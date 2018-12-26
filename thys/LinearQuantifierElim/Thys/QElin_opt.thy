@@ -4,9 +4,9 @@ theory QElin_opt
 imports QElin
 begin
 
-subsubsection{*An optimization*}
+subsubsection\<open>An optimization\<close>
 
-text{* Atoms are simplified asap. *}
+text\<open>Atoms are simplified asap.\<close>
 
 definition
 "asimp a = (case a of

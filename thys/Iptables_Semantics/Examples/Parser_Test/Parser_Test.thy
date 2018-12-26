@@ -9,7 +9,7 @@ Argument 2: The path to the firewall (iptables-save). A path is represented as l
 \<close>
 parse_iptables_save parser_test_firewall = "data" "iptables-save"
 
-text\<open>The command @{text parse_iptables_save} would provide nicer syntax (but does not support paths at the moment)\<close>
+text\<open>The command \<open>parse_iptables_save\<close> would provide nicer syntax (but does not support paths at the moment)\<close>
 
 term parser_test_firewall
 thm parser_test_firewall_def

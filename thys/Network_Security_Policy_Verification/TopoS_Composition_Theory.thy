@@ -2,14 +2,14 @@ theory TopoS_Composition_Theory
 imports TopoS_Interface TopoS_Helper
 begin
 
-section{*Composition Theory*}
+section\<open>Composition Theory\<close>
 
-text{*Several invariants may apply to one policy. *}
+text\<open>Several invariants may apply to one policy.\<close>
 
-text{*The security invariants are all collected in a list. 
+text\<open>The security invariants are all collected in a list. 
 The list corresponds to the security requirements. 
 The list should have the type @{typ "('v graph \<Rightarrow> bool) list"}, i.e.\ a list of predicates over the policy. 
-We need in instantiated security invariant, i.e.\ get rid of @{typ "'a"} and @{typ "'b"}*}
+We need in instantiated security invariant, i.e.\ get rid of @{typ "'a"} and @{typ "'b"}\<close>
 
  \<comment> \<open>An instance (configured) a security invariant I.e.\ a concrete security requirement, in different terminology.\<close>
  record ('v) SecurityInvariant_configured =
@@ -51,8 +51,8 @@ We need in instantiated security invariant, i.e.\ get rid of @{typ "'a"} and @{t
    by(simp add: Let_def new_configured_SecurityInvariant.simps)
 
 
-text{* We now collect all the core properties of a security invariant, but without the @{typ "'a"} @{typ "'b"} 
-      types, so it is instantiated with a concrete configuration.*}
+text\<open>We now collect all the core properties of a security invariant, but without the @{typ "'a"} @{typ "'b"} 
+      types, so it is instantiated with a concrete configuration.\<close>
 locale configured_SecurityInvariant =
   fixes m :: "('v::vertex) SecurityInvariant_configured"
   assumes
@@ -76,8 +76,8 @@ locale configured_SecurityInvariant =
       apply(simp add: SecurityInvariant_withOffendingFlows.sinvar_mono_def, clarify)
       by(fact mono_sinvar)
 
-    text{* if the network where nobody communicates with anyone fulfilles its security requirement,
-          the offending flows are always defined. *}
+    text\<open>if the network where nobody communicates with anyone fulfilles its security requirement,
+          the offending flows are always defined.\<close>
     lemma defined_offending': 
       "\<lbrakk> wf_graph G; \<not> c_sinvar m G \<rbrakk> \<Longrightarrow> c_offending_flows m G \<noteq> {}"
       proof -
@@ -109,7 +109,7 @@ locale configured_SecurityInvariant =
             SecurityInvariant_withOffendingFlows.is_offending_flows_def)
       by(simp add: valid_c_offending_flows)
 
-    text{* all the @{term SecurityInvariant_preliminaries} stuff must hold, for an arbitrary @{term nP} *}
+    text\<open>all the @{term SecurityInvariant_preliminaries} stuff must hold, for an arbitrary @{term nP}\<close>
     lemma SecurityInvariant_preliminariesD:
       "SecurityInvariant_preliminaries (\<lambda> (G::('v::vertex) graph) (nP::'v \<Rightarrow> 'a). c_sinvar m G)"
       proof(unfold_locales, goal_cases)
@@ -124,58 +124,58 @@ locale configured_SecurityInvariant =
      by(blast dest: mono_sinvar)
 
     
-    subsection{*Reusing Lemmata*}
+    subsection\<open>Reusing Lemmata\<close>
       lemmas mono_extend_set_offending_flows =
       SecurityInvariant_preliminaries.mono_extend_set_offending_flows[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm mono_extend_set_offending_flows [no_vars]}*}
+      text\<open>@{thm mono_extend_set_offending_flows [no_vars]}\<close>
 
       lemmas offending_flows_union_mono =
       SecurityInvariant_preliminaries.offending_flows_union_mono[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm offending_flows_union_mono [no_vars]}*}
+      text\<open>@{thm offending_flows_union_mono [no_vars]}\<close>
 
       lemmas sinvar_valid_remove_flattened_offending_flows =
       SecurityInvariant_preliminaries.sinvar_valid_remove_flattened_offending_flows[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm sinvar_valid_remove_flattened_offending_flows [no_vars]}*}
+      text\<open>@{thm sinvar_valid_remove_flattened_offending_flows [no_vars]}\<close>
 
       lemmas sinvar_valid_remove_SOME_offending_flows =
       SecurityInvariant_preliminaries.sinvar_valid_remove_SOME_offending_flows[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm sinvar_valid_remove_SOME_offending_flows [no_vars]}*}
+      text\<open>@{thm sinvar_valid_remove_SOME_offending_flows [no_vars]}\<close>
 
 
       lemmas sinvar_valid_remove_minimalize_offending_overapprox =
       SecurityInvariant_preliminaries.sinvar_valid_remove_minimalize_offending_overapprox[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm sinvar_valid_remove_minimalize_offending_overapprox [no_vars]}*}
+      text\<open>@{thm sinvar_valid_remove_minimalize_offending_overapprox [no_vars]}\<close>
       
 
       lemmas empty_offending_contra =
       SecurityInvariant_withOffendingFlows.empty_offending_contra[where sinvar="(\<lambda>G nP. c_sinvar m G)", simplified subst_offending_flows]
-      text{*@{thm empty_offending_contra [no_vars]}*}
+      text\<open>@{thm empty_offending_contra [no_vars]}\<close>
 
       lemmas Un_set_offending_flows_bound_minus_subseteq = 
       SecurityInvariant_preliminaries.Un_set_offending_flows_bound_minus_subseteq[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm Un_set_offending_flows_bound_minus_subseteq [no_vars]}*}
+      text\<open>@{thm Un_set_offending_flows_bound_minus_subseteq [no_vars]}\<close>
 
       lemmas Un_set_offending_flows_bound_minus_subseteq' = 
       SecurityInvariant_preliminaries.Un_set_offending_flows_bound_minus_subseteq'[OF SecurityInvariant_preliminariesD, simplified subst_offending_flows]
-      text{*@{thm Un_set_offending_flows_bound_minus_subseteq' [no_vars]}*}
+      text\<open>@{thm Un_set_offending_flows_bound_minus_subseteq' [no_vars]}\<close>
 end
 
 thm configured_SecurityInvariant_def
-text{*@{thm configured_SecurityInvariant_def [no_vars]}*}
+text\<open>@{thm configured_SecurityInvariant_def [no_vars]}\<close>
 
 thm configured_SecurityInvariant.mono_sinvar
-text{*@{thm configured_SecurityInvariant.mono_sinvar [no_vars]}*}
+text\<open>@{thm configured_SecurityInvariant.mono_sinvar [no_vars]}\<close>
 
 
 
-text{* 
+text\<open>
   Naming convention:
     m :: network security requirement
     M :: network security requirement list
-*}
+\<close>
 
-  text{* The function @{term new_configured_SecurityInvariant} takes some tuple and if it returns a result,
-         the locale assumptions are automatically fulfilled. *}
+  text\<open>The function @{term new_configured_SecurityInvariant} takes some tuple and if it returns a result,
+         the locale assumptions are automatically fulfilled.\<close>
   theorem new_configured_SecurityInvariant_sound: 
   "\<lbrakk> new_configured_SecurityInvariant (sinvar, defbot, receiver_violation, nP) = Some m \<rbrakk> \<Longrightarrow>
     configured_SecurityInvariant m"
@@ -206,18 +206,18 @@ text{*
         done
    qed
 
-text{* All security invariants are valid according to the definition *}
+text\<open>All security invariants are valid according to the definition\<close>
 definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Rightarrow> bool" where
   "valid_reqs M \<equiv> \<forall> m \<in> set M. configured_SecurityInvariant m"
 
- subsection {*Algorithms*}
-    text{*A (generic) security invariant corresponds to a type of security requirements (type: @{typ "'v graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool"}).
+ subsection \<open>Algorithms\<close>
+    text\<open>A (generic) security invariant corresponds to a type of security requirements (type: @{typ "'v graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool"}).
           A configured security invariant is a security requirement in a scenario specific setting (type: @{typ "'v graph \<Rightarrow> bool"}).
           I.e., it is a security requirement as listed in the requirements document.
-          All security requirements are fulfilled for a fixed policy @{term G} if all security requirements are fulfilled for @{term G}. *}
+          All security requirements are fulfilled for a fixed policy @{term G} if all security requirements are fulfilled for @{term G}.\<close>
 
 
-    text{*Get all possible offending flows from all security requirements *}
+    text\<open>Get all possible offending flows from all security requirements\<close>
     definition get_offending_flows :: "'v SecurityInvariant_configured list \<Rightarrow> 'v graph \<Rightarrow> (('v \<times> 'v) set set)" where
       "get_offending_flows M G = (\<Union>m\<in>set M. c_offending_flows m G)"  
 
@@ -225,7 +225,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
     definition all_security_requirements_fulfilled :: "('v::vertex) SecurityInvariant_configured list \<Rightarrow> 'v graph \<Rightarrow> bool" where
       "all_security_requirements_fulfilled M G \<equiv> \<forall>m \<in> set M. (c_sinvar m) G"
     
-    text{* Generate a valid topology from the security requirements *}
+    text\<open>Generate a valid topology from the security requirements\<close>
     (*constant G, remove after algorithm*)
     fun generate_valid_topology :: "'v SecurityInvariant_configured list \<Rightarrow> 'v graph \<Rightarrow> 'v graph" where
       "generate_valid_topology [] G = G" |
@@ -241,7 +241,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
       by(auto simp add: get_ACS_def get_IFS_def)
   
 
-   subsection{*Lemmata*}
+   subsection\<open>Lemmata\<close>
     lemma valid_reqs1: "valid_reqs (m # M) \<Longrightarrow> configured_SecurityInvariant m"
       by(simp add: valid_reqs_def)
     lemma valid_reqs2: "valid_reqs (m # M) \<Longrightarrow> valid_reqs M"
@@ -268,7 +268,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
         apply blast
         done
 
-    subsection{* generate valid topology *}
+    subsection\<open>generate valid topology\<close>
     (*
       lemma generate_valid_topology_def_delete_multiple: 
         "generate_valid_topology M G = delete_edges (generate_valid_topology M G) (\<Union> (get_offending_flows M G))"
@@ -323,7 +323,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
         case Cons thus ?case by (simp add: delete_edges_simp2) blast
         qed(simp)
 
-      text{* @{term generate_valid_topology} generates a valid topology (Policy)! *}
+      text\<open>@{term generate_valid_topology} generates a valid topology (Policy)!\<close>
       theorem generate_valid_topology_sound:
       "\<lbrakk> valid_reqs M; wf_graph \<lparr>nodes = V, edges = E\<rparr> \<rbrakk> \<Longrightarrow> 
       all_security_requirements_fulfilled M (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>)"
@@ -352,7 +352,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
                by(simp add: delete_edges_simp2 generate_valid_topology_nodes)
     
           from valid_reqs2[OF Cons(2)] have "valid_reqs M" .
-          from Cons.IH[OF `valid_reqs M` Cons(3)] have IH:
+          from Cons.IH[OF \<open>valid_reqs M\<close> Cons(3)] have IH:
             "all_security_requirements_fulfilled M (generate_valid_topology M \<lparr>nodes = V, edges = E\<rparr>)" .
 
           have generate_valid_topology_EX_graph_record:
@@ -369,7 +369,7 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
           \<comment> \<open>@{thm IH[simplified E_IH_prop]}\<close>
           \<comment> \<open>@{thm all_security_requirements_fulfilled_mono[OF `valid_reqs M` _  valid_G_E_IH IH[simplified E_IH_prop]]}\<close>
     
-          from all_security_requirements_fulfilled_mono[OF `valid_reqs M` _  valid_G_E_IH IH[simplified E_IH_prop]] have mono_rule:
+          from all_security_requirements_fulfilled_mono[OF \<open>valid_reqs M\<close> _  valid_G_E_IH IH[simplified E_IH_prop]] have mono_rule:
             "\<And> E'. E' \<subseteq> E_IH \<Longrightarrow> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E'\<rparr>" .
     
           have "all_security_requirements_fulfilled M 
@@ -402,9 +402,9 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
     by auto
 
 
-  text{*Does it also generate a maximum topology? It does, if the security invariants are in ENF-form. That means, if 
+  text\<open>Does it also generate a maximum topology? It does, if the security invariants are in ENF-form. That means, if 
         all security invariants can be expressed as a predicate over the edges, 
-        @{term "\<exists>P. \<forall>G. c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1,v2))"}*}
+        @{term "\<exists>P. \<forall>G. c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1,v2))"}\<close>
   definition max_topo :: "('v::vertex) SecurityInvariant_configured list \<Rightarrow> 'v graph \<Rightarrow> bool" where
     "max_topo M G \<equiv> all_security_requirements_fulfilled M G \<and> (
       \<forall> (v1, v2) \<in> (nodes G \<times> nodes G) - (edges G). \<not> all_security_requirements_fulfilled M (add_edge v1 v2 G))"
@@ -427,11 +427,11 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
     from this unique have "\<not> c_sinvar m G" and 2: "c_sinvar m (delete_edges G F)" and 
                           3: "(\<forall>(e1, e2)\<in>F. \<not> c_sinvar m (add_edge e1 e2 (delete_edges G F)))" by auto
 
-    from this `F = {e \<in> edges G. \<not> P e}` have x3: "\<forall> e \<in> edges G - F. P e" by (metis (lifting) mem_Collect_eq set_diff_eq)
+    from this \<open>F = {e \<in> edges G. \<not> P e}\<close> have x3: "\<forall> e \<in> edges G - F. P e" by (metis (lifting) mem_Collect_eq set_diff_eq)
     hence 4: "\<forall>(v1,v2) \<in> edges G - F. P (v1, v2)" by blast
 
     have "F \<noteq> {}" by (metis assms(1) assms(2) configured_SecurityInvariant.empty_offending_contra insertCI)
-    from this `F = {e \<in> edges G. \<not> P e}` `\<not> c_sinvar m G` have 5: "c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1, v2))"
+    from this \<open>F = {e \<in> edges G. \<not> P e}\<close> \<open>\<not> c_sinvar m G\<close> have 5: "c_sinvar m G = (\<forall>(v1,v2) \<in> edges G. P (v1, v2))"
       apply(simp add: graph_ops)
       by(blast)
 
@@ -473,20 +473,20 @@ lemma enf_not_fulfilled_if_in_offending:
     from validRs have valid_mD:"\<And>m. m \<in> set M \<Longrightarrow> configured_SecurityInvariant m " 
       by(simp add: valid_reqs_def)
     
-     from `m \<in> set M` valid_mD have "configured_SecurityInvariant m" by simp
+     from \<open>m \<in> set M\<close> valid_mD have "configured_SecurityInvariant m" by simp
 
-     from enf `m \<in> set M` obtain P where enf_m: "\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)" by blast
+     from enf \<open>m \<in> set M\<close> obtain P where enf_m: "\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)" by blast
      
-     from `(v1, v2) \<in> F` have "F \<noteq> {}" by auto
+     from \<open>(v1, v2) \<in> F\<close> have "F \<noteq> {}" by auto
 
-     from enf_offending_flows[OF `configured_SecurityInvariant m` `\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)`] have
+     from enf_offending_flows[OF \<open>configured_SecurityInvariant m\<close> \<open>\<forall>G. c_sinvar m G = (\<forall>e\<in>edges G. P e)\<close>] have
       offending: "\<And>G. c_offending_flows m G = (if c_sinvar m G then {} else {{e \<in> edges G. \<not> P e}})" by simp
-     from `F \<in> c_offending_flows m ?G` `F \<noteq> {}` have "F = {e \<in> edges ?G. \<not> P e}"
+     from \<open>F \<in> c_offending_flows m ?G\<close> \<open>F \<noteq> {}\<close> have "F = {e \<in> edges ?G. \<not> P e}"
        by(simp split: if_split_asm add: offending)
-     from this `(v1, v2) \<in> F`  have "\<not> P (v1, v2)" by simp
+     from this \<open>(v1, v2) \<in> F\<close>  have "\<not> P (v1, v2)" by simp
 
      from this enf_m have "\<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" by(simp)
-     thus "\<exists>m\<in>set M. \<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" using `m \<in> set M`
+     thus "\<exists>m\<in>set M. \<not> c_sinvar m \<lparr>nodes = V, edges = insert (v1, v2) E\<rparr>" using \<open>m \<in> set M\<close>
       apply(rule_tac x="m" in bexI)
        by simp_all
 qed
@@ -534,7 +534,7 @@ qed
     have "\<forall>(v1, v2) \<in> (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G).
        \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
           
-    from this `V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)` have "\<forall>(v1, v2) \<in> V \<times> V - E.
+    from this \<open>V \<times> V - E = (\<Union>m\<in>set M. \<Union>c_offending_flows m ?G)\<close> have "\<forall>(v1, v2) \<in> V \<times> V - E.
          \<not> all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<union> {(v1, v2)}\<rparr>" by simp
     hence goal2: "(\<forall>(v1, v2)\<in>nodes (generate_valid_topology M ?G) \<times> nodes (generate_valid_topology M ?G) -
                 edges (generate_valid_topology M ?G).
@@ -629,7 +629,7 @@ qed
     
 
 
-   subsection{* More Lemmata *}
+   subsection\<open>More Lemmata\<close>
      lemma (in configured_SecurityInvariant) c_sinvar_valid_imp_no_offending_flows: 
       "c_sinvar m G \<Longrightarrow> c_offending_flows m G = {}"
         by(simp add: valid_c_offending_flows)
@@ -676,14 +676,14 @@ qed
       from this show ?case
        proof(elim disjE, goal_cases)
        case 1
-         with `configured_SecurityInvariant m` Cons.prems(2,3,4) obtain F where
+         with \<open>configured_SecurityInvariant m\<close> Cons.prems(2,3,4) obtain F where
            "F\<in>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr>" and "F' \<subseteq> F"
            by(blast dest: configured_SecurityInvariant.mono_extend_set_offending_flows)
          hence "F\<in>get_offending_flows (m # M) \<lparr>nodes = V, edges = E\<rparr>"
            by (simp add: get_offending_flows_def)
-         with `F' \<subseteq> F` show ?case by blast
+         with \<open>F' \<subseteq> F\<close> show ?case by blast
        next
-       case 2 with Cons `valid_reqs M` show ?case by(simp add: get_offending_flows_def) blast
+       case 2 with Cons \<open>valid_reqs M\<close> show ?case by(simp add: get_offending_flows_def) blast
        qed
      qed
 
@@ -717,9 +717,9 @@ qed
         from Cons.prems(1) valid_reqs2 have "valid_reqs M" by force
         from Cons.prems(1) valid_reqs1 have "configured_SecurityInvariant m" by force
         from Cons.prems(4) have "\<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X" by(simp add: get_offending_flows_def)
-        from Cons.IH[OF `valid_reqs M` Cons.prems(2) Cons.prems(3) `\<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X`] have IH: "\<Union>get_offending_flows M \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'" .
+        from Cons.IH[OF \<open>valid_reqs M\<close> Cons.prems(2) Cons.prems(3) \<open>\<Union>get_offending_flows M \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X\<close>] have IH: "\<Union>get_offending_flows M \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'" .
         from Cons.prems(4) have "\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X" by(simp add: get_offending_flows_def)
-        from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq'[OF `configured_SecurityInvariant m` Cons.prems(2) `\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X`] have "\<Union>c_offending_flows m \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'" .
+        from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq'[OF \<open>configured_SecurityInvariant m\<close> Cons.prems(2) \<open>\<Union>c_offending_flows m \<lparr>nodes = V, edges = E\<rparr> \<subseteq> X\<close>] have "\<Union>c_offending_flows m \<lparr>nodes = V, edges = E - E'\<rparr> \<subseteq> X - E'" .
         from this IH show ?case by(simp add: get_offending_flows_def)
       qed
 
@@ -764,7 +764,7 @@ qed
 
 
 
-   text{*Hilber's eps operator example*}
+   text\<open>Hilber's eps operator example\<close>
    lemma "(SOME x. x : {1::nat, 2, 3}) = x \<Longrightarrow> x = 1 \<or> x = 2 \<or> x = 3"
      proof -
       have "(SOME x. x \<in> {1::nat, 2, 3}) \<in> {1::nat, 2, 3}" unfolding some_in_eq by simp
@@ -773,7 +773,7 @@ qed
 
   (*TODO: remove the offending flows from the graph for each iteration. requires proof arbitrary: G
           allows to put expensive invariants at back of list and hope that sinvar is true until the are evaluated*)
-  text{*Only removing one offending flow should be enough*}
+  text\<open>Only removing one offending flow should be enough\<close>
   fun generate_valid_topology_SOME :: "'v SecurityInvariant_configured list \<Rightarrow> 'v graph \<Rightarrow> 'v graph" where
     "generate_valid_topology_SOME [] G = G" |
     "generate_valid_topology_SOME (m#Ms) G = (if c_sinvar m G
@@ -819,7 +819,7 @@ qed
            by (metis graph.select_convs(1) graph.select_convs(2) graph_eq_intro)
 
         from valid_reqs2[OF Cons(2)] have "valid_reqs M" .
-        from Cons.IH[OF `valid_reqs M` Cons(3)] have IH:
+        from Cons.IH[OF \<open>valid_reqs M\<close> Cons(3)] have IH:
           "all_security_requirements_fulfilled M (generate_valid_topology_SOME M \<lparr>nodes = V, edges = E\<rparr>)" .
 
         have goal_rm_SOME_m: "c_offending_flows m \<lparr>nodes = V, edges = E\<rparr> \<noteq> {} \<Longrightarrow>
@@ -855,7 +855,7 @@ qed
           from wf_graph_generate_valid_topology_SOME[OF Cons(3)] E_IH_prop
           have valid_G_E_IH: "wf_graph \<lparr>nodes = V, edges = E_IH\<rparr>" by simp
     
-          from all_security_requirements_fulfilled_mono[OF `valid_reqs M` _ valid_G_E_IH ] IH E_IH_prop
+          from all_security_requirements_fulfilled_mono[OF \<open>valid_reqs M\<close> _ valid_G_E_IH ] IH E_IH_prop
           have mono_rule: "E' \<subseteq> E_IH \<Longrightarrow> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E'\<rparr>" for E' by simp
   
           have "all_security_requirements_fulfilled M
@@ -929,10 +929,10 @@ qed
 
 
 
-  text{*Notation:
+  text\<open>Notation:
     @{const generate_valid_topology_SOME}: non-deterministic choice
-    @{text generate_valid_topology_some}: executable which selects always the same
-    *}
+    \<open>generate_valid_topology_some\<close>: executable which selects always the same
+\<close>
   fun generate_valid_topology_some :: "'v SecurityInvariant_configured list \<Rightarrow> ('v\<times>'v) list \<Rightarrow> 'v graph \<Rightarrow> 'v graph" where
     "generate_valid_topology_some [] _ G = G" |
     "generate_valid_topology_some (m#Ms) Es G = (if c_sinvar m G
@@ -983,7 +983,7 @@ qed
 
   
         from valid_reqs2[OF Cons(2)] have "valid_reqs M" .
-        from Cons.IH[OF `valid_reqs M` Cons(3)] Cons.prems have IH:
+        from Cons.IH[OF \<open>valid_reqs M\<close> Cons(3)] Cons.prems have IH:
           "all_security_requirements_fulfilled M (generate_valid_topology_some M Es \<lparr>nodes = V, edges = E\<rparr>)" by simp
 
  
@@ -1006,7 +1006,7 @@ qed
           from wf_graph_generate_valid_topology_some[OF Cons(3)] E_IH_prop
           have valid_G_E_IH: "wf_graph \<lparr>nodes = V, edges = E_IH\<rparr>" by simp
     
-          from all_security_requirements_fulfilled_mono[OF `valid_reqs M` _ valid_G_E_IH ] IH E_IH_prop
+          from all_security_requirements_fulfilled_mono[OF \<open>valid_reqs M\<close> _ valid_G_E_IH ] IH E_IH_prop
           have mono_rule: "E' \<subseteq> E_IH \<Longrightarrow> all_security_requirements_fulfilled M \<lparr>nodes = V, edges = E'\<rparr>" for E' by simp
   
           have "all_security_requirements_fulfilled M

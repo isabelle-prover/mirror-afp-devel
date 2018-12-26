@@ -2,9 +2,9 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* Generated subalgebras *}
+section \<open>Generated subalgebras\<close>
 
-text {* This section contains definitions and properties related to generated subalgebras. *}
+text \<open>This section contains definitions and properties related to generated subalgebras.\<close>
 
 theory Generated_Subalgebra imports "HOL-Probability.Probability"
 
@@ -273,7 +273,7 @@ proof -
       fix a::"nat \<Rightarrow> 'a set"
       assume "(\<And>i. a i \<in> sigma_sets (space M) {f -` B \<inter> space M |B. B \<in> sets N})"
       and "(\<And>i. (x \<in> a i) = (w \<in> a i))"
-      show "(x \<in> \<Union>(a ` UNIV)) = (w \<in> \<Union>(a ` UNIV))" by (simp add: `\<And>i. (x \<in> a i) = (w \<in> a i)`)
+      show "(x \<in> \<Union>(a ` UNIV)) = (w \<in> \<Union>(a ` UNIV))" by (simp add: \<open>\<And>i. (x \<in> a i) = (w \<in> a i)\<close>)
     }
     {show "(x\<in> {}) = (w\<in> {})" by simp}
   qed} note eqsig = this
@@ -284,7 +284,7 @@ proof -
   thus "(x\<in> A) = (w\<in> A)" using eqsig by simp
 qed
 
-subsection {* Independence between a random variable and a subalgebra. *}
+subsection \<open>Independence between a random variable and a subalgebra.\<close>
 
 definition (in prob_space) subalgebra_indep_var :: "('a \<Rightarrow> real) \<Rightarrow> 'a measure \<Rightarrow> bool" where
   "subalgebra_indep_var X N \<longleftrightarrow>
@@ -331,7 +331,7 @@ proof ((rule indep_var_eq[THEN iffD2]), (intro conjI))
         qed
       qed
       also have "... = sets N"
-        by (simp add: `sigma_algebra (space M) (sets N)` sigma_algebra.sigma_sets_eq)
+        by (simp add: \<open>sigma_algebra (space M) (sets N)\<close> sigma_algebra.sigma_sets_eq)
       finally show "sigma_sets (space M) {?IA -` B \<inter> space M |B. B \<in> sets borel} \<subseteq> sets N" .
     qed
     show "indep_set (sigma_sets (space M) {X -` A \<inter> space M |A. A \<in> sets borel}) (sets N) "

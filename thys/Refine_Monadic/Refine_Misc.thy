@@ -1,11 +1,11 @@
-section {* Miscellanneous Lemmas and Tools *}
+section \<open>Miscellanneous Lemmas and Tools\<close>
 theory Refine_Misc
 imports 
   Automatic_Refinement.Automatic_Refinement
   Refine_Mono_Prover
 begin
 
-text {* Basic configuration for monotonicity prover: *}
+text \<open>Basic configuration for monotonicity prover:\<close>
 lemmas [refine_mono] = monoI monotoneI[of "(\<le>)" "(\<le>)"]
 lemmas [refine_mono] = TrueI le_funI order_refl
 
@@ -35,19 +35,19 @@ lemma let_mono[refine_mono]:
   "f x \<le> f' x' \<Longrightarrow> Let x f \<le> Let x' f'" by auto
 
 
-subsection {* Uncategorized Lemmas *}
+subsection \<open>Uncategorized Lemmas\<close>
 lemma all_nat_split_at: "\<forall>i::'a::linorder<k. P i \<Longrightarrow> P k \<Longrightarrow> \<forall>i>k. P i 
   \<Longrightarrow> \<forall>i. P i"
   by (metis linorder_neq_iff)
 
-subsection {* Well-Foundedness *}
+subsection \<open>Well-Foundedness\<close>
 
 lemma wf_no_infinite_down_chainI:
   assumes "\<And>f. \<lbrakk>\<And>i. (f (Suc i), f i)\<in>r\<rbrakk> \<Longrightarrow> False"
   shows "wf r"
   by (metis assms wf_iff_no_infinite_down_chain)
 
-text {* This lemma transfers well-foundedness over a simulation relation. *}
+text \<open>This lemma transfers well-foundedness over a simulation relation.\<close>
 lemma sim_wf:
   assumes WF: "wf (S'\<inverse>)"
   assumes STARTR: "(x0,x0')\<in>R"
@@ -56,23 +56,23 @@ lemma sim_wf:
   assumes CLOSED: "Domain S  \<subseteq> S\<^sup>*``{x0}"
   shows "wf (S\<inverse>)"
 proof (rule wf_no_infinite_down_chainI, simp)
-  txt {*
+  txt \<open>
     Informal proof:
-    Assume there is an infinite chain in @{text "S"}.
-    Due to the closedness property of @{text "S"}, it can be extended to 
-    start at @{text x0}.
-    Now, we inductively construct an infinite chain in @{text "S'"}, such that
+    Assume there is an infinite chain in \<open>S\<close>.
+    Due to the closedness property of \<open>S\<close>, it can be extended to 
+    start at \<open>x0\<close>.
+    Now, we inductively construct an infinite chain in \<open>S'\<close>, such that
     each element of the new chain is in relation with the corresponding 
     element of the original chain:
-      The first element is @{text "x0'"}. 
-      For any element @{text "i+1"}, the simulation property yields the next
+      The first element is \<open>x0'\<close>. 
+      For any element \<open>i+1\<close>, the simulation property yields the next
       element.
-    This chain contradicts well-foundedness of @{text "S'"}.
-    *}
+    This chain contradicts well-foundedness of \<open>S'\<close>.
+\<close>
 
   fix f
   assume CHAIN: "\<And>i. (f i, f (Suc i))\<in>S"
-  txt {* Extend to start with @{text "x0"} *}
+  txt \<open>Extend to start with \<open>x0\<close>\<close>
   obtain f' where CHAIN': "\<And>i. (f' i, f' (Suc i))\<in>S" and [simp]: "f' 0 = x0"
   proof -
     {
@@ -89,7 +89,7 @@ proof (rule wf_no_infinite_down_chainI, simp)
           fix g k 
           assume "g 0 = x0" and "y = g k" 
             and "\<forall>i<k. (g i, g (Suc i))\<in>S"
-          thus ?case using `(y,z)\<in>S`
+          thus ?case using \<open>(y,z)\<in>S\<close>
             by (rule_tac step.prems[where g="g(Suc k := z)" and k="Suc k"])
               auto
         qed
@@ -116,7 +116,7 @@ proof (rule wf_no_infinite_down_chainI, simp)
     thus ?thesis by (blast intro!: that)
   qed
 
-  txt {* Construct chain in @{text "S'"}*}
+  txt \<open>Construct chain in \<open>S'\<close>\<close>
   define g' where "g' = rec_nat x0' (\<lambda>i x. SOME x'. 
           (x,x')\<in>S' \<and> (f' (Suc i),x')\<in>R \<and> (x0', x')\<in>S'\<^sup>* )"
   {
@@ -144,12 +144,12 @@ proof (rule wf_no_infinite_down_chainI, simp)
         done
     qed
   } hence S'CHAIN: "\<forall>i. (g' i, g'(Suc i))\<in>S'" by simp
-  txt {* This contradicts well-foundedness *}
+  txt \<open>This contradicts well-foundedness\<close>
   with WF show False 
     by (erule_tac wf_no_infinite_down_chainE[where f=g']) simp
 qed
 
-text {* Well-founded relation that approximates a finite set from below. *}
+text \<open>Well-founded relation that approximates a finite set from below.\<close>
 definition "finite_psupset S \<equiv> { (Q',Q). Q\<subset>Q' \<and> Q' \<subseteq> S }"
 lemma finite_psupset_wf[simp, intro]: "finite S \<Longrightarrow> wf (finite_psupset S)"
   unfolding finite_psupset_def by (blast intro: wf_bounded_supset)
@@ -170,7 +170,7 @@ lemma greater_bounded_Suc_iff[simp]: "(Suc x,x)\<in>greater_bounded N \<longleft
 
     
     
-subsection {* Monotonicity and Orderings *}
+subsection \<open>Monotonicity and Orderings\<close>
 
 lemma mono_const[simp, intro!]: "mono (\<lambda>_. c)" by (auto intro: monoI)
 lemma mono_if: "\<lbrakk>mono S1; mono S2\<rbrakk> \<Longrightarrow>
@@ -257,7 +257,7 @@ lemma mono_compD: "mono f \<Longrightarrow> x\<le>y \<Longrightarrow> f o x \<le
   done
 
 
-subsubsection {* Galois Connections *}
+subsubsection \<open>Galois Connections\<close>
 locale galois_connection =
   fixes \<alpha>::"'a::complete_lattice \<Rightarrow> 'b::complete_lattice" and \<gamma>
   assumes galois: "c \<le> \<gamma>(a) \<longleftrightarrow> \<alpha>(c) \<le> a"
@@ -299,7 +299,7 @@ begin
 
 end
 
-subsubsection {* Fixed Points *}
+subsubsection \<open>Fixed Points\<close>
 lemma mono_lfp_eqI:
   assumes MONO: "mono f"
   assumes FIXP: "f a \<le> a"
@@ -357,8 +357,8 @@ lemma lfp_gen_induct:
 
 
 
-subsubsection {* Connecting Complete Lattices and 
-  Chain-Complete Partial Orders *}
+subsubsection \<open>Connecting Complete Lattices and 
+  Chain-Complete Partial Orders\<close>
 (* Note: Also connected by subclass now. However, we need both directions
   of embedding*)
 lemma (in complete_lattice) is_ccpo: "class.ccpo Sup (\<le>) (<)"
@@ -440,8 +440,8 @@ lemma point_chainI: "is_chain M \<Longrightarrow> is_chain ((\<lambda>f. f x)`M)
   by (auto intro: chainI le_funI dest: chainD le_funD)
 
 
-text {* We transfer the admissible induction lemmas to complete
-  lattices. *}
+text \<open>We transfer the admissible induction lemmas to complete
+  lattices.\<close>
 lemma lfp_cadm_induct:
   "\<lbrakk>chain_admissible P; P (Sup {}); mono f; \<And>x. P x \<Longrightarrow> P (f x)\<rbrakk> \<Longrightarrow> P (lfp f)"
   by (simp only: ccpo_mono_simp[symmetric] ccpo_lfp_simp[symmetric])
@@ -452,7 +452,7 @@ lemma gfp_cadm_induct:
   by (simp only: dual_ccpo_mono_simp[symmetric] ccpo_gfp_simp[symmetric])
      (rule ccpo.fixp_induct[OF is_dual_ccpo])
 
-subsubsection {* Continuity and Kleene Fixed Point Theorem *}
+subsubsection \<open>Continuity and Kleene Fixed Point Theorem\<close>
 definition "cont f \<equiv> \<forall>C. C\<noteq>{} \<longrightarrow> f (Sup C) = Sup (f`C)"
 definition "strict f \<equiv> f bot = bot"
 definition "inf_distrib f \<equiv> strict f \<and> cont f"
@@ -513,7 +513,7 @@ lemma inf_distrib_is_mono[simp]:
   shows "inf_distrib f \<Longrightarrow> mono f"
   by simp
 
-text {* Only proven for complete lattices here. Also holds for CCPOs. *}
+text \<open>Only proven for complete lattices here. Also holds for CCPOs.\<close>
 
 theorem gen_kleene_lfp:
   fixes f:: "'a::complete_lattice \<Rightarrow> 'a"
@@ -693,8 +693,8 @@ lemma (in galois_connection) inf_dist_\<alpha>: "inf_distrib \<alpha>"
   apply simp
   done
 
-subsection {* Maps *}
-subsubsection {* Key-Value Set *}
+subsection \<open>Maps\<close>
+subsubsection \<open>Key-Value Set\<close>
   
   lemma map_to_set_simps[simp]: 
     "map_to_set Map.empty = {}"

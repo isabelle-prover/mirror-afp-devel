@@ -4,15 +4,15 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-section {* Regular Algebras *}
+section \<open>Regular Algebras\<close>
 
 theory Regular_Algebras
   imports Dioid_Power_Sum Kleene_Algebra.Finite_Suprema Kleene_Algebra.Kleene_Algebra
 begin
 
-subsection {* Conway's Classical Axioms *}
+subsection \<open>Conway's Classical Axioms\<close>
 
-text {* Conway's classical axiomatisation of Regular Algebra from~\cite{Conway}. *}
+text \<open>Conway's classical axiomatisation of Regular Algebra from~\cite{Conway}.\<close>
  
 class star_dioid = dioid_one_zero + star_op + plus_ord
 
@@ -26,7 +26,7 @@ class strong_conway_dioid = conway_dioid +
 class C_algebra = strong_conway_dioid +
   assumes C14: "x\<^sup>\<star> = (x\<^bsup>n+1\<^esup>)\<^sup>\<star> \<cdot> x\<^bsub>0\<^esub>\<^bsup>n\<^esup>"
 
-text {* We tried to dualise using sublocales, but this causes an infinite loop on dual.dual.dual.... *}
+text \<open>We tried to dualise using sublocales, but this causes an infinite loop on dual.dual.dual....\<close>
 
 lemma (in conway_dioid) C11_var: "(x + y)\<^sup>\<star> = x\<^sup>\<star> \<cdot> (y \<cdot> x\<^sup>\<star>)\<^sup>\<star>"
 proof -
@@ -95,7 +95,7 @@ proof
     by (metis C13)
 qed
 
-text{* Nitpick finds counterexamples to the following claims. *}
+text\<open>Nitpick finds counterexamples to the following claims.\<close>
 
 lemma (in conway_dioid) "1\<^sup>\<star> = 1"
   nitpick [expect=genuine] \<comment> \<open>3-element counterexample\<close>
@@ -208,9 +208,9 @@ proof
     by (metis C14_dual opp_mult_def opp_power_def opp_powsum_def)
 qed (simp_all add: opp_mult_def mult.assoc distrib_left)
 
-subsection {* Boffa's Axioms *}
+subsection \<open>Boffa's Axioms\<close>
 
-text {* Boffa's two axiomatisations of Regular Algebra from~\cite{Boffa1,Boffa2}. *}
+text \<open>Boffa's two axiomatisations of Regular Algebra from~\cite{Boffa1,Boffa2}.\<close>
 
 class B1_algebra = conway_dioid +
   assumes R: "x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
@@ -683,12 +683,12 @@ sublocale B2_algebra \<subseteq> strong_conway_dioid
 sublocale B2_algebra \<subseteq> C_algebra
   by unfold_locales (metis powerstar)
 
-text {* The following fact could neither be verified nor falsified in Isabelle. It does not hold for other reasons. *}
+text \<open>The following fact could neither be verified nor falsified in Isabelle. It does not hold for other reasons.\<close>
 
 lemma (in C_algebra) "x\<cdot>x = x \<longrightarrow> x\<^sup>\<star> = 1+x"
 oops
 
-subsection {* Boffa Monoid Identities *}
+subsection \<open>Boffa Monoid Identities\<close>
 
 typedef ('a , 'b) boffa_mon = "{f :: 'a::{finite,monoid_mult}  \<Rightarrow> 'b::B1_algebra. True}"
   by auto
@@ -806,7 +806,7 @@ qed
     by (metis (mono_tags) one B1_algebra_class.R star_trans_eq)
 qed
     
-subsection {* Conway's Conjectures *}
+subsection \<open>Conway's Conjectures\<close>
 
 class C0_algebra = strong_conway_dioid +
   assumes C0:  "x \<cdot> y = y \<cdot> z \<Longrightarrow> x\<^sup>\<star> \<cdot> y = y \<cdot> z\<^sup>\<star>"
@@ -930,7 +930,7 @@ instance C2l_algebra \<subseteq> B1_algebra
 instance C2r_algebra \<subseteq>  B1_algebra 
   by (intro_classes, metis C2r conway_dioid_class.C12)
 
-text {* The following claims are refuted by Nitpick *}
+text \<open>The following claims are refuted by Nitpick\<close>
 
 lemma (in conway_dioid) 
   assumes "x \<cdot> y = y \<cdot> z \<Longrightarrow> x\<^sup>\<star> \<cdot> y = y \<cdot> z\<^sup>\<star>"
@@ -944,7 +944,7 @@ lemma (in conway_dioid)
 (*  nitpick [expect=genuine] -- "3-element counterexample"*)
 oops
 
-text {* The following fact could not be refuted by Nitpick or Quickcheck; but an infinite counterexample exists. *}
+text \<open>The following fact could not be refuted by Nitpick or Quickcheck; but an infinite counterexample exists.\<close>
 
 lemma (in B1_algebra) "x = x\<cdot>y\<longrightarrow> x = x\<cdot>y\<^sup>\<star>"
   oops
@@ -1028,9 +1028,9 @@ sublocale C2_algebra \<subseteq> C3_algebra ..
 
 sublocale C3_algebra \<subseteq> C2_algebra ..
 
-subsection {* Kozen's Kleene Algebras *}
+subsection \<open>Kozen's Kleene Algebras\<close>
 
-text {* Kozen's Kleene Algebras~\cite{Kozen,Kozensemi}. *}
+text \<open>Kozen's Kleene Algebras~\cite{Kozen,Kozensemi}.\<close>
 
 class Kl_base = star_dioid +
   assumes Kl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -1161,9 +1161,9 @@ sublocale K1_algebra \<subseteq> K2_algebra ..
 sublocale K2_algebra \<subseteq> koz: kleene_algebra
   by (unfold_locales, metis Kl, metis star_inductl_var, metis star_inductr_var)
 
-subsection {* Salomaa's Axioms *}
+subsection \<open>Salomaa's Axioms\<close>
 
-text {* Salomaa's axiomatisations of Regular Algebra~\cite{Salomaa}. *}
+text \<open>Salomaa's axiomatisations of Regular Algebra~\cite{Salomaa}.\<close>
 
 class salomaa_base = star_dioid +
   fixes ewp :: "'a \<Rightarrow> bool" 
@@ -1174,7 +1174,7 @@ class Sr_algebra = salomaa_base +
   assumes S12r: "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
   and Ar : "\<lbrakk> \<not> ewp y; x = x \<cdot> y + z \<rbrakk> \<Longrightarrow> x = z \<cdot> y\<^sup>\<star>"
 
-text {* The following claim is ruled out by Nitpick. The unfold law cannot be weakened as in Kleene algebra. *}
+text \<open>The following claim is ruled out by Nitpick. The unfold law cannot be weakened as in Kleene algebra.\<close>
 
 lemma (in salomaa_base) 
   assumes S12r': "1 + x\<^sup>\<star> \<cdot> x \<le> x\<^sup>\<star>"
@@ -1269,7 +1269,7 @@ sublocale S_algebra \<subseteq> K1_algebra ..
 
 sublocale S_algebra \<subseteq> K2_algebra ..
 
-text {* The following claim could be refuted. *}
+text \<open>The following claim could be refuted.\<close>
 
 lemma (in K2_algebra) "(\<not> 1 \<le>  x) \<longrightarrow>  x = x \<cdot> y + z \<longrightarrow> x = z \<cdot> y\<^sup>\<star>"
 oops

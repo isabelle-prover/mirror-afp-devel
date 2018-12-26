@@ -2,20 +2,20 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Indices of Sets} *}
+section \<open>\isaheader{Indices of Sets}\<close>
 theory SetIndex
 imports 
   "../spec/MapSpec"
   "../spec/SetSpec"
 begin
-text_raw {*\label{thy:SetIndex}*}
+text_raw \<open>\label{thy:SetIndex}\<close>
 
-text {*
+text \<open>
   This theory defines an indexing operation that builds an index from a set 
   and an indexing function. 
 
   Here, index is a map from indices to all values of the set with that index.
-  *}
+\<close>
 
 subsection "Indexing by Function"
 
@@ -44,12 +44,12 @@ lemma index_map_correct: "im_\<alpha> (index_map f s) = index f s"
   done
 
 subsection "Indexing by Maps and Sets from the Isabelle Collections Framework"
-text {*
+text \<open>
   In this theory, we define the generic algorithm as constants outside any locale,
   but prove the correctness lemmas inside a locale that assumes correctness of all
   prerequisite functions.
   Finally, we export the correctness lemmas from the locale.
-*}
+\<close>
 
 locale index_loc = 
   m: StdMap m_ops +

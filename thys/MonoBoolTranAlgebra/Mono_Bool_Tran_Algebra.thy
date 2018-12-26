@@ -1,16 +1,16 @@
-section {* Algebra of Monotonic Boolean Transformers *}
+section \<open>Algebra of Monotonic Boolean Transformers\<close>
 
 theory  Mono_Bool_Tran_Algebra
 imports Mono_Bool_Tran
 begin
 
-text{*
+text\<open>
 In this section we introduce the {\em algebra of monotonic boolean transformers}.
 This is a bounded distributive lattice with a monoid operation, a
 dual operator and an iteration operator. The standard model for this
 algebra is the set of monotonic boolean transformers introduced
 in the previous section. 
-*}
+\<close>
 
 class dual = 
   fixes dual::"'a \<Rightarrow> 'a" ("_ ^ o" [81] 80)
@@ -281,14 +281,14 @@ lemma dual_star_pres_disj: "x \<in> disjunctive \<Longrightarrow> x^\<otimes> \<
   apply (rule start_pres_conj)
   by (rule dual_disjunctive, simp)
 
-subsection{*Assertions*}
+subsection\<open>Assertions\<close>
 
-text{*
+text\<open>
 Usually, in Kleene algebra with tests or in other progrm algebras, tests or assertions
 or assumptions are defined using an existential quantifier. An element of the algebra
 is a test if it has a complement with respect to $\bot$ and $1$. In this formalization
 assertions can be defined much simpler using the dual operator.
-*}
+\<close>
 
 definition
    "assertion = {x . x \<le> 1 \<and> (x * \<top>) \<sqinter> (x ^ o) = x}"
@@ -358,7 +358,7 @@ lemma mbta_MonoTran_disjunctive: "Rep_MonoTran ` disjunctive = Apply.disjunctive
       show "?P \<le> ?Q"
         using * [of "\<lambda>_. a" "\<lambda>_. b"] by (simp add: comp_def fun_eq_iff)
     next
-      from `mono f` show "?Q \<le> ?P" by (rule Lattices.semilattice_sup_class.mono_sup)
+      from \<open>mono f\<close> show "?Q \<le> ?P" by (rule Lattices.semilattice_sup_class.mono_sup)
     qed
   next
     fix f :: "'a \<Rightarrow> 'a"
@@ -647,7 +647,7 @@ lemma [simp]: "1 \<in> assertion"
   by (unfold assertion_def, simp)
 
 
-subsection {*Weakest precondition of true*}
+subsection \<open>Weakest precondition of true\<close>
 
 definition
   "wpt x = (x * \<top>) \<sqinter> 1"
@@ -765,7 +765,7 @@ lemma [simp]: "x * \<bottom> \<le> x"
 
 end
 
-subsection{*Monotonic Boolean trasformers algebra with post condition statement*}
+subsection\<open>Monotonic Boolean trasformers algebra with post condition statement\<close>
 
 definition
   "post_fun (p::'a::order) q = (if p \<le> q then (\<top>::'b::{order_bot,order_top}) else \<bottom>)"
@@ -809,7 +809,7 @@ qed
    
 end
 
-subsection{*Complete monotonic Boolean transformers algebra*}
+subsection\<open>Complete monotonic Boolean transformers algebra\<close>
 
 class complete_mbt_algebra = post_mbt_algebra + complete_distrib_lattice +
   assumes Inf_comp: "(Inf X) * z = (INF x \<in> X . (x * z))"

@@ -44,7 +44,7 @@ lemma wqo_on_trees:
   by (simp add: tree_emb_def)
 
 text \<open>
-If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then trees of type @{typ "'a tree"}
+If the type @{typ "'a"} is well-quasi-ordered by \<open>P\<close>, then trees of type @{typ "'a tree"}
 are well-quasi-ordered by the homeomorphic embedding relation.
 \<close>
 instantiation tree :: (wqo) wqo

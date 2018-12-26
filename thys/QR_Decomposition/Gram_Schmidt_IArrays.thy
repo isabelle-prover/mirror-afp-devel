@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Gram Schmidt over IArrays*}
+section\<open>Gram Schmidt over IArrays\<close>
 
 theory Gram_Schmidt_IArrays
 imports 
@@ -12,7 +12,7 @@ imports
   Matrix_To_IArray_QR 
 begin
 
-subsection{*Some previous definitions, lemmas and instantiations about iarrays*}
+subsection\<open>Some previous definitions, lemmas and instantiations about iarrays\<close>
 
 definition iarray_of_iarray_to_list_of_list :: "'a iarray iarray => 'a list list"
   where "iarray_of_iarray_to_list_of_list A = map IArray.list_of (map ((!!) A) [0..<IArray.length A])"
@@ -182,7 +182,7 @@ proof (unfold iarray_exhaust2 list_eq_iff_nth_eq, auto, unfold IArray.length_def
 qed
 
 
-subsection{*Inner mult over real iarrays*}
+subsection\<open>Inner mult over real iarrays\<close>
 
 definition inner_iarray :: "real iarray => real iarray => real"  (infixl "\<bullet>i" 70)
   where "inner_iarray A B = sum (\<lambda>n. A !! n * B !! n) {0..<IArray.length A}"
@@ -211,7 +211,7 @@ lemma vec_to_iarray_scaleR:
   "vec_to_iarray (a *\<^sub>R x) = a *\<^sub>R (vec_to_iarray x)"
   unfolding scaleR_vec_def scaleR_iarray_def vec_to_iarray_def by auto
 
-subsection{*Gram Schmidt over IArrays*}
+subsection\<open>Gram Schmidt over IArrays\<close>
 
 definition "Gram_Schmidt_column_k_iarrays A k
   = tabulate2 (nrows_iarray A) (ncols_iarray A) (\<lambda>a b. (if b = k
@@ -453,7 +453,7 @@ lemma matrix_to_iarray_Gram_Schmidt_matrix[code_unfold]:
   by (rule matrix_to_iarray_Gram_Schmidt_upt_k, simp add: ncols_def)
 
 
-text{*Examples:*}
+text\<open>Examples:\<close>
 
 value"let A = list_of_list_to_matrix [[4,5],[8,1],[-1,5]]::real^2^3
   in iarray_of_iarray_to_list_of_list (matrix_to_iarray (Gram_Schmidt_matrix A))"

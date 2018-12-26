@@ -4,13 +4,13 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Ordinal Arithmetic *}
+section \<open>Ordinal Arithmetic\<close>
 
 theory OrdinalArith
 imports OrdinalRec
 begin
 
-subsection {* Addition *}
+subsection \<open>Addition\<close>
 
 instantiation ordinal :: plus
 begin
@@ -96,7 +96,7 @@ lemma ordinal_plus_eq_0:
 by (rule not_inject, simp add: ordinal_plus_not_0)
 
 
-subsection {* Subtraction *}
+subsection \<open>Subtraction\<close>
 
 instantiation ordinal :: minus
 begin
@@ -181,7 +181,7 @@ lemma ordinal_minus_monoR: "x \<le> y \<Longrightarrow> z - y \<le> z - (x::ordi
 done
 
 
-subsection {* Multiplication *}
+subsection \<open>Multiplication\<close>
 
 instantiation ordinal :: times
 begin
@@ -288,7 +288,7 @@ lemma ordinal_times_not_0 [simp]:
 by (rule not_inject, simp add: ordinal_times_eq_0)
 
 
-subsection {* Exponentiation *}
+subsection \<open>Exponentiation\<close>
 
 definition
   exp_ordinal :: "[ordinal, ordinal] \<Rightarrow> ordinal" (infixr "**" 75) where

@@ -4,14 +4,14 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-section {* Pratt's Counterexamples *}
+section \<open>Pratt's Counterexamples\<close>
 
 theory Pratts_Counterexamples
   imports Regular_Algebras
 begin
 
-text {* We create two regular algebra models due to Pratt~\cite{Pratt} which are used to
-        distinguish K1 algebras from K1l and K1r algebras. *}
+text \<open>We create two regular algebra models due to Pratt~\cite{Pratt} which are used to
+        distinguish K1 algebras from K1l and K1r algebras.\<close>
 
 datatype pratt1 = 
   P1Bot ("\<bottom>\<^sub>1") |

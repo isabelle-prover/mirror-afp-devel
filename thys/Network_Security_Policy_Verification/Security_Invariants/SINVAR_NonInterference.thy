@@ -2,7 +2,7 @@ theory SINVAR_NonInterference
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant NonInterference *}
+subsection \<open>SecurityInvariant NonInterference\<close>
 
 datatype node_config = Interfering | Unrelated
 
@@ -29,7 +29,7 @@ definition receiver_violation :: "bool" where
   "receiver_violation = True"
 
 
-text{*simplifications for sets we need in the uniqueness proof*}
+text\<open>simplifications for sets we need in the uniqueness proof\<close>
   lemma tmp1: "{(b, a). a = vertex_1 \<and> b = vertex_2} = {(vertex_2, vertex_1)}" by auto
   lemma tmp6: "{(vertex_1, vertex_2), (vertex_2, vertex_1)}\<^sup>+ = 
     {(vertex_1, vertex_1), (vertex_2, vertex_2), (vertex_1, vertex_2), (vertex_2, vertex_1)}"
@@ -87,7 +87,7 @@ text{*simplifications for sets we need in the uniqueness proof*}
   lemma empty_undirected_reachable_false: "xb \<in> undirected_reachable (delete_edges G (edges G)) na \<longleftrightarrow> False"
     by(simp add: undirected_reachable_def succ_tran_def undirected_def delete_edges_edges_empty)
 
-subsubsection{*monotonic and preliminaries*}
+subsubsection\<open>monotonic and preliminaries\<close>
   lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
   unfolding SecurityInvariant_withOffendingFlows.sinvar_mono_def
     apply(clarsimp)

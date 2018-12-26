@@ -1,4 +1,4 @@
-section {*  Well founded and transitive relations  *}
+section \<open>Well founded and transitive relations\<close>
 
 theory WellFoundedTransitive
 imports Main

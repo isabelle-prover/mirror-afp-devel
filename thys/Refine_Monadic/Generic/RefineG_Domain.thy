@@ -1,9 +1,9 @@
-section {* General Domain Theory *}
+section \<open>General Domain Theory\<close>
 theory RefineG_Domain
 imports "../Refine_Misc"
 begin
 
-  subsection {* General Order Theory Tools *}
+  subsection \<open>General Order Theory Tools\<close>
   lemma chain_f_apply: "Complete_Partial_Order.chain (fun_ord le) F
     \<Longrightarrow> Complete_Partial_Order.chain le {y . \<exists>f\<in>F. y = f x}"
     unfolding Complete_Partial_Order.chain_def 
@@ -31,7 +31,7 @@ begin
     "fun_lub lub {f} = (\<lambda>x. lub {f x})"
     unfolding fun_lub_def by auto
 
-  subsection {* Flat Ordering *}
+  subsection \<open>Flat Ordering\<close>
   lemma flat_ord_chain_cases: 
     assumes A: "Complete_Partial_Order.chain (flat_ord b) C"
     obtains "C={}" 
@@ -79,7 +79,7 @@ begin
   interpretation flat_le_mono_setup: mono_setup_loc "flat_ord b"
     by standard auto
 
-  subsubsection {* Flat function Ordering *}
+  subsubsection \<open>Flat function Ordering\<close>
   abbreviation "flatf_ord b == fun_ord (flat_ord b)"
   abbreviation "flatf_lub b == fun_lub (flat_lub b)"
 
@@ -88,11 +88,11 @@ begin
     apply unfold_locales
     done
 
-  subsubsection {* Fixed Points in Flat Ordering *}
-  text {*
+  subsubsection \<open>Fixed Points in Flat Ordering\<close>
+  text \<open>
     Fixed points in a flat ordering are used to express recursion.
     The bottom element is interpreted as non-termination.
-  *}  
+\<close>  
 
   abbreviation "flat_mono b == monotone (flat_ord b) (flat_ord b)"
   abbreviation "flatf_mono b == monotone (flatf_ord b) (flatf_ord b)"
@@ -122,7 +122,7 @@ begin
     apply (auto simp add: fun_lub_def) []
     done
 
-  text {*
+  text \<open>
     If a property is defined pointwise, and holds for the bottom element,
     we can use fixed-point induction for it. 
 
@@ -132,7 +132,7 @@ begin
     This rule covers refinement and transfer properties, 
     such as: Refinement of fixed-point combinators and transfer of 
     fixed-point combinators to different domains.
-  *}
+\<close>
   lemma flatf_fp_induct_pointwise:
     \<comment> \<open>Fixed-point induction for pointwise properties\<close>
     fixes a :: 'a
@@ -169,12 +169,12 @@ begin
     with PRE0 show ?thesis by blast
   qed
   
-  text {*
+  text \<open>
     The next rule covers transfer between fixed points.
     It allows to lift a pointwise transfer condition 
-    @{text "P x y \<longrightarrow> tr (f x) (f y)"} to fixed points.
+    \<open>P x y \<longrightarrow> tr (f x) (f y)\<close> to fixed points.
     Note that one of the fixed points may be an arbitrary fixed point.
-  *}
+\<close>
   lemma flatf_fixp_transfer:
     \<comment> \<open>Transfer rule for fixed points\<close>
     assumes TR_BOT[simp]: "\<And>x'. tr b x'"
@@ -192,19 +192,19 @@ begin
     apply (blast intro: RS)
     done
 
-  subsubsection {* Relation of Flat Ordering to Complete Lattices *}
-  text {*
+  subsubsection \<open>Relation of Flat Ordering to Complete Lattices\<close>
+  text \<open>
     In this section, we establish the relation between flat orderings 
     and complete lattices. This relation is exploited to show properties
     of fixed points wrt. a refinement ordering.
-  *}
+\<close>
 
   abbreviation "flat_le \<equiv> flat_ord bot"
   abbreviation "flat_ge \<equiv> flat_ord top"
   abbreviation "flatf_le \<equiv> flatf_ord bot"
   abbreviation "flatf_ge \<equiv> flatf_ord top"
 
-  text {* The flat ordering implies the lattice ordering *}
+  text \<open>The flat ordering implies the lattice ordering\<close>
   lemma flat_ord_compat: 
     fixes x y :: "'a :: complete_lattice"
     shows 
@@ -228,9 +228,9 @@ begin
   abbreviation "flatf_gfp \<equiv> flatf_ord.fixp top"
   abbreviation "flatf_lfp \<equiv> flatf_ord.fixp bot"
 
-  text {* If a functor is monotonic wrt. both the flat and the 
+  text \<open>If a functor is monotonic wrt. both the flat and the 
     lattice ordering, the fixed points wrt. these orderings coincide. 
-  *}
+\<close>
   lemma lfp_eq_flatf_lfp:
     assumes FM: "flatf_mono_le B" and M: "mono B"
     shows "lfp B = flatf_lfp B"
@@ -263,10 +263,10 @@ begin
   
 
   (* TODO: This belongs to "General Recursion"*)
-  text {*
+  text \<open>
     The following lemma provides a well-founded induction scheme for arbitrary 
     fixed point combinators.
-  *}
+\<close>
   lemma wf_fixp_induct:
     \<comment> \<open>Well-Founded induction for arbitrary fixed points\<close>
     fixes a :: 'a

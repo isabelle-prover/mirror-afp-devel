@@ -1,4 +1,4 @@
-section {* Well-Ordered Strategy *}
+section \<open>Well-Ordered Strategy\<close>
 
 theory WellOrderedStrategy
 imports
@@ -6,7 +6,7 @@ imports
   Strategy
 begin
 
-text {*
+text \<open>
   Constructing a uniform strategy from a set of strategies on a set of nodes often works by
   well-ordering the strategies and then choosing the minimal strategy on each node.
   Then every path eventually follows one strategy because we choose the strategies along the path
@@ -15,7 +15,7 @@ text {*
   The following locale formalizes this idea.
 
   We will use this to construct uniform attractor and winning strategies.
-*}
+\<close>
 
 locale WellOrderedStrategies = ParityGame +
   fixes S :: "'a set"
@@ -34,7 +34,7 @@ locale WellOrderedStrategies = ParityGame +
     and strategies_continue: "\<And>v w \<sigma>. \<lbrakk> v \<in> S; v\<rightarrow>w; v \<in> VV p \<Longrightarrow> \<sigma> v = w; \<sigma> \<in> good v \<rbrakk> \<Longrightarrow> \<sigma> \<in> good w"
 begin
 
-text {* The set of all strategies which are good somewhere. *}
+text \<open>The set of all strategies which are good somewhere.\<close>
 abbreviation "Strategies \<equiv> {\<sigma>. \<exists>v \<in> S. \<sigma> \<in> good v}"
 
 definition minimal_good_strategy where
@@ -42,18 +42,18 @@ definition minimal_good_strategy where
 
 no_notation binomial (infixl "choose" 65)
 
-text {* Among the good strategies on @{term v}, choose the minimum. *}
+text \<open>Among the good strategies on @{term v}, choose the minimum.\<close>
 definition choose where
   "choose v \<equiv> THE \<sigma>. minimal_good_strategy v \<sigma>"
 
-text {*
+text \<open>
   Define a strategy which uses the minimum strategy on all nodes of @{term S}.
   Of course, we need to prove that this is a well-formed strategy.
-*}
+\<close>
 definition well_ordered_strategy where
   "well_ordered_strategy \<equiv> override_on \<sigma>_arbitrary (\<lambda>v. choose v v) S"
 
-text {* Show some simple properties of the binary relation @{term r} on the set @{const Strategies}. *}
+text \<open>Show some simple properties of the binary relation @{term r} on the set @{const Strategies}.\<close>
 lemma r_refl [simp]: "refl_on Strategies r"
   using r_wo unfolding well_order_on_def linear_order_on_def partial_order_on_def preorder_on_def by blast
 lemma r_total [simp]: "total_on Strategies r"
@@ -63,14 +63,14 @@ lemma r_trans [simp]: "trans r"
 lemma r_wf [simp]: "wf (r - Id)"
   using well_order_on_def r_wo by blast
 
-text {* @{const choose} always chooses a minimal good strategy on @{term S}. *}
+text \<open>@{const choose} always chooses a minimal good strategy on @{term S}.\<close>
 lemma choose_works:
   assumes "v \<in> S"
   shows "minimal_good_strategy v (choose v)"
 proof-
   have wf: "wf (r - Id)" using well_order_on_def r_wo by blast
   obtain \<sigma> where \<sigma>1: "minimal_good_strategy v \<sigma>"
-    unfolding minimal_good_strategy_def by (meson good_ex[OF `v \<in> S`] wf wf_eq_minimal)
+    unfolding minimal_good_strategy_def by (meson good_ex[OF \<open>v \<in> S\<close>] wf wf_eq_minimal)
   hence \<sigma>: "\<sigma> \<in> good v" "\<And>\<sigma>'. (\<sigma>', \<sigma>) \<in> r - Id \<Longrightarrow> \<sigma>' \<notin> good v"
     unfolding minimal_good_strategy_def by auto
   { fix \<sigma>' assume "minimal_good_strategy v \<sigma>'"
@@ -78,8 +78,8 @@ proof-
       unfolding minimal_good_strategy_def by auto
     have "(\<sigma>, \<sigma>') \<notin> r - Id" using \<sigma>(1) \<sigma>'(2) by blast
     moreover have "(\<sigma>', \<sigma>) \<notin> r - Id" using \<sigma>(2) \<sigma>'(1) by auto
-    moreover have "\<sigma> \<in> Strategies" using \<sigma>(1) `v \<in> S` by auto
-    moreover have "\<sigma>' \<in> Strategies" using \<sigma>'(1) `v \<in> S` by auto
+    moreover have "\<sigma> \<in> Strategies" using \<sigma>(1) \<open>v \<in> S\<close> by auto
+    moreover have "\<sigma>' \<in> Strategies" using \<sigma>'(1) \<open>v \<in> S\<close> by auto
     ultimately have "\<sigma>' = \<sigma>"
       using r_wo Linear_order_in_diff_Id well_order_on_Field well_order_on_def by fastforce
   }
@@ -101,16 +101,16 @@ proof-
   {
     fix v assume "v \<in> S" "v \<in> VV p" "\<not>deadend v"
     moreover have "strategy p (choose v)"
-      using choose_works[OF `v \<in> S`, unfolded minimal_good_strategy_def, THEN conjunct1] good_strategies
+      using choose_works[OF \<open>v \<in> S\<close>, unfolded minimal_good_strategy_def, THEN conjunct1] good_strategies
       by blast
     ultimately have "v\<rightarrow>(\<lambda>v. choose v v) v" using strategy_def by blast
   }
   thus ?thesis unfolding well_ordered_strategy_def using valid_strategy_updates_set by force
 qed
 
-subsection {* Strategies on a Path *}
+subsection \<open>Strategies on a Path\<close>
 
-text {* Maps a path to its strategies. *}
+text \<open>Maps a path to its strategies.\<close>
 definition "path_strategies \<equiv> lmap choose"
 
 lemma path_strategies_in_Strategies:
@@ -142,23 +142,23 @@ proof-
   moreover have "lset P' \<subseteq> S" unfolding P'_def using P(1) lset_ldropn_subset[of n P] by blast
   ultimately have "v \<in> S" "w \<in> S" by auto
   moreover have "v\<rightarrow>w" using valid_path_edges'[of v w Ps, folded vw] valid_path_drop[OF P(2)] P'_def by blast
-  moreover have "choose v \<in> good v" using choose_good `v \<in> S` by blast
+  moreover have "choose v \<in> good v" using choose_good \<open>v \<in> S\<close> by blast
   moreover have "v \<in> VV p \<Longrightarrow> choose v v = w" proof-
     assume "v \<in> VV p"
     moreover have "path_conforms_with_strategy p P' well_ordered_strategy"
       unfolding P'_def using path_conforms_with_strategy_drop P(3) by blast
     ultimately have "well_ordered_strategy v = w" using vw path_conforms_with_strategy_start by blast
-    thus "choose v v = w" unfolding well_ordered_strategy_def using `v \<in> S` by auto
+    thus "choose v v = w" unfolding well_ordered_strategy_def using \<open>v \<in> S\<close> by auto
   qed
   ultimately have "choose v \<in> good w" using strategies_continue by blast
-  hence *: "(choose v, choose w) \<notin> r - Id" using choose_minimal `w \<in> S` by blast
+  hence *: "(choose v, choose w) \<notin> r - Id" using choose_minimal \<open>w \<in> S\<close> by blast
 
   have "(choose w, choose v) \<in> r" proof (cases)
     assume "choose v = choose w"
-    thus ?thesis using r_refl refl_onD choose_in_Strategies[OF `v \<in> S`] by fastforce
+    thus ?thesis using r_refl refl_onD choose_in_Strategies[OF \<open>v \<in> S\<close>] by fastforce
   next
     assume "choose v \<noteq> choose w"
-    thus ?thesis using * r_total choose_in_Strategies[OF `v \<in> S`] choose_in_Strategies[OF `w \<in> S`]
+    thus ?thesis using * r_total choose_in_Strategies[OF \<open>v \<in> S\<close>] choose_in_Strategies[OF \<open>w \<in> S\<close>]
       by (metis (lifting) Linear_order_in_diff_Id r_wo well_order_on_Field well_order_on_def)
   qed
   hence "(path_strategies P' $ Suc 0, path_strategies P' $ 0) \<in> r"
@@ -184,7 +184,7 @@ using assms proof (induct "m - n" arbitrary: n m)
     have "m \<noteq> 0" using Suc.hyps(2) by linarith
     then obtain m' where m': "Suc m' = m" using not0_implies_Suc by blast
     hence "d = m' - n" using Suc.hyps(2) by presburger
-    moreover hence "n < m'" using `d \<noteq> 0` by presburger 
+    moreover hence "n < m'" using \<open>d \<noteq> 0\<close> by presburger 
     ultimately have "(path_strategies P $ m', path_strategies P $ n) \<in> r"
       using Suc.hyps(1)[of m' n, OF _ P(1,2,3)] Suc.prems(5) dual_order.strict_trans enat_ord_simps(2) m'
       by blast
@@ -208,7 +208,7 @@ proof-
     fix m assume "n \<le> m"
     have "path_strategies P $ n = path_strategies P $ m" proof (rule ccontr)
       assume *: "path_strategies P $ n \<noteq> path_strategies P $ m"
-      with `n \<le> m` have "n < m" using le_imp_less_or_eq by blast
+      with \<open>n \<le> m\<close> have "n < m" using le_imp_less_or_eq by blast
       with path_strategies_monotone have "(path_strategies P $ m, path_strategies P $ n) \<in> r"
         using assms by (simp add: infinite_small_llength)
       with * have "(path_strategies P $ m, path_strategies P $ n) \<in> r - Id" by simp
@@ -220,13 +220,13 @@ proof-
   thus ?thesis by blast
 qed
 
-subsection {* Eventually One Strategy *}
+subsection \<open>Eventually One Strategy\<close>
 
-text {*
+text \<open>
   The key lemma: Every path that stays in @{term S} and follows @{const well_ordered_strategy}
   eventually follows one strategy because the strategies are well-ordered and non-increasing
   along the path.
-*}
+\<close>
 
 lemma path_eventually_conforms_to_\<sigma>_map_n:
   assumes "lset P \<subseteq> S" "valid_path P" "path_conforms_with_strategy p P well_ordered_strategy"
@@ -243,12 +243,12 @@ next
   let ?\<sigma> = well_ordered_strategy
   define P' where "P' = ldropn n P"
   { fix v assume "v \<in> lset P'"
-    hence "v \<in> S" using `lset P \<subseteq> S` P'_def in_lset_ldropnD by fastforce
-    from `v \<in> lset P'` obtain m where m: "enat m < llength P'" "P' $ m = v" by (meson in_lset_conv_lnth)
-    hence "P $ m + n = v" unfolding P'_def by (simp add: `\<not>lfinite P` infinite_small_llength)
-    moreover have "?\<sigma> v = choose v v" unfolding well_ordered_strategy_def using `v \<in> S` by auto
+    hence "v \<in> S" using \<open>lset P \<subseteq> S\<close> P'_def in_lset_ldropnD by fastforce
+    from \<open>v \<in> lset P'\<close> obtain m where m: "enat m < llength P'" "P' $ m = v" by (meson in_lset_conv_lnth)
+    hence "P $ m + n = v" unfolding P'_def by (simp add: \<open>\<not>lfinite P\<close> infinite_small_llength)
+    moreover have "?\<sigma> v = choose v v" unfolding well_ordered_strategy_def using \<open>v \<in> S\<close> by auto
     ultimately have "?\<sigma> v = (path_strategies P $ m + n) v"
-      unfolding path_strategies_def using infinite_small_llength[OF `\<not>lfinite P`] by simp
+      unfolding path_strategies_def using infinite_small_llength[OF \<open>\<not>lfinite P\<close>] by simp
     hence "?\<sigma> v = (path_strategies P $ n) v" using n[of "m + n"] by simp
   }
   moreover have "path_conforms_with_strategy p P' well_ordered_strategy"

@@ -1,13 +1,13 @@
-subsection {* Weak step consistency *}
+subsection \<open>Weak step consistency\<close>
 
 theory Step_vpeq_weakly_step_consistent
   imports Step Step_invariants Step_vpeq
 begin
 
 
-text {* The notion of weak step consistency is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\cite{Verbeek2013}). *}
+text \<open>The notion of weak step consistency is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\cite{Verbeek2013}).\<close>
 
-subsubsection {* Weak step consistency of auxiliary functions *}
+subsubsection \<open>Weak step consistency of auxiliary functions\<close>
 
 lemma ipc_precondition_weakly_step_consistent:
   assumes eq_tid: "vpeq (partition tid) s1 s2"
@@ -127,7 +127,7 @@ proof -
     by auto
 qed
 
-subsubsection {* Weak step consistency of atomic step functions *}
+subsubsection \<open>Weak step consistency of atomic step functions\<close>
 
 lemma ipc_weakly_step_consistent:
   assumes eq_obs: "vpeq u s1 s2"
@@ -212,7 +212,7 @@ lemma ev_signal_weakly_step_consistent:
               atomic_step_ev_signal_def
     by simp
 
-text {* The use of @{term extend_f} is to provide infrastructure to support use in dynamic policies, currently not used. *}
+text \<open>The use of @{term extend_f} is to provide infrastructure to support use in dynamic policies, currently not used.\<close>
  
 definition extend_f :: "(partition_id_t \<Rightarrow> partition_id_t \<Rightarrow> bool) \<Rightarrow> (partition_id_t \<Rightarrow> partition_id_t \<Rightarrow> bool) \<Rightarrow> (partition_id_t \<Rightarrow> partition_id_t \<Rightarrow> bool)" where
   "extend_f f g \<equiv> \<lambda> p1 p2 . f p1 p2 \<or> g p1 p2"
@@ -246,12 +246,12 @@ proof -
 qed
 
 
-subsubsection {* Summary theorems on view-partitioning weak step consistency *}
+subsubsection \<open>Summary theorems on view-partitioning weak step consistency\<close>
 
-text {* The atomic step is weakly step consistent with view partitioning.
+text \<open>The atomic step is weakly step consistent with view partitioning.
  Here, the ``weakness'' is that we assume that the two states are vp-equivalent
  not only w.r.t. the observer domain @{term u}, but also w.r.t. the caller
- domain @{term "partition tid"}). *}
+ domain @{term "partition tid"}).\<close>
 
 theorem atomic_step_weakly_step_consistent:
   assumes eq_obs: "vpeq u s1 s2"

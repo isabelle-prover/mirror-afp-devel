@@ -192,7 +192,7 @@ lemma inv_greek_mono:
   shows "(inv_greek s, inv_greek t) \<in> greek_less r"
 using assms(2)
 proof (induct "length s + length t" arbitrary: s t rule: less_induct)
-  note * = trans_lex_prod[OF trans_letter_less[OF `trans r`] trans_greek_less[of r]]
+  note * = trans_lex_prod[OF trans_letter_less[OF \<open>trans r\<close>] trans_greek_less[of r]]
   case (less s t)
   have "(inv_msog (ms_of_greek s), inv_msog (ms_of_greek t)) \<in> mult (letter_less r <*lex*> greek_less r)"
   unfolding inv_msog_def
@@ -225,7 +225,7 @@ proof
 next
   assume "b \<noteq> []"
   then show "([],b) \<in> greek_less r"
-  unfolding greek_less_nonempty[OF `b \<noteq> []`] by (simp add: ms_of_greek_def)
+  unfolding greek_less_nonempty[OF \<open>b \<noteq> []\<close>] by (simp add: ms_of_greek_def)
 qed
 
 lemma greek_less_singleton:
@@ -241,7 +241,7 @@ lemma greek_less_cons_mono:
   assumes "trans r"
   shows "(s, t) \<in> greek_less r \<Longrightarrow> (x # s, x # t) \<in> greek_less r"
 proof (induct "length s + length t" arbitrary: s t rule: less_induct)
-  note * = trans_lex_prod[OF trans_letter_less[OF `trans r`] trans_greek_less[of r]]
+  note * = trans_lex_prod[OF trans_letter_less[OF \<open>trans r\<close>] trans_greek_less[of r]]
   case (less s t)
   {
     fix M have "(M + image_mset (adj_msog [x] []) (ms_of_greek s),
@@ -280,11 +280,11 @@ lemma greek_embed:
   shows "list_emb (\<lambda>a b. (a, b): reflcl (letter_less r)) a b \<Longrightarrow> (a, b) \<in> reflcl (greek_less r)"
 proof (induct rule: list_emb.induct)
   case (list_emb_Cons a b y) thus ?case
-  using trans_greek_less[unfolded trans_def] `trans r`
+  using trans_greek_less[unfolded trans_def] \<open>trans r\<close>
     greek_less_app_mono1[of r "[]" "[y]" a] greek_less_app_mono2[of r a b "[y]"] by auto
 next
   case (list_emb_Cons2 x y a b) thus ?case
-  using trans_greek_less[unfolded trans_def] `trans r` greek_less_singleton[of x y r]
+  using trans_greek_less[unfolded trans_def] \<open>trans r\<close> greek_less_singleton[of x y r]
     greek_less_app_mono1[of r "[x]" "[y]" a] greek_less_app_mono2[of r a b "[y]"] by auto
 qed simp
 
@@ -300,15 +300,15 @@ lemma wf_greek_less:
   assumes "wf r" and "trans r"
   shows "wf (greek_less r)"
 proof -
-  obtain q where "r \<subseteq> q" and "well_order q" by (metis total_well_order_extension `wf r`)
+  obtain q where "r \<subseteq> q" and "well_order q" by (metis total_well_order_extension \<open>wf r\<close>)
   define q' where "q' = q - Id"
-  from `well_order q` have "reflcl q' = q"
+  from \<open>well_order q\<close> have "reflcl q' = q"
   by (auto simp add: well_order_on_def linear_order_on_def partial_order_on_def preorder_on_def
       refl_on_def q'_def)
-  from `well_order q` have "trans q'" and "irrefl q'"
+  from \<open>well_order q\<close> have "trans q'" and "irrefl q'"
   unfolding well_order_on_def linear_order_on_def partial_order_on_def preorder_on_def antisym_def
     trans_def irrefl_def q'_def by blast+
-  from `r \<subseteq> q` `wf r` have "r \<subseteq> q'" by (auto simp add: q'_def)
+  from \<open>r \<subseteq> q\<close> \<open>wf r\<close> have "r \<subseteq> q'" by (auto simp add: q'_def)
   have "wqo_on (\<lambda>a b. (a,b) \<in> (greek_less q')\<^sup>=) UNIV"
   proof (intro wqo_on_hom[of "(\<lambda>a b. (a, b) \<in> (greek_less q')\<^sup>=)" "id" UNIV
          "list_emb (\<lambda>a b. (a, b) \<in> (letter_less q')\<^sup>=)", unfolded surj_id])
@@ -317,17 +317,17 @@ proof -
   next
     show "\<forall>x\<in>UNIV. \<forall>y\<in>UNIV. list_emb (\<lambda>a b. (a, b) \<in> (letter_less q')\<^sup>=) x y \<longrightarrow>
           (id x, id y) \<in> (greek_less q')\<^sup>="
-    using greek_embed[OF `trans q'`] by auto
+    using greek_embed[OF \<open>trans q'\<close>] by auto
   next
     show "wqo_on (list_emb (\<lambda>a b. (a, b) \<in> (letter_less q')\<^sup>=)) UNIV"
-    using higman[OF wqo_letter_less[OF `trans q'`]] `well_order q` `reflcl q' = q`
+    using higman[OF wqo_letter_less[OF \<open>trans q'\<close>]] \<open>well_order q\<close> \<open>reflcl q' = q\<close>
     by (auto simp: well_order_implies_wqo)
   qed
   with wqo_on_imp_wfp_on[OF this] strict_order_strict[OF strict_order_greek_less]
-    `irrefl q'` `trans q'`
+    \<open>irrefl q'\<close> \<open>trans q'\<close>
   have "wfp_on (\<lambda>a b. (a, b) \<in> greek_less q') UNIV" by force
   then show ?thesis
-  using mono_greek_less `r \<subseteq> q'` wf_subset unfolding wf_iff_wfp_on[symmetric] mono_def by metis
+  using mono_greek_less \<open>r \<subseteq> q'\<close> wf_subset unfolding wf_iff_wfp_on[symmetric] mono_def by metis
 qed
 
 
@@ -504,7 +504,7 @@ proof -
   have *: "inv_greek [(Acute,a),(Macron,b)] = [(Macron,b),(Grave,a)]" by (simp add: inv_greek_def)
   have "(inv_greek (inv_greek (as @ b' @ cs @ a' @ bs)),
    inv_greek (inv_greek ([(Acute,a),(Macron,b)]))) \<in> greek_less r"
-   apply (rule inv_greek_mono[OF `trans r`])
+   apply (rule inv_greek_mono[OF \<open>trans r\<close>])
    apply (unfold inv_greek_append append_assoc *)
    apply (insert assms)
    apply (rule rcliff_greek_less1, auto simp: inv_greek_def)
@@ -521,7 +521,7 @@ proof -
   have *: "inv_greek [(Acute,a),(Macron,b)] = [(Macron,b),(Grave,a)]" by (simp add: inv_greek_def)
   have "(inv_greek (inv_greek (cs @ a' @ bs)),
     inv_greek (inv_greek ([(Acute,a),(Macron,b)]))) \<in> greek_less r"
-   apply (rule inv_greek_mono[OF `trans r`])
+   apply (rule inv_greek_mono[OF \<open>trans r\<close>])
    apply (unfold inv_greek_append append_assoc *)
    apply (insert assms)
    apply (rule rcliff_greek_less2, auto simp: inv_greek_def)
@@ -658,7 +658,7 @@ proof (intro subrelI)
   then obtain xs where "(u, v) \<in> lconv xs" by (auto intro: conversion_to_lconv[of u v])
   then show "(u, v) \<in> valley' UNIV"
   proof (induct xs rule: wf_induct[of "greek_less r"])
-    case 1 thus ?case using wf_greek_less[OF `wf r` `trans r`] .
+    case 1 thus ?case using wf_greek_less[OF \<open>wf r\<close> \<open>trans r\<close>] .
   next
     case (2 xs) show ?case
     proof (rule conversion_join_or_peak_or_cliff[of "map fst xs"])
@@ -705,7 +705,7 @@ proof (intro subrelI)
         from lp have "(js, [(Acute,a),(Grave,b)]) \<in> greek_less r"
         unfolding lpeak_def using peak_greek_less[of _ r a _ b] by fastforce
         then have "(p @ js @ q, xs) \<in> greek_less r" unfolding xs
-        by (intro greek_less_app_mono1 greek_less_app_mono2 `trans r`) auto
+        by (intro greek_less_app_mono1 greek_less_app_mono2 \<open>trans r\<close>) auto
         moreover have "(u, v) \<in> lconv (p @ js @ q)"
         using p q js by auto
         ultimately have "(u, v) \<in> valley' UNIV" using 2(1) by blast
@@ -721,10 +721,10 @@ proof (intro subrelI)
         obtain js where lp: "lcliff r a b js" and js: "(t',u') \<in> lconv js" using lc[OF a b] by auto
         from lp have "(js, [(Acute,a),(Macron,b)]) \<in> greek_less r"
         unfolding lcliff_def
-        using lcliff_greek_less1[OF `trans r`, of _ a _ b] lcliff_greek_less2[OF `trans r`, of _ a b]
+        using lcliff_greek_less1[OF \<open>trans r\<close>, of _ a _ b] lcliff_greek_less2[OF \<open>trans r\<close>, of _ a b]
         by fastforce
         then have "(p @ js @ q, xs) \<in> greek_less r" unfolding xs
-        by (intro greek_less_app_mono1 greek_less_app_mono2 `trans r`) auto
+        by (intro greek_less_app_mono1 greek_less_app_mono2 \<open>trans r\<close>) auto
         moreover have "(u, v) \<in> lconv (p @ js @ q)"
         using p q js by auto
         ultimately have "(u, v) \<in> valley' UNIV" using 2(1) by blast
@@ -740,10 +740,10 @@ proof (intro subrelI)
         obtain js where lp: "rcliff r a b js" and js: "(t',u') \<in> lconv js" using rc[OF a b] by auto
         from lp have "(js, [(Macron,a),(Grave,b)]) \<in> greek_less r"
         unfolding rcliff_def
-        using rcliff_greek_less1[OF `trans r`, of _ a b] rcliff_greek_less2[OF `trans r`, of _ a _ b]
+        using rcliff_greek_less1[OF \<open>trans r\<close>, of _ a b] rcliff_greek_less2[OF \<open>trans r\<close>, of _ a _ b]
         by fastforce
         then have "(p @ js @ q, xs) \<in> greek_less r" unfolding xs
-        by (intro greek_less_app_mono1 greek_less_app_mono2 `trans r`) auto
+        by (intro greek_less_app_mono1 greek_less_app_mono2 \<open>trans r\<close>) auto
         moreover have "(u, v) \<in> lconv (p @ js @ q)"
         using p q js by auto
         ultimately have "(u, v) \<in> valley' UNIV" using 2(1) by blast
@@ -924,7 +924,7 @@ private abbreviation (input) down :: "('b \<Rightarrow> 'a rel) \<Rightarrow> ('
   "down L \<equiv> \<lambda>i. \<Union>j \<in> under q i. L j"
 
 private lemma Union_down: "(\<Union>i. down L i) = (\<Union>i. L i)"
-using `refl q` by (auto simp: refl_on_def under_def)
+using \<open>refl q\<close> by (auto simp: refl_on_def under_def)
 
 text \<open>Extended decreasing diagrams for commutation.\<close>
 
@@ -941,14 +941,14 @@ proof (induct rule: dd_commute[of r "down L" "down R"])
   have "\<And>a' a. (a',a) \<in> q \<Longrightarrow> under r a' \<subseteq> under r a" using compat by (auto simp: under_def)
   then have aux1: "\<And>a' a L. (a',a) \<in> q \<Longrightarrow> (\<Union>i \<in> under r a'. L i) \<subseteq> (\<Union>i \<in> under r a. L i)" by auto
   have aux2: "\<And>a' a L. (a',a) \<in> q \<Longrightarrow> down L a' \<subseteq> down L a" 
-    using `trans q` by (auto simp: under_def trans_def)
+    using \<open>trans q\<close> by (auto simp: under_def trans_def)
   have aux3: "\<And>a L. (\<Union>i \<in> under r a. L i) \<subseteq> (\<Union>i \<in> under r a. down L i)"
-    using `refl q` by (auto simp: under_def refl_on_def)
+    using \<open>refl q\<close> by (auto simp: under_def refl_on_def)
   from aux1[OF a'(1), of L] aux1[OF a'(1), of R] aux2[OF a'(1), of L]
        aux1[OF b'(1), of L] aux1[OF b'(1), of R] aux2[OF b'(1), of R]
        aux3[of L] aux3[of R]
   show ?case
-  by (intro set_mp[OF _ pk[OF `(s, t) \<in> L a'` `(s, u) \<in> R b'`]], unfold UN_Un)
+  by (intro set_mp[OF _ pk[OF \<open>(s, t) \<in> L a'\<close> \<open>(s, u) \<in> R b'\<close>]], unfold UN_Un)
      (intro relcomp_mono rtrancl_mono Un_mono iffD2[OF converse_mono]; fast)
 qed fact+
 

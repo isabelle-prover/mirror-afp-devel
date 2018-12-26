@@ -2,7 +2,7 @@
     Author:     Brian Huffman, Portland State University
 *)
 
-section {* Free Boolean algebras *}
+section \<open>Free Boolean algebras\<close>
 
 theory Free_Boolean_Algebra
 imports Main
@@ -21,17 +21,17 @@ lemma sup_conv_inf:
 by simp
 (*>*)
 
-subsection {* Free boolean algebra as a set *}
+subsection \<open>Free boolean algebra as a set\<close>
 
-text {*
+text \<open>
   We start by defining the free boolean algebra over type @{typ 'a} as
-  an inductive set.  Here @{text "i :: 'a"} represents a variable;
-  @{text "A :: 'a set"} represents a valuation, assigning a truth
-  value to each variable; and @{text "S :: 'a set set"} represents a
+  an inductive set.  Here \<open>i :: 'a\<close> represents a variable;
+  \<open>A :: 'a set\<close> represents a valuation, assigning a truth
+  value to each variable; and \<open>S :: 'a set set\<close> represents a
   formula, as the set of valuations that make the formula true.  The
-  set @{text fba} contains representatives of formulas built from
+  set \<open>fba\<close> contains representatives of formulas built from
   finite combinations of variables with negation and conjunction.
-*}
+\<close>
 
 inductive_set
   fba :: "'a set set set"
@@ -66,14 +66,14 @@ proof -
 qed
 
 
-subsection {* Free boolean algebra as a type *}
+subsection \<open>Free boolean algebra as a type\<close>
 
-text {*
-  The next step is to use @{text typedef} to define a type isomorphic
-  to the set @{const fba}.  We also define a constructor @{text var}
+text \<open>
+  The next step is to use \<open>typedef\<close> to define a type isomorphic
+  to the set @{const fba}.  We also define a constructor \<open>var\<close>
   that corresponds with the similarly-named introduction rule for
   @{const fba}.
-*}
+\<close>
 
 typedef 'a formula = "fba :: 'a set set set"
   by (auto intro: fba_empty)
@@ -84,13 +84,13 @@ where "var i = Abs_formula {A. i \<in> A}"
 lemma Rep_formula_var: "Rep_formula (var i) = {A. i \<in> A}"
 unfolding var_def using fba.var by (rule Abs_formula_inverse)
 
-text {*
+text \<open>
   \medskip
   Now we make type @{typ "'a formula"} into a Boolean algebra.  This
   involves defining the various operations (ordering relations, binary
   infimum and supremum, complement, difference, top and bottom
   elements) and proving that they satisfy the appropriate laws.
-*}
+\<close>
 
 instantiation formula :: (type) boolean_algebra
 begin
@@ -156,12 +156,12 @@ qed (unfold Rep_formula_simps, auto)
 
 end
 
-text {*
+text \<open>
   \medskip
   The laws of a Boolean algebra do not require the top and bottom
   elements to be distinct, so the following rules must be proved
   separately:
-*}
+\<close>
 
 lemma bot_neq_top_formula [simp]: "(\<bottom> :: 'a formula) \<noteq> \<top>"
 unfolding Rep_formula_simps by auto
@@ -169,11 +169,11 @@ unfolding Rep_formula_simps by auto
 lemma top_neq_bot_formula [simp]: "(\<top> :: 'a formula) \<noteq> \<bottom>"
 unfolding Rep_formula_simps by auto
 
-text {*
+text \<open>
   \medskip
   Here we prove an essential property of a free Boolean algebra:
   all generators are independent.
-*}
+\<close>
 
 lemma var_le_var_simps [simp]:
   "var i \<le> var j \<longleftrightarrow> i = j"
@@ -187,12 +187,11 @@ lemma var_eq_var_simps [simp]:
   "- var i \<noteq> var j"
 unfolding Rep_formula_simps set_eq_subset by fast+
 
-text {*
+text \<open>
   \medskip
   We conclude this section by proving an induction principle for
-  formulas.  It mirrors the definition of the inductive set @{text
-  fba}, with cases for variables, complements, and conjunction.
-*}
+  formulas.  It mirrors the definition of the inductive set \<open>fba\<close>, with cases for variables, complements, and conjunction.
+\<close>
 
 lemma formula_induct [case_names var compl inf, induct type: formula]:
   fixes P :: "'a formula \<Rightarrow> bool"
@@ -209,25 +208,25 @@ proof (induct x rule: Abs_formula_induct)
     thus ?case unfolding var_def .
   next
     case (Compl S)
-    from `P (Abs_formula S)` have "P (- Abs_formula S)" by (rule 2)
-    with `S \<in> fba` show ?case
+    from \<open>P (Abs_formula S)\<close> have "P (- Abs_formula S)" by (rule 2)
+    with \<open>S \<in> fba\<close> show ?case
       unfolding uminus_formula_def by (simp add: Abs_formula_inverse)
   next
     case (inter S T)
-    from `P (Abs_formula S)` and `P (Abs_formula T)`
+    from \<open>P (Abs_formula S)\<close> and \<open>P (Abs_formula T)\<close>
     have "P (Abs_formula S \<sqinter> Abs_formula T)" by (rule 3)
-    with `S \<in> fba` and `T \<in> fba` show ?case
+    with \<open>S \<in> fba\<close> and \<open>T \<in> fba\<close> show ?case
       unfolding inf_formula_def by (simp add: Abs_formula_inverse)
   qed
 qed
 
 
-subsection {* If-then-else for Boolean algebras *}
+subsection \<open>If-then-else for Boolean algebras\<close>
 
-text {*
+text \<open>
   This is a generic if-then-else operator for arbitrary Boolean
   algebras.
-*}
+\<close>
 
 definition
   ifte :: "'a::boolean_algebra \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -266,13 +265,13 @@ unfolding ifte_def [of x] sup_conv_inf
 by (simp only: compl_ifte [symmetric] inf_ifte_distrib [symmetric] ifte_same)
 
 
-subsection {* Formulas over a set of generators *}
+subsection \<open>Formulas over a set of generators\<close>
 
-text {*
-  The set @{text "formulas S"} consists of those formulas that only
-  depend on variables in the set @{text S}.  It is analogous to the
+text \<open>
+  The set \<open>formulas S\<close> consists of those formulas that only
+  depend on variables in the set \<open>S\<close>.  It is analogous to the
   @{const lists} operator for the list datatype.
-*}
+\<close>
 
 definition
   formulas :: "'a set \<Rightarrow> 'a formula set"
@@ -337,13 +336,13 @@ lemmas formulas_intros =
   formulas_inf formulas_sup formulas_diff formulas_ifte
 
 
-subsection {* Injectivity of if-then-else *}
+subsection \<open>Injectivity of if-then-else\<close>
 
-text {*
+text \<open>
   The if-then-else operator is injective in some limited
   circumstances: when the scrutinee is a variable that is not
   mentioned in either branch.
-*}
+\<close>
 
 lemma ifte_inject:
   assumes "ifte (var i) x y = ifte (var i) x' y'" 
@@ -364,11 +363,11 @@ proof
   proof (rule set_eqI)
     fix A
     have "A \<in> Rep_formula x \<longleftrightarrow> insert i A \<in> Rep_formula x"
-      using `x \<in> formulas S` by (rule formulasD, force simp add: `i \<notin> S`)
+      using \<open>x \<in> formulas S\<close> by (rule formulasD, force simp add: \<open>i \<notin> S\<close>)
     also have "\<dots> \<longleftrightarrow> insert i A \<in> Rep_formula x'"
       by (rule 1, simp)
     also have "\<dots> \<longleftrightarrow> A \<in> Rep_formula x'"
-      using `x' \<in> formulas S` by (rule formulasD, force simp add: `i \<notin> S`)
+      using \<open>x' \<in> formulas S\<close> by (rule formulasD, force simp add: \<open>i \<notin> S\<close>)
     finally show "A \<in> Rep_formula x \<longleftrightarrow> A \<in> Rep_formula x'" .
   qed
   show  "y = y'"
@@ -376,36 +375,36 @@ proof
   proof (rule set_eqI)
     fix A
     have "A \<in> Rep_formula y \<longleftrightarrow> A - {i} \<in> Rep_formula y"
-      using `y \<in> formulas S` by (rule formulasD, force simp add: `i \<notin> S`)
+      using \<open>y \<in> formulas S\<close> by (rule formulasD, force simp add: \<open>i \<notin> S\<close>)
     also have "\<dots> \<longleftrightarrow> A - {i} \<in> Rep_formula y'"
       by (rule 2, simp)
     also have "\<dots> \<longleftrightarrow> A \<in> Rep_formula y'"
-      using `y' \<in> formulas S` by (rule formulasD, force simp add: `i \<notin> S`)
+      using \<open>y' \<in> formulas S\<close> by (rule formulasD, force simp add: \<open>i \<notin> S\<close>)
     finally show "A \<in> Rep_formula y \<longleftrightarrow> A \<in> Rep_formula y'" .
   qed
 qed
 
 
-subsection {* Specification of homomorphism operator *}
+subsection \<open>Specification of homomorphism operator\<close>
 
-text {*
-  Our goal is to define a homomorphism operator @{text hom} such that
-  for any function @{text f}, @{text "hom f"} is the unique Boolean
-  algebra homomorphism satisfying @{text "hom f (var i) = f i"}
-  for all @{text i}.
+text \<open>
+  Our goal is to define a homomorphism operator \<open>hom\<close> such that
+  for any function \<open>f\<close>, \<open>hom f\<close> is the unique Boolean
+  algebra homomorphism satisfying \<open>hom f (var i) = f i\<close>
+  for all \<open>i\<close>.
 
-  Instead of defining @{text hom} directly, we will follow the
-  approach used to define Isabelle's @{text fold} operator for finite
-  sets.  First we define the graph of the @{text hom} function as a
-  relation; later we will define the @{text hom} function itself using
+  Instead of defining \<open>hom\<close> directly, we will follow the
+  approach used to define Isabelle's \<open>fold\<close> operator for finite
+  sets.  First we define the graph of the \<open>hom\<close> function as a
+  relation; later we will define the \<open>hom\<close> function itself using
   definite choice.
 
-  The @{text hom_graph} relation is defined inductively, with
+  The \<open>hom_graph\<close> relation is defined inductively, with
   introduction rules based on the if-then-else normal form of Boolean
   formulas.  The relation is also indexed by an extra set parameter
-  @{text S}, to ensure that branches of each if-then-else do not use
+  \<open>S\<close>, to ensure that branches of each if-then-else do not use
   the same variable again.
-*}
+\<close>
 
 inductive
   hom_graph ::
@@ -417,14 +416,14 @@ where
 | ifte: "i \<notin> S \<Longrightarrow> hom_graph f S x a \<Longrightarrow> hom_graph f S y b \<Longrightarrow>
   hom_graph f (insert i S) (ifte (var i) x y) (ifte (f i) a b)"
 
-text {*
+text \<open>
   \medskip
   The next two lemmas establish a stronger elimination rule for
   assumptions of the form @{term "hom_graph f (insert i S) x a"}.
   Essentially, they say that we can arrange the top-level if-then-else
   to use the variable of our choice.  The proof makes use of the
   distributive properties of if-then-else.
-*}
+\<close>
 
 lemma hom_graph_dest:
   "hom_graph f S x a \<Longrightarrow> k \<in> S \<Longrightarrow> \<exists>y z b c.
@@ -436,10 +435,10 @@ proof (induct set: hom_graph)
     assume "i = k" with ifte(1,2,4) show ?case by auto
   next
     assume "i \<noteq> k"
-    with `k \<in> insert i S` have k: "k \<in> S" by simp
+    with \<open>k \<in> insert i S\<close> have k: "k \<in> S" by simp
     have *: "insert i S - {k} = insert i (S - {k})"
-      using `i \<noteq> k` by (simp add: insert_Diff_if)
-    have **: "i \<notin> S - {k}" using `i \<notin> S` by simp
+      using \<open>i \<noteq> k\<close> by (simp add: insert_Diff_if)
+    have **: "i \<notin> S - {k}" using \<open>i \<notin> S\<close> by simp
     from ifte(1) ifte(3) [OF k] ifte(5) [OF k]
     show ?case
       unfolding *
@@ -461,14 +460,14 @@ lemma hom_graph_insert_elim:
 using hom_graph_dest [OF assms(1) insertI1]
 by (clarify, simp add: assms(2))
 
-text {*
+text \<open>
   \medskip
   Now we prove the first uniqueness property of the @{const hom_graph}
   relation.  This version of uniqueness says that for any particular
-  value of @{text S}, the relation @{term "hom_graph f S"} maps each
-  @{text x} to at most one @{text a}.  The proof uses the
+  value of \<open>S\<close>, the relation @{term "hom_graph f S"} maps each
+  \<open>x\<close> to at most one \<open>a\<close>.  The proof uses the
   injectiveness of if-then-else, which we proved earlier.
-*}
+\<close>
 
 lemma hom_graph_imp_formulas:
   "hom_graph f S x a \<Longrightarrow> x \<in> formulas S"
@@ -490,13 +489,13 @@ proof (induct arbitrary: a' set: hom_graph)
     by simp
 qed (erule hom_graph.cases, simp_all)+
 
-text {*
+text \<open>
   \medskip
   The next few lemmas will help to establish a stronger version of the
   uniqueness property of @{const hom_graph}.  They show that the @{const
-  hom_graph} relation is preserved if we replace @{text S} with a
+  hom_graph} relation is preserved if we replace \<open>S\<close> with a
   larger finite set.
-*}
+\<close>
 
 lemma hom_graph_insert:
   assumes "hom_graph f S x a"
@@ -515,9 +514,9 @@ lemma hom_graph_finite_superset:
   assumes "hom_graph f S x a" and "finite T" and "S \<subseteq> T"
   shows "hom_graph f T x a"
 proof -
-  from `finite T` have "hom_graph f (S \<union> T) x a"
+  from \<open>finite T\<close> have "hom_graph f (S \<union> T) x a"
     by (induct set: finite, simp add: assms, simp add: hom_graph_insert)
-  with `S \<subseteq> T` show "hom_graph f T x a"
+  with \<open>S \<subseteq> T\<close> show "hom_graph f T x a"
     by (simp only: subset_Un_eq)
 qed
 
@@ -525,12 +524,12 @@ lemma hom_graph_imp_finite:
   "hom_graph f S x a \<Longrightarrow> finite S"
 by (induct set: hom_graph) simp_all
 
-text {*
+text \<open>
   \medskip
   This stronger uniqueness property says that @{term "hom_graph f"}
-  maps each @{text x} to at most one @{text a}, even for
+  maps each \<open>x\<close> to at most one \<open>a\<close>, even for
   \emph{different} values of the set parameter.
-*}
+\<close>
 
 lemma hom_graph_unique':
   assumes "hom_graph f S x a" and "hom_graph f T x a'"
@@ -544,11 +543,11 @@ proof (rule hom_graph_unique)
     using assms(2) fin Un_upper2 by (rule hom_graph_finite_superset)
 qed
 
-text {*
+text \<open>
   \medskip
   Finally, these last few lemmas establish that the @{term "hom_graph
-  f"} relation is total: every @{text x} is mapped to some @{text a}.
-*}
+  f"} relation is total: every \<open>x\<close> is mapped to some \<open>a\<close>.
+\<close>
 
 lemma hom_graph_var: "hom_graph f {i} (var i) (f i)"
 proof -
@@ -589,13 +588,12 @@ by (induct x)
    (auto intro: hom_graph_var hom_graph_compl hom_graph_union_inf)
 
 
-subsection {* Homomorphisms into other boolean algebras *}
+subsection \<open>Homomorphisms into other boolean algebras\<close>
 
-text {*
+text \<open>
   Now that we have proved the necessary existence and uniqueness
-  properties of @{const hom_graph}, we can define the function @{text
-  hom} using definite choice.
-*}
+  properties of @{const hom_graph}, we can define the function \<open>hom\<close> using definite choice.
+\<close>
 
 definition
   hom :: "('a \<Rightarrow> 'b::boolean_algebra) \<Rightarrow> 'a formula \<Rightarrow> 'b"
@@ -619,10 +617,10 @@ apply (erule exE)
 apply (erule (1) hom_graph_unique')
 done
 
-text {*
+text \<open>
   \medskip
   The @{const hom} function correctly implements its specification:
-*}
+\<close>
 
 lemma hom_var [simp]: "hom f (var i) = f i"
 by (rule hom_equality, rule hom_graph_var)
@@ -668,12 +666,12 @@ lemmas hom_simps =
   hom_var hom_bot hom_top hom_compl
   hom_inf hom_sup hom_diff hom_ifte
 
-text {*
+text \<open>
   \medskip
   The type @{typ "'a formula"} can be viewed as a monad, with @{const
   var} as the unit, and @{const hom} as the bind operator.  We can
   prove the standard monad laws with simple proofs by induction.
-*}
+\<close>
 
 lemma hom_var_eq_id: "hom var x = x"
 by (induct x) simp_all
@@ -682,13 +680,13 @@ lemma hom_hom: "hom f (hom g x) = hom (\<lambda>i. hom f (g i)) x"
 by (induct x) simp_all
 
 
-subsection {* Map operation on Boolean formulas *}
+subsection \<open>Map operation on Boolean formulas\<close>
 
-text {*
+text \<open>
   We can define a map functional in terms of @{const hom} and @{const
-  var}.  The properties of @{text fmap} follow directly from the
+  var}.  The properties of \<open>fmap\<close> follow directly from the
   lemmas we have already proved about @{const hom}.
-*}
+\<close>
 
 definition
   fmap :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a formula \<Rightarrow> 'b formula"
@@ -724,11 +722,11 @@ lemmas fmap_simps =
   fmap_var fmap_bot fmap_top fmap_compl
   fmap_inf fmap_sup fmap_diff fmap_ifte
 
-text {*
+text \<open>
   \medskip
   The map functional satisfies the functor laws: it preserves identity
   and function composition.
-*}
+\<close>
 
 lemma fmap_ident: "fmap (\<lambda>i. i) x = x"
 by (induct x) simp_all
@@ -737,14 +735,14 @@ lemma fmap_fmap: "fmap f (fmap g x) = fmap (f \<circ> g) x"
 by (induct x) simp_all
 
 
-subsection {* Hiding lattice syntax *}
+subsection \<open>Hiding lattice syntax\<close>
 
-text {*
+text \<open>
   The following command hides the lattice syntax, to avoid potential
   conflicts with other theories that import this one.  To re-enable
-  the syntax, users should import theory @{text Lattice_Syntax} from
+  the syntax, users should import theory \<open>Lattice_Syntax\<close> from
   the Isabelle library.
-*}
+\<close>
 
 no_notation
   top ("\<top>") and

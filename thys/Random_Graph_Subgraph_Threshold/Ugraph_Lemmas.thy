@@ -1,4 +1,4 @@
-section{* Lemmas about undirected graphs *}
+section\<open>Lemmas about undirected graphs\<close>
 
 theory Ugraph_Lemmas
 imports
@@ -6,8 +6,8 @@ imports
   Girth_Chromatic.Girth_Chromatic
 begin
 
-text{* The complete graph is a graph where all possible edges are present. It is wellformed by
-definition. *}
+text\<open>The complete graph is a graph where all possible edges are present. It is wellformed by
+definition.\<close>
 
 definition complete :: "nat set \<Rightarrow> ugraph" where
 "complete V = (V, all_edges V)"
@@ -16,7 +16,7 @@ lemma complete_wellformed: "uwellformed (complete V)"
 unfolding complete_def uwellformed_def all_edges_def
 by simp
 
-text{* If the set of vertices is finite, the set of edges in the complete graph is finite. *}
+text\<open>If the set of vertices is finite, the set of edges in the complete graph is finite.\<close>
 
 lemma all_edges_finite: "finite V \<Longrightarrow> finite (all_edges V)"
 unfolding all_edges_def
@@ -26,27 +26,27 @@ corollary complete_finite_edges: "finite V \<Longrightarrow> finite (uedges (com
 unfolding complete_def using all_edges_finite
 by simp
 
-text{* The sets of possible edges of disjoint sets of vertices are disjoint. *}
+text\<open>The sets of possible edges of disjoint sets of vertices are disjoint.\<close>
 
 lemma all_edges_disjoint: "S \<inter> T = {} \<Longrightarrow> all_edges S \<inter> all_edges T = {}"
 unfolding all_edges_def
 by force
 
-text{* A graph is called `finite' if its set of edges and its set of vertices are finite. *}
+text\<open>A graph is called `finite' if its set of edges and its set of vertices are finite.\<close>
 
 definition "finite_graph G \<equiv> finite (uverts G) \<and> finite (uedges G)"
 
-text{* The complete graph is finite. *}
+text\<open>The complete graph is finite.\<close>
 
 corollary complete_finite: "finite V \<Longrightarrow> finite_graph (complete V)"
 using complete_finite_edges unfolding finite_graph_def complete_def
 by simp
 
-text{* A graph is called `nonempty' if it contains at least one vertex and at least one edge. *}
+text\<open>A graph is called `nonempty' if it contains at least one vertex and at least one edge.\<close>
 
 definition "nonempty_graph G \<equiv> uverts G \<noteq> {} \<and> uedges G \<noteq> {}"
 
-text{* A random graph is both wellformed and finite. *}
+text\<open>A random graph is both wellformed and finite.\<close>
 
 lemma (in edge_space) wellformed_and_finite:
   assumes "E \<in> Pow S_edges"
@@ -63,13 +63,13 @@ next
     using complete_wellformed unfolding edge_ugraph_def S_edges_def complete_def uwellformed_def by force
 qed
 
-text{* The probability for a random graph to have $e$ edges is $p ^ e$. *}
+text\<open>The probability for a random graph to have $e$ edges is $p ^ e$.\<close>
 
 lemma (in edge_space) cylinder_empty_prob:
   "A \<subseteq> S_edges \<Longrightarrow> prob (cylinder S_edges A {}) = p ^ (card A)"
 using cylinder_prob by auto
 
-subsection{* Subgraphs *}
+subsection\<open>Subgraphs\<close>
 
 definition subgraph :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" where
 "subgraph G' G \<equiv> uverts G' \<subseteq> uverts G \<and> uedges G' \<subseteq> uedges G"
@@ -100,7 +100,7 @@ proof -
     ultimately have "e = mk_uedge (u, v)" "u \<in> uverts G" "v \<in> uverts G"
       by auto
     hence "e \<in> all_edges (uverts G)"
-      unfolding all_edges_def using `u \<noteq> v` by fastforce
+      unfolding all_edges_def using \<open>u \<noteq> v\<close> by fastforce
   }
   thus ?thesis
     unfolding complete_def subgraph_def by auto
@@ -149,7 +149,7 @@ using subgraphs_finite
 unfolding nonempty_subgraphs_def subgraphs_def
 by auto
 
-subsection{* Induced subgraphs *}
+subsection\<open>Induced subgraphs\<close>
 
 definition induced_subgraph :: "uvert set \<Rightarrow> ugraph \<Rightarrow> ugraph" where
 "induced_subgraph V G = (V, uedges G \<inter> all_edges V)"
@@ -197,15 +197,15 @@ proof -
     .
 qed
 
-subsection{* Graph isomorphism *}
+subsection\<open>Graph isomorphism\<close>
 
-text{* We define graph isomorphism slightly different than in the literature. The usual definition
+text\<open>We define graph isomorphism slightly different than in the literature. The usual definition
 is that two graphs are isomorphic iff there exists a bijection between the vertex sets which
 preserves the adjacency. However, this complicates many proofs.
 
 Instead, we define the intuitive mapping operation on graphs. An isomorphism between two graphs
 arises if there is a suitable mapping function from the first to the second graph. Later, we show
-that this operation can be inverted. *}
+that this operation can be inverted.\<close>
 
 fun map_ugraph :: "(nat \<Rightarrow> nat) \<Rightarrow> ugraph \<Rightarrow> ugraph" where
 "map_ugraph f (V, E) = (f ` V, (\<lambda>e. f ` e) ` E)"
@@ -359,12 +359,12 @@ proof -
     by (metis map map_ugraph.simps snd_conv surjective_pairing)
 qed
 
-subsection{* Isomorphic subgraphs *}
+subsection\<open>Isomorphic subgraphs\<close>
 
-text{* The somewhat sloppy term `isomorphic subgraph' denotes a subgraph which is isomorphic to a
+text\<open>The somewhat sloppy term `isomorphic subgraph' denotes a subgraph which is isomorphic to a
 fixed other graph. For example, saying that a graph contains a triangle usually means that it
 contains \emph{any} triangle, not the specific triangle with the nodes $1$, $2$ and $3$. Hence, such
-a graph would have a triangle as an isomorphic subgraph. *}
+a graph would have a triangle as an isomorphic subgraph.\<close>
 
 definition subgraph_isomorphic :: "ugraph \<Rightarrow> ugraph \<Rightarrow> bool" ("_ \<sqsubseteq> _") where
 "G' \<sqsubseteq> G \<equiv> uwellformed G \<and> (\<exists>G''. G' \<simeq> G'' \<and> subgraph G'' G)"
@@ -418,7 +418,7 @@ next
   ultimately have "G\<^sub>1 \<simeq> ?G\<^sub>1'"
     using assms(1) unfolding isomorphism_def by (metis map_ugraph.simps fst_conv surjective_pairing)
   moreover have "subgraph ?G\<^sub>1' G\<^sub>3" (* Yes, I will TOTALLY understand that step tomorrow. *)
-    using subgraph_trans[OF map_ugraph_preserves_sub[OF assms(2)]] bij(2) `subgraph G\<^sub>2' G\<^sub>3` by simp
+    using subgraph_trans[OF map_ugraph_preserves_sub[OF assms(2)]] bij(2) \<open>subgraph G\<^sub>2' G\<^sub>3\<close> by simp
   ultimately show "\<exists>G''. G\<^sub>1 \<simeq> G'' \<and> subgraph G'' G\<^sub>3"
     by blast
 qed
@@ -443,23 +443,23 @@ lemmas subgraph_isomorphic_post_closed = subgraph_isomorphic_post_iso_closed
 
 lemmas subgraph_isomorphic_closed = subgraph_isomorphic_pre_closed subgraph_isomorphic_post_closed
 
-subsection{* Density *}
+subsection\<open>Density\<close>
 
-text{* The density of a graph is the quotient of the number of edges and the number of vertices of
-a graph. *}
+text\<open>The density of a graph is the quotient of the number of edges and the number of vertices of
+a graph.\<close>
 
 definition density :: "ugraph \<Rightarrow> real" where
 "density G = card (uedges G) / card (uverts G)"
 
-text{* The maximum density of a graph is the density of its densest nonempty subgraph. *}
+text\<open>The maximum density of a graph is the density of its densest nonempty subgraph.\<close>
 
 definition max_density :: "ugraph \<Rightarrow> real" where
 "max_density G = Lattices_Big.Max (density ` nonempty_subgraphs G)"
 
-text{* We prove some obvious results about the maximum density, such as that there is a subgraph
+text\<open>We prove some obvious results about the maximum density, such as that there is a subgraph
 which has the maximum density and that the (maximum) density is preserved by isomorphisms. The
 proofs are a bit complicated by the fact that most facts about @{term Lattices_Big.Max} require
-non-emptiness of the target set, but we need that anyway to get a value out of it. *}
+non-emptiness of the target set, but we need that anyway to get a value out of it.\<close>
 
 lemma subgraph_has_max_density:
   assumes "finite_graph G" and "nonempty_graph G" and "uwellformed G"
@@ -542,7 +542,7 @@ proof -
           using f(2) unfolding bij_betw_def by (metis subset_inj_on)
         hence "G \<simeq> map_ugraph f G"
           unfolding isomorphism_def bij_betw_def
-          by (metis map_ugraph.simps fst_conv surjective_pairing map_ugraph_wellformed `uwellformed G`)
+          by (metis map_ugraph.simps fst_conv surjective_pairing map_ugraph_wellformed \<open>uwellformed G\<close>)
         thus "density G = density (map_ugraph f G)"
           by (fact isomorphic_density)
       qed
@@ -595,22 +595,22 @@ proof -
     by (fact antisym)
 qed
 
-subsection{* Fixed selectors *}
+subsection\<open>Fixed selectors\<close>
 
-text{* \label{sec:selector}
+text\<open>\label{sec:selector}
 In the proof of the main theorem in the lecture notes, the concept of a ``fixed copy'' of a graph is
 fundamental.
 
 Let $H$ be a fixed graph. A `fixed selector' is basically a function mapping a set with the same
 size as the vertex set of $H$ to a new graph which is isomorphic to $H$ and its vertex set is the
 same as the input set.\footnote{We call such a selector \emph{fixed} because its result is
-deterministic.} *}
+deterministic.}\<close>
 
 definition "is_fixed_selector H f = (\<forall>V. finite V \<and> card (uverts H) = card V \<longrightarrow> H \<simeq> f V \<and> uverts (f V) = V)"
 
-text{* Obviously, there may be many possible fixed selectors for a given graph. First, we show
+text\<open>Obviously, there may be many possible fixed selectors for a given graph. First, we show
 that there is always at least one. This is sufficient, because we can always obtain that one and
-use its properties without knowing exactly which one we chose. *}
+use its properties without knowing exactly which one we chose.\<close>
 
 lemma ex_fixed_selector:
   assumes "uwellformed H" and "finite_graph H"

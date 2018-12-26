@@ -1,9 +1,9 @@
-section {* Graphs *}
+section \<open>Graphs\<close>
 
 theory Graph
 imports Main begin
 
-text {* @{typ 'a} is the vertex type. *}
+text \<open>@{typ 'a} is the vertex type.\<close>
 type_synonym 'a Edge = "'a \<times> 'a"
 type_synonym 'a Walk = "'a list"
 
@@ -13,10 +13,10 @@ record 'a Graph =
 abbreviation is_arc :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>\<index>" 60) where
   "v \<rightarrow>\<^bsub>G\<^esub> w \<equiv> (v,w) \<in> E\<^bsub>G\<^esub>"
 
-text {*
+text \<open>
   We only consider undirected finite simple graphs, that is, graphs without multi-edges and without
   loops.
-*}
+\<close>
 locale Graph =
   fixes G :: "('a, 'b) Graph_scheme" (structure)
   assumes finite_vertex_set: "finite V"
@@ -29,17 +29,17 @@ lemma finite_edge_set [simp]: "finite E" using finite_vertex_set valid_edge_set
 lemma edges_are_in_V: assumes "v\<rightarrow>w" shows "v \<in> V" "w \<in> V"
   using assms valid_edge_set by blast+
 
-subsection {* Walks *}
+subsection \<open>Walks\<close>
 
-text {* A walk is sequence of vertices connected by edges. *}
+text \<open>A walk is sequence of vertices connected by edges.\<close>
 inductive walk :: "'a Walk \<Rightarrow> bool" where
 Nil [simp]: "walk []"
 | Singleton [simp]: "v \<in> V \<Longrightarrow> walk [v]"
 | Cons: "v\<rightarrow>w \<Longrightarrow> walk (w # vs) \<Longrightarrow> walk (v # w # vs)"
 
-text {*
+text \<open>
   Show a few composition/decomposition lemmas for walks.  These will greatly simplify the proofs
-  that follow. *}
+  that follow.\<close>
 lemma walk_2 [simp]: "v\<rightarrow>w \<Longrightarrow> walk [v,w]" by (simp add: edges_are_in_V(2) walk.intros(3))
 lemma walk_comp: "\<lbrakk> walk xs; walk ys; xs = Nil \<or> ys = Nil \<or> last xs\<rightarrow>hd ys \<rbrakk> \<Longrightarrow> walk (xs @ ys)"
   by (induct rule: walk.induct, simp_all add: walk.intros(3))
@@ -85,7 +85,7 @@ proof-
   qed
 qed
 
-subsection {* Connectivity *}
+subsection \<open>Connectivity\<close>
 
 definition connected :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>\<^sup>*" 60) where
   "connected v w \<equiv> \<exists>xs. walk xs \<and> xs \<noteq> Nil \<and> hd xs = v \<and> last xs = w"
@@ -116,10 +116,10 @@ proof-
   qed
 qed
 
-subsection {* Paths *}
+subsection \<open>Paths\<close>
 
-text {* A path is a walk without repeated vertices.  This is simple enough, so most of the above
-  lemmas transfer directly to paths. *}
+text \<open>A path is a walk without repeated vertices.  This is simple enough, so most of the above
+  lemmas transfer directly to paths.\<close>
 
 abbreviation path :: "'a Walk \<Rightarrow> bool" where "path xs \<equiv> walk xs \<and> distinct xs"
 
@@ -145,7 +145,7 @@ lemma path_takeWhile_edge: "\<lbrakk> path (xs @ [v]); xs \<noteq> Nil; hd xs \<
   \<Longrightarrow> last (takeWhile (\<lambda>x. x \<noteq> v) xs)\<rightarrow>v" using walk_takeWhile_edge by blast
 
 end
-text {* We introduce shorthand notation for a path connecting two vertices. *}
+text \<open>We introduce shorthand notation for a path connecting two vertices.\<close>
 definition path_from_to :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a Walk \<Rightarrow> 'a \<Rightarrow> bool"
   ("_ \<leadsto>_\<leadsto>\<index> _" [71, 71, 71] 70) where
   "path_from_to G v xs w \<equiv> Graph.path G xs \<and> xs \<noteq> Nil \<and> hd xs = v \<and> last xs = w"
@@ -154,15 +154,15 @@ lemma path_from_toI [intro]: "\<lbrakk> path xs; xs \<noteq> Nil; hd xs = v; las
   and path_from_toE [dest]: "v \<leadsto>xs\<leadsto> w \<Longrightarrow> path xs \<and> xs \<noteq> Nil \<and> hd xs = v \<and> last xs = w"
   unfolding path_from_to_def by blast+
 
-text {* Every walk contains a path connecting the same vertices. *}
+text \<open>Every walk contains a path connecting the same vertices.\<close>
 lemma walk_to_path:
   assumes "walk xs" "xs \<noteq> Nil" "hd xs = v" "last xs = w"
   shows "\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> set xs"
 proof-
-  text {* We prove this by removing loops from @{term xs} until @{term xs} is a path.
+  text \<open>We prove this by removing loops from @{term xs} until @{term xs} is a path.
     We want to perform induction over @{term "length xs"}, but @{term xs} in
     @{term "set ys \<subseteq> set xs"} should not be part of the induction hypothesis. To accomplish this,
-    we hide @{term "set xs"} behind a definition for this specific part of the goal. *}
+    we hide @{term "set xs"} behind a definition for this specific part of the goal.\<close>
   define target_set where "target_set = set xs"
   hence "set xs \<subseteq> target_set" by simp
   thus "\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> target_set"
@@ -172,13 +172,13 @@ proof-
     then obtain xs where
       xs: "n = length xs" "walk xs" "xs \<noteq> Nil" "hd xs = v" "last xs = w" "set xs \<subseteq> target_set" and
       hyp: "\<not>(\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> target_set)" by blast
-    text {* If @{term xs} is not a path, then @{term xs} is not distinct and we can decompose it. *}
+    text \<open>If @{term xs} is not a path, then @{term xs} is not distinct and we can decompose it.\<close>
     then obtain ys zs u
       where xs_decomp: "u \<in> set ys" "distinct ys" "xs = ys @ u # zs"
       using not_distinct_conv_prefix by (metis path_from_toI)
-    text {* @{term u} appears in @{term xs}, so we have a loop in @{term xs} starting from an
+    text \<open>@{term u} appears in @{term xs}, so we have a loop in @{term xs} starting from an
       occurrence of @{term u} in @{term xs} ending in the vertex @{term u} in @{term "u # ys"}.
-      We define @{term zs} as @{term xs} without this loop. *}
+      We define @{term zs} as @{term xs} without this loop.\<close>
     obtain ys' ys_suffix where
       ys_decomp: "ys = ys' @ u # ys_suffix" by (meson split_list xs_decomp(1))
     define zs' where "zs' = ys' @ u # zs"
@@ -198,11 +198,11 @@ corollary connected_by_path:
   obtains xs where "v \<leadsto>xs\<leadsto> w"
   using assms connected_def walk_to_path by blast
 
-subsection {* Cycles *}
+subsection \<open>Cycles\<close>
 
-text {* A cycle in an undirected graph is a closed path with at least 3 different vertices.
+text \<open>A cycle in an undirected graph is a closed path with at least 3 different vertices.
   Closed paths with 0 or 1 vertex do not exist (graphs are loop-free), and paths with 2 vertices
-  are not considered loops in undirected graphs. *}
+  are not considered loops in undirected graphs.\<close>
 definition cycle :: "'a Walk \<Rightarrow> bool" where
   "cycle xs \<equiv> path xs \<and> length xs > 2 \<and> last xs \<rightarrow> hd xs"
 
@@ -211,12 +211,12 @@ lemma cycleI [intro]: "\<lbrakk> path xs; length xs > 2; last xs\<rightarrow>hd 
 lemma cycleE: "cycle xs \<Longrightarrow> path xs \<and> xs \<noteq> Nil \<and> length xs > 2 \<and> last xs\<rightarrow>hd xs"
   unfolding cycle_def by auto
 
-text {* We can now show a lemma that explains how to construct cycles from certain paths.
+text \<open>We can now show a lemma that explains how to construct cycles from certain paths.
   If two paths both starting from @{term v} diverge immediately and meet again on their
   last vertices, then the graph contains a cycle with @{term v} on it.
 
   Note that if two paths do not diverge immediately but only eventually, then
-  @{prop maximal_common_prefix} can be used to remove the common prefix. *}
+  @{prop maximal_common_prefix} can be used to remove the common prefix.\<close>
 lemma meeting_paths_produce_cycle:
   assumes xs: "path (v # xs)" "xs \<noteq> Nil"
       and ys: "path (v # ys)" "ys \<noteq> Nil"
@@ -253,7 +253,7 @@ proof-
   ultimately show ?thesis using cycleI[of ?zs] by auto
 qed
 
-text {* A graph with unique paths between every pair of connected vertices has no cycles. *}
+text \<open>A graph with unique paths between every pair of connected vertices has no cycles.\<close>
 lemma unique_paths_implies_no_cycles:
   assumes unique_paths: "\<And>v w. v \<rightarrow>\<^sup>* w \<Longrightarrow> \<exists>!xs. v \<leadsto>xs\<leadsto> w"
   shows "\<And>xs. \<not>cycle xs"
@@ -273,10 +273,10 @@ proof
   ultimately show False unfolding good_def using unique_paths by blast
 qed
 
-text {*
+text \<open>
   A graph without cycles (also called a forest) has a unique path between every pair of connected
   vertices.
-*}
+\<close>
 lemma no_cycles_implies_unique_paths:
   assumes no_cycles: "\<And>xs. \<not>cycle xs" and connected: "v \<rightarrow>\<^sup>* w"
   shows "\<exists>!xs. v \<leadsto>xs\<leadsto> w"

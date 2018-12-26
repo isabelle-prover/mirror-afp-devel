@@ -35,18 +35,18 @@ lemma build_local_iwf:
 using assms
 proof(induction)
   case (tfinite t)
-  from `wf t`
+  from \<open>wf t\<close>
   have "snd (root t) \<in> R" using wf.simps by blast
 
-  from `wf t`
+  from \<open>wf t\<close>
   have "eff (snd (root t)) (fst (root t)) ((fst \<circ> root) |`| cont t)" using wf.simps by blast
 
-  from `wf t`
+  from \<open>wf t\<close>
   have "\<And> t'. t' |\<in>| cont t \<Longrightarrow> wf t'" using wf.simps by blast
   hence IH: "\<And> \<Gamma>' t'. t' |\<in>| cont t \<Longrightarrow> (\<exists>it'. local_iwf it' (fst (root t')))" using tfinite(2) by blast
   then obtain its where its: "\<And> t'. t' |\<in>| cont t \<Longrightarrow> local_iwf (its t') (fst (root t'))" by metis
 
-  from `eff _ _ _`
+  from \<open>eff _ _ _\<close>
   show ?case               
   proof(cases rule: eff.cases[case_names Axiom NatRule Cut])
   case (Axiom c \<Gamma>)
@@ -57,7 +57,7 @@ proof(induction)
 
       let "?it" = "INode (Assumption c) c undefined undefined [] ::  ('form, 'rule, 'subst, 'var) itree"
 
-      from `c \<in> set assumptions`
+      from \<open>c \<in> set assumptions\<close>
       have "local_iwf ?it (\<Gamma> \<turnstile> c)"
         by (auto intro!: iwf local_fresh_check.intros)
 
@@ -69,17 +69,17 @@ proof(induction)
   
       let "?it" = "HNode undefined s [] ::  ('form, 'rule, 'subst, 'var) itree"
   
-      from  `c |\<in>| \<Gamma>` False
+      from  \<open>c |\<in>| \<Gamma>\<close> False
       have "local_iwf ?it (\<Gamma> \<turnstile> c)" by (auto intro: iwfH)
       thus ?thesis unfolding Axiom..
     qed
   next
   case (NatRule rule c ants \<Gamma> i s)
-    from `natEff_Inst rule c ants`
+    from \<open>natEff_Inst rule c ants\<close>
     have "snd rule = c"  and [simp]: "ants = f_antecedent (fst rule)" and "c \<in> set (consequent (fst rule))"
       by (auto simp add: natEff_Inst.simps)  
 
-    from `(fst \<circ> root) |\`| cont t = (\<lambda>ant. (\<lambda>p. subst s (freshen i p)) |\`| a_hyps ant |\<union>| \<Gamma> \<turnstile> subst s (freshen i (a_conc ant))) |\`| ants`
+    from \<open>(fst \<circ> root) |`| cont t = (\<lambda>ant. (\<lambda>p. subst s (freshen i p)) |`| a_hyps ant |\<union>| \<Gamma> \<turnstile> subst s (freshen i (a_conc ant))) |`| ants\<close>
     obtain to_t where "\<And> ant. ant |\<in>| ants \<Longrightarrow> to_t ant |\<in>| cont t \<and> (fst \<circ> root) (to_t ant) = ((\<lambda>p. subst s (freshen i p)) |`| a_hyps ant |\<union>| \<Gamma> \<turnstile> subst s (freshen i (a_conc ant)))"
       by (rule fimage_eq_to_f) (rule that)
     hence to_t_in_cont: "\<And> ant. ant |\<in>| ants \<Longrightarrow> to_t ant |\<in>| cont t"
@@ -89,12 +89,12 @@ proof(induction)
     let ?ants' = "map (\<lambda> ant. its (to_t ant)) (antecedent (fst rule))"
     let "?it" = "INode (Rule (fst rule)) c i s ?ants' ::  ('form, 'rule, 'subst, 'var) itree"
 
-    from `snd (root t) \<in> R`
+    from \<open>snd (root t) \<in> R\<close>
     have "fst rule \<in> sset rules"
       unfolding NatRule
       by (auto simp add: stream.set_map n_rules_def no_empty_conclusions )
     moreover
-    from `c \<in> set (consequent (fst rule))`
+    from \<open>c \<in> set (consequent (fst rule))\<close>
     have "c |\<in>| f_consequent (fst rule)" by (simp add: f_consequent_def)
     moreover
     { fix ant
@@ -104,7 +104,7 @@ proof(induction)
       have "local_iwf (its (to_t ant)) (fst (root (to_t ant)))".
       also have "fst (root (to_t ant)) =
         ((\<lambda>p. subst s (freshen i p)) |`| a_hyps ant |\<union>| \<Gamma> \<turnstile> subst s (freshen i (a_conc ant)))"
-        by (rule to_t_root[OF `ant |\<in>| ants`])
+        by (rule to_t_root[OF \<open>ant |\<in>| ants\<close>])
       also have "\<dots> =
         ((\<lambda>h. subst s (freshen i (labelsOut (Rule (fst rule)) h))) |`| hyps_for (Rule (fst rule)) ant |\<union>| \<Gamma>
          \<turnstile> subst s (freshen i (a_conc ant)))" 
@@ -128,15 +128,15 @@ proof(induction)
     obtain s where "subst s anyP = con" by atomize_elim (rule anyP_is_any)
     hence  [simp]: "subst s (freshen undefined anyP) = con" by (simp add: lconsts_anyP freshen_closed)
 
-    from `(fst \<circ> root) |\`| cont t = {|\<Gamma> \<turnstile> con|}`
+    from \<open>(fst \<circ> root) |`| cont t = {|\<Gamma> \<turnstile> con|}\<close>
     obtain t'  where "t' |\<in>| cont t" and [simp]: "fst (root t') = (\<Gamma> \<turnstile> con)"
       by (cases "cont t") auto
     
-    from `t' |\<in>| cont t` obtain "it'" where "local_iwf it' (\<Gamma> \<turnstile> con)" using IH by force
+    from \<open>t' |\<in>| cont t\<close> obtain "it'" where "local_iwf it' (\<Gamma> \<turnstile> con)" using IH by force
 
     let "?it" = "INode Helper anyP undefined s [it'] ::  ('form, 'rule, 'subst, 'var) itree"
 
-    from `local_iwf it' (\<Gamma> \<turnstile> con)`
+    from \<open>local_iwf it' (\<Gamma> \<turnstile> con)\<close>
     have "local_iwf ?it (\<Gamma> \<turnstile> con)" by (auto intro!: iwf local_fresh_check.intros)
     thus ?thesis unfolding Cut..
   qed 

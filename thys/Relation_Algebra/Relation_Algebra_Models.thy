@@ -4,31 +4,31 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Models of Relation Algebra *}
+section \<open>Models of Relation Algebra\<close>
 
 theory Relation_Algebra_Models
   imports Relation_Algebra Kleene_Algebra.Inf_Matrix
 begin
 
-text {* We formalise two models. First we show the obvious: binary relations
+text \<open>We formalise two models. First we show the obvious: binary relations
 form a relation algebra. Then we show that infinite matrices (which we
 formalised originally for Kleene algebras) form models of relation algebra if
-we restrict their element type to @{typ bool}. *}
+we restrict their element type to @{typ bool}.\<close>
 
-subsection {* Binary Relations *}
+subsection \<open>Binary Relations\<close>
 
-text {* Since Isabelle's libraries for binary relations are very well
-developed, the proof for this model is entirely trivial. *}
+text \<open>Since Isabelle's libraries for binary relations are very well
+developed, the proof for this model is entirely trivial.\<close>
 
 interpretation rel_relation_algebra: relation_algebra "(-)" uminus "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" UNIV "(O)" Relation.converse Id
 by unfold_locales auto
 
-subsection {* Infinite Boolean Matrices *}
+subsection \<open>Infinite Boolean Matrices\<close>
 
-text {* Next we consider infinite Boolean matrices. We define the maximal
+text \<open>Next we consider infinite Boolean matrices. We define the maximal
 Boolean matrix (all of its entries are @{const True}), the converse or
 transpose of a matrix, the intersection of two Boolean matrices and the
-complement of a Boolean matrix. *}
+complement of a Boolean matrix.\<close>
 
 definition mat_top :: "('a, 'b, bool) matrix" ("\<tau>")
   where "\<tau> i j \<equiv> True"
@@ -42,9 +42,9 @@ definition mat_inter :: "('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matr
 definition mat_complement :: "('a, 'b, bool) matrix \<Rightarrow> ('a, 'b, bool) matrix" ("_\<^sup>c" [101] 100)
   where "f\<^sup>c = (\<lambda>i j. - f i j)"
 
-text {* Next we show that the Booleans form a dioid. We state this as an
+text \<open>Next we show that the Booleans form a dioid. We state this as an
 \emph{instantiation} result. The Kleene algebra files contain an
-\emph{interpretation} proof, which is not sufficient for our purposes. *}
+\emph{interpretation} proof, which is not sufficient for our purposes.\<close>
 
 instantiation bool :: dioid_one_zero
 begin
@@ -66,7 +66,7 @@ begin
 
 end
 
-text {* We now show that infinite Boolean matrices form a Boolean algebra. *}
+text \<open>We now show that infinite Boolean matrices form a Boolean algebra.\<close>
 
 lemma le_funI2: "(\<And>i j. f i j \<le> g i j) \<Longrightarrow> f \<le> g"
 by (metis le_funI)
@@ -74,18 +74,18 @@ by (metis le_funI)
 interpretation matrix_ba: boolean_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "(\<sqinter>)" "(\<le>)" "(<)" mat_add mat_zero mat_top
 by standard (force intro!: le_funI simp: mat_inter_def plus_bool_def mat_add_def mat_zero_def zero_bool_def mat_top_def mat_complement_def)+
 
-text {* We continue working towards the main result of this section, that
-infinite Boolean matrices form a relation algebra. *}
+text \<open>We continue working towards the main result of this section, that
+infinite Boolean matrices form a relation algebra.\<close>
 
 lemma mat_mult_var: "(f \<otimes> g) = (\<lambda>i j. \<Sum> {(f i k) * (g k j) | k. k \<in> UNIV})"
 by (rule ext)+ (simp add: mat_mult_def)
 
-text {* The following fact is related to proving the last relation algebra
+text \<open>The following fact is related to proving the last relation algebra
 axiom in the matrix model. It is more complicated than necessary since finite
 infima are not well developed in Isabelle. Instead we translate properties of
 finite infima into properties of finite suprema by using Boolean algebra. For
 finite suprema we have developed special-purpose theorems in the Kleene algebra
-files. *}
+files.\<close>
 
 lemma mat_res_pointwise:
   fixes i j :: "'a::finite"
@@ -116,7 +116,7 @@ proof -
     by auto
 qed
 
-text {* Finally the main result of this section. *}
+text \<open>Finally the main result of this section.\<close>
 
 interpretation matrix_ra: relation_algebra "\<lambda>f g. f \<sqinter> g\<^sup>c" mat_complement "(\<sqinter>)" "(\<le>)" "(<)" "(\<oplus>)" "\<lambda>i j. False" \<tau> "(\<otimes>)" mat_transpose \<epsilon>
 proof

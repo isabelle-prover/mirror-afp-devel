@@ -1,23 +1,23 @@
-section {* Buildings *}
+section \<open>Buildings\<close>
 
-text {*
+text \<open>
   In this section we collect the axioms for a (thick) building in a locale, and prove that
   apartments in a building are uniformly Coxeter.
-*}
+\<close>
 
 theory Building
 imports Coxeter
 
 begin
 
-subsection {* Apartment systems *}
+subsection \<open>Apartment systems\<close>
 
-text {*
+text \<open>
   First we describe and explore the basic structure of apartment systems. An apartment system is a
   collection of isomorphic thin chamber subcomplexes with certain intersection properties.
-*}
+\<close>
 
-subsubsection {* Locale and basic facts *}
+subsubsection \<open>Locale and basic facts\<close>
 
 locale ChamberComplexWithApartmentSystem = ChamberComplex X
   for   X :: "'a set set"
@@ -130,12 +130,12 @@ lemma strong_intersecttwo:
 
 end (* context ChamberComplexWithApartmentSystem *)
 
-subsubsection {* Isomorphisms between apartments *}
+subsubsection \<open>Isomorphisms between apartments\<close>
 
-text {*
+text \<open>
   By standard uniqueness, the isomorphism between overlapping apartments guaranteed by the axiom
-  @{text "intersecttwo"} is unique.
-*}
+  \<open>intersecttwo\<close> is unique.
+\<close>
 
 context ChamberComplexWithApartmentSystem
 begin
@@ -263,9 +263,9 @@ lemma the_apartment_iso_int_im:
 
 end (* context ChamberComplexWithApartmentSystem *)
 
-subsubsection {* Retractions onto apartments *}
+subsubsection \<open>Retractions onto apartments\<close>
 
-text {*
+text \<open>
   Since the isomorphism between overlapping apartments is the identity on their intersection,
   starting with a fixed chamber in a fixed apartment, we can construct a retraction onto that
   apartment as follows. Given a vertex in the complex, that vertex is contained a chamber, and
@@ -274,7 +274,7 @@ text {*
   image of the vertex does not depend on the containing chamber and apartment chosen, and so
   since the isomorphisms between apartments used are unique, such a retraction onto an apartment
   is canonical.
-*}
+\<close>
 
 context ChamberComplexWithApartmentSystem
 begin
@@ -420,15 +420,15 @@ lemma canonical_retraction_comp_apartment_endomorphism:
 end (* context ChamberComplexWithApartmentSystem *)
 
 
-subsubsection {* Distances in apartments *}
+subsubsection \<open>Distances in apartments\<close>
 
-text {*
+text \<open>
   Here we examine distances between chambers and between a facet and a chamber, especially with
   respect to canonical retractions onto an apartment. Note that a distance measured within an
   apartment is equal to the distance measured between the same objects in the wider chamber
   complex. In other words, the shortest distance between chambers can always be achieved within an
   apartment.
-*}
+\<close>
 
 context ChamberComplexWithApartmentSystem
 begin
@@ -577,15 +577,15 @@ qed
 
 end (* context ChamberComplexWithApartmentSystem *)
 
-subsubsection {* Special situation: a triangle of apartments and chambers *}
+subsubsection \<open>Special situation: a triangle of apartments and chambers\<close>
 
-text {*
+text \<open>
   To facilitate proving that apartments in buildings have sufficient foldings to be Coxeter, we
   explore the situation of three chambers sharing a common facet, along with three apartments, each
   of which contains two of the chambers. A folding of one of the apartments is
   constructed by composing two apartment retractions, and by symmetry we automatically obtain an
   opposed folding.
-*}
+\<close>
 
 locale ChamberComplexApartmentSystemTriangle =
   ChamberComplexWithApartmentSystem X \<A>
@@ -1435,11 +1435,11 @@ lemmas opp_res_fold_A =
 
 end (* context ChamberComplexApartmentSystemTriangle *)
 
-subsection {* Building locale and basic lemmas *}
+subsection \<open>Building locale and basic lemmas\<close>
 
-text {* 
+text \<open>
   Finally, we define a (thick) building to be a thick chamber complex with a system of apartments.
-*}
+\<close>
 
 locale Building = ChamberComplexWithApartmentSystem X \<A>
   for X :: "'a set set"
@@ -1461,14 +1461,14 @@ lemmas chamber_some_third_chamber =
 
 end (* context Building *)
 
-subsection {* Apartments are uniformly Coxeter *}
+subsection \<open>Apartments are uniformly Coxeter\<close>
 
-text {*
+text \<open>
   Using the assumption of thickness, we may use the special situation
   @{const ChamberComplexApartmentSystemTriangle} to verify that apartments have enough pairs of
   opposed foldings to ensure that they are isomorphic to a Coxeter complex. Since the apartments
   are all isomorphic, they are uniformly isomorphic to a single Coxeter complex.
-*}
+\<close>
 
 context Building
 begin

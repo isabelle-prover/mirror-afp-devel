@@ -1,25 +1,25 @@
-section {* The $A_{T,E}$ Algorithm *}
+section \<open>The $A_{T,E}$ Algorithm\<close>
 
 theory Ate_Defs
 imports Heard_Of.HOModel "../Consensus_Types"
 begin
 
-text {* The contents of this file have been taken almost verbatim from the
+text \<open>The contents of this file have been taken almost verbatim from the
   Heard Of Model AFP entry. The only difference is that the types have been
-  changed. *}
+  changed.\<close>
 
-subsection {* Model of the algorithm *}
+subsection \<open>Model of the algorithm\<close>
 
-text {* The following record models the local state of a process. *}
+text \<open>The following record models the local state of a process.\<close>
 
 record 'val pstate =
   x :: "'val"              \<comment> \<open>current value held by process\<close>
   decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
-text {*
-  The @{text x} field of the initial state is unconstrained, but no
+text \<open>
+  The \<open>x\<close> field of the initial state is unconstrained, but no
   decision has yet been taken.
-*}
+\<close>
 
 definition Ate_initState where
   "Ate_initState p st \<equiv> (decide st = None)"
@@ -32,7 +32,7 @@ locale ate_parameters =
 
 begin
 
-text {* The following are consequences of the assumptions on the parameters. *}
+text \<open>The following are consequences of the assumptions on the parameters.\<close>
 
 lemma majE: "2 * (E - \<alpha>) \<ge> N"
 using TNaE TltN by auto
@@ -43,15 +43,15 @@ using majE EltN by auto
 lemma Tge2a: "T \<ge> 2 * \<alpha>"
 using TNaE EltN by auto
 
-text {*
-  At every round, each process sends its current @{text x}.
-  If it received more than @{text T} messages, it selects the smallest value
-  and store it in @{text x}. As in algorithm \emph{OneThirdRule}, we
+text \<open>
+  At every round, each process sends its current \<open>x\<close>.
+  If it received more than \<open>T\<close> messages, it selects the smallest value
+  and store it in \<open>x\<close>. As in algorithm \emph{OneThirdRule}, we
   therefore require values to be linearly ordered.
 
-  If more than @{text E} messages holding the same value are received,
+  If more than \<open>E\<close> messages holding the same value are received,
   the process decides that value.
-*}
+\<close>
 
 definition mostOftenRcvd where
   "mostOftenRcvd (msgs::process \<Rightarrow> 'val option) \<equiv>
@@ -75,25 +75,25 @@ where
          \<and> decide st' = decide st)"
 
 
-subsection {* Communication predicate for $A_{T,E}$ *}
+subsection \<open>Communication predicate for $A_{T,E}$\<close>
 
 definition Ate_commPerRd where
   "Ate_commPerRd HOrs SHOrs \<equiv>
    \<forall>p. card (HOrs p - SHOrs p) \<le> \<alpha>"
 
-text {*
+text \<open>
   The global communication predicate stipulates the three following
   conditions:
   \begin{itemize}
-  \item for every process @{text p} there are infinitely many rounds 
-    where @{text p} receives more than @{text T} messages,
-  \item for every process @{text p} there are infinitely many rounds 
-    where @{text p} receives more than @{text E} uncorrupted messages,
+  \item for every process \<open>p\<close> there are infinitely many rounds 
+    where \<open>p\<close> receives more than \<open>T\<close> messages,
+  \item for every process \<open>p\<close> there are infinitely many rounds 
+    where \<open>p\<close> receives more than \<open>E\<close> uncorrupted messages,
   \item and there are infinitely many rounds in which more than
-    @{text "E - \<alpha>"} processes receive uncorrupted messages from the
-    same set of processes, which contains more than @{text T} processes.
+    \<open>E - \<alpha>\<close> processes receive uncorrupted messages from the
+    same set of processes, which contains more than \<open>T\<close> processes.
   \end{itemize}
-*}
+\<close>
 definition
   Ate_commGlobal where
   "Ate_commGlobal HOs SHOs \<equiv>
@@ -104,12 +104,12 @@ definition
       \<and> card \<pi>2 > T
       \<and> (\<forall>p \<in> \<pi>1. HOs r' p = \<pi>2 \<and> SHOs r' p \<inter> HOs r' p = \<pi>2))"
 
-subsection {* The $A_{T,E}$ Heard-Of machine *}
+subsection \<open>The $A_{T,E}$ Heard-Of machine\<close>
 
-text {* 
+text \<open>
   We now define the non-coordinated SHO machine for the Ate algorithm
   by assembling the algorithm definition and its communication-predicate.
-*}
+\<close>
 
 definition Ate_SHOMachine where
   "Ate_SHOMachine = \<lparr> 

@@ -1,7 +1,7 @@
 (* Title: Computational_Model.thy
   Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* Oracle combinators *}
+section \<open>Oracle combinators\<close>
 
 theory Computational_Model imports 
   Generative_Probabilistic_Value

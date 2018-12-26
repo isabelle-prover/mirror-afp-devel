@@ -4,12 +4,12 @@ imports "../../TopoS_Impl"
 begin
 
 
-ML{*
+ML\<open>
 case !Graphviz.open_viewer of
     OpenImmediately => Graphviz.open_viewer := AskTimeouted 3.0
   | AskTimeouted _ => ()
   | DoNothing => ()
-*}
+\<close>
 
 subsection\<open>Architecture Definition\<close>
 
@@ -119,9 +119,9 @@ context begin
 end
 lemma "wf_list_graph policy" by eval
 
-ML_val{*
+ML_val\<open>
 visualize_graph @{context} @{term "[]::string SecurityInvariant list"} @{term "policy"};
-*}
+\<close>
 
 
 context begin
@@ -188,18 +188,18 @@ end
 definition "invariants \<equiv> [Tainting_m] @ SystemA_m @ SystemB_m @ SystemC_m @ SystemC3PO_m @ SystemUploadDroid_m"
 
 lemma "all_security_requirements_fulfilled invariants policy" by eval
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "invariants"} @{term "policy"};
-*}
+\<close>
 
 
 value[code] "implc_get_offending_flows invariants (policy\<lparr> edgesL := edgesL policy\<rparr>)"
 (*ML{*
 visualize_graph @{context} @{term "invariants"} @{term "(policy\<lparr> edgesL := (''Adversary'', ''C3PO_Storage'')#edgesL policy\<rparr>)"};
 *}*)
-ML{*
+ML\<open>
 visualize_graph_header @{context} @{term "invariants"} @{term "policy"} @{term taint_labels};
-*}
+\<close>
 
 subsection\<open>Analyzing the Policy\<close>
 
@@ -257,20 +257,20 @@ lemma "set [e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). e \<
  {(''C3PO_in'', ''C3PO_Storage'')}" by eval
 
 text\<open>visualization\<close>
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#3399FF\", constraint=false]",
      @{term "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). e \<notin> set (edgesL policy)]"})] ""; 
-*}
+\<close>
 
 text\<open>A visualization which shows all flows to the adversary which must NEVER happen
       (only considering taint labels, i.e. system boundaries are not considered).\<close>
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL policy"}
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
      @{term "[(e1, e2) \<leftarrow>  List.product  (nodesL policy) (nodesL policy).
      (e1,e2) \<notin> set (edgesL (make_policy [Tainting_m] (nodesL policy))) \<and> (e2 = ''Adversary'') \<and> (e1 \<noteq> ''Adversary'')]"})] "";
-*}
+\<close>
 
 text\<open>We conclude that the security invariants adequately reflect all aspects of the system we wanted to specify.\<close>
 
@@ -279,14 +279,14 @@ text\<open>We conclude that the security invariants adequately reflect all aspec
 
 
 
-subsection{*A stateful implementation*}
+subsection\<open>A stateful implementation\<close>
 
 
 definition "stateful_policy = generate_valid_stateful_policy_IFSACS policy invariants"
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL stateful_policy"}
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})] "";
-*}
+\<close>
 
 
 lemma "stateful_policy =
@@ -312,7 +312,7 @@ by eval
 
 subsection\<open>A firewall for Collect Droid\<close>
 text\<open>The firewall is installed at @{term "''C3PO_in''"}, this we only filter for the rules which affect this component.\<close>
-ML_val{*
+ML_val\<open>
 
 (*header*)
 writeln ("# flush all rules"^"\n"^
@@ -342,6 +342,6 @@ iterate_edges_ML @{context} @{term "[(s,r) \<leftarrow> flows_stateL stateful_po
   (fn (v1,v2) => writeln ("iptables -I OUTPUT -m state --state ESTABLISHED -i $"^v2^"_iface -s $"^v2^"_ipv4 -o $"^v1^"_iface -d $"^v1^"_ipv4 -j ACCEPT # "^v2^" -> "^v1^" (answer)") )
   (fn _ => () )
   (fn _ => () );
-*}
+\<close>
 
 end

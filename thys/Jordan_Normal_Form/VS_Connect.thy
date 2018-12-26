@@ -545,10 +545,10 @@ proof -
   have "A \<subseteq> span A" using assms in_own_span by simp
   have "submodule class_ring (span A) V" using assms span_is_submodule by simp
   have "LinearCombinations.module.span class_ring (vs (span A)) A = carrier (vs (span A))"
-    using  span_li_not_depend(1)[OF `A \<subseteq> span A` `submodule class_ring (span A) V`] by auto
-  then show ?thesis unfolding vectorspace.fin_dim_def[OF `vectorspace class_ring (span_vs A)`]
+    using  span_li_not_depend(1)[OF \<open>A \<subseteq> span A\<close> \<open>submodule class_ring (span A) V\<close>] by auto
+  then show ?thesis unfolding vectorspace.fin_dim_def[OF \<open>vectorspace class_ring (span_vs A)\<close>]
     using List.finite_set \<open>A \<subseteq> span A\<close> \<open>vectorspace class_ring (vs (span A))\<close>
-    vec_vs vectorspace.carrier_vs_is_self[OF `vectorspace class_ring (span_vs A)`] using assms(1) by auto
+    vec_vs vectorspace.carrier_vs_is_self[OF \<open>vectorspace class_ring (span_vs A)\<close>] using assms(1) by auto
 qed
 
 lemma (in vec_space) fin_dim_span_cols:

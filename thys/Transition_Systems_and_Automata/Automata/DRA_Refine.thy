@@ -1,4 +1,4 @@
-section {* Relations on Deterministic Rabin Automata *}
+section \<open>Relations on Deterministic Rabin Automata\<close>
 
 theory DRA_Refine
 imports

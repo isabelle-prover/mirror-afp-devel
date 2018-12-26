@@ -1,20 +1,20 @@
-section {* Models, Invariants and Refinements *}
+section \<open>Models, Invariants and Refinements\<close>
 
 theory Refinement imports Infra 
 begin
 
 (******************************************************************************)
-subsection {* Specifications, reachability, and behaviours. *}
+subsection \<open>Specifications, reachability, and behaviours.\<close>
 (******************************************************************************)
 
-text {* Transition systems are multi-pointed graphs. *}
+text \<open>Transition systems are multi-pointed graphs.\<close>
 
 record 's TS = 
   init :: "'s set"
   trans :: "('s \<times> 's) set"
 
 
-text {* The inductive set of reachable states. *}
+text \<open>The inductive set of reachable states.\<close>
 
 inductive_set 
   reach ::  "('s, 'a) TS_scheme \<Rightarrow> 's set" 
@@ -26,11 +26,11 @@ where
 (* inductive_cases reach_invert: "t \<in> reach T" *)
 
 
-subsubsection {* Finite behaviours *}
+subsubsection \<open>Finite behaviours\<close>
 (******************************************************************************)
 
-text {* Note that behaviours grow at the head of the list, i.e., the initial 
-state is at the end. *}
+text \<open>Note that behaviours grow at the head of the list, i.e., the initial 
+state is at the end.\<close>
 
 inductive_set 
   beh :: "('s, 'a) TS_scheme \<Rightarrow> ('s list) set"
@@ -43,7 +43,7 @@ where
 inductive_cases beh_non_empty: "s # b \<in> beh T"
 
 
-text {* Behaviours are prefix closed. *}
+text \<open>Behaviours are prefix closed.\<close>
 
 lemma beh_immediate_prefix_closed:
   "s # b \<in> beh T \<Longrightarrow> b \<in> beh T"
@@ -54,7 +54,7 @@ lemma beh_prefix_closed:
 by (induct c, auto dest!: beh_immediate_prefix_closed)
 
 
-text {* States in behaviours are exactly reachable. *}
+text \<open>States in behaviours are exactly reachable.\<close>
 
 lemma beh_in_reach [rule_format]:
   "b \<in> beh T \<Longrightarrow> (\<forall>s \<in> set b. s \<in> reach T)"
@@ -69,7 +69,7 @@ next
   proof -
     from r_trans(3) obtain b b0 b1 where "b \<in> beh T" "b = b1 @ s # b0" by (auto dest: split_list)
     hence "s # b0 \<in> beh T" by (auto intro: beh_prefix_closed)
-    hence "t # s # b0 \<in> beh T" using `(s, t) \<in> trans T`  by auto 
+    hence "t # s # b0 \<in> beh T" using \<open>(s, t) \<in> trans T\<close>  by auto 
     thus ?thesis by - (rule bexI, auto)
   qed
 qed
@@ -77,7 +77,7 @@ qed
 lemma reach_equiv_beh_states: "reach T = (\<Union>b\<in>beh T. set b)"
 by (auto intro!: reach_in_beh beh_in_reach)
 
-text {* Consecutive states in a behavior are connected by the transition relation *}
+text \<open>Consecutive states in a behavior are connected by the transition relation\<close>
 
 lemma beh_consecutive_in_trans:
   assumes "b \<in> beh TS"
@@ -93,10 +93,10 @@ proof-
     by (metis assms(1) beh_non_empty beh_prefix_closed list.distinct(1) list.inject)
 qed
 
-subsubsection {* Specifications, observability, and implementation *} 
+subsubsection \<open>Specifications, observability, and implementation\<close> 
 (******************************************************************************)
 
-text {* Specifications add an observer function to transition systems. *}
+text \<open>Specifications add an observer function to transition systems.\<close>
 
 record ('s, 'o) spec = "'s TS" +
   obs :: "'s \<Rightarrow> 'o" 
@@ -107,7 +107,7 @@ by (safe) (erule beh.induct, auto)+
 lemma reach_obs_upd [simp]: "reach (S(| obs := x |)) = reach S"
 by (safe) (erule reach.induct, auto)+
 
-text {* Observable behaviour and reachability. *}
+text \<open>Observable behaviour and reachability.\<close>
 
 definition 
   obeh :: "('s, 'o) spec \<Rightarrow> ('o list) set" where
@@ -130,10 +130,10 @@ lemma oreach_pi_translation:
 by (auto simp add: oreach_def)
 
 
-text {* A predicate $P$ on the states of a specification is \emph{observable} 
+text \<open>A predicate $P$ on the states of a specification is \emph{observable} 
 if it cannot distinguish between states yielding the same observation. 
 Equivalently, $P$ is observable if it is the inverse image under the 
-observation function of a predicate on observations. *}
+observation function of a predicate on observations.\<close>
 
 definition 
   observable :: "['s \<Rightarrow> 'o, 's set] \<Rightarrow> bool"
@@ -163,9 +163,9 @@ by (unfold observable3_def observable2_def) (auto)
 lemma observable_id [simp]: "observable id P" 
 by (simp add: observable_def)
 
-text {* The set extension of a function @{term "ob"} is the left adjoint of 
+text \<open>The set extension of a function @{term "ob"} is the left adjoint of 
 a Galois connection on the powerset lattices over domain and range of @{term "ob"} 
-where the right adjoint is the inverse image function. *}
+where the right adjoint is the inverse image function.\<close>
 
 lemma image_vimage_adjoints: "(ob`P \<subseteq> Q) = (P \<subseteq> ob-`Q)"
 by auto
@@ -173,8 +173,8 @@ by auto
 declare image_vimage_subset [simp, intro]
 declare vimage_image_subset [simp, intro]
 
-text {* Similar but "reversed" (wrt to adjointness) relationships only hold under
-additional conditions. *}
+text \<open>Similar but "reversed" (wrt to adjointness) relationships only hold under
+additional conditions.\<close>
 
 lemma image_r_vimage_l: "\<lbrakk> Q \<subseteq> ob`P; observable ob P \<rbrakk> \<Longrightarrow> ob-`Q \<subseteq> P"
 by (auto)
@@ -183,7 +183,7 @@ lemma vimage_l_image_r: "\<lbrakk> ob-`Q \<subseteq> P; Q \<subseteq> range ob \
 by (drule image_mono [where f=ob], auto)
 
 
-text {* Internal and external invariants *}
+text \<open>Internal and external invariants\<close>
 
 lemma external_from_internal_invariant: 
   "\<lbrakk> reach S \<subseteq> P; (obs S)`P \<subseteq> Q \<rbrakk>  
@@ -220,14 +220,14 @@ lemma external_equiv_internal_invariant:
 by (rule external_equiv_internal_invariant_vimage) (auto)
 
 
-text {* Our notion of implementation is inclusion of observable behaviours. *}
+text \<open>Our notion of implementation is inclusion of observable behaviours.\<close>
 
 definition 
   implements :: "['p \<Rightarrow> 'o, ('s, 'o) spec, ('t, 'p) spec] \<Rightarrow> bool" where
   "implements pi Sa Sc \<equiv> (map pi)`(obeh Sc) \<subseteq> obeh Sa"
 
 
-text {* Reflexivity and transitivity *}
+text \<open>Reflexivity and transitivity\<close>
 
 lemma implements_refl: "implements id S S"
 by (auto simp add: implements_def)
@@ -239,7 +239,7 @@ by (auto simp add: implements_def map_comp del: subsetI
          dest: image_mono [where f="map pi1"])
 
 
-text {* Preservation of external invariants *}
+text \<open>Preservation of external invariants\<close>
 
 lemma implements_oreach:
   "implements pi Sa Sc \<Longrightarrow> pi`(oreach Sc) \<subseteq> oreach Sa"
@@ -259,7 +259,7 @@ apply (intro vimage_mono external_invariant_preservation, auto)
 done
 
 
-text {* Preservation of internal invariants *}
+text \<open>Preservation of internal invariants\<close>
 
 lemma internal_invariant_translation:
   "\<lbrakk> reach Sa \<subseteq> Pa; Pa \<subseteq> obs Sa -` Qa; pi -` Qa \<subseteq> Q; obs S -` Q \<subseteq> P;
@@ -273,14 +273,14 @@ by (rule external_from_internal_invariant_vimage [
 
 
 (******************************************************************************)
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-text {* First we define Hoare triples over transition relations and then
-we derive proof rules to establish invariants. *}
+text \<open>First we define Hoare triples over transition relations and then
+we derive proof rules to establish invariants.\<close>
 
 
-subsubsection {* Hoare triples *}
+subsubsection \<open>Hoare triples\<close>
 (******************************************************************************)
 
 definition 
@@ -298,7 +298,7 @@ lemma hoareD:
   "\<lbrakk> {I} R {>J}; s \<in> I; (s, s') \<in> R \<rbrakk> \<Longrightarrow> s' \<in> J"
   by(auto simp add: PO_hoare_def)
 
-text {* Some essential facts about Hoare triples. *}
+text \<open>Some essential facts about Hoare triples.\<close>
 
 lemma hoare_conseq_left [intro]:
   "\<lbrakk> {P'} R {> Q}; P \<subseteq> P' \<rbrakk>
@@ -324,7 +324,7 @@ lemma hoare_conj_right [intro!]:
 by (auto simp add: PO_hoare_defs)
 
 
-text {* Special transition relations. *}
+text \<open>Special transition relations.\<close>
 
 lemma hoare_stop [simp, intro!]:
   "{P} {} {> Q}"
@@ -344,7 +344,7 @@ by (auto simp add: PO_hoare_defs)
 
 
 
-subsubsection {* Characterization of reachability *}
+subsubsection \<open>Characterization of reachability\<close>
 (******************************************************************************)
 
 lemma reach_init: "reach T \<subseteq> I \<Longrightarrow> init T \<subseteq> I"
@@ -354,7 +354,7 @@ lemma reach_trans: "reach T \<subseteq> I \<Longrightarrow> {reach T} trans T {>
 by (auto simp add: PO_hoare_defs)
 
 
-text {* Useful consequences. *}
+text \<open>Useful consequences.\<close>
 
 corollary init_reach [iff]: "init T \<subseteq> reach T" 
 by (rule reach_init, simp)
@@ -364,10 +364,10 @@ by (rule reach_trans, simp)
 
 
 
-subsubsection {* Invariant proof rules *}
+subsubsection \<open>Invariant proof rules\<close>
 (******************************************************************************)
 
-text {* Basic proof rule for invariants. *}
+text \<open>Basic proof rule for invariants.\<close>
 
 lemma inv_rule_basic:
   "\<lbrakk> init T \<subseteq> P; {P} (trans T) {> P} \<rbrakk>
@@ -375,8 +375,8 @@ lemma inv_rule_basic:
 by (safe, erule reach.induct, auto simp add: PO_hoare_def)
 
 
-text {* General invariant proof rule. This rule is complete (set 
-@{term "I = reach T"}). *}
+text \<open>General invariant proof rule. This rule is complete (set 
+@{term "I = reach T"}).\<close>
 
 lemma inv_rule:
   "\<lbrakk> init T \<subseteq> I; I \<subseteq> P; {I} (trans T) {> I} \<rbrakk>
@@ -385,7 +385,7 @@ apply (rule subset_trans, auto)              \<comment> \<open>strengthen goal\<
 apply (erule reach.induct, auto simp add: PO_hoare_def)
 done
 
-text {* The following rule is equivalent to the previous one. *}
+text \<open>The following rule is equivalent to the previous one.\<close>
 
 lemma INV_rule:
   "\<lbrakk> init T \<subseteq> I; {I \<inter> reach T} (trans T) {> I} \<rbrakk>
@@ -393,7 +393,7 @@ lemma INV_rule:
 by (safe, erule reach.induct, auto simp add: PO_hoare_defs)
 
 
-text {* Proof of equivalence. *}
+text \<open>Proof of equivalence.\<close>
 
 lemma inv_rule_from_INV_rule:
   "\<lbrakk> init T \<subseteq> I; I \<subseteq> P; {I} (trans T) {> I} \<rbrakk>
@@ -408,8 +408,8 @@ lemma INV_rule_from_inv_rule:
 by (rule_tac I="I \<inter> reach T" in inv_rule, auto)
 
 
-text {* Incremental proof rule for invariants using auxiliary invariant(s). 
-This rule might have become obsolete by addition of $INV\_rule$. *}
+text \<open>Incremental proof rule for invariants using auxiliary invariant(s). 
+This rule might have become obsolete by addition of $INV\_rule$.\<close>
 
 lemma inv_rule_incr:
   "\<lbrakk> init T \<subseteq> I; {I \<inter> J} (trans T) {> I}; reach T \<subseteq> J \<rbrakk>    
@@ -418,19 +418,19 @@ by (rule INV_rule, auto)
 
 
 (******************************************************************************)
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
-text {* Our notion of refinement is simulation. We first define a general
+text \<open>Our notion of refinement is simulation. We first define a general
 notion of relational Hoare tuple, which we then use to define the refinement
 proof obligation.  Finally, we show that observation-consistent refinement 
-of specifications implies the implementation relation between them. *}
+of specifications implies the implementation relation between them.\<close>
 
 
-subsubsection {* Relational Hoare tuples *}
+subsubsection \<open>Relational Hoare tuples\<close>
 (******************************************************************************)
 
-text {* Relational Hoare tuples formalize the following generalized simulation 
+text \<open>Relational Hoare tuples formalize the following generalized simulation 
 diagram:
 
 \begin{verbatim}
@@ -445,7 +445,7 @@ diagram:
 Here, $Ra$ and $Rc$ are the abstract and concrete transition relations, 
 and $pre$ and $post$ are the pre- and post-relations.
 (In the definiton below, the operator @{term "(O)"} stands for relational 
-composition, which is defined as follows: @{thm relcomp_def [no_vars]}.) *}
+composition, which is defined as follows: @{thm relcomp_def [no_vars]}.)\<close>
 
 definition
   PO_rhoare :: 
@@ -457,7 +457,7 @@ where
 lemmas PO_rhoare_defs = PO_rhoare_def relcomp_unfold
 
 
-text {* Facts about relational Hoare tuples. *}
+text \<open>Facts about relational Hoare tuples.\<close>
 
 lemma relhoare_conseq_left [intro]:
   "\<lbrakk> {pre'} Ra, Rc {> post}; pre \<subseteq> pre' \<rbrakk> 
@@ -485,7 +485,7 @@ lemma rel_hoare_skip [iff]: "{R} Id, Id {> R}"
 by (auto simp add: PO_rhoare_def)
 
 
-text {* Reflexivity and transitivity. *}
+text \<open>Reflexivity and transitivity.\<close>
 
 lemma relhoare_refl [simp]: "{Id} R, R {> Id}"
 by (auto simp add: PO_rhoare_defs)
@@ -500,10 +500,10 @@ apply (auto simp add: O_assoc del: subsetI)
 done
 
 
-text {* Conjunction in the post-relation cannot be split in general.  However, 
+text \<open>Conjunction in the post-relation cannot be split in general.  However, 
 here are two useful special cases.  In the first case the abstract transtition 
 relation is deterministic and in the second case one conjunct is a cartesian 
-product of two state predicates.  *}
+product of two state predicates.\<close>
 
 lemma relhoare_conj_right_det:                 
   "\<lbrakk> {pre} Ra, Rc {> post1}; {pre} Ra, Rc {> post2};
@@ -518,7 +518,7 @@ lemma relhoare_conj_right_cartesian [intro]:
 by (force simp add: PO_rhoare_defs PO_hoare_defs Domain_def Range_def)
 
 
-text {* Separate rule for cartesian products. *}
+text \<open>Separate rule for cartesian products.\<close>
 
 corollary relhoare_cartesian:
   "\<lbrakk> {Domain pre} Ra {> I}; {Range pre} Rc {> J};
@@ -527,7 +527,7 @@ corollary relhoare_cartesian:
 by (auto intro: relhoare_conseq_right)
 
 
-text {* Unions of transition relations. *}
+text \<open>Unions of transition relations.\<close>
 
 lemma relhoare_concrete_Un [simp]:
   "{pre} Ra, Rc1 \<union> Rc2 {> post} 
@@ -561,15 +561,15 @@ done
 
 
 
-subsubsection {* Refinement proof obligations *}
+subsubsection \<open>Refinement proof obligations\<close>
 (******************************************************************************)
 
-text {* A transition system refines another one if the initial states and the
+text \<open>A transition system refines another one if the initial states and the
 transitions are refined. 
 Initial state refinement means that for each concrete initial state there is 
 a related abstract one. Transition refinement means that the simulation 
 relation is preserved (as expressed by a relational Hoare tuple). 
-*}
+\<close>
 
 definition 
   PO_refines :: 
@@ -581,8 +581,8 @@ where
   )"
 
 
-text {* Basic refinement rule. This is just an introduction rule for the
-definition. *}
+text \<open>Basic refinement rule. This is just an introduction rule for the
+definition.\<close>
 
 lemma refine_basic:
   "\<lbrakk> init Tc \<subseteq> R``(init Ta); {R} (trans Ta), (trans Tc) {> R} \<rbrakk>
@@ -590,7 +590,7 @@ lemma refine_basic:
 by (simp add: PO_refines_def)
 
 
-text {* The following proof rule uses individual invariants @{term "I"} 
+text \<open>The following proof rule uses individual invariants @{term "I"} 
 and @{term "J"} of the concrete and abstract systems to strengthen the 
 simulation relation $R$. 
 
@@ -600,7 +600,7 @@ Note that the pre-condition of the invariant preservation hypotheses for
 @{term "Domain (R \<inter> UNIV \<times> J)"} and @{term "Range (R \<inter> I \<times> UNIV)"}, 
 respectively.  In particular, the latter predicate may be essential, if a 
 concrete invariant depends on the simulation relation and an abstract invariant, 
-i.e. to "transport" abstract invariants to the concrete system. *}
+i.e. to "transport" abstract invariants to the concrete system.\<close>
 
 lemma refine_init_using_invariants:
   "\<lbrakk> init Tc \<subseteq> R``(init Ta); init Ta \<subseteq> I; init Tc \<subseteq> J \<rbrakk>
@@ -615,7 +615,7 @@ lemma refine_trans_using_invariants:
 by (rule relhoare_conj_right_cartesian) (auto)
 
 
-text {* This is our main rule for refinements. *}
+text \<open>This is our main rule for refinements.\<close>
 
 lemma refine_using_invariants:
   "\<lbrakk> {R \<inter> I \<times> J} (trans Ta), (trans Tc) {> R};
@@ -628,12 +628,12 @@ by (unfold PO_refines_def)
    (intro refine_init_using_invariants refine_trans_using_invariants conjI)
 
 
-subsubsection {* Deriving invariants from refinements *}
+subsubsection \<open>Deriving invariants from refinements\<close>
 (******************************************************************************)
 
-text {* Some invariants can only be proved after the simulation has been 
+text \<open>Some invariants can only be proved after the simulation has been 
 established, because they depend on the simulation relation and some abstract
-invariants.  Here is a rule to derive invariant theorems from the refinement. *}
+invariants.  Here is a rule to derive invariant theorems from the refinement.\<close>
 
 lemma PO_refines_implies_Range_init:
   "PO_refines R Ta Tc \<Longrightarrow> init Tc \<subseteq> Range R"
@@ -649,7 +649,7 @@ by (rule INV_rule)
    (auto intro!: PO_refines_implies_Range_init 
                  PO_refines_implies_Range_trans)
 
-text {* The following rules are more useful in proofs. *}
+text \<open>The following rules are more useful in proofs.\<close>
 
 corollary INV_init_from_refinement: 
   "\<lbrakk> PO_refines R Ta Tc; Range R \<subseteq> I \<rbrakk>
@@ -668,7 +668,7 @@ corollary INV_from_refinement:
   \<Longrightarrow> reach Tc \<subseteq> I"
 by (drule PO_refines_implies_Range_invariant, fast)
 
-subsubsection {* Transfering abstract invariants to concrete systems *}
+subsubsection \<open>Transfering abstract invariants to concrete systems\<close>
 (******************************************************************************)
 
 lemmas hoare_conseq = hoare_conseq_right[OF hoare_conseq_left] for P' R Q'
@@ -738,10 +738,10 @@ lemma abs_INV_transfer:
   shows "reach Tc \<subseteq> R `` I" using PO_refines_implies_R_image_invariant[OF assms(1)] assms(2)
   by(auto)
 
-subsubsection {* Refinement of specifications *}
+subsubsection \<open>Refinement of specifications\<close>
 (******************************************************************************)
 
-text {* Lift relation membership to finite sequences *}
+text \<open>Lift relation membership to finite sequences\<close>
 
 inductive_set 
   seq_lift :: "('s \<times> 't) set \<Rightarrow> ('s list \<times> 't list) set" 
@@ -754,7 +754,7 @@ where
 inductive_cases sl_cons_right_invert: "(ba', t # bc) \<in> seq_lift R" 
 
 
-text {* For each concrete behaviour there is a related abstract one. *}
+text \<open>For each concrete behaviour there is a related abstract one.\<close>
 
 lemma behaviour_refinement:
 assumes "PO_refines R Ta Tc" "bc \<in> beh Tc" 
@@ -770,7 +770,7 @@ next
     from b_trans(2) obtain t c where "t # c \<in> beh Ta" "(t, s) \<in> R" "(t # c, s # b) \<in> seq_lift R"
       by (auto elim!: sl_cons_right_invert)
     moreover
-    from `(t, s) \<in> R` `(s, s') \<in> TS.trans Tc` assms(1) 
+    from \<open>(t, s) \<in> R\<close> \<open>(s, s') \<in> TS.trans Tc\<close> assms(1) 
     obtain t' where "(t, t') \<in> trans Ta" "(t', s') \<in> R" 
       by (auto simp add: PO_refines_def PO_rhoare_def)
     ultimately 
@@ -780,10 +780,10 @@ next
 qed
 
 
-text {* Observation consistency of a relation is defined using a mediator 
+text \<open>Observation consistency of a relation is defined using a mediator 
 function @{term "pi"} to abstract the concrete observation.  This allows us 
 to also refine the observables as we move down a refinement branch.
-*}
+\<close>
 
 definition 
   obs_consistent :: 
@@ -816,7 +816,7 @@ lemma obs_consistent_behaviours:
 by (erule seq_lift.induct) (auto simp add: obs_consistent_def) 
 
 
-text {* Definition of refinement proof obligations. *}
+text \<open>Definition of refinement proof obligations.\<close>
 
 definition 
   refines :: 
@@ -837,7 +837,7 @@ lemma PO_refines_from_refines:
 by (simp add: refines_def)
 
 
-text {* Reflexivity and transitivity of refinement. *}
+text \<open>Reflexivity and transitivity of refinement.\<close>
 
 lemma refinement_reflexive: "refines Id id S S"
 by (auto simp add: refines_defs)
@@ -850,7 +850,7 @@ apply (fastforce dest: Image_mono)
 done
 
 
-text {* Soundness of refinement for proving implementation *}
+text \<open>Soundness of refinement for proving implementation\<close>
 
 lemma observable_behaviour_refinement:
   "\<lbrakk> refines R pi Sa Sc; bc \<in> obeh Sc \<rbrakk> \<Longrightarrow> map pi bc \<in> obeh Sa"
@@ -863,7 +863,7 @@ by (auto simp add: implements_def
          elim!: observable_behaviour_refinement)
 
 
-text {* Extended versions of proof rules including observations *}
+text \<open>Extended versions of proof rules including observations\<close>
 
 lemmas Refinement_basic = refine_basic [THEN refinesI]
 lemmas Refinement_using_invariants = refine_using_invariants [THEN refinesI]

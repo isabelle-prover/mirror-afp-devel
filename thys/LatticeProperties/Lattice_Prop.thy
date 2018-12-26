@@ -1,4 +1,4 @@
-section{* Simplification Lemmas for Lattices *}
+section\<open>Simplification Lemmas for Lattices\<close>
 
 (*
     Author: Viorel Preoteasa
@@ -8,10 +8,10 @@ theory Lattice_Prop
 imports Main
 begin
 
-text{*
+text\<open>
 This theory introduces some simplification lemmas
 for semilattices and lattices
-*}
+\<close>
 
 notation 
    inf (infixl "\<sqinter>" 70) and

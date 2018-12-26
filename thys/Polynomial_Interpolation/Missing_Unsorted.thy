@@ -328,8 +328,8 @@ proof -
     by (simp add: coprime_dvd_mult_left_iff) 
   then obtain z' where ybz: "y' = b * z'" unfolding dvd_def by auto
   from id[unfolded y' this] have y: "y = b * (z * z')" by auto
-  with `y \<noteq> 0` have zz: "z * z' \<noteq> 0" by auto
-  from quotient_of_div[OF q] `y \<noteq> 0` `b \<noteq> 0` 
+  with \<open>y \<noteq> 0\<close> have zz: "z * z' \<noteq> 0" by auto
+  from quotient_of_div[OF q] \<open>y \<noteq> 0\<close> \<open>b \<noteq> 0\<close> 
   have "?r x * ?r b = ?r y * ?r a" by (auto simp: field_simps)
   hence id': "x * b = y * a" unfolding of_int_mult[symmetric] by linarith
   from this[unfolded y] b have x: "x = a * (z * z')" by auto
@@ -379,14 +379,14 @@ next
     with x sgn have "sgn y = -1" by simp
     hence "y < 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
     show ?thesis
-      by (rule inverse_le_iff_le_neg[OF True `y < 0`])
+      by (rule inverse_le_iff_le_neg[OF True \<open>y < 0\<close>])
   next
     case False
     with x have x: "x > 0" by auto
     with sgn have "sgn y = 1" by auto
     hence "y > 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
     show ?thesis
-      by (rule inverse_le_iff_le[OF x `y > 0`])
+      by (rule inverse_le_iff_le[OF x \<open>y > 0\<close>])
   qed
 qed
 
@@ -615,7 +615,7 @@ lemma unit_mult_left_cancel: "a dvd 1 \<Longrightarrow> a * b = a * c \<longleft
 lemma unit_mult_right_cancel: "a dvd 1 \<Longrightarrow> b * a = c * a \<longleftrightarrow> b = c"
   using unit_mult_left_cancel [of a b c] by (auto simp add: ac_simps)
 
-text {* New parts from here *}
+text \<open>New parts from here\<close>
 
 lemma irreducible_multD:
   assumes l: "irreducible (a*b)"

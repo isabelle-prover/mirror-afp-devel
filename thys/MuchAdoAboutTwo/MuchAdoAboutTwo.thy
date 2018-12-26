@@ -4,7 +4,7 @@
 *)
 
 
-section {* Much Ado about Two *}
+section \<open>Much Ado about Two\<close>
 
 (*<*)
 theory MuchAdoAboutTwo
@@ -13,7 +13,7 @@ begin
 (*>*)
 
 
-text {*
+text \<open>
 
 Due to Donald E. Knuth, it is known for some time that certain sorting
 functions for lists of arbitrary types can be proved correct by only showing
@@ -31,16 +31,16 @@ There are several solutions which optimise this computation, and an
 obvious question is to ask whether these solutions are correct.
 One way to answer this question is given in \cite{MuchAdoAboutTwo}.
 There, a ``0-1-2-principle'' is proved which relates an unspecified solution
-of the parallel prefix computation, expressed as a function @{text candidate},
-with @{text scanl1}, a functional representation of the parallel prefix
+of the parallel prefix computation, expressed as a function \<open>candidate\<close>,
+with \<open>scanl1\<close>, a functional representation of the parallel prefix
 computation. The essence proved in the mentioned paper is as follows:
-If @{text candidate} and @{text scanl1} behave identical on all lists over
-a type which has three elements, then @{text candidate} is semantically
-equivalent to @{text scanl1}, that is, @{text candidate} is a correct solution
+If \<open>candidate\<close> and \<open>scanl1\<close> behave identical on all lists over
+a type which has three elements, then \<open>candidate\<close> is semantically
+equivalent to \<open>scanl1\<close>, that is, \<open>candidate\<close> is a correct solution
 of the parallel prefix computation.
 
 Although it seems that nearly nothing is known about the function
-@{text candidate}, it turns out that the type of @{text candidate} already
+\<open>candidate\<close>, it turns out that the type of \<open>candidate\<close> already
 suffices for the proof of the paper's result. The key is relational
 parametricity \cite{TypesAbstractionsAndParametricPolymorphism} in the form of
 a free theorem \cite{TheoremsForFree}. This, some rewriting and a few 
@@ -75,22 +75,22 @@ proofs. This forms a major part of this article (see Section 6).
 
 \item Instead of integers, we restrict ourselves to natural numbers. Thus,
 several conditions can be simplified since every natural number is greater
-than or equal to @{text 0}. This decision has no further influence on the 
+than or equal to \<open>0\<close>. This decision has no further influence on the 
 proofs because they never consider negative integers.
 
 \item Mainly due to differences between Haskell and Isabelle, certain notations
 are different here compared to the original paper. List concatenation is
-denoted by @{text @} instead of $++$, and in writing down intervals, we use
-@{text "[0..<k + 1]"} instead of @{text "[0..k]"}. Moreover, we write @{text f}
-instead of $\oplus$ and @{text g} instead of $\otimes$. Functions mapping
+denoted by \<open>@\<close> instead of $++$, and in writing down intervals, we use
+\<open>[0..<k + 1]\<close> instead of \<open>[0..k]\<close>. Moreover, we write \<open>f\<close>
+instead of $\oplus$ and \<open>g\<close> instead of $\otimes$. Functions mapping
 an element of the three-valued type to an arbitrary type are denoted by
-@{text h}.
+\<open>h\<close>.
 
 \end{itemize}
 
 Whenever we use lemmas from already existing Isabelle theories, we qualify
-them by their theory name. For example, instead of @{text map_map}, we
-write @{text List.map_map} to point out that this lemma is taken from
+them by their theory name. For example, instead of \<open>map_map\<close>, we
+write \<open>List.map_map\<close> to point out that this lemma is taken from
 Isabelle's list theory.
 
 
@@ -101,8 +101,8 @@ original paper. The items below follow the structure of the original paper
 needed to be solved in formalising the original paper.
 
 \begin{itemize}
-\item Introductions of several list functions (e.g. @{text length},
-@{text map}, @{text take}) are dropped. They exist already in Isabelle's list
+\item Introductions of several list functions (e.g. \<open>length\<close>,
+\<open>map\<close>, \<open>take\<close>) are dropped. They exist already in Isabelle's list
 theory and are be considered familiar to the reader.
 
 \item The free theorem given in Lemma 1 of the original paper is not sufficient
@@ -159,13 +159,13 @@ Isabelle's list datatype.
 \end{itemize}
 
 
-*}
+\<close>
 
 
 
 
 
-section {* Basic definitions *}
+section \<open>Basic definitions\<close>
 
 
 
@@ -179,39 +179,39 @@ where
                      [1..<length xs + 1]"
 
 
-text {*
+text \<open>
 The original paper further relies on associative functions. Thus, we define
 another predicate to be able to express this condition:
-*}
+\<close>
 
 definition
   "associative f \<equiv> (\<forall>x y z. f x (f y z) = f (f x y) z)"
 
 
-text {*
+text \<open>
 The following constant symbols represents our unspecified function. We want to
-show that this function is semantically equivalent to @{text scanl1}, provided
+show that this function is semantically equivalent to \<open>scanl1\<close>, provided
 that the first argument is an associative function.
-*}
+\<close>
 
 consts 
   candidate :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> 'a list \<Rightarrow> 'a list"
 
 
-text {* 
-With the final theorem, it suffices to show that @{text candidate} behaves like
-@{text scanl1} on all lists of the following type, to conclude that 
-@{text canditate} is semantically equivalent to @{text scanl1}.
- *}
+text \<open>
+With the final theorem, it suffices to show that \<open>candidate\<close> behaves like
+\<open>scanl1\<close> on all lists of the following type, to conclude that 
+\<open>canditate\<close> is semantically equivalent to \<open>scanl1\<close>.
+\<close>
 
 datatype three = Zero | One | Two
 
 
 
-text {*
+text \<open>
 Although most of the functions mentioned in the original paper already exist
 in Isabelle's list theory, we still need to define two more functions:
-*}
+\<close>
 
 fun wrap :: "'a \<Rightarrow> 'a list"
 where
@@ -225,15 +225,15 @@ where
 
 
 
-section {* A Free Theorem *}
+section \<open>A Free Theorem\<close>
 
-text {* 
-The key to proof the final theorem is the following free theorem \cite{TypesAbstractionsAndParametricPolymorphism,TheoremsForFree} of @{text candidate}. 
+text \<open>
+The key to proof the final theorem is the following free theorem \cite{TypesAbstractionsAndParametricPolymorphism,TheoremsForFree} of \<open>candidate\<close>. 
 Since there is no proof possible without specifying the underlying
 (functional) language (which would be beyond the scope of this work),
 this lemma is expected to hold. As a consequence, all following lemmas and also
 the final theorem only hold under this provision.
-*}
+\<close>
 
 axiomatization where
   candidate_free_theorem:
@@ -241,18 +241,18 @@ axiomatization where
 
 
 
-text {*
+text \<open>
 In what follows in this section, the previous lemma is specialised to a lemma 
 for non-empty lists. More precisely, we want to restrict the above assumption
 to be applicable for non-empty lists. This is already possible without
 modifications when having a list datatype which does not allow for empty lists.
 However, before being able to also use Isabelle's list datatype, further
-conditions on @{text f} and @{text zs} are necessary.
+conditions on \<open>f\<close> and \<open>zs\<close> are necessary.
 
 To prove the derived lemma, we first introduce a datatype for non-empty lists,
 and we furthermore define conversion functions to map the new datatype on
 Isabelle lists and back.
-*}
+\<close>
 
 datatype 'a nel 
   = NE_One 'a 
@@ -270,9 +270,9 @@ where
                             | (_ # _) \<Rightarrow> NE_Cons x (l2n xs))"
 
 
-text {*
+text \<open>
 The following results relate Isabelle lists and non-empty lists:
-*}
+\<close>
 
 lemma non_empty_n2l: "n2l xs \<noteq> []"
 by (cases xs, auto)
@@ -308,11 +308,11 @@ next
 qed
 
 
-text {*
+text \<open>
 Based on the previous lemmas, we can state and proof a specialised version
-of @{text candidate}'s free theorem, suitable for our setting as explained 
+of \<open>candidate\<close>'s free theorem, suitable for our setting as explained 
 before.
-*}
+\<close>
 
 lemma Lemma_1:
   assumes A1: "\<And>(x::'a list) (y::'a list). 
@@ -411,12 +411,12 @@ qed
 
 
 
-section {* Useful lemmas *}
+section \<open>Useful lemmas\<close>
 
-text {*
+text \<open>
 In this section, we state and proof several lemmas, which neither occur in the
 original paper nor in Isabelle's libraries.
-*}
+\<close>
 
 lemma upt_map_Suc:
   "k > 0 \<Longrightarrow> [0..<k + 1] = 0 # map Suc [0..<k]"
@@ -522,16 +522,16 @@ qed
 
 
 
-section {* Preparatory Material *}
+section \<open>Preparatory Material\<close>
 
-text {*
+text \<open>
 In the original paper, the following lemmas L1 to L8 are given without a proof,
 although it is hinted there that most of them follow from parametricity
 properties \cite{TypesAbstractionsAndParametricPolymorphism,TheoremsForFree}.
 Alternatively, most of them can be shown by induction over lists.
 However, since we are using Isabelle's list datatype, we rely on already
 existing results.
-*}
+\<close>
 
 lemma L1: "map g (map f xs) = map (g \<circ> f) xs"
 using List.map_map by auto
@@ -577,11 +577,11 @@ next
 qed
 
 
-text {* 
-In Isabelle's list theory, a similar result for @{text foldl} already exists.
-Therefore, it is easy to prove the following lemma for @{text foldl1}.
+text \<open>
+In Isabelle's list theory, a similar result for \<open>foldl\<close> already exists.
+Therefore, it is easy to prove the following lemma for \<open>foldl1\<close>.
 Note that this lemma does not occur in the original paper.
-*}
+\<close>
 
 lemma foldl1_append:
   assumes "xs \<noteq> []"
@@ -598,10 +598,10 @@ proof -
 qed
 
 
-text {* 
+text \<open>
 This is a special induction scheme suitable for proving L8. It is not mentioned
 in the original paper.
-*}
+\<close>
 
 lemma foldl1_induct':
   assumes "\<And>f x. P f [x]"
@@ -701,10 +701,10 @@ next
 qed
 
 
-text {*
+text \<open>
 The next lemma is applied in several following proofs whenever the equivalence
 of two lists is shown.
-*}
+\<close>
 
 lemma Lemma_2:
   assumes "length xs = length ys"
@@ -714,11 +714,11 @@ using assms by (auto simp: List.list_eq_iff_nth_eq)
 
 
 
-text {*
+text \<open>
 In the original paper, this lemma and its proof appear inside of Lemma 3.
 However, this property will be useful also in later proofs and is thus 
 separated.
-*}
+\<close>
 
 lemma foldl1_map:
   assumes "associative f"
@@ -779,15 +779,15 @@ qed
 
 
 
-section {* Proving Proposition 1 *}
+section \<open>Proving Proposition 1\<close>
 
 
-subsection {* Definitions of Lemma 4 *}
+subsection \<open>Definitions of Lemma 4\<close>
 
-text {* 
+text \<open>
 In the same way as in the original paper, the following two functions are 
 defined:
-*}
+\<close>
 
 fun f1 :: "three \<Rightarrow> three \<Rightarrow> three"
 where
@@ -802,9 +802,9 @@ where
 | "f2 x Two  = Two"
 
 
-text {*
+text \<open>
 Both functions are associative as is proved by case analysis:
-*}
+\<close>
 
 lemma f1_assoc: "associative f1"
 unfolding associative_def proof auto
@@ -828,11 +828,11 @@ unfolding associative_def proof auto
 qed
 
 
-text {*
+text \<open>
 Next, we define two other functions, again according to the original paper.
-Note that @{text h1} has an extra parameter @{text k} which is only implicit in
+Note that \<open>h1\<close> has an extra parameter \<open>k\<close> which is only implicit in
 the original paper.
-*}
+\<close>
 
 fun h1 :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> three"
 where
@@ -848,12 +848,12 @@ where
 
 
 
-subsection {* Figures and Proofs *}
+subsection \<open>Figures and Proofs\<close>
 
-text {*
+text \<open>
 In the original paper, this lemma is depicted in (and proved by) Figure~2.
 Therefore, it carries this unusual name here.
-*}
+\<close>
 
 lemma Figure_2: 
   assumes "i \<le> k"
@@ -950,10 +950,10 @@ qed
 
 
 
-text {*
+text \<open>
 In the original paper, this lemma is depicted in (and proved by) Figure~3.
 Therefore, it carries this unusual name here.
-*}
+\<close>
 
 lemma Figure_3: 
   assumes "i < k"
@@ -1062,11 +1062,11 @@ qed
 
 
 
-text {*
+text \<open>
 Counterparts of the following two lemmas are shown in the proof of Lemma 4 in
 the original paper. Since here, the proof of Lemma 4 is seperated in several
 smaller lemmas, also these two properties are given separately.
-*}
+\<close>
 
 lemma L9:
   assumes "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) h. associative f 
@@ -1085,11 +1085,11 @@ using assms and f2_assoc and Figure_3 by auto
 
 
 
-text {*
+text \<open>
 In the original paper, this lemma is depicted in (and proved by) Figure~4.
 Therefore, it carries this unusual name here. This lemma expresses that every
-@{text "i \<le> k"} is contained in @{text js} at least once.
-*}
+\<open>i \<le> k\<close> is contained in \<open>js\<close> at least once.
+\<close>
 
 lemma Figure_4:
   assumes "foldl1 f1 (map (h1 k i) js) = One"
@@ -1139,11 +1139,11 @@ qed
 
 
 
-text {*
+text \<open>
 In the original paper, this lemma is depicted in (and proved by) Figure~5.
 Therefore, it carries this unusual name here. This lemma expresses that every
-@{text "i \<le> k"} is contained in @{text js} at most once.
-*}
+\<open>i \<le> k\<close> is contained in \<open>js\<close> at most once.
+\<close>
 
 lemma Figure_5:
   assumes "foldl1 f1 (map (h1 k i) js) = One"
@@ -1204,11 +1204,11 @@ qed
 
 
 
-text {*
+text \<open>
 In the original paper, this lemma is depicted in (and proved by) Figure~6.
 Therefore, it carries this unusual name here. This lemma expresses that
-@{text js} contains only elements of @{text "[0..<k + 1]"}.
-*}
+\<open>js\<close> contains only elements of \<open>[0..<k + 1]\<close>.
+\<close>
 
 lemma Figure_6:
   assumes "\<And>i. i \<le> k \<Longrightarrow> foldl1 f1 (map (h1 k i) js) = One"
@@ -1254,11 +1254,11 @@ qed
 
 
 
-text {*
+text \<open>
 In the original paper, this lemma is depicted in (and proved by) Figure~7.
 Therefore, it carries this unusual name here. This lemma expresses that every
-@{text "i \<le> k"} in @{text js} is eventually followed by @{text "i + 1"}.
-*}
+\<open>i \<le> k\<close> in \<open>js\<close> is eventually followed by \<open>i + 1\<close>.
+\<close>
 
 lemma Figure_7:
   assumes "foldl1 f2 (map (h2 i) js) = Two"
@@ -1365,23 +1365,23 @@ qed
   
 
 
-subsection {* Permutations and Lemma 4 *}
+subsection \<open>Permutations and Lemma 4\<close>
 
-text {*
+text \<open>
 In the original paper, the argumentation goes as follows:
-From @{text Figure_4} and @{text Figure_5} we can show that @{text js}
-contains every @{text "i \<le> k"} exactly once, and from @{text Figure_6} we can
-furthermore show that @{text js} contains no other elements. Thus, @{text js}
-must be a permutation of @{text "[0..<k + 1]"}.
+From \<open>Figure_4\<close> and \<open>Figure_5\<close> we can show that \<open>js\<close>
+contains every \<open>i \<le> k\<close> exactly once, and from \<open>Figure_6\<close> we can
+furthermore show that \<open>js\<close> contains no other elements. Thus, \<open>js\<close>
+must be a permutation of \<open>[0..<k + 1]\<close>.
 
 Here, however, the argumentation is different, because we want to use already
-existing results. Therefore, we show first, that the sets of @{text js} and
-@{text "[0..<k + 1]"} are equal using the results of @{text Figure_4} and
-@{text Figure_6}. Second, we show that @{text js} is a distinct list, i.e. no
-element occurs twice in @{text js}. Since also @{text "[0..<k + 1]"} is
-distinct, the multisets of @{text js} and @{text "[0..<k + 1]"} are equal,
+existing results. Therefore, we show first, that the sets of \<open>js\<close> and
+\<open>[0..<k + 1]\<close> are equal using the results of \<open>Figure_4\<close> and
+\<open>Figure_6\<close>. Second, we show that \<open>js\<close> is a distinct list, i.e. no
+element occurs twice in \<open>js\<close>. Since also \<open>[0..<k + 1]\<close> is
+distinct, the multisets of \<open>js\<close> and \<open>[0..<k + 1]\<close> are equal,
 and therefore, both lists are permutations.
-*}
+\<close>
 
 lemma js_is_a_permutation:
   assumes A1: "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) h. associative f
@@ -1442,13 +1442,13 @@ qed
 
 
 
-text {*
-The result of @{text Figure_7} is too specific. Instead of having that every
-@{text i} is eventually followed by @{text "i + 1"}, it more useful to know
-that every @{text i} is followed by all @{text "i + r"}, where 
-@{text "r > 0"}. This result follows easily by induction from 
-@{text Figure_7}.
-*}
+text \<open>
+The result of \<open>Figure_7\<close> is too specific. Instead of having that every
+\<open>i\<close> is eventually followed by \<open>i + 1\<close>, it more useful to know
+that every \<open>i\<close> is followed by all \<open>i + r\<close>, where 
+\<open>r > 0\<close>. This result follows easily by induction from 
+\<open>Figure_7\<close>.
+\<close>
 
 lemma Figure_7_trans:
   assumes A1: "\<And>i xs ys. \<lbrakk> i < k ; js = xs @ ys ; xs \<noteq> [] ; i = last xs \<rbrakk>
@@ -1490,11 +1490,11 @@ qed
 
 
 
-text {*
-Since we want to use Lemma @{text partitions_sorted} to show that @{text js}
+text \<open>
+Since we want to use Lemma \<open>partitions_sorted\<close> to show that \<open>js\<close>
 is sorted, we need yet another result which can be obtained using the
 previous lemma and some further argumentation:
-*}
+\<close>
 
 lemma js_partition_order:
   assumes A1: "js <~~> [0..<k + 1]"
@@ -1543,11 +1543,11 @@ qed
 
 
 
-text {*
-With the help of the previous lemma, we show now that @{text js} equals
-@{text "[0..<k + 1]"}, if both lists are permutations and every @{text i} is
-eventually followed by @{text "i + 1"} in @{text js}.
-*}
+text \<open>
+With the help of the previous lemma, we show now that \<open>js\<close> equals
+\<open>[0..<k + 1]\<close>, if both lists are permutations and every \<open>i\<close> is
+eventually followed by \<open>i + 1\<close> in \<open>js\<close>.
+\<close>
 
 lemma js_equals_upt_k:
   assumes A1: "js <~~> [0..<k + 1]"
@@ -1572,9 +1572,9 @@ qed
 
 
 
-text {*
+text \<open>
 From all the work done before, we conclude now Lemma 4:
-*}
+\<close>
 
 lemma Lemma_4:
   assumes "\<And>(f :: three \<Rightarrow> three \<Rightarrow> three) h. associative f  
@@ -1592,12 +1592,12 @@ qed
 
 
 
-subsection {* Lemma 5 *}
+subsection \<open>Lemma 5\<close>
 
-text {* 
+text \<open>
 This lemma is a lifting of Lemma 4 to the overall computation of 
-@{text scanl1}. Its proof follows closely the one given in the original paper.
-*}
+\<open>scanl1\<close>. Its proof follows closely the one given in the original paper.
+\<close>
 
 lemma Lemma_5:
   assumes "\<And>(f :: three \<Rightarrow> three \<Rightarrow> three) h. associative f
@@ -1709,18 +1709,18 @@ qed
 
 
 
-subsection {* Proposition 1 *}
+subsection \<open>Proposition 1\<close>
 
-text {*
+text \<open>
 In the original paper, only non-empty lists where considered, whereas here,
 the used list datatype allows also for empty lists. Therefore, we need to 
 exclude non-empty lists to have a similar setting as in the original paper.
 
 In the case of Proposition 1, we need to show that every list contained in
-the result of @{text "candidate (@) (map wrap [0..<n + 1])"} is non-empty.
-The idea is to interpret empty lists by the value @{text Zero} and non-empty
-lists by the value @{text One}, and to apply the assumptions.
-*}
+the result of \<open>candidate (@) (map wrap [0..<n + 1])\<close> is non-empty.
+The idea is to interpret empty lists by the value \<open>Zero\<close> and non-empty
+lists by the value \<open>One\<close>, and to apply the assumptions.
+\<close>
 
 lemma non_empty_candidate_results:
   assumes "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) (xs :: three list). 
@@ -1839,17 +1839,17 @@ qed
 
 
 
-text {*
+text \<open>
 Proposition 1 is very similar to the corresponding one shown in the original
 paper except of a slight modification due to the choice of using Isabelle's
 list datatype.
 
-Strictly speaking, the requirement that @{text xs} must be non-empty in the
+Strictly speaking, the requirement that \<open>xs\<close> must be non-empty in the
 assumptions of Proposition 1 is not necessary, because only non-empty lists
 are applied in the proof. However, the additional requirement eases the proof
 obligations of the final theorem, i.e. this additions allows more (or easier)
 applications of the final theorem.
-*}
+\<close>
 
 lemma Proposition_1:
   assumes "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) (xs :: three list). 
@@ -1885,17 +1885,17 @@ qed
 
 
 
-section {* Proving Proposition 2 *}
+section \<open>Proving Proposition 2\<close>
 
 
-text {* 
+text \<open>
 Before proving Proposition 2, a non-trivial step of that proof is shown first.
 In the original paper, the argumentation simply applies L7 and the definition
-of @{text map} and @{text "[0..<k + 1]"}. However, since, L7 requires that
-@{text k} must be less than @{text "length [0..<length xs]"} and this does
-not simply follow for the bound occurrence of @{text k}, a more complicated
+of \<open>map\<close> and \<open>[0..<k + 1]\<close>. However, since, L7 requires that
+\<open>k\<close> must be less than \<open>length [0..<length xs]\<close> and this does
+not simply follow for the bound occurrence of \<open>k\<close>, a more complicated
 proof is necessary. Here, it is shown based on Lemma 2.
-*}
+\<close>
       
 lemma Prop_2_step_L7:
   "map (\<lambda>k. foldl1 g (map (nth xs) [0..<k + 1])) [0..<length xs]
@@ -1944,12 +1944,12 @@ qed
 
 
 
-text {*
+text \<open>
 Compared to the original paper, here, Proposition 2 has the additional 
-assumption that @{text xs} is non-empty. The proof, however, is identical
+assumption that \<open>xs\<close> is non-empty. The proof, however, is identical
 to the the one given in the original paper, except for the non-trivial step
 shown before.
-*}
+\<close>
 
 lemma Proposition_2:
   assumes A1: "\<And> n. candidate (@) (map wrap [0..<n + 1]) = ups n"
@@ -2024,12 +2024,12 @@ qed
 
 
 
-section {* The Final Result *}
+section \<open>The Final Result\<close>
 
-text {* 
+text \<open>
 Finally, we the main result follows directly from Proposition 1 and 
 Proposition 2.
-*}
+\<close>
 
 theorem The_0_1_2_Principle:
   assumes "\<And> (f :: three \<Rightarrow> three \<Rightarrow> three) (xs :: three list). 
@@ -2043,13 +2043,13 @@ using Proposition_1 Proposition_2 and assms by blast
 
 
 
-text {*
+text \<open>
 \section*{Acknowledgments}
 
 I thank Janis Voigtl\"ander for sharing a draft of his paper before its
 publication with me.
 
-*}
+\<close>
 
 
 

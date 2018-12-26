@@ -2,7 +2,7 @@ theory SINVAR_BLPbasic
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant Basic Bell LaPadula  *}
+subsection \<open>SecurityInvariant Basic Bell LaPadula\<close>
 
 type_synonym security_level = nat
 
@@ -12,15 +12,15 @@ definition default_node_properties :: "security_level"
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> security_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (nP e1) \<le> (nP e2))"
 
-text{* What we call a @{typ security_level} is also referred to as security label
+text\<open>What we call a @{typ security_level} is also referred to as security label
 (or security clearance of subjects and classification of objects) in the literature. 
 The lowest security level is @{term "0::nat"}, which can be understood as unclassified.
 Consequently, 1 = confidential, 2 = secret, 3 = topSecret, .... 
-The total order of the security levels corresponds to the total order of the natural numbers @{text \<le>}. 
+The total order of the security levels corresponds to the total order of the natural numbers \<open>\<le>\<close>. 
 It is important that there is smallest security level (i.e. @{const default_node_properties}), 
 otherwise, a unique and secure default parameter could not exist. 
 Hence, it is not possible to extend the security levels to @{typ int} to model unlimited ``un-confidentialness''. 
-*}
+\<close>
 
 definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
 
@@ -86,7 +86,7 @@ done
 *)
  
 
-subsubsection {*ENF*}
+subsubsection \<open>ENF\<close>
   lemma zero_default_candidate: "\<And> nP e1 e2. \<not> ((\<le>)::security_level \<Rightarrow> security_level \<Rightarrow> bool) (nP e1) (nP e2) \<Longrightarrow> \<not> (\<le>) (nP e1) 0"
     by simp_all
   lemma zero_default_candidate_rule: "\<And> (nP::('v \<Rightarrow> security_level)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> (nP e1) \<le> 0"
@@ -134,8 +134,8 @@ subsubsection {*ENF*}
   unfolding receiver_violation_def by unfold_locales
 
 
-text{*Alternate definition of the @{const sinvar}:
-      For all reachable nodes, the security level is higher*}
+text\<open>Alternate definition of the @{const sinvar}:
+      For all reachable nodes, the security level is higher\<close>
 lemma sinvar_BLPbasic_tancl:
   "wf_graph G \<Longrightarrow> sinvar G nP = (\<forall> v \<in> nodes G. \<forall>v' \<in> succ_tran G v. (nP v) \<le> (nP v'))"
   proof(unfold sinvar.simps, rule iffI, goal_cases)

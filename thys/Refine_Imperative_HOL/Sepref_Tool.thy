@@ -27,7 +27,7 @@ lemma TRANS_init: "\<lbrakk> hn_refine \<Gamma> c \<Gamma>' R a; CNV c c' \<rbra
 
 lemma infer_post_triv: "P \<Longrightarrow>\<^sub>t P" by (rule entt_refl)
 
-ML {*
+ML \<open>
   structure Sepref = struct
     structure sepref_preproc_simps = Named_Thms (
       val name = @{binding sepref_preproc}
@@ -129,7 +129,7 @@ ML {*
       #> sepref_opt_simps.setup 
       #> sepref_opt_simps2.setup
   end
-*}
+\<close>
 
 setup Sepref.setup
 
@@ -156,7 +156,7 @@ text \<open>We allow the synthesized function to contain tagged function applica
 lemmas [sepref_opt_simps] = Autoref_Tagging.APP_def
 
 
-text {* Revert case-pulling done by monadify *}
+text \<open>Revert case-pulling done by monadify\<close>
 lemma case_prod_return_opt[sepref_opt_simps]:
   "case_prod (\<lambda>a b. return (f a b)) p = return (case_prod f p)"
   by (simp split: prod.split)
@@ -172,7 +172,7 @@ lemma case_list_return[sepref_opt_simps]:
 lemma if_return[sepref_opt_simps]:
   "If b (return t) (return e) = return (If b t e)" by simp
 
-text {* In some cases, pushing in the returns is more convenient *}
+text \<open>In some cases, pushing in the returns is more convenient\<close>
 lemma case_prod_opt2[sepref_opt_simps2]:
   "(\<lambda>x. return (case x of (a,b) \<Rightarrow> f a b)) 
   = (\<lambda>(a,b). return (f a b))"
@@ -346,7 +346,7 @@ subsubsection \<open>Precision Proofs\<close>
   text \<open>
     We provide a method that tries to extract equalities from
     an assumption of the form 
-    @{text "_ \<Turnstile> P1 * \<dots> * Pn \<and>\<^sub>A P1' * \<dots> * Pn'"},
+    \<open>_ \<Turnstile> P1 * \<dots> * Pn \<and>\<^sub>A P1' * \<dots> * Pn'\<close>,
     if it find a precision rule for Pi and Pi'.
     The precision rules are extracted from the constraint rules.
 
@@ -399,7 +399,7 @@ subsubsection \<open>Precision Proofs\<close>
     shows "a=a'"
     using assms unfolding precise_def prec_spec_def CONSTRAINT_def by blast
   
-  ML {*
+  ML \<open>
     fun prec_extract_eqs_tac ctxt = let
       fun is_precise thm = case Thm.concl_of thm of
         @{mpat "Trueprop (precise _)"} => true
@@ -420,7 +420,7 @@ subsubsection \<open>Precision Proofs\<close>
         THEN' REPEAT o (dresolve_tac ctxt thms)
         THEN' REPEAT o (eresolve_tac ctxt thin_prec_spec_rls )
     in tac end    
-  *}  
+\<close>  
 
   method_setup prec_extract_eqs = \<open>SIMPLE_METHOD_NOPARAM' prec_extract_eqs_tac\<close>
     \<open>Extract equalities from "_ |= _ & _" assumption, using precision rules\<close>

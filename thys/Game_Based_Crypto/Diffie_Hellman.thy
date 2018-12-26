@@ -8,7 +8,7 @@ theory Diffie_Hellman imports
   CryptHOL.Computational_Model
 begin
 
-subsection {* The DDH game *}
+subsection \<open>The DDH game\<close>
 
 locale ddh =
   fixes \<G> :: "'grp cyclic_group" (structure)
@@ -49,7 +49,7 @@ by(auto simp add: lossless_def ddh_1_def split_def Let_def)
 
 end
 
-subsection {* The LCDH game *}
+subsection \<open>The LCDH game\<close>
 
 locale lcdh =
   fixes \<G> :: "'grp cyclic_group" (structure)

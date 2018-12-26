@@ -422,7 +422,7 @@ lemma one_smult_vec [simp]:
 lemma index_finsum_vec: assumes "finite F" and i: "i < n"
   and vs: "vs \<in> F \<rightarrow> carrier_vec n"
   shows "finsum_vec TYPE('a :: comm_monoid_add) n vs F $ i = sum (\<lambda> f. vs f $ i) F"
-  using `finite F` vs
+  using \<open>finite F\<close> vs
 proof (induct F)
   case (insert f F)
   hence IH: "finsum_vec TYPE('a) n vs F $ i = (\<Sum>f\<in>F. vs f $ i)"
@@ -2274,7 +2274,7 @@ lemma vec_eq_iff: "(x = y) = (dim_vec x = dim_vec y \<and> (\<forall> i < dim_ve
 proof
   assume ?r
   show ?l
-    by (rule eq_vecI, insert `?r`, auto)
+    by (rule eq_vecI, insert \<open>?r\<close>, auto)
 qed simp
 
 lemma mat_eq_iff: "(x = y) = (dim_row x = dim_row y \<and> dim_col x = dim_col y \<and>
@@ -2282,7 +2282,7 @@ lemma mat_eq_iff: "(x = y) = (dim_row x = dim_row y \<and> dim_col x = dim_col y
 proof
   assume ?r
   show ?l
-    by (rule eq_matI, insert `?r`, auto)
+    by (rule eq_matI, insert \<open>?r\<close>, auto)
 qed simp
 
 lemma (in inj_semiring_hom) vec_hom_zero_iff[simp]: "(vec\<^sub>h x = 0\<^sub>v n) = (x = 0\<^sub>v n)"

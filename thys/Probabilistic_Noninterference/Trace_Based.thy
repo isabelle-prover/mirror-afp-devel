@@ -1,4 +1,4 @@
-section{* Trace-Based Noninterference *}
+section\<open>Trace-Based Noninterference\<close>
 
 theory Trace_Based
   imports Resumption_Based
@@ -6,7 +6,7 @@ begin
 
 (* This contains the development leading to the paper's Prop. 4. *)
 
-subsection{* Preliminaries *}
+subsection\<open>Preliminaries\<close>
 
 lemma dist_sum:
   fixes f :: "'a \<Rightarrow> real" and g :: "'a \<Rightarrow> real"
@@ -344,11 +344,11 @@ lemma dist_Ps_upper_bound:
   shows "dist (Ps cf1) (Ps cf2) \<le> Pn cf1 n + Pn cf2 m"
 using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
   case (less n m)
-  note `proper (fst cf1)`[simp, intro]
-  note `proper (fst cf2)`[simp, intro]
+  note \<open>proper (fst cf1)\<close>[simp, intro]
+  note \<open>proper (fst cf2)\<close>[simp, intro]
 
   define W where "W c = sum (wt (fst c) (snd c))" for c
-  from ZObis_mC_ZOC[OF `fst cf1 \<approx>01 fst cf2` `snd cf1 \<approx> snd cf2`]
+  from ZObis_mC_ZOC[OF \<open>fst cf1 \<approx>01 fst cf2\<close> \<open>snd cf1 \<approx> snd cf2\<close>]
   obtain I0 P F where mC: "mC_ZOC ZObis (fst cf1) (fst cf2) (snd cf1) (snd cf2) I0 P F" by blast
   then have P: "{} \<notin> P - {I0}" "part {..<brn (fst cf1)} P" and "I0 \<in> P"
     and FP: "{} \<notin> F`(P-{I0})" "part {..<brn (fst cf2)} (F`P)" "inj_on F P"
@@ -367,7 +367,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     by simp_all
 
   have "finite P" "inj_on F (P - {I0})" and FP': "finite (F`P)" "F I0 \<in> F`P"
-    using finite_part[OF _ P(2)] finite_part[OF _ FP(2)] `I0 \<in> P` `inj_on F P`
+    using finite_part[OF _ P(2)] finite_part[OF _ FP(2)] \<open>I0 \<in> P\<close> \<open>inj_on F P\<close>
     by (auto intro: inj_on_diff)
 
   { fix I i assume "I \<in> P" "i \<in> I"
@@ -400,7 +400,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         note cf2 = ZObis_pres_discrCfR[OF cf1 *]
         from cf1 cf2 have "S cf1 = (\<lambda>bT. snd cf1 \<approx> s)" "S cf2 = (\<lambda>bT. snd cf2 \<approx> s)"
           unfolding S_def[abs_def] by (auto simp: enat_0[symmetric])
-        moreover from `snd cf1 \<approx> snd cf2` have "snd cf1 \<approx> s \<longleftrightarrow> snd cf2 \<approx> s"
+        moreover from \<open>snd cf1 \<approx> snd cf2\<close> have "snd cf1 \<approx> s \<longleftrightarrow> snd cf2 \<approx> s"
           by (blast intro: indis_sym indis_trans)
         ultimately show ?thesis
           using T.prob_space by (cases "snd cf2 \<approx> s") (simp_all add: Ps_def Pn_def measure_nonneg)
@@ -420,7 +420,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     proof
       assume "n = 0"
       moreover
-      with T.prob_space `fst cf1 \<approx>01 fst cf2` `snd cf1 \<approx> snd cf2`
+      with T.prob_space \<open>fst cf1 \<approx>01 fst cf2\<close> \<open>snd cf1 \<approx> snd cf2\<close>
       have "dist (Ps cf1) (Ps cf2) \<le> Pn cf1 0"
         by (intro base_case) (auto simp: Ps_def Pn_def)
       moreover have "0 \<le> Pn cf2 m"
@@ -430,7 +430,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
     next
       assume "m = 0"
       moreover
-      with T.prob_space `fst cf1 \<approx>01 fst cf2` `snd cf1 \<approx> snd cf2`
+      with T.prob_space \<open>fst cf1 \<approx>01 fst cf2\<close> \<open>snd cf1 \<approx> snd cf2\<close>
       have "dist (Ps cf2) (Ps cf1) \<le> Pn cf2 0"
         by (intro base_case) (auto simp: Ps_def Pn_def intro: indis_sym ZObis_sym)
       moreover have "0 \<le> Pn cf1 n"
@@ -456,7 +456,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         fix i j assume ij: "i \<in> I" "j \<in> F I"
         assume "wt (fst cf1) (snd cf1) i / W cf1 I \<noteq> 0"
           and "wt (fst cf2) (snd cf2) j / W cf2 (F I) \<noteq> 0"
-        from `I \<in> P` ij P(2) FP(2) have br: "i < brn (fst cf1)" "j < brn (fst cf2)"
+        from \<open>I \<in> P\<close> ij P(2) FP(2) have br: "i < brn (fst cf1)" "j < brn (fst cf2)"
           by (auto dest: part_is_subset)
         show "dist (Ps (cont_eff cf1 i)) (Ps (cont_eff cf2 j)) \<le>
           Pn (cont_eff cf1 i) n' + Pn (cont_eff cf2 j) m'"
@@ -466,7 +466,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
             using br less.prems by (auto simp: cont_eff)
           show "fst (cont_eff cf1 i) \<approx>01 fst (cont_eff cf2 j)"
             "snd (cont_eff cf1 i) \<approx> snd (cont_eff cf2 j)"
-            using cont[OF `I \<in> P` `I \<noteq> I0` ij] eff[OF `I \<in> P` `I \<noteq> I0` ij] by (auto simp: cont_eff)
+            using cont[OF \<open>I \<in> P\<close> \<open>I \<noteq> I0\<close> ij] eff[OF \<open>I \<in> P\<close> \<open>I \<noteq> I0\<close> ij] by (auto simp: cont_eff)
         qed
       next
         show "(\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b / W cf2 (F I)) = 1"
@@ -484,16 +484,16 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       next
         assume "W cf2 (F I) \<noteq> 0"
         then have "W cf1 I \<noteq> 0" "W cf2 (F I) \<noteq> 0" by (auto simp: W)
-        from dist_n'_m'[OF `I \<in> P` `I \<noteq> I0` this] show ?thesis .
+        from dist_n'_m'[OF \<open>I \<in> P\<close> \<open>I \<noteq> I0\<close> this] show ?thesis .
       qed }
     note dist_n'_m'_W_iff = this
 
     { fix I j assume W: "W cf2 (F I0) \<noteq> 0"
-      from `I0 \<in> P` have "dist (\<Sum>i\<in>{()}. 1 * Ps cf1) (ps cf2 (F I0)) \<le> (\<Sum>i\<in>{()}. 1 * Pn cf1 n) + pn cf2 (F I0) m'"
+      from \<open>I0 \<in> P\<close> have "dist (\<Sum>i\<in>{()}. 1 * Ps cf1) (ps cf2 (F I0)) \<le> (\<Sum>i\<in>{()}. 1 * Pn cf1 n) + pn cf2 (F I0) m'"
         unfolding ps_def pn_def
       proof (intro dist_weighted_sum)
         fix j assume "j \<in> F I0"
-        with FP(2) `I0 \<in> P` have br: "j < brn (fst cf2)"
+        with FP(2) \<open>I0 \<in> P\<close> have br: "j < brn (fst cf2)"
           by (auto dest: part_is_subset)
         show "dist (Ps cf1) (Ps (cont_eff cf2 j)) \<le> Pn cf1 n + Pn (cont_eff cf2 j) m'"
         proof (rule less.hyps)
@@ -502,23 +502,23 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
             using br by (auto simp: cont_eff)
           show "fst cf1 \<approx>01 fst (cont_eff cf2 j)"
             "snd cf1 \<approx> snd (cont_eff cf2 j)"
-            using FI0[OF `j \<in> F I0`] `snd cf1 \<approx> snd cf2`
+            using FI0[OF \<open>j \<in> F I0\<close>] \<open>snd cf1 \<approx> snd cf2\<close>
             by (auto simp: cont_eff intro: indis_trans)
         qed
       next
         show "(\<Sum>b\<in>F I0. wt (fst cf2) (snd cf2) b / W cf2 (F I0)) = 1"
-          using W `I0 \<in> P` by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
+          using W \<open>I0 \<in> P\<close> by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
       qed auto
       then have "dist (Ps cf1) (ps cf2 (F I0)) \<le> Pn cf1 n + pn cf2 (F I0) m'"
         by simp }
     note dist_n_m' = this
 
     { fix I j assume W: "W cf1 I0 \<noteq> 0"
-      from `I0 \<in> P` have "dist (ps cf1 I0) (\<Sum>i\<in>{()}. 1 * Ps cf2) \<le> pn cf1 I0 n' + (\<Sum>i\<in>{()}. 1 * Pn cf2 m)"
+      from \<open>I0 \<in> P\<close> have "dist (ps cf1 I0) (\<Sum>i\<in>{()}. 1 * Ps cf2) \<le> pn cf1 I0 n' + (\<Sum>i\<in>{()}. 1 * Pn cf2 m)"
         unfolding ps_def pn_def
       proof (intro dist_weighted_sum)
         fix i assume "i \<in> I0"
-        with P(2) `I0 \<in> P` have br: "i < brn (fst cf1)"
+        with P(2) \<open>I0 \<in> P\<close> have br: "i < brn (fst cf1)"
           by (auto dest: part_is_subset)
         show "dist (Ps (cont_eff cf1 i)) (Ps cf2) \<le> Pn (cont_eff cf1 i) n' + Pn cf2 m"
         proof (rule less.hyps)
@@ -527,12 +527,12 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
             using br less.prems by (auto simp: cont_eff)
           show "fst (cont_eff cf1 i) \<approx>01 fst cf2"
             "snd (cont_eff cf1 i) \<approx> snd cf2"
-            using I0[OF `i \<in> I0`] `snd cf1 \<approx> snd cf2`
+            using I0[OF \<open>i \<in> I0\<close>] \<open>snd cf1 \<approx> snd cf2\<close>
             by (auto simp: cont_eff intro: indis_trans indis_sym)
         qed
       next
         show "(\<Sum>b\<in>I0. wt (fst cf1) (snd cf1) b / W cf1 I0) = 1"
-          using W `I0 \<in> P` by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
+          using W \<open>I0 \<in> P\<close> by (auto simp: sum_divide_distrib[symmetric] sum_nonneg W_def)
       qed auto
       then have "dist (ps cf1 I0) (Ps cf2) \<le> pn cf1 I0 n' + Pn cf2 m"
         by simp }
@@ -590,27 +590,27 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         using finite_I
         by (auto intro!: sum.cong simp add: sum_distrib_left sum_nonneg_eq_0_iff W_def)
       also have "\<dots> = ?P' I0 + (\<Sum>I\<in>P-{I0}. ?P' I)"
-        unfolding sum.remove[OF `finite P` `I0 \<in> P`] ..
+        unfolding sum.remove[OF \<open>finite P\<close> \<open>I0 \<in> P\<close>] ..
       finally have "\<P>(bT in T.T cf. S cf (Suc n) bT) = \<dots>" . }
     note P_split = this
 
     have Ps1: "Ps cf1 = W cf1 I0 * ps cf1 I0 + (\<Sum>I\<in>P-{I0}. W cf1 I * ps cf1 I)"
-      unfolding Ps_def ps_def using P(2) `finite P` `I0 \<in> P` by (intro P_split S_sets) simp_all
+      unfolding Ps_def ps_def using P(2) \<open>finite P\<close> \<open>I0 \<in> P\<close> by (intro P_split S_sets) simp_all
 
     have "Ps cf2 = W cf2 (F I0) * ps cf2 (F I0) + (\<Sum>I\<in>F`P-{F I0}. W cf2 I * ps cf2 I)"
-      unfolding Ps_def ps_def using FP(2) `finite P` `I0 \<in> P` by (intro P_split S_sets) simp_all
+      unfolding Ps_def ps_def using FP(2) \<open>finite P\<close> \<open>I0 \<in> P\<close> by (intro P_split S_sets) simp_all
     moreover have F_diff: "F ` P - {F I0} = F ` (P - {I0})"
-      by (auto simp: `inj_on F P`[THEN inj_on_eq_iff] `I0 \<in> P`)
+      by (auto simp: \<open>inj_on F P\<close>[THEN inj_on_eq_iff] \<open>I0 \<in> P\<close>)
     ultimately have Ps2: "Ps cf2 = W cf2 (F I0) * ps cf2 (F I0) + (\<Sum>I\<in>P-{I0}. W cf2 (F I) * ps cf2 (F I))"
-      by (simp add: sum.reindex `inj_on F (P-{I0})`)
+      by (simp add: sum.reindex \<open>inj_on F (P-{I0})\<close>)
 
     have Pn1: "Pn cf1 n = W cf1 I0 * pn cf1 I0 n' + (\<Sum>I\<in>P-{I0}. W cf1 I * pn cf1 I n')"
-      unfolding Pn_def pn_def nm using P(2) `finite P` `I0 \<in> P` by (intro P_split) (simp_all add: N_def)
+      unfolding Pn_def pn_def nm using P(2) \<open>finite P\<close> \<open>I0 \<in> P\<close> by (intro P_split) (simp_all add: N_def)
 
     have "Pn cf2 m = W cf2 (F I0) * pn cf2 (F I0) m' + (\<Sum>I\<in>F`P-{F I0}. W cf2 I * pn cf2 I m')"
-      unfolding Pn_def pn_def nm using FP(2) `finite P` `I0 \<in> P` by (intro P_split) (simp_all add: N_def)
+      unfolding Pn_def pn_def nm using FP(2) \<open>finite P\<close> \<open>I0 \<in> P\<close> by (intro P_split) (simp_all add: N_def)
     with F_diff have Pn2: "Pn cf2 m = W cf2 (F I0) * pn cf2 (F I0) m' + (\<Sum>I\<in>P-{I0}. W cf2 (F I) * pn cf2 (F I) m')"
-      by (simp add: sum.reindex `inj_on F (P-{I0})`)
+      by (simp add: sum.reindex \<open>inj_on F (P-{I0})\<close>)
 
     show ?thesis
     proof cases
@@ -620,11 +620,11 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         assume *: "W cf1 I0 = 1"
         then have "W cf1 I0 = W cf1 {..<brn (fst cf1)}" by (simp add: W_def)
         also have "\<dots> = W cf1 I0 + (\<Sum>I\<in>P - {I0}. W cf1 I)"
-          unfolding `part {..<brn (fst cf1)} P`[THEN part_sum] W_def
-          unfolding sum.remove[OF `finite P` `I0 \<in> P`] ..
+          unfolding \<open>part {..<brn (fst cf1)} P\<close>[THEN part_sum] W_def
+          unfolding sum.remove[OF \<open>finite P\<close> \<open>I0 \<in> P\<close>] ..
         finally have "(\<Sum>I\<in>P - {I0}. W cf1 I) = 0" by simp
         then have "\<forall>I\<in>P - {I0}. W cf1 I = 0"
-          using `finite P` by (subst (asm) sum_nonneg_eq_0_iff) auto
+          using \<open>finite P\<close> by (subst (asm) sum_nonneg_eq_0_iff) auto
         then have "Ps cf1 = ps cf1 I0" "Pn cf1 n = pn cf1 I0 n'"
           unfolding Ps1 Pn1 * by simp_all
         moreover note dist_n'_m *
@@ -637,7 +637,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
           unfolding sum.remove[OF FP'] ..
         finally have "(\<Sum>I\<in>F`P - {F I0}. W cf2 I) = 0" by simp
         then have "\<forall>I\<in>F`P - {F I0}. W cf2 I = 0"
-          using `finite P` by (subst (asm) sum_nonneg_eq_0_iff) auto
+          using \<open>finite P\<close> by (subst (asm) sum_nonneg_eq_0_iff) auto
         then have "Ps cf2 = ps cf2 (F I0)" "Pn cf2 m = pn cf2 (F I0) m'"
           unfolding Ps2 Pn2 * by (simp_all add: F_diff)
         moreover note dist_n_m' *
@@ -651,9 +651,9 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         then have "W cf I \<le> W cf {..<brn (fst (cf))}"
           unfolding W_def
           by (intro sum_mono2 part_is_subset) auto
-        then have "W cf I \<le> 1" using `proper (fst cf)` by (simp add: W_def) }
+        then have "W cf I \<le> 1" using \<open>proper (fst cf)\<close> by (simp add: W_def) }
       ultimately have wt_less1: "W cf1 I0 < 1" "W cf2 (F I0) < 1"
-        using FP(2) FP'(2) P(2) `I0 \<in> P`
+        using FP(2) FP'(2) P(2) \<open>I0 \<in> P\<close>
         unfolding le_less by blast+
 
       { fix I assume *: "I \<in> P - {I0}"
@@ -681,7 +681,7 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
       let ?E = "(?v0 * ?w1 * Ps cf2 + ?v1 * ?w0 * ps cf2 (F I0))"
 
       have w0v0_less1: "?w0 * ?v0 < 1 * 1"
-        using wt_less1 `I0 \<in> P` by (intro mult_strict_mono) auto
+        using wt_less1 \<open>I0 \<in> P\<close> by (intro mult_strict_mono) auto
       then have neg_w0v0_nonneg: "0 \<le> 1 - ?w0 * ?v0" by simp
 
       let ?e1 = "(\<Sum>I\<in>P-{I0}. W cf1 I / ?v1 * pn cf1 I n') +
@@ -738,10 +738,10 @@ using bisim proof (induct n m arbitrary: cf1 cf2 rule: nat_nat_induct)
         also have "\<dots> \<le> ?v1 * ?w0 * (Pn cf1 n + pn cf2 (F I0) m') + ?w1 * ?v0 * (pn cf1 I0 n' + Pn cf2 m)"
         proof (rule add_mono)
           show "dist (?v1 * ?w0 * Ps cf1) (?v1 * ?w0 * ps cf2 (F I0)) \<le> ?v1 * ?w0 * (Pn cf1 n + pn cf2 (F I0) m')"
-            using wt_less1 dist_n_m' `I0 \<in> P`
+            using wt_less1 dist_n_m' \<open>I0 \<in> P\<close>
             by (simp add: sum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W2_nneg)
           show "dist (?w1 * ?v0 * Ps cf2) (?w1 * ?v0 * ps cf1 I0) \<le> ?w1 * ?v0 * (pn cf1 I0 n' + Pn cf2 m)"
-            using wt_less1 dist_n'_m `I0 \<in> P`
+            using wt_less1 dist_n'_m \<open>I0 \<in> P\<close>
             by (subst dist_commute)
                (simp add: sum_nonneg mult_le_cancel_left not_le[symmetric] mult_le_0_iff W1_nneg)
         qed
@@ -819,22 +819,22 @@ using assms proof (induct n arbitrary: cf1 cf2)
   show ?case
   proof cases
     assume "snd cf1 \<approx> s'"
-    with `snd cf1 \<approx> snd cf2` `fst cf1 \<approx>s fst cf2` have "snd cf1 \<approx> s'" "snd cf2 \<approx> s'"
+    with \<open>snd cf1 \<approx> snd cf2\<close> \<open>fst cf1 \<approx>s fst cf2\<close> have "snd cf1 \<approx> s'" "snd cf2 \<approx> s'"
       by (metis indis_trans indis_sym)+
     then show ?case
       using T.prob_space by simp
   next
     assume "\<not> snd cf1 \<approx> s'"
-    with `snd cf1 \<approx> snd cf2` `fst cf1 \<approx>s fst cf2` have "\<not> snd cf1 \<approx> s' \<and> \<not> snd cf2 \<approx> s'"
+    with \<open>snd cf1 \<approx> snd cf2\<close> \<open>fst cf1 \<approx>s fst cf2\<close> have "\<not> snd cf1 \<approx> s' \<and> \<not> snd cf2 \<approx> s'"
       by (metis indis_trans indis_sym)
     then show ?case
       by auto
   qed
 next
   case (Suc n)
-  note `proper (fst cf1)`[simp] `proper (fst cf2)`[simp]
+  note \<open>proper (fst cf1)\<close>[simp] \<open>proper (fst cf2)\<close>[simp]
 
-  from Sbis_mC_C `fst cf1 \<approx>s fst cf2` `snd cf1 \<approx> snd cf2`
+  from Sbis_mC_C \<open>fst cf1 \<approx>s fst cf2\<close> \<open>snd cf1 \<approx> snd cf2\<close>
   obtain P F where mP: "mC_C Sbis (fst cf1) (fst cf2) (snd cf1) (snd cf2) P F"
     by blast
   then have
@@ -857,27 +857,27 @@ next
   note split = this
 
   { fix I i assume "I \<in> P" "i \<in> I"
-    with `proper (fst cf1)` have "i < brn (fst cf1)"
-      using part_is_subset[OF P(1) `I \<in> P`] by auto }
+    with \<open>proper (fst cf1)\<close> have "i < brn (fst cf1)"
+      using part_is_subset[OF P(1) \<open>I \<in> P\<close>] by auto }
   note brn_cf[simp] = this
 
   { fix I i assume "I \<in> P" "i \<in> F I"
-    with `proper (fst cf2)` have "i < brn (fst cf2)"
+    with \<open>proper (fst cf2)\<close> have "i < brn (fst cf2)"
       using part_is_subset[OF FP(1), of "F I"] by auto }
   note brn_cf2[simp] = this
 
   { fix I assume "I \<in> P"
-    with `{} \<notin> P` obtain i where "i \<in> I" by (metis all_not_in_conv)
-    from `I \<in> P` FP have "F I \<noteq> {}" "F I \<subseteq> {..<brn (fst cf2)}"
+    with \<open>{} \<notin> P\<close> obtain i where "i \<in> I" by (metis all_not_in_conv)
+    from \<open>I \<in> P\<close> FP have "F I \<noteq> {}" "F I \<subseteq> {..<brn (fst cf2)}"
       by (auto simp: part_is_subset)
     then obtain j where "j < brn (fst cf2)" "j \<in> F I" by auto
     { fix b assume "b \<in> F I"
       then have "?P (cont_eff cf1 i) n = ?P (cont_eff cf2 b) n"
-        using `I \<in> P` `i \<in> I` cont eff
+        using \<open>I \<in> P\<close> \<open>i \<in> I\<close> cont eff
         by (intro Suc) (auto simp add: cont_eff) }
     note cont_d_const = this[symmetric]
     { fix a assume "a \<in> I"
-      with `I \<in> P` `i \<in> I` `j \<in> F I` cont eff
+      with \<open>I \<in> P\<close> \<open>i \<in> I\<close> \<open>j \<in> F I\<close> cont eff
       have "?P (cont_eff cf1 i) n = ?P (cont_eff cf2 j) n \<and>
         ?P (cont_eff cf1 a) n = ?P (cont_eff cf2 j) n"
         by (intro conjI Suc) (auto simp add: cont_eff)
@@ -886,24 +886,24 @@ next
         (\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b) * ?P (cont_eff cf1 i) n"
       by (simp add: sum_distrib_right)
     also have "\<dots> = (\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b) * ?P (cont_eff cf1 i) n"
-      using W `I \<in> P` by auto
+      using W \<open>I \<in> P\<close> by auto
     also have "\<dots> = (\<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
       using cont_d_const by (auto simp add: sum_distrib_right)
     finally have "(\<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n) = \<dots>" . }
   note sum_eq = this
 
   have "?P cf1 (Suc n) = (\<Sum>I\<in>P. \<Sum>b\<in>I. wt (fst cf1) (snd cf1) b * ?P (cont_eff cf1 b) n)"
-    using `proper (fst cf1)` P(1) by (rule split)
+    using \<open>proper (fst cf1)\<close> P(1) by (rule split)
   also have "\<dots> = (\<Sum>I\<in>P. \<Sum>b\<in>F I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
     using sum_eq by simp
   also have "\<dots> = (\<Sum>I\<in>F`P. \<Sum>b\<in>I. wt (fst cf2) (snd cf2) b * ?P (cont_eff cf2 b) n)"
-    using `inj_on F P` by (simp add: sum.reindex)
+    using \<open>inj_on F P\<close> by (simp add: sum.reindex)
   also have "\<dots> = ?P cf2 (Suc n)"
-    using `proper (fst cf2)` FP(1) by (rule split[symmetric])
+    using \<open>proper (fst cf2)\<close> FP(1) by (rule split[symmetric])
   finally show ?case .
 qed
 
-subsection {* Final Theorems *}
+subsection \<open>Final Theorems\<close>
 
 theorem ZObis_eSec: "\<lbrakk>proper c; c \<approx>01 c; aeT c\<rbrakk> \<Longrightarrow> eSec c"
   by (auto simp: aeT_def eSec_def intro!: Ps_eq[simplified])
@@ -924,19 +924,19 @@ proof (unfold eSec_def, intro allI impI)
     fix e :: real assume "0 < e"
     then have "0 < e / 2" by simp
     let ?N = "\<lambda>s n bT. \<not> discrCf (((c,s) ## bT) !! n)"
-    from AE_T_max_qsend_time[OF _ `0 < e / 2`, of "(c,s1)"]
+    from AE_T_max_qsend_time[OF _ \<open>0 < e / 2\<close>, of "(c,s1)"]
     obtain N1 where N1: "\<P>(bT in T.T (c, s1). ?N s1 N1 bT) < e / 2"
-      using `aeT c` unfolding aeT_def by auto
-    from AE_T_max_qsend_time[OF _ `0 < e / 2`, of "(c,s2)"]
+      using \<open>aeT c\<close> unfolding aeT_def by auto
+    from AE_T_max_qsend_time[OF _ \<open>0 < e / 2\<close>, of "(c,s2)"]
     obtain N2 where N2: "\<P>(bT in T.T (c, s2). ?N s2 N2 bT) < e / 2"
-      using `aeT c` unfolding aeT_def by auto
+      using \<open>aeT c\<close> unfolding aeT_def by auto
     define N where "N = max N1 N2"
 
     let ?Tn = "\<lambda>n s bT. eff_at (c,s) bT n \<approx> t"
 
     have "dist \<P>(bT in T.T (c, s1). ?T s1 bT) \<P>(bT in T.T (c, s1). ?Tn N s1 bT) \<le>
         \<P>(bT in T.T (c, s1). ?N s1 N1 bT)"
-      using `aeT c`[unfolded aeT_def, rule_format] AE_T_enabled AE_space
+      using \<open>aeT c\<close>[unfolded aeT_def, rule_format] AE_T_enabled AE_space
     proof (intro T.prob_dist, eventually_elim, intro impI)
       fix bT assume bT: "enabled (c,s1) bT" and "\<not> \<not> discrCf (((c,s1) ## bT) !! N1)"
       with bT have "qsend ((c,s1) ## bT) \<le> N1"
@@ -949,7 +949,7 @@ proof (unfold eSec_def, intro allI impI)
     moreover
     have "dist \<P>(bT in T.T (c, s2). ?T s2 bT) \<P>(bT in T.T (c, s2). ?Tn N s2 bT) \<le>
         \<P>(bT in T.T (c, s2). ?N s2 N2 bT)"
-      using `aeT c`[unfolded aeT_def, rule_format] AE_T_enabled AE_space
+      using \<open>aeT c\<close>[unfolded aeT_def, rule_format] AE_T_enabled AE_space
     proof (intro T.prob_dist, eventually_elim, intro impI)
       fix bT assume bT: "enabled (c,s2) bT" "\<not> \<not> discrCf (((c,s2) ## bT) !! N2)"
       with bT have "qsend ((c,s2) ## bT) \<le> N2"
@@ -961,7 +961,7 @@ proof (unfold eSec_def, intro allI impI)
     qed measurable
     ultimately have "dist \<P>(bT in T.T (c, s1). ?T s1 bT) \<P>(bT in T.T (c, s1). ?Tn N s1 bT) +
       dist \<P>(bT in T.T (c, s2). ?T s2 bT) \<P>(bT in T.T (c, s1). ?Tn N s1 bT) \<le> e"
-      using `amSec c`[unfolded amSec_def, rule_format, OF `s1 \<approx> s2`, of N t]
+      using \<open>amSec c\<close>[unfolded amSec_def, rule_format, OF \<open>s1 \<approx> s2\<close>, of N t]
       using N1 N2 by simp
     from dist_triangle_le[OF this]
     show "\<bar>?P s1 - ?P s2\<bar> \<le> e" by (simp add: dist_real_def)

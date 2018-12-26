@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Preservation of deadlock for the JVMs *}
+section \<open>Preservation of deadlock for the JVMs\<close>
 
 theory JVMDeadlocked
 imports
@@ -74,7 +74,7 @@ proof -
   proof(cases xcp)
     case [simp]: (Some a)
     with exec have [simp]: "m' = h'" by(auto)
-    from `\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>` obtain D where D: "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
+    from \<open>\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>\<close> obtain D where D: "typeof_addr h a = \<lfloor>Class_type D\<rfloor>"
       by(auto simp add: correct_state_def)
     with hext have "cname_of h a = cname_of h' a" by(auto dest: hext_objD simp add: cname_of_def)
     with exec have "(ta, xcp', h, frs') \<in> exec P t (xcp, h, frs)" by auto
@@ -96,7 +96,7 @@ proof -
     from wf meth pc have wt: "P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M"
       by(rule wt_jvm_prog_impl_wt_instr)
 
-    from `\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>`
+    from \<open>\<Phi> \<turnstile> t: (xcp, h, frs) \<surd>\<close>
     have "\<exists>ta \<sigma>'. P,t \<turnstile> (xcp, h, f # Frs) -ta-jvm\<rightarrow> \<sigma>'"
       by(auto dest: progress[OF wf] simp del: correct_state_def split_paired_Ex)
     with exec meth have "\<exists>ta' \<sigma>'. (ta', \<sigma>') \<in> exec P t (xcp, h, frs) \<and> collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> collect_cond_actions \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> collect_cond_actions \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<and> collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub> \<subseteq> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
@@ -142,10 +142,10 @@ proof -
             by(auto simp add: confs_conv_map)
           hence "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Ts)" by(simp only: rev_map[symmetric])
           moreover hence "map typeof\<^bsub>h'\<^esub> (rev (take n stk)) = map Some (rev Ts)" using hext by(rule map_typeof_hext_mono)
-          with `P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : T'` `D'\<bullet>M'(Ts') :: T'` sees' C Ta' Ta
+          with \<open>P,h' \<turnstile> a\<bullet>M'(rev (take n stk)) : T'\<close> \<open>D'\<bullet>M'(Ts') :: T'\<close> sees' C Ta' Ta
           have "P \<turnstile> rev Ts [\<le>] Ts'" by cases (auto dest: sees_method_fun)
           ultimately have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
-            using Ta C sees' params None `D'\<bullet>M'(Ts') :: T'`
+            using Ta C sees' params None \<open>D'\<bullet>M'(Ts') :: T'\<close>
             by(auto simp add: external_WT'_iff confs_conv_map)
           from red_external_wt_hconf_hext[OF wfp red hext this tconf hconf]
           obtain ta'' va' h''' where "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -ta''\<rightarrow>ext \<langle>va',h'''\<rangle>"
@@ -201,7 +201,7 @@ next
     by(rule lifting_wf.redT_preserves[OF lifting_wf_correct_state_d])
   from red tst have "thr s' t \<noteq> None"
     by(cases s)(cases s', rule notI, auto dest: execd_mthr.redT_thread_not_disappear)
-  with `correct_state_ts \<Phi> (thr s') (shr s')` have "hconf (shr s')"
+  with \<open>correct_state_ts \<Phi> (thr s') (shr s')\<close> have "hconf (shr s')"
     by(auto dest: ts_okD simp add: correct_state_def)
   ultimately have "execd_mthr.must_sync P t (xcp, frs) (shr s')"
     by-(rule must_sync_preserved_d[OF wf])
@@ -221,7 +221,7 @@ next
     by(cases s)(cases s', rule notI, auto dest: execd_mthr.redT_thread_not_disappear)
   from red cs' have "correct_state_ts \<Phi> (thr s') (shr s')"
     by(rule lifting_wf.redT_preserves[OF lifting_wf_correct_state_d[OF wf]])
-  with `thr s' t \<noteq> None` have "hconf (shr s')"
+  with \<open>thr s' t \<noteq> None\<close> have "hconf (shr s')"
     by(auto dest: ts_okD simp add: correct_state_def)
   ultimately have "\<exists>L' \<subseteq> L. execd_mthr.can_sync P t (xcp, frs) (shr s) L'"
     by-(rule can_sync_devreserp_d[OF wf])
@@ -231,7 +231,7 @@ qed
 end
 
 
-text {* and now everything again for the aggresive VM *}
+text \<open>and now everything again for the aggresive VM\<close>
 
 context JVM_heap_conf_base' begin
 
@@ -287,24 +287,24 @@ proof -
       case (normal X X' M' ws')
       obtain XCP FRS where X [simp]: "X = (XCP, FRS)" by(cases X, auto)
       obtain XCP' FRS' where X' [simp]: "X' = (XCP', FRS')" by(cases X', auto)
-      from `mexecd P t' (X, shr s) ta' (X', M')`
+      from \<open>mexecd P t' (X, shr s) ta' (X', M')\<close>
       have "P,t' \<turnstile> Normal (XCP, shr s, FRS) -ta'-jvmd\<rightarrow> Normal (XCP', M', FRS')" by simp
-      moreover from `thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>` css
+      moreover from \<open>thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>\<close> css
       have "\<Phi> \<turnstile> t': (XCP, shr s, FRS) \<surd>" by(auto dest: ts_okD)
       ultimately have "\<Phi> \<turnstile> t': (XCP, M', FRS) \<surd>" by -(rule correct_state_heap_change[OF wf])
-      moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] css, OF `mexecd P t' (X, shr s) ta' (X', M')` `thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>`, of no_wait_locks] `thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>`
+      moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] css, OF \<open>mexecd P t' (X, shr s) ta' (X', M')\<close> \<open>thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>\<close>, of no_wait_locks] \<open>thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close>
       have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', no_wait_locks))) M'" by simp
       ultimately have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) M'"
-        using `thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>` `thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>`
+        using \<open>thr s t' = \<lfloor>(X, no_wait_locks)\<rfloor>\<close> \<open>thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close>
         apply(auto intro!: ts_okI dest: ts_okD)
         apply(case_tac "t=t'")
          apply(fastforce dest: redT_updTs_Some)
         apply(drule_tac t=t in ts_okD, fastforce+)
         done
       hence "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>) (shr s')" 
-        using `s' = (redT_updLs (locks s) t' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>, (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', redT_updLns (locks s) t' no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>)), M'), ws', redT_updIs (interrupts s) \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>)`
+        using \<open>s' = (redT_updLs (locks s) t' \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>, (redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>(t' \<mapsto> (X', redT_updLns (locks s) t' no_wait_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub>)), M'), ws', redT_updIs (interrupts s) \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub>)\<close>
         by simp
-      moreover from tst `thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>`
+      moreover from tst \<open>thread_oks (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close>
       have "redT_updTs (thr s) \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub> t = \<lfloor>(x, no_wait_locks)\<rfloor>" by(auto intro: redT_updTs_Some)
       ultimately show ?thesis by(auto dest: ts_okD)
     qed

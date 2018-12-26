@@ -1,12 +1,12 @@
-section {* The New Algorithm *}
+section \<open>The New Algorithm\<close>
 
 theory New_Algorithm_Defs
 imports Heard_Of.HOModel "../Consensus_Types" "../Consensus_Misc" Three_Steps
 begin
 
-subsection {* Model of the algorithm *}
-text {* We assume that the values are linearly ordered, to be able to have each process
-  select the smallest value. *}
+subsection \<open>Model of the algorithm\<close>
+text \<open>We assume that the values are linearly ordered, to be able to have each process
+  select the smallest value.\<close>
 axiomatization where val_linorder: 
   "OFCLASS(val, linorder_class)"
 
@@ -24,9 +24,9 @@ datatype msg =
 | Vote val
 | Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
-text {*
+text \<open>
   Characteristic predicates on messages.
-*}
+\<close>
 
 definition isLV where "isLV m \<equiv> \<exists>rv. m = Vote rv"
 
@@ -142,7 +142,7 @@ definition
    else if three_step r = 1 then next1 r
    else next2 r"
 
-subsection {* The Heard-Of machine *}
+subsection \<open>The Heard-Of machine\<close>
 definition
   NA_commPerRd where
   "NA_commPerRd (HOrs::process HO)  \<equiv> True"

@@ -2,7 +2,7 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* Program Execution in the JVM *}
+section \<open>Program Execution in the JVM\<close>
 
 theory JVMExec
 imports
@@ -55,12 +55,12 @@ by(auto intro: exec_1I elim: exec_1.cases)
 
 end
 
-text {*
+text \<open>
   The start configuration of the JVM: in the start heap, we call a 
-  method @{text m} of class @{text C} in program @{text P} with parameters @{term "vs"}. The 
-  @{text this} pointer of the frame is set to @{text Null} to simulate
+  method \<open>m\<close> of class \<open>C\<close> in program \<open>P\<close> with parameters @{term "vs"}. The 
+  \<open>this\<close> pointer of the frame is set to \<open>Null\<close> to simulate
   a static method invokation.
-*}
+\<close>
 
 abbreviation JVM_local_start ::
   "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'addr jvm_method \<Rightarrow> 'addr val list

@@ -1,11 +1,11 @@
 theory SINVAR_ACLcommunicateWith
 imports "../TopoS_Helper"
 begin
-subsection {* SecurityInvariant ACLcommunicateWith *}
-text{*An access control list strategy that says that hosts must only transitively access each other if allowed*}
+subsection \<open>SecurityInvariant ACLcommunicateWith\<close>
+text\<open>An access control list strategy that says that hosts must only transitively access each other if allowed\<close>
 
 
-text{*Warning: this transitive model has exponential computational complexity*}
+text\<open>Warning: this transitive model has exponential computational complexity\<close>
 
 definition default_node_properties :: "'v list"
   where  "default_node_properties \<equiv> []"

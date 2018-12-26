@@ -1,10 +1,10 @@
-chapter{*Pseudo-Coding: Section 7 Material*}
+chapter\<open>Pseudo-Coding: Section 7 Material\<close>
 
 theory Pseudo_Coding 
 imports II_Prelims
 begin
 
-section{*General Lemmas*}
+section\<open>General Lemmas\<close>
 
 lemma Collect_disj_Un: "{f i |i. P i \<or> Q i} = {f i |i. P i} \<union> {f i |i. Q i}"
 by auto 
@@ -63,7 +63,7 @@ lemma notin_V:
   apply (metis p mem_permute_iff fresh_at_base_permI)+
   done
 
-section{*Simultaneous Substitution*}
+section\<open>Simultaneous Substitution\<close>
 
 definition ssubst :: "tm \<Rightarrow> name set \<Rightarrow> (name \<Rightarrow> tm) \<Rightarrow> tm"
   where "ssubst t V F = Finite_Set.fold (\<lambda>i. subst i (F i)) t V"
@@ -74,7 +74,7 @@ definition make_F :: "name set \<Rightarrow> perm \<Rightarrow> name \<Rightarro
 lemma ssubst_empty [simp]: "ssubst t {} F = t"
   by (simp add: ssubst_def)
 
-text{*Renaming a finite set of variables. Based on the theorem @{text at_set_avoiding}*}
+text\<open>Renaming a finite set of variables. Based on the theorem \<open>at_set_avoiding\<close>\<close>
 locale quote_perm =
   fixes p :: perm and Vs :: "name set" and F :: "name \<Rightarrow> tm"
   assumes p: "atom ` (p \<bullet> Vs) \<sharp>* Vs" 
@@ -214,7 +214,7 @@ lemma atom_in_p_Vs: "\<lbrakk>i \<in> p \<bullet> V; V \<subseteq> Vs\<rbrakk> \
   by (metis (full_types) True_eqvt set_mp subset_eqvt)
 
 
-section{*The Main Theorems of Section 7*}
+section\<open>The Main Theorems of Section 7\<close>
 
 lemma SubstTermP_vquot_dbtm:
   assumes w: "w \<in> Vs - V" and V: "V \<subseteq> Vs" "V' = p \<bullet> V"
@@ -285,7 +285,7 @@ next
     by (auto intro: SubstFormP_Ex [THEN cut1])
 qed
 
-text{*Lemmas 7.5 and 7.6*}
+text\<open>Lemmas 7.5 and 7.6\<close>
 lemma ssubst_SubstFormP:
   fixes A::fm
   assumes w: "w \<in> Vs - V" and V: "V \<subseteq> Vs" "V' = p \<bullet> V"
@@ -302,7 +302,7 @@ proof -
     by (simp add: vquot_fm_def supp_conv_fresh ssubst_insert_if SubstFormP_vquot_dbfm)
 qed
 
-text{*Theorem 7.3*}
+text\<open>Theorem 7.3\<close>
 theorem PfP_implies_PfP_ssubst:
   fixes \<beta>::fm
   assumes \<beta>: "{} \<turnstile> PfP \<lceil>\<beta>\<rceil>"

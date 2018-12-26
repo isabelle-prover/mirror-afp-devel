@@ -2,9 +2,9 @@ theory OneThirdRuleDefs
 imports "../HOModel"
 begin
 
-section {* Verification of the \emph{One-Third Rule} Consensus Algorithm *}
+section \<open>Verification of the \emph{One-Third Rule} Consensus Algorithm\<close>
 
-text {*
+text \<open>
   We now apply the framework introduced so far to the verification of
   concrete algorithms, starting with algorithm \emph{One-Third Rule},
   which is one of the simplest algorithms presented in~\cite{charron:heardof}.
@@ -14,16 +14,16 @@ text {*
   it terminates in just two rounds. \emph{One-Third Rule} is an uncoordinated
   algorithm tolerating benign faults, hence SHO or coordinator sets do not
   play a role in its definition.
-*}
+\<close>
 
 
-subsection {* Model of the Algorithm *}
+subsection \<open>Model of the Algorithm\<close>
 
-text {*
+text \<open>
   We begin by introducing an anonymous type of processes of finite
-  cardinality that will instantiate the type variable @{text "'proc"}
+  cardinality that will instantiate the type variable \<open>'proc\<close>
   of the generic HO model.
-*}
+\<close>
 
 typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
@@ -32,42 +32,42 @@ instance Proc :: finite by (rule Proc_finite)
 abbreviation
   "N \<equiv> card (UNIV::Proc set)"
 
-text {*
-  The state of each process consists of two fields: @{text x} holds
-  the current value proposed by the process and @{text decide} the
+text \<open>
+  The state of each process consists of two fields: \<open>x\<close> holds
+  the current value proposed by the process and \<open>decide\<close> the
   value (if any, hence the option type) it has decided.
-*}
+\<close>
 
 record 'val pstate =
   x :: "'val"
   decide :: "'val option"
 
-text {*
-  The initial value of field @{text x} is unconstrained, but no decision
+text \<open>
+  The initial value of field \<open>x\<close> is unconstrained, but no decision
   has been taken initially.
-*}
+\<close>
 
 definition OTR_initState where
   "OTR_initState p st \<equiv> decide st = None"
 
-text {*
-  Given a vector @{text msgs} of values (possibly null) received from 
+text \<open>
+  Given a vector \<open>msgs\<close> of values (possibly null) received from 
   each process, @{term "HOV msgs v"} denotes the set of processes from
-  which value @{text v} was received.
-*}
+  which value \<open>v\<close> was received.
+\<close>
 
 definition HOV :: "(Proc \<Rightarrow> 'val option) \<Rightarrow> 'val \<Rightarrow> Proc set" where
   "HOV msgs v \<equiv> { q . msgs q = Some v }"
 
-text {*
+text \<open>
   @{term "MFR msgs v"} (``most frequently received'') holds for
-  vector @{text msgs} if no value has been received more frequently
-  than @{text v}.
+  vector \<open>msgs\<close> if no value has been received more frequently
+  than \<open>v\<close>.
 
   Some such value always exists, since there is only a finite set of
   processes and thus a finite set of possible cardinalities of the
   sets @{term "HOV msgs v"}.
-*}
+\<close>
 
 definition MFR :: "(Proc \<Rightarrow> 'val option) \<Rightarrow> 'val \<Rightarrow> bool" where
   "MFR msgs v \<equiv> \<forall>w. card (HOV msgs w) \<le> card (HOV msgs v)"
@@ -90,10 +90,10 @@ proof -
   thus ?thesis ..
 qed
 
-text {*
+text \<open>
   Also, if a process has heard from at least one other process,
   the most frequently received values are among the received messages.
-*}
+\<close>
 
 lemma MFR_in_msgs:
   assumes HO:"HOs m p \<noteq> {}"
@@ -115,27 +115,27 @@ proof -
     by (auto simp: HOV_def HOrcvdMsgs_def)
 qed
 
-text {*
-  @{term "TwoThirds msgs v"} holds if value @{text v} has been
+text \<open>
+  @{term "TwoThirds msgs v"} holds if value \<open>v\<close> has been
   received from more than $2/3$ of all processes.
-*}
+\<close>
 
 definition TwoThirds where
   "TwoThirds msgs v \<equiv> (2*N) div 3 < card (HOV msgs v)"
 
-text {*
+text \<open>
   The next-state relation of algorithm \emph{One-Third Rule} for every process
   is defined as follows:
   if the process has received values from more than $2/3$ of all processes,
-  the @{text x} field is set to the smallest among the most frequently received
+  the \<open>x\<close> field is set to the smallest among the most frequently received
   values, and the process decides value $v$ if it received $v$ from more than
-  $2/3$ of all processes. If @{text p} hasn't heard from more than $2/3$ of
+  $2/3$ of all processes. If \<open>p\<close> hasn't heard from more than $2/3$ of
   all processes, the state remains unchanged.
-  (Note that @{text Some} is the constructor of the option datatype, whereas
-  @{text "\<some>"} is Hilbert's choice operator.)
+  (Note that \<open>Some\<close> is the constructor of the option datatype, whereas
+  \<open>\<some>\<close> is Hilbert's choice operator.)
   We require the type of values to be linearly ordered so that the minimum
   is guaranteed to be well-defined.
-*}
+\<close>
 
 definition OTR_nextState where
   "OTR_nextState r p (st::('val::linorder) pstate) msgs st' \<equiv> 
@@ -146,25 +146,25 @@ definition OTR_nextState where
                     else decide st) \<rparr>
    else st' = st"
 
-text {*
+text \<open>
   The message sending function is very simple: at every round, every process
-  sends its current proposal (field @{text x} of its local state) to all 
+  sends its current proposal (field \<open>x\<close> of its local state) to all 
   processes.
-*}
+\<close>
 
 definition OTR_sendMsg where
   "OTR_sendMsg r p q st \<equiv> x st"
 
-subsection {* Communication Predicate for \emph{One-Third Rule} *}
+subsection \<open>Communication Predicate for \emph{One-Third Rule}\<close>
 
-text {*
+text \<open>
   We now define the communication predicate for the \emph{One-Third Rule}
   algorithm to be correct.
   It requires that, infinitely often, there is a round where all processes
-  receive messages from the same set @{text "\<Pi>"} of processes where @{text "\<Pi>"}
+  receive messages from the same set \<open>\<Pi>\<close> of processes where \<open>\<Pi>\<close>
   contains more than two thirds of all processes.
   The ``per-round'' part of the communication predicate is trivial.
-*}
+\<close>
 
 definition OTR_commPerRd where
   "OTR_commPerRd HOrs \<equiv> True"
@@ -173,14 +173,14 @@ definition OTR_commGlobal where
   "OTR_commGlobal HOs \<equiv>
     \<forall>r. \<exists>r0 \<Pi>. r0 \<ge> r \<and> (\<forall>p. HOs r0 p = \<Pi>) \<and> card \<Pi> > (2*N) div 3"
 
-subsection {* The \emph{One-Third Rule} Heard-Of Machine *}
+subsection \<open>The \emph{One-Third Rule} Heard-Of Machine\<close>
 
-text {*
+text \<open>
   We now define the HO machine for the \emph{One-Third Rule} algorithm
   by assembling the algorithm definition and its communication-predicate.
-  Because this is an uncoordinated algorithm, the @{text crd} arguments
+  Because this is an uncoordinated algorithm, the \<open>crd\<close> arguments
   of the initial- and next-state predicates are unused.
-*}
+\<close>
 
 definition OTR_HOMachine where
   "OTR_HOMachine =

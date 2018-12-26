@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JMM Instantiation for bytecode *}
+section \<open>JMM Instantiation for bytecode\<close>
 
 theory DRF_JVM
 imports
@@ -12,7 +12,7 @@ imports
   SC_Legal
 begin
 
-subsection {* DRF guarantee for the JVM *}
+subsection \<open>DRF guarantee for the JVM\<close>
 
 abbreviation (input) ka_xcp :: "'addr option \<Rightarrow> 'addr set"
 where "ka_xcp \<equiv> set_option"
@@ -700,7 +700,7 @@ proof -
   next
     show "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using vs2
-      by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF `wf_syscls P` ok])
+      by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF \<open>wf_syscls P\<close> ok])
   qed
 qed
 
@@ -1027,7 +1027,7 @@ proof -
     using correct_jvm_state_initial[OF wf wf_start]
     by(simp add: correct_jvm_state_def start_state_def split_beta)
   moreover have ka: "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-      using ka by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF `wf_syscls P` ok])
+      using ka by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF \<open>wf_syscls P\<close> ok])
   ultimately show ?thesis by(rule non_speculative_read_into_cut_and_update)
 qed
 
@@ -1052,7 +1052,7 @@ proof -
       by(simp add: correct_jvm_state_def start_state_def split_beta)
   next
     show "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-      using ka by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF `wf_syscls P` ok])
+      using ka by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF \<open>wf_syscls P\<close> ok])
   qed
 qed
 
@@ -1083,17 +1083,17 @@ proof -
   let ?start_obs = "map snd (lift_start_obs start_tid start_heap_obs)"
   let ?start_state = "init_fin_lift_state status (JVM_start_state P C M vs)"
 
-  note `wf_syscls P` non_speculative_read[OF wf hrt wf_start ka]
+  note \<open>wf_syscls P\<close> non_speculative_read[OF wf hrt wf_start ka]
   moreover have "ts_ok ?wt_ok (thr ?start_state) (shr ?start_state)"
     using correct_jvm_state_initial[OF wf wf_start]
     by(simp add: correct_jvm_state_def start_state_def split_beta)
   moreover
   have ka_allocated: "jvm_known_addrs start_tid ((\<lambda>(mxs, mxl0, b) vs. (None, [([], Null # vs @ replicate mxl0 undefined_value, fst (method P C M), M, 0)])) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
-    using ka by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF `wf_syscls P` ok])
+    using ka by(auto simp add: split_beta start_addrs_allocated jvm_known_addrs_def intro: start_tid_start_addrs[OF \<open>wf_syscls P\<close> ok])
   ultimately have "execd_mthr.if.hb_completion ?start_state (lift_start_obs start_tid start_heap_obs)"
     by(rule non_speculative_read_into_hb_completion)
 
-  thus ?thesis using `wf_syscls P`
+  thus ?thesis using \<open>wf_syscls P\<close>
   proof(rule sc_legal)
     from correct_jvm_state_initial[OF wf wf_start]
     show "correct_state_ts \<Phi> (thr (JVM_start_state P C M vs)) start_heap"
@@ -1137,7 +1137,7 @@ proof -
   from sc have "ta_seq_consist P Map.empty (lmap snd ?E)"
     unfolding lmap_lappend_distrib lmap_lconcat llist.map_comp split_def o_def lmap_llist_of map_map snd_conv
     by(simp add: ta_seq_consist_lappend ta_seq_consist_start_heap_obs)
-  from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF `?E \<in> ?\<E>`] this]
+  from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF \<open>?E \<in> ?\<E>\<close>] this]
   obtain ws where "sequentially_consistent P (?E, ws)" "P \<turnstile> (?E, ws) \<surd>" by iprover
   ultimately show ?thesis by blast
 qed
@@ -1159,9 +1159,9 @@ qed
 
 end
 
-text {*
+text \<open>
   One could now also prove that the aggressive JVM satisfies @{term drf}.
-  The key would be that @{text welltyped_commute} also holds for @{term "non_speculative"} prefixes from start.
-*}
+  The key would be that \<open>welltyped_commute\<close> also holds for @{term "non_speculative"} prefixes from start.
+\<close>
 
 end

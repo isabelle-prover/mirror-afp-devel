@@ -2,53 +2,53 @@ theory OperationalCorrespondence
   imports SourceTargetRelation
 begin
 
-section {* Operational Correspondence *}
+section \<open>Operational Correspondence\<close>
 
-text {* We consider different variants of operational correspondence. This criterion consists of a
+text \<open>We consider different variants of operational correspondence. This criterion consists of a
         completeness and a soundness condition and is often defined with respect to a relation TRel
         on target terms. Operational completeness modulo TRel ensures that an encoding preserves
         source term behaviour modulo TRel by requiring that each sequence of source term steps can
-        be mimicked by its translation such that the respective derivatives are related by TRel. *}
+        be mimicked by its translation such that the respective derivatives are related by TRel.\<close>
 
 abbreviation (in encoding) operational_complete :: "('procT \<times> 'procT) set \<Rightarrow> bool" where
   "operational_complete TRel \<equiv>
    \<forall>S S'. S \<longmapsto>Source* S' \<longrightarrow> (\<exists>T. \<lbrakk>S\<rbrakk> \<longmapsto>Target* T \<and> (\<lbrakk>S'\<rbrakk>, T) \<in> TRel)"
 
-text {* We call an encoding strongly operational complete modulo TRel if each source term step has
-        to be mimicked by single target term step of its translation. *}
+text \<open>We call an encoding strongly operational complete modulo TRel if each source term step has
+        to be mimicked by single target term step of its translation.\<close>
 
 abbreviation (in encoding) strongly_operational_complete :: "('procT \<times> 'procT) set \<Rightarrow> bool" where
   "strongly_operational_complete TRel \<equiv>
    \<forall>S S'. S \<longmapsto>Source S' \<longrightarrow> (\<exists>T. \<lbrakk>S\<rbrakk> \<longmapsto>Target T \<and> (\<lbrakk>S'\<rbrakk>, T) \<in> TRel)"
 
-text {* Operational soundness ensures that the encoding does not introduce new behaviour. An
+text \<open>Operational soundness ensures that the encoding does not introduce new behaviour. An
         encoding is weakly operational sound modulo TRel if each sequence of target term steps is
         part of the translation of a sequence of source term steps such that the derivatives are
         related by TRel. It allows for intermediate states on the translation of source term step
-        that are not the result of translating a source term. *}
+        that are not the result of translating a source term.\<close>
 
 abbreviation (in encoding) weakly_operational_sound :: "('procT \<times> 'procT) set \<Rightarrow> bool" where
   "weakly_operational_sound TRel \<equiv>
    \<forall>S T. \<lbrakk>S\<rbrakk> \<longmapsto>Target* T \<longrightarrow> (\<exists>S' T'. S \<longmapsto>Source* S' \<and> T \<longmapsto>Target* T' \<and> (\<lbrakk>S'\<rbrakk>, T') \<in> TRel)"
 
-text {* And encoding is operational sound modulo TRel if each sequence of target term steps is the
+text \<open>And encoding is operational sound modulo TRel if each sequence of target term steps is the
         translation of a sequence of source term steps such that the derivatives are related by
         TRel. This criterion does not allow for intermediate states, i.e., does not allow to a
         reach target term from an encoded source term that is not related by TRel to the
-        translation of a source term. *}
+        translation of a source term.\<close>
 
 abbreviation (in encoding) operational_sound :: "('procT \<times> 'procT) set \<Rightarrow> bool" where
   "operational_sound TRel \<equiv> \<forall>S T. \<lbrakk>S\<rbrakk> \<longmapsto>Target* T \<longrightarrow> (\<exists>S'. S \<longmapsto>Source* S' \<and> (\<lbrakk>S'\<rbrakk>, T) \<in> TRel)"
 
-text {* Strong operational soundness modulo TRel is a stricter variant of operational soundness,
-        where a single target term step has to be mapped on a single source term step. *}
+text \<open>Strong operational soundness modulo TRel is a stricter variant of operational soundness,
+        where a single target term step has to be mapped on a single source term step.\<close>
 
 abbreviation (in encoding) strongly_operational_sound :: "('procT \<times> 'procT) set \<Rightarrow> bool" where
   "strongly_operational_sound TRel \<equiv>
    \<forall>S T. \<lbrakk>S\<rbrakk> \<longmapsto>Target T \<longrightarrow> (\<exists>S'. S \<longmapsto>Source S' \<and> (\<lbrakk>S'\<rbrakk>, T) \<in> TRel)"
 
-text {* An encoding is weakly operational corresponding modulo TRel if it is operational complete
-        and weakly operational sound modulo TRel. *}
+text \<open>An encoding is weakly operational corresponding modulo TRel if it is operational complete
+        and weakly operational sound modulo TRel.\<close>
 
 abbreviation (in encoding) weakly_operational_corresponding
     :: "('procT \<times> 'procT) set \<Rightarrow> bool"
@@ -56,14 +56,14 @@ abbreviation (in encoding) weakly_operational_corresponding
   "weakly_operational_corresponding TRel \<equiv>
    operational_complete TRel \<and> weakly_operational_sound TRel"
 
-text {* Operational correspondence modulo is the combination of operational completeness and
-        operational soundness modulo TRel. *}
+text \<open>Operational correspondence modulo is the combination of operational completeness and
+        operational soundness modulo TRel.\<close>
 
 abbreviation (in encoding) operational_corresponding :: "('procT \<times> 'procT) set \<Rightarrow> bool" where
   "operational_corresponding TRel \<equiv> operational_complete TRel \<and> operational_sound TRel"
 
-text {* An encoding is strongly operational corresponding modulo TRel if it is strongly operational
-        complete and strongly operational sound modulo TRel. *}
+text \<open>An encoding is strongly operational corresponding modulo TRel if it is strongly operational
+        complete and strongly operational sound modulo TRel.\<close>
 
 abbreviation (in encoding) strongly_operational_corresponding
     :: "('procT \<times> 'procT) set \<Rightarrow> bool"
@@ -71,10 +71,10 @@ abbreviation (in encoding) strongly_operational_corresponding
   "strongly_operational_corresponding TRel \<equiv>
    strongly_operational_complete TRel \<and> strongly_operational_sound TRel"
 
-subsection {* Trivial Operational Correspondence Results *}
+subsection \<open>Trivial Operational Correspondence Results\<close>
 
-text {* Every encoding is (weakly) operational corresponding modulo the all relation on target
-        terms. *}
+text \<open>Every encoding is (weakly) operational corresponding modulo the all relation on target
+        terms.\<close>
 
 lemma (in encoding) operational_correspondence_modulo_all_relation:
   shows "operational_complete {(T1, T2). True}"
@@ -98,8 +98,8 @@ lemma (in encoding) operational_correspondence_modulo_some_target_relation:
             all_relation_is_weak_reduction_bisimulation[where Cal="Target"]
     by blast+
 
-text {* Strong operational correspondence requires that source can perform a step iff their
-        translations can perform a step. *}
+text \<open>Strong operational correspondence requires that source can perform a step iff their
+        translations can perform a step.\<close>
 
 lemma (in encoding) strong_operational_correspondence_modulo_some_target_relation:
   shows "(\<exists>TRel. strongly_operational_corresponding TRel)
@@ -132,11 +132,11 @@ proof -
     by blast
 qed
 
-subsection {* (Strong) Operational Completeness vs (Strong) Simulation *}
+subsection \<open>(Strong) Operational Completeness vs (Strong) Simulation\<close>
 
-text {* An encoding is operational complete modulo a weak simulation on target terms TRel iff there
+text \<open>An encoding is operational complete modulo a weak simulation on target terms TRel iff there
         is a relation, like indRelRTPO, that relates at least all source terms to their literal
-        translations, includes TRel, and is a weak simulation. *}
+        translations, includes TRel, and is a weak simulation.\<close>
 
 lemma (in encoding) weak_reduction_simulation_impl_OCom:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -354,9 +354,9 @@ next
     by simp
 qed
 
-text {* An encoding is strong operational complete modulo a strong simulation on target terms TRel
+text \<open>An encoding is strong operational complete modulo a strong simulation on target terms TRel
         iff there is a relation, like indRelRTPO, that relates at least all source terms to their
-        literal translations, includes TRel, and is a strong simulation. *}
+        literal translations, includes TRel, and is a strong simulation.\<close>
 
 lemma (in encoding) strong_reduction_simulation_impl_SOCom:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -643,10 +643,10 @@ next
     by blast
 qed
 
-subsection {* Weak Operational Soundness vs Contrasimulation *}
+subsection \<open>Weak Operational Soundness vs Contrasimulation\<close>
 
-text {* If the inverse of a relation that includes TRel and relates source terms and their literal
-        translations is a contrasimulation, then the encoding is weakly operational sound. *}
+text \<open>If the inverse of a relation that includes TRel and relates source terms and their literal
+        translations is a contrasimulation, then the encoding is weakly operational sound.\<close>
 
 lemma (in encoding) weak_reduction_contrasimulation_impl_WOSou:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -683,12 +683,12 @@ proof clarify
     by blast
 qed
 
-subsection {* (Strong) Operational Soundness vs (Strong) Simulation *}
+subsection \<open>(Strong) Operational Soundness vs (Strong) Simulation\<close>
 
-text {* An encoding is operational sound modulo a relation TRel whose inverse is a weak reduction
+text \<open>An encoding is operational sound modulo a relation TRel whose inverse is a weak reduction
         simulation on target terms iff there is a relation, like indRelRTPO, that relates at least
         all source terms to their literal translations, includes TRel, and whose inverse is a weak
-        simulation. *}
+        simulation.\<close>
 
 lemma (in encoding) weak_reduction_simulation_impl_OSou:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -888,10 +888,10 @@ next
     by simp
 qed
 
-text {* An encoding is strongly operational sound modulo a relation TRel whose inverse is a strong
+text \<open>An encoding is strongly operational sound modulo a relation TRel whose inverse is a strong
         reduction simulation on target terms iff there is a relation, like indRelRTPO, that relates
         at least all source terms to their literal translations, includes TRel, and whose inverse
-        is a strong simulation. *}
+        is a strong simulation.\<close>
 
 lemma (in encoding) strong_reduction_simulation_impl_SOSou:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -1143,11 +1143,11 @@ next
     by blast
 qed
 
-subsection {* Weak Operational Correspondence vs Correspondence Similarity *}
+subsection \<open>Weak Operational Correspondence vs Correspondence Similarity\<close>
 
-text {* If there exists a relation that relates at least all source terms and their literal
+text \<open>If there exists a relation that relates at least all source terms and their literal
         translations, includes TRel, and is a correspondence simulation then the encoding is weakly
-        operational corresponding w.r.t. TRel. *}
+        operational corresponding w.r.t. TRel.\<close>
 
 lemma (in encoding) weak_reduction_correspondence_simulation_impl_WOC:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -1184,10 +1184,10 @@ next
   qed
 qed
 
-text {* An encoding is weakly operational corresponding w.r.t. a correspondence simulation on
+text \<open>An encoding is weakly operational corresponding w.r.t. a correspondence simulation on
         target terms TRel iff there exists a relation, like indRelRTPO, that relates at least all
         source terms and their literal translations, includes TRel, and is a correspondence
-        simulation. *}
+        simulation.\<close>
 
 lemma (in encoding) WOC_iff_indRelRTPO_is_reduction_correspondence_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -1507,13 +1507,13 @@ next
     by blast
 qed
 
-subsection {* (Strong) Operational Correspondence vs (Strong) Bisimilarity *}
+subsection \<open>(Strong) Operational Correspondence vs (Strong) Bisimilarity\<close>
 
-text {* An encoding is operational corresponding w.r.t a weak bisimulation on target terms TRel iff
+text \<open>An encoding is operational corresponding w.r.t a weak bisimulation on target terms TRel iff
         there exists a relation, like indRelRTPO, that relates at least all source terms and their
         literal translations, includes TRel, and is a weak bisimulation. Thus this variant of
         operational correspondence ensures that source terms and their translations are weak
-        bisimilar. *}
+        bisimilar.\<close>
 
 lemma (in encoding) OC_iff_indRelRTPO_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2087,11 +2087,11 @@ next
     by simp
 qed
 
-text {* An encoding is strong operational corresponding w.r.t a strong bisimulation on target terms
+text \<open>An encoding is strong operational corresponding w.r.t a strong bisimulation on target terms
         TRel iff there exists a relation, like indRelRTPO, that relates at least all source terms
         and their literal translations, includes TRel, and is a strong bisimulation. Thus this
         variant of operational correspondence ensures that source terms and their translations are
-        strong bisimilar. *}
+        strong bisimilar.\<close>
 
 lemma (in encoding) SOC_iff_indRelRTPO_is_strong_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"

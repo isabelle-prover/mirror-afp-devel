@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* The source language as an instance of the framework *}
+section \<open>The source language as an instance of the framework\<close>
 
 theory Threaded
 imports
@@ -116,7 +116,7 @@ by(induct)(auto dest: redT_hext_incr intro: hext_trans)
 
 end
 
-subsection {* Lifting @{term "tconf"} to multithreaded states *}
+subsection \<open>Lifting @{term "tconf"} to multithreaded states\<close>
 
 context J_heap begin
 
@@ -139,7 +139,7 @@ end
 sublocale J_heap < red_tconf: lifting_wf final_expr "mred P" convert_RA "\<lambda>t ex h. P,h \<turnstile> t \<surd>t"
 by(rule lifting_wf_tconf)
 
-subsection {* Towards agreement between the framework semantics' lock state and the locks stored in the expressions *}
+subsection \<open>Towards agreement between the framework semantics' lock state and the locks stored in the expressions\<close>
 
 primrec sync_ok :: "('a,'b,'addr) exp \<Rightarrow> bool"
   and sync_oks :: "('a,'b,'addr) exp list \<Rightarrow> bool"
@@ -203,13 +203,13 @@ lemma assumes wf: "wf_J_prog P"
   and reds_preserve_sync_oks: "\<lbrakk> extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es \<rbrakk> \<Longrightarrow> sync_oks es'"
 proof(induct rule: red_reds.inducts)
   case (RedCall s a U M Ts T pns body D vs)
-  from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+  from wf \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D\<close>
   have "wf_mdecl wf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)"
     by(rule sees_wf_mdecl)
   then obtain T where "P,[this\<mapsto>Class D,pns[\<mapsto>]Ts] \<turnstile> body :: T"
     by(auto simp add: wf_mdecl_def)
   hence "expr_locks body = (\<lambda>ad. 0)" by(rule WT_expr_locks)
-  with `length vs = length pns` `length Ts = length pns` 
+  with \<open>length vs = length pns\<close> \<open>length Ts = length pns\<close> 
   have "expr_locks (blocks pns Ts vs body) = (\<lambda>ad. 0)"
     by(simp add: expr_locks_blocks)
   thus ?case by(auto intro: expr_locks_sync_ok)
@@ -265,7 +265,7 @@ done
 
 end
 
-text {* Framework lock state agrees with locks stored in the expression *}
+text \<open>Framework lock state agrees with locks stored in the expression\<close>
 
 definition lock_ok :: "('addr,'thread_id) locks \<Rightarrow> ('addr,'thread_id,('a, 'b,'addr) exp \<times> 'x) thread_info \<Rightarrow> bool" where
   "\<And>ln. lock_ok ls ts \<equiv> \<forall>t. (case (ts t) of None    \<Rightarrow> (\<forall>l. has_locks (ls $ l) t = 0)
@@ -323,7 +323,7 @@ apply(drule WT_expr_locks)
 apply(simp add: expr_locks_blocks)
 done
 
-subsection {* Preservation of lock state agreement *}
+subsection \<open>Preservation of lock state agreement\<close>
 
 fun upd_expr_lock_action :: "int \<Rightarrow> lock_action \<Rightarrow> int"
 where
@@ -377,13 +377,13 @@ proof -
         \<Longrightarrow> upd_expr_locks (\<lambda>ad. 0) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> = (\<lambda>ad. (int o expr_lockss es') ad - (int o expr_lockss es) ad)"
   proof(induct rule: red_reds.inducts)
     case (RedCall s a U M Ts T pns body D vs)
-    from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+    from wf \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D\<close>
     have "wf_mdecl wf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)"
       by(rule sees_wf_mdecl)
     then obtain T where "P,[this\<mapsto>Class D,pns[\<mapsto>]Ts] \<turnstile> body :: T"
       by(auto simp add: wf_mdecl_def)
     hence "expr_locks body = (\<lambda>ad. 0)" by(rule WT_expr_locks)
-    with `length vs = length pns` `length Ts = length pns` 
+    with \<open>length vs = length pns\<close> \<open>length Ts = length pns\<close> 
     have "expr_locks (blocks pns Ts vs body) = (\<lambda>ad. 0)"
       by(simp add: expr_locks_blocks)
     thus ?case by(auto intro: expr_locks_sync_ok)
@@ -469,7 +469,7 @@ proof(cases ta)
   case (NewThread T x m)
   obtain E X where [simp]: "x = (E, X)" by (cases x, auto)
   with NewThread have "sync_ok E" by(simp)(rule nt)
-  with NewThread `sync_es_ok ts h` show ?thesis
+  with NewThread \<open>sync_es_ok ts h\<close> show ?thesis
     apply -
     apply(rule ts_okI)
     apply(case_tac "t=T")
@@ -484,10 +484,10 @@ proof(induct tas arbitrary: ts)
   case Nil thus ?case by(auto intro: ts_okI dest: ts_okD)
 next
   case (Cons TA TAS TS)
-  note IH = `\<And>ts. \<lbrakk>sync_es_ok ts h; \<And>t e x h''. NewThread t (e, x) h'' \<in> set TAS \<Longrightarrow> sync_ok e\<rbrakk> 
-            \<Longrightarrow> sync_es_ok (redT_updTs ts TAS) h'`
-  note nt = `\<And>t e x h. NewThread t (e, x) h \<in> set (TA # TAS) \<Longrightarrow> sync_ok e`
-  from `sync_es_ok TS h` nt
+  note IH = \<open>\<And>ts. \<lbrakk>sync_es_ok ts h; \<And>t e x h''. NewThread t (e, x) h'' \<in> set TAS \<Longrightarrow> sync_ok e\<rbrakk> 
+            \<Longrightarrow> sync_es_ok (redT_updTs ts TAS) h'\<close>
+  note nt = \<open>\<And>t e x h. NewThread t (e, x) h \<in> set (TA # TAS) \<Longrightarrow> sync_ok e\<close>
+  from \<open>sync_es_ok TS h\<close> nt
   have "sync_es_ok (redT_updT TS TA) h"
     by(auto elim!: sync_ok_redT_updT)
   hence "sync_es_ok (redT_updTs (redT_updT TS TA) TAS) h'"
@@ -542,7 +542,7 @@ proof -
         by(auto split: if_split_asm intro: redT_updTs_None)
       with loes have "has_locks (ls $ l) t'' = 0"
         by(auto dest: lock_okD1)
-      moreover from `?ts' t'' = None` 
+      moreover from \<open>?ts' t'' = None\<close> 
       have "t \<noteq> t''" by(simp split: if_split_asm)
       ultimately show "has_locks (ls' $ l) t'' = 0"
         by(simp add: red_mthr.redT_has_locks_inv[OF redT])
@@ -553,7 +553,7 @@ proof -
       show "has_locks (ls' $ l) t'' + ln'' $ l = expr_locks e'' l"
       proof(cases "t = t''")
         case True
-        note tt'' = `t = t''`
+        note tt'' = \<open>t = t''\<close>
         with ts't'' have  e'': "e'' = e'" and x'': "x'' = x'"
           and ln'': "ln'' = redT_updLns ls t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>" by auto
         have "ls_els_ok ls t no_wait_locks (int o expr_locks e)"
@@ -571,7 +571,7 @@ proof -
           by(auto dest: ls_els_okD[where l = l] simp: lock_expr_locks_ok_def)
       next
         case False
-        note tt'' = `t \<noteq> t''`
+        note tt'' = \<open>t \<noteq> t''\<close>
         from lota have lao: "lock_actions_ok (ls $ l) t (\<lbrace>ta\<rbrace>\<^bsub>l\<^esub> $ l)"
           by(simp add: lock_ok_las_def)
         show ?thesis
@@ -616,7 +616,7 @@ proof -
       by auto
     obtain e x where [simp]: "a = (e, x)" by (cases a, auto)
     from ts' have ts': "ts' = ts(t \<mapsto> ((e, x), no_wait_locks))" by simp
-    from `ts t = \<lfloor>(a, ln)\<rfloor>` have tst: "ts t = \<lfloor>((e, x), ln)\<rfloor>" by simp
+    from \<open>ts t = \<lfloor>(a, ln)\<rfloor>\<close> have tst: "ts t = \<lfloor>((e, x), ln)\<rfloor>" by simp
     show ?thesis
     proof(rule lock_okI)
       fix t'' l
@@ -642,19 +642,19 @@ proof -
         show ?thesis
         proof(cases "ln $ l > 0")
           case True
-          with `may_acquire_all ls t ln` ls' have "may_lock (ls $ l) t"
+          with \<open>may_acquire_all ls t ln\<close> ls' have "may_lock (ls $ l) t"
             by(auto elim: may_acquire_allE)
           with ls'
           have "has_locks (ls' $ l) t = has_locks (ls $ l) t + ln $ l"
             by(simp add: has_locks_acquire_locks_conv)
-          with `has_locks (ls $ l) t + ln $ l = expr_locks e l`
+          with \<open>has_locks (ls $ l) t + ln $ l = expr_locks e l\<close>
           show ?thesis by(simp)
         next
           case False
           hence "ln $ l = 0" by simp
           with ls' have "has_locks (ls' $ l) t = has_locks (ls $ l) t"
             by(simp)
-          with `has_locks (ls $ l) t + ln $ l = expr_locks e l` `ln $ l = 0`
+          with \<open>has_locks (ls $ l) t + ln $ l = expr_locks e l\<close> \<open>ln $ l = 0\<close>
           show ?thesis by(simp)
         qed
       next
@@ -665,17 +665,17 @@ proof -
         show ?thesis
         proof(cases "ln $ l > 0")
           case False
-          with `t \<noteq> t''` ls'
+          with \<open>t \<noteq> t''\<close> ls'
           have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''" by(simp)
-          with `has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l`
+          with \<open>has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l\<close>
           show ?thesis by(simp)
         next
           case True
-          with `may_acquire_all ls t ln` have "may_lock (ls $ l) t"
+          with \<open>may_acquire_all ls t ln\<close> have "may_lock (ls $ l) t"
             by(auto elim: may_acquire_allE)
-          with ls' `t \<noteq> t''` have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''"
+          with ls' \<open>t \<noteq> t''\<close> have "has_locks (ls' $ l) t'' = has_locks (ls $ l) t''"
             by(simp add: has_locks_acquire_locks_conv')
-          with ls' `has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l`
+          with ls' \<open>has_locks (ls $ l) t'' + ln'' $ l = expr_locks e'' l\<close>
           show ?thesis by(simp)
         qed
       qed
@@ -706,7 +706,7 @@ by simp
 
 end
 
-subsection {* Determinism *}
+subsection \<open>Determinism\<close>
 
 context J_heap_base begin
 

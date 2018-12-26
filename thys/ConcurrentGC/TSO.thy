@@ -15,14 +15,14 @@ imports
 begin
 
 (*>*)
-subsection{* Coarse TSO invariants *}
+subsection\<open>Coarse TSO invariants\<close>
 
-text{*
+text\<open>
 
 Very coarse invariants about what processes write, and when they hold
 the TSO lock.
 
-*}
+\<close>
 
 abbreviation gc_writes :: "('field, 'ref) mem_write_action \<Rightarrow> bool" where
   "gc_writes w \<equiv> case w of mw_Mark _ _ \<Rightarrow> True | mw_Phase _ \<Rightarrow> True | mw_fM _ \<Rightarrow> True | mw_fA _ \<Rightarrow> True | _ \<Rightarrow> False"
@@ -135,18 +135,18 @@ by (vcg_jackhammer simp: tso_writes_inv_def)
 
 (*>*)
 
-subsubsection{* Locations where the TSO lock is held *}
+subsubsection\<open>Locations where the TSO lock is held\<close>
 
-text (in gc) {*
+text (in gc) \<open>
 
 The GC holds the TSO lock only during the \texttt{CAS} in @{const
 "mark_object"}.
 
-*}
+\<close>
 
 definition gc_tso_lock_locs :: "location set" where
   "gc_tso_lock_locs \<equiv> \<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l"
-local_setup {* Cimp.locset @{thm "gc_tso_lock_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "gc_tso_lock_locs_def"}\<close>
 
 definition (in gc) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "tso_lock_invL \<equiv>
@@ -169,16 +169,16 @@ lemma (in mut_m) gc_tso_lock_invL[intro]:
 by vcg_ni
 
 (*>*)
-text (in mut_m) {*
+text (in mut_m) \<open>
 
 A mutator holds the TSO lock only during the \texttt{CAS}s in @{const
 "mark_object"}.
 
-*}
+\<close>
 
 definition "mut_tso_lock_locs \<equiv>
   \<Union>l\<in>{ ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'' }. suffixed l"
-local_setup {* Cimp.locset @{thm "mut_tso_lock_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_tso_lock_locs_def"}\<close>
 
 definition (in mut_m) tso_lock_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "tso_lock_invL \<equiv>

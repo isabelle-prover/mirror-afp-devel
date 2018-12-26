@@ -5,12 +5,12 @@
     License:     LGPL
 *)
 
-section {* The Formalization of JML Operators *}
+section \<open>The Formalization of JML Operators\<close>
 
 theory JML imports "../Isabelle_Store/StoreProperties" begin
 
-text {* JML operators that are to be used in Hoare formulae can be formalized here.
-*}
+text \<open>JML operators that are to be used in Hoare formulae can be formalized here.
+\<close>
 
 definition
   instanceof :: "Value \<Rightarrow> Javatype \<Rightarrow> bool"  ("_ @instanceof _")

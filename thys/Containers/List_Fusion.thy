@@ -6,7 +6,7 @@ imports
   Main
 begin
 
-section {* Shortcut fusion for lists *}
+section \<open>Shortcut fusion for lists\<close>
 
 lemma Option_map_mono [partial_function_mono]:
   "mono_option f \<Longrightarrow> mono_option (\<lambda>x. map_option g (f x))"
@@ -32,7 +32,7 @@ qed
 
 
 
-subsection {* The type of generators for finite lists *}
+subsection \<open>The type of generators for finite lists\<close>
 
 type_synonym ('a, 's) raw_generator = "('s \<Rightarrow> bool) \<times> ('s \<Rightarrow> 'a \<times> 's)"
 
@@ -63,7 +63,7 @@ lemma wf_terminates:
   shows "terminates g"
 proof(rule terminatesI)
   fix s
-  from `wf R` show "s \<in> terminates_on g"
+  from \<open>wf R\<close> show "s \<in> terminates_on g"
   proof(induction rule: wf_induct[rule_format, consumes 1, case_names wf])
     case (wf s)
     show ?case
@@ -197,7 +197,7 @@ lemma Nil_eq_unfoldr_iff [simp]:
   "[] = list.unfoldr g s \<longleftrightarrow> \<not> list.has_next g s"
 by(auto intro: sym dest: sym)
 
-subsection {* Generators for @{typ "'a list"} *}
+subsection \<open>Generators for @{typ "'a list"}\<close>
 
 primrec list_has_next :: "'a list \<Rightarrow> bool"
 where
@@ -521,10 +521,10 @@ next
     case Nil thus ?case by(simp del: Nil_eq_unfoldr_iff)
   next
     case (Cons x' xs)
-    from `x' # xs = list.unfoldr g s`[symmetric, simp]
+    from \<open>x' # xs = list.unfoldr g s\<close>[symmetric, simp]
     have [simp]: "fst (list.next g s) = x' \<and> list.has_next g s \<and> list.unfoldr g (snd (list.next g s)) = xs"
       by(subst (asm) list.unfoldr.simps)(simp add: split_beta split: if_split_asm)
-    from Cons.hyps(1)[of "snd (list.next g s)"] `x \<in> set (list.unfoldr g s)` `P x` show ?case
+    from Cons.hyps(1)[of "snd (list.next g s)"] \<open>x \<in> set (list.unfoldr g s)\<close> \<open>P x\<close> show ?case
       by(subst has_next_filter_generator)(auto simp add: split_beta)
   qed
 qed
@@ -568,7 +568,7 @@ qed
 
 end
 
-subsection {* Destroying lists *}
+subsection \<open>Destroying lists\<close>
 
 definition hd_fusion :: "('a, 's) generator \<Rightarrow> 's \<Rightarrow> 'a"
 where "hd_fusion g s = hd (list.unfoldr g s)"

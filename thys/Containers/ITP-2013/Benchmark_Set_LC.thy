@@ -52,17 +52,17 @@ proof
     assume ?lhs
     then obtain "x < y" "x \<noteq> y - 1" ..
     have "0 \<le> uint x" by simp
-    also have "\<dots> < uint y" using `x < y` by(simp add: word_less_def)
+    also have "\<dots> < uint y" using \<open>x < y\<close> by(simp add: word_less_def)
     finally have "0 < uint y" .
     then have "y - 1 < y" by(simp add: word_less_def uint_sub_if' not_le)
-    moreover from `0 < uint y` `x < y` `x \<noteq> y - 1`
+    moreover from \<open>0 < uint y\<close> \<open>x < y\<close> \<open>x \<noteq> y - 1\<close>
     have "x < y - 1" by(simp add: word_less_def uint_sub_if' uint_arith_simps(3))
     ultimately show ?rhs by blast
   next
     assume ?rhs
     then obtain z where z: "x < z" "z < y" by blast
     have "0 \<le> uint z" by simp
-    also have "\<dots> < uint y" using `z < y` by(simp add: word_less_def)
+    also have "\<dots> < uint y" using \<open>z < y\<close> by(simp add: word_less_def)
     finally show ?lhs using z by(auto simp add: word_less_def uint_sub_if')
   qed
   thus "?pi (Some x) (Some y) = (\<exists>z>x. z < y)" by simp

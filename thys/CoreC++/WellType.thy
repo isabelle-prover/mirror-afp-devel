@@ -6,12 +6,12 @@
     Based on the Jinja theory J/WellType.thy by Tobias Nipkow 
 *)
 
-section {* Well-typedness of CoreC++ expressions *}
+section \<open>Well-typedness of CoreC++ expressions\<close>
 
 theory WellType imports Syntax TypeRel begin
 
 
-subsection {* The rules *}
+subsection \<open>The rules\<close>
 
 inductive
   WT :: "[prog,env,expr     ,ty     ] \<Rightarrow> bool"
@@ -110,7 +110,7 @@ lemmas WT_WTs_induct = WT_WTs.induct [split_format (complete)]
   and WT_WTs_inducts = WT_WTs.inducts [split_format (complete)]
 
 
-subsection{* Easy consequences *}
+subsection\<open>Easy consequences\<close>
 
 lemma [iff]: "(P,E \<turnstile> [] [::] Ts) = (Ts = [])"
 

@@ -28,9 +28,9 @@ imports
   NthRoot_Impl
 begin
 
-section {*Executable algorithms for square roots*}
+section \<open>Executable algorithms for square roots\<close>
 
-text {*
+text \<open>
   This theory provides executable algorithms for computing square-roots of numbers which
   are all based on the Babylonian method (which is also known as Heron's method or Newton's method).
   
@@ -50,21 +50,21 @@ text {*
   $(a_1x_1 + \dots a_nx_n)^2 = p$ had to be solved over the integers, where $p$ is a concrete polynomial.
   For example, for the equation $(ax + by)^2 = 4x^2 - 12xy + 9y^2$ one easily figures out that
   $a^2 = 4, b^2 = 9$, and $ab = -6$, which results in a possible solution $a = \sqrt 4 = 2, b = - \sqrt 9 = -3$.
-*}
+\<close>
 
-subsection {* The Babylonian method *}
+subsection \<open>The Babylonian method\<close>
 
-text {*
+text \<open>
 The Babylonian method for computing $\sqrt n$ iteratively computes 
 \[
 x_{i+1} = \frac{\frac n{x_i} + x_i}2
 \]
 until $x_i^2 \approx n$. Note that if $x_0^2 \geq n$, then for all $i$ we have both
 $x_i^2 \geq n$ and $x_i \geq x_{i+1}$. 
-*}
+\<close>
 
-subsection {* The Babylonian method using integer division *}
-text {*
+subsection \<open>The Babylonian method using integer division\<close>
+text \<open>
   First, the algorithm is developed for the non-negative integers.
   Here, the division operation $\frac xy$ is replaced by @{term "x div y = \<lfloor>of_int x / of_int y\<rfloor>"}.
   Note that replacing @{term "\<lfloor>of_int x / of_int y\<rfloor>"} by @{term "\<lceil>of_int x / of_int y\<rceil>"} would lead to non-termination
@@ -76,12 +76,12 @@ text {*
   we have experienced in an earlier state of this development where everything was based on naturals.
 
   Since the elements
-  $x_0, x_1, x_2,\dots$ are monotone decreasing, in the main algorithm we abort as soon as $x_i^2 \leq n$. *}
+  $x_0, x_1, x_2,\dots$ are monotone decreasing, in the main algorithm we abort as soon as $x_i^2 \leq n$.\<close>
 
 
-text {* \textbf{Since in the meantime, all of these algorithms have been generalized to arbitrary
+text \<open>\textbf{Since in the meantime, all of these algorithms have been generalized to arbitrary
   $p$-th roots in @{theory Sqrt_Babylonian.NthRoot_Impl}, we just instantiate the general algorithms by $p = 2$ and then provide 
-  specialized code equations which are more efficient than the general purpose algorithms.} *}
+  specialized code equations which are more efficient than the general purpose algorithms.}\<close>
 
 definition sqrt_int_main' :: "int \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   [simp]: "sqrt_int_main' x n = root_int_main' 1 1 2 x n"
@@ -166,7 +166,7 @@ lemma sqrt_int_ceiling_bound: "0 \<le> x \<Longrightarrow> x \<le> (sqrt_int_cei
   by (metis of_int_power_le_of_int_cancel_iff)
 
 
-subsection {* Square roots for the naturals *}
+subsection \<open>Square roots for the naturals\<close>
 
 
 definition sqrt_nat :: "nat \<Rightarrow> nat list"
@@ -196,7 +196,7 @@ lemma sqrt_nat_ceiling_code[code]: "sqrt_nat_ceiling x = sqrt_int_ceiling_pos (i
 lemma sqrt_nat_ceiling[simp]: "sqrt_nat_ceiling x = \<lceil> sqrt (real x) \<rceil>"
   unfolding sqrt_nat_ceiling_def by (simp add: sqrt_def)
 
-subsection {* Square roots for the rationals *}
+subsection \<open>Square roots for the rationals\<close>
 
 definition sqrt_rat :: "rat \<Rightarrow> rat list" where
   "sqrt_rat x = root_rat 2 x"
@@ -261,9 +261,9 @@ proof -
   thus ?thesis by auto
 qed
 
-subsection {* Approximating square roots *}
+subsection \<open>Approximating square roots\<close>
 
-text {*
+text \<open>
   The difference to the previous algorithms is that now we abort, once the distance is below
   $\epsilon$.  
   Moreover, here we use standard division and not integer division.
@@ -272,15 +272,15 @@ text {*
   We first provide the executable version without guard @{term "x > 0"} as partial function,
   and afterwards prove termination and soundness for a similar algorithm that is defined within the upcoming
 locale.
-*}
+\<close>
 
 partial_function (tailrec) sqrt_approx_main_impl :: "'a :: linordered_field \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where 
   [code]: "sqrt_approx_main_impl \<epsilon> n x = (if x * x - n < \<epsilon> then x else sqrt_approx_main_impl \<epsilon> n 
     ((n / x + x) / 2))"
 
-text {* We setup a locale where we ensure that we have standard assumptions: positive $\epsilon$ and
+text \<open>We setup a locale where we ensure that we have standard assumptions: positive $\epsilon$ and
   positive $n$. We require sort @{term floor_ceiling}, since @{term "\<lfloor> x \<rfloor>"} is used for the termination
-  argument. *}
+  argument.\<close>
 locale sqrt_approximation = 
   fixes \<epsilon> :: "'a :: {linordered_field,floor_ceiling}"
   and n :: 'a
@@ -293,11 +293,11 @@ function sqrt_approx_main :: "'a \<Rightarrow> 'a" where
     ((n / x + x) / 2)) else 0)"
     by pat_completeness auto
 
-text {* Termination essentially is a proof of convergence. Here, one complication is the fact
+text \<open>Termination essentially is a proof of convergence. Here, one complication is the fact
   that the limit is not always defined. E.g., if @{typ "'a"} is @{typ rat} then there is no
   square root of 2. Therefore, the error-rate $\frac x{\sqrt n} - 1$ is not expressible. 
   Instead we use the expression $\frac{x^2}n - 1$ as error-rate which
-  does not require any square-root operation. *}
+  does not require any square-root operation.\<close>
 termination
 proof -
   define er where "er x = (x * x / n - 1)" for x
@@ -346,8 +346,8 @@ proof -
   qed
 qed
 
-text {* Once termination is proven, it is easy to show equivalence of 
-  @{const sqrt_approx_main_impl} and @{const sqrt_approx_main}. *}
+text \<open>Once termination is proven, it is easy to show equivalence of 
+  @{const sqrt_approx_main_impl} and @{const sqrt_approx_main}.\<close>
 lemma sqrt_approx_main_impl: "x > 0 \<Longrightarrow> sqrt_approx_main_impl \<epsilon> n x = sqrt_approx_main x"
 proof (induct x rule: sqrt_approx_main.induct)
   case (1 x)
@@ -364,7 +364,7 @@ proof (induct x rule: sqrt_approx_main.induct)
   qed
 qed
 
-text {* Also soundness is not complicated. *}
+text \<open>Also soundness is not complicated.\<close>
 
 lemma sqrt_approx_main_sound: assumes x: "x > 0" and xx: "x * x > n"
   shows "sqrt_approx_main x * sqrt_approx_main x > n \<and> sqrt_approx_main x * sqrt_approx_main x - n < \<epsilon>"
@@ -402,7 +402,7 @@ qed
 
 end
 
-text {* It remains to assemble everything into one algorithm. *}
+text \<open>It remains to assemble everything into one algorithm.\<close>
 
 definition sqrt_approx :: "'a :: {linordered_field,floor_ceiling} \<Rightarrow> 'a \<Rightarrow> 'a" where
   "sqrt_approx \<epsilon> x \<equiv> if \<epsilon> > 0 then (if x = 0 then 0 else let xpos = abs x in sqrt_approx_main_impl \<epsilon> xpos (xpos + 1)) else 0"
@@ -431,26 +431,26 @@ next
   show ?thesis unfolding id using sqrt by auto
 qed
 
-subsection {* Some tests *}
+subsection \<open>Some tests\<close>
 
-text {* Testing executabity and show that sqrt 2 is irrational *}
+text \<open>Testing executabity and show that sqrt 2 is irrational\<close>
 lemma "\<not> (\<exists> i :: rat. i * i = 2)"
 proof -
   have "set (sqrt_rat 2) = {}" by eval
   thus ?thesis by simp
 qed
 
-text {* Testing speed *}
+text \<open>Testing speed\<close>
 lemma "\<not> (\<exists> i :: int. i * i = 1234567890123456789012345678901234567890)"
 proof -
   have "set (sqrt_int 1234567890123456789012345678901234567890) = {}" by eval
   thus ?thesis by simp
 qed
 
-text {* The following test *}
+text \<open>The following test\<close>
 
 value "let \<epsilon> = 1 / 100000000 :: rat; s = sqrt_approx \<epsilon> 2 in (s, s * s - 2, \<bar>s * s - 2\<bar> < \<epsilon>)"
 
-text {* results in (1.4142135623731116, 4.738200762148612e-14, True). *}
+text \<open>results in (1.4142135623731116, 4.738200762148612e-14, True).\<close>
  
 end

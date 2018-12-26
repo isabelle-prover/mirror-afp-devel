@@ -1,8 +1,8 @@
-section{*Inductive Study of Confidentiality against the General Attacker*}
+section\<open>Inductive Study of Confidentiality against the General Attacker\<close>
 
 theory  ConfidentialityGA imports NS_Public_Bad_GA begin
 
-text{*New subsidiary lemmas to reason on a generic agent initial state*}
+text\<open>New subsidiary lemmas to reason on a generic agent initial state\<close>
 
 lemma parts_initState: "parts(initState C) = initState C"
 by (cases C, simp)
@@ -11,13 +11,13 @@ lemma analz_initState: "analz(initState C) = initState C"
 by (cases C, force dest: analz_into_parts)
 
 
-text{*Generalising over all initial secrets the existing treatment, which is limited to private encryption keys*}
+text\<open>Generalising over all initial secrets the existing treatment, which is limited to private encryption keys\<close>
 
 definition staticSecret :: "agent \<Rightarrow> msg set" where
  [simp]: "staticSecret A == {Key (priEK A), Key (priSK A), Key (shrK A)}"
 
 
-text{*More subsidiary lemmas combining initial secrets and knowledge of generic agent*}
+text\<open>More subsidiary lemmas combining initial secrets and knowledge of generic agent\<close>
 
 lemma staticSecret_in_initState [simp]:
 "staticSecret A \<subseteq> initState A"
@@ -48,7 +48,7 @@ lemma nonce_notin_analz_initState:
 by(cases A, auto dest: analz_into_parts)
 
 
-subsection{*Protocol independent study*}
+subsection\<open>Protocol independent study\<close>
 
 lemma staticSecret_parts_agent:
  "\<lbrakk>m \<in> parts (knows C evs); m \<in> staticSecret A\<rbrakk> \<Longrightarrow>  
@@ -57,7 +57,7 @@ lemma staticSecret_parts_agent:
   (\<exists>Y. Notes C Y \<in> set evs \<and> m \<in> parts{Y})"
 apply (erule rev_mp)
 apply (induct_tac evs)
-txt{*@{subgoals [display,indent =1]}*}
+txt\<open>@{subgoals [display,indent =1]}\<close>
 apply (simp add: staticSecretA_notin_parts_initStateB)
 apply (induct_tac a)
 (*Says*) 
@@ -70,7 +70,7 @@ apply simp
 (*Notes*)
 apply simp
 apply clarify 
-txt{*@{subgoals [display,indent =1]}*}
+txt\<open>@{subgoals [display,indent =1]}\<close>
 apply (drule parts_insert [THEN equalityD1, THEN subsetD])
 apply blast
 done
@@ -104,7 +104,7 @@ apply (drule parts_insert [THEN equalityD1, THEN subsetD])
 apply blast
 done
 
-subsection{*Protocol dependent study*}
+subsection\<open>Protocol dependent study\<close>
 
 (*NS_no_Notes moved up in NS_Public_Bad_GA.thy so that it's visible to a sibling theory of this one's
 
@@ -119,7 +119,7 @@ lemma NS_staticSecret_parts_agent_weak:
 apply (blast dest: NS_no_Notes staticSecret_parts_agent)
 done
 
-text{*Can't prove the homologous theorem of NS\_Says\_Spy\_staticSecret, hence the specialisation proof strategy cannot be applied*}
+text\<open>Can't prove the homologous theorem of NS\_Says\_Spy\_staticSecret, hence the specialisation proof strategy cannot be applied\<close>
 
 (*Simple though illustrative corollary*)
 (*note use of Says_imp_knows, an enforcement of the threat model*)
@@ -131,11 +131,11 @@ apply (blast dest: NS_staticSecret_parts_agent_weak Says_imp_knows [THEN parts.I
 apply (blast dest: staticSecret_parts_agent NS_no_Notes Says_imp_knows [THEN parts.Inj] parts_trans)*)
 done
 
-text{*
+text\<open>
 The previous theorems show that in general any agent could send anybody's initial secret, namely the threat model does not impose anything against it. However, the actual protocol specification will, where agents either follow the protocol or build messages out of their traffic analysis - this is actually the same in DY
 
 Therefore, we are only left with the direct proof strategy.
-*}
+\<close>
 
 lemma NS_staticSecret_parts_agent:
  "\<lbrakk>m \<in> parts (knows C evs); m \<in> staticSecret A; 
@@ -150,15 +150,15 @@ apply clarify
 apply (drule parts_insert [THEN equalityD1, THEN subsetD])(*shot1*)
 apply (case_tac "Aa=A") 
 apply clarify
-txt{*@{subgoals [display,indent=1,goals_limit=2]}*}
+txt\<open>@{subgoals [display,indent=1,goals_limit=2]}\<close>
 apply blast
 (*Aa\<noteq>A*)
 apply simp
 apply clarify (*applies induction hypothesis!*)(*shot2*)
-txt{*@{subgoals [display,indent=1,goals_limit=1]}*}
+txt\<open>@{subgoals [display,indent=1,goals_limit=1]}\<close>
 apply (drule Fake_parts_sing [THEN subsetD], simp)  (*shot3*)
 apply (simp add: staticSecret_synth_eq) 
-txt{*@{subgoals [display,indent=1,goals_limit=1]}*}
+txt\<open>@{subgoals [display,indent=1,goals_limit=1]}\<close>
 apply (blast dest: NS_staticSecret_parts_agent_parts)
 (*rest!*)
 apply (force simp add: staticSecret_def)+
@@ -180,7 +180,7 @@ apply (erule rev_mp, erule rev_mp)
 apply (erule analz.induct)
 prefer 4
 apply clarify
-txt{*@{subgoals [display,indent=1,goals_limit=1]}*}
+txt\<open>@{subgoals [display,indent=1,goals_limit=1]}\<close>
 apply (blast dest: parts.Body analz.Decrypt)
 apply blast+
 done
@@ -200,7 +200,7 @@ apply clarify
 apply simp
 (*fixing confidentiality of both private keys*)
 apply (drule subset_insertI [THEN analz_mono, THEN contra_subsetD])+
-txt{*@{subgoals [display,indent=1,goals_limit=1]}*}
+txt\<open>@{subgoals [display,indent=1,goals_limit=1]}\<close>
 apply (subgoal_tac "
         \<forall>S R Y.
            (S = Aa \<and> R = Ba \<and> Y = X \<longrightarrow>
@@ -210,7 +210,7 @@ apply (subgoal_tac "
 prefer 2 
 apply blast 
 apply simp
-txt{*@{subgoals [display,indent=1,goals_limit=1]}*}
+txt\<open>@{subgoals [display,indent=1,goals_limit=1]}\<close>
 apply (force dest!: analz_insert_analz)
 (*Alternative proof
 apply (erule disjE) apply simp 

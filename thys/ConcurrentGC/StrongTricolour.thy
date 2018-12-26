@@ -15,9 +15,9 @@ imports
 begin
 
 (*>*)
-subsection{* The strong-tricolour invariant *}
+subsection\<open>The strong-tricolour invariant\<close>
 
-text{*
+text\<open>
 
 \label{sec:tricolour-invariants}
 \label{sec:strong-tricolour-invariant}
@@ -25,7 +25,7 @@ text{*
 As the GC algorithm uses both insertion and deletion barriers, it
 preserves the \emph{strong tricolour-invariant}:
 
-*}
+\<close>
 
 abbreviation points_to_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" (infix "points'_to'_white" 51) where
   "x points_to_white y \<equiv> x points_to y and white y"
@@ -33,7 +33,7 @@ abbreviation points_to_white :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 
 definition strong_tricolour_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "strong_tricolour_inv \<equiv> ALLS b w. black b imp not b points_to_white w"
 
-text{*
+text\<open>
 
 Intuitively this invariant says that there are no pointers from
 completely processed objects to the unexplored space; i.e., the grey
@@ -41,7 +41,7 @@ references properly separate the two. In contrast the weak tricolour
 invariant allows such pointers, provided there is a grey reference
 that protects the unexplored object.
 
-*}
+\<close>
 
 definition has_white_path_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" (infix "has'_white'_path'_to" 51) where
   "x has_white_path_to y \<equiv> \<lambda>s. (\<lambda>x y. (x points_to_white y) s)\<^sup>*\<^sup>* x y"
@@ -58,13 +58,12 @@ lemma "strong_tricolour_inv s \<Longrightarrow> weak_tricolour_inv s"
 by (clarsimp simp: strong_tricolour_inv_def weak_tricolour_inv_def grey_protects_white_def)
 
 (*>*)
-text{*
+text\<open>
 
-The key invariant that the mutators establish as they perform @{text
-"get_roots"}: they protect their white-reachable references with grey
+The key invariant that the mutators establish as they perform \<open>get_roots\<close>: they protect their white-reachable references with grey
 objects.
 
-*}
+\<close>
 
 definition in_snapshot :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "in_snapshot r \<equiv> black r or (EXS g. g grey_protects_white r)"
@@ -72,7 +71,7 @@ definition in_snapshot :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" wh
 definition (in mut_m) reachable_snapshot_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "reachable_snapshot_inv \<equiv> ALLS r. reachable r imp in_snapshot r"
 
-text{*
+text\<open>
 
 Note that it is not easy to specify precisely when the snapshot (of
 objects the GC will retain) is taken due to the raggedness of the
@@ -82,7 +81,7 @@ In some phases we need to know that the insertion and deletion
 barriers are installed, in order to preserve the snapshot. These can
 ignore TSO effects as marks hit system memory in a timely way.
 
-*}
+\<close>
 
 abbreviation marked_insertion :: "('field, 'ref) mem_write_action \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "marked_insertion w \<equiv> \<lambda>s. case w of mw_Mutate r f (Some r') \<Rightarrow> marked r' s | _ \<Rightarrow> True"
@@ -96,11 +95,11 @@ abbreviation marked_deletion :: "('field, 'ref) mem_write_action \<Rightarrow> (
 definition (in mut_m) marked_deletions :: "('field, 'mut, 'ref) lsts_pred" where
   "marked_deletions \<equiv> ALLS w. tso_pending_write (mutator m) w imp marked_deletion w"
 
-text{*
+text\<open>
 
 Finally, in some phases the heap is somewhat monochrome.
 
-*}
+\<close>
 
 definition black_heap :: "('field, 'mut, 'ref) lsts_pred" where
   "black_heap \<equiv> ALLS r. black r or not valid_ref r"
@@ -117,7 +116,7 @@ definition no_grey_refs :: "('field, 'mut, 'ref) lsts_pred" where
 
 (* **************************************** *)
 
-text{* has white path to *}
+text\<open>has white path to\<close>
 
 lemma has_white_path_to_eq_imp:
   "eq_imp (\<lambda>(_::unit). sys_fM \<otimes> sys_heap)
@@ -150,7 +149,7 @@ lemma has_white_path_to_blacken[simp]:
   "(x has_white_path_to w) (s(gc := s gc\<lparr> W := gc_W s - rs \<rparr>)) \<longleftrightarrow> (x has_white_path_to w) s"
 by (simp add: has_white_path_to_def)
 
-text{* WL *}
+text\<open>WL\<close>
 
 lemma WL_mo_co_mark[simp]:
   "ghost_honorary_grey (s p) = {}
@@ -327,7 +326,7 @@ lemma no_grey_refs_bwD[dest]:
   "\<lbrakk> heap (s sys) r = Some obj; no_grey_refs s \<rbrakk> \<Longrightarrow> black r s \<or> white r s"
 by (clarsimp simp: black_def grey_def no_grey_refs_def split: obj_at_splits)
 
-text{* tso write refs *}
+text\<open>tso write refs\<close>
 
 lemma tso_write_refs_simps[simp]:
   "mut_m.tso_write_refs m (s(mutator m' := s (mutator m')\<lparr>roots := roots'\<rparr>))
@@ -354,7 +353,7 @@ lemma mutator_reachable_tso:
     \<Longrightarrow> mut_m.reachable m r s \<and> (\<forall>r'. opt_r' = Some r' \<longrightarrow> mut_m.reachable m r' s)"
 by (auto simp: mut_m.tso_write_refs_def)
 
-text{* coloured heaps *}
+text\<open>coloured heaps\<close>
 
 lemma black_heap_eq_imp:
   "eq_imp (\<lambda>(_::unit). (\<lambda>s. \<Union>p. WL p s) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark \<circ> sys_heap s))
@@ -540,7 +539,7 @@ apply (rule iffI)
               simp: tso_write_refs_def)
 done
 
-text{* strong tricolour *}
+text\<open>strong tricolour\<close>
 
 lemma strong_tricolour_invD:
   "\<lbrakk> black x s; (x points_to y) s; valid_ref y s; strong_tricolour_inv s \<rbrakk>
@@ -550,7 +549,7 @@ apply (drule spec[where x=x])
 apply (auto split: obj_at_splits)
 done
 
-text{* grey protects white *}
+text\<open>grey protects white\<close>
 
 lemma grey_protects_whiteD[dest]:
   "(g grey_protects_white w) s \<Longrightarrow> grey g s \<and> (g = w \<or> white w s)"
@@ -582,7 +581,7 @@ lemma grey_protects_white_alloc[simp]:
      \<longleftrightarrow> (g grey_protects_white w) s"
 by (clarsimp simp: grey_protects_white_def has_white_path_to_def)
 
-text{* reachable snapshot inv *}
+text\<open>reachable snapshot inv\<close>
 
 lemma (in mut_m) reachable_snapshot_invI[intro]:
   "(\<And>y. reachable y s \<Longrightarrow> in_snapshot y s) \<Longrightarrow> reachable_snapshot_inv s"
@@ -755,19 +754,19 @@ qed
 (* **************************************** *)
 
 (*>*)
-subsection{* Invariants *}
+subsection\<open>Invariants\<close>
 
-text (in mut_m) {*
+text (in mut_m) \<open>
 
 We need phase invariants in terms of both @{const
 "mut_ghost_handshake_phase"} and @{const "sys_ghost_handshake_phase"}
 which respectively track what the mutators and GC know by virtue of
 the synchronisation structure of the system.
 
-Read the following as ``when mutator @{text "m"} is past the specified
+Read the following as ``when mutator \<open>m\<close> is past the specified
 handshake, and has yet to reach the next one, ... holds.''
 
-*}
+\<close>
 
 primrec (in mut_m) mutator_phase_inv_aux :: "handshake_phase \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "mutator_phase_inv_aux hp_Idle          = \<langle>True\<rangle>"
@@ -782,12 +781,12 @@ abbreviation (in mut_m) mutator_phase_inv :: "('field, 'mut, 'ref) lsts_pred" wh
 abbreviation mutators_phase_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "mutators_phase_inv \<equiv> ALLS m. mut_m.mutator_phase_inv m"
 
-text{*
+text\<open>
 
 This is what the GC guarantees. Read this as ``when the GC is at or
 past the specified handshake, ... holds.''
 
-*}
+\<close>
 
 primrec sys_phase_inv_aux :: "handshake_phase \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "sys_phase_inv_aux hp_Idle          = ( (If sys_fA eq sys_fM Then black_heap Else white_heap) and no_grey_refs )"
@@ -910,21 +909,21 @@ done
 
 (* **************************************** *)
 
-subsection{* Lonely mutator assertions *}
+subsection\<open>Lonely mutator assertions\<close>
 
-text{*
+text\<open>
 
-The second assertion is key: after the @{text "''init_noop''"}
+The second assertion is key: after the \<open>''init_noop''\<close>
 handshake, we need to know that there are no pending white insertions
 (mutations that insert unmarked references) for the deletion barrier
 to work.
 
-*}
+\<close>
 
 definition ghost_honorary_root_empty_locs :: "location set" where
   "ghost_honorary_root_empty_locs \<equiv>
      - (prefixed ''store_del'' \<union> {''lop_store_ins''} \<union> prefixed ''store_ins'')"
-local_setup {* Cimp.locset @{thm "ghost_honorary_root_empty_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "ghost_honorary_root_empty_locs_def"}\<close>
 
 definition (in mut_m) load_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "load_invL \<equiv>
@@ -1659,12 +1658,12 @@ done
 
 (* **************************************** *)
 
-subsection{* The infamous termination argument. *}
+subsection\<open>The infamous termination argument.\<close>
 
-text{*
+text\<open>
 
 We need to know that if the GC does not receive any further work to do
-at @{text "get_roots"} and @{text "get_work"}, then there are no grey
+at \<open>get_roots\<close> and \<open>get_work\<close>, then there are no grey
 objects left. Essentially this encodes the stability property that
 grey objects must exist for mutators to create grey objects.
 
@@ -1673,7 +1672,7 @@ the GC to hold all the grey references. The two handshakes transform
 the GC's local knowledge that it has no more work to do into a global
 property, or gives it more work.
 
-*}
+\<close>
 
 definition (in mut_m) gc_W_empty_mut_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "gc_W_empty_mut_inv \<equiv>
@@ -1686,13 +1685,13 @@ definition (in -) gc_W_empty_locs :: "location set" where
      \<union> prefixed ''mark_noop''
      \<union> prefixed ''mark_loop_get_roots''
      \<union> prefixed ''mark_loop_get_work''"
-local_setup (in -) {* Cimp.locset @{thm "gc_W_empty_locs_def"} *}
+local_setup (in -) \<open>Cimp.locset @{thm "gc_W_empty_locs_def"}\<close>
 
 definition "black_heap_locs \<equiv> { ''sweep_idle'', ''idle_noop_mfence'', ''idle_noop_init_type'' }"
-local_setup {* Cimp.locset @{thm "black_heap_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "black_heap_locs_def"}\<close>
 
 definition "no_grey_refs_locs \<equiv> black_heap_locs \<union> sweep_locs \<union> {''mark_end''}"
-local_setup {* Cimp.locset @{thm "no_grey_refs_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "no_grey_refs_locs_def"}\<close>
 
 definition (in gc) gc_W_empty_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "gc_W_empty_invL \<equiv>
@@ -1925,7 +1924,7 @@ lemma (in mut_m) gc_W_empty_invL[intro]:
    \<lbrace> gc.gc_W_empty_invL \<rbrace>"
 apply vcg_nihe
 (* apply vcg_ni -- very slow *)
-apply(tactic {*
+apply(tactic \<open>
 let val ctxt = @{context} in
 
   TRY (HEADGOAL (vcg_clarsimp_tac ctxt))
@@ -1945,7 +1944,7 @@ THEN
   THEN_ALL_NEW clarsimp_tac ctxt)
 
 end
-*})
+\<close>)
 
 (* hs_noop_done *)
 apply (clarsimp simp: atS_un gc.handshake_invL_def)
@@ -1988,10 +1987,10 @@ done
 
 (* **************************************** *)
 
-subsection{* Sweep loop invariants *}
+subsection\<open>Sweep loop invariants\<close>
 
 definition "sweep_loop_locs \<equiv> prefixed ''sweep_loop''"
-local_setup {* Cimp.locset @{thm "sweep_loop_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "sweep_loop_locs_def"}\<close>
 
 definition (in gc) sweep_loop_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "sweep_loop_invL \<equiv>
@@ -3013,7 +3012,7 @@ done
 
 (* **************************************** *)
 
-text{* Remaining non-interference proofs. *}
+text\<open>Remaining non-interference proofs.\<close>
 
 lemma marked_insertionsD:
   "\<lbrakk> sys_mem_write_buffers (mutator m) s = mw_Mutate r f (Some r') # ws; mut_m.marked_insertions m s \<rbrakk>

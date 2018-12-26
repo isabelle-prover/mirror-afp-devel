@@ -12,9 +12,9 @@ as a (tree-shaped) incredible graph, but where the structure is still given by t
 and not by a set of edges etc.\<close>
 
 
-text {*
+text \<open>
 Tree-shape, but incredible-graph-like content (port names, explicit annotation and substitution)
-*}
+\<close>
 
 datatype ('form,'rule,'subst,'var) itnode =
     I (iNodeOf': "('form, 'rule) graph_node")
@@ -85,7 +85,7 @@ lemma all_local_vars_Assumption[simp]:
   unfolding all_local_vars_def by simp
 
 text \<open>Local freshness side-conditions, corresponding what we have in the
-theory @{text Natural_Deduction}.\<close>
+theory \<open>Natural_Deduction\<close>.\<close>
 
 inductive local_fresh_check :: "('form, 'rule, 'subst) fresh_check" where
   "\<lbrakk>\<And> f. f |\<in>| \<Gamma> \<Longrightarrow> freshenLC i ` (all_local_vars n) \<inter> lconsts f = {};
@@ -95,7 +95,7 @@ inductive local_fresh_check :: "('form, 'rule, 'subst) fresh_check" where
 abbreviation "local_iwf \<equiv> iwf local_fresh_check"
 
 text \<open>No freshness side-conditions. Used with the tree that comes out of
-@{text globalize}, where we establish the (global) freshness conditions
+\<open>globalize\<close>, where we establish the (global) freshness conditions
 separately.\<close>
 
 inductive no_fresh_check :: "('form, 'rule, 'subst) fresh_check" where
@@ -211,7 +211,7 @@ proof-
     show "x \<in> ?S2 \<union> ?S3"
     proof(cases rule: prefix_app_Cons_elim)
       assume "is' = []" and "i' = i"
-      with `hyps (iNodeOf (tree_at t is')) h = Some _`
+      with \<open>hyps (iNodeOf (tree_at t is')) h = Some _\<close>
       have "x \<in> ?S2" by auto
       thus ?thesis..
     next
@@ -219,10 +219,10 @@ proof-
       assume [simp]: "is' = i # is''" and "prefix (is'' @ [i']) is"
       have "tree_at t is' = tree_at ?t' is''" by simp
 
-      note `prefix (is'' @ [i']) is`
-           `i' < length (inPorts' (iNodeOf (tree_at t is')))`
-           `hyps (iNodeOf (tree_at t is')) h = Some (inPorts' (iNodeOf (tree_at t is')) ! i')`
-      from this[unfolded `tree_at t is' = tree_at ?t' is''`]
+      note \<open>prefix (is'' @ [i']) is\<close>
+           \<open>i' < length (inPorts' (iNodeOf (tree_at t is')))\<close>
+           \<open>hyps (iNodeOf (tree_at t is')) h = Some (inPorts' (iNodeOf (tree_at t is')) ! i')\<close>
+      from this[unfolded \<open>tree_at t is' = tree_at ?t' is''\<close>]
       have "subst (iSubst (tree_at (iAnts t ! i) is'')) (freshen (iAnnot (tree_at (iAnts t ! i) is'')) (labelsOut (iNodeOf (tree_at (iAnts t ! i) is'')) h))
           \<in> hyps_along (iAnts t ! i) is" by (rule hyps_along.intros)
       hence "x \<in> ?S3" by simp
@@ -235,10 +235,10 @@ proof-
     proof
       have "prefix ([]@[i]) (i#is)" by simp
       moreover
-      from `iwf _ t _`
+      from \<open>iwf _ t _\<close>
       have "length (iAnts t) \<le> length (inPorts' (iNodeOf (tree_at t []))) "
         by cases (auto dest: list_all2_lengthD)
-      with `i < _`
+      with \<open>i < _\<close>
       have "i < length (inPorts' (iNodeOf (tree_at t [])))" by simp
       moreover
       assume "x \<in> ?S2"
@@ -282,35 +282,35 @@ proof-
     show ?case
     proof(cases "is")
       case Nil
-      with `tree_at (INode n p a' s' ants) is = HNode i s ants'`
+      with \<open>tree_at (INode n p a' s' ants) is = HNode i s ants'\<close>
       show ?thesis by auto
     next
       case (Cons i' "is'")
-      with `is \<in> it_paths (INode n p a' s' ants)`
+      with \<open>is \<in> it_paths (INode n p a' s' ants)\<close>
       have "i' < length ants" and "is' \<in> it_paths (ants ! i')"
         by (auto elim: it_paths_ConsE)
 
       let ?\<Gamma>' = "(\<lambda>h. subst s' (freshen a' (labelsOut n h))) |`| hyps_for n (inPorts' n ! i')"
 
-      from `tree_at (INode n p a' s' ants) is = HNode i s ants'`
+      from \<open>tree_at (INode n p a' s' ants) is = HNode i s ants'\<close>
       have "tree_at (ants ! i') is' = HNode i s ants'" using Cons by simp
 
-      from  iwf.IH `i' < length ants`  `is' \<in> it_paths (ants ! i')` this
+      from  iwf.IH \<open>i' < length ants\<close>  \<open>is' \<in> it_paths (ants ! i')\<close> this
       have  "subst s (freshen i anyP) \<in> hyps_along (ants ! i') is'
         \<or> subst s (freshen i anyP) |\<in>| ?\<Gamma>' |\<union>| \<Gamma> \<and> subst s (freshen i anyP) |\<notin>| ass_forms"
         by (auto dest: list_all2_nthD2)
       moreover
-      from  `is \<in> it_paths (INode n p a' s' ants)`
+      from  \<open>is \<in> it_paths (INode n p a' s' ants)\<close>
       have "hyps_along (INode n p a' s' ants) is = fset ?\<Gamma>' \<union> hyps_along (ants ! i') is'"
-        using `is = _`
-        by (simp add: hyps_along_Cons[OF `iwf lc (INode n p a' s' ants) (\<Gamma> \<turnstile> c)`])
+        using \<open>is = _\<close>
+        by (simp add: hyps_along_Cons[OF \<open>iwf lc (INode n p a' s' ants) (\<Gamma> \<turnstile> c)\<close>])
       ultimately
       show ?thesis by auto
     qed
   next
     case (iwfH c  \<Gamma> s' i' "is")
     hence [simp]: "is = []" "i' = i" "s' = s" by simp_all
-    from `c = subst s' (freshen i' anyP)` `c |\<in>| \<Gamma>` `c |\<notin>| ass_forms`
+    from \<open>c = subst s' (freshen i' anyP)\<close> \<open>c |\<in>| \<Gamma>\<close> \<open>c |\<notin>| ass_forms\<close>
     show ?case by simp
   qed
   with assms(4)
@@ -450,9 +450,9 @@ using assms
 proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: iwf.induct)
   case (iwf n p s i \<Gamma> ants c "is" f)
 
-  note `n \<in> sset nodes`
+  note \<open>n \<in> sset nodes\<close>
   moreover
-  note `Reg p |\<in>| outPorts n`
+  note \<open>Reg p |\<in>| outPorts n\<close>
   moreover
   { fix i' 
     let ?V = "a_fresh (inPorts' n ! i')"
@@ -465,12 +465,12 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
     assume "i' < length (inPorts' n)"
     hence "(inPorts' n ! i') |\<in>| inPorts n" by (simp add: inPorts_fset_of)
 
-    from `i' < length (inPorts' n)`
+    from \<open>i' < length (inPorts' n)\<close>
     have subset_V: "?V \<subseteq> all_local_vars n"
       unfolding all_local_vars_def
       by (auto simp add: inPorts_fset_of set_conv_nth)
 
-    from `local_fresh_check n i s (\<Gamma> \<turnstile> c)` 
+    from \<open>local_fresh_check n i s (\<Gamma> \<turnstile> c)\<close> 
     have "freshenLC i ` all_local_vars n \<inter> subst_lconsts s = {}" 
       by (rule local_fresh_check.cases) simp
     hence "freshenLC i ` ?V \<inter> subst_lconsts s = {}" 
@@ -478,12 +478,12 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
     hence rerename_subst: "subst_renameLCs ?f' s = subst_renameLCs f s"
       by (rule rerename_subst_noop)
 
-    from all_local_consts_listed'[OF ` n \<in> sset nodes` `(inPorts' n ! i') |\<in>| inPorts n`]
+    from all_local_consts_listed'[OF \<open> n \<in> sset nodes\<close> \<open>(inPorts' n ! i') |\<in>| inPorts n\<close>]
     have subset_conc: "lconsts (a_conc (inPorts' n ! i')) \<subseteq> ?V"
       and subset_hyp': "\<And> hyp . hyp |\<in>| a_hyps (inPorts' n ! i') \<Longrightarrow> lconsts hyp \<subseteq> ?V"
       by (auto simp add: fmember.rep_eq)
       
-    from List.list_all2_nthD[OF `list_all2 _ _ _` `i' < length (inPorts' n)`,simplified]
+    from List.list_all2_nthD[OF \<open>list_all2 _ _ _\<close> \<open>i' < length (inPorts' n)\<close>,simplified]
     have "plain_iwf ?t
            (renameLCs ?f' |`| ((\<lambda>h. subst s (freshen i (labelsOut n h))) |`| hyps_for n ?ip |\<union>|  \<Gamma>) \<turnstile>
             renameLCs ?f' (subst s (freshen i (a_conc ?ip))))"
@@ -495,7 +495,7 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
     proof(rule fimage_cong[OF refl])
       fix x
       assume "x |\<in>| \<Gamma>"
-      with `local_fresh_check n i s (\<Gamma> \<turnstile> c)`
+      with \<open>local_fresh_check n i s (\<Gamma> \<turnstile> c)\<close>
       have "freshenLC i ` all_local_vars n \<inter> lconsts x = {}" 
         by (elim local_fresh_check.cases) simp
       hence "freshenLC i ` ?V \<inter> lconsts x = {}" 
@@ -532,7 +532,7 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
     finally
     have "plain_iwf ?t (?\<Gamma>' |\<union>| renameLCs f |`| \<Gamma> \<turnstile> ?c')".
   }
-  with list_all2_lengthD[OF `list_all2 _ _ _`]
+  with list_all2_lengthD[OF \<open>list_all2 _ _ _\<close>]
   have "list_all2
      (\<lambda>ip t. plain_iwf t ((\<lambda>h. subst (subst_renameLCs f s)
        (freshen (isidx is) (labelsOut n h))) |`| hyps_for n ip |\<union>|  renameLCs f |`| \<Gamma> \<turnstile> subst (subst_renameLCs f s) (freshen (isidx is) (labelsIn n ip))))
@@ -542,9 +542,9 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
   moreover
   have "no_fresh_check n (isidx is) (subst_renameLCs f s) (renameLCs f |`| \<Gamma> \<turnstile> renameLCs f c)"..
   moreover
-  from `n \<in> sset nodes` `Reg p |\<in>| outPorts n`
+  from \<open>n \<in> sset nodes\<close> \<open>Reg p |\<in>| outPorts n\<close>
   have "lconsts p = {}" by (rule no_local_consts_in_consequences')
-  with `c = subst s (freshen i p)`
+  with \<open>c = subst s (freshen i p)\<close>
   have "renameLCs f c = subst (subst_renameLCs f s) (freshen (isidx is) p)"
     by (simp add: rename_subst rename_closed freshen_closed)
   ultimately
@@ -553,14 +553,14 @@ proof (induction t "\<Gamma> \<turnstile> c" arbitrary: "is" f \<Gamma> c rule: 
     by (rule iwf.intros(1))
 next
   case (iwfH c \<Gamma> s i "is" f)
-  from `c |\<notin>| ass_forms`
+  from \<open>c |\<notin>| ass_forms\<close>
   have "renameLCs f c |\<notin>| ass_forms"
     using assumptions_closed closed_no_lconsts lconsts_renameLCs rename_closed by fastforce
   moreover
-  from `c |\<in>| \<Gamma>`
+  from \<open>c |\<in>| \<Gamma>\<close>
   have "renameLCs f c |\<in>| renameLCs f |`| \<Gamma>"  by auto
   moreover
-  from `c = subst s (freshen i anyP)`
+  from \<open>c = subst s (freshen i anyP)\<close>
   have "renameLCs f c = subst (subst_renameLCs f s)  (freshen (isidx is) anyP)"
     by (metis freshen_closed lconsts_anyP rename_closed rename_subst)
   ultimately 

@@ -39,19 +39,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section {* Instantiating Our Secure Service Example *}
+section \<open>Instantiating Our Secure Service Example\<close>
 theory 
   ServiceExample
   imports 
     Service
 begin
-text {*
+text \<open>
   In the following, we briefly present an instantiations  of our secure service example 
   from the last section. We assume three different members of the health care staff and 
   two patients:
-*}
+\<close>
 
-subsection {* Access Control Configuration *}
+subsection \<open>Access Control Configuration\<close>
 definition alice :: user where "alice = 1"
 definition bob :: user where "bob = 2"
 definition charlie :: user where "charlie = 3"
@@ -85,11 +85,11 @@ definition LR1 :: LR where
 definition \<Sigma>0 :: \<Sigma> where
  "\<Sigma>0 = (Map.empty(patient1\<mapsto>LR1))"
 
-subsection {* The Initial System State *}
+subsection \<open>The Initial System State\<close>
 definition \<sigma>0 :: "DB \<times> \<Sigma>\<times>\<upsilon>" where
  "\<sigma>0 = (Spine0,\<Sigma>0,UC0)"
  
-subsection{* Basic Properties *}
+subsection\<open>Basic Properties\<close>
 
 lemma [simp]: "(case a of allow d \<Rightarrow> \<lfloor>X\<rfloor> | deny d2 \<Rightarrow> \<lfloor>Y\<rfloor>) = \<bottom> \<Longrightarrow> False"
   by (case_tac a,simp_all)
@@ -122,13 +122,13 @@ lemma deny_allow[simp]: " \<lfloor>deny ()\<rfloor> \<notin> Some ` range allow"
 lemma allow_deny[simp]: " \<lfloor>allow ()\<rfloor> \<notin> Some ` range deny" 
   by auto
     
-text{* Policy as monad. Alice using her first urp can read the SCR of patient1. *}
+text\<open>Policy as monad. Alice using her first urp can read the SCR of patient1.\<close>
 lemma 
   "(\<sigma>0 \<Turnstile> (os \<leftarrow> mbind [(createSCR alice Clerical patient1)] (PolMon); 
        (return (os = [(deny (Out) )]))))"
   by (simp add: PolMon_def MonSimps PolSimps)
     
-text{* Presenting her other urp, she is not allowed to read it. *}
+text\<open>Presenting her other urp, she is not allowed to read it.\<close>
 lemma "SE_LR_RBAC_Policy ((appendEntry alice Clerical patient1 ei d),\<sigma>0)= \<lfloor>deny ()\<rfloor>"
   by (simp add: PolSimps)  
 

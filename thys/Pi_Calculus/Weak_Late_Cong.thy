@@ -103,7 +103,7 @@ proof -
       hence "P \<leadsto><(?X \<union> weakBisim)> Q" by(rule_tac Weak_Late_Step_Sim.monotonic) auto
       hence "P \<leadsto>\<^sup>^<(?X \<union> weakBisim)> Q" by(rule Weak_Late_Step_Sim.weakSimWeakEqSim)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     thus ?case by(auto simp add: congruence_def)

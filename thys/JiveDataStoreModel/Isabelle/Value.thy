@@ -5,34 +5,34 @@
     License:     LGPL
 *)
  
-section {* Value *}
+section \<open>Value\<close>
 
 theory Value imports Subtype begin
 
-text {* This theory contains our model of the values in the store. The store is untyped, therefore all
-  types that exist in Java are wrapped into one type @{text Value}.
+text \<open>This theory contains our model of the values in the store. The store is untyped, therefore all
+  types that exist in Java are wrapped into one type \<open>Value\<close>.
 
   In a first approach, the primitive Java types supported in this formalization are 
   mapped to similar Isabelle
   types. Later, we will have
   proper formalizations of the Java types in Isabelle, which will then be used here.
-  *}
+\<close>
   
 type_synonym JavaInt = int
 type_synonym JavaShort = int
 type_synonym JavaByte = int
 type_synonym JavaBoolean = bool
 
-text {* The objects of each class are identified by a unique ID.
+text \<open>The objects of each class are identified by a unique ID.
 We use elements of type @{typ nat} here, but in general it is sufficient to use
 an infinite type with a successor function and a comparison predicate.
-*}
+\<close>
 
 type_synonym ObjectId = nat
 
-text {* The definition of the datatype @{text Value}. Values can be of the Java types 
+text \<open>The definition of the datatype \<open>Value\<close>. Values can be of the Java types 
 boolean, int, short and byte. Additionally, they can be an object reference,
-an array reference or the value null. *}
+an array reference or the value null.\<close>
 
 datatype Value = boolV  JavaBoolean
                | intgV  JavaInt  
@@ -43,12 +43,12 @@ datatype Value = boolV  JavaBoolean
                | nullV
                
 
-text {* Arrays are modeled as references just like objects. So they
-can be viewed as special kinds of objects, like in Java.  *}
+text \<open>Arrays are modeled as references just like objects. So they
+can be viewed as special kinds of objects, like in Java.\<close>
 
-subsection {* Discriminator Functions *}
+subsection \<open>Discriminator Functions\<close>
 
-text {* To test values, we define the following discriminator functions. *}
+text \<open>To test values, we define the following discriminator functions.\<close>
 
 definition isBoolV  :: "Value \<Rightarrow> bool" where
 "isBoolV v = (case v of
@@ -217,7 +217,7 @@ lemma isNullV_simps [simp]:
 "isNullV nullV      = True"
   by (simp_all add: isNullV_def)
 
-subsection {* Selector Functions *}
+subsection \<open>Selector Functions\<close>
 
 definition aI :: "Value \<Rightarrow> JavaInt" where
 "aI v = (case v of  
@@ -334,12 +334,12 @@ lemma aid_simps [simp]:
 "aid (arrV T a) = a"
 by (simp add: aid_def)
 
-subsection{* Determining the Type of a Value *}
+subsection\<open>Determining the Type of a Value\<close>
 
-text {* To determine the type of a value, we define the function
-@{text "typeof"}. This function is
+text \<open>To determine the type of a value, we define the function
+\<open>typeof\<close>. This function is
 often written as $\tau$ in theoretical texts, therefore we add
-the appropriate syntax support. *}
+the appropriate syntax support.\<close>
 
 definition typeof :: "Value \<Rightarrow> Javatype" where
 "typeof v = (case v of
@@ -365,13 +365,13 @@ lemma typeof_simps [simp]:
   by (simp_all add: typeof_def)
 
 
-subsection {* Default Initialization Values for Types *}
+subsection \<open>Default Initialization Values for Types\<close>
 
-text {* The function @{text "init"} yields the default initialization values for each 
+text \<open>The function \<open>init\<close> yields the default initialization values for each 
 type. For boolean, the
 default value is False, for the integral types, it is 0, and for the reference
 types, it is nullV.
-*}
+\<close>
 
 definition init :: "Javatype \<Rightarrow> Value" where
 "init T = (case T of

@@ -4,23 +4,23 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Models of Action Algebras *}
+section \<open>Models of Action Algebras\<close>
 
 theory Action_Algebra_Models
 imports Action_Algebra Kleene_Algebra.Kleene_Algebra_Models
 begin
 
-subsection {* The Powerset Action Algebra over a Monoid *}
+subsection \<open>The Powerset Action Algebra over a Monoid\<close>
 
-text {* Here we show that various models of Kleene algebras are also
+text \<open>Here we show that various models of Kleene algebras are also
 residuated; hence they form action algebras. In each case the main
-work is to establish the residuated lattice structure. *}
+work is to establish the residuated lattice structure.\<close>
 
-text {* The interpretation proofs for some of the following models are
-quite similar. One could, perhaps, abstract out common reasoning. *}
+text \<open>The interpretation proofs for some of the following models are
+quite similar. One could, perhaps, abstract out common reasoning.\<close>
 
 
-subsection {* The Powerset Action Algebra over a Monoid *}
+subsection \<open>The Powerset Action Algebra over a Monoid\<close>
 
 instantiation set :: (monoid_mult) residuated_sup_lgroupoid
 begin
@@ -89,7 +89,7 @@ begin
 end (* instantiation *)
 
 
-subsection {* Language Action Algebras *}
+subsection \<open>Language Action Algebras\<close>
 
 definition limp_lan :: "'a lan \<Rightarrow> 'a lan \<Rightarrow> 'a lan" where
   "limp_lan Z Y = {x. \<forall>y \<in> Y. x @ y \<in> Z}"
@@ -116,7 +116,7 @@ proof
 qed
 
 
-subsection {* Relation Action Algebras *}
+subsection \<open>Relation Action Algebras\<close>
 
 definition limp_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
   "limp_rel T S = {(y,x) | y x. \<forall>z. (x,z) \<in> S \<longrightarrow> (y,z) \<in> T}"
@@ -143,7 +143,7 @@ proof
 qed
 
 
-subsection {* Trace Action Algebras *}
+subsection \<open>Trace Action Algebras\<close>
 
 definition limp_trace :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" where
   "limp_trace Z Y = \<Union> {X. t_prod X Y \<subseteq> Z}"
@@ -202,9 +202,9 @@ proof
 qed
 
 
-subsection {* Path Action Algebras *}
+subsection \<open>Path Action Algebras\<close>
 
-text {* We start with paths that include the empty path. *}
+text \<open>We start with paths that include the empty path.\<close>
 
 definition limp_path :: "'a path set \<Rightarrow> 'a path set \<Rightarrow> 'a path set" where
   "limp_path Z Y = \<Union> {X. p_prod X Y \<subseteq> Z}"
@@ -262,8 +262,8 @@ proof
     by (simp add: path_kleene_algebra.star_rtc_least)    
 qed
 
-text {* We now consider a notion of paths that does not include the
-empty path. *}
+text \<open>We now consider a notion of paths that does not include the
+empty path.\<close>
 
 definition limp_ppath :: "'a ppath set \<Rightarrow> 'a ppath set \<Rightarrow> 'a ppath set" where
   "limp_ppath Z Y = \<Union> {X. pp_prod X Y \<subseteq> Z}"
@@ -322,7 +322,7 @@ proof
 qed
 
 
-subsection {* The Min-Plus Action Algebra *}
+subsection \<open>The Min-Plus Action Algebra\<close>
 
 instantiation pnat :: minus
 begin
@@ -376,8 +376,8 @@ end (* instantiation *)
 instantiation pnat :: action_algebra
 begin
 
-text {* The Kleene star for type~@{typ pnat} has already been defined in theory
-@{theory Kleene_Algebra.Kleene_Algebra_Models}. *}
+text \<open>The Kleene star for type~@{typ pnat} has already been defined in theory
+@{theory Kleene_Algebra.Kleene_Algebra_Models}.\<close>
 
   instance
   proof

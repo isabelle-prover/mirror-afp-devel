@@ -4,18 +4,18 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Functions *}
+section \<open>Functions\<close>
 
 theory Relation_Algebra_Functions
   imports Relation_Algebra_Vectors Relation_Algebra_Tests
 begin
 
-subsection {* Functions *}
+subsection \<open>Functions\<close>
 
-text {* This section collects the most important properties of functions. Most
+text \<open>This section collects the most important properties of functions. Most
 of them can be found in the books by Maddux and by Schmidt and Str\"ohlein. The
 main material is on partial and total functions, injections, surjections,
-bijections. *}
+bijections.\<close>
 
 (* Perhaps this material should be reorganised so that related theorems are
 grouped together ... *)
@@ -38,8 +38,8 @@ definition is_inj :: "'a \<Rightarrow> bool"
 definition is_sur :: "'a \<Rightarrow> bool"
   where "is_sur x \<equiv> 1' \<le> x\<^sup>\<smile> ; x"
 
-text {* We distinguish between partial and total bijections. As usual we call
-the latter just bijections. *}
+text \<open>We distinguish between partial and total bijections. As usual we call
+the latter just bijections.\<close>
 
 definition is_p_bij :: "'a \<Rightarrow> bool"
   where "is_p_bij x \<equiv> is_p_fun x \<and> is_inj x \<and> is_sur x"
@@ -47,7 +47,7 @@ definition is_p_bij :: "'a \<Rightarrow> bool"
 definition is_bij :: "'a \<Rightarrow> bool"
   where "is_bij x \<equiv> is_map x \<and> is_inj x \<and> is_sur x"
 
-text {* Our first set of lemmas relates the various concepts. *}
+text \<open>Our first set of lemmas relates the various concepts.\<close>
 
 lemma inj_p_fun: "is_inj x \<longleftrightarrow> is_p_fun (x\<^sup>\<smile>)"
 by (metis conv_invol is_inj_def is_p_fun_def)
@@ -64,12 +64,12 @@ by (metis conv_invol sur_total)
 lemma bij_conv: "is_bij x  \<longleftrightarrow> is_bij (x\<^sup>\<smile>)"
 by (metis is_bij_def inj_p_fun is_map_def p_fun_inj sur_total total_sur)
 
-text {* Next we show that tests are partial injections. *}
+text \<open>Next we show that tests are partial injections.\<close>
 
 lemma test_is_inj_fun: "is_test x \<Longrightarrow> (is_p_fun x \<and> is_inj x)"
 by (metis is_inj_def p_fun_inj test_comp test_eq_conv is_test_def)
 
-text {* Next we show composition properties. *}
+text \<open>Next we show composition properties.\<close>
 
 lemma p_fun_comp:
   assumes "is_p_fun x" and "is_p_fun y"
@@ -120,8 +120,8 @@ lemma bij_comp:
   shows "is_bij (x ; y)"
 by (metis assms is_bij_def inj_comp map_comp sur_comp)
 
-text {* We now show that (partial) functions, unlike relations, distribute over
-meets from the left. *}
+text \<open>We now show that (partial) functions, unlike relations, distribute over
+meets from the left.\<close>
 
 lemma p_fun_distl: "is_p_fun x \<Longrightarrow> x ; (y \<cdot> z) = x ; y \<cdot> x ; z"
 proof -
@@ -137,8 +137,8 @@ qed
 lemma map_distl: "is_map x \<Longrightarrow> x ; (y \<cdot> z) = x ; y \<cdot> x ; z"
 by (metis is_map_def p_fun_distl)
 
-text {* Next we prove simple properties of functions which arise in equivalent
-definitions of those concepts. *}
+text \<open>Next we prove simple properties of functions which arise in equivalent
+definitions of those concepts.\<close>
 
 lemma p_fun_zero: "is_p_fun x \<Longrightarrow> x ; y \<cdot> x ; -y = 0"
 by (metis annir inf_compl_bot p_fun_distl)
@@ -160,8 +160,8 @@ lemma bij_is_maprop:
   shows "x\<^sup>\<smile> ; x  = 1' \<and> x ; x\<^sup>\<smile> = 1'"
 by (metis assms is_bij_def eq_iff is_inj_def is_map_def is_p_fun_def is_sur_def is_total_def)
 
-text{* We now provide alternative definitions for functions. These can be found
-in Schmidt and Str\"ohlein's book. *}
+text\<open>We now provide alternative definitions for functions. These can be found
+in Schmidt and Str\"ohlein's book.\<close>
 
 lemma p_fun_def_var: "is_p_fun x \<longleftrightarrow> x ; -(1') \<le> -x"
 by (metis conv_galois_1 double_compl galois_aux inf.commute is_p_fun_def)
@@ -184,7 +184,7 @@ by (metis conv_galois_2 double_compl galois_aux inf.commute is_inj_def)
 lemma is_maprop: "is_map x \<longleftrightarrow> x ; -(1') = -x"
 by (metis eq_iff is_map_def p_fun_def_var total_def_var_2)
 
-text {* Finally we prove miscellaneous properties of functions. *}
+text \<open>Finally we prove miscellaneous properties of functions.\<close>
 
 lemma ss_422iii: "is_p_fun y \<Longrightarrow> (x \<cdot> z ; y\<^sup>\<smile>) ; y = x ; y \<cdot> z"
 (* by (smt antisym comp_assoc inf_commute maddux_17 meet_iso mult_isol mult_oner mult_subdistr_var order_trans is_p_fun_def) *)
@@ -195,7 +195,7 @@ proof (rule antisym)
   have "(x \<cdot> z ; y\<^sup>\<smile>) ; y \<le> x ; y \<cdot> (z ; (y\<^sup>\<smile> ; y))"
     by (metis mult_subdistr_var mult.assoc)
   also have "\<dots> \<le> x ; y \<cdot> z ; 1'"
-    by (metis `is_p_fun y` inf_absorb2 inf_le1 le_infI le_infI2 mult_subdistl is_p_fun_def)
+    by (metis \<open>is_p_fun y\<close> inf_absorb2 inf_le1 le_infI le_infI2 mult_subdistl is_p_fun_def)
   finally show "(x \<cdot> z ; y\<^sup>\<smile>) ; y \<le> x ; y \<cdot> z"
     by (metis mult.right_neutral)
 qed
@@ -206,14 +206,14 @@ by (metis annir galois_aux inf.commute inf_compl_bot p_fun_distl)
 lemma ss_422v: "is_p_fun x \<Longrightarrow> x ; -y = x ; 1 \<cdot> -(x ; y)"
 by (metis inf.commute inf_absorb2 inf_top_left maddux_23 p_fun_compl)
 
-text {* The next property is a Galois connection. *}
+text \<open>The next property is a Galois connection.\<close>
 
 lemma ss43iii: "is_map x \<longleftrightarrow> (\<forall>y. x ; -y = -(x ; y))"
 by standard (metis inf_top_left is_map_def ss_422v total_one, metis is_maprop mult.right_neutral)
 
-text {* Next we prove a lemma from Schmidt and Str\"ohlein's book and some of
+text \<open>Next we prove a lemma from Schmidt and Str\"ohlein's book and some of
 its consequences. We show the proof in detail since the textbook proof uses
-Tarski's rule which we omit. *}
+Tarski's rule which we omit.\<close>
 
 lemma ss423: "is_map x \<Longrightarrow> y ; x \<le> z \<longleftrightarrow> y \<le> z ; x\<^sup>\<smile>"
 proof
@@ -221,13 +221,13 @@ proof
   hence "y \<le> y ; x ; x\<^sup>\<smile>"
     by (metis is_map_def mult_1_right mult.assoc mult_isol is_total_def)
   thus "y \<le> z ; x\<^sup>\<smile>"
-    by (metis `y ; x \<le> z` mult_isor order_trans)
+    by (metis \<open>y ; x \<le> z\<close> mult_isor order_trans)
 next
   assume "is_map x" and "y \<le> z ; x\<^sup>\<smile>"
   hence "y ; x \<le> z ; x\<^sup>\<smile> ; x"
     by (metis mult_isor)
   also have "\<dots> \<le> z ; 1'"
-    by (metis `is_map x` is_map_def mult.assoc mult_isol is_p_fun_def)
+    by (metis \<open>is_map x\<close> is_map_def mult.assoc mult_isol is_p_fun_def)
   finally show "y ; x \<le> z"
     by (metis mult_1_right)
 qed
@@ -275,10 +275,10 @@ by (metis is_map_def mult.assoc mult.right_neutral total_inj_id)
 lemma sur_map_epimorph: "\<lbrakk>is_sur x; is_map x\<rbrakk> \<Longrightarrow> (\<forall>y z. x ; y = x ; z \<longrightarrow> y = z)"
 by (metis eq_iff mult.assoc mult.left_neutral ss423 is_sur_def)
 
-subsection {* Points and Rectangles *}
+subsection \<open>Points and Rectangles\<close>
 
-text {* Finally here is a section on points and rectangles. This is only a
-beginning. *}
+text \<open>Finally here is a section on points and rectangles. This is only a
+beginning.\<close>
 
 definition is_point :: "'a \<Rightarrow> bool"
   where "is_point x \<equiv> is_vector x \<and> is_inj x \<and> x \<noteq> 0"
@@ -289,11 +289,11 @@ definition is_rectangle :: "'a \<Rightarrow> bool"
 lemma rectangle_eq [simp]: "is_rectangle x \<longleftrightarrow> x ; 1 ; x = x"
 by (metis conv_one dedekind eq_iff inf_top_left mult.assoc one_idem_mult is_rectangle_def)
 
-subsection {* Antidomain *}
+subsection \<open>Antidomain\<close>
 
-text{* This section needs to be linked with domain semirings. We essentially
+text\<open>This section needs to be linked with domain semirings. We essentially
 prove the antidomain semiring axioms. Then we have the abstract properties at
-our disposition. *}
+our disposition.\<close>
 
 definition antidom :: "'a \<Rightarrow> 'a" ("a")
   where "a x = 1' \<cdot> (-(x ; 1))"
@@ -334,9 +334,9 @@ apply standard
 apply (metis dom_def_aux inf.commute mult.right_neutral test_1 is_test_def)
 done
 
-text {* At this point we have all the necessary ingredients to prove that
+text \<open>At this point we have all the necessary ingredients to prove that
 relation algebras form Boolean domain semirings. However, we omit a formal
-proof since we haven't formalized the latter. *}
+proof since we haven't formalized the latter.\<close>
 
 lemma dom_one: "x ; 1 = d x ; 1"
 by (metis dom_def_aux inf_top_left mult.left_neutral ra_1)

@@ -10,9 +10,9 @@ imports ClockView SPRViewDet
 begin
 (*>*)
 
-subsection{* The Muddy Children *}
+subsection\<open>The Muddy Children\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-mc}
 
@@ -46,13 +46,13 @@ reasons with the following KBP:
 \begin{center}
   \begin{tabular}{lll}
     $\mathbf{do}$\\
-     & $\gcalt\ \hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $@{text "\<rightarrow>"}$ Say ``I know if my forehead is muddy''\\
-     & $\gcalt\ @{text "\<not>"}\hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $@{text "\<rightarrow>"}$ Say nothing\\
+     & $\gcalt\ \hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $\<open>\<rightarrow>\<close>$ Say ``I know if my forehead is muddy''\\
+     & $\gcalt\ \<open>\<not>\<close>\hat{\mathbf{K}}_{\mbox{child}_i} \mbox{muddy}_i$ & $\<open>\<rightarrow>\<close>$ Say nothing\\
     $\mathbf{od}$\\
   \end{tabular}
 \end{center}
-where $\hat{\mathbf{K}}_a @{text "\<phi>"}$ abbreviates $\mathbf{K}_a
-@{text "\<phi>"}\ @{text "\<or>"}\ \mathbf{K}_a @{text "\<not>\<phi>"}$.
+where $\hat{\mathbf{K}}_a \<open>\<phi>\<close>$ abbreviates $\mathbf{K}_a
+\<open>\<phi>\<close>\ \<open>\<or>\<close>\ \mathbf{K}_a \<open>\<not>\<phi>\<close>$.
 
 As this protocol is deterministic, we use the SPR algorithm of
 \S\ref{sec:kbps-theory-spr-deterministic-protocols}.
@@ -92,7 +92,7 @@ semantics as it requires (in general) remembering the sequence of
 previous broadcasts of length proportional to the number of
 children. We discuss this further in \S\ref{sec:kbps-muddychildren}.
 
-*}
+\<close>
 (*<*)
 
 datatype Agent = Child0 | Child1 | Child2
@@ -299,14 +299,14 @@ where
               \<lparr> guard = Kand (Knot (\<^bold>K\<^sub>a (Kprop (Dirty a))))
                              (Knot (\<^bold>K\<^sub>a (Knot (Kprop (Dirty a))))), action = SayNothing \<rparr> ]"
 
-subsubsection{* Locale instantiations *}
+subsubsection\<open>Locale instantiations\<close>
 
 interpretation MC: Environment jkbp envInit envAction envTrans envVal envObs
   apply unfold_locales
   apply (auto simp: jkbp_def)
   done
 
-subsubsection{* The Clock view implementation *}
+subsubsection\<open>The Clock view implementation\<close>
 
 interpretation MC_Clock:
   FiniteLinorderEnvironment jkbp envInit envAction envTrans envVal envObs agents
@@ -328,7 +328,7 @@ lemma (in FiniteLinorderEnvironment)
   "MC.Clock.implements mc_ClockAlg"
   unfolding mc_ClockAlg_def by (rule MC_Clock.mkClockAuto_implements)
 
-subsubsection{* The SPR view implementation *}
+subsubsection\<open>The SPR view implementation\<close>
 
 interpretation MC_SPR:
   FiniteDetBroadcastEnvironment jkbp envInit envAction envTrans envVal envObs agents envObsC

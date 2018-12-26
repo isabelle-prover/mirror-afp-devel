@@ -5,12 +5,12 @@
 
 chapter "Subcategory"
 
-  text{*
+  text\<open>
     In this chapter we give a construction of the subcategory of a category
     defined by a predicate on arrows subject to closure conditions.  The arrows of
     the subcategory are directly identified with the arrows of the ambient category.
     We also define the related notions of full subcategory and inclusion functor.
-  *}
+\<close>
 
 theory Subcategory
 imports Functor
@@ -305,9 +305,9 @@ begin
   context full_subcategory
   begin
 
-    text {*
+    text \<open>
       Isomorphisms in a full subcategory are inherited from the ambient category.
-    *}
+\<close>
 
     lemma iso_char:
     shows "iso f \<longleftrightarrow> arr f \<and> C.iso f"
@@ -343,10 +343,10 @@ begin
 
   section "Inclusion Functor"
 
-  text {*
-    If @{text S} is a subcategory of @{text C}, then there is an inclusion functor
-    from @{text S} to @{text C}.  Inclusion functors are faithful embeddings.
-  *}
+  text \<open>
+    If \<open>S\<close> is a subcategory of \<open>C\<close>, then there is an inclusion functor
+    from \<open>S\<close> to \<open>C\<close>.  Inclusion functors are faithful embeddings.
+\<close>
 
   locale inclusion_functor =
     C: category C +
@@ -384,10 +384,10 @@ begin
   sublocale inclusion_functor \<subseteq> embedding_functor S.comp C S.map
     using is_embedding_functor by auto
 
-  text {*
+  text \<open>
     The inclusion of a full subcategory is a special case.
     Such functors are fully faithful.
-  *}
+\<close>
 
   locale full_inclusion_functor =
     C: category C +

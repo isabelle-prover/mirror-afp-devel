@@ -1,15 +1,15 @@
-section {* Entry Point for the Automatic Refinement Tool *}
+section \<open>Entry Point for the Automatic Refinement Tool\<close>
 theory Automatic_Refinement
 imports 
   "Tool/Autoref_Tool"
   Autoref_Bindings_HOL
 begin
-  text {* The automatic refinement tool should be used by 
-    importing this theory *}
+  text \<open>The automatic refinement tool should be used by 
+    importing this theory\<close>
 
-subsection {* Convenience *}
+subsection \<open>Convenience\<close>
 
-text {* The following lemmas can be used to add tags to theorems *}
+text \<open>The following lemmas can be used to add tags to theorems\<close>
 lemma PREFER_I: "P x \<Longrightarrow> PREFER P x" by simp
 lemma PREFER_D: "PREFER P x \<Longrightarrow> P x" by simp
 

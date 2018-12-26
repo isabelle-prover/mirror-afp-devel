@@ -13,7 +13,7 @@ subsection "Microsteps "
 
 text \<open>
   We distinguish microsteps from `external' transitions (observable or not). Here, they are
-  a kind of `hypothetical computation', since, unlike @{text \<tau>}-transitions, they do not make
+  a kind of `hypothetical computation', since, unlike \<open>\<tau>\<close>-transitions, they do not make
   choices but rather `compute' which choices are possible.
 \<close>
 
@@ -110,7 +110,7 @@ lemmas no_microstep [intro,simp] =
 subsection "Wellformed process specifications "
 
 text \<open>
-  A process specification @{text \<Gamma>} is wellformed if its @{term "microstep \<Gamma>"} relation is
+  A process specification \<open>\<Gamma>\<close> is wellformed if its @{term "microstep \<Gamma>"} relation is
   free of loops and infinite chains.
 
   For example, these specifications are not wellformed:
@@ -281,7 +281,7 @@ theorem wf_no_direct_calls[intro]:
 subsection "Start terms"
 
 text \<open>
-  The start terms are those terms, relative to a wellformed process specification @{text \<Gamma>},
+  The start terms are those terms, relative to a wellformed process specification \<open>\<Gamma>\<close>,
   from which transitions can occur directly.
 \<close>
 
@@ -585,7 +585,7 @@ subsection "Derivative terms "
 
 text \<open>
   The derivatives of a term are those @{term sterm}s potentially reachable by taking a
-  transition, relative to a wellformed process specification @{text \<Gamma>}. These terms
+  transition, relative to a wellformed process specification \<open>\<Gamma>\<close>. These terms
   overapproximate the reachable sterms, since the truth of guards is not considered.
 \<close>
 

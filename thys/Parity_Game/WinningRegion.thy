@@ -1,4 +1,4 @@
-section {* Winning Regions *}
+section \<open>Winning Regions\<close>
 
 theory WinningRegion
 imports
@@ -6,10 +6,10 @@ imports
   WinningStrategy
 begin
 
-text {*
-  Here we define winning regions of parity games.  The winning region for player @{text p} is the
-  set of nodes from which @{text p} has a positional winning strategy.
-*}
+text \<open>
+  Here we define winning regions of parity games.  The winning region for player \<open>p\<close> is the
+  set of nodes from which \<open>p\<close> has a positional winning strategy.
+\<close>
 
 context ParityGame begin
 
@@ -26,11 +26,11 @@ lemma winning_region_deadends:
   assumes "v \<in> VV p" "deadend v"
   shows "v \<in> winning_region p**"
 proof
-  show "v \<in> V" using `v \<in> VV p` by blast
+  show "v \<in> V" using \<open>v \<in> VV p\<close> by blast
   show "winning_strategy p** \<sigma>_arbitrary v" using assms winning_strategy_on_deadends by simp
 qed simp
 
-subsection {* Paths in Winning Regions *}
+subsection \<open>Paths in Winning Regions\<close>
 
 lemma (in vmc_path) paths_stay_in_winning_region:
   assumes \<sigma>': "strategy p \<sigma>'" "winning_strategy p \<sigma>' v0"
@@ -56,7 +56,7 @@ proof
         assume "v0 \<in> VV p"
         hence "winning_strategy p \<sigma>' (\<sigma>' v0)"
           using strategy_extends_VVp local.step(4) step.prems(2) v0_no_deadend by blast
-        moreover have "\<sigma> v0 = w0" using v0_conforms `v0 \<in> VV p` by blast
+        moreover have "\<sigma> v0 = w0" using v0_conforms \<open>v0 \<in> VV p\<close> by blast
         moreover have "\<sigma>' v0 = \<sigma> v0"
           using \<sigma> assms(1) step.prems(2) v0_V unfolding winning_region_def by blast
         ultimately show ?thesis by simp
@@ -93,9 +93,9 @@ proof-
   thus "winning_path p P" unfolding P'_def using winning_path_drop_add n(1) P_valid by blast
 qed
 
-subsection {* Irrelevant Updates *}
+subsection \<open>Irrelevant Updates\<close>
 
-text {* Updating a winning strategy outside of the winning region is irrelevant. *}
+text \<open>Updating a winning strategy outside of the winning region is irrelevant.\<close>
 
 lemma winning_strategy_updates:
   assumes \<sigma>: "strategy p \<sigma>" "winning_strategy p \<sigma> v0"
@@ -111,7 +111,7 @@ proof
   thus "winning_path p P" using conforms_to_another_strategy \<sigma>(2) winning_strategy_def by blast
 qed
 
-subsection {* Extending Winning Regions *}
+subsection \<open>Extending Winning Regions\<close>
 
 lemma winning_region_extends_VVp:
   assumes v: "v \<in> VV p" "v\<rightarrow>w" and w: "w \<in> winning_region p"
@@ -121,19 +121,19 @@ proof (rule ccontr)
     using w unfolding winning_region_def by blast
   let ?\<sigma> = "\<sigma>(v := w)"
   assume contra: "v \<notin> winning_region p"
-  moreover have "strategy p ?\<sigma>" using valid_strategy_updates \<sigma>(1) `v\<rightarrow>w` by blast
+  moreover have "strategy p ?\<sigma>" using valid_strategy_updates \<sigma>(1) \<open>v\<rightarrow>w\<close> by blast
   moreover hence "winning_strategy p ?\<sigma> v"
     using winning_strategy_updates \<sigma> contra v strategy_extends_backwards_VVp
     by auto
-  ultimately show False using `v\<rightarrow>w` unfolding winning_region_def by auto
+  ultimately show False using \<open>v\<rightarrow>w\<close> unfolding winning_region_def by auto
 qed
 
-text {*
-  Unfortunately, we cannot prove the corresponding theorem @{text winning_region_extends_VVpstar}
+text \<open>
+  Unfortunately, we cannot prove the corresponding theorem \<open>winning_region_extends_VVpstar\<close>
   for @{term "VV p**"}-nodes yet.
   First, we need to show that there exists a uniform winning strategy on @{term "winning_region p"}.
-  We will prove @{text winning_region_extends_VVpstar} as soon as we have this.
-*}
+  We will prove \<open>winning_region_extends_VVpstar\<close> as soon as we have this.
+\<close>
 
 end \<comment> \<open>context ParityGame\<close>
 

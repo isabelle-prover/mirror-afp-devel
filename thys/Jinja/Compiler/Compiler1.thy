@@ -3,11 +3,11 @@
     Copyright   TUM 2003
 *)
 
-section {* Compilation Stage 1 *}
+section \<open>Compilation Stage 1\<close>
 
 theory Compiler1 imports PCompiler J1 Hidden begin
 
-text{* Replacing variable names by indices. *}
+text\<open>Replacing variable names by indices.\<close>
 
 primrec compE\<^sub>1  :: "vname list \<Rightarrow> expr \<Rightarrow> expr\<^sub>1"
   and compEs\<^sub>1 :: "vname list \<Rightarrow> expr list \<Rightarrow> expr\<^sub>1 list" where
@@ -49,7 +49,7 @@ and "\<And>Vs. max_varss (compEs\<^sub>1 Vs es) = max_varss es"
 (*<*)by (induct e and es rule: max_vars.induct max_varss.induct) simp_all(*>*)
 
 
-text{* Compiling programs: *}
+text\<open>Compiling programs:\<close>
 
 definition compP\<^sub>1 :: "J_prog \<Rightarrow> J\<^sub>1_prog"
 where

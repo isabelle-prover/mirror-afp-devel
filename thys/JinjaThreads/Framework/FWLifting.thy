@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Lifting of thread-local properties to the multithreaded case *}
+section \<open>Lifting of thread-local properties to the multithreaded case\<close>
 
 theory FWLifting
 imports
   FWWellform
 begin
 
-text{* Lifting for properties that only involve thread-local state information and the shared memory. *}
+text\<open>Lifting for properties that only involve thread-local state information and the shared memory.\<close>
 
 definition
   ts_ok :: "('t \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
@@ -40,7 +40,7 @@ lemma ts_ok_mono:
   "\<lbrakk> ts_ok P ts m; \<And>t x. P t x m \<Longrightarrow> Q t x m \<rbrakk> \<Longrightarrow> ts_ok Q ts m"
 by(auto intro!: ts_okI dest: ts_okD)
 
-text{* Lifting for properites, that also require additional data that does not change during execution *}
+text\<open>Lifting for properites, that also require additional data that does not change during execution\<close>
 
 definition
   ts_inv :: "('i \<Rightarrow> 't \<Rightarrow> 'x \<Rightarrow> 'm \<Rightarrow> bool) \<Rightarrow> ('t \<rightharpoonup> 'i) \<Rightarrow> ('l,'t,'x) thread_info \<Rightarrow> 'm \<Rightarrow> bool"
@@ -59,7 +59,7 @@ lemma ts_invD:
   "\<And>ln. \<lbrakk> ts_inv P I ts m; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> \<exists>i. I t = \<lfloor>i\<rfloor> \<and> P i t x m"
 by(auto simp add: ts_inv_def)
 
-text {* Wellformedness properties for lifting *}
+text \<open>Wellformedness properties for lifting\<close>
 
 definition
   ts_inv_ok :: "('l,'t,'x) thread_info \<Rightarrow> ('t \<rightharpoonup> 'i) \<Rightarrow> bool"
@@ -135,8 +135,8 @@ proof(induct tas arbitrary: ts I)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS I)
-  note IH = `\<And>ts I. ts_inv_ok ts I \<Longrightarrow> ts_inv_ok (redT_updTs' ts TAS) (upd_invs I P TAS)`
-  note esok = `ts_inv_ok TS I`
+  note IH = \<open>\<And>ts I. ts_inv_ok ts I \<Longrightarrow> ts_inv_ok (redT_updTs' ts TAS) (upd_invs I P TAS)\<close>
+  note esok = \<open>ts_inv_ok TS I\<close>
   from esok have "ts_inv_ok (redT_updT' TS TA) (upd_inv I P TA)"
     by -(rule ts_inv_ok_upd_inv')
   hence "ts_inv_ok (redT_updTs' (redT_updT' TS TA) TAS) (upd_invs (upd_inv I P TA) P TAS)"
@@ -156,8 +156,8 @@ proof(induct tas arbitrary: ts I)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS I)
-  note IH = `\<And>ts I. ts_inv_ok ts I \<Longrightarrow> ts_inv_ok (redT_updTs ts TAS) (upd_invs I P TAS)`
-  note esok = `ts_inv_ok TS I`
+  note IH = \<open>\<And>ts I. ts_inv_ok ts I \<Longrightarrow> ts_inv_ok (redT_updTs ts TAS) (upd_invs I P TAS)\<close>
+  note esok = \<open>ts_inv_ok TS I\<close>
   from esok have "ts_inv_ok (redT_updT TS TA) (upd_inv I P TA)"
     by -(rule ts_inv_ok_upd_inv)
   hence "ts_inv_ok (redT_updTs (redT_updT TS TA) TAS) (upd_invs (upd_inv I P TA) P TAS)"
@@ -176,9 +176,9 @@ proof(induct tas arbitrary: ts I)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS I)
-  note IH = `\<And>ts I. \<lbrakk> ts_inv_ok ts I; thread_oks ts TAS\<rbrakk> \<Longrightarrow> I \<subseteq>\<^sub>m upd_invs I P TAS`
-  note esinv = `ts_inv_ok TS I`
-  note cct = `thread_oks TS (TA # TAS)`
+  note IH = \<open>\<And>ts I. \<lbrakk> ts_inv_ok ts I; thread_oks ts TAS\<rbrakk> \<Longrightarrow> I \<subseteq>\<^sub>m upd_invs I P TAS\<close>
+  note esinv = \<open>ts_inv_ok TS I\<close>
+  note cct = \<open>thread_oks TS (TA # TAS)\<close>
   from esinv cct have "I \<subseteq>\<^sub>m upd_inv I P TA"
     by(auto intro: ts_inv_ok_inv_ext_upd_inv)
   also from esinv cct have "ts_inv_ok (redT_updT' TS TA) (upd_inv I P TA)"
@@ -194,10 +194,10 @@ proof(induct tas arbitrary: ts I)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS I)
-  note IH = `\<And>ts I. \<lbrakk>thread_oks ts TAS; I t = \<lfloor>i\<rfloor>; ts t = \<lfloor>x\<rfloor>\<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = \<lfloor>i\<rfloor>`
-  note cct = `thread_oks TS (TA # TAS)`
-  note it = `I t = \<lfloor>i\<rfloor>`
-  note est = `TS t = \<lfloor>x\<rfloor>`
+  note IH = \<open>\<And>ts I. \<lbrakk>thread_oks ts TAS; I t = \<lfloor>i\<rfloor>; ts t = \<lfloor>x\<rfloor>\<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = \<lfloor>i\<rfloor>\<close>
+  note cct = \<open>thread_oks TS (TA # TAS)\<close>
+  note it = \<open>I t = \<lfloor>i\<rfloor>\<close>
+  note est = \<open>TS t = \<lfloor>x\<rfloor>\<close>
   from cct have cctta: "thread_ok TS TA"
     and ccttas: "thread_oks (redT_updT' TS TA) TAS" by auto
   from cctta it est have "upd_inv I Q TA t = \<lfloor>i\<rfloor>"
@@ -219,9 +219,9 @@ proof(induct tas arbitrary: ts I)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS I)
-  note IH = `\<And>ts I. \<lbrakk>thread_oks ts TAS; ts t = \<lfloor>x\<rfloor>\<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = I t`
-  note cct = `thread_oks TS (TA # TAS)`
-  note est = `TS t = \<lfloor>x\<rfloor>`
+  note IH = \<open>\<And>ts I. \<lbrakk>thread_oks ts TAS; ts t = \<lfloor>x\<rfloor>\<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = I t\<close>
+  note cct = \<open>thread_oks TS (TA # TAS)\<close>
+  note est = \<open>TS t = \<lfloor>x\<rfloor>\<close>
   from cct est have "upd_invs (upd_inv I Q TA) Q TAS t = upd_inv I Q TA t"
     apply(clarsimp)
     apply(erule IH)
@@ -242,9 +242,9 @@ proof(rule exI[where x="SOME i. Q i t x m"])
     case Nil thus ?case by simp
   next
     case (Cons TA TAS TS I)
-    note IH = `\<And>ts I. \<lbrakk> NewThread t x m \<in> set TAS; thread_oks ts TAS \<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = \<lfloor>SOME i. Q i t x m\<rfloor>`
-    note nt = `NewThread t x m \<in> set (TA # TAS)`
-    note cct = `thread_oks TS (TA # TAS)`
+    note IH = \<open>\<And>ts I. \<lbrakk> NewThread t x m \<in> set TAS; thread_oks ts TAS \<rbrakk> \<Longrightarrow> upd_invs I Q TAS t = \<lfloor>SOME i. Q i t x m\<rfloor>\<close>
+    note nt = \<open>NewThread t x m \<in> set (TA # TAS)\<close>
+    note cct = \<open>thread_oks TS (TA # TAS)\<close>
     { assume nt': "NewThread t x m \<in> set TAS"
       from cct have ?case
         apply(clarsimp)

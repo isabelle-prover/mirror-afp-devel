@@ -1,4 +1,4 @@
-section {* Proof Helpers *}
+section \<open>Proof Helpers\<close>
 
 text\<open>In this section we define and prove lemmas that help to show that all identified critical 
 conditions hold for concurrent operations. Many of the following parts are derivations from the 

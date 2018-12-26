@@ -6,7 +6,7 @@
   that describes a density function on the corresponding measure space.
 *)
 
-section {* Concrete PDF Compiler *}
+section \<open>Concrete PDF Compiler\<close>
 
 theory PDF_Compiler
 imports PDF_Compiler_Pred PDF_Target_Density_Contexts
@@ -75,7 +75,7 @@ code_pred expr_has_density_cexpr .
 
 
 
-text {* Auxiliary lemmas *}
+text \<open>Auxiliary lemmas\<close>
 
 lemma cdens_ctxt_invar_insert:
   assumes inv: "cdens_ctxt_invar vs vs' \<Gamma> \<delta>"
@@ -1163,7 +1163,7 @@ next
 
 next
   case (edc_add vs vs' \<Gamma> \<delta> e f t t')
-  note t = `\<Gamma> \<turnstile> e : PRODUCT t t`
+  note t = \<open>\<Gamma> \<turnstile> e : PRODUCT t t\<close>
   note invar = cdens_ctxt_invarD[OF edc_add.prems(2)]
   from edc_add.prems and t have "op_type Add (PRODUCT t t) = Some t'"
     by (elim expr_typing_opE) (auto dest: expr_typing_unique)
@@ -1388,7 +1388,7 @@ proof-
 qed
 
 
-section {* Tests *}
+section \<open>Tests\<close>
 
 values "{(t, f) |t f. Val (IntVal 42) : t \<Rightarrow>\<^sub>c f}"
 values "{(t, f) |t f. Minus $$ (Val (IntVal 42)) : t \<Rightarrow>\<^sub>c f}"

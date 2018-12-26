@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Specialize type safety for JMM heap implementation 2 *}
+section \<open>Specialize type safety for JMM heap implementation 2\<close>
 
 theory JMM_Typesafe2
 imports
@@ -78,18 +78,18 @@ proof(coinduction arbitrary: s \<xi> rule: trsys.Runs.coinduct[consumes 1, case_
   proof(cases rule: trsys.Runs.cases[consumes 1, case_names Stuck Step])
     case (Stuck S)
     { fix tta s'
-      from `\<not> ?redT S tta s'` have "\<not> ?redT' S tta s'"
+      from \<open>\<not> ?redT S tta s'\<close> have "\<not> ?redT' S tta s'"
         by(rule contrapos_nn)(fastforce simp add: multithreaded_base.redT.simps) }
-    hence ?Stuck using `\<xi> = LNil` unfolding `s = S` by blast
+    hence ?Stuck using \<open>\<xi> = LNil\<close> unfolding \<open>s = S\<close> by blast
     thus ?thesis ..
   next
     case (Step S s' ttas tta)
-    from `\<xi> = LCons tta ttas` read
+    from \<open>\<xi> = LCons tta ttas\<close> read
     have read1: "\<And>ad al v T. \<lbrakk> NormalAction (ReadMem ad al v) \<in> set \<lbrace>snd tta\<rbrace>\<^bsub>o\<^esub>; ?adal ad al T \<rbrakk> \<Longrightarrow> ?conf v T"
       and read2: "?read ttas" by(auto simp add: o_def)
-    from `?redT S tta s'` read1
+    from \<open>?redT S tta s'\<close> read1
     have "?redT' S tta s'" by(fastforce simp add: multithreaded_base.redT.simps)
-    hence ?Step using Step read2 `s = S` by blast
+    hence ?Step using Step read2 \<open>s = S\<close> by blast
     thus ?thesis ..
   qed
 qed
@@ -124,19 +124,19 @@ proof -
         from stuck[OF RedT' this] 
         obtain tta s'' where "?redT' s' tta s''" by blast
         with Stuck(3)[of tta s''] show False
-          unfolding `s' = S` by contradiction
+          unfolding \<open>s' = S\<close> by contradiction
       qed
       with Stuck(1-2) have ?Stuck by simp
       thus ?thesis by(rule disjI1)
     next
       case (Step S s'' \<xi>' tta)
-      note Step = Step(2-)[folded `s' = S`]
-      from `?redT' s' tta s''` have "?redT s' tta s''"
+      note Step = Step(2-)[folded \<open>s' = S\<close>]
+      from \<open>?redT' s' tta s''\<close> have "?redT s' tta s''"
         by(fastforce simp add: multithreaded_base.redT.simps)
-      moreover from RedT' `?redT' s' tta s''`
+      moreover from RedT' \<open>?redT' s' tta s''\<close>
       have "?RedT' s (ttas @ [tta]) s''"
         unfolding multithreaded_base.RedT_def by(rule rtrancl3p_step)
-      ultimately have ?Step using `\<xi> = LCons tta \<xi>'` `?Runs' s'' \<xi>'` by blast
+      ultimately have ?Step using \<open>\<xi> = LCons tta \<xi>'\<close> \<open>?Runs' s'' \<xi>'\<close> by blast
       thus ?thesis by(rule disjI2)
     qed
   qed

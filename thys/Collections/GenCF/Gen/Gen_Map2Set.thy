@@ -1,4 +1,4 @@
-section {* \isaheader{Generic Map To Set Converter} *}
+section \<open>\isaheader{Generic Map To Set Converter}\<close>
 theory Gen_Map2Set
 imports 
   "../Intf/Intf_Map"
@@ -128,8 +128,8 @@ lemma map2set_to_list[autoref_ga_rules]:
   by (simp add: foldli_map comp_def fn_fst_conv)
 *)
 
-text {* Transfering also non-basic operations results in specializations
-  of map-algorithms to also be used for sets *}
+text \<open>Transfering also non-basic operations results in specializations
+  of map-algorithms to also be used for sets\<close>
 lemma map2set_union[autoref_rules_raw]:
   assumes "MINOR_PRIO_TAG (- 9)"
   assumes "GEN_OP u (++) (\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R\<rightarrow>\<langle>Rk,Id\<rangle>R)"

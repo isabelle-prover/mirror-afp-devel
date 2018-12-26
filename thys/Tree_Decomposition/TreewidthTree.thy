@@ -1,9 +1,9 @@
-section {* Treewidth of Trees *}
+section \<open>Treewidth of Trees\<close>
 
 theory TreewidthTree
 imports TreeDecomposition begin
 
-text {* The treewidth of a tree is 1 if the tree has at least one edge, otherwise it is 0.
+text \<open>The treewidth of a tree is 1 if the tree has at least one edge, otherwise it is 0.
 
   For simplicity and without loss of generality, we assume that the vertex set of the tree is a
   subset of the natural numbers because this is what we use in the definition of
@@ -12,7 +12,7 @@ text {* The treewidth of a tree is 1 if the tree has at least one edge, otherwis
   While it would be nice to lift this restriction, removing it would entail defining isomorphisms
   between graphs in order to map the tree decomposition to a tree decomposition over the natural
   numbers.  This is outside the scope of this theory and probably not terribly interesting by
-  itself. *}
+  itself.\<close>
 theorem treewidth_tree:
   fixes G :: "nat Graph" (structure)
   assumes "Tree G"
@@ -80,8 +80,8 @@ proof-
     treewidth_cards_treewidth treewidth_upper_bound_ex)
 qed
 
-text {* If the tree is non-trivial, that is, if it contains more than one vertex, then its
-  treewidth is exactly 1. *}
+text \<open>If the tree is non-trivial, that is, if it contains more than one vertex, then its
+  treewidth is exactly 1.\<close>
 corollary treewidth_tree_exact:
   fixes G :: "nat Graph" (structure)
   assumes "Tree G" "card V\<^bsub>G\<^esub> > 1"

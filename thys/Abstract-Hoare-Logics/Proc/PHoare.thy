@@ -5,41 +5,41 @@
 
 theory PHoare imports PLang begin
 
-subsection{* Hoare logic for partial correctness *}
+subsection\<open>Hoare logic for partial correctness\<close>
 
-text{*Taking auxiliary variables seriously means that assertions must
+text\<open>Taking auxiliary variables seriously means that assertions must
 now depend on them as well as on the state. Initially we do not fix
 the type of auxiliary variables but parameterize the type of
-assertions with a type variable @{typ 'a}:*}
+assertions with a type variable @{typ 'a}:\<close>
 
 type_synonym 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
 
-text{*
+text\<open>
 The second major change is the need to reason about Hoare
 triples in a context: proofs about recursive procedures are conducted
 by induction where we assume that all @{term CALL}s satisfy the given
 pre/postconditions and have to show that the body does as well. The
-assumption is stored in a context, which is a set of Hoare triples:*}
+assumption is stored in a context, which is a set of Hoare triples:\<close>
 
 type_synonym 'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
 
-text{*\noindent In the presence of only a single procedure the context will
+text\<open>\noindent In the presence of only a single procedure the context will
 always be empty or a singleton set. With multiple procedures, larger
 sets can arise.
 
 Now that we have contexts, validity becomes more complicated. Ordinary
 validity (w.r.t.\ partial correctness) is still what it used to be,
 except that we have to take auxiliary variables into account as well:
-*}
+\<close>
 
 definition
  valid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
      "\<Turnstile> {P}c{Q} \<longleftrightarrow> (\<forall>s t. s -c\<rightarrow> t \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t))"
 
-text{*\noindent Auxiliary variables are always denoted by @{term z}.
+text\<open>\noindent Auxiliary variables are always denoted by @{term z}.
 
 Validity of a context and validity of a Hoare triple in a context are defined
-as follows:*}
+as follows:\<close>
 
 definition
  valids :: "'a cntxt \<Rightarrow> bool" ("|\<Turnstile> _" 50) where
@@ -49,12 +49,12 @@ definition
  cvalid :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>/ {(1_)}/ (_)/ {(1_)}" 50) where
   "C \<Turnstile> {P}c{Q} \<longleftrightarrow> |\<Turnstile> C \<longrightarrow> \<Turnstile> {P}c{Q}"
 
-text{*\noindent Note that @{prop"{} \<Turnstile> {P}c{Q}"} is equivalent to
+text\<open>\noindent Note that @{prop"{} \<Turnstile> {P}c{Q}"} is equivalent to
 @{prop"\<Turnstile> {P}c{Q}"}.
 
 Unfortunately, this is not the end of it. As we have two
-semantics, @{text"-c\<rightarrow>"} and @{text"-c-n\<rightarrow>"}, we also need a second notion
-of validity parameterized with the recursion depth @{term n}:*}
+semantics, \<open>-c\<rightarrow>\<close> and \<open>-c-n\<rightarrow>\<close>, we also need a second notion
+of validity parameterized with the recursion depth @{term n}:\<close>
 
 definition
  nvalid :: "nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>_ {(1_)}/ (_)/ {(1_)}" 50) where
@@ -68,7 +68,7 @@ definition
  cnvalid :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<Turnstile>_/ {(1_)}/ (_)/ {(1_)}" 50) where
   "C \<Turnstile>n {P}c{Q} \<longleftrightarrow> |\<Turnstile>_n C \<longrightarrow> \<Turnstile>n {P}c{Q}"
 
-text{*Finally we come to the proof system for deriving triples in a context:*}
+text\<open>Finally we come to the proof system for deriving triples in a context:\<close>
 
 inductive
   hoare :: "'a cntxt \<Rightarrow> 'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("_ \<turnstile>/ ({(1_)}/ (_)/ {(1_)})" 50)
@@ -95,7 +95,7 @@ where
 abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a assn \<Rightarrow> bool" ("_ \<turnstile> _") where
   "C \<turnstile> x \<equiv> C \<turnstile> {fst x}fst (snd x){snd (snd x)}"
 
-text{*\noindent The first four rules are familiar, except for their adaptation
+text\<open>\noindent The first four rules are familiar, except for their adaptation
 to auxiliary variables. The @{term CALL} rule embodies induction and
 has already been motivated above. Note that it is only applicable if
 the context is empty. This shows that we never need nested induction.
@@ -103,7 +103,7 @@ For the same reason the assumption rule (the last rule) is stated with
 just a singleton context.
 
 The rule of consequence is explained in the accompanying paper.
-*}
+\<close>
 
 lemma strengthen_pre:
  "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C\<turnstile> {P}c{Q}  \<rbrakk> \<Longrightarrow> C\<turnstile> {P'}c{Q}"
@@ -113,13 +113,13 @@ lemmas valid_defs = valid_def valids_def cvalid_def
                     nvalid_def nvalids_def cnvalid_def
 
 theorem hoare_sound: "C \<turnstile> {P}c{Q}  \<Longrightarrow>  C \<Turnstile> {P}c{Q}"
-txt{*\noindent requires a generalization: @{prop"\<forall>n. C \<Turnstile>n
+txt\<open>\noindent requires a generalization: @{prop"\<forall>n. C \<Turnstile>n
 {P}c{Q}"} is proved instead, from which the actual theorem follows
 directly via lemma @{thm[source]exec_iff_execn} in \S\ref{sec:proc1-lang}.
 The generalization
 is proved by induction on @{term c}. The reason for the generalization
 is that soundness of the @{term CALL} rule is proved by induction on the
-maximal call depth, i.e.\ @{term n}.*}
+maximal call depth, i.e.\ @{term n}.\<close>
 apply(subgoal_tac "\<forall>n. C \<Turnstile>n {P}c{Q}")
 apply(unfold valid_defs exec_iff_execn)
  apply fast
@@ -144,9 +144,9 @@ apply(erule hoare.induct)
 apply auto
 done
 
-text{*
+text\<open>
 The completeness proof employs the notion of a \emph{most general triple} (or
-\emph{most general formula}): *}
+\emph{most general formula}):\<close>
 
 definition
   MGT :: "com \<Rightarrow> state assn \<times> com \<times> state assn" where
@@ -154,7 +154,7 @@ definition
 
 declare MGT_def[simp]
 
-text{*\noindent Note that the type of @{term z} has been identified with
+text\<open>\noindent Note that the type of @{term z} has been identified with
 @{typ state}.  This means that for every state variable there is an auxiliary
 variable, which is simply there to record the value of the program variables
 before execution of a command. This is exactly what, for example, VDM offers
@@ -162,7 +162,7 @@ by allowing you to refer to the pre-value of a variable in a
 postcondition. The intuition behind @{term"MGT c"} is
 that it completely describes the operational behaviour of @{term c}.  It is
 easy to see that, in the presence of the new consequence rule,
-\mbox{@{prop"{} \<turnstile> MGT c"}} implies completeness:*}
+\mbox{@{prop"{} \<turnstile> MGT c"}} implies completeness:\<close>
 
 lemma MGT_implies_complete:
  "{} \<turnstile> MGT c  \<Longrightarrow>  {} \<Turnstile> {P}c{Q}  \<Longrightarrow>  {} \<turnstile> {P}c{Q::state assn}"
@@ -171,7 +171,7 @@ apply (erule hoare.Conseq)
 apply(simp add: valid_defs)
 done
 
-text{* In order to discharge @{prop"{} \<turnstile> MGT c"} one proves*}
+text\<open>In order to discharge @{prop"{} \<turnstile> MGT c"} one proves\<close>
 
 lemma MGT_lemma: "C \<turnstile> MGT CALL  \<Longrightarrow>  C \<turnstile> MGT c"
 apply (simp)
@@ -202,7 +202,7 @@ apply(induct_tac c)
 apply(fastforce intro: hoare.Local elim!: hoare.Conseq)
 done
 
-text{*\noindent The proof is by induction on @{term c}. In the @{term
+text\<open>\noindent The proof is by induction on @{term c}. In the @{term
 While}-case it is easy to show that @{term"\<lambda>z t. (z,t) \<in> ({(s,t). b
 s \<and> s -c\<rightarrow> t})^*"} is invariant. The precondition \mbox{@{term[source]"\<lambda>z s. z=s"}}
 establishes the invariant and a reflexive transitive closure
@@ -210,8 +210,8 @@ induction shows that the invariant conjoined with @{prop"\<not>b t"}
 implies the postcondition \mbox{@{term"\<lambda>z t. z -WHILE b DO c\<rightarrow> t"}}. The
 remaining cases are trivial.
 
-Using the @{thm[source]MGT_lemma} (together with the @{text CALL} and the
-assumption rule) one can easily derive *}
+Using the @{thm[source]MGT_lemma} (together with the \<open>CALL\<close> and the
+assumption rule) one can easily derive\<close>
 
 lemma MGT_CALL: "{} \<turnstile> MGT CALL"
 apply(simp add: MGT_def)
@@ -220,9 +220,9 @@ apply (rule hoare.Conseq[OF MGT_lemma[simplified], OF hoare.Asm])
 apply (fast intro:exec.intros)
 done
 
-text{*\noindent Using the @{thm[source]MGT_lemma} once more we obtain
+text\<open>\noindent Using the @{thm[source]MGT_lemma} once more we obtain
 @{prop"{} \<turnstile> MGT c"} and thus by @{thm[source]MGT_implies_complete}
-completeness.*}
+completeness.\<close>
 
 theorem "{} \<Turnstile> {P}c{Q}  \<Longrightarrow>  {} \<turnstile> {P}c{Q::state assn}"
 apply(erule MGT_implies_complete[OF MGT_lemma[OF MGT_CALL]])

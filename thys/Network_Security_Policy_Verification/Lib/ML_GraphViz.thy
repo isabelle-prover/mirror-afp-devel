@@ -3,13 +3,13 @@ imports ML_GraphViz_Config
 begin
 
 
-ML_val{*
+ML_val\<open>
   val _ = writeln ("using `"^Graphviz_Platform_Config.executable_pdf_viewer^"` as pdf viewer and `"^
                    Graphviz_Platform_Config.executable_dot^"` to render graphs.");
-*}
+\<close>
 
 
-ML {*
+ML \<open>
 (*should we open a pdf viewer to display the generated graph?*)
 datatype open_viewer = DoNothing | OpenImmediately | AskTimeouted of real
 
@@ -177,7 +177,7 @@ fun visualize_graph ctxt tune_node_format edges =
   visualize_graph_pretty ctxt tune_node_format [("", edges)] "#TODO add header here"
 
 end;
-*}
+\<close>
 
 
 end

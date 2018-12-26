@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/WellForm.thy by Tobias Nipkow
 *)
 
-section {* Generic Well-formedness of programs *}
+section \<open>Generic Well-formedness of programs\<close>
 
 theory WellForm
 imports
@@ -12,17 +12,17 @@ imports
   ExternalCall
 begin
 
-text {*\noindent This theory defines global well-formedness conditions
+text \<open>\noindent This theory defines global well-formedness conditions
 for programs but does not look inside method bodies.  Hence it works
 for both Jinja and JVM programs. Well-typing of expressions is defined
-elsewhere (in theory @{text WellType}).
+elsewhere (in theory \<open>WellType\<close>).
 
 Because JinjaThreads does not have method overloading, its policy for method
 overriding is the classical one: \emph{covariant in the result type
 but contravariant in the argument types.} This means the result type
 of the overriding method becomes more specific, the argument types
 become more general.
-*}
+\<close>
 
 type_synonym 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
 
@@ -58,7 +58,7 @@ lemma wf_prog_def2:
   "wf_prog wf_md P \<longleftrightarrow> wf_syscls P \<and> (\<forall>C rest. class P C = \<lfloor>rest\<rfloor> \<longrightarrow> wf_cdecl wf_md P (C, rest)) \<and> distinct_fst (classes P)"
 by(cases P)(auto simp add: wf_prog_def dest: map_of_SomeD map_of_SomeI)
 
-subsection{* Well-formedness lemmas *}
+subsection\<open>Well-formedness lemmas\<close>
 
 lemma wf_prog_wf_syscls: "wf_prog wf_md P \<Longrightarrow> wf_syscls P"
 by(simp add: wf_prog_def)
@@ -103,9 +103,9 @@ lemma wf_preallocatedE:
   and "C \<in> sys_xcpts"
   obtains "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor>" "P \<turnstile> C \<preceq>\<^sup>* Throwable"
 proof -
-  from `preallocated h` `C \<in> sys_xcpts` have "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor>" 
+  from \<open>preallocated h\<close> \<open>C \<in> sys_xcpts\<close> have "typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor>" 
     by(rule typeof_addr_sys_xcp)
-  moreover from `C \<in> sys_xcpts` `wf_prog wf_md P` have "P \<turnstile> C \<preceq>\<^sup>* Throwable" by(rule xcpt_subcls_Throwable)
+  moreover from \<open>C \<in> sys_xcpts\<close> \<open>wf_prog wf_md P\<close> have "P \<turnstile> C \<preceq>\<^sup>* Throwable" by(rule xcpt_subcls_Throwable)
   ultimately show thesis by(rule that)
 qed
 
@@ -369,7 +369,7 @@ lemma is_lub_unique:
   shows "\<lbrakk> P \<turnstile> lub(U, V) = T; P \<turnstile> lub(U, V) = T' \<rbrakk> \<Longrightarrow> T = T'"
 by(auto elim!: is_lub.cases intro: widen_antisym[OF wf])
 
-subsection{* Well-formedness and method lookup *}
+subsection\<open>Well-formedness and method lookup\<close>
 
 lemma sees_wf_mdecl:
   "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<rbrakk> \<Longrightarrow> wf_mdecl wf_md P D (M,Ts,T,m)"
@@ -504,7 +504,7 @@ proof -
   moreover have "m' \<noteq> None"
   proof
     assume "m' = None"
-    with wf `P \<turnstile> C sees run: []\<rightarrow>Void = m' in D'` have "D'\<bullet>run([]) :: Void"
+    with wf \<open>P \<turnstile> C sees run: []\<rightarrow>Void = m' in D'\<close> have "D'\<bullet>run([]) :: Void"
       by(auto intro: sees_wf_native)
     thus False by cases auto
   qed
@@ -543,7 +543,7 @@ proof(cases P)
     done
 qed
     
-subsection{* Well-formedness and field lookup *}
+subsection\<open>Well-formedness and field lookup\<close>
 
 lemma wf_Fields_Ex:
   "\<lbrakk> wf_prog wf_md P; is_class P C \<rbrakk> \<Longrightarrow> \<exists>FDTs. P \<turnstile> C has_fields FDTs"
@@ -579,13 +579,13 @@ proof(induct rule: rtranclp_induct)
   case base show ?case using has .
 next
   case (step D D')
-  note DsubD' = `P \<turnstile> D \<prec>\<^sup>1 D'`
+  note DsubD' = \<open>P \<turnstile> D \<prec>\<^sup>1 D'\<close>
   from DsubD' obtain rest where classD: "class P D = \<lfloor>(D', rest)\<rfloor>"
     and DObj: "D \<noteq> Object" by(auto elim!: subcls1.cases)
-  from DsubD' `P \<turnstile> D' \<preceq>\<^sup>* E` have DsubE: "P \<turnstile> D \<preceq>\<^sup>* E" and DsubE2: "(subcls1 P)^++ D E"
+  from DsubD' \<open>P \<turnstile> D' \<preceq>\<^sup>* E\<close> have DsubE: "P \<turnstile> D \<preceq>\<^sup>* E" and DsubE2: "(subcls1 P)^++ D E"
     by(rule converse_rtranclp_into_rtranclp rtranclp_into_tranclp2)+
   from wf DsubE2 have DnE: "D \<noteq> E" by(rule subcls_irrefl)
-  from DsubE have hasD: "P \<turnstile> D has F:T (fm) in E" by(rule `P \<turnstile> D \<preceq>\<^sup>* E \<Longrightarrow> P \<turnstile> D has F:T (fm) in E`)
+  from DsubE have hasD: "P \<turnstile> D has F:T (fm) in E" by(rule \<open>P \<turnstile> D \<preceq>\<^sup>* E \<Longrightarrow> P \<turnstile> D has F:T (fm) in E\<close>)
   then obtain FDTs where hasf: "P \<turnstile> D has_fields FDTs" and FE: "map_of FDTs (F, E) = \<lfloor>(T, fm)\<rfloor>"
     unfolding has_field_def by blast
   from hasf show ?case
@@ -624,7 +624,7 @@ proof -
   from hasf have "map_of (map (\<lambda>((F, D), T). (F, D, T)) FDTs) F = \<lfloor>(D, T, fm)\<rfloor>"
   proof cases
     case (has_fields_Object D' fs ms)
-    from `class P Object = \<lfloor>(D', fs, ms)\<rfloor>` wf
+    from \<open>class P Object = \<lfloor>(D', fs, ms)\<rfloor>\<close> wf
     have "wf_cdecl wf_md P (Object, D', fs, ms)" by(rule class_wf)
     hence "distinct_fst fs" by(simp add: wf_cdecl_def)
     with FD has_fields_Object show ?thesis by(auto intro: map_of_remap_conv simp del: map_map)
@@ -633,7 +633,7 @@ proof -
     hence [simp]: "FDTs = map (\<lambda>(F, Tm). ((F, D), Tm)) fs @ FDTs'"
       and classD: "class P D = \<lfloor>(D', fs, ms)\<rfloor>" and DnObj: "D \<noteq> Object"
       and hasf': "P \<turnstile> D' has_fields FDTs'" by auto
-    from `class P D = \<lfloor>(D', fs, ms)\<rfloor>` wf
+    from \<open>class P D = \<lfloor>(D', fs, ms)\<rfloor>\<close> wf
     have "wf_cdecl wf_md P (D, D', fs, ms)" by(rule class_wf)
     hence "distinct_fst fs" by(simp add: wf_cdecl_def)
     moreover have "map_of FDTs' (F, D) = None"
@@ -655,34 +655,34 @@ lemma has_fields_distinct:
   assumes wf: "wf_prog wf_md P"
   and "P \<turnstile> C has_fields FDTs"
   shows "distinct (map fst FDTs)"
-using `P \<turnstile> C has_fields FDTs`
+using \<open>P \<turnstile> C has_fields FDTs\<close>
 proof(induct)
   case (has_fields_Object D fs ms FDTs)
   have eq: "map (fst \<circ> (\<lambda>(F, y). ((F, Object), y))) fs = map ((\<lambda>F. (F, Object)) \<circ> fst) fs" by(auto)
-  from `class P Object = \<lfloor>(D, fs, ms)\<rfloor>` wf
+  from \<open>class P Object = \<lfloor>(D, fs, ms)\<rfloor>\<close> wf
   have "wf_cdecl wf_md P (Object, D, fs, ms)" by(rule class_wf)
   hence "distinct (map fst fs)" by(simp add: wf_cdecl_def distinct_fst_def)
   hence "distinct (map (fst \<circ> (\<lambda>(F, y). ((F, Object), y))) fs)" 
     unfolding eq distinct_map by(auto intro: comp_inj_on inj_onI)
-  thus ?case using `FDTs = map (\<lambda>(F, T). ((F, Object), T)) fs` by(simp)
+  thus ?case using \<open>FDTs = map (\<lambda>(F, T). ((F, Object), T)) fs\<close> by(simp)
 next
   case (has_fields_rec C D fs ms FDTs FDTs')
   have eq: "map (fst \<circ> (\<lambda>(F, y). ((F, C), y))) fs = map ((\<lambda>F. (F, C)) \<circ> fst) fs" by(auto)
-  from `class P C = \<lfloor>(D, fs, ms)\<rfloor>` wf
+  from \<open>class P C = \<lfloor>(D, fs, ms)\<rfloor>\<close> wf
   have "wf_cdecl wf_md P (C, D, fs, ms)" by(rule class_wf)
   hence "distinct (map fst fs)" by(simp add: wf_cdecl_def distinct_fst_def)
   hence "distinct (map (fst \<circ> (\<lambda>(F, y). ((F, C), y))) fs)"
     unfolding eq distinct_map by(auto intro: comp_inj_on inj_onI)
-  moreover from `class P C = \<lfloor>(D, fs, ms)\<rfloor>` `C \<noteq> Object`
+  moreover from \<open>class P C = \<lfloor>(D, fs, ms)\<rfloor>\<close> \<open>C \<noteq> Object\<close>
   have "P \<turnstile> C \<prec>\<^sup>1 D" by(rule subcls1.intros)
-  with `P \<turnstile> D has_fields FDTs`
+  with \<open>P \<turnstile> D has_fields FDTs\<close>
   have "(fst \<circ> (\<lambda>(F, y). ((F, C), y))) ` set fs \<inter> fst ` set FDTs = {}"
     by(auto dest: subcls_notin_has_fields)
-  ultimately show ?case using `FDTs' = map (\<lambda>(F, T). ((F, C), T)) fs @ FDTs` `distinct (map fst FDTs)` by simp
+  ultimately show ?case using \<open>FDTs' = map (\<lambda>(F, T). ((F, C), T)) fs @ FDTs\<close> \<open>distinct (map fst FDTs)\<close> by simp
 qed
 
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool)
@@ -690,11 +690,11 @@ code_pred
   wf_overriding 
 .
 
-text {* 
+text \<open>
   Separate subclass acycilicity from class declaration check.
   Otherwise, cyclic class hierarchies might lead to non-termination
   as @{term "Methods"} recurses over the class hierarchy.
-*}
+\<close>
 
 definition acyclic_class_hierarchy :: "'m prog \<Rightarrow> bool"
 where

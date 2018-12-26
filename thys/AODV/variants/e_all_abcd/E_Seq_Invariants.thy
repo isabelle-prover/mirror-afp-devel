@@ -162,7 +162,7 @@ lemma sip_not_ip:
                           onl_invariant_sterms [OF aodv_wf ip_constant [THEN invariant_restrict_inD]]
                 simp add: clear_locals_sip_not_ip') clarsimp+
 
-text \<open>Neither @{text sip_not_ip'} nor @{text sip_not_ip} is needed to show loop freedom.\<close>
+text \<open>Neither \<open>sip_not_ip'\<close> nor \<open>sip_not_ip\<close> is needed to show loop freedom.\<close>
 
 text \<open>Proposition 7.10\<close>
 

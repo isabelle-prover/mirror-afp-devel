@@ -51,11 +51,11 @@ abbreviation Hset2 :: "('p1, 'p2, 'p3, 'p, 'a1, 'a2) H \<Rightarrow> 'a2 set" wh
 
 lemma Hset1_alt:
   "Hset1 = Union o BNF_Def.collect {image F1set1 o Gset1, image F2set1 o Gset2, image F3set1 o Gset3}"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_set_alt_tac @{context} @{thm G.collect_set_map} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_alt_tac @{context} @{thm G.collect_set_map}\<close>)
 
 lemma Hset2_alt:
   "Hset2 = Union o BNF_Def.collect {image F1set2 o Gset1, image F2set2 o Gset2, image F3set2 o Gset3}"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_set_alt_tac @{context} @{thm G.collect_set_map} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_alt_tac @{context} @{thm G.collect_set_map}\<close>)
 
 abbreviation Hbd where
   "Hbd \<equiv> (bd_F1 +c bd_F2 +c bd_F3) *c bd_G"
@@ -68,43 +68,43 @@ theorem Hmap_comp: "Hmap (f1 o g1) (f2 o g2) = Hmap f1 f2 o Hmap g1 g2"
 
 theorem Hmap_cong: "\<lbrakk>\<And>z. z \<in> Hset1 x \<Longrightarrow> f1 z = g1 z; \<And>z. z \<in> Hset2 x \<Longrightarrow> f2 z = g2 z\<rbrakk> \<Longrightarrow>
   Hmap f1 f2 x = Hmap g1 g2 x"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_map_cong0_tac @{context}
-  [] @{thms Hset1_alt Hset2_alt} @{thm G.map_cong0} @{thms F1.map_cong0 F2.map_cong0 F3.map_cong0} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_map_cong0_tac @{context}
+  [] @{thms Hset1_alt Hset2_alt} @{thm G.map_cong0} @{thms F1.map_cong0 F2.map_cong0 F3.map_cong0}\<close>)
 
 theorem Hset1_natural: "Hset1 o Hmap f1 f2 = image f1 o Hset1"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_set_map0_tac @{context} @{thm refl} @{thm G.map_comp0} @{thm G.map_cong0}
-  @{thm G.collect_set_map} @{thms F1.set_map0(1) F2.set_map0(1) F3.set_map0(1)} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_map0_tac @{context} @{thm refl} @{thm G.map_comp0} @{thm G.map_cong0}
+  @{thm G.collect_set_map} @{thms F1.set_map0(1) F2.set_map0(1) F3.set_map0(1)}\<close>)
 
 theorem Hset2_natural: "Hset2 o Hmap f1 f2 = image f2 o Hset2"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_set_map0_tac @{context} @{thm refl} @{thm G.map_comp0} @{thm G.map_cong0}
-  @{thm G.collect_set_map} @{thms F1.set_map0(2) F2.set_map0(2) F3.set_map0(2)} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_map0_tac @{context} @{thm refl} @{thm G.map_comp0} @{thm G.map_cong0}
+  @{thm G.collect_set_map} @{thms F1.set_map0(2) F2.set_map0(2) F3.set_map0(2)}\<close>)
 
 theorem Hbd_card_order: "card_order Hbd"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_bd_card_order_tac @{context}
-  @{thms F1.bd_card_order F2.bd_card_order F3.bd_card_order} @{thm G.bd_card_order} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_bd_card_order_tac @{context}
+  @{thms F1.bd_card_order F2.bd_card_order F3.bd_card_order} @{thm G.bd_card_order}\<close>)
 
 theorem Hbd_cinfinite: "cinfinite Hbd"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_bd_cinfinite_tac @{context}
-  @{thm F1.bd_cinfinite} @{thm G.bd_cinfinite} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_bd_cinfinite_tac @{context}
+  @{thm F1.bd_cinfinite} @{thm G.bd_cinfinite}\<close>)
 
 theorem Hset1_bd: "|Hset1 (x :: ('p1, 'p2, 'p3, 'p, 'a1, 'a2) H )| \<le>o
   (Hbd :: ('p1, 'p2, 'p3, 'p) Hbd_type rel)"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_set_bd_tac @{context} @{thm refl} NONE @{thm Hset1_alt}
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_bd_tac @{context} @{thm refl} NONE @{thm Hset1_alt}
       @{thms comp_single_set_bd[OF F1.bd_Card_order F1.set_bd(1) G.set_bd(1)]
              comp_single_set_bd[OF F2.bd_Card_order F2.set_bd(1) G.set_bd(2)]
-             comp_single_set_bd[OF F3.bd_Card_order F3.set_bd(1) G.set_bd(3)]} *})
+             comp_single_set_bd[OF F3.bd_Card_order F3.set_bd(1) G.set_bd(3)]}\<close>)
 
 theorem Hset2_bd: "|Hset2 (x :: ('p1, 'p2, 'p3, 'p, 'a1, 'a2) H )| \<le>o
   (Hbd :: ('p1, 'p2, 'p3, 'p) Hbd_type rel)"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_set_bd_tac @{context} @{thm refl} NONE @{thm Hset2_alt}
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_set_bd_tac @{context} @{thm refl} NONE @{thm Hset2_alt}
       @{thms comp_single_set_bd[OF F1.bd_Card_order F1.set_bd(2) G.set_bd(1)]
              comp_single_set_bd[OF F2.bd_Card_order F2.set_bd(2) G.set_bd(2)]
-             comp_single_set_bd[OF F3.bd_Card_order F3.set_bd(2) G.set_bd(3)]} *})
+             comp_single_set_bd[OF F3.bd_Card_order F3.set_bd(2) G.set_bd(3)]}\<close>)
 
 abbreviation Hin where "Hin A1 A2 \<equiv> {x. Hset1 x \<subseteq> A1 \<and> Hset2 x \<subseteq> A2}"
 
 lemma Hin_alt: "Hin A1 A2 = Gin (F1in A1 A2) (F2in A1 A2) (F3in A1 A2)"
-  by (tactic {* BNF_Comp_Tactics.mk_comp_in_alt_tac @{context} @{thms Hset1_alt Hset2_alt} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_in_alt_tac @{context} @{thms Hset1_alt Hset2_alt}\<close>)
 
 definition Hwit1 where "Hwit1 b c = wit1_G wit_F1 (wit_F3 b c)"
 definition Hwit21 where "Hwit21 b c = wit2_G (wit1_F2 b) (wit_F3 b c)"
@@ -114,23 +114,23 @@ lemma Hwit1:
   "\<And>x. x \<in> Hset1 (Hwit1 b c) \<Longrightarrow> x = b"
   "\<And>x. x \<in> Hset2 (Hwit1 b c) \<Longrightarrow> x = c"
   unfolding Hwit1_def
-  by (tactic {* BNF_Comp_Tactics.mk_comp_wit_tac @{context} [] @{thms G.wit1 G.wit2}
-  @{thm G.collect_set_map} @{thms F1.wit F2.wit1 F2.wit2 F3.wit} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_wit_tac @{context} [] @{thms G.wit1 G.wit2}
+  @{thm G.collect_set_map} @{thms F1.wit F2.wit1 F2.wit2 F3.wit}\<close>)
 
 lemma Hwit21:
   "\<And>x. x \<in> Hset1 (Hwit21 b c) \<Longrightarrow> x = b"
   "\<And>x. x \<in> Hset2 (Hwit21 b c) \<Longrightarrow> x = c"
   unfolding Hwit21_def
-  by (tactic {* BNF_Comp_Tactics.mk_comp_wit_tac @{context} [] @{thms G.wit1 G.wit2}
-  @{thm G.collect_set_map} @{thms F1.wit F2.wit1 F2.wit2 F3.wit} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_wit_tac @{context} [] @{thms G.wit1 G.wit2}
+  @{thm G.collect_set_map} @{thms F1.wit F2.wit1 F2.wit2 F3.wit}\<close>)
 
 
 lemma Hwit22:
   "\<And>x. x \<in> Hset1 (Hwit22 b c) \<Longrightarrow> x = b"
   "\<And>x. x \<in> Hset2 (Hwit22 b c) \<Longrightarrow> x = c"
   unfolding Hwit22_def
-  by (tactic {* BNF_Comp_Tactics.mk_comp_wit_tac @{context} [] @{thms G.wit1 G.wit2}
-  @{thm G.collect_set_map} @{thms F1.wit F2.wit1 F2.wit2 F3.wit} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_comp_wit_tac @{context} [] @{thms G.wit1 G.wit2}
+  @{thm G.collect_set_map} @{thms F1.wit F2.wit1 F2.wit2 F3.wit}\<close>)
 
 (* Relator structure for H *)
 

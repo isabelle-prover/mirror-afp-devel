@@ -38,7 +38,7 @@ definition star :: "'a lang \<Rightarrow> 'a lang" where
 "star A = (\<Union>n. A ^^ n)"
 
 
-subsection{* Concatenation of Languages *}
+subsection\<open>Concatenation of Languages\<close>
 
 lemma concI[simp,intro]: "u : A \<Longrightarrow> v : B \<Longrightarrow> u@v : A @@ B"
   by (auto simp add: conc_def)
@@ -80,7 +80,7 @@ lemma conc_subset_lists: "A \<subseteq> lists S \<Longrightarrow> B \<subseteq> 
   by(fastforce simp: conc_def in_lists_conv_set)
 
 
-subsection{* Iteration of Languages *}
+subsection\<open>Iteration of Languages\<close>
 
 lemma lang_pow_add: "A ^^ (n + m) = A ^^ n @@ A ^^ m"
   by (induct n) (auto simp: conc_assoc)
@@ -122,15 +122,15 @@ qed
 
 lemma star_if_lang[simp]: assumes "w : A" shows "w : star A"
 proof (rule star_if_lang_pow)
-  show "w : A ^^ 1" using `w : A` by simp
+  show "w : A ^^ 1" using \<open>w : A\<close> by simp
 qed
 
 lemma append_in_starI[simp]:
 assumes "u : star A" and "v : star A" shows "u@v : star A"
 proof -
-  from `u : star A` obtain m where "u : A ^^ m" by (auto simp: star_def)
+  from \<open>u : star A\<close> obtain m where "u : A ^^ m" by (auto simp: star_def)
   moreover
-  from `v : star A` obtain n where "v : A ^^ n" by (auto simp: star_def)
+  from \<open>v : star A\<close> obtain n where "v : A ^^ n" by (auto simp: star_def)
   ultimately have "u@v : A ^^ (m+n)" by (simp add: lang_pow_add)
   thus ?thesis by simp
 qed
@@ -150,8 +150,8 @@ assumes "w : star A"
 shows "P w"
 proof -
   { fix n have "w : A ^^ n \<Longrightarrow> P w"
-    by (induct n arbitrary: w) (auto intro: `P []` step star_if_lang_pow) }
-  with `w : star A` show "P w" by (auto simp: star_def)
+    by (induct n arbitrary: w) (auto intro: \<open>P []\<close> step star_if_lang_pow) }
+  with \<open>w : star A\<close> show "P w" by (auto simp: star_def)
 qed
 
 lemma star_empty[simp]: "star {} = {[]}"
@@ -217,7 +217,7 @@ lemma Ball_starI: "\<forall>a \<in> set as. [a] \<in> A \<Longrightarrow> as \<i
 lemma map_image_star[simp]: "map f ` star A = star (map f ` A)"
   by (auto elim: star_induct) (auto elim: star_induct simp del: map_append simp: map_append[symmetric] intro!: imageI)
 
-subsection {* Left-Quotients of Languages *}
+subsection \<open>Left-Quotients of Languages\<close>
 
 definition lQuot :: "'a \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 where "lQuot x A = { xs. x#xs \<in> A }"
@@ -289,7 +289,7 @@ lemma lQuots_simps [simp]:
 lemma lQuots_append[iff]: "v \<in> lQuots w A \<longleftrightarrow> w @ v \<in> A"
   by (induct w arbitrary: v A) (auto simp add: lQuot_def)
 
-subsection {* Right-Quotients of Languages *}
+subsection \<open>Right-Quotients of Languages\<close>
 
 definition rQuot :: "'a \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 where "rQuot x A = { xs. xs @ [x] \<in> A }"
@@ -365,7 +365,7 @@ lemma rQuots_simps [simp]:
 lemma rQuots_append[iff]: "v \<in> rQuots w A \<longleftrightarrow> v @ rev w \<in> A"
   by (induct w arbitrary: v A) (auto simp add: rQuot_def)
 
-subsection {* Two-Sided-Quotients of Languages *}
+subsection \<open>Two-Sided-Quotients of Languages\<close>
 
 definition biQuot :: "'a \<Rightarrow> 'a \<Rightarrow> 'a lang \<Rightarrow> 'a lang"
 where "biQuot x y A = { xs. x # xs @ [y] \<in> A }"
@@ -425,7 +425,7 @@ lemma biQuots_simps [simp]:
 lemma biQuots_append[iff]: "v \<in> biQuots u w A \<longleftrightarrow> u @ v @ rev w \<in> A"
   unfolding biQuots_def by auto
 
-subsection {* Arden's Lemma *}
+subsection \<open>Arden's Lemma\<close>
 
 lemma arden_helper:
   assumes eq: "X = A @@ X \<union> B"
@@ -452,14 +452,14 @@ proof
   assume eq: "X = A @@ X \<union> B"
   { fix w assume "w : X"
     let ?n = "size w"
-    from `[] \<notin> A` have "ALL u : A. length u \<ge> 1"
+    from \<open>[] \<notin> A\<close> have "ALL u : A. length u \<ge> 1"
       by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
     hence "ALL u : A^^(?n+1). length u \<ge> ?n+1"
       by (metis length_lang_pow_lb nat_mult_1)
     hence "ALL u : A^^(?n+1)@@X. length u \<ge> ?n+1"
       by(auto simp only: conc_def length_append)
     hence "w \<notin> A^^(?n+1)@@X" by auto
-    hence "w : star A @@ B" using `w : X` using arden_helper[OF eq, where n="?n"]
+    hence "w : star A @@ B" using \<open>w : X\<close> using arden_helper[OF eq, where n="?n"]
       by (auto simp add: star_def conc_UNION_distrib)
   } moreover
   { fix w assume "w : star A @@ B"
@@ -506,14 +506,14 @@ proof
  assume eq: "X = X @@ A \<union> B"
   { fix w assume "w : X"
     let ?n = "size w"
-    from `[] \<notin> A` have "ALL u : A. length u \<ge> 1"
+    from \<open>[] \<notin> A\<close> have "ALL u : A. length u \<ge> 1"
       by (metis Suc_eq_plus1 add_leD2 le_0_eq length_0_conv not_less_eq_eq)
     hence "ALL u : A^^(?n+1). length u \<ge> ?n+1"
       by (metis length_lang_pow_lb nat_mult_1)
     hence "ALL u : X @@ A^^(?n+1). length u \<ge> ?n+1"
       by(auto simp only: conc_def length_append)
     hence "w \<notin> X @@ A^^(?n+1)" by auto
-    hence "w : B @@ star A" using `w : X` using reversed_arden_helper[OF eq, where n="?n"]
+    hence "w : B @@ star A" using \<open>w : X\<close> using reversed_arden_helper[OF eq, where n="?n"]
       by (auto simp add: star_def conc_UNION_distrib)
   } moreover
   { fix w assume "w : B @@ star A"
@@ -535,7 +535,7 @@ next
     using eq by blast 
 qed
 
-subsection {* Lists of Fixed Length *}
+subsection \<open>Lists of Fixed Length\<close>
 
 abbreviation listsN where "listsN n S \<equiv> {xs. xs \<in> lists S \<and> length xs = n}"
 

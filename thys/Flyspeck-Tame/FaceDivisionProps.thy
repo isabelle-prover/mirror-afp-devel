@@ -1,12 +1,12 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-section{*Properties of Face Division*}
+section\<open>Properties of Face Division\<close>
 
 theory FaceDivisionProps
 imports Plane EnumeratorProps
 begin
 
-subsection{* Finality *}
+subsection\<open>Finality\<close>
 
 (********************* makeFaceFinal ****************************)
 
@@ -96,7 +96,7 @@ by(simp add:subdivFace_def subdivFace'_preserve_finals)
 declare Nat.diff_is_0_eq' [simp del]
 
 (********************* section is_prefix ****************************)
-subsection {* @{text "is_prefix"} *}
+subsection \<open>\<open>is_prefix\<close>\<close>
 
 definition is_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
 "is_prefix ls vs \<equiv>  (\<exists> bs. vs = ls @ bs)"
@@ -117,7 +117,7 @@ by (auto dest!: splitAt_ram simp: is_prefix_def)
 
 
 (******************** section is_sublist *********************************)
-subsection {* @{text"is_sublist"} *}
+subsection \<open>\<open>is_sublist\<close>\<close>
 
 definition is_sublist :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
 "is_sublist ls vs \<equiv>  (\<exists> as bs. vs = as @ ls @ bs)"
@@ -403,7 +403,7 @@ apply (subgoal_tac "vs = fst (splitAt ram vs) @ ram # snd (splitAt ram vs) @ []"
 
 
 (*********************** section is_nextElem *****************************)
-subsection {* @{text "is_nextElem"} *}
+subsection \<open>\<open>is_nextElem\<close>\<close>
 
 definition is_nextElem :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
  "is_nextElem xs x y \<equiv> is_sublist [x,y] xs \<or> xs \<noteq> [] \<and> x = last xs \<and> y = hd xs"
@@ -534,7 +534,7 @@ apply(simp add: distinct_conv_nth mod_Suc)
 done
 
 
-subsection{* @{text "nextElem, sublist, is_nextElem"} *}
+subsection\<open>\<open>nextElem, sublist, is_nextElem\<close>\<close>
 
 lemma is_sublist_eq: "distinct vs \<Longrightarrow> c \<noteq> y \<Longrightarrow>
  (nextElem vs c x = y) = is_sublist [x,y] vs"
@@ -637,7 +637,7 @@ proof -
 qed
 
 
-subsection {* @{text before} *}
+subsection \<open>\<open>before\<close>\<close>
 
 definition before :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
 "before vs ram1 ram2 \<equiv> \<exists> a b c. vs = a @ ram1 # b @ ram2 # c"
@@ -827,7 +827,7 @@ qed
 
 
 (************************ between lemmas *************************************)
-subsection {* @{const between} *}
+subsection \<open>@{const between}\<close>
 
 definition pre_between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
 "pre_between vs ram1 ram2 \<equiv>
@@ -1129,7 +1129,7 @@ by (rule pre_between_symI)
 
 
 (*********************** between - is_nextElem *************************)
-subsubsection {* @{text "between is_nextElem"} *}
+subsubsection \<open>\<open>between is_nextElem\<close>\<close>
 
 
 
@@ -1372,7 +1372,7 @@ qed
 
 
 
-subsubsection {* @{text "is_nextElem edges"} equivalence *}
+subsubsection \<open>\<open>is_nextElem edges\<close> equivalence\<close>
 
 
 lemma is_nextElem_edges1: "distinct (vertices f) \<Longrightarrow> (a,b) \<in> edges (f::face) \<Longrightarrow> is_nextElem (vertices f) a b" apply (simp add: edges_face_def nextVertex_def) apply (rule is_nextElem1) by auto
@@ -1393,7 +1393,7 @@ by (auto intro: is_nextElem_edges1 is_nextElem_edges2)
 
 
 (*********************** nextVertex *****************************)
-subsubsection {* @{const nextVertex} *}
+subsubsection \<open>@{const nextVertex}\<close>
 
 lemma nextElem_suc2: "distinct (vertices f) \<Longrightarrow> last (vertices f) = v \<Longrightarrow> v \<in> set (vertices f) \<Longrightarrow> f \<bullet> v = hd (vertices f)"
 proof -
@@ -1422,7 +1422,7 @@ qed
 
 
 (*********************** split_face ****************************)
-subsection {* @{const split_face} *}
+subsection \<open>@{const split_face}\<close>
 
 
 definition pre_split_face :: "face \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list \<Rightarrow> bool" where
@@ -1567,7 +1567,7 @@ proof -
 qed
 
 
-subsection {* @{text verticesFrom} *}
+subsection \<open>\<open>verticesFrom\<close>\<close>
 
 definition verticesFrom :: "face \<Rightarrow> vertex \<Rightarrow> vertex list" where
  "verticesFrom f \<equiv> rotate_to (vertices f)"
@@ -1844,7 +1844,7 @@ done
 (************************** splitFace ********************************)
 
 
-subsection {* @{const splitFace} *}
+subsection \<open>@{const splitFace}\<close>
 
 
 definition pre_splitFace :: "graph \<Rightarrow> vertex \<Rightarrow> vertex \<Rightarrow> face \<Rightarrow> vertex list \<Rightarrow> bool" where
@@ -3443,7 +3443,7 @@ done
 (********************* Vorbereitung für subdivFace *****************)
 
 (**** computes the list of ram vertices **********)
-subsection {* @{text removeNones} *}
+subsection \<open>\<open>removeNones\<close>\<close>
 
 definition removeNones :: "'a option list \<Rightarrow> 'a list" where
 "removeNones vOptionList \<equiv> [the x. x \<leftarrow> vOptionList, x \<noteq> None]"
@@ -3466,7 +3466,7 @@ declare removeNones_def [simp del]
 
 
 (************* natToVertexList ************)
-subsection{* @{text natToVertexList} *}
+subsection\<open>\<open>natToVertexList\<close>\<close>
 
 (* Hilfskonstrukt natToVertexList *)
 primrec natToVertexListRec ::
@@ -3486,7 +3486,7 @@ where
     (if i = 0 then (Some v)#(natToVertexListRec i v f is) else [])"
 
 
-subsection {* @{const indexToVertexList} *}
+subsection \<open>@{const indexToVertexList}\<close>
 
 lemma  nextVertex_inj:
  "distinct (vertices f) \<Longrightarrow> v \<in> \<V> f \<Longrightarrow>
@@ -3911,7 +3911,7 @@ definition invalidVertexList :: "graph \<Rightarrow> face \<Rightarrow> vertex o
 
 (**************************** subdivFace **********************)
 
-subsection {* @{text"pre_subdivFace(')"} *}
+subsection \<open>\<open>pre_subdivFace(')\<close>\<close>
 
 definition pre_subdivFace_face :: "face \<Rightarrow> vertex \<Rightarrow> vertex option list \<Rightarrow> bool" where
 "pre_subdivFace_face f v' vOptionList \<equiv>

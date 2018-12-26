@@ -1,6 +1,6 @@
 (* Authors:  René Neumann and Florian Haftmann, TU Muenchen *)
 
-section {* Relating Functional Binomial Queues To The Abstract Priority Queues *}
+section \<open>Relating Functional Binomial Queues To The Abstract Priority Queues\<close>
 
 theory PQ_Implementation
 imports PQ Binomial_Queue 
@@ -10,10 +10,10 @@ notation
   "PQ.values" ("|(_)|")
   and "PQ.priorities" ("\<parallel>(_)\<parallel>")
 
-text {*
-  \noindent Naming convention: prefix @{text "bt_"} for bintrees, @{text "bts_"} for bintree lists,
+text \<open>
+  \noindent Naming convention: prefix \<open>bt_\<close> for bintrees, \<open>bts_\<close> for bintree lists,
   no prefix for binqueues.
-*}
+\<close>
 
 primrec bt_dfs :: "(('a::linorder, 'b) bintree \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) bintree \<Rightarrow> 'c list"
   and bts_dfs :: "(('a::linorder, 'b) bintree \<Rightarrow> 'c) \<Rightarrow> ('a, 'b) bintree list  \<Rightarrow> 'c list" where
@@ -586,7 +586,7 @@ next
   ultimately 
   have "?M = ord_class.min (priority t) (priority r)" by simp
 
-  with `priority t \<le> priority r` show ?case by (auto simp add: ord_class.min_def)
+  with \<open>priority t \<le> priority r\<close> show ?case by (auto simp add: ord_class.min_def)
 qed
 
 lemma is_binqueue_min_Min_prios:
@@ -604,7 +604,7 @@ proof (induct xs)
     case True note T = this Some
     
     from T have "normalized xs" by simp
-    with `xs \<noteq> []` have "prios xs \<noteq> []" by (induct xs) (simp_all add: bt_dfs_simp)
+    with \<open>xs \<noteq> []\<close> have "prios xs \<noteq> []" by (induct xs) (simp_all add: bt_dfs_simp)
     with T show ?thesis
       using Min_Un[of "set (bt_dfs priority x)" "set (prios xs)"]
       using bt_dfs_Min_priority[of x]
@@ -620,13 +620,13 @@ lemma min_p_min:
   and "distinct (prios xs)"
   shows "min xs = PQ.priority (pqueue xs) (PQ.min (pqueue xs))"
 proof -
-  from `xs \<noteq> []` `normalized xs` have "\<not> PQ.is_empty (pqueue xs)"
+  from \<open>xs \<noteq> []\<close> \<open>normalized xs\<close> have "\<not> PQ.is_empty (pqueue xs)"
     by (simp add: empty_empty)
 
   moreover
   from assms have "min xs = Some (Min (set (prios xs)))"
     by (simp add: is_binqueue_min_Min_prios)
-  with `distinct (vals xs)` have "min xs = Some (Min (set \<parallel>pqueue xs\<parallel> ))"
+  with \<open>distinct (vals xs)\<close> have "min xs = Some (Min (set \<parallel>pqueue xs\<parallel> ))"
     by (simp add: prios_pqueue)
 
   ultimately show ?thesis
@@ -645,7 +645,7 @@ proof -
   from assms have "min xs \<noteq> None" by (simp add: normalized_min_not_None)
   from assms have "min xs = PQ.priority (pqueue xs) (PQ.min (pqueue xs))"
     by (simp add: min_p_min)
-  with `min xs \<noteq> None` show ?thesis by (auto simp add: min_eq_find_min_Some)
+  with \<open>min xs \<noteq> None\<close> show ?thesis by (auto simp add: min_eq_find_min_Some)
 qed
 
 lemma find_min_v_min:
@@ -677,7 +677,7 @@ proof -
       unfolding alist_split(2) 
       unfolding dfs_comp 
       by (induct ("dfs alist xs")) (auto simp add: rev_image_eqI)
-    with `distinct (prios xs)` show False by simp
+    with \<open>distinct (prios xs)\<close> show False by simp
   qed
   with ot show ?thesis by auto
 qed
@@ -728,7 +728,7 @@ proof (induct xs arbitrary: t)
   next
     case False
     with Some.prems have "Some t \<in> set xs" by simp
-    with `priority t = a` have "a \<in> set (prios xs)"
+    with \<open>priority t = a\<close> have "a \<in> set (prios xs)"
     proof (induct xs)
       case (Some x xs) then show ?case
         by (cases "t = x") (simp_all add: bt_dfs_simp)
@@ -857,7 +857,7 @@ lemma alist_delete_min:
   and "find_min xs = Some (Node a v ts)"
   shows "set (dfs alist (delete_min xs)) = set (dfs alist xs) - {(v, a)}"
 proof -
-  from `distinct (vals xs)` have d: "distinct (dfs alist xs)"
+  from \<open>distinct (vals xs)\<close> have d: "distinct (dfs alist xs)"
     using dfs_comp_distinct[of fst alist "xs"]
     by (simp only: alist_split)
 
@@ -933,7 +933,7 @@ proof -
     from Node ot have "val (the (find_min xs)) = v" by simp
     with assms have "v = PQ.min (pqueue xs)" by (simp add: find_min_v_min)
     
-    moreover note `distinct (vals xs)`
+    moreover note \<open>distinct (vals xs)\<close>
     ultimately show ?thesis by (simp add: alist_pqueue)
   qed
 qed

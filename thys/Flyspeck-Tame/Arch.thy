@@ -1,12 +1,12 @@
 (* Author: Tobias Nipkow *)
 
-section {* Archive *}
+section \<open>Archive\<close>
 
 theory Arch
 imports Main "HOL-Library.Code_Target_Numeral"
 begin
 
-setup {* fn thy =>
+setup \<open>fn thy =>
   let
     val T = @{typ "integer list list list"}
     val dir = Resources.master_directory thy
@@ -19,10 +19,10 @@ setup {* fn thy =>
         ["Archives/Tri.ML", "Archives/Quad.ML",
           "Archives/Pent.ML", "Archives/Hex.ML"])
   end
-*}
+\<close>
 
-text {* The definition of these constants is only ever needed at the ML level
-when running the eval proof method. *}
+text \<open>The definition of these constants is only ever needed at the ML level
+when running the eval proof method.\<close>
 
 definition Tri :: "nat list list list"
 where

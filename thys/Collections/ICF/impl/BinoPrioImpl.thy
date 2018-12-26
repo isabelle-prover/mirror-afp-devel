@@ -1,4 +1,4 @@
-section {*\isaheader{Implementation of Priority Queues by Binomial Heap}*}
+section \<open>\isaheader{Implementation of Priority Queues by Binomial Heap}\<close>
 
 theory BinoPrioImpl
 imports 
@@ -100,7 +100,7 @@ interpretation bino: StdPrio_no_invar bino_ops
   done
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "bino"*}
+setup \<open>ICF_Tools.revert_abbrevs "bino"\<close>
 
 definition test_codegen where "test_codegen = (
   bino.empty,

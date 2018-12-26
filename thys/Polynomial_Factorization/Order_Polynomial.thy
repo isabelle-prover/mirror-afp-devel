@@ -46,7 +46,7 @@ next
   {
     assume "order a ?p \<noteq> 0"
     then obtain m where ord: "order a ?p = Suc m" by (cases "order a ?p", auto)
-    from order[OF `?p \<noteq> 0`, of a, unfolded ord] have dvd: "[:- a, 1:] ^ Suc m dvd ?p" by auto        
+    from order[OF \<open>?p \<noteq> 0\<close>, of a, unfolded ord] have dvd: "[:- a, 1:] ^ Suc m dvd ?p" by auto        
     from poly_linear_exp_linear_factors[OF dvd[unfolded p]] False have False by auto
   }
   hence "order a ?p = 0" by auto
@@ -83,7 +83,7 @@ lemma order_sum_degree: assumes "p \<noteq> 0"
 proof -
   define n where "n = degree p"
   have "degree p \<le> n" unfolding n_def by auto
-  thus ?thesis using `p \<noteq> 0`
+  thus ?thesis using \<open>p \<noteq> 0\<close>
   proof (induct n arbitrary: p)
     case (0 p)
     define a where "a = coeff p 0"
@@ -94,7 +94,7 @@ proof -
     thus ?case unfolding p by auto 
   next
     case (Suc m p)
-    note order = order[OF `p \<noteq> 0`]
+    note order = order[OF \<open>p \<noteq> 0\<close>]
     show ?case
     proof (cases "\<exists> a. poly p a = 0")
       case True
@@ -102,9 +102,9 @@ proof -
       with order_root[of p a] Suc obtain n where orda: "order a p = Suc n" 
         by (cases "order a p", auto)
       let ?a = "[: -a, 1 :] ^ Suc n"
-      from order_decomp[OF `p \<noteq> 0`, of a, unfolded orda]
+      from order_decomp[OF \<open>p \<noteq> 0\<close>, of a, unfolded orda]
         obtain q where p: "p = ?a * q" and ndvd: "\<not> [:- a, 1:] dvd q" by auto
-      from `p \<noteq> 0`[unfolded p] have nz: "?a \<noteq> 0" "q \<noteq> 0" by auto
+      from \<open>p \<noteq> 0\<close>[unfolded p] have nz: "?a \<noteq> 0" "q \<noteq> 0" by auto
       hence deg: "degree p = degree ?a + degree q" unfolding p
         by (subst degree_mult_eq, auto)
       have ord: "\<And> a. order a p = order a ?a + order a q"
@@ -112,11 +112,11 @@ proof -
         by (subst order_mult, insert nz, auto)
       have roots: "{ a. poly p a = 0 } = insert a ({ a. poly q a = 0} - {a})" using root
         unfolding p poly_mult by auto
-      have fin: "finite {a. poly q a = 0}" by (rule poly_roots_finite[OF `q \<noteq> 0`])
+      have fin: "finite {a. poly q a = 0}" by (rule poly_roots_finite[OF \<open>q \<noteq> 0\<close>])
       have "Suc n = order a p" using orda by simp
       also have "\<dots> = Suc n + order a q" unfolding ord order_linear_power' by simp
       finally have "order a q = 0" by auto
-      with order_root[of q a] `q \<noteq> 0` have qa: "poly q a \<noteq> 0" by auto
+      with order_root[of q a] \<open>q \<noteq> 0\<close> have qa: "poly q a \<noteq> 0" by auto
       have "(\<Sum>a\<in>{a. poly q a = 0} - {a}. order a p) = (\<Sum>a\<in>{a. poly q a = 0} - {a}. order a q)"
       proof (rule sum.cong[OF refl])
         fix b
@@ -127,7 +127,7 @@ proof -
       qed
       also have "\<dots> = (\<Sum>a\<in>{a. poly q a = 0}. order a q)" using qa by auto
       also have "\<dots> \<le> degree q"
-        by (rule Suc(1)[OF _ `q \<noteq> 0`], 
+        by (rule Suc(1)[OF _ \<open>q \<noteq> 0\<close>], 
         insert deg[unfolded degree_linear_power] Suc(2), auto)
       finally have "(\<Sum>a\<in>{a. poly q a = 0} - {a}. order a p) \<le> degree q" .      
       thus ?thesis unfolding roots deg using fin

@@ -10,7 +10,7 @@ imports
   SndIsomorphismGrp
 begin
 
-section {*Simple Groups*}
+section \<open>Simple Groups\<close>
 
 locale simple_group = group +
   assumes order_gt_one:"order G > 1"
@@ -18,11 +18,11 @@ locale simple_group = group +
 
 lemma (in simple_group) is_simple_group: "simple_group G" by (rule simple_group_axioms)
 
-text {* Simple groups are non-trivial. *}
+text \<open>Simple groups are non-trivial.\<close>
 
 lemma (in simple_group) simple_not_triv: "carrier G \<noteq> {\<one>}" using order_gt_one unfolding order_def by auto
 
-text {* Every group of prime order is simple *}
+text \<open>Every group of prime order is simple\<close>
 
 lemma (in group) prime_order_simple:
   assumes prime:"prime (order G)"
@@ -49,7 +49,7 @@ next
   qed
 qed
 
-text {* Being simple is a property that is preserved by isomorphisms. *}
+text \<open>Being simple is a property that is preserved by isomorphisms.\<close>
 
 lemma (in simple_group) iso_simple:
   assumes H:"group H"
@@ -80,7 +80,7 @@ next
   ultimately show "N = carrier H" using surj by simp
 qed
 
-text {* As a corollary of this: Factorizing a group by itself does not result in a simple group! *}
+text \<open>As a corollary of this: Factorizing a group by itself does not result in a simple group!\<close>
 
 lemma (in group) self_factor_not_simple:"\<not> simple_group (G Mod (carrier G))"
 proof

@@ -5,7 +5,7 @@ imports Nominal2_Base
 begin
 
 
-section {* Abstractions *}
+section \<open>Abstractions\<close>
 
 fun
   alpha_set
@@ -43,7 +43,7 @@ notation
   alpha_res ("_ \<approx>res _ _ _ _" [100, 100, 100, 100, 100] 100) and
   alpha_lst ("_ \<approx>lst _ _ _ _" [100, 100, 100, 100, 100] 100)
 
-section {* Mono *}
+section \<open>Mono\<close>
 
 lemma [mono]:
   shows "R1 \<le> R2 \<Longrightarrow> alpha_set bs R1 \<le> alpha_set bs R2"
@@ -52,7 +52,7 @@ lemma [mono]:
   by (case_tac [!] bs, case_tac [!] cs)
      (auto simp: le_fun_def le_bool_def alphas)
 
-section {* Equivariance *}
+section \<open>Equivariance\<close>
 
 lemma alpha_eqvt[eqvt]:
   shows "(bs, x) \<approx>set R f q (cs, y) \<Longrightarrow> (p \<bullet> bs, p \<bullet> x) \<approx>set (p \<bullet> R) (p \<bullet> f) (p \<bullet> q) (p \<bullet> cs, p \<bullet> y)"
@@ -67,7 +67,7 @@ lemma alpha_eqvt[eqvt]:
   unfolding fresh_star_eqvt[symmetric]
   by (auto simp only: permute_bool_def)
 
-section {* Equivalence *}
+section \<open>Equivalence\<close>
 
 lemma alpha_refl:
   assumes a: "R x x"
@@ -157,7 +157,7 @@ done
 lemmas alpha_trans_eqvt = alpha_set_trans_eqvt alpha_res_trans_eqvt alpha_lst_trans_eqvt
 
 
-section {* General Abstractions *}
+section \<open>General Abstractions\<close>
 
 fun
   alpha_abs_set
@@ -230,7 +230,7 @@ lemma alphas_abs_eqvt:
   by (auto simp only: fresh_star_permute_iff permute_eqvt[symmetric])
 
 
-section {* Strengthening the equivalence *}
+section \<open>Strengthening the equivalence\<close>
 
 lemma disjoint_right_eq:
   assumes a: "A \<union> B1 = A \<union> B2"
@@ -433,7 +433,7 @@ lemma alpha_res_alpha_set:
   "(bs, x) \<approx>res (=) supp p (cs, y) \<longleftrightarrow> (bs \<inter> supp x, x) \<approx>set (=) supp p (cs \<inter> supp y, y)"
   using alpha_abs_set_abs_res alpha_abs_res_abs_set by blast
 
-section {* Quotient types *}
+section \<open>Quotient types\<close>
 
 quotient_type
     'a abs_set = "(atom set \<times> 'a::pt)" / "alpha_abs_set"
@@ -750,7 +750,7 @@ lemma Abs_fresh_star2:
   by auto
 
 
-section {* Abstractions of single atoms *}
+section \<open>Abstractions of single atoms\<close>
 
 
 lemma Abs1_eq:
@@ -920,7 +920,7 @@ lemma Abs1_eq_iff':
 by (auto simp: Abs1_eq_iff fresh_permute_left)
 
 
-ML {*
+ML \<open>
 fun alpha_single_simproc thm _ ctxt ctrm =
   let
     val thy = Proof_Context.theory_of ctxt
@@ -936,19 +936,19 @@ fun alpha_single_simproc thm _ ctxt ctrm =
   in
     SOME thm'
   end
-*}
+\<close>
 
 simproc_setup alpha_set ("[{atom a}]set. x = [{atom b}]set. y") =
-  {* alpha_single_simproc @{thm Abs1_eq_iff_all(1)[THEN eq_reflection]} *}
+  \<open>alpha_single_simproc @{thm Abs1_eq_iff_all(1)[THEN eq_reflection]}\<close>
 
 simproc_setup alpha_res ("[{atom a}]res. x = [{atom b}]res. y") =
-  {* alpha_single_simproc @{thm Abs1_eq_iff_all(2)[THEN eq_reflection]} *}
+  \<open>alpha_single_simproc @{thm Abs1_eq_iff_all(2)[THEN eq_reflection]}\<close>
 
 simproc_setup alpha_lst ("[[atom a]]lst. x = [[atom b]]lst. y") =
-  {* alpha_single_simproc @{thm Abs1_eq_iff_all(3)[THEN eq_reflection]} *}
+  \<open>alpha_single_simproc @{thm Abs1_eq_iff_all(3)[THEN eq_reflection]}\<close>
 
 
-subsection {* Renaming of bodies of abstractions *}
+subsection \<open>Renaming of bodies of abstractions\<close>
 
 lemma Abs_rename_set:
   fixes x::"'a::fs"
@@ -1012,7 +1012,7 @@ proof -
 qed
 
 
-text {* for deep recursive binders *}
+text \<open>for deep recursive binders\<close>
 
 lemma Abs_rename_set':
   fixes x::"'a::fs"
@@ -1034,7 +1034,7 @@ lemma Abs_rename_lst':
   shows "\<exists>q. [bs]lst. x = [q \<bullet> bs]lst. (q \<bullet> x) \<and> q \<bullet> bs = p \<bullet> bs"
 using Abs_rename_lst[OF a] by metis
 
-section {* Infrastructure for building tuples of relations and functions *}
+section \<open>Infrastructure for building tuples of relations and functions\<close>
 
 fun
   prod_fv :: "('a \<Rightarrow> atom set) \<Rightarrow> ('b \<Rightarrow> atom set) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> atom set"

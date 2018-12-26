@@ -6,9 +6,9 @@ theory DList_Set imports
   Equal
 begin
 
-section {* Sets implemented by distinct lists *}
+section \<open>Sets implemented by distinct lists\<close>
 
-subsection {* Operations on the raw type with parametrised equality *}
+subsection \<open>Operations on the raw type with parametrised equality\<close>
 
 context equal_base begin
 
@@ -110,7 +110,7 @@ lemma ID_ceq: (* FIXME: Adapt Set_Impl to directly use above equal class! *)
   "ID CEQ('a :: ceq) = Some eq \<Longrightarrow> equal eq"
 by(unfold_locales)(clarsimp simp add: ID_ceq)
 
-subsection {* The type of distinct lists *}
+subsection \<open>The type of distinct lists\<close>
 
 typedef (overloaded) 'a :: ceq set_dlist =
   "{xs::'a list. equal_base.list_distinct ceq' xs \<or> ID CEQ('a) = None}"
@@ -147,7 +147,7 @@ lemmas Abs_dlist_cases[cases type: set_dlist] =
 
 setup_lifting type_definition_set_dlist'
 
-subsection {* Operations *}
+subsection \<open>Operations\<close>
 
 lift_definition empty :: "'a :: ceq set_dlist" is "[]"
 by simp
@@ -163,7 +163,7 @@ by(auto simp: equal.distinct_remove1 ID_ceq)
 lift_definition filter :: "('a :: ceq \<Rightarrow> bool) \<Rightarrow> 'a set_dlist \<Rightarrow> 'a set_dlist" is List.filter
 by(auto simp add: equal_base.list_distinct_filter)
 
-text {* Derived operations: *}
+text \<open>Derived operations:\<close>
 
 lift_definition null :: "'a :: ceq set_dlist \<Rightarrow> bool" is List.null .
 
@@ -225,7 +225,7 @@ proof -
   thus "?thesis xs" using ceq by(auto dest: equal.equal_eq[OF ID_ceq] simp add: ceq_prod_def ID_None)
 qed
 
-subsection {* Properties *}
+subsection \<open>Properties\<close>
 
 lemma member_empty [simp]: "member empty = (\<lambda>_. False)"
 by transfer (simp add: fun_eq_iff)

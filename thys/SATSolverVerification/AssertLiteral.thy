@@ -65,7 +65,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause \<and> clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -79,12 +79,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -108,10 +108,10 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(3)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -126,7 +126,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -143,10 +143,10 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(3)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -172,12 +172,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -200,12 +200,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             unfolding isPrefix_def
             by (auto simp add: Let_def split: if_split_asm)
         qed
@@ -216,12 +216,12 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -229,10 +229,10 @@ next
       case True
       thus ?thesis
         using Cons
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -247,7 +247,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state')) clause`
+          using \<open>l' el (nth (getF ?state')) clause\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -262,10 +262,10 @@ next
         show ?thesis
           using Cons(1)[of "?state''"]
           using Cons(3)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -289,12 +289,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -315,12 +315,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             unfolding isPrefix_def
             by (auto simp add: Let_def split: if_split_asm)
         qed
@@ -356,7 +356,7 @@ proof (induct Wl arbitrary: newWl stateA stateB)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF stateA)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF stateA)\<close>
   have "0 \<le> clause \<and> clause < length (getF stateA)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -368,7 +368,7 @@ next
   proof (cases "Some literal = getWatch1 stateA clause")
     case True
     hence "Some literal = getWatch1 stateB clause"
-      using `getWatch1 stateA = getWatch1 stateB`
+      using \<open>getWatch1 stateA = getWatch1 stateB\<close>
       by simp
 
     let ?state'A = "swapWatches clause stateA"
@@ -387,26 +387,26 @@ next
 
     let ?w1 = wb
     have "getWatch1 ?state'A clause = Some ?w1"
-      using `getWatch2 stateA clause = Some wb`
+      using \<open>getWatch2 stateA clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     hence "getWatch1 ?state'B clause = Some ?w1"
-      using `getWatch1 ?state'A = getWatch1 ?state'B`
+      using \<open>getWatch1 ?state'A = getWatch1 ?state'B\<close>
       by simp
     let ?w2 = wa
     have "getWatch2 ?state'A clause = Some ?w2"
-      using `getWatch1 stateA clause = Some wa`
+      using \<open>getWatch1 stateA clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     hence "getWatch2 ?state'B clause = Some ?w2"
-      using `getWatch2 ?state'A = getWatch2 ?state'B`
+      using \<open>getWatch2 ?state'A = getWatch2 ?state'B\<close>
       by simp
 
     show ?thesis
     proof (cases "literalTrue ?w1 (elements (getM ?state'A))")
       case True
       hence "literalTrue ?w1 (elements (getM ?state'B))"
-        using `getM ?state'A = getM ?state'B`
+        using \<open>getM ?state'A = getM ?state'B\<close>
         by simp
       
       from Cons(2)
@@ -433,33 +433,33 @@ next
       ultimately
       show ?thesis
         using Cons(1)[of "?state'A" "?state'B" "clause # newWl"]
-        using `getM ?state'A = getM ?state'B`
-        using `getF ?state'A = getF ?state'B`
-        using `getWatch1 ?state'A = getWatch1 ?state'B`
-        using `getWatch2 ?state'A = getWatch2 ?state'B`
-        using `getConflictFlag ?state'A = getConflictFlag ?state'B`
-        using `getSATFlag ?state'A = getSATFlag ?state'B`
+        using \<open>getM ?state'A = getM ?state'B\<close>
+        using \<open>getF ?state'A = getF ?state'B\<close>
+        using \<open>getWatch1 ?state'A = getWatch1 ?state'B\<close>
+        using \<open>getWatch2 ?state'A = getWatch2 ?state'B\<close>
+        using \<open>getConflictFlag ?state'A = getConflictFlag ?state'B\<close>
+        using \<open>getSATFlag ?state'A = getSATFlag ?state'B\<close>
         using Cons(3)
-        using `getWatch1 ?state'A clause = Some ?w1`
-        using `getWatch2 ?state'A clause = Some ?w2`
-        using `getWatch1 ?state'B clause = Some ?w1`
-        using `getWatch2 ?state'B clause = Some ?w2`
-        using `Some literal = getWatch1 stateA clause`
-        using `Some literal = getWatch1 stateB clause`
-        using `literalTrue ?w1 (elements (getM ?state'A))`
-        using `literalTrue ?w1 (elements (getM ?state'B))`
+        using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+        using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 stateA clause\<close>
+        using \<open>Some literal = getWatch1 stateB clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'A))\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'B))\<close>
         by (simp add:Let_def)
     next
       case False
       hence "\<not> literalTrue ?w1 (elements (getM ?state'B))"
-        using `getM ?state'A = getM ?state'B`
+        using \<open>getM ?state'A = getM ?state'B\<close>
         by simp
       show ?thesis
       proof (cases "getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A)")
         case (Some l')
         hence "getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = Some l'"
-          using `getF ?state'A = getF ?state'B`
-          using `getM ?state'A = getM ?state'B`
+          using \<open>getF ?state'A = getF ?state'B\<close>
+          using \<open>getM ?state'A = getM ?state'B\<close>
           by simp
 
         have "l' el (nth (getF ?state'A) clause)"
@@ -467,7 +467,7 @@ next
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
           by simp
         hence "l' el (nth (getF ?state'B) clause)"
-          using `getF ?state'A = getF ?state'B`
+          using \<open>getF ?state'A = getF ?state'B\<close>
           by simp
 
 
@@ -489,7 +489,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state''A) (getWatch1 ?state''A) (getWatch2 ?state''A)"
-          using `l' el (nth (getF ?state'A) clause)`
+          using \<open>l' el (nth (getF ?state'A) clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -514,34 +514,34 @@ next
         ultimately
         show ?thesis
           using Cons(1)[of "?state''A" "?state''B" "newWl"]
-          using `getM ?state''A = getM ?state''B`
-          using `getF ?state''A = getF ?state''B`
-          using `getWatch1 ?state''A = getWatch1 ?state''B`
-          using `getWatch2 ?state''A = getWatch2 ?state''B`
-          using `getConflictFlag ?state''A = getConflictFlag ?state''B`
-          using `getSATFlag ?state''A = getSATFlag ?state''B`
+          using \<open>getM ?state''A = getM ?state''B\<close>
+          using \<open>getF ?state''A = getF ?state''B\<close>
+          using \<open>getWatch1 ?state''A = getWatch1 ?state''B\<close>
+          using \<open>getWatch2 ?state''A = getWatch2 ?state''B\<close>
+          using \<open>getConflictFlag ?state''A = getConflictFlag ?state''B\<close>
+          using \<open>getSATFlag ?state''A = getSATFlag ?state''B\<close>
           using Cons(3)
-          using `getWatch1 ?state'A clause = Some ?w1`
-          using `getWatch2 ?state'A clause = Some ?w2`
-          using `getWatch1 ?state'B clause = Some ?w1`
-          using `getWatch2 ?state'B clause = Some ?w2`
-          using `Some literal = getWatch1 stateA clause`
-          using `Some literal = getWatch1 stateB clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'A))`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'B))`
-          using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = Some l'`
-          using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = Some l'`
+          using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+          using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 stateA clause\<close>
+          using \<open>Some literal = getWatch1 stateB clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'A))\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'B))\<close>
+          using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = Some l'\<close>
+          using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = Some l'\<close>
           by (simp add:Let_def)
       next
         case None
         hence "getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None"
-          using `getF ?state'A = getF ?state'B` `getM ?state'A = getM ?state'B`
+          using \<open>getF ?state'A = getF ?state'B\<close> \<open>getM ?state'A = getM ?state'B\<close>
           by simp
         show ?thesis
         proof (cases "literalFalse ?w1 (elements (getM ?state'A))")
           case True
           hence "literalFalse ?w1 (elements (getM ?state'B))"
-            using `getM ?state'A = getM ?state'B`
+            using \<open>getM ?state'A = getM ?state'B\<close>
             by simp
 
           let ?state''A = "?state'A\<lparr>getConflictFlag := True, getConflictClause := clause\<rparr>"
@@ -580,30 +580,30 @@ next
           show ?thesis
             using Cons(4) Cons(5)
             using Cons(1)[of "?state''A" "?state''B" "clause # newWl"]
-            using `getM ?state''A = getM ?state''B`
-            using `getF ?state''A = getF ?state''B`
-            using `getWatch1 ?state''A = getWatch1 ?state''B`
-            using `getWatch2 ?state''A = getWatch2 ?state''B`
-            using `getConflictFlag ?state''A = getConflictFlag ?state''B`
-            using `getSATFlag ?state''A = getSATFlag ?state''B`
+            using \<open>getM ?state''A = getM ?state''B\<close>
+            using \<open>getF ?state''A = getF ?state''B\<close>
+            using \<open>getWatch1 ?state''A = getWatch1 ?state''B\<close>
+            using \<open>getWatch2 ?state''A = getWatch2 ?state''B\<close>
+            using \<open>getConflictFlag ?state''A = getConflictFlag ?state''B\<close>
+            using \<open>getSATFlag ?state''A = getSATFlag ?state''B\<close>
             using Cons(3)
-            using `getWatch1 ?state'A clause = Some ?w1`
-            using `getWatch2 ?state'A clause = Some ?w2`
-            using `getWatch1 ?state'B clause = Some ?w1`
-            using `getWatch2 ?state'B clause = Some ?w2`
-            using `Some literal = getWatch1 stateA clause`
-            using `Some literal = getWatch1 stateB clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'A))`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'B))`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None`
-            using `literalFalse ?w1 (elements (getM ?state'A))`
-            using `literalFalse ?w1 (elements (getM ?state'B))`
+            using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+            using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 stateA clause\<close>
+            using \<open>Some literal = getWatch1 stateB clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'A))\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'B))\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'A))\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'B))\<close>
             by (simp add:Let_def)
         next
           case False
           hence "\<not> literalFalse ?w1 (elements (getM ?state'B))"
-            using `getM ?state'A = getM ?state'B`
+            using \<open>getM ?state'A = getM ?state'B\<close>
             by simp
           let ?state''A = "setReason ?w1 clause (?state'A\<lparr>getQ := (if ?w1 el (getQ ?state'A) then (getQ ?state'A) else (getQ ?state'A) @ [?w1])\<rparr>)"
           let ?state''B = "setReason ?w1 clause (?state'B\<lparr>getQ := (if ?w1 el (getQ ?state'B) then (getQ ?state'B) else (getQ ?state'B) @ [?w1])\<rparr>)"
@@ -646,25 +646,25 @@ next
           show ?thesis
             using Cons(4) Cons(5)
             using Cons(1)[of "?state''A" "?state''B" "clause # newWl"]
-            using `getM ?state''A = getM ?state''B`
-            using `getF ?state''A = getF ?state''B`
-            using `getWatch1 ?state''A = getWatch1 ?state''B`
-            using `getWatch2 ?state''A = getWatch2 ?state''B`
-            using `getConflictFlag ?state''A = getConflictFlag ?state''B`
-            using `getSATFlag ?state''A = getSATFlag ?state''B`
+            using \<open>getM ?state''A = getM ?state''B\<close>
+            using \<open>getF ?state''A = getF ?state''B\<close>
+            using \<open>getWatch1 ?state''A = getWatch1 ?state''B\<close>
+            using \<open>getWatch2 ?state''A = getWatch2 ?state''B\<close>
+            using \<open>getConflictFlag ?state''A = getConflictFlag ?state''B\<close>
+            using \<open>getSATFlag ?state''A = getSATFlag ?state''B\<close>
             using Cons(3)
-            using `getWatch1 ?state'A clause = Some ?w1`
-            using `getWatch2 ?state'A clause = Some ?w2`
-            using `getWatch1 ?state'B clause = Some ?w1`
-            using `getWatch2 ?state'B clause = Some ?w2`
-            using `Some literal = getWatch1 stateA clause`
-            using `Some literal = getWatch1 stateB clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'A))`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'B))`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'A))`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'B))`
+            using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+            using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 stateA clause\<close>
+            using \<open>Some literal = getWatch1 stateB clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'A))\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'B))\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'A))\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'B))\<close>
             by (simp add:Let_def)
         qed
       qed
@@ -690,14 +690,14 @@ next
 
     let ?w1 = wa
     have "getWatch1 ?state'A clause = Some ?w1"
-      using `getWatch1 stateA clause = Some wa`
+      using \<open>getWatch1 stateA clause = Some wa\<close>
       by auto
     hence "getWatch1 ?state'B clause = Some ?w1"
       using Cons
       by simp
     let ?w2 = wb
     have "getWatch2 ?state'A clause = Some ?w2"
-      using `getWatch2 stateA clause = Some wb`
+      using \<open>getWatch2 stateA clause = Some wb\<close>
       by auto
     hence "getWatch2 ?state'B clause = Some ?w2"
       using Cons
@@ -713,26 +713,26 @@ next
       show ?thesis
         using Cons(1)[of "?state'A" "?state'B" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6) Cons(7) Cons(8) Cons(9)
-        using `\<not> Some literal = getWatch1 stateA clause`
-        using `\<not> Some literal = getWatch1 stateB clause`
-        using `getWatch1 ?state'A clause = Some ?w1`
-        using `getWatch1 ?state'B clause = Some ?w1`
-        using `getWatch2 ?state'A clause = Some ?w2`
-        using `getWatch2 ?state'B clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'A))`
-        using `literalTrue ?w1 (elements (getM ?state'B))`
+        using \<open>\<not> Some literal = getWatch1 stateA clause\<close>
+        using \<open>\<not> Some literal = getWatch1 stateB clause\<close>
+        using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+        using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+        using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'A))\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'B))\<close>
         by (simp add:Let_def)
     next
       case False
       hence "\<not> literalTrue ?w1 (elements (getM ?state'B))"
-        using `getM ?state'A = getM ?state'B`
+        using \<open>getM ?state'A = getM ?state'B\<close>
         by simp
       show ?thesis
       proof (cases "getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A)")
         case (Some l')
         hence "getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = Some l'"
-          using `getF ?state'A = getF ?state'B`
-          using `getM ?state'A = getM ?state'B`
+          using \<open>getF ?state'A = getF ?state'B\<close>
+          using \<open>getM ?state'A = getM ?state'B\<close>
           by simp
 
         have "l' el (nth (getF ?state'A) clause)"
@@ -740,7 +740,7 @@ next
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
           by simp
         hence "l' el (nth (getF ?state'B) clause)"
-          using `getF ?state'A = getF ?state'B`
+          using \<open>getF ?state'A = getF ?state'B\<close>
           by simp
 
         let ?state''A = "setWatch2 clause l' ?state'A"
@@ -760,7 +760,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state''A) (getWatch1 ?state''A) (getWatch2 ?state''A)"
-          using `l' el (nth (getF ?state'A) clause)`
+          using \<open>l' el (nth (getF ?state'A) clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -774,34 +774,34 @@ next
         ultimately
         show ?thesis
           using Cons(1)[of "?state''A" "?state''B" "newWl"]
-          using `getM ?state''A = getM ?state''B`
-          using `getF ?state''A = getF ?state''B`
-          using `getWatch1 ?state''A = getWatch1 ?state''B`
-          using `getWatch2 ?state''A = getWatch2 ?state''B`
-          using `getConflictFlag ?state''A = getConflictFlag ?state''B`
-          using `getSATFlag ?state''A = getSATFlag ?state''B`
+          using \<open>getM ?state''A = getM ?state''B\<close>
+          using \<open>getF ?state''A = getF ?state''B\<close>
+          using \<open>getWatch1 ?state''A = getWatch1 ?state''B\<close>
+          using \<open>getWatch2 ?state''A = getWatch2 ?state''B\<close>
+          using \<open>getConflictFlag ?state''A = getConflictFlag ?state''B\<close>
+          using \<open>getSATFlag ?state''A = getSATFlag ?state''B\<close>
           using Cons(3)
-          using `getWatch1 ?state'A clause = Some ?w1`
-          using `getWatch2 ?state'A clause = Some ?w2`
-          using `getWatch1 ?state'B clause = Some ?w1`
-          using `getWatch2 ?state'B clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 stateA clause`
-          using `\<not> Some literal = getWatch1 stateB clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'A))`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'B))`
-          using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = Some l'`
-          using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = Some l'`
+          using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+          using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 stateA clause\<close>
+          using \<open>\<not> Some literal = getWatch1 stateB clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'A))\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'B))\<close>
+          using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = Some l'\<close>
+          using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = Some l'\<close>
           by (simp add:Let_def)
       next
         case None
         hence "getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None"
-          using `getF ?state'A = getF ?state'B` `getM ?state'A = getM ?state'B`
+          using \<open>getF ?state'A = getF ?state'B\<close> \<open>getM ?state'A = getM ?state'B\<close>
           by simp
         show ?thesis
         proof (cases "literalFalse ?w1 (elements (getM ?state'A))")
           case True
           hence "literalFalse ?w1 (elements (getM ?state'B))"
-            using `getM ?state'A = getM ?state'B`
+            using \<open>getM ?state'A = getM ?state'B\<close>
             by simp
 
           let ?state''A = "?state'A\<lparr>getConflictFlag := True, getConflictClause := clause\<rparr>"
@@ -830,30 +830,30 @@ next
           show ?thesis
             using Cons(4) Cons(5)
             using Cons(1)[of "?state''A" "?state''B" "clause # newWl"]
-            using `getM ?state''A = getM ?state''B`
-            using `getF ?state''A = getF ?state''B`
-            using `getWatch1 ?state''A = getWatch1 ?state''B`
-            using `getWatch2 ?state''A = getWatch2 ?state''B`
-            using `getConflictFlag ?state''A = getConflictFlag ?state''B`
-            using `getSATFlag ?state''A = getSATFlag ?state''B`
+            using \<open>getM ?state''A = getM ?state''B\<close>
+            using \<open>getF ?state''A = getF ?state''B\<close>
+            using \<open>getWatch1 ?state''A = getWatch1 ?state''B\<close>
+            using \<open>getWatch2 ?state''A = getWatch2 ?state''B\<close>
+            using \<open>getConflictFlag ?state''A = getConflictFlag ?state''B\<close>
+            using \<open>getSATFlag ?state''A = getSATFlag ?state''B\<close>
             using Cons(3)
-            using `getWatch1 ?state'A clause = Some ?w1`
-            using `getWatch2 ?state'A clause = Some ?w2`
-            using `getWatch1 ?state'B clause = Some ?w1`
-            using `getWatch2 ?state'B clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 stateA clause`
-            using `\<not> Some literal = getWatch1 stateB clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'A))`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'B))`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None`
-            using `literalFalse ?w1 (elements (getM ?state'A))`
-            using `literalFalse ?w1 (elements (getM ?state'B))`
+            using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+            using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 stateA clause\<close>
+            using \<open>\<not> Some literal = getWatch1 stateB clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'A))\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'B))\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'A))\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'B))\<close>
             by (simp add:Let_def)
         next
           case False
           hence "\<not> literalFalse ?w1 (elements (getM ?state'B))"
-            using `getM ?state'A = getM ?state'B`
+            using \<open>getM ?state'A = getM ?state'B\<close>
             by simp
           let ?state''A = "setReason ?w1 clause (?state'A\<lparr>getQ := (if ?w1 el (getQ ?state'A) then (getQ ?state'A) else (getQ ?state'A) @ [?w1])\<rparr>)"
           let ?state''B = "setReason ?w1 clause (?state'B\<lparr>getQ := (if ?w1 el (getQ ?state'B) then (getQ ?state'B) else (getQ ?state'B) @ [?w1])\<rparr>)"
@@ -885,25 +885,25 @@ next
           show ?thesis
             using Cons(4) Cons(5)
             using Cons(1)[of "?state''A" "?state''B" "clause # newWl"]
-            using `getM ?state''A = getM ?state''B`
-            using `getF ?state''A = getF ?state''B`
-            using `getWatch1 ?state''A = getWatch1 ?state''B`
-            using `getWatch2 ?state''A = getWatch2 ?state''B`
-            using `getConflictFlag ?state''A = getConflictFlag ?state''B`
-            using `getSATFlag ?state''A = getSATFlag ?state''B`
+            using \<open>getM ?state''A = getM ?state''B\<close>
+            using \<open>getF ?state''A = getF ?state''B\<close>
+            using \<open>getWatch1 ?state''A = getWatch1 ?state''B\<close>
+            using \<open>getWatch2 ?state''A = getWatch2 ?state''B\<close>
+            using \<open>getConflictFlag ?state''A = getConflictFlag ?state''B\<close>
+            using \<open>getSATFlag ?state''A = getSATFlag ?state''B\<close>
             using Cons(3)
-            using `getWatch1 ?state'A clause = Some ?w1`
-            using `getWatch2 ?state'A clause = Some ?w2`
-            using `getWatch1 ?state'B clause = Some ?w1`
-            using `getWatch2 ?state'B clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 stateA clause`
-            using `\<not> Some literal = getWatch1 stateB clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'A))`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'B))`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None`
-            using `getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'A))`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'B))`
+            using \<open>getWatch1 ?state'A clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'A clause = Some ?w2\<close>
+            using \<open>getWatch1 ?state'B clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state'B clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 stateA clause\<close>
+            using \<open>\<not> Some literal = getWatch1 stateB clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'A))\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'B))\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'A) clause) ?w1 ?w2 (getM ?state'A) = None\<close>
+            using \<open>getNonWatchedUnfalsifiedLiteral (nth (getF ?state'B) clause) ?w1 ?w2 (getM ?state'B) = None\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'A))\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'B))\<close>
             by (simp add:Let_def)
         qed
       qed
@@ -927,7 +927,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause \<and> clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -941,12 +941,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -967,10 +967,10 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(3)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         apply (simp add:Let_def)
         unfolding swapWatches_def
         by simp
@@ -987,7 +987,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -1002,10 +1002,10 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(3)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           apply (simp add: Let_def)
           unfolding setWatch2_def
@@ -1032,12 +1032,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             apply (simp add: Let_def)
             unfolding swapWatches_def
             by simp
@@ -1061,12 +1061,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             apply (simp add: Let_def)
             unfolding setReason_def
             unfolding swapWatches_def
@@ -1079,12 +1079,12 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -1092,10 +1092,10 @@ next
       case True
       thus ?thesis
         using Cons
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -1110,7 +1110,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state')) clause`
+          using \<open>l' el (nth (getF ?state')) clause\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -1123,10 +1123,10 @@ next
         show ?thesis
           using Cons(1)[of "?state''"]
           using Cons(3)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           apply (simp add: Let_def)
           unfolding setWatch2_def
@@ -1150,12 +1150,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -1174,12 +1174,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             apply (simp add: Let_def)
             unfolding setReason_def
             by simp
@@ -1204,7 +1204,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause" and "clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -1218,12 +1218,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -1242,10 +1242,10 @@ next
       ultimately
       show ?thesis
         using Cons
-        using `Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add: Let_def)
     next
       case False
@@ -1260,7 +1260,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -1273,10 +1273,10 @@ next
         ultimately
         show ?thesis
           using Cons
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -1298,12 +1298,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -1323,12 +1323,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -1338,12 +1338,12 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -1351,10 +1351,10 @@ next
       case True
       thus ?thesis
         using Cons
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -1369,7 +1369,7 @@ next
 
         from Cons
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -1380,10 +1380,10 @@ next
         ultimately
         show ?thesis
           using Cons
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -1403,12 +1403,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -1425,12 +1425,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -1454,7 +1454,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause" and "clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -1468,12 +1468,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -1499,10 +1499,10 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(4)
-        using `Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add: Let_def)
     next
       case False
@@ -1511,9 +1511,9 @@ next
         case (Some l')
         hence "l' el (nth (getF ?state') clause)" "l' \<noteq> literal" "l' \<noteq> ?w1" "l' \<noteq> ?w2"
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
           unfolding swapWatches_def
           by auto
 
@@ -1521,7 +1521,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -1529,9 +1529,9 @@ next
         moreover
         from Cons(3)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' \<noteq> ?w1`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> ?w1\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -1544,10 +1544,10 @@ next
         ultimately
         show ?thesis
           using Cons
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -1575,12 +1575,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -1607,12 +1607,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -1622,12 +1622,12 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto       
     show ?thesis
@@ -1635,10 +1635,10 @@ next
       case True
       thus ?thesis
         using Cons
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -1647,8 +1647,8 @@ next
         case (Some l')
         hence "l' el (nth (getF ?state') clause)" "l' \<noteq> ?w1" "l' \<noteq> ?w2"
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding swapWatches_def
           by auto
 
@@ -1656,16 +1656,16 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
         moreover
         from Cons(3)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' \<noteq> ?w1`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> ?w1\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding setWatch2_def
           by auto
@@ -1676,10 +1676,10 @@ next
         ultimately
         show ?thesis
           using Cons
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -1704,12 +1704,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -1733,12 +1733,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -1764,7 +1764,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall>c. c \<in> set (clause # Wl') \<or> c \<in> set newWl \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall>c. c \<in> set (clause # Wl') \<or> c \<in> set newWl \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause" and "clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -1778,12 +1778,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -1807,10 +1807,10 @@ next
       ultimately
       show ?thesis
         using Cons
-        using `Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add: Let_def)
     next
       case False
@@ -1825,7 +1825,7 @@ next
 
         from Cons(2)
         have "InvariantWatchListsContainOnlyClausesFromF (getWatchList ?state'') (getF ?state'')"
-          using `clause < length (getF state)`
+          using \<open>clause < length (getF state)\<close>
           unfolding InvariantWatchListsContainOnlyClausesFromF_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -1833,7 +1833,7 @@ next
         moreover
         from Cons(3)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -1846,10 +1846,10 @@ next
         ultimately
         show ?thesis
           using Cons
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -1876,12 +1876,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -1907,12 +1907,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -1922,12 +1922,12 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -1935,10 +1935,10 @@ next
       case True
       thus ?thesis
         using Cons
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -1953,14 +1953,14 @@ next
 
         from Cons(2)
         have "InvariantWatchListsContainOnlyClausesFromF (getWatchList ?state'') (getF ?state'')"
-          using `clause < length (getF state)`
+          using \<open>clause < length (getF state)\<close>
           unfolding setWatch2_def
           unfolding InvariantWatchListsContainOnlyClausesFromF_def
           by auto
         moreover 
         from Cons(3)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -1971,10 +1971,10 @@ next
         ultimately
         show ?thesis
           using Cons
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -1994,12 +1994,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -2022,12 +2022,12 @@ next
           ultimately
           show ?thesis
             using Cons
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -2061,13 +2061,13 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `uniq (clause # Wl')`
+  from \<open>uniq (clause # Wl')\<close>
   have "clause \<notin> set Wl'"
     by (simp add:uniqAppendIff)
 
   have "set Wl' \<inter> set (clause # newWl) = {}"
     using Cons(8)
-    using `clause \<notin> set Wl'`
+    using \<open>clause \<notin> set Wl'\<close>
     by simp
 
   have "uniq Wl'"
@@ -2080,7 +2080,7 @@ next
     using uniqAppendIff
     by force
 
-  from `\<forall>c. c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall>c. c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause" and "clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -2094,12 +2094,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     show ?thesis
@@ -2132,7 +2132,7 @@ next
         (c \<in> set (getWatchList ?state' l)) =
         (Some l = getWatch1 ?state' c \<or> Some l = getWatch2 ?state' c)"
         using Cons(6)
-        using `(getWatchList ?state') = (getWatchList state)`
+        using \<open>(getWatchList ?state') = (getWatchList state)\<close>
         using swapWatchesEffect
         by auto
       moreover 
@@ -2145,13 +2145,13 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(5)
-        using `Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
-        using `uniq (clause # newWl)`
-        using `set Wl' \<inter> set (clause # newWl) = {}`
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
+        using \<open>uniq (clause # newWl)\<close>
+        using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
         by (simp add: Let_def)
     next
       case False
@@ -2160,9 +2160,9 @@ next
         case (Some l')
         hence "l' el (nth (getF ?state') clause)" "l' \<noteq> literal" "l' \<noteq> ?w1" "l' \<noteq> ?w2"
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
           unfolding swapWatches_def
           by auto
         
@@ -2170,7 +2170,7 @@ next
         
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -2178,18 +2178,18 @@ next
         moreover
         from Cons(3)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `l' \<noteq> ?w1`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>l' \<noteq> ?w1\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding swapWatches_def
           unfolding setWatch2_def
           by simp
         moreover
         have "clause \<notin> set (getWatchList state l')"
-          using `l' \<noteq> literal`
-          using `l' \<noteq> ?w1` `l' \<noteq> ?w2`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> literal\<close>
+          using \<open>l' \<noteq> ?w1\<close> \<open>l' \<noteq> ?w2\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           using Cons(6)
           unfolding swapWatches_def
           by simp
@@ -2221,20 +2221,20 @@ next
               proof (cases "l = l'")
                 case True
                 thus ?thesis
-                  using `c = clause`
+                  using \<open>c = clause\<close>
                   unfolding setWatch2_def
                   by simp
               next
                 case False
                 show ?thesis
                   using Cons(6)
-                  using `(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))`
-                  using `l \<noteq> l'`
-                  using `l \<noteq> literal`
-                  using `getWatch1 ?state' clause = Some ?w1`
-                  using `getWatch2 ?state' clause = Some ?w2`
-                  using `Some literal = getWatch1 state clause`
-                  using `c = clause`
+                  using \<open>(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))\<close>
+                  using \<open>l \<noteq> l'\<close>
+                  using \<open>l \<noteq> literal\<close>
+                  using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                  using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+                  using \<open>Some literal = getWatch1 state clause\<close>
+                  using \<open>c = clause\<close>
                   using swapWatchesEffect
                   unfolding swapWatches_def
                   unfolding setWatch2_def
@@ -2244,9 +2244,9 @@ next
               case False
               thus ?thesis
                 using Cons(6)
-                using `l \<noteq> literal`
-                using `(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))`
-                using `c \<noteq> clause`
+                using \<open>l \<noteq> literal\<close>
+                using \<open>(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))\<close>
+                using \<open>c \<noteq> clause\<close>
                 unfolding setWatch2_def
                 using swapWatchesEffect[of "clause" "state" "c"]
                 by auto
@@ -2268,18 +2268,18 @@ next
               assume "c \<in> set newWl \<or> c \<in> set Wl'"
               show "Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
               proof-
-                from `c \<in> set newWl \<or> c \<in> set Wl'`
+                from \<open>c \<in> set newWl \<or> c \<in> set Wl'\<close>
                 have "Some literal = getWatch1 state c \<or> Some literal = getWatch2 state c"
                   using Cons(7)
                   by auto
                 
-                from Cons(8) `clause \<notin> set Wl'` `c \<in> set newWl \<or> c \<in> set Wl'`
+                from Cons(8) \<open>clause \<notin> set Wl'\<close> \<open>c \<in> set newWl \<or> c \<in> set Wl'\<close>
                 have "c \<noteq> clause"
                   by auto
                 
                 show ?thesis
-                  using `Some literal = getWatch1 state c \<or> Some literal = getWatch2 state c`
-                  using `c \<noteq> clause`
+                  using \<open>Some literal = getWatch1 state c \<or> Some literal = getWatch2 state c\<close>
+                  using \<open>c \<noteq> clause\<close>
                   using swapWatchesEffect
                   unfolding setWatch2_def
                   by simp
@@ -2289,18 +2289,18 @@ next
               show "c \<in> set newWl \<or> c \<in> set Wl'"
               proof-
                 have "Some literal \<noteq> getWatch1 ?state'' clause \<and>  Some literal \<noteq> getWatch2 ?state'' clause"
-                  using `l' \<noteq> literal`
-                  using `clause < length (getF state)`
-                  using `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
-                  using `getWatch1 ?state' clause = Some ?w1`
-                  using `getWatch2 ?state' clause = Some ?w2`
-                  using `Some literal = getWatch1 state clause`
+                  using \<open>l' \<noteq> literal\<close>
+                  using \<open>clause < length (getF state)\<close>
+                  using \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
+                  using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                  using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+                  using \<open>Some literal = getWatch1 state clause\<close>
                   unfolding InvariantWatchesDiffer_def
                   unfolding setWatch2_def
                   unfolding swapWatches_def
                   by auto
                 thus ?thesis
-                  using `Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c`
+                  using \<open>Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c\<close>
                   using Cons(7)
                   using swapWatchesEffect
                   unfolding setWatch2_def
@@ -2319,13 +2319,13 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(5)
-          using `uniq Wl'`
-          using `uniq newWl`
-          using `set Wl' \<inter> set (clause # newWl) = {}`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>uniq Wl'\<close>
+          using \<open>uniq newWl\<close>
+          using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def fun_upd_def)
       next
@@ -2361,7 +2361,7 @@ next
             (c \<in> set (getWatchList ?state'' l)) =
             (Some l = getWatch1 ?state'' c \<or> Some l = getWatch2 ?state'' c)"
             using Cons(6)
-            using `(getWatchList state) = (getWatchList ?state'')`
+            using \<open>(getWatchList state) = (getWatchList ?state'')\<close>
             using swapWatchesEffect
             by auto
           moreover 
@@ -2374,15 +2374,15 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(5)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
-            using `uniq (clause # newWl)`
-            using `set Wl' \<inter> set (clause # newWl) = {}`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
+            using \<open>uniq (clause # newWl)\<close>
+            using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
             by (simp add: Let_def)
         next
           case False
@@ -2418,7 +2418,7 @@ next
             (c \<in> set (getWatchList ?state'' l)) =
             (Some l = getWatch1 ?state'' c \<or> Some l = getWatch2 ?state'' c)"
             using Cons(6)
-            using `(getWatchList state) = (getWatchList ?state'')`
+            using \<open>(getWatchList state) = (getWatchList ?state'')\<close>
             using swapWatchesEffect
             unfolding setReason_def
             by auto
@@ -2433,15 +2433,15 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(5)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
-            using `uniq (clause # newWl)`
-            using `set Wl' \<inter> set (clause # newWl) = {}`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
+            using \<open>uniq (clause # newWl)\<close>
+            using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -2451,19 +2451,19 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto    
 
     have "Some literal = getWatch2 state clause"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `Some literal \<noteq> getWatch1 state clause`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>Some literal \<noteq> getWatch1 state clause\<close>
       using Cons(7)
       by force
 
@@ -2477,13 +2477,13 @@ next
       thus ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6)
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq (clause # newWl)`
-        using `uniq Wl'`
-        using `set Wl' \<inter> set (clause # newWl) = {}`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq (clause # newWl)\<close>
+        using \<open>uniq Wl'\<close>
+        using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
         by simp
     next
       case False
@@ -2492,33 +2492,33 @@ next
         case (Some l')
         hence "l' el (nth (getF ?state') clause)" "l' \<noteq> literal" "l' \<noteq> ?w1" "l' \<noteq> ?w2"
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
-          using `Some literal = getWatch2 state clause`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>Some literal = getWatch2 state clause\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           by auto
 
         let ?state'' = "setWatch2 clause l' ?state'"
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
         moreover
         from Cons(3)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `l' \<noteq> ?w1`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>l' \<noteq> ?w1\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding setWatch2_def
           by simp
         moreover
         have "clause \<notin> set (getWatchList state l')"
-          using `l' \<noteq> literal`
-          using `l' \<noteq> ?w1` `l' \<noteq> ?w2`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> literal\<close>
+          using \<open>l' \<noteq> ?w1\<close> \<open>l' \<noteq> ?w2\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           using Cons(6)
           by simp
         with Cons(4)
@@ -2547,20 +2547,20 @@ next
               proof (cases "l = l'")
                 case True
                 thus ?thesis
-                  using `c = clause`
+                  using \<open>c = clause\<close>
                   unfolding setWatch2_def
                   by simp
               next
                 case False
                 show ?thesis
                   using Cons(6)
-                  using `(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))`
-                  using `l \<noteq> l'`
-                  using `l \<noteq> literal`
-                  using `getWatch1 ?state' clause = Some ?w1`
-                  using `getWatch2 ?state' clause = Some ?w2`
-                  using `Some literal = getWatch2 state clause`
-                  using `c = clause`
+                  using \<open>(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))\<close>
+                  using \<open>l \<noteq> l'\<close>
+                  using \<open>l \<noteq> literal\<close>
+                  using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                  using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+                  using \<open>Some literal = getWatch2 state clause\<close>
+                  using \<open>c = clause\<close>
                   unfolding setWatch2_def
                   by simp
               qed
@@ -2568,9 +2568,9 @@ next
               case False
               thus ?thesis
                 using Cons(6)
-                using `l \<noteq> literal`
-                using `(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))`
-                using `c \<noteq> clause`
+                using \<open>l \<noteq> literal\<close>
+                using \<open>(getWatchList ?state'') = (getWatchList state)(l' := clause # (getWatchList state l'))\<close>
+                using \<open>c \<noteq> clause\<close>
                 unfolding setWatch2_def
                 by auto
             qed
@@ -2591,18 +2591,18 @@ next
               assume "c \<in> set newWl \<or> c \<in> set Wl'"
               show "Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
               proof-
-                from `c \<in> set newWl \<or> c \<in> set Wl'`
+                from \<open>c \<in> set newWl \<or> c \<in> set Wl'\<close>
                 have "Some literal = getWatch1 state c \<or> Some literal = getWatch2 state c"
                   using Cons(7)
                   by auto
                 
-                from Cons(8) `clause \<notin> set Wl'` `c \<in> set newWl \<or> c \<in> set Wl'`
+                from Cons(8) \<open>clause \<notin> set Wl'\<close> \<open>c \<in> set newWl \<or> c \<in> set Wl'\<close>
                 have "c \<noteq> clause"
                   by auto
                 
                 show ?thesis
-                  using `Some literal = getWatch1 state c \<or> Some literal = getWatch2 state c`
-                  using `c \<noteq> clause`
+                  using \<open>Some literal = getWatch1 state c \<or> Some literal = getWatch2 state c\<close>
+                  using \<open>c \<noteq> clause\<close>
                   unfolding setWatch2_def
                   by simp
               qed
@@ -2611,17 +2611,17 @@ next
               show "c \<in> set newWl \<or> c \<in> set Wl'"
               proof-
                 have "Some literal \<noteq> getWatch1 ?state'' clause \<and>  Some literal \<noteq> getWatch2 ?state'' clause"
-                  using `l' \<noteq> literal`
-                  using `clause < length (getF state)`
-                  using `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
-                  using `getWatch1 ?state' clause = Some ?w1`
-                  using `getWatch2 ?state' clause = Some ?w2`
-                  using `Some literal = getWatch2 state clause`
+                  using \<open>l' \<noteq> literal\<close>
+                  using \<open>clause < length (getF state)\<close>
+                  using \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
+                  using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                  using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+                  using \<open>Some literal = getWatch2 state clause\<close>
                   unfolding InvariantWatchesDiffer_def
                   unfolding setWatch2_def
                   by auto
                 thus ?thesis
-                  using `Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c`
+                  using \<open>Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c\<close>
                   using Cons(7)
                   unfolding setWatch2_def
                   by (auto split: if_split_asm)
@@ -2638,13 +2638,13 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(5)
-          using `uniq Wl'`
-          using `uniq newWl`
-          using `set Wl' \<inter> set (clause # newWl) = {}`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>uniq Wl'\<close>
+          using \<open>uniq newWl\<close>
+          using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def fun_upd_def)
       next
@@ -2688,18 +2688,18 @@ next
                       InvariantWatchListsUniq (getWatchList state')"
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(5)
-            using `uniq Wl'`
-            using `uniq (clause # newWl)`
-            using `set Wl' \<inter> set (clause # newWl) = {}`
+            using \<open>uniq Wl'\<close>
+            using \<open>uniq (clause # newWl)\<close>
+            using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
             apply (simp only: Let_def)
             by (simp (no_asm_use)) (simp)
           thus ?thesis
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal \<noteq>  getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal \<noteq>  getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -2744,15 +2744,15 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(5)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
-            using `uniq (clause # newWl)`
-            using `set Wl' \<inter> set (clause # newWl) = {}`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
+            using \<open>uniq (clause # newWl)\<close>
+            using \<open>set Wl' \<inter> set (clause # newWl) = {}\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -2786,7 +2786,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause \<and> clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -2803,12 +2803,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     with True have
@@ -2816,26 +2816,26 @@ next
       unfolding swapWatches_def
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)" "?w2 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `0 \<le> clause \<and> clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
 
-    from `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 \<noteq> ?w2"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `0 \<le> clause \<and> clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
       unfolding InvariantWatchesDiffer_def
       unfolding swapWatches_def
       by auto
 
     have "\<not> literalFalse ?w2 (elements M)"
-      using `?w2 = literal`
+      using \<open>?w2 = literal\<close>
       using Cons(5)
       using Cons(8)
       unfolding InvariantUniq_def
@@ -2889,8 +2889,8 @@ next
         by auto
       moreover
       have "getWatch1 ?fState clause = getWatch1 ?state' clause \<and> getWatch2 ?fState clause = getWatch2 ?state' clause"
-        using `clause \<notin> set Wl'`
-        using `InvariantWatchesEl (getF ?state') (getWatch1 ?state') (getWatch2 ?state')` `getF ?state' = getF state`
+        using \<open>clause \<notin> set Wl'\<close>
+        using \<open>InvariantWatchesEl (getF ?state') (getWatch1 ?state') (getWatch2 ?state')\<close> \<open>getF ?state' = getF state\<close>
         using Cons(7)
         using notifyWatchesLoopPreservedWatches[of "?state'" "Wl'" "literal" "clause # newWl" ]
         by (simp add: Let_def)
@@ -2900,34 +2900,34 @@ next
       proof-
         have "(getM ?fState) = (getM state) \<and> (getF ?fState = getF state)"
           using notifyWatchesLoopPreservedVariables[of "?state'" "Wl'" "literal" "clause # newWl"]
-          using `InvariantWatchesEl (getF ?state') (getWatch1 ?state') (getWatch2 ?state')` `getF ?state' = getF state`
+          using \<open>InvariantWatchesEl (getF ?state') (getWatch1 ?state') (getWatch2 ?state')\<close> \<open>getF ?state' = getF state\<close>
           using Cons(7)
           unfolding swapWatches_def
           by (simp add: Let_def)
         moreover
         have "\<not> literalFalse ?w1 (elements M)"
-          using `literalTrue ?w1 (elements (getM ?state'))` `?w1 \<noteq> ?w2` `?w2 = literal`
+          using \<open>literalTrue ?w1 (elements (getM ?state'))\<close> \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close>
           using Cons(4) Cons(8)
           unfolding InvariantConsistent_def
           unfolding swapWatches_def
           by (auto simp add: inconsistentCharacterization)
         moreover 
         have "elementLevel (opposite ?w2) (getM ?state') = currentLevel (getM ?state')"
-          using `?w2 = literal`
+          using \<open>?w2 = literal\<close>
           using Cons(5) Cons(8)
           unfolding InvariantUniq_def
           unfolding swapWatches_def
           by (auto simp add: uniqAppendIff elementOnCurrentLevel)
         ultimately
         show ?thesis
-          using `getWatch1 ?fState clause = getWatch1 ?state' clause \<and> getWatch2 ?fState clause = getWatch2 ?state' clause`
-          using `?w2 = literal` `?w1 \<noteq> ?w2`
-          using `?w1 el (nth (getF state) clause)`
-          using `literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?fState clause = getWatch1 ?state' clause \<and> getWatch2 ?fState clause = getWatch2 ?state' clause\<close>
+          using \<open>?w2 = literal\<close> \<open>?w1 \<noteq> ?w2\<close>
+          using \<open>?w1 el (nth (getF state) clause)\<close>
+          using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
           unfolding watchCharacterizationCondition_def
           using elementLevelLeqCurrentLevel[of "?w1" "getM ?state'"]
           using notifyWatchesLoopPreservedVariables[of "?state'" "Wl'" "literal" "clause # newWl"]
-          using `InvariantWatchesEl (getF ?state') (getWatch1 ?state') (getWatch2 ?state')` `getF ?state' = getF state`
+          using \<open>InvariantWatchesEl (getF ?state') (getWatch1 ?state') (getWatch2 ?state')\<close> \<open>getF ?state' = getF state\<close>
           using Cons(7) 
           using Cons(8)
           unfolding swapWatches_def
@@ -2937,11 +2937,11 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(7) Cons(8)
-        using `uniq Wl'`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>uniq Wl'\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add: Let_def)
     next
       case False
@@ -2949,8 +2949,8 @@ next
       proof (cases "getNonWatchedUnfalsifiedLiteral (nth (getF ?state') clause) ?w1 ?w2 (getM ?state')")
         case (Some l')
         hence "l' el (nth (getF ?state') clause)" "l' \<noteq> ?w1" "l' \<noteq> ?w2" "\<not> literalFalse l' (elements (getM ?state'))"
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
           by auto
 
@@ -2959,7 +2959,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -2967,9 +2967,9 @@ next
         moreover
         from Cons(3)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' \<noteq> ?w1`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> ?w1\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -3013,18 +3013,18 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
               
               have "\<not> (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
                 using Cons(8)
-                using `l' \<noteq> ?w1` and `l' \<noteq> ?w2` `l' el (nth (getF ?state') clause)`
-                using `\<not> literalFalse l' (elements (getM ?state'))`
+                using \<open>l' \<noteq> ?w1\<close> and \<open>l' \<noteq> ?w2\<close> \<open>l' el (nth (getF ?state') clause)\<close>
+                using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
                 using a and b
-                using `c = clause`
+                using \<open>c = clause\<close>
                 unfolding swapWatches_def
                 unfolding setWatch2_def
                 by auto
@@ -3035,18 +3035,18 @@ next
                 using Cons(6)
                 unfolding InvariantWatchCharacterization_def
                 unfolding watchCharacterizationCondition_def
-                using `0 \<le> clause \<and> clause < length (getF state)`
-                using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
-                using `literalFalse ww1 (elements M)`
-                using `ww1 = ?w1`
+                using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
+                using \<open>literalFalse ww1 (elements M)\<close>
+                using \<open>ww1 = ?w1\<close>
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
               ultimately
               show ?thesis
-                using `ww1 = ?w1`
-                using `c = clause`
+                using \<open>ww1 = ?w1\<close>
+                using \<open>c = clause\<close>
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
@@ -3075,12 +3075,12 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
-              with `\<not> literalFalse l' (elements (getM ?state'))` b
+              with \<open>\<not> literalFalse l' (elements (getM ?state'))\<close> b
                 Cons(8)
               have False
                 unfolding swapWatches_def
@@ -3098,7 +3098,7 @@ next
         moreover 
         have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
           using Cons(10)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           using swapWatchesEffect[of "clause" "state"]
           unfolding setWatch2_def
           by simp
@@ -3110,13 +3110,13 @@ next
           by auto
         moreover
         have "getWatch1 ?state'' clause = Some ?w1" "getWatch2 ?state'' clause = Some l'"
-          using `getWatch1 ?state' clause = Some ?w1`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
           unfolding swapWatches_def
           unfolding setWatch2_def
           by auto
         hence "getWatch1 ?fState clause = getWatch1 ?state'' clause \<and> getWatch2 ?fState clause = Some l'"
-          using `clause \<notin> set Wl'`
-          using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+          using \<open>clause \<notin> set Wl'\<close>
+          using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
           using Cons(7)
           using notifyWatchesLoopPreservedWatches[of "?state''" "Wl'" "literal" "newWl"]
           by (simp add: Let_def)
@@ -3126,7 +3126,7 @@ next
         proof-
           have "(getM ?fState) = (getM state)" "(getF ?fState) = (getF state)"
             using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "newWl"]
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             unfolding setWatch2_def
             unfolding swapWatches_def
@@ -3139,24 +3139,24 @@ next
             show "\<exists> l. l el (nth (getF ?state'') clause) \<and> literalTrue l (elements M) \<and>  elementLevel l M \<le> elementLevel (opposite ?w1) M"
             proof-
               have "\<not> (\<forall> l. l el (nth (getF state) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
-                using `l' el (nth (getF ?state') clause)` `l' \<noteq> ?w1` `l' \<noteq> ?w2` `\<not> literalFalse l' (elements (getM ?state'))`
+                using \<open>l' el (nth (getF ?state') clause)\<close> \<open>l' \<noteq> ?w1\<close> \<open>l' \<noteq> ?w2\<close> \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
                 using Cons(8)
                 unfolding swapWatches_def
                 by auto
 
-              from `literalFalse ?w1 (elements M)` Cons(6)
+              from \<open>literalFalse ?w1 (elements M)\<close> Cons(6)
               have
                 "(\<exists>l. l el (getF state ! clause) \<and> literalTrue l (elements M) \<and> elementLevel l M \<le> elementLevel (opposite ?w1) M) \<or>
                  (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> 
                       literalFalse l (elements M) \<and> elementLevel (opposite l) M \<le> elementLevel (opposite ?w1) M)"
-                using `0 \<le> clause \<and> clause < length (getF state)`
-                using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding InvariantWatchCharacterization_def
                 unfolding watchCharacterizationCondition_def
                 unfolding swapWatches_def
                 by simp
-              with `\<not> (\<forall> l. l el (nth (getF state) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))`
+              with \<open>\<not> (\<forall> l. l el (nth (getF state) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))\<close>
               have "\<exists>l. l el (getF state ! clause) \<and> literalTrue l (elements M) \<and> elementLevel l M \<le> elementLevel (opposite ?w1) M"
                 by auto
               thus ?thesis
@@ -3167,8 +3167,8 @@ next
           qed
           
           have "watchCharacterizationCondition l' ?w1 (getM ?fState) (getF ?fState ! clause)"
-            using `\<not> literalFalse l' (elements (getM ?state'))`
-            using `getM ?fState = getM state` 
+            using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
+            using \<open>getM ?fState = getM state\<close> 
             unfolding swapWatches_def
             unfolding watchCharacterizationCondition_def
             by simp
@@ -3178,14 +3178,14 @@ next
             case True
             hence "literalFalse ?w1 (elements M)"
               using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "newWl"]
-              using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+              using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
               using Cons(7) Cons(8)
-              using `?w1 \<noteq> ?w2` `?w2 = literal`
+              using \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close>
               unfolding setWatch2_def
               unfolding swapWatches_def
               by (simp add: Let_def)
-            with `literalFalse ?w1 (elements M) \<longrightarrow> 
-              (\<exists> l. l el (nth (getF ?state'') clause) \<and> literalTrue l (elements M) \<and>  elementLevel l M \<le> elementLevel (opposite ?w1) M)`
+            with \<open>literalFalse ?w1 (elements M) \<longrightarrow> 
+              (\<exists> l. l el (nth (getF ?state'') clause) \<and> literalTrue l (elements M) \<and>  elementLevel l M \<le> elementLevel (opposite ?w1) M)\<close>
             obtain l::Literal
               where "l el (nth (getF ?state'') clause)" and 
               "literalTrue l (elements M)" and 
@@ -3193,13 +3193,13 @@ next
               by auto
             hence "elementLevel l (getM state) \<le> elementLevel (opposite ?w1) (getM state)"
               using Cons(8)
-              using `literalTrue l (elements M)` `literalFalse ?w1 (elements M)`
+              using \<open>literalTrue l (elements M)\<close> \<open>literalFalse ?w1 (elements M)\<close>
               using elementLevelAppend[of "l" "M" "[(opposite literal, decision)]"]
               using elementLevelAppend[of "opposite ?w1" "M" "[(opposite literal, decision)]"]
               by auto
             thus ?thesis
-              using `l el (nth (getF ?state'') clause)` `literalTrue l (elements M)`
-              using `getM ?fState = getM state` `getF ?fState = getF state` `getM ?state'' = getM state` `getF ?state'' = getF state`
+              using \<open>l el (nth (getF ?state'') clause)\<close> \<open>literalTrue l (elements M)\<close>
+              using \<open>getM ?fState = getM state\<close> \<open>getF ?fState = getF state\<close> \<open>getM ?state'' = getM state\<close> \<open>getF ?state'' = getF state\<close>
               using Cons(8)
               unfolding watchCharacterizationCondition_def
               by auto
@@ -3217,14 +3217,14 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(7) Cons(8)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `getWatch1 ?state'' clause = Some ?w1`
-          using `getWatch2 ?state'' clause = Some l'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>getWatch1 ?state'' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state'' clause = Some l'\<close>
           using Some
-          using `uniq Wl'`
+          using \<open>uniq Wl'\<close>
           by (simp add: Let_def)
       next
         case None
@@ -3267,7 +3267,7 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(10)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             using swapWatchesEffect[of "clause" "state"]
             by simp
           moreover
@@ -3277,22 +3277,22 @@ next
             by auto
           moreover
           have "getWatch1 ?fState clause = getWatch1 ?state'' clause \<and> getWatch2 ?fState clause = getWatch2 ?state'' clause"
-            using `clause \<notin> set Wl'`
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>clause \<notin> set Wl'\<close>
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             using notifyWatchesLoopPreservedWatches[of "?state''" "Wl'" "literal" "clause # newWl" ]
             by (simp add: Let_def)
           moreover
           have "literalFalse ?w1 (elements M)"
-            using `literalFalse ?w1 (elements (getM ?state'))`
-              `?w1 \<noteq> ?w2` `?w2 = literal` Cons(8)
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+              \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close> Cons(8)
             unfolding swapWatches_def
             by auto
 
           have "\<not> literalTrue ?w2 (elements M)"
             using Cons(4)
             using Cons(8)
-            using `?w2 = literal`
+            using \<open>?w2 = literal\<close>
             using inconsistentCharacterization[of "elements M @ [opposite literal]"]
             unfolding InvariantConsistent_def
             by force
@@ -3305,42 +3305,42 @@ next
               assume "\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements M)"
               show "False"
               proof-
-                from `\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements M)`
+                from \<open>\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements M)\<close>
                 obtain l 
                   where "l el (nth (getF state) clause)" "literalTrue l (elements M)"
                   by auto
                 hence "l \<noteq> ?w1" "l \<noteq> ?w2"
-                  using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-                  using `\<not> literalTrue ?w2 (elements M)`
+                  using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+                  using \<open>\<not> literalTrue ?w2 (elements M)\<close>
                   unfolding swapWatches_def
                   using Cons(8)
                   by auto
-                with `l el (nth (getF state) clause)`
+                with \<open>l el (nth (getF state) clause)\<close>
                 have "literalFalse l (elements (getM ?state'))"
-                  using `getWatch1 ?state' clause = Some ?w1`
-                  using `getWatch2 ?state' clause = Some ?w2`
+                  using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                  using \<open>getWatch2 ?state' clause = Some ?w2\<close>
                   using None
                   using getNonWatchedUnfalsifiedLiteralNoneCharacterization[of "nth (getF ?state') clause" "?w1" "?w2" "getM ?state'"]
                   unfolding swapWatches_def
                   by simp
-                with `l \<noteq> ?w2` `?w2 = literal` Cons(8)
+                with \<open>l \<noteq> ?w2\<close> \<open>?w2 = literal\<close> Cons(8)
                 have "literalFalse l (elements M)"
                   unfolding swapWatches_def
                   by simp
-                with Cons(4) `literalTrue l (elements M)`
+                with Cons(4) \<open>literalTrue l (elements M)\<close>
                 show ?thesis
                   unfolding InvariantConsistent_def
                   using Cons(8)
                   by (auto simp add: inconsistentCharacterization)
               qed
             qed
-            with `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M`
+            with \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M\<close>
             show ?thesis
               unfolding InvariantWatchCharacterization_def
-              using `literalFalse ?w1 (elements M)`
-              using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-              using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
-              using `0 \<le> clause \<and> clause < length (getF state)`
+              using \<open>literalFalse ?w1 (elements M)\<close>
+              using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+              using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
+              using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
               unfolding watchCharacterizationCondition_def
               unfolding swapWatches_def
               by (simp) (blast)
@@ -3359,13 +3359,13 @@ next
               have "literalFalse l (elements (getM ?state'')) \<and> 
                     elementLevel (opposite l) (getM ?state'') \<le> elementLevel (opposite ?w1) (getM ?state'')"
               proof-
-                from * `l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2`
+                from * \<open>l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2\<close>
                 have "literalFalse l (elements M)" "elementLevel (opposite l) M \<le> elementLevel (opposite ?w1) M"
                   unfolding swapWatches_def
                   by auto
                 thus ?thesis
                   using elementLevelAppend[of "opposite l" "M" "[(opposite literal, decision)]"]
-                  using `literalFalse ?w1 (elements M)`
+                  using \<open>literalFalse ?w1 (elements M)\<close>
                   using elementLevelAppend[of "opposite ?w1" "M" "[(opposite literal, decision)]"]
                   using Cons(8)
                   unfolding swapWatches_def
@@ -3378,7 +3378,7 @@ next
 
           have "(getM ?fState) = (getM state)" "(getF ?fState) = (getF state)"
             using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "clause # newWl"]
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             unfolding swapWatches_def
             by (auto simp add: Let_def)
@@ -3386,8 +3386,8 @@ next
                       literalFalse l (elements (getM ?fState)) \<and> 
                       elementLevel (opposite l) (getM ?fState) \<le> elementLevel (opposite ?w1) (getM ?fState)"
             using **
-            using `getM ?state'' = getM state`
-            using `getF ?state'' = getF state`
+            using \<open>getM ?state'' = getM state\<close>
+            using \<open>getF ?state'' = getF state\<close>
             by simp
           moreover
           have "\<forall> l. literalFalse l (elements (getM ?fState)) \<longrightarrow> 
@@ -3395,9 +3395,9 @@ next
           proof-
             have "elementLevel (opposite ?w2) (getM ?fState) = currentLevel (getM ?fState)"
               using Cons(8)
-              using `(getM ?fState) = (getM state)`
-              using `\<not> literalFalse ?w2 (elements M)`
-              using `?w2 = literal`
+              using \<open>(getM ?fState) = (getM state)\<close>
+              using \<open>\<not> literalFalse ?w2 (elements M)\<close>
+              using \<open>?w2 = literal\<close>
               using elementOnCurrentLevel[of "opposite ?w2" "M" "decision"]
               by simp
             thus ?thesis
@@ -3407,13 +3407,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(7) Cons(8)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             unfolding watchCharacterizationCondition_def
             by (simp add: Let_def)
         next
@@ -3460,7 +3460,7 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(10)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             using swapWatchesEffect[of "clause" "state"]
             unfolding setReason_def
             by simp
@@ -3472,23 +3472,23 @@ next
             by auto
           moreover
           have "getWatch1 ?state'' clause = Some ?w1" "getWatch2 ?state'' clause = Some ?w2"
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
             unfolding setReason_def
             unfolding swapWatches_def
             by auto
           moreover
           have "getWatch1 ?fState clause = Some ?w1" "getWatch2 ?fState clause = Some ?w2"
-            using `getWatch1 ?state'' clause = Some ?w1` `getWatch2 ?state'' clause = Some ?w2`
-            using `clause \<notin> set Wl'`
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>getWatch1 ?state'' clause = Some ?w1\<close> \<open>getWatch2 ?state'' clause = Some ?w2\<close>
+            using \<open>clause \<notin> set Wl'\<close>
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             using notifyWatchesLoopPreservedWatches[of "?state''" "Wl'" "literal" "clause # newWl" ]
             by (auto simp add: Let_def)
           moreover
           have "(getM ?fState) = (getM state)" "(getF ?fState) = (getF state)"
             using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "clause # newWl"]
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             unfolding setReason_def
             unfolding swapWatches_def
@@ -3500,19 +3500,19 @@ next
                "?fState = notifyWatches_loop literal (clause # Wl') newWl state"
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(7) Cons(8)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (auto simp add: Let_def)
           moreover
           have *: "\<forall> l. l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state''))"
             using None
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
             using getNonWatchedUnfalsifiedLiteralNoneCharacterization[of "nth (getF ?state') clause" "?w1" "?w2" "getM ?state'"]
             using Cons(8)
             unfolding setReason_def
@@ -3520,10 +3520,10 @@ next
             by auto
 
           have**: "\<forall> l. l el (nth (getF ?fState) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?fState))"
-            using `(getM ?fState) = (getM state)` `(getF ?fState) = (getF state)`
+            using \<open>(getM ?fState) = (getM state)\<close> \<open>(getF ?fState) = (getF state)\<close>
             using *
-            using `getM ?state'' = getM state`
-            using `getF ?state'' = getF state`
+            using \<open>getM ?state'' = getM state\<close>
+            using \<open>getF ?state'' = getF state\<close>
             unfolding swapWatches_def
             by auto
 
@@ -3532,9 +3532,9 @@ next
           proof-
             have "elementLevel (opposite ?w2) (getM ?fState) = currentLevel (getM ?fState)"
               using Cons(8)
-              using `(getM ?fState) = (getM state)`
-              using `\<not> literalFalse ?w2 (elements M)`
-              using `?w2 = literal`
+              using \<open>(getM ?fState) = (getM state)\<close>
+              using \<open>\<not> literalFalse ?w2 (elements M)\<close>
+              using \<open>?w2 = literal\<close>
               using elementOnCurrentLevel[of "opposite ?w2" "M" "decision"]
               by simp
             thus ?thesis
@@ -3549,16 +3549,16 @@ next
               fix w1 w2
               assume "Some w1 = getWatch1 ?fState clause \<and> Some w2 = getWatch2 ?fState clause"
               hence "w1 = ?w1" "w2 = ?w2"
-                using `getWatch1 ?fState clause = Some ?w1`
-                using `getWatch2 ?fState clause = Some ?w2`
+                using \<open>getWatch1 ?fState clause = Some ?w1\<close>
+                using \<open>getWatch2 ?fState clause = Some ?w2\<close>
                 by auto
               hence "watchCharacterizationCondition w1 w2 (getM ?fState) (getF ?fState ! clause) \<and>
                 watchCharacterizationCondition w2 w1 (getM ?fState) (getF ?fState ! clause)"
                 unfolding watchCharacterizationCondition_def
                 using ** ***
                 unfolding watchCharacterizationCondition_def
-                using `(getM ?fState) = (getM state)` `(getF ?fState) = (getF state)`
-                using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+                using \<open>(getM ?fState) = (getM state)\<close> \<open>(getF ?fState) = (getF state)\<close>
+                using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
                 unfolding swapWatches_def
                 by simp
             }
@@ -3576,42 +3576,42 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       by auto
     
-    from `\<not> Some literal = getWatch1 state clause`
-      `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)`
+    from \<open>\<not> Some literal = getWatch1 state clause\<close>
+      \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)\<close>
     have "Some literal = getWatch2 state clause"
       by auto
     hence "?w2 = literal"
-      using `getWatch2 ?state' clause = Some ?w2`
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
       by simp
     hence "literalFalse ?w2 (elements (getM state))"
       using Cons(8)
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)" "?w2 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `0 \<le> clause \<and> clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       by auto
 
-    from `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 \<noteq> ?w2"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `0 \<le> clause \<and> clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
       unfolding InvariantWatchesDiffer_def
       by auto
 
     have "\<not> literalFalse ?w2 (elements M)"
-      using `?w2 = literal`
+      using \<open>?w2 = literal\<close>
       using Cons(5)
       using Cons(8)
       unfolding InvariantUniq_def
@@ -3624,7 +3624,7 @@ next
       let ?fState = "notifyWatches_loop literal Wl' (clause # newWl) ?state'"
 
       have "getWatch1 ?fState clause = getWatch1 ?state' clause \<and> getWatch2 ?fState clause = getWatch2 ?state' clause"
-        using `clause \<notin> set Wl'`
+        using \<open>clause \<notin> set Wl'\<close>
         using Cons(2) 
         using Cons(7)
         using notifyWatchesLoopPreservedWatches[of "?state'" "Wl'" "literal" "clause # newWl" ]
@@ -3640,26 +3640,26 @@ next
           by (simp add: Let_def)
         moreover
         have "\<not> literalFalse ?w1 (elements M)"
-          using `literalTrue ?w1 (elements (getM ?state'))` `?w1 \<noteq> ?w2` `?w2 = literal`
+          using \<open>literalTrue ?w1 (elements (getM ?state'))\<close> \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close>
           using Cons(4) Cons(8)
           unfolding InvariantConsistent_def
           by (auto simp add: inconsistentCharacterization)
         moreover 
         have "elementLevel (opposite ?w2) (getM ?state') = currentLevel (getM ?state')"
-          using `?w2 = literal`
+          using \<open>?w2 = literal\<close>
           using Cons(5) Cons(8)
           unfolding InvariantUniq_def
           by (auto simp add: uniqAppendIff elementOnCurrentLevel)
         ultimately
         show ?thesis
-          using `getWatch1 ?fState clause = getWatch1 ?state' clause \<and> getWatch2 ?fState clause = getWatch2 ?state' clause`
-          using `?w2 = literal` `?w1 \<noteq> ?w2`
-          using `?w1 el (nth (getF state) clause)`
-          using `literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?fState clause = getWatch1 ?state' clause \<and> getWatch2 ?fState clause = getWatch2 ?state' clause\<close>
+          using \<open>?w2 = literal\<close> \<open>?w1 \<noteq> ?w2\<close>
+          using \<open>?w1 el (nth (getF state) clause)\<close>
+          using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
           unfolding watchCharacterizationCondition_def
           using elementLevelLeqCurrentLevel[of "?w1" "getM ?state'"]
           using notifyWatchesLoopPreservedVariables[of "?state'" "Wl'" "literal" "clause # newWl"]
-          using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)` 
+          using \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close> 
           using Cons(7) 
           using Cons(8)
           by (auto simp add: Let_def)
@@ -3669,12 +3669,12 @@ next
         using assms
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6) Cons(7) Cons(8) Cons(9) Cons(10)
-        using `uniq Wl'`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch2 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `?w1 \<noteq> ?w2`
+        using \<open>uniq Wl'\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch2 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>?w1 \<noteq> ?w2\<close>
         by (simp add:Let_def)
     next
       case False
@@ -3682,8 +3682,8 @@ next
       proof (cases "getNonWatchedUnfalsifiedLiteral (nth (getF ?state') clause) ?w1 ?w2 (getM ?state')")
         case (Some l')
         hence "l' el (nth (getF ?state') clause)" "l' \<noteq> ?w1" "l' \<noteq> ?w2" "\<not> literalFalse l' (elements (getM ?state'))"
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           using getNonWatchedUnfalsifiedLiteralSomeCharacterization
           by auto
 
@@ -3692,16 +3692,16 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
         moreover
         from Cons(3)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' \<noteq> ?w1`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> ?w1\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding setWatch2_def
           by auto
@@ -3741,17 +3741,17 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 by auto
               
               have "\<not> (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
                 using Cons(8)
-                using `l' \<noteq> ?w1` and `l' \<noteq> ?w2` `l' el (nth (getF ?state') clause)`
-                using `\<not> literalFalse l' (elements (getM ?state'))`
+                using \<open>l' \<noteq> ?w1\<close> and \<open>l' \<noteq> ?w2\<close> \<open>l' el (nth (getF ?state') clause)\<close>
+                using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
                 using a and b
-                using `c = clause`
+                using \<open>c = clause\<close>
                 unfolding setWatch2_def
                 by auto
               moreover
@@ -3761,17 +3761,17 @@ next
                 using Cons(6)
                 unfolding InvariantWatchCharacterization_def
                 unfolding watchCharacterizationCondition_def
-                using `0 \<le> clause \<and> clause < length (getF state)`
-                using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
-                using `literalFalse ww1 (elements M)`
-                using `ww1 = ?w1`
+                using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
+                using \<open>literalFalse ww1 (elements M)\<close>
+                using \<open>ww1 = ?w1\<close>
                 unfolding setWatch2_def
                 by auto
               ultimately
               show ?thesis
-                using `ww1 = ?w1`
-                using `c = clause`
+                using \<open>ww1 = ?w1\<close>
+                using \<open>c = clause\<close>
                 unfolding setWatch2_def
                 by auto
             qed
@@ -3798,11 +3798,11 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 by auto
-              with `\<not> literalFalse l' (elements (getM ?state'))` b
+              with \<open>\<not> literalFalse l' (elements (getM ?state'))\<close> b
                 Cons(8)
               have False
                 by simp
@@ -3819,7 +3819,7 @@ next
         moreover
         have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
           using Cons(10)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding setWatch2_def
           by simp
         moreover
@@ -3829,12 +3829,12 @@ next
           by auto
         moreover
         have "getWatch1 ?state'' clause = Some ?w1" "getWatch2 ?state'' clause = Some l'"
-          using `getWatch1 ?state' clause = Some ?w1`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
           unfolding setWatch2_def
           by auto
         hence "getWatch1 ?fState clause = getWatch1 ?state'' clause \<and> getWatch2 ?fState clause = Some l'"
-          using `clause \<notin> set Wl'`
-          using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+          using \<open>clause \<notin> set Wl'\<close>
+          using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
           using Cons(7)
           using notifyWatchesLoopPreservedWatches[of "?state''" "Wl'" "literal" "newWl"]
           by (simp add: Let_def)
@@ -3844,7 +3844,7 @@ next
         proof-
           have "(getM ?fState) = (getM state)" "(getF ?fState) = (getF state)"
             using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "newWl"]
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             unfolding setWatch2_def
             by (auto simp add: Let_def)
@@ -3856,23 +3856,23 @@ next
             show "\<exists> l. l el (nth (getF ?state'') clause) \<and> literalTrue l (elements M) \<and>  elementLevel l M \<le> elementLevel (opposite ?w1) M"
             proof-
               have "\<not> (\<forall> l. l el (nth (getF state) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
-                using `l' el (nth (getF ?state') clause)` `l' \<noteq> ?w1` `l' \<noteq> ?w2` `\<not> literalFalse l' (elements (getM ?state'))`
+                using \<open>l' el (nth (getF ?state') clause)\<close> \<open>l' \<noteq> ?w1\<close> \<open>l' \<noteq> ?w2\<close> \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
                 using Cons(8)
                 unfolding swapWatches_def
                 by auto
 
-              from `literalFalse ?w1 (elements M)` Cons(6)
+              from \<open>literalFalse ?w1 (elements M)\<close> Cons(6)
               have
                 "(\<exists>l. l el (getF state ! clause) \<and> literalTrue l (elements M) \<and> elementLevel l M \<le> elementLevel (opposite ?w1) M) \<or>
                  (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> 
                       literalFalse l (elements M) \<and> elementLevel (opposite l) M \<le> elementLevel (opposite ?w1) M)"
-                using `0 \<le> clause \<and> clause < length (getF state)`
-                using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding InvariantWatchCharacterization_def
                 unfolding watchCharacterizationCondition_def
                 by simp
-              with `\<not> (\<forall> l. l el (nth (getF state) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))`
+              with \<open>\<not> (\<forall> l. l el (nth (getF state) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))\<close>
               have "\<exists>l. l el (getF state ! clause) \<and> literalTrue l (elements M) \<and> elementLevel l M \<le> elementLevel (opposite ?w1) M"
                 by auto
               thus ?thesis
@@ -3882,8 +3882,8 @@ next
           qed
           moreover
           have "watchCharacterizationCondition l' ?w1 (getM ?fState) (getF ?fState ! clause)"
-            using `\<not> literalFalse l' (elements (getM ?state'))`
-            using `getM ?fState = getM state` 
+            using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
+            using \<open>getM ?fState = getM state\<close> 
             unfolding watchCharacterizationCondition_def
             by simp
           moreover
@@ -3892,13 +3892,13 @@ next
             case True
             hence "literalFalse ?w1 (elements M)"
               using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "newWl"]
-              using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+              using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
               using Cons(7) Cons(8)
-              using `?w1 \<noteq> ?w2` `?w2 = literal`
+              using \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close>
               unfolding setWatch2_def
               by (simp add: Let_def)
-            with `literalFalse ?w1 (elements M) \<longrightarrow> 
-              (\<exists> l. l el (nth (getF ?state'') clause) \<and> literalTrue l (elements M) \<and>  elementLevel l M \<le> elementLevel (opposite ?w1) M)`
+            with \<open>literalFalse ?w1 (elements M) \<longrightarrow> 
+              (\<exists> l. l el (nth (getF ?state'') clause) \<and> literalTrue l (elements M) \<and>  elementLevel l M \<le> elementLevel (opposite ?w1) M)\<close>
             obtain l::Literal
               where "l el (nth (getF ?state'') clause)" and 
               "literalTrue l (elements M)" and 
@@ -3906,13 +3906,13 @@ next
               by auto
             hence "elementLevel l (getM state) \<le> elementLevel (opposite ?w1) (getM state)"
               using Cons(8)
-              using `literalTrue l (elements M)` `literalFalse ?w1 (elements M)`
+              using \<open>literalTrue l (elements M)\<close> \<open>literalFalse ?w1 (elements M)\<close>
               using elementLevelAppend[of "l" "M" "[(opposite literal, decision)]"]
               using elementLevelAppend[of "opposite ?w1" "M" "[(opposite literal, decision)]"]
               by auto
             thus ?thesis
-              using `l el (nth (getF ?state'') clause)` `literalTrue l (elements M)`
-              using `getM ?fState = getM state` `getF ?fState = getF state` `getM ?state'' = getM state` `getF ?state'' = getF state`
+              using \<open>l el (nth (getF ?state'') clause)\<close> \<open>literalTrue l (elements M)\<close>
+              using \<open>getM ?fState = getM state\<close> \<open>getF ?fState = getF state\<close> \<open>getM ?state'' = getM state\<close> \<open>getF ?state'' = getF state\<close>
               using Cons(8)
               unfolding watchCharacterizationCondition_def
               by auto
@@ -3930,15 +3930,15 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(7) Cons(8)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch2 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `getWatch1 ?state'' clause = Some ?w1`
-          using `getWatch2 ?state'' clause = Some l'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch2 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>getWatch1 ?state'' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state'' clause = Some l'\<close>
           using Some
-          using `uniq Wl'`
-          using `?w1 \<noteq> ?w2`
+          using \<open>uniq Wl'\<close>
+          using \<open>?w1 \<noteq> ?w2\<close>
           by (simp add: Let_def)
       next
         case None
@@ -3976,7 +3976,7 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(10)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             by simp
           moreover
           have "getM ?state'' = getM state"
@@ -3984,21 +3984,21 @@ next
             by auto
           moreover
           have "getWatch1 ?fState clause = getWatch1 ?state'' clause \<and> getWatch2 ?fState clause = getWatch2 ?state'' clause"
-            using `clause \<notin> set Wl'`
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>clause \<notin> set Wl'\<close>
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             using notifyWatchesLoopPreservedWatches[of "?state''" "Wl'" "literal" "clause # newWl" ]
             by (simp add: Let_def)
           moreover
           have "literalFalse ?w1 (elements M)"
-            using `literalFalse ?w1 (elements (getM ?state'))`
-              `?w1 \<noteq> ?w2` `?w2 = literal` Cons(8)
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+              \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close> Cons(8)
             by auto
 
           have "\<not> literalTrue ?w2 (elements M)"
             using Cons(4)
             using Cons(8)
-            using `?w2 = literal`
+            using \<open>?w2 = literal\<close>
             using inconsistentCharacterization[of "elements M @ [opposite literal]"]
             unfolding InvariantConsistent_def
             by force
@@ -4011,39 +4011,39 @@ next
               assume "\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements M)"
               show "False"
               proof-
-                from `\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements M)`
+                from \<open>\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements M)\<close>
                 obtain l 
                   where "l el (nth (getF state) clause)" "literalTrue l (elements M)"
                   by auto
                 hence "l \<noteq> ?w1" "l \<noteq> ?w2"
-                  using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-                  using `\<not> literalTrue ?w2 (elements M)`
+                  using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+                  using \<open>\<not> literalTrue ?w2 (elements M)\<close>
                   using Cons(8)
                   by auto
-                with `l el (nth (getF state) clause)`
+                with \<open>l el (nth (getF state) clause)\<close>
                 have "literalFalse l (elements (getM ?state'))"
-                  using `getWatch1 ?state' clause = Some ?w1`
-                  using `getWatch2 ?state' clause = Some ?w2`
+                  using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                  using \<open>getWatch2 ?state' clause = Some ?w2\<close>
                   using None
                   using getNonWatchedUnfalsifiedLiteralNoneCharacterization[of "nth (getF ?state') clause" "?w1" "?w2" "getM ?state'"]
                   by simp
-                with `l \<noteq> ?w2` `?w2 = literal` Cons(8)
+                with \<open>l \<noteq> ?w2\<close> \<open>?w2 = literal\<close> Cons(8)
                 have "literalFalse l (elements M)"
                   by simp
-                with Cons(4) `literalTrue l (elements M)`
+                with Cons(4) \<open>literalTrue l (elements M)\<close>
                 show ?thesis
                   unfolding InvariantConsistent_def
                   using Cons(8)
                   by (auto simp add: inconsistentCharacterization)
               qed
             qed
-            with `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M`
+            with \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M\<close>
             show ?thesis
               unfolding InvariantWatchCharacterization_def
-              using `literalFalse ?w1 (elements M)`
-              using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-              using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
-              using `0 \<le> clause \<and> clause < length (getF state)`
+              using \<open>literalFalse ?w1 (elements M)\<close>
+              using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+              using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
+              using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
               unfolding watchCharacterizationCondition_def
               by (simp) (blast)
           qed
@@ -4061,12 +4061,12 @@ next
               have "literalFalse l (elements (getM ?state'')) \<and> 
                     elementLevel (opposite l) (getM ?state'') \<le> elementLevel (opposite ?w1) (getM ?state'')"
               proof-
-                from * `l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2`
+                from * \<open>l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2\<close>
                 have "literalFalse l (elements M)" "elementLevel (opposite l) M \<le> elementLevel (opposite ?w1) M"
                   by auto
                 thus ?thesis
                   using elementLevelAppend[of "opposite l" "M" "[(opposite literal, decision)]"]
-                  using `literalFalse ?w1 (elements M)`
+                  using \<open>literalFalse ?w1 (elements M)\<close>
                   using elementLevelAppend[of "opposite ?w1" "M" "[(opposite literal, decision)]"]
                   using Cons(8)
                   by simp
@@ -4078,15 +4078,15 @@ next
 
           have "(getM ?fState) = (getM state)" "(getF ?fState) = (getF state)"
             using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "clause # newWl"]
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             by (auto simp add: Let_def)
           hence "\<forall> l. l el (nth (getF ?fState) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> 
                       literalFalse l (elements (getM ?fState)) \<and> 
                       elementLevel (opposite l) (getM ?fState) \<le> elementLevel (opposite ?w1) (getM ?fState)"
             using **
-            using `getM ?state'' = getM state`
-            using `getF ?state'' = getF state`
+            using \<open>getM ?state'' = getM state\<close>
+            using \<open>getF ?state'' = getF state\<close>
             by simp
           moreover
           have "\<forall> l. literalFalse l (elements (getM ?fState)) \<longrightarrow> 
@@ -4094,9 +4094,9 @@ next
           proof-
             have "elementLevel (opposite ?w2) (getM ?fState) = currentLevel (getM ?fState)"
               using Cons(8)
-              using `(getM ?fState) = (getM state)`
-              using `\<not> literalFalse ?w2 (elements M)`
-              using `?w2 = literal`
+              using \<open>(getM ?fState) = (getM state)\<close>
+              using \<open>\<not> literalFalse ?w2 (elements M)\<close>
+              using \<open>?w2 = literal\<close>
               using elementOnCurrentLevel[of "opposite ?w2" "M" "decision"]
               by simp
             thus ?thesis
@@ -4106,14 +4106,14 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(7) Cons(8)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch2 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch2 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
-            using `?w1 \<noteq> ?w2`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
+            using \<open>?w1 \<noteq> ?w2\<close>
             unfolding watchCharacterizationCondition_def
             by (simp add: Let_def)
         next
@@ -4155,7 +4155,7 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(10)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setReason_def
             by simp
           moreover
@@ -4165,22 +4165,22 @@ next
             by auto
           moreover
           have "getWatch1 ?state'' clause = Some ?w1" "getWatch2 ?state'' clause = Some ?w2"
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
             unfolding setReason_def
             by auto
           moreover
           have "getWatch1 ?fState clause = Some ?w1" "getWatch2 ?fState clause = Some ?w2"
-            using `getWatch1 ?state'' clause = Some ?w1` `getWatch2 ?state'' clause = Some ?w2`
-            using `clause \<notin> set Wl'`
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>getWatch1 ?state'' clause = Some ?w1\<close> \<open>getWatch2 ?state'' clause = Some ?w2\<close>
+            using \<open>clause \<notin> set Wl'\<close>
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             using notifyWatchesLoopPreservedWatches[of "?state''" "Wl'" "literal" "clause # newWl" ]
             by (auto simp add: Let_def)
           moreover
           have "(getM ?fState) = (getM state)" "(getF ?fState) = (getF state)"
             using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "clause # newWl"]
-            using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')` `getF ?state'' = getF state`
+            using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close> \<open>getF ?state'' = getF state\<close>
             using Cons(7)
             unfolding setReason_def
             by (auto simp add: Let_def)
@@ -4191,29 +4191,29 @@ next
                "?fState = notifyWatches_loop literal (clause # Wl') newWl state"
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(7) Cons(8)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch2 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch2 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (auto simp add: Let_def)
           moreover
           have *: "\<forall> l. l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state''))"
             using None
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
             using getNonWatchedUnfalsifiedLiteralNoneCharacterization[of "nth (getF ?state') clause" "?w1" "?w2" "getM ?state'"]
             using Cons(8)
             unfolding setReason_def
             by auto
 
           have**: "\<forall> l. l el (nth (getF ?fState) clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?fState))"
-            using `(getM ?fState) = (getM state)` `(getF ?fState) = (getF state)`
+            using \<open>(getM ?fState) = (getM state)\<close> \<open>(getF ?fState) = (getF state)\<close>
             using *
-            using `getM ?state'' = getM state`
-            using `getF ?state'' = getF state`
+            using \<open>getM ?state'' = getM state\<close>
+            using \<open>getF ?state'' = getF state\<close>
             by auto
 
           have ***: "\<forall> l. literalFalse l (elements (getM ?fState)) \<longrightarrow> 
@@ -4221,9 +4221,9 @@ next
           proof-
             have "elementLevel (opposite ?w2) (getM ?fState) = currentLevel (getM ?fState)"
               using Cons(8)
-              using `(getM ?fState) = (getM state)`
-              using `\<not> literalFalse ?w2 (elements M)`
-              using `?w2 = literal`
+              using \<open>(getM ?fState) = (getM state)\<close>
+              using \<open>\<not> literalFalse ?w2 (elements M)\<close>
+              using \<open>?w2 = literal\<close>
               using elementOnCurrentLevel[of "opposite ?w2" "M" "decision"]
               by simp
             thus ?thesis
@@ -4238,16 +4238,16 @@ next
               fix w1 w2
               assume "Some w1 = getWatch1 ?fState clause \<and> Some w2 = getWatch2 ?fState clause"
               hence "w1 = ?w1" "w2 = ?w2"
-                using `getWatch1 ?fState clause = Some ?w1`
-                using `getWatch2 ?fState clause = Some ?w2`
+                using \<open>getWatch1 ?fState clause = Some ?w1\<close>
+                using \<open>getWatch2 ?fState clause = Some ?w2\<close>
                 by auto
               hence "watchCharacterizationCondition w1 w2 (getM ?fState) (getF ?fState ! clause) \<and>
                 watchCharacterizationCondition w2 w1 (getM ?fState) (getF ?fState ! clause)"
                 unfolding watchCharacterizationCondition_def
                 using ** ***
                 unfolding watchCharacterizationCondition_def
-                using `(getM ?fState) = (getM state)` `(getF ?fState) = (getF state)`
-                using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+                using \<open>(getM ?fState) = (getM state)\<close> \<open>(getF ?fState) = (getF state)\<close>
+                using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
                 by simp
             }
             thus ?thesis
@@ -4285,11 +4285,11 @@ proof (induct Wl arbitrary: newWl state)
 next
   case (Cons clause Wl')
   
-  from `uniq (clause # Wl')`
+  from \<open>uniq (clause # Wl')\<close>
   have "uniq Wl'" and "clause \<notin> set Wl'"
     by (auto simp add: uniqAppendIff)
 
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause" "clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -4303,27 +4303,27 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
 
-    from `Some literal = getWatch1 state clause`
-      `getWatch2 ?state' clause = Some ?w2`
-    `literalFalse literal (elements (getM state))`
+    from \<open>Some literal = getWatch1 state clause\<close>
+      \<open>getWatch2 ?state' clause = Some ?w2\<close>
+    \<open>literalFalse literal (elements (getM state))\<close>
     have "literalFalse ?w2 (elements (getM state))"
       unfolding swapWatches_def
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
@@ -4351,9 +4351,9 @@ next
         by auto
       moreover
       have "\<not> clauseFalse (nth (getF state) clause) (elements (getM state))"
-        using `?w1 el (nth (getF state) clause)`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `InvariantConsistent (getM state)`
+        using \<open>?w1 el (nth (getF state) clause)\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>InvariantConsistent (getM state)\<close>
         unfolding InvariantConsistent_def
         unfolding swapWatches_def
           by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)
@@ -4361,11 +4361,11 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(3) Cons(4) Cons(6)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (auto simp add:Let_def)
     next
       case False
@@ -4380,7 +4380,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -4401,15 +4401,15 @@ next
         moreover
         have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
           using Cons(5)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding swapWatches_def
           unfolding setWatch2_def
           by auto
         moreover
         have "\<not> clauseFalse (nth (getF state) clause) (elements (getM state))"
-          using `l' el (nth (getF ?state') clause)` 
-          using `\<not> literalFalse l' (elements (getM ?state'))`
-          using `InvariantConsistent (getM state)`
+          using \<open>l' el (nth (getF ?state') clause)\<close> 
+          using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
+          using \<open>InvariantConsistent (getM state)\<close>
           unfolding InvariantConsistent_def
           unfolding swapWatches_def
           by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)
@@ -4417,11 +4417,11 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(3) Cons(4) Cons(6)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `uniq Wl'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>uniq Wl'\<close>
           using Some
           by (auto simp add: Let_def)
       next
@@ -4454,28 +4454,28 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding swapWatches_def
             unfolding setWatch2_def
             by auto
           moreover
           have "clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             unfolding swapWatches_def
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           ultimately
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3) Cons(4) Cons(6)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (auto simp add: Let_def)
         next
           case False
@@ -4503,15 +4503,15 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding swapWatches_def
             unfolding setReason_def
             by auto
           moreover
           have "\<not> clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `?w1 el (nth (getF state) clause)`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `InvariantConsistent (getM state)`
+            using \<open>?w1 el (nth (getF state) clause)\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>InvariantConsistent (getM state)\<close>
             unfolding InvariantConsistent_def
           unfolding swapWatches_def
           by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)      
@@ -4519,13 +4519,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3) Cons(4) Cons(6)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             apply (simp add: Let_def)
             unfolding setReason_def
             unfolding swapWatches_def
@@ -4538,30 +4538,30 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
 
-    from `\<not> Some literal = getWatch1 state clause`
-      `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)`
+    from \<open>\<not> Some literal = getWatch1 state clause\<close>
+      \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)\<close>
     have "Some literal = getWatch2 state clause"
       by auto
     hence "literalFalse ?w2 (elements (getM state))"
       using 
-      `getWatch2 ?state' clause = Some ?w2`
-      `literalFalse literal (elements (getM state))`
+      \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      \<open>literalFalse literal (elements (getM state))\<close>
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
@@ -4571,9 +4571,9 @@ next
       case True
 
       have "\<not> clauseFalse (nth (getF state) clause) (elements (getM state))"
-        using `?w1 el (nth (getF state) clause)`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `InvariantConsistent (getM state)`
+        using \<open>?w1 el (nth (getF state) clause)\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>InvariantConsistent (getM state)\<close>
         unfolding InvariantConsistent_def
         unfolding swapWatches_def
         by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)
@@ -4582,11 +4582,11 @@ next
         using True
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6)
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (auto simp add:Let_def)
     next
       case False
@@ -4601,7 +4601,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -4619,25 +4619,25 @@ next
         moreover
         have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
           using Cons(5)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding setWatch2_def
           by auto
         moreover
         have "\<not> clauseFalse (nth (getF state) clause) (elements (getM state))"
-          using `l' el (nth (getF ?state') clause)` 
-          using `\<not> literalFalse l' (elements (getM ?state'))`
-          using `InvariantConsistent (getM state)`
+          using \<open>l' el (nth (getF ?state') clause)\<close> 
+          using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
+          using \<open>InvariantConsistent (getM state)\<close>
           unfolding InvariantConsistent_def
           by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)
         ultimately
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(3) Cons(4) Cons(6)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `uniq Wl'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>uniq Wl'\<close>
           using Some
           by (auto simp add: Let_def)
       next
@@ -4667,26 +4667,26 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setWatch2_def
             by auto
           moreover
           have "clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           ultimately
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3) Cons(4) Cons(6)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (auto simp add: Let_def)
         next
           case False
@@ -4711,27 +4711,27 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setReason_def
             by auto
           moreover
           have "\<not> clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `?w1 el (nth (getF state) clause)`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `InvariantConsistent (getM state)`
+            using \<open>?w1 el (nth (getF state) clause)\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>InvariantConsistent (getM state)\<close>
             unfolding InvariantConsistent_def
           by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)      
           ultimately
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3) Cons(4) Cons(6)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             apply (simp add: Let_def)
             unfolding setReason_def
             by auto
@@ -4771,11 +4771,11 @@ proof (induct Wl arbitrary: newWl state)
 next
   case (Cons clause Wl')
   
-  from `uniq (clause # Wl')`
+  from \<open>uniq (clause # Wl')\<close>
   have "uniq Wl'" and "clause \<notin> set Wl'"
     by (auto simp add: uniqAppendIff)
 
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause" "clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -4784,7 +4784,7 @@ next
     unfolding InvariantWatchesEl_def
     by auto
 
-  from `0 \<le> clause` `clause < length (getF state)`
+  from \<open>0 \<le> clause\<close> \<open>clause < length (getF state)\<close>
   have "(nth (getF state) clause) el (getF state)"
     by simp
 
@@ -4794,39 +4794,39 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
 
     have "?w2 = literal"
-      using `Some literal = getWatch1 state clause`
-      using `getWatch2 ?state' clause = Some ?w2`
+      using \<open>Some literal = getWatch1 state clause\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
       unfolding swapWatches_def
       by simp
       
     hence "literalFalse ?w2 (elements (getM state))"
-      using `(getM state) = M @ [(opposite literal, decision)]`
+      using \<open>(getM state) = M @ [(opposite literal, decision)]\<close>
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)" "?w2 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
 
-    from `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 \<noteq> ?w2"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>clause < length (getF state)\<close>
       unfolding InvariantWatchesDiffer_def
       unfolding swapWatches_def
       by auto
@@ -4867,9 +4867,9 @@ next
         by auto
       moreover
       have "\<not> (\<exists> l. isUnitClause (nth (getF state) clause) l (elements (getM state)))"
-        using `?w1 el (nth (getF state) clause)`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `InvariantConsistent (getM state)`
+        using \<open>?w1 el (nth (getF state) clause)\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>InvariantConsistent (getM state)\<close>
         unfolding InvariantConsistent_def
         unfolding swapWatches_def
           by (auto simp add: isUnitClause_def inconsistentCharacterization)
@@ -4877,11 +4877,11 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(5) Cons(6)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by ( simp add:Let_def)
     next
       case False
@@ -4896,7 +4896,7 @@ next
 
         from Cons(3)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -4904,9 +4904,9 @@ next
         moreover
         from Cons(4)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' \<noteq> ?w1`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> ?w1\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -4928,7 +4928,7 @@ next
         moreover
         have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
           using Cons(7)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding swapWatches_def
           unfolding setWatch2_def
           by auto
@@ -4957,18 +4957,18 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
               
               have "\<not> (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
                 using Cons(2)
-                using `l' \<noteq> ?w1` and `l' \<noteq> ?w2` `l' el (nth (getF ?state') clause)`
-                using `\<not> literalFalse l' (elements (getM ?state'))`
+                using \<open>l' \<noteq> ?w1\<close> and \<open>l' \<noteq> ?w2\<close> \<open>l' el (nth (getF ?state') clause)\<close>
+                using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
                 using a and b
-                using `c = clause`
+                using \<open>c = clause\<close>
                 unfolding swapWatches_def
                 unfolding setWatch2_def
                 by auto
@@ -4979,18 +4979,18 @@ next
                 using Cons(9)
                 unfolding InvariantWatchCharacterization_def
                 unfolding watchCharacterizationCondition_def
-                using `clause < length (getF state)`
-                using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
-                using `literalFalse ww1 (elements M)`
-                using `ww1 = ?w1`
+                using \<open>clause < length (getF state)\<close>
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
+                using \<open>literalFalse ww1 (elements M)\<close>
+                using \<open>ww1 = ?w1\<close>
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
               ultimately
               show ?thesis
-                using `ww1 = ?w1`
-                using `c = clause`
+                using \<open>ww1 = ?w1\<close>
+                using \<open>c = clause\<close>
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
@@ -5019,12 +5019,12 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 unfolding swapWatches_def
                 by auto
-              with `\<not> literalFalse l' (elements (getM ?state'))` b
+              with \<open>\<not> literalFalse l' (elements (getM ?state'))\<close> b
                 Cons(2)
               have False
                 unfolding swapWatches_def
@@ -5048,47 +5048,47 @@ next
             then obtain l
               where "isUnitClause (nth (getF state) clause) l (elements (getM state))"
               by auto
-            with `l' el (nth (getF ?state') clause)` `\<not> literalFalse l' (elements (getM ?state'))`
+            with \<open>l' el (nth (getF ?state') clause)\<close> \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
             have "l = l'"
               unfolding isUnitClause_def
               unfolding swapWatches_def
               by auto
-            with `l' \<noteq> ?w1` have
+            with \<open>l' \<noteq> ?w1\<close> have
               "literalFalse ?w1 (elements (getM ?state'))"
-              using `isUnitClause (nth (getF state) clause) l (elements (getM state))`
-              using `?w1 el (nth (getF state) clause)`
+              using \<open>isUnitClause (nth (getF state) clause) l (elements (getM state))\<close>
+              using \<open>?w1 el (nth (getF state) clause)\<close>
               unfolding isUnitClause_def
               unfolding swapWatches_def
               by simp
-            with `?w1 \<noteq> ?w2` `?w2 = literal`
+            with \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close>
             Cons(2)
             have "literalFalse ?w1 (elements M)"
               unfolding swapWatches_def
               by simp
 
-            from `isUnitClause (nth (getF state) clause) l (elements (getM state))`
+            from \<open>isUnitClause (nth (getF state) clause) l (elements (getM state))\<close>
               Cons(6)
             have "\<not> (\<exists> l. (l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))))"
               using containsTrueNotUnit[of _ "(nth (getF state) clause)" "elements (getM state)"]
               unfolding InvariantConsistent_def
               by auto
 
-            from `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M`
-            `clause < length (getF state)`
-              `literalFalse ?w1 (elements M)` 
-              `getWatch1 ?state' clause = Some ?w1` [THEN sym]
-              `getWatch2 ?state' clause = Some ?w2` [THEN sym]
+            from \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M\<close>
+            \<open>clause < length (getF state)\<close>
+              \<open>literalFalse ?w1 (elements M)\<close> 
+              \<open>getWatch1 ?state' clause = Some ?w1\<close> [THEN sym]
+              \<open>getWatch2 ?state' clause = Some ?w2\<close> [THEN sym]
             have "(\<exists>l. l el (getF state ! clause) \<and> literalTrue l (elements M) \<and> elementLevel l M \<le> elementLevel (opposite ?w1) M) \<or>
                   (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
               unfolding InvariantWatchCharacterization_def
               unfolding watchCharacterizationCondition_def
               unfolding swapWatches_def
               by auto
-            with `\<not> (\<exists> l. (l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))))`
+            with \<open>\<not> (\<exists> l. (l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))))\<close>
             Cons(2)
             have "(\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
               by auto
-            with `l' el (getF ?state' ! clause)` `l' \<noteq> ?w1` `l' \<noteq> ?w2` `\<not> literalFalse l' (elements (getM ?state'))`
+            with \<open>l' el (getF ?state' ! clause)\<close> \<open>l' \<noteq> ?w1\<close> \<open>l' \<noteq> ?w2\<close> \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
             Cons(2)
             have False
               unfolding swapWatches_def
@@ -5101,11 +5101,11 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(2) Cons(5) Cons(6)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `uniq Wl'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>uniq Wl'\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -5144,7 +5144,7 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(7)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding swapWatches_def
             by auto
           moreover
@@ -5155,9 +5155,9 @@ next
             by auto
           moreover
           have "clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             unfolding swapWatches_def
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           hence "\<not> (\<exists> l. isUnitClause (nth (getF state) clause) l (elements (getM state)))"
@@ -5167,13 +5167,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(2) Cons(5) Cons(6)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
         next
           case False
@@ -5209,7 +5209,7 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(7)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding swapWatches_def
             unfolding setReason_def
             by auto
@@ -5225,16 +5225,16 @@ next
                    ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''"
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(2) Cons(5)
-            using `uniq Wl'`
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
           moreover
           have "notifyWatches_loop literal Wl' (clause # newWl) ?state'' = notifyWatches_loop literal (clause # Wl') newWl state"
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
           ultimately 
           have "let state' = notifyWatches_loop literal (clause # Wl') newWl state in
@@ -5242,12 +5242,12 @@ next
             by simp
 
           have "isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `?w1 el (nth (getF state) clause)`
-            using `?w2 el (nth (getF state) clause)`
-            using `literalFalse ?w2 (elements (getM state))`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>?w1 el (nth (getF state) clause)\<close>
+            using \<open>?w2 el (nth (getF state) clause)\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             unfolding swapWatches_def
             unfolding isUnitClause_def
             by auto
@@ -5263,13 +5263,13 @@ next
                 case True
                 hence "let state' = notifyWatches_loop literal (clause # Wl') newWl state in 
                    l \<in> set (getQ state') - set (getQ ?state'')"
-                  using `let state' = notifyWatches_loop literal (clause # Wl') newWl state in
-                    l \<in> set (getQ state') - set (getQ state)`
+                  using \<open>let state' = notifyWatches_loop literal (clause # Wl') newWl state in
+                    l \<in> set (getQ state') - set (getQ state)\<close>
                   unfolding setReason_def
                   unfolding swapWatches_def
                   by (simp add:Let_def)
-                with `let state' = notifyWatches_loop literal (clause # Wl') newWl state in
-                  ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''`
+                with \<open>let state' = notifyWatches_loop literal (clause # Wl') newWl state in
+                  ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''\<close>
                 show ?thesis
                   unfolding setReason_def
                   unfolding swapWatches_def
@@ -5277,10 +5277,10 @@ next
               next
                 case False
                 thus ?thesis
-                  using `(nth (getF state) clause) el (getF state)`
-                        `?w2 = literal`
-                        `?w2 el (nth (getF state) clause)`
-                        `isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))`
+                  using \<open>(nth (getF state) clause) el (getF state)\<close>
+                        \<open>?w2 = literal\<close>
+                        \<open>?w2 el (nth (getF state) clause)\<close>
+                        \<open>isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))\<close>
                   by (auto simp add:Let_def)
               qed
             } 
@@ -5298,12 +5298,12 @@ next
                 {
                   fix l::Literal
                   assume "isUnitClause (nth (getF state) c) l (elements (getM state))"
-                  with `isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))` `c = clause`
+                  with \<open>isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))\<close> \<open>c = clause\<close>
                   have "l = ?w1"
                     unfolding isUnitClause_def
                     by auto
                   have "isPrefix (getQ ?state'') (getQ (notifyWatches_loop literal Wl' (clause # newWl) ?state''))"
-                    using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')`
+                    using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close>
                     using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "clause # newWl"]
                     using Cons(5)
                     unfolding swapWatches_def
@@ -5313,18 +5313,18 @@ next
                     using prefixIsSubset[of "getQ ?state''" "getQ (notifyWatches_loop literal Wl' (clause # newWl) ?state'')"]
                     by auto
                   hence "l \<in> set (getQ (notifyWatches_loop literal Wl' (clause # newWl) ?state''))"
-                    using `l = ?w1`
+                    using \<open>l = ?w1\<close>
                     unfolding swapWatches_def
                     unfolding setReason_def
                   by auto
               } 
               thus ?thesis
-                using `notifyWatches_loop literal Wl' (clause # newWl) ?state'' = notifyWatches_loop literal (clause # Wl') newWl state`
+                using \<open>notifyWatches_loop literal Wl' (clause # newWl) ?state'' = notifyWatches_loop literal (clause # Wl') newWl state\<close>
                 by (simp add:Let_def)
             next
                 case False
                 hence "c \<in> set Wl'"
-                  using `c \<in> set (clause # Wl')`
+                  using \<open>c \<in> set (clause # Wl')\<close>
                   by simp
                 {
                   fix l::Literal
@@ -5333,9 +5333,9 @@ next
                     unfolding setReason_def
                     unfolding swapWatches_def
                     by simp
-                  with `let state' = notifyWatches_loop literal (clause # Wl') newWl state in
-                    ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''`
-                    `c \<in> set Wl'`
+                  with \<open>let state' = notifyWatches_loop literal (clause # Wl') newWl state in
+                    ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''\<close>
+                    \<open>c \<in> set Wl'\<close>
                   have "let state' = notifyWatches_loop literal (clause # Wl') newWl state in l \<in> set (getQ state')"
                     by (simp add:Let_def)
                 }
@@ -5357,41 +5357,41 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
 
 
-    from `\<not> Some literal = getWatch1 state clause`
-      `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)`
+    from \<open>\<not> Some literal = getWatch1 state clause\<close>
+      \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)\<close>
     have "Some literal = getWatch2 state clause"
       by auto
     hence "?w2 = literal"
-      using `getWatch2 ?state' clause = Some ?w2`
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
       by simp
     hence "literalFalse ?w2 (elements (getM state))"
       using Cons(2)
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)" "?w2 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
 
-    from `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 \<noteq> ?w2"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>clause < length (getF state)\<close>
       unfolding InvariantWatchesDiffer_def
       unfolding swapWatches_def
       by auto
@@ -5400,20 +5400,20 @@ next
     proof (cases "literalTrue ?w1 (elements (getM ?state'))")
       case True
       have "\<not> (\<exists> l. isUnitClause (nth (getF state) clause) l (elements (getM state)))"
-        using `?w1 el (nth (getF state) clause)`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `InvariantConsistent (getM state)`
+        using \<open>?w1 el (nth (getF state) clause)\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>InvariantConsistent (getM state)\<close>
         unfolding InvariantConsistent_def
         by (auto simp add: isUnitClause_def inconsistentCharacterization)
       thus ?thesis
         using True
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6) Cons(7) Cons(8) Cons(9)
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (simp add:Let_def)
     next
       case False
@@ -5428,16 +5428,16 @@ next
 
         from Cons(3)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
         moreover
         from Cons(4)
         have "InvariantWatchesDiffer (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' \<noteq> ?w1`
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
+          using \<open>l' \<noteq> ?w1\<close>
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
           unfolding InvariantWatchesDiffer_def
           unfolding setWatch2_def
           by auto
@@ -5456,7 +5456,7 @@ next
         moreover
         have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
           using Cons(7)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding setWatch2_def
           by auto
         moreover
@@ -5483,17 +5483,17 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 by auto
               
               have "\<not> (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
-                using `l' \<noteq> ?w1` and `l' \<noteq> ?w2` `l' el (nth (getF ?state') clause)`
-                using `\<not> literalFalse l' (elements (getM ?state'))`
+                using \<open>l' \<noteq> ?w1\<close> and \<open>l' \<noteq> ?w2\<close> \<open>l' el (nth (getF ?state') clause)\<close>
+                using \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
                 using Cons(2)
                 using a and b
-                using `c = clause`
+                using \<open>c = clause\<close>
                 unfolding setWatch2_def
                 by auto
               moreover
@@ -5502,17 +5502,17 @@ next
                 using Cons(9)
                 unfolding InvariantWatchCharacterization_def
                 unfolding watchCharacterizationCondition_def
-                using `clause < length (getF state)`
-                using `getWatch1 ?state' clause = Some ?w1`[THEN sym]
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
-                using `literalFalse ww1 (elements M)`
-                using `ww1 = ?w1`
+                using \<open>clause < length (getF state)\<close>
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>[THEN sym]
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
+                using \<open>literalFalse ww1 (elements M)\<close>
+                using \<open>ww1 = ?w1\<close>
                 unfolding setWatch2_def
                 by auto
               ultimately
               show ?thesis
-                using `ww1 = ?w1`
-                using `c = clause`
+                using \<open>ww1 = ?w1\<close>
+                using \<open>c = clause\<close>
                 unfolding setWatch2_def
                 by auto
             qed
@@ -5539,11 +5539,11 @@ next
               case True
               with a 
               have "ww1 = ?w1" and "ww2 = l'"
-                using `getWatch1 ?state' clause = Some ?w1`
-                using `getWatch2 ?state' clause = Some ?w2`[THEN sym]
+                using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+                using \<open>getWatch2 ?state' clause = Some ?w2\<close>[THEN sym]
                 unfolding setWatch2_def
                 by auto
-              with `\<not> literalFalse l' (elements (getM ?state'))` b
+              with \<open>\<not> literalFalse l' (elements (getM ?state'))\<close> b
               Cons(2)
               have False
                 unfolding setWatch2_def
@@ -5567,44 +5567,44 @@ next
             then obtain l
               where "isUnitClause (nth (getF state) clause) l (elements (getM state))"
               by auto
-            with `l' el (nth (getF ?state') clause)` `\<not> literalFalse l' (elements (getM ?state'))`
+            with \<open>l' el (nth (getF ?state') clause)\<close> \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
             have "l = l'"
               unfolding isUnitClause_def
               by auto
-            with `l' \<noteq> ?w1` have
+            with \<open>l' \<noteq> ?w1\<close> have
               "literalFalse ?w1 (elements (getM ?state'))"
-              using `isUnitClause (nth (getF state) clause) l (elements (getM state))`
-              using `?w1 el (nth (getF state) clause)`
+              using \<open>isUnitClause (nth (getF state) clause) l (elements (getM state))\<close>
+              using \<open>?w1 el (nth (getF state) clause)\<close>
               unfolding isUnitClause_def
               by simp
-            with `?w1 \<noteq> ?w2` `?w2 = literal`
+            with \<open>?w1 \<noteq> ?w2\<close> \<open>?w2 = literal\<close>
             Cons(2)
             have "literalFalse ?w1 (elements M)"
               by simp
 
-            from `isUnitClause (nth (getF state) clause) l (elements (getM state))`
+            from \<open>isUnitClause (nth (getF state) clause) l (elements (getM state))\<close>
               Cons(6)
             have "\<not> (\<exists> l. (l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))))"
               using containsTrueNotUnit[of _ "(nth (getF state) clause)" "elements (getM state)"]
               unfolding InvariantConsistent_def
               by auto
 
-            from `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M`
-            `clause < length (getF state)`
-              `literalFalse ?w1 (elements M)` 
-              `getWatch1 ?state' clause = Some ?w1` [THEN sym]
-              `getWatch2 ?state' clause = Some ?w2` [THEN sym]
+            from \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) M\<close>
+            \<open>clause < length (getF state)\<close>
+              \<open>literalFalse ?w1 (elements M)\<close> 
+              \<open>getWatch1 ?state' clause = Some ?w1\<close> [THEN sym]
+              \<open>getWatch2 ?state' clause = Some ?w2\<close> [THEN sym]
             have "(\<exists>l. l el (getF state ! clause) \<and> literalTrue l (elements M) \<and> elementLevel l M \<le> elementLevel (opposite ?w1) M) \<or>
                   (\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
               unfolding InvariantWatchCharacterization_def
               unfolding watchCharacterizationCondition_def
               unfolding swapWatches_def
               by auto
-            with `\<not> (\<exists> l. (l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))))`
+            with \<open>\<not> (\<exists> l. (l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))))\<close>
             Cons(2)
             have "(\<forall>l. l el (getF state ! clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements M))"
               by auto
-            with `l' el (getF ?state' ! clause)` `l' \<noteq> ?w1` `l' \<noteq> ?w2` `\<not> literalFalse l' (elements (getM ?state'))`
+            with \<open>l' el (getF ?state' ! clause)\<close> \<open>l' \<noteq> ?w1\<close> \<open>l' \<noteq> ?w2\<close> \<open>\<not> literalFalse l' (elements (getM ?state'))\<close>
             Cons(2)
             have False
               unfolding swapWatches_def
@@ -5617,11 +5617,11 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(2) Cons(5) Cons(7)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `uniq Wl'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>uniq Wl'\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -5656,7 +5656,7 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(7)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setWatch2_def
             by auto
           moreover
@@ -5666,9 +5666,9 @@ next
             by auto
           moreover
           have "clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             unfolding swapWatches_def
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           hence "\<not> (\<exists> l. isUnitClause (nth (getF state) clause) l (elements (getM state)))"
@@ -5678,13 +5678,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(2) Cons(5) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
         next
           case False
@@ -5715,7 +5715,7 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(7)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setReason_def
             by auto
           moreover
@@ -5729,16 +5729,16 @@ next
                    ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''"
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(2) Cons(5) Cons(6) Cons(7)
-            using `uniq Wl'`
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
           moreover
           have "notifyWatches_loop literal Wl' (clause # newWl) ?state'' = notifyWatches_loop literal (clause # Wl') newWl state"
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
           ultimately 
           have "let state' = notifyWatches_loop literal (clause # Wl') newWl state in
@@ -5746,12 +5746,12 @@ next
             by simp
 
           have "isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `?w1 el (nth (getF state) clause)`
-            using `?w2 el (nth (getF state) clause)`
-            using `literalFalse ?w2 (elements (getM state))`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>?w1 el (nth (getF state) clause)\<close>
+            using \<open>?w2 el (nth (getF state) clause)\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             unfolding swapWatches_def
             unfolding isUnitClause_def
             by auto
@@ -5767,13 +5767,13 @@ next
                 case True
                 hence "let state' = notifyWatches_loop literal (clause # Wl') newWl state in 
                    l \<in> set (getQ state') - set (getQ ?state'')"
-                  using `let state' = notifyWatches_loop literal (clause # Wl') newWl state in
-                    l \<in> set (getQ state') - set (getQ state)`
+                  using \<open>let state' = notifyWatches_loop literal (clause # Wl') newWl state in
+                    l \<in> set (getQ state') - set (getQ state)\<close>
                   unfolding setReason_def
                   unfolding swapWatches_def
                   by (simp add:Let_def)
-                with `let state' = notifyWatches_loop literal (clause # Wl') newWl state in
-                  ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''`
+                with \<open>let state' = notifyWatches_loop literal (clause # Wl') newWl state in
+                  ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''\<close>
                 show ?thesis
                   unfolding setReason_def
                   unfolding swapWatches_def
@@ -5781,9 +5781,9 @@ next
               next
                 case False
                 thus ?thesis
-                  using `(nth (getF state) clause) el (getF state)` `isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))`
-                        `?w2 = literal`
-                        `?w2 el (nth (getF state) clause)`
+                  using \<open>(nth (getF state) clause) el (getF state)\<close> \<open>isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))\<close>
+                        \<open>?w2 = literal\<close>
+                        \<open>?w2 el (nth (getF state) clause)\<close>
                   by (auto simp add:Let_def)
               qed
             } 
@@ -5801,12 +5801,12 @@ next
                 {
                   fix l::Literal
                   assume "isUnitClause (nth (getF state) c) l (elements (getM state))"
-                  with `isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))` `c = clause`
+                  with \<open>isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))\<close> \<open>c = clause\<close>
                   have "l = ?w1"
                     unfolding isUnitClause_def
                     by auto
                   have "isPrefix (getQ ?state'') (getQ (notifyWatches_loop literal Wl' (clause # newWl) ?state''))"
-                    using `InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')`
+                    using \<open>InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')\<close>
                     using notifyWatchesLoopPreservedVariables[of "?state''" "Wl'" "literal" "clause # newWl"]
                     using Cons(5)
                     unfolding swapWatches_def
@@ -5816,18 +5816,18 @@ next
                     using prefixIsSubset[of "getQ ?state''" "getQ (notifyWatches_loop literal Wl' (clause # newWl) ?state'')"]
                     by auto
                   hence "l \<in> set (getQ (notifyWatches_loop literal Wl' (clause # newWl) ?state''))"
-                    using `l = ?w1`
+                    using \<open>l = ?w1\<close>
                     unfolding swapWatches_def
                     unfolding setReason_def
                   by auto
               } 
               thus ?thesis
-                using `notifyWatches_loop literal Wl' (clause # newWl) ?state'' = notifyWatches_loop literal (clause # Wl') newWl state`
+                using \<open>notifyWatches_loop literal Wl' (clause # newWl) ?state'' = notifyWatches_loop literal (clause # Wl') newWl state\<close>
                 by (simp add:Let_def)
             next
                 case False
                 hence "c \<in> set Wl'"
-                  using `c \<in> set (clause # Wl')`
+                  using \<open>c \<in> set (clause # Wl')\<close>
                   by simp
                 {
                   fix l::Literal
@@ -5836,9 +5836,9 @@ next
                     unfolding setReason_def
                     unfolding swapWatches_def
                     by simp
-                  with `let state' = notifyWatches_loop literal (clause # Wl') newWl state in
-                    ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''`
-                    `c \<in> set Wl'`
+                  with \<open>let state' = notifyWatches_loop literal (clause # Wl') newWl state in
+                    ?Cond1 state' ?state'' \<and> ?Cond2 Wl' state' ?state''\<close>
+                    \<open>c \<in> set Wl'\<close>
                   have "let state' = notifyWatches_loop literal (clause # Wl') newWl state in l \<in> set (getQ state')"
                     by (simp add:Let_def)
                 }
@@ -5875,7 +5875,7 @@ proof (induct Wl arbitrary: newWl state)
     by simp
 next
   case (Cons clause Wl')
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause \<and> clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -5889,12 +5889,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto    
     show ?thesis
@@ -5917,10 +5917,10 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(3) Cons(4)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -5935,7 +5935,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -5951,10 +5951,10 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(3) Cons(4)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -5979,12 +5979,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3) Cons(4)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -6005,19 +6005,19 @@ next
           moreover
           have "uniq (getQ ?state'')"
             using Cons(4)
-            using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
+            using \<open>getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])\<close>
             unfolding InvariantUniqQ_def
             by (simp add: uniqAppendIff)
           ultimately
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             unfolding isPrefix_def
             unfolding InvariantUniqQ_def
             by (simp add: Let_def split: if_split_asm)
@@ -6029,21 +6029,21 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       by auto    
     show ?thesis
     proof (cases "literalTrue ?w1 (elements (getM ?state'))")
       case True
       thus ?thesis
         using Cons
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
         by (simp add:Let_def)
     next
       case False
@@ -6058,7 +6058,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state')) clause`
+          using \<open>l' el (nth (getF ?state')) clause\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -6072,10 +6072,10 @@ next
         show ?thesis
           using Cons(1)[of "?state''"]
           using Cons(3) Cons(4)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -6098,12 +6098,12 @@ next
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3) Cons(4)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
             by (simp add: Let_def)
         next
           case False
@@ -6122,19 +6122,19 @@ next
           moreover
           have "uniq (getQ ?state'')"
             using Cons(4)
-            using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
+            using \<open>getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])\<close>
             unfolding InvariantUniqQ_def
             by (simp add: uniqAppendIff)
           ultimately
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
             unfolding isPrefix_def
             unfolding InvariantUniqQ_def
             by (simp add: Let_def split: if_split_asm)
@@ -6163,11 +6163,11 @@ proof (induct Wl arbitrary: newWl state)
 next
   case (Cons clause Wl')
 
-  from `uniq (clause # Wl')`
+  from \<open>uniq (clause # Wl')\<close>
   have "clause \<notin> set Wl'" "uniq Wl'"
     by (auto simp add:uniqAppendIff)
 
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause \<and> clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -6181,12 +6181,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
 
@@ -6224,11 +6224,11 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(4) Cons(6) Cons(7)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (simp add:Let_def)
     next
       case False
@@ -6243,7 +6243,7 @@ next
 
         from Cons(3)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -6251,7 +6251,7 @@ next
         moreover
         have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
           using Cons(5)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           using swapWatchesEffect[of "clause" "state"]
           unfolding setWatch2_def
           by simp
@@ -6267,12 +6267,12 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(2) Cons(4) Cons(6) Cons(7)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
-          using `uniq Wl'`
+          using \<open>uniq Wl'\<close>
           by (simp add: Let_def)
       next
         case None
@@ -6296,41 +6296,41 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             using swapWatchesEffect[of "clause" "state"]
             by simp
           moreover
           have "\<forall> l. l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state''))"
             using None
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
             using getNonWatchedUnfalsifiedLiteralNoneCharacterization[of "nth (getF ?state') clause" "?w1" "?w2" "getM ?state'"]
             unfolding setReason_def
             unfolding swapWatches_def
             by auto
 
           hence "clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             unfolding swapWatches_def
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           moreover
           have "(nth (getF state) clause) el (getF state)"
-            using `0 \<le> clause \<and> clause < length (getF state)`
+            using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
             using nth_mem[of "clause" "getF state"]
             by simp
           ultimately
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(2) Cons(4) Cons(6) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
-            using `0 \<le> clause \<and> clause < length (getF state)`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
+            using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
             unfolding InvariantConflictClauseCharacterization_def
             by (simp add: Let_def)
         next
@@ -6353,7 +6353,7 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             using swapWatchesEffect[of "clause" "state"]
             unfolding setReason_def
             by simp
@@ -6361,13 +6361,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "clause # newWl"]
             using Cons(2) Cons(4) Cons(6) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -6377,19 +6377,19 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       by auto
 
-    from `\<not> Some literal = getWatch1 state clause`
-      `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)`
+    from \<open>\<not> Some literal = getWatch1 state clause\<close>
+      \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> Some literal = (getWatch1 state c)  \<or> Some literal = (getWatch2 state c)\<close>
     have "Some literal = getWatch2 state clause"
       by auto
     hence "?w2 = literal"
-      using `getWatch2 ?state' clause = Some ?w2`
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
       by simp
     hence "literalFalse ?w2 (elements (getM state))"
       using Cons(2)
@@ -6401,11 +6401,11 @@ next
       thus ?thesis
         using Cons(1)[of "?state'" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6) Cons(7)
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (simp add:Let_def)
     next
       case False
@@ -6420,7 +6420,7 @@ next
 
         from Cons(3)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state')) clause`
+          using \<open>l' el (nth (getF ?state')) clause\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
@@ -6435,19 +6435,19 @@ next
         moreover
         have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
           using Cons(5)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding setWatch2_def
           by simp
         ultimately
         show ?thesis
           using Cons(1)[of "?state''" "newWl"]
           using Cons(2) Cons(4) Cons(6) Cons(7)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
-          using `uniq Wl'`
+          using \<open>uniq Wl'\<close>
           by (simp add: Let_def)
       next
         case None
@@ -6470,37 +6470,37 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             by simp
           moreover
           have "\<forall> l. l el (nth (getF ?state'') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state''))"
             using None
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
             using getNonWatchedUnfalsifiedLiteralNoneCharacterization[of "nth (getF ?state') clause" "?w1" "?w2" "getM ?state'"]
             unfolding setReason_def
             by auto
           hence "clauseFalse (nth (getF state) clause) (elements (getM state))"
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           moreover
           have "(nth (getF state) clause) el (getF state)"
-            using `0 \<le> clause \<and> clause < length (getF state)`
+            using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
             using nth_mem[of "clause" "getF state"]
             by simp
           ultimately
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(2) Cons(4) Cons(6) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
-            using `0 \<le> clause \<and> clause < length (getF state)`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
+            using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
             unfolding InvariantConflictClauseCharacterization_def
             by (simp add: Let_def)
         next
@@ -6521,20 +6521,20 @@ next
           moreover
           have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(5)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setReason_def
             by simp
           ultimately
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(2) Cons(4) Cons(6) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
         qed
       qed
@@ -6571,11 +6571,11 @@ proof (induct Wl arbitrary: newWl state Q)
 next
   case (Cons clause Wl')
 
-  from `uniq (clause # Wl')`
+  from \<open>uniq (clause # Wl')\<close>
   have "clause \<notin> set Wl'" "uniq Wl'"
     by (auto simp add:uniqAppendIff)
 
-  from `\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)`
+  from \<open>\<forall> (c::nat). c \<in> set (clause # Wl') \<longrightarrow> 0 \<le> c \<and> c < length (getF state)\<close>
   have "0 \<le> clause \<and> clause < length (getF state)"
     by auto
   then obtain wa::Literal and wb::Literal
@@ -6589,12 +6589,12 @@ next
     let ?state' = "swapWatches clause state"
     let ?w1 = wb
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       unfolding swapWatches_def
       by auto
     let ?w2 = wa
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       unfolding swapWatches_def
       by auto
     with True have
@@ -6605,11 +6605,11 @@ next
       using Cons(6)
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)" "?w2 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `0 \<le> clause \<and> clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
@@ -6640,11 +6640,11 @@ next
       show ?thesis
         using Cons(1)[of "?state'" "Q" "clause # newWl"]
         using Cons(3) Cons(6) Cons(7)
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `Some literal = getWatch1 state clause`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>Some literal = getWatch1 state clause\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (simp add:Let_def)
     next
       case False
@@ -6659,7 +6659,7 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state') clause)`
+          using \<open>l' el (nth (getF ?state') clause)\<close>
           unfolding InvariantWatchesEl_def
           unfolding swapWatches_def
           unfolding setWatch2_def
@@ -6667,7 +6667,7 @@ next
         moreover
         have "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
           using Cons(4)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           using swapWatchesEffect[of "clause" "state"]
           unfolding setWatch2_def
           by simp
@@ -6683,12 +6683,12 @@ next
         show ?thesis
           using Cons(1)[of "?state''" "Q" "newWl"]
           using Cons(3) Cons(6) Cons(7)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
           using Some
-          using `uniq Wl'`
+          using \<open>uniq Wl'\<close>
           by (simp add: Let_def)
       next
         case None
@@ -6721,13 +6721,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''" "Q""clause # newWl"]
             using Cons(3) Cons(6) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
         next
           case False
@@ -6752,30 +6752,30 @@ next
           moreover
           hence "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(4)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             using swapWatchesEffect[of "clause" "state"]
             unfolding setReason_def
             by simp
           moreover
           have "isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `?w1 el (nth (getF state) clause)`
-            using `?w2 el (nth (getF state) clause)`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>?w1 el (nth (getF state) clause)\<close>
+            using \<open>?w2 el (nth (getF state) clause)\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             unfolding swapWatches_def
             unfolding isUnitClause_def
             by auto
           hence "InvariantGetReasonIsReason (getReason ?state'') (getF ?state'') (getM ?state'') (Q \<union> {?w1})"
             using Cons(7)
-            using `getM ?state'' = getM state`
-            using `getF ?state'' = getF state`
-            using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
-            using `getReason ?state'' = (getReason state)(?w1 := Some clause)`
-            using `0 \<le> clause \<and> clause < length (getF state)`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-            using `isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))`
+            using \<open>getM ?state'' = getM state\<close>
+            using \<open>getF ?state'' = getF state\<close>
+            using \<open>getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])\<close>
+            using \<open>getReason ?state'' = (getReason state)(?w1 := Some clause)\<close>
+            using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+            using \<open>isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))\<close>
             unfolding swapWatches_def
             unfolding InvariantGetReasonIsReason_def
             by auto
@@ -6789,11 +6789,11 @@ next
                   (Q \<union> (set (getQ ?state0) - set (getQ ?state'')) \<union> {?w1})"
             using Cons(1)[of "?state''" "Q \<union> {?w1}" "clause # newWl"]
             using Cons(3) Cons(6) Cons(7)
-            using `uniq Wl'`
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def split: if_split_asm)
           moreover
           have "(Q \<union> (set (getQ ?state0) - set (getQ state))) \<subseteq> (Q \<union> (set (getQ ?state0) - set (getQ ?state'')) \<union> {?w1})"
-            using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
+            using \<open>getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])\<close>
             unfolding swapWatches_def
             by auto
           ultimately
@@ -6804,13 +6804,13 @@ next
             by simp
           moreover
           have "notifyWatches_loop literal (clause # Wl') newWl state = ?state0"
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
           ultimately
           show ?thesis
@@ -6823,17 +6823,17 @@ next
     let ?state' = state
     let ?w1 = wa
     have "getWatch1 ?state' clause = Some ?w1"
-      using `getWatch1 state clause = Some wa`
+      using \<open>getWatch1 state clause = Some wa\<close>
       by auto
     let ?w2 = wb
     have "getWatch2 ?state' clause = Some ?w2"
-      using `getWatch2 state clause = Some wb`
+      using \<open>getWatch2 state clause = Some wb\<close>
       by auto
 
     have "?w2 = literal"
-      using `0 \<le> clause \<and> clause < length (getF state)`
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
       using Cons(4)
       using False
       by simp
@@ -6842,11 +6842,11 @@ next
       using Cons(6)
       by simp
 
-    from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     have "?w1 el (nth (getF state) clause)" "?w2 el (nth (getF state) clause)"
-      using `getWatch1 ?state' clause = Some ?w1`
-      using `getWatch2 ?state' clause = Some ?w2`
-      using `0 \<le> clause \<and> clause < length (getF state)`
+      using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+      using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+      using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
       unfolding InvariantWatchesEl_def
       unfolding swapWatches_def
       by auto
@@ -6857,11 +6857,11 @@ next
       thus ?thesis
         using Cons(1)[of "state" "Q" "clause # newWl"]
         using Cons(2) Cons(3) Cons(4) Cons(5) Cons(6) Cons(7)
-        using `\<not> Some literal = getWatch1 state clause`
-        using `getWatch1 ?state' clause = Some ?w1`
-        using `getWatch2 ?state' clause = Some ?w2`
-        using `literalTrue ?w1 (elements (getM ?state'))`
-        using `uniq Wl'`
+        using \<open>\<not> Some literal = getWatch1 state clause\<close>
+        using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+        using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+        using \<open>literalTrue ?w1 (elements (getM ?state'))\<close>
+        using \<open>uniq Wl'\<close>
         by (simp add:Let_def)
     next
       case False
@@ -6876,14 +6876,14 @@ next
 
         from Cons(2)
         have "InvariantWatchesEl (getF ?state'') (getWatch1 ?state'') (getWatch2 ?state'')"
-          using `l' el (nth (getF ?state')) clause`
+          using \<open>l' el (nth (getF ?state')) clause\<close>
           unfolding InvariantWatchesEl_def
           unfolding setWatch2_def
           by auto
         moreover
         have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
           using Cons(4)
-          using `clause \<notin> set Wl'`
+          using \<open>clause \<notin> set Wl'\<close>
           unfolding setWatch2_def
           by simp
         moreover
@@ -6897,11 +6897,11 @@ next
         show ?thesis
           using Cons(1)[of "?state''"]
           using Cons(3) Cons(6) Cons(7)
-          using `getWatch1 ?state' clause = Some ?w1`
-          using `getWatch2 ?state' clause = Some ?w2`
-          using `\<not> Some literal = getWatch1 state clause`
-          using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-          using `uniq Wl'`
+          using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+          using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+          using \<open>\<not> Some literal = getWatch1 state clause\<close>
+          using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+          using \<open>uniq Wl'\<close>
           using Some
           by (simp add: Let_def)
       next
@@ -6922,7 +6922,7 @@ next
           moreover
           have "\<forall>c. c \<in> set Wl' \<longrightarrow> Some literal = getWatch1 ?state'' c \<or> Some literal = getWatch2 ?state'' c"
             using Cons(4)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setWatch2_def
             by simp
           moreover
@@ -6935,13 +6935,13 @@ next
           show ?thesis
             using Cons(1)[of "?state''"]
             using Cons(3) Cons(6) Cons(7)
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
         next
           case False
@@ -6964,28 +6964,28 @@ next
           moreover
           hence "\<forall>  (c::nat). c \<in> set Wl' \<longrightarrow> Some literal = (getWatch1 ?state'' c)  \<or> Some literal = (getWatch2 ?state'' c)"
             using Cons(4)
-            using `clause \<notin> set Wl'`
+            using \<open>clause \<notin> set Wl'\<close>
             unfolding setReason_def
             by simp
           moreover
           have "isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))"
-            using `\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))`
-            using `?w1 el (nth (getF state) clause)`
-            using `?w2 el (nth (getF state) clause)`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `literalFalse ?w2 (elements (getM state))`
+            using \<open>\<forall> l. l el (nth (getF ?state') clause) \<and> l \<noteq> ?w1 \<and> l \<noteq> ?w2 \<longrightarrow> literalFalse l (elements (getM ?state'))\<close>
+            using \<open>?w1 el (nth (getF state) clause)\<close>
+            using \<open>?w2 el (nth (getF state) clause)\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>literalFalse ?w2 (elements (getM state))\<close>
             unfolding isUnitClause_def
             by auto
           hence "InvariantGetReasonIsReason (getReason ?state'') (getF ?state'') (getM ?state'') (Q \<union> {?w1})"
             using Cons(7)
-            using `getM ?state'' = getM state`
-            using `getF ?state'' = getF state`
-            using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
-            using `getReason ?state'' = (getReason state)(?w1 := Some clause)`
-            using `0 \<le> clause \<and> clause < length (getF state)`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
-            using `isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))`
+            using \<open>getM ?state'' = getM state\<close>
+            using \<open>getF ?state'' = getF state\<close>
+            using \<open>getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])\<close>
+            using \<open>getReason ?state'' = (getReason state)(?w1 := Some clause)\<close>
+            using \<open>0 \<le> clause \<and> clause < length (getF state)\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
+            using \<open>isUnitClause (nth (getF state) clause) ?w1 (elements (getM state))\<close>
             unfolding InvariantGetReasonIsReason_def
             by auto
           moreover
@@ -6997,11 +6997,11 @@ next
                   (Q \<union> (set (getQ ?state0) - set (getQ ?state'')) \<union> {?w1})"
             using Cons(1)[of "?state''" "Q \<union> {?w1}" "clause # newWl"]
             using Cons(3) Cons(6) Cons(7)
-            using `uniq Wl'`
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def split: if_split_asm)
           moreover
           have "(Q \<union> (set (getQ ?state0) - set (getQ state))) \<subseteq> (Q \<union> (set (getQ ?state0) - set (getQ ?state'')) \<union> {?w1})"
-            using `getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])`
+            using \<open>getQ ?state'' = (if ?w1 el (getQ state) then (getQ state) else (getQ state) @ [?w1])\<close>
             by auto
           ultimately
           have "InvariantGetReasonIsReason (getReason ?state0) (getF ?state0) (getM ?state0) 
@@ -7011,13 +7011,13 @@ next
             by simp
           moreover
           have "notifyWatches_loop literal (clause # Wl') newWl state = ?state0"
-            using `getWatch1 ?state' clause = Some ?w1`
-            using `getWatch2 ?state' clause = Some ?w2`
-            using `\<not> Some literal = getWatch1 state clause`
-            using `\<not> literalTrue ?w1 (elements (getM ?state'))`
+            using \<open>getWatch1 ?state' clause = Some ?w1\<close>
+            using \<open>getWatch2 ?state' clause = Some ?w2\<close>
+            using \<open>\<not> Some literal = getWatch1 state clause\<close>
+            using \<open>\<not> literalTrue ?w1 (elements (getM ?state'))\<close>
             using None
-            using `\<not> literalFalse ?w1 (elements (getM ?state'))`
-            using `uniq Wl'`
+            using \<open>\<not> literalFalse ?w1 (elements (getM ?state'))\<close>
+            using \<open>uniq Wl'\<close>
             by (simp add: Let_def)
           ultimately
           show ?thesis
@@ -7117,12 +7117,12 @@ proof-
       case True
       thus ?thesis
         using *
-        using `Some w1 = getWatch1 ?state' c` `Some w2 = getWatch2 ?state' c`
+        using \<open>Some w1 = getWatch1 ?state' c\<close> \<open>Some w2 = getWatch2 ?state' c\<close>
         by auto
     next
       case False
       hence "Some (opposite literal) \<noteq> getWatch1 state c" and "Some (opposite literal) \<noteq> getWatch2 state c"
-        using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
+        using \<open>InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)\<close>
         unfolding InvariantWatchListsCharacterization_def
         by auto
       moreover
@@ -7136,16 +7136,16 @@ proof-
         by (auto simp add: Let_def)
       ultimately
       have "w1 \<noteq> opposite literal" "w2 \<noteq> opposite literal"
-        using `Some w1 = getWatch1 ?state' c` and `Some w2 = getWatch2 ?state' c`
+        using \<open>Some w1 = getWatch1 ?state' c\<close> and \<open>Some w2 = getWatch2 ?state' c\<close>
         by auto
 
       have "watchCharacterizationCondition w1 w2 (getM state) (getF state ! c)" and
            "watchCharacterizationCondition w2 w1 (getM state) (getF state ! c)"
-        using `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
-        using `Some w1 = getWatch1 ?state' c` and `Some w2 = getWatch2 ?state' c`
-        using `getWatch1 ?state' c = getWatch1 state c` and `getWatch2 ?state' c = getWatch2 state c`
+        using \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)\<close>
+        using \<open>Some w1 = getWatch1 ?state' c\<close> and \<open>Some w2 = getWatch2 ?state' c\<close>
+        using \<open>getWatch1 ?state' c = getWatch1 state c\<close> and \<open>getWatch2 ?state' c = getWatch2 state c\<close>
         unfolding InvariantWatchCharacterization_def
-        using `c < length (getF ?state')`
+        using \<open>c < length (getF ?state')\<close>
         using assms
         using assertLiteralEffect[of "state" "literal" "decision"]
         by auto
@@ -7154,12 +7154,12 @@ proof-
       proof-
         {
           assume "literalFalse w1 (elements (getM ?state'))"
-            with `w1 \<noteq> opposite literal`
+            with \<open>w1 \<noteq> opposite literal\<close>
             have "literalFalse w1 (elements (getM state))"
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
             by simp
-          with `watchCharacterizationCondition w1 w2 (getM state) (getF state ! c)`
+          with \<open>watchCharacterizationCondition w1 w2 (getM state) (getF state ! c)\<close>
           have "(\<exists> l. l el ((getF state) ! c) \<and> literalTrue l (elements (getM state))
             \<and> elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)) \<or> 
             (\<forall>l. l el (getF state ! c) \<and> l \<noteq> w1 \<and> l \<noteq> w2 \<longrightarrow>
@@ -7168,7 +7168,7 @@ proof-
             unfolding watchCharacterizationCondition_def
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
-            using `w1 \<noteq> opposite literal`
+            using \<open>w1 \<noteq> opposite literal\<close>
             by simp
           have "?a ?state' \<or> ?b ?state'"
           proof (cases "?b state")
@@ -7181,14 +7181,14 @@ proof-
                 have "literalFalse l (elements (getM ?state')) \<and> 
                       elementLevel (opposite l) (getM ?state') \<le> elementLevel (opposite w1) (getM ?state')"
                 proof-
-                  from True `l el (nth (getF ?state') c)` `l \<noteq> w1` `l \<noteq> w2`
+                  from True \<open>l el (nth (getF ?state') c)\<close> \<open>l \<noteq> w1\<close> \<open>l \<noteq> w2\<close>
                   have "literalFalse l (elements (getM state))"
                     "elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w1) (getM state)"
                     using assms 
                     using assertLiteralEffect[of "state" "literal" "decision"]
                     by auto
                   thus ?thesis
-                    using `literalFalse w1 (elements (getM state))`
+                    using \<open>literalFalse w1 (elements (getM state))\<close>
                     using elementLevelAppend[of "opposite w1" "getM state" "[(literal, decision)]"]
                     using elementLevelAppend[of "opposite l" "getM state" "[(literal, decision)]"]
                     using assms 
@@ -7201,30 +7201,30 @@ proof-
             qed
           next
             case False
-            with `?a state \<or> ?b state`
+            with \<open>?a state \<or> ?b state\<close>
             obtain l::Literal
               where "l el (getF state ! c)" "literalTrue l (elements (getM state))" 
               "elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)"
               by auto
             
-            from `w1 \<noteq> opposite literal`
-              `literalFalse w1 (elements (getM ?state'))`
+            from \<open>w1 \<noteq> opposite literal\<close>
+              \<open>literalFalse w1 (elements (getM ?state'))\<close>
             have "elementLevel (opposite w1) ((getM state) @ [(literal, decision)]) = elementLevel (opposite w1) (getM state)"
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               unfolding elementLevel_def
               by (simp add: markedElementsToAppend)
             moreover
-            from `literalTrue l (elements (getM state))`
+            from \<open>literalTrue l (elements (getM state))\<close>
             have "elementLevel l ((getM state) @ [(literal, decision)]) = elementLevel l (getM state)"
               unfolding elementLevel_def
               by (simp add: markedElementsToAppend)
             ultimately
             have "elementLevel l ((getM state) @ [(literal, decision)]) \<le> elementLevel (opposite w1) ((getM state) @ [(literal, decision)])"
-              using `elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)`
+              using \<open>elementLevel l (getM state) \<le> elementLevel (opposite w1) (getM state)\<close>
               by simp
             thus ?thesis
-              using `l el (getF state ! c)` `literalTrue l (elements (getM state))`
+              using \<open>l el (getF state ! c)\<close> \<open>literalTrue l (elements (getM state))\<close>
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               by auto
@@ -7239,12 +7239,12 @@ proof-
       proof-
         {
           assume "literalFalse w2 (elements (getM ?state'))"
-            with `w2 \<noteq> opposite literal`
+            with \<open>w2 \<noteq> opposite literal\<close>
             have "literalFalse w2 (elements (getM state))"
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
             by simp
-          with `watchCharacterizationCondition w2 w1 (getM state) (getF state ! c)`
+          with \<open>watchCharacterizationCondition w2 w1 (getM state) (getF state ! c)\<close>
           have "(\<exists> l. l el ((getF state) ! c) \<and> literalTrue l (elements (getM state))
             \<and> elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)) \<or> 
             (\<forall>l. l el (getF state ! c) \<and> l \<noteq> w2 \<and> l \<noteq> w1 \<longrightarrow>
@@ -7253,7 +7253,7 @@ proof-
             unfolding watchCharacterizationCondition_def
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
-            using `w2 \<noteq> opposite literal`
+            using \<open>w2 \<noteq> opposite literal\<close>
             by simp
           have "?a ?state' \<or> ?b ?state'"
           proof (cases "?b state")
@@ -7266,14 +7266,14 @@ proof-
                 have "literalFalse l (elements (getM ?state')) \<and> 
                       elementLevel (opposite l) (getM ?state') \<le> elementLevel (opposite w2) (getM ?state')"
                 proof-
-                  from True `l el (nth (getF ?state') c)` `l \<noteq> w1` `l \<noteq> w2`
+                  from True \<open>l el (nth (getF ?state') c)\<close> \<open>l \<noteq> w1\<close> \<open>l \<noteq> w2\<close>
                   have "literalFalse l (elements (getM state))"
                     "elementLevel (opposite l) (getM state) \<le> elementLevel (opposite w2) (getM state)"
                     using assms 
                     using assertLiteralEffect[of "state" "literal" "decision"]
                     by auto
                   thus ?thesis
-                    using `literalFalse w2 (elements (getM state))`
+                    using \<open>literalFalse w2 (elements (getM state))\<close>
                     using elementLevelAppend[of "opposite w2" "getM state" "[(literal, decision)]"]
                     using elementLevelAppend[of "opposite l" "getM state" "[(literal, decision)]"]
                     using assms 
@@ -7286,30 +7286,30 @@ proof-
             qed
           next
             case False
-            with `?a state \<or> ?b state`
+            with \<open>?a state \<or> ?b state\<close>
             obtain l::Literal
               where "l el (getF state ! c)" "literalTrue l (elements (getM state))" 
               "elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)"
               by auto
             
-            from `w2 \<noteq> opposite literal`
-              `literalFalse w2 (elements (getM ?state'))`
+            from \<open>w2 \<noteq> opposite literal\<close>
+              \<open>literalFalse w2 (elements (getM ?state'))\<close>
             have "elementLevel (opposite w2) ((getM state) @ [(literal, decision)]) = elementLevel (opposite w2) (getM state)"
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               unfolding elementLevel_def
               by (simp add: markedElementsToAppend)
             moreover
-            from `literalTrue l (elements (getM state))`
+            from \<open>literalTrue l (elements (getM state))\<close>
             have "elementLevel l ((getM state) @ [(literal, decision)]) = elementLevel l (getM state)"
               unfolding elementLevel_def
               by (simp add: markedElementsToAppend)
             ultimately
             have "elementLevel l ((getM state) @ [(literal, decision)]) \<le> elementLevel (opposite w2) ((getM state) @ [(literal, decision)])"
-              using `elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)`
+              using \<open>elementLevel l (getM state) \<le> elementLevel (opposite w2) (getM state)\<close>
               by simp
             thus ?thesis
-              using `l el (getF state ! c)` `literalTrue l (elements (getM state))`
+              using \<open>l el (getF state ! c)\<close> \<open>literalTrue l (elements (getM state))\<close>
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               by auto
@@ -7355,11 +7355,11 @@ proof-
     using NotifyWatchesLoopConflictFlagEffect[of "?state" 
       "getWatchList ?state (opposite literal)"
       "opposite literal" "[]"]
-    using `InvariantConsistent ((getM state) @ [(literal, decision)])`
-    using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
-    using `InvariantWatchListsUniq (getWatchList state)`
-    using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
-    using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+    using \<open>InvariantConsistent ((getM state) @ [(literal, decision)])\<close>
+    using \<open>InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)\<close>
+    using \<open>InvariantWatchListsUniq (getWatchList state)\<close>
+    using \<open>InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)\<close>
+    using \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
     unfolding InvariantWatchListsUniq_def
     unfolding InvariantWatchListsCharacterization_def
     unfolding InvariantWatchListsContainOnlyClausesFromF_def
@@ -7383,7 +7383,7 @@ proof-
       "clause < length (getF ?state)"
       "\<exists> w1 w2. getWatch1 ?state clause = Some w1 \<and> getWatch2 ?state clause = Some w2 \<and> 
       w1 el (nth (getF ?state) clause) \<and> w2 el (nth (getF ?state) clause)"
-      using `clause \<in> set (getWatchList ?state (opposite literal))`
+      using \<open>clause \<in> set (getWatchList ?state (opposite literal))\<close>
       using assms
       unfolding InvariantWatchListsContainOnlyClausesFromF_def
       unfolding InvariantWatchesEl_def
@@ -7394,7 +7394,7 @@ proof-
       using nth_mem[of "clause" "getF ?state"]
       by auto
     thus "?rhs"
-      using `clauseFalse (nth (getF ?state) clause) (elements (getM ?state))`
+      using \<open>clauseFalse (nth (getF ?state) clause) (elements (getM ?state))\<close>
       by auto
   next
     assume "?rhs"
@@ -7407,7 +7407,7 @@ proof-
       where "clause = (nth (getF ?state) ci)" "ci < length (getF ?state)"
       by (auto simp add: in_set_conv_nth)
     moreover
-    from `ci < length (getF ?state)`
+    from \<open>ci < length (getF ?state)\<close>
     obtain w1 w2
       where "getWatch1 state ci = Some w1" "getWatch2 state ci = Some w2" 
       "w1 el (nth (getF state) ci)" "w2 el (nth (getF state) ci)"
@@ -7418,45 +7418,45 @@ proof-
     proof-
       {
         assume "\<not> ?thesis"
-        with `clauseFalse clause ((elements (getM state)) @ [literal])`
-          `clause = (nth (getF ?state) ci)`
-          `getWatch1 state ci = Some w1` `getWatch2 state ci = Some w2`
-          `w1 el (nth (getF state) ci)` `w2 el (nth (getF state) ci)`
+        with \<open>clauseFalse clause ((elements (getM state)) @ [literal])\<close>
+          \<open>clause = (nth (getF ?state) ci)\<close>
+          \<open>getWatch1 state ci = Some w1\<close> \<open>getWatch2 state ci = Some w2\<close>
+          \<open>w1 el (nth (getF state) ci)\<close> \<open>w2 el (nth (getF state) ci)\<close>
         have "literalFalse w1 (elements (getM state))" "literalFalse w2 (elements (getM state))"
           by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
         
 
         
-        from `InvariantConsistent ((getM state) @ [(literal, decision)])`
-        `clauseFalse clause ((elements (getM state)) @ [literal])`
+        from \<open>InvariantConsistent ((getM state) @ [(literal, decision)])\<close>
+        \<open>clauseFalse clause ((elements (getM state)) @ [literal])\<close>
         have "\<not> (\<exists> l. l el clause \<and> literalTrue l (elements (getM state)))"
           unfolding InvariantConsistent_def
           by (auto simp add: inconsistentCharacterization clauseFalseIffAllLiteralsAreFalse)
 
 
-        from `InvariantUniq ((getM state) @ [(literal, decision)])`
+        from \<open>InvariantUniq ((getM state) @ [(literal, decision)])\<close>
         have "\<not> literalTrue literal (elements (getM state))"
           unfolding InvariantUniq_def
           by (auto simp add: uniqAppendIff)
         
-        from `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
-          `literalFalse w1 (elements (getM state))` `literalFalse w2 (elements (getM state))`
-          `\<not> (\<exists> l. l el clause \<and> literalTrue l (elements (getM state)))`
-          `getWatch1 state ci = Some w1`[THEN sym] 
-          `getWatch2 state ci = Some w2`[THEN sym]
-          `ci < length (getF ?state)`
-          `clause = (nth (getF ?state) ci)`
+        from \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)\<close>
+          \<open>literalFalse w1 (elements (getM state))\<close> \<open>literalFalse w2 (elements (getM state))\<close>
+          \<open>\<not> (\<exists> l. l el clause \<and> literalTrue l (elements (getM state)))\<close>
+          \<open>getWatch1 state ci = Some w1\<close>[THEN sym] 
+          \<open>getWatch2 state ci = Some w2\<close>[THEN sym]
+          \<open>ci < length (getF ?state)\<close>
+          \<open>clause = (nth (getF ?state) ci)\<close>
         have "\<forall> l. l el clause \<and> l \<noteq> w1 \<and> l \<noteq> w2 \<longrightarrow> literalFalse l (elements (getM state))"
           unfolding InvariantWatchCharacterization_def
           unfolding watchCharacterizationCondition_def
           by auto
         hence "literalTrue literal (elements (getM state))"
-          using `\<not> (getWatch1 state ci = Some (opposite literal) \<or> getWatch2 state ci = Some (opposite literal))`
-          using `opposite literal el clause`
-          using `getWatch1 state ci = Some w1`
-          using `getWatch2 state ci = Some w2`
+          using \<open>\<not> (getWatch1 state ci = Some (opposite literal) \<or> getWatch2 state ci = Some (opposite literal))\<close>
+          using \<open>opposite literal el clause\<close>
+          using \<open>getWatch1 state ci = Some w1\<close>
+          using \<open>getWatch2 state ci = Some w2\<close>
           by auto
-        with `\<not> literalTrue literal (elements (getM state))`
+        with \<open>\<not> literalTrue literal (elements (getM state))\<close>
         have False
           by simp
       }
@@ -7466,7 +7466,7 @@ proof-
     ultimately
     show "?lhs"
       using assms
-      using `clauseFalse clause ((elements (getM state)) @ [literal])`
+      using \<open>clauseFalse clause ((elements (getM state)) @ [literal])\<close>
       unfolding InvariantWatchListsCharacterization_def
       by force
   qed
@@ -7499,11 +7499,11 @@ proof-
     using NotifyWatchesLoopConflictFlagEffect[of "?state" 
       "getWatchList ?state (opposite literal)"
       "opposite literal" "[]"]
-    using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
-    using `InvariantConsistent ((getM state) @ [(literal, decision)])`
-    using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
-    using `InvariantWatchListsUniq (getWatchList state)`
-    using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
+    using \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
+    using \<open>InvariantConsistent ((getM state) @ [(literal, decision)])\<close>
+    using \<open>InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)\<close>
+    using \<open>InvariantWatchListsUniq (getWatchList state)\<close>
+    using \<open>InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)\<close>
     unfolding InvariantWatchListsUniq_def
     unfolding InvariantWatchListsCharacterization_def
     unfolding InvariantWatchListsContainOnlyClausesFromF_def
@@ -7518,9 +7518,9 @@ proof-
   proof (cases "getConflictFlag state")
     case True
     thus ?thesis
-      using `InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)`
+      using \<open>InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)\<close>
       using assertLiteralEffect[of "state" "literal" "decision"]
-      using `getConflictFlag state \<longrightarrow> getConflictFlag ?state'`
+      using \<open>getConflictFlag state \<longrightarrow> getConflictFlag ?state'\<close>
       using assms
       unfolding InvariantConflictFlagCharacterization_def
       by (auto simp add: Let_def formulaFalseAppendValuation)
@@ -7528,7 +7528,7 @@ proof-
     case False
     
     hence "\<not> formulaFalse (getF state) (elements (getM state))"
-      using `InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)`
+      using \<open>InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)\<close>
       unfolding InvariantConflictFlagCharacterization_def
       by simp
 
@@ -7541,29 +7541,29 @@ proof-
         assume "clause \<notin> set (getWatchList ?state (opposite literal))" and
           "0 \<le> clause \<and> clause < length (getF ?state)"
 
-        from `0 \<le> clause \<and> clause < length (getF ?state)`
+        from \<open>0 \<le> clause \<and> clause < length (getF ?state)\<close>
         obtain w1::Literal and w2::Literal
           where "getWatch1 ?state clause = Some w1" and
                 "getWatch2 ?state clause = Some w2" and
                 "w1 el (nth (getF ?state) clause)" and
                 "w2 el (nth (getF ?state) clause)"
-          using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+          using \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
           unfolding InvariantWatchesEl_def
           by auto
 
         have "\<not> clauseFalse (nth (getF ?state) clause) (elements (getM ?state))" 
         proof-
-          from `clause \<notin> set (getWatchList ?state (opposite literal))`
+          from \<open>clause \<notin> set (getWatchList ?state (opposite literal))\<close>
           have "w1 \<noteq> opposite literal" and
                "w2 \<noteq> opposite literal"
-            using `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
-            using `getWatch1 ?state clause = Some w1` and `getWatch2 ?state clause = Some w2`
+            using \<open>InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)\<close>
+            using \<open>getWatch1 ?state clause = Some w1\<close> and \<open>getWatch2 ?state clause = Some w2\<close>
             unfolding InvariantWatchListsCharacterization_def
             by auto
 
-          from `\<not> formulaFalse (getF state) (elements (getM state))`
+          from \<open>\<not> formulaFalse (getF state) (elements (getM state))\<close>
           have "\<not> clauseFalse (nth (getF ?state) clause) (elements (getM state))"
-            using  `0 \<le> clause \<and> clause < length (getF ?state)`
+            using  \<open>0 \<le> clause \<and> clause < length (getF ?state)\<close>
             by (simp add: formulaFalseIffContainsFalseClause)
         
           
@@ -7571,14 +7571,14 @@ proof-
           proof (cases "literalFalse w1 (elements (getM state)) \<or> literalFalse w2 (elements (getM state))")
             case True
             (* Depends on the watch characterization invariant *)
-            with `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
+            with \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)\<close>
             have $: "(\<exists> l. l el (nth (getF state) clause) \<and> literalTrue l (elements (getM state))) \<or> 
                   (\<forall> l. l el (nth (getF state) clause) \<and> 
                          l \<noteq> w1 \<and> l \<noteq> w2 \<longrightarrow> literalFalse l (elements (getM state)))
               "
-              using `getWatch1 ?state clause = Some w1`[THEN sym]
-              using `getWatch2 ?state clause = Some w2`[THEN sym]
-              using `0 \<le> clause \<and> clause < length (getF ?state)`
+              using \<open>getWatch1 ?state clause = Some w1\<close>[THEN sym]
+              using \<open>getWatch2 ?state clause = Some w2\<close>[THEN sym]
+              using \<open>0 \<le> clause \<and> clause < length (getF ?state)\<close>
               unfolding InvariantWatchCharacterization_def
               unfolding watchCharacterizationCondition_def
               by auto
@@ -7589,7 +7589,7 @@ proof-
               case True
               have "\<not> literalFalse w1 (elements (getM state)) \<or> \<not> literalFalse w2 (elements (getM state))"
               proof-
-                from `\<not> clauseFalse (nth (getF ?state) clause) (elements (getM state))`
+                from \<open>\<not> clauseFalse (nth (getF ?state) clause) (elements (getM state))\<close>
                 obtain l::Literal
                   where "l el (nth (getF ?state) clause)" and "\<not> literalFalse l (elements (getM state))"
                   by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
@@ -7598,10 +7598,10 @@ proof-
                   by auto
               qed
               hence "\<not> literalFalse w1 (elements (getM ?state)) \<or> \<not> literalFalse w2 (elements (getM ?state))"
-                using `w1 \<noteq> opposite literal` and `w2 \<noteq> opposite literal`
+                using \<open>w1 \<noteq> opposite literal\<close> and \<open>w2 \<noteq> opposite literal\<close>
                 by auto
               thus ?thesis
-                using `w1 el (nth (getF ?state) clause)` `w2 el (nth (getF ?state) clause)`
+                using \<open>w1 el (nth (getF ?state) clause)\<close> \<open>w2 el (nth (getF ?state) clause)\<close>
                 by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
             next
               case False
@@ -7610,15 +7610,15 @@ proof-
                 using $
                 by auto
               thus ?thesis
-                using `InvariantConsistent ((getM state) @ [(literal, decision)])`
+                using \<open>InvariantConsistent ((getM state) @ [(literal, decision)])\<close>
                 unfolding InvariantConsistent_def
                 by (auto simp add: clauseFalseIffAllLiteralsAreFalse inconsistentCharacterization)
             qed
           next
             case False
             thus ?thesis
-              using `w1 el (nth (getF ?state) clause)` and
-                `w1 \<noteq> opposite literal`
+              using \<open>w1 el (nth (getF ?state) clause)\<close> and
+                \<open>w1 \<noteq> opposite literal\<close>
               by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
           qed
         qed
@@ -7629,24 +7629,24 @@ proof-
     show ?thesis
     proof (cases "getConflictFlag ?state'")
       case True
-      from `\<not> getConflictFlag state` `getConflictFlag ?state'`
+      from \<open>\<not> getConflictFlag state\<close> \<open>getConflictFlag ?state'\<close>
       obtain clause::nat
         where
         "clause \<in> set (getWatchList ?state (opposite literal))" and
          "clauseFalse (nth (getF ?state) clause) (elements (getM ?state))"
         using *
         by auto
-      from `InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)`
-        `clause \<in> set (getWatchList ?state (opposite literal))`
+      from \<open>InvariantWatchListsContainOnlyClausesFromF (getWatchList state) (getF state)\<close>
+        \<open>clause \<in> set (getWatchList ?state (opposite literal))\<close>
       have "(nth (getF ?state) clause) el (getF ?state)"
         unfolding InvariantWatchListsContainOnlyClausesFromF_def
         using nth_mem
         by simp
-      with `clauseFalse (nth (getF ?state) clause) (elements (getM ?state))` 
+      with \<open>clauseFalse (nth (getF ?state) clause) (elements (getM ?state))\<close> 
       have "formulaFalse (getF ?state) (elements (getM ?state))"
         by (auto simp add: Let_def formulaFalseIffContainsFalseClause)  
       thus ?thesis
-        using `\<not> getConflictFlag state` `getConflictFlag ?state'`
+        using \<open>\<not> getConflictFlag state\<close> \<open>getConflictFlag ?state'\<close>
         unfolding InvariantConflictFlagCharacterization_def
         using assms
         using assertLiteralEffect[of "state" "literal" "decision"]
@@ -7664,7 +7664,7 @@ proof-
       hence "\<not> formulaFalse (getF ?state) (elements (getM ?state))"
         by (auto simp add:set_conv_nth formulaFalseIffContainsFalseClause)
       thus ?thesis
-        using `\<not> getConflictFlag state` `\<not> getConflictFlag ?state'`
+        using \<open>\<not> getConflictFlag state\<close> \<open>\<not> getConflictFlag ?state'\<close>
         using assms
         unfolding InvariantConflictFlagCharacterization_def
         by (auto simp add: Let_def assertLiteralEffect)
@@ -7749,92 +7749,92 @@ proof-
         {
           assume "\<not> ?thesis"
           
-          from `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)`
+          from \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close>
           obtain wl1 wl2
             where "?w1 = Some wl1" "?w2 = Some wl2" "wl1 el (getF state ! uci)" "wl2 el (getF state ! uci)"
             unfolding InvariantWatchesEl_def
-            using `uci < length (getF state)`
+            using \<open>uci < length (getF state)\<close>
             by force
 
-          with `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
+          with \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)\<close>
           have "watchCharacterizationCondition wl1 wl2 (getM state) (getF state ! uci)"
                "watchCharacterizationCondition wl2 wl1 (getM state) (getF state ! uci)"
-            using `uci < length (getF state)`
+            using \<open>uci < length (getF state)\<close>
             unfolding InvariantWatchCharacterization_def
             by auto
 
-          from `isUnitClause uc ul ((elements (getM state)) @ [literal])`
+          from \<open>isUnitClause uc ul ((elements (getM state)) @ [literal])\<close>
           have "\<not> (\<exists> l. l el uc \<and> (literalTrue l ((elements (getM state)) @ [literal])))"
             using containsTrueNotUnit
-            using `InvariantConsistent ((getM state) @ [(literal, decision)])`
+            using \<open>InvariantConsistent ((getM state) @ [(literal, decision)])\<close>
             unfolding InvariantConsistent_def
             by auto
           
-          from `InvariantUniq ((getM state) @ [(literal, decision)])`
+          from \<open>InvariantUniq ((getM state) @ [(literal, decision)])\<close>
           have "\<not> literal el (elements (getM state))"
             unfolding InvariantUniq_def
             by (simp add: uniqAppendIff)
         
-          from `\<not> ?thesis` 
-            `?w1 = Some wl1` `?w2 = Some wl2`
+          from \<open>\<not> ?thesis\<close> 
+            \<open>?w1 = Some wl1\<close> \<open>?w2 = Some wl2\<close>
           have "wl1 \<noteq> opposite literal" "wl2 \<noteq> opposite literal"
             by auto
 
-          from `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+          from \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
           have "wl1 \<noteq> wl2"
-            using `?w1 = Some wl1` `?w2 = Some wl2`
+            using \<open>?w1 = Some wl1\<close> \<open>?w2 = Some wl2\<close>
             unfolding InvariantWatchesDiffer_def
-            using `uci < length (getF state)`
+            using \<open>uci < length (getF state)\<close>
             by auto
           
           have "literalFalse wl1 (elements (getM state)) \<or> literalFalse wl2 (elements (getM state))"
           proof (cases "ul = wl1")
             case True
-            with `wl1 \<noteq> wl2`
+            with \<open>wl1 \<noteq> wl2\<close>
             have "ul \<noteq> wl2"
               by simp
-            with `isUnitClause uc ul ((elements (getM state)) @ [literal])`
-              `wl2 \<noteq> opposite literal` `wl2 el (getF state ! uci)`
-              `uc = (getF state ! uci)`
+            with \<open>isUnitClause uc ul ((elements (getM state)) @ [literal])\<close>
+              \<open>wl2 \<noteq> opposite literal\<close> \<open>wl2 el (getF state ! uci)\<close>
+              \<open>uc = (getF state ! uci)\<close>
             show ?thesis
               unfolding isUnitClause_def
               by auto
           next
             case False
-            with `isUnitClause uc ul ((elements (getM state)) @ [literal])`
-              `wl1 \<noteq> opposite literal` `wl1 el (getF state ! uci)`
-              `uc = (getF state ! uci)`
+            with \<open>isUnitClause uc ul ((elements (getM state)) @ [literal])\<close>
+              \<open>wl1 \<noteq> opposite literal\<close> \<open>wl1 el (getF state ! uci)\<close>
+              \<open>uc = (getF state ! uci)\<close>
             show ?thesis
               unfolding isUnitClause_def
               by auto
           qed
 
-          with  `watchCharacterizationCondition wl1 wl2 (getM state) (getF state ! uci)`
-            `watchCharacterizationCondition wl2 wl1 (getM state) (getF state ! uci)`
-            `\<not> (\<exists> l. l el uc \<and> (literalTrue l ((elements (getM state)) @ [literal])))`
-            `uc = (getF state ! uci)`
-            `?w1 = Some wl1` `?w2 = Some wl2`
+          with  \<open>watchCharacterizationCondition wl1 wl2 (getM state) (getF state ! uci)\<close>
+            \<open>watchCharacterizationCondition wl2 wl1 (getM state) (getF state ! uci)\<close>
+            \<open>\<not> (\<exists> l. l el uc \<and> (literalTrue l ((elements (getM state)) @ [literal])))\<close>
+            \<open>uc = (getF state ! uci)\<close>
+            \<open>?w1 = Some wl1\<close> \<open>?w2 = Some wl2\<close>
           have "\<forall> l. l el uc \<and> l \<noteq> wl1 \<and> l \<noteq> wl2 \<longrightarrow> literalFalse l (elements (getM state))"
             unfolding watchCharacterizationCondition_def
             by auto
-          with `wl1 \<noteq> opposite literal` `wl2 \<noteq> opposite literal` `opposite literal el uc`
+          with \<open>wl1 \<noteq> opposite literal\<close> \<open>wl2 \<noteq> opposite literal\<close> \<open>opposite literal el uc\<close>
           have "literalTrue literal (elements (getM state))"
             by auto
-          with `\<not> literal el (elements (getM state))`
+          with \<open>\<not> literal el (elements (getM state))\<close>
           have False
             by simp
         } thus ?thesis
           by auto
       qed
-      with `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
+      with \<open>InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)\<close>
       have "uci \<in> set (getWatchList state (opposite literal))"
         unfolding InvariantWatchListsCharacterization_def
         by auto
 
       thus "ul \<in> set (getQ ?state'')"
-        using `uc el (getF state)` 
-        using `isUnitClause uc ul ((elements (getM state)) @ [literal])`
-        using `uc = (getF state ! uci)`
+        using \<open>uc el (getF state)\<close> 
+        using \<open>isUnitClause uc ul ((elements (getM state)) @ [literal])\<close>
+        using \<open>uc = (getF state ! uci)\<close>
         unfolding assertLiteral_def
         unfolding notifyWatches_def
         using assms
@@ -7920,7 +7920,7 @@ proof-
 
   {
     assume "\<not> getConflictFlag ?state'"
-    with `getConflictFlag state \<longrightarrow> getConflictFlag ?state'`
+    with \<open>getConflictFlag state \<longrightarrow> getConflictFlag ?state'\<close>
     have "\<not> getConflictFlag state"
       by simp
 
@@ -7938,9 +7938,9 @@ proof-
         proof (cases "l el (getQ state)")
           case True
         
-          from `\<not> getConflictFlag state`
-            `InvariantQCharacterization (getConflictFlag state) (getQ state) (getF state) (getM state)`
-            `l el (getQ state)`
+          from \<open>\<not> getConflictFlag state\<close>
+            \<open>InvariantQCharacterization (getConflictFlag state) (getQ state) (getF state) (getM state)\<close>
+            \<open>l el (getQ state)\<close>
           obtain c::Clause
             where "c el (getF state)" "isUnitClause c l (elements (getM state))"
             unfolding InvariantQCharacterization_def
@@ -7952,14 +7952,14 @@ proof-
             hence "opposite l \<noteq> literal"
               by auto
             
-            from `isUnitClause c l (elements (getM state))`
-              `opposite l \<noteq> literal` `l \<noteq> literal`
+            from \<open>isUnitClause c l (elements (getM state))\<close>
+              \<open>opposite l \<noteq> literal\<close> \<open>l \<noteq> literal\<close>
             have "isUnitClause c l ((elements (getM state) @ [literal]))"
               using isUnitClauseAppendValuation[of "c" "l" "elements (getM state)" "literal"]
               by simp
             thus ?thesis
               using assms
-              using `c el (getF state)`
+              using \<open>c el (getF state)\<close>
               using assertLiteralEffect[of "state" "literal" "decision"]
               by auto
           next
@@ -7967,14 +7967,14 @@ proof-
             hence "opposite l = literal"
               by simp
 
-            from `isUnitClause c l (elements (getM state))`
+            from \<open>isUnitClause c l (elements (getM state))\<close>
             have "clauseFalse c (elements (getM ?state'))"
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               using unitBecomesFalse[of "c" "l" "elements (getM state)"]
-              using `opposite l = literal`
+              using \<open>opposite l = literal\<close>
               by simp
-            with `c el (getF state)`
+            with \<open>c el (getF state)\<close>
             have "formulaFalse (getF state) (elements (getM ?state'))"
               by (auto simp add: formulaFalseIffContainsFalseClause)
                 
@@ -7982,13 +7982,13 @@ proof-
             have "InvariantConflictFlagCharacterization (getConflictFlag ?state') (getF ?state') (getM ?state')"
               using InvariantConflictFlagCharacterizationAfterAssertLiteral
               by (simp add: Let_def)
-            with `formulaFalse (getF state) (elements (getM ?state'))`
+            with \<open>formulaFalse (getF state) (elements (getM ?state'))\<close>
             have "getConflictFlag ?state'"
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               unfolding InvariantConflictFlagCharacterization_def
               by auto
-            with `\<not> getConflictFlag ?state'`
+            with \<open>\<not> getConflictFlag ?state'\<close>
             show ?thesis
               by simp
           qed
@@ -7997,7 +7997,7 @@ proof-
           then obtain c::Clause
             where "c el (getF ?state') \<and> isUnitClause c l (elements (getM ?state'))"
             using *
-            using `l el (getQ ?state')`
+            using \<open>l el (getQ ?state')\<close>
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
             by auto
@@ -8017,15 +8017,15 @@ proof-
         then obtain w1::Literal and w2::Literal
           where "getWatch1 state ci = Some w1" and "getWatch2 state ci = Some w2" and 
           "w1 el c" and "w2 el c"
-          using `InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)` 
-          using `c = (nth (getF ?state') ci)`
+          using \<open>InvariantWatchesEl (getF state) (getWatch1 state) (getWatch2 state)\<close> 
+          using \<open>c = (nth (getF ?state') ci)\<close>
           unfolding InvariantWatchesEl_def
           using assms
           using assertLiteralEffect[of "state" "literal" "decision"]
           by auto
         hence "w1 \<noteq> w2"
-          using `ci < length (getF ?state')`
-          using `InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)`
+          using \<open>ci < length (getF ?state')\<close>
+          using \<open>InvariantWatchesDiffer (getF state) (getWatch1 state) (getWatch2 state)\<close>
           unfolding InvariantWatchesDiffer_def
           using assms
           using assertLiteralEffect[of "state" "literal" "decision"]
@@ -8034,9 +8034,9 @@ proof-
         show "l el (removeAll literal (getQ ?state'))"
         proof (cases "isUnitClause c l (elements (getM state))")
           case True
-          with `InvariantQCharacterization (getConflictFlag state) (getQ state) (getF state) (getM state)`
-            `\<not> getConflictFlag state`
-            `c el (getF ?state')` 
+          with \<open>InvariantQCharacterization (getConflictFlag state) (getQ state) (getF state) (getM state)\<close>
+            \<open>\<not> getConflictFlag state\<close>
+            \<open>c el (getF ?state')\<close> 
           have "l el (getQ state)"
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
@@ -8051,12 +8051,12 @@ proof-
             unfolding isPrefix_def
             by auto
           have "l el (getQ ?state')"
-            using `l el (getQ state)`
-            `(getQ state) @ Q' = (getQ ?state')`[THEN sym]
+            using \<open>l el (getQ state)\<close>
+            \<open>(getQ state) @ Q' = (getQ ?state')\<close>[THEN sym]
             by simp
           moreover
           have "l \<noteq> literal"
-            using `isUnitClause c l (elements (getM ?state'))`
+            using \<open>isUnitClause c l (elements (getM ?state'))\<close>
             using assms
             using assertLiteralEffect[of "state" "literal" "decision"]
             unfolding isUnitClause_def
@@ -8071,15 +8071,15 @@ proof-
           proof (cases "ci \<in> set (getWatchList ?state (opposite literal))")
             case True
             with ** 
-              `isUnitClause c l (elements (getM ?state'))`
-              `c = (nth (getF ?state') ci)`
+              \<open>isUnitClause c l (elements (getM ?state'))\<close>
+              \<open>c = (nth (getF ?state') ci)\<close>
             have "l \<in> set (getQ ?state')"
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               by simp
             moreover
             have "l \<noteq> literal"
-              using `isUnitClause c l (elements (getM ?state'))`
+              using \<open>isUnitClause c l (elements (getM ?state'))\<close>
               unfolding isUnitClause_def
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
@@ -8089,9 +8089,9 @@ proof-
               by simp
           next
             case False
-            with `InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)`
+            with \<open>InvariantWatchListsCharacterization (getWatchList state) (getWatch1 state) (getWatch2 state)\<close>
             have "w1 \<noteq> opposite literal" "w2 \<noteq> opposite literal"
-              using `getWatch1 state ci = Some w1` and `getWatch2 state ci = Some w2`
+              using \<open>getWatch1 state ci = Some w1\<close> and \<open>getWatch2 state ci = Some w2\<close>
               unfolding InvariantWatchListsCharacterization_def
               by auto
             have "literalFalse w1 (elements (getM state)) \<or> literalFalse w2 (elements (getM state))"
@@ -8099,28 +8099,28 @@ proof-
               {
                 assume "\<not> ?thesis"
                 hence "\<not> literalFalse w1 (elements (getM ?state'))" "\<not> literalFalse w2 (elements (getM ?state'))"
-                  using `w1 \<noteq> opposite literal` and `w2 \<noteq> opposite literal`
+                  using \<open>w1 \<noteq> opposite literal\<close> and \<open>w2 \<noteq> opposite literal\<close>
                   using assms
                   using assertLiteralEffect[of "state" "literal" "decision"]
                   by auto
-                with `w1 \<noteq> w2` `w1 el c` `w2 el c`
+                with \<open>w1 \<noteq> w2\<close> \<open>w1 el c\<close> \<open>w2 el c\<close>
                 have  "\<not> isUnitClause c l (elements (getM ?state'))"
                   unfolding isUnitClause_def
                   by auto
               }
-              with `isUnitClause c l (elements (getM ?state'))`
+              with \<open>isUnitClause c l (elements (getM ?state'))\<close>
               show ?thesis
                 by auto
             qed
                 (* Depends on the watch characterization invariant *)
-            with `InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)`
+            with \<open>InvariantWatchCharacterization (getF state) (getWatch1 state) (getWatch2 state) (getM state)\<close>
             have $: "(\<exists> l. l el c \<and> literalTrue l (elements (getM state))) \<or> 
                      (\<forall> l. l el c \<and> 
                          l \<noteq> w1 \<and> l \<noteq> w2 \<longrightarrow> literalFalse l (elements (getM state)))
               "
-              using `ci < length (getF ?state')`
-              using `c = (nth (getF ?state') ci)`
-              using `getWatch1 state ci = Some w1`[THEN sym] and `getWatch2 state ci = Some w2`[THEN sym]
+              using \<open>ci < length (getF ?state')\<close>
+              using \<open>c = (nth (getF ?state') ci)\<close>
+              using \<open>getWatch1 state ci = Some w1\<close>[THEN sym] and \<open>getWatch2 state ci = Some w2\<close>[THEN sym]
               using assms
               using assertLiteralEffect[of "state" "literal" "decision"]
               unfolding InvariantWatchCharacterization_def
@@ -8129,7 +8129,7 @@ proof-
             thus ?thesis
             proof(cases "\<forall> l. l el c \<and> l \<noteq> w1 \<and> l \<noteq> w2 \<longrightarrow> literalFalse l (elements (getM state))")
               case True
-              with `isUnitClause c l (elements (getM ?state'))`
+              with \<open>isUnitClause c l (elements (getM ?state'))\<close>
               have "literalFalse w1 (elements (getM state)) \<longrightarrow> 
                       \<not> literalFalse w2 (elements (getM state)) \<and> \<not> literalTrue w2 (elements (getM state)) \<and> l = w2"
                    "literalFalse w2 (elements (getM state)) \<longrightarrow> 
@@ -8139,16 +8139,16 @@ proof-
                 using assertLiteralEffect[of "state" "literal" "decision"]
                 by auto
               
-              with `literalFalse w1 (elements (getM state)) \<or> literalFalse w2 (elements (getM state))`
+              with \<open>literalFalse w1 (elements (getM state)) \<or> literalFalse w2 (elements (getM state))\<close>
               have "(literalFalse w1 (elements (getM state)) \<and> \<not> literalFalse w2 (elements (getM state)) \<and> \<not> literalTrue w2 (elements (getM state)) \<and> l = w2) \<or> 
                     (literalFalse w2 (elements (getM state)) \<and> \<not> literalFalse w1 (elements (getM state)) \<and> \<not> literalTrue w1 (elements (getM state)) \<and> l = w1)"
                 by blast
               hence "isUnitClause c l (elements (getM state))"
-                using `w1 el c` `w2 el c` True
+                using \<open>w1 el c\<close> \<open>w2 el c\<close> True
                 unfolding isUnitClause_def
                 by auto
               thus ?thesis
-                using `\<not> isUnitClause c l (elements (getM state))`
+                using \<open>\<not> isUnitClause c l (elements (getM state))\<close>
                 by simp
             next
               case False
@@ -8161,11 +8161,11 @@ proof-
                 using assertLiteralEffect[of "state" "literal" "decision"]
                 by auto
               
-              from `InvariantConsistent ((getM state) @ [(literal, decision)])`
-                `l' el c` `literalTrue l' (elements (getM ?state'))`
+              from \<open>InvariantConsistent ((getM state) @ [(literal, decision)])\<close>
+                \<open>l' el c\<close> \<open>literalTrue l' (elements (getM ?state'))\<close>
               show ?thesis
                 using containsTrueNotUnit[of "l'" "c" "elements (getM ?state')"]
-                using `isUnitClause c l (elements (getM ?state'))`
+                using \<open>isUnitClause c l (elements (getM ?state'))\<close>
                 using assms
                 using assertLiteralEffect[of "state" "literal" "decision"]
                 unfolding InvariantConsistent_def
@@ -8235,7 +8235,7 @@ proof-
       unfolding assertLiteral_def
       unfolding notifyWatches_def
       by (auto simp add: Let_def)
-    with `\<not> ?thesis`
+    with \<open>\<not> ?thesis\<close>
     obtain clause
       where "isUnitClause clause literal (elements (getM ?state))"
       by (auto simp add: Let_def)
@@ -8327,15 +8327,15 @@ proof-
         by (auto simp add: prefixToLevelAppend)
       moreover
       have "\<not> formulaFalse (getF state) (elements (prefixToLevel level (getM state)))"
-        using `InvariantNoDecisionsWhenConflict (getF state) (getM state) (currentLevel (getM state))`
-        using `level < currentLevel (getM state)`
+        using \<open>InvariantNoDecisionsWhenConflict (getF state) (getM state) (currentLevel (getM state))\<close>
+        using \<open>level < currentLevel (getM state)\<close>
         unfolding InvariantNoDecisionsWhenConflict_def
         by simp
       moreover
       have "\<not> (\<exists>clause literal. clause el (getF state) \<and> 
                 isUnitClause clause literal (elements (prefixToLevel level (getM state))))"
-        using `InvariantNoDecisionsWhenUnit (getF state) (getM state) (currentLevel (getM state))`
-        using `level < currentLevel (getM state)`
+        using \<open>InvariantNoDecisionsWhenUnit (getF state) (getM state) (currentLevel (getM state))\<close>
+        using \<open>level < currentLevel (getM state)\<close>
         unfolding InvariantNoDecisionsWhenUnit_def
         by simp
       ultimately
@@ -8354,8 +8354,8 @@ proof-
           unfolding currentLevel_def
           by (auto simp add: markedElementsAppend)
         thus ?thesis 
-          using `\<not> (level < currentLevel (getM state))`
-          using `level < currentLevel (getM ?state')`
+          using \<open>\<not> (level < currentLevel (getM state))\<close>
+          using \<open>level < currentLevel (getM ?state')\<close>
           by simp
       next
         case True
@@ -8365,20 +8365,20 @@ proof-
           unfolding currentLevel_def
           by (auto simp add: markedElementsAppend)
         hence "level = currentLevel (getM state)"
-          using `\<not> (level < currentLevel (getM state))`
-          using `level < currentLevel (getM ?state')`
+          using \<open>\<not> (level < currentLevel (getM state))\<close>
+          using \<open>level < currentLevel (getM ?state')\<close>
           by simp
         hence "prefixToLevel level (getM ?state') = (getM state)"
-          using `decision`
+          using \<open>decision\<close>
           using assms
           using assertLiteralEffect[of "state" "literal" "decision"]
           using prefixToLevelAppend[of "currentLevel (getM state)" "getM state" "[(literal, True)]"]
           by auto
         thus ?thesis
-          using `decision`
-          using `decision \<longrightarrow> \<not> (getConflictFlag state) \<and> (getQ state) = []`
-          using `InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)`       
-          using `InvariantQCharacterization (getConflictFlag state) (getQ state) (getF state) (getM state)`
+          using \<open>decision\<close>
+          using \<open>decision \<longrightarrow> \<not> (getConflictFlag state) \<and> (getQ state) = []\<close>
+          using \<open>InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)\<close>       
+          using \<open>InvariantQCharacterization (getConflictFlag state) (getQ state) (getF state) (getM state)\<close>
           unfolding InvariantConflictFlagCharacterization_def
           unfolding InvariantQCharacterization_def
           using assms
@@ -8429,7 +8429,7 @@ proof-
       unfolding isUnitClause_def
       by auto
     thus "vbl \<in> vars (getF state)"
-      using `var ul = vbl`
+      using \<open>var ul = vbl\<close>
       by auto
   qed
   thus ?thesis

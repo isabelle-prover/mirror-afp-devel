@@ -70,7 +70,7 @@ text \<open>Since we are in a Isabelle session, at this time, it becomes possibl
 the command @{command value} the result of the translations applied with @{term Design}. 
 A suitable environment should nevertheless be provided, 
 one can typically experiment this by copying-pasting the following environment
-initialized in the above @{text main}:\<close>
+initialized in the above \<open>main\<close>:\<close>
 
 definition "main =
  (let n = \<lambda>n1. ToyTyObj (ToyTyCore_pre n1) []

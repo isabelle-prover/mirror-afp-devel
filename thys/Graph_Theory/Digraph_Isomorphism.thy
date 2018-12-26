@@ -4,7 +4,7 @@ theory Digraph_Isomorphism imports
   Digraph_Component
 begin
 
-section {* Isomorphisms of Digraphs *}
+section \<open>Isomorphisms of Digraphs\<close>
 
 record ('a,'b,'aa,'bb) digraph_isomorphism =
   iso_verts :: "'a \<Rightarrow> 'aa"

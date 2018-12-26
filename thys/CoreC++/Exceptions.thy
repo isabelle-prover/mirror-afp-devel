@@ -3,11 +3,11 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Exceptions *}
+section \<open>Exceptions\<close>
 
 theory Exceptions imports Objects begin
 
-subsection {* Exceptions *}
+subsection \<open>Exceptions\<close>
 
 
 definition NullPointer :: cname where 

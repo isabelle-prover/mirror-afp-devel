@@ -12,9 +12,9 @@ imports SCFs
 begin
 (*>*)
 
-section{* Arrow's General Possibility Theorem *}
+section\<open>Arrow's General Possibility Theorem\<close>
 
-text{*
+text\<open>
 
 The proof falls into two parts: showing that a semi-decisive individual is
 in fact a dictator, and that a semi-decisive individual exists. I take them
@@ -23,20 +23,20 @@ in that order.
 It might be good to do some of this in a locale. The complication is
 untangling where various witnesses need to be quantified over.
 
-*}
+\<close>
 
 (* **************************************** *)
 
-subsection{* Semi-decisiveness Implies Decisiveness *}
+subsection\<open>Semi-decisiveness Implies Decisiveness\<close>
 
-text{*
+text\<open>
 
 I follow \cite[Chapter~3*]{Sen:70a} quite closely here. Formalising his
 appeal to the @{term "iia"} assumption is the main complication here.
 
-*}
+\<close>
 
-text{* The witness for the first lemma: in the profile $P'$, special agent
+text\<open>The witness for the first lemma: in the profile $P'$, special agent
 $j$ strictly prefers $x$ to $y$ to $z$, and doesn't care about the other
 alternatives. Everyone else strictly prefers $y$ to each of $x$ to $z$, and
 inherits the relative preferences between $x$ and $z$ from profile $P$.
@@ -47,7 +47,7 @@ following lemma is used with different instantiations of $x$, $y$ and $z$,
 so we need to quantify over them here. This happens implicitly, but in a
 locale we would have to be more explicit.
 
-This is just tedious. *}
+This is just tedious.\<close>
 
 lemma decisive1_witness:
   assumes has3A: "hasw [x,y,z] A"
@@ -94,10 +94,10 @@ proof
     unfolding strict_pref_def by auto
 qed
 
-text {* The key lemma: in the presence of Arrow's assumptions, an individual
+text \<open>The key lemma: in the presence of Arrow's assumptions, an individual
 who is semi-decisive for $x$ and $y$ is actually decisive for $x$ over any
 other alternative $z$. (This is where the quantification becomes important.) 
-*}
+\<close>
 
 lemma decisive1:
   assumes has3A: "hasw [x,y,z] A"
@@ -149,10 +149,10 @@ proof
   ultimately show "x \<^bsub>(swf P)\<^esub>\<prec> z" unfolding strict_pref_def by blast
 qed
 
-text{* The witness for the second lemma: special agent $j$ strictly prefers
+text\<open>The witness for the second lemma: special agent $j$ strictly prefers
 $z$ to $x$ to $y$, and everyone else strictly prefers $z$ to $x$ and $y$ to
 $x$. (In some sense the last part is upside-down with respect to the first
-witness.) *}
+witness.)\<close>
 
 lemma decisive2_witness:
   assumes has3A: "hasw [x,y,z] A"
@@ -249,9 +249,9 @@ proof
   ultimately show "z \<^bsub>(swf P)\<^esub>\<prec> y" unfolding strict_pref_def by blast
 qed
 
-text {* The following results permute $x$, $y$ and $z$ to show how
+text \<open>The following results permute $x$, $y$ and $z$ to show how
 decisiveness can be obtained from semi-decisiveness in all cases. Again,
-quite tedious. *}
+quite tedious.\<close>
 
 lemma decisive3:
   assumes has3A: "hasw [x,y,z] A"
@@ -382,8 +382,8 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-text {* The first result: if $j$ is semidecisive for some alternatives $u$
-and $v$, then they are actually a dictator. *}
+text \<open>The first result: if $j$ is semidecisive for some alternatives $u$
+and $v$, then they are actually a dictator.\<close>
 
 lemma sd_imp_dictator:
   assumes has3A: "has 3 A"
@@ -409,12 +409,12 @@ qed
 
 (* **************************************** *)
 
-subsection{* The Existence of a Semi-decisive Individual *}
+subsection\<open>The Existence of a Semi-decisive Individual\<close>
 
-text{* The second half of the proof establishes the existence of a
+text\<open>The second half of the proof establishes the existence of a
 semi-decisive individual. The required witness is essentially an encoding of
 the Condorcet pardox (aka "the paradox of voting" that shows we get tied up
-in knots if a certain agent didn't have dictatorial powers. *}
+in knots if a certain agent didn't have dictatorial powers.\<close>
 
 lemma sd_exists_witness:
   assumes has3A: "hasw [x,y,z] A"
@@ -458,8 +458,8 @@ proof
     unfolding strict_pref_def by auto
 qed
 
-text {* This proof is unfortunately long. Many of the statements rely on a
-lot of context, making it difficult to split it up. *}
+text \<open>This proof is unfortunately long. Many of the statements rely on a
+lot of context, making it difficult to split it up.\<close>
 
 lemma sd_exists:
   assumes has3A: "has 3 A"
@@ -608,9 +608,9 @@ qed
 
 (* **************************************** *)
 
-subsection{* Arrow's General Possibility Theorem *}
+subsection\<open>Arrow's General Possibility Theorem\<close>
 
-text{*
+text\<open>
 
 Finally we conclude with the celebrated ``possibility'' result. Note that we
 assume the set of individuals is finite; \cite{Routley:79} relaxes this with
@@ -618,7 +618,7 @@ some fancier set theory. Having an infinite set of alternatives doesn't
 matter, though the result is a bit more plausible if we assume finiteness
 \cite[p54]{Sen:70a}.
 
-*}
+\<close>
 
 theorem ArrowGeneralPossibility:
   assumes has3A: "has 3 A"

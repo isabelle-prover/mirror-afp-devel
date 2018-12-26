@@ -352,8 +352,8 @@ text \<open>We now build the infrastructure for establishing invariants
 
 
 text \<open>For technical reasons, invariants are established in a two-step process:
-  \<^enum> First, we prove the invariant wrt. the parameterization in the @{text param_DFS} locale.
-  \<^enum> Next, we transfer the invariant to the @{text DFS_invar}-locale.
+  \<^enum> First, we prove the invariant wrt. the parameterization in the \<open>param_DFS\<close> locale.
+  \<^enum> Next, we transfer the invariant to the \<open>DFS_invar\<close>-locale.
 \<close>
 (* This locale is required to establish new invariants.
   We would like to directly establish new invariants in the 
@@ -512,10 +512,10 @@ begin
     hence DI: "DFS_invar G param s" by unfold_locales
     then interpret DFS_invar G param s .
 
-    from `cond s` have IB: "\<not> is_break param s" by (simp add: cond_def)
+    from \<open>cond s\<close> have IB: "\<not> is_break param s" by (simp add: cond_def)
 
     have B: "step s \<le>\<^sub>n SPEC (DFS_invar G param)"
-      by rule (metis DFS_invar_step' DI `cond s`)
+      by rule (metis DFS_invar_step' DI \<open>cond s\<close>)
 
     note rule_assms = DI IC IB
 
@@ -921,7 +921,7 @@ context param_DFS begin
       by simp blast
 
     moreover
-    from `stack s \<noteq> []` finish have "E``dom (finished s') \<subseteq> dom (discovered s')" 
+    from \<open>stack s \<noteq> []\<close> finish have "E``dom (finished s') \<subseteq> dom (discovered s')" 
       apply (cases "stack s") apply simp
       apply (simp add: discovered_closed_def) 
       apply (blast)

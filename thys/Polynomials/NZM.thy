@@ -23,20 +23,20 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Monotonicity criteria of Neurauter, Zankl, and Middeldorp *}
+section \<open>Monotonicity criteria of Neurauter, Zankl, and Middeldorp\<close>
 
 theory NZM
 imports "Abstract-Rewriting.SN_Order_Carrier" Polynomials
 begin
 
-text {* 
+text \<open>
 We show that our check on monotonicity is strong enough to capture the 
 exact criterion for polynomials of degree 2 that is presented in \cite{NZM10}:
 \begin{itemize}
 \item $ax^2 + bx + c$ is monotone if $b + a > 0$ and $a \geq 0$
 \item $ax^2 + bx + c$ is weakly monotone if $b + a \geq 0$ and $a \geq 0$
 \end{itemize}
-*}
+\<close>
 
 lemma var_monom_x_x [simp]: "var_monom x * var_monom x \<noteq> 1" 
   by (unfold eq_monom_sum_var, auto simp: sum_var_monom_mult sum_var_monom_var)

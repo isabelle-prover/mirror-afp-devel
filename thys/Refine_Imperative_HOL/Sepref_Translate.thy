@@ -19,11 +19,11 @@ text \<open>
   exploited to create copies of parameters that are still required, but
   would be destroyed by a synthesized operation.
   These \emph{frame-based} rules are in the named theorem collection
-  @{text sepref_fr_rules}, and the collection @{text sepref_copy_rules}
+  \<open>sepref_fr_rules\<close>, and the collection \<open>sepref_copy_rules\<close>
   contains rules to handle copying of parameters.
 
   Apart from the frame-based rules described above, there is also a set of
-  rules for combinators, in the collection @{text sepref_comb_rules}, 
+  rules for combinators, in the collection \<open>sepref_comb_rules\<close>, 
   where no automatic copying of parameters is applied.
 
   Moreover, this theory contains 
@@ -810,7 +810,7 @@ lemma to_import_frefD:
 
 lemma add_PR_CONST: "(c,a)\<in>R \<Longrightarrow> (c,PR_CONST a)\<in>R" by simp
 
-ML {*
+ML \<open>
 structure Sepref_Import_Param = struct
 
   (* TODO: Almost clone of Sepref_Rules.to_foparam*)
@@ -884,7 +884,7 @@ structure Sepref_Import_Param = struct
         "Sepref: Parametricity to hnr-rule, no conversion to hfref"    
 
 end
-*}
+\<close>
 
 setup Sepref_Import_Param.setup
 

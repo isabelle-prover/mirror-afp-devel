@@ -1,6 +1,6 @@
 theory CFGExit_wf imports CFGExit CFG_wf begin
 
-subsection {* New well-formedness lemmas using @{text "(_Exit_)"} *}
+subsection \<open>New well-formedness lemmas using \<open>(_Exit_)\<close>\<close>
 
 
 locale CFGExit_wf = 

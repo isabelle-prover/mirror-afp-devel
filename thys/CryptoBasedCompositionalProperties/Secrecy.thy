@@ -3,7 +3,7 @@
    Author:    Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
 
-section {*Secrecy: Definitions and properties *}
+section \<open>Secrecy: Definitions and properties\<close>
 
 theory Secrecy
 imports Secrecy_types inout ListExtras

@@ -11,7 +11,7 @@ theory GeneralizedNoninterference
 imports ClassicalNoninterference
 begin
 
-text {*
+text \<open>
 \null
 
 The purpose of this section is to compare CSP noninterference security as defined previously with
@@ -22,51 +22,51 @@ not sufficient condition for them. This renders CSP noninterference security pre
 extension of classical noninterference security to nondeterministic systems.
 
 For clarity, all the constants and fact names defined in this section, with the possible exception
-of datatype constructors and main theorems, contain prefix @{text g_}.
-*}
+of datatype constructors and main theorems, contain prefix \<open>g_\<close>.
+\<close>
 
 
 subsection "Generalized noninterference"
 
-text {*
+text \<open>
 The original formulation of generalized noninterference security as contained in \cite{R4} focuses
 on systems whose events, split in inputs and outputs, are mapped into either of two security levels,
 \emph{high} and \emph{low}. Such a system is said to be secure just in case, for any trace
-@{text xs} and any high-level input @{text x}, the set of the \emph{possible low-level futures} of
-@{text xs}, i.e. of the sequences of low-level events that may succeed @{text xs} in the traces of
-the system, is equal to the set of the possible low-level futures of @{text "xs @ [x]"}.
+\<open>xs\<close> and any high-level input \<open>x\<close>, the set of the \emph{possible low-level futures} of
+\<open>xs\<close>, i.e. of the sequences of low-level events that may succeed \<open>xs\<close> in the traces of
+the system, is equal to the set of the possible low-level futures of \<open>xs @ [x]\<close>.
 
 This definition requires the following corrections:
 
 \begin{itemize}
 
 \item
-Variable @{text x} must range over all high-level events rather than over high-level inputs alone,
+Variable \<open>x\<close> must range over all high-level events rather than over high-level inputs alone,
 since high-level outputs must not be allowed to affect low-level futures as well.
 
 \item
-For any @{text x}, the range of trace @{text xs} must be restricted to the traces of the system that
-may be succeeded by @{text x}, viz. trace @{text xs} must be such that event list @{text "xs @ [x]"}
+For any \<open>x\<close>, the range of trace \<open>xs\<close> must be restricted to the traces of the system that
+may be succeeded by \<open>x\<close>, viz. trace \<open>xs\<close> must be such that event list \<open>xs @ [x]\<close>
 be itself a trace.
 \\Otherwise, a system that admits both high-level and low-level events in its alphabet but never
 accepts any high-level event, always accepting any low-level one instead, would turn out not to be
 secure, which is paradoxical since \emph{high} can by no means affect \emph{low} in a system never
-engaging in high-level events. The cause of the paradox is that, for each trace @{text xs} and each
-high-level event @{text x} of such a system, the set of the possible low-level futures of @{text xs}
+engaging in high-level events. The cause of the paradox is that, for each trace \<open>xs\<close> and each
+high-level event \<open>x\<close> of such a system, the set of the possible low-level futures of \<open>xs\<close>
 matches the Kleene closure of the set of low-level events, whereas the set of the possible low-level
-futures of @{text "xs @ [x]"} matches the empty set as @{text "xs @ [x]"} is not a trace.
+futures of \<open>xs @ [x]\<close> matches the empty set as \<open>xs @ [x]\<close> is not a trace.
 
 \end{itemize}
 
 Observe that the latter correction renders it unnecessary to explicitly assume that event list
-@{text xs} be a trace of the system, as this follows from the assumption that @{text "xs @ [x]"} be
+\<open>xs\<close> be a trace of the system, as this follows from the assumption that \<open>xs @ [x]\<close> be
 such.
 
 Here below is a formal definition of the notion of generalized noninterference security for
 processes, amended in accordance with the previous considerations.
 
 \null
-*}
+\<close>
 
 datatype g_level = High | Low
 
@@ -75,12 +75,12 @@ definition g_secure :: "'a process \<Rightarrow> ('a \<Rightarrow> g_level) \<Ri
   {ys'. \<exists>ys. xs @ ys \<in> traces P \<and> ys' = [y\<leftarrow>ys. L y = Low]} =
   {ys'. \<exists>ys. xs @ x # ys \<in> traces P \<and> ys' = [y\<leftarrow>ys. L y = Low]}"
 
-text {*
+text \<open>
 \null
 
 It is possible to prove that a weaker sufficient (as well as necessary, as obvious) condition for
 generalized noninterference security is that the set of the possible low-level futures of trace
-@{text xs} be included in the set of the possible low-level futures of trace @{text "xs @ [x]"},
+\<open>xs\<close> be included in the set of the possible low-level futures of trace \<open>xs @ [x]\<close>,
 because the latter is always included in the former.
 
 In what follows, such security property is defined formally and its sufficiency for generalized
@@ -88,7 +88,7 @@ noninterference security to hold is demonstrated in the form of an introduction 
 turn out to be useful in subsequent proofs.
 
 \null
-*}
+\<close>
 
 definition g_secure_suff :: "'a process \<Rightarrow> ('a \<Rightarrow> g_level) \<Rightarrow> bool" where
 "g_secure_suff P L \<equiv> \<forall>xs x. xs @ [x] \<in> traces P \<and> L x = High \<longrightarrow>
@@ -123,11 +123,11 @@ qed
 
 subsection "Comparison between security properties"
 
-text {*
+text \<open>
 In the continuation, it will be proven that CSP noninterference security is a sufficient condition
 for generalized noninterference security for any process whose events are mapped into either
-security domain @{text High} or @{text Low}, under the policy that @{text High} may not affect
-@{text Low}.
+security domain \<open>High\<close> or \<open>Low\<close>, under the policy that \<open>High\<close> may not affect
+\<open>Low\<close>.
 
 Particularly, this is the case for any such classical process. This fact, along with the equivalence
 between CSP noninterference security and classical noninterference security for classical processes,
@@ -136,7 +136,7 @@ machine is a sufficient condition for the generalized noninterference security o
 classical process under the aforesaid policy.
 
 \null
-*}
+\<close>
 
 definition g_I :: "(g_level \<times> g_level) set" where
 "g_I \<equiv> {(High, High), (Low, Low), (Low, High)}"
@@ -234,7 +234,7 @@ theorem c_secure_implies_g_secure:
  "c_secure step out s\<^sub>0 g_I L \<Longrightarrow> g_secure (c_process step out s\<^sub>0) (c_dom L)"
 by (rule secure_implies_g_secure, rule c_secure_implies_secure, rule g_I_refl)
 
-text {*
+text \<open>
 \null
 
 Since the definition of generalized noninterference security does not impose any explicit
@@ -260,7 +260,7 @@ condition for CSP noninterference security even in the case of deterministic pro
 The remainder of this section is dedicated to the construction of such counterexample.
 
 \null
-*}
+\<close>
 
 datatype g_state = Even | Odd
 

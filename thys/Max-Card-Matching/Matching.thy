@@ -4,7 +4,7 @@ begin
 
 type_synonym label = nat
 
-section {* Definitions *}
+section \<open>Definitions\<close>
 
 definition finite_graph :: "'v set => ('v * 'v) set \<Rightarrow> bool" where
   "finite_graph V E = (finite V \<and> finite E \<and> 
@@ -50,7 +50,7 @@ definition relevant_endpoint :: "('v \<Rightarrow> label) \<Rightarrow> 'v set \
                                  ('v * 'v) \<Rightarrow> 'v" where 
   "relevant_endpoint L V e = (if L (fst e) = 1 then fst e else snd e)"
 
-section {* Lemmas *}
+section \<open>Lemmas\<close>
 
 lemma definition_of_range:
   "endpoint_inV V1 ` matching_i 1 V E M L = 
@@ -93,7 +93,7 @@ proof -
   then show ?thesis by (auto simp add: edge_as_set_def endpoint_inV_def)
 qed
 
-subsection {* @{text "|M1| \<le> n1"} *}
+subsection \<open>\<open>|M1| \<le> n1\<close>\<close>
 
 lemma card_M1_le_NVL1: 
   assumes "matching V E M"
@@ -221,7 +221,7 @@ next
   qed
 qed
 
-subsection {* @{text "|Mi| \<le> \<lfloor>ni/2\<rfloor>"} *}
+subsection \<open>\<open>|Mi| \<le> \<lfloor>ni/2\<rfloor>\<close>\<close>
 
 lemma card_Mi_le_floor_div_2_NVLi:
   assumes "OSC L E \<and> matching V E M \<and> i > 1"
@@ -236,7 +236,7 @@ proof -
     by (intro card_Mi_le_floor_div_2_Vi)
   ultimately show ?thesis by auto
 qed
-subsection {* @{text "|M| \<le> \<Sum>|Mi|"} *}
+subsection \<open>\<open>|M| \<le> \<Sum>|Mi|\<close>\<close>
 lemma card_M_le_sum_card_Mi: 
 assumes "matching V E M" and "OSC L E"
 shows "card M \<le> (\<Sum> i \<in> L`V. card (matching_i i V E M L))"
@@ -306,7 +306,7 @@ proof -
     have "finite V" using assms 
       by (simp add: matching_def finite_graph_def)
     have b: "sum ?g (?A \<union> ?B) = sum ?g ?A + sum ?g ?B"
-      using assms `finite V` by (auto intro: sum.union_disjoint)    
+      using assms \<open>finite V\<close> by (auto intro: sum.union_disjoint)    
     have 1: "?Mi = ?M01+ ?Mgr1" using assms a b 
       by (simp add: matching_def finite_graph_def)
     moreover
@@ -350,8 +350,8 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-section {* Final Theorem *}
-text{* The following theorem is due to Edmond~\cite{Edmonds:matching}: *}
+section \<open>Final Theorem\<close>
+text\<open>The following theorem is due to Edmond~\cite{Edmonds:matching}:\<close>
 
 theorem maximum_cardinality_matching:
   assumes "matching V E M" and "OSC L E"
@@ -361,6 +361,6 @@ theorem maximum_cardinality_matching:
   using assms card_M_le_weight_NVLi
   by simp
 
-text{* The widely used algorithmic library LEDA has a certifying algorithm for maximum cardinality matching.
-This Isabelle proof is part of the work done to verify the checker of this certifying algorithm. For more information see \cite{VerificationofCertifyingComputations}. *}
+text\<open>The widely used algorithmic library LEDA has a certifying algorithm for maximum cardinality matching.
+This Isabelle proof is part of the work done to verify the checker of this certifying algorithm. For more information see \cite{VerificationofCertifyingComputations}.\<close>
 end

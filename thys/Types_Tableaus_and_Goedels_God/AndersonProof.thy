@@ -39,8 +39,8 @@ theorem T3: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E G\<^sup>A\<rfl
     
 subsection \<open>Part II - God's Existence is Necessary if Possible\<close>
         
-text\<open>  @{text "\<P>"} now satisfies only one of the stability conditions. But since the argument uses an \emph{S5} logic, 
-the other stability condition is implied. Therefore @{text "\<P>"} becomes rigid (see p. 124).  \<close>
+text\<open>  \<open>\<P>\<close> now satisfies only one of the stability conditions. But since the argument uses an \emph{S5} logic, 
+the other stability condition is implied. Therefore \<open>\<P>\<close> becomes rigid (see p. 124).  \<close>
 axiomatization where
   A4a: "\<lfloor>\<^bold>\<forall>X. \<P> X \<^bold>\<rightarrow> \<^bold>\<box>(\<P> X)\<rfloor>"      \<comment> \<open>axiom 11.11\<close>
       

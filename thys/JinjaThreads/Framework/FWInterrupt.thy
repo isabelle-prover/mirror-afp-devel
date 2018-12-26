@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of the thread actions for interruption *}
+section \<open>Semantics of the thread actions for interruption\<close>
 
 theory FWInterrupt
 imports
@@ -191,14 +191,14 @@ proof(rule interrupt_actions_ok_all_nthI)
       case 0 thus ?case by(clarsimp simp add: neq_Nil_conv collect_interrupts_def)
     next
       case (Suc n)
-      from `Suc n < length ias` obtain ia ias'
+      from \<open>Suc n < length ias\<close> obtain ia ias'
         where ias [simp]: "ias = ia # ias'" by(cases ias) auto
-      from `interrupt_actions_ok is' ias`
+      from \<open>interrupt_actions_ok is' ias\<close>
       have ia_ok: "interrupt_action_ok is' ia" by simp
         
-      from `t \<in> redT_updIs is' (take (Suc n) ias)`
+      from \<open>t \<in> redT_updIs is' (take (Suc n) ias)\<close>
       have "t \<in> redT_updIs (redT_updI is' ia) (take n ias')" by simp
-      moreover from `collect_interrupts (take (Suc (Suc n)) ias) \<subseteq> is` ia_ok
+      moreover from \<open>collect_interrupts (take (Suc (Suc n)) ias) \<subseteq> is\<close> ia_ok
       have "collect_interrupts (take (Suc n) ias') \<subseteq> redT_updI is ia"
       proof(cases "(ia, is)" rule: collect_interrupt.cases)
         case ("3_2" t' Ts)
@@ -209,25 +209,25 @@ proof(rule interrupt_actions_ok_all_nthI)
           then obtain n' where "n' < length (take (Suc n) ias')" "take (Suc n) ias' ! n' = IsInterrupted t' True"
             "Interrupt t' \<notin> set (take n' (take (Suc n) ias'))" by(rule collect_interruptsE)
           hence "n' \<le> n" "ias' ! n' = IsInterrupted t' True" "Interrupt t' \<notin> set (take n' ias')"
-            using `Suc n < length ias` by(simp_all add: min_def split: if_split_asm)
-          hence "Suc n' < length ias" using `Suc n < length ias` by(simp add: min_def)
-          with `interrupt_actions_ok is' ias` 
+            using \<open>Suc n < length ias\<close> by(simp_all add: min_def split: if_split_asm)
+          hence "Suc n' < length ias" using \<open>Suc n < length ias\<close> by(simp add: min_def)
+          with \<open>interrupt_actions_ok is' ias\<close> 
           have "interrupt_action_ok (redT_updIs is' (take (Suc n') ias)) (ias ! Suc n')"
             by(rule interrupt_actions_ok_nthD)
-          with `Suc n < length ias` `ias' ! n' = IsInterrupted t' True`
+          with \<open>Suc n < length ias\<close> \<open>ias' ! n' = IsInterrupted t' True\<close>
           have "t' \<in> redT_updIs (is' - {t'}) (take n' ias')" by simp
           hence "Interrupt t' \<in> set (take n' ias')"
             by(rule redT_updIs_insert_Interrupt) simp
-          with `Interrupt t' \<notin> set (take n' ias')` show False by contradiction
+          with \<open>Interrupt t' \<notin> set (take n' ias')\<close> show False by contradiction
         qed
-        thus ?thesis using `collect_interrupts (take (Suc (Suc n)) ias) \<subseteq> is`
+        thus ?thesis using \<open>collect_interrupts (take (Suc (Suc n)) ias) \<subseteq> is\<close>
           by(auto simp add: collect_interrupts_def)
       qed(auto simp add: collect_interrupts_def)
-      moreover from `Suc n < length ias` have "n < length ias'" by simp
-      moreover from `ias ! Suc n = IsInterrupted t True` have "ias' ! n = IsInterrupted t True" by simp
-      moreover from `interrupt_actions_ok' is ias` have "interrupt_actions_ok' (redT_updI is ia) ias'"
+      moreover from \<open>Suc n < length ias\<close> have "n < length ias'" by simp
+      moreover from \<open>ias ! Suc n = IsInterrupted t True\<close> have "ias' ! n = IsInterrupted t True" by simp
+      moreover from \<open>interrupt_actions_ok' is ias\<close> have "interrupt_actions_ok' (redT_updI is ia) ias'"
         unfolding ias by simp
-      moreover from `interrupt_actions_ok is' ias` have "interrupt_actions_ok (redT_updI is' ia) ias'" by simp
+      moreover from \<open>interrupt_actions_ok is' ias\<close> have "interrupt_actions_ok (redT_updI is' ia) ias'" by simp
       ultimately have "t \<in> redT_updIs (redT_updI is ia) (take n ias')" by(rule Suc)
       thus ?case by simp
     qed

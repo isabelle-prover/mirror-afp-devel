@@ -9,8 +9,8 @@ theory SetCat
 imports SetCategory AbstractedCategory
 begin
 
-  text{*
-    This theory proves the consistency of the @{text set_category} locale by giving
+  text\<open>
+    This theory proves the consistency of the \<open>set_category\<close> locale by giving
     a particular concrete construction of an interpretation for it.  Although the
     construction used here is probably the first one that would come to mind
     (arrows are defined as triples @{term "(F, (A, B))"} where @{term A} and @{term B}
@@ -19,29 +19,29 @@ begin
     Because of this, we don't want clients of this theory to have implicit dependencies
     on the specific details of the construction we use.  We therefore go to some
     trouble to hide these details behind an opaque arrow type and export only the
-    definitions and facts that are made explicit in the @{text set_category} locale.
-  *}
+    definitions and facts that are made explicit in the \<open>set_category\<close> locale.
+\<close>
 
-  text{*
-    We first define a locale @{text setcat} that gives the details of the particular
+  text\<open>
+    We first define a locale \<open>setcat\<close> that gives the details of the particular
     construction of ``the category of @{typ 'a}-sets and functions between them''.
     We use a locale so that we can later interpret it once in a local context,
     prove the main fact, which is that we thereby obtain an interpretation of the
-    @{text set_category} locale, and leave no other permanent vestiges of it
+    \<open>set_category\<close> locale, and leave no other permanent vestiges of it
     in this theory.
-  *}
+\<close>
 
   locale setcat
   begin
 
-    text{*
+    text\<open>
       We represent an arrow as a tuple @{term "(F, (A, B))"}, where @{term A} and
       @{term B} are @{typ 'a}-sets and @{term "(F :: 'a \<Rightarrow> 'a) \<in> extensional A \<inter> (A \<rightarrow> B)"}.
       Since in HOL every type is inhabited, we can avoid using option types here
       by letting @{term "(\<lambda>x. x, ({undefined}, {}))"} serve as the null element of
       the arrow type.  This term can never denote an arrow, because the set
       @{term "{undefined} \<rightarrow> {}"} is empty at any type.
-    *}
+\<close>
 
     type_synonym 'a arr = "('a \<Rightarrow> 'a) * 'a set * 'a set"
 
@@ -83,10 +83,10 @@ begin
                       (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))
                     else Null)"
 
-    text{*
+    text\<open>
       Our first objective is to develop just enough properties of the preceding
       definitions to show that they yield a category.
-    *}
+\<close>
 
     lemma Arr_Id:
     shows "Arr (Id A)"
@@ -268,10 +268,10 @@ begin
     interpretation category comp
       using is_category by auto
 
-    text{*
-      Next, we obtain characterizations of the basic notions of the @{text category}
+    text\<open>
+      Next, we obtain characterizations of the basic notions of the \<open>category\<close>
       locale in terms of the concrete structure.
-    *}
+\<close>
 
     lemma dom_simp:
     assumes "arr f"
@@ -318,17 +318,17 @@ begin
   sublocale setcat \<subseteq> category comp
     using is_category by auto
 
-  text{*
+  text\<open>
     Now we want to apply the preceding construction to obtain an actual interpretation
-    of the @{text set_category} locale that hides the concrete details of the construction.
+    of the \<open>set_category\<close> locale that hides the concrete details of the construction.
     To do this, we first import the preceding construction into a local context,
     then define an opaque new arrow type for the arrows, and lift just enough
     of the properties of the concrete construction to the abstract setting to make
-    it possible to prove that the abstracted category interprets the @{text set_category}
-    locale.  We can then forget about everything except the @{text set_category} axioms.
+    it possible to prove that the abstracted category interprets the \<open>set_category\<close>
+    locale.  We can then forget about everything except the \<open>set_category\<close> axioms.
     All of this is done within a local context to avoid making any global interpretations.
     Everything except what we ultimately want to export is declared ``private''.
-  *}
+\<close>
 
   context begin
 
@@ -352,11 +352,11 @@ begin
     notation comp      (infixr "\<cdot>" 55)
     notation in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
-    text{*
+    text\<open>
       To be able to accomplish anything with the category we just defined,
       we have to lift a certain amount of the features of the concrete structure
       through the abstraction.
-    *}
+\<close>
 
     private definition MkArr
     where "MkArr A B F \<equiv> Abs_arr (restrict F A, (A, B))"
@@ -529,7 +529,7 @@ begin
           have "Dom a = {} \<Longrightarrow> \<not>terminal a"
           proof -
             assume "Dom a = {}"
-            hence 1: "a = Id {}" using `ide a` Id_Dom by force
+            hence 1: "a = Id {}" using \<open>ide a\<close> Id_Dom by force
             have "\<And>f. f \<in> hom (Id {undefined}) (Id {}) \<Longrightarrow> Fun f \<in> {undefined} \<rightarrow> {}"
               by (metis Cod_MkArr CollectD IntD2 arrI arr_char cod_char dom_char in_homE)
             hence "hom (Id {undefined}) a = {}" using 1 by auto
@@ -541,10 +541,10 @@ begin
             fix x x'
             assume 1: "x \<in> Dom a \<and> x' \<in> Dom a \<and> x \<noteq> x'"
             have "\<guillemotleft>MkArr {undefined} (Dom a) (\<lambda>_. x) : Id {undefined} \<rightarrow> a\<guillemotright>"
-              using 1 MkArr_in_hom [of "\<lambda>_. x" "{undefined}" "Dom a"] Id_Dom [of a] `ide a`
+              using 1 MkArr_in_hom [of "\<lambda>_. x" "{undefined}" "Dom a"] Id_Dom [of a] \<open>ide a\<close>
               by simp
             moreover have "\<guillemotleft>MkArr {undefined} (Dom a) (\<lambda>_. x') : Id {undefined} \<rightarrow> a\<guillemotright>"
-              using 1 MkArr_in_hom [of "\<lambda>_. x'" "{undefined}" "Dom a"] Id_Dom [of a] `ide a`
+              using 1 MkArr_in_hom [of "\<lambda>_. x'" "{undefined}" "Dom a"] Id_Dom [of a] \<open>ide a\<close>
               by simp
             moreover have
                 "MkArr {undefined} (Dom a) (\<lambda>_. x) \<noteq> MkArr {undefined} (Dom a) (\<lambda>_. x')"
@@ -573,12 +573,12 @@ begin
     shows "terminal unity"
       using terminal_char unity_def someI_ex [of terminal] by metis
   
-    text{*
+    text\<open>
       The inverse maps @{term UP} and @{term DOWN} are used to pass back and forth between
       the inhabitants of type @{typ 'a} and the corresponding terminal objects.
       These are exported so that a client of the theory can relate the concrete
       element type @{typ 'a} to the otherwise abstract arrow type.
-    *}
+\<close>
 
     definition UP :: "'a \<Rightarrow> 'a arr"
     where "UP x \<equiv> Id {x}"
@@ -627,10 +627,10 @@ begin
       using assms UP_DOWN UP_def
       by (metis Dom_MkArr mem_Collect_eq)
 
-    text{*
+    text\<open>
       The image of a point @{term "p \<in> hom unity a"} is a terminal object, which is given
       by the formula @{term "(UP o Fun p o DOWN) unity"}.
-    *}
+\<close>
 
     private lemma Img_point:
     assumes "\<guillemotleft>p : unity \<rightarrow> a\<guillemotright>"
@@ -658,11 +658,11 @@ begin
       finally show "Img p = (UP o Fun p o DOWN) unity" using assms by auto
     qed
   
-    text{*
+    text\<open>
       The function @{term Img} is injective on @{term "hom unity a"} and its inverse takes
       a terminal object @{term t} to the arrow in @{term "hom unity a"} corresponding to the
       constant-@{term t} function.
-    *}
+\<close>
 
     private abbreviation MkElem
     where "MkElem t a \<equiv> MkArr {U} (Dom a) (\<lambda>_ \<in> {U}. DOWN t)"
@@ -768,10 +768,10 @@ begin
         by auto
     qed
     
-    text{*
-      The main result, which establishes the consistency of the @{text set_category} locale
+    text\<open>
+      The main result, which establishes the consistency of the \<open>set_category\<close> locale
       and provides us with a way of obtaining ``set categories'' at arbitrary types.
-    *}
+\<close>
 
     theorem is_set_category:
     shows "set_category comp"
@@ -936,12 +936,12 @@ begin
       qed
     qed
 
-    text{*
-      As a consequence of the categoricity of the @{text set_category} axioms,
-      if @{term S} interprets @{text set_category}, and if @{term \<phi>} is a bijection between
+    text\<open>
+      As a consequence of the categoricity of the \<open>set_category\<close> axioms,
+      if @{term S} interprets \<open>set_category\<close>, and if @{term \<phi>} is a bijection between
       the universe of @{term S} and the elements of type @{typ 'a}, then @{term S} is isomorphic
-      to the category @{text SetCat} of @{typ 'a} sets and functions between them constructed here.
-    *}
+      to the category \<open>SetCat\<close> of @{typ 'a} sets and functions between them constructed here.
+\<close>
 
     corollary set_category_iso_SetCat:
     fixes S :: "'s comp" and \<phi> :: "'s \<Rightarrow> 'a"
@@ -973,11 +973,11 @@ begin
         by blast
     qed
 
-    text{*
-      @{text SetCat} can be viewed as a concrete set category over its own element type
+    text\<open>
+      \<open>SetCat\<close> can be viewed as a concrete set category over its own element type
       @{typ 'a}, using @{term UP} as the required injection from @{typ 'a} to the universe
-      of @{text SetCat}.
-    *}
+      of \<open>SetCat\<close>.
+\<close>
 
     corollary is_concrete_set_category:
     shows "concrete_set_category comp Univ UP"

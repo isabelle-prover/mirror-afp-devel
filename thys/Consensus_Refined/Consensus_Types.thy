@@ -4,10 +4,10 @@ imports Main
 begin
 (*>*)
 
-subsection {* Consensus: types *}
+subsection \<open>Consensus: types\<close>
 typedecl process
 
-text {* Once we start taking maximums (e.g. in Last\_Voting), we will need the process set to be finite *}
+text \<open>Once we start taking maximums (e.g. in Last\_Voting), we will need the process set to be finite\<close>
 axiomatization where process_finite: 
   (* "class.finite TYPE(process)" *)
   "OFCLASS(process, finite_class)"

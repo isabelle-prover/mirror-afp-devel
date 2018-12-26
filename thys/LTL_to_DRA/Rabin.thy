@@ -87,7 +87,7 @@ proof -
   obtain \<delta> q\<^sub>0 \<alpha> where "R = (\<delta>, q\<^sub>0, \<alpha>)"
     using prod_cases3 by blast
   show "(\<And>F I. (F, I) \<in> snd (snd R) \<Longrightarrow> accepting_pair\<^sub>G\<^sub>R_LTS (fst R) (fst (snd R)) (F, I) w \<Longrightarrow> thesis) \<Longrightarrow> thesis"
-    using assms unfolding `R = (\<delta>, q\<^sub>0, \<alpha>)` by auto
+    using assms unfolding \<open>R = (\<delta>, q\<^sub>0, \<alpha>)\<close> by auto
 qed
 
 lemma accept\<^sub>G\<^sub>R_LTS_I:
@@ -206,7 +206,7 @@ proof
     moreover
     {
       fix i
-      from `r 0 = q\<^sub>0` `LTS_is_inf_run (reach\<^sub>t \<Sigma> \<delta> q\<^sub>0) w r` have "r i = run \<delta> q\<^sub>0 w i"
+      from \<open>r 0 = q\<^sub>0\<close> \<open>LTS_is_inf_run (reach\<^sub>t \<Sigma> \<delta> q\<^sub>0) w r\<close> have "r i = run \<delta> q\<^sub>0 w i"
         by (induction i; simp_all add: LTS_is_inf_run_def reach\<^sub>t_def) metis
     }
     hence "r = run \<delta> q\<^sub>0 w"

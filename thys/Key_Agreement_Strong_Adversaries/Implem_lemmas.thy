@@ -92,7 +92,7 @@ by (auto elim: validE)
 subsection \<open>Extractable messages\<close>
 (**************************************************************************************************)
 
-text \<open>@{text "extractable K I"}: subset of messages in $I$ which are implementations 
+text \<open>\<open>extractable K I\<close>: subset of messages in $I$ which are implementations 
 (not necessarily valid since we do not require that they are payload) and can be extracted 
 using the keys in K. It corresponds to L2 @{term extr}.\<close>
 
@@ -192,7 +192,7 @@ done
 subsection \<open>Lemmas for proving intruder refinement (L2-L3)\<close>
 (**************************************************************************************************)
 
-text \<open>Chain of lemmas used to prove the refinement for @{text "l3_dy"}. 
+text \<open>Chain of lemmas used to prove the refinement for \<open>l3_dy\<close>. 
 The ultimate goal is to show @{prop [display] 
   "synth (analz (NI \<union> I \<union> K \<union> Tags)) \<subseteq> synth (analz (extr Bad NI (abs I))) \<union> -payload"
 }\<close>

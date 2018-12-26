@@ -5,14 +5,14 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Sublinearity *}
+section \<open>Sublinearity\<close>
 
 theory Sublinearity imports Embedding Healthiness LoopInduction begin
 
-subsection {* Nonrecursive Primitives *}
+subsection \<open>Nonrecursive Primitives\<close>
 
-text {* Sublinearity of non-recursive programs is generally straightforward, and follows from the
-alebraic properties of the underlying operations, together with healthiness. *}
+text \<open>Sublinearity of non-recursive programs is generally straightforward, and follows from the
+alebraic properties of the underlying operations, together with healthiness.\<close>
 
 lemma sublinear_wp_Skip:
   "sublinear (wp Skip)"
@@ -176,7 +176,7 @@ proof(rule sublinearI, simp only:wp_eval)
                    (wp y (\<lambda>s. a * Q s + b * R s \<ominus> c) s)" .
 qed
 
-text {* As for continuity, we insist on a finite support. *}
+text \<open>As for continuity, we insist on a finite support.\<close>
 lemma sublinear_wp_SetPC:
   fixes p::"'a \<Rightarrow> 's prog"
   assumes slp: "\<And>s a. a \<in> supp (P s) \<Longrightarrow> sublinear (wp (p a))"
@@ -274,10 +274,10 @@ lemma sublinear_wp_Bind:
   "\<lbrakk> \<And>s. sublinear (wp (a (f s))) \<rbrakk> \<Longrightarrow> sublinear (wp (Bind f a))"
   by(rule sublinearI, simp add:wp_eval, auto)
 
-subsection {* Sublinearity for Loops *}
+subsection \<open>Sublinearity for Loops\<close>
 
-text {* We break the proof of sublinearity loops into separate proofs of sub-distributivity and
-sub-additivity.  The first follows by transfinite induction. *}
+text \<open>We break the proof of sublinearity loops into separate proofs of sub-distributivity and
+sub-additivity.  The first follows by transfinite induction.\<close>
 lemma sub_distrib_wp_loop:
   fixes body::"'s prog"
   assumes sdb: "sub_distrib (wp body)"
@@ -385,8 +385,8 @@ proof -
   thus ?thesis by(auto intro!:sub_distribI)
 qed
 
-text {* For sub-additivity, we again use the limit-of-iterates characterisation.  Firstly, all
-iterates are sublinear: *}
+text \<open>For sub-additivity, we again use the limit-of-iterates characterisation.  Firstly, all
+iterates are sublinear:\<close>
 lemma sublinear_iterates:
   assumes hb: "healthy (wp body)"
       and sb: "sublinear (wp body)"
@@ -394,8 +394,8 @@ lemma sublinear_iterates:
   by(induct i, auto intro!:sublinear_wp_PC sublinear_wp_Seq sublinear_wp_Skip sublinear_wp_Embed
                            assms healthy_intros iterates_healthy)
 
-text {* From this, sub-additivity follows for the limit (i.e. the loop), by appealing to the
-property at all steps. *}
+text \<open>From this, sub-additivity follows for the limit (i.e. the loop), by appealing to the
+property at all steps.\<close>
 lemma sub_add_wp_loop:
   fixes body::"'s prog"
   assumes sb: "sublinear (wp body)"

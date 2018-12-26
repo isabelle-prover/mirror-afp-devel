@@ -39,11 +39,11 @@ context
   fixes sel_fun :: "'a ::idom_divide det_selection_fun"
 begin
 
-subsection {* Properties of triangular matrices *}
+subsection \<open>Properties of triangular matrices\<close>
 
-text {*
+text \<open>
   Each column of a triangular matrix should satisfy the following property.
-*}
+\<close>
 
 definition triangular_column::"nat \<Rightarrow> 'a mat \<Rightarrow> bool"
   where "triangular_column j A \<equiv> \<forall>i. j < i \<longrightarrow> i < dim_row A \<longrightarrow> A $$ (i,j) = 0"
@@ -56,10 +56,10 @@ lemma triangular_columnI [intro]:
   "(\<And>i. j < i \<Longrightarrow> i < dim_row A \<Longrightarrow> A $$ (i,j) = 0) \<Longrightarrow> triangular_column j A"
   unfolding triangular_column_def by auto
 
-text {*
+text \<open>
   The following predicate states that the first $k$ columns satisfy
   triangularity.
-*}
+\<close>
 
 definition triangular_to:: "nat \<Rightarrow> 'a mat \<Rightarrow> bool"
   where "triangular_to k A == \<forall>j. j<k \<longrightarrow> triangular_column j A"
@@ -97,7 +97,7 @@ lemma triangle_trans: "triangular_to k A \<Longrightarrow> k > k' \<Longrightarr
   by (intro triangular_toI, elim triangular_toD, auto)
 
 
-subsection {* Algorithms for Triangulization *}
+subsection \<open>Algorithms for Triangulization\<close>
 
 context 
   fixes mf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a"
@@ -113,9 +113,9 @@ lemma mute_preserves_dimensions:
   shows [simp]: "dim_row A' = dim_row A" and [simp]: "dim_col A' = dim_col A"
 using assms by (auto simp: Let_def split: if_splits prod.splits)
 
-text {*
+text \<open>
   Algorithm @{term "mute k l"} makes $k$-th row $l$-th column element to 0.
-*}
+\<close>
 
 lemma mute_makes_0 :
  assumes mute_fun: "mute_fun mf"
@@ -135,7 +135,7 @@ proof -
   unfolding mat_addrow_def using mf id by (auto simp: ac_simps Let_def split: if_splits)
 qed
 
-text {* It will not touch unexpected rows. *}
+text \<open>It will not touch unexpected rows.\<close>
 lemma mute_preserves:
   "mute q k l (r,A) = (r',A') \<Longrightarrow>
    i < dim_row A \<Longrightarrow>
@@ -146,7 +146,7 @@ lemma mute_preserves:
    A' $$ (i,j) = A $$ (i,j)"
    by (auto simp: Let_def split: if_splits prod.splits)
 
-text {* It preserves $0$s in the touched row. *}
+text \<open>It preserves $0$s in the touched row.\<close>
 lemma mute_preserves_0:
   "mute q k l (r,A) = (r',A') \<Longrightarrow>
    i < dim_row A \<Longrightarrow>
@@ -158,7 +158,7 @@ lemma mute_preserves_0:
    A' $$ (i,j) = 0"
    by (auto simp: Let_def split: if_splits prod.splits)
 
-text {* Hence, it will respect partially triangular matrix. *}
+text \<open>Hence, it will respect partially triangular matrix.\<close>
 lemma mute_preserves_triangle:
  assumes rA' : "mute q k l (r,A) = (r',A')"
  and triA: "triangular_to l A"
@@ -179,7 +179,7 @@ proof (rule triangular_toI)
 qed
 
 
-text {* Recursive application of @{const mute} *}
+text \<open>Recursive application of @{const mute}\<close>
 
 private fun sub1 :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
 where "sub1 q 0 l rA = rA"
@@ -220,7 +220,7 @@ proof -
   qed auto
 qed
 
-text {* Triangularity is respected by @{const sub1}. *}
+text \<open>Triangularity is respected by @{const sub1}.\<close>
 lemma sub1_preserves_triangle:
   assumes "sub1 q k l (r,A) = (r',A')"
   and tri: "triangular_to l A"
@@ -314,9 +314,9 @@ proof (intro triangular_columnI)
     by auto
 qed
 
-text {*
+text \<open>
   The algorithm @{const sub1} increases the number of columns that form triangle.
-*}
+\<close>
 lemma sub1_grows_triangle:
   assumes rA': "sub1 (A $$ (l,l)) (dim_row A - Suc l) l (r,A) = (r',A')"
   and r: "dim_row A > 0"
@@ -333,7 +333,7 @@ proof -
 qed
 end
 
-subsection {* Finding Non-Zero Elements *}
+subsection \<open>Finding Non-Zero Elements\<close>
 
 private definition find_non0 :: "nat \<Rightarrow> 'a mat \<Rightarrow> nat option" where
   "find_non0 l A = (let is = [Suc l ..< dim_row A];
@@ -351,10 +351,10 @@ proof -
   from det_selection_funD[OF sel_fun xs, folded m] show "A $$ (m, l) \<noteq> 0" "l < m" "m < dim_row A" by auto
 qed
 
-text {*
+text \<open>
   If @{term "find_non0 l A"} fails,
   then $A$ is already triangular to $l$-th column.
-*}
+\<close>
 
 lemma find_non0_all0:
   "find_non0 l A = None \<Longrightarrow> triangular_column l A"
@@ -369,13 +369,13 @@ proof (intro triangular_columnI)
     by (metis (mono_tags) xs case_prodI filter_empty_conv)
 qed
 
-subsection {* Determinant Preserving Growth of Triangle *}
+subsection \<open>Determinant Preserving Growth of Triangle\<close>
 
-text {*
+text \<open>
   The algorithm @{const sub1} does not preserve determinants when it hits
   a $0$-valued diagonal element. To avoid this case, we introduce the following
   operation:
-*}
+\<close>
 
 private fun sub2 :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
   where "sub2 d l (r,A) = (
@@ -517,11 +517,11 @@ proof (rule triangle_growth)
 qed
 end
 
-subsection {* Recursive Triangulization of Columns *}
+subsection \<open>Recursive Triangulization of Columns\<close>
 
-text {*
+text \<open>
   Now we recursively apply @{const sub2} to make the entire matrix to be triangular.
-*}
+\<close>
 
 private fun sub3 :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<times> 'a mat \<Rightarrow> 'a \<times> 'a mat"
   where "sub3 d 0 rA = rA"
@@ -571,7 +571,7 @@ proof -
   qed auto
 qed
 
-subsection {* Triangulization *}
+subsection \<open>Triangulization\<close>
 
 definition triangulize :: "'a mat \<Rightarrow> 'a \<times> 'a mat"
 where "triangulize A = sub3 (dim_row A) (dim_row A) (1,A)"
@@ -609,13 +609,13 @@ proof (cases "0<n")
     thus ?thesis unfolding upper_triangular_def by auto
 qed
 
-subsection{* Divisor will not be 0 *}
+subsection\<open>Divisor will not be 0\<close>
 
-text {*
+text \<open>
   Here we show that each sub-algorithm will not make $r$
   of the input/output pair $(r,A)$ to 0.
   The algorithm @{term "sub1 A_ll k l (r,A)"} requires $A_{l,l} \neq 0$.
-*}
+\<close>
 
 lemma sub1_divisor [simp]:
   assumes rA': "sub1 q k l (r, A) = (r',A')"
@@ -646,7 +646,7 @@ proof -
   qed (insert r0, simp)
 qed
 
-text {* The algorithm @{term "sub2"} will not require such a condition. *}
+text \<open>The algorithm @{term "sub2"} will not require such a condition.\<close>
 lemma sub2_divisor [simp]:
   assumes rA': "sub2 k l (r, A) = (r',A')"
   and lk: "l < k"
@@ -702,12 +702,12 @@ proof -
   show ?thesis using sub3_divisor[OF rA'] A by auto 
 qed
 
-subsection {* Determinant Preservation Results *}
+subsection \<open>Determinant Preservation Results\<close>
 
-text {*
+text \<open>
   For each sub-algorithm $f$,
   we show $f(r,A) = (r',A')$ implies @{term "r * det A' = r' * det A"}.
-*}
+\<close>
 
 lemma mute_det:
   assumes "A \<in> carrier_mat n n"
@@ -840,7 +840,7 @@ proof -
 qed
 end
 
-subsection {* Determinant Computation *}
+subsection \<open>Determinant Computation\<close>
 
 definition det_code :: "'a mat \<Rightarrow> 'a" where
   "det_code A = (if dim_row A = dim_col A then

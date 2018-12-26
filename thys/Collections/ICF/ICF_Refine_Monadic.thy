@@ -1,13 +1,13 @@
-section {* \isaheader{Refine-Monadci setup for ICF} *}
+section \<open>\isaheader{Refine-Monadci setup for ICF}\<close>
 theory ICF_Refine_Monadic
 imports ICF_Impl
 begin
-text {*
+text \<open>
   This theory sets up some lemmas that automate refinement proofs using
   the Isabelle Collection Framework (ICF).
-  *}
+\<close>
 
-subsection {* General Setup*}
+subsection \<open>General Setup\<close>
 
 lemma (in set) drh[refine_dref_RELATES]: 
   "RELATES (build_rel \<alpha> invar)" by (simp add: RELATES_def)
@@ -39,9 +39,9 @@ lemma (in map_iteratei) it_is_iterator[refine_transfer]:
   unfolding IT_tag_def by (rule iteratei_rule)
 *)
 
-text {*
+text \<open>
   This definition is handy to be used on the abstract level.
-*}
+\<close>
 definition "prio_pop_min q \<equiv> do {
     ASSERT (dom q \<noteq> {});
     SPEC (\<lambda>(e,w,q'). 
@@ -103,7 +103,7 @@ lemma (in poly_set_iterateoi) dres_ne_bot_map_iterateo[refine_transfer]:
 
 
 subsection "Alternative FOREACH-transfer"
-text {* Required for manual refinements *}
+text \<open>Required for manual refinements\<close>
 lemma transfer_FOREACHoci_plain[refine_transfer]:
   assumes A: "set_iterator_genord iterate s ordR"
   assumes R: "\<And>x \<sigma>. RETURN (fi x \<sigma>) \<le> f x \<sigma>"

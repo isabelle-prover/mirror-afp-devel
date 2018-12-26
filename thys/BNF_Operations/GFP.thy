@@ -11,7 +11,7 @@ theory GFP
 begin
 (*>*)
 
-text {*
+text \<open>
 \begin{tabular}{rcl}
   'b1 &=& ('a, 'b1, 'b2) F1\\
   'b2 &=& ('a, 'b1, 'b2) F2
@@ -23,7 +23,7 @@ To build a witness scenario, let us assume
   ('a, 'b1, 'b2) F1 &=& 'a * 'b1 + 'a * 'b2\\
   ('a, 'b1, 'b2) F2 &=& unit + 'b1 * 'b2
 \end{tabular}
-*}
+\<close>
 
 ML \<open>open Ctr_Sugar_Util\<close>
 declare [[bnf_internals]]
@@ -102,7 +102,7 @@ lemma F2map_congL: "\<lbrakk>\<forall>a \<in> F2set2 x. f a = a; \<forall>a \<in
   apply (rule F2.map_id)
   done
 
-subsection {* Coalgebra *}
+subsection \<open>Coalgebra\<close>
 
 definition coalg where
   "coalg B1 B2 s1 s2 =
@@ -113,7 +113,7 @@ lemmas coalg_F2in = bspec[OF conjunct2[OF iffD1[OF coalg_def]]]
 
 lemma coalg_F1set2:
   "\<lbrakk>coalg B1 B2 s1 s2; a \<in> B1\<rbrakk> \<Longrightarrow> F1set2 (s1 a) \<subseteq> B1"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF coalg_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF coalg_def]} 1\<close>)
   apply (erule conjE)
   apply (drule bspec[rotated])
    apply assumption
@@ -123,7 +123,7 @@ lemma coalg_F1set2:
 
 lemma coalg_F1set3:
   "\<lbrakk>coalg B1 B2 s1 s2; a \<in> B1\<rbrakk> \<Longrightarrow> F1set3 (s1 a) \<subseteq> B2"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF coalg_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF coalg_def]} 1\<close>)
   apply (erule conjE)
   apply (drule bspec[rotated])
    apply assumption
@@ -133,7 +133,7 @@ lemma coalg_F1set3:
 
 lemma coalg_F2set2:
   "\<lbrakk>coalg B1 B2 s1 s2; a \<in> B2\<rbrakk> \<Longrightarrow> F2set2 (s2 a) \<subseteq> B1"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF coalg_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF coalg_def]} 1\<close>)
   apply (erule conjE)
   apply (drule bspec[rotated])
    apply assumption
@@ -143,7 +143,7 @@ lemma coalg_F2set2:
 
 lemma coalg_F2set3:
   "\<lbrakk>coalg B1 B2 s1 s2; a \<in> B2\<rbrakk> \<Longrightarrow> F2set3 (s2 a) \<subseteq> B2"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF coalg_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF coalg_def]} 1\<close>)
   apply (erule conjE)
   apply (drule bspec[rotated])
    apply assumption
@@ -152,12 +152,12 @@ lemma coalg_F2set3:
   done
 
 
-subsection{* Type-coalgebra *}
+subsection\<open>Type-coalgebra\<close>
 
 abbreviation "tcoalg s1 s2 \<equiv> coalg UNIV UNIV s1 s2"
 
 lemma tcoalg: "tcoalg s1 s2"
-  apply (tactic {* rtac @{context} (@{thm coalg_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm coalg_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule ballI)
    apply (rule CollectI)
@@ -176,7 +176,7 @@ lemma tcoalg: "tcoalg s1 s2"
   done
 
 
-subsection {* Morphism *}
+subsection \<open>Morphism\<close>
 
 definition mor where
   "mor B1 B2 s1 s2 B1' B2' s1' s2' f g =
@@ -185,7 +185,7 @@ definition mor where
      (\<forall>z \<in> B2. F2map (id :: 'a \<Rightarrow> 'a) f g (s2 z) = s2' (g z))))"
 
 lemma mor_image1: "mor B1 B2 s1 s2 B1' B2' s1' s2' f g \<Longrightarrow> f ` B1 \<subseteq> B1'"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF mor_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF mor_def]} 1\<close>)
   apply (erule conjE)+
   apply (rule image_subsetI)
   apply (erule bspec)
@@ -193,7 +193,7 @@ lemma mor_image1: "mor B1 B2 s1 s2 B1' B2' s1' s2' f g \<Longrightarrow> f ` B1 
   done
 
 lemma mor_image2: "mor B1 B2 s1 s2 B1' B2' s1' s2' f g \<Longrightarrow> g ` B2 \<subseteq> B2'"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF mor_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF mor_def]} 1\<close>)
   apply (erule conjE)+
   apply (rule image_subsetI)
   apply (erule bspec)
@@ -205,7 +205,7 @@ lemmas mor_image2' = set_mp[OF mor_image2 imageI]
 
 lemma morE1: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> B1\<rbrakk>
    \<Longrightarrow> F1map id f g (s1 z) = s1' (f z)"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF mor_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF mor_def]} 1\<close>)
   apply (erule conjE)+
   apply (erule bspec)
   apply assumption
@@ -213,14 +213,14 @@ lemma morE1: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> B1\<rbrakk>
 
 lemma morE2: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> B2\<rbrakk>
    \<Longrightarrow> F2map id f g (s2 z) = s2' (g z)"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF mor_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF mor_def]} 1\<close>)
   apply (erule conjE)+
   apply (erule bspec)
   apply assumption
   done
 
 lemma mor_incl: "\<lbrakk>B1 \<subseteq> B1'; B2 \<subseteq> B2'\<rbrakk> \<Longrightarrow> mor B1 B2 s1 s2 B1' B2' s1 s2 id id"
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule conjI)
     apply (rule ballI)
@@ -250,7 +250,7 @@ lemma mor_comp:
   "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g;
     mor B1' B2' s1' s2' B1'' B2'' s1'' s2'' f' g'\<rbrakk> \<Longrightarrow>
    mor B1 B2 s1 s2 B1'' B2'' s1'' s2'' (f' o f) (g' o g)"
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
 
    apply (rule conjI)
@@ -268,7 +268,7 @@ lemma mor_comp:
 
   apply (rule conjI)
    apply (rule ballI)
-   apply (tactic {* stac @{context} @{thm o_apply} 1 *})
+   apply (tactic \<open>stac @{context} @{thm o_apply} 1\<close>)
    apply (rule trans)
     apply (rule sym[OF F1map_comp_id])
    apply (rule trans)
@@ -279,7 +279,7 @@ lemma mor_comp:
    apply assumption
 
   apply (rule ballI)
-  apply (tactic {* stac @{context} @{thm o_apply} 1 *})
+  apply (tactic \<open>stac @{context} @{thm o_apply} 1\<close>)
   apply (rule trans)
    apply (rule sym[OF F2map_comp_id])
   apply (rule trans)
@@ -292,7 +292,7 @@ lemma mor_comp:
 
 lemma mor_cong: "\<lbrakk> f' = f; g' = g; mor B1 B2 s1 s2 B1' B2' s1' s2' f g\<rbrakk> \<Longrightarrow>
   mor B1 B2 s1 s2 B1' B2' s1' s2' f' g'"
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply assumption
   done
 
@@ -315,7 +315,7 @@ lemma mor_UNIV: "mor UNIV UNIV s1 s2 UNIV UNIV s1' s2' f1 f2 \<longleftrightarro
     apply (rule UNIV_I)
    apply (rule sym[OF o_apply])
 
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule conjI)
     apply (rule ballI)
@@ -323,10 +323,10 @@ lemma mor_UNIV: "mor UNIV UNIV s1 s2 UNIV UNIV s1' s2' f1 f2 \<longleftrightarro
    apply (rule ballI)
    apply (rule UNIV_I)
   apply (rule conjI)
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (rule ballI)
    apply (erule o_eq_dest)
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (rule ballI)
   apply (erule o_eq_dest)
   done
@@ -342,7 +342,7 @@ lemma mor_str:
 
 lemma mor_case_sum:
   "mor UNIV UNIV s1 s2 UNIV UNIV (case_sum (F1map id Inl Inl o s1) s1') (case_sum (F2map id Inl Inl o s2) s2') Inl Inl"
-  apply (tactic {* rtac @{context} (@{thm mor_UNIV} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_UNIV} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule sym)
    apply (rule case_sum_o_inj(1))
@@ -350,7 +350,7 @@ lemma mor_case_sum:
   apply (rule case_sum_o_inj(1))
   done
 
-subsection {* Bisimulations *}
+subsection \<open>Bisimulations\<close>
 
 definition bis where
   "bis B1 B2 s1 s2 B1' B2' s1' s2' R1 R2 =
@@ -364,7 +364,7 @@ definition bis where
 
 lemma bis_cong: "\<lbrakk>bis B1 B2 s1 s2 B1' B2' s1' s2' R1 R2; R1' = R1; R2' = R2\<rbrakk> \<Longrightarrow>
   bis B1 B2 s1 s2 B1' B2' s1' s2' R1' R2'"
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply assumption
   done
 
@@ -382,7 +382,7 @@ lemma bis_Frel:
     apply (rule allI)
     apply (rule allI)
     apply (rule impI)
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule allE)+
     apply (erule impE)
      apply assumption
@@ -435,7 +435,7 @@ lemma bis_Frel:
    apply (rule allI)
    apply (rule allI)
    apply (rule impI)
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1*})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule allE)+
    apply (erule impE)
     apply assumption
@@ -489,7 +489,7 @@ lemma bis_Frel:
   apply (erule conjI)
 
   apply (rule conjI)
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (rule allI)
    apply (rule allI)
    apply (rule impI)
@@ -505,16 +505,16 @@ lemma bis_Frel:
     apply (rule conjI)
      apply (rule trans)
       apply (rule F1.map_comp)
-     apply (tactic {* stac @{context} @{thm id_o} 1 *})
-     apply (tactic {* stac @{context} @{thm o_id} 1 *})
-     apply (tactic {* stac @{context} @{thm o_id} 1 *})
+     apply (tactic \<open>stac @{context} @{thm id_o} 1\<close>)
+     apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
+     apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
      apply assumption
 
     apply (rule trans)
      apply (rule F1.map_comp)
-    apply (tactic {* stac @{context} @{thm id_o} 1 *})
-    apply (tactic {* stac @{context} @{thm o_id} 1 *})
-    apply (tactic {* stac @{context} @{thm o_id} 1 *})
+    apply (tactic \<open>stac @{context} @{thm id_o} 1\<close>)
+    apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
+    apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
     apply (rule trans)
      apply (rule F1.map_cong0)
        apply (rule Collect_case_prodD)
@@ -541,7 +541,7 @@ lemma bis_Frel:
     apply (rule trans[OF fun_cong[OF image_id] id_apply])
    apply assumption
 
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (rule allI)
   apply (rule allI)
   apply (rule impI)
@@ -557,16 +557,16 @@ lemma bis_Frel:
    apply (rule conjI)
     apply (rule trans)
      apply (rule F2.map_comp)
-    apply (tactic {* stac @{context} @{thm id_o} 1 *})
-    apply (tactic {* stac @{context} @{thm o_id} 1 *})
-    apply (tactic {* stac @{context} @{thm o_id} 1 *})
+    apply (tactic \<open>stac @{context} @{thm id_o} 1\<close>)
+    apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
+    apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
     apply assumption
 
    apply (rule trans)
     apply (rule F2.map_comp)
-   apply (tactic {* stac @{context} @{thm id_o} 1 *})
-   apply (tactic {* stac @{context} @{thm o_id} 1 *})
-   apply (tactic {* stac @{context} @{thm o_id} 1 *})
+   apply (tactic \<open>stac @{context} @{thm id_o} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm o_id} 1\<close>)
    apply (rule trans)
     apply (rule F2.map_cong0)
       apply (rule Collect_case_prodD)
@@ -597,8 +597,8 @@ lemma bis_Frel:
 lemma bis_converse:
   "bis B1 B2 s1 s2 B1' B2' s1' s2' R1 R2 \<Longrightarrow>
    bis B1' B2' s1' s2' B1 B2 s1 s2 (R1^-1) (R2^-1)"
-  apply (tactic {* rtac @{context} (@{thm bis_Frel} RS iffD2) 1 *})
-  apply (tactic {* dtac @{context} (@{thm bis_Frel} RS iffD1) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm bis_Frel} RS iffD2) 1\<close>)
+  apply (tactic \<open>dtac @{context} (@{thm bis_Frel} RS iffD1) 1\<close>)
   apply (erule conjE)+
   apply (rule conjI)
 
@@ -645,8 +645,8 @@ lemma bis_Comp:
   "\<lbrakk>bis B1 B2 s1 s2 B1' B2' s1' s2' P1 P2;
     bis B1' B2' s1' s2' B1'' B2'' s1'' s2'' Q1 Q2\<rbrakk> \<Longrightarrow>
     bis B1 B2 s1 s2 B1'' B2'' s1'' s2'' (P1 O Q1) (P2 O Q2)"
-  apply (tactic {* rtac @{context} (@{thm bis_Frel[THEN iffD2]}) 1 *})
-  apply (tactic {* dtac @{context} (@{thm bis_Frel[THEN iffD1]}) 1 *})+
+  apply (tactic \<open>rtac @{context} (@{thm bis_Frel[THEN iffD2]}) 1\<close>)
+  apply (tactic \<open>dtac @{context} (@{thm bis_Frel[THEN iffD1]}) 1\<close>)+
   apply (erule conjE)+
   apply (rule conjI)
    apply (rule conjI)
@@ -664,9 +664,9 @@ lemma bis_Comp:
     apply (rule relcompp_in_rel)
    apply (rule predicate2D[OF eq_refl[OF sym[OF F1.rel_compp]]])
    apply (erule relcompE)
-   apply (tactic {* dtac @{context} (@{thm prod.inject[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context} (@{thm prod.inject[THEN iffD1]}) 1\<close>)
    apply (erule conjE)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (erule allE)+
    apply (rule relcomppI)
     apply (erule mp)
@@ -682,9 +682,9 @@ lemma bis_Comp:
    apply (rule relcompp_in_rel)
   apply (rule predicate2D[OF eq_refl[OF sym[OF F2.rel_compp]]])
   apply (erule relcompE)
-  apply (tactic {* dtac @{context} (@{thm prod.inject[THEN iffD1]}) 1 *})
+  apply (tactic \<open>dtac @{context} (@{thm prod.inject[THEN iffD1]}) 1\<close>)
   apply (erule conjE)
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (erule allE)+
   apply (rule relcomppI)
    apply (erule mp)
@@ -737,12 +737,12 @@ lemma bis_Union: "\<forall>i \<in> I. bis B1 B2 s1 s2 B1 B2 s1 s2 (R1i i) (R2i i
     apply (drule bspec)
      apply assumption
     apply (drule conjunct1)
-    apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (rule UN_least)
    apply (drule bspec)
     apply assumption
    apply (drule conjunct1)
-   apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
 
   apply (rule conjI)
    apply (rule allI)+
@@ -751,7 +751,7 @@ lemma bis_Union: "\<forall>i \<in> I. bis B1 B2 s1 s2 B1 B2 s1 s2 (R1i i) (R2i i
    apply (drule bspec)
     apply assumption
    apply (drule conjunct2)
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (erule allE)+
    apply (drule mp)
     apply assumption
@@ -769,7 +769,7 @@ lemma bis_Union: "\<forall>i \<in> I. bis B1 B2 s1 s2 B1 B2 s1 s2 (R1i i) (R2i i
   apply (drule bspec)
    apply assumption
   apply (drule conjunct2)
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (erule allE)+
   apply (drule mp)
    apply assumption
@@ -794,13 +794,13 @@ definition lsbis2 where "lsbis2 B1 B2 s1 s2 =
 
 lemma sbis_lsbis:
   "sbis B1 B2 s1 s2 (lsbis1 B1 B2 s1 s2) (lsbis2 B1 B2 s1 s2)"
-  apply (tactic {* rtac @{context} (Thm.permute_prems 0 1 @{thm bis_cong}) 1 *})
+  apply (tactic \<open>rtac @{context} (Thm.permute_prems 0 1 @{thm bis_cong}) 1\<close>)
     apply (rule lsbis1_def)
    apply (rule lsbis2_def)
   apply (rule bis_Union)
   apply (rule ballI)
   apply (erule CollectE exE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (erule bis_cong)
    apply (rule fst_conv)
   apply (rule snd_conv)
@@ -910,7 +910,7 @@ lemma equiv_lsbis2: "coalg B1 B2 s1 s2 \<Longrightarrow> equiv B2 (lsbis2 B1 B2 
   done
 
 
-subsection {* The Tree Coalgebra *}
+subsection \<open>The Tree Coalgebra\<close>
 
 typedef bd_type_F = "UNIV :: (bd_type_F1 + bd_type_F2) set"
   apply (rule exI) apply (rule UNIV_I)
@@ -977,7 +977,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
   apply (rule conjI)
    apply (rule ballI)
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule ssubst_mem[OF trans[OF trans[OF fun_cong[OF strT1_def] prod.case]]])
     apply (erule trans[OF arg_cong])
     apply (rule sum.case(1))
@@ -1005,7 +1005,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
       apply (drule bspec)
        apply (erule thin_rl)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule bspec)
        apply (rule CollectI)
        apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1038,7 +1038,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply (drule bspec)
       apply (erule thin_rl)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule bspec)
       apply (rule CollectI)
       apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1066,7 +1066,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
 
     apply (drule bspec)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule bspec)
      apply (erule set_mp[OF equalityD1])
      apply assumption
@@ -1111,7 +1111,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply (drule bspec)
       apply (erule thin_rl)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule bspec)
       apply (rule CollectI)
       apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1144,7 +1144,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (drule bspec)
      apply (erule thin_rl)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule bspec)
      apply (rule CollectI)
      apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1172,7 +1172,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
 
    apply (drule bspec)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule bspec)
     apply (erule set_mp[OF equalityD1])
     apply assumption
@@ -1201,7 +1201,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
 
   apply (rule ballI)
   apply (erule CollectE exE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (rule ssubst_mem[OF trans[OF fun_cong[OF strT2_def] prod.case]])
   apply (rule ssubst_mem)
    apply (rule trans)
@@ -1231,7 +1231,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
      apply (drule bspec)
       apply (erule thin_rl)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule bspec)
       apply (rule CollectI)
       apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1264,7 +1264,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (drule bspec)
      apply (erule thin_rl)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule bspec)
      apply (rule CollectI)
      apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1292,7 +1292,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
 
    apply (drule bspec)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (drule bspec)
     apply (erule set_mp[OF equalityD1])
     apply assumption
@@ -1337,7 +1337,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
     apply (drule bspec)
      apply (erule thin_rl)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule bspec)
      apply (rule CollectI)
      apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1370,7 +1370,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
    apply (drule bspec)
     apply (erule thin_rl)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule bspec)
     apply (rule CollectI)
     apply (erule set_mp[OF equalityD1[OF Succ_Shift]])
@@ -1398,7 +1398,7 @@ lemma coalg_T: "coalg carT1 carT2 strT1 strT2"
 
   apply (drule bspec)
    apply assumption
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (drule bspec)
    apply (erule set_mp[OF equalityD1])
    apply assumption
@@ -1513,22 +1513,22 @@ lemma length_Lev:
    apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule trans)
      apply (rule length_Cons)
     apply (rule arg_cong[of _ _ Suc])
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule mp)
     apply assumption
 
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule trans)
     apply (rule length_Cons)
    apply (rule arg_cong[of _ _ Suc])
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule mp)
    apply assumption
 
@@ -1537,22 +1537,22 @@ lemma length_Lev:
   apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule trans)
     apply (rule length_Cons)
    apply (rule arg_cong[of _ _ Suc])
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (erule mp)
    apply assumption
 
   apply (erule CollectE exE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (rule trans)
    apply (rule length_Cons)
   apply (rule arg_cong[of _ _ Suc])
   apply (erule allE)+
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (erule mp)
   apply assumption
   done
@@ -1608,9 +1608,9 @@ lemma rv_last:
   apply (rule sum.exhaust)
    apply (rule conjI)
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (rule conjI)
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (erule exE)
      apply (rule exI)
      apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1618,7 +1618,7 @@ lemma rv_last:
      apply (erule trans[OF arg_cong[OF sum.case_cong_weak]])
      apply (rule trans[OF arg_cong[OF sum.case(1)]])
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (erule exE)
     apply (rule exI)
     apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1628,9 +1628,9 @@ lemma rv_last:
     apply assumption
 
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (rule conjI)
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule exE)
     apply (rule exI)
     apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1638,7 +1638,7 @@ lemma rv_last:
     apply (erule trans[OF arg_cong[OF sum.case_cong_weak]])
     apply (rule trans[OF arg_cong[OF sum.case(1)]])
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule exE)
    apply (rule exI)
    apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1649,9 +1649,9 @@ lemma rv_last:
 
   apply (rule conjI)
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (rule conjI)
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule exE)
     apply (rule exI)
     apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1659,7 +1659,7 @@ lemma rv_last:
     apply (erule trans[OF arg_cong[OF sum.case_cong_weak]])
     apply (rule trans[OF arg_cong[OF sum.case(2)]])
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule exE)
    apply (rule exI)
    apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1669,9 +1669,9 @@ lemma rv_last:
    apply assumption
 
   apply (erule allE)+
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (rule conjI)
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (erule exE)
    apply (rule exI)
    apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1679,7 +1679,7 @@ lemma rv_last:
    apply (erule trans[OF arg_cong[OF sum.case_cong_weak]])
    apply (rule trans[OF arg_cong[OF sum.case(2)]])
    apply assumption
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (erule exE)
   apply (rule exI)
   apply (rule trans[OF arg_cong[OF append_Cons]])
@@ -1726,13 +1726,13 @@ lemma Fset_Lev:
     apply (rule impI)
     apply (drule set_mp[OF equalityD1[OF Lev1_0]])
     apply (erule singletonE)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (drule trans[OF sym])
       apply (rule rv1_Nil)
      apply (drule Inl_inject)
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (rule conjI)
       apply (rule impI)
       apply (rule ssubst_mem[OF append_Nil])
@@ -1770,7 +1770,7 @@ lemma Fset_Lev:
    apply (drule set_rev_mp[OF _ equalityD1])
     apply (rule Lev2_0)
    apply (erule singletonE)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (drule trans[OF sym])
@@ -1781,8 +1781,8 @@ lemma Fset_Lev:
    apply (drule trans[OF sym])
     apply (rule rv2_Nil)
    apply (drule Inr_inject)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
-   apply (tactic {* stac @{context} @{thm append_Nil} 1 *})+
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm append_Nil} 1\<close>)+
    apply (rule conjI)
     apply (rule impI)
     apply (rule set_mp[OF equalityD2])
@@ -1816,7 +1816,7 @@ lemma Fset_Lev:
    apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (rule conjI)
@@ -1836,13 +1836,13 @@ lemma Fset_Lev:
        apply (rule trans[OF sum.case(1)])
        apply (erule arg_cong[OF frombd_F12_tobd_F12])
       apply (erule allE)+
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (erule mp)
       apply assumption
 
@@ -1862,13 +1862,13 @@ lemma Fset_Lev:
       apply (rule trans[OF sum.case(1)])
       apply (erule arg_cong[OF frombd_F12_tobd_F12])
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (erule mp)
      apply assumption
 
@@ -1890,13 +1890,13 @@ lemma Fset_Lev:
       apply (rule trans[OF sum.case(1)])
       apply (erule arg_cong[OF frombd_F12_tobd_F12])
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (erule mp)
      apply assumption
 
@@ -1916,21 +1916,21 @@ lemma Fset_Lev:
      apply (rule trans[OF sum.case(1)])
      apply (erule arg_cong[OF frombd_F12_tobd_F12])
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (erule mp)
     apply assumption
     (*UN1/2*)
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
-   apply (tactic {* stac @{context} @{thm rv1_Cons} 1 *})
-   apply (tactic {* stac @{context} @{thm sum.case(2)} 1 *})
-   apply (tactic {* stac @{context} @{thm frombd_F13_tobd_F13} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm rv1_Cons} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm sum.case(2)} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm frombd_F13_tobd_F13} 1\<close>)
     apply assumption
    apply (rule conjI)
     apply (rule impI)
@@ -1946,13 +1946,13 @@ lemma Fset_Lev:
       apply (rule refl)
      apply (erule conjI)
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (erule mp)
      apply assumption
 
@@ -1967,13 +1967,13 @@ lemma Fset_Lev:
      apply (rule refl)
     apply (erule conjI)
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (erule mp)
     apply assumption
 
@@ -1990,13 +1990,13 @@ lemma Fset_Lev:
      apply (rule refl)
     apply (erule conjI)
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule mp)
     apply assumption
 
@@ -2011,13 +2011,13 @@ lemma Fset_Lev:
     apply (rule refl)
    apply (erule conjI)
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule mp)
    apply assumption
 
@@ -2028,10 +2028,10 @@ lemma Fset_Lev:
    apply (rule Lev2_Suc)
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
-   apply (tactic {* stac @{context} @{thm rv2_Cons} 1 *})
-   apply (tactic {* stac @{context} @{thm sum.case(1)} 1 *})
-   apply (tactic {* stac @{context} @{thm frombd_F22_tobd_F22} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm rv2_Cons} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm sum.case(1)} 1\<close>)
+   apply (tactic \<open>stac @{context} @{thm frombd_F22_tobd_F22} 1\<close>)
     apply assumption
    apply (rule conjI)
     apply (rule impI)
@@ -2047,13 +2047,13 @@ lemma Fset_Lev:
       apply (rule refl)
      apply (erule conjI)
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (erule mp)
      apply assumption
 
@@ -2068,13 +2068,13 @@ lemma Fset_Lev:
      apply (rule refl)
     apply (erule conjI)
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (erule mp)
     apply assumption
 
@@ -2091,13 +2091,13 @@ lemma Fset_Lev:
      apply (rule refl)
     apply (erule conjI)
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule mp)
     apply assumption
 
@@ -2112,21 +2112,21 @@ lemma Fset_Lev:
     apply (rule refl)
    apply (erule conjI)
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule mp)
    apply assumption
     (*UN1/2*)
   apply (erule CollectE exE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
-  apply (tactic {* stac @{context} @{thm rv2_Cons} 1 *})
-  apply (tactic {* stac @{context} @{thm sum.case(2)} 1 *})
-  apply (tactic {* stac @{context} @{thm frombd_F23_tobd_F23} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
+  apply (tactic \<open>stac @{context} @{thm rv2_Cons} 1\<close>)
+  apply (tactic \<open>stac @{context} @{thm sum.case(2)} 1\<close>)
+  apply (tactic \<open>stac @{context} @{thm frombd_F23_tobd_F23} 1\<close>)
    apply assumption
   apply (rule conjI)
    apply (rule impI)
@@ -2142,13 +2142,13 @@ lemma Fset_Lev:
      apply (rule refl)
     apply (erule conjI)
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule mp)
     apply assumption
 
@@ -2163,13 +2163,13 @@ lemma Fset_Lev:
     apply (rule refl)
    apply (erule conjI)
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule mp)
    apply assumption
 
@@ -2186,13 +2186,13 @@ lemma Fset_Lev:
     apply (rule refl)
    apply (erule conjI)
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (erule mp)
    apply assumption
 
@@ -2207,13 +2207,13 @@ lemma Fset_Lev:
    apply (rule refl)
   apply (erule conjI)
   apply (erule allE)+
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (drule mp)
    apply assumption
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (drule mp)
    apply assumption
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (erule mp)
   apply assumption
   done
@@ -2251,7 +2251,7 @@ lemma Fset_image_Lev:
     apply (rule impI)
     apply (drule set_mp[OF equalityD1[OF Lev1_0]])
     apply (erule singletonE)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (rule conjI)
@@ -2261,13 +2261,13 @@ lemma Fset_image_Lev:
       apply (drule ssubst_mem[OF sym[OF append_Nil]])
       apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
       apply (drule Inl_inject)
-      apply (tactic {* hyp_subst_tac @{context} 1 *})
+      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (erule UnE)
        apply (erule CollectE exE conjE)+
        apply (drule list.inject[THEN iffD1])
        apply (erule conjE)
        apply (drule Inl_inject)
-       apply (tactic {* hyp_subst_tac @{context} 1 *})
+       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (erule imageI)
       apply (erule CollectE exE conjE)+
       apply (drule list.inject[THEN iffD1])
@@ -2286,7 +2286,7 @@ lemma Fset_image_Lev:
      apply (drule trans[OF sym])
       apply (rule rv1_Nil)
      apply (drule Inl_inject)
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (erule UnE)
       apply (erule CollectE exE conjE)+
       apply (drule list.inject[THEN iffD1])
@@ -2296,7 +2296,7 @@ lemma Fset_image_Lev:
      apply (drule list.inject[THEN iffD1])
      apply (erule conjE)
      apply (drule Inr_inject)
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (erule imageI)
     apply (rule impI)
     apply (drule trans[OF sym])
@@ -2306,7 +2306,7 @@ lemma Fset_image_Lev:
    apply (rule impI)
    apply (drule set_mp[OF equalityD1[OF Lev2_0]])
    apply (erule singletonE)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (rule conjI)
@@ -2320,13 +2320,13 @@ lemma Fset_image_Lev:
     apply (drule trans[OF sym])
      apply (rule rv2_Nil)
     apply (drule Inr_inject)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (erule UnE)
      apply (erule CollectE exE conjE)+
      apply (drule list.inject[THEN iffD1])
      apply (erule conjE)
      apply (drule Inl_inject)
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (erule imageI)
     apply (erule CollectE exE conjE)+
     apply (drule list.inject[THEN iffD1])
@@ -2345,7 +2345,7 @@ lemma Fset_image_Lev:
    apply (drule trans[OF sym])
     apply (rule rv2_Nil)
    apply (drule Inr_inject)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
     apply (drule list.inject[THEN iffD1])
@@ -2355,7 +2355,7 @@ lemma Fset_image_Lev:
    apply (drule list.inject[THEN iffD1])
    apply (erule conjE)
    apply (drule Inr_inject)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (erule imageI)
 
 (*IS*)
@@ -2366,7 +2366,7 @@ lemma Fset_image_Lev:
    apply (drule set_mp[OF equalityD1[OF Lev1_Suc]])
    apply (erule UnE)
     apply (erule CollectE exE conjE)+
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (drule ssubst_mem[OF sym[OF append_Cons]])
@@ -2376,11 +2376,11 @@ lemma Fset_image_Lev:
       apply (drule list.inject[THEN iffD1])
       apply (erule conjE)
       apply (drule Inl_inject)
-      apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 (@{thm tobd_F12_inj} RS iffD1)) 1 *})
+      apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 (@{thm tobd_F12_inj} RS iffD1)) 1\<close>)
         apply assumption
        apply assumption
-      apply (tactic {* hyp_subst_tac @{context} 1 *})
+      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (rule conjI)
        apply (rule impI)
        apply (drule trans[OF sym])
@@ -2388,13 +2388,13 @@ lemma Fset_image_Lev:
         apply (rule trans[OF arg_cong[OF sum.case(1)]])
         apply (erule arg_cong[OF frombd_F12_tobd_F12])
        apply (erule allE)+
-       apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+       apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
        apply (drule mp)
         apply assumption
-       apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+       apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
        apply (drule mp)
         apply assumption
-       apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+       apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
        apply (erule mp)
        apply (erule sym)
 
@@ -2404,13 +2404,13 @@ lemma Fset_image_Lev:
        apply (rule trans[OF arg_cong[OF sum.case(1)]])
        apply (erule arg_cong[OF frombd_F12_tobd_F12])
       apply (erule allE)+
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
       apply (erule mp)
       apply (erule sym)
 
@@ -2427,11 +2427,11 @@ lemma Fset_image_Lev:
      apply (drule list.inject[THEN iffD1])
      apply (erule conjE)
      apply (drule Inl_inject)
-     apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F12_inj[THEN iffD1]}) 1 *})
+     apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F12_inj[THEN iffD1]}) 1\<close>)
        apply assumption
       apply assumption
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (rule conjI)
       apply (rule impI)
       apply (drule trans[OF sym])
@@ -2439,13 +2439,13 @@ lemma Fset_image_Lev:
        apply (rule trans[OF arg_cong[OF sum.case(1)]])
        apply (erule arg_cong[OF frombd_F12_tobd_F12])
       apply (erule allE)+
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (erule mp)
       apply (erule sym)
 
@@ -2455,13 +2455,13 @@ lemma Fset_image_Lev:
       apply (rule trans[OF arg_cong[OF sum.case(1)]])
       apply (erule arg_cong[OF frombd_F12_tobd_F12])
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (erule mp)
      apply (erule sym)
 
@@ -2471,7 +2471,7 @@ lemma Fset_image_Lev:
     apply (erule notE[OF Inl_not_Inr])
     (*outer UN1/2*)
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (drule ssubst_mem[OF sym[OF append_Cons]])
@@ -2486,11 +2486,11 @@ lemma Fset_image_Lev:
     apply (drule list.inject[THEN iffD1])
     apply (erule conjE)
     apply (drule Inr_inject)
-    apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F13_inj[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F13_inj[THEN iffD1]}) 1\<close>)
       apply assumption
      apply assumption
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (drule trans[OF sym])
@@ -2498,13 +2498,13 @@ lemma Fset_image_Lev:
       apply (rule trans[OF arg_cong[OF sum.case(2)]])
       apply (erule arg_cong[OF frombd_F13_tobd_F13])
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (erule mp)
      apply (erule sym)
 
@@ -2514,13 +2514,13 @@ lemma Fset_image_Lev:
      apply (rule trans[OF arg_cong[OF sum.case(2)]])
      apply (erule arg_cong[OF frombd_F13_tobd_F13])
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (erule mp)
     apply (erule sym)
 
@@ -2537,11 +2537,11 @@ lemma Fset_image_Lev:
    apply (drule list.inject[THEN iffD1])
    apply (erule conjE)
    apply (drule Inr_inject)
-   apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F13_inj[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F13_inj[THEN iffD1]}) 1\<close>)
      apply assumption
     apply assumption
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (drule trans[OF sym])
@@ -2549,13 +2549,13 @@ lemma Fset_image_Lev:
      apply (rule trans[OF arg_cong[OF sum.case(2)]])
      apply (erule arg_cong[OF frombd_F13_tobd_F13])
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule mp)
     apply (erule sym)
 
@@ -2565,13 +2565,13 @@ lemma Fset_image_Lev:
     apply (rule trans[OF arg_cong[OF sum.case(2)]])
     apply (erule arg_cong[OF frombd_F13_tobd_F13])
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule mp)
    apply (erule sym)
 
@@ -2581,7 +2581,7 @@ lemma Fset_image_Lev:
   apply (drule set_mp[OF equalityD1[OF Lev2_Suc]])
   apply (erule UnE)
    apply (erule CollectE exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (drule ssubst_mem[OF sym[OF append_Cons]])
@@ -2591,11 +2591,11 @@ lemma Fset_image_Lev:
      apply (drule list.inject[THEN iffD1])
      apply (erule conjE)
      apply (drule Inl_inject)
-     apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F22_inj[THEN iffD1]}) 1 *})
+     apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F22_inj[THEN iffD1]}) 1\<close>)
        apply assumption
       apply assumption
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (rule conjI)
       apply (rule impI)
       apply (drule trans[OF sym])
@@ -2603,13 +2603,13 @@ lemma Fset_image_Lev:
        apply (rule trans[OF arg_cong[OF sum.case(1)]])
        apply (erule arg_cong[OF frombd_F22_tobd_F22])
       apply (erule allE)+
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (drule mp)
        apply assumption
-      apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (erule mp)
       apply (erule sym)
 
@@ -2619,13 +2619,13 @@ lemma Fset_image_Lev:
       apply (rule trans[OF arg_cong[OF sum.case(1)]])
       apply (erule arg_cong[OF frombd_F22_tobd_F22])
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (erule mp)
      apply (erule sym)
 
@@ -2642,11 +2642,11 @@ lemma Fset_image_Lev:
     apply (drule list.inject[THEN iffD1])
     apply (erule conjE)
     apply (drule Inl_inject)
-    apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F22_inj[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F22_inj[THEN iffD1]}) 1\<close>)
       apply assumption
      apply assumption
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule conjI)
      apply (rule impI)
      apply (drule trans[OF sym])
@@ -2654,13 +2654,13 @@ lemma Fset_image_Lev:
       apply (rule trans[OF arg_cong[OF sum.case(1)]])
       apply (erule arg_cong[OF frombd_F22_tobd_F22])
      apply (erule allE)+
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (drule mp)
       apply assumption
-     apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+     apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (erule mp)
      apply (erule sym)
 
@@ -2670,13 +2670,13 @@ lemma Fset_image_Lev:
      apply (rule trans[OF arg_cong[OF sum.case(1)]])
      apply (erule arg_cong[OF frombd_F22_tobd_F22])
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (erule mp)
     apply (erule sym)
 
@@ -2686,7 +2686,7 @@ lemma Fset_image_Lev:
    apply (erule notE[OF Inl_not_Inr])
     (*outer UN1/2*)
   apply (erule CollectE exE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (rule conjI)
    apply (rule impI)
    apply (drule ssubst_mem[OF sym[OF append_Cons]])
@@ -2701,11 +2701,11 @@ lemma Fset_image_Lev:
    apply (drule list.inject[THEN iffD1])
    apply (erule conjE)
    apply (drule Inr_inject)
-   apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F23_inj[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F23_inj[THEN iffD1]}) 1\<close>)
      apply assumption
     apply assumption
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule conjI)
     apply (rule impI)
     apply (drule trans[OF sym])
@@ -2713,13 +2713,13 @@ lemma Fset_image_Lev:
      apply (rule trans[OF arg_cong[OF sum.case(2)]])
      apply (erule arg_cong[OF frombd_F23_tobd_F23])
     apply (erule allE)+
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (drule mp)
      apply assumption
-    apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
     apply (erule mp)
     apply (erule sym)
 
@@ -2729,13 +2729,13 @@ lemma Fset_image_Lev:
     apply (rule trans[OF arg_cong[OF sum.case(2)]])
     apply (erule arg_cong[OF frombd_F23_tobd_F23])
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (erule mp)
    apply (erule sym)
 
@@ -2752,11 +2752,11 @@ lemma Fset_image_Lev:
   apply (drule list.inject[THEN iffD1])
   apply (erule conjE)
   apply (drule Inr_inject)
-  apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F23_inj[THEN iffD1]}) 1 *})
+  apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F23_inj[THEN iffD1]}) 1\<close>)
     apply assumption
    apply assumption
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (rule conjI)
    apply (rule impI)
    apply (drule trans[OF sym])
@@ -2764,13 +2764,13 @@ lemma Fset_image_Lev:
     apply (rule trans[OF arg_cong[OF sum.case(2)]])
     apply (erule arg_cong[OF frombd_F23_tobd_F23])
    apply (erule allE)+
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (drule mp)
     apply assumption
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (erule mp)
    apply (erule sym)
 
@@ -2780,13 +2780,13 @@ lemma Fset_image_Lev:
    apply (rule trans[OF arg_cong[OF sum.case(2)]])
    apply (erule arg_cong[OF frombd_F23_tobd_F23])
   apply (erule allE)+
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (drule mp)
    apply assumption
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (drule mp)
    apply assumption
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (erule mp)
   apply (erule sym)
   done
@@ -2815,7 +2815,7 @@ lemma mor_beh:
   apply (rule mor_cong)
     apply (rule ext[OF beh1_def])
    apply (rule ext[OF beh2_def])
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule conjI)
     apply (rule ballI)
@@ -2865,7 +2865,7 @@ lemma mor_beh:
        apply (rule F1set2_image_Lev1)
          apply assumption
         apply (drule length_Lev1)
-        apply (tactic {* hyp_subst_tac @{context} 1 *})
+        apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
         apply (drule length_Lev1')
         apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
        apply assumption
@@ -2888,7 +2888,7 @@ lemma mor_beh:
       apply (rule F1set3_image_Lev1)
         apply assumption
        apply (drule length_Lev1)
-       apply (tactic {* hyp_subst_tac @{context} 1 *})
+       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (drule length_Lev1')
        apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
       apply assumption
@@ -2922,7 +2922,7 @@ lemma mor_beh:
       apply (rule F2set2_image_Lev1)
         apply assumption
        apply (drule length_Lev1)
-       apply (tactic {* hyp_subst_tac @{context} 1 *})
+       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (drule length_Lev1')
        apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
       apply assumption
@@ -2945,7 +2945,7 @@ lemma mor_beh:
      apply (rule F2set3_image_Lev1)
        apply assumption
       apply (drule length_Lev1)
-      apply (tactic {* hyp_subst_tac @{context} 1 *})
+      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (drule length_Lev1')
       apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
      apply assumption
@@ -3051,7 +3051,7 @@ lemma mor_beh:
       apply (rule F1set2_image_Lev2)
         apply assumption
        apply (drule length_Lev2)
-       apply (tactic {* hyp_subst_tac @{context} 1 *})
+       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (drule length_Lev2')
        apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
       apply assumption
@@ -3074,7 +3074,7 @@ lemma mor_beh:
      apply (rule F1set3_image_Lev2)
        apply assumption
       apply (drule length_Lev2)
-      apply (tactic {* hyp_subst_tac @{context} 1 *})
+      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (drule length_Lev2')
       apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
      apply assumption
@@ -3108,7 +3108,7 @@ lemma mor_beh:
      apply (rule F2set2_image_Lev2)
        apply assumption
       apply (drule length_Lev2)
-      apply (tactic {* hyp_subst_tac @{context} 1 *})
+      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (drule length_Lev2')
       apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
      apply assumption
@@ -3131,7 +3131,7 @@ lemma mor_beh:
     apply (rule F2set3_image_Lev2)
       apply assumption
      apply (drule length_Lev2)
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (drule length_Lev2')
      apply (erule set_mp[OF equalityD1[OF arg_cong[OF length_append_singleton]]])
     apply assumption
@@ -3194,8 +3194,8 @@ lemma mor_beh:
    apply (rule sym)
    apply (rule trans)
     apply (rule trans[OF fun_cong[OF strT1_def] prod.case])
-   apply (tactic {* CONVERSION (Conv.top_conv
-              (K (Conv.try_conv (Conv.rewr_conv (@{thm rv1_Nil} RS eq_reflection)))) @{context}) 1 *})
+   apply (tactic \<open>CONVERSION (Conv.top_conv
+              (K (Conv.try_conv (Conv.rewr_conv (@{thm rv1_Nil} RS eq_reflection)))) @{context}) 1\<close>)
    apply (rule trans[OF sum.case_cong_weak])
     apply (rule sum.case(1))
    apply (rule trans[OF sum.case(1)])
@@ -3222,17 +3222,17 @@ lemma mor_beh:
        apply (rule Lev1_Suc)
       apply (erule UnE)
        apply (erule CollectE exE conjE)+
-       apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+       apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
        apply (erule conjE)
        apply (drule Inl_inject)
-       apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F12_inj[THEN iffD1]}) 1 *})
+       apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F12_inj[THEN iffD1]}) 1\<close>)
          apply assumption
         apply assumption
-       apply (tactic {* hyp_subst_tac @{context} 1 *})
+       apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
        apply (erule UN_I[OF UNIV_I])
       apply (erule CollectE exE conjE)+
-      apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+      apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
       apply (erule conjE)
       apply (erule notE[OF Inl_not_Inr])
 
@@ -3256,8 +3256,8 @@ lemma mor_beh:
     apply (rule iffD2)
      apply (rule fun_eq_iff)
     apply (rule allI)
-    apply (tactic {* CONVERSION (Conv.top_conv
-              (K (Conv.try_conv (Conv.rewr_conv (@{thm rv1_Cons} RS eq_reflection)))) @{context}) 1 *})
+    apply (tactic \<open>CONVERSION (Conv.top_conv
+              (K (Conv.try_conv (Conv.rewr_conv (@{thm rv1_Cons} RS eq_reflection)))) @{context}) 1\<close>)
     apply (rule sum.case_cong_weak)
     apply (rule trans[OF sum.case(1)])
     apply (drule frombd_F12_tobd_F12)
@@ -3284,18 +3284,18 @@ lemma mor_beh:
       apply (rule Lev1_Suc)
      apply (erule UnE)
       apply (erule CollectE exE conjE)+
-      apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+      apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
       apply (erule conjE)
       apply (erule notE[OF Inr_not_Inl])
      apply (erule CollectE exE conjE)+
-     apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+     apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
      apply (erule conjE)
      apply (drule Inr_inject)
-     apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F13_inj[THEN iffD1]}) 1 *})
+     apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F13_inj[THEN iffD1]}) 1\<close>)
        apply assumption
       apply assumption
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (erule UN_I[OF UNIV_I])
 
     apply (rule UN_least)
@@ -3356,17 +3356,17 @@ lemma mor_beh:
       apply (rule Lev2_Suc)
      apply (erule UnE)
       apply (erule CollectE exE conjE)+
-      apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+      apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
       apply (erule conjE)
       apply (drule Inl_inject)
-      apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F22_inj[THEN iffD1]}) 1 *})
+      apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F22_inj[THEN iffD1]}) 1\<close>)
         apply assumption
        apply assumption
-      apply (tactic {* hyp_subst_tac @{context} 1 *})
+      apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
       apply (erule UN_I[OF UNIV_I])
      apply (erule CollectE exE conjE)+
-     apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+     apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
      apply (erule conjE)
      apply (erule notE[OF Inl_not_Inr])
 
@@ -3416,18 +3416,18 @@ lemma mor_beh:
      apply (rule Lev2_Suc)
     apply (erule UnE)
      apply (erule CollectE exE conjE)+
-     apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+     apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
      apply (erule conjE)
      apply (erule notE[OF Inr_not_Inl])
     apply (erule CollectE exE conjE)+
-    apply (tactic {* dtac @{context} @{thm list.inject[THEN iffD1]} 1 *})
+    apply (tactic \<open>dtac @{context} @{thm list.inject[THEN iffD1]} 1\<close>)
     apply (erule conjE)
     apply (drule Inr_inject)
-    apply (tactic {* dtac @{context}
-  (Thm.permute_prems 0 2 @{thm tobd_F23_inj[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context}
+  (Thm.permute_prems 0 2 @{thm tobd_F23_inj[THEN iffD1]}) 1\<close>)
       apply assumption
      apply assumption
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (erule UN_I[OF UNIV_I])
 
    apply (rule UN_least)
@@ -3457,7 +3457,7 @@ lemma mor_beh:
   apply (erule arg_cong[OF frombd_F23_tobd_F23])
   done
 
-subsection {* Quotient Coalgebra *}
+subsection \<open>Quotient Coalgebra\<close>
 
 (* final coalgebra *)
 abbreviation car_final1 where
@@ -3529,7 +3529,7 @@ lemma congruent_strQ2: "congruent (lsbis2 carT1 carT2 strT1 strT2 :: 'a carrier 
 
 lemma coalg_final:
   "coalg car_final1 car_final2 str_final1 str_final2"
-  apply (tactic {* rtac @{context} (@{thm coalg_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm coalg_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule univ_preserves)
      apply (rule equiv_lsbis1)
@@ -3562,7 +3562,7 @@ lemma coalg_final:
     apply (rule coalg_T)
    apply (rule congruent_strQ2)
   apply (rule ballI)
-  apply (tactic {* stac @{context} @{thm o_apply} 1 *})
+  apply (tactic \<open>stac @{context} @{thm o_apply} 1\<close>)
   apply (rule CollectI)
   apply (rule conjI)
    apply (rule subset_UNIV)
@@ -3587,7 +3587,7 @@ lemma mor_T_final:
   "mor carT1 carT2 strT1 strT2 car_final1 car_final2 str_final1 str_final2
   (Equiv_Relations.proj (lsbis1 carT1 carT2 strT1 strT2))
   (Equiv_Relations.proj (lsbis2 carT1 carT2 strT1 strT2))"
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule conjI)
     apply (rule ballI)
@@ -3754,7 +3754,7 @@ lemmas unfold2 = sym[OF morE2[OF mor_unfold UNIV_I]]
 
 lemma JF_cind: "sbis UNIV UNIV dtor1 dtor2 R1 R2 \<Longrightarrow> R1 \<subseteq> Id \<and> R2 \<subseteq> Id"
   apply (rule rev_mp)
-   apply (tactic {* forward_tac @{context} @{thms bis_def[THEN iffD1]} 1 *})
+   apply (tactic \<open>forward_tac @{context} @{thms bis_def[THEN iffD1]} 1\<close>)
    apply (erule conjE)+
    apply (rule bis_cong)
      apply (rule bis_Comp)
@@ -4019,7 +4019,7 @@ lemma corec_unique:
   apply (erule arg_cong2[of _ _ _ _ case_sum, OF refl])
   done
 
-subsection {* Coinduction *}
+subsection \<open>Coinduction\<close>
 
 lemma Frel_coind:
   "\<lbrakk>\<forall>a b. phi1 a b \<longrightarrow> F1rel (=) phi1 phi2 (dtor1 a) (dtor1 b);
@@ -4076,7 +4076,7 @@ lemma Frel_coind:
   apply (erule case_prodI)
   done
 
-subsection {* The Result as an BNF *}
+subsection \<open>The Result as an BNF\<close>
 
 abbreviation JF1map where
   "JF1map u \<equiv> unfold1 (F1map u id id o dtor1) (F2map u id id o dtor2)"
@@ -4159,7 +4159,7 @@ theorem JF1map_comp: "JF1map (g o f) = JF1map g o JF1map f"
 theorem JF2map_comp: "JF2map (g o f) = JF2map g o JF2map f"
   apply (rule sym)
   apply (rule conjunct2)
-  apply (tactic {* rtac @{context} (Thm.permute_prems 0 1 @{thm unfold_unique}) 1*})
+  apply (tactic \<open>rtac @{context} (Thm.permute_prems 0 1 @{thm unfold_unique}) 1\<close>)
 
    apply (rule trans[OF o_assoc])
    apply (rule trans[OF arg_cong[OF sym[OF F2.map_comp0]]])
@@ -4348,7 +4348,7 @@ lemma F1set2_JF1set_incl_JF1set:
    apply (rule equalityD2)
    apply (rule JF1col_Suc)
   apply (rule UnI2)
-  apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN 2 1) 1 *})
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN 2 1) 1\<close>)
   apply (erule UN_I)
   apply assumption
   done
@@ -4363,7 +4363,7 @@ lemma F1set3_JF2set_incl_JF1set:
    apply (rule equalityD2)
    apply (rule JF1col_Suc)
   apply (rule UnI2)
-  apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN  2 2) 1 *})
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN  2 2) 1\<close>)
   apply (erule UN_I)
   apply assumption
   done
@@ -4378,7 +4378,7 @@ lemma F2set2_JF1set_incl_JF2set:
    apply (rule equalityD2)
    apply (rule JF2col_Suc)
   apply (rule UnI2)
-  apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN  2 1) 1 *})
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN  2 1) 1\<close>)
   apply (erule UN_I)
   apply assumption
   done
@@ -4393,7 +4393,7 @@ lemma F2set3_JF2set_incl_JF2set:
    apply (rule equalityD2)
    apply (rule JF2col_Suc)
   apply (rule UnI2)
-  apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN  2 2) 1 *})
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN  2 2) 1\<close>)
   apply (erule UN_I)
   apply assumption
   done
@@ -4415,7 +4415,7 @@ lemma JFset_le:
       apply (rule Un_upper1)
      apply (rule subsetI)
      apply (rule UnI2)
-     apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN 2 1) 1 *})
+     apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN 2 1) 1\<close>)
      apply (erule UN_I)
      apply (erule UnE)
       apply (erule F1set1_JF1set)
@@ -4428,7 +4428,7 @@ lemma JFset_le:
      apply assumption
     apply (rule subsetI)
     apply (rule UnI2)
-    apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN 2 2) 1 *})
+    apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN 2 2) 1\<close>)
     apply (erule UN_I)
     apply (erule UnE)
      apply (erule F2set1_JF2set)
@@ -4441,7 +4441,7 @@ lemma JFset_le:
     apply assumption
    apply (rule subsetI)
    apply (rule UnI2)
-   apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN 2 1) 1 *})
+   apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN 2 1) 1\<close>)
    apply (erule UN_I)
    apply (erule UnE)+
     apply (erule F1set1_JF1set)
@@ -4454,7 +4454,7 @@ lemma JFset_le:
    apply assumption
   apply (rule subsetI)
   apply (rule UnI2)
-  apply (tactic {* rtac @{context} (BNF_Util.mk_UnIN 2 2) 1 *})
+  apply (tactic \<open>rtac @{context} (BNF_Util.mk_UnIN 2 2) 1\<close>)
   apply (erule UN_I)
   apply (erule UnE)+
    apply (erule F2set1_JF2set)
@@ -4516,10 +4516,10 @@ lemma JFcol_natural:
    apply (rule arg_cong2[of _ _ _ _ "(\<union>)"])
     apply (rule SUP_cong[OF refl])
     apply (erule allE)+
-    apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+    apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (rule SUP_cong[OF refl])
    apply (erule allE)+
-   apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
 
   apply (unfold JF2col_Suc JF2map_simps image_Un image_UN UN_simps(10)
       F2.set_map(1) F2.set_map(2) F2.set_map(3)) [1]
@@ -4528,10 +4528,10 @@ lemma JFcol_natural:
   apply (rule arg_cong2[of _ _ _ _ "(\<union>)"])
    apply (rule SUP_cong[OF refl])
    apply (erule allE)+
-   apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
   apply (rule SUP_cong[OF refl])
   apply (erule allE)+
-  apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   done
 
 theorem JF1set_natural: "JF1set o (JF1map u) = image u o JF1set"
@@ -4566,7 +4566,7 @@ theorem JFmap_cong0:
     apply (intro allI impI iffD2[OF F1.in_rel])
 
     apply (erule exE conjE)+
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule exI)
 
     apply (rule conjI[rotated])
@@ -4638,7 +4638,7 @@ theorem JFmap_cong0:
    apply (intro allI impI iffD2[OF F2.in_rel])
 
    apply (erule exE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule exI)
 
    apply (rule conjI[rotated])
@@ -4710,7 +4710,7 @@ theorem JFmap_cong0:
 
   apply (rule conjI)
    apply (rule impI)
-   apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (erule mp)
    apply (rule exI)
    apply (rule conjI)
@@ -4720,7 +4720,7 @@ theorem JFmap_cong0:
    apply (rule refl)
 
   apply (rule impI)
-  apply (tactic {* dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+  apply (tactic \<open>dtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
   apply (erule mp)
   apply (rule exI)
   apply (rule conjI)
@@ -4760,13 +4760,13 @@ lemma JFcol_bd: "\<forall>(j1 :: 'a JF1) (j2 :: 'a JF2). |JF1col n j1| \<le>o bd
         apply (rule F1set2_bd')
        apply (rule ballI)
        apply (erule allE)+
-       apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+       apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
       apply (rule bd_F_Cinfinite)
      apply (rule UNION_Cinfinite_bound)
        apply (rule F1set3_bd')
       apply (rule ballI)
       apply (erule allE)+
-      apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+      apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
      apply (rule bd_F_Cinfinite)
     apply (rule bd_F_Cinfinite)
    apply (rule bd_F_Cinfinite)
@@ -4781,13 +4781,13 @@ lemma JFcol_bd: "\<forall>(j1 :: 'a JF1) (j2 :: 'a JF2). |JF1col n j1| \<le>o bd
        apply (rule F2set2_bd')
       apply (rule ballI)
       apply (erule allE)+
-      apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+      apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
      apply (rule bd_F_Cinfinite)
     apply (rule UNION_Cinfinite_bound)
       apply (rule F2set3_bd')
      apply (rule ballI)
      apply (erule allE)+
-     apply (tactic {* etac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+     apply (tactic \<open>etac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
     apply (rule bd_F_Cinfinite)
    apply (rule bd_F_Cinfinite)
   apply (rule bd_F_Cinfinite)
@@ -4800,7 +4800,7 @@ theorem JF1set_bd: "|JF1set j| \<le>o bd_F"
     apply (rule natLeq_ordLeq_cinfinite)
     apply (rule bd_F_Cinfinite)
    apply (rule ballI)
-   apply (tactic {* rtac @{context} (BNF_Util.mk_conjunctN 2 1) 1 *})
+   apply (tactic \<open>rtac @{context} (BNF_Util.mk_conjunctN 2 1) 1\<close>)
    apply (rule spec[OF spec[OF JFcol_bd]])
   apply (rule bd_F_Cinfinite)
   done
@@ -4812,7 +4812,7 @@ theorem JF2set_bd: "|JF2set j| \<le>o bd_F"
     apply (rule natLeq_ordLeq_cinfinite)
     apply (rule bd_F_Cinfinite)
    apply (rule ballI)
-   apply (tactic {* rtac @{context} (BNF_Util.mk_conjunctN 2 2) 1 *})
+   apply (tactic \<open>rtac @{context} (BNF_Util.mk_conjunctN 2 2) 1\<close>)
    apply (rule spec[OF spec[OF JFcol_bd]])
   apply (rule bd_F_Cinfinite)
   done
@@ -4848,7 +4848,7 @@ theorem JF1wit: "\<And>x. x \<in> JF1set (JF1wit a) \<Longrightarrow> x = a"
    apply (erule FalseE)
   apply (erule UN_E)
   apply (drule F1.wit2)
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (drule set_rev_mp)
    apply (rule equalityD1)
    apply (rule JF2set_simps)
@@ -4884,7 +4884,7 @@ lemmas JFset_induct =
 end
 
 (*export that one!*)
-ML {* rule_by_tactic @{context} (ALLGOALS (TRY o etac @{context} asm_rl)) @{thm JFset_induct} *}
+ML \<open>rule_by_tactic @{context} (ALLGOALS (TRY o etac @{context} asm_rl)) @{thm JFset_induct}\<close>
 
 (* Compositionality of relators *)
 
@@ -4918,11 +4918,11 @@ lemma J_rel_coind_ind:
                                F2map snd snd snd (g x y) = dtor2 y)\<rbrakk> \<Longrightarrow>
   (\<forall>a\<in>JF1set z1. \<forall>x y. R2 x y \<and> z1 = unfold1 (case_prod f) (case_prod g) (x, y) \<longrightarrow> R1 (fst a) (snd a)) \<and>
   (\<forall>a\<in>JF2set z2. \<forall>x y. R3 x y \<and> z2 = unfold2 (case_prod f) (case_prod g) (x, y) \<longrightarrow> R1 (fst a) (snd a))"
-  apply (tactic {* rtac @{context} (rule_by_tactic @{context} (ALLGOALS (TRY o etac @{context} asm_rl))
+  apply (tactic \<open>rtac @{context} (rule_by_tactic @{context} (ALLGOALS (TRY o etac @{context} asm_rl))
   @{thm JFset_induct[of
   "\<lambda>a z1. \<forall>x y. R2 x y \<and> z1 = unfold1 (case_prod f) (case_prod g) (x, y) \<longrightarrow> R1 (fst a) (snd a)"
   "\<lambda>a z2. \<forall>x y. R3 x y \<and> z2 = unfold2 (case_prod f) (case_prod g) (x, y) \<longrightarrow> R1 (fst a) (snd a)"
-  z1 z2]}) 1 *})
+  z1 z2]}) 1\<close>)
        apply (rule allI impI)+
        apply (erule conjE)
        apply (drule spec2)
@@ -4954,10 +4954,10 @@ lemma J_rel_coind_ind:
      apply (drule mp)
       apply assumption
      apply (erule CollectE conjE)+
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   unfolding unfold1 F1.set_map(2) prod.case image_id id_apply
      apply (erule imageE)
-     apply (tactic {* hyp_subst_tac @{context} 1 *})
+     apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
      apply (erule allE mp)+
      apply (rule conjI)
       apply (erule Collect_case_prodD[OF set_mp])
@@ -4972,10 +4972,10 @@ lemma J_rel_coind_ind:
     apply (drule mp)
      apply assumption
     apply (erule CollectE conjE)+
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   unfolding unfold1 F1.set_map(3) prod.case image_id id_apply
     apply (erule imageE)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (erule allE mp)+
     apply (rule conjI)
      apply (erule Collect_case_prodD[OF set_mp])
@@ -4991,10 +4991,10 @@ lemma J_rel_coind_ind:
    apply (drule mp)
     apply assumption
    apply (erule CollectE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   unfolding unfold2 F2.set_map(2) prod.case image_id id_apply
    apply (erule imageE)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (erule allE mp)+
    apply (rule conjI)
     apply (erule Collect_case_prodD[OF set_mp])
@@ -5009,10 +5009,10 @@ lemma J_rel_coind_ind:
   apply (drule mp)
    apply assumption
   apply (erule CollectE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   unfolding unfold2 F2.set_map(3) prod.case image_id id_apply
   apply (erule imageE)
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (erule allE mp)+
   apply (rule conjI)
    apply (erule Collect_case_prodD[OF set_mp])
@@ -5043,7 +5043,7 @@ lemma J_rel_coind_coind1:
    apply (drule mp)
     apply assumption
    apply (erule CollectE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule exI)
    apply (rule conjI[rotated])
     apply (rule conjI)
@@ -5098,7 +5098,7 @@ lemma J_rel_coind_coind1:
   apply (drule mp)
    apply assumption
   apply (erule CollectE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (rule exI)
   apply (rule conjI[rotated])
    apply (rule conjI)
@@ -5171,7 +5171,7 @@ lemma J_rel_coind_coind2:
    apply (drule mp)
     apply assumption
    apply (erule CollectE conjE)+
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule exI)
    apply (rule conjI[rotated])
     apply (rule conjI)
@@ -5226,7 +5226,7 @@ lemma J_rel_coind_coind2:
   apply (drule mp)
    apply assumption
   apply (erule CollectE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (rule exI)
   apply (rule conjI[rotated])
    apply (rule conjI)
@@ -5809,17 +5809,17 @@ lemma unfold_transfer:
 
 end
 
-ML {*
+ML \<open>
   BNF_FP_Util.mk_xtor_co_iter_o_map_thms BNF_Util.Greatest_FP false 1 @{thm unfold_unique}
     @{thms JF1map JF2map} (map (BNF_Tactics.mk_pointfree2 @{context}) @{thms unfold1 unfold2})
     @{thms F1.map_comp0[symmetric] F2.map_comp0[symmetric]} @{thms F1.map_cong0 F2.map_cong0}
-*}
+\<close>
 
-ML {*
+ML \<open>
   BNF_FP_Util.mk_xtor_co_iter_o_map_thms BNF_Util.Greatest_FP true 1 @{thm corec_unique}
     @{thms JF1map JF2map} (map (BNF_Tactics.mk_pointfree2 @{context}) @{thms corec1 corec2})
     @{thms F1.map_comp0[symmetric] F2.map_comp0[symmetric]} @{thms F1.map_cong0 F2.map_cong0}
-*}
+\<close>
 
 bnf "'a JF1"
   map: JF1map

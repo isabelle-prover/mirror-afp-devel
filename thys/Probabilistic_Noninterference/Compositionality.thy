@@ -1,4 +1,4 @@
-section {* Compositionality of Resumption-Based Noninterference *}
+section \<open>Compositionality of Resumption-Based Noninterference\<close>
 
 theory Compositionality
 imports Resumption_Based
@@ -9,7 +9,7 @@ begin
 context PL_Indis
 begin
 
-subsection{* Compatibility and discreetness of atoms, tests and choices *}
+subsection\<open>Compatibility and discreetness of atoms, tests and choices\<close>
 
 definition compatAtm where
 "compatAtm atm \<equiv>
@@ -38,9 +38,9 @@ shows " cval ch s = cval ch t"
 using assms unfolding compatCh_def by auto
 
 
-subsection{* Compositionality of self-isomorphism *}
+subsection\<open>Compositionality of self-isomorphism\<close>
 
-text{* Self-Isomorphism versus language constructs: *}
+text\<open>Self-Isomorphism versus language constructs:\<close>
 
 lemma siso_Done[simp]:
 "siso Done"
@@ -237,7 +237,7 @@ proof-
   thus ?thesis using assms by blast
 qed
 
-text{* Self-isomorphism implies strong bisimilarity: *}
+text\<open>Self-isomorphism implies strong bisimilarity:\<close>
 
 lemma bij_betw_emp[simp]:
 "bij_betw f {} {}"
@@ -276,7 +276,7 @@ proof-
   have "u ` I \<subseteq> singlPart I" unfolding u_def singlPart_def by auto
   moreover have "inj_on u I" unfolding u_def inj_on_def by auto
   ultimately show ?thesis using assms
-  by (metis `inj_on u I` finite_imageD infinite_super)
+  by (metis \<open>inj_on u I\<close> finite_imageD infinite_super)
 qed
 
 lemma singlPart_finite[simp]:
@@ -307,7 +307,7 @@ proof (coinduction arbitrary: c)
        (auto simp add: mC_C_part_def mC_C_wt_def singlPart_def)
 qed
 
-subsection {* Discreetness versus language constructs: *}
+subsection \<open>Discreetness versus language constructs:\<close>
 
 lemma discr_Done[simp]: "discr Done"
   by coinduction auto
@@ -354,9 +354,9 @@ proof (coinduction arbitrary: cl, clarsimp)
     ((\<exists>cl'. cont (Par cl) s ii = Par cl' \<and> properL cl' \<and> discrL cl') \<or> discr (cont (Par cl) s ii))"
   proof (cases rule: brnL_cases)
     case (Local n i)
-    with `discrL cl` have "s \<approx> eff (cl ! n) s i" by simp
+    with \<open>discrL cl\<close> have "s \<approx> eff (cl ! n) s i" by simp
     thus ?thesis
-      using Local `discrL cl` `properL cl` by auto
+      using Local \<open>discrL cl\<close> \<open>properL cl\<close> by auto
   qed
 qed
 
@@ -367,15 +367,15 @@ proof (coinduction arbitrary: cl, clarsimp)
     ((\<exists>cl'. cont (ParT cl) s ii = ParT cl' \<and> properL cl' \<and> discrL cl') \<or> discr (cont (ParT cl) s ii))"
   proof (cases rule: brnL_cases)
     case (Local n i)
-    have "s \<approx> eff (cl ! n) s i" using Local `discrL cl` by simp
-    thus ?thesis using Local `discrL cl` `properL cl` by simp
+    have "s \<approx> eff (cl ! n) s i" using Local \<open>discrL cl\<close> by simp
+    thus ?thesis using Local \<open>discrL cl\<close> \<open>properL cl\<close> by simp
   qed
 qed
 
 lemma discr_finished[simp]: "proper c \<Longrightarrow> finished c \<Longrightarrow> discr c"
   by (induct c rule: proper_induct) (auto simp: discrL_intro)
 
-subsection{* Strong bisimilarity versus language constructs *}
+subsection\<open>Strong bisimilarity versus language constructs\<close>
 
 lemma Sbis_pres_discr_L:
   "c \<approx>s d \<Longrightarrow> discr d \<Longrightarrow> discr c"
@@ -1317,7 +1317,7 @@ shows "Par cl \<approx>s Par dl"
 using assms thetaSPar_Sbis unfolding thetaSPar_def by blast
 
 
-subsection{* 01-bisimilarity versus language constructs *}
+subsection\<open>01-bisimilarity versus language constructs\<close>
 
 (* Discreetness: *)
 lemma ZObis_pres_discr_L: "c \<approx>01 d \<Longrightarrow> discr d \<Longrightarrow> discr c"

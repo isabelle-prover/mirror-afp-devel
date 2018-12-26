@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of the thread actions for wait, notify and interrupt *}
+section \<open>Semantics of the thread actions for wait, notify and interrupt\<close>
 
 theory FWWait
 imports
   FWState
 begin
 
-text {* Update functions for the wait sets in the multithreaded state *}
+text \<open>Update functions for the wait sets in the multithreaded state\<close>
 
 inductive redT_updW :: "'t \<Rightarrow> ('w, 't) wait_sets \<Rightarrow> ('t,'w) wait_set_action \<Rightarrow> ('w,'t) wait_sets \<Rightarrow> bool"
 for t :: 't and ws :: "('w, 't) wait_sets"
@@ -59,8 +59,8 @@ lemma redT_updWs_None_implies_None:
   assumes "redT_updWs t' ws was ws'"
   and "t \<noteq> t'" and "ws t = None"
   shows "ws' t = None"
-using `redT_updWs t' ws was ws'` `ws t = None` unfolding redT_updWs_def
-by induct(auto intro: redT_updW_None_implies_None[OF _ _ `t \<noteq> t'`])
+using \<open>redT_updWs t' ws was ws'\<close> \<open>ws t = None\<close> unfolding redT_updWs_def
+by induct(auto intro: redT_updW_None_implies_None[OF _ _ \<open>t \<noteq> t'\<close>])
 
 lemma redT_updW_PostWS_imp_PostWS:
   "\<lbrakk> redT_updW t ws wa ws'; ws t'' = \<lfloor>PostWS w\<rfloor>; t'' \<noteq> t \<rbrakk> \<Longrightarrow>  ws' t'' = \<lfloor>PostWS w\<rfloor>"
@@ -98,11 +98,11 @@ next
   show ?case
   proof(cases "ws' t'")
     case None
-    from redT_updW_None_SomeD[OF `redT_updW t ws' wa ws''`, OF `ws'' t' = \<lfloor>w\<rfloor>` this]
+    from redT_updW_None_SomeD[OF \<open>redT_updW t ws' wa ws''\<close>, OF \<open>ws'' t' = \<lfloor>w\<rfloor>\<close> this]
     show ?thesis by auto
   next
     case (Some w')
-    with `ws t' = None` rtrancl3p_step.hyps(2) show ?thesis by auto
+    with \<open>ws t' = None\<close> rtrancl3p_step.hyps(2) show ?thesis by auto
   qed
 qed
 
@@ -120,11 +120,11 @@ next
   show ?case
   proof(cases "ws' t' = \<lfloor>InWS w\<rfloor>")
     case True
-    with `ws t' \<noteq> \<lfloor>InWS w\<rfloor>` `\<lbrakk>ws' t' = \<lfloor>InWS w\<rfloor>; ws t' \<noteq> \<lfloor>InWS w\<rfloor>\<rbrakk> \<Longrightarrow> t = t' \<and> Suspend w \<in> set was`
+    with \<open>ws t' \<noteq> \<lfloor>InWS w\<rfloor>\<close> \<open>\<lbrakk>ws' t' = \<lfloor>InWS w\<rfloor>; ws t' \<noteq> \<lfloor>InWS w\<rfloor>\<rbrakk> \<Longrightarrow> t = t' \<and> Suspend w \<in> set was\<close>
     show ?thesis by simp
   next
     case False
-    with `redT_updW t ws' wa ws''` `ws'' t' = \<lfloor>InWS w\<rfloor>`
+    with \<open>redT_updW t ws' wa ws''\<close> \<open>ws'' t' = \<lfloor>InWS w\<rfloor>\<close>
     have "t' = t \<and> wa = Suspend w" by(rule redT_updW_neq_Some_SomeD)
     thus ?thesis by auto
   qed
@@ -143,24 +143,24 @@ proof(induct arbitrary: w rule: rtrancl3p_converse_induct)
   case refl thus ?case by simp
 next
   case (step ws wa ws' was ws'')
-  note `ws'' t = \<lfloor>w'\<rfloor>`
+  note \<open>ws'' t = \<lfloor>w'\<rfloor>\<close>
   moreover  
   have "ws' t \<noteq> None"
   proof
     assume "ws' t = None"
-    with `rtrancl3p (redT_updW t) ws' was ws''` `ws'' t = \<lfloor>w'\<rfloor>`
+    with \<open>rtrancl3p (redT_updW t) ws' was ws''\<close> \<open>ws'' t = \<lfloor>w'\<rfloor>\<close>
     obtain w' where "Suspend w' \<in> set was" unfolding redT_updWs_def[symmetric]
       by(auto dest: redT_updWs_None_SomeD)
-    with `Suspend w' \<notin> set (wa # was)` show False by simp
+    with \<open>Suspend w' \<notin> set (wa # was)\<close> show False by simp
   qed
   then obtain w'' where "ws' t = \<lfloor>w''\<rfloor>" by auto
   moreover {
     fix w
-    from `Suspend w \<notin> set (wa # was)` have "Suspend w \<notin> set was" by simp }
+    from \<open>Suspend w \<notin> set (wa # was)\<close> have "Suspend w \<notin> set was" by simp }
   ultimately have "w' = w'' \<or> (\<exists>w''' w''''. w'' = InWS w''' \<and> w' = PostWS w'''')" by(rule step.hyps)
   moreover { fix w
-    from `Suspend w \<notin> set (wa # was)` have "wa \<noteq> Suspend w" by auto }
-  note redT_updW_not_Suspend_Some[OF `redT_updW t ws wa ws'`, OF `ws' t = \<lfloor>w''\<rfloor>` `ws t = \<lfloor>w\<rfloor>` this]
+    from \<open>Suspend w \<notin> set (wa # was)\<close> have "wa \<noteq> Suspend w" by auto }
+  note redT_updW_not_Suspend_Some[OF \<open>redT_updW t ws wa ws'\<close>, OF \<open>ws' t = \<lfloor>w''\<rfloor>\<close> \<open>ws t = \<lfloor>w\<rfloor>\<close> this]
   ultimately show ?case by auto
 qed
 
@@ -182,19 +182,19 @@ proof(induct rule: rtrancl3p_converse_induct)
   case refl thus ?case by simp
 next
   case (step ws wa ws' was ws'')
-  note Suspend = `\<And>w. Suspend w \<notin> set (wa # was)`
-  note `ws'' t = \<lfloor>PostWS w\<rfloor>`
+  note Suspend = \<open>\<And>w. Suspend w \<notin> set (wa # was)\<close>
+  note \<open>ws'' t = \<lfloor>PostWS w\<rfloor>\<close>
   moreover have "ws' t = \<lfloor>PostWS w\<rfloor>"
   proof(cases "ws' t")
     case None
-    with `rtrancl3p (redT_updW t) ws' was ws''` `ws'' t = \<lfloor>PostWS w\<rfloor>`
+    with \<open>rtrancl3p (redT_updW t) ws' was ws''\<close> \<open>ws'' t = \<lfloor>PostWS w\<rfloor>\<close>
     obtain w where "Suspend w \<in> set was" unfolding redT_updWs_def[symmetric]
       by(auto dest: redT_updWs_None_SomeD)
     with Suspend[of w] have False by simp
     thus ?thesis ..
   next
     case (Some w')
-    thus ?thesis using `ws t = \<lfloor>PostWS w\<rfloor>` Suspend `redT_updW t ws wa ws'`
+    thus ?thesis using \<open>ws t = \<lfloor>PostWS w\<rfloor>\<close> Suspend \<open>redT_updW t ws wa ws'\<close>
       by(auto simp add: redT_updW.simps split: if_split_asm)
   qed
   moreover
@@ -202,12 +202,12 @@ next
   ultimately have "Notified \<notin> set was \<and> WokenUp \<notin> set was" by(rule step.hyps)
   moreover 
   { fix w from Suspend[of w] have "wa \<noteq> Suspend w" by auto }
-  with `redT_updW t ws wa ws'` `ws' t = \<lfloor>PostWS w\<rfloor>` `ws t = \<lfloor>PostWS w\<rfloor>`
+  with \<open>redT_updW t ws wa ws'\<close> \<open>ws' t = \<lfloor>PostWS w\<rfloor>\<close> \<open>ws t = \<lfloor>PostWS w\<rfloor>\<close>
   have "wa \<noteq> Notified \<and> wa \<noteq> WokenUp" by(rule redT_updW_Woken_Up_same_no_Notified_Interrupted)
   ultimately show ?case by auto
 qed
 
-text {* Preconditions for wait set actions *}
+text \<open>Preconditions for wait set actions\<close>
 
 definition wset_actions_ok :: "('w,'t) wait_sets \<Rightarrow> 't \<Rightarrow> ('t,'w) wait_set_action list \<Rightarrow> bool"
 where

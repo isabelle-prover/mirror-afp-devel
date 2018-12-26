@@ -1,4 +1,4 @@
-section {* Preliminaries *}
+section \<open>Preliminaries\<close>
 
 (*<*)
 theory Prelim

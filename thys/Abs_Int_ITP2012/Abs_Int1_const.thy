@@ -112,7 +112,7 @@ value "show_acom (((step_const \<top>)^^11) (\<bottom>\<^sub>c test6_const))"
 value "show_acom_opt (AI_const test6_const)"
 
 
-text{* Monotonicity: *}
+text\<open>Monotonicity:\<close>
 
 global_interpretation Abs_Int_mono
 where \<gamma> = \<gamma>_const and num' = Const and plus' = plus_const
@@ -121,7 +121,7 @@ proof (standard, goal_cases)
     by(auto simp: plus_const_cases split: const.split)
 qed
 
-text{* Termination: *}
+text\<open>Termination:\<close>
 
 definition "m_const x = (case x of Const _ \<Rightarrow> 1 | Any \<Rightarrow> 0)"
 

@@ -1,10 +1,10 @@
-chapter {* Sigma-Formulas and Theorem 2.5 *}
+chapter \<open>Sigma-Formulas and Theorem 2.5\<close>
 
 theory Sigma
 imports Predicates
 begin
 
-section{*Ground Terms and Formulas*}
+section\<open>Ground Terms and Formulas\<close>
 
 definition ground_aux :: "tm \<Rightarrow> atom set \<Rightarrow> bool"
   where "ground_aux t S \<equiv> (supp t \<subseteq> S)"
@@ -43,13 +43,13 @@ unfolding ground_aux_def ground_fm_aux_def fresh_def
 by simp_all
 
 
-section{*Sigma Formulas*}
+section\<open>Sigma Formulas\<close>
 
-text{*Section 2 material*}
+text\<open>Section 2 material\<close>
 
-subsection {* Strict Sigma Formulas *}
+subsection \<open>Strict Sigma Formulas\<close>
 
-text{*Definition 2.1*}
+text\<open>Definition 2.1\<close>
 inductive ss_fm :: "fm \<Rightarrow> bool" where
     MemI:  "ss_fm (Var i IN Var j)"
   | DisjI: "ss_fm A \<Longrightarrow> ss_fm B \<Longrightarrow> ss_fm (A OR B)"
@@ -78,7 +78,7 @@ lemma ss_fm_imp_Sigma_fm [intro]: "ss_fm A \<Longrightarrow> Sigma_fm A"
 lemma Sigma_fm_Fls [iff]: "Sigma_fm Fls"
   by (rule Sigma_fm_Iff [of _ "Ex i (Var i IN Var i)"]) auto
 
-subsection{* Closure properties for Sigma-formulas *}
+subsection\<open>Closure properties for Sigma-formulas\<close>
 
 lemma
   assumes "Sigma_fm A" "Sigma_fm B"  
@@ -114,7 +114,7 @@ proof -
 qed
 
   
-section{* Lemma 2.2: Atomic formulas are Sigma-formulas *}
+section\<open>Lemma 2.2: Atomic formulas are Sigma-formulas\<close>
 
 lemma Eq_Eats_Iff:
    assumes [unfolded fresh_Pair, simp]: "atom i \<sharp> (z,x,y)"
@@ -174,7 +174,7 @@ proof -
     done
 qed
 
-text {*The subset relation *}
+text \<open>The subset relation\<close>
 lemma Var_Subset_sf: "Sigma_fm (Var i SUBS Var j)"
 proof -
   obtain k::name where k: "atom (k::name) \<sharp> (i,j)"
@@ -311,14 +311,14 @@ proof (induction n arbitrary: t u rule: less_induct)
       next
         case (Var i) show ?thesis
         proof (cases t rule: tm.exhaust)
-          case Zero thus ?thesis using `u = Var i`
+          case Zero thus ?thesis using \<open>u = Var i\<close>
             by (auto intro: Zero_Mem_sf)
         next
           case (Var j)
-          thus ?thesis using `u = Var i`
+          thus ?thesis using \<open>u = Var i\<close>
             by auto
         next
-          case (Eats t1 t2) thus ?thesis using `u = Var i` less.prems
+          case (Eats t1 t2) thus ?thesis using \<open>u = Var i\<close> less.prems
             by (force intro: Eats_Mem_sf Sigma_fm_Iff [OF Extensionality _ _] 
                       simp: supp_conv_fresh less.IH [THEN conjunct1])
         qed
@@ -336,12 +336,12 @@ lemma Subset_sf [iff]: "Sigma_fm (t SUBS u)"
 lemma Mem_sf [iff]: "Sigma_fm (t IN u)"
   by (metis Subset_Mem_sf_lemma [OF lessI])
 
-text {*The equality relation is a Sigma-Formula *}
+text \<open>The equality relation is a Sigma-Formula\<close>
 lemma Equality_sf [iff]: "Sigma_fm (t EQ u)"
   by (auto intro: Sigma_fm_Iff [OF Extensionality] simp: supp_conv_fresh)
 
 
-section{*Universal Quantification Bounded by an Arbitrary Term*}
+section\<open>Universal Quantification Bounded by an Arbitrary Term\<close>
 
 lemma All2_term_Iff: "atom i \<sharp> t \<Longrightarrow> atom j \<sharp> (i,t,A) \<Longrightarrow> 
                   {} \<turnstile> (All2 i t A) IFF Ex j (Var j EQ t AND All2 i (Var j) A)"
@@ -365,7 +365,7 @@ proof -
 qed
 
 
-section {* Lemma 2.3: Sequence-related concepts are Sigma-formulas *}
+section \<open>Lemma 2.3: Sequence-related concepts are Sigma-formulas\<close>
 
 lemma OrdP_sf [iff]: "Sigma_fm (OrdP t)"
 proof -
@@ -421,9 +421,9 @@ lemma LstSeqP_sf [iff]: "Sigma_fm (LstSeqP t u v)"
   by (auto simp: LstSeqP.simps)
 
   
-section {* A Key Result: Theorem 2.5 *}
+section \<open>A Key Result: Theorem 2.5\<close>
 
-subsection {* Sigma-Eats Formulas*}
+subsection \<open>Sigma-Eats Formulas\<close>
 
 inductive se_fm :: "fm \<Rightarrow> bool" where
     MemI:  "se_fm (t IN u)"
@@ -443,8 +443,8 @@ declare se_fm.intros [intro]
 lemma subst_fm_in_se_fm: "se_fm A \<Longrightarrow> se_fm (A(k::=x))"
 by (nominal_induct avoiding: k x rule: se_fm.strong_induct) (auto)
 
-subsection{*Preparation*}
-text{*To begin, we require some facts connecting quantification and ground terms.*}
+subsection\<open>Preparation\<close>
+text\<open>To begin, we require some facts connecting quantification and ground terms.\<close>
 
 lemma obtain_const_tm:  obtains t where "\<lbrakk>t\<rbrakk>e = x" "ground t"
 proof (induct x rule: hf_induct)
@@ -459,12 +459,12 @@ lemma ex_eval_fm_iff_exists_tm:
   "eval_fm e (Ex k A) \<longleftrightarrow> (\<exists>t. eval_fm e (A(k::=t)) \<and> ground t)"
 by (auto simp: eval_subst_fm) (metis obtain_const_tm)
 
-text{*In a negative context, the formulation above is actually weaker than this one.*}
+text\<open>In a negative context, the formulation above is actually weaker than this one.\<close>
 lemma ex_eval_fm_iff_exists_tm':
   "eval_fm e (Ex k A) \<longleftrightarrow> (\<exists>t. eval_fm e (A(k::=t)))"
 by (auto simp: eval_subst_fm) (metis obtain_const_tm)
 
-text{*A ground term defines a finite set of ground terms, its elements.*}
+text\<open>A ground term defines a finite set of ground terms, its elements.\<close>
 nominal_function elts :: "tm \<Rightarrow> tm set" where
    "elts Zero       = {}"
  | "elts (Var k)    = {}"
@@ -479,7 +479,7 @@ lemma eval_fm_All2_Eats:
    eval_fm e (All2 i (Eats t u) A) \<longleftrightarrow> eval_fm e (A(i::=u)) \<and> eval_fm e (All2 i t A)"
   by (simp only: ex_eval_fm_iff_exists_tm' eval_fm.simps) (auto simp: eval_subst_fm)
 
-text{*The term @{term t} must be ground, since @{term elts} doesn't handle variables.*}
+text\<open>The term @{term t} must be ground, since @{term elts} doesn't handle variables.\<close>
 lemma eval_fm_All2_Iff_elts:
   "ground t \<Longrightarrow> eval_fm e (All2 i t A) \<longleftrightarrow> (\<forall>u \<in> elts t. eval_fm e (A(i::=u)))"
 apply (induct t rule: tm.induct)
@@ -507,7 +507,7 @@ next
     by (auto intro: anti_deduction) (metis Iff_MP_same Var_Eq_subst_Iff thin1)
 qed
 
-subsection{*The base cases: ground atomic formulas *}
+subsection\<open>The base cases: ground atomic formulas\<close>
 
 lemma ground_prove:
    "\<lbrakk>size t + size u < n; ground t; ground u\<rbrakk>
@@ -553,7 +553,7 @@ lemma ground_se_fm_induction:
    "ground_fm \<alpha> \<Longrightarrow> size \<alpha> < n \<Longrightarrow> se_fm \<alpha> \<Longrightarrow> eval_fm e \<alpha> \<Longrightarrow> {} \<turnstile> \<alpha>"
 proof (induction n arbitrary: \<alpha> rule: less_induct)
   case (less n \<alpha>)
-  show ?case using `se_fm \<alpha>`
+  show ?case using \<open>se_fm \<alpha>\<close>
   proof (cases rule: se_fm.cases)
     case (MemI t u) thus "{} \<turnstile> \<alpha>" using less
       by (auto intro: ground_prove_IN)
@@ -588,7 +588,7 @@ lemma ss_imp_se_fm: "ss_fm A \<Longrightarrow> se_fm A"
 lemma se_fm_imp_thm: "\<lbrakk>se_fm A; ground_fm A; eval_fm e A\<rbrakk> \<Longrightarrow> {} \<turnstile> A"
   by (metis ground_se_fm_induction lessI)
 
-text{*Theorem 2.5*}
+text\<open>Theorem 2.5\<close>
 theorem Sigma_fm_imp_thm: "\<lbrakk>Sigma_fm A; ground_fm A; eval_fm e0 A\<rbrakk> \<Longrightarrow> {} \<turnstile> A"
   by (metis Iff_MP2_same ss_imp_se_fm empty_iff Sigma_fm_def eval_fm_Iff ground_fm_aux_def 
             hfthm_sound se_fm_imp_thm subset_empty)

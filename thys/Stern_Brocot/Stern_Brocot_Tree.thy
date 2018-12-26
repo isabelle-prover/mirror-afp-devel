@@ -1,7 +1,7 @@
 (* Author: Peter Gammie
    Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* The Stern-Brocot Tree *}
+section \<open>The Stern-Brocot Tree\<close>
 
 theory Stern_Brocot_Tree
 imports
@@ -11,11 +11,11 @@ imports
   Applicative_Lifting.Stream_Algebra
 begin
 
-text{*
+text\<open>
   The Stern-Brocot tree is discussed at length by \citet[\S4.5]{GrahamKnuthPatashnik1994CM}.
   In essence the tree enumerates the rational numbers in their lowest terms by constructing the
-  @{text mediant} of two bounding fractions.
-*}
+  \<open>mediant\<close> of two bounding fractions.
+\<close>
 
 type_synonym fraction = "nat \<times> nat"
 
@@ -30,7 +30,7 @@ where
     (\<lambda>(lb, ub). (mediant (lb, ub), ub))
     ((0, 1), (1, 0))"
 
-text{*
+text\<open>
   This process is visualised in Figure~\ref{fig:stern-brocot-iterate}.
   Intuitively each node is labelled with the mediant of it's rightmost and leftmost ancestors.
 
@@ -78,15 +78,15 @@ text{*
   
   Our ultimate goal is to show that the Stern-Brocot tree contains all rationals (in lowest terms),
   and that each occurs exactly once in the tree. A proof is sketched in \citet[\S4.5]{GrahamKnuthPatashnik1994CM}.
-*}
+\<close>
 
-subsection {* Specification via a recursion equation *}
+subsection \<open>Specification via a recursion equation\<close>
 
-text {*
+text \<open>
   \cite{Hinze2009JFP} derives the following recurrence relation for the Stern-Brocot tree. 
   We will show in \S\ref{section:eq:rec:iterative} that his derivation is sound with respect to the
   standard iterative definition of the tree shown above.
-*}
+\<close>
 
 abbreviation succ :: "fraction \<Rightarrow> fraction"
 where "succ \<equiv> \<lambda>(m, n). (m + n, n)"
@@ -101,7 +101,7 @@ where
      (map_tree recip (map_tree succ (map_tree recip stern_brocot_recurse)))
      (map_tree succ stern_brocot_recurse)"
 
-text \<open>Actually, we would like to write the specification below, but @{text "(\<diamondop>)"} cannot be registered as friendly due to varying type parameters\<close>
+text \<open>Actually, we would like to write the specification below, but \<open>(\<diamondop>)\<close> cannot be registered as friendly due to varying type parameters\<close>
 lemma stern_brocot_unfold:
   "stern_brocot_recurse =
    Node (1, 1)
@@ -123,13 +123,13 @@ apply(simp add: o_assoc)
 apply(rule conjI; applicative_nf; simp)
 done
 
-subsection {* Basic properties *}
+subsection \<open>Basic properties\<close>
 
-text {*
+text \<open>
   The recursive definition is useful for showing some basic properties of the tree, 
   such as that the pairs of numbers at each node are coprime, and have non-zero denominators.
   Both are simple inductions on the path.
-*}
+\<close>
 
 lemma stern_brocot_denominator_non_zero:
   "case root (traverse_tree path stern_brocot_recurse) of (m, n) \<Rightarrow> m > 0 \<and> n > 0"
@@ -140,12 +140,12 @@ lemma stern_brocot_coprime:
   by (induct path) (auto split: dir.splits simp add: coprime_iff_gcd_eq_1, metis gcd.commute gcd_add1)
 
 
-subsection {* All the rationals *}
+subsection \<open>All the rationals\<close>
 
-text{*
+text\<open>
   For every pair of positive naturals, we can construct a path into the Stern-Brocot tree such that the naturals at the end of the path define the same rational as the pair we started with.
   Intuitively, the choices made by Euclid's algorithm define this path.
-*}
+\<close>
 
 function mk_path :: "nat \<Rightarrow> nat \<Rightarrow> path" where
   "m = n \<Longrightarrow> mk_path (Suc m) (Suc n) = []"
@@ -176,9 +176,9 @@ next
     by (simp add: eq_rat field_simps of_nat_diff split: prod.split_asm)
 qed (simp_all add: eq_rat)
 
-subsection {* No repetitions *}
+subsection \<open>No repetitions\<close>
 
-text {*
+text \<open>
   We establish that the Stern-Brocot tree does not contain repetitions, i.e.,
   that each rational number appears at most once in it.
   Note that this property is stronger than merely requiring that pairs of naturals not be repeated,
@@ -193,7 +193,7 @@ text {*
   We then derive an iterative version and use invariant reasoning on that.
   We begin by defining some matrix machinery.
   This is all elementary and primitive (we do not need much algebra).
-*}
+\<close>
 
 type_synonym matrix = "fraction \<times> fraction"
 type_synonym vector = fraction
@@ -250,10 +250,10 @@ by (cases m) (simp_all add: LL_def UR_def times_matrix_def split_def field_simps
 lemma recip_succ_recip: "recip \<circ> succ \<circ> recip = (\<lambda>(x, y). (x, x + y))"
 by (clarsimp simp: fun_eq_iff)
 
-text {* 
+text \<open>
   \citeauthor{BackhouseFerreira2008MPC} work with the identity matrix @{const "I"} at the root.
   This has the advantage that all relevant matrices have determinants of @{term "1 :: nat"}.
-*}
+\<close>
 
 definition stern_brocot_iterate_aux :: "matrix \<Rightarrow> matrix tree"
 where "stern_brocot_iterate_aux \<equiv> tree_iterate (\<lambda>s. s \<otimes> LL) (\<lambda>s. s \<otimes> UR)"
@@ -274,10 +274,10 @@ proof -
  finally show ?thesis by simp
 qed
 
-text{*
+text\<open>
   The following are the key ordering properties derived by \citet{BackhouseFerreira2008MPC}.
   They hinge on the matrices containing only natural numbers.
-*}
+\<close>
 
 lemma tree_ordering_left:
   assumes DX: "Det X = 1"
@@ -433,12 +433,12 @@ lemma rat_inv_eq:
   assumes "coprime c d"
   shows "a = c \<and> b = d"
 proof -
-  from `b > 0` `d > 0` `Fract a b = Fract c d`
+  from \<open>b > 0\<close> \<open>d > 0\<close> \<open>Fract a b = Fract c d\<close>
   have *: "a * d = c * b" by (simp add: eq_rat)
-  from arg_cong[where f=sgn, OF this] `b > 0` `d > 0`
+  from arg_cong[where f=sgn, OF this] \<open>b > 0\<close> \<open>d > 0\<close>
   have "sgn a = sgn c" by (simp add: sgn_mult)
   with * show ?thesis
-    using `b > 0` `d > 0` coprime_crossproduct_int[OF `coprime a b` `coprime c d`]
+    using \<open>b > 0\<close> \<open>d > 0\<close> coprime_crossproduct_int[OF \<open>coprime a b\<close> \<open>coprime c d\<close>]
     by (simp add: abs_sgn)
 qed
 
@@ -454,12 +454,12 @@ using stern_brocot_coprime[where path=path]
 by(auto simp: gcd_int_def dest!: rat_inv_eq intro: stern_brocot_fractions_not_repeated simp add: stern_brocot_recurse_iterate[symmetric] split: prod.splits)
 
 
-subsection {* Equivalence of recursive and iterative version \label{section:eq:rec:iterative} *}
+subsection \<open>Equivalence of recursive and iterative version \label{section:eq:rec:iterative}\<close>
 
-text {*
+text \<open>
   \citeauthor{Hinze2009JFP} shows that it does not matter whether we use @{const I} or
   @{const "F"} at the root provided we swap the left and right matrices too.
- *}
+\<close>
 
 definition stern_brocot_Hinze_iterate :: "fraction tree"
 where "stern_brocot_Hinze_iterate = map_tree mediant (tree_iterate (\<lambda>s. s \<otimes> UR) (\<lambda>s. s \<otimes> LL) F)"
@@ -489,9 +489,9 @@ end
 no_notation times_matrix (infixl "\<otimes>" 70)
   and times_vector (infixl "\<odot>" 70)
 
-section {* Linearising the Stern-Brocot Tree *}
+section \<open>Linearising the Stern-Brocot Tree\<close>
 
-subsection {* Turning a tree into a stream *}
+subsection \<open>Turning a tree into a stream\<close>
 
 corec tree_chop :: "'a tree \<Rightarrow> 'a tree"
 where "tree_chop t = Node (root (left t)) (right t) (tree_chop (left t))"
@@ -502,7 +502,7 @@ lemma tree_chop_sel [simp]:
   "right (tree_chop t) = tree_chop (left t)"
 by(subst tree_chop.code; simp; fail)+
 
-text {* @{const tree_chop} is a idiom homomorphism *}
+text \<open>@{const tree_chop} is a idiom homomorphism\<close>
 
 lemma tree_chop_pure_tree [simp]:
   "tree_chop (pure x) = pure x"
@@ -523,7 +523,7 @@ lemma stream_sel [simp]:
   "stl (stream t) = stream (tree_chop t)"
 by(subst stream.code; simp; fail)+
 
-text{* @{const "stream"} is an idiom homomorphism. *}
+text\<open>@{const "stream"} is an idiom homomorphism.\<close>
 
 lemma stream_pure [simp]: "stream (pure x) = pure x"
 by coinduction auto
@@ -549,7 +549,7 @@ by(simp add: one_tree_def one_stream_def)
 lemma stream_numeral [simp]: "stream (numeral n) = numeral n"
 by(induct n)(simp_all only: numeral.simps stream_plus stream_1)
 
-subsection {* Split the Stern-Brocot tree into numerators and denumerators *}
+subsection \<open>Split the Stern-Brocot tree into numerators and denumerators\<close>
 
 corec num_den :: "bool \<Rightarrow> nat tree"
 where
@@ -612,11 +612,11 @@ lemma num_mod_den_simps [simp]:
   "right num_mod_den = num_mod_den"
 by(subst num_mod_den.code; simp; fail)+
 
-text{*
+text\<open>
   The arithmetic transformations need the precondition that @{const den} contains only
   positive numbers, no @{term "0 :: nat"}. \citet[p502]{Hinze2009JFP} gets a bit sloppy here; it is
   not straightforward to adapt his lifting framework \cite{Hinze2010Lifting} to conditional equations.
-*}
+\<close>
 
 lemma mod_tree_lemma1:
   fixes x :: "nat tree"
@@ -649,7 +649,7 @@ proof -
   have le: "0 < y \<Longrightarrow> 2 * (x mod y) \<le> x + y" for x y :: nat
     by (simp add: mult_2 add_mono)
 
-  text {* We switch to @{typ int} such that all cancellation laws are available. *}
+  text \<open>We switch to @{typ int} such that all cancellation laws are available.\<close>
   define den' where "den' = pure int \<diamondop> den"
   define num' where "num' = pure int \<diamondop> num"
   define num_mod_den' where "num_mod_den' = pure int \<diamondop> num_mod_den"
@@ -679,14 +679,14 @@ proof -
   finally show ?thesis .
 qed
 
-subsection{* Loopless linearisation of the Stern-Brocot tree. *}
+subsection\<open>Loopless linearisation of the Stern-Brocot tree.\<close>
 
-text {*
+text \<open>
   This is a loopless linearisation of the Stern-Brocot tree that gives Stern's diatomic sequence,
   which is also known as Dijkstra's fusc function \cite{Dijkstra1982EWD570,Dijkstra1982EWD578}.
   Loopless \`a la \cite{Bird2006MPC} means that the first element of the stream can be computed in linear
   time and every further element in constant time.
-*}
+\<close>
 
 friend_of_corec smap :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a stream \<Rightarrow> 'a stream"
 where "smap f xs = SCons (f (shd xs)) (smap f (stl xs))"
@@ -742,7 +742,7 @@ lemma fusc'_simps [simp]:
   "stl fusc' = fusc + fusc' - 2 * (fusc mod fusc')"
 by(subst fusc'_unfold, simp)+
 
-subsection {* Equivalence with Dijkstra's fusc function *}
+subsection \<open>Equivalence with Dijkstra's fusc function\<close>
 
 lemma stern_brocot_loopless_siterate: "stern_brocot_loopless = siterate step (1, 1)"
 by(rule stern_brocot_loopless.unique[symmetric])(rule stream.expand; simp add: smap_siterate[symmetric])

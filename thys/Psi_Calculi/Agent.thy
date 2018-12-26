@@ -334,25 +334,25 @@ proof -
     thus ?case by auto
   next
     case(Suc n xvec yvec M P)
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    with `length xvec = length yvec`
+    with \<open>length xvec = length yvec\<close>
     obtain y yvec' where "yvec = y#yvec'" by(case_tac yvec) auto
-    from `yvec = y#yvec'` `xvec=x#xvec'` `xvec \<sharp>* yvec` `distinct yvec` `length xvec = length yvec` `yvec \<sharp>* M` `yvec \<sharp>* P`
+    from \<open>yvec = y#yvec'\<close> \<open>xvec=x#xvec'\<close> \<open>xvec \<sharp>* yvec\<close> \<open>distinct yvec\<close> \<open>length xvec = length yvec\<close> \<open>yvec \<sharp>* M\<close> \<open>yvec \<sharp>* P\<close>
     have "length xvec' = length yvec'" and "xvec' \<sharp>* yvec'" and "distinct yvec'" and "yvec' \<sharp>* M" and "yvec' \<sharp>* P"
       by simp+
-    then obtain N Q where Eq: "inputChain xvec' M P = inputChain yvec' N Q" using `length xvec' = n`
+    then obtain N Q where Eq: "inputChain xvec' M P = inputChain yvec' N Q" using \<open>length xvec' = n\<close>
       by(drule_tac Suc) auto
-    moreover from `distinct yvec` `yvec = y#yvec'` have "y \<sharp> yvec'" by auto
-    moreover from `xvec \<sharp>* yvec` `xvec = x#xvec'` `yvec=y#yvec'` have "x \<noteq> y" and "x \<sharp> yvec'"
+    moreover from \<open>distinct yvec\<close> \<open>yvec = y#yvec'\<close> have "y \<sharp> yvec'" by auto
+    moreover from \<open>xvec \<sharp>* yvec\<close> \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close> have "x \<noteq> y" and "x \<sharp> yvec'"
       by auto
-    moreover from `yvec \<sharp>* M` `yvec \<sharp>* P` `yvec = y#yvec'` have "y \<sharp> M" and "y \<sharp> P" by auto
+    moreover from \<open>yvec \<sharp>* M\<close> \<open>yvec \<sharp>* P\<close> \<open>yvec = y#yvec'\<close> have "y \<sharp> M" and "y \<sharp> P" by auto
     hence "y \<sharp> inputChain xvec' M P" by(simp add: inputChainFresh)
     with Eq have "y \<sharp> inputChain yvec' N Q" by(simp add: inputChainFresh)
     ultimately have "\<nu> x (inputChain xvec' M P) = \<nu> y (inputChain yvec' ([(x, y)] \<bullet> N) ([(x, y)] \<bullet> Q))"
       by(simp add: input.inject alpha' eqvts name_swap)
-    thus ?case using `xvec = x#xvec'` `yvec=y#yvec'` by force
+    thus ?case using \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close> by force
   qed
   ultimately show ?thesis
     by blast
@@ -379,49 +379,49 @@ proof -
   proof(induct n arbitrary: xvec yvec M N P Q)
     case(0 xvec yvec M N P Q)
     have Eq: "inputChain xvec M P = inputChain yvec N Q" by fact
-    from `0 = length xvec` have "xvec = []" by auto
+    from \<open>0 = length xvec\<close> have "xvec = []" by auto
     moreover with Eq have "yvec = []"
       by(case_tac yvec) auto
     ultimately show ?case using Eq
       by(simp add: input.inject)
   next
     case(Suc n xvec yvec M N P Q)
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    from `inputChain xvec M P = inputChain yvec N Q` `xvec = x # xvec'`
+    from \<open>inputChain xvec M P = inputChain yvec N Q\<close> \<open>xvec = x # xvec'\<close>
     obtain y yvec' where "inputChain (x#xvec') M P = inputChain (y#yvec') N Q"
       and "yvec = y#yvec'"
       by(case_tac yvec) auto
     hence EQ: "\<nu> x (inputChain xvec' M P) = \<nu> y (inputChain yvec' N Q)"
       by simp
-    from `xvec = x#xvec'` `yvec=y#yvec'` `xvec \<sharp>* yvec`
+    from \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close> \<open>xvec \<sharp>* yvec\<close>
     have "x \<noteq> y" and "xvec' \<sharp>* yvec'" and "x \<sharp> yvec'" and "y \<sharp> xvec'"
       by(auto simp add: fresh_list_cons)
-    from `distinct xvec` `distinct yvec` `xvec=x#xvec'` `yvec=y#yvec'` have "x \<sharp> xvec'" and "y \<sharp> yvec'" and "distinct xvec'" and "distinct yvec'"
+    from \<open>distinct xvec\<close> \<open>distinct yvec\<close> \<open>xvec=x#xvec'\<close> \<open>yvec=y#yvec'\<close> have "x \<sharp> xvec'" and "y \<sharp> yvec'" and "distinct xvec'" and "distinct yvec'"
       by simp+
     have IH: "\<And>xvec yvec M N P Q. \<lbrakk>inputChain xvec (M::'a) (P::('a, 'b, 'c) psi) = inputChain yvec (N::'a) (Q::('a, 'b, 'c) psi); xvec \<sharp>* yvec; distinct xvec; distinct yvec; n = length xvec\<rbrakk> \<Longrightarrow> \<exists>p. (set p) \<subseteq> (set xvec) \<times> (set yvec) \<and> distinctPerm p \<and>  yvec = p \<bullet> xvec \<and> N = p \<bullet> M \<and> Q = p \<bullet> P"
       by fact
-    from EQ `x \<noteq> y`  `x \<sharp> yvec'` `y \<sharp> yvec'` have "inputChain xvec' M P = inputChain yvec' ([(x, y)] \<bullet> N) ([(x, y)] \<bullet> Q)"
+    from EQ \<open>x \<noteq> y\<close>  \<open>x \<sharp> yvec'\<close> \<open>y \<sharp> yvec'\<close> have "inputChain xvec' M P = inputChain yvec' ([(x, y)] \<bullet> N) ([(x, y)] \<bullet> Q)"
       by(simp add: input.inject alpha eqvts)
-    with `xvec' \<sharp>* yvec'` `distinct xvec'` `distinct yvec'` `length xvec' = n` IH
+    with \<open>xvec' \<sharp>* yvec'\<close> \<open>distinct xvec'\<close> \<open>distinct yvec'\<close> \<open>length xvec' = n\<close> IH
     obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p" and "yvec' = p \<bullet> xvec'" and "([(x, y)] \<bullet> N) = p \<bullet> M" and "([(x, y)] \<bullet> Q) = p \<bullet> P"
       by metis
     from S have "set((x, y)#p) \<subseteq> set(x#xvec') \<times> set(y#yvec')" by auto
-    moreover from `x \<sharp> xvec'` `x \<sharp> yvec'` `y \<sharp> xvec'` `y \<sharp> yvec'` S have "x \<sharp> p" and "y \<sharp> p"
+    moreover from \<open>x \<sharp> xvec'\<close> \<open>x \<sharp> yvec'\<close> \<open>y \<sharp> xvec'\<close> \<open>y \<sharp> yvec'\<close> S have "x \<sharp> p" and "y \<sharp> p"
       apply(induct p)
       by(auto simp add: fresh_list_nil fresh_list_cons fresh_prod name_list_supp) (auto simp add: fresh_def) 
 
-    with S `distinctPerm p` `x \<noteq> y` have "distinctPerm((x, y)#p)" by auto
-    moreover from `yvec' = p \<bullet> xvec'` `x \<sharp> p` `y \<sharp> p` `x \<sharp> xvec'` `y \<sharp> xvec'` have "(y#yvec') = ((x, y)#p) \<bullet> (x#xvec')"
+    with S \<open>distinctPerm p\<close> \<open>x \<noteq> y\<close> have "distinctPerm((x, y)#p)" by auto
+    moreover from \<open>yvec' = p \<bullet> xvec'\<close> \<open>x \<sharp> p\<close> \<open>y \<sharp> p\<close> \<open>x \<sharp> xvec'\<close> \<open>y \<sharp> xvec'\<close> have "(y#yvec') = ((x, y)#p) \<bullet> (x#xvec')"
       by(simp add: calc_atm freshChainSimps)
-    moreover from `([(x, y)] \<bullet> N) = p \<bullet> M` have "([(x, y)] \<bullet> [(x, y)] \<bullet> N) = [(x, y)] \<bullet> p \<bullet> M"
+    moreover from \<open>([(x, y)] \<bullet> N) = p \<bullet> M\<close> have "([(x, y)] \<bullet> [(x, y)] \<bullet> N) = [(x, y)] \<bullet> p \<bullet> M"
       by(simp add: pt_bij)
     hence "N = ((x, y)#p) \<bullet> M" by simp
-    moreover from `([(x, y)] \<bullet> Q) = p \<bullet> P` have "([(x, y)] \<bullet> [(x, y)] \<bullet> Q) = [(x, y)] \<bullet> p \<bullet> P"
+    moreover from \<open>([(x, y)] \<bullet> Q) = p \<bullet> P\<close> have "([(x, y)] \<bullet> [(x, y)] \<bullet> Q) = [(x, y)] \<bullet> p \<bullet> P"
       by(simp add: pt_bij)
     hence "Q = ((x, y)#p) \<bullet> P" by simp
-    ultimately show ?case using `xvec=x#xvec'` `yvec=y#yvec'`
+    ultimately show ?case using \<open>xvec=x#xvec'\<close> \<open>yvec=y#yvec'\<close>
       by blast
   qed
   ultimately show ?thesis by blast
@@ -443,16 +443,16 @@ proof -
   with assms show ?thesis
   proof(induct n arbitrary: xvec yvec M P N Q)
     case(0 xvec yvec M P N Q)
-    from `0 = length xvec` have "xvec = []" by auto
-    moreover with `inputChain xvec M P = inputChain yvec N Q` have "yvec = []"
+    from \<open>0 = length xvec\<close> have "xvec = []" by auto
+    moreover with \<open>inputChain xvec M P = inputChain yvec N Q\<close> have "yvec = []"
       by(case_tac yvec) auto
     ultimately show ?case by simp
   next
     case(Suc n xvec yvec M P N Q)
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    from `inputChain xvec M P = inputChain yvec N Q` `xvec = x # xvec'`
+    from \<open>inputChain xvec M P = inputChain yvec N Q\<close> \<open>xvec = x # xvec'\<close>
     obtain y yvec' where "inputChain (x#xvec') M P = inputChain (y#yvec') N Q"
       and "yvec = y#yvec'"
       by(case_tac yvec) auto
@@ -465,19 +465,19 @@ proof -
       assume "x = y"
       with EQ have "inputChain xvec' M P = inputChain yvec' N Q"
         by(simp add: alpha input.inject)
-      with IH `length xvec' = n` have "length xvec' = length yvec'"
+      with IH \<open>length xvec' = n\<close> have "length xvec' = length yvec'"
         by blast
-      with `xvec = x#xvec'` `yvec=y#yvec'`
+      with \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close>
       show ?case by simp
     next
       assume "x \<noteq> y"
       with EQ have "inputChain xvec' M P = inputChain ([(x, y)] \<bullet> yvec') ([(x, y)] \<bullet> N) ([(x, y)] \<bullet> Q)"
         by(simp add: alpha input.inject eqvts)
-      with IH `length xvec' = n` have "length xvec' = length ([(x, y)] \<bullet> yvec')"
+      with IH \<open>length xvec' = n\<close> have "length xvec' = length ([(x, y)] \<bullet> yvec')"
         by blast
       hence "length xvec' = length yvec'"
         by simp
-      with `xvec = x#xvec'` `yvec=y#yvec'`
+      with \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close>
       show ?case by simp
     qed
   qed
@@ -583,7 +583,7 @@ proof -
         by(force intro: freshChainPerm simp add: freshChainSym)
       with ySuppN show "False" by(simp add: fresh_def)
     qed
-    with `distinct yvec'`  yEq show ?case by simp
+    with \<open>distinct yvec'\<close>  yEq show ?case by simp
   qed
 qed
 
@@ -664,7 +664,7 @@ lemma guardedClosed[simp]:
 
   shows "guarded(p \<bullet> P)"
 proof -
-  from `guarded P` have "p \<bullet> (guarded P)"
+  from \<open>guarded P\<close> have "p \<bullet> (guarded P)"
     by(simp add: perm_bool)
   thus ?thesis by(simp add: eqvts)
 qed

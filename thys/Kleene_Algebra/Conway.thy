@@ -4,21 +4,21 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Conway Algebras *}
+section \<open>Conway Algebras\<close>
 
 theory Conway
   imports Dioid
 begin
 
-text {*
+text \<open>
   We define a weak regular algebra which can serve as a common basis for Kleene algebra and demonic reginement algebra.
   It is closely related to an axiomatisation given by Conway~\cite{conway71regular}. 
-*}
+\<close>
 
 class dagger_op =
   fixes dagger :: "'a \<Rightarrow> 'a" ("_\<^sup>\<dagger>" [101] 100)
 
-subsection{* Near Conway Algebras *}
+subsection\<open>Near Conway Algebras\<close>
 
 class near_conway_base = near_dioid_one + dagger_op +
   assumes dagger_denest: "(x + y)\<^sup>\<dagger> = (x\<^sup>\<dagger> \<cdot> y)\<^sup>\<dagger> \<cdot> x\<^sup>\<dagger>"
@@ -77,7 +77,7 @@ lemma star_square: "(x \<cdot> x)\<^sup>\<dagger> \<le> x\<^sup>\<dagger>"
 lemma dagger_rtc1_eq [simp]: "1 + x + x\<^sup>\<dagger> \<cdot> x\<^sup>\<dagger> = x\<^sup>\<dagger>"
   by (simp add: local.dagger_ext local.dagger_refl local.join.sup_absorb2)
 
-text {* Nitpick refutes the next lemmas. *}
+text \<open>Nitpick refutes the next lemmas.\<close>
 
 lemma " y + y \<cdot> x\<^sup>\<dagger> \<cdot> x = y \<cdot> x\<^sup>\<dagger>"
 (*nitpick [expect=genuine]*)
@@ -105,7 +105,7 @@ oops
 
 end
 
-subsection{* Pre-Conway Algebras *}
+subsection\<open>Pre-Conway Algebras\<close>
 
 class pre_conway_base = near_conway_base + pre_dioid_one
 
@@ -122,7 +122,7 @@ lemma dagger_sum_unfold [simp]: "x\<^sup>\<dagger> + x\<^sup>\<dagger> \<cdot> y
 
 end
 
-subsection {* Conway Algebras *}
+subsection \<open>Conway Algebras\<close>
 
 class conway_base = pre_conway_base + dioid_one
 
@@ -154,7 +154,7 @@ qed
 
 end
 
-subsection {* Conway Algebras with  Zero *}
+subsection \<open>Conway Algebras with  Zero\<close>
 
 class near_conway_base_zerol = near_conway_base + near_dioid_one_zerol
 
@@ -185,7 +185,7 @@ oops
 
 end
 
-subsection {* Conway Algebras with Simulation *}
+subsection \<open>Conway Algebras with Simulation\<close>
 
 class near_conway = near_conway_base +
   assumes dagger_simr: "z \<cdot> x \<le> y \<cdot> z \<Longrightarrow> z \<cdot> x\<^sup>\<dagger> \<le> y\<^sup>\<dagger> \<cdot> z"
@@ -195,16 +195,16 @@ begin
 lemma dagger_slide_var: "x \<cdot> (y \<cdot> x)\<^sup>\<dagger> \<le> (x \<cdot> y)\<^sup>\<dagger> \<cdot> x"
   by (metis eq_refl dagger_simr mult.assoc)
 
-text {* Nitpick refutes the next lemma. *}
+text \<open>Nitpick refutes the next lemma.\<close>
 
 lemma dagger_slide: "x \<cdot> (y \<cdot> x)\<^sup>\<dagger> = (x \<cdot> y)\<^sup>\<dagger> \<cdot> x"
 (*nitpick [expect=genuine]*)
   oops
 
-text {*
+text \<open>
   We say that $y$ preserves $x$ if $x \cdot y \cdot x = x \cdot y$ and $!x \cdot y \cdot !x = !x \cdot y$. This definition is taken
   from Solin~\cite{Solin11}. It is useful for program transformation.
-*}
+\<close>
   
 lemma preservation1: "x \<cdot> y \<le> x \<cdot> y \<cdot> x \<Longrightarrow> x \<cdot> y\<^sup>\<dagger> \<le> (x \<cdot> y + z)\<^sup>\<dagger> \<cdot> x"
 proof -
@@ -255,7 +255,7 @@ begin
 
 subclass conway_base ..
 
-text {* Nitpick refutes the next lemmas. *}
+text \<open>Nitpick refutes the next lemmas.\<close>
 
 lemma "1 = 1\<^sup>\<dagger>"
 (*nitpick [expect=genuine]*)

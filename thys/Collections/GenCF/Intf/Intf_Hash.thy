@@ -1,4 +1,4 @@
-section {* \isaheader{Hashable Interface} *}
+section \<open>\isaheader{Hashable Interface}\<close>
 theory Intf_Hash
 imports 
     Main
@@ -10,7 +10,7 @@ begin
 type_synonym 'a eq = "'a \<Rightarrow> 'a \<Rightarrow> bool"
 type_synonym 'k bhc = "nat \<Rightarrow> 'k \<Rightarrow> nat"
 
-subsection {* Abstract and concrete hash functions *}
+subsection \<open>Abstract and concrete hash functions\<close>
 
 definition is_bounded_hashcode :: "('c\<times>'a) set \<Rightarrow> 'c eq \<Rightarrow> 'c bhc \<Rightarrow> bool"
   where "is_bounded_hashcode R eq bhc \<equiv> 
@@ -77,7 +77,7 @@ next
   from abstract_bhc_correct[OF bhc] show "?bhc' n' x' < n'"
   proof (cases "x' \<in> Range Rk")
     case False
-      with `1 < n'` show ?thesis 
+      with \<open>1 < n'\<close> show ?thesis 
           unfolding abstract_bounded_hashcode_def by simp
   next
     case True
@@ -85,10 +85,10 @@ next
       have "(n',n') \<in> nat_rel" ..
       from abstract_bhc_correct[OF assms] have "?bhc' n' x' = bhc n' x"
         apply -
-        apply (drule fun_relD[OF _ `(n',n') \<in> nat_rel`],
-               drule fun_relD[OF _ `(x,x') \<in> Rk`], simp)
+        apply (drule fun_relD[OF _ \<open>(n',n') \<in> nat_rel\<close>],
+               drule fun_relD[OF _ \<open>(x,x') \<in> Rk\<close>], simp)
         done
-      also from `1 < n'` and bhc have "... < n'" by blast
+      also from \<open>1 < n'\<close> and bhc have "... < n'" by blast
       finally show "?bhc' n' x' < n'" .
   qed
 qed simp
@@ -106,7 +106,7 @@ lemma hashable_bhc_is_bhc[autoref_ga_rules]:
   by (simp add: bounded_hashcode_nat_bounds)
 
 
-subsection {* Default hash map size *}
+subsection \<open>Default hash map size\<close>
 
 definition is_valid_def_hm_size :: "'k itself \<Rightarrow> nat \<Rightarrow> bool"
     where "is_valid_def_hm_size type n \<equiv> n > 1"

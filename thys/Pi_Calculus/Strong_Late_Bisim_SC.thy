@@ -44,7 +44,7 @@ lemma matchNil:
 proof -
   let ?X = "{([a\<frown>b]P, \<zero>), (\<zero>, [a\<frown>b]P)}"
   have "([a\<frown>b]P, \<zero>) \<in> ?X" by simp
-  thus ?thesis using `a \<noteq> b`
+  thus ?thesis using \<open>a \<noteq> b\<close>
     by(coinduct rule: bisimCoinduct) (auto intro: matchNilLeft nilSimRight reflexive)
 qed
 
@@ -59,7 +59,7 @@ lemma mismatchId:
 proof -
   let ?X = "{([a\<noteq>b]P, P), (P, [a\<noteq>b]P)}"
   have "([a\<noteq>b]P, P) \<in> ?X" by simp
-  thus ?thesis using `a \<noteq> b`
+  thus ?thesis using \<open>a \<noteq> b\<close>
     by(coinduct rule: bisimCoinduct) (auto intro: mismatchIdLeft mismatchIdRight reflexive)
 qed
 
@@ -107,7 +107,7 @@ proof -
       hence "eqvt(?X \<union> bisim)" by auto
       ultimately have "<\<nu>x><\<nu>y>P \<leadsto>[(?X \<union> bisim)] <\<nu>y><\<nu>x>P" by(rule resComm)
     }
-    with `(xyP, yxP) \<in> ?X` show ?case by auto
+    with \<open>(xyP, yxP) \<in> ?X\<close> show ?case by auto
   next
     case(cSym xyP yxP)
     thus ?case by auto
@@ -198,7 +198,7 @@ proof -
       ultimately have "resChain lst (P \<parallel> Q) \<leadsto>[(?X \<union> bisim)] resChain lst (Q \<parallel> P)" using Res
         by(rule resChainI)
     }
-    with `(PQ, QP) \<in> ?X` show ?case by auto
+    with \<open>(PQ, QP) \<in> ?X\<close> show ?case by auto
   next
     case(cSym PQ QP)
     thus ?case by auto
@@ -220,7 +220,7 @@ proof -
 
   have Res: "\<And>P Q x. (P, Q) \<in> ?X \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?X" by(blast intro: resChain.step[THEN sym])
 
-  from `x \<sharp> P` have "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(blast intro: resChain.base[THEN sym])
+  from \<open>x \<sharp> P\<close> have "(<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?X" by(blast intro: resChain.base[THEN sym])
   moreover have EqvtX: "eqvt ?X" by(fastforce simp add: eqvt_def name_fresh_left name_rev_per)
   ultimately show ?thesis
   proof(coinduct rule: bisimTransitiveCoinduct)
@@ -229,7 +229,7 @@ proof -
       fix P Q lst x
       assume "(x::name) \<sharp> (P::pi)"
       moreover have "Id \<subseteq> ?Y" by(blast intro: reflexive)
-      moreover from `eqvt ?X` bisimEqvt have "eqvt ?Y" by blast
+      moreover from \<open>eqvt ?X\<close> bisimEqvt have "eqvt ?Y" by blast
       moreover have "\<And>P Q x. x \<sharp> P \<Longrightarrow> (<\<nu>x>(P \<parallel> Q), P \<parallel> <\<nu>x>Q) \<in> ?Y"
         by(blast intro: resChain.base[THEN sym] reflexive)
       moreover {
@@ -241,7 +241,7 @@ proof -
         ultimately have  "(<\<nu>x><\<nu>y>(P \<parallel> Q), <\<nu>y>(P \<parallel> <\<nu>x>Q)) \<in> ?Y" by(blast intro: reflexive)
       }
       ultimately have "<\<nu>x>(P \<parallel> Q) \<leadsto>[?Y] (P \<parallel> <\<nu>x>Q)" by(rule scopeExtParLeft) 
-      moreover note `eqvt ?Y`
+      moreover note \<open>eqvt ?Y\<close>
       moreover from Res have "\<And>P Q x. (P, Q) \<in> ?Y \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?Y"
         by(blast intro: resChain.step[THEN sym] dest: resPres)
       ultimately have "resChain lst (<\<nu>x>(P \<parallel> Q)) \<leadsto>[?Y] resChain lst (P \<parallel> <\<nu>x>Q)" 
@@ -251,7 +251,7 @@ proof -
       fix P Q lst x
       assume "(x::name) \<sharp> (P::pi)"
       moreover have "Id \<subseteq> ?Y" by(blast intro: reflexive)
-      moreover from `eqvt ?X` bisimEqvt have "eqvt ?Y" by blast
+      moreover from \<open>eqvt ?X\<close> bisimEqvt have "eqvt ?Y" by blast
       moreover have "\<And>P Q x. x \<sharp> P \<Longrightarrow> (P \<parallel> <\<nu>x>Q, <\<nu>x>(P \<parallel> Q)) \<in> ?Y"
         by(blast intro: resChain.base[THEN sym] reflexive)
       moreover {
@@ -264,13 +264,13 @@ proof -
       }
       ultimately have "(P \<parallel> <\<nu>x>Q) \<leadsto>[?Y] <\<nu>x>(P \<parallel> Q)" 
         by(rule scopeExtParRight) 
-      moreover note `eqvt ?Y`
+      moreover note \<open>eqvt ?Y\<close>
       moreover from Res have "\<And>P Q x. (P, Q) \<in> ?Y \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?Y"
         by(blast intro: resChain.step[THEN sym] dest: resPres)
       ultimately have "resChain lst (P \<parallel> <\<nu>x>Q) \<leadsto>[?Y] resChain lst (<\<nu>x>(P \<parallel> Q))" 
         by(rule resChainI)
     }
-    ultimately show ?case using `(P, Q) \<in> ?X` by auto
+    ultimately show ?case using \<open>(P, Q) \<in> ?X\<close> by auto
   next
     case(cSym P Q)
     thus ?case 
@@ -336,11 +336,11 @@ proof -
         ultimately have "(<\<nu>x>(P \<parallel> Q) \<parallel> R, <\<nu>x>(P \<parallel> (Q \<parallel> R))) \<in> ?Y" by(blast intro: reflexive)
       }
       ultimately have "(P \<parallel> Q) \<parallel> R \<leadsto>[?Y] P \<parallel> (Q \<parallel> R)" by(rule parAssocLeft)
-      moreover from `eqvt ?X` bisimEqvt have "eqvt ?Y" by blast
+      moreover from \<open>eqvt ?X\<close> bisimEqvt have "eqvt ?Y" by blast
       ultimately have "resChain lst ((P \<parallel> Q) \<parallel> R) \<leadsto>[?Y] resChain lst (P \<parallel> (Q \<parallel> R))" using ResY
         by(rule resChainI)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     {
@@ -352,7 +352,7 @@ proof -
       hence "(resChain lst (P \<parallel> (Q \<parallel> R)), resChain lst ((P \<parallel> Q) \<parallel> R)) \<in> ?Y" using ResY
         by(induct lst) auto
     }
-    with `(P, Q) \<in> ?X` show ?case by blast
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by blast
   qed
 qed
 
@@ -369,7 +369,7 @@ proof -
   moreover have "<\<nu>x>P \<parallel> \<zero> \<sim> \<zero> \<parallel> <\<nu>x>P" by(rule parSym)
   moreover have "\<zero> \<parallel> <\<nu>x>P \<sim> <\<nu>x>(\<zero> \<parallel> P)" by(rule scopeExtPar[THEN symmetric]) auto
   moreover have "<\<nu>x>(\<zero> \<parallel> P) \<sim> <\<nu>x>(P \<parallel> \<zero>)" by(rule resPres[OF parSym])
-  moreover from `x \<sharp> P` have "<\<nu>x>(P \<parallel> \<zero>) \<sim> P \<parallel> <\<nu>x>\<zero>" by(rule scopeExtPar)
+  moreover from \<open>x \<sharp> P\<close> have "<\<nu>x>(P \<parallel> \<zero>) \<sim> P \<parallel> <\<nu>x>\<zero>" by(rule scopeExtPar)
   moreover have  "P \<parallel> <\<nu>x>\<zero> \<sim> <\<nu>x>\<zero> \<parallel> P" by(rule parSym)
   moreover have "<\<nu>x>\<zero> \<parallel> P \<sim> \<zero> \<parallel> P" by(rule parPres[OF nilRes])
   moreover have "\<zero> \<parallel> P \<sim> P \<parallel> \<zero>" by(rule parSym)
@@ -403,7 +403,7 @@ lemma scopeExtSum:
   shows "<\<nu>x>(P \<oplus> Q) \<sim> P \<oplus> <\<nu>x>Q"
 proof -
   have "<\<nu>x>(P \<oplus> Q) \<sim> <\<nu>x>P \<oplus> <\<nu>x>Q" by(rule sumRes)
-  moreover from `x \<sharp> P` have "<\<nu>x>P \<oplus> <\<nu>x>Q \<sim> P \<oplus> <\<nu>x>Q"
+  moreover from \<open>x \<sharp> P\<close> have "<\<nu>x>P \<oplus> <\<nu>x>Q \<sim> P \<oplus> <\<nu>x>Q"
     by(rule sumPres[OF scopeFresh])
   ultimately show ?thesis by(rule transitive)
 qed

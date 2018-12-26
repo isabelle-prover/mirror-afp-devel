@@ -3,14 +3,14 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Relations between Jinja Types *}
+section \<open>Relations between Jinja Types\<close>
 
 theory TypeRel imports 
   "HOL-Library.Transitive_Closure_Table"
   Decl 
 begin
 
-subsection{* The subclass relations *}
+subsection\<open>The subclass relations\<close>
 
 inductive_set
   subcls1 :: "'m prog \<Rightarrow> (cname \<times> cname) set"
@@ -69,7 +69,7 @@ done
 *)
 
 
-subsection{* The subtype relations *}
+subsection\<open>The subtype relations\<close>
 
 inductive
   widen   :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
@@ -157,7 +157,7 @@ lemmas widens_Cons [iff] = list_all2_Cons1 [of "widen P"] for P
 (*>*)
 
 
-subsection{* Method lookup *}
+subsection\<open>Method lookup\<close>
 
 inductive
   Methods :: "['m prog, cname, mname \<rightharpoonup> (ty list \<times> ty \<times> 'm) \<times> cname] \<Rightarrow> bool"
@@ -315,7 +315,7 @@ lemma sees_method_is_class:
 (*<*)by (auto simp add: is_class_def Method_def elim: Methods.induct)(*>*)
 
 
-subsection{* Field lookup *}
+subsection\<open>Field lookup\<close>
 
 inductive
   Fields :: "['m prog, cname, ((vname \<times> cname) \<times> ty) list] \<Rightarrow> bool"

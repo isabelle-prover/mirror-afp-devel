@@ -6,7 +6,7 @@ begin
 
 text \<open> 
 Contents:
-\<^item> We prove Hessenberg's theorem ([@{text "hessenberg_theorem"}]): Pappus's property implies Desargues's 
+\<^item> We prove Hessenberg's theorem ([\<open>hessenberg_theorem\<close>]): Pappus's property implies Desargues's 
 property in a projective plane. 
 \<close>
 

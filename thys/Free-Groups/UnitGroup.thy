@@ -1,4 +1,4 @@
-section {* The Unit Group *}
+section \<open>The Unit Group\<close>
 
 theory "UnitGroup"
 imports
@@ -6,7 +6,7 @@ imports
    Generators
 begin
 
-text {* There is, up to isomorphisms, only one group with one element. *}
+text \<open>There is, up to isomorphisms, only one group with one element.\<close>
 
 definition unit_group :: "unit monoid"
 where 

@@ -35,16 +35,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Normalisation Proofs: Integer Protocol *}
+subsection \<open>Normalisation Proofs: Integer Protocol\<close>
 theory 
   NormalisationIPPProofs
   imports 
     NormalisationIntegerPortProof
 begin
 
-text{*
+text\<open>
   Normalisation proofs which are specific to the IntegerProtocol address representation. 
-*} 
+\<close> 
 
 lemma ConcAssoc: "Cp((A \<oplus> B) \<oplus> D) = Cp(A \<oplus> (B \<oplus> D))"
   by (simp add: Cp.simps)
@@ -980,7 +980,7 @@ next
       case True thus ?thesis using Cons by (simp) (rule impI, simp) 
     next
       case False thus ?thesis 
-        using Cons False `\<not> not_MT Cp ys` apply (simp)
+        using Cons False \<open>\<not> not_MT Cp ys\<close> apply (simp)
         apply (intro conjI impI| simp)+
         apply (subgoal_tac "rm_MT_rules Cp ys = []")
          apply (subgoal_tac "x \<notin> dom (Cp (list2FWpolicy ys))") 
@@ -1547,7 +1547,7 @@ proof (cases "p")
   case Nil then show ?thesis by simp
 next
   case (Cons a list) show ?thesis  
-    apply (insert `p = a # list`, simp_all)
+    apply (insert \<open>p = a # list\<close>, simp_all)
   proof (cases "a = DenyAll")
     case True 
     assume * : "a = DenyAll" 
@@ -1706,7 +1706,7 @@ lemmas domain_reasoningPr = domDA ConcAssoc2 domSubset1 domSubset2
   domSubsetDistr2 domSubsetDistrA domSubsetDistrD coerc_assoc ConcAssoc 
   ConcAssoc3
   
-text {* The following lemmas help with the normalisation *}
+text \<open>The following lemmas help with the normalisation\<close>
 lemma list2policyR_Start[rule_format]: "p \<in> dom (Cp a) \<longrightarrow>
                  Cp (list2policyR (a # list)) p = Cp a p"
   by (induct "a # list" rule:list2policyR.induct)
@@ -1824,9 +1824,9 @@ lemma norm_notMT_manual: "DenyAll \<in> set (policy2list p) \<Longrightarrow> no
   unfolding normalize_manual_orderPr_def
   by (simp add: idNMT rADnMT wellformed1_alternative_sorted wp1ID wp1_alternativesep wp1n_RS2)
     
-text{* 
+text\<open>
   As an example, how this theorems can be used for a concrete normalisation instantiation. 
-*}
+\<close>
   
 lemma normalizePrNAT: 
   "DenyAll \<in> set (policy2list Filter) \<Longrightarrow> 

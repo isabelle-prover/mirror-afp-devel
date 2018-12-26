@@ -8,7 +8,7 @@ theory ShortestPathNeg
 imports ShortestPath
 
 begin
-section {*Shortest Path (with general edge costs)*}
+section \<open>Shortest Path (with general edge costs)\<close>
 (* 
   In this locale we assume we are given a 
   wellformed directed graph $G = (V,E)$ with 

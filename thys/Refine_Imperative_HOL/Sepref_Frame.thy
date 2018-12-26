@@ -5,15 +5,15 @@ begin
   text \<open> In this theory, we provide a specific frame inference tactic
     for Sepref.
 
-    The first tactic, @{text frame_tac}, is a standard frame inference tactic, 
+    The first tactic, \<open>frame_tac\<close>, is a standard frame inference tactic, 
     based on the assumption that only @{const hn_ctxt}-assertions need to be
     matched.
 
-    The second tactic, @{text merge_tac}, resolves entailments of the form
-      @{text "F1 \<or>\<^sub>A F2 \<Longrightarrow>\<^sub>t ?F"}
+    The second tactic, \<open>merge_tac\<close>, resolves entailments of the form
+      \<open>F1 \<or>\<^sub>A F2 \<Longrightarrow>\<^sub>t ?F\<close>
     that occur during translation of if and case statements.
     It synthesizes a new frame ?F, where refinements of variables 
-    with equal refinements in @{text F1} and @{text F2} are preserved,
+    with equal refinements in \<open>F1\<close> and \<open>F2\<close> are preserved,
     and the others are set to @{const hn_invalid}.
     \<close>
 
@@ -209,7 +209,7 @@ lemma merge_sat2: "(A\<or>\<^sub>AA' \<Longrightarrow>\<^sub>t Am) \<Longrightar
 
 
 
-ML {*
+ML \<open>
 signature SEPREF_FRAME = sig
 
 
@@ -520,7 +520,7 @@ structure Sepref_Frame : SEPREF_FRAME = struct
   ) ctxt
 
 end
-*}
+\<close>
 
 setup Sepref_Frame.setup
 

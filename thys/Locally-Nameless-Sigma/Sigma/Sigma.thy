@@ -1,10 +1,10 @@
-section {* Locally Nameless representation of basic Sigma calculus enriched with formal parameter *}
+section \<open>Locally Nameless representation of basic Sigma calculus enriched with formal parameter\<close>
 
 theory Sigma
 imports "../preliminary/FMap"
 begin
 
-subsection {* Infrastructure for the finite maps *}
+subsection \<open>Infrastructure for the finite maps\<close>
 
 axiomatization max_label :: nat where
   LabelAvail: "max_label > 10"
@@ -72,12 +72,12 @@ proof (auto)
   with in_mono[OF assms(1)] show "\<exists>y. f x = Some y" by blast
 next
   fix x y assume "f x = Some y"
-  from card_seteq[OF finite_dom_fmap[of f] `L \<subseteq> dom f`] `card L = card (dom f)`
+  from card_seteq[OF finite_dom_fmap[of f] \<open>L \<subseteq> dom f\<close>] \<open>card L = card (dom f)\<close>
   have "L = dom f" by simp
-  with `f x = Some y` show "x \<in> L" by force
+  with \<open>f x = Some y\<close> show "x \<in> L" by force
 qed
 
-subsection {* Object-terms in Locally Nameless representation notation, beta-reduction and substitution *}
+subsection \<open>Object-terms in Locally Nameless representation notation, beta-reduction and substitution\<close>
 
 datatype type = Object "Label -~> (type \<times> type)"
 
@@ -86,7 +86,7 @@ type_synonym fVariable = string
 (* each binder introduces 2 variables: self and parameter *)
 (* thus to each deBruijn index (nat) correspond 2 variables of the same depth *)
 
-subsubsection {* Enriched Sigma datatype of objects *}
+subsubsection \<open>Enriched Sigma datatype of objects\<close>
 datatype sterm =
   Bvar bVariable             (* bound variable -- as deBruijn index *)
 | Fvar fVariable             (* free variable *)
@@ -122,20 +122,20 @@ proof -
     proof (induct_tac t and foobar rule: compat_sterm.induct compat_sterm_option.induct, auto)
       fix f :: "Label -~> sterm" and T :: type
       assume "\<And>x. applyPropOnOption P1 (f x)"
-      with a_f `P3 Map.empty` have "P3 f"
+      with a_f \<open>P3 Map.empty\<close> have "P3 f"
       proof (induct f rule: fmap_induct, simp)
         case (insert F x z)
         note 
-          P1F'   = `\<And>xa. applyPropOnOption P1 ((F(x \<mapsto> z)) xa)` and
-          predP3 = `\<lbrakk> \<And>l f t1. \<lbrakk>l \<notin> dom f; P1 t1; P3 f\<rbrakk> \<Longrightarrow> P3 (f(l \<mapsto> t1)); 
+          P1F'   = \<open>\<And>xa. applyPropOnOption P1 ((F(x \<mapsto> z)) xa)\<close> and
+          predP3 = \<open>\<lbrakk> \<And>l f t1. \<lbrakk>l \<notin> dom f; P1 t1; P3 f\<rbrakk> \<Longrightarrow> P3 (f(l \<mapsto> t1)); 
                       P3 Map.empty; \<And>x. applyPropOnOption P1 (F x)\<rbrakk>
-                    \<Longrightarrow> P3 F` and
-          P3F'   = `\<And>l f t f. \<lbrakk> l \<notin> dom f; P1 t; P3 f \<rbrakk> \<Longrightarrow> P3 (f(l \<mapsto> t))`
+                    \<Longrightarrow> P3 F\<close> and
+          P3F'   = \<open>\<And>l f t f. \<lbrakk> l \<notin> dom f; P1 t; P3 f \<rbrakk> \<Longrightarrow> P3 (f(l \<mapsto> t))\<close>
         have "\<And>xa. applyPropOnOption P1 (F xa)"
         proof -
           fix xa :: Label show "applyPropOnOption P1 (F xa)"
           proof (cases "xa = x")
-            case True with P1F' `x \<notin> dom F` have "F xa = None" by force
+            case True with P1F' \<open>x \<notin> dom F\<close> have "F xa = None" by force
             thus ?thesis by simp
           next
             case False hence eq: "F xa = (F(x \<mapsto> z)) xa" by auto
@@ -143,11 +143,11 @@ proof -
               by (simp only: ssubst[OF eq])
           qed
         qed
-        from a_f predP3[OF _ `P3 Map.empty` this] have P3F: "P3 F" by simp
+        from a_f predP3[OF _ \<open>P3 Map.empty\<close> this] have P3F: "P3 F" by simp
         from P1F'[of x]
         have "applyPropOnOption P1 (Some z)" by auto
         hence "P1 z" by simp
-        from a_f[OF `x \<notin> dom F` this P3F] show ?case by assumption
+        from a_f[OF \<open>x \<notin> dom F\<close> this P3F] show ?case by assumption
       qed
       with a_obj show "P1 (Obj f T)" by simp
     qed
@@ -155,7 +155,7 @@ proof -
   with assms show ?thesis
   proof (auto)
     assume "\<And>l f t1. \<lbrakk>l \<notin> dom f; P3 f\<rbrakk> \<Longrightarrow> P3 (f(l \<mapsto> t1))"
-    with `P3 Map.empty` show "P3 f" by (rule fmap_induct)
+    with \<open>P3 Map.empty\<close> show "P3 f" by (rule fmap_induct)
   qed
 qed
 
@@ -172,7 +172,7 @@ lemma ball_tsp_P3:
 proof (intro strip)
   fix l assume "l \<in> dom f" with assms(2) have "P1 (the(f l))" by blast
   moreover
-  from assms(3) `l \<in> dom f` have "\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P2 (the(f l)) s p"
+  from assms(3) \<open>l \<in> dom f\<close> have "\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P2 (the(f l)) s p"
     by blast
   ultimately
   show "P3 (the(f l))" using assms(1) by simp
@@ -194,14 +194,14 @@ proof (intro strip)
   fix l assume "l \<in> dom f'" with assms(2-3) have "P1 (the(f l)) (the(f' l))" 
     by blast
   moreover 
-  from assms(2,4) `l \<in> dom f'`
+  from assms(2,4) \<open>l \<in> dom f'\<close>
   have "\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P2 (the (f l)) (the(f' l)) s p" by blast
   ultimately
   show "P3 (the(f l)) (the(f' l))" using assms(1)[of "the(f l)" "the(f' l)"] 
     by simp
 qed
 
-subsubsection {* Free variables *}
+subsubsection \<open>Free variables\<close>
 primrec
  FV       :: "sterm \<Rightarrow> fVariable set"
 and
@@ -241,7 +241,7 @@ proof -
   from assms have "\<exists>s. s \<notin> L" by (simp only: ex_new_if_finite[OF infinite_UNIV_listI])
   then obtain s where "s \<notin> L" ..
   moreover
-  from `finite L` have "finite (L \<union> {s})" by simp
+  from \<open>finite L\<close> have "finite (L \<union> {s})" by simp
   hence "\<exists>p. p \<notin> L \<union> {s}" by (simp only: ex_new_if_finite[OF infinite_UNIV_listI])
   then obtain p where "p \<notin> L \<union> {s}" ..
   ultimately show ?thesis by blast
@@ -250,7 +250,7 @@ qed
 lemma FV_option_lem: "\<forall>l\<in>dom f. FV (the(f l)) = FVoption (f l)"
   by auto
 
-subsubsection {* Term opening *}
+subsubsection \<open>Term opening\<close>
 primrec
   sopen        :: "[nat, sterm, sterm, sterm] \<Rightarrow> sterm" 
   ("{_ \<rightarrow> [_,_]} _" [0, 0, 0, 300] 300)
@@ -300,7 +300,7 @@ lemma sopen_eq_Fvar':
   assumes "{n \<rightarrow> [Fvar s,Fvar p]} t = Fvar x" and "x \<noteq> s" and "x \<noteq> p"
   shows "t = Fvar x"
 proof -
-  from sopen_eq_Fvar[OF assms(1)] `x \<noteq> s` `x \<noteq> p` show ?thesis
+  from sopen_eq_Fvar[OF assms(1)] \<open>x \<noteq> s\<close> \<open>x \<noteq> p\<close> show ?thesis
     by auto
 qed
 
@@ -493,14 +493,14 @@ proof -
           assume 
             "(case b' of Self i \<Rightarrow> if n = i then Fvar s else Bvar b'
                       | Param i \<Rightarrow> if n = i then Fvar p else Bvar b') = Fvar s"
-          with `s \<noteq> p` have "b' = Self n"
+          with \<open>s \<noteq> p\<close> have "b' = Self n"
             by (cases b', auto, (rename_tac nat, case_tac "n = nat", auto)+)
         }note fvS = this
         assume eq_s: "Fvar s = {n \<rightarrow> [Fvar s,Fvar p]} t"
-        with sym[OF this] `s \<notin> FV t` `s \<noteq> p` fvS
+        with sym[OF this] \<open>s \<notin> FV t\<close> \<open>s \<noteq> p\<close> fvS
         have "t = Bvar (Self n)" by (cases t, auto)
         moreover
-        from a sym[OF eq_s] `s \<noteq> p` fvS[of b]
+        from a sym[OF eq_s] \<open>s \<noteq> p\<close> fvS[of b]
         have "Self n = b" by simp
         ultimately show "Bvar b = t" by simp
       next
@@ -509,14 +509,14 @@ proof -
           assume 
             "(case b' of Self i \<Rightarrow> if n = i then Fvar s else Bvar b'
                       | Param i \<Rightarrow> if n = i then Fvar p else Bvar b') = Fvar p"
-          with `s \<noteq> p` have "b' = Param n"
+          with \<open>s \<noteq> p\<close> have "b' = Param n"
             by (cases b', auto, (rename_tac nat, case_tac "n = nat", auto)+)
         }note fvP = this
         assume eq_p: "Fvar p = {n \<rightarrow> [Fvar s,Fvar p]} t"
-        with sym[OF this] `p \<notin> FV t` `s \<noteq> p` fvP
+        with sym[OF this] \<open>p \<notin> FV t\<close> \<open>s \<noteq> p\<close> fvP
         have "t = Bvar (Param n)" by (cases t, auto)
         moreover
-        from a sym[OF eq_p] `s \<noteq> p` fvP[of b]
+        from a sym[OF eq_p] \<open>s \<noteq> p\<close> fvP[of b]
         have "Param n = b" by simp
         ultimately show "Bvar b = t" by simp
       next
@@ -551,7 +551,7 @@ proof -
         assume 
           "Fvar x = (case b of Self i \<Rightarrow> if n = i then Fvar s else Bvar b
                             | Param i \<Rightarrow> if n = i then Fvar p else Bvar b)"
-        from cT[OF sym[OF this]] `s \<noteq> x` `p \<noteq> x`
+        from cT[OF sym[OF this]] \<open>s \<noteq> x\<close> \<open>p \<noteq> x\<close>
         have False by simp
         then show 
           "(case b of Self i \<Rightarrow> if n = i then Fvar s else Bvar b
@@ -595,14 +595,14 @@ proof -
             by (rule cong, simp)
           moreover
           from 
-            `\<forall>l\<in>dom f. s \<notin> FVoption (f l)`
-            `\<forall>l\<in>dom f. p \<notin> FVoption (f l)` 
+            \<open>\<forall>l\<in>dom f. s \<notin> FVoption (f l)\<close>
+            \<open>\<forall>l\<in>dom f. p \<notin> FVoption (f l)\<close> 
           have "s \<notin> FVoption (f l)" and "p \<notin> FVoption (f l)"
             by (case_tac "l \<in> dom f", auto)+
           moreover
           from nin_s nin_p have "s \<notin> FVoption (f' l)" and "p \<notin> FVoption (f' l)"
             by (case_tac "l \<in> dom f'", auto)+
-          ultimately show "f l = f' l" using Obj[of l] `s \<noteq> p`
+          ultimately show "f l = f' l" using Obj[of l] \<open>s \<noteq> p\<close>
             by simp
         qed
         thus "f = f'" by (rule ext)
@@ -669,7 +669,7 @@ proof -
   from conjunct1[OF this] show ?thesis by assumption
 qed
 
-subsubsection {* Variable closing *}
+subsubsection \<open>Variable closing\<close>
 primrec
  sclose        :: "[nat, fVariable, fVariable, sterm] \<Rightarrow> sterm" 
  ("{_ \<leftarrow> [_,_]} _" [0, 0, 0, 300] 300)
@@ -757,7 +757,7 @@ lemma Self_not_in_closed[simp]: "sa \<notin> FV ({n \<leftarrow> [sa,pa]} t)"
 lemma Param_not_in_closed[simp]: "pa \<notin> FV ({n \<leftarrow> [sa,pa]} t)"
   by (simp add: sclose_FV)
 
-subsubsection {* Substitution *}
+subsubsection \<open>Substitution\<close>
 primrec
  ssubst        :: "[fVariable, sterm, sterm] \<Rightarrow> sterm" 
  ("[_ \<rightarrow> _] _" [0, 0, 300] 300)
@@ -836,7 +836,7 @@ lemma ssubstoption_insert:
       = (\<lambda>(la::Label). ssubst_option x t' (f la))(l \<mapsto> [x \<rightarrow> t'] t)"
   by (rule Ltake_eq_all, force, simp add: Ltake_eq_def)
 
-subsubsection {* Local closure *}
+subsubsection \<open>Local closure\<close>
 inductive lc :: "sterm \<Rightarrow> bool"
 where
   lc_Fvar[simp, intro!]: "lc (Fvar x)"
@@ -876,7 +876,7 @@ next
     proof -
       assume "x \<notin> dom F" hence "\<forall>l\<in>dom F. the(F l) = the ((F(x \<mapsto> y)) l)" 
         by auto
-      with `\<forall>l\<in>dom (F(x \<mapsto> y)). body (the((F(x \<mapsto> y)) l))`
+      with \<open>\<forall>l\<in>dom (F(x \<mapsto> y)). body (the((F(x \<mapsto> y)) l))\<close>
       have "\<forall>l\<in>dom F. body (the (F l))" by force
       from insert(2)[OF this]
       obtain L where 
@@ -884,7 +884,7 @@ next
         "\<forall>l\<in>dom F. \<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p
                      \<longrightarrow> lc (the (F l)\<^bsup>[Fvar s, Fvar p]\<^esup>)" by auto
       moreover
-      from `\<forall>l\<in>dom (F(x \<mapsto> y)). body (the((F(x \<mapsto> y)) l))` have "body y" by force
+      from \<open>\<forall>l\<in>dom (F(x \<mapsto> y)). body (the((F(x \<mapsto> y)) l))\<close> have "body y" by force
       then obtain L' where 
         "finite L'" and
         "\<forall>s p. s \<notin> L' \<and> p \<notin> L' \<and> s \<noteq> p
@@ -922,7 +922,7 @@ lemma lc_induct[consumes 1, case_names Fvar Call Upd Obj Bnd]:
   using assms by (induct rule: lc.induct, auto)
   
 
-subsubsection {* Connections between sopen, sclose, ssubst, lc and body and resulting properties *}
+subsubsection \<open>Connections between sopen, sclose, ssubst, lc and body and resulting properties\<close>
 lemma ssubst_intro[rule_format]:
   "\<forall>n s p sa pa. sa \<notin> FV t \<longrightarrow> pa \<notin> FV t \<longrightarrow> sa \<noteq> pa
      \<longrightarrow> sa \<notin> FV p
@@ -954,13 +954,13 @@ proof -
       assume "sa \<notin> FV (Obj f T)" and "pa \<notin> FV (Obj f T)"
       {
         fix l 
-        from `sa \<notin> FV (Obj f T)` have "sa \<notin> FVoption (f l)"
+        from \<open>sa \<notin> FV (Obj f T)\<close> have "sa \<notin> FVoption (f l)"
           by (case_tac "l \<in> dom f", auto)
       }
       moreover
       {
         fix l
-        from `pa \<notin> FV (Obj f T)` have pa: "pa \<notin> FVoption (f l)"
+        from \<open>pa \<notin> FV (Obj f T)\<close> have pa: "pa \<notin> FVoption (f l)"
           by (case_tac "l \<in> dom f", auto)
       }
       moreover assume "sa \<noteq> pa" and "sa \<notin> FV p"
@@ -1035,7 +1035,7 @@ next
   show ?case
   proof (intro strip)
     fix n s p
-    from `finite L` exFresh_s_p_cof[of "L \<union> FV t \<union> {s} \<union> {p}"]
+    from \<open>finite L\<close> exFresh_s_p_cof[of "L \<union> FV t \<union> {s} \<union> {p}"]
     obtain sa pa where
       sapa: "sa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> pa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> sa \<noteq> pa"
       by auto
@@ -1074,9 +1074,9 @@ proof -
   with assms have "{n \<rightarrow> [s,p]} t = [sa \<rightarrow> s] [pa \<rightarrow> p] t" 
     using sopen_lc_FV 
     by simp
-  with ssubst_fresh[OF `pa \<notin> FV t`] 
+  with ssubst_fresh[OF \<open>pa \<notin> FV t\<close>] 
   have "{n \<rightarrow> [s,p]} t = [sa \<rightarrow> s] t" by simp
-  with ssubst_fresh[OF `sa \<notin> FV t`] 
+  with ssubst_fresh[OF \<open>sa \<notin> FV t\<close>] 
   show "{n \<rightarrow> [s,p]} t = t" by simp
 qed
 
@@ -1193,7 +1193,7 @@ next
   show ?case
   proof (intro strip)
     fix n s p
-    from `finite L` exFresh_s_p_cof[of "L \<union> FV t \<union> {s} \<union> {p}"]
+    from \<open>finite L\<close> exFresh_s_p_cof[of "L \<union> FV t \<union> {s} \<union> {p}"]
     obtain sa pa where
       sapa: "sa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> pa \<notin> L \<union> FV t \<union> {s} \<union> {p} 
              \<and> sa \<noteq> pa"
@@ -1324,23 +1324,23 @@ proof -
 = {k \<rightarrow> [s',p']} {n \<rightarrow> [s,p]} t 
 *)
   from 
-    ssubst_intro[OF `sa \<notin> FV t` `pa \<notin> FV t` `sa \<noteq> pa` `sa \<notin> FV p'`] 
-    ssubst_intro[OF `sb \<notin> FV ({k \<rightarrow> [s',p']} t)` `pb \<notin> FV ({k \<rightarrow> [s',p']} t)` 
-                    `sb \<noteq> pb` `sb \<notin> FV p`]
-    sym[OF ssubst_sopen_commute[OF `lc s'` 
-                                   `sa \<notin> FV (Fvar sb)` `sa \<notin> FV (Fvar pb)`]]
-    sym[OF ssubst_sopen_commute[OF `lc p'` 
-                                   `pa \<notin> FV (Fvar sb)` `pa \<notin> FV (Fvar pb)`]]
-    sopen_commute[OF `n \<noteq> k`]
-    ssubst_commute[OF `pb \<noteq> sa` `pb \<notin> FV s'` `sa \<notin> FV p`]
-    ssubst_commute[OF `sb \<noteq> sa` `sb \<notin> FV s'` `sa \<notin> FV s`]
-    ssubst_commute[OF `pb \<noteq> pa` `pb \<notin> FV p'` `pa \<notin> FV p`]
-    ssubst_commute[OF `sb \<noteq> pa` `sb \<notin> FV p'` `pa \<notin> FV s`]
-    ssubst_sopen_commute[OF `lc s` `sb \<notin> FV (Fvar sa)` `sb \<notin> FV (Fvar pa)`] 
-    ssubst_sopen_commute[OF `lc p` `pb \<notin> FV (Fvar sa)` `pb \<notin> FV (Fvar pa)`] 
-    sym[OF ssubst_intro[OF `sb \<notin> FV t` `pb \<notin> FV t` `sb \<noteq> pb` `sb \<notin> FV p`]] 
-    sym[OF ssubst_intro[OF `sa \<notin> FV ({n \<rightarrow> [s,p]} t)` `pa \<notin> FV ({n \<rightarrow> [s,p]} t)`
-                           `sa \<noteq> pa` `sa \<notin> FV p'`]]
+    ssubst_intro[OF \<open>sa \<notin> FV t\<close> \<open>pa \<notin> FV t\<close> \<open>sa \<noteq> pa\<close> \<open>sa \<notin> FV p'\<close>] 
+    ssubst_intro[OF \<open>sb \<notin> FV ({k \<rightarrow> [s',p']} t)\<close> \<open>pb \<notin> FV ({k \<rightarrow> [s',p']} t)\<close> 
+                    \<open>sb \<noteq> pb\<close> \<open>sb \<notin> FV p\<close>]
+    sym[OF ssubst_sopen_commute[OF \<open>lc s'\<close> 
+                                   \<open>sa \<notin> FV (Fvar sb)\<close> \<open>sa \<notin> FV (Fvar pb)\<close>]]
+    sym[OF ssubst_sopen_commute[OF \<open>lc p'\<close> 
+                                   \<open>pa \<notin> FV (Fvar sb)\<close> \<open>pa \<notin> FV (Fvar pb)\<close>]]
+    sopen_commute[OF \<open>n \<noteq> k\<close>]
+    ssubst_commute[OF \<open>pb \<noteq> sa\<close> \<open>pb \<notin> FV s'\<close> \<open>sa \<notin> FV p\<close>]
+    ssubst_commute[OF \<open>sb \<noteq> sa\<close> \<open>sb \<notin> FV s'\<close> \<open>sa \<notin> FV s\<close>]
+    ssubst_commute[OF \<open>pb \<noteq> pa\<close> \<open>pb \<notin> FV p'\<close> \<open>pa \<notin> FV p\<close>]
+    ssubst_commute[OF \<open>sb \<noteq> pa\<close> \<open>sb \<notin> FV p'\<close> \<open>pa \<notin> FV s\<close>]
+    ssubst_sopen_commute[OF \<open>lc s\<close> \<open>sb \<notin> FV (Fvar sa)\<close> \<open>sb \<notin> FV (Fvar pa)\<close>] 
+    ssubst_sopen_commute[OF \<open>lc p\<close> \<open>pb \<notin> FV (Fvar sa)\<close> \<open>pb \<notin> FV (Fvar pa)\<close>] 
+    sym[OF ssubst_intro[OF \<open>sb \<notin> FV t\<close> \<open>pb \<notin> FV t\<close> \<open>sb \<noteq> pb\<close> \<open>sb \<notin> FV p\<close>]] 
+    sym[OF ssubst_intro[OF \<open>sa \<notin> FV ({n \<rightarrow> [s,p]} t)\<close> \<open>pa \<notin> FV ({n \<rightarrow> [s,p]} t)\<close>
+                           \<open>sa \<noteq> pa\<close> \<open>sa \<notin> FV p'\<close>]]
   show "{n \<rightarrow> [s,p]} {k \<rightarrow> [s',p']} t = {k \<rightarrow> [s',p']} {n \<rightarrow> [s,p]} t"
     by force
 qed
@@ -1380,7 +1380,7 @@ proof -
       from this[of x] 
       obtain L where "finite L" and "pred_cof L ([x \<rightarrow> t'] u)"
         by auto
-      with `lc t'` pred_t show "lc ([x \<rightarrow> t'] Upd t l u)" 
+      with \<open>lc t'\<close> pred_t show "lc ([x \<rightarrow> t'] Upd t l u)" 
         unfolding pred_cof_def
         by simp
     qed
@@ -1392,7 +1392,7 @@ proof -
       define pred_fl where "pred_fl s p b l = lc ([x \<rightarrow> t'] the b\<^bsup>[Fvar s, Fvar p]\<^esup>)"
         for s p b and l::Label
 
-      from `lc t'` fmap_ball_all2[OF pred]
+      from \<open>lc t'\<close> fmap_ball_all2[OF pred]
       have "\<forall>l\<in>dom f. \<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> t'] the(f l))"
         unfolding pred_cof_def
         by simp
@@ -1411,7 +1411,7 @@ proof -
     show ?case
     proof (intro strip)
       fix x t' assume "lc t'"
-      with `finite L` show "\<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> t'] t)"
+      with \<open>finite L\<close> show "\<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> t'] t)"
         unfolding pred_cof_def
       proof (
           rule_tac x = "L \<union> {x}" in exI, 
@@ -1419,11 +1419,11 @@ proof -
         fix s p assume sp: "s \<notin> L \<union> {x} \<and> p \<notin> L \<union> {x} \<and> s \<noteq> p"
         hence "x \<notin> FV (Fvar s)" and "x \<notin> FV (Fvar p)"
           by auto
-        from sp pred `lc t'`
+        from sp pred \<open>lc t'\<close>
         have "lc ([x \<rightarrow> t'] (t\<^bsup>[Fvar s,Fvar p]\<^esup>))"
           by blast
-        with ssubst_sopen_commute[OF `lc t'` `x \<notin> FV (Fvar s)` 
-                                     `x \<notin> FV (Fvar p)`]
+        with ssubst_sopen_commute[OF \<open>lc t'\<close> \<open>x \<notin> FV (Fvar s)\<close> 
+                                     \<open>x \<notin> FV (Fvar p)\<close>]
         show "lc ([x \<rightarrow> t'] t\<^bsup>[Fvar s,Fvar p]\<^esup>)"
           by (auto simp: openz_def)
       qed
@@ -1468,7 +1468,7 @@ proof -
   from pred_sp sapa have "lc (t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)" by blast
 
   with 
-    ssubst_intro[OF `sa \<notin> FV t` `pa \<notin> FV t` `sa \<noteq> pa` `sa \<notin> FV (Fvar p)`] 
+    ssubst_intro[OF \<open>sa \<notin> FV t\<close> \<open>pa \<notin> FV t\<close> \<open>sa \<noteq> pa\<close> \<open>sa \<notin> FV (Fvar p)\<close>] 
     ssubst_preserves_lc
   show "lc (t\<^bsup>[Fvar s,Fvar p]\<^esup>)" by (auto simp: openz_def)
 qed
@@ -1484,12 +1484,12 @@ proof -
   hence "sa \<notin> FV t" and "pa \<notin> FV t" and "sa \<noteq> pa" and "sa \<notin> FV p" 
     by auto
 
-  from body_lc_FV[OF `body t`] have lc: "lc (t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
+  from body_lc_FV[OF \<open>body t\<close>] have lc: "lc (t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
     by assumption
 
   from
-    ssubst_intro[OF `sa \<notin> FV t` `pa \<notin> FV t` `sa \<noteq> pa` `sa \<notin> FV p`] 
-    ssubst_preserves_lc[OF lc] `lc s` `lc p`
+    ssubst_intro[OF \<open>sa \<notin> FV t\<close> \<open>pa \<notin> FV t\<close> \<open>sa \<noteq> pa\<close> \<open>sa \<notin> FV p\<close>] 
+    ssubst_preserves_lc[OF lc] \<open>lc s\<close> \<open>lc p\<close>
   show "lc (t\<^bsup>[s,p]\<^esup>)" by (auto simp: openz_def)
 qed
 
@@ -1507,8 +1507,8 @@ proof
     assume "sa \<notin> FV t \<union> {s} \<union> {p} \<and> pa \<notin> FV t \<union> {s} \<union> {p} \<and> sa \<noteq> pa"
     hence "s \<notin> FV (Fvar pa)" by auto
     from 
-      sopen_sclose_eq_ssubst[OF `s \<noteq> p` this `lc t`] 
-      ssubst_preserves_lc[OF `lc t`]
+      sopen_sclose_eq_ssubst[OF \<open>s \<noteq> p\<close> this \<open>lc t\<close>] 
+      ssubst_preserves_lc[OF \<open>lc t\<close>]
     show "lc (\<sigma>[s,p] t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)" by (simp add: openz_def closez_def)
   qed
   thus 
@@ -1545,13 +1545,13 @@ next
     proof (cases "t'' = Fvar x")
       case True thus ?thesis by simp
     next
-      case False with `Upd t l u = [x \<rightarrow> v] t''` t'' 
+      case False with \<open>Upd t l u = [x \<rightarrow> v] t''\<close> t'' 
       show ?thesis
       proof (clarify)
         fix t' u' assume "Upd t l u = [x \<rightarrow> v] Upd t' l u'"
         hence "t = [x \<rightarrow> v] t'" and "u = [x \<rightarrow> v] u'" 
           by auto
-        with `lc v` pred_t pred_u lc_upd[of t' l u']
+        with \<open>lc v\<close> pred_t pred_u lc_upd[of t' l u']
         show "lc (Upd t' l u')" by auto
       qed
     qed
@@ -1571,7 +1571,7 @@ next
     proof (cases "t' = Fvar x")
       case True thus ?thesis by simp
     next
-      case False with `Obj f T = [x \<rightarrow> v] t'` t'
+      case False with \<open>Obj f T = [x \<rightarrow> v] t'\<close> t'
       show ?thesis
       proof (clarify)
         fix f' assume "Obj f T = [x \<rightarrow> v] Obj f' T"
@@ -1579,7 +1579,7 @@ next
           ssubst: "\<forall>l\<in>dom f. the(f l) = [x \<rightarrow> v] the(f' l)" and
           "dom f = dom f'"
           by auto
-        with pred `lc v` lc_obj[of f' T]
+        with pred \<open>lc v\<close> lc_obj[of f' T]
         show "lc (Obj f' T)"
           by auto
       qed
@@ -1590,23 +1590,23 @@ next
   show ?case
   proof (intro strip)
     fix x v t' assume "t = [x \<rightarrow> v] t'" and "lc v"
-    from `finite L` exFresh_s_p_cof[of "L \<union> {x} \<union> FV t'"]
+    from \<open>finite L\<close> exFresh_s_p_cof[of "L \<union> {x} \<union> FV t'"]
     obtain s p where 
       "s \<notin> L" and "p \<notin> L" and "s \<noteq> p" and
       "x \<notin> FV (Fvar s)" and "x \<notin> FV (Fvar p)" and
       "s \<notin> FV t'" and "p \<notin> FV t'"
       by auto
     from 
-      `t = [x \<rightarrow> v] t'`
-      ssubst_sopen_commute[OF `lc v` `x \<notin> FV (Fvar s)` `x \<notin> FV (Fvar p)`]
+      \<open>t = [x \<rightarrow> v] t'\<close>
+      ssubst_sopen_commute[OF \<open>lc v\<close> \<open>x \<notin> FV (Fvar s)\<close> \<open>x \<notin> FV (Fvar p)\<close>]
     have "(t\<^bsup>[Fvar s, Fvar p]\<^esup>) = [x \<rightarrow> v] (t'\<^bsup>[Fvar s, Fvar p]\<^esup>)"
       by (auto simp: openz_def)
     with 
-      `s \<notin> L` `p \<notin> L` `s \<noteq> p` `lc v` pred
+      \<open>s \<notin> L\<close> \<open>p \<notin> L\<close> \<open>s \<noteq> p\<close> \<open>lc v\<close> pred
     have "lc (t'\<^bsup>[Fvar s, Fvar p]\<^esup>)" by blast
     from 
-      lc_body[OF this `s \<noteq> p`]
-      sclose_sopen_eq_t[OF `s \<notin> FV t'` `p \<notin> FV t'` `s \<noteq> p`]
+      lc_body[OF this \<open>s \<noteq> p\<close>]
+      sclose_sopen_eq_t[OF \<open>s \<notin> FV t'\<close> \<open>p \<notin> FV t'\<close> \<open>s \<noteq> p\<close>]
     show "body t'" by (auto simp: openz_def closez_def)
   qed
 qed
@@ -1639,14 +1639,14 @@ proof -
       \<longrightarrow> lc ([x \<rightarrow> t'] t\<^bsup>[Fvar s,Fvar p]\<^esup>)"
   proof (intro strip)
     fix s :: fVariable and p :: fVariable
-    from body_lc_FV[OF `body t`]
+    from body_lc_FV[OF \<open>body t\<close>]
     have "lc ({0 \<rightarrow> [Fvar s,Fvar p]} t)" by (simp add: openz_def)
-    from ssubst_preserves_lc[OF this `lc t'`] 
+    from ssubst_preserves_lc[OF this \<open>lc t'\<close>] 
     have "lc ([x \<rightarrow> t'] (t\<^bsup>[Fvar s,Fvar p]\<^esup>))" by (simp add: openz_def)
 
     moreover assume "s \<notin> FV t' \<union> {x} \<and> p \<notin> FV t' \<union> {x} \<and> s \<noteq> p"
     hence "x \<notin> FV (Fvar s)" and "x \<notin> FV (Fvar p)" by auto
-    note ssubst_sopen_commute[OF `lc t'` this]
+    note ssubst_sopen_commute[OF \<open>lc t'\<close> this]
     ultimately
     show "lc ([x \<rightarrow> t'] t\<^bsup>[Fvar s,Fvar p]\<^esup>)" by (simp add: openz_def)
   qed
@@ -1667,15 +1667,15 @@ proof -
       \<longrightarrow> lc ({n \<rightarrow> [s,p]} t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
   proof (cases "n = 0")
     case True thus ?thesis
-      using body_lc[OF `body t` `lc s` `lc p`] sopen_twice[OF `lc s` `lc p`] 
+      using body_lc[OF \<open>body t\<close> \<open>lc s\<close> \<open>lc p\<close>] sopen_twice[OF \<open>lc s\<close> \<open>lc p\<close>] 
       by (simp add: openz_def)
   next
     case False thus ?thesis
     proof (intro strip)
       fix sa :: fVariable and pa :: fVariable
-      from body_lc_FV[OF `body t`] have "lc (t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)" by assumption
+      from body_lc_FV[OF \<open>body t\<close>] have "lc (t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)" by assumption
       moreover
-      from sopen_commute_gen[OF _ _ `lc s` `lc p` not_sym[OF `n \<noteq> 0`]]
+      from sopen_commute_gen[OF _ _ \<open>lc s\<close> \<open>lc p\<close> not_sym[OF \<open>n \<noteq> 0\<close>]]
       have "{n \<rightarrow> [s,p]} t\<^bsup>[Fvar sa,Fvar pa]\<^esup> = {n \<rightarrow> [s,p]} (t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
         by (simp add: openz_def)
       ultimately show "lc ({n \<rightarrow> [s,p]} t\<^bsup>[Fvar sa,Fvar pa]\<^esup>)" by simp
@@ -1687,7 +1687,7 @@ proof -
     by (rule_tac x = "FV t \<union> FV s \<union> FV p" in exI, simp)
 qed
 
-subsection {* Beta-reduction *}
+subsection \<open>Beta-reduction\<close>
 inductive beta :: "[sterm, sterm] \<Rightarrow> bool" (infixl "\<rightarrow>\<^sub>\<beta>" 50)
 where
   beta[simp, intro!]      : 
@@ -1781,7 +1781,7 @@ lemma Call_beta: "Call t l u \<rightarrow>\<^sub>\<beta> z \<Longrightarrow>
   \<or>(\<exists>f T. Obj f T = t \<and> l \<in> dom f \<and> z = (the (f l)\<^bsup>[Obj f T, u]\<^esup>))"
   by (erule beta_cases, auto)
 
-subsubsection {* Properties *}
+subsubsection \<open>Properties\<close>
 lemma beta_lc[simp]:
   fixes t t'
   assumes "t \<rightarrow>\<^sub>\<beta> t'"
@@ -1806,7 +1806,7 @@ next
   case Obj thus ?case by (simp add: lc_obj)
 next
   case (Bnd L t t') note cof = this(2)
-  from `finite L` exFresh_s_p_cof[of "L \<union> FV t"]
+  from \<open>finite L\<close> exFresh_s_p_cof[of "L \<union> FV t"]
   obtain s p where 
     "s \<notin> L" and "s \<notin> FV t" and "p \<notin> L" and "p \<notin> FV t" and "s \<noteq> p" 
     by auto  
@@ -1814,9 +1814,9 @@ next
     "lc (t\<^bsup>[Fvar s, Fvar p]\<^esup>)" and "lc t''" and
     "t' = \<sigma>[s,p] t''" by auto
   from 
-    lc_body[OF this(1) `s \<noteq> p`] 
-    sclose_sopen_eq_t[OF `s \<notin> FV t` `p \<notin> FV t` `s \<noteq> p`]
-    this(3) lc_body[OF this(2) `s \<noteq> p`]
+    lc_body[OF this(1) \<open>s \<noteq> p\<close>] 
+    sclose_sopen_eq_t[OF \<open>s \<notin> FV t\<close> \<open>p \<notin> FV t\<close> \<open>s \<noteq> p\<close>]
+    this(3) lc_body[OF this(2) \<open>s \<noteq> p\<close>]
   show ?case by (simp add: openz_def closez_def)
 qed
 
@@ -1871,7 +1871,7 @@ proof -
       obtain L where
         "finite L" and "pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v] t')"
         by auto
-      with ssubst_preserves_lc[OF `lc u` `lc v`] 
+      with ssubst_preserves_lc[OF \<open>lc u\<close> \<open>lc v\<close>] 
       show "[x \<rightarrow> v] Upd u l t \<rightarrow>\<^sub>\<beta> [x \<rightarrow> v] Upd u l t'"
         unfolding pred_cof_def
         by auto
@@ -1880,15 +1880,15 @@ proof -
     case (beta l f T t) thus ?case
     proof (intro strip, simp)
       fix x v assume "lc v"
-      from ssubst_preserves_lc[OF `lc t` this] have "lc ([x \<rightarrow> v] t)" 
+      from ssubst_preserves_lc[OF \<open>lc t\<close> this] have "lc ([x \<rightarrow> v] t)" 
         by simp
       note lem =
-        beta.beta[OF domssubst[OF `l \<in> dom f`] 
-        lcobj[OF `lc (Obj f T)` `lc v`] this]
+        beta.beta[OF domssubst[OF \<open>l \<in> dom f\<close>] 
+        lcobj[OF \<open>lc (Obj f T)\<close> \<open>lc v\<close>] this]
 
-      from `l \<in> dom f` have "the (ssubst_option x v (f l)) = [x \<rightarrow> v] the (f l)"
+      from \<open>l \<in> dom f\<close> have "the (ssubst_option x v (f l)) = [x \<rightarrow> v] the (f l)"
         by auto
-      with lem[of x] ssubst_openz_distrib[OF `lc v`]
+      with lem[of x] ssubst_openz_distrib[OF \<open>lc v\<close>]
       show
         "Call (Obj (\<lambda>l. ssubst_option x v (f l)) T) l ([x \<rightarrow> v] t)
          \<rightarrow>\<^sub>\<beta> [x \<rightarrow> v] (the (f l)\<^bsup>[Obj f T, t]\<^esup>)"
@@ -1898,12 +1898,12 @@ proof -
     case (Upd l f T t) thus ?case
     proof (intro strip, simp)
       fix x v assume "lc v"
-      from ssubst_preserves_body[OF `body t` `lc v`] have "body ([x \<rightarrow> v] t)" 
+      from ssubst_preserves_body[OF \<open>body t\<close> \<open>lc v\<close>] have "body ([x \<rightarrow> v] t)" 
         by simp
       from
-        beta.beta_Upd[OF domssubst[OF `l \<in> dom f`] 
-                         lcobj[OF `lc (Obj f T)` `lc v`] this]
-        ssubstoption_insert[OF `l \<in> dom f`] 
+        beta.beta_Upd[OF domssubst[OF \<open>l \<in> dom f\<close>] 
+                         lcobj[OF \<open>lc (Obj f T)\<close> \<open>lc v\<close>] this]
+        ssubstoption_insert[OF \<open>l \<in> dom f\<close>] 
       show
         "Upd (Obj (\<lambda>l. ssubst_option x v (f l)) T) l ([x \<rightarrow> v] t)
          \<rightarrow>\<^sub>\<beta> Obj (\<lambda>la. ssubst_option x v (if la = l then Some t else f la)) T"
@@ -1921,14 +1921,14 @@ proof -
       have "\<forall>l\<in>dom (\<lambda>l. ssubst_option x v (f l)). body (the (ssubst_option x v (f l)))"
       proof (intro strip, simp)
         fix l' :: Label assume "l' \<in> dom f"
-        with `\<forall>l\<in>dom f. body (the(f l))` have "body (the (f l'))" by blast
-        note ssubst_preserves_body[OF this `lc v`]
-        with `l' \<in> dom f` ssubst_option_lem
+        with \<open>\<forall>l\<in>dom f. body (the(f l))\<close> have "body (the (f l'))" by blast
+        note ssubst_preserves_body[OF this \<open>lc v\<close>]
+        with \<open>l' \<in> dom f\<close> ssubst_option_lem
         show "body (the (ssubst_option x v (f l')))" by auto
       qed
       from
-        beta.beta_Obj[OF domssubst[OF `l \<in> dom f`] `finite L` _ this] 
-        ssubstoption_insert[OF `l \<in> dom f`] `pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v] t')`
+        beta.beta_Obj[OF domssubst[OF \<open>l \<in> dom f\<close>] \<open>finite L\<close> _ this] 
+        ssubstoption_insert[OF \<open>l \<in> dom f\<close>] \<open>pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v] t')\<close>
       show 
         "Obj (\<lambda>la. ssubst_option x v (if la = l then Some t else f la)) T
          \<rightarrow>\<^sub>\<beta> Obj (\<lambda>la. ssubst_option x v (if la = l then Some t' else f la)) T"
@@ -1940,27 +1940,27 @@ proof -
     show ?case
     proof (intro strip)
       fix x v assume "lc v"
-      from `finite L`
+      from \<open>finite L\<close>
       show "\<exists>L. finite L \<and> pred_cof L ([x \<rightarrow> v] t) ([x \<rightarrow> v] t')"
       proof (rule_tac x = "L \<union> {x} \<union> FV v" in exI, 
           unfold pred_cof_def, auto)
         fix s p assume "s \<notin> L" and "p \<notin> L" and "s \<noteq> p"
-        with pred `lc v` obtain t'' where
+        with pred \<open>lc v\<close> obtain t'' where
           "t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> t''" and
           ssubst_beta: "[x \<rightarrow> v] (t\<^bsup>[Fvar s,Fvar p]\<^esup>) \<rightarrow>\<^sub>\<beta> [x \<rightarrow> v] t''" and
           "t' = \<sigma>[s,p] t''"
           by blast
         assume "s \<noteq> x" and "p \<noteq> x"
         hence "x \<notin> FV (Fvar s)" and "x \<notin> FV (Fvar p)" by auto
-        from ssubst_sopen_commute[OF `lc v` this] ssubst_beta
+        from ssubst_sopen_commute[OF \<open>lc v\<close> this] ssubst_beta
         have "[x \<rightarrow> v] t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> [x \<rightarrow> v] t''" 
           by (simp add: openz_def)
         moreover
         assume "s \<notin> FV v" and "p \<notin> FV v"
         from 
-          ssubst_sclose_commute[OF this not_sym[OF `s \<noteq> x`] 
-                                        not_sym[OF `p \<noteq> x`]] 
-          `t' = \<sigma>[s,p] t''`
+          ssubst_sclose_commute[OF this not_sym[OF \<open>s \<noteq> x\<close>] 
+                                        not_sym[OF \<open>p \<noteq> x\<close>]] 
+          \<open>t' = \<sigma>[s,p] t''\<close>
         have "[x \<rightarrow> v] t' = \<sigma>[s,p] [x \<rightarrow> v] t''" 
           by (simp add: closez_def)
         ultimately
@@ -1998,14 +1998,14 @@ next
   case (beta l f T t) thus ?case
   proof (intro strip)
     assume "x \<notin> FV (Call (Obj f T) l t)"
-    with `l \<in> dom f` have "x \<notin> FV (the (f l)) \<union> FV (Obj f T) \<union> FV t"
+    with \<open>l \<in> dom f\<close> have "x \<notin> FV (the (f l)) \<union> FV (Obj f T) \<union> FV t"
     proof (auto)
       fix y :: sterm
       assume "x \<in> FV y" and "f l = Some y"
       hence "x \<in> FVoption (f l)"
         by auto
       moreover assume "\<forall>l\<in>dom f. x \<notin> FVoption (f l)"
-      ultimately show False using `l \<in> dom f`
+      ultimately show False using \<open>l \<in> dom f\<close>
         by blast
     qed
     from contra_subsetD[OF sopen_FV this]
@@ -2015,9 +2015,9 @@ next
   case (Bnd L t t') thus ?case
   proof (intro strip)
     assume "x \<notin> FV t"
-    from `finite L` exFresh_s_p_cof[of "L \<union> {x}"]
+    from \<open>finite L\<close> exFresh_s_p_cof[of "L \<union> {x}"]
     obtain s p where sp: "s \<notin> L \<union> {x} \<and> p \<notin> L \<union> {x} \<and> s \<noteq> p" by auto
-    with `x \<notin> FV t` sopen_FV[of 0 "Fvar s" "Fvar p" t]
+    with \<open>x \<notin> FV t\<close> sopen_FV[of 0 "Fvar s" "Fvar p" t]
     have "x \<notin> FV (t\<^bsup>[Fvar s, Fvar p]\<^esup>)" by (auto simp: openz_def)
     with sp Bnd(2) obtain t'' where
       "x \<notin> FV t''" and "t' = \<sigma>[s,p] t''" 
@@ -2045,21 +2045,21 @@ lemma rtrancl_beta_body:
 proof (cases "t = t'")
   case True with assms(3) show ?thesis by simp
 next
-  from exFresh_s_p_cof[OF `finite L`] 
+  from exFresh_s_p_cof[OF \<open>finite L\<close>] 
   obtain s p where sp: "s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p" by auto
   hence "s \<noteq> p" by simp
 
   from assms(2) sp
   obtain t'' where "t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t''" and "t' = \<sigma>[s,p] t''" 
     by auto
-  with `body t` have "lc t''"
+  with \<open>body t\<close> have "lc t''"
   proof (cases "(t\<^bsup>[Fvar s,Fvar p]\<^esup>) = t''")
-    case True with body_lc[OF `body t`] show "lc t''" by auto
+    case True with body_lc[OF \<open>body t\<close>] show "lc t''" by auto
   next
-    case False with rtrancl_beta_lc[OF `t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t''`] 
+    case False with rtrancl_beta_lc[OF \<open>t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t''\<close>] 
     show "lc t''" by auto
   qed
-  from lc_body[OF this `s \<noteq> p`] `t' = \<sigma>[s,p] t''` show "body t'" by simp
+  from lc_body[OF this \<open>s \<noteq> p\<close>] \<open>t' = \<sigma>[s,p] t''\<close> show "body t'" by simp
 qed
 
 lemma rtrancl_beta_preserves_FV[simp, rule_format]: 
@@ -2068,19 +2068,19 @@ proof (induct t t' rule: rtranclp.induct, simp)
   case (rtrancl_into_rtrancl a b c) thus ?case
   proof (clarify)
     assume "x \<notin> FV b" and "x \<in> FV c"
-    from beta_preserves_FV[OF `b \<rightarrow>\<^sub>\<beta> c` this(1)] this(2)
+    from beta_preserves_FV[OF \<open>b \<rightarrow>\<^sub>\<beta> c\<close> this(1)] this(2)
     show False by simp
   qed
 qed
 
-subsubsection {* Congruence rules *}
+subsubsection \<open>Congruence rules\<close>
 lemma rtrancl_beta_CallL [intro!, rule_format]:
   "\<lbrakk> t \<rightarrow>\<^sub>\<beta>\<^sup>* t'; lc u \<rbrakk> \<Longrightarrow> Call t l u \<rightarrow>\<^sub>\<beta>\<^sup>* Call t' l u"
 proof (induct t t' rule: rtranclp.induct, simp)
   case (rtrancl_into_rtrancl a b c) thus ?case
   proof (auto)
-    from `b \<rightarrow>\<^sub>\<beta> c` `lc u` have "Call b l u \<rightarrow>\<^sub>\<beta> Call c l u" by simp
-    with rtrancl_into_rtrancl(2)[OF `lc u`]
+    from \<open>b \<rightarrow>\<^sub>\<beta> c\<close> \<open>lc u\<close> have "Call b l u \<rightarrow>\<^sub>\<beta> Call c l u" by simp
+    with rtrancl_into_rtrancl(2)[OF \<open>lc u\<close>]
     show "Call a l u \<rightarrow>\<^sub>\<beta>\<^sup>* Call c l u" by auto
   qed
 qed
@@ -2090,8 +2090,8 @@ lemma rtrancl_beta_CallR [intro!, rule_format]:
 proof (induct t t' rule: rtranclp.induct, simp)
   case (rtrancl_into_rtrancl a b c) thus ?case
   proof (auto)
-    from `b \<rightarrow>\<^sub>\<beta> c` `lc u` have "Call u l b \<rightarrow>\<^sub>\<beta> Call u l c" by simp
-    with rtrancl_into_rtrancl(2)[OF `lc u`]
+    from \<open>b \<rightarrow>\<^sub>\<beta> c\<close> \<open>lc u\<close> have "Call u l b \<rightarrow>\<^sub>\<beta> Call u l c" by simp
+    with rtrancl_into_rtrancl(2)[OF \<open>lc u\<close>]
     show "Call u l a \<rightarrow>\<^sub>\<beta>\<^sup>* Call u l c" by auto
   qed
 qed
@@ -2102,9 +2102,9 @@ lemma rtrancl_beta_Call [intro!, rule_format]:
 proof (induct t t' rule: rtranclp.induct, blast)
   case (rtrancl_into_rtrancl a b c) thus ?case
   proof (auto)
-    from `u \<rightarrow>\<^sub>\<beta>\<^sup>* u'` `lc u` have "lc u'" by auto
-    with `b \<rightarrow>\<^sub>\<beta> c` have "Call b l u' \<rightarrow>\<^sub>\<beta> Call c l u'" by simp
-    with rtrancl_into_rtrancl(2)[OF `lc a` `u \<rightarrow>\<^sub>\<beta>\<^sup>* u'` `lc u`]
+    from \<open>u \<rightarrow>\<^sub>\<beta>\<^sup>* u'\<close> \<open>lc u\<close> have "lc u'" by auto
+    with \<open>b \<rightarrow>\<^sub>\<beta> c\<close> have "Call b l u' \<rightarrow>\<^sub>\<beta> Call c l u'" by simp
+    with rtrancl_into_rtrancl(2)[OF \<open>lc a\<close> \<open>u \<rightarrow>\<^sub>\<beta>\<^sup>* u'\<close> \<open>lc u\<close>]
     show "Call a l u \<rightarrow>\<^sub>\<beta>\<^sup>* Call c l u'" by auto
   qed
 qed
@@ -2114,8 +2114,8 @@ lemma rtrancl_beta_UpdL:
 proof (induct t t' rule: rtranclp.induct, simp)
   case (rtrancl_into_rtrancl a b c) thus ?case
   proof (auto)
-    from `b \<rightarrow>\<^sub>\<beta> c` `body u` have "Upd b l u \<rightarrow>\<^sub>\<beta> Upd c l u" by simp
-    with rtrancl_into_rtrancl(2)[OF `body u`]
+    from \<open>b \<rightarrow>\<^sub>\<beta> c\<close> \<open>body u\<close> have "Upd b l u \<rightarrow>\<^sub>\<beta> Upd c l u" by simp
+    with rtrancl_into_rtrancl(2)[OF \<open>body u\<close>]
     show "Upd a l u \<rightarrow>\<^sub>\<beta>\<^sup>* Upd c l u" by auto
   qed
 qed
@@ -2136,21 +2136,21 @@ proof (intro strip)
       \<longrightarrow> (\<exists>t''. (\<sigma>[s,p] t)\<^bsup>[Fvar sa,Fvar pa]\<^esup> \<rightarrow>\<^sub>\<beta> t'' \<and> \<sigma>[s,p] t' = \<sigma>[sa,pa] t'')"
   proof (intro strip)
     fix sa :: fVariable and pa :: fVariable
-    from beta_ssubst[OF `t \<rightarrow>\<^sub>\<beta> t'`] 
+    from beta_ssubst[OF \<open>t \<rightarrow>\<^sub>\<beta> t'\<close>] 
     have "[p \<rightarrow> Fvar pa] t \<rightarrow>\<^sub>\<beta> [p \<rightarrow> Fvar pa] t'" by simp
     from beta_ssubst[OF this] 
     have 
       betasubst: "[s \<rightarrow> Fvar sa] [p \<rightarrow> Fvar pa] t \<rightarrow>\<^sub>\<beta> [s \<rightarrow> Fvar sa] [p \<rightarrow> Fvar pa] t'" 
       by simp
 
-    from beta_lc[OF `t \<rightarrow>\<^sub>\<beta> t'`] have "lc t" and "lc t'" by auto
+    from beta_lc[OF \<open>t \<rightarrow>\<^sub>\<beta> t'\<close>] have "lc t" and "lc t'" by auto
 
     assume 
       sapa: "sa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> pa \<notin> L \<union> FV t \<union> {s} \<union> {p} \<and> sa \<noteq> pa"
     hence "s \<notin> FV (Fvar pa)" by auto
     from 
-      sopen_sclose_eq_ssubst[OF `s \<noteq> p` this `lc t`] 
-      sopen_sclose_eq_ssubst[OF `s \<noteq> p` this `lc t'`]
+      sopen_sclose_eq_ssubst[OF \<open>s \<noteq> p\<close> this \<open>lc t\<close>] 
+      sopen_sclose_eq_ssubst[OF \<open>s \<noteq> p\<close> this \<open>lc t'\<close>]
       betasubst
     have "\<sigma>[s,p] t\<^bsup>[Fvar sa, Fvar pa]\<^esup> \<rightarrow>\<^sub>\<beta> (\<sigma>[s,p] t'\<^bsup>[Fvar sa, Fvar pa]\<^esup>)"
       by (simp add: openz_def closez_def)
@@ -2160,13 +2160,13 @@ proof (intro strip)
       from sapa have "sa \<notin> FV t" by simp
       from 
         contra_subsetD[OF sclose_subset_FV 
-                          beta_preserves_FV[OF `t \<rightarrow>\<^sub>\<beta> t'` this]] 
+                          beta_preserves_FV[OF \<open>t \<rightarrow>\<^sub>\<beta> t'\<close> this]] 
       have "sa \<notin> FV (\<sigma>[s,p] t')" by (simp add: closez_def)
       moreover
       from sapa have "pa \<notin> FV t" by simp
       from 
         contra_subsetD[OF sclose_subset_FV 
-                          beta_preserves_FV[OF `t \<rightarrow>\<^sub>\<beta> t'` this]]
+                          beta_preserves_FV[OF \<open>t \<rightarrow>\<^sub>\<beta> t'\<close> this]]
       have "pa \<notin> FV (\<sigma>[s,p] t')" by (simp add: closez_def)
       ultimately
       have "sa \<notin> FV (\<sigma>[s,p] t')" and "pa \<notin> FV (\<sigma>[s,p] t')" and "sa \<noteq> pa" 
@@ -2196,12 +2196,12 @@ lemma rtrancl_beta_UpdR:
   "finite L" and "lc u"
   shows "Upd u l t \<rightarrow>\<^sub>\<beta>\<^sup>* Upd u l t'"
 proof -
-  from `finite L` have "finite (L \<union> FV t)" by simp
+  from \<open>finite L\<close> have "finite (L \<union> FV t)" by simp
   from exFresh_s_p_cof[OF this]
   obtain s p where sp: "s \<notin> L \<union> FV t \<and> p \<notin> L \<union> FV t \<and> s \<noteq> p" by auto
   with assms(1) obtain t'' where "t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t''" and t': "t' = \<sigma>[s,p] t''" 
     by auto
-  with `lc u` have "Upd u l t \<rightarrow>\<^sub>\<beta>\<^sup>* Upd u l \<sigma>[s,p] t''"
+  with \<open>lc u\<close> have "Upd u l t \<rightarrow>\<^sub>\<beta>\<^sup>* Upd u l \<sigma>[s,p] t''"
   proof (erule_tac rtranclp_induct)
     from sp have "s \<notin> FV t" and "p \<notin> FV t" and "s \<noteq> p" by auto
     from sclose_sopen_eq_t[OF this] 
@@ -2211,13 +2211,13 @@ proof -
     fix y :: sterm and z :: sterm
     assume "y \<rightarrow>\<^sub>\<beta> z"
     from sp have "s \<notin> L" and "p \<notin> L" and "s \<noteq> p" by auto
-    from beta_binder[OF `y \<rightarrow>\<^sub>\<beta> z` `finite L` this]
+    from beta_binder[OF \<open>y \<rightarrow>\<^sub>\<beta> z\<close> \<open>finite L\<close> this]
     obtain L' where 
       "finite L'" and
       "\<forall>sa pa. sa \<notin> L' \<and> pa \<notin> L' \<and> sa \<noteq> pa
         \<longrightarrow> (\<exists>t''. \<sigma>[s,p] y\<^bsup>[Fvar sa,Fvar pa]\<^esup> \<rightarrow>\<^sub>\<beta> t'' \<and> \<sigma>[s,p] z = \<sigma>[sa,pa] t'')"
       by auto
-    from beta.beta_UpdR[OF this `lc u`]
+    from beta.beta_UpdR[OF this \<open>lc u\<close>]
     have "Upd u l (\<sigma>[s,p] y) \<rightarrow>\<^sub>\<beta> Upd u l (\<sigma>[s,p] z)" by assumption
     moreover assume "Upd u l t \<rightarrow>\<^sub>\<beta>\<^sup>* Upd u l (\<sigma>[s,p] y)"
     ultimately show "Upd u l t \<rightarrow>\<^sub>\<beta>\<^sup>* Upd u l (\<sigma>[s,p] z)" by simp
@@ -2236,9 +2236,9 @@ proof (induct u u' rule: rtranclp.induct)
 next
   case (rtrancl_into_rtrancl a b c) thus ?case
   proof (auto)
-    from rtrancl_beta_body[OF `finite L` rtrancl_into_rtrancl(5) `body t`] `b \<rightarrow>\<^sub>\<beta> c`
+    from rtrancl_beta_body[OF \<open>finite L\<close> rtrancl_into_rtrancl(5) \<open>body t\<close>] \<open>b \<rightarrow>\<^sub>\<beta> c\<close>
     have "Upd b l t' \<rightarrow>\<^sub>\<beta> Upd c l t'" by simp
-    with rtrancl_into_rtrancl(2)[OF `finite L` rtrancl_into_rtrancl(5) `lc a` `body t`]
+    with rtrancl_into_rtrancl(2)[OF \<open>finite L\<close> rtrancl_into_rtrancl(5) \<open>lc a\<close> \<open>body t\<close>]
     show "Upd a l t \<rightarrow>\<^sub>\<beta>\<^sup>* Upd c l t'" by simp
   qed
 qed
@@ -2252,12 +2252,12 @@ lemma rtrancl_beta_obj:
   "\<forall>l\<in>dom f. body (the(f l))" and "body t"
   shows "Obj (f (l \<mapsto> t)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f (l \<mapsto> t')) T"
 proof -
-  from `finite L` have "finite (L \<union> FV t)" by simp
+  from \<open>finite L\<close> have "finite (L \<union> FV t)" by simp
   from exFresh_s_p_cof[OF this]
   obtain s p where sp: "s \<notin> L \<union> FV t \<and> p \<notin> L \<union> FV t \<and> s \<noteq> p" by auto
   with assms(3) obtain t'' where "t\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t''" and "t' = \<sigma>[s,p] t''" 
     by auto
-  with `l \<in> dom f` `\<forall>l\<in>dom f. body (the(f l))` 
+  with \<open>l \<in> dom f\<close> \<open>\<forall>l\<in>dom f. body (the(f l))\<close> 
   have "Obj (f(l \<mapsto> t)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> \<sigma>[s,p] t'')) T"
   proof (erule_tac rtranclp_induct)
     from sp have "s \<notin> FV t" and "p \<notin> FV t" and "s \<noteq> p" by auto
@@ -2267,20 +2267,20 @@ proof -
   next
     fix y :: sterm and z :: sterm assume "y \<rightarrow>\<^sub>\<beta> z"
     from sp have "s \<notin> L" and "p \<notin> L" and "s \<noteq> p" by auto
-    from beta_binder[OF `y \<rightarrow>\<^sub>\<beta> z` `finite L` this]
+    from beta_binder[OF \<open>y \<rightarrow>\<^sub>\<beta> z\<close> \<open>finite L\<close> this]
     obtain L' where 
       "finite L'" and
       "\<forall>sa pa. sa \<notin> L' \<and> pa \<notin> L' \<and> sa \<noteq> pa
         \<longrightarrow> (\<exists>t''. \<sigma>[s,p] y\<^bsup>[Fvar sa,Fvar pa]\<^esup> \<rightarrow>\<^sub>\<beta> t'' \<and> \<sigma>[s,p] z = \<sigma>[sa,pa] t'')"
       by auto
-    from beta.beta_Obj[OF `l \<in> dom f` this `\<forall>l\<in>dom f. body (the(f l))`]
+    from beta.beta_Obj[OF \<open>l \<in> dom f\<close> this \<open>\<forall>l\<in>dom f. body (the(f l))\<close>]
     have "Obj (f(l \<mapsto> \<sigma>[s,p] y)) T \<rightarrow>\<^sub>\<beta> Obj (f(l \<mapsto> \<sigma>[s,p] z)) T"
       by assumption
     moreover assume "Obj (f(l \<mapsto> t)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> \<sigma>[s,p] y)) T"
     ultimately
     show "Obj (f(l \<mapsto> t)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> \<sigma>[s,p] z)) T" by simp
   qed
-  with `t' = \<sigma>[s,p] t''` show "Obj (f(l \<mapsto> t)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> t')) T" 
+  with \<open>t' = \<sigma>[s,p] t''\<close> show "Obj (f(l \<mapsto> t)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> t')) T" 
     by simp
 qed
 
@@ -2295,12 +2295,12 @@ lemma obj_lem:
 proof 
   (rule_tac P = "\<lambda>y. Obj y T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> t')) T" and s = "(f(l \<mapsto> the(f l)))" 
     in subst)
-  from `l \<in> dom f` fun_upd_idem show "f(l \<mapsto> the (f l)) = f" by force
+  from \<open>l \<in> dom f\<close> fun_upd_idem show "f(l \<mapsto> the (f l)) = f" by force
 next
-  from `l \<in> dom f` `\<forall>l\<in>dom f. body (the(f l))` have "body (the (f l))" 
+  from \<open>l \<in> dom f\<close> \<open>\<forall>l\<in>dom f. body (the(f l))\<close> have "body (the (f l))" 
     by blast
   with 
-    rtrancl_beta_obj[OF `l \<in> dom f` `finite L` assms(3) `\<forall>l\<in>dom f. body (the(f l))`]
+    rtrancl_beta_obj[OF \<open>l \<in> dom f\<close> \<open>finite L\<close> assms(3) \<open>\<forall>l\<in>dom f. body (the(f l))\<close>]
   show "Obj (f(l \<mapsto> the (f l))) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (f(l \<mapsto> t')) T" by simp
 qed
 
@@ -2356,12 +2356,12 @@ proof
                  \<longrightarrow> Ltake_eq (snd (ob ! k)) (fst (ob ! k)) g 
                      \<and> Ltake_eq (dom f - snd (ob ! k)) (fst (ob ! k)) f"
         by auto
-      from `length ob = k + 1` have obkmem: "(ob!k) \<in> set ob" by auto
+      from \<open>length ob = k + 1\<close> have obkmem: "(ob!k) \<in> set ob" by auto
 
       with mem_ob have obksnd: "snd(ob!k) \<subseteq> dom f" by blast
       from 
-        card_psubset[OF finite_dom_fmap this] `card (snd(ob!k)) = k` 
-        `k < card (dom f)`
+        card_psubset[OF finite_dom_fmap this] \<open>card (snd(ob!k)) = k\<close> 
+        \<open>k < card (dom f)\<close>
       have "snd (ob!k) \<subset> dom f" by simp
       then obtain l' where "l' \<in> dom f" and "l' \<notin> snd (ob!k)" by auto
 
@@ -2370,17 +2370,17 @@ proof
         (* get witness *)
       define ob' where "ob' = ob @ [(fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))]"
 
-      from nth_fst[OF `length ob = k + 1`] have first: "ob'!0 = ob!0" 
+      from nth_fst[OF \<open>length ob = k + 1\<close>] have first: "ob'!0 = ob!0" 
         by (simp add: ob'_def)
 
-      from `length ob = k + 1` nth_last[of ob "Suc k"]
+      from \<open>length ob = k + 1\<close> nth_last[of ob "Suc k"]
       have last: "ob'!Suc k = (fst(ob!k)(l' \<mapsto> the (g l')), insert l' (snd(ob!k)))"
         by (simp add: ob'_def)
 
-      from `length ob = k + 1` nth_append[of ob _ k] have kth: "ob'!k = ob!k"
+      from \<open>length ob = k + 1\<close> nth_append[of ob _ k] have kth: "ob'!k = ob!k"
         by (auto simp: ob'_def)
 
-      from `card (snd(ob!k)) = k` card_k
+      from \<open>card (snd(ob!k)) = k\<close> card_k
       have ass:
         "\<forall>l\<in>(snd(ob!k)). fst(ob!k) l = g l"
         "\<forall>l\<in>(dom f - snd(ob!k)). fst(ob!k) l = f l"
@@ -2388,7 +2388,7 @@ proof
 
 
         (* prop#1 *)
-      from `length ob = k + 1` have "length ob' = Suc k + 1" 
+      from \<open>length ob = k + 1\<close> have "length ob' = Suc k + 1" 
         by (auto simp: ob'_def)
 
         (* prop#2 *)
@@ -2405,7 +2405,7 @@ proof
           with mem_ob show "dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f"
             by blast
         next
-          from obkfst obksnd `l' \<in> dom f`
+          from obkfst obksnd \<open>l' \<in> dom f\<close>
           show 
             "insert l' (dom (fst (ob!k))) = dom f 
              \<and> l' \<in> dom f \<and> snd(ob!k) \<subseteq> dom f" 
@@ -2415,7 +2415,7 @@ proof
 
         (* prop#3 *)
       moreover 
-      from first `fst(ob!0) = f` have "fst(ob'!0) = f" by simp
+      from first \<open>fst(ob!0) = f\<close> have "fst(ob'!0) = f" by simp
 
         (* prop#4 *)
       moreover
@@ -2424,7 +2424,7 @@ proof
       from card_insert[OF this]
       have "card (insert l' (snd (ob!k))) = Suc (card (snd(ob!k) - {l'}))" 
         by simp
-      with `l' \<notin> snd (ob!k)` `card (snd(ob!k)) = k` last
+      with \<open>l' \<notin> snd (ob!k)\<close> \<open>card (snd(ob!k)) = k\<close> last
       have "card(snd(ob'!Suc k)) = Suc k" by auto
 
         (* prop#5 *)
@@ -2433,21 +2433,21 @@ proof
       proof (intro strip)
         fix i :: nat
         from last have "snd(ob'!Suc k) = insert l' (snd (ob!k))" by simp
-        with `l' \<notin> snd (ob!k)` have "snd(ob!k) \<subset> snd(ob'!Suc k)" by auto
+        with \<open>l' \<notin> snd (ob!k)\<close> have "snd(ob!k) \<subset> snd(ob'!Suc k)" by auto
         moreover
         assume "i < Suc k"
-        with `length ob = k + 1` have "i < length ob" by simp
+        with \<open>length ob = k + 1\<close> have "i < length ob" by simp
         with nth_append[of ob _ i] have "ob'!i = ob!i" by (simp add: ob'_def)
         ultimately show "snd(ob'!i) \<subset> snd(ob'!Suc k)"
         proof (cases "i < k")
           case True 
           with 
-            `\<forall>i<k. snd(ob!i) \<subset> snd(ob!k)` `ob'!i = ob!i` 
-            `snd(ob!k) \<subset> snd(ob'!Suc k)`
+            \<open>\<forall>i<k. snd(ob!i) \<subset> snd(ob!k)\<close> \<open>ob'!i = ob!i\<close> 
+            \<open>snd(ob!k) \<subset> snd(ob'!Suc k)\<close>
           show "snd (ob'!i) \<subset> snd (ob'!Suc k)" by auto
         next
-          case False with `i < Suc k` have "i = k" by arith
-          with `ob'!i = ob!i` `snd(ob!k) \<subset> snd(ob'!Suc k)`
+          case False with \<open>i < Suc k\<close> have "i = k" by arith
+          with \<open>ob'!i = ob!i\<close> \<open>snd(ob!k) \<subset> snd(ob'!Suc k)\<close>
           show "snd (ob'!i) \<subset> snd (ob'!Suc k)" by auto
         qed
       qed
@@ -2455,10 +2455,10 @@ proof
         (* prop#6 -- the main statement *)
       moreover
       {
-        from `l' \<in> dom f` `l' \<notin> snd(ob!k)` have "l' \<in> (dom f - snd(ob!k))" 
+        from \<open>l' \<in> dom f\<close> \<open>l' \<notin> snd(ob!k)\<close> have "l' \<in> (dom f - snd(ob!k))" 
           by auto
         with ass have "the(fst(ob!k) l') = the(f l')" by auto 
-        with `l' \<in> dom f` assms(2)
+        with \<open>l' \<in> dom f\<close> assms(2)
         have 
           sp: "\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p 
                 \<longrightarrow> (\<exists>t''. the(fst(ob!k) l')\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t'' 
@@ -2478,7 +2478,7 @@ proof
             with ass have "fst(ob!k) la = f la" by blast
             with bodyf show "body (the (fst(ob!k) la))" by auto
           next
-            from exFresh_s_p_cof[OF `finite L`]
+            from exFresh_s_p_cof[OF \<open>finite L\<close>]
             obtain s p where "s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p" by auto
             with assms(2) inf
             obtain t' where 
@@ -2489,14 +2489,14 @@ proof
             proof (cases "(the (f la)\<^bsup>[Fvar s,Fvar p]\<^esup>) = t'")
               case True 
               with 
-                lcf lc_body `s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p` 
-                `the(g la) = \<sigma>[s,p] t'`
+                lcf lc_body \<open>s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p\<close> 
+                \<open>the(g la) = \<sigma>[s,p] t'\<close>
               show "body (the(g la))" by auto
             next
               case False 
               with 
-                rtrancl_beta_lc[OF `the (f la)\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t'`] 
-                lc_body `s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p` `the(g la) = \<sigma>[s,p] t'`
+                rtrancl_beta_lc[OF \<open>the (f la)\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta>\<^sup>* t'\<close>] 
+                lc_body \<open>s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p\<close> \<open>the(g la) = \<sigma>[s,p] t'\<close>
               show "body (the(g la))" by auto
             qed
             case True with ass bodyg show "body (the(fst(ob!k) la))" by simp
@@ -2504,8 +2504,8 @@ proof
         qed
 
         moreover
-        from `l' \<in> dom f` obkfst have "l' \<in> dom(fst(ob!k))" by auto
-        note obj_lem[OF this `finite L`]
+        from \<open>l' \<in> dom f\<close> obkfst have "l' \<in> dom(fst(ob!k))" by auto
+        note obj_lem[OF this \<open>finite L\<close>]
 
         ultimately
         have "Obj (fst(ob!k)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob!k)(l' \<mapsto> the (g l'))) T"
@@ -2518,13 +2518,13 @@ proof
         ultimately
         have "Obj (fst(ob'!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob'!Suc k)) T"
           using 
-            rtranclp_trans[OF `Obj (fst (ob!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst (ob!k)) T`] first kth
+            rtranclp_trans[OF \<open>Obj (fst (ob!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst (ob!k)) T\<close>] first kth
           by auto
       }
 
         (* prop#7 *)
       moreover
-      from `l' \<in> dom f` `dom f = dom g`
+      from \<open>l' \<in> dom f\<close> \<open>dom f = dom g\<close>
       have 
         "card (snd(ob'!Suc k)) = Suc k 
          \<longrightarrow> Ltake_eq (snd (ob'!Suc k)) (fst (ob'!Suc k)) g 
@@ -2557,8 +2557,8 @@ lemma rtrancl_beta_obj_n:
   "dom f = dom g" and "\<forall>l\<in>dom f. body (the(f l))"
   shows "Obj f T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj g T"
 proof (cases "f = Map.empty")
-  case True with `dom f = dom g` have "{} = dom g" by simp
-  from `f = Map.empty` empty_dom[OF this] show ?thesis by simp
+  case True with \<open>dom f = dom g\<close> have "{} = dom g" by simp
+  from \<open>f = Map.empty\<close> empty_dom[OF this] show ?thesis by simp
 next
   from rtrancl_beta_obj_lem00[OF assms]
   obtain ob :: "((Label -~> sterm) \<times> (Label set)) list" 
@@ -2570,31 +2570,31 @@ next
     "Obj (fst(ob!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob!card(dom f))) T" and
     "Ltake_eq (snd(ob!card(dom f))) (fst(ob!card(dom f))) g"
     by blast
-  from `length ob = card (dom f) + 1` have "(ob!card(dom f)) \<in> set ob" by auto
-  with `\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f`
+  from \<open>length ob = card (dom f) + 1\<close> have "(ob!card(dom f)) \<in> set ob" by auto
+  with \<open>\<forall>obi. obi \<in> set ob \<longrightarrow> dom (fst obi) = dom f \<and> snd obi \<subseteq> dom f\<close>
   have "dom (fst(ob!card(dom f))) = dom f" and "snd(ob!card(dom f)) \<subseteq> dom f"
     by blast+
 
   {
     fix l :: Label
     from 
-      `snd(ob!card(dom f)) \<subseteq> dom f` `card (snd(ob!card(dom f))) = card(dom f)`
+      \<open>snd(ob!card(dom f)) \<subseteq> dom f\<close> \<open>card (snd(ob!card(dom f))) = card(dom f)\<close>
       Ltake_eq_dom
     have "snd(ob!card(dom f)) = dom f" by blast
-    with `Ltake_eq (snd(ob!card (dom f))) (fst(ob!card (dom f))) g` 
+    with \<open>Ltake_eq (snd(ob!card (dom f))) (fst(ob!card (dom f))) g\<close> 
     have "fst(ob!card(dom f)) l = g l"
     proof (cases "l \<in> dom f", simp_all add: Ltake_eq_def)
       assume "l \<notin> dom f" 
-      with `dom f = dom g` `dom (fst(ob!card(dom f))) = dom f` 
+      with \<open>dom f = dom g\<close> \<open>dom (fst(ob!card(dom f))) = dom f\<close> 
       show "fst(ob!card(dom f)) l = g l" by auto
     qed
   }
   with ext have "fst(ob!card(dom f)) = g" by auto
-  with `fst(ob!0) = f` `Obj (fst(ob!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob!card (dom f))) T` 
+  with \<open>fst(ob!0) = f\<close> \<open>Obj (fst(ob!0)) T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj (fst(ob!card (dom f))) T\<close> 
   show "Obj f T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj g T" by simp
 qed
 
-subsection {*Size of sterms*}
+subsection \<open>Size of sterms\<close>
 
 (* this section defines the size of sterms 
 compared to size, the size of an object is the sum of the size of its fields +1 *)

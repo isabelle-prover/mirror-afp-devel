@@ -1,4 +1,4 @@
-section {* The abstract semantics is correct *}
+section \<open>The abstract semantics is correct\<close>
 
 theory AbsCFCorrect
   imports AbsCF ExCF "HOL-Library.Adhoc_Overloading"
@@ -6,17 +6,17 @@ begin
 
 default_sort type
 
-text {*
+text \<open>
 The intention of the abstract semantics is to safely approximate the real control flow. This means that every call recorded by the exact semantics must occur in the result provided by the abstract semantics, which in turn is allowed to predict more calls than actually done.
-*}
+\<close>
 
-subsection {* Abstraction functions *}
+subsection \<open>Abstraction functions\<close>
 
-text {*
-This relation is expressed by abstraction functions and approximation relations. For each of our data types, there is an abstraction function @{text "abs_<type>"}, mapping the a value from the exact setup to the corresponding value in the abstract view. The approximation relation then expresses the fact that one abstract value of such a type is safely approximated by another.
+text \<open>
+This relation is expressed by abstraction functions and approximation relations. For each of our data types, there is an abstraction function \<open>abs_<type>\<close>, mapping the a value from the exact setup to the corresponding value in the abstract view. The approximation relation then expresses the fact that one abstract value of such a type is safely approximated by another.
 
-Because we need an abstraction function for contours, we extend the @{text contour} type class by the abstraction functions and two equations involving the @{text nb} and @{text \<binit>} symbols.
-*}
+Because we need an abstraction function for contours, we extend the \<open>contour\<close> type class by the abstraction functions and two equations involving the \<open>nb\<close> and \<open>\<binit>\<close> symbols.
+\<close>
 
 class contour_a = contour +
   fixes abs_cnt :: "contour \<Rightarrow> 'a"
@@ -29,13 +29,13 @@ definition "abs_cnt _ = ()"
 instance by standard auto
 end
 
-text {*
-It would be unwieldly to always write out @{text "abs_<type> x"}. We would rather like to write @{text "|x|"} if the type of @{text x} is known, as Shivers does it as well. Isabelle allows one to use the same syntax for different symbols. In that case, it generates more than one parse tree and picks the (hopefully unique) tree that typechecks.
+text \<open>
+It would be unwieldly to always write out \<open>abs_<type> x\<close>. We would rather like to write \<open>|x|\<close> if the type of \<open>x\<close> is known, as Shivers does it as well. Isabelle allows one to use the same syntax for different symbols. In that case, it generates more than one parse tree and picks the (hopefully unique) tree that typechecks.
 
-Unfortunately, this does not work well in our case: There are eight @{text "abs_<type>"} functions and some expressions later have multiple occurrences of these, causing an exponential blow-up of combinations.
+Unfortunately, this does not work well in our case: There are eight \<open>abs_<type>\<close> functions and some expressions later have multiple occurrences of these, causing an exponential blow-up of combinations.
 
-Therefore, we use a module by Christian Sternagel and Alexander Krauss for ad-hoc overloading, where the choice of the concrete function is done at parse time and immediately. This is used in the following to set up the the symbol @{text "|_|"} for the family of abstraction functions.
-*}
+Therefore, we use a module by Christian Sternagel and Alexander Krauss for ad-hoc overloading, where the choice of the concrete function is done at parse time and immediately. This is used in the following to set up the the symbol \<open>|_|\<close> for the family of abstraction functions.
+\<close>
 
 consts abs :: "'a \<Rightarrow> 'b" ("|_|")
 
@@ -89,11 +89,11 @@ fun abs_cstate :: "cstate \<Rightarrow> 'c::contour_a \<acstate>"
 adhoc_overloading
   abs abs_cstate
 
-subsection {* Lemmas about abstraction functions *}
+subsection \<open>Lemmas about abstraction functions\<close>
 
-text {*
+text \<open>
 Some results about the abstractions functions.
-*}
+\<close>
 
 lemma abs_benv_empty[simp]: "|Map.empty| = Map.empty"
 unfolding abs_benv_def by simp
@@ -115,11 +115,11 @@ lemma abs_venv_empty[simp]: "|Map.empty| = {}."
   apply (rule ext) by (auto simp add: abs_venv_def smap_empty_def)
 
 
-subsection {* Approximation relation *}
+subsection \<open>Approximation relation\<close>
 
-text {*
+text \<open>
 The family of relations defined here capture the notion of safe approximation.
-*}
+\<close>
 
 consts approx :: "'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<lessapprox> _")
 
@@ -160,11 +160,11 @@ inductive cstate_approx :: "'c \<acstate> \<Rightarrow>'c \<acstate> \<Rightarro
 adhoc_overloading
   approx cstate_approx
 
-subsection {* Lemmas about the approximation relation *}
+subsection \<open>Lemmas about the approximation relation\<close>
 
-text {*
+text \<open>
 Most of the following lemmas reduce an approximation statement about larger structures, as they are occurring the semantics functions, to statements about the components.
-*}
+\<close>
 
 lemma venv_approx_trans[trans]:
   fixes ve1 ve2 ve3 :: "'c \<avenv>"
@@ -189,7 +189,7 @@ proof (induct l)
       by (rule smap_Union_union)
     also
     have "\<dots> = \<Union>. (map (\<lambda>(v,k). |[v \<mapsto> k]| ) (a#l))"
-      using `a = (v,k)`
+      using \<open>a = (v,k)\<close>
       by auto
     finally
     show ?case .
@@ -220,11 +220,11 @@ lemma d_approx_empty[simp]: "{} \<lessapprox> (d::'c \<ad>)"
 lemma ds_approx_empty[simp]: "[] \<lessapprox> []"
   unfolding ds_approx_def by simp
 
-subsection {* Lemma 7 *}
+subsection \<open>Lemma 7\<close>
 
-text {*
-Shivers' lemma 7 says that @{text \<aA>} safely approximates @{text \<A>}.
-*}
+text \<open>
+Shivers' lemma 7 says that \<open>\<aA>\<close> safely approximates \<open>\<A>\<close>.
+\<close>
 
 lemma lemma7:
   assumes "|ve::venv| \<lessapprox> ve_a"
@@ -243,11 +243,11 @@ case (R _ v)
 qed (auto simp add:d_approx_def)
 
 
-subsection {* Lemmas 8 and 9 *}
+subsection \<open>Lemmas 8 and 9\<close>
 
-text {*
-The main goal of this section is to show that @{text \<aF>} safely approximates @{text \<F>} and that @{text \<aC>} safely approximates @{text \<C>}. This has to be shown at once, as the functions are mutually recursive and requires a fixed point induction. To that end, we have to augment the set of continuity lemmas.
-*}
+text \<open>
+The main goal of this section is to show that \<open>\<aF>\<close> safely approximates \<open>\<F>\<close> and that \<open>\<aC>\<close> safely approximates \<open>\<C>\<close>. This has to be shown at once, as the functions are mutually recursive and requires a fixed point induction. To that end, we have to augment the set of continuity lemmas.
+\<close>
 
 lemma cont2cont_abs_ccache[cont2cont,simp]:
   assumes "cont f"
@@ -256,9 +256,9 @@ unfolding abs_ccache_def
 using assms
 by (rule cont2cont)(rule cont_const)
 
-text {*
+text \<open>
 Shivers proves these lemmas using parallel fixed point induction over the two fixed points (the one from the exact semantics and the one from the abstract semantics). But it is simpler and equivalent to just do induction over the exact semantics and keep the abstract semantics functions fixed, so this is what I am doing.
-*}
+\<close>
 
 
 lemma lemma89:
@@ -296,7 +296,7 @@ case 1
   show ?case
   proof(cases fstate rule:fstate_case, auto simp del:a_evalF.simps a_evalC.simps set_map)
 
-  txt {* Case Lambda *}
+  txt \<open>Case Lambda\<close>
   fix \<beta> and lab and vs:: "var list" and c
   assume ds_a_length: "length vs = length ds_a"
 
@@ -340,7 +340,7 @@ case 1
   by (subst a_evalF.simps, simp del:a_evalF.simps a_evalC.simps)
 
   next
-  txt {* Case Plus *}
+  txt \<open>Case Plus\<close>
   fix lab a1 a2 cnt
   assume "isProc cnt"
   assume abs_ds': "[{}, {}, |cnt| ] \<lessapprox> ds_a"
@@ -363,7 +363,7 @@ case 1
     by (rule Next.hyps(1)[OF prem])
   also have "\<dots> \<lessapprox> (\<Union>cnt\<in>cnt_a. \<aF>\<cdot>(Discr (cnt, [{}], ve_a, \<anb> b_a lab)))"
     using abs_cnt
-    by (auto intro: the_elem_is_Proc[OF `isProc cnt`] simp del: a_evalF.simps simp add:ccache_approx_def d_approx_def)
+    by (auto intro: the_elem_is_Proc[OF \<open>isProc cnt\<close>] simp del: a_evalF.simps simp add:ccache_approx_def d_approx_def)
   finally
   have old_elems: "|(evalF\<cdot>(Discr (cnt, [DI (a1 + a2)], ve, nb b lab)))|
        \<lessapprox> (\<Union>cnt\<in>cnt_a. \<aF>\<cdot>(Discr (cnt, [{}], ve_a, \<anb> b_a lab)))".
@@ -385,7 +385,7 @@ case 1
     using ds_a by (subst a_evalF.simps)(auto simp del:a_evalF.simps)
   next
 
-  txt {* Case If (true branch) *}
+  txt \<open>Case If (true branch)\<close>
   fix ct cf v cntt cntf
   assume "isProc cntt"
   assume "isProc cntf"
@@ -412,7 +412,7 @@ case 1
     by (rule Next.hyps(1)[OF prem])
   also have "\<dots> \<lessapprox> (\<Union>cnt\<in>?cnt_a. \<aF>\<cdot>(Discr (cnt, [], ve_a, \<anb> b_a ?c)))"
     using abs_cntt and abs_cntf
-    by (auto intro: the_elem_is_Proc[OF `isProc ?cnt`] simp del: a_evalF.simps simp add:ccache_approx_def d_approx_def)
+    by (auto intro: the_elem_is_Proc[OF \<open>isProc ?cnt\<close>] simp del: a_evalF.simps simp add:ccache_approx_def d_approx_def)
 
   finally
   have old_elems: "|evalF\<cdot>(Discr (?cnt, [], ve, nb b ?c))|
@@ -442,7 +442,7 @@ case 1
     using ds_a by (subst a_evalF.simps)(auto simp del:a_evalF.simps)
   next
 
-  txt {* Case If (false branch). We use schematic variable to keep this similar to the true branch. *}
+  txt \<open>Case If (false branch). We use schematic variable to keep this similar to the true branch.\<close>
   fix ct cf v cntt cntf
   assume "isProc cntt"
   assume "isProc cntf"
@@ -469,7 +469,7 @@ case 1
     by (rule Next.hyps(1)[OF prem])
   also have "\<dots> \<lessapprox> (\<Union>cnt\<in>?cnt_a. \<aF>\<cdot>(Discr (cnt, [], ve_a, \<anb> b_a ?c)))"
     using abs_cntt and abs_cntf
-    by (auto intro: the_elem_is_Proc[OF `isProc ?cnt`] simp del: a_evalF.simps simp add:ccache_approx_def d_approx_def)
+    by (auto intro: the_elem_is_Proc[OF \<open>isProc ?cnt\<close>] simp del: a_evalF.simps simp add:ccache_approx_def d_approx_def)
 
   finally
   have old_elems: "|evalF\<cdot>(Discr (?cnt, [], ve, nb b ?c))|
@@ -516,7 +516,7 @@ case 2
   show ?case
   proof(cases c, auto simp add:HOL.Let_def simp del:a_evalF.simps a_evalC.simps set_map evalV.simps)
 
-  txt {* Case App *}
+  txt \<open>Case App\<close>
   fix lab f vs
   let ?d = "\<A> f \<beta> ve"
   assume "isProc ?d"
@@ -531,7 +531,7 @@ case 2
     by -(rule Next.hyps(1),auto intro:fstate_approx.intros)
   also have "\<dots> \<lessapprox> (\<Union>f'\<in>\<aA> f \<beta>_a ve_a.
               \<aF>\<cdot>(Discr(f', map (\<lambda>v. \<aA> v \<beta>_a ve_a) vs, ve_a, \<anb> |b| lab)))"
-    using lemma7[OF abs_ve] the_elem_is_Proc[OF `isProc ?d`] abs_\<beta>
+    using lemma7[OF abs_ve] the_elem_is_Proc[OF \<open>isProc ?d\<close>] abs_\<beta>
     by (auto simp del: a_evalF.simps simp add:d_approx_def ccache_approx_def)
   finally
   have old_elems: "
@@ -563,7 +563,7 @@ case 2
     by (subst a_evalC.simps)(auto simp add: HOL.Let_def simp del:a_evalF.simps)
   next
 
-  txt {* Case Let *}
+  txt \<open>Case Let\<close>
   fix lab binds c'
 
   have "|\<beta>(lab \<mapsto> nb b lab)| =
@@ -619,9 +619,9 @@ case 2
 }
 qed
 
-text {*
-And finally, we lift this result to @{text \<aPR>} and @{text \<PR>}.
-*}
+text \<open>
+And finally, we lift this result to \<open>\<aPR>\<close> and \<open>\<PR>\<close>.
+\<close>
 
 lemma lemma6: "|\<PR> l| \<lessapprox> \<aPR> l"
   unfolding evalCPS_def evalCPS_a_def

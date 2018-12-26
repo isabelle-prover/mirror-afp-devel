@@ -1,10 +1,10 @@
-section {* Implementing Graphs *}
+section \<open>Implementing Graphs\<close>
 (* Author: Peter Lammich *)
 theory Digraph_Impl
 imports Digraph
 begin
 
-subsection {* Directed Graphs by Successor Function *}
+subsection \<open>Directed Graphs by Successor Function\<close>
 type_synonym 'a slg = "'a \<Rightarrow> 'a list"
 
 
@@ -65,7 +65,7 @@ lemma E_of_succ_refine[autoref_rules]:
   done
 
 
-subsubsection {* Restricting Edges*}
+subsubsection \<open>Restricting Edges\<close>
 definition op_graph_restrict :: "'v set \<Rightarrow> 'v set \<Rightarrow> ('v \<times> 'v) set \<Rightarrow> ('v \<times> 'v) set"
   where [simp]: "op_graph_restrict Vl Vr E \<equiv> E \<inter> Vl \<times> Vr"
 
@@ -174,9 +174,9 @@ lemmas [autoref_rules (overloaded)] = graph_minus_set_impl_aux[OF GEN_OP_D GEN_O
 
 
 
-subsection {* Rooted Graphs *}
+subsection \<open>Rooted Graphs\<close>
 
-subsubsection {* Operation Identification Setup *}
+subsubsection \<open>Operation Identification Setup\<close>
 
 consts
   i_g_ext :: "interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -196,7 +196,7 @@ lemma g_type[autoref_itype]:
 end
 
 
-subsubsection {* Generic Implementation *}
+subsubsection \<open>Generic Implementation\<close>
 record ('vi,'ei,'v0i) gen_g_impl =
   gi_V :: 'vi
   gi_E :: 'ei
@@ -233,7 +233,7 @@ lemma gen_g_refine:
   unfolding gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation with list-set for Nodes *}
+subsubsection \<open>Implementation with list-set for Nodes\<close>
 type_synonym ('v,'m) frgv_impl_scheme = 
   "('v list, 'v \<Rightarrow> 'v list, 'v list, 'm) gen_g_impl_scheme"
 
@@ -257,8 +257,8 @@ lemmas [param, autoref_rules] = gen_g_refine[where
   Rv = "\<langle>Rv\<rangle>list_set_rel" and Re = "\<langle>Rv\<rangle>slg_rel" and ?Rv0.0 = "\<langle>Rv\<rangle>list_set_rel"
   for Rv, folded frgv_impl_rel_ext_def]
 
-subsubsection {* Implementation with Cfun for Nodes *}
-text {* This implementation allows for the universal node set. *}
+subsubsection \<open>Implementation with Cfun for Nodes\<close>
+text \<open>This implementation allows for the universal node set.\<close>
 type_synonym ('v,'m) g_impl_scheme = 
   "('v \<Rightarrow> bool, 'v \<Rightarrow> 'v list, 'v list, 'm) gen_g_impl_scheme"
 
@@ -321,7 +321,7 @@ schematic_goal "(?c,\<lambda>V V0 E.
   apply (autoref (keep_goal))
   done
 
-subsubsection {* Renaming *}
+subsubsection \<open>Renaming\<close>
 
 definition "the_inv_into_map V f x 
   = (if x \<in> f`V then Some (the_inv_into V f x) else None)"
@@ -502,7 +502,7 @@ concrete_definition fr_rename_ext_impl uses fr_rename_ext_impl_aux
 
 thm fr_rename_ext_impl.refine[OF GEN_OP_D SIDE_GEN_ALGO_D SIDE_GEN_ALGO_D]
 
-subsection {* Graphs from Lists *}
+subsection \<open>Graphs from Lists\<close>
 
 definition succ_of_list :: "(nat\<times>nat) list \<Rightarrow> nat \<Rightarrow> nat set"
   where

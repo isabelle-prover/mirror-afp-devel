@@ -10,9 +10,9 @@ imports
   TypeSystemTactics
 begin
 
-text {*
+text \<open>
   Use upper-case variable names to avoid clashing with one-letter free variables
-*}
+\<close>
 datatype addr = X | control_X | Y | control_Y | Z | control_Z
 type_synonym val = nat
 type_synonym mem = "addr \<Rightarrow> val"

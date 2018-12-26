@@ -77,11 +77,11 @@ proof
     thus "P \<sim> Q"
     proof(coinduct rule: bisimCoinduct)
       case(cSim P Q)
-      with `old_bisim Rel` show ?case
+      with \<open>old_bisim Rel\<close> show ?case
         by(fastforce simp add: old_bisim_def intro: Strong_Late_Sim.monotonic)
     next
       case(cSym P Q)
-      with `old_bisim Rel` show ?case
+      with \<open>old_bisim Rel\<close> show ?case
         by(auto simp add: old_bisim_def)
     qed
   qed
@@ -127,13 +127,13 @@ lemma bisimClosed:
   shows "(p \<bullet> P) \<sim> (p \<bullet> Q)" 
 proof -
   let ?X = "{(p \<bullet> P, p \<bullet> Q) | P Q (p::name prm). P \<sim> Q}"
-  from `P \<sim> Q` have  "(p \<bullet> P, p \<bullet> Q) \<in> ?X" by blast
+  from \<open>P \<sim> Q\<close> have  "(p \<bullet> P, p \<bullet> Q) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim pP pQ)
-    from `(pP, pQ) \<in> ?X` obtain P Q p where "P \<sim> Q" and "pP = (p::name prm) \<bullet> P" and "pQ = p \<bullet> Q"
+    from \<open>(pP, pQ) \<in> ?X\<close> obtain P Q p where "P \<sim> Q" and "pP = (p::name prm) \<bullet> P" and "pQ = p \<bullet> Q"
       by auto
-    from `P \<sim> Q` have "P \<leadsto>[bisim] Q" by(rule bisimE)
+    from \<open>P \<sim> Q\<close> have "P \<leadsto>[bisim] Q" by(rule bisimE)
     moreover have "bisim \<subseteq> ?X"
     proof 
       fix x
@@ -159,7 +159,7 @@ proof -
     qed
     ultimately have "(p \<bullet> P) \<leadsto>[?X] (p \<bullet> Q)" 
       by(rule Strong_Late_Sim.eqvtI)
-    with `pP = p \<bullet> P` `pQ = p \<bullet> Q` show ?case
+    with \<open>pP = p \<bullet> P\<close> \<open>pQ = p \<bullet> Q\<close> show ?case
       by(force intro: Strong_Late_Sim.monotonic)
   next
     case(cSym P Q)
@@ -204,7 +204,7 @@ lemma bisimTransitiveCoinduct[case_names cSim cSym, case_conclusion bisim step, 
   shows "P \<sim> Q"
 proof -
   let ?X = "bisim O (X \<union> bisim) O bisim"
-  from `(P, Q) \<in> X`  have "(P, Q) \<in> ?X" by(auto intro: reflexive)
+  from \<open>(P, Q) \<in> X\<close>  have "(P, Q) \<in> ?X" by(auto intro: reflexive)
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim P Q)
@@ -215,26 +215,26 @@ proof -
       have "P \<leadsto>[(?X \<union> bisim)] Q"
       proof(cases "(P', Q') \<in> X")
         case True
-        from `P \<sim> P'` have "P \<leadsto>[bisim] P'" by(rule bisimE)
-        moreover from `(P', Q') \<in> X` have "P' \<leadsto>[(?X)] Q'" by(rule rSim)
-        moreover from `eqvt X` bisimEqvt have "eqvt(?X \<union> bisim)" by blast
+        from \<open>P \<sim> P'\<close> have "P \<leadsto>[bisim] P'" by(rule bisimE)
+        moreover from \<open>(P', Q') \<in> X\<close> have "P' \<leadsto>[(?X)] Q'" by(rule rSim)
+        moreover from \<open>eqvt X\<close> bisimEqvt have "eqvt(?X \<union> bisim)" by blast
         moreover have "bisim O ?X \<subseteq> ?X \<union> bisim" by(auto dest: transitive)
         ultimately have "P \<leadsto>[(?X \<union> bisim)] Q'" by(rule Strong_Late_Sim.transitive)
-        moreover from `Q' \<sim> Q` have "Q' \<leadsto>[bisim] Q" by(rule bisimE)
-        moreover note `eqvt(?X \<union> bisim)`
+        moreover from \<open>Q' \<sim> Q\<close> have "Q' \<leadsto>[bisim] Q" by(rule bisimE)
+        moreover note \<open>eqvt(?X \<union> bisim)\<close>
         moreover have "(?X \<union> bisim) O bisim \<subseteq> ?X \<union> bisim"
           by auto (blast dest: transitive)+
         ultimately show ?thesis by(rule Strong_Late_Sim.transitive)
       next
         case False
-        from `(P', Q') \<notin> X` `(P', Q') \<in> X \<union> bisim` have "P' \<sim> Q'" by simp
-        with `P \<sim> P'` `Q' \<sim> Q` have "P \<sim> Q" by(blast dest: transitive)
+        from \<open>(P', Q') \<notin> X\<close> \<open>(P', Q') \<in> X \<union> bisim\<close> have "P' \<sim> Q'" by simp
+        with \<open>P \<sim> P'\<close> \<open>Q' \<sim> Q\<close> have "P \<sim> Q" by(blast dest: transitive)
         hence "P \<leadsto>[bisim] Q" by(rule bisimE)
         moreover have "bisim \<subseteq> ?X \<union> bisim" by auto
         ultimately show ?thesis by(rule Strong_Late_Sim.monotonic)
       qed
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
     case(cSym P Q)
     {
       fix P P' Q' Q
@@ -243,20 +243,20 @@ proof -
       have "(Q, P) \<in> bisim O (X \<union> bisim) O bisim"
       proof(cases "(P', Q') \<in> X")
         case True
-        from `(P', Q') \<in> X` have "(Q', P') \<in> ?X" by(rule rSym)
+        from \<open>(P', Q') \<in> X\<close> have "(Q', P') \<in> ?X" by(rule rSym)
         then obtain Q'' P'' where "Q' \<sim> Q''" and "(Q'', P'') \<in> X \<union> bisim" and "P'' \<sim> P'"
           by auto
-        from `Q' \<sim> Q` `Q' \<sim> Q''` have "Q \<sim> Q''" by(metis transitive symmetric)
-        moreover from `P \<sim> P'` `P'' \<sim> P'` have "P'' \<sim> P" by(metis transitive symmetric)
-        ultimately show ?thesis using `(Q'', P'') \<in> X \<union> bisim` by blast
+        from \<open>Q' \<sim> Q\<close> \<open>Q' \<sim> Q''\<close> have "Q \<sim> Q''" by(metis transitive symmetric)
+        moreover from \<open>P \<sim> P'\<close> \<open>P'' \<sim> P'\<close> have "P'' \<sim> P" by(metis transitive symmetric)
+        ultimately show ?thesis using \<open>(Q'', P'') \<in> X \<union> bisim\<close> by blast
       next
         case False
-        from `(P', Q') \<notin> X` `(P', Q') \<in> X \<union> bisim` have "P' \<sim> Q'" by simp
-        with `P \<sim> P'` `Q' \<sim> Q` have "Q \<sim> P" by(metis transitive symmetric)
+        from \<open>(P', Q') \<notin> X\<close> \<open>(P', Q') \<in> X \<union> bisim\<close> have "P' \<sim> Q'" by simp
+        with \<open>P \<sim> P'\<close> \<open>Q' \<sim> Q\<close> have "Q \<sim> P" by(metis transitive symmetric)
         thus ?thesis by(blast intro: reflexive)
       qed
     }
-    with `(P, Q) \<in> ?X` show ?case by blast
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by blast
   qed
 qed
 

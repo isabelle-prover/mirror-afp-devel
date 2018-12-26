@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Hermite Normal Form*}
+section\<open>Hermite Normal Form\<close>
 
 theory Hermite
   imports 
@@ -13,15 +13,15 @@ theory Hermite
   "HOL-Computational_Algebra.Euclidean_Algorithm"
 begin
 
-subsection{*Some previous properties*}
+subsection\<open>Some previous properties\<close>
 
-subsubsection{*Rings*}
+subsubsection\<open>Rings\<close>
 
 subclass (in bezout_ring_div) euclidean_ring
 proof
 qed
 
-subsubsection{*Polynomials*}
+subsubsection\<open>Polynomials\<close>
 
 lemma coeff_dvd_poly: "[:coeff a (degree a):] dvd (a::'a::{field} poly)"
 proof (cases "a=0")
@@ -45,14 +45,14 @@ next
   case False have q: "q \<noteq> 0" 
     by (metis False dvd2 dvd_0_left_iff)
   have degree: "degree p = degree q"
-    using `p dvd q` `q dvd p` `p \<noteq> 0` `q \<noteq> 0`
+    using \<open>p dvd q\<close> \<open>q dvd p\<close> \<open>p \<noteq> 0\<close> \<open>q \<noteq> 0\<close>
     by (intro order_antisym dvd_imp_degree_le)
-  from `p dvd q` obtain a where a: "q = p * a" ..
-  with `q \<noteq> 0` have "a \<noteq> 0" by auto
-  with degree a `p \<noteq> 0` have "degree a = 0"
+  from \<open>p dvd q\<close> obtain a where a: "q = p * a" ..
+  with \<open>q \<noteq> 0\<close> have "a \<noteq> 0" by auto
+  with degree a \<open>p \<noteq> 0\<close> have "degree a = 0"
     by (simp add: degree_mult_eq)
   with a show ?thesis
-  proof (cases a, auto split: if_splits, metis `a \<noteq> 0`)
+  proof (cases a, auto split: if_splits, metis \<open>a \<noteq> 0\<close>)
     fix aa :: 'a
     assume a1: "aa \<noteq> 0"
     assume "q = smult aa p"
@@ -63,7 +63,7 @@ next
   qed
 qed
 
-subsubsection{*Units*}
+subsubsection\<open>Units\<close>
 
 lemma unit_prod:
   assumes "finite S"
@@ -79,7 +79,7 @@ next
   thus ?case using is_unit_mult_iff insert.hyps by auto
 qed
 
-subsubsection{*Upper triangular matrices*}
+subsubsection\<open>Upper triangular matrices\<close>
 
 lemma is_unit_diagonal: 
   fixes U::"'a::{comm_ring_1, algebraic_semidom}^'n::{finite, wellorder}^'n::{finite, wellorder}"
@@ -168,7 +168,7 @@ proof -
   finally show ?thesis unfolding sum_0 by simp
 qed
 
-subsubsection{*More properties of mod type*}
+subsubsection\<open>More properties of mod type\<close>
 
 lemma add_left_neutral:
   fixes a::"'n::mod_type"
@@ -179,7 +179,7 @@ lemma from_nat_1: "from_nat 1 = 1"
   unfolding from_nat_def o_def Abs'_def
   by (metis Rep_1 Rep_mod of_nat_1 one_def)
 
-subsubsection{*Div and Mod*}
+subsubsection\<open>Div and Mod\<close>
 
 lemma dvd_minus_eq_mod:
   fixes c::"'a::unique_euclidean_ring"
@@ -216,7 +216,7 @@ lemma exists_k_mod:
   by (metis add.commute diff_add_cancel diff_minus_eq_add
       mult_div_mod_eq mult.commute mult_minus_left)
 
-subsection{*Units, associated and congruent relations*}
+subsection\<open>Units, associated and congruent relations\<close>
 
 context semiring_1
 begin
@@ -298,7 +298,7 @@ lemma equiv_congruent: "equiv UNIV (congruent_rel b)"
 
 end
 
-subsection{*Associates and residues functions*}
+subsection\<open>Associates and residues functions\<close>
 
 context normalization_semidom
 begin
@@ -368,7 +368,7 @@ lemma in_Res_not_congruent:
   by auto
 
 
-subsubsection{*Concrete instances in Euclidean rings*}
+subsubsection\<open>Concrete instances in Euclidean rings\<close>
 
 definition "ass_function_euclidean (p::'a::{normalization_euclidean_semiring, euclidean_ring}) = normalize p"
 definition "res_function_euclidean b (n::'a::{euclidean_ring}) = (if b = 0 then n else (n mod b))"
@@ -381,7 +381,7 @@ lemma res_function_euclidean:
   by (auto simp add: pairwise_def res_function_def cong_eq image_def res_function_euclidean_def dvd_minus_eq_mod)
     (auto simp add: dvd_cong_not_eq_mod eq_mod_dvd_minus diff_mod_cong_0 cong_diff_mod exists_k_mod)
 
-subsubsection{*Concrete case of the integer ring*}
+subsubsection\<open>Concrete case of the integer ring\<close>
 
 definition "ass_function_int (n::int) = abs n"
 
@@ -393,9 +393,9 @@ lemma ass_function_int_UNIV: "(ass_function_int` UNIV) = {x. x\<ge>0}"
   by (auto, metis abs_of_nonneg)
 
 
-subsection{*Definition of Hermite Normal Form*}
+subsection\<open>Definition of Hermite Normal Form\<close>
 
-text{*
+text\<open>
 It is worth noting that there is not a single definition of Hermite Normal Form
 in the literature. For instance, some authors restrict their definitions to the case 
 of square nonsingular matrices. Other authors just work with integer matrices.
@@ -438,11 +438,11 @@ parameterised by functions which obtain the appropriate leading coefficient and 
 suitable elements above them. We can execute the algorithm with different functions to get 
 exactly which Hermite Normal Form we want. Once we fix such a complete set of nonassociates 
 and the corresponding complete set of residues, the Hermite Normal Form is unique.
-*}
+\<close>
 
-subsubsection{*Echelon form up to row k*}
+subsubsection\<open>Echelon form up to row k\<close>
 
-text{*We present the definition of echelon form up to a row k (not included).*}
+text\<open>We present the definition of echelon form up to a row k (not included).\<close>
 
 definition "echelon_form_upt_row A k =
   (
@@ -493,9 +493,9 @@ lemma echelon_form_echelon_form_upt_row: "echelon_form A = echelon_form_upt_row 
   by (simp add: to_nat_less_card echelon_form_def echelon_form_upt_row_def ncols_def nrows_def 
       echelon_form_upt_k_def is_zero_row_upt_k_def is_zero_row_def)
 
-subsubsection{*Hermite Normal Form up to row k*}
+subsubsection\<open>Hermite Normal Form up to row k\<close>
 
-text{*Predicate to check if a matrix is in Hermite Normal form up to row k (not included).*}
+text\<open>Predicate to check if a matrix is in Hermite Normal form up to row k (not included).\<close>
 
 definition "Hermite_upt_row A k associates residues = 
   (
@@ -506,7 +506,7 @@ definition "Hermite_upt_row A k associates residues =
     (\<forall>i. to_nat i < k \<and> \<not> is_zero_row i A \<longrightarrow> (\<forall>j<i. A $ j $ (LEAST n. A $ i $ n \<noteq> 0) \<in> residues (A $ i $ (LEAST n. A $ i $ n \<noteq> 0))))
   )"
 
-text{*The definition of Hermite Normal Form is now introduced:*}
+text\<open>The definition of Hermite Normal Form is now introduced:\<close>
 
 definition Hermite::"'a::{bezout_ring_div,normalization_semidom} set \<Rightarrow> ('a \<Rightarrow> 'a set) \<Rightarrow> 
    (('a, 'b::{mod_type}) vec, 'c::{mod_type}) vec \<Rightarrow> bool"
@@ -531,9 +531,9 @@ lemma Hermite_intro:
   shows "Hermite associates residues A"
   using assms unfolding Hermite_def by simp
 
-subsection{*Definition of an algorithm to compute the Hermite Normal Form*}
+subsection\<open>Definition of an algorithm to compute the Hermite Normal Form\<close>
 
-text{*
+text\<open>
 The algorithm is parameterised by three functions:
 
 \begin{itemize}
@@ -545,7 +545,7 @@ The algorithm is parameterised by three functions:
 \end{itemize}
 
 
-*}
+\<close>
 
 primrec Hermite_reduce_above :: "'a::unique_euclidean_ring^'cols::mod_type^'rows::mod_type\<Rightarrow>nat
     \<Rightarrow>'rows\<Rightarrow>'cols\<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>'a) \<Rightarrow> 'a^'cols::mod_type^'rows::mod_type"
@@ -569,9 +569,9 @@ definition "Hermite_of_upt_row_i A i ass res = foldl (Hermite_of_row_i ass res) 
 definition "Hermite_of A ass res bezout = 
   (let A'= echelon_form_of A bezout in Hermite_of_upt_row_i A' (nrows A) ass res)"
 
-subsection{*Proving the correctness of the algorithm*}
+subsection\<open>Proving the correctness of the algorithm\<close>
 
-subsubsection{*The proof*}
+subsubsection\<open>The proof\<close>
 
 lemma Hermite_reduce_above_preserves:
   assumes n: "n\<le>to_nat a"
@@ -1772,7 +1772,7 @@ next
 qed
 
 
-subsubsection{*Proving that the Hermite Normal Form is computed by means of elementary operations*}
+subsubsection\<open>Proving that the Hermite Normal Form is computed by means of elementary operations\<close>
 
 lemma invertible_Hermite_reduce_above:
   assumes n: "n \<le> to_nat i"
@@ -1886,7 +1886,7 @@ proof -
   finally show ?thesis using inv_PQ by blast
 qed
 
-subsubsection{*The final theorem*}
+subsubsection\<open>The final theorem\<close>
 
 lemma Hermite:
   assumes a: "ass_function ass"
@@ -1896,7 +1896,7 @@ lemma Hermite:
   Hermite (range ass) (\<lambda>c. range (res c)) (Hermite_of A ass res bezout)"
   using invertible_Hermite_of[OF a b] Hermite_Hermite_of[OF a r b] by fast
 
-subsection{*Proving the uniqueness of the Hermite Normal Form*}
+subsection\<open>Proving the uniqueness of the Hermite Normal Form\<close>
 
 lemma diagonal_least_nonzero:
   fixes H :: "(('a :: {bezout_ring_div, normalization_euclidean_semiring, unique_euclidean_ring}, 'b :: mod_type) vec, 'b) vec"
@@ -1940,8 +1940,8 @@ proof -
     by auto
 qed
 
-text{*The uniqueness of the Hermite Normal Form is proven following the proof presented in the book
-  Integral Matrices (1972) by Morris Newman.*}
+text\<open>The uniqueness of the Hermite Normal Form is proven following the proof presented in the book
+  Integral Matrices (1972) by Morris Newman.\<close>
 
 lemma Hermite_unique:
   fixes K::"'a::{bezout_ring_div,normalization_euclidean_semiring,unique_euclidean_ring}^'n::mod_type^'n::mod_type"
@@ -2117,7 +2117,7 @@ proof -
 qed
   
 
-subsection{*Examples of execution*}
+subsection\<open>Examples of execution\<close>
 
 value[code] "let A = list_of_list_to_matrix ([[37,8,6],[5,4,-8],[3,24,-7]])::int^3^3
   in matrix_to_list_of_list (Hermite_of A ass_function_euclidean res_function_euclidean euclid_ext2)"

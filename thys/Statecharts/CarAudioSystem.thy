@@ -4,15 +4,15 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Example Specification for a Car Audio System *}
+section \<open>Example Specification for a Car Audio System\<close>
 
 theory CarAudioSystem
 imports HAKripke HAOps
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-subsubsection {* Data space for two Integer-Variables *}                  
+subsubsection \<open>Data space for two Integer-Variables\<close>                  
 
 datatype d = V0 int
              | V1 int
@@ -53,7 +53,7 @@ definition
                                    Abs_pdata (L d, DSpace)
                               else (Data2PData d))"
 
-subsubsection {* Sequential Automaton  @{text "Root_CTRL"} *}                  
+subsubsection \<open>Sequential Automaton  \<open>Root_CTRL\<close>\<close>                  
 
 definition
  Root_CTRL_States :: "string set" where
@@ -76,7 +76,7 @@ definition
  "Root_CTRL = Abs_seqauto (Root_CTRL_States, Root_CTRL_Init,
                             Root_CTRL_Labels, Root_CTRL_Delta)"
 
-subsubsection {* Sequential Automaton  @{text "CDPlayer_CTRL"} *}                  
+subsubsection \<open>Sequential Automaton  \<open>CDPlayer_CTRL\<close>\<close>                  
 
 definition
  CDPlayer_CTRL_States :: "string set" where
@@ -133,7 +133,7 @@ definition
  "CDPlayer_CTRL  = Abs_seqauto (CDPlayer_CTRL_States, CDPlayer_CTRL_Init,
                                 CDPlayer_CTRL_Labels, CDPlayer_CTRL_Delta)"
 
-subsubsection {* Sequential Automaton  @{text "AudioPlayer_CTRL"} *}                  
+subsubsection \<open>Sequential Automaton  \<open>AudioPlayer_CTRL\<close>\<close>                  
 
 definition
  AudioPlayer_CTRL_States :: "string set" where
@@ -157,7 +157,7 @@ definition
  "AudioPlayer_CTRL = Abs_seqauto (AudioPlayer_CTRL_States, AudioPlayer_CTRL_Init,
                                   AudioPlayer_CTRL_Labels, AudioPlayer_CTRL_Delta)"
 
-subsubsection {* Sequential Automaton  @{text "On_CTRL"} *}                  
+subsubsection \<open>Sequential Automaton  \<open>On_CTRL\<close>\<close>                  
 
 definition
  On_CTRL_States :: "string set" where
@@ -187,7 +187,7 @@ definition
  "On_CTRL = Abs_seqauto (On_CTRL_States, On_CTRL_Init,
                          On_CTRL_Labels, On_CTRL_Delta)"
 
-subsubsection {* Sequential Automaton  @{text "TunerMode_CTRL"} *}                  
+subsubsection \<open>Sequential Automaton  \<open>TunerMode_CTRL\<close>\<close>                  
 
 definition
  TunerMode_CTRL_States :: "string set" where
@@ -218,7 +218,7 @@ definition
  "TunerMode_CTRL  = Abs_seqauto (TunerMode_CTRL_States, TunerMode_CTRL_Init,
                                   TunerMode_CTRL_Labels, TunerMode_CTRL_Delta)"
 
-subsubsection {* Sequential Automaton  @{text "CDMode_CTRL"} *}                  
+subsubsection \<open>Sequential Automaton  \<open>CDMode_CTRL\<close>\<close>                  
 
 definition
  CDMode_CTRL_States :: "string set" where
@@ -268,7 +268,7 @@ definition
  "CDMode_CTRL  = Abs_seqauto (CDMode_CTRL_States, CDMode_CTRL_Init,
                                CDMode_CTRL_Labels, CDMode_CTRL_Delta)"
 
-subsubsection {* Hierarchical Automaton  @{text "CarAudioSystem"} *}                  
+subsubsection \<open>Hierarchical Automaton  \<open>CarAudioSystem\<close>\<close>                  
 
 definition
      CarAudioSystem :: "(string,string,d)hierauto" where
@@ -279,9 +279,9 @@ definition
                   [++] (''On'', CDMode_CTRL))"
 
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
-subsubsection {* Sequential Automaton @{text "CDMode_CTRL"} *}
+subsubsection \<open>Sequential Automaton \<open>CDMode_CTRL\<close>\<close>
 
 lemma check_Root_CTRL:
   "(Root_CTRL_States,Root_CTRL_Init,Root_CTRL_Labels,Root_CTRL_Delta) : seqauto"
@@ -325,7 +325,7 @@ apply (simp add: expr_def Delta_Root_CTRL Root_CTRL_Delta_def)
 apply (rule refl)
 done
 
-subsubsection {* Sequential Automaton @{text "CDPlayer_CTRL"} *}
+subsubsection \<open>Sequential Automaton \<open>CDPlayer_CTRL\<close>\<close>
 
 lemma check_CDPlayer_CTRL:
   "(CDPlayer_CTRL_States,CDPlayer_CTRL_Init,CDPlayer_CTRL_Labels,CDPlayer_CTRL_Delta) : seqauto"
@@ -369,7 +369,7 @@ apply (simp add: expr_def Delta_CDPlayer_CTRL CDPlayer_CTRL_Delta_def CDPlayer_C
 apply (rule refl)
 done
 
-subsubsection {* Sequential Automaton @{text "AudioPlayer_CTRL"} *}
+subsubsection \<open>Sequential Automaton \<open>AudioPlayer_CTRL\<close>\<close>
 
 lemma check_AudioPlayer_CTRL:
   "(AudioPlayer_CTRL_States,AudioPlayer_CTRL_Init,AudioPlayer_CTRL_Labels,AudioPlayer_CTRL_Delta) : seqauto"
@@ -413,7 +413,7 @@ apply (simp add: expr_def Delta_AudioPlayer_CTRL AudioPlayer_CTRL_Delta_def Labe
 apply (rule refl)
 done
 
-subsubsection {* Sequential Automaton @{text "On_CTRL"} *}
+subsubsection \<open>Sequential Automaton \<open>On_CTRL\<close>\<close>
 
 lemma check_On_CTRL:
   "(On_CTRL_States,On_CTRL_Init,On_CTRL_Labels,On_CTRL_Delta) : seqauto"
@@ -457,7 +457,7 @@ apply (simp add: expr_def Delta_On_CTRL On_CTRL_Delta_def Label_def)
 apply (rule refl)
 done
 
-subsubsection {* Sequential Automaton @{text "TunerMode_CTRL"} *}
+subsubsection \<open>Sequential Automaton \<open>TunerMode_CTRL\<close>\<close>
 
 lemma check_TunerMode_CTRL:
   "(TunerMode_CTRL_States,TunerMode_CTRL_Init,TunerMode_CTRL_Labels,TunerMode_CTRL_Delta) : seqauto"
@@ -501,7 +501,7 @@ apply (simp add: expr_def Delta_TunerMode_CTRL TunerMode_CTRL_Delta_def Label_de
 apply (rule refl)
 done
 
-subsubsection {* Sequential Automaton @{text "CDMode_CTRL"} *}
+subsubsection \<open>Sequential Automaton \<open>CDMode_CTRL\<close>\<close>
 
 lemma check_CDMode_CTRL:
   "(CDMode_CTRL_States,CDMode_CTRL_Init,CDMode_CTRL_Labels,CDMode_CTRL_Delta) : seqauto"
@@ -545,7 +545,7 @@ apply (simp add: expr_def Label_def Delta_CDMode_CTRL CDMode_CTRL_Delta_def CDMo
 apply (rule refl)
 done
 
-subsubsection {*  Hierarchical Automaton @{text "CarAudioSystem"} *}
+subsubsection \<open>Hierarchical Automaton \<open>CarAudioSystem\<close>\<close>
 
 lemmas CarAudioSystemStates = States_Root_CTRL States_CDPlayer_CTRL States_AudioPlayer_CTRL States_On_CTRL 
                               States_TunerMode_CTRL States_CDMode_CTRL

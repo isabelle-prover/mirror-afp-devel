@@ -1,16 +1,16 @@
-subsection {* Separation kernel state and atomic step function *}
+subsection \<open>Separation kernel state and atomic step function\<close>
 
 theory Step
   imports Step_policies
 begin
 
 
-subsubsection {* Interrupt points *}
+subsubsection \<open>Interrupt points\<close>
 
-text {* To model concurrency, each system call is split into several atomic steps,
+text \<open>To model concurrency, each system call is split into several atomic steps,
         while allowing interrupts between the steps. The state of a thread is
         represented by an ``interrupt point" (which corresponds to the value of the program counter
-        saved by the system when a thread is interrupted). *}
+        saved by the system when a thread is interrupted).\<close>
 
 datatype ipc_direction_t = SEND | RECV
 datatype ipc_stage_t = PREP | WAIT | BUF page_t
@@ -25,17 +25,17 @@ datatype int_point_t =
  | SK_EV_SIGNAL ev_signal_stage_t thread_id_t \<comment> \<open>The thread is sending an event.\<close>
  | NONE \<comment> \<open>The thread is not executing any system call.\<close>
 
-subsubsection {* System state *}
+subsubsection \<open>System state\<close>
 
 typedecl obj_t \<comment> \<open>value of an object\<close>
 
-text {* Each thread belongs to a partition. The relation is fixed (in this instantiation of a separation kernel). *}
+text \<open>Each thread belongs to a partition. The relation is fixed (in this instantiation of a separation kernel).\<close>
 
 consts
   partition :: "thread_id_t \<Rightarrow> partition_id_t"
 
-text {* The state contains the dynamic policy (the communication rights in the current state
-  of the system, for example). *}
+text \<open>The state contains the dynamic policy (the communication rights in the current state
+  of the system, for example).\<close>
 
 record thread_t =
   (* 
@@ -50,42 +50,42 @@ record state_t =
   obj :: "obj_id_t \<Rightarrow> obj_t"             \<comment> \<open>values of all objects\<close>
   thread :: "thread_id_t \<Rightarrow> thread_t"    \<comment> \<open>internal state of threads\<close>
 
-text {* Later (Section~\ref{sect:step_invariants}), the system invariant @{term sp_subset} will be used to ensure that the dynamic policies (sp\_impl\_...)
-are a subset of the corresponding static policies (sp\_spec\_...). *}
+text \<open>Later (Section~\ref{sect:step_invariants}), the system invariant @{term sp_subset} will be used to ensure that the dynamic policies (sp\_impl\_...)
+are a subset of the corresponding static policies (sp\_spec\_...).\<close>
 
-subsubsection {* Atomic step *}
+subsubsection \<open>Atomic step\<close>
 
-text_raw {*\paragraph{Helper functions}*}
+text_raw \<open>\paragraph{Helper functions}\<close>
 
-text {* Set new value for an object. *}
+text \<open>Set new value for an object.\<close>
 
 definition set_object_value :: "obj_id_t \<Rightarrow> obj_t \<Rightarrow> state_t \<Rightarrow> state_t" where
   "set_object_value obj_id val s =
     s \<lparr> obj := fun_upd (obj s) obj_id val \<rparr>"
 
-text {* Return a representation of the opposite direction of IPC communication. *}
+text \<open>Return a representation of the opposite direction of IPC communication.\<close>
 
 definition opposite_ipc_direction :: "ipc_direction_t \<Rightarrow> ipc_direction_t" where
   "opposite_ipc_direction dir \<equiv> case dir of SEND \<Rightarrow> RECV | RECV \<Rightarrow> SEND"
 
-text {* Add an access right from one partition to an object. In this model, not 
-available from the API, but shows how dynamic changes of access rights could be implemented. *}
+text \<open>Add an access right from one partition to an object. In this model, not 
+available from the API, but shows how dynamic changes of access rights could be implemented.\<close>
 
 definition add_access_right :: "partition_id_t => obj_id_t => mode_t => state_t => state_t" where
   "add_access_right part_id obj_id m s = 
     s \<lparr> sp_impl_subj_obj := \<lambda> q q' q''. (part_id = q \<and> obj_id = q' \<and> m = q'') 
      \<or> sp_impl_subj_obj s q q' q''\<rparr>"
 
-text {* Add a communication right from one partition to another. In this model, not
-available from the API. *}
+text \<open>Add a communication right from one partition to another. In this model, not
+available from the API.\<close>
 
 definition add_comm_right :: "partition_id_t \<Rightarrow> partition_id_t \<Rightarrow> state_t \<Rightarrow> state_t" where
   "add_comm_right p p' s \<equiv>
     s \<lparr> sp_impl_subj_subj := \<lambda> q q' . (p = q \<and> p' = q') \<or> sp_impl_subj_subj s q q' \<rparr>"
 
-text_raw {*\paragraph{Model of IPC system call}*}
+text_raw \<open>\paragraph{Model of IPC system call}\<close>
 
-text {* We model IPC with the following simplifications:
+text \<open>We model IPC with the following simplifications:
 
 \begin{enumerate}
 \item The model contains the system calls for sending 
@@ -94,7 +94,7 @@ text {* We model IPC with the following simplifications:
 \item We model only a copying (``BUF") mode, not a memory-mapping mode.
 \item The model always copies one page per syscall.
 \end{enumerate}
-*}
+\<close>
 
 definition ipc_precondition :: "thread_id_t \<Rightarrow> ipc_direction_t \<Rightarrow> thread_id_t \<Rightarrow> page_t \<Rightarrow> state_t \<Rightarrow> bool" where
   "ipc_precondition tid dir partner page s \<equiv>
@@ -117,7 +117,7 @@ definition atomic_step_ipc :: "thread_id_t \<Rightarrow> ipc_direction_t \<Right
              (set_object_value (PAGE page') (obj s (PAGE page)) s)
         | RECV \<Rightarrow> s)"
 
-text_raw {*\paragraph{Model of event syscalls}*}
+text_raw \<open>\paragraph{Model of event syscalls}\<close>
 
 (*The maximum allowed event counter*)
 (* outcommented, as currently not used consts EV_CTR_MAX :: nat *)
@@ -142,25 +142,25 @@ definition atomic_step_ev_wait_all :: "thread_id_t \<Rightarrow> state_t \<Right
  "atomic_step_ev_wait_all tid  s =
     s \<lparr> thread := fun_upd (thread s) tid (thread s tid \<lparr> ev_counter := 0 \<rparr> )   \<rparr>"
 
-text_raw {*\paragraph{Instantiation of CISK aborting and waiting}*}
+text_raw \<open>\paragraph{Instantiation of CISK aborting and waiting}\<close>
 
-text {*
+text \<open>
   In this instantiation of CISK, the @{term aborting} function is used to indicate security policy enforcement.
   An IPC call aborts in its @{term PREP} stage if the precondition for the calling thread does 
   not hold. An event signal call aborts in its @{term EV_SIGNAL_PREP} stage if the 
   precondition for the calling thread does not hold. 
-*}
+\<close>
 definition aborting :: "state_t \<Rightarrow> thread_id_t \<Rightarrow> int_point_t \<Rightarrow> bool"
 where "aborting s tid a \<equiv> case a of SK_IPC dir PREP partner page \<Rightarrow>
                             \<not>ipc_precondition tid dir partner page s
                            | SK_EV_SIGNAL EV_SIGNAL_PREP partner \<Rightarrow>
                             \<not>ev_signal_precondition tid partner s
                            | _ => False"
-text {*
+text \<open>
   The @{term waiting} function is used to indicate synchronization.
   An IPC call waits in its @{term WAIT} stage while the precondition for the partner thread does not hold.
   An EV\_WAIT call waits until the event counter is not zero.
-*}
+\<close>
 definition waiting :: "state_t \<Rightarrow> thread_id_t \<Rightarrow> int_point_t \<Rightarrow> bool"
 where "waiting s tid a \<equiv> 
            case a of SK_IPC dir WAIT partner page \<Rightarrow> 
@@ -170,9 +170,9 @@ where "waiting s tid a \<equiv>
                    | SK_EV_WAIT EV_FINISH _ \<Rightarrow> False
                    | _ \<Rightarrow> False"
 
-text_raw {*\paragraph{The atomic step function.} *}
+text_raw \<open>\paragraph{The atomic step function.}\<close>
 
-text {* In the definition of @{term atomic_step} the arguments to an interrupt point are
+text \<open>In the definition of @{term atomic_step} the arguments to an interrupt point are
  not taken from the thread state -- the argument given to @{term atomic_step} could have an 
  arbitrary value.
  So, seen in isolation, @{term atomic_step} allows more transitions than actually occur in the 
@@ -181,7 +181,7 @@ text {* In the definition of @{term atomic_step} the arguments to an interrupt p
  attack sequences @{term rAS_set} (Section~\ref{sect:separation_kernel_model}). 
  An additional condition is that (3) the dynamic policy used in @{term aborting} 
  is a subset of the static policy. This is ensured by the invariant @{term sp_subset}.
-*}
+\<close>
 
 definition atomic_step :: "state_t \<Rightarrow> int_point_t \<Rightarrow> state_t" where
   "atomic_step s ipt \<equiv>

@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-section {* Properties of Lower Bound Machinery *}
+section \<open>Properties of Lower Bound Machinery\<close>
 
 theory ScoreProps
 imports ListSum TameEnum PlaneProps TameProps
@@ -166,7 +166,7 @@ next
   proof
     assume f: "f \<bullet> v = a"
     then obtain f' where f': "f' \<in> set(facesAt g a)" and v: "f' \<bullet> a = v"
-      using mgp_nextVertex_face_ex2[OF mgp `v : \<V> g` v] by blast
+      using mgp_nextVertex_face_ex2[OF mgp \<open>v : \<V> g\<close> v] by blast
     have "f' \<bullet> a \<in> V" using v vV by simp
     with f' s2 show False by blast
   qed
@@ -193,7 +193,7 @@ next
     have  "a \<notin> \<V> f"
     proof
       assume a2: "a \<in> \<V> f"
-      with mgp a `v : \<V> g` have "f \<in> \<F> g" by(blast intro:minGraphProps)
+      with mgp a \<open>v : \<V> g\<close> have "f \<in> \<F> g" by(blast intro:minGraphProps)
       with mgp a2 have "f \<in> set (facesAt g a)" by(blast intro:minGraphProps)
       with a have "\<V> f \<inter> V \<subseteq> {a}" by (simp add: s3)
       with v have "a = v" by auto
@@ -337,7 +337,7 @@ proof -
         assume "|vertices f| \<le> 4"
         from this f have "set (vertices f)
           \<inter> set [fst p. p \<leftarrow> deleteAround g a ps] \<subseteq> {a}"
-          by (rule deleteAround_separated[OF mgp fin `a : \<V> g`])
+          by (rule deleteAround_separated[OF mgp fin \<open>a : \<V> g\<close>])
         moreover
         have "set (ExcessNotAtRecList (deleteAround g a ps) g)
           \<subseteq> set [fst p. p \<leftarrow> deleteAround g a ps]"
@@ -528,7 +528,7 @@ apply(simp add: ExcessAt_def excess_eq faceCountMax_bound)
 apply(auto simp:finalVertex_def plane_final_facesAt)
 done
 
-text {* separating *}
+text \<open>separating\<close>
 
 definition separating :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b set) \<Rightarrow> bool" where
   "separating V F \<equiv> 

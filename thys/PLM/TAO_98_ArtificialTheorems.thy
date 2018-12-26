@@ -4,15 +4,15 @@ imports TAO_7_Axioms
 begin
 (*>*)
 
-section{* Artificial Theorems *}
-text{* \label{TAO_ArtificialTheorems} *}
+section\<open>Artificial Theorems\<close>
+text\<open>\label{TAO_ArtificialTheorems}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   Some examples of theorems that can be derived from the model structure, but which
   are not derivable from the deductive system PLM itself.
 \end{remark}
-*}
+\<close>
 
 locale ArtificialTheorems
 begin
@@ -25,13 +25,13 @@ begin
     "[\<lparr>\<^bold>\<lambda> x . \<lbrace>y\<^sup>P, G\<rbrace>, x\<^sup>P\<rparr> \<^bold>\<equiv> \<lbrace>y\<^sup>P, G\<rbrace> in v]"
     by (auto simp: meta_defs meta_aux conn_defs forall_\<Pi>\<^sub>1_def)
 
-text{*
+text\<open>
 \begin{remark}
   The following is \emph{not} a theorem and nitpick can
   find a countermodel. This is expected and important.
   If this were a theorem, the theory would become inconsistent.
 \end{remark}
-*}
+\<close>
 
   lemma lambda_enc_3:
     "[(\<lparr>\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>, x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<lbrace>x\<^sup>P, F\<rbrace>) in v]"
@@ -39,11 +39,11 @@ text{*
     nitpick[user_axioms, expect=genuine]
     oops \<comment> \<open>countermodel by nitpick\<close>
 
-text{*
+text\<open>
 \begin{remark}
   Instead the following two statements hold.
 \end{remark}
-*}
+\<close>
 
   lemma lambda_enc_4:
     "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<lbrace>y\<^sup>P, F\<rbrace> in v])"
@@ -53,11 +53,11 @@ text{*
     "[\<lparr>(\<^bold>\<lambda> x . \<phi> (x\<^sup>P)), x\<^sup>P\<rparr> in v] = (\<exists> y . \<nu>\<upsilon> y = \<nu>\<upsilon> x \<and> [\<phi> (y\<^sup>P) in v])"
     by (simp add: meta_defs meta_aux)
 
-text{*
+text\<open>
 \begin{remark}
   These statements can be translated to statements in the embedded logic.
 \end{remark}
-*}
+\<close>
 
   lemma lambda_ex_emb:
     "[\<lparr>(\<^bold>\<lambda> x . \<phi> (x\<^sup>P)), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<phi> (y\<^sup>P)) in v]"
@@ -96,12 +96,12 @@ text{*
     "[\<lparr>(\<^bold>\<lambda> x . \<lbrace>x\<^sup>P, F\<rbrace>), x\<^sup>P\<rparr> \<^bold>\<equiv> (\<^bold>\<exists> y . (\<^bold>\<forall> F . \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,y\<^sup>P\<rparr>) \<^bold>& \<lbrace>y\<^sup>P, F\<rbrace>) in v]"
     using lambda_ex_emb by fast
 
-text{*
+text\<open>
 \begin{remark}
-  In the case of proper maps, the generalized @{text "\<beta>"}-conversion reduces to
-  classical @{text "\<beta>"}-conversion.
+  In the case of proper maps, the generalized \<open>\<beta>\<close>-conversion reduces to
+  classical \<open>\<beta>\<close>-conversion.
 \end{remark}
-*}
+\<close>
 
   lemma proper_beta:
     assumes "IsProperInX \<phi>"
@@ -125,14 +125,14 @@ text{*
       by (meson ConjI ExI)
   qed
       
-text{*
+text\<open>
 \begin{remark}
   The following theorem is a consequence of the constructed Aczel-model, but not
   part of PLM. Separate research on possible modifications of the embedding suggest
   that this artificial theorem can be avoided by introducing a dependency on states
   for the mapping from abstract objects to special urelements.
 \end{remark}
-*}
+\<close>
 
   lemma lambda_rel_extensional:
     assumes "[\<^bold>\<forall>F . \<lparr>F,a\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>F,b\<^sup>P\<rparr> in v]"

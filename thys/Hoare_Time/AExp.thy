@@ -20,10 +20,10 @@ fun aval :: "aexp \<Rightarrow> state \<Rightarrow> val" where
 
 value "aval (Plus (V ''x'') (N 5)) (\<lambda>x. if x = ''x'' then 7 else 0)"
 
-text {* The same state more concisely: *}
+text \<open>The same state more concisely:\<close>
 value "aval (Plus (V ''x'') (N 5)) ((\<lambda>x. 0) (''x'':= 7))"
 
-text {* A little syntax magic to write larger states compactly: *}
+text \<open>A little syntax magic to write larger states compactly:\<close>
 
 definition null_state ("<>") where
   "null_state \<equiv> \<lambda>x. 0"

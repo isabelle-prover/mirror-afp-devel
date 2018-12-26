@@ -477,7 +477,7 @@ by (rule inv_rule_basic) (auto)
 subsubsection \<open>inv3 (authentication guard)\<close>
 (**************************************************************************************************)
 
-text \<open>If @{text "Auth A B \<langle>Number 1, gnx, Exp Gen (NonceF (Rb$ny))\<rangle> \<in> chan s"} and @{term "A"},
+text \<open>If \<open>Auth A B \<langle>Number 1, gnx, Exp Gen (NonceF (Rb$ny))\<rangle> \<in> chan s\<close> and @{term "A"},
   @{term "B"} are honest
   then the message has indeed been sent by an initiator run (etc).\<close>
 
@@ -516,7 +516,7 @@ by (rule inv_rule_basic) (auto)
 subsubsection \<open>inv4\<close>
 (**************************************************************************************************)
 
-text \<open>For an initiator, the session key is always @{text "gny^nx"}.\<close>
+text \<open>For an initiator, the session key is always \<open>gny^nx\<close>.\<close>
 
 definition
   l2_inv4 :: "l2_state set"
@@ -549,7 +549,7 @@ by (rule inv_rule_basic) (auto)
 subsubsection \<open>inv4'\<close>
 (**************************************************************************************************)
 
-text \<open>For a responder, the session key is always @{text "gnx^ny"}.\<close>
+text \<open>For a responder, the session key is always \<open>gnx^ny\<close>.\<close>
 
 definition
   l2_inv4' :: "l2_state set"

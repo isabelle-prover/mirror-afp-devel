@@ -6,13 +6,13 @@ begin
 
 section "Definition of the Tetrahedron and its Rotations"
 
-text {*
+text \<open>
   In this section we will use the orbit-stabiliser theorem to count the number of rotational symmetries
   of a tetrahedron.
 
   The tetrahedron will be defined as a set of four vertices, labelled A, B, C, and D. A rotation
   is defined as a function between the vertices.
-*}
+\<close>
 
 datatype Vertex = A | B | C | D
 definition vertices :: "Vertex set" where
@@ -20,12 +20,12 @@ definition vertices :: "Vertex set" where
 
 type_synonym Rotation = "(Vertex \<Rightarrow> Vertex)"
 
-text {*
+text \<open>
 We define four primitive rotations explicitly. The axis of each rotation is the line through a vertex
 that is perpendicular to the face opposite to the vertex. Every rotation is by 120 degrees counter clockwise.
 
 We also define the identity as a possible rotation.
-*}
+\<close>
 
 definition rotate_A :: Rotation where
   "rotate_A = (\<lambda>v. (case v of A \<Rightarrow> A | B \<Rightarrow> C | C \<Rightarrow> D | D \<Rightarrow> B))"
@@ -42,20 +42,20 @@ declare rotate_A_def [simple_rotations] rotate_B_def [simple_rotations] rotate_C
 definition simple_rotations :: "Rotation set" where
   "simple_rotations = {id, rotate_A, rotate_B, rotate_C, rotate_D}"
 
-text {*
+text \<open>
 All other rotations are combinations of the previously defined simple rotations. We define these
 inductively.
-*}
+\<close>
 inductive_set complex_rotations :: "Rotation set" where
   simp: "r \<in> simple_rotations \<Longrightarrow> r \<in> complex_rotations" |
   comp: "r \<in> simple_rotations \<Longrightarrow> s \<in> complex_rotations \<Longrightarrow> (r \<circ> s) \<in> complex_rotations"
   
 section "Properties of Rotations"
 
-text {*
+text \<open>
 In this section we prove some basic properties of rotations that will be useful later.
 We begin by showing that rotations are bijections.
-*}
+\<close>
 
 lemma simple_rotations_inj:
   assumes r:"r \<in> simple_rotations"
@@ -99,9 +99,9 @@ apply(induction arbitrary: s rule: complex_rotations.induct)
 apply(auto simp add: comp_assoc complex_rotations.comp)
 done
     
-text {*
+text \<open>
 Next, we show that simple rotations (except the identity) keep exactly one vertex fixed.
-*}    
+\<close>    
 
 lemma simple_rotations_fix:
   assumes r:"r \<in> simple_rotations"
@@ -118,9 +118,9 @@ lemma simple_rotations_fix_unique:
       auto simp add: simple_rotations
      )+
    
-text {*
+text \<open>
 We also show that simple rotations do not contain cycles of length 2. 
-*}  
+\<close>  
    
 lemma simple_rotations_cycle:
   assumes r:"r \<in> simple_rotations"
@@ -131,11 +131,11 @@ lemma simple_rotations_cycle:
       auto simp add: simple_rotations
      )+ 
 
-text {*
+text \<open>
 The following lemmas are all variations on the fact that any property that holds for 4 distinct
 vertices holds for all vertices. This is necessary to avoid having to use Vertex.exhaust as much
 as possible.
-*}  
+\<close>  
    
 lemma distinct_vertices: "distinct[(a::Vertex),b,c,d] \<Longrightarrow> (\<forall> e. e \<in> {a,b,c,d})"
 apply(safe)
@@ -184,13 +184,13 @@ proof -
   then show "r = id" by auto
 qed 
  
-text {*
+text \<open>
 Here we show that two invariants hold for rotations. Firstly, any rotation that does not fix a vertex consists
 of 2-cycles. Secondly, the only rotation that fixes more than one vertex is the identity.
 
 This proof is very long in part because both invariants have to be proved simultaneously because
 they depend on each other.
-*}    
+\<close>    
   
 lemma complex_rotations_invariants: 
   "r \<in> complex_rotations \<Longrightarrow> (((\<forall> v. r v \<noteq> v) \<longrightarrow> r v = w \<longrightarrow> r w = v) \<and> (r v = v \<longrightarrow> r w = w \<longrightarrow> v \<noteq> w \<longrightarrow> r = id)) "
@@ -569,19 +569,19 @@ next
   qed
 qed
   
-text {*
+text \<open>
   This lemma is a simple corollary of the previous result. It is the main result necessary to 
   count stabilisers.
-*}  
+\<close>  
 
 corollary complex_rotations_fix: "r \<in> complex_rotations \<Longrightarrow> r a = a \<Longrightarrow> r b = b \<Longrightarrow> a \<noteq> b \<Longrightarrow> r = id"
   using complex_rotations_invariants by blast
 
 section "Inversions"
-text {*
+text \<open>
   In this section we show that inverses exist for each rotation, which we will need to show that
   the rotations we defined indeed form a group.
-*}
+\<close>
 
 lemma simple_rotations_rotate_id:
   assumes r:"r \<in> simple_rotations"
@@ -619,19 +619,19 @@ qed
 
 section "The Tetrahedral Group"
 
-text {*
+text \<open>
 We can now define the group of rotational symmetries of a tetrahedron. Since we modeled rotations
 as functions, the group operation is functional composition and the identity element of the group is
 the identity function
-*}
+\<close>
 
 definition tetrahedral_group :: "Rotation monoid" where
   "tetrahedral_group = \<lparr>carrier = complex_rotations, mult = (\<circ>), one = id\<rparr>"
 
-text {*
+text \<open>
 We now prove that this indeed forms a group. Most of the subgoals are trivial, the last goal uses
 our results from the previous section about inverses.
-*}
+\<close>
 
 lemma is_tetrahedral_group: "group tetrahedral_group"
 proof(rule groupI)
@@ -664,10 +664,10 @@ next
     using complex_rotations_inverses by (simp add: tetrahedral_group_def)
 qed
 
-text {*
+text \<open>
 Having proved that our definition forms a group we can now instantiate our orbit-stabiliser locale.
 The group action is the application of a rotation.
-*}
+\<close>
 
 fun apply_rotation :: "Rotation \<Rightarrow> Vertex \<Rightarrow> Vertex" where "apply_rotation r v = r v"
 
@@ -688,9 +688,9 @@ proof intro_locales
 qed
 
 section "Counting Orbits"
-text {*
+text \<open>
 We now prove that there is an orbit for each vertex. That is, the group action is transitive.
-*}
+\<close>
 lemma orbit_is_transitive: "tetrahedral.orbit A = vertices"
 proof
   show "tetrahedral.orbit A \<subseteq> vertices" unfolding vertices_def using Vertex.exhaust by blast 
@@ -731,9 +731,9 @@ proof
   from A B C D show "vertices \<subseteq> tetrahedral.orbit A" by (simp add: vertices_def subsetI)
 qed
 
-text {*
+text \<open>
 It follows from the previous lemma, that the cardinality of the set of orbits for a particular vertex is 4.
-*}
+\<close>
 lemma card_orbit: "card (tetrahedral.orbit A) = 4"
 proof -
   from card_empty card_insert_if have "card vertices = 4" unfolding vertices_def by auto
@@ -742,16 +742,16 @@ qed
 
 section "Counting Stabilisers"
 
-text {*
+text \<open>
 Each vertex has three elements in its stabiliser - the identity, a rotation around its axis by 120 degrees,
 and a rotation around its axis by 240 degrees. We will prove this next.
-*}
+\<close>
 definition stabiliser_A :: "Rotation set" where
   "stabiliser_A = {id, rotate_A, rotate_A \<circ> rotate_A}"
 
-text {*
+text \<open>
 This lemma shows that our conjectured stabiliser is correct.
-*}
+\<close>
 lemma is_stabiliser: "tetrahedral.stabiliser A = stabiliser_A"
 proof
   show "stabiliser_A \<subseteq> tetrahedral.stabiliser A"
@@ -839,9 +839,9 @@ proof
   qed
 qed
 
-text {*
+text \<open>
 Using the previous result, we can now show that the cardinality of the stabiliser is 3.
-*}
+\<close>
 lemma card_stabiliser_help: "card stabiliser_A = 3"
 proof -
   have idA:"id \<noteq> rotate_A"
@@ -871,21 +871,21 @@ lemma card_stabiliser: "card (tetrahedral.stabiliser A) = 3"
 
 section "Proving Finiteness"
 
-text {*
+text \<open>
 In order to apply the orbit-stabiliser theorem, we need to prove that the set of rotations is
 finite. We first prove that the set of vertices is finite.
-*}
+\<close>
 lemma vertex_set: "(UNIV::Vertex set) = {A, B, C, D}"
   by(auto, metis Vertex.exhaust)
 
 lemma vertex_finite: "finite (UNIV :: Vertex set)"
   by (simp add: vertex_set)
 
-text {*
+text \<open>
 Next we need instantiate Vertex as an element of the type class of finite sets in
 HOL/Finite\_Set.thy. This will allow us to use the lemma that functions between finite sets
 are finite themselves.
-*}
+\<close>
 
 instantiation Vertex :: finite
 begin
@@ -893,9 +893,9 @@ instance proof
   show "finite (UNIV :: Vertex set)" by (simp add: vertex_set)
 qed
 
-text {*
+text \<open>
 Now we can show that the set of rotations is finite.
-*}
+\<close>
 lemma finite_carrier: "finite (carrier tetrahedral_group)"
 proof -
   (* This follows from the instantiation above *)
@@ -906,11 +906,11 @@ qed
 
 section "Order of the Group"
 
-text {*
+text \<open>
 We can now finally apply the orbit-stabiliser theorem.
 Since we have orbits of cardinality 4 and stabilisers of cardinality 3, the order of the tetrahedral group,
 and with it the number of rotational symmetries of the tetrahedron, is 12.
-*}
+\<close>
 theorem "order tetrahedral_group = 12"
 proof -
   have "card (tetrahedral.orbit A) * card (tetrahedral.stabiliser A) = 12"

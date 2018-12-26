@@ -346,14 +346,14 @@ proof -
             qed auto
             hence ?one ?two ?three by blast+
             show ?thesis unfolding simp rts rt3 
-              by (rule conjI[OF _ conjI[OF `?two` `?three`]], unfold `?one`, auto)
+              by (rule conjI[OF _ conjI[OF \<open>?two\<close> \<open>?three\<close>]], unfold \<open>?one\<close>, auto)
           next
             case False
             let ?m = "(l+r)/2"
             let ?lrs = "[(?m,r),(l,?m)] @ lrs"
-            from False `c \<noteq> 0` have simp: "?main lrss rais = ?main ?lrs rais"
+            from False \<open>c \<noteq> 0\<close> have simp: "?main lrss rais = ?main ?lrs rais"
               unfolding simp by (auto simp: Let_def)
-            from False `c \<noteq> 0` have "c \<ge> 2" by auto
+            from False \<open>c \<noteq> 0\<close> have "c \<ge> 2" by auto
             from delta(2)[OF this[unfolded c]] have delta: "delta \<le> ?r (r - l) / 4" by auto
             have lrs: "\<And> l r. (l,r) \<in> set ?lrs \<Longrightarrow> l \<le> r"
               using lr lrs by (fastforce simp: field_simps)
@@ -388,15 +388,15 @@ proof -
             hence ?one ?two by blast+
             have cong: "\<And> a b c. b = c \<Longrightarrow> a \<union> b = a \<union> c" by auto
             have id: "?rt ?lrs = ?rt lrs \<union> ?rt [(?m,r),(l,?m)]" by auto
-            show ?thesis unfolding rts simp `?one` id
+            show ?thesis unfolding rts simp \<open>?one\<close> id
             proof (rule conjI[OF cong[OF cong] conjI])
               have "\<And> x. root_cond (p,l,r) x = (root_cond (p,l,?m) x \<or> root_cond (p,?m,r) x)"
                 unfolding root_cond_def by (auto simp:hom_distribs)
               hence id: "Collect (root_cond (p,l,r)) = {x. (root_cond (p,l,?m) x \<or> root_cond (p,?m,r) x)}" 
                 by auto
               show "?rt [(?m,r),(l,?m)] = Collect (root_cond (p,l,r))" unfolding id list.simps by blast
-              show "\<forall> a \<in> set (?main ?lrs rais). invariant_2 a" using `?two` by auto
-              show "distinct (map real_of_2 (?main ?lrs rais))" using `?two` by auto
+              show "\<forall> a \<in> set (?main ?lrs rais). invariant_2 a" using \<open>?two\<close> by auto
+              show "distinct (map real_of_2 (?main ?lrs rais))" using \<open>?two\<close> by auto
             qed
           qed
         qed

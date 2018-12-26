@@ -11,7 +11,7 @@ begin
 
 text \<open>
 This theory defines the optimized variant of the graceful recursive path order
-(RPO) for @{text \<lambda>}-free higher-order terms.
+(RPO) for \<open>\<lambda>\<close>-free higher-order terms.
 \<close>
 
 

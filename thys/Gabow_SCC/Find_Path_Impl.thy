@@ -1,12 +1,12 @@
-section {* Implementation of Safety Property Model Checker \label{sec:find_path_impl}*}
+section \<open>Implementation of Safety Property Model Checker \label{sec:find_path_impl}\<close>
 theory Find_Path_Impl
 imports 
   Find_Path
   CAVA_Automata.Digraph_Impl
 begin
 
-  section {* Workset Algorithm *}
-  text {* A simple implementation is by a workset algorithm. *}
+  section \<open>Workset Algorithm\<close>
+  text \<open>A simple implementation is by a workset algorithm.\<close>
   definition "ws_update E u p V ws \<equiv> RETURN (
              V \<union> E``{u}, 
              ws ++ (\<lambda>v. if (u,v)\<in>E \<and> v\<notin>V then Some (u#p) else None))"
@@ -182,7 +182,7 @@ begin
       done
   qed
 
-  text {* We refine the algorithm to use a foreach-loop*}
+  text \<open>We refine the algorithm to use a foreach-loop\<close>
   definition "ws_update_foreach E u p V ws \<equiv> 
     FOREACH (LIST_SET_REV_TAG (E``{u})) (\<lambda>v (V,ws). 
       if v\<in>V then 
@@ -269,7 +269,7 @@ begin
     apply simp_all
     done
 
-  section {* Refinement to efficient data structures *}
+  section \<open>Refinement to efficient data structures\<close>
   schematic_goal wset_find_path'_refine_aux:
     fixes U0::"'a::hashable set" and P::"'a \<Rightarrow> bool" and E::"('a\<times>'a) set"
     assumes [autoref_rules]: 
@@ -294,7 +294,7 @@ begin
   concrete_definition wset_find_path_impl for succi U0' P 
     uses wset_find_path'_refine_aux
 
-  section {* Autoref Setup *}
+  section \<open>Autoref Setup\<close>
   context begin interpretation autoref_syn .
     lemma [autoref_itype]: 
       "find_path ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_slg \<rightarrow>\<^sub>i \<langle>I\<rangle>\<^sub>ii_set \<rightarrow>\<^sub>i (I\<rightarrow>\<^sub>ii_bool) 
@@ -325,7 +325,7 @@ begin
 
   export_code wset_find_path_code checking SML
 
-section {* Nontrivial paths *}
+section \<open>Nontrivial paths\<close>
 
 definition "find_path1_gen E u0 P \<equiv> do {
   res \<leftarrow> find_path E (E``{u0}) P;

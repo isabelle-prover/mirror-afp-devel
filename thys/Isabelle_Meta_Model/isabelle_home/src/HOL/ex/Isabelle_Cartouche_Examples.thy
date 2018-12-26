@@ -34,13 +34,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Part ... *}
+chapter\<open>Part ...\<close>
 
 theory Isabelle_Cartouche_Examples
 imports Main
 begin
 
-ML {*
+ML \<open>
 (*  Title:      HOL/ex/Cartouche_Examples.thy
     Author:     Makarius
 *)
@@ -65,7 +65,7 @@ ML {*
         | _ => err ())
       end;
   end;
-*}
+\<close>
 
 syntax "_cartouche_string" :: "cartouche_position \<Rightarrow> _"  ("_")
 

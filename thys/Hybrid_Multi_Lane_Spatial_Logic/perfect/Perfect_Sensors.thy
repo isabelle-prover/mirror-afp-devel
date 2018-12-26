@@ -6,12 +6,12 @@ each car can perceive both the physical size as well as the concrete
 braking distance of all other cars.
 *)
 
-section {*Perfect Sensors*}
-text{*
+section \<open>Perfect Sensors\<close>
+text\<open>
 This section contains an instantiations of the sensor function for 
 "perfect sensors". That is, each car can perceive both the physical
 size as well as the braking distance of each other car. 
-*}
+\<close>
 
 theory Perfect_Sensors
   imports  "../Length"
@@ -33,12 +33,12 @@ qed
 notation perfect_sensors.space ("space")
 notation perfect_sensors.len ("len")
 
-text{* 
+text\<open>
 With this sensor definition, we can show that the perceived length of a car
 is independent of the spatial transitions between traffic snapshots. The 
 length may only change during evolutions, in particular if the car changes its dynamical
 behaviour.
-*}
+\<close>
 
 lemma create_reservation_length_stable:
   "(ts\<^bold>\<midarrow>r(d)\<^bold>\<rightarrow>ts') \<longrightarrow> len v ts c = len v ts' c"
@@ -164,11 +164,11 @@ proof
   qed
 qed
 
-text{*
+text\<open>
 The following lemma shows that the perceived length is independent from
 the owner of the view. That is, as long as two views consist of the same 
 extension, the perceived length of each car is the same in both views.
-*}
+\<close>
   
 lemma all_own_ext_eq_len_eq:
   "ext v = ext v'  \<longrightarrow> len v ts c = len v' ts c"
@@ -207,10 +207,10 @@ proof
   qed
 qed
 
-text{* 
+text\<open>
 Finally, switching the perspective of a view does not change the
 perceived length.
-*}
+\<close>
     
 lemma switch_length_stable:"(v=d>v') \<longrightarrow> len v ts c = len v' ts c"
   using all_own_ext_eq_len_eq view.switch_def  by metis

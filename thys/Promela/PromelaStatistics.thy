@@ -4,7 +4,7 @@ imports
 begin
 
 code_printing
-  code_module PromelaStatistics \<rightharpoonup> (SML) {*
+  code_module PromelaStatistics \<rightharpoonup> (SML) \<open>
     structure PromelaStatistics = struct
       val active = Unsynchronized.ref false
       val parseTime = Unsynchronized.ref Time.zeroTime
@@ -30,10 +30,10 @@ code_printing
         
       val _ = Statistics.register_stat ("Promela",is_active,to_string)
     end
-*}
+\<close>
 code_reserved SML PromelaStatistics
 
-ML_val {* @{code hd} *}
+ML_val \<open>@{code hd}\<close>
 
 consts 
   start :: "unit \<Rightarrow> unit"

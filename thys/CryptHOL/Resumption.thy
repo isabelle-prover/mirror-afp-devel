@@ -1,7 +1,7 @@
 (* Title: Resumption.thy
   Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* The resumption-error monad *}
+section \<open>The resumption-error monad\<close>
 
 theory Resumption
 imports
@@ -280,7 +280,7 @@ apply(drule (2) Pause)
 apply blast
 done
 
-subsection {* Setup for @{text "partial_function"} *}
+subsection \<open>Setup for \<open>partial_function\<close>\<close>
 
 context includes lifting_syntax begin
 
@@ -321,7 +321,7 @@ lemma resumption_ord_coinduct [consumes 1, case_names Done Abort Pause, case_con
   and Pause: "\<And>r r'. \<lbrakk> X r r'; \<not> is_Done r; \<not> is_Done r' \<rbrakk> 
   \<Longrightarrow> output r = output r' \<and> ((=) ===> (\<lambda>r r'. X r r' \<or> resumption_ord r r')) (resume r) (resume r')"
   shows "resumption_ord r r'"
-using `X r r'`
+using \<open>X r r'\<close>
 proof coinduct
   case (resumption_ord r r')
   thus ?case
@@ -363,7 +363,7 @@ next
 next
   case (Pause r r' r'')
   hence "resumption_ord r r'" "resumption_ord r' r''" by simp_all
-  thus ?case using `\<not> is_Done r` `\<not> is_Done r''`
+  thus ?case using \<open>\<not> is_Done r\<close> \<open>\<not> is_Done r''\<close>
     by(cases)(auto simp add: rel_fun_def)
 qed
 
@@ -410,7 +410,7 @@ proof(rule chainI)
     where r': "r' = resume \<r>' inp" "\<r>' \<in> R" "\<not> is_Done \<r>'"
     and r'': "r'' = resume \<r>'' inp" "\<r>'' \<in> R" "\<not> is_Done \<r>''"
     by(auto simp add: R'_def)
-  from chain `\<r>' \<in> R` `\<r>'' \<in> R`
+  from chain \<open>\<r>' \<in> R\<close> \<open>\<r>'' \<in> R\<close>
   have "resumption_ord \<r>' \<r>'' \<or> resumption_ord \<r>'' \<r>'"
     by(auto elim: chainE)
   with r' r''
@@ -437,32 +437,32 @@ next
   thus "resumption_ord r (resumption_lub R)"
   proof(coinduction arbitrary: r R)
     case (Done r R)
-    note chain = `Complete_Partial_Order.chain resumption_ord R`
-      and r = `r \<in> R`
-    from `is_Done (resumption_lub R)` have A: "\<forall>r \<in> R. is_Done r" by simp
+    note chain = \<open>Complete_Partial_Order.chain resumption_ord R\<close>
+      and r = \<open>r \<in> R\<close>
+    from \<open>is_Done (resumption_lub R)\<close> have A: "\<forall>r \<in> R. is_Done r" by simp
     with r obtain a' where "r = Done a'" by(cases r) auto
     { fix r'
       assume "a' \<noteq> None"
       hence "(THE x. x \<in> result ` R \<and> x \<noteq> None) = a'"
-        using r A `r = Done a'`
+        using r A \<open>r = Done a'\<close>
         by(auto 4 3 del: the_equality intro!: the_equality intro: rev_image_eqI elim: chainE[OF chain] simp add: flat_ord_def is_Done_def) 
     }
-    with A r `r = Done a'` show ?case
+    with A r \<open>r = Done a'\<close> show ?case
       by(cases a')(auto simp add: flat_ord_def flat_lub_def)
   next
     case (Abort r R)
     hence chain: "Complete_Partial_Order.chain resumption_ord R" and "r \<in> R" by simp_all
-    from `r \<in> R` `\<not> is_Done (resumption_lub R)` `is_Done r`
+    from \<open>r \<in> R\<close> \<open>\<not> is_Done (resumption_lub R)\<close> \<open>is_Done r\<close>
     show ?case by(auto elim: chainE[OF chain] dest: resumption_ord_abort resumption_ord_is_DoneD)
   next
     case (Pause r R)
     hence chain: "Complete_Partial_Order.chain resumption_ord R"
       and r: "r \<in> R" by simp_all
     have ?resume 
-      using r `\<not> is_Done r` resumption_ord_chain_resume[OF chain]
+      using r \<open>\<not> is_Done r\<close> resumption_ord_chain_resume[OF chain]
       by(auto simp add: rel_fun_def bexI)
     moreover
-    from r `\<not> is_Done r` have "output (resumption_lub R) = output r"
+    from r \<open>\<not> is_Done r\<close> have "output (resumption_lub R) = output r"
       by(auto 4 4 simp add: bexI del: the_equality intro!: the_equality elim: chainE[OF chain] dest: resumption_ord_outputD)
     ultimately show ?case by simp
   qed
@@ -474,7 +474,7 @@ next
     case (Done R r)
     hence chain: "Complete_Partial_Order.chain resumption_ord R"
       and ub: "\<forall>r'\<in>R. resumption_ord r' r" by simp_all
-    from `is_Done r` ub have is_Done: "\<forall>r' \<in> R. is_Done r'"
+    from \<open>is_Done r\<close> ub have is_Done: "\<forall>r' \<in> R. is_Done r'"
       and ub': "\<And>r'. r' \<in> result ` R \<Longrightarrow> flat_ord None r' (result r)"
       by(auto dest: resumption_ord_is_DoneD resumption_ord_resultD)
     from is_Done have chain': "Complete_Partial_Order.chain (flat_ord None) (result ` R)"
@@ -486,13 +486,13 @@ next
     case (Abort R r)
     hence chain: "Complete_Partial_Order.chain resumption_ord R"
       and ub: "\<forall>r'\<in>R. resumption_ord r' r" by simp_all
-    from `\<not> is_Done r` `is_Done (resumption_lub R)` ub
+    from \<open>\<not> is_Done r\<close> \<open>is_Done (resumption_lub R)\<close> ub
     show ?case by(auto simp add: flat_lub_def dest: resumption_ord_abort)
   next
     case (Pause R r)
     hence chain: "Complete_Partial_Order.chain resumption_ord R"
       and ub: "\<And>r'. r'\<in>R \<Longrightarrow> resumption_ord r' r" by simp_all
-    from `\<not> is_Done (resumption_lub R)` have exR: "\<exists>r \<in> R. \<not> is_Done r" by simp
+    from \<open>\<not> is_Done (resumption_lub R)\<close> have exR: "\<exists>r \<in> R. \<not> is_Done r" by simp
     then obtain r' where r': "r' \<in> R" "\<not> is_Done r'" by auto
     with ub[of r'] have "output r = output r'" by(auto dest: resumption_ord_outputD)
     also have [symmetric]: "output (resumption_lub R) = output r'" using exR r'
@@ -515,8 +515,8 @@ interpretation resumption:
   rewrites "resumption_lub {} = (ABORT :: ('a, 'b, 'c) resumption)"
 by (rule resumption_partial_function_definition resumption_lub_empty)+
 
-declaration {* Partial_Function.init "resumption" @{term resumption.fixp_fun}
-  @{term resumption.mono_body} @{thm resumption.fixp_rule_uc} @{thm resumption.fixp_induct_uc} NONE *}
+declaration \<open>Partial_Function.init "resumption" @{term resumption.fixp_fun}
+  @{term resumption.mono_body} @{thm resumption.fixp_rule_uc} @{thm resumption.fixp_induct_uc} NONE\<close>
 
 abbreviation "mono_resumption \<equiv> monotone (fun_ord resumption_ord) resumption_ord"
 
@@ -548,7 +548,7 @@ proof(rule monotoneI)
     case (Done f' g' h k)
     hence le: "resumption_ord f' g'"
       and mg: "\<And>y. resumption_ord (h y) (k y)" by simp_all
-    from `is_Done (g' \<bind> k)`
+    from \<open>is_Done (g' \<bind> k)\<close>
     have done_Bg: "is_Done g'" 
       and "result g' \<noteq> None \<Longrightarrow> is_Done (k (the (result g')))" by simp_all
     moreover
@@ -579,7 +579,7 @@ proof(rule monotoneI)
     next
       case True
       hence "is_Done g'" using Pause by(auto dest: resumption_ord_abort)
-      thus ?thesis using True Pause resumption_ord_resultD[OF `resumption_ord f' g'`]
+      thus ?thesis using True Pause resumption_ord_resultD[OF \<open>resumption_ord f' g'\<close>]
         by(auto del: rel_funI intro!: rel_funI simp add: bind_resumption_is_Done flat_ord_def intro: resumption_ord_resumeD[THEN rel_funD] exI[where x=f'] exI[where x=g'])
     qed
     ultimately show ?case ..
@@ -591,7 +591,7 @@ lemma fixes f F
   shows results_conv_fixp: "results \<equiv> ccpo.fixp (fun_lub Union) (fun_ord (\<subseteq>)) F" (is "_ \<equiv> ?fixp")
   and results_mono: "\<And>x. monotone (fun_ord (\<subseteq>)) (\<subseteq>) (\<lambda>f. F f x)" (is "PROP ?mono")
 proof(rule eq_reflection ext antisym subsetI)+
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix x r
   show "?fixp r \<subseteq> results r"
     by(induction arbitrary: r rule: lfp.fixp_induct_uc[of "\<lambda>x. x" F "\<lambda>x. x", OF mono reflexive refl])
@@ -673,7 +673,7 @@ lemma fixes f F
   shows outputs_conv_fixp: "outputs \<equiv> ccpo.fixp (fun_lub Union) (fun_ord (\<subseteq>)) F" (is "_ \<equiv> ?fixp")
   and outputs_mono: "\<And>x. monotone (fun_ord (\<subseteq>)) (\<subseteq>) (\<lambda>f. F f x)" (is "PROP ?mono")
 proof(rule eq_reflection ext antisym subsetI)+
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   show "?fixp r \<subseteq> outputs r" for r
     by(induct arbitrary: r rule: lfp.fixp_induct_uc[of "\<lambda>x. x" F "\<lambda>x. x", OF mono reflexive refl])(auto simp add: F_def split: resumption.split)
   show "x \<in> ?fixp r" if "x \<in> outputs r" for x r using that
@@ -697,7 +697,7 @@ lemma pred_resumption_antimono:
 using r monotoneD[OF monotone_results le] monotoneD[OF monotone_outputs le]
 by(auto simp add: pred_resumption_def)
 
-subsection {* Setup for lifting and transfer *}
+subsection \<open>Setup for lifting and transfer\<close>
 
 declare resumption.rel_eq [id_simps, relator_eq]
 declare resumption.rel_mono [relator_mono]

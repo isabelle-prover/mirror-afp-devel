@@ -109,7 +109,7 @@ proof -
   moreover have "\<lparr>\<nu>x\<rparr>P \<parallel> \<zero> \<sim> \<zero> \<parallel> \<lparr>\<nu>x\<rparr>P" by(rule parComm)
   moreover have "\<zero> \<parallel> \<lparr>\<nu>x\<rparr>P \<sim> \<lparr>\<nu>x\<rparr>(\<zero> \<parallel> P)" by(rule scopeExt[THEN symmetric]) auto
   moreover have "\<lparr>\<nu>x\<rparr>(\<zero> \<parallel> P) \<sim> \<lparr>\<nu>x\<rparr>(P \<parallel> \<zero>)" by(rule resPres[OF parComm])
-  moreover from `x \<sharp> P` have "\<lparr>\<nu>x\<rparr>(P \<parallel> \<zero>) \<sim> P \<parallel> \<lparr>\<nu>x\<rparr>\<zero>" by(rule scopeExt)
+  moreover from \<open>x \<sharp> P\<close> have "\<lparr>\<nu>x\<rparr>(P \<parallel> \<zero>) \<sim> P \<parallel> \<lparr>\<nu>x\<rparr>\<zero>" by(rule scopeExt)
   moreover have  "P \<parallel> \<lparr>\<nu>x\<rparr>\<zero> \<sim> \<lparr>\<nu>x\<rparr>\<zero> \<parallel> P" by(rule parComm)
   moreover have "\<lparr>\<nu>x\<rparr>\<zero> \<parallel> P \<sim> \<zero> \<parallel> P" by(rule parPres[OF resNil])
   moreover have "\<zero> \<parallel> P \<sim> P \<parallel> \<zero>" by(rule parComm)
@@ -128,7 +128,7 @@ lemma scopeExtSum:
 proof -
   have "(\<lparr>\<nu>x\<rparr>(P \<oplus> Q), P \<oplus> \<lparr>\<nu>x\<rparr>Q) \<in> {(\<lparr>\<nu>x\<rparr>(P \<oplus> Q), P \<oplus> \<lparr>\<nu>x\<rparr>Q), (P \<oplus> \<lparr>\<nu>x\<rparr>Q, \<lparr>\<nu>x\<rparr>(P \<oplus> Q))}"
     by simp
-  thus ?thesis using `x \<sharp> P`
+  thus ?thesis using \<open>x \<sharp> P\<close>
     by(coinduct rule: bisimCoinduct) 
       (auto intro: scopeExtSumLeft scopeExtSumRight reflexive scopeFresh scopeFresh[THEN symmetric])
 qed
@@ -144,7 +144,7 @@ lemma resAct:
 proof -
   have "(\<lparr>\<nu>x\<rparr>(\<alpha>.(P)), \<alpha>.(\<lparr>\<nu>x\<rparr>P)) \<in> {(\<lparr>\<nu>x\<rparr>(\<alpha>.(P)), \<alpha>.(\<lparr>\<nu>x\<rparr>P)), (\<alpha>.(\<lparr>\<nu>x\<rparr>P), \<lparr>\<nu>x\<rparr>(\<alpha>.(P)))}"
     by simp
-  thus ?thesis using `x \<sharp> \<alpha>`
+  thus ?thesis using \<open>x \<sharp> \<alpha>\<close>
     by(coinduct rule: bisimCoinduct) (auto intro: resActLeft resActRight reflexive)
 qed
 

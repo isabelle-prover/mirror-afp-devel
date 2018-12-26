@@ -142,14 +142,14 @@ begin
               proof
                 assume "Q \<Turnstile> Act \<alpha> ?y"
                 then obtain Q' where 1: "Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and 2: "Q' \<Turnstile> ?y"
-                  using `bn \<alpha> \<sharp>* Q` by (metis valid_Act_fresh)
+                  using \<open>bn \<alpha> \<sharp>* Q\<close> by (metis valid_Act_fresh)
                 from 2 have "\<And>Q''. Q \<rightarrow> \<langle>\<alpha>,Q''\<rangle> \<longrightarrow> Q' \<Turnstile> f Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False
                   using is_distinguishing_formula_def by blast
               qed
             ultimately have False
-              by (metis `P =\<cdot> Q` logically_equivalent_def)
+              by (metis \<open>P =\<cdot> Q\<close> logically_equivalent_def)
           }
           then show ?thesis by auto
         qed

@@ -2,9 +2,9 @@ theory AutoCorres_Misc imports
   "../l4v/lib/OptionMonadWP"
 begin
 
-section {* Auxilliary Lemmas for Autocorres *}
+section \<open>Auxilliary Lemmas for Autocorres\<close>
 
-subsection {* Option monad *}
+subsection \<open>Option monad\<close>
 
 definition owhile_inv :: "('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> ('s,'a) lookup) \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> bool) \<Rightarrow> 'a rel \<Rightarrow> ('s,'a) lookup"   where
  "owhile_inv c b a I R \<equiv> owhile c b a"
@@ -22,7 +22,7 @@ lemma ovalidNF_owhile:
 proof (intro allI impI)
   fix s assume "P r s"
   then have "I r s" by fact
-  moreover note `wf R`
+  moreover note \<open>wf R\<close>
   moreover have "\<And>r r'. I r s \<Longrightarrow> C r s \<Longrightarrow> B r s = Some r' \<Longrightarrow> (r', r) \<in> R"
     using assms(2) unfolding ovalidNF_def by fastforce
   moreover have "\<And>r r'. I r s \<Longrightarrow> C r s \<Longrightarrow> B r s = Some r' \<Longrightarrow> I r' s"

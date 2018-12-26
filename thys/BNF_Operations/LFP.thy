@@ -14,7 +14,7 @@ begin
 ML \<open>open Ctr_Sugar_Util\<close>
 notation BNF_Def.convol ("<_ , _>")
 
-text {*
+text \<open>
 \begin{tabular}{rcl}
   'b1 &=& ('a, 'b1, 'b2) F1\\
   'b2 &=& ('a, 'b1, 'b2) F2
@@ -26,7 +26,7 @@ To build a witness scenario, let us assume
   ('a, 'b1, 'b2) F1 &=& 'a * 'b1 + 'a * 'b2\\
   ('a, 'b1, 'b2) F2 &=& unit + 'b1 * 'b2
 \end{tabular}
-*}
+\<close>
 
 declare [[bnf_internals]]
 bnf_axiomatization (F1set1: 'a, F1set2: 'b1, F1set3: 'b2)  F1
@@ -97,14 +97,14 @@ lemma F2map_congL: "\<lbrakk>\<forall>a \<in> F2set2 x. f a = a; \<forall>a \<in
   done
 
 
-subsection{* Algebra *}
+subsection\<open>Algebra\<close>
 
 definition alg where
   "alg B1 B2 s1 s2 =
     ((\<forall>x \<in> F1in (UNIV :: 'a set) B1 B2. s1 x \<in> B1) \<and> (\<forall>y \<in> F2in (UNIV :: 'a set) B1 B2. s2 y \<in> B2))"
 
 lemma alg_F1set: "\<lbrakk>alg B1 B2 s1 s2; F1set2 x \<subseteq> B1; F1set3 x \<subseteq> B2\<rbrakk> \<Longrightarrow> s1 x \<in> B1"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF alg_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF alg_def]} 1\<close>)
   apply (erule conjE)+
   apply (erule bspec)
   apply (rule CollectI)
@@ -114,7 +114,7 @@ lemma alg_F1set: "\<lbrakk>alg B1 B2 s1 s2; F1set2 x \<subseteq> B1; F1set3 x \<
   done
 
 lemma alg_F2set: "\<lbrakk>alg B1 B2 s1 s2; F2set2 x \<subseteq> B1; F2set3 x \<subseteq> B2\<rbrakk> \<Longrightarrow> s2 x \<in> B2"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF alg_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF alg_def]} 1\<close>)
   apply (erule conjE)+
   apply (erule bspec)
   apply (rule CollectI)
@@ -127,7 +127,7 @@ lemma alg_not_empty:
   "alg B1 B2 s1 s2 \<Longrightarrow> B1 \<noteq> {} \<and> B2 \<noteq> {}"
   apply (rule conjI)
    apply (rule notI)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (frule alg_F1set)
 
 (* ORELSE of the following three possibilities *)
@@ -139,8 +139,8 @@ lemma alg_not_empty:
     apply (drule F1.wit1 F1.wit2 F2.wit)
 
 (**)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
-    apply (tactic {* FIRST' (map (fn thm => rtac @{context} thm THEN' assume_tac @{context}) @{thms alg_F1set alg_F2set}) 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
+    apply (tactic \<open>FIRST' (map (fn thm => rtac @{context} thm THEN' assume_tac @{context}) @{thms alg_F1set alg_F2set}) 1\<close>)
 
      apply (rule subset_emptyI)
      apply (erule F1.wit1 F1.wit2 F2.wit)
@@ -153,7 +153,7 @@ lemma alg_not_empty:
    apply (erule emptyE)
 
   apply (rule notI)
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply (drule alg_F2set)
 
     apply (rule subsetI)
@@ -167,7 +167,7 @@ lemma alg_not_empty:
   done
 
 
-subsection {* Morphism *}
+subsection \<open>Morphism\<close>
 
 definition mor where
   "mor B1 B2 s1 s2 B1' B2' s1' s2' f g =
@@ -177,7 +177,7 @@ definition mor where
 
 lemma morE1: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> F1in UNIV B1 B2\<rbrakk>
    \<Longrightarrow> f (s1 z) = s1' (F1map id f g z)"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF mor_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF mor_def]} 1\<close>)
   apply (erule conjE)+
   apply (erule bspec)
   apply assumption
@@ -185,14 +185,14 @@ lemma morE1: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> F1in UNIV B1
 
 lemma morE2: "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g; z \<in> F2in UNIV B1 B2\<rbrakk>
    \<Longrightarrow> g (s2 z) = s2' (F2map id f g z)"
-  apply (tactic {* dtac @{context} @{thm iffD1[OF mor_def]} 1 *})
+  apply (tactic \<open>dtac @{context} @{thm iffD1[OF mor_def]} 1\<close>)
   apply (erule conjE)+
   apply (erule bspec)
   apply assumption
   done
 
 lemma mor_incl: "\<lbrakk>B1 \<subseteq> B1'; B2 \<subseteq> B2'\<rbrakk> \<Longrightarrow> mor B1 B2 s1 s2 B1' B2' s1 s2 id id"
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
 
    apply (rule conjI)
@@ -208,13 +208,13 @@ lemma mor_incl: "\<lbrakk>B1 \<subseteq> B1'; B2 \<subseteq> B2'\<rbrakk> \<Long
    apply (rule ballI)
    apply (rule trans)
     apply (rule id_apply)
-   apply (tactic {* stac @{context} @{thm F1.map_id} 1 *})
+   apply (tactic \<open>stac @{context} @{thm F1.map_id} 1\<close>)
    apply (rule refl)
 
   apply (rule ballI)
   apply (rule trans)
    apply (rule id_apply)
-  apply (tactic {* stac @{context} @{thm F2.map_id} 1 *})
+  apply (tactic \<open>stac @{context} @{thm F2.map_id} 1\<close>)
   apply (rule refl)
   done
 
@@ -222,9 +222,9 @@ lemma mor_comp:
   "\<lbrakk>mor B1 B2 s1 s2 B1' B2' s1' s2' f g;
     mor B1' B2' s1' s2' B1'' B2'' s1'' s2'' f' g'\<rbrakk> \<Longrightarrow>
    mor B1 B2 s1 s2 B1'' B2'' s1'' s2'' (f' o f) (g' o g)"
-  apply (tactic {* dtac @{context} (@{thm mor_def} RS iffD1) 1 *})
-  apply (tactic {* dtac @{context} (@{thm mor_def} RS iffD1) 1 *})
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>dtac @{context} (@{thm mor_def} RS iffD1) 1\<close>)
+  apply (tactic \<open>dtac @{context} (@{thm mor_def} RS iffD1) 1\<close>)
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (erule conjE)+
   apply (rule conjI)
 
@@ -299,7 +299,7 @@ lemma mor_comp:
 
 lemma mor_cong: "\<lbrakk> f' = f; g' = g; mor B1 B2 s1 s2 B1' B2' s1' s2' f g\<rbrakk> \<Longrightarrow>
   mor B1 B2 s1 s2 B1' B2' s1' s2' f' g'"
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   apply assumption
   done
 
@@ -322,7 +322,7 @@ lemma mor_str:
   done
 
 
-subsection{* Bounds *}
+subsection\<open>Bounds\<close>
 
 type_synonym bd_type_F1' = "bd_type_F1 + (bd_type_F1, bd_type_F1, bd_type_F1) F1"
 type_synonym bd_type_F2' = "bd_type_F2 + (bd_type_F2, bd_type_F2, bd_type_F2) F2"
@@ -407,7 +407,7 @@ lemmas worel_SucFbd = Card_order_wo_rel[OF SucFbd_Card_order]
 lemmas ASucFbd_Cinfinite = Cinfinite_cexp[OF ordLeq_csum2[OF Card_order_ctwo] SucFbd_Cinfinite]
 
 
-subsection{* Minimal Algebras *}
+subsection\<open>Minimal Algebras\<close>
 
 (* These are algebras generated by the empty set. *)
 abbreviation min_G1 where
@@ -503,7 +503,7 @@ corollary min_algs2: "i \<in> Field SucFbd \<Longrightarrow> snd (min_algs s1 s2
   done
 
 lemma min_algs_mono1: "relChain SucFbd (%i. fst (min_algs s1 s2 i))"
-  apply (tactic {* rtac @{context} @{thm iffD2[OF meta_eq_to_obj_eq[OF relChain_def]]} 1 *})
+  apply (tactic \<open>rtac @{context} @{thm iffD2[OF meta_eq_to_obj_eq[OF relChain_def]]} 1\<close>)
   apply (rule allI)+
   apply (rule impI)
   apply (rule case_split)
@@ -522,7 +522,7 @@ lemma min_algs_mono1: "relChain SucFbd (%i. fst (min_algs s1 s2 i))"
   done
 
 lemma min_algs_mono2: "relChain SucFbd (%i. snd (min_algs s1 s2 i))"
-  apply (tactic {* rtac @{context} @{thm iffD2[OF meta_eq_to_obj_eq[OF relChain_def]]} 1 *})
+  apply (tactic \<open>rtac @{context} @{thm iffD2[OF meta_eq_to_obj_eq[OF relChain_def]]} 1\<close>)
   apply (rule allI)+
   apply (rule impI)
   apply (rule case_split)
@@ -568,7 +568,7 @@ lemma SucFbd_limit: "\<lbrakk>x1 \<in> Field SucFbd & x2 \<in> Field SucFbd\<rbr
   done
 
 lemma alg_min_alg: "alg (min_alg1 s1 s2) (min_alg2 s1 s2) s1 s2"
-  apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule ballI)
    apply (erule CollectE conjE)+
@@ -803,19 +803,19 @@ lemma card_of_min_algs:
       apply (rule ordIso_transitive)
        apply (rule csum_cong1)
        apply (rule ordIso_transitive)
-        apply (tactic {* BNF_Tactics.mk_rotate_eq_tac @{context}
+        apply (tactic \<open>BNF_Tactics.mk_rotate_eq_tac @{context}
            (rtac @{context} @{thm ordIso_refl} THEN'
            FIRST' [rtac @{context} @{thm card_of_Card_order},
            rtac @{context} @{thm Card_order_csum},
            rtac @{context} @{thm Card_order_cexp}])
            @{thm ordIso_transitive} @{thm csum_assoc} @{thm csum_com} @{thm csum_cong}
-           [1,2] [2,1] 1 *})
+           [1,2] [2,1] 1\<close>)
        apply (rule csum_absorb1)
         apply (rule ASucFbd_Cinfinite)
 
        apply (rule ordLeq_transitive)
         apply (rule ordLeq_csum1)
-        apply (tactic {* FIRST' [rtac @{context} @{thm Card_order_csum}, rtac @{context} @{thm card_of_Card_order}] 1 *})
+        apply (tactic \<open>FIRST' [rtac @{context} @{thm Card_order_csum}, rtac @{context} @{thm card_of_Card_order}] 1\<close>)
        apply (rule ordLeq_cexp1)
         apply (rule SucFbd_Cnotzero)
        apply (rule Card_order_csum)
@@ -923,19 +923,19 @@ lemma card_of_min_algs:
      apply (rule ordIso_transitive)
       apply (rule csum_cong1)
       apply (rule ordIso_transitive)
-       apply (tactic {* BNF_Tactics.mk_rotate_eq_tac @{context}
+       apply (tactic \<open>BNF_Tactics.mk_rotate_eq_tac @{context}
            (rtac @{context} @{thm ordIso_refl} THEN'
            FIRST' [rtac @{context} @{thm card_of_Card_order},
            rtac @{context} @{thm Card_order_csum},
            rtac @{context} @{thm Card_order_cexp}])
            @{thm ordIso_transitive} @{thm csum_assoc} @{thm csum_com} @{thm csum_cong}
-           [1,2] [2,1] 1 *})
+           [1,2] [2,1] 1\<close>)
       apply (rule csum_absorb1)
        apply (rule ASucFbd_Cinfinite)
 
       apply (rule ordLeq_transitive)
        apply (rule ordLeq_csum1)
-       apply (tactic {* FIRST' [rtac @{context} @{thm Card_order_csum}, rtac @{context} @{thm card_of_Card_order}] 1 *})
+       apply (tactic \<open>FIRST' [rtac @{context} @{thm Card_order_csum}, rtac @{context} @{thm card_of_Card_order}] 1\<close>)
       apply (rule ordLeq_cexp1)
        apply (rule SucFbd_Cnotzero)
       apply (rule Card_order_csum)
@@ -1106,10 +1106,10 @@ lemma mor_incl_min_alg:
   apply (erule least_min_alg2)
   done
 
-subsection {* Initiality *}
+subsection \<open>Initiality\<close>
 
-text{* The following ``happens" to be the type (for our particular construction)
-of the initial algebra carrier: *}
+text\<open>The following ``happens" to be the type (for our particular construction)
+of the initial algebra carrier:\<close>
 
 type_synonym 'a1 F1init_type = "('a1, 'a1 ASucFbd_type, 'a1 ASucFbd_type) F1 \<Rightarrow> 'a1 ASucFbd_type"
 type_synonym 'a1 F2init_type = "('a1, 'a1 ASucFbd_type, 'a1 ASucFbd_type) F2 \<Rightarrow> 'a1 ASucFbd_type"
@@ -1120,7 +1120,7 @@ typedef 'a1 IIT =
   by (rule exI) (rule UNIV_I)
 
 
-subsection{* Initial Algebras *}
+subsection\<open>Initial Algebras\<close>
 
 abbreviation II :: "'a1 IIT set" where
   "II \<equiv> {Abs_IIT ((B1, B2), (s1, s2)) |B1 B2 s1 s2. alg B1 B2 s1 s2}"
@@ -1143,7 +1143,7 @@ lemma alg_select:
                       (fst (snd (Rep_IIT i))) (snd (snd (Rep_IIT i)))"
   apply (rule ballI)
   apply (erule CollectE exE conjE)+
-  apply (tactic {* hyp_subst_tac @{context} 1 *})
+  apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
   unfolding fst_conv snd_conv Abs_IIT_inverse[OF UNIV_I]
   apply assumption
   done
@@ -1158,9 +1158,9 @@ lemma mor_select:
     apply (rule o_id)
    apply (rule sym)
    apply (rule o_id)
-  apply (tactic {* rtac @{context} (Thm.permute_prems 0 1 @{thm mor_comp}) 1 *})
-   apply (tactic {* etac @{context} (Thm.permute_prems 0 1 @{thm mor_comp}) 1 *})
-   apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (Thm.permute_prems 0 1 @{thm mor_comp}) 1\<close>)
+   apply (tactic \<open>etac @{context} (Thm.permute_prems 0 1 @{thm mor_comp}) 1\<close>)
+   apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
    apply (rule conjI)
 
     apply (rule conjI)
@@ -1184,7 +1184,7 @@ lemma mor_select:
   apply (rule mor_incl_min_alg)
     (*alg_epi*)
   apply (erule thin_rl)+
-  apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule ballI)
    apply (erule CollectE conjE)+
@@ -1245,7 +1245,7 @@ lemma init_unique_mor:
    apply (erule prop_restrict)
    apply (erule thin_rl)
    apply (rule least_min_alg1)
-   apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+   apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
    apply (rule conjI)
     apply (rule ballI)
     apply (rule CollectI)
@@ -1341,7 +1341,7 @@ lemma init_unique_mor:
   apply (erule thin_rl)
   apply (erule prop_restrict)
   apply (rule least_min_alg2)
-  apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule ballI)
    apply (rule CollectI)
@@ -1446,7 +1446,7 @@ lemma init_induct: "closed dummy phi1 phi2 \<Longrightarrow>
    apply (rule ballI)
    apply (erule prop_restrict)
    apply (rule least_min_alg1)
-   apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+   apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
 
    apply (rule conjI)
     apply (rule ballI)
@@ -1513,7 +1513,7 @@ lemma init_induct: "closed dummy phi1 phi2 \<Longrightarrow>
   apply (rule ballI)
   apply (erule prop_restrict)
   apply (rule least_min_alg2)
-  apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
 
   apply (rule conjI)
    apply (rule ballI)
@@ -1579,7 +1579,7 @@ lemma init_induct: "closed dummy phi1 phi2 \<Longrightarrow>
   done
 
 
-subsection {* The datatype *}
+subsection \<open>The datatype\<close>
 
 typedef (overloaded) 'a1 IF1 = "car_init1 (undefined :: 'a1)"
   apply (rule iffD2)
@@ -1671,7 +1671,7 @@ lemma copy:
    \<exists>f' g'. alg B1' B2' f' g' \<and> mor B1' B2' f' g' B1 B2 s1 s2 f g"
   apply (rule exI)+
   apply (rule conjI)
-   apply (tactic {* rtac @{context} (@{thm alg_def} RS iffD2) 1 *})
+   apply (tactic \<open>rtac @{context} (@{thm alg_def} RS iffD2) 1\<close>)
    apply (rule conjI)
     apply (rule ballI)
     apply (erule CollectE conjE)+
@@ -1713,7 +1713,7 @@ lemma copy:
    apply (rule equalityD1)
    apply (erule bij_betw_imp_surj_on)
 
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule conjI)
     apply (erule bij_betwE)
@@ -1783,7 +1783,7 @@ lemma init_ex_mor:
   apply (rule subset_UNIV)
   done
 
-text {* Iteration *}
+text \<open>Iteration\<close>
 
 abbreviation fold where
   "fold s1 s2 \<equiv> (SOME f. mor UNIV UNIV ctor1 ctor2 UNIV UNIV s1 s2 (fst f) (snd f))"
@@ -1804,7 +1804,7 @@ lemma mor_fold:
   apply (erule mor_cong[OF fst_conv snd_conv])
   done
 
-ML {*
+ML \<open>
   val fold1 = rule_by_tactic @{context}
     (rtac @{context} CollectI 1 THEN BNF_Util.CONJ_WRAP (K (rtac @{context} @{thm subset_UNIV} 1)) (1 upto 3))
     @{thm morE1[OF mor_fold]}
@@ -1812,7 +1812,7 @@ ML {*
   val fold2 = rule_by_tactic @{context}
     (rtac @{context} CollectI 1 THEN BNF_Util.CONJ_WRAP (K (rtac @{context} @{thm subset_UNIV} 1)) (1 upto 3))
     @{thm morE2[OF mor_fold]}
-*}
+\<close>
 
 theorem fold1:
   "(fold1 s1 s2) (ctor1 x) = s1 (F1map id (fold1 s1 s2) (fold2 s1 s2) x)"
@@ -1868,7 +1868,7 @@ lemma mor_UNIV: "mor UNIV UNIV s1 s2 UNIV UNIV s1' s2' f g \<longleftrightarrow>
     apply (rule subset_UNIV)
    apply (rule sym[OF o_apply])
 
-  apply (tactic {* rtac @{context} (@{thm mor_def} RS iffD2) 1 *})
+  apply (tactic \<open>rtac @{context} (@{thm mor_def} RS iffD2) 1\<close>)
   apply (rule conjI)
    apply (rule conjI)
     apply (rule ballI)
@@ -1928,7 +1928,7 @@ lemmas fold_unique = fold_unique_mor[OF iffD2[OF mor_UNIV], OF conjI]
 lemmas fold1_ctor = sym[OF conjunct1[OF fold_unique_mor[OF mor_incl[OF subset_UNIV subset_UNIV]]]]
 lemmas fold2_ctor = sym[OF conjunct2[OF fold_unique_mor[OF mor_incl[OF subset_UNIV subset_UNIV]]]]
 
-text {* Case distinction *}
+text \<open>Case distinction\<close>
 
 lemmas ctor1_o_fold1 =
   trans[OF conjunct1[OF fold_unique_mor[OF mor_comp[OF mor_fold mor_str]]] fold1_ctor]
@@ -1939,8 +1939,8 @@ lemmas ctor2_o_fold2 =
 definition "dtor1 = fold1 (F1map id ctor1 ctor2) (F2map id ctor1 ctor2)"
 definition "dtor2 = fold2 (F1map id ctor1 ctor2) (F2map id ctor1 ctor2)"
 
-ML {* Local_Defs.fold @{context} @{thms dtor1_def} @{thm ctor1_o_fold1} *}
-ML {* Local_Defs.fold @{context} @{thms dtor2_def} @{thm ctor2_o_fold2} *}
+ML \<open>Local_Defs.fold @{context} @{thms dtor1_def} @{thm ctor1_o_fold1}\<close>
+ML \<open>Local_Defs.fold @{context} @{thms dtor2_def} @{thm ctor2_o_fold2}\<close>
 
 lemma ctor1_o_dtor1: "ctor1 o dtor1 = id"
   unfolding dtor1_def
@@ -2010,7 +2010,7 @@ lemmas ctor2_nchotomy = surjD[OF surj_ctor2]
 lemmas ctor2_diff = inj_eq[OF inj_ctor2]
 lemmas ctor2_cases = exE[OF ctor2_nchotomy]
 
-text {* Primitive recursion *}
+text \<open>Primitive recursion\<close>
 
 definition rec1 where
   "rec1 s1 s2 = snd o fold1 (<ctor1 o F1map id fst fst, s1>) (<ctor2 o F2map id fst fst, s2>)"
@@ -2059,7 +2059,7 @@ lemma rec_unique:
   done
 
 
-text {* Induction *}
+text \<open>Induction\<close>
 
 theorem ctor_induct:
   "\<lbrakk>\<And>x. (\<And>a. a \<in> F1set2 x \<Longrightarrow> phi1 a) \<Longrightarrow> (\<And>a. a \<in> F1set3 x \<Longrightarrow> phi2 a) \<Longrightarrow> phi1 (ctor1 x);
@@ -2093,7 +2093,7 @@ theorem ctor_induct:
      apply (rule equalityD1)
      apply (rule F1.set_map(2))
     apply (erule imageE)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule ssubst_mem[OF Abs_IF1_inverse])
      apply (erule set_mp)
      apply assumption
@@ -2106,7 +2106,7 @@ theorem ctor_induct:
      apply (rule equalityD1)
      apply (rule F1.set_map(3))
     apply (erule imageE)
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
     apply (rule ssubst_mem[OF Abs_IF2_inverse])
      apply (erule set_mp)
      apply assumption
@@ -2129,7 +2129,7 @@ theorem ctor_induct:
     apply (rule equalityD1)
     apply (rule F2.set_map(2))
    apply (erule imageE)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule ssubst_mem[OF Abs_IF1_inverse])
     apply (erule set_mp)
     apply assumption
@@ -2142,7 +2142,7 @@ theorem ctor_induct:
     apply (rule equalityD1)
     apply (rule F2.set_map(3))
    apply (erule imageE)
-   apply (tactic {* hyp_subst_tac @{context} 1 *})
+   apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
    apply (rule ssubst_mem[OF Abs_IF2_inverse])
     apply (erule set_mp)
     apply assumption
@@ -2162,7 +2162,7 @@ theorem ctor_induct2:
     apply (rule allI[OF conjunct1[OF ctor_induct[OF asm_rl TrueI]]])
     apply (drule meta_spec2)
     apply (erule thin_rl)
-    apply (tactic {* (dtac @{context} @{thm meta_mp} THEN_ALL_NEW Goal.norm_hhf_tac @{context}) 1 *})
+    apply (tactic \<open>(dtac @{context} @{thm meta_mp} THEN_ALL_NEW Goal.norm_hhf_tac @{context}) 1\<close>)
      apply (drule meta_spec)+
      apply (erule meta_mp[OF spec])
      apply assumption
@@ -2192,9 +2192,9 @@ theorem ctor_induct2:
   done
 
 
-subsection {* The Result as an BNF *}
+subsection \<open>The Result as an BNF\<close>
 
-text{* The map operator *}
+text\<open>The map operator\<close>
 
 abbreviation IF1map where "IF1map f \<equiv> fold1 (ctor1 o (F1map f id id)) (ctor2 o (F2map f id id))"
 abbreviation IF2map where "IF2map f \<equiv> fold2 (ctor1 o (F1map f id id)) (ctor2 o (F2map f id id))"
@@ -2286,7 +2286,7 @@ theorem IF1map_comp: "IF1map (g o f) = IF1map g o IF1map f"
 
 theorem IF2map_comp: "IF2map (g o f) = IF2map g o IF2map f"
   apply (rule sym)
-  apply (tactic {* rtac @{context} (Thm.permute_prems 0 1 @{thm conjunct2[OF IFmap_unique]}) 1 *})
+  apply (tactic \<open>rtac @{context} (Thm.permute_prems 0 1 @{thm conjunct2[OF IFmap_unique]}) 1\<close>)
    apply (rule ext)
    apply (rule trans[OF o_apply])
    apply (rule trans[OF o_apply])
@@ -2304,7 +2304,7 @@ theorem IF2map_comp: "IF2map (g o f) = IF2map g o IF2map f"
   done
 
 
-text{* The bound *}
+text\<open>The bound\<close>
 
 abbreviation IFbd where "IFbd \<equiv> F1bd' +c F2bd'"
 
@@ -2322,7 +2322,7 @@ lemma IFbd_Cinfinite: "Cinfinite IFbd"
 lemmas IFbd_cinfinite = conjunct1[OF IFbd_Cinfinite]
 
 
-text {* The set operator *}
+text \<open>The set operator\<close>
 
 (* "IFcol" stands for "collect"  *)
 
@@ -2377,7 +2377,7 @@ lemmas F2set1_IF2set = xt1(3)[OF IF2set_simps Un_upper1]
 lemmas F2set2_IF2set = subset_trans[OF UN_upper subset_trans[OF Un_upper1 xt1(3)[OF IF2set_simps Un_upper2]]]
 lemmas F2set3_IF2set = subset_trans[OF UN_upper subset_trans[OF Un_upper2 xt1(3)[OF IF2set_simps Un_upper2]]]
 
-text {* The BNF conditions for IF  *}
+text \<open>The BNF conditions for IF\<close>
 
 lemma IFset_natural:
   "f ` (IF1set x) = IF1set (IF1map f x) \<and> f ` (IF2set y) = IF2set (IF2map f y)"
@@ -2405,7 +2405,7 @@ lemma IFset_natural:
     apply (rule trans)
      apply (rule SUP_cong)
       apply (rule refl)
-     apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+     apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
     apply (rule sym)
     apply (rule trans)
      apply (rule SUP_cong)
@@ -2418,7 +2418,7 @@ lemma IFset_natural:
    apply (rule trans)
     apply (rule SUP_cong)
      apply (rule refl)
-    apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+    apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
    apply (rule sym)
    apply (rule trans)
     apply (rule SUP_cong)
@@ -2450,7 +2450,7 @@ lemma IFset_natural:
    apply (rule trans)
     apply (rule SUP_cong)
      apply (rule refl)
-    apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+    apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
    apply (rule sym)
    apply (rule trans)
     apply (rule SUP_cong)
@@ -2463,7 +2463,7 @@ lemma IFset_natural:
   apply (rule trans)
    apply (rule SUP_cong)
     apply (rule refl)
-   apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+   apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
   apply (rule sym)
   apply (rule trans)
    apply (rule SUP_cong)
@@ -2508,13 +2508,13 @@ lemma IFmap_cong:
       apply (erule set_rev_mp)
       apply (rule F1set1_IF1set)
      apply (rule mp)
-      apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+      apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
      apply (rule ballI)
      apply (erule bspec)
      apply (erule set_rev_mp)
      apply (erule F1set2_IF1set)
     apply (rule mp)
-     apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+     apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
     apply (rule ballI)
     apply (erule bspec)
     apply (erule set_rev_mp)
@@ -2531,13 +2531,13 @@ lemma IFmap_cong:
      apply (erule set_rev_mp)
      apply (rule F2set1_IF2set)
     apply (rule mp)
-     apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+     apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
     apply (rule ballI)
     apply (erule bspec)
     apply (erule set_rev_mp)
     apply (erule F2set2_IF2set)
    apply (rule mp)
-    apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+    apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
    apply (rule ballI)
    apply (erule bspec)
    apply (erule set_rev_mp)
@@ -2552,7 +2552,7 @@ theorem IF1map_cong:
    apply (rule conjunct1)
    apply (rule IFmap_cong)
   apply (rule ballI)
-  apply (tactic {* Goal.assume_rule_tac @{context} 1 *})
+  apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>)
   done
 
 theorem IF2map_cong:
@@ -2561,7 +2561,7 @@ theorem IF2map_cong:
    apply (rule conjunct2)
    apply (rule IFmap_cong)
   apply (rule ballI)
-  apply (tactic {* Goal.assume_rule_tac @{context} 1 *})
+  apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>)
   done
 
 lemma IFset_bd:
@@ -2577,12 +2577,12 @@ lemma IFset_bd:
       apply (rule UNION_Cinfinite_bound)
         apply (rule F1set2_bd')
        apply (rule ballI)
-       apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+       apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
       apply (rule IFbd_Cinfinite)
      apply (rule UNION_Cinfinite_bound)
        apply (rule F1set3_bd')
       apply (rule ballI)
-      apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+      apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
      apply (rule IFbd_Cinfinite)
     apply (rule IFbd_Cinfinite)
    apply (rule IFbd_Cinfinite)
@@ -2596,12 +2596,12 @@ lemma IFset_bd:
      apply (rule UNION_Cinfinite_bound)
        apply (rule F2set2_bd')
       apply (rule ballI)
-      apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+      apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
      apply (rule IFbd_Cinfinite)
     apply (rule UNION_Cinfinite_bound)
       apply (rule F2set3_bd')
      apply (rule ballI)
-     apply (tactic {* Goal.assume_rule_tac @{context} 1 *}) (* IH *)
+     apply (tactic \<open>Goal.assume_rule_tac @{context} 1\<close>) (* IH *)
     apply (rule IFbd_Cinfinite)
    apply (rule IFbd_Cinfinite)
   apply (rule IFbd_Cinfinite)
@@ -2630,7 +2630,7 @@ lemma in_IF2rel:
 
 lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R (IF1rel R) (IF2rel R) a b"
   apply (rule iffI)
-   apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})+
+   apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)+
    apply (erule exE conjE CollectE)+
    apply (rule iffD2)
     apply (rule F1.in_rel)
@@ -2717,7 +2717,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
     apply (rule IF1map_simps)
    apply (erule trans[OF arg_cong[OF ctor1_dtor1]])
 
-  apply (tactic {* dtac @{context} (@{thm F1.in_rel[THEN iffD1]}) 1 *})
+  apply (tactic \<open>dtac @{context} (@{thm F1.in_rel[THEN iffD1]}) 1\<close>)
   apply (erule exE conjE CollectE)+
   apply (rule iffD2)
    apply (rule in_IF1rel)
@@ -2743,7 +2743,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
     apply hypsubst
-    apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)
     apply (drule someI_ex)
     apply (erule conjE)+
     apply (erule CollectD)
@@ -2758,7 +2758,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
    apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
    apply hypsubst
-   apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)
    apply (drule someI_ex)
    apply (erule conjE)+
    apply (erule CollectD)
@@ -2778,7 +2778,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
      apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
      apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
      apply hypsubst
-     apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})
+     apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)
      apply (drule someI_ex)
      apply (erule conjE)+
      apply assumption
@@ -2788,7 +2788,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
     apply hypsubst
-    apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)
     apply (drule someI_ex)
     apply (erule conjE)+
     apply assumption
@@ -2808,7 +2808,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
     apply hypsubst
-    apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)
     apply (drule someI_ex)
     apply (erule conjE)+
     apply assumption
@@ -2818,7 +2818,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
    apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
    apply hypsubst
-   apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)
    apply (drule someI_ex)
    apply (erule conjE)+
    apply assumption
@@ -2827,7 +2827,7 @@ lemma IF1rel_F1rel: "IF1rel R (ctor1 a) (ctor1 b) \<longleftrightarrow> F1rel R 
 
 lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R (IF1rel R) (IF2rel R) a b"
   apply (rule iffI)
-   apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})+
+   apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)+
    apply (erule exE conjE CollectE)+
    apply (rule iffD2)
     apply (rule F2.in_rel)
@@ -2916,7 +2916,7 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
     apply (rule IF2map_simps)
    apply (erule trans[OF arg_cong[OF ctor2_dtor2]])
 
-  apply (tactic {* dtac @{context} (@{thm F2.in_rel[THEN iffD1]}) 1 *})
+  apply (tactic \<open>dtac @{context} (@{thm F2.in_rel[THEN iffD1]}) 1\<close>)
   apply (erule exE conjE CollectE)+
   apply (rule iffD2)
    apply (rule in_IF2rel)
@@ -2943,8 +2943,8 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
     apply (erule imageE)
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
-    apply (tactic {* hyp_subst_tac @{context} 1 *})
-    apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})
+    apply (tactic \<open>hyp_subst_tac @{context} 1\<close>)
+    apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)
     apply (drule someI_ex)
     apply (erule conjE)+
     apply (erule CollectD)
@@ -2959,7 +2959,7 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
    apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
    apply hypsubst
-   apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)
    apply (drule someI_ex)
    apply (erule exE conjE)+
    apply (erule CollectD)
@@ -2982,7 +2982,7 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
      apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
      apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
      apply hypsubst
-     apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})
+     apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)
      apply (drule someI_ex)
      apply (erule conjE)+
      apply assumption
@@ -2992,7 +2992,7 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
     apply hypsubst
-    apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)
     apply (drule someI_ex)
     apply (erule conjE)+
     apply assumption
@@ -3015,7 +3015,7 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
     apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
     apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
     apply hypsubst
-    apply (tactic {* dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1 *})
+    apply (tactic \<open>dtac @{context} (@{thm in_IF1rel[THEN iffD1]}) 1\<close>)
     apply (drule someI_ex)
     apply (erule conjE)+
     apply assumption
@@ -3025,7 +3025,7 @@ lemma IF2rel_F2rel: "IF2rel R (ctor2 a) (ctor2 b) \<longleftrightarrow> F2rel R 
    apply (drule ssubst_mem[OF surjective_pairing[symmetric]])
    apply (erule CollectE case_prodE iffD1[OF prod.inject, elim_format] conjE)+
    apply hypsubst
-   apply (tactic {* dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1 *})
+   apply (tactic \<open>dtac @{context} (@{thm in_IF2rel[THEN iffD1]}) 1\<close>)
    apply (drule someI_ex)
    apply (erule conjE)+
    apply assumption
@@ -3158,17 +3158,17 @@ lemma IF2wit: "x \<in> IF2set IF2wit \<Longrightarrow> False"
   by (elim UnE F2.wit[elim_format] UN_E FalseE |
       rule refl |  hypsubst | assumption | unfold IF2set_simps)+
 
-ML {*
+ML \<open>
   BNF_FP_Util.mk_xtor_co_iter_o_map_thms BNF_Util.Least_FP false 1 @{thm fold_unique}
     @{thms IF1map IF2map} (map (BNF_Tactics.mk_pointfree2 @{context}) @{thms fold1 fold2})
     @{thms F1.map_comp0[symmetric] F2.map_comp0[symmetric]} @{thms F1.map_cong0 F2.map_cong0}
-*}
+\<close>
 
-ML {*
+ML \<open>
   BNF_FP_Util.mk_xtor_co_iter_o_map_thms BNF_Util.Least_FP true 1 @{thm rec_unique}
     @{thms IF1map IF2map} (map (BNF_Tactics.mk_pointfree2 @{context}) @{thms rec1 rec2})
     @{thms F1.map_comp0[symmetric] F2.map_comp0[symmetric]} @{thms F1.map_cong0 F2.map_cong0}
-*}
+\<close>
 
 bnf "'a IF1"
   map: IF1map

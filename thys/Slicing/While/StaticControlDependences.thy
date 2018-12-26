@@ -1,4 +1,4 @@
-section {* Interpretations of the various static control dependences *}
+section \<open>Interpretations of the various static control dependences\<close>
 
 theory StaticControlDependences imports 
   AdditionalLemmas 
@@ -37,7 +37,7 @@ interpretation WhileStrongPostdomination:
 by(rule WhileStrongPostdomination_aux)
 
 
-subsection {* Standard Control Dependence *}
+subsection \<open>Standard Control Dependence\<close>
 
 lemma WStandardControlDependence_aux:
   "StandardControlDependencePDG sourcenode targetnode kind (valid_edge prog)
@@ -68,7 +68,7 @@ interpretation Fundamental_property_scd: BackwardSlice_wf sourcenode targetnode 
   by(rule Fundamental_property_scd_aux)
 
 
-subsection {* Weak Control Dependence *}
+subsection \<open>Weak Control Dependence\<close>
 
 lemma WWeakControlDependence_aux:
   "WeakControlDependencePDG sourcenode targetnode kind (valid_edge prog)
@@ -99,7 +99,7 @@ interpretation Fundamental_property_wcd: BackwardSlice_wf sourcenode targetnode 
   by(rule Fundamental_property_wcd_aux)
 
 
-subsection {* Weak Order Dependence *}
+subsection \<open>Weak Order Dependence\<close>
 
 lemma Fundamental_property_wod_aux: "BackwardSlice_wf sourcenode targetnode kind 
   (valid_edge prog) Entry (Defs prog) (Uses prog) id 

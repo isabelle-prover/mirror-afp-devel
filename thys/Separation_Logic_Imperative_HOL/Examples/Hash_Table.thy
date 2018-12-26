@@ -6,9 +6,9 @@ imports
   "../Sep_Main"
 begin
 
-subsection {* Datatype *}
+subsection \<open>Datatype\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
 datatype ('k, 'v) hashtable = HashTable "('k \<times> 'v) list array" nat
 
@@ -19,7 +19,7 @@ primrec the_size :: "('k, 'v) hashtable \<Rightarrow> nat"
   where "the_size (HashTable _ n) = n"
 
 
-subsubsection {* Storable on Heap *}
+subsubsection \<open>Storable on Heap\<close>
 
 fun hs_encode :: "('k::countable, 'v::countable) hashtable \<Rightarrow> nat"
   where "hs_encode (HashTable a n) = to_nat (n, a)"
@@ -34,9 +34,9 @@ qed
 instance hashtable :: (heap, heap) heap ..
 
 
-subsection {* Assertions *}
+subsection \<open>Assertions\<close>
 
-subsubsection {* Assertion for Hashtable *}
+subsubsection \<open>Assertion for Hashtable\<close>
 
 definition ht_table :: "('k::heap \<times> 'v::heap) list list \<Rightarrow> ('k, 'v) hashtable \<Rightarrow> assn"
   where "ht_table l ht = (the_array ht) \<mapsto>\<^sub>a l"
@@ -68,12 +68,12 @@ lemma is_hashtable_prec: "precise is_hashtable"
   apply (auto simp add: preciseD[OF snga_prec])
   done
 
-text {* These rules are quite useful for automated methods, to avoid unfolding
+text \<open>These rules are quite useful for automated methods, to avoid unfolding
   of definitions, that might be used folded in other lemmas,
   like induction hypothesis. However, they show in some sense a possibility for
   modularization improvement, as it should be enough to show an implication
-  and know that the @{text "nth"} and @{text "len"} operations do not change
-  the heap. *}
+  and know that the \<open>nth\<close> and \<open>len\<close> operations do not change
+  the heap.\<close>
 lemma ht_array_nth_rule[sep_heap_rules]:
     "i<length l \<Longrightarrow> <is_hashtable l ht>
       Array.nth (the_array ht) i
@@ -89,9 +89,9 @@ lemma ht_array_length_rule[sep_heap_rules]:
   by sep_auto
 
 
-subsection {* New *}
+subsection \<open>New\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
 definition ht_new_sz :: "nat \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable Heap"
 where
@@ -104,7 +104,7 @@ definition ht_new :: "('k::{heap,hashable}, 'v::heap) hashtable Heap"
   where "ht_new \<equiv> ht_new_sz (def_hashmap_size TYPE('k))"
 
 
-subsubsection {* Complete Correctness *}
+subsubsection \<open>Complete Correctness\<close>
 
 lemma ht_hash_replicate[simp, intro!]: "ht_hash (replicate n [])"
   apply (induct n)
@@ -141,9 +141,9 @@ lemma complete_ht_new:
   by (simp add: complete_ht_new_sz[OF def_hashmap_size])
 
 
-subsection {* Lookup *}
+subsection \<open>Lookup\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
 fun ls_lookup :: "'k \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> 'v option"
 where
@@ -160,7 +160,7 @@ where
   }"
 
 
-subsubsection {* Complete Correctness *}
+subsubsection \<open>Complete Correctness\<close>
 
 lemma complete_ht_lookup:
   "<is_hashtable l ht> ht_lookup x ht
@@ -180,7 +180,7 @@ lemma complete_ht_lookup:
   apply simp
   done
 
-text {* Alternative, more automatic proof *}
+text \<open>Alternative, more automatic proof\<close>
 lemma complete_ht_lookup_alt_proof:
   "<is_hashtable l ht> ht_lookup x ht
     <\<lambda>r. is_hashtable l ht *
@@ -191,9 +191,9 @@ lemma complete_ht_lookup_alt_proof:
   done
 
 
-subsection {* Update *}
+subsection \<open>Update\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
 fun ls_update :: "'k \<Rightarrow> 'v \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> (('k \<times> 'v) list \<times> bool)"
 where
@@ -275,7 +275,7 @@ definition ht_upd
     }"
 
 
-subsubsection {* Complete Correctness *}
+subsubsection \<open>Complete Correctness\<close>
 
 lemma ht_hash_update:
   assumes "ht_hash ls"
@@ -403,7 +403,7 @@ lemma complete_ht_upd: "<is_hashtable l ht> ht_upd k v ht
               ht_distinct_update[unfolded abs_update_def] abs_update_def)
   done
 
-text {* Alternative, more automatic proof *}
+text \<open>Alternative, more automatic proof\<close>
 lemma complete_ht_upd_alt_proof:
   "<is_hashtable l ht> ht_upd k v ht <is_hashtable (abs_update k v l)>"
   unfolding ht_upd_def is_hashtable_def Let_def
@@ -415,9 +415,9 @@ lemma complete_ht_upd_alt_proof:
   done
 
 
-subsection {* Delete *}
+subsection \<open>Delete\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
 fun ls_delete :: "'k \<Rightarrow> ('k \<times> 'v) list \<Rightarrow> (('k \<times> 'v) list \<times> bool)" where
   "ls_delete k [] = ([], False)" |
@@ -504,7 +504,7 @@ definition ht_delete
     }"
 
 
-subsubsection {* Complete Correctness *}
+subsubsection \<open>Complete Correctness\<close>
 
 lemma ht_hash_delete:
   assumes "ht_hash ls"
@@ -628,7 +628,7 @@ lemma complete_ht_delete: "<is_hashtable l ht> ht_delete k ht
   apply simp
   done
 
-text {* Alternative, more automatic proof *}
+text \<open>Alternative, more automatic proof\<close>
 lemma "<is_hashtable l ht> ht_delete k ht
   <is_hashtable (l[bounded_hashcode_nat (length l)
     k := fst (ls_delete k (l ! bounded_hashcode_nat (length l) k))])>"
@@ -641,11 +641,11 @@ lemma "<is_hashtable l ht> ht_delete k ht
   done
 
 
-subsection {* Re-Hashing *}
+subsection \<open>Re-Hashing\<close>
 
-subsubsection {* Auxiliary Functions *}
+subsubsection \<open>Auxiliary Functions\<close>
 
-text {* \paragraph{Insert List} *}
+text \<open>\paragraph{Insert List}\<close>
 fun ht_insls
   :: "('k \<times> 'v) list
     \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable
@@ -712,7 +712,7 @@ next
   qed
 qed
 
-text {* \paragraph{Copy} *}
+text \<open>\paragraph{Copy}\<close>
 fun ht_copy :: "nat \<Rightarrow> ('k::{heap,hashable}, 'v::heap) hashtable
   \<Rightarrow> ('k, 'v) hashtable \<Rightarrow> ('k, 'v) hashtable Heap"
   where
@@ -790,7 +790,7 @@ next
     done
 qed
 
-text {* Alternative, more automatic proof *}
+text \<open>Alternative, more automatic proof\<close>
 lemma complete_ht_copy_alt_proof: "n \<le> List.length ss \<Longrightarrow>
   <is_hashtable ss src * is_hashtable ds dst>
   ht_copy n src dst
@@ -887,7 +887,7 @@ lemma complete_ht_update_rehash:
   by (sep_auto heap: complete_ht_rehash complete_ht_upd)
 
 
-subsection {* Conversion to List *}
+subsection \<open>Conversion to List\<close>
 
 definition ht_to_list ::
   "('k::heap, 'v::heap) hashtable \<Rightarrow> ('k \<times> 'v) list Heap" where

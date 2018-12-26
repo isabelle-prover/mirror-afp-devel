@@ -2,9 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-chapter {* Compilation \label{cha:comp} *}
+chapter \<open>Compilation \label{cha:comp}\<close>
 
-section {* Method calls in expressions *}
+section \<open>Method calls in expressions\<close>
 
 theory CallExpr imports 
   "../J/Expr"

@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-section {* Computing Images of Finite Transitive Closures *}
+section \<open>Computing Images of Finite Transitive Closures\<close>
 
 theory Finite_Transitive_Closure_Simprocs
 imports Transitive_Closure_List_Impl

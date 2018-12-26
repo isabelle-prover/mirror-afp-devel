@@ -28,7 +28,7 @@ abbreviation of_int_interval :: "int \<Rightarrow> 'a :: ring_1 interval" where
   "of_int_interval x \<equiv> to_interval (of_int x)" 
 
 
-subsection {* Syntactic Class Instantiations *}
+subsection \<open>Syntactic Class Instantiations\<close>
 
 instantiation interval :: ("zero") zero begin
   definition zero_interval where "0 \<equiv> Interval 0 0"
@@ -71,7 +71,7 @@ instantiation interval :: ("{ord,times,inverse}") "inverse" begin
   instance..
 end
 
-subsection {* Class Instantiations *}
+subsection \<open>Class Instantiations\<close>
 
 instance interval :: (semigroup_add) semigroup_add
 proof
@@ -94,7 +94,7 @@ qed
 
 instance interval :: (comm_monoid_add) comm_monoid_add by (intro_classes, auto)
 
-text {* Intervals do not form an additive group, but satisfy some properties. *}
+text \<open>Intervals do not form an additive group, but satisfy some properties.\<close>
 
 lemma interval_uminus_zero[simp]:
   shows "-(0 :: 'a :: group_add interval) = 0"
@@ -104,8 +104,8 @@ lemma interval_diff_zero[simp]:
   fixes a :: "'a :: cancel_comm_monoid_add interval"
   shows "a - 0 = a" by (cases a, simp add: zero_interval_def)
 
-text {* Without type invariant, intervals do not form a multiplicative monoid,
- but satisfy some properties. *}
+text \<open>Without type invariant, intervals do not form a multiplicative monoid,
+ but satisfy some properties.\<close>
 
 instance interval :: ("{linorder,mult_zero}") mult_zero
 proof
@@ -113,7 +113,7 @@ proof
   show "a * 0 = 0" "0 * a = 0" by (atomize(full), cases a, auto simp: zero_interval_def)
 qed
 
-subsection {* Membership *}
+subsection \<open>Membership\<close>
 
 fun in_interval :: "'a :: order \<Rightarrow> 'a interval \<Rightarrow> bool" ("(_/ \<in>\<^sub>i _)" [51, 51] 50) where
   "y \<in>\<^sub>i Interval lx ux = (lx \<le> y \<and> y \<le> ux)" 
@@ -240,7 +240,7 @@ proof -
   show ?thesis using min max X Y by (auto simp: Let_def)
 qed
 
-subsection {* Convergence *}
+subsection \<open>Convergence\<close>
 
 definition interval_tendsto :: "(nat \<Rightarrow> 'a :: topological_space interval) \<Rightarrow> 'a \<Rightarrow> bool"
   (infixr "\<longlonglongrightarrow>\<^sub>i" 55) where

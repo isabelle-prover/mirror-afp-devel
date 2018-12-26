@@ -97,13 +97,13 @@ proof -
   assume "contradict as cs"
   have "\<not> I\<^sub>R (cs \<odot>\<^sub>a as) xs"
   proof (cases "cs \<odot>\<^sub>a as")
-    case Less thus ?thesis using `contradict as cs`
+    case Less thus ?thesis using \<open>contradict as cs\<close>
       by(simp add:contradict_def iprod0_if_coeffs0)
   next
-    case Eq thus ?thesis using `contradict as cs`
+    case Eq thus ?thesis using \<open>contradict as cs\<close>
       by(simp add:contradict_def iprod0_if_coeffs0)
   qed
-  thus ?thesis using `contradict as cs`
+  thus ?thesis using \<open>contradict as cs\<close>
     by(force simp add:contradict_def intro: I_R_iprod_a I_R_mult_atom
              elim:in_set_zipE)
 qed

@@ -215,7 +215,7 @@ by (rule inv_rule_incr, auto del: subsetI)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "m1x"}\<close>
+subsection \<open>Refinement of \<open>m1x\<close>\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>
@@ -338,7 +338,7 @@ by (rule implements_trans, auto)
 subsubsection \<open>inv (inherited): Secrecy\<close>
 (*invh*************************************************************************)
 
-text \<open>Secrecy preserved from @{text "m1x"}.\<close>
+text \<open>Secrecy preserved from \<open>m1x\<close>.\<close>
 
 lemma knC_runs1x1a [simp]: "knC (runs1x1a runz) = knC runz"
 apply (auto simp add: map_runs_def elim!: knC.cases, auto)
@@ -361,7 +361,7 @@ by (rule external_to_internal_invariant) (auto del: subsetI)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0i"} for initiator/server\<close>
+subsection \<open>Refinement of \<open>a0i\<close> for initiator/server\<close>
 (******************************************************************************)
 
 text \<open>For the initiator, we get an injective agreement with the server on 
@@ -653,7 +653,7 @@ by (rule_tac J=" m1a_inv2i_serv \<inter> m1x_secrecy" in inv_rule_incr)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0n"} for responder/server\<close>
+subsection \<open>Refinement of \<open>a0n\<close> for responder/server\<close>
 (******************************************************************************)
 
 text \<open>For the responder, we get a non-injective agreement with the server on 

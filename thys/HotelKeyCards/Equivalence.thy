@@ -183,16 +183,16 @@ apply (clarsimp simp add: fun_eq_iff [where 'a=room] fun_eq_iff [where 'a=guest 
 done
 (*>*)
 
-section{*Equivalence*}
+section\<open>Equivalence\<close>
 
-text{* Although the state based and the trace based model look similar
+text\<open>Although the state based and the trace based model look similar
 enough, the
 nagging feeling remains that they could be subtly different. Hence I
 wanted to show the equivalence formally. This was very fortunate,
 because it revealed some unintended discrepancies (no longer
 present). Although I had proved both systems safe, it turned out that
 the state based version of safety was more restrictive than the trace
-based one. In the state based version of @{text safe} the room had to
+based one. In the state based version of \<open>safe\<close> the room had to
 be empty the first time the owner enters with the latest card, whereas
 in the trace based version any time the owner enters with the latest
 card can make a room safe.  Such errors in an automaton checking a
@@ -213,7 +213,7 @@ true whereas @{const Trace.safe} is initially false.
 
 \end{itemize}
 Since many names occur in both models they are disambiguated by the
-prefixes @{text state} and @{text Trace}.
+prefixes \<open>state\<close> and \<open>Trace\<close>.
 
 In the one direction I have shown that any hotel trace starting
 with an injective @{const initk} gives rise to a reachable state
@@ -227,7 +227,7 @@ interpretation for @{const initk} that works, namely the one that was
 chosen as the initial setting for the keys in @{term s}.
 
 \sloppy
-The proofs are almost automatic, except for the @{text safe}
+The proofs are almost automatic, except for the \<open>safe\<close>
 component. In essence, we have to show that the procedural @{const
 state.safe} implements the declarative @{const Trace.safe}. The proof
 was complicated by the fact that initially it was not true and I had
@@ -237,13 +237,13 @@ finders~\cite{BerghoferN-SEFM04,Weber05bounded}
 did not seem to work here due to search space reasons.
 Once the bugs were ironed out, the following key lemma,
 together with some smaller lemmas,
-automated the correspondence proof for @{text safe}:
+automated the correspondence proof for \<open>safe\<close>:
 @{thm[display]safe_Enter}
 In addition we used many lemmas from the trace model, including
 Theorem~\ref{safe}.
 \fussy
 
-*}
+\<close>
 
 (*<*)
 end

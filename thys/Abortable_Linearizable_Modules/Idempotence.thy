@@ -1,4 +1,4 @@
-section {* Idempotence of the SLin I/O automaton *}
+section \<open>Idempotence of the SLin I/O automaton\<close>
 
 theory Idempotence
 imports SLin Simulations
@@ -24,8 +24,8 @@ lemmas trans_defs = Inv_def Lin_def Resp_def Init_def
 
 declare if_split_asm [split]
 
-subsection {*A case rule for decomposing the transition relation 
-  of the composition of two SLins *}
+subsection \<open>A case rule for decomposing the transition relation 
+  of the composition of two SLins\<close>
 
 declare comp_simps [simp]
 lemma trans_elim:
@@ -88,7 +88,7 @@ next
 qed
 declare comp_simps [simp del]
 
-subsection {* Definition of the Refinement Mapping *}
+subsection \<open>Definition of the Refinement Mapping\<close>
 
 fun f :: "(('a,'b,'c)SLin_state * ('a,'b,'c)SLin_state) \<Rightarrow> ('a,'b,'c)SLin_state"
   where
@@ -100,7 +100,7 @@ fun f :: "(('a,'b,'c)SLin_state * ('a,'b,'c)SLin_state) \<Rightarrow> ('a,'b,'c)
       dstate = (if dstate s2 = \<bottom> then dstate s1 else dstate s2),
       initialized = True\<rparr>"
 
-subsection {*Invariants *}
+subsection \<open>Invariants\<close>
 
 declare 
   trans_defs [simp]
@@ -443,7 +443,7 @@ next
     qed
     moreover have "initVals t2 = initVals s2" and "dstate t1 = dstate s1" 
       using Invoke1(1) by auto
-    ultimately show "P8 (t1,t2)" using `P8 (s1,s2)` by fastforce
+    ultimately show "P8 (t1,t2)" using \<open>P8 (s1,s2)\<close> by fastforce
   next
     case Lin1
     assume "P8 (s1,s2)"
@@ -454,7 +454,7 @@ next
       have 1:"iv \<in> initVals s2" using Lin1(1) 0 by simp
       have 4:"iv \<in> abortVals s1" using 1 P11 by simp
       obtain rs where 2:"rs \<in> pendingSeqs s1" and 3:"iv = dstate s1 \<star> rs"
-        using `P8 (s1,s2)` 1 by auto
+        using \<open>P8 (s1,s2)\<close> 1 by auto
       obtain rs' where 6:"dstate t1 = dstate s1 \<star> rs'" and 5:"dstate s1 \<star> rs' \<preceq> iv"
         using Lin1(1) 1 4 by auto
       obtain rs'' where 7:"iv = (dstate s1 \<star> rs') \<star> rs''" and 8:"set rs'' \<subseteq> set rs"
@@ -515,7 +515,7 @@ next
         using Switch1(1) by (simp add:pendingReqs_def) fastforce
       thus ?thesis by (auto simp add:pendingSeqs_def)
     qed
-    show "P8 (t1,t2)" using `P8 (s1,s2)` 2 4 5 6 7 by auto 
+    show "P8 (t1,t2)" using \<open>P8 (s1,s2)\<close> 2 4 5 6 7 by auto 
   next
     case (Invoke2 i p c)
     assume "P8 (s1,s2)"
@@ -1019,7 +1019,7 @@ next
                 ultimately show ?thesis using 2 6 7 
                   by (metis (lifting, no_types) UnE subsetD) 
               qed }
-            thus ?thesis using `r \<in> set ?rs` Reco2(1) by fastforce
+            thus ?thesis using \<open>r \<in> set ?rs\<close> Reco2(1) by fastforce
           qed }
         ultimately show ?thesis by blast
       qed
@@ -1165,7 +1165,7 @@ proof (auto simp only:invariant_def)
       show "dstate  (f (s1,s2)) = dstate s2"
       proof -
         have "dstate s1 \<preceq> dstate s2"
-          using `initialized s2` and `P9 (s1,s2)`
+          using \<open>initialized s2\<close> and \<open>P9 (s1,s2)\<close>
             by auto
         hence "dstate s1 = dstate s2" using True
           by (metis antisym bot)
@@ -1348,7 +1348,7 @@ proof (auto simp only:invariant_def)
           have "status s2 p \<in> {Pending,Aborted} \<and> pending s2 p = pending s1 p" 
           proof -
             have "\<not> contains (dstate s2) r"
-              using 6 `r \<in> set rs'` by simp
+              using 6 \<open>r \<in> set rs'\<close> by simp
             moreover 
             have "P26 (s1,s2)" using reach P26_invariant
               by (metis invariant_def)
@@ -1363,7 +1363,7 @@ proof (auto simp only:invariant_def)
   qed
 qed
 
-subsection {* Proof of the Idempotence Theorem *}
+subsection \<open>Proof of the Idempotence Theorem\<close>
 
 declare %invisible
   hide_asig_def[simp]
@@ -1408,7 +1408,7 @@ proof -
       and trans:"(s1,s2) \<midarrow>a\<midarrow>(composition)\<longrightarrow> (t1,t2)"
       define u where "u = f (s1,s2)"
       define u' where "u' = f (t1,t2)"
-      txt {* Lemmas and invariants *}
+      txt \<open>Lemmas and invariants\<close>
       have "pendingReqs s2 \<subseteq> pendingReqs u"
       proof -
         have "P6 (s1,s2)" using reach P6_invariant
@@ -1484,10 +1484,10 @@ proof -
           and 3:"t2 = s2\<lparr>pending := (pending s2)(p := (p,c)), 
             status := (status s2)(p := Pending)\<rparr>"
             using Invoke2(1) by auto   
-          have 4:"status u p = Ready" using 1 u_def `P6 (s1,s2)` by auto
+          have 4:"status u p = Ready" using 1 u_def \<open>P6 (s1,s2)\<close> by auto
           have 5:"u' = u\<lparr>pending := (pending u)(p := (p,c)), 
             status := (status u)(p := Pending)\<rparr>" 
-              using 2 3 u_def u'_def `P6 (t1,t2)` by fastforce
+              using 2 3 u_def u'_def \<open>P6 (t1,t2)\<close> by fastforce
           have 6:"Inv p c u u'" using 4 5 by force
           show ?thesis using 6 Invoke2(3) ids by simp
         qed
@@ -1505,7 +1505,7 @@ proof -
         proof -
           have 1:"status s1 p = Aborted \<and> status t1 p = Aborted"
           proof -
-            show ?thesis using `P6 (s1,s2)` `P6 (t1,t2)` 
+            show ?thesis using \<open>P6 (s1,s2)\<close> \<open>P6 (t1,t2)\<close> 
               Response2(1) by force
           qed
           have 2:"status u p = Pending \<and> initialized u" 
@@ -1522,7 +1522,7 @@ proof -
             have "dstate s1 = dstate s2" 
             proof -
               have "dstate s1 \<preceq> dstate s2"
-                using Response2(1)  `P9 (s1,s2)` by auto
+                using Response2(1)  \<open>P9 (s1,s2)\<close> by auto
               with True show ?thesis by (metis antisym bot) 
             qed
             thus ?thesis using 1 Response2(1) u_def by auto
@@ -1551,7 +1551,7 @@ proof -
           have 3:"ou = \<gamma> (dstate u) (pending u p)
             \<and> contains (dstate u) (pending u p)"
             using Response1(1) True u_def by auto
-          show ?thesis using 1 2 3 `initialized u` Response1(3) ids by auto
+          show ?thesis using 1 2 3 \<open>initialized u\<close> Response1(3) ids by auto
         next
           case False
           have 1:"status u p = Pending \<and> initialized u" 
@@ -1568,9 +1568,9 @@ proof -
             proof -
               have 3:"dstate s1 \<preceq> dstate u"
               proof -
-                have "initialized s2" using `P16 (s1,s2)` False
+                have "initialized s2" using \<open>P16 (s1,s2)\<close> False
                   by auto
-                thus ?thesis using `P9 (s1,s2)` u_def False refl by simp
+                thus ?thesis using \<open>P9 (s1,s2)\<close> u_def False refl by simp
               qed
               have 4:"pending s1 p = pending u p" 
                 using u_def Response1(1) by force
@@ -1588,12 +1588,12 @@ proof -
                 have 6:"status s1 p = Pending 
                   \<and> contains (dstate s1) (pending s1 p)" 
                     using Response1(1) by force
-                have 8:"initialized s2" using False `P16 (s1,s2)`
+                have 8:"initialized s2" using False \<open>P16 (s1,s2)\<close>
                   by auto
-                show ?thesis using that `P17 (s1,s2)` 6 8 7 by fastforce
+                show ?thesis using that \<open>P17 (s1,s2)\<close> 6 8 7 by fastforce
               qed
               have 7:"fst (pending s1 p) = p"  
-                using Response1(1) `P1 (s1,s2)` by auto
+                using Response1(1) \<open>P1 (s1,s2)\<close> by auto
               show ?thesis using 4 5 6 7 2 idem2_star by auto
             qed
             thus "ou = \<gamma> (dstate u) (pending u p)" 
@@ -1635,9 +1635,9 @@ proof -
                   assume 7:"iv \<in> ivs"
                   have "\<exists> rs . set rs \<subseteq> pendingReqs s1 
                     \<and> iv = dstate s1 \<star> rs"
-                      using `P8 (s1,s2)` 7 3 by auto
+                      using \<open>P8 (s1,s2)\<close> 7 3 by auto
                         (metis mem_Collect_eq pendingSeqs_def set_rev_mp) }
-                moreover have "finite ivs" using `P13 (s1,s2)` 3
+                moreover have "finite ivs" using \<open>P13 (s1,s2)\<close> 3
                     by (metis P13.simps rev_finite_subset)
                 ultimately show ?thesis using that glb_common_set 4
                   by metis
@@ -1651,21 +1651,21 @@ proof -
             moreover
             have "pendingReqs s1 \<union> pendingReqs s2 \<subseteq> pendingReqs u"
             proof -
-              note `pendingReqs s2 \<subseteq> pendingReqs u`
+              note \<open>pendingReqs s2 \<subseteq> pendingReqs u\<close>
               moreover
               have "pendingReqs s1 \<subseteq> pendingReqs u"
-                using Reco2(1) `P7 (s1,s2)`
+                using Reco2(1) \<open>P7 (s1,s2)\<close>
                   by (auto simp add:pendingReqs_def u_def)
               ultimately show ?thesis by auto
             qed
             moreover 
             have "abortVals u = abortVals s2" by (auto simp add:u_def)
             moreover
-            have "dstate u = dstate s1" using `P16 (s1,s2)`
+            have "dstate u = dstate s1" using \<open>P16 (s1,s2)\<close>
               Reco2(1) u_def by force
             moreover
             have "dstate u' = dstate t2" 
-              using Reco2(1) `P22 (t1,t2)` by (auto simp add:u'_def)
+              using Reco2(1) \<open>P22 (t1,t2)\<close> by (auto simp add:u'_def)
             ultimately show ?thesis using that 
               by (auto simp add:pendingSeqs_def, blast)
           qed
@@ -1673,7 +1673,7 @@ proof -
           have "u' = u\<lparr>dstate := dstate u \<star> rs\<rparr>"
             using 2 Reco2(1) u_def u'_def by force
           moreover
-          note `initialized u`
+          note \<open>initialized u\<close>
           ultimately show ?thesis by auto 
         qed
         moreover
@@ -1708,7 +1708,7 @@ proof -
           have "u' = u\<lparr>dstate := dstate u'\<rparr>" using Lin2(1)
             by (auto simp add:u_def u'_def)
           moreover
-          note `initialized u` 
+          note \<open>initialized u\<close> 
           moreover
           obtain rs where "dstate u' = dstate u \<star> rs"
             and "rs \<in> pendingSeqs u" 
@@ -1719,13 +1719,13 @@ proof -
               and 3:"\<forall> av \<in> abortVals s2 . dstate t2 \<preceq> av"
               using Lin2(1) by force
             have 4:"rs \<in> pendingSeqs u" 
-              using  2 and `pendingReqs s2 \<subseteq> pendingReqs u`
+              using  2 and \<open>pendingReqs s2 \<subseteq> pendingReqs u\<close>
                 by (metis mem_Collect_eq pendingSeqs_def subset_trans)
             have 5:"dstate u' = dstate u \<star> rs" 
               and 6:"\<forall> av \<in> abortVals u . dstate u' \<preceq> av"
             proof -
               have 7:"dstate u = dstate s2 \<and> dstate u' = dstate t2"
-                using `P22 (s1,s2)` and `P22 (t1,t2)` Lin2(1)
+                using \<open>P22 (s1,s2)\<close> and \<open>P22 (t1,t2)\<close> Lin2(1)
                   by (auto simp add:u_def u'_def)
               show "dstate u' = dstate u \<star> rs" using 7 1 by auto
               show "\<forall> av \<in> abortVals u . dstate u' \<preceq> av"
@@ -1757,9 +1757,9 @@ proof -
           let ?e = "(u,[(Linearize 0,u')])"
           have "is_exec_frag_of (ioa 0 id2) ?e"
           proof -
-            note `u' = u\<lparr>dstate := dstate u'\<rparr>`
+            note \<open>u' = u\<lparr>dstate := dstate u'\<rparr>\<close>
             moreover
-            note `initialized u` 
+            note \<open>initialized u\<close> 
             moreover
             obtain rs where "dstate u' = dstate u \<star> rs"
               and "rs \<in> pendingSeqs u" 
@@ -1770,10 +1770,10 @@ proof -
                 and 3:"\<forall> av \<in> abortVals s1 . dstate t1 \<preceq> av"
                 using Lin1(1) by force
               have 5:"pendingSeqs s1 \<subseteq> pendingSeqs u" 
-                using False `P7 (s1,s2)`
+                using False \<open>P7 (s1,s2)\<close>
                   by (auto simp add:pendingReqs_def pendingSeqs_def u_def)
               have 6:"dstate u = dstate s1 \<and> dstate u' = dstate t1"
-                using `P16 (s1,s2)` False Lin1(1)
+                using \<open>P16 (s1,s2)\<close> False Lin1(1)
                   by (auto simp add:u_def u'_def)
               have 4:"\<forall> av \<in> abortVals u . dstate u' \<preceq> av"
               proof (cases "abortVals u = {}")
@@ -1787,12 +1787,12 @@ proof -
                 moreover have "dstate t1 \<preceq> \<Sqinter>(abortVals t1)" 
                 proof - 
                   have "abortVals t1 = abortVals s1" using Lin1(1) by auto
-                  moreover have "abortVals t1 \<noteq> {}" using False `P19 (t1,t2)`
+                  moreover have "abortVals t1 \<noteq> {}" using False \<open>P19 (t1,t2)\<close>
                     Lin1(1) by (simp add: u_def)
-                  ultimately show ?thesis using 3 `P13 (t1,t2)`  
+                  ultimately show ?thesis using 3 \<open>P13 (t1,t2)\<close>  
                     by simp (metis boundedI) 
                 qed
-                ultimately show ?thesis using `P21 (t1,t2)` 3
+                ultimately show ?thesis using \<open>P21 (t1,t2)\<close> 3
                   by (metis P21.simps coboundedI2 orderE)
               qed
               show ?thesis using 1 2 3 4 5 6 that by auto
@@ -1819,9 +1819,9 @@ proof -
           moreover have "last_state ?e = u'"
           proof -
             have "dstate u = dstate s2 \<and> dstate u' = dstate t2"
-              using `P22 (s1,s2)` and `P22 (t1,t2)` and True and Lin1(1)
+              using \<open>P22 (s1,s2)\<close> and \<open>P22 (t1,t2)\<close> and True and Lin1(1)
                 by (auto simp add:u_def u'_def)
-            thus ?thesis using Lin1(1) `u' = u\<lparr>dstate := dstate u'\<rparr>`
+            thus ?thesis using Lin1(1) \<open>u' = u\<lparr>dstate := dstate u'\<rparr>\<close>
               by simp
           qed
           ultimately show ?thesis 
@@ -1844,11 +1844,11 @@ proof -
               and 2:"av \<in> safeAborts s2" and 3:"s1 = t1" 
               and 4:"status s2 p = Pending"
                 using Switch2(1) by auto
-            show 5:"status u p = Pending" using `P6 (s1,s2)` 4
+            show 5:"status u p = Pending" using \<open>P6 (s1,s2)\<close> 4
               by (auto simp add:u_def)
-            have 6:"status u' p = Aborted" using `P6 (t1,t2)` 1
+            have 6:"status u' p = Aborted" using \<open>P6 (t1,t2)\<close> 1
               by (auto simp add:u'_def)
-            show "pending u p = (p,c)" using `P6 (s1,s2)` 4 Switch2(1)
+            show "pending u p = (p,c)" using \<open>P6 (s1,s2)\<close> 4 Switch2(1)
               by (auto simp add:u_def)
             show "u' = u\<lparr>abortVals := (abortVals u) \<union> {av},
               status := (status u)(p := Aborted)\<rparr>" using 1 3 5 6
@@ -1858,7 +1858,7 @@ proof -
           have 5:"av \<in> safeAborts u" 
           proof (cases "initialized s2")
             case True
-            hence 6:"dstate u = dstate s2" using `P22 (s1,s2)`  
+            hence 6:"dstate u = dstate s2" using \<open>P22 (s1,s2)\<close>  
               by (auto simp add:u_def)
             have "(\<exists> rs \<in> pendingSeqs s2 . av = dstate s2 \<star> rs)
               \<or> (dstate s2 \<preceq> av \<and> (\<exists> ivs \<in> initSets s2 . 
@@ -1871,8 +1871,8 @@ proof -
             thus ?thesis
             proof
               assume "\<exists> rs \<in> pendingSeqs s2 . av = dstate s2 \<star> rs"
-              moreover note `initialized u` 
-              ultimately show ?thesis using `pendingReqs s2 \<subseteq> pendingReqs u` 6 
+              moreover note \<open>initialized u\<close> 
+              ultimately show ?thesis using \<open>pendingReqs s2 \<subseteq> pendingReqs u\<close> 6 
                 by (simp add:safeAborts_def initAborts_def)
                   (metis less_eq_def mem_Collect_eq pendingSeqs_def 
                     sup.coboundedI2 sup.orderE) 
@@ -1886,16 +1886,16 @@ proof -
                   and 10:"dstate s2 \<preceq> \<Sqinter>ivs" 
                   and 11:"rs' \<in> pendingSeqs s2 \<and> av = \<Sqinter>ivs \<star> rs'" 
                     using 7 by auto
-                have 12:"dstate u = dstate s2" using True `P22 (s1,s2)`
+                have 12:"dstate u = dstate s2" using True \<open>P22 (s1,s2)\<close>
                   by (auto simp add:u_def)
                 moreover
                 obtain rs where "rs \<in> pendingSeqs u" and "\<Sqinter>ivs = dstate s2 \<star> rs"
-                  using `P25 (s1,s2)` True 9 10 by (auto simp add:u_def)
+                  using \<open>P25 (s1,s2)\<close> True 9 10 by (auto simp add:u_def)
                 ultimately have  "av = dstate u \<star> (rs@rs')" 
                   and "rs@rs' \<in> pendingSeqs u"
                   using 11 by (simp_all add:pendingSeqs_def)
                     (metis exec_append, metis lem1 subset_trans)
-                thus ?thesis using 8 `initialized u`
+                thus ?thesis using 8 \<open>initialized u\<close>
                   by (auto simp add:safeAborts_def initAborts_def)
               qed
             qed
@@ -1910,18 +1910,18 @@ proof -
                 using 0 by (auto simp add:uninitAborts_def)
               have 4:"rs \<in> pendingSeqs u" using lem1 2 
                 by (auto simp add:pendingSeqs_def)
-              have 5:"dstate u = dstate s1" using False `P10 (s1,s2)`
+              have 5:"dstate u = dstate s1" using False \<open>P10 (s1,s2)\<close>
                 by (auto simp add:u_def) 
               obtain rs' where 6:"\<Sqinter>ivs = dstate s1 \<star> rs'" 
                 and 7:"rs' \<in> pendingSeqs s1"
-                  using 1 `P8a (s1,s2)` by auto
-              have 8:"rs' \<in> pendingSeqs u" using False `P23 (s1,s2)` 7
+                  using 1 \<open>P8a (s1,s2)\<close> by auto
+              have 8:"rs' \<in> pendingSeqs u" using False \<open>P23 (s1,s2)\<close> 7
                 by (auto simp add:u_def)
               have 9:"av = dstate u \<star> (rs'@rs)" using 3 5 6
                 by (metis exec_append) 
               have 10:"rs'@rs \<in> pendingSeqs u"
                 using 4 8 by (auto simp add:pendingSeqs_def)
-              show ?thesis using 9 10 `initialized u`
+              show ?thesis using 9 10 \<open>initialized u\<close>
                 by (auto simp add:safeAborts_def initAborts_def less_eq_def)
             qed
           qed

@@ -11,7 +11,7 @@ lemma inj_card_le:
   "inj (f::'a \<Rightarrow> 'b) \<Longrightarrow> finite (UNIV::'b set) \<Longrightarrow> card (UNIV::'a set) \<le> card (UNIV::'b set)"
   by (blast intro: card_inj_on_le)
 
-text {*
+text \<open>
   We define a generic locale for capturing refinement between an abstract and a concrete
   program. We then define and prove sufficient, conditions that preserve local security
   from the abstract to the concrete program.
@@ -24,7 +24,7 @@ text {*
 
   The simpler locale below forbids extra variables in the concrete program, making the
   necessary conditions for preservation of local security simpler.
-*}
+\<close>
 locale sifum_refinement = 
   abs: sifum_security dma\<^sub>A \<C>_vars\<^sub>A \<C>\<^sub>A eval\<^sub>A some_val +
   conc: sifum_security dma\<^sub>C \<C>_vars\<^sub>C \<C>\<^sub>C eval\<^sub>C some_val
@@ -50,12 +50,12 @@ locale sifum_refinement =
 
 section "General Compositional Refinement"
 
-text {*
+text \<open>
   The type of state relations between the abstract and compiled components.
   The job of a certifying compiler will be to exhibit one of these for each
   component it compiles. Below we'll define the conditions that such a
   relation needs to satisfy to give compositional refinement.
-*}
+\<close>
 type_synonym ('Com\<^sub>A, 'Var\<^sub>A, 'Val, 'Com\<^sub>C, 'Var\<^sub>C) state_relation = 
    "(('Com\<^sub>A, 'Var\<^sub>A, 'Val) LocalConf \<times> ('Com\<^sub>C, 'Var\<^sub>C, 'Val) LocalConf) set"
 
@@ -150,9 +150,9 @@ lemma preserves_modes_mem_mds\<^sub>A_simp:
   apply blast+
   done
 
-text {*
+text \<open>
   This version might be more useful. Not sure yet.
-*}
+\<close>
 lemma preserves_modes_mem_def2:
   "preserves_modes_mem \<R> =
   (\<forall> c\<^sub>A mds\<^sub>A mem\<^sub>A c\<^sub>C mds\<^sub>C mem\<^sub>C. (\<langle> c\<^sub>A, mds\<^sub>A, mem\<^sub>A \<rangle>\<^sub>A, \<langle> c\<^sub>C, mds\<^sub>C, mem\<^sub>C \<rangle>\<^sub>C) \<in> \<R> \<longrightarrow>
@@ -214,10 +214,10 @@ next
   where [simp]: "lc\<^sub>0 = \<langle>c\<^sub>0, mds\<^sub>0, mem\<^sub>0\<rangle>\<^sub>A" by (case_tac lc\<^sub>0, auto)
   obtain c\<^sub>1 mds\<^sub>1 mem\<^sub>1 
   where [simp]: "lc\<^sub>1 = \<langle>c\<^sub>1, mds\<^sub>1, mem\<^sub>1\<rangle>\<^sub>A" by (case_tac lc\<^sub>1, auto)
-  from `snd (fst lc\<^sub>0) = snd (fst lc\<^sub>0')` obtain c\<^sub>0' mem\<^sub>0'
+  from \<open>snd (fst lc\<^sub>0) = snd (fst lc\<^sub>0')\<close> obtain c\<^sub>0' mem\<^sub>0'
   where [simp]: "lc\<^sub>0' = \<langle>c\<^sub>0', mds\<^sub>0, mem\<^sub>0'\<rangle>\<^sub>A" by (case_tac lc\<^sub>0', auto)
   
-  from `(lc\<^sub>0, lc\<^sub>0') \<in> \<R>\<^sub>A`[simplified] `lc\<^sub>0 \<leadsto>\<^sub>A lc\<^sub>1`[simplified] `abs.strong_low_bisim_mm \<R>\<^sub>A`
+  from \<open>(lc\<^sub>0, lc\<^sub>0') \<in> \<R>\<^sub>A\<close>[simplified] \<open>lc\<^sub>0 \<leadsto>\<^sub>A lc\<^sub>1\<close>[simplified] \<open>abs.strong_low_bisim_mm \<R>\<^sub>A\<close>
   obtain c\<^sub>1' mem\<^sub>1' where a: "\<langle>c\<^sub>0',mds\<^sub>0, mem\<^sub>0'\<rangle>\<^sub>A \<leadsto>\<^sub>A \<langle>c\<^sub>1',mds\<^sub>1, mem\<^sub>1'\<rangle>\<^sub>A" and 
           b: "(\<langle>c\<^sub>1,mds\<^sub>1,mem\<^sub>1\<rangle>\<^sub>A,\<langle>c\<^sub>1',mds\<^sub>1, mem\<^sub>1'\<rangle>\<^sub>A) \<in> \<R>\<^sub>A"
     unfolding abs.strong_low_bisim_mm_def
@@ -349,7 +349,7 @@ proof(clarify)
 qed
 
   
-text {*
+text \<open>
   Perhaps surprisingly, we don't necessarily 
   care whether the refinement preserves
   termination or divergence behaviour from the source to the target program.
@@ -369,7 +369,7 @@ text {*
   pairs of concrete steps that correspond to each other in terms of progress.
   This is particularly important for distinguishing between multiple concrete
   steps derived from the expansion of a single abstract step.
-*}
+\<close>
 definition
   secure_refinement :: "('Com\<^sub>A, 'Var\<^sub>A, 'Val) LocalConf rel \<Rightarrow> ('Com\<^sub>A, 'Var\<^sub>A, 'Val, 'Com\<^sub>C, 'Var\<^sub>C) state_relation \<Rightarrow> 
                           ('Com\<^sub>C, 'Var\<^sub>C, 'Val) LocalConf rel \<Rightarrow> bool"
@@ -468,11 +468,11 @@ lemma abs_low_mds_eq_dma\<^sub>C_eq:
     fix x\<^sub>C
     assume "x\<^sub>C \<in> \<C>\<^sub>C"
     from this obtain x\<^sub>A where "var\<^sub>C_of x\<^sub>A = x\<^sub>C" and "x\<^sub>A \<in> \<C>\<^sub>A" using control_vars_are_A_vars by blast
-    from assms `x\<^sub>A \<in> \<C>\<^sub>A` have "(mem\<^sub>A_of mem\<^sub>1\<^sub>C) x\<^sub>A = (mem\<^sub>A_of mem\<^sub>2\<^sub>C) x\<^sub>A"
+    from assms \<open>x\<^sub>A \<in> \<C>\<^sub>A\<close> have "(mem\<^sub>A_of mem\<^sub>1\<^sub>C) x\<^sub>A = (mem\<^sub>A_of mem\<^sub>2\<^sub>C) x\<^sub>A"
       unfolding abs.low_mds_eq_def
       using abs.\<C>_Low by blast
     thus "(mem\<^sub>1\<^sub>C x\<^sub>C) = (mem\<^sub>2\<^sub>C x\<^sub>C)"
-      using `var\<^sub>C_of x\<^sub>A = x\<^sub>C` unfolding mem\<^sub>A_of_def by blast
+      using \<open>var\<^sub>C_of x\<^sub>A = x\<^sub>C\<close> unfolding mem\<^sub>A_of_def by blast
   qed
 
 lemma R\<^sub>C_ofD:
@@ -539,7 +539,7 @@ proof(rule symI, clarify)
     (mds\<^sub>C' = mds\<^sub>C) \<and>
    conc.low_mds_eq mds\<^sub>C' mem\<^sub>2\<^sub>C mem\<^sub>1\<^sub>C \<and>
    (\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C, mem\<^sub>2\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<in> P"
-    using `sym \<R>\<^sub>A` P_sym unfolding sym_def using conc.low_mds_eq_sym by metis
+    using \<open>sym \<R>\<^sub>A\<close> P_sym unfolding sym_def using conc.low_mds_eq_sym by metis
    thus "(\<langle>c\<^sub>2\<^sub>C, mds\<^sub>C', mem\<^sub>2\<^sub>C\<rangle>\<^sub>C, \<langle>c\<^sub>1\<^sub>C, mds\<^sub>C, mem\<^sub>1\<^sub>C\<rangle>\<^sub>C) \<in> R\<^sub>C_of \<R>\<^sub>A \<R> P"
    using R\<^sub>C_ofI by auto
 qed
@@ -829,11 +829,11 @@ proof -
   qed
 qed
   
-text {*
+text \<open>
   Security of the concrete system should follow straightforwardly from
   security of the abstract one, via the compositionality theorem, presuming
   that the compiler also preserves the sound use of modes.
-*}
+\<close>
 lemma R\<^sub>C_of_strong_low_bisim_mm:
   assumes abs: "abs.strong_low_bisim_mm \<R>\<^sub>A"
   assumes rr: "secure_refinement \<R>\<^sub>A \<R> P"
@@ -856,7 +856,7 @@ lemma R\<^sub>C_of_strong_low_bisim_mm:
 
 section "A Simpler Proof Principle for General Compositional Refinement"
 
-text {*
+text \<open>
   Here we make use of the fact that the source language we are working
   in is assumed deterministic. This allows us to invert the direction
   of refinement and thereby to derive a simpler condition for secure
@@ -866,9 +866,9 @@ text {*
   and has the user prove separately that the coupling invariant @{term P}
   is self-preserving. This allows proofs about coupling invariant properties
   to be disentangled from the proof of refinement itself.
-*}
+\<close>
   
-text {*
+text \<open>
   Given a  bisimulation @{term \<R>\<^sub>A}, this definition captures the essence of the extra
   requirements on a refinement relation~@{term \<R>} needed to ensure that the refined program is
   also secure. These requirements are essentially that:
@@ -887,7 +887,7 @@ text {*
   invariant @{term P} to be the one that relates all configurations with
   identical programs and mode states, appeared in Murray et al., CSF 2016.
   Here we generalise the theory to support a wider class of coupling invariants.
-*}
+\<close>
 definition
   simpler_refinement_safe 
 where
@@ -1031,10 +1031,10 @@ qed
 
 section "Simple Bisimulations and Simple Refinement"
 
-text {*
+text \<open>
   We derive the theory of simple refinements from Murray et al. CSF 2016 from the above
   \emph{simpler} theory of secure refinement.
-*}
+\<close>
 
 definition
    bisim_simple
@@ -1113,7 +1113,7 @@ qed
   
 section "Sound Mode Use Preservation"
 
-text {*
+text \<open>
   Prove that
   \begin{quote}
   acquiring a mode on the concrete version of an abstract
@@ -1131,7 +1131,7 @@ text {*
    @{term "Acq (var\<^sub>C_of x) SomeMode"}
    is a the right way to implement the abstract program doing
    @{term "Acq x SomeMode"}.
-*}
+\<close>
 
 (* FIXME: There might be better names for these *)
 lemma mode_acquire_refinement_helper:
@@ -1265,12 +1265,12 @@ end
 
 section "Refinement without changing the Memory Model"
 
-text {*
+text \<open>
   Here we define a locale which restricts the refinement to be between an abstract and
   concrete programs that share identical memory models: i,e. have the same set of variables.
   This allows us to derive simpler versions of the conditions that are likely to be easier
   to work with for initial experimentation.
-*}
+\<close>
 locale sifum_refinement_same_mem = 
   abs: sifum_security dma \<C>_vars \<C> eval\<^sub>A some_val +
   conc: sifum_security dma \<C>_vars \<C> eval\<^sub>C some_val
@@ -1422,9 +1422,9 @@ record ('a, 'Val, 'Var\<^sub>C, 'Com\<^sub>C, 'Var\<^sub>A, 'Com\<^sub>A) compon
 
 section "Whole System Refinement"
 
-text {*
+text \<open>
   A locale to capture componentwise refinement of an entire system.
-*}
+\<close>
 locale sifum_refinement_sys = 
   sifum_refinement dma\<^sub>A dma\<^sub>C \<C>_vars\<^sub>A \<C>_vars\<^sub>C \<C>\<^sub>A \<C>\<^sub>C eval\<^sub>A eval\<^sub>C some_val var\<^sub>C_of
   for dma\<^sub>A :: "('Var\<^sub>A,'Val) Mem \<Rightarrow> 'Var\<^sub>A \<Rightarrow> Sec"
@@ -2035,17 +2035,17 @@ proof -
         assume "i = n"
         hence "cms\<^sub>A'' ! i = cm\<^sub>An''"
           using cms\<^sub>A''_def len_cms\<^sub>A'' len by simp
-        moreover from `i = n` have "cms\<^sub>C'' ! i = cm\<^sub>Cn''"
+        moreover from \<open>i = n\<close> have "cms\<^sub>C'' ! i = cm\<^sub>Cn''"
           using cms\<^sub>C''_def len_cms\<^sub>C'' len by simp
         ultimately  show ?thesis 
-          using in_\<R>n'' `i = n`
+          using in_\<R>n'' \<open>i = n\<close>
           by simp
       next
         obtain c\<^sub>Ai mds\<^sub>Ai where cms\<^sub>Ai_def [simp]: "(cms\<^sub>A ! i) = (c\<^sub>Ai, mds\<^sub>Ai)" by fastforce 
         obtain c\<^sub>Ci mds\<^sub>Ci where cms\<^sub>Ci_def [simp]: "(cms\<^sub>C ! i) = (c\<^sub>Ci, mds\<^sub>Ci)" by fastforce 
         hence mds\<^sub>Ci_def: "mds\<^sub>Ci = snd (cms\<^sub>C ! i)" by simp
         
-        from 2(5) `i < length cms` have 
+        from 2(5) \<open>i < length cms\<close> have 
           in_\<R>i: "((cms\<^sub>A ! i,mem\<^sub>A), (cms\<^sub>C ! i,mem\<^sub>C)) \<in> \<R>_rel (cms ! i)"
           by force
           
@@ -2054,7 +2054,7 @@ proof -
           unfolding secure_refinement_def
           by (metis surjective_pairing)
           
-        from in_\<R>i secure_refinements  `i < length cms` preserves_modes_memD
+        from in_\<R>i secure_refinements  \<open>i < length cms\<close> preserves_modes_memD
              cms\<^sub>Ai_def cms\<^sub>Ci_def
         have mem\<^sub>A_def [simp]: "mem\<^sub>A = mem\<^sub>A_of mem\<^sub>C" and
              mds\<^sub>Ai_def [simp]: "mds\<^sub>Ai = mds\<^sub>A_of mds\<^sub>Ci"
@@ -2064,14 +2064,14 @@ proof -
         assume "i \<noteq> n"
         hence "cms\<^sub>A'' ! i = cms\<^sub>A ! i"
           using cms\<^sub>A''_def len_cms\<^sub>A'' len by simp
-        moreover from `i \<noteq> n` have "cms\<^sub>C'' ! i = cms\<^sub>C ! i"
+        moreover from \<open>i \<noteq> n\<close> have "cms\<^sub>C'' ! i = cms\<^sub>C ! i"
           using cms\<^sub>C''_def len_cms\<^sub>C'' len by simp
         ultimately  show ?thesis 
         
-          using 2(5)[of i] `i \<noteq> n` `i < length cms`
+          using 2(5)[of i] \<open>i \<noteq> n\<close> \<open>i < length cms\<close>
           apply simp
           apply(rule closed_othersD)
-            apply(rule secure_refinements[OF `i < length cms`, unfolded secure_refinement_def, THEN conjunct1])
+            apply(rule secure_refinements[OF \<open>i < length cms\<close>, unfolded secure_refinement_def, THEN conjunct1])
            apply assumption
           apply(simp only: mds\<^sub>Ci_def)  
           apply(rule_tac \<R>n="\<R>_rel (cms ! n)"  and \<R>i="\<R>_rel (cms ! i)" in modified_variables_are_not_assumed_not_written)
@@ -2469,7 +2469,7 @@ proof -
        using secure_refinements len apply blast
       using local_guarantee_preservation len by blast
     have "abs.locally_sound_mode_use (fst gc\<^sub>A ! i, snd gc\<^sub>A)"
-      using sound_mode_use\<^sub>A `i < length cms` len_eq
+      using sound_mode_use\<^sub>A \<open>i < length cms\<close> len_eq
       unfolding abs.sound_mode_use_def list_all_length
       by (simp add: case_prod_unfold)
     

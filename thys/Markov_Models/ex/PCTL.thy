@@ -8,7 +8,7 @@ imports
   "HOL-Library.Monad_Syntax"
 begin
 
-section {* Adapt Gauss-Jordan elimination to DTMCs *}
+section \<open>Adapt Gauss-Jordan elimination to DTMCs\<close>
 
 locale Finite_DTMC =
   fixes K :: "'s \<Rightarrow> 's pmf" and S :: "'s set" and \<rho> :: "'s \<Rightarrow> real" and \<iota> :: "'s \<Rightarrow> 's \<Rightarrow> real"
@@ -53,7 +53,7 @@ qed
 lemma order_Ex:
   assumes "s \<in> S" obtains i where "i < card S" "s = order i"
 proof -
-  from `s \<in> S` have "s \<in> order ` {..<card S}"
+  from \<open>s \<in> S\<close> have "s \<in> order ` {..<card S}"
     by simp
   with that show thesis
     by (auto simp del: image_order)
@@ -83,7 +83,7 @@ lemma gauss_jordan'_correct:
   assumes "gauss_jordan' M a = Some f"
   shows "\<forall>s\<in>S. (\<Sum>s'\<in>S. M s s' * f s') = a s"
 proof -
-  note `gauss_jordan' M a = Some f`
+  note \<open>gauss_jordan' M a = Some f\<close>
   moreover define M' where "M' = (\<lambda>i j. if j = card S then
     a (order i) else M (order i) (order j))"
   ultimately obtain sol where sol: "gauss_jordan M' (card S) = Some sol"
@@ -132,7 +132,7 @@ proof -
     have "\<forall>i\<in>{..<card S}. y i = x (order i)"
       unfolding iorder_image_eq[symmetric]
       by (simp add: order_iorder)
-    with `j < card S` show "y j = x (order j)" by simp
+    with \<open>j < card S\<close> show "y j = x (order j)" by simp
   qed
   from gauss_jordan_complete[OF _ this]
   show ?thesis
@@ -141,9 +141,9 @@ qed
 
 end
 
-section {* pCTL model checking*}
+section \<open>pCTL model checking\<close>
 
-subsection {* Syntax *}
+subsection \<open>Syntax\<close>
 
 datatype realrel = LessEqual | Less | Greater | GreaterEqual | Equal
 
@@ -169,7 +169,7 @@ lemma measurable_bound_until[measurable]:
   shows "Measurable.pred (stream_space M) (bound_until n \<phi> \<psi>)"
   by (induct n) simp_all
 
-subsection {* Semantics *}
+subsection \<open>Semantics\<close>
 
 primrec inrealrel :: "realrel \<Rightarrow> 'a \<Rightarrow> ('a::linorder) \<Rightarrow> bool" where
 "inrealrel LessEqual r q    \<longleftrightarrow> q \<le> r" |
@@ -217,9 +217,9 @@ lemma pvalid_sets[measurable]: "Measurable.pred R.S (pvalid F)"
 lemma reward_measurable[measurable]: "reward F \<in> borel_measurable R.S"
   by (cases F) auto
 
-subsection {* Implementation of @{text Sat} *}
+subsection \<open>Implementation of \<open>Sat\<close>\<close>
 
-subsubsection {* @{text Prob0}  *}
+subsubsection \<open>\<open>Prob0\<close>\<close>
 
 definition Prob0 where
   "Prob0 \<Phi> \<Psi> = S - while (\<lambda>R. \<exists>s\<in>\<Phi>. R \<inter> E s \<noteq> {} \<and> s \<notin> R) (\<lambda>R. R \<union> {s\<in>\<Phi>. R \<inter> E s \<noteq> {}}) \<Psi>"
@@ -245,13 +245,13 @@ proof (intro while_rule[where Q="\<lambda>R. S - R = ?U" and P="\<lambda>R. \<Ps
     { fix s s' assume s: "s \<in> \<Phi>" "s' \<in> R" "s' \<in> E s" and r: "(Sigma \<Phi> E)\<^sup>* `` {s} \<inter> \<Psi> = {}"
       with R have "(s, s') \<in> (Sigma \<Phi> E)\<^sup>*" "s' \<in> \<Phi> - \<Psi>"
         by (auto elim: converse_rtranclE)
-      moreover with `s' \<in> R` R obtain s'' where "(s', s'') \<in> (Sigma \<Phi> E)\<^sup>*" "s'' \<in> \<Psi>"
+      moreover with \<open>s' \<in> R\<close> R obtain s'' where "(s', s'') \<in> (Sigma \<Phi> E)\<^sup>*" "s'' \<in> \<Psi>"
         by auto
       ultimately have "(s, s'') \<in> (Sigma \<Phi> E)\<^sup>*" "s'' \<in> \<Psi>"
         by auto
       with r have False
         by auto }
-    with `\<Phi> \<subseteq> S` R show "R \<union> ?\<Delta> R \<subseteq> S - ?U" by auto }
+    with \<open>\<Phi> \<subseteq> S\<close> R show "R \<union> ?\<Delta> R \<subseteq> S - ?U" by auto }
 
   { fix R assume R: "\<Psi> \<subseteq> R \<and> R \<subseteq> S - ?U" and dR: "\<not> (\<exists>s\<in>\<Phi>. R \<inter> E s \<noteq> {} \<and> s \<notin> R)"
     { fix s t assume s: "s \<in> S - R"
@@ -301,7 +301,7 @@ lemma E_rtrancl_closed:
   assumes "s \<in> S" "(s, t) \<in> (SIGMA x:A. B x)\<^sup>*" "\<And>x. x \<in> A \<Longrightarrow> B x \<subseteq> E x" shows "t \<in> S"
   using assms(2,3,1) E_closed by induction force+
 
-subsubsection {* @{text Prob1} *}
+subsubsection \<open>\<open>Prob1\<close>\<close>
 
 definition Prob1 where
   "Prob1 Y \<Phi> \<Psi> = Prob0 (\<Phi> - \<Psi>) Y"
@@ -326,13 +326,13 @@ proof -
     then have "s \<notin> ?P0"
       by auto
     then have "s \<in> \<Phi> - \<Psi> \<or> s \<in> \<Psi>"
-      using P0_subset `s \<in> S` by auto
+      using P0_subset \<open>s \<in> S\<close> by auto
     moreover
     { assume "s \<in> \<Phi> - \<Psi>"
       have "AE \<omega> in T s. ev (HLD (\<Psi> \<union> ?P0)) \<omega>"
       proof (rule AE_T_ev_HLD)
         fix t assume s_t: "(s, t) \<in> acc_on (- (\<Psi> \<union> ?P0))"
-        from `s \<in> S` s_t have "t \<in> S"
+        from \<open>s \<in> S\<close> s_t have "t \<in> S"
           by (rule E_rtrancl_closed) auto
 
         show "\<exists>t'\<in>\<Psi> \<union> ?P0. (t, t') \<in> acc"
@@ -340,15 +340,15 @@ proof -
           assume "t \<in> ?P0" then show ?thesis by auto
         next
           assume "t \<notin> ?P0"
-          with `t\<in>S` obtain s where t_s: "(t, s) \<in> (SIGMA x:\<Phi>. E x)\<^sup>*" and "s \<in> \<Psi>"
+          with \<open>t\<in>S\<close> obtain s where t_s: "(t, s) \<in> (SIGMA x:\<Phi>. E x)\<^sup>*" and "s \<in> \<Psi>"
             unfolding P0 by auto
           from t_s have "(t, s) \<in> acc"
             by (rule set_rev_mp) (intro rtrancl_mono Sigma_mono, auto)
-          with `s \<in> \<Psi>` show ?thesis by auto
+          with \<open>s \<in> \<Psi>\<close> show ?thesis by auto
         qed
       next
         have "acc_on (- (\<Psi> \<union> ?P0)) `` {s} \<subseteq> S"
-          using `s \<in> S` by (auto intro: E_rtrancl_closed)
+          using \<open>s \<in> S\<close> by (auto intro: E_rtrancl_closed)
         then show "finite (acc_on (- (\<Psi> \<union> ?P0)) `` {s})"
           using finite_S by (auto dest: finite_subset)
       qed
@@ -356,7 +356,7 @@ proof -
         using AE_T_enabled
       proof eventually_elim
         fix \<omega> assume "ev (HLD (\<Psi> \<union> ?P0)) \<omega>" "enabled s \<omega>"
-        from this s `s \<in> \<Phi> - \<Psi>` show "(HLD \<Phi> suntil HLD \<Psi>) \<omega>"
+        from this s \<open>s \<in> \<Phi> - \<Psi>\<close> show "(HLD \<Phi> suntil HLD \<Psi>) \<omega>"
         proof (induction arbitrary: s)
           case (base \<omega>) then show ?case
             by (auto simp: HLD_iff enabled.simps[of s] intro: suntil.intros)
@@ -369,7 +369,7 @@ proof -
           then have "shd \<omega> \<in> \<Phi> - \<Psi> \<or> shd \<omega> \<in> \<Psi>" "shd \<omega> \<in> S"
             using P0_subset step.prems(1,2) E_closed by (auto simp add: enabled.simps[of s])
           then show ?case
-            using step.prems(1) step.IH[OF _ _ *] `shd \<omega> \<in> S`
+            using step.prems(1) step.IH[OF _ _ *] \<open>shd \<omega> \<in> S\<close>
             by (auto simp add: suntil.simps[of _ _ \<omega>] HLD_iff[abs_def] enabled.simps[of s \<omega>])
         qed
       qed }
@@ -378,7 +378,7 @@ proof -
   next
     fix s assume s: "s \<in> S" "AE \<omega> in T s. (HLD \<Phi> suntil HLD \<Psi>) (s ## \<omega>)"
     { fix t assume "(s, t) \<in> (SIGMA s:\<Phi>-\<Psi>. E s)\<^sup>*"
-      from this `s \<in> S` have "(AE \<omega> in T t. (HLD \<Phi> suntil HLD \<Psi>) (t ## \<omega>)) \<and> t \<in> S"
+      from this \<open>s \<in> S\<close> have "(AE \<omega> in T t. (HLD \<Phi> suntil HLD \<Psi>) (t ## \<omega>)) \<and> t \<in> S"
       proof induction
         case (step t u) with E_closed show ?case
           by (auto simp add: AE_T_iff[of _ t] suntil_Stream)
@@ -391,7 +391,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsubsection {* @{text ProbU},  @{text ExpCumm}, and @{text ExpState}  *}
+subsubsection \<open>\<open>ProbU\<close>,  \<open>ExpCumm\<close>, and \<open>ExpState\<close>\<close>
 
 abbreviation "\<tau> s t \<equiv> pmf (K s) t"
 
@@ -409,7 +409,7 @@ fun ExpState :: "'s \<Rightarrow> nat \<Rightarrow> ennreal" where
 "ExpState s 0       = \<rho> s" |
 "ExpState s (Suc k) = (\<Sum>s'\<in>S. \<tau> s s' * ExpState s' k)"
 
-subsubsection {* @{text LES} *}
+subsubsection \<open>\<open>LES\<close>\<close>
 
 definition LES :: "'s set \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow> real" where
   "LES F r c =
@@ -417,13 +417,13 @@ definition LES :: "'s set \<Rightarrow> 's \<Rightarrow> 's \<Rightarrow> real" 
                  else (if c = r then \<tau> r c - 1 else \<tau> r c ))"
 
 
-subsubsection {* @{text ProbUinfty}, compute unbounded until *}
+subsubsection \<open>\<open>ProbUinfty\<close>, compute unbounded until\<close>
 
 definition ProbUinfty :: "'s set \<Rightarrow> 's set \<Rightarrow> ('s \<Rightarrow> real) option" where
   "ProbUinfty S1 S2 = gauss_jordan' (LES (Prob0 S1 S2 \<union> S2))
                                     (\<lambda>i. if i \<in> S2 then 1 else 0)"
 
-subsubsection {* @{text ExpFuture}, compute unbounded reward *}
+subsubsection \<open>\<open>ExpFuture\<close>, compute unbounded reward\<close>
 
 definition ExpFuture :: "'s set \<Rightarrow> ('s \<Rightarrow> ennreal) option" where
   "ExpFuture F = do {
@@ -434,7 +434,7 @@ definition ExpFuture :: "'s set \<Rightarrow> ('s \<Rightarrow> ennreal) option"
       Some (\<lambda>s. if s \<in> Y then ennreal (sol s) else \<infinity>)
     }"
 
-subsubsection {* @{text Sat} *}
+subsubsection \<open>\<open>Sat\<close>\<close>
 
 fun Sat :: "'s sform \<Rightarrow> 's set option" where
 "Sat true                   = Some S" |
@@ -480,7 +480,7 @@ next
   have "\<P>(\<omega> in T q. pvalid (U (Suc k) F1 F2) (q ## \<omega>)) =
     (if q \<in> svalid F2 then 1 else if q \<in> svalid F1 then
       \<Sum>t\<in>S. \<tau> q t * \<P>(\<omega> in T t. pvalid (U k F1 F2) (t ## \<omega>)) else 0)"
-    using `q \<in> S` by (subst prob_sum) simp_all
+    using \<open>q \<in> S\<close> by (subst prob_sum) simp_all
   also have "\<dots> = ProbU q (Suc k) (svalid F1) (svalid F2)"
     using Suc by simp
   finally show ?case ..
@@ -489,7 +489,7 @@ qed
 lemma Prob0_imp_not_Psi:
   assumes "\<Phi> \<subseteq> S" "\<Psi> \<subseteq> S" "s \<in> Prob0 \<Phi> \<Psi>" shows "s \<notin> \<Psi>"
 proof -
-  have "s \<in> S" using `s \<in> Prob0 \<Phi> \<Psi>` Prob0_subset_S by auto
+  have "s \<in> S" using \<open>s \<in> Prob0 \<Phi> \<Psi>\<close> Prob0_subset_S by auto
   with assms show ?thesis by (auto simp add: Prob0_iff suntil_Stream)
 qed
 
@@ -497,7 +497,7 @@ lemma Psi_imp_not_Prob0:
   assumes "\<Phi> \<subseteq> S" "\<Psi> \<subseteq> S" shows "s \<in> \<Psi> \<Longrightarrow> s \<notin> Prob0 \<Phi> \<Psi>"
   using Prob0_imp_not_Psi[OF assms] by metis
 
-subsubsection {* Finite expected reward *}
+subsubsection \<open>Finite expected reward\<close>
 
 abbreviation "s0 \<equiv> SOME s. s \<in> S"
 
@@ -517,11 +517,11 @@ proof -
     show ?thesis
     proof (rule nn_integral_reward_until_finite)
       have "acc `` {s} \<subseteq> S"
-        using E_rtrancl_closed[of s _ _ E] `s \<in> S` by auto
+        using E_rtrancl_closed[of s _ _ E] \<open>s \<in> S\<close> by auto
       then show "finite (acc `` {s})"
         using finite_S by (auto dest: finite_subset)
       show "AE \<omega> in T s. (ev (HLD (svalid F))) \<omega>"
-        using until by (auto simp add: suntil_Stream `s \<notin> svalid F` intro: ev_suntil)
+        using until by (auto simp add: suntil_Stream \<open>s \<notin> svalid F\<close> intro: ev_suntil)
     qed auto
   qed simp
   finally show ?thesis .
@@ -544,23 +544,23 @@ proof
     show ?thesis
     proof (rule unique_les[of _ "S - N" K N])
       show "finite ((\<lambda>x. l1 x - l2 x) ` (S - N \<union> N))" "(\<Union>x\<in>S - N. E x) \<subseteq> S - N \<union> N"
-        using E_closed finite_S `N \<subseteq> S` by (auto dest: finite_subset)
+        using E_closed finite_S \<open>N \<subseteq> S\<close> by (auto dest: finite_subset)
       show "\<And>s. s \<in> N \<Longrightarrow> l1 s = l2 s" by fact
       { fix s assume "s \<in> S - N" with E_closed finite_S show "integrable (K s) l1" "integrable (K s) l2"
           by (auto intro!: integrable_measure_pmf_finite dest: finite_subset)
         obtain t where "(t \<in> \<Psi> \<and> (s, t) \<in> (Sigma \<Phi> E)\<^sup>*) \<or> s \<in> N"
-          using `s \<in> S - N` in_S(4) unfolding Prob0_iff_reachable[OF in_S(1,2)] by auto
+          using \<open>s \<in> S - N\<close> in_S(4) unfolding Prob0_iff_reachable[OF in_S(1,2)] by auto
         moreover have "(Sigma \<Phi> E)\<^sup>* \<subseteq> acc"
           by (intro rtrancl_mono Sigma_mono) auto
         ultimately show "\<exists>t\<in>N. (s, t) \<in> acc"
-          using `\<Psi> \<subseteq> N` by auto
+          using \<open>\<Psi> \<subseteq> N\<close> by auto
         show "l1 s = integral\<^sup>L (K s) l1 + c s"
-          using E_closed l1 `s \<in> S - N`
+          using E_closed l1 \<open>s \<in> S - N\<close>
           by (subst integral_measure_pmf[OF finite_S]) (auto simp: subset_eq field_simps)
         show "l2 s = integral\<^sup>L (K s) l2 + c s"
-          using E_closed l2 `s \<in> S - N`
+          using E_closed l2 \<open>s \<in> S - N\<close>
           by (subst integral_measure_pmf[OF finite_S]) (auto simp: subset_eq field_simps) }
-    qed (insert `s \<notin>  N` `s \<in> S`, auto)
+    qed (insert \<open>s \<notin>  N\<close> \<open>s \<in> S\<close>, auto)
   qed
 qed
 
@@ -581,7 +581,7 @@ next
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
     by (auto intro!: sum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
-    using `s \<in> S` by (simp add: sum_subtractf single_l)
+    using \<open>s \<in> S\<close> by (simp add: sum_subtractf single_l)
   finally show "l s - 0 = (\<Sum>s'\<in>S. \<tau> s s' * l s')"
     using sol[THEN bspec, of s] s by (simp add: LES_def)
 next
@@ -600,7 +600,7 @@ next
     then have "\<P>(\<omega> in T s. pvalid (U\<^sup>\<infinity> F1 F2) (s ## \<omega>)) = 0"
       by (intro T.prob_eq_0_AE) simp
     moreover have "l s = 0"
-      using `s \<in> S` P0 sol[THEN bspec, of s] Prob0_subset_S
+      using \<open>s \<in> S\<close> P0 sol[THEN bspec, of s] Prob0_subset_S
         Prob0_imp_not_Psi[OF svalid_subset_S svalid_subset_S P0]
       by (auto simp: LES_def single_l split: if_split_asm)
     ultimately show "l s = \<P>(\<omega> in T s. pvalid (U\<^sup>\<infinity> F1 F2) (s ## \<omega>))" by simp
@@ -627,7 +627,7 @@ proof -
     with AE_T_enabled have "(AE \<omega> in T s. (HLD S suntil HLD ?F) \<omega>)"
     proof eventually_elim
       fix \<omega> assume "ev (HLD ?F) \<omega>" "enabled s \<omega>"
-      from this `s \<in> S` show "(HLD S suntil HLD ?F) \<omega>"
+      from this \<open>s \<in> S\<close> show "(HLD S suntil HLD ?F) \<omega>"
       proof (induction arbitrary: s)
         case (step \<omega>) show ?case
           using E_closed step.IH[of "shd \<omega>"] step.prems
@@ -637,19 +637,19 @@ proof -
   moreover have "\<not> (AE \<omega> in T s. (HLD S suntil HLD ?F) (s ## \<omega>))"
     using s svalid_subset_S unfolding N_def Y_def by (simp add: Prob1_iff)
   ultimately have *: "\<not> (AE \<omega> in T s. ev (HLD ?F) (s ## \<omega>))"
-    using `s \<in> S` by (cases "s \<in> ?F") (auto simp add: suntil_Stream ev_Stream)
+    using \<open>s \<in> S\<close> by (cases "s \<in> ?F") (auto simp add: suntil_Stream ev_Stream)
 
   show ?thesis
   proof (rule ccontr)
     assume "\<not> ?thesis"
-    from nn_integral_PInf_AE[OF _ this] `s\<in>S`
+    from nn_integral_PInf_AE[OF _ this] \<open>s\<in>S\<close>
     have "AE \<omega> in T s. ev (HLD ?F) (s ## \<omega>)"
       by (simp split: if_split_asm)
     with * show False ..
   qed
 qed
 
-subsubsection {* The expected reward implies a unique LES *}
+subsubsection \<open>The expected reward implies a unique LES\<close>
 
 lemma existence_of_ExpFuture:
   fixes s F
@@ -675,10 +675,10 @@ proof -
     show "\<tau> s s' * ?E s' = ennreal (\<tau> s s' * enn2real (?E s'))"
     proof cases
       assume "\<tau> s s' \<noteq> 0"
-      with `s \<in> S` `s' \<in> S` have "s' \<in> E s" by (simp add: set_pmf_iff)
-      from `s \<notin> ?F` AE_until have "AE \<omega> in T s. (HLD S suntil HLD ?F) (s ## \<omega>)"
-        using svalid_subset_S `s \<in> S` by simp
-      with nn_integral_reward_finite[OF `s' \<in> S`, of F] `s \<in> S` `s' \<in> E s` `s \<notin> ?F`
+      with \<open>s \<in> S\<close> \<open>s' \<in> S\<close> have "s' \<in> E s" by (simp add: set_pmf_iff)
+      from \<open>s \<notin> ?F\<close> AE_until have "AE \<omega> in T s. (HLD S suntil HLD ?F) (s ## \<omega>)"
+        using svalid_subset_S \<open>s \<in> S\<close> by simp
+      with nn_integral_reward_finite[OF \<open>s' \<in> S\<close>, of F] \<open>s \<in> S\<close> \<open>s' \<in> E s\<close> \<open>s \<notin> ?F\<close>
       have "?E s' \<noteq> \<infinity>"
         by (simp add: AE_T_iff[of _ s] AE_measure_pmf_iff suntil_Stream
                  del: reward.simps)
@@ -687,21 +687,21 @@ proof -
   qed simp
 
   have "AE \<omega> in T s. ?R (s ## \<omega>) = \<rho> s + \<iota> s (shd \<omega>) + ?R \<omega>"
-    using `s \<notin> svalid F` by (auto simp: ev_Stream )
+    using \<open>s \<notin> svalid F\<close> by (auto simp: ev_Stream )
   then have "(\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s) = (\<integral>\<^sup>+\<omega>. (\<rho> s + \<iota> s (shd \<omega>)) + ?R \<omega> \<partial>T s)"
     by (rule nn_integral_cong_AE)
   also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (shd \<omega>) \<partial>T s) +
     (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
-    using `s \<in> S`
+    using \<open>s \<in> S\<close>
     by (subst nn_integral_add)
        (auto simp add: space_PiM PiE_iff simp del: reward.simps)
   also have "\<dots> = ennreal (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) + (\<integral>\<^sup>+\<omega>. ?R \<omega> \<partial>T s)"
-    using `s \<in> S`
+    using \<open>s \<in> S\<close>
     by (subst nn_integral_eq_sum)
        (auto simp: field_simps sum.distrib sum_distrib_left[symmetric] ennreal_mult[symmetric] sum_nonneg)
   finally show ?thesis
     apply (simp del: reward.simps)
-    apply (subst nn_integral_eq_sum[OF `s \<in> S` reward_measurable])
+    apply (subst nn_integral_eq_sum[OF \<open>s \<in> S\<close> reward_measurable])
     apply (simp del: reward.simps ennreal_plus add: * ennreal_plus[symmetric] sum_nonneg)
     done
 qed
@@ -732,11 +732,11 @@ next
     (\<Sum>s'\<in>S. \<tau> s s' * l s' - (if s' = s then 1 else 0) * l s')"
     by (auto intro!: sum.cong simp: field_simps)
   also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * l s') - l s"
-    using `s \<in> S` by (simp add: sum_subtractf single_l)
+    using \<open>s \<in> S\<close> by (simp add: sum_subtractf single_l)
   finally have "l s = (\<Sum>s'\<in>S. \<tau> s s' * l s') - (\<Sum>s'\<in>S. (if s' = s then \<tau> s s' - 1 else \<tau> s s') * l s')"
     by (simp add: field_simps)
   then show "l s - (\<rho> s + (\<Sum>s'\<in>S. \<tau> s s' * \<iota> s s')) = (\<Sum>s'\<in>S. \<tau> s s' * l s')"
-    using sol[OF `s \<in> S`] `s \<in> Y` `s \<notin> ?F` by (simp add: const_def LES_def)
+    using sol[OF \<open>s \<in> S\<close>] \<open>s \<in> Y\<close> \<open>s \<notin> ?F\<close> by (simp add: const_def LES_def)
 next
   fix s assume s: "s \<in> S - (Y - ?F)"
   with sol[of s] have "l s = 0"
@@ -754,7 +754,7 @@ next
   finally show "l s = enn2real (\<integral>\<^sup>+\<omega>. ?R (s ## \<omega>) \<partial>T s)" .
 qed
 
-subsection {* Soundness of @{const Sat} *}
+subsection \<open>Soundness of @{const Sat}\<close>
 
 theorem Sat_sound:
   "Sat F \<noteq> None \<Longrightarrow> Sat F = Some (svalid F)"
@@ -762,7 +762,7 @@ proof (induct F rule: Sat.induct)
   case (5 rel r F)
   { fix q assume "q \<in> S"
     with svalid_subset_S have "sum (\<tau> q) (svalid F) = \<P>(\<omega> in T q. HLD (svalid F) \<omega>)"
-      by (subst prob_sum[OF `q\<in>S`]) (auto intro!: sum.mono_neutral_cong_left) }
+      by (subst prob_sum[OF \<open>q\<in>S\<close>]) (auto intro!: sum.mono_neutral_cong_left) }
   with 5 show ?case
     by (auto split: bind_split_asm)
 
@@ -807,17 +807,17 @@ next
                  simp: ennreal_plus[symmetric] sum_nonneg sum.reindex lessThan_Suc_eq_insert_0 Zero_notin_Suc)
       also have "\<dots> = (\<integral>\<^sup>+\<omega>. \<rho> s + \<iota> s (\<omega> !! 0) \<partial>T s) +
           (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
-        using `s \<in> S`
+        using \<open>s \<in> S\<close>
         by (intro nn_integral_add AE_I2) (auto simp: sum_nonneg)
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) +
         (\<integral>\<^sup>+\<omega>. (\<Sum>i<k. \<rho> (\<omega> !! i) + \<iota> (\<omega> !! i) (\<omega> !! (Suc i))) \<partial>T s)"
-        using `s \<in> S` by (subst nn_integral_eq_sum)
+        using \<open>s \<in> S\<close> by (subst nn_integral_eq_sum)
           (auto simp del: ennreal_plus simp: ennreal_plus[symmetric] ennreal_mult[symmetric] sum_nonneg)
       also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * (\<rho> s + \<iota> s s')) +
         (\<Sum>s'\<in>S. \<tau> s s' * ExpCumm s' k)"
-        using `s \<in> S` by (subst nn_integral_eq_sum) (auto simp: Suc)
+        using \<open>s \<in> S\<close> by (subst nn_integral_eq_sum) (auto simp: Suc)
       also have "\<dots> = ExpCumm s (Suc k)"
-        using `s \<in> S`
+        using \<open>s \<in> S\<close>
         by (simp add: field_simps sum.distrib sum_distrib_left[symmetric] ennreal_mult[symmetric]
             ennreal_plus[symmetric] sum_nonneg del: ennreal_plus)
       finally show ?case by simp
@@ -861,10 +861,10 @@ next
       unfolding Y_def N_def by auto
     then have "AE \<omega> in T s. (HLD S suntil HLD ?F) (s ## \<omega>)"
       using svalid_subset_S by (auto simp add: Prob1_iff)
-    from nn_integral_reward_finite[OF `s \<in> S`] this
+    from nn_integral_reward_finite[OF \<open>s \<in> S\<close>] this
     have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) \<noteq> \<infinity>"
       by (simp add: )
-    with l_eq `s \<in> S` have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) = ennreal (l s)"
+    with l_eq \<open>s \<in> S\<close> have "(\<integral>\<^sup>+\<omega>. reward (Future F) (s ## \<omega>) \<partial>T s) = ennreal (l s)"
       by (auto simp: less_top) }
   moreover
   { fix s assume "s \<in> S" "s \<notin> Y"
@@ -878,7 +878,7 @@ next
     done
 qed (auto split: bind_split_asm)
 
-subsection {* Completeness of @{const Sat} *}
+subsection \<open>Completeness of @{const Sat}\<close>
 
 theorem Sat_complete:
   "Sat F \<noteq> None"
@@ -916,7 +916,7 @@ proof (induct F rule: Sat.induct)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * ?x s') - ?x s"
           using s by (simp add: single_l sum_subtractf)
         finally show ?thesis
-          using * prob_sum[OF `s \<in> S`] s_not_0 by (simp del: pvalid.simps)
+          using * prob_sum[OF \<open>s \<in> S\<close>] s_not_0 by (simp del: pvalid.simps)
       qed
     qed
   qed (simp add: distr_def constants_def)
@@ -945,11 +945,11 @@ next
         show ?thesis
         proof cases
           assume "s \<in> Y"
-          with `s \<in> S` s `s \<in> Y` show ?thesis
+          with \<open>s \<in> S\<close> s \<open>s \<in> Y\<close> show ?thesis
             by (simp add: LES_def const_def single_l ev_Stream)
         next
           assume "s \<notin> Y"
-          with infinite_reward[of s \<Phi>] Y_def N_def s `s \<in> S`
+          with infinite_reward[of s \<Phi>] Y_def N_def s \<open>s \<in> S\<close>
           show ?thesis by (simp add: const_def LES_def single_l del: reward.simps)
         qed
       next
@@ -959,9 +959,9 @@ next
           (\<Sum>s'\<in>S. \<tau> s s' * enn2real (?E s') - (if s' = s then 1 else 0) * enn2real (?E s'))"
           by (auto intro!: sum.cong simp: field_simps)
         also have "\<dots> = (\<Sum>s'\<in>S. \<tau> s s' * enn2real (?E s')) - enn2real (?E s)"
-          using `s \<in> S` by (simp add: sum_subtractf single_l)
+          using \<open>s \<in> S\<close> by (simp add: sum_subtractf single_l)
         finally show ?thesis
-          using s `s \<in> S` existence_of_ExpFuture[OF N_def Y_def `s \<in> S` s]
+          using s \<open>s \<in> S\<close> existence_of_ExpFuture[OF N_def Y_def \<open>s \<in> S\<close> s]
           by (simp add: LES_def const_def del: reward.simps)
       qed
     qed
@@ -972,7 +972,7 @@ next
     by auto
 qed (force split: bind_split)+
 
-subsection {* Completeness and Soundness @{const Sat} *}
+subsection \<open>Completeness and Soundness @{const Sat}\<close>
 
 corollary Sat: "Sat \<Phi> = Some (svalid \<Phi>)"
   using Sat_sound Sat_complete by auto

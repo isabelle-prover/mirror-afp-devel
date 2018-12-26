@@ -1,14 +1,14 @@
-section {* Partial Function Package Setup *}
+section \<open>Partial Function Package Setup\<close>
 theory Refine_Pfun
 imports Refine_Basic Refine_Det
 begin
 
-text {*
+text \<open>
   In this theory, we set up the partial function package to be used 
   with our refinement framework.
-*}
+\<close>
 
-subsection {* Nondeterministic Result Monad *}
+subsection \<open>Nondeterministic Result Monad\<close>
 
 interpretation nrec:
   partial_function_definitions "(\<le>)" "Sup::'a nres set \<Rightarrow> 'a nres"
@@ -69,9 +69,9 @@ qed
     predicate as free variable.
 *)
 
-declaration {* Partial_Function.init "nrec" @{term nrec.fixp_fun}
+declaration \<open>Partial_Function.init "nrec" @{term nrec.fixp_fun}
   @{term nrec.mono_body} @{thm nrec.fixp_rule_uc} @{thm nrec.fixp_induct_uc}
-  (*SOME @{thm fixp_induct_nrec}*) (NONE) *}
+  (*SOME @{thm fixp_induct_nrec}*) (NONE)\<close>
 
 lemma bind_mono_pfun[partial_function_mono]:
   fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c nres) \<Rightarrow> ('d nres)"
@@ -85,7 +85,7 @@ lemma bind_mono_pfun[partial_function_mono]:
   done
 
 
-subsection {* Deterministic Result Monad *}
+subsection \<open>Deterministic Result Monad\<close>
 
 interpretation drec:
   partial_function_definitions "(\<le>)" "Sup::'a dres set \<Rightarrow> 'a dres"
@@ -116,9 +116,9 @@ proof -
     done
 qed
 
-declaration {* Partial_Function.init "drec" @{term drec.fixp_fun}
+declaration \<open>Partial_Function.init "drec" @{term drec.fixp_fun}
   @{term drec.mono_body} @{thm drec.fixp_rule_uc} @{thm drec.fixp_induct_uc} 
-  NONE *}
+  NONE\<close>
 
 lemma drec_bind_mono_pfun[partial_function_mono]:
   fixes C :: "'a \<Rightarrow> ('b \<Rightarrow> 'c dres) \<Rightarrow> ('d dres)"

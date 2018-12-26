@@ -3,13 +3,13 @@
     License: LGPL
 *)
 
-section {* Yonedas Lemma *}
+section \<open>Yonedas Lemma\<close>
 
 theory Yoneda
 imports HomFunctors NatTrans
 begin
 
-subsection {* The Sandwich Natural Transformation *}
+subsection \<open>The Sandwich Natural Transformation\<close>
 
 locale Yoneda = "functor" + into_set +
   assumes "TERM (AA :: ('o,'a,'m)category_scheme)"
@@ -84,7 +84,7 @@ proof (rule funcsetI)
         hence "set_func (F\<^bsub>\<a>\<^esub> f) : (F\<^bsub>\<o>\<^esub> A) \<rightarrow> (F\<^bsub>\<o>\<^esub> B)"
           by (simp add: Set_def set_cat_def set_arrow_def)
         thus "set_func (F\<^bsub>\<a>\<^esub> f) a \<in> F\<^bsub>\<o>\<^esub> B"
-          using `a \<in> F\<^bsub>\<o>\<^esub> A`
+          using \<open>a \<in> F\<^bsub>\<o>\<^esub> A\<close>
           by (rule funcset_mem)
       qed
     qed
@@ -98,7 +98,7 @@ lemma (in Yoneda) sandwich_type:
   shows "\<sigma>(A,a) B \<in> hom Set (Hom A B) (F\<^bsub>\<o>\<^esub> B)"
 proof-
   have "\<sigma>(A,a) \<in> Ob \<rightarrow> Ar\<^bsub>Set\<^esub>"
-    using A and `a \<in> F\<^bsub>\<o>\<^esub> A` by (rule sandwich_funcset)
+    using A and \<open>a \<in> F\<^bsub>\<o>\<^esub> A\<close> by (rule sandwich_funcset)
   hence "\<sigma>(A,a) B \<in> ar Set"
     using B by (rule funcset_mem)
   thus ?thesis
@@ -190,7 +190,7 @@ proof (intro natural_transformation.intro natural_transformation_axioms.intro tw
 qed
 
 
-subsection {* Sandwich Components are Bijective *}
+subsection \<open>Sandwich Components are Bijective\<close>
 
 lemma (in Yoneda) unsandwich_left_inverse:
   assumes 1: "A \<in> Ob"
@@ -321,10 +321,10 @@ proof (rule extensionalityI)
 qed
 
 
-text {* In order to state the lemma, we must rectify a curious
+text \<open>In order to state the lemma, we must rectify a curious
 omission from the Isabelle/HOL library. They define the idea of
 injectivity on a given set, but surjectivity is only defined relative
-to the entire universe of the target type. *}
+to the entire universe of the target type.\<close>
 
 definition
   surj_on :: "['a \<Rightarrow> 'b, 'a set, 'b set] \<Rightarrow> bool" where

@@ -16,7 +16,7 @@ This material corresponds to Section 4.1 (``Theorem Proving Processes'') of Bach
 chapter.
 
 The locale assumptions below capture conditions R1 to R3 of Definition 4.1.
-@{text Rf} denotes $\mathcal{R}_{\mathcal{F}}$; @{text Ri} denotes $\mathcal{R}_{\mathcal{I}}$.
+\<open>Rf\<close> denotes $\mathcal{R}_{\mathcal{F}}$; \<open>Ri\<close> denotes $\mathcal{R}_{\mathcal{I}}$.
 \<close>
 
 locale redundancy_criterion = inference_system +

@@ -1,10 +1,10 @@
-subsection {* The view-partitioning equivalence relation *}
+subsection \<open>The view-partitioning equivalence relation\<close>
 
 theory Step_vpeq
   imports Step Step_invariants
 begin
 
-text {* The view consists of
+text \<open>The view consists of
  \begin{enumerate}
  \item View of object values.
  \item View of subject-subject dynamic policy. The threads can discover the policy
@@ -12,7 +12,7 @@ text {* The view consists of
  \item View of subject-object dynamic policy. The threads can discover the policy
        at runtime, e.g. by calling open() and observing success or failure.
  \end{enumerate}
-*}
+\<close>
 
 definition vpeq_obj :: "partition_id_t \<Rightarrow> state_t \<Rightarrow> state_t \<Rightarrow> bool" where
   "vpeq_obj u s t \<equiv> \<forall> obj_id . Policy.sp_spec_subj_obj u obj_id READ \<longrightarrow> (obj s) obj_id = (obj t) obj_id"
@@ -37,7 +37,7 @@ definition vpeq_local :: "partition_id_t \<Rightarrow> state_t \<Rightarrow> sta
 definition "vpeq u s t \<equiv>
    vpeq_obj u s t \<and> vpeq_subj_subj u s t \<and> vpeq_subj_obj u s t \<and> vpeq_local u s t"
 
-subsubsection {* Elementary properties *}
+subsubsection \<open>Elementary properties\<close>
 
 lemma vpeq_rel:
   shows vpeq_refl: "vpeq u s s"
@@ -46,7 +46,7 @@ lemma vpeq_rel:
   unfolding vpeq_def vpeq_obj_def vpeq_subj_subj_def vpeq_subj_obj_def vpeq_local_def
     by auto
 
-text {* Auxiliary equivalence relation. *}
+text \<open>Auxiliary equivalence relation.\<close>
 
 
 lemma set_object_value_ign:
@@ -59,8 +59,8 @@ proof -
     by auto
 qed
 
-text {* Context-switch and fetch operations are also consistent with vpeq
-        and locally respect everything. *}
+text \<open>Context-switch and fetch operations are also consistent with vpeq
+        and locally respect everything.\<close>
 
 theorem cswitch_consistency_and_respect:
   fixes u :: partition_id_t 

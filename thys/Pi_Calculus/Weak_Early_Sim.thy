@@ -40,12 +40,12 @@ proof(auto simp add: weakSimulation_def)
   obtain c::name where "c \<sharp> P" and "c \<sharp> Q" and "c \<noteq> a" and "c \<sharp> Q'" and "c \<sharp> C" and "c \<noteq> x"
     by(generate_fresh "name") auto
 
-  from QTrans `c \<sharp> Q'` have "Q \<longmapsto> a<\<nu>c> \<prec> ([(x, c)] \<bullet> Q')" by(simp add: alphaBoundOutput)
+  from QTrans \<open>c \<sharp> Q'\<close> have "Q \<longmapsto> a<\<nu>c> \<prec> ([(x, c)] \<bullet> Q')" by(simp add: alphaBoundOutput)
   then obtain P' where PTrans: "P \<Longrightarrow>a<\<nu>c> \<prec> P'" and P'RelQ': "(P', [(x, c)] \<bullet> Q') \<in> Rel"
-    using `c \<sharp> P` `c \<sharp> Q` `c \<noteq> a` `c \<sharp> C`
+    using \<open>c \<sharp> P\<close> \<open>c \<sharp> Q\<close> \<open>c \<noteq> a\<close> \<open>c \<sharp> C\<close>
     by(drule_tac Bound) auto
 
-  from PTrans `x \<sharp> P` `c \<noteq> x` have "P \<Longrightarrow>a<\<nu>x> \<prec> ([(x, c)] \<bullet> P')"
+  from PTrans \<open>x \<sharp> P\<close> \<open>c \<noteq> x\<close> have "P \<Longrightarrow>a<\<nu>x> \<prec> ([(x, c)] \<bullet> P')"
     by(force intro: weakTransitionAlpha simp add: name_swap)
   moreover from Eqvt P'RelQ' have "([(x, c)] \<bullet> P', [(x, c)] \<bullet> [(x, c)] \<bullet> Q') \<in> Rel"
     by(rule eqvtRelI)
@@ -142,10 +142,10 @@ proof -
   from QChain PRelQ Sim obtain P''' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P'''" and P'''RelQ''': "(P''', Q''') \<in> Rel" 
     by(blast dest: weakSimTauChain)
 
-  from PChain `x \<sharp> P` have "x \<sharp> P'''" by(rule freshChain)
+  from PChain \<open>x \<sharp> P\<close> have "x \<sharp> P'''" by(rule freshChain)
       
   from P'''RelQ''' have "P''' \<leadsto><Rel> Q'''" by(rule Sim)
-  with Q'''Trans `x \<sharp> P'''` obtain P'' where P'''Trans: "P''' \<Longrightarrow>a<\<nu>x> \<prec> P''"
+  with Q'''Trans \<open>x \<sharp> P'''\<close> obtain P'' where P'''Trans: "P''' \<Longrightarrow>a<\<nu>x> \<prec> P''"
                                          and P''RelQ'': "(P'', Q'') \<in> Rel"
     by(blast dest: simE)
 
@@ -272,11 +272,11 @@ proof -
   proof(induct rule: simCasesCont[where C=Q])
     case(Bound a x R')
     have RTrans: "R \<longmapsto>a<\<nu>x> \<prec> R'" by fact
-    from `x \<sharp> Q` QSimR RTrans obtain Q' where QTrans: "Q \<Longrightarrow>a<\<nu>x> \<prec> Q'"
+    from \<open>x \<sharp> Q\<close> QSimR RTrans obtain Q' where QTrans: "Q \<Longrightarrow>a<\<nu>x> \<prec> Q'"
                                           and Q'Rel'R': "(Q', R') \<in> Rel'"
       by(blast dest: simE)
 
-    from Sim Eqvt PRelQ QTrans `x \<sharp> P` 
+    from Sim Eqvt PRelQ QTrans \<open>x \<sharp> P\<close> 
     obtain P' where PTrans: "P \<Longrightarrow>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
       by(drule_tac simE2) auto
 (*      by(blast dest: simE2)*)
@@ -314,11 +314,11 @@ proof -
   proof(induct rule: simCasesCont[where C=Q])
     case(Bound a x R')
     have RTrans: "R \<longmapsto>a<\<nu>x> \<prec> R'" by fact
-    from QSimR RTrans `x \<sharp> Q` obtain Q' where QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'"
+    from QSimR RTrans \<open>x \<sharp> Q\<close> obtain Q' where QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'"
                                           and Q'Rel'R': "(Q', R') \<in> Rel'"
       by(blast dest: Strong_Early_Sim.elim)
 
-    with PSimQ QTrans `x \<sharp> P` obtain P' where PTrans: "P \<Longrightarrow>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" 
+    with PSimQ QTrans \<open>x \<sharp> P\<close> obtain P' where PTrans: "P \<Longrightarrow>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" 
       by(blast dest: simE)
     moreover from P'RelQ' Q'Rel'R' Trans have "(P', R') \<in> Rel''" by blast
     ultimately show ?case by blast
@@ -345,7 +345,7 @@ lemma strongSimWeakSim:
 proof(induct rule: simCases)
   case(Bound Q' a x)
   have "Q \<longmapsto>a<\<nu>x> \<prec> Q'" by fact
-  with PSimQ `x \<sharp> P` obtain P' where PTrans: "P \<longmapsto>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
+  with PSimQ \<open>x \<sharp> P\<close> obtain P' where PTrans: "P \<longmapsto>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
     by(blast dest: Strong_Early_Sim.elim)
   from PTrans have "P \<Longrightarrow>a<\<nu>x> \<prec>  P'"
     by(force intro: Weak_Early_Step_Semantics.singleActionChain simp add: weakFreeTransition_def)

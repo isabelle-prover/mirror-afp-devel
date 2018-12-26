@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler, Tobias Nipkow
 *)
 
-section {* Well-Formedness of Intermediate Language *}
+section \<open>Well-Formedness of Intermediate Language\<close>
 
 theory J1WellForm imports
   "../J/DefAss"
   J1WellType
 begin
 
-subsection{* Well-formedness*}
+subsection\<open>Well-formedness\<close>
 
 definition wf_J1_mdecl :: "'addr J1_prog \<Rightarrow> cname \<Rightarrow> 'addr expr1 mdecl \<Rightarrow> bool"
 where

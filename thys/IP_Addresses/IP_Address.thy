@@ -44,10 +44,10 @@ subsection\<open>Sets of IP Addresses\<close>
         {network_prefix .. network_prefix OR (NOT netmask)}"
 
   text\<open>Example (pseudo syntax):
-    @{const ipset_from_netmask} @{text "192.168.1.129  255.255.255.0"} =
-        @{text "{192.168.1.0 .. 192.168.1.255}"}\<close>
+    @{const ipset_from_netmask} \<open>192.168.1.129  255.255.255.0\<close> =
+        \<open>{192.168.1.0 .. 192.168.1.255}\<close>\<close>
 
-  text{*A network mask of all ones (i.e. @{term "(- 1)::'i::len word"}).*}
+  text\<open>A network mask of all ones (i.e. @{term "(- 1)::'i::len word"}).\<close>
   lemma ipset_from_netmask_minusone:
     "ipset_from_netmask ip (- 1) = {ip}" by (simp add: ipset_from_netmask_def)
   lemma ipset_from_netmask_maxword:
@@ -63,7 +63,7 @@ subsection\<open>Sets of IP Addresses\<close>
        ipset_from_netmask addr ((mask pflength) << (len_of(TYPE('i)) - pflength))"
 
   text\<open>Example (pseudo syntax):
-    @{const ipset_from_cidr} @{text "192.168.1.129 24"} = @{text "{192.168.1.0 .. 192.168.1.255}"}\<close>
+    @{const ipset_from_cidr} \<open>192.168.1.129 24\<close> = \<open>{192.168.1.0 .. 192.168.1.255}\<close>\<close>
 
   (*does this simplify stuff?*)
   lemma "(case ipcidr of (base, len) \<Rightarrow> ipset_from_cidr base len) = uncurry ipset_from_cidr ipcidr"
@@ -73,7 +73,7 @@ subsection\<open>Sets of IP Addresses\<close>
     by(auto simp add: ipset_from_cidr_def ipset_from_netmask_def Let_def)
 
   text\<open>A prefix length of word size gives back the singleton set with the IP address.
-       Example: @{text "192.168.1.2/32 = {192.168.1.2}"}\<close>
+       Example: \<open>192.168.1.2/32 = {192.168.1.2}\<close>\<close>
   lemma ipset_from_cidr_wordlength:
     fixes ip :: "'i::len word"
     shows "ipset_from_cidr ip (len_of TYPE('i)) = {ip}"
@@ -109,7 +109,7 @@ subsection\<open>Sets of IP Addresses\<close>
   lemma ipset_from_cidr_not_empty: "ipset_from_cidr base len \<noteq> {}"
     by(simp add: ipset_from_cidr_alt bitmagic_zeroLast_leq_or1Last)
 
-  text{*Though we can write 192.168.1.2/24, we say that 192.168.0.0/24 is well-formed.*}
+  text\<open>Though we can write 192.168.1.2/24, we say that 192.168.0.0/24 is well-formed.\<close>
   lemma ipset_from_cidr_base_wellforemd: fixes base:: "'i::len word"
     assumes "mask (len_of TYPE('i) - l) AND base = 0"
       shows "ipset_from_cidr base l = {base .. base OR mask (len_of TYPE('i) - l)}"
@@ -274,7 +274,7 @@ subsection\<open>IP Addresses in CIDR Notation\<close>
 
 subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
   text\<open>Intersecting two intervals may result in a new interval.
-    Example: @{text "{1..10} \<inter> {5..20} = {5..10}"}
+    Example: \<open>{1..10} \<inter> {5..20} = {5..10}\<close>
 
     Intersecting two IP address ranges represented as CIDR ranges results either in the empty set
     or the smaller of the two ranges. It will never create a new range.
@@ -357,7 +357,7 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
          Some (base2, m2)
       )"
 
-  text{*Intersecting with an address with prefix length zero always yields a non-empty result.*}
+  text\<open>Intersecting with an address with prefix length zero always yields a non-empty result.\<close>
   lemma ipcidr_conjunct_any: "ipcidr_conjunct a (x,0) \<noteq> None" "ipcidr_conjunct (y,0) b \<noteq> None"
      apply(cases a, simp add: ipset_from_cidr_0 ipset_from_cidr_not_empty)
     by(cases b, simp add: ipset_from_cidr_0 ipset_from_cidr_not_empty)

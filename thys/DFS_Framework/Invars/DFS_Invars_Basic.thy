@@ -408,7 +408,7 @@ begin
   lemma "is_invar (\<lambda>s. finite (edges s))"
     by (induction rule: establish_invarI) auto
 
-  text {* Sometimes it's useful to just chose between tree-edges and non-tree. *}
+  text \<open>Sometimes it's useful to just chose between tree-edges and non-tree.\<close>
   lemma edgesE_CB:
     assumes "x \<in> edges s"
     and "x \<in> tree_edges s \<Longrightarrow> P"
@@ -460,7 +460,7 @@ begin
     from new_root empty_stack_imp_empty_pending 
     have [simp]: "pending s = {}" by simp
 
-    from `v0 \<notin> dom (discovered s)` 
+    from \<open>v0 \<notin> dom (discovered s)\<close> 
     have [simp]: "E \<inter> insert v0 (dom (discovered s)) \<times> UNIV - {v0} \<times> succ v0 
       = E \<inter> dom (discovered s) \<times> UNIV" by auto
 
@@ -634,7 +634,7 @@ context param_DFS begin
     with path_mono[OF _ this(2)] EQ have 
       "path (tree_edges s') v0 (rev (tl (stack s))) (hd (stack s))" 
       by blast
-    with `v0 \<in> V0` show ?case
+    with \<open>v0 \<in> V0\<close> show ?case
       by (cases "stack s") (auto simp: path_simps)
 
   next
@@ -657,7 +657,7 @@ context param_DFS begin
       moreover from P A have 
         "path (tree_edges s') v0 (rev (tl (stack s')) @ [hd (stack s')]) (hd (stack s))"
         by (simp)
-      moreover note `v0 \<in> V0`
+      moreover note \<open>v0 \<in> V0\<close>
       ultimately show "\<exists>v0\<in>V0. path (tree_edges s') v0 (rev (tl (stack s'))) (hd (stack s'))"
         by (auto simp add: path_append_conv)
     qed
@@ -717,7 +717,7 @@ context param_DFS begin
     from discover interpret DFS_invar where s=s by simp
 
     from discover have NE[simp]: "stack s \<noteq> []" by simp
-    note TDI = `tree_discovered_inv s`[unfolded tree_discovered_inv_def]
+    note TDI = \<open>tree_discovered_inv s\<close>[unfolded tree_discovered_inv_def]
 
     have "tree_edges s' = {} \<longrightarrow> dom (discovered s') \<subseteq> V0 \<and> (stack s' = [] \<or> (\<exists>v0\<in>V0. stack s' = [v0]))"
       by simp \<comment> \<open>@{text "tree_edges s' \<noteq> {}"}\<close>
@@ -747,7 +747,7 @@ context param_DFS begin
             with discover have "a \<noteq> v" by blast
             with step show ?case by auto
           qed simp
-          with `y \<in> V0` have "x \<in> (tree_edges s)\<^sup>+ `` V0" by auto
+          with \<open>y \<in> V0\<close> have "x \<in> (tree_edges s)\<^sup>+ `` V0" by auto
           with t_ne TDI show ?thesis by auto
         qed
       qed
@@ -762,14 +762,14 @@ context param_DFS begin
       proof (cases "tree_edges s = {}")
         case True with trancl_single have "(tree_edges s')\<^sup>+ = {(hd (stack s), v)}" by simp
         moreover from True TDI have "hd (stack s) \<in> V0" "dom (discovered s) \<subseteq> V0" by auto
-        ultimately show ?thesis using A `x\<notin>V0` by auto
+        ultimately show ?thesis using A \<open>x\<notin>V0\<close> by auto
       next
         case False note t_ne = this
 
         show ?thesis
         proof (cases "x=v")
           case False with A have "x \<in> dom (discovered s)" by simp
-          with TDI t_ne `x \<notin> V0` have "x \<in> (tree_edges s)\<^sup>+ `` V0" by auto
+          with TDI t_ne \<open>x \<notin> V0\<close> have "x \<in> (tree_edges s)\<^sup>+ `` V0" by auto
           with trancl_sub_insert_trancl show ?thesis by simp blast
         next
           case True
@@ -780,7 +780,7 @@ context param_DFS begin
             "(v0, hd (stack s)) \<in> (tree_edges s)\<^sup>*"
             by (blast intro!: path_is_rtrancl)
           with EQ have "(v0, hd (stack s)) \<in> (tree_edges s')\<^sup>*" by (auto intro: rtrancl_mono_mp)
-          ultimately show ?thesis using `v0 \<in> V0` True by (auto elim: rtrancl_into_trancl1)
+          ultimately show ?thesis using \<open>v0 \<in> V0\<close> True by (auto elim: rtrancl_into_trancl1)
         qed
       qed
     } with t_d have "(tree_edges s')\<^sup>+ `` V0 \<union> V0 = dom (discovered s') \<union> V0" by blast
@@ -822,16 +822,16 @@ context param_DFS begin
         have "(y,v) \<notin> tree_edges s'"
         proof (rule notI)
           assume "(y,v) \<in> tree_edges s'" 
-          with True `y\<noteq>w` have "(y,v) \<in> tree_edges s" by simp
+          with True \<open>y\<noteq>w\<close> have "(y,v) \<in> tree_edges s" by simp
           with v_notin_tree show False by auto
         qed
-        with True * `y\<noteq>w` v_hd show ?thesis 
+        with True * \<open>y\<noteq>w\<close> v_hd show ?thesis 
           apply (cases "w = v")
           apply simp 
           using discover apply simp apply blast
           done
       next
-        case False with v_notin_tree * `y\<noteq>w` v_hd 
+        case False with v_notin_tree * \<open>y\<noteq>w\<close> v_hd 
         show ?thesis
           apply (cases "w' = v")
           apply simp apply blast
@@ -887,7 +887,7 @@ context begin interpretation timing_syntax .
       next
         case False with v_notin_tree T have "(a,b) \<in> tree_edges s" "a \<noteq> v" by auto
         with discover have "\<delta> s a < \<delta> s b" by auto
-        with False `a\<noteq>v` show ?thesis by simp
+        with False \<open>a\<noteq>v\<close> show ?thesis by simp
       qed
     } thus ?case by blast
   next
@@ -940,13 +940,13 @@ context DFS_invar begin context begin interpretation timing_syntax .
     from y obtain py where py: "path (tree_edges s) y py v" and "py \<noteq> []"
       using trancl_is_path by metis
 
-    from `px \<noteq> []` `py \<noteq> []` px py
+    from \<open>px \<noteq> []\<close> \<open>py \<noteq> []\<close> px py
     show ?thesis
     proof (induction arbitrary: v rule: rev_nonempty_induct2')
       case (single) hence "(x,v) \<in> tree_edges s" "(y,v) \<in> tree_edges s" 
         by (simp_all add: path_simps)
       with tree_eq_rule have "x=y" by simp
-      with `x\<noteq>y` show ?case by contradiction
+      with \<open>x\<noteq>y\<close> show ?case by contradiction
     next
       case (snocl a as) hence "(y,v) \<in> tree_edges s" by (simp add: path_simps)
       moreover from snocl have "path (tree_edges s) x as a" "(a,v) \<in> tree_edges s" 
@@ -954,7 +954,7 @@ context DFS_invar begin context begin interpretation timing_syntax .
       ultimately have "path (tree_edges s) x as y"
         using tree_eq_rule
         by auto
-      with path_is_trancl `as \<noteq> []` show ?case by metis
+      with path_is_trancl \<open>as \<noteq> []\<close> show ?case by metis
     next
       case (snocr _ a as) hence "(x,v) \<in> tree_edges s" by (simp add: path_simps)
       moreover from snocr have "path (tree_edges s) y as a" "(a,v) \<in> tree_edges s" 
@@ -962,7 +962,7 @@ context DFS_invar begin context begin interpretation timing_syntax .
       ultimately have "path (tree_edges s) y as x"
         using tree_eq_rule
         by auto
-      with path_is_trancl `as \<noteq> []` show ?case by metis
+      with path_is_trancl \<open>as \<noteq> []\<close> show ?case by metis
     next
       case (snoclr a as b bs) hence 
         "path (tree_edges s) x as a" "(a,v) \<in> tree_edges s"
@@ -1002,7 +1002,7 @@ context DFS_invar begin context begin interpretation timing_syntax .
     
     from x have ne[simp]: "stack s \<noteq> []" by auto
 
-    from `j<i` have "x \<in> set (tl (stack s))"
+    from \<open>j<i\<close> have "x \<in> set (tl (stack s))"
       using nth_mem nth_tl[OF ne, of "i - 1"] i
       by auto
     with tl_stack_hd_tree_path have 
@@ -1078,7 +1078,7 @@ context DFS_invar begin context begin interpretation timing_syntax .
     moreover with nc_V0_finished[OF C] have "v0 \<in> dom (finished s)" 
       by auto
     ultimately show ?thesis
-      using tree_path_impl_parenthesis that[OF `v0 \<in> V0`]
+      using tree_path_impl_parenthesis that[OF \<open>v0 \<in> V0\<close>]
       by simp
   qed
 
@@ -1113,14 +1113,14 @@ context param_DFS begin context begin interpretation timing_syntax .
       from F finished_discovered discover have "b \<noteq> v" by auto
       show "(a,b) \<in> (tree_edges s')\<^sup>+"
       proof (cases "a = v")
-        case True with D `b\<noteq>v` have "counter s < \<delta> s b" by simp
+        case True with D \<open>b\<noteq>v\<close> have "counter s < \<delta> s b" by simp
         also from F have "b \<in> dom (discovered s)" 
           using finished_discovered by auto
         with timing_less_counter have "\<delta> s b < counter s" by simp
         finally have False .
         thus ?thesis ..
       next
-        case False with `b\<noteq>v` F D discover have "(a,b) \<in> (tree_edges s)\<^sup>+" by simp
+        case False with \<open>b\<noteq>v\<close> F D discover have "(a,b) \<in> (tree_edges s)\<^sup>+" by simp
         thus ?thesis by (auto intro: trancl_mono_mp)
       qed
     qed
@@ -1149,7 +1149,7 @@ context param_DFS begin context begin interpretation timing_syntax .
           unfolding stack_set_def
         proof
           from F show "a \<in> dom (discovered s)" by simp
-          from True `a\<noteq>b` \<phi>b paren have "a \<in> dom (finished s) \<longrightarrow> \<phi> s a > counter s" by simp
+          from True \<open>a\<noteq>b\<close> \<phi>b paren have "a \<in> dom (finished s) \<longrightarrow> \<phi> s a > counter s" by simp
           with timing_less_counter show "a \<notin> dom (finished s)" by force
         qed 
         with paren True on_stack_is_tree_path have "(a,b) \<in> (tree_edges s)\<^sup>+" by auto
@@ -1228,7 +1228,7 @@ context DFS_invar begin context begin interpretation timing_syntax .
     proof (cases "w \<in> dom (finished s)")
       case True with False v \<delta> show ?thesis by (simp add: parenthesis_impl_tree_path_not_finished)
     next
-      case False with `v \<notin> dom (finished s)` no_pending_imp_succ_discovered v w have 
+      case False with \<open>v \<notin> dom (finished s)\<close> no_pending_imp_succ_discovered v w have 
         "v \<in> set (stack s)" "w \<in> set (stack s)" 
         by (simp_all add: stack_set_def)
       with on_stack_is_tree_path \<delta> show ?thesis by simp
@@ -1505,7 +1505,7 @@ context DFS_invar begin
         from no_loop_in_tree have "(u,u) \<notin> (tree_edges s)\<^sup>+" .
         with trancl_union_outside[OF path] obtain x y where "(u,x) \<in> ?E\<^sup>*" "(x,y) \<in> cross_edges s" "(y,u) \<in> ?E\<^sup>*" by auto
         with cross_edges_target_finished have "y \<in> dom (finished s)" by simp
-        moreover with * `(y,u) \<in> ?E\<^sup>*` have "(y,u) \<in> ?E\<^sup>+" by (auto simp add: rtrancl_eq_or_trancl)
+        moreover with * \<open>(y,u) \<in> ?E\<^sup>*\<close> have "(y,u) \<in> ?E\<^sup>+" by (auto simp add: rtrancl_eq_or_trancl)
         ultimately show False by (metis aux)
       qed
     qed
@@ -1587,25 +1587,25 @@ context begin interpretation timing_syntax .
       show ?thesis
       proof
         assume "(x,y) \<in> (tree_edges s)\<^sup>*"
-        with `x\<noteq>y` have T: "(x,y) \<in> (tree_edges s)\<^sup>+" by (metis rtranclD)
+        with \<open>x\<noteq>y\<close> have T: "(x,y) \<in> (tree_edges s)\<^sup>+" by (metis rtranclD)
         then obtain p where P: "path (tree_edges s) x p y" by (metis trancl_is_path)
         with tree_edges_ssE have "path E x p y" using path_mono[where E="tree_edges s"] 
           by simp
         moreover 
         from P have "\<delta> s x < \<delta> s y \<and> (\<forall> v \<in> set (tl p). \<delta> s x < \<delta> s v)"
-          using `x\<noteq>y`
+          using \<open>x\<noteq>y\<close>
         proof (induct rule: path_tl_induct)
           case (single u) thus ?case by (fact tree_edge_disc)
         next
-          case (step u v) note `\<delta> s x < \<delta> s u`
+          case (step u v) note \<open>\<delta> s x < \<delta> s u\<close>
           also from step have "\<delta> s u < \<delta> s v" by (metis tree_edge_disc)
           finally show ?case .
         qed
         ultimately show "white_path s x y"
-          by (auto simp add: `x\<noteq>y` white_path_def)
+          by (auto simp add: \<open>x\<noteq>y\<close> white_path_def)
       next
         assume "white_path s x y"
-        with `x\<noteq>y` obtain p where 
+        with \<open>x\<noteq>y\<close> obtain p where 
             P:"path E x p y" and
             white: "\<delta> s x < \<delta> s y \<and> (\<forall> v \<in> set (tl p). \<delta> s x < \<delta> s v)"
           unfolding white_path_def
@@ -1631,9 +1631,9 @@ context begin interpretation timing_syntax .
             y_f_d: "y \<in> dom (finished s)" "y \<in> dom (discovered s)"
             by auto
             
-          from `y \<in> succ u` ureach fin_eq_reach have "\<delta> s y < \<phi> s u" 
+          from \<open>y \<in> succ u\<close> ureach fin_eq_reach have "\<delta> s y < \<phi> s u" 
             using finished_succ_fin by simp
-          also from `\<delta> s x < \<delta> s u` have "x \<noteq> u" by auto
+          also from \<open>\<delta> s x < \<delta> s u\<close> have "x \<noteq> u" by auto
           with x_u have "(x,u) \<in> (tree_edges s)\<^sup>+" by (metis rtrancl_eq_or_trancl)
           with fin_eq_reach reach have "\<phi> s u < \<phi> s x" 
             using tree_path_impl_parenthesis

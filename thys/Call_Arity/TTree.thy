@@ -2,7 +2,7 @@ theory TTree
 imports Main ConstOn "List-Interleavings"
 begin
 
-subsubsection {* Prefix-closed sets of lists *}
+subsubsection \<open>Prefix-closed sets of lists\<close>
 
 definition downset :: "'a list set \<Rightarrow> bool" where
   "downset xss = (\<forall>x n. x \<in> xss \<longrightarrow> take n x \<in> xss)"
@@ -37,14 +37,14 @@ proof(intro impI allI )
     from this
     show ?thesis
     proof(induction rule: inc_induct)
-    case base with `xs \<in> xss` show ?case by simp
+    case base with \<open>xs \<in> xss\<close> show ?case by simp
     next
     case (step n')
       from butlast[OF step.IH] step(2)
       show ?case by (simp add: butlast_take)
     qed      
   next
-  case False with `xs \<in> xss` show ?thesis by simp
+  case False with \<open>xs \<in> xss\<close> show ?thesis by simp
   qed
 qed
 
@@ -64,7 +64,7 @@ proof(rule, elim imageE, clarsimp)
     case Nil thus ?case by force
   next
     case snoc
-    thus ?case using `downset xss`  by (auto intro: snoc.IH)
+    thus ?case using \<open>downset xss\<close>  by (auto intro: snoc.IH)
   qed
 qed
 
@@ -72,13 +72,13 @@ lemma downset_set_subset:
   "downset ({xs. set xs \<subseteq> S})"
 by (auto dest: in_set_butlastD)
 
-subsubsection {* The type of infinite labeled trees *}
+subsubsection \<open>The type of infinite labeled trees\<close>
 
 typedef 'a ttree = "{xss :: 'a list set . [] \<in> xss \<and> downset xss}" by auto
 
 setup_lifting type_definition_ttree
 
-subsubsection {* Deconstructors *}
+subsubsection \<open>Deconstructors\<close>
 
 lift_definition possible ::"'a ttree \<Rightarrow> 'a \<Rightarrow> bool"
   is "\<lambda> xss x. \<exists> xs. x#xs \<in> xss".
@@ -87,7 +87,7 @@ lift_definition nxt ::"'a ttree \<Rightarrow> 'a \<Rightarrow> 'a ttree"
   is "\<lambda> xss x. insert [] {xs | xs. x#xs \<in> xss}"
   by (auto simp add: downset_def take_Suc_Cons[symmetric] simp del: take_Suc_Cons)
 
-subsubsection {* Trees as set of paths *}
+subsubsection \<open>Trees as set of paths\<close>
 
 lift_definition paths :: "'a ttree \<Rightarrow> 'a list set" is "(\<lambda> x. x)".
 
@@ -154,18 +154,18 @@ proof(rule paths_inj, rule set_eqI)
   case (Cons x xs t t')
     show ?case
     proof (rule Cons_pathI)
-      from `P t t'`
+      from \<open>P t t'\<close>
       show "possible t x \<longleftrightarrow> possible t' x" by (rule assms(2))
     next
       assume "possible t x" and "possible t' x"
-      with `P t t'`
+      with \<open>P t t'\<close>
       have "P (nxt t x) (nxt t' x)" by (rule assms(3))
       thus "xs \<in> paths (nxt t x) \<longleftrightarrow> xs \<in> paths (nxt t' x)" by (rule Cons.IH)
     qed
   qed
 qed
 
-subsubsection {* The carrier of a tree *}
+subsubsection \<open>The carrier of a tree\<close>
 
 lift_definition carrier :: "'a ttree \<Rightarrow> 'a set" is "\<lambda> xss. \<Union>(set ` xss)".
 
@@ -185,14 +185,14 @@ lemma Union_paths_carrier: "(\<Union>x\<in>paths t. set x) = carrier t"
   by transfer auto
 
 
-subsubsection {* Repeatable trees *}
+subsubsection \<open>Repeatable trees\<close>
 
 definition repeatable where "repeatable t = (\<forall>x . possible t x \<longrightarrow> nxt t x = t)"
 
 lemma nxt_repeatable[simp]: "repeatable t \<Longrightarrow> possible t x \<Longrightarrow> nxt t x = t"
   unfolding repeatable_def by auto
 
-subsubsection {* Simple trees *}
+subsubsection \<open>Simple trees\<close>
 
 lift_definition empty :: "'a ttree" is "{[]}" by auto
 
@@ -263,7 +263,7 @@ lift_definition many_among :: "'a set \<Rightarrow> 'a ttree" is "\<lambda> S. {
 lemma carrier_many_among[simp]: "carrier (many_among S) = S"
  by transfer (auto, metis List.set_insert bot.extremum insertCI insert_subset list.set(1))
 
-subsubsection {* Intersection of two trees *}
+subsubsection \<open>Intersection of two trees\<close>
 
 lift_definition intersect :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<inter>\<inter>" 80)
   is "(\<inter>)"
@@ -277,7 +277,7 @@ lemma carrier_intersect: "carrier (t \<inter>\<inter> t') \<subseteq> carrier t 
   by auto
   
 
-subsubsection {* Disjoint union of trees *}
+subsubsection \<open>Disjoint union of trees\<close>
 
 lift_definition either :: "'a ttree \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree" (infixl "\<oplus>\<oplus>" 80)
   is "(\<union>)"
@@ -317,7 +317,7 @@ lift_definition Either :: "'a ttree set \<Rightarrow> 'a ttree"  is "\<lambda> S
 lemma paths_Either: "paths (Either ts) = insert [] (\<Union>(paths ` ts))"
   by transfer auto
 
-subsubsection {* Merging of trees *}
+subsubsection \<open>Merging of trees\<close>
 
 lemma ex_ex_eq_hint: "(\<exists>x. (\<exists>xs ys. x = f xs ys \<and> P xs ys) \<and> Q x) \<longleftrightarrow> (\<exists>xs ys. Q (f xs ys) \<and> P xs ys)"
   by auto
@@ -365,15 +365,15 @@ proof
   then obtain xs where "x#xs \<in> paths (t \<otimes>\<otimes> t')"
     by transfer auto
   
-  from `x#xs \<in> paths (t \<otimes>\<otimes> t')`
+  from \<open>x#xs \<in> paths (t \<otimes>\<otimes> t')\<close>
   obtain ys zs where "ys \<in> paths t" and "zs \<in> paths t'" and "x#xs \<in> ys \<otimes> zs"
     by transfer auto
 
-  from `x#xs \<in> ys \<otimes> zs`
+  from \<open>x#xs \<in> ys \<otimes> zs\<close>
   have "ys \<noteq> [] \<and> hd ys = x  \<or> zs \<noteq> [] \<and> hd zs = x"
     by (auto elim: interleave_cases)
   thus "possible t x \<or> possible t' x"
-    using  `ys \<in> paths t`   `zs \<in> paths t'`
+    using  \<open>ys \<in> paths t\<close>   \<open>zs \<in> paths t'\<close>
     by transfer auto
 next
   assume "possible t x \<or> possible t' x"
@@ -467,7 +467,7 @@ proof-
   then obtain ys zs where "ys \<in> paths t" and "zs \<in> paths t'" and "xs \<in> interleave ys zs"
     by (auto simp add: paths_both)
   from this(3) have "set xs = set ys \<union> set zs" by (rule interleave_set)
-  with `ys \<in> _` `zs \<in> _` `x \<in> set xs`
+  with \<open>ys \<in> _\<close> \<open>zs \<in> _\<close> \<open>x \<in> set xs\<close>
   have "x \<in> carrier t \<union> carrier t'"  by transfer auto
   }
   moreover
@@ -477,7 +477,7 @@ proof-
   show ?thesis by auto
 qed
 
-subsubsection {* Removing elements from a tree *}
+subsubsection \<open>Removing elements from a tree\<close>
 
 lift_definition without :: "'a \<Rightarrow> 'a ttree \<Rightarrow> 'a ttree"
   is "\<lambda> x xss. filter (\<lambda> x'. x' \<noteq> x) ` xss"
@@ -559,7 +559,7 @@ lemma intersect_many_among: "t \<inter>\<inter> many_among S = ttree_restr S t"
   apply auto
 *)
 
-subsubsection {* Multiple variables, each called at most once *}
+subsubsection \<open>Multiple variables, each called at most once\<close>
 
 lift_definition singles :: "'a set \<Rightarrow> 'a ttree" is "\<lambda> S. {xs. \<forall> x \<in> S. length (filter (\<lambda> x'. x' = x) xs) \<le> 1}"
   apply auto
@@ -619,7 +619,7 @@ proof
     by (induction xs) auto
   hence "filter (\<lambda>x'. x' = x) xs \<in> paths (many_calls x)" by transfer auto
   moreover
-  from `xs \<in> paths t`
+  from \<open>xs \<in> paths t\<close>
   have "filter (\<lambda>x'. x' \<noteq> x) xs \<in> paths (without x t)" by transfer auto
   moreover
   have "xs \<in> interleave (filter (\<lambda>x'. x' = x) xs)  (filter (\<lambda>x'. x' \<noteq> x) xs)" by (rule interleave_filtered)
@@ -628,7 +628,7 @@ qed
 
 
 
-subsubsection {* Substituting trees for every node *}
+subsubsection \<open>Substituting trees for every node\<close>
 
 definition f_nxt :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'a ttree)"
   where "f_nxt f T x = (if x \<in> T then f(x:=empty) else f)"
@@ -711,7 +711,7 @@ proof
     thus ?case by simp
   next
   case (Cons f T' t x xs T)
-    from `x # xs \<in> paths (substitute f T' t)`
+    from \<open>x # xs \<in> paths (substitute f T' t)\<close>
     have [simp]: "possible t x" and "xs \<in> paths (substitute (f_nxt f T' x) T' (nxt t x \<otimes>\<otimes> f x))" by auto
     from Cons.IH[OF this(2) Cons.prems(2)]
     have "xs \<in> paths (substitute (f_nxt f T' x) T (nxt t x \<otimes>\<otimes> f x))".
@@ -732,10 +732,10 @@ proof
     show ?case by simp
   next
     case (Cons x xs)
-    from `x # xs \<in> paths t` 
+    from \<open>x # xs \<in> paths t\<close> 
     have "possible t x" by transfer auto
     moreover
-    from `x # xs \<in> paths t` have "xs \<in> paths (nxt t x)"
+    from \<open>x # xs \<in> paths t\<close> have "xs \<in> paths (nxt t x)"
       by (auto simp add: paths_nxt_eq)
     hence "xs \<in> paths (nxt t x \<otimes>\<otimes> f x)" by (rule set_mp[OF both_contains_arg1])
     note Cons.IH[OF this]
@@ -973,12 +973,12 @@ next
   hence "x \<in> carrier t" by (metis carrier_possible)
   hence "x \<in> A" using Cons.prems(3) by auto
   with Cons.prems have [simp]: "f' x = f x" by auto
-  have "carrier (f x) \<subseteq> A" using `x \<in> A` by (rule Cons.prems(2))
+  have "carrier (f x) \<subseteq> A" using \<open>x \<in> A\<close> by (rule Cons.prems(2))
 
   from Cons.prems(1,2) Cons.prems(4)[symmetric]
   show ?case
     by (auto elim!: Cons.IH
-          dest!: set_mp[OF carrier_f_nxt] set_mp[OF carrier_nxt_subset] set_mp[OF Cons.prems(3)] set_mp[OF `carrier (f x) \<subseteq> A`]
+          dest!: set_mp[OF carrier_f_nxt] set_mp[OF carrier_nxt_subset] set_mp[OF Cons.prems(3)] set_mp[OF \<open>carrier (f x) \<subseteq> A\<close>]
           intro: f_nxt_cong
           )
 qed
@@ -1075,27 +1075,27 @@ next
   case Nil thus ?case by simp
   next
   case (Cons x' xs f t)
-    from `x' # xs \<in> paths (substitute f T t)`
+    from \<open>x' # xs \<in> paths (substitute f T t)\<close>
     have "possible t x'" and "xs \<in> paths (substitute (f_nxt f T x') T (nxt t x' \<otimes>\<otimes> f x'))" by auto
 
-    from `x \<in> set (x' # xs)`
+    from \<open>x \<in> set (x' # xs)\<close>
     have "x = x' \<or> (x \<noteq> x' \<and> x \<in> set xs)" by auto
     hence "carrier (f x) \<subseteq> carrier (substitute (f_nxt f T x') T (nxt t x' \<otimes>\<otimes> f x'))"
     proof(elim conjE disjE)
       assume "x = x'"
       have "carrier (f x) \<subseteq> carrier (nxt t x \<otimes>\<otimes> f x)" by simp
       also have "\<dots> \<subseteq> carrier (substitute (f_nxt f T x') T (nxt t x \<otimes>\<otimes> f x))" by (rule carrier_substitute1)
-      finally show ?thesis unfolding `x = x'`.
+      finally show ?thesis unfolding \<open>x = x'\<close>.
     next
       assume "x \<noteq> x'"
       hence [simp]: "(f_nxt f T x' x) = f x" by (simp add: f_nxt_def)
 
       assume "x \<in> set xs" 
-      from Cons.IH[OF `xs \<in> _ ` this]
+      from Cons.IH[OF \<open>xs \<in> _ \<close> this]
       show "carrier (f x) \<subseteq> carrier (substitute (f_nxt f T x') T (nxt t x' \<otimes>\<otimes> f x'))" by simp
     qed
     also
-    from `possible t x'`
+    from \<open>possible t x'\<close>
     have "carrier (substitute (f_nxt f T x') T (nxt t x' \<otimes>\<otimes> f x')) \<subseteq>  carrier (substitute f T t)"
       apply transfer
       apply auto
@@ -1164,10 +1164,10 @@ proof(rule paths_inj, rule set_eqI, rule iffI)
     from Cons.prems(2)
     have "(\<And>x'. carrier (f_nxt f T x x') \<inter> S = {})" by (auto simp add: f_nxt_def)
     
-    from  Cons.IH[OF `xs \<in> _` this]
+    from  Cons.IH[OF \<open>xs \<in> _\<close> this]
     have "[x'\<leftarrow>xs . x' \<in> S] \<in> paths (ttree_restr S (nxt t x) \<otimes>\<otimes> ttree_restr S (f x))" by (simp add: ttree_restr_both)
     hence "[x'\<leftarrow>xs . x' \<in> S] \<in> paths (ttree_restr S (nxt t x))" by (simp add: ttree_restr_is_empty[OF Cons.prems(2)])
-    with `possible t x`
+    with \<open>possible t x\<close>
     show "[x'\<leftarrow>x#xs . x' \<in> S] \<in> paths (ttree_restr S t)"
       by (cases "x \<in> S") (auto simp add: Cons_path ttree_restr_possible  dest: set_mp[OF ttree_restr_nxt_subset2]  set_mp[OF ttree_restr_nxt_subset])
   qed
@@ -1183,7 +1183,7 @@ next
     by (auto simp add: filter_paths_conv_free_restr[symmetric])
 qed
 
-text {* An alternative characterization of substitution *}
+text \<open>An alternative characterization of substitution\<close>
 
 inductive substitute'' :: "('a \<Rightarrow> 'a ttree) \<Rightarrow> 'a set \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
   substitute''_Nil: "substitute'' f T [] []"
@@ -1204,7 +1204,7 @@ proof
     thus ?case by auto
   next
     case (Cons x xs f t)
-    from `x # xs \<in> paths (substitute f T t)`
+    from \<open>x # xs \<in> paths (substitute f T t)\<close>
     have "possible t x" and "xs \<in> paths (substitute (f_nxt f T x) T (nxt t x \<otimes>\<otimes> f x))" by (auto simp add: Cons_path)
     from Cons.IH[OF this(2)]
     obtain xs' where "xs' \<in> paths (nxt t x \<otimes>\<otimes> f x)" and "substitute'' (f_nxt f T x) T xs' xs" by auto
@@ -1212,10 +1212,10 @@ proof
     obtain ys' zs' where "ys' \<in> paths (nxt t x)" and "zs' \<in> paths (f x)" and "xs' \<in> interleave ys' zs'" 
       by (auto simp add: paths_both)
   
-    from this(2,3) `substitute'' (f_nxt f T x) T xs' xs`
+    from this(2,3) \<open>substitute'' (f_nxt f T x) T xs' xs\<close>
     have "substitute'' f T (x # ys') (x # xs)"..
     moreover
-    from `ys' \<in> paths (nxt t x)` `possible t x`
+    from \<open>ys' \<in> paths (nxt t x)\<close> \<open>possible t x\<close>
     have "x # ys' \<in> paths t"  by (simp add: Cons_path)
     ultimately
     show ?case by auto
@@ -1269,12 +1269,12 @@ proof(rule paths_inj, rule set_eqI, rule iffI)
     proof (cases "x \<in> S")
       case True
       show ?thesis
-        using `possible t x` Cons.prems(3) * True
+        using \<open>possible t x\<close> Cons.prems(3) * True
         by (auto simp add: ttree_restr_both ttree_restr_noop[OF Cons.prems(2)] intro: ttree_restr_possible
                     dest: set_mp[OF substitute_mono2[OF both_mono1[OF ttree_restr_nxt_subset]]])
     next
       case False
-      with `const_on f (- S) TTree.empty` have [simp]: "f x = empty" by auto
+      with \<open>const_on f (- S) TTree.empty\<close> have [simp]: "f x = empty" by auto
       hence [simp]: "f_nxt f T x = f" by (auto simp add: f_nxt_def)
       show ?thesis
       using * False
@@ -1293,7 +1293,7 @@ next
   have "\<exists> xs''. xs = filter (\<lambda> x'. x'\<in>S) xs'' \<and> substitute'' f T xs' xs''"
   proof(induction "(xs',xs)" arbitrary: f xs' xs rule: measure_induct_rule[where f = "\<lambda> (xs,ys). length (filter (\<lambda> x'. x' \<notin> S) xs) + length ys"])
   case (less xs ys)
-    note `substitute'' f T [x'\<leftarrow>xs . x' \<in> S] ys`
+    note \<open>substitute'' f T [x'\<leftarrow>xs . x' \<in> S] ys\<close>
 
     show ?case
     proof(cases xs)
@@ -1307,21 +1307,21 @@ next
         have "substitute'' f T (x# [x'\<leftarrow>xs' . x' \<in> S]) ys" by simp
         from substitute''_ConsE[OF this]
         obtain zs xs'' ys' where "ys = x # ys'" and "zs \<in> paths (f x)" and "xs'' \<in> interleave [x'\<leftarrow>xs' . x' \<in> S] zs" and "substitute'' (f_nxt f T x) T xs'' ys'".
-        from `zs \<in> paths (f x)`  less.prems(2)
+        from \<open>zs \<in> paths (f x)\<close>  less.prems(2)
         have "set zs \<subseteq> S" by (auto simp add: Union_paths_carrier[symmetric])
         hence [simp]: "[x'\<leftarrow>zs . x' \<in> S] = zs" "[x'\<leftarrow>zs . x' \<notin> S] = []" 
             by (metis UnCI Un_subset_iff eq_iff filter_True,
-               metis `set zs \<subseteq> S` filter_False insert_absorb insert_subset)
+               metis \<open>set zs \<subseteq> S\<close> filter_False insert_absorb insert_subset)
         
-        from `xs'' \<in> interleave [x'\<leftarrow>xs' . x' \<in> S] zs`
+        from \<open>xs'' \<in> interleave [x'\<leftarrow>xs' . x' \<in> S] zs\<close>
         have "xs'' \<in> interleave [x'\<leftarrow>xs' . x' \<in> S] [x'\<leftarrow>zs . x' \<in> S]" by simp
         then obtain xs''' where "xs'' = [x'\<leftarrow>xs''' . x' \<in> S]" and "xs''' \<in> interleave xs' zs" by (rule interleave_filter)
 
-        from `xs''' \<in> interleave xs' zs`
+        from \<open>xs''' \<in> interleave xs' zs\<close>
         have l: "\<And> P. length (filter P xs''') = length (filter P xs') + length (filter P zs)"
           by (induction) auto
         
-        from `substitute'' (f_nxt f T x) T xs'' ys'` `xs'' = _`
+        from \<open>substitute'' (f_nxt f T x) T xs'' ys'\<close> \<open>xs'' = _\<close>
         have "substitute'' (f_nxt f T x) T [x'\<leftarrow>xs''' . x' \<in> S] ys'" by simp
         moreover
         from less.prems(2)
@@ -1333,11 +1333,11 @@ next
         ultimately
         have "\<exists>ys''. ys' = [x'\<leftarrow>ys'' . x' \<in> S] \<and> substitute'' (f_nxt f T x) T xs''' ys''"
             by (rule less.hyps[rotated])
-               (auto simp add: `ys = _ ` `xs =_` `x \<in> S` `xs'' = _`[symmetric] l)[1]
+               (auto simp add: \<open>ys = _ \<close> \<open>xs =_\<close> \<open>x \<in> S\<close> \<open>xs'' = _\<close>[symmetric] l)[1]
         then obtain ys'' where "ys' = [x'\<leftarrow>ys'' . x' \<in> S]" and "substitute'' (f_nxt f T x) T xs''' ys''" by blast
-        hence "ys = [x'\<leftarrow>x#ys'' . x' \<in> S]" using `x \<in> S` `ys = _` by simp
+        hence "ys = [x'\<leftarrow>x#ys'' . x' \<in> S]" using \<open>x \<in> S\<close> \<open>ys = _\<close> by simp
         moreover
-        from `zs \<in> paths (f x)` `xs''' \<in> interleave xs' zs` `substitute'' (f_nxt f T x) T xs''' ys''`
+        from \<open>zs \<in> paths (f x)\<close> \<open>xs''' \<in> interleave xs' zs\<close> \<open>substitute'' (f_nxt f T x) T xs''' ys''\<close>
         have "substitute'' f T (x#xs') (x#ys'')"
           by rule
         ultimately
@@ -1346,15 +1346,15 @@ next
       case False with Cons less.prems
         have "substitute'' f T ([x'\<leftarrow>xs' . x' \<in> S]) ys" by simp
         hence "\<exists>ys'. ys = [x'\<leftarrow>ys' . x' \<in> S] \<and> substitute'' f T xs' ys'"
-            by (rule less.hyps[OF _ _ less.prems(2,3), rotated]) (auto simp add:  `xs =_` `x \<notin>  S`)
+            by (rule less.hyps[OF _ _ less.prems(2,3), rotated]) (auto simp add:  \<open>xs =_\<close> \<open>x \<notin>  S\<close>)
         then obtain ys' where "ys = [x'\<leftarrow>ys' . x' \<in> S]" and "substitute'' f T xs' ys'" by auto
         
         from this(1)
-        have "ys = [x'\<leftarrow>x#ys' . x' \<in> S]" using `x \<notin> S` `ys = _` by simp
+        have "ys = [x'\<leftarrow>x#ys' . x' \<in> S]" using \<open>x \<notin> S\<close> \<open>ys = _\<close> by simp
         moreover
-        have [simp]: "f x = empty" using `x \<notin> S` less.prems(3) by force
+        have [simp]: "f x = empty" using \<open>x \<notin> S\<close> less.prems(3) by force
         hence "f_nxt f T x = f" by (auto simp add: f_nxt_def)
-        with `substitute'' f T xs' ys'`
+        with \<open>substitute'' f T xs' ys'\<close>
         have "substitute'' f T (x#xs') (x#ys')"
           by (auto intro: substitute''.intros)
         ultimately
@@ -1363,9 +1363,9 @@ next
     qed
   qed
   then obtain xs'' where "xs = filter (\<lambda> x'. x'\<in>S) xs''" and "substitute'' f T xs' xs''" by auto
-  from this(2) `xs' \<in> paths t`
+  from this(2) \<open>xs' \<in> paths t\<close>
   have "xs'' \<in> paths (substitute f T t)" by (auto simp add: substitute_substitute'')
-  with `xs = _`
+  with \<open>xs = _\<close>
   show "xs \<in> paths (ttree_restr S (substitute f T t))"
     by (auto simp add:  filter_paths_conv_free_restr[symmetric])
 qed

@@ -730,7 +730,7 @@ begin
         next
           case (step x)
           have "x \<in> arcs G"
-            using`c \<in> arcs H` step.hyps(2) by (auto simp: arcs_H dest: H.in_face_cycle_setD)
+            using\<open>c \<in> arcs H\<close> step.hyps(2) by (auto simp: arcs_H dest: H.in_face_cycle_setD)
           moreover
           have "G.face_cycle_succ x \<noteq> a' \<Longrightarrow>  {x, G.face_cycle_succ x} \<inter> {a, a'} = {}"
             using step(1) diff_face_not_in(1) G.face_cycle_succ_inI G.segment_face_cycle_x_x_eq
@@ -782,11 +782,11 @@ begin
         case (step x)
         moreover
         have "x \<in> arcs G"
-          using `d \<in> arcs H` arcs_H digraph_map.in_face_cycle_setD step.hyps(2) by fastforce
+          using \<open>d \<in> arcs H\<close> arcs_H digraph_map.in_face_cycle_setD step.hyps(2) by fastforce
         moreover
         have " {x, G.face_cycle_succ x} \<inter> {a, a'} = {}"
         proof -
-          have "a \<noteq> x" using step(2) H.in_face_cycle_setD `d \<in> arcs H` arcs_not_in by blast
+          have "a \<noteq> x" using step(2) H.in_face_cycle_setD \<open>d \<in> arcs H\<close> arcs_not_in by blast
           moreover
           have "a \<noteq> G.face_cycle_succ x"
             by (metis b_in not_in_segment1 segment.step segmentD_orbit step(1))

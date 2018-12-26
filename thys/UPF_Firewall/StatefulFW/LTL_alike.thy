@@ -35,27 +35,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Termporal Combinators *}
+subsection \<open>Termporal Combinators\<close>
 theory
   LTL_alike 
   imports 
     Main
 begin
 
-text{* 
+text\<open>
   In the following, we present a small embbeding of temporal combinators, that may help to 
   formulate typical temporal properties in traces and protocols concisely. It is based on 
   \emph{finite} lists, therefore the properties of this logic are not fully compatible with  
   LTL based on Kripke-structures. For the purpose of this demonstration, however, the difference 
   does not matter.
-*}
+\<close>
 
 fun nxt :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" ("N")
 where 
    "nxt p [] = False"
 |  "nxt p (a # S) = (p S)"
 
-text{* Predicate $p$ holds at first position. *}
+text\<open>Predicate $p$ holds at first position.\<close>
 
 fun atom :: "('\<alpha> \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" ("\<guillemotleft>_\<guillemotright>")
 where 
@@ -71,10 +71,10 @@ where
    "always p [] = True"
 |  "always p (a # S) = ((p (a # S)) \<and> always p S)"
 
-text{* 
+text\<open>
   Always is a generalization of the \verb+list_all+ combinator from the List-library; if arguing 
   locally, this paves the way to a wealth of library lemmas. 
-*}
+\<close>
 lemma always_is_listall : "(\<box> \<guillemotleft>p\<guillemotright>) (t) = list_all (p) (t)"
   by(induct "t", simp_all)
 
@@ -84,29 +84,29 @@ where
 |  "eventually p (a # S) = ((p (a # S)) \<or> eventually p S)"
 
 
-text{* 
+text\<open>
   Eventually is a generalization of the \verb+list_ex+ combinator from the List-library; if arguing 
   locally, this paves the way to a wealth of library lemmas. 
-*}
+\<close>
 lemma eventually_is_listex : "(\<diamondsuit> \<guillemotleft>p\<guillemotright>) (t) = list_ex (p) (t)"
   by(induct "t", simp_all)
 
-text{*  
+text\<open>
   The next two constants will help us later in defining the state transitions. The constant 
-  @{text "before"} is @{text "True"} if for all elements which appear before the first element 
-  for which  @{text q} holds, @{text p} must hold.
-*}
+  \<open>before\<close> is \<open>True\<close> if for all elements which appear before the first element 
+  for which  \<open>q\<close> holds, \<open>p\<close> must hold.
+\<close>
 
 fun before :: "('\<alpha> \<Rightarrow> bool) \<Rightarrow> ('\<alpha> \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" 
 where 
   "before p q [] = False"
 | "before p q (a # S) = (q a \<or> (p a \<and> (before p q S)))"
 
-text{* 
-  Analogously there is an operator @{text not_before} which returns
-  @{text "True"} if for all elements which appear before the first
-  element for which @{text q} holds, @{text p} must not hold.
-*}
+text\<open>
+  Analogously there is an operator \<open>not_before\<close> which returns
+  \<open>True\<close> if for all elements which appear before the first
+  element for which \<open>q\<close> holds, \<open>p\<close> must not hold.
+\<close>
 
 fun not_before :: "('\<alpha> \<Rightarrow> bool) \<Rightarrow> ('\<alpha> \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" 
 where  
@@ -122,13 +122,13 @@ lemma not_before_superfluous:
     done
   done
     
-text{*General "before":*}
+text\<open>General "before":\<close>
 fun until :: "('\<alpha> list \<Rightarrow> bool) \<Rightarrow> ('\<alpha> list \<Rightarrow> bool) \<Rightarrow> '\<alpha> list \<Rightarrow> bool" (infixl "U" 66)
 where 
   "until p q [] = False"
 | "until p q (a # S) = (\<exists> s t. a # S= s @ t \<and> p s \<and>  q t)"
 
-text{* This leads to this amazingly tricky proof:*}
+text\<open>This leads to this amazingly tricky proof:\<close>
 lemma before_vs_until: 
 "(before p q) = ((\<box>\<guillemotleft>p\<guillemotright>) U \<guillemotleft>q\<guillemotright>)"
 proof -

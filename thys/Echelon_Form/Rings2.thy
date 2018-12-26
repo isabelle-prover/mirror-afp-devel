@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Rings*}
+section\<open>Rings\<close>
 
 theory Rings2
 imports
@@ -12,7 +12,7 @@ imports
    "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
-subsection{*Previous lemmas and results*}
+subsection\<open>Previous lemmas and results\<close>
 
 lemma chain_le:
   fixes I::"nat => 'a set"
@@ -50,7 +50,7 @@ proof -
     unfolding 3 by fast
 qed
 
-text{*This lemma is presented in the library but for additive abelian groups*}
+text\<open>This lemma is presented in the library but for additive abelian groups\<close>
 
 lemma sum_negf:
   "sum (%x. - (f x)::'a) A = - sum f A"
@@ -61,7 +61,7 @@ next
 qed
 
 
-text{*The following lemmas are presented in the library but for other type classes (semiring\_0)*}
+text\<open>The following lemmas are presented in the library but for other type classes (semiring\_0)\<close>
 
 lemma sum_distrib_left:
   shows "r * sum f A = sum (%n. r * f n) A"
@@ -107,7 +107,7 @@ lemma sum_singleton: "sum f {x} = f x"
 by (metis add_commute empty_iff finite.emptyI add_0_left sum.empty sum.insert)
 end
 
-subsection{*Subgroups*}
+subsection\<open>Subgroups\<close>
 
 context group_add
 begin
@@ -163,7 +163,7 @@ qed
 
 end
 
-subsection{*Ideals*}
+subsection\<open>Ideals\<close>
 
 context ring
 begin
@@ -590,19 +590,19 @@ lemma ideal_kZ: "ideal {k*x|x. x\<in>(UNIV::int set)}"
   apply (metis minus_mult_right)
   done
 
-subsection{*GCD Rings and Bezout Domains*}
+subsection\<open>GCD Rings and Bezout Domains\<close>
 
-text{*To define GCD rings and Bezout rings, there are at least two options:
+text\<open>To define GCD rings and Bezout rings, there are at least two options:
 fix the operation gcd or just assume its existence. We have chosen the second one in order to be
 able to use subclasses (if we fix a gcd in the bezout ring class, then we couln't prove that
-principal ideal rings are a subclass of bezout rings).*}
+principal ideal rings are a subclass of bezout rings).\<close>
 
 class GCD_ring = comm_ring_1
   + assumes exists_gcd: "\<exists>d. d dvd a \<and> d dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d)"
 begin
 
-text{*In this structure, there is always a gcd for each pair of elements, but maybe not unique.
-The following definition essentially says if a function satisfies the condition to be a gcd.*}
+text\<open>In this structure, there is always a gcd for each pair of elements, but maybe not unique.
+The following definition essentially says if a function satisfies the condition to be a gcd.\<close>
 
 definition is_gcd :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "is_gcd (gcd') = (\<forall>a b. (gcd' a b dvd a)
@@ -644,9 +644,9 @@ proof
     using exists_bezout[of a b] by auto
 qed
 
-text{*In this structure, there is always a bezout decomposition for each pair of elements, but it is
+text\<open>In this structure, there is always a bezout decomposition for each pair of elements, but it is
 not unique. The following definition essentially says if a function satisfies the condition to be a
-bezout decomposition.*}
+bezout decomposition.\<close>
 
 definition is_bezout :: "('a \<Rightarrow>'a \<Rightarrow> ('a \<times> 'a \<times> 'a)) \<Rightarrow> bool"
   where "is_bezout (bezout) = (\<forall>a b. let (p, q, gcd_a_b) = bezout a b
@@ -656,11 +656,11 @@ definition is_bezout :: "('a \<Rightarrow>'a \<Rightarrow> ('a \<times> 'a \<tim
                                         \<and> (gcd_a_b dvd b)
                                         \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd gcd_a_b))"
 
-text{*The following definition is similar to the previous one, and checks if the input is a
-function that given two parameters @{text "a b"} returns 5 elements @{text "(p,q,u,v,d)"}
-where @{text "d"} is a gcd of @{text "a"} and @{text "b"}, @{text "p"} and @{text "q"} are the
-bezout coefficients such that @{text "p*a+q*b=d"}, @{text "d*u = -b"} and @{text "d*v= a"}.
-The elements @{text "u"} and @{text "v"} are useful for defining the bezout matrix.*}
+text\<open>The following definition is similar to the previous one, and checks if the input is a
+function that given two parameters \<open>a b\<close> returns 5 elements \<open>(p,q,u,v,d)\<close>
+where \<open>d\<close> is a gcd of \<open>a\<close> and \<open>b\<close>, \<open>p\<close> and \<open>q\<close> are the
+bezout coefficients such that \<open>p*a+q*b=d\<close>, \<open>d*u = -b\<close> and \<open>d*v= a\<close>.
+The elements \<open>u\<close> and \<open>v\<close> are useful for defining the bezout matrix.\<close>
 
 definition is_bezout_ext :: "('a \<Rightarrow>'a \<Rightarrow> ('a \<times> 'a \<times> 'a \<times> 'a \<times> 'a)) \<Rightarrow> bool"
   where "is_bezout_ext (bezout) = (\<forall>a b. let (p, q, u, v, gcd_a_b) = bezout a b
@@ -687,8 +687,8 @@ lemma is_gcd_is_bezout:
   shows "is_gcd (\<lambda>a b. (case bezout a b of (_, _, gcd') \<Rightarrow> (gcd')))"
   unfolding is_gcd_def using assms unfolding is_bezout_def Let_def by (simp add: split_beta)
 
-text{*The assumptions of the Bezout rings say that there exists a bezout operation.
-  Now we will show that there also exists an operation satisfying @{text "is_bezout_ext"}*}
+text\<open>The assumptions of the Bezout rings say that there exists a bezout operation.
+  Now we will show that there also exists an operation satisfying \<open>is_bezout_ext\<close>\<close>
 
 lemma exists_bezout_ext_aux:
   fixes a and b
@@ -746,13 +746,13 @@ class bezout_domain_div = bezout_domain + euclidean_semiring
 subclass (in bezout_ring_div) bezout_domain_div
 proof qed
 
-subsection{*Principal Ideal Domains*}
+subsection\<open>Principal Ideal Domains\<close>
 
 class pir = comm_ring_1 + assumes all_ideal_is_principal: "ideal I \<Longrightarrow> principal_ideal I"
 class pid = idom + pir
 
-text{*Thanks to the following proof, we will show that there exist bezout and gcd operations
-in principal ideal rings for each pair of elements.*}
+text\<open>Thanks to the following proof, we will show that there exist bezout and gcd operations
+in principal ideal rings for each pair of elements.\<close>
 
 subclass (in pir) bezout_ring
 proof
@@ -894,9 +894,9 @@ proof qed
 subclass (in pid_div) bezout_domain_div
 proof qed
 
-subsection{*Euclidean Domains*}
+subsection\<open>Euclidean Domains\<close>
 
-text{*We make use of the euclidean ring (domain) class developed by Manuel Eberl.*}
+text\<open>We make use of the euclidean ring (domain) class developed by Manuel Eberl.\<close>
 
 subclass (in euclidean_ring) pid
 proof
@@ -954,8 +954,8 @@ qed
 context euclidean_ring_gcd
 begin
 
-text{*This is similar to the @{text "euclid_ext"} operation, but involving two more parameters
-to satisfy that @{text "is_bezout_ext euclid_ext2"}*}
+text\<open>This is similar to the \<open>euclid_ext\<close> operation, but involving two more parameters
+to satisfy that \<open>is_bezout_ext euclid_ext2\<close>\<close>
 
 definition euclid_ext2 :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a"
   where "euclid_ext2 a b =
@@ -987,10 +987,10 @@ end
 subclass (in euclidean_ring) pid_div ..
 
 
-subsection{*More gcd structures*}
+subsection\<open>More gcd structures\<close>
 
-text{*The following classes represent structures where there exists a gcd
-  for each pair of elements and the operation is fixed.*}
+text\<open>The following classes represent structures where there exists a gcd
+  for each pair of elements and the operation is fixed.\<close>
 
 class pir_gcd = pir + semiring_gcd
 class pid_gcd = pid + pir_gcd
@@ -999,10 +999,10 @@ subclass (in euclidean_ring_gcd) pid_gcd ..
 
 
 
-subsection{*Field*}
+subsection\<open>Field\<close>
 
-text{*Proving that any field is a euclidean domain. There are alternatives to do this,
-see @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00034.html"}*}
+text\<open>Proving that any field is a euclidean domain. There are alternatives to do this,
+see @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2014-October/msg00034.html"}\<close>
 
 (* TODO Remove *)
 class field_euclidean = field + euclidean_ring +

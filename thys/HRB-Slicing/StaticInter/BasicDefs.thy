@@ -1,8 +1,8 @@
-chapter {* The Framework *}
+chapter \<open>The Framework\<close>
 
 theory BasicDefs imports AuxLemmas begin
 
-text {*
+text \<open>
   As slicing is a program analysis that can be completely based on the
   information given in the CFG, we want to provide a framework which
   allows us to formalize and prove properties of slicing regardless of
@@ -25,9 +25,9 @@ text {*
   $(n_1,s_1)$ to $(n_1',s_1')$, this tuple simulates a 
   tuple $(n_2,s_2)$ which is the result of making an
   observable move in the sliced graph beginning in $(n_2',s_2')$.  
-*}
+\<close>
 
-section {* Basic Definitions *}
+section \<open>Basic Definitions\<close>
 
 fun fun_upds :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> ('a \<Rightarrow> 'b)"
 where "fun_upds f [] ys = f"
@@ -43,10 +43,10 @@ proof(induct xs arbitrary:ys i)
   case Nil thus ?case by simp
 next
   case (Cons x' xs')
-  note IH = `\<And>ys i. \<lbrakk>i < length xs'; length xs' = length ys; distinct xs'\<rbrakk>
-    \<Longrightarrow> f(xs' [:=] ys) (xs'!i) = ys!i`
-  from `distinct (x'#xs')` have "distinct xs'" and "x' \<notin> set xs'" by simp_all
-  from `length (x'#xs') = length ys` obtain y' ys' where [simp]:"ys = y'#ys'"
+  note IH = \<open>\<And>ys i. \<lbrakk>i < length xs'; length xs' = length ys; distinct xs'\<rbrakk>
+    \<Longrightarrow> f(xs' [:=] ys) (xs'!i) = ys!i\<close>
+  from \<open>distinct (x'#xs')\<close> have "distinct xs'" and "x' \<notin> set xs'" by simp_all
+  from \<open>length (x'#xs') = length ys\<close> obtain y' ys' where [simp]:"ys = y'#ys'"
     and "length xs' = length ys'"
     by(cases ys) auto
   show ?case
@@ -54,10 +54,10 @@ next
     case 0 thus ?thesis by simp
   next
     case (Suc j)
-    with `i < length (x'#xs')` have "j < length xs'" by simp
-    from IH[OF this `length xs' = length ys'` `distinct xs'`]
+    with \<open>i < length (x'#xs')\<close> have "j < length xs'" by simp
+    from IH[OF this \<open>length xs' = length ys'\<close> \<open>distinct xs'\<close>]
     have "f(xs' [:=] ys') (xs'!j) = ys'!j" .
-    with `x' \<notin> set xs'` `j < length xs'`
+    with \<open>x' \<notin> set xs'\<close> \<open>j < length xs'\<close>
     have "f((x'#xs') [:=] ys) ((x'#xs')!(Suc j)) = ys!(Suc j)" by fastforce
     with Suc show ?thesis by simp
   qed
@@ -68,14 +68,14 @@ lemma fun_upds_eq:
   assumes "V \<in> set xs" and "length xs = length ys" and "distinct xs"
   shows "f(xs [:=] ys) V = f'(xs [:=] ys) V"
 proof -
-  from `V \<in> set xs` obtain i where "i < length xs" and "xs!i = V"
+  from \<open>V \<in> set xs\<close> obtain i where "i < length xs" and "xs!i = V"
     by(fastforce simp:in_set_conv_nth)
-  with `length xs = length ys` `distinct xs`
+  with \<open>length xs = length ys\<close> \<open>distinct xs\<close>
   have "f(xs [:=] ys)(xs!i) = (ys!i)" by -(rule fun_upds_nth)
   moreover
-  from `i < length xs` `xs!i = V` `length xs = length ys` `distinct xs`
+  from \<open>i < length xs\<close> \<open>xs!i = V\<close> \<open>length xs = length ys\<close> \<open>distinct xs\<close>
   have "f'(xs [:=] ys)(xs!i) = (ys!i)" by -(rule fun_upds_nth)
-  ultimately show ?thesis using `xs!i = V` by simp
+  ultimately show ?thesis using \<open>xs!i = V\<close> by simp
 qed
 
 
@@ -83,7 +83,7 @@ lemma fun_upds_notin:"x \<notin> set xs \<Longrightarrow> f(xs [:=] ys) x = f x"
 by(induct xs arbitrary:ys,auto,case_tac ys,auto)
 
 
-subsection {*@{text distinct_fst}*}
+subsection \<open>\<open>distinct_fst\<close>\<close>
  
 definition distinct_fst :: "('a \<times> 'b) list \<Rightarrow> bool" where
   "distinct_fst  \<equiv>  distinct \<circ> map fst"
@@ -103,12 +103,12 @@ lemma distinct_fst_isin_same_fst:
 by(induct xs,auto simp:distinct_fst_def image_def)
 
 
-subsection{* Edge kinds *}
+subsection\<open>Edge kinds\<close>
 
-text {* Every procedure has a unique name, e.g. in object oriented languages
-  @{text pname} refers to class + procedure. *}
+text \<open>Every procedure has a unique name, e.g. in object oriented languages
+  \<open>pname\<close> refers to class + procedure.\<close>
 
-text {* A state is a call stack of tuples, which consists of:
+text \<open>A state is a call stack of tuples, which consists of:
   \begin{enumerate}
   \item data information, i.e.\ a mapping from the local variables in the call 
   frame to their values, and
@@ -122,7 +122,7 @@ text {* A state is a call stack of tuples, which consists of:
   values the parameters have in a certain call frame and control flow information for
   the return. The return edge is concerned with passing the values 
   of the return parameter values to the underlying stack frame. See the funtions 
-  @{text transfer} and @{text pred} in locale @{text CFG}. *}
+  \<open>transfer\<close> and \<open>pred\<close> in locale \<open>CFG\<close>.\<close>
 
 datatype (dead 'var, dead 'val, dead 'ret, dead 'pname) edge_kind =
     UpdateEdge "('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"                  ("\<Up>_")

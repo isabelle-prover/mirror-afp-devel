@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* Normalization of WS1S Formulas *}
+section \<open>Normalization of WS1S Formulas\<close>
 
 (*<*)
 theory WS1S_Normalization

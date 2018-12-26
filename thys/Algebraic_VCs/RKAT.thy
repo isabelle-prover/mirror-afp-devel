@@ -4,16 +4,16 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsection {* Refinement Component *}
+subsection \<open>Refinement Component\<close>
 
 theory RKAT
   imports "AVC_KAT/VC_KAT"
 
 begin
 
-subsubsection{* RKAT: Definition and Basic Properties *}
+subsubsection\<open>RKAT: Definition and Basic Properties\<close>
 
-text {* A refinement KAT is a KAT expanded by Morgan's specification statement. *}
+text \<open>A refinement KAT is a KAT expanded by Morgan's specification statement.\<close>
 
 class rkat = kat +
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -27,7 +27,7 @@ lemma R1: "H p (R p q) q"
 lemma R2: "H p x q \<Longrightarrow> x \<le> R p q"
   by (simp add: spec_def)
 
-subsubsection{* Propositional Refinement Calculus *}
+subsubsection\<open>Propositional Refinement Calculus\<close>
 
 lemma R_skip: "1 \<le> R p p"
 proof -

@@ -1,8 +1,8 @@
 chapter "Orbit-Stabiliser Theorem"
-text {*
+text \<open>
 In this Theory we will prove the orbit-stabiliser theorem, a basic result in the algebra of groups.
 
-*}
+\<close>
 
 theory Orbit_Stabiliser
   imports
@@ -11,11 +11,11 @@ theory Orbit_Stabiliser
 begin
 
 section "Imports"
-text {*
+text \<open>
   /HOL/Algebra/Group.thy is used for the definitions of groups and subgroups
-  *}
+\<close>
 
-text {*
+text \<open>
   Left\_Coset.thy is a copy of /HOL/Algebra/Coset.thy that includes additional theorems about left cosets.
 
   The version of Coset.thy in the Isabelle library is missing some theorems about left cosets
@@ -23,20 +23,20 @@ text {*
   of right cosets with those of left cosets.
 
   Coset.thy is used for definitions of group order, quotient groups (operator LMod), and Lagranges theorem.
-  *}
+\<close>
 
-text {*
+text \<open>
   /HOL/Fun.thy is used for function composition and the identity function.
-  *}
+\<close>
 
 
 section "Group Actions"
 
-text {*
+text \<open>
   We begin by augmenting the existing definition of a group with a group action.
 
   The group action was defined according to @{cite groupaction}.
-*}
+\<close>
 
 locale orbit_stabiliser = group +
   fixes action :: "'a \<Rightarrow> 'b \<Rightarrow> 'b" (infixl "\<odot>" 51)
@@ -46,9 +46,9 @@ locale orbit_stabiliser = group +
 
 section "Orbit and stabiliser"
 
-text {*
+text \<open>
 Next, we define orbit and stabiliser, according to the same Wikipedia article.
-*}
+\<close>
 
 context orbit_stabiliser
 begin
@@ -62,11 +62,11 @@ definition stabiliser :: "'b \<Rightarrow> 'a set"
 
 section "Stabiliser Theorems"
 
-text {*
+text \<open>
 We begin our proofs by showing that the stabiliser forms a subgroup.
 
 This proof follows the template from  @{cite stabsub}.
-*}
+\<close>
 
 theorem stabiliser_subgroup: "subgroup (stabiliser x) G"
 proof(rule subgroupI)
@@ -98,12 +98,12 @@ next
     using g_stab h_stab stabiliser_def by auto
 qed
 
-text {*
+text \<open>
 As an intermediate step we formulate a lemma about the relationship between the group action
 and the stabiliser.
 
 This proof follows the template from @{cite stabsubcor}.
-*}
+\<close>
 
 corollary stabiliser_subgroup_corollary:
   assumes g_car: "g \<in> carrier G" and
@@ -135,12 +135,12 @@ proof
   qed
 qed
 
-text {*
+text \<open>
 Using the previous lemma and our proof that the stabiliser forms a subgroup, we can now
 show that the elements of the orbit map to left cosets of the stabiliser.
 
 This will later form the basis of showing a bijection between the orbit and those cosets.
-*}
+\<close>
 
 lemma stabiliser_cosets_equivalent:
   assumes g_car: "g \<in> carrier G" and
@@ -172,17 +172,17 @@ qed
 
 section "Picking representatives from cosets"
 
-text {*
+text \<open>
 Before we can prove the bijection, we need a few lemmas about representatives from sets.
 
 First we define rep to be an arbitrary element from a left coset of the stabiliser.
-*}
+\<close>
 definition rep :: "'a set \<Rightarrow> 'a" where
   "(H \<in> carrier (G LMod (stabiliser x))) \<Longrightarrow> rep H = (SOME y. y \<in> H)"
 
-text {*
+text \<open>
   The next lemma shows that the representative is always an element of its coset.
-*}
+\<close>
 lemma quotient_rep_ex  : "H \<in> (carrier (G LMod (stabiliser x))) \<Longrightarrow> rep H \<in> H"
 proof -
   fix H
@@ -193,10 +193,10 @@ proof -
   then show "rep H \<in> H" using H rep_def by auto
 qed
 
-text {*
+text \<open>
 The final lemma about representatives shows that it does not matter which element of the coset
 is picked, i.e. all representatives are equivalent.
-*}
+\<close>
 lemma rep_equivalent:
   assumes H:"H \<in> carrier (G LMod stabiliser x)" and
     gH:"g \<in> H"
@@ -214,11 +214,11 @@ qed
 
 section "Orbit-Stabiliser Theorem"
 
-text {*
+text \<open>
   We can now establish the bijection between orbit(x) and the quotient group G/(stabiliser(x))
 
   The idea for this bijection is from @{cite orbitstab}
-*}
+\<close>
 theorem orbit_stabiliser_bij:
   "bij_betw (\<lambda>H. rep H \<odot> x) (carrier (G LMod (stabiliser x))) (orbit x) "
 proof (rule bij_betw_imageI)
@@ -287,10 +287,10 @@ next
 qed
 
 
-text{*
+text\<open>
   The actual orbit-stabiliser theorem is a consequence of the bijection
    we established in the previous theorem and of Lagrange's theorem
-*}
+\<close>
 theorem orbit_stabiliser:
   assumes finite: "finite (carrier G)"
   shows "order G = card (orbit x) * card (stabiliser x)"

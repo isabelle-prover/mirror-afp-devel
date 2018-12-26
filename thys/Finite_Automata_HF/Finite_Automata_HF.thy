@@ -1,25 +1,25 @@
-chapter {*Finite Automata using the Hereditarily Finite Sets*}
+chapter \<open>Finite Automata using the Hereditarily Finite Sets\<close>
 
 theory Finite_Automata_HF imports
   HereditarilyFinite.Ordinal
   "Regular-Sets.Regular_Exp"
 begin
 
-text{*Finite Automata, both deterministic and non-deterministic, for regular languages.
+text\<open>Finite Automata, both deterministic and non-deterministic, for regular languages.
   The Myhill-Nerode Theorem. Closure under intersection, concatenation, etc.
   Regular expressions define regular languages. Closure under reversal;
   the powerset construction mapping NFAs to DFAs. Left and right languages; minimal DFAs.
-  Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFAs.*}
+  Brzozowski's minimization algorithm. Uniqueness up to isomorphism of minimal DFAs.\<close>
 
-section{*Deterministic Finite Automata*}
+section\<open>Deterministic Finite Automata\<close>
 
-text{*Right invariance is the key property for equivalence relations on states of DFAs.*}
+text\<open>Right invariance is the key property for equivalence relations on states of DFAs.\<close>
 definition right_invariant :: "('a list \<times> 'a list) set \<Rightarrow> bool" where
   "right_invariant r \<equiv> (\<forall>u v w. (u,v) \<in> r \<longrightarrow> (u@w, v@w) \<in> r)"
 
-subsection{*Basic Definitions*}
+subsection\<open>Basic Definitions\<close>
 
-text{*First, the record for DFAs*}
+text\<open>First, the record for DFAs\<close>
 record 'a dfa = states :: "hf set"
                 init   :: "hf"
                 final  :: "hf set"
@@ -36,7 +36,7 @@ begin
 lemma finite_final [simp]: "finite (final M)"
   using final finite_subset finite by blast
 
-text{*Transition function for a given starting state and word.*}
+text\<open>Transition function for a given starting state and word.\<close>
 primrec nextl :: "[hf, 'a list] \<Rightarrow> hf" where
     "nextl q []     = q"
   | "nextl q (x#xs) = nextl (nxt M q x) xs"
@@ -44,19 +44,19 @@ primrec nextl :: "[hf, 'a list] \<Rightarrow> hf" where
 definition language :: "'a list set"  where
   "language \<equiv> {xs. nextl (init M) xs \<in> final M}"
 
-text{*The left language WRT a state q is the set of words that lead to q.*}
+text\<open>The left language WRT a state q is the set of words that lead to q.\<close>
 definition left_lang :: "hf \<Rightarrow> 'a list set"  where
   "left_lang q \<equiv> {u. nextl (init M) u = q}"
 
-text{*Part of Prop 1 of
+text\<open>Part of Prop 1 of
   Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën,
   Split and join for minimizing: Brzozowski's algorithm,
-  Prague Stringology Conference 2002*}
+  Prague Stringology Conference 2002\<close>
 lemma left_lang_disjoint:
   "q1 \<noteq> q2 \<Longrightarrow> left_lang q1 \<inter> left_lang q2 = {}"
   unfolding left_lang_def by auto
 
-text{*The right language WRT a state q is the set of words that go from q to F.*}
+text\<open>The right language WRT a state q is the set of words that go from q to F.\<close>
 definition right_lang :: "hf \<Rightarrow> 'a list set"  where
   "right_lang q \<equiv> {u. nextl q u \<in> final M}"
 
@@ -75,13 +75,13 @@ lemma nextl_state: "q \<in> states M \<Longrightarrow> nextl q xs \<in> states M
 lemma nextl_init_state [simp]: "nextl (init M) xs \<in> states M"
   by (simp add: nextl_state)
 
-subsection{*An Equivalence Relation on States*}
+subsection\<open>An Equivalence Relation on States\<close>
 
-text{*Two words are equivalent if they take the machine to the same state.
-  See e.g. Kozen, Automata and Computability, Springer, 1997, page 90. *}
+text\<open>Two words are equivalent if they take the machine to the same state.
+  See e.g. Kozen, Automata and Computability, Springer, 1997, page 90.\<close>
 
 
-text{*This relation asks, do @{term u} and @{term v} lead to the same state?*}
+text\<open>This relation asks, do @{term u} and @{term v} lead to the same state?\<close>
 definition eq_nextl :: "('a list \<times> 'a list) set" where
   "eq_nextl \<equiv> {(u,v). nextl (init M) u = nextl (init M) v}"
 
@@ -112,7 +112,7 @@ lemma index_eq_nextl_le_states: "card (UNIV // eq_nextl) \<le> card (states M)"
   apply (auto simp: quotient_def eq_nextl_class_in_left_lang_im)
   done
 
-subsection {*Minimisation via Accessibility*}
+subsection \<open>Minimisation via Accessibility\<close>
 
 definition accessible :: "hf set"  where
   "accessible \<equiv> {q. left_lang q \<noteq> {}}"
@@ -226,9 +226,9 @@ definition minimal where
 
 
 
-subsection{*An Equivalence Relation on States*}
+subsection\<open>An Equivalence Relation on States\<close>
 
-text{*Collapsing map on states. Two states are equivalent if they yield identical outcomes*}
+text\<open>Collapsing map on states. Two states are equivalent if they yield identical outcomes\<close>
 definition eq_right_lang :: "(hf \<times> hf) set" where
   "eq_right_lang \<equiv> {(u,v). u \<in> states M \<and> v \<in> states M \<and> right_lang u = right_lang v}"
 
@@ -309,7 +309,7 @@ lemma card_Collapse_dfa: "card (states M // eq_right_lang) \<le> card (states M)
 end
 
 
-subsection {*Isomorphisms Between DFAs*}
+subsection \<open>Isomorphisms Between DFAs\<close>
 
 locale dfa_isomorphism = M: dfa M + N: dfa N for M :: "'a dfa" and N :: "'a dfa" +
   fixes h :: "hf \<Rightarrow> hf"
@@ -359,7 +359,7 @@ lemma trans: "dfa_isomorphism N N' h' \<Longrightarrow> dfa_isomorphism M N' (h'
 
 end
 
-section{*The Myhill-Nerode theorem: three characterisations of a regular language*}
+section\<open>The Myhill-Nerode theorem: three characterisations of a regular language\<close>
 
 definition regular :: "'a list set \<Rightarrow> bool" where
   "regular L \<equiv> \<exists>M. dfa M \<and> dfa.language M = L"
@@ -367,8 +367,8 @@ definition regular :: "'a list set \<Rightarrow> bool" where
 definition MyhillNerode :: "'a list set \<Rightarrow> ('a list * 'a list) set \<Rightarrow> bool" where
   "MyhillNerode L R \<equiv> equiv UNIV R \<and> right_invariant R \<and> finite (UNIV//R) \<and> (\<exists>A. L = R``A)"
 
-text{*This relation can be seen as an abstraction of the idea, do @{term u} and @{term v}
-  lead to the same state?  Compare with @{term eq_nextl}, which does precisely that.*}
+text\<open>This relation can be seen as an abstraction of the idea, do @{term u} and @{term v}
+  lead to the same state?  Compare with @{term eq_nextl}, which does precisely that.\<close>
 definition eq_app_right :: "'a list set \<Rightarrow> ('a list * 'a list) set" where
   "eq_app_right L \<equiv> {(u,v). \<forall>w. u@w \<in> L \<longleftrightarrow> v@w \<in> L}"
 
@@ -396,8 +396,8 @@ lemma MN_refines_eq_app_right: "MyhillNerode L R \<Longrightarrow> R \<subseteq>
   unfolding eq_app_right_def MyhillNerode_def right_invariant_def equiv_def trans_def sym_def
   by blast
 
-text{*Step 1 in the circle of implications: every regular language @{term L} is recognised
-  by some Myhill-Nerode relation, @{term R}*}
+text\<open>Step 1 in the circle of implications: every regular language @{term L} is recognised
+  by some Myhill-Nerode relation, @{term R}\<close>
 context dfa
 begin
   lemma MN_eq_nextl: "MyhillNerode language eq_nextl"
@@ -413,7 +413,7 @@ begin
     by (metis finite_refines_card_le finite_index_eq_nextl equiv_eq_nextl equiv_eq_app_right
               eq_nextl_refines_eq_app_right)
 
-  text{*A specific lower bound on the number of states in a DFA*}
+  text\<open>A specific lower bound on the number of states in a DFA\<close>
   lemma index_eq_app_right_lower:
        "card (UNIV // eq_app_right language) \<le> card (states M)"
     using index_eq_nextl_le_states index_le_index_eq_nextl order_trans by blast
@@ -422,16 +422,16 @@ end
 lemma L1_2: "regular L \<Longrightarrow> \<exists>R. MyhillNerode L R"
   by (metis dfa.MN_eq_nextl regular_def)
 
-text{*Step 2: every Myhill-Nerode relation @{term R} for the language @{term L}
-  can be mapped to the canonical M-N relation.*}
+text\<open>Step 2: every Myhill-Nerode relation @{term R} for the language @{term L}
+  can be mapped to the canonical M-N relation.\<close>
 lemma L2_3:
   assumes "MyhillNerode L R"
   obtains "finite (UNIV // eq_app_right L)"
           "card (UNIV // eq_app_right L) \<le> card (UNIV // R)"
 by (meson assms MN_refines_eq_app_right MyhillNerode_def equiv_eq_app_right finite_refines_finite finite_refines_card_le)
 
-text {*Working towards step 3.  Also, every Myhill-Nerode relation @{term R} for @{term L}
-  can be mapped to a machine. The locale below constructs such a DFA. *}
+text \<open>Working towards step 3.  Also, every Myhill-Nerode relation @{term R} for @{term L}
+  can be mapped to a machine. The locale below constructs such a DFA.\<close>
 
 locale MyhillNerode_dfa =
   fixes L :: "'a list set" and R :: "('a list * 'a list) set"
@@ -534,16 +534,16 @@ corollary eq_app_right_finite_index_imp_dfa:
     "dfa M" "dfa.language M = L" "card (states M) = card (UNIV // eq_app_right L)"
   using MN_eq_app_right MN_imp_dfa assms by blast
 
-text{*Step 3*}
+text\<open>Step 3\<close>
 corollary L3_1: "finite (UNIV // eq_app_right L) \<Longrightarrow> regular L"
   using eq_app_right_finite_index_imp_dfa regular_def by blast
 
 
-section{*Non-Deterministic Finite Automata*}
+section\<open>Non-Deterministic Finite Automata\<close>
 
-text{*These NFAs may include epsilon-transitions and multiple start states.*}
+text\<open>These NFAs may include epsilon-transitions and multiple start states.\<close>
 
-subsection{*Basic Definitions*}
+subsection\<open>Basic Definitions\<close>
 
 record 'a nfa = states :: "hf set"
                 init   :: "hf set"
@@ -601,7 +601,7 @@ lemma finite_final: "finite (final M)"
 lemma finite_nxt: "q \<in> states M \<Longrightarrow> finite (nxt M q x)"
   by (metis finite_subset finite nxt)
 
-text{*Transition function for a given starting state and word.*}
+text\<open>Transition function for a given starting state and word.\<close>
 primrec nextl :: "[hf set, 'a list] \<Rightarrow> hf set" where
     "nextl Q []     = epsclo Q"
   | "nextl Q (x#xs) = nextl (\<Union>q \<in> epsclo Q. nxt M q x) xs"
@@ -609,7 +609,7 @@ primrec nextl :: "[hf set, 'a list] \<Rightarrow> hf set" where
 definition language :: "'a list set"  where
   "language \<equiv> {xs. nextl (init M) xs \<inter> final M \<noteq> {}}"
 
-text{*The right language WRT a state q is the set of words that go from q to F.*}
+text\<open>The right language WRT a state q is the set of words that go from q to F.\<close>
 definition right_lang :: "hf \<Rightarrow> 'a list set"  where
   "right_lang q \<equiv> {u. nextl {q} u \<inter> final M \<noteq> {}}"
 
@@ -646,7 +646,7 @@ lemma nextl_Un: "nextl (Q1 \<union> Q2) xs = nextl Q1 xs \<union> nextl Q2 xs"
 lemma nextl_UN: "nextl (\<Union>i\<in>I. f i) xs = (\<Union>i\<in>I. nextl (f i) xs)"
   by (induct xs arbitrary: f) auto
 
-subsection{*The Powerset Construction*}
+subsection\<open>The Powerset Construction\<close>
 
 definition Power_dfa :: "'a dfa" where
   "Power_dfa = \<lparr>dfa.states = {HF (epsclo q) | q. q \<in> Pow (states M)},
@@ -698,7 +698,7 @@ lemma nextl_Power_dfa:
   apply (metis contra_subsetD empty_subsetI epsclo_idem epsclo_mono insert_subset)
   done
 
-text{*Part of Prop 4 of Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën (2002)*}
+text\<open>Part of Prop 4 of Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën (2002)\<close>
 lemma Power_right_lang:
      "qs \<in> dfa.states Power_dfa \<Longrightarrow> Power.right_lang qs = (\<Union>q \<in> hfset qs. right_lang q)"
 using epsclo_increasing
@@ -711,7 +711,7 @@ using nextl_state apply blast
 done
 
 
-text{*The Power DFA accepts the same language as the NFA.*}
+text\<open>The Power DFA accepts the same language as the NFA.\<close>
 theorem Power_language [simp]: "Power.language = language"
 proof -
   { fix u
@@ -734,22 +734,22 @@ proof -
     by blast
 qed
 
-text{*Every language accepted by a NFA is also accepted by a DFA.*}
+text\<open>Every language accepted by a NFA is also accepted by a DFA.\<close>
 corollary imp_regular: "regular language"
   using Power_language dfa_Power regular_def by blast
 
 end
 
-text{*As above, outside the locale*}
+text\<open>As above, outside the locale\<close>
 corollary nfa_imp_regular:
   assumes "nfa M" "nfa.language M = L"
     shows "regular L"
 using assms nfa.imp_regular by blast
 
 
-section{*Closure Properties for Regular Languages*}
+section\<open>Closure Properties for Regular Languages\<close>
 
-subsection{*The Empty Language*}
+subsection\<open>The Empty Language\<close>
 
 theorem regular_empty:  "regular {}"
 proof -
@@ -762,7 +762,7 @@ proof -
     by force
 qed
 
-subsection{*The Empty Word*}
+subsection\<open>The Empty Word\<close>
 
 theorem regular_nullstr:  "regular {[]}"
 proof -
@@ -776,7 +776,7 @@ proof -
     by (metis N.imp_regular)
 qed
 
-subsection{*Single Symbol Languages*}
+subsection\<open>Single Symbol Languages\<close>
 
 theorem regular_singstr: "regular {[a]}"
 proof -
@@ -797,7 +797,7 @@ proof -
     by (metis N.imp_regular)
 qed
 
-subsection{*The Complement of a Language*}
+subsection\<open>The Complement of a Language\<close>
 
 theorem regular_Compl:
   assumes S: "regular S" shows "regular (-S)"
@@ -822,9 +822,9 @@ proof -
     by (intro exI conjI, unfold_locales) (rule eq_L)
 qed
 
-subsection{*The Intersection and Union of Two Languages*}
+subsection\<open>The Intersection and Union of Two Languages\<close>
 
-text{*By the familiar product construction*}
+text\<open>By the familiar product construction\<close>
 
 theorem regular_Int:
   assumes S: "regular S" and T: "regular T" shows "regular (S \<inter> T)"
@@ -863,7 +863,7 @@ corollary regular_Un:
   by (metis S T compl_sup double_compl regular_Compl  regular_Int [of "-S" "-T"])
 
 
-subsection{*The Concatenation of Two Languages*}
+subsection\<open>The Concatenation of Two Languages\<close>
 
 lemma Inlr_rtrancl [simp]: "((\<lambda>q. (Inl q, Inr a)) ` A)\<^sup>* = ((\<lambda>q. (Inl q, Inr a)) ` A)\<^sup>="
   by (auto elim: rtranclE)
@@ -945,13 +945,13 @@ next
     by (simp add: Cons.IH regular_conc regular_singstr)
 qed
 
-text{*All finite sets are regular.*}
+text\<open>All finite sets are regular.\<close>
 theorem regular_finite: "finite L \<Longrightarrow> regular L"
   apply (induct L rule: finite.induct)
   apply (simp add: regular_empty)
   using regular_Un regular_word by fastforce
 
-subsection{*The Kleene Star of a Language*}
+subsection\<open>The Kleene Star of a Language\<close>
 
 theorem regular_star:
   assumes S: "regular S" shows "regular (star S)"
@@ -1050,7 +1050,7 @@ proof -
     by (metis ST.imp_regular)
 qed
 
-subsection{*The Reversal of a Regular Language*}
+subsection\<open>The Reversal of a Regular Language\<close>
 
 definition Reverse_nfa :: "'a dfa \<Rightarrow> 'a nfa" where
   "Reverse_nfa MS = \<lparr>nfa.states = dfa.states MS,
@@ -1090,7 +1090,7 @@ begin
       by (induct u rule: rev_induct) (auto simp: nxt)
   qed
 
-  text{*Part of Prop 3 of Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën (2002)*}
+  text\<open>Part of Prop 3 of Jean-Marc Champarnaud, A. Khorsi and T. Paranthoën (2002)\<close>
   lemma right_lang_Reverse: "nfa.right_lang (Reverse_nfa M) q = rev ` (dfa.left_lang M q)"
   proof -
     interpret NR: nfa "Reverse_nfa M"
@@ -1139,18 +1139,18 @@ proof -
 qed
 
 
-text{*All regular expressions yield regular languages.*}
+text\<open>All regular expressions yield regular languages.\<close>
 theorem regular_lang: "regular (lang r)"
   by (induct r)
      (auto simp: regular_empty regular_nullstr regular_singstr regular_Un regular_conc regular_star)
 
 
-section{*Brzozowski's Minimization Algorithm*}
+section\<open>Brzozowski's Minimization Algorithm\<close>
 
 context dfa
   begin
 
-subsection{*More about the relation @{term eq_app_right}*}
+subsection\<open>More about the relation @{term eq_app_right}\<close>
 
   lemma left_eq_app_right:
        "\<lbrakk>u \<in> left_lang q; v \<in> left_lang q\<rbrakk> \<Longrightarrow> (u,v) \<in> eq_app_right language"
@@ -1190,8 +1190,8 @@ subsection{*More about the relation @{term eq_app_right}*}
     unfolding min_states_def minimal_def
     by (metis bij_betw_def card_image inj_right_lang_imp_eq_app_right_index)
 
-  text{*A minimal machine has a minimal number of states, compared with any other machine
-        for the same language.*}
+  text\<open>A minimal machine has a minimal number of states, compared with any other machine
+        for the same language.\<close>
   theorem minimal_imp_card_states_le:
        "\<lbrakk>minimal; dfa M'; dfa.language M' = language\<rbrakk>
         \<Longrightarrow> card (dfa.states M) \<le> card (dfa.states M')"

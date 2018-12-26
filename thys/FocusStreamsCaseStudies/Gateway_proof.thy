@@ -11,7 +11,7 @@ theory Gateway_proof
 imports Gateway_proof_aux
 begin
 
-subsection {* Properties of the Gateway *}
+subsection \<open>Properties of the Gateway\<close>
 
 lemma Gateway_L1:
   assumes h1:"Gateway req dt a stop lose d ack i vc"
@@ -391,7 +391,7 @@ using assms
 by (simp add: Gateway_L8a)
 
 
-subsection {* Proof of the Refinement Relation for the Gateway Requirements *}
+subsection \<open>Proof of the Refinement Relation for the Gateway Requirements\<close>
 
 lemma Gateway_L0:
  assumes "Gateway req dt a stop lose d ack i vc"
@@ -400,7 +400,7 @@ using assms
 by (simp add: GatewayReq_def Gateway_L1 Gateway_L2 Gateway_L3 Gateway_L4) 
  
 
-subsection {* Lemmas about Gateway Requirements *}
+subsection \<open>Lemmas about Gateway Requirements\<close>
 
 lemma GatewayReq_L1:
   assumes h1:"msg (Suc 0) req"
@@ -458,7 +458,7 @@ proof -
 qed
 
 
-subsection {* Properties of the Gateway System *}
+subsection \<open>Properties of the Gateway System\<close>
    
 lemma GatewaySystem_L1aux:
 assumes "msg (Suc 0) req"
@@ -731,7 +731,7 @@ proof -
 qed
 
 
-subsection {* Proof of the Refinement for the Gateway System *} 
+subsection \<open>Proof of the Refinement for the Gateway System\<close> 
 
 lemma GatewaySystem_L0:
  assumes "GatewaySystem req dt stop lose d ack vc"

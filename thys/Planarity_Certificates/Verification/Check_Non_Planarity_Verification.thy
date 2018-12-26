@@ -7,7 +7,7 @@ theory Check_Non_Planarity_Verification imports
   "HOL-Eisbach.Eisbach"
 begin
 
-subsection {* Graph Basics and Implementation*}
+subsection \<open>Graph Basics and Implementation\<close>
 
 context pre_digraph begin
 
@@ -45,66 +45,66 @@ next
       by (cases es rule: rev_cases) auto
 
     have "fst e \<in> set (inner_verts es)"
-      using A `distinct (inner_verts es)`  `es \<noteq> []`
+      using A \<open>distinct (inner_verts es)\<close>  \<open>es \<noteq> []\<close>
       by (auto simp: inner_verts_def)
     moreover
     have "fst e' \<noteq> fst e" "snd e' = fst e"
-      using `es = es' @ [e']` snoc.prems(1)
+      using \<open>es = es' @ [e']\<close> snoc.prems(1)
       by (auto simp: awalk_Cons_iff dest: no_loops)
     ultimately
     obtain es'' e'' where "es' = es'' @ [e'']"
-      by (cases es' rule: rev_cases) (auto simp: `es = es' @ [e']` inner_verts_def)
+      by (cases es' rule: rev_cases) (auto simp: \<open>es = es' @ [e']\<close> inner_verts_def)
     then have "fst e'' \<noteq> fst e"
-      using `snd e' = fst e`[symmetric] snoc.prems(1,3) unfolding \<open>es = _\<close>
-      by (simp add: `es = _` awalk_Cons_iff progressing_append_iff progressing_Cons)
+      using \<open>snd e' = fst e\<close>[symmetric] snoc.prems(1,3) unfolding \<open>es = _\<close>
+      by (simp add: \<open>es = _\<close> awalk_Cons_iff progressing_append_iff progressing_Cons)
 
     have "fst e' \<in> set (inner_verts es)"
-      using `es = es' @ [e']` `es' = es'' @ [e'']`
+      using \<open>es = es' @ [e']\<close> \<open>es' = es'' @ [e'']\<close>
       by (cases es'') (auto simp: inner_verts_def)
 
     have "fst e \<in> set (inner_verts es')"
-      using `es = es' @ [e']` `fst e \<in> set (inner_verts es)` `fst e' \<noteq> fst e`
+      using \<open>es = es' @ [e']\<close> \<open>fst e \<in> set (inner_verts es)\<close> \<open>fst e' \<noteq> fst e\<close>
       by (cases es')  (auto simp: inner_verts_def)
     then obtain q e'2 e'3 r where Z: "es' = q @ [e'2, e'3] @ r" "snd e'2 = fst e" "fst e'3 = fst e"
     proof -
       obtain e'3' where "e'3' \<in> set (tl es')" "fst e'3' = fst e"
-        using `fst e \<in> set (inner_verts es')`
+        using \<open>fst e \<in> set (inner_verts es')\<close>
         by (cases es') (auto simp: inner_verts_def)
       then obtain q r where "tl es' = q @ e'3' # r"
         by (metis split_list)
       then have F2: "snd (last (hd es' # q)) = fst e"
-        using `es = es' @ [e']` snoc.prems(1) `fst e'3' = fst e`
+        using \<open>es = es' @ [e']\<close> snoc.prems(1) \<open>fst e'3' = fst e\<close>
         apply (cases es')
          apply (case_tac [2] q rule: rev_cases)
           apply auto
         done
       then have "es' = (butlast (hd es' # q)) @ [last (hd es' # q), e'3'] @ r"
-        using `tl es' = q @ e'3' # r` by (cases es') auto
-      then show ?thesis using F2 `fst e'3' = fst e` by fact
+        using \<open>tl es' = q @ e'3' # r\<close> by (cases es') auto
+      then show ?thesis using F2 \<open>fst e'3' = fst e\<close> by fact
     qed
     then have "fst e'2 \<noteq> snd e'3"
-      using snoc.prems(3) unfolding `es = _`
+      using snoc.prems(3) unfolding \<open>es = _\<close>
       by (simp add: progressing_append_iff progressing_Cons)
     moreover
     from Z have B: "fst e'2 = u \<or> fst e'2 \<in> set (inner_verts es')"
-      using `es = es' @ [e']` snoc.prems(1)
+      using \<open>es = es' @ [e']\<close> snoc.prems(1)
       by (cases q) (auto simp: inner_verts_def)
     then have "fst e'2 \<noteq> fst e'"
     proof
       assume "fst e'2 = u"
       then have "fst e'2 \<notin> set (inner_verts es)"
-        using V `es = es' @ [e']` snoc.prems(2)
+        using V \<open>es = es' @ [e']\<close> snoc.prems(2)
         by (cases es') (auto simp: inner_verts_def)
       moreover
       have "fst e' \<in> set (inner_verts es)"
-        using `es = es' @ [e']` `es' = es'' @ [e'']`
+        using \<open>es = es' @ [e']\<close> \<open>es' = es'' @ [e'']\<close>
         by (cases es'') (auto simp: inner_verts_def)
       ultimately show ?thesis by auto
     next
       assume "fst e'2 \<in> set (inner_verts es')"
       moreover
       have "fst e' \<in> set (inner_verts es)"
-        using `es = es' @ [e']` `es' = es'' @ [e'']`
+        using \<open>es = es' @ [e']\<close> \<open>es' = es'' @ [e'']\<close>
         by (cases es'') (auto simp: inner_verts_def)
       ultimately
       show ?thesis
@@ -115,35 +115,35 @@ next
     have "snd e'3 \<noteq> fst e'"
     proof (rule notI, cases)
       assume "r = []" "snd e'3 = fst e'"
-      then show False using Z `es = es' @ [e']` snoc.prems(3) `snd e' = fst e`
+      then show False using Z \<open>es = es' @ [e']\<close> snoc.prems(3) \<open>snd e' = fst e\<close>
         by (simp add: progressing_append_iff progressing_Cons)
     next
       assume A: "r \<noteq> []" "snd e'3 = fst e'"
       then obtain r0 rs where "r = r0 # rs" by (cases r) auto
       then have "snd e'3 = fst r0"
-        using Z `es = es' @ [e']` snoc.prems(1)
+        using Z \<open>es = es' @ [e']\<close> snoc.prems(1)
         by (auto simp: awalk_Cons_iff)
       with A have "fst r0 = fst e'" by auto
       have "\<not>distinct (inner_verts es)"
-        by (cases q) (auto simp add: Z(1) `es = es' @ [e']`
-          `r = r0 # rs` `fst r0 = fst e'` inner_verts_def)
-      then show False using `distinct (inner_verts es)` by auto
+        by (cases q) (auto simp add: Z(1) \<open>es = es' @ [e']\<close>
+          \<open>r = r0 # rs\<close> \<open>fst r0 = fst e'\<close> inner_verts_def)
+      then show False using \<open>distinct (inner_verts es)\<close> by auto
     qed
     ultimately
     have card_to_fst_e: "card {e'2, (snd e'3, fst e'3), e'} = 3"
       by (auto simp: card_insert_if)
     moreover
     have "e'3 \<in> parcs G"
-      using Z using snoc.prems(1) `es = es' @ [e']`
+      using Z using snoc.prems(1) \<open>es = es' @ [e']\<close>
       by (auto intro: arcs_symmetric)
     then have "(snd e'3, fst e'3) \<in> parcs G"
       by (auto intro: arcs_symmetric)
     then have "{e'2, (snd e'3, fst e'3), e'} \<subseteq> {ed \<in> parcs G. snd ed = fst e}"
-      using snoc.prems(1) `es = es' @ [e']` Z by auto
+      using snoc.prems(1) \<open>es = es' @ [e']\<close> Z by auto
     moreover
     have "fst e \<in> pverts G" using snoc.prems(1) by auto
     then have card_to_fst_e_abs: "card {ed \<in> parcs G. snd ed = fst e} \<le> 2"
-      using `fst e \<in> set (inner_verts es)` V snoc.prems(2)
+      using \<open>fst e \<in> set (inner_verts es)\<close> V snoc.prems(2)
       unfolding verts3_def in_degree_def
       by (cases es) (auto simp: inner_verts_def in_arcs_def)
     ultimately
@@ -225,12 +225,12 @@ proof -
     using progress by (auto simp: progressing_append_iff progressing_Cons)
 
   have "x \<in> parcs G" "y \<in> parcs G"
-    using walk_p `p = xs @ x # y # ys` by auto
+    using walk_p \<open>p = xs @ x # y # ys\<close> by auto
   then have "{x, (snd y, w)} \<subseteq> {e \<in> parcs G. snd e = w}"
     using inc_w by auto (metis arcs_symmetric surjective_pairing)
   then have "card {x, (snd y, w)} \<le> in_degree G w"
     unfolding in_degree_def by (intro card_mono) auto
-  then show ?thesis using `fst x \<noteq> snd y` inc_w
+  then show ?thesis using \<open>fst x \<noteq> snd y\<close> inc_w
     by (auto simp: card_insert_if split: if_split_asm)
 qed
 
@@ -420,9 +420,9 @@ lemma
 
 
 
-subsection {* Total Correctness *}
+subsection \<open>Total Correctness\<close>
 
-subsubsection {* Procedure @{term is_subgraph} *}
+subsubsection \<open>Procedure @{term is_subgraph}\<close>
 
 definition is_subgraph_verts_inv :: "IGraph \<Rightarrow> IGraph \<Rightarrow> nat \<Rightarrow> bool" where
   "is_subgraph_verts_inv G H i \<equiv> set (take i (ig_verts G)) \<subseteq> set (ig_verts H)"
@@ -551,7 +551,7 @@ lemma (in is_subgraph_impl) is_subgraph_spec:
   apply (fastforce simp: IGraph_inv_conv' is_subgraph_verts_arcs_last)
   done
 
-subsubsection {* Procedure @{term is_loop_free} *}
+subsubsection \<open>Procedure @{term is_loop_free}\<close>
 
 definition "is_loopfree_inv G k \<equiv> \<forall>j<k. fst (ig_arcs G ! j) \<noteq> snd (ig_arcs G ! j)"
 
@@ -600,7 +600,7 @@ lemma (in is_loopfree_impl) is_loopfree_spec:
 
 
 
-subsubsection {* Procedure @{term select_nodes} *}
+subsubsection \<open>Procedure @{term select_nodes}\<close>
 
 definition select_nodes_inv :: "IGraph \<Rightarrow> IGraph \<Rightarrow> nat \<Rightarrow> bool" where
   "select_nodes_inv G H i \<equiv> set (ig_verts H) = {v \<in> set (take i (ig_verts G)). card (ig_neighbors G v) \<ge> 3} \<and> IGraph_inv H"
@@ -650,7 +650,7 @@ lemma (in select_nodes_impl) select_nodes_spec:
 
 
 
-subsubsection {* Procedure @{term find_endpoint} *}
+subsubsection \<open>Procedure @{term find_endpoint}\<close>
 
 definition find_endpoint_path_inv where
   "find_endpoint_path_inv G H len u v w x \<equiv>
@@ -704,12 +704,12 @@ proof -
     and iv: "set (inner_verts q) \<inter> verts3 (mk_graph G) = {}"
     and prg: "progressing q"
     unfolding find_endpoint_path_inv_def by auto
-  moreover then obtain q0 qs where "q = q0 # qs" using `0 < len` by (cases q) auto
+  moreover then obtain q0 qs where "q = q0 # qs" using \<open>0 < len\<close> by (cases q) auto
   moreover
   have "len \<le> ig_verts_cnt G"
   proof -
     have ev_q: "awalk_verts u q = u # inner_verts q @ [x]"
-      unfolding inner_verts_conv[of q u] using q `q = q0 # qs` by auto
+      unfolding inner_verts_conv[of q u] using q \<open>q = q0 # qs\<close> by auto
     then have len_ev: "length (awalk_verts u q) = 2 + length (inner_verts q)"
       by auto
 
@@ -775,7 +775,7 @@ proof -
   obtain q where walk_q: "awalk u ((u, v) # q) u" and
       progress_q: "progressing ((u, v) # q)" and
       iv_q: "set (inner_verts  ((u, v) # q)) \<inter> verts3 (mk_graph G) = {}"
-    by (rule find_endpoint_path_lastE[OF path ig lf snp `0 < len` mem]) auto
+    by (rule find_endpoint_path_lastE[OF path ig lf snp \<open>0 < len\<close> mem]) auto
 
   from iapath have walk_p: "awalk u ((u,v) # p) x" and
       iv_p: "set (inner_verts ((u, v) # p)) \<inter> verts3 (mk_graph G) = {}" and
@@ -821,15 +821,15 @@ proof
   have V: "verts3 (mk_graph G) \<subseteq> V" "V \<subseteq> pverts (mk_graph G)"
     unfolding verts3_def V_def by auto
 
-  from `?A` have walk_p: "awalk v_tail ((v_tail, v_next) # p) x" and
+  from \<open>?A\<close> have walk_p: "awalk v_tail ((v_tail, v_next) # p) x" and
       progress_p: "progressing ((v_tail, v_next) # p)"
     by (auto simp: gen_iapath_def apath_def intro: apath_imp_progressing)
   have iapath_V_p: "gen_iapath  V v_tail ((v_tail, v_next) # p) x"
   proof -
     { fix u assume A: "u \<in> set (inner_verts ((v_tail, v_next) # p))"
-      then have "u \<in> pverts (mk_graph G)" using `?A`
+      then have "u \<in> pverts (mk_graph G)" using \<open>?A\<close>
         by (auto 2 4 simp: set_inner_verts gen_iapath_def apath_Cons_iff dest: awalkI_apath)
-      with A `?A` inner_verts_min_degree[OF walk_p progress_p A] have "u \<notin> V"
+      with A \<open>?A\<close> inner_verts_min_degree[OF walk_p progress_p A] have "u \<notin> V"
         unfolding gen_iapath_def verts3_def V_def by auto }
     with \<open>?A\<close> V show ?thesis by (auto simp: gen_iapath_def)
   qed
@@ -838,7 +838,7 @@ proof
     unfolding gen_iapath_def apath_def by auto
 
   have id_x: "2 < in_degree (mk_graph G) x"
-    using `?A` unfolding gen_iapath_def verts3_def by auto
+    using \<open>?A\<close> unfolding gen_iapath_def verts3_def by auto
 
   from arcs have edge_no_pr: "\<And>e. e \<in> set (ig_in_out_arcs G v1) \<Longrightarrow>
       v0 = ig_opposite G e v1" and"v0 = v0a" "v1 = v1a"
@@ -849,11 +849,11 @@ proof
     fix e assume "e \<in> ?L"
     then have "fst e \<noteq> snd e" by (auto dest: no_loops)
     moreover
-    from `e \<in> ?L` have "e \<in> set (ig_in_out_arcs G v1) \<or> (snd e, fst e) \<in> set (ig_in_out_arcs G v1)"
+    from \<open>e \<in> ?L\<close> have "e \<in> set (ig_in_out_arcs G v1) \<or> (snd e, fst e) \<in> set (ig_in_out_arcs G v1)"
       by (auto simp: mkg_simps ig_in_out_arcs_def symcl_def)
     then have "v0 = ig_opposite G e v1 \<or> v0 = ig_opposite G (snd e, fst e) v1"
       by (auto intro: edge_no_pr)
-    ultimately show "e \<in> ?R" using `e \<in> ?L` by (auto simp: ig_opposite_def)
+    ultimately show "e \<in> ?R" using \<open>e \<in> ?L\<close> by (auto simp: ig_opposite_def)
   qed
   then have id_v1: "in_degree (mk_graph G) v1 \<le> card {(v0,v1)}"
     unfolding in_degree_def in_arcs_def by (intro card_mono) auto
@@ -876,7 +876,7 @@ proof
   then have iv_q: "set (inner_verts q) \<inter> V = {}" by auto
 
   have arcs_q: "(v_tail, v_next) \<in> set q"
-    using q_props `0 < len` by (cases q) auto
+    using q_props \<open>0 < len\<close> by (cases q) auto
 
   have neq: "v_tail \<noteq> v1"
     using find_endpoint_path_last2D[OF _ ig lf snp \<open>0 < len\<close> \<open>v_tail \<in> _\<close> \<open>?A\<close>] path by auto
@@ -928,7 +928,7 @@ proof -
     by (metis awalk pg.awalk_last_in_verts verts_mkg)
 
   with arcs have "iadj G x x'" "x = w'" "w \<noteq> x'"
-    using `x \<in> set (ig_verts G)` unfolding find_endpoint_arcs_inv_def
+    using \<open>x \<in> set (ig_verts G)\<close> unfolding find_endpoint_arcs_inv_def
     by (auto intro: iadj_io_edge)
   then have "(x,x') \<in> parcs (mk_graph G)" "x' \<in> set (ig_verts G)"
     using ig unfolding iadj_def by (auto simp: mkg_simps set_ig_arcs_imp_verts symcl_def)
@@ -936,10 +936,10 @@ proof -
     unfolding p'_def using awalk by (auto simp: pg.awalk_simps mkg_simps)
   moreover
   have "length p' = Suc len" "hd p' = (u,v)" "last p' = (w',x')"
-    using `x = w'` `0 < len` p by (auto simp: p'_def)
+    using \<open>x = w'\<close> \<open>0 < len\<close> p by (auto simp: p'_def)
   moreover
   have "set (pg.inner_verts p') \<inter> set (ig_verts H) = {}"
-    using iv not_end p `0 < len` unfolding p'_def by (auto simp: pg.inner_verts_def)
+    using iv not_end p \<open>0 < len\<close> unfolding p'_def by (auto simp: pg.inner_verts_def)
   moreover
   { fix ys y z zs have "p' \<noteq> ys @ [(y,z), (z,y)] @ zs"
     proof
@@ -947,8 +947,8 @@ proof -
       assume ?A
       from progress have "\<And>zs. p \<noteq> ys @ (y,z) # (z,y) # zs"
         by (auto simp: progressing_append_iff progressing_Cons)
-      with `?A` have "zs = []" unfolding p'_def by (cases zs rule: rev_cases) auto
-      then show False using `?A` using `w \<noteq> x'` `last p = (w,x)` unfolding p'_def by auto
+      with \<open>?A\<close> have "zs = []" unfolding p'_def by (cases zs rule: rev_cases) auto
+      then show False using \<open>?A\<close> using \<open>w \<noteq> x'\<close> \<open>last p = (w,x)\<close> unfolding p'_def by auto
     qed }
   then have "progressing p'" by (auto simp: progressing_def)
   ultimately show ?thesis unfolding find_endpoint_path_inv_def by blast
@@ -960,7 +960,7 @@ lemma no_loop_path:
 proof -
   interpret ppg: pair_pseudo_graph "mk_graph G"
     using ig by (rule IGraph_imp_ppg_mkg)
-  from `u = v` show ?thesis
+  from \<open>u = v\<close> show ?thesis
     by (auto simp: ppg.gen_iapath_def ppg.apath_Cons_iff)
        (metis hd_in_set ppg.awalk_verts_non_Nil ppg.awhd_of_awalk pre_digraph.awalkI_apath)
 qed
@@ -1004,7 +1004,7 @@ lemma (in find_endpoint_impl) find_endpoint_spec:
 done
 
 
-subsubsection {* Procedure @{term contract} *}
+subsubsection \<open>Procedure @{term contract}\<close>
 
 definition contract_iter_nodes_inv where
   "contract_iter_nodes_inv G H k \<equiv>
@@ -1121,7 +1121,7 @@ proof -
     then have "e \<in> parcs (mk_graph G)" using path
       by (auto simp: pre_digraph.gen_iapath_def pre_digraph.apath_def pre_digraph.awalk_def)
     moreover
-    then obtain w where "e = (u,w)" using `p = e # es` path
+    then obtain w where "e = (u,w)" using \<open>p = e # es\<close> path
       by (cases e) (auto simp: pre_digraph.gen_iapath_def pre_digraph.apath_def pre_digraph.awalk_def pre_digraph.cas.simps)
     ultimately
     have "(u,w) \<in> set (ig_arcs G) \<or> (w,u) \<in> set (ig_arcs G)"
@@ -1141,7 +1141,7 @@ proof -
       apply (erule notE)
       apply (rule exI[where x=k])
       apply (simp add: H2 opp_e')
-      using path `e = (u,w)` `p = e # es` by auto }
+      using path \<open>e = (u,w)\<close> \<open>p = e # es\<close> by auto }
   then have "set (ig_arcs H) \<union>({u} \<times> {v. \<exists>p. pre_digraph.iapath (mk_graph G) u p v}) \<subseteq> set (ig_arcs H')"
     using ciai unfolding contract_iter_adj_inv_def by auto
   ultimately
@@ -1267,7 +1267,7 @@ lemma (in contract_impl) contract_spec:
 
 
 
-subsubsection {* Procedure @{term is_K33} *}
+subsubsection \<open>Procedure @{term is_K33}\<close>
 
 definition is_K33_colorize_inv :: "IGraph \<Rightarrow> ig_vertex \<Rightarrow> nat \<Rightarrow> (ig_vertex \<Rightarrow> bool) \<Rightarrow> bool" where
   "is_K33_colorize_inv G u k blue \<equiv> \<forall>v \<in> set (ig_verts G). blue v \<longleftrightarrow>
@@ -1402,7 +1402,7 @@ proof -
     by (auto simp: distinct_card)
   ultimately have "card U = 3"
     by (simp add: card_Un_disjoint[OF fin_UV UV_set(4)])
-  note cards = `card V = 3` `card U = 3` card_verts
+  note cards = \<open>card V = 3\<close> \<open>card U = 3\<close> card_verts
 
   from is_K33_outer_last[THEN iffD1, OF outer]
   have "(\<forall>u\<in>U. \<forall>v\<in>V. (u, v) \<in> set (ig_arcs G) \<and> (v, u) \<in> set (ig_arcs G))
@@ -1556,7 +1556,7 @@ lemma (in is_K33_impl) is_K33_spec:
   done
 
 
-subsubsection {* Procedure @{term is_K5} *}
+subsubsection \<open>Procedure @{term is_K5}\<close>
 
 definition
   "is_K5_outer_inv G k \<equiv> \<forall>i<k. \<forall>v \<in> set (ig_verts G). ig_verts G ! i \<noteq> v
@@ -1670,7 +1670,7 @@ lemma (in is_K5_impl) is_K5_spec:
 
 
 
-subsubsection {* Soundness of the Checker *}
+subsubsection \<open>Soundness of the Checker\<close>
 
 lemma planar_theorem:
   assumes "pair_pseudo_graph G" "pair_pseudo_graph K"

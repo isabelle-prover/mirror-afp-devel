@@ -23,7 +23,7 @@ text \<open>
 subsection \<open>Bounded Reachability\<close>
 
 text \<open>
-  We provide an algorithm @{text relpow_impl} that computes all states that are reachable from an
+  We provide an algorithm \<open>relpow_impl\<close> that computes all states that are reachable from an
   initial set of states @{term new} by at most @{term n} steps. The algorithm also stores a set of
   states that have already been visited @{term have}, and then show, do not have to be expanded a
   second time. The algorithm is parametric in the underlying data structure, it just requires
@@ -193,7 +193,7 @@ qed (simp add: un)
 
 text \<open>
   From the previous lemma we can directly derive that @{const relpow_impl} works correctly if @{term
-  have} is initially set to @{text empty}
+  have} is initially set to \<open>empty\<close>
 \<close>
 lemma relpow_impl:
   "set_of (relpow_i new empty n) = {b | a b m. a \<in> set new \<and> m \<le> n \<and> (a, b) \<in> rel ^^ m}" 
@@ -236,11 +236,11 @@ where
       n = length rel
     in (\<lambda> as. relpow_impl succ un memb (succ as) emp n))"
 
-text {*
+text \<open>
   The soundness of both @{const rtrancl_impl} and @{const trancl_impl} follows from the soundness of
   @{const relpow_impl} and the fact that for finite relations, we can limit the number of steps to
   explore all elements in the reflexive transitive closure.
-*}
+\<close>
 
 lemma rtrancl_finite_relpow:
   "(a, b) \<in> (set rel)\<^sup>* \<longleftrightarrow> (\<exists> n \<le> length rel. (a, b) \<in> set rel ^^ n)" (is "?l = ?r")

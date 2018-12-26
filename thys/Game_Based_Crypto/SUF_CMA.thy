@@ -7,7 +7,7 @@ theory SUF_CMA imports
   CryptHOL.Environment_Functor
 begin
 
-subsection {* Strongly existentially unforgeable signature scheme *}
+subsection \<open>Strongly existentially unforgeable signature scheme\<close>
 
 locale sig_scheme =
   fixes key_gen :: "security \<Rightarrow> ('vkey \<times> 'sigkey) spmf"

@@ -115,13 +115,13 @@ proof -
     case True
     then have "p = replicate (num_args (fun t)) Left" using p_replicate 
       by (metis Suc_inject \<open>is_App t\<close> args.elims args_Nil_iff_is_Hd length_append_singleton tm.sel(4))
-    then have "chop t = s" unfolding chop_emb_step_at[OF `is_App t`] 
+    then have "chop t = s" unfolding chop_emb_step_at[OF \<open>is_App t\<close>] 
       using pos emb_step_at by blast
     then show ?thesis by blast
   next
     case False
     then have "Suc (length p) < num_args t"
-      using pos emb_step_at `is_App t` `list_all (\<lambda>x. x = dir.Left) p`
+      using pos emb_step_at \<open>is_App t\<close> \<open>list_all (\<lambda>x. x = dir.Left) p\<close>
     proof (induct p arbitrary:t s)
       case Nil
       then show ?case 
@@ -132,7 +132,7 @@ proof -
         using Cons.prems(5) by auto
       have 1:"Suc (length p) \<noteq> num_args (fun t)"  
         by (metis (no_types, lifting) Cons.prems(1) Cons.prems(4) args.elims args_Nil_iff_is_Hd length_Cons length_append_singleton tm.sel(4))
-      have 2:"position_of (fun t) (p @ [Right])"   using `position_of t ((a # p) @ [Right])` `is_App t` 
+      have 2:"position_of (fun t) (p @ [Right])"   using \<open>position_of t ((a # p) @ [Right])\<close> \<open>is_App t\<close> 
         by (metis (full_types) Cons.prems(5) position_of_left append_Cons list_all_simps(1) tm.collapse(2))
       have 3: "emb_step_at p dir.Right (fun t) = emb_step_at p dir.Right (fun t)" 
         using emb_step_at_left_context[of p Right "fun t" "arg t"] by blast
@@ -145,7 +145,7 @@ proof -
     have "chop t = emb_step_at (p @ [Left] @ q) dir.Right t"
     proof -
       have "length p + (num_args (fun t) - length p) = num_args (fun t)" 
-        using `Suc (length p) < num_args t`
+        using \<open>Suc (length p) < num_args t\<close>
         by (metis Suc_less_eq2 \<open>is_App t\<close> args.simps(2) diff_Suc_1 leD length_butlast nat_le_linear 
             ordered_cancel_comm_monoid_diff_class.add_diff_inverse snoc_eq_iff_butlast tm.collapse(2))
       then have 1:"replicate (num_args (fun t)) dir.Left = p @ replicate (num_args (fun t) - length p) dir.Left" 
@@ -196,7 +196,7 @@ proof -
     by (simp add: \<open>is_App t\<close> args_Nil_iff_is_Hd)
 
   have C3:"args s = take ?i (args t) @ drop (Suc ?i) (args t)"
-    using all_Left pos emb_step_at `is_App t` proof (induct p arbitrary:s t)
+    using all_Left pos emb_step_at \<open>is_App t\<close> proof (induct p arbitrary:s t)
     case Nil
     then show ?case using emb_step_at_left[of "fun t" "arg t"]
       by (simp, metis One_nat_def args.simps(2) butlast_conv_take butlast_snoc tm.collapse(2))
@@ -220,7 +220,7 @@ proof -
       by (metis args.simps(2) diff_Suc_Suc length_append_singleton local.Cons(5) tm.collapse(2))
     have 3:"args (fun t) @ [arg t] = args t"
       by (metis Cons.prems(4) args.simps(2) tm.collapse(2))
-    have "num_args t > 1" using `position_of t ((a # p) @ [Left])` 
+    have "num_args t > 1" using \<open>position_of t ((a # p) @ [Left])\<close> 
       by (metis "3" \<open>position_of (fun t) (p @ [dir.Left])\<close> args_Nil_iff_is_Hd butlast_snoc emb_step.simps emb_step_at_if_position length_butlast length_greater_0_conv tm.discI(2) zero_less_diff)
     then have "Suc k<num_args t" unfolding k_def'
       using \<open>1 < num_args t\<close> by linarith
@@ -299,24 +299,24 @@ proof -
   have "is_App (subst \<rho> s)"
     by (metis assms(1) subst.simps(2) tm.collapse(2) tm.disc(2))
   have 1:"subst \<rho> (chop s) = emb_step_at (replicate (num_args (fun s)) dir.Left) dir.Right (subst \<rho>  s)"
-    using chop_emb_step_at[OF assms(1)] using emb_step_at_subst chop_position_of[OF `is_App s`] 
+    using chop_emb_step_at[OF assms(1)] using emb_step_at_subst chop_position_of[OF \<open>is_App s\<close>] 
     by (metis)
   have "num_args (fun s) \<le> num_args (fun (subst \<rho> s))" 
-    using fun_subst[OF `is_App s`] 
+    using fun_subst[OF \<open>is_App s\<close>] 
     by (metis args_subst leI length_append length_map not_add_less2)
   then have "num_args (fun s) < num_args (fun (subst \<rho> s))" 
     using assms(2) "1" \<open>is_App (subst \<rho> s)\<close> chop_emb_step_at le_imp_less_or_eq 
     by fastforce
   then have "num_args s \<le> num_args (fun (subst \<rho> s))" 
-    using Suc_num_args[OF `is_App s`] by linarith
+    using Suc_num_args[OF \<open>is_App s\<close>] by linarith
   then have  "replicate (num_args (fun s)) dir.Left @
         [opp dir.Right] @ replicate (num_args (fun (subst \<rho> s)) - num_args s) dir.Left =
         replicate (num_args (fun (subst \<rho> s))) dir.Left" 
     unfolding append.simps opp_simps replicate_Suc[symmetric] replicate_add[symmetric]
-    using Suc_num_args[OF `is_App s`]
+    using Suc_num_args[OF \<open>is_App s\<close>]
     by (metis add_Suc_shift ordered_cancel_comm_monoid_diff_class.add_diff_inverse)
   then show ?thesis unfolding 1
-    unfolding  chop_emb_step_at[OF `is_App (subst \<rho> s)`]
+    unfolding  chop_emb_step_at[OF \<open>is_App (subst \<rho> s)\<close>]
     by (metis merge_emb_step_at)
 qed
 
@@ -333,11 +333,11 @@ lemma chop_subst_Hd:
 proof -
   have "is_App (subst \<rho> s)"
     by (metis assms(1) subst.simps(2) tm.collapse(2) tm.disc(2))
-  have "num_args (fun s) = num_args (fun (subst \<rho> s))" unfolding fun_subst[OF `is_App s`,symmetric]
+  have "num_args (fun s) = num_args (fun (subst \<rho> s))" unfolding fun_subst[OF \<open>is_App s\<close>,symmetric]
     using args_subst_Hd using assms(2) by auto
   then show ?thesis
-    unfolding chop_emb_step_at[OF assms(1)] chop_emb_step_at[OF `is_App (subst \<rho> s)`]
-    using emb_step_at_subst[OF chop_position_of[OF `is_App s`]]
+    unfolding chop_emb_step_at[OF assms(1)] chop_emb_step_at[OF \<open>is_App (subst \<rho> s)\<close>]
+    using emb_step_at_subst[OF chop_position_of[OF \<open>is_App s\<close>]]
     by simp
 qed
 

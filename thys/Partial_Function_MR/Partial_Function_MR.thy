@@ -5,19 +5,19 @@ imports Main
 keywords "partial_function_mr" :: thy_decl
 begin
 
-subsection  {*Register the \isa{partial-function-mr} command*}
+subsection  \<open>Register the \isa{partial-function-mr} command\<close>
 ML_file "partial_function_mr.ML"
               
-subsection {*Register the "option"-monad*}
+subsection \<open>Register the "option"-monad\<close>
 
-text {*Obviously, the map-function for the @{type option}-monad is @{term map_option}.*}
+text \<open>Obviously, the map-function for the @{type option}-monad is @{term map_option}.\<close>
 
-text {*First, derive the required identity lemma.*}
+text \<open>First, derive the required identity lemma.\<close>
 
 lemma option_map_id: "map_option (\<lambda> x. x) x = x" 
   by (cases x, auto)
 
-text {*Second, register @{term map_option} as being monotone.*}
+text \<open>Second, register @{term map_option} as being monotone.\<close>
 lemma option_map_mono[partial_function_mono]:
   assumes mf: "mono_option B"
   shows "mono_option (\<lambda>f. map_option h (B f))"
@@ -29,7 +29,7 @@ proof (rule monotoneI)
     unfolding flat_ord_def by auto    
 qed
 
-text {*And finally perform the registration. We need 
+text \<open>And finally perform the registration. We need 
 \begin{itemize}
 \item a constructor for map: it takes a monadic term $mt$ of type \isa{mtT},
   a list of functions \isa{t-to-ss} with corresponding types in \isa{t-to-sTs},
@@ -48,8 +48,8 @@ text {*And finally perform the registration. We need
 \item a compositionality theorem of the form @{term "map f (map g x) = map (f o g) x"} 
 \item an identity theorem of the form @{term "map (\<lambda> x. x) m = m"} 
 \end{itemize}
-*}
-declaration {* Partial_Function_MR.init 
+\<close>
+declaration \<open>Partial_Function_MR.init 
   "option" 
   (fn (mt, t_to_ss, mtT, msT, t_to_sTs) =>
       list_comb (Const (@{const_name map_option}, t_to_sTs ---> mtT --> msT), t_to_ss) $ mt)
@@ -57,22 +57,22 @@ declaration {* Partial_Function_MR.init
   (fn mT => ([],Term.dest_Type mT |> #2)) 
   @{thms option.map_comp} 
   @{thms option_map_id}
-*}
+\<close>
 
-subsection {*Register the "tailrec"-monad*}
+subsection \<open>Register the "tailrec"-monad\<close>
 
-text {*For the "tailrec"-monad (which is the identity monad) we take the identity
+text \<open>For the "tailrec"-monad (which is the identity monad) we take the identity
   function as map, there are no flexible parameters, and the monadic type itself is
   the (only) fixed argument. As a consequence, we can only define tail-recursive and 
-  mutual recursive functions which share the same return type.*}
+  mutual recursive functions which share the same return type.\<close>
 
-declaration {* Partial_Function_MR.init 
+declaration \<open>Partial_Function_MR.init 
   "tailrec" 
   (fn (mt, t_to_ss, mtT, msT, t_to_sTs) => mt)
   (fn (commonT,_) => hd commonT)
   (fn mT => ([mT],[])) 
   [] 
   []
-  *}
+\<close>
 
 end

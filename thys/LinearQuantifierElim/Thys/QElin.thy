@@ -4,7 +4,7 @@ theory QElin
 imports LinArith
 begin
 
-subsection{* Fourier *}
+subsection\<open>Fourier\<close>
 
 definition qe_FM\<^sub>1 :: "atom list \<Rightarrow> atom fm" where
 "qe_FM\<^sub>1 as = list_conj [Atom(combine p q). p\<leftarrow>lbounds as, q\<leftarrow>ubounds as]"
@@ -28,9 +28,9 @@ proof
     fix x y assume "x\<in>?lbs" "y\<in>?ubs"
     then obtain r cs
       where "(r,cs) \<in> ?Ls \<and> x = r + \<langle>cs,xs\<rangle>" by fastforce
-    moreover from `y\<in>?ubs` obtain s ds
+    moreover from \<open>y\<in>?ubs\<close> obtain s ds
       where "(s,ds) \<in> ?Us \<and> y = s + \<langle>ds,xs\<rangle>" by fastforce
-    ultimately show "x<y" using `?L`
+    ultimately show "x<y" using \<open>?L\<close>
       by(fastforce simp:qe_FM\<^sub>1_def algebra_simps iprod_left_diff_distrib)
   qed
   { assume nonempty: "?lbs \<noteq> {} \<and> ?ubs \<noteq> {}"
@@ -153,7 +153,7 @@ done
 theorem qfree_qe_FM: "qfree (qe_FM f)"
 by(simp add:qe_FM_def R\<^sub>e.qfree_lift_dnfeq_qe qfree_qe_FM\<^sub>1)
 
-subsubsection{* Tests *}
+subsubsection\<open>Tests\<close>
 
 lemmas qesimps = qe_FM_def R\<^sub>e.lift_dnfeq_qe_def R\<^sub>e.lift_eq_qe_def R.qelim_def qe_FM\<^sub>1_def lbounds_def ubounds_def list_conj_def list_disj_def and_def or_def depends\<^sub>R_def
 

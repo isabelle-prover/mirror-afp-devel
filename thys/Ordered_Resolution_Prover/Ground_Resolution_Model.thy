@@ -14,7 +14,7 @@ text \<open>
 The proofs of refutational completeness for the two resolution inference systems presented in
 Section 3 (``Standard Resolution'') of Bachmair and Ganzinger's chapter share mostly the same
 candidate model construction. The literal selection capability needed for the second system is
-ignored by the first one, by taking @{term "\<lambda>_. {}"} as instantiation for the @{text S}
+ignored by the first one, by taking @{term "\<lambda>_. {}"} as instantiation for the \<open>S\<close>
 parameter.
 \<close>
 
@@ -30,10 +30,10 @@ begin
 
 text \<open>
 The following commands corresponds to Definition 3.14, which generalizes Definition 3.1.
-@{text "production C"} is denoted $\varepsilon_C$ in the chapter; @{text "interp C"} is denoted
-$I_C$; @{text "Interp C"} is denoted $I^C$; and @{text Interp_N} is denoted $I_N$. The mutually
+\<open>production C\<close> is denoted $\varepsilon_C$ in the chapter; \<open>interp C\<close> is denoted
+$I_C$; \<open>Interp C\<close> is denoted $I^C$; and \<open>Interp_N\<close> is denoted $I_N$. The mutually
 recursive definition from the chapter is massaged to simplify the termination argument. The
-@{text production_unfold} lemma below gives the intended characterization.
+\<open>production_unfold\<close> lemma below gives the intended characterization.
 \<close>
 
 context

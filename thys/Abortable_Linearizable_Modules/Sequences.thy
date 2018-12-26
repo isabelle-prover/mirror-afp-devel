@@ -1,4 +1,4 @@
-section {* Sequences as Lists *}
+section \<open>Sequences as Lists\<close>
 
 theory Sequences
 imports Main
@@ -7,9 +7,9 @@ begin
 locale Sequences 
 begin
 
-text {* We reverse the order of application of @{term "(#)"} and 
+text \<open>We reverse the order of application of @{term "(#)"} and 
   @{term "(@)"} because it we think that it is easier to think of sequences as growing 
-  to the right. *}
+  to the right.\<close>
 no_notation Cons (infixr "#" 65)
 abbreviation Append  (infixl "#" 65)
   where "Append xs x \<equiv> Cons x xs"

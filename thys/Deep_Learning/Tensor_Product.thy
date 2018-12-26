@@ -81,17 +81,17 @@ begin
     then obtain a where "vec A = [a]"
       using Suc_length_conv Tensor.tensor_vec_from_lookup_Nil length_0_conv length_tensor_vec_from_lookup length_vec by metis
     then have "A \<otimes> B = a \<cdot> B" unfolding tensor_prod_def smult_def using order_0 by simp
-    moreover have "lookup A [] = a" by (simp add: `Tensor.vec A = [a]` lookup_def order_0.hyps)
+    moreover have "lookup A [] = a" by (simp add: \<open>Tensor.vec A = [a]\<close> lookup_def order_0.hyps)
     ultimately have "lookup (A \<otimes> B) (is2) = a * lookup B is2" by (simp add: lookup_smult is2_valid)
-    then show ?case using `lookup A [] = a` null_rec(1) order_0.hyps order_0.prems(1) by auto
+    then show ?case using \<open>lookup A [] = a\<close> null_rec(1) order_0.hyps order_0.prems(1) by auto
   next
     case (order_step A is1)
     then obtain i is1' where "i # is1' = is1" by blast
     have "lookup (subtensor A i \<otimes> B) (is1' @ is2) = lookup (subtensor A i) is1' * lookup B is2" using order_step
-      by (metis `i # is1' = is1` dims_subtensor list.sel(1) list.sel(3) valid_index_dimsE)
+      by (metis \<open>i # is1' = is1\<close> dims_subtensor list.sel(1) list.sel(3) valid_index_dimsE)
     then show "lookup (A \<otimes> B) (is1 @ is2) = lookup A is1 * lookup B is2"
       using lookup_subtensor1[of i is1' A] lookup_subtensor1[of i "is1' @ is2" "A\<otimes>B"] subtensor_tensor_prod[of A i B]
-      Cons_eq_appendI `i # is1' = is1` dims_tensor_prod is2_valid list.sel(1) order_step.hyps order_step.prems(1) valid_index_append valid_index_dimsE
+      Cons_eq_appendI \<open>i # is1' = is1\<close> dims_tensor_prod is2_valid list.sel(1) order_step.hyps order_step.prems(1) valid_index_append valid_index_dimsE
       by metis
   qed
 
@@ -119,15 +119,15 @@ begin
     proof (rule tensor_lookup_eqI, simp)
       fix "is" assume "is \<lhd> dims ((A \<otimes> B) \<otimes> C)"
       obtain is1 is23 where "is1 \<lhd> dims A" "is23 \<lhd> dims (B \<otimes> C)" "is1 @ is23 = is"
-        by (metis (mono_tags, lifting) `is \<lhd> dims ((A \<otimes> B) \<otimes> C)` Tensor_Product.dims_tensor_prod append_assoc valid_index_split)
+        by (metis (mono_tags, lifting) \<open>is \<lhd> dims ((A \<otimes> B) \<otimes> C)\<close> Tensor_Product.dims_tensor_prod append_assoc valid_index_split)
       obtain is2 is3 where "is2 \<lhd> dims B" "is3 \<lhd> dims C" "is2 @ is3 = is23"
         by (metis \<open>is23 \<lhd> dims (local.tensor_prod_otimes B C)\<close> dims_tensor_prod valid_index_split)
       define is12 where "is12 = is1 @ is2"
       have "is12 \<lhd> dims (A \<otimes> B)" by (simp add: \<open>is1 \<lhd> dims A\<close> \<open>is2 \<lhd> dims B\<close> is12_def valid_index_append)
       have "is12 @ is3 = is" by (simp add: \<open>is1 @ is23 = is\<close> \<open>is2 @ is3 = is23\<close> is12_def)
       show "lookup ((A \<otimes> B) \<otimes> C) is = lookup (A \<otimes> (B \<otimes> C)) is"
-        unfolding lookup_tensor_prod[OF `is1 \<lhd> dims A` `is23 \<lhd> dims (B \<otimes> C)`, unfolded `is1 @ is23 = is`]
-        lookup_tensor_prod[OF `is12 \<lhd> dims (A \<otimes> B)` `is3 \<lhd> dims C`, unfolded `is12 @ is3 = is`]
+        unfolding lookup_tensor_prod[OF \<open>is1 \<lhd> dims A\<close> \<open>is23 \<lhd> dims (B \<otimes> C)\<close>, unfolded \<open>is1 @ is23 = is\<close>]
+        lookup_tensor_prod[OF \<open>is12 \<lhd> dims (A \<otimes> B)\<close> \<open>is3 \<lhd> dims C\<close>, unfolded \<open>is12 @ is3 = is\<close>]
         using \<open>is1 \<lhd> dims A\<close> \<open>is2 @ is3 = is23\<close> \<open>is2 \<lhd> dims B\<close> \<open>is3 \<lhd> dims C\<close> is12_def mult.assoc by fastforce
     qed
   qed
@@ -141,17 +141,17 @@ proof -
   have "\<And>is. is \<lhd> dims A @ dims C \<Longrightarrow> lookup ((A + B) \<otimes> C) is = lookup (A \<otimes> C + B \<otimes> C) is"
   proof -
     fix "is" assume "is \<lhd> dims A @ dims C"
-    obtain is1 is2 where "is = is1 @ is2" "is1 \<lhd> dims A" "is2 \<lhd> dims C" using valid_index_split using `is \<lhd> dims A @ dims C` by blast
+    obtain is1 is2 where "is = is1 @ is2" "is1 \<lhd> dims A" "is2 \<lhd> dims C" using valid_index_split using \<open>is \<lhd> dims A @ dims C\<close> by blast
     then show "lookup ((A + B) \<otimes> C) is = lookup ((A \<otimes> C) + (B \<otimes> C)) is"
      using lookup_plus
-     `is1 \<lhd> dims A` `is2 \<lhd> dims C` assms plus_dim1 dims_tensor_prod lookup_tensor_prod ring_class.ring_distribs(2) valid_index_append
+     \<open>is1 \<lhd> dims A\<close> \<open>is2 \<lhd> dims C\<close> assms plus_dim1 dims_tensor_prod lookup_tensor_prod ring_class.ring_distribs(2) valid_index_append
      by fastforce
   qed
   moreover have "tensor_from_lookup (dims A @ dims C) (lookup ((A + B) \<otimes> C)) = (A + B) \<otimes> C"
        "tensor_from_lookup (dims A @ dims C) (lookup ((A \<otimes> C) + (B \<otimes> C))) = (A \<otimes> C) + (B \<otimes> C)"
     by (metis (no_types, lifting) assms plus_dim1 dims_tensor_prod tensor_lookup)+
   ultimately show ?thesis using tensor_from_lookup_eqI
-    by (metis `\<And>is. is \<lhd> dims A @ dims C \<Longrightarrow> lookup ((A + B) \<otimes> C) is = lookup (A \<otimes> C + B \<otimes> C) is`)
+    by (metis \<open>\<And>is. is \<lhd> dims A @ dims C \<Longrightarrow> lookup ((A + B) \<otimes> C) is = lookup (A \<otimes> C + B \<otimes> C) is\<close>)
 qed
 
 lemma tensor_prod_distr_right:
@@ -161,17 +161,17 @@ proof -
   have "\<And>is. is \<lhd> dims C @ dims A \<Longrightarrow> lookup (C \<otimes> (A + B)) is = lookup (C \<otimes> A + C \<otimes> B) is"
   proof -
     fix "is" assume "is \<lhd> dims C @ dims A"
-    obtain is1 is2 where "is = is1 @ is2" "is1 \<lhd> dims C" "is2 \<lhd> dims A" using valid_index_split using `is \<lhd> dims C @ dims A` by blast
+    obtain is1 is2 where "is = is1 @ is2" "is1 \<lhd> dims C" "is2 \<lhd> dims A" using valid_index_split using \<open>is \<lhd> dims C @ dims A\<close> by blast
     then show "lookup (C \<otimes> (A + B)) is = lookup ((C \<otimes> A) + (C \<otimes> B)) is"
      using lookup_plus
-     using `is2 \<lhd> dims A` `is1 \<lhd> dims C` assms plus_dim1 dims_tensor_prod lookup_tensor_prod ring_class.ring_distribs(1) valid_index_append
+     using \<open>is2 \<lhd> dims A\<close> \<open>is1 \<lhd> dims C\<close> assms plus_dim1 dims_tensor_prod lookup_tensor_prod ring_class.ring_distribs(1) valid_index_append
      by fastforce
   qed
   moreover have "tensor_from_lookup (dims C @ dims A) (lookup (C \<otimes> (A + B))) = C \<otimes> (A + B)"
        "tensor_from_lookup (dims C @ dims A) (lookup ((C \<otimes> A) + (C \<otimes> B))) = (C \<otimes> A) + (C \<otimes> B)"
     by (metis (no_types, lifting) assms plus_dim1 dims_tensor_prod tensor_lookup)+
   ultimately show ?thesis using tensor_from_lookup_eqI
-    by (metis `\<And>is. is \<lhd> dims C @ dims A \<Longrightarrow> lookup (C \<otimes> (A + B)) is = lookup (C \<otimes> A + C \<otimes> B) is`)
+    by (metis \<open>\<And>is. is \<lhd> dims C @ dims A \<Longrightarrow> lookup (C \<otimes> (A + B)) is = lookup (C \<otimes> A + C \<otimes> B) is\<close>)
 qed
 
 instantiation tensor :: (ring_1) monoid_mult
@@ -208,8 +208,8 @@ proof (rule tensor_lookup_eqI)
   then obtain is1 is2 where "is1 \<lhd> dims A" "is2 \<lhd> dims B" "is = is1 @ is2" by (metis dims_tensor_prod valid_index_split)
   then have "is1 \<lhd> dims (a \<cdot> A)" by auto
   show "lookup (a \<cdot> (A \<otimes> B)) is = lookup (a \<cdot> A \<otimes> B) is"
-  using lookup_tensor_prod[OF `is1 \<lhd> dims A` `is2 \<lhd> dims B`] lookup_tensor_prod[OF `is1 \<lhd> dims (a \<cdot> A)` `is2 \<lhd> dims B`]
-        lookup_smult[OF `is \<lhd> dims (A \<otimes> B)`] lookup_smult[OF `is1 \<lhd> dims A`] `is = is1 @ is2` by simp
+  using lookup_tensor_prod[OF \<open>is1 \<lhd> dims A\<close> \<open>is2 \<lhd> dims B\<close>] lookup_tensor_prod[OF \<open>is1 \<lhd> dims (a \<cdot> A)\<close> \<open>is2 \<lhd> dims B\<close>]
+        lookup_smult[OF \<open>is \<lhd> dims (A \<otimes> B)\<close>] lookup_smult[OF \<open>is1 \<lhd> dims A\<close>] \<open>is = is1 @ is2\<close> by simp
 qed
 
 lemma smult_prod_extract2:
@@ -222,8 +222,8 @@ proof (rule tensor_lookup_eqI)
   then obtain is1 is2 where "is1 \<lhd> dims A" "is2 \<lhd> dims B" "is = is1 @ is2" by (metis dims_tensor_prod valid_index_split)
   then have "is2 \<lhd> dims (a \<cdot> B)" by auto
   show "lookup (a \<cdot> (A \<otimes> B)) is = lookup (A \<otimes> (a \<cdot> B)) is"
-  using lookup_tensor_prod[OF `is1 \<lhd> dims A` `is2 \<lhd> dims B`] lookup_tensor_prod[OF `is1 \<lhd> dims A` `is2 \<lhd> dims (a \<cdot> B)`]
-        lookup_smult[OF `is \<lhd> dims (A \<otimes> B)`] lookup_smult[OF `is2 \<lhd> dims B`] `is = is1 @ is2` by simp
+  using lookup_tensor_prod[OF \<open>is1 \<lhd> dims A\<close> \<open>is2 \<lhd> dims B\<close>] lookup_tensor_prod[OF \<open>is1 \<lhd> dims A\<close> \<open>is2 \<lhd> dims (a \<cdot> B)\<close>]
+        lookup_smult[OF \<open>is \<lhd> dims (A \<otimes> B)\<close>] lookup_smult[OF \<open>is2 \<lhd> dims B\<close>] \<open>is = is1 @ is2\<close> by simp
 qed
 
 
@@ -236,7 +236,7 @@ proof
   then obtain a where "vec A = [a]" by (metis One_nat_def Suc_length_conv length_0_conv)
   moreover have "vec (a \<cdot> 1) = [a]" unfolding smult_def tensor_one_def by (simp add: vec_smult_def)
   ultimately have "A = a \<cdot> 1" using tensor_eqI by (metis assms dims_smult length_0_conv order_tensor_one)
-  then show "A = hd (vec A) \<cdot> 1" using `vec A = [a]` by auto
+  then show "A = hd (vec A) \<cdot> 1" using \<open>vec A = [a]\<close> by auto
 qed
 
 lemma smult_1:
@@ -273,7 +273,7 @@ proof (rule tensor_lookup_eqI)
   have "hd (dims A) =  hd (dims (A \<otimes> B))"
     by (metis One_nat_def Suc_length_conv append_Cons assms(1) dims_tensor_prod list.sel(1))
   show "dims (subtensor (A \<otimes> B) i) = dims (lookup A [i] \<cdot> B)"
-    unfolding dims_smult dims_subtensor[OF `dims (A \<otimes> B) \<noteq> []` `i < hd (dims A)`[unfolded `hd (dims A) =  hd (dims (A \<otimes> B))`] ]
+    unfolding dims_smult dims_subtensor[OF \<open>dims (A \<otimes> B) \<noteq> []\<close> \<open>i < hd (dims A)\<close>[unfolded \<open>hd (dims A) =  hd (dims (A \<otimes> B))\<close>] ]
     by (metis One_nat_def Suc_length_conv append.simps(2) append_self_conv2 assms(1) dims_tensor_prod length_0_conv list.sel(3))
 next
   fix "is" assume "is \<lhd> dims (subtensor (A \<otimes> B) i)"
@@ -281,13 +281,13 @@ next
   have "hd (dims A) =  hd (dims (A \<otimes> B))"
     by (metis One_nat_def Suc_length_conv append_Cons assms(1) dims_tensor_prod list.sel(1))
   then have "is \<lhd> dims B"
-    using `is \<lhd> dims (subtensor (A \<otimes> B) i)`[unfolded dims_subtensor[OF `dims (A \<otimes> B) \<noteq> []` `i < hd (dims A)`[unfolded `hd (dims A) =  hd (dims (A \<otimes> B))`] ]]
+    using \<open>is \<lhd> dims (subtensor (A \<otimes> B) i)\<close>[unfolded dims_subtensor[OF \<open>dims (A \<otimes> B) \<noteq> []\<close> \<open>i < hd (dims A)\<close>[unfolded \<open>hd (dims A) =  hd (dims (A \<otimes> B))\<close>] ]]
     by (metis One_nat_def Suc_length_conv append_self_conv2 assms(1) dims_tensor_prod length_0_conv list.sel(3) list.simps(3) tl_append2)
   have "[i] \<lhd> dims A" using assms by (metis One_nat_def Suc_length_conv length_0_conv list.sel(1) valid_index.Nil valid_index.simps)
   then have "i # is \<lhd> dims (A \<otimes> B)" using \<open>is \<lhd> dims (subtensor (A \<otimes> B) i)\<close> dims_subtensor valid_index.Cons by auto
   then show "lookup (subtensor (A \<otimes> B) i) is = lookup (lookup A [i] \<cdot> B) is"
-  unfolding lookup_subtensor1[OF `i # is \<lhd> dims (A \<otimes> B)`]
-    using lookup_tensor_prod[OF `[i] \<lhd> dims A` `is \<lhd> dims B`] lookup_smult
+  unfolding lookup_subtensor1[OF \<open>i # is \<lhd> dims (A \<otimes> B)\<close>]
+    using lookup_tensor_prod[OF \<open>[i] \<lhd> dims A\<close> \<open>is \<lhd> dims B\<close>] lookup_smult
     \<open>is \<lhd> dims B\<close> using append_Cons by fastforce
 qed
 

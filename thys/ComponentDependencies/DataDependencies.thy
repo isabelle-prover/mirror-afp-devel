@@ -195,7 +195,7 @@ lemma
 
 (*<*)
 (*>*)
-subsection {* Direct and indirect data dependencies between components *}
+subsection \<open>Direct and indirect data dependencies between components\<close>
 
 \<comment> \<open>The component C should be defined on the same abstraction\<close>
 \<comment> \<open>level we are seaching for its direct or indirect sources,\<close>
@@ -512,7 +512,7 @@ by (metis AccSigleLoop Acc_SourcesNOT empty_iff insert_iff)
 
 (*<*)
 (*>*)
-subsection {* Components that are elementary wrt. data dependencies *}
+subsection \<open>Components that are elementary wrt. data dependencies\<close>
 
 \<comment> \<open>two output channels of a component C are corelated, if they mutually depend on the same local variable(s)\<close>
 definition
@@ -570,7 +570,7 @@ qed
 
 (*<*)
 (*>*)
-subsection {* Set of components needed to check a specific property *}
+subsection \<open>Set of components needed to check a specific property\<close>
 
 \<comment> \<open>set of components specified on abstreaction level i, which input channels belong to the set chSet\<close>
 definition
@@ -691,7 +691,7 @@ qed
 
 (*<*)
 (*>*)
-subsection {* Additional properties: Remote Computation *}
+subsection \<open>Additional properties: Remote Computation\<close>
 
 \<comment> \<open>The value of  $UplSizeHighLoad$ $x$ is True if its $UplSize$ measure is greather that a predifined value\<close>
 definition UplSizeHighLoadCh ::  "chanID \<Rightarrow> bool"

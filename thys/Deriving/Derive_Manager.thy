@@ -19,14 +19,14 @@ text \<open>
   \<close>}
 
   \begin{description}
-  \item @{text "\<^bold>d\<^bold>e\<^bold>r\<^bold>i\<^bold>v\<^bold>e (param) sort datatype"} calls the hook for deriving @{text sort} (that
-  may depend on the optional @{text param}) on @{text datatype} (if such a hook is registered).
+  \item \<open>\<^bold>d\<^bold>e\<^bold>r\<^bold>i\<^bold>v\<^bold>e (param) sort datatype\<close> calls the hook for deriving \<open>sort\<close> (that
+  may depend on the optional \<open>param\<close>) on \<open>datatype\<close> (if such a hook is registered).
 
-  E.g., @{text "\<^bold>d\<^bold>e\<^bold>r\<^bold>i\<^bold>v\<^bold>e compare_order list"} will derive a comparator for datatype @{type list}
+  E.g., \<open>\<^bold>d\<^bold>e\<^bold>r\<^bold>i\<^bold>v\<^bold>e compare_order list\<close> will derive a comparator for datatype @{type list}
   which is also used to define a linear order on @{type list}s.
   \end{description}
 
-  There is also the diagnostic command @{text "\<^bold>p\<^bold>r\<^bold>i\<^bold>n\<^bold>t\<^bold>_\<^bold>d\<^bold>e\<^bold>r\<^bold>i\<^bold>v\<^bold>e\<^bold>s"} that shows the list of currently
+  There is also the diagnostic command \<open>\<^bold>p\<^bold>r\<^bold>i\<^bold>n\<^bold>t\<^bold>_\<^bold>d\<^bold>e\<^bold>r\<^bold>i\<^bold>v\<^bold>e\<^bold>s\<close> that shows the list of currently
   registered hooks.
 \<close>
 

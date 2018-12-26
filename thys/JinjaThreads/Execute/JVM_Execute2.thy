@@ -115,7 +115,7 @@ unfolding sc_jvm_state_invar_def Int_iff mem_Collect_eq
 apply(rule conjI)
  apply(simp add: sc.execute.correct_jvm_state_initial[OF assms])
 apply(rule ts_okI)
-using `sc_wf_start_state P C M vs`
+using \<open>sc_wf_start_state P C M vs\<close>
 apply(auto simp add: sc.start_state_def split_beta sc_wf_start_state_iff split: if_split_asm dest: sees_method_idemp)
 done
 
@@ -258,7 +258,7 @@ proof -
   qed(rule invariant3p_sc_jvm_state_invar[OF assms])
 qed
 
-subsection {* Round-robin scheduler *}
+subsection \<open>Round-robin scheduler\<close>
 
 interpretation JVM_rr: 
   sc_round_robin_base
@@ -295,7 +295,7 @@ apply(rule JVM_rr.round_robin_scheduler)
 apply(rule sc_exec_deterministic[OF assms])
 done
 
-subsection {* Random scheduler *}
+subsection \<open>Random scheduler\<close>
 
 interpretation JVM_rnd: 
   sc_random_scheduler_base
@@ -331,8 +331,8 @@ apply(rule JVM_rnd.random_scheduler_scheduler)
 apply(rule sc_exec_deterministic[OF assms])
 done
 
-ML_val {* @{code exec_JVM_rr} *}
+ML_val \<open>@{code exec_JVM_rr}\<close>
 
-ML_val {* @{code exec_JVM_rnd} *}
+ML_val \<open>@{code exec_JVM_rnd}\<close>
 
 end

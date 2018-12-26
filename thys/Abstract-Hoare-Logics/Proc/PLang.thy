@@ -7,7 +7,7 @@ section "Hoare Logics for 1 Procedure"
 
 theory PLang imports Main begin
 
-subsection{* The language *}
+subsection\<open>The language\<close>
 
 typedecl state
 
@@ -21,17 +21,17 @@ datatype com = Do "(state \<Rightarrow> state set)"
              | Local "(state \<Rightarrow> state)" com "(state \<Rightarrow> state \<Rightarrow> state)"
                ("LOCAL _; _; _" [0,0,60] 60)
 
-text{*\noindent There is only one parameterless procedure in the program. Hence
+text\<open>\noindent There is only one parameterless procedure in the program. Hence
 @{term CALL} does not even need to mention the procedure name. There
 is no separate syntax for procedure declarations. Instead we declare a HOL
-constant that represents the body of the one procedure in the program.*}
+constant that represents the body of the one procedure in the program.\<close>
 
 consts body :: com
 
-text{*\noindent
+text\<open>\noindent
 As before, command execution is described by transitions
-@{text"s -c\<rightarrow> t"}. The only new rule is the one for @{term CALL} ---
-it requires no comment:*}
+\<open>s -c\<rightarrow> t\<close>. The only new rule is the one for @{term CALL} ---
+it requires no comment:\<close>
 
 inductive
   exec :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"  ("_/ -_\<rightarrow>/ _" [50,0,50] 50)
@@ -84,14 +84,14 @@ lemma WhileI: "\<lbrakk>b s; s -c\<rightarrow> t; t -WHILE b DO c\<rightarrow> u
 by(fastforce elim:exec.WhileTrue)
 (*>*)
 
-text{*This semantics turns out not to be fine-grained
+text\<open>This semantics turns out not to be fine-grained
 enough. The soundness proof for the Hoare logic below proceeds by
 induction on the call depth during execution. To make this work we
-define a second semantics \mbox{@{text"s -c-n\<rightarrow> t"}} which expresses that the
+define a second semantics \mbox{\<open>s -c-n\<rightarrow> t\<close>} which expresses that the
 execution uses at most @{term n} nested procedure invocations, where
 @{term n} is a natural number. The rules are straightforward: @{term
 n} is just passed around, except for procedure calls, where it is
-decremented: *}
+decremented:\<close>
 
 inductive
   execn :: "state \<Rightarrow> com \<Rightarrow> nat \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_-_\<rightarrow>/ _" [50,0,0,50] 50)
@@ -134,8 +134,8 @@ lemma [iff]: "(s -LOCAL f; c; g-n\<rightarrow> u) = (\<exists>t. f s -c-n\<right
 by(auto elim: execn.cases intro:execn.intros)
 
 
-text{*\noindent By induction on @{prop"s -c-m\<rightarrow> t"} we show
-monotonicity w.r.t.\ the call depth:*}
+text\<open>\noindent By induction on @{prop"s -c-m\<rightarrow> t"} we show
+monotonicity w.r.t.\ the call depth:\<close>
 
 lemma exec_mono[rule_format]: "s -c-m\<rightarrow> t \<Longrightarrow> \<forall>n. m \<le> n \<longrightarrow> s -c-n\<rightarrow> t"
 apply(erule execn.induct)
@@ -153,8 +153,8 @@ apply(erule execn.induct)
   apply blast
 done
 
-text{*\noindent With the help of this lemma we prove the expected
-relationship between the two semantics: *}
+text\<open>\noindent With the help of this lemma we prove the expected
+relationship between the two semantics:\<close>
 
 lemma exec_iff_execn: "(s -c\<rightarrow> t) = (\<exists>n. s -c-n\<rightarrow> t)"
 apply(rule iffI)

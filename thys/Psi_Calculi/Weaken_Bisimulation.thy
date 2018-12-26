@@ -129,11 +129,11 @@ proof auto
   assume "\<Psi> \<rhd> P \<approx>\<^sub>w Q" thus "\<Psi> \<rhd> P \<approx> Q"
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cStatImp \<Psi> P Q)
-    from `\<Psi> \<rhd> P \<approx>\<^sub>w Q` have "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<weakenBisim> Q" by(rule weakenBisimE)
+    from \<open>\<Psi> \<rhd> P \<approx>\<^sub>w Q\<close> have "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<weakenBisim> Q" by(rule weakenBisimE)
     thus ?case using weakenBisimE(3) by(rule weakenStatImpWeakStatImp)
   next
     case(cSim \<Psi> P Q)
-    from `\<Psi> \<rhd> P \<approx>\<^sub>w Q` weakenBisimE
+    from \<open>\<Psi> \<rhd> P \<approx>\<^sub>w Q\<close> weakenBisimE
     show ?case by(rule weakenSimWeakSim)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -147,11 +147,11 @@ next
   assume "\<Psi> \<rhd> P \<approx> Q" thus "\<Psi> \<rhd> P \<approx>\<^sub>w Q"
   proof(coinduct rule: weakenBisimWeakCoinduct)
     case(cStatImp \<Psi> P Q)
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> P \<lessapprox><weakBisim> Q" by(rule weakBisimE)
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> P \<lessapprox><weakBisim> Q" by(rule weakBisimE)
     thus ?case using statEqWeakBisim by(rule weakStatImpWeakenStatImp)
   next
     case(cSim \<Psi> P Q)
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(rule weakBisimE)
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(rule weakBisimE)
     thus ?case using statEqWeakBisim by(rule weakSimWeakenSim)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -179,15 +179,15 @@ lemma weakenTransitiveWeakCoinduct[case_names cStatImp cSim cExt cSym, case_conc
 
   shows "\<Psi> \<rhd> P \<approx>\<^sub>w Q"
 proof -
-  from p `eqvt X` have "\<Psi> \<rhd> P \<approx> Q"
+  from p \<open>eqvt X\<close> have "\<Psi> \<rhd> P \<approx> Q"
   proof(coinduct rule: weakTransitiveWeakCoinduct)
     case(cStatImp \<Psi> P Q)
-    from `(\<Psi>, P, Q) \<in> X` have "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<X> Q" by(rule rStatImp)
+    from \<open>(\<Psi>, P, Q) \<in> X\<close> have "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<X> Q" by(rule rStatImp)
     thus ?case using rExt by(rule weakenStatImpWeakStatImp)
   next
     case(cSim \<Psi> P Q)
     let ?Y = "{(\<Psi>, P, Q) | \<Psi> P Q. \<exists>P' Q'. \<Psi> \<rhd> P \<sim> P' \<and> (\<Psi>, P', Q') \<in> X \<and> \<Psi> \<rhd> Q' \<sim> Q}"
-    note `(\<Psi>, P, Q) \<in> X`
+    note \<open>(\<Psi>, P, Q) \<in> X\<close>
     moreover note rStatImp rSim
     moreover have "\<And>\<Psi> P Q \<Psi>'. (\<Psi>, P, Q) \<in> ?Y \<Longrightarrow> (\<Psi> \<otimes> \<Psi>', P, Q) \<in> ?Y"
       by(blast dest: bisimE rExt)
@@ -220,7 +220,7 @@ lemma weakenTransitiveCoinduct[case_names cStatImp cSim cExt cSym, case_conclusi
   shows "\<Psi> \<rhd> P \<approx>\<^sub>w Q"
 proof -
   from p have "(\<Psi>, P, Q) \<in> X \<union> weakenBisim" by auto
-  moreover from `eqvt X` have "eqvt(X \<union> weakenBisim)" by auto
+  moreover from \<open>eqvt X\<close> have "eqvt(X \<union> weakenBisim)" by auto
   ultimately show ?thesis
   proof(coinduct rule: weakenTransitiveWeakCoinduct)
     case(cStatImp \<Psi> P Q)

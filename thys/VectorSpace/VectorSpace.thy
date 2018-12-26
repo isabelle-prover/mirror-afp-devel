@@ -1,4 +1,4 @@
-section {* Basic theory of vector spaces, using locales *}
+section \<open>Basic theory of vector spaces, using locales\<close>
 
 theory VectorSpace
 imports Main
@@ -10,9 +10,9 @@ imports Main
   SumSpaces
 begin
 
-subsection {* Basic definitions and facts carried over from modules*}
-text {*A @{text "vectorspace"} is a module where the ring is a field. 
-Note that we switch notation from $(R, M)$ to $(K, V)$.*}
+subsection \<open>Basic definitions and facts carried over from modules\<close>
+text \<open>A \<open>vectorspace\<close> is a module where the ring is a field. 
+Note that we switch notation from $(R, M)$ to $(K, V)$.\<close>
 locale vectorspace = 
   module?: module K V + field?: field K  
   for K and V
@@ -22,10 +22,10 @@ Use sets for bases, and functions from the sets to carrier K
 represent the coefficients. 
 *)
 
-text {*A @{text "subspace"} of a vectorspace is a nonempty subset 
+text \<open>A \<open>subspace\<close> of a vectorspace is a nonempty subset 
 that is closed under addition and scalar multiplication. These properties
 have already been defined in submodule. Caution: W is a set, while V is 
-a module record. To get W as a vectorspace, write vs W.*}
+a module record. To get W as a vectorspace, write vs W.\<close>
 locale subspace =
   fixes K and W and V (structure)
   assumes vs: "vectorspace K V"
@@ -36,8 +36,8 @@ lemma (in vectorspace) is_module[simp]:
   "subspace K W V\<Longrightarrow>submodule K W V"
 by (unfold subspace_def, auto)
 
-text {*We introduce some basic facts and definitions copied from module.
-We introduce some abbreviations, to match convention.*}
+text \<open>We introduce some basic facts and definitions copied from module.
+We introduce some abbreviations, to match convention.\<close>
 abbreviation (in vectorspace) vs::"'c set \<Rightarrow> ('a, 'c, 'd) module_scheme"
   where "vs W \<equiv> V\<lparr>carrier :=W\<rparr>"
 
@@ -68,8 +68,8 @@ proof -
   from h2 h3 nonzero show ?thesis by (rule zero_nin_lin_indpt)
 qed
 
-text {*A @{text "linear_map"} is a module homomorphism between 2 vectorspaces
-over the same field.*}
+text \<open>A \<open>linear_map\<close> is a module homomorphism between 2 vectorspaces
+over the same field.\<close>
 locale linear_map = 
   V?: vectorspace K V + W?: vectorspace K W
   + mod_hom?: mod_hom K V W T
@@ -131,7 +131,7 @@ proof -
   from field 2 show ?thesis by (unfold vectorspace_def module_def, auto)
 qed
 
-text {*For any set $S$, the space of functions $S\to K$ forms a vector space.*}
+text \<open>For any set $S$, the space of functions $S\to K$ forms a vector space.\<close>
 lemma (in vectorspace) func_space_is_vs:
   fixes S
   shows "vectorspace K (func_space S)" 
@@ -171,8 +171,8 @@ proof -
     by (unfold linear_map_def vectorspace_def , auto, intro direct_sum_is_module, auto)
 qed
 
-text {*For subspaces $V_1,V_2\subseteq V$, the map $V_1\oplus V_2\to V$ given by $(v_1,v_2)\mapsto 
-v_1+v_2$ is linear.*}
+text \<open>For subspaces $V_1,V_2\subseteq V$, the map $V_1\oplus V_2\to V$ given by $(v_1,v_2)\mapsto 
+v_1+v_2$ is linear.\<close>
 lemma (in vectorspace) sum_map_linear: 
   fixes V1 V2
   assumes h1: "subspace K V1 V" and h2: "subspace K V2 V"
@@ -195,7 +195,7 @@ proof -
     by (unfold subspace_def, auto)
 qed
 
-text {*If $W_1,W_2\subseteq V$ are subspaces, $W_1\subseteq W_1 + W_2$*}
+text \<open>If $W_1,W_2\subseteq V$ are subspaces, $W_1\subseteq W_1 + W_2$\<close>
 lemma (in vectorspace) in_sum_vs:
   fixes W1 W2
   assumes h1: "subspace K W1 V" and h2: "subspace K W2 V"
@@ -212,8 +212,8 @@ proof -
   from h1 h2 show ?thesis by (intro msum_comm, unfold subspace_def, auto)
 qed
 
-text {*If $W_1,W_2\subseteq V$ are subspaces, then $W_1+W_2$ is the minimal subspace such that 
-both $W_1\subseteq W$ and $W_2\subseteq W$.*}
+text \<open>If $W_1,W_2\subseteq V$ are subspaces, then $W_1+W_2$ is the minimal subspace such that 
+both $W_1\subseteq W$ and $W_2\subseteq W$.\<close>
 lemma (in vectorspace) vsum_is_minimal:
   fixes W W1 W2
   assumes h1: "subspace K W1 V" and h2: "subspace K W2 V" and h3: "subspace K W V"
@@ -233,9 +233,9 @@ proof -
   from 0 1 show ?thesis by (unfold subspace_def mod_hom_def linear_map_def, auto)
 qed
 
-subsubsection {* Facts specific to vector spaces *}
+subsubsection \<open>Facts specific to vector spaces\<close>
 
-text {*If $av = w$ and $a\neq 0$, $v=a^{-1}w$.*}
+text \<open>If $av = w$ and $a\neq 0$, $v=a^{-1}w$.\<close>
 lemma (in vectorspace) mult_inverse:
   assumes h1: "a\<in>carrier K" and h2: "v\<in>carrier V" and h3: "a \<odot>\<^bsub>V\<^esub> v = w" and h4: "a\<noteq>\<zero>\<^bsub>K\<^esub>"
   shows "v = (inv\<^bsub>K\<^esub> a )\<odot>\<^bsub>V\<^esub> w"
@@ -258,7 +258,7 @@ proof -
   from 2 6 show ?thesis by auto
 qed
 
-text {*If $w\in S$ and $\sum_{w\in S} a_ww=0$, we have $v=\sum_{w\not\in S}a_v^{-1}a_ww$*}
+text \<open>If $w\in S$ and $\sum_{w\in S} a_ww=0$, we have $v=\sum_{w\not\in S}a_v^{-1}a_ww$\<close>
 lemma (in vectorspace) lincomb_isolate: 
   fixes A v
   assumes h1: "finite A" and h2: "A\<subseteq>carrier V"  and h3: "a\<in>A\<rightarrow>carrier K" and h4: "v\<in>A"
@@ -292,7 +292,7 @@ proof -
     by (force simp add: 11 ring_subset_carrier)
 qed
 
-text {*The map $(S\to K)\mapsto V$ given by $(a_v)_{v\in S}\mapsto \sum_{v\in S} a_v v$ is linear.*}
+text \<open>The map $(S\to K)\mapsto V$ given by $(a_v)_{v\in S}\mapsto \sum_{v\in S} a_v v$ is linear.\<close>
 lemma (in vectorspace) lincomb_is_linear:
   fixes S
   assumes h: "finite S" and h2: "S\<subseteq>carrier V"
@@ -303,10 +303,10 @@ proof -
   from 0 1 show ?thesis by (unfold vectorspace_def mod_hom_def linear_map_def, auto)
 qed
 
-subsection {* Basic facts about span and linear independence *}
+subsection \<open>Basic facts about span and linear independence\<close>
 
-text {*If $S$ is linearly independent, then $v\in \text{span}S$ iff $S\cup \{v\}$ is linearly 
-dependent. *}
+text \<open>If $S$ is linearly independent, then $v\in \text{span}S$ iff $S\cup \{v\}$ is linearly 
+dependent.\<close>
 theorem (in vectorspace) lin_dep_iff_in_span:
   fixes A v S
   assumes  h1: "S \<subseteq> carrier V" and h2: "lin_indpt S" and h3: "v\<in> carrier V" and h4: "v\<notin>S"
@@ -358,7 +358,7 @@ proof -
   from a1 a2 show ?thesis by auto
 qed
 
-text {*If $v\in \text{span} A$ then $\text{span}A =\text{span}(A\cup \{v\})$*}
+text \<open>If $v\in \text{span} A$ then $\text{span}A =\text{span}(A\cup \{v\})$\<close>
 lemma (in vectorspace) already_in_span:
   fixes v A
   assumes  inC: "A\<subseteq>carrier V" and inspan: "v\<in>span A"
@@ -373,12 +373,12 @@ proof -
   from dir1 dir2 show ?thesis by auto
 qed
 
-subsection {* The Replacement Theorem*}
+subsection \<open>The Replacement Theorem\<close>
 
-text {*If $A,B\subseteq V$ are finite, $A$ is linearly independent, $B$ generates $W$, 
+text \<open>If $A,B\subseteq V$ are finite, $A$ is linearly independent, $B$ generates $W$, 
 and $A\subseteq W$, then there exists $C\subseteq V$ disjoint from $A$ such that
 $\text{span}(A\cup C) = W$ and $|C|\le |B|-|A|$. In other words, we can complete
-any linearly independent set to a generating set of $W$ by adding at most $|B|-|A|$ more elements. *}
+any linearly independent set to a generating set of $W$ by adding at most $|B|-|A|$ more elements.\<close>
 theorem (in vectorspace) replacement:
   fixes A B (*A B are lists of vectors (colloquially we refer to them as sets)*) 
   assumes h1: "finite A"
@@ -481,22 +481,22 @@ next
   qed
 qed
 
-subsection {* Defining dimension and bases. *}
+subsection \<open>Defining dimension and bases.\<close>
 
-text {*Finite dimensional is defined as having a finite generating set.*}
+text \<open>Finite dimensional is defined as having a finite generating set.\<close>
 definition (in vectorspace) fin_dim:: "bool"
   where "fin_dim = (\<exists> A. ((finite A) \<and> (A \<subseteq> carrier V) \<and> (gen_set A)))"
 
-text {*The dimension is the size of the smallest generating set. For equivalent
-characterizations see below.*}
+text \<open>The dimension is the size of the smallest generating set. For equivalent
+characterizations see below.\<close>
 definition (in vectorspace) dim:: "nat"
   where "dim = (LEAST n. (\<exists> A. ((finite A) \<and> (card A = n) \<and> (A \<subseteq> carrier V) \<and> (gen_set A))))"
 
-text {*A @{text "basis"} is a linearly independent generating set.*}
+text \<open>A \<open>basis\<close> is a linearly independent generating set.\<close>
 definition (in vectorspace) basis:: "'c set \<Rightarrow> bool"
   where "basis A = ((lin_indpt A) \<and> (gen_set A)\<and> (A\<subseteq>carrier V))"
 
-text {*From the replacement theorem, any linearly independent set is smaller than any generating set.*}
+text \<open>From the replacement theorem, any linearly independent set is smaller than any generating set.\<close>
 lemma (in vectorspace) li_smaller_than_gen:
   fixes A B
   assumes h1: "finite A" and h2: "finite B" and h3: "A\<subseteq>carrier V" and h4: "B\<subseteq>carrier V" 
@@ -510,7 +510,7 @@ proof -
   from 2 show ?thesis by arith
 qed
 
-text {*The dimension is the cardinality of any basis. (In particular, all bases are the same size.)*}
+text \<open>The dimension is the cardinality of any basis. (In particular, all bases are the same size.)\<close>
 lemma (in vectorspace) dim_basis:
   fixes A 
   assumes  fin: "finite A" and h2: "basis A"
@@ -534,17 +534,17 @@ proof -
 qed
 
 (*can define more generally with posets*)
-text {*A @{text "maximal"} set with respect to $P$ is such that if $B\supseteq A$ and $P$ is also 
-satisfied for $B$, then $B=A$.*}
+text \<open>A \<open>maximal\<close> set with respect to $P$ is such that if $B\supseteq A$ and $P$ is also 
+satisfied for $B$, then $B=A$.\<close>
 definition maximal::"'a set \<Rightarrow> ('a set \<Rightarrow> bool) \<Rightarrow> bool"
   where "maximal A P = ((P A) \<and> (\<forall>B. B\<supseteq>A \<and> P B \<longrightarrow> B = A))"
 
-text {*A @{text "minimal"} set with respect to $P$ is such that if $B\subseteq A$ and $P$ is also 
-satisfied for $B$, then $B=A$.*}
+text \<open>A \<open>minimal\<close> set with respect to $P$ is such that if $B\subseteq A$ and $P$ is also 
+satisfied for $B$, then $B=A$.\<close>
 definition minimal::"'a set \<Rightarrow> ('a set \<Rightarrow> bool) \<Rightarrow> bool"
   where "minimal A P = ((P A) \<and> (\<forall>B. B\<subseteq>A \<and> P B \<longrightarrow> B = A))"
  
-text {*A maximal linearly independent set is a generating set.*}
+text \<open>A maximal linearly independent set is a generating set.\<close>
 lemma (in vectorspace) max_li_is_gen:
   fixes A
   assumes h1: "maximal A (\<lambda>S. S\<subseteq>carrier V \<and> lin_indpt S)"
@@ -578,7 +578,7 @@ proof (rule ccontr)
   from h1 9 show False by auto
 qed
 
-text {*A minimal generating set is linearly independent.*}
+text \<open>A minimal generating set is linearly independent.\<close>
 lemma (in vectorspace) min_gen_is_li:
   fixes A
   assumes h1: "minimal A (\<lambda>S. S\<subseteq>carrier V \<and> gen_set S)"
@@ -616,7 +616,7 @@ proof (rule ccontr)
   from h1 10 show False by auto
 qed
 
-text {*Given that some finite set satisfies $P$, there is a minimal set that satisfies $P$.*}
+text \<open>Given that some finite set satisfies $P$, there is a minimal set that satisfies $P$.\<close>
 lemma minimal_exists:
   fixes A P
   assumes h1: "finite A" and h2: "P A"
@@ -660,7 +660,7 @@ case (less A)
    qed
 qed
 
-text {*If $V$ is finite-dimensional, then any linearly independent set is finite.*}
+text \<open>If $V$ is finite-dimensional, then any linearly independent set is finite.\<close>
 lemma (in vectorspace) fin_dim_li_fin:
   assumes fd: "fin_dim" and li: "lin_indpt A" and inC: "A\<subseteq>carrier V"
   shows fin: "finite A"
@@ -675,7 +675,7 @@ proof (rule ccontr)
   from this B show False by auto
 qed
 
-text {*If $V$ is finite-dimensional (has a finite generating set), then a finite basis exists.*}
+text \<open>If $V$ is finite-dimensional (has a finite generating set), then a finite basis exists.\<close>
 lemma (in vectorspace) finite_basis_exists:
   assumes h1: "fin_dim"
   shows "\<exists>\<beta>. finite \<beta> \<and> basis \<beta>"
@@ -690,7 +690,7 @@ proof -
   moreover from 1 3 have 6: "finite \<beta>" by (auto simp add: finite_subset)
   ultimately show ?thesis apply (unfold basis_def) by auto
 qed
-text{*
+text\<open>
 The proof is as follows.
 \begin{enumerate}
 \item Because $V$ is finite-dimensional, there is a finite generating set 
@@ -699,9 +699,9 @@ The proof is as follows.
 \item $\beta$ is linearly independent because a minimal generating set is linearly independent.
 \end{enumerate}
 Finally, $\beta$ is a basis because it is both generating and linearly independent.
-*}
+\<close>
 
-text {*Any linearly independent set has cardinality at most equal to the dimension.*}
+text \<open>Any linearly independent set has cardinality at most equal to the dimension.\<close>
 lemma (in vectorspace) li_le_dim: 
   fixes A
   assumes fd: "fin_dim" and c: "A\<subseteq>carrier V" and l: "lin_indpt A"
@@ -717,7 +717,7 @@ proof  -
   from 2 3 show "card A \<le> dim" by auto
 qed
 
-text {*Any generating set has cardinality at least equal to the dimension.*}
+text \<open>Any generating set has cardinality at least equal to the dimension.\<close>
 lemma (in vectorspace) gen_ge_dim: 
   fixes A
   assumes fa: "finite A" and c: "A\<subseteq>carrier V" and l: "gen_set A"
@@ -733,8 +733,8 @@ proof  -
 qed
 
 
-text {*If there is an upper bound on the cardinality of sets satisfying $P$, then there is a maximal
-set satisfying $P$.*}
+text \<open>If there is an upper bound on the cardinality of sets satisfying $P$, then there is a maximal
+set satisfying $P$.\<close>
 lemma maximal_exists:
   fixes P B N
   assumes maxc: "\<And>A. P A \<Longrightarrow> finite A \<and> (card A \<le>N)" and b: "P B"
@@ -758,7 +758,7 @@ proof -
   from 4 6 show ?thesis by auto
 qed
 
-text {*Any maximal linearly independent set is a basis.*}
+text \<open>Any maximal linearly independent set is a basis.\<close>
 lemma (in vectorspace) max_li_is_basis:
   fixes A
   assumes h1: "maximal A (\<lambda>S. S\<subseteq>carrier V \<and> lin_indpt S)"
@@ -768,7 +768,7 @@ proof -
   from assms 1 show ?thesis by (unfold basis_def maximal_def, auto)
 qed
 
-text {*Any minimal linearly independent set is a generating set.*}
+text \<open>Any minimal linearly independent set is a generating set.\<close>
 lemma (in vectorspace) min_gen_is_basis:
   fixes A
   assumes h1: "minimal A (\<lambda>S. S\<subseteq>carrier V \<and> gen_set S)"
@@ -778,7 +778,7 @@ proof -
   from assms 1 show ?thesis by (unfold basis_def minimal_def, auto)
 qed
 
-text {*Any linearly independent set with cardinality at least the dimension is a basis.*}
+text \<open>Any linearly independent set with cardinality at least the dimension is a basis.\<close>
 lemma (in vectorspace) dim_li_is_basis:
   fixes A
   assumes fd: "fin_dim" and fa: "finite A" and ca: "A\<subseteq>carrier V" and li: "lin_indpt A" 
@@ -795,7 +795,7 @@ proof -
   from h1 show ?thesis by (auto intro: max_li_is_basis)
 qed
 
-text {*Any generating set with cardinality at most the dimension is a basis.*}
+text \<open>Any generating set with cardinality at most the dimension is a basis.\<close>
 lemma (in vectorspace) dim_gen_is_basis:
   fixes A
   assumes fa: "finite A" and ca: "A\<subseteq>carrier V" and li: "gen_set A" 
@@ -826,8 +826,8 @@ proof -
   from h2 show ?thesis by (rule min_gen_is_basis)
 qed
 
-text {*$\beta$ is a basis iff for all $v\in V$, there exists a unique $(a_v)_{v\in S}$ such that
-$\sum_{v\in S} a_v v=v$.*}
+text \<open>$\beta$ is a basis iff for all $v\in V$, there exists a unique $(a_v)_{v\in S}$ such that
+$\sum_{v\in S} a_v v=v$.\<close>
 lemma (in vectorspace) basis_criterion:
   assumes A_fin: "finite A" and AinC: "A\<subseteq>carrier V"
   shows "basis A \<longleftrightarrow> (\<forall>v. v\<in> carrier V \<longrightarrow>(\<exists>! a.  a\<in>A \<rightarrow>\<^sub>E carrier K \<and> lincomb a A = v))"
@@ -931,11 +931,11 @@ lemma (in linear_map) surj_imp_imT_carrier:
   shows "(imT) = carrier W" 
   by (simp add: surj im_def)
 
-subsection {* The rank-nullity (dimension) theorem*}
+subsection \<open>The rank-nullity (dimension) theorem\<close>
 
-text {*If $V$ is finite-dimensional and $T:V\to W$ is a linear map, then $\text{dim}(\text{im}(T))+
+text \<open>If $V$ is finite-dimensional and $T:V\to W$ is a linear map, then $\text{dim}(\text{im}(T))+
 \text{dim}(\text{ker}(T)) = \text{dim} V$. Moreover, we prove that if $T$ is surjective 
-  linear-map between $V$ and $W$, where $V$ is finite-dimensional, then also $W$ is finite-dimensional. *}
+  linear-map between $V$ and $W$, where $V$ is finite-dimensional, then also $W$ is finite-dimensional.\<close>
 theorem (in linear_map) rank_nullity_main: 
   assumes fd: "V.fin_dim"
   shows "(vectorspace.dim K (W.vs imT)) + (vectorspace.dim K (V.vs kerT)) = V.dim"       
@@ -988,7 +988,7 @@ than kerT\<close>
     by auto
   from subs_ker Ainker Akerli have Ali: "V.module.lin_indpt A" 
     by (auto simp add: V.module.span_li_not_depend(2))
-  txt{* Use the replacement theorem to find C such that $A\cup C$ is a basis of V.*}
+  txt\<open>Use the replacement theorem to find C such that $A\cup C$ is a basis of V.\<close>
   from fd obtain B where B: "finite B\<and> V.basis B" by (metis V.finite_basis_exists)
   from B have Bfin: "finite B" and Bbasis:"V.basis B" by auto
   from B have Bcard: "V.dim = card B" by (intro V.dim_basis, auto) 
@@ -999,10 +999,10 @@ than kerT\<close>
     apply (intro V.replacement)
     apply (unfold vectorspace.basis_def V.basis_def)
       by (unfold ker_def, auto)
-  txt {* From replacement we got $|C|\leq |B|-|A|$. Equality must actually hold, because no generating set
+  txt \<open>From replacement we got $|C|\leq |B|-|A|$. Equality must actually hold, because no generating set
 can be smaller than $B$. Now $A\cup C$ is a maximal generating set, hence a basis; its cardinality
-equals the dimension. *}
-  txt {* We claim that $T(C)$ is basis for $\text{im}(T)$.*}
+equals the dimension.\<close>
+  txt \<open>We claim that $T(C)$ is basis for $\text{im}(T)$.\<close>
   then obtain C where C: "finite C \<and> C\<subseteq>carrier V \<and> C\<subseteq> V.module.span B \<and> C\<inter>A={} 
     \<and> int (card C) \<le> (int (card B)) - (int (card A)) \<and> (V.module.span (A \<union> C) = V.module.span B)" by auto
   hence Cfin: "finite C" and CinC: "C\<subseteq>carrier V" and CinspanB: " C\<subseteq>V.module.span B" and CAdis: "C\<inter>A={}" 
@@ -1022,18 +1022,18 @@ equals the dimension. *}
   from finA AinC C cardEq 62 have ACfin: "finite (A\<union>C)" and ACbasis: "V.basis (A\<union>C)" 
     by (auto intro!: V.dim_gen_is_basis) 
   have lm: "linear_map K V W T"..
-  txt {*Let $C'$ be the image of $C$ under $T$. We will show $C'$ is a basis for $\text{im}(T)$.*}
+  txt \<open>Let $C'$ be the image of $C$ under $T$. We will show $C'$ is a basis for $\text{im}(T)$.\<close>
   let ?C' = "T`C"
   from Cfin have C'fin: "finite ?C'" by auto
   from AinC C have cim: "?C'\<subseteq>imT" by (unfold im_def, auto)
 
-  txt {* "There is a subtle detail: we first have to show $T$ is injective on $C$.*}
-  txt {*We establish that no nontrivial linear combination of $C$ can have image 0 under $T$, 
+  txt \<open>"There is a subtle detail: we first have to show $T$ is injective on $C$.\<close>
+  txt \<open>We establish that no nontrivial linear combination of $C$ can have image 0 under $T$, 
 because that would mean it is a linear combination of $A$, giving that $A\cup C$ is linearly dependent, 
 contradiction. We use this result in 2 ways: (1) if $T$ is not injective on $C$, then we obtain $v$, $w\in C$ 
 such that $v-w$ is in the kernel, contradiction, (2) if $T(C)$ is linearly dependent, 
 taking the inverse image of that linear combination gives a linear combination of $C$ in the kernel, 
-contradiction. Hence $T$ is injective on $C$ and $T(C)$ is linearly independent.*}
+contradiction. Hence $T$ is injective on $C$ and $T(C)$ is linearly independent.\<close>
   have lc_in_ker: "\<And>d D v. \<lbrakk>D\<subseteq>C; d\<in>D\<rightarrow>carrier K; T (V.module.lincomb d D) = \<zero>\<^bsub>W\<^esub>; 
     v\<in>D; d v \<noteq>\<zero>\<^bsub>K\<^esub>\<rbrakk>\<Longrightarrow>False"
   proof -
@@ -1128,9 +1128,9 @@ contradiction. Hence $T$ is injective on $C$ and $T(C)$ is linearly independent.
     hence c'fun: "(c'\<in> (?C'\<rightarrow>carrier K))" and c'lc: "(W.module.lincomb c' ?C' = \<zero>\<^bsub>W\<^esub>)" and 
       v':"(v'\<in>?C')" and cvnz: "(c' v'\<noteq> \<zero>\<^bsub>K\<^esub>)" by auto
 (*can't get c' directly with metis/auto with W.module.finite_lin_dep*)
-    txt {*We take the inverse image of $C'$ under $T$ to get a linear combination of $C$ that is 
+    txt \<open>We take the inverse image of $C'$ under $T$ to get a linear combination of $C$ that is 
 in the kernel and hence a linear combination of $A$. This contradicts $A\cup C$ being linearly
-independent. *}
+independent.\<close>
     let ?c="\<lambda>v. c' (T v)"
     from c'fun have c_fun: "?c\<in> C\<rightarrow>carrier K" by auto
     from Cfin (*C finite*)

@@ -9,7 +9,7 @@ imports Hensel_Lifting
 begin
 
 
-subsection{* Hensel Lifting in a Type-Based Setting *}
+subsection\<open>Hensel Lifting in a Type-Based Setting\<close>
 
 (* TODO: Move? *)
 

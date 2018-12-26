@@ -6,21 +6,21 @@ theory Lp
 imports Functional_Spaces
 begin
 
-text {*The material in this file is essentially of analytic nature. However, one of the central
+text \<open>The material in this file is essentially of analytic nature. However, one of the central
 proofs (the proof of Holder inequality below) uses a probability space, and Jensen's inequality
 there. Hence, we need to import \verb+Probability+. Moreover, we use several lemmas from
-\verb+SG_Library_Complement+.*}
+\verb+SG_Library_Complement+.\<close>
 
 
-section {*Conjugate exponents*}
+section \<open>Conjugate exponents\<close>
 
-text {*Two numbers $p$ and $q$ are \emph{conjugate} if $1/p + 1/q = 1$. This relation keeps
+text \<open>Two numbers $p$ and $q$ are \emph{conjugate} if $1/p + 1/q = 1$. This relation keeps
 appearing in the theory of $L^p$ spaces, as the dual of $L^p$ is $L^q$ where $q$ is the conjugate
 of $p$. This relation makes sense for real numbers, but also for ennreals
 (where the case $p=1$ and $q=\infty$ is most important). Unfortunately, manipulating the
 previous relation with ennreals is tedious as there is no good simproc involving addition and
 division there. To mitigate this difficulty, we prove once and for all most useful properties
-of such conjugates exponents in this paragraph.*}
+of such conjugates exponents in this paragraph.\<close>
 
 lemma Lp_cases_1_PInf:
   assumes "p \<ge> (1::ennreal)"
@@ -84,18 +84,18 @@ lemma conjugate_exponent_ennreal:
         "conjugate_exponent(conjugate_exponent p) = p"
 proof -
   have "(1/p + 1/(conjugate_exponent p) = 1) \<and> (conjugate_exponent p \<ge> 1) \<and> conjugate_exponent(conjugate_exponent p) = p"
-  using `p \<ge> 1` proof (cases rule: Lp_cases_1_PInf)
+  using \<open>p \<ge> 1\<close> proof (cases rule: Lp_cases_1_PInf)
     case (gr p2)
-    then have *: "conjugate_exponent p = ennreal (conjugate_exponent p2)" using conjugate_exponent_real_ennreal[OF `p2 > 1`] by auto
-    have a: "conjugate_exponent p \<ge> 1" using * conjugate_exponent_real[OF `p2 > 1`] by auto
+    then have *: "conjugate_exponent p = ennreal (conjugate_exponent p2)" using conjugate_exponent_real_ennreal[OF \<open>p2 > 1\<close>] by auto
+    have a: "conjugate_exponent p \<ge> 1" using * conjugate_exponent_real[OF \<open>p2 > 1\<close>] by auto
     have b: "conjugate_exponent(conjugate_exponent p) = p"
-      using conjugate_exponent_real(3)[OF `p2 > 1`] conjugate_exponent_real_ennreal[OF `p2 > 1`]
-      conjugate_exponent_real_ennreal[OF conjugate_exponent_real(2)[OF `p2 > 1`]] unfolding * `p = ennreal p2` by auto
-    have "1 / p + 1 / conjugate_exponent p = ennreal(1/p2 + 1/(conjugate_exponent p2))" unfolding * unfolding `p = ennreal p2`
-      using conjugate_exponent_real(2)[OF `p2 > 1`] `p2 > 1`
+      using conjugate_exponent_real(3)[OF \<open>p2 > 1\<close>] conjugate_exponent_real_ennreal[OF \<open>p2 > 1\<close>]
+      conjugate_exponent_real_ennreal[OF conjugate_exponent_real(2)[OF \<open>p2 > 1\<close>]] unfolding * \<open>p = ennreal p2\<close> by auto
+    have "1 / p + 1 / conjugate_exponent p = ennreal(1/p2 + 1/(conjugate_exponent p2))" unfolding * unfolding \<open>p = ennreal p2\<close>
+      using conjugate_exponent_real(2)[OF \<open>p2 > 1\<close>] \<open>p2 > 1\<close>
       apply (subst ennreal_plus, auto) apply (subst divide_ennreal[symmetric], auto)
       using divide_ennreal_def inverse_ennreal inverse_eq_divide by auto
-    then have c: "1 / p + 1 / conjugate_exponent p = 1" using conjugate_exponent_real[OF `p2 > 1`] by auto
+    then have c: "1 / p + 1 / conjugate_exponent p = 1" using conjugate_exponent_real[OF \<open>p2 > 1\<close>] by auto
     show ?thesis using a b c by simp
   qed (auto)
   then show "1/p + 1/(conjugate_exponent p) = 1"
@@ -118,20 +118,20 @@ proof -
   then show "p \<ge> 1"
     by (metis assms divide_ennreal_def ennreal_add_eq_top ennreal_divide_self ennreal_divide_zero ennreal_le_epsilon ennreal_one_neq_top mult.left_neutral mult_left_le zero_le)
   then show "q = conjugate_exponent p" using conjugate_exponent_ennreal_iff assms by auto
-  then show "q \<ge> 1" using conjugate_exponent_ennreal[OF `p \<ge> 1`] by auto
+  then show "q \<ge> 1" using conjugate_exponent_ennreal[OF \<open>p \<ge> 1\<close>] by auto
   show "p = conjugate_exponent q"
-    using conjugate_exponent_ennreal_iff[OF `q\<ge>1`, of p] assms by (simp add: add.commute)
+    using conjugate_exponent_ennreal_iff[OF \<open>q\<ge>1\<close>, of p] assms by (simp add: add.commute)
 qed
 
 
-section {*Convexity inequalities and integration*}
+section \<open>Convexity inequalities and integration\<close>
 
-text {*In this paragraph, we describe the basic inequalities relating the integral of a function
+text \<open>In this paragraph, we describe the basic inequalities relating the integral of a function
 and of its $p$-th power, for $p > 0$. These inequalities imply in particular that the $L^p$ norm
 satisfies the triangular inequality, a feature we will need when defining the $L^p$ spaces below.
 In particular, we prove the Hölder and Minkowski inequalities. The Hölder inequality,
 especially, is the basis of all further inequalities for $L^p$ spaces.
-*}
+\<close>
 
 lemma (in prob_space) bound_L1_Lp:
   assumes "p \<ge> (1::real)"
@@ -149,11 +149,11 @@ proof -
   show *: "integrable M f"
     apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. 1 + \<bar>f x\<bar> powr p"], auto simp add: assms) using * by auto
   show "abs(\<integral>x. f x \<partial>M) powr p \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M)"
-    by (rule jensens_inequality[OF * _ _ assms(3) convex_abs_powr[OF `p \<ge> 1`]], auto)
+    by (rule jensens_inequality[OF * _ _ assms(3) convex_abs_powr[OF \<open>p \<ge> 1\<close>]], auto)
   then have "(abs(\<integral>x. f x \<partial>M) powr p) powr (1/p) \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
     using assms(1) powr_mono2 by auto
   then show "abs(\<integral>x. f x \<partial>M) \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
-    using `p \<ge> 1` by (auto simp add: powr_powr)
+    using \<open>p \<ge> 1\<close> by (auto simp add: powr_powr)
 qed
 
 
@@ -166,12 +166,12 @@ theorem Holder_inequality:
         "(\<integral>x. \<bar>f x * g x\<bar> \<partial>M) \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) * (\<integral>x. \<bar>g x\<bar> powr q \<partial>M) powr (1/q)"
         "abs(\<integral>x. f x * g x \<partial>M) \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) * (\<integral>x. \<bar>g x\<bar> powr q \<partial>M) powr (1/q)"
 proof -
-  have "p > 1" using conjugate_exponent_realI(1)[OF `p>0` `q>0` `1/p+1/q=1`].
+  have "p > 1" using conjugate_exponent_realI(1)[OF \<open>p>0\<close> \<open>q>0\<close> \<open>1/p+1/q=1\<close>].
 
   have *: "x * y \<le> x powr p + y powr q" if "x \<ge> 0" "y \<ge> 0" for x y
   proof -
     have "x * y = (x powr p) powr (1/p) * (y powr q) powr (1/q)"
-      using `p > 0` `q > 0` powr_powr that(1) that(2) by auto
+      using \<open>p > 0\<close> \<open>q > 0\<close> powr_powr that(1) that(2) by auto
     also have "... \<le> (max (x powr p) (y powr q)) powr (1/p) * (max (x powr p) (y powr q)) powr (1/q)"
       apply (rule mult_mono, auto) using assms(1) assms(2) powr_mono2 by auto
     also have "... = max (x powr p) (y powr q)"
@@ -184,10 +184,10 @@ proof -
     apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>f x\<bar> powr p + \<bar>g x\<bar> powr q"], auto)
     by (rule Bochner_Integration.integrable_add, auto simp add: assms * abs_mult)
 
-  text {*The proof of the main inequality is done by applying the inequality
+  text \<open>The proof of the main inequality is done by applying the inequality
         $(\int |h| d\mu \leq \int |h|^p d\mu)^{1/p}$ to the right function $h$ in the right
         probability space. One should take $h = f \cdot |g|^{1-q}$, and $d\mu = |g|^q dM / I$,
-        where $I = \int |g|^q$. This readily gives the result.*}
+        where $I = \int |g|^q$. This readily gives the result.\<close>
 
   show *: "(\<integral>x. \<bar>f x * g x\<bar> \<partial>M) \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) * (\<integral>x. \<bar>g x\<bar> powr q \<partial>M) powr (1/q)"
   proof (cases "(\<integral>x. \<bar>g x\<bar> powr q \<partial>M) = 0")
@@ -195,7 +195,7 @@ proof -
     then have "AE x in M. \<bar>g x\<bar> powr q = 0"
       by (subst integral_nonneg_eq_0_iff_AE[symmetric], auto simp add: assms)
     then have *: "AE x in M. f x * g x = 0"
-      using `q > 0` by auto
+      using \<open>q > 0\<close> by auto
     have "(\<integral>x. \<bar>f x * g x\<bar> \<partial>M) = (\<integral>x. 0 \<partial>M)"
       apply (rule integral_cong_AE) using * by auto
     then show ?thesis by auto
@@ -212,9 +212,9 @@ proof -
       apply (subst nn_integral_eq_integral, auto simp add: assms, unfold I_def)
       using * by auto
 
-    have [simp]: "p \<ge> 1" "p \<ge> 0" using `p > 1` by auto
+    have [simp]: "p \<ge> 1" "p \<ge> 0" using \<open>p > 1\<close> by auto
     have A: "q + (1 - q) * p = 0" using assms by (auto simp add: divide_simps algebra_simps)
-    have B: "1 - 1/p = 1/q" using `1/p + 1/q = 1` by auto
+    have B: "1 - 1/p = 1/q" using \<open>1/p + 1/q = 1\<close> by auto
     define f2 where "f2 = (\<lambda>x. f x * indicator {y\<in> space M. g y \<noteq> 0} x)"
     have [measurable]: "f2 \<in> borel_measurable M" unfolding f2_def by auto
     define h where "h = (\<lambda>x. \<bar>f2 x\<bar> * \<bar>g x\<bar> powr (1-q))"
@@ -222,23 +222,23 @@ proof -
     have [measurable]: "h \<in> borel_measurable M2" unfolding M2_def by auto
 
     have Eq: "(\<bar>g x\<bar> powr q / I) *\<^sub>R \<bar>h x\<bar> powr p = \<bar>f2 x\<bar> powr p / I" for x
-      apply (insert `I>0`, auto simp add: divide_simps, unfold h_def)
+      apply (insert \<open>I>0\<close>, auto simp add: divide_simps, unfold h_def)
       apply (auto simp add: divide_nonneg_pos divide_simps powr_mult powr_powr powr_add[symmetric] A)
       unfolding f2_def by auto
     have "integrable M2 (\<lambda>x. \<bar>h x\<bar> powr p)"
       unfolding M2_def apply (subst integrable_density, simp, simp, simp add: divide_simps)
       apply (subst Eq, rule integrable_divide, rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>f x\<bar> powr p"], unfold f2_def)
-      by (unfold indicator_def, auto simp add: `integrable M (\<lambda>x. \<bar>f x\<bar> powr p)`)
+      by (unfold indicator_def, auto simp add: \<open>integrable M (\<lambda>x. \<bar>f x\<bar> powr p)\<close>)
     then have "integrable M2 (\<lambda>x. \<bar>h x\<bar>)"
-      by (metis bound_L1_Lp(1) \<open>random_variable borel h\<close> `p > 1` integrable_abs le_less)
+      by (metis bound_L1_Lp(1) \<open>random_variable borel h\<close> \<open>p > 1\<close> integrable_abs le_less)
 
     have "(\<integral>x. \<bar>h x\<bar> powr p \<partial>M2) = (\<integral>x. (\<bar>g x\<bar> powr q / I) *\<^sub>R (\<bar>h x\<bar> powr p) \<partial>M)"
       unfolding M2_def by (rule integral_density[of "\<lambda>x. \<bar>h x\<bar> powr p" M "\<lambda>x. \<bar>g x\<bar> powr q / I"], auto simp add: divide_simps)
     also have "... = (\<integral>x. \<bar>f2 x\<bar> powr p / I \<partial>M)"
       apply (rule Bochner_Integration.integral_cong) using Eq by auto
     also have "... \<le> (\<integral>x. \<bar>f x\<bar> powr p / I \<partial>M)"
-      apply (rule integral_mono', rule integrable_divide[OF `integrable M (\<lambda>x. \<bar>f x\<bar> powr p)`])
-      unfolding f2_def indicator_def using `I > 0` by (auto simp add: divide_simps)
+      apply (rule integral_mono', rule integrable_divide[OF \<open>integrable M (\<lambda>x. \<bar>f x\<bar> powr p)\<close>])
+      unfolding f2_def indicator_def using \<open>I > 0\<close> by (auto simp add: divide_simps)
     finally have C: "(\<integral>x. \<bar>h x\<bar> powr p \<partial>M2) \<le> (\<integral>x. \<bar>f x\<bar> powr p / I \<partial>M)" by simp
 
     have "(\<integral>x. \<bar>f x * g x\<bar> \<partial>M) / I = (\<integral>x. \<bar>f x * g x\<bar> / I \<partial>M)"
@@ -252,11 +252,11 @@ proof -
       by auto
     also have "... \<le> (\<integral>x. abs(\<bar>h x\<bar>) powr p \<partial>M2) powr (1/p)"
       apply (rule bound_L1_Lp(3)[of p "\<lambda>x. \<bar>h x\<bar>"])
-      by (auto simp add: `integrable M2 (\<lambda>x. \<bar>h x\<bar> powr p)`)
+      by (auto simp add: \<open>integrable M2 (\<lambda>x. \<bar>h x\<bar> powr p)\<close>)
     also have "... \<le> (\<integral>x. \<bar>f x\<bar> powr p / I \<partial>M) powr (1/p)"
       by (rule powr_mono2, insert C, auto)
     also have "... \<le> ((\<integral>x. \<bar>f x\<bar> powr p \<partial>M) / I) powr (1/p)"
-      apply (rule powr_mono2, auto simp add: divide_simps) using `p \<ge> 0` by auto
+      apply (rule powr_mono2, auto simp add: divide_simps) using \<open>p \<ge> 0\<close> by auto
     also have "... = (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) * I powr(-1/p)"
       by (auto simp add: less_imp_le powr_divide powr_minus_divide)
     finally have "(\<integral>x. \<bar>f x * g x\<bar> \<partial>M) \<le> (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) * I * I powr(-1/p)"
@@ -288,7 +288,7 @@ proof -
     also have "... \<le> (max \<bar>x\<bar> \<bar>y\<bar>) + max \<bar>x\<bar> \<bar>y\<bar>" by auto
     also have "... = 2 * max \<bar>x\<bar> \<bar>y\<bar>" by auto
     finally have "\<bar>x + y\<bar> powr p \<le> (2 * max \<bar>x\<bar> \<bar>y\<bar>) powr p"
-      using powr_mono2 `p \<ge> 1` by auto
+      using powr_mono2 \<open>p \<ge> 1\<close> by auto
     also have "... = 2 powr p * (max \<bar>x\<bar> \<bar>y\<bar>) powr p"
       using powr_mult by auto
     also have "... \<le> 2 powr p * (\<bar>x\<bar> powr p + \<bar>y\<bar> powr p)"
@@ -309,7 +309,7 @@ proof -
     then have [simp]: "p > 1" "p \<ge> 1" "p > 0" "p \<noteq> 0" using assms(1) by auto
     define q where "q = conjugate_exponent p"
     have [simp]: "q > 1" "q > 0" "1/p + 1/q = 1" "(p-1) * q = p"
-      unfolding q_def using conjugate_exponent_real[OF `p>1`] by auto
+      unfolding q_def using conjugate_exponent_real[OF \<open>p>1\<close>] by auto
     then have [simp]: "(z powr (p-1)) powr q = z powr p" for z
       by (simp add: powr_powr)
     have "(\<integral>x. \<bar>f x + g x\<bar> powr p \<partial>M) = (\<integral>x. \<bar>f x + g x\<bar> * \<bar>f x + g x\<bar> powr (p-1) \<partial>M)"
@@ -355,9 +355,9 @@ proof -
   qed
 qed
 
-text {*When $p<1$, the function $x \mapsto |x|^p$ is not convex any more. Hence, the $L^p$ ``norm''
+text \<open>When $p<1$, the function $x \mapsto |x|^p$ is not convex any more. Hence, the $L^p$ ``norm''
 is not a norm any more, but a quasinorm. This is proved using a different convexity argument, as
-follows.*}
+follows.\<close>
 
 theorem Minkowski_inequality_le_1:
   assumes "p > (0::real)" "p \<le> 1"
@@ -369,18 +369,18 @@ theorem Minkowski_inequality_le_1:
           \<le> 2 powr (1/p-1) * (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + 2 powr (1/p-1) * (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p)"
 proof -
   have *: "\<bar>a + b\<bar> powr p \<le> \<bar>a\<bar> powr p + \<bar>b\<bar> powr p" for a b
-    using x_plus_y_p_le_xp_plus_yp[OF `p > 0` `p \<le> 1`, of "\<bar>a\<bar>" "\<bar>b\<bar>"]
+    using x_plus_y_p_le_xp_plus_yp[OF \<open>p > 0\<close> \<open>p \<le> 1\<close>, of "\<bar>a\<bar>" "\<bar>b\<bar>"]
     by (auto, meson abs_ge_zero abs_triangle_ineq assms(1) le_less order.trans powr_mono2)
   show "integrable M (\<lambda>x. \<bar>f x + g x\<bar> powr p)"
     by (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>f x\<bar> powr p + \<bar>g x\<bar> powr p"], auto simp add: *)
 
   have "(\<integral>x. \<bar>f x + g x\<bar> powr p \<partial>M) powr (1/p) \<le> (\<integral>x. \<bar>f x\<bar> powr p + \<bar>g x\<bar> powr p \<partial>M) powr (1/p)"
-    by (rule powr_mono2, simp add: `p > 0` less_imp_le, simp, rule integral_mono', auto simp add: *)
+    by (rule powr_mono2, simp add: \<open>p > 0\<close> less_imp_le, simp, rule integral_mono', auto simp add: *)
   also have "... = 2 powr (1/p) * (((\<integral>x. \<bar>f x\<bar> powr p \<partial>M) + (\<integral>x. \<bar>g x\<bar> powr p \<partial>M)) / 2) powr (1/p)"
     by (auto simp add: powr_mult[symmetric] add_divide_distrib)
   also have "... \<le> 2 powr (1/p) * (((\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p)) / 2)"
     apply (rule mult_mono, simp, rule convex_on_mean_ineq[OF convex_powr[of "1/p"]])
-    using `p \<le> 1` `p > 0` by auto
+    using \<open>p \<le> 1\<close> \<open>p > 0\<close> by auto
   also have "... = 2 powr (1/p - 1) * ((\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p))"
     by (simp add: powr_diff)
   finally show "(\<integral>x. \<bar>f x + g x\<bar> powr p \<partial>M) powr (1/p)
@@ -389,13 +389,13 @@ proof -
 qed
 
 
-section {*$L^p$ spaces*}
+section \<open>$L^p$ spaces\<close>
 
-text {*We define $L^p$ spaces by giving their defining quasinorm. It is a norm for $p\in [1, \infty]$,
+text \<open>We define $L^p$ spaces by giving their defining quasinorm. It is a norm for $p\in [1, \infty]$,
 and a quasinorm for $p \in (0,1)$. The construction of a quasinorm from a formula only makes sense
 if this formula is indeed a quasinorm, i.e., it is homogeneous and satisfies the triangular
 inequality with the given multiplicative defect. Thus, we have to show that this is indeed
-the case to be able to use the definition.*}
+the case to be able to use the definition.\<close>
 
 definition Lp_space::"ennreal \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> real) quasinorm"
   where "Lp_space p M = (
@@ -410,9 +410,9 @@ definition Lp_space::"ennreal \<Rightarrow> 'a measure \<Rightarrow> ('a \<Right
 abbreviation "\<LL> == Lp_space"
 
 
-subsection {*$L^\infty$*}
+subsection \<open>$L^\infty$\<close>
 
-text {*Let us check that, for $L^\infty$, the above definition makes sense.*}
+text \<open>Let us check that, for $L^\infty$, the above definition makes sense.\<close>
 
 lemma L_infinity:
   "eNorm (\<LL> \<infinity> M) f = (if f \<in> borel_measurable M then esssup M (\<lambda>x. ereal \<bar>f x\<bar>) else (\<infinity>::ennreal))"
@@ -444,10 +444,10 @@ proof -
   proof -
     have "abs c > 0" "ereal \<bar>c\<bar> \<ge> 0" using that by auto
     have *: "esssup M (\<lambda>x. abs(c *\<^sub>R f x)) = abs c * esssup M (\<lambda>x. \<bar>f x\<bar>)"
-      apply (subst esssup_cmult[OF `abs c > 0`, of M "\<lambda>x. ereal \<bar>f x\<bar>", symmetric])
+      apply (subst esssup_cmult[OF \<open>abs c > 0\<close>, of M "\<lambda>x. ereal \<bar>f x\<bar>", symmetric])
       using times_ereal.simps(1) by (auto simp add: abs_mult)
     show ?thesis
-      unfolding e2ennreal_mult[OF `ereal \<bar>c\<bar> \<ge> 0`] * scaleR_fun_def
+      unfolding e2ennreal_mult[OF \<open>ereal \<bar>c\<bar> \<ge> 0\<close>] * scaleR_fun_def
       using ennreal.abs_eq ennreal.rep_eq by auto
   qed
 
@@ -537,9 +537,9 @@ lemma L_infinity_AE_bound:
   shows "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> M) f"
 using L_infinity_AE_ebound[of f M] unfolding eNorm_Norm[OF assms] by (simp)
 
-text {*In the next lemma, the assumption $C \geq 0$ that might seem useless is in fact
+text \<open>In the next lemma, the assumption $C \geq 0$ that might seem useless is in fact
 necessary for the second statement when the space has zero measure. Indeed, any function is
-then almost surely bounded by any constant!*}
+then almost surely bounded by any constant!\<close>
 
 lemma L_infinity_I:
   assumes "f \<in> borel_measurable M"
@@ -554,7 +554,7 @@ proof -
   then have "eNorm (\<LL> \<infinity> M) f \<le> ereal C"
     unfolding L_infinity(1) using assms(1) e2ennreal_mono by force
   then have "ennreal (Norm (\<LL> \<infinity> M) f) \<le> ennreal C"
-    using eNorm_Norm[OF `f \<in> space\<^sub>N (\<LL> \<infinity> M)`] assms(3) ennreal.abs_eq ennreal.rep_eq by auto
+    using eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> \<infinity> M)\<close>] assms(3) ennreal.abs_eq ennreal.rep_eq by auto
   then show "Norm (\<LL> \<infinity> M) f \<le> C" using assms(3) by auto
 qed
 
@@ -574,7 +574,7 @@ lemma L_infinity_pos_measure:
       and "eNorm (\<LL> \<infinity> M) f > (C::real)"
   shows "emeasure M {x \<in> space M. \<bar>f x\<bar> > C} > 0"
 proof -
-  have *: "esssup M (\<lambda>x. ereal(\<bar>f x\<bar>)) > ereal C" using `eNorm (\<LL> \<infinity> M) f > C` unfolding L_infinity
+  have *: "esssup M (\<lambda>x. ereal(\<bar>f x\<bar>)) > ereal C" using \<open>eNorm (\<LL> \<infinity> M) f > C\<close> unfolding L_infinity
   proof (auto)
     assume a1: "ennreal C < e2ennreal (esssup M (\<lambda>x. ereal \<bar>f x\<bar>))"
     have "\<not> e2ennreal (esssup M (\<lambda>a. ereal \<bar>f a\<bar>)) \<le> e2ennreal (ereal C)" if "\<not> C < 0"
@@ -603,7 +603,7 @@ proof -
   proof -
     have "(\<lambda>n. \<bar>(f n - g) x\<bar>) \<longlonglongrightarrow> 0"
       apply (rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. Norm (\<LL> \<infinity> M) (f n - g)"])
-      using that `tendsto_in\<^sub>N (\<LL> \<infinity> M) f g` unfolding tendsto_in\<^sub>N_def by auto
+      using that \<open>tendsto_in\<^sub>N (\<LL> \<infinity> M) f g\<close> unfolding tendsto_in\<^sub>N_def by auto
     then have "(\<lambda>n. \<bar>f n x - g x\<bar>) \<longlonglongrightarrow> 0" by auto
     then show ?thesis
       by (simp add: \<open>(\<lambda>n. \<bar>f n x - g x\<bar>) \<longlonglongrightarrow> 0\<close> LIM_zero_cancel tendsto_rabs_zero_cancel)
@@ -611,8 +611,8 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text {*As an illustration of the mechanism of spaces inclusion, let us show that bounded
-continuous functions belong to $L^\infty$.*}
+text \<open>As an illustration of the mechanism of spaces inclusion, let us show that bounded
+continuous functions belong to $L^\infty$.\<close>
 
 lemma bcontfun_subset_L_infinity:
   assumes "sets M = sets borel"
@@ -624,11 +624,11 @@ proof -
   have *: "f \<in> space\<^sub>N (\<LL> \<infinity> M) \<and> Norm (\<LL> \<infinity> M) f \<le> Norm bcontfun\<^sub>N f" if "f \<in> space\<^sub>N bcontfun\<^sub>N" for f
   proof -
     have H: "continuous_on UNIV f" "\<And>x. abs(f x) \<le> Norm bcontfun\<^sub>N f"
-      using bcontfun\<^sub>ND[OF `f \<in> space\<^sub>N bcontfun\<^sub>N`] by auto
+      using bcontfun\<^sub>ND[OF \<open>f \<in> space\<^sub>N bcontfun\<^sub>N\<close>] by auto
     then have "f \<in> borel_measurable borel" using borel_measurable_continuous_on1 by simp
     then have "f \<in> borel_measurable M" using assms by auto
     have *: "AE x in M. \<bar>f x\<bar> \<le> Norm bcontfun\<^sub>N f" using H(2) by auto
-    show ?thesis using L_infinity_I[OF `f \<in> borel_measurable M` * Norm_nonneg] by auto
+    show ?thesis using L_infinity_I[OF \<open>f \<in> borel_measurable M\<close> * Norm_nonneg] by auto
   qed
   show "space\<^sub>N bcontfun\<^sub>N \<subseteq> space\<^sub>N (\<LL> \<infinity> M)"
        "\<And>f. f \<in> space\<^sub>N bcontfun\<^sub>N \<Longrightarrow> Norm (\<LL> \<infinity> M) f \<le> Norm bcontfun\<^sub>N f"
@@ -641,7 +641,7 @@ proof -
 qed
 
 
-subsection {*$L^p$ for $0 < p < \infty$*}
+subsection \<open>$L^p$ for $0 < p < \infty$\<close>
 
 lemma Lp:
   assumes "p \<ge> (1::real)"
@@ -655,29 +655,29 @@ proof -
   proof (rule quasinorm_onI)
     fix f g assume "f \<in> F" "g \<in> F"
     then show "f + g \<in> F"
-      unfolding F_def plus_fun_def apply (auto) by (rule Minkowski_inequality(1), auto simp add: `p \<ge> 1`)
+      unfolding F_def plus_fun_def apply (auto) by (rule Minkowski_inequality(1), auto simp add: \<open>p \<ge> 1\<close>)
     show "ennreal ((\<integral>x. \<bar>(f + g) x\<bar> powr p \<partial>M) powr (1/p))
           \<le> ennreal 1 * (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + ennreal 1 * (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p)"
       apply (auto, subst ennreal_plus[symmetric], simp, simp, rule ennreal_leI)
-      unfolding plus_fun_def apply (rule Minkowski_inequality(2)[of p f M g], auto simp add: `p \<ge> 1`)
-      using `f \<in> F` `g \<in> F` unfolding F_def by auto
+      unfolding plus_fun_def apply (rule Minkowski_inequality(2)[of p f M g], auto simp add: \<open>p \<ge> 1\<close>)
+      using \<open>f \<in> F\<close> \<open>g \<in> F\<close> unfolding F_def by auto
   next
     fix f and c::real assume "f \<in> F"
-    show "c *\<^sub>R f \<in> F" using `f \<in> F` unfolding scaleR_fun_def F_def by (auto simp add: abs_mult powr_mult)
+    show "c *\<^sub>R f \<in> F" using \<open>f \<in> F\<close> unfolding scaleR_fun_def F_def by (auto simp add: abs_mult powr_mult)
     show "(\<integral>x. \<bar>(c *\<^sub>R f) x\<bar> powr p \<partial>M) powr (1/p) \<le> ennreal(abs(c)) * (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
       apply (rule eq_refl, subst ennreal_mult[symmetric], simp, simp, rule ennreal_cong)
-      apply (unfold scaleR_fun_def, simp add: abs_mult powr_mult powr_powr) using `p \<ge> 1` by auto
+      apply (unfold scaleR_fun_def, simp add: abs_mult powr_mult powr_powr) using \<open>p \<ge> 1\<close> by auto
   next
     show "0 \<in> F" unfolding zero_fun_def F_def by auto
   qed (auto)
 
-  have "p \<ge> 0" using `p \<ge> 1` by auto
+  have "p \<ge> 0" using \<open>p \<ge> 1\<close> by auto
   have **: "\<LL> p M = quasinorm_of (1,
               (\<lambda>f. if (f \<in> borel_measurable M \<and> integrable M (\<lambda>x. \<bar>f x\<bar> powr p))
               then (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)
               else (\<infinity>::ennreal)))"
-    unfolding Lp_space_def using enn2real_ennreal[OF `p \<ge> 0`] `p \<ge> 1` apply auto
-    using enn2real_ennreal[OF `p \<ge> 0`] by presburger
+    unfolding Lp_space_def using enn2real_ennreal[OF \<open>p \<ge> 0\<close>] \<open>p \<ge> 1\<close> apply auto
+    using enn2real_ennreal[OF \<open>p \<ge> 0\<close>] by presburger
   show "eNorm (\<LL> p M) f = (if (f \<in> borel_measurable M \<and> integrable M (\<lambda>x. \<bar>f x\<bar> powr p))
                             then (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)
                             else (\<infinity>::ennreal))"
@@ -697,32 +697,32 @@ proof -
   proof (rule quasinorm_onI)
     fix f g assume "f \<in> F" "g \<in> F"
     then show "f + g \<in> F"
-      unfolding F_def plus_fun_def apply (auto) by (rule Minkowski_inequality_le_1(1), auto simp add: `p > 0` `p \<le> 1`)
+      unfolding F_def plus_fun_def apply (auto) by (rule Minkowski_inequality_le_1(1), auto simp add: \<open>p > 0\<close> \<open>p \<le> 1\<close>)
     show "ennreal ((\<integral>x. \<bar>(f + g) x\<bar> powr p \<partial>M) powr (1/p))
           \<le> ennreal (2 powr (1/p-1)) * (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) + ennreal (2 powr (1/p-1)) * (\<integral>x. \<bar>g x\<bar> powr p \<partial>M) powr (1/p)"
       apply (subst ennreal_mult[symmetric], auto)+
       apply (subst ennreal_plus[symmetric], simp, simp)
       apply (rule ennreal_leI)
-      unfolding plus_fun_def apply (rule Minkowski_inequality_le_1(2)[of p f M g], auto simp add: `p > 0` `p \<le> 1`)
-      using `f \<in> F` `g \<in> F` unfolding F_def by auto
+      unfolding plus_fun_def apply (rule Minkowski_inequality_le_1(2)[of p f M g], auto simp add: \<open>p > 0\<close> \<open>p \<le> 1\<close>)
+      using \<open>f \<in> F\<close> \<open>g \<in> F\<close> unfolding F_def by auto
   next
     fix f and c::real assume "f \<in> F"
-    show "c *\<^sub>R f \<in> F" using `f \<in> F` unfolding scaleR_fun_def F_def by (auto simp add: abs_mult powr_mult)
+    show "c *\<^sub>R f \<in> F" using \<open>f \<in> F\<close> unfolding scaleR_fun_def F_def by (auto simp add: abs_mult powr_mult)
     show "(\<integral>x. \<bar>(c *\<^sub>R f) x\<bar> powr p \<partial>M) powr (1/p) \<le> ennreal(abs(c)) * (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
       apply (rule eq_refl, subst ennreal_mult[symmetric], simp, simp, rule ennreal_cong)
-      apply (unfold scaleR_fun_def, simp add: abs_mult powr_mult powr_powr) using `p > 0` by auto
+      apply (unfold scaleR_fun_def, simp add: abs_mult powr_mult powr_powr) using \<open>p > 0\<close> by auto
   next
     show "0 \<in> F" unfolding zero_fun_def F_def by auto
-    show "1 \<le> 2 powr (1 / p - 1)" using `p > 0` `p \<le> 1` by (auto simp add: ge_one_powr_ge_zero)
+    show "1 \<le> 2 powr (1 / p - 1)" using \<open>p > 0\<close> \<open>p \<le> 1\<close> by (auto simp add: ge_one_powr_ge_zero)
   qed (auto)
 
-  have "p \<ge> 0" using `p > 0` by auto
+  have "p \<ge> 0" using \<open>p > 0\<close> by auto
   have **: "\<LL> p M = quasinorm_of (2 powr (1/p-1),
               (\<lambda>f. if (f \<in> borel_measurable M \<and> integrable M (\<lambda>x. \<bar>f x\<bar> powr p))
               then (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)
               else (\<infinity>::ennreal)))"
-    unfolding Lp_space_def using `p > 0` `p \<le> 1` using enn2real_ennreal[OF `p \<ge> 0`] apply auto
-    by (insert enn2real_ennreal[OF `p \<ge> 0`], presburger)+
+    unfolding Lp_space_def using \<open>p > 0\<close> \<open>p \<le> 1\<close> using enn2real_ennreal[OF \<open>p \<ge> 0\<close>] apply auto
+    by (insert enn2real_ennreal[OF \<open>p \<ge> 0\<close>], presburger)+
   show "eNorm (\<LL> p M) f = (if (f \<in> borel_measurable M \<and> integrable M (\<lambda>x. \<bar>f x\<bar> powr p))
                             then (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)
                             else (\<infinity>::ennreal))"
@@ -734,9 +734,9 @@ lemma Lp_space:
   assumes "p > (0::real)"
   shows "space\<^sub>N (\<LL> p M) = {f \<in> borel_measurable M. integrable M (\<lambda>x. \<bar>f x\<bar> powr p)}"
 apply (auto simp add: spaceN_iff)
-using Lp(1) Lp_le_1(1) `p > 0` apply (metis infinity_ennreal_def less_le not_less)
-using Lp(1) Lp_le_1(1) `p > 0` apply (metis infinity_ennreal_def less_le not_less)
-using Lp(1) Lp_le_1(1) `p > 0` by (metis ennreal_neq_top linear top.not_eq_extremum)
+using Lp(1) Lp_le_1(1) \<open>p > 0\<close> apply (metis infinity_ennreal_def less_le not_less)
+using Lp(1) Lp_le_1(1) \<open>p > 0\<close> apply (metis infinity_ennreal_def less_le not_less)
+using Lp(1) Lp_le_1(1) \<open>p > 0\<close> by (metis ennreal_neq_top linear top.not_eq_extremum)
 
 lemma Lp_I:
   assumes "p > (0::real)"
@@ -761,10 +761,10 @@ lemma Lp_D:
 proof -
   show *: "f \<in> borel_measurable M"
           "integrable M (\<lambda>x. \<bar>f x\<bar> powr p)"
-    using Lp_space[OF `p > 0`] assms(2) by auto
+    using Lp_space[OF \<open>p > 0\<close>] assms(2) by auto
   then show "Norm (\<LL> p M) f = (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
             "eNorm (\<LL> p M) f = (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
-    using Lp_I[OF `p > 0`] by auto
+    using Lp_I[OF \<open>p > 0\<close>] by auto
 qed
 
 lemma Lp_Norm:
@@ -779,14 +779,14 @@ proof -
     then show ?thesis using Lp_I[OF assms True] by auto
   next
     case False
-    then have "f \<notin> space\<^sub>N (\<LL> p M)" using Lp_space[OF `p > 0`, of M] by auto
+    then have "f \<notin> space\<^sub>N (\<LL> p M)" using Lp_space[OF \<open>p > 0\<close>, of M] by auto
     then have *: "Norm (\<LL> p M) f = 0" using eNorm_Norm' by auto
     have "(\<integral>x. \<bar>f x\<bar> powr p \<partial>M) = 0" using False by (simp add: not_integrable_integral_eq)
     then have "(\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p) = 0" by auto
     then show ?thesis using * by auto
   qed
   then show "(Norm (\<LL> p M) f) powr p = (\<integral>x. \<bar>f x\<bar> powr p \<partial>M)"
-    unfolding * using powr_powr `p > 0` by auto
+    unfolding * using powr_powr \<open>p > 0\<close> by auto
 qed
 
 lemma Lp_zero_space:
@@ -798,7 +798,7 @@ proof (auto)
     using Lp_space[OF assms] zero_spaceN_subset_spaceN by auto
   then show "f \<in> borel_measurable M" by auto
   have "eNorm (\<LL> p M) f = (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
-    by (cases "p \<le> 1", insert * `p > 0`, auto simp add: Lp_le_1(1) Lp(1))
+    by (cases "p \<le> 1", insert * \<open>p > 0\<close>, auto simp add: Lp_le_1(1) Lp(1))
   then have "(\<integral>x. \<bar>f x\<bar> powr p \<partial>M) = 0" using H unfolding zero_space\<^sub>N_def by auto
   then have "AE x in M. \<bar>f x\<bar> powr p = 0"
     by (subst integral_nonneg_eq_0_iff_AE[symmetric], insert *, auto)
@@ -812,7 +812,7 @@ next
   have **: "(\<integral>x. \<bar>f x\<bar> powr p \<partial>M) = 0"
     using integral_cong_AE[OF _ _ *] by auto
   have "eNorm (\<LL> p M) f = (\<integral>x. \<bar>f x\<bar> powr p \<partial>M) powr (1/p)"
-    by (cases "p \<le> 1", insert H(1) `integrable M (\<lambda>x. \<bar>f x\<bar> powr p)` `p > 0`, auto simp add: Lp_le_1(1) Lp(1))
+    by (cases "p \<le> 1", insert H(1) \<open>integrable M (\<lambda>x. \<bar>f x\<bar> powr p)\<close> \<open>p > 0\<close>, auto simp add: Lp_le_1(1) Lp(1))
   then have "eNorm (\<LL> p M) f = 0" using ** by simp
   then show "f \<in> zero_space\<^sub>N (\<LL> p M)"
     using zero_spaceN_iff by auto
@@ -826,18 +826,18 @@ lemma Lp_tendsto_AE_subseq:
   shows "\<exists>r. strict_mono r \<and> (AE x in M. (\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x)"
 proof -
   have "f n - g \<in> space\<^sub>N (\<LL> p M)" for n
-    using spaceN_diff[OF `\<And>n. f n \<in> space\<^sub>N (\<LL> p M)` `g \<in> space\<^sub>N (\<LL> p M)`] by simp
+    using spaceN_diff[OF \<open>\<And>n. f n \<in> space\<^sub>N (\<LL> p M)\<close> \<open>g \<in> space\<^sub>N (\<LL> p M)\<close>] by simp
   have int: "integrable M (\<lambda>x. \<bar>f n x - g x\<bar> powr p)" for n
-    using Lp_D(2)[OF `p > 0` `f n - g \<in> space\<^sub>N (\<LL> p M)`] by auto
+    using Lp_D(2)[OF \<open>p > 0\<close> \<open>f n - g \<in> space\<^sub>N (\<LL> p M)\<close>] by auto
 
   have "(\<lambda>n. Norm (\<LL> p M) (f n - g)) \<longlonglongrightarrow> 0"
-    using `tendsto_in\<^sub>N (\<LL> p M) f g` unfolding tendsto_in\<^sub>N_def by auto
+    using \<open>tendsto_in\<^sub>N (\<LL> p M) f g\<close> unfolding tendsto_in\<^sub>N_def by auto
   then have *: "(\<lambda>n. (\<integral>x. \<bar>f n x - g x\<bar> powr p \<partial>M) powr (1/p)) \<longlonglongrightarrow> 0"
-    using Lp_D(3)[OF `p > 0` `\<And>n. f n - g \<in> space\<^sub>N (\<LL> p M)`] by auto
+    using Lp_D(3)[OF \<open>p > 0\<close> \<open>\<And>n. f n - g \<in> space\<^sub>N (\<LL> p M)\<close>] by auto
   have "(\<lambda>n. ((\<integral>x. \<bar>f n x - g x\<bar> powr p \<partial>M) powr (1/p)) powr p) \<longlonglongrightarrow> 0"
-    apply (rule tendsto_zero_powrI[of _ _ _ p]) using `p > 0` * by auto
+    apply (rule tendsto_zero_powrI[of _ _ _ p]) using \<open>p > 0\<close> * by auto
   then have **: "(\<lambda>n. (\<integral>x. \<bar>f n x - g x\<bar> powr p \<partial>M)) \<longlonglongrightarrow> 0"
-    using powr_powr `p > 0` by auto
+    using powr_powr \<open>p > 0\<close> by auto
   have "\<exists>r. strict_mono r \<and> (AE x in M. (\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0)"
     apply (rule tendsto_L1_AE_subseq) using int ** by auto
   then obtain r where "strict_mono r" "AE x in M. (\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0"
@@ -845,17 +845,17 @@ proof -
   moreover have "(\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x" if "(\<lambda>n. \<bar>f (r n) x - g x\<bar> powr p) \<longlonglongrightarrow> 0" for x
   proof -
     have "(\<lambda>n. (\<bar>f (r n) x - g x\<bar> powr p) powr (1/p)) \<longlonglongrightarrow> 0"
-      apply (rule tendsto_zero_powrI[of _ _ _ "1/p"]) using `p > 0` that by auto
+      apply (rule tendsto_zero_powrI[of _ _ _ "1/p"]) using \<open>p > 0\<close> that by auto
     then have "(\<lambda>n. \<bar>f (r n) x - g x\<bar>) \<longlonglongrightarrow> 0"
-      using powr_powr `p > 0` by auto
+      using powr_powr \<open>p > 0\<close> by auto
     show ?thesis
       by (simp add: \<open>(\<lambda>n. \<bar>f (r n) x - g x\<bar>) \<longlonglongrightarrow> 0\<close> Limits.LIM_zero_cancel tendsto_rabs_zero_cancel)
   qed
   ultimately have "AE x in M. (\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x" by auto
-  then show ?thesis using `strict_mono r` by auto
+  then show ?thesis using \<open>strict_mono r\<close> by auto
 qed
 
-subsection {*Specialization to $L^1$*}
+subsection \<open>Specialization to $L^1$\<close>
 
 lemma L1_space:
   "space\<^sub>N (\<LL> 1 M) = {f. integrable M f}"
@@ -887,9 +887,9 @@ next
   then show ?thesis using Norm_nonneg by auto
 qed
 
-text {*In $L^1$, one can give a direct formula for the eNorm of a measurable function, using a
+text \<open>In $L^1$, one can give a direct formula for the eNorm of a measurable function, using a
 nonnegative integral. The same formula holds in $L^p$ for $p > 0$, with additional powers $p$ and
-$1/p$, but one can not write it down since \verb+powr+ is not defined on \verb+ennreal+.*}
+$1/p$, but one can not write it down since \verb+powr+ is not defined on \verb+ennreal+.\<close>
 
 lemma L1_Norm:
   assumes [measurable]: "f \<in> borel_measurable M"
@@ -926,15 +926,15 @@ lemma L1_indicator':
       and "emeasure M A \<noteq> \<infinity>"
   shows "indicator A \<in> space\<^sub>N (\<LL> 1 M)"
         "Norm (\<LL> 1 M) (indicator A) = measure M A"
-unfolding space\<^sub>N_def Norm_def using L1_indicator[OF `A \<in> sets M`] `emeasure M A \<noteq> \<infinity>`
+unfolding space\<^sub>N_def Norm_def using L1_indicator[OF \<open>A \<in> sets M\<close>] \<open>emeasure M A \<noteq> \<infinity>\<close>
 by (auto simp add: top.not_eq_extremum Sigma_Algebra.measure_def)
 
 
-subsection {*$L^0$*}
+subsection \<open>$L^0$\<close>
 
-text {*We have defined $L^p$ for all exponents $p$, although it does not really make sense for $p = 0$.
+text \<open>We have defined $L^p$ for all exponents $p$, although it does not really make sense for $p = 0$.
 We have chosen a definition in this case (the space of all measurable functions) so that many
-statements are true for all exponents. In this paragraph, we show the consistency of this definition.*}
+statements are true for all exponents. In this paragraph, we show the consistency of this definition.\<close>
 
 lemma L_zero:
   "eNorm (\<LL> 0 M) f = (if f \<in> borel_measurable M then 0 else \<infinity>)"
@@ -953,7 +953,7 @@ lemma L_zero_space:
 apply (auto simp add: spaceN_iff zero_spaceN_iff L_zero(1))
 using top.not_eq_extremum by force+
 
-subsection {*Basic results on $L^p$ for general $p$*}
+subsection \<open>Basic results on $L^p$ for general $p$\<close>
 
 lemma Lp_measurable_subset:
   "space\<^sub>N (\<LL> p M) \<subseteq> borel_measurable M"
@@ -962,7 +962,7 @@ proof (cases rule: Lp_cases[of p])
   then show ?thesis using L_zero_space by auto
 next
   case (real_pos p2)
-  then show ?thesis using Lp_space[OF `p2 > 0`] by auto
+  then show ?thesis using Lp_space[OF \<open>p2 > 0\<close>] by auto
 next
   case PInf
   then show ?thesis using L_infinity_space by auto
@@ -981,7 +981,7 @@ proof (cases rule: Lp_cases[of p])
   then show ?thesis using L_infinity_zero_space by auto
 next
   case (real_pos p2)
-  then show ?thesis using Lp_zero_space[OF `p2 > 0`] unfolding `p = ennreal p2` by auto
+  then show ?thesis using Lp_zero_space[OF \<open>p2 > 0\<close>] unfolding \<open>p = ennreal p2\<close> by auto
 next
   case zero
   then have False using assms by auto
@@ -1001,7 +1001,7 @@ proof -
     then have "f \<in> space\<^sub>N (\<LL> q M)" using spaceN_iff by auto
     then have f_meas [measurable]: "f \<in> borel_measurable M" using Lp_measurable by auto
     consider "p = 0" | "p = q" | "p > 0 \<and> p < \<infinity> \<and> q = \<infinity>" | "p > 0 \<and> p < q \<and> q < \<infinity>"
-      using `p \<le> q` apply (simp add: top.not_eq_extremum)
+      using \<open>p \<le> q\<close> apply (simp add: top.not_eq_extremum)
       using not_less_iff_gr_or_eq order.order_iff_strict by fastforce
     then show ?thesis
     proof (cases)
@@ -1016,20 +1016,20 @@ proof -
       obtain p2 where "p = ennreal p2" "p2 > 0"
         using 3 enn2real_positive_iff[of p] by (cases p) auto
       have *: "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> M) f"
-        using L_infinity_AE_bound `f \<in> space\<^sub>N (\<LL> q M)` `q = \<infinity>` by auto
+        using L_infinity_AE_bound \<open>f \<in> space\<^sub>N (\<LL> q M)\<close> \<open>q = \<infinity>\<close> by auto
       have **: "integrable M (\<lambda>x. \<bar>f x\<bar> powr p2)"
         apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. (Norm (\<LL> \<infinity> M) f) powr p2"], auto)
-        using * powr_mono2 `p2 > 0` by force
+        using * powr_mono2 \<open>p2 > 0\<close> by force
       then have "eNorm (\<LL> p2 M) f = (\<integral>x. \<bar>f x\<bar> powr p2 \<partial>M) powr (1/p2)"
-        using Lp_I(3)[OF `p2 > 0` f_meas] by simp
+        using Lp_I(3)[OF \<open>p2 > 0\<close> f_meas] by simp
       also have "... \<le> (\<integral>x. (Norm (\<LL> \<infinity> M) f) powr p2 \<partial>M) powr (1/p2)"
-        apply (rule ennreal_leI, rule powr_mono2, simp add: `p2 > 0` less_imp_le, simp)
+        apply (rule ennreal_leI, rule powr_mono2, simp add: \<open>p2 > 0\<close> less_imp_le, simp)
         apply (rule integral_mono_AE, auto simp add: **)
-        using * powr_mono2 `p2 > 0` by force
+        using * powr_mono2 \<open>p2 > 0\<close> by force
       also have "... = Norm (\<LL> \<infinity> M) f"
-        using `p2 > 0` by (auto simp add: prob_space powr_powr)
+        using \<open>p2 > 0\<close> by (auto simp add: prob_space powr_powr)
       finally show ?thesis
-        using `p = ennreal p2` `q = \<infinity>` eNorm_Norm[OF `f \<in> space\<^sub>N (\<LL> q M)`] by auto
+        using \<open>p = ennreal p2\<close> \<open>q = \<infinity>\<close> eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> q M)\<close>] by auto
     next
       case 4
       then have "0 < p" "p < \<infinity>" by auto
@@ -1038,29 +1038,29 @@ proof -
       have "0 < q" "q < \<infinity>" using 4 by auto
       then obtain q2 where "q = ennreal q2" "q2 > 0"
         using enn2real_positive_iff[of q] by (cases q) auto
-      have "p2 < q2" using 4 `p = ennreal p2` `q = ennreal q2`
+      have "p2 < q2" using 4 \<open>p = ennreal p2\<close> \<open>q = ennreal q2\<close>
         using ennreal_less_iff by auto
       define r2 where "r2 = q2 / p2"
-      have "r2 \<ge> 1" unfolding r2_def using `p2 < q2` `p2 > 0` by auto
+      have "r2 \<ge> 1" unfolding r2_def using \<open>p2 < q2\<close> \<open>p2 > 0\<close> by auto
       have *: "abs (\<bar>z\<bar> powr p2) powr r2 = \<bar>z\<bar> powr q2" for z::real
-        unfolding r2_def using `p2 > 0` by (simp add: powr_powr)
+        unfolding r2_def using \<open>p2 > 0\<close> by (simp add: powr_powr)
       have I: "integrable M (\<lambda>x. abs(\<bar>f x\<bar> powr p2) powr r2)"
-        unfolding * using `f \<in> space\<^sub>N (\<LL> q M)` `q = ennreal q2` Lp_D(2)[OF `q2 > 0`] by auto
+        unfolding * using \<open>f \<in> space\<^sub>N (\<LL> q M)\<close> \<open>q = ennreal q2\<close> Lp_D(2)[OF \<open>q2 > 0\<close>] by auto
       have J: "integrable M (\<lambda>x. \<bar>f x\<bar> powr p2)"
-        by (rule bound_L1_Lp(1)[OF `r2 \<ge> 1` _ I], auto)
+        by (rule bound_L1_Lp(1)[OF \<open>r2 \<ge> 1\<close> _ I], auto)
       have "f \<in> space\<^sub>N (\<LL> p2 M)"
-        by (rule Lp_I(1)[OF `p2 > 0` _ J], simp)
+        by (rule Lp_I(1)[OF \<open>p2 > 0\<close> _ J], simp)
       have "(\<integral>x. \<bar>f x\<bar> powr p2 \<partial>M) powr (1/p2) = abs(\<integral>x. \<bar>f x\<bar> powr p2 \<partial>M) powr (1/p2)"
         by auto
       also have "... \<le> ((\<integral>x. abs (\<bar>f x\<bar> powr p2) powr r2 \<partial>M) powr (1/r2)) powr (1/p2)"
-        apply (subst powr_mono2, simp add: `p2 > 0` less_imp_le, simp)
-        apply (rule bound_L1_Lp, simp add: `r2 \<ge> 1`, simp)
-        unfolding * using `f \<in> space\<^sub>N (\<LL> q M)` `q = ennreal q2` Lp_D(2)[OF `q2 > 0`] by auto
+        apply (subst powr_mono2, simp add: \<open>p2 > 0\<close> less_imp_le, simp)
+        apply (rule bound_L1_Lp, simp add: \<open>r2 \<ge> 1\<close>, simp)
+        unfolding * using \<open>f \<in> space\<^sub>N (\<LL> q M)\<close> \<open>q = ennreal q2\<close> Lp_D(2)[OF \<open>q2 > 0\<close>] by auto
       also have "... = (\<integral>x. \<bar>f x\<bar> powr q2 \<partial>M) powr (1/q2)"
-        unfolding * using `p2 > 0` by (simp add: powr_powr r2_def)
+        unfolding * using \<open>p2 > 0\<close> by (simp add: powr_powr r2_def)
       finally show ?thesis
-        using `f \<in> space\<^sub>N (\<LL> q M)` Lp_D(4)[OF `q2 > 0`] ennreal_leI
-        unfolding `p = ennreal p2` `q = ennreal q2` Lp_D(4)[OF `p2 > 0` `f \<in> space\<^sub>N (\<LL> p2 M)`] by force
+        using \<open>f \<in> space\<^sub>N (\<LL> q M)\<close> Lp_D(4)[OF \<open>q2 > 0\<close>] ennreal_leI
+        unfolding \<open>p = ennreal p2\<close> \<open>q = ennreal q2\<close> Lp_D(4)[OF \<open>p2 > 0\<close> \<open>f \<in> space\<^sub>N (\<LL> p2 M)\<close>] by force
     qed
   next
     case False
@@ -1071,7 +1071,7 @@ proof -
   then show "\<LL> q M \<subseteq>\<^sub>N \<LL> p M" using quasinorm_subsetI[of _ _ 1] by auto
   then show "space\<^sub>N (\<LL> q M) \<subseteq> space\<^sub>N (\<LL> p M)" using quasinorm_subset_space by auto
   then show "Norm (\<LL> p M) f \<le> Norm (\<LL> q M) f" if "f \<in> space\<^sub>N (\<LL> q M)" for f
-    using eNorm_Norm that `eNorm (\<LL> p M) f \<le> eNorm (\<LL> q M) f` ennreal_le_iff Norm_nonneg
+    using eNorm_Norm that \<open>eNorm (\<LL> p M) f \<le> eNorm (\<LL> q M) f\<close> ennreal_le_iff Norm_nonneg
     by (metis rev_subsetD)
 qed
 
@@ -1089,33 +1089,33 @@ proof -
     then have "Norm (\<LL> p M) g = 0"
       unfolding Norm_def using L_zero(1)[of M] by auto
     then have "Norm (\<LL> p M) g \<le> Norm (\<LL> p M) f" using Norm_nonneg by auto
-    then show ?thesis unfolding `p = 0` L_zero_space by auto
+    then show ?thesis unfolding \<open>p = 0\<close> L_zero_space by auto
   next
     case (real_pos p2)
     have *: "integrable M (\<lambda>x. \<bar>f x\<bar> powr p2)"
-      using `f \<in> space\<^sub>N (\<LL> p M)` unfolding `p = ennreal p2` using Lp_D(2) `p2 > 0` by auto
+      using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> unfolding \<open>p = ennreal p2\<close> using Lp_D(2) \<open>p2 > 0\<close> by auto
     have **: "integrable M (\<lambda>x. \<bar>g x\<bar> powr p2)"
       apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. \<bar>f x\<bar> powr p2"]) using * apply auto
-      using assms(3) powr_mono2 `p2 > 0` by (auto simp add: less_imp_le)
+      using assms(3) powr_mono2 \<open>p2 > 0\<close> by (auto simp add: less_imp_le)
     then have "g \<in> space\<^sub>N (\<LL> p M)"
-      unfolding `p = ennreal p2` using Lp_space[OF `p2 > 0`, of M] by auto
+      unfolding \<open>p = ennreal p2\<close> using Lp_space[OF \<open>p2 > 0\<close>, of M] by auto
     have "Norm (\<LL> p M) g = (\<integral>x. \<bar>g x\<bar> powr p2 \<partial>M) powr (1/p2)"
-      unfolding `p = ennreal p2` by (rule Lp_I(2)[OF `p2 > 0` _ **], simp)
+      unfolding \<open>p = ennreal p2\<close> by (rule Lp_I(2)[OF \<open>p2 > 0\<close> _ **], simp)
     also have "... \<le> (\<integral>x. \<bar>f x\<bar> powr p2 \<partial>M) powr (1/p2)"
-      apply (rule powr_mono2, simp add: `p2 > 0` less_imp_le, simp)
+      apply (rule powr_mono2, simp add: \<open>p2 > 0\<close> less_imp_le, simp)
       apply (rule integral_mono_AE, auto simp add: * **)
-      using `p2 > 0` less_imp_le powr_mono2 assms(3) by auto
+      using \<open>p2 > 0\<close> less_imp_le powr_mono2 assms(3) by auto
     also have "... = Norm (\<LL> p M) f"
-      unfolding `p = ennreal p2` by (rule Lp_I(2)[OF `p2 > 0` _ *, symmetric], simp)
-    finally show ?thesis using `g \<in> space\<^sub>N (\<LL> p M)` by auto
+      unfolding \<open>p = ennreal p2\<close> by (rule Lp_I(2)[OF \<open>p2 > 0\<close> _ *, symmetric], simp)
+    finally show ?thesis using \<open>g \<in> space\<^sub>N (\<LL> p M)\<close> by auto
   next
     case PInf
     have "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> p M) f"
-      using `f \<in> space\<^sub>N (\<LL> p M)` L_infinity_AE_bound unfolding `p = \<infinity>` by auto
+      using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> L_infinity_AE_bound unfolding \<open>p = \<infinity>\<close> by auto
     then have *: "AE x in M. \<bar>g x\<bar> \<le> Norm (\<LL> p M) f"
       using assms(3) by auto
     show ?thesis
-      using L_infinity_I[OF assms(1) *] Norm_nonneg `p = \<infinity>` by auto
+      using L_infinity_I[OF assms(1) *] Norm_nonneg \<open>p = \<infinity>\<close> by auto
   qed
   then show "g \<in> space\<^sub>N (\<LL> p M)" "Norm (\<LL> p M) g \<le> Norm (\<LL> p M) f"
     by auto
@@ -1132,7 +1132,7 @@ proof -
   have "Norm (\<LL> p M) (\<lambda>x. \<bar>f x\<bar>) \<le> Norm (\<LL> p M) f"
     by (rule Lp_domination[OF _ assms], auto)
   moreover have "Norm (\<LL> p M) f \<le> Norm (\<LL> p M) (\<lambda>x. \<bar>f x\<bar>)"
-    by (rule Lp_domination[OF _ `(\<lambda>x. \<bar>f x\<bar>) \<in> space\<^sub>N (\<LL> p M)`], auto)
+    by (rule Lp_domination[OF _ \<open>(\<lambda>x. \<bar>f x\<bar>) \<in> space\<^sub>N (\<LL> p M)\<close>], auto)
   finally show "Norm (\<LL> p M) (\<lambda>x. \<bar>f x\<bar>) = Norm (\<LL> p M) f" by auto
 qed
 
@@ -1151,17 +1151,17 @@ next
   case (real_pos p2)
   have *: "integrable M (\<lambda>x. \<bar>f x\<bar> powr p2)"
     apply (rule integrableI_bounded_set[of "{x \<in> space M. f x \<noteq> 0}" _ _ "C powr p2"])
-    using assms powr_mono2[OF less_imp_le[OF `p2 > 0`]] by (auto simp add: top.not_eq_extremum)
+    using assms powr_mono2[OF less_imp_le[OF \<open>p2 > 0\<close>]] by (auto simp add: top.not_eq_extremum)
   show ?thesis
-    unfolding `p = ennreal p2` apply (rule Lp_I[OF `p2 > 0`]) using * by auto
+    unfolding \<open>p = ennreal p2\<close> apply (rule Lp_I[OF \<open>p2 > 0\<close>]) using * by auto
 qed
 
 
-subsection {*$L^p$ versions of the main theorems in integration theory*}
+subsection \<open>$L^p$ versions of the main theorems in integration theory\<close>
 
-text {*The space $L^p$ is stable under almost sure convergence, for sequence with bounded norm.
+text \<open>The space $L^p$ is stable under almost sure convergence, for sequence with bounded norm.
 This is a version of Fatou's lemma (and it indeed follows from this lemma in the only
-nontrivial situation where $p \in (0, +\infty)$.*}
+nontrivial situation where $p \in (0, +\infty)$.\<close>
 
 proposition Lp_AE_limit:
   assumes [measurable]: "g \<in> borel_measurable M"
@@ -1181,7 +1181,7 @@ next
   then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> eNorm (\<LL> p M) (f (r0 n)) < \<infinity>"
     unfolding eventually_sequentially by blast
   define r where "r = (\<lambda>n. r0 (n + N))"
-  have "strict_mono r" unfolding r_def using `strict_mono r0` 
+  have "strict_mono r" unfolding r_def using \<open>strict_mono r0\<close> 
     by (simp add: strict_mono_Suc_iff)
   have *: "(\<lambda>n. eNorm (\<LL> p M) (f (r n))) \<longlonglongrightarrow> le"
     unfolding r_def using LIMSEQ_ignore_initial_segment[OF r0(2), of N].
@@ -1191,10 +1191,10 @@ next
     using Lp_measurable by auto
   define l where "l = enn2real le"
   have "l \<ge> 0" unfolding l_def by auto
-  have "le = ennreal l" using `le < \<infinity>` unfolding l_def by auto
+  have "le = ennreal l" using \<open>le < \<infinity>\<close> unfolding l_def by auto
   have [tendsto_intros]: "(\<lambda>n. Norm (\<LL> p M) (f (r n))) \<longlonglongrightarrow> l"
     apply (rule tendsto_ennrealD)
-    using * `le < \<infinity>` unfolding eNorm_Norm[OF `\<And>n. f (r n) \<in> space\<^sub>N (\<LL> p M)`] l_def by auto
+    using * \<open>le < \<infinity>\<close> unfolding eNorm_Norm[OF \<open>\<And>n. f (r n) \<in> space\<^sub>N (\<LL> p M)\<close>] l_def by auto
 
   show ?thesis
   proof (cases rule: Lp_cases[of p])
@@ -1205,23 +1205,23 @@ next
   next
     case (real_pos p2)
     then have "f (r n) \<in> space\<^sub>N (\<LL> p2 M)" for n
-      using `\<And>n. f (r n) \<in> space\<^sub>N(\<LL> p M)` by auto
+      using \<open>\<And>n. f (r n) \<in> space\<^sub>N(\<LL> p M)\<close> by auto
     have "liminf (\<lambda>n. ennreal(\<bar>f (r n) x\<bar> powr p2)) = \<bar>g x\<bar> powr p2" if "(\<lambda>n. f n x) \<longlonglongrightarrow> g x" for x
-      apply (rule lim_imp_Liminf, auto intro!: tendsto_intros simp add: `p2 > 0`)
-      using LIMSEQ_subseq_LIMSEQ[OF that `strict_mono r`] unfolding comp_def by auto
+      apply (rule lim_imp_Liminf, auto intro!: tendsto_intros simp add: \<open>p2 > 0\<close>)
+      using LIMSEQ_subseq_LIMSEQ[OF that \<open>strict_mono r\<close>] unfolding comp_def by auto
     then have *: "AE x in M. liminf (\<lambda>n. ennreal(\<bar>f (r n) x\<bar> powr p2)) = \<bar>g x\<bar> powr p2"
-      using `AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x` by auto
+      using \<open>AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x\<close> by auto
 
     have "(\<integral>\<^sup>+x. ennreal(\<bar>f (r n) x\<bar> powr p2) \<partial>M) = ennreal((Norm (\<LL> p M) (f (r n))) powr p2)" for n
     proof -
       have "(\<integral>\<^sup>+x. ennreal(\<bar>f (r n) x\<bar> powr p2) \<partial>M) = ennreal (\<integral>x. \<bar>f (r n) x\<bar> powr p2 \<partial>M)"
-        by (rule nn_integral_eq_integral, auto simp add: Lp_D(2)[OF `p2 > 0` `f (r n) \<in> space\<^sub>N (\<LL> p2 M)`])
+        by (rule nn_integral_eq_integral, auto simp add: Lp_D(2)[OF \<open>p2 > 0\<close> \<open>f (r n) \<in> space\<^sub>N (\<LL> p2 M)\<close>])
       also have "... = ennreal((Norm (\<LL> p2 M) (f (r n))) powr p2)"
-        unfolding Lp_D(3)[OF `p2 > 0` `f (r n) \<in> space\<^sub>N (\<LL> p2 M)`] using powr_powr `p2 > 0` by auto
-      finally show ?thesis using `p = ennreal p2` by simp
+        unfolding Lp_D(3)[OF \<open>p2 > 0\<close> \<open>f (r n) \<in> space\<^sub>N (\<LL> p2 M)\<close>] using powr_powr \<open>p2 > 0\<close> by auto
+      finally show ?thesis using \<open>p = ennreal p2\<close> by simp
     qed
     moreover have "(\<lambda>n. ennreal((Norm (\<LL> p M) (f (r n))) powr p2)) \<longlonglongrightarrow> ennreal(l powr p2)"
-      by (auto intro!:tendsto_intros simp add: `p2 > 0`)
+      by (auto intro!:tendsto_intros simp add: \<open>p2 > 0\<close>)
     ultimately have **: "liminf (\<lambda>n. (\<integral>\<^sup>+x. ennreal(\<bar>f (r n) x\<bar> powr p2) \<partial>M)) = ennreal(l powr p2)"
       using lim_imp_Liminf by force
 
@@ -1233,39 +1233,39 @@ next
     then have "(\<integral>\<^sup>+x. \<bar>g x\<bar> powr p2 \<partial>M) < \<infinity>" using le_less_trans by fastforce
     then have intg: "integrable M (\<lambda>x. \<bar>g x\<bar> powr p2)"
       apply (intro integrableI_nonneg) by auto
-    then have "g \<in> space\<^sub>N (\<LL> p2 M)" using Lp_I(1)[OF `p2 > 0`, of _ M] by fastforce
+    then have "g \<in> space\<^sub>N (\<LL> p2 M)" using Lp_I(1)[OF \<open>p2 > 0\<close>, of _ M] by fastforce
     have "ennreal((Norm (\<LL> p2 M) g) powr p2) = ennreal(\<integral>x. \<bar>g x\<bar> powr p2 \<partial>M)"
-      unfolding Lp_D(3)[OF `p2 > 0` `g \<in> space\<^sub>N (\<LL> p2 M)`] using powr_powr `p2 > 0` by auto
+      unfolding Lp_D(3)[OF \<open>p2 > 0\<close> \<open>g \<in> space\<^sub>N (\<LL> p2 M)\<close>] using powr_powr \<open>p2 > 0\<close> by auto
     also have "... = (\<integral>\<^sup>+x. \<bar>g x\<bar> powr p2 \<partial>M)"
       by (rule nn_integral_eq_integral[symmetric], auto simp add: intg)
     finally have "ennreal((Norm (\<LL> p2 M) g) powr p2) \<le> ennreal(l powr p2)"
-      using `(\<integral>\<^sup>+x. \<bar>g x\<bar> powr p2 \<partial>M) \<le> ennreal(l powr p2)` by auto
+      using \<open>(\<integral>\<^sup>+x. \<bar>g x\<bar> powr p2 \<partial>M) \<le> ennreal(l powr p2)\<close> by auto
     then have "((Norm (\<LL> p2 M) g) powr p2) powr (1/p2) \<le> (l powr p2) powr (1/p2)"
-      using ennreal_le_iff `l \<ge> 0` `p2 > 0` powr_mono2 by auto
+      using ennreal_le_iff \<open>l \<ge> 0\<close> \<open>p2 > 0\<close> powr_mono2 by auto
     then have "Norm (\<LL> p2 M) g \<le> l"
-      using `p2 > 0` `l \<ge> 0` by (auto simp add: powr_powr)
+      using \<open>p2 > 0\<close> \<open>l \<ge> 0\<close> by (auto simp add: powr_powr)
     then have "eNorm (\<LL> p2 M) g \<le> le"
-      unfolding eNorm_Norm[OF `g \<in> space\<^sub>N (\<LL> p2 M)`] `le = ennreal l` using ennreal_leI by auto
-    then show ?thesis unfolding le_def `p = ennreal p2` by simp
+      unfolding eNorm_Norm[OF \<open>g \<in> space\<^sub>N (\<LL> p2 M)\<close>] \<open>le = ennreal l\<close> using ennreal_leI by auto
+    then show ?thesis unfolding le_def \<open>p = ennreal p2\<close> by simp
   next
     case PInf
     then have "AE x in M. \<forall>n. \<bar>f (r n) x\<bar> \<le> Norm (\<LL> \<infinity> M) (f (r n))"
-      apply (subst AE_all_countable) using L_infinity_AE_bound `\<And>n. f (r n) \<in> space\<^sub>N (\<LL> p M)` by blast
+      apply (subst AE_all_countable) using L_infinity_AE_bound \<open>\<And>n. f (r n) \<in> space\<^sub>N (\<LL> p M)\<close> by blast
     moreover have "\<bar>g x\<bar> \<le> l" if "\<forall>n. \<bar>f (r n) x\<bar> \<le> Norm (\<LL> \<infinity> M) (f (r n))" "(\<lambda>n. f n x) \<longlonglongrightarrow> g x" for x
     proof -
       have "(\<lambda>n. f (r n) x) \<longlonglongrightarrow> g x"
-        using that LIMSEQ_subseq_LIMSEQ[OF _ `strict_mono r`] unfolding comp_def by auto
+        using that LIMSEQ_subseq_LIMSEQ[OF _ \<open>strict_mono r\<close>] unfolding comp_def by auto
       then have *: "(\<lambda>n. \<bar>f (r n) x\<bar>) \<longlonglongrightarrow> \<bar>g x\<bar>"
         by (auto intro!:tendsto_intros)
       show ?thesis
-        apply (rule LIMSEQ_le[OF *]) using that(1) `(\<lambda>n. Norm (\<LL> p M) (f (r n))) \<longlonglongrightarrow> l` unfolding PInf by auto
+        apply (rule LIMSEQ_le[OF *]) using that(1) \<open>(\<lambda>n. Norm (\<LL> p M) (f (r n))) \<longlonglongrightarrow> l\<close> unfolding PInf by auto
     qed
-    ultimately have "AE x in M. \<bar>g x\<bar> \<le> l" using `AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x` by auto
+    ultimately have "AE x in M. \<bar>g x\<bar> \<le> l" using \<open>AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x\<close> by auto
     then have "g \<in> space\<^sub>N (\<LL> \<infinity> M)" "Norm (\<LL> \<infinity> M) g \<le> l"
-      using L_infinity_I[OF `g \<in> borel_measurable M` _ `l \<ge> 0`] by auto
+      using L_infinity_I[OF \<open>g \<in> borel_measurable M\<close> _ \<open>l \<ge> 0\<close>] by auto
     then have "eNorm (\<LL> \<infinity> M) g \<le> le"
-      unfolding eNorm_Norm[OF `g \<in> space\<^sub>N (\<LL> \<infinity> M)`] `le = ennreal l` using ennreal_leI by auto
-    then show ?thesis unfolding le_def `p = \<infinity>` by simp
+      unfolding eNorm_Norm[OF \<open>g \<in> space\<^sub>N (\<LL> \<infinity> M)\<close>] \<open>le = ennreal l\<close> using ennreal_leI by auto
+    then show ?thesis unfolding le_def \<open>p = \<infinity>\<close> by simp
   qed
 qed
 
@@ -1277,9 +1277,9 @@ lemma Lp_AE_limit':
   shows "g \<in> space\<^sub>N (\<LL> p M)"
         "Norm (\<LL> p M) g \<le> l"
 proof -
-  have "l \<ge> 0" by (rule LIMSEQ_le_const[OF `(\<lambda>n. Norm (\<LL> p M) (f n)) \<longlonglongrightarrow> l`], auto)
+  have "l \<ge> 0" by (rule LIMSEQ_le_const[OF \<open>(\<lambda>n. Norm (\<LL> p M) (f n)) \<longlonglongrightarrow> l\<close>], auto)
   have "(\<lambda>n. eNorm (\<LL> p M) (f n)) \<longlonglongrightarrow> ennreal l"
-    unfolding eNorm_Norm[OF `\<And>n. f n \<in> space\<^sub>N (\<LL> p M)`] using `(\<lambda>n. Norm (\<LL> p M) (f n)) \<longlonglongrightarrow> l` by auto
+    unfolding eNorm_Norm[OF \<open>\<And>n. f n \<in> space\<^sub>N (\<LL> p M)\<close>] using \<open>(\<lambda>n. Norm (\<LL> p M) (f n)) \<longlonglongrightarrow> l\<close> by auto
   then have *: "ennreal l = liminf (\<lambda>n. eNorm (\<LL> p M) (f n))"
     using lim_imp_Liminf[symmetric] trivial_limit_sequentially by blast
   have "eNorm (\<LL> p M) g \<le> ennreal l"
@@ -1287,8 +1287,8 @@ proof -
   then have "eNorm (\<LL> p M) g < \<infinity>" using le_less_trans by fastforce
   then show "g \<in> space\<^sub>N (\<LL> p M)" using spaceN_iff by auto
   show "Norm (\<LL> p M) g \<le> l"
-    using `eNorm (\<LL> p M) g \<le> ennreal l` ennreal_le_iff[OF `l \<ge> 0`]
-    unfolding eNorm_Norm[OF `g \<in> space\<^sub>N (\<LL> p M)`] by auto
+    using \<open>eNorm (\<LL> p M) g \<le> ennreal l\<close> ennreal_le_iff[OF \<open>l \<ge> 0\<close>]
+    unfolding eNorm_Norm[OF \<open>g \<in> space\<^sub>N (\<LL> p M)\<close>] by auto
 qed
 
 lemma Lp_AE_limit'':
@@ -1299,25 +1299,25 @@ lemma Lp_AE_limit'':
   shows "g \<in> space\<^sub>N (\<LL> p M)"
         "Norm (\<LL> p M) g \<le> C"
 proof -
-  have "C \<ge> 0" by (rule order_trans[OF Norm_nonneg[of "\<LL> p M" "f 0"] `Norm (\<LL> p M) (f 0) \<le> C`])
+  have "C \<ge> 0" by (rule order_trans[OF Norm_nonneg[of "\<LL> p M" "f 0"] \<open>Norm (\<LL> p M) (f 0) \<le> C\<close>])
   have *: "liminf (\<lambda>n. ennreal C) = ennreal C"
     using Liminf_const trivial_limit_at_top_linorder by blast
   have "eNorm (\<LL> p M) (f n) \<le> ennreal C" for n
-    unfolding eNorm_Norm[OF `f n \<in> space\<^sub>N (\<LL> p M)`]
-    using `Norm (\<LL> p M) (f n) \<le> C` by (auto simp add: ennreal_leI)
+    unfolding eNorm_Norm[OF \<open>f n \<in> space\<^sub>N (\<LL> p M)\<close>]
+    using \<open>Norm (\<LL> p M) (f n) \<le> C\<close> by (auto simp add: ennreal_leI)
   then have "liminf (\<lambda>n. eNorm (\<LL> p M) (f n)) \<le> ennreal C"
     using Liminf_mono[of "(\<lambda>n. eNorm (\<LL> p M) (f n))" "\<lambda>_. C" sequentially] * by auto
   then have "eNorm (\<LL> p M) g \<le> ennreal C" using
-    Lp_AE_limit[OF `g \<in> borel_measurable M` `AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x`, of p] by auto
+    Lp_AE_limit[OF \<open>g \<in> borel_measurable M\<close> \<open>AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x\<close>, of p] by auto
   then have "eNorm (\<LL> p M) g < \<infinity>" using le_less_trans by fastforce
   then show "g \<in> space\<^sub>N (\<LL> p M)" using spaceN_iff by auto
   show "Norm (\<LL> p M) g \<le> C"
-    using `eNorm (\<LL> p M) g \<le> ennreal C` ennreal_le_iff[OF `C \<ge> 0`]
-    unfolding eNorm_Norm[OF `g \<in> space\<^sub>N (\<LL> p M)`] by auto
+    using \<open>eNorm (\<LL> p M) g \<le> ennreal C\<close> ennreal_le_iff[OF \<open>C \<ge> 0\<close>]
+    unfolding eNorm_Norm[OF \<open>g \<in> space\<^sub>N (\<LL> p M)\<close>] by auto
 qed
 
-text {*We give the version of Lebesgue dominated convergence theorem in the setting of
-$L^p$ spaces.*}
+text \<open>We give the version of Lebesgue dominated convergence theorem in the setting of
+$L^p$ spaces.\<close>
 
 proposition Lp_domination_limit:
   fixes p::real
@@ -1329,17 +1329,17 @@ proposition Lp_domination_limit:
   shows "g \<in> space\<^sub>N (\<LL> p M)"
         "tendsto_in\<^sub>N (\<LL> p M) f g"
 proof -
-  have [measurable]: "m \<in> borel_measurable M" using Lp_measurable[OF `m \<in> space\<^sub>N (\<LL> p M)`] by auto
+  have [measurable]: "m \<in> borel_measurable M" using Lp_measurable[OF \<open>m \<in> space\<^sub>N (\<LL> p M)\<close>] by auto
   have "f n \<in> space\<^sub>N(\<LL> p M)" for n
-    apply (rule Lp_domination[OF _ `m \<in> space\<^sub>N (\<LL> p M)`]) using `AE x in M. \<bar>f n x\<bar> \<le> m x` by auto
+    apply (rule Lp_domination[OF _ \<open>m \<in> space\<^sub>N (\<LL> p M)\<close>]) using \<open>AE x in M. \<bar>f n x\<bar> \<le> m x\<close> by auto
 
   have "AE x in M. \<forall>n. \<bar>f n x\<bar> \<le> m x"
-    apply (subst AE_all_countable) using `\<And>n. AE x in M. \<bar>f n x\<bar> \<le> m x` by auto
+    apply (subst AE_all_countable) using \<open>\<And>n. AE x in M. \<bar>f n x\<bar> \<le> m x\<close> by auto
   moreover have "\<bar>g x\<bar> \<le> m x" if "\<forall>n. \<bar>f n x\<bar> \<le> m x" "(\<lambda>n. f n x) \<longlonglongrightarrow> g x" for x
     apply (rule LIMSEQ_le_const2[of "\<lambda>n. \<bar>f n x\<bar>"]) using that by (auto intro!:tendsto_intros)
-  ultimately have *: "AE x in M. \<bar>g x\<bar> \<le> m x" using `AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x` by auto
+  ultimately have *: "AE x in M. \<bar>g x\<bar> \<le> m x" using \<open>AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x\<close> by auto
   show "g \<in> space\<^sub>N(\<LL> p M)"
-    apply (rule Lp_domination[OF _ `m \<in> space\<^sub>N (\<LL> p M)`]) using * by auto
+    apply (rule Lp_domination[OF _ \<open>m \<in> space\<^sub>N (\<LL> p M)\<close>]) using * by auto
 
   have "(\<lambda>n. Norm (\<LL> p M) (f n - g)) \<longlonglongrightarrow> 0"
   proof (cases "p \<le> 0")
@@ -1353,30 +1353,30 @@ proof -
     proof (rule integral_dominated_convergence[of _ _ _ "(\<lambda>x. \<bar>2 * m x\<bar> powr p)"], auto)
       show "integrable M (\<lambda>x. \<bar>2 * m x\<bar> powr p)"
         unfolding abs_mult apply (subst powr_mult)
-        using Lp_D(2)[OF `p > 0` `m \<in> space\<^sub>N (\<LL> p M)`] by auto
+        using Lp_D(2)[OF \<open>p > 0\<close> \<open>m \<in> space\<^sub>N (\<LL> p M)\<close>] by auto
       have "(\<lambda>n. \<bar>f n x - g x\<bar> powr p) \<longlonglongrightarrow> \<bar>0\<bar> powr p" if "(\<lambda>n. f n x) \<longlonglongrightarrow> g x" for x
-        apply (rule tendsto_powr') using `p > 0` that apply (auto)
+        apply (rule tendsto_powr') using \<open>p > 0\<close> that apply (auto)
         using Lim_null tendsto_rabs_zero_iff by fastforce
       then show "AE x in M. (\<lambda>n. \<bar>f n x - g x\<bar> powr p) \<longlonglongrightarrow> 0"
-        using `AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x` by auto
+        using \<open>AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> g x\<close> by auto
       have "\<bar>f n x - g x\<bar> powr p \<le> \<bar>2 * m x\<bar> powr p" if "\<bar>f n x\<bar> \<le> m x" "\<bar>g x\<bar> \<le> m x" for n x
-        using powr_mono2 `p > 0` that by auto
+        using powr_mono2 \<open>p > 0\<close> that by auto
       then show "AE x in M. \<bar>f n x - g x\<bar> powr p \<le> \<bar>2 * m x\<bar> powr p" for n
-        using `AE x in M. \<bar>f n x\<bar> \<le> m x` `AE x in M. \<bar>g x\<bar> \<le> m x` by auto
+        using \<open>AE x in M. \<bar>f n x\<bar> \<le> m x\<close> \<open>AE x in M. \<bar>g x\<bar> \<le> m x\<close> by auto
     qed
     then have "(\<lambda>n. (Norm (\<LL> p M) (f n - g)) powr p) \<longlonglongrightarrow> (Norm (\<LL> p M) 0) powr p"
-      unfolding Lp_D[OF `p > 0` spaceN_diff[OF `\<And>n. f n \<in> space\<^sub>N(\<LL> p M)` `g \<in> space\<^sub>N(\<LL> p M)`]]
-      using `p > 0` by (auto simp add: powr_powr)
+      unfolding Lp_D[OF \<open>p > 0\<close> spaceN_diff[OF \<open>\<And>n. f n \<in> space\<^sub>N(\<LL> p M)\<close> \<open>g \<in> space\<^sub>N(\<LL> p M)\<close>]]
+      using \<open>p > 0\<close> by (auto simp add: powr_powr)
     then have "(\<lambda>n. ((Norm (\<LL> p M) (f n - g)) powr p) powr (1/p)) \<longlonglongrightarrow> ((Norm (\<LL> p M) 0) powr p) powr (1/p)"
-      by (rule tendsto_powr', auto simp add: `p > 0`)
-    then show ?thesis using powr_powr `p > 0` by auto
+      by (rule tendsto_powr', auto simp add: \<open>p > 0\<close>)
+    then show ?thesis using powr_powr \<open>p > 0\<close> by auto
   qed
   then show "tendsto_in\<^sub>N (\<LL> p M) f g"
     unfolding tendsto_in\<^sub>N_def by auto
 qed
 
-text {*We give the version of the monotone convergence theorem in the setting of
-$L^p$ spaces.*}
+text \<open>We give the version of the monotone convergence theorem in the setting of
+$L^p$ spaces.\<close>
 
 proposition Lp_monotone_limit:
   fixes f::"nat \<Rightarrow> 'a \<Rightarrow> real"
@@ -1393,47 +1393,47 @@ proof -
   proof (cases rule: Lp_cases[of p])
     case PInf
     have "AE x in M. \<bar>f n x\<bar> \<le> C" for n
-      using L_infinity_AE_bound[of "f n" M] `Norm (\<LL> p M) (f n) \<le> C` `f n \<in> space\<^sub>N (\<LL> p M)`
-      unfolding `p=\<infinity>` by auto
+      using L_infinity_AE_bound[of "f n" M] \<open>Norm (\<LL> p M) (f n) \<le> C\<close> \<open>f n \<in> space\<^sub>N (\<LL> p M)\<close>
+      unfolding \<open>p=\<infinity>\<close> by auto
     then have *: "AE x in M. \<forall>n. \<bar>f n x\<bar> \<le> C"
       by (subst AE_all_countable, auto)
     have "(\<lambda>n. f n x) \<longlonglongrightarrow> (SUP n. f n x)" if "incseq (\<lambda>n. f n x)" "\<And>n. \<bar>f n x\<bar> \<le> C" for x
-      apply (rule LIMSEQ_incseq_SUP[OF _ `incseq (\<lambda>n. f n x)`]) using that(2) abs_le_D1 by fastforce
+      apply (rule LIMSEQ_incseq_SUP[OF _ \<open>incseq (\<lambda>n. f n x)\<close>]) using that(2) abs_le_D1 by fastforce
     then have "convergent (\<lambda>n. f n x)" if "incseq (\<lambda>n. f n x)" "\<And>n. \<bar>f n x\<bar> \<le> C" for x
       unfolding convergent_def using that by auto
-    then show ?thesis using `AE x in M. incseq (\<lambda>n. f n x)` * by auto
+    then show ?thesis using \<open>AE x in M. incseq (\<lambda>n. f n x)\<close> * by auto
   next
     case (real_pos p2)
     define g where "g = (\<lambda>n. f n - f 0)"
     have "AE x in M. incseq (\<lambda>n. g n x)"
-      unfolding g_def using `AE x in M. incseq (\<lambda>n. f n x)` by (simp add: incseq_def)
+      unfolding g_def using \<open>AE x in M. incseq (\<lambda>n. f n x)\<close> by (simp add: incseq_def)
     have "g n \<in> space\<^sub>N (\<LL> p2 M)" for n
-      unfolding g_def using `\<And>n. f n \<in> space\<^sub>N (\<LL> p M)` unfolding `p = ennreal p2` by auto
+      unfolding g_def using \<open>\<And>n. f n \<in> space\<^sub>N (\<LL> p M)\<close> unfolding \<open>p = ennreal p2\<close> by auto
     then have [measurable]: "g n \<in> borel_measurable M" for n using Lp_measurable by auto
     define D where "D = defect (\<LL> p2 M) * C + defect (\<LL> p2 M) * C"
     have "Norm (\<LL> p2 M) (g n) \<le> D" for n
     proof -
-      have "f n \<in> space\<^sub>N (\<LL> p2 M)" using `f n \<in> space\<^sub>N (\<LL> p M)` unfolding `p = ennreal p2` by auto
+      have "f n \<in> space\<^sub>N (\<LL> p2 M)" using \<open>f n \<in> space\<^sub>N (\<LL> p M)\<close> unfolding \<open>p = ennreal p2\<close> by auto
       have "Norm (\<LL> p2 M) (g n) \<le> defect (\<LL> p2 M) * Norm (\<LL> p2 M) (f n) + defect (\<LL> p2 M) * Norm (\<LL> p2 M) (f 0)"
-        unfolding g_def using Norm_triangular_ineq_diff[OF `f n \<in> space\<^sub>N (\<LL> p2 M)`] by auto
+        unfolding g_def using Norm_triangular_ineq_diff[OF \<open>f n \<in> space\<^sub>N (\<LL> p2 M)\<close>] by auto
       also have "... \<le> D"
         unfolding D_def apply(rule add_mono)
-        using mult_left_mono defect_ge_1[of "\<LL> p2 M"] `\<And>n. Norm (\<LL> p M) (f n) \<le> C` unfolding `p = ennreal p2` by auto
+        using mult_left_mono defect_ge_1[of "\<LL> p2 M"] \<open>\<And>n. Norm (\<LL> p M) (f n) \<le> C\<close> unfolding \<open>p = ennreal p2\<close> by auto
       finally show ?thesis by simp
     qed
     have g_bound: "(\<integral>\<^sup>+x. \<bar>g n x\<bar> powr p2 \<partial>M) \<le> ennreal(D powr p2)" for n
     proof -
       have "(\<integral>\<^sup>+x. \<bar>g n x\<bar> powr p2 \<partial>M) = ennreal(\<integral>x. \<bar>g n x\<bar> powr p2 \<partial>M)"
-        apply (rule nn_integral_eq_integral) using Lp_D(2)[OF `p2 > 0` `g n \<in> space\<^sub>N (\<LL> p2 M)`] by auto
+        apply (rule nn_integral_eq_integral) using Lp_D(2)[OF \<open>p2 > 0\<close> \<open>g n \<in> space\<^sub>N (\<LL> p2 M)\<close>] by auto
       also have "... = ennreal((Norm (\<LL> p2 M) (g n)) powr p2)"
-        apply (subst Lp_Norm(2)[OF `p2 > 0`, of "g n", symmetric]) by auto
+        apply (subst Lp_Norm(2)[OF \<open>p2 > 0\<close>, of "g n", symmetric]) by auto
       also have "... \<le> ennreal(D powr p2)"
-        by (auto intro!: powr_mono2 simp add: less_imp_le[OF `p2 > 0`] `Norm (\<LL> p2 M) (g n) \<le> D`)
+        by (auto intro!: powr_mono2 simp add: less_imp_le[OF \<open>p2 > 0\<close>] \<open>Norm (\<LL> p2 M) (g n) \<le> D\<close>)
       finally show ?thesis by simp
     qed
     have "\<forall>n. g n x \<ge> 0" if "incseq (\<lambda>n. f n x)" for x
       unfolding g_def using that by (auto simp add: incseq_def)
-    then have "AE x in M. \<forall>n. g n x \<ge> 0" using `AE x in M. incseq (\<lambda>n. f n x)` by auto
+    then have "AE x in M. \<forall>n. g n x \<ge> 0" using \<open>AE x in M. incseq (\<lambda>n. f n x)\<close> by auto
 
     define h where "h = (\<lambda>n x. ennreal(\<bar>g n x\<bar> powr p2))"
     have [measurable]: "h n \<in> borel_measurable M" for n unfolding h_def by auto
@@ -1441,9 +1441,9 @@ proof -
     have [measurable]: "H \<in> borel_measurable M" unfolding H_def by auto
     have "\<And>n. h n x \<le> h (Suc n) x" if "\<forall>n. g n x \<ge> 0" "incseq (\<lambda>n. g n x)" for x
       unfolding h_def apply (auto intro!:powr_mono2)
-      apply (auto simp add: less_imp_le[OF `p2 > 0`]) using that incseq_SucD by auto
+      apply (auto simp add: less_imp_le[OF \<open>p2 > 0\<close>]) using that incseq_SucD by auto
     then have *: "AE x in M. h n x \<le> h (Suc n) x" for n
-      using `AE x in M. \<forall>n. g n x \<ge> 0` `AE x in M. incseq (\<lambda>n. g n x)` by auto
+      using \<open>AE x in M. \<forall>n. g n x \<ge> 0\<close> \<open>AE x in M. incseq (\<lambda>n. g n x)\<close> by auto
     have "(\<integral>\<^sup>+x. H x \<partial>M) = (SUP n. \<integral>\<^sup>+x. h n x \<partial>M)"
       unfolding H_def by (rule nn_integral_monotone_convergence_SUP_AE, auto simp add: *)
     also have "... \<le> ennreal(D powr p2)"
@@ -1455,40 +1455,40 @@ proof -
     have "convergent (\<lambda>n. f n x)" if "H x \<noteq> \<infinity>" "incseq (\<lambda>n. f n x)" for x
     proof -
       define A where "A = enn2real(H x)"
-      then have "H x = ennreal A" using `H x \<noteq> \<infinity>` by (simp add: ennreal_enn2real_if)
+      then have "H x = ennreal A" using \<open>H x \<noteq> \<infinity>\<close> by (simp add: ennreal_enn2real_if)
       have "f n x \<le> f 0 x + A powr (1/p2)" for n
       proof -
         have "ennreal(\<bar>g n x\<bar> powr p2) \<le> ennreal A"
-          unfolding `H x = ennreal A`[symmetric] H_def h_def by (meson SUP_upper2 UNIV_I order_refl)
+          unfolding \<open>H x = ennreal A\<close>[symmetric] H_def h_def by (meson SUP_upper2 UNIV_I order_refl)
         then have "\<bar>g n x\<bar> powr p2 \<le> A"
           by (subst ennreal_le_iff[symmetric], auto simp add: A_def)
         have "\<bar>g n x\<bar> = (\<bar>g n x\<bar> powr p2) powr (1/p2)"
-          using `p2 > 0` by (simp add: powr_powr)
+          using \<open>p2 > 0\<close> by (simp add: powr_powr)
         also have "... \<le> A powr (1/p2)"
-          apply (rule powr_mono2) using `p2 > 0` `\<bar>g n x\<bar> powr p2 \<le> A` by auto
+          apply (rule powr_mono2) using \<open>p2 > 0\<close> \<open>\<bar>g n x\<bar> powr p2 \<le> A\<close> by auto
         finally have "\<bar>g n x\<bar> \<le> A powr (1/p2)" by simp
         then show ?thesis unfolding g_def by auto
       qed
       then show "convergent (\<lambda>n. f n x)"
-        using LIMSEQ_incseq_SUP[OF _ `incseq (\<lambda>n. f n x)`] convergent_def by (metis bdd_aboveI2)
+        using LIMSEQ_incseq_SUP[OF _ \<open>incseq (\<lambda>n. f n x)\<close>] convergent_def by (metis bdd_aboveI2)
     qed
     then show "AE x in M. convergent (\<lambda>n. f n x)"
-      using `AE x in M. H x \<noteq> \<infinity>` `AE x in M. incseq (\<lambda>n. f n x)` by auto
-  qed (insert `p>0`, simp)
+      using \<open>AE x in M. H x \<noteq> \<infinity>\<close> \<open>AE x in M. incseq (\<lambda>n. f n x)\<close> by auto
+  qed (insert \<open>p>0\<close>, simp)
   then have lim: "AE x in M. (\<lambda>n. f n x) \<longlonglongrightarrow> lim (\<lambda>n. f n x)"
     using convergent_LIMSEQ_iff by auto
   show "(\<lambda>x. lim (\<lambda>n. f n x)) \<in> space\<^sub>N (\<LL> p M)"
-    apply (rule Lp_AE_limit''[of _ _ f, OF _ `\<And>n. f n \<in> space\<^sub>N (\<LL> p M)` lim `\<And>n. Norm (\<LL> p M) (f n) \<le> C`])
+    apply (rule Lp_AE_limit''[of _ _ f, OF _ \<open>\<And>n. f n \<in> space\<^sub>N (\<LL> p M)\<close> lim \<open>\<And>n. Norm (\<LL> p M) (f n) \<le> C\<close>])
     by auto
   show "Norm (\<LL> p M) (\<lambda>x. lim (\<lambda>n. f n x)) \<le> C"
-    apply (rule Lp_AE_limit''[of _ _ f, OF _ `\<And>n. f n \<in> space\<^sub>N (\<LL> p M)` lim `\<And>n. Norm (\<LL> p M) (f n) \<le> C`])
+    apply (rule Lp_AE_limit''[of _ _ f, OF _ \<open>\<And>n. f n \<in> space\<^sub>N (\<LL> p M)\<close> lim \<open>\<And>n. Norm (\<LL> p M) (f n) \<le> C\<close>])
     by auto
 qed
 
 
-subsection {*Completeness of $L^p$*}
+subsection \<open>Completeness of $L^p$\<close>
 
-text {*We prove the completeness of $L^p$.*}
+text \<open>We prove the completeness of $L^p$.\<close>
 
 theorem Lp_complete:
   "complete\<^sub>N (\<LL> p M)"
@@ -1498,21 +1498,21 @@ proof (cases rule: Lp_cases[of p])
   proof (rule complete\<^sub>N_I)
     fix u assume "\<forall>(n::nat). u n \<in> space\<^sub>N (\<LL> p M)"
     then have "tendsto_in\<^sub>N (\<LL> p M) u 0"
-      unfolding tendsto_in\<^sub>N_def Norm_def `p = 0` L_zero(1) L_zero_space by auto
+      unfolding tendsto_in\<^sub>N_def Norm_def \<open>p = 0\<close> L_zero(1) L_zero_space by auto
     then show "\<exists>x\<in>space\<^sub>N (\<LL> p M). tendsto_in\<^sub>N (\<LL> p M) u x"
       by auto
   qed
 next
   case (real_pos p2)
   show ?thesis
-  proof (rule complete\<^sub>N_I'[of "\<lambda>n. (1/2)^n * (1/(defect (\<LL> p M))^(Suc n))"], unfold `p = ennreal p2`)
+  proof (rule complete\<^sub>N_I'[of "\<lambda>n. (1/2)^n * (1/(defect (\<LL> p M))^(Suc n))"], unfold \<open>p = ennreal p2\<close>)
     show "0 < (1 / 2) ^ n * (1 / defect (\<LL> (ennreal p2) M) ^ Suc n)" for n
       using defect_ge_1[of "\<LL> (ennreal p2) M"] by (auto simp add: divide_simps)
 
     fix u assume "\<forall>(n::nat). u n \<in> space\<^sub>N (\<LL> p2 M)" "\<forall>n. Norm (\<LL> p2 M) (u n) \<le> (1/2)^n * (1/(defect (\<LL> p2 M))^(Suc n))"
     then have H: "\<And>n. u n \<in> space\<^sub>N (\<LL> p2 M)"
                  "\<And>n. Norm (\<LL> p2 M) (u n) \<le> (1 / 2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))"
-      unfolding `p = ennreal p2` by auto
+      unfolding \<open>p = ennreal p2\<close> by auto
     have [measurable]: "u n \<in> borel_measurable M" for n using Lp_measurable[OF H(1)].
 
     define w where "w = (\<lambda>N x. (\<Sum>n\<in>{..<N}. \<bar>u n x\<bar>))"
@@ -1522,10 +1522,10 @@ next
     then have wN_inc: "AE x in M. incseq (\<lambda>N. w N x)" by simp
 
     have abs_u_space: "(\<lambda>x. \<bar>u n x\<bar>) \<in> space\<^sub>N (\<LL> p2 M)" for n
-      by (rule Lp_Banach_lattice[OF `u n \<in> space\<^sub>N (\<LL> p2 M)`])
+      by (rule Lp_Banach_lattice[OF \<open>u n \<in> space\<^sub>N (\<LL> p2 M)\<close>])
     then have wN_space: "w N \<in> space\<^sub>N (\<LL> p2 M)" for N unfolding w2 using H(1) by auto
     have abs_u_Norm: "Norm (\<LL> p2 M) (\<lambda>x. \<bar>u n x\<bar>) \<le> (1 / 2) ^ n * (1/(defect (\<LL> p2 M))^(Suc n))" for n
-      using Lp_Banach_lattice(2)[OF `u n \<in> space\<^sub>N (\<LL> p2 M)`] H(2) by auto
+      using Lp_Banach_lattice(2)[OF \<open>u n \<in> space\<^sub>N (\<LL> p2 M)\<close>] H(2) by auto
 
     have wN_Norm: "Norm (\<LL> p2 M) (w N) \<le> 2" for N
     proof -
@@ -1544,11 +1544,11 @@ next
     qed
 
     have "AE x in M. convergent (\<lambda>N. w N x)"
-      apply (rule Lp_monotone_limit[OF `p > 0`, of _ _ 2], unfold `p = ennreal p2`)
+      apply (rule Lp_monotone_limit[OF \<open>p > 0\<close>, of _ _ 2], unfold \<open>p = ennreal p2\<close>)
       using wN_inc wN_Norm wN_space by auto
     define m where "m = (\<lambda>x. lim (\<lambda>N. w N x))"
     have m_space: "m \<in> space\<^sub>N (\<LL> p2 M)"
-      unfolding m_def `p = ennreal p2`[symmetric] apply (rule Lp_monotone_limit[OF `p > 0`, of _ _ 2], unfold `p = ennreal p2`)
+      unfolding m_def \<open>p = ennreal p2\<close>[symmetric] apply (rule Lp_monotone_limit[OF \<open>p > 0\<close>, of _ _ 2], unfold \<open>p = ennreal p2\<close>)
       using wN_inc wN_Norm wN_space by auto
 
     define v where "v = (\<lambda>x. (\<Sum>n. u n x))"
@@ -1568,14 +1568,14 @@ next
           unfolding fun_sum_apply by auto
         also have "... \<le> (\<Sum>i. \<bar>u i x\<bar>)"
           apply (rule sum_le_suminf) using S by auto
-        finally show ?thesis using `m x = (\<Sum>n. \<bar>u n x\<bar>)` by simp
+        finally show ?thesis using \<open>m x = (\<Sum>n. \<bar>u n x\<bar>)\<close> by simp
       qed
       then have "(\<forall>n. \<bar>(sum u {0..<n}) x\<bar> \<le> m x) \<and> (\<lambda>n. (sum u {0..<n}) x) \<longlonglongrightarrow> v x"
         unfolding atLeast0LessThan using * by auto
     }
     then have m_bound: "\<And>n. AE x in M. \<bar>(sum u {0..<n}) x\<bar> \<le> m x"
           and u_conv: "AE x in M. (\<lambda>n. (sum u {0..<n}) x) \<longlonglongrightarrow> v x"
-      using `AE x in M. convergent (\<lambda>N. w N x)` by auto
+      using \<open>AE x in M. convergent (\<lambda>N. w N x)\<close> by auto
 
     have "tendsto_in\<^sub>N (\<LL> p2 M) (\<lambda>n. sum u {0..<n}) v"
       by (rule Lp_domination_limit[OF v_meas u_meas m_space u_conv m_bound])
@@ -1608,7 +1608,7 @@ next
         using * by auto
       have "\<bar>w N x - v x\<bar> = \<bar>(\<Sum>n. u (n + N) x)\<bar>"
         unfolding v_def w_def
-        apply (subst suminf_split_initial_segment[OF summable_rabs_cancel[OF `summable (\<lambda>n. \<bar>u n x\<bar>)`], of "N"])
+        apply (subst suminf_split_initial_segment[OF summable_rabs_cancel[OF \<open>summable (\<lambda>n. \<bar>u n x\<bar>)\<close>], of "N"])
         by (simp add: lessThan_atLeast0)
       also have "... \<le> (\<Sum>n. \<bar>u (n + N) x\<bar>)"
         apply (rule summable_rabs, subst summable_iff_shift) using ** by auto
@@ -1634,17 +1634,17 @@ next
     have "v = - (w 0 - v)" unfolding w_def by auto
     then have "v \<in> space\<^sub>N (\<LL> \<infinity> M)" using **(1)[of 0] spaceN_add spaceN_diff by fastforce
     then show "\<exists>v \<in> space\<^sub>N (\<LL> p M). tendsto_in\<^sub>N (\<LL> p M) (\<lambda>n. sum u {0..<n}) v"
-      using `tendsto_in\<^sub>N (\<LL> \<infinity> M) w v` unfolding `p = \<infinity>` w_def fun_sum_apply[symmetric] by auto
+      using \<open>tendsto_in\<^sub>N (\<LL> \<infinity> M) w v\<close> unfolding \<open>p = \<infinity>\<close> w_def fun_sum_apply[symmetric] by auto
   qed (simp)
 qed
 
 
-subsection {*Multiplication of functions, duality*}
+subsection \<open>Multiplication of functions, duality\<close>
 
-text {*The next theorem asserts that the multiplication of two functions in $L^p$ and $L^q$ belongs to
+text \<open>The next theorem asserts that the multiplication of two functions in $L^p$ and $L^q$ belongs to
 $L^r$, where $r$ is determined by the equality $1/r = 1/p + 1/q$. This is essentially a case by case
 analysis, depending on the kind of $L^p$ space we are considering. The only nontrivial case is
-when $p$, $q$ (and $r$) are finite and nonzero. In this case, it reduces to H\"older inequality.*}
+when $p$, $q$ (and $r$) are finite and nonzero. In this case, it reduces to H\"older inequality.\<close>
 
 theorem Lp_Lq_mult:
   fixes p q r::ennreal
@@ -1664,101 +1664,101 @@ proof -
     then show ?thesis unfolding zero using * L_zero_space[of M] by auto
   next
     case (real_pos r2)
-    have "p > 0" "q > 0" using `1/p + 1/q = 1/r` `r > 0`
+    have "p > 0" "q > 0" using \<open>1/p + 1/q = 1/r\<close> \<open>r > 0\<close>
       by (metis ennreal_add_eq_top ennreal_divide_eq_top_iff ennreal_top_neq_one gr_zeroI zero_neq_one)+
     consider "p = \<infinity>" | "q = \<infinity>" | "p < \<infinity> \<and> q < \<infinity>" using top.not_eq_extremum by force
     then show ?thesis
     proof (cases)
       case 1
-      then have "q = r" using `1/p + 1/q = 1/r`
+      then have "q = r" using \<open>1/p + 1/q = 1/r\<close>
         by (metis ennreal_divide_top infinity_ennreal_def one_divide_one_divide_ennreal semiring_normalization_rules(5))
       have "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> p M) f"
-        using `f \<in> space\<^sub>N (\<LL> p M)` L_infinity_AE_bound unfolding `p = \<infinity>` by auto
+        using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> L_infinity_AE_bound unfolding \<open>p = \<infinity>\<close> by auto
       then have *: "AE x in M. \<bar>f x * g x\<bar> \<le> \<bar>Norm (\<LL> p M) f * g x\<bar>"
         unfolding abs_mult using Norm_nonneg[of "\<LL> p M" f] mult_right_mono by fastforce
       have **: "(\<lambda>x. Norm (\<LL> p M) f * g x) \<in> space\<^sub>N (\<LL> r M)"
-        using spaceN_cmult[OF `g \<in> space\<^sub>N (\<LL> q M)`] unfolding `q = r` scaleR_fun_def by simp
+        using spaceN_cmult[OF \<open>g \<in> space\<^sub>N (\<LL> q M)\<close>] unfolding \<open>q = r\<close> scaleR_fun_def by simp
       have ***: "Norm (\<LL> r M) (\<lambda>x. Norm (\<LL> p M) f * g x) = Norm (\<LL> p M) f * Norm (\<LL> q M) g"
-        using Norm_cmult[of "\<LL> r M"] unfolding `q = r` scaleR_fun_def by auto
+        using Norm_cmult[of "\<LL> r M"] unfolding \<open>q = r\<close> scaleR_fun_def by auto
       then show ?thesis
-        using Lp_domination[of "\<lambda>x. f x * g x" M "\<lambda>x. Norm (\<LL> p M) f * g x" r] unfolding `q = r`
+        using Lp_domination[of "\<lambda>x. f x * g x" M "\<lambda>x. Norm (\<LL> p M) f * g x" r] unfolding \<open>q = r\<close>
         using * ** *** by auto
     next
       case 2
-      then have "p = r" using `1/p + 1/q = 1/r`
+      then have "p = r" using \<open>1/p + 1/q = 1/r\<close>
         by (metis add.right_neutral ennreal_divide_top infinity_ennreal_def one_divide_one_divide_ennreal)
       have "AE x in M. \<bar>g x\<bar> \<le> Norm (\<LL> q M) g"
-        using `g \<in> space\<^sub>N (\<LL> q M)` L_infinity_AE_bound unfolding `q = \<infinity>` by auto
+        using \<open>g \<in> space\<^sub>N (\<LL> q M)\<close> L_infinity_AE_bound unfolding \<open>q = \<infinity>\<close> by auto
       then have *: "AE x in M. \<bar>f x * g x\<bar> \<le> \<bar>Norm (\<LL> q M) g * f x\<bar>"
         apply (simp only: mult.commute[of "Norm (\<LL> q M) g" _])
         unfolding abs_mult using mult_left_mono Norm_nonneg[of "\<LL> q M" g] by fastforce
       have **: "(\<lambda>x. Norm (\<LL> q M) g * f x) \<in> space\<^sub>N (\<LL> r M)"
-        using spaceN_cmult[OF `f \<in> space\<^sub>N (\<LL> p M)`] unfolding `p = r` scaleR_fun_def by simp
+        using spaceN_cmult[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>] unfolding \<open>p = r\<close> scaleR_fun_def by simp
       have ***: "Norm (\<LL> r M) (\<lambda>x. Norm (\<LL> q M) g * f x) = Norm (\<LL> p M) f * Norm (\<LL> q M) g"
-        using Norm_cmult[of "\<LL> r M"] unfolding `p = r` scaleR_fun_def by auto
+        using Norm_cmult[of "\<LL> r M"] unfolding \<open>p = r\<close> scaleR_fun_def by auto
       then show ?thesis
-        using Lp_domination[of "\<lambda>x. f x * g x" M "\<lambda>x. Norm (\<LL> q M) g * f x" r] unfolding `p = r`
+        using Lp_domination[of "\<lambda>x. f x * g x" M "\<lambda>x. Norm (\<LL> q M) g * f x" r] unfolding \<open>p = r\<close>
         using * ** *** by auto
     next
       case 3
       obtain p2 where "p = ennreal p2" "p2 > 0"
-        using enn2real_positive_iff[of p] 3 `p > 0` by (cases p) auto
+        using enn2real_positive_iff[of p] 3 \<open>p > 0\<close> by (cases p) auto
       obtain q2 where "q = ennreal q2" "q2 > 0"
-        using enn2real_positive_iff[of q] 3 `q > 0` by (cases q) auto
+        using enn2real_positive_iff[of q] 3 \<open>q > 0\<close> by (cases q) auto
 
       have "ennreal(1/r2) = 1/r"
-        using `r = ennreal r2` `r2 > 0` divide_ennreal zero_le_one by fastforce
+        using \<open>r = ennreal r2\<close> \<open>r2 > 0\<close> divide_ennreal zero_le_one by fastforce
       also have "... = 1/p + 1/q" using assms by auto
-      also have "... = ennreal(1/p2 + 1/q2)" using `p = ennreal p2` `p2 > 0` `q = ennreal q2` `q2 > 0`
+      also have "... = ennreal(1/p2 + 1/q2)" using \<open>p = ennreal p2\<close> \<open>p2 > 0\<close> \<open>q = ennreal q2\<close> \<open>q2 > 0\<close>
         apply (simp only: divide_ennreal ennreal_1[symmetric]) using ennreal_plus[of "1/p2" "1/q2", symmetric] by auto
       finally have *: "1/r2 = 1/p2 + 1/q2"
-        using ennreal_inj `p2 > 0` `q2 > 0` `r2 > 0` by (metis divide_pos_pos ennreal_less_zero_iff le_less zero_less_one)
+        using ennreal_inj \<open>p2 > 0\<close> \<open>q2 > 0\<close> \<open>r2 > 0\<close> by (metis divide_pos_pos ennreal_less_zero_iff le_less zero_less_one)
 
       define P where "P = p2 / r2"
       define Q where "Q = q2 / r2"
       have [simp]: "P > 0" "Q > 0" and "1/P + 1/Q = 1"
-        using `p2 > 0` `q2 > 0` `r2 > 0` * unfolding P_def Q_def by (auto simp add: divide_simps algebra_simps)
+        using \<open>p2 > 0\<close> \<open>q2 > 0\<close> \<open>r2 > 0\<close> * unfolding P_def Q_def by (auto simp add: divide_simps algebra_simps)
       have Pa: "(\<bar>z\<bar> powr r2) powr P = \<bar>z\<bar> powr p2" for z
-        unfolding P_def powr_powr using `r2 > 0` by auto
+        unfolding P_def powr_powr using \<open>r2 > 0\<close> by auto
       have Qa: "(\<bar>z\<bar> powr r2) powr Q = \<bar>z\<bar> powr q2" for z
-        unfolding Q_def powr_powr using `r2 > 0` by auto
+        unfolding Q_def powr_powr using \<open>r2 > 0\<close> by auto
 
       have *: "integrable M (\<lambda>x. \<bar>f x\<bar> powr r2 * \<bar>g x\<bar> powr r2)"
-        apply (rule Holder_inequality[OF `P>0` `Q>0` `1/P + 1/Q = 1`], auto simp add: Pa Qa)
-        using `f \<in> space\<^sub>N (\<LL> p M)` unfolding `p = ennreal p2` using Lp_space[OF `p2 > 0`] apply auto
-        using `g \<in> space\<^sub>N (\<LL> q M)` unfolding `q = ennreal q2` using Lp_space[OF `q2 > 0`] by auto
+        apply (rule Holder_inequality[OF \<open>P>0\<close> \<open>Q>0\<close> \<open>1/P + 1/Q = 1\<close>], auto simp add: Pa Qa)
+        using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> unfolding \<open>p = ennreal p2\<close> using Lp_space[OF \<open>p2 > 0\<close>] apply auto
+        using \<open>g \<in> space\<^sub>N (\<LL> q M)\<close> unfolding \<open>q = ennreal q2\<close> using Lp_space[OF \<open>q2 > 0\<close>] by auto
       have "(\<lambda>x. f x * g x) \<in> space\<^sub>N (\<LL> r M)"
-        unfolding `r = ennreal r2` using Lp_space[OF `r2 > 0`, of M] by (auto simp add: * abs_mult powr_mult)
+        unfolding \<open>r = ennreal r2\<close> using Lp_space[OF \<open>r2 > 0\<close>, of M] by (auto simp add: * abs_mult powr_mult)
       have "Norm (\<LL> r M) (\<lambda>x. f x * g x) = (\<integral>x. \<bar>f x * g x\<bar> powr r2 \<partial>M) powr (1/r2)"
-        unfolding `r = ennreal r2` using Lp_Norm[OF `r2 > 0`, of _ M] by auto
+        unfolding \<open>r = ennreal r2\<close> using Lp_Norm[OF \<open>r2 > 0\<close>, of _ M] by auto
       also have "... = abs (\<integral>x. \<bar>f x\<bar> powr r2 * \<bar>g x\<bar> powr r2 \<partial>M) powr (1/r2)"
         by (auto simp add: powr_mult abs_mult)
       also have "... \<le> ((\<integral>x. \<bar> \<bar>f x\<bar> powr r2 \<bar> powr P \<partial>M) powr (1/P) * (\<integral>x. \<bar> \<bar>g x\<bar> powr r2 \<bar> powr Q \<partial>M) powr (1/Q)) powr (1/r2)"
-        apply (rule powr_mono2, simp add: `r2 > 0` less_imp_le, simp)
-        apply (rule Holder_inequality[OF `P>0` `Q>0` `1/P + 1/Q = 1`], auto simp add: Pa Qa)
-        using `f \<in> space\<^sub>N (\<LL> p M)` unfolding `p = ennreal p2` using Lp_space[OF `p2 > 0`] apply auto
-        using `g \<in> space\<^sub>N (\<LL> q M)` unfolding `q = ennreal q2` using Lp_space[OF `q2 > 0`] by auto
+        apply (rule powr_mono2, simp add: \<open>r2 > 0\<close> less_imp_le, simp)
+        apply (rule Holder_inequality[OF \<open>P>0\<close> \<open>Q>0\<close> \<open>1/P + 1/Q = 1\<close>], auto simp add: Pa Qa)
+        using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> unfolding \<open>p = ennreal p2\<close> using Lp_space[OF \<open>p2 > 0\<close>] apply auto
+        using \<open>g \<in> space\<^sub>N (\<LL> q M)\<close> unfolding \<open>q = ennreal q2\<close> using Lp_space[OF \<open>q2 > 0\<close>] by auto
       also have "... = (\<integral>x. \<bar>f x\<bar> powr p2 \<partial>M) powr (1/p2) * (\<integral>x. \<bar>g x\<bar> powr q2 \<partial>M) powr (1/q2)"
-        apply (auto simp add: powr_mult powr_powr) unfolding P_def Q_def using `r2 > 0` by auto
+        apply (auto simp add: powr_mult powr_powr) unfolding P_def Q_def using \<open>r2 > 0\<close> by auto
       also have "... = Norm (\<LL> p M) f * Norm (\<LL> q M) g"
-        unfolding `p = ennreal p2` `q = ennreal q2`
-        using Lp_Norm[OF `p2 > 0`, of _ M] Lp_Norm[OF `q2 > 0`, of _ M] by auto
-      finally show ?thesis using `(\<lambda>x. f x * g x) \<in> space\<^sub>N (\<LL> r M)` by auto
+        unfolding \<open>p = ennreal p2\<close> \<open>q = ennreal q2\<close>
+        using Lp_Norm[OF \<open>p2 > 0\<close>, of _ M] Lp_Norm[OF \<open>q2 > 0\<close>, of _ M] by auto
+      finally show ?thesis using \<open>(\<lambda>x. f x * g x) \<in> space\<^sub>N (\<LL> r M)\<close> by auto
     qed
   next
     case PInf
-    then have "p = \<infinity>" "q = r" using `1/p + 1/q = 1/r`
+    then have "p = \<infinity>" "q = r" using \<open>1/p + 1/q = 1/r\<close>
       by (metis add_eq_0_iff_both_eq_0 ennreal_divide_eq_0_iff infinity_ennreal_def not_one_le_zero order.order_iff_strict)+
     have "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> p M) f"
-      using `f \<in> space\<^sub>N (\<LL> p M)` L_infinity_AE_bound unfolding `p = \<infinity>` by auto
+      using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> L_infinity_AE_bound unfolding \<open>p = \<infinity>\<close> by auto
     then have *: "AE x in M. \<bar>f x * g x\<bar> \<le> \<bar>Norm (\<LL> p M) f * g x\<bar>"
       unfolding abs_mult using Norm_nonneg[of "\<LL> p M" f] mult_right_mono by fastforce
     have **: "(\<lambda>x. Norm (\<LL> p M) f * g x) \<in> space\<^sub>N (\<LL> r M)"
-      using spaceN_cmult[OF `g \<in> space\<^sub>N (\<LL> q M)`] unfolding `q = r` scaleR_fun_def by simp
+      using spaceN_cmult[OF \<open>g \<in> space\<^sub>N (\<LL> q M)\<close>] unfolding \<open>q = r\<close> scaleR_fun_def by simp
     have ***: "Norm (\<LL> r M) (\<lambda>x. Norm (\<LL> p M) f * g x) = Norm (\<LL> p M) f * Norm (\<LL> q M) g"
-      using Norm_cmult[of "\<LL> r M"] unfolding `q = r` scaleR_fun_def by auto
+      using Norm_cmult[of "\<LL> r M"] unfolding \<open>q = r\<close> scaleR_fun_def by auto
     then show ?thesis
-      using Lp_domination[of "\<lambda>x. f x * g x" M "\<lambda>x. Norm (\<LL> p M) f * g x" r] unfolding `q = r`
+      using Lp_domination[of "\<lambda>x. f x * g x" M "\<lambda>x. Norm (\<LL> p M) f * g x" r] unfolding \<open>q = r\<close>
       using * ** *** by auto
   qed
   then show "(\<lambda>x. f x * g x) \<in> space\<^sub>N (\<LL> r M)"
@@ -1766,8 +1766,8 @@ proof -
     by auto
 qed
 
-text {*The previous theorem admits an eNorm version in which one does not assume a priori
-that the functions under consideration belong to $L^p$ or $L^q$.*}
+text \<open>The previous theorem admits an eNorm version in which one does not assume a priori
+that the functions under consideration belong to $L^p$ or $L^q$.\<close>
 
 theorem Lp_Lq_emult:
   fixes p q r::ennreal
@@ -1782,12 +1782,12 @@ proof (cases "r = 0")
 next
   case False
   then have "r > 0" using not_gr_zero by blast
-  then have "p > 0" "q > 0" using `1/p + 1/q = 1/r`
+  then have "p > 0" "q > 0" using \<open>1/p + 1/q = 1/r\<close>
     by (metis ennreal_add_eq_top ennreal_divide_eq_top_iff ennreal_top_neq_one gr_zeroI zero_neq_one)+
   then have Z: "zero_space\<^sub>N (\<LL> p M) = {f \<in> borel_measurable M. AE x in M. f x = 0}"
                "zero_space\<^sub>N (\<LL> q M) = {f \<in> borel_measurable M. AE x in M. f x = 0}"
                "zero_space\<^sub>N (\<LL> r M) = {f \<in> borel_measurable M. AE x in M. f x = 0}"
-    using `r > 0` Lp_infinity_zero_space by auto
+    using \<open>r > 0\<close> Lp_infinity_zero_space by auto
   have [measurable]: "(\<lambda>x. f x * g x) \<in> borel_measurable M" using assms by auto
   consider "eNorm (\<LL> p M) f = 0 \<or> eNorm (\<LL> q M) g = 0"
          | "(eNorm (\<LL> p M) f > 0 \<and> eNorm (\<LL> q M) g = \<infinity>) \<or> (eNorm (\<LL> p M) f = \<infinity> \<and> eNorm (\<LL> q M) g > 0)"
@@ -1822,22 +1822,22 @@ lemma Lp_Lq_duality_bound:
         "abs(\<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f * Norm (\<LL> q M) g"
 proof -
   have "(\<lambda>x. f x * g x) \<in> space\<^sub>N (\<LL> 1 M)"
-    apply (rule Lp_Lq_mult[OF _ `f \<in> space\<^sub>N (\<LL> p M)` `g \<in> space\<^sub>N (\<LL> q M)`])
-    using `1/p + 1/q = 1` by auto
+    apply (rule Lp_Lq_mult[OF _ \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> \<open>g \<in> space\<^sub>N (\<LL> q M)\<close>])
+    using \<open>1/p + 1/q = 1\<close> by auto
   then show "integrable M (\<lambda>x. f x * g x)" using L1_space by auto
 
   have "abs(\<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> 1 M) (\<lambda>x. f x * g x)" using L1_int_ineq by auto
   also have "... \<le> Norm (\<LL> p M) f * Norm (\<LL> q M) g"
-    apply (rule Lp_Lq_mult[OF _ `f \<in> space\<^sub>N (\<LL> p M)` `g \<in> space\<^sub>N (\<LL> q M)`])
-    using `1/p + 1/q = 1` by auto
+    apply (rule Lp_Lq_mult[OF _ \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> \<open>g \<in> space\<^sub>N (\<LL> q M)\<close>])
+    using \<open>1/p + 1/q = 1\<close> by auto
   finally show "abs(\<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f * Norm (\<LL> q M) g" by simp
 qed
 
-text {*The next theorem asserts that the norm of an $L^p$ function $f$ can be obtained by estimating
+text \<open>The next theorem asserts that the norm of an $L^p$ function $f$ can be obtained by estimating
 the integrals of $fg$ over all $L^q$ functions $g$, where $1/p + 1/q = 1$. When $p = \infty$, it is
 necessary to assume that the space is sigma-finite: for instance, if the space is one single atom
 of infinite mass, then there is no nonzero $L^1$ function, so taking for $f$ the constant function
-equal to $1$, it has $L^\infty$ norm equal to $1$, but $\int fg = 0$ for all $L^1$ function $g$.*}
+equal to $1$, it has $L^\infty$ norm equal to $1$, but $\int fg = 0$ for all $L^1$ function $g$.\<close>
 
 theorem Lp_Lq_duality:
   fixes p q::ennreal
@@ -1853,7 +1853,7 @@ proof -
     have g: "g \<in> space\<^sub>N (\<LL> q M)" "Norm (\<LL> q M) g \<le> 1" using that by auto
     have "(\<integral>x. f x * g x \<partial>M) \<le> abs(\<integral>x. f x * g x \<partial>M)" by auto
     also have "... \<le> Norm (\<LL> p M) f * Norm (\<LL> q M) g"
-      using Lp_Lq_duality_bound(2)[OF `1/p + 1/q = 1` `f \<in> space\<^sub>N (\<LL> p M)` g(1)] by auto
+      using Lp_Lq_duality_bound(2)[OF \<open>1/p + 1/q = 1\<close> \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> g(1)] by auto
     also have "... \<le> Norm (\<LL> p M) f"
       using g(2) Norm_nonneg[of "\<LL> p M" f] mult_left_le by blast
     finally show "(\<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f" by simp
@@ -1866,13 +1866,13 @@ proof -
     show "(SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. \<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f"
       by (rule cSUP_least, auto, rule exI[of _ 0], auto simp add: B)
 
-    have "p \<ge> 1" using conjugate_exponent_ennrealI(1)[OF `1/p + 1/q = 1`] by simp
+    have "p \<ge> 1" using conjugate_exponent_ennrealI(1)[OF \<open>1/p + 1/q = 1\<close>] by simp
     show "Norm (\<LL> p M) f \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
-    using `p \<ge> 1` proof (cases rule: Lp_cases_1_PInf)
+    using \<open>p \<ge> 1\<close> proof (cases rule: Lp_cases_1_PInf)
       case PInf
       then have "f \<in> space\<^sub>N (\<LL> \<infinity> M)"
-        using `f \<in> space\<^sub>N(\<LL> p M)` by simp
-      have "q = 1" using `1/p + 1/q = 1` `p = \<infinity>` by (simp add: divide_eq_1_ennreal)
+        using \<open>f \<in> space\<^sub>N(\<LL> p M)\<close> by simp
+      have "q = 1" using \<open>1/p + 1/q = 1\<close> \<open>p = \<infinity>\<close> by (simp add: divide_eq_1_ennreal)
       have "c \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))" if "c < Norm (\<LL> p M) f" for c
       proof (cases "c < 0")
         case True
@@ -1883,83 +1883,83 @@ proof -
       next
         case False
         then have "ennreal c < eNorm (\<LL> \<infinity> M) f"
-          using eNorm_Norm[OF `f \<in> space\<^sub>N (\<LL> p M)`] that ennreal_less_iff unfolding `p = \<infinity>` by auto
+          using eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>] that ennreal_less_iff unfolding \<open>p = \<infinity>\<close> by auto
         then have *: "emeasure M {x \<in> space M. \<bar>f x\<bar> > c} > 0" using L_infinity_pos_measure[of f M c] by auto
         obtain A where [measurable]: "\<And>(n::nat). A n \<in> sets M" and "(\<Union>i. A i) = space M" "\<And>i. emeasure M (A i) \<noteq> \<infinity>"
-          using sigma_finite_measure.sigma_finite[OF `p = \<infinity> \<Longrightarrow> sigma_finite_measure M`[OF `p = \<infinity>`]] by (metis UNIV_I sets_range)
+          using sigma_finite_measure.sigma_finite[OF \<open>p = \<infinity> \<Longrightarrow> sigma_finite_measure M\<close>[OF \<open>p = \<infinity>\<close>]] by (metis UNIV_I sets_range)
         define Y where "Y = (\<lambda>n::nat. {x \<in> A n. \<bar>f x\<bar> > c})"
         have [measurable]: "Y n \<in> sets M" for n unfolding Y_def by auto
-        have "{x \<in> space M. \<bar>f x\<bar> > c} = (\<Union>n. Y n)" unfolding Y_def using `(\<Union>i. A i) = space M` by auto
+        have "{x \<in> space M. \<bar>f x\<bar> > c} = (\<Union>n. Y n)" unfolding Y_def using \<open>(\<Union>i. A i) = space M\<close> by auto
         then have "emeasure M (\<Union>n. Y n) > 0" using * by auto
         then obtain n where "emeasure M (Y n) > 0"
-          using emeasure_pos_unionE[of Y, OF `\<And>n. Y n \<in> sets M`] by auto
+          using emeasure_pos_unionE[of Y, OF \<open>\<And>n. Y n \<in> sets M\<close>] by auto
         have "emeasure M (Y n) \<le> emeasure M (A n)" apply (rule emeasure_mono) unfolding Y_def by auto
-        then have "emeasure M (Y n) \<noteq> \<infinity>" using `emeasure M (A n) \<noteq> \<infinity>`
+        then have "emeasure M (Y n) \<noteq> \<infinity>" using \<open>emeasure M (A n) \<noteq> \<infinity>\<close>
           by (metis infinity_ennreal_def neq_top_trans)
-        then have "measure M (Y n) > 0" using `emeasure M (Y n) > 0` unfolding measure_def
+        then have "measure M (Y n) > 0" using \<open>emeasure M (Y n) > 0\<close> unfolding measure_def
           by (simp add: enn2real_positive_iff top.not_eq_extremum)
         have "\<bar>f x\<bar> \<ge> c" if "x \<in> Y n" for x using that less_imp_le unfolding Y_def by auto
 
         define g where "g = (\<lambda>x. indicator (Y n) x * sgn(f x)) /\<^sub>R measure M (Y n)"
         have "g \<in> space\<^sub>N (\<LL> 1 M)"
           apply (rule Lp_domination[of _ _ "indicator (Y n) /\<^sub>R measure M (Y n)"]) unfolding g_def
-          using L1_indicator'[OF `Y n \<in> sets M` `emeasure M (Y n) \<noteq> \<infinity>`] by (auto simp add: abs_mult indicator_def abs_sgn_eq)
+          using L1_indicator'[OF \<open>Y n \<in> sets M\<close> \<open>emeasure M (Y n) \<noteq> \<infinity>\<close>] by (auto simp add: abs_mult indicator_def abs_sgn_eq)
         have "Norm (\<LL> 1 M) g = Norm (\<LL> 1 M) (\<lambda>x. indicator (Y n) x * sgn(f x)) / abs(measure M (Y n))"
           unfolding g_def Norm_cmult by (simp add: divide_inverse)
         also have "... \<le> Norm (\<LL> 1 M) (indicator (Y n)) / abs(measure M (Y n))"
-          using `measure M (Y n) > 0` apply (auto simp add: divide_simps) apply (rule Lp_domination)
-          using L1_indicator'[OF `Y n \<in> sets M` `emeasure M (Y n) \<noteq> \<infinity>`] by (auto simp add: abs_mult indicator_def abs_sgn_eq)
+          using \<open>measure M (Y n) > 0\<close> apply (auto simp add: divide_simps) apply (rule Lp_domination)
+          using L1_indicator'[OF \<open>Y n \<in> sets M\<close> \<open>emeasure M (Y n) \<noteq> \<infinity>\<close>] by (auto simp add: abs_mult indicator_def abs_sgn_eq)
         also have "... = measure M (Y n) / abs(measure M (Y n))"
-          using L1_indicator'[OF `Y n \<in> sets M` `emeasure M (Y n) \<noteq> \<infinity>`] by (auto simp add: abs_mult indicator_def abs_sgn_eq)
-        also have "... = 1" using `measure M (Y n) > 0` by auto
+          using L1_indicator'[OF \<open>Y n \<in> sets M\<close> \<open>emeasure M (Y n) \<noteq> \<infinity>\<close>] by (auto simp add: abs_mult indicator_def abs_sgn_eq)
+        also have "... = 1" using \<open>measure M (Y n) > 0\<close> by auto
         finally have "Norm (\<LL> 1 M) g \<le> 1" by simp
 
         have "c * measure M (Y n) = (\<integral>x. c * indicator (Y n) x \<partial>M)"
-          using `measure M (Y n) > 0` `emeasure M (Y n) \<noteq> \<infinity>` by auto
+          using \<open>measure M (Y n) > 0\<close> \<open>emeasure M (Y n) \<noteq> \<infinity>\<close> by auto
         also have "... \<le> (\<integral>x. \<bar>f x\<bar> * indicator (Y n) x \<partial>M)"
           apply (rule integral_mono)
-          using `emeasure M (Y n) \<noteq> \<infinity>` \<open>0 < Sigma_Algebra.measure M (Y n)\<close> not_integrable_integral_eq apply fastforce
+          using \<open>emeasure M (Y n) \<noteq> \<infinity>\<close> \<open>0 < Sigma_Algebra.measure M (Y n)\<close> not_integrable_integral_eq apply fastforce
           apply (rule Bochner_Integration.integrable_bound[of _ "\<lambda>x. Norm (\<LL> \<infinity> M) f * indicator (Y n) x"])
-          using `emeasure M (Y n) \<noteq> \<infinity>` \<open>0 < Sigma_Algebra.measure M (Y n)\<close> not_integrable_integral_eq apply fastforce
-          using L_infinity_AE_bound[OF `f \<in> space\<^sub>N (\<LL> \<infinity> M)`] by (auto simp add: indicator_def Y_def)
+          using \<open>emeasure M (Y n) \<noteq> \<infinity>\<close> \<open>0 < Sigma_Algebra.measure M (Y n)\<close> not_integrable_integral_eq apply fastforce
+          using L_infinity_AE_bound[OF \<open>f \<in> space\<^sub>N (\<LL> \<infinity> M)\<close>] by (auto simp add: indicator_def Y_def)
         finally have "c \<le> (\<integral>x. \<bar>f x\<bar> * indicator (Y n) x \<partial>M) / measure M (Y n)"
-          using `measure M (Y n) > 0` by (auto simp add: divide_simps)
+          using \<open>measure M (Y n) > 0\<close> by (auto simp add: divide_simps)
         also have "... = (\<integral>x. f x * indicator (Y n) x * sgn(f x) / measure M (Y n) \<partial>M)"
-          using `measure M (Y n) > 0` by (simp add: abs_sgn mult.commute mult.left_commute)
+          using \<open>measure M (Y n) > 0\<close> by (simp add: abs_sgn mult.commute mult.left_commute)
         also have "... = (\<integral>x. f x * g x \<partial>M)"
           unfolding divide_inverse g_def divideR_apply by (auto simp add: algebra_simps)
         also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
-          unfolding `q = 1` apply (rule cSUP_upper, auto)
-          using `g \<in> space\<^sub>N (\<LL> 1 M)` `Norm (\<LL> 1 M) g \<le> 1` apply auto using B `p = \<infinity>` `q = 1` by (meson bdd_aboveI2)
+          unfolding \<open>q = 1\<close> apply (rule cSUP_upper, auto)
+          using \<open>g \<in> space\<^sub>N (\<LL> 1 M)\<close> \<open>Norm (\<LL> 1 M) g \<le> 1\<close> apply auto using B \<open>p = \<infinity>\<close> \<open>q = 1\<close> by (meson bdd_aboveI2)
         finally show ?thesis by simp
       qed
       then show ?thesis using dense_le by auto
     next
       case one
-      then have "q = \<infinity>" using `1/p + 1/q = 1` by simp
+      then have "q = \<infinity>" using \<open>1/p + 1/q = 1\<close> by simp
       define g where "g = (\<lambda>x. sgn (f x))"
       have [measurable]: "g \<in> space\<^sub>N (\<LL> \<infinity> M)"
         apply (rule L_infinity_I[of g M 1]) unfolding g_def by (auto simp add: abs_sgn_eq)
       have "Norm (\<LL> \<infinity> M) g \<le> 1"
         apply (rule L_infinity_I[of g M 1]) unfolding g_def by (auto simp add: abs_sgn_eq)
       have "Norm (\<LL> p M) f = (\<integral>x. \<bar>f x\<bar> \<partial>M)"
-        unfolding `p = 1` apply (rule L1_D(3)) using `f \<in> space\<^sub>N (\<LL> p M)` unfolding `p = 1` by auto
+        unfolding \<open>p = 1\<close> apply (rule L1_D(3)) using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> unfolding \<open>p = 1\<close> by auto
       also have "... = (\<integral>x. f x * g x \<partial>M)"
         unfolding g_def by (simp add: abs_sgn)
       also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
-        unfolding `q = \<infinity>` apply (rule cSUP_upper, auto)
-        using `g \<in> space\<^sub>N (\<LL> \<infinity> M)` `Norm (\<LL> \<infinity> M) g \<le> 1` apply auto
+        unfolding \<open>q = \<infinity>\<close> apply (rule cSUP_upper, auto)
+        using \<open>g \<in> space\<^sub>N (\<LL> \<infinity> M)\<close> \<open>Norm (\<LL> \<infinity> M) g \<le> 1\<close> apply auto
         using B \<open>q = \<infinity>\<close> by fastforce
       finally show ?thesis by simp
     next
       case (gr p2)
       then have "p2 > 0" by simp
-      have "f \<in> space\<^sub>N (\<LL> p2 M)" using `f \<in> space\<^sub>N (\<LL> p M)` `p = ennreal p2` by auto
+      have "f \<in> space\<^sub>N (\<LL> p2 M)" using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> \<open>p = ennreal p2\<close> by auto
       define q2 where "q2 = conjugate_exponent p2"
-      have "q2 > 1" "q2 > 0" using conjugate_exponent_real(2)[OF `p2 > 1`] unfolding q2_def by auto
+      have "q2 > 1" "q2 > 0" using conjugate_exponent_real(2)[OF \<open>p2 > 1\<close>] unfolding q2_def by auto
       have "q = ennreal q2"
-        unfolding q2_def conjugate_exponent_real_ennreal[OF `p2 > 1`, symmetric] `p = ennreal p2`[symmetric]
-        using conjugate_exponent_ennreal_iff[OF `p \<ge> 1`] `1/p + 1/q = 1` by auto
+        unfolding q2_def conjugate_exponent_real_ennreal[OF \<open>p2 > 1\<close>, symmetric] \<open>p = ennreal p2\<close>[symmetric]
+        using conjugate_exponent_ennreal_iff[OF \<open>p \<ge> 1\<close>] \<open>1/p + 1/q = 1\<close> by auto
 
       show ?thesis
       proof (cases "Norm (\<LL> p M) f = 0")
@@ -1971,17 +1971,17 @@ proof -
       next
         case False
         then have "Norm (\<LL> p2 M) f > 0"
-          unfolding `p = ennreal p2` using Norm_nonneg[of "\<LL> p2 M" f] by linarith
+          unfolding \<open>p = ennreal p2\<close> using Norm_nonneg[of "\<LL> p2 M" f] by linarith
 
         define h where "h = (\<lambda>x. sgn(f x) * \<bar>f x\<bar> powr (p2 - 1))"
         have [measurable]: "h \<in> borel_measurable M" unfolding h_def by auto
         have "(\<integral>\<^sup>+x. \<bar>h x\<bar> powr q2 \<partial>M) = (\<integral>\<^sup>+x. (\<bar>f x\<bar> powr (p2 - 1)) powr q2 \<partial>M)"
           unfolding h_def by (rule nn_integral_cong, auto simp add: abs_mult abs_sgn_eq)
         also have "... = (\<integral>\<^sup>+x. \<bar>f x\<bar> powr p2 \<partial>M)"
-          unfolding powr_powr q2_def using conjugate_exponent_real(4)[OF `p2 > 1`] by auto
+          unfolding powr_powr q2_def using conjugate_exponent_real(4)[OF \<open>p2 > 1\<close>] by auto
         also have "... = (Norm (\<LL> p2 M) f) powr p2"
-          apply (subst Lp_Norm(2), auto simp add: `p2 > 0`)
-          by (rule nn_integral_eq_integral, auto simp add: Lp_D(2)[OF `p2 > 0` `f \<in> space\<^sub>N (\<LL> p2 M)`])
+          apply (subst Lp_Norm(2), auto simp add: \<open>p2 > 0\<close>)
+          by (rule nn_integral_eq_integral, auto simp add: Lp_D(2)[OF \<open>p2 > 0\<close> \<open>f \<in> space\<^sub>N (\<LL> p2 M)\<close>])
         finally have *: "(\<integral>\<^sup>+x. \<bar>h x\<bar> powr q2 \<partial>M) = (Norm (\<LL> p2 M) f) powr p2" by simp
         have "integrable M (\<lambda>x. \<bar>h x\<bar> powr q2)"
           apply (rule integrableI_bounded, auto) using * by auto
@@ -1992,13 +1992,13 @@ proof -
         define g where "g = (\<lambda>x. h x / (Norm (\<LL> p2 M) f) powr (p2 / q2))"
         have [measurable]: "g \<in> borel_measurable M" unfolding g_def by auto
         have intg: "integrable M (\<lambda>x. \<bar>g x\<bar> powr q2)"
-          unfolding g_def using `Norm (\<LL> p2 M) f > 0` `q2 > 1` apply (simp add: abs_mult powr_divide powr_powr)
-          using `integrable M (\<lambda>x. \<bar>h x\<bar> powr q2)` integrable_divide_zero by blast
-        have "g \<in> space\<^sub>N (\<LL> q2 M)" by (rule Lp_I(1)[OF `q2 > 0` _ intg], auto)
+          unfolding g_def using \<open>Norm (\<LL> p2 M) f > 0\<close> \<open>q2 > 1\<close> apply (simp add: abs_mult powr_divide powr_powr)
+          using \<open>integrable M (\<lambda>x. \<bar>h x\<bar> powr q2)\<close> integrable_divide_zero by blast
+        have "g \<in> space\<^sub>N (\<LL> q2 M)" by (rule Lp_I(1)[OF \<open>q2 > 0\<close> _ intg], auto)
         have "(\<integral>x. \<bar>g x\<bar> powr q2 \<partial>M) = 1"
-          unfolding g_def using `Norm (\<LL> p2 M) f > 0` `q2 > 1` by (simp add: abs_mult powr_divide powr_powr **)
+          unfolding g_def using \<open>Norm (\<LL> p2 M) f > 0\<close> \<open>q2 > 1\<close> by (simp add: abs_mult powr_divide powr_powr **)
         then have "Norm (\<LL> q2 M) g = 1"
-          apply (subst Lp_D[OF `q2 > 0`]) using `g \<in> space\<^sub>N (\<LL> q2 M)` by auto
+          apply (subst Lp_D[OF \<open>q2 > 0\<close>]) using \<open>g \<in> space\<^sub>N (\<LL> q2 M)\<close> by auto
 
         have "(\<integral>x. f x * g x \<partial>M) = (\<integral>x. f x * sgn(f x) * \<bar>f x\<bar> powr (p2 - 1) / (Norm (\<LL> p2 M) f) powr (p2 / q2) \<partial>M)"
           unfolding g_def h_def by (simp add: mult.assoc)
@@ -2007,24 +2007,24 @@ proof -
         also have "... = (\<integral>x. \<bar>f x\<bar> powr p2 \<partial>M) / (Norm (\<LL> p2 M) f) powr (p2 / q2)"
           by (subst powr_mult_base, auto)
         also have "... = (Norm (\<LL> p2 M) f) powr p2 / (Norm (\<LL> p2 M) f) powr (p2 / q2)"
-          by (subst Lp_Norm(2)[OF `p2 > 0`], auto)
+          by (subst Lp_Norm(2)[OF \<open>p2 > 0\<close>], auto)
         also have "... = (Norm (\<LL> p2 M) f) powr (p2 - p2/q2)"
           by (simp add: powr_diff [symmetric] )
         also have "... = Norm (\<LL> p2 M) f"
-          unfolding q2_def using conjugate_exponent_real(5)[OF `p2 > 1`] by auto
+          unfolding q2_def using conjugate_exponent_real(5)[OF \<open>p2 > 1\<close>] by auto
         finally have "Norm (\<LL> p M) f = (\<integral>x. f x * g x \<partial>M)"
-          unfolding `p = ennreal p2` by simp
+          unfolding \<open>p = ennreal p2\<close> by simp
         also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
-          unfolding `q = ennreal q2` apply (rule cSUP_upper, auto)
-          using `g \<in> space\<^sub>N (\<LL> q2 M)` `Norm (\<LL> q2 M) g = 1` apply auto
-          using B `q = ennreal q2` by fastforce
+          unfolding \<open>q = ennreal q2\<close> apply (rule cSUP_upper, auto)
+          using \<open>g \<in> space\<^sub>N (\<LL> q2 M)\<close> \<open>Norm (\<LL> q2 M) g = 1\<close> apply auto
+          using B \<open>q = ennreal q2\<close> by fastforce
         finally show ?thesis by simp
       qed
     qed
   qed
 qed
 
-text {*The previous theorem admits a version in which one does not assume a priori that the
+text \<open>The previous theorem admits a version in which one does not assume a priori that the
 function under consideration belongs to $L^p$. This gives an efficient criterion to check
 if a function is indeed in $L^p$. In this case, it is always necessary to assume that the
 measure is sigma-finite.
@@ -2032,7 +2032,7 @@ measure is sigma-finite.
 Note that, in the statement, the Bochner integral $\int fg$ vanishes by definition if
 $fg$ is not integrable. Hence, the statement really says that the eNorm can be estimated
 using functions $g$ for which $fg$ is integrable. It is precisely the construction of such
-functions $g$ that requires the space to be sigma-finite.*}
+functions $g$ that requires the space to be sigma-finite.\<close>
 
 theorem Lp_Lq_duality':
   fixes p q::ennreal
@@ -2044,30 +2044,30 @@ proof (cases "eNorm (\<LL> p M) f \<noteq> \<infinity>")
   case True
   then have "f \<in> space\<^sub>N (\<LL> p M)" unfolding space\<^sub>N_def by (simp add: top.not_eq_extremum)
   show ?thesis
-    unfolding eNorm_Norm[OF `f \<in> space\<^sub>N (\<LL> p M)`] Lp_Lq_duality[OF `f \<in> space\<^sub>N (\<LL> p M)` `1/p + 1/q = 1` `sigma_finite_measure M`]
+    unfolding eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>] Lp_Lq_duality[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> \<open>1/p + 1/q = 1\<close> \<open>sigma_finite_measure M\<close>]
     apply (rule SUP_real_ennreal[symmetric], auto, rule exI[of _ 0], auto)
-    by (rule Lp_Lq_duality[OF `f \<in> space\<^sub>N (\<LL> p M)` `1/p + 1/q = 1` `sigma_finite_measure M`])
+    by (rule Lp_Lq_duality[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> \<open>1/p + 1/q = 1\<close> \<open>sigma_finite_measure M\<close>])
 next
   case False
   have B: "\<exists>g \<in> {g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M) \<ge> C" if "C < \<infinity>" for C::ennreal
   proof -
-    obtain Cr where "C = ennreal Cr" "Cr \<ge> 0" using `C < \<infinity>` ennreal_cases less_irrefl by auto
+    obtain Cr where "C = ennreal Cr" "Cr \<ge> 0" using \<open>C < \<infinity>\<close> ennreal_cases less_irrefl by auto
     obtain A where A: "\<And>n::nat. A n \<in> sets M" "incseq A" "(\<Union>n. A n) = space M"
             "\<And>n. emeasure M (A n) \<noteq> \<infinity>"
-      using sigma_finite_measure.sigma_finite_incseq[OF `sigma_finite_measure M`] by (metis range_subsetD)
+      using sigma_finite_measure.sigma_finite_incseq[OF \<open>sigma_finite_measure M\<close>] by (metis range_subsetD)
     define Y where "Y = (\<lambda>n. {x \<in> A n. \<bar>f x\<bar> \<le> n})"
-    have [measurable]: "\<And>n. Y n \<in> sets M" unfolding Y_def using `\<And>n::nat. A n \<in> sets M` by auto
+    have [measurable]: "\<And>n. Y n \<in> sets M" unfolding Y_def using \<open>\<And>n::nat. A n \<in> sets M\<close> by auto
     have "incseq Y"
-      apply (rule incseq_SucI) unfolding Y_def using incseq_SucD[OF `incseq A`] by auto
+      apply (rule incseq_SucI) unfolding Y_def using incseq_SucD[OF \<open>incseq A\<close>] by auto
     have *: "\<exists>N. \<forall>n \<ge> N. f x * indicator (Y n) x = f x" if "x \<in> space M" for x
     proof -
-      obtain n0 where n0: "x \<in> A n0" using `x \<in> space M` `(\<Union>n. A n) = space M` by auto
+      obtain n0 where n0: "x \<in> A n0" using \<open>x \<in> space M\<close> \<open>(\<Union>n. A n) = space M\<close> by auto
       obtain n1::nat where n1: "\<bar>f x\<bar> \<le> n1" using real_arch_simple by blast
       have "x \<in> Y (max n0 n1)"
         unfolding Y_def using n1 apply auto
-        using n0 `incseq A` incseq_def max.cobounded1 by blast
+        using n0 \<open>incseq A\<close> incseq_def max.cobounded1 by blast
       then have *: "x \<in> Y n" if "n \<ge> max n0 n1" for n
-        using `incseq Y` that incseq_def by blast
+        using \<open>incseq Y\<close> that incseq_def by blast
       show ?thesis by (rule exI[of _ "max n0 n1"], auto simp add: *)
     qed
     have *: "(\<lambda>n. f x * indicator (Y n) x) \<longlonglongrightarrow> f x" if "x \<in> space M" for x
@@ -2085,27 +2085,27 @@ next
       unfolding Y_def indicator_def apply auto
       by (metis (mono_tags, lifting) A(1) A(4) emeasure_mono infinity_ennreal_def mem_Collect_eq neq_top_trans subsetI)
     have "Norm (\<LL> p M) (\<lambda>x. f x * indicator (Y n) x) > Cr"
-      using n unfolding eNorm_Norm[OF `(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)`]
+      using n unfolding eNorm_Norm[OF \<open>(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)\<close>]
       by (meson ennreal_leI not_le)
     then have "(SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * indicator (Y n) x * g x \<partial>M)) > Cr"
-      using Lp_Lq_duality(2)[OF `(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)` `1/p + 1/q = 1` `sigma_finite_measure M`]
+      using Lp_Lq_duality(2)[OF \<open>(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)\<close> \<open>1/p + 1/q = 1\<close> \<open>sigma_finite_measure M\<close>]
       by auto
     then have "\<exists>g \<in> {g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * indicator (Y n) x * g x \<partial>M) > Cr"
       apply (subst less_cSUP_iff[symmetric])
-      using Lp_Lq_duality(1)[OF `(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)` `1/p + 1/q = 1` `sigma_finite_measure M`] apply auto
+      using Lp_Lq_duality(1)[OF \<open>(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)\<close> \<open>1/p + 1/q = 1\<close> \<open>sigma_finite_measure M\<close>] apply auto
       by (rule exI[of _ 0], auto)
     then obtain g where g: "g \<in> space\<^sub>N (\<LL> q M)" "Norm (\<LL> q M) g \<le> 1" "(\<integral>x. f x * indicator (Y n) x * g x \<partial>M) > Cr"
       by auto
     then have [measurable]: "g \<in> borel_measurable M" using Lp_measurable by auto
     define h where "h = (\<lambda>x. indicator (Y n) x * g x)"
     have "Norm (\<LL> q M) h \<le> Norm (\<LL> q M) g"
-      apply (rule Lp_domination[of _ _ g]) unfolding h_def indicator_def using `g \<in> space\<^sub>N (\<LL> q M)` by auto
-    then have a: "Norm (\<LL> q M) h \<le> 1" using `Norm (\<LL> q M) g \<le> 1` by auto
+      apply (rule Lp_domination[of _ _ g]) unfolding h_def indicator_def using \<open>g \<in> space\<^sub>N (\<LL> q M)\<close> by auto
+    then have a: "Norm (\<LL> q M) h \<le> 1" using \<open>Norm (\<LL> q M) g \<le> 1\<close> by auto
     have b: "h \<in> space\<^sub>N (\<LL> q M)"
-      apply (rule Lp_domination[of _ _ g]) unfolding h_def indicator_def using `g \<in> space\<^sub>N (\<LL> q M)` by auto
+      apply (rule Lp_domination[of _ _ g]) unfolding h_def indicator_def using \<open>g \<in> space\<^sub>N (\<LL> q M)\<close> by auto
     have "(\<integral>x. f x * h x \<partial>M) > Cr" unfolding h_def using g(3) by (auto simp add: mult.assoc)
     then have "(\<integral>x. f x * h x \<partial>M) > C"
-      unfolding `C = ennreal Cr` using `Cr \<ge> 0` by (simp add: ennreal_less_iff)
+      unfolding \<open>C = ennreal Cr\<close> using \<open>Cr \<ge> 0\<close> by (simp add: ennreal_less_iff)
     then show ?thesis using a b by auto
   qed
   have "(SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M)) \<ge> \<infinity>"
@@ -2114,9 +2114,9 @@ next
 qed
 
 
-subsection {*Conditional expectations and $L^p$*}
+subsection \<open>Conditional expectations and $L^p$\<close>
 
-text {*The $L^p$ space with respect to a subalgebra is included in the whole $L^p$ space.*}
+text \<open>The $L^p$ space with respect to a subalgebra is included in the whole $L^p$ space.\<close>
 
 lemma Lp_subalgebra:
   assumes "subalgebra M F"
@@ -2134,33 +2134,33 @@ proof -
     show ?thesis
     proof (cases rule: Lp_cases[of p])
       case zero
-      then show ?thesis using that unfolding `p = 0` L_zero_space Norm_def L_zero by auto
+      then show ?thesis using that unfolding \<open>p = 0\<close> L_zero_space Norm_def L_zero by auto
     next
       case PInf
       have [measurable]: "f \<in> borel_measurable (restr_to_subalg M F)" using that Lp_measurable by auto
       then have [measurable]: "f \<in> borel_measurable F" using assms measurable_in_subalg' by blast
       then have [measurable]: "f \<in> borel_measurable M" using assms measurable_from_subalg by blast
       have "AE x in (restr_to_subalg M F). \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> (restr_to_subalg M F)) f"
-        using L_infinity_AE_bound that unfolding `p = \<infinity>` by auto
+        using L_infinity_AE_bound that unfolding \<open>p = \<infinity>\<close> by auto
       then have a: "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> (restr_to_subalg M F)) f"
         using assms AE_restr_to_subalg by blast
       have *: "f \<in> space\<^sub>N (\<LL> \<infinity> M)" "Norm (\<LL> \<infinity> M) f \<le> Norm (\<LL> \<infinity> (restr_to_subalg M F)) f"
-        using L_infinity_I[OF `f \<in> borel_measurable M` a] by auto
+        using L_infinity_I[OF \<open>f \<in> borel_measurable M\<close> a] by auto
       then have b: "AE x in M. \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> M) f"
         using L_infinity_AE_bound by auto
       have c: "AE x in (restr_to_subalg M F). \<bar>f x\<bar> \<le> Norm (\<LL> \<infinity> M) f"
         apply (rule AE_restr_to_subalg2[OF assms]) using b by auto
       have "Norm (\<LL> \<infinity> (restr_to_subalg M F)) f \<le> Norm (\<LL> \<infinity> M) f"
-        using L_infinity_I[OF `f \<in> borel_measurable (restr_to_subalg M F)` c] by auto
-      then show ?thesis using * unfolding `p = \<infinity>` by auto
+        using L_infinity_I[OF \<open>f \<in> borel_measurable (restr_to_subalg M F)\<close> c] by auto
+      then show ?thesis using * unfolding \<open>p = \<infinity>\<close> by auto
     next
       case (real_pos p2)
       then have a [measurable]: "f \<in> space\<^sub>N (\<LL> p2 (restr_to_subalg M F))"
-        using that unfolding `p = ennreal p2` by auto
+        using that unfolding \<open>p = ennreal p2\<close> by auto
       then have b [measurable]: "f \<in> space\<^sub>N (\<LL> p2 M)"
-        unfolding Lp_space[OF `p2 > 0`] using integrable_from_subalg[OF assms] by auto
+        unfolding Lp_space[OF \<open>p2 > 0\<close>] using integrable_from_subalg[OF assms] by auto
       show ?thesis
-        unfolding `p = ennreal p2` Lp_D[OF `p2 > 0` a] Lp_D[OF `p2 > 0` b]
+        unfolding \<open>p = ennreal p2\<close> Lp_D[OF \<open>p2 > 0\<close> a] Lp_D[OF \<open>p2 > 0\<close> b]
         using integral_subalgebra2[OF assms, symmetric, of f] apply (auto simp add: b)
         by (metis (mono_tags, lifting) \<open>integrable (restr_to_subalg M F) (\<lambda>x. \<bar>f x\<bar> powr p2)\<close> assms integrableD(1) integral_subalgebra2 measurable_in_subalg')
     qed
@@ -2174,10 +2174,10 @@ proof -
     by (metis ennreal_1 mult.left_neutral quasinorm_subsetI)
 qed
 
-text {*For $p \geq 1$, the conditional expectation of an $L^p$ function still belongs to $L^p$,
+text \<open>For $p \geq 1$, the conditional expectation of an $L^p$ function still belongs to $L^p$,
 with an $L^p$ norm which is bounded by the norm of the original function. This is wrong for
 $p < 1$. One can prove this separating the cases and using the conditional version of Jensen's
-inequality, but it is much more efficient to do it with duality arguments, as follows.*}
+inequality, but it is much more efficient to do it with duality arguments, as follows.\<close>
 
 proposition Lp_real_cond_exp:
   assumes [simp]: "subalgebra M F"
@@ -2189,22 +2189,22 @@ proposition Lp_real_cond_exp:
 proof -
   have [measurable]: "f \<in> borel_measurable M" using Lp_measurable assms by auto
   define q where "q = conjugate_exponent p"
-  have "1/p + 1/q = 1" unfolding q_def using conjugate_exponent_ennreal[OF `p \<ge> 1`] by simp
+  have "1/p + 1/q = 1" unfolding q_def using conjugate_exponent_ennreal[OF \<open>p \<ge> 1\<close>] by simp
   have "eNorm (\<LL> p (restr_to_subalg M F)) (real_cond_exp M F f)
     = (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q (restr_to_subalg M F)). Norm (\<LL> q (restr_to_subalg M F)) g \<le> 1}. ennreal(\<integral>x. (real_cond_exp M F f) x * g x \<partial>(restr_to_subalg M F)))"
-    by (rule Lp_Lq_duality'[OF `1/p + 1/q = 1` `sigma_finite_measure (restr_to_subalg M F)`], simp)
+    by (rule Lp_Lq_duality'[OF \<open>1/p + 1/q = 1\<close> \<open>sigma_finite_measure (restr_to_subalg M F)\<close>], simp)
   also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M))"
   proof (rule SUP_mono, auto)
     fix g assume H: "g \<in> space\<^sub>N (\<LL> q (restr_to_subalg M F))"
                     "Norm (\<LL> q (restr_to_subalg M F)) g \<le> 1"
     then have H2: "g \<in> space\<^sub>N (\<LL> q M)" "Norm (\<LL> q M) g \<le> 1"
-      using Lp_subalgebra[OF `subalgebra M F`] by (auto simp add: subset_iff)
+      using Lp_subalgebra[OF \<open>subalgebra M F\<close>] by (auto simp add: subset_iff)
     have [measurable]: "g \<in> borel_measurable M" "g \<in> borel_measurable F"
       using Lp_measurable[OF H(1)] Lp_measurable[OF H2(1)] by auto
     have int: "integrable M (\<lambda>x. f x * g x)"
-      using Lp_Lq_duality_bound(1)[OF `1/p + 1/q = 1` `f \<in> space\<^sub>N (\<LL> p M)` H2(1)].
+      using Lp_Lq_duality_bound(1)[OF \<open>1/p + 1/q = 1\<close> \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> H2(1)].
     have "(\<integral>x. (real_cond_exp M F f) x * g x \<partial>(restr_to_subalg M F)) = (\<integral>x. g x * (real_cond_exp M F f) x \<partial>M)"
-      by (subst mult.commute, rule integral_subalgebra2[OF `subalgebra M F`], auto)
+      by (subst mult.commute, rule integral_subalgebra2[OF \<open>subalgebra M F\<close>], auto)
     also have "... = (\<integral>x. g x * f x \<partial>M)"
       apply (rule sigma_finite_subalgebra.real_cond_exp_intg, auto simp add: int mult.commute)
       unfolding sigma_finite_subalgebra_def using assms by auto
@@ -2215,14 +2215,14 @@ proof -
       using H2 by blast
   qed
   also have "... = eNorm (\<LL> p M) f"
-    apply (rule Lp_Lq_duality'[OF `1/p + 1/q = 1`, symmetric], auto intro!: sigma_finite_subalgebra_is_sigma_finite[of _ F])
+    apply (rule Lp_Lq_duality'[OF \<open>1/p + 1/q = 1\<close>, symmetric], auto intro!: sigma_finite_subalgebra_is_sigma_finite[of _ F])
     unfolding sigma_finite_subalgebra_def using assms by auto
   finally have *: "eNorm (\<LL> p (restr_to_subalg M F)) (real_cond_exp M F f) \<le> eNorm (\<LL> p M) f"
     by simp
   then show a: "real_cond_exp M F f \<in> space\<^sub>N (\<LL> p (restr_to_subalg M F))"
-    apply (subst spaceN_iff) using `f \<in> space\<^sub>N (\<LL> p M)` by (simp add: space\<^sub>N_def)
+    apply (subst spaceN_iff) using \<open>f \<in> space\<^sub>N (\<LL> p M)\<close> by (simp add: space\<^sub>N_def)
   show "Norm (\<LL> p (restr_to_subalg M F)) (real_cond_exp M F f) \<le> Norm (\<LL> p M) f"
-    using * unfolding eNorm_Norm[OF `f \<in> space\<^sub>N (\<LL> p M)`] eNorm_Norm[OF a] by simp
+    using * unfolding eNorm_Norm[OF \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>] eNorm_Norm[OF a] by simp
 qed
 
 lemma Lp_real_cond_exp_eNorm:
@@ -2235,7 +2235,7 @@ proof (cases "eNorm (\<LL> p M) f = \<infinity>")
   then have *: "f \<in> space\<^sub>N (\<LL> p M)"
     unfolding spaceN_iff by (simp add: top.not_eq_extremum)
   show ?thesis
-    using Lp_real_cond_exp[OF assms `f \<in> space\<^sub>N (\<LL> p M)`] by (subst eNorm_Norm, auto simp: `f \<in> space\<^sub>N (\<LL> p M)`)+
+    using Lp_real_cond_exp[OF assms \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>] by (subst eNorm_Norm, auto simp: \<open>f \<in> space\<^sub>N (\<LL> p M)\<close>)+
 qed (simp)
 
 end

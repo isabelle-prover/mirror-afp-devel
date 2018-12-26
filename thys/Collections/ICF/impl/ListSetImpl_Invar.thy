@@ -2,14 +2,14 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Set Implementation by List with explicit invariants} *}
+section \<open>\isaheader{Set Implementation by List with explicit invariants}\<close>
 theory ListSetImpl_Invar
   imports 
   "../spec/SetSpec"
   "../gen_algo/SetGA"
   "../../Lib/Dlist_add"
 begin
-text_raw {*\label{thy:ListSetImpl_Invar}*}
+text_raw \<open>\label{thy:ListSetImpl_Invar}\<close>
 
 (*@impl Set
   @type 'a lsi
@@ -66,7 +66,7 @@ proof -
 qed
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "lsi"*}
+setup \<open>ICF_Tools.revert_abbrevs "lsi"\<close>
 
 lemma pi_lsi[proper_it]: 
   "proper_it' foldli foldli"

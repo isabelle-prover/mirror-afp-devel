@@ -33,7 +33,7 @@ qed
 consts NO_TAG :: "prop"
 
 
-ML {*
+ML \<open>
 signature SELECT_SOLVE = sig
   val PREFER_SOLVED: tactic -> tactic
   val IF_SUBGOAL_SOLVED: tactic -> tactic -> tactic -> tactic
@@ -224,6 +224,6 @@ structure Select_Solve :SELECT_SOLVE = struct
   end
 end
 
-*}
+\<close>
 
 end

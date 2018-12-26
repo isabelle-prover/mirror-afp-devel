@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Abstract heap locales for source code programs *}
+section \<open>Abstract heap locales for source code programs\<close>
 
 theory JHeap
 imports

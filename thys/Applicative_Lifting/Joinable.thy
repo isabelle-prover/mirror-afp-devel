@@ -54,7 +54,7 @@ lemma refl_le_joinable:
 proof (rule subrelI)
   fix x y
   assume "(x, y) \<in> R"
-  moreover from `refl R` have "(y, y) \<in> R" by (blast dest: refl_onD)
+  moreover from \<open>refl R\<close> have "(y, y) \<in> R" by (blast dest: refl_onD)
   ultimately show "(x, y) \<in> joinable R" by (rule joinableI)
 qed
 
@@ -97,10 +97,10 @@ proof (rule transI)
   then obtain u where xu: "(x, u) \<in> R" and yu: "(y, u) \<in> R" by (rule joinableE)
   assume "(y, z) \<in> joinable R"
   then obtain v where yv: "(y, v) \<in> R" and zv: "(z, v) \<in> R" by (rule joinableE)
-  from yu yv `confluent R` obtain w where uw: "(u, w) \<in> R" and vw: "(v, w) \<in> R"
+  from yu yv \<open>confluent R\<close> obtain w where uw: "(u, w) \<in> R" and vw: "(v, w) \<in> R"
     by (blast elim: confluentE)
-  from xu uw `trans R` have "(x, w) \<in> R" by (blast elim: transE)
-  moreover from zv vw `trans R` have "(z, w) \<in> R" by (blast elim: transE)
+  from xu uw \<open>trans R\<close> have "(x, w) \<in> R" by (blast elim: transE)
+  moreover from zv vw \<open>trans R\<close> have "(z, w) \<in> R" by (blast elim: transE)
   ultimately show "(x, z) \<in> joinable R" by (rule joinableI)
 qed
 
@@ -132,9 +132,9 @@ next
     next
       case (step y z)
       have "R \<subseteq> joinable (R\<^sup>*)" using refl_le_joinable refl_rtrancl by fast
-      with `(y, z) \<in> R \<union> R\<inverse>` have "(y, z) \<in> joinable (R\<^sup>*)" using joinable_sym by fast
-      with `(x, y) \<in> joinable (R\<^sup>*)` show "(x, z) \<in> joinable (R\<^sup>*)"
-        using trans_joinable trans_rtrancl `confluent (R\<^sup>*)` by (blast dest: transD)
+      with \<open>(y, z) \<in> R \<union> R\<inverse>\<close> have "(y, z) \<in> joinable (R\<^sup>*)" using joinable_sym by fast
+      with \<open>(x, y) \<in> joinable (R\<^sup>*)\<close> show "(x, z) \<in> joinable (R\<^sup>*)"
+        using trans_joinable trans_rtrancl \<open>confluent (R\<^sup>*)\<close> by (blast dest: transD)
     qed
   qed
 qed

@@ -5,7 +5,7 @@ begin
 code_identifier code_module SINVAR_Sink_impl => (Scala) SINVAR_Sink
 
 
-subsubsection {* SecurityInvariant Sink (IFS) List Implementation*}
+subsubsection \<open>SecurityInvariant Sink (IFS) List Implementation\<close>
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). e1 \<noteq> e2 \<longrightarrow> SINVAR_Sink.allowed_sink_flow (nP e1) (nP e2))"
@@ -51,7 +51,7 @@ interpretation Sink_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* Sink packing *}
+subsubsection \<open>Sink packing\<close>
   definition SINVAR_LIB_Sink :: "('v::vertex, node_config) TopoS_packed" where
     "SINVAR_LIB_Sink \<equiv> 
     \<lparr> nm_name = ''Sink'', 
@@ -70,7 +70,7 @@ subsubsection {* Sink packing *}
     apply(simp)
     by(unfold_locales)
 
-text {* Examples*}
+text \<open>Examples\<close>
   definition example_net_sink :: "nat list_graph" where
   "example_net_sink \<equiv> \<lparr> nodesL = [1::nat,2,3, 8, 11,12], 
     edgesL = [(1,8),(1,2), (2,8),(3,8),(4,8), (2,3),(3,2), (11,8),(12,8), (11,12), (1,12)] \<rparr>"

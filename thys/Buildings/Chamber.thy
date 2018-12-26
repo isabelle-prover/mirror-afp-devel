@@ -1,20 +1,20 @@
-section {* Chamber complexes *}
+section \<open>Chamber complexes\<close>
 
-text {*
+text \<open>
   Now we develop the basic theory of chamber complexes, including both thin and thick complexes.
   Some terminology: a maximal simplex is now called a chamber, and a chain (with respect to
   adjacency) of chambers is now called a gallery. A gallery in which no chamber appears more than
   once is called proper, and we use the prefix p as a naming convention to denote proper.
   Again, we remind the reader that some sources reserve the name gallery for (a slightly weaker
   notion of) what we are calling a proper gallery, using pregallery to denote an improper gallery.
-*}
+\<close>
 
 theory Chamber
 imports Algebra Simplicial
 
 begin
 
-subsection {* Locale definition and basic facts *}
+subsection \<open>Locale definition and basic facts\<close>
 
 locale ChamberComplex = SimplicialComplex X
   for X :: "'a set set"
@@ -220,12 +220,12 @@ qed
 end (* context ChamberComplex *)
 
 
-subsection {* The system of chambers and distance between chambers  *}
+subsection \<open>The system of chambers and distance between chambers\<close>
 
-text {*
+text \<open>
   We now examine the system of all chambers in more detail, and explore the distance function on
   this system provided by lengths of minimal galleries.
-*}
+\<close>
 
 context ChamberComplex
 begin
@@ -320,12 +320,12 @@ lemma face_distance_eq_0: "chamber C \<Longrightarrow> F\<subseteq>C \<Longright
 end (* context ChamberComplex *)
 
 
-subsection {* Labelling a chamber complex *}
+subsection \<open>Labelling a chamber complex\<close>
 
-text {*
+text \<open>
   A labelling of a chamber complex is a function on the vertex set so that each chamber is in
   bijective correspondence with the label set (chambers all have the same number of vertices).
-*}
+\<close>
 
 context ChamberComplex
 begin
@@ -366,15 +366,15 @@ lemma label_wrt_elt_image: "label_wrt B f \<Longrightarrow> v\<in>\<Union>X \<Lo
 end (* context ChamberComplex *)
 
 
-subsection {* Morphisms of chamber complexes *}
+subsection \<open>Morphisms of chamber complexes\<close>
 
-text {*
+text \<open>
   While any function on the vertex set of a simplicial complex can be considered a morphism of
   simplicial complexes onto its image, for chamber complexes we require the function send chambers
   onto chambers of the same cardinality in some chamber complex of the codomain.
-*}
+\<close>
 
-subsubsection {* Morphism locale and basic facts *}
+subsubsection \<open>Morphism locale and basic facts\<close>
 
 locale ChamberComplexMorphism = domain: ChamberComplex X + codomain: ChamberComplex Y
   for     X :: "'a set set"
@@ -542,7 +542,7 @@ qed (auto simp add: dim_map)
 
 end (* context ChamberComplexMorphism *)
 
-subsubsection {* Action on pregalleries and galleries *}
+subsubsection \<open>Action on pregalleries and galleries\<close>
 
 context ChamberComplexMorphism
 begin
@@ -574,7 +574,7 @@ lemma gallery_betw_map:
 end (* context ChamberComplexMorphism *)
 
 
-subsubsection {* Properties of the image *}
+subsubsection \<open>Properties of the image\<close>
 
 context ChamberComplexMorphism
 begin
@@ -653,7 +653,7 @@ lemma restrict_codomain_to_image: "ChamberComplexMorphism X (f\<turnstile>X) f"
 end (* context ChamberComplexMorphism *)
 
 
-subsubsection {* Action on the chamber system *}
+subsubsection \<open>Action on the chamber system\<close>
 
 context ChamberComplexMorphism
 begin
@@ -713,7 +713,7 @@ lemma face_distance_eq_chamber_distance_min_gallery_betw_map:
 end (* context ChamberComplexMorphism *)
 
 
-subsubsection {* Isomorphisms *}
+subsubsection \<open>Isomorphisms\<close>
 
 locale ChamberComplexIsomorphism = ChamberComplexMorphism X Y f
   for X  :: "'a set set"
@@ -924,7 +924,7 @@ qed
 
 end (* context ChamberComplexIsomorphism *)
 
-subsubsection {* Endomorphisms *}
+subsubsection \<open>Endomorphisms\<close>
 
 locale ChamberComplexEndomorphism = ChamberComplexMorphism X X f
   for X :: "'a set set"
@@ -1150,7 +1150,7 @@ lemmas respects_label_fixes_chamber_imp_fixespointwise =
 
 end (* context ChamberComplexEndomorphism *)
 
-subsubsection {* Automorphisms *}
+subsubsection \<open>Automorphisms\<close>
 
 locale ChamberComplexAutomorphism = ChamberComplexIsomorphism X X f
   for X :: "'a set set"
@@ -1230,9 +1230,9 @@ qed
 
 end (* context ChamberComplexAutomorphism *)
 
-subsubsection {* Retractions *}
+subsubsection \<open>Retractions\<close>
 
-text {* A retraction of a chamber complex is an endomorphism that is the identity on its image. *}
+text \<open>A retraction of a chamber complex is an endomorphism that is the identity on its image.\<close>
 
 locale ChamberComplexRetraction = ChamberComplexEndomorphism X f
   for X :: "'a set set"
@@ -1273,20 +1273,20 @@ qed
 
 end (* context ChamberComplexRetraction *)
 
-subsubsection {* Foldings of chamber complexes *}
+subsubsection \<open>Foldings of chamber complexes\<close>
 
-text {*
+text \<open>
   A folding of a chamber complex is a retraction that literally folds the complex in half, in that
   each chamber in the image is the image of precisely two chambers: itself (since a folding is a
   retraction) and a unique chamber outside the image.
-*}
+\<close>
 
-paragraph {* Locale definition *}
+paragraph \<open>Locale definition\<close>
 
-text {*
+text \<open>
   Here we define the locale and collect some lemmas inherited from the
   @{const ChamberComplexRetraction} locale.
-*}
+\<close>
 
 locale ChamberComplexFolding = ChamberComplexRetraction X f
   for X :: "'a set set"
@@ -1304,13 +1304,13 @@ lemmas chamber_retraction2 = chamber_retraction2
 
 end (* context ChamberComplexFolding *)
 
-paragraph {* Decomposition into half chamber systems and half apartments *}
+paragraph \<open>Decomposition into half chamber systems and half apartments\<close>
 
-text {*
+text \<open>
   Here we describe how a folding splits the chamber system of the complex into its image and the
   complement of its image. The chamber subcomplex consisting of all simplices contained in a
   chamber of a given half of the chamber system is called a half-apartment.
-*}
+\<close>
 
 context ChamberComplexFolding
 begin
@@ -1370,12 +1370,12 @@ lemma chamber_in_opp_half_apartment:
 
 end (* context ChamberComplexFolding *)
 
-paragraph {* Mapping between half chamber systems for foldings *}
+paragraph \<open>Mapping between half chamber systems for foldings\<close>
 
-text {*
+text \<open>
   Since each chamber in the image of the folding is the image of a unique chamber in the complement
   of the image, we obtain well-defined functions from one half chamber system to the other.
-*}
+\<close>
 
 context ChamberComplexFolding
 begin
@@ -1451,9 +1451,9 @@ end (* context ChamberComplexFolding *)
 
 
 
-subsection {* Thin chamber complexes  *}
+subsection \<open>Thin chamber complexes\<close>
 
-text {*
+text \<open>
   A thin chamber complex is one in which every facet is a facet in exactly two chambers. Slightly
   more generally, we first consider the case of a chamber complex in which every facet is a facet
   of at most two chambers. One of the main results obtained at this point is the so-called standard
@@ -1461,9 +1461,9 @@ text {*
   agree on a particular chamber must in fact agree on the entire complex. Following that, foldings
   of thin chamber complexes are investigated. In particular, we are interested in pairs of opposed
   foldings.
-*}
+\<close>
 
-subsubsection {* Locales and basic facts *}
+subsubsection \<open>Locales and basic facts\<close>
 
 locale ThinishChamberComplex = ChamberComplex X
   for X :: "'a set set"
@@ -1631,7 +1631,7 @@ end (* context ThinChamberComplex *)
 lemmas (in ChamberComplexIsomorphism) thin_image_shared_facet =
   thinish_image_shared_facet[OF _ _ _ _ _ ThinChamberComplex.thinish]
 
-subsubsection {* The standard uniqueness argument for chamber morphisms of thin chamber complexes *}
+subsubsection \<open>The standard uniqueness argument for chamber morphisms of thin chamber complexes\<close>
 
 context ThinishChamberComplex
 begin
@@ -1780,9 +1780,9 @@ lemmas standard_uniqueness_pgallery_betw = standard_uniqueness_pgallery_betw
 end (* context ThinChamberComplex *)
 
 
-subsection {* Foldings of thin chamber complexes *}
+subsection \<open>Foldings of thin chamber complexes\<close>
 
-subsubsection {* Locale definition and basic facts *}
+subsubsection \<open>Locale definition and basic facts\<close>
 
 locale ThinishChamberComplexFolding =
   ThinishChamberComplex X + folding: ChamberComplexFolding X f
@@ -2174,13 +2174,13 @@ qed
 
 end (* context ThinChamberComplexFolding *)
 
-subsubsection {* Pairs of opposed foldings *}
+subsubsection \<open>Pairs of opposed foldings\<close>
 
-text {*
+text \<open>
   A pair of foldings of a thin chamber complex are opposed or opposite if there is a corresponding
   pair of adjacent chambers, where each folding sends its corresponding chamber to the other
   chamber.
-*}
+\<close>
 
 locale OpposedThinChamberComplexFoldings =
   ThinChamberComplex X
@@ -2391,9 +2391,9 @@ lemmas split_gallery_gf =
 
 end (* context OpposedThinChamberComplexFoldings *)
 
-subsubsection {* The automorphism induced by a pair of opposed foldings *}
+subsubsection \<open>The automorphism induced by a pair of opposed foldings\<close>
 
-text {*
+text \<open>
   Recall that a folding of a chamber complex is a special kind of chamber complex retraction, and
   so is the identity on its image. Hence a pair of opposed foldings will be the identity on the
   intersection of their images and so we can stitch them together to create an automorphism of the
@@ -2401,7 +2401,7 @@ text {*
   This automorphism will be of order two, and will be the unique automorphism of the chamber
   complex that fixes pointwise the facet shared by the pair of adjacent chambers associated to the
   opposed foldings.
-*}
+\<close>
 
 context OpposedThinChamberComplexFoldings
 begin
@@ -2882,15 +2882,15 @@ lemmas indaut_resplabels =
 
 end (* context OpposedThinChamberComplexFoldings *)
 
-subsubsection {* Walls *}
+subsubsection \<open>Walls\<close>
 
-text {*
+text \<open>
   A pair of opposed foldings of a thin chamber complex defines a decomposition of the chamber
   system into the two disjoint chamber system images. Call such a decomposition a wall, as we image
   that disjointness erects a wall between the two half chamber systems. By considering the
   collection of all possible opposed folding pairs, and their associated walls, we can obtain
   information about minimality of galleries by considering the walls they cross.
-*}
+\<close>
 
 context ThinChamberComplex
 begin
@@ -3500,15 +3500,15 @@ lemma not_min_gallery_double_split:
 end (* context ThinChamberComplex *)
 
 
-subsection {* Thin chamber complexes with many foldings *}
+subsection \<open>Thin chamber complexes with many foldings\<close>
 
-text {*
+text \<open>
   Here we begin to examine thin chamber complexes in which every pair of adjacent chambers affords a
   pair of opposed foldings of the complex. This condition will ultimately be shown to be sufficient
   to ensure that a thin chamber complex is isomorphic to some Coxeter complex.
-*}
+\<close>
 
-subsubsection {* Locale definition and basic facts *}
+subsubsection \<open>Locale definition and basic facts\<close>
 
 locale ThinChamberComplexManyFoldings = ThinChamberComplex X
   for   X  :: "'a set set"
@@ -3647,15 +3647,15 @@ proof
   qed
 qed
 
-subsubsection {* The group of automorphisms *}
+subsubsection \<open>The group of automorphisms\<close>
 
-text {*
+text \<open>
   Recall that a pair of opposed foldings of a thin chamber complex can be stitched together to form
   an automorphism of the complex. Choosing an arbitrary chamber in the complex to act as a sort of
   centre of the complex (referred to as the fundamental chamber), we consider the group (under
   composition) generated by the automorphisms afforded by the chambers adjacent to the fundamental
   chamber via the pairs of opposed foldings that we have assumed to exist.
-*}
+\<close>
 
 context ThinChamberComplexManyFoldings
 begin
@@ -3841,12 +3841,12 @@ lemma W_respects_labels:
 
 end (* context ThinChamberComplexManyFoldings *)
 
-subsubsection {* Action of the group of automorphisms on the chamber system *}
+subsubsection \<open>Action of the group of automorphisms on the chamber system\<close>
 
-text {*
+text \<open>
   Now we examine the action of the group @{term W} on the chamber system. In particular, we show
   that the action is transitive.
-*}
+\<close>
 
 
 context ThinChamberComplexManyFoldings
@@ -4066,14 +4066,14 @@ qed (simp add: zero_permutation.rep_eq)
 
 end (* context ThinChamberComplexManyFoldings *)
 
-subsubsection {* A labelling by the vertices of the fundamental chamber *}
+subsubsection \<open>A labelling by the vertices of the fundamental chamber\<close>
 
-text {*
+text \<open>
   Here we show that by repeatedly applying the composition of all the elements in the collection
   @{term S} of fundamental automorphisms, we can retract the entire chamber complex onto the
   fundamental chamber. This retraction provides a means of labelling the chamber complex, using the
   vertices of the fundamental chamber as labels.
-*}
+\<close>
 
 context ThinChamberComplexManyFoldings
 begin
@@ -4496,13 +4496,13 @@ lemma ex_label_map: "\<exists>\<phi>. label_wrt C0 \<phi>"
 
 end (* context ThinChamberComplexManyFoldings *)
 
-subsubsection {* More on the action of the group of automorphisms on chambers *}
+subsubsection \<open>More on the action of the group of automorphisms on chambers\<close>
 
-text {*
+text \<open>
   Recall that we have already verified that @{term W} acts transitively on the chamber system. We
   now use the labelling of the chamber complex examined in the previous section to show that this
   action is simply transitive.
-*}
+\<close>
 
 context ThinChamberComplexManyFoldings
 begin
@@ -4540,14 +4540,14 @@ qed
 
 end (* context ThinChamberComplexManyFoldings *)
 
-subsubsection {* A bijection between the fundamental chamber and the set of generating automorphisms *}
+subsubsection \<open>A bijection between the fundamental chamber and the set of generating automorphisms\<close>
 
-text {*
+text \<open>
   Removing a single vertex from the fundamental chamber determines a facet, a facet in the
   fundamental chamber determines an adjacent chamber (since our complex is thin), and a chamber
   adjacent to the fundamental chamber determines an automorphism (via some pair of opposed foldings)
   in our generating set @{term S}. Here we show that this correspondence is bijective.
-*}
+\<close>
 
 context ThinChamberComplexManyFoldings
 begin
@@ -4645,11 +4645,11 @@ end (* context ThinChamberComplexManyFoldings *)
 
 
 
-subsection {* Thick chamber complexes *}
+subsection \<open>Thick chamber complexes\<close>
 
-text {* 
+text \<open>
   A thick chamber complex is one in which every facet is a facet of at least three chambers.
-*}
+\<close>
 
 locale ThickChamberComplex = ChamberComplex X
   for X :: "'a set set"

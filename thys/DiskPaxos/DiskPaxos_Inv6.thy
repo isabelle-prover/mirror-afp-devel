@@ -6,13 +6,13 @@
 
 theory DiskPaxos_Inv6 imports DiskPaxos_Chosen  begin
 
-subsection {* Invariant 6 *}
+subsection \<open>Invariant 6\<close>
 
-text{* 
+text\<open>
 The final conjunct of $HInv$ asserts that, once an output has been chosen, 
 $valueChosen(chosen)$ holds, and each processor's output equals either $chosen$ or
 $NotAnInput$.
-*}
+\<close>
 
 definition HInv6 :: "state \<Rightarrow> bool"
 where
@@ -663,10 +663,10 @@ proof -
     by(simp add: HInv6_def)
 qed
 
-text{*
+text\<open>
   $HInv1 \wedge HInv2 \wedge HInv2' \wedge HInv3 \wedge HInv4 \wedge HInv5 \wedge HInv6$ 
   is an invariant of $HNext$.
-*}
+\<close>
 
 lemma I2f:
   assumes nxt: "HNext s s'"

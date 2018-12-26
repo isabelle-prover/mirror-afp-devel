@@ -5,14 +5,14 @@
 
 chapter "Monoidal Category"
 
-text_raw{*
+text_raw\<open>
 \label{monoidal-category-chap}
-*}
+\<close>
 
-text {*
+text \<open>
   In this theory, we define the notion ``monoidal category,'' and develop consequences of
   the definition.  The main result is a proof of MacLane's coherence theorem.
-*}
+\<close>
     
 theory MonoidalCategory
 imports Category3.EquivalenceOfCategories
@@ -20,25 +20,25 @@ begin
 
   section "Monoidal Category"
 
-  text {*
+  text \<open>
     A typical textbook presentation defines a monoidal category to be a category @{term C}
-    equipped with (among other things) a binary ``tensor product'' functor @{text "\<otimes>: C \<times> C \<rightarrow> C"}
-    and an ``associativity'' natural isomorphism @{text \<alpha>}, whose components are isomorphisms
-    @{text "\<alpha> (a, b, c): (a \<otimes> b) \<otimes> c \<rightarrow> a \<otimes> (b \<otimes> c)"} for objects @{text a}, @{text b},
-    and @{text c} of @{text C}.  This way of saying things avoids an explicit definition of
-    the functors that are the domain and codomain of @{text \<alpha>} and, in particular, what category
+    equipped with (among other things) a binary ``tensor product'' functor \<open>\<otimes>: C \<times> C \<rightarrow> C\<close>
+    and an ``associativity'' natural isomorphism \<open>\<alpha>\<close>, whose components are isomorphisms
+    \<open>\<alpha> (a, b, c): (a \<otimes> b) \<otimes> c \<rightarrow> a \<otimes> (b \<otimes> c)\<close> for objects \<open>a\<close>, \<open>b\<close>,
+    and \<open>c\<close> of \<open>C\<close>.  This way of saying things avoids an explicit definition of
+    the functors that are the domain and codomain of \<open>\<alpha>\<close> and, in particular, what category
     serves as the domain of these functors.  The domain category is in fact the product
-    category @{text "C \<times> C \<times> C"} and the domain and codomain of @{text \<alpha>} are the functors
-    @{text "T o (T \<times> C): C \<times> C \<times> C \<rightarrow> C"} and @{text "T o (C \<times> T): C \<times> C \<times> C \<rightarrow> C"}.
+    category \<open>C \<times> C \<times> C\<close> and the domain and codomain of \<open>\<alpha>\<close> are the functors
+    \<open>T o (T \<times> C): C \<times> C \<times> C \<rightarrow> C\<close> and \<open>T o (C \<times> T): C \<times> C \<times> C \<rightarrow> C\<close>.
     In a formal development, though, we can't gloss over the fact that
-    @{text "C \<times> C \<times> C"} has to mean either @{text "C \<times> (C \<times> C)"} or @{text "(C \<times> C) \<times> C"},
+    \<open>C \<times> C \<times> C\<close> has to mean either \<open>C \<times> (C \<times> C)\<close> or \<open>(C \<times> C) \<times> C\<close>,
     which are not formally identical, and that associativities are somehow involved in the
-    definitions of the functors @{text "T o (T \<times> C)"} and @{text "T o (C \<times> T)"}.
-    Here we define the @{text binary_endofunctor} locale to codify our choices about what
-    @{text "C \<times> C \<times> C"}, @{text "T o (T \<times> C)"}, and @{text "T o (C \<times> T)"} actually mean.
-    In particular, we choose @{text "C \<times> C \<times> C"} to be @{text "C \<times> (C \<times> C)"} and define the
-    functors @{text "T o (T \<times> C)"}, and @{text "T o (C \<times> T)"} accordingly.
-  *}
+    definitions of the functors \<open>T o (T \<times> C)\<close> and \<open>T o (C \<times> T)\<close>.
+    Here we define the \<open>binary_endofunctor\<close> locale to codify our choices about what
+    \<open>C \<times> C \<times> C\<close>, \<open>T o (T \<times> C)\<close>, and \<open>T o (C \<times> T)\<close> actually mean.
+    In particular, we choose \<open>C \<times> C \<times> C\<close> to be \<open>C \<times> (C \<times> C)\<close> and define the
+    functors \<open>T o (T \<times> C)\<close>, and \<open>T o (C \<times> T)\<close> accordingly.
+\<close>
 
   locale binary_endofunctor =
     C: category C +
@@ -93,30 +93,30 @@ begin
 
   end
 
-  text {*
+  text \<open>
     Our primary definition for ``monoidal category'' follows the somewhat non-traditional
     development in \cite{Etingof15}.  There a monoidal category is defined to be a category
-    @{text C} equipped with a binary \emph{tensor product} functor @{text "T: C \<times> C \<rightarrow> C"},
+    \<open>C\<close> equipped with a binary \emph{tensor product} functor \<open>T: C \<times> C \<rightarrow> C\<close>,
     an \emph{associativity isomorphism}, which is a natural isomorphism
-    @{text "\<alpha>: T o (T \<times> C) \<rightarrow> T o (C \<times> T)"}, a \emph{unit object} @{text \<I>} of @{text C},
-    and an isomorphism @{text "\<iota>: T (\<I>, \<I>) \<rightarrow> \<I>"}, subject to two axioms:
+    \<open>\<alpha>: T o (T \<times> C) \<rightarrow> T o (C \<times> T)\<close>, a \emph{unit object} \<open>\<I>\<close> of \<open>C\<close>,
+    and an isomorphism \<open>\<iota>: T (\<I>, \<I>) \<rightarrow> \<I>\<close>, subject to two axioms:
     the \emph{pentagon axiom}, which expresses the commutativity of certain pentagonal diagrams
-    involving components of @{text \<alpha>}, and the left and right \emph{unit axioms}, which state
-    that the endofunctors @{text "T (\<I>, -)"} and @{text "T (-, \<I>)"} are equivalences of categories.
-    This definition is formalized in the @{text monoidal_category} locale.
+    involving components of \<open>\<alpha>\<close>, and the left and right \emph{unit axioms}, which state
+    that the endofunctors \<open>T (\<I>, -)\<close> and \<open>T (-, \<I>)\<close> are equivalences of categories.
+    This definition is formalized in the \<open>monoidal_category\<close> locale.
 
     In more traditional developments, the definition of monoidal category involves additional
-    left and right \emph{unitor} isomorphisms @{text \<lambda>} and @{text \<rho>} and associated axioms
+    left and right \emph{unitor} isomorphisms \<open>\<lambda>\<close> and \<open>\<rho>\<close> and associated axioms
     involving their components.
     However, as is shown in \cite{Etingof15} and formalized here, the unitors are uniquely
-    determined by @{text \<alpha>} and their values @{text "\<lambda>(\<I>)"} and @{text "\<rho>(\<I>)"} at @{text \<I>},
-    which coincide.  Treating @{text \<lambda>} and @{text \<rho>} as defined notions results in a more
+    determined by \<open>\<alpha>\<close> and their values \<open>\<lambda>(\<I>)\<close> and \<open>\<rho>(\<I>)\<close> at \<open>\<I>\<close>,
+    which coincide.  Treating \<open>\<lambda>\<close> and \<open>\<rho>\<close> as defined notions results in a more
     economical basic definition of monoidal category that requires less data to be given,
     and has a similar effect on the definition of ``monoidal functor.''
     Moreover, in the context of the formalization of categories that we use here,
-    the unit object @{text \<I>} also need not be given separately, as it can be obtained as the
-    codomain of the isomorphism @{text \<iota>}.
-  *}
+    the unit object \<open>\<I>\<close> also need not be given separately, as it can be obtained as the
+    codomain of the isomorphism \<open>\<iota>\<close>.
+\<close>
 
   locale monoidal_category =
     category C +
@@ -137,13 +137,13 @@ begin
                  \<alpha> (a, b, T (c, d)) \<cdot> \<alpha> (T (a, b), c, d)"
   begin
 
-    text{*
+    text\<open>
       We now define helpful notation and abbreviations to improve readability.
-      We did not define and use the notation @{text \<otimes>} for the tensor product
-      in the definition of the locale because to define @{text \<otimes>} as a binary
-      operator requires that it be in curried form, whereas for @{text T}
+      We did not define and use the notation \<open>\<otimes>\<close> for the tensor product
+      in the definition of the locale because to define \<open>\<otimes>\<close> as a binary
+      operator requires that it be in curried form, whereas for \<open>T\<close>
       to be a binary functor requires that it take a pair as its argument.
-    *}
+\<close>
 
     definition unity :: 'a ("\<I>")
     where "unity \<equiv> cod \<iota>"
@@ -160,12 +160,12 @@ begin
     abbreviation assoc       ("\<a>[_, _, _]")
     where "\<a>[a, b, c] \<equiv> \<alpha> (a, b, c)"
 
-    text{*
+    text\<open>
       In HOL we can just give the definitions of the left and right unitors ``up front''
       without any preliminary work.  Later we will have to show that these definitions
       have the right properties.  The next two definitions define the values of the
       unitors when applied to identities; that is, their components as natural transformations.
-    *}
+\<close>
 
     definition lunit ("\<l>[_]")
     where "lunit a \<equiv> THE f. \<guillemotleft>f : \<I> \<otimes> a \<rightarrow> a\<guillemotright> \<and> \<I> \<otimes> f = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
@@ -173,11 +173,11 @@ begin
     definition runit ("\<r>[_]")
     where "runit a \<equiv> THE f. \<guillemotleft>f : a \<otimes> \<I> \<rightarrow> a\<guillemotright> \<and> f \<otimes> \<I> = (a \<otimes> \<iota>) \<cdot> \<a>[a, \<I>, \<I>]"
 
-    text{*
+    text\<open>
       The next two definitions extend the unitors to all arrows, not just identities.
-      Unfortunately, the traditional symbol @{text \<lambda>} for the left unitor is already
+      Unfortunately, the traditional symbol \<open>\<lambda>\<close> for the left unitor is already
       reserved for a higher purpose, so we have to make do with a poor substitute.
-    *}
+\<close>
 
     abbreviation \<ll>
     where "\<ll> f \<equiv> if arr f then f \<cdot> \<l>[dom f] else null"
@@ -185,13 +185,13 @@ begin
     abbreviation \<rho>
     where "\<rho> f \<equiv> if arr f then f \<cdot> \<r>[dom f] else null"
 
-    text{*
+    text\<open>
       We now embark upon a development of the consequences of the monoidal category axioms.
       One of our objectives is to be able to show that an interpretation of the
-      @{text monoidal_category} locale induces an interpretation of a locale corresponding
+      \<open>monoidal_category\<close> locale induces an interpretation of a locale corresponding
       to a more traditional definition of monoidal category.
       Another is to obtain the facts we need to prove the coherence theorem.
-    *}
+\<close>
 
     lemma \<iota>_in_hom [intro]:
     shows "\<guillemotleft>\<iota> : \<I> \<otimes> \<I> \<rightarrow> \<I>\<guillemotright>"
@@ -277,14 +277,14 @@ begin
     shows "iso \<a>[a, b, c]"
       using assms \<alpha>.preserves_iso by simp
 
-    text{*
-      The next result uses the fact that the functor @{text L} is an equivalence
+    text\<open>
+      The next result uses the fact that the functor \<open>L\<close> is an equivalence
       (and hence faithful) to show the existence of a unique solution to the characteristic
       equation used in the definition of a component @{term "\<l>[a]"} of the left unitor.
       It follows that @{term "\<l>[a]"}, as given by our definition using definite description,
       satisfies this characteristic equation and is therefore uniquely determined by
-      by @{text \<otimes>}, @{term \<alpha>}, and @{text \<iota>}.
-    *}
+      by \<open>\<otimes>\<close>, @{term \<alpha>}, and \<open>\<iota>\<close>.
+\<close>
 
     lemma lunit_char:
     assumes "ide a"
@@ -345,11 +345,11 @@ begin
     shows "cod \<l>[a] = a"
       using assms lunit_in_hom by auto
 
-    text{*
+    text\<open>
       As the right-hand side of the characteristic equation for @{term "\<I> \<otimes> \<l>[a]"}
-      is an isomorphism, and the equivalence functor @{text L} reflects isomorphisms,
+      is an isomorphism, and the equivalence functor \<open>L\<close> reflects isomorphisms,
       it follows that @{term "\<l>[a]"} is an isomorphism.
-    *}
+\<close>
 
     lemma iso_lunit [simp]:
     assumes "ide a"
@@ -359,11 +359,11 @@ begin
             tensor_preserves_iso unity_def
       by metis
 
-    text{*
+    text\<open>
       To prove that an arrow @{term f} is equal to @{term "\<l>[a]"} we need only show
       that it is parallel to @{term "\<l>[a]"} and that @{term "\<I> \<otimes> f"} satisfies the same
       characteristic equation as @{term "\<I> \<otimes> \<l>[a]"} does.
-    *}
+\<close>
 
     lemma lunit_eqI:
     assumes "\<guillemotleft>f : \<I> \<otimes> a \<rightarrow> a\<guillemotright>" and "\<I> \<otimes> f = (\<iota> \<otimes> a) \<cdot> inv \<a>[\<I>, \<I>, a]"
@@ -374,10 +374,10 @@ begin
         using assms lunit_char the1_equality by blast
     qed
 
-    text{*
+    text\<open>
       The next facts establish the corresponding results for the components of the
       right unitor.
-    *}
+\<close>
 
     lemma runit_char:
     assumes "ide a"
@@ -449,10 +449,10 @@ begin
             unity_def
       by metis
 
-    text{*
+    text\<open>
       We can now show that the components of the left and right unitors have the
       naturality properties required of a natural transformation.
-    *}
+\<close>
 
     lemma lunit_naturality:
     assumes "arr f"
@@ -509,11 +509,11 @@ begin
 
   end
 
-  text{*
+  text\<open>
     The following locale is an extension of @{locale monoidal_category} that has the
     unitors and their inverses, as well as the inverse to the associator,
     conveniently pre-interpreted.
-  *}
+\<close>
 
   locale extended_monoidal_category =
     monoidal_category +
@@ -523,11 +523,11 @@ begin
     \<rho>: natural_isomorphism C C R map \<rho> +
     \<rho>': inverse_transformation C C R map \<rho>
 
-  text{*
+  text\<open>
     Next we show that an interpretation of @{locale monoidal_category} extends to an
     interpretation of @{locale extended_monoidal_category} and we arrange for the former
     locale to inherit from the latter.
-  *}
+\<close>
 
   context monoidal_category
   begin
@@ -721,20 +721,20 @@ begin
             unity_def
       by metis
 
-    text{*
+    text\<open>
       The components of the left and right unitors are related via a ``triangle''
       diagram that also involves the associator.
       The proof follows \cite{Etingof15}, Proposition 2.2.3.
-    *}
+\<close>
 
     lemma triangle:
     assumes "ide a" and "ide b"
     shows "(a \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, b] = \<r>[a] \<otimes> b"
     proof -
-      text{*
+      text\<open>
         We show that the lower left triangle in the following diagram commutes.
-      *}
-      text{*
+\<close>
+      text\<open>
 $$\xymatrix{
   {@{term "((a \<otimes> \<I>) \<otimes> \<I>) \<otimes> b"}}
      \ar[rrrr]^{\scriptsize @{term "\<a>[a, \<I>, \<I>] \<otimes> b"}}
@@ -757,7 +757,7 @@ $$\xymatrix{
   && {@{term "a \<otimes> \<I> \<otimes> \<I> \<otimes> b"}}
       \ar[uu]^{\scriptsize @{term "a \<otimes> \<l>[\<I> \<otimes> b]"}}
 }$$
-      *}
+\<close>
       have *: "(a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b] = \<r>[a] \<otimes> \<I> \<otimes> b"
       proof -
         have 1: "((a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b]) \<cdot> \<a>[a \<otimes> \<I>, \<I>, b]
@@ -787,13 +787,13 @@ $$\xymatrix{
             by fastforce
         qed
       qed
-      text{*
+      text\<open>
          In \cite{Etingof15} it merely states that the preceding result suffices
-         ``because any object of @{text C} is isomorphic to one of the form @{term "\<I> \<otimes> b"}.''
+         ``because any object of \<open>C\<close> is isomorphic to one of the form @{term "\<I> \<otimes> b"}.''
          However, it seems a little bit more involved than that to formally transport the
-         equation @{text "(*)"} along the isomorphism @{term "\<l>[b]"} from @{term "\<I> \<otimes> b"}
+         equation \<open>(*)\<close> along the isomorphism @{term "\<l>[b]"} from @{term "\<I> \<otimes> b"}
          to @{term b}.
-      *}
+\<close>
       have "(a \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, b] = ((a \<otimes> \<l>[b]) \<cdot> (a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> (a \<otimes> \<I> \<otimes> \<l>\<^sup>-\<^sup>1[b])) \<cdot>
                                      (a \<otimes> \<I> \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b] \<cdot> ((a \<otimes> \<I>) \<otimes> \<l>\<^sup>-\<^sup>1[b])"
       proof -
@@ -824,10 +824,10 @@ $$\xymatrix{
     assumes "ide a" and "ide b" and "ide c"
     shows "(a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c]) = a \<otimes> \<l>[b] \<otimes> c"
     proof -
-      text{*
+      text\<open>
         We show that the lower right triangle in the following diagram commutes.
-      *}
-      text{*
+\<close>
+      text\<open>
 $$\xymatrix{
   {@{term "((a \<otimes> \<I>) \<otimes> b) \<otimes> c"}}
      \ar[rrrr]^{\scriptsize @{term "\<a>[a, \<I>, b] \<otimes> c"}}
@@ -850,7 +850,7 @@ $$\xymatrix{
   && {@{term "a \<otimes> \<I> \<otimes> b \<otimes> c"}}
       \ar[uu]^{\scriptsize @{term "a \<otimes> \<l>[b \<otimes> c]"}}
 }$$
-      *}
+\<close>
       have "((a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c])) \<cdot> (\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)) =
             ((a \<otimes> \<l>[b \<otimes> c]) \<cdot> \<a>[a, \<I>, b \<otimes> c]) \<cdot> \<a>[a \<otimes> \<I>, b, c]"
         using assms pentagon comp_assoc by simp
@@ -865,10 +865,10 @@ $$\xymatrix{
       finally have 1: "((a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c])) \<cdot> \<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)
                         = (a \<otimes> (\<l>[b] \<otimes> c)) \<cdot> \<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)"
         by blast
-      text{*
+      text\<open>
         The result follows by cancelling the isomorphism
         @{term "\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)"}
-      *}
+\<close>
       have 2: "iso (\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c))"
         using assms isos_compose by simp
       moreover have
@@ -883,12 +883,12 @@ $$\xymatrix{
         by auto
     qed
 
-    text{*
+    text\<open>
       The following result is quoted without proof as Theorem 7 of \cite{Kelly64} where it is
       attributed to MacLane \cite{MacLane63}.  It also appears as \cite{MacLane71},
       Exercise 1, page 161.  I did not succeed within a few hours to construct a proof following
       MacLane's hint.  The proof below is based on \cite{Etingof15}, Proposition 2.2.4.
-    *}
+\<close>
 
     lemma lunit_tensor':
     assumes "ide a" and "ide b"
@@ -907,18 +907,18 @@ $$\xymatrix{
     shows "\<l>[a \<otimes> b] = (\<l>[a] \<otimes> b) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, a, b]"
       using assms lunit_tensor' invert_side_of_triangle by simp
 
-    text{*
+    text\<open>
       We next show the corresponding result for the right unitor.
-    *}
+\<close>
       
     lemma runit_tensor_gen:
     assumes "ide a" and "ide b" and "ide c"
     shows "\<r>[a \<otimes> b] \<otimes> c = ((a \<otimes> \<r>[b]) \<otimes> c) \<cdot> (\<a>[a, b, \<I>] \<otimes> c)"
     proof -
-      text{*
+      text\<open>
         We show that the upper right triangle in the following diagram commutes.
-      *}
-      text{*
+\<close>
+      text\<open>
 $$\xymatrix{
   && {@{term "((a \<otimes> b) \<otimes> \<I>) \<otimes> c"}}
      \ar[dll]_{\scriptsize @{term "\<a>[a \<otimes> b, \<I>, c]"}}
@@ -941,7 +941,7 @@ $$\xymatrix{
      \ar[llll]^{\scriptsize @{term "a \<otimes> \<a>[b, \<I>, c]"}}
      \ar[ull]_{\scriptsize @{term "a \<otimes> \<r>[b] \<otimes> c"}}
 }$$
-      *}
+\<close>
       have "\<r>[a \<otimes> b] \<otimes> c = ((a \<otimes> b) \<otimes> \<l>[c]) \<cdot> \<a>[a \<otimes> b, \<I>, c]"
         using assms triangle by simp
       also have "... = (\<a>\<^sup>-\<^sup>1[a, b, c] \<cdot> (a \<otimes> b \<otimes> \<l>[c]) \<cdot> \<a>[a, b, \<I> \<otimes> c]) \<cdot> \<a>[a \<otimes> b, \<I>, c]"
@@ -986,9 +986,9 @@ $$\xymatrix{
     shows "\<r>[a \<otimes> b] \<cdot> \<a>\<^sup>-\<^sup>1[a, b, \<I>] = a \<otimes> \<r>[b]"
       using assms runit_tensor invert_side_of_triangle by force
 
-    text {*
+    text \<open>
       Sometimes inverted forms of the triangle and pentagon axioms are useful.
-    *}
+\<close>
 
     lemma triangle':
     assumes "ide a" and "ide b"
@@ -1016,11 +1016,11 @@ $$\xymatrix{
       finally show ?thesis by auto
     qed
 
-    text{*
+    text\<open>
       The following non-obvious fact is Corollary 2.2.5 from \cite{Etingof15}.
       The statement that @{term "\<l>[\<I>] = \<r>[\<I>]"} is Theorem 6 from \cite{Kelly64}.
       MacLane \cite{MacLane71} does not show this, but assumes it as an axiom.
-    *}
+\<close>
 
     lemma unitor_coincidence:
     shows "\<l>[\<I>] = \<iota>" and "\<r>[\<I>] = \<iota>"
@@ -1046,9 +1046,9 @@ $$\xymatrix{
     and "(\<iota> \<otimes> \<I>) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>] = \<I> \<otimes> \<iota>"
       using triangle [of \<I> \<I>] triangle' [of \<I> \<I>] unitor_coincidence by auto
 
-    text{*
+    text\<open>
       The only isomorphism that commutes with @{term \<iota>} is @{term \<I>}.
-    *}
+\<close>
 
     lemma iso_commuting_with_\<iota>_equals_\<I>:
     assumes "\<guillemotleft>f : \<I> \<rightarrow> \<I>\<guillemotright>" and "iso f" and "f \<cdot> \<iota> = \<iota> \<cdot> (f \<otimes> f)"
@@ -1083,10 +1083,10 @@ $$\xymatrix{
 
   end
 
-  text{*
-    We now show that the unit @{text \<iota>} of a monoidal category is unique up to a unique
+  text\<open>
+    We now show that the unit \<open>\<iota>\<close> of a monoidal category is unique up to a unique
     isomorphism (Proposition 2.2.6 of \cite{Etingof15}).
-  *}
+\<close>
 
   locale monoidal_category_with_alternate_unit =
     monoidal_category C T \<alpha> \<iota> +
@@ -1124,9 +1124,9 @@ $$\xymatrix{
         using iso_lunit C\<^sub>1.iso_runit iso_inv_iso isos_compose i_def by simp
     qed
 
-    text{*
+    text\<open>
       The following is Exercise 2.2.7 of \cite{Etingof15}.
-    *}
+\<close>
 
     lemma i_maps_\<iota>_to_\<iota>\<^sub>1:
     shows "i \<cdot> \<iota> = \<iota>\<^sub>1 \<cdot> (i \<otimes> i)"
@@ -1135,7 +1135,7 @@ $$\xymatrix{
       proof -
         have "\<iota> \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<r>\<^sub>1[\<I>]) = \<r>\<^sub>1[\<I>] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1])"
         proof -
-          text {*
+          text \<open>
 $$\xymatrix{
   && {@{term[source=true] "(\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<I> \<otimes> \<I>\<^sub>1"}}
      \ar[dddll]_{\scriptsize @{term[source=true] "\<r>\<^sub>1[\<I>] \<otimes> \<r>\<^sub>1[\<I>]"}}
@@ -1162,7 +1162,7 @@ $$\xymatrix{
   \\
   && {@{term[source=true] "\<I>"}}
 }$$
-          *}
+\<close>
           have "\<iota> \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<r>\<^sub>1[\<I>]) = \<iota> \<cdot> (\<I> \<otimes> \<r>\<^sub>1[\<I>]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
             using interchange comp_cod_arr comp_arr_dom by simp
           also have "... = \<iota> \<cdot> (\<r>\<^sub>1[\<I> \<otimes> \<I>] \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
@@ -1188,7 +1188,7 @@ $$\xymatrix{
       qed
       have 2: "\<l>[\<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1]) = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1] \<otimes> \<l>[\<I>\<^sub>1])"
       proof -
-        text {*
+        text \<open>
 $$\xymatrix{
   && {@{term[source=true] "(\<I> \<otimes> \<I>\<^sub>1) \<otimes> (\<I> \<otimes> \<I>\<^sub>1)"}}
      \ar[dddll]_{\scriptsize @{term[source=true] "\<l>[\<I>\<^sub>1] \<otimes> \<l>[\<I>\<^sub>1]"}}
@@ -1215,7 +1215,7 @@ $$\xymatrix{
   \\
   && {@{term[source=true] "\<I>\<^sub>1"}}
 }$$
-        *}
+\<close>
         have "\<l>[\<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1]) = \<l>[\<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I>\<^sub>1) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
           using interchange comp_arr_dom comp_cod_arr by force
         also have "... = \<l>[\<I>\<^sub>1] \<cdot> ((\<I> \<otimes> \<iota>\<^sub>1) \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1]) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
@@ -1234,7 +1234,7 @@ $$\xymatrix{
       qed
       show ?thesis
       proof -
-        text {*
+        text \<open>
 $$\xymatrix{
   {@{term[source=true] "\<I>\<^sub>1 \<otimes> \<I>\<^sub>1"}}
      \ar[dd]_{\scriptsize @{term "\<iota>\<^sub>1"}}
@@ -1256,7 +1256,7 @@ $$\xymatrix{
   &&
   {@{term[source=true] "\<I>"}}
 }$$
-        *}
+\<close>
         have "i \<cdot> \<iota> = \<l>[\<I>\<^sub>1] \<cdot> inv \<r>\<^sub>1[\<I>] \<cdot> \<iota>"
           using i_def comp_assoc by auto
         also have "... = (\<l>[\<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1])) \<cdot> (inv \<r>\<^sub>1[\<I>] \<otimes> inv \<r>\<^sub>1[\<I>])"
@@ -1318,7 +1318,7 @@ $$\xymatrix{
 
   section "Elementary Monoidal Category"
 
-  text{*
+  text\<open>
     Although the economy of data assumed by @{locale monoidal_category} is useful for general
     results, to establish interpretations it is more convenient to work with a traditional
     definition of monoidal category.  The following locale provides such a definition.
@@ -1326,7 +1326,7 @@ $$\xymatrix{
     components of the associator and unitors, which are required only to satisfy elementary
     conditions that imply functoriality and naturality, without having to worry about
     extensionality or formal interpretations for the various functors and natural transformations.
-  *}
+\<close>
 
   locale elementary_monoidal_category =
     category C
@@ -1357,10 +1357,10 @@ $$\xymatrix{
                    (a \<otimes> \<a>[b, c, d]) \<cdot> \<a>[a, b \<otimes> c, d] \<cdot> (\<a>[a, b, c] \<otimes> d)
                      = \<a>[a, b, c \<otimes> d] \<cdot> \<a>[a \<otimes> b, c, d]"
 
-  text{*
-    An interpretation for the @{text monoidal_category} locale readily induces an
-    interpretation for the @{text elementary_monoidal_category} locale.
-  *}
+  text\<open>
+    An interpretation for the \<open>monoidal_category\<close> locale readily induces an
+    interpretation for the \<open>elementary_monoidal_category\<close> locale.
+\<close>
       
   context monoidal_category
   begin
@@ -1380,13 +1380,13 @@ $$\xymatrix{
     interpretation CC: product_category C C ..
     interpretation CCC: product_category C CC.comp ..
 
-    text{*
+    text\<open>
       To avoid name clashes between the @{locale monoidal_category} and
       @{locale elementary_monoidal_category} locales, some constants for which definitions
       are needed here are given separate names from the versions in @{locale monoidal_category}.
       We eventually show that the locally defined versions are equal to their counterparts
       in @{locale monoidal_category}.
-    *}
+\<close>
       
     definition T\<^sub>E\<^sub>M\<^sub>C :: "'a * 'a \<Rightarrow> 'a"
     where "T\<^sub>E\<^sub>M\<^sub>C f \<equiv> if CC.arr f then (fst f \<otimes> snd f) else null"
@@ -1561,10 +1561,10 @@ $$\xymatrix{
 
     interpretation \<rho>': inverse_transformation C C R\<^sub>E\<^sub>M\<^sub>C map \<rho>\<^sub>E\<^sub>M\<^sub>C ..
 
-    text{*
+    text\<open>
       The endofunctors @{term L\<^sub>E\<^sub>M\<^sub>C} and @{term R\<^sub>E\<^sub>M\<^sub>C} are equivalence functors,
       due to the existence of the unitors.
-    *}
+\<close>
 
     lemma L_is_equivalence_functor:
     shows "equivalence_functor C C L\<^sub>E\<^sub>M\<^sub>C"
@@ -1588,12 +1588,12 @@ $$\xymatrix{
     interpretation R: equivalence_functor C C R\<^sub>E\<^sub>M\<^sub>C
       using R_is_equivalence_functor by auto
 
-    text{*
+    text\<open>
       To complete an interpretation of the @{locale "monoidal_category"} locale,
       we define @{term "\<iota> \<equiv> \<l>[\<I>]"}.
       We could also have chosen @{term "\<iota> \<equiv> \<rho>[\<I>]"} as the two are equal, though to prove
       that requires some work yet.
-    *}
+\<close>
 
     definition \<iota>
     where "\<iota> \<equiv> \<l>[\<I>]"
@@ -1631,13 +1631,13 @@ $$\xymatrix{
     interpretation MC: monoidal_category C T\<^sub>E\<^sub>M\<^sub>C \<alpha> \<iota>
       using induces_monoidal_category by auto
 
-    text{*
-      We now show that the notions defined in the interpretation @{text MC} agree with their
+    text\<open>
+      We now show that the notions defined in the interpretation \<open>MC\<close> agree with their
       counterparts in the present locale.  These facts are needed if we define an
       interpretation for the @{locale elementary_monoidal_category} locale, use it to
       obtain the induced interpretation for @{locale monoidal_category}, and then want to
       transfer facts obtained in the induced interpretation back to the original one.
-    *}
+\<close>
 
     lemma \<I>_agreement:
     shows "\<I> = MC.unity"
@@ -1651,20 +1651,20 @@ $$\xymatrix{
     shows "R\<^sub>E\<^sub>M\<^sub>C = MC.R"
       using \<iota>_in_hom R\<^sub>E\<^sub>M\<^sub>C_def MC.unity_def by auto
 
-    text{*
+    text\<open>
       We wish to show that the components of the unitors @{term MC.\<ll>} and @{term MC.\<rho>}
-      defined in the induced interpretation @{text MC} agree with those given by the
+      defined in the induced interpretation \<open>MC\<close> agree with those given by the
       parameters @{term lunit} and @{term runit} to the present locale.  To avoid a lengthy
       development that repeats work already done in the @{locale monoidal_category} locale,
       we establish the agreement in a special case and then use the properties already
-      shown for @{text MC} to prove the general case.  In particular, we first show that
+      shown for \<open>MC\<close> to prove the general case.  In particular, we first show that
       @{term "\<l>[\<I>] = MC.lunit MC.unity"} and @{term "\<r>[\<I>] = MC.runit MC.unity"},
       from which it follows by facts already proved for @{term MC} that both are equal to @{term \<iota>}.
       We then show that for an arbitrary identity @{term a} the arrows @{term "\<l>[a]"}
       and @{term "\<r>[a]"} satisfy the equations that uniquely characterize the components
       @{term "MC.lunit a"} and @{term "MC.runit a"}, respectively, and are therefore equal
       to those components.
-    *}
+\<close>
       
     lemma unitor_coincidence\<^sub>E\<^sub>M\<^sub>C:
     shows "\<l>[\<I>] = \<iota>" and "\<r>[\<I>] = \<iota>"
@@ -1774,10 +1774,10 @@ $$\xymatrix{
 
   section "Strict Monoidal Category"
 
-  text{*
+  text\<open>
     A monoidal category is \emph{strict} if the components of the associator and unitors
     are all identities.
-  *}
+\<close>
       
   locale strict_monoidal_category =
     monoidal_category +
@@ -1809,11 +1809,11 @@ $$\xymatrix{
 
   section "Opposite Monoidal Category"
 
-  text{*
+  text\<open>
     The \emph{opposite} of a monoidal category has the same underlying category, but the
     arguments to the tensor product are reversed and the associator is inverted and its
     arguments reversed.
-  *}
+\<close>
       
   locale opposite_monoidal_category =
     C: monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>
@@ -1871,14 +1871,14 @@ $$\xymatrix{
 
   section "Monoidal Language"
 
-  text{*
+  text\<open>
     In this section we assume that a category @{term C} is given, and we define a
     formal syntax of terms constructed from arrows of @{term C} using function symbols
     that correspond to unity, composition, tensor, the associator and its formal inverse,
     and the left and right unitors and their formal inverses.
     We will use this syntax to state and prove the coherence theorem and then to construct
     the free monoidal category generated by @{term C}.
-  *}
+\<close>
 
   locale monoidal_language =
     C: category C
@@ -1901,9 +1901,9 @@ $$\xymatrix{
     shows "\<not> is_Tensor Unity"
       by simp
 
-    text{*
+    text\<open>
       We define formal domain and codomain functions on terms.
-    *}
+\<close>
 
     primrec Dom :: "'a term \<Rightarrow> 'a term"
     where "Dom \<^bold>\<langle>f\<^bold>\<rangle> = \<^bold>\<langle>C.dom f\<^bold>\<rangle>"
@@ -1929,10 +1929,10 @@ $$\xymatrix{
         | "Cod \<^bold>\<a>\<^bold>[t, u, v\<^bold>] = (Cod t \<^bold>\<otimes> (Cod u \<^bold>\<otimes> Cod v))"
         | "Cod \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>] = ((Cod t \<^bold>\<otimes> Cod u) \<^bold>\<otimes> Cod v)"
 
-    text{*
+    text\<open>
       A term is a ``formal arrow'' if it is constructed from arrows of @{term[source=true] C}
       in such a way that composition is applied only to formally composable pairs of terms.
-    *}
+\<close>
 
     primrec Arr :: "'a term \<Rightarrow> bool"
     where "Arr \<^bold>\<langle>f\<^bold>\<rangle> = C.arr f"
@@ -1955,10 +1955,10 @@ $$\xymatrix{
     abbreviation Hom :: "'a term \<Rightarrow> 'a term \<Rightarrow> 'a term set"
     where "Hom a b \<equiv> { t. Arr t \<and> Dom t = a \<and> Cod t = b }"
 
-    text{*
+    text\<open>
       A term is a ``formal identity'' if it is constructed from identity arrows of
-      @{term[source=true] C} and @{term "\<^bold>\<I>"} using only the @{text "\<^bold>\<otimes>"} operator.
-    *}
+      @{term[source=true] C} and @{term "\<^bold>\<I>"} using only the \<open>\<^bold>\<otimes>\<close> operator.
+\<close>
 
     primrec Ide :: "'a term \<Rightarrow> bool"
     where "Ide \<^bold>\<langle>f\<^bold>\<rangle> = C.ide f"
@@ -1988,10 +1988,10 @@ $$\xymatrix{
     shows "Ide t \<Longrightarrow> t \<in> Hom t t"
       by (induct t) auto
 
-    text{*
+    text\<open>
       A formal arrow is ``canonical'' if the only arrows of @{term[source=true] C} used in its
       construction are identities.
-    *}
+\<close>
 
     primrec Can :: "'a term \<Rightarrow> bool"
     where "Can \<^bold>\<langle>f\<^bold>\<rangle> = C.ide f"
@@ -2013,11 +2013,11 @@ $$\xymatrix{
     shows "Can t \<Longrightarrow> Arr t"
       by (induct t) auto
 
-    text{*
+    text\<open>
       We next define the formal inverse of a term.
       This is only sensible for formal arrows built using only isomorphisms of
       @{term[source=true] C}; in particular, for canonical formal arrows.
-    *}
+\<close>
 
     primrec Inv :: "'a term \<Rightarrow> 'a term"
     where "Inv \<^bold>\<langle>f\<^bold>\<rangle> = \<^bold>\<langle>C.inv f\<^bold>\<rangle>"
@@ -2061,17 +2061,17 @@ $$\xymatrix{
     shows "Inv (Inv t) = t"
       using assms by (induct t) auto
 
-    text{*
+    text\<open>
       We call a term ``diagonal'' if it is either @{term "\<^bold>\<I>"} or it is constructed from
-      arrows of @{term[source=true] C} using only the @{text "\<^bold>\<otimes>"} operator associated to the right.
+      arrows of @{term[source=true] C} using only the \<open>\<^bold>\<otimes>\<close> operator associated to the right.
       Essentially, such terms are lists of arrows of @{term[source=true] C}, where @{term "\<^bold>\<I>"}
-      represents the empty list and @{text "\<^bold>\<otimes>"} is used as the list constructor.
+      represents the empty list and \<open>\<^bold>\<otimes>\<close> is used as the list constructor.
       We call them ``diagonal'' because terms can regarded as defining ``interconnection matrices''
       of arrows connecting ``inputs'' to ``outputs'', and from this point of view diagonal
       terms correspond to diagonal matrices.  The matrix point of view is suggestive for the
       extension of the results presented here to the symmetric monoidal and cartesian monoidal
       cases.
-    *}
+\<close>
 
     fun Diag :: "'a term \<Rightarrow> bool"
     where "Diag \<^bold>\<I> = True"
@@ -2147,14 +2147,14 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       The following function defines the ``dimension'' of a term,
       which is the number of arrows of @{term C} it contains.
       For diagonal terms, this is just the length of the term when regarded as a list
       of arrows of @{term C}.
       Alternatively, if a term is regarded as defining an interconnection matrix,
       then the dimension is the number of inputs (or outputs).
-    *}
+\<close>
 
     primrec dim :: "'a term \<Rightarrow> nat"
     where "dim \<^bold>\<langle>f\<^bold>\<rangle> = 1"
@@ -2168,12 +2168,12 @@ $$\xymatrix{
         | "dim \<^bold>\<a>\<^bold>[t, u, v\<^bold>] = dim t + dim u + dim v"
         | "dim \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>] = dim t + dim u + dim v"
 
-    text{*
+    text\<open>
       The following function defines a tensor product for diagonal terms.
       If terms are regarded as lists, this is just list concatenation.
       If terms are regarded as matrices, this corresponds to constructing a block
       diagonal matrix.
-    *}
+\<close>
 
     fun TensorDiag      (infixr "\<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor>" 53)
     where "\<^bold>\<I> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u = u"
@@ -2436,10 +2436,10 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       The following function defines composition for compatible diagonal terms,
-      by ``pushing the composition down'' to arrows of @{text C}.
-    *}
+      by ``pushing the composition down'' to arrows of \<open>C\<close>.
+\<close>
 
     fun CompDiag :: "'a term \<Rightarrow> 'a term \<Rightarrow> 'a term"      (infixr "\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>" 55)
     where "\<^bold>\<I> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u = u"
@@ -2448,10 +2448,10 @@ $$\xymatrix{
         | "t \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<I> = t"
         | "t \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> _ = undefined \<^bold>\<cdot> undefined"
 
-    text{*
+    text\<open>
       Note that the last clause above is not relevant to diagonal terms.
       We have chosen a provably non-diagonal value in order to validate associativity.
-    *}
+\<close>
 
     lemma CompDiag_preserves_Diag:
     assumes "Diag t" and "Diag u" and "Dom t = Cod u"
@@ -2725,9 +2725,9 @@ $$\xymatrix{
     shows "Inv t \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> t = Dom t"
       using assms Can_and_Diag_implies_Ide Ide_in_Hom by simp
 
-    text{*
+    text\<open>
       The next fact is a syntactic version of the interchange law, for diagonal terms.
-    *}
+\<close>
 
     lemma CompDiag_TensorDiag:
     assumes "Diag t" and "Diag u" and "Diag v" and "Diag w"
@@ -2859,10 +2859,10 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       The following function reduces an arrow to diagonal form.
       The precise relationship between a term and its diagonalization is developed below.
-    *}
+\<close>
 
     fun Diagonalize :: "'a term \<Rightarrow> 'a term"   ("\<^bold>\<lfloor>_\<^bold>\<rfloor>")
     where "\<^bold>\<lfloor>\<^bold>\<langle>f\<^bold>\<rangle>\<^bold>\<rfloor> = \<^bold>\<langle>f\<^bold>\<rangle>"
@@ -2916,9 +2916,9 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       The diagonalizations of canonical arrows are identities.
-    *}
+\<close>
 
     lemma Ide_Diagonalize_Can:
     assumes "Can t"
@@ -3047,21 +3047,21 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       Our next objective is to begin making the connection, to be completed in a
       subsequent section, between arrows and their diagonalizations.
       To summarize, an arrow @{term t} and its diagonalization @{term "\<^bold>\<lfloor>t\<^bold>\<rfloor>"} are opposite sides
       of a square whose other sides are certain canonical terms
-      @{text "Dom t\<^bold>\<down> \<in> Hom (Dom t) \<^bold>\<lfloor>Dom t\<^bold>\<rfloor>"} and @{text "Cod t\<^bold>\<down> \<in> Hom (Cod t) \<^bold>\<lfloor>Cod t\<^bold>\<rfloor>"},
-      where @{text "Dom t\<^bold>\<down>"} and @{text "Cod t\<^bold>\<down>"} are defined by the function @{text red}
+      \<open>Dom t\<^bold>\<down> \<in> Hom (Dom t) \<^bold>\<lfloor>Dom t\<^bold>\<rfloor>\<close> and \<open>Cod t\<^bold>\<down> \<in> Hom (Cod t) \<^bold>\<lfloor>Cod t\<^bold>\<rfloor>\<close>,
+      where \<open>Dom t\<^bold>\<down>\<close> and \<open>Cod t\<^bold>\<down>\<close> are defined by the function \<open>red\<close>
       below.  The coherence theorem amounts to the statement that every such square commutes
       when the formal terms involved are evaluated in the evident way in any monoidal category.
 
-      Function @{text red} defined below takes an identity term @{term a} to a canonical arrow
-      @{text "a\<^bold>\<down> \<in> Hom a \<^bold>\<lfloor>a\<^bold>\<rfloor>"}.  The auxiliary function @{text red2} takes a pair @{term "(a, b)"}
+      Function \<open>red\<close> defined below takes an identity term @{term a} to a canonical arrow
+      \<open>a\<^bold>\<down> \<in> Hom a \<^bold>\<lfloor>a\<^bold>\<rfloor>\<close>.  The auxiliary function \<open>red2\<close> takes a pair @{term "(a, b)"}
       of diagonal identity terms and produces a canonical arrow
-      @{text "a \<^bold>\<Down> b \<in> Hom (a \<^bold>\<otimes> b) \<^bold>\<lfloor>a \<^bold>\<otimes> b\<^bold>\<rfloor>"}.
-      The canonical arrow @{text "a\<^bold>\<down>"} amounts to a ``parallel innermost reduction''
+      \<open>a \<^bold>\<Down> b \<in> Hom (a \<^bold>\<otimes> b) \<^bold>\<lfloor>a \<^bold>\<otimes> b\<^bold>\<rfloor>\<close>.
+      The canonical arrow \<open>a\<^bold>\<down>\<close> amounts to a ``parallel innermost reduction''
       from @{term a} to @{term "\<^bold>\<lfloor>a\<^bold>\<rfloor>"}, where the reduction steps are canonical arrows
       that involve the unitors and associator only in their uninverted forms.
       In general, a parallel innermost reduction from @{term a} will not be unique:
@@ -3086,7 +3086,7 @@ $$\xymatrix{
       avoided laboriously constructing and then throwing away thousands of lines of proof
       text that used a non-structural, ``operational'' approach to defining a reduction
       from @{term a} to @{term "\<^bold>\<lfloor>a\<^bold>\<rfloor>"}.
-    *}
+\<close>
 
     fun red2                       (infixr "\<^bold>\<Down>" 53)
     where "\<^bold>\<I> \<^bold>\<Down> a = \<^bold>\<l>\<^bold>[a\<^bold>]"
@@ -3290,7 +3290,7 @@ $$\xymatrix{
   context category
   begin
 
-    text {*
+    text \<open>
       The next two results are sometimes useful for performing manipulations at the
       head of a chain of composed arrows.  I have adopted the convention that such
       chains are canonically represented in right-associated form.  This makes it
@@ -3298,7 +3298,7 @@ $$\xymatrix{
       to perform them at the ``head''.  These results take care of the rote manipulations
       using associativity that are needed to either permute or combine arrows at the
       head of a chain.
-    *}
+\<close>
 
     lemma comp_permute:
     assumes "f \<cdot> g = k \<cdot> l" and "seq f g" and "seq g h"
@@ -3312,11 +3312,11 @@ $$\xymatrix{
 
   end
 
-  text{*
-    If @{term D} is a monoidal category, then a functor @{text "V: C \<rightarrow> D"} extends
+  text\<open>
+    If @{term D} is a monoidal category, then a functor \<open>V: C \<rightarrow> D\<close> extends
     in an evident way to an evaluation map that interprets each formal arrow of the
     monoidal language of @{term C} as an arrow of @{term D}.
-  *}
+\<close>
 
   locale evaluation_map =
     monoidal_language C +
@@ -3351,10 +3351,10 @@ $$\xymatrix{
         | "\<lbrace>\<^bold>\<a>\<^bold>[t, u, v\<^bold>]\<rbrace> = \<alpha> (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"
         | "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]\<rbrace> = \<alpha>' (\<lbrace>t\<rbrace>, \<lbrace>u\<rbrace>, \<lbrace>v\<rbrace>)"
 
-    text{*
-      Identity terms evaluate to identities of @{text D} and evaluation preserves
+    text\<open>
+      Identity terms evaluate to identities of \<open>D\<close> and evaluation preserves
       domain and codomain.
-    *}
+\<close>
 
     lemma ide_eval_Ide [simp]:
     shows "Ide t \<Longrightarrow> ide \<lbrace>t\<rbrace>"
@@ -3479,11 +3479,11 @@ $$\xymatrix{
       using assms \<alpha>'_simp [of "\<lbrace>t\<rbrace>" "\<lbrace>u\<rbrace>" "\<lbrace>v\<rbrace>"] assoc'_naturality [of "\<lbrace>t\<rbrace>" "\<lbrace>u\<rbrace>" "\<lbrace>v\<rbrace>"]
       by simp
 
-    text{*
+    text\<open>
       The following are conveniences for the case of identity arguments
       to avoid having to get rid of the extra identities that are introduced by
       the general formulas above.
-    *}
+\<close>
 
     lemma eval_Lunit_Ide [simp]:
     assumes "Ide a"
@@ -3515,10 +3515,10 @@ $$\xymatrix{
     shows "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[a, b, c\<^bold>]\<rbrace> = \<a>\<^sup>-\<^sup>1[\<lbrace>a\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
       using assms \<alpha>'_ide_simp by simp
 
-    text{*
-      Canonical arrows evaluate to isomorphisms in @{text D}, and formal inverses evaluate
-      to inverses in @{text D}.
-    *}
+    text\<open>
+      Canonical arrows evaluate to isomorphisms in \<open>D\<close>, and formal inverses evaluate
+      to inverses in \<open>D\<close>.
+\<close>
 
     lemma iso_eval_Can:
     shows "Can t \<Longrightarrow> iso \<lbrace>t\<rbrace>"
@@ -3607,9 +3607,9 @@ $$\xymatrix{
       qed
     qed
 
-    text{*
-      The operation @{text "\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>"} evaluates to composition in @{text D}.
-    *}
+    text\<open>
+      The operation \<open>\<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor>\<close> evaluates to composition in \<open>D\<close>.
+\<close>
 
     lemma eval_CompDiag:
     assumes "Diag t" and "Diag u" and "Seq t u"
@@ -3655,11 +3655,11 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       For identity terms @{term a} and @{term b}, the reduction @{term "(a \<^bold>\<otimes> b)\<^bold>\<down>"}
-      factors (under evaluation in @{text D}) into the parallel reduction @{term "a\<^bold>\<down> \<^bold>\<otimes> b\<^bold>\<down>"},
+      factors (under evaluation in \<open>D\<close>) into the parallel reduction @{term "a\<^bold>\<down> \<^bold>\<otimes> b\<^bold>\<down>"},
       followed by a reduction of its codomain @{term "\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>"}.
-    *}
+\<close>
 
     lemma eval_red_Tensor:
     assumes "Ide a" and "Ide b"
@@ -3683,21 +3683,21 @@ $$\xymatrix{
       using assms tensor_preserves_ide \<rho>_ide_simp unitor_coincidence \<iota>_in_hom comp_cod_arr
       by (cases a, auto)
 
-    text{*
+    text\<open>
       Define a formal arrow t to be ``coherent'' if the square formed by @{term t}, @{term "\<^bold>\<lfloor>t\<^bold>\<rfloor>"}
       and the reductions @{term "Dom t\<^bold>\<down>"} and @{term "Cod t\<^bold>\<down>"} commutes under evaluation
-      in @{text D}.  We will show that all formal arrows are coherent.
+      in \<open>D\<close>.  We will show that all formal arrows are coherent.
       Since the diagonalizations of canonical arrows are identities, a corollary is that parallel
       canonical arrows have equal evaluations.
-    *}
+\<close>
 
     abbreviation coherent
     where "coherent t \<equiv> \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>t\<rbrace> = \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom t\<^bold>\<down>\<rbrace>"
 
-    text{*
+    text\<open>
       Diagonal arrows are coherent, since for such arrows @{term t} the reductions
       @{term "Dom t\<^bold>\<down>"} and @{term "Cod t\<^bold>\<down>"} are identities.
-    *}
+\<close>
 
     lemma Diag_implies_coherent:
     assumes "Diag t"
@@ -3707,13 +3707,13 @@ $$\xymatrix{
             comp_arr_dom comp_cod_arr
       by simp
 
-    text{*
-      The evaluation of a coherent arrow @{term t} has a canonical factorization in @{text D}
+    text\<open>
+      The evaluation of a coherent arrow @{term t} has a canonical factorization in \<open>D\<close>
       into the evaluations of a reduction @{term "Dom t\<^bold>\<down>"}, diagonalization @{term "\<^bold>\<lfloor>t\<^bold>\<rfloor>"},
       and inverse reduction @{term "Inv (Cod t\<^bold>\<down>)"}.
       This will later allow us to use the term @{term "Inv (Cod t\<^bold>\<down>) \<^bold>\<cdot> \<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<cdot> Dom t\<^bold>\<down>"}
       as a normal form for @{term t}.
-    *}
+\<close>
 
     lemma canonical_factorization:
     assumes "Arr t"
@@ -3741,9 +3741,9 @@ $$\xymatrix{
       finally show "coherent t" by blast
     qed
 
-    text{*
+    text\<open>
       A canonical arrow is coherent if and only if its formal inverse is.
-    *}
+\<close>
 
     lemma Can_implies_coherent_iff_coherent_Inv:
     assumes "Can t"
@@ -3782,9 +3782,9 @@ $$\xymatrix{
       qed
     qed
 
-    text{*
+    text\<open>
       Some special cases of coherence are readily dispatched.
-    *}
+\<close>
 
     lemma coherent_Unity:
     shows "coherent \<^bold>\<I>"
@@ -3841,16 +3841,16 @@ $$\xymatrix{
       using assms Ide_implies_Can coherent_Runit_Ide
             Can_implies_coherent_iff_coherent_Inv [of "Runit a"] by simp
 
-    text{*
+    text\<open>
       To go further, we need the next result, which is in some sense the crux of coherence:
       For diagonal identities @{term a}, @{term b}, and @{term c},
       the reduction @{term "((a \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b) \<^bold>\<Down> c) \<^bold>\<cdot> ((a \<^bold>\<Down> b) \<^bold>\<otimes> c)"} from @{term "(a \<^bold>\<otimes> b) \<^bold>\<otimes> c"}
       that first reduces the subterm @{term "a \<^bold>\<otimes> b"} and then reduces the result,
-      is equivalent under evaluation in @{text D} to the reduction that first
+      is equivalent under evaluation in \<open>D\<close> to the reduction that first
       applies the associator @{term "\<^bold>\<a>\<^bold>[a, b, c\<^bold>]"} and then applies the reduction
       @{term "(a \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)) \<^bold>\<cdot> (a \<^bold>\<otimes> (b \<^bold>\<Down> c))"} from @{term "a \<^bold>\<otimes> (b \<^bold>\<otimes> c)"}.
       The triangle and pentagon axioms are used in the proof.
-    *}
+\<close>
 
     lemma coherence_key_fact:
     assumes "Ide a \<and> Diag a" and "Ide b \<and> Diag b" and "Ide c \<and> Diag c"
@@ -3861,7 +3861,7 @@ $$\xymatrix{
         using assms not_is_Tensor_TensorDiagE eval_red2_Diag_Unity triangle
               comp_cod_arr comp_assoc
         by simp
-        text {* The triangle is used! *}
+        text \<open>The triangle is used!\<close>
       moreover have "c = \<^bold>\<I> \<Longrightarrow> ?thesis"
         using assms TensorDiag_preserves_Diag TensorDiag_preserves_Ide
               not_is_Tensor_TensorDiagE eval_red2_Diag_Unity
@@ -4032,7 +4032,7 @@ $$\xymatrix{
                       TensorDiag_preserves_Diag tensor_preserves_ide TensorDiag_preserves_Ide
                       pentagon
                 by simp
-              text {* The pentagon is used! *}
+              text \<open>The pentagon is used!\<close>
               also have "... = (((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<Down> b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>) \<cdot>
                                  \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>]) \<cdot> ((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>) \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot>
                                \<a>[\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
@@ -4129,10 +4129,10 @@ $$\xymatrix{
         by metis
     qed
 
-    text{*
+    text\<open>
       The next lemma implies coherence for the special case of a term that is the tensor
       of two diagonal arrows.
-    *}
+\<close>
 
     lemma eval_red2_naturality:
     assumes "Diag t" and "Diag u"
@@ -4377,9 +4377,9 @@ $$\xymatrix{
       finally show "coherent (t \<^bold>\<cdot> u)" by blast
     qed
 
-    text{*
+    text\<open>
       The main result: ``Every formal arrow is coherent.''
-    *}
+\<close>
 
     theorem coherence:
     assumes "Arr t"
@@ -4542,26 +4542,26 @@ $$\xymatrix{
       thus ?thesis using assms by blast
     qed
 
-    text{*
+    text\<open>
       MacLane \cite{MacLane71} says: ``A coherence theorem asserts `Every diagram commutes',''
       but that is somewhat misleading.  A coherence theorem provides some kind of hopefully
       useful way of distinguishing diagrams that definitely commute from diagrams that might not.
       The next result expresses coherence for monoidal categories in this way.
       As the hypotheses can be verified algorithmically (using the functions @{term Dom},
       @{term Cod}, @{term Arr}, and @{term Diagonalize}) if we are given an oracle for equality
-      of arrows in @{text C}, the result provides a decision procedure, relative to @{text C},
-      for the word problem for the free monoidal category generated by @{text C}.
-    *}
+      of arrows in \<open>C\<close>, the result provides a decision procedure, relative to \<open>C\<close>,
+      for the word problem for the free monoidal category generated by \<open>C\<close>.
+\<close>
 
     corollary eval_eqI:
     assumes "Par t u" and "\<^bold>\<lfloor>t\<^bold>\<rfloor> = \<^bold>\<lfloor>u\<^bold>\<rfloor>"
     shows "\<lbrace>t\<rbrace> = \<lbrace>u\<rbrace>"
       using assms coherence canonical_factorization by simp
 
-    text{*
+    text\<open>
       Our final corollary expresses coherence in a more ``MacLane-like'' fashion:
       parallel canonical arrows are equivalent under evaluation.
-    *}
+\<close>
 
     corollary maclane_coherence:
     assumes "Par t u" and "Can t" and "Can u"

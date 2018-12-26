@@ -3,13 +3,13 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* Computably enumerable sets of natural numbers *}
+section \<open>Computably enumerable sets of natural numbers\<close>
 
 theory RecEnSet
 imports PRecList PRecFun2 PRecFinSet PRecUnGr
 begin
 
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 
 definition
   fn_to_set :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> nat set" where
@@ -19,7 +19,7 @@ definition
   ce_sets :: "(nat set) set" where
   "ce_sets = { (fn_to_set p) | p. p \<in> PrimRec2 }"
 
-subsection {* Basic properties of computably enumerable sets *}
+subsection \<open>Basic properties of computably enumerable sets\<close>
 
 lemma ce_set_lm_1: "p \<in> PrimRec2 \<Longrightarrow> fn_to_set p \<in> ce_sets" by (auto simp add: ce_sets_def)
 
@@ -246,7 +246,7 @@ proof -
   with S12 show ?thesis by simp
 qed
 
-subsection {* Enumeration of computably enumerable sets *}
+subsection \<open>Enumeration of computably enumerable sets\<close>
 
 definition
   nat_to_ce_set :: "nat \<Rightarrow> (nat set)" where
@@ -284,7 +284,7 @@ proof -
 qed
 
 
-subsection {* Characteristic functions *}
+subsection \<open>Characteristic functions\<close>
 
 definition
   chf :: "nat set \<Rightarrow> (nat \<Rightarrow> nat)" \<comment> \<open>Characteristic function\<close> where
@@ -353,7 +353,7 @@ proof -
   then show ?thesis by (rule chf_lm_4)
 qed
 
-subsection {* Computably enumerable relations *}
+subsection \<open>Computably enumerable relations\<close>
 
 definition
   ce_set_to_rel :: "nat set \<Rightarrow> (nat * nat) set" where
@@ -924,7 +924,7 @@ proof -
 qed
 
 
-subsection {* Total computable functions *}
+subsection \<open>Total computable functions\<close>
 
 definition
   graph :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<times> nat) set" where
@@ -1082,7 +1082,7 @@ proof -
   then show ?thesis by (unfold total_recursive_def1, auto)
 qed
 
-subsection {* Computable sets, Post's theorem *}
+subsection \<open>Computable sets, Post's theorem\<close>
 
 definition
   computable :: "nat set \<Rightarrow> bool" where
@@ -1205,7 +1205,7 @@ next
   assume "total_recursive (chf A)" then show "computable A" by (rule tot_rec_impl_comp)
 qed
 
-subsection {* Universal computably enumerable set *}
+subsection \<open>Universal computably enumerable set\<close>
 
 definition
   univ_ce :: "nat set" where
@@ -1338,7 +1338,7 @@ proof (rule ccontr)
   with univ_ce_is_not_comp2 show False by auto
 qed
 
-subsection {* s-1-1 theorem, one-one and many-one reducibilities*}
+subsection \<open>s-1-1 theorem, one-one and many-one reducibilities\<close>
 
 definition
   index_of_r_to_l :: nat where
@@ -1613,7 +1613,7 @@ proof -
   with one_reducible_lm_3 show ?thesis by auto
 qed
 
-subsection {* One-complete sets *}
+subsection \<open>One-complete sets\<close>
 
 definition
   one_complete :: "nat set \<Rightarrow> bool" where
@@ -1632,7 +1632,7 @@ proof (unfold one_complete_def)
   qed
 qed
 
-subsection {* Index sets, Rice's theorem *}
+subsection \<open>Index sets, Rice's theorem\<close>
 
 definition
   index_set :: "nat set \<Rightarrow> bool" where

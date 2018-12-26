@@ -1,10 +1,10 @@
-section {* Error monad *}
+section \<open>Error monad\<close>
 
 theory Error_Monad
 imports Monad_Plus
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 tycondef 'a\<cdot>'e error = Err (lazy "'e") | Ok (lazy "'a")
 
@@ -29,7 +29,7 @@ apply (simp add: Err_def)
 apply (simp add: Ok_def)
 done
 
-subsection {* Monad class instance *}
+subsection \<open>Monad class instance\<close>
 
 instantiation error :: ("domain") "{monad, functor_plus}"
 begin
@@ -81,7 +81,7 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_error_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>'e error) = \<bottom>"

@@ -2,9 +2,9 @@ theory Reduction
 imports HOModel Stuttering_Equivalence.StutterEquivalence
 begin
 
-section {* Reduction Theorem *}
+section \<open>Reduction Theorem\<close>
 
-text {*
+text \<open>
   We have defined the semantics of HO algorithms such that rounds are executed
   atomically, by all processes. This definition is surprising for a model of
   asynchronous distributed algorithms since it models a synchronous execution
@@ -38,11 +38,11 @@ text {*
 
   The proofs follow Chaouch-Saad et al.~\cite{saad:reduction}, where the
   reduction theorem was proved for uncoordinated HO algorithms.
-*}
+\<close>
 
-subsection {* Fine-Grained Semantics *}
+subsection \<open>Fine-Grained Semantics\<close>
 
-text {*
+text \<open>
   In the fine-grained semantics, a run of an HO algorithm is represented
   as an $\omega$-sequence of system configurations. Each configuration 
   is represented as a record carrying the following information:
@@ -60,7 +60,7 @@ text {*
 
   As explained earlier, the coordinators of processes are not recorded in
   the configuration, but algorithms may record them as part of the process states.
-*}
+\<close>
 
 record ('pst, 'proc, 'msg) config =
   round :: "'proc \<Rightarrow> nat"
@@ -71,11 +71,11 @@ record ('pst, 'proc, 'msg) config =
 
 type_synonym ('pst ,'proc , 'msg) fgrun = "nat \<Rightarrow> ('pst, 'proc, 'msg) config"
 
-text {*
+text \<open>
   In an initial configuration for an algorithm, the local state of every process
   satisfies the algorithm's initial-state predicate, and all other components
   have obvious default values.
-*}
+\<close>
 
 definition fg_init_config where
   "fg_init_config A (config::('pst,'proc, 'msg) config) (coord::'proc coord) \<equiv>
@@ -85,7 +85,7 @@ definition fg_init_config where
    \<and> rcvd config = (\<lambda>p q. None)
    \<and> network config = {}"
 
-text {*
+text \<open>
   In the fine-grained semantics, we have three types of transitions due to
   \begin{itemize}
   \item some process sending a message,
@@ -93,14 +93,14 @@ text {*
   \item some process executing a local transition.
   \end{itemize}
 
-  The following definition models process @{text p} sending a message to
-  process @{text q}. The transition is enabled if @{text p} has not yet
-  sent any message to @{text q} for the current round. The message to be
-  sent is computed according to the algorithm's @{text sendMsg} function. 
-  The effect of the transition is to add @{text q} to the @{text sent}
+  The following definition models process \<open>p\<close> sending a message to
+  process \<open>q\<close>. The transition is enabled if \<open>p\<close> has not yet
+  sent any message to \<open>q\<close> for the current round. The message to be
+  sent is computed according to the algorithm's \<open>sendMsg\<close> function. 
+  The effect of the transition is to add \<open>q\<close> to the \<open>sent\<close>
   component of the configuration and the message quadruple to the
-  @{text network} component.
-*}
+  \<open>network\<close> component.
+\<close>
 
 definition fg_send_msg where
   "fg_send_msg A p q config config' \<equiv>
@@ -111,16 +111,16 @@ definition fg_send_msg where
                    {(p, round config p, q,
                      sendMsg A (round config p) p q (state config p))} \<rparr>"
 
-text {*
+text \<open>
   The following definition models the reception of a message by process
-  @{text p} from process @{text q}. The action is enabled if @{text q}
-  is in the heard-of set @{text HO} of process @{text p} for the current
-  round, and if the network contains some message from @{text q} to
-  @{text p} for the round that @{text p} is currently executing.
-  W.l.o.g., we model message corruption at reception: if @{text q} is not
-  in @{text p}'s SHO set (parameter @{text SHO}), then an arbitrary value
-  @{text m'} is received instead of @{text m}.
-*}
+  \<open>p\<close> from process \<open>q\<close>. The action is enabled if \<open>q\<close>
+  is in the heard-of set \<open>HO\<close> of process \<open>p\<close> for the current
+  round, and if the network contains some message from \<open>q\<close> to
+  \<open>p\<close> for the round that \<open>p\<close> is currently executing.
+  W.l.o.g., we model message corruption at reception: if \<open>q\<close> is not
+  in \<open>p\<close>'s SHO set (parameter \<open>SHO\<close>), then an arbitrary value
+  \<open>m'\<close> is received instead of \<open>m\<close>.
+\<close>
 
 definition fg_rcv_msg where
   "fg_rcv_msg p q HO SHO config config' \<equiv> 
@@ -131,17 +131,17 @@ definition fg_rcv_msg where
                     if q \<in> SHO then Some m else Some m')),
           network := network config - {(q, (round config p), p, m)} \<rparr>"
 
-text {*
-  Finally, we consider local state transition of process @{text p}. 
-  A local transition is enabled only after @{text p} has sent all messages
+text \<open>
+  Finally, we consider local state transition of process \<open>p\<close>. 
+  A local transition is enabled only after \<open>p\<close> has sent all messages
   for its current round and has received all messages that it is supposed
-  to receive according to its current HO set (parameter @{text HO}). The
-  local state is updated according to the algorithm's @{text CnextState} 
-  relation, which may depend on the coordinator @{text crd} of the following
-  round. The round of process @{text p} is incremented, and the
-  @{text sent} and @{text rcvd} components for process @{text p} are
+  to receive according to its current HO set (parameter \<open>HO\<close>). The
+  local state is updated according to the algorithm's \<open>CnextState\<close> 
+  relation, which may depend on the coordinator \<open>crd\<close> of the following
+  round. The round of process \<open>p\<close> is incremented, and the
+  \<open>sent\<close> and \<open>rcvd\<close> components for process \<open>p\<close> are
   reset to initial values for the new round.
-*}
+\<close>
 
 definition fg_local where
   "fg_local A p HO crd config config' \<equiv>
@@ -154,10 +154,10 @@ definition fg_local where
              sent := (sent config)(p := {}),
              rcvd := (rcvd config)(p := \<lambda>q. None) \<rparr>)"
 
-text {*
-  The next-state relation for process @{text p} is just the disjunction of
+text \<open>
+  The next-state relation for process \<open>p\<close> is just the disjunction of
   the above three types of transitions.
-*}
+\<close>
 
 definition fg_next_config where
   "fg_next_config A p HO SHO crd config config' \<equiv>
@@ -165,13 +165,13 @@ definition fg_next_config where
    \<or> (\<exists>q. fg_rcv_msg p q HO SHO config config')
    \<or> fg_local A p HO crd config config'"
 
-text {*
+text \<open>
   Fine-grained runs are infinite sequences of configurations that start
   in an initial configuration and where each step corresponds to some process
   sending a message, receiving a message or performing a local step. We also
   require that every process eventually executes every round -- note that
   this condition is implicit in the definition of coarse-grained runs.
-*}
+\<close>
 
 definition fg_run where
   "fg_run A rho HOs SHOs coords \<equiv>
@@ -183,28 +183,28 @@ definition fg_run where
                                     (rho i) (rho (Suc i)))
     \<and> (\<forall>p r. \<exists>n. round (rho n) p = r)"
 
-text {*
+text \<open>
   The following function computes at which ``time point'' (index in the
-  fine-grained computation) process @{text p} starts executing round 
-  @{text r}. This function plays an important role in the correspondence
+  fine-grained computation) process \<open>p\<close> starts executing round 
+  \<open>r\<close>. This function plays an important role in the correspondence
   between the two semantics, and in the subsequent proofs.
-*}
+\<close>
 
 definition fg_start_round where
   "fg_start_round rho p r \<equiv> LEAST (n::nat). round (rho n) p = r"
 
 
-subsection {* Properties of the Fine-Grained Semantics *}
+subsection \<open>Properties of the Fine-Grained Semantics\<close>
 
-text {*
+text \<open>
   In preparation for the proof of the reduction theorem, we establish a
   number of consequences of the above definitions.
-*}
+\<close>
 
-text {*
+text \<open>
   Process states change only when round numbers change during a
   fine-grained run.
-*}
+\<close>
 lemma fg_state_change:
   assumes rho: "fg_run A rho HOs SHOs coords"
       and rd: "round (rho (Suc n)) p = round (rho n) p"
@@ -219,9 +219,9 @@ proof -
     by (auto simp: fg_next_config_def fg_send_msg_def fg_rcv_msg_def fg_local_def)
 qed
 
-text {*
+text \<open>
   Round numbers never decrease.
-*}
+\<close>
 lemma fg_round_numbers_increase:
   assumes rho: "fg_run A rho HOs SHOs coords" and n: "n \<le> m"
   shows "round (rho n) p \<le> round (rho m) p"
@@ -248,11 +248,11 @@ proof -
   with k show ?thesis by simp
 qed
 
-text {*
+text \<open>
   Combining the two preceding lemmas, it follows that the local states
-  of process @{text p} at two configurations are the same if these 
+  of process \<open>p\<close> at two configurations are the same if these 
   configurations have the same round number.
-*}
+\<close>
 lemma fg_same_round_same_state:
   assumes rho: "fg_run A rho HOs SHOs coords"
       and rd: "round (rho m) p = round (rho n) p"
@@ -294,12 +294,12 @@ proof -
   qed
 qed
 
-text {*
-  Since every process executes every round, function @{text fg_startRound}
-  is well-defined. We also list a few facts about @{text fg_startRound} that
+text \<open>
+  Since every process executes every round, function \<open>fg_startRound\<close>
+  is well-defined. We also list a few facts about \<open>fg_startRound\<close> that
   will be used to show that it is a ``stuttering sampling function'',
   a notion introduced in the theories about stuttering equivalence.
-*}
+\<close>
 lemma fg_start_round:
   assumes "fg_run A rho HOs SHOs coords"
   shows "round (rho (fg_start_round rho p r)) p = r"
@@ -343,12 +343,12 @@ proof
     by (rule fg_start_round_later)
 qed
 
-text {*
-  Process @{text p} is at round @{text r} at all configurations between 
-  the start of round @{text r} and the start of round @{text "r+1"}.
-  By lemma @{text fg_same_round_same_state}, this implies that the
-  local state of process @{text p} is the same at all these configurations.
-*}
+text \<open>
+  Process \<open>p\<close> is at round \<open>r\<close> at all configurations between 
+  the start of round \<open>r\<close> and the start of round \<open>r+1\<close>.
+  By lemma \<open>fg_same_round_same_state\<close>, this implies that the
+  local state of process \<open>p\<close> is the same at all these configurations.
+\<close>
 lemma fg_round_between_start_rounds:
 assumes rho: "fg_run A rho HOs SHOs coords"
     and 1: "fg_start_round rho p r \<le> n"
@@ -372,11 +372,11 @@ next
   qed
 qed
 
-text {*
-  For any process @{text p} and round @{text r} there is some instant @{text n}
-  where @{text p} executes a local transition from round @{text r}. In fact,
-  @{text "n+1"} marks the start of round @{text "r+1"}.
-*}
+text \<open>
+  For any process \<open>p\<close> and round \<open>r\<close> there is some instant \<open>n\<close>
+  where \<open>p\<close> executes a local transition from round \<open>r\<close>. In fact,
+  \<open>n+1\<close> marks the start of round \<open>r+1\<close>.
+\<close>
 lemma fg_local_transition_from_round:
 assumes rho: "fg_run A rho HOs SHOs coords"
 obtains n where "round (rho n) p = r"
@@ -425,13 +425,13 @@ proof -
   with 1 n that show ?thesis by auto
 qed
 
-text {*
+text \<open>
   We now prove two invariants asserted in \cite{saad:reduction}. The first
-  one states that any message @{text m} in transit from process @{text p}
-  to process @{text q} for round @{text r} corresponds to the message
-  computed by @{text p} for @{text q}, given @{text p}'s state at its
-  @{text r}th local transition.
-*}
+  one states that any message \<open>m\<close> in transit from process \<open>p\<close>
+  to process \<open>q\<close> for round \<open>r\<close> corresponds to the message
+  computed by \<open>p\<close> for \<open>q\<close>, given \<open>p\<close>'s state at its
+  \<open>r\<close>th local transition.
+\<close>
 
 lemma fg_invariant1:
   assumes rho: "fg_run A rho HOs SHOs coords"
@@ -453,11 +453,11 @@ next
     by (force simp: fg_run_def)
   thus "?thesis"
   proof (auto simp: fg_next_config_def)
-    txt {*
-      Only @{text fg_send_msg} transitions for process @{text p} are interesting,
-      since all other transitions cannot add a message for @{text p}, hence we can
+    txt \<open>
+      Only \<open>fg_send_msg\<close> transitions for process \<open>p\<close> are interesting,
+      since all other transitions cannot add a message for \<open>p\<close>, hence we can
       apply the induction hypothesis.
-    *}
+\<close>
     fix q'
     assume send: "fg_send_msg A p' q' ?cfg ?cfg'"
     show ?thesis
@@ -485,13 +485,13 @@ next
   qed
 qed
 
-text {*
-  The second invariant states that if process @{text q} received message
-  @{text m} from process @{text p}, then (a) @{text p} is in @{text q}'s
-  HO set for that round @{text m}, and (b) if @{text p} is moreover in
-  @{text q}'s SHO set, then @{text m} is the message that @{text p} computed
+text \<open>
+  The second invariant states that if process \<open>q\<close> received message
+  \<open>m\<close> from process \<open>p\<close>, then (a) \<open>p\<close> is in \<open>q\<close>'s
+  HO set for that round \<open>m\<close>, and (b) if \<open>p\<close> is moreover in
+  \<open>q\<close>'s SHO set, then \<open>m\<close> is the message that \<open>p\<close> computed
   at the start of that round.
-*}
+\<close>
 
 lemma fg_invariant2a:
   assumes rho: "fg_run A rho HOs SHOs coords"
@@ -515,10 +515,10 @@ next
     by (force simp: fg_run_def)
   thus "?P (Suc n)"
   proof (auto simp: fg_next_config_def)
-    txt {* 
-      Except for @{text fg_rcv_msg} steps of process @{text q}, the proof
+    txt \<open>
+      Except for \<open>fg_rcv_msg\<close> steps of process \<open>q\<close>, the proof
       is immediately reduced to the induction hypothesis.
-    *}
+\<close>
     fix q'
     assume rcvmsg: "fg_rcv_msg p' q' ?HO ?SHO ?cfg ?cfg'"
     hence rd: "?rd (Suc n) = ?rd n" by (auto simp: fg_rcv_msg_def)
@@ -570,10 +570,10 @@ next
     by (force simp: fg_run_def)
   thus "?P (Suc n)"
   proof (auto simp: fg_next_config_def)
-    txt {* 
-      Except for @{text fg_rcv_msg} steps of process @{text q}, the proof
+    txt \<open>
+      Except for \<open>fg_rcv_msg\<close> steps of process \<open>q\<close>, the proof
       is immediately reduced to the induction hypothesis.
-    *}
+\<close>
     fix q'
     assume rcvmsg: "fg_rcv_msg p' q' ?HO ?SHO ?cfg ?cfg'"
     hence rd: "?rd (Suc n) = ?rd n" by (auto simp: fg_rcv_msg_def)
@@ -606,26 +606,26 @@ next
   qed
 qed
 
-subsection {* From Fine-Grained to Coarse-Grained Runs *}
+subsection \<open>From Fine-Grained to Coarse-Grained Runs\<close>
 
-text {*
-  The reduction theorem asserts that for any fine-grained run @{text rho}
+text \<open>
+  The reduction theorem asserts that for any fine-grained run \<open>rho\<close>
   there is a coarse-grained run such that every process sees the same
   sequence of local states in the two runs, modulo stuttering. In other words,
   no process can locally distinguish the two runs.
 
-  Given fine-grained run @{text rho}, the corresponding coarse-grained run @{text sigma} is 
+  Given fine-grained run \<open>rho\<close>, the corresponding coarse-grained run \<open>sigma\<close> is 
   defined as the sequence of state vectors at the beginning of every round. 
-  Notice in particular that the local states @{text "sigma r p"} and 
-  @{text "sigma r q"} of two different processes @{text p} and @{text q}
-  appear at different instants in the original run @{text rho}. Nevertheless,
-  we prove that @{text sigma} is a coarse-grained run of the algorithm for
+  Notice in particular that the local states \<open>sigma r p\<close> and 
+  \<open>sigma r q\<close> of two different processes \<open>p\<close> and \<open>q\<close>
+  appear at different instants in the original run \<open>rho\<close>. Nevertheless,
+  we prove that \<open>sigma\<close> is a coarse-grained run of the algorithm for
   the same HO, SHO, and coordinator assignments. By definition (and the
-  fact that local states remain equal between @{text fg_start_round}
-  instants), the sequences of process states in @{text rho} and
-  @{text sigma} are easily seen to be stuttering equivalent, and this
+  fact that local states remain equal between \<open>fg_start_round\<close>
+  instants), the sequences of process states in \<open>rho\<close> and
+  \<open>sigma\<close> are easily seen to be stuttering equivalent, and this
   will be formally stated below.
-*}
+\<close>
 
 definition coarse_run where
   "coarse_run rho r p \<equiv> state (rho (fg_start_round rho p r)) p"
@@ -682,9 +682,9 @@ next
 qed
 
 
-subsection {* Locally Similar Runs and Local Properties *}
+subsection \<open>Locally Similar Runs and Local Properties\<close>
 
-text {*
+text \<open>
   We say that two sequences of configurations (vectors of process states)
   are \emph{locally similar} if for every process the sequences of its
   process states are stuttering equivalent. Observe that different stuttering
@@ -694,7 +694,7 @@ text {*
 
   A property of a sequence of configurations is called \emph{local} if it
   is insensitive to local similarity.
-*}
+\<close>
 
 definition locally_similar where
   "locally_similar (\<sigma>::nat \<Rightarrow> 'proc \<Rightarrow> 'pst)  \<tau> \<equiv> 
@@ -704,9 +704,9 @@ definition local_property where
   "local_property P \<equiv>
    \<forall>\<sigma> \<tau>. locally_similar \<sigma> \<tau> \<longrightarrow> P \<sigma> \<longrightarrow> P \<tau>"
 
-text {*
+text \<open>
   Local similarity is an equivalence relation.
-*}
+\<close>
 
 lemma locally_similar_refl: "locally_similar \<sigma> \<sigma>"
   by (simp add: locally_similar_def stutter_equiv_refl)
@@ -722,11 +722,11 @@ lemma local_property_eq:
   "local_property P = (\<forall>\<sigma> \<tau>. locally_similar \<sigma> \<tau> \<longrightarrow> P \<sigma> = P \<tau>)"
   by (auto simp: local_property_def dest: locally_similar_sym)
 
-text {*
-  Consider any fine-grained run @{text rho}. The projection of @{text rho}
+text \<open>
+  Consider any fine-grained run \<open>rho\<close>. The projection of \<open>rho\<close>
   to vectors of process states is locally similar to the coarse-grained run
-  computed from @{text rho}.
-*}
+  computed from \<open>rho\<close>.
+\<close>
 
 lemma coarse_run_locally_similar:
   assumes rho: "fg_run A rho HOs SHOs coords"
@@ -759,14 +759,14 @@ proof (auto simp: locally_similar_def)
   qed
 qed
 
-text {*
-  Therefore, in order to verify a local property @{text P} for a
-  fine-grained run over given @{text HO}, @{text SHO}, and @{text coord}
-  collections, it is enough to show that @{text P} holds for all
+text \<open>
+  Therefore, in order to verify a local property \<open>P\<close> for a
+  fine-grained run over given \<open>HO\<close>, \<open>SHO\<close>, and \<open>coord\<close>
+  collections, it is enough to show that \<open>P\<close> holds for all
   coarse-grained runs for these same collections.
   Indeed, one may restrict attention to coarse-grained runs whose 
   initial states agree with that of the given fine-grained run.
-*}
+\<close>
 
 theorem local_property_reduction:
   assumes rho: "fg_run A rho HOs SHOs coords"
@@ -785,13 +785,13 @@ proof -
 qed
 
 
-subsection {* Consensus as a Local Property *}
+subsection \<open>Consensus as a Local Property\<close>
 
-text {*
+text \<open>
   Consensus and Weak Consensus are local properties and can therefore
   be verified just over coarse-grained runs, according to theorem
-  @{text local_property_reduction}.
-*}
+  \<open>local_property_reduction\<close>.
+\<close>
 
 lemma integrity_is_local:
   assumes sim: "locally_similar \<sigma> \<tau>"

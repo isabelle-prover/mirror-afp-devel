@@ -2,15 +2,15 @@ theory Launchbury
 imports Terms Substitution
 begin
 
-subsubsection {* The natural semantics *}
+subsubsection \<open>The natural semantics\<close>
 
-text {* This is the semantics as in \cite{launchbury}, with two differences:
+text \<open>This is the semantics as in \cite{launchbury}, with two differences:
 \begin{itemize}
 \item Explicit freshness requirements for bound variables in the application and the Let rule.
 \item An additional parameter that stores variables that have to be avoided, but do not occur
 in the judgement otherwise, follwing \cite{sestoft}.
 \end{itemize}
-*}
+\<close>
 
 inductive
   reds :: "heap \<Rightarrow> exp \<Rightarrow> var list \<Rightarrow> heap \<Rightarrow> exp \<Rightarrow> bool"
@@ -47,7 +47,7 @@ nominal_inductive reds
   avoids Application: "y"
   by (auto simp add: fresh_star_def fresh_Pair)
 
-subsubsection {* Example evaluations *}
+subsubsection \<open>Example evaluations\<close>
 
 lemma eval_test:
   "[] : (Let [(x, Lam [y]. Var y)] (Var x)) \<Down>\<^bsub>[]\<^esub> [(x, Lam [y]. Var y)] : (Lam [y]. Var y)"
@@ -59,11 +59,11 @@ lemma eval_test2:
   "y \<noteq> x \<Longrightarrow> n \<noteq> y \<Longrightarrow> n \<noteq> x \<Longrightarrow>[] : (Let [(x, Lam [y]. Var y)] (App (Var x) x)) \<Down>\<^bsub>[]\<^esub> [(x, Lam [y]. Var y)] : (Lam [y]. Var y)"
   by (auto intro!: Lambda Application Variable Let simp add: fresh_Pair fresh_at_base fresh_Cons fresh_Nil fresh_star_def pure_fresh)
 
-subsubsection {* Better introduction rules *}
+subsubsection \<open>Better introduction rules\<close>
 
-text {*
+text \<open>
 This variant do not require freshness.
-*}
+\<close>
 
 lemma reds_ApplicationI:
   assumes "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : Lam [y]. e'"
@@ -73,30 +73,30 @@ proof-
   obtain y' :: var where "atom y' \<sharp> (\<Gamma>, e, x, L, \<Delta>, \<Theta>, z, e')" by (rule obtain_fresh)
 
   have a: "Lam [y']. ((y' \<leftrightarrow> y) \<bullet> e') = Lam [y]. e'"
-    using `atom y' \<sharp> _`
+    using \<open>atom y' \<sharp> _\<close>
     by (auto simp add: Abs1_eq_iff fresh_Pair fresh_at_base)
 
   have b: "((y' \<leftrightarrow> y) \<bullet> e')[y'::=x] = e'[y::=x]"
   proof(cases "x = y")
     case True
-    have "atom y' \<sharp> e'" using `atom y' \<sharp> _` by simp
+    have "atom y' \<sharp> e'" using \<open>atom y' \<sharp> _\<close> by simp
     thus ?thesis
       by (simp add: True subst_swap_same  subst_subst_back)
   next
     case False
     hence "atom y \<sharp> x" by simp
 
-    have [simp]: "(y' \<leftrightarrow> y) \<bullet> x = x" using `atom y \<sharp> _`  `atom y' \<sharp> _`
+    have [simp]: "(y' \<leftrightarrow> y) \<bullet> x = x" using \<open>atom y \<sharp> _\<close>  \<open>atom y' \<sharp> _\<close>
         by (simp add: flip_fresh_fresh fresh_Pair fresh_at_base)
 
     have "((y' \<leftrightarrow> y) \<bullet> e')[y'::=x] = (y' \<leftrightarrow> y) \<bullet> (e'[y::=x])" by simp
     also have "\<dots> = e'[y::=x]"
-      using `atom y \<sharp> _`  `atom y' \<sharp> _`
+      using \<open>atom y \<sharp> _\<close>  \<open>atom y' \<sharp> _\<close>
       by (simp add: flip_fresh_fresh fresh_Pair fresh_at_base subst_pres_fresh)
     finally
     show ?thesis.
   qed
-  have "atom y' \<sharp> (\<Gamma>, e, x, L, \<Delta>, \<Theta>, z)" using  `atom y' \<sharp> _` by (simp add: fresh_Pair)
+  have "atom y' \<sharp> (\<Gamma>, e, x, L, \<Delta>, \<Theta>, z)" using  \<open>atom y' \<sharp> _\<close> by (simp add: fresh_Pair)
   from this assms[folded a b]
   show ?thesis ..
 qed
@@ -109,27 +109,27 @@ lemma reds_SmartLet: "\<lbrakk>
 unfolding SmartLet_def
 by (auto intro: reds.Let)
 
-text {*
+text \<open>
 A single rule for values
-*}
+\<close>
 lemma reds_isValI:
   "isVal z \<Longrightarrow> \<Gamma> : z \<Down>\<^bsub>L\<^esub> \<Gamma> : z"
 by (cases z rule:isVal.cases) (auto intro: reds.intros)
 
 
-subsubsection {* Properties of the semantics *}
+subsubsection \<open>Properties of the semantics\<close>
 
-text {*
+text \<open>
 Heap entries are never removed.
-*}
+\<close>
 
 lemma reds_doesnt_forget:
   "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z \<Longrightarrow> domA \<Gamma> \<subseteq> domA \<Delta>"
 by(induct rule: reds.induct) auto
 
-text {*
+text \<open>
 Live variables are not added to the heap.
-*}
+\<close>
 
 lemma reds_avoids_live':
  assumes "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z"
@@ -145,9 +145,9 @@ lemma reds_avoids_live:
   \<rbrakk> \<Longrightarrow> x \<notin> domA \<Delta>"
 using reds_avoids_live' by blast
 
-text {*
+text \<open>
 Fresh variables either stay fresh or are added to the heap.
-*}
+\<close>
 
 lemma reds_fresh:" \<lbrakk> \<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z;
    atom (x::var) \<sharp> (\<Gamma>, e)
@@ -164,7 +164,7 @@ case (Application y \<Gamma> e x' L \<Delta> \<Theta> z e')
     hence "atom x \<sharp> e'[y ::= x']"
       using Application.prems
       by (auto intro: subst_pres_fresh simp add: fresh_Pair)
-    thus ?thesis using Application.hyps(5) `atom x \<sharp> (\<Delta>, Lam [y]. e')` by auto
+    thus ?thesis using Application.hyps(5) \<open>atom x \<sharp> (\<Delta>, Lam [y]. e')\<close> by auto
   next
     assume "x \<in> domA \<Delta> - set (x' # L)"
     thus ?thesis using reds_doesnt_forget[OF Application.hyps(4)] by auto
@@ -177,12 +177,12 @@ case(Variable \<Gamma> v e L \<Delta> z)
   have "atom x \<sharp> delete v \<Gamma>".
   moreover
   have "v \<in> domA \<Gamma>" using Variable.hyps(1) by (metis domA_from_set map_of_SomeD)
-  from fresh_map_of[OF this  `atom x \<sharp> \<Gamma>`]
+  from fresh_map_of[OF this  \<open>atom x \<sharp> \<Gamma>\<close>]
   have "atom x \<sharp> the (map_of \<Gamma> v)".
-  hence "atom x \<sharp> e" using `map_of \<Gamma> v = Some e` by simp
+  hence "atom x \<sharp> e" using \<open>map_of \<Gamma> v = Some e\<close> by simp
   ultimately
   have "atom x \<sharp> (\<Delta>, z) \<or> x \<in> domA \<Delta> - set (v # L)"  using Variable.hyps(3) by (auto simp add: fresh_Pair)
-  thus ?case using `atom x \<sharp> v` by (auto simp add: fresh_Pair fresh_Cons fresh_at_base)
+  thus ?case using \<open>atom x \<sharp> v\<close> by (auto simp add: fresh_Pair fresh_Cons fresh_at_base)
 next
 
 case (Bool \<Gamma> b L)
@@ -190,18 +190,18 @@ case (Bool \<Gamma> b L)
 next
 
 case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
-  from `atom x \<sharp> (\<Gamma>, scrut ? e\<^sub>1 : e\<^sub>2)`
+  from \<open>atom x \<sharp> (\<Gamma>, scrut ? e\<^sub>1 : e\<^sub>2)\<close>
   have "atom x \<sharp> (\<Gamma>, scrut)" and "atom x \<sharp> (e\<^sub>1, e\<^sub>2)" by (auto simp add: fresh_Pair)
   from IfThenElse.hyps(2)[OF this(1)]
   show ?case
   proof
-    assume "atom x \<sharp> (\<Delta>, Bool b)" with `atom x \<sharp> (e\<^sub>1, e\<^sub>2)`
+    assume "atom x \<sharp> (\<Delta>, Bool b)" with \<open>atom x \<sharp> (e\<^sub>1, e\<^sub>2)\<close>
     have "atom x \<sharp> (\<Delta>, if b then e\<^sub>1 else e\<^sub>2)" by auto
     from IfThenElse.hyps(4)[OF this]
     show ?thesis.
   next
     assume "x \<in> domA \<Delta> - set L"
-    with reds_doesnt_forget[OF `\<Delta> : (if b then e\<^sub>1 else e\<^sub>2) \<Down>\<^bsub>L\<^esub> \<Theta> : z`]
+    with reds_doesnt_forget[OF \<open>\<Delta> : (if b then e\<^sub>1 else e\<^sub>2) \<Down>\<^bsub>L\<^esub> \<Theta> : z\<close>]
     show ?thesis by auto
   qed
 next
@@ -213,7 +213,7 @@ case (Let \<Delta> \<Gamma> L body \<Theta> z)
       hence "atom x \<sharp> \<Delta>" using Let.prems by(auto simp add: fresh_Pair)      
       show ?thesis
         apply(rule Let.hyps(3))
-        using Let.prems `atom x \<sharp> \<Delta>` False
+        using Let.prems \<open>atom x \<sharp> \<Delta>\<close> False
         by (auto simp add: fresh_Pair fresh_append)
   next
     case True
@@ -244,9 +244,9 @@ lemma reds_pres_closed:
   shows   "fv (\<Delta>, z) \<subseteq> set L \<union> domA \<Delta>"
 using new_free_vars_on_heap[OF assms(1)] assms(2) by auto
 
-text {*
+text \<open>
 Reducing the set of variables to avoid is always possible.
-*} 
+\<close> 
 
 lemma reds_smaller_L: "\<lbrakk> \<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z;
    set L' \<subseteq> set L
@@ -281,7 +281,7 @@ case (Let \<Delta> \<Gamma>  L body \<Theta> z L')
     by (rule reds.Let[OF _ Let.hyps(4)[OF Let.prems]])
 qed
 
-text {* Things are evaluated to a lambda expression, and the variable can be freely chose. *}
+text \<open>Things are evaluated to a lambda expression, and the variable can be freely chose.\<close>
 
 lemma result_evaluated:
   "\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : z \<Longrightarrow> isVal z"

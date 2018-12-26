@@ -3,16 +3,16 @@
     Author:     David Trachtenherz
 *)
 
-section {* Arithmetic operators on natural intervals *}
+section \<open>Arithmetic operators on natural intervals\<close>
 
 theory IL_IntervalOperators
 imports IL_Interval
 begin
 
 
-subsection {* Arithmetic operations with intervals *}
+subsection \<open>Arithmetic operations with intervals\<close>
 
-subsubsection {* Addition of and multiplication by constants *}
+subsubsection \<open>Addition of and multiplication by constants\<close>
 
 definition iT_Plus :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<oplus>" 55)
   where "I \<oplus> k \<equiv> (\<lambda>n.(n + k)) ` I"
@@ -347,7 +347,7 @@ lemmas iT_mult =
   iT_Mult_singleton
 
 
-subsubsection {* Some conversions between intervals using constant addition and multiplication *}
+subsubsection \<open>Some conversions between intervals using constant addition and multiplication\<close>
 
 lemma iFROM_conv: "[n\<dots>] = UNIV \<oplus> n"
 by (simp add: iFROM_0[symmetric] iFROM_add)
@@ -368,13 +368,13 @@ apply (simp add: iTILL_mult iMODb_add)
 done
 
 
-text {* Some examples showing the utility of iMODb\_conv *}
+text \<open>Some examples showing the utility of iMODb\_conv\<close>
 lemma "[12, mod 10, 4] = {12, 22, 32, 42, 52}"
 apply (simp add: iT_defs)
 apply safe
 defer 1
 apply simp+
-txt {* The direct proof without iMODb\_conv fails *}
+txt \<open>The direct proof without iMODb\_conv fails\<close>
 oops
 
 lemma "[12, mod 10, 4] = {12, 22, 32, 42, 52}"
@@ -407,7 +407,7 @@ apply fastforce
 done
 
 
-subsubsection {* Subtraction of constants *}
+subsubsection \<open>Subtraction of constants\<close>
 
 definition iT_Plus_neg :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<oplus>-" 55) where
   "I \<oplus>- k \<equiv> {x. x + k \<in> I}"
@@ -574,7 +574,7 @@ apply (simp add: Max_mono2 monoI cut_ge_finite cut_ge_Max_eq)
 done
 
 
-text {* Subtractions of constants from intervals *}
+text \<open>Subtractions of constants from intervals\<close>
 
 lemma iFROM_add_neg: "[n\<dots>] \<oplus>- k = [n - k\<dots>]"
 by (fastforce simp: set_eq_iff iT_Plus_neg_mem_iff)
@@ -743,7 +743,7 @@ lemmas iT_add_neg =
   iT_Plus_neg_singleton
 
 
-subsubsection {* Subtraction of intervals from constants *}
+subsubsection \<open>Subtraction of intervals from constants\<close>
 
 definition iT_Minus :: "Time \<Rightarrow> iT \<Rightarrow> iT" (infixl "\<ominus>" 55)
   where "k \<ominus> I \<equiv> {x. x \<le> k \<and> (k - x) \<in> I}"
@@ -1037,9 +1037,9 @@ lemmas iT_sub =
   iT_Minus_singleton
 
 
-subsubsection {* Division of intervals by constants *}
+subsubsection \<open>Division of intervals by constants\<close>
 
-text {* Monotonicity and injectivity of artithmetic operators *}
+text \<open>Monotonicity and injectivity of artithmetic operators\<close>
 
 lemma iMOD_div_right_strict_mono_on: "
   \<lbrakk> 0 < k; k \<le> m \<rbrakk> \<Longrightarrow> strict_mono_on (\<lambda>x. x div k) [r, mod m]"
@@ -1517,7 +1517,7 @@ lemmas iT_div =
   iMODb_div
   iT_Div_singleton
 
-text {* This lemma is valid for all @{term "k \<le> m"},i. e., also for k with @{term "m mod k \<noteq> 0"}. *} 
+text \<open>This lemma is valid for all @{term "k \<le> m"},i. e., also for k with @{term "m mod k \<noteq> 0"}.\<close> 
 lemma iMODb_div_unique: "
   \<lbrakk> 0 < k; k \<le> m; k \<le> c; [r', mod m', c'] = [r, mod m, c] \<oslash> k \<rbrakk> \<Longrightarrow> 
   r' = r div k \<and> m' = m div k \<and> c' = c"
@@ -1648,7 +1648,7 @@ apply (frule iMODb_div_mod_gr0_not_ex[of k m k r], simp+)
 done
 
 
-subsection {* Interval cut operators with arithmetic interval operators *}
+subsection \<open>Interval cut operators with arithmetic interval operators\<close>
 
 lemma 
   iT_Plus_cut_le2:      "(I \<oplus> k) \<down>\<le> (t + k) = (I \<down>\<le> t) \<oplus> k" and
@@ -1868,7 +1868,7 @@ lemma iT_Div_cut_greater2: "
 by (frule iT_Div_cut_greater[of k I "t div k"], simp add: div_mult_cancel)
 
 
-subsection {* @{text inext} and @{text iprev} with interval operators *}
+subsection \<open>\<open>inext\<close> and \<open>iprev\<close> with interval operators\<close>
 
 lemma iT_Plus_inext: "inext (n + k) (I \<oplus> k) = (inext n I) + k"
 by (unfold iT_Plus_def, rule inext_image2[OF add_right_strict_mono])
@@ -2142,7 +2142,7 @@ by (rule iprev_nth_image[OF _ _ mod_eq_div_right_strict_mono_on])
 
 
 
-subsection {* Cardinality of intervals with interval operators*}
+subsection \<open>Cardinality of intervals with interval operators\<close>
 
 lemma iT_Plus_card: "card (I \<oplus> k) = card I"
 apply (unfold iT_Plus_def)
@@ -2471,9 +2471,9 @@ corollary iT_Div_card_ge_div: "card I div d \<le> card (I \<oslash> d)"
 by (rule iT_Div_card_ge[THEN add_leD1])
 
 
-text {* 
+text \<open>
   There is no better lower bound function @{term f} for @{term "(i \<oslash> d)"} 
-  with @{term "card i"} and @{term d} as arguments. *}
+  with @{term "card i"} and @{term d} as arguments.\<close>
 lemma iT_Div_card_ge__is_maximal_lower_bound: "
   \<forall>I d. card I div d + (if card I mod d = 0 then 0 else Suc 0) \<le> f (card I) d \<and> 
         f (card I) d \<le> card (I \<oslash> d) \<Longrightarrow> 
@@ -2635,9 +2635,9 @@ apply clarsimp
 done
 
 
-subsection {* Results about sets of intervals *}
+subsection \<open>Results about sets of intervals\<close>
 
-subsubsection {* Set of intervals without and with empty interval *}
+subsubsection \<open>Set of intervals without and with empty interval\<close>
 
 definition iFROM_UN_set :: "(nat set) set"
   where "iFROM_UN_set \<equiv> \<Union>n. {[n\<dots>]}"
@@ -2731,7 +2731,7 @@ definition i_UN_set :: "(nat set) set"
   where "i_UN_set \<equiv> iFROM_UN_set \<union> iTILL_UN_set \<union> iIN_UN_set \<union> iMOD_UN_set \<union> iMODb_UN_set"
 
 
-text {* Minimal definitions for @{term i_set} and @{term i_set} *}
+text \<open>Minimal definitions for @{term i_set} and @{term i_set}\<close>
 
 definition i_set_min :: "(nat set) set"
   where "i_set_min \<equiv> iFROM_set \<union> iIN_set \<union> iMOD2_set \<union> iMODb2_set"
@@ -2800,9 +2800,9 @@ where
   i_set0_ind_empty[intro!] : "{} \<in> i_set0_ind"
 | i_set0_ind_i_set[intro]:  "I \<in> i_set_ind \<Longrightarrow> I \<in> i_set0_ind"
 
-text {* 
-  The introduction rule @{text i_set0_ind_i_set} is not declared a safe introduction rule,
-  because it would disturb the correct usage of the @{text safe} method. *}
+text \<open>
+  The introduction rule \<open>i_set0_ind_i_set\<close> is not declared a safe introduction rule,
+  because it would disturb the correct usage of the \<open>safe\<close> method.\<close>
 
 lemma i_set_ind_subset_i_set0_ind: "i_set_ind \<subseteq> i_set0_ind"
 by (rule subsetI, rule i_set0_ind_i_set)
@@ -2934,7 +2934,7 @@ lemma i_set_as_iMOD_iMODb: "
 by (blast intro: i_set_finite_as_iMODb i_set_infinite_as_iMOD)
 
 
-subsubsection {* Interval sets are closed under cutting *}
+subsubsection \<open>Interval sets are closed under cutting\<close>
 
 lemma i_set_cut_le_ge_closed_disj: "
   \<lbrakk> I \<in> i_set; t \<in> I; cut_op = (\<down>\<le>) \<or> cut_op = (\<down>\<ge>) \<rbrakk> \<Longrightarrow> 
@@ -2982,7 +2982,7 @@ lemmas i_set0_cut_closed =
   i_set0_cut_greater_closed
 
 
-subsubsection {* Interval sets are closed under addition and multiplication *}
+subsubsection \<open>Interval sets are closed under addition and multiplication\<close>
 
 lemma i_set_Plus_closed: "I \<in> i_set \<Longrightarrow> I \<oplus> k \<in> i_set"
 apply (simp add: i_set_i_set_ind_eq)
@@ -3016,7 +3016,7 @@ apply (simp add: i_set_i_set_ind_eq[symmetric] i_set_Mult_closed)
 done
 
 
-subsubsection {* Interval sets are closed with certain conditions under subtraction *}
+subsubsection \<open>Interval sets are closed with certain conditions under subtraction\<close>
 
 lemma i_set_Plus_neg_closed: "
   \<lbrakk> I \<in> i_set; \<exists>x\<in>I. k \<le> x \<rbrakk> \<Longrightarrow> I \<oplus>- k \<in> i_set"
@@ -3061,7 +3061,7 @@ lemmas i_set0_IntOp_closed =
   i_set0_Minus_closed
 
 
-subsubsection {* Interval sets are not closed under division *}
+subsubsection \<open>Interval sets are not closed under division\<close>
 
 lemma iMOD_div_mod_gr0_not_in_i_set: "
   \<lbrakk> 0 < k; k < m; 0 < m mod k \<rbrakk> \<Longrightarrow> [r, mod m] \<oslash> k \<notin> i_set"
@@ -3099,7 +3099,7 @@ apply (rule subsetD[OF i_set_subset_i_set0], assumption)
 done
 
 
-subsubsection {* Sets of intervals closed under division *}
+subsubsection \<open>Sets of intervals closed under division\<close>
 
 inductive_set NatMultiples :: "nat set \<Rightarrow> nat set"
   for F :: "nat set"
@@ -3131,7 +3131,7 @@ apply (simp add: mult.assoc[of _ _ b] NatMultiples_Product)
 done
 
 
-text {* Subset of @{term i_set} containing only continuous intervals, i. e., without @{term iMOD} and @{term iMODb}. *}
+text \<open>Subset of @{term i_set} containing only continuous intervals, i. e., without @{term iMOD} and @{term iMODb}.\<close>
   
 inductive_set i_set_cont :: "(nat set) set"
 where
@@ -3154,7 +3154,7 @@ apply (rule insert_mono)
 apply (rule i_set_cont_subset_i_set)
 done
 
-text {* Minimal definition of @{term i_set_cont} *}
+text \<open>Minimal definition of @{term i_set_cont}\<close>
   
 inductive_set i_set_cont_min :: "(nat set) set"
 where
@@ -3173,7 +3173,7 @@ apply blast+
 done
 
 
-text {* @{text inext} and @{text iprev} with continuous intervals *}
+text \<open>\<open>inext\<close> and \<open>iprev\<close> with continuous intervals\<close>
 
 lemma i_set_cont_inext: "
   \<lbrakk> I \<in> i_set_cont; n \<in> I; finite I \<Longrightarrow> n < Max I \<rbrakk> \<Longrightarrow> inext n I = Suc n"
@@ -3205,7 +3205,7 @@ apply (rule order_le_less_trans[OF iMin_le, of n0], assumption+)
 done
 
 
-text {* Sets of modulo intervals *}
+text \<open>Sets of modulo intervals\<close>
 
 inductive_set i_set_mult :: "nat \<Rightarrow> (nat set) set"
   for k :: nat
@@ -3351,7 +3351,7 @@ apply (simp_all add: iT_div i_set_mult.intros)
 apply (simp_all add: iMOD_div iMODb_div mod_0_imp_mod_mult_left_0 mod_0_imp_div_mult_left_eq i_set_mult.intros)
 done
 
-text {* Intervals from @{term "i_set_mult k"} remain in @{term i_set} after division by @{term d} a divisor of @{term k}. *}
+text \<open>Intervals from @{term "i_set_mult k"} remain in @{term i_set} after division by @{term d} a divisor of @{term k}.\<close>
 corollary i_set_mult_mod_0_div_i_set: "
   \<lbrakk> I \<in> i_set_mult k; k mod d = 0 \<rbrakk> \<Longrightarrow> I \<oslash> d \<in> i_set"
 by (rule subsetD[OF i_set_mult_subset_i_set[of "k div d"]], rule i_set_mult_mod_0_div)

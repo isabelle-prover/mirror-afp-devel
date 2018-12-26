@@ -1,4 +1,4 @@
-section {* Generic Algorithms for Graphs *}
+section \<open>Generic Algorithms for Graphs\<close>
 theory GraphGA
 imports 
   GraphSpec 
@@ -63,13 +63,13 @@ begin
       "('V,'W,('V\<times>'W\<times>'V) list,'G) graph_edges_it"
       where "gga_edges_list_it G \<equiv> set_iterator_product 
         (nodes_it G) (succ_it G)"
-    local_setup {* Locale_Code.lc_decl_del @{term gga_edges_list_it} *}
+    local_setup \<open>Locale_Code.lc_decl_del @{term gga_edges_list_it}\<close>
   end
-  setup {*
+  setup \<open>
     (Record_Intf.add_unf_thms_global @{thms 
       gga_edges_it_defs.gga_edges_list_it_def[abs_def]
     })
-  *} 
+\<close> 
 
   locale gga_edges_it = gga_edges_it_defs nodes_list_it succ_list_it 
     + graph \<alpha> invar

@@ -13,10 +13,10 @@ proof(induction arbitrary: S  rule:reds.induct)
   show ?case..
 next
   case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
-  from `fv (\<Gamma>, App e x, S) \<subseteq> set L \<union> domA \<Gamma>`
+  from \<open>fv (\<Gamma>, App e x, S) \<subseteq> set L \<union> domA \<Gamma>\<close>
   have prem1: "fv (\<Gamma>, e, Arg x # S) \<subseteq> set L \<union> domA \<Gamma>" by simp
   
-  from prem1 reds_pres_closed[OF `\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : Lam [y]. e'`] reds_doesnt_forget[OF `\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : Lam [y]. e'`]
+  from prem1 reds_pres_closed[OF \<open>\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : Lam [y]. e'\<close>] reds_doesnt_forget[OF \<open>\<Gamma> : e \<Down>\<^bsub>L\<^esub> \<Delta> : Lam [y]. e'\<close>]
   have prem2: "fv (\<Delta>, e'[y::=x], S) \<subseteq> set L \<union> domA \<Delta>" by (auto simp add: fv_subst_eq)
 
   have "(\<Gamma>, App e x, S) \<Rightarrow> (\<Gamma>, e, Arg x # S)"..
@@ -31,14 +31,14 @@ case (Variable \<Gamma> x e L \<Delta> z S)
 
   have "x \<notin> domA \<Delta>" by (rule reds_avoids_live[OF Variable(2), where x = x]) simp_all
 
-  from `fv (\<Gamma>, Var x, S) \<subseteq> set L \<union> domA \<Gamma>`
+  from \<open>fv (\<Gamma>, Var x, S) \<subseteq> set L \<union> domA \<Gamma>\<close>
   have prem: "fv (delete x \<Gamma>, e, Upd x # S) \<subseteq> set (x#L) \<union> domA (delete x \<Gamma>)"
-    by (auto dest: set_mp[OF fv_delete_subset] set_mp[OF map_of_Some_fv_subset[OF `map_of \<Gamma> x = Some e`]])
+    by (auto dest: set_mp[OF fv_delete_subset] set_mp[OF map_of_Some_fv_subset[OF \<open>map_of \<Gamma> x = Some e\<close>]])
 
-  from `map_of \<Gamma> x = Some e`
+  from \<open>map_of \<Gamma> x = Some e\<close>
   have "(\<Gamma>, Var x, S) \<Rightarrow> (delete x \<Gamma>, e, Upd x # S)"..
   also have "\<dots> \<Rightarrow>\<^sup>* (\<Delta>, z, Upd x # S)" by (rule Variable.IH[OF prem])
-  also have "\<dots> \<Rightarrow> ((x,z)#\<Delta>, z, S)" using `x \<notin> domA \<Delta>` `isVal z` by (rule var\<^sub>2)
+  also have "\<dots> \<Rightarrow> ((x,z)#\<Delta>, z, S)" using \<open>x \<notin> domA \<Delta>\<close> \<open>isVal z\<close> by (rule var\<^sub>2)
   finally show ?case.
 next
 case (Bool \<Gamma> b L S)
@@ -129,123 +129,123 @@ lemma lemma_3:
 using assms
 proof(induction T arbitrary: \<Gamma> e S \<Delta> z rule: measure_induct_rule[where f = length])
   case (less T \<Gamma> e S \<Delta> z)
-  from `(\<Gamma>, e, S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^esub> (\<Delta>, z, S)`
+  from \<open>(\<Gamma>, e, S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^esub> (\<Delta>, z, S)\<close>
   have "(\<Gamma>, e, S) \<Rightarrow>\<^sup>*\<^bsub>T\<^esub> (\<Delta>, z, S)" and "\<forall> c'\<in>set T. S \<lesssim> stack c'" unfolding bal.simps by auto
 
   from this(1)
   show ?case
   proof(cases)
   case trace_nil
-    from `isVal z`  trace_nil show ?thesis by (auto intro: reds_isValI)
+    from \<open>isVal z\<close>  trace_nil show ?thesis by (auto intro: reds_isValI)
   next
   case (trace_cons conf' T')
-    from `T = conf' # T'` and `\<forall> c'\<in>set T. S \<lesssim> stack c'` have "S \<lesssim> stack conf'" by auto
+    from \<open>T = conf' # T'\<close> and \<open>\<forall> c'\<in>set T. S \<lesssim> stack c'\<close> have "S \<lesssim> stack conf'" by auto
 
-    from `(\<Gamma>, e, S) \<Rightarrow> conf'`
+    from \<open>(\<Gamma>, e, S) \<Rightarrow> conf'\<close>
     show ?thesis
     proof(cases)
     case (app\<^sub>1 e x)
       obtain T\<^sub>1 c\<^sub>3 c\<^sub>4 T\<^sub>2
       where "T' = T\<^sub>1 @ c\<^sub>4 # T\<^sub>2" and prem1: "(\<Gamma>, e, Arg x # S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^sub>1\<^esub> c\<^sub>3" and "c\<^sub>3 \<Rightarrow> c\<^sub>4" and prem2: " c\<^sub>4 \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^sub>2\<^esub> (\<Delta>, z, S)"
-        by (rule bal_consE[OF  `bal _ T _`[unfolded app\<^sub>1 trace_cons]]) (simp, rule)
+        by (rule bal_consE[OF  \<open>bal _ T _\<close>[unfolded app\<^sub>1 trace_cons]]) (simp, rule)
 
-      from `T = _` `T' = _` have "length T\<^sub>1 < length T" and "length T\<^sub>2 < length T" by auto
+      from \<open>T = _\<close> \<open>T' = _\<close> have "length T\<^sub>1 < length T" and "length T\<^sub>2 < length T" by auto
 
       from prem1 have "stack c\<^sub>3 =  Arg x # S" by (auto dest:  bal_stackD)
       moreover
       from prem2 have "stack c\<^sub>4 = S" by (auto dest: bal_stackD)
       moreover
-      note `c\<^sub>3 \<Rightarrow> c\<^sub>4`
+      note \<open>c\<^sub>3 \<Rightarrow> c\<^sub>4\<close>
       ultimately
       obtain \<Delta>' y e' where "c\<^sub>3 = (\<Delta>', Lam [y]. e', Arg x # S)" and "c\<^sub>4 = (\<Delta>', e'[y ::= x], S)"
         by (auto elim!: step.cases simp del: exp_assn.eq_iff)
 
       
-      from less(1)[OF `length T\<^sub>1 < length T` prem1[unfolded `c\<^sub>3 = _` `c\<^sub>4 = _`]]
+      from less(1)[OF \<open>length T\<^sub>1 < length T\<close> prem1[unfolded \<open>c\<^sub>3 = _\<close> \<open>c\<^sub>4 = _\<close>]]
       have "\<Gamma> : e \<Down>\<^bsub>upds_list S\<^esub> \<Delta>' : Lam [y]. e'" by simp
       moreover
-      from less(1)[OF `length T\<^sub>2 < length T` prem2[unfolded `c\<^sub>3 = _` `c\<^sub>4 = _`] `isVal z`]
+      from less(1)[OF \<open>length T\<^sub>2 < length T\<close> prem2[unfolded \<open>c\<^sub>3 = _\<close> \<open>c\<^sub>4 = _\<close>] \<open>isVal z\<close>]
       have "\<Delta>' : e'[y::=x] \<Down>\<^bsub>upds_list S\<^esub> \<Delta> : z" by simp
       ultimately
       show ?thesis unfolding app\<^sub>1
         by (rule reds_ApplicationI)
     next
     case (app\<^sub>2 y e x S')
-      from `conf' =_` `S = _ # S'` `S \<lesssim> stack conf'`
+      from \<open>conf' =_\<close> \<open>S = _ # S'\<close> \<open>S \<lesssim> stack conf'\<close>
       have False by (auto simp add: extends_def)
       thus ?thesis..
     next
     case (var\<^sub>1 x e)
       obtain T\<^sub>1 c\<^sub>3 c\<^sub>4 T\<^sub>2
       where "T' = T\<^sub>1 @ c\<^sub>4 # T\<^sub>2" and prem1: "(delete x \<Gamma>, e, Upd x # S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^sub>1\<^esub> c\<^sub>3" and "c\<^sub>3 \<Rightarrow> c\<^sub>4" and prem2: "c\<^sub>4 \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^sub>2\<^esub> (\<Delta>, z, S)"
-        by (rule bal_consE[OF  `bal _ T _`[unfolded var\<^sub>1 trace_cons]]) (simp, rule)
+        by (rule bal_consE[OF  \<open>bal _ T _\<close>[unfolded var\<^sub>1 trace_cons]]) (simp, rule)
       
-      from `T = _` `T' = _` have "length T\<^sub>1 < length T" and "length T\<^sub>2 < length T" by auto
+      from \<open>T = _\<close> \<open>T' = _\<close> have "length T\<^sub>1 < length T" and "length T\<^sub>2 < length T" by auto
 
       from prem1 have "stack c\<^sub>3 = Upd x # S" by (auto dest:  bal_stackD)
       moreover
       from prem2 have "stack c\<^sub>4 = S" by (auto dest: bal_stackD)
       moreover
-      note `c\<^sub>3 \<Rightarrow> c\<^sub>4`
+      note \<open>c\<^sub>3 \<Rightarrow> c\<^sub>4\<close>
       ultimately
       obtain \<Delta>' z' where "c\<^sub>3 = (\<Delta>', z', Upd x # S)" and "c\<^sub>4 = ((x,z')#\<Delta>', z', S)" and "isVal z'"
         by (auto elim!: step.cases simp del: exp_assn.eq_iff)
 
-      from `isVal z'` and prem2[unfolded `c\<^sub>4 = _`]
+      from \<open>isVal z'\<close> and prem2[unfolded \<open>c\<^sub>4 = _\<close>]
       have "T\<^sub>2 = []" by (rule isVal_stops)
-      with prem2 `c\<^sub>4 = _`
+      with prem2 \<open>c\<^sub>4 = _\<close>
       have "z' = z" and "\<Delta> = (x,z)#\<Delta>'" by auto
           
-      from less(1)[OF `length T\<^sub>1 < length T` prem1[unfolded `c\<^sub>3 = _` `c\<^sub>4 = _`  `z' = _`]  `isVal z`]
+      from less(1)[OF \<open>length T\<^sub>1 < length T\<close> prem1[unfolded \<open>c\<^sub>3 = _\<close> \<open>c\<^sub>4 = _\<close>  \<open>z' = _\<close>]  \<open>isVal z\<close>]
       have "delete x \<Gamma> : e \<Down>\<^bsub>x # upds_list S\<^esub> \<Delta>' : z" by simp
-      with `map_of _ _ = _`
-      show ?thesis unfolding var\<^sub>1(1) `\<Delta> = _` by rule
+      with \<open>map_of _ _ = _\<close>
+      show ?thesis unfolding var\<^sub>1(1) \<open>\<Delta> = _\<close> by rule
     next
     case (var\<^sub>2 x S')
-      from `conf' = _` `S = _ # S'` `S \<lesssim> stack conf'`
+      from \<open>conf' = _\<close> \<open>S = _ # S'\<close> \<open>S \<lesssim> stack conf'\<close>
       have False by (auto simp add: extends_def)
       thus ?thesis..
     next
     case (if\<^sub>1 scrut  e\<^sub>1 e\<^sub>2)
       obtain T\<^sub>1 c\<^sub>3 c\<^sub>4 T\<^sub>2
       where "T' = T\<^sub>1 @ c\<^sub>4 # T\<^sub>2" and prem1: "(\<Gamma>, scrut, Alts e\<^sub>1 e\<^sub>2 # S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^sub>1\<^esub> c\<^sub>3" and "c\<^sub>3 \<Rightarrow> c\<^sub>4" and prem2: "c\<^sub>4 \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^sub>2\<^esub> (\<Delta>, z, S)"
-        by (rule bal_consE[OF  `bal _ T _`[unfolded if\<^sub>1 trace_cons]])  (simp, rule)
+        by (rule bal_consE[OF  \<open>bal _ T _\<close>[unfolded if\<^sub>1 trace_cons]])  (simp, rule)
 
-      from `T = _` `T' = _` have "length T\<^sub>1 < length T" and "length T\<^sub>2 < length T" by auto
+      from \<open>T = _\<close> \<open>T' = _\<close> have "length T\<^sub>1 < length T" and "length T\<^sub>2 < length T" by auto
 
       from prem1 have "stack c\<^sub>3 = Alts e\<^sub>1 e\<^sub>2 # S" by (auto dest:  bal_stackD)
       moreover
       from prem2 have "stack c\<^sub>4 = S" by (auto dest: bal_stackD)
       moreover
-      note `c\<^sub>3 \<Rightarrow> c\<^sub>4`
+      note \<open>c\<^sub>3 \<Rightarrow> c\<^sub>4\<close>
       ultimately
       obtain \<Delta>' b where "c\<^sub>3 = (\<Delta>', Bool b, Alts e\<^sub>1 e\<^sub>2 # S)" and "c\<^sub>4 = (\<Delta>', (if b then e\<^sub>1 else e\<^sub>2), S)"
         by (auto elim!: step.cases simp del: exp_assn.eq_iff)
 
-      from less(1)[OF `length T\<^sub>1 < length T` prem1[unfolded `c\<^sub>3 = _` `c\<^sub>4 = _` ] isVal_Bool]
+      from less(1)[OF \<open>length T\<^sub>1 < length T\<close> prem1[unfolded \<open>c\<^sub>3 = _\<close> \<open>c\<^sub>4 = _\<close> ] isVal_Bool]
       have "\<Gamma> : scrut \<Down>\<^bsub>upds_list S\<^esub> \<Delta>' : Bool b" by simp
       moreover
-      from less(1)[OF `length T\<^sub>2 < length T` prem2[unfolded `c\<^sub>4 = _`] `isVal z`]
+      from less(1)[OF \<open>length T\<^sub>2 < length T\<close> prem2[unfolded \<open>c\<^sub>4 = _\<close>] \<open>isVal z\<close>]
       have "\<Delta>' : (if b then e\<^sub>1 else e\<^sub>2) \<Down>\<^bsub>upds_list S\<^esub> \<Delta> : z".
       ultimately
       show ?thesis unfolding if\<^sub>1 by (rule reds.IfThenElse)
    next
     case (if\<^sub>2 b e1 e2 S')
-      from `conf' = _` `S = _ # S'` `S \<lesssim> stack conf'`
+      from \<open>conf' = _\<close> \<open>S = _ # S'\<close> \<open>S \<lesssim> stack conf'\<close>
       have False by (auto simp add: extends_def)
       thus ?thesis..
     next
     case (let\<^sub>1 as e)
-      from `T = conf' # T'` have "length T' < length T" by auto
+      from \<open>T = conf' # T'\<close> have "length T' < length T" by auto
       moreover
       have "(as @ \<Gamma>, e, S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T'\<^esub> (\<Delta>, z, S)" 
-        using trace_cons `conf' = _`  `\<forall> c'\<in>set T. S \<lesssim> stack c'` by fastforce
+        using trace_cons \<open>conf' = _\<close>  \<open>\<forall> c'\<in>set T. S \<lesssim> stack c'\<close> by fastforce
       moreover
-      note `isVal z`
+      note \<open>isVal z\<close>
       ultimately
       have "as @ \<Gamma> : e \<Down>\<^bsub>upds_list S\<^esub> \<Delta> : z" by (rule less)
       moreover
-      from `atom \` domA as \<sharp>* \<Gamma>`  `atom \` domA as \<sharp>* S`
+      from \<open>atom ` domA as \<sharp>* \<Gamma>\<close>  \<open>atom ` domA as \<sharp>* S\<close>
       have "atom ` domA as \<sharp>* (\<Gamma>, upds_list S)" by (auto simp add: fresh_star_Pair)
       ultimately
       show ?thesis unfolding let\<^sub>1  by (rule reds.Let[rotated])
@@ -272,7 +272,7 @@ proof-
   moreover
   hence "\<forall> c'\<in>set T. stack (\<Gamma>, e, S) \<lesssim> stack c'"
     by (rule conjunct1[OF traces_list_all])
-       (auto elim: step.cases simp add: dummy_stack_extended[OF `set S \<subseteq> Dummy \` UNIV`])
+       (auto elim: step.cases simp add: dummy_stack_extended[OF \<open>set S \<subseteq> Dummy ` UNIV\<close>])
   ultimately
   have "(\<Gamma>, e, S) \<Rightarrow>\<^sup>b\<^sup>*\<^bsub>T\<^esub> (\<Delta>, z, S)"
     by (rule balI) simp

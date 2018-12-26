@@ -271,7 +271,7 @@ theorem sturm_ext_above:
   shows "proots_count p {x. a<x} = changes_gt_smods_ext a p (pderiv p)"
 proof -
   define ps where "ps\<equiv>smods_ext p (pderiv p)"
-  have "p\<noteq>0" and "p\<in>set ps" using `poly p a\<noteq>0` ps_def by auto
+  have "p\<noteq>0" and "p\<in>set ps" using \<open>poly p a\<noteq>0\<close> ps_def by auto
   obtain ub where ub:"\<forall>p\<in>set ps. \<forall>x. poly p x=0 \<longrightarrow> x<ub"
     and ub_sgn:"\<forall>x\<ge>ub. \<forall>p\<in>set ps. sgn (poly p x) = sgn_pos_inf p"
     and "ub>a"
@@ -292,8 +292,8 @@ proof -
     thus ?thesis unfolding changes_gt_smods_ext_def changes_itv_smods_ext_def ps_def
       by metis
   qed
-  moreover have "poly p ub\<noteq>0" using ub `p\<in>set ps` by auto
-  ultimately show ?thesis using sturm_ext_interval[OF `ub>a` assms] by auto
+  moreover have "poly p ub\<noteq>0" using ub \<open>p\<in>set ps\<close> by auto
+  ultimately show ?thesis using sturm_ext_interval[OF \<open>ub>a\<close> assms] by auto
 qed
 
 theorem sturm_ext_below:
@@ -320,8 +320,8 @@ proof -
     thus ?thesis unfolding changes_le_smods_ext_def changes_itv_smods_ext_def ps_def
       by metis
   qed
-  moreover have "poly p lb\<noteq>0" using lb `p\<in>set ps` by auto
-  ultimately show ?thesis using sturm_ext_interval[OF `lb<b` _ assms] by auto
+  moreover have "poly p lb\<noteq>0" using lb \<open>p\<in>set ps\<close> by auto
+  ultimately show ?thesis using sturm_ext_interval[OF \<open>lb<b\<close> _ assms] by auto
 qed
 
 theorem sturm_ext_R: 
@@ -329,7 +329,7 @@ theorem sturm_ext_R:
   shows "proots_count p UNIV = changes_R_smods_ext p (pderiv p)"
 proof - 
   define ps where "ps\<equiv>smods_ext p (pderiv p)"
-  have "p\<in>set ps" using ps_def `p\<noteq>0` by auto
+  have "p\<in>set ps" using ps_def \<open>p\<noteq>0\<close> by auto
   obtain lb where lb:"\<forall>p\<in>set ps. \<forall>x. poly p x=0 \<longrightarrow> x>lb"
     and lb_sgn:"\<forall>x\<le>lb. \<forall>p\<in>set ps. sgn (poly p x) = sgn_neg_inf p"
     and "lb<0"
@@ -355,8 +355,8 @@ proof -
     thus ?thesis unfolding changes_R_smods_ext_def changes_itv_smods_ext_def ps_def
       by metis
   qed
-  moreover have "poly p lb\<noteq>0" and "poly p ub\<noteq>0" using lb ub `p\<in>set ps` by auto
-  moreover have "lb<ub" using `lb<0` `0<ub` by auto
+  moreover have "poly p lb\<noteq>0" and "poly p ub\<noteq>0" using lb ub \<open>p\<in>set ps\<close> by auto
+  moreover have "lb<ub" using \<open>lb<0\<close> \<open>0<ub\<close> by auto
   ultimately show ?thesis using sturm_ext_interval by auto
 qed
 

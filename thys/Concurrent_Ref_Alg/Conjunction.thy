@@ -1,16 +1,16 @@
-section {* Weak Conjunction Operator \label{S:conjunction} *}
+section \<open>Weak Conjunction Operator \label{S:conjunction}\<close>
 
 theory Conjunction
 imports Refinement_Lattice
 begin
 
-text {*
+text \<open>
   The weak conjunction operator $\doublecap$ is similar to
   least upper bound ($\sqcup$) 
   but is abort strict,
   i.e.\ the lattice bottom is an annihilator: $c \doublecap \bot = \bot$. 
   It has identity the command chaos that allows any non-aborting behaviour.
-*}
+\<close>
 
 locale chaos =
   fixes chaos :: "'a::refinement_lattice"    ("chaos") 
@@ -29,10 +29,10 @@ locale conj =
   fixes conj :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a"   (infixl "\<iinter>" 80)
   assumes conj_bot_right: "c \<iinter> \<bottom> = \<bottom>"
 
-text {* 
+text \<open>
   Conjunction forms an idempotent, commutative monoid
   (i.e. a semi-lattice), with identity chaos.
-*}
+\<close>
 
 locale conjunction = conj + chaos + conj: semilattice_neutr conj chaos
 
@@ -61,11 +61,11 @@ end
 
 
 
-subsection {* Distributed weak conjunction *}
+subsection \<open>Distributed weak conjunction\<close>
 
-text {*
+text \<open>
   The weak conjunction operator distributes across arbitrary non-empty infima.
-*}
+\<close>
 
 locale conj_distrib = conjunction +
   assumes Inf_conj_distrib: "D \<noteq> {} \<Longrightarrow> (\<Sqinter> D) \<iinter> c = (\<Sqinter>d\<in>D. d \<iinter> c)"   (* 48 *)

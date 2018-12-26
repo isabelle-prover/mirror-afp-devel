@@ -6,7 +6,7 @@ begin
 
 text \<open>
 Contents:
-\<^item> We formalize Desargues's property, [@{text "desargues_prop"}], that states that if two triangles are perspective 
+\<^item> We formalize Desargues's property, [\<open>desargues_prop\<close>], that states that if two triangles are perspective 
 from a point, then they are perspective from a line. 
 Note that some planes satisfy that property and some others don't, hence Desargues's property is
 not a theorem though it is a theorem in projective space geometry. 

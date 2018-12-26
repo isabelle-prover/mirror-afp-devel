@@ -22,7 +22,7 @@ begin
     "FL_logically_equivalent F P Q \<longleftrightarrow> \<not>(\<exists>x. x \<in> \<A>[F] \<and> x distinguishes P from Q)"
   by (meson FL_logically_equivalent_def Not is_distinguishing_formula_def FL_valid_Not)
 
-  text \<open>There exists a distinguishing formula for~@{term P} and~@{term Q} in~@{text "\<A>[F]"} whose
+  text \<open>There exists a distinguishing formula for~@{term P} and~@{term Q} in~\<open>\<A>[F]\<close> whose
     support is contained in~@{term "supp (F,P)"}.\<close>
 
   lemma FL_distinguished_bounded_support:
@@ -93,15 +93,15 @@ begin
           using card_B by auto
         from fresh_p have "p \<bullet> F = F"
           using fresh_star_Pair fresh_star_supp_conv perm_supp_eq by blast
-        with `x \<in> \<A>[F]` show "x' \<in> \<A>[F]"
+        with \<open>x \<in> \<A>[F]\<close> show "x' \<in> \<A>[F]"
           using p_x by (metis is_FL_formula_eqvt)
       qed
     moreover have "?y distinguishes P from Q"
       unfolding is_distinguishing_formula_def proof
-        from `x distinguishes P from Q` show "P \<Turnstile> ?y"
+        from \<open>x distinguishes P from Q\<close> show "P \<Turnstile> ?y"
           by (auto simp add: card_B finite_supp_B) (metis is_distinguishing_formula_def fresh_star_Un supp_Pair supp_perm_eq FL_valid_eqvt)
       next
-        from `x distinguishes P from Q` show "\<not> Q \<Turnstile> ?y"
+        from \<open>x distinguishes P from Q\<close> show "\<not> Q \<Turnstile> ?y"
           by (auto simp add: card_B finite_supp_B) (metis is_distinguishing_formula_def permute_zero fresh_star_zero)
       qed
     ultimately show ?thesis
@@ -151,9 +151,9 @@ begin
             let ?y = "Conj (Abs_bset (g ` ?Q')) :: ('idx, 'pred, 'act, 'effect) formula"
             have "Act f \<alpha> ?y \<in> \<A>[F]"
               proof
-                from `f \<in>\<^sub>f\<^sub>s F` show "f \<in>\<^sub>f\<^sub>s F" .
+                from \<open>f \<in>\<^sub>f\<^sub>s F\<close> show "f \<in>\<^sub>f\<^sub>s F" .
               next
-                from `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)` show "bn \<alpha> \<sharp>* (F, f)"
+                from \<open>bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)\<close> show "bn \<alpha> \<sharp>* (F, f)"
                   using fresh_star_Pair by blast
               next
                 show "Conj (Abs_bset (g ` ?Q')) \<in> \<A>[L (\<alpha>, F, f)]"
@@ -186,14 +186,14 @@ begin
               proof
                 assume "Q \<Turnstile> Act f \<alpha> ?y"
                 then obtain Q' where 1: "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and 2: "Q' \<Turnstile> ?y"
-                  using `bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)` by (metis fresh_star_Pair FL_valid_Act_fresh)
+                  using \<open>bn \<alpha> \<sharp>* (\<langle>f\<rangle>Q, F, f)\<close> by (metis fresh_star_Pair FL_valid_Act_fresh)
                 from 2 have "\<And>Q''. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q''\<rangle> \<longrightarrow> Q' \<Turnstile> g Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False
                   using is_distinguishing_formula_def by blast
               qed
             ultimately have False
-              by (metis `FL_logically_equivalent F P Q` FL_logically_equivalent_def)
+              by (metis \<open>FL_logically_equivalent F P Q\<close> FL_logically_equivalent_def)
           }
           then show ?thesis by auto
         qed

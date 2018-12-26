@@ -329,7 +329,7 @@ begin
 
     have "finite (bn \<alpha>')"
       by (fact bn_finite)
-    moreover note `finite (supp X)`
+    moreover note \<open>finite (supp X)\<close>
     moreover have "finite (supp (supp x' - bn \<alpha>', supp \<alpha>' - bn \<alpha>', \<langle>\<alpha>',P'\<rangle>))"
       by (simp add: supp_Pair finite_sets_supp finite_supp)
     moreover have "bn \<alpha>' \<sharp>* (supp x' - bn \<alpha>', supp \<alpha>' - bn \<alpha>', \<langle>\<alpha>',P'\<rangle>)"

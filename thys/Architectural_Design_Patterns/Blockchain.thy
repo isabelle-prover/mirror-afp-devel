@@ -8,9 +8,9 @@ theory Blockchain imports Auxiliary DynamicArchitectures.Dynamic_Architecture_Ca
 begin
 
 subsection "Blockchains"
-text {*
+text \<open>
   A blockchain itself is modeled as a simple list.
-*}
+\<close>
 
 type_synonym 'a BC = "'a list"
 
@@ -80,9 +80,9 @@ proof -
 qed
 
 subsection "Blockchain Architectures"
-text {*
+text \<open>
   In the following we describe the locale for blockchain architectures.
-*}
+\<close>
 
 locale Blockchain = dynamic_component cmp active
   for active :: "'nid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
@@ -439,10 +439,10 @@ lemma mbc_prop[simp]:
   using someI_ex[OF mbc_ex] MBC_def by simp
 
 subsubsection "Trusted Proof of Work"
-text {*
+text \<open>
   An important construction is the maximal proof of work available in the trusted community.
   The construction was already introduces in the locale itself since it was used to express some of the locale assumptions.
-*}
+\<close>
 
 abbreviation pow_cond:: "trace \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
   where "pow_cond t n n' \<equiv> \<forall>nid\<in>actTr (t n). length (bc (\<sigma>\<^bsub>nid\<^esub>(t n))) \<le> n'"
@@ -655,9 +655,9 @@ proof -
 qed
 
 subsubsection "History"
-text {*
+text \<open>
   In the following we introduce an operator which extracts the development of a blockchain up to a time point @{term n}.
-*}
+\<close>
 
 abbreviation "his_prop t n nid n' nid' x \<equiv>
   (\<exists>n. latestAct_cond nid' t n' n) \<and> \<parallel>snd x\<parallel>\<^bsub>t (fst x)\<^esub> \<and> fst x = \<langle>nid' \<leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<and>
@@ -689,9 +689,9 @@ next
   ultimately show ?thesis by simp
 qed
 
-text {*
+text \<open>
   In addition we also introduce an operator to obtain the predecessor of a blockchains development.
-*}
+\<close>
 
 definition "hisPred"
   where "hisPred t n nid n' \<equiv> (GREATEST n''. \<exists>nid'. (n'',nid')\<in> his t n nid \<and> n'' < n')"
@@ -948,7 +948,7 @@ next
           moreover from \<open>(n''', nid''') \<in> his t n nid\<close>
             have "\<exists>nid'. (n''', nid') \<in> his t n nid" by auto
           ultimately have "\<exists>!nid'. (n''', nid') \<in> his t n nid" using step.IH by auto
-          with `(n''', nid''') \<in> his t n nid` `(n'''', nid'''') \<in> his t n nid` \<open>n'''=n''''\<close>
+          with \<open>(n''', nid''') \<in> his t n nid\<close> \<open>(n'''', nid'''') \<in> his t n nid\<close> \<open>n'''=n''''\<close>
             show ?thesis by auto
         qed
         ultimately have "(n', nid') = (n', nid'')" using n'nid' by simp
@@ -1087,9 +1087,9 @@ proof -
   with his_le[of "(n',nid')"] show ?thesis by simp
 qed
 
-text {*
+text \<open>
   An extended version of the development in which deactivations are filled with the last value.
-*}
+\<close>
 
 function devExt::"trace \<Rightarrow> nat \<Rightarrow> 'nid \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'nid BC"
   where "\<lbrakk>\<exists>n'<n\<^sub>s. \<not>Option.is_none (devBC t n nid n'); Option.is_none (devBC t n nid n\<^sub>s)\<rbrakk> \<Longrightarrow> devExt t n nid n\<^sub>s 0 = bc (\<sigma>\<^bsub>the (devBC t n nid (GREATEST n'. n'<n\<^sub>s \<and> \<not>Option.is_none (devBC t n nid n')))\<^esub>(t (GREATEST n'. n'<n\<^sub>s \<and> \<not>Option.is_none (devBC t n nid n'))))"

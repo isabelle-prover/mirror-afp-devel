@@ -1,9 +1,9 @@
-section {* Parametricity Theorems for HOL *}
+section \<open>Parametricity Theorems for HOL\<close>
 theory Param_HOL
 imports Param_Tool
 begin
 
-subsection {*Sets*}
+subsection \<open>Sets\<close>
 
 lemma param_empty[param]:
   "({},{})\<in>\<langle>R\<rangle>set_rel" by (auto simp: set_rel_def)

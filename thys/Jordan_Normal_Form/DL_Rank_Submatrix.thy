@@ -16,8 +16,8 @@ proof (rule eq_vecI)
   fix j assume "j < dim_vec (row A (pick I i))"
   then have "j < dim_col (submatrix A I UNIV)" "j < dim_col A" "j < card {j. j < dim_col A \<and> j \<in> UNIV}" using dim_eq by auto
   show "row (submatrix A I UNIV) i $ j = row A (pick I i) $ j"
-    unfolding row_def index_vec[OF `j < dim_col (submatrix A I UNIV)`] index_vec[OF `j < dim_col A`]
-    using submatrix_index[OF assms `j < card {j. j < dim_col A \<and> j \<in> UNIV}`] using pick_UNIV by auto
+    unfolding row_def index_vec[OF \<open>j < dim_col (submatrix A I UNIV)\<close>] index_vec[OF \<open>j < dim_col A\<close>]
+    using submatrix_index[OF assms \<open>j < card {j. j < dim_col A \<and> j \<in> UNIV}\<close>] using pick_UNIV by auto
 qed
 
 lemma distinct_cols_submatrix_UNIV:
@@ -28,7 +28,7 @@ using assms proof (rule contrapos_pp)
   then obtain i j where "i < dim_col A" "j < dim_col A" "(cols A)!i = (cols A)!j" "i\<noteq>j"
     using distinct_conv_nth cols_length by metis
   have "i < dim_col (submatrix A I UNIV)" "j < dim_col (submatrix A I UNIV)"
-    unfolding dim_submatrix using `i < dim_col A` `j < dim_col A`by simp_all
+    unfolding dim_submatrix using \<open>i < dim_col A\<close> \<open>j < dim_col A\<close>by simp_all
   then have "i < length (cols (submatrix A I UNIV))" "j < length (cols (submatrix A I UNIV))"
     unfolding cols_length by simp_all
   have "(cols (submatrix A I UNIV))!i = (cols (submatrix A I UNIV))!j"
@@ -40,20 +40,20 @@ using assms proof (rule contrapos_pp)
       using \<open>j < length (cols (submatrix A I UNIV))\<close>  by auto
     then have  "k < card {j. j < dim_row A \<and> j \<in> I}"  using dim_submatrix(1) by metis
     have i_transfer:"cols (submatrix A I UNIV) ! i $ k = (cols A) ! i $ (pick I k)"
-      unfolding cols_nth[OF `i < dim_col (submatrix A I UNIV)`] col_def index_vec[OF `k < dim_row (submatrix A I UNIV)`]
-      unfolding submatrix_index[OF `k < card {j. j < dim_row A \<and> j \<in> I}` `i < dim_col (submatrix A I UNIV)`[unfolded dim_submatrix]]
-      unfolding pick_UNIV cols_nth[OF `i < dim_col A`] col_def index_vec[OF pick_le[OF `k < card {j. j < dim_row A \<and> j \<in> I}`]]
+      unfolding cols_nth[OF \<open>i < dim_col (submatrix A I UNIV)\<close>] col_def index_vec[OF \<open>k < dim_row (submatrix A I UNIV)\<close>]
+      unfolding submatrix_index[OF \<open>k < card {j. j < dim_row A \<and> j \<in> I}\<close> \<open>i < dim_col (submatrix A I UNIV)\<close>[unfolded dim_submatrix]]
+      unfolding pick_UNIV cols_nth[OF \<open>i < dim_col A\<close>] col_def index_vec[OF pick_le[OF \<open>k < card {j. j < dim_row A \<and> j \<in> I}\<close>]]
       by metis
     have j_transfer:"cols (submatrix A I UNIV) ! j $ k = (cols A) ! j $ (pick I k)"
-      unfolding cols_nth[OF `j < dim_col (submatrix A I UNIV)`] col_def index_vec[OF `k < dim_row (submatrix A I UNIV)`]
-      unfolding submatrix_index[OF `k < card {j. j < dim_row A \<and> j \<in> I}` `j < dim_col (submatrix A I UNIV)`[unfolded dim_submatrix]]
-      unfolding pick_UNIV cols_nth[OF `j < dim_col A`] col_def index_vec[OF pick_le[OF `k < card {j. j < dim_row A \<and> j \<in> I}`]]
+      unfolding cols_nth[OF \<open>j < dim_col (submatrix A I UNIV)\<close>] col_def index_vec[OF \<open>k < dim_row (submatrix A I UNIV)\<close>]
+      unfolding submatrix_index[OF \<open>k < card {j. j < dim_row A \<and> j \<in> I}\<close> \<open>j < dim_col (submatrix A I UNIV)\<close>[unfolded dim_submatrix]]
+      unfolding pick_UNIV cols_nth[OF \<open>j < dim_col A\<close>] col_def index_vec[OF pick_le[OF \<open>k < card {j. j < dim_row A \<and> j \<in> I}\<close>]]
       by metis
     show "cols (submatrix A I UNIV) ! i $ k = cols (submatrix A I UNIV) ! j $ k"
       using \<open>cols A ! i = cols A ! j\<close> i_transfer j_transfer by auto
   qed
   then show "\<not> distinct (cols (submatrix A I UNIV))" unfolding distinct_conv_nth
-    using `i < length (cols (submatrix A I UNIV))` `j < length (cols (submatrix A I UNIV))` \<open>i \<noteq> j\<close> by blast
+    using \<open>i < length (cols (submatrix A I UNIV))\<close> \<open>j < length (cols (submatrix A I UNIV))\<close> \<open>i \<noteq> j\<close> by blast
 qed
 
 lemma cols_submatrix_subset: "set (cols (submatrix A UNIV J)) \<subseteq> set (cols A)"
@@ -64,20 +64,20 @@ proof
   then have "j < dim_col (submatrix A UNIV J)" by simp
   then have "j < card {j. j < dim_col A \<and> j \<in> J}" by (simp add: dim_submatrix(2))
   have "cols (submatrix A UNIV J) ! j = cols A ! (pick J j)"
-    unfolding cols_nth[OF `j < dim_col (submatrix A UNIV J)`] cols_nth[OF pick_le[OF `j < card {j. j < dim_col A \<and> j \<in> J}`]]
+    unfolding cols_nth[OF \<open>j < dim_col (submatrix A UNIV J)\<close>] cols_nth[OF pick_le[OF \<open>j < card {j. j < dim_col A \<and> j \<in> J}\<close>]]
   proof (rule eq_vecI)
     show "dim_vec (col (submatrix A UNIV J) j) = dim_vec (col A (pick J j))" unfolding dim_col dim_submatrix by auto
     fix i assume "i < dim_vec (col A (pick J j))"
     then have "i < dim_row A" by simp
     then have "i < dim_row (submatrix A UNIV J)" using \<open>dim_vec (col (submatrix A UNIV J) j) = dim_vec (col A (pick J j))\<close> by auto
     show "col (submatrix A UNIV J) j $ i = col A (pick J j) $ i"
-      unfolding col_def index_vec[OF `i < dim_row (submatrix A UNIV J)`] index_vec[OF `i < dim_row A`]
+      unfolding col_def index_vec[OF \<open>i < dim_row (submatrix A UNIV J)\<close>] index_vec[OF \<open>i < dim_row A\<close>]
       using submatrix_index by (metis (no_types, lifting) \<open>dim_vec (col (submatrix A UNIV J) j) = dim_vec (col A (pick J j))\<close>
       \<open>i < dim_vec (col A (pick J j))\<close> \<open>j < dim_col (submatrix A UNIV J)\<close> dim_col dim_submatrix(1) dim_submatrix(2) pick_UNIV)
   qed
   then show "c \<in> set (cols A)"
-    using `cols (submatrix A UNIV J) ! j = c`
-    using pick_le[OF `j < card {j. j < dim_col A \<and> j \<in> J}`] by (metis cols_length nth_mem)
+    using \<open>cols (submatrix A UNIV J) ! j = c\<close>
+    using pick_le[OF \<open>j < card {j. j < dim_col A \<and> j \<in> J}\<close>] by (metis cols_length nth_mem)
 qed
 
 lemma (in vec_space) lin_dep_submatrix_UNIV:
@@ -90,7 +90,7 @@ proof -
   obtain v where 2:"v \<in> carrier_vec nc" and 3:"v \<noteq> 0\<^sub>v nc" and "A *\<^sub>v v = 0\<^sub>v n"
     using vec_space.lin_depE[OF assms(1) assms(2) distinct_cols_submatrix_UNIV[OF assms(3)]] by auto
   have 1: "submatrix A I UNIV \<in> carrier_mat (card {i. i < n \<and> i \<in> I}) nc"
-    apply (rule carrier_matI) unfolding dim_submatrix using `A \<in> carrier_mat n nc` by auto
+    apply (rule carrier_matI) unfolding dim_submatrix using \<open>A \<in> carrier_mat n nc\<close> by auto
   have 4:"submatrix A I UNIV *\<^sub>v v = 0\<^sub>v (card {i. i < n \<and> i \<in> I})"
   proof (rule eq_vecI)
     show dim_eq:"dim_vec (submatrix A I UNIV *\<^sub>v v) = dim_vec (0\<^sub>v (card {i. i < n \<and> i \<in> I}))" using "1" by auto
@@ -100,7 +100,7 @@ proof -
     also have "... = row A (pick I i) \<bullet> v" using row_submatrix_UNIV
       by (metis (no_types, lifting)  dim_eq dim_mult_mat_vec dim_submatrix(1) \<open>i < dim_vec (0\<^sub>v (card {i. i < n \<and> i \<in> I}))\<close>)
     also have "... = 0"
-      using `A *\<^sub>v v = 0\<^sub>v n` i_le[THEN pick_le] by (metis assms(1) index_mult_mat_vec carrier_matD(1) index_zero_vec(1))
+      using \<open>A *\<^sub>v v = 0\<^sub>v n\<close> i_le[THEN pick_le] by (metis assms(1) index_mult_mat_vec carrier_matD(1) index_zero_vec(1))
     also have "... = 0\<^sub>v (card {i. i < n \<and> i \<in> I}) $ i" by (simp add: i_le)
     finally show "(submatrix A I UNIV *\<^sub>v v) $ i = 0\<^sub>v (card {i. i < n \<and> i \<in> I}) $ i" by metis
   qed
@@ -113,7 +113,7 @@ assumes "det (submatrix A I J) \<noteq> 0"
 shows "card {j. j < nc \<and> j \<in> J} \<le> rank A"
 proof -
   have square:"dim_row (submatrix A I J) = dim_col (submatrix A I J)"
-   using det_def `det (submatrix A I J) \<noteq> 0` by metis
+   using det_def \<open>det (submatrix A I J) \<noteq> 0\<close> by metis
   then have full_rank:"vec_space.rank (dim_row (submatrix A I J)) (submatrix A I J) = dim_row (submatrix A I J)"
    using vec_space.low_rank_det_zero assms(2) carrier_matI by auto
   then have distinct:"distinct (cols (submatrix A I J))" using vec_space.non_distinct_low_rank
@@ -126,13 +126,13 @@ proof -
     using submatrix_split dim_submatrix(1) indpt by (metis (full_types) assms(1) carrier_matD(1))
 
   have "submatrix A UNIV J \<in> carrier_mat n (dim_col (submatrix A UNIV J))"
-    apply (rule carrier_matI) unfolding dim_submatrix(1) using `A \<in> carrier_mat n nc` carrier_matD by simp_all
+    apply (rule carrier_matI) unfolding dim_submatrix(1) using \<open>A \<in> carrier_mat n nc\<close> carrier_matD by simp_all
   have "lin_indpt (set (cols (submatrix A UNIV J)))"
-    using indpt2 vec_space.lin_dep_submatrix_UNIV[OF `submatrix A UNIV J \<in> carrier_mat n (dim_col (submatrix A UNIV J))` _ distinct2] by blast
+    using indpt2 vec_space.lin_dep_submatrix_UNIV[OF \<open>submatrix A UNIV J \<in> carrier_mat n (dim_col (submatrix A UNIV J))\<close> _ distinct2] by blast
   have distinct3:"distinct (cols (submatrix A UNIV J))" by (metis distinct distinct_cols_submatrix_UNIV submatrix_split)
   show ?thesis using
-    rank_ge_card_indpt[OF `A \<in> carrier_mat n nc` cols_submatrix_subset `lin_indpt (set (cols (submatrix A UNIV J)))`,
-    unfolded distinct_card[OF distinct3, unfolded cols_length dim_submatrix], unfolded carrier_matD(2)[OF `A \<in> carrier_mat n nc`]]
+    rank_ge_card_indpt[OF \<open>A \<in> carrier_mat n nc\<close> cols_submatrix_subset \<open>lin_indpt (set (cols (submatrix A UNIV J)))\<close>,
+    unfolded distinct_card[OF distinct3, unfolded cols_length dim_submatrix], unfolded carrier_matD(2)[OF \<open>A \<in> carrier_mat n nc\<close>]]
     by blast
 qed
 

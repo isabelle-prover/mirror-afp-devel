@@ -448,18 +448,18 @@ next
   have "((\<lambda>x. inverse (x ^ Suc n)) has_real_derivative -real (Suc n) * inverse (t ^ Suc (Suc n))) (at t)"
     using DERIV_inverse_fun[OF DERIV_pow[where n="Suc n"], where s=UNIV]
     apply(rule iffD1[OF DERIV_cong_ev[OF refl], rotated 2])
-    using `t \<noteq> 0`
+    using \<open>t \<noteq> 0\<close>
     by (simp_all add: divide_simps)
   hence "((\<lambda>x. fact n * (-1::real)^n * inverse (x ^ Suc n)) has_real_derivative fact (Suc n) * (- 1) ^ Suc n / t ^ Suc (Suc n)) (at t)"
     apply(rule iffD1[OF DERIV_cong_ev, OF refl _ _ DERIV_cmult[where c="fact n * (-1::real)^n"], rotated 2])
-    using `t \<noteq> 0`
+    using \<open>t \<noteq> 0\<close>
     by (simp_all add: field_simps distrib_left)
   then show "((\<lambda>x. interpret_floatarith (deriv_rec (Inverse (Var 0)) n) (xs[0:=x])) has_real_derivative
          interpret_floatarith (deriv_rec (Inverse (Var 0)) (Suc n)) (xs[0:=t]))
          (at t within S)"
     apply -
     apply (rule has_field_derivative_at_within)
-    apply(rule iffD1[OF DERIV_cong_ev[OF refl _ closed_formula[OF `t \<noteq> 0`, symmetric]], unfolded f_def, rotated 1])
+    apply(rule iffD1[OF DERIV_cong_ev[OF refl _ closed_formula[OF \<open>t \<noteq> 0\<close>, symmetric]], unfolded f_def, rotated 1])
      apply simp
     using assms
     by (simp, safe, simp_all add: fact_real_float_equiv inverse_eq_divide even_iff_mod_2_eq_zero)

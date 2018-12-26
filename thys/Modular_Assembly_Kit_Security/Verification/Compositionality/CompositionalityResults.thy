@@ -4578,18 +4578,18 @@ proof -
      have "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}"
        by auto
      
-     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=`V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>` `V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>` 
-              `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>` `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>` `N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}`
+     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=\<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> 
+              \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> \<open>N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}\<close>
     
     (*Show ES1\<parallel>ES2 is a well behaved composition w.r.t.  ?\<V>\<^sub>1' and ?\<V>\<^sub>2' *)
      have wbc1: "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> E\<^bsub>ES1\<^esub>={} \<and> N\<^bsub>?\<V>\<^sub>2'\<^esub> \<inter> E\<^bsub>ES2\<^esub>={}"
        by auto
      
      
-    from `SR \<V>1 Tr\<^bsub>ES1\<^esub>`  have "R ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
+    from \<open>SR \<V>1 Tr\<^bsub>ES1\<^esub>\<close>  have "R ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
       using validES1 validV1 BSPTaxonomyDifferentCorrections.SR_implies_R_for_modified_view  
       unfolding  BSPTaxonomyDifferentCorrections_def by auto
-    from `SR \<V>2 Tr\<^bsub>ES2\<^esub>`  have "R ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
+    from \<open>SR \<V>2 Tr\<^bsub>ES2\<^esub>\<close>  have "R ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
       using validES2 validV2  BSPTaxonomyDifferentCorrections.SR_implies_R_for_modified_view 
       unfolding BSPTaxonomyDifferentCorrections_def by auto   
  
@@ -4597,13 +4597,13 @@ proof -
          properSeparation_\<V>\<^sub>1\<V>\<^sub>2  wbc1
     have "Compositionality ES1 ES2 ?\<V>' ?\<V>\<^sub>1' ?\<V>\<^sub>2'" unfolding Compositionality_def 
       by (simp add: properSeparationOfViews_def wellBehavedComposition_def)
-    with `R ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>` `R ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>` have "R ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
+    with \<open>R ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>\<close> \<open>R ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>\<close> have "R ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
      using Compositionality.compositionality_R by blast
      
    from  validES1 validES2 composeES_yields_ES validVC
    have "BSPTaxonomyDifferentCorrections (ES1\<parallel>ES2) \<V>"
       unfolding BSPTaxonomyDifferentCorrections_def by auto 
-    with `R ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>` have "SR \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
+    with \<open>R ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>\<close> have "SR \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
       using BSPTaxonomyDifferentCorrections.R_implies_SR_for_modified_view  by auto 
   }
   thus ?thesis by auto  
@@ -4643,18 +4643,18 @@ proof -
      have "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}"
        by auto
      
-     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=`V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>` `V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>` 
-              `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>` `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>` `N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}`
+     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=\<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> 
+              \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> \<open>N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}\<close>
     
     (*Show ES1\<parallel>ES2 is a well behaved composition w.r.t.  ?\<V>\<^sub>1' and ?\<V>\<^sub>2' *)
      have wbc1: "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> E\<^bsub>ES1\<^esub>={} \<and> N\<^bsub>?\<V>\<^sub>2'\<^esub> \<inter> E\<^bsub>ES2\<^esub>={}"
        by auto
      
      
-    from `SD \<V>1 Tr\<^bsub>ES1\<^esub>`  have "BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
+    from \<open>SD \<V>1 Tr\<^bsub>ES1\<^esub>\<close>  have "BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
       using validES1 validV1 BSPTaxonomyDifferentCorrections.SD_implies_BSD_for_modified_view
       unfolding  BSPTaxonomyDifferentCorrections_def by auto
-    from `SD \<V>2 Tr\<^bsub>ES2\<^esub>`  have "BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
+    from \<open>SD \<V>2 Tr\<^bsub>ES2\<^esub>\<close>  have "BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
       using validES2 validV2 BSPTaxonomyDifferentCorrections.SD_implies_BSD_for_modified_view
       unfolding BSPTaxonomyDifferentCorrections_def by auto   
  
@@ -4663,13 +4663,13 @@ proof -
     have "Compositionality ES1 ES2 ?\<V>' ?\<V>\<^sub>1' ?\<V>\<^sub>2'"
       unfolding Compositionality_def
       by (simp add: properSeparationOfViews_def wellBehavedComposition_def)
-    with `BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>` `BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>` have "BSD ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
+    with \<open>BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>\<close> \<open>BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>\<close> have "BSD ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
      using Compositionality.compositionality_BSD by blast
      
    from  validES1 validES2 composeES_yields_ES validVC
    have "BSPTaxonomyDifferentCorrections (ES1\<parallel>ES2) \<V>"
       unfolding BSPTaxonomyDifferentCorrections_def by auto 
-    with `BSD ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>` have "SD \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
+    with \<open>BSD ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>\<close> have "SD \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
       using BSPTaxonomyDifferentCorrections.BSD_implies_SD_for_modified_view  by auto 
   }
   thus ?thesis by auto  
@@ -4712,23 +4712,23 @@ proof -
      have "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}"
        by auto
      
-     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=`V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>` `V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>` 
-              `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>` `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>` `N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}`
+     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=\<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> 
+              \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> \<open>N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}\<close>
     
     (*Show ES1\<parallel>ES2 is a well behaved composition w.r.t.  ?\<V>\<^sub>1' and ?\<V>\<^sub>2' *)
      have wbc1: "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> E\<^bsub>ES1\<^esub>={} \<and> N\<^bsub>?\<V>\<^sub>2'\<^esub> \<inter> E\<^bsub>ES2\<^esub>={}"
        by auto
      
-    from `SD \<V>1 Tr\<^bsub>ES1\<^esub>`  have "BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
+    from \<open>SD \<V>1 Tr\<^bsub>ES1\<^esub>\<close>  have "BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
       using validES1 validV1 BSPTaxonomyDifferentCorrections.SD_implies_BSD_for_modified_view 
       unfolding  BSPTaxonomyDifferentCorrections_def by auto
-    from `SD \<V>2 Tr\<^bsub>ES2\<^esub>`  have "BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
+    from \<open>SD \<V>2 Tr\<^bsub>ES2\<^esub>\<close>  have "BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
       using validES2 validV2 BSPTaxonomyDifferentCorrections.SD_implies_BSD_for_modified_view 
       unfolding BSPTaxonomyDifferentCorrections_def by auto  
-    from `SI \<V>1 Tr\<^bsub>ES1\<^esub>`  have "BSI ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
+    from \<open>SI \<V>1 Tr\<^bsub>ES1\<^esub>\<close>  have "BSI ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
       using validES1 validV1 BSPTaxonomyDifferentCorrections.SI_implies_BSI_for_modified_view 
       unfolding  BSPTaxonomyDifferentCorrections_def by auto
-    from `SI \<V>2 Tr\<^bsub>ES2\<^esub>`  have "BSI ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
+    from \<open>SI \<V>2 Tr\<^bsub>ES2\<^esub>\<close>  have "BSI ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
       using validES2 validV2 BSPTaxonomyDifferentCorrections.SI_implies_BSI_for_modified_view 
       unfolding BSPTaxonomyDifferentCorrections_def by auto   
 
@@ -4736,14 +4736,14 @@ proof -
          properSeparation_\<V>\<^sub>1\<V>\<^sub>2  wbc1
     have "Compositionality ES1 ES2 ?\<V>' ?\<V>\<^sub>1' ?\<V>\<^sub>2'" unfolding Compositionality_def 
       by (simp add: properSeparationOfViews_def wellBehavedComposition_def)
-    with `BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>` `BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>` `BSI  ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>` `BSI ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>`
+    with \<open>BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>\<close> \<open>BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>\<close> \<open>BSI  ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>\<close> \<open>BSI ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>\<close>
     have "BSI ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
      using Compositionality.compositionality_BSI by blast
      
    from  validES1 validES2 composeES_yields_ES validVC
    have "BSPTaxonomyDifferentCorrections (ES1\<parallel>ES2) \<V>"
       unfolding BSPTaxonomyDifferentCorrections_def by auto 
-    with `BSI ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>` have "SI \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
+    with \<open>BSI ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>\<close> have "SI \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
       using BSPTaxonomyDifferentCorrections.BSI_implies_SI_for_modified_view  by auto 
   }
   thus ?thesis by auto  
@@ -4801,25 +4801,25 @@ proof -
      have "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}"
        by auto
      
-     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=`V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>` `V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>` 
-              `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>` `C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>` `N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}`
+     note properSeparation_\<V>\<^sub>1\<V>\<^sub>2=\<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> = V\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>V\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> = V\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> 
+              \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES1\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>1'\<^esub>\<close> \<open>C\<^bsub>?\<V>'\<^esub> \<inter> E\<^bsub>ES2\<^esub> \<subseteq> C\<^bsub>?\<V>\<^sub>2'\<^esub>\<close> \<open>N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> N\<^bsub>?\<V>\<^sub>2'\<^esub> ={}\<close>
     
     (*Show ES1\<parallel>ES2 is a well behaved composition w.r.t.  ?\<V>\<^sub>1' and ?\<V>\<^sub>2' *)
      have wbc1: "N\<^bsub>?\<V>\<^sub>1'\<^esub> \<inter> E\<^bsub>ES1\<^esub>={} \<and> N\<^bsub>?\<V>\<^sub>2'\<^esub> \<inter> E\<^bsub>ES2\<^esub>={}" 
        by auto
     
       
-    from `SD \<V>1 Tr\<^bsub>ES1\<^esub>`  have "BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
+    from \<open>SD \<V>1 Tr\<^bsub>ES1\<^esub>\<close>  have "BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
       using validES1 validV1 BSPTaxonomyDifferentCorrections.SD_implies_BSD_for_modified_view 
       unfolding  BSPTaxonomyDifferentCorrections_def by auto
-    from `SD \<V>2 Tr\<^bsub>ES2\<^esub>`  have "BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
+    from \<open>SD \<V>2 Tr\<^bsub>ES2\<^esub>\<close>  have "BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
       using validES2 validV2 BSPTaxonomyDifferentCorrections.SD_implies_BSD_for_modified_view 
       unfolding BSPTaxonomyDifferentCorrections_def by auto 
 
-    from `SIA \<rho>1 \<V>1 Tr\<^bsub>ES1\<^esub>` `(?\<rho>1' ?\<V>\<^sub>1') = (\<rho>1 \<V>1)`  have "BSIA ?\<rho>1' ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
+    from \<open>SIA \<rho>1 \<V>1 Tr\<^bsub>ES1\<^esub>\<close> \<open>(?\<rho>1' ?\<V>\<^sub>1') = (\<rho>1 \<V>1)\<close>  have "BSIA ?\<rho>1' ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>"      
       using validES1 validV1 BSPTaxonomyDifferentCorrections.SIA_implies_BSIA_for_modified_view 
       unfolding  BSPTaxonomyDifferentCorrections_def by fastforce
-    from `SIA \<rho>2 \<V>2 Tr\<^bsub>ES2\<^esub>` `(?\<rho>2' ?\<V>\<^sub>2') = (\<rho>2 \<V>2)`  have "BSIA ?\<rho>2' ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
+    from \<open>SIA \<rho>2 \<V>2 Tr\<^bsub>ES2\<^esub>\<close> \<open>(?\<rho>2' ?\<V>\<^sub>2') = (\<rho>2 \<V>2)\<close>  have "BSIA ?\<rho>2' ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>"     
       using validES2 validV2 BSPTaxonomyDifferentCorrections.SIA_implies_BSIA_for_modified_view 
       unfolding BSPTaxonomyDifferentCorrections_def by fastforce   
 
@@ -4828,23 +4828,23 @@ proof -
     have "Compositionality ES1 ES2 ?\<V>' ?\<V>\<^sub>1' ?\<V>\<^sub>2'" 
       unfolding Compositionality_def 
       by (simp add: properSeparationOfViews_def wellBehavedComposition_def)
-    from `(\<rho>1 \<V>1) \<subseteq> (\<rho> \<V>) \<inter> E\<^bsub>ES1\<^esub>` `(?\<rho>1' ?\<V>\<^sub>1') = (\<rho>1 \<V>1)` `(?\<rho>' ?\<V>') = (\<rho> \<V>)`
+    from \<open>(\<rho>1 \<V>1) \<subseteq> (\<rho> \<V>) \<inter> E\<^bsub>ES1\<^esub>\<close> \<open>(?\<rho>1' ?\<V>\<^sub>1') = (\<rho>1 \<V>1)\<close> \<open>(?\<rho>' ?\<V>') = (\<rho> \<V>)\<close>
     have "?\<rho>1' ?\<V>\<^sub>1'  \<subseteq>  ?\<rho>'  ?\<V>' \<inter> E\<^bsub>ES1\<^esub>"
       by auto 
-    from `(\<rho>2 \<V>2) \<subseteq> (\<rho> \<V>) \<inter> E\<^bsub>ES2\<^esub>` `(?\<rho>2' ?\<V>\<^sub>2') = (\<rho>2 \<V>2)` `(?\<rho>' ?\<V>') = (\<rho> \<V>)`
+    from \<open>(\<rho>2 \<V>2) \<subseteq> (\<rho> \<V>) \<inter> E\<^bsub>ES2\<^esub>\<close> \<open>(?\<rho>2' ?\<V>\<^sub>2') = (\<rho>2 \<V>2)\<close> \<open>(?\<rho>' ?\<V>') = (\<rho> \<V>)\<close>
     have "?\<rho>2' ?\<V>\<^sub>2'  \<subseteq>  ?\<rho>'  ?\<V>' \<inter> E\<^bsub>ES2\<^esub>"
       by auto   
 
-    from `Compositionality ES1 ES2 ?\<V>' ?\<V>\<^sub>1' ?\<V>\<^sub>2'` `BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>` `BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>` 
-          `BSIA ?\<rho>1' ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>` `BSIA ?\<rho>2' ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>` 
-          `?\<rho>1' ?\<V>\<^sub>1'  \<subseteq>  ?\<rho>'  ?\<V>' \<inter> E\<^bsub>ES1\<^esub>` `?\<rho>2' ?\<V>\<^sub>2'  \<subseteq>  ?\<rho>'  ?\<V>' \<inter> E\<^bsub>ES2\<^esub>`
+    from \<open>Compositionality ES1 ES2 ?\<V>' ?\<V>\<^sub>1' ?\<V>\<^sub>2'\<close> \<open>BSD ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>\<close> \<open>BSD ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>\<close> 
+          \<open>BSIA ?\<rho>1' ?\<V>\<^sub>1' Tr\<^bsub>ES1\<^esub>\<close> \<open>BSIA ?\<rho>2' ?\<V>\<^sub>2' Tr\<^bsub>ES2\<^esub>\<close> 
+          \<open>?\<rho>1' ?\<V>\<^sub>1'  \<subseteq>  ?\<rho>'  ?\<V>' \<inter> E\<^bsub>ES1\<^esub>\<close> \<open>?\<rho>2' ?\<V>\<^sub>2'  \<subseteq>  ?\<rho>'  ?\<V>' \<inter> E\<^bsub>ES2\<^esub>\<close>
     have "BSIA ?\<rho>' ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>"
       using Compositionality.compositionality_BSIA by fastforce
       
     from  validES1 validES2 composeES_yields_ES validVC 
     have "BSPTaxonomyDifferentCorrections (ES1\<parallel>ES2) \<V>" 
       unfolding BSPTaxonomyDifferentCorrections_def by auto 
-    with `BSIA ?\<rho>' ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>` `(?\<rho>' ?\<V>') = (\<rho> \<V>)` have "SIA \<rho> \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
+    with \<open>BSIA ?\<rho>' ?\<V>' Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>\<close> \<open>(?\<rho>' ?\<V>') = (\<rho> \<V>)\<close> have "SIA \<rho> \<V> Tr\<^bsub>(ES1\<parallel>ES2)\<^esub>" 
       using BSPTaxonomyDifferentCorrections.BSIA_implies_SIA_for_modified_view  by fastforce
   }
   thus ?thesis

@@ -294,7 +294,7 @@ proof -
           assume "x = unit_vec n j" "j \<noteq> k" "j < n"
           hence "(x,j) \<in> set lookup" unfolding lookup_def by auto
           from map_of_is_SomeI[OF dist this]
-          have "a x = w $ j - w $ k / v $ k * v $ j" unfolding a_def using `j \<noteq> k` by auto
+          have "a x = w $ j - w $ k / v $ k * v $ j" unfolding a_def using \<open>j \<noteq> k\<close> by auto
         } note a = this          
         have "(\<Sum>x\<in>set ?b. (a x \<cdot>\<^sub>v x) $ i) = (a v \<cdot>\<^sub>v v) $ i + (\<Sum>x\<in>(set ?b) - {v}. (a x \<cdot>\<^sub>v x) $ i)"
           by (rule sum.remove[OF finite_set], auto simp: b)

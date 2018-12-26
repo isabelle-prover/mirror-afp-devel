@@ -2,7 +2,7 @@
     Author:     Stefan Berghofer, Gerwin Klein
 *)
 
-section {* Example for generating executable code from JVM semantics \label{sec:JVMListExample} *}
+section \<open>Example for generating executable code from JVM semantics \label{sec:JVMListExample}\<close>
 
 theory JVMListExample
 imports
@@ -114,7 +114,7 @@ lemmas [code_unfold] = SystemClasses_def [unfolded ObjectC_def NullPointerC_def 
 
 definition "test = exec (E, start_state E test_name makelist_name)"
 
-ML_val {* 
+ML_val \<open>
   @{code test};
   @{code exec} (@{code E}, @{code the} it);
   @{code exec} (@{code E}, @{code the} it);
@@ -188,6 +188,6 @@ ML_val {*
     SOME (@{code Intg} (@{code int_of_integer} 3)) then () else error "wrong result";
   if snd (@{code the} (h (@{code nat_of_integer} 5))) (@{code next_name}, @{code list_name}) =
     SOME @{code Null} then () else error "wrong result";
-*}
+\<close>
 
 end

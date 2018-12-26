@@ -1,4 +1,4 @@
-section {* Interpreted Transition Systems and Traces *}
+section \<open>Interpreted Transition Systems and Traces\<close>
 
 theory Transition_System_Interpreted_Traces
 imports

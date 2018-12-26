@@ -1,12 +1,12 @@
-subsection {* Atomic step locally respects the information flow policy *}
+subsection \<open>Atomic step locally respects the information flow policy\<close>
 
 theory Step_vpeq_locally_respects
   imports Step Step_invariants Step_vpeq
 begin
 
-text {* The notion of locally respects is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\cite{Verbeek2013}). *}
+text \<open>The notion of locally respects is common usage. We augment it by assuming that the @{term atomic_step_invariant} holds (see~\cite{Verbeek2013}).\<close>
 
-subsubsection {* Locally respects of atomic step functions *}
+subsubsection \<open>Locally respects of atomic step functions\<close>
 lemma ipc_respects_policy:
   assumes no: "\<not> Policy.ifp (partition tid) u"
     and inv: "atomic_step_invariant s"
@@ -134,10 +134,10 @@ lemma ev_wait_one_respects_policy:
 qed
 
 
-subsubsection {* Summary theorems on view-partitioning locally respects *}
+subsubsection \<open>Summary theorems on view-partitioning locally respects\<close>
 
-text {* Atomic step locally respects the information flow policy (ifp). The policy ifp is not necessarily the same
-  as sp\_spec\_subj\_subj. *}
+text \<open>Atomic step locally respects the information flow policy (ifp). The policy ifp is not necessarily the same
+  as sp\_spec\_subj\_subj.\<close>
 
 theorem atomic_step_respects_policy:
   assumes no: "\<not> Policy.ifp (partition (current s)) u"

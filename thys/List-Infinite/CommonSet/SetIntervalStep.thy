@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Stepping through sets of natural numbers *}
+section \<open>Stepping through sets of natural numbers\<close>
 
 theory SetIntervalStep
 imports SetIntervalCut
 begin
 
-subsection {* Function @{text inext} and @{text iprev} for stepping through natural sets *}
+subsection \<open>Function \<open>inext\<close> and \<open>iprev\<close> for stepping through natural sets\<close>
 
 definition inext :: "nat \<Rightarrow> nat set \<Rightarrow> nat"
 where
@@ -25,7 +25,7 @@ where
     then Max (I \<down>< n)
     else n)"
 
-text {* @{text inext} and @{text iprev} can be viewed as generalisations of @{text Suc} and @{text prev} *}
+text \<open>\<open>inext\<close> and \<open>iprev\<close> can be viewed as generalisations of \<open>Suc\<close> and \<open>prev\<close>\<close>
 
 lemma inext_UNIV: "inext n UNIV = Suc n"
 apply (simp add: inext_def cut_greater_def, safe)
@@ -1176,7 +1176,7 @@ apply blast
 done
 
 
-subsection {* @{text inext_nth} and @{text iprev_nth} -- nth element of a natural set *}
+subsection \<open>\<open>inext_nth\<close> and \<open>iprev_nth\<close> -- nth element of a natural set\<close>
 
 primrec inext_nth :: "nat set \<Rightarrow> nat \<Rightarrow> nat"   ("(_ \<rightarrow> _)" [100, 100] 60)
 where
@@ -1671,7 +1671,7 @@ lemma iprev_nth_singleton: "{a} \<leftarrow> n= a"
 by (simp add: iprev_nth_iMin_fix[OF singleton_not_empty _ le0])
 
 
-subsection {* Induction over arbitrary natural sets using the functions @{text inext} and @{text iprev} *}
+subsection \<open>Induction over arbitrary natural sets using the functions \<open>inext\<close> and \<open>iprev\<close>\<close>
 
 lemma inext_nth_surj_aux1:"
   {x \<in> I. \<not>(\<exists>n. I \<rightarrow> n = x)} = {}"
@@ -1872,7 +1872,7 @@ apply (simp add: iprev_nth_closed[OF _ in_imp_not_empty] iprev_nth_surj_on)+
 done
 
 
-subsection {* Natural intervals with @{text inext} and @{text iprev} *}
+subsection \<open>Natural intervals with \<open>inext\<close> and \<open>iprev\<close>\<close>
 
 lemma inext_atLeast: "n \<le> t \<Longrightarrow> inext t {n..} = Suc t"
 apply (unfold inext_def)
@@ -1964,7 +1964,7 @@ lemma inext_nth_UNIV: "UNIV \<rightarrow> a = a"
 by (simp add: inext_nth_atLeast del: atLeast_0 add: atLeast_0[symmetric])
 
 
-subsection {* Further result for @{text inext_nth} and @{text iprev_nth} *}
+subsection \<open>Further result for \<open>inext_nth\<close> and \<open>iprev_nth\<close>\<close>
 
 lemma inext_iprev_nth_Suc: "
   iMin I \<noteq> I \<leftarrow> n \<Longrightarrow> inext (I \<leftarrow> Suc n) I = I \<leftarrow> n"

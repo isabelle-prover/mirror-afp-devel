@@ -4,15 +4,15 @@
    Maintainer:  Ralph Romanos <ralph.romanos at student.ecp.fr>
 *)
 
-section {* Proving the impossibility of trisecting an angle and doubling the cube *}
+section \<open>Proving the impossibility of trisecting an angle and doubling the cube\<close>
 
 theory Impossible_Geometry
 imports Complex_Main
 begin
 
-section {* Formal Proof *}
+section \<open>Formal Proof\<close>
 
-subsection {* Definition of the set of Points *}
+subsection \<open>Definition of the set of Points\<close>
 
 datatype point = Point real real
 
@@ -37,9 +37,9 @@ lemma point_eq_iff:
   "M = N \<longleftrightarrow> abscissa M = abscissa N \<and> ordinate M = ordinate N"
   by (induct M, induct N) simp
 
-subsection {* Subtraction *}
+subsection \<open>Subtraction\<close>
 
-text {* Datatype point has a structure of abelian group *}
+text \<open>Datatype point has a structure of abelian group\<close>
 
 instantiation point :: ab_group_add
 begin
@@ -112,9 +112,9 @@ instance
 
 end
 
-subsection {* Metric Space *}
+subsection \<open>Metric Space\<close>
 
-text {* We can also define a distance, hence point is also a metric space *}
+text \<open>We can also define a distance, hence point is also a metric space\<close>
 
 instantiation point :: metric_space
 begin
@@ -164,40 +164,40 @@ proof
 qed (rule uniformity_point_def open_point_def)+
 end
 
-subsection {* Geometric Definitions *}
+subsection \<open>Geometric Definitions\<close>
 
-text {* These geometric definitions will later be used to define
-constructible points *}
+text \<open>These geometric definitions will later be used to define
+constructible points\<close>
 
-text {* The distance between two points is defined with the distance
-of the metric space point *}
+text \<open>The distance between two points is defined with the distance
+of the metric space point\<close>
 definition distance_def:
   "distance A B = dist A B"
 
-text {* @{term "parallel A B C D"} is true if the lines @{term "(AB)"}
-and @{term "(CD)"} are parallel. If not it is false. *}
+text \<open>@{term "parallel A B C D"} is true if the lines @{term "(AB)"}
+and @{term "(CD)"} are parallel. If not it is false.\<close>
 
 definition parallel_def:
   "parallel A B C D = ((abscissa A - abscissa B) * (ordinate C - ordinate D) = (ordinate A - ordinate B) * (abscissa C - abscissa D))"
 
-text {* Three points @{term "A B C"} are collinear if and only if the
-lines @{term "(AB)"} and @{term "(AC)"} are parallel *}
+text \<open>Three points @{term "A B C"} are collinear if and only if the
+lines @{term "(AB)"} and @{term "(AC)"} are parallel\<close>
 
 definition collinear_def:
   "collinear A B C = parallel A B A C"
 
-text {* The point @{term M} is the intersection of two lines @{term
+text \<open>The point @{term M} is the intersection of two lines @{term
 "(AB)"} and @{term "(CD)"} if and only if the points @{term A}, @{term
 M} and @{term B} are collinear and the points @{term C}, @{term M} and
-@{term D} are also collinear *}
+@{term D} are also collinear\<close>
 
 definition is_intersection_def:
   "is_intersection M A B C D = (collinear A M B \<and> collinear C M D)"
 
 
-subsection {*Reals definable with square roots*}
+subsection \<open>Reals definable with square roots\<close>
 
-text {* The inductive set @{term "radical_sqrt"} defines the reals
+text \<open>The inductive set @{term "radical_sqrt"} defines the reals
 that can be defined with square roots. If @{term x} is in the
 following set, then it depends only upon rational expressions and
 square roots. For example, suppose @{term x} is of the form : $x =
@@ -205,7 +205,7 @@ square roots. For example, suppose @{term x} is of the form : $x =
 \sqrt{b}) + (a + \sqrt{b}) / \sqrt{g}$, where @{term a}, @{term b},
 @{term c}, @{term d}, @{term e}, @{term f} and @{term g} are
 rationals. Then @{term x} is in @{term "radical_sqrt"} because it is
-only defined with rationals and square roots of radicals. *}
+only defined with rationals and square roots of radicals.\<close>
 
 inductive_set radical_sqrt :: "real set"
   where
@@ -216,52 +216,52 @@ inductive_set radical_sqrt :: "real set"
   "x \<in> radical_sqrt \<Longrightarrow> y \<in> radical_sqrt \<Longrightarrow> x*y \<in> radical_sqrt"|
   "x \<in> radical_sqrt \<Longrightarrow> x \<ge> 0 \<Longrightarrow> sqrt x \<in> radical_sqrt"
 
-text {* Here, we list some rules that will be used to prove that a
-given real is in @{term "radical_sqrt"}. *}
+text \<open>Here, we list some rules that will be used to prove that a
+given real is in @{term "radical_sqrt"}.\<close>
 
-text {* Given two reals in @{term "radical_sqrt"} @{term x} and @{term
-y}, the subtraction $x - y$ is also in @{term "radical_sqrt"}. *}
+text \<open>Given two reals in @{term "radical_sqrt"} @{term x} and @{term
+y}, the subtraction $x - y$ is also in @{term "radical_sqrt"}.\<close>
 
 lemma radical_sqrt_rule_subtraction:
   "x \<in> radical_sqrt \<Longrightarrow> y \<in> radical_sqrt \<Longrightarrow> x-y \<in> radical_sqrt"
 by (metis diff_conv_add_uminus radical_sqrt.intros(2) radical_sqrt.intros(4))
 
 
-text {* Given two reals in @{term "radical_sqrt"} @{term x} and @{term
+text \<open>Given two reals in @{term "radical_sqrt"} @{term x} and @{term
 y}, and $y \neq 0$, the division $x / y$ is also in @{term
-"radical_sqrt"}. *}
+"radical_sqrt"}.\<close>
 
 lemma radical_sqrt_rule_division:
   "x \<in> radical_sqrt \<Longrightarrow> y \<in> radical_sqrt \<Longrightarrow> y \<noteq> 0 \<Longrightarrow> x/y \<in> radical_sqrt"
   by (metis divide_real_def radical_sqrt.intros(3) radical_sqrt.intros(5) real_scaleR_def real_vector.scale_one)
 
 
-text {* Given a positive real @{term x} in @{term "radical_sqrt"}, its
-square $x^2$ is also in @{term "radical_sqrt"}. *}
+text \<open>Given a positive real @{term x} in @{term "radical_sqrt"}, its
+square $x^2$ is also in @{term "radical_sqrt"}.\<close>
 
 lemma radical_sqrt_rule_power2:
   "x \<in> radical_sqrt \<Longrightarrow> x \<ge> 0 \<Longrightarrow> x^2 \<in> radical_sqrt"
 by (metis power2_eq_square radical_sqrt.intros(5))
 
 
-text {* Given a positive real @{term x} in @{term "radical_sqrt"}, its
-cube $x^3$ is also in @{term "radical_sqrt"}. *}
+text \<open>Given a positive real @{term x} in @{term "radical_sqrt"}, its
+cube $x^3$ is also in @{term "radical_sqrt"}.\<close>
 
 lemma radical_sqrt_rule_power3:
   "x \<in> radical_sqrt \<Longrightarrow> x \<ge> 0 \<Longrightarrow> x^3 \<in> radical_sqrt"
   by (metis power3_eq_cube radical_sqrt.intros(5))
 
-subsection {* Introduction of the datatype expr which represents radical expressions *}
+subsection \<open>Introduction of the datatype expr which represents radical expressions\<close>
 
-text {* An expression expr is either a rational constant: Const or the
+text \<open>An expression expr is either a rational constant: Const or the
 negation of an expression or the inverse of an expression or the
 addition of two expressions or the multiplication of two expressions
-or the square root of an expression. *}
+or the square root of an expression.\<close>
 
 datatype expr = Const rat | Negation expr | Inverse expr | Addition expr expr | Multiplication expr expr | Sqrt expr
 
-text {* The function @{term "translation"} translates a given
-expression into its equivalent real. *}
+text \<open>The function @{term "translation"} translates a given
+expression into its equivalent real.\<close>
 
 fun translation :: "expr => real" ("(2\<lbrace>_\<rbrace>)")
   where
@@ -272,17 +272,17 @@ fun translation :: "expr => real" ("(2\<lbrace>_\<rbrace>)")
   "translation (Multiplication e1 e2) = translation e1 * translation e2"|
   "translation (Sqrt e) = (if translation e < 0 then 0 else sqrt (translation e))"
 
-text {* Define the set of all the radicals of a given expression. For
+text \<open>Define the set of all the radicals of a given expression. For
 example, suppose @{term "expr"} is of the form : expr = Addition (Sqrt
 (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition
 (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a},
 @{term b}, @{term c} and @{term d} are rationals. This can be
-translated as follows: @{text "\<lbrace>expr\<rbrace> ="}~$\sqrt{a + \sqrt{b}} +
+translated as follows: \<open>\<lbrace>expr\<rbrace> =\<close>~$\sqrt{a + \sqrt{b}} +
 \sqrt{c + \sqrt{\sqrt{d}}}$. Moreover, the set @{term "radicals"} of
-this expression is : @{text "\<lbrace>"}Addition (Const @{term a}) (Sqrt
+this expression is : \<open>\<lbrace>\<close>Addition (Const @{term a}) (Sqrt
 (Const @{term b})), Const @{term b}, Addition (Const @{term c}) (Sqrt
 (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term
-d}@{text "\<rbrace>"}. *}
+d}\<open>\<rbrace>\<close>.\<close>
 
 fun radicals :: "expr => expr set"
   where
@@ -294,17 +294,17 @@ fun radicals :: "expr => expr set"
   "radicals (Sqrt e) = (if \<lbrace>e\<rbrace> < 0 then radicals e else {e} \<union> (radicals e))"
 
 
-text {* If @{term r} is in @{term "radicals"} of @{term e} then the
+text \<open>If @{term r} is in @{term "radicals"} of @{term e} then the
 set @{term "radical_sqrt"} of @{term r} is a subset (strictly
-speaking) of the set @{term "radicals"} of @{term e}. *}
+speaking) of the set @{term "radicals"} of @{term e}.\<close>
 
 lemma radicals_expr_subset: "r \<in> radicals e \<Longrightarrow> radicals r \<subset> radicals e"
   by (induct e, auto simp add: if_split_asm)
 
-text {* If @{term x} is in @{term "radical_sqrt"} then there exists a
+text \<open>If @{term x} is in @{term "radical_sqrt"} then there exists a
 radical expression @{term e} which translation is @{term x} (it is
 important to notice that this expression is not necessarily
-unique). *}
+unique).\<close>
 
 lemma radical_sqrt_correct_expr:
   "x \<in> radical_sqrt \<Longrightarrow> (\<exists> e. \<lbrace>e\<rbrace> = x)"
@@ -319,15 +319,15 @@ lemma radical_sqrt_correct_expr:
   apply (metis linorder_not_less translation.simps(6))
   done
 
-text {* The order of an expression is the maximum number of radicals
+text \<open>The order of an expression is the maximum number of radicals
 one over another occurring in a given expression. Using the example
 above, suppose @{term "expr"} is of the form : expr = Addition (Sqrt
 (Addition (Const @{term a}) Sqrt (Const @{term b}))) (Sqrt (Addition
 (Const @{term c}) (Sqrt (Sqrt (Const @{term d}))))), where @{term a},
 @{term b}, @{term c} and @{term d} are rationals and which can be
-translated as follows: @{text "\<lbrace>expr\<rbrace> ="}~$\sqrt{a + \sqrt{b} +
+translated as follows: \<open>\<lbrace>expr\<rbrace> =\<close>~$\sqrt{a + \sqrt{b} +
 \sqrt{c + \sqrt{\sqrt{d}}}}$. The order of @{term expr} is $max (2,3)
-= 3$. *}
+= 3$.\<close>
 
 fun order :: "expr => nat"
   where
@@ -338,9 +338,9 @@ fun order :: "expr => nat"
   "order (Multiplication e1 e2) = max (order e1) (order e2)"|
   "order (Sqrt e) = 1 + order e"
 
-text {* If an expression @{term s} is one of the radicals (or in
+text \<open>If an expression @{term s} is one of the radicals (or in
 @{term "radicals"}) of the expression @{term r}, then its order is
-smaller (strictly speaking) then the order of @{term r}. *}
+smaller (strictly speaking) then the order of @{term r}.\<close>
 
 lemma in_radicals_smaller_order:
   "s \<in> radicals r \<Longrightarrow> (order s) < (order r)"
@@ -348,68 +348,68 @@ lemma in_radicals_smaller_order:
   apply (metis insert_iff insert_is_Un less_Suc_eq)
   done
 
-text {* The following theorem is the converse of the previous lemma. *}
+text \<open>The following theorem is the converse of the previous lemma.\<close>
 
 lemma in_radicals_smaller_order_contrap:
   "(order s) \<ge> (order r) \<Longrightarrow> \<not> (s \<in> radicals r)"
   by (metis in_radicals_smaller_order leD)
 
-text {* An expression @{term r} cannot be one of its own radicals. *}
+text \<open>An expression @{term r} cannot be one of its own radicals.\<close>
 
 lemma not_in_own_radicals:
   "\<not> (r \<in> radicals r)"
   by (metis in_radicals_smaller_order order_less_irrefl)
 
 
-text {* If an expression @{term e} is a radical expression and it has
-no radicals then its translation is a rational. *}
+text \<open>If an expression @{term e} is a radical expression and it has
+no radicals then its translation is a rational.\<close>
 
 lemma radicals_empty_rational: "radicals e = {} \<Longrightarrow> \<lbrace>e\<rbrace> \<in> \<rat>"
   by (induct e, auto)
 
-text {* A finite non-empty set of natural numbers has necessarily a
-maximum. *}
+text \<open>A finite non-empty set of natural numbers has necessarily a
+maximum.\<close>
 
 lemma finite_set_has_max:
   "finite (s:: nat set) \<Longrightarrow> s \<noteq> {} \<Longrightarrow> \<exists>k \<in> s. \<forall> p \<in> s. p \<le> k"
   by (metis Max_ge Max_in)
 
-text {* There is a finite number of radicals in an expression. *}
+text \<open>There is a finite number of radicals in an expression.\<close>
 
 lemma finite_radicals: "finite (radicals e)"
   by (induct e, auto)
 
-text {* We define here a new set corresponding to the orders of each
+text \<open>We define here a new set corresponding to the orders of each
 element in the set @{term "radicals"} of an expression @{term
 expr}. Using the example above, suppose @{term expr} is of the form :
 expr = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term
 b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term
 d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are
-rationals and which can be translated as follows: @{text "\<lbrace>expr\<rbrace>
-="}~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The set @{term
+rationals and which can be translated as follows: \<open>\<lbrace>expr\<rbrace>
+=\<close>~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The set @{term
 "radicals"} of @{term expr} is $\{$Addition (Const @{term a}) Sqrt
 (Const @{term b}), Const @{term b}, Addition (Const @{term c}) (Sqrt
 (Sqrt (Const @{term d}))), Sqrt (Const @{term d}), Const @{term
 d}$\}$; therefore, the set @{term "order_radicals"} of this set is
-$\{1,0,2,1,0\}$.  *}
+$\{1,0,2,1,0\}$.\<close>
 
 fun order_radicals:: "expr set => nat set"
   where "order_radicals s = {y. \<exists> x \<in> s. y = order x}"
 
-text {* If the set of radicals of an expression @{term e} is not empty
+text \<open>If the set of radicals of an expression @{term e} is not empty
 and is finite then the set @{term "order_radicals"} of the set of
-radicals of @{term e} is not empty and is also finite. *}
+radicals of @{term e} is not empty and is also finite.\<close>
 
 lemma finite_order_radicals:
   "radicals e \<noteq> {} \<Longrightarrow> finite (radicals e) \<Longrightarrow>
    order_radicals (radicals e) \<noteq> {} \<and> finite (order_radicals (radicals e))"
   by simp (metis equals0I)
 
-text {* The following lemma states that given an expression @{term e},
+text \<open>The following lemma states that given an expression @{term e},
 if the set @{term "order_radicals"} of the set @{term "radicals e"} is
 not empty and is finite, then there exists a radical @{term r} of
 @{term e} which is of highest order among the radicals of @{term e}.
-*}
+\<close>
 
 lemma finite_order_radicals_has_max:
   "order_radicals (radicals e) \<noteq> {} \<Longrightarrow>
@@ -419,7 +419,7 @@ lemma finite_order_radicals_has_max:
     by auto
 
 
-text {* This important lemma states that in an expression that has at
+text \<open>This important lemma states that in an expression that has at
 least one radical, we can find an upmost radical @{term r} which is
 not radical of any other term of the expression @{term e}. It is also
 important to notice that this upmost radical is not necessarily unique
@@ -428,11 +428,11 @@ e}. Using the example above, suppose @{term e} is of the form : @{term
 e} = Addition (Sqrt (Addition (Const @{term a}) Sqrt (Const @{term
 b}))) (Sqrt (Addition (Const @{term c}) (Sqrt (Sqrt (Const @{term
 d}))))), where @{term a}, @{term b}, @{term c} and @{term d} are
-rationals and which can be translated as follows: @{text "\<lbrace>e\<rbrace>
-="}~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The possible
+rationals and which can be translated as follows: \<open>\<lbrace>e\<rbrace>
+=\<close>~$\sqrt{a + \sqrt{b}} + \sqrt{c + \sqrt{\sqrt{d}}}$. The possible
 upmost radicals in this expression are Addition (Const @{term a})
 (Sqrt (Const @{term b})) or Addition (Const @{term c}) (Sqrt (Sqrt
-(Const @{term d}))). *}
+(Const @{term d}))).\<close>
 
 
 lemma upmost_radical_sqrt2:
@@ -442,16 +442,16 @@ lemma upmost_radical_sqrt2:
   by (metis finite_order_radicals finite_order_radicals_has_max in_radicals_smaller_order_contrap)
 
 
-text {* The following 7 lemmas are used to prove the main lemma @{term
+text \<open>The following 7 lemmas are used to prove the main lemma @{term
 "radical_sqrt_normal_form"} which states that if an expression @{term
 e} has at least one radical then it can be written in a normal
 form. This means that there exist three radical expressions @{term a},
-@{term b} and @{term r} such that @{text "\<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> *
-\<sqrt>\<lbrace>r\<rbrace>"} and the radicals of @{term a} are radicals of @{term e}
+@{term b} and @{term r} such that \<open>\<lbrace>e\<rbrace> = \<lbrace>a\<rbrace> + \<lbrace>b\<rbrace> *
+\<sqrt>\<lbrace>r\<rbrace>\<close> and the radicals of @{term a} are radicals of @{term e}
 but are not @{term r}, and the same goes for the radicals of @{term b}
 and @{term r}. It is important to notice that @{term a}, @{term b} and
 @{term r} are not unique and @{term "Sqrt r"} is not necessarily the
-term of highest order. *}
+term of highest order.\<close>
 
 lemma radical_sqrt_normal_form_sublemma:
   "((a::real) - b) * (a + b) = a * a - b * b"
@@ -617,7 +617,7 @@ next
   qed
 qed
 
-text {* This main lemma is essential for the remaining part of the proof. *}
+text \<open>This main lemma is essential for the remaining part of the proof.\<close>
 
 theorem radical_sqrt_normal_form:
   "radicals e \<noteq> {} \<Longrightarrow>
@@ -629,15 +629,15 @@ theorem radical_sqrt_normal_form:
   by auto (metis all_not_in_conv leD)
 
 
-subsection {* Important properties of the roots of a cubic equation *}
+subsection \<open>Important properties of the roots of a cubic equation\<close>
 
-text {* The following 7 lemmas are used to prove a main result about
+text \<open>The following 7 lemmas are used to prove a main result about
 the properties of the roots of a cubic equation (@{term
 "cubic_root_radical_sqrt_rational"}) which states that assuming that
 @{term a} @{term b} and @{term c} are rationals and that @{term x} is
 a radical satisfying $x^3 + a x^2 + b x + c = 0$ then there exists a
 rational root. This lemma will be used in the proof of the
-impossibility of trisection an angle and of duplicating a cube. *}
+impossibility of trisection an angle and of duplicating a cube.\<close>
 
 
 lemma cubic_root_radical_sqrt_steplemma:
@@ -821,8 +821,8 @@ proof (induct n arbitrary: e rule: less_induct)
   qed
 qed
 
-text {* Now we can prove the final result about the properties of the
-roots of a cubic equation. *}
+text \<open>Now we can prove the final result about the properties of the
+roots of a cubic equation.\<close>
 
 theorem cubic_root_radical_sqrt_rational:
   assumes a: "a \<in> \<rat>" and b: "b \<in> \<rat>" and c: "c \<in> \<rat>"
@@ -839,7 +839,7 @@ proof-
     by auto
 qed
 
-subsection {* Important properties of radicals *}
+subsection \<open>Important properties of radicals\<close>
 
 lemma sqrt_roots:
   "y^2=x \<Longrightarrow> x\<ge>0 & (sqrt (x) = y | sqrt (x) = -y)"
@@ -1093,7 +1093,7 @@ proof -
 qed
 
 
-subsection {* Important properties of geometrical points which coordinates are radicals *}
+subsection \<open>Important properties of geometrical points which coordinates are radicals\<close>
 
 lemma radical_sqrt_line_line_intersection:
   assumes absA: "(abscissa (A)) \<in> radical_sqrt"
@@ -1235,7 +1235,7 @@ proof-
     by auto
 qed
 
-subsection {* Definition of the set of contructible points *}
+subsection \<open>Definition of the set of contructible points\<close>
 
 inductive_set constructible :: "point set"
   where
@@ -1244,8 +1244,8 @@ inductive_set constructible :: "point set"
   "(A \<in> constructible \<and> B \<in> constructible \<and> C \<in> constructible \<and> D \<in> constructible \<and> E \<in> constructible \<and> \<not> A = B \<and> collinear A M B \<and> distance C M = distance D E) \<Longrightarrow> M \<in> constructible"|
   "(A \<in> constructible \<and> B \<in> constructible \<and> C \<in> constructible \<and> D \<in> constructible \<and> E \<in> constructible \<and> F \<in> constructible \<and> \<not> (A = D \<and> distance B C = distance E F) \<and> distance A M = distance B C \<and> distance D M = distance E F) \<Longrightarrow> M \<in> constructible"
 
-subsection {* An important property about constructible points: their
-coordinates are radicals *}
+subsection \<open>An important property about constructible points: their
+coordinates are radicals\<close>
 
 lemma constructible_radical_sqrt:
   assumes h: "M \<in> constructible"
@@ -1258,7 +1258,7 @@ lemma constructible_radical_sqrt:
   apply (metis radical_sqrt_circle_circle_intersection)
   done
 
-subsection {* Proving the impossibility of duplicating the cube *}
+subsection \<open>Proving the impossibility of duplicating the cube\<close>
 
 lemma impossibility_of_doubling_the_cube_lemma:
   assumes x: "x \<in> radical_sqrt"
@@ -1313,7 +1313,7 @@ theorem impossibility_of_doubling_the_cube:
   by (metis abscissa.simps constructible_radical_sqrt impossibility_of_doubling_the_cube_lemma)
 
 
-subsection {* Proving the impossibility of trisecting an angle *}
+subsection \<open>Proving the impossibility of trisecting an angle\<close>
 
 lemma impossibility_of_trisecting_pi_over_3_lemma:
   assumes x: "x \<in> radical_sqrt"

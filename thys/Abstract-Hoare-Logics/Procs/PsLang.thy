@@ -7,7 +7,7 @@ section "Hoare Logics for Mutually Recursive Procedure"
 
 theory PsLang imports Main begin
 
-subsection{* The language *}
+subsection\<open>The language\<close>
 
 typedecl state
 typedecl pname
@@ -25,7 +25,7 @@ datatype
 
 consts body :: "pname \<Rightarrow> com"
 
-text{* We generalize from a single procedure to a whole set of
+text\<open>We generalize from a single procedure to a whole set of
 procedures following the ideas of von Oheimb~\cite{Oheimb-FSTTCS99}.
 The basic setup is modified only in a few places:
 \begin{itemize}
@@ -34,7 +34,7 @@ The basic setup is modified only in a few places:
 \item The @{term CALL} command now has an argument of type @{typ pname},
 the name of the procedure that is to be called.
 \end{itemize}
-*}
+\<close>
 
 inductive
   exec :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool"   ("_/ -_\<rightarrow>/ _" [50,0,50] 50)

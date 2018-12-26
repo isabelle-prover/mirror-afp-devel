@@ -275,8 +275,8 @@ text \<open>
     @{thm lookup_Abs_poly_mapping}
   \end{quote}
   Luckily, we have rarely to deal with those low-level morphisms explicitly
-  but rely on Isabelle's \emph{lifting} package with its method @{text transfer}
-  and its specification tool @{text lift_definition}.
+  but rely on Isabelle's \emph{lifting} package with its method \<open>transfer\<close>
+  and its specification tool \<open>lift_definition\<close>.
 \<close>
 
 setup_lifting type_definition_poly_mapping
@@ -286,7 +286,7 @@ text \<open>
   @{typ "'a \<Rightarrow>\<^sub>0 'b"} serves distinctive purposes:
   \begin{enumerate}
     \item A clever nesting as @{typ "(nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a"}
-      later in theory @{text MPoly} gives a suitable
+      later in theory \<open>MPoly\<close> gives a suitable
       representation type for polynomials \qt{almost for free}:
       Interpreting @{typ "nat \<Rightarrow>\<^sub>0 nat"} as a mapping from variable identifiers
       to exponents yields monomials, and the whole type maps monomials
@@ -307,8 +307,8 @@ text \<open>
 subsection \<open>Additive structure\<close>
 
 text \<open>
-  The additive structure covers the usual operations @{text 0}, @{text "+"} and
-  (unary and binary) @{text "-"}.  Recalling the ultimate interpretation, it
+  The additive structure covers the usual operations \<open>0\<close>, \<open>+\<close> and
+  (unary and binary) \<open>-\<close>.  Recalling the ultimate interpretation, it
   is obvious that these have just lift the corresponding operations on values
   to mappings.
 
@@ -316,7 +316,7 @@ text \<open>
   of pointwise lifting a typical pattern is to have instantiations for a considerable
   number of type classes.
 
-  The operations themselves are specified using @{text lift_definition}, where
+  The operations themselves are specified using \<open>lift_definition\<close>, where
   the proofs of the \qt{almost everywhere zero} property can be significantly involved.
 
   The @{const lookup} operation is supposed to be usable explicitly (unless in
@@ -1329,7 +1329,7 @@ lift_definition "nth" :: "'a list \<Rightarrow> (nat \<Rightarrow>\<^sub>0 'a::z
 
 text \<open>
   The opposite direction is directly specified on (later)
-  type @{text nat_mapping}.
+  type \<open>nat_mapping\<close>.
 \<close>
 
 lemma nth_Nil [simp]:
@@ -1464,7 +1464,7 @@ where
 text \<open>
   For the canonical sparse representation we provide both
   directions of morphisms since the specification of
-  ordered association lists in theory @{text OAList}
+  ordered association lists in theory \<open>OAList\<close>
   will support arbitrary linear orders @{class linorder}
   as keys, not just natural numbers @{typ nat}.
 \<close>

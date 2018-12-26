@@ -21,7 +21,7 @@ bnf_axiomatization ('a, 'b) F0 [wits: "'a \<Rightarrow> ('a, 'b) F0"]
 bnf_axiomatization ('a, 'b) G0 [wits: "'a \<Rightarrow> ('a, 'b) G0"]
 
 
-subsection {* Nested Definition *}
+subsection \<open>Nested Definition\<close>
 
 datatype 'a F = CF "('a, 'a F) F0"
 datatype 'a G = CG "('a, ('a G) F) G0"
@@ -37,7 +37,7 @@ thm F.ctor_rel_induct
 thm G.ctor_rel_induct[unfolded rel_pre_G_def id_apply]
 
 
-subsection {* Isomorphic Mutual Definition *}
+subsection \<open>Isomorphic Mutual Definition\<close>
 
 datatype 'a G\<^sub>M = CG "('a, 'a GF\<^sub>M) G0"
   and  'a GF\<^sub>M = CF "('a G\<^sub>M, 'a GF\<^sub>M) F0"
@@ -51,9 +51,9 @@ term "ctor_rec_G\<^sub>M :: (('a GF\<^sub>M \<times> 'c, 'a) G\<^sub>M_pre_G\<^s
 term "ctor_rec_GF\<^sub>M :: (('a GF\<^sub>M \<times> 'c, 'a) G\<^sub>M_pre_G\<^sub>M \<Rightarrow> 'b) \<Rightarrow> (('a GF\<^sub>M \<times> 'c, 'a G\<^sub>M \<times> 'b) GF\<^sub>M_pre_GF\<^sub>M \<Rightarrow> 'c) \<Rightarrow> 'a GF\<^sub>M \<Rightarrow> 'c"
 thm G\<^sub>M_GF\<^sub>M.ctor_rel_induct[unfolded rel_pre_G\<^sub>M_def rel_pre_GF\<^sub>M_def]
 
-subsection {* Mutualization *}
+subsection \<open>Mutualization\<close>
 
-subsubsection {* Iterators *}
+subsubsection \<open>Iterators\<close>
 
 definition n2m_ctor_fold_G :: "(('c, 'a) G\<^sub>M_pre_G\<^sub>M \<Rightarrow> 'b) \<Rightarrow> (('c, 'b) GF\<^sub>M_pre_GF\<^sub>M \<Rightarrow> 'c) \<Rightarrow> 'a G \<Rightarrow> 'b"
   where "n2m_ctor_fold_G s1 s2 = ctor_fold_G (s1 o
@@ -87,7 +87,7 @@ lemma n2m_ctor_fold_G_F:
     rewriteL_comp_comp[OF F0.map_comp0[symmetric]]
     rewriteL_comp_comp[OF type_copy_Rep_o_Abs[OF BNF_Composition.type_definition_id_bnf_UNIV]] ..
 
-subsubsection {* Recursors *}
+subsubsection \<open>Recursors\<close>
 
 definition n2m_ctor_rec_G ::
   "(('a G F \<times> 'c, 'a) G\<^sub>M_pre_G\<^sub>M \<Rightarrow> 'b) \<Rightarrow> (('a G F \<times> 'c, 'a G \<times> 'b) GF\<^sub>M_pre_GF\<^sub>M \<Rightarrow> 'c) \<Rightarrow> 'a G \<Rightarrow> 'b"
@@ -121,7 +121,7 @@ lemma n2m_ctor_rec_G_F:
     rewriteL_comp_comp[OF F0.map_comp0[symmetric]]
     rewriteL_comp_comp[OF type_copy_Rep_o_Abs[OF BNF_Composition.type_definition_id_bnf_UNIV]] ..
 
-subsubsection {* Induction *}
+subsubsection \<open>Induction\<close>
 
 lemma n2m_rel_induct_G_G_F:
   assumes IH1: "\<forall>x y. BNF_Def.vimage2p (BNF_Composition.id_bnf o BNF_Composition.id_bnf) (BNF_Composition.id_bnf o BNF_Composition.id_bnf) (rel_pre_G\<^sub>M P R S) x y \<longrightarrow> R (ctor_G x) (ctor_G y)"
@@ -160,7 +160,7 @@ bnf_axiomatization ('a, 'b) coF0
 bnf_axiomatization ('a, 'b) coG0
 
 
-subsection {* Nested definition *}
+subsection \<open>Nested definition\<close>
 
 codatatype 'a coF = CcoF "('a, 'a coF) coF0"
 codatatype 'a coG = CcoG "('a, ('a coG) coF) coG0"
@@ -176,7 +176,7 @@ thm coF.dtor_rel_coinduct
 thm coG.dtor_rel_coinduct[unfolded rel_pre_coG_def id_apply]
 
 
-subsection {* Isomorphic Mutual Definition *}
+subsection \<open>Isomorphic Mutual Definition\<close>
 
 codatatype 'a coG\<^sub>M = CcoG "('a, 'a coGcoF\<^sub>M) coG0"
   and  'a coGcoF\<^sub>M = CcoF "('a coG\<^sub>M, 'a coGcoF\<^sub>M) coF0"
@@ -190,9 +190,9 @@ term "dtor_corec_coG\<^sub>M :: ('b \<Rightarrow> ('a coGcoF\<^sub>M + 'c, 'a) c
 term "dtor_corec_coGcoF\<^sub>M :: ('b \<Rightarrow> ('a coGcoF\<^sub>M + 'c, 'a) coG\<^sub>M_pre_coG\<^sub>M) \<Rightarrow> ('c \<Rightarrow> ('a coGcoF\<^sub>M + 'c, 'a coG\<^sub>M + 'b) coGcoF\<^sub>M_pre_coGcoF\<^sub>M) \<Rightarrow> 'c \<Rightarrow> 'a coGcoF\<^sub>M"
 thm coG\<^sub>M_coGcoF\<^sub>M.dtor_rel_coinduct[unfolded rel_pre_coG\<^sub>M_def rel_pre_coGcoF\<^sub>M_def]
 
-subsection {* Mutualization *}
+subsection \<open>Mutualization\<close>
 
-subsubsection {* Coiterators *}
+subsubsection \<open>Coiterators\<close>
 
 definition n2m_dtor_unfold_coG :: "('b \<Rightarrow> ('c, 'a) coG\<^sub>M_pre_coG\<^sub>M) \<Rightarrow> ('c \<Rightarrow> ('c, 'b) coGcoF\<^sub>M_pre_coGcoF\<^sub>M) \<Rightarrow> 'b \<Rightarrow> 'a coG"
   where "n2m_dtor_unfold_coG s1 s2 = dtor_unfold_coG (BNF_Composition.id_bnf o BNF_Composition.id_bnf o
@@ -226,7 +226,7 @@ lemma n2m_dtor_unfold_coG_coF:
     rewriteL_comp_comp[OF coF0.map_comp0[symmetric]]
     rewriteL_comp_comp[OF type_copy_Rep_o_Abs[OF BNF_Composition.type_definition_id_bnf_UNIV]] ..
 
-subsubsection {* Corecursors *}
+subsubsection \<open>Corecursors\<close>
 
 definition n2m_dtor_corec_coG ::
   "('b \<Rightarrow> ('a coG coF + 'c, 'a) coG\<^sub>M_pre_coG\<^sub>M) \<Rightarrow> ('c \<Rightarrow> ('a coG coF + 'c, 'a coG + 'b) coGcoF\<^sub>M_pre_coGcoF\<^sub>M) \<Rightarrow> 'b \<Rightarrow> 'a coG"
@@ -260,7 +260,7 @@ lemma n2m_dtor_corec_coG_coF:
     rewriteL_comp_comp[OF coF0.map_comp0[symmetric]]
     rewriteL_comp_comp[OF type_copy_Rep_o_Abs[OF BNF_Composition.type_definition_id_bnf_UNIV]] ..
 
-subsubsection {* Coinduction *}
+subsubsection \<open>Coinduction\<close>
 
 lemma n2m_rel_coinduct_coG_coG_coF:
   assumes CIH1: "\<forall>x y. R x y \<longrightarrow> BNF_Def.vimage2p (BNF_Composition.id_bnf o BNF_Composition.id_bnf) (BNF_Composition.id_bnf o BNF_Composition.id_bnf) (rel_pre_coG\<^sub>M P R S) (dtor_coG x) (dtor_coG y)"

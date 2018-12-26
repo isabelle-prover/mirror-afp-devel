@@ -9,7 +9,7 @@ theory Lexer
   imports "Regular-Sets.Derivatives"
 begin
 
-section {* Values *}
+section \<open>Values\<close>
 
 datatype 'a val = 
   Void
@@ -20,7 +20,7 @@ datatype 'a val =
 | Stars "('a val) list"
 
 
-section {* The string behind a value *}
+section \<open>The string behind a value\<close>
 
 fun 
   flat :: "'a val \<Rightarrow> 'a list"
@@ -37,7 +37,7 @@ lemma flat_Stars [simp]:
  "flat (Stars vs) = concat (map flat vs)"
 by (induct vs) (auto)
 
-section {* Relation between values and regular expressions *}
+section \<open>Relation between values and regular expressions\<close>
 
 inductive 
   Prf :: "'a val \<Rightarrow> 'a rexp \<Rightarrow> bool" ("\<turnstile> _ : _" [100, 100] 100)
@@ -113,7 +113,7 @@ lemma L_flat_Prf:
 using L_flat_Prf1 L_flat_Prf2 by blast
 
 
-section {* Sulzmann and Lu functions *}
+section \<open>Sulzmann and Lu functions\<close>
 
 fun 
   mkeps :: "'a rexp \<Rightarrow> 'a val"
@@ -134,7 +134,7 @@ where
 | "injval (Star r) c (Seq v (Stars vs)) = Stars ((injval r c v) # vs)" 
 
 
-section {* Mkeps, injval *}
+section \<open>Mkeps, injval\<close>
 
 lemma mkeps_nullable:
   assumes "nullable r" 
@@ -178,7 +178,7 @@ done
 
 (* HERE *)
 
-section {* Our Alternative Posix definition *}
+section \<open>Our Alternative Posix definition\<close>
 
 inductive 
   Posix :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 'a val \<Rightarrow> bool" ("_ \<in> _ \<rightarrow> _" [100, 100, 100] 100)
@@ -449,7 +449,7 @@ next
 qed
 
 
-section {* The Lexer by Sulzmann and Lu  *}
+section \<open>The Lexer by Sulzmann and Lu\<close>
 
 fun 
   lexer :: "'a rexp \<Rightarrow> 'a list \<Rightarrow> ('a val) option"

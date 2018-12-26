@@ -5,24 +5,24 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Determinism *}
+section \<open>Determinism\<close>
 
 theory Determinism imports WellDefined begin
 
-text_raw {* \label{s:prog_determ} *}
+text_raw \<open>\label{s:prog_determ}\<close>
 
-text {* We provide a set of lemmas for establishing that
+text \<open>We provide a set of lemmas for establishing that
   appropriately restricted programs are fully additive, and
   maximal in the refinement order.  This is particularly useful
-  with data refinement, as it implies correspondence. *}
+  with data refinement, as it implies correspondence.\<close>
 
-subsection  {* Additivity *}
+subsection  \<open>Additivity\<close>
 
 lemma additive_wp_Abort:
   "additive (wp (Abort))"
   by(auto simp:wp_eval)
 
-text {* @{term "wlp Abort"} is not additive.  *}
+text \<open>@{term "wlp Abort"} is not additive.\<close>
 
 lemma additive_wp_Skip:
   "additive (wp (Skip))"
@@ -57,7 +57,7 @@ lemma additive_wp_PC:
   "\<lbrakk> additive (wp a); additive (wp b) \<rbrakk> \<Longrightarrow> additive (wp (a \<^bsub>P\<^esub>\<oplus> b))"
   by(rule additiveI, simp add:additiveD field_simps wp_eval)
 
-text {* @{term DC} is not additive. *}
+text \<open>@{term DC} is not additive.\<close>
 
 lemma additive_wp_SetPC:
   "\<lbrakk> \<And>x s. x \<in> supp (p s) \<Longrightarrow> additive (wp (a x)); \<And>s. finite (supp (p s)) \<rbrakk> \<Longrightarrow>
@@ -84,7 +84,7 @@ lemmas fa_intros =
   additive_wp_Bind  additive_wp_Embed
   additive_wp_repeat
 
-subsection {* Maximality *}
+subsection \<open>Maximality\<close>
 
 lemma max_wp_Skip:
   "maximal (wp Skip)"
@@ -154,7 +154,7 @@ lemmas max_intros =
   max_wp_SetDC max_wp_Embed
   max_wp_Bind  max_wp_repeat
 
-text {* A healthy transformer that terminates is maximal. *}
+text \<open>A healthy transformer that terminates is maximal.\<close>
 lemma healthy_term_max:
   assumes ht: "healthy t"
       and trm: "\<lambda>s. 1 \<tturnstile> t (\<lambda>s. 1)"
@@ -174,7 +174,7 @@ proof(intro maximalI ext)
   finally show "t (\<lambda>s. c) s = c" .
 qed
 
-subsection {* Determinism *}
+subsection \<open>Determinism\<close>
 
 lemma det_wp_Skip:
   "determ (wp Skip)"

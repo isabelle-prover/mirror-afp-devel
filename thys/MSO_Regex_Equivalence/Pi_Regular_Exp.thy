@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* $\Pi$-Extended Regular Expressions *}
+section \<open>$\Pi$-Extended Regular Expressions\<close>
 
 (*<*)
 theory Pi_Regular_Exp
@@ -8,7 +8,7 @@ imports Pi_Regular_Set "HOL-Library.List_Lexorder" "HOL-Library.Code_Target_Nat"
   Deriving.Compare_Instances   
 begin
 (*>*)
-subsection {* Syntax of regular expressions *}
+subsection \<open>Syntax of regular expressions\<close>
 
 datatype 'a rexp =
   Zero |
@@ -23,7 +23,7 @@ datatype 'a rexp =
   Pr "('a rexp)"
 derive linorder rexp
 
-text {* Lifting constructors to lists *}
+text \<open>Lifting constructors to lists\<close>
 
 fun rexp_of_list where
   "rexp_of_list OPERATION N [] = N"
@@ -45,7 +45,7 @@ proof (induct xs)
 qed simp
 
 
-subsection {* ACI normalization *}
+subsection \<open>ACI normalization\<close>
 
 fun toplevel_summands :: "'a rexp \<Rightarrow> 'a rexp set" where
   "toplevel_summands (Plus r s) = toplevel_summands r \<union> toplevel_summands s"
@@ -222,7 +222,7 @@ declare ACI_norm_alt[symmetric, code]
 
 
 
-subsection {* Finality *}
+subsection \<open>Finality\<close>
 
 primrec final :: "'a rexp \<Rightarrow> bool"
 where
@@ -253,7 +253,7 @@ qed auto
 
 
 
-subsection {* Wellformedness w.r.t. an alphabet *}
+subsection \<open>Wellformedness w.r.t. an alphabet\<close>
 
 locale alphabet =
 fixes \<Sigma> :: "nat \<Rightarrow> 'a set" ("\<Sigma> _")
@@ -321,7 +321,7 @@ end
 
 
 
-subsection {* Language *}
+subsection \<open>Language\<close>
 
 locale project =
   alphabet \<Sigma> wf_atom for \<Sigma> :: "nat \<Rightarrow> 'a set" and wf_atom :: "nat \<Rightarrow> 'b :: linorder \<Rightarrow> bool" +
@@ -405,7 +405,7 @@ lemma lang_flatten_INTERSECT[simp]:
 proof
   assume ?L
   thus ?R using in_lang_INTERSECT[OF bspec[OF wf_lang_wf_word[OF iffD2[OF wf_flatten_INTERSECT]]],
-    OF assms(1,3) `?L`, of "sorted_list_of_set X"] assms(1)
+    OF assms(1,3) \<open>?L\<close>, of "sorted_list_of_set X"] assms(1)
     by auto
 next
   assume ?R

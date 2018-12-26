@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-section {* Personal Firewall *}
+section \<open>Personal Firewall\<close>
 theory 
   PersonalFirewall
   imports 

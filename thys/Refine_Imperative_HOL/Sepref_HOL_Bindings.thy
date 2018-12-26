@@ -795,7 +795,7 @@ proof
     from A obtain av' where [simp]: "a'=Some av'" by (cases a', simp_all)
 
     from A have "h \<Turnstile> P av pv * F \<and>\<^sub>A P av' pv * F'" by simp
-    with `precise P` have "av=av'" by (rule preciseD)
+    with \<open>precise P\<close> have "av=av'" by (rule preciseD)
     thus ?thesis by simp
   qed simp_all
 qed

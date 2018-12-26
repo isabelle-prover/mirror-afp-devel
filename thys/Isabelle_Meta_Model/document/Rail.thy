@@ -50,7 +50,7 @@ section\<open>Main Setup of Meta Commands\<close>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def generation_syntax} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def generation_syntax} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -135,7 +135,7 @@ Then all incoming meta-commands are considered as arguments sent to the exported
 As a compositionality aspect, these arguments are compiled then linked together
 with the (already compiled) meta-compiler, but
 this implies the use of one call of 
-@{text "unsafeCoerce"} in Haskell and one @{text "Obj.magic"} statement in OCaml 
+\<open>unsafeCoerce\<close> in Haskell and one \<open>Obj.magic\<close> statement in OCaml 
 (otherwise another solution would be to extract the meta-compiler as a functor).
 Similar optimizations are not yet implemented for Scala and are only half-implemented for the SML target
 (which basically performs a step of marshalling to string in Isabelle/ML).
@@ -158,15 +158,15 @@ for varying the semantics of languages being embedded.
 For example, @{keyword "design"} and @{keyword "analysis"} are two options for specifying how 
 the modelling of objects will be represented in the Toy Language.
 Similarly, this would be a typical place for options like
-@{text eager} or @{text lazy} for choosing how the evaluation should happen...
+\<open>eager\<close> or \<open>lazy\<close> for choosing how the evaluation should happen...
 \<close>
 
 section\<open>All Meta Commands of the Toy Language\<close>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def Class} & : & @{text "theory \<rightarrow> theory"} \\
-  @{command_def Abstract_class} & : & @{text "theory \<rightarrow> theory"} \\
+  @{command_def Class} & : & \<open>theory \<rightarrow> theory\<close> \\
+  @{command_def Abstract_class} & : & \<open>theory \<rightarrow> theory\<close> \\
 \end{matharray}
 
 @{rail \<open>
@@ -196,9 +196,9 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def Aggregation} & : & @{text "theory \<rightarrow> theory"} \\
-  @{command_def Association} & : & @{text "theory \<rightarrow> theory"} \\
-  @{command_def Composition} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def Aggregation} & : & \<open>theory \<rightarrow> theory\<close> \\
+  @{command_def Association} & : & \<open>theory \<rightarrow> theory\<close> \\
+  @{command_def Composition} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -219,8 +219,8 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def Associationclass} & : & @{text "theory \<rightarrow> theory"} \\
-  @{command_def Abstract_associationclass} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def Associationclass} & : & \<open>theory \<rightarrow> theory\<close> \\
+  @{command_def Abstract_associationclass} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -233,7 +233,7 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def Context} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def Context} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -245,7 +245,7 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def Instance} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def Instance} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -265,7 +265,7 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def State} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def State} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -279,7 +279,7 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def PrePost} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def PrePost} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -295,7 +295,7 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def End} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def End} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -305,7 +305,7 @@ text \<open>
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def BaseType} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def BaseType} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -320,7 +320,7 @@ section\<open>Extensions of Isabelle Commands\<close>
            fun\<acute>, definition\<acute> or code_reflect\<acute> *)
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def "code_reflect'"} & : & @{text "theory \<rightarrow> theory"}
+  @{command_def "code_reflect'"} & : & \<open>theory \<rightarrow> theory\<close>
 \end{matharray}
 
 @{rail \<open>
@@ -339,9 +339,9 @@ from the command @{command export_code} (with the same semantics).
 
 text \<open>
 \begin{matharray}{rcl}
-  @{command_def lazy_code_printing} & : & @{text "theory \<rightarrow> theory"} \\
-  @{command_def apply_code_printing} & : & @{text "theory \<rightarrow> theory"} \\
-  @{command_def apply_code_printing_reflect} & : & @{text "local_theory \<rightarrow> local_theory"}
+  @{command_def lazy_code_printing} & : & \<open>theory \<rightarrow> theory\<close> \\
+  @{command_def apply_code_printing} & : & \<open>theory \<rightarrow> theory\<close> \\
+  @{command_def apply_code_printing_reflect} & : & \<open>local_theory \<rightarrow> local_theory\<close>
 \end{matharray}
 
 @{rail \<open>

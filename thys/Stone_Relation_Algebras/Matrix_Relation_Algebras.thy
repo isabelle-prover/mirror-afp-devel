@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Matrix Relation Algebras *}
+section \<open>Matrix Relation Algebras\<close>
 
-text {*
+text \<open>
 This theory gives matrix models of Stone relation algebras and more general structures.
 We consider only square matrices.
 The main result is that matrices over Stone relation algebras form a Stone relation algebra.
@@ -18,7 +18,7 @@ Relation algebras have both a semiring and a lattice structure such that semirin
 In particular, finite sums and finite suprema coincide.
 Isabelle/HOL has separate theories for semirings and lattices, based on separate addition and join operations and different operations for finite sums and finite suprema.
 Reusing results from both theories is beneficial for relation algebras, but not always easy to realise.
-*}
+\<close>
 
 theory Matrix_Relation_Algebras
 
@@ -26,13 +26,13 @@ imports Relation_Algebras
 
 begin
 
-subsection {* Finite Suprema *}
+subsection \<open>Finite Suprema\<close>
 
-text {*
+text \<open>
 We consider finite suprema in idempotent semirings and Stone relation algebras.
-We mostly use the first of the following notations, which denotes the supremum of expressions @{text "t(x)"} over all @{text x} from the type of @{text x}.
+We mostly use the first of the following notations, which denotes the supremum of expressions \<open>t(x)\<close> over all \<open>x\<close> from the type of \<open>x\<close>.
 For finite types, this is implemented in Isabelle/HOL as the repeated application of binary suprema.
-*}
+\<close>
 
 syntax
   "_sum_sup_monoid" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Squnion>\<^sub>_ _)" [0,10] 10)
@@ -44,10 +44,10 @@ translations
 context idempotent_semiring
 begin
 
-text {*
+text \<open>
 The following induction principles are useful for comparing two suprema.
 The first principle works because types are not empty.
-*}
+\<close>
 
 lemma one_sup_induct [case_names one sup]:
   fixes f g :: "'b::finite \<Rightarrow> 'a"
@@ -77,10 +77,10 @@ lemma bot_sup_induct [case_names bot sup]:
   using bot sup apply fastforce
   using sup by blast
 
-text {*
+text \<open>
 Now many properties of finite suprema follow by simple applications of the above induction rules.
 In particular, we show distributivity of composition, isotonicity and the upper-bound property.
-*}
+\<close>
 
 lemma comp_right_dist_sum:
   fixes f :: "'b::finite \<Rightarrow> 'a"
@@ -147,9 +147,9 @@ end
 context stone_relation_algebra
 begin
 
-text {*
+text \<open>
 In Stone relation algebras, we can also show that converse,  double complement and meet distribute over finite suprema.
-*}
+\<close>
 
 lemma conv_dist_sum:
   fixes f :: "'b::finite \<Rightarrow> 'a"
@@ -180,21 +180,21 @@ lemma inf_right_dist_sum:
 
 end
 
-subsection {* Square Matrices *}
+subsection \<open>Square Matrices\<close>
 
-text {*
+text \<open>
 Because our semiring and relation algebra type classes only work for homogeneous relations, we only look at square matrices.
-*}
+\<close>
 
 type_synonym ('a,'b) square = "'a \<times> 'a \<Rightarrow> 'b"
 
-text {*
+text \<open>
 We use standard matrix operations.
 The Stone algebra structure is lifted componentwise.
 Composition is matrix multiplication using given composition and supremum operations.
 Its unit lifts given zero and one elements into an identity matrix.
 Converse is matrix transpose with an additional componentwise transpose.
-*}
+\<close>
 
 definition less_eq_matrix :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"                                           (infix "\<preceq>" 50)   where "f \<preceq> g = (\<forall>e . f e \<le> g e)"
 definition less_matrix    :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"                                           (infix "\<prec>" 50)   where "f \<prec> g = (f \<preceq> g \<and> \<not> g \<preceq> f)"
@@ -209,12 +209,12 @@ definition bot_matrix     :: "('a,'b::bot) square"                              
 definition top_matrix     :: "('a,'b::top) square"                                                                     ("mtop")         where "mtop   = (\<lambda>e . top)"
 definition one_matrix     :: "('a,'b::{one,bot}) square"                                                               ("mone")         where "mone   = (\<lambda>(i,j) . if i = j then 1 else bot)"
 
-subsection {* Stone Algebras *}
+subsection \<open>Stone Algebras\<close>
 
-text {*
+text \<open>
 We first lift the Stone algebra structure.
 Because all operations are componentwise, this also works for infinite matrices.
-*}
+\<close>
 
 interpretation matrix_order: order where less_eq = less_eq_matrix and less = "less_matrix :: ('a,'b::order) square \<Rightarrow> ('a,'b) square \<Rightarrow> bool"
   apply unfold_locales
@@ -260,9 +260,9 @@ interpretation matrix_p_algebra: p_algebra where sup = sup_matrix and inf = inf_
 
 interpretation matrix_pd_algebra: pd_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::pd_algebra) square" and top = top_matrix and uminus = uminus_matrix ..
 
-text {*
+text \<open>
 In particular, matrices over Stone algebras form a Stone algebra.
-*}
+\<close>
 
 interpretation matrix_stone_algebra: stone_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::stone_algebra) square" and top = top_matrix and uminus = uminus_matrix
   by unfold_locales (simp add: sup_matrix_def uminus_matrix_def top_matrix_def)
@@ -280,12 +280,12 @@ interpretation matrix_boolean_algebra: boolean_algebra where sup = sup_matrix an
   apply (simp add: sup_matrix_def uminus_matrix_def top_matrix_def)
   by (simp add: inf_matrix_def uminus_matrix_def minus_matrix_def)
 
-subsection {* Semirings *}
+subsection \<open>Semirings\<close>
 
-text {*
+text \<open>
 Next, we lift the semiring structure.
 Because of composition, this requires a restriction to finite matrices.
-*}
+\<close>
 
 interpretation matrix_monoid: monoid_mult where times = times_matrix and one = "one_matrix :: ('a::finite,'b::idempotent_semiring) square"
 proof
@@ -472,11 +472,11 @@ proof
   qed
 qed
 
-subsection {* Stone Relation Algebras *}
+subsection \<open>Stone Relation Algebras\<close>
 
-text {*
+text \<open>
 Finally, we show that matrices over Stone relation algebras form a Stone relation algebra.
-*}
+\<close>
 
 interpretation matrix_stone_relation_algebra: stone_relation_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a::finite,'b::stone_relation_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix
 proof

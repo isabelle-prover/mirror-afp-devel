@@ -5,7 +5,7 @@ theory GPV_Bisim imports
   GPV_Expectation
 begin
 
-subsection {* Bisimulation for oracles *}
+subsection \<open>Bisimulation for oracles\<close>
 
 text \<open>Bisimulation is a consequence of parametricity\<close>
 

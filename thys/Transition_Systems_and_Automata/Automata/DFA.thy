@@ -1,4 +1,4 @@
-section {* Deterministic Finite Automata *}
+section \<open>Deterministic Finite Automata\<close>
 
 theory DFA
 imports

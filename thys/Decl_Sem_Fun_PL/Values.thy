@@ -1,11 +1,11 @@
 section "Declarative semantics with tables as lists"
 
-text{*
+text\<open>
   The semantics that represents function tables as lists is largely obsolete,
   being replaced by the finite set representation. However, the proof
   of equivalence to the intersection type system still uses the version
   based on lists.
-*}
+\<close>
   
 subsection "Definition of values for declarative semantics" 
 

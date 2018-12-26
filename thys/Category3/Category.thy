@@ -9,7 +9,7 @@ theory Category
 imports Main "HOL-Library.FuncSet"
 begin
 
-  text {*
+  text \<open>
     This theory develops an ``object-free'' definition of category loosely following
     \cite{AHS}, Sec. 3.52-3.53.
     We define the notion ``category'' in terms of axioms that concern a single
@@ -30,38 +30,38 @@ begin
     have been equipped with their domain and codomain sets.
 
     To represent the partiality of the composition operation of a category, we assume that the
-    composition for a category has a unique zero element, which we call @{text null},
+    composition for a category has a unique zero element, which we call \<open>null\<close>,
     and we consider arrows to be ``composable'' if and only if their composite is non-null.
     Functors and natural transformations are required to map arrows to arrows and be
     ``extensional'' in the sense that they map non-arrows to null.  This is so that
     equality of functors and natural transformations coincides with their extensional equality
     as functions in HOL.
-    The fact that we co-opt an element of the arrow type to serve as @{text null} means that
+    The fact that we co-opt an element of the arrow type to serve as \<open>null\<close> means that
     it is not possible to define a category whose arrows exhaust the elements of a given type.
     This presents a disadvantage in some situations.  For example, we cannot construct a
     discrete category whose arrows are directly identified with the set of \emph{all}
     elements of a given type @{typ 'a}; instead, we must pass to a larger type
-    (such as @{typ "'a option"}) so that there is an element available for use as @{text null}.
-    The presence of @{text null}, however, is crucial to our being able to define a
+    (such as @{typ "'a option"}) so that there is an element available for use as \<open>null\<close>.
+    The presence of \<open>null\<close>, however, is crucial to our being able to define a
     system of introduction and elimination rules that can be applied automatically to establish
-    that a given expression denotes an arrow.  Without @{text null}, we would be able to
+    that a given expression denotes an arrow.  Without \<open>null\<close>, we would be able to
     define an introduction rule to infer, say, that the composition of composable arrows
     is composable, but not an elimination rule to infer that arrows are composable from
     the fact that their composite is an arrow.  Having the ability to do both is critical
     to the usability of the theory.
-  *}
+\<close>
 
   section "Partial Magmas"
 
-  text {*
-    A \emph{partial magma} is a partial binary operation @{text C} defined on the set
+  text \<open>
+    A \emph{partial magma} is a partial binary operation \<open>C\<close> defined on the set
     of elements at a type @{typ 'a}.  As discussed above,
-    we assume the existence of a unique element @{text null} of type @{typ 'a}
-    that is a zero for @{text C}, and we use @{text null} to represent ``undefined''.
-    We think of the operation @{text C} as an operation of ``composition'', and
-    we regard elements @{text f} and @{text g} of type @{typ 'a} as \emph{composable}
-    if @{text "C g f \<noteq> null"}.
-  *}
+    we assume the existence of a unique element \<open>null\<close> of type @{typ 'a}
+    that is a zero for \<open>C\<close>, and we use \<open>null\<close> to represent ``undefined''.
+    We think of the operation \<open>C\<close> as an operation of ``composition'', and
+    we regard elements \<open>f\<close> and \<open>g\<close> of type @{typ 'a} as \emph{composable}
+    if \<open>C g f \<noteq> null\<close>.
+\<close>
 
   type_synonym 'a comp = "'a \<Rightarrow> 'a \<Rightarrow> 'a"
 
@@ -84,26 +84,26 @@ begin
       using null_def ex_un_null theI' [of "\<lambda>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"]
       by auto
 
-    text {*
-      An \emph{identity} is a self-composable element @{text a} such that composition of
-      any other element @{text f} with @{text a} on either the left or the right results in
-      @{text f} whenever the composition is defined.
-    *}
+    text \<open>
+      An \emph{identity} is a self-composable element \<open>a\<close> such that composition of
+      any other element \<open>f\<close> with \<open>a\<close> on either the left or the right results in
+      \<open>f\<close> whenever the composition is defined.
+\<close>
 
     definition ide
     where "ide a \<equiv> a \<cdot> a \<noteq> null \<and>
                    (\<forall>f. (f \<cdot> a \<noteq> null \<longrightarrow> f \<cdot> a = f) \<and> (a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f))"
 
-    text {*
-      A \emph{domain} of an element @{text f} is an identity @{text a} for which composition of
-      @{text f} with @{text a} on the right is defined.
+    text \<open>
+      A \emph{domain} of an element \<open>f\<close> is an identity \<open>a\<close> for which composition of
+      \<open>f\<close> with \<open>a\<close> on the right is defined.
       The notion \emph{codomain} is defined similarly, using composition on the left.
       Note that, although these definitions are completely dual, the choice of terminology
       implies that we will think of composition as being written in traditional order,
       as opposed to diagram order.  It is pretty much essential to do it this way, to maintain
       compatibility with the notation for function application once we start working with
       functors and natural transformations.
-    *}
+\<close>
 
     definition domains
     where "domains f \<equiv> {a. ide a \<and> f \<cdot> a \<noteq> null}"
@@ -127,11 +127,11 @@ begin
     shows "a \<in> codomains a \<longleftrightarrow> ide a"
       using ide_def codomains_def by auto
 
-    text {*
-      An element @{text f} is an \emph{arrow} if either it has a domain or it has a codomain.
-      In an arbitrary partial magma it is possible for @{text f} to have one but not the other,
-      but the @{text category} locale will include assumptions to rule this out.
-    *}
+    text \<open>
+      An element \<open>f\<close> is an \emph{arrow} if either it has a domain or it has a codomain.
+      In an arbitrary partial magma it is possible for \<open>f\<close> to have one but not the other,
+      but the \<open>category\<close> locale will include assumptions to rule this out.
+\<close>
 
     definition arr
     where "arr f \<equiv> domains f \<noteq> {} \<or> codomains f \<noteq> {}"
@@ -140,13 +140,13 @@ begin
     shows "\<not> arr null"
       by (simp add: arr_def domains_null codomains_null)
 
-    text {*
+    text \<open>
       Using the notions of domain and codomain, we can define \emph{homs}.
       The predicate @{term "in_hom f a b"} expresses ``@{term f} is an arrow from @{term a}
       to @{term b},'' and the term @{term "hom a b"} denotes the set of all such arrows.
       It is convenient to have both of these, though passing back and forth sometimes involves
       extra work.  We choose @{term "in_hom"} as the more fundamental notion.
-    *}
+\<close>
 
     definition in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
     where "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<equiv> a \<in> domains f \<and> b \<in> codomains f"
@@ -163,10 +163,10 @@ begin
     shows "ide a \<longleftrightarrow> \<guillemotleft>a : a \<rightarrow> a\<guillemotright>"
       using self_domain_iff_ide self_codomain_iff_ide in_hom_def ide_def by fastforce
 
-    text {*
+    text \<open>
       Arrows @{term "f"} @{term "g"} for which the composite @{term "g \<cdot> f"} is defined
       are \emph{sequential}.
-    *}
+\<close>
 
     abbreviation seq
     where "seq g f \<equiv> arr (g \<cdot> f)"
@@ -181,11 +181,11 @@ begin
     shows "b \<cdot> f = f"
       using assms ide_in_hom ide_def not_arr_null by metis
 
-    text {*
+    text \<open>
       The \emph{domain} of an arrow @{term f} is an element chosen arbitrarily from the
       set of domains of @{term f} and the \emph{codomain} of @{term f} is an element chosen
       arbitrarily from the set of codomains.
-    *}
+\<close>
 
     definition dom
     where "dom f = (if domains f \<noteq> {} then (SOME a. a \<in> domains f) else null)"
@@ -215,17 +215,17 @@ begin
 
   section "Categories"
 
-  text{*
+  text\<open>
     A \emph{category} is defined to be a partial magma whose composition satisfies an
     extensionality condition, an associativity condition, and the requirement that every
     arrow have both a domain and a codomain.
     The associativity condition involves four ``matching conditions''
-    (@{text "match_1"}, @{text "match_2"}, @{text "match_3"}, and @{text "match_4"})
+    (\<open>match_1\<close>, \<open>match_2\<close>, \<open>match_3\<close>, and \<open>match_4\<close>)
     which constrain the domain of definition of the composition, and a fifth condition
-    (@{text "comp_assoc'"}) which states that the results of the two ways of composing
-    three elements are equal.  In the presence of the @{text "comp_assoc'"} axiom
-    @{text "match_4"} can be derived from @{text "match_3"} and vice versa.
-  *}
+    (\<open>comp_assoc'\<close>) which states that the results of the two ways of composing
+    three elements are equal.  In the presence of the \<open>comp_assoc'\<close> axiom
+    \<open>match_4\<close> can be derived from \<open>match_3\<close> and vice versa.
+\<close>
 
   locale category = partial_magma +
   assumes ext: "g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
@@ -236,7 +236,7 @@ begin
   and comp_assoc': "\<lbrakk> seq g f; seq h g \<rbrakk> \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
   begin
 
-    text{*
+    text\<open>
       Associativity of composition holds unconditionally.  This was not the case in
       previous, weaker versions of this theory, and I did not notice this for some
       time after updating to the current axioms.  It is obviously an advantage that
@@ -246,7 +246,7 @@ begin
       applying other simplifications that we would also like to be able to apply automatically.
       So, it now seems best not to make this fact a default simplification, but rather
       to invoke it explicitly where it is required.
-    *}
+\<close>
 
     lemma comp_assoc:
     shows "(h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
@@ -297,10 +297,10 @@ begin
     shows "codomains f \<noteq> {} \<longleftrightarrow> arr f"
       using has_domain_iff_arr has_domain_iff_has_codomain by auto
 
-    text{*
+    text\<open>
       A consequence of the category axioms is that domains and codomains, if they exist,
       are unique.
-    *}
+\<close>
 
     lemma domain_unique:
     assumes "a \<in> domains f" and "a' \<in> domains f"
@@ -332,13 +332,13 @@ begin
     shows "codomains f = {cod f}"
       using assms cod_in_codomains has_codomain_iff_arr codomain_unique by auto
 
-    text{*
+    text\<open>
       A consequence of the following lemma is that the notion @{term "arr"} is redundant,
       given @{term "in_hom"}, @{term "dom"}, and @{term "cod"}.  However, I have retained it
       because I have not been able to find a set of usefully powerful simplification rules
       expressed only in terms of @{term "in_hom"} that does not result in looping in many
       situations.
-    *}
+\<close>
 
     lemma arr_iff_in_hom:
     shows "arr f \<longleftrightarrow> \<guillemotleft>f : dom f \<rightarrow> cod f\<guillemotright>"
@@ -359,7 +359,7 @@ begin
      using assms in_hom_def domains_char codomains_char has_domain_iff_arr
      by (metis empty_iff singleton_iff)
 
-    text{*
+    text\<open>
       To obtain the ``only if'' direction in the next two results and in similar results later
       for composition and the application of functors and natural transformations,
       is the reason for assuming the existence of @{term null} as a special element of the
@@ -369,7 +369,7 @@ begin
       that if @{term "dom f"} is an arrow then so is @{term f}.  Similarly, we will be able
       to infer not only that if @{term f} and @{term g} are composable arrows then
       @{term "C g f"} is an arrow, but also that if @{term "C g f"} is an arrow then
-      @{text f} and @{text g} are composable arrows.  These inferences allow most necessary
+      \<open>f\<close> and \<open>g\<close> are composable arrows.  These inferences allow most necessary
       facts about what terms denote arrows to be deduced automatically from minimal
       assumptions.  Typically all that is required is to assume or establish that certain
       terms denote arrows in particular homs at the point where those terms are first
@@ -377,7 +377,7 @@ begin
       Without this feature, nearly every proof would involve many tedious additional steps
       to establish that each of the terms appearing in the proof (including all its subterms)
       in fact denote arrows.
-    *}
+\<close>
 
     lemma arr_dom_iff_arr:
     shows "arr (dom f) \<longleftrightarrow> arr f"
@@ -437,10 +437,10 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       The following is another example of a crucial ``downward'' rule that would not be possible
       without a reserved @{term null} value.
-    *}
+\<close>
 
     lemma seqE [elim]:
     assumes "seq g f"
@@ -576,12 +576,12 @@ begin
         using assms ide_in_hom using seqI' by blast
     qed
 
-    text{*
+    text\<open>
       Here we define some common configurations of arrows.
       These are defined as abbreviations, because we want all ``diagrammatic'' assumptions
       in a theorem to reduce readily to a conjunction of assertions of the basic forms
       @{term "arr f"}, @{term "dom f = X"}, @{term "cod f = Y"}, and @{term "in_hom f a b"}.
-    *}
+\<close>
 
     abbreviation endo
     where "endo f \<equiv> seq f f"
@@ -602,34 +602,34 @@ begin
 
   section "Classical Categories"
 
-  text{*
-    In this section we define a secondary axiomatization of categories, @{text classical_category},
+  text\<open>
+    In this section we define a secondary axiomatization of categories, \<open>classical_category\<close>,
     which is a more traditional one, except that in view of the totality of functions in HOL
-    we need to introduce predicates @{text Obj} and @{text Arr} that characterize the bona fide
+    we need to introduce predicates \<open>Obj\<close> and \<open>Arr\<close> that characterize the bona fide
     objects and arrows among the elements of their respective types.
     A category defined this way is not ``extensional'', in the sense that there
     will in general be categories with the same sets of objects and arrows,
-    such that @{text Dom}, @{text Cod}, @{text Id}, and @{text Comp} agree on these
+    such that \<open>Dom\<close>, \<open>Cod\<close>, \<open>Id\<close>, and \<open>Comp\<close> agree on these
     objects and arrows, but they do not necessarily agree on other values of the corresponding
     types.
 
-    We show below that an interpretation of the @{text category} induces an interpretation
-    of the @{text classical_category} locale.
-    Conversely, we show that if @{text Obj}, @{text Arr}, @{text Dom}, @{text Cod},
-    @{text Id}, and @{text Comp} comprise an interpretation of @{text classical_category},
-    then we can define from them a partial composition that interprets the @{text category} locale.
-    Moreover, the predicate derived @{text arr} derived from this partial composition agrees
-    with the originally given predicate @{text Arr}, the notions @{text dom}, @{text cod},
-    and @{text comp} derived from the partial composition agree with the originally given
-    @{text Dom}, @{text Cod}, and @{text Comp} on arguments that satisfy @{text arr},
+    We show below that an interpretation of the \<open>category\<close> induces an interpretation
+    of the \<open>classical_category\<close> locale.
+    Conversely, we show that if \<open>Obj\<close>, \<open>Arr\<close>, \<open>Dom\<close>, \<open>Cod\<close>,
+    \<open>Id\<close>, and \<open>Comp\<close> comprise an interpretation of \<open>classical_category\<close>,
+    then we can define from them a partial composition that interprets the \<open>category\<close> locale.
+    Moreover, the predicate derived \<open>arr\<close> derived from this partial composition agrees
+    with the originally given predicate \<open>Arr\<close>, the notions \<open>dom\<close>, \<open>cod\<close>,
+    and \<open>comp\<close> derived from the partial composition agree with the originally given
+    \<open>Dom\<close>, \<open>Cod\<close>, and \<open>Comp\<close> on arguments that satisfy \<open>arr\<close>,
     and the identities derived from the partial composition are in bijective correspondence with
-    the elements that satisfy the originally given predicate @{text Obj}.
+    the elements that satisfy the originally given predicate \<open>Obj\<close>.
 
     In some cases, rather than defining a construction on categories directly
     in terms of the partial-composition-based axioms, it can be simpler to
     define the construction in classical terms in a convenient way, and then
     extract a partial composition via the construction given here.
-  *}
+\<close>
 
   locale classical_category =
   fixes Obj :: "'obj \<Rightarrow> bool"
@@ -655,11 +655,11 @@ begin
     abbreviation Seq
     where "Seq g f \<equiv> (Arr f \<and> Arr g \<and> Cod f = Dom g)"
 
-    text{*
+    text\<open>
       Because @{term Arr} might be the universal predicate for type @{typ 'arr},
       it is necessary to pass to type @{typ "'arr option"} in order to have a value
-      available to serve as @{text null}.
-    *}
+      available to serve as \<open>null\<close>.
+\<close>
 
     definition comp :: "'arr option \<Rightarrow> 'arr option \<Rightarrow> 'arr option"
     where "comp g f = (if f \<noteq> None \<and> g \<noteq> None \<and> Seq (the g) (the f)
@@ -772,12 +772,12 @@ begin
     theorem induces_category:
     shows "category comp" ..
 
-    text{*
+    text\<open>
       The arrows of the classical category are in bijective correspondence with the
       arrows of the category defined by @{term comp}, and the originally given
       @{term Dom}, @{term Cod}, and @{term Comp} coincide along this bijection with
       @{term C.dom}, @{term C.cod}, and @{term comp}.
-    *}
+\<close>
 
     lemma bij_betw_Arr_arr:
     shows "bij_betw Some (Collect Arr) (Collect C.arr)"
@@ -823,10 +823,10 @@ begin
     shows "C.ide a \<longleftrightarrow> Arr (the a) \<and> a = Some (Id (Dom (the a)))"
       using C.ide_dom arr_char dom_char C.ide_in_hom by fastforce
 
-    text{*
+    text\<open>
       The objects of the classical category are in bijective correspondence with
       the identities of the category defined by comp.
-    *}
+\<close>
 
     lemma bij_betw_Obj_ide:
     shows "bij_betw (Some o Id) (Collect Obj) (Collect C.ide)"
@@ -837,11 +837,11 @@ begin
   sublocale classical_category \<subseteq> category comp
     using induces_category by auto
 
-  text{*
+  text\<open>
     A category defined using the nonstandard, partial-composition-based axiomatization
     admits an interpretation of the classical axioms, and the composition derived
     from this interpretation coincides with the originally given one.
-  *}
+\<close>
 
   context category
   begin

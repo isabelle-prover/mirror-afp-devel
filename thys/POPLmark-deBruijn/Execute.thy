@@ -5,9 +5,9 @@ theory Execute
 imports POPLmarkRecord "HOL-Library.Code_Target_Numeral"
 begin
 
-section {* Executing the specification *}
+section \<open>Executing the specification\<close>
 
-text {*
+text \<open>
 \label{sec:exec}
 An important criterion that a solution to the {\sc PoplMark} Challenge should
 fulfill is the possibility to {\it animate} the specification. For example,
@@ -18,9 +18,9 @@ The definition of the single-step evaluation relation presented in \secref{sec:e
 and \secref{sec:evaluation-rcd} is directly executable.
 
 In order to compute the normal form of a term using the one-step evaluation
-relation @{text "\<longmapsto>"}, we introduce the inductive predicate @{text "t \<Down> u"},
-denoting that @{text u} is a normal form of @{text t}.
-*}
+relation \<open>\<longmapsto>\<close>, we introduce the inductive predicate \<open>t \<Down> u\<close>,
+denoting that \<open>u\<close> is a normal form of \<open>t\<close>.
+\<close>
 
 inductive norm :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<Down>" 50)
 where
@@ -92,15 +92,15 @@ definition
 
 value "normal_forms fact2"
 
-text {*
+text \<open>
 Unfortunately, the definition based
 on evaluation contexts from \secref{sec:evaluation-ctxt} is not directly executable.
 The reason is that from the definition of evaluation contexts, the code generator
-cannot immediately read off an algorithm that, given a term @{text t}, computes a context
-@{text E} and a term @{text "t\<^sub>0"} such that @{text "t = E t\<^sub>0"}. In order to do this, one
+cannot immediately read off an algorithm that, given a term \<open>t\<close>, computes a context
+\<open>E\<close> and a term \<open>t\<^sub>0\<close> such that \<open>t = E t\<^sub>0\<close>. In order to do this, one
 would have to extract the algorithm contained in the proof of the {\it decomposition lemma}
 from \secref{sec:evaluation-ctxt}.
-*}
+\<close>
 
 values "{u. norm fact2 u}"
 

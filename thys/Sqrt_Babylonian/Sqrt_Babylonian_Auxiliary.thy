@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Auxiliary lemmas which might be moved into the Isabelle distribution. *}
+section \<open>Auxiliary lemmas which might be moved into the Isabelle distribution.\<close>
 
 theory Sqrt_Babylonian_Auxiliary
 imports 

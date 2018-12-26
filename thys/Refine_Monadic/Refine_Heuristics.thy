@@ -1,42 +1,42 @@
-section {* Data Refinement Heuristics *}
+section \<open>Data Refinement Heuristics\<close>
 theory Refine_Heuristics
 imports Refine_Basic
 begin
 
-text {*
+text \<open>
   This theory contains some heuristics to automatically prove
   data refinement goals that are left over by the refinement condition 
   generator.
-*}
+\<close>
 
-text {*
-  The theorem collection @{text "refine_hsimp"} contains additional simplifier
+text \<open>
+  The theorem collection \<open>refine_hsimp\<close> contains additional simplifier
   rules that are useful to discharge typical data refinement goals.
-*}
+\<close>
 
-ML {*
+ML \<open>
   structure refine_heuristics_simps = Named_Thms
     ( val name = @{binding refine_hsimp}
       val description = "Refinement Framework: " ^
         "Data refinement heuristics simp rules" );
-*}
+\<close>
 
-setup {* refine_heuristics_simps.setup *}
+setup \<open>refine_heuristics_simps.setup\<close>
 
-subsection {* Type Based Heuristics *}
-text {*
+subsection \<open>Type Based Heuristics\<close>
+text \<open>
   This heuristics instantiates schematic data refinement relations based
   on their type. Both, the left hand side and right hand side type are
   considered.
-*}
+\<close>
 
-text {* The heuristics works by proving goals of the form 
-  @{text "RELATES ?R"}, thereby instantiating @{text "?R"}. *}
+text \<open>The heuristics works by proving goals of the form 
+  \<open>RELATES ?R\<close>, thereby instantiating \<open>?R\<close>.\<close>
 definition RELATES :: "('a\<times>'b) set \<Rightarrow> bool" where "RELATES R \<equiv> True"
 lemma RELATESI: "RELATES R" by (simp add: RELATES_def)
 
 
-ML {*
+ML \<open>
 structure Refine_dref_type = struct
   structure pattern_rules = Named_Thms
     ( val name = @{binding refine_dref_pattern}
@@ -97,13 +97,13 @@ structure Refine_dref_type = struct
 
 
 end;
-*}
+\<close>
 
-setup {* Refine_dref_type.RELATES_rules.setup *}
-setup {* Refine_dref_type.pattern_rules.setup *}
+setup \<open>Refine_dref_type.RELATES_rules.setup\<close>
+setup \<open>Refine_dref_type.pattern_rules.setup\<close>
 
 method_setup refine_dref_type = 
-  {* Scan.lift (Args.mode "trace" -- Args.mode "nopost") 
+  \<open>Scan.lift (Args.mode "trace" -- Args.mode "nopost") 
   >> (fn (tracing,nopost) => 
     fn ctxt => (let
       val ctxt = 
@@ -113,7 +113,7 @@ method_setup refine_dref_type =
         Refine_dref_type.type_tac ctxt 
         THEN (if nopost then all_tac else ALLGOALS (TRY o Refine.post_tac ctxt))))
     end))
-  *} 
+\<close> 
   "Use type-based heuristics to instantiate data refinement relations"
 
 (*method_setup refine_dref_type_only = 
@@ -122,11 +122,11 @@ method_setup refine_dref_type =
   "Use type-based heuristics to instantiate data refinement relations. 
     No postprocessing."*)
 
-subsection {* Patterns *}
-text {*
+subsection \<open>Patterns\<close>
+text \<open>
   This section defines the patterns that are recognized as data refinement 
   goals.
-*}
+\<close>
 
 lemma RELATESI_memb[refine_dref_pattern]: 
   "RELATES R \<Longrightarrow> (a,b)\<in>R \<Longrightarrow> (a,b)\<in>R" .
@@ -137,11 +137,11 @@ text \<open>Allows refine-rules to add \<open>RELATES\<close> goals if they intr
 lemma RELATES_pattern[refine_dref_pattern]: "RELATES R \<Longrightarrow> RELATES R" .
 lemmas [refine_hsimp] = RELATES_def 
     
-subsection {* Refinement Relations *}
-text {*
+subsection \<open>Refinement Relations\<close>
+text \<open>
   In this section, we define some general purpose refinement relations, e.g.,
   for product types and sets.
-*}
+\<close>
 
 lemma Id_RELATES [refine_dref_RELATES]: "RELATES Id" by (simp add: RELATES_def)
 

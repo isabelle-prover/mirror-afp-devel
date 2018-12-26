@@ -50,7 +50,7 @@ theorem T3: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E G\<rfloor>" us
     
 subsubsection \<open>Axioms\<close>
         
-text\<open>  @{text "\<P>"} satisfies the so-called stability conditions (see @{cite "Fitting"}, p. 124), which means
+text\<open>  \<open>\<P>\<close> satisfies the so-called stability conditions (see @{cite "Fitting"}, p. 124), which means
  it designates rigidly (note that this makes for an \emph{essentialist} assumption). \<close>
 axiomatization where
       A4a: "\<lfloor>\<^bold>\<forall>X. \<P> X \<^bold>\<rightarrow> \<^bold>\<box>(\<P> X)\<rfloor>"      \<comment> \<open>axiom 11.11\<close>
@@ -170,7 +170,7 @@ axiomatization where
  symm: "symmetric aRel"
  
 lemma True nitpick[satisfy] oops \<comment> \<open>model found: axioms still consistent\<close>
-text\<open>  Using an \emph{S5} logic, \emph{modal collapse} (@{text "\<lfloor>\<^bold>\<forall>\<Phi>.(\<Phi> \<^bold>\<rightarrow> (\<^bold>\<box> \<Phi>))\<rfloor>"}) is actually valid (see `More Objections' some pages below) \<close>
+text\<open>  Using an \emph{S5} logic, \emph{modal collapse} (\<open>\<lfloor>\<^bold>\<forall>\<Phi>.(\<Phi> \<^bold>\<rightarrow> (\<^bold>\<box> \<Phi>))\<rfloor>\<close>) is actually valid (see `More Objections' some pages below) \<close>
     
 text\<open>  We prove some useful inference rules: \<close>    
 lemma modal_distr: "\<lfloor>\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>)\<rfloor> \<Longrightarrow> \<lfloor>(\<^bold>\<diamond>\<phi> \<^bold>\<rightarrow> \<^bold>\<diamond>\<psi>)\<rfloor>" by blast
@@ -261,7 +261,7 @@ lemma PosPropertiesNecExist: "\<lfloor>\<^bold>\<forall>Y. \<P> Y \<^bold>\<righ
     
 subsubsection \<open>More Objections\<close>
 text\<open>  Fitting discusses the objection raised by Sobel @{cite "sobel2004logic"}, who argues that G\"odel's axiom system
- is too strong: it implies that whatever is the case is so necessarily, i.e. the modal system collapses (@{text "\<phi> \<longrightarrow> \<box>\<phi>"}).
+ is too strong: it implies that whatever is the case is so necessarily, i.e. the modal system collapses (\<open>\<phi> \<longrightarrow> \<box>\<phi>\<close>).
  The \emph{modal collapse} has been philosophically interpreted as implying the absence of free will. \<close>
 
 text\<open>  We start by proving an useful FOL lemma: \<close>  

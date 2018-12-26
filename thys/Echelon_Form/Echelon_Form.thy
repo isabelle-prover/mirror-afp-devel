@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Echelon Form*}
+section\<open>Echelon Form\<close>
 
 theory Echelon_Form
 imports 
@@ -14,9 +14,9 @@ imports
 begin
 
 
-subsection{*Definition of Echelon Form*}
+subsection\<open>Definition of Echelon Form\<close>
 
-text{*Echelon form up to column k (NOT INCLUDED).*}
+text\<open>Echelon form up to column k (NOT INCLUDED).\<close>
 
 definition 
   echelon_form_upt_k :: "'a::{bezout_ring}^'cols::{mod_type}^'rows::{finite, ord} \<Rightarrow> nat \<Rightarrow> bool" 
@@ -30,7 +30,7 @@ definition
   
 definition "echelon_form A = echelon_form_upt_k A (ncols A)"
 
-text{*Some properties of matrices in echelon form.*}
+text\<open>Some properties of matrices in echelon form.\<close>
 
 lemma echelon_form_upt_k_intro:
   assumes "(\<forall>i. is_zero_row_upt_k i k A \<longrightarrow> \<not> (\<exists>j. j>i \<and> \<not> is_zero_row_upt_k j k A))"
@@ -283,7 +283,7 @@ next
   qed
 qed
 
-text{*A matrix in echelon form is upper triangular.*}
+text\<open>A matrix in echelon form is upper triangular.\<close>
 lemma echelon_form_imp_upper_triagular:
   fixes A::"'a::{bezout_ring}^'n::{mod_type}^'n::{mod_type}"
   assumes "echelon_form A"
@@ -339,10 +339,10 @@ proof (rule echelon_form_upt_k_if_equal[OF e _ k], auto)
 qed
 
 
-text{*There are similar theorems to the following ones in the Gauss-Jordan developments, but
+text\<open>There are similar theorems to the following ones in the Gauss-Jordan developments, but
 for matrices in reduced row echelon form. It is possible to prove that reduced row echelon form 
 implies echelon form. Then the theorems in the Gauss-Jordan development could be 
-obtained with ease.*}
+obtained with ease.\<close>
 
 lemma greatest_less_zero_row:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{finite, wellorder}"
@@ -379,11 +379,11 @@ proof (rule echelon_form_intro)
     by (simp add: rref_condition3_equiv rref)
 qed
 
-subsection{*Computing the echelon form of a matrix*}
+subsection\<open>Computing the echelon form of a matrix\<close>
 
-subsubsection{*Demonstration over principal ideal rings*}
+subsubsection\<open>Demonstration over principal ideal rings\<close>
        
-text{*Important remark:
+text\<open>Important remark:
 
 We want to prove that there exist the echelon form of any matrix whose elements belong to a bezout 
 domain. In addition, we want to compute the echelon form, so we will need computable gcd 
@@ -394,32 +394,32 @@ and executing over euclidean domains.
 To do that, we have studied several options:
 
 \begin{enumerate}
-  \item We could define a gcd in bezout rings (@{text "bezout_ring_gcd"}) as follows:
-  @{text "gcd_bezout_ring a b = (SOME d. d dvd a \<and> d dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d))"}
+  \item We could define a gcd in bezout rings (\<open>bezout_ring_gcd\<close>) as follows:
+  \<open>gcd_bezout_ring a b = (SOME d. d dvd a \<and> d dvd b \<and> (\<forall>d'. d' dvd a \<and> d' dvd b \<longrightarrow> d' dvd d))\<close>
 
   And then define an algorithm that computes the Echelon Form using such a definition to the gcd.
   This would allow us to prove the correctness over bezout rings, but we would not be able
   to execute over euclidean rings because it is not possible to demonstrate a (code) lemma 
-  stating that @{text "(gcd_bezout_ring a b) = gcd_eucl a b"} (the gcd is not unique over 
+  stating that \<open>(gcd_bezout_ring a b) = gcd_eucl a b\<close> (the gcd is not unique over 
   bezout rings and GCD rings).
   
-  \item Create a @{text "bezout_ring_norm"} class and define a gcd normalized over bezout rings:
-  @{text "definition gcd_bezout_ring_norm a b = gcd_bezout_ring a b div normalisation_factor (gcd_bezout_ring a b)"}
+  \item Create a \<open>bezout_ring_norm\<close> class and define a gcd normalized over bezout rings:
+  \<open>definition gcd_bezout_ring_norm a b = gcd_bezout_ring a b div normalisation_factor (gcd_bezout_ring a b)\<close>
 
-  Then, one could demonstrate a (code) lemma stating that: @{text "(gcd_bezout_ring_norm a b) 
-  = gcd_eucl a b"}
+  Then, one could demonstrate a (code) lemma stating that: \<open>(gcd_bezout_ring_norm a b) 
+  = gcd_eucl a b\<close>
   This allows us to execute the gcd function, but with bezout it is not possible.
 
   \item The third option (and the chosen one) consists of defining the algorithm over bezout domains 
-  and parametrizing the algorithm by a @{text "bezout"} operation which must satisfy 
+  and parametrizing the algorithm by a \<open>bezout\<close> operation which must satisfy 
   suitable properties (i.e @{term "is_bezout_ext bezout"}). Then we can prove the correctness over 
   bezout domains and we will execute over euclidean domains, since we can prove that the 
   operation  @{term "euclid_ext2"} is an executable operation which satisfies 
   @{term "is_bezout_ext euclid_ext2"}.
 \end{enumerate}
-*}
+\<close>
 
-subsubsection{*Definition of the algorithm*}
+subsubsection\<open>Definition of the algorithm\<close>
 
 context bezout_ring
 begin
@@ -449,12 +449,12 @@ where "bezout_iterate A 0 i j bezout = A"
         (if (Suc n) \<le> to_nat i then A else 
               bezout_iterate (bezout_matrix A i (from_nat (Suc n)) j bezout ** A) n i j bezout)"
 
-text{*If every element in column @{term "k::nat"} over index @{term "i::nat"} are equal to zero,
+text\<open>If every element in column @{term "k::nat"} over index @{term "i::nat"} are equal to zero,
       the same input is returned. If every element over @{term "i::nat"} 
       is equal to zero, except the pivot, the algorithm does nothing, but pivot @{term "i::nat"}
       is increased in a unit. Finally, if there is a position @{term "n::nat"} 
       whose coefficient is different from zero, its row is interchanged with row 
-      @{term "i::nat"} and the bezout coefficients are used to produce a zero in its position.*}
+      @{term "i::nat"} and the bezout coefficients are used to produce a zero in its position.\<close>
 
 
 definition 
@@ -470,7 +470,7 @@ definition
 definition "echelon_form_of_upt_k A k bezout = (fst (foldl (echelon_form_of_column_k bezout) (A,0) [0..<Suc k]))"
 definition "echelon_form_of A bezout = echelon_form_of_upt_k A (ncols A - 1) bezout"
 
-subsubsection{*The executable definition:*}
+subsubsection\<open>The executable definition:\<close>
 
 context euclidean_space
 begin
@@ -479,7 +479,7 @@ definition [code_unfold]: "echelon_form_of_euclidean A = echelon_form_of A eucli
 
 end
 
-subsubsection{*Properties of the bezout matrix*}
+subsubsection\<open>Properties of the bezout matrix\<close>
 
 lemma bezout_matrix_works1:
   assumes ib: "is_bezout_ext bezout"
@@ -1037,7 +1037,7 @@ proof (auto simp add: a_not_n i_not_n a_not_i)
   finally show "sum ?f UNIV = A $ a $ b" .
 qed
 
-text{*Code equations to execute the bezout matrix*}
+text\<open>Code equations to execute the bezout matrix\<close>
 
 definition "bezout_matrix_row A a b j bezout x
   = (let (p, q, u, v, d) = bezout (A $ a $ j) (A $ b $ j) 
@@ -1063,7 +1063,7 @@ lemma [code abstract]: "vec_nth (bezout_matrix A a b j bezout) = bezout_matrix_r
   unfolding bezout_matrix_def unfolding bezout_matrix_row_def[abs_def] Let_def 
   by (cases "bezout (A $ a $ j) (A $ b $ j)") auto
 
-subsubsection{*Properties of the bezout iterate function*}
+subsubsection\<open>Properties of the bezout iterate function\<close>
 
 lemma bezout_iterate_not_zero:
   assumes Aik_0: "A $ i $ from_nat k \<noteq> 0"
@@ -1349,7 +1349,7 @@ next
   qed
 qed
 
-subsubsection{*Proving the correctness*}
+subsubsection\<open>Proving the correctness\<close>
 
 lemma condition1_index_le_zero_row: 
   fixes A k
@@ -2534,7 +2534,7 @@ proof (induct k)
     also have "... \<noteq> 0" 
     proof (rule bezout_iterate_not_zero[OF _ _ _ ib], simp_all add: nrows_def)
       show "A $ (LEAST n. A $ n $ 0 \<noteq> 0) $ from_nat 0 \<noteq> 0"
-        by (metis (mono_tags) LeastI `A $ m $ 0 \<noteq> 0` from_nat_0)
+        by (metis (mono_tags) LeastI \<open>A $ m $ 0 \<noteq> 0\<close> from_nat_0)
       show "to_nat 0 \<le> CARD('rows) - Suc 0" by (metis le0 to_nat_0)
     qed
     finally have " bezout_iterate ?interchange (nrows A - Suc 0) 0 0 bezout $ 0 $ 0 \<noteq> 0" .
@@ -2553,7 +2553,7 @@ proof (induct k)
     also have "... \<noteq> 0" 
     proof (rule bezout_iterate_not_zero[OF _ _ _ ib], simp_all add: nrows_def)
       show "A $ (LEAST n. A $ n $ 0 \<noteq> 0) $ from_nat 0 \<noteq> 0"
-        by (metis (mono_tags) LeastI `A $ m $ 0 \<noteq> 0` from_nat_0)
+        by (metis (mono_tags) LeastI \<open>A $ m $ 0 \<noteq> 0\<close> from_nat_0)
       show "to_nat 0 \<le> CARD('rows) - Suc 0" by (metis le0 to_nat_0)
     qed
     finally have 1: "bezout_iterate ?interchange (nrows A - Suc 0) 0 0 bezout $ 0 $ 0 \<noteq> 0" .
@@ -2568,7 +2568,7 @@ proof (induct k)
       proof (rule bezout_iterate_zero_column_k[OF _ ib])
         show "echelon_form_upt_k (?interchange) 0" by (metis echelon_form_upt_k_0)   
         show "?interchange $ 0 $ from_nat 0 \<noteq> 0" 
-          by (metis (mono_tags, lifting) LeastI_ex `A $ m $ 0 \<noteq> 0` from_nat_0 interchange_rows_i)
+          by (metis (mono_tags, lifting) LeastI_ex \<open>A $ m $ 0 \<noteq> 0\<close> from_nat_0 interchange_rows_i)
         show "nrows A - Suc 0 < nrows (?interchange)" unfolding nrows_def by simp
         show "0 < b" using b .
         show "0 < ncols (?interchange)" unfolding ncols_def by auto
@@ -2800,7 +2800,7 @@ next
   qed
 qed
 
-subsubsection{*Proving the existence of invertible matrices which do the transformations*}
+subsubsection\<open>Proving the existence of invertible matrices which do the transformations\<close>
 
 lemma bezout_iterate_invertible:
   fixes A::"'a::{bezout_domain}^'cols^'rows::{mod_type}"
@@ -2928,7 +2928,7 @@ next
   qed
 qed
 
-subsubsection{*Final results*}
+subsubsection\<open>Final results\<close>
 
 lemma echelon_form_echelon_form_of:
   fixes A::"'a::{bezout_domain}^'cols::{mod_type}^'rows::{mod_type}"
@@ -2951,7 +2951,7 @@ lemma echelon_form_of_invertible:
   using echelon_form_of_upt_k_invertible[OF ib] echelon_form_echelon_form_of[OF ib]
   unfolding echelon_form_of_def by fast
 
-text{*Executable version*}
+text\<open>Executable version\<close>
  
 corollary echelon_form_echelon_form_of_euclidean:
   fixes A::"'a::{euclidean_ring_gcd}^'cols::{mod_type}^'rows::{mod_type}"
@@ -2966,7 +2966,7 @@ corollary echelon_form_of_euclidean_invertible:
          \<and> echelon_form (echelon_form_of A euclid_ext2)"
   using echelon_form_of_invertible[OF is_bezout_ext_euclid_ext2] .
 
-subsection{*More efficient code equations*}
+subsection\<open>More efficient code equations\<close>
 
 definition
   "echelon_form_of_column_k_efficient bezout A' k =

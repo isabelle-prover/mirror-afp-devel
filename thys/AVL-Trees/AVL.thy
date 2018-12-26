@@ -14,15 +14,15 @@ theory AVL
 imports Main
 begin
 
-text {*
+text \<open>
   This is a monolithic formalization of AVL trees.
-*}
+\<close>
 
-subsection {* AVL tree type definition *}
+subsection \<open>AVL tree type definition\<close>
 
 datatype (set_of: 'a) tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
-subsection {* Invariants and auxiliary functions *}
+subsection \<open>Invariants and auxiliary functions\<close>
 
 primrec height :: "'a tree \<Rightarrow> nat" where
 "height ET = 0" |
@@ -40,7 +40,7 @@ primrec is_ord :: "('a::order) tree \<Rightarrow> bool" where
  ((\<forall>n' \<in> set_of l. n' < n) \<and> (\<forall>n' \<in> set_of r. n < n') \<and> is_ord l \<and> is_ord r)"
 
 
-subsection {* AVL interface and implementation *}
+subsection \<open>AVL interface and implementation\<close>
 
 primrec is_in :: "('a::order) \<Rightarrow> 'a tree \<Rightarrow> bool" where
  "is_in k ET = False" |
@@ -115,9 +115,9 @@ primrec delete :: "'a::order \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
         mkt_bal_l n l r'
    )"
 
-subsection {* Correctness proof *}
+subsection \<open>Correctness proof\<close>
 
-subsubsection {* Insertion maintains AVL balance *}
+subsubsection \<open>Insertion maintains AVL balance\<close>
 
 declare Let_def [simp]
 
@@ -195,7 +195,7 @@ qed
 
 (* It apppears that these two properties need to be proved simultaneously: *)
 
-text{* Insertion maintains the AVL property: *}
+text\<open>Insertion maintains the AVL property:\<close>
 
 theorem avl_insert_aux:
   assumes "avl t"
@@ -217,7 +217,7 @@ proof (induction t)
       with MKT 1 show ?thesis by (auto simp add:avl_mkt_bal_l simp del:mkt_bal_l.simps)
     next
       case False
-      with MKT 1 `x\<noteq>n` show ?thesis by (auto simp add:avl_mkt_bal_r simp del:mkt_bal_r.simps)
+      with MKT 1 \<open>x\<noteq>n\<close> show ?thesis by (auto simp add:avl_mkt_bal_r simp del:mkt_bal_r.simps)
     qed
   qed
   case 2
@@ -232,7 +232,7 @@ proof (induction t)
       case True
       with MKT 2 show ?thesis
       proof(cases "height (AVL.insert x l) = height r + 2")
-        case False with MKT 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps simp: height_mkt_bal_l2)
+        case False with MKT 2 \<open>x < n\<close> show ?thesis by (auto simp del: mkt_bal_l.simps simp: height_mkt_bal_l2)
       next
         case True 
         then consider (a) "height (mkt_bal_l n (AVL.insert x l) r) = height r + 2"
@@ -241,17 +241,17 @@ proof (induction t)
         then show ?thesis
         proof cases
           case a
-          with 2 `x < n` show ?thesis by (auto simp del: mkt_bal_l.simps)
+          with 2 \<open>x < n\<close> show ?thesis by (auto simp del: mkt_bal_l.simps)
         next
           case b
-          with True 1 MKT(2) `x < n` show ?thesis by (simp del: mkt_bal_l.simps) arith
+          with True 1 MKT(2) \<open>x < n\<close> show ?thesis by (simp del: mkt_bal_l.simps) arith
         qed
       qed
     next
       case False
       with MKT 2 show ?thesis 
       proof(cases "height (AVL.insert x r) = height l + 2")
-        case False with MKT 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps simp: height_mkt_bal_r2)
+        case False with MKT 2 \<open>\<not>x < n\<close> show ?thesis by (auto simp del: mkt_bal_r.simps simp: height_mkt_bal_r2)
       next
         case True 
         then consider (a) "height (mkt_bal_r n l (AVL.insert x r)) = height l + 2"
@@ -260,10 +260,10 @@ proof (induction t)
         then show ?thesis 
         proof cases
           case a
-          with 2 `\<not>x < n` show ?thesis by (auto simp del: mkt_bal_r.simps)
+          with 2 \<open>\<not>x < n\<close> show ?thesis by (auto simp del: mkt_bal_r.simps)
         next
           case b
-          with True 1 MKT(4) `\<not>x < n` show ?thesis by (simp del: mkt_bal_r.simps) arith
+          with True 1 MKT(4) \<open>\<not>x < n\<close> show ?thesis by (simp del: mkt_bal_r.simps) arith
         qed
       qed
     qed
@@ -272,7 +272,7 @@ qed simp_all
 
 lemmas avl_insert = avl_insert_aux(1)
 
-subsubsection {* Deletion maintains AVL balance *}
+subsubsection \<open>Deletion maintains AVL balance\<close>
 
 lemma avl_delete_max:
   assumes "avl x" and "x \<noteq> ET"
@@ -294,7 +294,7 @@ next
   case 2
   let ?r = "MKT rn rl rr rh"
   let ?r' = "snd (delete_max ?r)"
-  from `avl x` MKT 2 have "avl l" and "avl ?r" by simp_all
+  from \<open>avl x\<close> MKT 2 have "avl l" and "avl ?r" by simp_all
   then show ?case using MKT 2 height_mkt_bal_l[of l ?r' n] height_mkt_bal_l2[of l ?r' n]
     apply (auto split:prod.splits simp del:avl.simps mkt_bal_l.simps) by arith+
 qed auto
@@ -308,13 +308,13 @@ proof (cases t rule:delete_root_cases)
   let ?l = "MKT ln ll lr lh"
   let ?r = "MKT rn rl rr rh"
   let ?l' = "snd (delete_max ?l)"
-  from `avl t` and MKT_MKT have "avl ?r" by simp
-  from `avl t` and MKT_MKT have "avl ?l" by simp
+  from \<open>avl t\<close> and MKT_MKT have "avl ?r" by simp
+  from \<open>avl t\<close> and MKT_MKT have "avl ?l" by simp
   then have "avl(?l')" "height ?l = height(?l') \<or>
          height ?l = height(?l') + 1" by (rule avl_delete_max,simp)+
-  with `avl t` MKT_MKT have "height ?l' = height ?r \<or> height ?l' = height ?r + 1
+  with \<open>avl t\<close> MKT_MKT have "height ?l' = height ?r \<or> height ?l' = height ?r + 1
             \<or> height ?r = height ?l' + 1 \<or> height ?r = height ?l' + 2" by fastforce
-  with `avl ?l'` `avl ?r` have "avl(mkt_bal_r (fst(delete_max ?l)) ?l' ?r)"
+  with \<open>avl ?l'\<close> \<open>avl ?r\<close> have "avl(mkt_bal_r (fst(delete_max ?l)) ?l' ?r)"
     by (rule avl_mkt_bal_r)
   with MKT_MKT show ?thesis by (auto split:prod.splits simp del:mkt_bal_r.simps)
 qed simp_all
@@ -329,19 +329,19 @@ proof (cases t rule: delete_root_cases)
   let ?r = "MKT rn rl rr rh"
   let ?l' = "snd (delete_max ?l)"
   let ?t' = "mkt_bal_r (fst(delete_max ?l)) ?l' ?r"
-  from `avl t` and MKT_MKT have "avl ?r" by simp
-  from `avl t` and MKT_MKT have "avl ?l" by simp
+  from \<open>avl t\<close> and MKT_MKT have "avl ?r" by simp
+  from \<open>avl t\<close> and MKT_MKT have "avl ?l" by simp
   then have "avl(?l')"  by (rule avl_delete_max,simp)
-  have l'_height: "height ?l = height ?l' \<or> height ?l = height ?l' + 1" using `avl ?l` by (intro avl_delete_max) auto
-  have t_height: "height t = 1 + max (height ?l) (height ?r)" using `avl t` MKT_MKT by simp
-  have "height t = height ?t' \<or> height t = height ?t' + 1" using  `avl t` MKT_MKT
+  have l'_height: "height ?l = height ?l' \<or> height ?l = height ?l' + 1" using \<open>avl ?l\<close> by (intro avl_delete_max) auto
+  have t_height: "height t = 1 + max (height ?l) (height ?r)" using \<open>avl t\<close> MKT_MKT by simp
+  have "height t = height ?t' \<or> height t = height ?t' + 1" using  \<open>avl t\<close> MKT_MKT
   proof(cases "height ?r = height ?l' + 2")
     case False
-    show ?thesis using l'_height t_height False by (subst  height_mkt_bal_r2[OF `avl ?l'` `avl ?r` False])+ arith
+    show ?thesis using l'_height t_height False by (subst  height_mkt_bal_r2[OF \<open>avl ?l'\<close> \<open>avl ?r\<close> False])+ arith
   next
     case True
     show ?thesis
-    proof(cases rule: disjE[OF height_mkt_bal_r[OF True `avl ?l'` `avl ?r`, of "fst (delete_max ?l)"]])
+    proof(cases rule: disjE[OF height_mkt_bal_r[OF True \<open>avl ?l'\<close> \<open>avl ?r\<close>, of "fst (delete_max ?l)"]])
       case 1
       then show ?thesis using l'_height t_height True by arith
     next
@@ -352,7 +352,7 @@ proof (cases t rule: delete_root_cases)
   thus ?thesis using MKT_MKT by (auto split:prod.splits simp del:mkt_bal_r.simps)
 qed simp_all
 
-text{* Deletion maintains the AVL property: *}
+text\<open>Deletion maintains the AVL property:\<close>
 
 theorem avl_delete_aux:
   assumes "avl t" 
@@ -373,7 +373,7 @@ proof (induct t)
       with MKT 1 show ?thesis by (auto simp add:avl_mkt_bal_r simp del:mkt_bal_r.simps)
     next
       case False
-      with MKT 1 `x\<noteq>n` show ?thesis by (auto simp add:avl_mkt_bal_l simp del:mkt_bal_l.simps)
+      with MKT 1 \<open>x\<noteq>n\<close> show ?thesis by (auto simp add:avl_mkt_bal_l simp del:mkt_bal_l.simps)
     qed
   qed
   case 2
@@ -391,7 +391,7 @@ proof (induct t)
       case True
       show ?thesis
       proof(cases "height r = height (delete x l) + 2")
-        case False with MKT 1 `x < n` show ?thesis by auto
+        case False with MKT 1 \<open>x < n\<close> show ?thesis by auto
       next
         case True 
         then consider (a) "height (mkt_bal_r n (delete x l) r) = height (delete x l) + 2"
@@ -400,17 +400,17 @@ proof (induct t)
         then show ?thesis 
         proof cases
           case a
-          with `x < n` MKT 2 show ?thesis by auto
+          with \<open>x < n\<close> MKT 2 show ?thesis by auto
         next
           case b
-          with `x < n` MKT 2 show ?thesis by auto
+          with \<open>x < n\<close> MKT 2 show ?thesis by auto
         qed
       qed
     next
       case False
       show ?thesis
       proof(cases "height l = height (delete x r) + 2")
-        case False with MKT 1 `\<not>x < n` `x \<noteq> n` show ?thesis by auto
+        case False with MKT 1 \<open>\<not>x < n\<close> \<open>x \<noteq> n\<close> show ?thesis by auto
       next
         case True 
         then consider (a) "height (mkt_bal_l n l (delete x r)) = height (delete x r) + 2"
@@ -419,10 +419,10 @@ proof (induct t)
         then show ?thesis 
         proof cases
           case a
-          with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
+          with \<open>\<not>x < n\<close> \<open>x \<noteq> n\<close> MKT 2 show ?thesis by auto
         next
           case b
-          with `\<not>x < n` `x \<noteq> n` MKT 2 show ?thesis by auto
+          with \<open>\<not>x < n\<close> \<open>x \<noteq> n\<close> MKT 2 show ?thesis by auto
         qed
       qed
     qed
@@ -432,7 +432,7 @@ qed simp_all
 lemmas avl_delete = avl_delete_aux(1)
 
 
-subsubsection {* Correctness of insertion *}
+subsubsection \<open>Correctness of insertion\<close>
 
 lemma set_of_mkt_bal_l:
   "\<lbrakk> avl l; avl r \<rbrakk> \<Longrightarrow>
@@ -444,14 +444,14 @@ lemma set_of_mkt_bal_r:
   set_of (mkt_bal_r n l r) = Set.insert n (set_of l \<union> set_of r)"
 by (auto simp: mkt_def split:tree.splits)
 
-text{* Correctness of @{const insert}: *}
+text\<open>Correctness of @{const insert}:\<close>
 
 theorem set_of_insert:
   "avl t \<Longrightarrow> set_of(insert x t) = Set.insert x (set_of t)"
 by (induct t) 
    (auto simp: avl_insert set_of_mkt_bal_l set_of_mkt_bal_r simp del:mkt_bal_l.simps mkt_bal_r.simps)
 
-subsubsection {* Correctness of deletion *}
+subsubsection \<open>Correctness of deletion\<close>
 
 fun rightmost_item :: "'a tree \<Rightarrow> 'a" where
 "rightmost_item (MKT n l ET h) = n" |
@@ -535,7 +535,7 @@ proof(cases t rule:delete_root_cases)
     by (simp del: delete_root.simps)
 qed auto
 
-text{* Correctness of @{const delete}: *}
+text\<open>Correctness of @{const delete}:\<close>
 
 theorem set_of_delete:
   "\<lbrakk> avl t; is_ord t \<rbrakk> \<Longrightarrow> set_of (delete x t) = (set_of t) - {x}"
@@ -554,18 +554,18 @@ proof (induct t)
         by (force simp: avl_delete set_of_mkt_bal_r[of "(delete x l)" r n] simp del:mkt_bal_r.simps)
     next
       case False
-      with False MKT `x\<noteq>n` show ?thesis 
+      with False MKT \<open>x\<noteq>n\<close> show ?thesis 
         by (force simp: avl_delete set_of_mkt_bal_l[of l "(delete x r)" n] simp del:mkt_bal_l.simps)
     qed
  qed
 qed simp
 
-subsubsection {* Correctness of lookup *}
+subsubsection \<open>Correctness of lookup\<close>
 
 theorem is_in_correct: "is_ord t \<Longrightarrow> is_in k t = (k : set_of t)"
 by (induct t) auto
 
-subsubsection {* Insertion maintains order *}
+subsubsection \<open>Insertion maintains order\<close>
 
 lemma is_ord_mkt_bal_l:
   "is_ord(MKT n l r h) \<Longrightarrow> is_ord (mkt_bal_l n l r)"
@@ -574,14 +574,14 @@ by (cases l) (auto simp: mkt_def split:tree.splits intro: order_less_trans)
 lemma is_ord_mkt_bal_r: "is_ord(MKT n l r h) \<Longrightarrow> is_ord (mkt_bal_r n l r)"
 by (cases r) (auto simp: mkt_def split:tree.splits intro: order_less_trans)
 
-text{* If the order is linear, @{const insert} maintains the order: *}
+text\<open>If the order is linear, @{const insert} maintains the order:\<close>
 
 theorem is_ord_insert:
   "\<lbrakk> avl t; is_ord t \<rbrakk> \<Longrightarrow> is_ord(insert (x::'a::linorder) t)"
 by (induct t) (simp_all add:is_ord_mkt_bal_l is_ord_mkt_bal_r avl_insert set_of_insert
                 linorder_not_less order_neq_le_trans del:mkt_bal_l.simps mkt_bal_r.simps)
 
-subsubsection {* Deletion maintains order *}
+subsubsection \<open>Deletion maintains order\<close>
 
 lemma is_ord_delete_max:
   "\<lbrakk> avl t; is_ord t; t\<noteq>ET \<rbrakk> \<Longrightarrow> is_ord(snd(delete_max t))"
@@ -623,7 +623,7 @@ proof(cases t rule:delete_root_cases)
   ultimately show ?thesis by (auto simp del:mkt_bal_r.simps is_ord.simps split:prod.splits)
 qed simp_all
 
-text{* If the order is linear, @{const delete} maintains the order: *}
+text\<open>If the order is linear, @{const delete} maintains the order:\<close>
 
 theorem is_ord_delete:
   "\<lbrakk> avl t; is_ord t \<rbrakk> \<Longrightarrow> is_ord (delete x t)"
@@ -644,7 +644,7 @@ proof (induct t)
     next
       case False
       with False MKT have "\<forall>h. is_ord (MKT n l (delete x r) h)" by (auto simp:set_of_delete)
-      with False MKT is_ord_mkt_bal_l[of n l "(delete x r)"] `x\<noteq>n` show ?thesis by (simp add: avl_delete)
+      with False MKT is_ord_mkt_bal_l[of n l "(delete x r)"] \<open>x\<noteq>n\<close> show ?thesis by (simp add: avl_delete)
     qed
   qed
 qed simp

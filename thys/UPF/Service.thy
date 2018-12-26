@@ -40,52 +40,52 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section {* Secure Service Specification *}
+section \<open>Secure Service Specification\<close>
 theory 
   Service
   imports 
     UPF
 begin
-text {*
+text \<open>
   In this section, we model a simple Web service and its access control model 
   that allows the staff in a hospital to access health care records of patients. 
-*}
+\<close>
 
-subsection{* Datatypes for Modelling Users and Roles*}
-subsubsection {* Users *}
-text{*
+subsection\<open>Datatypes for Modelling Users and Roles\<close>
+subsubsection \<open>Users\<close>
+text\<open>
   First, we introduce a type for users that we use to model that each 
   staff member has a unique id:
-*}
+\<close>
 type_synonym user = int  (* Each NHS employee has a unique NHS_ID. *)
 
-text {*
+text \<open>
   Similarly, each patient has a unique id:
-*}
+\<close>
 type_synonym patient = int (* Each patient gets a unique id *)
 
-subsubsection {* Roles and Relationships*}
-text{*   In our example, we assume three different roles for members of the clinical staff: *}
+subsubsection \<open>Roles and Relationships\<close>
+text\<open>In our example, we assume three different roles for members of the clinical staff:\<close>
 
 datatype role =  ClinicalPractitioner | Nurse | Clerical 
 
-text{* 
+text\<open>
   We model treatment relationships (legitimate relationships) between staff and patients 
   (respectively, their health records. This access control model is inspired by our detailed 
   NHS model.
-*}     
+\<close>     
 type_synonym lr_id = int
 type_synonym LR    = "lr_id \<rightharpoonup> (user set)"
   
-text{* The security context stores all the existing LRs. *}
+text\<open>The security context stores all the existing LRs.\<close>
 type_synonym \<Sigma> = "patient \<rightharpoonup> LR"
   
-text{* The user context stores the roles the users are in. *}
+text\<open>The user context stores the roles the users are in.\<close>
 type_synonym \<upsilon> = "user \<rightharpoonup> role"
   
-subsection {* Modelling Health Records and the Web Service API*}
-subsubsection {* Health Records *}
-text {* The content and the status of the entries of a health record *}
+subsection \<open>Modelling Health Records and the Web Service API\<close>
+subsubsection \<open>Health Records\<close>
+text \<open>The content and the status of the entries of a health record\<close>
 datatype data         = dummyContent 
 datatype status       = Open | Closed
 type_synonym entry_id = int
@@ -93,8 +93,8 @@ type_synonym entry    = "status \<times> user \<times> data"
 type_synonym SCR      = "(entry_id \<rightharpoonup> entry)"
 type_synonym DB       = "patient \<rightharpoonup> SCR"
 
-subsubsection {* The Web Service API *}
-text{* The operations provided by the service: *}
+subsubsection \<open>The Web Service API\<close>
+text\<open>The operations provided by the service:\<close>
 datatype Operation = createSCR user role patient  
                    | appendEntry user role patient entry_id entry
                    | deleteEntry user role patient entry_id  
@@ -207,17 +207,17 @@ fun allContentStatic where
   |"allContentStatic [] = True"
 
 
-subsection{* Modelling Access Control*}
-text {*
+subsection\<open>Modelling Access Control\<close>
+text \<open>
   In the following, we define a rather complex access control model for our 
   scenario that extends traditional role-based access control 
   (RBAC)~\cite{sandhu.ea:role-based:1996} with treatment relationships and sealed 
   envelopes. Sealed envelopes (see~\cite{bruegger:generation:2012} for details)
   are a variant of break-the-glass access control (see~\cite{brucker.ea:extending:2009} 
   for a general motivation and explanation of break-the-glass access control).
-*}
+\<close>
 
-subsubsection {* Sealed Envelopes *}
+subsubsection \<open>Sealed Envelopes\<close>
 
 type_synonym SEPolicy = "(Operation \<times> DB \<mapsto>  unit) "
 
@@ -259,7 +259,7 @@ definition SEPolicy :: SEPolicy where
 lemmas SEsimps = SEPolicy_def get_entry_def userHasAccess_def
                  editEntrySE_def deleteEntrySE_def readEntrySE_def
 
-subsubsection {* Legitimate Relationships *}
+subsubsection \<open>Legitimate Relationships\<close>
 
 type_synonym LRPolicy = "(Operation \<times> \<Sigma>, unit) policy"
 
@@ -365,7 +365,7 @@ definition FunPolicy where
               removeLRFunPolicy \<Oplus> readSCRFunPolicy \<Oplus>
               addLRFunPolicy \<Oplus> createFunPolicy \<Oplus> A\<^sub>U"
 
-subsubsection{* Modelling Core RBAC *}
+subsubsection\<open>Modelling Core RBAC\<close>
 
 type_synonym RBACPolicy = "Operation \<times> \<upsilon> \<mapsto> unit"
 
@@ -389,9 +389,9 @@ definition RBACPolicy :: RBACPolicy where
      then  \<lfloor>allow ()\<rfloor>
      else  \<lfloor>deny ()\<rfloor>)"
 
-subsection {* The State Transitions and Output Function*}
+subsection \<open>The State Transitions and Output Function\<close>
 
-subsubsection{* State Transition *}
+subsubsection\<open>State Transition\<close>
 
 fun OpSuccessDB :: "(Operation \<times> DB) \<rightharpoonup> DB"  where
    "OpSuccessDB (createSCR u r p,S) = (case S p of \<bottom> \<Rightarrow> \<lfloor>S(p\<mapsto>\<emptyset>)\<rfloor>
@@ -434,7 +434,7 @@ fun OpSuccessSigma :: "(Operation \<times> \<Sigma>) \<rightharpoonup> \<Sigma>"
 fun OpSuccessUC :: "(Operation \<times> \<upsilon>) \<rightharpoonup> \<upsilon>" where
    "OpSuccessUC (f,u) = \<lfloor>u\<rfloor>"
 
-subsubsection {* Output *}
+subsubsection \<open>Output\<close>
 
 type_synonym Output = unit  
 
@@ -445,7 +445,7 @@ fun OpSuccessOutput :: "(Operation) \<rightharpoonup> Output" where
 fun OpFailOutput :: "Operation \<rightharpoonup>  Output" where
    "OpFailOutput x = \<lfloor>()\<rfloor>"
 
-subsection {* Combine All Parts *}
+subsection \<open>Combine All Parts\<close>
 
 definition SE_LR_Policy :: "(Operation \<times> DB \<times> \<Sigma>, unit) policy" where
    "SE_LR_Policy = (\<lambda>(x,x). x)  o\<^sub>f  (SEPolicy \<Otimes>\<^sub>\<or>\<^sub>D LR_Policy) o (\<lambda>(a,b,c). ((a,b),a,c))"

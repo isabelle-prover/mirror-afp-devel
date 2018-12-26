@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Hash functions *}
+section \<open>Hash functions\<close>
 
 theory Hash_Generator
 imports 
@@ -32,7 +32,7 @@ begin
 
 subsection "Introduction"
 
-text {*
+text \<open>
 The interface for hash-functions is defined in the class @{class hashable} which has been developed
 as part of the Isabelle Collection Framework \cite{rbt}. It requires a hash-function
 (@{const hashcode}), a bounded hash-function (@{const bounded_hashcode}),
@@ -57,16 +57,16 @@ arithmetic operation a modulo operation is performed.
 
 Finally, the default hash-table size is just set to 10, following Java's default
 hash-table constructor.
-*}
+\<close>
 
 subsection "Features and Limitations"
 
-text {*
+text \<open>
 We get same limitation as for the order generator. 
 For mutual recursive datatypes, only
 for the first mentioned datatype the instantiations of the @{class hashable}-class are
 derived.
-*}
+\<close>
 
 subsection "Installing the generator"
 

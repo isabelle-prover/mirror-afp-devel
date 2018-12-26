@@ -2,12 +2,12 @@ theory C2
 imports "HOL-Algebra.Group"
 begin
 
-section {* The group C2 *}
+section \<open>The group C2\<close>
 
-text {*
+text \<open>
 The two-element group is defined over the set of boolean values. This allows to 
 use the equality of boolean values as the group operation.
-*}
+\<close>
 
 definition "C2"
   where "C2 = \<lparr> carrier = UNIV, mult = (=), one = True \<rparr>"

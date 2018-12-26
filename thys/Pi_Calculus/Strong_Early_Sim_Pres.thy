@@ -44,12 +44,12 @@ lemma inputPres:
 using Eqvt
 proof(induct rule: simCasesCont[where C="(x, a, P, Q)"])
   case(Bound b y Q')
-  from `y \<sharp> (x, a, P, Q)` have "y \<noteq> x" "y \<noteq> a" "y \<sharp> P" "y \<sharp> Q" by simp+
-  from `a<x>.Q \<longmapsto>b<\<nu>y> \<prec> Q'` `y \<noteq> a` `y \<noteq> x` `y \<sharp> Q` show ?case
+  from \<open>y \<sharp> (x, a, P, Q)\<close> have "y \<noteq> x" "y \<noteq> a" "y \<sharp> P" "y \<sharp> Q" by simp+
+  from \<open>a<x>.Q \<longmapsto>b<\<nu>y> \<prec> Q'\<close> \<open>y \<noteq> a\<close> \<open>y \<noteq> x\<close> \<open>y \<sharp> Q\<close> show ?case
     by(erule_tac inputCases') auto
 next
   case(Free \<alpha> Q')
-  from `a<x>.Q \<longmapsto> \<alpha> \<prec> Q'`
+  from \<open>a<x>.Q \<longmapsto> \<alpha> \<prec> Q'\<close>
   show ?case
   proof(induct rule: inputCases)
     case(cInput u)
@@ -174,7 +174,7 @@ next
       with PSimQ obtain P' where PTrans: "P \<longmapsto> \<alpha> \<prec> P'"
                              and PRel: "(P', Q') \<in> Rel"
           by(blast dest: elim)
-      from PTrans `a \<noteq> b` have "[a\<noteq>b]P \<longmapsto>\<alpha> \<prec> P'" by(rule TransitionsEarly.Mismatch)
+      from PTrans \<open>a \<noteq> b\<close> have "[a\<noteq>b]P \<longmapsto>\<alpha> \<prec> P'" by(rule TransitionsEarly.Mismatch)
       with RelRel' PRel show ?case by blast
     qed
   qed
@@ -196,36 +196,36 @@ proof(induct rule: simCases)
   case(Bound a y Q')
   have "y \<sharp> P \<oplus> R" by fact
   hence "(y::name) \<sharp> P" and  "y \<sharp> R" by simp+
-  from `Q \<oplus> R \<longmapsto>a<\<nu>y> \<prec> Q'` show ?case
+  from \<open>Q \<oplus> R \<longmapsto>a<\<nu>y> \<prec> Q'\<close> show ?case
   proof(induct rule: sumCases)
     case Sum1
-    from `P \<leadsto>[Rel] Q` `Q \<longmapsto>a<\<nu>y> \<prec> Q'` `y \<sharp> P` obtain P' where PTrans: "P \<longmapsto>a<\<nu>y> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" 
+    from \<open>P \<leadsto>[Rel] Q\<close> \<open>Q \<longmapsto>a<\<nu>y> \<prec> Q'\<close> \<open>y \<sharp> P\<close> obtain P' where PTrans: "P \<longmapsto>a<\<nu>y> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" 
       by(blast dest: elim)
     
     from PTrans have "P \<oplus> R \<longmapsto>a<\<nu>y> \<prec> P'" by(rule Early_Semantics.Sum1)
-    moreover from P'RelQ' `Rel \<subseteq> Rel'` have "(P', Q') \<in> Rel'" by blast
+    moreover from P'RelQ' \<open>Rel \<subseteq> Rel'\<close> have "(P', Q') \<in> Rel'" by blast
     ultimately show ?case by blast
   next
     case Sum2
-    from `R \<longmapsto>a<\<nu>y> \<prec> Q'` have "P \<oplus> R \<longmapsto>a<\<nu>y> \<prec> Q'" by(rule Early_Semantics.Sum2)
+    from \<open>R \<longmapsto>a<\<nu>y> \<prec> Q'\<close> have "P \<oplus> R \<longmapsto>a<\<nu>y> \<prec> Q'" by(rule Early_Semantics.Sum2)
     moreover from C1 have "(Q', Q') \<in> Rel'" by auto
     ultimately show ?case by blast
   qed
 next
   case(Free \<alpha> Q')
-  from `Q \<oplus> R \<longmapsto>\<alpha> \<prec> Q'` show "\<exists>P'. P \<oplus> R \<longmapsto> \<alpha> \<prec> P' \<and> (P', Q') \<in> Rel'"
+  from \<open>Q \<oplus> R \<longmapsto>\<alpha> \<prec> Q'\<close> show "\<exists>P'. P \<oplus> R \<longmapsto> \<alpha> \<prec> P' \<and> (P', Q') \<in> Rel'"
   proof(induct rule: sumCases)
     case Sum1
     have "Q \<longmapsto>\<alpha> \<prec> Q'" by fact
-    with `P \<leadsto>[Rel] Q` obtain P' where PTrans: "P \<longmapsto>\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" 
+    with \<open>P \<leadsto>[Rel] Q\<close> obtain P' where PTrans: "P \<longmapsto>\<alpha> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" 
       by(blast dest: elim)
 
     from PTrans have "P \<oplus> R \<longmapsto>\<alpha> \<prec> P'" by(rule TransitionsEarly.Sum1)
-    moreover from P'RelQ' `Rel \<subseteq> Rel'` have "(P', Q') \<in> Rel'" by blast
+    moreover from P'RelQ' \<open>Rel \<subseteq> Rel'\<close> have "(P', Q') \<in> Rel'" by blast
     ultimately show ?case by blast
   next
     case Sum2
-    from `R \<longmapsto>\<alpha> \<prec> Q'` have "P \<oplus> R \<longmapsto>\<alpha> \<prec> Q'" by(rule TransitionsEarly.Sum2)
+    from \<open>R \<longmapsto>\<alpha> \<prec> Q'\<close> have "P \<oplus> R \<longmapsto>\<alpha> \<prec> Q'" by(rule TransitionsEarly.Sum2)
     moreover from C1 have "(Q', Q') \<in> Rel'" by blast
     ultimately show ?case by blast
   qed
@@ -536,15 +536,15 @@ proof -
         next
           fix y
           assume "(y::name) \<sharp> Q'" and "y \<sharp> P" and "y \<sharp> R" and "y \<sharp> Q"
-          from QTrans `y \<sharp> Q'` have "Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q')"
+          from QTrans \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q')"
             by(simp add: alphaBoundOutput)
           moreover from PRelQ have "P \<leadsto>[Rel] Q" by(rule Sim)
           ultimately obtain P' where PTrans: "P \<longmapsto>a<\<nu>y> \<prec> P'" and P'RelQ': "(P', [(x, y)] \<bullet> Q') \<in> Rel"
-            using `y \<sharp> P`
+            using \<open>y \<sharp> P\<close>
             by(blast dest: elim)
-          from PTrans `y \<sharp> R` have "P \<parallel> R \<longmapsto>a<\<nu>y> \<prec> (P' \<parallel> R)" by(force intro: Early_Semantics.Par1B)
+          from PTrans \<open>y \<sharp> R\<close> have "P \<parallel> R \<longmapsto>a<\<nu>y> \<prec> (P' \<parallel> R)" by(force intro: Early_Semantics.Par1B)
           moreover from P'RelQ' PBRQ have "(P' \<parallel> R, ([(x, y)] \<bullet> Q') \<parallel> !Q) \<in> bangRel Rel" by(rule Rel.BRPar)
-          with `x \<sharp> Q` `y \<sharp> Q` have "(P' \<parallel> R, ([(y, x)] \<bullet> Q') \<parallel> !([(y, x)] \<bullet> Q)) \<in> bangRel Rel"
+          with \<open>x \<sharp> Q\<close> \<open>y \<sharp> Q\<close> have "(P' \<parallel> R, ([(y, x)] \<bullet> Q') \<parallel> !([(y, x)] \<bullet> Q)) \<in> bangRel Rel"
             by(simp add: name_fresh_fresh name_swap)
           ultimately show "\<exists>P'. P \<parallel> R \<longmapsto>a<\<nu>y> \<prec> P' \<and> (P', ([(y, x)] \<bullet> Q') \<parallel> !([(y, x)] \<bullet> Q)) \<in> bangRel Rel"
             by blast
@@ -592,12 +592,12 @@ proof -
           fix y
           assume "(y::name) \<sharp> Q" and "y \<sharp> Q'" and "y \<sharp> P" and "y \<sharp> R"
           from RBRQ have "?Sim R (a<\<nu>x> \<prec> Q')" by(rule IH)
-          with `y \<sharp> Q'` have "?Sim R (a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q'))" by(simp add: alphaBoundOutput)
-          with `y \<sharp> R` obtain R' where RTrans: "R \<longmapsto> a<\<nu>y> \<prec> R'" and R'BRQ': "(R', ([(x, y)] \<bullet> Q')) \<in> (bangRel Rel)"
+          with \<open>y \<sharp> Q'\<close> have "?Sim R (a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q'))" by(simp add: alphaBoundOutput)
+          with \<open>y \<sharp> R\<close> obtain R' where RTrans: "R \<longmapsto> a<\<nu>y> \<prec> R'" and R'BRQ': "(R', ([(x, y)] \<bullet> Q')) \<in> (bangRel Rel)"
             by(metis elim)
-          from RTrans `y \<sharp> P` have "P \<parallel> R \<longmapsto> a<\<nu>y> \<prec> (P \<parallel> R')" by(auto intro: Early_Semantics.Par2B)
+          from RTrans \<open>y \<sharp> P\<close> have "P \<parallel> R \<longmapsto> a<\<nu>y> \<prec> (P \<parallel> R')" by(auto intro: Early_Semantics.Par2B)
           moreover from PRelQ R'BRQ' have "(P \<parallel> R', Q \<parallel> ([(x, y)] \<bullet> Q')) \<in> (bangRel Rel)" by(rule Rel.BRPar)
-          with `y \<sharp> Q` `x \<sharp> Q` have "(P \<parallel> R', ([(y, x)] \<bullet> Q) \<parallel> ([(y, x)] \<bullet> Q')) \<in> (bangRel Rel)"
+          with \<open>y \<sharp> Q\<close> \<open>x \<sharp> Q\<close> have "(P \<parallel> R', ([(y, x)] \<bullet> Q) \<parallel> ([(y, x)] \<bullet> Q')) \<in> (bangRel Rel)"
             by(simp add: name_swap name_fresh_fresh)
           ultimately show "\<exists>P'. P \<parallel> R \<longmapsto> a<\<nu>y> \<prec> P' \<and> (P', ([(y, x)] \<bullet> Q) \<parallel> ([(y, x)] \<bullet> Q')) \<in> bangRel Rel" by blast
         qed

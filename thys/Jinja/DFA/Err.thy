@@ -5,7 +5,7 @@
 The error type.
 *)
 
-section {* The Error Type *}
+section \<open>The Error Type\<close>
 
 theory Err
 imports Semilat
@@ -165,7 +165,7 @@ proof -
   interpret Semilat A r f by fact
   show ?thesis
     apply (unfold sl_def esl_def)
-    apply (simp add: semilat_errI [OF `Semilat A r f`])
+    apply (simp add: semilat_errI [OF \<open>Semilat A r f\<close>])
     done
 qed
 (*>*)
@@ -197,7 +197,7 @@ lemma Err_in_err [iff]: "Err : err A"
 lemma Ok_in_err [iff]: "(OK x \<in> err A) = (x\<in>A)"
 (*<*) by (auto simp add: err_def') (*>*)
 
-subsection {* lift *}
+subsection \<open>lift\<close>
 
 lemma lift_in_errI:
   "\<lbrakk> e \<in> err S; \<forall>x\<in>S. e = OK x \<longrightarrow> f x \<in> err S \<rbrakk> \<Longrightarrow> lift f e \<in> err S"
@@ -218,7 +218,7 @@ lemma OK_lift2_OK [simp]: "OK x \<squnion>\<^bsub>lift2 f\<^esub> OK y = x \<squ
 (*<*) by (simp add: lift2_def plussub_def split: err.split) (*>*)
 
 
-subsection {* sup *}
+subsection \<open>sup\<close>
 
 lemma Err_sup_Err [simp]: "Err \<squnion>\<^bsub>sup f\<^esub> x = Err"
 (*<*) by (simp add: plussub_def sup_def lift2_def) (*>*)
@@ -247,7 +247,7 @@ apply (simp split: err.split)
 done 
 (*>*)
 
-subsection {* semilat (err A) (le r) f *}
+subsection \<open>semilat (err A) (le r) f\<close>
 
 lemma semilat_le_err_Err_plus [simp]:
   "\<lbrakk> x\<in> err A; semilat(err A, le r, f) \<rbrakk> \<Longrightarrow> Err \<squnion>\<^sub>f x = Err"
@@ -321,7 +321,7 @@ proof -
 qed
 (*>*)
 
-subsection {* semilat (err(Union AS)) *}
+subsection \<open>semilat (err(Union AS))\<close>
 
 (* FIXME? *)
 lemma all_bex_swap_lemma [iff]:
@@ -341,11 +341,11 @@ apply fast
 done 
 (*>*)
 
-text {* 
+text \<open>
   If @{term "AS = {}"} the thm collapses to
   @{prop "order r \<and> closed {Err} f \<and> Err \<squnion>\<^sub>f Err = Err"}
   which may not hold 
-*}
+\<close>
 lemma err_semilat_UnionI:
   "\<lbrakk> \<forall>A\<in>AS. err_semilat(A, r, f); AS \<noteq> {}; 
       \<forall>A\<in>AS.\<forall>B\<in>AS. A\<noteq>B \<longrightarrow> (\<forall>a\<in>A.\<forall>b\<in>B. \<not>a \<sqsubseteq>\<^sub>r b \<and> a \<squnion>\<^sub>f b = Err) \<rbrakk> 

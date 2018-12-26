@@ -10,10 +10,10 @@ proof
   thus False by simp
 qed
 
-text {*
+text \<open>
 The semantics of an expression, given only @{term r} resources, will only use values from the
 environment with less resources.
-*}
+\<close>
 
 lemma restr_can_restrict_env: "(\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub>)|\<^bsub>C\<cdot>r\<^esub> = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)|\<^bsub>C\<cdot>r\<^esub>"
 proof(induction e arbitrary: \<rho> r rule: exp_induct)
@@ -23,7 +23,7 @@ proof(induction e arbitrary: \<rho> r rule: exp_induct)
     fix r'
     assume "r' \<sqsubseteq> r"
     have "(\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r') = \<rho> x\<cdot>r'" by simp
-    also have "\<dots> = ((\<rho> x)|\<^bsub>r\<^esub>)\<cdot>r'" using `r' \<sqsubseteq> r` by simp
+    also have "\<dots> = ((\<rho> x)|\<^bsub>r\<^esub>)\<cdot>r'" using \<open>r' \<sqsubseteq> r\<close> by simp
     also have "\<dots> =  (\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r')" by simp
     finally show "(\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r') = (\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r')".
   qed simp
@@ -39,7 +39,7 @@ next
       have "\<rho>(x := v)|\<^sup>\<circ>\<^bsub>r\<^esub> = (\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>)(x := v)|\<^sup>\<circ>\<^bsub>r\<^esub>"
         by simp
       hence "(\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>(x := v)\<^esub>)|\<^bsub>r'\<^esub> = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>(\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>)(x := v)\<^esub>)|\<^bsub>r'\<^esub>"
-        by  (subst (1 2) C_restr_eq_lower[OF Lam `r' \<sqsubseteq> C\<cdot>r` ]) simp
+        by  (subst (1 2) C_restr_eq_lower[OF Lam \<open>r' \<sqsubseteq> C\<cdot>r\<close> ]) simp
     }
     thus "(\<N>\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r') = (\<N>\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r')"
       by simp
@@ -54,7 +54,7 @@ next
     hence "(\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r' = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
         by (rule C_restr_eqD[OF App])
     thus "(\<N>\<lbrakk> App e x \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r') = (\<N>\<lbrakk> App e x \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r')"
-      using `r' \<sqsubseteq> r` by simp
+      using \<open>r' \<sqsubseteq> r\<close> by simp
   qed simp
 next
   case (Bool b)
@@ -68,21 +68,21 @@ next
     hence "r' \<sqsubseteq> C\<cdot>r" by (metis below_C below_trans)
 
     have "(\<N>\<lbrakk> scrut \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r' = (\<N>\<lbrakk> scrut \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
-      using `r' \<sqsubseteq> C\<cdot>r` by (rule C_restr_eqD[OF IfThenElse(1)])
+      using \<open>r' \<sqsubseteq> C\<cdot>r\<close> by (rule C_restr_eqD[OF IfThenElse(1)])
     moreover
     have "(\<N>\<lbrakk> e\<^sub>1 \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r' = (\<N>\<lbrakk> e\<^sub>1 \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
-      using `r' \<sqsubseteq> C\<cdot>r` by (rule C_restr_eqD[OF IfThenElse(2)])
+      using \<open>r' \<sqsubseteq> C\<cdot>r\<close> by (rule C_restr_eqD[OF IfThenElse(2)])
     moreover
     have "(\<N>\<lbrakk> e\<^sub>2 \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>r' = (\<N>\<lbrakk> e\<^sub>2 \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
-      using `r' \<sqsubseteq> C\<cdot>r` by (rule C_restr_eqD[OF IfThenElse(3)])
+      using \<open>r' \<sqsubseteq> C\<cdot>r\<close> by (rule C_restr_eqD[OF IfThenElse(3)])
     ultimately
     show "(\<N>\<lbrakk> (scrut ? e\<^sub>1 : e\<^sub>2) \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r') = (\<N>\<lbrakk> (scrut ? e\<^sub>1 : e\<^sub>2) \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r')"
-      using `r' \<sqsubseteq> r` by simp
+      using \<open>r' \<sqsubseteq> r\<close> by simp
   qed simp
 next
   case (Let \<Gamma> e)
 
-  txt {* The lemma, lifted to heaps *}
+  txt \<open>The lemma, lifted to heaps\<close>
   have restr_can_restrict_env_heap : "\<And> r. (\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>)|\<^sup>\<circ>\<^bsub>r\<^esub> = (\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>)|\<^sup>\<circ>\<^bsub>r\<^esub>"
   proof(rule has_ESem.parallel_HSem_ind)
     fix \<rho>\<^sub>1 \<rho>\<^sub>2 :: CEnv and r :: C
@@ -98,16 +98,16 @@ next
       proof(cases "x \<in> domA \<Gamma>")
         case True
         have "(\<N>\<lbrakk> the (map_of \<Gamma> x) \<rbrakk>\<^bsub>\<rho>\<^sub>1\<^esub>)\<cdot>r' = (\<N>\<lbrakk> the (map_of \<Gamma> x) \<rbrakk>\<^bsub>\<rho>\<^sub>1|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
-         by (rule C_restr_eqD[OF Let(1)[OF True] `r' \<sqsubseteq> C\<cdot>r`])
+         by (rule C_restr_eqD[OF Let(1)[OF True] \<open>r' \<sqsubseteq> C\<cdot>r\<close>])
         also have "\<dots> = (\<N>\<lbrakk> the (map_of \<Gamma> x) \<rbrakk>\<^bsub>\<rho>\<^sub>2|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
-          unfolding `\<rho>\<^sub>1|\<^sup>\<circ>\<^bsub>r\<^esub> = \<rho>\<^sub>2|\<^sup>\<circ>\<^bsub>r\<^esub>`..
+          unfolding \<open>\<rho>\<^sub>1|\<^sup>\<circ>\<^bsub>r\<^esub> = \<rho>\<^sub>2|\<^sup>\<circ>\<^bsub>r\<^esub>\<close>..
         also have "\<dots>   = (\<N>\<lbrakk> the (map_of \<Gamma> x) \<rbrakk>\<^bsub>\<rho>\<^sub>2\<^esub>)\<cdot>r'"
-          by (rule C_restr_eqD[OF Let(1)[OF True] `r' \<sqsubseteq> C\<cdot>r`, symmetric])
+          by (rule C_restr_eqD[OF Let(1)[OF True] \<open>r' \<sqsubseteq> C\<cdot>r\<close>, symmetric])
         finally
         show ?thesis using True by (simp add: lookupEvalHeap)
       next
         case False
-        with `r' \<sqsubseteq> r`
+        with \<open>r' \<sqsubseteq> r\<close>
         show ?thesis by simp
       qed
     qed
@@ -122,10 +122,10 @@ next
     have "(\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>)|\<^sup>\<circ>\<^bsub>r\<^esub> = (\<N>\<lbrace>\<Gamma>\<rbrace>(\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>))|\<^sup>\<circ>\<^bsub>r\<^esub>"
       by (rule restr_can_restrict_env_heap)
     hence "(\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)\<cdot>r' = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>r'"
-      by (subst (1 2) C_restr_eqD[OF Let(2) `r' \<sqsubseteq> C\<cdot>r`]) simp
+      by (subst (1 2) C_restr_eqD[OF Let(2) \<open>r' \<sqsubseteq> C\<cdot>r\<close>]) simp
 
     thus "(\<N>\<lbrakk> Let \<Gamma> e \<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r') = (\<N>\<lbrakk> Let \<Gamma> e \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r')"
-      using `r' \<sqsubseteq> r` by simp
+      using \<open>r' \<sqsubseteq> r\<close> by simp
   qed simp
 qed
 
@@ -133,10 +133,10 @@ lemma can_restrict_env:
   "(\<N>\<lbrakk>e\<rbrakk>\<^bsub>\<rho>\<^esub>)\<cdot>(C\<cdot>r) = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>)\<cdot>(C\<cdot>r)"
   by (rule C_restr_eqD[OF restr_can_restrict_env below_refl])
 
-text {*
+text \<open>
 When an expression @{term e} terminates, then we can remove such an expression from the heap and it
 still terminates. This is the crucial trick to handle black-holing in the resourced semantics.
-*}
+\<close>
 
 lemma add_BH:
   assumes "map_of \<Gamma> x = Some e"
@@ -172,7 +172,7 @@ proof-
         have "((\<^bold>\<N>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>\<rho>\<^esub>)|\<^sup>\<circ>\<^bsub>r\<^esub>) x = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub>)|\<^bsub>r\<^esub>"
           by (simp add: lookupEvalHeap)
         also have "\<dots> \<sqsubseteq> (\<N>\<lbrakk> e \<rbrakk>\<^bsub>ub\<^esub>)|\<^bsub>r\<^esub>"
-          using `\<rho> \<sqsubseteq> ub` by (intro monofun_cfun_arg)
+          using \<open>\<rho> \<sqsubseteq> ub\<close> by (intro monofun_cfun_arg)
         also have "\<dots> = (\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<^esub>)|\<^bsub>r\<^esub>"
           unfolding ub_def..
         also have "\<dots> = \<bottom>"
@@ -190,10 +190,10 @@ proof-
             by (rule C_restr_eq_lower[OF restr_can_restrict_env below_C])
           also have "\<dots> \<sqsubseteq> \<N>\<lbrakk> the (map_of \<Gamma> y) \<rbrakk>\<^bsub>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub>\<^esub>"
             by (rule C_restr_below)
-          also note `\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub> \<sqsubseteq> \<N>\<lbrace>delete x \<Gamma>\<rbrace>`
+          also note \<open>\<rho>|\<^sup>\<circ>\<^bsub>r\<^esub> \<sqsubseteq> \<N>\<lbrace>delete x \<Gamma>\<rbrace>\<close>
           finally
           show ?thesis
-            using `y \<in> domA \<Gamma>` `y \<noteq> x`
+            using \<open>y \<in> domA \<Gamma>\<close> \<open>y \<noteq> x\<close>
             by (simp add: lookupEvalHeap lookup_HSem_heap)
         next
           case False
@@ -202,7 +202,7 @@ proof-
       qed
     qed
 
-    from `\<rho> \<sqsubseteq> ub`
+    from \<open>\<rho> \<sqsubseteq> ub\<close>
     have "(\<^bold>\<N>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>\<rho>\<^esub>) \<sqsubseteq> (\<^bold>\<N>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>ub\<^esub>)" 
       by (rule cont2monofunE[rotated]) simp
     also have "\<dots> = ub"
@@ -223,14 +223,14 @@ proof-
     by (intro monofun_cfun_arg monofun_cfun_fun heaps )
   also
   have "\<dots> \<sqsubseteq> (\<N>\<lbrakk>e\<rbrakk>\<^bsub>\<N>\<lbrace>delete x \<Gamma>\<rbrace>\<^esub>)\<cdot>r'"
-    using `C\<cdot>r \<sqsubseteq> r'` by (rule monofun_cfun_arg)
+    using \<open>C\<cdot>r \<sqsubseteq> r'\<close> by (rule monofun_cfun_arg)
   finally
   show ?thesis by this (intro cont2cont)+
 qed
 
-text {*
+text \<open>
 The semantics is continuous, so we can apply induction here:
-*}
+\<close>
 
 lemma resourced_adequacy:
   assumes "(\<N>\<lbrakk>e\<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<^esub>)\<cdot>r \<noteq> \<bottom>"
@@ -253,9 +253,9 @@ next
       by (auto intro: ccontr simp add: lookup_HSem_other)
     hence "map_of \<Gamma> x = Some ?e" by (rule domA_map_of_Some_the)
     moreover
-    from step.prems[unfolded Var] `map_of \<Gamma> x = Some ?e` `x \<in> domA \<Gamma>`
+    from step.prems[unfolded Var] \<open>map_of \<Gamma> x = Some ?e\<close> \<open>x \<in> domA \<Gamma>\<close>
     have "(\<N>\<lbrakk>?e\<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<^esub>)\<cdot>r \<noteq> \<bottom>" by (auto simp add: lookup_HSem_heap  simp del: app_strict)
-    hence "(\<N>\<lbrakk>?e\<rbrakk>\<^bsub>\<N>\<lbrace>delete x \<Gamma>\<rbrace>\<^esub>)\<cdot>r \<noteq> \<bottom>" by (rule add_BH[OF `map_of \<Gamma> x = Some ?e`])
+    hence "(\<N>\<lbrakk>?e\<rbrakk>\<^bsub>\<N>\<lbrace>delete x \<Gamma>\<rbrace>\<^esub>)\<cdot>r \<noteq> \<bottom>" by (rule add_BH[OF \<open>map_of \<Gamma> x = Some ?e\<close>])
     from step.IH[OF this]
     obtain \<Delta> v where "delete x \<Gamma> : ?e \<Down>\<^bsub>x # S\<^esub> \<Delta> : v" by blast
     ultimately
@@ -288,8 +288,8 @@ next
 
     have "((\<N>\<lbrakk> v \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<^esub>)\<cdot>r \<down>CFn (\<N>\<lbrace>\<Gamma>\<rbrace>) x|\<^bsub>r\<^esub>)\<cdot>r \<noteq> \<bottom>" by fact
     also have "(\<N>\<lbrace>\<Gamma>\<rbrace>) x|\<^bsub>r\<^esub> \<sqsubseteq> (\<N>\<lbrace>\<Gamma>\<rbrace>) x" by (rule C_restr_below)
-    also note `v = _`
-    also note `(\<N>\<lbrace>\<Gamma>\<rbrace>) \<sqsubseteq> (\<N>\<lbrace>\<Delta>\<rbrace>)`
+    also note \<open>v = _\<close>
+    also note \<open>(\<N>\<lbrace>\<Gamma>\<rbrace>) \<sqsubseteq> (\<N>\<lbrace>\<Delta>\<rbrace>)\<close>
     also have "(\<N>\<lbrakk> Lam [y]. e'' \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<^esub>)\<cdot>r \<sqsubseteq> CFn\<cdot>(\<Lambda> v. \<N>\<lbrakk>e''\<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>)(y := v)\<^esub>)"
       by (rule CELam_no_restr)
     also have "(\<dots> \<down>CFn (\<N>\<lbrace>\<Delta>\<rbrace>) x)\<cdot>r = (\<N>\<lbrakk>e''\<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>)(y := ((\<N>\<lbrace>\<Delta>\<rbrace>) x))\<^esub>)\<cdot>r" by simp
@@ -341,16 +341,16 @@ next
     have "(\<N>\<lbrakk> scrut \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<^esub>)\<cdot>r \<sqsubseteq> (\<N>\<lbrakk> v \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<^esub>)\<cdot>r" by (rule monofun_cfun_fun)
     with is_CB
     have "(\<N>\<lbrakk> v \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<^esub>)\<cdot>r = CB\<cdot>(Discr b)" by simp
-    with `isVal v`
+    with \<open>isVal v\<close>
     have "v = Bool b" by (cases v rule: isVal.cases) (case_tac r, auto)+
 
-    from not_bot2 `\<N>\<lbrace>\<Gamma>\<rbrace> \<sqsubseteq> \<N>\<lbrace>\<Delta>\<rbrace>`
+    from not_bot2 \<open>\<N>\<lbrace>\<Gamma>\<rbrace> \<sqsubseteq> \<N>\<lbrace>\<Delta>\<rbrace>\<close>
     have "(\<N>\<lbrakk> (if b then e\<^sub>1 else e\<^sub>2) \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<^esub>)\<cdot>r \<noteq> \<bottom>"
       by (rule not_bot_below_trans[OF _ monofun_cfun_fun[OF monofun_cfun_arg]])
     from step.IH[OF this]
     obtain \<Theta> v' where rhs: "\<Delta> : (if b then e\<^sub>1 else e\<^sub>2) \<Down>\<^bsub>S'\<^esub> \<Theta> : v'" by blast
 
-    from lhs'[unfolded `v = _`] rhs
+    from lhs'[unfolded \<open>v = _\<close>] rhs
     have "\<Gamma> : (scrut ? e\<^sub>1 : e\<^sub>2) \<Down>\<^bsub>S'\<^esub> \<Theta> : v'" by rule
     hence "\<Gamma> : (scrut ? e\<^sub>1 : e\<^sub>2) \<Down>\<^bsub>S\<^esub> \<Theta> : v'"
       apply (rule reds_smaller_L) using S' by auto

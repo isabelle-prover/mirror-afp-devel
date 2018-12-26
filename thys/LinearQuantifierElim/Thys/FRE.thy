@@ -4,11 +4,11 @@ theory FRE
 imports LinArith
 begin
 
-subsection{* Ferrante-Rackoff \label{sec:FRE}*}
+subsection\<open>Ferrante-Rackoff \label{sec:FRE}\<close>
 
-text{* This section formalizes a slight variant of Ferrante and
+text\<open>This section formalizes a slight variant of Ferrante and
 Rackoff's algorithm~\cite{FerranteR-SIAM75}. We consider equalities
-separately, which improves performance. *}
+separately, which improves performance.\<close>
 
 fun between :: "real * real list \<Rightarrow> real * real list \<Rightarrow> real * real list"
 where "between (r,cs) (s,ds) = ((r+s)/2, (1/2) *\<^sub>s (cs+ds))"
@@ -28,24 +28,24 @@ shows "\<exists>l\<in>L.\<exists>u\<in>U. l<u \<and> (\<forall>y. l<y \<and> y<u
 proof -
   let ?L = "{l:L. l < x}" let ?U = "{u:U. x < u}"
   let ?ll = "Max ?L" let ?uu = "Min ?U"
-  have "?L \<noteq> {}" using `l \<in> L` `l<x` by (blast intro:order_less_imp_le)
-  moreover have "?U \<noteq> {}" using `u:U` `x<u` by (blast intro:order_less_imp_le)
+  have "?L \<noteq> {}" using \<open>l \<in> L\<close> \<open>l<x\<close> by (blast intro:order_less_imp_le)
+  moreover have "?U \<noteq> {}" using \<open>u:U\<close> \<open>x<u\<close> by (blast intro:order_less_imp_le)
   ultimately have "\<forall>y. ?ll<y \<and> y<x \<longrightarrow> y \<notin> L" "\<forall>y. x<y \<and> y<?uu \<longrightarrow> y \<notin> U"
-    using `finite L` `finite U` by force+
+    using \<open>finite L\<close> \<open>finite U\<close> by force+
   moreover have "?ll \<in> L"
   proof
-    show "?ll \<in> ?L" using `finite L` Max_in[OF _ `?L \<noteq> {}`] by simp
+    show "?ll \<in> ?L" using \<open>finite L\<close> Max_in[OF _ \<open>?L \<noteq> {}\<close>] by simp
     show "?L \<subseteq> L" by blast
   qed
   moreover have "?uu \<in> U"
   proof
-    show "?uu \<in> ?U" using `finite U` Min_in[OF _ `?U \<noteq> {}`] by simp
+    show "?uu \<in> ?U" using \<open>finite U\<close> Min_in[OF _ \<open>?U \<noteq> {}\<close>] by simp
     show "?U \<subseteq> U" by blast
   qed
-  moreover have "?ll < x" using `finite L` `?L \<noteq> {}` by simp
-  moreover have "x < ?uu" using `finite U` `?U \<noteq> {}` by simp
-  moreover have "?ll < ?uu" using `?ll<x` `x<?uu` by arith
-  ultimately show ?thesis using `l < x` `x < u` `?L \<noteq> {}` `?U \<noteq> {}`
+  moreover have "?ll < x" using \<open>finite L\<close> \<open>?L \<noteq> {}\<close> by simp
+  moreover have "x < ?uu" using \<open>finite U\<close> \<open>?U \<noteq> {}\<close> by simp
+  moreover have "?ll < ?uu" using \<open>?ll<x\<close> \<open>x<?uu\<close> by arith
+  ultimately show ?thesis using \<open>l < x\<close> \<open>x < u\<close> \<open>?L \<noteq> {}\<close> \<open>?U \<noteq> {}\<close>
     by(blast intro!:dense greaterThanLessThan_iff[THEN iffD1])
 qed
 
@@ -67,27 +67,27 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Atom Less Cons by simp }
       moreover
       { assume "c<0"
-        hence "x < (r - \<langle>cs,xs\<rangle>)/c" (is "_ < ?u") using `r < c*x + \<langle>cs,xs\<rangle>`
+        hence "x < (r - \<langle>cs,xs\<rangle>)/c" (is "_ < ?u") using \<open>r < c*x + \<langle>cs,xs\<rangle>\<close>
           by (simp add: field_simps)
         have ?thesis
         proof (rule ccontr)
           assume "\<not> R.I (Atom a) (y#xs)"
-          hence "?u \<le> y" using Atom Less Cons `c<0`
+          hence "?u \<le> y" using Atom Less Cons \<open>c<0\<close>
             by (auto simp add: field_simps)
-          hence "?u < u" using `y<u` by simp
-          with `x<?u` show False using Atom Less Cons `c<0`
+          hence "?u < u" using \<open>y<u\<close> by simp
+          with \<open>x<?u\<close> show False using Atom Less Cons \<open>c<0\<close>
             by(auto simp:depends\<^sub>R_def)
         qed } moreover
       { assume "c>0"
-        hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using `r < c*x + \<langle>cs,xs\<rangle>`
+        hence "x > (r - \<langle>cs,xs\<rangle>)/c" (is "_ > ?l") using \<open>r < c*x + \<langle>cs,xs\<rangle>\<close>
           by (simp add: field_simps)
         have ?thesis
         proof (rule ccontr)
           assume "\<not> R.I (Atom a) (y#xs)"
-          hence "?l \<ge> y" using Atom Less Cons `c>0`
+          hence "?l \<ge> y" using Atom Less Cons \<open>c>0\<close>
             by (auto simp add: field_simps)
-          hence "?l > l" using `y>l` by simp
-          with `?l<x` show False using Atom Less Cons `c>0`
+          hence "?l > l" using \<open>y>l\<close> by simp
+          with \<open>?l<x\<close> show False using Atom Less Cons \<open>c>0\<close>
             by (auto simp:depends\<^sub>R_def)
         qed }
       ultimately show ?thesis by force
@@ -103,7 +103,7 @@ proof(induct f)
       { assume "c=0" hence ?thesis using Atom Eq Cons by simp }
       moreover
       { assume "c\<noteq>0"
-        hence ?thesis using `r = c*x + \<langle>cs,xs\<rangle>` Atom Eq Cons `l<y` `y<u`
+        hence ?thesis using \<open>r = c*x + \<langle>cs,xs\<rangle>\<close> Atom Eq Cons \<open>l<y\<close> \<open>y<u\<close>
           by(auto simp: ac_simps depends\<^sub>R_def split:if_splits) }
       ultimately show ?thesis by force
     qed
@@ -120,24 +120,24 @@ assumes "nqfree \<phi>" shows "R.I (FR\<^sub>1 \<phi>) xs = (\<exists>x. R.I \<p
 proof
   assume ?FR
   { assume "R.I (inf\<^sub>- \<phi>) xs"
-    hence ?EX using `?FR` min_inf[OF `nqfree \<phi>`, where xs=xs]
+    hence ?EX using \<open>?FR\<close> min_inf[OF \<open>nqfree \<phi>\<close>, where xs=xs]
       by(auto simp add:FR\<^sub>1_def)
   } moreover
   { assume "R.I (inf\<^sub>+ \<phi>) xs"
-    hence ?EX using `?FR` plus_inf[OF `nqfree \<phi>`, where xs=xs]
+    hence ?EX using \<open>?FR\<close> plus_inf[OF \<open>nqfree \<phi>\<close>, where xs=xs]
       by(auto simp add:FR\<^sub>1_def)
   } moreover
   { assume "\<exists>x \<in> EQ \<phi> xs. R.I \<phi> (x#xs)"
-    hence ?EX using `?FR` by(auto simp add:FR\<^sub>1_def)
+    hence ?EX using \<open>?FR\<close> by(auto simp add:FR\<^sub>1_def)
   } moreover
   { assume "\<not>R.I (inf\<^sub>- \<phi>) xs \<and> \<not>R.I (inf\<^sub>+ \<phi>) xs \<and>
             (\<forall>x\<in>EQ \<phi> xs. \<not>R.I \<phi> (x#xs))"
-    with `?FR` obtain r cs s ds
+    with \<open>?FR\<close> obtain r cs s ds
       where "R.I (subst \<phi> (between (r,cs) (s,ds))) xs"
       by(auto simp: FR\<^sub>1_def eval_def
-        diff_divide_distrib set_ebounds I_subst `nqfree \<phi>`) blast
+        diff_divide_distrib set_ebounds I_subst \<open>nqfree \<phi>\<close>) blast
     hence "R.I \<phi> (eval (between (r,cs) (s,ds)) xs # xs)"
-      by(simp add:I_subst `nqfree \<phi>`)
+      by(simp add:I_subst \<open>nqfree \<phi>\<close>)
     hence ?EX .. }
   ultimately show ?EX by blast
 next
@@ -151,15 +151,15 @@ next
       where "(r,cs) \<in> set(ebounds(R.atoms\<^sub>0 \<phi>)) \<and> x = r + \<langle>cs,xs\<rangle>"
       by(force simp:set_ebounds field_simps)
     moreover hence "R.I (subst \<phi> (r,cs)) xs" using x
-      by(auto simp: I_subst `nqfree \<phi>` eval_def)
+      by(auto simp: I_subst \<open>nqfree \<phi>\<close> eval_def)
     ultimately have ?FR by(force simp:FR\<^sub>1_def) } moreover
   { assume "\<not> R.I (inf\<^sub>- \<phi>) xs" and "\<not> R.I (inf\<^sub>+ \<phi>) xs" and "x \<notin> EQ \<phi> xs"
     obtain l where "l \<in> LB \<phi> xs" "l < x"
-      using LBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^sub>- \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
+      using LBex[OF \<open>nqfree \<phi>\<close> x \<open>\<not> R.I (inf\<^sub>- \<phi>) xs\<close> \<open>x \<notin> EQ \<phi> xs\<close>] ..
     obtain u where "u \<in> UB \<phi> xs" "x < u"
-      using UBex[OF `nqfree \<phi>` x `\<not> R.I (inf\<^sub>+ \<phi>) xs` `x \<notin> EQ \<phi> xs`] ..
+      using UBex[OF \<open>nqfree \<phi>\<close> x \<open>\<not> R.I (inf\<^sub>+ \<phi>) xs\<close> \<open>x \<notin> EQ \<phi> xs\<close>] ..
     have "\<exists>l\<in>LB \<phi> xs. \<exists>u\<in>UB \<phi> xs. l<u \<and> (\<forall>y. l < y \<and> y < u \<longrightarrow> R.I \<phi> (y#xs))"
-      using dense_interval[where P = "\<lambda>x. R.I \<phi> (x#xs)", OF finite_LB finite_UB `l:LB \<phi> xs` `u:UB \<phi> xs` `l<x` `x<u` x] x dense[OF `nqfree \<phi>` _ _ _ _ `x \<notin> EQ \<phi> xs`] by simp
+      using dense_interval[where P = "\<lambda>x. R.I \<phi> (x#xs)", OF finite_LB finite_UB \<open>l:LB \<phi> xs\<close> \<open>u:UB \<phi> xs\<close> \<open>l<x\<close> \<open>x<u\<close> x] x dense[OF \<open>nqfree \<phi>\<close> _ _ _ _ \<open>x \<notin> EQ \<phi> xs\<close>] by simp
     then obtain r c cs s d ds
       where "Less r (c # cs) \<in> set (R.atoms\<^sub>0 \<phi>)" "Less s (d # ds) \<in> set (R.atoms\<^sub>0 \<phi>)"
           "\<And>y. (r - \<langle>cs,xs\<rangle>) / c < y \<Longrightarrow> y < (s - \<langle>ds,xs\<rangle>) / d \<Longrightarrow> R.I \<phi> (y # xs)"
@@ -179,7 +179,7 @@ next
       with * show ?P and ?Q by (auto simp add: field_simps eval_def iprod_left_add_distrib)
     qed
     ultimately have ?FR
-      by (fastforce simp: FR\<^sub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst `nqfree \<phi>`)
+      by (fastforce simp: FR\<^sub>1_def bex_Un set_lbounds set_ubounds set_ebounds I_subst \<open>nqfree \<phi>\<close>)
   } ultimately show ?FR by blast
 qed
 

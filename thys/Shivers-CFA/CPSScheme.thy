@@ -4,26 +4,26 @@ theory CPSScheme
   imports Main
 begin
 
-text {*
+text \<open>
 First, we define the syntax tree of a program in our toy functional language, using continuation passing style, corresponding to section 3.2 in Shivers' dissertation.
-*}
+\<close>
 
-text {*
+text \<open>
 We assume that the program to be investigated is already parsed into a syntax tree. Furthermore, we assume that distinct labels were added to distinguish different code positions and that the program has been alphatised, i.e. that each variable name is only bound once. This binding position is, as a convenience, considered part of the variable name.
-*}
+\<close>
 
 type_synonym label = nat
 type_synonym var = "label \<times> string"
 
 definition "binder" :: "var \<Rightarrow> label" where [simp]: "binder v = fst v"
 
-text {*
+text \<open>
 The syntax consists now of lambda abstractions, call expressions and values, which can either be lambdas, variable references, constants or primitive operations. A program is a lambda expression.
 
-Shivers' language has as the set of basic values integers plus a special value for \textit{false}. We simplified this to just the set of integers. The conditional @{text If} considers zero as false and any other number as true.
+Shivers' language has as the set of basic values integers plus a special value for \textit{false}. We simplified this to just the set of integers. The conditional \<open>If\<close> considers zero as false and any other number as true.
 
 Shivers also restricts the values in a call expression: No constant maybe be used as the called value, and no primitive operation may occur as an argument. This restriction is dropped here and just leads to runtime errors when evaluating the program.
-*}
+\<close>
 
 datatype prim = Plus label | If label label
 datatype lambda = Lambda label "var list" call
@@ -43,10 +43,10 @@ lemmas mutual_lambda_call_var_inducts =
   compat_nat_char_list_prod_lambda_prod_list.induct
   compat_nat_char_list_prod_lambda_prod.induct
 
-text {*
+text \<open>
 Three example programs. These were generated using the Haskell implementation
 of Shivers' algorithm that we wrote as a prototype\cite{HaskProto}.
-*}
+\<close>
 
 abbreviation "ex1 == (Lambda 1 [(1,''cont'')] (App 2 (R 3 (1,''cont'')) [(C 4 0)]))"
 abbreviation "ex2 == (Lambda 1 [(1,''cont'')] (App 2 (P (Plus 3)) [(C 4 1), (C 5 1), (R 6 (1,''cont''))]))"

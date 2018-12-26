@@ -3,15 +3,15 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Kleene Algebras *}
+section \<open>Kleene Algebras\<close>
 
-text {*
+text \<open>
 Kleene algebras have been axiomatised by Kozen to describe the equational theory of regular languages \cite{Kozen1994}.
 Binary relations are another important model.
 This theory implements variants of Kleene algebras based on idempotent left semirings \cite{Moeller2007}.
 The weakening of some semiring axioms allows the treatment of further computation models.
 The presented algebras are special cases of iterings, so many results can be inherited.
-*}
+\<close>
 
 theory Kleene_Algebras
 
@@ -19,9 +19,9 @@ imports Iterings
 
 begin
 
-text {*
+text \<open>
 We start with left Kleene algebras, which use the left unfold and left induction axioms of Kleene algebras.
-*}
+\<close>
 
 class star =
   fixes star :: "'a \<Rightarrow> 'a" ("_\<^sup>\<star>" [100] 100)
@@ -40,9 +40,9 @@ lemma star_left_unfold_equal:
   "1 \<squnion> x * x\<^sup>\<star> = x\<^sup>\<star>"
   by (metis sup_right_isotone antisym mult_right_isotone mult_1_right star_left_induct star_left_unfold)
 
-text {*
+text \<open>
 This means that for some properties of Kleene algebras, only one inequality can be derived, as exemplified by the following sliding rule.
-*}
+\<close>
 
 lemma star_left_slide:
   "(x * y)\<^sup>\<star> * x \<le> x * (y * x)\<^sup>\<star>"
@@ -82,10 +82,10 @@ qed
 
 end
 
-text {*
+text \<open>
 We now show that left Kleene algebras form iterings.
 A sublocale is used instead of a subclass, because iterings use a different iteration operation.
-*}
+\<close>
 
 sublocale left_kleene_algebra < star: left_conway_semiring where circ = star
   apply unfold_locales
@@ -96,9 +96,9 @@ sublocale left_kleene_algebra < star: left_conway_semiring where circ = star
 context left_kleene_algebra
 begin
 
-text {*
+text \<open>
 A number of lemmas in this class are taken from Georg Struth's Kleene algebra theory \cite{ArmstrongGomesStruthWeber2016}.
-*}
+\<close>
 
 lemma star_sub_one:
   "x \<le> 1 \<Longrightarrow> x\<^sup>\<star> = 1"
@@ -172,9 +172,9 @@ lemma star_decompose_3:
   "(x\<^sup>\<star> * y\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star>"
   using star_sup_1 star_decompose_1 by auto
 
-text {*
+text \<open>
 In contrast to iterings, we now obtain that the iteration operation results in least fixpoints.
-*}
+\<close>
 
 lemma star_loop_least_fixpoint:
   "y * x \<squnion> z = x \<Longrightarrow> y\<^sup>\<star> * z \<le> x"
@@ -219,9 +219,9 @@ lemma circ_separate_6: "y * x \<le> x * (x \<squnion> y) \<longrightarrow> (x \<
 
 end
 
-text {*
+text \<open>
 We next add the right induction rule, which allows us to strengthen many inequalities of left Kleene algebras to equalities.
-*}
+\<close>
 
 class strong_left_kleene_algebra = left_kleene_algebra +
   assumes star_right_induct: "z \<squnion> x * y \<le> x \<longrightarrow> z * y\<^sup>\<star> \<le> x"
@@ -265,9 +265,9 @@ qed
 
 end
 
-text {*
+text \<open>
 Again we inherit results from the itering hierarchy.
-*}
+\<close>
 
 sublocale strong_left_kleene_algebra < star: itering_1 where circ = star
   apply unfold_locales
@@ -372,9 +372,9 @@ lemma star_circ_simulate_left_plus: "x * z \<le> z * y\<^sup>\<star> \<squnion> 
 
 end
 
-text {*
+text \<open>
 The following class contains a generalisation of Kleene algebras, which lacks the right zero axiom.
-*}
+\<close>
 
 class left_zero_kleene_algebra = idempotent_left_zero_semiring + strong_left_kleene_algebra
 begin
@@ -416,10 +416,10 @@ proof -
     by (metis mult_right_isotone mult_assoc)
 qed
 
-text {*
+text \<open>
 The following theorem is similar to the puzzle where persons insert themselves always in the middle between two groups of people in a line.
 Here, however, items in the middle annihilate each other, leaving just one group of items behind.
-*}
+\<close>
 
 lemma cancel_separate:
   assumes "x * y \<le> 1"
@@ -468,9 +468,9 @@ qed
 
 end
 
-text {*
+text \<open>
 We can now inherit from the strongest variant of iterings.
-*}
+\<close>
 
 sublocale left_zero_kleene_algebra < star: itering where circ = star
   apply unfold_locales
@@ -586,16 +586,16 @@ lemma cancel_separate_1_sup:
 
 end
 
-text {*
+text \<open>
 A Kleene algebra is obtained by requiring an idempotent semiring.
-*}
+\<close>
 
 class kleene_algebra = left_zero_kleene_algebra + idempotent_semiring
 
-text {*
+text \<open>
 The following classes are variants of Kleene algebras expanded by an additional iteration operation.
 This is useful to study the Kleene star in computation models that do not use least fixpoints in the refinement order as the semantics of recursion.
-*}
+\<close>
 
 class left_kleene_conway_semiring = left_kleene_algebra + left_conway_semiring
 begin
@@ -678,9 +678,9 @@ lemma "(x\<^sup>\<star> * y * x\<^sup>\<star>)\<^sup>\<circ> = (x\<^sup>\<star> 
 
 end
 
-text {*
+text \<open>
 The following classes add a greatest element.
-*}
+\<close>
 
 class bounded_left_kleene_algebra = bounded_idempotent_left_semiring + left_kleene_algebra
 
@@ -694,9 +694,9 @@ class bounded_kleene_algebra = bounded_idempotent_semiring + kleene_algebra
 
 sublocale bounded_kleene_algebra < star: bounded_itering where circ = star ..
 
-text {*
+text \<open>
 We conclude with an alternative axiomatisation of Kleene algebras.
-*}
+\<close>
 
 class kleene_algebra_var = idempotent_semiring + star +
   assumes star_left_unfold_var : "1 \<squnion> y * y\<^sup>\<star> \<le> y\<^sup>\<star>"

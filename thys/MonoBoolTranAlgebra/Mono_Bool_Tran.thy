@@ -1,4 +1,4 @@
-section {* Monotonic Boolean Transformers *}
+section \<open>Monotonic Boolean Transformers\<close>
 
 theory Mono_Bool_Tran
 imports
@@ -6,7 +6,7 @@ imports
   LatticeProperties.Conj_Disj
 begin
 
-text{*
+text\<open>
 The type of monotonic transformers is the type associated to the set of monotonic
 functions from a partially ordered set (poset) to itself. The type of monotonic
 transformers with the pointwise extended order is also a poset. 
@@ -21,7 +21,7 @@ algebra are not closed to the pointwise extended negation operator.
 
 Finally we introduce an iteration operator on monotonic transformers
 over a complete lattice.
-*}
+\<close>
 
 notation
   bot  ("\<bottom>") and
@@ -80,10 +80,10 @@ proof
   fix a b
   assume "a \<le> b"
   have "f a \<sqinter> g a \<le> f a" by simp
-  also from `mono f` `a \<le> b` have "\<dots> \<le> f b" by (auto elim: monoE)
+  also from \<open>mono f\<close> \<open>a \<le> b\<close> have "\<dots> \<le> f b" by (auto elim: monoE)
   finally have *: "f a \<sqinter> g a \<le> f b" .
   have "f a \<sqinter> g a \<le> g a" by simp
-  also from `mono g` `a \<le> b` have "\<dots> \<le> g b" by (auto elim: monoE)
+  also from \<open>mono g\<close> \<open>a \<le> b\<close> have "\<dots> \<le> g b" by (auto elim: monoE)
   finally have **: "f a \<sqinter> g a \<le> g b" .
   from * ** show "(f \<sqinter> g) a \<le> (f \<sqinter> g) b" by auto
 qed
@@ -94,10 +94,10 @@ lemma (in semilattice_sup) mono_sup [simp]:
 proof
   fix a b
   assume "a \<le> b"
-  from `mono f` `a \<le> b` have "f a \<le> f b" by (auto elim: monoE)
+  from \<open>mono f\<close> \<open>a \<le> b\<close> have "f a \<le> f b" by (auto elim: monoE)
   also have "f b \<le> f b \<squnion> g b" by simp
   finally have *: "f a \<le> f b \<squnion> g b" .
-  from `mono g` `a \<le> b` have "g a \<le> g b" by (auto elim: monoE)
+  from \<open>mono g\<close> \<open>a \<le> b\<close> have "g a \<le> g b" by (auto elim: monoE)
   also have "g b \<le> f b \<squnion> g b" by simp
   finally have **: "g a \<le> f b \<squnion> g b" .
   from * ** show "(f \<squnion> g) a \<le> (f \<squnion> g) b" by auto
@@ -112,7 +112,7 @@ proof
   { fix f
     assume "f \<in> A"
     with assms have "mono f" by auto
-    with `a \<le> b` have "f a \<le> f b" by (auto elim: monoE)
+    with \<open>a \<le> b\<close> have "f a \<le> f b" by (auto elim: monoE)
   }
   then have "(\<Sqinter>f\<in>A. f a) \<le> (\<Sqinter>f\<in>A. f b)"
     by (auto intro: complete_lattice_class.INF_greatest complete_lattice_class.INF_lower2)
@@ -128,7 +128,7 @@ proof
   { fix f
     assume "f \<in> A"
     with assms have "mono f" by auto
-    with `a \<le> b` have "f a \<le> f b" by (auto elim: monoE)
+    with \<open>a \<le> b\<close> have "f a \<le> f b" by (auto elim: monoE)
   }
   then have "(\<Squnion>f\<in>A. f a) \<le> (\<Squnion>f\<in>A. f b)"
     by (auto intro: complete_lattice_class.SUP_least complete_lattice_class.SUP_upper2)
@@ -330,7 +330,7 @@ proof
   assume "a \<le> b"
   from assms have "mono (lfp (Omega_fun f id))"
     by (auto intro: mono_mono_Omega_fun)
-  with `a \<le> b` show "omega_fun f a \<le> omega_fun f b"
+  with \<open>a \<le> b\<close> show "omega_fun f a \<le> omega_fun f b"
     by (auto simp add: omega_fun_def elim: monoE)
 qed
 
@@ -343,7 +343,7 @@ proof
   assume "a \<le> b"
   from assms have "mono (gfp (Omega_fun f id))"
     by (auto intro: mono_mono_Omega_fun)
-  with `a \<le> b` show "star_fun f a \<le> star_fun f b"
+  with \<open>a \<le> b\<close> show "star_fun f a \<le> star_fun f b"
     by (auto simp add: star_fun_def elim: monoE)
 qed
 

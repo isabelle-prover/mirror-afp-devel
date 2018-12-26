@@ -2,14 +2,14 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Fifo Queue by Pair of Lists} *}
+section \<open>\isaheader{Fifo Queue by Pair of Lists}\<close>
 theory Fifo
 imports 
   "../gen_algo/ListGA"
   "../tools/Record_Intf"
   "../tools/Locale_Code"
 begin
-text_raw {*\label{thy:Fifo}*}
+text_raw \<open>\label{thy:Fifo}\<close>
 
 (* TODO: Move to Misc *)
 lemma rev_tl_rev: "rev (tl (rev l)) = butlast l"
@@ -22,7 +22,7 @@ lemma rev_tl_rev: "rev (tl (rev l)) = butlast l"
   Fifo-Queues implemented by two stacks.
 *)
 
-text {*
+text \<open>
   A fifo-queue is implemented by a pair of two lists (stacks). 
   New elements are pushed on the first stack, and elements are popped from 
   the second stack. If the second stack is empty, the first stack is reversed
@@ -33,9 +33,9 @@ text {*
   the amortized time per buffer operation is constant.
 
   Moreover, this fifo implementation also supports efficient push and pop operations.
-*}
+\<close>
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 type_synonym 'a fifo = "'a list \<times> 'a list"
 
 text "Abstraction of the fifo to a list. The next element to be got is at 
@@ -202,7 +202,7 @@ interpretation fifo: StdList fifo_ops
 interpretation fifo: StdList_no_invar fifo_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
-setup {* ICF_Tools.revert_abbrevs "fifo" *}
+setup \<open>ICF_Tools.revert_abbrevs "fifo"\<close>
 
 definition test_codegen where "test_codegen \<equiv> 
   (

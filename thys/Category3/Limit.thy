@@ -9,7 +9,7 @@ theory Limit
 imports FreeCategory DiscreteCategory Adjunction
 begin
 
-  text{*
+  text\<open>
     This theory defines the notion of limit in terms of diagrams and cones and relates
     it to the concept of a representation of a functor.  The diagonal functor associated
     with a diagram shape @{term J} is defined and it is shown that a right adjoint to
@@ -30,16 +30,16 @@ begin
     Although it would be possible to rework the entire development in dual form,
     it is possible that there is a more efficient way to dualize at least parts of it without
     repeating all the work.  This is something that deserves further thought.
-  *}
+\<close>
 
   section "Representations of Functors"
 
-  text{*
-    A representation of a contravariant functor @{text "F: Cop \<rightarrow> S"}, where @{term S}
+  text\<open>
+    A representation of a contravariant functor \<open>F: Cop \<rightarrow> S\<close>, where @{term S}
     is a set category that is the target of a hom-functor for @{term C}, consists of
     an object @{term a} of @{term C} and a natural isomorphism @{term "\<Phi>: Y a \<rightarrow> F"},
-    where @{text "Y: C \<rightarrow> [Cop, S]"} is the Yoneda functor.
-  *}
+    where \<open>Y: C \<rightarrow> [Cop, S]\<close> is the Yoneda functor.
+\<close>
 
   locale representation_of_functor =
     C: category C +
@@ -62,9 +62,9 @@ begin
 
   end
 
-  text{*
+  text\<open>
     Two representations of the same functor are uniquely isomorphic.
-  *}
+\<close>
 
   locale two_representations_one_functor =
     C: category C +
@@ -183,8 +183,8 @@ begin
 
   section "Diagrams and Cones"
 
-  text{*
-    A \emph{diagram} in a category @{term C} is a functor @{text "D: J \<rightarrow> C"}.
+  text\<open>
+    A \emph{diagram} in a category @{term C} is a functor \<open>D: J \<rightarrow> C\<close>.
     We refer to the category @{term J} as the diagram \emph{shape}.
     Note that in the usual expositions of category theory that use set theory
     as their foundations, the shape @{term J} of a diagram is required to be
@@ -197,7 +197,7 @@ begin
     category has @{term I}-indexed products if and only if its universe
     ``admits @{term I}-indexed tuples'' is suggestive of how this might
     be defined), but I haven't fully explored this idea at present.
-  *}
+\<close>
 
   locale diagram =
     C: category C +
@@ -217,11 +217,11 @@ begin
   shows "diagram J' C (D o F)"
     by (meson assms(1) assms(2) diagram_def functor.axioms(1) functor_comp)
     
-  text{*
-    A \emph{cone} over a diagram @{text "D: J \<rightarrow> C"} is a natural transformation
+  text\<open>
+    A \emph{cone} over a diagram \<open>D: J \<rightarrow> C\<close> is a natural transformation
     from a constant functor to @{term D}.  The value of the constant functor is
     the \emph{apex} of the cone.
-  *}
+\<close>
 
   locale cone =
     C: category C +
@@ -247,10 +247,10 @@ begin
 
   end
 
-  text{*
+  text\<open>
     A cone over diagram @{term D} is transformed into a cone over diagram @{term "D o F"}
     by pre-composing with @{term F}.
-  *}
+\<close>
 
   lemma comp_cone_functor:
   assumes "cone J C D a \<chi>" and "functor J' J F"
@@ -268,10 +268,10 @@ begin
     show "cone J' C (D o F) a (\<chi> o F)" ..
   qed
 
-  text{*
+  text\<open>
     A cone over diagram @{term D} can be transformed into a cone over a diagram @{term D'}
     by post-composing with a natural transformation from @{term D} to @{term D'}.
-  *}
+\<close>
 
   lemma vcomp_transformation_cone:
   assumes "cone J C D a \<chi>"
@@ -330,11 +330,11 @@ begin
     abbreviation cones :: "'c \<Rightarrow> ('j \<Rightarrow> 'c) set"
     where "cones a \<equiv> { \<chi>. cone a \<chi> }"
 
-    text{*
+    text\<open>
       An arrow @{term "f \<in> C.hom a' a"} induces by composition a transformation from
       cones with apex @{term a} to cones with apex @{term a'}.  This transformation
       is functorial in @{term f}.
-    *}
+\<close>
 
     abbreviation cones_map :: "'c \<Rightarrow> ('j \<Rightarrow> 'c) \<Rightarrow> ('j \<Rightarrow> 'c)"
     where "cones_map f \<equiv> (\<lambda>\<chi> \<in> cones (C.cod f). \<lambda>j. if J.arr j then \<chi> j \<cdot> f else C.null)"
@@ -421,10 +421,10 @@ begin
 
   end
 
-  text{*
+  text\<open>
     Changing the apex of a cone by pre-composing with an arrow @{term f} commutes
     with changing the diagram of a cone by post-composing with a natural transformation.
-  *}
+\<close>
 
   lemma cones_map_vcomp:
   assumes "diagram J C D" and "diagram J C D'"
@@ -467,7 +467,7 @@ begin
     qed
   qed
 
-  text{*
+  text\<open>
     Given a diagram @{term D}, we can construct a contravariant set-valued functor,
     which takes each object @{term a} of @{term C} to the set of cones over @{term D}
     with apex @{term a}, and takes each arrow @{term f} of @{term C} to the function
@@ -477,7 +477,7 @@ begin
     correspondence between cones and elements of the universe of @{term S}.
     A set category @{term S} equipped with an injective mapping
     @{term_type "\<iota> :: ('j => 'c) => 's"} serves this purpose.
-  *}
+\<close>
   locale cones_functor =
     C: category C +
     Cop: dual_category C +
@@ -579,11 +579,11 @@ begin
 
   subsection "Limit Cones"
 
-  text{*
+  text\<open>
     A \emph{limit cone} for a diagram @{term D} is a cone @{term \<chi>} over @{term D}
     with the universal property that any other cone @{term \<chi>'} over the diagram @{term D}
     factors uniquely through @{term \<chi>}.
-  *}
+\<close>
 
   locale limit_cone =
     C: category C +
@@ -644,11 +644,11 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       For a limit cone @{term \<chi>} with apex @{term a}, for each object @{term a'} the
       hom-set @{term "C.hom a' a"} is in bijective correspondence with the set of cones
       with apex @{term a'}.
-    *}
+\<close>
 
     lemma bij_betw_hom_and_cones:
     assumes "C.ide a'"
@@ -687,10 +687,10 @@ begin
     abbreviation limit_cone
     where "limit_cone a \<chi> \<equiv> Limit.limit_cone J C D a \<chi>"
 
-    text{*
+    text\<open>
       A diagram @{term D} has object @{term a} as a limit if @{term a} is the apex
       of some limit cone over @{term D}.
-    *}
+\<close>
 
     abbreviation has_as_limit :: "'c \<Rightarrow> bool"
     where "has_as_limit a \<equiv> (\<exists>\<chi>. limit_cone a \<chi>)"
@@ -725,10 +725,10 @@ begin
 
   subsection "Limits by Representation"
 
-  text{*
-    A limit for a diagram D can also be given by a representation @{text "(a, \<Phi>)"}
+  text\<open>
+    A limit for a diagram D can also be given by a representation \<open>(a, \<Phi>)\<close>
     of the cones functor.
-  *}
+\<close>
 
   locale representation_of_cones_functor =
     C: category C +
@@ -750,9 +750,9 @@ begin
 
   subsection "Putting it all Together"
 
-  text{*
+  text\<open>
     A ``limit situation'' combines and connects the ways of presenting a limit.
-  *}
+\<close>
 
   locale limit_situation =
     C: category C +
@@ -778,26 +778,26 @@ begin
      "Cop.ide a' \<Longrightarrow> \<Phi> a' = S.mkArr (Hom.set (a', a)) (\<iota> ` D.cones a')
                                     (\<lambda>x. \<iota> (D.cones_map (Hom.\<psi> (a', a) x) \<chi>))"
 
-  text (in limit_situation) {*
+  text (in limit_situation) \<open>
     The assumption @{prop \<chi>_in_terms_of_\<Phi>} states that the universal cone @{term \<chi>} is obtained
     by applying the function @{term "S.Fun (\<Phi> a)"} to the identity @{term a} of
     @{term[source=true] C} (after taking into account the necessary coercions).
-  *}
+\<close>
 
-  text (in limit_situation) {*
+  text (in limit_situation) \<open>
     The assumption @{prop \<Phi>_in_terms_of_\<chi>} states that the component of @{term \<Phi>} at @{term a'}
     is the arrow of @{term[source=true] S} corresponding to the function that takes an arrow
     @{term "f \<in> C.hom a' a"} and produces the cone with vertex @{term a'} obtained
     by transforming the universal cone @{term \<chi>} by @{term f}.
-  *}
+\<close>
 
   subsection "Limit Cones Induce Limit Situations"
 
-  text{*
+  text\<open>
     To obtain a limit situation from a limit cone, we need to introduce a set category
     that is large enough to contain the hom-sets of @{term C} as well as the cones
     over @{term D}.  We use the category of @{typ "('c + ('j \<Rightarrow> 'c))"}-sets for this.
-  *}
+\<close>
 
   context limit_cone
   begin
@@ -858,14 +858,14 @@ begin
     shows "\<chi> \<in> D.cones a"
       using cone_axioms by simp
     
-    text{*
+    text\<open>
       For each object @{term a'} of @{term[source=true] C} we have a function mapping
       @{term "C.hom a' a"} to the set of cones over @{term D} with apex @{term a'},
-      which takes @{term "f \<in> C.hom a' a"} to @{text \<chi>f}, where @{text \<chi>f} is the cone obtained by
+      which takes @{term "f \<in> C.hom a' a"} to \<open>\<chi>f\<close>, where \<open>\<chi>f\<close> is the cone obtained by
       composing @{term \<chi>} with @{term f} (after accounting for coercions to and from the
       universe of @{term S}.  The corresponding arrows of @{term S} are the
-      components of a natural isomorphism from @{term "Y a"} to @{text "Cones"}.
-    *}
+      components of a natural isomorphism from @{term "Y a"} to \<open>Cones\<close>.
+\<close>
 
     definition \<Phi>o :: "'c \<Rightarrow> ('c + ('j \<Rightarrow> 'c)) SetCat.arr"
     where
@@ -1419,18 +1419,18 @@ begin
   context category
   begin
 
-    text{*
+    text\<open>
       A category @{term[source=true] C} has limits of shape @{term J} if every diagram of shape
       @{term J} admits a limit cone.
-    *}
+\<close>
 
     definition has_limits_of_shape
     where "has_limits_of_shape J \<equiv> \<forall>D. diagram J C D \<longrightarrow> (\<exists>a \<chi>. limit_cone J C D a \<chi>)"
 
-    text{*
+    text\<open>
       A category has limits at a type @{typ 'j} if it has limits of shape @{term J}
       for every category @{term J} whose arrows are of type @{typ 'j}.
-    *}
+\<close>
 
     definition has_limits
     where "has_limits (_ :: 'j) \<equiv> \<forall>J :: 'j comp. category J \<longrightarrow> has_limits_of_shape J"
@@ -1547,12 +1547,12 @@ begin
 
   subsection "Diagonal Functors"
 
-  text{*
+  text\<open>
     The existence of limits can also be expressed in terms of adjunctions: a category @{term C}
     has limits of shape @{term J} if the diagonal functor taking each object @{term a}
-    in @{term C} to the constant-@{term a} diagram and each arrow @{text "f \<in> C.hom a a'"}
+    in @{term C} to the constant-@{term a} diagram and each arrow \<open>f \<in> C.hom a a'\<close>
     to the constant-@{term f} natural transformation between diagrams is a left adjoint functor.
-  *}
+\<close>
 
   locale diagonal_functor =
     C: category C +
@@ -1667,10 +1667,10 @@ begin
   context diagonal_functor
   begin
 
-    text{*
+    text\<open>
       The objects of @{term J_C} correspond bijectively to diagrams of shape @{term J}
       in @{term C}.
-    *}
+\<close>
 
     lemma ide_determines_diagram:
     assumes "J_C.ide d"
@@ -1709,9 +1709,9 @@ begin
         using diagram_determines_ide by blast
     qed
 
-    text{*
+    text\<open>
       Arrows from from the diagonal functor correspond bijectively to cones.
-    *}
+\<close>
 
     lemma arrow_determines_cone:
     assumes "J_C.ide d" and "arrow_from_functor C J_C.comp map a d x"
@@ -1774,11 +1774,11 @@ begin
          by (simp add: \<chi>.natural_transformation_axioms)
     qed
 
-    text{*
+    text\<open>
       Transforming a cone by composing at the apex with an arrow @{term g} corresponds,
-      via the preceding bijections, to composition in @{text "[J, C]"} with the image of @{term g}
+      via the preceding bijections, to composition in \<open>[J, C]\<close> with the image of @{term g}
       under the diagonal functor.
-    *}
+\<close>
 
     lemma cones_map_is_composition:
     assumes "\<guillemotleft>g : a' \<rightarrow> a\<guillemotright>" and "cone J C D a \<chi>"
@@ -1877,9 +1877,9 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       Coextension along an arrow from a functor is equivalent to a transformation of cones.
-    *}
+\<close>
 
     lemma coextension_iff_cones_map:
     assumes x: "arrow_from_functor C J_C.comp map a d x"
@@ -1981,12 +1981,12 @@ begin
   assumes adjoint: "adjoint_functors J_C.comp C \<Delta>.map G"
   begin
 
-    text{*
+    text\<open>
       A right adjoint @{term G} to a diagonal functor maps each object @{term d} of
-      @{text "[J, C]"} (corresponding to a diagram @{term D} of shape @{term J} in @{term C}
+      \<open>[J, C]\<close> (corresponding to a diagram @{term D} of shape @{term J} in @{term C}
       to an object of @{term C}.  This object is the limit object, and the component at @{term d}
       of the counit of the adjunction determines the limit cone.
-    *}
+\<close>
 
     lemma gives_limit_cones:
     assumes "diagram J C D"
@@ -2080,14 +2080,14 @@ begin
         by metis
       thus "has_limits_of_shape J" using has_limits_of_shape_def by blast
       next
-      text{*
+      text\<open>
         If @{term "has_limits J"}, then every diagram @{term D} from @{term J} to
         @{term[source=true] C} has a limit cone.
         This means that, for every object @{term d} of the functor category
-        @{text "[J, C]"}, there exists an object @{term a} of @{term C} and a terminal arrow from
-        @{text "\<Delta> a"} to @{term d} in @{text "[J, C]"}.  The terminal arrow is given by the
+        \<open>[J, C]\<close>, there exists an object @{term a} of @{term C} and a terminal arrow from
+        \<open>\<Delta> a\<close> to @{term d} in \<open>[J, C]\<close>.  The terminal arrow is given by the
         limit cone.
-      *}
+\<close>
       assume A: "has_limits_of_shape J"
       show "left_adjoint_functor C J_C.comp \<Delta>.map"
       proof
@@ -2183,32 +2183,32 @@ begin
     assumes "diagram J C E" and "diagram.has_as_limit J C E a"
     shows "diagram.has_as_limit J D (G o E) (G a)"
     proof -
-      text{*
+      text\<open>
         From the assumption that @{term E} has a limit, obtain a limit cone @{term \<chi>}.
-      *}
+\<close>
       interpret J: category J using assms(1) diagram_def by auto
       interpret E: diagram J C E using assms(1) by auto
       from assms(2) obtain \<chi> where \<chi>: "limit_cone J C E a \<chi>" by auto
       interpret \<chi>: limit_cone J C E a \<chi> using \<chi> by auto
       have a: "C.ide a" using \<chi>.ide_apex by auto
-      text{*
-        Form the @{term E}-image @{text GE} of the diagram @{term E}.
-      *}
+      text\<open>
+        Form the @{term E}-image \<open>GE\<close> of the diagram @{term E}.
+\<close>
       interpret GE: composite_functor J C D E G ..
       interpret GE: diagram J D GE.map ..
-      text{* Let @{text G\<chi>} be the @{term G}-image of the cone @{term \<chi>},
-             and note that it is a cone over @{text GE}. *}
+      text\<open>Let \<open>G\<chi>\<close> be the @{term G}-image of the cone @{term \<chi>},
+             and note that it is a cone over \<open>GE\<close>.\<close>
       let ?G\<chi> = "G o \<chi>"
       interpret G\<chi>: cone J D GE.map "G a" ?G\<chi>
         using \<chi>.cone_axioms preserves_cones by blast
-      text{*
-        Claim that @{text G\<chi>} is a limit cone for diagram @{text GE}.
-      *}
+      text\<open>
+        Claim that \<open>G\<chi>\<close> is a limit cone for diagram \<open>GE\<close>.
+\<close>
       interpret G\<chi>: limit_cone J D GE.map "G a" ?G\<chi>
       proof
-        text {*
-          Let @{term \<kappa>} be an arbitrary cone over @{text GE}.
-        *}
+        text \<open>
+          Let @{term \<kappa>} be an arbitrary cone over \<open>GE\<close>.
+\<close>
         fix b \<kappa>
         assume \<kappa>: "GE.cone b \<kappa>"
         interpret \<kappa>: cone J D GE.map b \<kappa> using \<kappa> by auto
@@ -2217,10 +2217,10 @@ begin
           by (meson F_is_functor \<kappa>.ide_apex functor.preserves_ide)
         interpret Adj: meta_adjunction C D F G \<phi> \<psi>
           using induces_meta_adjunction by auto
-        text{*
+        text\<open>
           For each arrow @{term j} of @{term J}, let @{term "\<chi>' j"} be defined to be
           the adjunct of @{term "\<chi> j"}.  We claim that @{term \<chi>'} is a cone over @{term E}.
-        *}
+\<close>
         let ?\<chi>' = "\<lambda>j. if J.arr j then Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (\<kappa> j) else C.null"
         have cone_\<chi>': "E.cone (F b) ?\<chi>'"
         proof
@@ -2267,17 +2267,17 @@ begin
             finally show ?thesis by auto
           qed
         qed
-        text{*
+        text\<open>
           Using the universal property of the limit cone @{term \<chi>}, obtain the unique arrow
           @{term f} that transforms @{term \<chi>} into @{term \<chi>'}.
-        *}
+\<close>
         from this \<chi>.is_universal [of "F b" ?\<chi>'] obtain f
           where f: "\<guillemotleft>f : F b \<rightarrow>\<^sub>C a\<guillemotright> \<and> E.cones_map f \<chi> = ?\<chi>'"
           by auto
-        text{*
+        text\<open>
           Let @{term g} be the adjunct of @{term f}, and show that @{term g} transforms
           @{term G\<chi>} into @{term \<kappa>}.
-        *}
+\<close>
         let ?g = "G f \<cdot>\<^sub>D Adj.\<eta> b"
         have 1: "\<guillemotleft>?g : b \<rightarrow>\<^sub>D G a\<guillemotright>" using f \<kappa>.ide_apex by fastforce
         moreover have "GE.cones_map ?g ?G\<chi> = \<kappa>"
@@ -2321,13 +2321,13 @@ begin
           ultimately show "GE.cones_map ?g ?G\<chi> j = \<kappa> j" by auto
         qed
         ultimately have "\<guillemotleft>?g : b \<rightarrow>\<^sub>D G a\<guillemotright> \<and> GE.cones_map ?g ?G\<chi> = \<kappa>" by auto
-        text{*
+        text\<open>
           It remains to be shown that @{term g} is the unique such arrow.
           Given any @{term g'} that transforms @{term G\<chi>} into @{term \<kappa>},
           its adjunct transforms @{term \<chi>} into @{term \<chi>'}.
           The adjunct of @{term g'} is therefore equal to @{term f},
           which implies @{term g'} = @{term g}.
-        *}
+\<close>
         moreover have "\<And>g'. \<guillemotleft>g' : b \<rightarrow>\<^sub>D G a\<guillemotright> \<and> GE.cones_map g' ?G\<chi> = \<kappa> \<Longrightarrow> g' = ?g"
         proof -
           fix g'
@@ -2384,10 +2384,10 @@ begin
 
   subsection "Terminal Objects"
 
-  text{*
+  text\<open>
    An object of a category @{term C} is a terminal object if and only if it is a limit of the
    empty diagram in @{term C}.
-  *}
+\<close>
 
   locale empty_diagram =
     diagram J C D
@@ -2432,9 +2432,9 @@ begin
         let ?\<chi> = "\<lambda>j. C.null"
         have "C.ide a" using a C.terminal_def by simp
         interpret A: constant_functor J C a
-          apply unfold_locales using `C.ide a` by simp
+          apply unfold_locales using \<open>C.ide a\<close> by simp
         interpret \<chi>: cone J C D a ?\<chi>
-          using `C.ide a` is_empty by (unfold_locales, auto)
+          using \<open>C.ide a\<close> is_empty by (unfold_locales, auto)
         have cone_\<chi>: "cone a ?\<chi>" .. 
         have 1: "\<And>a' \<chi>'. cone a' \<chi>' \<Longrightarrow> \<chi>' = (\<lambda>j. C.null)"
         proof -
@@ -2464,9 +2464,9 @@ begin
 
   subsection "Products"
 
-  text{*
+  text\<open>
     A \emph{product} in a category @{term C} is a limit of a discrete diagram in @{term C}.
-  *}
+\<close>
 
   locale discrete_diagram =
     J: category J +
@@ -2505,7 +2505,7 @@ begin
 
   end
 
-  text{*
+  text\<open>
     The following locale defines a discrete diagram in a category @{term C},
     given an index set @{term I} and a function @{term D} mapping @{term I}
     to objects of @{term C}.  Here we obtain the diagram shape @{term J}
@@ -2513,7 +2513,7 @@ begin
     the objects of @{term J} with the elements of @{term I}, however this construction
     can only be applied in case the set @{term I} is not the universe of its
     element type.
-  *}
+\<close>
 
   locale discrete_diagram_from_map =
     J: discrete_category I null +
@@ -2549,11 +2549,11 @@ begin
     lemma is_cone:
     shows "D.cone a \<pi>" ..
 
-    text{*
+    text\<open>
       The following versions of @{prop is_universal} and @{prop induced_arrowI}
-      from the @{text limit_cone} locale are specialized to the case in which the
+      from the \<open>limit_cone\<close> locale are specialized to the case in which the
       underlying diagram is a product diagram.
-    *}
+\<close>
 
     lemma is_universal':
     assumes "C.ide b" and "\<And>j. J.arr j \<Longrightarrow> \<guillemotleft>F j: b \<rightarrow> D j\<guillemotright>"
@@ -2647,7 +2647,7 @@ begin
     definition has_as_product
     where "has_as_product J D a \<equiv> (\<exists>\<pi>. product_cone J C D a \<pi>)"
 
-    text{*
+    text\<open>
       A category has @{term I}-indexed products for an @{typ 'i}-set @{term I}
       if every @{term I}-indexed discrete diagram has a product.
       In order to reap the benefits of being able to directly identify the elements
@@ -2655,7 +2655,7 @@ begin
       the use of coercion maps), it is necessary to assume that @{term "I \<noteq> UNIV"}.
       If we want to assert that a category has products indexed by the universe of
       some type @{typ 'i}, we have to pass to a larger type, such as @{typ "'i option"}.
-    *}
+\<close>
 
     definition has_products
     where "has_products (I :: 'i set) \<equiv>
@@ -2701,10 +2701,10 @@ begin
 
   subsection "Equalizers"
 
-  text{*
+  text\<open>
     An \emph{equalizer} in a category @{term C} is a limit of a parallel pair
     of arrows in @{term C}.
-  *}
+\<close>
 
   locale parallel_pair_diagram =
     J: parallel_pair +
@@ -3007,17 +3007,17 @@ begin
 
   section "Limits by Products and Equalizers"
  
-  text{*
+  text\<open>
     A category with equalizers has limits of shape @{term J} if it has products
     indexed by the set of arrows of @{term J} and the set of objects of @{term J}.
     The proof is patterned after \cite{MacLane}, Theorem 2, page 109:
     \begin{quotation}
-       ``The limit of @{text "F: J \<rightarrow> C"} is the equalizer @{text e}
-       of @{text "f, g: \<Pi>\<^sub>i F\<^sub>i \<rightarrow> \<Pi>\<^sub>u F\<^sub>c\<^sub>o\<^sub>d \<^sub>u (u \<in> arr J, i \<in> J)"}
-       where @{text "p\<^sub>u f = p\<^sub>c\<^sub>o\<^sub>d \<^sub>u"}, @{text "p\<^sub>u g = F\<^sub>u o p\<^sub>d\<^sub>o\<^sub>m \<^sub>u"};
-       the limiting cone @{text \<mu>} is @{text "\<mu>\<^sub>j = p\<^sub>j e"}, for @{text "j \<in> J"}.''
+       ``The limit of \<open>F: J \<rightarrow> C\<close> is the equalizer \<open>e\<close>
+       of \<open>f, g: \<Pi>\<^sub>i F\<^sub>i \<rightarrow> \<Pi>\<^sub>u F\<^sub>c\<^sub>o\<^sub>d \<^sub>u (u \<in> arr J, i \<in> J)\<close>
+       where \<open>p\<^sub>u f = p\<^sub>c\<^sub>o\<^sub>d \<^sub>u\<close>, \<open>p\<^sub>u g = F\<^sub>u o p\<^sub>d\<^sub>o\<^sub>m \<^sub>u\<close>;
+       the limiting cone \<open>\<mu>\<close> is \<open>\<mu>\<^sub>j = p\<^sub>j e\<close>, for \<open>j \<in> J\<close>.''
     \end{quotation}
-  *}
+\<close>
 
   locale category_with_equalizers =
     category C
@@ -3038,9 +3038,9 @@ begin
         assume D: "diagram J C D"
         interpret D: diagram J C D using D by auto
 
-        text{*
+        text\<open>
           First, construct the two required products and their cones.
-        *}
+\<close>
         interpret Obj: discrete_category "Collect J.ide" J.null
           using J.not_arr_null J.ideD(1) mem_Collect_eq by (unfold_locales, blast)
         interpret \<Delta>o: discrete_diagram_from_map "Collect J.ide" C D J.null
@@ -3067,10 +3067,10 @@ begin
         have \<pi>a_in_hom: "\<And>j. Arr.arr j \<Longrightarrow> \<guillemotleft>\<pi>a j : \<Pi>a \<rightarrow> D (J.cod j)\<guillemotright>"
           using \<pi>a.preserves_cod \<pi>a.preserves_dom \<Delta>a.map_def by auto
 
-        text{*
-           Next, construct a parallel pair of arrows @{text "f, g: \<Pi>o \<rightarrow> \<Pi>a"}
+        text\<open>
+           Next, construct a parallel pair of arrows \<open>f, g: \<Pi>o \<rightarrow> \<Pi>a\<close>
            that expresses the commutativity constraints imposed by the diagram.
-        *}
+\<close>
         interpret \<Pi>o: constant_functor Arr.comp C \<Pi>o
           using \<pi>o.ide_apex by (unfold_locales, auto)
         let ?\<chi> = "\<lambda>j. if Arr.arr j then \<pi>o (J.cod j) else null"
@@ -3125,11 +3125,11 @@ begin
           using equ by auto
         interpret EQU: equalizer_cone C ?f ?g e ..
 
-        text{*
+        text\<open>
           An arrow @{term h} with @{term "cod h = \<Pi>o"} equalizes @{term f} and @{term g}
           if and only if it satisfies the commutativity condition required for a cone over
           @{term D}.
-        *}
+\<close>
         have E: "\<And>h. \<guillemotleft>h : dom h \<rightarrow> \<Pi>o\<guillemotright> \<Longrightarrow>
                    ?f \<cdot> h = ?g \<cdot> h \<longleftrightarrow> (\<forall>j. J.arr j \<longrightarrow> ?\<chi> j \<cdot> h = ?\<chi>' j \<cdot> h)"
         proof
@@ -3234,13 +3234,13 @@ begin
                            (D (J.cod j) \<cdot> \<pi>o (J.cod j) \<cdot> e) \<cdot> dom e = D j \<cdot> \<pi>o (J.dom j) \<cdot> e)"
             using 1 2 E by presburger
         qed
-        text{*
+        text\<open>
           The composites of @{term e} with the projections from the product @{term \<Pi>o}
           determine a limit cone @{term \<mu>} for @{term D}.  The component of @{term \<mu>}
           at an object @{term j} of @{term[source=true] J} is the composite @{term "C (\<pi>o j) e"}.
           However, we need to extend @{term \<mu>} to all arrows @{term j} of @{term[source=true] J},
           so the correct definition is @{term "\<mu> j = C (D j) (C (\<pi>o (J.dom j)) e)"}.
-        *}
+\<close>
         have e_in_hom: "\<guillemotleft>e : dom e \<rightarrow> \<Pi>o\<guillemotright>"
           using EQU.equalizes f_in_hom in_homI
           by (metis (no_types, lifting) seqE in_homE)
@@ -3270,10 +3270,10 @@ begin
           show "?\<mu> (J.cod j) \<cdot> domE.map j = ?\<mu> j"
             using j e_map E' by (simp add: e_in_hom)
         qed
-        text{*
+        text\<open>
           If @{term \<tau>} is any cone over @{term D} then @{term \<tau>} restricts to a cone over
           @{term \<Delta>o} for which the induced arrow to @{term \<Pi>o} equalizes @{term f} and @{term g}.
-        *}
+\<close>
         have R: "\<And>a \<tau>. cone J C D a \<tau> \<Longrightarrow>
                         cone Obj.comp C \<Delta>o.map a (\<Delta>o.mkCone \<tau>) \<and>
                         ?f \<cdot> \<pi>o.induced_arrow a (\<Delta>o.mkCone \<tau>)
@@ -3336,9 +3336,9 @@ begin
           thus "cone Obj.comp C \<Delta>o.map a (\<Delta>o.mkCone \<tau>) \<and> C ?f ?e = C ?g ?e"
             using \<tau>o.cone_axioms by auto
         qed
-        text{*
+        text\<open>
           Finally, show that @{term \<mu>} is a limit cone.
-        *}
+\<close>
         interpret \<mu>: limit_cone J C D "dom e" ?\<mu>
         proof
           fix a \<tau>
@@ -3473,9 +3473,9 @@ begin
 
   section "Limits in a Set Category"
 
-  text{*
+  text\<open>
     In this section, we consider the special case of limits in a set category.
-  *}
+\<close>
 
   locale diagram_in_set_category =
     J: category J +
@@ -3488,21 +3488,21 @@ begin
 
     notation S.in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
-    text{*
+    text\<open>
       An object @{term a} of a set category @{term[source=true] S} is a limit of a diagram in
       @{term[source=true] S} if and only if there is a bijection between the set
       @{term "S.hom S.unity a"} of points of @{term a} and the set of cones over the diagram
       that have apex @{term S.unity}.
-    *}
+\<close>
 
     lemma limits_are_sets_of_cones:
     shows "has_as_limit a \<longleftrightarrow> S.ide a \<and> (\<exists>\<phi>. bij_betw \<phi> (S.hom S.unity a) (cones S.unity))"
     proof
-      text{*
-        If @{text "has_limit a"}, then by the universal property of the limit cone,
+      text\<open>
+        If \<open>has_limit a\<close>, then by the universal property of the limit cone,
         composition in @{term[source=true] S} yields a bijection between @{term "S.hom S.unity a"}
         and @{term "cones S.unity"}.
-      *}
+\<close>
       assume a: "has_as_limit a"
       hence "S.ide a"
         using limit_cone_def cone.ide_apex by metis
@@ -3511,9 +3511,9 @@ begin
       have "bij_betw (\<lambda>f. cones_map f \<chi>) (S.hom S.unity a) (cones S.unity)"
         using \<chi>.bij_betw_hom_and_cones S.ide_unity by simp
       thus "S.ide a \<and> (\<exists>\<phi>. bij_betw \<phi> (S.hom S.unity a) (cones S.unity))"
-        using `S.ide a` by blast
+        using \<open>S.ide a\<close> by blast
       next
-      text{*
+      text\<open>
         Conversely, an arbitrary bijection @{term \<phi>} between @{term "S.hom S.unity a"}
         and cones unity extends pointwise to a natural bijection @{term "\<Phi> a'"} between
         @{term "S.hom a' a"} and @{term "cones a'"}, showing that @{term a} is a limit.
@@ -3531,7 +3531,7 @@ begin
         @{term "\<chi>f j \<in> hom a' (cod (D j))"} and @{term "S (\<chi>f j) y = \<phi> (S f y) j"}
         for all points @{term y} of @{term a'}.
         The cone @{term \<chi>a} corresponding to @{term "a \<in> S.hom a a"} is then a limit cone.
-      *}
+\<close>
       assume a: "S.ide a \<and> (\<exists>\<phi>. bij_betw \<phi> (S.hom S.unity a) (cones S.unity))"
       hence ide_a: "S.ide a" by auto
       show "has_as_limit a"
@@ -3546,12 +3546,12 @@ begin
             using f y \<phi> bij_betw_imp_funcset funcset_mem by blast
           show "\<guillemotleft>\<phi> (f \<cdot> y) j : S.unity \<rightarrow> S.cod (D j)\<guillemotright>" using j by auto
         qed
-        text{*
+        text\<open>
           We want to define the component @{term "\<chi>j \<in> S.hom (S.dom f) (S.cod (D j))"}
           at @{term j} of a cone by specifying how it acts by composition on points
           @{term "y \<in> S.hom S.unity (S.dom f)"}.  We can do this because @{term[source=true] S}
           is a set category.
-        *}
+\<close>
         let ?P = "\<lambda>f j \<chi>j. \<guillemotleft>\<chi>j : S.dom f \<rightarrow> S.cod (D j)\<guillemotright> \<and>
                            (\<forall>y. \<guillemotleft>y : S.unity \<rightarrow> S.dom f\<guillemotright> \<longrightarrow> \<chi>j \<cdot> y = \<phi> (f \<cdot> y) j)"
         let ?\<chi> = "\<lambda>f j. if J.arr j then (THE \<chi>j. ?P f j \<chi>j) else S.null"
@@ -3568,10 +3568,10 @@ begin
             by (elim S.in_homE, auto)
           thus "?P f j (?\<chi> f j)" using j theI' [of "?P f j"] by simp
         qed
-        text{*
+        text\<open>
           The arrows @{term "\<chi> f j"} are in fact the components of a cone with apex
           @{term "S.dom f"}.
-        *}
+\<close>
         have cone: "\<And>f. \<guillemotleft>f : S.dom f \<rightarrow> a\<guillemotright> \<Longrightarrow> cone (S.dom f) (?\<chi> f)"
         proof -
           fix f
@@ -3639,9 +3639,9 @@ begin
           qed
         qed
         interpret \<chi>a: cone J S D a "?\<chi> a" using a cone [of a] by fastforce
-        text{*
-          Finally, show that @{text "\<chi> a"} is a limit cone.
-        *}
+        text\<open>
+          Finally, show that \<open>\<chi> a\<close> is a limit cone.
+\<close>
         interpret \<chi>a: limit_cone J S D a "?\<chi> a"
         proof
           fix a' \<chi>'
@@ -3810,9 +3810,9 @@ begin
   context set_category
   begin
 
-    text{*
+    text\<open>
       A set category has an equalizer for any parallel pair of arrows.
-    *}
+\<close>
 
     lemma has_equalizers:
     shows "has_equalizers"
@@ -3826,10 +3826,10 @@ begin
         interpret PP: parallel_pair_diagram S f0 f1
           apply unfold_locales using par by auto
         interpret PP: diagram_in_set_category J.comp S PP.map ..
-        text{*
+        text\<open>
           Let @{term a} be the object corresponding to the set of all images of equalizing points
           of @{term "dom f0"}, and let @{term e} be the inclusion of @{term a} in @{term "dom f0"}.
-        *}
+\<close>
         let ?a = "mkIde (img ` {e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e})"
         have "{e. e \<in> hom unity (dom f0) \<and> f0 \<cdot> e = f1 \<cdot> e} \<subseteq> hom unity (dom f0)"
           by auto
@@ -3850,11 +3850,11 @@ begin
               using imageE img_point_elem_set mem_Collect_eq subsetI by auto
           qed
           ultimately show ?thesis
-            using incl_in_def `ide ?a` by simp
+            using incl_in_def \<open>ide ?a\<close> by simp
         qed
-        text{*
+        text\<open>
           Then @{term "set a"} is in bijective correspondence with @{term "PP.cones unity"}.
-        *}
+\<close>
         let ?\<phi> = "\<lambda>t. PP.mkCone (mkPoint (dom f0) t)"
         let ?\<psi> = "\<lambda>\<chi>. img (\<chi> (J.Zero))"
         have bij: "bij_betw ?\<phi> (set ?a) (PP.cones unity)"
@@ -3907,10 +3907,10 @@ begin
             finally show "?\<phi> (?\<psi> \<chi>) = \<chi>" by auto
           qed
         qed
-        text{*
-          It follows that @{term a} is a limit of @{text PP}, and that the limit cone gives an
+        text\<open>
+          It follows that @{term a} is a limit of \<open>PP\<close>, and that the limit cone gives an
           equalizer of @{term f0} and @{term f1}.
-        *}
+\<close>
         have "\<exists>\<mu>. bij_betw \<mu> (hom unity ?a) (set ?a)"
           using bij_betw_points_and_set ide_a by auto
         from this obtain \<mu> where \<mu>: "bij_betw \<mu> (hom unity ?a) (set ?a)" by blast
@@ -3941,7 +3941,7 @@ begin
   context set_category
   begin
 
-    text{*
+    text\<open>
       The aim of the next results is to characterize the conditions under which a set
       category has products.  In a traditional development of category theory,
       one shows that the category \textbf{Set} of \emph{all} sets has all small
@@ -3950,7 +3950,7 @@ begin
       elements at a particular type.  Clearly, we cannot expect such a category
       to have products indexed by arbitrarily large sets.  The existence of
       @{term I}-indexed products in a set category @{term[source=true] S} implies that the universe
-      @{text S.Univ} of @{term[source=true] S} must be large enough to admit the formation of
+      \<open>S.Univ\<close> of @{term[source=true] S} must be large enough to admit the formation of
       @{term I}-tuples of its elements.  Conversely, for a set category @{term[source=true] S}
       the ability to form @{term I}-tuples in @{term Univ} implies that
       @{term[source=true] S} has @{term I}-indexed products.  Below we make this precise by
@@ -3965,18 +3965,18 @@ begin
       function from theory @{theory "HOL-Library.FuncSet"} needs to be modified.
       The theory @{theory "HOL-Library.FuncSet"} uses the definite, but arbitrarily chosen value
       @{term undefined} as the value to be assumed by an extensional function outside
-      of its domain.  In the context of the @{text set_category}, though, it is
-      more natural to use @{text S.unity}, which is guaranteed to be an element of the
+      of its domain.  In the context of the \<open>set_category\<close>, though, it is
+      more natural to use \<open>S.unity\<close>, which is guaranteed to be an element of the
       universe of @{term[source=true] S}, for this purpose.  Doing things that way makes it
       simpler to establish a bijective correspondence between cones over @{term D} with apex
       @{term unity} and the set of extensional functions @{term d} that map
       each arrow @{term j} of @{term J} to an element @{term "d j"} of @{term "set (D j)"}.
-      Possibly it makes sense to go back and make this change in @{text set_category},
+      Possibly it makes sense to go back and make this change in \<open>set_category\<close>,
       but that would mean completely abandoning @{theory "HOL-Library.FuncSet"} and essentially
-      introducing a duplicate version for use with @{text set_category}.
+      introducing a duplicate version for use with \<open>set_category\<close>.
       As a compromise, what I have done here is to locally redefine the few notions from
       @{theory "HOL-Library.FuncSet"} that I need in order to prove the next set of results.
-    *}
+\<close>
 
     definition extensional
     where "extensional A \<equiv> {f. \<forall>x. x \<notin> A \<longrightarrow> f x = unity}"
@@ -4022,12 +4022,12 @@ begin
   and D :: "'j \<Rightarrow> 's"
   begin
 
-    text{*
+    text\<open>
       For @{term D} a discrete diagram in a set category, there is a bijective correspondence
       between cones over @{term D} with apex unity and the set of extensional functions @{term d}
       that map each arrow @{term j} of @{term[source=true] J} to an element of
       @{term "S.set (D j)"}.
-    *}
+\<close>
 
     abbreviation I
     where "I \<equiv> Collect J.arr"
@@ -4142,10 +4142,10 @@ begin
   context set_category
   begin
 
-    text{*
+    text\<open>
       A set category admits @{term I}-indexed tupling if there is an injective map that takes
       each extensional function from @{term I} to @{term Univ} to an element of @{term Univ}.
-    *}
+\<close>
 
     definition admits_tupling
     where "admits_tupling I \<equiv> \<exists>\<pi>. \<pi> \<in> PiE I (\<lambda>_. Univ) \<rightarrow> Univ \<and> inj_on \<pi> (PiE I (\<lambda>_. Univ))"
@@ -4180,14 +4180,14 @@ begin
     fixes I :: "'i set"
     shows "has_products I \<longleftrightarrow> I \<noteq> UNIV \<and> admits_tupling I"
     proof
-      text{*
+      text\<open>
         If @{term[source=true] S} has @{term I}-indexed products, then for every @{term I}-indexed
         discrete diagram @{term D} in @{term[source=true] S} there is an object @{term \<Pi>D}
         of @{term[source=true] S} whose points are in bijective correspondence with the set of
         cones over @{term D} with apex @{term unity}.  In particular this is true for
         the diagram @{term D} that assigns to each element of @{term I} the
         ``universal object'' @{term "mkIde Univ"}.
-      *}
+\<close>
       assume has_products: "has_products I"
       have I: "I \<noteq> UNIV" using has_products has_products_def by auto
       interpret J: discrete_category I "SOME x. x \<notin> I"
@@ -4275,14 +4275,14 @@ begin
         from ex_\<pi> obtain \<pi>
         where \<pi>: "\<pi> \<in> (PiE I (\<lambda>x. Univ)) \<rightarrow> Univ \<and> inj_on \<pi> (PiE I (\<lambda>x. Univ))"
           using admits_tupling_def by metis
-        text{*
+        text\<open>
           Given an @{term I}-indexed discrete diagram @{term D}, obtain the object @{term \<Pi>D}
           of @{term[source=true] S} corresponding to the set @{term "\<pi> ` PiE I D"} of all
-          @{term "\<pi> d"} where @{text "d \<in> d \<in> J \<rightarrow>\<^sub>E Univ"} and @{term "d i \<in> D i"}
+          @{term "\<pi> d"} where \<open>d \<in> d \<in> J \<rightarrow>\<^sub>E Univ\<close> and @{term "d i \<in> D i"}
           for all @{term "i \<in> I"}.
           The elements of @{term \<Pi>D} are in bijective correspondence with the set of cones
           over @{term D}, hence @{term \<Pi>D} is a limit of @{term D}.
-        *}
+\<close>
         have "\<And>J D. discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I
                  \<Longrightarrow> \<exists>\<Pi>D. has_as_product J D \<Pi>D"
         proof
@@ -4306,12 +4306,12 @@ begin
           qed
           hence set_\<Pi>D: "\<pi> ` PiE I (set o D) = set ?\<Pi>D"
             using 0 ide_in_hom by auto
-          text{*
+          text\<open>
             The elements of @{term \<Pi>D} are all values of the form @{term "\<pi> d"},
             where @{term d} satisfies @{term "d i \<in> set (D i)"} for all @{term "i \<in> I"}.
             Such @{term d} correspond bijectively to cones.
             Since @{term \<pi>} is injective, the values @{term "\<pi> d"} correspond bijectively to cones.
-          *}
+\<close>
           let ?\<phi> = "mkPoint ?\<Pi>D o \<pi> o D.coneToFun"
           let ?\<phi>' = "D.funToCone o inv_into (PiE I (set o D)) \<pi> o img"
           have 1: "\<pi> \<in> PiE I (set o D) \<rightarrow> set ?\<Pi>D \<and> inj_on \<pi> (PiE I (set o D))"
@@ -4395,7 +4395,7 @@ begin
             using bij_betw_inv_into by blast
           hence "\<exists>\<phi>. bij_betw \<phi> (hom unity ?\<Pi>D) (D.cones unity)" by blast
           hence "D.has_as_limit ?\<Pi>D"
-            using `ide ?\<Pi>D` D.limits_are_sets_of_cones by simp
+            using \<open>ide ?\<Pi>D\<close> D.limits_are_sets_of_cones by simp
           from this obtain \<chi> where \<chi>: "limit_cone J S D ?\<Pi>D \<chi>" by blast
           interpret \<chi>: limit_cone J S D ?\<Pi>D \<chi> using \<chi> by auto
           interpret P: product_cone J S D ?\<Pi>D \<chi>
@@ -4411,12 +4411,12 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       Characterization of the completeness properties enjoyed by a set category:
       A set category @{term[source=true] S} has all limits at a type @{typ 'j},
       if and only if @{term[source=true] S} admits @{term I}-indexed tupling
       for all @{typ 'j}-sets @{term I} such that @{term "I \<noteq> UNIV"}.
-    *}
+\<close>
 
     theorem has_limits_iff_admits_tupling:
     shows "has_limits (undefined :: 'j) \<longleftrightarrow> (\<forall>I :: 'j set. I \<noteq> UNIV \<longrightarrow> admits_tupling I)"
@@ -4461,11 +4461,11 @@ begin
 
   section "Limits in Functor Categories"
 
-  text{*
+  text\<open>
     In this section, we consider the special case of limits in functor categories,
-    with the objective of showing that limits in a functor category @{text "[A, B]"}
-    are given pointwise, and that @{text "[A, B]"} has all limits that @{term B} has.
-  *}
+    with the objective of showing that limits in a functor category \<open>[A, B]\<close>
+    are given pointwise, and that \<open>[A, B]\<close> has all limits that @{term B} has.
+\<close>
 
   locale parametrized_diagram =
     J: category J +
@@ -4484,12 +4484,12 @@ begin
     notation JxA.comp     (infixr "\<cdot>\<^sub>J\<^sub>x\<^sub>A" 55)
     notation JxA.in_hom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J\<^sub>x\<^sub>A _\<guillemotright>")
 
-    text{*
-      A choice of limit cone for each diagram @{text "D (-, a)"}, where @{term a}
-      is an object of @{term[source=true] A}, extends to a functor @{text "L: A \<rightarrow> B"},
+    text\<open>
+      A choice of limit cone for each diagram \<open>D (-, a)\<close>, where @{term a}
+      is an object of @{term[source=true] A}, extends to a functor \<open>L: A \<rightarrow> B\<close>,
       where the action of @{term L} on arrows of @{term[source=true] A} is determined by
       universality.
-     *}
+\<close>
 
     abbreviation L
     where "L \<equiv> \<lambda>l \<chi>. \<lambda>a. if A.arr a then
@@ -4711,10 +4711,10 @@ begin
     notation JxA.comp     (infixr "\<cdot>\<^sub>J\<^sub>x\<^sub>A" 55)
     notation JxA.in_hom   ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>J\<^sub>x\<^sub>A _\<guillemotright>")
 
-    text{*
+    text\<open>
       Evaluation of a functor or natural transformation from @{term[source=true] J}
-      to @{text "[A, B]"} at an arrow @{term a} of @{term[source=true] A}.
-    *}
+      to \<open>[A, B]\<close> at an arrow @{term a} of @{term[source=true] A}.
+\<close>
 
     abbreviation at
     where "at a \<tau> \<equiv> \<lambda>j. Curry.uncurry \<tau> (j, a)"
@@ -4968,12 +4968,12 @@ begin
       qed
     qed
        
-    text{*
+    text\<open>
       If @{term \<chi>} is a cone with apex @{term a} over @{term D}, then @{term \<chi>}
       is a limit cone if, for each object @{term x} of @{term X}, the cone obtained
       by evaluating @{term \<chi>} at @{term x} is a limit cone with apex @{term "A_B.Fun a x"}
       for the diagram in @{term C} obtained by evaluating @{term D} at @{term x}.
-    *}
+\<close>
 
     lemma cone_is_limit_if_pointwise_limit:
     assumes cone_\<chi>: "cone x \<chi>"
@@ -4988,11 +4988,11 @@ begin
         assume cone_\<chi>': "cone x' \<chi>'"
         interpret \<chi>': cone J A_B.comp D x' \<chi>' using cone_\<chi>' by auto
         have x': "A_B.ide x'" using \<chi>'.ide_apex by auto
-        text{*
-          The universality of the limit cone @{text "at a \<chi>"} yields, for each object
-          @{text a} of @{text A}, a unique arrow @{text fa} that transforms
-          @{text "at a \<chi>"} to @{text "at a \<chi>'"}.
-        *}
+        text\<open>
+          The universality of the limit cone \<open>at a \<chi>\<close> yields, for each object
+          \<open>a\<close> of \<open>A\<close>, a unique arrow \<open>fa\<close> that transforms
+          \<open>at a \<chi>\<close> to \<open>at a \<chi>'\<close>.
+\<close>
         have EU: "\<And>a. A.ide a \<Longrightarrow>
                         \<exists>!fa. fa \<in> B.hom (A_B.Fun x' a) (A_B.Fun x a) \<and>
                                    diagram.cones_map J B (at a D) fa (at a \<chi>) = at a \<chi>'"
@@ -5009,12 +5009,12 @@ begin
                       Da.cones_map fa (at a \<chi>) = at a \<chi>'"
             using \<chi>a.is_universal by simp
         qed
-        text{*
-          Our objective is to show the existence of a unique arrow @{text f} that transforms
-          @{text \<chi>} into @{text \<chi>'}.  We obtain @{text f} by bundling the arrows @{text fa}
-          of @{text C} and proving that this yields a natural transformation from @{text X}
-          to @{text C}, hence an arrow of @{text "[X, C]"}.
-        *}
+        text\<open>
+          Our objective is to show the existence of a unique arrow \<open>f\<close> that transforms
+          \<open>\<chi>\<close> into \<open>\<chi>'\<close>.  We obtain \<open>f\<close> by bundling the arrows \<open>fa\<close>
+          of \<open>C\<close> and proving that this yields a natural transformation from \<open>X\<close>
+          to \<open>C\<close>, hence an arrow of \<open>[X, C]\<close>.
+\<close>
         show "\<exists>!f. \<guillemotleft>f : x' \<rightarrow>\<^sub>[\<^sub>A\<^sub>,\<^sub>B\<^sub>] x\<guillemotright> \<and> cones_map f \<chi> = \<chi>'"
         proof
           let ?P = "\<lambda>a fa. \<guillemotleft>fa : A_B.Fun x' a \<rightarrow>\<^sub>B A_B.Fun x a\<guillemotright> \<and>
@@ -5038,10 +5038,10 @@ begin
             using x A_B.ide_char by simp
           interpret Fun_x': "functor" A B "\<lambda>a. A_B.Fun x' a"
             using x' A_B.ide_char by simp
-          text{*
-            The arrows @{text "Fun_f a"} are the components of a natural transformation.
+          text\<open>
+            The arrows \<open>Fun_f a\<close> are the components of a natural transformation.
             It is more work to verify the naturality than it seems like it ought to be.
-          *}
+\<close>
           interpret \<phi>: transformation_by_components A B
                          "\<lambda>a. A_B.Fun x' a" "\<lambda>a. A_B.Fun x a" ?Fun_f
           proof
@@ -5051,7 +5051,7 @@ begin
             next
             fix a
             assume a: "A.arr a"
-            text{*
+            text\<open>
 \newcommand\xdom{\mathop{\rm dom}}
 \newcommand\xcod{\mathop{\rm cod}}
 $$\xymatrix{
@@ -5061,7 +5061,7 @@ $$\xymatrix{
   {x'_{\xdom a}} \urtwocell\omit{\omit(B)} \ar@/^5em/[uu]^{f_{\xdom a}}_{\hspace{1em}(C)} \ar[u]^{\chi'_{\xdom a}}
      \ar[r]_{x'_a} & {x'_{\xcod a}} \ar[u]_{x'_{\xcod a}} \ar@/_5em/[uu]_{f_{\xcod a}}
 }$$
-            *}
+\<close>
             let ?x_dom_a = "A_B.Fun x (A.dom a)"
             let ?x_cod_a = "A_B.Fun x (A.cod a)"
             let ?x_a = "A_B.Fun x a"
@@ -5094,12 +5094,12 @@ $$\xymatrix{
               using a cone_\<chi>' cone_at_ide_is_cone by auto
             interpret \<chi>'_cod_a: cone J B "at (A.cod a) D" "A_B.Fun x' (A.cod a)" "at (A.cod a) \<chi>'"
               using a cone_\<chi>' cone_at_ide_is_cone by auto
-            text{*
-              Now construct cones with apexes @{text "x_dom_a"} and @{text "x'_dom_a"}
+            text\<open>
+              Now construct cones with apexes \<open>x_dom_a\<close> and \<open>x'_dom_a\<close>
               over @{term "at (A.cod a) D"} by forming the vertical composites of
               @{term "at (A.dom a) \<chi>"} and @{term "at (A.cod a) \<chi>'"} with the natural
               transformation @{term "at a D"}.
-            *}
+\<close>
             interpret Dao\<chi>_dom_a: vertical_composite J B
                                     \<chi>_dom_a.A.map "at (A.dom a) D" "at (A.cod a) D"
                                     "at (A.dom a) \<chi>" "at a D" ..
@@ -5114,10 +5114,10 @@ $$\xymatrix{
               by metis
             have Dao\<chi>_dom_a: "D_cod_a.cone ?x_dom_a Dao\<chi>_dom_a.map" ..
             have Dao\<chi>'_dom_a: "D_cod_a.cone ?x'_dom_a Dao\<chi>'_dom_a.map" ..
-            text{*
+            text\<open>
               These cones are also obtained by transforming the cones @{term "at (A.cod a) \<chi>"}
-              and @{term "at (A.cod a) \<chi>'"} by @{text x_a} and @{text x'_a}, respectively.
-            *}
+              and @{term "at (A.cod a) \<chi>'"} by \<open>x_a\<close> and \<open>x'_a\<close>, respectively.
+\<close>
             have A: "Dao\<chi>_dom_a.map = D_cod_a.cones_map ?x_a (at (A.cod a) \<chi>)"
             proof
               fix j
@@ -5188,11 +5188,11 @@ $$\xymatrix{
                   "Dao\<chi>'_dom_a.map j = D_cod_a.cones_map ?x'_a (at (A.cod a) \<chi>') j"
                 by blast
             qed
-            text{*
-              Next, we show that @{text f_dom_a}, which is the unique arrow that transforms
-              @{text \<chi>_dom_a} into @{text \<chi>'_dom_a}, is also the unique arrow that transforms
-              @{text Dao\<chi>_dom_a} into @{text Dao\<chi>'_dom_a}.
-            *}
+            text\<open>
+              Next, we show that \<open>f_dom_a\<close>, which is the unique arrow that transforms
+              \<open>\<chi>_dom_a\<close> into \<open>\<chi>'_dom_a\<close>, is also the unique arrow that transforms
+              \<open>Dao\<chi>_dom_a\<close> into \<open>Dao\<chi>'_dom_a\<close>.
+\<close>
             have C: "D_cod_a.cones_map ?f_dom_a Dao\<chi>_dom_a.map = Dao\<chi>'_dom_a.map"
             proof (intro NaturalTransformation.eqI)
               show "natural_transformation
@@ -5237,12 +5237,12 @@ $$\xymatrix{
                   by auto
               qed
             qed
-            text{*
-              Naturality amounts to showing that @{text "C f_cod_a x'_a = C x_a f_dom_a"}.
+            text\<open>
+              Naturality amounts to showing that \<open>C f_cod_a x'_a = C x_a f_dom_a\<close>.
               To do this, we show that both arrows transform @{term "at (A.cod a) \<chi>"}
-              into @{text Dao\<chi>'_cod_a}, thus they are equal by the universality of
+              into \<open>Dao\<chi>'_cod_a\<close>, thus they are equal by the universality of
               @{term "at (A.cod a) \<chi>"}.
-            *}
+\<close>
             have "\<exists>!fa. \<guillemotleft>fa : ?x'_dom_a \<rightarrow>\<^sub>B ?x_cod_a\<guillemotright> \<and>
                         D_cod_a.cones_map fa (at (A.cod a) \<chi>) = Dao\<chi>'_dom_a.map"
               using Dao\<chi>'_dom_a.cone_axioms a \<chi>_cod_a.is_universal [of ?x'_dom_a Dao\<chi>'_dom_a.map]
@@ -5301,12 +5301,12 @@ $$\xymatrix{
             ultimately show "?f_cod_a \<cdot>\<^sub>B ?x'_a = ?x_a \<cdot>\<^sub>B ?f_dom_a"
               using a \<chi>_cod_a.is_universal by blast
           qed
-          text{*
-            The arrow from @{term x'} to @{term x} in @{text "[A, B]"} determined by
-            the natural transformation @{text \<phi>} transforms @{term \<chi>} into @{term \<chi>'}.
-            Moreover, it is the unique such arrow, since the components of @{text \<phi>}
+          text\<open>
+            The arrow from @{term x'} to @{term x} in \<open>[A, B]\<close> determined by
+            the natural transformation \<open>\<phi>\<close> transforms @{term \<chi>} into @{term \<chi>'}.
+            Moreover, it is the unique such arrow, since the components of \<open>\<phi>\<close>
             are each determined by universality.
-          *}
+\<close>
           let ?f = "A_B.mkArr (\<lambda>a. A_B.Fun x' a) (\<lambda>a. A_B.Fun x a) \<phi>.map"
           have f_in_hom: "?f \<in> A_B.hom x' x"
           proof -
@@ -5374,10 +5374,10 @@ $$\xymatrix{
   context functor_category
   begin
 
-    text{*
-      A functor category @{text "[A, B]"} has limits of shape @{term[source=true] J}
+    text\<open>
+      A functor category \<open>[A, B]\<close> has limits of shape @{term[source=true] J}
       whenever @{term B} has limits of shape @{term[source=true] J}.
-    *}
+\<close>
 
     lemma has_limits_of_shape_if_target_does:
     assumes "category (J :: 'j comp)"
@@ -5393,10 +5393,10 @@ $$\xymatrix{
         interpret D: diagram J comp D using D by auto
         interpret D: diagram_in_functor_category A B J D ..
         interpret Curry: currying J A B ..
-        text{*
-          Given diagram @{term D} in @{text "[A, B]"}, choose for each object @{text a}
-          of @{text A} a limit cone @{text "(la, \<chi>a)"} for @{text "at a D"} in @{text B}.
-        *}
+        text\<open>
+          Given diagram @{term D} in \<open>[A, B]\<close>, choose for each object \<open>a\<close>
+          of \<open>A\<close> a limit cone \<open>(la, \<chi>a)\<close> for \<open>at a D\<close> in \<open>B\<close>.
+\<close>
         let ?l = "\<lambda>a. diagram.some_limit J B (D.at a D)"
         let ?\<chi> = "\<lambda>a. diagram.some_limit_cone J B (D.at a D)"
         have l\<chi>: "\<And>a. A.ide a \<Longrightarrow> diagram.limit_cone J B (D.at a D) (?l a) (?\<chi> a)"
@@ -5410,9 +5410,9 @@ $$\xymatrix{
                   Da.limit_cone_some_limit_cone
             by auto
         qed
-        text{*
-          The choice of limit cones induces a limit functor from @{text A} to @{text B}.
-        *}
+        text\<open>
+          The choice of limit cones induces a limit functor from \<open>A\<close> to \<open>B\<close>.
+\<close>
         interpret uncurry_D: diagram JxA.comp B "Curry.uncurry D"
         proof -
           interpret "functor" JxA.comp B "Curry.uncurry D"
@@ -5433,10 +5433,10 @@ $$\xymatrix{
           using L_arr by blast
         have L_map: "\<And>a. A.arr a \<Longrightarrow> uncurry_D.P ?l ?\<chi> a (uncurry_D.L ?l ?\<chi> a)"
           using L_arr by blast
-        text{*
-          The functor @{text L} extends to a functor @{text L'} from @{text "JxA"}
-          to @{text B} that is constant on @{text J}.
-        *}
+        text\<open>
+          The functor \<open>L\<close> extends to a functor \<open>L'\<close> from \<open>JxA\<close>
+          to \<open>B\<close> that is constant on \<open>J\<close>.
+\<close>
         let ?L' = "\<lambda>ja. if JxA.arr ja then ?L (snd ja) else B.null"
         let ?P' = "\<lambda>ja. ?P (snd ja)"
         interpret L': "functor" JxA.comp B ?L'
@@ -5461,11 +5461,11 @@ $$\xymatrix{
         have L'_arr_map:
              "\<And>ja. JxA.arr ja \<Longrightarrow> uncurry_D.P ?l ?\<chi> (snd ja) (uncurry_D.L ?l ?\<chi> (snd ja))"
            using L'_arr by presburger
-        text{*
-          The map that takes an object @{text "(j, a)"} of @{text "JxA"} to the component
-          @{text "\<chi> a j"} of the limit cone @{text "\<chi> a"} is a natural transformation
-          from @{text L} to uncurry @{text D}.
-        *}
+        text\<open>
+          The map that takes an object \<open>(j, a)\<close> of \<open>JxA\<close> to the component
+          \<open>\<chi> a j\<close> of the limit cone \<open>\<chi> a\<close> is a natural transformation
+          from \<open>L\<close> to uncurry \<open>D\<close>.
+\<close>
         let ?\<chi>' = "\<lambda>ja. ?\<chi> (snd ja) (fst ja)"
         interpret \<chi>': transformation_by_components JxA.comp B ?L' "Curry.uncurry D" ?\<chi>'
         proof
@@ -5537,9 +5537,9 @@ $$\xymatrix{
            finally show ?thesis by auto
          qed
        qed
-       text{*
-         Since @{text \<chi>'} is constant on @{text J}, @{text "curry \<chi>'"} is a cone over @{text D}.
-       *}
+       text\<open>
+         Since \<open>\<chi>'\<close> is constant on \<open>J\<close>, \<open>curry \<chi>'\<close> is a cone over \<open>D\<close>.
+\<close>
        interpret constL: constant_functor J comp "mkIde ?L"
        proof
          show "ide (mkIde ?L)"
@@ -5582,10 +5582,10 @@ $$\xymatrix{
            by force
        qed
        interpret curry_\<chi>': cone J comp D "mkIde ?L" "Curry.curry ?L' (Curry.uncurry D) \<chi>'.map" ..
-       text{*
-         The value of @{text curry_\<chi>'} at each object @{text a} of @{text A} is the
-         limit cone @{text "\<chi> a"}, hence @{text "curry_\<chi>'"} is a limit cone.
-       *}
+       text\<open>
+         The value of \<open>curry_\<chi>'\<close> at each object \<open>a\<close> of \<open>A\<close> is the
+         limit cone \<open>\<chi> a\<close>, hence \<open>curry_\<chi>'\<close> is a limit cone.
+\<close>
        have 1: "\<And>a. A.ide a \<Longrightarrow> D.at a (Curry.curry ?L' (Curry.uncurry D) \<chi>'.map) = ?\<chi> a"
        proof -
          fix a
@@ -5638,10 +5638,10 @@ $$\xymatrix{
 
   section "The Yoneda Functor Preserves Limits"
 
-  text{*
-    In this section, we show that the Yoneda functor from @{text C} to @{text "[Cop, S]"}
+  text\<open>
+    In this section, we show that the Yoneda functor from \<open>C\<close> to \<open>[Cop, S]\<close>
     preserves limits.
-  *}
+\<close>
 
   context yoneda_functor
   begin
@@ -5651,13 +5651,13 @@ $$\xymatrix{
     assumes "diagram J C D" and "diagram.has_as_limit J C D a"
     shows "diagram.has_as_limit J Cop_S.comp (map o D) (map a)"
     proof -
-      text{*
+      text\<open>
         The basic idea of the proof is as follows:
-        If @{text \<chi>} is a limit cone in @{text C}, then for every object @{text a'}
-        of @{text Cop} the evaluation of @{text "Y o \<chi>"} at @{text a'} is a limit cone
-        in @{text S}.  By the results on limits in functor categories,
-        this implies that @{text "Y o \<chi>"} is a limit cone in @{text "[Cop, S]"}.
-      *}
+        If \<open>\<chi>\<close> is a limit cone in \<open>C\<close>, then for every object \<open>a'\<close>
+        of \<open>Cop\<close> the evaluation of \<open>Y o \<chi>\<close> at \<open>a'\<close> is a limit cone
+        in \<open>S\<close>.  By the results on limits in functor categories,
+        this implies that \<open>Y o \<chi>\<close> is a limit cone in \<open>[Cop, S]\<close>.
+\<close>
       interpret J: category J using assms(1) diagram_def by auto
       interpret D: diagram J C D using assms(1) by auto
       from assms(2) obtain \<chi> where \<chi>: "D.limit_cone a \<chi>" by blast
@@ -5710,14 +5710,14 @@ $$\xymatrix{
           assume \<sigma>: "YoD_a'.cone x \<sigma>"
           interpret \<sigma>: cone J S "YoD.at a' (map o D)" x \<sigma> using \<sigma> by auto
           have x: "S.ide x" using \<sigma>.ide_apex by simp
-          text{*
-            For each object @{text j} of @{text J}, the component @{text "\<sigma> j"}
-            is an arrow in @{text "S.hom x (Hom.map (a', D j))"}.
-            Each element @{text "e \<in> S.set x"} therefore determines an arrow
-            @{text "\<psi> (a', D j) (S.Fun (\<sigma> j) e) \<in> C.hom a' (D j)"}.
-            These arrows are the components of a cone @{text "\<kappa> e"} over @{term D}
+          text\<open>
+            For each object \<open>j\<close> of \<open>J\<close>, the component \<open>\<sigma> j\<close>
+            is an arrow in \<open>S.hom x (Hom.map (a', D j))\<close>.
+            Each element \<open>e \<in> S.set x\<close> therefore determines an arrow
+            \<open>\<psi> (a', D j) (S.Fun (\<sigma> j) e) \<in> C.hom a' (D j)\<close>.
+            These arrows are the components of a cone \<open>\<kappa> e\<close> over @{term D}
             with apex @{term a'}.
-          *}
+\<close>
           have \<sigma>j: "\<And>j. J.ide j \<Longrightarrow> \<guillemotleft>\<sigma> j : x \<rightarrow>\<^sub>S Hom.map (a', D j)\<guillemotright>"
             using eval_at_ide \<sigma>.preserves_hom J.ide_in_hom by force
           have \<kappa>: "\<And>e. e \<in> S.set x \<Longrightarrow>
@@ -5828,19 +5828,19 @@ $$\xymatrix{
               using e \<kappa> by blast
             show "D.cone a' (?\<kappa> e)" ..
           qed
-          text{*
-            Since @{text "\<kappa> e"} is a cone for each element @{text e} of @{text "S.set x"},
-            by the universal property of the limit cone @{text \<chi>} there is a unique arrow
-            @{text "fe \<in> C.hom a' a"} that transforms @{text \<chi>} to @{text "\<kappa> e"}.
-          *}
+          text\<open>
+            Since \<open>\<kappa> e\<close> is a cone for each element \<open>e\<close> of \<open>S.set x\<close>,
+            by the universal property of the limit cone \<open>\<chi>\<close> there is a unique arrow
+            \<open>fe \<in> C.hom a' a\<close> that transforms \<open>\<chi>\<close> to \<open>\<kappa> e\<close>.
+\<close>
           have ex_fe: "\<And>e. e \<in> S.set x \<Longrightarrow> \<exists>!fe. \<guillemotleft>fe : a' \<rightarrow> a\<guillemotright> \<and> D.cones_map fe \<chi> = ?\<kappa> e"
             using cone_\<kappa>e \<chi>.is_universal by simp
-          text{*
-            The map taking @{text "e \<in> S.set x"} to @{text "fe \<in> C.hom a' a"}
-            determines an arrow @{text "f \<in> S.hom x (Hom (a', a))"} that
-            transforms the cone obtained by evaluating @{text "Y o \<chi>"} at @{text a'}
-            to the cone @{text \<sigma>}.
-          *}
+          text\<open>
+            The map taking \<open>e \<in> S.set x\<close> to \<open>fe \<in> C.hom a' a\<close>
+            determines an arrow \<open>f \<in> S.hom x (Hom (a', a))\<close> that
+            transforms the cone obtained by evaluating \<open>Y o \<chi>\<close> at \<open>a'\<close>
+            to the cone \<open>\<sigma>\<close>.
+\<close>
           let ?f = "S.mkArr (S.set x) (Hom.set (a', a))
                             (\<lambda>e. \<phi> (a', a) (\<chi>.induced_arrow a' (?\<kappa> e)))"
           have 0: "(\<lambda>e. \<phi> (a', a) (\<chi>.induced_arrow a' (?\<kappa> e))) \<in> S.set x \<rightarrow> Hom.set (a', a)"
@@ -5948,12 +5948,12 @@ $$\xymatrix{
           hence ff: "?f \<in> S.hom x (Hom.map (a', a)) \<and>
                      YoD_a'.cones_map ?f (YoD.at a' (map o \<chi>)) = \<sigma>"
             using f by auto
-          text{*
-            Any other arrow @{text "f' \<in> S.hom x (Hom.map (a', a))"} that
-            transforms the cone obtained by evaluating @{text "Y o \<chi>"} at @{term a'}
-            to the cone @{term \<sigma>}, must equal @{text f}, showing that @{text f}
+          text\<open>
+            Any other arrow \<open>f' \<in> S.hom x (Hom.map (a', a))\<close> that
+            transforms the cone obtained by evaluating \<open>Y o \<chi>\<close> at @{term a'}
+            to the cone @{term \<sigma>}, must equal \<open>f\<close>, showing that \<open>f\<close>
             is unique.
-          *}
+\<close>
           moreover have "\<And>f'. \<guillemotleft>f' : x \<rightarrow>\<^sub>S Hom.map (a', a)\<guillemotright> \<and>
                               YoD_a'.cones_map f' (YoD.at a' (map o \<chi>)) = \<sigma>
                                 \<Longrightarrow> f' = ?f"

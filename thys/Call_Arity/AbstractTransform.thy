@@ -68,7 +68,7 @@ next
   have "a' = a" and  "Lam [x]. e = Lam [x']. e'" by simp_all
   from this(2)
   show ?case
-  unfolding `a' = a`
+  unfolding \<open>a' = a\<close>
   proof(rule eqvt_lam_case)
     fix \<pi> :: perm
 
@@ -108,7 +108,7 @@ next
   have "a' = a" and  "Terms.Let as body = Terms.Let as' body'" by simp_all
   from this(2)
   show ?case
-  unfolding `a' = a`
+  unfolding \<open>a' = a\<close>
   proof (rule eqvt_let_case)
     have "supp (TransLet (AnalLet as body a) (map_transform (\<lambda>x0 x1. transform_sumC (x0, x1)) (PropLetHeap (AnalLet as body a)) as) (transform_sumC (PropLetBody (AnalLet as body a), body))) \<subseteq> supp (Let as body)"
       by (auto simp add: Let_supp supp_Pair pure_supp exp_assn.fsupp

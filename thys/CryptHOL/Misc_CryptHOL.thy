@@ -273,7 +273,7 @@ lemma option_rel_map_restrict_relp:
   "rel_option (R \<upharpoonleft> P \<otimes> Q) x (map_option g y) = rel_option ((\<lambda>x. R x \<circ> g) \<upharpoonleft> P \<otimes> Q \<circ> g) x y"
 by(simp_all add: option.rel_map restrict_relp_def fun_eq_iff)
 
-subsubsection {* Orders on option *}
+subsubsection \<open>Orders on option\<close>
 
 abbreviation le_option :: "'a option \<Rightarrow> 'a option \<Rightarrow> bool"
 where "le_option \<equiv> ord_option (=)"
@@ -339,7 +339,7 @@ lemma in_set_assert_option [simp]: "x \<in> set_option (assert_option b) \<longl
 by(cases b) simp_all
 
 
-subsubsection {* Join on options *}
+subsubsection \<open>Join on options\<close>
 
 definition join_option :: "'a option option \<Rightarrow> 'a option"
 where "join_option x = (case x of Some y \<Rightarrow> y | None \<Rightarrow> None)"
@@ -464,7 +464,7 @@ proof
 qed simp
 
 text \<open>
-  We need a polymorphic constant for the empty map such that @{text "transfer_prover"}
+  We need a polymorphic constant for the empty map such that \<open>transfer_prover\<close>
   can use a custom transfer rule for @{const Map.empty}
 \<close>
 definition Map_empty where [simp]: "Map_empty \<equiv> Map.empty"
@@ -479,7 +479,7 @@ lemma map_eqI: "\<forall>x\<in>dom m \<union> dom m'. m x = m' x \<Longrightarro
 by(auto simp add: fun_eq_iff domIff intro: option.expand)
 
 
-subsection {* Countable *}
+subsection \<open>Countable\<close>
 
 lemma countable_lfp:
   assumes step: "\<And>Y. countable Y \<Longrightarrow> countable (F Y)"
@@ -784,7 +784,7 @@ by linarith
 lemma (in linordered_semidom) mult_right_le: "c \<le> 1 \<Longrightarrow> 0 \<le> a \<Longrightarrow> c * a \<le> a"
 by(subst mult.commute)(rule mult_left_le)
 
-subsection \<open>Chain-complete partial orders and @{text partial_function}\<close>
+subsection \<open>Chain-complete partial orders and \<open>partial_function\<close>\<close>
 
 lemma fun_ordD: "fun_ord ord f g \<Longrightarrow> ord (f x) (g x)"
 by(simp add: fun_ord_def)
@@ -1160,7 +1160,7 @@ lemma disjointpD':
   "\<lbrakk> disjointp xs; P x; Q x; xs ! n = P; xs ! m = Q; n < length xs; m < length xs \<rbrakk> \<Longrightarrow> n = m"
 by(auto 4 3 simp add: disjointp_def disjoint_family_on_def)
 
-subsubsection {* List of a given length *}
+subsubsection \<open>List of a given length\<close>
 
 inductive_set nlists :: "'a set \<Rightarrow> nat \<Rightarrow> 'a list set" for A n
 where nlists: "\<lbrakk> set xs \<subseteq> A; length xs = n \<rbrakk> \<Longrightarrow> xs \<in> nlists A n"
@@ -1323,7 +1323,7 @@ lemma run_bind_option_envT [simp]:
 by(cases x) simp_all
 
 
-subsection {* Measures *}
+subsection \<open>Measures\<close>
 
 declare sets_restrict_space_count_space [measurable_cong]
 
@@ -1340,7 +1340,7 @@ lemma measurable_snd_count_space [measurable]:
   "A \<subseteq> B \<Longrightarrow> snd \<in> measurable (M1 \<Otimes>\<^sub>M count_space A) (count_space B)"
 by(auto simp add: measurable_def space_pair_measure snd_vimage_eq_Times times_Int_times)
 
-subsection {* Sequence space *}
+subsection \<open>Sequence space\<close>
 
 lemma (in sequence_space) nn_integral_split:
   assumes f[measurable]: "f \<in> borel_measurable S"
@@ -1359,7 +1359,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Probability mass functions *}
+subsection \<open>Probability mass functions\<close>
 
 lemma measure_map_pmf_conv_distr:
   "measure_pmf (map_pmf f p) = distr (measure_pmf p) (count_space UNIV) f"

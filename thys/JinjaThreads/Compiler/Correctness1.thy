@@ -4,7 +4,7 @@
     reminiscent of the Jinja theory Compiler/Correctness1
 *)
 
-section {* Semantic Correctness of Stage 1 *}
+section \<open>Semantic Correctness of Stage 1\<close>
 
 theory Correctness1 imports
   J0J1Bisim
@@ -63,7 +63,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Correctness proof *}
+subsection \<open>Correctness proof\<close>
 
 locale J0_J1_heap_base =
   J?: J_heap_base +
@@ -374,22 +374,22 @@ lemma assumes wf: "wf_J_prog P"
   (is "\<lbrakk> _; _; _; _; _; ?synths es1 S \<rbrakk> \<Longrightarrow> ?concls es1 es2 S XS es1' S' TA vs")
 proof(induct arbitrary: vs e2 XS and vs es2 XS rule: red_reds.inducts)
   case (BinOpRed1 e s ta e' s' bop e2 Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs (e \<guillemotleft>bop\<guillemotright> e2) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs (e \<guillemotleft>bop\<guillemotright> e2) E2 xs\<close> obtain E
     where "E2 = E \<guillemotleft>bop\<guillemotright> compE1 Vs e2" and "bisim Vs e E xs" and "\<not> contains_insync e2" by auto
-  with IH[of Vs E xs] `fv (e \<guillemotleft>bop\<guillemotright> e2) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val e`
-    `length Vs + max_vars (e \<guillemotleft>bop\<guillemotright> e2) \<le> length xs` `?synth (e \<guillemotleft>bop\<guillemotright> e2) s` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+  with IH[of Vs E xs] \<open>fv (e \<guillemotleft>bop\<guillemotright> e2) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val e\<close>
+    \<open>length Vs + max_vars (e \<guillemotleft>bop\<guillemotright> e2) \<le> length xs\<close> \<open>?synth (e \<guillemotleft>bop\<guillemotright> e2) s\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
   show ?case by(cases "is_val e'")(fastforce elim!: sim_move01_expr)+
 next
   case (BinOpRed2 e s ta e' s' v bop Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `bisim Vs (Val v \<guillemotleft>bop\<guillemotright> e) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>bisim Vs (Val v \<guillemotleft>bop\<guillemotright> e) E2 xs\<close> obtain E
     where "E2 = Val v \<guillemotleft>bop\<guillemotright> E" and "bisim Vs e E xs" by auto
-  with IH[of Vs E xs] `fv (Val v \<guillemotleft>bop\<guillemotright> e) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-    `length Vs + max_vars (Val v \<guillemotleft>bop\<guillemotright> e) \<le> length xs` `?synth (Val v \<guillemotleft>bop\<guillemotright> e) s` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+  with IH[of Vs E xs] \<open>fv (Val v \<guillemotleft>bop\<guillemotright> e) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+    \<open>length Vs + max_vars (Val v \<guillemotleft>bop\<guillemotright> e) \<le> length xs\<close> \<open>?synth (Val v \<guillemotleft>bop\<guillemotright> e) s\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
   show ?case by(fastforce elim!: sim_move01_expr)
 next
   case RedVar thus ?case
@@ -399,35 +399,35 @@ next
     by(fastforce intro: index_less_aux LAss_lem intro!: exI simp del: fun_upd_apply)
 next
   case (AAccRed1 a s ta a' s' i Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs a e2 XS; fv a \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars a \<le> length XS;
-            ?synth a s \<rbrakk> \<Longrightarrow> ?concl a e2 s XS a' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>` have "\<not> is_val a" by auto
-  with `bisim Vs (a\<lfloor>i\<rceil>) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs a e2 XS; fv a \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars a \<le> length XS;
+            ?synth a s \<rbrakk> \<Longrightarrow> ?concl a e2 s XS a' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close> have "\<not> is_val a" by auto
+  with \<open>bisim Vs (a\<lfloor>i\<rceil>) E2 xs\<close> obtain E
     where "E2 = E\<lfloor>compE1 Vs i\<rceil>" and "bisim Vs a E xs" and "\<not> contains_insync i" by auto
-  with IH[of Vs E xs] `fv (a\<lfloor>i\<rceil>) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val a`
-    `length Vs + max_vars (a\<lfloor>i\<rceil>) \<le> length xs` `?synth (a\<lfloor>i\<rceil>) s` `extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>`
+  with IH[of Vs E xs] \<open>fv (a\<lfloor>i\<rceil>) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val a\<close>
+    \<open>length Vs + max_vars (a\<lfloor>i\<rceil>) \<le> length xs\<close> \<open>?synth (a\<lfloor>i\<rceil>) s\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close>
   show ?case by(cases "is_val a'")(fastforce elim!: sim_move01_expr)+
 next
   case (AAccRed2 i s ta i' s' a Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs i e2 XS; fv i \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars i \<le> length XS;
-            ?synth i s \<rbrakk> \<Longrightarrow> ?concl i e2 s XS i' s' ta vs`
-  from `bisim Vs (Val a\<lfloor>i\<rceil>) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs i e2 XS; fv i \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars i \<le> length XS;
+            ?synth i s \<rbrakk> \<Longrightarrow> ?concl i e2 s XS i' s' ta vs\<close>
+  from \<open>bisim Vs (Val a\<lfloor>i\<rceil>) E2 xs\<close> obtain E
     where "E2 = Val a\<lfloor>E\<rceil>" and "bisim Vs i E xs" by auto
-  with IH[of Vs E xs] `fv (Val a\<lfloor>i\<rceil>) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-    `length Vs + max_vars (Val a\<lfloor>i\<rceil>) \<le> length xs` `?synth (Val a\<lfloor>i\<rceil>) s` `extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>`
+  with IH[of Vs E xs] \<open>fv (Val a\<lfloor>i\<rceil>) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+    \<open>length Vs + max_vars (Val a\<lfloor>i\<rceil>) \<le> length xs\<close> \<open>?synth (Val a\<lfloor>i\<rceil>) s\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>\<close>
   show ?case by(fastforce elim!: sim_move01_expr)
 next
   case RedAAcc thus ?case by(auto simp del: split_paired_Ex)
 next
   case (AAssRed1 a s ta a' s' i e Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs a e2 XS; fv a \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars a \<le> length XS;
-            ?synth a s \<rbrakk> \<Longrightarrow> ?concl a e2 s XS a' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>` have "\<not> is_val a" by auto
-  with `bisim Vs (a\<lfloor>i\<rceil>:=e) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs a e2 XS; fv a \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars a \<le> length XS;
+            ?synth a s \<rbrakk> \<Longrightarrow> ?concl a e2 s XS a' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close> have "\<not> is_val a" by auto
+  with \<open>bisim Vs (a\<lfloor>i\<rceil>:=e) E2 xs\<close> obtain E
     where E2: "E2 = E\<lfloor>compE1 Vs i\<rceil>:=compE1 Vs e" and "bisim Vs a E xs"
     and sync: "\<not> contains_insync i" "\<not> contains_insync e" by auto
-  with IH[of Vs E xs] `fv (a\<lfloor>i\<rceil>:=e) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val a` `extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>`
-    `length Vs + max_vars (a\<lfloor>i\<rceil>:=e) \<le> length xs` `?synth (a\<lfloor>i\<rceil>:=e) s`
+  with IH[of Vs E xs] \<open>fv (a\<lfloor>i\<rceil>:=e) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val a\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close>
+    \<open>length Vs + max_vars (a\<lfloor>i\<rceil>:=e) \<le> length xs\<close> \<open>?synth (a\<lfloor>i\<rceil>:=e) s\<close>
   obtain ta' e2' xs'
     where IH': "sim_move01 (compP1 P) t ta a E (hp s) xs ta' e2' (hp s') xs'"
     "bisim Vs a' e2' xs'" "lcl s' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
@@ -435,64 +435,64 @@ next
   show ?case
   proof(cases "is_val a'")
     case True
-    from `fv (a\<lfloor>i\<rceil>:=e) \<subseteq> set Vs` sync
+    from \<open>fv (a\<lfloor>i\<rceil>:=e) \<subseteq> set Vs\<close> sync
     have "bisim Vs i (compE1 Vs i) xs'" "bisim Vs e (compE1 Vs e) xs'" by auto
-    with IH' E2 True sync  `\<not> is_val a` `extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>` show ?thesis
+    with IH' E2 True sync  \<open>\<not> is_val a\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close> show ?thesis
       by(cases "is_val i")(fastforce elim!: sim_move01_expr)+
   next
-    case False with IH' E2 sync `\<not> is_val a` `extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>`
+    case False with IH' E2 sync \<open>\<not> is_val a\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close>
     show ?thesis by(fastforce elim!: sim_move01_expr)
   qed
 next
   case (AAssRed2 i s ta i' s' a e Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs i e2 XS; fv i \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars i \<le> length XS;
-            ?synth i s \<rbrakk> \<Longrightarrow> ?concl i e2 s XS i' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>` have "\<not> is_val i" by auto
-  with `bisim Vs (Val a\<lfloor>i\<rceil> := e) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs i e2 XS; fv i \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars i \<le> length XS;
+            ?synth i s \<rbrakk> \<Longrightarrow> ?concl i e2 s XS i' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>\<close> have "\<not> is_val i" by auto
+  with \<open>bisim Vs (Val a\<lfloor>i\<rceil> := e) E2 xs\<close> obtain E
     where "E2 = Val a\<lfloor>E\<rceil>:=compE1 Vs e" and "bisim Vs i E xs" and "\<not> contains_insync e" by auto
-  with IH[of Vs E xs] `fv (Val a\<lfloor>i\<rceil>:=e) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val i` `extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>`
-    `length Vs + max_vars (Val a\<lfloor>i\<rceil>:=e) \<le> length xs` `?synth (Val a\<lfloor>i\<rceil>:=e) s`
+  with IH[of Vs E xs] \<open>fv (Val a\<lfloor>i\<rceil>:=e) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val i\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>\<close>
+    \<open>length Vs + max_vars (Val a\<lfloor>i\<rceil>:=e) \<le> length xs\<close> \<open>?synth (Val a\<lfloor>i\<rceil>:=e) s\<close>
   show ?case by(cases "is_val i'")(fastforce elim!: sim_move01_expr)+
 next
   case (AAssRed3 e s ta e' s' a i Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `bisim Vs (Val a\<lfloor>Val i\<rceil> := e) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>bisim Vs (Val a\<lfloor>Val i\<rceil> := e) E2 xs\<close> obtain E
     where "E2 = Val a\<lfloor>Val i\<rceil>:=E" and "bisim Vs e E xs" by auto
-  with IH[of Vs E xs] `fv (Val a\<lfloor>Val i\<rceil>:=e) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_vars (Val a\<lfloor>Val i\<rceil>:=e) \<le> length xs` `?synth (Val a\<lfloor>Val i\<rceil>:=e) s`
+  with IH[of Vs E xs] \<open>fv (Val a\<lfloor>Val i\<rceil>:=e) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_vars (Val a\<lfloor>Val i\<rceil>:=e) \<le> length xs\<close> \<open>?synth (Val a\<lfloor>Val i\<rceil>:=e) s\<close>
   show ?case by(fastforce elim!: sim_move01_expr)
 next
   case RedAAssStore thus ?case by(auto intro!: exI)
 next
   case (FAssRed1 e s ta e' s' F D e2 Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs (e\<bullet>F{D} := e2) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs (e\<bullet>F{D} := e2) E2 xs\<close> obtain E
     where "E2 = E\<bullet>F{D} := compE1 Vs e2" and "bisim Vs e E xs" and "\<not> contains_insync e2" by auto
-  with IH[of Vs E xs] `fv (e\<bullet>F{D} := e2) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val e` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_vars (e\<bullet>F{D} := e2) \<le> length xs` `?synth (e\<bullet>F{D} := e2) s`
+  with IH[of Vs E xs] \<open>fv (e\<bullet>F{D} := e2) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val e\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_vars (e\<bullet>F{D} := e2) \<le> length xs\<close> \<open>?synth (e\<bullet>F{D} := e2) s\<close>
   show ?case by(cases "is_val e'")(fastforce elim!: sim_move01_expr)+
 next
   case (FAssRed2 e s ta e' s' v F D Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `bisim Vs (Val v\<bullet>F{D} := e) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>bisim Vs (Val v\<bullet>F{D} := e) E2 xs\<close> obtain E
     where "E2 = Val v\<bullet>F{D} := E" and "bisim Vs e E xs" by auto
-  with IH[of Vs E xs] `fv (Val v\<bullet>F{D} := e) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_vars (Val v\<bullet>F{D} := e) \<le> length xs` `?synth (Val v\<bullet>F{D} := e) s`
+  with IH[of Vs E xs] \<open>fv (Val v\<bullet>F{D} := e) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_vars (Val v\<bullet>F{D} := e) \<le> length xs\<close> \<open>?synth (Val v\<bullet>F{D} := e) s\<close>
   show ?case by(fastforce elim!: sim_move01_expr)
 next
   case (CASRed1 e s ta e' s' D F e2 e3 Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs _ E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs _ E2 xs\<close> obtain E
     where E2: "E2 = E\<bullet>compareAndSwap(D\<bullet>F, compE1 Vs e2, compE1 Vs e3)" and "bisim Vs e E xs"
     and sync: "\<not> contains_insync e2" "\<not> contains_insync e3" by(auto)
-  with IH[of Vs E xs] `fv _ \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val e` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_vars _ \<le> length xs` `?synth _ s`
+  with IH[of Vs E xs] \<open>fv _ \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val e\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_vars _ \<le> length xs\<close> \<open>?synth _ s\<close>
   obtain ta' e2' xs'
     where IH': "sim_move01 (compP1 P) t ta e E (hp s) xs ta' e2' (hp s') xs'"
     "bisim Vs e' e2' xs'" "lcl s' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
@@ -500,108 +500,108 @@ next
   show ?case
   proof(cases "is_val e'")
     case True
-    from `fv _ \<subseteq> set Vs` sync
+    from \<open>fv _ \<subseteq> set Vs\<close> sync
     have "bisim Vs e2 (compE1 Vs e2) xs'" "bisim Vs e3 (compE1 Vs e3) xs'" by auto
-    with IH' E2 True sync  `\<not> is_val e` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` show ?thesis
+    with IH' E2 True sync  \<open>\<not> is_val e\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> show ?thesis
       by(cases "is_val e2")(fastforce elim!: sim_move01_expr)+
   next
-    case False with IH' E2 sync `\<not> is_val e` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+    case False with IH' E2 sync \<open>\<not> is_val e\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
     show ?thesis by(fastforce elim!: sim_move01_expr)
   qed
 next
   case (CASRed2 e s ta e' s' v D F e3 Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs _ E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs _ E2 xs\<close> obtain E
     where "E2 = Val v\<bullet>compareAndSwap(D\<bullet>F, E, compE1 Vs e3)" and "bisim Vs e E xs" and "\<not> contains_insync e3" by(auto)
-  with IH[of Vs E xs] `fv _ \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `\<not> is_val e` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_vars _ \<le> length xs` `?synth _ s`
+  with IH[of Vs E xs] \<open>fv _ \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>\<not> is_val e\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_vars _ \<le> length xs\<close> \<open>?synth _ s\<close>
   show ?case by(cases "is_val e'")(fastforce elim!: sim_move01_expr)+
 next
   case (CASRed3 e s ta e' s' v D F v' Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `bisim Vs _ E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>bisim Vs _ E2 xs\<close> obtain E
     where "E2 = Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E)" and "bisim Vs e E xs" by auto
-  with IH[of Vs E xs] `fv _ \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_vars _ \<le> length xs` `?synth _ s`
+  with IH[of Vs E xs] \<open>fv _ \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_vars _ \<le> length xs\<close> \<open>?synth _ s\<close>
   show ?case by(fastforce elim!: sim_move01_expr)
 next
   case (CallObj e s ta e' s' M es Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs (e\<bullet>M(es)) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs (e\<bullet>M(es)) E2 xs\<close> obtain E
     where "E2 = E\<bullet>M(compEs1 Vs es)" and "bisim Vs e E xs" and "\<not> contains_insyncs es"
     by(auto simp add: compEs1_conv_map)
-  with IH[of Vs E xs] `fv (e\<bullet>M(es)) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-    `length Vs + max_vars (e\<bullet>M(es)) \<le> length xs` `?synth (e\<bullet>M(es)) s`
+  with IH[of Vs E xs] \<open>fv (e\<bullet>M(es)) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+    \<open>length Vs + max_vars (e\<bullet>M(es)) \<le> length xs\<close> \<open>?synth (e\<bullet>M(es)) s\<close>
   show ?case by(cases "is_val e'")(fastforce elim!: sim_move01_expr split: if_split_asm)+
 next
   case (CallParams es s ta es' s' v M Vs E2 xs)
-  note IH = `\<And>vs es2 XS. \<lbrakk>bisims vs es es2 XS; fvs es \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_varss es \<le> length XS;
-            ?synths es s \<rbrakk> \<Longrightarrow> ?concls es es2 s XS es' s' ta vs`
-  from `bisim Vs (Val v\<bullet>M(es)) E2 xs` obtain Es 
+  note IH = \<open>\<And>vs es2 XS. \<lbrakk>bisims vs es es2 XS; fvs es \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_varss es \<le> length XS;
+            ?synths es s \<rbrakk> \<Longrightarrow> ?concls es es2 s XS es' s' ta vs\<close>
+  from \<open>bisim Vs (Val v\<bullet>M(es)) E2 xs\<close> obtain Es 
     where "E2 = Val v\<bullet>M(Es)" and "bisims Vs es Es xs" by auto
-  moreover from `extTA2J0 P,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>` have "\<not> is_vals es" by auto
-  with `?synth (Val v\<bullet>M(es)) s` have "?synths es s" by(auto)
-  moreover note IH[of Vs Es xs] `fv (Val v\<bullet>M(es)) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` 
-    `length Vs + max_vars (Val v\<bullet>M(es)) \<le> length xs`
+  moreover from \<open>extTA2J0 P,P,t \<turnstile> \<langle>es,s\<rangle> [-ta\<rightarrow>] \<langle>es',s'\<rangle>\<close> have "\<not> is_vals es" by auto
+  with \<open>?synth (Val v\<bullet>M(es)) s\<close> have "?synths es s" by(auto)
+  moreover note IH[of Vs Es xs] \<open>fv (Val v\<bullet>M(es)) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> 
+    \<open>length Vs + max_vars (Val v\<bullet>M(es)) \<le> length xs\<close>
   ultimately show ?case by(fastforce elim!: sim_move01_CallParams)
 next
   case (RedCall s a U M Ts T pns body D vs Vs E2 xs)
-  from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>`
+  from \<open>typeof_addr (hp s) a = \<lfloor>U\<rfloor>\<close>
   have "call (addr a\<bullet>M(map Val vs)) = \<lfloor>(a, M, vs)\<rfloor>" by auto
-  with `?synth (addr a\<bullet>M(map Val vs)) s` have "synthesized_call P (hp s) (a, M, vs)" by auto
-  with `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
+  with \<open>?synth (addr a\<bullet>M(map Val vs)) s\<close> have "synthesized_call P (hp s) (a, M, vs)" by auto
+  with \<open>typeof_addr (hp s) a = \<lfloor>U\<rfloor>\<close> \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D\<close>
   have False by(auto simp add: synthesized_call_conv dest: sees_method_fun)
   thus ?case ..
 next
   case (RedCallExternal s a T M Ts Tr D vs ta va h' ta' e' s' Vs E2 xs)
-  from `bisim Vs (addr a\<bullet>M(map Val vs)) E2 xs` have "E2 = addr a\<bullet>M(map Val vs)" by auto
-  moreover note `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D` `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `ta' = extTA2J0 P ta`
-    `e' = extRet2J (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)` `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
-    `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-  moreover from wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
+  from \<open>bisim Vs (addr a\<bullet>M(map Val vs)) E2 xs\<close> have "E2 = addr a\<bullet>M(map Val vs)" by auto
+  moreover note \<open>P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D\<close> \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close> \<open>ta' = extTA2J0 P ta\<close>
+    \<open>e' = extRet2J (addr a\<bullet>M(map Val vs)) va\<close> \<open>s' = (h', lcl s)\<close> \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
+    \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+  moreover from wf \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
   have "ta_bisim01 (extTA2J0 P ta) (extTA2J1 (compP1 P) ta)" by(rule red_external_ta_bisim01)
-  moreover from `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
-    `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D`
+  moreover from \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close> \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close>
+    \<open>P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D\<close>
   have "\<tau>external_defs D M \<Longrightarrow> h' = hp s \<and> ta = \<epsilon>"
     by(fastforce dest: \<tau>external'_red_external_heap_unchanged \<tau>external'_red_external_TA_empty simp add: \<tau>external'_def \<tau>external_def)
   ultimately show ?case 
     by(cases va)(fastforce intro!: exI[where x=ta] intro: Red1CallExternal simp add: map_eq_append_conv sim_move01_def dest: sees_method_fun simp del: split_paired_Ex)+
 next
   case (BlockRed e h x V vo ta e' h' x' T Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl (h, x(V := vo)) \<subseteq>\<^sub>m [vs [\<mapsto>] XS];
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl (h, x(V := vo)) \<subseteq>\<^sub>m [vs [\<mapsto>] XS];
                          length vs + max_vars e \<le> length XS; ?synth e (h, (x(V := vo)))\<rbrakk>
-            \<Longrightarrow> ?concl e e2 (h, x(V := vo)) XS e' (h', x') ta vs`
-  note red = `extTA2J0 P,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
-  note len = `length Vs + max_vars {V:T=vo; e} \<le> length xs`
-  from `fv {V:T=vo; e} \<subseteq> set Vs` have fv: "fv e \<subseteq> set (Vs@[V])" by auto
-  from `bisim Vs {V:T=vo; e} E2 xs` show ?case
+            \<Longrightarrow> ?concl e e2 (h, x(V := vo)) XS e' (h', x') ta vs\<close>
+  note red = \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>
+  note len = \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
+  from \<open>fv {V:T=vo; e} \<subseteq> set Vs\<close> have fv: "fv e \<subseteq> set (Vs@[V])" by auto
+  from \<open>bisim Vs {V:T=vo; e} E2 xs\<close> show ?case
   proof(cases rule: bisim_cases(7)[consumes 1, case_names BlockNone BlockSome BlockSomeNone])
     case (BlockNone E')
-    with red IH[of "Vs@[V]" E' xs] fv `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-      `length Vs + max_vars {V:T=vo; e} \<le> length xs` `?synth {V:T=vo; e} (h, x)`
+    with red IH[of "Vs@[V]" E' xs] fv \<open>lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+      \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>?synth {V:T=vo; e} (h, x)\<close>
     obtain TA' e2' xs' where red': "sim_move01 (compP1 P) t ta e E' h xs TA' e2' h' xs'"
       and bisim': "bisim (Vs @ [V]) e' e2' xs'" "x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']" by auto 
-    from red' `length Vs + max_vars {V:T=vo; e} \<le> length xs`
+    from red' \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
     have "length (Vs@[V]) + max_vars e \<le> length xs'"
       by(fastforce simp add: sim_move01_def dest: red1_preserves_len \<tau>red1t_preserves_len \<tau>red1r_preserves_len split: if_split_asm)
-    with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs', V \<mapsto> xs' ! length Vs]" by(simp)
+    with \<open>x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']\<close> have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs', V \<mapsto> xs' ! length Vs]" by(simp)
     moreover 
     { assume "V \<in> set Vs"
       hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
-      with `bisim (Vs @ [V]) e E' xs` have "unmod E' (index Vs V)"
+      with \<open>bisim (Vs @ [V]) e E' xs\<close> have "unmod E' (index Vs V)"
         by -(rule hidden_bisim_unmod)
-      moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>V \<in> set Vs\<close>
       have "index Vs V < length xs" by(auto intro: index_less_aux)
       ultimately have "xs ! index Vs V = xs' ! index Vs V"
         using sim_move01_preserves_unmod[OF red'] by(simp) }
     moreover from red' have "length xs = length xs'" by(rule sim_move01_preserves_len[symmetric])
     ultimately have rel: "x'(V := x V) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
-      using `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `length Vs + max_vars {V:T=vo; e} \<le> length xs`
+      using \<open>lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
       by(auto intro: Block_lem)
     show ?thesis
     proof(cases "x' V")
@@ -611,87 +611,87 @@ next
     next
       case (Some v)
       moreover
-      with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v\<rfloor>"
+      with \<open>x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']\<close> have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v\<rfloor>"
         by(auto simp add: map_le_def dest: bspec)
       moreover
-      from `length Vs + max_vars {V:T=vo; e} \<le> length xs` have "length Vs < length xs" by auto
-      ultimately have "xs' ! length Vs = v" using `length xs = length xs'` by(simp)
+      from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> have "length Vs < length xs" by auto
+      ultimately have "xs' ! length Vs = v" using \<open>length xs = length xs'\<close> by(simp)
       with red' bisim' BlockNone Some len
       show ?thesis by(fastforce simp del: fun_upd_apply intro: rel)
     qed
   next
     case (BlockSome E' v)
-    with red IH[of "Vs@[V]" E' "xs[length Vs := v]"] fv `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-      `length Vs + max_vars {V:T=vo; e} \<le> length xs` `?synth {V:T=vo; e} (h, x)`
+    with red IH[of "Vs@[V]" E' "xs[length Vs := v]"] fv \<open>lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+      \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>?synth {V:T=vo; e} (h, x)\<close>
     obtain TA' e2' xs' where red': "sim_move01 (compP1 P) t ta e E' h (xs[length Vs := v]) TA' e2' h' xs'"
       and bisim': "bisim (Vs @ [V]) e' e2' xs'" "x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']" by auto
-    from red' `length Vs + max_vars {V:T=vo; e} \<le> length xs`
+    from red' \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
     have "length (Vs@[V]) + max_vars e \<le> length xs'" by(auto dest: sim_move01_preserves_len)
-    with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs', V \<mapsto> xs' ! length Vs]" by(simp)
+    with \<open>x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']\<close> have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs', V \<mapsto> xs' ! length Vs]" by(simp)
     moreover 
     { assume "V \<in> set Vs"
       hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
-      with `bisim (Vs @ [V]) e E' (xs[length Vs := v])` have "unmod E' (index Vs V)"
+      with \<open>bisim (Vs @ [V]) e E' (xs[length Vs := v])\<close> have "unmod E' (index Vs V)"
         by -(rule hidden_bisim_unmod)
-      moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>V \<in> set Vs\<close>
       have "index Vs V < length xs" by(auto intro: index_less_aux)
-      moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>V \<in> set Vs\<close>
       have "(xs[length Vs := v]) ! index Vs V = xs ! index Vs V" by(simp)
       ultimately have "xs ! index Vs V = xs' ! index Vs V"
         using sim_move01_preserves_unmod[OF red', of "index Vs V"] by(simp) }
     moreover from red' have "length xs = length xs'" by(auto dest: sim_move01_preserves_len)
     ultimately have rel: "x'(V := x V) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
-      using `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `length Vs + max_vars {V:T=vo; e} \<le> length xs`
+      using \<open>lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
       by(auto intro: Block_lem)
     from BlockSome red obtain v' where Some: "x' V = \<lfloor>v'\<rfloor>" by(auto dest!: red_lcl_incr)
-    with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v'\<rfloor>"
+    with \<open>x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']\<close> have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v'\<rfloor>"
       by(auto simp add: map_le_def dest: bspec)
     moreover
-    from `length Vs + max_vars {V:T=vo; e} \<le> length xs` have "length Vs < length xs" by auto
-    ultimately have "xs' ! length Vs = v'" using `length xs = length xs'` by(simp)
-    with red' bisim' BlockSome Some `length Vs < length xs`
+    from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> have "length Vs < length xs" by auto
+    ultimately have "xs' ! length Vs = v'" using \<open>length xs = length xs'\<close> by(simp)
+    with red' bisim' BlockSome Some \<open>length Vs < length xs\<close>
     show ?thesis by(fastforce simp del: fun_upd_apply intro: rel)
   next 
     case (BlockSomeNone E')
-    with red IH[of "Vs@[V]" E' xs] fv `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
-      `length Vs + max_vars {V:T=vo; e} \<le> length xs` `?synth {V:T=vo; e} (h, x)`
+    with red IH[of "Vs@[V]" E' xs] fv \<open>lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
+      \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>?synth {V:T=vo; e} (h, x)\<close>
     obtain TA' e2' xs' where red': "sim_move01 (compP1 P) t ta e E' h xs TA' e2' h' xs'"
       and IH': "bisim (Vs @ [V]) e' e2' xs'" "x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']" by auto
-    from red' `length Vs + max_vars {V:T=vo; e} \<le> length xs`
+    from red' \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
     have "length (Vs@[V]) + max_vars e \<le> length xs'" by(auto dest: sim_move01_preserves_len)
-    with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs', V \<mapsto> xs' ! length Vs]" by(simp)
+    with \<open>x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']\<close> have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs', V \<mapsto> xs' ! length Vs]" by(simp)
     moreover 
     { assume "V \<in> set Vs"
       hence "hidden (Vs @ [V]) (index Vs V)" by(rule hidden_index)
-      with `bisim (Vs @ [V]) e E' xs` have "unmod E' (index Vs V)"
+      with \<open>bisim (Vs @ [V]) e E' xs\<close> have "unmod E' (index Vs V)"
         by -(rule hidden_bisim_unmod)
-      moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>V \<in> set Vs\<close>
       have "index Vs V < length xs" by(auto intro: index_less_aux)
-      moreover from `length Vs + max_vars {V:T=vo; e} \<le> length xs` `V \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> \<open>V \<in> set Vs\<close>
       have "(xs[length Vs := v]) ! index Vs V = xs ! index Vs V" by(simp)
       ultimately have "xs ! index Vs V = xs' ! index Vs V"
         using sim_move01_preserves_unmod[OF red', of "index Vs V"] by(simp) }
     moreover from red' have "length xs = length xs'" by(auto dest: sim_move01_preserves_len)
     ultimately have rel: "x'(V := x V) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']"
-      using `lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `length Vs + max_vars {V:T=vo; e} \<le> length xs`
+      using \<open>lcl (h, x) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close>
       by(auto intro: Block_lem)
     from BlockSomeNone red obtain v' where Some: "x' V = \<lfloor>v'\<rfloor>" by(auto dest!: red_lcl_incr)
-    with `x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']` have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v'\<rfloor>"
+    with \<open>x' \<subseteq>\<^sub>m [Vs @ [V] [\<mapsto>] xs']\<close> have "[Vs @ [V] [\<mapsto>] xs'] V = \<lfloor>v'\<rfloor>"
       by(auto simp add: map_le_def dest: bspec)
     moreover
-    from `length Vs + max_vars {V:T=vo; e} \<le> length xs` have "length Vs < length xs" by auto
-    ultimately have "xs' ! length Vs = v'" using `length xs = length xs'` by(simp)
-    with red' IH' BlockSomeNone Some `length Vs < length xs`
+    from \<open>length Vs + max_vars {V:T=vo; e} \<le> length xs\<close> have "length Vs < length xs" by auto
+    ultimately have "xs' ! length Vs = v'" using \<open>length xs = length xs'\<close> by(simp)
+    with red' IH' BlockSomeNone Some \<open>length Vs < length xs\<close>
     show ?thesis by(fastforce simp del: fun_upd_apply intro: rel)
   qed
 next
   case (RedBlock V T vo u s Vs E2 xs)
-  from `bisim Vs {V:T=vo; Val u} E2 xs` obtain vo'
+  from \<open>bisim Vs {V:T=vo; Val u} E2 xs\<close> obtain vo'
     where [simp]: "E2 = {length Vs:T=vo'; Val u}" by auto
   from RedBlock show ?case
   proof(cases vo)
     case (Some v)
-    with `bisim Vs {V:T=vo; Val u} E2 xs`
+    with \<open>bisim Vs {V:T=vo; Val u} E2 xs\<close>
     have vo': "case vo' of None \<Rightarrow> xs ! length Vs = v | Some v' \<Rightarrow> v = v'" by auto
     have "sim_move01 (compP1 P) t \<epsilon> {V:T=vo; Val u} E2 (hp s) xs \<epsilon> (Val u) (hp s) (xs[length Vs := v])"
     proof(cases vo')
@@ -700,8 +700,8 @@ next
       thus ?thesis using Some None by auto
     next
       case Some
-      from `length Vs + max_vars {V:T=vo; Val u} \<le> length xs` have "length Vs < length xs" by simp
-      with vo' Some show ?thesis using `vo = Some v` by auto
+      from \<open>length Vs + max_vars {V:T=vo; Val u} \<le> length xs\<close> have "length Vs < length xs" by simp
+      with vo' Some show ?thesis using \<open>vo = Some v\<close> by auto
     qed
     thus ?thesis using RedBlock by fastforce
   qed fastforce
@@ -709,17 +709,17 @@ next
   case SynchronizedNull thus ?case by fastforce
 next
   case (LockSynchronized a e s Vs E2 xs)
-  from `bisim Vs (sync(addr a) e) E2 xs`
+  from \<open>bisim Vs (sync(addr a) e) E2 xs\<close>
   have E2: "E2 = sync\<^bsub>length Vs\<^esub> (addr a) (compE1 (Vs@[fresh_var Vs]) e)" 
     and sync: "\<not> contains_insync e" by auto
   moreover have "fresh_var Vs \<notin> set Vs" by(rule fresh_var_fresh)
-  with `fv (sync(addr a) e) \<subseteq> set Vs` have "fresh_var Vs \<notin> fv e" by auto
-  from E2 `fv (sync(addr a) e) \<subseteq> set Vs` sync
+  with \<open>fv (sync(addr a) e) \<subseteq> set Vs\<close> have "fresh_var Vs \<notin> fv e" by auto
+  from E2 \<open>fv (sync(addr a) e) \<subseteq> set Vs\<close> sync
   have "bisim (Vs@[fresh_var Vs]) e (compE1 (Vs@[fresh_var Vs]) e) (xs[length Vs := Addr a])"
     by(auto intro!: compE1_bisim)
   hence "bisim Vs (insync(a) e) (insync\<^bsub>length Vs\<^esub> (a) (compE1 (Vs@[fresh_var Vs]) e)) (xs[length Vs := Addr a])"
-    using `fresh_var Vs \<notin> fv e` `length Vs + max_vars (sync(addr a) e) \<le> length xs` by auto
-  moreover from `length Vs + max_vars (sync(addr a) e) \<le> length xs`
+    using \<open>fresh_var Vs \<notin> fv e\<close> \<open>length Vs + max_vars (sync(addr a) e) \<le> length xs\<close> by auto
+  moreover from \<open>length Vs + max_vars (sync(addr a) e) \<le> length xs\<close>
   have "False,compP1 P,t \<turnstile>1 \<langle>sync\<^bsub>length Vs\<^esub> (addr a) (compE1 (Vs@[fresh_var Vs]) e), (hp s, xs)\<rangle>
         -\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>\<rightarrow>
         \<langle>insync\<^bsub>length Vs\<^esub> (a) (compE1 (Vs@[fresh_var Vs]) e), (hp s, xs[length Vs := Addr a])\<rangle>"
@@ -729,21 +729,21 @@ next
   moreover have "zip Vs (xs[length Vs := Addr a]) = (zip Vs xs)[length Vs := (arbitrary, Addr a)]"
     by(rule sym)(simp add: update_zip)
   hence "zip Vs (xs[length Vs := Addr a]) = zip Vs xs" by simp
-  with `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` have "lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs[length Vs := Addr a]]"
+  with \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> have "lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs[length Vs := Addr a]]"
     by(auto simp add: map_le_def map_upds_def)
-  ultimately show ?case using `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` by fastforce
+  ultimately show ?case using \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> by fastforce
 next
   case (SynchronizedRed2 e s ta e' s' a Vs E2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `bisim Vs (insync(a) e) E2 xs` obtain E
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+            ?synth e s \<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>bisim Vs (insync(a) e) E2 xs\<close> obtain E
     where E2: "E2 = insync\<^bsub>length Vs\<^esub> (a) E" and bisim: "bisim (Vs@[fresh_var Vs]) e E xs"
     and xsa: "xs ! length Vs = Addr a" by auto
-  from `fv (insync(a) e) \<subseteq> set Vs` fresh_var_fresh[of Vs] have fv: "fresh_var Vs \<notin> fv e" by auto
-  from `length Vs + max_vars (insync(a) e) \<le> length xs` have "length Vs < length xs" by simp
+  from \<open>fv (insync(a) e) \<subseteq> set Vs\<close> fresh_var_fresh[of Vs] have fv: "fresh_var Vs \<notin> fv e" by auto
+  from \<open>length Vs + max_vars (insync(a) e) \<le> length xs\<close> have "length Vs < length xs" by simp
   { assume "lcl s (fresh_var Vs) \<noteq> None"
     then obtain v where "lcl s (fresh_var Vs) = \<lfloor>v\<rfloor>" by auto
-    with `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` have "[Vs [\<mapsto>] xs] (fresh_var Vs) = \<lfloor>v\<rfloor>" 
+    with \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> have "[Vs [\<mapsto>] xs] (fresh_var Vs) = \<lfloor>v\<rfloor>" 
       by(auto simp add: map_le_def dest: bspec)
     hence "fresh_var Vs \<in> set Vs" 
       by(auto simp add: map_upds_def set_zip dest!: map_of_SomeD )
@@ -751,49 +751,49 @@ next
     ultimately have False by contradiction }
   hence "lcl s (fresh_var Vs) = None" by(cases "lcl s (fresh_var Vs)", auto)
   hence "(lcl s)(fresh_var Vs := None) = lcl s" by(auto intro: ext)
-  moreover from `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
+  moreover from \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
   have "(lcl s)(fresh_var Vs := None) \<subseteq>\<^sub>m [Vs [\<mapsto>] xs, fresh_var Vs \<mapsto> xs ! length Vs]" by(simp)
   ultimately have "lcl s \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] xs]"
-    using `length Vs < length xs` by(auto)
-  with IH[of "Vs@[fresh_var Vs]" E xs] `fv (insync(a) e) \<subseteq> set Vs` bisim
-    `length Vs + max_vars (insync(a) e) \<le> length xs` `?synth (insync(a) e) s` 
+    using \<open>length Vs < length xs\<close> by(auto)
+  with IH[of "Vs@[fresh_var Vs]" E xs] \<open>fv (insync(a) e) \<subseteq> set Vs\<close> bisim
+    \<open>length Vs + max_vars (insync(a) e) \<le> length xs\<close> \<open>?synth (insync(a) e) s\<close> 
   obtain TA' e2' xs' where IH': "sim_move01 (compP1 P) t ta e E (hp s) xs TA' e2' (hp s') xs'"
     "bisim (Vs @ [fresh_var Vs]) e' e2' xs'" "lcl s' \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] xs']" by auto
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "dom (lcl s') \<subseteq> dom (lcl s) \<union> fv e" by(auto dest: red_dom_lcl)
-  with fv `lcl s (fresh_var Vs) = None` have "(fresh_var Vs) \<notin> dom (lcl s')" by auto
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "dom (lcl s') \<subseteq> dom (lcl s) \<union> fv e" by(auto dest: red_dom_lcl)
+  with fv \<open>lcl s (fresh_var Vs) = None\<close> have "(fresh_var Vs) \<notin> dom (lcl s')" by auto
   hence "lcl s' (fresh_var Vs) = None" by auto
   moreover from IH' have "length xs = length xs'" by(auto dest: sim_move01_preserves_len)
-  moreover note `lcl s' \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] xs']` `length Vs < length xs`
+  moreover note \<open>lcl s' \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] xs']\<close> \<open>length Vs < length xs\<close>
   ultimately have "lcl s' \<subseteq>\<^sub>m [Vs [\<mapsto>] xs']" by(auto simp add: map_le_def dest: bspec)
   moreover from bisim fv have "unmod E (length Vs)" by(auto intro: bisim_fv_unmod)
-  with IH' `length Vs < length xs` have "xs ! length Vs = xs' ! length Vs"
+  with IH' \<open>length Vs < length xs\<close> have "xs ! length Vs = xs' ! length Vs"
     by(auto dest!: sim_move01_preserves_unmod)
   with xsa have "xs' ! length Vs = Addr a" by simp
   ultimately show ?case using IH' E2 by(fastforce)
 next
   case (UnlockSynchronized a v s Vs E2 xs)
-  from `bisim Vs (insync(a) Val v) E2 xs` have E2: "E2 = insync\<^bsub>length Vs\<^esub> (a) Val v" 
+  from \<open>bisim Vs (insync(a) Val v) E2 xs\<close> have E2: "E2 = insync\<^bsub>length Vs\<^esub> (a) Val v" 
     and xsa: "xs ! length Vs = Addr a" by auto
-  moreover from `length Vs + max_vars (insync(a) Val v) \<le> length xs` xsa
+  moreover from \<open>length Vs + max_vars (insync(a) Val v) \<le> length xs\<close> xsa
   have "False,compP1 P,t \<turnstile>1 \<langle>insync\<^bsub>length Vs\<^esub> (a) (Val v), (hp s, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>\<rightarrow> \<langle>Val v, (hp s, xs)\<rangle>"
     by-(rule Unlock1Synchronized, auto)
   hence "sim_move01 (compP1 P) t \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace> (insync(a) Val v) (insync\<^bsub>length Vs\<^esub> (a) Val v) (hp s) xs \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace> (Val v) (hp s) xs"
     by(fastforce simp add: sim_move01_def ta_bisim_def)
-  ultimately show ?case using `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` by fastforce
+  ultimately show ?case using \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> by fastforce
 next
   case (RedWhile b c s Vs E2 xs)
-  from `bisim Vs (while (b) c) E2 xs` have "E2 = while (compE1 Vs b) (compE1 Vs c)"
+  from \<open>bisim Vs (while (b) c) E2 xs\<close> have "E2 = while (compE1 Vs b) (compE1 Vs c)"
     and sync: "\<not> contains_insync b" "\<not> contains_insync c" by auto
   moreover have "False,compP1 P,t \<turnstile>1 \<langle>while(compE1 Vs b) (compE1 Vs c), (hp s, xs)\<rangle> 
                  -\<epsilon>\<rightarrow> \<langle>if (compE1 Vs b) (compE1 Vs c;;while(compE1 Vs b) (compE1 Vs c)) else unit, (hp s, xs)\<rangle>"
     by(rule Red1While)
   hence "sim_move01 (compP1 P) t \<epsilon> (while (b) c) (while (compE1 Vs b) (compE1 Vs c)) (hp s) xs \<epsilon> (if (compE1 Vs b) (compE1 Vs c;;while(compE1 Vs b) (compE1 Vs c)) else unit) (hp s) xs"
     by(auto simp add: sim_move01_def)
-  moreover from `fv (while (b) c) \<subseteq> set Vs` sync
+  moreover from \<open>fv (while (b) c) \<subseteq> set Vs\<close> sync
   have "bisim Vs (if (b) (c;; while (b) c) else unit)
                  (if (compE1 Vs b) (compE1 Vs (c;; while(b) c)) else (compE1 Vs unit)) xs"
     by -(rule bisimCond, auto)
-  ultimately show ?case using `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]`
+  ultimately show ?case using \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close>
     by(simp)((rule exI)+, erule conjI, auto)
 next
   case (RedTryCatch s a D C V e2 Vs E2 xs)
@@ -802,14 +802,14 @@ next
   case RedTryFail thus ?case by(auto intro!: exI)
 next
   case (ListRed1 e s ta e' s' es Vs ES2 xs)
-  note IH = `\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
-                         ?synth e s\<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs`
-  from `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisims Vs (e # es) ES2 xs` obtain E' 
+  note IH = \<open>\<And>vs e2 XS. \<lbrakk>bisim vs e e2 XS; fv e \<subseteq> set vs; lcl s \<subseteq>\<^sub>m [vs [\<mapsto>] XS]; length vs + max_vars e \<le> length XS;
+                         ?synth e s\<rbrakk> \<Longrightarrow> ?concl e e2 s XS e' s' ta vs\<close>
+  from \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisims Vs (e # es) ES2 xs\<close> obtain E' 
     where "bisim Vs e E' xs" and ES2: "ES2 = E' # compEs1 Vs es" 
     and sync: "\<not> contains_insyncs es" by(auto simp add: compEs1_conv_map)
-  with IH[of Vs E' xs] `fvs (e # es) \<subseteq> set Vs` `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
-    `length Vs + max_varss (e # es) \<le> length xs` `?synths (e # es) s` `\<not> is_val e`
+  with IH[of Vs E' xs] \<open>fvs (e # es) \<subseteq> set Vs\<close> \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>extTA2J0 P,P,t \<turnstile> \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
+    \<open>length Vs + max_varss (e # es) \<le> length xs\<close> \<open>?synths (e # es) s\<close> \<open>\<not> is_val e\<close>
   show ?case by(cases "is_val e'")(fastforce elim!: sim_moves01_expr split: if_split_asm)+
 next
   case (ListRed2 es s ta es' s' v Vs ES2 xs)
@@ -822,13 +822,13 @@ next
     by(cases vo)(fastforce elim!: bisim_cases)+
 next    
   case (SynchronizedThrow2 a ad s Vs E2 xs)
-  from `bisim Vs (insync(a) Throw ad) E2 xs` have "xs ! length Vs = Addr a" by auto
-  with `length Vs + max_vars (insync(a) Throw ad) \<le> length xs`
+  from \<open>bisim Vs (insync(a) Throw ad) E2 xs\<close> have "xs ! length Vs = Addr a" by auto
+  with \<open>length Vs + max_vars (insync(a) Throw ad) \<le> length xs\<close>
   have "False,compP1 P,t \<turnstile>1 \<langle>insync\<^bsub>length Vs\<^esub> (a) Throw ad, (hp s, xs)\<rangle> -\<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>\<rightarrow> \<langle>Throw ad, (hp s, xs)\<rangle>"
     by-(rule Synchronized1Throw2, auto)
   hence "sim_move01 (compP1 P) t \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace> (insync(a) Throw ad) (insync\<^bsub>length Vs\<^esub> (a) Throw ad) (hp s) xs \<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace> (Throw ad) (hp s) xs"
     by(fastforce simp add: sim_move01_def ta_bisim_def fun_eq_iff expand_finfun_eq finfun_upd_apply ta_upd_simps split: if_split_asm)
-  moreover note `lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]` `bisim Vs (insync(a) Throw ad) E2 xs`
+  moreover note \<open>lcl s \<subseteq>\<^sub>m [Vs [\<mapsto>] xs]\<close> \<open>bisim Vs (insync(a) Throw ad) E2 xs\<close>
   ultimately show ?case by(fastforce)
 next
   case InstanceOfRed thus ?case by(fastforce)
@@ -1145,101 +1145,101 @@ lemma assumes wf: "wf_J_prog P"
   (is "\<lbrakk> _; _; _; _; _; _ \<rbrakk> \<Longrightarrow> ?concls es1 es1' es2 S x TA S' es1' vs")
 proof(induct arbitrary: vs e2 x and vs es2 x rule: red1_reds1.inducts)
   case (Bin1OpRed1 e s ta e' s' bop e2 Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-             \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs E2 (e \<guillemotleft>bop\<guillemotright> e2) (lcl s)` obtain E E2'
+             \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs E2 (e \<guillemotleft>bop\<guillemotright> e2) (lcl s)\<close> obtain E E2'
     where E2: "E2 = E \<guillemotleft>bop\<guillemotright> E2'" "e2 = compE1 Vs E2'" and "bisim Vs E e (lcl s)"
     and sync: "\<not> contains_insync E2'"
     by(auto elim!: bisim_cases)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (e \<guillemotleft>bop\<guillemotright> e2) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (e \<guillemotleft>bop\<guillemotright> e2) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto)
-  with E2 `fv E2 \<subseteq> set Vs` sync show ?case by(cases "is_val e2'")(auto intro: BinOpRed1)
+  with E2 \<open>fv E2 \<subseteq> set Vs\<close> sync show ?case by(cases "is_val e2'")(auto intro: BinOpRed1)
 next
   case (Bin1OpRed2 e s ta e' s' v bop Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-              \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `bisim Vs E2 (Val v \<guillemotleft>bop\<guillemotright> e) (lcl s)` obtain E 
+              \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>bisim Vs E2 (Val v \<guillemotleft>bop\<guillemotright> e) (lcl s)\<close> obtain E 
     where E2: "E2 = Val v \<guillemotleft>bop\<guillemotright> E" and "bisim Vs E e (lcl s)" by(auto)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (Val v \<guillemotleft>bop\<guillemotright> e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>` E2
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (Val v \<guillemotleft>bop\<guillemotright> e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close> E2
   ultimately show ?case by(auto intro: BinOpRed2)
 next
   case (Red1Var s V v Vs E2 X)
-  from `bisim Vs E2 (Var V) (lcl s)` `fv E2 \<subseteq> set Vs`
+  from \<open>bisim Vs E2 (Var V) (lcl s)\<close> \<open>fv E2 \<subseteq> set Vs\<close>
   obtain V' where "E2 = Var V'" "V' = Vs ! V" "V = index Vs V'" by(clarify, simp)
-  from `E2 = Var V'` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  from \<open>E2 = Var V'\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   obtain v' where "X V' = \<lfloor>v'\<rfloor>" by(auto simp add: hyperset_defs)
-  with `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` have "[Vs [\<mapsto>] lcl s] V' = \<lfloor>v'\<rfloor>" by(rule map_le_SomeD)
-  with `length Vs + max_vars (Var V) \<le> length (lcl s)`
+  with \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close> have "[Vs [\<mapsto>] lcl s] V' = \<lfloor>v'\<rfloor>" by(rule map_le_SomeD)
+  with \<open>length Vs + max_vars (Var V) \<le> length (lcl s)\<close>
   have "lcl s ! (index Vs V') = v'" by(auto intro: map_upds_Some_eq_nth_index)
-  with `V = index Vs V'` `lcl s ! V = v` have "v = v'" by simp
-  with `X V' = \<lfloor>v'\<rfloor>` `E2 = Var V'` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
+  with \<open>V = index Vs V'\<close> \<open>lcl s ! V = v\<close> have "v = v'" by simp
+  with \<open>X V' = \<lfloor>v'\<rfloor>\<close> \<open>E2 = Var V'\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
   show ?case by(fastforce intro: RedVar)
 next
   case (LAss1Red e s ta e' s' V Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `bisim Vs E2 (V:=e) (lcl s)` obtain E V'
+            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>bisim Vs E2 (V:=e) (lcl s)\<close> obtain E V'
     where E2: "E2 = (V':=E)" "V = index Vs V'" and "bisim Vs E e (lcl s)" by auto
-  with IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (V:=e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  with IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (V:=e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
     E2 show ?case by(auto intro: LAssRed)
 next
   case (Red1LAss V l v h Vs E2 X)
-  from `bisim Vs E2 (V:=Val v) (lcl (h, l))` obtain V' where "E2 = (V' := Val v)" "V = index Vs V'" by(auto)
-  moreover with `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, l)]` `length Vs + max_vars (V:=Val v) \<le> length (lcl (h, l))`
+  from \<open>bisim Vs E2 (V:=Val v) (lcl (h, l))\<close> obtain V' where "E2 = (V' := Val v)" "V = index Vs V'" by(auto)
+  moreover with \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, l)]\<close> \<open>length Vs + max_vars (V:=Val v) \<le> length (lcl (h, l))\<close>
   have "X(V' \<mapsto> v) \<subseteq>\<^sub>m [Vs [\<mapsto>] l[index Vs V' := v]]" by(auto intro: LAss_lem)
   ultimately show ?case by(auto intro: RedLAss simp del: fun_upd_apply)
 next
   case (AAcc1Red1 a s ta a' s' i Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 a (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 a (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars a \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-             \<Longrightarrow> ?concl a a' e2 s x ta s' a' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>` have "\<not> is_val a" by auto
-  with `bisim Vs E2 (a\<lfloor>i\<rceil>) (lcl s)` obtain E E2'
+             \<Longrightarrow> ?concl a a' e2 s x ta s' a' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close> have "\<not> is_val a" by auto
+  with \<open>bisim Vs E2 (a\<lfloor>i\<rceil>) (lcl s)\<close> obtain E E2'
     where E2: "E2 = E\<lfloor>E2'\<rceil>" "i = compE1 Vs E2'" and "bisim Vs E a (lcl s)"
     and sync: "\<not> contains_insync E2'" by(fastforce)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (a\<lfloor>i\<rceil>) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (a\<lfloor>i\<rceil>) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where "sim_move10 P t ta a a' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' a' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto)
-  with E2 `fv E2 \<subseteq> set Vs` sync show ?case
+  with E2 \<open>fv E2 \<subseteq> set Vs\<close> sync show ?case
     by(cases "is_val e2'")(auto intro: AAccRed1)
 next
   case (AAcc1Red2 i s ta i' s' a Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 i (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 i (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars i \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl i i' e2 s x ta s' i' vs`
-  from `bisim Vs E2 (Val a\<lfloor>i\<rceil>) (lcl s)` obtain E 
+            \<Longrightarrow> ?concl i i' e2 s x ta s' i' vs\<close>
+  from \<open>bisim Vs E2 (Val a\<lfloor>i\<rceil>) (lcl s)\<close> obtain E 
     where E2: "E2 = Val a\<lfloor>E\<rceil>" and "bisim Vs E i (lcl s)" by(auto)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` E2
-    `length Vs + max_vars (Val a\<lfloor>i\<rceil>) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close> E2
+    \<open>length Vs + max_vars (Val a\<lfloor>i\<rceil>) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately show ?case by(auto intro: AAccRed2)
 next
   case Red1AAcc thus ?case by(fastforce intro: RedAAcc simp del: fun_upd_apply)
 next
   case (AAss1Red1 a s ta a' s' i e Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 a (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 a (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars a \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor> \<rbrakk>
-             \<Longrightarrow> ?concl a a' e2 s x ta s' a' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>` have "\<not> is_val a" by auto
-  with `bisim Vs E2 (a\<lfloor>i\<rceil>:=e) (lcl s)` obtain E E2' E2''
+             \<Longrightarrow> ?concl a a' e2 s x ta s' a' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>a,s\<rangle> -ta\<rightarrow> \<langle>a',s'\<rangle>\<close> have "\<not> is_val a" by auto
+  with \<open>bisim Vs E2 (a\<lfloor>i\<rceil>:=e) (lcl s)\<close> obtain E E2' E2''
     where E2: "E2 = E\<lfloor>E2'\<rceil>:=E2''" "i = compE1 Vs E2'" "e = compE1 Vs E2''" and "bisim Vs E a (lcl s)"
     and sync: "\<not> contains_insync E2'" "\<not> contains_insync E2''" by(fastforce)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (a\<lfloor>i\<rceil>:=e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (a\<lfloor>i\<rceil>:=e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where IH': "sim_move10 P t ta a a' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' a' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto)
   show ?case
   proof(cases "is_val e2'")
     case True
-    from E2 `fv E2 \<subseteq> set Vs` sync have "bisim Vs E2' i (lcl s')" "bisim Vs E2'' e (lcl s')" by auto
+    from E2 \<open>fv E2 \<subseteq> set Vs\<close> sync have "bisim Vs E2' i (lcl s')" "bisim Vs E2'' e (lcl s')" by auto
     with IH' E2 True sync show ?thesis
       by(cases "is_val E2'")(fastforce intro: AAssRed1)+
   next
@@ -1247,28 +1247,28 @@ next
   qed
 next
   case (AAss1Red2 i s ta i' s' a e Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 i (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 i (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars i \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl i i' e2 s x ta s' i' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>` have "\<not> is_val i" by auto
-  with `bisim Vs E2 (Val a\<lfloor>i\<rceil>:=e) (lcl s)` obtain E E2'
+            \<Longrightarrow> ?concl i i' e2 s x ta s' i' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>i,s\<rangle> -ta\<rightarrow> \<langle>i',s'\<rangle>\<close> have "\<not> is_val i" by auto
+  with \<open>bisim Vs E2 (Val a\<lfloor>i\<rceil>:=e) (lcl s)\<close> obtain E E2'
     where E2: "E2 = Val a\<lfloor>E\<rceil>:=E2'" "e = compE1 Vs E2'" and "bisim Vs E i (lcl s)"
     and sync: "\<not> contains_insync E2'" by(fastforce)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (Val a\<lfloor>i\<rceil>:=e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (Val a\<lfloor>i\<rceil>:=e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where "sim_move10 P t ta i i' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' i' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto)
-  with E2 `fv E2 \<subseteq> set Vs` sync show ?case
+  with E2 \<open>fv E2 \<subseteq> set Vs\<close> sync show ?case
     by(cases "is_val e2'")(fastforce intro: AAssRed2)+
 next
   case (AAss1Red3 e s ta e' s' a i Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `bisim Vs E2 (Val a\<lfloor>Val i\<rceil>:=e) (lcl s)` obtain E
+            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>bisim Vs E2 (Val a\<lfloor>Val i\<rceil>:=e) (lcl s)\<close> obtain E
     where E2: "E2 = Val a\<lfloor>Val i\<rceil>:=E" and "bisim Vs E e (lcl s)" by(fastforce)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` E2
-    `length Vs + max_vars (Val a\<lfloor>Val i\<rceil>:=e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close> E2
+    \<open>length Vs + max_vars (Val a\<lfloor>Val i\<rceil>:=e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately show ?case by(fastforce intro: AAssRed3)
 next
   case Red1AAssStore thus ?case by(auto)((rule exI conjI)+, auto)
@@ -1277,145 +1277,145 @@ next
     by(fastforce simp del: fun_upd_apply)
 next 
   case (FAss1Red1 e s ta e' s' F D e2 Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-             \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs E2 (e\<bullet>F{D}:=e2) (lcl s)` obtain E E2'
+             \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs E2 (e\<bullet>F{D}:=e2) (lcl s)\<close> obtain E E2'
     where E2: "E2 = E\<bullet>F{D}:=E2'" "e2 = compE1 Vs E2'" and "bisim Vs E e (lcl s)" 
     and sync: "\<not> contains_insync E2'" by(fastforce)
-  with IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (e\<bullet>F{D}:=e2) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  with IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (e\<bullet>F{D}:=e2) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   obtain TA' e2' x' where "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(fastforce)
-  with E2 `fv E2 \<subseteq> set Vs` sync show ?case by(cases "is_val e2'")(auto intro: FAssRed1)
+  with E2 \<open>fv E2 \<subseteq> set Vs\<close> sync show ?case by(cases "is_val e2'")(auto intro: FAssRed1)
 next 
   case (FAss1Red2 e s ta e' s' v F D Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `bisim Vs E2 (Val v\<bullet>F{D}:=e) (lcl s)` obtain E
+            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>bisim Vs E2 (Val v\<bullet>F{D}:=e) (lcl s)\<close> obtain E
     where E2: "E2 = (Val v\<bullet>F{D}:=E)" and "bisim Vs E e (lcl s)" by(fastforce)
-  with IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (Val v\<bullet>F{D}:=e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  with IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (Val v\<bullet>F{D}:=e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
     E2 show ?case by(fastforce intro: FAssRed2)
 next
   case (CAS1Red1 e s ta e' s' D F e2 e3 Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor> \<rbrakk>
-             \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs E2 _ (lcl s)` obtain E E2' E2''
+             \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs E2 _ (lcl s)\<close> obtain E E2' E2''
     where E2: "E2 = E\<bullet>compareAndSwap(D\<bullet>F, E2', E2'')" "e2 = compE1 Vs E2'" "e3 = compE1 Vs E2''" and "bisim Vs E e (lcl s)"
     and sync: "\<not> contains_insync E2'" "\<not> contains_insync E2''" by(fastforce)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars _ \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars _ \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where IH': "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto)
   show ?case
   proof(cases "is_val e2'")
     case True
-    from E2 `fv E2 \<subseteq> set Vs` sync have "bisim Vs E2' e2 (lcl s')" "bisim Vs E2'' e3 (lcl s')" by auto
+    from E2 \<open>fv E2 \<subseteq> set Vs\<close> sync have "bisim Vs E2' e2 (lcl s')" "bisim Vs E2'' e3 (lcl s')" by auto
     with IH' E2 True sync show ?thesis by(cases "is_val E2'")(fastforce)+
   next
     case False with IH' E2 sync show ?thesis by(fastforce)
   qed
 next
   case (CAS1Red2 e s ta e' s' v D F e3 Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` have "\<not> is_val e" by auto
-  with `bisim Vs E2 _ (lcl s)` obtain E E2'
+            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> have "\<not> is_val e" by auto
+  with \<open>bisim Vs E2 _ (lcl s)\<close> obtain E E2'
     where E2: "E2 = (Val v\<bullet>compareAndSwap(D\<bullet>F, E, E2'))" "e3 = compE1 Vs E2'" and "bisim Vs E e (lcl s)"
     and sync: "\<not> contains_insync E2'" by(auto)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars _ \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars _ \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto)
-  with E2 `fv E2 \<subseteq> set Vs` sync show ?case
+  with E2 \<open>fv E2 \<subseteq> set Vs\<close> sync show ?case
     by(cases "is_val e2'")(fastforce)+
 next
   case (CAS1Red3 e s ta e' s' v D F v' Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
              x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
-            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs`
-  from `bisim Vs E2 _ (lcl s)` obtain E
+            \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close>
+  from \<open>bisim Vs E2 _ (lcl s)\<close> obtain E
     where E2: "E2 = (Val v\<bullet>compareAndSwap(D\<bullet>F, Val v', E))" and "bisim Vs E e (lcl s)" by(fastforce)
-  moreover note IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` E2
-    `length Vs + max_vars _ \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  moreover note IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close> E2
+    \<open>length Vs + max_vars _ \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately show ?case by(fastforce)
 next
   case (Call1Obj e s ta e' s' M es Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
             x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s);
-            \<D> e2 \<lfloor>dom x\<rfloor> \<rbrakk> \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs` 
-  from `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` `bisim Vs E2 (e\<bullet>M(es)) (lcl s)`
+            \<D> e2 \<lfloor>dom x\<rfloor> \<rbrakk> \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close> 
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> \<open>bisim Vs E2 (e\<bullet>M(es)) (lcl s)\<close>
   obtain E es' where E2: "E2 = E\<bullet>M(es')" "es = compEs1 Vs es'" and "bisim Vs E e (lcl s)"
     and sync: "\<not> contains_insyncs es'" by(auto elim!: bisim_cases simp add: compEs1_conv_map)
-  with IH[of Vs E X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (e\<bullet>M(es)) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+  with IH[of Vs E X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (e\<bullet>M(es)) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   obtain TA' e2' x' where IH': "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(fastforce)
-  with E2 `fv E2 \<subseteq> set Vs` `E2 = E\<bullet>M(es')` sync show ?case
+  with E2 \<open>fv E2 \<subseteq> set Vs\<close> \<open>E2 = E\<bullet>M(es')\<close> sync show ?case
     by(cases "is_val e2'")(auto intro: CallObj)
 next
   case (Call1Params es s ta es' s' v M Vs E2 X)
-  note IH = `\<And>vs es2 x. \<lbrakk> bisims vs es2 es (lcl s); fvs es2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs es2 x. \<lbrakk> bisims vs es2 es (lcl s); fvs es2 \<subseteq> set vs;
             x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_varss es \<le> length (lcl s); \<D>s es2 \<lfloor>dom x\<rfloor>\<rbrakk> 
-           \<Longrightarrow> ?concls es es' es2 s x ta s' es' vs`
-  from `bisim Vs E2 (Val v\<bullet>M(es)) (lcl s)` obtain Es
+           \<Longrightarrow> ?concls es es' es2 s x ta s' es' vs\<close>
+  from \<open>bisim Vs E2 (Val v\<bullet>M(es)) (lcl s)\<close> obtain Es
     where "E2 = Val v \<bullet>M(Es)" "bisims Vs Es es (lcl s)" by(auto)
-  with IH[of Vs Es X] `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_vars (Val v\<bullet>M(es)) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
-    `E2 = Val v \<bullet>M(Es)` show ?case by(fastforce intro: CallParams)
+  with IH[of Vs Es X] \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_vars (Val v\<bullet>M(es)) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
+    \<open>E2 = Val v \<bullet>M(Es)\<close> show ?case by(fastforce intro: CallParams)
 next
   case (Red1CallExternal s a T M Ts Tr D vs ta va h' e' s' Vs E2 X)
-  from `bisim Vs E2 (addr a\<bullet>M(map Val vs)) (lcl s)` have E2: "E2 = addr a\<bullet>M(map Val vs)" by auto
-  moreover from `compP1 P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D`
+  from \<open>bisim Vs E2 (addr a\<bullet>M(map Val vs)) (lcl s)\<close> have E2: "E2 = addr a\<bullet>M(map Val vs)" by auto
+  moreover from \<open>compP1 P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D\<close>
   have "P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D" by simp
-  moreover from `compP1 P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
+  moreover from \<open>compP1 P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
   have "P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
-  moreover from wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
+  moreover from wf \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
   have "ta_bisim01 (extTA2J0 P ta) (extTA2J1 (compP1 P) ta)"
     by(rule red_external_ta_bisim01)
-  moreover note `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `e' = extRet2J1 (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)`
-  moreover from `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
-    `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D`
+  moreover note \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close> \<open>e' = extRet2J1 (addr a\<bullet>M(map Val vs)) va\<close> \<open>s' = (h', lcl s)\<close>
+  moreover from \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close> \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
+    \<open>P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D\<close>
   have "\<tau>external_defs D M \<Longrightarrow> ta = \<epsilon> \<and> h' = hp s"
     by(fastforce dest: \<tau>external'_red_external_heap_unchanged \<tau>external'_red_external_TA_empty simp add: \<tau>external'_def \<tau>external_def)
-  ultimately show ?case using `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
+  ultimately show ?case using \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
     by(fastforce intro!: exI[where x="extTA2J0 P ta"] intro: RedCallExternal simp add: map_eq_append_conv sim_move10_def synthesized_call_def dest: sees_method_fun del: disjCI intro: disjI1 disjI2)
 next
   case (Block1Red e h x ta e' h' x' V T Vs E2 X)
-  note IH = `\<And>vs e2 xa. \<lbrakk> bisim vs e2 e (lcl (h, x)); fv e2 \<subseteq> set vs; xa \<subseteq>\<^sub>m [vs [\<mapsto>] lcl (h, x)];
+  note IH = \<open>\<And>vs e2 xa. \<lbrakk> bisim vs e2 e (lcl (h, x)); fv e2 \<subseteq> set vs; xa \<subseteq>\<^sub>m [vs [\<mapsto>] lcl (h, x)];
                        length vs + max_vars e \<le> length (lcl (h, x)); \<D> e2 \<lfloor>dom xa\<rfloor>\<rbrakk>
-             \<Longrightarrow> ?concl e e' e2 (h, x) xa ta (h', x') e' vs` 
-  from `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+             \<Longrightarrow> ?concl e e' e2 (h, x) xa ta (h', x') e' vs\<close> 
+  from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>
   have "length x = length x'" by(auto dest: red1_preserves_len)
-  with `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))`
+  with \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close>
   have "length Vs < length x'" by simp
-  from `bisim Vs E2 {V:T=None; e} (lcl (h, x))`
+  from \<open>bisim Vs E2 {V:T=None; e} (lcl (h, x))\<close>
   show ?case
   proof(cases rule: bisim_cases(14)[consumes 1, case_names BlockNone BlockSome BlockSomeNone])
     case (BlockNone V' E)
-    with `fv E2 \<subseteq> set Vs` have "fv E \<subseteq> set (Vs@[V'])" by auto
-    with IH[of "Vs@[V']" E "X(V' := None)"] BlockNone `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]`
-      `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` `\<D> E2 \<lfloor>dom X\<rfloor>`
+    with \<open>fv E2 \<subseteq> set Vs\<close> have "fv E \<subseteq> set (Vs@[V'])" by auto
+    with IH[of "Vs@[V']" E "X(V' := None)"] BlockNone \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]\<close>
+      \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
     obtain TA' e2' X' where IH': "sim_move10 P t ta e e' E h (X(V' := None)) TA' e2' h' X'"
       "bisim (Vs @ [V']) e2' e' x'" "X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']"
       by(fastforce simp del: fun_upd_apply)
     { assume "V' \<in> set Vs"
       hence "hidden (Vs @ [V']) (index Vs V')" by(rule hidden_index)
-      with `bisim (Vs @ [V']) E e (lcl (h, x))` have "unmod e (index Vs V')"
+      with \<open>bisim (Vs @ [V']) E e (lcl (h, x))\<close> have "unmod e (index Vs V')"
         by(auto intro: hidden_bisim_unmod)
-      moreover from `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` `V' \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close> \<open>V' \<in> set Vs\<close>
       have "index Vs V' < length x" by(auto intro: index_less_aux)
       ultimately have "x ! index Vs V' = x' ! index Vs V'"
-        using red1_preserves_unmod[OF `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`]
+        using red1_preserves_unmod[OF \<open>False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>]
         by(simp) }
-    with `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` 
-      `X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']` `length x = length x'` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]`
+    with \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close> 
+      \<open>X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']\<close> \<open>length x = length x'\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]\<close>
     have rel: "X'(V' := X V') \<subseteq>\<^sub>m [Vs [\<mapsto>] x']" by(auto intro: Block_lem)
 
     show ?thesis
@@ -1424,7 +1424,7 @@ next
       with BlockNone IH' rel show ?thesis by(fastforce intro: BlockRed)
     next
       case (Some v)
-      with `X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']` `length Vs < length x'`
+      with \<open>X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']\<close> \<open>length Vs < length x'\<close>
       have "x' ! length Vs = v" by(auto dest: map_le_SomeD)
       with BlockNone IH' rel Some show ?thesis by(fastforce intro: BlockRed)
     qed
@@ -1432,76 +1432,76 @@ next
     case BlockSome thus ?thesis by simp
   next
     case (BlockSomeNone V' E)
-    with `fv E2 \<subseteq> set Vs` have "fv E \<subseteq> set (Vs@[V'])" by auto
-    with IH[of "Vs@[V']" E "X(V' \<mapsto> x ! length Vs)"] BlockSomeNone `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]`
-      `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` `\<D> E2 \<lfloor>dom X\<rfloor>`
+    with \<open>fv E2 \<subseteq> set Vs\<close> have "fv E \<subseteq> set (Vs@[V'])" by auto
+    with IH[of "Vs@[V']" E "X(V' \<mapsto> x ! length Vs)"] BlockSomeNone \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]\<close>
+      \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
     obtain TA' e2' X' where IH': "sim_move10 P t ta e e' E h (X(V' \<mapsto> x ! length Vs)) TA' e2' h' X'"
       "bisim (Vs @ [V']) e2' e' x'" "X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']"
       by(fastforce simp del: fun_upd_apply)
     { assume "V' \<in> set Vs"
       hence "hidden (Vs @ [V']) (index Vs V')" by(rule hidden_index)
-      with `bisim (Vs @ [V']) E e (lcl (h, x))` have "unmod e (index Vs V')"
+      with \<open>bisim (Vs @ [V']) E e (lcl (h, x))\<close> have "unmod e (index Vs V')"
         by(auto intro: hidden_bisim_unmod)
-      moreover from `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` `V' \<in> set Vs`
+      moreover from \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close> \<open>V' \<in> set Vs\<close>
       have "index Vs V' < length x" by(auto intro: index_less_aux)
       ultimately have "x ! index Vs V' = x' ! index Vs V'"
-        using red1_preserves_unmod[OF `False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`]
+        using red1_preserves_unmod[OF \<open>False,compP1 P,t \<turnstile>1 \<langle>e,(h, x)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>]
         by(simp) }
-    with `length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))` 
-      `X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']` `length x = length x'` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]`
+    with \<open>length Vs + max_vars {V:T=None; e} \<le> length (lcl (h, x))\<close> 
+      \<open>X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']\<close> \<open>length x = length x'\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]\<close>
     have rel: "X'(V' := X V') \<subseteq>\<^sub>m [Vs [\<mapsto>] x']" by(auto intro: Block_lem)
-    from `sim_move10 P t ta e e' E h (X(V' \<mapsto> x ! length Vs)) TA' e2' h' X'`
+    from \<open>sim_move10 P t ta e e' E h (X(V' \<mapsto> x ! length Vs)) TA' e2' h' X'\<close>
     obtain v' where "X' V' = \<lfloor>v'\<rfloor>"
       by(auto simp: sim_move10_def split: if_split_asm dest!: \<tau>red0t_lcl_incr \<tau>red0r_lcl_incr red_lcl_incr subsetD)
-    with `X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']` `length Vs < length x'`
+    with \<open>X' \<subseteq>\<^sub>m [Vs @ [V'] [\<mapsto>] x']\<close> \<open>length Vs < length x'\<close>
     have "x' ! length Vs = v'" by(auto dest: map_le_SomeD)
-    with BlockSomeNone IH' rel `X' V' = \<lfloor>v'\<rfloor>`
+    with BlockSomeNone IH' rel \<open>X' V' = \<lfloor>v'\<rfloor>\<close>
     show ?thesis by(fastforce intro: BlockRed)
   qed
 next
   case(Block1Some V xs T v e h)
-  from `bisim vs e2 {V:T=\<lfloor>v\<rfloor>; e} (lcl (h, xs))` obtain e' V' where "e2 = {V':T=\<lfloor>v\<rfloor>; e'}"
+  from \<open>bisim vs e2 {V:T=\<lfloor>v\<rfloor>; e} (lcl (h, xs))\<close> obtain e' V' where "e2 = {V':T=\<lfloor>v\<rfloor>; e'}"
     and "V = length vs" "bisim (vs @ [V']) e' e (xs[length vs := v])" by(fastforce)
   moreover have "sim_move10 P t \<epsilon> {length vs:T=\<lfloor>v\<rfloor>; e} {length vs:T=None; e} {V':T=\<lfloor>v\<rfloor>; e'} h x \<epsilon> {V':T=\<lfloor>v\<rfloor>; e'} h x"
     by(auto)
-  moreover from `bisim (vs @ [V']) e' e (xs[length vs := v])`
-    `length vs + max_vars {V:T=\<lfloor>v\<rfloor>; e} \<le> length (lcl (h, xs))`
+  moreover from \<open>bisim (vs @ [V']) e' e (xs[length vs := v])\<close>
+    \<open>length vs + max_vars {V:T=\<lfloor>v\<rfloor>; e} \<le> length (lcl (h, xs))\<close>
   have "bisim vs {V':T=\<lfloor>v\<rfloor>; e'} {length vs:T=None; e} (xs[length vs := v])" by auto
-  moreover from `x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl (h, xs)]` `length vs + max_vars {V:T=\<lfloor>v\<rfloor>; e} \<le> length (lcl (h, xs))`
+  moreover from \<open>x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl (h, xs)]\<close> \<open>length vs + max_vars {V:T=\<lfloor>v\<rfloor>; e} \<le> length (lcl (h, xs))\<close>
   have "x \<subseteq>\<^sub>m [vs [\<mapsto>] xs[length vs := v]]" by auto
   ultimately show ?case by auto
 next
   case (Lock1Synchronized V xs a e h Vs E2 X)
-  note len = `length Vs + max_vars (sync\<^bsub>V\<^esub> (addr a) e) \<le> length (lcl (h, xs))`
-  from `bisim Vs E2 (sync\<^bsub>V\<^esub> (addr a) e) (lcl (h, xs))` obtain E
+  note len = \<open>length Vs + max_vars (sync\<^bsub>V\<^esub> (addr a) e) \<le> length (lcl (h, xs))\<close>
+  from \<open>bisim Vs E2 (sync\<^bsub>V\<^esub> (addr a) e) (lcl (h, xs))\<close> obtain E
     where E2: "E2 = sync(addr a) E" "e = compE1 (Vs@[fresh_var Vs]) E" 
     and sync: "\<not> contains_insync E" and [simp]: "V = length Vs" by auto
   moreover
   have "extTA2J0 P,P,t \<turnstile> \<langle>sync(addr a) E, (h, X)\<rangle> -\<lbrace>Lock\<rightarrow>a, SyncLock a\<rbrace>\<rightarrow> \<langle>insync(a) E, (h, X)\<rangle>"
     by(rule LockSynchronized)
-  moreover from `fv E2 \<subseteq> set Vs` fresh_var_fresh[of Vs] sync len
+  moreover from \<open>fv E2 \<subseteq> set Vs\<close> fresh_var_fresh[of Vs] sync len
   have "bisim Vs (insync(a) E) (insync\<^bsub>length Vs\<^esub> (a) e) (xs[length Vs := Addr a])"
-    unfolding `e = compE1 (Vs@[fresh_var Vs]) E` `E2 = sync(addr a) E`
+    unfolding \<open>e = compE1 (Vs@[fresh_var Vs]) E\<close> \<open>E2 = sync(addr a) E\<close>
     by -(rule bisimInSynchronized,rule compE1_bisim, auto)
   moreover have "zip Vs (xs[length Vs := Addr a]) = (zip Vs xs)[length Vs := (arbitrary, Addr a)]"
     by(rule sym)(simp add: update_zip)
   hence "zip Vs (xs[length Vs := Addr a]) = zip Vs xs" by simp
-  with `X \<subseteq>\<^sub>m [Vs [\<mapsto>] (lcl (h, xs))]` have "X \<subseteq>\<^sub>m [Vs [\<mapsto>] xs[length Vs := Addr a]]"
+  with \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] (lcl (h, xs))]\<close> have "X \<subseteq>\<^sub>m [Vs [\<mapsto>] xs[length Vs := Addr a]]"
     by(auto simp add: map_le_def map_upds_def)
   ultimately show ?case by(fastforce intro: sim_move10_SyncLocks)
 next
   case (Synchronized1Red2 e s ta e' s' V a Vs E2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
             x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s);
-            \<D> e2 \<lfloor>dom x\<rfloor> \<rbrakk> \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs` 
-  from `bisim Vs E2 (insync\<^bsub>V\<^esub> (a) e) (lcl s)` obtain E
+            \<D> e2 \<lfloor>dom x\<rfloor> \<rbrakk> \<Longrightarrow> ?concl e e' e2 s x ta s' e' vs\<close> 
+  from \<open>bisim Vs E2 (insync\<^bsub>V\<^esub> (a) e) (lcl s)\<close> obtain E
     where E2: "E2 = insync(a) E" and bisim: "bisim (Vs@[fresh_var Vs]) E e (lcl s)"
     and xsa: "lcl s ! length Vs = Addr a" and [simp]: "V = length Vs" by auto
-  with `fv E2 \<subseteq> set Vs` fresh_var_fresh[of Vs] have fv: "(fresh_var Vs) \<notin> fv E" by auto
-  from `length Vs + max_vars (insync\<^bsub>V\<^esub> (a) e) \<le> length (lcl s)` have "length Vs < length (lcl s)" by simp
+  with \<open>fv E2 \<subseteq> set Vs\<close> fresh_var_fresh[of Vs] have fv: "(fresh_var Vs) \<notin> fv E" by auto
+  from \<open>length Vs + max_vars (insync\<^bsub>V\<^esub> (a) e) \<le> length (lcl s)\<close> have "length Vs < length (lcl s)" by simp
   { assume "X (fresh_var Vs) \<noteq> None"
     then obtain v where "X (fresh_var Vs) = \<lfloor>v\<rfloor>" by auto
-    with `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` have "[Vs [\<mapsto>] lcl s] (fresh_var Vs) = \<lfloor>v\<rfloor>" 
+    with \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close> have "[Vs [\<mapsto>] lcl s] (fresh_var Vs) = \<lfloor>v\<rfloor>" 
       by(auto simp add: map_le_def dest: bspec)
     hence "(fresh_var Vs) \<in> set Vs" 
       by(auto simp add: map_upds_def set_zip dest!: map_of_SomeD )
@@ -1509,133 +1509,133 @@ next
     ultimately have False by contradiction }
   hence "X (fresh_var Vs) = None" by(cases "X (fresh_var Vs)", auto)
   hence "X(fresh_var Vs := None) = X" by(auto intro: ext)
-  moreover from `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
+  moreover from \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
   have "X(fresh_var Vs := None) \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s, (fresh_var Vs) \<mapsto> (lcl s) ! length Vs]" by(simp)
   ultimately have "X \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] lcl s]"
-    using `length Vs < length (lcl s)` by(auto)
-  moreover note IH[of "Vs@[fresh_var Vs]" E X] bisim E2 `fv E2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]` 
-    `length Vs + max_vars (insync\<^bsub>V\<^esub> (a) e) \<le> length (lcl s)` `\<D> E2 \<lfloor>dom X\<rfloor>`
+    using \<open>length Vs < length (lcl s)\<close> by(auto)
+  moreover note IH[of "Vs@[fresh_var Vs]" E X] bisim E2 \<open>fv E2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close> 
+    \<open>length Vs + max_vars (insync\<^bsub>V\<^esub> (a) e) \<le> length (lcl s)\<close> \<open>\<D> E2 \<lfloor>dom X\<rfloor>\<close>
   ultimately obtain TA' e2' x' where IH': "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim (Vs @ [fresh_var Vs]) e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] lcl s']" by auto
   hence "dom x' \<subseteq> dom X \<union> fv E"
     by(fastforce iff del: domIff simp add: sim_move10_def dest: red_dom_lcl \<tau>red0r_dom_lcl[OF wf_prog_wwf_prog[OF wf]] \<tau>red0t_dom_lcl[OF wf_prog_wwf_prog[OF wf]] \<tau>red0r_fv_subset[OF wf_prog_wwf_prog[OF wf]] split: if_split_asm)
-  with fv `X (fresh_var Vs) = None` have "(fresh_var Vs) \<notin> dom x'" by auto
+  with fv \<open>X (fresh_var Vs) = None\<close> have "(fresh_var Vs) \<notin> dom x'" by auto
   hence "x' (fresh_var Vs) = None" by auto
-  moreover from `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+  moreover from \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
   have "length (lcl s) = length (lcl s')" by(auto dest: red1_preserves_len)
-  moreover note `x' \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] lcl s']` `length Vs < length (lcl s)`
+  moreover note \<open>x' \<subseteq>\<^sub>m [Vs @ [fresh_var Vs] [\<mapsto>] lcl s']\<close> \<open>length Vs < length (lcl s)\<close>
   ultimately have "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by(auto simp add: map_le_def dest: bspec)
   moreover from bisim fv have "unmod e (length Vs)" by(auto intro: bisim_fv_unmod)
-  with `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` `length Vs < length (lcl s)`
+  with \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> \<open>length Vs < length (lcl s)\<close>
   have "lcl s ! length Vs = lcl s' ! length Vs"
     by(auto dest!: red1_preserves_unmod)
   with xsa have "lcl s' ! length Vs = Addr a" by simp
   ultimately show ?case using IH' E2 by(auto intro: SynchronizedRed2)
 next
   case (Unlock1Synchronized xs V a' a v h Vs E2 X)
-  from `bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Val v) (lcl (h, xs))`
+  from \<open>bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Val v) (lcl (h, xs))\<close>
   have E2: "E2 = insync(a) Val v" "V = length Vs" "xs ! length Vs = Addr a" by auto
-  moreover with `xs ! V = Addr a'` have [simp]: "a' = a" by simp
+  moreover with \<open>xs ! V = Addr a'\<close> have [simp]: "a' = a" by simp
   have "extTA2J0 P,P,t \<turnstile> \<langle>insync(a) (Val v), (h, X)\<rangle> -\<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>\<rightarrow> \<langle>Val v, (h, X)\<rangle>"
     by(rule UnlockSynchronized)
-  ultimately show ?case using `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, xs)]` by(fastforce intro: sim_move10_SyncLocks)
+  ultimately show ?case using \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, xs)]\<close> by(fastforce intro: sim_move10_SyncLocks)
 next
   case (Unlock1SynchronizedNull xs V a v h Vs E2 X)
-  from `bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Val v) (lcl (h, xs))`
+  from \<open>bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Val v) (lcl (h, xs))\<close>
   have "V = length Vs" "xs ! length Vs = Addr a" by(auto)
-  with `xs ! V = Null` have False by simp
+  with \<open>xs ! V = Null\<close> have False by simp
   thus ?case ..
 next
   case (Unlock1SynchronizedFail xs V A' a' v h Vs E2 X)
-  from `False` show ?case ..
+  from \<open>False\<close> show ?case ..
 next
   case (Red1While b c s Vs E2 X)
-  from `bisim Vs E2 (while (b) c) (lcl s)` obtain B C
+  from \<open>bisim Vs E2 (while (b) c) (lcl s)\<close> obtain B C
     where E2: "E2 = while (B) C" "b = compE1 Vs B" "c = compE1 Vs C" 
     and sync: "\<not> contains_insync B" "\<not> contains_insync C" by auto
   moreover have "extTA2J0 P,P,t \<turnstile> \<langle>while (B) C, (hp s, X)\<rangle> -\<epsilon>\<rightarrow> \<langle>if (B) (C;;while (B) C) else unit, (hp s, X)\<rangle>"
     by(rule RedWhile)
   hence "sim_move10 P t \<epsilon> (while (compE1 Vs B) (compE1 Vs C)) (if (compE1 Vs B) (compE1 Vs C;;while (compE1 Vs B) (compE1 Vs C)) else unit) (while (B) C) (hp s) X \<epsilon> (if (B) (C;;while (B) C) else unit) (hp s) X"
     by(auto simp add: sim_move10_def)
-  moreover from `fv E2 \<subseteq> set Vs` E2 sync
+  moreover from \<open>fv E2 \<subseteq> set Vs\<close> E2 sync
   have "bisim Vs (if (B) (C;; while (B) C) else unit)
                  (if (compE1 Vs B) (compE1 Vs (C;; while(B) C)) else (compE1 Vs unit)) (lcl s)"
     by -(rule bisimCond, auto)
-  ultimately show ?case using `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
+  ultimately show ?case using \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
     by(simp)(rule exI, rule exI, rule exI, erule conjI, auto)
 next
   case (Red1TryCatch h a D C V x e2 Vs E2 X)
-  from `bisim Vs E2 (try Throw a catch(C V) e2) (lcl (h, x))`
+  from \<open>bisim Vs E2 (try Throw a catch(C V) e2) (lcl (h, x))\<close>
   obtain E2' V' where "E2 = try Throw a catch(C V') E2'" "V = length Vs" "e2 = compE1 (Vs @ [V']) E2'"
     and sync: "\<not> contains_insync E2'" by(auto)
-  with `fv E2 \<subseteq> set Vs` have "fv E2' \<subseteq> set (Vs @[V'])" by auto
-  with `e2 = compE1 (Vs @ [V']) E2'`  sync have "bisim (Vs @[V']) E2' e2 (x[V := Addr a])"
+  with \<open>fv E2 \<subseteq> set Vs\<close> have "fv E2' \<subseteq> set (Vs @[V'])" by auto
+  with \<open>e2 = compE1 (Vs @ [V']) E2'\<close>  sync have "bisim (Vs @[V']) E2' e2 (x[V := Addr a])"
     by(auto intro!: compE1_bisim)
-  with `V = length Vs` `length Vs + max_vars (try Throw a catch(C V) e2) \<le> length (lcl (h, x))`
+  with \<open>V = length Vs\<close> \<open>length Vs + max_vars (try Throw a catch(C V) e2) \<le> length (lcl (h, x))\<close>
   have "bisim Vs {V':Class C=\<lfloor>Addr a\<rfloor>; E2'} {length Vs:Class C=None; e2} (x[V := Addr a])"
     by(auto intro: bisimBlockSomeNone)
-  moreover from `length Vs + max_vars (try Throw a catch(C V) e2) \<le> length (lcl (h, x))`
+  moreover from \<open>length Vs + max_vars (try Throw a catch(C V) e2) \<le> length (lcl (h, x))\<close>
   have "[Vs [\<mapsto>] x[length Vs := Addr a]] = [Vs [\<mapsto>] x]" by simp
-  with `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]` have "X \<subseteq>\<^sub>m [Vs [\<mapsto>] x[length Vs := Addr a]]" by simp
-  moreover note `e2 = compE1 (Vs @ [V']) E2'` `E2 = try Throw a catch(C V') E2'`
-    `typeof_addr h a = \<lfloor>Class_type D\<rfloor>` `compP1 P \<turnstile> D \<preceq>\<^sup>* C` `V = length Vs`
+  with \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, x)]\<close> have "X \<subseteq>\<^sub>m [Vs [\<mapsto>] x[length Vs := Addr a]]" by simp
+  moreover note \<open>e2 = compE1 (Vs @ [V']) E2'\<close> \<open>E2 = try Throw a catch(C V') E2'\<close>
+    \<open>typeof_addr h a = \<lfloor>Class_type D\<rfloor>\<close> \<open>compP1 P \<turnstile> D \<preceq>\<^sup>* C\<close> \<open>V = length Vs\<close>
   ultimately show ?case by(auto intro!: exI)
 next
   case Red1TryFail thus ?case by(auto intro!: exI sim_move10_TryFail)
 next
   case (List1Red1 e s ta e' s' es Vs ES2 X)
-  note IH = `\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs e2 x. \<lbrakk> bisim vs e2 e (lcl s); fv e2 \<subseteq> set vs;
             x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_vars e \<le> length (lcl s); \<D> e2 \<lfloor>dom x\<rfloor>\<rbrakk>
            \<Longrightarrow> \<exists>TA' e2' x'. sim_move10 P t ta e e' e2 (hp s) x TA' e2' (hp s') x' \<and> 
-                 bisim vs e2' e' (lcl s') \<and> x' \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s']`
-  from `bisims Vs ES2 (e # es) (lcl s)` `False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+                 bisim vs e2' e' (lcl s') \<and> x' \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s']\<close>
+  from \<open>bisims Vs ES2 (e # es) (lcl s)\<close> \<open>False,compP1 P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
   obtain E ES where "ES2 = E # ES" "\<not> is_val E" "es = compEs1 Vs ES" "bisim Vs E e (lcl s)"
     and sync: "\<not> contains_insyncs ES" by(auto elim!: bisims_cases simp add: compEs1_conv_map)
-  with IH[of Vs E X] `fvs ES2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_varss (e # es) \<le> length (lcl s)` `\<D>s ES2 \<lfloor>dom X\<rfloor>`
+  with IH[of Vs E X] \<open>fvs ES2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_varss (e # es) \<le> length (lcl s)\<close> \<open>\<D>s ES2 \<lfloor>dom X\<rfloor>\<close>
   obtain TA' e2' x' where IH': "sim_move10 P t ta e e' E (hp s) X TA' e2' (hp s') x'"
     "bisim Vs e2' e' (lcl s')" "x' \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s']" by fastforce
   show ?case
   proof(cases "is_val e2'")
     case False
-    with IH' `ES2 = E # ES` `es = compEs1 Vs ES` sync show ?thesis by(auto intro: sim_moves10_expr)
+    with IH' \<open>ES2 = E # ES\<close> \<open>es = compEs1 Vs ES\<close> sync show ?thesis by(auto intro: sim_moves10_expr)
   next
     case True
-    from `fvs ES2 \<subseteq> set Vs` `ES2 = E # ES` `es = compEs1 Vs ES` sync
+    from \<open>fvs ES2 \<subseteq> set Vs\<close> \<open>ES2 = E # ES\<close> \<open>es = compEs1 Vs ES\<close> sync
     have "bisims Vs ES es (lcl s')" by(auto intro: compEs1_bisims)
-    with IH' True `ES2 = E # ES` `es = compEs1 Vs ES` show ?thesis by(auto intro: sim_moves10_expr)
+    with IH' True \<open>ES2 = E # ES\<close> \<open>es = compEs1 Vs ES\<close> show ?thesis by(auto intro: sim_moves10_expr)
   qed
 next
   case (List1Red2 es s ta es' s' v Vs ES2 X)
-  note IH = `\<And>vs es2 x. \<lbrakk>bisims vs es2 es (lcl s); fvs es2 \<subseteq> set vs;
+  note IH = \<open>\<And>vs es2 x. \<lbrakk>bisims vs es2 es (lcl s); fvs es2 \<subseteq> set vs;
             x \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s]; length vs + max_varss es \<le> length (lcl s); \<D>s es2 \<lfloor>dom x\<rfloor>\<rbrakk>
-           \<Longrightarrow> \<exists>TA' es2' x'. sim_moves10 P t ta es es' es2 (hp s) x TA' es2' (hp s') x' \<and> bisims vs es2' es' (lcl s') \<and> x' \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s']`
-  from `bisims Vs ES2 (Val v # es) (lcl s)` obtain ES where "ES2 = Val v # ES" "bisims Vs ES es (lcl s)"
+           \<Longrightarrow> \<exists>TA' es2' x'. sim_moves10 P t ta es es' es2 (hp s) x TA' es2' (hp s') x' \<and> bisims vs es2' es' (lcl s') \<and> x' \<subseteq>\<^sub>m [vs [\<mapsto>] lcl s']\<close>
+  from \<open>bisims Vs ES2 (Val v # es) (lcl s)\<close> obtain ES where "ES2 = Val v # ES" "bisims Vs ES es (lcl s)"
     by(auto elim!: bisims_cases)
-  with IH[of Vs ES X] `fvs ES2 \<subseteq> set Vs` `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]`
-    `length Vs + max_varss (Val v # es) \<le> length (lcl s)` `\<D>s ES2 \<lfloor>dom X\<rfloor>`
-    `ES2 = Val v # ES` show ?case by(fastforce intro: sim_moves10_expr)
+  with IH[of Vs ES X] \<open>fvs ES2 \<subseteq> set Vs\<close> \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl s]\<close>
+    \<open>length Vs + max_varss (Val v # es) \<le> length (lcl s)\<close> \<open>\<D>s ES2 \<lfloor>dom X\<rfloor>\<close>
+    \<open>ES2 = Val v # ES\<close> show ?case by(fastforce intro: sim_moves10_expr)
 next
   case Call1ThrowParams
   thus ?case by(fastforce intro: CallThrowParams elim!: bisim_cases simp add: bisims_map_Val_Throw2)
 next
   case (Synchronized1Throw2 xs V a' a ad h Vs E2 X)
-  from `bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Throw ad) (lcl (h, xs))`
+  from \<open>bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Throw ad) (lcl (h, xs))\<close>
   have "xs ! length Vs = Addr a" and "V = length Vs" by auto
-  with `xs ! V = Addr a'` have [simp]: "a' = a" by simp
+  with \<open>xs ! V = Addr a'\<close> have [simp]: "a' = a" by simp
   have "extTA2J0 P,P,t \<turnstile> \<langle>insync(a) Throw ad, (h, X)\<rangle> -\<lbrace>Unlock\<rightarrow>a, SyncUnlock a\<rbrace>\<rightarrow> \<langle>Throw ad, (h, X)\<rangle>"
     by(rule SynchronizedThrow2)
-  with `X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, xs)]` `bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Throw ad) (lcl (h, xs))`
+  with \<open>X \<subseteq>\<^sub>m [Vs [\<mapsto>] lcl (h, xs)]\<close> \<open>bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Throw ad) (lcl (h, xs))\<close>
   show ?case by(auto intro: sim_move10_SyncLocks intro!: exI)
 next
   case (Synchronized1Throw2Null xs V a a' h Vs E2 X)
-  from `bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Throw a') (lcl (h, xs))`
+  from \<open>bisim Vs E2 (insync\<^bsub>V\<^esub> (a) Throw a') (lcl (h, xs))\<close>
   have "V = length Vs" "xs ! length Vs = Addr a" by(auto)
-  with `xs ! V = Null` have False by simp
+  with \<open>xs ! V = Null\<close> have False by simp
   thus ?case ..
 next
   case (Synchronized1Throw2Fail xs V A' a' a h Vs E2 X)
-  from `False` show ?case ..
+  from \<open>False\<close> show ?case ..
 next
   case InstanceOf1Red thus ?case by auto(blast)
 next
@@ -1666,7 +1666,7 @@ next
   case bisimBlockNone thus ?case by(fastforce intro: take_eq_take_le_eq)
 next
   case (bisimBlockSome Vs V e e' xs v T)
-  from `length Vs + max_vars {length Vs:T=\<lfloor>v\<rfloor>; e'} \<le> length xs`
+  from \<open>length Vs + max_vars {length Vs:T=\<lfloor>v\<rfloor>; e'} \<le> length xs\<close>
   have "\<tau>red1'r P t h ({length Vs:T=\<lfloor>v\<rfloor>; e'}, xs) ({length Vs:T=None; e'}, xs[length Vs := v])"
     by(auto intro!: \<tau>red1r_1step Block1Some)
   also from bisimBlockSome obtain e'' xs'
@@ -1674,48 +1674,48 @@ next
     and "call1 e'' = \<lfloor>aMvs\<rfloor>" "bisim (Vs @ [V]) e e'' xs'" 
     and "take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'" by auto
   hence "\<tau>red1'r P t h ({length Vs:T=None; e'}, xs[length Vs := v]) ({length Vs:T=None; e''}, xs')" by auto
-  also from `call1 e'' = \<lfloor>aMvs\<rfloor>` have "call1 {length Vs:T=None; e''} = \<lfloor>aMvs\<rfloor>" by simp
-  moreover from `take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'`
+  also from \<open>call1 e'' = \<lfloor>aMvs\<rfloor>\<close> have "call1 {length Vs:T=None; e''} = \<lfloor>aMvs\<rfloor>" by simp
+  moreover from \<open>take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'\<close>
   have "take (length Vs) xs = take (length Vs) xs'"
     by(auto dest: take_eq_take_le_eq[where m="length Vs"] simp add: take_list_update_beyond)
   moreover {
     have "xs' ! length Vs = take (length (Vs @ [V])) xs' ! length Vs" by simp
-    also note `take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'`[symmetric]
+    also note \<open>take (length (Vs @ [V])) (xs[length Vs := v]) = take (length (Vs @ [V])) xs'\<close>[symmetric]
     also have "take (length (Vs @ [V])) (xs[length Vs := v]) ! length Vs = v"
-      using `length Vs + max_vars {length Vs:T=\<lfloor>v\<rfloor>; e'} \<le> length xs` by simp
+      using \<open>length Vs + max_vars {length Vs:T=\<lfloor>v\<rfloor>; e'} \<le> length xs\<close> by simp
     finally have "bisim Vs {V:T=\<lfloor>v\<rfloor>; e} {length Vs:T=None; e''} xs'"
-      using `bisim (Vs @ [V]) e e'' xs'` by auto }
+      using \<open>bisim (Vs @ [V]) e e'' xs'\<close> by auto }
   ultimately show ?case by blast
 next
   case (bisimBlockSomeNone Vs V e e' xs v T)
   then obtain e'' xs' where "\<tau>red1'r P t h (e', xs) (e'', xs')" "call1 e'' = \<lfloor>aMvs\<rfloor>" "bisim (Vs @ [V]) e e'' xs'"
     and "take (length (Vs @ [V])) xs = take (length (Vs @ [V])) xs'" by auto
   hence "\<tau>red1'r P t h ({length Vs:T=None; e'}, xs) ({length Vs:T=None; e''}, xs')" by auto
-  moreover from `call1 e'' = \<lfloor>aMvs\<rfloor>` have "call1 ({length Vs:T=None; e''}) = \<lfloor>aMvs\<rfloor>" by simp
-  moreover from `take (length (Vs @ [V])) xs = take (length (Vs @ [V])) xs'`
+  moreover from \<open>call1 e'' = \<lfloor>aMvs\<rfloor>\<close> have "call1 ({length Vs:T=None; e''}) = \<lfloor>aMvs\<rfloor>" by simp
+  moreover from \<open>take (length (Vs @ [V])) xs = take (length (Vs @ [V])) xs'\<close>
   have "take (length Vs) xs = take (length Vs) xs'" by(auto intro: take_eq_take_le_eq)
   moreover {
     have "xs' ! length Vs = take (length (Vs @ [V])) xs' ! length Vs" by simp
-    also note `take (length (Vs @ [V])) xs = take (length (Vs @ [V])) xs'`[symmetric]
-    also have "take (length (Vs @ [V])) xs ! length Vs = v" using `xs ! length Vs = v` by simp
+    also note \<open>take (length (Vs @ [V])) xs = take (length (Vs @ [V])) xs'\<close>[symmetric]
+    also have "take (length (Vs @ [V])) xs ! length Vs = v" using \<open>xs ! length Vs = v\<close> by simp
     finally have "bisim Vs {V:T=\<lfloor>v\<rfloor>; e} {length Vs:T=None; e''} xs'"
-      using `bisim (Vs @ [V]) e e'' xs'` by auto }
+      using \<open>bisim (Vs @ [V]) e e'' xs'\<close> by auto }
   ultimately show ?case by blast
 next
   case (bisimInSynchronized Vs e e' xs a)
   then obtain e'' xs' where "\<tau>red1'r P t h (e', xs) (e'', xs')" "call1 e'' = \<lfloor>aMvs\<rfloor>" "bisim (Vs @ [fresh_var Vs]) e e'' xs'"
     and "take (Suc (length Vs)) xs = take (Suc (length Vs)) xs'" by auto
   hence "\<tau>red1'r P t h (insync\<^bsub>length Vs\<^esub> (a) e', xs) (insync\<^bsub>length Vs\<^esub> (a) e'', xs')" by auto
-  moreover from `call1 e'' = \<lfloor>aMvs\<rfloor>` have "call1 (insync\<^bsub>length Vs\<^esub> (a) e'') = \<lfloor>aMvs\<rfloor>" by simp
-  moreover from `take (Suc (length Vs)) xs = take (Suc (length Vs)) xs'`
+  moreover from \<open>call1 e'' = \<lfloor>aMvs\<rfloor>\<close> have "call1 (insync\<^bsub>length Vs\<^esub> (a) e'') = \<lfloor>aMvs\<rfloor>" by simp
+  moreover from \<open>take (Suc (length Vs)) xs = take (Suc (length Vs)) xs'\<close>
   have "take (length Vs) xs = take (length Vs) xs'" by(auto intro: take_eq_take_le_eq)
   moreover {
     have "xs' ! length Vs = take (Suc (length Vs)) xs' ! length Vs" by simp
-    also note `take (Suc (length Vs)) xs = take (Suc (length Vs)) xs'`[symmetric]
+    also note \<open>take (Suc (length Vs)) xs = take (Suc (length Vs)) xs'\<close>[symmetric]
     also have "take (Suc (length Vs)) xs ! length Vs = Addr a"
-      using `xs ! length Vs = Addr a` by simp
+      using \<open>xs ! length Vs = Addr a\<close> by simp
     finally have "bisim Vs (insync(a) e) (insync\<^bsub>length Vs\<^esub> (a) e'') xs'"
-      using `bisim (Vs @ [fresh_var Vs]) e e'' xs'` by auto }
+      using \<open>bisim (Vs @ [fresh_var Vs]) e e'' xs'\<close> by auto }
   ultimately show ?case by blast
 next
   case bisimsCons1 thus ?case by(fastforce intro!: \<tau>red1r_inj_\<tau>reds1r)
@@ -1754,9 +1754,9 @@ lemma Red1_simulates_red0:
 using red
 proof(cases)
   case (red0Red XS')
-  note [simp] = `es1' = es1`
-    and red = `extTA2J0 P,P,t \<turnstile> \<langle>e1,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e1',(h', XS')\<rangle>`
-    and notsynth = `\<forall>aMvs. call e1 = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs`
+  note [simp] = \<open>es1' = es1\<close>
+    and red = \<open>extTA2J0 P,P,t \<turnstile> \<langle>e1,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e1',(h', XS')\<rangle>\<close>
+    and notsynth = \<open>\<forall>aMvs. call e1 = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs\<close>
   from bisiml obtain E xs where ex2: "ex2 = (E, xs)"
     and bisim: "bisim [] e1 E xs" and fv: "fv e1 = {}" 
     and length: "max_vars E \<le> length xs" and bsl: "bisim_list es1 exs2"
@@ -1772,7 +1772,7 @@ proof(cases)
     have "fv e1' = {}" by simp
     moreover from red D have "\<D> e1' \<lfloor>dom XS'\<rfloor>"
       by(auto dest: red_preserves_defass[OF wf] split: if_split_asm)
-    with red_dom_lcl[OF red] `fv e1 = {}` have "\<D> e1' \<lfloor>{}\<rfloor>"
+    with red_dom_lcl[OF red] \<open>fv e1 = {}\<close> have "\<D> e1' \<lfloor>{}\<rfloor>"
       by(auto elim!: D_mono' simp add: hyperset_defs)
     moreover from sim have "length xs = length xs'" "max_vars e2' \<le> max_vars E"
       by(auto dest: sim_move01_preserves_len sim_move01_max_vars_decr)
@@ -1781,13 +1781,13 @@ proof(cases)
   ultimately show ?thesis using ex2 by(simp split del: if_split)(rule exI conjI|assumption)+
 next
   case (red0Call a M vs U Ts T pns body D)
-  note [simp] = `ta = \<epsilon>` `h' = h`
-    and es1' = `es1' = e1 # es1`
-    and e1' = `e1' = blocks (this # pns) (Class D # Ts) (Addr a # vs) body`
-    and call = `call e1 = \<lfloor>(a, M, vs)\<rfloor>`
-    and ha = `typeof_addr h a = \<lfloor>U\<rfloor>`
-    and sees = `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D`
-    and len = `length vs = length pns` `length Ts = length pns`
+  note [simp] = \<open>ta = \<epsilon>\<close> \<open>h' = h\<close>
+    and es1' = \<open>es1' = e1 # es1\<close>
+    and e1' = \<open>e1' = blocks (this # pns) (Class D # Ts) (Addr a # vs) body\<close>
+    and call = \<open>call e1 = \<lfloor>(a, M, vs)\<rfloor>\<close>
+    and ha = \<open>typeof_addr h a = \<lfloor>U\<rfloor>\<close>
+    and sees = \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D\<close>
+    and len = \<open>length vs = length pns\<close> \<open>length Ts = length pns\<close>
   from bisiml obtain E xs where ex2: "ex2 = (E, xs)"
     and bisim: "bisim [] e1 E xs" and fv: "fv e1 = {}" 
     and length: "max_vars E \<le> length xs" and bsl: "bisim_list es1 exs2"
@@ -1806,14 +1806,14 @@ next
   have "\<tau>Red1'r (compP1 P) t h ((E, xs), exs2) ((e', xs'), exs2)"
     using red by(rule \<tau>red1r_into_\<tau>Red1r)
   moreover {
-    note `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` 
+    note \<open>call1 e' = \<lfloor>(a, M, vs)\<rfloor>\<close> 
     moreover note ha
     moreover have "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = map_option (\<lambda>(pns, body). compE1 (this # pns) body) \<lfloor>(pns, body)\<rfloor> in D"
       using sees unfolding compP1_def by(rule sees_method_compP)
     hence sees': "compP1 P \<turnstile> class_type_of U sees M:Ts \<rightarrow> T = \<lfloor>compE1 (this # pns) body\<rfloor> in D" by simp
     moreover from len have "length vs = length Ts" by simp
     ultimately have "False,compP1 P,t \<turnstile>1 \<langle>(e', xs')/exs2,h\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e2', ?xs2')/?exs2', h\<rangle>" by(rule red1Call) 
-    moreover have "\<tau>Move1 P h ((e', xs'), exs2)" using `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` ha sees
+    moreover have "\<tau>Move1 P h ((e', xs'), exs2)" using \<open>call1 e' = \<lfloor>(a, M, vs)\<rfloor>\<close> ha sees
       by(auto simp add: synthesized_call_def \<tau>external'_def dest: sees_method_fun dest!: \<tau>move1_not_call1[where P=P and h=h])
     ultimately have "\<tau>Red1' (compP1 P) t h ((e', xs'), exs2) ((?e2', ?xs2'), ?exs2')" by auto }
   ultimately have "\<tau>Red1't (compP1 P) t h ((E, xs), exs2) ((?e2', ?xs2'), ?exs2')" by(rule rtranclp_into_tranclp1)
@@ -1821,19 +1821,19 @@ next
   { from red have "length xs' = length xs" by(rule \<tau>red1r_preserves_len)
     moreover from red have "max_vars e' \<le> max_vars E" by(rule \<tau>red1r_max_vars)
     ultimately have "max_vars e' \<le> length xs'" using length by simp }
-  with bsl `bisim [] e1 e' xs'` fv D have "bisim_list (e1 # es1) ?exs2'"
-    using `call e1 = \<lfloor>(a, M, vs)\<rfloor>` `call1 e' = \<lfloor>(a, M, vs)\<rfloor>` by(rule bisim_listCons)
+  with bsl \<open>bisim [] e1 e' xs'\<close> fv D have "bisim_list (e1 # es1) ?exs2'"
+    using \<open>call e1 = \<lfloor>(a, M, vs)\<rfloor>\<close> \<open>call1 e' = \<lfloor>(a, M, vs)\<rfloor>\<close> by(rule bisim_listCons)
   hence "bisim_list1 (e1', es1') ((?e2', ?xs2'), ?exs2')"
     unfolding e1' es1'
   proof(rule bisim_list1I)
     from wf_prog_wwf_prog[OF wf] sees
     have "wf_mdecl wwf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)" by(rule sees_wf_mdecl)
     hence fv': "fv body \<subseteq> set pns \<union> {this}" by(auto simp add: wf_mdecl_def)
-    moreover from `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` have "\<not> contains_insync body"
+    moreover from \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D\<close> have "\<not> contains_insync body"
       by(auto dest!: sees_wf_mdecl[OF wf] WT_expr_locks simp add: wf_mdecl_def contains_insync_conv)
     ultimately have "bisim ([this] @ pns) body (compE1 ([this] @ pns) body) ?xs2'"
       by -(rule compE1_bisim, auto)
-    with `length vs = length pns` `length Ts = length pns`
+    with \<open>length vs = length pns\<close> \<open>length Ts = length pns\<close>
     have "bisim ([] @ [this]) (blocks pns Ts vs body) (blocks1 (Suc 0) Ts (compE1 (this # pns) body)) ?xs2'"
       by -(drule blocks_bisim,auto simp add: nth_append)
     from bisimBlockSomeNone[OF this, of "Addr a" "Class D"]
@@ -1843,7 +1843,7 @@ next
     from wf sees
     have "wf_mdecl wf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,body)\<rfloor>)" by(rule sees_wf_mdecl)
     hence "\<D> body \<lfloor>set pns \<union> {this}\<rfloor>" by(auto simp add: wf_mdecl_def)
-    with `length vs = length pns` `length Ts = length pns`
+    with \<open>length vs = length pns\<close> \<open>length Ts = length pns\<close>
     have "\<D> (blocks pns Ts vs body) \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>" by(auto)
     thus "\<D> ?e1' \<lfloor>{}\<rfloor>" by auto
     
@@ -1851,13 +1851,13 @@ next
   qed
   moreover have "\<tau>Move0 P h (e1, es1)" using call ha sees
     by(fastforce simp add: synthesized_call_def  \<tau>external'_def dest: sees_method_fun \<tau>move0_callD[where P=P and h=h])
-  ultimately show ?thesis using ex2 `call e1 = \<lfloor>(a, M, vs)\<rfloor>` 
+  ultimately show ?thesis using ex2 \<open>call e1 = \<lfloor>(a, M, vs)\<rfloor>\<close> 
     by(simp del: \<tau>Move1.simps)(rule exI conjI|assumption)+
 next
   case (red0Return e)
-  note es1 = `es1 = e # es1'` and e1' = `e1' = inline_call e1 e`
-    and [simp] = `ta = \<epsilon>` `h' = h`
-    and fin = `final e1`
+  note es1 = \<open>es1 = e # es1'\<close> and e1' = \<open>e1' = inline_call e1 e\<close>
+    and [simp] = \<open>ta = \<epsilon>\<close> \<open>h' = h\<close>
+    and fin = \<open>final e1\<close>
   from bisiml es1 obtain E' xs' E xs exs' aMvs where ex2: "ex2 = (E', xs')" and exs2: "exs2 = (E, xs) # exs'"
     and bisim': "bisim [] e1 E' xs'"
     and bisim: "bisim [] e E xs"
@@ -1870,11 +1870,11 @@ next
     by(fastforce elim: bisim_list1_elim)
   let ?e2' = "inline_call E' E"
 
-  from `final e1` bisim' have "final E'" by(auto)
+  from \<open>final e1\<close> bisim' have "final E'" by(auto)
   hence red': "False,compP1 P,t \<turnstile>1 \<langle>ex2/exs2, h\<rangle> -\<epsilon>\<rightarrow> \<langle>(?e2', xs)/exs', h\<rangle>"
     unfolding ex2 exs2 by(rule red1Return)
   moreover have "\<tau>Move0 P h (e1, es1) = \<tau>Move1 P h ((E', xs'), exs2)"
-    using `final e1` `final E'` by auto
+    using \<open>final e1\<close> \<open>final E'\<close> by auto
   moreover {
     note bisiml
     moreover
@@ -1886,10 +1886,10 @@ next
     moreover from fin have "\<D> (inline_call e1 e) \<lfloor>{}\<rfloor>"
       using call D by(rule defass_inline_call)
     moreover have "max_vars ?e2' \<le> max_vars E + max_vars E'" by(rule inline_call_max_vars1)
-    with `final E'` length have "max_vars ?e2' \<le> length xs" by(auto elim!: final.cases)
+    with \<open>final E'\<close> length have "max_vars ?e2' \<le> length xs" by(auto elim!: final.cases)
     ultimately have "bisim_list1 (inline_call e1 e, es1') ((?e2', xs), exs')"
       by(rule bisim_list1I) }
-  ultimately show ?thesis using e1' `final e1` `final E'` ex2 
+  ultimately show ?thesis using e1' \<open>final e1\<close> \<open>final E'\<close> ex2 
     apply(simp del: \<tau>Move0.simps \<tau>Move1.simps)
     apply(rule exI conjI impI|assumption)+
      apply(rule tranclp.r_into_trancl, simp)
@@ -1940,13 +1940,13 @@ next
   with \<tau>red have "\<tau>red0r (extTA2J0 P) P t h (e, Map.empty) (e'', Map.empty)" by simp
   with wwf have "\<tau>Red0r P t h (e, es) (e'', es)"
     using fv by(rule \<tau>red0r_into_\<tau>Red0r)
-  moreover from red `xs'' = Map.empty`
+  moreover from red \<open>xs'' = Map.empty\<close>
   have "extTA2J0 P,P,t \<turnstile> \<langle>e'',(h, Map.empty)\<rangle> -ta'\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
-  from red0Red[OF this] `no_call P h e''` 
+  from red0Red[OF this] \<open>no_call P h e''\<close> 
   have "P,t \<turnstile>0 \<langle>e''/es,h\<rangle> -ta'\<rightarrow> \<langle>e'/es,h'\<rangle>" by(simp add: no_call_def)
-  moreover from `\<not> \<tau>move0 P h e''` red
+  moreover from \<open>\<not> \<tau>move0 P h e''\<close> red
   have "\<not> \<tau>Move0 P h (e'', es)" by auto
-  ultimately show ?thesis using False `ta_bisim01 ta' (extTA2J1 (compP1 P) ta)` call
+  ultimately show ?thesis using False \<open>ta_bisim01 ta' (extTA2J1 (compP1 P) ta)\<close> call
     by(simp del: \<tau>Move0.simps) blast
 qed
 
@@ -1966,10 +1966,10 @@ lemma red0_simulates_Red1:
 using red
 proof(cases)
   case (red1Red E xs TA E' xs')
-  note red = `False,compP1 P,t \<turnstile>1 \<langle>E,(h, xs)\<rangle> -TA\<rightarrow> \<langle>E',(h', xs')\<rangle>`
-    and ex2 = `ex2 = (E, xs)`
-    and ex2' = `ex2' = (E', xs')`
-    and [simp] = `ta = extTA2J1 (compP1 P) TA` `exs2' = exs2`
+  note red = \<open>False,compP1 P,t \<turnstile>1 \<langle>E,(h, xs)\<rangle> -TA\<rightarrow> \<langle>E',(h', xs')\<rangle>\<close>
+    and ex2 = \<open>ex2 = (E, xs)\<close>
+    and ex2' = \<open>ex2' = (E', xs')\<close>
+    and [simp] = \<open>ta = extTA2J1 (compP1 P) TA\<close> \<open>exs2' = exs2\<close>
   from bisiml ex2 have bisim: "bisim [] e E xs" and fv: "fv e = {}"
     and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
     and D: "\<D> e \<lfloor>{}\<rfloor>" by(auto elim: bisim_list1_elim)
@@ -2002,22 +2002,22 @@ proof(cases)
     by(clarsimp split: if_split_asm)(rule exI conjI|assumption|simp)+
 next
   case (red1Call E a M vs U Ts T body D xs)
-  note [simp] = `ex2 = (E, xs)` `h' = h` `ta = \<epsilon>`
-    and ex2' = `ex2' = (blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined_value)`
-    and exs' = `exs2' = (E, xs) # exs2`
-    and call = `call1 E = \<lfloor>(a, M, vs)\<rfloor>` and ha = `typeof_addr h a = \<lfloor>U\<rfloor>`
-    and sees = `compP1 P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
-    and len = `length vs = length Ts`
+  note [simp] = \<open>ex2 = (E, xs)\<close> \<open>h' = h\<close> \<open>ta = \<epsilon>\<close>
+    and ex2' = \<open>ex2' = (blocks1 0 (Class D#Ts) body, Addr a # vs @ replicate (max_vars body) undefined_value)\<close>
+    and exs' = \<open>exs2' = (E, xs) # exs2\<close>
+    and call = \<open>call1 E = \<lfloor>(a, M, vs)\<rfloor>\<close> and ha = \<open>typeof_addr h a = \<lfloor>U\<rfloor>\<close>
+    and sees = \<open>compP1 P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D\<close>
+    and len = \<open>length vs = length Ts\<close>
   let ?e2' = "blocks1 0 (Class D#Ts) body"
   let ?xs2' = "Addr a # vs @ replicate (max_vars body) undefined_value"
   from bisiml have bisim: "bisim [] e E xs" and fv: "fv e = {}"
     and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
     and D: "\<D> e \<lfloor>{}\<rfloor>" by(auto elim: bisim_list1_elim)
 
-  from bisim `call1 E = \<lfloor>(a, M, vs)\<rfloor>`
+  from bisim \<open>call1 E = \<lfloor>(a, M, vs)\<rfloor>\<close>
   have "call e = \<lfloor>(a, M, vs)\<rfloor>" by(rule bisim_call1_Some_call)
   moreover note ha
-  moreover from `compP1 P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
+  moreover from \<open>compP1 P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D\<close>
   obtain pns Jbody where sees': "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, Jbody)\<rfloor> in D"
     and body: "body = compE1 (this # pns) Jbody"
     by(auto dest: sees_method_compPD)
@@ -2026,12 +2026,12 @@ next
     by(auto dest!: sees_wf_mdecl simp add: wf_mdecl_def)
   with len have "length vs = length pns" "length Ts = length pns" by simp_all
   ultimately have red': "P,t \<turnstile>0 \<langle>e/es, h\<rangle> -\<epsilon>\<rightarrow> \<langle>?e'/e#es, h\<rangle>" by(rule red0Call)
-  moreover from `call e = \<lfloor>(a, M, vs)\<rfloor>` ha sees'
+  moreover from \<open>call e = \<lfloor>(a, M, vs)\<rfloor>\<close> ha sees'
   have "\<tau>Move0 P h (e, es)"
     by(fastforce simp add: synthesized_call_def dest: \<tau>move0_callD[where P=P and h=h] sees_method_fun)
   ultimately have "\<tau>Red0t P t h (e, es) (?e', e#es)" by auto
   moreover
-  from bsl bisim fv D length `call e = \<lfloor>(a, M, vs)\<rfloor>` `call1 E = \<lfloor>(a, M, vs)\<rfloor>`
+  from bsl bisim fv D length \<open>call e = \<lfloor>(a, M, vs)\<rfloor>\<close> \<open>call1 E = \<lfloor>(a, M, vs)\<rfloor>\<close>
   have "bisim_list (e # es) ((E, xs) # exs2)" by(rule bisim_list.intros)
   hence "bisim_list1 (?e', e # es) (ex2', (E, xs) # exs2)" unfolding ex2'
   proof(rule bisim_list1I)
@@ -2042,30 +2042,30 @@ next
       by(auto dest!: sees_wf_mdecl[OF wf] WT_expr_locks simp add: wf_mdecl_def contains_insync_conv)
     ultimately have "bisim ([] @ this # pns) Jbody (compE1 ([] @ this # pns) Jbody) ?xs2'"
       by -(rule compE1_bisim, auto)
-    with `length vs = length Ts` `length Ts = length pns` body
+    with \<open>length vs = length Ts\<close> \<open>length Ts = length pns\<close> body
     have "bisim [] ?e' (blocks1 (length ([] :: vname list)) (Class D # Ts) body) ?xs2'"
       by -(rule blocks_bisim, auto simp add: nth_append nth_Cons')
     thus "bisim [] ?e' ?e2' ?xs2'" by simp
-    from `length vs = length Ts` `length Ts = length pns` `fv Jbody \<subseteq> set pns \<union> {this}`
+    from \<open>length vs = length Ts\<close> \<open>length Ts = length pns\<close> \<open>fv Jbody \<subseteq> set pns \<union> {this}\<close>
     show "fv ?e' = {}" by auto
     from wf sees'
     have "wf_mdecl wf_J_mdecl P D (M,Ts,T,\<lfloor>(pns,Jbody)\<rfloor>)" by(rule sees_wf_mdecl)
     hence "\<D> Jbody \<lfloor>set pns \<union> {this}\<rfloor>" by(auto simp add: wf_mdecl_def)
-    with `length vs = length Ts` `length Ts = length pns`
+    with \<open>length vs = length Ts\<close> \<open>length Ts = length pns\<close>
     have "\<D> (blocks pns Ts vs Jbody) \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>" by(auto)
     thus "\<D> ?e' \<lfloor>{}\<rfloor>" by simp
     from len show "max_vars ?e2' \<le> length ?xs2'" by(simp add: blocks1_max_vars)
   qed
-  moreover have "\<tau>Move1 P h (ex2, exs2)" using ha `call1 E = \<lfloor>(a, M, vs)\<rfloor>` sees'
+  moreover have "\<tau>Move1 P h (ex2, exs2)" using ha \<open>call1 E = \<lfloor>(a, M, vs)\<rfloor>\<close> sees'
     by(auto simp add: synthesized_call_def \<tau>external'_def dest!: \<tau>move1_not_call1[where P=P and h=h] dest: sees_method_fun)
   ultimately show ?thesis using exs'
     by(simp del: \<tau>Move1.simps \<tau>Move0.simps)(rule exI conjI rtranclp.rtrancl_refl|assumption)+
 next
   case (red1Return E' x' E x)
-  note [simp] = `h' = h` `ta = \<epsilon>`
-    and ex2 = `ex2 = (E', x')` and exs2 = `exs2 = (E, x) # exs2'`
-    and ex2' = `ex2' = (inline_call E' E, x)`
-    and fin = `final E'`
+  note [simp] = \<open>h' = h\<close> \<open>ta = \<epsilon>\<close>
+    and ex2 = \<open>ex2 = (E', x')\<close> and exs2 = \<open>exs2 = (E, x) # exs2'\<close>
+    and ex2' = \<open>ex2' = (inline_call E' E, x)\<close>
+    and fin = \<open>final E'\<close>
   from bisiml ex2 exs2 obtain e' es' aMvs where es: "es = e' # es'"
     and bsl: "bisim_list es' exs2'"
     and bisim: "bisim [] e E' x'"
@@ -2077,7 +2077,7 @@ next
     and call1: "call1 E = \<lfloor>aMvs\<rfloor>"
     by(fastforce elim!: bisim_list1_elim)
   
-  from `final E'` bisim have fin': "final e" by(auto)
+  from \<open>final E'\<close> bisim have fin': "final e" by(auto)
   hence "P,t \<turnstile>0 \<langle>e/e' # es',h\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e e'/es',h\<rangle>" by(rule red0Return)
   moreover from bisim fin' bisim' call
   have "bisim [] (inline_call e e') (inline_call E' E) x"

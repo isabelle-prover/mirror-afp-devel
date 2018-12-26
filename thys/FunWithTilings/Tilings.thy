@@ -5,7 +5,7 @@
 
 theory Tilings imports Main begin
 
-section{* Inductive Tiling *}
+section\<open>Inductive Tiling\<close>
 
 
 inductive_set
@@ -42,11 +42,11 @@ using assms apply auto
 done
 
 
-section{* The Mutilated Chess Board Cannot be Tiled by Dominoes *}
+section\<open>The Mutilated Chess Board Cannot be Tiled by Dominoes\<close>
 
-text {* The originator of this problem is Max Black, according to J A
+text \<open>The originator of this problem is Max Black, according to J A
 Robinson. It was popularized as the \emph{Mutilated Checkerboard Problem} by
-J McCarthy.  *}
+J McCarthy.\<close>
 
 inductive_set domino :: "(nat \<times> nat) set set" where
 horiz [simp]: "{(i, j), (i, Suc j)} \<in> domino" |
@@ -57,7 +57,7 @@ by (erule domino.cases, auto)
 
 declare tiling_finite[OF domino_finite, simp]
 
-text {* \medskip Sets of squares of the given colour *}
+text \<open>\medskip Sets of squares of the given colour\<close>
 
 definition
   coloured :: "nat \<Rightarrow> (nat \<times> nat) set" where
@@ -72,7 +72,7 @@ abbreviation
   "blacks \<equiv> coloured (Suc 0)"
 
 
-text {* \medskip Chess boards *}
+text \<open>\medskip Chess boards\<close>
 
 lemma Sigma_Suc1 [simp]:
   "{0..< Suc n} \<times> B = ({n} \<times> B) \<union> ({0..<n} \<times> B)"
@@ -91,7 +91,7 @@ lemma dominoes_tile_matrix: "{0..<m} \<times> {0..< 2*n} \<in> tiling domino"
 by (induct m) auto
 
 
-text {* \medskip @{term coloured} and Dominoes *}
+text \<open>\medskip @{term coloured} and Dominoes\<close>
 
 lemma coloured_insert [simp]:
   "coloured b \<inter> (insert (i, j) t) =
@@ -108,7 +108,7 @@ apply (erule domino.cases)
 done
 
 
-text {* \medskip Tilings of dominoes *}
+text \<open>\medskip Tilings of dominoes\<close>
 
 declare
   Int_Un_distrib [simp]
@@ -126,7 +126,7 @@ apply blast
 done
 
 
-text {* \medskip Final argument is surprisingly complex *}
+text \<open>\medskip Final argument is surprisingly complex\<close>
 
 theorem gen_mutil_not_tiling:
   "t \<in> tiling domino ==>
@@ -142,7 +142,7 @@ apply (simp add: tiling_domino_0_1 [symmetric])
 apply (simp add: coloured_def card_Diff2_less)
 done
 
-text {* Apply the general theorem to the well-known case *}
+text \<open>Apply the general theorem to the well-known case\<close>
 
 theorem mutil_not_tiling:
   "t = {0..< 2 * Suc m} \<times> {0..< 2 * Suc n}
@@ -153,9 +153,9 @@ apply auto
 done
 
 
-section{* The Mutilated Chess Board Can be Tiled by Ls *}
+section\<open>The Mutilated Chess Board Can be Tiled by Ls\<close>
 
-text{* Remove a arbitrary square from a chess board of size $2^n \times 2^n$.
+text\<open>Remove a arbitrary square from a chess board of size $2^n \times 2^n$.
 The result can be tiled by L-shaped tiles:
 \begin{picture}(8,8)
 \put(0,0){\framebox(4,4){}}
@@ -163,14 +163,14 @@ The result can be tiled by L-shaped tiles:
 \put(0,4){\framebox(4,4){}}
 \end{picture}.
 The four possible L-shaped tiles are obtained by dropping
-one of the four squares from $\{(x,y),(x+1,y),(x,y+1),(x+1,y+1)\}$: *}
+one of the four squares from $\{(x,y),(x+1,y),(x,y+1),(x+1,y+1)\}$:\<close>
 
 definition "L2 (x::nat) (y::nat) = {(x,y), (x+1,y), (x, y+1)}"
 definition "L3 (x::nat) (y::nat) = {(x,y), (x+1,y), (x+1, y+1)}"
 definition "L0 (x::nat) (y::nat) = {(x+1,y), (x,y+1), (x+1, y+1)}"
 definition "L1 (x::nat) (y::nat) = {(x,y), (x,y+1), (x+1, y+1)}"
 
-text{* All tiles: *}
+text\<open>All tiles:\<close>
 
 definition Ls :: "(nat * nat) set set" where
 "Ls \<equiv> { L0 x y | x y. True} \<union> { L1 x y | x y. True} \<union>
@@ -180,7 +180,7 @@ lemma LinLs: "L0 i j : Ls & L1 i j : Ls & L2 i j : Ls & L3 i j : Ls"
 by(fastforce simp:Ls_def)
 
 
-text{* Square $2^n \times 2^n$ grid, shifted by $i$ and $j$: *}
+text\<open>Square $2^n \times 2^n$ grid, shifted by $i$ and $j$:\<close>
 
 definition "square2 (n::nat) (i::nat) (j::nat) = {i..< 2^n+i} \<times> {j..< 2^n+j}"
 
@@ -204,7 +204,7 @@ proof-
   ultimately show ?thesis by blast
 qed
 
-text{* Some specific lemmas: *}
+text\<open>Some specific lemmas:\<close>
 
 lemma pos_pow2: "(0::nat) < 2^(n::nat)"
 by simp
@@ -221,7 +221,7 @@ by blast
 lemma DisjI2: "A Int B = {} \<Longrightarrow> A Int (B-X) = {}"
 by blast
 
-text{* The main theorem: *}
+text\<open>The main theorem:\<close>
 
 theorem Ls_can_tile: "i \<le> a \<Longrightarrow> a < 2^n + i \<Longrightarrow> j \<le> b \<Longrightarrow> b < 2^n + j
   \<Longrightarrow> square2 n i j - {(a,b)} : tiling Ls"
@@ -245,7 +245,7 @@ next
       by(rule IH)(insert pos_pow2[of n], auto)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L0 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
-      using  a b `?A`
+      using  a b \<open>?A\<close>
       by (clarsimp simp: square2_Suc L0_def Un_Diff Diff_insert_if)
          (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
@@ -260,7 +260,7 @@ next
       by(rule IH)(insert pos_pow2[of n], auto)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L1 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
-      using  a b `?B`
+      using  a b \<open>?B\<close>
       by (simp add: square2_Suc L1_def Un_Diff Diff_insert_if le_diff_conv2)
          (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
@@ -275,7 +275,7 @@ next
       by(rule IH)(insert pos_pow2[of n], auto)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L3 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
-      using  a b `?C`
+      using  a b \<open>?C\<close>
       by (simp add: square2_Suc L3_def Un_Diff Diff_insert_if le_diff_conv2)
          (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)
@@ -290,7 +290,7 @@ next
       by(rule IH)(insert pos_pow2[of n], auto)
     ultimately
     have "square2 (n+1) i j - {(a,b)} - L2 (2^n+i - 1) (2^n+j - 1) \<in> tiling Ls"
-      using  a b `?D`
+      using  a b \<open>?D\<close>
       by (simp add: square2_Suc L2_def Un_Diff Diff_insert_if le_diff_conv2)
          (fastforce intro!: tiling_UnI DisjI1 DisjI2 square2_disj[THEN iffD2]
                    simp:Int_Un_distrib2)

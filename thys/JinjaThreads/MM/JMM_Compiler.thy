@@ -4,7 +4,7 @@
     Compiler correctness for the JMM
 *)
 
-section {* Compiler correctness for the JMM *}
+section \<open>Compiler correctness for the JMM\<close>
 
 theory JMM_Compiler imports
   JMM_J

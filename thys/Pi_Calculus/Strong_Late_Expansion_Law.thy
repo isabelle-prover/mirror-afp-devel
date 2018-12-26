@@ -375,7 +375,7 @@ next
         fix x P'
         assume xFreshP'': "(x::name) \<sharp> P''" and xineqb: "x \<noteq> b"
         assume "<\<nu>y>b{y}.P'' \<longmapsto>b<\<nu>x> \<prec> P'" and xineqy: "x \<noteq> y"
-        moreover from `x \<noteq> b` `x \<sharp> P''` `x \<noteq> y` have "x \<sharp> b{y}.P''" by simp
+        moreover from \<open>x \<noteq> b\<close> \<open>x \<sharp> P''\<close> \<open>x \<noteq> y\<close> have "x \<sharp> b{y}.P''" by simp
         ultimately show "<\<nu>x>b{x}.P' \<in> summands (<\<nu>y>b{y}.P'')"
         proof(induct rule: resCasesB)
           case(cOpen a P''')
@@ -928,11 +928,11 @@ next
     moreover obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> P'"
       by(generate_fresh "name") auto
     assume "P \<parallel> Q \<longmapsto>a<x> \<prec> P'"
-    with `y \<sharp> P'` have "P \<parallel> Q \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')"
+    with \<open>y \<sharp> P'\<close> have "P \<parallel> Q \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')"
       by(simp add: alphaBoundResidual)
-    ultimately have "R \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')" using `y \<sharp> P` `y \<sharp> Q`
+    ultimately have "R \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close>
       by auto
-    thus "R \<longmapsto>a<x> \<prec> P'" using `y \<sharp> P'` by(simp add: alphaBoundResidual)
+    thus "R \<longmapsto>a<x> \<prec> P'" using \<open>y \<sharp> P'\<close> by(simp add: alphaBoundResidual)
   next
     assume "R \<longmapsto>a<x> \<prec> P'"
     with Exp obtain R where "R \<in> expandSet P Q" and "R \<longmapsto>a<x> \<prec> P'" by(blast dest: expandAction')
@@ -976,19 +976,19 @@ next
         proof(induct rule: parCasesB)
           case(cPar1 P')
           have "P \<longmapsto>a<\<nu>x> \<prec> P'" by fact
-          with Phnf `a \<noteq> x` have "<\<nu>x>a{x}.P' \<in> summands P" by(simp add: summandTransition)
+          with Phnf \<open>a \<noteq> x\<close> have "<\<nu>x>a{x}.P' \<in> summands P" by(simp add: summandTransition)
           moreover have "x \<sharp> Q" by fact
           ultimately have "<\<nu>x>a{x}.(P' \<parallel> Q) \<in> expandSet P Q" by(auto simp add: expandSet_def)
-          moreover have "<\<nu>x>a{x}.(P' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> (P' \<parallel> Q)" using `a \<noteq> x`
+          moreover have "<\<nu>x>a{x}.(P' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> (P' \<parallel> Q)" using \<open>a \<noteq> x\<close>
             by(blast intro: Open Output)
           ultimately show ?case using Exp by(blast intro: expandAction)
         next
           case(cPar2 Q')
           have "Q \<longmapsto>a<\<nu>x> \<prec> Q'" by fact
-          with Qhnf `a \<noteq> x` have "<\<nu>x>a{x}.Q' \<in> summands Q" by(simp add: summandTransition)
+          with Qhnf \<open>a \<noteq> x\<close> have "<\<nu>x>a{x}.Q' \<in> summands Q" by(simp add: summandTransition)
           moreover have "x \<sharp> P" by fact
           ultimately have "<\<nu>x>a{x}.(P \<parallel> Q') \<in> expandSet P Q" by(simp add: expandSet_def, blast)
-          moreover have "<\<nu>x>a{x}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> (P \<parallel> Q')" using `a \<noteq> x`
+          moreover have "<\<nu>x>a{x}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> (P \<parallel> Q')" using \<open>a \<noteq> x\<close>
             by(blast intro: Open Output)
           ultimately show ?case using Exp by(blast intro: expandAction)
         qed
@@ -996,11 +996,11 @@ next
       moreover obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> P'" and "y \<noteq> a"
         by(generate_fresh "name") auto
       assume "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'"
-      with `y \<sharp> P'` have "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
+      with \<open>y \<sharp> P'\<close> have "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
         by(simp add: alphaBoundResidual)
-      ultimately have "R \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a`
+      ultimately have "R \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close>
         by auto
-      thus "R \<longmapsto>a<\<nu>x> \<prec> P'" using `y \<sharp> P'` by(simp add: alphaBoundResidual)
+      thus "R \<longmapsto>a<\<nu>x> \<prec> P'" using \<open>y \<sharp> P'\<close> by(simp add: alphaBoundResidual)
     next
       {
         fix R x P'
@@ -1014,7 +1014,7 @@ next
           moreover assume "y \<sharp> Q"
           ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<\<nu>y> \<prec> P'' \<parallel> Q" by(rule Par1B)
           assume ResTrans: "<\<nu>y>a'{y}.(P'' \<parallel> Q) \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> [y].a'{y}.(P'' \<parallel> Q)"
-          with ResTrans `a' \<noteq> y` `x \<sharp> P` `x \<sharp> Q` have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P'' \<parallel> Q"
+          with ResTrans \<open>a' \<noteq> y\<close> \<open>x \<sharp> P\<close> \<open>x \<sharp> Q\<close> have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P'' \<parallel> Q"
             apply(case_tac "x=y")
             defer
             apply(erule_tac resCasesB)
@@ -1043,7 +1043,7 @@ next
         moreover assume "y \<sharp> P"
         ultimately have PQTrans: "P \<parallel> Q \<longmapsto>a'<\<nu>y> \<prec> P \<parallel> Q'" by(rule Par2B)
         assume ResTrans: "<\<nu>y>a'{y}.(P \<parallel> Q') \<longmapsto>a<\<nu>x> \<prec> P'" and "x \<sharp> [y].a'{y}.(P \<parallel> Q')"
-        with ResTrans `a' \<noteq> y` have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P \<parallel> Q'"
+        with ResTrans \<open>a' \<noteq> y\<close> have "a<\<nu>x> \<prec> P' = a'<\<nu>y> \<prec> P \<parallel> Q'"
           apply(case_tac "x=y")
           defer
           apply(erule_tac resCasesB)
@@ -1071,9 +1071,9 @@ next
       apply(drule_tac expandAction') by auto
     moreover obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> R" and "y \<sharp> P'"
       by(generate_fresh "name") auto
-    moreover with `y \<sharp> P'` `R \<longmapsto>a<\<nu>x> \<prec> P'` have "R \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" by(simp add: alphaBoundResidual)
+    moreover with \<open>y \<sharp> P'\<close> \<open>R \<longmapsto>a<\<nu>x> \<prec> P'\<close> have "R \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" by(simp add: alphaBoundResidual)
     ultimately have "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" by auto
-    thus "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'" using `y \<sharp> P'` by(simp add: alphaBoundResidual)
+    thus "P \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> P'" using \<open>y \<sharp> P'\<close> by(simp add: alphaBoundResidual)
     qed
   qed
 

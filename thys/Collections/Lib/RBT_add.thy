@@ -2,13 +2,13 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Additions to RB-Trees} *}
+section \<open>\isaheader{Additions to RB-Trees}\<close>
 theory RBT_add
 imports 
   "HOL-Library.RBT_Impl" 
   "../Iterator/Iterator"
 begin
-text_raw {*\label{thy:RBT_add}*}
+text_raw \<open>\label{thy:RBT_add}\<close>
 
 lemma tlt_trans: "\<lbrakk>l |\<guillemotleft> u; u\<le>v\<rbrakk> \<Longrightarrow> l |\<guillemotleft> v"
   by (induct l) auto

@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Test cases *}
+chapter \<open>Test cases\<close>
 
 theory Native_Word_Test imports
   Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
   "HOL-Library.Code_Test"
 begin
 
-section {* Tests for @{typ uint32} *}
+section \<open>Tests for @{typ uint32}\<close>
 
 notation sshiftr_uint32 (infixl ">>>" 55)
 
@@ -75,7 +75,7 @@ end
 
 definition test_uint32' :: uint32 
 where "test_uint32' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
-ML {* val 0wx12 = @{code test_uint32'} *}
+ML \<open>val 0wx12 = @{code test_uint32'}\<close>
 
 lemma "x AND y = x OR (y :: uint32)"
 quickcheck[random, expect=counterexample]
@@ -90,7 +90,7 @@ lemma "(f :: uint32 \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
-section {* Tests for @{typ uint16} *}
+section \<open>Tests for @{typ uint16}\<close>
 
 notation sshiftr_uint16 (infixl ">>>" 55)
 
@@ -162,7 +162,7 @@ lemma "(f :: uint16 \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
-section {* Tests for @{typ uint8} *}
+section \<open>Tests for @{typ uint8}\<close>
 
 notation sshiftr_uint8 (infixl ">>>" 55)
 
@@ -225,11 +225,11 @@ have test_uint8 by eval
 have test_uint8 by code_simp
 have test_uint8 by normalization
 end
-ML_val {* val true = @{code test_uint8} *}
+ML_val \<open>val true = @{code test_uint8}\<close>
 
 definition test_uint8' :: uint8
 where "test_uint8' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
-ML {* val 0wx12 = @{code test_uint8'} *}
+ML \<open>val 0wx12 = @{code test_uint8'}\<close>
 
 lemma "x AND y = x OR (y :: uint8)"
 quickcheck[random, expect=counterexample]
@@ -244,7 +244,7 @@ lemma "(f :: uint8 \<Rightarrow> unit) = g"
 quickcheck[narrowing, size=3, expect=no_counterexample]
 by(simp add: fun_eq_iff)
 
-section {* Tests for @{typ "uint"} *}
+section \<open>Tests for @{typ "uint"}\<close>
 
 notation sshiftr_uint (infixl ">>>" 55)
 
@@ -412,12 +412,12 @@ have test_uint64 by eval
 have test_uint64 by code_simp
 have test_uint64 by normalization
 end
-ML_val {* val true = @{code test_uint64} *}
+ML_val \<open>val true = @{code test_uint64}\<close>
 
 definition test_uint64' :: uint64
 where "test_uint64' = 0 + 10 - 14 * 3 div 6 mod 3 << 3 >> 2"
 
-section {* Tests for casts *}
+section \<open>Tests for casts\<close>
 
 definition test_casts :: bool
 where "test_casts \<longleftrightarrow>
@@ -454,10 +454,10 @@ notepad begin
   have test_casts'' by normalization
   have test_casts'' by code_simp
 end
-ML {* 
+ML \<open>
   val true = @{code test_casts}
   val true = @{code test_casts''}
-*}
+\<close>
 
 definition test_casts_uint :: bool where
   "test_casts_uint \<longleftrightarrow>

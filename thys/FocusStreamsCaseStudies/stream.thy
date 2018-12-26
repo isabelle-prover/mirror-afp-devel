@@ -11,7 +11,7 @@ theory stream
   imports ListExtras ArithExtras
 begin
 
-subsection {* Definition of the FOCUS stream types *}
+subsection \<open>Definition of the FOCUS stream types\<close>
 
 \<comment> \<open>Finite timed FOCUS stream\<close>
 type_synonym 'a fstream = "'a list list"
@@ -30,7 +30,7 @@ datatype 'a stream =
         | InfU "'a iustream" \<comment> \<open>infinite untimed streams\<close>
 
 
-subsection {* Definitions of operators *}
+subsection \<open>Definitions of operators\<close>
   
 \<comment> \<open>domain of an infinite untimed stream\<close>
 definition
@@ -600,7 +600,7 @@ where
        else inf_last_ti s i)"
 
 
-subsection {* Properties of operators *}
+subsection \<open>Properties of operators\<close>
 
 lemma inf_last_ti_nonempty_k:
   assumes "inf_last_ti dt t \<noteq> []"
@@ -635,7 +635,7 @@ next
 qed
 
 
-subsubsection {* Lemmas for concatenation operator *}
+subsubsection \<open>Lemmas for concatenation operator\<close>
 
 lemma fin_length_append:
   "fin_length (x@y) = (fin_length x) + (fin_length y)"
@@ -684,7 +684,7 @@ next
 qed
 
 
-subsubsection {* Lemmas for operators $ts$ and $msg$ *}
+subsubsection \<open>Lemmas for operators $ts$ and $msg$\<close>
 
 lemma ts_msg1:
   assumes "ts p"
@@ -766,7 +766,7 @@ proof -
 qed
 
 
-subsubsection {* Lemmas for $inf\_truncate$ *}
+subsubsection \<open>Lemmas for $inf\_truncate$\<close>
 
 lemma inf_truncate_nonempty:
   assumes "z i \<noteq> []"
@@ -809,7 +809,7 @@ lemma inf_truncate_append:
 by (metis inf_truncate.simps(2))
 
 
-subsubsection {* Lemmas for $fin\_make\_untimed$ *} 
+subsubsection \<open>Lemmas for $fin\_make\_untimed$\<close> 
 
 lemma fin_make_untimed_append:
   assumes "fin_make_untimed x \<noteq> []"
@@ -907,7 +907,7 @@ from assms and sg1 and sg2 show ?thesis
 qed
 
 
-subsubsection {* Lemmas for $inf\_disj$ and $inf\_disjS$ *} 
+subsubsection \<open>Lemmas for $inf\_disj$ and $inf\_disjS$\<close> 
 
 lemma inf_disj_index:
   assumes h1:"inf_disj n nS"

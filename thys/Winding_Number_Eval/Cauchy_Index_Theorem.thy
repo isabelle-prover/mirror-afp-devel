@@ -2564,7 +2564,7 @@ next
   case False
   obtain p' q' where p':"p= p'*gcd p q" and q':"q=q'*gcd p q" 
     using gcd_dvd1 gcd_dvd2 dvd_def[of "gcd p q", simplified mult.commute]  by metis
-  then have "coprime p' q'" "p'\<noteq>0" "gcd p q\<noteq>0" using gcd_coprime `p\<noteq>0`  by auto
+  then have "coprime p' q'" "p'\<noteq>0" "gcd p q\<noteq>0" using gcd_coprime \<open>p\<noteq>0\<close>  by auto
   
   define f where "f \<equiv> (\<lambda>x. poly q' x / poly p' x)"
   define g where "g \<equiv> (\<lambda>x. if poly (gcd p q) x = 0 then 0::real else 1)"

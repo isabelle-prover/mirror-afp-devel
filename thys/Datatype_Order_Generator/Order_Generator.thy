@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Generating linear orders for datatypes *}
+section \<open>Generating linear orders for datatypes\<close>
 
 theory Order_Generator
 imports 
@@ -31,7 +31,7 @@ begin
 
 subsection Introduction
 
-text {*
+text \<open>
 
 The order generator registers itself at the derive-manager for the classes @{class ord},
 @{class order}, and @{class linorder}.
@@ -62,11 +62,11 @@ Note that when calling the generator for @{class linorder}, it will automaticall
 for @{class order}, which in turn invokes the generator for @{class ord}. 
 A later invokation of @{class linorder}
 after @{class order} or @{class ord} is not possible.
-*}
+\<close>
 
 subsection "Implementation Notes"
 
-text {*
+text \<open>
 The generator uses the recursors from the datatype package to define a lexicographic order.
 E.g., for a declaration 
 \texttt{datatype 'a tree = Empty | Node "'a tree" 'a "'a tree"}
@@ -84,11 +84,11 @@ of the orders are all proven using induction (with the induction theorem from th
 and afterwards there is a case distinction on the remaining variables, i.e., here @{term y} and @{term z}.
 If the constructors of @{term x}, @{term y}, and @{term z} are different always some basic tactic is invoked. 
 In the other case (identical constructors) for each property a dedicated tactic was designed.
-*}
+\<close>
 
 subsection "Features and Limitations"
 
-text {*
+text \<open>
 The order generator has been developed mainly for datatypes without explicit mutual recursion. 
 For mutual recursive datatypes---like
 \texttt{datatype a = C b and b = D a a}---only
@@ -97,7 +97,7 @@ derived.
 
 Indirect recursion like in \texttt{datatype tree = Leaf nat | Node "tree list"} should work 
 without problems.
-*}
+\<close>
 
 subsection "Installing the generator"
 

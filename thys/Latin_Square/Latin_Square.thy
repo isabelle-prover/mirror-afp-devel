@@ -7,7 +7,7 @@ theory Latin_Square
 imports Marriage.Marriage
 begin
 
-text {*
+text \<open>
   This theory is about Latin Squares. A Latin Square is a $n \times n$ table filled with
   integers from 1 to n where each number appears exactly once in each row and each column.
 
@@ -25,11 +25,11 @@ text {*
 
   Additionally I use the numbers $0$ to $n-1$ instead of $1$ to $n$ for indexing the rows and columns as
   well as for filling the cells.
-*}
+\<close>
 
 datatype latin_type = Row | Col | Num
 
-text{* latin\_type is of sort enum, needed for "value" command *}
+text\<open>latin\_type is of sort enum, needed for "value" command\<close>
 instantiation latin_type :: enum
 begin
   definition "enum_latin_type == [Row, Col, Num]"
@@ -45,8 +45,8 @@ by (metis latin_type.exhaust)
 end
 
 
-text{* Given a latin\_type t, you might want to reference the other two.
-   These are "next t" and "next (next t)": *}
+text\<open>Given a latin\_type t, you might want to reference the other two.
+   These are "next t" and "next (next t)":\<close>
 definition [simp]:"next t \<equiv> (case t of Row \<Rightarrow> Col | Col \<Rightarrow> Num | Num \<Rightarrow> Row)"
 
 lemma all_types_next_eqiv:"(\<forall>t. P (next t)) \<longleftrightarrow> (\<forall>t. P t)"
@@ -55,23 +55,23 @@ lemma all_types_next_eqiv:"(\<forall>t. P (next t)) \<longleftrightarrow> (\<for
   apply metis
 done
 
-text {* We call a column of the orthogonal array a latin\_entry: *}
+text \<open>We call a column of the orthogonal array a latin\_entry:\<close>
 type_synonym latin_entry = "latin_type \<Rightarrow> nat"
 
-text {* This function removes one element of the 3-tupel and returns the other two as a pair: *}
+text \<open>This function removes one element of the 3-tupel and returns the other two as a pair:\<close>
 definition without :: "latin_type \<Rightarrow> latin_entry \<Rightarrow> nat \<times> nat" where
 [simp]:"without t \<equiv> \<lambda>e. (e (next t), e (next (next t)))"
 
 value "without Row (\<lambda>t. case t of Row \<Rightarrow> 0 | Col \<Rightarrow> 1 | Num \<Rightarrow> 2)" \<comment> \<open>returns (1,2)\<close>
 
-abbreviation "row_col \<equiv> without Num" text {*returns row and column of a latin\_entry as a pair.*}
-abbreviation "col_num \<equiv> without Row" text {*returns column and number of a latin\_entry as a pair.*}
-abbreviation "num_row \<equiv> without Col" text {*returns number and row of a latin\_entry as a pair.*}
+abbreviation "row_col \<equiv> without Num" text \<open>returns row and column of a latin\_entry as a pair.\<close>
+abbreviation "col_num \<equiv> without Row" text \<open>returns column and number of a latin\_entry as a pair.\<close>
+abbreviation "num_row \<equiv> without Col" text \<open>returns number and row of a latin\_entry as a pair.\<close>
 
-text{* A partial latin square is a square that contains each number at most once in each row and each
+text\<open>A partial latin square is a square that contains each number at most once in each row and each
    column, but not all cells have to be filled. Equivalently we can say that any two rows of the
    orthogonal array contain each pair of two numbers at most once. This can be expressed using the
-   inj\_on predicate: *}
+   inj\_on predicate:\<close>
 definition partial_latin_square :: "latin_entry set \<Rightarrow> nat \<Rightarrow> bool" where
 "partial_latin_square s n \<equiv>
   (\<forall>t. inj_on (without t) s) \<and> \<comment> \<open>numbers are unique in each column (t=Row), numbers are unique in each row (t=Col), rows-column combinations are specified unambiguously (t=Num)\<close>
@@ -87,8 +87,8 @@ value "partial_latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 1)
 } 2" \<comment> \<open>False, because 1 appears twice in column 0\<close>
 
-text {* Looking at the orthogonal array a latin square is given iff any two rows of the
-   orthogonal array contain each pair of two numbers at exactly once: *}
+text \<open>Looking at the orthogonal array a latin square is given iff any two rows of the
+   orthogonal array contain each pair of two numbers at exactly once:\<close>
 definition latin_square :: "latin_entry set \<Rightarrow> nat \<Rightarrow> bool" where
 "latin_square s n \<equiv>
   (\<forall>t. bij_betw (without t) s ({0..<n}\<times>{0..<n}))" (* numbers exactly once in each column (t=Row), numbers exactly once in each row (t=Col), rows-column combinations are specified exactly once (t=Num) *)
@@ -103,8 +103,8 @@ value "latin_square {
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 0),  (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 1 | Num \<Rightarrow> 0)
 } 2" \<comment> \<open>False, because 0 appears twice in Col 1 and twice in Row 1\<close>
 
-text {* A latin rectangle is a partial latin square in which the first m rows are filled and the following
-   rows are empty: *}
+text \<open>A latin rectangle is a partial latin square in which the first m rows are filled and the following
+   rows are empty:\<close>
 definition latin_rect :: "latin_entry set \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
 "latin_rect s m n \<equiv>
   m \<le> n \<and>
@@ -121,7 +121,7 @@ value "latin_rect {
   (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 0 | Num \<Rightarrow> 0),  (\<lambda>t. case t of Row \<Rightarrow> 1 | Col \<Rightarrow> 1 | Num \<Rightarrow> 1)
 } 1 2" \<comment> \<open>False\<close>
 
-text {* There is another equivalent description of latin rectangles, which is easier to prove: *}
+text \<open>There is another equivalent description of latin rectangles, which is easier to prove:\<close>
 lemma latin_rect_iff:
 "m\<le>n \<and> partial_latin_square s n \<and> card s = n*m \<and> (\<forall>e\<in>s. e Row < m) \<longleftrightarrow> latin_rect s m n"
 proof (rule iffI)
@@ -133,7 +133,7 @@ proof (rule iffI)
     moreover have "{0..<m} \<times> {0..<n} = row_col ` s"
     proof-
       have "row_col ` s \<subseteq> {0..<m} \<times> {0..<n}" using prems partial_latin_square_def by auto
-      moreover have "card (row_col ` s) = card ({0..<m} \<times> {0..<n})" using prems card_image[OF `inj_on row_col s`] by auto
+      moreover have "card (row_col ` s) = card ({0..<m} \<times> {0..<n})" using prems card_image[OF \<open>inj_on row_col s\<close>] by auto
       ultimately show "{0..<m} \<times> {0..<n} = row_col ` s" using card_subset_eq[of "{0..<m} \<times> {0..<n}" "row_col ` s"] by auto
     qed
     ultimately show ?thesis unfolding bij_betw_def by auto
@@ -145,7 +145,7 @@ proof (rule iffI)
     moreover have "{0..<n} \<times> {0..<m} = num_row ` s"
     proof-
       have "num_row ` s \<subseteq> {0..<n} \<times> {0..<m}" using prems partial_latin_square_def by auto
-      moreover have "card (num_row ` s) = card ({0..<n} \<times> {0..<m})" using prems card_image[OF `inj_on num_row s`] by auto
+      moreover have "card (num_row ` s) = card ({0..<n} \<times> {0..<m})" using prems card_image[OF \<open>inj_on num_row s\<close>] by auto
       ultimately show "{0..<n} \<times> {0..<m} = num_row ` s" using card_subset_eq[of "{0..<n} \<times> {0..<m}" "num_row ` s"] by auto
     qed
     ultimately show ?thesis unfolding bij_betw_def by auto
@@ -164,7 +164,7 @@ next
   ultimately show "m\<le>n \<and> partial_latin_square s n \<and> card s = n * m \<and> (\<forall>e\<in>s. e Row < m)" by auto
 qed
 
-text {* A square is a latin square iff it is a partial latin square with all $n^2$ cells filled: *}
+text \<open>A square is a latin square iff it is a partial latin square with all $n^2$ cells filled:\<close>
 lemma partial_latin_square_full:
 "partial_latin_square s n \<and> card s = n*n \<longleftrightarrow> latin_square s n"
 proof (rule iffI)
@@ -189,8 +189,8 @@ next
   ultimately show "partial_latin_square s n \<and> card s = n*n" by (auto simp add:  bij_betw_same_card)
 qed
 
-text {* Now we prove Lemma 1 from chapter 27 in "Das Buch der Beweise". But first some lemmas, that prove
-   very intuitive facts: *}
+text \<open>Now we prove Lemma 1 from chapter 27 in "Das Buch der Beweise". But first some lemmas, that prove
+   very intuitive facts:\<close>
 
 lemma bij_restrict:
 assumes "bij_betw f A B" "\<forall>a\<in>A. P a \<longleftrightarrow> Q (f a)"
@@ -203,7 +203,7 @@ proof -
     fix b
     assume "b \<in> {b \<in> B. Q b}"
     then obtain a where "f a = b" "a\<in>A" using assms(1) bij_betw_inv_into_right bij_betwE bij_betw_inv_into mem_Collect_eq by (metis (no_types, lifting))
-    then show "b \<in> f ` {a\<in>A. P a}" using `b \<in> {b \<in> B. Q b}` assms(2) by blast
+    then show "b \<in> f ` {a\<in>A. P a}" using \<open>b \<in> {b \<in> B. Q b}\<close> assms(2) by blast
   qed
   with inj surj1 surj2 show ?thesis using bij_betw_imageI by fastforce
 qed
@@ -218,8 +218,8 @@ assumes "b\<in>B"
 shows "{p\<in>A\<times>B. snd p = b} = A\<times>{b}"
 using SigmaI assms by auto
 
-text {* The union of sets containing at most k elements each cannot contain more elements than
-   the number of sets times k: *}
+text \<open>The union of sets containing at most k elements each cannot contain more elements than
+   the number of sets times k:\<close>
 lemma limited_family_union: "finite B \<Longrightarrow> \<forall>P\<in>B. card P \<le> k \<Longrightarrow> card (\<Union>B) \<le> card B * k"
 proof (induction B rule:finite_induct)
   case empty
@@ -231,8 +231,8 @@ next
   then show ?case using insert by simp
 qed
 
-text {* If f hits each element at most k times, the domain of f can only be k times bigger than the
-   image of f: *}
+text \<open>If f hits each element at most k times, the domain of f can only be k times bigger than the
+   image of f:\<close>
 lemma limited_preimages:
 assumes "\<forall>x \<in> f ` D. card ((f -` {x})\<inter>D) \<le> k" "finite D"
 shows "card D \<le> card (f ` D) * k "
@@ -242,11 +242,11 @@ proof -
   have "card (\<Union>?preimages) \<le> card ?preimages * k" using limited_family_union[of "?preimages" k] assms by auto
   moreover have "card (?preimages) * k \<le> card (f ` D) * k" using card_image_le[of "f ` D" "\<lambda>x. (f -` {x})\<inter>D"] assms by auto
   ultimately have "card (\<Union>?preimages) \<le> card (f ` D) * k" using le_trans by blast
-  then show ?thesis using `D = \<Union>?preimages` by metis
+  then show ?thesis using \<open>D = \<Union>?preimages\<close> by metis
 qed
 
-text {* Let $A_1, \dots, A_n$ be sets with $k>0$ elements each. Any element is only contained in at most $k$ of
-   these sets. Then there are more different elements in total than sets $A_i$: *}
+text \<open>Let $A_1, \dots, A_n$ be sets with $k>0$ elements each. Any element is only contained in at most $k$ of
+   these sets. Then there are more different elements in total than sets $A_i$:\<close>
 lemma union_limited_replicates:
 assumes "finite I" "\<forall>i\<in>I. finite (A i)" "k>0" "\<forall>i\<in>I. card (A i) = k" "\<forall>i\<in>I. \<forall>x\<in>(A i). card {i\<in>I. x\<in>A i} \<le> k"
 shows "card (\<Union>i\<in>I. (A i)) \<ge> card I" using assms
@@ -285,7 +285,7 @@ proof -
   proof
     fix x0 assume x0_def: "x0 \<in> f ` ?pairs"
     have "(f -` {x0}) \<inter> ?pairs = {(i,x). i\<in>I \<and> x\<in>A i \<and> x=x0}" using f_def by auto
-    moreover have "card {(i,x). i\<in>I \<and> x\<in>A i \<and> x=x0} = card {i\<in>I. x0\<in>A i}" using `finite I`
+    moreover have "card {(i,x). i\<in>I \<and> x\<in>A i \<and> x=x0} = card {i\<in>I. x0\<in>A i}" using \<open>finite I\<close>
     proof -
       have "inj_on (\<lambda>i. (i,x0)) {i\<in>I. x0\<in>A i}" by (meson Pair_inject inj_onI)
       moreover have "(\<lambda>i. (i,x0)) ` {i\<in>I. x0\<in>A i} = {(i,x). i\<in>I \<and> x\<in>A i \<and> x=x0}" by (rule subset_antisym) blast+
@@ -309,7 +309,7 @@ proof -
   ultimately show ?thesis using f_def by auto
 qed
 
-text {* In a $m \times n$ latin rectangle each number appears in m columns: *}
+text \<open>In a $m \times n$ latin rectangle each number appears in m columns:\<close>
 lemma latin_rect_card_col:
 assumes "latin_rect s m n" "x<n"
 shows "card {e Col|e. e\<in>s \<and> e Num = x} = m"
@@ -333,7 +333,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text {* In a $m \times n$ latin rectangle each column contains m numbers: *}
+text \<open>In a $m \times n$ latin rectangle each column contains m numbers:\<close>
 lemma latin_rect_card_num:
 assumes "latin_rect s m n" "x<n"
 shows "card {e Num|e. e\<in>s \<and> e Col = x} = m"
@@ -357,7 +357,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text {* Finally we prove lemma 1 chapter 27 of "Das Buch der Beweise": *}
+text \<open>Finally we prove lemma 1 chapter 27 of "Das Buch der Beweise":\<close>
 theorem
   assumes "latin_rect s (n-m) n" "m\<le>n"
   shows "\<exists>s'. s\<subseteq>s' \<and> latin_square s' n"
@@ -390,12 +390,12 @@ next
       fix j0 x assume "j0 \<in> J" "x \<in> ?not_in_column j0"
       then have "card ({0..<n} - {e Col|e. e\<in>s \<and> e Num = x}) = Suc m"
       proof -
-        have "card {e Col|e. e\<in>s \<and> e Num = x} = n - Suc m" using latin_rect_card_col `x \<in> ?not_in_column j0` Suc by auto
+        have "card {e Col|e. e\<in>s \<and> e Num = x} = n - Suc m" using latin_rect_card_col \<open>x \<in> ?not_in_column j0\<close> Suc by auto
         moreover have "{e Col|e. e\<in>s \<and> e Num = x}\<subseteq>{0..<n}" using Suc latin_rect_def partial_latin_square_def by auto
         moreover then have "finite {e Col|e. e\<in>s \<and> e Num = x}" using finite_subset by auto
         ultimately show ?thesis using card_Diff_subset[of "{e Col|e. e\<in>s \<and> e Num = x}" "{0..<n}"] using Suc.prems by auto
       qed
-      moreover have "{j \<in> J. x \<in> ?not_in_column j} \<subseteq> {0..<n} - {e Col|e. e\<in>s \<and> e Num = x}" using Diff_mono J_def using `x \<in> ?not_in_column j0` by blast
+      moreover have "{j \<in> J. x \<in> ?not_in_column j} \<subseteq> {0..<n} - {e Col|e. e\<in>s \<and> e Num = x}" using Diff_mono J_def using \<open>x \<in> ?not_in_column j0\<close> by blast
       ultimately show "card {j \<in> J. x \<in> ?not_in_column j} \<le> Suc m" by (metis (no_types, lifting) card_mono finite_Diff finite_atLeastLessThan)
     qed
     moreover have "finite J" using J_def finite_subset by auto
@@ -422,17 +422,17 @@ next
         moreover have "e1 Col = e2 Col"
         proof (cases)
           assume "e1 Row = n - Suc m"
-          then have "e2 Row = n - Suc m" using without_def `num_row e1 = num_row e2` by auto
+          then have "e2 Row = n - Suc m" using without_def \<open>num_row e1 = num_row e2\<close> by auto
           have "\<forall>e\<in>s. e Row < n - Suc m" using Suc latin_rect_iff by blast
-          then have "e1 \<in> new_row" "e2 \<in> new_row"  using s'_def `e1 \<in> s'` `e2 \<in> s'` `e1 Row = n - Suc m` `e2 Row = n - Suc m` by auto
+          then have "e1 \<in> new_row" "e2 \<in> new_row"  using s'_def \<open>e1 \<in> s'\<close> \<open>e2 \<in> s'\<close> \<open>e1 Row = n - Suc m\<close> \<open>e2 Row = n - Suc m\<close> by auto
           then have "e1 Num = R (e1 Col)" "e2 Num = R (e2 Col)" using new_row_def by auto
-          then have "R (e1 Col) = R (e2 Col)" using `e1 Num = e2 Num` by auto
-          moreover have "e1 Col < n" "e2 Col < n" using `e1 \<in> new_row` `e2 \<in> new_row` new_row_def by auto
+          then have "R (e1 Col) = R (e2 Col)" using \<open>e1 Num = e2 Num\<close> by auto
+          moreover have "e1 Col < n" "e2 Col < n" using \<open>e1 \<in> new_row\<close> \<open>e2 \<in> new_row\<close> new_row_def by auto
           ultimately show "e1 Col = e2 Col" using R_def inj_on_def by (metis (mono_tags, lifting) atLeast0LessThan lessThan_iff)
         next
           assume "e1 Row \<noteq> n - Suc m"
-          then have "e1\<in>s" "e2\<in>s" using new_row_def s'_def `e1\<in>s'` `e2\<in>s'` `e1 Row = e2 Row` by auto
-          then show "e1 Col = e2 Col" using Suc latin_rect_def bij_betw_def by (metis `num_row e1 = num_row e2` inj_onD)
+          then have "e1\<in>s" "e2\<in>s" using new_row_def s'_def \<open>e1\<in>s'\<close> \<open>e2\<in>s'\<close> \<open>e1 Row = e2 Row\<close> by auto
+          then show "e1 Col = e2 Col" using Suc latin_rect_def bij_betw_def by (metis \<open>num_row e1 = num_row e2\<close> inj_onD)
         qed
         ultimately show "e1=e2" using latin_type.induct[of "\<lambda>t. e1 t = e2 t"] by auto
       qed
@@ -444,15 +444,15 @@ next
         proof (cases)
           assume "e1 Row = n - Suc m"
           have "\<forall>e\<in>s. e Row < n - Suc m" using Suc latin_rect_iff by blast
-          then have "e2 Num \<in> ?not_in_column (e2 Col)" using R_def new_row_def `e1 Col = e2 Col` `e1 Num = e2 Num` using s'_def `e1 \<in> s'` `e1 Row = n - Suc m` by auto
-          then show "e1 Row = e2 Row" using new_row_def `e1 Row = n - Suc m`  s'_def `e2 \<in> s'` by auto
+          then have "e2 Num \<in> ?not_in_column (e2 Col)" using R_def new_row_def \<open>e1 Col = e2 Col\<close> \<open>e1 Num = e2 Num\<close> using s'_def \<open>e1 \<in> s'\<close> \<open>e1 Row = n - Suc m\<close> by auto
+          then show "e1 Row = e2 Row" using new_row_def \<open>e1 Row = n - Suc m\<close>  s'_def \<open>e2 \<in> s'\<close> by auto
         next
           assume "e1 Row \<noteq> n - Suc m"
-          then have "e1\<in>s" using new_row_def s'_def `e1\<in>s'` by auto
-          then have "e2 Num \<notin> ?not_in_column (e2 Col)" using `e1 Col = e2 Col` `e1 Num = e2 Num` by auto
-          then have "e2\<in>s" using new_row_def s'_def `e2\<in>s'` R_def by auto
+          then have "e1\<in>s" using new_row_def s'_def \<open>e1\<in>s'\<close> by auto
+          then have "e2 Num \<notin> ?not_in_column (e2 Col)" using \<open>e1 Col = e2 Col\<close> \<open>e1 Num = e2 Num\<close> by auto
+          then have "e2\<in>s" using new_row_def s'_def \<open>e2\<in>s'\<close> R_def by auto
           moreover have "inj_on col_num s" using Suc.prems latin_rect_def[of s "(n - Suc m)" n] partial_latin_square_def[of s n] by blast
-          ultimately show "e1 Row = e2 Row" using Suc latin_rect_def by (metis `col_num e1 = col_num e2` `e1 \<in> s` inj_onD)
+          ultimately show "e1 Row = e2 Row" using Suc latin_rect_def by (metis \<open>col_num e1 = col_num e2\<close> \<open>e1 \<in> s\<close> inj_onD)
         qed
         ultimately show "e1=e2" using latin_type.induct[of "\<lambda>t. e1 t = e2 t"] by auto
       qed
@@ -463,13 +463,13 @@ next
         moreover have "e1 Num = e2 Num"
         proof (cases)
           assume "e1 Row = n - Suc m"
-          then have "e2 Row = n - Suc m" using without_def `row_col e1 = row_col e2` by auto
+          then have "e2 Row = n - Suc m" using without_def \<open>row_col e1 = row_col e2\<close> by auto
           have "\<forall>e\<in>s. e Row < n - Suc m" using Suc latin_rect_iff by blast
-          then show "e1 Num = e2 Num" using `e1 Col = e2 Col` using new_row_def s'_def `e1 \<in> s'` `e2 \<in> s'` `e1 Row = n - Suc m` `e2 Row = n - Suc m` by auto
+          then show "e1 Num = e2 Num" using \<open>e1 Col = e2 Col\<close> using new_row_def s'_def \<open>e1 \<in> s'\<close> \<open>e2 \<in> s'\<close> \<open>e1 Row = n - Suc m\<close> \<open>e2 Row = n - Suc m\<close> by auto
         next
           assume "e1 Row \<noteq> n - Suc m"
-          then have "e1\<in>s" "e2\<in>s" using new_row_def s'_def `e1\<in>s'` `e2\<in>s'` `e1 Row = e2 Row` by auto
-          then show "e1 Num = e2 Num" using Suc latin_rect_def bij_betw_def by (metis `row_col e1 = row_col e2` inj_onD)
+          then have "e1\<in>s" "e2\<in>s" using new_row_def s'_def \<open>e1\<in>s'\<close> \<open>e2\<in>s'\<close> \<open>e1 Row = e2 Row\<close> by auto
+          then show "e1 Num = e2 Num" using Suc latin_rect_def bij_betw_def by (metis \<open>row_col e1 = row_col e2\<close> inj_onD)
         qed
         ultimately show "e1=e2" using latin_type.induct[of "\<lambda>t. e1 t = e2 t"] by auto
       qed
@@ -482,7 +482,7 @@ next
           then show ?thesis using new_row_def R_def by (induction t) auto
         next
           assume "e\<notin>new_row"
-          then show ?thesis using s'_def `e\<in>s'` latin_rect_def partial_latin_square_def Suc by auto
+          then show ?thesis using s'_def \<open>e\<in>s'\<close> latin_rect_def partial_latin_square_def Suc by auto
         qed
       qed
       ultimately show "partial_latin_square s' n" unfolding partial_latin_square_def using latin_type.induct[of "\<lambda>t. inj_on (without t) s'"] by auto
@@ -518,7 +518,7 @@ next
     next
       fix e
       assume "e \<in> s'" "e\<notin>new_row"
-      then have "e Row < n - Suc m"  using latin_rect_iff Suc  s'_def `e\<in>s'` by auto
+      then have "e Row < n - Suc m"  using latin_rect_iff Suc  s'_def \<open>e\<in>s'\<close> by auto
       then show "e Row < n - m" by auto
     qed
     ultimately show ?thesis using latin_rect_iff[of "n-m" n] by auto
@@ -527,7 +527,7 @@ next
   \<comment> \<open>Finally we use the induction hypothesis:\<close>
   then obtain s'' where "s' \<subseteq> s''" "latin_square s'' n" using Suc by auto
   then have "s \<subseteq> s''" using s'_def by auto
-  then show "\<exists>s'. s \<subseteq> s' \<and> latin_square s' n" using `latin_square s'' n` by auto
+  then show "\<exists>s'. s \<subseteq> s' \<and> latin_square s' n" using \<open>latin_square s'' n\<close> by auto
 qed
 
 end

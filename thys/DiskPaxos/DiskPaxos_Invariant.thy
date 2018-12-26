@@ -6,7 +6,7 @@
 
 theory DiskPaxos_Invariant imports DiskPaxos_Inv6 begin
 
-subsection {* The Complete Invariant *}
+subsection \<open>The Complete Invariant\<close>
 
 definition HInv :: "state \<Rightarrow> bool"
 where

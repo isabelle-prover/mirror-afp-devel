@@ -5,19 +5,19 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* The Loop Rules *}
+section \<open>The Loop Rules\<close>
 
 theory Loops imports WellDefined begin
 
-text_raw {* \label{s:loop_rules} *}
+text_raw \<open>\label{s:loop_rules}\<close>
 
-text {* Given a well-defined body, we can annotate a loop using an invariant, just as in the
-classical setting. *}
+text \<open>Given a well-defined body, we can annotate a loop using an invariant, just as in the
+classical setting.\<close>
 
-subsection {* Liberal and Strict Invariants. *}
+subsection \<open>Liberal and Strict Invariants.\<close>
 
-text {* A probabilistic invariant generalises a boolean one: it \emph{entails} itself, given
-the loop guard. *}
+text \<open>A probabilistic invariant generalises a boolean one: it \emph{entails} itself, given
+the loop guard.\<close>
 
 definition
   wp_inv :: "('s \<Rightarrow> bool) \<Rightarrow> 's prog \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> bool"
@@ -41,7 +41,7 @@ lemma wlp_invD:
   "wlp_inv G body I \<Longrightarrow> \<guillemotleft>G\<guillemotright> s * I s \<le> wlp body I s"
   by(simp add:wlp_inv_def)
 
-text {* For standard invariants, the multiplication reduces to conjunction. *}
+text \<open>For standard invariants, the multiplication reduces to conjunction.\<close>
 lemma wp_inv_stdD:
   assumes inv: "wp_inv G body \<guillemotleft>I\<guillemotright>"
   and     hb:  "healthy (wp body)"
@@ -63,9 +63,9 @@ proof(rule le_funI)
   qed
 qed
 
-subsection {* Partial Correctness *}
+subsection \<open>Partial Correctness\<close>
 
-text {* Partial correctness for loops\citep[Lemma 7.2.2, \S7, p.~185]{McIver_M_04}. *}
+text \<open>Partial correctness for loops\citep[Lemma 7.2.2, \S7, p.~185]{McIver_M_04}.\<close>
 lemma wlp_Loop:
   assumes wd: "well_def body"
       and uI: "unitary I"
@@ -90,11 +90,11 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Total Correctness *}
-text_raw {* \label{s:loop_total} *}
+subsection \<open>Total Correctness\<close>
+text_raw \<open>\label{s:loop_total}\<close>
 
-text {* The first total correctness lemma for loops which terminate with probability 1\citep[Lemma
-7.3.1, \S7, p.~186]{McIver_M_04}. *}
+text \<open>The first total correctness lemma for loops which terminate with probability 1\citep[Lemma
+7.3.1, \S7, p.~186]{McIver_M_04}.\<close>
 
 lemma wp_Loop:
   assumes wd:   "well_def body"
@@ -103,11 +103,11 @@ lemma wp_Loop:
   shows "I && wp (do G \<longrightarrow> body od) (\<lambda>s. 1) \<tturnstile> wp (do G \<longrightarrow> body od) (\<lambda>s. \<guillemotleft>\<N> G\<guillemotright> s * I s)"
     (is "I && ?T \<tturnstile> wp ?loop ?X")
 proof -
-  txt {* We first appeal to the \emph{liberal} loop rule: *}
+  txt \<open>We first appeal to the \emph{liberal} loop rule:\<close>
   from assms have "I && ?T \<tturnstile> wlp ?loop ?X && ?T"
     by(blast intro:exp_conj_mono_left wlp_Loop)
 
-  txt {* Next, by sub-conjunctivity: *}
+  txt \<open>Next, by sub-conjunctivity:\<close>
   also {
     from wd have sdp_loop: "sub_distrib_pconj (do G \<longrightarrow> body od)"
       by(blast intro:sdp_intros)
@@ -116,12 +116,12 @@ proof -
       by(blast intro:sub_distrib_pconjD sdp_intros unitary_intros)
   }
 
-  txt {* Finally, the conjunction collapses: *}
+  txt \<open>Finally, the conjunction collapses:\<close>
   finally show ?thesis
     by(simp add:exp_conj_1_right sound_intros sound_nneg unit unitary_sound)
 qed
 
-subsection {* Unfolding *}
+subsection \<open>Unfolding\<close>
 
 lemma wp_loop_unfold:
   fixes body :: "'s prog"

@@ -20,8 +20,8 @@ Ordered ground resolution with selection is the second inference system studied 
 subsection \<open>Inference Rule\<close>
 
 text \<open>
-Ordered ground resolution consists of a single rule, called @{text ord_resolve} below. Like
-@{text unord_resolve}, the rule is sound and counterexample-reducing. In addition, it is reductive.
+Ordered ground resolution consists of a single rule, called \<open>ord_resolve\<close> below. Like
+\<open>unord_resolve\<close>, the rule is sound and counterexample-reducing. In addition, it is reductive.
 \<close>
 
 context ground_resolution_with_selection

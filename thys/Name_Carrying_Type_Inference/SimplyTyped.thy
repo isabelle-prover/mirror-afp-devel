@@ -476,8 +476,8 @@ proof -
   hence "y \<noteq> x" "y \<notin> fvs A" "y \<notin> S" by auto
 
   obtain B where B: "B = [y \<leftrightarrow> x] \<cdot> A" by auto
-  hence "Fn x T A = Fn y T B" using fn_eq `y \<noteq> x` `y \<notin> fvs A` by metis
-  thus ?thesis using `y \<noteq> x` `y \<notin> S` B by metis
+  hence "Fn x T A = Fn y T B" using fn_eq \<open>y \<noteq> x\<close> \<open>y \<notin> fvs A\<close> by metis
+  thus ?thesis using \<open>y \<noteq> x\<close> \<open>y \<notin> S\<close> B by metis
 qed
 
 lemma trm_strong_induct:
@@ -506,19 +506,19 @@ proof -
     next
     case (4 x T A)
       have "finite S" "finite (fvs (\<pi> \<cdot> A))" "finite {\<pi> $ x}"
-        using `finite S` fvs_finite by auto
+        using \<open>finite S\<close> fvs_finite by auto
       hence "finite (S \<union> fvs (\<pi> \<cdot> A) \<union> {\<pi> $ x})" by auto
       
       obtain y where "y = fresh_in (S \<union> fvs (\<pi> \<cdot> A) \<union> {\<pi> $ x})" by auto
       hence "y \<notin> S \<union> fvs (\<pi> \<cdot> A) \<union> {\<pi> $ x}" using fresh_axioms unfolding class.fresh_def
-        using `finite (S \<union> fvs (\<pi> \<cdot> A) \<union> {\<pi> $ x})` by metis
+        using \<open>finite (S \<union> fvs (\<pi> \<cdot> A) \<union> {\<pi> $ x})\<close> by metis
       hence "y \<noteq> \<pi> $ x" "y \<notin> fvs (\<pi> \<cdot> A)" "y \<notin> S" by auto
       hence *: "\<And>A. P S A \<Longrightarrow> P S (Fn y T A)" using assms(4) by metis
   
       have "P S (([y \<leftrightarrow> \<pi> $ x] \<diamondop> \<pi>) \<cdot> A)" using 4 by metis
       hence "P S (Fn y T (([y \<leftrightarrow> \<pi> $ x] \<diamondop> \<pi>) \<cdot> A))" using * by metis
       moreover have "(Fn y T (([y \<leftrightarrow> \<pi> $ x] \<diamondop> \<pi>) \<cdot> A)) = Fn (\<pi> $ x) T (\<pi> \<cdot> A)"
-        using trm_prm_apply_compose fn_eq `y \<noteq> \<pi> $ x` `y \<notin> fvs (\<pi> \<cdot> A)` by metis
+        using trm_prm_apply_compose fn_eq \<open>y \<noteq> \<pi> $ x\<close> \<open>y \<notin> fvs (\<pi> \<cdot> A)\<close> by metis
       ultimately show ?case using trm_prm_simp(4) by metis
     next
     case (5 A B)
@@ -611,7 +611,7 @@ using assms proof(induction arbitrary: \<Delta> rule: typing.induct)
       next
       case False
         assume "y \<in> fvs A"
-        hence "y \<in> fvs (Fn x \<tau> A)" using fvs_simp(4) `y \<noteq> x` DiffI singletonD by fastforce
+        hence "y \<in> fvs (Fn x \<tau> A)" using fvs_simp(4) \<open>y \<noteq> x\<close> DiffI singletonD by fastforce
         hence "\<Gamma> y = \<Delta> (\<pi> $ y)" using tfn.prems by metis
         thus ?thesis by (simp add: prm_apply_unequal)
       next
@@ -640,7 +640,7 @@ proof -
     hence "y \<noteq> b" using assms(2) by auto
     consider "y = a" | "y \<noteq> a" by auto
     thus "(\<Gamma>(a \<mapsto> \<sigma>)) y  = (\<Gamma>(b \<mapsto> \<sigma>)) ([a \<leftrightarrow> b] $ y)"
-    by(cases, simp add: prm_unit_action, simp add: prm_unit_inaction `y \<noteq> b`)
+    by(cases, simp add: prm_unit_action, simp add: prm_unit_inaction \<open>y \<noteq> b\<close>)
   qed
   thus ?thesis using typing_prm assms(1) by metis
 qed
@@ -764,12 +764,12 @@ using assms proof(induction rule: typing.induct)
     thus ?case using typing.tvar by metis
   next
   case (tapp \<Gamma> f \<tau> \<tau>' x)
-    from `y \<notin> fvs (App f x)` have "y \<notin> fvs f" "y \<notin> fvs x" using fvs_simp(3) Un_iff by force+
+    from \<open>y \<notin> fvs (App f x)\<close> have "y \<notin> fvs f" "y \<notin> fvs x" using fvs_simp(3) Un_iff by force+
     hence "\<Gamma>(y \<mapsto> \<sigma>) \<turnstile> f : (TArr \<tau> \<tau>')" "\<Gamma>(y \<mapsto> \<sigma>) \<turnstile> x : \<tau>" using tapp.IH by metis+
     thus ?case using typing.tapp by metis
   next
   case (tfn \<Gamma> x \<tau> A \<tau>')
-    from `y \<notin> fvs (Fn x \<tau> A)` consider "y = x" | "y \<noteq> x \<and> y \<notin> fvs A"
+    from \<open>y \<notin> fvs (Fn x \<tau> A)\<close> consider "y = x" | "y \<noteq> x \<and> y \<notin> fvs A"
       using fvs_simp(4) DiffI empty_iff insert_iff by fastforce
     thus ?case proof(cases)
       case 1
@@ -779,7 +779,7 @@ using assms proof(induction rule: typing.induct)
       case 2
         hence "y \<noteq> x" "y \<notin> fvs A" by auto
         hence "\<Gamma>(x \<mapsto> \<tau>, y \<mapsto> \<sigma>) \<turnstile> A : \<tau>'" using tfn.IH by metis
-        hence "\<Gamma>(y \<mapsto> \<sigma>, x \<mapsto> \<tau>) \<turnstile> A : \<tau>'" using `y \<noteq> x` fun_upd_twist by metis
+        hence "\<Gamma>(y \<mapsto> \<sigma>, x \<mapsto> \<tau>) \<turnstile> A : \<tau>'" using \<open>y \<noteq> x\<close> fun_upd_twist by metis
         thus ?thesis using typing.tfn by metis
       next
     qed
@@ -1032,13 +1032,13 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
     thus ?case using typing.tvar by metis
   next
   case (3 A B)
-    from `infer \<Gamma> (App A B) = Some \<tau>` obtain \<sigma>
+    from \<open>infer \<Gamma> (App A B) = Some \<tau>\<close> obtain \<sigma>
       where "infer \<Gamma> A = Some (TArr \<sigma> \<tau>)" and "infer \<Gamma> B = Some \<sigma>"
       using infer_appE by metis
     thus ?case using "3.IH" typing.tapp by metis
   next
   case (4 x T A \<Gamma> \<tau>)
-    from `infer \<Gamma> (Fn x T A) = Some \<tau>` obtain \<sigma>
+    from \<open>infer \<Gamma> (Fn x T A) = Some \<tau>\<close> obtain \<sigma>
       where "\<tau> = TArr T \<sigma>" and "infer (\<Gamma>(x \<mapsto> T)) A = Some \<sigma>"
       using infer_fnE by metis
     thus ?case using "4.IH" typing.tfn by metis
@@ -1188,7 +1188,7 @@ lemma substitutes_fnE:
 using assms proof(induction rule: substitutes_fnE'[where y=y and T=T and A=A and x=x and M=M and X=X])
   case (6 z B B' S)
     consider "y = z \<and> T = S \<and> A = B" | "y \<noteq> z \<and> T = S \<and> y \<notin> fvs B \<and> A = [y \<leftrightarrow> z] \<cdot> B"
-      using `Fn y T A = Fn z S B` trm_simp(4) by metis
+      using \<open>Fn y T A = Fn z S B\<close> trm_simp(4) by metis
     thus ?case proof(cases)
       case 1
         thus ?thesis using 6 by metis
@@ -1196,21 +1196,21 @@ using assms proof(induction rule: substitutes_fnE'[where y=y and T=T and A=A and
       case 2
         hence "y \<noteq> z" "T = S" "y \<notin> fvs B" "A = [y \<leftrightarrow> z] \<cdot> B" by auto
         have "substitutes ([y \<leftrightarrow> z] \<cdot> B) ([y \<leftrightarrow> z] $ x) ([y \<leftrightarrow> z] \<cdot> M) ([y \<leftrightarrow> z] \<cdot> B')"
-          using substitutes_prm `substitutes B x M B'` by metis
+          using substitutes_prm \<open>substitutes B x M B'\<close> by metis
         hence "substitutes A ([y \<leftrightarrow> z] $ x) ([y \<leftrightarrow> z] \<cdot> M) ([y \<leftrightarrow> z] \<cdot> B')"
-          using `A = [y \<leftrightarrow> z] \<cdot> B` by metis
+          using \<open>A = [y \<leftrightarrow> z] \<cdot> B\<close> by metis
         hence "substitutes A x ([y \<leftrightarrow> z] \<cdot> M) ([y \<leftrightarrow> z] \<cdot> B')"
-          using `y \<noteq> x` `x \<noteq> z` prm_unit_inaction by metis
+          using \<open>y \<noteq> x\<close> \<open>x \<noteq> z\<close> prm_unit_inaction by metis
         hence *: "substitutes A x M ([y \<leftrightarrow> z] \<cdot> B')"
-          using `y \<notin> fvs M` `z \<notin> fvs M` trm_prm_unit_inaction by metis
+          using \<open>y \<notin> fvs M\<close> \<open>z \<notin> fvs M\<close> trm_prm_unit_inaction by metis
 
         have "y \<notin> fvs B'"
           using
-            substitutes_fvs `substitutes B x M B'` `y \<notin> fvs B` `y \<notin> fvs M`
+            substitutes_fvs \<open>substitutes B x M B'\<close> \<open>y \<notin> fvs B\<close> \<open>y \<notin> fvs M\<close>
             Diff_subset UnE set_rev_mp
           by blast
         hence "X = Fn y T ([y \<leftrightarrow> z] \<cdot> B')"
-          using `X = Fn z S B'` `y \<noteq> z` `T = S` fn_eq
+          using \<open>X = Fn z S B'\<close> \<open>y \<noteq> z\<close> \<open>T = S\<close> fn_eq
           by metis
 
         thus ?thesis using * by auto
@@ -1300,12 +1300,12 @@ proof(induction A rule: trm_strong_induct[where S="{x} \<union> fvs M"])
     thus ?case proof(cases)
       case 1
         obtain X where "X = M" by auto
-        hence "substitutes (Var y) x M X" using `x = y` substitutes.var1 by metis
+        hence "substitutes (Var y) x M X" using \<open>x = y\<close> substitutes.var1 by metis
         thus ?thesis by auto
       next
       case 2
         obtain X where "X = (Var y)" by auto
-        hence "substitutes (Var y) x M X" using `x \<noteq> y` substitutes.var2 by metis
+        hence "substitutes (Var y) x M X" using \<open>x \<noteq> y\<close> substitutes.var2 by metis
         thus ?thesis by auto
       next
     qed
@@ -1318,29 +1318,29 @@ proof(induction A rule: trm_strong_induct[where S="{x} \<union> fvs M"])
   next
   case (4 y T A)
     from this obtain A' where A': "substitutes A x M A'" by auto
-    from `y \<notin> ({x} \<union> fvs M)` have "y \<noteq> x" "y \<notin> fvs M" by auto
+    from \<open>y \<notin> ({x} \<union> fvs M)\<close> have "y \<noteq> x" "y \<notin> fvs M" by auto
     obtain X where "X = Fn y T A'" by auto
-    hence "substitutes (Fn y T A) x M X" using substitutes.fn `y \<noteq> x` `y \<notin> fvs M` A' by metis
+    hence "substitutes (Fn y T A) x M X" using substitutes.fn \<open>y \<noteq> x\<close> \<open>y \<notin> fvs M\<close> A' by metis
     thus ?case by auto
   next
   case (5 A B)
     from this obtain A' B' where "substitutes A x M A'" "substitutes B x M B'" by auto
     from this obtain X where "X = Pair A' B'" by auto
     hence "substitutes (Pair A B) x M X"
-      using substitutes.pair `substitutes A x M A'` `substitutes B x M B'`
+      using substitutes.pair \<open>substitutes A x M A'\<close> \<open>substitutes B x M B'\<close>
       by metis
     thus ?case by auto
   next
   case (6 P)
     from this obtain P' where "substitutes P x M P'" by auto
     from this obtain X where "X = Fst P'" by auto
-    hence "substitutes (Fst P) x M X" using substitutes.fst `substitutes P x M P'` by metis
+    hence "substitutes (Fst P) x M X" using substitutes.fst \<open>substitutes P x M P'\<close> by metis
     thus ?case by auto
   next
   case (7 P)
     from this obtain P' where "substitutes P x M P'" by auto
     from this obtain X where "X = Snd P'" by auto
-    hence "substitutes (Snd P) x M X" using substitutes.snd `substitutes P x M P'` by metis
+    hence "substitutes (Snd P) x M X" using substitutes.snd \<open>substitutes P x M P'\<close> by metis
     thus ?case by auto
   next
 qed
@@ -1502,10 +1502,10 @@ using assms proof(induction M rule: trm_strong_induct[where S="{y} \<union> fvs 
   case (4 x T A)
     hence "y \<noteq> x" "x \<notin> fvs N" by auto
     
-    have "y \<notin> fvs A - {x}" using `y \<noteq> x` `y \<notin> fvs (Fn x T A)` fvs_simp(4) by metis
-    hence "y \<notin> fvs A" using `y \<noteq> x` by auto
+    have "y \<notin> fvs A - {x}" using \<open>y \<noteq> x\<close> \<open>y \<notin> fvs (Fn x T A)\<close> fvs_simp(4) by metis
+    hence "y \<notin> fvs A" using \<open>y \<noteq> x\<close> by auto
     hence "A[y ::= N] = A" using "4.IH" by blast
-    thus ?case using `y \<noteq> x` `y \<notin> fvs A` `x \<notin> fvs N` subst_simp_fn by metis
+    thus ?case using \<open>y \<noteq> x\<close> \<open>y \<notin> fvs A\<close> \<open>x \<notin> fvs N\<close> subst_simp_fn by metis
   next
   case (5 A B)
     thus ?case using subst_simp_pair by (simp add: fvs_simp)
@@ -1536,43 +1536,43 @@ using assms proof(induction A rule: trm_strong_induct[where S="{y, z} \<union> f
         thus ?thesis using subst_simp_var1 trm_prm_simp(2) prm_unit_action prm_unit_commutes by metis
       next
       case 2
-        thus ?thesis using subst_simp_var2 trm_prm_simp(2) prm_unit_inaction `y \<noteq> x` by metis
+        thus ?thesis using subst_simp_var2 trm_prm_simp(2) prm_unit_inaction \<open>y \<noteq> x\<close> by metis
       next
     qed
   next
   case (3 A B)
-    from `y \<notin> fvs (App A B)` have "y \<notin> fvs A" "y \<notin> fvs B" by (auto simp add: fvs_simp(3))
+    from \<open>y \<notin> fvs (App A B)\<close> have "y \<notin> fvs A" "y \<notin> fvs B" by (auto simp add: fvs_simp(3))
     thus ?case using "3.IH" subst_simp_app trm_prm_simp(3) by metis
   next
   case (4 x T A)
     hence "x \<noteq> y" "x \<noteq> z" "x \<notin> fvs M" by auto
-    hence "y \<notin> fvs A" using `y \<notin> fvs (Fn x T A)` fvs_simp(4) by force
+    hence "y \<notin> fvs A" using \<open>y \<notin> fvs (Fn x T A)\<close> fvs_simp(4) by force
     hence *: "([y \<leftrightarrow> z] \<cdot> A)[y ::= M] = (A[z ::= M])" using "4.IH" by metis
 
     have "([y \<leftrightarrow> z] \<cdot> Fn x T A)[y ::= M] = ((Fn ([y \<leftrightarrow> z] $ x) T ([y \<leftrightarrow> z] \<cdot> A))[y ::= M])"
       using trm_prm_simp(4) by metis
     also have "... = ((Fn x T ([y \<leftrightarrow> z] \<cdot> A))[y ::= M])"
-      using prm_unit_inaction `x \<noteq> y` `x \<noteq> z` by metis
+      using prm_unit_inaction \<open>x \<noteq> y\<close> \<open>x \<noteq> z\<close> by metis
     also have "... = Fn x T (([y \<leftrightarrow> z] \<cdot> A)[y ::= M])"
-      using subst_simp_fn `x \<noteq> y` `x \<notin> fvs M` by metis
+      using subst_simp_fn \<open>x \<noteq> y\<close> \<open>x \<notin> fvs M\<close> by metis
     also have "... = Fn x T (A[z ::= M])" using * by metis
     also have "... = ((Fn x T A)[z ::= M])"
-      using subst_simp_fn `x \<noteq> z` `x \<notin> fvs M` by metis
+      using subst_simp_fn \<open>x \<noteq> z\<close> \<open>x \<notin> fvs M\<close> by metis
     finally show ?case.
   next
   case (5 A B)
-    from `y \<notin> fvs (Pair A B)` have "y \<notin> fvs A" "y \<notin> fvs B" by (auto simp add: fvs_simp(5))
+    from \<open>y \<notin> fvs (Pair A B)\<close> have "y \<notin> fvs A" "y \<notin> fvs B" by (auto simp add: fvs_simp(5))
     hence "([y \<leftrightarrow> z] \<cdot> A)[y ::= M] = (A[z ::= M])" "([y \<leftrightarrow> z] \<cdot> B)[y ::= M] = (B[z ::= M])"
       using "5.IH" by metis+
     thus ?case using trm_prm_simp(5) subst_simp_pair by metis
   next
   case (6 P)
-    from `y \<notin> fvs (Fst P)` have "y \<notin> fvs P" by (simp add: fvs_simp(6))
+    from \<open>y \<notin> fvs (Fst P)\<close> have "y \<notin> fvs P" by (simp add: fvs_simp(6))
     hence "([y \<leftrightarrow> z] \<cdot> P)[y ::= M] = (P[z ::= M])" using "6.IH" by metis
     thus ?case using trm_prm_simp(6) subst_simp_fst by metis
   next
   case (7 P)
-    from `y \<notin> fvs (Snd P)` have "y \<notin> fvs P" by (simp add: fvs_simp(7))
+    from \<open>y \<notin> fvs (Snd P)\<close> have "y \<notin> fvs P" by (simp add: fvs_simp(7))
     hence "([y \<leftrightarrow> z] \<cdot> P)[y ::= M] = (P[z ::= M])" using "7.IH" by metis
     thus ?case using trm_prm_simp(7) subst_simp_snd by metis
   next
@@ -1597,7 +1597,7 @@ using assms proof(induction M rule: trm_strong_induct[where S="{y, z} \<union> f
       next
       case 2
         hence "x \<noteq> y" "x = z" using assms(1) by auto
-        thus ?thesis using subst_free `y \<notin> fvs L` subst_simp_var1 subst_simp_var2 by metis
+        thus ?thesis using subst_free \<open>y \<notin> fvs L\<close> subst_simp_var1 subst_simp_var2 by metis
       next
       case 3
         then show ?thesis using subst_simp_var2 by metis
@@ -1609,14 +1609,14 @@ using assms proof(induction M rule: trm_strong_induct[where S="{y, z} \<union> f
   next
   case (4 x T A)
     hence *: "A[y ::= N][z ::= L] = (A[z ::= L][y ::= N[z ::= L]])" by blast
-    from `x \<notin> {y, z} \<union> fvs N \<union> fvs L` have "x \<noteq> y" "x \<noteq> z" "x \<notin> fvs N" "x \<notin> fvs L" by auto
+    from \<open>x \<notin> {y, z} \<union> fvs N \<union> fvs L\<close> have "x \<noteq> y" "x \<noteq> z" "x \<notin> fvs N" "x \<notin> fvs L" by auto
     hence "x \<notin> fvs (N[z ::= L])" using subst_fvs by auto
     
     have "(Fn x T A)[y ::= N][z ::= L] = Fn x T (A[y ::= N][z ::= L])"
-      using subst_simp_fn `x \<noteq> y` `x \<noteq> z` `x \<notin> fvs N` `x \<notin> fvs L` by metis
+      using subst_simp_fn \<open>x \<noteq> y\<close> \<open>x \<noteq> z\<close> \<open>x \<notin> fvs N\<close> \<open>x \<notin> fvs L\<close> by metis
     also have "... = Fn x T (A[z ::= L][y ::= N[z ::= L]])" using * by metis
     also have "... = ((Fn x T A)[z ::= L][y ::= N[z ::= L]])"
-      using subst_simp_fn `x \<noteq> y` `x \<noteq> z` `x \<notin> fvs (N[z ::= L])` `x \<notin> fvs L` by metis
+      using subst_simp_fn \<open>x \<noteq> y\<close> \<open>x \<noteq> z\<close> \<open>x \<notin> fvs (N[z ::= L])\<close> \<open>x \<notin> fvs L\<close> by metis
     finally show ?case.
   next
   case (5 A B)
@@ -1648,12 +1648,12 @@ using assms proof(induction M arbitrary: \<Gamma> \<sigma> rule: trm_strong_dept
       case 1
         hence "(\<Gamma>(x \<mapsto> \<tau>)) x = Some \<sigma>" using * by metis
         hence "\<tau> = \<sigma>" by auto
-        thus ?thesis using `\<Gamma> \<turnstile> N : \<tau>` subst_simp_var1 `x = z` by metis
+        thus ?thesis using \<open>\<Gamma> \<turnstile> N : \<tau>\<close> subst_simp_var1 \<open>x = z\<close> by metis
       next
       case 2
         hence "\<Gamma> x = Some \<sigma>" using * by auto
         hence "\<Gamma> \<turnstile> Var x : \<sigma>" using typing.tvar by metis
-        thus ?thesis using `x \<noteq> z` subst_simp_var2 by metis
+        thus ?thesis using \<open>x \<noteq> z\<close> subst_simp_var2 by metis
       next
     qed
   next
@@ -1661,7 +1661,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<sigma> rule: trm_strong_dept
     have *: "depth A < depth (App A B) \<and> depth B < depth (App A B)"
       using depth_app by auto
 
-    from `\<Gamma>(z \<mapsto> \<tau>) \<turnstile> App A B : \<sigma>` obtain \<sigma>' where
+    from \<open>\<Gamma>(z \<mapsto> \<tau>) \<turnstile> App A B : \<sigma>\<close> obtain \<sigma>' where
       "\<Gamma>(z \<mapsto> \<tau>) \<turnstile> A : (TArr \<sigma>' \<sigma>)"
       "\<Gamma>(z \<mapsto> \<tau>) \<turnstile> B : \<sigma>'"
       using typing_appE by metis
@@ -1677,14 +1677,14 @@ using assms proof(induction M arbitrary: \<Gamma> \<sigma> rule: trm_strong_dept
     hence *: "\<Gamma>(x \<mapsto> T) \<turnstile> N : \<tau>" using typing_weaken 4 by metis
     have **: "depth A < depth (Fn x T A)" using depth_fn.
 
-    from `\<Gamma>(z \<mapsto> \<tau>) \<turnstile> Fn x T A : \<sigma>` obtain \<sigma>' where
+    from \<open>\<Gamma>(z \<mapsto> \<tau>) \<turnstile> Fn x T A : \<sigma>\<close> obtain \<sigma>' where
       "\<sigma> = TArr T \<sigma>'"
       "\<Gamma>(z \<mapsto> \<tau>)(x \<mapsto> T) \<turnstile> A : \<sigma>'"
       using typing_fnE by metis
-    hence "\<Gamma>(x \<mapsto> T)(z \<mapsto> \<tau>) \<turnstile> A : \<sigma>'" using `x \<noteq> z` fun_upd_twist by metis
+    hence "\<Gamma>(x \<mapsto> T)(z \<mapsto> \<tau>) \<turnstile> A : \<sigma>'" using \<open>x \<noteq> z\<close> fun_upd_twist by metis
     hence "\<Gamma>(x \<mapsto> T) \<turnstile> A[z ::= N] : \<sigma>'" using 4 * ** by metis
-    hence "\<Gamma> \<turnstile> Fn x T (A[z ::= N]) : \<sigma>" using typing.tfn `\<sigma> = TArr T \<sigma>'` by metis
-    thus ?case using `x \<noteq> z` `x \<notin> fvs N` subst_simp_fn by metis
+    hence "\<Gamma> \<turnstile> Fn x T (A[z ::= N]) : \<sigma>" using typing.tfn \<open>\<sigma> = TArr T \<sigma>'\<close> by metis
+    thus ?case using \<open>x \<noteq> z\<close> \<open>x \<notin> fvs N\<close> subst_simp_fn by metis
   next
   case (5 A B)
     from this obtain T S where "\<sigma> = TPair T S" "\<Gamma>(z \<mapsto> \<tau>) \<turnstile> A : T" "\<Gamma>(z \<mapsto> \<tau>) \<turnstile> B : S"
@@ -1692,7 +1692,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<sigma> rule: trm_strong_dept
     moreover have "depth A < depth (Pair A B)" and "depth B < depth (Pair A B)"
       using depth_pair by auto
     ultimately have "\<Gamma> \<turnstile> A[z ::= N] : T" "\<Gamma> \<turnstile> B[z ::= N] : S" using 5 by metis+
-    hence "\<Gamma> \<turnstile> Pair (A[z ::= N]) (B[z ::= N]) : \<sigma>" using `\<sigma> = TPair T S` typing.tpair by metis
+    hence "\<Gamma> \<turnstile> Pair (A[z ::= N]) (B[z ::= N]) : \<sigma>" using \<open>\<sigma> = TPair T S\<close> typing.tpair by metis
     thus ?case using subst_simp_pair by metis
   next
   case (6 P)
@@ -1801,7 +1801,7 @@ lemma beta_reduction_left_fnE:
 using assms proof(cases)
   case (fn B B' y S)
     consider "x = y \<and> T = S \<and> A = B" | "x \<noteq> y \<and> T = S \<and> x \<notin> fvs B \<and> A = [x \<leftrightarrow> y] \<cdot> B"
-      using trm_simp(4) `Fn x T A = Fn y S B` by metis
+      using trm_simp(4) \<open>Fn x T A = Fn y S B\<close> by metis
     thus ?thesis proof(cases)
       case 1
         thus ?thesis using fn by auto
@@ -1883,7 +1883,7 @@ using assms proof(induction arbitrary: M' rule: typing.induct)
     thus ?case using beta_reduction_left_varE by metis
   next
   case (tapp \<Gamma> A \<tau> \<sigma> B M')
-    from `(App A B) \<rightarrow>\<beta> M'` consider
+    from \<open>(App A B) \<rightarrow>\<beta> M'\<close> consider
       "(\<exists>x T X. A = (Fn x T X) \<and> M' = (X[x ::= B]))" |
       "(\<exists>A'. (A \<rightarrow>\<beta> A') \<and> M' = App A' B)" |
       "(\<exists>B'. (B \<rightarrow>\<beta> B') \<and> M' = App A B')" using beta_reduction_left_appE by metis
@@ -1892,21 +1892,21 @@ using assms proof(induction arbitrary: M' rule: typing.induct)
       case 1
         from this obtain x T X where "A = Fn x T X" and *: "M' = (X[x ::= B])" by auto
 
-        have "\<Gamma>(x \<mapsto> \<tau>) \<turnstile> X : \<sigma>" using typing_fnE `\<Gamma> \<turnstile> A : (TArr \<tau> \<sigma>)` `A = Fn x T X` type.inject
+        have "\<Gamma>(x \<mapsto> \<tau>) \<turnstile> X : \<sigma>" using typing_fnE \<open>\<Gamma> \<turnstile> A : (TArr \<tau> \<sigma>)\<close> \<open>A = Fn x T X\<close> type.inject
           by blast
-        hence "\<Gamma> \<turnstile> (X[x ::= B]) : \<sigma>" using typing_subst `\<Gamma> \<turnstile> B : \<tau>` by metis
+        hence "\<Gamma> \<turnstile> (X[x ::= B]) : \<sigma>" using typing_subst \<open>\<Gamma> \<turnstile> B : \<tau>\<close> by metis
         thus ?thesis using * by auto
       next
       case 2
         from this obtain A' where "A \<rightarrow>\<beta> A'" and *: "M' = (App A' B)" by auto
         hence "\<Gamma> \<turnstile> A' : (TArr \<tau> \<sigma>)" using tapp.IH(1) by metis
-        hence "\<Gamma> \<turnstile> (App A' B) : \<sigma>" using `\<Gamma> \<turnstile> B : \<tau>` typing.tapp by metis
+        hence "\<Gamma> \<turnstile> (App A' B) : \<sigma>" using \<open>\<Gamma> \<turnstile> B : \<tau>\<close> typing.tapp by metis
         thus ?thesis using * by auto
       next
       case 3
         from this obtain B' where "B \<rightarrow>\<beta> B'" and *: "M' = (App A B')" by auto
         hence "\<Gamma> \<turnstile> B' : \<tau>" using tapp.IH(2) by metis
-        hence "\<Gamma> \<turnstile> (App A B') : \<sigma>" using `\<Gamma> \<turnstile> A : (TArr \<tau> \<sigma>)` typing.tapp by metis
+        hence "\<Gamma> \<turnstile> (App A B') : \<sigma>" using \<open>\<Gamma> \<turnstile> A : (TArr \<tau> \<sigma>)\<close> typing.tapp by metis
         thus ?thesis using * by auto
       next
     qed
@@ -1945,7 +1945,7 @@ using assms proof(induction arbitrary: M' rule: typing.induct)
       next
       case 2
         from this obtain A B where "P = Pair A B" and "M' = A" by auto
-        thus ?thesis using `\<Gamma> \<turnstile> P : (TPair \<tau> \<sigma>)` typing_pairE by blast
+        thus ?thesis using \<open>\<Gamma> \<turnstile> P : (TPair \<tau> \<sigma>)\<close> typing_pairE by blast
       next
     qed
   next
@@ -1960,7 +1960,7 @@ using assms proof(induction arbitrary: M' rule: typing.induct)
       next
       case 2
         from this obtain A B where "P = Pair A B" and "M' = B" by auto
-        thus ?thesis using `\<Gamma> \<turnstile> P : (TPair \<tau> \<sigma>)` typing_pairE by blast
+        thus ?thesis using \<open>\<Gamma> \<turnstile> P : (TPair \<tau> \<sigma>)\<close> typing_pairE by blast
       next
     qed
   next  
@@ -1986,7 +1986,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
     thus ?case using NF.var by metis
   next
   case (3 A B)
-    from `\<Gamma> \<turnstile> App A B : \<tau>` obtain \<sigma>
+    from \<open>\<Gamma> \<turnstile> App A B : \<tau>\<close> obtain \<sigma>
       where "\<Gamma> \<turnstile> A : (TArr \<sigma> \<tau>)" and "\<Gamma> \<turnstile> B : \<sigma>"
       using typing_appE by metis
     hence A: "NF A \<or> (\<exists>A'. (A \<rightarrow>\<beta> A'))" and B: "NF B \<or> (\<exists>B'. (B \<rightarrow>\<beta> B'))"
@@ -2006,7 +2006,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
                 thus ?thesis by blast
               next
               case 2
-                thus ?thesis using `NF A` `NF B` NF.app by metis
+                thus ?thesis using \<open>NF A\<close> \<open>NF B\<close> NF.app by metis
               next
             qed
           next
@@ -2021,10 +2021,10 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
     qed
   next
   case (4 x T A)
-    from `\<Gamma> \<turnstile> Fn x T A : \<tau>` obtain \<sigma>
+    from \<open>\<Gamma> \<turnstile> Fn x T A : \<tau>\<close> obtain \<sigma>
       where "\<tau> = TArr T \<sigma>" and "\<Gamma>(x \<mapsto> T) \<turnstile> A : \<sigma>"
       using typing_fnE by metis
-    from `\<Gamma>(x \<mapsto> T) \<turnstile> A : \<sigma>` consider "NF A" | "\<exists>A'. (A \<rightarrow>\<beta> A')"
+    from \<open>\<Gamma>(x \<mapsto> T) \<turnstile> A : \<sigma>\<close> consider "NF A" | "\<exists>A'. (A \<rightarrow>\<beta> A')"
       using "4.IH" by metis
 
     thus ?case proof(cases)
@@ -2034,7 +2034,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
       case 2
         from this obtain A' where "A \<rightarrow>\<beta> A'" by auto
         obtain M' where "M' = Fn x T A'" by auto
-        hence "(Fn x T A) \<rightarrow>\<beta> M'" using `A \<rightarrow>\<beta> A'` beta_reduction.fn by metis
+        hence "(Fn x T A) \<rightarrow>\<beta> M'" using \<open>A \<rightarrow>\<beta> A'\<close> beta_reduction.fn by metis
         thus ?thesis by auto
       next
     qed
@@ -2054,7 +2054,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
             thus ?thesis by auto
           next
           case 2
-            thus ?thesis using `NF P` NF.fst by metis
+            thus ?thesis using \<open>NF P\<close> NF.fst by metis
           next
         qed
       next
@@ -2075,7 +2075,7 @@ using assms proof(induction M arbitrary: \<Gamma> \<tau> rule: trm_induct)
             thus ?thesis by auto
           next
           case 2
-            thus ?thesis using `NF P` NF.snd by metis
+            thus ?thesis using \<open>NF P\<close> NF.snd by metis
           next
         qed
       next
@@ -2111,7 +2111,7 @@ using assms proof(induction)
   next
   case (transitive M M' M'')
     hence "fvs M'' \<subseteq> fvs M'" using beta_reduction_fvs by metis
-    thus ?case using `fvs M' \<subseteq> fvs M` by auto
+    thus ?case using \<open>fvs M' \<subseteq> fvs M\<close> by auto
   next
 qed
 
@@ -2220,7 +2220,7 @@ using assms proof(induction)
   next
   case (transitive M M' M'')
     hence "\<Gamma> \<turnstile> M' : \<tau>" using preservation by metis
-    hence "\<Gamma> \<turnstile> M'' : \<tau>" using preservation' `M' \<rightarrow>\<beta> M''` by metis
+    hence "\<Gamma> \<turnstile> M'' : \<tau>" using preservation' \<open>M' \<rightarrow>\<beta> M''\<close> by metis
     thus ?case using progress by metis
   next
 qed
@@ -2324,8 +2324,8 @@ using assms proof(induction rule: parallel_reduction_fnE'[where x=x and T=T and 
       case 2
         hence "x \<noteq> y" "T = S" "x \<notin> fvs B" "A = [x \<leftrightarrow> y] \<cdot> B" by auto
         hence "x \<notin> fvs B'" "A >> ([x \<leftrightarrow> y] \<cdot> B')"
-          using parallel_reduction_fvs parallel_reduction_prm `B >> B'` by auto
-        thus ?thesis using fn_eq `X = Fn y S B'` `x \<noteq> y` `T = S` by metis
+          using parallel_reduction_fvs parallel_reduction_prm \<open>B >> B'\<close> by auto
+        thus ?thesis using fn_eq \<open>X = Fn y S B'\<close> \<open>x \<noteq> y\<close> \<open>T = S\<close> by metis
       next
     qed
   next
@@ -2351,14 +2351,14 @@ lemma parallel_reduction_redexE:
   "
 using assms proof(induction rule: parallel_reduction_redexE'[where x=x and T=T and A=A and B=B and X=X])
   case (5 C C' D D')
-    from `App (Fn x T A) B = App C D` have C: "C = Fn x T A" and D: "D = B"
+    from \<open>App (Fn x T A) B = App C D\<close> have C: "C = Fn x T A" and D: "D = B"
       by (metis trm_simp(2), metis trm_simp(3))
-    from C and `C >> C'` obtain A' where C': "C' = Fn x T A'"
+    from C and \<open>C >> C'\<close> obtain A' where C': "C' = Fn x T A'"
       using parallel_reduction_fnE by metis
-    thus ?thesis using C C' D `C >> C'` `D >> D'` `X = App C' D'` by metis
+    thus ?thesis using C C' D \<open>C >> C'\<close> \<open>D >> D'\<close> \<open>X = App C' D'\<close> by metis
   next
   case (3 C C' D D' y S)
-    from `App (Fn x T A) B = App (Fn y S C) D` have "Fn x T A = Fn y S C" and B: "B = D"
+    from \<open>App (Fn x T A) B = App (Fn y S C) D\<close> have "Fn x T A = Fn y S C" and B: "B = D"
       by (metis trm_simp(2), metis trm_simp(3))
     from this consider
       "x = y \<and> T = S \<and> A = C"
@@ -2366,17 +2366,17 @@ using assms proof(induction rule: parallel_reduction_redexE'[where x=x and T=T a
       using trm_simp(4) by metis
     thus ?case proof(cases)
       case 1
-        thus ?thesis using `C >> C'` `X = (C'[y ::= D'])` `D >> D'` B by metis
+        thus ?thesis using \<open>C >> C'\<close> \<open>X = (C'[y ::= D'])\<close> \<open>D >> D'\<close> B by metis
       next
       case 2
         hence "x \<noteq> y" "T = S" and A: "A = [x \<leftrightarrow> y] \<cdot> C" "x \<notin> fvs C" by auto
-        have "x \<notin> fvs C'" using parallel_reduction_fvs `x \<notin> fvs C` `C >> C'` by force
+        have "x \<notin> fvs C'" using parallel_reduction_fvs \<open>x \<notin> fvs C\<close> \<open>C >> C'\<close> by force
         
         have "A >> ([x \<leftrightarrow> y] \<cdot> C')"
-          using parallel_reduction_prm `C >> C'` A by metis
+          using parallel_reduction_prm \<open>C >> C'\<close> A by metis
         moreover have "X = (([x \<leftrightarrow> y] \<cdot> C')[x ::= D'])"
-          using `X = (C'[y ::= D'])` subst_swp `x \<notin> fvs C'` by metis
-        ultimately show ?thesis using `D >> D'` B by metis
+          using \<open>X = (C'[y ::= D'])\<close> subst_swp \<open>x \<notin> fvs C'\<close> by metis
+        ultimately show ?thesis using \<open>D >> D'\<close> B by metis
       next
     qed
   next
@@ -2398,7 +2398,7 @@ lemma parallel_reduction_nonredexE:
 using assms proof(induction rule: parallel_reduction_nonredexE'[where A=A and B=B and X=X])
   case (5 C C' D D')
     hence "A = C" "B = D" using trm_simp(2, 3) by auto
-    thus ?case using `C >> C'` `D >> D'` `X = App C' D'` by metis
+    thus ?case using \<open>C >> C'\<close> \<open>D >> D'\<close> \<open>X = App C' D'\<close> by metis
   next
 qed (
   metis assms(1),
@@ -2521,7 +2521,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
   next
   case (2 x)
     hence "X' = Var x" using parallel_reduction_varE by metis
-    thus ?case using parallel_reduction_subst_inner `M >> M'` by metis
+    thus ?case using parallel_reduction_subst_inner \<open>M >> M'\<close> by metis
   next
   case (3 C D)
     consider "\<exists>x T A. C = Fn x T A" | "\<nexists>x T A. C = Fn x T A" by metis
@@ -2535,20 +2535,20 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
           "X' = App (Fn x T A) D"
         | "\<exists>A' D'. ((Fn x T A) >> (Fn x T A')) \<and> (D >> D') \<and> X' = (App (Fn x T A') D')" 
         | "\<exists>A' D'. (A >> A') \<and> (D >> D') \<and> X' = (A'[x ::= D'])"
-        using parallel_reduction_redexE `(App C D) >> X'` C by metis
+        using parallel_reduction_redexE \<open>(App C D) >> X'\<close> C by metis
         thus ?thesis proof(cases)
           case 1
-            thus ?thesis using parallel_reduction_subst_inner `M >> M'` C by metis
+            thus ?thesis using parallel_reduction_subst_inner \<open>M >> M'\<close> C by metis
           next
           case 2
             from this obtain A' D'
               where "(Fn x T A) >> (Fn x T A')" "D >> D'" and X': "X' = App (Fn x T A') D'"
               by auto
             have *: "((Fn x T A)[z ::= M]) >> ((Fn x T A')[z ::= M'])"
-              using "3.IH" `depth C < depth (App C D)` C `(Fn x T A) >> (Fn x T A')` `M >> M'`
+              using "3.IH" \<open>depth C < depth (App C D)\<close> C \<open>(Fn x T A) >> (Fn x T A')\<close> \<open>M >> M'\<close>
               by metis
             have **: "(D[z ::= M]) >> (D'[z ::= M'])"
-              using "3.IH" `depth D < depth (App C D)` `D >> D'` `M >> M'`
+              using "3.IH" \<open>depth D < depth (App C D)\<close> \<open>D >> D'\<close> \<open>M >> M'\<close>
               by metis
 
             have "(App C D)[z ::= M] = App ((Fn x T A)[z ::= M]) (D[z ::= M])"
@@ -2573,24 +2573,24 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
               where "y \<notin> {z} \<union> fvs M \<union> fvs M' \<union> fvs A'" and C: "C = Fn y T ([y \<leftrightarrow> x] \<cdot> A)"
               using fresh_fn C by metis
             hence "y \<noteq> z" "y \<notin> fvs M" "y \<notin> fvs M'" "y \<notin> fvs A'" by auto
-            have "([y \<leftrightarrow> x] \<cdot> A) >> ([y \<leftrightarrow> x] \<cdot> A')" using parallel_reduction_prm `A >> A'` by metis
+            have "([y \<leftrightarrow> x] \<cdot> A) >> ([y \<leftrightarrow> x] \<cdot> A')" using parallel_reduction_prm \<open>A >> A'\<close> by metis
             hence *: "([y \<leftrightarrow> x] \<cdot> A)[z ::= M] >> (([y \<leftrightarrow> x] \<cdot> A')[z ::= M'])"
-              using "3.IH" `depth A < depth (App C D)` depth_prm
-              using `([y \<leftrightarrow> x] \<cdot> A) >> ([y \<leftrightarrow> x] \<cdot>A')` `M >> M'` by metis
+              using "3.IH" \<open>depth A < depth (App C D)\<close> depth_prm
+              using \<open>([y \<leftrightarrow> x] \<cdot> A) >> ([y \<leftrightarrow> x] \<cdot>A')\<close> \<open>M >> M'\<close> by metis
             have **: "(D[z ::= M]) >> (D'[z ::= M'])"
-              using "3.IH" `depth D < depth (App C D)` `D >> D'` `M >> M'`
+              using "3.IH" \<open>depth D < depth (App C D)\<close> \<open>D >> D'\<close> \<open>M >> M'\<close>
               by metis
 
             have "(App C D)[z ::= M] = (App ((Fn y T ([y \<leftrightarrow> x] \<cdot> A))[z ::= M]) (D[z ::= M]))"
               using C subst_simp_app by metis
             moreover have "... = (App (Fn y T (([y \<leftrightarrow> x] \<cdot> A)[z ::= M])) (D[z ::= M]))"
-              using `y \<noteq> z` `y \<notin> fvs M` subst_simp_fn by metis
+              using \<open>y \<noteq> z\<close> \<open>y \<notin> fvs M\<close> subst_simp_fn by metis
             moreover have "... >> (([y \<leftrightarrow> x] \<cdot> A')[z ::= M'][y ::= D'[z ::= M']])"
               using parallel_reduction.beta * ** by metis
             moreover have "... = (([y \<leftrightarrow> x] \<cdot> A')[y ::= D'][z ::= M'])"
-              using barendregt `y \<noteq> z` `y \<notin> fvs M'` by metis
+              using barendregt \<open>y \<noteq> z\<close> \<open>y \<notin> fvs M'\<close> by metis
             moreover have "... = (A'[x ::= D'][z ::= M'])"
-              using subst_swp `y \<notin> fvs A'` by metis
+              using subst_swp \<open>y \<notin> fvs A'\<close> by metis
             moreover have "... = (X'[z ::= M'])" using X' by metis
             ultimately show ?thesis by metis
           next
@@ -2598,12 +2598,12 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
       next
       case 2
         from this obtain C' D' where "C >> C'" "D >> D'" and X': "X' = App C' D'"
-          using parallel_reduction_nonredexE `(App C D) >> X'` by metis
+          using parallel_reduction_nonredexE \<open>(App C D) >> X'\<close> by metis
 
         have "depth C < depth (App C D)" "depth D < depth (App C D)"
           using depth_app by auto
         hence *: "(C[z ::= M]) >> (C'[z ::= M'])" and **: "(D[z ::= M]) >> (D'[z ::= M'])"
-          using "3.IH" `C >> C'` `D >> D'` `M >> M'` by metis+
+          using "3.IH" \<open>C >> C'\<close> \<open>D >> D'\<close> \<open>M >> M'\<close> by metis+
 
         have "(App C D)[z ::= M] = App (C[z ::= M]) (D[z ::= M])"
           using subst_simp_app by metis
@@ -2620,25 +2620,25 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
     hence "x \<noteq> z" "x \<notin> fvs M" "x \<notin> fvs M'"
       by auto
 
-    from `(Fn x T A) >> X'` consider
+    from \<open>(Fn x T A) >> X'\<close> consider
       "X' = Fn x T A"
     | "\<exists>A'. (A >> A') \<and> X' = Fn x T A'" using parallel_reduction_fnE by metis
     thus ?case proof(cases)
       case 1
-        thus ?thesis using parallel_reduction_subst_inner `M >> M'` by metis
+        thus ?thesis using parallel_reduction_subst_inner \<open>M >> M'\<close> by metis
       next
       case 2
         from this obtain A' where "A >> A'" and X': "X' = Fn x T A'" by auto
 
         hence *: "(A[z ::= M]) >> (A'[z ::= M'])"
-          using "4.IH" depth_fn `A >> A'` `M >> M'` by metis
+          using "4.IH" depth_fn \<open>A >> A'\<close> \<open>M >> M'\<close> by metis
 
         have "((Fn x T A)[z ::= M]) = (Fn x T (A[z ::= M]))"
-          using subst_simp_fn `x \<noteq> z` `x \<notin> fvs M` by metis
+          using subst_simp_fn \<open>x \<noteq> z\<close> \<open>x \<notin> fvs M\<close> by metis
         moreover have "... >> (Fn x T (A'[z ::= M']))"
           using parallel_reduction.eta * by metis
         moreover have "... = ((Fn x T A')[z ::= M'])"
-          using subst_simp_fn `x \<noteq> z` `x \<notin> fvs M'` by metis
+          using subst_simp_fn \<open>x \<noteq> z\<close> \<open>x \<notin> fvs M'\<close> by metis
         moreover have "... = (X'[z ::= M'])"
           using X' by metis
         ultimately show ?thesis by metis
@@ -2646,19 +2646,19 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
     qed
   next
   case (5 A B)
-    from `(Pair A B) >> X'` consider
+    from \<open>(Pair A B) >> X'\<close> consider
       "X' = Pair A B"
     | "\<exists>A' B'. (A >> A') \<and> (B >> B') \<and> X' = Pair A' B'"
       using parallel_reduction_pairE by metis
     thus ?case proof(cases)
       case 1
-        thus ?thesis using parallel_reduction_subst_inner `M >> M'` by metis
+        thus ?thesis using parallel_reduction_subst_inner \<open>M >> M'\<close> by metis
       next
       case 2
         from this obtain A' B' where "A >> A'" "B >> B'" and X': "X' = Pair A' B'" by auto
 
         have *: "(A[z ::= M]) >> (A'[z ::= M'])" and **: "(B[z ::= M]) >> (B'[z ::= M'])"
-          using "5.IH" `A >> A'` `B >> B'` `M >> M'` by (metis depth_pair(1), metis depth_pair(2))
+          using "5.IH" \<open>A >> A'\<close> \<open>B >> B'\<close> \<open>M >> M'\<close> by (metis depth_pair(1), metis depth_pair(2))
 
         have "(Pair A B)[z ::= M] = (Pair (A[z ::= M]) (B[z ::= M]))"
           using subst_simp_pair by metis
@@ -2672,7 +2672,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
     qed
   next
   case (6 P)
-    from `(Fst P) >> X'` consider
+    from \<open>(Fst P) >> X'\<close> consider
       "\<exists>P'. (P >> P') \<and> X' = Fst P'"
     | "\<exists>A A' B. P = Pair A B \<and> (A >> A') \<and> X' = A'"
       using parallel_reduction_fstE by metis
@@ -2681,7 +2681,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
         from this obtain P' where "P >> P'" and X': "X' = Fst P'" by auto
 
         have *: "(P[z ::= M]) >> (P'[z ::= M'])"
-          using "6.IH" depth_fst `P >> P'` `M >> M'` by metis
+          using "6.IH" depth_fst \<open>P >> P'\<close> \<open>M >> M'\<close> by metis
 
         have "(Fst P)[z ::= M] = Fst (P[z ::= M])"
           using subst_simp_fst by metis
@@ -2698,7 +2698,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
         have "depth A < depth (Fst P)"
           using P depth_fst depth_pair dual_order.strict_trans by fastforce
         hence *: "(A[z ::= M]) >> (A'[z ::= M'])"
-          using "6.IH" `A >> A'` `M >> M'` by metis
+          using "6.IH" \<open>A >> A'\<close> \<open>M >> M'\<close> by metis
 
         have "(Fst P)[z ::= M] = (Fst (Pair (A[z ::= M]) (B[z ::= M])))"
           using P subst_simp_fst subst_simp_pair by metis
@@ -2711,7 +2711,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
     qed
   next
   case (7 P)
-    from `(Snd P) >> X'` consider
+    from \<open>(Snd P) >> X'\<close> consider
       "\<exists>P'. (P >> P') \<and> X' = Snd P'"
     | "\<exists>A B B'. P = Pair A B \<and> (B >> B') \<and> X' = B'"
       using parallel_reduction_sndE by metis
@@ -2720,7 +2720,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
         from this obtain P' where "P >> P'" and X': "X' = Snd P'" by auto
 
         have *: "(P[z ::= M]) >> (P'[z ::= M'])"
-          using "7.IH" depth_snd `P >> P'` `M >> M'` by metis
+          using "7.IH" depth_snd \<open>P >> P'\<close> \<open>M >> M'\<close> by metis
 
         have "(Snd P)[z ::= M] = Snd (P[z ::= M])"
           using subst_simp_snd by metis
@@ -2737,7 +2737,7 @@ using assms proof(induction X arbitrary: X' rule: trm_strong_depth_induct[where 
         have "depth B < depth (Snd P)"
           using P depth_snd depth_pair dual_order.strict_trans by fastforce
         hence *: "(B[z ::= M]) >> (B'[z ::= M'])"
-          using "7.IH" `B >> B'` `M >> M'` by metis
+          using "7.IH" \<open>B >> B'\<close> \<open>M >> M'\<close> by metis
 
         have "(Snd P)[z ::= M] = (Snd (Pair (A[z ::= M]) (B[z ::= M])))"
           using P subst_simp_snd subst_simp_pair by metis
@@ -2889,17 +2889,17 @@ using assms proof(cases)
       case 1
         hence "x = y" and "A = B" by auto
         obtain A' where "A' = B'" by auto
-        hence "A >>> A'" and "X = Fn x T A'" using eta `A = B` `x = y` `T = S` by auto
+        hence "A >>> A'" and "X = Fn x T A'" using eta \<open>A = B\<close> \<open>x = y\<close> \<open>T = S\<close> by auto
         thus ?thesis by auto
       next
       case 2
         hence "x \<noteq> y" "x \<notin> fvs B" and A: "A = [x \<leftrightarrow> y] \<cdot> B" by auto
-        hence "x \<notin> fvs B'" using `B >>> B'` complete_development_fvs by auto
+        hence "x \<notin> fvs B'" using \<open>B >>> B'\<close> complete_development_fvs by auto
         obtain A' where A': "A' = [x \<leftrightarrow> y] \<cdot> B'" by auto
-        hence "A >>> A'" using A `B >>> B'` complete_development_prm by auto
+        hence "A >>> A'" using A \<open>B >>> B'\<close> complete_development_prm by auto
         have "X = Fn x T A'"
-          using fn_eq `x \<noteq> y` `x \<notin> fvs B'` A' `X = Fn y S B'` `T = S` by metis
-        thus ?thesis using `A >>> A'` by auto
+          using fn_eq \<open>x \<noteq> y\<close> \<open>x \<notin> fvs B'\<close> A' \<open>X = Fn y S B'\<close> \<open>T = S\<close> by metis
+        thus ?thesis using \<open>A >>> A'\<close> by auto
       next
     qed
   next
@@ -2948,7 +2948,7 @@ proof(induction A rule: trm_induct)
           using complete_development_fnE A' by metis
         obtain X where "X = (M'[x ::= B'])" by auto
         hence "(App A B) >>> X"
-          using complete_development.beta `M >>> M'` B' A by metis
+          using complete_development.beta \<open>M >>> M'\<close> B' A by metis
         thus ?thesis by auto
       next
       case 2
@@ -2972,7 +2972,7 @@ proof(induction A rule: trm_induct)
         from this obtain A B X where "P = Pair A B" "P >>> X" using 6 by auto
         from this obtain A' B' where "A >>> A'" "B >>> B'" "X = Pair A' B'"
           using complete_development_pairE by metis
-        thus ?thesis using complete_development.fst2 `P = Pair A B` by metis
+        thus ?thesis using complete_development.fst2 \<open>P = Pair A B\<close> by metis
       next
       case 2
         thus ?thesis using complete_development.fst1 6 by blast
@@ -2986,7 +2986,7 @@ proof(induction A rule: trm_induct)
         from this obtain A B X where "P = Pair A B" "P >>> X" using 7 by auto
         from this obtain A' B' where "A >>> A'" "B >>> B'" "X = Pair A' B'"
           using complete_development_pairE by metis
-        thus ?thesis using complete_development.snd2 `P = Pair A B` by metis
+        thus ?thesis using complete_development.snd2 \<open>P = Pair A B\<close> by metis
       next
       case 2
         thus ?thesis using complete_development.snd1 7 by blast
@@ -3007,14 +3007,14 @@ using assms proof(induction arbitrary: B rule: complete_development.induct)
   next
   case (beta A A' C C' x T)
     hence "A >> A'" "C >> C'" using parallel_reduction.refl by metis+
-    from `(App (Fn x T A) C) >> B` consider
+    from \<open>(App (Fn x T A) C) >> B\<close> consider
         "B = App (Fn x T A) C"
       | "\<exists>A'' C''. (A >> A'') \<and> (C >> C'') \<and> B = (A''[x ::= C''])"
       | "\<exists>A'' C''. ((Fn x T A) >> (Fn x T A'')) \<and> (C >> C'') \<and> B = (App (Fn x T A'') C'')"
       using parallel_reduction_redexE by metis
     thus ?case proof(cases)
       case 1
-        thus ?thesis using parallel_reduction.beta `A >> A'` `C >> C'` by metis
+        thus ?thesis using parallel_reduction.beta \<open>A >> A'\<close> \<open>C >> C'\<close> by metis
       next
       case 2
         from this obtain A'' C'' where "A >> A''" "C >> C''" and B: "B = (A''[x ::= C''])" by auto
@@ -3029,7 +3029,7 @@ using assms proof(induction arbitrary: B rule: complete_development.induct)
         have "A'' >> A'"
         proof -
           thm parallel_reduction_fnE
-          from `(Fn x T A) >> (Fn x T A'')` consider
+          from \<open>(Fn x T A) >> (Fn x T A'')\<close> consider
             "Fn x T A = Fn x T A''"
           | "\<exists>A'''. (A >> A''') \<and> Fn x T A'' = Fn x T A'''"
             using parallel_reduction_fnE by metis
@@ -3045,7 +3045,7 @@ using assms proof(induction arbitrary: B rule: complete_development.induct)
           qed
           thus ?thesis using beta.IH by metis
         qed
-        thus ?thesis using B `C'' >> C'` parallel_reduction.beta by metis
+        thus ?thesis using B \<open>C'' >> C'\<close> parallel_reduction.beta by metis
       next
     qed
   next
@@ -3070,7 +3070,7 @@ using assms proof(induction arbitrary: B rule: complete_development.induct)
     thus ?case using B parallel_reduction.app by metis
   next
   case (pair A A' C C')
-    from `(Pair A C) >> B` and parallel_reduction_pairE obtain A'' C'' where
+    from \<open>(Pair A C) >> B\<close> and parallel_reduction_pairE obtain A'' C'' where
       "A >> A''" "C >> C''" "B = Pair A'' C''" by metis
     thus ?case using pair.IH parallel_reduction.pair by metis
   next
@@ -3089,7 +3089,7 @@ using assms proof(induction arbitrary: B rule: complete_development.induct)
         from this obtain P'' where "(Pair A C) >> P''" and "B = Fst P''" by auto
         from this obtain A'' C'' where "P'' = Pair A'' C''" "A >> A''" "C >> C''"
           using parallel_reduction_pairE by metis
-        thus ?thesis using fst2 parallel_reduction.fst2 `B = Fst P''` by metis
+        thus ?thesis using fst2 parallel_reduction.fst2 \<open>B = Fst P''\<close> by metis
       next
       case 2
         from this obtain A'' where "A >> A''" "B = A''" by metis
@@ -3112,7 +3112,7 @@ using assms proof(induction arbitrary: B rule: complete_development.induct)
         from this obtain P'' where "(Pair A C) >> P''" and "B = Snd P''" by auto
         from this obtain A'' C'' where "P'' = Pair A'' C''" "A >> A''" "C >> C''"
           using parallel_reduction_pairE by metis
-        thus ?thesis using snd2 parallel_reduction.snd2 `B = Snd P''` by metis
+        thus ?thesis using snd2 parallel_reduction.snd2 \<open>B = Snd P''\<close> by metis
       next
       case 2
         from this obtain C'' where "C >> C''" "B = C''" by metis
@@ -3144,9 +3144,9 @@ using assms proof(induction)
   next
   case (transitive A A' A'')
     from this obtain C where "B >>\<^sup>* C" "A' >> C" by metis
-    from `A' >> C` `A' >> A''` obtain D where "C >> D" "A'' >> D"
+    from \<open>A' >> C\<close> \<open>A' >> A''\<close> obtain D where "C >> D" "A'' >> D"
       using parallel_reduction_diamond by metis
-    thus ?case using parallel_reduces.transitive `B >>\<^sup>* C` by metis
+    thus ?case using parallel_reduces.transitive \<open>B >>\<^sup>* C\<close> by metis
   next
 qed
 
@@ -3160,8 +3160,8 @@ using assms proof(induction)
   case (transitive A A' A'')
     from this obtain C' where "A' >>\<^sup>* C'" "C >>\<^sup>* C'" by metis
     from this obtain D where "A'' >>\<^sup>* D" "C' >> D"
-      using `A' >> A''` `A' >>\<^sup>* C'` parallel_reduces_diamond' by metis
-    thus ?case using parallel_reduces.transitive `C >>\<^sup>* C'` by metis
+      using \<open>A' >> A''\<close> \<open>A' >>\<^sup>* C'\<close> parallel_reduces_diamond' by metis
+    thus ?case using parallel_reduces.transitive \<open>C >>\<^sup>* C'\<close> by metis
   next
 qed
 
@@ -3191,7 +3191,7 @@ using assms proof(induction)
   next
   case (beta A A' B B' x T)
     hence "(App (Fn x T A) B) \<rightarrow>\<beta>\<^sup>* (App (Fn x T A') B')"
-      using `A \<rightarrow>\<beta>\<^sup>* A'`
+      using \<open>A \<rightarrow>\<beta>\<^sup>* A'\<close>
       beta_reduces_fn beta_reduces_app_left beta_reduces_app_right beta_reduces_composition
       by metis
     moreover have "(App (Fn x T A') B') \<rightarrow>\<beta> (A'[x ::= B'])"

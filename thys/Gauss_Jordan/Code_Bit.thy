@@ -4,14 +4,14 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Code Generation for Bits*}
+section\<open>Code Generation for Bits\<close>
 
 theory Code_Bit
 imports "HOL-Library.Bit"
 begin
 
-text{*Implementation for the field of integer numbers module 2.
-Experimentally we have checked that the implementation by means of booleans is the fastest one.*}
+text\<open>Implementation for the field of integer numbers module 2.
+Experimentally we have checked that the implementation by means of booleans is the fastest one.\<close>
 
 code_datatype "0::bit" "(1::bit)"
 code_printing

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Gauss Jordan algorithm over abstract matrices*}
+section\<open>Gauss Jordan algorithm over abstract matrices\<close>
 
 theory Gauss_Jordan
 imports
@@ -13,15 +13,15 @@ imports
   Rank  
 begin
 
-subsection{*The Gauss-Jordan Algorithm*}
+subsection\<open>The Gauss-Jordan Algorithm\<close>
 
-text{* Now, a computable version of the Gauss-Jordan algorithm is presented. The output will be a matrix in reduced row echelon form.
-We present an algorithm in which the reduction is applied by columns*}
+text\<open>Now, a computable version of the Gauss-Jordan algorithm is presented. The output will be a matrix in reduced row echelon form.
+We present an algorithm in which the reduction is applied by columns\<close>
 
-text{*Using this definition, zeros are made in the column j of a matrix A placing the pivot entry (a nonzero element) in the position (i,j).
+text\<open>Using this definition, zeros are made in the column j of a matrix A placing the pivot entry (a nonzero element) in the position (i,j).
 For that, a suitable row interchange is made to achieve a non-zero entry in position (i,j). Then, this pivot entry is multiplied by its inverse
 to make the pivot entry equals to 1. After that, are other entries of the j-th column are eliminated by subtracting suitable multiples of the
-i-th row from the other rows.*}
+i-th row from the other rows.\<close>
 
 definition Gauss_Jordan_in_ij :: "'a::{semiring_1, inverse, one, uminus}^'m^'n::{finite, ord}=> 'n=>'m=>'a^'m^'n::{finite, ord}"
 where "Gauss_Jordan_in_ij A i j = (let n = (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n); 
@@ -56,27 +56,27 @@ proof -
   from P1 P2 P3 P4 P5 P6 that show thesis by blast
 qed
                                 
-text{*The following definition makes the step of Gauss-Jordan in a column. This function receives two input parameters: the column k
-where the step of Gauss-Jordan must be applied and a pair (which consists of the row where the pivot should be placed in the column k and the original matrix).*}
+text\<open>The following definition makes the step of Gauss-Jordan in a column. This function receives two input parameters: the column k
+where the step of Gauss-Jordan must be applied and a pair (which consists of the row where the pivot should be placed in the column k and the original matrix).\<close>
 
 definition Gauss_Jordan_column_k :: "(nat \<times> ('a::{zero,inverse,uminus,semiring_1}^'m::{mod_type}^'n::{mod_type})) 
 => nat => (nat \<times> ('a^'m::{mod_type}^'n::{mod_type}))"
 where "Gauss_Jordan_column_k A' k = (let i=fst A'; A=(snd A'); from_nat_i=(from_nat i::'n); from_nat_k=(from_nat k::'m) in 
         if (\<forall>m\<ge>(from_nat_i). A $ m $(from_nat_k)=0) \<or> (i = nrows A) then (i,A) else (i+1, (Gauss_Jordan_in_ij A (from_nat_i) (from_nat_k))))"
 
-text{*The following definition applies the Gauss-Jordan step from the first column up to the k one (included).*}
+text\<open>The following definition applies the Gauss-Jordan step from the first column up to the k one (included).\<close>
 
 definition Gauss_Jordan_upt_k :: "'a::{inverse,uminus,semiring_1}^'columns::{mod_type}^'rows::{mod_type} => nat 
 => 'a^'columns::{mod_type}^'rows::{mod_type}"
  where "Gauss_Jordan_upt_k A k = snd (foldl Gauss_Jordan_column_k (0,A) [0..<Suc k])"
 
-text{*Gauss-Jordan is to apply the @{term "Gauss_Jordan_column_k"} in all columns.*}
+text\<open>Gauss-Jordan is to apply the @{term "Gauss_Jordan_column_k"} in all columns.\<close>
 definition Gauss_Jordan :: "'a::{inverse,uminus,semiring_1}^'columns::{mod_type}^'rows::{mod_type}  
 => 'a^'columns::{mod_type}^'rows::{mod_type}"
  where "Gauss_Jordan A = Gauss_Jordan_upt_k A ((ncols A) - 1)"
 
 
-subsection{*Properties about rref and the greatest nonzero row.*}
+subsection\<open>Properties about rref and the greatest nonzero row.\<close>
 
 lemma greatest_plus_one_eq_0:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
@@ -176,9 +176,9 @@ corollary row_greater_greatest_is_zero:
   assumes "(GREATEST m. \<not> is_zero_row_upt_k m k A) < i"
   shows "is_zero_row_upt_k i k A" using greatest_ge_nonzero_row assms by fastforce
 
-subsection{*The proof of its correctness*}
+subsection\<open>The proof of its correctness\<close>
 
-text{*Properties of @{term "Gauss_Jordan_in_ij"}*}
+text\<open>Properties of @{term "Gauss_Jordan_in_ij"}\<close>
 
 lemma Gauss_Jordan_in_ij_1:
   fixes A::"'a::{field}^'m^'n::{finite, ord, wellorder}"
@@ -309,8 +309,8 @@ proof (rule ccontr)
   thus False using not_zero_i by contradiction
 qed
 
-text{*Here we start to prove that 
-      the output of @{term "Gauss Jordan A"} is a matrix in reduced row echelon form.*}
+text\<open>Here we start to prove that 
+      the output of @{term "Gauss Jordan A"} is a matrix in reduced row echelon form.\<close>
 
 lemma condition_1_part_1:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
@@ -1473,11 +1473,11 @@ proof -
 qed
 
 
-text{*The following lemma is one of most important ones in the verification of the Gauss-Jordan algorithm.
+text\<open>The following lemma is one of most important ones in the verification of the Gauss-Jordan algorithm.
 The aim is to prove two statements about @{thm "Gauss_Jordan_upt_k_def"} (one about the result is on rref and another about the index).
 The reason of doing that way is because both statements need them mutually to be proved.
 As the proof is made using induction, two base cases and two induction steps appear.
-*}
+\<close>
 lemma rref_and_index_Gauss_Jordan_upt_k:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}" and k::nat
   assumes  "k < ncols A"
@@ -1665,9 +1665,9 @@ qed
 
 
 
-text{*Here we start to prove that the transformation from the original matrix to its reduced row echelon form has been carried out by means of elementary operations.*}
-text{*The following function eliminates all entries of the j-th column using the non-zero element situated in the position (i,j).
-It is introduced to make easier the proof that each Gauss-Jordan step consists in applying suitable elementary operations.*}
+text\<open>Here we start to prove that the transformation from the original matrix to its reduced row echelon form has been carried out by means of elementary operations.\<close>
+text\<open>The following function eliminates all entries of the j-th column using the non-zero element situated in the position (i,j).
+It is introduced to make easier the proof that each Gauss-Jordan step consists in applying suitable elementary operations.\<close>
 
 primrec row_add_iterate :: "'a::{semiring_1, uminus}^'n^'m::{mod_type} => nat => 'm => 'n => 'a^'n^'m::{mod_type}"
   where "row_add_iterate A 0 i j = (if i=0 then A else row_add A 0 i (-A $ 0 $ j))"
@@ -1952,7 +1952,7 @@ proof (rule ccontr)
   show False using Ax Ay unfolding eq by simp
 qed
 
-text{*The final results:*}
+text\<open>The final results:\<close>
 
 lemma invertible_Gauss_Jordan:
   fixes A::"'a::{field}^'n::{mod_type}^'m::{mod_type}"
@@ -1963,8 +1963,8 @@ lemma Gauss_Jordan:
   shows "\<exists>P. invertible P \<and> (Gauss_Jordan A) = P**A \<and> reduced_row_echelon_form (Gauss_Jordan A)"
   by (simp add: invertible_Gauss_Jordan rref_Gauss_Jordan)
   
-text{*Some properties about the rank of a matrix, obtained thanks to the Gauss-Jordan algorithm and
-  the reduced row echelon form.*}  
+text\<open>Some properties about the rank of a matrix, obtained thanks to the Gauss-Jordan algorithm and
+  the reduced row echelon form.\<close>  
 
 lemma rref_rank:
   fixes A::"'a::{field}^'m::{mod_type}^'n::{finite,one,plus,ord}"
@@ -2032,7 +2032,7 @@ have b_eq_x: "b = x"
 show?thesis
  using rref_condition2_explicit[OF rref_A, of b] row_b
  unfolding b column_def is_zero_row_def' 
- by (metis (mono_tags) `\<not> is_zero_row b A \<Longrightarrow> A $ b $ (LEAST k. A $ b $ k \<noteq> 0) = 1`
+ by (metis (mono_tags) \<open>\<not> is_zero_row b A \<Longrightarrow> A $ b $ (LEAST k. A $ b $ k \<noteq> 0) = 1\<close>
           b_eq_x is_zero_row_eq_row_zero vec_lambda_beta) 
 qed
 
@@ -2259,7 +2259,7 @@ lemma rank_Gauss_Jordan:
   by (metis Gauss_Jordan_def invertible_Gauss_Jordan_up_to_k 
       row_rank_eq_col_rank rank_def crk_is_preserved)
 
-text{*Other interesting properties:*}
+text\<open>Other interesting properties:\<close>
 
 lemma A_0_imp_Gauss_Jordan_0:
   fixes A::"'a::{field}^'n::{mod_type}^'m::{mod_type}"
@@ -2394,7 +2394,7 @@ lemma rank_Gauss_Jordan_eq:
   shows "rank A = (let A'=(Gauss_Jordan A) in card {row i A' |i. row i A' \<noteq> 0})"
   by (metis (mono_tags) rank_Gauss_Jordan rref_Gauss_Jordan rref_rank)
 
-subsection{*Lemmas for code generation and rank computation*}
+subsection\<open>Lemmas for code generation and rank computation\<close>
 
 lemma [code abstract]: 
 shows "vec_nth (Gauss_Jordan_in_ij A i j) = (let n = (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n); 

@@ -2,21 +2,21 @@
     Author:      Peter Lammich <peter.lammich@uni-muenster.de>
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
-section {* Labeled transition systems *}
+section \<open>Labeled transition systems\<close>
 theory LTS
 imports Main
 begin
-text_raw {*\label{thy:LTS}*}
+text_raw \<open>\label{thy:LTS}\<close>
 
-text {*
+text \<open>
   Labeled transition systems (LTS) provide a model of a state transition system with named transitions.
-*}
+\<close>
 
-subsection {* Definitions *}
-text {*  An LTS is modeled as a ternary relation between start configuration, transition label and end configuration *}
+subsection \<open>Definitions\<close>
+text \<open>An LTS is modeled as a ternary relation between start configuration, transition label and end configuration\<close>
 type_synonym ('c,'a) LTS = "('c \<times> 'a \<times> 'c) set"
 
-text {* Transitive reflexive closure *}
+text \<open>Transitive reflexive closure\<close>
 
 inductive_set 
   trcl :: "('c,'a) LTS \<Rightarrow> ('c,'a list) LTS"
@@ -25,7 +25,7 @@ inductive_set
   empty[simp]: "(c,[],c) \<in> trcl t"
   | cons[simp]: "\<lbrakk> (c,a,c') \<in> t; (c',w,c'') \<in> trcl t \<rbrakk> \<Longrightarrow> (c,a#w,c'') \<in> trcl t"
 
-subsection {* Basic properties of transitive reflexive closure *}
+subsection \<open>Basic properties of transitive reflexive closure\<close>
 lemma trcl_empty_cons: "(c,[],c')\<in>trcl t \<Longrightarrow> (c=c')"
   by (auto elim: trcl.cases)
 lemma trcl_empty_simp[simp]: "(c,[],c')\<in>trcl t = (c=c')"

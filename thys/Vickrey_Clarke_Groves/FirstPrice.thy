@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* First-price auction: adapted from VCG auction *}
+section \<open>First-price auction: adapted from VCG auction\<close>
 
 theory FirstPrice
 

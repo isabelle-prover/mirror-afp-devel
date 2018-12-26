@@ -1,16 +1,16 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-section {* Defining data structure and \\
-          key function remove\_max *}
+section \<open>Defining data structure and \\
+          key function remove\_max\<close>
 
 theory RemoveMax
 imports Sort
 begin
 
-subsection {* Describing data structure *}
+subsection \<open>Describing data structure\<close>
 
-text{*
+text\<open>
 We have already said that we are going to formalize heap and selection
 sort and to show connections between these two sorts.  However, one
 can immediately notice that selection sort is using list and heap sort
@@ -20,7 +20,7 @@ and independently proved that they satisfy conditions of locale
 \verb|Sort|. They work with different objects. Much better thing to do
 is to stay on the abstract level and to add the new locale, one that
 describes characteristics of both list and heap. 
-*}
+\<close>
 
 locale Collection = 
   fixes empty :: "'b"
@@ -52,9 +52,9 @@ begin
      [simp]: "set l = set_mset (multiset l)"
 end
 
-subsection {* Function remove\_max *}
+subsection \<open>Function remove\_max\<close>
 
-text{*
+text\<open>
 We wanted to emphasize that algorithms are same. Due to
 the complexity of the implementation it usually happens that simple
 properties are omitted, such as the connection between these two
@@ -69,7 +69,7 @@ not bring anything new. Being on the abstract level does not only
 simplify the verifications, but also helps us to notice and to show
 students important features. Even further, we can prove them formally
 and completely justify our observation.
-*}
+\<close>
 
 locale RemoveMax = Collection empty is_empty of_list  multiset for 
   empty :: "'b" and 
@@ -115,14 +115,14 @@ lemma remove_max_set:
 using remove_max_multiset[of l m l']
 by (metis Un_insert_right local.set_def set_mset_add_mset_insert sup_bot_right)
 
-text{* As it is said before
+text\<open>As it is said before
 in each iteration invariant condition must be satisfied, so the {\em
   inv l} is always true, e.g. before and after execution of any
 function. This is also the reason why sort function must be defined as
 partial. This function parameters stay the same in each step of
 iteration -- list stays list, and heap stays heap. As we said before,
 in Isabelle/HOL we can only define total function, but there is a
-mechanism that enables total function to appear as partial one: *}
+mechanism that enables total function to appear as partial one:\<close>
 
 partial_function (tailrec) ssort' where 
   "ssort' l sl = 
@@ -152,14 +152,14 @@ proof (induct p rule: wf_induct[of "measure (\<lambda>(l, sl). size (multiset l)
   obtain l sl where "p = (l, sl)"
     by (cases p) auto
   show "ssort'_dom p"
-  proof (subst `p = (l, sl)`, rule ssort'_dom.step)
+  proof (subst \<open>p = (l, sl)\<close>, rule ssort'_dom.step)
     fix m l'
     assume "\<not> is_empty l" "(m, l') = remove_max l"
     show "ssort'_dom (l', m#sl)"
     proof (rule *[rule_format])
       show "((l', m#sl), p) \<in> ?r" "inv (fst (l', m#sl))"
-        using `p = (l, sl)` `inv (fst p)` `\<not> is_empty l` 
-        using `(m, l') = remove_max l`
+        using \<open>p = (l, sl)\<close> \<open>inv (fst p)\<close> \<open>\<not> is_empty l\<close> 
+        using \<open>(m, l') = remove_max l\<close>
         using remove_max_inv[of l m l']
         using remove_max_multiset_size[of l m l']
         by auto
@@ -173,7 +173,7 @@ lemma ssort'Induct:
     \<lbrakk>\<not> is_empty l; inv l; (m, l') = remove_max l; P l sl\<rbrakk> \<Longrightarrow> P l' (m # sl)"
   shows "P empty (ssort' l sl)"
 proof-
-  from `inv l` have "ssort'_dom (l, sl)"
+  from \<open>inv l\<close> have "ssort'_dom (l, sl)"
     using ssort'_termination
     by auto
   thus ?thesis
@@ -259,10 +259,10 @@ proof (subst mset_eq_perm[symmetric])
 qed
 end
 
-text{* Using assumptions given in the definitions of the locales {\em
+text\<open>Using assumptions given in the definitions of the locales {\em
   Collection} and {\em RemoveMax} for the functions {\em multiset},
 {\em is\_empty}, {\em of\_list} and {\em remove\_max} it is no
-difficulty to show: *}
+difficulty to show:\<close>
 
 sublocale RemoveMax < Sort ssort
 by (unfold_locales) (auto simp add: sorted_ssort permutation_ssort)

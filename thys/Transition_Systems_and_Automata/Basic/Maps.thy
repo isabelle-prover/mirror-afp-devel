@@ -1,10 +1,10 @@
-section {* Maps *}
+section \<open>Maps\<close>
 
 theory Maps
 imports Sequence_Zip
 begin
 
-  section {* Basics *}
+  section \<open>Basics\<close>
 
   lemma fun_upd_None[simp]:
     assumes "p \<notin> dom f"
@@ -39,7 +39,7 @@ begin
     finally show ?case by this
   qed
 
-  subsection {* Expanding set functions to sets of functions *}
+  subsection \<open>Expanding set functions to sets of functions\<close>
 
   definition expand :: "('a \<Rightarrow> 'b set) \<Rightarrow> ('a \<Rightarrow> 'b) set" where
     "expand f = {g. \<forall> x. g x \<in> f x}"
@@ -65,7 +65,7 @@ begin
     show "g \<in> {g. \<forall> y. g y \<in> (f (x := S)) y}" using 1 by auto
   qed
 
-  subsection {* Expanding set maps into sets of maps *}
+  subsection \<open>Expanding set maps into sets of maps\<close>
 
   definition expand_map :: "('a \<rightharpoonup> 'b set) \<Rightarrow> ('a \<rightharpoonup> 'b) set" where
     "expand_map f \<equiv> expand (case_option {None} (image Some) \<circ> f)"

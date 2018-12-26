@@ -1,4 +1,4 @@
-section {* Rankings *}
+section \<open>Rankings\<close>
 
 theory Ranking
 imports
@@ -6,7 +6,7 @@ imports
   "Graph"
 begin
 
-  subsection {* Rankings *}
+  subsection \<open>Rankings\<close>
 
   type_synonym 'state ranking = "'state node \<Rightarrow> nat"
 
@@ -17,7 +17,7 @@ begin
       (\<forall> v \<in> gunodes A w. gaccepting A v \<longrightarrow> even (f v)) \<and>
       (\<forall> v \<in> gunodes A w. \<forall> r k. gurun A w r v \<longrightarrow> smap f (gtrace r v) = sconst k \<longrightarrow> odd k)"
 
-  subsection {* Ranking Implies Word not in Language *}
+  subsection \<open>Ranking Implies Word not in Language\<close>
 
   lemma ranking_stuck:
     assumes "ranking A w f"
@@ -115,9 +115,9 @@ begin
     show False using 4 11 by auto
   qed
 
-  subsection {* Word not in Language implies Ranking *}
+  subsection \<open>Word not in Language implies Ranking\<close>
 
-  subsubsection {* Removal of Endangered Nodes *}
+  subsubsection \<open>Removal of Endangered Nodes\<close>
 
   definition clean :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state node set \<Rightarrow> 'state node set" where
     "clean A w V \<equiv> {v \<in> V. infinite (greachable A w V v)}"
@@ -135,7 +135,7 @@ begin
     show "v \<in> clean A w V" unfolding clean_def using assms(1) 5 by simp
   qed
 
-  subsubsection {* Removal of Safe Nodes *}
+  subsubsection \<open>Removal of Safe Nodes\<close>
 
   definition prune :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state node set \<Rightarrow> 'state node set" where
     "prune A w V \<equiv> {v \<in> V. \<exists> u \<in> greachable A w V v. gaccepting A u}"
@@ -152,7 +152,7 @@ begin
     show "v \<in> prune A w V" unfolding prune_def using assms(1) 2(2) 4 by auto
   qed
 
-  subsubsection {* Run Graph Interation *}
+  subsubsection \<open>Run Graph Interation\<close>
 
   definition graph :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> nat \<Rightarrow> 'state node set" where
     "graph A w k \<equiv> alternate (clean A w) (prune A w) k (gunodes A w)"
@@ -391,7 +391,7 @@ begin
     using graph_empty graph_antimono assms
     by (metis (no_types, lifting) Suc_leI antimono_def basic_trans_rules(30) empty_iff not_le_imp_less)
 
-  subsection {* Node Ranks *}
+  subsection \<open>Node Ranks\<close>
 
   definition rank :: "('label, 'state) nba \<Rightarrow> 'label stream \<Rightarrow> 'state node \<Rightarrow> nat" where
     "rank A w v \<equiv> GREATEST k. v \<in> graph A w k"
@@ -471,7 +471,7 @@ begin
     show "odd k" using 10 unfolding graph_Suc by auto
   qed
 
-  subsection {* Correctness Theorem *}
+  subsection \<open>Correctness Theorem\<close>
 
   theorem language_ranking_iff:
     assumes "finite (nodes A)"

@@ -1,30 +1,30 @@
 (*File: IMP.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory IMP imports Main begin
-section {*The language IMP*}
+section \<open>The language IMP\<close>
 
-text{*\label{sec:IMP}In this section we define a simple imperative programming
+text\<open>\label{sec:IMP}In this section we define a simple imperative programming
 language. Syntax and operational semantics are as in \cite{Winskel93},
 except that we enrich the language with a single unnamed,
 parameterless procedure. Both, this section and the following one
 merely set the basis for the development described in the later
 sections and largely follow the approach to formalize program logics
 advocated by Kleymann, Nipkow, and others - see for example
-\cite{KleymannPhD,Nipkow-CSL02,Nipkow-AFP-AHL}.*}
+\cite{KleymannPhD,Nipkow-CSL02,Nipkow-AFP-AHL}.\<close>
 
-subsection{*Syntax*} 
+subsection\<open>Syntax\<close> 
 
-text{*We start from unspecified categories of program variables and
-values.*}
+text\<open>We start from unspecified categories of program variables and
+values.\<close>
 
 typedecl Var
 typedecl Val
 
-text{*Arithmetic expressions are inductively built up from variables,
+text\<open>Arithmetic expressions are inductively built up from variables,
 values, and binary operators which are modeled as meta-logical
 functions over values. Similarly, boolean expressions are built up
 from arithmetic expressions using binary boolean operators which are 
-modeled as functions of the ambient logic HOL.*}
+modeled as functions of the ambient logic HOL.\<close>
 
 datatype Expr =
    varE Var
@@ -33,9 +33,9 @@ datatype Expr =
 
 datatype BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
 
-text{*Commands are the usual ones for an imperative language, plus the
+text\<open>Commands are the usual ones for an imperative language, plus the
 command $\mathit{Call}$ which stands for the invocation of a single
-(unnamed, parameterless) procedure.*}
+(unnamed, parameterless) procedure.\<close>
 
 datatype IMP =
     Skip 
@@ -45,23 +45,23 @@ datatype IMP =
   | Iff BExpr IMP IMP
   | Call
 
-text{*The body of this procedure is identified by the following
-constant.*}
+text\<open>The body of this procedure is identified by the following
+constant.\<close>
 
 consts body :: IMP
 
-subsection{*Dynamic semantics*}
+subsection\<open>Dynamic semantics\<close>
 
-text{*States are given by stores - in our case, HOL functions
-mapping program variables to values.*}
+text\<open>States are given by stores - in our case, HOL functions
+mapping program variables to values.\<close>
 
 type_synonym State = "Var \<Rightarrow> Val"
 
 definition update :: "State \<Rightarrow> Var \<Rightarrow> Val \<Rightarrow> State"
 where "update s x v = (\<lambda> y . if x=y then v else s y)"
 
-text{*The evaluation of expressions is defined inductively, as
-standard.*}
+text\<open>The evaluation of expressions is defined inductively, as
+standard.\<close>
 
 primrec evalE::"Expr \<Rightarrow> State \<Rightarrow> Val"
 where
@@ -73,9 +73,9 @@ primrec evalB::"BExpr \<Rightarrow> State \<Rightarrow> bool"
 where
 "evalB (compB f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
-text{*The operational semantics is a standard big-step relation, with
+text\<open>The operational semantics is a standard big-step relation, with
 a height index that facilitates the Kleymann-Nipkow-style~\cite{KleymannPhD,Nipkow-CSL02}
-soundness proof of the program logic.*}
+soundness proof of the program logic.\<close>
 
 inductive_set Semn :: "(State \<times> IMP \<times> nat \<times> State) set" where
  SemSkip: "(s,Skip,1,s) : Semn" 
@@ -121,13 +121,13 @@ SemN  :: "[State, IMP, nat, State] \<Rightarrow> bool"   (" _ , _ \<rightarrow>\
 where
 "s,c \<rightarrow>\<^sub>n t == (s,c,n,t) : Semn"
 
-text{*Often, the height index does not matter, so we define a notion
-hiding it.*}
+text\<open>Often, the height index does not matter, so we define a notion
+hiding it.\<close>
 
 definition Sem :: "[State, IMP, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
 where "s,c \<Down> t = (\<exists> n. s,c \<rightarrow>\<^sub>n t)"
 
-text{*Inductive elimination rules for the (indexed) dynamic semantics:*}
+text\<open>Inductive elimination rules for the (indexed) dynamic semantics:\<close>
 
 inductive_cases Sem_eval_cases: 
  "s,Skip \<rightarrow>\<^sub>n t"
@@ -142,8 +142,8 @@ lemma Sem_no_zero_height_derivsAux: "\<forall> s t. ((s, c \<rightarrow>\<^sub>0
 by (induct_tac c, auto elim: Sem_eval_cases)
 (*>*)
 
-text{*An induction on $c$ shows that no derivations of height
-$0$ exist.*}
+text\<open>An induction on $c$ shows that no derivations of height
+$0$ exist.\<close>
 
 lemma Sem_no_zero_height_derivs: "(s, c \<rightarrow>\<^sub>0 t) ==> False"
 (*<*)by (insert Sem_no_zero_height_derivsAux, fastforce)(*>*)
@@ -189,8 +189,8 @@ apply simp
 done
 (*>*)
 
-text{*The proof of determinism is by induction on the 
-      (indexed) operational semantics.*}
+text\<open>The proof of determinism is by induction on the 
+      (indexed) operational semantics.\<close>
 
 lemma SemDeterm: "\<lbrakk>s, c \<Down> t; s, c \<Down> r\<rbrakk> \<Longrightarrow> r=t"
 (*<*)
@@ -200,5 +200,5 @@ apply simp
 done
 (*>*)
 
-text{*End of theory IMP*}
+text\<open>End of theory IMP\<close>
 end

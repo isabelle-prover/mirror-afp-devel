@@ -490,12 +490,12 @@ next
   thus "\<exists>P'. P \<Longrightarrow>\<^sub>l \<alpha> \<prec> P' \<and> (P', Q') \<in> Rel"
   proof(induct arbitrary: \<alpha> Q''' Q' rule: tauChainInduct)
     case(id \<alpha> Q''')
-    from PSimQ `Q \<longmapsto>\<alpha> \<prec> Q'''` have "\<exists>P'. P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P' \<and> (P', Q''') \<in> Rel"
+    from PSimQ \<open>Q \<longmapsto>\<alpha> \<prec> Q'''\<close> have "\<exists>P'. P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P' \<and> (P', Q''') \<in> Rel"
       by(blast dest: simE)
     then obtain P''' where PTrans: "P \<Longrightarrow>\<^sub>l\<alpha> \<prec> P'''" and P'RelQ''': "(P''', Q''') \<in> Rel"
       by blast
     
-    have "\<exists>P'. P''' \<Longrightarrow>\<^sub>\<tau> P' \<and> (P', Q') \<in> Rel" using `Q''' \<Longrightarrow>\<^sub>\<tau> Q'` P'RelQ''' Sim
+    have "\<exists>P'. P''' \<Longrightarrow>\<^sub>\<tau> P' \<and> (P', Q') \<in> Rel" using \<open>Q''' \<Longrightarrow>\<^sub>\<tau> Q'\<close> P'RelQ''' Sim
       by(rule Weak_Late_Sim.weakSimTauChain)
     then obtain P' where P'''Chain: "P''' \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
     
@@ -506,12 +506,12 @@ next
   next
     case(ih Q'''' Q''' \<alpha> Q'' Q')
     have "Q''' \<Longrightarrow>\<^sub>\<tau> Q'''" by simp
-    with `Q'''' \<longmapsto>\<tau> \<prec> Q'''` obtain P''' where PTrans: "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'''" and P'''RelQ''': "(P''', Q''') \<in> Rel"
+    with \<open>Q'''' \<longmapsto>\<tau> \<prec> Q'''\<close> obtain P''' where PTrans: "P \<Longrightarrow>\<^sub>l\<tau> \<prec> P'''" and P'''RelQ''': "(P''', Q''') \<in> Rel"
       by(drule_tac ih) auto
-    from P'''RelQ''' `Q''' \<longmapsto>\<alpha> \<prec> Q''` obtain P'' where 
+    from P'''RelQ''' \<open>Q''' \<longmapsto>\<alpha> \<prec> Q''\<close> obtain P'' where 
       P'''Trans: "P''' \<Longrightarrow>\<^sub>l\<^sup>^\<alpha> \<prec> P''" and P''RelQ'': "(P'', Q'') \<in> Rel"
       by(blast dest: Weak_Late_Sim.simE Sim)
-    from P''RelQ'' `Q'' \<Longrightarrow>\<^sub>\<tau> Q'` Sim obtain P' where 
+    from P''RelQ'' \<open>Q'' \<Longrightarrow>\<^sub>\<tau> Q'\<close> Sim obtain P' where 
       P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(P', Q')\<in> Rel"
       by(drule_tac Weak_Late_Sim.weakSimTauChain) auto
     
@@ -521,7 +521,7 @@ next
       apply(drule_tac Weak_Late_Step_Semantics.chainTransitionAppend, simp)
       apply(rule Weak_Late_Step_Semantics.chainTransitionAppend, auto)
       by(drule_tac Weak_Late_Step_Semantics.chainTransitionAppend, auto)
-    with `(P', Q') \<in> Rel` show ?case by blast
+    with \<open>(P', Q') \<in> Rel\<close> show ?case by blast
   qed
 qed
 

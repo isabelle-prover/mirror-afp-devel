@@ -3,12 +3,12 @@ theory Mcalc2C
 imports Mcalc2
 begin
 
-subsection{* Constant policy on types *}
+subsection\<open>Constant policy on types\<close>
 
-text{* Currently our soundness proof only covers the case of the calculus
+text\<open>Currently our soundness proof only covers the case of the calculus
 having different extension policies for different predicates, but not
 for differnt types versus the same predicate. This is sufficient for our purpose
-of proving soundness of the guard encodings.  *}
+of proving soundness of the guard encodings.\<close>
 
 locale ProblemIkPolMcalc2C =
 ProblemIkPolMcalc2 wtFsym wtPsym arOf resOf parOf \<Phi> infTp pol grdOf
@@ -50,8 +50,8 @@ and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi> and infTp pol and grdOf and intT and intF and intP
 
 
-subsection{* Extension of a structure to an infinte structure
-by adding indistinguishable elements *}
+subsection\<open>Extension of a structure to an infinte structure
+by adding indistinguishable elements\<close>
 
 context ModelIkPolMcalc2C begin
 
@@ -142,7 +142,7 @@ sublocale ModelIkPolMcalc2C < InfStruct where
 intT = I_intT and intF = I_intF and intP = I_intP
 using InfStruct .
 
-subsection{* The soundness of the calculus *}
+subsection\<open>The soundness of the calculus\<close>
 
 (* In what follows, ``Ik" stands for the original
 (augmented with infiniteness-knowledge)
@@ -412,8 +412,8 @@ qed
 
 end (* context ProblemIkPolMcalc2 *)
 
-text{* Final theorem in sublocale form: Any problem that passes the
-  monotonicity calculus is monotonic:  *}
+text\<open>Final theorem in sublocale form: Any problem that passes the
+  monotonicity calculus is monotonic:\<close>
 sublocale ProblemIkPolMcalc2C < MonotProblem
 by standard (rule monot)
 

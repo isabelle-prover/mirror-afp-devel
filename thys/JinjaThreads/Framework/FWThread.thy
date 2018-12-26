@@ -2,14 +2,14 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of the thread actions for thread creation *}
+section \<open>Semantics of the thread actions for thread creation\<close>
 
 theory FWThread
 imports
   FWState
 begin
 
-text{* Abstractions for thread ids *}
+text\<open>Abstractions for thread ids\<close>
 
 context
   notes [[inductive_internals]]
@@ -26,7 +26,7 @@ end
 lemma free_thread_id_iff: "free_thread_id ts t = (ts t = None)"
 by(auto elim: free_thread_id.cases intro: free_thread_id.intros)
 
-text{* Update functions for the multithreaded state *}
+text\<open>Update functions for the multithreaded state\<close>
 
 fun redT_updT :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x,'m) new_thread_action \<Rightarrow> ('l,'t,'x) thread_info"
 where
@@ -66,9 +66,9 @@ lemma redT_updTs_finite_dom_inv:
   "finite (dom (redT_updTs ts tas)) = finite (dom ts)"
 by(induct ts tas rule: redT_updTs.induct)(simp_all add: redT_updT_finite_dom_inv)
 
-text{* Preconditions for thread creation actions *}
+text\<open>Preconditions for thread creation actions\<close>
 
-text{* These primed versions are for checking preconditions only. They allow the thread actions to have a type for thread-local information that is different than the thread info state itself. *}
+text\<open>These primed versions are for checking preconditions only. They allow the thread actions to have a type for thread-local information that is different than the thread info state itself.\<close>
 
 fun redT_updT' :: "('l,'t,'x) thread_info \<Rightarrow> ('t,'x','m) new_thread_action \<Rightarrow> ('l,'t,'x) thread_info"
 where
@@ -104,8 +104,8 @@ proof(induct tas arbitrary: ts ts')
   case Nil thus ?case by simp
 next
   case (Cons ta tas ts ts')
-  note IH = `\<And>ts ts'. (\<And>t. (ts t = None) = (ts' t = None)) \<Longrightarrow> thread_oks ts tas = thread_oks ts' tas`
-  note eq = `\<And>t. (ts t = None) = (ts' t = None)`
+  note IH = \<open>\<And>ts ts'. (\<And>t. (ts t = None) = (ts' t = None)) \<Longrightarrow> thread_oks ts tas = thread_oks ts' tas\<close>
+  note eq = \<open>\<And>t. (ts t = None) = (ts' t = None)\<close>
   from eq have "thread_ok ts ta \<longleftrightarrow> thread_ok ts' ta" by(rule thread_ok_ts_change)
   moreover from eq have "\<And>t. (redT_updT' ts ta t = None) = (redT_updT' ts' ta t = None)"
     by(cases ta)(auto)
@@ -183,11 +183,11 @@ proof(induct tas arbitrary: ts)
   case Nil thus ?case by simp
 next
   case (Cons TA TAS TS)
-  note IH = `\<And>ts. \<lbrakk>redT_updTs ts TAS t = \<lfloor>(x, w)\<rfloor>; thread_oks ts TAS; ts t = None\<rbrakk> \<Longrightarrow> \<exists>m. NewThread t x m \<in> set TAS \<and> w = no_wait_locks`
-  note es't = `redT_updTs TS (TA # TAS) t = \<lfloor>(x, w)\<rfloor>`
-  note cct = `thread_oks TS (TA # TAS)`
+  note IH = \<open>\<And>ts. \<lbrakk>redT_updTs ts TAS t = \<lfloor>(x, w)\<rfloor>; thread_oks ts TAS; ts t = None\<rbrakk> \<Longrightarrow> \<exists>m. NewThread t x m \<in> set TAS \<and> w = no_wait_locks\<close>
+  note es't = \<open>redT_updTs TS (TA # TAS) t = \<lfloor>(x, w)\<rfloor>\<close>
+  note cct = \<open>thread_oks TS (TA # TAS)\<close>
   hence cctta: "thread_ok TS TA" and ccts: "thread_oks (redT_updT TS TA) TAS" by auto
-  note est = `TS t = None`
+  note est = \<open>TS t = None\<close>
   { fix X W
     assume rest: "redT_updT TS TA t = \<lfloor>(X, W)\<rfloor>"
     then obtain m where "TA = NewThread t X m \<and> W = no_wait_locks" using cctta est

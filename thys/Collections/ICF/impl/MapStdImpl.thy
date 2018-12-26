@@ -13,8 +13,8 @@ imports
   ArrayHashMap
   ArrayMapImpl
 begin
-text_raw {*\label{thy:MapStdImpl}*}
-text {*
+text_raw \<open>\label{thy:MapStdImpl}\<close>
+text \<open>
   This theory summarizes various standard implementation of maps, namely list-maps, RB-tree-maps, trie-maps, hashmaps, indexed array maps.
-*}
+\<close>
 end

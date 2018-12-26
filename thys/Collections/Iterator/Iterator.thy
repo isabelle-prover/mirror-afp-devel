@@ -8,8 +8,8 @@ imports
   Idx_Iterator
 begin
 
-  text {* Folding over a list created by a proper iterator can be replaced
-    by a single iteration *}
+  text \<open>Folding over a list created by a proper iterator can be replaced
+    by a single iteration\<close>
   lemma proper_it_to_list_opt[refine_transfer_post_subst]:
     assumes PR: "proper_it' it it'"
     shows "foldli o it_to_list it \<equiv> it'"

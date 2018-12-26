@@ -30,7 +30,7 @@ proof -
   from c have "CP \<noteq> 0" by auto
   from poly_roots_finite[OF this]
   show "finite (spectrum A)" unfolding id .
-  from poly_roots_degree[OF `CP \<noteq> 0`]
+  from poly_roots_degree[OF \<open>CP \<noteq> 0\<close>]
   show "card (spectrum A) \<le> n" unfolding id using d by simp
 qed
 
@@ -185,7 +185,7 @@ proof -
     have dvd: "[:- ev, 1:] ^ ?k dvd char_poly A" unfolding cA using 
       poly_linear_exp_linear_factors_rev[of "- ev" "map uminus as"] 
       unfolding len prod .
-    from `ev \<in> set as` deg lenn
+    from \<open>ev \<in> set as\<close> deg lenn
     have "degree (char_poly A) \<noteq> 0" by (cases as, auto)
     hence "char_poly A \<noteq> 0" by auto
     from order_max[OF dvd this] have k: "?k \<le> Polynomial.order ev (char_poly A)" .

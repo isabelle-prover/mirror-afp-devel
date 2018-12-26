@@ -1,9 +1,9 @@
-section {* Tree Decompositions *}
+section \<open>Tree Decompositions\<close>
 
 theory TreeDecomposition
 imports Tree begin
 
-text {* A tree decomposition of a graph. *}
+text \<open>A tree decomposition of a graph.\<close>
 
 locale TreeDecomposition = Graph G + T: Tree T
   for G :: "('a, 'b) Graph_scheme" (structure) and T :: "('c,'d) Graph_scheme" +
@@ -17,17 +17,17 @@ locale TreeDecomposition = Graph G + T: Tree T
         connecting @{term s} and @{term u}\<close>
     and bags_continuous: "\<lbrakk> s \<in> V\<^bsub>T\<^esub>; u \<in> V\<^bsub>T\<^esub>; t \<in> set (s \<leadsto>\<^bsub>T\<^esub> u) \<rbrakk> \<Longrightarrow> bag s \<inter> bag u \<subseteq> bag t"
 begin
-text {*
+text \<open>
   Following the usual literature, we will call elements of @{term V} vertices and
-  elements of @{term "V\<^bsub>T\<^esub>"} bags (or nodes) from now on. *}
+  elements of @{term "V\<^bsub>T\<^esub>"} bags (or nodes) from now on.\<close>
 
-subsection {* Width of a Tree Decomposition *}
+subsection \<open>Width of a Tree Decomposition\<close>
 
-text {* We define the width of this tree decomposition as the size of the largest bag minus 1. *}
+text \<open>We define the width of this tree decomposition as the size of the largest bag minus 1.\<close>
 abbreviation "bag_cards \<equiv> { card (bag t) | t. t \<in> V\<^bsub>T\<^esub> }"
 definition "max_bag_card \<equiv> Max bag_cards"
-text {* We need a special case for @{term "V\<^bsub>T\<^esub> = {}"} because in this case @{const max_bag_card}
-  is not well-defined. *}
+text \<open>We need a special case for @{term "V\<^bsub>T\<^esub> = {}"} because in this case @{const max_bag_card}
+  is not well-defined.\<close>
 definition "width \<equiv> if V\<^bsub>T\<^esub> = {} then 0 else max_bag_card - 1"
 
 lemma bags_in_V: "t \<in> V\<^bsub>T\<^esub> \<Longrightarrow> bag t \<subseteq> V" using bags_union Sup_upper mem_Collect_eq by blast
@@ -37,11 +37,11 @@ lemma bag_bound_V_empty: "\<lbrakk> V = {}; t \<in> V\<^bsub>T\<^esub> \<rbrakk>
 lemma empty_tree_empty_V: "V\<^bsub>T\<^esub> = {} \<Longrightarrow> V = {}" using bags_union by simp
 lemma bags_exist: "v \<in> V \<Longrightarrow> \<exists>t \<in> V\<^bsub>T\<^esub>. v \<in> bag t" using bags_union using UnionE mem_Collect_eq by auto
 
-text {*
+text \<open>
   The width is never larger than the number of vertices, and if there is at least one vertex
   in the graph, then it is always smaller.  This is trivially true because a bag contains at most
   all of @{term V}.  However, the proof is not fully trivial because we also need to show that
-  @{const width} is well-defined. *}
+  @{const width} is well-defined.\<close>
 lemma bag_cards_finite: "finite bag_cards" using T.finite_vertex_set by simp
 lemma bag_cards_nonempty: "V \<noteq> {} \<Longrightarrow> bag_cards \<noteq> {}"
   using bag_cards_finite empty_tree_empty_V empty_Collect_eq ex_in_conv by blast
@@ -79,19 +79,19 @@ qed
 
 end \<comment> \<open>locale TreeDecomposition\<close>
 
-subsection {* Treewidth of a Graph *}
+subsection \<open>Treewidth of a Graph\<close>
 
 context Graph begin
 
-text {* The treewidth of a graph is the minimum treewidth over all its tree decompositions.
+text \<open>The treewidth of a graph is the minimum treewidth over all its tree decompositions.
   Here we assume without loss of generality that the universe of the vertices of the tree
-  is @{type nat}.  Because trees are finite, @{type nat} always contains enough elements. *}
+  is @{type nat}.  Because trees are finite, @{type nat} always contains enough elements.\<close>
 abbreviation treewidth_cards :: "nat set" where "treewidth_cards \<equiv>
   { TreeDecomposition.width T bag | (T :: nat Graph) bag. TreeDecomposition G T bag }"
 definition treewidth :: "nat" where "treewidth \<equiv> Min treewidth_cards"
 
-text {* Every graph has a trivial tree decomposition consisting of a single bag containing all of
-  @{term V}. *}
+text \<open>Every graph has a trivial tree decomposition consisting of a single bag containing all of
+  @{term V}.\<close>
 proposition tree_decomposition_exists: "\<exists>(T :: 'c Graph) bag. TreeDecomposition G T bag" proof-
   obtain x where "x \<in> (UNIV :: 'c set)" by blast
   define T where [simp]: "T = \<lparr> verts = {x}, arcs = {} \<rparr>"
@@ -130,15 +130,15 @@ lemma treewidth_upper_bound_ex:
 
 end \<comment> \<open>locale Graph\<close>
 
-subsection {* Separations *}
+subsection \<open>Separations\<close>
 
 context TreeDecomposition begin
 
-text {*
+text \<open>
   Every edge @{term "s\<rightarrow>\<^bsub>T\<^esub> t"} in @{term T} separates @{term T}.  In a tree decomposition,
   this edge also separates @{term G}.  Proving this is our goal.  First, let us define the set of
   vertices appearing in the left subtree when separating the tree at @{term "s \<rightarrow>\<^bsub>T\<^esub> t"}.
-*}
+\<close>
 definition left_part :: "'c \<Rightarrow> 'c \<Rightarrow> 'a set" where
   "left_part s t \<equiv> \<Union>{ bag u | u. u \<in> T.left_tree s t }"
 lemma left_partI [intro]: "\<lbrakk> v \<in> bag u; u \<in> T.left_tree s t \<rbrakk> \<Longrightarrow> v \<in> left_part s t"
@@ -147,15 +147,15 @@ lemma left_partI [intro]: "\<lbrakk> v \<in> bag u; u \<in> T.left_tree s t \<rb
 lemma left_part_in_V: "left_part s t \<subseteq> V" unfolding left_part_def
   using T.left_tree_in_V bags_in_V by blast
 
-text {* Let us define the subgraph of @{term T} induced by a vertex of @{term G}. *}
+text \<open>Let us define the subgraph of @{term T} induced by a vertex of @{term G}.\<close>
 definition vertex_subtree :: "'a \<Rightarrow> 'c set" where
   "vertex_subtree v \<equiv> { t \<in> V\<^bsub>T\<^esub>. v \<in> bag t }"
 lemma vertex_subtreeI [intro]: "\<lbrakk> t \<in> V\<^bsub>T\<^esub>; v \<in> bag t \<rbrakk> \<Longrightarrow> t \<in> vertex_subtree v"
   unfolding vertex_subtree_def by blast
 
-text {*
+text \<open>
   The suggestive name @{const vertex_subtree} is correct: Because @{term T} is a tree
-  decomposition, @{term "vertex_subtree v"} is a subtree (it is connected). *}
+  decomposition, @{term "vertex_subtree v"} is a subtree (it is connected).\<close>
 lemma vertex_subtree_connected:
   assumes v: "v \<in> V" and s: "s \<in> vertex_subtree v" and t: "t \<in> vertex_subtree v"
     and xs: "s \<leadsto>xs\<leadsto>\<^bsub>T\<^esub> t"
@@ -188,10 +188,10 @@ corollary vertex_subtree_unique_path_connected:
   by (metis (no_types, lifting) T.unique_connecting_path T.unique_connecting_path_unique
       mem_Collect_eq vertex_subtree_def)
 
-text {*
+text \<open>
   In order to prove that edges in @{term T} are separations in @{term G}, we need one key lemma.
   If a vertex appears on both sides of a separation, then it also appears in the separation.
-*}
+\<close>
 lemma vertex_in_separator:
   assumes st: "s \<rightarrow>\<^bsub>T\<^esub> t" and v: "v \<in> left_part s t" "v \<in> left_part t s"
   shows "v \<in> bag s" "v \<in> bag t"
@@ -204,9 +204,9 @@ proof-
   thus "v \<in> bag t" using bags_continuous u by (meson IntI T.left_treeE subsetCE)
 qed
 
-text {* Now we can show the main theorem: For every edge @{term "s \<rightarrow>\<^bsub>T\<^esub> t"} in @{term T}, the
+text \<open>Now we can show the main theorem: For every edge @{term "s \<rightarrow>\<^bsub>T\<^esub> t"} in @{term T}, the
   set @{term "bag s \<inter> bag t"} is a separator of @{term G}.  That is, every path from the left part
-  to the right part goes through @{term "bag s \<inter> bag t"}. *}
+  to the right part goes through @{term "bag s \<inter> bag t"}.\<close>
 theorem bags_separate:
   assumes st: "s \<rightarrow>\<^bsub>T\<^esub> t" and v: "v \<in> left_part s t" and w: "w \<in> left_part t s" and xs: "v \<leadsto>xs\<leadsto> w"
   shows "set xs \<inter> bag s \<inter> bag t \<noteq> {}"
@@ -254,8 +254,8 @@ proof (rule ccontr)
   ultimately show False using T.left_tree_disjoint st by blast
 qed
 
-text {* It follows that vertices cannot be dropped from a bag if they have a neighbor that has
-  not been visited yet (that is, a neighbor that is strictly in the right part of the separation). *}
+text \<open>It follows that vertices cannot be dropped from a bag if they have a neighbor that has
+  not been visited yet (that is, a neighbor that is strictly in the right part of the separation).\<close>
 corollary bag_no_drop:
   assumes st: "s \<rightarrow>\<^bsub>T\<^esub> t" and vw: "v\<rightarrow>w" and v: "v \<in> bag s" and w: "w \<notin> bag s" "w \<in> left_part t s"
   shows "v \<in> bag t"

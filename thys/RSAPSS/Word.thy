@@ -1,13 +1,13 @@
 (*  Author:     Sebastian Skalberg, TU Muenchen
 *)
 
-section {* Binary Words *}
+section \<open>Binary Words\<close>
 
 theory Word
 imports Main
 begin
 
-subsection {* Auxilary Lemmas *}
+subsection \<open>Auxilary Lemmas\<close>
 
 lemma max_le [intro!]: "[| x \<le> z; y \<le> z |] ==> max x y \<le> z"
   by (simp add: max_def)
@@ -32,7 +32,7 @@ lemma int_nat_two_exp: "2 ^ k = int (2 ^ k)"
   by simp
 
 
-subsection {* Bits *}
+subsection \<open>Bits\<close>
 
 datatype bit =
     Zero ("\<zero>")
@@ -71,10 +71,10 @@ lemma bitxor_cancel [simp]: "(b \<oplus>\<^sub>b b) = \<zero>"
   by (cases b) simp_all
 
 
-subsection {* Bit Vectors *}
+subsection \<open>Bit Vectors\<close>
 
-text {* First, a couple of theorems expressing case analysis and
-induction principles for bit vectors. *}
+text \<open>First, a couple of theorems expressing case analysis and
+induction principles for bit vectors.\<close>
 
 lemma bit_list_cases:
   assumes empty: "w = [] ==> P w"
@@ -324,7 +324,7 @@ next
   assume "n ~= 0"
   hence "0 < n" by simp
   hence "n div 2 < n" by arith
-  from this and `0 < n` show R by (rule div)
+  from this and \<open>0 < n\<close> show R by (rule div)
 qed
 
 lemma int_wf_ge_induct:
@@ -704,7 +704,7 @@ proof (rule ccontr)
 qed
 
 
-subsection {* Unsigned Arithmetic Operations *}
+subsection \<open>Unsigned Arithmetic Operations\<close>
 
 definition
   bv_add :: "[bit list, bit list ] => bit list" where
@@ -784,7 +784,7 @@ proof (unfold bv_mult_def,rule length_nat_to_bv_upper_limit)
     by arith
 qed
 
-subsection {* Signed Vectors *}
+subsection \<open>Signed Vectors\<close>
 
 primrec norm_signed :: "bit list => bit list" where
     norm_signed_Nil: "norm_signed [] = []"
@@ -1327,9 +1327,9 @@ proof (rule ccontr)
 qed
 
 
-subsection {* Signed Arithmetic Operations *}
+subsection \<open>Signed Arithmetic Operations\<close>
 
-subsubsection {* Conversion from unsigned to signed *}
+subsubsection \<open>Conversion from unsigned to signed\<close>
 
 definition
   utos :: "bit list => bit list" where
@@ -1352,7 +1352,7 @@ proof (simp add: utos_def norm_signed_Cons, safe)
 qed
 
 
-subsubsection {* Unary minus *}
+subsubsection \<open>Unary minus\<close>
 
 definition
   bv_uminus :: "bit list => bit list" where
@@ -1903,7 +1903,7 @@ qed
 lemma bv_smult_sym: "bv_smult w1 w2 = bv_smult w2 w1"
   by (simp add: bv_smult_def ac_simps)
 
-subsection {* Structural operations *}
+subsection \<open>Structural operations\<close>
 
 definition
   bv_select :: "[bit list,nat] => bit" where
@@ -2220,7 +2220,7 @@ declare fast_bv_to_nat_Cons [simp del]
 declare fast_bv_to_nat_Cons0 [simp]
 declare fast_bv_to_nat_Cons1 [simp]
 
-simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
+simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = \<open>
   fn _ => fn ctxt => fn ct =>
     let
       fun is_const_bool (Const(@{const_name True},_)) = true
@@ -2242,7 +2242,7 @@ simproc_setup bv_to_nat ("bv_to_nat (x # xs)") = {*
             else NONE
         | proc _ = NONE
     in proc (Thm.term_of ct) end
-*}
+\<close>
 
 declare bv_to_nat1 [simp del]
 declare bv_to_nat_helper [simp del]

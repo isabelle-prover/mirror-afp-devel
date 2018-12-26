@@ -1,28 +1,28 @@
-chapter {* Second Example *}
+chapter \<open>Second Example\<close>
 
 theory %invisible Second_Example
 imports Main
 begin
 
-text {* \label{chap:exampleII} *}
+text \<open>\label{chap:exampleII}\<close>
 
-text {* Pop-refinement is illustrated via a simple derivation,
+text \<open>Pop-refinement is illustrated via a simple derivation,
 in Isabelle/HOL,
-of a non-deterministic program that satisfies a hyperproperty. *}
+of a non-deterministic program that satisfies a hyperproperty.\<close>
 
 
-section {* Hyperproperties *}
-text {* \label{sec:hyper} *}
+section \<open>Hyperproperties\<close>
+text \<open>\label{sec:hyper}\<close>
 
-text {* Hyperproperties are predicates over sets of traces~%
+text \<open>Hyperproperties are predicates over sets of traces~%
 \cite{ClarksonSchneiderHyperproperties}.
 Hyperproperties capture security policies
 like non-interference~\cite{GoguenMeseguerNonInterference},
 which applies to deterministic systems,
 and generalized non-interference (GNI)~\cite{McCulloughSpecificationsMLS},
-which generalizes non-interference to non-deterministic systems.*}
+which generalizes non-interference to non-deterministic systems.\<close>
 
-text {* The formulation of GNI in~\cite{ClarksonSchneiderHyperproperties},
+text \<open>The formulation of GNI in~\cite{ClarksonSchneiderHyperproperties},
 which is derived from~\cite{McLeanPossibilisticProperties},
 is based on:
 \begin{itemize}
@@ -37,9 +37,9 @@ to infinite streams of low and high inputs and outputs.
 \end{itemize}
 The following formulation is slightly more general,
 because the functions that return low and high inputs and outputs
-operate directly on abstract traces. *}
+operate directly on abstract traces.\<close>
 
-text {* GNI says that for any two traces @{term \<tau>\<^sub>1} and @{term \<tau>\<^sub>2},
+text \<open>GNI says that for any two traces @{term \<tau>\<^sub>1} and @{term \<tau>\<^sub>2},
 there is always a trace @{term \<tau>\<^sub>3} with
 the same high inputs as @{term \<tau>\<^sub>1}
 and the same low inputs and low outputs as @{term \<tau>\<^sub>2}.
@@ -49,7 +49,7 @@ cannot gain any information about high inputs
 (i.e.\ high inputs cannot interfere with low outputs)
 because observing a trace @{term \<tau>\<^sub>2}
 is indistinguishable from observing some other trace @{term \<tau>\<^sub>3}
-that has the same high inputs as an arbitrary trace @{term \<tau>\<^sub>1}. *}
+that has the same high inputs as an arbitrary trace @{term \<tau>\<^sub>1}.\<close>
 
 locale generalized_non_interference =
   fixes low_in :: "'\<tau> \<Rightarrow> 'i" \<comment> \<open>low inputs\<close>
@@ -63,10 +63,10 @@ where "GNI \<T> \<equiv>
     high_in \<tau>\<^sub>3 = high_in \<tau>\<^sub>1 \<and> low_in \<tau>\<^sub>3 = low_in \<tau>\<^sub>2 \<and> low_out \<tau>\<^sub>3 = low_out \<tau>\<^sub>2"
 
 
-section {* Target Programming Language *}
-text {* \label{sec:targetII} *}
+section \<open>Target Programming Language\<close>
+text \<open>\label{sec:targetII}\<close>
 
-text {* In the target language used in this example,%
+text \<open>In the target language used in this example,%
 \footnote{Even though this language has many similarities
 with the language in \secref{sec:targetI},
 the two languages are defined separately
@@ -88,9 +88,9 @@ Each variable stores a non-negative integer.
 Executing the body in a state yields a new state.
 Because of non-determinism, different new states are possible,
 i.e.\ executing the body in the same state
-may yield different new states at different times. *}
+may yield different new states at different times.\<close>
 
-text {* For instance, executing the body of the program
+text \<open>For instance, executing the body of the program
 \begin{verbatim}
   prog {
     vars {
@@ -111,26 +111,26 @@ text {* For instance, executing the body of the program
 in the state where \verb|x| contains 4 and \verb|y| contains 7,
 yields a new state where
 \verb|x| always contains 10
-and \verb|y| may contain any number in $\{2,3,\ldots\}$. *}
+and \verb|y| may contain any number in $\{2,3,\ldots\}$.\<close>
 
 
-subsection {* Syntax *}
-text {* \label{sec:syntaxII} *}
+subsection \<open>Syntax\<close>
+text \<open>\label{sec:syntaxII}\<close>
 
-text {* Variables are identified by names. *}
+text \<open>Variables are identified by names.\<close>
 
 type_synonym name = string
 
-text {* Expressions are built out of
-constants, variables, and addition operations. *}
+text \<open>Expressions are built out of
+constants, variables, and addition operations.\<close>
 
 datatype expr = Const nat | Var name | Add expr expr
 
-text {* Statements are built out of
+text \<open>Statements are built out of
 deterministic assignments,
 non-deterministic assignments,
 conditionals,
-and sequencing. *}
+and sequencing.\<close>
 
 datatype stmt =
   Assign name expr |
@@ -138,25 +138,25 @@ datatype stmt =
   IfEq expr expr stmt stmt |
   Seq stmt stmt
 
-text {* A program consists of
+text \<open>A program consists of
 a list of state variables
-and a body statement. *}
+and a body statement.\<close>
 
 record prog =
   vars :: "name list"
   body :: stmt
 
 
-subsection {* Static Semantics *}
-text {* \label{sec:staticII} *}
+subsection \<open>Static Semantics\<close>
+text \<open>\label{sec:staticII}\<close>
 
-text {* A context is a set of variables. *}
+text \<open>A context is a set of variables.\<close>
 
 type_synonym ctxt = "name set"
 
-text {* Given a context,
+text \<open>Given a context,
 an expression is well-formed iff\
-all its variables are in the context. *}
+all its variables are in the context.\<close>
 
 fun wfe :: "ctxt \<Rightarrow> expr \<Rightarrow> bool"
 where
@@ -164,12 +164,12 @@ where
   "wfe \<Gamma> (Var v) \<longleftrightarrow> v \<in> \<Gamma>" |
   "wfe \<Gamma> (Add e\<^sub>1 e\<^sub>2) \<longleftrightarrow> wfe \<Gamma> e\<^sub>1 \<and> wfe \<Gamma> e\<^sub>2"
 
-text {* Given a context,
+text \<open>Given a context,
 a statement is well-formed iff\
 its deterministic assignments
 assign well-formed expressions to variables in the context,
 its non-deterministic assignments operate on variables in the context,
-and its conditional tests compare well-formed expressions. *}
+and its conditional tests compare well-formed expressions.\<close>
 
 fun wfs :: "ctxt \<Rightarrow> stmt \<Rightarrow> bool"
 where
@@ -178,35 +178,35 @@ where
   "wfs \<Gamma> (IfEq e\<^sub>1 e\<^sub>2 s\<^sub>1 s\<^sub>2) \<longleftrightarrow> wfe \<Gamma> e\<^sub>1 \<and> wfe \<Gamma> e\<^sub>2 \<and> wfs \<Gamma> s\<^sub>1 \<and> wfs \<Gamma> s\<^sub>2" |
   "wfs \<Gamma> (Seq s\<^sub>1 s\<^sub>2) \<longleftrightarrow> wfs \<Gamma> s\<^sub>1 \<and> wfs \<Gamma> s\<^sub>2"
 
-text {* The context of a program consists of the state variables. *}
+text \<open>The context of a program consists of the state variables.\<close>
 
 definition ctxt :: "prog \<Rightarrow> ctxt"
 where "ctxt p \<equiv> set (vars p)"
 
-text {* A program is well-formed iff\
+text \<open>A program is well-formed iff\
 the variables are distinct
-and the body is well-formed in the context of the program. *}
+and the body is well-formed in the context of the program.\<close>
 
 definition wfp :: "prog \<Rightarrow> bool"
 where "wfp p \<equiv> distinct (vars p) \<and> wfs (ctxt p) (body p)"
 
 
-subsection {* Dynamic Semantics *}
-text {* \label{sec:dynamicII} *}
+subsection \<open>Dynamic Semantics\<close>
+text \<open>\label{sec:dynamicII}\<close>
 
-text {* A state associates values (non-negative integers) to variables. *}
+text \<open>A state associates values (non-negative integers) to variables.\<close>
 
 type_synonym state = "name \<rightharpoonup> nat"
 
-text {* A state matches a context iff\
-state and context have the same variables. *}
+text \<open>A state matches a context iff\
+state and context have the same variables.\<close>
 
 definition match :: "state \<Rightarrow> ctxt \<Rightarrow> bool"
 where "match \<sigma> \<Gamma> \<equiv> dom \<sigma> = \<Gamma>"
 
-text {* Evaluating an expression in a state yields a value,
+text \<open>Evaluating an expression in a state yields a value,
 or an error (@{const None})
-if the expression contains a variable not in the state. *}
+if the expression contains a variable not in the state.\<close>
 
 definition add_opt :: "nat option \<Rightarrow> nat option \<Rightarrow> nat option" (infixl "\<oplus>" 65)
 \<comment> \<open>Lifting of addition to @{typ "nat option"}.\<close>
@@ -219,20 +219,20 @@ where
  "eval \<sigma> (Var v) = \<sigma> v" |
  "eval \<sigma> (Add e\<^sub>1 e\<^sub>2) = eval \<sigma> e\<^sub>1 \<oplus> eval \<sigma> e\<^sub>2"
 
-text {* Evaluating a well-formed expression never yields an error,
-if the state matches the context. *}
+text \<open>Evaluating a well-formed expression never yields an error,
+if the state matches the context.\<close>
 
 lemma eval_wfe:
   "wfe \<Gamma> e \<Longrightarrow> match \<sigma> \<Gamma> \<Longrightarrow> eval \<sigma> e \<noteq> None"
 by (induct e, auto simp: match_def add_opt_def)
 
-text {* Executing a statement in a state yields a new state,
+text \<open>Executing a statement in a state yields a new state,
 or an error (@{const None})
 if the evaluation of an expression yields an error
 or if an assignment operates on a variable not in the state.
 Non-determinism is modeled via a relation
 between old states and results,
-where a result is either a new state or an error. *}
+where a result is either a new state or an error.\<close>
 
 inductive exec :: "stmt \<Rightarrow> state \<Rightarrow> state option \<Rightarrow> bool"
   ("_ \<rhd> _ \<leadsto> _" [50, 50, 50] 50)
@@ -270,7 +270,7 @@ where
   ExecSeqOK:
     "s\<^sub>1 \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<Longrightarrow> s\<^sub>2 \<rhd> \<sigma>' \<leadsto> \<rho> \<Longrightarrow> Seq s\<^sub>1 s\<^sub>2 \<rhd> \<sigma> \<leadsto> \<rho>"
 
-text {* The execution of any statement in any state always yields a result. *}
+text \<open>The execution of any statement in any state always yields a result.\<close>
 
 lemma exec_always:
   "\<exists>\<rho>. s \<rhd> \<sigma> \<leadsto> \<rho>"
@@ -295,8 +295,8 @@ next
   by (metis ExecSeqError ExecSeqOK option.exhaust)
 qed
 
-text {* Executing a well-formed statement in a state that matches the context
-never yields an error and always yields states that match the context. *}
+text \<open>Executing a well-formed statement in a state that matches the context
+never yields an error and always yields states that match the context.\<close>
 
 lemma exec_wfs_match:
   "wfs \<Gamma> s \<Longrightarrow> match \<sigma> \<Gamma> \<Longrightarrow> s \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<Longrightarrow> match \<sigma>' \<Gamma>"
@@ -379,14 +379,14 @@ lemma exec_wfs_always_match:
   "wfs \<Gamma> s \<Longrightarrow> match \<sigma> \<Gamma> \<Longrightarrow> \<exists>\<sigma>'. s \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<and> match \<sigma>' \<Gamma>"
 by (metis exec_always exec_wfs_match exec_wfs_no_error option.exhaust)
 
-text {* The states of a program
-are the ones that match the context of the program. *}
+text \<open>The states of a program
+are the ones that match the context of the program.\<close>
 
 definition states :: "prog \<Rightarrow> state set"
 where "states p \<equiv> {\<sigma>. match \<sigma> (ctxt p)}"
 
-text {* Executing the body of a well-formed program in a state of the program
-always yields some state of the program, and never an error. *}
+text \<open>Executing the body of a well-formed program in a state of the program
+always yields some state of the program, and never an error.\<close>
 
 lemma exec_wfp_no_error:
   "wfp p \<Longrightarrow> \<sigma> \<in> states p \<Longrightarrow> \<not> (body p \<rhd> \<sigma> \<leadsto> None)"
@@ -400,7 +400,7 @@ lemma exec_wfp_always_in_states:
   "wfp p \<Longrightarrow> \<sigma> \<in> states p \<Longrightarrow> \<exists>\<sigma>'. body p \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<and> \<sigma>' \<in> states p"
 by (metis exec_always exec_wfp_in_states exec_wfp_no_error option.exhaust)
 
-text {* Program execution can be described
+text \<open>Program execution can be described
 in terms of the trace formalism in~\cite{ClarksonSchneiderHyperproperties}.
 Every possible (non-erroneous) execution of a program
 can be described by a trace of two states---initial and final.
@@ -409,7 +409,7 @@ erroneous executions do not contribute to the traces of a program;
 only well-formed programs are of interest,
 which, as proved above, never execute erroneously.
 Due to non-determinism, there may be traces
-with the same initial state and different final states. *}
+with the same initial state and different final states.\<close>
 
 record trace =
   initial :: state
@@ -422,42 +422,42 @@ where [intro!]: "
   body p \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<Longrightarrow>
   \<lparr>initial = \<sigma>, final = \<sigma>'\<rparr> \<in> traces p"
 
-text {* The finite traces of a program could be turned into infinite traces
+text \<open>The finite traces of a program could be turned into infinite traces
 by infinitely stuttering the final state,
 obtaining the `executions' defined in~\cite{ClarksonSchneiderHyperproperties}.
 However, such infinite traces carry no additional information
 compared to the finite traces from which they are derived:
 for programs in this language,
 the infinite executions of~\cite{ClarksonSchneiderHyperproperties}
-are modeled as finite traces of type @{typ trace}. *}
+are modeled as finite traces of type @{typ trace}.\<close>
 
 
-section {* Requirement Specification *}
-text {* \label{sec:specificationII} *}
+section \<open>Requirement Specification\<close>
+text \<open>\label{sec:specificationII}\<close>
 
-text {* The target program
+text \<open>The target program
 must process low and high inputs to yield low and high outputs,
 according to constraints that involve
 both non-determinism and under-specification,
 with no information flowing from high inputs to low outputs.%
 \footnote{As in \secref{sec:hyper},
 `low' and `high' have the usual security meaning,
-e.g.\ `low' means `unclassified' and `high' means `classified'.} *}
+e.g.\ `low' means `unclassified' and `high' means `classified'.}\<close>
 
 
-subsection {* Input/Output Variables *}
-text {* \label{sec:specII:iovars} *}
+subsection \<open>Input/Output Variables\<close>
+text \<open>\label{sec:specII:iovars}\<close>
 
-text {* Even though the language defined in \secref{sec:targetII}
+text \<open>Even though the language defined in \secref{sec:targetII}
 has no explicit features for input and output,
 an external agent could
 write values into some variables,
 execute the program body,
 and read values from some variables.
 Thus, variables may be regarded as holding
-inputs (in the initial state) and outputs (in the final state). *}
+inputs (in the initial state) and outputs (in the final state).\<close>
 
-text {* In the target program, four variables are required:
+text \<open>In the target program, four variables are required:
 \begin{itemize}
 \item
 A variable @{term "''lowIn''"} to hold low inputs.
@@ -468,16 +468,16 @@ A variable @{term "''highIn''"} to hold high inputs.
 \item
 A variable @{term "''highOut''"} to hold high outputs.
 \end{itemize}
-Other variables are allowed but not required. *}
+Other variables are allowed but not required.\<close>
 
 definition io_vars :: "prog \<Rightarrow> bool"
 where "io_vars p \<equiv> ctxt p \<supseteq> {''lowIn'', ''lowOut'', ''highIn'', ''highOut''}"
 
 
-subsection {* Low Processing *}
-text {* \label{sec:specII:lowproc} *}
+subsection \<open>Low Processing\<close>
+text \<open>\label{sec:specII:lowproc}\<close>
 
-text {* If the low input is not 0,
+text \<open>If the low input is not 0,
 the low output must be 1 plus the low input.
 That is,
 for every possible execution of the program
@@ -486,7 +486,7 @@ the final state's low output must be 1 plus the low input.
 If there are multiple possible final states for the same initial state
 due to non-determinism,
 all of them must have the same required low output.
-Thus, processing of non-0 low inputs must be deterministic. *}
+Thus, processing of non-0 low inputs must be deterministic.\<close>
 
 definition low_proc_non0 :: "prog \<Rightarrow> bool"
 where "low_proc_non0 p \<equiv>
@@ -495,14 +495,14 @@ where "low_proc_non0 p \<equiv>
     body p \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<longrightarrow>
     the (\<sigma>' ''lowOut'') = the (\<sigma> ''lowIn'') + 1"
 
-text {* If the low input is 0, the low output must be a random value.
+text \<open>If the low input is 0, the low output must be a random value.
 That is,
 for every possible initial state of the program whose low input is 0,
 and for every possible value,
 there must exist an execution of the program
 whose final state has that value as low output.
 Executions corresponding to all possible values must be possible.
-Thus, processing of the 0 low input must be non-deterministic. *}
+Thus, processing of the 0 low input must be non-deterministic.\<close>
 
 definition low_proc_0 :: "prog \<Rightarrow> bool"
 where "low_proc_0 p \<equiv>
@@ -511,10 +511,10 @@ where "low_proc_0 p \<equiv>
     (\<exists>\<sigma>'. body p \<rhd> \<sigma> \<leadsto> Some \<sigma>' \<and> the (\<sigma>' ''lowOut'') = u)"
 
 
-subsection {* High Processing *}
-text {* \label{sec:specII:highproc} *}
+subsection \<open>High Processing\<close>
+text \<open>\label{sec:specII:highproc}\<close>
 
-text {* The high output must be
+text \<open>The high output must be
 at least as large as the sum of the low and high inputs.
 That is,
 for every possible execution of the program,
@@ -526,7 +526,7 @@ Since different high outputs may satisfy the constraint given the same inputs,
 not all the possible final states from a given initial state
 must have the same high output.
 Thus, processing of high inputs is under-specified;
-it can be realized deterministically or non-deterministically. *}
+it can be realized deterministically or non-deterministically.\<close>
 
 definition high_proc :: "prog \<Rightarrow> bool"
 where "high_proc p \<equiv>
@@ -535,22 +535,22 @@ where "high_proc p \<equiv>
     the (\<sigma>' ''highOut'') \<ge> the (\<sigma> ''lowIn'') + the (\<sigma> ''highIn'')"
 
 
-subsection {* All Requirements *}
-text {* \label{sec:specII:all} *}
+subsection \<open>All Requirements\<close>
+text \<open>\label{sec:specII:all}\<close>
 
-text {* Besides satisfying the above requirements on
+text \<open>Besides satisfying the above requirements on
 input/output variables, low processing, and high processing,
-the target program must be well-formed. *}
+the target program must be well-formed.\<close>
 
 definition spec\<^sub>0 :: "prog \<Rightarrow> bool"
 where "spec\<^sub>0 p \<equiv>
   wfp p \<and> io_vars p \<and> low_proc_non0 p \<and> low_proc_0 p \<and> high_proc p"
 
 
-subsection {* Generalized Non-Interference *}
-text {* \label{sec:specII:GNI} *}
+subsection \<open>Generalized Non-Interference\<close>
+text \<open>\label{sec:specII:GNI}\<close>
 
-text {* The parameters of the GNI formulation in \secref{sec:hyper}
+text \<open>The parameters of the GNI formulation in \secref{sec:hyper}
 are instantiated according to the target program under consideration.
 In an execution of the program:
 \begin{itemize}
@@ -566,7 +566,7 @@ is the high input.
 \item
 The value of the variable @{term "''highOut''"} in the final state
 is the high output.
-\end{itemize} *}
+\end{itemize}\<close>
 
 definition low_in :: "trace \<Rightarrow> nat"
 where "low_in \<tau> \<equiv> the (initial \<tau> ''lowIn'')"
@@ -586,8 +586,8 @@ interpretation
 abbreviation GNI :: "trace set \<Rightarrow> bool"
 where "GNI \<equiv> Target.GNI"
 
-text {* The requirements in @{const spec\<^sub>0} imply that
-the set of traces of the target program satisfies GNI. *}
+text \<open>The requirements in @{const spec\<^sub>0} imply that
+the set of traces of the target program satisfies GNI.\<close>
 
 lemma spec\<^sub>0_GNI:
   "spec\<^sub>0 p \<Longrightarrow> GNI (traces p)"
@@ -689,33 +689,33 @@ proof (auto simp: Target.GNI_def)
   qed
 qed
 
-text {* Since GNI is implied by @{const spec\<^sub>0}
+text \<open>Since GNI is implied by @{const spec\<^sub>0}
 and since every pop-refinement of @{const spec\<^sub>0} implies @{const spec\<^sub>0},
 GNI is preserved through every pop-refinement of @{const spec\<^sub>0}.
 Pop-refinement differs from the popular notion of refinement
 as inclusion of sets of traces (e.g.~\cite{AbadiLamportRefinement}),
-which does not preserve GNI~\cite{ClarksonSchneiderHyperproperties}. *}
+which does not preserve GNI~\cite{ClarksonSchneiderHyperproperties}.\<close>
 
 
-section {* Stepwise Refinement *}
-text {* \label{sec:refinementII} *}
+section \<open>Stepwise Refinement\<close>
+text \<open>\label{sec:refinementII}\<close>
 
-text {* The remark at the beginning of \secref{sec:refinementI}
+text \<open>The remark at the beginning of \secref{sec:refinementI}
 applies here as well:
 the following sequence of refinement steps
 may be overkill for obtaining an implementation of @{const spec\<^sub>0},
-but illustrates concepts that should apply to more complex cases. *}
+but illustrates concepts that should apply to more complex cases.\<close>
 
 
-subsection {* Step 1 *}
+subsection \<open>Step 1\<close>
 
-text {* \label{sec:refII:stepI} *}
+text \<open>\label{sec:refII:stepI}\<close>
 
-text {* The program needs no other variables
+text \<open>The program needs no other variables
 besides those prescribed by @{const io_vars}.
 Thus, @{const io_vars} is refined to a stronger condition
 that constrains the program to contain exactly those variables,
-in a certain order. *}
+in a certain order.\<close>
 
 abbreviation vars\<^sub>0 :: "name list"
 where "vars\<^sub>0 \<equiv> [''lowIn'', ''lowOut'', ''highIn'', ''highOut'']"
@@ -725,9 +725,9 @@ lemma vars\<^sub>0_correct:
   "vars p = vars\<^sub>0 \<Longrightarrow> io_vars p"
 by (auto simp: io_vars_def ctxt_def)
 
-text {* The refinement of @{const io_vars}
+text \<open>The refinement of @{const io_vars}
 reduces the well-formedness of the program
-to the well-formedness of the body. *}
+to the well-formedness of the body.\<close>
 
 abbreviation \<Gamma>\<^sub>0 :: ctxt
 where "\<Gamma>\<^sub>0 \<equiv> {''lowIn'', ''lowOut'', ''highIn'', ''highOut''}"
@@ -736,11 +736,11 @@ lemma reduce_wf_prog_to_body:
   "vars p = vars\<^sub>0 \<Longrightarrow> wfp p \<longleftrightarrow> wfs \<Gamma>\<^sub>0 (body p)"
 by (auto simp: wfp_def ctxt_def)
 
-text {* The refinement of @{const io_vars}
+text \<open>The refinement of @{const io_vars}
 induces a simplification of the processing constraints:
 since the context of the program is now defined to be @{const \<Gamma>\<^sub>0},
 the @{term "\<sigma> \<in> states p"} conditions are replaced
-with @{term "match \<sigma> \<Gamma>\<^sub>0"} conditions. *}
+with @{term "match \<sigma> \<Gamma>\<^sub>0"} conditions.\<close>
 
 definition low_proc_non0\<^sub>1 :: "prog \<Rightarrow> bool"
 where "low_proc_non0\<^sub>1 p \<equiv>
@@ -776,8 +776,8 @@ lemma high_proc\<^sub>1_correct:
   "vars p = vars\<^sub>0 \<Longrightarrow> high_proc\<^sub>1 p \<longleftrightarrow> high_proc p"
 by (auto simp: high_proc\<^sub>1_def high_proc_def states_def ctxt_def)
 
-text {* The refinement of @{const spec\<^sub>0} consists of
-the refinement of @{const io_vars} and of the simplified constraints. *}
+text \<open>The refinement of @{const spec\<^sub>0} consists of
+the refinement of @{const io_vars} and of the simplified constraints.\<close>
 
 definition spec\<^sub>1 :: "prog \<Rightarrow> bool"
 where "spec\<^sub>1 p \<equiv>
@@ -798,26 +798,26 @@ by (auto simp:
   high_proc\<^sub>1_correct)
 
 
-subsection {* Step 2 *}
+subsection \<open>Step 2\<close>
 
-text {* \label{sec:refII:stepII} *}
+text \<open>\label{sec:refII:stepII}\<close>
 
-text {* The body of the target program is split
+text \<open>The body of the target program is split
 into two sequential statements---%
-one to compute the low output and one to compute the high output. *}
+one to compute the low output and one to compute the high output.\<close>
 
 definition body_split :: "prog \<Rightarrow> stmt \<Rightarrow> stmt \<Rightarrow> bool"
 where "body_split p s\<^sub>L s\<^sub>H \<equiv> body p = Seq s\<^sub>L s\<^sub>H"
 \<comment> \<open>The order of the two statements in the body is arbitrary.\<close>
 
-text {* The splitting reduces the well-formedness of the body
-to the well-formedness of the two statements. *}
+text \<open>The splitting reduces the well-formedness of the body
+to the well-formedness of the two statements.\<close>
 
 lemma reduce_wf_body_to_stmts:
   "body_split p s\<^sub>L s\<^sub>H \<Longrightarrow> wfs \<Gamma>\<^sub>0 (body p) \<longleftrightarrow> wfs \<Gamma>\<^sub>0 s\<^sub>L \<and> wfs \<Gamma>\<^sub>0 s\<^sub>H"
 by (auto simp: body_split_def)
 
-text {* The processing predicates over programs
+text \<open>The processing predicates over programs
 are refined to predicates over the statements @{term s\<^sub>L} and @{term s\<^sub>H}.
 Since @{term s\<^sub>H} follows @{term s\<^sub>L}:
 \begin{itemize}
@@ -825,7 +825,7 @@ Since @{term s\<^sub>H} follows @{term s\<^sub>L}:
 @{term s\<^sub>H} must not change the low output, which is computed by @{term s\<^sub>L}.
 \item
 @{term s\<^sub>L} must not change the low and high inputs, which are used by @{term s\<^sub>H}.
-\end{itemize} *}
+\end{itemize}\<close>
 
 definition low_proc_non0\<^sub>2 :: "stmt \<Rightarrow> bool"
 where "low_proc_non0\<^sub>2 s\<^sub>L \<equiv>
@@ -946,9 +946,9 @@ next
   qed
 qed
 
-text {* The refined specification consists of
+text \<open>The refined specification consists of
 the splitting of the body into the two sequential statements
-and the refined well-formedness and processing constraints. *}
+and the refined well-formedness and processing constraints.\<close>
 
 definition spec\<^sub>2 :: "prog \<Rightarrow> bool"
 where "spec\<^sub>2 p \<equiv>
@@ -968,15 +968,15 @@ lemma step_2_correct:
 by (auto simp: spec\<^sub>2_def spec\<^sub>1_def reduce_wf_body_to_stmts proc\<^sub>2_correct)
 
 
-subsection {* Step 3 *}
+subsection \<open>Step 3\<close>
 
-text {* \label{sec:refII:stepIII} *}
+text \<open>\label{sec:refII:stepIII}\<close>
 
-text {* The processing constraints
+text \<open>The processing constraints
 @{const low_proc_non0\<^sub>2} and @{const low_proc_0\<^sub>2} on @{term s\<^sub>L}
 suggest the use of a conditional that
 randomizes @{term "''lowOut''"} if @{term "''lowIn''"} is 0,
-and stores 1 plus @{term "''lowIn''"} into @{term "''lowOut''"} otherwise. *}
+and stores 1 plus @{term "''lowIn''"} into @{term "''lowOut''"} otherwise.\<close>
 
 abbreviation s\<^sub>L\<^sub>0 :: stmt
 where "s\<^sub>L\<^sub>0 \<equiv>
@@ -1043,8 +1043,8 @@ proof (unfold low_proc_no_input_change_def, clarify)
   by (auto elim: exec.cases)
 qed
 
-text {* The refined specification is obtained
-by simplification using the definition of @{term s\<^sub>L}. *}
+text \<open>The refined specification is obtained
+by simplification using the definition of @{term s\<^sub>L}.\<close>
 
 definition spec\<^sub>3 :: "prog \<Rightarrow> bool"
 where "spec\<^sub>3 p \<equiv>
@@ -1061,21 +1061,21 @@ unfolding spec\<^sub>3_def spec\<^sub>2_def
 by (metis
   wfs_s\<^sub>L\<^sub>0 low_proc_non0_s\<^sub>L\<^sub>0 low_proc_0_s\<^sub>L\<^sub>0 low_proc_no_input_change_s\<^sub>L\<^sub>0)
 
-text {* The non-determinism required by @{const low_proc_0}
+text \<open>The non-determinism required by @{const low_proc_0}
 cannot be pop-refined away.
 In particular, @{term s\<^sub>L} cannot be defined
 to copy the high input to the low output when the low input is 0,
-which would lead to a program that does not satisfy GNI. *}
+which would lead to a program that does not satisfy GNI.\<close>
 
 
-subsection {* Step 4 *}
+subsection \<open>Step 4\<close>
 
-text {* \label{sec:refII:stepIV} *}
+text \<open>\label{sec:refII:stepIV}\<close>
 
-text {* The processing constraint @{const high_proc\<^sub>2} on @{term s\<^sub>H}
+text \<open>The processing constraint @{const high_proc\<^sub>2} on @{term s\<^sub>H}
 can be satisfied in different ways.
 A simple way is to pick the sum of the low and high inputs:
-@{const high_proc\<^sub>2} is refined by replacing the inequality with an equality. *}
+@{const high_proc\<^sub>2} is refined by replacing the inequality with an equality.\<close>
 
 definition high_proc\<^sub>4 :: "stmt \<Rightarrow> bool"
 where "high_proc\<^sub>4 s\<^sub>H \<equiv>
@@ -1088,8 +1088,8 @@ lemma high_proc\<^sub>4_correct:
   "high_proc\<^sub>4 s\<^sub>H \<Longrightarrow> high_proc\<^sub>2 s\<^sub>H"
 by (auto simp: high_proc\<^sub>4_def high_proc\<^sub>2_def)
 
-text {* The refined specification is obtained
-by substituting the refined processing constraint on @{term s\<^sub>H}. *}
+text \<open>The refined specification is obtained
+by substituting the refined processing constraint on @{term s\<^sub>H}.\<close>
 
 definition spec\<^sub>4 :: "prog \<Rightarrow> bool"
 where "spec\<^sub>4 p \<equiv>
@@ -1105,14 +1105,14 @@ lemma step_4_correct:
 by (auto simp: spec\<^sub>4_def spec\<^sub>3_def high_proc\<^sub>4_correct)
 
 
-subsection {* Step 5 *}
+subsection \<open>Step 5\<close>
 
-text {* \label{sec:refII:stepV} *}
+text \<open>\label{sec:refII:stepV}\<close>
 
-text {* The refined processing constraint @{const high_proc\<^sub>4} on @{term s\<^sub>H}
+text \<open>The refined processing constraint @{const high_proc\<^sub>4} on @{term s\<^sub>H}
 suggest the use of an assignment that
 stores the sum of @{term "''lowIn''"} and @{term "''highIn''"}
-into @{term "''highOut''"}. *}
+into @{term "''highOut''"}.\<close>
 
 abbreviation s\<^sub>H\<^sub>0 :: stmt
 where "s\<^sub>H\<^sub>0 \<equiv> Assign ''highOut'' (Add (Var ''lowIn'') (Var ''highIn''))"
@@ -1139,8 +1139,8 @@ lemma high_proc_no_low_output_change_s\<^sub>H\<^sub>0:
   "high_proc_no_low_output_change s\<^sub>H\<^sub>0"
 by (auto simp: high_proc_no_low_output_change_def elim: exec.cases)
 
-text {* The refined specification is obtained
-by simplification using the definition of @{term s\<^sub>H}. *}
+text \<open>The refined specification is obtained
+by simplification using the definition of @{term s\<^sub>H}.\<close>
 
 definition spec\<^sub>5 :: "prog \<Rightarrow> bool"
 where "spec\<^sub>5 p \<equiv> vars p = vars\<^sub>0 \<and> body_split p s\<^sub>L\<^sub>0 s\<^sub>H\<^sub>0"
@@ -1151,12 +1151,12 @@ unfolding spec\<^sub>5_def spec\<^sub>4_def
 by (metis wfs_s\<^sub>H\<^sub>0 high_proc\<^sub>4_s\<^sub>H\<^sub>0 high_proc_no_low_output_change_s\<^sub>H\<^sub>0)
 
 
-subsection {* Step 6 *}
+subsection \<open>Step 6\<close>
 
-text {* \label{sec:refII:stepVI} *}
+text \<open>\label{sec:refII:stepVI}\<close>
 
-text {* @{const spec\<^sub>5}, which defines the variables and the body,
-is refined to characterize a unique program in explicit syntactic form. *}
+text \<open>@{const spec\<^sub>5}, which defines the variables and the body,
+is refined to characterize a unique program in explicit syntactic form.\<close>
 
 abbreviation p\<^sub>0 :: prog
 where "p\<^sub>0 \<equiv> \<lparr>vars = vars\<^sub>0, body = Seq s\<^sub>L\<^sub>0 s\<^sub>H\<^sub>0\<rparr>"
@@ -1168,9 +1168,9 @@ lemma step_6_correct:
   "spec\<^sub>6 p \<Longrightarrow> spec\<^sub>5 p"
 by (auto simp: spec\<^sub>6_def spec\<^sub>5_def body_split_def)
 
-text {* The program satisfies @{const spec\<^sub>0} by construction.
+text \<open>The program satisfies @{const spec\<^sub>0} by construction.
 The program witnesses the consistency of the requirements,
-i.e.\ the fact that @{const spec\<^sub>0} is not always false. *}
+i.e.\ the fact that @{const spec\<^sub>0} is not always false.\<close>
 
 lemma p\<^sub>0_sat_spec\<^sub>0:
   "spec\<^sub>0 p\<^sub>0"
@@ -1183,7 +1183,7 @@ by (metis
  step_6_correct
  spec\<^sub>6_def)
 
-text {* From @{const p\<^sub>0}, the program text
+text \<open>From @{const p\<^sub>0}, the program text
 \begin{verbatim}
   prog {
     vars {
@@ -1202,7 +1202,7 @@ text {* From @{const p\<^sub>0}, the program text
     }
   }
 \end{verbatim}
-is easily obtained. *}
+is easily obtained.\<close>
 
 
 end %invisible

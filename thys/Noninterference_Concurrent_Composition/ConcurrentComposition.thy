@@ -11,7 +11,7 @@ theory ConcurrentComposition
 imports Noninterference_Sequential_Composition.Propaedeutics
 begin
 
-text {*
+text \<open>
 \null
 
 In his outstanding work on Communicating Sequential Processes \cite{R6}, Hoare has defined two
@@ -35,12 +35,12 @@ demonstrated in \cite{R2}, \cite{R3}, and \cite{R4}.
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
 information, cf. Isabelle documentation, particularly \cite{R7}, \cite{R8}, \cite{R9}, and
 \cite{R10}.
-*}
+\<close>
 
 
 subsection "Propaedeutic definitions and lemmas"
 
-text {*
+text \<open>
 The starting point is comprised of some definitions and lemmas propaedeutic to the proof of the
 target security conservation theorem.
 
@@ -52,7 +52,7 @@ to the futures of @{term P} associated to any one of its traces. This is a gener
 former result since @{term "futures P xs = failures P"} for @{term "xs = []"}.
 
 \null
-*}
+\<close>
 
 lemma sinks_aux_elem [rule_format]:
  "u \<in> sinks_aux I D U xs \<longrightarrow> u \<in> U \<or> (\<exists>x \<in> set xs. u = D x)"
@@ -80,7 +80,7 @@ lemma process_rule_5_general [rule_format]:
 proof (induction ys rule: rev_induct, simp, rule impI, simp)
 qed (subst append_assoc [symmetric], rule process_rule_5)
 
-text {*
+text \<open>
 \null
 
 Here below is the definition of operator \emph{after}, for which a symbolic notation similar to the
@@ -89,7 +89,7 @@ one used in \cite{R6} is introduced. Then, it is proven that for any process @{t
 indeed enjoy their respective characteristic properties as defined in \cite{R1}.
 
 \null
-*}
+\<close>
 
 definition future_divergences :: "'a process \<Rightarrow> 'a list \<Rightarrow> 'a list set" where
 "future_divergences P xs \<equiv> {ys. xs @ ys \<in> divergences P}"
@@ -148,13 +148,13 @@ lemma after_futures:
   shows "futures (P \<setminus> xs) ys = futures P (xs @ ys)"
 by (simp add: futures_def after_failures [OF A])
 
-text {*
+text \<open>
 \null
 
 Finally, the closure of the futures of a secure process under intransitive purge is proven.
 
 \null
-*}
+\<close>
 
 lemma after_secure:
   assumes A: "xs \<in> traces P"
@@ -176,9 +176,9 @@ by (drule ipurge_tr_ref_aux_futures, simp_all add: futures_def)
 
 subsection "Concurrent composition"
 
-text {*
+text \<open>
 In \cite{R6}, the concurrent composition of two processes @{term P}, @{term Q}, expressed using
-notation @{text "P \<parallel> Q"}, is defined as a process whose alphabet is the union of the alphabets of
+notation \<open>P \<parallel> Q\<close>, is defined as a process whose alphabet is the union of the alphabets of
 @{term P} and @{term Q}, so that the shared events requiring the synchronous participation of both
 processes are those in the intersection of their alphabets.
 
@@ -186,7 +186,7 @@ In the formalization of Communicating Sequential Processes developed in \cite{R1
 @{term P} and @{term Q} are the data types @{typ 'a} and @{typ 'b} nested in their respective types
 @{typ "'a process"} and @{typ "'b process"}. Therefore, for any two maps @{term "p :: 'a \<Rightarrow> 'c"},
 @{term "q :: 'b \<Rightarrow> 'c"}, the concurrent composition of @{term P} and @{term Q} with respect to
-@{term p} and @{term q}, expressed using notation @{text "P \<parallel> Q <p, q>"}, is defined in what follows
+@{term p} and @{term q}, expressed using notation \<open>P \<parallel> Q <p, q>\<close>, is defined in what follows
 as a process of type @{typ "'c process"}, where meaningful events are those in
 @{term "range p \<union> range q"} and shared events are those in @{term "range p \<inter> range q"}.
 
@@ -218,7 +218,7 @@ if the input processes do not diverge, which is the case for any process of prac
 (cf. \cite{R6}).
 
 \null
-*}
+\<close>
 
 definition con_comp_divergences ::
  "'a process \<Rightarrow> 'b process \<Rightarrow> ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'c) \<Rightarrow> 'c list set" where
@@ -249,7 +249,7 @@ abbreviation con_comp_syntax ::
 where
 "P \<parallel> Q <p, q> \<equiv> con_comp P Q p q"
 
-text {*
+text \<open>
 \null
 
 Here below is the proof that, for any two processes @{term P}, @{term Q} and any two maps @{term p},
@@ -258,7 +258,7 @@ the characteristic properties of the failures and the divergences sets of a proc
 \cite{R1}.
 
 \null
-*}
+\<close>
 
 lemma con_comp_prop_1:
  "([], {}) \<in> con_comp_failures P Q p q"
@@ -741,7 +741,7 @@ next
   qed (rule con_comp_prop_6)
 qed
 
-text {*
+text \<open>
 \null
 
 Here below, the previous result is applied to derive useful expressions for the outputs of the
@@ -749,7 +749,7 @@ functions returning the elements of a process, as defined in \cite{R1} and \cite
 the concurrent composition of a pair of processes.
 
 \null
-*}
+\<close>
 
 lemma con_comp_failures:
  "failures (P \<parallel> Q <p, q>) = con_comp_failures P Q p q"
@@ -777,7 +777,7 @@ lemma con_comp_next_events:
     {x. xs @ [x] \<in> Domain (con_comp_failures P Q p q)}"
 by (simp add: next_events_def con_comp_traces)
 
-text {*
+text \<open>
 \null
 
 In what follows, three lemmas are proven. The first one, whose proof makes use of the axiom of
@@ -788,7 +788,7 @@ practical significance (cf. \cite{R2}). The other two lemmas are auxiliary prope
 composition used in the proof of the target security conservation theorem.
 
 \null
-*}
+\<close>
 
 lemma con_comp_ref_union_closed:
   assumes
@@ -1147,7 +1147,7 @@ proof (simp add: con_comp_failures_def con_comp_divergences_def,
   qed (subst G, simp_all add: C D E)
 qed
 
-text {*
+text \<open>
 \null
 
 In order to prove that CSP noninterference security is conserved under concurrent composition, the
@@ -1162,7 +1162,7 @@ the commutative property of concurrent composition. Therefore, @{term D} and @{t
 events of the input processes into security domains of the same type @{typ 'd}, and for each
 @{term x} in @{term "range p \<inter> range q"}, @{term D} and @{term E} must map the events of the input
 processes corresponding to @{term x} into the same domain. This requirement is formalized here below
-by means of predicate @{text consistent_maps}.
+by means of predicate \<open>consistent_maps\<close>.
 
 Similarly, if distinct noninterference policies applied to the input processes, there would exist
 some ordered pair of security domains included in one of the policies, but not in the other one.
@@ -1187,12 +1187,12 @@ the above considerations about policy @{term I'} entail that @{term "(Some d, So
 case @{term "(d, e) \<in> I"}. Furthermore, since fake events may only occur in divergent traces, which
 are extensions of divergences of the input processes comprised of meaningful events, @{term I'} must
 allow the security domain @{term None} of fake events to be affected by any meaningful domain
-matching pattern @{text "Some _"}. Such a noninterference policy, denoted using notation
+matching pattern \<open>Some _\<close>. Such a noninterference policy, denoted using notation
 @{term "con_comp_pol I"}, is defined here below. Observe that @{term "con_comp_pol I"} keeps being
 reflexive or transitive if @{term I} is.
 
 \null
-*}
+\<close>
 
 definition con_comp_pol ::
  "('d \<times> 'd) set \<Rightarrow> ('d option \<times> 'd option) set" where
@@ -1218,7 +1218,7 @@ definition consistent_maps ::
 
 subsection "Auxiliary intransitive purge functions"
 
-text {*
+text \<open>
 Let @{term I} be a noninterference policy, @{term D} an event-domain map, @{term U} a domain set,
 and @{term "xs = x # xs'"} an event list. Suppose to take event @{term x} just in case it satisfies
 predicate @{term P}, to append @{term xs'} to the resulting list (matching either @{term "[x]"} or
@@ -1231,11 +1231,11 @@ of the input list is retained in the output list just in case it passes filter @
 affected neither by the domains in @{term U}, nor by the domains of the previous items affected by
 some domain in @{term U}.
 
-Here below is the formal definition of such purge function, named @{text ipurge_tr_aux_foldr} as its
+Here below is the formal definition of such purge function, named \<open>ipurge_tr_aux_foldr\<close> as its
 action resembles that of function @{term foldr}.
 
 \null
-*}
+\<close>
 
 primrec ipurge_tr_aux_foldr ::
  "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'd set \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -1245,7 +1245,7 @@ where
    ((if P x then [x] else []) @
      ipurge_tr_aux_foldr I D P (sinks_aux I D U [x]) xs)"
 
-text {*
+text \<open>
 \null
 
 Likewise, given @{term I}, @{term D}, @{term U}, @{term "xs = x # xs'"}, and an event set @{term X},
@@ -1264,12 +1264,12 @@ From the above considerations on function @{term ipurge_tr_aux_foldr}, it follow
 of list @{term "ipurge_tr_aux_foldr I D P (sinks_aux I D U [x]) xs'"} has no impact on the final
 result, because none of its items may be affected by the domains in @{term U}.
 
-Here below is the formal definition of such purge function, named @{text ipurge_ref_aux_foldr},
+Here below is the formal definition of such purge function, named \<open>ipurge_ref_aux_foldr\<close>,
 which at first glance just seems a uselessly complicate and inefficient way to compute the
 intransitive purge of an event set.
 
 \null
-*}
+\<close>
 
 primrec ipurge_ref_aux_foldr ::
  "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'd set \<Rightarrow> 'a list \<Rightarrow> 'a set \<Rightarrow> 'a set"
@@ -1280,7 +1280,7 @@ where
      ipurge_tr_aux_foldr I D P (sinks_aux I D U [x]) xs)
    (ipurge_ref_aux_foldr I D P (sinks_aux I D U [x]) xs X)"
 
-text {*
+text \<open>
 \null
 
 The reason for the introduction of such intransitive purge functions is that the recursive equations
@@ -1317,7 +1317,7 @@ Here below is the proof of the equivalence between function @{term ipurge_tr_aux
 filtered intransitive purge of an event list.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_aux_foldr_subset:
  "U \<subseteq> V \<Longrightarrow>
@@ -1393,14 +1393,14 @@ proof (induction xs arbitrary: U, simp)
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of the equivalence between function @{term ipurge_ref_aux_foldr} and the
 intransitive purge of an event set.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_aux_foldr_sinks_aux [rule_format]:
  "U \<subseteq> V \<longrightarrow> sinks_aux I D U (ipurge_tr_aux_foldr I D P V xs) = U"
@@ -1631,14 +1631,14 @@ proof (induction xs arbitrary: U, simp)
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 Finally, here below is the proof of the implication involving functions @{term ipurge_tr_aux_foldr}
 and @{term ipurge_ref_aux_foldr} discussed above.
 
 \null
-*}
+\<close>
 
 lemma con_comp_sinks_aux_range:
   assumes
@@ -2194,7 +2194,7 @@ qed
 
 subsection "Conservation of noninterference security under concurrent composition"
 
-text {*
+text \<open>
 Everything is now ready for proving the target security conservation theorem. It states that for any
 two processes @{term P}, @{term Q} being secure with respect to the noninterference policy @{term I}
 and the event-domain maps @{term D}, @{term E}, their concurrent composition @{term "P \<parallel> Q <p, q>"}
@@ -2209,7 +2209,7 @@ concerning the latter input process by just swapping @{term D} for @{term E} and
 proven for the former input process.
 
 \null
-*}
+\<close>
 
 lemma con_comp_secure_del_aux_1:
   assumes
@@ -3113,7 +3113,7 @@ qed
 
 subsection "Conservation of noninterference security in the absence of fake events"
 
-text {*
+text \<open>
 In what follows, it is proven that in the absence of fake events, namely if
 @{term "range p \<union> range q = UNIV"}, the output of the concurrent composition of two secure processes
 is secure with respect to the same noninterference policy enforced by the input processes, and to
@@ -3127,7 +3127,7 @@ composition @{term "P \<parallel> Q <p, q>"} is secure with respect to the same 
 @{term "range p \<union> range q = UNIV"} and @{term "consistent_maps D E p q"} are satisfied.
 
 \null
-*}
+\<close>
 
 lemma con_comp_sinks_range:
  "u \<in> range Some \<Longrightarrow>

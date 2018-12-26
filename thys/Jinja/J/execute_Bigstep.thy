@@ -3,7 +3,7 @@
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-section {* Code Generation For BigStep *}
+section \<open>Code Generation For BigStep\<close>
 
 theory execute_Bigstep
 imports
@@ -172,7 +172,7 @@ definition "V = ''V''"
 definition "C = ''C''"
 definition "F = ''F''"
 
-ML_val {*
+ML_val \<open>
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 5)), _), _) = Predicate.yield @{code test1};
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 11)), _), _) = Predicate.yield @{code test2};
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 83)), _), _) = Predicate.yield @{code test3};
@@ -187,14 +187,14 @@ ML_val {*
   @{assert} (c = @{code C} andalso obj = @{code Object} andalso i = @{code int_of_integer} 42);
 
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 160)), _), _) = Predicate.yield @{code test6};
-*}
+\<close>
 
 definition "test7 = [classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
 definition "L = ''L''"
 definition "N = ''N''"
 
-ML_val {*
+ML_val \<open>
   val SOME ((_, (h, _)), _) = Predicate.yield @{code test7};
   val SOME (_, fs1) = h (@{code nat_of_integer} 0);
   val SOME (_, fs2) = h (@{code nat_of_integer} 1);
@@ -213,14 +213,14 @@ ML_val {*
      fs3 (N, L) = SOME (@{code Addr} (@{code nat_of_integer} 3)) andalso
      fs4 (F, L) = SOME (@{code Intg} (@{code int_of_integer} 4)) andalso
      fs4 (N, L) = SOME @{code Null});
-*}
+\<close>
 
 definition "test8 = [classObject, classA] \<turnstile> \<langle>testExpr_ClassA, (Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 definition "i = ''int''"
 definition "t = ''test''"
 definition "A = ''A''"
 
-ML_val {*
+ML_val \<open>
   val SOME ((_, (h, l)), _) = Predicate.yield @{code test8};
   val SOME (_, fs1) = h (@{code nat_of_integer} 0);
   val SOME (_, fs2) = h (@{code nat_of_integer} 1);
@@ -233,7 +233,7 @@ ML_val {*
      fs1 (t, A) = SOME @{code Null} andalso
      fs2 (i, A) = SOME (@{code Intg} (@{code int_of_integer} 50)) andalso 
      fs2 (t, A) = SOME @{code Null});
-*}
+\<close>
 
 end
 

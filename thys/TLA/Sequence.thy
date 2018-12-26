@@ -5,17 +5,17 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* (Infinite) Sequences *} 
+section \<open>(Infinite) Sequences\<close> 
 
 theory Sequence
 imports Main
 begin
 
-text {*
+text \<open>
   Lamport's Temporal Logic of Actions (TLA) is a linear-time temporal logic,
   and its semantics is defined over infinite sequence of states, which we
-  simply represent by the type @{text "'a seq"}, defined as an abbreviation
-  for the type @{text "nat \<Rightarrow> 'a"}, where @{text "'a"} is the type of sequence 
+  simply represent by the type \<open>'a seq\<close>, defined as an abbreviation
+  for the type \<open>nat \<Rightarrow> 'a\<close>, where \<open>'a\<close> is the type of sequence 
   elements.
 
   This theory defines some useful notions about such sequences, and in particular
@@ -25,13 +25,13 @@ text {*
   complications of having to handle both finite and infinite sequences of states:
   see e.g. Devillers et al \cite{Devillers97} who discuss several variants of
   representing possibly infinite sequences in HOL, Isabelle and PVS.
-*}
+\<close>
 
 type_synonym 'a seq = "nat \<Rightarrow> 'a"
 
 subsection "Some operators on sequences"
 
-text {* Some general functions on sequences are provided *}
+text \<open>Some general functions on sequences are provided\<close>
 
 definition first :: "'a seq \<Rightarrow> 'a" 
 where "first s \<equiv> s 0"
@@ -50,13 +50,13 @@ definition
 where
  "s ## \<sigma>  \<equiv> \<lambda> n. if n=0 then s else \<sigma> (n - 1)"
 
-text {* 
-  @{text "s |\<^sub>s i"} returns the suffix of sequence @{term s} from
+text \<open>
+  \<open>s |\<^sub>s i\<close> returns the suffix of sequence @{term s} from
   index @{term i}.  @{term first} returns the first element of a sequence
   while  @{term second} returns the second element. @{term tail} returns the
   sequence starting at the second element. @{term "s ## \<sigma>"} prefixes the
   sequence @{term \<sigma>} by element @{term s}.
-*}
+\<close>
 
 subsubsection "Properties of @{term first} and @{term second}"
 
@@ -117,9 +117,9 @@ lemma seq_app_greater_than_zero: "n > 0 \<Longrightarrow> (s ## \<sigma>) n = \<
 
 subsection "Finite and Empty Sequences"
 
-text{* 
+text\<open>
   We identify finite and empty sequences and prove lemmas about them. 
-*}
+\<close>
 
 definition fin :: "('a seq) \<Rightarrow> bool"
 where "fin s \<equiv> \<exists> i. \<forall> j \<ge> i. s j = s i"
@@ -139,18 +139,18 @@ where "emptyseq \<equiv> \<lambda> s. \<forall> i. s i = s 0"
 abbreviation notemptyseq :: "('a seq) \<Rightarrow> bool"
 where "notemptyseq s \<equiv> \<not>(emptyseq s)"
 
-text {*
+text \<open>
   Predicate @{term fin} holds if there is an element
   in the sequence such that all subsequent elements are identical,
   i.e. the sequence is finite. @{term "last s"} returns the smallest index
   from which on all elements of a finite sequence @{term s} are identical. Note that 
-  if @{text s} is not finite then an arbitrary number is returned.
+  if \<open>s\<close> is not finite then an arbitrary number is returned.
   @{term laststate} returns the last element of a finite sequence. We assume 
   that the sequence is finite when using  @{term last} and  @{term laststate}.
   Predicate @{term emptyseq} identifies empty sequences -- i.e. all states in
   the sequence are identical to the initial one, while @{term notemptyseq} holds
   if the given sequence is not empty.
-*}
+\<close>
 
 subsubsection "Properties of @{term emptyseq}"
 
@@ -210,9 +210,9 @@ qed
 
 subsection "Stuttering Invariance"
 
-text {*
+text \<open>
   This subsection provides functions for removing stuttering
-  steps of sequences, i.e. we formalise Lamports @{text \<natural>} operator.
+  steps of sequences, i.e. we formalise Lamports \<open>\<natural>\<close> operator.
   Our formal definition is close to that of Wahab in the PVS prover.
 
   The key novelty with the @{term "Sequence"} theory, is the treatment of
@@ -220,10 +220,10 @@ text {*
   the operators derived using it. Such proofs require comparing sequences
   up to stuttering. Here, Lamport's \cite{Lamport94} method is used to
   mechanise the equality of sequences up to stuttering: he defines 
-  the @{text \<natural>} operator, which collapses a sequence by removing
+  the \<open>\<natural>\<close> operator, which collapses a sequence by removing
   all stuttering steps, except possibly infinite stuttering at the end of the sequence. 
   These are left unchanged.
-*}
+\<close>
 
 definition nonstutseq :: "('a seq) \<Rightarrow> bool"
 where "nonstutseq s \<equiv> \<forall> i. s i = s (Suc i) \<longrightarrow> (\<forall> j > i. s i = s j)"
@@ -244,7 +244,7 @@ fun "next" :: "nat \<Rightarrow> ('a seq) \<Rightarrow> ('a seq)" where
 definition collapse :: "('a seq) \<Rightarrow> ('a seq)" ("\<natural>")
 where "\<natural> s \<equiv> \<lambda> n. (next n s) 0"
 
-text {* 
+text \<open>
   Predicate @{term nonstutseq} identifies sequences without any 
   stuttering steps -- except possibly for infinite stuttering at the end.
   Further, @{term "stutstep s n"} is a predicate which holds if the element
@@ -260,11 +260,11 @@ text {*
   @{term "nextsuffix s"} returns the suffix of the sequence starting at the
   next changing state. It uses @{term "nextnat"} to obtain this. All the real
   computation is done in this function. Firstly, an empty sequence will obviously
-  not contain any changes, and @{text 0} is therefore returned. In this case 
+  not contain any changes, and \<open>0\<close> is therefore returned. In this case 
   @{term "nextsuffix"} behaves like the identify function. If the sequence is not
   empty then the smallest number @{term "i"} such that @{term "s i"} is different
   from the initial state is returned. This is achieved by @{term "Least"}.
-*}
+\<close>
 
 subsubsection "Properties of @{term nonstutseq}"
 
@@ -510,7 +510,7 @@ lemma collapse_empty_iff_empty [simp]: "emptyseq (\<natural> s) = emptyseq s"
 
 subsection "Similarity of Sequences"
 
-text{*
+text\<open>
   Since adding or removing stuttering steps does not change the validity 
   of a stuttering-invarant formula, equality is often too strong, 
   and the weaker equality \emph{up to stuttering} is sufficient. 
@@ -518,7 +518,7 @@ text{*
   of sequences in the literature, and is required to
   show that logical operators are stuttering invariant. This
   is mechanised as:
-*}
+\<close>
 
 definition seqsimilar :: "('a seq) \<Rightarrow> ('a seq) \<Rightarrow> bool" (infixl "\<approx>" 50)
 where "\<sigma> \<approx> \<tau> \<equiv> (\<natural> \<sigma>) = (\<natural> \<tau>)"
@@ -714,11 +714,11 @@ next
   from this g3 show ?thesis by (rule seqsimilarI)
 qed
 
-text {*
+text \<open>
   If two sequences are similar then for any suffix of one of them there
   exists a similar suffix of the other one. We will prove a stronger
   result below.
-*}
+\<close>
 
 lemma simstep_disj1: assumes H: "s \<approx> t" shows "\<exists> m. ((s |\<^sub>s n) \<approx> (t |\<^sub>s m))"
 proof (induct n)
@@ -780,14 +780,14 @@ next
   thus ?thesis by (simp add: nextnat_le_seqsim)
 qed
 
-text {*
-  Given a suffix @{text "s |\<^sub>s n"} of some sequence @{text "s"} that is
-  similar to some suffix @{text "t |\<^sub>s m"} of sequence @{text "t"}, there
-  exists some suffix @{text "t |\<^sub>s m'"} of @{text "t"} such that
-  @{text "s |\<^sub>s n"} and @{text "t |\<^sub>s m'"} are similar and also
-  @{text "s |\<^sub>s (n+1)"} is similar to either @{text "t |\<^sub>s m'"} or to
-  @{text "t |\<^sub>s (m'+1)"}.
-*}
+text \<open>
+  Given a suffix \<open>s |\<^sub>s n\<close> of some sequence \<open>s\<close> that is
+  similar to some suffix \<open>t |\<^sub>s m\<close> of sequence \<open>t\<close>, there
+  exists some suffix \<open>t |\<^sub>s m'\<close> of \<open>t\<close> such that
+  \<open>s |\<^sub>s n\<close> and \<open>t |\<^sub>s m'\<close> are similar and also
+  \<open>s |\<^sub>s (n+1)\<close> is similar to either \<open>t |\<^sub>s m'\<close> or to
+  \<open>t |\<^sub>s (m'+1)\<close>.
+\<close>
 
 lemma seqsim_suffix_suc:
   assumes H: "s |\<^sub>s n \<approx> t |\<^sub>s m"
@@ -818,18 +818,18 @@ next
   thus ?thesis by blast
 qed
 
-text {*
+text \<open>
   The following main result about similar sequences shows that if
-  @{text "s \<approx> t"} holds then for any suffix @{text "s |\<^sub>s n"} of @{text "s"}
-  there exists a suffix @{text "t |\<^sub>s m"} such that
+  \<open>s \<approx> t\<close> holds then for any suffix \<open>s |\<^sub>s n\<close> of \<open>s\<close>
+  there exists a suffix \<open>t |\<^sub>s m\<close> such that
   \begin{itemize}
-  \item @{text "s |\<^sub>s n"} and @{text "t |\<^sub>s m"} are similar, and
-  \item @{text "s |\<^sub>s (n+1)"} is similar to either @{text "t |\<^sub>s (m+1)"}
-    or @{text "t |\<^sub>s m"}.
+  \item \<open>s |\<^sub>s n\<close> and \<open>t |\<^sub>s m\<close> are similar, and
+  \item \<open>s |\<^sub>s (n+1)\<close> is similar to either \<open>t |\<^sub>s (m+1)\<close>
+    or \<open>t |\<^sub>s m\<close>.
   \end{itemize}
-  The idea is to pick the largest @{text "m"} such that @{text "s |\<^sub>s n \<approx> t |\<^sub>s m"}
-  (or some such @{text "m"} if @{text "s |\<^sub>s n"} is empty).
-*}
+  The idea is to pick the largest \<open>m\<close> such that \<open>s |\<^sub>s n \<approx> t |\<^sub>s m\<close>
+  (or some such \<open>m\<close> if \<open>s |\<^sub>s n\<close> is empty).
+\<close>
 
 theorem sim_step: 
   assumes H: "s \<approx> t" 

@@ -25,7 +25,7 @@ lemma smult_cancel:
   shows "p=q" 
 proof -
   have "smult c (p-q)=0" using smult by (metis diff_self smult_diff_right)
-  thus ?thesis using `c\<noteq>0` by auto
+  thus ?thesis using \<open>c\<noteq>0\<close> by auto
 qed
 
 lemma dvd_monic:
@@ -64,7 +64,7 @@ next
         ultimately have "sum T (\<Union>C) = sum (sum T) C" 
           using sum.Union_disjoint by auto
         moreover have "\<Union>C={..degree p + degree k - n}" 
-          using `n \<le> degree k` unfolding C_def by auto
+          using \<open>n \<le> degree k\<close> unfolding C_def by auto
         moreover have  "sum (sum T) C= sum T {0..<degree p} + sum T {(degree p)} + 
                   sum T {degree p + 1..degree p + degree k - n}"
         proof -
@@ -74,7 +74,7 @@ next
             by (metis add.commute add_diff_cancel_right' atLeastAtMost_singleton_iff 
                   diff_self_eq_0 eq_imp_le not_one_le_zero)
           moreover have "{0..<degree p}\<noteq>{degree p + 1..degree p + degree k - n}" 
-            using `degree k\<ge>n` `degree p\<noteq>0` by fastforce
+            using \<open>degree k\<ge>n\<close> \<open>degree p\<noteq>0\<close> by fastforce
           ultimately show ?thesis unfolding C_def by auto
         qed
         ultimately show ?thesis by auto
@@ -93,8 +93,8 @@ next
       moreover have "n\<noteq>0\<Longrightarrow>c dvd sum T {0..<degree p}" 
       proof (rule dvd_sum)
         fix i assume i:"i \<in> {0..<degree p}" and "n\<noteq>0"
-        hence "(n+i-degree p)\<le>degree k" using `n \<le> degree k` by auto
-        moreover have "n + i - degree p <n" using i `n\<noteq>0` by auto 
+        hence "(n+i-degree p)\<le>degree k" using \<open>n \<le> degree k\<close> by auto
+        moreover have "n + i - degree p <n" using i \<open>n\<noteq>0\<close> by auto 
         ultimately have "c dvd coeff k (degree k - (n+i-degree p))"
           using 1(1) by auto
         hence "c dvd coeff k (degree p + degree k - n - i)"
@@ -122,7 +122,7 @@ next
   hence "smult c (Abs_poly f)=k" 
     using f smult.abs_eq[of c "Abs_poly f"] Abs_poly_inverse[of f] coeff_inverse[of k]
     by simp
-  hence "q=p* Abs_poly f" using k `c\<noteq>0` smult_cancel by auto
+  hence "q=p* Abs_poly f" using k \<open>c\<noteq>0\<close> smult_cancel by auto
   thus ?thesis unfolding dvd_def by auto
 qed
 
@@ -138,7 +138,7 @@ lemma poly_power_n_odd:
   shows "poly ([:-a,1:]^n) x>0 \<longleftrightarrow> (x>a)" using assms 
 proof -
   have "poly ([:-a,1:]^n) x\<ge>0 = (poly [:- a, 1:] x \<ge>0)" 
-    unfolding poly_power using zero_le_odd_power[OF `odd n`] by blast
+    unfolding poly_power using zero_le_odd_power[OF \<open>odd n\<close>] by blast
   also have "(poly [:- a, 1:] x \<ge>0) = (x\<ge>a)" by fastforce
   finally have "poly ([:-a,1:]^n) x\<ge>0 = (x\<ge>a)" .
   moreover have "poly ([:-a,1:]^n) x=0 = (x=a)" by(rule poly_power_n_eq, metis assms even_zero)    

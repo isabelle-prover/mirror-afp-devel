@@ -1,4 +1,4 @@
-section {* Alternating Function Iteration *}
+section \<open>Alternating Function Iteration\<close>
 
 theory Alternate
 imports Main

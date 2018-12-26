@@ -17,7 +17,7 @@ type_synonym ml_vname = nat
 (* FIXME only for codegen*)
 type_synonym cname = int
 
-text{* ML terms: *}
+text\<open>ML terms:\<close>
 
 datatype ml =
  \<comment> \<open>ML\<close>
@@ -32,13 +32,13 @@ datatype ml =
  \<comment> \<open>ML function \emph{apply}\<close>
 | "apply" ml ml
 
-text{* Lambda-terms: *}
+text\<open>Lambda-terms:\<close>
 
 datatype tm = C cname | V vname | \<Lambda> tm | At tm tm (infix "\<bullet>" 100)
             | "term" ml   \<comment> \<open>ML function \texttt{term}\<close>
 
-text {* The following locale captures type conventions for variables.
-  It is not actually used, merely a formal comment. *}
+text \<open>The following locale captures type conventions for variables.
+  It is not actually used, merely a formal comment.\<close>
 
 locale Vars =
  fixes r s t:: tm
@@ -49,7 +49,7 @@ locale Vars =
  and x :: vname
  and X :: ml_vname
 
-text{* The subset of pure terms: *}
+text\<open>The subset of pure terms:\<close>
 
 inductive pure :: "tm \<Rightarrow> bool" where
 "pure(C nm)" |
@@ -68,7 +68,7 @@ next
   assume "pure t" thus "pure(\<Lambda> t)" by(rule Lam)
 qed
 
-text{* Closed terms w.r.t.\ ML variables:*}
+text\<open>Closed terms w.r.t.\ ML variables:\<close>
 
 fun closed_ML :: "nat \<Rightarrow> ml \<Rightarrow> bool" ("closed\<^sub>M\<^sub>L") where
 "closed\<^sub>M\<^sub>L i (C\<^sub>M\<^sub>L nm) = True" |
@@ -86,7 +86,7 @@ fun closed_tm_ML :: "nat \<Rightarrow> tm \<Rightarrow> bool" ("closed\<^sub>M\<
 "closed_tm_ML i (term v) = closed_ML i v" |
 "closed_tm_ML i v = True"
 
-text{* Free variables: *}
+text\<open>Free variables:\<close>
 
 fun fv_ML :: "ml \<Rightarrow> ml_vname set" ("fv\<^sub>M\<^sub>L") where
 "fv\<^sub>M\<^sub>L (C\<^sub>M\<^sub>L nm) = {}" |
@@ -110,7 +110,7 @@ subsection "Iterated Term Application"
 abbreviation foldl_At (infix "\<bullet>\<bullet>" 90) where
 "t \<bullet>\<bullet> ts \<equiv> foldl (\<bullet>) t ts"
 
-text{*Auxiliary measure function:*}
+text\<open>Auxiliary measure function:\<close>
 primrec depth_At :: "tm \<Rightarrow> nat"
 where
   "depth_At(C nm) = 0"
@@ -280,7 +280,7 @@ definition
  cons_ML :: "ml \<Rightarrow> (nat \<Rightarrow> ml) \<Rightarrow> (nat \<Rightarrow> ml)" (infix "##" 65) where
 "v##\<sigma> \<equiv> \<lambda>i. case i of 0 \<Rightarrow> v::ml | Suc j \<Rightarrow> lift\<^sub>M\<^sub>L 0 (\<sigma> j)"
 
-text{* Only for pure terms! *}
+text\<open>Only for pure terms!\<close>
 primrec subst :: "(nat \<Rightarrow> tm) \<Rightarrow> tm \<Rightarrow> tm"
 where
   "subst \<sigma> (C nm) = C nm"
@@ -556,9 +556,9 @@ proof(induct s arbitrary: t)
 qed (auto elim!: pattern.cases split:if_split_asm)
 
 
-subsection "Reduction of @{text \<lambda>}-terms"
+subsection "Reduction of \<open>\<lambda>\<close>-terms"
 
-text{* The source program: *}
+text\<open>The source program:\<close>
 
 axiomatization R :: "(cname * tm list * tm)set" where
 pure_R: "(nm,ts,t) : R \<Longrightarrow> (\<forall>t \<in> set ts. pure t) \<and> pure t" and
@@ -633,15 +633,15 @@ done
 
 subsection "Reduction of ML-terms"
 
-text{* The compiled rule set: *}
+text\<open>The compiled rule set:\<close>
 
 consts compR :: "(cname * ml list * ml)set"
 
-text{* \noindent
-The actual definition is given in \S\ref{sec:Compiler} below. *}
+text\<open>\noindent
+The actual definition is given in \S\ref{sec:Compiler} below.\<close>
 
-text{* Now we characterize ML values that cannot possibly be rewritten by a
-rule in @{const compR}. *}
+text\<open>Now we characterize ML values that cannot possibly be rewritten by a
+rule in @{const compR}.\<close>
 
 lemma termination_no_match_ML:
   "i < length ps \<Longrightarrow> rev ps ! i = C\<^sub>U nm vs
@@ -730,8 +730,8 @@ where
 
 section "Kernel"
 
-text{* First a special size function and some lemmas for the
-termination proof of the kernel function. *}
+text\<open>First a special size function and some lemmas for the
+termination proof of the kernel function.\<close>
 
 fun size' :: "ml \<Rightarrow> nat" where
 "size' (C\<^sub>M\<^sub>L nm) = 1" |
@@ -886,8 +886,8 @@ done
 
 subsection "An auxiliary substitution"
 
-text{* This function is only introduced to prove the involved susbtitution
-lemma @{text kernel_subst1} below. *}
+text\<open>This function is only introduced to prove the involved susbtitution
+lemma \<open>kernel_subst1\<close> below.\<close>
 
 fun subst_ml :: "(nat \<Rightarrow> nat) \<Rightarrow> ml \<Rightarrow> ml" where
 "subst_ml \<sigma> (C\<^sub>M\<^sub>L nm) = C\<^sub>M\<^sub>L nm" |
@@ -916,7 +916,7 @@ apply(simp add: lift_ML_subst_ml)
 done
 
 
-text{* Maybe this should be the def of lift: *}
+text\<open>Maybe this should be the def of lift:\<close>
 lemma lift_is_subst_ml: "lift k v = subst_ml (\<lambda>n. if n<k then n else n+1) v"
 by(induct k v rule:lift_ml.induct)(simp_all add:list_eq_iff_nth_eq)
 
@@ -1087,12 +1087,12 @@ proof(induct u arbitrary:v rule:kernel.induct)
     thus ?thesis by(simp cong:if_cong0 add:shift_subst_decr)
   qed
   finally have "?R = ?M" .
-  then show "?L = ?R" using `?L = ?M` by metis
+  then show "?L = ?R" using \<open>?L = ?M\<close> by metis
 qed
 qed (simp_all add:list_eq_iff_nth_eq, (simp_all add:rev_nth)?)
 
 
-section {*Compiler \label{sec:Compiler}*}
+section \<open>Compiler \label{sec:Compiler}\<close>
 
 axiomatization arity :: "cname \<Rightarrow> nat"
 
@@ -1104,12 +1104,12 @@ where
 | "compile (s \<bullet> t) \<sigma> = apply (compile s \<sigma>) (compile t \<sigma>)"
 | "compile (\<Lambda> t) \<sigma> = Clo (Lam\<^sub>M\<^sub>L (compile t (V\<^sub>M\<^sub>L 0 ## \<sigma>))) [] 1"
 
-text{* Compiler for open terms and for terms with fixed free variables: *}
+text\<open>Compiler for open terms and for terms with fixed free variables:\<close>
 
 definition "comp_open t = compile t V\<^sub>M\<^sub>L"
 abbreviation "comp_fixed t \<equiv> compile t (\<lambda>i. V\<^sub>U i [])"
 
-text{* Compiled rules: *}
+text\<open>Compiled rules:\<close>
 
 lemma size_args_less_size_tm[simp]: "s \<in> set (args_tm t) \<Longrightarrow> size s < size t"
 by(induct t) auto
@@ -1249,7 +1249,7 @@ section "Correctness"
 lemma eq_Red_tm_trans: "s = t \<Longrightarrow> t \<rightarrow> t' \<Longrightarrow> s \<rightarrow> t'"
 by simp
 
-text{* Soundness of reduction: *}
+text\<open>Soundness of reduction:\<close>
 theorem fixes v :: ml shows Red_ml_sound:
   "v \<Rightarrow> v' \<Longrightarrow> closed\<^sub>M\<^sub>L 0 v \<Longrightarrow> v! \<rightarrow>* v'! \<and> closed\<^sub>M\<^sub>L 0 v'" and
   "vs \<Rightarrow> vs' \<Longrightarrow> \<forall>v\<in>set vs. closed\<^sub>M\<^sub>L 0 v \<Longrightarrow>
@@ -1341,13 +1341,13 @@ theorem nbe_correct: fixes t :: tm
 assumes "pure t" and "term (comp_fixed t) \<Rightarrow>* t'" and "pure t'" shows "t \<rightarrow>* t'"
 proof -
   have ML_cl: "closed\<^sub>M\<^sub>L 0 (term (comp_fixed t))"
-    by (simp add: closed_ML_compile[OF `pure t`])
+    by (simp add: closed_ML_compile[OF \<open>pure t\<close>])
   have "(term (comp_fixed t))! = t"
-    using kernel_compile[OF `pure t`] by simp
+    using kernel_compile[OF \<open>pure t\<close>] by simp
   moreover have "term (comp_fixed t)! \<rightarrow>* t'!"
     using kernel_inv[OF assms(2) ML_cl] by auto
   ultimately have "t \<rightarrow>* t'!" by simp
-  thus ?thesis using kernel_pure[OF `pure t'`] by simp
+  thus ?thesis using kernel_pure[OF \<open>pure t'\<close>] by simp
 qed
 
 
@@ -1811,7 +1811,7 @@ lemma Red_term_pres_no_match:
    \<Longrightarrow> no_match ps (map dterm (ts[i := t']))"
 proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
   case (1 ps dts ts i t')
-  from `no_match ps dts` `dts = map dterm ts`
+  from \<open>no_match ps dts\<close> \<open>dts = map dterm ts\<close>
   obtain j nm nm' rs rs' where ob: "j < size ts" "j < size ps"
     "ps!j = C nm \<bullet>\<bullet> rs" "dterm (ts!j) = C nm' \<bullet>\<bullet> rs'"
     "nm = nm' \<longrightarrow> no_match rs rs'"
@@ -1826,17 +1826,17 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
     proof-
       { assume [simp]: "j=i"
         have "\<exists>rs'. dterm t' = C nm' \<bullet>\<bullet> rs' \<and> (nm = nm' \<longrightarrow> no_match rs rs')"
-          using `ts ! i \<Rightarrow> t'`
+          using \<open>ts ! i \<Rightarrow> t'\<close>
         proof(cases rule:Red_term_hnf_cases)
           case (5 v v' ts'')
           then obtain vs where [simp]:
             "v = C\<^sub>U nm' vs" "rs' = map dterm\<^sub>M\<^sub>L (rev vs) @ map dterm ts''"
             using ob by(cases v) auto
           obtain vs' where [simp]: "v' = C\<^sub>U nm' vs'" "vs \<Rightarrow> vs'"
-            using `v\<Rightarrow>v'` by(rule Red_ml.cases) auto
+            using \<open>v\<Rightarrow>v'\<close> by(rule Red_ml.cases) auto
           obtain v' k where [arith]: "k<size vs" and "vs!k \<Rightarrow> v'"
             and [simp]: "vs' = vs[k := v']"
-            using Red_ml_list_nth[OF `vs\<Rightarrow>vs'`] by fastforce
+            using Red_ml_list_nth[OF \<open>vs\<Rightarrow>vs'\<close>] by fastforce
           show ?thesis (is "\<exists>rs'. ?P rs' \<and> ?Q rs'")
           proof
             let ?rs' = "map dterm ((map term (rev vs) @ ts'')[(size vs - k - 1):=term v'])"
@@ -1846,7 +1846,7 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
               apply rule
               apply(rule "1.hyps"[OF _ ob(3)])
               using "1.prems" 5 ob
-              apply (auto simp:nth_append rev_nth ctxt_term[OF `vs!k \<Rightarrow> v'`] simp del: map_map)
+              apply (auto simp:nth_append rev_nth ctxt_term[OF \<open>vs!k \<Rightarrow> v'\<close>] simp del: map_map)
               done
             ultimately show "?P ?rs' \<and> ?Q ?rs'" ..
           qed
@@ -1878,9 +1878,9 @@ proof(induct ps dts arbitrary: ts i t' rule:no_match.induct)
         qed (insert ob, auto simp del: map_map)
       }
       hence "\<exists>rs'. dterm (ts[i := t'] ! j) = C nm' \<bullet>\<bullet> rs' \<and> (nm = nm' \<longrightarrow> no_match rs rs')"
-        using `i < size ts` ob by(simp add:nth_list_update)
+        using \<open>i < size ts\<close> ob by(simp add:nth_list_update)
       hence "?P j" using ob by auto
-      moreover have "j < ?m" using `j < length ts` `j < size ps` by simp
+      moreover have "j < ?m" using \<open>j < length ts\<close> \<open>j < size ps\<close> by simp
       ultimately show ?thesis by blast
     qed
   qed
@@ -1901,19 +1901,19 @@ next
   case (Suc n)
   then have "sum_list ns \<noteq> 0" by arith
   then obtain k l where "k<size ts" and [simp]: "ns!k = Suc l"
-    by simp (metis `length ns = length ts` gr0_implies_Suc in_set_conv_nth)
+    by simp (metis \<open>length ns = length ts\<close> gr0_implies_Suc in_set_conv_nth)
   let ?ns = "ns[k := l]"
-  have "n = sum_list ?ns" using `Suc n = sum_list ns` `k<size ts` `size ns = size ts`
+  have "n = sum_list ?ns" using \<open>Suc n = sum_list ns\<close> \<open>k<size ts\<close> \<open>size ns = size ts\<close>
     by (simp add:sum_list_update)
   obtain t' where "ts!k \<Rightarrow> t'" "(t', ts'!k) : Red_term^^l"
-    using Suc(3) `k<size ts` `size ns = size ts` `ns!k = Suc l`
+    using Suc(3) \<open>k<size ts\<close> \<open>size ns = size ts\<close> \<open>ns!k = Suc l\<close>
     by (metis relpow_Suc_E2)
   then have 1: "\<forall>i<size(ts[k:=t']). (ts[k:=t']!i, ts'!i) : Red_term^^(?ns!i)"
-    using Suc(3) `k<size ts` `size ns = size ts`
+    using Suc(3) \<open>k<size ts\<close> \<open>size ns = size ts\<close>
     by (auto simp add:nth_list_update)
-  note nm1 = Red_term_pres_no_match[OF `k<size ts` `ts!k \<Rightarrow> t'` `no_match ps (map dterm ts)`]
-  show ?case by(rule Suc(1)[OF `n = sum_list ?ns` 1 _ _ nm1])
-               (simp_all add: `size ts' = size ts` `size ns = size ts`)
+  note nm1 = Red_term_pres_no_match[OF \<open>k<size ts\<close> \<open>ts!k \<Rightarrow> t'\<close> \<open>no_match ps (map dterm ts)\<close>]
+  show ?case by(rule Suc(1)[OF \<open>n = sum_list ?ns\<close> 1 _ _ nm1])
+               (simp_all add: \<open>size ts' = size ts\<close> \<open>size ns = size ts\<close>)
 qed
 
 
@@ -2065,13 +2065,13 @@ proof(induct ps os arbitrary: ts ts' rule: no_match.induct)
       "i < size os" "os!i = C nm' \<bullet>\<bullet> os'" "nm=nm' \<longrightarrow> no_match ps' os'"
     using 1(4) no_match.simps[of ps os] by fastforce
   note 1(5)[simp]
-  have "C_normal (ts ! i)" using 1(2) `i < size os` by auto
-  have "ts!i \<Rightarrow>* ts'!i" using 1(3) `i < size os` by auto
-  have "dterm (ts ! i) = C nm' \<bullet>\<bullet> os'" using `os!i = C nm' \<bullet>\<bullet> os'` `i < size os`
+  have "C_normal (ts ! i)" using 1(2) \<open>i < size os\<close> by auto
+  have "ts!i \<Rightarrow>* ts'!i" using 1(3) \<open>i < size os\<close> by auto
+  have "dterm (ts ! i) = C nm' \<bullet>\<bullet> os'" using \<open>os!i = C nm' \<bullet>\<bullet> os'\<close> \<open>i < size os\<close>
     by (simp add:nth_map)
-  with C_redts [OF `ts!i \<Rightarrow>* ts'!i` `C_normal (ts!i)`]
-    C_normal_subterm[OF `C_normal (ts!i)`]
-    C_normal_subterms[OF `C_normal (ts!i)`]
+  with C_redts [OF \<open>ts!i \<Rightarrow>* ts'!i\<close> \<open>C_normal (ts!i)\<close>]
+    C_normal_subterm[OF \<open>C_normal (ts!i)\<close>]
+    C_normal_subterms[OF \<open>C_normal (ts!i)\<close>]
   obtain ss' rs rs' :: "tm list" where b: "\<forall>t\<in>set rs. C_normal t"
     "dterm (ts' ! i) = C nm' \<bullet>\<bullet> ss'" "length rs = length rs'"
     "\<forall>i<length rs. rs ! i \<Rightarrow>* rs' ! i" "ss' = map dterm rs'" "os' = map dterm rs"
@@ -2110,7 +2110,7 @@ proof(induct i arbitrary:rs)
   ultimately show ?case by auto
 next
   case (Suc i rs)
-  from `(V x \<bullet>\<bullet> rs, r) \<in> Red_term ^^ Suc i`
+  from \<open>(V x \<bullet>\<bullet> rs, r) \<in> Red_term ^^ Suc i\<close>
   obtain r' where r': "V x \<bullet>\<bullet> rs \<Rightarrow> r'" and "(r',r) \<in> Red_term ^^ i"
     by (metis relpow_Suc_D2)
   from r' have "\<exists>k<size rs. \<exists>s. rs!k \<Rightarrow> s \<and> r' = V x \<bullet>\<bullet> rs[k:=s]"
@@ -2140,8 +2140,8 @@ next
     qed
   qed
   then obtain k s where "k<size rs" "rs!k \<Rightarrow> s" and [simp]: "r' = V x \<bullet>\<bullet> rs[k:=s]" by metis
-  from Suc(1)[of "rs[k:=s]"] `(r',r) \<in> Red_term ^^ i`
-  show ?case using `k<size rs` `rs!k \<Rightarrow> s`
+  from Suc(1)[of "rs[k:=s]"] \<open>(r',r) \<in> Red_term ^^ i\<close>
+  show ?case using \<open>k<size rs\<close> \<open>rs!k \<Rightarrow> s\<close>
     apply auto
     apply(rule_tac x="is[k := Suc(is!k)]" in exI)
     apply (auto simp:nth_list_update)
@@ -2165,7 +2165,7 @@ proof(induct i arbitrary:rs)
   ultimately show ?case by auto
 next
   case (Suc i rs)
-  from `(C nm \<bullet>\<bullet> rs, r) \<in> Red_term ^^ Suc i`
+  from \<open>(C nm \<bullet>\<bullet> rs, r) \<in> Red_term ^^ Suc i\<close>
   obtain r' where r': "C nm \<bullet>\<bullet> rs \<Rightarrow> r'" and "(r',r) \<in> Red_term ^^ i"
     by (metis relpow_Suc_D2)
   from r' have "\<exists>k<size rs. \<exists>s. rs!k \<Rightarrow> s \<and> r' = C nm \<bullet>\<bullet> rs[k:=s]"
@@ -2195,8 +2195,8 @@ next
     qed
   qed
   then obtain k s where "k<size rs" "rs!k \<Rightarrow> s" and [simp]: "r' = C nm \<bullet>\<bullet> rs[k:=s]" by metis
-  from Suc(1)[of "rs[k:=s]"] `(r',r) \<in> Red_term ^^ i`
-  show ?case using `k<size rs` `rs!k \<Rightarrow> s`
+  from Suc(1)[of "rs[k:=s]"] \<open>(r',r) \<in> Red_term ^^ i\<close>
+  show ?case using \<open>k<size rs\<close> \<open>rs!k \<Rightarrow> s\<close>
     apply auto
     apply(rule_tac x="is[k := Suc(is!k)]" in exI)
     apply (auto simp:nth_list_update)
@@ -2235,13 +2235,13 @@ proof -
         with less have 0:"no_match_compR nm vs" by auto
         let ?n = "size vs"
         have 1: "(C nm \<bullet>\<bullet> map term (rev vs),t') : Red_term^^i'"
-          using term_C `(s,t') : Red_term^^i'` by simp
+          using term_C \<open>(s,t') : Red_term^^i'\<close> by simp
         with C_Red_term_it[OF 1] 
         obtain ts ks where [simp]: "t' = C nm \<bullet>\<bullet> ts"
           and sz: "size ts = ?n \<and> size ks = ?n \<and>
           (\<forall>i<?n. (term((rev vs)!i), ts!i) : Red_term^^(ks!i) \<and> ks ! i \<le> i')"
           by(auto cong:conj_cong)
-        have pure_ts: "\<forall>t\<in>set ts. pure t" using `pure t'` by simp
+        have pure_ts: "\<forall>t\<in>set ts. pure t" using \<open>pure t'\<close> by simp
         { fix i assume "i<size vs"
           moreover hence "(term((rev vs)!i), ts!i) : Red_term^^(ks!i)" by(metis sz)
           ultimately have "normal (ts!i)"
@@ -2267,7 +2267,7 @@ proof -
             and "length ts' = ?n \<and> length is =?n \<and>
               (\<forall>j< ?n. (map term (rev vs) ! j, ts' ! j) \<in> Red_term ^^ is ! j \<and> is ! j \<le> i')"
             using sz by auto
-          from `t' = C nm \<bullet>\<bullet> ts'` `t' = C nm \<bullet>\<bullet> ts` have "ts = ts'" by simp
+          from \<open>t' = C nm \<bullet>\<bullet> ts'\<close> \<open>t' = C nm \<bullet>\<bullet> ts\<close> have "ts = ts'" by simp
           show ?thesis using sz by (auto  simp: rtrancl_is_UN_relpow)
         qed
         have 5: "\<forall>t\<in>set(map term vs). C_normal t"
@@ -2292,7 +2292,7 @@ proof -
         case (term_V x vs)
         let ?n = "size vs"
         have 1: "(V x \<bullet>\<bullet> map term (rev vs),t') : Red_term^^i'"
-          using term_V `(s,t') : Red_term^^i'` by simp
+          using term_V \<open>(s,t') : Red_term^^i'\<close> by simp
         with Red_term_it[OF 1] obtain ts "is" where [simp]: "t' = V x \<bullet>\<bullet> ts"
           and 2: "length ts = ?n \<and>
             length is = ?n \<and> (\<forall>j<?n. (term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j \<and>
@@ -2301,32 +2301,32 @@ proof -
         have "\<forall>j<?n. normal(ts!j)"
         proof(clarify)
           fix j assume 0: "j < ?n"
-          then have "is!j < k" using `k=Suc i` 2 by auto
-          have red: "(term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j" using `j < ?n` 2 by auto
-          have pure: "pure (ts ! j)" using `pure t'` 0 2 by auto
+          then have "is!j < k" using \<open>k=Suc i\<close> 2 by auto
+          have red: "(term (rev vs ! j), ts ! j) \<in> Red_term ^^ is ! j" using \<open>j < ?n\<close> 2 by auto
+          have pure: "pure (ts ! j)" using \<open>pure t'\<close> 0 2 by auto
           have Cnm: "C_normal\<^sub>M\<^sub>L (rev vs ! j)" using less term_V
             by simp (metis 0 in_set_conv_nth length_rev set_rev)
-          from less(1)[OF `is!j < k` refl Cnm pure red] show "normal(ts!j)" .
+          from less(1)[OF \<open>is!j < k\<close> refl Cnm pure red] show "normal(ts!j)" .
         qed
         note 3=this
         show ?thesis by simp (metis normal.intros(1) in_set_conv_nth 2 3)
       next
         case (term_Clo f vs n)
         let ?u = "apply (lift 0 (Clo f vs n)) (V\<^sub>U 0 [])"
-        from term_Clo `(s,t') : Red_term^^i'`
+        from term_Clo \<open>(s,t') : Red_term^^i'\<close>
         obtain t'' where [simp]: "t' = \<Lambda> t''" and 1: "(term ?u, t'') : Red_term^^i'"
           by(metis Lam_Red_term_itE)
-        have "i' < k" using `k = Suc i` by arith
-        have "pure t''" using `pure t'` by simp
+        have "i' < k" using \<open>k = Suc i\<close> by arith
+        have "pure t''" using \<open>pure t'\<close> by simp
         have "C_normal\<^sub>M\<^sub>L ?u" using less term_Clo by(simp)
-        from less(1)[OF `i' < k` refl `C_normal\<^sub>M\<^sub>L ?u` `pure t''` 1]
+        from less(1)[OF \<open>i' < k\<close> refl \<open>C_normal\<^sub>M\<^sub>L ?u\<close> \<open>pure t''\<close> 1]
         show ?thesis by(simp add:normal.intros)
       next
         case (ctxt_term u')
-        have "i' < k" using `k = Suc i` by arith
+        have "i' < k" using \<open>k = Suc i\<close> by arith
         have "C_normal\<^sub>M\<^sub>L u'" by (rule C_normal_ML_inv) (insert less ctxt_term, simp_all)
         have "(term u', t') \<in> Red_term ^^ i'" using red ctxt_term by auto
-        from less(1)[OF `i' < k` refl `C_normal\<^sub>M\<^sub>L u'` `pure t'` this] show ?thesis .
+        from less(1)[OF \<open>i' < k\<close> refl \<open>C_normal\<^sub>M\<^sub>L u'\<close> \<open>pure t'\<close> this] show ?thesis .
       qed
     qed
   qed
@@ -2345,12 +2345,12 @@ apply(simp add: C_normal_ML_compile)
 apply assumption
 done
 
-section{* Refinements *}
+section\<open>Refinements\<close>
 
-text{* We ensure that all occurrences of @{term "C\<^sub>U nm vs"} satisfy
-the invariant @{prop"size vs = arity nm"}. *}
+text\<open>We ensure that all occurrences of @{term "C\<^sub>U nm vs"} satisfy
+the invariant @{prop"size vs = arity nm"}.\<close>
 
-text{* A constructor value: *}
+text\<open>A constructor value:\<close>
 
 fun C\<^sub>Us :: "ml \<Rightarrow> bool" where
 "C\<^sub>Us(C\<^sub>U nm vs) = (size vs = arity nm \<and> (\<forall>v\<in>set vs. C\<^sub>Us v))" |
@@ -2370,7 +2370,7 @@ apply(simp add:size_foldl_At)
 apply (metis gr_implies_not0 length_0_conv)
 done
 
-text{* Linear patterns: *}
+text\<open>Linear patterns:\<close>
 
 function linpats :: "tm list \<Rightarrow> bool" where
 "linpats ts \<longleftrightarrow>
@@ -2410,7 +2410,7 @@ proof(induct ts rule:linpats.induct)
     proof
       assume "?V" thus ?thesis by(auto simp:pat_V)
     next
-      assume "?C" thus ?thesis using 1(1) `i < size ts`
+      assume "?C" thus ?thesis using 1(1) \<open>i < size ts\<close>
         by auto (metis pat_C)
     qed
   qed

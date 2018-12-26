@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Sequential consistency with efficient data structures *}
+section \<open>Sequential consistency with efficient data structures\<close>
 
 theory SC_Collections
 imports
@@ -17,7 +17,7 @@ begin
 hide_const (open) new_Addr
 hide_fact (open) new_Addr_SomeD new_Addr_SomeI
 
-subsection{* Objects and Arrays *}
+subsection\<open>Objects and Arrays\<close>
 
 type_synonym fields = "(char, (cname, addr val) lm) tm"
 type_synonym array_cells = "(nat, addr val) rbt"
@@ -74,7 +74,7 @@ where
 lemma obj_ty_blank [iff]: "obj_ty (blank P hT) = hT"
 by(cases hT) simp_all
 
-subsection{* Heap *}
+subsection\<open>Heap\<close>
 
 type_synonym heap = "(addr, heapobj) rbt"
 
@@ -169,7 +169,7 @@ interpretation sc:
     "sc_heap_write"
   for P . 
 
-text {* Translate notation from @{text heap_base} *}
+text \<open>Translate notation from \<open>heap_base\<close>\<close>
 
 abbreviation sc_preallocated :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"
 where "sc_preallocated == sc.preallocated TYPE('m)"
@@ -250,7 +250,7 @@ by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def rm.lookup_correct r
 lemma sc_hext_upd_arr: "\<lbrakk> rm_lookup a h = Some (Arr T si f e) \<rbrakk> \<Longrightarrow> h \<unlhd>sc rm_update a (Arr T si f' e') h"
 by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def rm.lookup_correct rm.update_correct)
 
-subsection {* Conformance *}
+subsection \<open>Conformance\<close>
 
 definition sc_oconf :: "'m prog \<Rightarrow> heap \<Rightarrow> heapobj \<Rightarrow> bool"   ("_,_ \<turnstile>sc _ \<surd>" [51,51,51] 50)
 where
@@ -321,7 +321,7 @@ proof -
     assume "n' < n"
     { fix rm and k :: nat
       assume "\<forall>i<k. \<exists>v. rm_\<alpha> rm i = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
-      with `n' < n` have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm [k..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
+      with \<open>n' < n\<close> have "\<exists>v. rm_\<alpha> (foldl (\<lambda>cells i. rm_update i (default_val T) cells) rm [k..<n]) n' = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
         by(induct m\<equiv>"n-k" arbitrary: n k rm)(auto simp add: rm.update_correct upt_conv_Cons type)
     }
     from this[of 0 "rm_empty ()"]
@@ -451,25 +451,25 @@ proof
   from alt show "\<exists>v. sc_heap_read h a al v \<and> P,h \<turnstile>sc v :\<le> T"
   proof(cases)
     case (addr_loc_type_field U F fm D) 
-    note [simp] = `al = CField D F`
+    note [simp] = \<open>al = CField D F\<close>
     show ?thesis
     proof(cases "arrobj")
       case (Obj C' fs)
-      with `sc_typeof_addr h a = \<lfloor>U\<rfloor>` arrobj
+      with \<open>sc_typeof_addr h a = \<lfloor>U\<rfloor>\<close> arrobj
       have [simp]: "C' = class_type_of U" by(auto simp add: sc_typeof_addr_def)
       from hconf arrobj Obj have "P,h \<turnstile>sc Obj (class_type_of U) fs \<surd>" by(auto dest: sc_hconfD)
-      with `P \<turnstile> class_type_of U has F:T (fm) in D` obtain fs' v 
+      with \<open>P \<turnstile> class_type_of U has F:T (fm) in D\<close> obtain fs' v 
       where "tm_lookup (String.explode F) fs = \<lfloor>fs'\<rfloor>" "lm_lookup D fs' = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
       by(fastforce simp add: sc_oconf_def tm.lookup_correct lm.lookup_correct)
       thus ?thesis using Obj arrobj by(auto intro: sc_heap_read.intros)
     next
       case (Arr T' si f el)
-      with `sc_typeof_addr h a = \<lfloor>U\<rfloor>` arrobj
+      with \<open>sc_typeof_addr h a = \<lfloor>U\<rfloor>\<close> arrobj
       have [simp]: "U = Array_type T' si" by(auto simp add: sc_typeof_addr_def)
       from hconf arrobj Arr have "P,h \<turnstile>sc Arr T' si f el \<surd>" by(auto dest: sc_hconfD)
-      from `P \<turnstile> class_type_of U has F:T (fm) in D` have [simp]: "D = Object"
+      from \<open>P \<turnstile> class_type_of U has F:T (fm) in D\<close> have [simp]: "D = Object"
         by(auto dest: has_field_decl_above)
-      with `P,h \<turnstile>sc Arr T' si f el \<surd>` `P \<turnstile> class_type_of U has F:T (fm) in D`
+      with \<open>P,h \<turnstile>sc Arr T' si f el \<surd>\<close> \<open>P \<turnstile> class_type_of U has F:T (fm) in D\<close>
       obtain v where "lm_lookup F f = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
         by(fastforce simp add: sc_oconf_def)
       thus ?thesis using Arr arrobj by(auto intro: sc_heap_read.intros)
@@ -544,7 +544,7 @@ where "sc_deterministic_heap_ops \<equiv> sc.deterministic_heap_ops TYPE('m)"
 lemma sc_deterministic_heap_ops: "\<not> sc_spurious_wakeups \<Longrightarrow> sc_deterministic_heap_ops P"
 by(rule sc.deterministic_heap_opsI)(auto elim: sc_heap_read.cases sc_heap_write.cases simp add: sc_allocate_def)
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)

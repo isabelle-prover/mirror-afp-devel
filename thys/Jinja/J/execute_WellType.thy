@@ -3,7 +3,7 @@
     Copyright   2004 Technische Universitaet Muenchen
 *)
 
-section {* Code Generation For WellType *}
+section \<open>Code Generation For WellType\<close>
 
 theory execute_WellType
 imports
@@ -55,19 +55,19 @@ proof -
   from WT.prems show thesis
   proof(cases (no_simp))
     case (WTCond E e e1 T1 e2 T2 T)
-    from `x \<turnstile> T1 \<le> T2 \<or> x \<turnstile> T2 \<le> T1` show thesis
+    from \<open>x \<turnstile> T1 \<le> T2 \<or> x \<turnstile> T2 \<le> T1\<close> show thesis
     proof
       assume "x \<turnstile> T1 \<le> T2"
-      with `x \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2` have "T = T2" ..
-      from `xa = E` `xb = if (e) e1 else e2` `xc = T` `x,E \<turnstile> e :: Boolean` 
-        `x,E \<turnstile> e1 :: T1` `x,E \<turnstile> e2 :: T2` `x \<turnstile> T1 \<le> T2` `x \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1`
-      show ?thesis unfolding `T = T2` by(rule WT.WTCond1[OF refl])
+      with \<open>x \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2\<close> have "T = T2" ..
+      from \<open>xa = E\<close> \<open>xb = if (e) e1 else e2\<close> \<open>xc = T\<close> \<open>x,E \<turnstile> e :: Boolean\<close> 
+        \<open>x,E \<turnstile> e1 :: T1\<close> \<open>x,E \<turnstile> e2 :: T2\<close> \<open>x \<turnstile> T1 \<le> T2\<close> \<open>x \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1\<close>
+      show ?thesis unfolding \<open>T = T2\<close> by(rule WT.WTCond1[OF refl])
     next
       assume "x \<turnstile> T2 \<le> T1"
-      with `x \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1` have "T = T1" ..
-      from `xa = E` `xb = if (e) e1 else e2` `xc = T` `x,E \<turnstile> e :: Boolean` 
-        `x,E \<turnstile> e1 :: T1` `x,E \<turnstile> e2 :: T2` `x \<turnstile> T2 \<le> T1` `x \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2`
-      show ?thesis unfolding `T = T1` by(rule WT.WTCond2[OF refl])
+      with \<open>x \<turnstile> T2 \<le> T1 \<longrightarrow> T = T1\<close> have "T = T1" ..
+      from \<open>xa = E\<close> \<open>xb = if (e) e1 else e2\<close> \<open>xc = T\<close> \<open>x,E \<turnstile> e :: Boolean\<close> 
+        \<open>x,E \<turnstile> e1 :: T1\<close> \<open>x,E \<turnstile> e2 :: T2\<close> \<open>x \<turnstile> T2 \<le> T1\<close> \<open>x \<turnstile> T1 \<le> T2 \<longrightarrow> T = T2\<close>
+      show ?thesis unfolding \<open>T = T1\<close> by(rule WT.WTCond2[OF refl])
     qed
   qed(assumption|erule (2) WT.that[OF refl])+
 next
@@ -85,14 +85,14 @@ definition test4 where "test4 = [], Map.empty(''V'' \<mapsto> Integer)  \<turnst
 definition test5 where "test5 = [classObject, (''C'',(''Object'',[(''F'',Integer)],[]))], Map.empty  \<turnstile> testExpr5 :: _"
 definition test6 where "test6 = [classObject, classI], Map.empty  \<turnstile> testExpr6 :: _"
 
-ML_val {*
+ML_val \<open>
   val SOME(@{code Integer}, _) = Predicate.yield @{code test1};
   val SOME(@{code Integer}, _) = Predicate.yield @{code test2};
   val SOME(@{code Integer}, _) = Predicate.yield @{code test3};
   val SOME(@{code Void}, _) = Predicate.yield @{code test4};
   val SOME(@{code Void}, _) = Predicate.yield @{code test5};
   val SOME(@{code Integer}, _) = Predicate.yield @{code test6};
-*}
+\<close>
 
 definition testmb_isNull where "testmb_isNull = [classObject, classA], Map.empty([this] [\<mapsto>] [Class ''A'']) \<turnstile> mb_isNull :: _"
 definition testmb_add where "testmb_add = [classObject, classA], Map.empty([this,''i''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_add :: _"
@@ -100,18 +100,18 @@ definition testmb_mult_cond where "testmb_mult_cond = [classObject, classA], Map
 definition testmb_mult_block where "testmb_mult_block = [classObject, classA], Map.empty([this,''i'',''j'',''temp''] [\<mapsto>] [Class ''A'',Integer,Integer,Integer]) \<turnstile> mb_mult_block :: _"
 definition testmb_mult where "testmb_mult = [classObject, classA], Map.empty([this,''i'',''j''] [\<mapsto>] [Class ''A'',Integer,Integer]) \<turnstile> mb_mult :: _"
 
-ML_val {*
+ML_val \<open>
   val SOME(@{code Boolean}, _) = Predicate.yield @{code testmb_isNull};
   val SOME(@{code Integer}, _) = Predicate.yield @{code testmb_add};
   val SOME(@{code Boolean}, _) = Predicate.yield @{code testmb_mult_cond};
   val SOME(@{code Void}, _) = Predicate.yield @{code testmb_mult_block};
   val SOME(@{code Integer}, _) = Predicate.yield @{code testmb_mult};
-*}
+\<close>
 
 definition test where "test = [classObject, classA], Map.empty \<turnstile> testExpr_ClassA :: _"
 
-ML_val {*
+ML_val \<open>
   val SOME(@{code Integer}, _) = Predicate.yield @{code test};
-*}
+\<close>
 
 end

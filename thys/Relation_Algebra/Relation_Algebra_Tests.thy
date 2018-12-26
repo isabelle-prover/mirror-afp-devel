@@ -4,16 +4,16 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Tests *}
+section \<open>Tests\<close>
 
 theory Relation_Algebra_Tests
   imports Relation_Algebra
 begin
 
-subsection {* Tests *}
+subsection \<open>Tests\<close>
 
-text {* Tests or subidentities provide another way of modelling sets. Once more
-we prove the basic properties, most of which stem from Maddux's book. *}
+text \<open>Tests or subidentities provide another way of modelling sets. Once more
+we prove the basic properties, most of which stem from Maddux's book.\<close>
 
 context relation_algebra
 begin
@@ -76,7 +76,7 @@ next
   hence two: "x ; 1 \<cdot> (-x \<cdot> 1') \<le> -x"
     by (metis inf.commute inf_le1 le_infE)
   hence "x ; 1 \<cdot> (-x \<cdot> 1') \<le> x"
-    by (metis one inf.commute le_infE meet_iso one_conv `is_test x` eq_iff test_1 test_eq_conv)
+    by (metis one inf.commute le_infE meet_iso one_conv \<open>is_test x\<close> eq_iff test_1 test_eq_conv)
   hence "x ; 1 \<cdot> (-x \<cdot> 1') = 0"
     by (metis two galois_aux2 le_iff_inf)
   thus "-x \<cdot> 1' \<le> -(x ; 1) \<cdot> 1'"
@@ -103,7 +103,7 @@ lemma maddux_35: "is_test x \<Longrightarrow> x ; y \<cdot> -z = x ; y \<cdot> -
 proof (rule antisym)
   assume "is_test x"
   show "x ; y \<cdot> -z \<le> x ; y \<cdot> -(x ; z)"
-    by (metis `is_test x` comp_anti mult_isor mult_onel is_test_def inf.commute inf_le2 le_infI le_infI1)
+    by (metis \<open>is_test x\<close> comp_anti mult_isor mult_onel is_test_def inf.commute inf_le2 le_infI le_infI1)
   have one: "x ; y \<cdot> -(x ; z) \<le> x ; (y \<cdot> -z)"
     by (metis eq_iff le_infE maddux_23)
   hence two: "x ; y \<cdot> -(x ; z) \<le> x ; y"
@@ -112,16 +112,16 @@ proof (rule antisym)
     using one
     by (metis galois_1 le_iff_sup distrib_left sup_compl_top sup_top_right)
   hence "x ; y \<cdot> -(x ; z) \<le> -z"
-    by (metis `is_test x` mult_isor mult_onel is_test_def order_trans)
+    by (metis \<open>is_test x\<close> mult_isor mult_onel is_test_def order_trans)
   thus "x ; y \<cdot> -(x ; z) \<le> x ; y \<cdot> -z"
     using two
     by (metis le_inf_iff)
 qed
 
-subsection {* Test Complements *}
+subsection \<open>Test Complements\<close>
 
-text {* Text complements are complements of elements that are ``pushed below''
-the multiplicative unit. *}
+text \<open>Text complements are complements of elements that are ``pushed below''
+the multiplicative unit.\<close>
 
 definition tc :: "'a \<Rightarrow> 'a" 
   where "tc x = 1' \<cdot> -x"

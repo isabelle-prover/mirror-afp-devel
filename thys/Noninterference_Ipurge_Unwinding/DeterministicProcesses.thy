@@ -11,7 +11,7 @@ theory DeterministicProcesses
 imports IpurgeUnwinding
 begin
 
-text {*
+text \<open>
 \null
 
 In accordance with Hoare's formal definition of deterministic processes \cite{R3}, this section
@@ -19,27 +19,27 @@ shows that a process is deterministic just in case it is a \emph{trace set proce
 identified by means of a trace set alone, matching the set of its traces, in place of a
 failures-divergences pair. Then, variants of the Ipurge Unwinding Theorem are proven for
 deterministic processes and trace set processes.
-*}
+\<close>
 
 
 subsection "Deterministic processes"
 
-text {*
-Here below are the definitions of predicates @{text d_future_consistent} and
-@{text d_weakly_future_consistent}, which are variants of predicates @{term future_consistent} and
+text \<open>
+Here below are the definitions of predicates \<open>d_future_consistent\<close> and
+\<open>d_weakly_future_consistent\<close>, which are variants of predicates @{term future_consistent} and
 @{term weakly_future_consistent} meant for applying to deterministic processes. In some detail,
 being deterministic processes such that refused events are completely specified by accepted events
 (cf. \cite{R3}, \cite{R1}), the new predicates are such that their truth values can be determined
 by just considering the accepted events of the process taken as input.
 
 Then, it is proven that these predicates are characterized by the same connection as that of their
-general-purpose counterparts, viz. @{text d_future_consistent} implies
-@{text d_weakly_future_consistent}, and they are equivalent for domain-relation map
+general-purpose counterparts, viz. \<open>d_future_consistent\<close> implies
+\<open>d_weakly_future_consistent\<close>, and they are equivalent for domain-relation map
 @{term rel_ipurge}. Finally, the predicates are shown to be equivalent to their general-purpose
 counterparts in the case of a deterministic process.
 
 \null
-*}
+\<close>
 
 definition d_future_consistent ::
  "'a process \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> ('a, 'd) dom_rel_map \<Rightarrow> bool" where
@@ -225,7 +225,7 @@ proof (rule iffI, simp_all only: d_weakly_future_consistent_def,
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of a variant of the Ipurge Unwinding Theorem applying to deterministic
@@ -235,7 +235,7 @@ union closed is replaced by the assumption that it be deterministic, since the f
 shown to be entailed by the latter.
 
 \null
-*}
+\<close>
 
 lemma d_implies_ruc:
   assumes A: "deterministic P"
@@ -283,22 +283,22 @@ qed (insert d_implies_ruc [OF A], rule ipurge_unwinding)
 
 subsection "Trace set processes"
 
-text {*
+text \<open>
 In \cite{R3}, section 2.8, Hoare formulates a simplified definition of a deterministic process,
 identified with a \emph{trace set}, i.e. a set of event lists containing the empty list and any
 prefix of each of its elements. Of course, this is consistent with the definition of determinism
 applying to processes identified with failures-divergences pairs, which implies that their refusals
 are completely specified by their traces (cf. \cite{R3}, \cite{R1}).
 
-Here below are the definitions of a function @{text ts_process}, converting the input set of lists
-into a process, and a predicate @{text trace_set}, returning @{term True} just in case the input set
+Here below are the definitions of a function \<open>ts_process\<close>, converting the input set of lists
+into a process, and a predicate \<open>trace_set\<close>, returning @{term True} just in case the input set
 of lists has the aforesaid properties. An analysis is then conducted about the output of the
 functions defined in \cite{R1}, section 1.1, when acting on a \emph{trace set process}, i.e. a
-process that may be expressed as @{text "ts_process T"} where @{text "trace_set T"} matches
+process that may be expressed as \<open>ts_process T\<close> where \<open>trace_set T\<close> matches
 @{term True}.
 
 \null
-*}
+\<close>
 
 definition ts_process :: "'a list set \<Rightarrow> 'a process" where
 "ts_process T \<equiv> Abs_process ({(xs, X). xs \<in> T \<and> (\<forall>x \<in> X. xs @ [x] \<notin> T)}, {})"
@@ -365,7 +365,7 @@ lemma ts_process_next_events:
  "trace_set T \<Longrightarrow> (x \<in> next_events (ts_process T) xs) = (xs @ [x] \<in> T)"
 by (drule ts_process_traces, simp add: next_events_def)
 
-text {*
+text \<open>
 \null
 
 In what follows, the proof is given of two results which provide a connection between the notions of
@@ -374,7 +374,7 @@ deterministic just in case it is equal to the trace set process corresponding to
 traces.
 
 \null
-*}
+\<close>
 
 lemma ts_process_d:
  "trace_set T \<Longrightarrow> deterministic (ts_process T)"
@@ -513,7 +513,7 @@ lemma d_equals_ts_process_traces:
  "deterministic P = (ts_process (traces P) = P)"
 by (rule iffI, erule d_implies_ts_process_traces, rule ts_process_traces_implies_d)
 
-text {*
+text \<open>
 \null
 
 Finally, a variant of the Ipurge Unwinding Theorem applying to trace set processes is derived from
@@ -522,7 +522,7 @@ deterministic is replaced by the assumption that it be a trace set process,
 since the former property is entailed by the latter (cf. above).
 
 \null
-*}
+\<close>
 
 theorem ts_ipurge_unwinding:
  "trace_set T \<Longrightarrow>

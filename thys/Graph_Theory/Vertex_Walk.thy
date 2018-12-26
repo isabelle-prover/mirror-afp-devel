@@ -6,17 +6,17 @@ theory Vertex_Walk
 imports Arc_Walk
 begin
 
-section {* Walks Based on Vertices *}
+section \<open>Walks Based on Vertices\<close>
 
-text {*
+text \<open>
   These definitions are here mainly for historical purposes, as they
   do not really work with multigraphs. Consider using Arc Walks
   instead.
-*}
+\<close>
 
 type_synonym 'a vwalk = "'a list"
 
-text {* Computes the list of arcs belonging to a list of nodes *}
+text \<open>Computes the list of arcs belonging to a list of nodes\<close>
 fun vwalk_arcs :: "'a vwalk \<Rightarrow> ('a \<times> 'a) list" where
     "vwalk_arcs [] = []"
   | "vwalk_arcs [x] = []"
@@ -35,7 +35,7 @@ definition vwalk :: "'a vwalk \<Rightarrow> ('a,'b) pre_digraph \<Rightarrow> bo
 definition vpath :: "'a vwalk \<Rightarrow> ('a,'b) pre_digraph \<Rightarrow> bool" where
   "vpath p G \<equiv> vwalk p G \<and> distinct p"
 
-text {* For a given vwalk, compute a vpath with the same tail G and end *}
+text \<open>For a given vwalk, compute a vpath with the same tail G and end\<close>
 function vwalk_to_vpath :: "'a vwalk \<Rightarrow> 'a vwalk" where
     "vwalk_to_vpath [] = []"
   | "vwalk_to_vpath (x # xs) = (if (x \<in> set xs)
@@ -99,7 +99,7 @@ proof (induct p)
     fix v es' assume "es = v # es'"
     then have "(u,v) \<in> arcs_ends G" and "P (v # es')"
       using Cons by (auto elim: vwalk_consE)
-    then show ?thesis using `es = v # es'` Cons.prems by auto
+    then show ?thesis using \<open>es = v # es'\<close> Cons.prems by auto
   qed auto
 qed auto
 
@@ -183,9 +183,9 @@ proof
   from assms have "a \<in> verts G" and "set p \<subseteq> verts G" by auto
   then show "set (a # p) \<subseteq> verts G" by auto
 
-  from `vwalk p G` have "p \<noteq> []" by auto
+  from \<open>vwalk p G\<close> have "p \<noteq> []" by auto
   then show "set (vwalk_arcs (a # p)) \<subseteq> arcs_ends G"
-    using `vwalk p G` and `(a, hd p) \<in> arcs_ends G`
+    using \<open>vwalk p G\<close> and \<open>(a, hd p) \<in> arcs_ends G\<close>
     by (auto simp add: set_vwalk_arcs_cons)
 qed
 
@@ -207,15 +207,15 @@ lemma vwalkI_append_r:
   assumes "vwalk (p @ q) G"
   shows "vwalk q G"
 proof
-  from `vwalk (p @ q) G` have "set (p @ q) \<subseteq> verts G" by blast
+  from \<open>vwalk (p @ q) G\<close> have "set (p @ q) \<subseteq> verts G" by blast
   then show "set q \<subseteq> verts G" by simp
 
-  from `vwalk (p @ q) G` have "set (vwalk_arcs (p @ q)) \<subseteq> arcs_ends G"
+  from \<open>vwalk (p @ q) G\<close> have "set (vwalk_arcs (p @ q)) \<subseteq> arcs_ends G"
     by blast
   then show "set (vwalk_arcs q) \<subseteq> arcs_ends G"
     by (metis set_vwalk_arcs_append2 subset_trans)
 
-  from `q \<noteq> []` show "q \<noteq> []" by assumption
+  from \<open>q \<noteq> []\<close> show "q \<noteq> []" by assumption
 qed
 
 lemma vwalk_to_vpath_hd: "hd (vwalk_to_vpath xs) = hd xs"
@@ -268,10 +268,10 @@ using assms proof (induct p rule: vwalk_to_vpath_induct3)
 next
   case (in_set x xs)
   have set_neq: "\<And>x xs. x \<notin> set xs \<Longrightarrow> \<forall>x' \<in> set xs. x' \<noteq> x" by metis
-  from `x \<in> set xs` obtain ys zs where "xs = ys @ x # zs" and "x \<notin> set ys"
+  from \<open>x \<in> set xs\<close> obtain ys zs where "xs = ys @ x # zs" and "x \<notin> set ys"
     by (metis in_set_conv_decomp_first)
   then have vwalk_dW: "vwalk (dropWhile (\<lambda>y. y \<noteq> x) xs) G"
-    using in_set and `xs = ys @ x # zs`
+    using in_set and \<open>xs = ys @ x # zs\<close>
     by (auto simp add: dropWhile_append3 set_neq intro: vwalkI_append_r[where p="x # ys"])
   then show ?case using in_set
     by (auto simp add: vwalk_dW)
@@ -295,11 +295,11 @@ next
        apply -
        apply (erule vwalk_consE)
         using Cons
-        apply (auto intro: `x \<in> verts G`)
+        apply (auto intro: \<open>x \<in> verts G\<close>)
       done
     then have "vpath (x # vwalk_to_vpath xs) G"
       apply (rule vpathI)
-      using `vpath (vwalk_to_vpath xs) G`
+      using \<open>vpath (vwalk_to_vpath xs) G\<close>
       using x_notin
       by auto
     then show ?thesis using not_in_set
@@ -474,19 +474,19 @@ lemma vwalk_joinI_vwalk':
   shows "vwalk (p \<oplus> q) G"
 proof (unfold vwalk_join_def, rule vwalkI)
   have "set p \<subseteq> verts G" and "set q \<subseteq> verts G"
-    using `vwalk p G` and `vwalk q G` by blast+
+    using \<open>vwalk p G\<close> and \<open>vwalk q G\<close> by blast+
   then show "set (p @ tl q) \<subseteq> verts G"
     by (cases q) auto
 next
-  show "p @ tl q \<noteq> []" using `vwalk p G` by auto
+  show "p @ tl q \<noteq> []" using \<open>vwalk p G\<close> by auto
 next
   have pe_p: "set (vwalk_arcs p) \<subseteq> arcs_ends G"
-    using `vwalk p G` by blast
+    using \<open>vwalk p G\<close> by blast
   have pe_q': "set (vwalk_arcs (tl q)) \<subseteq> arcs_ends G"
   proof -
     have "set (vwalk_arcs (tl q)) \<subseteq> set (vwalk_arcs q)"
       by (cases q) (simp_all add: set_vwalk_arcs_cons)
-    then show ?thesis using `vwalk q G` by blast
+    then show ?thesis using \<open>vwalk q G\<close> by blast
   qed
 
   show "set (vwalk_arcs (p @ tl q)) \<subseteq> arcs_ends G"
@@ -495,13 +495,13 @@ next
   next
     case (Cons x xs)
     then have nonempty: "p \<noteq> []" "tl q \<noteq> []"
-      using `vwalk p G` by auto
+      using \<open>vwalk p G\<close> by auto
     moreover
     have "(hd q, hd (tl q)) \<in> set (vwalk_arcs q)"
-      using `vwalk q G` Cons by  (cases q) auto
+      using \<open>vwalk q G\<close> Cons by  (cases q) auto
     ultimately show ?thesis
-      using `vwalk q G`
-      by (auto simp: pe_p pe_q' `last p = hd q` vwalk_arcs_append)
+      using \<open>vwalk q G\<close>
+      by (auto simp: pe_p pe_q' \<open>last p = hd q\<close> vwalk_arcs_append)
   qed
 qed
 
@@ -517,7 +517,7 @@ lemma vwalk_join_split:
   shows "\<exists>q r. p = q \<oplus> r
   \<and> last q = u \<and> hd r = u \<and> q \<noteq> [] \<and> r \<noteq> []"
 proof -
-  from `u \<in> set p`
+  from \<open>u \<in> set p\<close>
   obtain pre_p post_p where "p = pre_p @ u # post_p"
     by atomize_elim (auto simp add: split_list)
   then have "p = (pre_p @ [u]) \<oplus> (u # post_p)"
@@ -638,10 +638,10 @@ proof -
     fix p assume "vpath p G"
     then show "set p \<subseteq> verts G" by blast
 
-    from `vpath p G` have "length p = card (set p)"
+    from \<open>vpath p G\<close> have "length p = card (set p)"
       by (auto simp add: distinct_card)
     also have "\<dots> \<le> card (verts G)"
-      using `vpath p G`
+      using \<open>vpath p G\<close>
       by (auto intro!: card_mono elim!: vpathE)
     finally show "length p \<le> card (verts G)" .
   qed
@@ -669,7 +669,7 @@ proof
 next
   assume ?R
   then obtain p where "vwalk p G" "hd p = u" "last p = v" by auto
-  with `vwalk p G` show ?L
+  with \<open>vwalk p G\<close> show ?L
   proof (induct p arbitrary: u rule: vwalk_induct)
     case (Base u) then show ?case by auto
   next
@@ -712,18 +712,18 @@ next
     case True then show ?thesis using Cons by auto
   next
     case False
-    then have "vwalk xs G" using `vwalk (x # xs) G`
+    then have "vwalk xs G" using \<open>vwalk (x # xs) G\<close>
       by (metis vwalk_consE)
     then have "vwalk (rev xs) G" using Cons by blast
     have "vwalk (rev (x # xs)) G"
     proof (rule vwalkI)
-      have "set (x # xs) \<subseteq> verts G" using `vwalk (x # xs) G` by blast
+      have "set (x # xs) \<subseteq> verts G" using \<open>vwalk (x # xs) G\<close> by blast
       then show "set (rev (x # xs)) \<subseteq> verts G" by auto
     next
       have "set (vwalk_arcs (x # xs)) \<subseteq> arcs_ends G"
-        using `vwalk (x # xs) G` by auto
+        using \<open>vwalk (x # xs) G\<close> by auto
       then show "set (vwalk_arcs (rev (x # xs))) \<subseteq> arcs_ends G"
-        using `symmetric G`
+        using \<open>symmetric G\<close>
         by (simp only: set_vwalk_arcs_rev)
            (auto intro: arcs_ends_symmetric)
     next

@@ -1,4 +1,4 @@
-section {* Default Code Generator Setup for the Isabelle Collection Framework *}
+section \<open>Default Code Generator Setup for the Isabelle Collection Framework\<close>
 theory Code_Target_ICF
 imports   
   "HOL-Library.Code_Target_Numeral"

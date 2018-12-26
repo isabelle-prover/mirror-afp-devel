@@ -25,7 +25,7 @@ proof (rule admI, goal_cases)
   case prems: (1 Y)
   show ?case
     apply (rule pointwiseI)
-    apply (rule admD[OF adm_subst[where t = "\<lambda>p . (fst p x, snd p x)" for x, OF _ assms, simplified] `chain Y`])
+    apply (rule admD[OF adm_subst[where t = "\<lambda>p . (fst p x, snd p x)" for x, OF _ assms, simplified] \<open>chain Y\<close>])
     using prems(2) unfolding pointwise_def apply auto
     done
 qed
@@ -91,26 +91,26 @@ next
   assume "chain Y"
   assume "chain (\<lambda>i . ?I (Y i))"
 
-  have ch_f: "f (\<Squnion> i. Y i) \<sqsubseteq> (\<Squnion> i. f (Y i))" by (metis `chain Y` assms(1) below_refl cont2contlubE)
+  have ch_f: "f (\<Squnion> i. Y i) \<sqsubseteq> (\<Squnion> i. f (Y i))" by (metis \<open>chain Y\<close> assms(1) below_refl cont2contlubE)
 
   show "?I (\<Squnion> i. Y i) \<sqsubseteq> (\<Squnion> i. ?I (Y i))" 
   proof(cases "\<forall> i. P (Y i)")
-    case True hence "P (\<Squnion> i. Y i)" by (metis `chain Y` adm_def assms(5))
+    case True hence "P (\<Squnion> i. Y i)" by (metis \<open>chain Y\<close> adm_def assms(5))
     with True ch_f show ?thesis by auto
   next
     case False
     then obtain j where "\<not> P (Y j)" by auto
     hence *:  "\<forall> i \<ge> j. \<not> P (Y i)" "\<not> P (\<Squnion> i. Y i)"
       apply (auto)
-      apply (metis assms(4) chain_mono[OF `chain Y`])
-      apply (metis assms(4) is_ub_thelub[OF `chain Y`])
+      apply (metis assms(4) chain_mono[OF \<open>chain Y\<close>])
+      apply (metis assms(4) is_ub_thelub[OF \<open>chain Y\<close>])
       done
 
     have "?I (\<Squnion> i. Y i) = g (\<Squnion> i. Y i)" using * by simp
-    also have "\<dots> = g (\<Squnion> i. Y (i + j))" by (metis lub_range_shift[OF `chain Y`])
-    also have "\<dots> = (\<Squnion> i. (g (Y (i + j))))" by (rule cont2contlubE[OF assms(2) chain_shift[OF `chain Y`]] )
+    also have "\<dots> = g (\<Squnion> i. Y (i + j))" by (metis lub_range_shift[OF \<open>chain Y\<close>])
+    also have "\<dots> = (\<Squnion> i. (g (Y (i + j))))" by (rule cont2contlubE[OF assms(2) chain_shift[OF \<open>chain Y\<close>]] )
     also have "\<dots> = (\<Squnion> i. (?I (Y (i + j))))" using * by auto
-    also have "\<dots> = (\<Squnion> i. (?I (Y i)))" by (metis lub_range_shift[OF `chain (\<lambda>i . ?I (Y i))`])
+    also have "\<dots> = (\<Squnion> i. (?I (Y i)))" by (metis lub_range_shift[OF \<open>chain (\<lambda>i . ?I (Y i))\<close>])
     finally show ?thesis by simp
   qed
 qed
@@ -144,7 +144,7 @@ lemma adm_subst2: "cont f \<Longrightarrow> cont g \<Longrightarrow> adm (\<lamb
   done
 
 
-subsubsection {* Composition of fun and cfun *}
+subsubsection \<open>Composition of fun and cfun\<close>
 
 lemma cont2cont_comp [simp, cont2cont]:
   assumes "cont f"
@@ -153,7 +153,7 @@ lemma cont2cont_comp [simp, cont2cont]:
   shows "cont (\<lambda> x. (f x) \<circ> (g x))"
   unfolding comp_def
   by (rule cont2cont_lambda)
-     (intro cont2cont  `cont g` `cont f` cont_compose2[OF cont2cont_fun[OF assms(1)] assms(2)] cont2cont_fun)
+     (intro cont2cont  \<open>cont g\<close> \<open>cont f\<close> cont_compose2[OF cont2cont_fun[OF assms(1)] assms(2)] cont2cont_fun)
 
 definition cfun_comp :: "('a::pcpo \<rightarrow> 'b::pcpo) \<rightarrow> ('c::type \<Rightarrow> 'a) \<rightarrow> ('c::type \<Rightarrow> 'b)"
   where  "cfun_comp = (\<Lambda> f \<rho>. (\<lambda> x. f\<cdot>x) \<circ> \<rho>)"
@@ -168,12 +168,12 @@ lemma fix_eq_fix:
   "f\<cdot>(fix\<cdot>g) \<sqsubseteq> fix\<cdot>g \<Longrightarrow> g\<cdot>(fix\<cdot>f) \<sqsubseteq> fix\<cdot>f \<Longrightarrow> fix\<cdot>f = fix\<cdot>g"
   by (metis fix_least_below below_antisym)
 
-subsubsection {* Additional transitivity rules *}
+subsubsection \<open>Additional transitivity rules\<close>
 
-text {*
+text \<open>
 These collect side-conditions of the form @{term "cont f"}, so the usual way to discharge them
 is to write @{text[source] "by this (intro cont2cont)+"} at the end.
-*}
+\<close>
 
 lemma below_trans_cong[trans]:
   "a \<sqsubseteq> f x \<Longrightarrow> x \<sqsubseteq> y \<Longrightarrow> cont f \<Longrightarrow> a \<sqsubseteq> f y "

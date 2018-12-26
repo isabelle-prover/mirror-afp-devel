@@ -2,17 +2,17 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* Operations on Set Iterators *}
+section \<open>Operations on Set Iterators\<close>
 theory SetIteratorOperations
 imports Main SetIterator
 begin
 
-text{* Many operations on sets can be lifted to iterators over sets. This theory tries to introduce
-the most useful such operations. *}
+text\<open>Many operations on sets can be lifted to iterators over sets. This theory tries to introduce
+the most useful such operations.\<close>
 
-subsection {* Empty set *}
+subsection \<open>Empty set\<close>
 
-text {* Iterators over empty sets and singleton sets are very easy to define. *}
+text \<open>Iterators over empty sets and singleton sets are very easy to define.\<close>
 definition set_iterator_emp :: "('a,'\<sigma>) set_iterator" where
   "set_iterator_emp c f \<sigma>0 = \<sigma>0"
 
@@ -54,7 +54,7 @@ unfolding set_iterator_map_rev_linord_def
 by (simp_all add: set_iterator_genord_emp_correct map_to_set_def) 
 
 
-subsection{*Singleton Sets*}
+subsection\<open>Singleton Sets\<close>
 
 definition set_iterator_sng :: "'a \<Rightarrow> ('a,'\<sigma>) set_iterator" where
   "set_iterator_sng x c f \<sigma>0 = (if c \<sigma>0 then f x \<sigma>0 else \<sigma>0)"
@@ -96,10 +96,10 @@ unfolding set_iterator_map_rev_linord_def
 by (simp add: set_iterator_genord_sng_correct) 
 
 
-subsection {* Union *}
+subsection \<open>Union\<close>
 
-text {* Iterators over disjoint sets can be combined by first iterating over one and then the
-other set. The result is an iterator over the union of the original sets.*}
+text \<open>Iterators over disjoint sets can be combined by first iterating over one and then the
+other set. The result is an iterator over the union of the original sets.\<close>
 
 definition set_iterator_union ::
     "('a,'\<sigma>) set_iterator \<Rightarrow> ('a, '\<sigma>) set_iterator \<Rightarrow> ('a,'\<sigma>) set_iterator" where
@@ -219,7 +219,7 @@ lemma (in linorder) map_iterator_rev_linord_union_correct :
 done
 
 
-subsection {* Product *}
+subsection \<open>Product\<close>
 
 definition set_iterator_product :: 
     "('a,'\<sigma>) set_iterator \<Rightarrow> ('a \<Rightarrow> ('b,'\<sigma>) set_iterator) \<Rightarrow> ('a \<times> 'b ,'\<sigma>) set_iterator" where
@@ -343,11 +343,11 @@ proof -
 qed
 
 
-subsection {* Filter and Image *}
+subsection \<open>Filter and Image\<close>
 
-text {* Filtering and applying an injective function on iterators is easily defineable as well.
+text \<open>Filtering and applying an injective function on iterators is easily defineable as well.
   In contrast to sets the function really has to be injective, because an iterator guarentees to
-  visit each element only once. *}
+  visit each element only once.\<close>
 
 definition set_iterator_image_filter ::
     "('a \<Rightarrow> 'b option) \<Rightarrow> ('a,'\<sigma>) set_iterator \<Rightarrow> ('b,'\<sigma>) set_iterator" where
@@ -428,7 +428,7 @@ proof -
 qed
 
 
-text {* Special definitions for only filtering or only appling a function are handy. *}
+text \<open>Special definitions for only filtering or only appling a function are handy.\<close>
 definition set_iterator_filter ::
     "('a \<Rightarrow> bool) \<Rightarrow> ('a,'\<sigma>) set_iterator \<Rightarrow> ('a,'\<sigma>) set_iterator" where
   "set_iterator_filter P \<equiv> set_iterator_image_filter (\<lambda>x. if P x then Some x else None)"
@@ -542,11 +542,11 @@ qed
 
 
 
-subsection {*Construction from list (foldli)*}
+subsection \<open>Construction from list (foldli)\<close>
 
-text {* Iterators correspond by definition to iteration over distinct lists. They fix an order 
+text \<open>Iterators correspond by definition to iteration over distinct lists. They fix an order 
  in which the elements are visited. Therefore, it is trivial to construct an iterator from a 
- distinct list. *}
+ distinct list.\<close>
 
 lemma set_iterator_genord_foldli_correct :
 "distinct xs \<Longrightarrow> sorted_wrt R xs \<Longrightarrow> set_iterator_genord (foldli xs) (set xs) R"
@@ -596,7 +596,7 @@ using assms
 by (rule_tac map_iterator_rev_linord_I[of xs]) (simp_all)
 
 
-subsection {*Construction from list (foldri)*}
+subsection \<open>Construction from list (foldri)\<close>
 
 lemma set_iterator_genord_foldri_correct :
 "distinct xs \<Longrightarrow> sorted_wrt R (rev xs) \<Longrightarrow> set_iterator_genord (foldri xs) (set xs) R"
@@ -647,14 +647,14 @@ by (rule_tac map_iterator_rev_linord_I[of "rev xs"])
    (simp_all add: rev_map[symmetric] foldri_def)
 
 
-subsection {* Iterators over Maps *}
+subsection \<open>Iterators over Maps\<close>
 
-text {* In the following iterator over the key-value pairs of a finite map are called
- iterators over maps. Operations for such iterators are presented.*}
+text \<open>In the following iterator over the key-value pairs of a finite map are called
+ iterators over maps. Operations for such iterators are presented.\<close>
 
-subsubsection{* Domain Iterator *}
+subsubsection\<open>Domain Iterator\<close>
 
-text {* One very simple such operation is iterating over only the keys of the map. *}
+text \<open>One very simple such operation is iterating over only the keys of the map.\<close>
 
 definition map_iterator_dom where
   "map_iterator_dom it = set_iterator_image fst it"
@@ -707,10 +707,10 @@ apply auto
 done
 
 
-subsubsection{* Domain Iterator with Filter *}
+subsubsection\<open>Domain Iterator with Filter\<close>
 
-text {* More complex is iterating over only the keys such that the key-value pairs satisfy some
-        property.*}
+text \<open>More complex is iterating over only the keys such that the key-value pairs satisfy some
+        property.\<close>
 
 definition map_iterator_dom_filter ::
     "('a \<times> 'b \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'b,'\<sigma>) set_iterator \<Rightarrow> ('a,'\<sigma>) set_iterator" where
@@ -808,7 +808,7 @@ apply (simp_all add: set_iterator_def)
 done
 
 
-subsubsection{* Product for Maps *}
+subsubsection\<open>Product for Maps\<close>
 
 definition map_iterator_product where
   "map_iterator_product it_a it_b =
@@ -896,7 +896,7 @@ proof -
 qed
 
   
-subsubsection{* Key Filter *}
+subsubsection\<open>Key Filter\<close>
 
 definition map_iterator_key_filter ::
     "('a \<Rightarrow> bool) \<Rightarrow> ('a \<times> 'b,'\<sigma>) set_iterator \<Rightarrow> ('a \<times> 'b,'\<sigma>) set_iterator" where

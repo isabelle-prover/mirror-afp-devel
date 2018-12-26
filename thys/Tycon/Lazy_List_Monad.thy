@@ -1,14 +1,14 @@
-section {* Lazy list monad *}
+section \<open>Lazy list monad\<close>
 
 theory Lazy_List_Monad
 imports Monad_Zero_Plus
 begin
 
-text {* To illustrate the general process of defining a new type
+text \<open>To illustrate the general process of defining a new type
 constructor, we formalize the datatype of lazy lists. Below are the
-Haskell datatype definition and class instances. *}
+Haskell datatype definition and class instances.\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 data List a = Nil | Cons a (List a)
 
@@ -28,19 +28,19 @@ instance MonadPlus List where
   mplus Nil         ys = ys
   mplus (Cons x xs) ys = Cons x (mplus xs ys)
 \end{verbatim}
-*}
+\<close>
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
-text {* The first step is to register the datatype definition with
-@{text tycondef}. *}
+text \<open>The first step is to register the datatype definition with
+\<open>tycondef\<close>.\<close>
 
 tycondef 'a\<cdot>llist = LNil | LCons (lazy "'a") (lazy "'a\<cdot>llist")
 
-text {* The @{text tycondef} command generates lots of theorems
-automatically, but there are a few more involving @{text coerce} and
-@{text fmapU} that we still need to prove manually. These proofs could
-be automated in a later version of @{text tycondef}. *}
+text \<open>The \<open>tycondef\<close> command generates lots of theorems
+automatically, but there are a few more involving \<open>coerce\<close> and
+\<open>fmapU\<close> that we still need to prove manually. These proofs could
+be automated in a later version of \<open>tycondef\<close>.\<close>
 
 lemma coerce_llist_abs [simp]: "coerce\<cdot>(llist_abs\<cdot>x) = llist_abs\<cdot>(coerce\<cdot>x)"
 apply (simp add: llist_abs_def coerce_def)
@@ -63,12 +63,12 @@ apply (subst fix_eq, simp add: LNil_def)
 apply (subst fix_eq, simp add: LCons_def)
 done
 
-subsection {* Class instances *}
+subsection \<open>Class instances\<close>
 
-text {* The @{text tycondef} command defines @{text fmapU} for us and
-proves a @{text prefunctor} class instance automatically. For the
-@{text functor} instance we only need to prove the composition law,
-which we can do by induction. *}
+text \<open>The \<open>tycondef\<close> command defines \<open>fmapU\<close> for us and
+proves a \<open>prefunctor\<close> class instance automatically. For the
+\<open>functor\<close> instance we only need to prove the composition law,
+which we can do by induction.\<close>
 
 instance llist :: "functor"
 proof
@@ -77,12 +77,12 @@ proof
     by (induct xs rule: llist.induct) simp_all
 qed
 
-text {* For the other class instances, we need to provide definitions
-for a few constants: @{text returnU}, @{text bindU} @{text zeroU}, and
-@{text plusU}. We can use ordinary commands like @{text definition}
-and @{text fixrec} for this purpose. Finally we prove the class
+text \<open>For the other class instances, we need to provide definitions
+for a few constants: \<open>returnU\<close>, \<open>bindU\<close> \<open>zeroU\<close>, and
+\<open>plusU\<close>. We can use ordinary commands like \<open>definition\<close>
+and \<open>fixrec\<close> for this purpose. Finally we prove the class
 axioms, along with a few helper lemmas, using ordinary proof
-procedures like induction. *}
+procedures like induction.\<close>
 
 instantiation llist :: monad_zero_plus
 begin
@@ -151,16 +151,16 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
-text {* After proving the class instances, there is still one more
+text \<open>After proving the class instances, there is still one more
 step: We must transfer all the list-specific lemmas about the
-monomorphic constants (e.g., @{text fmapU} and @{text bindU}) to the
-corresponding polymorphic constants (@{text fmap} and @{text bind}).
+monomorphic constants (e.g., \<open>fmapU\<close> and \<open>bindU\<close>) to the
+corresponding polymorphic constants (\<open>fmap\<close> and \<open>bind\<close>).
 These lemmas primarily consist of the defining equations for each
-constant. The polymorphic constants are defined using @{text coerce},
+constant. The polymorphic constants are defined using \<open>coerce\<close>,
 so the proofs proceed by unfolding the definitions and simplifying
-with the @{text coerce_simp} rules. *}
+with the \<open>coerce_simp\<close> rules.\<close>
 
 lemma fmap_llist_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>llist) = \<bottom>"

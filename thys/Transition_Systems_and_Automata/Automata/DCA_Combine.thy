@@ -1,4 +1,4 @@
-section {* Deterministic Co-Büchi Automata Combinations *}
+section \<open>Deterministic Co-Büchi Automata Combinations\<close>
 
 theory DCA_Combine
 imports "DCA" "DGCA"

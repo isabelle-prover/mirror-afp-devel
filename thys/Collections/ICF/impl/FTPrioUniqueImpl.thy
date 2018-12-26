@@ -1,4 +1,4 @@
-section {*\isaheader{Implementation of Unique Priority Queues by Finger Trees}*}
+section \<open>\isaheader{Implementation of Unique Priority Queues by Finger Trees}\<close>
 theory FTPrioUniqueImpl
 imports 
   FTAnnotatedListImpl 
@@ -26,7 +26,7 @@ interpretation aluprioi: StdUprio aluprioi_ops
   by (rule aluprio_ga.aluprio_ops_impl)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "aluprioi"*}
+setup \<open>ICF_Tools.revert_abbrevs "aluprioi"\<close>
 
 definition test_codegen where "test_codegen \<equiv> (
   aluprioi.empty,

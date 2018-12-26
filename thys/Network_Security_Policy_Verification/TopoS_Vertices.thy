@@ -5,11 +5,11 @@ imports Main
 begin
 
 
-section{*A type for vertices*}
+section\<open>A type for vertices\<close>
 
-text{*
+text\<open>
 This theory makes extensive use of graphs.
-We define a typeclass @{text "vertex"} for the vertices we will use in our theory.
+We define a typeclass \<open>vertex\<close> for the vertices we will use in our theory.
 The vertices will correspond to network or policy entities.
 
 Later, we will conduct some proves by providing counterexamples.
@@ -20,8 +20,8 @@ The type @{typ "bool"} alone does not fulfill this assumption, because it only h
 
 This is only a constraint over the type, of course, a policy with less than three entities can also be verified.
 
-TL;DR: We define @{typ "'a"} @{text vertex}, which is as good as @{typ "'a"}.
-*}
+TL;DR: We define @{typ "'a"} \<open>vertex\<close>, which is as good as @{typ "'a"}.
+\<close>
 
 
 \<comment> \<open>We need at least some vertices available for a graph ...\<close>
@@ -41,7 +41,7 @@ begin
 end
 
 
-text {* Numbers, chars and strings are good candidates for vertices. *}
+text \<open>Numbers, chars and strings are good candidates for vertices.\<close>
 
 instantiation nat::vertex
 begin
@@ -79,7 +79,7 @@ instance proof qed(simp add: vertex_1_list_def vertex_2_list_def vertex_3_list_d
 end
 
 \<comment> \<open>for the ML graphviz visualizer\<close>
-ML {*
+ML \<open>
 fun tune_string_vertex_format (t: term) (s: string) : string = 
     if fastype_of t = @{typ string} then
       if String.isPrefix "''" s then
@@ -87,7 +87,7 @@ fun tune_string_vertex_format (t: term) (s: string) : string =
       else let val _ = writeln ("no tune_string_vertex_format for \""^s^"\"") in s end
     else s
     handle Subscript => let val _ = writeln ("tune_string_vertex_format Subscript excpetion") in s end;
-*}
+\<close>
 
 
   

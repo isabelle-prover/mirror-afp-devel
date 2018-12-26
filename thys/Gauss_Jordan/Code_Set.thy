@@ -11,10 +11,10 @@ imports
   "HOL-Library.Cardinality"
 begin
 
-text{*The following setup could help to get code generation for List.coset, 
+text\<open>The following setup could help to get code generation for List.coset, 
   but it neither works correctly it complains that code
   equations for remove are missed, even when List.coset should be rewritten
-  to an enum:*}
+  to an enum:\<close>
 
 declare minus_coset_filter [code del]
 declare remove_code(2) [code del]
@@ -25,13 +25,13 @@ declare Cardinality.card'_code(2)[code del]
 
 code_datatype set
 
-text{*The following code equation could be useful to avoid the problem of
-  code generation for List.coset []:*}
+text\<open>The following code equation could be useful to avoid the problem of
+  code generation for List.coset []:\<close>
 
 lemma [code]: "List.coset (l::'a::enum list) = set (enum_class.enum) - set l"
   by (metis Compl_eq_Diff_UNIV coset_def enum_UNIV)
 
-text{*Now the following examples work:*}
+text\<open>Now the following examples work:\<close>
 
 value "UNIV::bool set"
 value "List.coset ([]::bool list)"

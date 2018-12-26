@@ -26,7 +26,7 @@ the server sends a timestamp along with the session key. We check the
 timestamp's validity to ensure recentness of the session key. 
 
 We establish one refinement for this model, namely that this model refines
-the basic authenticated key transport model @{text "m1_keydist_inrn"}, 
+the basic authenticated key transport model \<open>m1_keydist_inrn\<close>, 
 which guarantees non-injective agreement with the server on the session key
 and the server-generated timestamp.
 \<close>
@@ -211,7 +211,7 @@ by (rule inv_rule_incr, auto del: subsetI)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "m1a"}\<close>
+subsection \<open>Refinement of \<open>m1a\<close>\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>

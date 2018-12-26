@@ -4,15 +4,15 @@ theory ExCF
   imports HOLCF HOLCFUtils CPSScheme Utils
 begin
 
-text {*
+text \<open>
 We now alter the standard semantics given in the previous section to calculate a control flow graph instead of the return value. At this point, we still ``run'' the program in full, so this is not yet the static analysis that we aim for. Instead, this is the reference for the correctness proof of the static analysis: If an edge is recorded here, we expect it to be found by the static analysis as well.
-*}
+\<close>
 
-text {*
+text \<open>
 In preparation of the correctness proof we change the type of the contour counters. Instead of plain natural numbers as in the previous sections we use lists of labels, remembering at each step which part of the program was just evaluated.
 
 Note that for the exact semantics, this is information is not used in any way and it would have been possible to just use natural numbers again. This is reflected by the preorder instance for the contours which only look at the length of the list, but not the entries.
-*}
+\<close>
 
 definition "contour = (UNIV::label list set)"
 
@@ -33,9 +33,9 @@ instance proof
 qed(auto simp add:le_contour_def less_contour_def Rep_contour_inverse Abs_contour_inverse contour_def)
 end
 
-text {*
+text \<open>
 Three simple lemmas helping Isabelle to automatically prove statements about contour numbers.
-*}
+\<close>
 
 lemma nb_le_less[iff]: "nb b c \<le> b' \<longleftrightarrow> b < b'"
   unfolding nb_def
@@ -48,9 +48,9 @@ lemma nb_less[iff]: "b' < nb b c \<longleftrightarrow> b' \<le> b"
 declare less_imp_le[where 'a = contour, intro]
 
 
-text {*
+text \<open>
 The other types used in our semantics functions have not changed.
-*}
+\<close>
 
 type_synonym benv = "label \<rightharpoonup> contour"
 type_synonym closure = "lambda \<times> benv"
@@ -62,9 +62,9 @@ datatype d = DI int
 
 type_synonym venv = "var \<times> contour \<rightharpoonup> d"
 
-text {*
+text \<open>
 As we do not use the type system to distinguish procedural from non-procedural values, we define a predicate for that.
-*}
+\<close>
 
 primrec isProc 
   where "isProc (DI _) = False"
@@ -72,9 +72,9 @@ primrec isProc
       | "isProc (DP _) = True"
       | "isProc Stop   = True"
 
-text {*
+text \<open>
 To please @{theory HOLCF}, we declare the discrete partial order for our types:
-*}
+\<close>
 
 instantiation contour :: discrete_cpo
 begin
@@ -91,9 +91,9 @@ definition  [simp]: "(x::call) \<sqsubseteq> y \<longleftrightarrow> x = y"
 instance by standard simp
 end
 
-text {*
+text \<open>
 The evaluation function for values has only changed slightly: To avoid worrying about incorrect programs, we return zero when a variable lookup fails. If the labels in the program given are correct, this will not happen. Shivers makes this explicit in Section 4.1.3 by restricting the function domains to the valid programs. This is omitted here.
-*}
+\<close>
 
 
 fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" ("\<A>")
@@ -106,9 +106,9 @@ fun evalV :: "val \<Rightarrow> benv \<Rightarrow> venv \<Rightarrow> d" ("\<A>"
   |     "\<A> (L lam) \<beta> ve = DC (lam, \<beta>)"
 
 
-text {*
-To be able to do case analysis on the custom datatypes @{text lambda}, @{text d}, @{text call} and @{text prim} inside a function defined with @{text fixrec}, we need continuity results for them. These are all of the same shape and proven by case analysis on the discriminator.
-*}
+text \<open>
+To be able to do case analysis on the custom datatypes \<open>lambda\<close>, \<open>d\<close>, \<open>call\<close> and \<open>prim\<close> inside a function defined with \<open>fixrec\<close>, we need continuity results for them. These are all of the same shape and proven by case analysis on the discriminator.
+\<close>
 
 lemma cont2cont_case_lambda [simp, cont2cont]:
   assumes "\<And>a b c. cont (\<lambda>x. f x a b c)"
@@ -139,11 +139,11 @@ lemma cont2cont_case_prim [simp, cont2cont]:
 using assms
 by (cases p) auto
 
-text {*
+text \<open>
 Now, our answer domain is not any more the integers, but rather call caches. These are represented as sets containing tuples of call sites (given by their label) and binding environments to the called value. The argument types are unaltered.
 
-In the functions @{text \<F>} and @{text \<C>}, upon every call, a new element is added to the resulting set. The @{text STOP} continuation now ignores its argument and retuns the empty set instead. This corresponds to Figure 4.2 and 4.3 in Shivers' dissertation.
-*}
+In the functions \<open>\<F>\<close> and \<open>\<C>\<close>, upon every call, a new element is added to the resulting set. The \<open>STOP\<close> continuation now ignores its argument and retuns the empty set instead. This corresponds to Figure 4.2 and 4.3 in Shivers' dissertation.
+\<close>
 
 type_synonym ccache = "((label \<times> benv) \<times> d) set"
 type_synonym ans = ccache
@@ -199,9 +199,9 @@ fixrec   evalF :: "fstate discr \<rightarrow> ans" ("\<F>")
                  in \<C>\<cdot>(Discr (c',\<beta>',ve',b'))
         )"
 
-text {*
-In preparation of later proofs, we give the cases of the generated induction rule names and also create a large rule to deconstruct the an value of type @{text fstate} into the various cases that were used in the definition of @{text \<F>}.
-*}
+text \<open>
+In preparation of later proofs, we give the cases of the generated induction rule names and also create a large rule to deconstruct the an value of type \<open>fstate\<close> into the various cases that were used in the definition of \<open>\<F>\<close>.
+\<close>
 
 lemmas evalF_evalC_induct = evalF_evalC.induct[case_names Admissibility Bottom Next]
 
@@ -224,9 +224,9 @@ lemmas fstate_case = prod_cases4[OF d.exhaust, of _ "\<lambda>x _ _ _ . x",
   case_names "x" "Closure" "x" "x"  "x" "x" "Plus" "x" "x" "x" "x" "x" "x" "x" "x"   "x" "x" "If_True" "If_False" "x" "x" "x" "x" "x" "Stop"  "x" "x" "x" "x" "x"]
 
 
-text {*
-The exact semantics of a program again uses @{text \<F>} with properly initialized arguments. For the first two examples, we see that the function works as expected.
-*}
+text \<open>
+The exact semantics of a program again uses \<open>\<F>\<close> with properly initialized arguments. For the first two examples, we see that the function works as expected.
+\<close>
 
 definition evalCPS :: "prog \<Rightarrow> ans" ("\<PR>")
   where "\<PR> l = (let ve = Map.empty;

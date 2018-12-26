@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Compiler correctness for JMM heap implementation 2 *}
+section \<open>Compiler correctness for JMM heap implementation 2\<close>
 
 theory JMM_Compiler_Type2
 imports
@@ -58,7 +58,7 @@ proof
     moreover from conflict have "J2JVM P,E \<turnstile> a \<dagger> a'"
       by(simp add: J2JVM_def compP2_def)
     ultimately have "J2JVM P,E \<turnstile> a \<le>hb a' \<or> J2JVM P,E \<turnstile> a' \<le>hb a"
-      using `?lhs` actions by(auto simp add: correctly_synchronized_def)
+      using \<open>?lhs\<close> actions by(auto simp add: correctly_synchronized_def)
     thus "P,E \<turnstile> a \<le>hb a' \<or> P,E \<turnstile> a' \<le>hb a"
       by(simp add: J2JVM_def compP2_def)
   qed
@@ -90,7 +90,7 @@ next
     moreover from conflict have "P,E \<turnstile> a \<dagger> a'"
       by(simp add: J2JVM_def compP2_def)
     ultimately have "P,E \<turnstile> a \<le>hb a' \<or> P,E \<turnstile> a' \<le>hb a"
-      using `?rhs` actions by(auto simp add: correctly_synchronized_def)
+      using \<open>?rhs\<close> actions by(auto simp add: correctly_synchronized_def)
     thus "J2JVM P,E \<turnstile> a \<le>hb a' \<or> J2JVM P,E \<turnstile> a' \<le>hb a" 
       by(simp add: J2JVM_def compP2_def)
   qed

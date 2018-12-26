@@ -2,11 +2,11 @@ theory SINVAR_BLPstrict
 imports "../TopoS_Helper"
 begin
 
-subsection {* Stricter Bell LaPadula SecurityInvariant *}
-text{* All unclassified data sources must be labeled, default assumption: all is secret.
+subsection \<open>Stricter Bell LaPadula SecurityInvariant\<close>
+text\<open>All unclassified data sources must be labeled, default assumption: all is secret.
 
 Warning: This is considered here an access control strategy.
-By default, everything is secret and one explicitly prohibits sending to non-secret hosts.*}
+By default, everything is secret and one explicitly prohibits sending to non-secret hosts.\<close>
 
 datatype security_level = Unclassified | Confidential | Secret
 
@@ -78,7 +78,7 @@ where sinvar = sinvar
 
 
 
-subsection {*ENF*}
+subsection \<open>ENF\<close>
   lemma secret_default_candidate: "\<And> (nP::('v \<Rightarrow> security_level)) e1 e2. \<not> (nP e1) \<le> (nP e2) \<Longrightarrow> \<not> Secret \<le> (nP e2)"
     apply(case_tac "nP e1")
     apply(simp_all)

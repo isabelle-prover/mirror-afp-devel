@@ -13,12 +13,12 @@ locale pk_enc =
   and decrypt :: "security \<Rightarrow> 'dkey \<Rightarrow> 'cipher \<Rightarrow> 'plain option" \<comment> \<open>deterministic, but not used\<close>
   and valid_plain :: "security \<Rightarrow> 'plain \<Rightarrow> bool" \<comment> \<open>checks whether a plain text is valid, i.e., has the right format\<close>
 
-subsection {* The IND-CCA2 game for public-key encryption *}
+subsection \<open>The IND-CCA2 game for public-key encryption\<close>
 
-text {*
+text \<open>
   We model an IND-CCA2 security game in the multi-user setting as described in
   \cite{BellareBoldyrevaMicali2000EUROCRYPT}.
-*}
+\<close>
 
 locale ind_cca2 = pk_enc +
   constrains key_gen :: "security \<Rightarrow> ('ekey \<times> 'dkey) spmf"

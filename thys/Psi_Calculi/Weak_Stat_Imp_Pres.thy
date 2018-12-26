@@ -118,22 +118,22 @@ lemma weakStatImpResPres:
 proof(induct rule: weakStatImpI)
   case(cStatImp \<Psi>')
   obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'" and "y \<sharp> P" and "y \<sharp> Q" by(generate_fresh "name") auto
-  from `eqvt Rel` `\<Psi> \<rhd> P \<lessapprox><Rel> Q`  have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<lessapprox><Rel> ([(x, y)] \<bullet> Q)" by(rule weakStatImpClosed)
-  with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> ([(x, y)] \<bullet> P) \<lessapprox><Rel> ([(x, y)] \<bullet> Q)" by simp
+  from \<open>eqvt Rel\<close> \<open>\<Psi> \<rhd> P \<lessapprox><Rel> Q\<close>  have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<lessapprox><Rel> ([(x, y)] \<bullet> Q)" by(rule weakStatImpClosed)
+  with \<open>x \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>\<close> have "\<Psi> \<rhd> ([(x, y)] \<bullet> P) \<lessapprox><Rel> ([(x, y)] \<bullet> Q)" by simp
   then obtain Q' Q'' where QChain: "\<Psi> \<rhd> ([(x, y)] \<bullet> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
                        and PimpQ': "insertAssertion (extractFrame ([(x, y)] \<bullet> P)) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
                        and Q'Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "(\<Psi> \<otimes> \<Psi>', ([(x, y)] \<bullet> P), Q'') \<in> Rel"
     by(rule weakStatImpE)
-  from QChain `y \<sharp> \<Psi>` have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>y\<rparr>Q'" by(rule tauChainResPres)
-  with `y \<sharp> Q` have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>y\<rparr>Q'" by(simp add: alphaRes)
-  moreover from PimpQ' `y \<sharp> \<Psi>` have "insertAssertion (extractFrame(\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(\<lparr>\<nu>y\<rparr>Q')) \<Psi>"
+  from QChain \<open>y \<sharp> \<Psi>\<close> have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>y\<rparr>Q'" by(rule tauChainResPres)
+  with \<open>y \<sharp> Q\<close> have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>y\<rparr>Q'" by(simp add: alphaRes)
+  moreover from PimpQ' \<open>y \<sharp> \<Psi>\<close> have "insertAssertion (extractFrame(\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(\<lparr>\<nu>y\<rparr>Q')) \<Psi>"
     by(force intro: frameImpResPres)
-  with `y \<sharp> P` have "insertAssertion (extractFrame(\<lparr>\<nu>x\<rparr>P)) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(\<lparr>\<nu>y\<rparr>Q')) \<Psi>"
+  with \<open>y \<sharp> P\<close> have "insertAssertion (extractFrame(\<lparr>\<nu>x\<rparr>P)) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(\<lparr>\<nu>y\<rparr>Q')) \<Psi>"
     by(simp add: alphaRes)
-  moreover from Q'Chain `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "\<Psi> \<otimes> \<Psi>' \<rhd> \<lparr>\<nu>y\<rparr>Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>y\<rparr>Q''" by(rule_tac tauChainResPres) auto
-  moreover from `(\<Psi> \<otimes> \<Psi>', ([(x, y)] \<bullet> P), Q'') \<in> Rel` `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P), \<lparr>\<nu>y\<rparr>Q'') \<in> Rel'" 
+  moreover from Q'Chain \<open>y \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>'\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> \<lparr>\<nu>y\<rparr>Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>y\<rparr>Q''" by(rule_tac tauChainResPres) auto
+  moreover from \<open>(\<Psi> \<otimes> \<Psi>', ([(x, y)] \<bullet> P), Q'') \<in> Rel\<close> \<open>y \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>'\<close> have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P), \<lparr>\<nu>y\<rparr>Q'') \<in> Rel'" 
     by(blast intro: C1)
-  with `y \<sharp> P` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>y\<rparr>Q'') \<in> Rel'" by(simp add: alphaRes)
+  with \<open>y \<sharp> P\<close> have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>y\<rparr>Q'') \<in> Rel'" by(simp add: alphaRes)
   ultimately show ?case
     by blast
 qed
@@ -168,18 +168,18 @@ proof(induct rule: weakStatImpI)
     by(rule_tac c="(P, Q, R, \<Psi>, \<Psi>', A\<^sub>R, \<Psi>\<^sub>R, P)" in name_list_avoiding) auto
     
   from FrR have "(p \<bullet> extractFrame R) = (p \<bullet> \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>)" by(rule pt_bij3)
-  with `A\<^sub>R \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^sub>R` S have FrpR: "extractFrame(p \<bullet> R) = \<langle>A\<^sub>R, p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: eqvts)
-  from `eqvt Rel` `\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<lessapprox><Rel> Q` have "(p \<bullet> (\<Psi> \<otimes> \<Psi>\<^sub>R)) \<rhd> (p \<bullet> P) \<lessapprox><Rel> (p \<bullet> Q)" by(rule weakStatImpClosed)
-  with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> (p \<bullet> P) \<lessapprox><Rel> (p \<bullet> Q)" by(simp add: eqvts)
+  with \<open>A\<^sub>R \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* A\<^sub>R\<close> S have FrpR: "extractFrame(p \<bullet> R) = \<langle>A\<^sub>R, p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: eqvts)
+  from \<open>eqvt Rel\<close> \<open>\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<lessapprox><Rel> Q\<close> have "(p \<bullet> (\<Psi> \<otimes> \<Psi>\<^sub>R)) \<rhd> (p \<bullet> P) \<lessapprox><Rel> (p \<bullet> Q)" by(rule weakStatImpClosed)
+  with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> (p \<bullet> P) \<lessapprox><Rel> (p \<bullet> Q)" by(simp add: eqvts)
   then obtain Q' Q'' where QChain: "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> (p \<bullet> Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
                        and PimpQ': "insertAssertion (extractFrame (p \<bullet> P)) (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R))"
                        and Q'Chain: "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "((\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>', (p \<bullet> P), Q'') \<in> Rel"
     by(rule weakStatImpE)
     
-  from `A\<^sub>R \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^sub>R` `A\<^sub>R \<sharp>* Q` S have "A\<^sub>R \<sharp>* (p \<bullet> Q)" by(simp add: freshChainSimps)
-  moreover from `(p \<bullet> xvec) \<sharp>* Q` have "(p \<bullet> p \<bullet> xvec) \<sharp>* (p \<bullet> Q)"
+  from \<open>A\<^sub>R \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* A\<^sub>R\<close> \<open>A\<^sub>R \<sharp>* Q\<close> S have "A\<^sub>R \<sharp>* (p \<bullet> Q)" by(simp add: freshChainSimps)
+  moreover from \<open>(p \<bullet> xvec) \<sharp>* Q\<close> have "(p \<bullet> p \<bullet> xvec) \<sharp>* (p \<bullet> Q)"
     by(simp only: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  hence "xvec \<sharp>* (p \<bullet> Q)" using `distinctPerm p` by simp
+  hence "xvec \<sharp>* (p \<bullet> Q)" using \<open>distinctPerm p\<close> by simp
   ultimately have "A\<^sub>R \<sharp>* Q'" and "A\<^sub>R \<sharp>* Q''" and "xvec \<sharp>* Q'" and "xvec \<sharp>* Q''" using QChain Q'Chain
     by(metis tauChainFreshChain)+
 
@@ -187,19 +187,19 @@ proof(induct rule: weakStatImpI)
     by(rule_tac C="(\<Psi>, \<Psi>', A\<^sub>R, p \<bullet> \<Psi>\<^sub>R)" in freshFrame) auto
   obtain A\<^sub>Q' \<Psi>\<^sub>Q' where FrQ': "extractFrame Q' = \<langle>A\<^sub>Q', \<Psi>\<^sub>Q'\<rangle>" and "A\<^sub>Q' \<sharp>* \<Psi>"and "A\<^sub>Q' \<sharp>* \<Psi>'" and "A\<^sub>Q' \<sharp>* A\<^sub>R" and "A\<^sub>Q' \<sharp>* (p \<bullet> \<Psi>\<^sub>R)"
     by(rule_tac C="(\<Psi>, \<Psi>', A\<^sub>R, p \<bullet> \<Psi>\<^sub>R)" in freshFrame) auto
-  from `A\<^sub>R \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^sub>R` `A\<^sub>R \<sharp>* P` S have "A\<^sub>R \<sharp>* (p \<bullet> P)" by(simp add: freshChainSimps)
-  with `A\<^sub>R \<sharp>* Q'` `A\<^sub>P \<sharp>* A\<^sub>R` `A\<^sub>Q' \<sharp>* A\<^sub>R` FrP FrQ' have "A\<^sub>R \<sharp>* \<Psi>\<^sub>P" and  "A\<^sub>R \<sharp>* \<Psi>\<^sub>Q'"
+  from \<open>A\<^sub>R \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* A\<^sub>R\<close> \<open>A\<^sub>R \<sharp>* P\<close> S have "A\<^sub>R \<sharp>* (p \<bullet> P)" by(simp add: freshChainSimps)
+  with \<open>A\<^sub>R \<sharp>* Q'\<close> \<open>A\<^sub>P \<sharp>* A\<^sub>R\<close> \<open>A\<^sub>Q' \<sharp>* A\<^sub>R\<close> FrP FrQ' have "A\<^sub>R \<sharp>* \<Psi>\<^sub>P" and  "A\<^sub>R \<sharp>* \<Psi>\<^sub>Q'"
     by(force dest: extractFrameFreshChain)+
 
-  from QChain FrpR `A\<^sub>R \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* (p \<bullet> Q)` have "\<Psi> \<rhd> (p \<bullet> Q) \<parallel> (p \<bullet> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<parallel> (p \<bullet> R)" by(rule tauChainPar1)
+  from QChain FrpR \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* (p \<bullet> Q)\<close> have "\<Psi> \<rhd> (p \<bullet> Q) \<parallel> (p \<bullet> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<parallel> (p \<bullet> R)" by(rule tauChainPar1)
   hence "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> ((p \<bullet> Q) \<parallel> (p \<bullet> R))) \<Longrightarrow>\<^sup>^\<^sub>\<tau> p \<bullet> (Q' \<parallel> (p \<bullet> R))" by(rule eqvts)
-  with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S `distinctPerm p` have "\<Psi> \<rhd> Q \<parallel> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> (p \<bullet> Q') \<parallel> R" by(simp add: eqvts)
-  hence "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q') \<parallel> R)" using `xvec \<sharp>* \<Psi>` by(rule tauChainResChainPres)
+  with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S \<open>distinctPerm p\<close> have "\<Psi> \<rhd> Q \<parallel> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> (p \<bullet> Q') \<parallel> R" by(simp add: eqvts)
+  hence "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q') \<parallel> R)" using \<open>xvec \<sharp>* \<Psi>\<close> by(rule tauChainResChainPres)
   moreover have "\<langle>(A\<^sub>P@A\<^sub>R), \<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> (p \<bullet> \<Psi>\<^sub>R)\<rangle> \<hookrightarrow>\<^sub>F \<langle>(A\<^sub>Q'@A\<^sub>R), \<Psi> \<otimes> \<Psi>\<^sub>Q' \<otimes> (p \<bullet> \<Psi>\<^sub>R)\<rangle>"
   proof -
     have "\<langle>A\<^sub>P, \<Psi> \<otimes> \<Psi>\<^sub>P \<otimes> (p \<bullet> \<Psi>\<^sub>R)\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>P, (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>\<^sub>P\<rangle>"
       by(metis frameResChainPres frameNilStatEq Associativity Commutativity AssertionStatEqTrans Composition)
-    moreover with FrP FrQ' PimpQ' `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>P \<sharp>* (p \<bullet> \<Psi>\<^sub>R)` `A\<^sub>Q' \<sharp>* \<Psi>` `A\<^sub>Q' \<sharp>* (p \<bullet> \<Psi>\<^sub>R)`
+    moreover with FrP FrQ' PimpQ' \<open>A\<^sub>P \<sharp>* \<Psi>\<close> \<open>A\<^sub>P \<sharp>* (p \<bullet> \<Psi>\<^sub>R)\<close> \<open>A\<^sub>Q' \<sharp>* \<Psi>\<close> \<open>A\<^sub>Q' \<sharp>* (p \<bullet> \<Psi>\<^sub>R)\<close>
     have "\<langle>A\<^sub>P, (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>\<^sub>P\<rangle> \<hookrightarrow>\<^sub>F \<langle>A\<^sub>Q', (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>\<^sub>Q'\<rangle>"  using freshCompChain
       by simp
     moreover have "\<langle>A\<^sub>Q', (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>\<^sub>Q'\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>Q', \<Psi> \<otimes> \<Psi>\<^sub>Q' \<otimes> (p \<bullet> \<Psi>\<^sub>R)\<rangle>"
@@ -212,34 +212,34 @@ proof(induct rule: weakStatImpI)
       apply(simp add: frameChainAppend)
       by(metis frameImpChainComm FrameStatImpTrans)
   qed
-  with FrP FrpR FrQ' `A\<^sub>P \<sharp>* A\<^sub>R` `A\<^sub>P \<sharp>* (p \<bullet> \<Psi>\<^sub>R)` `A\<^sub>Q' \<sharp>* A\<^sub>R` `A\<^sub>Q' \<sharp>* (p \<bullet> \<Psi>\<^sub>R)` `A\<^sub>R \<sharp>* \<Psi>\<^sub>P` `A\<^sub>R \<sharp>* \<Psi>\<^sub>Q'`
-      `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>Q' \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* \<Psi>`
+  with FrP FrpR FrQ' \<open>A\<^sub>P \<sharp>* A\<^sub>R\<close> \<open>A\<^sub>P \<sharp>* (p \<bullet> \<Psi>\<^sub>R)\<close> \<open>A\<^sub>Q' \<sharp>* A\<^sub>R\<close> \<open>A\<^sub>Q' \<sharp>* (p \<bullet> \<Psi>\<^sub>R)\<close> \<open>A\<^sub>R \<sharp>* \<Psi>\<^sub>P\<close> \<open>A\<^sub>R \<sharp>* \<Psi>\<^sub>Q'\<close>
+      \<open>A\<^sub>P \<sharp>* \<Psi>\<close> \<open>A\<^sub>Q' \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* \<Psi>\<close>
   have "insertAssertion(extractFrame((p \<bullet> P) \<parallel> (p \<bullet> R))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame(Q' \<parallel> (p \<bullet> R))) \<Psi>"
     by simp
   hence "(p \<bullet> insertAssertion(extractFrame((p \<bullet> P) \<parallel> (p \<bullet> R))) \<Psi>) \<hookrightarrow>\<^sub>F (p \<bullet> insertAssertion(extractFrame(Q' \<parallel> (p \<bullet> R))) \<Psi>)"
     by(rule FrameStatImpClosed)
-  with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S `distinctPerm p`
+  with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S \<open>distinctPerm p\<close>
   have "insertAssertion(extractFrame(P \<parallel> R)) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame((p \<bullet> Q') \<parallel> R)) \<Psi>"
     by(simp add: eqvts)
-  with `xvec \<sharp>* \<Psi>` have "insertAssertion(extractFrame(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> R))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame(\<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q') \<parallel> R))) \<Psi>"
+  with \<open>xvec \<sharp>* \<Psi>\<close> have "insertAssertion(extractFrame(\<lparr>\<nu>*xvec\<rparr>(P \<parallel> R))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame(\<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q') \<parallel> R))) \<Psi>"
     by(force intro: frameImpResChainPres)
   moreover from Q'Chain have "(\<Psi> \<otimes> \<Psi>') \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''"
     by(rule tauChainStatEq) (metis Associativity AssertionStatEqTrans Commutativity Composition)
-  hence "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<parallel> (p \<bullet> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'' \<parallel> (p \<bullet> R)" using FrpR `A\<^sub>R \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* \<Psi>'` `A\<^sub>R \<sharp>* Q'` `A\<^sub>R \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^sub>R` S
+  hence "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<parallel> (p \<bullet> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'' \<parallel> (p \<bullet> R)" using FrpR \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* \<Psi>'\<close> \<open>A\<^sub>R \<sharp>* Q'\<close> \<open>A\<^sub>R \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* A\<^sub>R\<close> S
     by(force intro: tauChainPar1 simp add: freshChainSimps)
-  hence "\<Psi> \<otimes> \<Psi>' \<rhd> \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(Q' \<parallel> (p \<bullet> R)) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(Q'' \<parallel> (p \<bullet> R))" using `(p \<bullet> xvec) \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'`
+  hence "\<Psi> \<otimes> \<Psi>' \<rhd> \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(Q' \<parallel> (p \<bullet> R)) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(Q'' \<parallel> (p \<bullet> R))" using \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>'\<close>
     by(rule_tac tauChainResChainPres) auto
-  hence "\<Psi> \<otimes> \<Psi>' \<rhd> \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q') \<parallel> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q'') \<parallel> R)" using `xvec \<sharp>* Q'` `xvec \<sharp>* Q''` `(p \<bullet> xvec) \<sharp>* R` S `distinctPerm p`
+  hence "\<Psi> \<otimes> \<Psi>' \<rhd> \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q') \<parallel> R) \<Longrightarrow>\<^sup>^\<^sub>\<tau> \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q'') \<parallel> R)" using \<open>xvec \<sharp>* Q'\<close> \<open>xvec \<sharp>* Q''\<close> \<open>(p \<bullet> xvec) \<sharp>* R\<close> S \<open>distinctPerm p\<close>
     apply(subst resChainAlpha) apply(auto simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
     by(subst resChainAlpha[of _ xvec]) (auto simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  moreover from `((\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>', (p \<bullet> P), Q'') \<in> Rel` have "((\<Psi> \<otimes> \<Psi>') \<otimes> (p \<bullet> \<Psi>\<^sub>R), (p \<bullet> P),  Q'') \<in> Rel"
+  moreover from \<open>((\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> \<Psi>', (p \<bullet> P), Q'') \<in> Rel\<close> have "((\<Psi> \<otimes> \<Psi>') \<otimes> (p \<bullet> \<Psi>\<^sub>R), (p \<bullet> P),  Q'') \<in> Rel"
     by(rule C3) (metis Associativity AssertionStatEqTrans Commutativity Composition)
   hence "(\<Psi> \<otimes> \<Psi>', (p \<bullet> P) \<parallel> (p \<bullet> R), Q'' \<parallel> (p \<bullet> R)) \<in> Rel'" 
-    using FrpR `A\<^sub>R \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* \<Psi>'` `A\<^sub>R \<sharp>* Q''` `A\<^sub>R \<sharp>* P` `A\<^sub>R \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* A\<^sub>R` S
+    using FrpR \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* \<Psi>'\<close> \<open>A\<^sub>R \<sharp>* Q''\<close> \<open>A\<^sub>R \<sharp>* P\<close> \<open>A\<^sub>R \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* A\<^sub>R\<close> S
     by(rule_tac C1) (auto simp add: freshChainSimps)
-  hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> R)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(Q'' \<parallel> (p \<bullet> R))) \<in> Rel'"  using `(p \<bullet> xvec) \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'`
+  hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> R)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(Q'' \<parallel> (p \<bullet> R))) \<in> Rel'"  using \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>'\<close>
     by(rule_tac C2) auto
-  hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q'') \<parallel> R)) \<in> Rel'" using `(p \<bullet> xvec) \<sharp>* P` `xvec \<sharp>* Q''` `(p \<bullet> xvec) \<sharp>* R` S `distinctPerm p`
+  hence "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>((p \<bullet> Q'') \<parallel> R)) \<in> Rel'" using \<open>(p \<bullet> xvec) \<sharp>* P\<close> \<open>xvec \<sharp>* Q''\<close> \<open>(p \<bullet> xvec) \<sharp>* R\<close> S \<open>distinctPerm p\<close>
     apply(subst resChainAlpha[where p=p]) 
     apply simp
     apply simp

@@ -55,9 +55,9 @@ text \<open>Runs record the protocol participants (initiator, responder) and the
 keys learned during the execution. In later refinements, we will also add
 nonces and timestamps to the run record.
 
-The variables @{text "kn"} and @{text "az"} from @{text "s0g_secrecy_leak"} 
-are replaced by runs using a data refinement. Variable @{text "lk"} is 
-concretized into variable @{text "leak"}. 
+The variables \<open>kn\<close> and \<open>az\<close> from \<open>s0g_secrecy_leak\<close> 
+are replaced by runs using a data refinement. Variable \<open>lk\<close> is 
+concretized into variable \<open>leak\<close>. 
 
 We define the state in two separate record definitions. The first one has 
 just a runs field and the second extends this with a leak field.  Later 
@@ -133,7 +133,7 @@ lemma azC_empty [simp]: "azC Map.empty = keySetup"
 by (auto elim: azC.cases)
 
 
-text \<open>@{text "azC"} and run abstraction\<close>
+text \<open>\<open>azC\<close> and run abstraction\<close>
 
 lemma azC_map_runs [simp]: "azC (map_runs h runz) = azC runz"
 by (auto simp add: map_runs_def elim!: azC.cases)

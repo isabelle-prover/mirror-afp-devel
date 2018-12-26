@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-section {* Basic Functions Old and New *}
+section \<open>Basic Functions Old and New\<close>
 
 theory ListAux
 imports Main
@@ -9,7 +9,7 @@ begin
 
 declare Let_def[simp]
 
-subsection {* HOL *}
+subsection \<open>HOL\<close>
 
 lemma pairD:  "(a,b) = p \<Longrightarrow> a = fst p \<and> b = snd p"
 by auto
@@ -26,12 +26,12 @@ lemma [code]:
   unfolding enum_def lessThan_0 lessThan_Suc by rule+
 
 
-subsection {* Lists *}
+subsection \<open>Lists\<close>
 
 declare List.member_def[simp] list_all_iff[simp] list_ex_iff[simp]
 
 
-subsubsection{* @{text length} *}
+subsubsection\<open>\<open>length\<close>\<close>
 
 notation length  ("|_|")
 
@@ -47,7 +47,7 @@ lemma length4D: "|xs| = 4 \<Longrightarrow> \<exists> a b c d. xs = [a, b, c, d]
  apply (case_tac listb) by simp_all
 
 
-subsubsection {* @{const filter} *}
+subsubsection \<open>@{const filter}\<close>
 
 lemma filter_emptyE[dest]: "(filter P xs = []) \<Longrightarrow>  x \<in> set xs \<Longrightarrow>  \<not> P x" 
   by (simp add: filter_empty_conv)
@@ -113,7 +113,7 @@ lemma [simp]: "[f x. x <- xs, P x] = [f x. x <- [x \<leftarrow> xs. P x]]"
   by (induct xs) auto
 
 
-subsubsection {* @{const concat} *}
+subsubsection \<open>@{const concat}\<close>
 
 syntax
   "_concat" :: "idt \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  ("\<Squnion>\<^bsub>_\<in> _\<^esub> _" 10)
@@ -121,7 +121,7 @@ translations
   "\<Squnion>\<^bsub>x\<in>xs\<^esub> f" == "CONST concat [f. x <- xs]" 
 
 
-subsubsection {* List product *}
+subsubsection \<open>List product\<close>
 
 definition listProd1 :: "'a \<Rightarrow> 'b list \<Rightarrow> ('a \<times> 'b) list" where
  "listProd1 a bs \<equiv> [(a,b). b <- bs]"
@@ -133,7 +133,7 @@ lemma(*<*)[simp]: (*>*) "set (xs \<times> ys) = (set xs) \<times> (set ys)"
   by (auto simp: listProd_def listProd1_def)
 
 
-subsubsection {*  Minimum and maximum *}
+subsubsection \<open>Minimum and maximum\<close>
 
 primrec minimal:: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> 'a" where
  "minimal m (x#xs) =
@@ -161,7 +161,7 @@ lemma max_list_conv_Max[simp]:
 by (induct xs) auto
 
 
-subsubsection {* replace *}
+subsubsection \<open>replace\<close>
 
 primrec replace :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow>  'a list" where
   "replace x ys [] = []"
@@ -306,7 +306,7 @@ apply clarsimp
 done
 
 
-subsubsection {* @{const"distinct"} *}
+subsubsection \<open>@{const"distinct"}\<close>
 
 lemma dist_at1: "\<And> c vs. distinct vs \<Longrightarrow> vs = a @ r # b \<Longrightarrow> vs = c @ r # d \<Longrightarrow> a = c"
 proof (induct a)
@@ -355,7 +355,7 @@ proof -
     apply (thin_tac "vs = a # list @ x # hd vs # bs") by auto
 qed
 
-subsubsection {* Misc *}
+subsubsection \<open>Misc\<close>
 
 (* FIXME move to List *)
 lemma drop_last_in: "\<And>n. n < length ls \<Longrightarrow> last ls \<in> set (drop n ls)"
@@ -379,7 +379,7 @@ qed
 
 (****************************** rotate *************************)
 
-subsubsection {* @{const rotate} *}
+subsubsection \<open>@{const rotate}\<close>
 
 lemma  plus_length1[simp]: "rotate (k+(length ls)) ls = rotate k ls "
 proof -
@@ -541,7 +541,7 @@ qed
 
 (************************* SplitAt *******************************************)
 
-subsection {* @{text splitAt} *}
+subsection \<open>\<open>splitAt\<close>\<close>
 
 primrec splitAtRec :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> 'a list" where
   "splitAtRec c bs [] = (bs,[])"
@@ -552,7 +552,7 @@ definition splitAt :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list \<times> '
   "splitAt c as  \<equiv> splitAtRec c [] as"
 
 
-subsubsection {* @{const splitAtRec} *}
+subsubsection \<open>@{const splitAtRec}\<close>
 
 lemma splitAtRec_conv: "\<And>bs.
  splitAtRec x bs xs =
@@ -589,7 +589,7 @@ by (induct vs) auto
 
 
 
-subsubsection {* @{const splitAt} *}
+subsubsection \<open>@{const splitAt}\<close>
 
 lemma splitAt_conv:
  "splitAt x xs = (takeWhile (\<lambda>y. y\<noteq>x) xs, tl(dropWhile (\<lambda>y. y\<noteq>x) xs))"
@@ -612,7 +612,7 @@ lemma fst_splitAt_last:
 by(simp add:splitAt_conv takeWhile_not_last)
 
 
-subsubsection {* Sets *}
+subsubsection \<open>Sets\<close>
 
 lemma splitAtRec_union:
 "\<And> a b s. (a,b) = splitAtRec ram s vs \<Longrightarrow> (set a \<union> set b) - {ram} = (set vs \<union> set s) - {ram}"
@@ -653,7 +653,7 @@ next
 qed
 
 
-subsubsection {* Distinctness *}
+subsubsection \<open>Distinctness\<close>
 
 lemma splitAt_distinct_ab_aux:
  "distinct vs \<Longrightarrow> (a,b) = splitAt ram vs \<Longrightarrow> distinct a \<and> distinct b"
@@ -726,7 +726,7 @@ lemma splitAt_subset: "(a,b) = splitAt ram vs \<Longrightarrow> (set a \<subsete
 apply (cases "ram \<in> set vs") by (auto dest: splitAt_split simp: splitAt_no_ram)
 
 
-subsubsection {* @{const splitAt} composition *}
+subsubsection \<open>@{const splitAt} composition\<close>
 
 lemma set_help: "v \<in> set ( as @ bs) \<Longrightarrow> v \<in> set as \<or> v \<in> set bs" by auto
 
@@ -833,7 +833,7 @@ lemma splitAt_dist_ram_all:
                             by (rule_tac splitAt_dist_ram10) auto
 
 
-subsubsection {* Mixed *}
+subsubsection \<open>Mixed\<close>
 
 lemma fst_splitAt_rev:
  "distinct xs \<Longrightarrow> x \<in> set xs \<Longrightarrow>
@@ -980,7 +980,7 @@ apply clarsimp
 done
 
 
-subsection {* @{text between} *}
+subsection \<open>\<open>between\<close>\<close>
 
 definition between :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list" where
  "between vs ram\<^sub>1 ram\<^sub>2 \<equiv>
@@ -1050,7 +1050,7 @@ apply(clarsimp simp:between_def split_def split:if_split_asm)
 done
 
 
-subsection {* Tables *}
+subsection \<open>Tables\<close>
 
 type_synonym ('a, 'b) table = "('a \<times> 'b) list"
 

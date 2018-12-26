@@ -1,4 +1,4 @@
-section{*Sum of divisors function*}
+section\<open>Sum of divisors function\<close>
 
 theory Sigma
 imports PerfectBasics "HOL-Library.Infinite_Set"
@@ -181,12 +181,12 @@ proof
     fix x
     assume "x : {p ^ f * b | f b. f <= n & b dvd m}"
     then obtain b f where "x = p^f*b & f <= n & b dvd m" by auto
-    with `prime p` show "x : {a * b |a b. a dvd p ^ n & b dvd m}"
+    with \<open>prime p\<close> show "x : {a * b |a b. a dvd p ^ n & b dvd m}"
       by (auto simp add: divides_primepow_nat)
   qed
 next
   show "{a*b |a b. a dvd p ^ n & b dvd m} <= {p^f * b |f b. f <= n & b dvd m}"
-    using `prime p` by auto (metis assms divides_primepow_nat)
+    using \<open>prime p\<close> by auto (metis assms divides_primepow_nat)
 qed
 
 

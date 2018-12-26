@@ -38,9 +38,9 @@ proof (rule n_lb[OF 1 _ 4])
     with * n_S2[of s] n_nS12[of s] 3[of s] have "s \<in> S1"
       by (metis DiffI zero_neq_one)
     have "0 < n s"
-      by (intro n_pos[of "\<lambda>s. x s \<noteq> 0", OF `x s \<noteq> 0` `s \<in> S1` `wf R`])
+      by (intro n_pos[of "\<lambda>s. x s \<noteq> 0", OF \<open>x s \<noteq> 0\<close> \<open>s \<in> S1\<close> \<open>wf R\<close>])
          (metis zero_less_one n_S2 2)
-    with `n s = 0` show False by auto
+    with \<open>n s = 0\<close> show False by auto
   qed
 qed
 
@@ -48,7 +48,7 @@ end
 
 no_notation Stream.snth (infixl "!!" 100) \<comment> \<open>we use @{text "!!"} for IArray\<close>
 
-subsection {* Computable representation *}
+subsection \<open>Computable representation\<close>
 
 record mdp_reachability_problem =
   state_count :: nat
@@ -94,14 +94,14 @@ lemma sparse_mult_eq_sum_lookup:
   assumes "list_all (\<lambda>(n, x). n < M) xs" "distinct (map fst xs)"
   shows "sparse_mult xs y = (\<Sum>i<M. lookup 0 xs i * y !! i)"
 proof -
-  from `distinct (map fst xs)` have "distinct xs" "inj_on fst (set xs)"
+  from \<open>distinct (map fst xs)\<close> have "distinct xs" "inj_on fst (set xs)"
     by (simp_all add: distinct_map)
   then have "sparse_mult xs y = (\<Sum>x\<in>set xs. snd x * y !! fst x)"
     by (auto intro!: sum.cong simp add: sparse_mult_def sum_list_distinct_conv_sum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x) * y !! fst x)"
     by (intro sum.cong refl arg_cong2[where f="(*)"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x * y !! x)"
-    using `inj_on fst (set xs)` by (simp add: sum.reindex)
+    using \<open>inj_on fst (set xs)\<close> by (simp add: sum.reindex)
   also have "\<dots> = (\<Sum>x<M. lookup 0 xs x * y !! x)"
     using assms(1)
     by (intro sum.mono_neutral_cong_left)
@@ -114,14 +114,14 @@ lemma sum_list_eq_sum_lookup:
   assumes "list_all (\<lambda>(n, x). n < M) xs" "distinct (map fst xs)"
   shows "sum_list (map snd xs) = (\<Sum>i<M. lookup 0 xs i)"
 proof -
-  from `distinct (map fst xs)` have "distinct xs" "inj_on fst (set xs)"
+  from \<open>distinct (map fst xs)\<close> have "distinct xs" "inj_on fst (set xs)"
     by (simp_all add: distinct_map)
   then have "sum_list (map snd xs) = (\<Sum>x\<in>set xs. snd x)"
     by (auto intro!: sum.cong simp add: sparse_mult_def sum_list_distinct_conv_sum_set)
   also have "\<dots> = (\<Sum>x\<in>set xs. lookup 0 xs (fst x))"
     by (intro sum.cong refl arg_cong2[where f="(*)"]) (simp add: lookup_in_set assms)
   also have "\<dots> = (\<Sum>x\<in>fst ` set xs. lookup 0 xs x)"
-    using `inj_on fst (set xs)` by (simp add: sum.reindex)
+    using \<open>inj_on fst (set xs)\<close> by (simp add: sum.reindex)
   also have "\<dots> = (\<Sum>x<M. lookup 0 xs x)"
     using assms(1)
     by (intro sum.mono_neutral_cong_left)
@@ -247,7 +247,7 @@ proof
   show "S1 \<inter> S2 = {}" "S1 \<subseteq> S" "S2 \<subseteq> S"
     using valid_mdp_rpD(1)[OF rp] by auto
   show "finite S" "S \<noteq> {}"
-    using `valid_mdp_rp mdp` by (auto simp add: valid_mdp_rp_def)
+    using \<open>valid_mdp_rp mdp\<close> by (auto simp add: valid_mdp_rp_def)
   show "\<And>s. K s \<noteq> {}"
     using valid_mdp_rpD(6)[OF rp] by transfer simp
   show "\<And>s. finite (K s)"
@@ -267,7 +267,7 @@ lemma
     and P_min: "P_min i \<ge> real_of_rat (solution (neg_cert c) !! i)" (is ?min)
 proof -
   have "valid_pos_cert mdp (pos_cert c)" "valid_neg_cert mdp (neg_cert c)"
-    using `valid_cert mdp c` by (auto simp: valid_cert_def)
+    using \<open>valid_cert mdp c\<close> by (auto simp: valid_cert_def)
   note pos = this(1)[unfolded valid_pos_cert_def] and neg = this(2)[unfolded valid_neg_cert_def]
 
   let ?x = "\<lambda>s. real_of_rat (solution (pos_cert c) !! s)"
@@ -279,29 +279,29 @@ proof -
     then obtain j where j: "j < length (distrs mdp !! s)"
       "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = real_of_rat (lookup 0 (distrs mdp !! s ! j) i)"
       by transfer (auto simp: in_set_conv_nth)
-    with valid_sub_certD(4)[OF `valid_mdp_rp mdp` pos, of s "distrs mdp !! s ! j"] `s \<in> S1`
-         valid_mdp_rp_sparse_mult[OF `valid_mdp_rp mdp`, of s "distrs mdp !! s ! j" "solution (pos_cert c)"]
+    with valid_sub_certD(4)[OF \<open>valid_mdp_rp mdp\<close> pos, of s "distrs mdp !! s ! j"] \<open>s \<in> S1\<close>
+         valid_mdp_rp_sparse_mult[OF \<open>valid_mdp_rp mdp\<close>, of s "distrs mdp !! s ! j" "solution (pos_cert c)"]
     show "(\<Sum>t\<in>S. pmf D t * ?x t) \<le> ?x s"
       by (simp add: of_rat_mult[symmetric] of_rat_sum[symmetric] of_rat_less_eq j)
   next
     fix s a assume "s \<in> S2" then show "?x s = 1"
-      using valid_sub_certD[OF `valid_mdp_rp mdp` pos] by simp
+      using valid_sub_certD[OF \<open>valid_mdp_rp mdp\<close> pos] by simp
   next
     fix s define X where "X = (SIGMA s:S1. \<Union>D\<in>K s. set_pmf D)"
     assume "s \<in> S1" "?x s \<noteq> 0"
     with valid_sub_certD(3)[OF rp pos, of s]
     have "0 < ?x s"
       by simp
-    with `s\<in>S1` show "\<exists>t\<in>S2. (s, t) \<in> X\<^sup>*"
+    with \<open>s\<in>S1\<close> show "\<exists>t\<in>S2. (s, t) \<in> X\<^sup>*"
     proof (induction n\<equiv>"snd (witness (pos_cert c) !! s)" arbitrary: s rule: less_induct)
       case (less s)
       obtain t a n where eq: "witness (pos_cert c) !! s = ((t, a), n)"
         by (metis prod.exhaust)
-      from valid_pos_certD[OF rp `valid_pos_cert mdp (pos_cert c)` _ _ _ this] less.prems
+      from valid_pos_certD[OF rp \<open>valid_pos_cert mdp (pos_cert c)\<close> _ _ _ this] less.prems
       have ord: "snd (witness (pos_cert c) !! t) < snd (witness (pos_cert c) !! s)"
         and t: "lookup 0 (distrs mdp !! s ! a) t \<noteq> 0" "0 < ?x t" "t\<in>S" "a < length (distrs mdp !! s)"
         unfolding eq by auto
-      with `s\<in>S1` have X: "(s, t) \<in> X"
+      with \<open>s\<in>S1\<close> have X: "(s, t) \<in> X"
         unfolding X_def
         by (transfer fixing: s t a c)
            (auto simp: X_def in_set_conv_nth
@@ -310,11 +310,11 @@ proof -
       show ?case
       proof cases
         assume "t \<in> S1"
-        with less.hyps[OF ord _ `0 < ?x t`] X show ?thesis
+        with less.hyps[OF ord _ \<open>0 < ?x t\<close>] X show ?thesis
           by auto
       next
         assume "t \<notin> S1"
-        with valid_sub_certD[OF `valid_mdp_rp mdp` pos, of t] `0 < ?x t` `t\<in>S`
+        with valid_sub_certD[OF \<open>valid_mdp_rp mdp\<close> pos, of t] \<open>0 < ?x t\<close> \<open>t\<in>S\<close>
         have "t \<in> S2"
           by auto
         with X show ?thesis
@@ -323,7 +323,7 @@ proof -
     qed
   next
     fix s assume "s \<in> S - S1 - S2" then show "?x s = 0"
-      using valid_sub_certD(1)[OF `valid_mdp_rp mdp` pos, of s] by simp
+      using valid_sub_certD(1)[OF \<open>valid_mdp_rp mdp\<close> pos, of s] by simp
   qed
   then show ?max
     by (simp add: P_max_def)
@@ -337,13 +337,13 @@ proof -
     then obtain j where j: "j < length (distrs mdp !! s)"
       "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = real_of_rat (lookup 0 (distrs mdp !! s ! j) i)"
       by transfer (auto simp: in_set_conv_nth)
-    with valid_sub_certD(4)[OF `valid_mdp_rp mdp` neg, of s "distrs mdp !! s ! j"] `s \<in> S1`
-         valid_mdp_rp_sparse_mult[OF `valid_mdp_rp mdp`, of s "distrs mdp !! s ! j" "solution (neg_cert c)"]
+    with valid_sub_certD(4)[OF \<open>valid_mdp_rp mdp\<close> neg, of s "distrs mdp !! s ! j"] \<open>s \<in> S1\<close>
+         valid_mdp_rp_sparse_mult[OF \<open>valid_mdp_rp mdp\<close>, of s "distrs mdp !! s ! j" "solution (neg_cert c)"]
     show "?x s \<le> (\<Sum>t\<in>S. pmf D t * ?x t)"
       by (simp add: of_rat_mult[symmetric] of_rat_sum[symmetric] of_rat_less_eq j)
   next
     fix s a assume "s \<in> S2" then show "?x s = 1"
-      using valid_sub_certD[OF `valid_mdp_rp mdp` neg] by simp
+      using valid_sub_certD[OF \<open>valid_mdp_rp mdp\<close> neg] by simp
   next
     show "wf ((S \<times> S \<inter> {(s, t). snd (witness (neg_cert c) !! t) < snd (witness (neg_cert c) !! s)})\<inverse>)" (is "wf ?F")
       using MDP.S_finite
@@ -351,7 +351,7 @@ proof -
 
     fix s D assume 2: "s \<in> S1" "D \<in> K s" and "?x s \<noteq> 0"
     then have "0 < ?x s"
-      using valid_sub_certD(3)[OF `valid_mdp_rp mdp` neg, of s] by auto
+      using valid_sub_certD(3)[OF \<open>valid_mdp_rp mdp\<close> neg, of s] by auto
 
     from 2 obtain a where a: "a < length (distrs mdp !! s)"
       "\<And>i. i < state_count mdp \<Longrightarrow> pmf D i = real_of_rat (lookup 0 (distrs mdp !! s ! a) i)"
@@ -359,29 +359,29 @@ proof -
 
     obtain js n where eq: "witness (neg_cert c) !! s = (js, n)"
       by (metis prod.exhaust)
-    from valid_neg_certD[OF `valid_mdp_rp mdp` `valid_neg_cert mdp (neg_cert c)` _ _ _ eq] a `s \<in> S1` `0 < ?x s`
+    from valid_neg_certD[OF \<open>valid_mdp_rp mdp\<close> \<open>valid_neg_cert mdp (neg_cert c)\<close> _ _ _ eq] a \<open>s \<in> S1\<close> \<open>0 < ?x s\<close>
     have *: "length js = length (distrs mdp !! s)" "js ! a \<in> S"
       "snd (witness (neg_cert c) !! (js ! a)) < snd (witness (neg_cert c) !! s)"
       "lookup 0 (distrs mdp !! s ! a) (js ! a) \<noteq> 0"
       "0 < ?x (js ! a)"
       unfolding eq by (auto dest: list_all2_nthD2 list_all2_lengthD)
-    with a `s \<in> S1` have js_a: "js ! a \<in> D" "(js ! a, s) \<in> ?F"
+    with a \<open>s \<in> S1\<close> have js_a: "js ! a \<in> D" "(js ! a, s) \<in> ?F"
       by (auto simp: set_pmf_iff)
 
     show "\<exists>t\<in>D. (t, s) \<in> ?F \<and> t \<in> S1 \<and> ?x t \<noteq> 0 \<or> t \<in> S2"
     proof cases
-      assume "js ! a \<in> S1" with js_a `0 < ?x (js ! a)` show ?thesis by auto
+      assume "js ! a \<in> S1" with js_a \<open>0 < ?x (js ! a)\<close> show ?thesis by auto
     next
       assume "js ! a \<notin> S1"
-      with `0 < ?x (js ! a)` `js!a \<in> S` valid_sub_certD[OF rp neg, of "js ! a"]
+      with \<open>0 < ?x (js ! a)\<close> \<open>js!a \<in> S\<close> valid_sub_certD[OF rp neg, of "js ! a"]
       have "js ! a \<in> S2"
         by (auto simp:  less_le)
-      with `js ! a \<in> D` show ?thesis
+      with \<open>js ! a \<in> D\<close> show ?thesis
         by auto
     qed
   next
     fix s assume "s \<in> S - S1 - S2" then show "?x s = 0"
-      using valid_sub_certD(1)[OF `valid_mdp_rp mdp` neg, of s] by simp
+      using valid_sub_certD(1)[OF \<open>valid_mdp_rp mdp\<close> neg, of s] by simp
   qed
   then show ?min
     by (simp add: P_min_def)

@@ -3,7 +3,7 @@
   Authors: Manuel Eberl
 *)
 
-section {* Density Contexts *}
+section \<open>Density Contexts\<close>
 
 theory PDF_Density_Contexts
 imports PDF_Semantics
@@ -42,10 +42,10 @@ proof-
   finally show ?thesis .
 qed
 
-text {* A density context holds a set of variables @{term V}, their types (using @{term \<Gamma>}), and a
+text \<open>A density context holds a set of variables @{term V}, their types (using @{term \<Gamma>}), and a
 common density function @{term \<delta>} of the finite product space of all the variables in @{term V}.
 @{term \<delta>} takes a state @{term "\<sigma> \<in> (\<Pi>\<^sub>E x\<in>V. type_universe (\<Gamma> x))"} and returns the common density
-of these variables. *}
+of these variables.\<close>
 
 type_synonym dens_ctxt = "vname set \<times> vname set \<times> (vname \<Rightarrow> pdf_type) \<times> (state \<Rightarrow> ennreal)"
 type_synonym expr_density = "state \<Rightarrow> val \<Rightarrow> ennreal"
@@ -59,8 +59,8 @@ definition state_measure'
        distr (state_measure V \<Gamma>) (state_measure (V\<union>V') \<Gamma>) (\<lambda>\<sigma>. merge V V' (\<sigma>, \<rho>))"
 
 
-text {* The marginal density of a variable @{term x} is obtained by integrating the common density
-@{term \<delta>} over all the remaining variables. *}
+text \<open>The marginal density of a variable @{term x} is obtained by integrating the common density
+@{term \<delta>} over all the remaining variables.\<close>
 
 definition marg_dens :: "dens_ctxt \<Rightarrow> vname \<Rightarrow> expr_density" where
   "marg_dens = (\<lambda>(V,V',\<Gamma>,\<delta>) x \<rho> v. \<integral>\<^sup>+\<sigma>. \<delta> (merge V V' (\<sigma>(x := v), \<rho>)) \<partial>state_measure (V-{x}) \<Gamma>)"
@@ -386,8 +386,8 @@ proof-
 qed
 
 
-text {* The space described by the marginal density is the same as the space obtained by projecting
-@{term x} (resp. @{term x} and @{term y}) out of the common distribution of all variables. *}
+text \<open>The space described by the marginal density is the same as the space obtained by projecting
+@{term x} (resp. @{term x} and @{term y}) out of the common distribution of all variables.\<close>
 
 lemma density_marg_dens_eq:
   assumes "x \<in> V" "\<rho> \<in> space (state_measure V' \<Gamma>)"

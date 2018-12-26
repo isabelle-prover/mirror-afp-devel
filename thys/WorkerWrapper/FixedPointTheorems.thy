@@ -10,10 +10,10 @@ imports
   HOLCF
 begin
 
-setup {*
+setup \<open>
   Thy_Output.antiquotation_raw \<^binding>\<open>haskell\<close> (Scan.lift Args.name)
     (fn _ => fn s => Latex.string ("\\" ^ "<" ^ s ^ "\\>"))
-*}
+\<close>
 
 (* LaTeXsugar fights with HOLCF syntax: at least cdot *)
 
@@ -31,9 +31,9 @@ syntax (Rule output)
   "_asm" :: "prop \<Rightarrow> asms" ("\<^latex>\<open>\\mbox{\<close>_\<^latex>\<open>}\<close>")
 
 (*>*)
-section{* Fixed-point theorems for program transformation *}
+section\<open>Fixed-point theorems for program transformation\<close>
 
-text{*
+text\<open>
 
 We begin by recounting some standard theorems from the early days of
 denotational semantics. The origins of these results are lost to
@@ -42,11 +42,11 @@ history; the interested reader can find some of it in
 DBLP:books/daglib/0002432, Harel:1980, Plotkin:1983, Winskel:1993,
 DBLP:journals/toplas/Sangiorgi09}.
 
-*}
+\<close>
 
-subsection{* The rolling rule *}
+subsection\<open>The rolling rule\<close>
 
-text{*
+text\<open>
 
 The \emph{rolling rule} captures what intuitively happens when we
 re-order a recursive computation consisting of two parts. This theorem
@@ -54,7 +54,7 @@ dates from the 1970s at the latest -- see \citet[p210]{Stoy:1977} and
 \citet{Plotkin:1983}. The following proofs were provided by
 \citet{GillHutton:2009}.
 
-*}
+\<close>
 
 lemma rolling_rule_ltr: "fix\<cdot>(g oo f) \<sqsubseteq> g\<cdot>(fix\<cdot>(f oo g))"
 proof -
@@ -86,9 +86,9 @@ by \citet{DBLP:conf/lics/SimpsonP00}.
 
 *)
 
-subsection{* Least-fixed-point fusion *}
+subsection\<open>Least-fixed-point fusion\<close>
 
-text{*
+text\<open>
 
 \label{sec:lfp-fusion}
 
@@ -123,7 +123,7 @@ The following proof is close to the third variant of
 \end{center}
 in a very straightforward way:
 
-*}
+\<close>
 
 lemma lfp_fusion:
   assumes "g\<cdot>\<bottom> = \<bottom>"
@@ -132,22 +132,22 @@ lemma lfp_fusion:
 proof(induct rule: parallel_fix_ind)
   case 2 show "g\<cdot>\<bottom> = \<bottom>" by fact
   case (3 x y)
-  from `g\<cdot>x = y` `g oo f = h oo g` show "g\<cdot>(f\<cdot>x) = h\<cdot>y"
+  from \<open>g\<cdot>x = y\<close> \<open>g oo f = h oo g\<close> show "g\<cdot>(f\<cdot>x) = h\<cdot>y"
     by (simp add: cfun_eq_iff)
 qed simp
 
-text{*
+text\<open>
 
 This lemma also goes by the name of \emph{Plotkin's axiom}
 \citep{PittsAM:relpod} or \emph{uniformity}
 \citep{DBLP:conf/lics/SimpsonP00}.
 
-*}
+\<close>
 (*<*)
 
 (* The rest of this theory is only of historical interest. *)
 
-text {* Some may find the pointed version easier to read. *}
+text \<open>Some may find the pointed version easier to read.\<close>
 
 lemma lfp_fusion_pointed:
   assumes Cfg: "\<And>f. C\<cdot>(F\<cdot>f) = G\<cdot>(C\<cdot>f)"
@@ -156,16 +156,16 @@ lemma lfp_fusion_pointed:
   using lfp_fusion[where f=F and g=C and h=G] assms
   by (simp add: cfcomp1)
 
-subsubsection{* More about @{text "lfp-fusion"} *}
+subsubsection\<open>More about \<open>lfp-fusion\<close>\<close>
 
-text{*
+text\<open>
 
 Alternative proofs. This is the ``intuitive'' one
 \citet[p125]{Gunter:1992} and \citet[p46]{Tullsen:PhDThesis}, where we
 can shuffle @{term "g"} to the end of the the iteration of @{term "f"}
 using @{term "fgh"}.
 
-*}
+\<close>
 
 lemma lfp_fusion2_aux:
   assumes fgh: "g oo f = h oo g"
@@ -191,8 +191,8 @@ proof -
   finally show ?thesis .
 qed
 
-text{* This is the first one by \citet[p213]{Stoy:1977}, almost
-identical to the above. *}
+text\<open>This is the first one by \citet[p213]{Stoy:1977}, almost
+identical to the above.\<close>
 
 lemma lfp_fusion3_aux:
   assumes fgh: "g oo f = h oo g"
@@ -221,8 +221,8 @@ proof -
   finally show ?thesis .
 qed
 
-text{* Stoy's second proof \citep[p214]{Stoy:1977} is similar to the
-original proof using fixed-point induction. *}
+text\<open>Stoy's second proof \citep[p214]{Stoy:1977} is similar to the
+original proof using fixed-point induction.\<close>
 
 lemma lfp_fusion4:
   assumes fgh: "g oo f = h oo g"
@@ -247,7 +247,7 @@ proof(rule below_antisym)
   qed simp
 qed
 
-text{* A wrinkly variant from \citet[p11]{barbed-wire:1991}. *}
+text\<open>A wrinkly variant from \citet[p11]{barbed-wire:1991}.\<close>
 
 lemma lfp_fusion_barbed_variant:
   assumes ff': "f\<cdot>\<bottom> = f'\<cdot>\<bottom>"
@@ -257,7 +257,7 @@ lemma lfp_fusion_barbed_variant:
 proof(induct rule: parallel_fix_ind)
   case 2 show "f\<cdot>\<bottom> = f'\<cdot>\<bottom>" by (rule ff')
   case (3 x y)
-  from `f\<cdot>x = f'\<cdot>y` have "h\<cdot>(f\<cdot>x) = h\<cdot>(f'\<cdot>y)" by simp
+  from \<open>f\<cdot>x = f'\<cdot>y\<close> have "h\<cdot>(f\<cdot>x) = h\<cdot>(f'\<cdot>y)" by simp
   with fgh f'g'h have "f\<cdot>(g\<cdot>x) = f'\<cdot>(g'\<cdot>y)"
     using cfcomp2[where f="f" and g="g", symmetric]
           cfcomp2[where f="f'" and g="g'", symmetric]

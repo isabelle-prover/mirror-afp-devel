@@ -65,12 +65,12 @@ proof -
   {
     fix R T P Q
     assume "R \<approx> T" and "(P, Q) \<in> ?Y"
-    from `(P, Q) \<in> ?Y` obtain P' Q' where "P \<approx> P'" and "(P', Q') \<in> ?X" and "Q' \<sim> Q"
+    from \<open>(P, Q) \<in> ?Y\<close> obtain P' Q' where "P \<approx> P'" and "(P', Q') \<in> ?X" and "Q' \<sim> Q"
       by auto
-    from `P \<approx> P'` have "R \<parallel> P \<approx> R \<parallel> P'" 
+    from \<open>P \<approx> P'\<close> have "R \<parallel> P \<approx> R \<parallel> P'" 
       by(metis parPres bisimWeakBisimulation transitive parComm)
-    moreover from `R \<approx> T` `(P', Q') \<in> ?X` have "(R \<parallel> P', T \<parallel> Q') \<in> ?X" by(auto dest: BRPar)
-    moreover from `Q' \<sim> Q` have "T \<parallel> Q' \<sim> T \<parallel> Q" by(metis Strong_Bisim_Pres.parPres Strong_Bisim.transitive parComm)
+    moreover from \<open>R \<approx> T\<close> \<open>(P', Q') \<in> ?X\<close> have "(R \<parallel> P', T \<parallel> Q') \<in> ?X" by(auto dest: BRPar)
+    moreover from \<open>Q' \<sim> Q\<close> have "T \<parallel> Q' \<sim> T \<parallel> Q" by(metis Strong_Bisim_Pres.parPres Strong_Bisim.transitive parComm)
     ultimately have "(R \<parallel> P, T \<parallel> Q) \<in> ?Y" by auto
   } note BRParAux = this
 
@@ -78,10 +78,10 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimWeakUpto)
     case(cSim P Q)
-    from `(P, Q) \<in> bangRel weakBisimulation` show ?case
+    from \<open>(P, Q) \<in> bangRel weakBisimulation\<close> show ?case
     proof(induct)
       case(BRBang P Q)
-      note `P \<approx> Q` weakBisimulationE(1) BRParAux
+      note \<open>P \<approx> Q\<close> weakBisimulationE(1) BRParAux
       moreover have "?X \<subseteq> ?Y" by(auto intro: Strong_Bisim.reflexive reflexive)
       moreover {
         fix P Q
@@ -92,9 +92,9 @@ proof -
       ultimately show ?case by(rule bangPres)
     next
       case(BRPar R T P Q)
-      from `R \<approx> T` have "R \<leadsto>\<^sup>^<weakBisimulation> T" by(rule weakBisimulationE)
-      moreover note `R \<approx> T` `P \<leadsto>\<^sup>^<?Y> Q` 
-      moreover from `(P, Q) \<in> ?X` have "(P, Q) \<in> ?Y" by(blast intro: Strong_Bisim.reflexive reflexive)
+      from \<open>R \<approx> T\<close> have "R \<leadsto>\<^sup>^<weakBisimulation> T" by(rule weakBisimulationE)
+      moreover note \<open>R \<approx> T\<close> \<open>P \<leadsto>\<^sup>^<?Y> Q\<close> 
+      moreover from \<open>(P, Q) \<in> ?X\<close> have "(P, Q) \<in> ?Y" by(blast intro: Strong_Bisim.reflexive reflexive)
       ultimately show ?case using BRParAux by(rule Weak_Sim_Pres.parPresAux)
     qed
   next

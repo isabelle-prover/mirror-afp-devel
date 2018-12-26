@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Gauss Jordan algorithm over nested IArrays*}
+section\<open>Gauss Jordan algorithm over nested IArrays\<close>
 
 theory Gauss_Jordan_IArrays
 imports
@@ -12,7 +12,7 @@ imports
   Gauss_Jordan
 begin
 
-subsection{*Definitions and functions to compute the Gauss-Jordan algorithm over matrices represented as nested iarrays*}
+subsection\<open>Definitions and functions to compute the Gauss-Jordan algorithm over matrices represented as nested iarrays\<close>
 
 definition "least_non_zero_position_of_vector_from_index A i = the (List.find (\<lambda>x. A !! x \<noteq> 0) [i..<IArray.length A])"
 definition "least_non_zero_position_of_vector A = least_non_zero_position_of_vector_from_index A 0"
@@ -37,7 +37,7 @@ definition Gauss_Jordan_iarrays :: "'a::{field} iarray iarray => 'a::{field} iar
   where "Gauss_Jordan_iarrays A = Gauss_Jordan_upt_k_iarrays A (ncols_iarray A - 1)"
 
 
-subsection{*Proving the equivalence between Gauss-Jordan algorithm over nested iarrays and over nested vecs (abstract matrices).*}
+subsection\<open>Proving the equivalence between Gauss-Jordan algorithm over nested iarrays and over nested vecs (abstract matrices).\<close>
 
 lemma vector_all_zero_from_index_eq:
 fixes A::"'a::{zero}^'n::{mod_type}"
@@ -241,8 +241,8 @@ next
 qed
 
 
-text{*Due to the assumptions presented in @{thm "matrix_to_iarray_Gauss_Jordan_column_k_2"}, the following lemma must have three shows.
-The proof style is similar to @{thm "rref_and_index_Gauss_Jordan_upt_k"}.*}
+text\<open>Due to the assumptions presented in @{thm "matrix_to_iarray_Gauss_Jordan_column_k_2"}, the following lemma must have three shows.
+The proof style is similar to @{thm "rref_and_index_Gauss_Jordan_upt_k"}.\<close>
 
 lemma foldl_Gauss_Jordan_column_k_eq:
   fixes A::"'a::{field}^'columns::{mod_type}^'rows::{mod_type}"
@@ -305,14 +305,14 @@ lemma matrix_to_iarray_Gauss_Jordan[code_unfold]:
 
 
 
-subsection{*Implementation over IArrays of the computation of the @{term "rank"} of a matrix*}
+subsection\<open>Implementation over IArrays of the computation of the @{term "rank"} of a matrix\<close>
 
 definition rank_iarray :: "'a::{field} iarray iarray => nat"
   where "rank_iarray A = (let A' = (Gauss_Jordan_iarrays A); nrows = (IArray.length A') in card {i. i<nrows \<and> \<not> is_zero_iarray (A' !! i)})"
 
-subsubsection{*Proving the equivalence between @{term "rank"} and @{term "rank_iarray"}.*}
+subsubsection\<open>Proving the equivalence between @{term "rank"} and @{term "rank_iarray"}.\<close>
 
-text{*First of all, some code equations are removed to allow the execution of Gauss-Jordan algorithm using iarrays*}
+text\<open>First of all, some code equations are removed to allow the execution of Gauss-Jordan algorithm using iarrays\<close>
 lemmas card'_code(2)[code del]
 lemmas rank_Gauss_Jordan_code[code del]
 
@@ -358,7 +358,7 @@ proof (unfold rank_eq_card_iarrays' Let_def, rule bij_betw_same_card[symmetric, 
   show "x = y" using inj_index_independent_rows[OF _ x_in eq'] rref_Gauss_Jordan by fast
 qed
 
-subsubsection{*Code equations for computing the rank over nested iarrays and the dimensions of the elementary subspaces*}
+subsubsection\<open>Code equations for computing the rank over nested iarrays and the dimensions of the elementary subspaces\<close>
 
 lemma rank_iarrays_code[code]:
   "rank_iarray A = length (filter (\<lambda>x. \<not> is_zero_iarray x) (IArray.list_of (Gauss_Jordan_iarrays A)))"

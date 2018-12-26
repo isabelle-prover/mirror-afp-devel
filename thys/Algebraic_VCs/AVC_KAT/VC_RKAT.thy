@@ -9,12 +9,12 @@ theory VC_RKAT
 
 begin
 
-text {* This component supports the step-wise refinement of simple while programs
-in a partial correctness setting. *}
+text \<open>This component supports the step-wise refinement of simple while programs
+in a partial correctness setting.\<close>
 
-subsubsection {* Assignment Laws *}
+subsubsection \<open>Assignment Laws\<close>
 
-text {* The store model is taken from KAT  *}
+text \<open>The store model is taken from KAT\<close>
 
 lemma R_assign: "(\<forall>s. P s \<longrightarrow> Q (s (v := e s))) \<Longrightarrow> (v ::= e) \<subseteq> rel_R \<lceil>P\<rceil> \<lceil>Q\<rceil>"
 proof - 
@@ -31,7 +31,7 @@ lemma R_assignr: "(\<forall>s. Q' s \<longrightarrow> Q (s (v := e s))) \<Longri
 lemma R_assignl: "(\<forall>s. P s \<longrightarrow> P' (s (v := e s))) \<Longrightarrow> (v ::= e) ; (rel_R \<lceil>P'\<rceil> \<lceil>Q\<rceil>) \<subseteq> rel_R \<lceil>P\<rceil> \<lceil>Q\<rceil>"
   by (metis H_assign_var rel_kat.H_seq rel_rkat.R1 rel_rkat.R2)
 
-subsubsection {* Simplified Refinement Laws *}
+subsubsection \<open>Simplified Refinement Laws\<close>
 
 lemma R_cons: "(\<forall>s. P s \<longrightarrow> P' s) \<Longrightarrow> (\<forall>s. Q' s \<longrightarrow> Q s) \<Longrightarrow> rel_R \<lceil>P'\<rceil> \<lceil>Q'\<rceil> \<subseteq> rel_R \<lceil>P\<rceil> \<lceil>Q\<rceil>"
   by (simp add: rel_rkat.R1 rel_rkat.R2 sH_cons_1 sH_cons_2)

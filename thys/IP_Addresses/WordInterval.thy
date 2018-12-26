@@ -35,7 +35,7 @@ subsection\<open>Semantics\<close>
   and balanced.*)
 
 subsection\<open>Basic operations\<close>
-  text\<open>@{text \<in>}\<close>
+  text\<open>\<open>\<in>\<close>\<close>
   fun wordinterval_element :: "'a::len0 word \<Rightarrow> 'a::len0 wordinterval \<Rightarrow> bool" where
     "wordinterval_element el (WordInterval s e) \<longleftrightarrow> s \<le> el \<and> el \<le> e" |
     "wordinterval_element el (RangeUnion r1 r2) \<longleftrightarrow>
@@ -67,7 +67,7 @@ subsection\<open>Basic operations\<close>
 
 
 subsection\<open>WordInterval and Lists\<close>
-  text\<open>A list of @{text "(start, end)"} tuples.\<close>
+  text\<open>A list of \<open>(start, end)\<close> tuples.\<close>
 
   text\<open>wordinterval to list\<close>
   fun wi2l :: "'a::len0 wordinterval \<Rightarrow> ('a::len0 word \<times> 'a::len0 word) list" where
@@ -423,7 +423,7 @@ lemma "wordinterval_compress (RangeUnion (RangeUnion (WordInterval (1::32 word) 
 
 subsection\<open>Further operations\<close>
 
-  text\<open>@{text "\<Union>"}\<close>
+  text\<open>\<open>\<Union>\<close>\<close>
   definition wordinterval_Union :: "('a::len) wordinterval list \<Rightarrow> 'a wordinterval" where
     "wordinterval_Union ws = wordinterval_compress (foldr wordinterval_union ws Empty_WordInterval)"
 
@@ -531,7 +531,7 @@ lemma wi2l_univ[simp]: "wi2l wordinterval_UNIV = [(0, max_word)]"
   unfolding wordinterval_UNIV_def
   by simp
 
-text\<open>@{text "\<inter>"}\<close>
+text\<open>\<open>\<inter>\<close>\<close>
 context
 begin
   private lemma "{(s::nat) .. e} \<inter> {s' .. e'} = {} \<longleftrightarrow> s > e' \<or> s' > e \<or> s > e \<or> s' > e'"

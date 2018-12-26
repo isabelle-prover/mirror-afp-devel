@@ -11,7 +11,7 @@ theory InductiveUnwinding
 imports Noninterference_Ipurge_Unwinding.DeterministicProcesses
 begin
 
-text {*
+text \<open>
 \null
 
 The necessary and sufficient condition for CSP noninterference security \cite{R2} stated by the
@@ -40,12 +40,12 @@ security defined in \cite{R2} and applied in this paper refers, cf. \cite{R4}.
 As regards the formal contents of this paper, the salient points of definitions and proofs are
 commented; for additional information, cf. Isabelle documentation, particularly \cite{R6},
 \cite{R7}, \cite{R8}, and \cite{R9}.
-*}
+\<close>
 
 
 subsection "Propaedeutic lemmas"
 
-text {*
+text \<open>
 Here below are the proofs of some lemmas on the constants defined in \cite{R2} and \cite{R3} which
 are propaedeutic to the demonstration of the Inductive Unwinding Theorem.
 
@@ -68,7 +68,7 @@ Function @{term ipurge_tr_rev} is idempotent.
 \end{itemize}
 
 \null
-*}
+\<close>
 
 lemma sources_aux_single_dom:
  "sources_aux I D {u} xs = insert u (sources I D u xs)"
@@ -111,7 +111,7 @@ proof (induction xs arbitrary: V rule: rev_induct, simp, subst sources_aux_appen
       with D have "\<exists>v \<in> ?V'. (u, v) \<in> I" ..
       hence "\<exists>u \<in> sinks_aux I D U xs. \<exists>v \<in> ?V'. (u, v) \<in> I" using C ..
       ultimately have "\<exists>u \<in> U. \<exists>v \<in> sources_aux I D ?V' xs. (u, v) \<in> I" ..
-      hence ?thesis using `?A` by simp
+      hence ?thesis using \<open>?A\<close> by simp
     }
     moreover {
       assume ?B
@@ -120,7 +120,7 @@ proof (induction xs arbitrary: V rule: rev_induct, simp, subst sources_aux_appen
        using A .
       moreover obtain u where
         C: "u \<in> sinks_aux I D U xs" and D: "\<exists>v \<in> V. (u, v) \<in> I"
-       using `?B` ..
+       using \<open>?B\<close> ..
       have "V \<subseteq> ?V" by (rule sources_aux_subset)
       hence "\<exists>v \<in> ?V. (u, v) \<in> I" using D by simp
       hence "\<exists>u \<in> sinks_aux I D U xs. \<exists>v \<in> ?V. (u, v) \<in> I" using C ..
@@ -320,7 +320,7 @@ by (induction xs, simp_all add: sources_idem)
 
 subsection "Closure of the traces of a secure process under reverse intransitive purge"
 
-text {*
+text \<open>
 The derivation of the Inductive Unwinding Theorem from the Ipurge Unwinding Theorem requires to
 prove that the set of the traces of a secure process is closed under reverse intransitive purge,
 i.e. function @{term ipurge_tr_rev} \cite{R3}. This can be expressed formally by means of the
@@ -362,11 +362,11 @@ tail-recursive functions described in \cite{R1}.
 
 The starting point is to formulate a naive definition of the function, which will then be refined as
 specified by the proof method. The name of the refined function, from which the name of the naive
-function here below is derived, will be @{text ipurge_tr_rev_t}, where suffix \emph{t} stands for
+function here below is derived, will be \<open>ipurge_tr_rev_t\<close>, where suffix \emph{t} stands for
 \emph{tail-recursive}.
 
 \null
-*}
+\<close>
 
 function (sequential) ipurge_tr_rev_t_naive ::
   "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
@@ -377,7 +377,7 @@ function (sequential) ipurge_tr_rev_t_naive ::
 "ipurge_tr_rev_t_naive _ _ _ _ ys = ys"
 oops
 
-text {*
+text \<open>
 \null
 
 The parameter into which the output is accumulated is the last one.
@@ -396,17 +396,17 @@ would have to be proven are the following ones:
 \null
 
 as they clearly entail the above formal statement of the target closure lemma.
-*}
+\<close>
 
 subsubsection "Step 1"
 
-text {*
+text \<open>
 In the definition of the auxiliary tail-recursive function @{term ipurge_tr_rev_t_aux}, the
 Cartesian product of the input types of function @{term ipurge_tr_rev_t_naive} will be implemented
 as a record type.
 
 \null
-*}
+\<close>
 
 record ('a, 'd) ipurge_rec =
   Pol :: "('d \<times> 'd) set"
@@ -442,13 +442,13 @@ proof (relation "measure (\<lambda>X. length (In X))", simp_all)
   thus "length (ipurge_tr I D (D x) xs) < Suc (length xs)" by simp
 qed
 
-text {*
+text \<open>
 \null
 
 As shown by this proof, the termination of function @{term ipurge_tr_rev_t_aux} is guaranteed by the
 fact, proven previously, that the event lists output by function @{term ipurge_tr} are not longer
 than the corresponding input ones.
-*}
+\<close>
 
 subsubsection "Step 2"
 
@@ -466,16 +466,16 @@ definition ipurge_tr_rev_t ::
 "ipurge_tr_rev_t I D u xs \<equiv>
   ipurge_tr_rev_t_out (ipurge_tr_rev_t_aux (ipurge_tr_rev_t_in I D u xs))"
 
-text {*
+text \<open>
 \null
 
-Since the significant inputs of function @{term ipurge_tr_rev_t_naive} match pattern @{text _},
-@{text _}, @{text _}, @{text _}, @{term "[]"}, those of function @{term ipurge_tr_rev_t_aux}, as
+Since the significant inputs of function @{term ipurge_tr_rev_t_naive} match pattern \<open>_\<close>,
+\<open>_\<close>, \<open>_\<close>, \<open>_\<close>, @{term "[]"}, those of function @{term ipurge_tr_rev_t_aux}, as
 returned by function @{term ipurge_tr_rev_t_in}, match pattern
-@{text "\<lparr>Pol = _, Map = _, Dom = _, In = _, Out = []\<rparr>"}.
+\<open>\<lparr>Pol = _, Map = _, Dom = _, In = _, Out = []\<rparr>\<close>.
 
 In terms of function @{term ipurge_tr_rev_t}, the statements to be proven, henceforth respectively
-named @{text ipurge_tr_rev_t_equiv} and @{text ipurge_tr_rev_t_trace}, take the following form:
+named \<open>ipurge_tr_rev_t_equiv\<close> and \<open>ipurge_tr_rev_t_trace\<close>, take the following form:
 
 \null
 
@@ -484,7 +484,7 @@ named @{text ipurge_tr_rev_t_equiv} and @{text ipurge_tr_rev_t_trace}, take the 
 \null
 
 @{term "secure P I D \<Longrightarrow> xs \<in> traces P \<Longrightarrow> ipurge_tr_rev_t I D u xs \<in> traces P"}
-*}
+\<close>
 
 subsubsection "Step 3"
 
@@ -592,16 +592,16 @@ where
 "ipurge_tr_rev_t_inv_2 P I D xs X \<equiv>
   secure P I D \<longrightarrow> xs \<in> traces P \<longrightarrow> Out X @ In X \<in> traces P"
 
-text {*
+text \<open>
 \null
 
-Two invariants have been defined, one for each of lemmas @{text ipurge_tr_rev_t_equiv},
-@{text ipurge_tr_rev_t_trace}.
+Two invariants have been defined, one for each of lemmas \<open>ipurge_tr_rev_t_equiv\<close>,
+\<open>ipurge_tr_rev_t_trace\<close>.
 
 More precisely, the invariants are @{term "ipurge_tr_rev_t_inv_1 I D u xs"} and
 @{term "ipurge_tr_rev_t_inv_2 P I D xs"}, where the free variables are intended to match those
 appearing in the aforesaid lemmas.
-*}
+\<close>
 
 subsubsection "Step 6"
 
@@ -644,7 +644,7 @@ lemma ipurge_tr_rev_t_invariance_aux:
   Pol Y = Pol X \<and> Map Y = Map X \<and> Dom Y = Dom X"
 by (erule ipurge_tr_rev_t_set.induct, simp_all)
 
-text {*
+text \<open>
 \null
 
 The lemma just proven, stating the invariance of the first three record fields over inductive set
@@ -654,12 +654,12 @@ The lemma just proven, stating the invariance of the first three record fields o
 The equality between the free variables appearing in the predicates and the corresponding fields of
 the record generating the set, which is required for such invariance properties to hold, is asserted
 in the enunciation of the properties by means of record updates. In the subsequent proofs of lemmas
-@{text ipurge_tr_rev_t_equiv}, @{text ipurge_tr_rev_t_trace}, the enforcement of this equality will
+\<open>ipurge_tr_rev_t_equiv\<close>, \<open>ipurge_tr_rev_t_trace\<close>, the enforcement of this equality will
 be ensured by the identification of both predicate variables and record fields with the related free
 variables appearing in the lemmas.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_rev_t_invariance_1:
  "\<lbrakk>Y \<in> ipurge_tr_rev_t_set (X\<lparr>Pol := I, Map := D, Dom := u\<rparr>);
@@ -706,12 +706,12 @@ qed
 
 subsubsection "Step 10"
 
-text {*
-Here below are the proofs of lemmas @{text ipurge_tr_rev_t_equiv}, @{text ipurge_tr_rev_t_trace},
+text \<open>
+Here below are the proofs of lemmas \<open>ipurge_tr_rev_t_equiv\<close>, \<open>ipurge_tr_rev_t_trace\<close>,
 which are then applied to demonstrate the target closure lemma.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_rev_t_equiv:
  "ipurge_tr_rev_t I D u xs = ipurge_tr_rev I D u xs"
@@ -763,7 +763,7 @@ by (subst ipurge_tr_rev_t_equiv [symmetric], rule ipurge_tr_rev_t_trace)
 
 subsection "The Inductive Unwinding Theorem in its general form"
 
-text {*
+text \<open>
 In what follows, the Inductive Unwinding Theorem is proven, in the form applying to a generic
 process. The equivalence of the condition expressed by the theorem to CSP noninterference security,
 as defined in \cite{R2}, is demonstrated by showing that it is necessary and sufficient for the
@@ -774,7 +774,7 @@ Particularly, the closure of the traces of a secure process under function @{ter
 the idempotence of this function are used in the proof of condition necessity.
 
 \null
-*}
+\<close>
 
 lemma inductive_unwinding_1:
   assumes
@@ -858,13 +858,13 @@ theorem inductive_unwinding:
     ref_dom_events P D u (ipurge_tr_rev I D u xs) = ref_dom_events P D u xs)"
 by (rule iffI, rule inductive_unwinding_1, assumption+, rule inductive_unwinding_2)
 
-text {*
+text \<open>
 \null
 
 Interestingly, this necessary and sufficient condition for the noninterference security of a process
 resembles the classical definition of noninterference security for a deterministic state machine
 with outputs formulated in \cite{R5}, which is formalized in \cite{R2} as predicate
-@{text c_secure}.
+\<open>c_secure\<close>.
 
 Denoting with (1) the former and with (2) the latter, the differences between them can be summarized
 as follows:
@@ -881,8 +881,8 @@ accept any action list as a trace.
 The definition of function @{term ipurge_tr_rev}, used in (1), does not implicitly assume that the
 noninterference policy be reflexive, even though any policy of practical significance will be such.
 On the contrary, the definition of the intransitive purge function used in (2), which is formalized
-in \cite{R2} as function @{text c_ipurge}, makes this implicit assumption, as shown by the
-consideration that @{text "c_ipurge I D (D x) [x] = [x]"} regardless of whether
+in \cite{R2} as function \<open>c_ipurge\<close>, makes this implicit assumption, as shown by the
+consideration that \<open>c_ipurge I D (D x) [x] = [x]\<close> regardless of whether
 @{term "(D x, D x) \<in> I"} or not.
 \\This is the mathematical reason why the equivalence between CSP noninterference security and
 classical noninterference security for deterministic state machines with outputs, proven in
@@ -898,12 +898,12 @@ The binding of the universal quantification over domains contained in (1) does n
 actual difference, since in (2) the purge function is only applied to domains in the range of the
 event-domain map, and its output matches the entire input action list, thus rendering the equation
 trivial, for domains allowed to be affected by any event domain.
-*}
+\<close>
 
 
 subsection "The Inductive Unwinding Theorem for deterministic and trace set processes"
 
-text {*
+text \<open>
 Here below are the proofs of specific variants of the Inductive Unwinding Theorem applying to
 deterministic processes and trace set processes \cite{R3}. The variant for deterministic processes
 is derived, following the above proof of the general form of the theorem, from the Ipurge Unwinding
@@ -918,7 +918,7 @@ these variants involve accepted events only, in accordance with the fact that in
 processes, refused events are completely specified by accepted events (cf. \cite{R4}, \cite{R2}).
 
 \null
-*}
+\<close>
 
 lemma d_inductive_unwinding_1:
   assumes

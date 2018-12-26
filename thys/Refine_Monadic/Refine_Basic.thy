@@ -1,4 +1,4 @@
-section {* Basic Concepts *}
+section \<open>Basic Concepts\<close>
 theory Refine_Basic
 imports Main 
   "HOL-Library.Monad_Syntax" 
@@ -8,8 +8,8 @@ imports Main
 begin
 
 
-subsection {* Nondeterministic Result Lattice and Monad *}
-text {*
+subsection \<open>Nondeterministic Result Lattice and Monad\<close>
+text \<open>
   In this section we introduce a complete lattice of result sets with an
   additional top element that represents failure. On this lattice, we define
   a monad: The return operator models a result that consists of a single value,
@@ -17,27 +17,27 @@ text {*
   Binding a failure yields always a failure.
   
   In addition to the return operator, we also introduce the operator 
-  @{text RES}, that embeds a set of results into our lattice. Its synonym for
-  a predicate is @{text SPEC}.
+  \<open>RES\<close>, that embeds a set of results into our lattice. Its synonym for
+  a predicate is \<open>SPEC\<close>.
 
   Program correctness is expressed by refinement, i.e., the expression
-  @{text "M \<le> SPEC \<Phi>"} means that @{text M} is correct w.r.t.\ 
-  specification @{text \<Phi>}. This suggests the following view on the program 
+  \<open>M \<le> SPEC \<Phi>\<close> means that \<open>M\<close> is correct w.r.t.\ 
+  specification \<open>\<Phi>\<close>. This suggests the following view on the program 
   lattice: The top-element is the result that is never correct. We call this
-  result @{text FAIL}. The bottom element is the program that is always correct.
-  It is called @{text SUCCEED}. An assertion can be encoded by failing if the
+  result \<open>FAIL\<close>. The bottom element is the program that is always correct.
+  It is called \<open>SUCCEED\<close>. An assertion can be encoded by failing if the
   asserted predicate is not true. Symmetrically, an assumption is encoded by
   succeeding if the predicate is not true. 
-*}
+\<close>
 
 
 datatype 'a nres = FAILi | RES "'a set"
-text {*
-  @{text FAILi} is only an internal notation, that should not be exposed to 
+text \<open>
+  \<open>FAILi\<close> is only an internal notation, that should not be exposed to 
   the user.
-  Instead, @{text FAIL} should be used, that is defined later as abbreviation 
+  Instead, \<open>FAIL\<close> should be used, that is defined later as abbreviation 
   for the top element of the lattice.
-*}
+\<close>
 instantiation nres :: (type) complete_lattice
 begin
 fun less_eq_nres where
@@ -94,8 +94,8 @@ abbreviation "SUCCEED \<equiv> bot::'a nres"
 abbreviation "SPEC \<Phi> \<equiv> RES (Collect \<Phi>)"
 definition "RETURN x \<equiv> RES {x}"
 
-text {* We try to hide the original @{text "FAILi"}-element as well as possible. 
-*}
+text \<open>We try to hide the original \<open>FAILi\<close>-element as well as possible. 
+\<close>
 lemma nres_cases[case_names FAIL RES, cases type]:
   obtains "M=FAIL" | X where "M=RES X"
   apply (cases M, fold top_nres_def) by auto
@@ -168,7 +168,7 @@ qed
 
 declare nres_simp_internals[simp]
 
-subsubsection {* Pointwise Reasoning *}
+subsubsection \<open>Pointwise Reasoning\<close>
 
 ML \<open>
   structure refine_pw_simps = Named_Thms
@@ -176,7 +176,7 @@ ML \<open>
       val description = "Refinement Framework: " ^
         "Simplifier rules for pointwise reasoning" )
 \<close>    
-setup {* refine_pw_simps.setup *}
+setup \<open>refine_pw_simps.setup\<close>
   
 definition "nofail S \<equiv> S\<noteq>FAIL"
 definition "inres S x \<equiv> RETURN x \<le> S"
@@ -209,8 +209,8 @@ lemma intro_nofail[refine_pw_simps]:
   "FAIL\<noteq>S \<longleftrightarrow> nofail S"
   by (cases S, simp_all)+
 
-text {* The following two lemmas will introduce pointwise reasoning for
-  orderings and equalities. *}
+text \<open>The following two lemmas will introduce pointwise reasoning for
+  orderings and equalities.\<close>
 lemma pw_le_iff: 
   "S \<le> S' \<longleftrightarrow> (nofail S'\<longrightarrow> (nofail S \<and> (\<forall>x. inres S x \<longrightarrow> inres S' x)))"
   apply (cases S, simp_all)
@@ -271,15 +271,15 @@ lemma pwD2:
 
 lemmas pwD = pwD1 pwD2
 
-text {*
+text \<open>
   When proving refinement, we may assume that the refined program does not 
-  fail. *}
+  fail.\<close>
 lemma le_nofailI: "\<lbrakk> nofail M' \<Longrightarrow> M \<le> M' \<rbrakk> \<Longrightarrow> M \<le> M'"
   by (cases M') auto
 
-text {* The following lemmas push pointwise reasoning over operators,
+text \<open>The following lemmas push pointwise reasoning over operators,
   thus converting an expression over lattice operators into a logical
-  formula. *}
+  formula.\<close>
 
 lemma pw_sup_nofail[refine_pw_simps]:
   "nofail (sup a b) \<longleftrightarrow> nofail a \<and> nofail b"
@@ -377,7 +377,7 @@ lemma nofail_antimono_fun: "f \<le> g \<Longrightarrow> (nofail (g x) \<longrigh
   by (auto simp: pw_le_iff dest: le_funD)
 
 
-subsubsection {* Monad Operators *}
+subsubsection \<open>Monad Operators\<close>
 definition bind where "bind M f \<equiv> case M of 
   FAILi \<Rightarrow> FAIL |
   RES X \<Rightarrow> Sup (f`X)"
@@ -416,7 +416,7 @@ lemma pw_bind_leI: "\<lbrakk>
   \<Longrightarrow> bind M f \<le> S"
   by (simp add: pw_bind_le_iff)
 
-text {* \paragraph{Monad Laws} *}
+text \<open>\paragraph{Monad Laws}\<close>
 lemma nres_monad1[simp]: "bind (RETURN x) f = f x"
   by (rule pw_eqI) (auto simp: refine_pw_simps)
 lemma nres_monad2[simp]: "bind M RETURN = M"
@@ -425,7 +425,7 @@ lemma nres_monad3[simp]: "bind (bind M f) g = bind M (\<lambda>x. bind (f x) g)"
   by (rule pw_eqI) (auto simp: refine_pw_simps)
 lemmas nres_monad_laws = nres_monad1 nres_monad2 nres_monad3
 
-text {* \paragraph{Congruence rule for bind} *}
+text \<open>\paragraph{Congruence rule for bind}\<close>
 lemma bind_cong:
   assumes "m=m'"
   assumes "\<And>x. RETURN x \<le> m' \<Longrightarrow> f x = f' x"
@@ -433,7 +433,7 @@ lemma bind_cong:
   using assms
   by (auto simp: refine_pw_simps pw_eq_iff pw_le_iff)
 
-text {* \paragraph{Monotonicity and Related Properties} *}
+text \<open>\paragraph{Monotonicity and Related Properties}\<close>
 lemma bind_mono[refine_mono]:
   "\<lbrakk> M \<le> M'; \<And>x. RETURN x \<le> M \<Longrightarrow> f x \<le> f' x \<rbrakk> \<Longrightarrow> bind M f \<le> bind M' f'"
   (*"\<lbrakk> flat_le M M'; \<And>x. flat_le (f x) (f' x) \<rbrakk> \<Longrightarrow> flat_le (bind M f) (bind M' f')"*)
@@ -476,7 +476,7 @@ lemma RES_Sup_RETURN: "Sup (RETURN`X) = RES X"
   by (rule pw_eqI) (auto simp add: refine_pw_simps)
 
     
-subsection {* VCG Setup *}
+subsection \<open>VCG Setup\<close>
   
 lemma SPEC_cons_rule:
   assumes "m \<le> SPEC \<Phi>"
@@ -486,7 +486,7 @@ lemma SPEC_cons_rule:
   
 lemmas SPEC_trans = order_trans[where z="SPEC Postcond" for Postcond, zero_var_indexes]
   
-ML {*
+ML \<open>
 structure Refine = struct
 
   structure vcg = Named_Thms
@@ -545,24 +545,24 @@ structure Refine = struct
          
 
 end;
-*}
-setup {* Refine.vcg.setup *}
-setup {* Refine.vcg_cons.setup *}
-setup {* Refine.refine0.setup *}
-setup {* Refine.refine.setup *}
-setup {* Refine.refine2.setup *}
+\<close>
+setup \<open>Refine.vcg.setup\<close>
+setup \<open>Refine.vcg_cons.setup\<close>
+setup \<open>Refine.refine0.setup\<close>
+setup \<open>Refine.refine.setup\<close>
+setup \<open>Refine.refine2.setup\<close>
 (*setup {* Refine.refine_post.setup *}*)
 
 method_setup refine_rcg = 
-  {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
+  \<open>Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
     Refine.rcg_tac add_thms ctxt THEN_ALL_NEW_FWD (TRY o Refine.post_tac ctxt)
-  )) *} 
+  ))\<close> 
   "Refinement framework: Generate refinement conditions"
 
 method_setup refine_vcg = 
-  {* Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
+  \<open>Attrib.thms >> (fn add_thms => fn ctxt => SIMPLE_METHOD' (
     Refine.rcg_tac (add_thms @ Refine.vcg.get ctxt) ctxt THEN_ALL_NEW_FWD (TRY o Refine.post_tac ctxt)
-  )) *} 
+  ))\<close> 
   "Refinement framework: Generate refinement and verification conditions"
 
 
@@ -577,27 +577,27 @@ method_setup refine_vcg =
 declare SPEC_cons_rule[refine_vcg_cons]    
     
     
-subsection {* Data Refinement *}
-text {*
+subsection \<open>Data Refinement\<close>
+text \<open>
   In this section we establish a notion of pointwise data refinement, by
-  lifting a relation @{text "R"} between concrete and abstract values to 
+  lifting a relation \<open>R\<close> between concrete and abstract values to 
   our result lattice.
 
-  Given a relation @{text R}, we define a {\em concretization function}
-  @{text "\<Down>R"} that takes an abstract result, and returns a concrete result.
-  The concrete result contains all values that are mapped by @{text R} to
+  Given a relation \<open>R\<close>, we define a {\em concretization function}
+  \<open>\<Down>R\<close> that takes an abstract result, and returns a concrete result.
+  The concrete result contains all values that are mapped by \<open>R\<close> to
   a value in the abstract result.
 
   Note that our concretization function forms no Galois connection, i.e.,
-  in general there is no @{text \<alpha>} such that 
-  @{text "m \<le>\<Down> R m'"} is equivalent to @{text "\<alpha> m \<le> m'"}.
+  in general there is no \<open>\<alpha>\<close> such that 
+  \<open>m \<le>\<Down> R m'\<close> is equivalent to \<open>\<alpha> m \<le> m'\<close>.
   However, we get a Galois connection for the special case of 
   single-valued relations.
  
   Regarding data refinement as Galois connections is inspired by \cite{mmo97},
   that also uses the adjuncts of
   a Galois connection to express data refinement by program refinement.
-*}
+\<close>
 
 definition conc_fun ("\<Down>") where
   "conc_fun R m \<equiv> case m of FAILi \<Rightarrow> FAIL | RES X \<Rightarrow> RES (R\<inverse>``X)"
@@ -700,9 +700,9 @@ lemma abs_trans[trans]:
   shows "\<Up>R' (\<Up>R C) \<le> A"
   using assms by (fastforce simp: pw_le_iff refine_pw_simps)
 
-subsubsection {* Transitivity Reasoner Setup *}
+subsubsection \<open>Transitivity Reasoner Setup\<close>
 
-text {* WARNING: The order of the single statements is important here! *}
+text \<open>WARNING: The order of the single statements is important here!\<close>
 lemma conc_trans_additional[trans]:
   "\<And>A B C. A\<le>\<Down>R  B \<Longrightarrow> B\<le>    C \<Longrightarrow> A\<le>\<Down>R  C"
   "\<And>A B C. A\<le>\<Down>Id B \<Longrightarrow> B\<le>\<Down>R  C \<Longrightarrow> A\<le>\<Down>R  C"
@@ -714,7 +714,7 @@ lemma conc_trans_additional[trans]:
   using conc_trans[where R=R and R'=Id]
   by (auto intro: order_trans)
 
-text {* WARNING: The order of the single statements is important here! *}
+text \<open>WARNING: The order of the single statements is important here!\<close>
 lemma abs_trans_additional[trans]:
   "\<And>A B C. \<lbrakk> A \<le> B; \<Up> R B \<le> C\<rbrakk> \<Longrightarrow> \<Up> R A \<le> C"
   "\<And>A B C. \<lbrakk>\<Up> Id A \<le> B; \<Up> R B \<le> C\<rbrakk> \<Longrightarrow> \<Up> R A \<le> C"
@@ -729,12 +729,12 @@ lemma abs_trans_additional[trans]:
   done
 
 
-subsection {* Derived Program Constructs *}
-text {*
+subsection \<open>Derived Program Constructs\<close>
+text \<open>
   In this section, we introduce some programming constructs that are derived 
   from the basic monad and ordering operations of our nondeterminism monad.
-*}
-subsubsection {* ASSUME and ASSERT *}
+\<close>
+subsubsection \<open>ASSUME and ASSERT\<close>
 
 definition ASSERT where "ASSERT \<equiv> iASSERT RETURN"
 definition ASSUME where "ASSUME \<equiv> iASSUME RETURN"
@@ -759,7 +759,7 @@ lemma pw_ASSUME[refine_pw_simps]:
   "inres (ASSUME \<Phi>) x \<longleftrightarrow> \<Phi>"
   by (cases \<Phi>, simp_all)+
 
-subsubsection {* Recursion *}
+subsubsection \<open>Recursion\<close>
 lemma pw_REC_nofail: 
   shows "nofail (REC B x) \<longleftrightarrow> trimono B \<and>
   (\<exists>F. (\<forall>x. 
@@ -821,13 +821,13 @@ lemmas pw_RECT = pw_RECT_inres pw_RECT_nofail
 
   
   
-subsection {* Proof Rules *}
+subsection \<open>Proof Rules\<close>
 
-subsubsection {* Proving Correctness *}
-text {*
+subsubsection \<open>Proving Correctness\<close>
+text \<open>
   In this section, we establish Hoare-like rules to prove that a program
   meets its specification.
-*}
+\<close>
 lemma le_SPEC_UNIV_rule [refine_vcg]: 
   "m \<le> SPEC (\<lambda>_. True) \<Longrightarrow> m \<le> RES UNIV" by auto
   
@@ -860,7 +860,7 @@ lemma Sup_img_rule[refine_vcg]:
   "\<lbrakk> \<And>x. x\<in>S \<Longrightarrow> f x \<le> SPEC \<Phi> \<rbrakk> \<Longrightarrow> Sup(f`S) \<le> SPEC \<Phi>"
   by (auto simp: SUP_img_rule_complete[symmetric])
 
-text {* This lemma is just to demonstrate that our rule is complete. *}
+text \<open>This lemma is just to demonstrate that our rule is complete.\<close>
 lemma bind_rule_complete: "bind M f \<le> SPEC \<Phi> \<longleftrightarrow> M \<le> SPEC (\<lambda>x. f x \<le> SPEC \<Phi>)"
   by (auto simp: pw_le_iff refine_pw_simps)
 lemma bind_rule[refine_vcg]: 
@@ -943,7 +943,7 @@ lemma REC_le_rule:
   Possibility 2: Only syntactically annotate the invariant, as hint for the VCG.
 *)
 
-subsubsection {* Proving Monotonicity *}
+subsubsection \<open>Proving Monotonicity\<close>
 
 lemma nr_mono_bind:
   assumes MA: "mono A" and MB: "\<And>s. mono (B s)"
@@ -965,15 +965,15 @@ lemma nr_mono_bind': "mono (\<lambda>F s. bind (f s) F)"
 
 lemmas nr_mono = nr_mono_bind nr_mono_bind' mono_const mono_if mono_id
 
-subsubsection {* Proving Refinement *}
-text {* In this subsection, we establish rules to prove refinement between 
+subsubsection \<open>Proving Refinement\<close>
+text \<open>In this subsection, we establish rules to prove refinement between 
   structurally similar programs. All rules are formulated including a possible
   data refinement via a refinement relation. If this is not required, the 
   refinement relation can be chosen to be the identity relation.
-  *}
+\<close>
 
-text {* If we have two identical programs, this rule solves the refinement goal
-  immediately, using the identity refinement relation. *}
+text \<open>If we have two identical programs, this rule solves the refinement goal
+  immediately, using the identity refinement relation.\<close>
 lemma Id_refine[refine0]: "S \<le> \<Down>Id S" by auto
 
 lemma RES_refine: 
@@ -1012,8 +1012,8 @@ lemma sup_refine[refine]:
   using assms by (auto simp: pw_le_iff refine_pw_simps)
     
     
-text {* The next two rules are incomplete, but a good approximation for refining
-  structurally similar programs. *}
+text \<open>The next two rules are incomplete, but a good approximation for refining
+  structurally similar programs.\<close>
 lemma bind_refine':
   fixes R' :: "('a\<times>'b) set" and R::"('c\<times>'d) set"
   assumes R1: "M \<le> \<Down> R' M'"
@@ -1047,8 +1047,8 @@ lemma bind_refine_abs': (* Only keep nf_inres-information for abstract *)
 
 
 
-text {* Special cases for refinement of binding to @{text "RES"}
-  statements *}
+text \<open>Special cases for refinement of binding to \<open>RES\<close>
+  statements\<close>
 lemma bind_refine_RES:
   "\<lbrakk>RES X \<le> \<Down> R' M';
   \<And>x x'. \<lbrakk>(x, x') \<in> R'; x \<in> X \<rbrakk> \<Longrightarrow> f x \<le> \<Down> R (f' x')\<rbrakk>
@@ -1075,9 +1075,9 @@ lemma ASSUME_refine[refine]:
   "\<lbrakk> \<Phi> \<Longrightarrow> \<Phi>' \<rbrakk> \<Longrightarrow> ASSUME \<Phi> \<le> \<Down>Id (ASSUME \<Phi>')"
   by (cases \<Phi>) auto
 
-text {*
+text \<open>
   Assertions and assumptions are treated specially in bindings
-*}
+\<close>
 lemma ASSERT_refine_right:
   assumes "\<Phi> \<Longrightarrow> S \<le>\<Down>R S'"
   shows "S \<le>\<Down>R (do {ASSERT \<Phi>; S'})"
@@ -1109,16 +1109,16 @@ lemma ASSUME_refine_left_pres:
   shows "do {ASSUME \<Phi>; S} \<le> \<Down>R S'"
   using assms by (cases \<Phi>) auto
 
-text {* Warning: The order of @{text "[refine]"}-declarations is 
+text \<open>Warning: The order of \<open>[refine]\<close>-declarations is 
   important here, as preconditions should be generated before 
-  additional proof obligations. *}
+  additional proof obligations.\<close>
 lemmas [refine0] = ASSUME_refine_right
 lemmas [refine0] = ASSERT_refine_left
 lemmas [refine0] = ASSUME_refine_left
 lemmas [refine0] = ASSERT_refine_right
 
-text {* For backward compatibility, as @{text "intro refine"} still
-  seems to be used instead of @{text "refine_rcg"}. *}
+text \<open>For backward compatibility, as \<open>intro refine\<close> still
+  seems to be used instead of \<open>refine_rcg\<close>.\<close>
 lemmas [refine] = ASSUME_refine_right
 lemmas [refine] = ASSERT_refine_left
 lemmas [refine] = ASSUME_refine_left
@@ -1192,8 +1192,8 @@ lemma Let_unfold_refine[refine]:
   shows "Let x f \<le> \<Down>R (Let x' f')"
   using assms by auto
 
-text {* The next lemma is sometimes more convenient, as it prevents
-  large let-expressions from exploding by being completely unfolded. *}
+text \<open>The next lemma is sometimes more convenient, as it prevents
+  large let-expressions from exploding by being completely unfolded.\<close>
 lemma Let_refine:
   assumes "(m,m')\<in>R'"
   assumes "\<And>x x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
@@ -1223,11 +1223,11 @@ lemma list_case_refine[refine]:
   shows "(case li of [] \<Rightarrow> fni | xi#xsi \<Rightarrow> fci xi xsi) \<le> \<Down>R (case l of [] \<Rightarrow> fn | x#xs \<Rightarrow> fc x xs)"  
   using assms by (auto split: list.split)  
     
-text {* It is safe to split conjunctions in refinement goals.*}
+text \<open>It is safe to split conjunctions in refinement goals.\<close>
 declare conjI[refine]
 
-text {* The following rules try to compensate for some structural changes,
-  like inlining lets or converting binds to lets. *}
+text \<open>The following rules try to compensate for some structural changes,
+  like inlining lets or converting binds to lets.\<close>
 lemma remove_Let_refine[refine2]:
   assumes "M \<le> \<Down>R (f x)"
   shows "M \<le> \<Down>R (Let x f)" using assms by auto
@@ -1301,11 +1301,11 @@ lemma intro_spec_refine[refine2]:
   by (simp add: intro_spec_refine_iff)
 
 
-text {* The following rules are intended for manual application, to reflect 
+text \<open>The following rules are intended for manual application, to reflect 
   some common structural changes, that, however, are not suited to be applied
-  automatically. *}
+  automatically.\<close>
 
-text {* Replacing a let by a deterministic computation *}
+text \<open>Replacing a let by a deterministic computation\<close>
 lemma let2bind_refine:
   assumes "m \<le> \<Down>R' (RETURN m')"
   assumes "\<And>x x'. (x,x')\<in>R' \<Longrightarrow> f x \<le> \<Down>R (f' x')"
@@ -1317,8 +1317,8 @@ lemma let2bind_refine:
 
 
 
-text {* Introduce a new binding, without a structural match in the abstract 
-  program *}
+text \<open>Introduce a new binding, without a structural match in the abstract 
+  program\<close>
 lemma intro_bind_refine:
   assumes "m \<le> \<Down>R' (RETURN m')"
   assumes "\<And>x. (x,m')\<in>R' \<Longrightarrow> f x \<le> \<Down>R m''"
@@ -1397,7 +1397,7 @@ lemma prod_case_refine:
 
 
 
-subsection {* Relators *}
+subsection \<open>Relators\<close>
 declare fun_relI[refine]
   
 definition nres_rel where 
@@ -1441,7 +1441,7 @@ lemma param_ASSERT_bind[param]: "\<lbrakk>
   \<rbrakk> \<Longrightarrow> (ASSERT \<Phi> \<then> f, ASSERT \<Psi> \<then> g) \<in> \<langle>R\<rangle>nres_rel"
   by (auto intro: nres_relI)
 
-subsection {* Autoref Setup *}
+subsection \<open>Autoref Setup\<close>
 
 consts i_nres :: "interface \<Rightarrow> interface"
 lemmas [autoref_rel_intf] = REL_INTFI[of nres_rel i_nres]
@@ -1554,10 +1554,10 @@ lemma autoref_RECT[autoref_rules]:
 
 end
 
-subsection {* Convenience Rules*}
-text {*
+subsection \<open>Convenience Rules\<close>
+text \<open>
   In this section, we define some lemmas that simplify common prover tasks.
-*}
+\<close>
 
 lemma ref_two_step: "A\<le>\<Down>R  B \<Longrightarrow> B\<le>C \<Longrightarrow> A\<le>\<Down>R  C" 
   by (rule conc_trans_additional)
@@ -1576,9 +1576,9 @@ lemma pw_ref_I:
   using assms
   by (simp add: pw_ref_iff)
 
-text {* Introduce an abstraction relation. Usage: 
-  @{text "rule introR[where R=absRel]"}
-*}
+text \<open>Introduce an abstraction relation. Usage: 
+  \<open>rule introR[where R=absRel]\<close>
+\<close>
 lemma introR: "(a,a')\<in>R \<Longrightarrow> (a,a')\<in>R" .
 
 lemma intro_prgR: "c \<le> \<Down>R a \<Longrightarrow> c \<le> \<Down>R a" by auto
@@ -1798,8 +1798,8 @@ lemma unused_bind_conv:
   shows "(m\<bind>(\<lambda>x. c))  = (ASSERT (nofail m) \<bind> (\<lambda>_. ASSUME (\<exists>x. inres m x) \<bind> (\<lambda>x. c)))" 
   by (auto simp: pw_eq_iff refine_pw_simps)
 
-text {* The following rules are useful for massaging programs before the 
-  refinement takes place *}
+text \<open>The following rules are useful for massaging programs before the 
+  refinement takes place\<close>
 lemma let_to_bind_conv: 
   "Let x f = RETURN x\<bind>f"
   by simp
@@ -1893,7 +1893,7 @@ lemma rel2p_nres_RETURN[rel2p]: "rel2p (\<langle>A\<rangle>nres_rel) (RETURN x) 
   by (auto simp: rel2p_def dest: nres_relD intro: nres_relI)
 
 
-subsubsection {* Boolean Operations on Specifications *}
+subsubsection \<open>Boolean Operations on Specifications\<close>
 lemma SPEC_iff:
   assumes "P \<le> SPEC (\<lambda>s. Q s \<longrightarrow> R s)"
   and "P \<le> SPEC (\<lambda>s. \<not> Q s \<longrightarrow> \<not> R s)"
@@ -1928,7 +1928,7 @@ proof -
 qed
 
 
-subsubsection {* Pointwise Reasoning *}
+subsubsection \<open>Pointwise Reasoning\<close>
 lemma inres_if:
   "\<lbrakk> inres (if P then Q else R) x; \<lbrakk>P; inres Q x\<rbrakk> \<Longrightarrow> S; \<lbrakk>\<not> P; inres R x\<rbrakk> \<Longrightarrow> S \<rbrakk> \<Longrightarrow> S"
 by (metis (full_types))

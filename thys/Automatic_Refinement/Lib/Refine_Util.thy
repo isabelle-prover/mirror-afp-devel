@@ -7,7 +7,7 @@ definition conv_tag where "conv_tag n x == x"
 
 lemma shift_lambda_left: "(f \<equiv> \<lambda>x. g x) \<Longrightarrow> (\<And>x. f x \<equiv> g x)" by simp
   
-ML {*
+ML \<open>
   infix 0 THEN_ELSE' THEN_ELSE_COMB'
   infix 1 THEN_ALL_NEW_FWD THEN_INTERVAL
   infix 2 ORELSE_INTERVAL
@@ -955,10 +955,10 @@ ML {*
   structure Basic_Refine_Util: BASIC_REFINE_UTIL = Refine_Util
   open Basic_Refine_Util
 
-*}
+\<close>
 
-attribute_setup zero_var_indexes = {*
+attribute_setup zero_var_indexes = \<open>
   Scan.succeed (Thm.rule_attribute [] (K Drule.zero_var_indexes))
-*} "Set variable indexes to zero, renaming to avoid clashes"
+\<close> "Set variable indexes to zero, renaming to avoid clashes"
 
 end

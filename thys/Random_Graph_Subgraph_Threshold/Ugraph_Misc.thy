@@ -1,4 +1,4 @@
-section{* Miscellaneous and contributed lemmas *}
+section\<open>Miscellaneous and contributed lemmas\<close>
 
 theory Ugraph_Misc
 imports
@@ -37,7 +37,7 @@ proof -
   have "sum f I = (\<Sum>i \<in> I. if P i then f i else f i)"
     by simp
   hence "sum f I = (\<Sum>i | i \<in> I \<and> P i. f i) + (\<Sum>i | i \<in> I \<and> \<not>P i. f i)"
-    by (simp only: sum_split[OF `finite I`])
+    by (simp only: sum_split[OF \<open>finite I\<close>])
   moreover have "0 \<le> (\<Sum>i | i \<in> I \<and> \<not>P i. f i)"
     by (rule sum_nonneg) (simp add: assms)
   ultimately show ?thesis
@@ -115,15 +115,15 @@ proof -
   hence "card (insert a ?E') = 1 + card ?E'"
     using card_insert by fastforce
   moreover have "E = insert a ?E'"
-    using `a \<in> E` by blast
+    using \<open>a \<in> E\<close> by blast
   ultimately have "card E = 1 + card ?E'"
     by simp
   hence "card ?E' = 0"
     using assms by simp
   hence "?E' = {}"
-    using `finite ?E'` by simp
+    using \<open>finite ?E'\<close> by simp
   thus ?thesis
-    using `a \<in> E` by blast
+    using \<open>a \<in> E\<close> by blast
 qed
 
 lemma card_2_elements:
@@ -139,7 +139,7 @@ proof -
   hence "card (insert a ?E') = 1 + card ?E'"
     using card_insert by fastforce
   moreover have "E = insert a ?E'"
-    using `a \<in> E` by blast
+    using \<open>a \<in> E\<close> by blast
   ultimately have "card E = 1 + card ?E'"
     by simp
   hence "card ?E' = 1"
@@ -147,9 +147,9 @@ proof -
   then obtain b where "?E' = {b}"
     using card_1_element by blast
   hence "E = {a, b}"
-    using `a \<in> E` by blast
+    using \<open>a \<in> E\<close> by blast
   moreover have "a \<noteq> b"
-    using `?E' = {b}` by blast
+    using \<open>?E' = {b}\<close> by blast
   ultimately show ?thesis
     by blast
 qed
@@ -286,7 +286,7 @@ proof -
           show "B \<in> ?lhs"
             proof safe
               fix x assume "x \<in> B" thus "x \<in> I"
-                using K `A \<subseteq> I` by blast
+                using K \<open>A \<subseteq> I\<close> by blast
             next
               have "card B = card K + card B' - card (K \<inter> B')"
                 using K assms by (metis card_union finite_A finite_subset finite_Diff)

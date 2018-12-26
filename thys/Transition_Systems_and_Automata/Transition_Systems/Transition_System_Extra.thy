@@ -1,4 +1,4 @@
-section {* Additional Theorems for Transition Systems *}
+section \<open>Additional Theorems for Transition Systems\<close>
 
 theory Transition_System_Extra
 imports

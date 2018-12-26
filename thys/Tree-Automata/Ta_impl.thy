@@ -14,15 +14,15 @@ begin
 
 
 
-text_raw {*\label{sec:taimpl}*}
+text_raw \<open>\label{sec:taimpl}\<close>
 
-text {*
+text \<open>
   In this theory, an effcient executable implementation of non-deterministic 
   tree automata and basic algorithms is defined.
 
   The algorithms use red-black trees to represent sets of states or rules 
   where appropriate.
-  *}
+\<close>
 
 subsection "Prelude"
 
@@ -54,7 +54,7 @@ begin
 
 end
 
-subsubsection {* Ad-Hoc instantiations of generic Algorithms *}
+subsubsection \<open>Ad-Hoc instantiations of generic Algorithms\<close>
 setup Locale_Code.open_block
 interpretation hll_idx: build_index_loc hm_ops ls_ops ls_ops by unfold_locales
 interpretation ll_set_xy: g_set_xy_loc ls_ops ls_ops 
@@ -80,7 +80,7 @@ interpretation hs_to_fifo: set_to_list_loc hs_ops fifo_ops by unfold_locales
 setup Locale_Code.close_block
 
 subsection "Generating Indices of Rules"
-text {*
+text \<open>
   Rule indices are pieces of extra information that may be attached to a 
   tree automaton.
   There are three possible rule indices
@@ -89,7 +89,7 @@ text {*
       \item[s]   index of rules by lhs
       \item[sf]  index of rules
     \end{description}
-  *}
+\<close>
 
 definition build_rule_index 
   :: "(('q,'l) ta_rule \<Rightarrow> 'i::hashable) \<Rightarrow> ('q,'l) ta_rule ls 
@@ -123,10 +123,10 @@ lemma build_rule_index_sf_correct[simp]:
 
 subsection "Tree Automaton with Optional Indices"
 
-text {*
+text \<open>
   A tree automaton contains a hashset of initial states, a list-set of rules and
   several (optional) rule indices.
-  *}
+\<close>
 
 record (overloaded) ('q,'l) hashedTa =
     \<comment> \<open>Initial states\<close>
@@ -222,10 +222,10 @@ lemma hta_idx_sf_pres
          hta_ensure_idx_sf_def 
     split: option.split)
 
-text {*
+text \<open>
   The lookup functions are only defined if the required index is present. 
   This enforces generation of the index before applying lookup functions.
-  *}
+\<close>
   \<comment> \<open>Lookup rules by function symbol\<close>
 definition "hta_lookup_f f H == hll_idx.lookup f (the (hta_idx_f H))"
   \<comment> \<open>Lookup rules by lhs-state\<close>
@@ -318,8 +318,8 @@ begin
       split: option.split_asm)
     done
 
-  text {* The abstract tree automaton satisfies the invariants for an abstract
-          tree automaton *}
+  text \<open>The abstract tree automaton satisfies the invariants for an abstract
+          tree automaton\<close>
   lemma hta_\<alpha>_is_ta[simp, intro!]: "tree_automaton (hta_\<alpha> H)"
     apply unfold_locales
     apply (unfold hta_\<alpha>_def)
@@ -512,13 +512,13 @@ end
 subsection "Product Automaton and Intersection"
 
 subsubsection "Brute Force Product Automaton"
-text {*
+text \<open>
   In this section, an algorithm that computes the product 
   automaton without reduction is implemented. While the runtime is always
   quadratic, this algorithm is very simple and the constant factors are 
   smaller than that of the version with integrated reduction.
   Moreover, lazy languages like Haskell seem to profit from this algorithm.
-*}
+\<close>
 
 definition \<delta>_prod_h 
   :: "('q1::hashable,'l::hashable) ta_rule ls 
@@ -580,10 +580,10 @@ lemma hta_prodWR_correct:
   by (simp_all add: hta_prodWR_correct_aux[OF TA] ta_prod_correct_aux1)
 
 subsubsection "Product Automaton with Forward-Reduction"
-text {*
+text \<open>
   A more elaborated algorithm combines forward-reduction and the product 
   construction, i.e. product rules are only created ,,by need''.
-*}
+\<close>
 
   \<comment> \<open>State of the product-automaton DFS-algorithm\<close>
 type_synonym ('q1,'q2,'l) pa_state 
@@ -1058,11 +1058,11 @@ lemma (in hashedTa) hta_remap_correct:
 
 
 subsubsection "Reindex Automaton"
-text {*
+text \<open>
   In this section, an algorithm for re-indexing the states of the automaton to
   an initial segment of the naturals is implemented. The language of the 
   automaton is not changed by the reindexing operation.
-*}
+\<close>
 
   \<comment> \<open>Set of states of a rule\<close>
 fun rule_states_l where
@@ -1199,11 +1199,11 @@ proof -
 qed
 
 subsection "Operators to Construct Tree Automata"
-text {*
+text \<open>
   This section defines operators that add initial states and rules to a tree 
   automaton, and thus incrementally construct a tree automaton from the empty
   automaton.
-  *}
+\<close>
 
 \<comment> \<open>The empty automaton\<close>
 definition hta_empty :: "unit \<Rightarrow> ('q::hashable,'l::hashable) hashedTa" 
@@ -1293,10 +1293,10 @@ theorem (in hashedTa) hta_reduce_correct:
 
 subsection "Backwards Reduction and Emptiness Check"
 
-text {*
+text \<open>
   The algorithm uses a map from states to the set of rules that contain 
   the state on their rhs.
-*}
+\<close>
 
   \<comment> \<open>Add an entry to the index\<close>
 definition "rqrm_add q r res ==
@@ -1681,7 +1681,7 @@ proof -
     
 qed
 
-subsubsection {* Emptiness Check with Witness Computation *}
+subsubsection \<open>Emptiness Check with Witness Computation\<close>
 
 definition brec_construct_witness 
   :: "('q::hashable,'l::hashable tree) hm \<Rightarrow> ('q,'l) ta_rule \<Rightarrow> 'l tree"
@@ -2085,15 +2085,15 @@ proof -
   } ultimately show ?T1 ?T2 by auto
 qed
 
-subsection {* Interface for Natural Number States and Symbols *}
-  text_raw {*\label{sec:htai_intf}*}
-text {*
+subsection \<open>Interface for Natural Number States and Symbols\<close>
+  text_raw \<open>\label{sec:htai_intf}\<close>
+text \<open>
   The library-interface is statically instantiated to use natural numbers 
   as both, states and symbols.
 
   This interface is easier to use from ML and OCaml, because there is no 
   overhead with typeclass emulation.
-*}
+\<close>
 
 type_synonym htai = "(nat,nat) hashedTa"
 
@@ -2185,14 +2185,14 @@ lemma htai_union_correct:
   apply (auto simp add: hta_union_correct hashedTa.hta_reindex_correct)
   done
 
-subsection {* Interface Documentation *} text_raw{*\label{sec:intf_doc}*}
-text {*
+subsection \<open>Interface Documentation\<close> text_raw\<open>\label{sec:intf_doc}\<close>
+text \<open>
   This section contains a documentation of the executable tree-automata
   interface. The documentation contains a description of each function along
   with the relevant correctness lemmas.
-*}
+\<close>
 
-text {*
+text \<open>
   ML/OCaml users should note, that there is an interface that has the fixed type
   Int for both states and function symbols. This interface is simpler to use
   from ML/OCaml than the generic one, as it requires no overhead to emulate
@@ -2201,15 +2201,15 @@ text {*
   The functions of this interface start with the prefix {\em htai} instead of
   {\em hta}, but have the same semantics otherwise 
   (cf Section~\ref{sec:htai_intf}).
-*}
+\<close>
 
-subsubsection {* Building a Tree Automaton *}
-text_raw {*
+subsubsection \<open>Building a Tree Automaton\<close>
+text_raw \<open>
   \newcommand{\fundesc}[2]{{\bf Function: #1}\\#2}
 
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_empty}}{
     Returns a tree automaton with no states and no rules. 
   }
@@ -2219,9 +2219,9 @@ text {*
     \item[@{thm [source] hta_empty_correct}:] @{thm hta_empty_correct[no_vars]}
     \item[@{thm [source] ta_empty_lang}:] @{thm ta_empty_lang[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_add_qi}}{
     Adds an initial state to the given automaton.
   }
@@ -2230,9 +2230,9 @@ text {*
     \item[@{thm [source] hashedTa.hta_add_qi_correct}]
       @{thm hashedTa.hta_add_qi_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_add_rule}}{
     Adds a rule to the given automaton.
   }
@@ -2241,20 +2241,20 @@ text {*
     \item[@{thm [source] hashedTa.hta_add_rule_correct}:]
       @{thm hashedTa.hta_add_rule_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-subsubsection {* Basic Operations *}
+subsubsection \<open>Basic Operations\<close>
 
-text {*
+text \<open>
   The tree automata of this library may have some optional indices, that 
   accelerate computation. The tree-automata operations will compute the 
   indices if necessary, but due to the pure nature of the Isabelle-language,
   the computed index cannot be stored for the next usage. Hence, before using a
   bulk of tree-automaton operations on the same tree-automata, the relevant 
   indexes should be pre-computed.
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{
     @{const [show_types] hta_ensure_idx_f}\\
     @{const [show_types] hta_ensure_idx_s}\\
@@ -2262,9 +2262,9 @@ text {*
   }{
     Computes an index for a tree automaton, if it is not yet present.
   }
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_mem}, @{const [show_types] hta_mem'}}{
     Check whether a tree is accepted by the tree automaton.
   }
@@ -2275,9 +2275,9 @@ text {*
     \item[@{thm [source] hashedTa.hta_mem'_correct}:]
       @{thm hashedTa.hta_mem'_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_prod}, @{const [show_types] hta_prod'}}{
     Compute the product automaton. The computed automaton is in 
     forward-reduced form. 
@@ -2295,9 +2295,9 @@ text {*
     \item[@{thm [source] hta_prod'_correct}:] 
       @{thm hta_prod'_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_prodWR}}{
     Compute the product automaton by brute-force algorithm. 
     The resulting automaton is not reduced.
@@ -2311,9 +2311,9 @@ text {*
   \item[@{thm [source] hta_prodWR_correct}:] 
     @{thm hta_prodWR_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_union}}{
     Compute the union of two tree automata.
   }
@@ -2322,9 +2322,9 @@ text {*
   \item[@{thm [source] hta_union_correct'}:] @{thm hta_union_correct'[no_vars]}
   \item[@{thm [source] hta_union_correct}:] @{thm hta_union_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_reduce}}{
     Reduce the automaton to the given set of states. All initial states outside
     this set will be removed. Moreover, all rules that contain states outside 
@@ -2335,9 +2335,9 @@ text {*
     \item[@{thm [source] hashedTa.hta_reduce_correct}:]
       @{thm hashedTa.hta_reduce_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_bwd_reduce}}{
     Compute the backwards-reduced version of a tree automata.
     States from that no tree can be produced are removed. 
@@ -2349,9 +2349,9 @@ text {*
       @{thm hashedTa.hta_bwd_reduce_correct[no_vars]}
     \item[@{thm [source] ta_reduce_b_acc}:] @{thm ta_reduce_b_acc[no_vars]}
   \end{description}
-*}
+\<close>
 
-text {*
+text \<open>
   \fundesc{@{const [show_types] hta_is_empty_witness}}{
     Check whether the language of the automaton is empty.
     If the language is not empty, a tree of the language is returned.
@@ -2365,9 +2365,9 @@ text {*
     \item[@{thm [source] hashedTa.hta_is_empty_witness_correct}:]
        @{thm hashedTa.hta_is_empty_witness_correct[no_vars]}
   \end{description}
-*}
+\<close>
 
-subsection {* Code Generation *}
+subsection \<open>Code Generation\<close>
 
 (* TODO/FIXME: There seems to be no way to reference the project-directory,
   in order to control the placement of the generated code files.
@@ -2429,7 +2429,7 @@ export_code
   the code generator generates code that violates the ML value-restriction.
 *)
 
-ML {*
+ML \<open>
   @{code hta_mem};
   @{code hta_mem'};
   @{code hta_prod};
@@ -2460,6 +2460,6 @@ ML {*
   (*@{code ls_size};
   @{code hs_size};
   @{code rs_size}*)
-*}
+\<close>
 
 end

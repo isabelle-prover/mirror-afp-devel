@@ -90,10 +90,10 @@ shows "\<Delta>' = \<Empt> \<and> \<Delta> = \<LM>A\<RM>"
 proof-
  from assms have "size (\<LM>A\<RM>) = size \<Delta> + size \<Delta>'" by auto
  then have "1 = size \<Delta> + size \<Delta>'" by auto
- moreover from `\<Delta> \<noteq> \<Empt>` have "0 \<noteq> size \<Delta>" by auto
+ moreover from \<open>\<Delta> \<noteq> \<Empt>\<close> have "0 \<noteq> size \<Delta>" by auto
  ultimately have "size \<Delta> = 1 \<and> size \<Delta>' = 0" by arith
  then have a: "\<Delta>' = \<Empt>" by auto
- with `\<LM>A\<RM> = \<Delta> + \<Delta>'` have b: "\<Delta> = \<LM>A\<RM>" by auto
+ with \<open>\<LM>A\<RM> = \<Delta> + \<Delta>'\<close> have b: "\<Delta> = \<LM>A\<RM>" by auto
  from a b show ?thesis by auto
 qed
 
@@ -134,12 +134,12 @@ qed
    ------------------------------- *)
 
 (*>*)
-text{*
+text\<open>
 \section{Modal Calculi \label{isamodal}}
 Some new techniques are needed when formalising results about modal calculi.  A set of modal operators must index formulae (and sequents and rules), there must be a method for modalising a multiset of formulae and we need to be able to handle implicit weakening rules.
 
 The first of these is easy; instead of indexing formulae by a single type variable, we index on a pair of type variables, one which contains the propositional connectives, and one which contains the modal operators:
-*}
+\<close>
 datatype ('a, 'b) form = At "nat"
                                  | Compound "'a" "('a, 'b) form list"
                                  | Modal "'b" "('a, 'b) form list"
@@ -211,9 +211,9 @@ begin
 definition uniqueConclusion :: "('a,'b) rule set \<Rightarrow> bool"
   where "uniqueConclusion R \<equiv> \<forall> r1 \<in> R. \<forall> r2 \<in> R. (snd r1 = snd r2) \<longrightarrow> (r1 =r2)"
 
-text{*
+text\<open>
 \noindent Modalising multisets is relatively straightforward.  We use the notation $!\cdot \Gamma$, where $!$ is a modal operator and $\Gamma$ is a multiset of formulae:
-*}
+\<close>
 definition modaliseMultiset :: "'b \<Rightarrow> ('a,'b) form multiset \<Rightarrow> ('a,'b) form multiset"
   where "modaliseMultiset a \<Gamma> \<equiv> {# Modal a [p]. p \<in># \<Gamma> #}"
 
@@ -235,22 +235,22 @@ inductive_set "upRules" where
 
 
 (*>*)
-text{*
+text\<open>
 \noindent Similarly to \S\ref{isafirstorder}, two new rule sets are created.  The first are the normal modal rules:
-*}
+\<close>
 inductive_set "modRules2" where
    (*<*)I[intro]:(*>*) "\<lbrakk> ps \<noteq> [] ; mset c = \<LM> Modal M Ms \<RM> \<rbrakk> \<Longrightarrow> (ps,c) \<in> modRules2"
 
-text{*
+text\<open>
 \noindent The second are the \textit{modalised context rules}.  Taking a subset of the normal modal rules, we extend using a pair of modalised multisets for context.  We create a new inductive rule set called \texttt{p-e}, for ``prime extend'', which takes a set of modal active parts and a pair of modal operators (say $!$ and $\bullet$), and returns the set of active parts extended with $!\cdot \Gamma \Rightarrow \bullet\cdot\Delta$:
-*}
+\<close>
 inductive_set p_e :: "('a,'b) rule set \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> ('a,'b) rule set" 
   for R :: "('a,'b) rule set" and M N :: "'b" 
   where
   (*<*)I[intro]:(*>*) "\<lbrakk> (Ps, c) \<in> R ; R \<subseteq> modRules2 \<rbrakk> \<Longrightarrow> extendRule (M\<cdot>\<Gamma> \<Rightarrow>* N\<cdot>\<Delta>) (Ps, c) \<in> p_e R M N"
 
-text{*
-\noindent We need a method for extending the conclusion of a rule without extending the premisses.  Again, this is simple:*}
+text\<open>
+\noindent We need a method for extending the conclusion of a rule without extending the premisses.  Again, this is simple:\<close>
 
 overloading extendConc \<equiv> extendConc
 begin
@@ -260,8 +260,8 @@ definition extendConc :: "('a,'b) sequent \<Rightarrow> ('a,'b) rule \<Rightarro
 
 end
 
-text{* \noindent  The extension of a rule set is now more complicated; the inductive definition has four clauses, depending on the type of rule:
-*}
+text\<open>\noindent  The extension of a rule set is now more complicated; the inductive definition has four clauses, depending on the type of rule:
+\<close>
 inductive_set ext :: "('a,'b) rule set \<Rightarrow> ('a,'b) rule set \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> ('a,'b) rule set" 
   for R R' :: "('a,'b) rule set" and M N :: "'b"
   where
@@ -270,9 +270,9 @@ inductive_set ext :: "('a,'b) rule set \<Rightarrow> ('a,'b) rule set \<Rightarr
 | mod1(*<*)[intro](*>*): "\<lbrakk> r \<in> p_e R' M N ; r \<in> R \<rbrakk> \<Longrightarrow> extendConc seq r \<in> ext R R' M N"
 | mod2(*<*)[intro](*>*): "\<lbrakk> r \<in> R ; r \<in> modRules2 \<rbrakk> \<Longrightarrow> extendRule seq r \<in> ext R R' M N"
 
-text{* 
+text\<open>
 \noindent Note the new rule set carries information about which set contains the modalised context rules and which modal operators which extend those prime parts.
-*}
+\<close>
 
 (*<*)
 (* A formulation of what it means to be a principal formula for a rule.   *)
@@ -426,11 +426,11 @@ proof-
        proof (cases)
           case (I R Rs)
           obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and `mset C = \<LM>Compound R Rs\<RM>` by auto
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and \<open>mset C = \<LM>Compound R Rs\<RM>\<close> by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
-          moreover have "snd r = C" using `r = (Ps,C)` by simp
+          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and \<open>C = (G \<Rightarrow>* H)\<close> by auto
+          moreover have "snd r = C" using \<open>r = (Ps,C)\<close> by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
 qed
@@ -444,7 +444,7 @@ proof (cases)
   then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
   then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using assms by simp
   then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-    using `mset C = \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+    using \<open>mset C = \<LM>Compound F Fs\<RM>\<close> and \<open>C = (\<Gamma> \<Rightarrow>* \<Delta>)\<close>
       and mset.simps [where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
     by auto
 qed
@@ -459,10 +459,10 @@ proof (cases)
   obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
   then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> modRules2" using assms by simp
   then have "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> C = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-    using `mset C = \<LM>Modal F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+    using \<open>mset C = \<LM>Modal F Fs\<RM>\<close> and \<open>C = (\<Gamma> \<Rightarrow>* \<Delta>)\<close>
       and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Modal F Fs"]
     by auto
-  thus ?thesis using `Ps \<noteq> []` by auto
+  thus ?thesis using \<open>Ps \<noteq> []\<close> by auto
 qed
 
 lemma modRule1Characterise:
@@ -474,7 +474,7 @@ using assms
 proof (cases)
   case (I ps c \<Gamma> \<Delta>)
   then have "(ps, c) \<in> modRules2" by auto
-  with `(ps, c) \<in> modRules2` obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> c = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
+  with \<open>(ps, c) \<in> modRules2\<close> obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> c = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
     using modRule2Characterise[where C=c and Ps=ps] by auto
   with I show ?thesis
     apply -
@@ -547,8 +547,8 @@ assumes "r = (ps,c)"
     and "p \<in> set ps"
 shows "extend S p \<in> set Ps"
 proof-
-from `p \<in> set ps` have "extend S p \<in> set (map (extend S) ps)" by auto
-moreover from `(Ps,C) = extendRule S r` and `r = (ps,c)` have "map (extend S) ps = Ps" by (simp add:extendRule_def) 
+from \<open>p \<in> set ps\<close> have "extend S p \<in> set (map (extend S) ps)" by auto
+moreover from \<open>(Ps,C) = extendRule S r\<close> and \<open>r = (ps,c)\<close> have "map (extend S) ps = Ps" by (simp add:extendRule_def) 
 ultimately show ?thesis by auto
 qed
 
@@ -587,7 +587,7 @@ assumes "mset c = \<LM>A\<RM>"
 shows "False"
 proof-
 from assms have "A \<in># \<LM>B\<RM>" using disjoint_Aux[where c=c and A=A and S=S] by auto
-with `A \<noteq> B` show ?thesis by auto
+with \<open>A \<noteq> B\<close> show ?thesis by auto
 qed
 
 lemma disjoint_Ax_up:
@@ -625,11 +625,11 @@ lemma Ax_subset_false_aux:
 assumes "A \<subseteq> B" and "A \<inter> B = {}" and "A \<noteq> {}"
 shows "False"
 proof-
- from `A \<noteq> {}` have "\<exists> a. a \<in> A" by auto
+ from \<open>A \<noteq> {}\<close> have "\<exists> a. a \<in> A" by auto
  then obtain a where a: "a \<in> A" by auto
- with `A \<subseteq> B` have "a \<in> B" by auto
+ with \<open>A \<subseteq> B\<close> have "a \<in> B" by auto
  with a have "a \<in> A \<inter> B" by simp
- with `A \<inter> B = {}` show ?thesis by auto
+ with \<open>A \<inter> B = {}\<close> show ?thesis by auto
 qed
 
 lemma Ax_subset_false:
@@ -656,13 +656,13 @@ proof-
 from assms obtain i where r1:"r = ([], \<LM> ff \<RM> \<Rightarrow>* \<Empt>) \<or> r = ([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i\<RM>)" 
      using characteriseAx[where r=r] by auto
 { assume "rightPrincipal r A R" then obtain Ps where r2:"r = (Ps, \<Empt> \<Rightarrow>* \<LM> A \<RM>)" by (cases r) auto
-  with r1 and disjoint and `r \<in> Ax` have "False" by auto
+  with r1 and disjoint and \<open>r \<in> Ax\<close> have "False" by auto
 }
 then have "\<not> rightPrincipal r A R" by auto
 moreover
 { assume "leftPrincipal r A R" then obtain Ps' 
           where r3:"r = (Ps', \<LM>A\<RM> \<Rightarrow>* \<Empt>) \<and> A \<noteq> ff" by (cases r) auto
-  with r1 and disjoint and `r \<in> Ax` have "False" by auto
+  with r1 and disjoint and \<open>r \<in> Ax\<close> have "False" by auto
 }
 then have "\<not> leftPrincipal r A R" by auto
 ultimately show ?thesis by simp
@@ -733,7 +733,7 @@ from assms have "fst r \<noteq> []" apply (rule p_e.cases) apply (insert modRule
 {assume "rightPrincipal r (Compound M Ms) R"
  with assms obtain ps c where "r = (ps,c)" and "c = (\<Empt> \<Rightarrow>* \<LM>Compound M Ms\<RM>)" using not_principal_aux
       apply (cases r) by (rule rightPrincipal.cases) auto 
- then have "r \<in> upRules" using `fst r \<noteq> []` by auto
+ then have "r \<in> upRules" using \<open>fst r \<noteq> []\<close> by auto
  with assms have "False" using disjoint_up_mod1[where M=S and N=T] by auto
 }
 thus ?thesis by auto
@@ -750,7 +750,7 @@ from assms have "fst r \<noteq> []" apply (rule p_e.cases) apply (insert modRule
 {assume "leftPrincipal r (Compound M Ms) R"
  with assms obtain ps c where "r = (ps,c)" and "c = (\<LM>Compound M Ms\<RM> \<Rightarrow>* \<Empt>)" using not_principal_aux2
       apply (cases r) by (rule leftPrincipal.cases) auto 
- then have "r \<in> upRules" using `fst r \<noteq> []` by auto
+ then have "r \<in> upRules" using \<open>fst r \<noteq> []\<close> by auto
  with assms have "False" using disjoint_up_mod1[where M=T and N=S] by auto
 }
 thus ?thesis by auto
@@ -859,7 +859,7 @@ assumes "A \<in># M\<cdot>\<Delta>"
 shows "\<exists> B. A = Modal M [B]"
 proof-
  from assms have "\<Delta> \<noteq> \<Empt>" by (auto simp add:modaliseEmpty)
- with `A \<in># M\<cdot>\<Delta>` show "\<exists> B. A = Modal M [B]" 
+ with \<open>A \<in># M\<cdot>\<Delta>\<close> show "\<exists> B. A = Modal M [B]" 
       proof (induct \<Delta>)
       case empty
       then show ?case by simp
@@ -871,7 +871,7 @@ proof-
       moreover
          {assume "A \<in># M\<cdot>\<Delta>'"
           then have "\<Delta>' \<noteq> \<Empt>" by (auto simp add:modaliseEmpty)
-          with `A \<in># M\<cdot>\<Delta>'` have "\<exists> B. A = Modal M [B]" using IH by simp
+          with \<open>A \<in># M\<cdot>\<Delta>'\<close> have "\<exists> B. A = Modal M [B]" using IH by simp
          }
       moreover
          {assume "A \<in># M\<cdot>(\<LM>x\<RM>)"
@@ -899,13 +899,13 @@ then have "False"
  proof- 
    from a have box: "A \<in> set_mset (M\<cdot>\<Delta>)" and dia: "A \<in> set_mset (N\<cdot>\<Delta>')" by auto
    from box have "A \<in># M\<cdot>\<Delta>" by auto
-   with `\<Delta> \<noteq> \<Empt>` have "\<exists> B. A = Modal M [B]" using modalise_characterise[where M=M] by (auto)
+   with \<open>\<Delta> \<noteq> \<Empt>\<close> have "\<exists> B. A = Modal M [B]" using modalise_characterise[where M=M] by (auto)
    then obtain B where "A = Modal M [B]" by blast
    moreover 
    from dia have "A \<in># N\<cdot>\<Delta>'" by auto
-   with `\<Delta>' \<noteq> \<Empt>` have "\<exists> C. A = Modal N [C]" using modalise_characterise[where M=N] by auto
+   with \<open>\<Delta>' \<noteq> \<Empt>\<close> have "\<exists> C. A = Modal N [C]" using modalise_characterise[where M=N] by auto
    then obtain C where "A = Modal N [C]" by blast
-   ultimately show "False" using `M\<noteq>N` by auto
+   ultimately show "False" using \<open>M\<noteq>N\<close> by auto
  qed
 }
 then show ?thesis by auto
@@ -951,19 +951,19 @@ case 0
  then obtain  r S where "r \<in> R" and split:"(extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta>) \<or> extendConc S r = ([],\<Gamma> \<Rightarrow>* \<Delta>))" 
       apply (rule ext.cases) by (auto simp add:extendRule_def extend_def extendConc_def)
  then obtain c where "r = ([],c)" by (cases r) (auto simp add:extendRule_def extendConc_def)
- with `r \<in> R` have "r \<in> Ax \<or> (r \<in> upRules \<union> (p_e R2 M N) \<union> modRules2)" using b c d e by auto
- with `r = ([],c)` have "r \<in> Ax" apply auto apply (rule upRules.cases,auto)
+ with \<open>r \<in> R\<close> have "r \<in> Ax \<or> (r \<in> upRules \<union> (p_e R2 M N) \<union> modRules2)" using b c d e by auto
+ with \<open>r = ([],c)\<close> have "r \<in> Ax" apply auto apply (rule upRules.cases,auto)
                                  defer
                                  apply (rule modRules2.cases, auto)
                                  apply (rule p_e.cases,auto simp add:extendRule_def)
                                  apply hypsubst_thin
                                  apply (insert p_e_non_empty[where R=R2 and M=M and N=N])
                                  apply (drule_tac x="([], extend ( M \<cdot> \<Gamma> \<Rightarrow>* N \<cdot> \<Delta>) c)" in meta_spec) by auto
- with `r = ([],c)` obtain i where "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>) \<or> c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
+ with \<open>r = ([],c)\<close> obtain i where "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>) \<or> c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
       using characteriseAx[where r=r] by auto
  moreover
     {assume "c = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"
-     then have "extend S (\<LM>At i\<RM> \<Rightarrow>*\<LM>At i\<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and `r = ([],c)`
+     then have "extend S (\<LM>At i\<RM> \<Rightarrow>*\<LM>At i\<RM>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and \<open>r = ([],c)\<close>
           by (auto simp add:extendRule_def extendConc_def)
      then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" using extendID by auto
      then have "At i \<in># \<Gamma> + \<Gamma>' \<and> At i \<in># \<Delta> + \<Delta>'" by auto
@@ -972,14 +972,14 @@ case 0
     }
  moreover
     {assume "c = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
-     then have "extend S (\<LM>ff\<RM> \<Rightarrow>*\<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and `r = ([],c)`
+     then have "extend S (\<LM>ff\<RM> \<Rightarrow>*\<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta>)" using split and \<open>r = ([],c)\<close>
           by (auto simp add:extendRule_def extendConc_def)
      then have "ff \<in># \<Gamma>" using extendFalsum by auto
      then have "ff \<in># \<Gamma> + \<Gamma>'" by auto
      then have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M N)" 
           using e and containFalsum[where \<Gamma>="\<Gamma>+\<Gamma>'" and \<Delta>="\<Delta>+\<Delta>'" and R=R] by auto
     }
- ultimately show "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n) \<in> derivable (ext R R2 M N)" using `n=0` by auto
+ ultimately show "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n) \<in> derivable (ext R R2 M N)" using \<open>n=0\<close> by auto
 next
 case (Suc n')
  then have "(\<Gamma> \<Rightarrow>* \<Delta>, n'+1) \<in> derivable (ext R R2 M N)" using a' by simp
@@ -1007,19 +1007,19 @@ case (Suc n')
            with h obtain m where "m\<le>n'" and "(p',m) \<in> derivable (ext R R2 M N)" by auto
            moreover obtain \<Phi> \<Psi> where eq:"p' = (\<Phi> \<Rightarrow>* \<Psi>)" by (cases p') auto 
            then have "p = (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')" using t by (auto simp add:extend_def union_ac)
-           ultimately have "(p,m) \<in> derivable (ext R R2 M N)" using IH and `n = Suc n'` and eq
+           ultimately have "(p,m) \<in> derivable (ext R R2 M N)" using IH and \<open>n = Suc n'\<close> and eq
                 apply- by (drule_tac x=m in spec) simp
-           then have "\<exists> m\<le>n'. (p,m) \<in> derivable (ext R R2 M N)" using `m\<le>n'` by auto
+           then have "\<exists> m\<le>n'. (p,m) \<in> derivable (ext R R2 M N)" using \<open>m\<le>n'\<close> by auto
            }
            then show ?thesis by auto
            qed
      then have "\<forall> p' \<in> set (fst (extendRule (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r)).
                 \<exists> m\<le>n'. (p',m) \<in> derivable (ext R R2 M N)" using eq by auto
      moreover have "extendRule (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r \<in> (ext R R2 M N)" 
-              using `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` by auto
+              using \<open>r \<in> upRules \<or> r \<in> modRules2\<close> and \<open>r \<in> R\<close> by auto
      ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n'+1) \<in> derivable (ext R R2 M N)"
               using derivable.step[where r="extendRule (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r" and R="ext R R2 M N" and m="n'"]
-              and `fst r \<noteq> []` and eq2 by (cases r) (auto simp add:map_is_Nil_conv extendRule_def)
+              and \<open>fst r \<noteq> []\<close> and eq2 by (cases r) (auto simp add:map_is_Nil_conv extendRule_def)
      }
  moreover
      {assume as:"r \<in> p_e R2 M N \<and> extendConc S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta>)"
@@ -1028,7 +1028,7 @@ case (Suc n')
       moreover from as have "Ps = fst (extendConc (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r)"
            by (auto simp add:extendConc_def)
       moreover have "extendConc S r \<in> ext R R2 M N" using as and g by auto
-      moreover have "extendConc (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r \<in> ext R R2 M N" using as and `r \<in> R` and c
+      moreover have "extendConc (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r \<in> ext R R2 M N" using as and \<open>r \<in> R\<close> and c
             and ext.mod1[where r=r and R'=R2 and M=M and N=N and R=R and seq="extend S (\<Gamma>' \<Rightarrow>* \<Delta>')"]
             by auto
       ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n'+1) \<in> derivable (ext R R2 M N)"
@@ -1036,7 +1036,7 @@ case (Suc n')
            derivable.step[where r="extendConc (extend S (\<Gamma>' \<Rightarrow>* \<Delta>')) r" and R="ext R R2 M N" and m="n'"]
            by auto
      }
- ultimately show "( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', n) \<in> derivable (ext R R2 M N)" using `n = Suc n'` by auto
+ ultimately show "( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', n) \<in> derivable (ext R R2 M N)" using \<open>n = Suc n'\<close> by auto
  qed
 qed
 
@@ -1067,46 +1067,46 @@ proof-
  from ext nonempty have "r \<in> upRules \<or> r \<in> modRules2" apply (auto simp add:extendRule_def) apply (cases r) 
        apply (rotate_tac 3) by (rule Ax.cases) auto
  obtain \<Phi> \<Psi> where "S = (\<Phi> \<Rightarrow>* \<Psi>)" by (cases S) (auto)
- from `r = (ps,c)` obtain G H where "c = (G \<Rightarrow>* H)" by (cases c) (auto)
+ from \<open>r = (ps,c)\<close> obtain G H where "c = (G \<Rightarrow>* H)" by (cases c) (auto)
  then have "\<LM> Modal M Ms \<RM> \<noteq> H" 
       proof-
       {assume "r \<in> upRules"
-       with `r = (ps,c)` obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
+       with \<open>r = (ps,c)\<close> obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
              using upRuleCharacterise[where Ps=ps and C=c] by auto
        moreover
          {assume "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>)"
-          with `c = (G \<Rightarrow>* H)` have "\<LM> Modal M Ms \<RM> \<noteq> H" by auto
+          with \<open>c = (G \<Rightarrow>* H)\<close> have "\<LM> Modal M Ms \<RM> \<noteq> H" by auto
          }
        moreover
          {assume "c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
-          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using `c = (G \<Rightarrow>* H)` by auto
+          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using \<open>c = (G \<Rightarrow>* H)\<close> by auto
          }
        ultimately have "\<LM> Modal M Ms \<RM> \<noteq> H" by blast
       }
       moreover
       {assume "r \<in> modRules2" 
-       with `r = (ps,c)` obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>) \<or> c = (\<LM> Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
+       with \<open>r = (ps,c)\<close> obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>) \<or> c = (\<LM> Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
              using modRule2Characterise[where Ps=ps and C=c] by auto
        moreover
          {assume "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>)"
-          then have "rightPrincipal r (Modal T Ts) R'" using `r = (ps,c)` and `r \<in> R`
+          then have "rightPrincipal r (Modal T Ts) R'" using \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close>
                proof-
-               from `c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)` and `r = (ps,c)` and `r \<in> R` and `r \<in> modRules2`
+               from \<open>c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)\<close> and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> and \<open>r \<in> modRules2\<close>
                     have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R" by auto
-               with `R = Ax \<union> R1 \<union> p_e R2 M1 M2 \<union> R3`
+               with \<open>R = Ax \<union> R1 \<union> p_e R2 M1 M2 \<union> R3\<close>
                     have "(ps,  \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> p_e R2 M1 M2 \<or>
                           (ps,  \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R3" apply auto apply (rule Ax.cases) apply auto
-                    apply (subgoal_tac "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> upRules") apply (insert `R1 \<subseteq> upRules`)
+                    apply (subgoal_tac "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> upRules") apply (insert \<open>R1 \<subseteq> upRules\<close>)
                     apply auto apply (rule upRules.cases) by auto
                moreover
                   {assume "(ps, \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R3"
-                   then have "(ps, \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" using `R' = Ax \<union> R1 \<union> R2 \<union> R3` by auto
+                   then have "(ps, \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" using \<open>R' = Ax \<union> R1 \<union> R2 \<union> R3\<close> by auto
                   }
                moreover
                   {assume "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> p_e R2 M1 M2"
                    then obtain \<Gamma>' \<Delta>' r' where aa: "(ps, \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) = extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' \<and> r' \<in> R2"
                         apply (rule p_e.cases) by auto
-                   then have "r' \<in> modRules2" using `R2 \<subseteq> modRules2` by auto
+                   then have "r' \<in> modRules2" using \<open>R2 \<subseteq> modRules2\<close> by auto
                    then obtain F Fs where 
                         "snd r' = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> snd r' = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
                         using modRule2Characterise[where Ps="fst r'" and C="snd r'"] by auto
@@ -1124,7 +1124,7 @@ proof-
                        then have "extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' = r'" using extendRuleEmpty[where r=r'] by auto
                        then have "extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' \<in> R2" using aa by auto
                        then have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R2" using aa by auto
-                       then have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" using `R' = Ax\<union>R1 \<union>R2 \<union> R3 ` by simp
+                       then have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" using \<open>R' = Ax\<union>R1 \<union>R2 \<union> R3 \<close> by simp
                       }
                    moreover
                       {assume "(\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) = (M1\<cdot>\<Gamma>' \<oplus> Modal F Fs \<Rightarrow>* M2\<cdot>\<Delta>')"
@@ -1134,43 +1134,43 @@ proof-
                    ultimately have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" by blast
                   }
               ultimately have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" by auto
-              then show ?thesis using `r = (ps,c)` and `c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)` by auto
+              then show ?thesis using \<open>r = (ps,c)\<close> and \<open>c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)\<close> by auto
               qed
-          with `\<not> rightPrincipal r (Modal M Ms) R'` have "Modal T Ts \<noteq> Modal M Ms" by auto
-          with `c = (G \<Rightarrow>* H)` have "\<LM> Modal M Ms \<RM> \<noteq> H" using `c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>)` by auto
+          with \<open>\<not> rightPrincipal r (Modal M Ms) R'\<close> have "Modal T Ts \<noteq> Modal M Ms" by auto
+          with \<open>c = (G \<Rightarrow>* H)\<close> have "\<LM> Modal M Ms \<RM> \<noteq> H" using \<open>c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>)\<close> by auto
          }
        moreover
          {assume "c = (\<LM>Modal T Ts \<RM> \<Rightarrow>* \<Empt>)"
-          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using `c = (G \<Rightarrow>* H)` by auto
+          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using \<open>c = (G \<Rightarrow>* H)\<close> by auto
          }
        ultimately have "\<LM> Modal M Ms \<RM> \<noteq> H" by blast
       }
-      ultimately show ?thesis using `r \<in> upRules \<or> r \<in> modRules2` by blast
+      ultimately show ?thesis using \<open>r \<in> upRules \<or> r \<in> modRules2\<close> by blast
       qed
  moreover have "succ S + succ (snd r) = (\<Delta> \<oplus> Modal M Ms)" 
           using ext and extendRule_def[where forms=S and R=r]
                     and extend_def[where forms=S and seq="snd r"] by auto
- then have "\<Psi> + H = \<Delta> \<oplus> Modal M Ms" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` and `r = (ps,c)` and `c = (G \<Rightarrow>* H)` by auto
- moreover from `r = (ps,c)` and `r \<in> upRules \<or> r \<in> modRules2` have "(ps,c) \<in> upRules \<or> (ps,c) \<in> modRules2" by auto
+ then have "\<Psi> + H = \<Delta> \<oplus> Modal M Ms" using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> and \<open>r = (ps,c)\<close> and \<open>c = (G \<Rightarrow>* H)\<close> by auto
+ moreover from \<open>r = (ps,c)\<close> and \<open>r \<in> upRules \<or> r \<in> modRules2\<close> have "(ps,c) \<in> upRules \<or> (ps,c) \<in> modRules2" by auto
  then have "\<exists> A. c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)"
       using upRuleCharacterise[where Ps=ps and C=c]
         and modRule2Characterise[where Ps=ps and C=c] by auto
- then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using `c = (G \<Rightarrow>* H)` by auto
+ then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using \<open>c = (G \<Rightarrow>* H)\<close> by auto
  ultimately have "Modal M Ms \<in># \<Psi>"
      proof-
      have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
      moreover
      {assume "H = \<Empt>"
-      then have "\<Psi> = \<Delta> \<oplus> Modal M Ms" using `\<Psi> + H = \<Delta> \<oplus> Modal M Ms` by auto
+      then have "\<Psi> = \<Delta> \<oplus> Modal M Ms" using \<open>\<Psi> + H = \<Delta> \<oplus> Modal M Ms\<close> by auto
       then have "Modal M Ms \<in># \<Psi>" by auto
      }
      moreover
      {assume "\<exists> A. H = \<LM>A\<RM>"
       then obtain T where "H = \<LM>T\<RM>" by auto
-      then have "\<Psi> \<oplus> T = \<Delta> \<oplus> Modal M Ms" using `\<Psi> + H = \<Delta> \<oplus> Modal M Ms` by auto
+      then have "\<Psi> \<oplus> T = \<Delta> \<oplus> Modal M Ms" using \<open>\<Psi> + H = \<Delta> \<oplus> Modal M Ms\<close> by auto
       then have "set_mset (\<Psi> \<oplus> T) = set_mset (\<Delta> \<oplus> Modal M Ms)" by auto
       then have "set_mset \<Psi> \<union> {T} = set_mset \<Delta> \<union> {Modal M Ms}" by auto
-      moreover from `H = \<LM>T\<RM>` and `\<LM>Modal M Ms\<RM> \<noteq> H` have "Modal M Ms \<noteq> T" by auto
+      moreover from \<open>H = \<LM>T\<RM>\<close> and \<open>\<LM>Modal M Ms\<RM> \<noteq> H\<close> have "Modal M Ms \<noteq> T" by auto
       ultimately have "Modal M Ms \<in> set_mset \<Psi>" by auto
       then have "Modal M Ms \<in># \<Psi>" by auto
      }
@@ -1178,11 +1178,11 @@ proof-
      qed
  then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> Modal M Ms" 
       by (rule_tac x="\<Psi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_eq_iff)
- then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
- have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
+ then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)" using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> by auto
+ have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and \<open>r = (ps,c)\<close> by auto
  then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
  then have "\<forall> p \<in> set Ps. (Modal M Ms \<in># succ p)" 
-      using `Modal M Ms \<in># \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+      using \<open>Modal M Ms \<in># \<Psi>\<close> and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> apply (auto simp add:Ball_def) 
       by (drule_tac x=x in spec) (auto simp add:extend_def)
  then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms)" using characteriseSeq
       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
@@ -1202,19 +1202,19 @@ proof-
                   apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                   apply (simp) apply (elim exE conjE) by (rule_tac x=m' in exI) arith
  obtain Ps' where eq: "Ps' = map (extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>')) ps" by auto
- have "length Ps = length Ps'" using `Ps' = map (extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>')) ps`
-                               and `Ps = map (extend S) ps` by auto
+ have "length Ps = length Ps'" using \<open>Ps' = map (extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>')) ps\<close>
+                               and \<open>Ps = map (extend S) ps\<close> by auto
  then have "Ps' \<noteq> []" using nonempty by auto
- from `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
+ from \<open>r \<in> upRules \<or> r \<in> modRules2\<close> and \<open>r \<in> R\<close> have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
  moreover have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
-          using `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)` and ext and `r = (ps,c)` and eq
+          using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)\<close> and ext and \<open>r = (ps,c)\<close> and eq
           by (auto simp add:extendRule_def extend_def)
  ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)" by simp
- have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
+ have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using \<open>Ps = map (extend S) ps\<close> by (simp add:Ball_def)           
  have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
  then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
            by (auto simp add: extend_def) 
- have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
+ have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using \<open>Ps = map (extend S) ps\<close> by (auto simp add:Ball_def Bex_def)
  then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
  moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p'" using eq
              by (auto simp add:Ball_def Bex_def)
@@ -1224,7 +1224,7 @@ proof-
                  {fix \<Phi>' \<Psi>'
                   assume "(\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms) \<in> set Ps"  
                   then have "\<exists> p \<in> set ps. extend (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms) p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms)"
-                       using `Ps = map (extend S) ps` and `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)` and a1 and d1
+                       using \<open>Ps = map (extend S) ps\<close> and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)\<close> and a1 and d1
                             apply (simp only:Ball_def Bex_def) apply (drule_tac x=" \<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms" in spec)
                             by (drule_tac x="\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms" in spec) (auto)
                   then obtain p where t:"p \<in> set ps \<and> (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms) = extend (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms) p"
@@ -1240,7 +1240,7 @@ proof-
                   then have "\<Psi>' + \<Delta>' = (\<Psi>1 + \<Delta>') + B" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>+\<Gamma>'\<Rightarrow>*\<Psi>1+\<Delta>'" and seq="D\<Rightarrow>*B"] by auto
-                  moreover have "extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B) \<in> set Ps'" using `p = (D \<Rightarrow>* B)` and t and c2 by auto
+                  moreover have "extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (D \<Rightarrow>* B) \<in> set Ps'" using \<open>p = (D \<Rightarrow>* B)\<close> and t and c2 by auto
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') \<in> set Ps'" by simp
                   }
                   thus ?thesis by blast
@@ -1269,8 +1269,8 @@ proof-
                   then have "\<Psi>' \<oplus> Modal M Ms = (\<Psi>1 \<oplus> Modal M Ms) + B" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms) = extend (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms) (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>\<Rightarrow>*\<Psi>1\<oplus>Modal M Ms" and seq="D\<Rightarrow>*B"] by auto
-                  moreover have "extend (\<Phi>  \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms) (D \<Rightarrow>* B) \<in> set Ps" using `p = (D \<Rightarrow>* B)` and t and c1
-                       and `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)` by auto
+                  moreover have "extend (\<Phi>  \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms) (D \<Rightarrow>* B) \<in> set Ps" using \<open>p = (D \<Rightarrow>* B)\<close> and t and c1
+                       and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Modal M Ms)\<close> by auto
                   ultimately have "(\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms) \<in> set Ps" by simp
                   }
                   thus ?thesis by blast
@@ -1284,7 +1284,7 @@ proof-
       by (drule_tac x="\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Modal M Ms" in spec) (simp)
  then have all:"\<forall> p \<in> set Ps'. \<exists> n\<le>n'. (p,n) \<in> derivable (ext R R2 M1 M2)" by auto
  then show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using num
-      and `(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)` and `Ps' \<noteq> []`
+      and \<open>(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)\<close> and \<open>Ps' \<noteq> []\<close>
       and derivable.step[where r="(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')" and R="ext R R2 M1 M2"]
       by (auto simp add:Ball_def Bex_def)
 qed
@@ -1311,50 +1311,50 @@ proof-
  from ext nonempty have "r \<in> upRules \<or> r \<in> modRules2" apply (auto simp add:extendRule_def) apply (cases r) 
        apply (rotate_tac 3) by (rule Ax.cases) auto
  obtain \<Phi> \<Psi> where "S = (\<Phi> \<Rightarrow>* \<Psi>)" by (cases S) (auto)
- from `r = (ps,c)` obtain G H where "c = (H \<Rightarrow>* G)" by (cases c) (auto)
+ from \<open>r = (ps,c)\<close> obtain G H where "c = (H \<Rightarrow>* G)" by (cases c) (auto)
  then have "\<LM> Modal M Ms \<RM> \<noteq> H" 
       proof-
       {assume "r \<in> upRules"
-       with `r = (ps,c)` obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
+       with \<open>r = (ps,c)\<close> obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
              using upRuleCharacterise[where Ps=ps and C=c] by auto
        moreover
          {assume "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>)"
-          with `c = (H \<Rightarrow>* G)` have "\<LM> Modal M Ms \<RM> \<noteq> H" by auto
+          with \<open>c = (H \<Rightarrow>* G)\<close> have "\<LM> Modal M Ms \<RM> \<noteq> H" by auto
          }
        moreover
          {assume "c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
-          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using `c = (H \<Rightarrow>* G)` by auto
+          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using \<open>c = (H \<Rightarrow>* G)\<close> by auto
          }
        ultimately have "\<LM> Modal M Ms \<RM> \<noteq> H" by blast
       }
       moreover
       {assume "r \<in> modRules2" 
-       with `r = (ps,c)` obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>) \<or> c = (\<LM> Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
+       with \<open>r = (ps,c)\<close> obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>) \<or> c = (\<LM> Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
              using modRule2Characterise[where Ps=ps and C=c] by auto
        moreover
          {assume "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>)"
-          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using `c = (H \<Rightarrow>* G)` by auto          
+          then have "\<LM>Modal M Ms \<RM> \<noteq> H" using \<open>c = (H \<Rightarrow>* G)\<close> by auto          
          }
        moreover
          {assume "c = (\<LM>Modal T Ts \<RM> \<Rightarrow>* \<Empt>)"
-          then have "leftPrincipal r (Modal T Ts) R'" using `r = (ps,c)` and `r \<in> R`
+          then have "leftPrincipal r (Modal T Ts) R'" using \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close>
                proof-
-               from `c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)` and `r = (ps,c)` and `r \<in> R` and `r \<in> modRules2`
+               from \<open>c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> and \<open>r \<in> modRules2\<close>
                     have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R" by auto
-               with `R = Ax \<union> R1 \<union> p_e R2 M1 M2 \<union> R3`
+               with \<open>R = Ax \<union> R1 \<union> p_e R2 M1 M2 \<union> R3\<close>
                     have "(ps,  \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> p_e R2 M1 M2 \<or>
                           (ps,  \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R3" apply auto apply (rule Ax.cases) apply auto
-                    apply (subgoal_tac "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> upRules") apply (insert `R1 \<subseteq> upRules`)
+                    apply (subgoal_tac "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> upRules") apply (insert \<open>R1 \<subseteq> upRules\<close>)
                     apply auto apply (rule upRules.cases) by auto
                moreover
                   {assume "(ps, \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R3"
-                   then have "(ps, \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" using `R' = Ax \<union> R1 \<union> R2 \<union> R3` by auto
+                   then have "(ps, \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" using \<open>R' = Ax \<union> R1 \<union> R2 \<union> R3\<close> by auto
                   }
                moreover
                   {assume "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> p_e R2 M1 M2"
                    then obtain \<Gamma>' \<Delta>' r' where aa: "(ps, \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) = extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' \<and> r' \<in> R2"
                         apply (rule p_e.cases) by auto
-                   then have "r' \<in> modRules2" using `R2 \<subseteq> modRules2` by auto
+                   then have "r' \<in> modRules2" using \<open>R2 \<subseteq> modRules2\<close> by auto
                    then obtain F Fs where 
                         "snd r' = (\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>) \<or> snd r' = (\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
                         using modRule2Characterise[where Ps="fst r'" and C="snd r'"] by auto
@@ -1377,45 +1377,45 @@ proof-
                        then have "extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' = r'" using extendRuleEmpty[where r=r'] by auto
                        then have "extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' \<in> R2" using aa by auto
                        then have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R2" using aa by auto
-                       then have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" using `R' = Ax\<union>R1 \<union>R2 \<union> R3 ` by simp
+                       then have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" using \<open>R' = Ax\<union>R1 \<union>R2 \<union> R3 \<close> by simp
                       }
                    ultimately have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" by blast
                   }
               ultimately have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" by auto
-              then show ?thesis using `r = (ps,c)` and `c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)` by auto
+              then show ?thesis using \<open>r = (ps,c)\<close> and \<open>c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> by auto
               qed
-          then have "leftPrincipal r (Modal T Ts) R'" using `r = (ps,c)` by auto
-          with `\<not> leftPrincipal r (Modal M Ms) R'` have "Modal T Ts \<noteq> Modal M Ms" by auto
-          with `c = (H \<Rightarrow>* G)` have "\<LM> Modal M Ms \<RM> \<noteq> H" using `c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)` by auto
+          then have "leftPrincipal r (Modal T Ts) R'" using \<open>r = (ps,c)\<close> by auto
+          with \<open>\<not> leftPrincipal r (Modal M Ms) R'\<close> have "Modal T Ts \<noteq> Modal M Ms" by auto
+          with \<open>c = (H \<Rightarrow>* G)\<close> have "\<LM> Modal M Ms \<RM> \<noteq> H" using \<open>c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> by auto
          }
        ultimately have "\<LM> Modal M Ms \<RM> \<noteq> H" by blast
       }
-      ultimately show ?thesis using `r \<in> upRules \<or> r \<in> modRules2` by blast
+      ultimately show ?thesis using \<open>r \<in> upRules \<or> r \<in> modRules2\<close> by blast
       qed
  moreover have "antec S + antec (snd r) = (\<Gamma> \<oplus> Modal M Ms)" 
           using ext and extendRule_def[where forms=S and R=r]
                     and extend_def[where forms=S and seq="snd r"] by auto
- then have "\<Phi> + H = \<Gamma> \<oplus> Modal M Ms" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` and `r = (ps,c)` and `c = (H \<Rightarrow>* G)` by auto
- moreover from `r = (ps,c)` and `r \<in> upRules \<or> r \<in> modRules2` have "(ps,c) \<in> upRules \<or> (ps,c) \<in> modRules2" by auto
+ then have "\<Phi> + H = \<Gamma> \<oplus> Modal M Ms" using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> and \<open>r = (ps,c)\<close> and \<open>c = (H \<Rightarrow>* G)\<close> by auto
+ moreover from \<open>r = (ps,c)\<close> and \<open>r \<in> upRules \<or> r \<in> modRules2\<close> have "(ps,c) \<in> upRules \<or> (ps,c) \<in> modRules2" by auto
  then have "\<exists> A. c = (\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<or> c = (\<LM>A\<RM> \<Rightarrow>* \<Empt>)"
       using upRuleCharacterise[where Ps=ps and C=c]
         and modRule2Characterise[where Ps=ps and C=c] by auto
- then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using `c = (H \<Rightarrow>* G)` by auto
+ then have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" using \<open>c = (H \<Rightarrow>* G)\<close> by auto
  ultimately have "Modal M Ms \<in># \<Phi>"
      proof-
      have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
      moreover
      {assume "H = \<Empt>"
-      then have "\<Phi> = \<Gamma> \<oplus> Modal M Ms" using `\<Phi> + H = \<Gamma> \<oplus> Modal M Ms` by auto
+      then have "\<Phi> = \<Gamma> \<oplus> Modal M Ms" using \<open>\<Phi> + H = \<Gamma> \<oplus> Modal M Ms\<close> by auto
       then have "Modal M Ms \<in># \<Phi>" by auto
      }
      moreover
      {assume "\<exists> A. H = \<LM>A\<RM>"
       then obtain T where "H = \<LM>T\<RM>" by auto
-      then have "\<Phi> \<oplus> T = \<Gamma> \<oplus> Modal M Ms" using `\<Phi> + H = \<Gamma> \<oplus> Modal M Ms` by auto
+      then have "\<Phi> \<oplus> T = \<Gamma> \<oplus> Modal M Ms" using \<open>\<Phi> + H = \<Gamma> \<oplus> Modal M Ms\<close> by auto
       then have "set_mset (\<Phi> \<oplus> T) = set_mset (\<Gamma> \<oplus> Modal M Ms)" by auto
       then have "set_mset \<Phi> \<union> {T} = set_mset \<Gamma> \<union> {Modal M Ms}" by auto
-      moreover from `H = \<LM>T\<RM>` and `\<LM>Modal M Ms\<RM> \<noteq> H` have "Modal M Ms \<noteq> T" by auto
+      moreover from \<open>H = \<LM>T\<RM>\<close> and \<open>\<LM>Modal M Ms\<RM> \<noteq> H\<close> have "Modal M Ms \<noteq> T" by auto
       ultimately have "Modal M Ms \<in> set_mset \<Phi>" by auto
       then have "Modal M Ms \<in># \<Phi>" by auto
      }
@@ -1423,11 +1423,11 @@ proof-
      qed
  then have "\<exists> \<Phi>1. \<Phi> = \<Phi>1 \<oplus> Modal M Ms" 
       by (rule_tac x="\<Phi> \<ominus> Modal M Ms" in exI) (auto simp add:multiset_eq_iff)
- then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
- have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
+ then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)" using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> by auto
+ have "Ps = map (extend S) ps" using ext and extendRule_def[where forms=S and R=r] and \<open>r = (ps,c)\<close> by auto
  then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
  then have "\<forall> p \<in> set Ps. (Modal M Ms \<in># antec p)" 
-      using `Modal M Ms \<in># \<Phi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+      using \<open>Modal M Ms \<in># \<Phi>\<close> and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> apply (auto simp add:Ball_def) 
       by (drule_tac x=x in spec) (auto simp add:extend_def)
  then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>')" using characteriseSeq
       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
@@ -1445,19 +1445,19 @@ proof-
                   apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                   apply (simp) apply (elim exE conjE) by (rule_tac x=m' in exI) (arith)
  obtain Ps' where eq: "Ps' = map (extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')) ps" by auto
- have "length Ps = length Ps'" using `Ps' = map (extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')) ps`
-                               and `Ps = map (extend S) ps` by auto
+ have "length Ps = length Ps'" using \<open>Ps' = map (extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')) ps\<close>
+                               and \<open>Ps = map (extend S) ps\<close> by auto
  then have "Ps' \<noteq> []" using nonempty by auto
- from `r \<in> upRules \<or> r \<in> modRules2` and `r \<in> R` have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
+ from \<open>r \<in> upRules \<or> r \<in> modRules2\<close> and \<open>r \<in> R\<close> have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r \<in> (ext R R2 M1 M2)" by auto
  moreover have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
-          using `S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)` and ext and `r = (ps,c)` and eq
+          using \<open>S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)\<close> and ext and \<open>r = (ps,c)\<close> and eq
           by (auto simp add:extendRule_def extend_def)
  ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)" by simp
- have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
+ have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using \<open>Ps = map (extend S) ps\<close> by (simp add:Ball_def)           
  have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq by (simp add:Ball_def)
  then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
            by (auto simp add: extend_def) 
- have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps` by (auto simp add:Ball_def Bex_def)
+ have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using \<open>Ps = map (extend S) ps\<close> by (auto simp add:Ball_def Bex_def)
  then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 by (auto simp add:Ball_def Bex_def)
  moreover have d2: "\<forall> p \<in> set Ps'. \<exists> p' \<in> set ps. p = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p'" using eq
              by (auto simp add:Ball_def Bex_def)
@@ -1467,7 +1467,7 @@ proof-
                  {fix \<Phi>' \<Psi>'
                   assume "(\<Phi>' \<oplus> Modal M Ms\<Rightarrow>* \<Psi>') \<in> set Ps"  
                   then have "\<exists> p \<in> set ps. extend (\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>) p = (\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>')"
-                       using `Ps = map (extend S) ps` and `S = (\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>)` and a1 and d1
+                       using \<open>Ps = map (extend S) ps\<close> and \<open>S = (\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>)\<close> and a1 and d1
                             apply (simp only:Ball_def Bex_def) apply (drule_tac x=" \<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>'" in spec)
                             by (drule_tac x="\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>'" in spec) (auto)
                   then obtain p where t:"p \<in> set ps \<and> (\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>') = extend (\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>) p"
@@ -1483,7 +1483,7 @@ proof-
                   then have "\<Phi>' + \<Gamma>' = (\<Phi>1 + \<Gamma>') + D" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>1+\<Gamma>'\<Rightarrow>*\<Psi>+\<Delta>'" and seq="D\<Rightarrow>*B"] by auto
-                  moreover have "extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B) \<in> set Ps'" using `p = (D \<Rightarrow>* B)` and t and c2 by auto
+                  moreover have "extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (D \<Rightarrow>* B) \<in> set Ps'" using \<open>p = (D \<Rightarrow>* B)\<close> and t and c2 by auto
                   ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') \<in> set Ps'" by simp
                   }
                   thus ?thesis by blast
@@ -1512,8 +1512,8 @@ proof-
                   then have "\<Phi>' \<oplus> Modal M Ms = (\<Phi>1 \<oplus> Modal M Ms) + D" by (auto simp add:union_ac)
                   ultimately have "(\<Phi>' \<oplus> Modal M Ms \<Rightarrow>* \<Psi>' ) = extend (\<Phi>1\<oplus> Modal M Ms \<Rightarrow>* \<Psi>) (D \<Rightarrow>* B)" 
                        using extend_def[where forms="\<Phi>1 \<oplus> Modal M Ms\<Rightarrow>*\<Psi>" and seq="D\<Rightarrow>*B"] by auto
-                  moreover have "extend (\<Phi>1\<oplus>Modal M Ms  \<Rightarrow>* \<Psi>) (D \<Rightarrow>* B) \<in> set Ps" using `p = (D \<Rightarrow>* B)` and t and c1
-                       and `S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)` by auto
+                  moreover have "extend (\<Phi>1\<oplus>Modal M Ms  \<Rightarrow>* \<Psi>) (D \<Rightarrow>* B) \<in> set Ps" using \<open>p = (D \<Rightarrow>* B)\<close> and t and c1
+                       and \<open>S = (\<Phi>1 \<oplus> Modal M Ms \<Rightarrow>* \<Psi>)\<close> by auto
                   ultimately have "(\<Phi>' \<oplus> Modal M Ms \<Rightarrow>* \<Psi>' ) \<in> set Ps" by simp
                   }
                   thus ?thesis by blast
@@ -1527,16 +1527,16 @@ proof-
       by (drule_tac x="\<Phi>'\<oplus> Modal M Ms \<Rightarrow>* \<Psi>' " in spec) (simp)
  then have all:"\<forall> p \<in> set Ps'. \<exists> n\<le>n'. (p,n) \<in> derivable (ext R R2 M1 M2)" by auto
  then show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using num
-      and `(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)` and `Ps' \<noteq> []`
+      and \<open>(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> (ext R R2 M1 M2)\<close> and \<open>Ps' \<noteq> []\<close>
       and derivable.step[where r="(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')" and R="(ext R R2 M1 M2)"]
       by (auto simp add:Ball_def Bex_def)
 qed
 
 
 (*>*)
-text{*
+text\<open>
 We have two different inversion lemmata, depending on whether the rule was a modalised context rule, or some other kind of rule.  We only show the former, since the latter is much the same as earlier proofs.  The interesting cases are picked out:
-*}
+\<close>
 lemma rightInvert:
 fixes \<Gamma> \<Delta> :: "('a,'b) form multiset"
 assumes rules: "R1 \<subseteq> upRules \<and> R2 \<subseteq> modRules2 \<and> R3 \<subseteq> modRules2 \<and> 
@@ -1579,7 +1579,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
           using characteriseAx[where r=r] by auto
      moreover 
          {assume "r = ([],\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"
-          with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)`
+          with \<open>extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)\<close>
                have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
                using extendRule_def[where R="([],\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)" and forms=S] by auto
           then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" 
@@ -1590,7 +1590,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
          }
      moreover
          {assume "r = ([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
-          with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)`
+          with \<open>extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)\<close>
              have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
              using extendRule_def[where R="([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and forms=S] by auto
           then have "ff \<in># \<Gamma>" 
@@ -1600,7 +1600,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
          }
      ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M1 M2)" by blast
-     then show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using `n=0` by auto
+     then show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using \<open>n=0\<close> by auto
  next
      case (Suc n')
      then have "(\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms,n'+1) \<in> derivable (ext R R2 M1 M2)" using a' by simp
@@ -1614,12 +1614,12 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                                 \<or> (r \<in> p_e R2 M1 M2 \<and> extendConc S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms))" and "r \<in> R" by auto
      moreover
         {assume ext1: "(r \<in> Ax \<or> r \<in> upRules \<or> r \<in> modRules2) \<and> extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
-         with `Ps \<noteq> []` have "r \<in> upRules \<or> r \<in> modRules2" and "extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)" 
+         with \<open>Ps \<noteq> []\<close> have "r \<in> upRules \<or> r \<in> modRules2" and "extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)" 
                apply auto apply (cases r) 
                by (rule Ax.cases) (auto simp add:extendRule_def)
          moreover
             {assume "r \<in> upRules"
-             with `r \<in> R` have "r \<in> R1" using rules [[hypsubst_thin=true]]
+             with \<open>r \<in> R\<close> have "r \<in> R1" using rules [[hypsubst_thin=true]]
                   apply auto apply (insert disjoint) apply auto
                   apply (insert upRuleCharacterise) apply (rotate_tac 10) apply (drule_tac x="fst r" in meta_spec)
                   apply (rotate_tac 10) apply (drule_tac x="snd r" in meta_spec) apply simp
@@ -1628,46 +1628,46 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                   by (auto simp add:extendRule_def extend_def)
              with rules have "r \<in> R'" by auto
              obtain ps c where "r = (ps,c)" by (cases r) auto
-             with `r \<in> upRules` obtain T Ts where sw:"c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> 
+             with \<open>r \<in> upRules\<close> obtain T Ts where sw:"c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> 
                                                    c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
                   using upRuleCharacterise[where Ps=ps and C=c] by auto
              have "(rightPrincipal r (Modal M Ms) R') \<or> \<not>(rightPrincipal r (Modal M Ms) R')" by blast
              moreover
                 {assume "rightPrincipal r (Modal M Ms) R'"
-                 then have "c = (\<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)" using `r = (ps,c)` by (cases) auto
-                 with sw and `r \<in> R'` have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
+                 then have "c = (\<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)" using \<open>r = (ps,c)\<close> by (cases) auto
+                 with sw and \<open>r \<in> R'\<close> have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
                       by auto
                 }
              moreover
                 {assume "\<not> rightPrincipal r (Modal M Ms) R'"
-                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' `Ps \<noteq> []`
+                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' \<open>Ps \<noteq> []\<close>
                       and nonPrincipalInvertRight[where ?R1.0=R1 and ?R2.0=R2 and ?R3.0=R3 and R=R and n=n
                                                   and \<Gamma>=\<Gamma> and \<Delta>=\<Delta> and M=M and Ms=Ms and r=r and S=S
                                                   and \<Gamma>'=\<Gamma>' and \<Delta>'=\<Delta>' and n'=n' and Ps=Ps and ps=ps 
                                                   and c=c and R'=R' and ?M1.0=M1 and ?M2.0=M2]
-                      and `n = Suc n'` and ext1 and rules and `r = (ps,c)` and `r \<in> R` by auto
+                      and \<open>n = Suc n'\<close> and ext1 and rules and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> by auto
                 }
              ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by blast
             }
          moreover
 (*>*)
 
-txt{* \noindent This is the case where the last inference was a normal modal inference: *}
+txt\<open>\noindent This is the case where the last inference was a normal modal inference:\<close>
 
   {assume "r \<in> modRules2"
    obtain ps c where "r = (ps,c)" by (cases r) auto
-   with `r \<in> modRules2` obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>) \<or> 
+   with \<open>r \<in> modRules2\<close> obtain T Ts where "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>) \<or> 
             c = (\<LM> Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
             using modRule2Characterise[where Ps=ps and C=c] by auto
    moreover
      {assume "c = (\<Empt> \<Rightarrow>* \<LM> Modal T Ts \<RM>)"
-      then have bb: "rightPrincipal r (Modal T Ts) R'" using `r = (ps,c)` and `r \<in> R`
+      then have bb: "rightPrincipal r (Modal T Ts) R'" using \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close>
       proof-  
-txt{* \noindent We need to know $r \in R$ so that we can extend the active part*}
-    from `c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)` and 
-           `r = (ps,c)` and 
-           `r \<in> R` and 
-           `r \<in> modRules2`
+txt\<open>\noindent We need to know $r \in R$ so that we can extend the active part\<close>
+    from \<open>c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)\<close> and 
+           \<open>r = (ps,c)\<close> and 
+           \<open>r \<in> R\<close> and 
+           \<open>r \<in> modRules2\<close>
         have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R" by auto
     with rules have "(ps,  \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> p_e R2 M1 M2 \<or>
          (ps,  \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R3" (*<*)apply auto apply (rule Ax.cases) apply auto
@@ -1680,7 +1680,7 @@ txt{* \noindent We need to know $r \in R$ so that we can extend the active part*
    moreover
       {assume "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> p_e R2 M1 M2"
 
-txt{* \noindent In this case, we show that $\Delta'$ and $\Gamma'$ must be empty.  The details are generally suppressed: *}
+txt\<open>\noindent In this case, we show that $\Delta'$ and $\Gamma'$ must be empty.  The details are generally suppressed:\<close>
   then obtain \<Gamma>' \<Delta>' r' 
   where aa: "(ps, \<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) = extendRule (M1\<cdot>\<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>') r' 
             \<and> r' \<in> R2"(*<*)apply (rule p_e.cases)(*>*) by auto
@@ -1712,22 +1712,22 @@ txt{* \noindent In this case, we show that $\Delta'$ and $\Gamma'$ must be empty
                               ultimately have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" by blast
                              }
                          ultimately have "(ps,\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>) \<in> R'" by auto
-                         then show ?thesis using `r = (ps,c)` and `c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)` by auto
+                         then show ?thesis using \<open>r = (ps,c)\<close> and \<open>c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)\<close> by auto
                          qed
                     have "Modal T Ts = Modal M Ms \<or> Modal T Ts \<noteq> Modal M Ms" by blast
                     moreover
                        {assume "Modal T Ts = Modal M Ms"
                         with bb have "rightPrincipal r (Modal M Ms) R'" by auto
                         with b' have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r)" apply- by (rule rightPrincipal.cases) auto
-                        moreover from `r = (ps,c)` and `c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)` and `Modal T Ts = Modal M Ms`
-                                 and `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)`
+                        moreover from \<open>r = (ps,c)\<close> and \<open>c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)\<close> and \<open>Modal T Ts = Modal M Ms\<close>
+                                 and \<open>extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)\<close>
                                  have "S = (\<Gamma> \<Rightarrow>* \<Delta>)" apply (auto simp add:extendRule_def extend_def) by (cases S) auto
                         ultimately have "(\<Gamma>+\<Gamma>' \<Rightarrow>* \<Delta>+\<Delta>') \<in> set Ps" 
                              using extendContain[where r=r and ps=ps and c=c and Ps=Ps 
                                                and C="\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms" and S="\<Gamma> \<Rightarrow>* \<Delta>" and p="\<Gamma>'\<Rightarrow>*\<Delta>'"]
-                             and `r = (ps,c)` and `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)` by (auto simp add:extend_def)
+                             and \<open>r = (ps,c)\<close> and \<open>extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)\<close> by (auto simp add:extend_def)
                         with d' have "\<exists> n\<le>n'. (\<Gamma>+\<Gamma>' \<Rightarrow>* \<Delta>+\<Delta>',n) \<in> derivable (ext R R2 M1 M2)" by auto
-                        with `n = Suc n'` have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)"
+                        with \<open>n = Suc n'\<close> have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)"
                              apply auto apply (rule_tac x=n in exI) by arith
                        }
                     moreover
@@ -1736,32 +1736,32 @@ txt{* \noindent In this case, we show that $\Delta'$ and $\Gamma'$ must be empty
                              apply auto apply (rotate_tac 1) apply (rule rightPrincipal.cases) apply auto
                              apply (rule rightPrincipal.cases) apply auto apply (rotate_tac 1)
                              by (rule rightPrincipal.cases) auto
-                        then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' `Ps \<noteq> []`
+                        then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' \<open>Ps \<noteq> []\<close>
                              and nonPrincipalInvertRight[where ?R1.0=R1 and ?R2.0=R2 and ?R3.0=R3 and R=R and n=n
                                                   and \<Gamma>=\<Gamma> and \<Delta>=\<Delta> and M=M and Ms=Ms and r=r and S=S
                                                   and \<Gamma>'=\<Gamma>' and \<Delta>'=\<Delta>' and n'=n' and Ps=Ps and ps=ps 
                                                   and c=c and R'=R' and ?M1.0=M1 and ?M2.0=M2]
-                             and `n = Suc n'` and ext1 and rules and `r = (ps,c)` and `r \<in> R` by auto
+                             and \<open>n = Suc n'\<close> and ext1 and rules and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> by auto
                        }
                     ultimately have " \<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" by blast
                    }
                 moreover
                    {assume "c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
-                    with `r = (ps,c)` have "\<not> rightPrincipal r (Modal M Ms) R'"
+                    with \<open>r = (ps,c)\<close> have "\<not> rightPrincipal r (Modal M Ms) R'"
                          apply auto by (rule rightPrincipal.cases) auto
-                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' `Ps \<noteq> []`
+                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' \<open>Ps \<noteq> []\<close>
                          and nonPrincipalInvertRight[where ?R1.0=R1 and ?R2.0=R2 and ?R3.0=R3 and R=R and n=n
                                                   and \<Gamma>=\<Gamma> and \<Delta>=\<Delta> and M=M and Ms=Ms and r=r and S=S
                                                   and \<Gamma>'=\<Gamma>' and \<Delta>'=\<Delta>' and n'=n' and Ps=Ps and ps=ps 
                                                   and c=c and R'=R' and ?M1.0=M1 and ?M2.0=M2]
-                         and `n = Suc n'` and ext1 and rules and `r = (ps,c)` and `r \<in> R` by auto
+                         and \<open>n = Suc n'\<close> and ext1 and rules and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> by auto
                    }
                 ultimately have "\<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" by blast
                }
             ultimately have "\<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" by blast
            }
        moreover(*>*)
-txt{* \noindent  The other interesting case is where the last inference was a modalised context inference: *}
+txt\<open>\noindent  The other interesting case is where the last inference was a modalised context inference:\<close>
 
  {assume ba: "r \<in> p_e R2 M1 M2 \<and> 
          extendConc S r = (Ps,  \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
@@ -1773,7 +1773,7 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
   obtain \<Gamma>1 \<Delta>1 where "S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)" by (cases S) auto
   moreover
     {assume "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)"
-     with ba ca `S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)` have
+     with ba ca \<open>S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)\<close> have
    eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
             by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
      (*<*)         then have eq2: "M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs = \<Delta> \<oplus> Modal M Ms" by auto
@@ -1793,14 +1793,14 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
  moreover
    {assume "Modal M Ms = Modal F Fs" \<comment> \<open>The last inference is principal\<close>
    then have "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)" 
-        using `r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)` by simp
+        using \<open>r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)\<close> by simp
    with cb and rules have "rightPrincipal r' (Modal M Ms) R'" 
         and "r' \<in> R'" by auto
-   with b have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using `r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)`
+   with b have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using \<open>r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)\<close>
        by (auto simp add:Ball_def)
   (*<*)    then have "extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'') (\<Gamma>' \<Rightarrow>* \<Delta>') 
                                \<in> set (map (extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'')) ps)" by auto
-                    moreover from ba and `r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)` and ca
+                    moreover from ba and \<open>r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal M Ms\<RM>)\<close> and ca
                          have "Ps = map (extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'')) ps"
                          by (auto simp add:extendRule_def extendConc_def)
                     moreover have "extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'') (\<Gamma>' \<Rightarrow>* \<Delta>') = (M1\<cdot>\<Gamma>'' + \<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>')" 
@@ -1811,12 +1811,12 @@ txt{* \noindent  The other interesting case is where the last inference was a mo
                          using dpWeak[where \<Gamma>="M1\<cdot>\<Gamma>'' + \<Gamma>'" and \<Delta>="M2\<cdot>\<Delta>'' + \<Delta>'" and R=R and ?R2.0=R2
                                       and M=M1 and N=M2 and ?R1.0=R1 and ?R3.0=R3 and \<Gamma>'=\<Gamma>1 and \<Delta>'=\<Delta>1] 
                          and rules by auto
-                    with `n = Suc n'` 
+                    with \<open>n = Suc n'\<close> 
                          have ee: "\<exists> m\<le>n. (M1\<cdot>\<Gamma>'' + \<Gamma>' + \<Gamma>1 \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>' + \<Delta>1,m) \<in> derivable (ext R R2 M1 M2)"
                          apply auto apply (rule_tac x=m in exI) by arith
                     from eq1 have "M1\<cdot>\<Gamma>'' + \<Gamma>1 = \<Gamma>" by auto
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>' + \<Gamma>1 = \<Gamma> + \<Gamma>'" by (auto simp add:union_ac)
-                    moreover from eq2 and `Modal M Ms = Modal F Fs` have "M2\<cdot>\<Delta>'' + \<Delta>1 = \<Delta>" 
+                    moreover from eq2 and \<open>Modal M Ms = Modal F Fs\<close> have "M2\<cdot>\<Delta>'' + \<Delta>1 = \<Delta>" 
                          using add_equal_means_equal[where \<Gamma>=" M2 \<cdot> \<Delta>'' + \<Delta>1" and \<Delta>=\<Delta> and A="Modal F Fs"]
                          by (auto simp add:union_ac)
                     then have "M2\<cdot>\<Delta>'' + \<Delta>' + \<Delta>1 = \<Delta> + \<Delta>'" by (auto simp add:union_ac) (*>*)
@@ -1835,15 +1835,15 @@ moreover
            by (auto simp add:extendConc_def)
  (*<*)        ultimately have "(snd (extendConc (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<Delta>2 + \<Delta>') r),n'+1) \<in> derivable (ext R R2 M1 M2)"
                          using d' and derivable.step[where r="extendConc (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<Delta>2 + \<Delta>') r"
-                                                     and R="ext R R2 M1 M2" and m=n'] and `Ps \<noteq> []` by auto
-                    moreover from ca and `r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs \<RM>)` 
+                                                     and R="ext R R2 M1 M2" and m=n'] and \<open>Ps \<noteq> []\<close> by auto
+                    moreover from ca and \<open>r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs \<RM>)\<close> 
                          have "snd (extendConc (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<Delta>2 + \<Delta>') r) = (M1\<cdot>\<Gamma>'' + (\<Gamma>1 + \<Gamma>') \<Rightarrow>* (M2\<cdot>\<Delta>'' \<oplus> Modal F Fs) + \<Delta>2 + \<Delta>')"
                          by (auto simp add:extendRule_def extendConc_def extend_def union_ac)
                     ultimately have gg: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 + \<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>2 + \<Delta>' \<oplus> Modal F Fs,n'+1) \<in> derivable (ext R R2 M1 M2)"
                          by (auto simp add:union_ac)
                     from eq1 have "M1\<cdot>\<Gamma>'' + \<Gamma>1 = \<Gamma>" by auto
                     then have "(M1\<cdot>\<Gamma>'' + \<Gamma>1 + \<Gamma>') = \<Gamma> + \<Gamma>'" by auto
-                    moreover from eq2 and `\<Delta>1 = \<Delta>2 \<oplus> Modal M Ms`
+                    moreover from eq2 and \<open>\<Delta>1 = \<Delta>2 \<oplus> Modal M Ms\<close>
                          have "M2\<cdot>\<Delta>'' + \<Delta>2 \<oplus> Modal F Fs \<oplus> Modal M Ms = \<Delta> \<oplus> Modal M Ms" by (auto simp add:union_ac)
                     then have "M2\<cdot>\<Delta>'' + \<Delta>2 \<oplus> Modal F Fs = \<Delta>" 
                          using add_equal_means_equal[where \<Gamma>=" M2 \<cdot> \<Delta>'' + \<Delta>2 \<oplus> Modal F Fs" and \<Delta>=\<Delta> and A="Modal M Ms"]
@@ -1853,16 +1853,16 @@ moreover
            
            by auto
   then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" 
-           using `n = Suc n'` by auto
+           using \<open>n = Suc n'\<close> by auto
  }
 ultimately have "\<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" 
            by blast
 (*<*)  }(*>*)
-txt{* \noindent The other case, where the last inference was a left inference, is more straightforward, and so is omitted. *}
+txt\<open>\noindent The other case, where the last inference was a left inference, is more straightforward, and so is omitted.\<close>
  (*<*)
             moreover
                {assume "r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
-                with ba ca `S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)` have
+                with ba ca \<open>S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)\<close> have
                      eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Modal M Ms)"
                      by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
                 then have eq2: "M2\<cdot>\<Delta>'' + \<Delta>1 = \<Delta> \<oplus> Modal M Ms" by auto
@@ -1887,22 +1887,22 @@ txt{* \noindent The other case, where the last inference was a left inference, i
                          by (auto simp add:extendConc_def)
                     ultimately have "(snd (extendConc (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<Delta>2 + \<Delta>') r),n'+1) \<in> derivable (ext R R2 M1 M2)"
                          using d' and derivable.step[where r="extendConc (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<Delta>2 + \<Delta>') r"
-                                                     and R="ext R R2 M1 M2" and m=n'] and `Ps \<noteq> []` by auto
-                    moreover from ca and `r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)` 
+                                                     and R="ext R R2 M1 M2" and m=n'] and \<open>Ps \<noteq> []\<close> by auto
+                    moreover from ca and \<open>r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)\<close> 
                          have "snd (extendConc (\<Gamma>1 + \<Gamma>' \<Rightarrow>* \<Delta>2 + \<Delta>') r) = ((M1\<cdot>\<Gamma>'' \<oplus> Modal F Fs)+ \<Gamma>1 + \<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>2 + \<Delta>')"
                          by (auto simp add:extendRule_def extendConc_def extend_def union_ac)
                     ultimately have gg: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 + \<Gamma>' \<oplus> Modal F Fs \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>2 + \<Delta>',n'+1) \<in> derivable (ext R R2 M1 M2)"
                          by (auto simp add:union_ac)
                     from eq1 have "M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs  = \<Gamma>" by auto
                     then have "(M1\<cdot>\<Gamma>'' + \<Gamma>1 + \<Gamma>') \<oplus> Modal F Fs = \<Gamma> + \<Gamma>'" by (auto simp add:union_ac)
-                    moreover from eq2 and `\<Delta>1 = \<Delta>2 \<oplus> Modal M Ms`
+                    moreover from eq2 and \<open>\<Delta>1 = \<Delta>2 \<oplus> Modal M Ms\<close>
                          have "M2\<cdot>\<Delta>'' + \<Delta>2 \<oplus> Modal M Ms = \<Delta> \<oplus> Modal M Ms" by (auto simp add:union_ac)
                     then have "M2\<cdot>\<Delta>'' + \<Delta>2 = \<Delta>" 
                          using add_equal_means_equal[where \<Gamma>=" M2 \<cdot> \<Delta>'' + \<Delta>2" and \<Delta>=\<Delta> and A="Modal M Ms"]
                          by (auto simp add:union_ac)
                     then have "M2\<cdot>\<Delta>'' + \<Delta>2 + \<Delta>'  = \<Delta> + \<Delta>'" by (auto simp add:union_ac)
                     ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n'+1) \<in> derivable (ext R R2 M1 M2)" using gg by (auto simp add:union_ac)
-                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using `n = Suc n'`
+                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using \<open>n = Suc n'\<close>
                          by auto
                    }
                 ultimately have "\<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" by blast
@@ -1952,7 +1952,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
           using characteriseAx[where r=r] by auto
      moreover 
          {assume "r = ([],\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)"
-          with `extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)`
+          with \<open>extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)\<close>
                have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
                using extendRule_def[where R="([],\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>)" and forms=S] by auto
           then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" 
@@ -1963,7 +1963,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
          }
      moreover
          {assume "r = ([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
-          with `extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)`
+          with \<open>extendRule S r = ([],\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)\<close>
              have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
              using extendRule_def[where R="([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" and forms=S] by auto
           then have "ff \<in># \<Gamma>" 
@@ -1973,7 +1973,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                and containFalsum[where \<Gamma>="\<Gamma> + \<Gamma>'" and \<Delta>="\<Delta> + \<Delta>'" and R=R] by auto
          }
      ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable (ext R R2 M1 M2)" by blast
-     then show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using `n=0` by auto
+     then show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using \<open>n=0\<close> by auto
  next
      case (Suc n')
      then have "(\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>,n'+1) \<in> derivable (ext R R2 M1 M2)" using a' by simp
@@ -1987,51 +1987,51 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                                 \<or> (r \<in> p_e R2 M1 M2 \<and> extendConc S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>))" and "r \<in> R" by auto
      moreover
         {assume ext1: "(r \<in> Ax \<or> r \<in> upRules \<or> r \<in> modRules2) \<and> extendRule S r = (Ps, \<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
-         with `Ps \<noteq> []` have "r \<in> upRules \<or> r \<in> modRules2" and "extendRule S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)" 
+         with \<open>Ps \<noteq> []\<close> have "r \<in> upRules \<or> r \<in> modRules2" and "extendRule S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)" 
                apply auto apply (cases r) 
                by (rule Ax.cases) (auto simp add:extendRule_def)
          moreover
             {assume "r \<in> upRules"
              then obtain ps c where "r = (ps,c)" by (cases r) auto
-             with `r \<in> upRules` obtain T Ts where sw:"c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> 
+             with \<open>r \<in> upRules\<close> obtain T Ts where sw:"c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> 
                                                    c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
                   using upRuleCharacterise[where Ps=ps and C=c] by auto
              have "(leftPrincipal r (Modal M Ms) R') \<or> \<not>(leftPrincipal r (Modal M Ms) R')" by blast
              moreover
                 {assume "leftPrincipal r (Modal M Ms) R'"
-                 then have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using `r = (ps,c)` by (cases) auto
-                 with sw and `r \<in> upRules` and disjoint have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
+                 then have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using \<open>r = (ps,c)\<close> by (cases) auto
+                 with sw and \<open>r \<in> upRules\<close> and disjoint have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
                       by auto
                 }
              moreover
                 {assume "\<not> leftPrincipal r (Modal M Ms) R'"
-                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' `Ps \<noteq> []`
+                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' \<open>Ps \<noteq> []\<close>
                       and nonPrincipalInvertLeft[where ?R1.0=R1 and ?R2.0=R2 and ?R3.0=R3 and R=R and n=n
                                                   and \<Gamma>=\<Gamma> and \<Delta>=\<Delta> and M=M and Ms=Ms and r=r and S=S
                                                   and \<Gamma>'=\<Gamma>' and \<Delta>'=\<Delta>' and n'=n' and Ps=Ps and ps=ps 
                                                   and c=c and R'=R' and ?M1.0=M1 and ?M2.0=M2]
-                      and `n = Suc n'` and ext1 and rules and `r = (ps,c)` and `r \<in> R` by auto
+                      and \<open>n = Suc n'\<close> and ext1 and rules and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> by auto
                 }
              ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by blast
             }
          moreover
             {assume "r \<in> modRules2"
              then obtain ps c where "r = (ps,c)" by (cases r) auto
-             with `r \<in> modRules2` obtain T Ts where sw: "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)
+             with \<open>r \<in> modRules2\<close> obtain T Ts where sw: "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)
                                                          \<or> c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
                   using modRule2Characterise[where Ps=ps and C=c] by auto
              have "leftPrincipal r (Modal M Ms) R' \<or> \<not> leftPrincipal r (Modal M Ms) R'" by blast
              moreover
                 {assume "leftPrincipal r (Modal M Ms) R'"
-                 then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using b' and `r = (ps,c)` and `r \<in> R`
+                 then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using b' and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close>
                       apply- apply (rule leftPrincipal.cases) by auto
-                 then have ex:"extend S (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set Ps" using `extendRule S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)`
-                      and `r = (ps,c)` by (simp add:extendContain)
+                 then have ex:"extend S (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set Ps" using \<open>extendRule S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)\<close>
+                      and \<open>r = (ps,c)\<close> by (simp add:extendContain)
                  moreover
                     {assume "c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)"
-                     then have bb: "leftPrincipal r (Modal T Ts) R'" using `r = (ps,c)` and `r \<in> R`
+                     then have bb: "leftPrincipal r (Modal T Ts) R'" using \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close>
                        proof-
-                          from `c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)` and `r = (ps,c)` and `r \<in> R` and `r \<in> modRules2`
+                          from \<open>c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> and \<open>r \<in> modRules2\<close>
                           have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R" by auto
                           with rules
                           have "(ps,  \<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> p_e R2 M1 M2 \<or>
@@ -2075,37 +2075,37 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                               ultimately have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" by blast
                              }
                          ultimately have "(ps,\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>) \<in> R'" by auto
-                         then show ?thesis using `r = (ps,c)` and `c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)` by auto
+                         then show ?thesis using \<open>r = (ps,c)\<close> and \<open>c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> by auto
                          qed
-                     then have "Modal T Ts = Modal M Ms" using `leftPrincipal r (Modal M Ms) R'` apply auto
+                     then have "Modal T Ts = Modal M Ms" using \<open>leftPrincipal r (Modal M Ms) R'\<close> apply auto
                           apply (rule leftPrincipal.cases) apply auto apply (rotate_tac 1) apply (rule leftPrincipal.cases)
                           apply auto apply (rule leftPrincipal.cases) apply auto apply (rotate_tac 1)
                           apply (rule leftPrincipal.cases) by auto
-                     then have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using `c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)` by auto
+                     then have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using \<open>c = (\<LM>Modal T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> by auto
                     }
                     moreover
                     {assume "c = (\<Empt> \<Rightarrow>* \<LM>Modal T Ts\<RM>)"
-                     then have "\<not> leftPrincipal r (Modal M Ms) R'" using `r = (ps,c)` apply auto
+                     then have "\<not> leftPrincipal r (Modal M Ms) R'" using \<open>r = (ps,c)\<close> apply auto
                           by (rule leftPrincipal.cases) (auto simp add:extendRule_def extend_def)
-                     with `leftPrincipal r (Modal M Ms) R'` have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" by simp
+                     with \<open>leftPrincipal r (Modal M Ms) R'\<close> have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" by simp
                     }
                  ultimately have "c = (\<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using sw by blast
-                 with `extendRule S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)` have "S = (\<Gamma> \<Rightarrow>* \<Delta>)"
-                      using `r = (ps,c)` apply (auto simp add:extendRule_def extend_def) by (cases S) auto
+                 with \<open>extendRule S r = (Ps,\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)\<close> have "S = (\<Gamma> \<Rightarrow>* \<Delta>)"
+                      using \<open>r = (ps,c)\<close> apply (auto simp add:extendRule_def extend_def) by (cases S) auto
                  with ex have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> set Ps" by (simp add:extend_def)
                  then have "\<exists> m\<le>n'. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)"
-                      using `\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable (ext R R2 M1 M2)` by auto
-                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using `n = Suc n'`
+                      using \<open>\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable (ext R R2 M1 M2)\<close> by auto
+                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using \<open>n = Suc n'\<close>
                       by (auto,rule_tac x=m in exI) (simp)
                 }
              moreover
                 {assume "\<not> leftPrincipal r (Modal M Ms) R'"
-                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' `Ps \<noteq> []`
+                 then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using IH and a' b' d' \<open>Ps \<noteq> []\<close>
                       and nonPrincipalInvertLeft[where ?R1.0=R1 and ?R2.0=R2 and ?R3.0=R3 and R=R and n=n
                                                   and \<Gamma>=\<Gamma> and \<Delta>=\<Delta> and M=M and Ms=Ms and r=r and S=S
                                                   and \<Gamma>'=\<Gamma>' and \<Delta>'=\<Delta>' and n'=n' and Ps=Ps and ps=ps 
                                                   and c=c and R'=R' and ?M1.0=M1 and ?M2.0=M2]
-                      and `n = Suc n'` and ext1 and rules and `r = (ps,c)` and `r \<in> R` by auto
+                      and \<open>n = Suc n'\<close> and ext1 and rules and \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> by auto
                 }
              ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" by blast
             }
@@ -2121,7 +2121,7 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
             obtain \<Gamma>1 \<Delta>1 where "S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)" by (cases S) auto
             moreover
                {assume "r' = (ps, \<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)"
-                with ba ca `S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)` have
+                with ba ca \<open>S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)\<close> have
                      eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1  \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
                      by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
                 then have eq2: "M1\<cdot>\<Gamma>'' + \<Gamma>1 = \<Gamma> \<oplus> Modal M Ms" by auto
@@ -2146,29 +2146,29 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                          by (auto simp add:extendConc_def)
                     ultimately have "(snd (extendConc (\<Gamma>2 + \<Gamma>' \<Rightarrow>* \<Delta>1 + \<Delta>') r),n'+1) \<in> derivable (ext R R2 M1 M2)"
                          using d' and derivable.step[where r="extendConc (\<Gamma>2 + \<Gamma>' \<Rightarrow>* \<Delta>1 + \<Delta>') r"
-                                                     and R="ext R R2 M1 M2" and m=n'] and `Ps \<noteq> []` by auto
-                    moreover from ca and `r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)` 
+                                                     and R="ext R R2 M1 M2" and m=n'] and \<open>Ps \<noteq> []\<close> by auto
+                    moreover from ca and \<open>r' = (ps,\<Empt> \<Rightarrow>* \<LM>Modal F Fs\<RM>)\<close> 
                          have "snd (extendConc (\<Gamma>2 + \<Gamma>' \<Rightarrow>* \<Delta>1 + \<Delta>') r) = (M1\<cdot>\<Gamma>''+ \<Gamma>2 + \<Gamma>' \<Rightarrow>* (M2\<cdot>\<Delta>'' \<oplus> Modal F Fs)+ \<Delta>1 + \<Delta>')"
                          by (auto simp add:extendRule_def extendConc_def extend_def union_ac)
                     ultimately have gg: "(M1\<cdot>\<Gamma>'' + \<Gamma>2 + \<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 + \<Delta>' \<oplus> Modal F Fs,n'+1) \<in> derivable (ext R R2 M1 M2)"
                          by (auto simp add:union_ac)
                     from eq1 have "M2\<cdot>\<Delta>'' + \<Delta>1 \<oplus> Modal F Fs  = \<Delta>" by auto
                     then have "(M2\<cdot>\<Delta>'' + \<Delta>1 + \<Delta>') \<oplus> Modal F Fs = \<Delta> + \<Delta>'" by (auto simp add:union_ac)
-                    moreover from eq2 and `\<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms`
+                    moreover from eq2 and \<open>\<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms\<close>
                          have "M1\<cdot>\<Gamma>'' + \<Gamma>2 \<oplus> Modal M Ms = \<Gamma> \<oplus> Modal M Ms" by (auto simp add:union_ac)
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>2 = \<Gamma>" 
                          using add_equal_means_equal[where \<Gamma>=" M1 \<cdot> \<Gamma>'' + \<Gamma>2" and \<Delta>=\<Gamma> and A="Modal M Ms"]
                          by (auto simp add:union_ac)
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>2 + \<Gamma>'  = \<Gamma> + \<Gamma>'" by (auto simp add:union_ac)
                     ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n'+1) \<in> derivable (ext R R2 M1 M2)" using gg by (auto simp add:union_ac)
-                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using `n = Suc n'`
+                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using \<open>n = Suc n'\<close>
                          by auto
                    }
                 ultimately have "\<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" by blast
                }
             moreover
                {assume "r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)"
-                with ba ca `S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)` have
+                with ba ca \<open>S = (\<Gamma>1 \<Rightarrow>* \<Delta>1)\<close> have
                      eq1: "(M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1) = (\<Gamma> \<oplus> Modal M Ms \<Rightarrow>* \<Delta>)"
                      by (auto simp add:extendRule_def extend_def extendConc_def union_ac)
                 then have eq2: "M1\<cdot>\<Gamma>'' + \<Gamma>1 \<oplus> Modal F Fs = \<Gamma> \<oplus> Modal M Ms" by auto
@@ -2184,12 +2184,12 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                    }
                 moreover
                    {assume "Modal M Ms = Modal F Fs"
-                    then have "r' = (ps, \<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using `r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)` by simp
+                    then have "r' = (ps, \<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)" using \<open>r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)\<close> by simp
                     with cb and rules have "leftPrincipal r' (Modal M Ms) R'" and "r' \<in> R'" by auto
-                    with b have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using `r' = (ps, \<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)`
+                    with b have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using \<open>r' = (ps, \<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)\<close>
                          by (auto simp add:Ball_def)
                     then have "extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'') (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (map (extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'')) ps)" by auto
-                    moreover from ba and `r' = (ps, \<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)` and ca
+                    moreover from ba and \<open>r' = (ps, \<LM>Modal M Ms\<RM> \<Rightarrow>* \<Empt>)\<close> and ca
                          have "Ps = map (extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'')) ps"
                          by (auto simp add:extendRule_def extendConc_def)
                     moreover have "extend (M1\<cdot>\<Gamma>'' \<Rightarrow>* M2\<cdot>\<Delta>'') (\<Gamma>' \<Rightarrow>* \<Delta>') = (M1\<cdot>\<Gamma>'' + \<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>')" 
@@ -2200,12 +2200,12 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                          using dpWeak[where \<Gamma>="M1\<cdot>\<Gamma>'' + \<Gamma>'" and \<Delta>="M2\<cdot>\<Delta>'' + \<Delta>'" and R=R and ?R2.0=R2
                                       and M=M1 and N=M2 and ?R1.0=R1 and ?R3.0=R3 and \<Gamma>'=\<Gamma>1 and \<Delta>'=\<Delta>1] 
                          and rules by auto
-                    with `n = Suc n'` 
+                    with \<open>n = Suc n'\<close> 
                          have ee: "\<exists> m\<le>n. (M1\<cdot>\<Gamma>'' + \<Gamma>' + \<Gamma>1 \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>' + \<Delta>1,m) \<in> derivable (ext R R2 M1 M2)"
                          apply auto apply (rule_tac x=m in exI) by arith
                     from eq1 have "M2\<cdot>\<Delta>'' + \<Delta>1 = \<Delta>" by auto
                     then have "M2\<cdot>\<Delta>'' + \<Delta>' + \<Delta>1 = \<Delta> + \<Delta>'" by (auto simp add:union_ac)
-                    moreover from eq2 and `Modal M Ms = Modal F Fs` have "M1\<cdot>\<Gamma>'' + \<Gamma>1 = \<Gamma>" 
+                    moreover from eq2 and \<open>Modal M Ms = Modal F Fs\<close> have "M1\<cdot>\<Gamma>'' + \<Gamma>1 = \<Gamma>" 
                          using add_equal_means_equal[where \<Gamma>=" M1 \<cdot> \<Gamma>'' + \<Gamma>1" and \<Delta>=\<Gamma> and A="Modal F Fs"]
                          by (auto simp add:union_ac)
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>' + \<Gamma>1 = \<Gamma> + \<Gamma>'" by (auto simp add:union_ac)
@@ -2223,22 +2223,22 @@ proof (induct n arbitrary: \<Gamma> \<Delta> rule:nat_less_induct)
                          by (auto simp add:extendConc_def)
                     ultimately have "(snd (extendConc (\<Gamma>2 + \<Gamma>' \<Rightarrow>* \<Delta>1 + \<Delta>') r),n'+1) \<in> derivable (ext R R2 M1 M2)"
                          using d' and derivable.step[where r="extendConc (\<Gamma>2 + \<Gamma>' \<Rightarrow>* \<Delta>1 + \<Delta>') r"
-                                                     and R="ext R R2 M1 M2" and m=n'] and `Ps \<noteq> []` by auto
-                    moreover from ca and `r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)` 
+                                                     and R="ext R R2 M1 M2" and m=n'] and \<open>Ps \<noteq> []\<close> by auto
+                    moreover from ca and \<open>r' = (ps,\<LM>Modal F Fs\<RM> \<Rightarrow>* \<Empt>)\<close> 
                          have "snd (extendConc (\<Gamma>2 + \<Gamma>' \<Rightarrow>* \<Delta>1 + \<Delta>') r) = ((M1\<cdot>\<Gamma>'' \<oplus> Modal F Fs )+ \<Gamma>2 + \<Gamma>' \<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 + \<Delta>')"
                          by (auto simp add:extendRule_def extendConc_def extend_def union_ac)
                     ultimately have gg: "(M1\<cdot>\<Gamma>'' + \<Gamma>2 + \<Gamma>' \<oplus> Modal F Fs\<Rightarrow>* M2\<cdot>\<Delta>'' + \<Delta>1 + \<Delta>',n'+1) \<in> derivable (ext R R2 M1 M2)"
                          by (auto simp add:union_ac)
                     from eq1 have "M2\<cdot>\<Delta>'' + \<Delta>1 = \<Delta>" by auto
                     then have "(M2\<cdot>\<Delta>'' + \<Delta>1 + \<Delta>') = \<Delta> + \<Delta>'" by auto
-                    moreover from eq2 and `\<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms`
+                    moreover from eq2 and \<open>\<Gamma>1 = \<Gamma>2 \<oplus> Modal M Ms\<close>
                          have "M1\<cdot>\<Gamma>'' + \<Gamma>2 \<oplus> Modal F Fs \<oplus> Modal M Ms = \<Gamma> \<oplus> Modal M Ms" by (auto simp add:union_ac)
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>2 \<oplus> Modal F Fs = \<Gamma>" 
                          using add_equal_means_equal[where \<Gamma>=" M1\<cdot>\<Gamma>'' + \<Gamma>2 \<oplus> Modal F Fs" and \<Delta>=\<Gamma> and A="Modal M Ms"]
                          by (auto simp add:union_ac)
                     then have "M1\<cdot>\<Gamma>'' + \<Gamma>2 + \<Gamma>' \<oplus> Modal F Fs = \<Gamma> + \<Gamma>'" by (auto simp add:union_ac)
                     ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',n'+1) \<in> derivable (ext R R2 M1 M2)" using gg by auto
-                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using `n = Suc n'`
+                    then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable (ext R R2 M1 M2)" using \<open>n = Suc n'\<close>
                          by auto
                    }
                 ultimately have "\<exists>m\<le>n. ( \<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>', m) \<in> derivable (ext R R2 M1 M2)" by blast
@@ -2271,7 +2271,7 @@ where
 |   conR[intro]: "([\<Empt> \<Rightarrow>* \<LM> A \<RM>, \<Empt> \<Rightarrow>* \<LM> B \<RM>], \<Empt> \<Rightarrow>* \<LM> A \<and>* B \<RM>) \<in> g3up"
 
 (*>*)
-text{*
+text\<open>
 
 We guarantee no other rule has the same modal operator in the succedent of a modalised context rule using the condition $M \neq M_{2}$.  Note this lemma only allows one kind of modalised context rule.  In other words, it could not be applied to a calculus with the rules:
 
@@ -2290,7 +2290,7 @@ cannot belong to any \texttt{p-e} set.  It would be a simple matter to extend th
 
 As an example, classical modal logic can be formalised.
 The (modal) rules for this calculus are then given in two sets, the latter of which will be extended with $\Box\cdot\Gamma \Rightarrow \Diamond\cdot\Delta$:
-*}
+\<close>
 inductive_set "g3mod2" 
 where
     diaR(*<*)[intro](*>*): "([\<Empt> \<Rightarrow>* \<LM> A \<RM>], \<Empt> \<Rightarrow>* \<LM> \<diamond> A \<RM>) \<in> g3mod2"
@@ -2358,15 +2358,15 @@ and "R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2"
 and "rightPrincipal r (\<box> A) R"
 shows "(\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<in> set (fst r)"
 proof-
- from `r \<in> g3mod2` have "\<exists> A. r = ([\<LM>A\<RM> \<Rightarrow>* \<Empt>], \<LM>\<box> A\<RM> \<Rightarrow>* \<Empt>) \<or>
+ from \<open>r \<in> g3mod2\<close> have "\<exists> A. r = ([\<LM>A\<RM> \<Rightarrow>* \<Empt>], \<LM>\<box> A\<RM> \<Rightarrow>* \<Empt>) \<or>
                               r = ([\<Empt> \<Rightarrow>* \<LM>A\<RM>], \<Empt> \<Rightarrow>* \<LM>\<diamond> A\<RM>)" 
       apply (cases r) by (rule g3mod2.cases) auto
  then obtain B where  "r = ([\<LM>B\<RM> \<Rightarrow>* \<Empt>], \<LM>\<box> B\<RM> \<Rightarrow>* \<Empt>) \<or>
                        r = ([\<Empt> \<Rightarrow>* \<LM>B\<RM>], \<Empt> \<Rightarrow>* \<LM>\<diamond> B\<RM>)" by blast
- then have "\<not> rightPrincipal r (\<box> A) R" using `R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2`
+ then have "\<not> rightPrincipal r (\<box> A) R" using \<open>R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2\<close>
       apply auto apply (rule rightPrincipal.cases) apply (auto simp add:extendRule_def extend_def)
       apply (rule rightPrincipal.cases) by (auto simp add:extendRule_def extend_def)
- with `rightPrincipal r (\<box> A) R` show ?thesis by auto
+ with \<open>rightPrincipal r (\<box> A) R\<close> show ?thesis by auto
 qed
 
 lemma principal_g3mod1:
@@ -2375,24 +2375,24 @@ and "R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2"
 and "rightPrincipal r (\<box> A) R"
 shows "(\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<in> set (fst r)"
 proof-
- from `r \<in> g3mod1` have "\<exists> A. r = ([\<LM>A\<RM> \<Rightarrow>* \<Empt>], \<LM>\<diamond> A\<RM> \<Rightarrow>* \<Empt>) \<or>
+ from \<open>r \<in> g3mod1\<close> have "\<exists> A. r = ([\<LM>A\<RM> \<Rightarrow>* \<Empt>], \<LM>\<diamond> A\<RM> \<Rightarrow>* \<Empt>) \<or>
                               r = ([\<Empt> \<Rightarrow>* \<LM>A\<RM>], \<Empt> \<Rightarrow>* \<LM>\<box> A\<RM>)" 
       apply (cases r) by (rule g3mod1.cases) auto
  then obtain B where  "r = ([\<LM>B\<RM> \<Rightarrow>* \<Empt>], \<LM>\<diamond> B\<RM> \<Rightarrow>* \<Empt>) \<or>
                        r = ([\<Empt> \<Rightarrow>* \<LM>B\<RM>], \<Empt> \<Rightarrow>* \<LM>\<box> B\<RM>)" by blast
  moreover
     {assume "r = ([\<LM>B\<RM> \<Rightarrow>* \<Empt>], \<LM>\<diamond> B\<RM> \<Rightarrow>* \<Empt>)"
-     then have "\<not> rightPrincipal r (\<box> A) R" using `R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2`
+     then have "\<not> rightPrincipal r (\<box> A) R" using \<open>R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2\<close>
           apply auto apply (rule rightPrincipal.cases) by (auto simp add:extendRule_def extend_def)
-     with `rightPrincipal r (\<box> A) R` have "(\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<in> set (fst r)" by auto
+     with \<open>rightPrincipal r (\<box> A) R\<close> have "(\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<in> set (fst r)" by auto
     }
  moreover
     {assume "r = ([\<Empt> \<Rightarrow>* \<LM>B\<RM>], \<Empt> \<Rightarrow>* \<LM>\<box> B\<RM>)"
-     then have "rightPrincipal r (\<box> B) R" using `r \<in> g3mod1` and `R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2` by auto
-     with `rightPrincipal r (\<box> A) R` have "A = B" apply-
+     then have "rightPrincipal r (\<box> B) R" using \<open>r \<in> g3mod1\<close> and \<open>R = Ax \<union> g3up \<union> g3mod1 \<union> g3mod2\<close> by auto
+     with \<open>rightPrincipal r (\<box> A) R\<close> have "A = B" apply-
           apply (rule rightPrincipal.cases) apply auto apply (rotate_tac 1) 
           by (rule rightPrincipal.cases) auto
-     with `r = ([\<Empt> \<Rightarrow>* \<LM>B\<RM>], \<Empt> \<Rightarrow>* \<LM>\<box> B\<RM>)` have "(\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<in> set (fst r)" by auto
+     with \<open>r = ([\<Empt> \<Rightarrow>* \<LM>B\<RM>], \<Empt> \<Rightarrow>* \<LM>\<box> B\<RM>)\<close> have "(\<Empt> \<Rightarrow>* \<LM>A\<RM>) \<in> set (fst r)" by auto
     }
  ultimately show ?thesis by auto
 qed  
@@ -2406,14 +2406,14 @@ apply (insert principal_g3up)[1] apply (drule_tac x="(a,b)" in meta_spec) apply 
 apply (insert principal_g3mod1)[1] apply (drule_tac x="(a,b)" in meta_spec) apply auto
 apply (insert principal_g3mod2) apply (drule_tac x="(a,b)" in meta_spec) by auto
 (*>*)
-text{*
+text\<open>
 \noindent We then show the strong admissibility of the rule:
 
 \[
 \infer{\Gamma \Rightarrow A,\Delta}{\Gamma \Rightarrow \Box A,\Delta}
 \]
 
-*}
+\<close>
 lemma invertBoxR:
 assumes "R = Ax \<union> g3up \<union> (p_e g3mod1 \<box> \<diamond>) \<union> g3mod2"
 and     "(\<Gamma> \<Rightarrow>* \<Delta> \<oplus> (\<box> A),n) \<in> derivable (ext R g3mod1 \<box> \<diamond>)"
@@ -2427,7 +2427,7 @@ proof-
  and g3 by auto
 qed
 
-text{* \noindent where \textit{principal} is the result which fulfils the principal formula conditions given in the inversion lemma, and \textit{g3} is a result about rule sets.*}
+text\<open>\noindent where \textit{principal} is the result which fulfils the principal formula conditions given in the inversion lemma, and \textit{g3} is a result about rule sets.\<close>
 (*<*) 
 end
 (*>*)

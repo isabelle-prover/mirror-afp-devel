@@ -1,4 +1,4 @@
-section {* Explicit Deterministic Rabin Automata *}
+section \<open>Explicit Deterministic Rabin Automata\<close>
 
 theory DRA_Explicit
 imports DRA_Nodes

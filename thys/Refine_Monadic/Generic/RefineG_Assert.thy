@@ -1,4 +1,4 @@
-section {* {Assert and Assume} *}
+section \<open>{Assert and Assume}\<close>
 theory RefineG_Assert
 imports RefineG_Transfer
 begin
@@ -48,7 +48,7 @@ definition "iASSUME return \<Phi> \<equiv> if \<Phi> then return () else bot"
     lemma le_ASSUMEI: "\<lbrakk> \<Phi>; \<Phi> \<Longrightarrow> M\<le>M' \<rbrakk> \<Longrightarrow> M \<le> bind (ASSUME \<Phi>) (\<lambda>_. M')"
       apply (cases \<Phi>) by (auto simp: ibind_strict imonad1)
 
-    text {* The order of these declarations does matter! *}
+    text \<open>The order of these declarations does matter!\<close>
     lemmas [intro?] = ASSERT_leI le_ASSUMEI
     lemmas [intro?] = le_ASSERTI ASSUME_leI
 
@@ -69,10 +69,10 @@ definition "iASSUME return \<Phi> \<equiv> if \<Phi> then return () else bot"
       by (cases \<Phi>) (auto simp: ibind_strict imonad1 simp: bot_unique)
   end
 
-  text {*
+  text \<open>
     This locale transfer's asserts and assumes. 
     To remove them, use the next locale.
-    *}
+\<close>
   locale transfer_generic_Assert = 
     c: generic_Assert cbind creturn cASSERT cASSUME +
     a: generic_Assert abind areturn aASSERT aASSUME +

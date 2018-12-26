@@ -161,22 +161,22 @@ lemma bisimTransCoinduct[consumes 1, case_names cSim cSym]:
 
   shows "P \<sim> Q"
 proof -
-  from `(P, Q) \<in> X` have "(P, Q) \<in> bisim O X O bisim"
+  from \<open>(P, Q) \<in> X\<close> have "(P, Q) \<in> bisim O X O bisim"
     by(auto intro: reflexive)
   thus ?thesis
   proof(coinduct rule: bisimWeakCoinduct)
     case(cSim P Q)
-    from `(P, Q) \<in> bisim O X O bisim`
+    from \<open>(P, Q) \<in> bisim O X O bisim\<close>
     obtain R S where "P \<sim> R" and "(R, S) \<in> X" and "S \<sim> Q"
       by auto
-    from `P \<sim> R` have "P \<leadsto>[bisim] R" by(rule bisimE)
-    moreover from `(R, S) \<in> X` have "R \<leadsto>[(bisim O X O bisim)] S"
+    from \<open>P \<sim> R\<close> have "P \<leadsto>[bisim] R" by(rule bisimE)
+    moreover from \<open>(R, S) \<in> X\<close> have "R \<leadsto>[(bisim O X O bisim)] S"
       by(rule rSim)
     moreover have "bisim O (bisim O X O bisim) \<subseteq> bisim O X O bisim"
       by(auto intro: transitive)
     ultimately have "P \<leadsto>[(bisim O X O bisim)] S"
       by(rule Strong_Sim.transitive)
-    moreover from `S \<sim> Q` have "S \<leadsto>[bisim] Q" by(rule bisimE)
+    moreover from \<open>S \<sim> Q\<close> have "S \<leadsto>[bisim] Q" by(rule bisimE)
     moreover have "(bisim O X O bisim) O bisim \<subseteq> bisim O X O bisim"
       by(auto intro: transitive)
     ultimately show ?case by(rule Strong_Sim.transitive)

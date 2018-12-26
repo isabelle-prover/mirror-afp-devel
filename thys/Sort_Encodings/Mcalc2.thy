@@ -1,17 +1,17 @@
-section {* The Second Monotonicity Calculus *}
+section \<open>The Second Monotonicity Calculus\<close>
 theory Mcalc2
 imports Mono
 begin
 
 
 
-subsection{* Extension policies *}
+subsection\<open>Extension policies\<close>
 
-text{* Extension policy: copy, true or false extension: *}
+text\<open>Extension policy: copy, true or false extension:\<close>
 
 datatype epol = Cext | Text | Fext
 
-text{* Problem with infinite knowledge and predicate-extension policy: *}
+text\<open>Problem with infinite knowledge and predicate-extension policy:\<close>
 
 locale ProblemIkPol = ProblemIk wtFsym wtPsym arOf resOf parOf \<Phi> infTp
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
@@ -25,7 +25,7 @@ and (* guard of a variable occurring in a certain literal of a certain clause: *
 
 context ProblemIkPol begin
 
-subsection{* Naked variables *}
+subsection\<open>Naked variables\<close>
 
 fun nv2T where
 "nv2T (Var x) = {x}"
@@ -70,9 +70,9 @@ qed
 lemma nv2C_varsC[simp]: "x \<in> nv2C c \<Longrightarrow> x \<in> varsC c"
 unfolding varsC_def nv2C_def by (induct c, auto)
 
-subsection{* The calculus *}
+subsection\<open>The calculus\<close>
 
-text{* The notion of a literal being a guard for a (typed) variable: *}
+text\<open>The notion of a literal being a guard for a (typed) variable:\<close>
 
 fun isGuard :: "var \<Rightarrow> ('fsym,'psym) lit \<Rightarrow> bool" where
 "isGuard x (Pos (Eq T1 T2)) \<longleftrightarrow> False"
@@ -86,9 +86,9 @@ fun isGuard :: "var \<Rightarrow> ('fsym,'psym) lit \<Rightarrow> bool" where
 "isGuard x (Neg (Pr p Tl)) \<longleftrightarrow> x \<in> \<Union> set (map nv2T Tl) \<and> pol (tpOfV x) p = Fext"
 
 
-text{* The monotonicity calculus from the Classen et. al. paper, applied
+text\<open>The monotonicity calculus from the Classen et. al. paper, applied
 to non-infinite types only: it checks that any variable in any literal of any clause
-is indeed guarded by its guard: *}
+is indeed guarded by its guard:\<close>
 
 inductive mcalc2 (infix "\<turnstile>2" 40) where
  [simp]: "infTp \<sigma> \<Longrightarrow> \<sigma> \<turnstile>2 c"

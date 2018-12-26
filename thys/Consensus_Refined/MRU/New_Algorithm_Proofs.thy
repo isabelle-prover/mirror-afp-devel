@@ -5,7 +5,7 @@ imports Three_Step_MRU New_Algorithm_Defs "../HO_Transition_System"
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 type_synonym p_TS_state = "(nat \<times> (process \<Rightarrow> pstate))"
 
 definition New_Algo_TS ::
@@ -51,7 +51,7 @@ qed
 
 type_synonym rHO = "nat \<Rightarrow> process HO"
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition new_algo_ref_rel :: "(three_step_mru_state \<times> p_TS_state)set" where
@@ -62,9 +62,9 @@ definition new_algo_ref_rel :: "(three_step_mru_state \<times> p_TS_state)set" w
     \<and> (three_step r = Suc 0 \<longrightarrow> three_step_mru_state.candidates sa = ran (prop_vote o sc))
   }"
 
-text {* 
-  Different types seem to be derived for the two @{text mru_vote_evolution} lemmas,
-  so we state them separately. *}
+text \<open>
+  Different types seem to be derived for the two \<open>mru_vote_evolution\<close> lemmas,
+  so we state them separately.\<close>
 lemma mru_vote_evolution0:
   "\<forall>p. next0 r p (s p) (msgs p) (crd p) (s' p) \<Longrightarrow> mru_vote o s' = mru_vote o s"
   apply(rule_tac[!] ext, rename_tac x, erule_tac[!] x=x in allE)
@@ -314,7 +314,7 @@ next
     done
 qed
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
 theorem New_Algo_termination:

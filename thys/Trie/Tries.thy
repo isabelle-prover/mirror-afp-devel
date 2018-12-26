@@ -6,7 +6,7 @@ theory Tries
 imports Trie
 begin
 
-text{* This is a specialization of tries where values are lists. *}
+text\<open>This is a specialization of tries where values are lists.\<close>
 
 type_synonym ('k,'v)tries = "('k,'v list)trie"
 
@@ -35,7 +35,7 @@ definition all_tries :: "('v \<Rightarrow> bool) \<Rightarrow> ('k,'v)tries \<Ri
 "all_tries P = all_trie (list_all P)"
 
 
-subsection {* @{const lookup_tries} *}
+subsection \<open>@{const lookup_tries}\<close>
 
 lemma lookup_Nil[simp]:
   "lookup_tries (Trie vo ps) [] = (case vo of None \<Rightarrow> [] | Some vs \<Rightarrow> vs)"
@@ -60,7 +60,7 @@ by(auto simp add: lookup_tries_def update_with_tries_def lookup_update_with_trie
   split: option.split)
 
 
-subsection {* @{const insert_tries}, @{const inserts_tries}, @{const tries_of_list} *}
+subsection \<open>@{const insert_tries}, @{const inserts_tries}, @{const tries_of_list}\<close>
 
 lemma invar_insert_tries: "invar_trie t \<Longrightarrow> invar_trie(insert_tries as v t)"
 by(simp add: insert_tries_def invar_update_with_trie split: option.split)
@@ -100,7 +100,7 @@ lemma in_set_lookup_of_listD:
 by(auto simp: tries_of_list_def dest: in_set_lookup_inserts_triesD)
 
 
-subsection {* @{const set_tries} *}
+subsection \<open>@{const set_tries}\<close>
 
 lemma set_tries_eq_ran: "set_tries t = Union(set ` ran(lookup_trie t))"
 apply(auto simp add: set_eq_iff set_tries_def lookup_tries_def ran_def)

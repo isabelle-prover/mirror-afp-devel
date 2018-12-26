@@ -29,21 +29,21 @@ declare [[show_question_marks = false]]
 
 
 (*>*)
-subsection {* Main definitions and theorems *}
+subsection \<open>Main definitions and theorems\<close>
 
-text {*
+text \<open>
 For your convenience, the main definitions and theorems of the present work are assembled in this section. The following 
 formulas are mechanically pretty-printed versions of the statements as defined resp.\ proven in Isabelle.
 Free variables are all-quantified. Some type conversion functions (like @{term_type set}) are omitted.
-The relations @{text \<sharp>} and @{text "\<sharp>*"} come from the Nominal package and express freshness of the
+The relations \<open>\<sharp>\<close> and \<open>\<sharp>*\<close> come from the Nominal package and express freshness of the
 variables on the left with regard to the expressions on the right.
 
 \input{map.tex}
-*}
+\<close>
 
-subsubsection {* Expressions *}
+subsubsection \<open>Expressions\<close>
 
-text {*
+text \<open>
 The type @{typ var} of variables is abstract and provided by the Nominal package. All we know about
 it is that it is countably infinite.
 Expressions of type @{typ exp} are given by the following grammar:
@@ -54,23 +54,23 @@ Expressions of type @{typ exp} are given by the following grammar:
 \mid {} & @{term "Let as e"} && \text{recursive let}
 \end{alignatstar}
 In the introduction we pretty-print expressions to resemble the notation in \cite{launchbury} and omit
-the constructor names @{term Var}, @{term App}, @{text Lam} and @{term Let}. In the actual theories, these are visible.
+the constructor names @{term Var}, @{term App}, \<open>Lam\<close> and @{term Let}. In the actual theories, these are visible.
 These expressions are, due to the machinery of the Nominal package, actually alpha-equivalency classes, so @{thm alpha_test} holds provably. This differs from Launchbury's original definition, which expects distinctly-named expressions and performs explicit alpha-renaming in the semantics.
 
 The type @{type heap} is an abbreviation for @{typ "(var \<times> exp) list"}. These are \emph{not} alpha-equivalency classes, i.e.\ we manage the bindings in heaps explicitly.
-*}
+\<close>
 
-subsubsection {* The natural semantics *}
+subsubsection \<open>The natural semantics\<close>
 
-text_raw {*
+text_raw \<open>
 \newlength{\rulelen}
 \setlength{\rulelen}{\linewidth}
 \newlength{\rulenamelen}
 \settowidth{\rulenamelen}{~{\sc Application}}
 \addtolength{\rulelen}{-\rulenamelen}
-*}
+\<close>
 
-text {*
+text \<open>
 Launchbury's original semantics, extended with some technical overhead related to name binding (following \cite{sestoft}),
 is defined as follows:\\
 %\begin{center}
@@ -79,22 +79,22 @@ is defined as follows:\\
 \parbox[t]{\rulelen}{\centering@{thm[mode=Rule] Launchbury.reds.Variable}}~{\sc Variable}\\[2ex]
 \parbox[t]{\rulelen}{\centering@{thm[mode=Rule] Launchbury.reds.Let}}~{\sc Let}
 %\end{center}
-*}
+\<close>
 
 
-subsubsection {* The denotational semantics *}
+subsubsection \<open>The denotational semantics\<close>
 
-text {*
+text \<open>
 The value domain of the denotational semantics is the initial solution to
 \[
 D = [D \to D]_\bot
 \]
 as introduced in \cite{abramsky}. The type @{typ Value}, together with the bottom value @{term_type "\<bottom>::Value"}, the
-injection @{term_type "Fn"} and the projection @{term "DUMMY \<down>Fn DUMMY"}@{text "::"}@{typeof "Fn_project"},
+injection @{term_type "Fn"} and the projection @{term "DUMMY \<down>Fn DUMMY"}\<open>::\<close>@{typeof "Fn_project"},
 is constructed as a pointed chain-complete partial order from this equation by the HOLCF package.
 The type of semantic environments is  @{typ "var \<Rightarrow> Value"}.
 
-The semantics of an expression @{term_type "e :: exp"} in an environment @{term "\<rho>"}@{text "::"}@{typ "var \<Rightarrow> Value"} is 
+The semantics of an expression @{term_type "e :: exp"} in an environment @{term "\<rho>"}\<open>::\<close>@{typ "var \<Rightarrow> Value"} is 
 written \mbox{@{term_type "Rep_cfun (Denotational.ESem e) \<rho>"}} and defined by the following equations:
 \begin{alignstar}
 @{thm (lhs) Denotational.ESem_simps(1)} & = @{thm (rhs) Denotational.ESem_simps(1)} \\
@@ -102,9 +102,9 @@ written \mbox{@{term_type "Rep_cfun (Denotational.ESem e) \<rho>"}} and defined 
 @{thm (lhs) Denotational.ESem_simps(3)} & = @{thm (rhs) Denotational.ESem_simps(3)} \\
 @{thm (lhs) Denotational.ESem_simps(6)} & = @{thm (rhs) Denotational.ESem_simps(6)}.
 \end{alignstar}
-*}
+\<close>
 
-text{*
+text\<open>
 The expression @{term "Denotational.EvalHeapSem_syn \<Gamma> \<rho>"} 
 maps the evaluation function over a heap, returning an environment:
 \begin{alignstar}
@@ -115,12 +115,12 @@ maps the evaluation function over a heap, returning an environment:
   & = @{thm (rhs) lookupEvalHeap_other[where f = "(\<lambda> e. Denotational.ESem_syn e \<rho>)"]}
   && \text{if } @{thm (prem 1) lookupEvalHeap_other[where f = "(\<lambda> e. Denotational.ESem_syn e \<rho>)"]}
 \end{alignstar}
-*}
+\<close>
 
-text {*
-The semantics @{term "Rep_cfun (Denotational.HSem \<Gamma>) \<rho>"}@{text "::"}@{typ "var \<Rightarrow> Value"} of a
-heap @{term "\<Gamma> :: heap"}@{text "::"}@{typ heap}
-in an environment @{term "\<rho>"}@{text "::"}@{typ "var \<Rightarrow> Value"} is  defined by the recursive equation
+text \<open>
+The semantics @{term "Rep_cfun (Denotational.HSem \<Gamma>) \<rho>"}\<open>::\<close>@{typ "var \<Rightarrow> Value"} of a
+heap @{term "\<Gamma> :: heap"}\<open>::\<close>@{typ heap}
+in an environment @{term "\<rho>"}\<open>::\<close>@{typ "var \<Rightarrow> Value"} is  defined by the recursive equation
 \[ @{thm "Denotational.HSem_eq"} \]
 where
 \begin{alignstar}
@@ -129,17 +129,17 @@ where
 \end{alignstar}
 
 The semantics of the heap in the empty environment @{term "\<bottom>"} is abbreviated as @{term "Denotational.AHSem_bot \<Gamma>"}.
-*}
+\<close>
 
-subsubsection {* Correctness and Adequacy *}
-text {* The statement of correctness  reads:
+subsubsection \<open>Correctness and Adequacy\<close>
+text \<open>The statement of correctness  reads:
 If @{thm (prem 1) CorrectnessOriginal.correctness(1)} and, as a side condition,
 @{thm (prem 2) CorrectnessOriginal.correctness(1)} holds,
 then
 \[
 @{thm (concl) CorrectnessOriginal.correctness(1)}.
 \]
-*}
+\<close>
 (*
 \]
 and
@@ -150,16 +150,16 @@ The latter is phrased slightly different than in \cite{launchbury}, which define
 @{text "\<le>"} on heaps, by being more explictit on what set of variables the heaps agree.
 *)
 
-text {* The statement of adequacy reads:
+text \<open>The statement of adequacy reads:
 \[
 \text{If }
 @{thm (prem 1) adequacy}\text{ then }@{thm (concl) adequacy}.
 \]
-*}
+\<close>
 
-subsection {* Differences to our previous work *}
+subsection \<open>Differences to our previous work\<close>
 
-text {*
+text \<open>
 We have previously published \cite{breitner2013} of which the present work is a continuation. They differ in scope and focus:
 
 \subsubsection{The treatment of $\sqcup$}
@@ -193,7 +193,7 @@ for which
 \]
 is a defining equation. The argument on the left hand side is the representative of an equivalence class
 (defined using the Nominal package), so this is only allowed if the right hand side is indeed independent
- of the actual choice of @{text "x"}. This is shown most commonly and easily if @{text x} is fresh in all the
+ of the actual choice of \<open>x\<close>. This is shown most commonly and easily if \<open>x\<close> is fresh in all the
 other arguments (@{term "atom x \<sharp> \<rho>"}), and indeed the Nominal package allows us to specify this as a side
 condition to the defining equation, which is what we did in \cite{breitner2013}.
 
@@ -202,20 +202,20 @@ only allowed if the argument has finite support (otherwise there might no variab
 @{term "atom x \<sharp> \<rho>"}). More precisely: The type of the argument must be a member of the @{class fs} typeclass
 provided by the Nominal package. The type @{typ "var \<Rightarrow> Value"} cannot be made a member of this class,
 as there obviously are elements that have infinite support. The fix here was to introduce a new type
- constructor, @{text "fmap"}, for partial functions with finite domain. This is fine: Only functions
+ constructor, \<open>fmap\<close>, for partial functions with finite domain. This is fine: Only functions
 with finite domain matter in our formalisation.
 
-The introduction of @{text "fmap"} had further consequences. The main type class of the HOLCF package,
+The introduction of \<open>fmap\<close> had further consequences. The main type class of the HOLCF package,
 which we use to define domains and continuous functions on them, is the class @{class cpo}, of chain-complete
-partial orders. With the usual ordering on partial functions, @{text "(var, Value) fmap"} cannot be
+partial orders. With the usual ordering on partial functions, \<open>(var, Value) fmap\<close> cannot be
 a member of this class. The fix here is to use a different ordering and only let elements be compareable
 that have the same domain. In our formalisation, the domain is alway known (e.g.\ all variables
 bound on some heap), so this worked out.
 
-But not without causing yet another issue: With this ordering, @{text "(var, Value) fmap"} is a
+But not without causing yet another issue: With this ordering, \<open>(var, Value) fmap\<close> is a
 @{class cpo}, but lacks a bottom element, i.e.\ now it is no @{class pcpo}, and HOLCF's built-in operator
 @{term "\<mu> x. f x"} for expressing least fixed-points, as they occur in the semantics of heaps,
-is not available. Furthermore, @{text "\<squnion>"} is not a total function, i.e.\ defined only on a subset of
+is not available. Furthermore, \<open>\<squnion>\<close> is not a total function, i.e.\ defined only on a subset of
 all possible arguments. The solution was a rather convoluted set of theories that formalize functions that
 are continuous on a specific set, fixed-points on such sets etc.
 
@@ -228,7 +228,7 @@ holds unconditionally. The actual, technical definition is
 \[
 @{thm Denotational.ESem_simps_as_defined(1)}
 \]
-where the right-hand-side can be shown to be invariant of the choice of @{text x}, as
+where the right-hand-side can be shown to be invariant of the choice of \<open>x\<close>, as
 @{term "x \<notin> fv (Lam [x]. e)"}. Once the function is defined, the equality
 @{thm Denotational.ESem_considers_fv'} can be proved. With that, the desired equation for
 @{thm (lhs) Denotational.ESem_simps(1)} follows. The same trick is applied to the equation for
@@ -253,15 +253,15 @@ constructor. From that point on, the development is free of the crutch @{typ ass
 
 In short, the notable changes in this work over \cite{breitner2013} are:
 \begin{itemize}
-\item We consider @{text "\<squnion>"} to be a right-sided update and do discuss neither the problem with
-@{text "\<squnion>"} denoting the least uppper bound, nor possible solutions.
+\item We consider \<open>\<squnion>\<close> to be a right-sided update and do discuss neither the problem with
+\<open>\<squnion>\<close> denoting the least uppper bound, nor possible solutions.
 \item This, a simpler choice for the type of semantic environments and a better definition of the type for terms, considerably simplifies the
 work.
 \item Most importantly, this work contains a complete and formal proof of the adequacy of Launchbury's semantics.
 \end{itemize}
-*}
+\<close>
 
-text{*
+text\<open>
 \subsection{Related work}
 
 Lidia Sánchez-Gil, Mercedes Hidalgo-Herrero and Yolanda Ortega-Mallén have worked on formal aspects
@@ -289,7 +289,7 @@ This work proves the adequacy as stated by Launchbury as well, but in contrast t
 alternative operational semantics is introduced. The problems of indirection vs. substitution and
 of blackholing is solved on the denotational side instead, which turned out to be much easier than
 proving the various operational semantics to be equivalent.
- *}
+\<close>
 
 (*<*)
 

@@ -15,7 +15,7 @@ See LICENSE file for details
 *)
 
 
-section {* Toolbox of various definitions and theorems about sets, relations and lists *}
+section \<open>Toolbox of various definitions and theorems about sets, relations and lists\<close>
 
 theory MiscTools 
 
@@ -28,29 +28,29 @@ Argmax
 
 begin
 
-subsection {* Facts and notations about relations, sets and functions. *}
+subsection \<open>Facts and notations about relations, sets and functions.\<close>
 
 (* We use as alternative notation for paste instead of +* also +< and overload this with the next definition *)
 notation paste (infix "+<" 75)
 
-text {* @{text +<} abbreviation permits to shorten the notation for altering a function f in a single point by giving a pair (a, b) so that the new function has value b with argument a. *}
+text \<open>\<open>+<\<close> abbreviation permits to shorten the notation for altering a function f in a single point by giving a pair (a, b) so that the new function has value b with argument a.\<close>
 
 abbreviation singlepaste
   where "singlepaste f pair == f +* {(fst pair, snd pair)}"
   notation singlepaste (infix "+<" 75)
 (* Type of g in f +< g should avoid ambiguities *)
 
-text {* @{text "--"} abbreviation permits to shorten the notation for considering a function outside a single point. *}
+text \<open>\<open>--\<close> abbreviation permits to shorten the notation for considering a function outside a single point.\<close>
 
 abbreviation singleoutside (infix "--" 75)
   where "f -- x \<equiv> f outside {x}"
 
-text {* Turns a HOL function into a set-theoretical function *}
+text \<open>Turns a HOL function into a set-theoretical function\<close>
 
 definition (*Graph :: "('a => 'b) => ('a \<times> 'b) set" where *) 
   "Graph f = {(x, f x) | x . True}"
 
-text {* Inverts @{term Graph} (which is equivalently done by @{term eval_rel}). *}
+text \<open>Inverts @{term Graph} (which is equivalently done by @{term eval_rel}).\<close>
 (* Assume (x, y) is in R. Apply R to x, i.e., R ,, x,  will result in y assumed y is unique. *)  
 
 definition
@@ -65,7 +65,7 @@ lemma lm001:
   "((P \<union> Q) || X) = ((P || X) \<union> (Q||X))" 
   unfolding restrict_def by blast
 
-text {* update behaves like P +* Q (paste), but without enlarging P's Domain. update is the set theoretic equivalent of the lambda function update @{term fun_upd} *}
+text \<open>update behaves like P +* Q (paste), but without enlarging P's Domain. update is the set theoretic equivalent of the lambda function update @{term fun_upd}\<close>
 
 definition update 
   where "update P Q = P +* (Q || (Domain P))"
@@ -75,9 +75,9 @@ definition update
 definition runiqer  :: "('a \<times> 'b) set => ('a \<times> 'b) set"
   where "runiqer R = { (x, THE y. y \<in> R `` {x})| x. x \<in> Domain R }"
 
-text {* @{term graph} is like @{term Graph}, but with a built-in restriction to a given set @{term X}.
+text \<open>@{term graph} is like @{term Graph}, but with a built-in restriction to a given set @{term X}.
 This makes it computable for finite X, whereas @{term "Graph f || X"} is not computable. 
-Duplicates the eponymous definition found in @{text Function_Order}, which is otherwise not needed. *}
+Duplicates the eponymous definition found in \<open>Function_Order\<close>, which is otherwise not needed.\<close>
 
 definition graph 
   where "graph X f = {(x, f x) | x. x \<in> X}" 
@@ -209,7 +209,7 @@ lemma lm018:
 
 
 
-subsection {* Ordered relations *}
+subsection \<open>Ordered relations\<close>
 
 (* note that card \<^bold>X\<ge>1 means in Isabelle that X is finite and not empty *)
 lemma lm019: 
@@ -775,7 +775,7 @@ lemma lm097:
 
 
 
-subsection {* Indicator function in set-theoretical form. *}
+subsection \<open>Indicator function in set-theoretical form.\<close>
 
 abbreviation 
   "Outside' X f == f outside X"
@@ -891,7 +891,7 @@ corollary differenceSumVsCardinalityReal:
   using assms lm112 by (metis Int_absorb2 Un_upper1 card_infinite equalityE sum.infinite)
 
 
-subsection {* Lists *}
+subsection \<open>Lists\<close>
 (* If there is an element in a list satisfying P, then the list of all elements satisfying P is not the empty list *)
 lemma lm114: 
   assumes "\<exists> n \<in> {0..<size l}. P (l!n)" 
@@ -954,7 +954,7 @@ lemma lm123:
 
 
 
-subsection {* Computing all the permutations of a list *}
+subsection \<open>Computing all the permutations of a list\<close>
 abbreviation 
   "rotateLeft == rotate"
 abbreviation 
@@ -1029,7 +1029,7 @@ corollary takeAllPermutation:
 abbreviation "subList l xl == map (nth l) (takeAll (%x. x \<le> size l) xl)"
 
 
-subsection {* A more computable version of @{term toFunction}.*}
+subsection \<open>A more computable version of @{term toFunction}.\<close>
 
 (* If R is a relation and the image of x is unique then take that, else take the fallback *)
 abbreviation "toFunctionWithFallback R fallback == 
@@ -1120,7 +1120,7 @@ lemma functionEquivalenceOnSets:
   using assms by (metis image_cong)
 
 
-subsection {* Cardinalities of sets. *}
+subsection \<open>Cardinalities of sets.\<close>
 lemma lm140: 
   assumes "runiq R" "runiq (R^-1)" 
   shows "(R``A) \<inter> (R``B) = R``(A\<inter>B)" 
@@ -1266,7 +1266,7 @@ lemma lm160:
 
 
 
-subsection {* Some easy properties on real numbers *}
+subsection \<open>Some easy properties on real numbers\<close>
 lemma lm161: 
   fixes a::real 
   fixes b c 

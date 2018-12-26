@@ -5,7 +5,7 @@
 
 *)
 
-section {* The JVM Type System as Semilattice *}
+section \<open>The JVM Type System as Semilattice\<close>
 
 theory JVM_SemiType imports SemiType begin
 
@@ -114,7 +114,7 @@ lemma err_le_unfold [iff]:
 (*<*) by (simp add: Err.le_def lesub_def) (*>*)
   
 
-subsection {* Semilattice *}
+subsection \<open>Semilattice\<close>
 
 lemma order_sup_state_opt [intro, simp]: 
   "wf_prog wf_mb P \<Longrightarrow> order (sup_state_opt P)"   
@@ -134,7 +134,7 @@ lemma acc_JVM [intro]:
 (*<*) by (unfold JVM_le_unfold) blast (*>*)
 
 
-subsection {* Widening with @{text "\<top>"} *}
+subsection \<open>Widening with \<open>\<top>\<close>\<close>
 
 lemma subtype_refl[iff]: "subtype P t t" (*<*) by (simp add: fun_of_def) (*>*)
 

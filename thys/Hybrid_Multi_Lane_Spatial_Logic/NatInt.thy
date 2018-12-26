@@ -15,7 +15,7 @@ consecutive intervals j and k.
 
 section \<open>Discrete Intervals based on Natural Numbers\<close>
 
-text{* We define a type of intervals based on the natural numbers. To that 
+text\<open>We define a type of intervals based on the natural numbers. To that 
 end, we employ standard operators of Isabelle, but in addition prove some
 structural properties of the intervals. In particular, we show that this type
 constitutes a meet-semilattice with a bottom element and equality.
@@ -23,20 +23,20 @@ constitutes a meet-semilattice with a bottom element and equality.
 Furthermore, we show that this semilattice allows for a constrained join, i.e.,
 the union of two intervals is defined, if either one of them is empty, or they are
 consecutive. Finally, we define the notion of \emph{chopping} an interval into
-two consecutive subintervals.  *}
+two consecutive subintervals.\<close>
 
 theory NatInt
   imports Main 
 begin
 
-text {* A discrete interval is a set of consecutive natural numbers, or the empty 
-set.*}
+text \<open>A discrete interval is a set of consecutive natural numbers, or the empty 
+set.\<close>
 
 typedef nat_int = "{S . (\<exists> (m::nat) n . {m..n }=S) }"  
   by auto
 setup_lifting type_definition_nat_int
 
-subsection {* Basic properties of discrete intervals. *}
+subsection \<open>Basic properties of discrete intervals.\<close>
   
 locale nat_int 
 interpretation nat_int_class?: nat_int .
@@ -116,9 +116,9 @@ lemma not_empty_means_seq:"\<forall>i \<in> {S . (\<exists> (m::nat) n .  {m..n 
   by force   
 end
   
-text {* The empty set is the bottom element of the type. The infimum/meet of 
+text \<open>The empty set is the bottom element of the type. The infimum/meet of 
 the semilattice is set intersection. The order is given by the subset relation.
- *}
+\<close>
 
 instantiation nat_int :: bot
 begin
@@ -187,12 +187,12 @@ abbreviation empty :: "nat_int" ("\<emptyset>")
 notation inf (infix "\<sqinter>" 70)
 
 
-text {* The union of two intervals is only defined, if it is also
-a discrete interval. *}
+text \<open>The union of two intervals is only defined, if it is also
+a discrete interval.\<close>
 definition union :: "nat_int \<Rightarrow> nat_int \<Rightarrow> nat_int" (infix "\<squnion>" 65)
   where "i \<squnion> j = Abs_nat_int (Rep_nat_int i \<union> Rep_nat_int j)"
 
-text {* Non-empty intervals contain a minimal and maximal element. 
+text \<open>Non-empty intervals contain a minimal and maximal element. 
 Two non-empty intervals \(i\) and \(j\) are 
 consecutive, if the minimum of \(j\) is the successor of the
 maximum of \(i\).
@@ -201,7 +201,7 @@ and \(k\), if the union of \(j\) and \(k\) equals \(i\), and if \(j\)
 and \(k\) are not-empty, they must be consecutive. Finally, we define
 the cardinality of discrete intervals by lifting the cardinality of
 sets. 
-*}
+\<close>
 definition maximum :: "nat_int \<Rightarrow> nat"
   where maximum_def: "i \<noteq> \<emptyset> \<Longrightarrow> maximum (i) =   Max (Rep_nat_int i)" 
     
@@ -218,8 +218,8 @@ definition N_Chop :: "nat_int \<Rightarrow> nat_int \<Rightarrow> nat_int \<Righ
 lift_definition card' ::"nat_int \<Rightarrow> nat"  ( "|_|" 70) is card .
 
 
-text{* For convenience, we also lift the membership relation and its negation
-to discrete intervals. *}
+text\<open>For convenience, we also lift the membership relation and its negation
+to discrete intervals.\<close>
 
 lift_definition el::"nat \<Rightarrow> nat_int \<Rightarrow> bool" (infix "\<^bold>\<in>" 50) is "Set.member" .
 
@@ -328,7 +328,7 @@ proof
   with assm show "m=n" by (simp add: Abs_nat_int_inverse el_def)
 qed
 
-subsection {* Algebraic properties of intersection and union. *}
+subsection \<open>Algebraic properties of intersection and union.\<close>
   
 lemma inter_empty1:"(i::nat_int) \<sqinter> \<emptyset> = \<emptyset>" 
   using Rep_nat_int_inject inf_nat_int.rep_eq bot_nat_int.abs_eq bot_nat_int.rep_eq 
@@ -345,8 +345,8 @@ lemma un_empty_absorb2:"\<emptyset> \<squnion> i = i"
   using  Abs_nat_int_inverse Rep_nat_int_inverse union_def empty_type bot_nat_int.rep_eq
   by auto
 
-text {* Most properties of the union of two intervals depends on them being consectuive,
-to ensure that their union exists. *}
+text \<open>Most properties of the union of two intervals depends on them being consectuive,
+to ensure that their union exists.\<close>
 
 lemma consec_un:"consec i j \<and> n \<notin> Rep_nat_int(i) \<union> Rep_nat_int j 
                   \<longrightarrow> n \<^bold>\<notin>  (i \<squnion> j)"

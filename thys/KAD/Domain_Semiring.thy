@@ -5,19 +5,19 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Domain Semirings *}
+section \<open>Domain Semirings\<close>
 
 theory Domain_Semiring
 imports Kleene_Algebra.Kleene_Algebra
 
 begin
 
-subsection {* Domain Semigroups and Domain Monoids *}
+subsection \<open>Domain Semigroups and Domain Monoids\<close>
 
 class domain_op =
   fixes domain_op :: "'a \<Rightarrow> 'a" ("d")
 
-text {* First we define the class of domain semigroups. Axioms are taken from~\cite{DesharnaisJipsenStruth}. *}
+text \<open>First we define the class of domain semigroups. Axioms are taken from~\cite{DesharnaisJipsenStruth}.\<close>
 
 class domain_semigroup = semigroup_mult + domain_op +
   assumes dsg1 [simp]: "d x \<cdot> x = x"
@@ -39,7 +39,7 @@ proof -
     by simp
 qed
 
-text {* The next lemmas show that domain elements form semilattices. *}
+text \<open>The next lemmas show that domain elements form semilattices.\<close>
 
 lemma dom_el_idem [simp]: "d x \<cdot> d x = d x"
 proof -
@@ -66,7 +66,7 @@ lemma d_fixpoint: "(\<exists>y. x = d y) \<longleftrightarrow> x = d x"
 lemma d_type: "\<forall>P. (\<forall>x. x = d x \<longrightarrow> P x) \<longleftrightarrow> (\<forall>x. P (d x))"
   by (metis domain_invol)
 
-text {* We define the semilattice ordering on domain semigroups and explore the semilattice of domain elements from the order point of view. *}
+text \<open>We define the semilattice ordering on domain semigroups and explore the semilattice of domain elements from the order point of view.\<close>
 
 definition ds_ord :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50) where
   "x \<sqsubseteq> y \<longleftrightarrow> x = d x \<cdot> y"
@@ -102,7 +102,7 @@ proof -
     using b calculation by presburger
 qed
 
-text {* This relation is indeed an order. *}
+text \<open>This relation is indeed an order.\<close>
 
 sublocale  ds: order "(\<sqsubseteq>)" "\<lambda>x y. (x \<sqsubseteq> y \<and> x \<noteq> y)"
 proof
@@ -138,7 +138,7 @@ proof -
     using ds_ord_def dsg4 mult_assoc by auto
 qed
 
-text {* The order on domain elements could as well be defined based on multiplication/meet. *}
+text \<open>The order on domain elements could as well be defined based on multiplication/meet.\<close>
 
 lemma ds_ord_sl_ord: "d x \<sqsubseteq> d y \<longleftrightarrow> d x \<cdot> d y = d x"
   using ds_ord_def by auto
@@ -212,7 +212,7 @@ qed
 
 end
 
-text {* We expand domain semigroups to domain monoids. *}
+text \<open>We expand domain semigroups to domain monoids.\<close>
 
 class domain_monoid = monoid_mult + domain_semigroup
 begin
@@ -230,9 +230,9 @@ lemma ds_subid_eq: "x \<sqsubseteq> 1 \<longleftrightarrow> x = d x"
 
 end
 
-subsection {* Domain Near-Semirings *}
+subsection \<open>Domain Near-Semirings\<close>
 
-text {* The axioms for domain near-semirings are taken from~\cite{DesharnaisStruthAMAST}. *}
+text \<open>The axioms for domain near-semirings are taken from~\cite{DesharnaisStruthAMAST}.\<close>
 
 class domain_near_semiring = ab_near_semiring + plus_ord + domain_op +
   assumes dns1 [simp]: "d x \<cdot> x = x"
@@ -243,7 +243,7 @@ class domain_near_semiring = ab_near_semiring + plus_ord + domain_op +
 
 begin
 
-text {* Domain near-semirings are automatically dioids; addition is idempotent. *}
+text \<open>Domain near-semirings are automatically dioids; addition is idempotent.\<close>
 
 subclass near_dioid
 proof
@@ -261,7 +261,7 @@ proof
   qed
 qed
 
-text {* Next we prepare to show that domain near-semirings are domain semigroups. *}
+text \<open>Next we prepare to show that domain near-semirings are domain semigroups.\<close>
 
 lemma dom_iso: "x \<le> y \<Longrightarrow> d x \<le> d y"
   using order_prop by auto
@@ -355,7 +355,7 @@ qed
 subclass domain_semigroup
  by (unfold_locales, auto simp: dns4)
 
-text {* We compare the domain semigroup ordering with that of the dioid. *}
+text \<open>We compare the domain semigroup ordering with that of the dioid.\<close>
 
 lemma d_two_orders: "d x \<sqsubseteq> d y \<longleftrightarrow> d x \<le> d y"
   by (simp add: dom_ord ds_ord_sl_ord)
@@ -367,7 +367,7 @@ lemma "x \<le> y \<Longrightarrow> x \<sqsubseteq> y"
 (*nitpick [expect=genuine]*)
 oops
 
-text {* Next we prove additional properties. *}
+text \<open>Next we prove additional properties.\<close>
 
 lemma dom_subdist: "d x \<le> d (x + y)"
   by simp
@@ -403,7 +403,7 @@ lemma dom_llp: "x \<le> d y \<cdot> x \<longleftrightarrow> d x \<le> d y"
 
 end
 
-text {* We expand domain near-semirings by an additive unit, using slightly different axioms. *}
+text \<open>We expand domain near-semirings by an additive unit, using slightly different axioms.\<close>
 
 class domain_near_semiring_one = ab_near_semiring_one + plus_ord + domain_op +
   assumes dnso1 [simp]: "x + d x \<cdot> x = d x \<cdot> x"
@@ -414,7 +414,7 @@ class domain_near_semiring_one = ab_near_semiring_one + plus_ord + domain_op +
 
 begin
 
-text {* The previous axioms are derivable. *}
+text \<open>The previous axioms are derivable.\<close>
 
 subclass domain_near_semiring
 proof
@@ -443,7 +443,7 @@ lemma dom_subid: "d x \<le> 1"
 
 end
 
-text {* We add a left unit of multiplication. *}
+text \<open>We add a left unit of multiplication.\<close>
 
 class domain_near_semiring_one_zerol = ab_near_semiring_one_zerol + domain_near_semiring_one +
   assumes dnso6 [simp]: "d 0 = 0"
@@ -465,13 +465,13 @@ qed
 
 end
 
-subsection {* Domain Pre-Dioids *}
+subsection \<open>Domain Pre-Dioids\<close>
 
-text {*
+text \<open>
   Pre-semirings with one and a left zero are automatically dioids.
   Hence there is no point defining domain pre-semirings separately from domain dioids. The axioms
 are once again from~\cite{DesharnaisStruthAMAST}.
-*}
+\<close>
 
 class domain_pre_dioid_one = pre_dioid_one + domain_op +
   assumes dpd1 : "x \<le> d x \<cdot> x"
@@ -481,7 +481,7 @@ class domain_pre_dioid_one = pre_dioid_one + domain_op +
 
 begin
 
-text {* We prepare to show that every domain pre-dioid with one is a domain near-dioid with one. *}
+text \<open>We prepare to show that every domain pre-dioid with one is a domain near-dioid with one.\<close>
 
 lemma dns1'' [simp]: "d x \<cdot> x = x"
 proof (rule antisym)
@@ -564,7 +564,7 @@ lemma d_restrict_iff_1: "(d x \<cdot> y \<le> z) \<longleftrightarrow> (d x \<cd
 
 end
 
-text {* We add once more a left unit of multiplication. *}
+text \<open>We add once more a left unit of multiplication.\<close>
 
 class domain_pre_dioid_one_zerol = domain_pre_dioid_one + pre_dioid_one_zerol +
   assumes dpd5 [simp]: "d 0 = 0"
@@ -576,9 +576,9 @@ subclass domain_near_semiring_one_zerol
 
 end
 
-subsection {* Domain Semirings *}
+subsection \<open>Domain Semirings\<close>
 
-text {* We do not consider domain semirings without units separately at the moment. The axioms are taken from from~\cite{DesharnaisStruthSCP}*}
+text \<open>We do not consider domain semirings without units separately at the moment. The axioms are taken from from~\cite{DesharnaisStruthSCP}\<close>
 
 class domain_semiringl = semiring_one_zerol + plus_ord + domain_op +
   assumes dsr1 [simp]: "x + d x \<cdot> x = d x \<cdot> x"
@@ -589,7 +589,7 @@ class domain_semiringl = semiring_one_zerol + plus_ord + domain_op +
 
 begin
 
-text {* Every domain semiring is automatically a domain pre-dioid with one and left zero. *}
+text \<open>Every domain semiring is automatically a domain pre-dioid with one and left zero.\<close>
 
 subclass dioid_one_zerol
   by (standard, metis add_commute dsr1 dsr3 distrib_left mult_oner)
@@ -601,9 +601,9 @@ end
 
 class domain_semiring = domain_semiringl + semiring_one_zero
 
-subsection {* The Algebra of Domain Elements *}
+subsection \<open>The Algebra of Domain Elements\<close>
 
-text {* We show that the domain elements of a domain semiring form a distributive lattice. Unfortunately we cannot prove this within the type class of domain semirings. *}
+text \<open>We show that the domain elements of a domain semiring form a distributive lattice. Unfortunately we cannot prove this within the type class of domain semirings.\<close>
 
 typedef (overloaded)  'a d_element = "{x :: 'a :: domain_semiring. x = d x}"
   by (rule_tac x = 1 in exI, simp add: domain_subid order_class.eq_iff)
@@ -644,9 +644,9 @@ end
 instance d_element :: (domain_semiring) distrib_lattice
   by (standard, transfer, metis dom_distrib)
 
-subsection {* Domain Semirings with a Greatest Element *}
+subsection \<open>Domain Semirings with a Greatest Element\<close>
 
-text {* If there is a greatest element in the semiring, then we have another equality. *}
+text \<open>If there is a greatest element in the semiring, then we have another equality.\<close>
 
 class domain_semiring_top = domain_semiring + order_top
 
@@ -667,13 +667,13 @@ qed
 
 end
 
-subsection {* Forward Diamond Operators *}
+subsection \<open>Forward Diamond Operators\<close>
 
 context domain_semiringl
 
 begin
 
-text {* We define a forward diamond operator over a domain semiring. A more modular consideration is not given at the moment. *}
+text \<open>We define a forward diamond operator over a domain semiring. A more modular consideration is not given at the moment.\<close>
 
 definition fd :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("( |_\<rangle> _)" [61,81] 82) where
   "|x\<rangle> y = d (x \<cdot> y)"
@@ -759,9 +759,9 @@ lemma fdia_zero [simp]: "|x\<rangle> 0 = 0"
 
 end
 
-subsection {* Domain Kleene Algebras *}
+subsection \<open>Domain Kleene Algebras\<close>
 
-text {* We add the Kleene star to our considerations. Special domain axioms are not needed. *}
+text \<open>We add the Kleene star to our considerations. Special domain axioms are not needed.\<close>
 
 class domain_left_kleene_algebra = left_kleene_algebra_zerol + domain_semiringl
 

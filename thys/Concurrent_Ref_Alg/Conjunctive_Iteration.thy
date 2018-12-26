@@ -1,4 +1,4 @@
-section {* Iteration for conjunctive models \label{S:conjunctive-iteration} *}
+section \<open>Iteration for conjunctive models \label{S:conjunctive-iteration}\<close>
 
 theory Conjunctive_Iteration
 imports
@@ -7,10 +7,10 @@ imports
   Infimum_Nat
 begin
 
-text {*
+text \<open>
   Sequential left-distributivity is only supported by conjunctive models
   but does not apply in general. The relational model is one such example.
-*}
+\<close>
 
 locale iteration_finite_conjunctive = seq_finite_conjunctive + iteration
 
@@ -67,7 +67,7 @@ proof -
   then have "c\<^sup>\<star>;d \<sqinter> c\<^sup>\<infinity>;d = c\<^sup>\<star>;d \<sqinter> c\<^sup>\<infinity>" by (simp add: infiter_annil)
   then have "c\<^sup>\<star>;d \<sqinter> c\<^sup>\<infinity> = lfp (\<lambda> x. d \<sqinter> c;x)" by (simp add: iter_induct_isolate)
   thus ?thesis 
-    by (simp add: `c\<^sup>\<omega> ; d = c\<^sup>\<star> ; d \<sqinter> c\<^sup>\<infinity> ; d` `c\<^sup>\<star> ; d \<sqinter> c\<^sup>\<infinity> ; d = c\<^sup>\<star> ; d \<sqinter> c\<^sup>\<infinity>`)
+    by (simp add: \<open>c\<^sup>\<omega> ; d = c\<^sup>\<star> ; d \<sqinter> c\<^sup>\<infinity> ; d\<close> \<open>c\<^sup>\<star> ; d \<sqinter> c\<^sup>\<infinity> ; d = c\<^sup>\<star> ; d \<sqinter> c\<^sup>\<infinity>\<close>)
 qed
 
 lemma iter_induct: "d \<sqinter> c;x \<sqsubseteq> x \<Longrightarrow> c\<^sup>\<omega>;d \<sqsubseteq> x"

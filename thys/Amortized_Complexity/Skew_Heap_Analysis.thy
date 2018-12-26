@@ -10,8 +10,8 @@ imports
   Priority_Queue_ops_merge
 begin
 
-text{* The following proof is a simplified version of the one by Kaldewaij and
-Schoenmakers~\cite{KaldewaijS-IPL91}. *}
+text\<open>The following proof is a simplified version of the one by Kaldewaij and
+Schoenmakers~\cite{KaldewaijS-IPL91}.\<close>
 
 text \<open>right-heavy:\<close>
 definition rh :: "'a tree => 'a tree => nat" where

@@ -3,21 +3,21 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Two sorted Kleene Algebra with Tests *}
+section \<open>Two sorted Kleene Algebra with Tests\<close>
 
 theory KAT2
   imports Kleene_Algebra.Kleene_Algebra
 begin
 
-text {*
+text \<open>
   As an alternative to the one-sorted implementation of tests, we provide a two-sorted, more 
   conventional one. In this setting, Isabelle's Boolean algebra theory can be used.
   This alternative can be developed further along the lines of the one-sorted implementation.
-*}
+\<close>
 
 syntax "_kat" :: "'a \<Rightarrow> 'a" ("`_`")
 
-ML {*
+ML \<open>
 val kat_test_vars = ["p","q","r","s","t","p'","q'","r'","s'","t'","p''","q''","r''","s''","t''"]
 
 fun map_ast_variables ast =
@@ -40,21 +40,21 @@ fun kat_hom_tac ctxt n =
   in
     asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps rev_rules) n
   end
-*}
+\<close>
 
-setup {* KATHomRules.setup *}
+setup \<open>KATHomRules.setup\<close>
 
-method_setup kat_hom = {*
+method_setup kat_hom = \<open>
 Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (kat_hom_tac ctxt 1)))
-*}
+\<close>
 
-parse_ast_translation {*
+parse_ast_translation \<open>
 let
   fun kat_tr ctxt [t] = map_ast_variables t
 in [(@{syntax_const "_kat"}, kat_tr)] end
-*}
+\<close>
 
-ML {*
+ML \<open>
 structure VCGRules = Named_Thms
   (val name = @{binding "vcg"}
    val description = "verification condition generator rules")
@@ -69,13 +69,13 @@ fun vcg_tac ctxt n =
         THEN kat_hom_tac ctxt n
         THEN TRY (resolve_tac ctxt @{thms order_refl} n ORELSE asm_full_simp_tac (put_simpset HOL_basic_ss ctxt) n)))
   end
-*}
+\<close>
 
-method_setup vcg = {*
+method_setup vcg = \<open>
 Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (vcg_tac ctxt 1)))
-*}
+\<close>
 
-setup {* VCGRules.setup *}
+setup \<open>VCGRules.setup\<close>
 
 locale dioid_tests =
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::dioid_one_zerol"
@@ -93,7 +93,7 @@ notation test ("\<iota>")
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
 
-ML_val {* map (fn thm => thm RS @{thm sym}) (KATHomRules.get @{context}) *}
+ML_val \<open>map (fn thm => thm RS @{thm sym}) (KATHomRules.get @{context})\<close>
 
 lemma test_iso: "p \<le> q \<Longrightarrow> `p \<le> q`"
   by (simp add: test_iso_eq)
@@ -134,7 +134,7 @@ notation test ("\<iota>")
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
 
-ML_val {* map (fn thm => thm RS @{thm sym}) (KATHomRules.get @{context}) *}
+ML_val \<open>map (fn thm => thm RS @{thm sym}) (KATHomRules.get @{context})\<close>
 
 lemma test_iso: "p \<le> q \<Longrightarrow> `p \<le> q`"
   by (simp add: test_iso_eq)

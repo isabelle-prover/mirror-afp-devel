@@ -24,11 +24,11 @@ syntax
   "_SUP1"     :: "pttrns \<Rightarrow> 'b \<Rightarrow> 'b"           ("(3\<Squnion>_./ _)" [0, 10] 10)
   "_SUP"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3\<Squnion>_\<in>_./ _)" [0, 0, 10] 10)
   
-section {* Residuated Lattices *}
+section \<open>Residuated Lattices\<close>
 
-subsection {* Residuated Functions on a Partial Order *}
+subsection \<open>Residuated Functions on a Partial Order\<close>
 
-text {*
+text \<open>
   We follow Galatos and \emph{al.} to define residuated funtions on
   partial orders. Material from articles by Maddux, and J{\'o}sson and Tsinakis are also considered.
   
@@ -40,7 +40,7 @@ text {*
   $g: P \to P$ such that $f(x) \le y \Leftrightarrow x \le g(y)$
   for all $x, y \in P$.
   That is, they are adjoints of a Galois connection.
-*}
+\<close>
 
 context order begin
 
@@ -58,18 +58,18 @@ theorem residuated_pairI [intro]:
 definition residuated :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where
   "residuated f \<equiv> \<exists>g. residuated_pair f g"
   
-text {* 
+text \<open>
   If a map $f$ is residuated, then its residual $g$ is unique. 
-*}
+\<close>
 
 lemma residual_unique: "residuated f \<Longrightarrow> \<exists>!g. residuated_pair f g"
   unfolding residuated_def residuated_pair_def
   by (metis ext eq_refl order.antisym)
   
-text {* 
+text \<open>
   Since the residual of a map $f$ is unique, it makes sense to 
   define a residual operator. 
-*}
+\<close>
   
 definition residual :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" where
   "residual f \<equiv> THE g. residuated_pair f g"
@@ -88,11 +88,11 @@ lemma residual_galoisI1: "residuated f \<Longrightarrow> f(x) \<le> y \<Longrigh
 lemma residual_galoisI2: "residuated f \<Longrightarrow> x \<le> residual f y \<Longrightarrow> f(x) \<le> y"
   by (metis residual_galois)
   
-text {*
+text \<open>
   A closure operator on a poset is a map that is expansive, isotone and
   idempotent.
   The composition of the residual of a function $f$ with $f$ is a closure operator.
-*}
+\<close>
 
 definition closure :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where
   "closure f \<equiv> (\<forall>x. x \<le> f x) \<and> (\<forall>x y. x \<le> y \<longrightarrow> f x \<le> f y) \<and> (\<forall>x. f(f x) = f x)"
@@ -109,11 +109,11 @@ lemma res_c3: "residuated f \<Longrightarrow> residual f (f (residual f (f x))) 
 lemma res_closure: "residuated f \<Longrightarrow> closure (residual f o f)"
   by (auto simp: closure_def intro: res_c1 res_c2 res_c3)
 
-text {*
+text \<open>
   Dually, an interior operator on a poset is a map that is contractive, isotone and
   idempotent.
   The composition of $f$ with its residual is an interior operator.
-*}
+\<close>
 
 definition interior :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where
   "interior f \<equiv> (\<forall>x. f x \<le> x) \<and> (\<forall>x y. x \<le> y \<longrightarrow> f x \<le> f y) \<and> (\<forall>x. f(f x) = f x)"
@@ -130,7 +130,7 @@ lemma res_i3: "residuated f \<Longrightarrow> f (residual f (f (residual f x))) 
 lemma res_interior: "residuated f \<Longrightarrow> interior (f o residual f)"
   by (auto simp: interior_def intro: res_i1 res_i2 res_i3)
 
-text {* Next we show a few basic lemmas about residuated maps. *}
+text \<open>Next we show a few basic lemmas about residuated maps.\<close>
 
 lemma res_iso: "residuated f \<Longrightarrow> x \<le> y \<Longrightarrow> f x \<le> f y"
   by (metis local.order.trans res_c1 residual_galois)
@@ -164,12 +164,12 @@ qed
 
 end (* order *)
 
-text {*
+text \<open>
   A residuated function $f$ preserves all existing joins.
   Dually, its residual preserves all existing meets.
   We restrict our attention to semilattices, where binary joins or meets exist, and to
   complete lattices, where arbitrary joins and meets exist.
-*}
+\<close>
 
 lemma (in semilattice_sup) residuated_sup: "residuated f \<Longrightarrow> f (x \<squnion> y) = f x \<squnion> f y"
 proof (rule antisym)
@@ -201,12 +201,12 @@ end
 
 context complete_lattice begin
 
-text {*
+text \<open>
   On a complete lattice, a function $f$ is residuated if and only if
   it preserves arbitrary (possibly infinite) joins.
   Dually, a function $g$ is a residual of a residuated funtion $f$
   if and only if $g$ preserver arbitrary meets. 
-*}
+\<close>
 
 lemma residual_eq1: "residuated f \<Longrightarrow> residual f y = \<Squnion> {x. f x \<le> y}"
 proof (rule antisym)
@@ -309,20 +309,20 @@ qed
 
 end (* complete lattices *)
 
-subsection {* Residuated Structures *}
+subsection \<open>Residuated Structures\<close>
 
-text {* 
+text \<open>
   In this section, we define residuated algebraic structures, starting from the simplest of all,
   a \emph{residuated partial ordered groupoid}, to 
   \emph{residuated l-monoids}, which are residuated 
   lattices where the multiplicative operator forms a monoid.
- *}
+\<close>
 
 class pogroupoid = order + times +
   assumes mult_isor: "x \<le> y \<Longrightarrow> x \<cdot> z \<le> y \<cdot> z"
   and mult_isol: "x \<le> y \<Longrightarrow> z \<cdot> x \<le> z \<cdot> y"
 
-text {*
+text \<open>
   A residuated partial ordered groupoid is simply a partial order and a multiplicative groupoid with 
   two extra operators satisfying the residuation laws.
   It is straighforward to prove that multiplication is compatible with the order,
@@ -330,7 +330,7 @@ text {*
   
   Most of the lemmas below come in pairs; they are related by opposition duality.
   Formalising this duality is left for future work.
-*}
+\<close>
 
 class residual_r_op =
   fixes residual_r :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixr "\<rightarrow>" 60)
@@ -355,9 +355,9 @@ lemma residuated_pair_multl [simp]: "residuated_pair (\<lambda>x. x \<cdot> y) (
 lemma residuated_pair_multr [simp]: "residuated_pair (\<lambda>y. x \<cdot> y) (\<lambda>y. x \<rightarrow> y)"
   by (auto simp: residuated_pair_def resr_galois)
 
-text {*
+text \<open>
   Multiplication is then obviously residuated.
-*}
+\<close>
   
 lemma residuated_multl [simp]: "residuated (\<lambda>x. x \<cdot> y)"
   by (metis residuated_def residuated_pair_multl)
@@ -373,9 +373,9 @@ lemma resr_eq [simp]: "residual (\<lambda>y. x \<cdot> y) = (\<lambda>y. x \<rig
   unfolding residual_def apply (rule the1_equality)
   by (auto simp: intro!: residual_unique)
   
-text {*
+text \<open>
   Next we prove a few lemmas, all of which are instantiation of more general facts about residuated functions.
-*}
+\<close>
   
 lemma res_lc1: "x \<le> x \<cdot> y \<leftarrow> y"
   by auto
@@ -446,7 +446,7 @@ lemma resl_antitoner: "x \<le> y \<longrightarrow> z \<leftarrow> y \<le> z \<le
 lemma resr_antitonel: "x \<le> y \<longrightarrow> y \<rightarrow> z \<le> x \<rightarrow> z"
   by (metis local.dual_order.trans local.resl_galois res_ri1 resrI)
 
-text {* The following lemmas are taken from Galatos and \emph{al.} *}
+text \<open>The following lemmas are taken from Galatos and \emph{al.}\<close>
 
 lemma jipsen1l: "x \<le> y \<leftarrow> (x \<rightarrow> y)"
   by (metis res_ri1 reslI)
@@ -462,9 +462,9 @@ lemma jipsen2r: "y \<leftarrow> ((y \<leftarrow> x) \<rightarrow> y) = y \<lefta
   
 end (* residuated_pogroupoid *)
 
-text {*
+text \<open>
   In a residuated partial ordered semigroup, the multiplicative operator is associative.
-*}
+\<close>
   
 class residuated_posemigroup = semigroup_mult + residuated_pogroupoid 
 begin
@@ -503,10 +503,10 @@ qed
 
 end (* residuated_posemigroup *)
 
-text {*
+text \<open>
   In a residuated partially ordered monoid, the multiplicative operator has a unit $1$; that is,
   its reduct forms a monoid.
-*}
+\<close>
 
 class residuated_pomonoid = monoid_mult + residuated_pogroupoid 
 begin
@@ -525,7 +525,7 @@ lemma mult_one_resl: "x \<cdot> (1 \<leftarrow> y) \<le> x \<leftarrow> y"
 lemma mult_one_resr: "(x \<rightarrow> 1) \<cdot> y \<le> x \<rightarrow> y"
   by (metis local.mult_1_left local.resr1)
 
-text {* More lemmas from Galatos and \emph{al.} follow. *}
+text \<open>More lemmas from Galatos and \emph{al.} follow.\<close>
 
 lemma jipsen3l: "1 \<le> x \<leftarrow> x"
   by (metis local.jipsen1l resr_unit)
@@ -559,12 +559,12 @@ lemma jipsen7r: "x \<rightarrow> y \<le> (x \<rightarrow> z) \<leftarrow> (y \<r
 
 end (* residuated_pomonoid *)
 
-text {*
+text \<open>
   Residuated partially ordered groupoids can be expanded residuated join semilattice ordered groupoids.
   They are used as a base for action algebras, which are expansions 
   of Kleene algebras by operations of residuation.
   Action algebras can be found in the AFP entry for Kleene algebras.
-*}
+\<close>
 
 class residuated_sup_lgroupoid = semilattice_sup + residuated_pogroupoid
 begin
@@ -595,9 +595,9 @@ lemma resr_superdist_var: "(x \<squnion> y) \<rightarrow> z \<le> x \<rightarrow
 
 end (* residuated_sup_lgroupoid *)
 
-text {*
+text \<open>
   Similarly, semigroup and monoid variants can be defined.
-*}
+\<close>
 
 class residuated_sup_lsemigroup = semilattice_sup + residuated_posemigroup
 subclass (in residuated_sup_lsemigroup) residuated_sup_lgroupoid ..
@@ -605,9 +605,9 @@ subclass (in residuated_sup_lsemigroup) residuated_sup_lgroupoid ..
 class residuated_sup_lmonoid = semilattice_sup + residuated_posemigroup
 subclass (in residuated_sup_lmonoid) residuated_sup_lsemigroup ..
 
-text {*
+text \<open>
   By lattice duality, we define residuated meet semillatice ordered groupoid.
-*}
+\<close>
 
 class residuated_inf_lgroupoid = semilattice_inf + residuated_pogroupoid
 begin
@@ -632,9 +632,9 @@ subclass (in residuated_inf_lsemigroup) residuated_inf_lgroupoid ..
 class residuated_inf_lmonoid = semilattice_inf + residuated_posemigroup
 subclass (in residuated_inf_lmonoid) residuated_inf_lsemigroup ..
 
-text {*
+text \<open>
   Finally, we obtain residuated lattice groupoids. 
-*}
+\<close>
 
 class residuated_lgroupoid = lattice + residuated_pogroupoid
 begin

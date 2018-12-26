@@ -7,8 +7,8 @@
  *
  * @TAG(DATA61_BSD)
  *)
-section {* Soundness proof of Owicki-Gries w.r.t.
-           COMPLX small-step semantics *}
+section \<open>Soundness proof of Owicki-Gries w.r.t.
+           COMPLX small-step semantics\<close>
 
 theory OG_Soundness
 imports

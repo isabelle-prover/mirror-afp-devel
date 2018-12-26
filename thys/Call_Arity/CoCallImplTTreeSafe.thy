@@ -18,7 +18,7 @@ next
     show ?thesis.
   next
     case True
-    with `\<not> one_call_in_path x (x' # xs)`
+    with \<open>\<not> one_call_in_path x (x' # xs)\<close>
     have [simp]: "x' = x" by (auto split: if_splits)
 
     have "x \<in> set xs"
@@ -28,7 +28,7 @@ next
       hence "one_call_in_path x (x # xs)" by simp
       with Cons show False by simp
     qed
-    with `set xs \<subseteq> ccNeighbors x' G`
+    with \<open>set xs \<subseteq> ccNeighbors x' G\<close>
     have "x \<in> ccNeighbors x G" by auto
     thus ?thesis by simp
   qed
@@ -176,7 +176,7 @@ next
   assume "\<not> one_call_in_path x p"
   hence "x \<in> set p" by (rule more_than_one_setD)
   
-  assume "p \<in> paths (Theap \<Gamma> e\<cdot>a)" with `x \<in> set p`
+  assume "p \<in> paths (Theap \<Gamma> e\<cdot>a)" with \<open>x \<in> set p\<close>
   have "x \<in> carrier (Theap \<Gamma> e\<cdot>a)" by (auto simp add: Union_paths_carrier[symmetric])
   hence "x \<in> edom (Aheap \<Gamma> e\<cdot>a)"
     unfolding Theap_simp by (auto split: if_splits)
@@ -184,17 +184,17 @@ next
   show "(Aheap \<Gamma> e\<cdot>a) x = up\<cdot>0"
   proof(cases "nonrec \<Gamma>")
     case False
-    from False `x \<in> thunks \<Gamma>`  `x \<in> edom (Aheap \<Gamma> e\<cdot>a)`
+    from False \<open>x \<in> thunks \<Gamma>\<close>  \<open>x \<in> edom (Aheap \<Gamma> e\<cdot>a)\<close>
     show ?thesis  by (rule aHeap_thunks_rec)
   next
     case True
-    with `p \<in> paths (Theap \<Gamma> e\<cdot>a)`
+    with \<open>p \<in> paths (Theap \<Gamma> e\<cdot>a)\<close>
     have "p \<in> valid_lists (edom (Aheap \<Gamma> e\<cdot>a)) (ccExp e\<cdot>a)" by (simp add: Theap_simp)
 
-    with `\<not> one_call_in_path x p`
+    with \<open>\<not> one_call_in_path x p\<close>
     have "x--x\<in> (ccExp e\<cdot>a)" by (rule valid_lists_many_calls)
   
-    from True `x \<in> thunks \<Gamma>` this
+    from True \<open>x \<in> thunks \<Gamma>\<close> this
     show ?thesis by (rule aHeap_thunks_nonrec)
   qed
 next
@@ -356,7 +356,7 @@ proof (rule ttree_belowI)
   with assms 
   have "ys \<in> paths (singles S)" and "set zs \<inter> S = {}"
     by (metis below_ttree.rep_eq contra_subsetD paths.rep_eq, auto simp add: Union_paths_carrier[symmetric])
-  with `xs \<in> ys \<otimes> zs`
+  with \<open>xs \<in> ys \<otimes> zs\<close>
   show "xs \<in> paths (singles S)"
     by (induction) (auto simp add: paths_singles no_call_in_path_set_conv interleave_set dest: more_than_one_setD split: if_splits)
 qed
@@ -391,7 +391,7 @@ proof-
   have "ttree_restr ({x}) (substitute f T t) = ttree_restr ({x}) t"
   proof(rule ttree_rest_substitute)
     fix x'
-    from `x \<notin> carrier (f x')`
+    from \<open>x \<notin> carrier (f x')\<close>
     show "carrier (f x') \<inter> {x} = {}" by auto
   qed
   hence "x \<notin> carrier (ttree_restr ({x}) (substitute f T t)) \<longleftrightarrow> x \<notin> carrier (ttree_restr ({x}) t)" by metis
@@ -415,19 +415,19 @@ proof(rule ttree_belowI)
   next
     case (Cons f T t x xs)
 
-    from `x#xs \<in> _`
+    from \<open>x#xs \<in> _\<close>
     have xs: "xs \<in> paths (substitute (f_nxt f T x) T (nxt t x \<otimes>\<otimes> f x))" by auto
     moreover
 
-    from `t \<sqsubseteq> singles S`
+    from \<open>t \<sqsubseteq> singles S\<close>
     have "nxt t x \<sqsubseteq> singles S" 
       by (metis "TTree-HOLCF.nxt_mono" below_trans nxt_singles_below_singles)
-    from this `carrier (f x) \<inter> S = {}`
+    from this \<open>carrier (f x) \<inter> S = {}\<close>
     have "nxt t x \<otimes>\<otimes> f x \<sqsubseteq> singles S"
       by (rule both_below_singles1)
     moreover
     { fix x'
-      from  `carrier (f x') \<inter> S = {}`
+      from  \<open>carrier (f x') \<inter> S = {}\<close>
       have "carrier (f_nxt f T x x') \<inter> S = {}"
         by (auto simp add: f_nxt_def)
     }
@@ -438,10 +438,10 @@ proof(rule ttree_belowI)
   show ?case
     proof(cases "x \<in> S")
       case True
-      with `carrier (f x) \<inter> S = {}`
+      with \<open>carrier (f x) \<inter> S = {}\<close>
       have "x \<notin> carrier (f x)" by auto
       moreover
-      from `t \<sqsubseteq> singles S`
+      from \<open>t \<sqsubseteq> singles S\<close>
       have "nxt t x \<sqsubseteq> nxt (singles S) x" by (rule nxt_mono)
       hence "carrier (nxt t x) \<subseteq> carrier (nxt (singles S) x)" by (rule carrier_mono)
       from set_mp[OF this] True
@@ -451,7 +451,7 @@ proof(rule ttree_belowI)
       hence "x \<notin> carrier (substitute (f_nxt f T x) T (nxt t x \<otimes>\<otimes> f x))"
       proof(rule substitute_not_carrier)
         fix x'  
-        from `carrier (f x') \<inter> S = {}` `x \<in> S`
+        from \<open>carrier (f x') \<inter> S = {}\<close> \<open>x \<in> S\<close>
         show "x \<notin> carrier (f_nxt f T x x')" by (auto simp add: f_nxt_def)
       qed
       with xs

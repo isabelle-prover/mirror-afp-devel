@@ -1,11 +1,11 @@
-section {* The type-erasure translation from many-typed to untyped FOL *}
+section \<open>The type-erasure translation from many-typed to untyped FOL\<close>
 theory E imports Mono CU
 begin
 
 (* This is the only development that uses UFOL *)
 
 
-subsection{* Preliminaries *}
+subsection\<open>Preliminaries\<close>
 
 
 (* Problem:
@@ -40,7 +40,7 @@ context Sig.Signature begin
 end (* context Signature.Signature *)
 
 
-subsection{* The translation *}
+subsection\<open>The translation\<close>
 
 sublocale M_Signature < U.Signature
 where arOf = "length o arOf" and parOf = "length o parOf"
@@ -70,11 +70,11 @@ unfolding M.wtPB_def wtPB_def by auto
 end (* context M_Signature *)
 
 
-subsection{* Completeness *}
+subsection\<open>Completeness\<close>
 
 (* In our implicitly-typed setting, ``e" is just the identity. *)
 
-text{* The next puts together an M$\_$signature with a structure for its U.flattened signature: *}
+text\<open>The next puts together an M$\_$signature with a structure for its U.flattened signature:\<close>
 
 locale UM_Struct =
 M? : M_Signature wtFsym wtPsym arOf resOf parOf +
@@ -132,14 +132,14 @@ apply standard apply(rule completeness[OF SAT]) .
 
 end (* context UM_Model *)
 
-text{* Global statement of completeness : UM$\_$Model consists
+text\<open>Global statement of completeness : UM$\_$Model consists
 of an M.problem and an U.model satisfying the U.translation of this problem.
-It is stated that it yields a model for the M.problem. *}
+It is stated that it yields a model for the M.problem.\<close>
 sublocale UM_Model < CM.Model where intT = "\<lambda> \<sigma>. D"
 using M_U_completeness .
 
 
-subsection{* Soundness for monotonic problems *}
+subsection\<open>Soundness for monotonic problems\<close>
 
 sublocale M_FullStruct < U? : CU.Struct
 where arOf = "length o arOf" and parOf = "length o parOf" and D = "intT any"
@@ -199,9 +199,9 @@ apply(rule MonotModel.InfModelI) ..
 end (* context M_MonotModel *)
 
 
-text{* Global statement of the soundness theorem: M$\_$MonotModel consists
+text\<open>Global statement of the soundness theorem: M$\_$MonotModel consists
 of a monotonic F.problem satisfied by an F.model.
-It is stated that this yields an U.Model for the translated problem. *}
+It is stated that this yields an U.Model for the translated problem.\<close>
 
 sublocale M_MonotModel < CU.Model
 where arOf = "length o arOf" and parOf = "length o parOf"

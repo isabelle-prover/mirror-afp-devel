@@ -1,13 +1,13 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Cardinality of Multisets *}
+section \<open>Cardinality of Multisets\<close>
 
 theory Card_Multisets
 imports
   "HOL-Library.Multiset"
 begin
 
-subsection {* Additions to Multiset Theory *}
+subsection \<open>Additions to Multiset Theory\<close>
 
 lemma mset_set_set_mset_subseteq:
   "mset_set (set_mset M) \<subseteq># M"
@@ -40,7 +40,7 @@ lemma card_set_mset_leq:
   "card (set_mset M) \<le> size M"
 by (induct M) (auto simp add: card_insert_le_m1)
 
-subsection {* Lemma to Enumerate Sets of Multisets *}
+subsection \<open>Lemma to Enumerate Sets of Multisets\<close>
 
 lemma set_of_multisets_eq:
   assumes "x \<notin> A"
@@ -76,7 +76,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-subsection {* Derivation of Suitable Induction Rule *}
+subsection \<open>Derivation of Suitable Induction Rule\<close>
 
 context
 begin
@@ -126,7 +126,7 @@ qed
 
 end
 
-subsection {* Finiteness of Sets of Multisets *}
+subsection \<open>Finiteness of Sets of Multisets\<close>
 
 lemma finite_multisets:
   assumes "finite A"
@@ -144,7 +144,7 @@ next
     using set_of_multisets_eq[OF \<open>x \<notin> A\<close>] by simp
 qed
 
-subsection {* Cardinality of Multisets *}
+subsection \<open>Cardinality of Multisets\<close>
 
 lemma card_multisets:
   assumes "finite A"

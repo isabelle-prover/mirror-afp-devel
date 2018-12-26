@@ -89,7 +89,7 @@ qed(auto split: option.split_asm simp: matches_case_tuple ternary_eval_def terna
 
 
 text\<open>
-Example: @{text "\<not> Unknown"} is as good as @{text Unknown}
+Example: \<open>\<not> Unknown\<close> is as good as \<open>Unknown\<close>
 \<close>
 lemma "\<lbrakk> ternary_ternary_eval (map_match_tac \<beta> p expr) = TernaryUnknown \<rbrakk> \<Longrightarrow> matches (\<beta>, \<alpha>) expr a p \<longleftrightarrow> matches (\<beta>, \<alpha>) (MatchNot expr) a p"
 by(simp add: matches_case_ternaryvalue_tuple)
@@ -415,7 +415,7 @@ by(simp add: matches_tuple)
 
 
 
-text\<open>For our @{typ "'p unknown_match_tac"}s @{text in_doubt_allow} and @{text in_doubt_deny},
+text\<open>For our @{typ "'p unknown_match_tac"}s \<open>in_doubt_allow\<close> and \<open>in_doubt_deny\<close>,
       when doing an induction over some function that modifies @{term "m::'a match_expr"},
       we get the @{const MatchNot} case for free (if we can set arbitrary @{term "p::'p"}).
       This does not hold for arbitrary @{typ "'p unknown_match_tac"}s.\<close>

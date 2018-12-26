@@ -3,7 +3,7 @@
     Maintainer:  Christian Sternagel and René Thiemann 
     License:     LGPL
 *)
-section {* Countable Datatypes *}
+section \<open>Countable Datatypes\<close>
 
 theory Countable_Generator
 imports 
@@ -11,21 +11,21 @@ imports
   "../Derive_Manager"
 begin
 
-text {*
+text \<open>
 Brian Huffman and Alexander Krauss (old datatype), and Jasmin Blanchette (BNF datatype) 
 have developed tactics which automatically can prove that a datatype is countable.
 We just make this tactic available in the derive-manager so that
 one can conveniently write \texttt{derive countable some-datatype}.
-*}
+\<close>
 
 subsection "Installing the tactic"
 
-text {*
+text \<open>
 There is nothing more to do, then to write some boiler-plate ML-code
 for class-instantiation.
-*}
+\<close>
 
-setup {*
+setup \<open>
   let 
     fun derive dtyp_name _ thy = 
       let
@@ -42,6 +42,6 @@ setup {*
   in 
     Derive_Manager.register_derive "countable" "register datatypes is class countable" derive
   end
-*}
+\<close>
 
 end

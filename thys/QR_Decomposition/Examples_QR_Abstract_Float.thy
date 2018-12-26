@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of execution using floats*}
+section\<open>Examples of execution using floats\<close>
 
 theory Examples_QR_Abstract_Float
 imports
@@ -12,7 +12,7 @@ imports
   Gauss_Jordan.Code_Real_Approx_By_Float_Haskell
 begin
 
-subsubsection{*Examples*}
+subsubsection\<open>Examples\<close>
 
 definition "example1 = (let A = list_of_list_to_matrix [[1,2,4],[9,4,5],[0,0,0]]::real^3^3 in 
   matrix_to_list_of_list (divide_by_norm A))"

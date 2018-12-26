@@ -9,7 +9,7 @@ theory Simplifying
   imports Lexer 
 begin
 
-section {* Lexer including simplifications *}
+section \<open>Lexer including simplifications\<close>
 
 
 fun F_RIGHT where

@@ -1,4 +1,4 @@
-section {* Deterministic Büchi Automata Combinations *}
+section \<open>Deterministic Büchi Automata Combinations\<close>
 
 theory DBA_Combine
 imports "DBA" "DGBA"

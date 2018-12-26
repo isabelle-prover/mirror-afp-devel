@@ -1,12 +1,12 @@
-section {* Concurrent Refinement Algebra \label{S:CRA} *}
+section \<open>Concurrent Refinement Algebra \label{S:CRA}\<close>
 
-text {*
+text \<open>
   This theory brings together the three main operators:
   sequential composition,
   parallel composition and
   conjunction,
   as well as the iteration operators. 
-*}
+\<close>
 
 theory CRA
 imports 
@@ -15,10 +15,10 @@ imports
   Parallel
 begin
 
-text {*
+text \<open>
   Locale sequential-parallel brings together the sequential and parallel
   operators and relates their identities.
-*}
+\<close>
 locale sequential_parallel = seq_distrib + par_distrib +
   assumes nil_par_nil: "nil \<parallel> nil \<sqsubseteq> nil" 
   and skip_nil: "skip \<sqsubseteq> nil"           (* 41 *)
@@ -33,11 +33,11 @@ by (metis antisym seq_mono_right seq_nil_right skip_skip skip_nil)
 
 end
 
-text {*
+text \<open>
   Locale conjunction-parallel brings together the weak conjunction and
   parallel operators and relates their identities.
   It also introduces the interchange axiom for conjunction and parallel.
-*}
+\<close>
 
 locale conjunction_parallel = conj_distrib + par_distrib + 
   assumes chaos_par_top: "\<top> \<sqsubseteq> chaos \<parallel> \<top>"
@@ -70,11 +70,11 @@ qed
 
 end
 
-text {*
+text \<open>
   Locale conjunction-sequential brings together the weak conjunction and
   sequential operators.
   It also introduces the interchange axiom for conjunction and sequential.
-*}
+\<close>
 
 locale conjunction_sequential = conj_distrib + seq_distrib + (* iteration + *)
   assumes chaos_seq_chaos: "chaos \<sqsubseteq> chaos;chaos"
@@ -155,9 +155,9 @@ qed
 
 end
 
-text {*
+text \<open>
   Locale cra brings together sequential, parallel and weak conjunction.
-*}
+\<close>
 
 locale cra = sequential_parallel + conjunction_parallel + conjunction_sequential
 

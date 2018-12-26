@@ -4,7 +4,7 @@
     Copyright   2002 Technische Universitaet Muenchen
 *)
 
-section {* Exceptions *}
+section \<open>Exceptions\<close>
 
 theory Exceptions imports Objects begin
 

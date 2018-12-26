@@ -2,11 +2,11 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-section {* Definition of the function lmirror *}
+section \<open>Definition of the function lmirror\<close>
 
 theory LMirror imports "../Coinductive_List" begin
 
-text {* This theory defines a function @{text lmirror}. *}
+text \<open>This theory defines a function \<open>lmirror\<close>.\<close>
 
 primcorec lmirror_aux :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
@@ -130,19 +130,19 @@ lemma llist_all2_lmirror_auxD:
   \<Longrightarrow> llist_all2 P xs xs'"
 proof(coinduction arbitrary: xs xs' acc acc')
   case (LNil xs xs' acc acc')
-  from `llist_all2 P (lmirror_aux acc xs) (lmirror_aux acc' xs')`
+  from \<open>llist_all2 P (lmirror_aux acc xs) (lmirror_aux acc' xs')\<close>
   have "llength (lmirror_aux acc xs) = llength (lmirror_aux acc' xs')"
     by(rule llist_all2_llengthD)
-  moreover from `llist_all2 P acc acc'`
+  moreover from \<open>llist_all2 P acc acc'\<close>
   have "llength acc = llength acc'" by(rule llist_all2_llengthD)
   ultimately have "llength xs = llength xs'"
-    using `lfinite acc` by(auto simp add: llength_lmirror_aux dest: lfinite_llength_enat)
+    using \<open>lfinite acc\<close> by(auto simp add: llength_lmirror_aux dest: lfinite_llength_enat)
   thus ?case by auto
 next
   case (LCons xs xs' acc acc')
-  from `llist_all2 P (lmirror_aux acc xs) (lmirror_aux acc' xs')` `\<not> lnull xs` `\<not> lnull xs'`
+  from \<open>llist_all2 P (lmirror_aux acc xs) (lmirror_aux acc' xs')\<close> \<open>\<not> lnull xs\<close> \<open>\<not> lnull xs'\<close>
   have ?lhd by(auto dest: llist_all2_lhdD simp add: lhd_lmirror_aux)
-  thus ?case using LCons `llist_all2 P (lmirror_aux acc xs) (lmirror_aux acc' xs')`[THEN llist_all2_ltlI]
+  thus ?case using LCons \<open>llist_all2 P (lmirror_aux acc xs) (lmirror_aux acc' xs')\<close>[THEN llist_all2_ltlI]
     by(auto 4 3 simp add: ltl_lmirror_aux)
 qed
 

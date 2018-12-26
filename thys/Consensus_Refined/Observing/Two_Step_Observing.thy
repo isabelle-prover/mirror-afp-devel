@@ -1,13 +1,13 @@
-section {* Two-Step Observing Quorums Model *}
+section \<open>Two-Step Observing Quorums Model\<close>
 
 theory Two_Step_Observing
 imports "../Observing_Quorums_Opt" "../Two_Steps"
 begin
 
-text {* To make the coming proofs of concrete algorithms easier, in this model we split 
-  the @{term olv_round} into two steps.  *}
+text \<open>To make the coming proofs of concrete algorithms easier, in this model we split 
+  the @{term olv_round} into two steps.\<close>
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 record tso_state = opt_obsv_state +
   r_votes :: "process \<Rightarrow> val option"
@@ -63,7 +63,7 @@ definition tso_TS :: "tso_state TS" where
 
 lemmas tso_TS_defs = tso_TS_def tso_init_def tso_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition basic_rel :: "(opt_obsv_state \<times> tso_state)set" where
@@ -166,7 +166,7 @@ lemma TS_Observing_Refines:
     dest: empty_not_quorum)
   done
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
 definition TSO_inv1 where
@@ -185,7 +185,7 @@ lemmas TSO_inv2I = TSO_inv2_def [THEN setc_def_to_intro, rule_format]
 lemmas TSO_inv2E [elim] = TSO_inv2_def [THEN setc_def_to_elim, rule_format]
 lemmas TSO_inv2D = TSO_inv2_def [THEN setc_def_to_dest, rule_format]
 
-subsubsection {* Proofs of invariants *}
+subsubsection \<open>Proofs of invariants\<close>
 (******************************************************************************)
 
 lemma TSO_inv1_inductive:

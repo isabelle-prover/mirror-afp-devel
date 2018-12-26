@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Formalization of the Gossip-Broadcast *}
+section \<open>Formalization of the Gossip-Broadcast\<close>
 
 theory Gossip_Broadcast
   imports "../Discrete_Time_Markov_Chain"
@@ -13,7 +13,7 @@ proof (safe intro!: inj_onI ext)
   fix f g :: "'a \<Rightarrow> 'b" and x y :: 'b
   assume *: "f(i := x) = g(i := y)" "f \<in> extensional I" "g \<in> extensional I"
   then show "x = y" by (auto simp: fun_eq_iff split: if_split_asm)
-  fix i' from * `i \<notin> I` show "f i' = g i'"
+  fix i' from * \<open>i \<notin> I\<close> show "f i' = g i'"
     by (cases "i' = i") (auto simp: fun_eq_iff extensional_def split: if_split_asm)
 qed
 
@@ -38,7 +38,7 @@ next
     using insert by (simp add: sum_distrib_right)
 qed
 
-subsection {* Definition of the Gossip-Broadcast *}
+subsection \<open>Definition of the Gossip-Broadcast\<close>
 
 datatype state = listening | sending | sleeping
 
@@ -102,7 +102,7 @@ qed
 
 end
 
-subsection {* The Gossip-Broadcast forms a DTMC *}
+subsection \<open>The Gossip-Broadcast forms a DTMC\<close>
 
 sublocale gossip_broadcast \<subseteq> MC_syntax proto_trans .
 

@@ -18,8 +18,8 @@ text \<open>
   specified in Imperative/HOL.
 \<close>
 
-subsection {* Values on Heap *}
-text \<open>We tag every refinement assertion with the tag @{text hn_ctxt}, to
+subsection \<open>Values on Heap\<close>
+text \<open>We tag every refinement assertion with the tag \<open>hn_ctxt\<close>, to
   avoid higher-order unification problems when the refinement assertion 
   is schematic.\<close>
 definition hn_ctxt :: "('a\<Rightarrow>'c\<Rightarrow>assn) \<Rightarrow> 'a \<Rightarrow> 'c \<Rightarrow> assn" 
@@ -174,16 +174,16 @@ lemma Range_of_constraint_conv[simp]: "Range (A\<inter>UNIV\<times>C) = Range A 
 
 subsection \<open>Heap-Nres Refinement Calculus\<close>
 
-text {* Predicate that expresses refinement. Given a heap
-  @{text "\<Gamma>"}, program @{text "c"} produces a heap @{text "\<Gamma>'"} and
-  a concrete result that is related with predicate @{text "R"} to some
-  abstract result from @{text "m"}*}
+text \<open>Predicate that expresses refinement. Given a heap
+  \<open>\<Gamma>\<close>, program \<open>c\<close> produces a heap \<open>\<Gamma>'\<close> and
+  a concrete result that is related with predicate \<open>R\<close> to some
+  abstract result from \<open>m\<close>\<close>
 definition "hn_refine \<Gamma> c \<Gamma>' R m \<equiv> nofail m \<longrightarrow>
   <\<Gamma>> c <\<lambda>r. \<Gamma>' * (\<exists>\<^sub>Ax. R x r * \<up>(RETURN x \<le> m)) >\<^sub>t"
 
 (* TODO: Can we change the patterns of assn_simproc to add this pattern? *)
 simproc_setup assn_simproc_hnr ("hn_refine \<Gamma> c \<Gamma>'")
-  = {*K Seplogic_Auto.assn_simproc_fun*}
+  = \<open>K Seplogic_Auto.assn_simproc_fun\<close>
 
 lemma hn_refineI[intro?]:
   assumes "nofail m 
@@ -514,7 +514,7 @@ proof -
     fix h as p
     assume A: "\<forall>f. f\<in>A \<longrightarrow> (\<exists>a.
       ((h, as) \<Turnstile> Ry a p * F \<and> RETURN a \<le> f x)) \<or> \<not> nofail (f x)"
-    with `f\<in>A` and `nofail (f x)` obtain a where 
+    with \<open>f\<in>A\<close> and \<open>nofail (f x)\<close> obtain a where 
       1: "(h, as) \<Turnstile> Ry a p * F" and "RETURN a \<le> f x"
       by blast
     have
@@ -560,7 +560,7 @@ proof (simp, intro conjI impI)
   have "\<forall>ax px. 
     hn_refine (hn_ctxt Rx ax px * F) (heap.fixp_fun cB px) (F' ax px) Ry 
       (gfp aB ax)"
-    apply (rule gfp_cadm_induct[OF _ _ `mono aB`])
+    apply (rule gfp_cadm_induct[OF _ _ \<open>mono aB\<close>])
 
     apply rule
     apply (auto simp: hn_refine_alt intro: hn_admissible'[OF PREC]) []
@@ -637,7 +637,7 @@ lemma hnr_If:
 
 
 subsection \<open>ML-Level Utilities\<close>
-ML {*
+ML \<open>
   signature SEPREF_BASIC = sig
     (* Destroy lambda term, return function to reconstruct. Bound var is replaced by free. *)
     val dest_lambda_rc: Proof.context -> term -> ((term * (term -> term)) * Proof.context)
@@ -1085,7 +1085,7 @@ ML {*
       msg ^ "\n" ^ Pretty.string_of (Pretty.chunks (Goal_Display.pretty_goals ctxt st))
 
   end
-*}
+\<close>
 
 
 ML \<open>

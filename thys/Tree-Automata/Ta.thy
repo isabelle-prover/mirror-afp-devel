@@ -6,10 +6,10 @@ section "Tree Automata"
 theory Ta
 imports Main Automatic_Refinement.Misc Tree
 begin
-text_raw {*\label{sec:ta}*}
+text_raw \<open>\label{sec:ta}\<close>
 
 
-text {*
+text \<open>
   This theory defines tree automata, tree regular languages and 
   specifies basic algorithms.
 
@@ -30,20 +30,20 @@ text {*
   specifications are not executable. A bit more specific algorithms are defined 
   in Section~\ref{sec:absalgo}, and a refinement to executable definitions is 
   done in Section~\ref{sec:taimpl}.
-*}
+\<close>
 
 subsection "Basic Definitions"
 
 subsubsection "Tree Automata"
 
-text {*
+text \<open>
   A tree automata consists of a (finite) set of initial states
   and a (finite) set of rules. 
 
-  A rule has the form @{text "q \<rightarrow> l q1\<dots>qn"}, 
+  A rule has the form \<open>q \<rightarrow> l q1\<dots>qn\<close>, 
   with the meaning that one can derive 
-  @{text "l(q1\<dots>qn)"} from the state @{text q}.
-*}
+  \<open>l(q1\<dots>qn)\<close> from the state \<open>q\<close>.
+\<close>
 
 (* Workaround for bug in Haskell-code generator: Type variables have to be 
   lower-case *)
@@ -79,13 +79,13 @@ begin
 end
 
 subsubsection "Acceptance"
-text {*
-  The predicate @{text "accs \<delta> t q"} is true, iff the tree @{text t} is accepted
-  in state @{text q} w.r.t. the rules in @{text \<delta>}.
+text \<open>
+  The predicate \<open>accs \<delta> t q\<close> is true, iff the tree \<open>t\<close> is accepted
+  in state \<open>q\<close> w.r.t. the rules in \<open>\<delta>\<close>.
   
   A tree is accepted in state $q$, if it can be produced from $q$ using the 
   rules.
-*}
+\<close>
 inductive accs :: "('Q,'L) ta_rule set \<Rightarrow> 'L tree \<Rightarrow> 'Q \<Rightarrow> bool"
 where
   "\<lbrakk>
@@ -113,10 +113,10 @@ lemma accs_laz: "accs = accs_laz"
 
 
 subsubsection "Language"
-text {*
+text \<open>
   The language of a tree automaton is the set of all trees that are accepted
   in an initial state.
-*}
+\<close>
 definition "ta_lang TA == { t . \<exists>q\<in>ta_initial TA. accs (ta_rules TA) t q }"
 
 subsection "Basic Properties"
@@ -376,12 +376,12 @@ end
 
 
 subsection "Algorithms"
-text {*
+text \<open>
   In this section, basic algorithms on tree-automata are specified.
   The specification is a high-level, non-executable specification, intended
   to be refined to more low-level specifications, as done in 
   Sections~\ref{sec:absalgo} and \ref{sec:taimpl}.
-*}
+\<close>
 
 subsubsection "Empty Automaton"
 definition "ta_empty == \<lparr> ta_initial = {}, ta_rules = {}\<rparr>"
@@ -819,15 +819,15 @@ lemma ta_reduce_\<delta>_states:
   apply (auto simp add: ta_reduce_def \<delta>_states_def reduce_rules_def) [1]
 done
 
-text_raw {*\paragraph{Forward Reduction}*}
-text {*
+text_raw \<open>\paragraph{Forward Reduction}\<close>
+text \<open>
   We characterize the set of forward accessible states by the reflexive,
-  transitive closure of a forward-successor (@{text "f_succ \<subseteq> Q\<times>Q"}) relation 
+  transitive closure of a forward-successor (\<open>f_succ \<subseteq> Q\<times>Q\<close>) relation 
   applied to the initial states.
   
   The forward-successors of a state $q$ are those states $q'$ such that there is
   a rule $q \leftarrow f(\ldots q' \ldots)$.
-*}
+\<close>
 
   \<comment> \<open>Forward successors\<close>
 inductive_set f_succ for \<delta> where
@@ -942,15 +942,15 @@ theorem ta_reduce_f_acc[simp]: "ta_lang (ta_fwd_reduce TA) = ta_lang TA"
   apply (blast intro: accs_mono[OF _ reduce_rules_subset])
   .
 
-text_raw {* \paragraph{Backward Reduction} *}
+text_raw \<open>\paragraph{Backward Reduction}\<close>
 
-text {*
+text \<open>
   A state is backward accessible, iff at least one tree is accepted in it.
 
   Inductively, backward accessible states can be characterized as follows:
   A state is backward accessible, if it occurs on the left hand side of a 
   rule, and all states on this rule's right hand side are backward accessible.
-*}
+\<close>
 inductive_set b_accessible :: "('Q,'L) ta_rule set \<Rightarrow> 'Q set" 
   for \<delta>
   where
@@ -1063,10 +1063,10 @@ theorem empty_if_no_b_accessible:
     intro: accs_is_b_accessible b_accessible_is_accs)
 
 subsubsection "Product Automaton"
-text {*
+text \<open>
   The product automaton of two tree automata accepts the intersection 
   of the languages of the two automata.
-*}
+\<close>
 
   \<comment> \<open>Product rule\<close>
 fun r_prod where
@@ -1160,11 +1160,11 @@ lemma \<delta>_prod_Un[simp]:
   "\<delta>_prod \<delta>1 (\<delta>2\<union>\<delta>2') = \<delta>_prod \<delta>1 \<delta>2 \<union> \<delta>_prod \<delta>1 \<delta>2'"
   by (auto elim: \<delta>_prodE intro: \<delta>_prodI)
 
-text {* The next two definitions are solely for technical reasons.
+text \<open>The next two definitions are solely for technical reasons.
   They are required to allow simplification of expressions of the form
   @{term "\<delta>_prod (insert r \<delta>1) \<delta>2"} or @{term "\<delta>_prod \<delta>1 (insert r \<delta>2)"}, 
   without making the simplifier loop.
-*}
+\<close>
 definition "\<delta>_prod_sng1 r \<delta>2 == 
   case r of (q1 \<rightarrow> l qs1) \<Rightarrow> 
     { r_prod r (q2 \<rightarrow> l qs2) | 
@@ -1266,13 +1266,13 @@ proof -
 qed
 
 subsubsection "Determinization"
-text {*
+text \<open>
   We only formalize the brute-force subset construction without reduction. 
 
   The basic idea of this construction is to construct an automaton where the
   states are sets of original states, and the lhs of a rule consists of all
   states that a term with given rhs and function symbol may be labeled by.
-*}
+\<close>
 
 context ranked_tree_automaton
 begin
@@ -1448,10 +1448,10 @@ begin
 end
 
 subsubsection "Completion"
-text {*
+text \<open>
   To each deterministic tree automaton, rules and states can be added to make
   it complete, without changing its language.
-*}
+\<close>
 
 context det_tree_automaton
 begin
@@ -1608,10 +1608,10 @@ begin
 end
 
 subsubsection "Complement"
-text {*
+text \<open>
   A deterministic, complete tree automaton can be transformed into an automaton
   accepting the complement language by complementing its initial states.
-*}
+\<close>
 
 context complete_tree_automaton
 begin
@@ -1684,10 +1684,10 @@ begin
     ultimately show ?thesis by (auto simp add: regular_languages_def)
   qed
 
-  text {*
+  text \<open>
     It is sometimes more handy to obtain a complete, deterministic tree automaton
     accepting a given regular language.
-    *}
+\<close>
   theorem obtain_complete:
     obtains TAC::"('Q set option,'L) tree_automaton_rec" where
     "ta_lang TAC = ta_lang TA"
@@ -1743,14 +1743,14 @@ proof -
 qed
 
 subsubsection "Closure Properties"
-text {*
+text \<open>
   In this section, we derive the standard closure properties of regular languages,
   i.e. that regular languages are closed under union, intersection, complement, 
   and difference, as well as that the empty and the universal language are
   regular.
   
   Note that we do not formalize homomorphisms or tree transducers here.
-*}
+\<close>
   
 theorem (in finite_alphabet) rtl_empty[simp, intro!]: "{} \<in> regular_languages A"
   by (rule ranked_tree_automaton.rtlI[OF ta_empty_rta, simplified])

@@ -10,10 +10,10 @@ imports Main
 begin
 
 
-text {* This theory is the main abstract separation algebra development *}
+text \<open>This theory is the main abstract separation algebra development\<close>
 
 
-section {* Input syntax for lifting boolean predicates to separation predicates *}
+section \<open>Input syntax for lifting boolean predicates to separation predicates\<close>
 
 abbreviation (input)
   pred_and :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> bool" (infixr "and" 35) where
@@ -44,7 +44,7 @@ abbreviation (input)
   "ALLS x. P x \<equiv> \<lambda>s. \<forall>x. P x s"
 
 
-section {* Associative/Commutative Monoid Basis of Separation Algebras *}
+section \<open>Associative/Commutative Monoid Basis of Separation Algebras\<close>
 
 class pre_sep_algebra = zero + plus +
   fixes sep_disj :: "'a => 'a => bool" (infix "##" 60)
@@ -81,14 +81,14 @@ lemmas sep_add_ac = sep_add_assoc sep_add_commute sep_add_left_commute
 end
 
 
-section {* Separation Algebra as Defined by Calcagno et al. *}
+section \<open>Separation Algebra as Defined by Calcagno et al.\<close>
 
 class sep_algebra = pre_sep_algebra +
   assumes sep_disj_addD1: "\<lbrakk> x ## y + z; y ## z \<rbrakk> \<Longrightarrow> x ## y"
   assumes sep_disj_addI1: "\<lbrakk> x ## y + z; y ## z \<rbrakk> \<Longrightarrow> x + y ##  z"
 begin
 
-subsection {* Basic Construct Definitions and Abbreviations *}
+subsection \<open>Basic Construct Definitions and Abbreviations\<close>
 
 definition
   sep_conj :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool)" (infixr "**" 35)
@@ -124,7 +124,7 @@ definition
   "sep_list_conj Ps \<equiv> foldl (**) \<box> Ps"
 
 
-subsection {* Disjunction/Addition Properties *}
+subsection \<open>Disjunction/Addition Properties\<close>
 
 lemma disjoint_zero_sym [simp]: "0 ## x"
   by (simp add: sep_disj_commute)
@@ -162,7 +162,7 @@ lemma sep_disj_add:
   by (metis sep_disj_addI1 sep_disj_addI3)
 
 
-subsection {* Substate Properties *}
+subsection \<open>Substate Properties\<close>
 
 lemma sep_substate_disj_add:
   "x ## y \<Longrightarrow> x \<preceq> x + y"
@@ -173,7 +173,7 @@ lemma sep_substate_disj_add':
   by (simp add: sep_add_ac sep_substate_disj_add)
 
 
-subsection {* Separating Conjunction Properties *}
+subsection \<open>Separating Conjunction Properties\<close>
 
 lemma sep_conjD:
   "(P \<and>* Q) h \<Longrightarrow> \<exists>x y. x ## y \<and> h = x + y \<and> P x \<and> Q y"
@@ -259,7 +259,7 @@ lemma sep_empty_zero [simp,intro!]: "\<box> 0"
   by (simp add: sep_empty_def)
 
 
-subsection {* Properties of @{text sep_true} and @{text sep_false} *}
+subsection \<open>Properties of \<open>sep_true\<close> and \<open>sep_false\<close>\<close>
 
 lemma sep_conj_sep_true:
   "P h \<Longrightarrow> (P ** sep_true) h"
@@ -284,7 +284,7 @@ lemma sep_conj_false_left [simp]:
 
 
 
-subsection {* Properties of zero (@{const sep_empty}) *}
+subsection \<open>Properties of zero (@{const sep_empty})\<close>
 
 lemma sep_conj_empty [simp]:
   "(P ** \<box>) = P"
@@ -309,7 +309,7 @@ lemma comm_monoid_add: "class.comm_monoid_add (**) \<box>"
   by (unfold_locales) (auto simp: sep_conj_ac)
 
 
-subsection {* Properties of top (@{text sep_true}) *}
+subsection \<open>Properties of top (\<open>sep_true\<close>)\<close>
 
 lemma sep_conj_true_P [simp]:
   "(sep_true ** (sep_true ** P)) = (sep_true ** P)"
@@ -329,7 +329,7 @@ lemma sep_conj_sep_true_right:
       simp add: sep_conj_ac)
 
 
-subsection {* Separating Conjunction with Quantifiers *}
+subsection \<open>Separating Conjunction with Quantifiers\<close>
 
 lemma sep_conj_conj:
   "((P and Q) ** R) h \<Longrightarrow> ((P ** R) and (Q ** R)) h"
@@ -350,7 +350,7 @@ lemma sep_conj_spec:
   by (force intro: sep_conjI elim: sep_conjE)
 
 
-subsection {* Properties of Separating Implication *}
+subsection \<open>Properties of Separating Implication\<close>
 
 lemma sep_implI:
   assumes a: "\<And>h'. \<lbrakk> h ## h'; P h' \<rbrakk> \<Longrightarrow> Q (h + h')"
@@ -400,7 +400,7 @@ lemma sep_conj_sep_impl_sep_conj2:
   by (erule (1) sep_conj_impl, erule sep_conj_sep_impl, simp add: sep_conj_ac)
 
 
-subsection {* Pure assertions *}
+subsection \<open>Pure assertions\<close>
 
 definition
   pure :: "('a \<Rightarrow> bool) \<Rightarrow> bool" where
@@ -465,7 +465,7 @@ lemmas pure_conj = pure_conj_right pure_conj_right' pure_conj_left
 declare pure_conj[simp add]
 
 
-subsection {* Intuitionistic assertions *}
+subsection \<open>Intuitionistic assertions\<close>
 
 definition intuitionistic :: "('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "intuitionistic P \<equiv> \<forall>h h'. P h \<and> h \<preceq> h' \<longrightarrow> P h'"
@@ -617,7 +617,7 @@ lemma intuitionistic_sep_impl_sep_true_simp:
            elim: sep_impl_sep_true_P intuitionistic_sep_impl_sep_true_P)
 
 
-subsection {* Strictly exact assertions *}
+subsection \<open>Strictly exact assertions\<close>
 
 definition strictly_exact :: "('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "strictly_exact P \<equiv> \<forall>h h'. P h \<and> P h' \<longrightarrow> h = h'"
@@ -653,7 +653,7 @@ interpretation sep: comm_monoid_add "(**)" \<box>
   by (rule comm_monoid_add)
 
 
-section {* Separation Algebra with Stronger, but More Intuitive Disjunction Axiom *}
+section \<open>Separation Algebra with Stronger, but More Intuitive Disjunction Axiom\<close>
 
 class stronger_sep_algebra = pre_sep_algebra +
   assumes sep_add_disj_eq [simp]: "y ## z \<Longrightarrow> x ## y + z = (x ## y \<and> x ## z)"
@@ -667,7 +667,7 @@ subclass sep_algebra by standard auto
 end
 
 
-section {* Folding separating conjunction over lists of predicates *}
+section \<open>Folding separating conjunction over lists of predicates\<close>
 
 lemma sep_list_conj_Nil [simp]: "\<And>* [] = \<box>"
   by (simp add: sep_list_conj_def)
@@ -714,14 +714,14 @@ next
 qed
 
 
-section {* Separation Algebra with a Cancellative Monoid (for completeness) *}
+section \<open>Separation Algebra with a Cancellative Monoid (for completeness)\<close>
 
-text {*
+text \<open>
   Separation algebra with a cancellative monoid. The results of being a precise
   assertion (distributivity over separating conjunction) require this.
   although we never actually use this property in our developments, we keep
   it here for completeness.
-  *}
+\<close>
 class cancellative_sep_algebra = sep_algebra +
   assumes sep_add_cancelD: "\<lbrakk> x + z = y + z ; x ## z ; y ## z \<rbrakk> \<Longrightarrow> x = y"
 begin

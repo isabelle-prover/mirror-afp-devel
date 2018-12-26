@@ -6,7 +6,7 @@ theory Swaps
 imports Inversion
 begin
 
-text{* Swap elements at index @{text n} and @{term "Suc n"}: *}
+text\<open>Swap elements at index \<open>n\<close> and @{term "Suc n"}:\<close>
 
 definition "swap n xs =
   (if Suc n < size xs then xs[n := xs!Suc n, Suc n := xs!n] else xs)"
@@ -58,7 +58,7 @@ proof-
 qed
 
 
-text{* Perform a list of swaps, from right to left: *}
+text\<open>Perform a list of swaps, from right to left:\<close>
 
 abbreviation swaps where "swaps == foldr swap"
 

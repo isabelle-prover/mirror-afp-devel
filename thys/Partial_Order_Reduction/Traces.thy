@@ -1,4 +1,4 @@
-section {* Trace Theory *}
+section \<open>Trace Theory\<close>
 
 theory Traces
 imports "Basics/Word_Prefixes"

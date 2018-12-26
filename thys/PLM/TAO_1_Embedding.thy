@@ -4,11 +4,11 @@ imports Main
 begin
 (*>*)
 
-section{* Representation Layer *}
-text{* \label{TAO_Embedding} *}
+section\<open>Representation Layer\<close>
+text\<open>\label{TAO_Embedding}\<close>
 
-subsection{* Primitives *}
-text{* \label{TAO_Embedding_Primitives} *}
+subsection\<open>Primitives\<close>
+text\<open>\label{TAO_Embedding_Primitives}\<close>
 
 typedecl i \<comment> \<open>possible worlds\<close>
 typedecl j \<comment> \<open>states\<close>
@@ -20,8 +20,8 @@ typedecl \<omega> \<comment> \<open>ordinary objects\<close>
 typedecl \<sigma> \<comment> \<open>special urelements\<close>
 datatype \<upsilon> = \<omega>\<upsilon> \<omega> | \<sigma>\<upsilon> \<sigma> \<comment> \<open>urelements\<close>
 
-subsection{* Derived Types *}
-text{* \label{TAO_Embedding_Derived_Types} *}
+subsection\<open>Derived Types\<close>
+text\<open>\label{TAO_Embedding_Derived_Types}\<close>
 
 typedef \<o> = "UNIV::(j\<Rightarrow>i\<Rightarrow>bool) set"
   morphisms eval\<o> make\<o> .. \<comment> \<open>truth values\<close>
@@ -47,8 +47,8 @@ setup_lifting type_definition_\<Pi>\<^sub>1
 setup_lifting type_definition_\<Pi>\<^sub>2
 setup_lifting type_definition_\<Pi>\<^sub>3
 
-subsection{* Individual Terms and Definite Descriptions *}
-text{* \label{TAO_Embedding_IndividualTerms} *}
+subsection\<open>Individual Terms and Definite Descriptions\<close>
+text\<open>\label{TAO_Embedding_IndividualTerms}\<close>
 
 lift_definition \<nu>\<kappa> :: "\<nu>\<Rightarrow>\<kappa>" ("_\<^sup>P" [90] 90) is Some .
 lift_definition proper :: "\<kappa>\<Rightarrow>bool" is "(\<noteq>) None" .
@@ -59,15 +59,15 @@ lift_definition that::"(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<kappa>" (binder "\
          then Some (THE x . (\<phi> x) dj dw)
          else None" .
 
-subsection{* Mapping from Individuals to Urelements *}
-text{* \label{TAO_Embedding_AbstractObjectsToSpecialUrelements} *}
+subsection\<open>Mapping from Individuals to Urelements\<close>
+text\<open>\label{TAO_Embedding_AbstractObjectsToSpecialUrelements}\<close>
 
 consts \<alpha>\<sigma> :: "\<alpha>\<Rightarrow>\<sigma>"
 axiomatization where \<alpha>\<sigma>_surj: "surj \<alpha>\<sigma>"
 definition \<nu>\<upsilon> :: "\<nu>\<Rightarrow>\<upsilon>" where "\<nu>\<upsilon> \<equiv> case_\<nu> \<omega>\<upsilon> (\<sigma>\<upsilon> \<circ> \<alpha>\<sigma>)"
 
-subsection{* Exemplification of n-place-Relations. *}
-text{* \label{TAO_Embedding_Exemplification} *}
+subsection\<open>Exemplification of n-place-Relations.\<close>
+text\<open>\label{TAO_Embedding_Exemplification}\<close>
 
 lift_definition exe0::"\<Pi>\<^sub>0\<Rightarrow>\<o>" ("\<lparr>_\<rparr>") is id .
 lift_definition exe1::"\<Pi>\<^sub>1\<Rightarrow>\<kappa>\<Rightarrow>\<o>" ("\<lparr>_,_\<rparr>") is
@@ -79,14 +79,14 @@ lift_definition exe3::"\<Pi>\<^sub>3\<Rightarrow>\<kappa>\<Rightarrow>\<kappa>\<
 "\<lambda> F x y z s w . (proper x) \<and> (proper y) \<and> (proper z) \<and>
    F (\<nu>\<upsilon> (rep x)) (\<nu>\<upsilon> (rep y)) (\<nu>\<upsilon> (rep z)) s w" .
 
-subsection{* Encoding *}
-text{* \label{TAO_Embedding_Encoding} *}
+subsection\<open>Encoding\<close>
+text\<open>\label{TAO_Embedding_Encoding}\<close>
 
 lift_definition enc :: "\<kappa>\<Rightarrow>\<Pi>\<^sub>1\<Rightarrow>\<o>" ("\<lbrace>_,_\<rbrace>") is
   "\<lambda> x F s w . (proper x) \<and> case_\<nu> (\<lambda> \<omega> . False) (\<lambda> \<alpha> . F \<in> \<alpha>) (rep x)" .
 
-subsection{* Connectives and Quantifiers *}
-text{* \label{TAO_Embedding_Connectives} *}
+subsection\<open>Connectives and Quantifiers\<close>
+text\<open>\label{TAO_Embedding_Connectives}\<close>
 
 consts I_NOT :: "j\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>i\<Rightarrow>bool"
 consts I_IMPL :: "j\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>(i\<Rightarrow>bool)\<Rightarrow>(i\<Rightarrow>bool)"
@@ -112,23 +112,23 @@ lift_definition box :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<box>_" [62] 63) is
 lift_definition actual :: "\<o>\<Rightarrow>\<o>" ("\<^bold>\<A>_" [64] 65) is
   "\<lambda> p s w . p s dw" .
 
-text{*
+text\<open>
 \begin{remark}
   The connectives behave classically if evaluated for the actual state @{term "dj"},
   whereas their behavior is governed by uninterpreted constants for any
   other state.
 \end{remark}
-*}
+\<close>
 
-subsection{* Lambda Expressions *}
-text{* \label{TAO_Embedding_Lambda} *}
+subsection\<open>Lambda Expressions\<close>
+text\<open>\label{TAO_Embedding_Lambda}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   Lambda expressions have to convert maps from individuals to propositions to
   relations that are represented by maps from urelements to truth values.
 \end{remark}
-*}
+\<close>
 
 lift_definition lambdabinder0 :: "\<o>\<Rightarrow>\<Pi>\<^sub>0" ("\<^bold>\<lambda>\<^sup>0") is id .
 lift_definition lambdabinder1 :: "(\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>1" (binder "\<^bold>\<lambda>" [8] 9) is
@@ -138,10 +138,10 @@ lift_definition lambdabinder2 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Ri
 lift_definition lambdabinder3 :: "(\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<nu>\<Rightarrow>\<o>)\<Rightarrow>\<Pi>\<^sub>3" ("\<^bold>\<lambda>\<^sup>3") is
   "\<lambda> \<phi> u v r s w . \<exists> x y z . \<nu>\<upsilon> x = u \<and> \<nu>\<upsilon> y = v \<and> \<nu>\<upsilon> z = r \<and> \<phi> x y z s w" .
 
-subsection{* Proper Maps *}
-text{* \label{TAO_Embedding_Proper} *}
+subsection\<open>Proper Maps\<close>
+text\<open>\label{TAO_Embedding_Proper}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   The embedding introduces the notion of \emph{proper} maps from
   individual terms to propositions.
@@ -152,7 +152,7 @@ text{*
   Proper maps are exactly those maps that - when used as matrix of a lambda-expression - unconditionally
   allow beta-reduction.
 \end{remark}
-*}
+\<close>
 
 lift_definition IsProperInX :: "(\<kappa>\<Rightarrow>\<o>)\<Rightarrow>bool" is
   "\<lambda> \<phi> . \<forall> x v . (\<exists> a . \<nu>\<upsilon> a = \<nu>\<upsilon> x \<and> (\<phi> (a\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) dj v)" .
@@ -164,22 +164,22 @@ lift_definition IsProperInXYZ :: "(\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<k
                       \<and> (\<phi> (a\<^sup>P) (b\<^sup>P) (c\<^sup>P) dj v)) = (\<phi> (x\<^sup>P) (y\<^sup>P) (z\<^sup>P) dj v)" .
 
 
-subsection{* Validity *} 
-text{* \label{TAO_Embedding_Validity} *}
+subsection\<open>Validity\<close> 
+text\<open>\label{TAO_Embedding_Validity}\<close>
 
 lift_definition valid_in :: "i\<Rightarrow>\<o>\<Rightarrow>bool" (infixl "\<Turnstile>" 5) is
   "\<lambda> v \<phi> . \<phi> dj v" .
 
-text{*
+text\<open>
 \begin{remark}
   A formula is considered semantically valid for a possible world,
   if it evaluates to @{term "True"} for the actual state @{term "dj"}
   and the given possible world.
 \end{remark}
-*}
+\<close>
 
-subsection{* Concreteness *}
-text{* \label{TAO_Embedding_Concreteness} *}
+subsection\<open>Concreteness\<close>
+text\<open>\label{TAO_Embedding_Concreteness}\<close>
 
 consts ConcreteInWorld :: "\<omega>\<Rightarrow>i\<Rightarrow>bool"
 
@@ -199,7 +199,7 @@ axiomatization where
   and PossiblyNoContingentObjectExistsAxiom:
     "PossiblyNoContingentObjectExists"
 
-text{*
+text\<open>
 \begin{remark}
   Care has to be taken that the defined notion of concreteness
   coincides with the meta-logical distinction between
@@ -210,22 +210,22 @@ text{*
   axiomatized, such that all ordinary objects are possibly concrete, contingent
   objects possibly exist and possibly no contingent objects exist.
 \end{remark}
-*}
+\<close>
 
 
 lift_definition Concrete::"\<Pi>\<^sub>1" ("E!") is
   "\<lambda> u s w . case u of \<omega>\<upsilon> x \<Rightarrow> ConcreteInWorld x w | _ \<Rightarrow> False" .
 
-text{*
+text\<open>
 \begin{remark}
   Concreteness of ordinary objects is now defined using this
   axiomatized uninterpreted constant. Abstract objects on the other
   hand are never concrete.
 \end{remark}
-*}
+\<close>
 
-subsection{* Collection of Meta-Definitions *}
-text{* \label{TAO_Embedding_meta_defs} *}
+subsection\<open>Collection of Meta-Definitions\<close>
+text\<open>\label{TAO_Embedding_meta_defs}\<close>
 
 named_theorems meta_defs
 
@@ -243,8 +243,8 @@ declare [[smt_solver = cvc4]]
 declare [[simp_depth_limit = 10]] (* prevent the simplifier from running forever *)
 declare [[unify_search_bound = 40]] (* prevent unification bound errors *)
 
-subsection{* Auxiliary Lemmata *}
-text{* \label{TAO_Embedding_Aux} *}
+subsection\<open>Auxiliary Lemmata\<close>
+text\<open>\label{TAO_Embedding_Aux}\<close>
   
 named_theorems meta_aux
 

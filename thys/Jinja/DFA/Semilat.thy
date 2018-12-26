@@ -5,9 +5,9 @@
 Semilattices.
 *)
 
-chapter {* Bytecode Verifier \label{cha:bv} *}
+chapter \<open>Bytecode Verifier \label{cha:bv}\<close>
 
-section {* Semilattices *}
+section \<open>Semilattices\<close>
 
 theory Semilat
 imports Main "HOL-Library.While_Combinator"
@@ -320,7 +320,7 @@ lemma is_lub_some_lub:
   \<Longrightarrow> is_lub (r^* ) x y (some_lub (r^* ) x y)"
   (*<*) by (fastforce dest: single_valued_has_lubs simp add: some_lub_conv) (*>*)
 
-subsection{*An executable lub-finder*}
+subsection\<open>An executable lub-finder\<close>
 
 definition exec_lub :: "('a * 'a) set \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a binop"
 where

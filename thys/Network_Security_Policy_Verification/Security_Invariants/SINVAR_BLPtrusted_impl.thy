@@ -2,7 +2,7 @@ theory SINVAR_BLPtrusted_impl
 imports SINVAR_BLPtrusted "../TopoS_Interface_impl"
 begin
 
-subsubsection {* SecurityInvariant List Implementation *}
+subsubsection \<open>SecurityInvariant List Implementation\<close>
 
 code_identifier code_module SINVAR_BLPtrusted_impl => (Scala) SINVAR_BLPtrusted
 
@@ -51,7 +51,7 @@ done
 
 
 
-subsubsection {* BLPtrusted packing *}
+subsubsection \<open>BLPtrusted packing\<close>
   definition SINVAR_LIB_BLPtrusted :: "('v::vertex, SINVAR_BLPtrusted.node_config) TopoS_packed" where
     "SINVAR_LIB_BLPtrusted \<equiv> 
     \<lparr> nm_name = ''BLPtrusted'', 
@@ -70,7 +70,7 @@ subsubsection {* BLPtrusted packing *}
     apply(simp)
     by(unfold_locales)
 
-subsubsection{* Example *}
+subsubsection\<open>Example\<close>
  (*TODO*)
 
 

@@ -3,17 +3,17 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* Primitive recursive functions *}
+section \<open>Primitive recursive functions\<close>
 
 theory PRecFun imports CPair
 begin
 
-text {*
+text \<open>
   This theory contains definition of the primitive recursive functions.
-*}
+\<close>
 
 
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 
 primrec
   PrimRecOp :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat \<Rightarrow> nat)"
@@ -80,10 +80,10 @@ ML_file "Utils.ML"
 
 named_theorems prec
 
-method_setup prec0 = {*
+method_setup prec0 = \<open>
   Attrib.thms >> (fn ths => fn ctxt => Method.METHOD (fn facts =>
     HEADGOAL (prec0_tac ctxt (facts @ Named_Theorems.get ctxt @{named_theorems prec}))))
-*} "apply primitive recursive functions"
+\<close> "apply primitive recursive functions"
 
 
 lemmas [prec] = pr_zero pr_suc pr_id1_1 pr_id2_1 pr_id2_2 pr_id3_1 pr_id3_2 pr_id3_3
@@ -424,7 +424,7 @@ proof -
   with S1 show ?thesis by simp
 qed
 
-ML {*
+ML \<open>
 fun get_if_by_index 1 = @{thm if_eq_is_pr}
   | get_if_by_index 2 = @{thm if_eq_is_pr2}
   | get_if_by_index 3 = @{thm if_eq_is_pr3}
@@ -458,15 +458,15 @@ fun prec_tac ctxt facts i =
   Method.insert_tac ctxt facts i THEN
   REPEAT (resolve_tac ctxt [@{thm const_is_pr}, @{thm const_is_pr_2}, @{thm const_is_pr_3}] i ORELSE
     assume_tac ctxt i ORELSE if_comp_tac ctxt i)
-*}
+\<close>
 
-method_setup prec = {*
+method_setup prec = \<open>
   Attrib.thms >> (fn ths => fn ctxt => Method.METHOD (fn facts =>
     HEADGOAL (prec_tac ctxt (facts @ Named_Theorems.get ctxt @{named_theorems prec}))))
-*} "apply primitive recursive functions"
+\<close> "apply primitive recursive functions"
 
 
-subsection {* Bounded least operator *}
+subsection \<open>Bounded least operator\<close>
 
 definition
   b_least :: "(nat \<Rightarrow> nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)" where
@@ -792,7 +792,7 @@ proof -
   then show ?thesis by (simp add: b_least_def1)
 qed
 
-subsection {* Examples *}
+subsection \<open>Examples\<close>
 
 theorem c_sum_as_b_least: "c_sum = (\<lambda> u. b_least2 (\<lambda> u z. (sgn1 (sf(z+1) - u))) u (Suc u))"
 proof (rule ext)

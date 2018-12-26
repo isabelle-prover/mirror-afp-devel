@@ -19,7 +19,7 @@ next
   also have "\<dots> = (\<Gamma>, (eta_expand (length T) (App e x)), T @ S)" unfolding subst_eta_expand by simp
   also have "\<dots> \<Rightarrow>\<^sup>* (\<Gamma>, App e x, T @ S)" by (rule Cons.IH[OF prem])
   also have "\<dots> \<Rightarrow> (\<Gamma>, e, Arg x # T @ S)"  by (rule app\<^sub>1)
-  finally show ?case using `se = _` by simp
+  finally show ?case using \<open>se = _\<close> by simp
 qed
 
 fun arg_prefix :: "stack \<Rightarrow> nat" where
@@ -40,7 +40,7 @@ proof-
     apply (case_tac n, auto)+
     done
   hence "S = take n S @ drop n S" by (metis append_take_drop_id)
-  with eta_expansion_safe[OF `_ \<subseteq> _`] `length _ = _`
+  with eta_expansion_safe[OF \<open>_ \<subseteq> _\<close>] \<open>length _ = _\<close>
   show ?thesis by metis
 qed
 

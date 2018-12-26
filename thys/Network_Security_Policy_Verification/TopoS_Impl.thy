@@ -8,7 +8,7 @@ imports TopoS_Library TopoS_Composition_Theory_impl
 begin
 
 
-section {* ML Visualization Interface *}
+section \<open>ML Visualization Interface\<close>
 
 definition print_offending_flows_debug ::
   "'v  SecurityInvariant list \<Rightarrow> 'v list_graph \<Rightarrow> (string \<times> ('v \<times> 'v) list list) list" where
@@ -19,7 +19,7 @@ definition print_offending_flows_debug ::
     ) M"
 
 (*TODO: move and tune*)
-ML{*
+ML\<open>
 fun pretty_assoclist ctxt header t = let
     val ls : (term * term) list = t |> HOLogic.dest_list |> map HOLogic.dest_prod;
     val pretty = fn t => Pretty.string_of (Syntax.pretty_term ctxt t);
@@ -28,9 +28,9 @@ fun pretty_assoclist ctxt header t = let
        |> space_implode "\n"
        |> (fn s => header^s)
        |> writeln end
-*}
+\<close>
 
-subsection{*Utility Functions*}
+subsection\<open>Utility Functions\<close>
 
   fun rembiflowdups :: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" where
     "rembiflowdups [] = []" |
@@ -76,7 +76,7 @@ subsection{*Utility Functions*}
       qed
 
 
-  text{*only for prettyprinting*}
+  text\<open>only for prettyprinting\<close>
   definition filter_for_biflows:: "('a \<times> 'a) list \<Rightarrow> ('a \<times> 'a) list" where
     "filter_for_biflows E \<equiv> [e \<leftarrow> E. (snd e, fst e) \<in> set E]"
 
@@ -103,7 +103,7 @@ subsection{*Utility Functions*}
 
 
 
-ML{*
+ML\<open>
 (*apply args to f. f ist best supplied using @{const_name "name_of_function"} *)
 fun apply_function (ctxt: Proof.context) (f: string) (args: term list) : term = 
   let
@@ -169,9 +169,9 @@ in
     end;
     
 end
-*}
+\<close>
 
-ML_val{*
+ML_val\<open>
 local
   val (biflows, uniflows) = partition_by_biflows @{context} @{term "[(1::int, 1::int), (1,2), (2, 1), (1,3)]"};
 in
@@ -181,10 +181,10 @@ end;
 
 val t = fastype_of @{term "[(''x'', 2::nat)]"};
 
-*}
-ML_val{*(*
+\<close>
+ML_val\<open>(*
 visualize_edges @{context}  @{term "[(1::int, 1::int), (1,2), (2, 1), (1,3)]"} []; *)
-*}
+\<close>
 
 
 
@@ -195,7 +195,7 @@ definition internal_get_invariant_types_list:: "'a SecurityInvariant list \<Righ
 definition internal_node_configs :: "'a list_graph \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<times>'b) list" where
   "internal_node_configs G config \<equiv> zip (nodesL G) (map config (nodesL G))"
 
-ML {*
+ML \<open>
 local
   fun get_graphivz_node_desc ctxt (node_config: term): string =
    let
@@ -253,6 +253,6 @@ fun visualize_graph_header ctxt (M: term) (G: term) (Config: term): unit =
 
 
 fun visualize_graph ctxt (M: term) (G: term): unit = visualize_graph_header ctxt M G @{term "[]"};
-*}
+\<close>
 
 end

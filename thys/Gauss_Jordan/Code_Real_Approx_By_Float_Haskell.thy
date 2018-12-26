@@ -4,17 +4,17 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Serialization of real numbers in Haskell*}
+section\<open>Serialization of real numbers in Haskell\<close>
 
 theory Code_Real_Approx_By_Float_Haskell
 imports "HOL-Library.Code_Real_Approx_By_Float"
 begin
 
-text{*\textbf{WARNING} This theory implements mathematical reals by machine
-reals in Haskell, in a similar way to the work done in the theory @{text "Code_Real_Approx_By_Float_Haskell"}.
-This is inconsistent.*}
+text\<open>\textbf{WARNING} This theory implements mathematical reals by machine
+reals in Haskell, in a similar way to the work done in the theory \<open>Code_Real_Approx_By_Float_Haskell\<close>.
+This is inconsistent.\<close>
 
-subsection{*Implementation of real numbers in Haskell*}
+subsection\<open>Implementation of real numbers in Haskell\<close>
 
 code_printing
   type_constructor real \<rightharpoonup> (Haskell) "Prelude.Double" (*Double precission*)
@@ -59,7 +59,7 @@ code_printing
   | constant arcsin \<rightharpoonup>
     (Haskell) "Prelude.asin"
 
-text{*The following lemmas have to be removed from the code generator in order to be able to execute @{term "(<)"} and @{term "(\<le>)"}*}
+text\<open>The following lemmas have to be removed from the code generator in order to be able to execute @{term "(<)"} and @{term "(\<le>)"}\<close>
 declare real_less_code[code del]
 declare real_less_eq_code[code del]
 

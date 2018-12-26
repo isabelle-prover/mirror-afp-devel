@@ -1,22 +1,22 @@
-section {* Example Instantiations *}
+section \<open>Example Instantiations\<close>
 
-text {*
+text \<open>
   This section provides a few example instantiations for the locales to show that they are not empty.
-*}
+\<close>
 
 theory ExampleInstantiations
 imports TreewidthCompleteGraph begin
 
 datatype Vertices = u0 | v0 | w0
 
-text {* The empty graph is a tree. *}
+text \<open>The empty graph is a tree.\<close>
 definition "T1 \<equiv> \<lparr> verts = {}, arcs = {} \<rparr>"
 interpretation Graph_T1: Graph T1 unfolding T1_def by standard simp_all
 interpretation Tree_T1: Tree T1
   by (rule Tree.intro, simp add: Graph_T1.Graph_axioms, standard, unfold T1_def, simp)
      (metis T1_def Graph_T1.cycle_def equals0D simps(2))
 
-text {* The complete graph with 2 vertices. *}
+text \<open>The complete graph with 2 vertices.\<close>
 definition "T2 \<equiv> \<lparr> verts = {u0, v0}, arcs = {(u0,v0),(v0,u0)} \<rparr>"
 lemma Graph_T2: "Graph T2" unfolding T2_def by standard auto
 lemma Tree_T2: "Tree T2"
@@ -45,19 +45,19 @@ proof-
     thus "\<not>cycle xs" by (metis T2_def cycleE empty_iff insertE prod.inject simps(2))
   qed
 qed
-text {* As expected, the treewidth of the complete graph with 2 vertices is 1.
+text \<open>As expected, the treewidth of the complete graph with 2 vertices is 1.
 
-  Note that we use @{text Graph.treewidth_complete_graph} here and not @{text treewidth_tree}.
-  This is because @{text treewidth_tree} requires the vertex set of the graph to be a set of
-  natural numbers, which is not the case here. *}
+  Note that we use \<open>Graph.treewidth_complete_graph\<close> here and not \<open>treewidth_tree\<close>.
+  This is because \<open>treewidth_tree\<close> requires the vertex set of the graph to be a set of
+  natural numbers, which is not the case here.\<close>
 lemma T2_complete: "\<lbrakk> v \<in> V\<^bsub>T2\<^esub>; w \<in> V\<^bsub>T2\<^esub>; v \<noteq> w \<rbrakk> \<Longrightarrow> v \<rightarrow>\<^bsub>T2\<^esub> w" unfolding T2_def by auto
 lemma treewidth_T2: "Graph.treewidth T2 = 1"
   using Graph.treewidth_complete_graph[OF Graph_T2] T2_complete unfolding T2_def by simp
 
-text {* The complete graph with 3 vertices. *}
+text \<open>The complete graph with 3 vertices.\<close>
 definition "T3 \<equiv> \<lparr> verts = {u0, v0, w0}, arcs = {(u0,v0),(v0,u0),(v0,w0),(w0,v0),(w0,u0),(u0,w0)} \<rparr>"
 lemma Graph_T3: "Graph T3" unfolding T3_def by standard auto
-text {* @{term "[u0, v0, w0]"} is a cycle in @{const "T3"}, so @{const "T3"} is not a tree. *}
+text \<open>@{term "[u0, v0, w0]"} is a cycle in @{const "T3"}, so @{const "T3"} is not a tree.\<close>
 lemma Not_Tree_T3: "\<not>Tree T3" proof
   assume "Tree T3" then interpret Tree T3 .
   let ?xs = "[u0, v0, w0]"
@@ -72,7 +72,7 @@ lemma T3_complete: "\<lbrakk> v \<in> V\<^bsub>T3\<^esub>; w \<in> V\<^bsub>T3\<
 lemma treewidth_T3: "Graph.treewidth T3 = 2"
   using Graph.treewidth_complete_graph[OF Graph_T3] T3_complete unfolding T3_def by simp
 
-text {* We omit a concrete example for the @{text TreeDecomposition} locale because
-  @{text tree_decomposition_exists} already shows that it is non-empty. *}
+text \<open>We omit a concrete example for the \<open>TreeDecomposition\<close> locale because
+  \<open>tree_decomposition_exists\<close> already shows that it is non-empty.\<close>
 
 end

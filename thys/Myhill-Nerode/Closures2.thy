@@ -4,9 +4,9 @@ imports
   Well_Quasi_Orders.Well_Quasi_Orders
 begin
 
-section {* Closure under @{text SUBSEQ} and @{text SUPSEQ} *}
+section \<open>Closure under \<open>SUBSEQ\<close> and \<open>SUPSEQ\<close>\<close>
 
-text {* Properties about the embedding relation *}
+text \<open>Properties about the embedding relation\<close>
 
 lemma subseq_strict_length:
   assumes a: "subseq x y" "x \<noteq> y" 
@@ -50,7 +50,7 @@ proof (rule ccontr)
   with e show "False" by auto
 qed
 
-subsection {* Sub- and Supersequences *}
+subsection \<open>Sub- and Supersequences\<close>
 
 definition
  "SUBSEQ A \<equiv> {x::('a::finite) list. \<exists>y \<in> A. subseq x y}"
@@ -87,7 +87,7 @@ apply(simp only: SUPSEQ_union)
 apply(simp)
 done
 
-subsection {* Regular expression that recognises every character *}
+subsection \<open>Regular expression that recognises every character\<close>
 
 definition
   Allreg :: "'a::finite rexp"
@@ -206,7 +206,7 @@ proof -
   show "\<exists>M. finite M \<and> SUPSEQ A = SUPSEQ M" by blast
 qed
 
-subsection {* Closure of @{const SUBSEQ} and @{const SUPSEQ} *}
+subsection \<open>Closure of @{const SUBSEQ} and @{const SUPSEQ}\<close>
 
 lemma closure_SUPSEQ:
   fixes A::"'a::finite lang" 

@@ -5,15 +5,15 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Healthiness *}
+section \<open>Healthiness\<close>
 
 theory Healthiness imports Embedding begin
 
-subsection {* The Healthiness of the Embedding *}
+subsection \<open>The Healthiness of the Embedding\<close>
 
-text {* Healthiness is mostly derived by structural induction using
+text \<open>Healthiness is mostly derived by structural induction using
   the simplifier.  @{term Abort}, @{term Skip} and @{term Apply}
-  form base cases. *}
+  form base cases.\<close>
 
 lemma healthy_wp_Abort:
   "healthy (wp Abort)"
@@ -107,7 +107,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   fix b and Q::"'s \<Rightarrow> real" and s::'s
   assume nQ: "nneg Q" and bQ: "bounded_by b Q"
 
-  txt {* Non-negative: *}
+  txt \<open>Non-negative:\<close>
   from nQ and bQ and hf have "0 \<le> wp f Q s" by(auto)
   with uP have "0 \<le> P s * ..." by(auto intro:mult_nonneg_nonneg)
   moreover {
@@ -118,7 +118,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   ultimately show "0 \<le> P s * wp f Q s + (1 - P s) * wp g Q s"
     by(auto intro:mult_nonneg_nonneg)
 
-  txt {* Bounded: *}
+  txt \<open>Bounded:\<close>
   from nQ bQ hf have "wp f Q s \<le> b" by(auto)
   with uP nQ bQ hf have "P s * wp f Q s \<le> P s * b"
     by(blast intro!:mult_mono)
@@ -134,7 +134,7 @@ proof(intro healthy_parts bounded_byI nnegI le_funI, simp_all add:wp_eval)
   also have "... = b" by(auto simp:algebra_simps)
   finally show "P s * wp f Q s + (1 - P s) * wp g Q s \<le> b" .
 next
-  txt {* Monotonic: *}
+  txt \<open>Monotonic:\<close>
   fix Q R::"'s \<Rightarrow> real" and s
   assume sQ: "sound Q" and sR: "sound R" and le: "Q \<tturnstile> R"
 
@@ -151,7 +151,7 @@ next
   ultimately show "P s * wp f Q s + (1 - P s) * wp g Q s \<le>
                    P s * wp f R s + (1 - P s) * wp g R s" by(auto)
 next
-  txt {* Scaling: *}
+  txt \<open>Scaling:\<close>
   fix Q::"'s \<Rightarrow> real" and c::real and s::'s
   assume sQ: "sound Q" and pos: "0 \<le> c"
   have "c * (P s * wp f Q s + (1 - P s) * wp g Q s) =
@@ -644,7 +644,7 @@ proof(intro nearly_healthyI unitaryI2 nnegI bounded_byI le_funI, simp_all only:w
     by(blast intro:le_funD[OF nearly_healthy_monoD, OF hsub])
 qed
 
-subsection {* Healthiness for Loops *}
+subsection \<open>Healthiness for Loops\<close>
 
 lemma wp_loop_step_mono:
   fixes t u::"'s trans"
@@ -684,8 +684,8 @@ proof(intro le_utransI le_funI, simp add:wp_eval)
     by(auto intro:mult_left_mono)
 qed
 
-text {* For each sound expectation, we have a pre fixed point of the loop body.
-This lets us use the relevant fixed-point lemmas. *}
+text \<open>For each sound expectation, we have a pre fixed point of the loop body.
+This lets us use the relevant fixed-point lemmas.\<close>
 lemma lfp_loop_fp:
   assumes hb: "healthy (wp body)"
       and sP: "sound P"
@@ -774,8 +774,8 @@ proof(intro soundI2 nnegI bounded_byI, simp_all add:wp_eval)
                 max (bound_of P) (bound_of (t P))" .
 qed
 
-text {* This gives the equivalence with the alternative definition for
-  loops\citep[\S7, p.~198, footnote 23]{McIver_M_04}. *}
+text \<open>This gives the equivalence with the alternative definition for
+  loops\citep[\S7, p.~198, footnote 23]{McIver_M_04}.\<close>
 
 lemma wlp_Loop1:
   fixes body :: "'s prog"
@@ -844,7 +844,7 @@ proof(simp only: wp_eval, intro lfp_trans_sound sP)
   show "\<And>P. sound P \<Longrightarrow> sound (?v P)" by(auto)
 qed
 
-text {* Likewise, we can rewrite strict loops. *}
+text \<open>Likewise, we can rewrite strict loops.\<close>
 lemma wp_Loop1:
   fixes body :: "'s prog"
   assumes sP: "sound P"
@@ -966,8 +966,8 @@ proof(intro nearly_healthyI unitaryI2 nnegI2 bounded_byI2, simp_all add:wlp_Loop
   qed
 qed
 
-text {* We show healthiness by appealing to the properties of expectation fixed points, applied
-to the alternative loop definition. *}
+text \<open>We show healthiness by appealing to the properties of expectation fixed points, applied
+to the alternative loop definition.\<close>
 lemma healthy_wp_loop:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"
@@ -1107,9 +1107,9 @@ proof -
   qed
 qed
 
-text {* Use 'simp add:healthy\_intros' or 'blast intro:healthy\_intros' as
+text \<open>Use 'simp add:healthy\_intros' or 'blast intro:healthy\_intros' as
         appropriate to discharge healthiness side-contitions for primitive
-        programs automatically. *}
+        programs automatically.\<close>
 lemmas healthy_intros =
   healthy_wp_Abort nearly_healthy_wlp_Abort healthy_wp_Skip   nearly_healthy_wlp_Skip
   healthy_wp_Seq   nearly_healthy_wlp_Seq   healthy_wp_PC     nearly_healthy_wlp_PC

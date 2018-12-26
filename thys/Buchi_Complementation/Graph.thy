@@ -1,4 +1,4 @@
-section {* Run Graphs *}
+section \<open>Run Graphs\<close>
 
 theory Graph
 imports "Transition_Systems_and_Automata.NBA"
@@ -19,7 +19,7 @@ begin
       greachable = graph.reachable and gnodes = graph.nodes
     by this
 
-  text {* We disable rules that are degenerate due to @{term "execute = const"}. *}
+  text \<open>We disable rules that are degenerate due to @{term "execute = const"}.\<close>
   declare graph.reachable.execute[rule del]
   declare graph.nodes.execute[rule del]
 

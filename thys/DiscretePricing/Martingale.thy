@@ -2,7 +2,7 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* Martingales *}
+section \<open>Martingales\<close>
 
 theory Martingale imports Filtration
 begin

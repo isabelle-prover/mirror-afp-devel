@@ -1,24 +1,24 @@
-section {* Code Generation from Locales *}
+section \<open>Code Generation from Locales\<close>
 theory Locale_Code
   imports ICF_Tools Ord_Code_Preproc
 begin
 
-text {*
+text \<open>
   Provides a simple mechanism to prepare code equations for
   constants stemming from locale interpretations.
 
   The usage pattern is as follows:
-    @{text "setup Locale_Code.checkpoint"} is called before a series of
-      interpretations, and afterwards, @{text "setup Locale_Code.prepare"}
+    \<open>setup Locale_Code.checkpoint\<close> is called before a series of
+      interpretations, and afterwards, \<open>setup Locale_Code.prepare\<close>
       is called. Afterwards, the code generator will correctly recognize 
       expressions involving terms from the locale interpretation.
 
-*}
+\<close>
 
-text {* Tag to indicate pattern deletion *}
+text \<open>Tag to indicate pattern deletion\<close>
 definition LC_DEL :: "'a \<Rightarrow> unit" where "LC_DEL a \<equiv> ()"
 
-ML {*
+ML \<open>
 signature LOCALE_CODE = sig
   type pat_eq = cterm * thm list
 
@@ -366,20 +366,20 @@ structure Locale_Code :LOCALE_CODE = struct
 
 end
 
-*}
+\<close>
 
 setup Locale_Code.setup
 
-attribute_setup lc_delete = {*
+attribute_setup lc_delete = \<open>
   Parse.and_list1' ICF_Tools.parse_cpat >> 
     (fn cpats => Thm.declaration_attribute (K 
       (Context.mapping (fold Locale_Code.del_pat cpats) I)))
-*} "Locale_Code: Delete patterns for current block"
+\<close> "Locale_Code: Delete patterns for current block"
 
-attribute_setup lc_add = {*
+attribute_setup lc_add = \<open>
   Parse.and_list1' (ICF_Tools.parse_cpat -- Attrib.thms) >> 
     (fn peqs => Thm.declaration_attribute (K 
       (Context.mapping (fold (uncurry Locale_Code.add_pat_eq) peqs) I)))
-*} "Locale_Code: Add pattern-eqs for current block"
+\<close> "Locale_Code: Add pattern-eqs for current block"
 
 end

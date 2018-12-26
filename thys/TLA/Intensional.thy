@@ -5,17 +5,17 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* Representing Intensional Logic  *}
+section \<open>Representing Intensional Logic\<close>
 
 theory Intensional 
 imports Main
 begin
 
-text{* 
+text\<open>
   In higher-order logic, every proof rule has a corresponding tautology, i.e.
   the \emph{deduction theorem} holds. Isabelle/HOL implements this since object-level
   implication ($\longrightarrow$) and meta-level entailment ($\Longrightarrow$) 
-  commute, viz. the proof rule @{text "impI:"} @{thm impI}. 
+  commute, viz. the proof rule \<open>impI:\<close> @{thm impI}. 
   However, the deduction theorem does not hold for 
   most modal and temporal logics \cite[page 95]{Lamport02}\cite{Merz98}.
   For example $A \vdash \Box A$ holds, meaning that if $A$ holds in any world, then
@@ -27,24 +27,24 @@ text{*
   axiomatic type class feature  \cite{Wenzel00b} by creating a type
   class @{term world}, which provides Skolem constants to associate formulas
   with the world they hold in. The class is trivial, not requiring any axioms.
-*}
+\<close>
 
 class world 
-text {*
+text \<open>
   @{term world} is a type class of possible worlds. It is a subclass
   of all HOL types @{term type}. No axioms are provided, since its only
   purpose is to avoid silly use of the @{term Intensional} syntax.
-*}
+\<close>
 
-subsection{* Abstract Syntax and Definitions *}
+subsection\<open>Abstract Syntax and Definitions\<close>
 
 
 type_synonym ('w,'a) expr = "'w \<Rightarrow> 'a"         
 type_synonym  'w form = "('w, bool) expr"
 
-text {* The intention is that @{typ 'a} will be used for unlifted
+text \<open>The intention is that @{typ 'a} will be used for unlifted
 types (class @{term type}), while @{typ 'w} is lifted (class @{term world}). 
-*}
+\<close>
 
 
 definition Valid :: "('w::world) form \<Rightarrow> bool"
@@ -65,12 +65,12 @@ definition lift3 :: "['a \<Rightarrow> 'b => 'c \<Rightarrow> 'd, ('w::world,'a)
 definition lift4 :: "['a \<Rightarrow> 'b => 'c \<Rightarrow> 'd \<Rightarrow> 'e, ('w::world,'a) expr, ('w,'b) expr, ('w,'c) expr,('w,'d) expr] \<Rightarrow> ('w,'e) expr"
   where unl_lift4: "lift4 f x y z zz w \<equiv> f (x w) (y w) (z w) (zz w)"
 
-text {* 
+text \<open>
   @{term "Valid F"} asserts that the lifted formula @{term F} holds everywhere.
   @{term const} allows lifting of a constant, while @{term lift} through
   @{term lift4} allow functions with arity 1--4 to be lifted. (Note that there
   is no way to define a generic lifting operator for functions of arbitrary arity.)
-*}
+\<close>
 
 definition RAll :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"  (binder "Rall " 10)
   where unl_Rall: "(Rall x. A x) w \<equiv> \<forall>x. A x w"
@@ -81,17 +81,17 @@ definition REx :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"  (
 definition REx1 :: "('a \<Rightarrow> ('w::world) form) \<Rightarrow> 'w form"  (binder "Rex! " 10)
   where unl_Rex1: "(Rex! x. A x) w \<equiv> \<exists>!x. A x w"
 
-text {* 
+text \<open>
   @{term RAll}, @{term REx} and @{term REx1} introduces ``rigid'' quantification
   over values (of non-world types) within ``intensional'' formulas. @{term RAll}
   is universal quantification, @{term REx} is existential quantifcation.
   @{term REx1} requires unique existence.
-*}
+\<close>
 
-text {*
+text \<open>
   We declare the ``unlifting rules'' as rewrite rules that will be applied
   automatically.
-*}
+\<close>
 
 lemmas intensional_rews[simp] = 
   unl_con unl_lift unl_lift2 unl_lift3 unl_lift4 
@@ -99,15 +99,15 @@ lemmas intensional_rews[simp] =
 
 
 
-subsection{* Concrete Syntax *}
+subsection\<open>Concrete Syntax\<close>
 
 nonterminal
   lift and liftargs
 
-text{*
+text\<open>
   The non-terminal @{term lift} represents lifted expressions. The idea is to use 
   Isabelle's macro mechanism to convert between the concrete and abstract syntax.
-*}
+\<close>
 
 syntax
   ""            :: "id \<Rightarrow> lift"                          ("_")
@@ -241,7 +241,7 @@ syntax (ASCII)
   "_REx1" :: "[idts, lift] \<Rightarrow> lift"                      ("(3EX! _./ _)" [0, 10] 10)
 
 
-subsection {* Lemmas and Tactics *}
+subsection \<open>Lemmas and Tactics\<close>
 
 lemma intD[dest]: "\<turnstile> A \<Longrightarrow> w \<Turnstile> A"
 proof -
@@ -253,16 +253,16 @@ qed
 lemma intI [intro!]: assumes P1:"(\<And> w. w \<Turnstile> A)" shows "\<turnstile> A"
   using assms by (auto simp: Valid_def)
 
-text{*
+text\<open>
   Basic unlifting introduces a parameter @{term w} and applies basic rewrites, e.g 
   @{term "\<turnstile> F = G"} becomes @{term "F w = G w"} and @{term "\<turnstile> F \<longrightarrow> G"} becomes   
   @{term "F w \<longrightarrow> G w"}.
-*}
+\<close>
 
-method_setup int_unlift = {*
+method_setup int_unlift = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD'
     (resolve_tac ctxt @{thms intI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
-*} "method to unlift and followed by intensional rewrites"
+\<close> "method to unlift and followed by intensional rewrites"
 
 lemma inteq_reflection: assumes P1: "\<turnstile> x=y" shows  "(x \<equiv> y)"
 proof -
@@ -307,9 +307,9 @@ lemma int_simps:
 
 lemmas intensional_simps[simp] = int_simps[THEN inteq_reflection]
 
-method_setup int_rewrite = {*
+method_setup int_rewrite = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (rewrite_goal_tac ctxt @{thms intensional_simps}))
-*} "rewrite method at intensional level"
+\<close> "rewrite method at intensional level"
 
 lemma Not_Rall: "\<turnstile> (\<not>(\<forall> x. F x)) = (\<exists> x. \<not>F x)"
   by auto

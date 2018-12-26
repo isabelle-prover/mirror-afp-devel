@@ -1,11 +1,11 @@
-section{* The First Monotonicity Calculus  *}
+section\<open>The First Monotonicity Calculus\<close>
 theory Mcalc
 imports Mono
 begin
 
 context ProblemIk begin
 
-subsection{* Naked variables *}
+subsection\<open>Naked variables\<close>
 
 fun nvT where
 "nvT (Var x) = {x}"
@@ -42,7 +42,7 @@ lemma nvPB_varsPB[simp]: "x \<in> nvPB \<Longrightarrow> x \<in> varsPB \<Phi>"
 unfolding varsPB_def nvPB_def by auto
 
 
-subsection{* The calculus *}
+subsection\<open>The calculus\<close>
 
 inductive mcalc (infix "\<turnstile>" 40) where
  [simp]: "infTp \<sigma> \<Longrightarrow> \<sigma> \<turnstile> c"
@@ -66,12 +66,12 @@ for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi> and infTp and intT and intF and intP
 
-subsection{* Extension of a structure to an infinite structure
-by adding indistinguishable elements *}
+subsection\<open>Extension of a structure to an infinite structure
+by adding indistinguishable elements\<close>
 
 context ModelIkMcalc begin
 
-text{* The projection from univ to a structure: *}
+text\<open>The projection from univ to a structure:\<close>
 
 definition proj where "proj \<sigma> a \<equiv> if intT \<sigma> a then a else pickT \<sigma>"
 
@@ -117,17 +117,17 @@ sublocale ModelIkMcalc < InfStruct where
 intT = I_intT and intF = I_intF and intP = I_intP
 using InfStruct .
 
-subsection{* The soundness of the calculus *}
+subsection\<open>The soundness of the calculus\<close>
 
-text{* In what follows, ``Ik'' stands for the original
+text\<open>In what follows, ``Ik'' stands for the original
 (augmented with infiniteness-knowledge)
 and ``I'' for the infinite structure constructed from it
-through the above sublocale statement. *}
+through the above sublocale statement.\<close>
 
 
 context ModelIkMcalc begin
 
-text{* The environment translation along the projection: *}
+text\<open>The environment translation along the projection:\<close>
 definition "transE \<xi> \<equiv> \<lambda> x. proj (tpOfV x) (\<xi> x)"
 
 lemma transE[simp]: "transE \<xi> x = proj (tpOfV x) (\<xi> x)"
@@ -262,8 +262,8 @@ qed
 
 end (* context ProblemIkMcalc *)
 
-text{* Final theorem in sublocale form: Any problem that passes the
-  monotonicity calculus is monotonic:  *}
+text\<open>Final theorem in sublocale form: Any problem that passes the
+  monotonicity calculus is monotonic:\<close>
 
 sublocale ProblemIkMcalc < MonotProblem
 by standard (rule monot)

@@ -1,15 +1,15 @@
 (*File: ContextVS.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory ContextVS imports VS begin
-subsection{*Contextual closure*}
+subsection\<open>Contextual closure\<close>
 
-text{*\label{sec:contextVS}We show that the notion of security is closed w.r.t.~low
+text\<open>\label{sec:contextVS}We show that the notion of security is closed w.r.t.~low
 attacking contexts, i.e.~contextual programs into which a
 secure program can be substituted and which itself employs only
-\emph{obviously} low variables.*}
+\emph{obviously} low variables.\<close>
 
-text{*Contexts are {\bf IMP} programs with (multiple) designated holes
-(represented by constructor $\mathit{Ctxt\_Here}$).*}
+text\<open>Contexts are {\bf IMP} programs with (multiple) designated holes
+(represented by constructor $\mathit{Ctxt\_Here}$).\<close>
 
 datatype CtxtProg =
   Ctxt_Hole
@@ -20,8 +20,8 @@ datatype CtxtProg =
 | Ctxt_While BExpr CtxtProg
 | Ctxt_Call
 
-text{*We let $C$, $D$ range over contextual programs. The substitution
-operation is defined by structural recursion.*}
+text\<open>We let $C$, $D$ range over contextual programs. The substitution
+operation is defined by structural recursion.\<close>
 
 primrec Fill::"CtxtProg \<Rightarrow> IMP \<Rightarrow> IMP"
 where
@@ -33,8 +33,8 @@ where
 "Fill (Ctxt_While b C) c = While b (Fill C c)" |
 "Fill Ctxt_Call c = Call"
 
-text{*Equally obvious are the definitions of the (syntactically)
-mentioned variables of arithmetic and boolean expressions.*}
+text\<open>Equally obvious are the definitions of the (syntactically)
+mentioned variables of arithmetic and boolean expressions.\<close>
 
 primrec EVars::"Expr \<Rightarrow> Var set"
 where
@@ -72,10 +72,10 @@ apply simp
 done
 (*>*) 
 
-text{*The variables possibly read from during the evaluation of $c$
+text\<open>The variables possibly read from during the evaluation of $c$
 are denoted by $\mathit{Vars\; c}$. Note that in the clause for
 assignments the variable that is assigned to is not included in the
-set.*}
+set.\<close>
 
 primrec Vars::"IMP \<Rightarrow> Var set"
 where
@@ -86,8 +86,8 @@ where
 "Vars (Iff b c d) = BVars b \<union> Vars c \<union> Vars d" |
 "Vars Call = {}"
 
-text{*For contexts, we define when a set $X$ of variables is an upper
-bound for the variables read from.*}
+text\<open>For contexts, we define when a set $X$ of variables is an upper
+bound for the variables read from.\<close>
 
 primrec CtxtVars::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
 where
@@ -198,12 +198,12 @@ apply (subgoal_tac "n \<le> n + na", assumption) apply (simp, simp)
 done
 (*>*)
 
-text{*A constant representing the procedure body with holes.*}
+text\<open>A constant representing the procedure body with holes.\<close>
 
 consts Ctxt_Body::CtxtProg
 
-text{*The following predicate expresses that all variables read from
-by a command $c$ are contained in the set $X$ of low variables.*}
+text\<open>The following predicate expresses that all variables read from
+by a command $c$ are contained in the set $X$ of low variables.\<close>
 
 definition LOW::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
 where "LOW X C = (CtxtVars X C \<and> (\<forall> x . x : X \<longrightarrow> CONTEXT x = low))"
@@ -289,12 +289,12 @@ apply clarsimp apply (erule Sem_eval_cases) apply (erule Sem_eval_cases)
 done
 (*>*)
 
-text{*By induction on the maximal height of the operational judgement
+text\<open>By induction on the maximal height of the operational judgement
 (hidden in the definition of $\mathit{secure}$) we can prove that the
 security of $c$ implies that of $\mathit{Fill}\ C\ c$, provided that
 the context and the procedure-context satisfy the $\mathit{LOW}$
 predicate for some $X$, and that the "real" body is obtained by
-substituting $c$ into the procedure context.*}
+substituting $c$ into the procedure context.\<close>
 
 lemma secureI_secureFillI: 
   "\<lbrakk>secure c; LOW X C; LOW X Ctxt_Body; body = Fill Ctxt_Body c\<rbrakk>
@@ -317,8 +317,8 @@ apply assumption
 done
 (*>*)
 
-text{*Consequently, a (low) variable representing the result of
-the attacking context does not leak any unwanted information.*}
+text\<open>Consequently, a (low) variable representing the result of
+the attacking context does not leak any unwanted information.\<close>
 
 consts res::Var
 
@@ -334,5 +334,5 @@ apply (erule_tac x=t in allE, erule_tac x=tt in allE, clarsimp)
 apply (simp add: twiddle_def)
 done
 (*>*)
-text{*End of theory ContextVS*}
+text\<open>End of theory ContextVS\<close>
 end

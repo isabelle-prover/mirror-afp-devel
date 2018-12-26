@@ -24,7 +24,7 @@ proof -
       hence "m < card F" by arith
       with Suc.IH obtain D
         where D: "D \<subseteq> X \<and> card D \<le> m \<and> m + 1 \<le> card (inter D ` F)" by auto
-      with `finite X` have "finite D" by (auto intro: finite_subset)
+      with \<open>finite X\<close> have "finite D" by (auto intro: finite_subset)
       show ?case
       proof (cases "card (inter D ` F) = card F")
         case True
@@ -37,23 +37,23 @@ proof -
         then obtain A1 A2 where "A1 \<in> F" and "A2 \<in> F" and 
           "D \<inter> A1 = D \<inter> A2" and "A1 \<noteq> A2"  by (auto simp: inj_on_def)
         then obtain x where x: "x : (A1 - A2) \<union> (A2 - A1)" by auto
-        from `\<forall>A \<in> F. A \<subseteq> X` `A1 \<in> F` `A2 \<in> F` x have "x : X" by auto
+        from \<open>\<forall>A \<in> F. A \<subseteq> X\<close> \<open>A1 \<in> F\<close> \<open>A2 \<in> F\<close> x have "x : X" by auto
         let ?E = "insert x D"
-        from D `finite D` have "card ?E \<le> Suc m"
+        from D \<open>finite D\<close> have "card ?E \<le> Suc m"
           by (metis (full_types) Suc_le_mono card_insert_if le_Suc_eq)
-        moreover with D `x:X` have "?E \<subseteq> X" by auto
+        moreover with D \<open>x:X\<close> have "?E \<subseteq> X" by auto
         moreover have "Suc m < card (inter ?E ` F)"
         proof -
-          from `D \<inter> A1 = D \<inter> A2` have 1: "(D \<inter> (?E \<inter> A1)) = (D \<inter> (?E \<inter> A2))"
+          from \<open>D \<inter> A1 = D \<inter> A2\<close> have 1: "(D \<inter> (?E \<inter> A1)) = (D \<inter> (?E \<inter> A2))"
             by auto
           from x have 2: "?E Int A1 \<noteq> ?E Int A2" by auto
           have 3: "inter D \<circ> inter ?E = inter D" by auto
           have 4: "~ inj_on (inter D) (inter ?E ` F)"
-            unfolding inj_on_def using 1 2 `A1 \<in> F` `A2 \<in> F` by blast
+            unfolding inj_on_def using 1 2 \<open>A1 \<in> F\<close> \<open>A2 \<in> F\<close> by blast
           from D have "Suc m \<le> card (inter D ` F)" by auto
           also have "... < card (inter ?E ` F)"
             by (rule card_less_if_surj_not_inj[of _ "inter D"])
-              (auto simp add: image_image 3 4 `finite F`)
+              (auto simp add: image_image 3 4 \<open>finite F\<close>)
           finally show ?thesis .
         qed
         ultimately have "?E\<subseteq>X \<and> card ?E \<le> Suc m \<and> Suc m + 1 \<le> card (inter ?E ` F)" 
@@ -66,10 +66,10 @@ proof -
   ultimately obtain D where 
     "D \<subseteq> X & card D \<le> card X - 1 & card (inter D ` F) \<ge> (card X - 1) + 1"
     by auto
-  moreover with `finite F` have "card (inter D ` F) \<le> card F"
+  moreover with \<open>finite F\<close> have "card (inter D ` F) \<le> card F"
     by (elim card_image_le)
   ultimately have "D \<subseteq> X & card D < card X & card (inter D ` F) = card F"
-    using `card F = card X` by auto
+    using \<open>card F = card X\<close> by auto
   thus ?thesis by auto
 qed
 

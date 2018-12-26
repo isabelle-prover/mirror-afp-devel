@@ -4,14 +4,14 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Direct Products *}
+section \<open>Direct Products\<close>
 
 theory Relation_Algebra_Direct_Products
   imports Relation_Algebra_Functions
 begin
 
-text {* This section uses the definition of direct products from Schmidt and
-Str\"ohlein's book to prove the well known universal property. *}
+text \<open>This section uses the definition of direct products from Schmidt and
+Str\"ohlein's book to prove the well known universal property.\<close>
 
 context relation_algebra
 begin
@@ -19,7 +19,7 @@ begin
 definition is_direct_product :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
   where "is_direct_product x y \<equiv> x\<^sup>\<smile> ; x = 1' \<and> y\<^sup>\<smile> ; y = 1' \<and> x ; x\<^sup>\<smile> \<cdot> y ; y\<^sup>\<smile> = 1' \<and> x\<^sup>\<smile> ; y = 1"
 
-text {* We collect some basic properties. *}
+text \<open>We collect some basic properties.\<close>
 
 lemma dp_p_fun1: "is_direct_product x y \<Longrightarrow> is_p_fun x"
 by (metis is_direct_product_def eq_refl is_p_fun_def)
@@ -45,7 +45,7 @@ by (metis is_direct_product_def inf_le2 is_total_def)
 lemma dp_map2: "is_direct_product x y \<Longrightarrow> is_map y"
 by (metis dp_p_fun2 dp_total2 is_map_def)
 
-text {*Next we prove four auxiliary lemmas. *}
+text \<open>Next we prove four auxiliary lemmas.\<close>
 
 lemma dp_aux1 [simp]:
   assumes "is_p_fun z"
@@ -75,7 +75,7 @@ lemma dp_aux4 [simp]:
   shows "( y ; z\<^sup>\<smile> \<cdot> w ; x\<^sup>\<smile>) ; z = y"
 by (metis assms dp_aux2 inf.commute)
 
-text {* Next we define a function which is an isomorphism on projections. *}
+text \<open>Next we define a function which is an isomorphism on projections.\<close>
 
 definition Phi :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Phi>")
   where "\<Phi> \<equiv> (\<lambda>w x y z. w ; y\<^sup>\<smile> \<cdot> x ; z\<^sup>\<smile>)"
@@ -83,8 +83,8 @@ definition Phi :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Right
 lemma Phi_conv: "(\<Phi> w x y z)\<^sup>\<smile> = y ; w\<^sup>\<smile> \<cdot> z ; x\<^sup>\<smile>"
 by (simp add: Phi_def)
 
-text {* We prove that @{const Phi} is an isomorphism with respect to the
-projections. *}
+text \<open>We prove that @{const Phi} is an isomorphism with respect to the
+projections.\<close>
 
 lemma mono_dp_1:
   assumes "is_direct_product w x"
@@ -98,7 +98,7 @@ lemma mono_dp_2:
   shows "\<Phi> w x y z ; z = x"
 by (metis assms dp_aux1 is_direct_product_def dp_p_fun2 dp_total1 Phi_def)
 
-text {* We now show that @{const Phi} is an injective function. *}
+text \<open>We now show that @{const Phi} is an injective function.\<close>
 
 lemma Phi_map:
   assumes "is_direct_product w x"
@@ -125,8 +125,8 @@ lemma Phi_inj:
   shows "is_inj (\<Phi> w x y z)"
 by (metis Phi_def Phi_conv Phi_map assms inj_p_fun is_map_def)
 
-text {* Next we show that the converse of @{const Phi} is an injective
-function. *}
+text \<open>Next we show that the converse of @{const Phi} is an injective
+function.\<close>
 
 lemma Phi_conv_map:
   assumes "is_direct_product w x"
@@ -164,9 +164,9 @@ lemma Phi_conv_bij:
   shows "is_bij ((\<Phi> w x y z)\<^sup>\<smile>)"
 by (metis Phi_bij Phi_def Phi_conv assms)
 
-text {* Next we construct, for given functions~@{term f} and~@{term g}, a
+text \<open>Next we construct, for given functions~@{term f} and~@{term g}, a
 function~@{term F} which makes the standard product diagram commute, and we
-verify these commutation properties. *}
+verify these commutation properties.\<close>
 
 definition F :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "F \<equiv> (\<lambda>f x g y. f ; x\<^sup>\<smile> \<cdot> g ; y\<^sup>\<smile>)"
@@ -183,8 +183,8 @@ lemma g_proj:
   shows "F f x g y ; y = g"
 by (metis assms dp_aux1 F_def is_map_def is_direct_product_def dp_p_fun2)
 
-text {* Finally we show uniqueness of~@{const F}, hence universality of the
-construction. *}
+text \<open>Finally we show uniqueness of~@{const F}, hence universality of the
+construction.\<close>
 
 lemma
   assumes "is_direct_product x y"

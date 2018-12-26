@@ -5,20 +5,20 @@
     License:     LGPL
 *)
 
-section {* The Direct Subtype Relation of Java Types *}
+section \<open>The Direct Subtype Relation of Java Types\<close>
 
 theory DirectSubtypes
 imports "../Isabelle/JavaType"
 begin
 
-text {*
+text \<open>
 In this theory, we formalize the direct subtype relations of the Java types (as defined
 in Sec. \ref{java_typeid_definitions}) that appear in the program to be verified. Thus, this
 theory has to be generated for each program.
 \label{direct_subtype_relations}
-*}
+\<close>
 
-text {* We have the following type hierarchy:
+text \<open>We have the following type hierarchy:
 \begin{center}
 \includegraphics[width=13cm]{TypeHierarchy}
 \end{center}
@@ -27,9 +27,9 @@ As you can see in the picture, all unnecessary direct subtype relations can be
 ignored, e.g. the subclass relation between CounterImpl and Object, because it is 
 added
 transitively by the widening relation of types (see Sec. \ref{widening_subtypes}).
-*}
+\<close>
 
-text {*
+text \<open>
 We have to specify the direct subtype relation between
 \begin{itemize}
 \item each ``leaf'' class or interface and its subtype \texttt{NullT}
@@ -42,7 +42,7 @@ We have to specify the direct subtype relation between
 \item the array type \texttt{Object[]} and its supertype \texttt{Object}
 \item two array types if their element types are in a subtype hierarchy
 \end{itemize}
-*}
+\<close>
 
 definition direct_subtype :: "(Javatype * Javatype) set" where
 "direct_subtype =
@@ -85,7 +85,7 @@ definition direct_subtype :: "(Javatype * Javatype) set" where
   (ArrT (CClassAT ClassCastException),   ArrT (CClassAT Exception))
 }"
 
-text {* This lemma is used later in the Simplifier. *}
+text \<open>This lemma is used later in the Simplifier.\<close>
 
 lemma direct_subtype:
   "(NullT, AClassT Dummy) \<in> direct_subtype"

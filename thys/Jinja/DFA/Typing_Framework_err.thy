@@ -4,7 +4,7 @@
 
 *)
 
-section {* Lifting the Typing Framework to err, app, and eff *}
+section \<open>Lifting the Typing Framework to err, app, and eff\<close>
 
 theory Typing_Framework_err imports Typing_Framework SemilatAlg begin
 

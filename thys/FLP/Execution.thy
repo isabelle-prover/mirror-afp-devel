@@ -1,21 +1,21 @@
-section {* Execution *}
+section \<open>Execution\<close>
 
-text {*
+text \<open>
   \file{Execution} introduces a locale for executions within asynchronous systems.
-*}
+\<close>
 
 theory Execution
 imports AsynchronousSystem ListUtilities
 begin
 
-subsection {* Execution locale definition *}
+subsection \<open>Execution locale definition\<close>
 
-text {*
+text \<open>
   A (finite) execution within a system is a list of configurations \isb{exec}
   accompanied by a list of messages \isb{trace} such that the first configuration
   is initial and every next state can be reached processing the messages
   in \isb{trace}.
-*}
+\<close>
 locale execution =
   asynchronousSystem trans sends start    
 for
@@ -44,7 +44,7 @@ abbreviation execConf ::
 where
   "execConf n  \<equiv> (exec ! n)"
 
-subsection {* Enabledness and occurrence in the execution *}
+subsection \<open>Enabledness and occurrence in the execution\<close>
 
 definition minimalEnabled ::
   "('p, 'v) message \<Rightarrow> bool"
@@ -385,7 +385,7 @@ qed
 
 end \<comment> \<open>end of locale Execution\<close>
 
-subsection {* Expanding executions to longer executions *}
+subsection \<open>Expanding executions to longer executions\<close>
 
 lemma (in asynchronousSystem) expandExecutionStep:
 fixes 
@@ -606,14 +606,14 @@ proof -
   with Exec'''(1) Exec'''(3) show ?thesis by blast
 qed
 
-subsection {* Infinite and fair executions *}
+subsection \<open>Infinite and fair executions\<close>
 
-text {*
+text \<open>
   Völzer does not give much attention to the definition of the
   infinite executions. We derive them from finite executions by considering
   infinite executions to be infinite sequence of finite executions increasing
   monotonically w.r.t. the list prefix relation.
- *}
+\<close>
 
 definition (in asynchronousSystem) infiniteExecution ::
   "(nat \<Rightarrow> (('p, 'v, 's) configuration list)) 

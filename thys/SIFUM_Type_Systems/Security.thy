@@ -2,7 +2,7 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-section {* Definition of the SIFUM-Security Property *}
+section \<open>Definition of the SIFUM-Security Property\<close>
 
 theory Security
 imports Main Preliminaries
@@ -10,7 +10,7 @@ begin
 
 context sifum_security begin
 
-subsection {* Evaluation of Concurrent Programs *}
+subsection \<open>Evaluation of Concurrent Programs\<close>
 
 abbreviation eval_abv :: "('Com, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
   (infixl "\<leadsto>" 70)
@@ -52,7 +52,7 @@ abbreviation meval_k_abv :: "nat \<Rightarrow> (_, _, _) GlobalConf \<Rightarrow
   where
   "gc \<rightarrow>\<^bsub>k \<^esub>gc' \<equiv> meval_k k gc gc'"
 
-subsection {* Low-equivalence and Strong Low Bisimulations *}
+subsection \<open>Low-equivalence and Strong Low Bisimulations\<close>
 
 (* Low-equality between memory states: *)
 definition low_eq :: "('Var, 'Val) Mem \<Rightarrow> (_, _) Mem \<Rightarrow> bool" (infixl "=\<^sup>l" 80)
@@ -111,7 +111,7 @@ definition low_indistinguishable :: "'Var Mds \<Rightarrow> 'Com \<Rightarrow> '
   where "c\<^sub>1 \<sim>\<^bsub>mds\<^esub> c\<^sub>2 = (\<forall> mem\<^sub>1 mem\<^sub>2. mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2 \<longrightarrow>
     \<langle> c\<^sub>1, mds, mem\<^sub>1 \<rangle> \<approx> \<langle> c\<^sub>2, mds, mem\<^sub>2 \<rangle>)"
 
-subsection {* SIFUM-Security *}
+subsection \<open>SIFUM-Security\<close>
 
 (* SIFUM-security for commands: *)
 definition com_sifum_secure :: "'Com \<Rightarrow> bool"
@@ -140,7 +140,7 @@ definition prog_sifum_secure :: "'Com list \<Rightarrow> bool"
                       (\<forall> x. dma x = Low \<and> (\<forall> i < length cms\<^sub>1'.
                         x \<notin> snd (cms\<^sub>1' ! i) AsmNoRead) \<longrightarrow> mem\<^sub>1' x = mem\<^sub>2' x)))))"
 
-subsection {* Sound Mode Use *}
+subsection \<open>Sound Mode Use\<close>
 
 definition doesnt_read :: "'Com \<Rightarrow> 'Var \<Rightarrow> bool"
   where

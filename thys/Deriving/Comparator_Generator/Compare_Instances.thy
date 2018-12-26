@@ -51,21 +51,21 @@ proof
 qed
 
 
-local_setup {*
+local_setup \<open>
   Comparator_Generator.register_foreign_comparator @{typ unit}
     @{term comparator_unit}
     @{thm comparator_unit}
-*}
+\<close>
 
-local_setup {*
+local_setup \<open>
   Comparator_Generator.register_foreign_comparator @{typ bool}
     @{term comparator_bool}
     @{thm comparator_bool}
-*}
+\<close>
 
 derive compare bool unit
 
-text \<open>It is not directly possible to @{text "derive (linorder) bool unit"}, since 
+text \<open>It is not directly possible to \<open>derive (linorder) bool unit\<close>, since 
   @{term "compare :: bool comparator"}
   was not defined as @{term "comparator_of :: bool comparator"}, but as
   @{const comparator_bool}.

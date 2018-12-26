@@ -97,10 +97,10 @@ derive countable "term" lab
 derive hashable "term" lab
 
 subsection "A complex datatype"
-text {*
+text \<open>
 The following datatype has nested indirect recursion, mutual recursion and
 uses other datatypes.
-*}
+\<close>
 
 datatype ('a, 'b) complex = 
   C1 nat "'a ttree" |

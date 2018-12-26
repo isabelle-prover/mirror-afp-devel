@@ -1,23 +1,22 @@
-section {* Error monad transformer *}
+section \<open>Error monad transformer\<close>
 
 theory Error_Transformer
 imports Error_Monad
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
-text {* The error monad transformer is defined in Haskell by composing
-the given monad with a standard error monad: *}
+text \<open>The error monad transformer is defined in Haskell by composing
+the given monad with a standard error monad:\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 data Error e a = Err e | Ok a
 newtype ErrorT e m a = ErrorT { runErrorT :: m (Error e a) }
 \end{verbatim}
-*}
+\<close>
 
-text {* We can formalize this definition directly using @{text
-tycondef}. \medskip *}
+text \<open>We can formalize this definition directly using \<open>tycondef\<close>. \medskip\<close>
 
 tycondef 'a\<cdot>('f::"functor",'e::"domain") errorT =
   ErrorT (runErrorT :: "('a\<cdot>'e error)\<cdot>'f")
@@ -61,7 +60,7 @@ lemma runErrorT_coerce [simp]:
   "runErrorT\<cdot>(coerce\<cdot>k) = coerce\<cdot>(runErrorT\<cdot>k)"
 by (induct k rule: errorT_induct, simp)
 
-subsection {* Functor class instance *}
+subsection \<open>Functor class instance\<close>
 
 lemma fmap_error_def: "fmap = error_map\<cdot>ID"
 apply (rule cfun_eqI, rename_tac f)
@@ -90,7 +89,7 @@ proof
     done
 qed
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_ErrorT [simp]:
   fixes f :: "'a \<rightarrow> 'b" and m :: "'a\<cdot>'e error\<cdot>('m::functor)"
@@ -108,18 +107,18 @@ lemma errorT_fmap_strict [simp]:
   shows "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>('m::monad,'e) errorT) = \<bottom>"
 by (simp add: errorT_eq_iff fmap_strict)
 
-subsection {* Monad operations *}
+subsection \<open>Monad operations\<close>
 
-text {* The error monad transformer does not yield a monad in the
-usual sense: We cannot prove a @{text monad} class instance, because
-type @{text "'a\<cdot>('m,'e) errorT"} contains values that break the monad
+text \<open>The error monad transformer does not yield a monad in the
+usual sense: We cannot prove a \<open>monad\<close> class instance, because
+type \<open>'a\<cdot>('m,'e) errorT\<close> contains values that break the monad
 laws. However, it turns out that such values are inaccessible: The
 monad laws are satisfied by all values constructible from the abstract
-operations. *}
+operations.\<close>
 
-text {* To explore the properties of the error monad transformer
+text \<open>To explore the properties of the error monad transformer
 operations, we define them all as non-overloaded functions. \medskip
-*}
+\<close>
 
 definition unitET :: "'a \<rightarrow> 'a\<cdot>('m::monad,'e) errorT"
   where "unitET = (\<Lambda> x. ErrorT\<cdot>(return\<cdot>(Ok\<cdot>x)))"
@@ -173,7 +172,7 @@ lemma runErrorT_fmapET [simp]:
       Err\<cdot>e \<Rightarrow> return\<cdot>(Err\<cdot>e) | Ok\<cdot>x \<Rightarrow> return\<cdot>(Ok\<cdot>(f\<cdot>x)))"
 unfolding fmapET_def by simp
 
-subsection {* Laws *}
+subsection \<open>Laws\<close>
 
 lemma bindET_unitET [simp]:
   "bindET\<cdot>(unitET\<cdot>x)\<cdot>k = k\<cdot>x"
@@ -216,7 +215,7 @@ lemma fmapET_fmapET:
   "fmapET\<cdot>f\<cdot>(fmapET\<cdot>g\<cdot>m) = fmapET\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>m"
 by (simp add: fmapET_def bindET_bindET)
 
-text {* Right unit monad law is not satisfied in general. *}
+text \<open>Right unit monad law is not satisfied in general.\<close>
 
 lemma bindET_unitET_right_counterexample:
   fixes m :: "'a\<cdot>('m::monad,'e) errorT"
@@ -225,7 +224,7 @@ lemma bindET_unitET_right_counterexample:
   shows "bindET\<cdot>m\<cdot>unitET \<noteq> m"
 by (simp add: errorT_eq_iff assms)
 
-text {* Right unit is satisfied for inner monads with strict return. *}
+text \<open>Right unit is satisfied for inner monads with strict return.\<close>
 
 lemma bindET_unitET_right_restricted:
   fixes m :: "'a\<cdot>('m::monad,'e) errorT"
@@ -239,11 +238,11 @@ apply (rule cfun_eqI)
 apply (case_tac x, simp_all add: assms)
 done
 
-subsection {* Error monad transformer invariant *}
+subsection \<open>Error monad transformer invariant\<close>
 
-text {* This inductively-defined invariant is supposed to represent
-the set of all values constructible using the standard @{text errorT}
-operations. *}
+text \<open>This inductively-defined invariant is supposed to represent
+the set of all values constructible using the standard \<open>errorT\<close>
+operations.\<close>
 
 inductive invar :: "'a\<cdot>('m::monad, 'e) errorT \<Rightarrow> bool"
   where invar_bottom: "invar \<bottom>"
@@ -254,7 +253,7 @@ inductive invar :: "'a\<cdot>('m::monad, 'e) errorT \<Rightarrow> bool"
   | invar_catchET: "\<And>m h. \<lbrakk>invar m; \<And>e. invar (h\<cdot>e)\<rbrakk> \<Longrightarrow> invar (catchET\<cdot>m\<cdot>h)"
   | invar_liftET: "\<And>m. invar (liftET\<cdot>m)"
 
-text {* Right unit is satisfied for arguments built from standard functions. *}
+text \<open>Right unit is satisfied for arguments built from standard functions.\<close>
 
 lemma bindET_unitET_right_invar:
   assumes "invar m"
@@ -274,7 +273,7 @@ apply (case_tac x, simp add: bind_strict, simp, simp)
 apply (rule errorT_eqI, simp add: monad_fmap bind_bind)
 done
 
-text {* Monad-fmap is satisfied for arguments built from standard functions. *}
+text \<open>Monad-fmap is satisfied for arguments built from standard functions.\<close>
 
 lemma errorT_monad_fmap_invar:
   fixes f :: "'a \<rightarrow> 'b" and m :: "'a\<cdot>('m::monad,'e) errorT"
@@ -301,15 +300,15 @@ apply (simp add: fmap_return)
 apply (rule errorT_eqI, simp add: monad_fmap bind_bind return_error_def)
 done
 
-subsection {* Invariant expressed as a deflation *}
+subsection \<open>Invariant expressed as a deflation\<close>
 
-text {* We can also define an invariant in a more semantic way, as the
-set of fixed-points of a deflation. *}
+text \<open>We can also define an invariant in a more semantic way, as the
+set of fixed-points of a deflation.\<close>
 
 definition invar' :: "'a\<cdot>('m::monad, 'e) errorT \<Rightarrow> bool"
   where "invar' m \<longleftrightarrow> fmapET\<cdot>ID\<cdot>m = m"
 
-text {* All standard operations preserve the invariant. *}
+text \<open>All standard operations preserve the invariant.\<close>
 
 lemma invar'_unitET: "invar' (unitET\<cdot>x)"
   unfolding invar'_def by (simp add: fmapET_def)
@@ -354,7 +353,7 @@ lemma invar'_bottom: "invar' \<bottom>"
 lemma adm_invar': "adm invar'"
   unfolding invar'_def [abs_def] by simp
 
-text {* All monad laws are preserved by values satisfying the invariant. *}
+text \<open>All monad laws are preserved by values satisfying the invariant.\<close>
 
 lemma bindET_fmapET_unitET:
   shows "bindET\<cdot>(fmapET\<cdot>f\<cdot>m)\<cdot>unitET = fmapET\<cdot>f\<cdot>m"

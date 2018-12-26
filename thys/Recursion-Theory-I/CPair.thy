@@ -3,19 +3,19 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* Cantor pairing function *}
+section \<open>Cantor pairing function\<close>
 
 theory CPair
 imports Main
 begin
 
-text {*
-  We introduce a particular coding @{text "c_pair"} from ordered pairs
+text \<open>
+  We introduce a particular coding \<open>c_pair\<close> from ordered pairs
   of natural numbers to natural numbers.  See \cite{Rogers} and the
   Isabelle documentation for more information.
-*}
+\<close>
 
-subsection {* Pairing function *}
+subsection \<open>Pairing function\<close>
 
 definition
   sf :: "nat \<Rightarrow> nat" where
@@ -119,7 +119,7 @@ proof -
   from S4 show ?thesis by (auto)
 qed
 
-text {* Auxiliary lemmas *}
+text \<open>Auxiliary lemmas\<close>
 
 lemma sf_aux1: "x + y < z \<Longrightarrow> sf(x+y) + x < sf(z)"
 proof -
@@ -166,7 +166,7 @@ proof -
   thus ?thesis by (simp add: sf_def)  
 qed
 
-text {* Basic properties of c\_pair function *}
+text \<open>Basic properties of c\_pair function\<close>
 
 lemma sum_le_c_pair: "x + y \<le> c_pair x y"
 proof -
@@ -263,12 +263,12 @@ proof -
   qed
 qed
 
-subsection {* Inverse mapping *}
+subsection \<open>Inverse mapping\<close>
 
-text {*
-  @{text "c_fst"} and @{text "c_snd"} are the functions which yield
-  the inverse mapping to @{text "c_pair"}.
-*}
+text \<open>
+  \<open>c_fst\<close> and \<open>c_snd\<close> are the functions which yield
+  the inverse mapping to \<open>c_pair\<close>.
+\<close>
 
 definition
   c_sum :: "nat \<Rightarrow> nat" where

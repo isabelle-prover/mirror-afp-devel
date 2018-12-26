@@ -3,18 +3,18 @@
     Author:     David Trachtenherz
 *)
 
-section {* Additional definitions and results for lists *}
+section \<open>Additional definitions and results for lists\<close>
 
 theory List2
 imports "../CommonSet/SetIntervalCut"
 begin
 
-subsection {* Additional definitions and results for lists *}
+subsection \<open>Additional definitions and results for lists\<close>
 
-text {*
+text \<open>
   Infix syntactical abbreviations for operators @{term take} and @{term drop}.
   The abbreviations resemble to the operator symbols used later
-  for take and drop operators on infinite lists in ListInf. *}
+  for take and drop operators on infinite lists in ListInf.\<close>
 
 abbreviation f_take' :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"  (infixl "\<down>" 100)
   where "xs \<down> n \<equiv> take n xs"
@@ -31,7 +31,7 @@ lemma length_snoc: "length (xs @ [x]) = Suc (length xs)"
 by simp
 
 
-subsubsection {* Additional lemmata about list emptiness *}
+subsubsection \<open>Additional lemmata about list emptiness\<close>
 
 lemma length_greater_imp_not_empty:"n < length xs \<Longrightarrow> xs \<noteq> []"
 by fastforce
@@ -55,7 +55,7 @@ lemma zip_not_empty_conv: "(zip xs ys \<noteq> []) = (xs \<noteq> [] \<and> ys \
 by (simp add: zip_eq_Nil)
 
 
-subsubsection {* Additional lemmata about @{term take}, @{term drop}, @{term hd}, @{term last}, @{text nth} and @{text filter}  *}
+subsubsection \<open>Additional lemmata about @{term take}, @{term drop}, @{term hd}, @{term last}, \<open>nth\<close> and \<open>filter\<close>\<close>
 
 lemma nth_tl_eq_nth_Suc: "
   Suc n \<le> length xs \<Longrightarrow> (tl xs) ! n = xs ! Suc n"
@@ -347,7 +347,7 @@ apply simp
 done
 
 
-subsubsection {* Ordered lists *}
+subsubsection \<open>Ordered lists\<close>
 
 fun list_ord :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a::ord) list \<Rightarrow> bool"
 where
@@ -568,7 +568,7 @@ apply (blast intro: less_trans)+
 done
 
 
-subsubsection {* Additional definitions and results for sublists *}
+subsubsection \<open>Additional definitions and results for sublists\<close>
 
 primrec sublist_list :: "'a list \<Rightarrow> nat list \<Rightarrow> 'a list"
 where
@@ -831,7 +831,7 @@ lemma set_sublist_list_eq_set_sublist: "
 by (simp add: sublist_list_if_sublist_list_eq[symmetric] set_sublist_list_if_eq_set_sublist)
 
 
-subsubsection {* Natural set images with lists *}
+subsubsection \<open>Natural set images with lists\<close>
 
 definition f_image :: "'a list \<Rightarrow> nat set \<Rightarrow> 'a set"    (infixr "`\<^sup>f" 90)
   where "xs `\<^sup>f A \<equiv> {y. \<exists>n\<in>A. n < length xs \<and> y = xs ! n}"
@@ -929,7 +929,7 @@ lemma f_rangeE[elim?]: "
 by blast
 
 
-subsubsection {* Mapping lists of functions to lists *}
+subsubsection \<open>Mapping lists of functions to lists\<close>
 
 primrec map_list :: "('a \<Rightarrow> 'b) list \<Rightarrow> 'a list \<Rightarrow> 'b list"
 where
@@ -1042,7 +1042,7 @@ lemma map_eq_map_list_replicate: "
 by (induct xs, simp+)
 
 
-subsubsection {* Mapping functions with two arguments to lists *}
+subsubsection \<open>Mapping functions with two arguments to lists\<close>
 
 primrec map2 :: "
   \<comment> \<open>Function taking two parameters\<close>

@@ -5,7 +5,7 @@ imports "../Voting_Opt" Ate_Defs Heard_Of.Majorities
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 axiomatization where val_linorder: 
   "OFCLASS(val, linorder_class)"
 
@@ -70,7 +70,7 @@ definition CSHOnextConfig where
 
 type_synonym rHO = "nat \<Rightarrow> process HO"
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition ate_ref_rel :: "(opt_v_state \<times> p_TS_state)set" where
@@ -115,12 +115,12 @@ proof -
   show ?thesis using EltN Egta by auto
 qed
 
-text {*
-  If more than @{text "E - \<alpha>"} processes send a value @{text v} to some
-  process @{text q} at some round @{text r}, and if @{text q} receives more than
-  @{text T} messages in @{text r}, then @{text v} is the most frequently
-  received value by @{text q} in @{text r}.
-*}
+text \<open>
+  If more than \<open>E - \<alpha>\<close> processes send a value \<open>v\<close> to some
+  process \<open>q\<close> at some round \<open>r\<close>, and if \<open>q\<close> receives more than
+  \<open>T\<close> messages in \<open>r\<close>, then \<open>v\<close> is the most frequently
+  received value by \<open>q\<close> in \<open>r\<close>.
+\<close>
 
 lemma mostOftenRcvd_v:
   assumes nxt: "Ate_nextState  r q (sc q) \<mu>q ((sc') q)"
@@ -257,11 +257,11 @@ qed
 
 end   \<comment> \<open>context @{text "ate_parameters"}\<close>
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
-text {* The termination proof for the algorithm is already given in the Heard-Of Model AFP
-  entry, and we do not repeat it here. *}
+text \<open>The termination proof for the algorithm is already given in the Heard-Of Model AFP
+  entry, and we do not repeat it here.\<close>
 
 end   (* theory AteProof *)
 

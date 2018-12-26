@@ -5,7 +5,7 @@
 *)
 
 
-section {* Kripke Structures as Hierarchical Automata*}
+section \<open>Kripke Structures as Hierarchical Automata\<close>
 theory HAKripke
 imports HASem Kripke
 begin

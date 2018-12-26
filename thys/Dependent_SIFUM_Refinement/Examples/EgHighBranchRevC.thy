@@ -5,7 +5,7 @@ imports Dependent_SIFUM_Type_Systems.Compositionality
         "../CompositionalRefinement"
 begin
 
-text {*
+text \<open>
   Theory for exploring refinement of a program that branches on a high variable.
 
   The purpose of this particular example is to demonstrate that in order to prove any branching
@@ -13,7 +13,7 @@ text {*
   necessary to ensure that the two concrete branches of execution take the same number of steps,
   possibly by skip-padding the one with less steps in it, and provide an appropriate coupling
   invariant to link the corresponding concrete steps of the two branches of the if-statement.
-*}
+\<close>
 
 type_synonym 'var addr = 'var
 type_synonym val = nat
@@ -2981,7 +2981,7 @@ case (if_reg_rel c\<^sub>A x then\<^sub>A else\<^sub>A c\<^sub>C then\<^sub>C el
       by blast
     with eval_tail\<^sub>C C.eval_det have
       tails_eq: "else\<^sub>C = else\<^sub>C' \<and> then\<^sub>C = then\<^sub>C'"
-      by (simp add: `c\<^sub>2\<^sub>C = Stmt.If (Neq (Load reg3) (Const 0)) then\<^sub>C else\<^sub>C`)
+      by (simp add: \<open>c\<^sub>2\<^sub>C = Stmt.If (Neq (Load reg3) (Const 0)) then\<^sub>C else\<^sub>C\<close>)
     let ?c\<^sub>2\<^sub>C' = "if (ev\<^sub>B mem\<^sub>2\<^sub>C (Neq (Load reg3) (Const 0))) then (then\<^sub>C') else (else\<^sub>C')"
     have "(\<langle>c\<^sub>2\<^sub>A', mds\<^sub>A_of mds\<^sub>C', mem\<^sub>2\<^sub>A'\<rangle>\<^sub>A, \<langle>?c\<^sub>2\<^sub>C', mds\<^sub>C', ?mem\<^sub>2\<^sub>C'\<rangle>\<^sub>C) \<in> RefRel_HighBranch"
     proof -

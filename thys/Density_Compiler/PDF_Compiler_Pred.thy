@@ -6,19 +6,19 @@
   on the corresponding measure spaces.
 *)
 
-section {* Abstract PDF Compiler *}
+section \<open>Abstract PDF Compiler\<close>
 
 theory PDF_Compiler_Pred
 imports PDF_Semantics PDF_Density_Contexts PDF_Transformations Density_Predicates
 begin
 
-subsection {* Density compiler predicate *}
+subsection \<open>Density compiler predicate\<close>
 
-text {*
+text \<open>
   Predicate version of the probability density compiler that compiles a expression
   to a probability density function of its distribution. The density is a HOL function of
   type @{typ "val \<Rightarrow> ennreal"}.
-*}
+\<close>
 
 inductive expr_has_density :: "dens_ctxt \<Rightarrow> expr \<Rightarrow> (state \<Rightarrow> val \<Rightarrow> ennreal) \<Rightarrow> bool"
               ("(1_ \<turnstile>\<^sub>d/ (_ \<Rightarrow>/ _))" [50,0,50] 50) where
@@ -81,7 +81,7 @@ lemmas expr_has_density_intros =
   hd_val hd_var hd_let hd_rand hd_rand_det hd_fail hd_pair hd_if hd_if_det
   hd_fst hd_snd hd_op_discr hd_neg hd_addc hd_multc hd_exp hd_inv hd_add
 
-subsection {* Auxiliary lemmas *}
+subsection \<open>Auxiliary lemmas\<close>
 
 lemma has_subprob_density_distr_Fst:
   fixes t1 t2 f
@@ -576,7 +576,7 @@ proof (intro measure_eqI)
 qed
 
 
-subsection {* Soundness proof *}
+subsection \<open>Soundness proof\<close>
 
 lemma restrict_state_measure[measurable]:
   "(\<lambda>x. restrict x V') \<in> measurable (state_measure (V \<union> V') \<Gamma>) (state_measure V' \<Gamma>)"
@@ -635,7 +635,7 @@ lemma expr_has_density_sound_aux:
 using assms
 proof (induction arbitrary: t rule: expr_has_density.induct[split_format (complete)])
   case (hd_AE V V' \<Gamma> \<delta> e f t f' t')
-  from `\<Gamma> \<turnstile> e : t'` and `\<Gamma> \<turnstile> e : t` have t[simp]: "t' = t"
+  from \<open>\<Gamma> \<turnstile> e : t'\<close> and \<open>\<Gamma> \<turnstile> e : t\<close> have t[simp]: "t' = t"
     by (rule expr_typing_unique)
   have "has_parametrized_subprob_density (state_measure V' \<Gamma>)
           (\<lambda>\<rho>. dens_ctxt_measure (V, V', \<Gamma>, \<delta>) \<rho> \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t) f" (is ?P)
@@ -719,7 +719,7 @@ next
     also have "... = distr (dens_ctxt_measure \<Y> \<rho>) (stock_measure t) (\<lambda>\<sigma>. \<sigma> x)"
       using dcm.subprob_not_empty hd_var
       by (subst bind_return_distr) (auto intro!: measurable_dens_ctxt_measure_component)
-    also have "... = ?M2" using density_marg_dens_eq[OF `x \<in> V`]
+    also have "... = ?M2" using density_marg_dens_eq[OF \<open>x \<in> V\<close>]
       by (simp add: t hd_var.prems \<rho>)
     finally show "?M1 = ?M2" .
   qed (auto intro!: measurable_marg_dens' simp: hd_var t)
@@ -1010,7 +1010,7 @@ next
 next
   case (hd_if_det b V V' \<Gamma> \<delta> e1 g1 e2 g2 t)
   interpret dc: density_context V V' \<Gamma> \<delta> by fact
-  from hd_if_det.prems `randomfree b`
+  from hd_if_det.prems \<open>randomfree b\<close>
   have tb[measurable (raw)]: "\<Gamma> \<turnstile> b : BOOL" and [measurable (raw)]: "randomfree b"
     and t1[measurable (raw)]: "\<Gamma> \<turnstile> e1 : t"
     and t2[measurable (raw)]: "\<Gamma> \<turnstile> e2 : t"

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of the thread actions for purely conditional purpose such as Join *}
+section \<open>Semantics of the thread actions for purely conditional purpose such as Join\<close>
 
 theory FWCondAction
 imports

@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* Deciding Equivalence of $\Pi$-Extended Regular Expressions *}
+section \<open>Deciding Equivalence of $\Pi$-Extended Regular Expressions\<close>
 
 (*<*)
 theory Pi_Equivalence_Checking
@@ -132,7 +132,7 @@ proof (rule set_eqI)
     show ?case
     proof cases
       assume a: "a \<in> set (\<sigma> n)"
-      with `R s1 s2` obtain s1' s2' where "R s1' s2'" "wf_state s1'" "wf_state s2'" and
+      with \<open>R s1 s2\<close> obtain s1' s2' where "R s1' s2'" "wf_state s1'" "wf_state s2'" and
         *[symmetric]: "post s1' = post (delta a s1)"  "post s2' = post (delta a s2)"
         using bisim unfolding image2p_apply by blast
       then have "w \<in> L (post (delta a s1)) \<longleftrightarrow> w \<in> L (post (delta a s2))"
@@ -153,7 +153,7 @@ proof (rule bisimulation_upto_bisimulation[OF assms(5,1)])
   assume "bisimulation S"
   then show "L s1 = L s2"
   proof (rule coinduction[OF _ WF])
-    from `R \<le> S` `R s1 s2` show "S s1 s2" by blast
+    from \<open>R \<le> S\<close> \<open>R s1 s2\<close> show "S s1 s2" by blast
   qed
 qed
 
@@ -207,7 +207,7 @@ using assms proof (intro subsetI, elim UnE)
   fix x assume "x \<in> snd `set ws"
   with assms show "x \<in> snd ` set ws' \<union> set ps'"
   proof (cases "x = snd (hd ws)")
-    case False with `x \<in> image snd (set ws)` have "x \<in> snd ` set (tl ws)" by (cases ws) auto
+    case False with \<open>x \<in> image snd (set ws)\<close> have "x \<in> snd ` set (tl ws)" by (cases ws) auto
     with assms show ?thesis by (auto split: prod.splits simp: Let_def)
   qed (auto split: prod.splits simp: Let_def)
 qed (auto split: prod.splits simp: Let_def)
@@ -337,7 +337,7 @@ lemma counterexample_sound:
   using assms unfolding counterexample_def Let_def
   by (auto dest!: counterexample[of r s] split: option.splits list.splits)
 
-text{* Auxiliary exacutable functions: *}
+text\<open>Auxiliary exacutable functions:\<close>
 
 definition reachable :: "'b rexp \<Rightarrow> 's set" where
   "reachable s = snd (the (rtrancl_while (\<lambda>_. True) (\<lambda>s. map (\<lambda>a. post (delta a s)) (\<sigma> n)) (init s)))"
@@ -408,7 +408,7 @@ proof -
           using base[unfolded st invariant_def] by (auto simp: bij_betw_def)
         hence "distinct (map (map_prod post post) (map snd ws @ ps))" unfolding distinct_map ..
         hence "map_prod post post ` set ps \<subset> map_prod post post ` set (snd (hd ws) # ps)"
-          using `test_invariant st` st by (cases ws) (simp_all, blast)
+          using \<open>test_invariant st\<close> st by (cases ws) (simp_all, blast)
         moreover have "map_prod post post ` set ps' = map_prod post post ` set (snd (hd ws) # ps)"
           using step_invariant by (auto split: prod.splits)
         ultimately have "map_prod post post ` set ps \<subset> map_prod post post ` set ps'" by simp

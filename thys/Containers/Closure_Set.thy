@@ -3,7 +3,7 @@
 
 theory Closure_Set imports Equal begin
 
-section {* Sets implemented as Closures *}
+section \<open>Sets implemented as Closures\<close>
 
 context equal_base begin
 

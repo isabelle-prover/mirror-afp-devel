@@ -13,7 +13,7 @@ abbrevs ">s" = ">\<^sub>s"
 begin
 
 text \<open>
-This theory defines @{text \<lambda>}-free higher-order terms and related locales.
+This theory defines \<open>\<lambda>\<close>-free higher-order terms and related locales.
 \<close>
 
 

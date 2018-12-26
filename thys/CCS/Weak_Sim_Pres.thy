@@ -32,30 +32,30 @@ lemma sumPres:
   shows "P \<oplus> R \<leadsto>\<^sup>^<Rel'> Q \<oplus> R"
 proof(induct rule: weakSimI)
   case(Sim \<alpha> QR)
-  from `Q \<oplus> R \<longmapsto>\<alpha> \<prec> QR` show ?case
+  from \<open>Q \<oplus> R \<longmapsto>\<alpha> \<prec> QR\<close> show ?case
   proof(induct rule: sumCases)
     case(cSum1 Q')
-    from `P \<leadsto>\<^sup>^<Rel> Q` `Q \<longmapsto>\<alpha> \<prec> Q'` 
+    from \<open>P \<leadsto>\<^sup>^<Rel> Q\<close> \<open>Q \<longmapsto>\<alpha> \<prec> Q'\<close> 
     obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
       by(blast dest: weakSimE)
     thus ?case
     proof(induct rule: weakTransCases)
       case Base
       have "P \<oplus> R \<Longrightarrow>\<^sup>^\<tau> \<prec> P \<oplus> R" by simp
-      moreover from `(P, Q') \<in> Rel` have "(P \<oplus> R, Q') \<in> Rel'" by(rule C1)
+      moreover from \<open>(P, Q') \<in> Rel\<close> have "(P \<oplus> R, Q') \<in> Rel'" by(rule C1)
       ultimately show ?case by blast
     next
       case Step
-      from `P \<Longrightarrow>\<alpha> \<prec> P'` have "P \<oplus> R \<Longrightarrow>\<alpha> \<prec> P'" by(rule weakCongSum1)
+      from \<open>P \<Longrightarrow>\<alpha> \<prec> P'\<close> have "P \<oplus> R \<Longrightarrow>\<alpha> \<prec> P'" by(rule weakCongSum1)
       hence "P \<oplus> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" by(simp add: weakTrans_def)
-      thus ?case using `(P', Q') \<in> Rel` `Rel \<subseteq> Rel'` by blast
+      thus ?case using \<open>(P', Q') \<in> Rel\<close> \<open>Rel \<subseteq> Rel'\<close> by blast
     qed
   next
     case(cSum2 R')
-    from `R \<longmapsto>\<alpha> \<prec> R'` have "R \<Longrightarrow>\<alpha> \<prec> R'" by(rule transitionWeakCongTransition)
+    from \<open>R \<longmapsto>\<alpha> \<prec> R'\<close> have "R \<Longrightarrow>\<alpha> \<prec> R'" by(rule transitionWeakCongTransition)
     hence "P \<oplus> R \<Longrightarrow>\<alpha> \<prec> R'" by(rule weakCongSum2)
     hence "P \<oplus> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'" by(simp add: weakTrans_def)
-    thus ?case using `Id \<subseteq> Rel'` by blast
+    thus ?case using \<open>Id \<subseteq> Rel'\<close> by blast
   qed
 qed
 
@@ -77,32 +77,32 @@ lemma parPresAux:
   shows "P \<parallel> R \<leadsto>\<^sup>^<Rel''> Q \<parallel> T"
 proof(induct rule: weakSimI)
   case(Sim \<alpha> QT)
-  from `Q \<parallel> T \<longmapsto>\<alpha> \<prec> QT`
+  from \<open>Q \<parallel> T \<longmapsto>\<alpha> \<prec> QT\<close>
   show ?case
   proof(induct rule: parCases)
     case(cPar1 Q')
-    from `P \<leadsto>\<^sup>^<Rel> Q` `Q \<longmapsto>\<alpha> \<prec> Q'` obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel" 
+    from \<open>P \<leadsto>\<^sup>^<Rel> Q\<close> \<open>Q \<longmapsto>\<alpha> \<prec> Q'\<close> obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel" 
       by(rule weakSimE)
-    from `P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'` have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<parallel> R" by(rule weakPar1)
-    moreover from `(P', Q') \<in> Rel` `(R, T) \<in> Rel'` have "(P' \<parallel> R, Q' \<parallel> T) \<in> Rel''" by(rule C1)
+    from \<open>P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'\<close> have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<parallel> R" by(rule weakPar1)
+    moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R, T) \<in> Rel'\<close> have "(P' \<parallel> R, Q' \<parallel> T) \<in> Rel''" by(rule C1)
     ultimately show ?case by blast
   next
     case(cPar2 T')
-    from `R \<leadsto>\<^sup>^<Rel'> T` `T \<longmapsto>\<alpha> \<prec> T'` obtain R' where "R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'" and "(R', T') \<in> Rel'" 
+    from \<open>R \<leadsto>\<^sup>^<Rel'> T\<close> \<open>T \<longmapsto>\<alpha> \<prec> T'\<close> obtain R' where "R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'" and "(R', T') \<in> Rel'" 
       by(rule weakSimE)
-    from `R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'` have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P \<parallel> R'" by(rule weakPar2)
-    moreover from `(P, Q) \<in> Rel` `(R', T') \<in> Rel'` have "(P \<parallel> R', Q \<parallel> T') \<in> Rel''" by(rule C1)
+    from \<open>R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'\<close> have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P \<parallel> R'" by(rule weakPar2)
+    moreover from \<open>(P, Q) \<in> Rel\<close> \<open>(R', T') \<in> Rel'\<close> have "(P \<parallel> R', Q \<parallel> T') \<in> Rel''" by(rule C1)
     ultimately show ?case by blast
   next
     case(cComm Q' T' \<alpha>)
-    from `P \<leadsto>\<^sup>^<Rel> Q` `Q \<longmapsto>\<alpha> \<prec> Q'` obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel" 
+    from \<open>P \<leadsto>\<^sup>^<Rel> Q\<close> \<open>Q \<longmapsto>\<alpha> \<prec> Q'\<close> obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel" 
       by(rule weakSimE)
-    from `R \<leadsto>\<^sup>^<Rel'> T` `T \<longmapsto>(coAction \<alpha>) \<prec> T'` obtain R' where "R \<Longrightarrow>\<^sup>^(coAction \<alpha>) \<prec> R'" and "(R', T') \<in> Rel'" 
+    from \<open>R \<leadsto>\<^sup>^<Rel'> T\<close> \<open>T \<longmapsto>(coAction \<alpha>) \<prec> T'\<close> obtain R' where "R \<Longrightarrow>\<^sup>^(coAction \<alpha>) \<prec> R'" and "(R', T') \<in> Rel'" 
       by(rule weakSimE)
-    from `P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'` `R \<Longrightarrow>\<^sup>^(coAction \<alpha>) \<prec> R'` `\<alpha> \<noteq> \<tau>` have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> P' \<parallel> R'" 
+    from \<open>P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'\<close> \<open>R \<Longrightarrow>\<^sup>^(coAction \<alpha>) \<prec> R'\<close> \<open>\<alpha> \<noteq> \<tau>\<close> have "P \<parallel> R \<Longrightarrow>\<tau> \<prec> P' \<parallel> R'" 
       by(auto intro: weakCongSync simp add: weakTrans_def)
     hence "P \<parallel> R \<Longrightarrow>\<^sup>^\<tau> \<prec> P' \<parallel> R'" by(simp add: weakTrans_def)
-    moreover from `(P', Q') \<in> Rel` `(R', T') \<in> Rel'` have "(P' \<parallel> R', Q' \<parallel> T') \<in> Rel''" by(rule C1)
+    moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R', T') \<in> Rel'\<close> have "(P' \<parallel> R', Q' \<parallel> T') \<in> Rel''" by(rule C1)
     ultimately show ?case by blast
   qed
 qed
@@ -154,75 +154,75 @@ proof(induct rule: weakSimI)
     hence "\<exists>P'. Pa \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel'"
     proof(nominal_induct arbitrary: Pa rule: bangInduct)
       case(cPar1 \<alpha> Q')
-      from `(Pa, Q \<parallel> !Q) \<in> bangRel Rel` 
+      from \<open>(Pa, Q \<parallel> !Q) \<in> bangRel Rel\<close> 
       show ?case
       proof(induct rule: BRParCases)
         case(BRPar P R)
-        from `(P, Q) \<in> Rel` have "P \<leadsto>\<^sup>^<Rel> Q" by(rule C1)
-        with `Q \<longmapsto>\<alpha> \<prec> Q'` obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
+        from \<open>(P, Q) \<in> Rel\<close> have "P \<leadsto>\<^sup>^<Rel> Q" by(rule C1)
+        with \<open>Q \<longmapsto>\<alpha> \<prec> Q'\<close> obtain P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
           by(blast dest: weakSimE)
-        from `P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'` have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<parallel> R" by(rule weakPar1)
-        moreover from `(P', Q') \<in> Rel` `(R, !Q) \<in> bangRel Rel` C2 have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> Rel'"
+        from \<open>P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'\<close> have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<parallel> R" by(rule weakPar1)
+        moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R, !Q) \<in> bangRel Rel\<close> C2 have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> Rel'"
           by(blast intro: Par)
         ultimately show ?case by blast
       qed
     next
       case(cPar2 \<alpha> Q')
-      from `(Pa, Q \<parallel> !Q) \<in> bangRel Rel`
+      from \<open>(Pa, Q \<parallel> !Q) \<in> bangRel Rel\<close>
       show ?case
       proof(induct rule: BRParCases)
         case(BRPar P R)
-        from `(R, !Q) \<in> bangRel Rel` obtain R' where "R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'" and "(R', Q') \<in> Rel'" using cPar2
+        from \<open>(R, !Q) \<in> bangRel Rel\<close> obtain R' where "R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'" and "(R', Q') \<in> Rel'" using cPar2
           by blast
-        from `R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'` have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P \<parallel> R'" by(rule weakPar2)
-        moreover from `(P, Q) \<in> Rel` `(R', Q') \<in> Rel'` have "(P \<parallel> R', Q \<parallel> Q') \<in> Rel'" by(rule Par)
+        from \<open>R \<Longrightarrow>\<^sup>^\<alpha> \<prec> R'\<close> have "P \<parallel> R \<Longrightarrow>\<^sup>^\<alpha> \<prec> P \<parallel> R'" by(rule weakPar2)
+        moreover from \<open>(P, Q) \<in> Rel\<close> \<open>(R', Q') \<in> Rel'\<close> have "(P \<parallel> R', Q \<parallel> Q') \<in> Rel'" by(rule Par)
         ultimately show ?case by blast
       qed
     next
       case(cComm a Q' Q'' Pa)
-      from `(Pa, Q \<parallel> !Q) \<in> bangRel Rel`
+      from \<open>(Pa, Q \<parallel> !Q) \<in> bangRel Rel\<close>
       show ?case
       proof(induct rule: BRParCases)
         case(BRPar P R)
-        from `(P, Q) \<in> Rel` have "P \<leadsto>\<^sup>^<Rel> Q" by(rule C1)
-        with `Q \<longmapsto>a \<prec> Q'` obtain P' where "P \<Longrightarrow>\<^sup>^a \<prec> P'" and "(P', Q') \<in> Rel"
+        from \<open>(P, Q) \<in> Rel\<close> have "P \<leadsto>\<^sup>^<Rel> Q" by(rule C1)
+        with \<open>Q \<longmapsto>a \<prec> Q'\<close> obtain P' where "P \<Longrightarrow>\<^sup>^a \<prec> P'" and "(P', Q') \<in> Rel"
           by(blast dest: weakSimE)
-        from `(R, !Q) \<in> bangRel Rel` obtain R' where "R \<Longrightarrow>\<^sup>^(coAction a) \<prec> R'" and "(R', Q'') \<in> Rel'" using cComm
+        from \<open>(R, !Q) \<in> bangRel Rel\<close> obtain R' where "R \<Longrightarrow>\<^sup>^(coAction a) \<prec> R'" and "(R', Q'') \<in> Rel'" using cComm
           by blast
-        from `P \<Longrightarrow>\<^sup>^a \<prec> P'` `R \<Longrightarrow>\<^sup>^(coAction a) \<prec> R'` `a \<noteq> \<tau>` have "P \<parallel> R \<Longrightarrow>\<^sup>^\<tau> \<prec> P' \<parallel> R'"
+        from \<open>P \<Longrightarrow>\<^sup>^a \<prec> P'\<close> \<open>R \<Longrightarrow>\<^sup>^(coAction a) \<prec> R'\<close> \<open>a \<noteq> \<tau>\<close> have "P \<parallel> R \<Longrightarrow>\<^sup>^\<tau> \<prec> P' \<parallel> R'"
           by(auto intro: weakCongSync simp add: weakTrans_def)
-        moreover from `(P', Q') \<in> Rel` `(R', Q'') \<in> Rel'` have "(P' \<parallel> R', Q' \<parallel> Q'') \<in> Rel'" by(rule Par)
+        moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R', Q'') \<in> Rel'\<close> have "(P' \<parallel> R', Q' \<parallel> Q'') \<in> Rel'" by(rule Par)
         ultimately show ?case by blast
       qed
     next
       case(cBang \<alpha> Q' Pa)
-      from `(Pa, !Q) \<in> bangRel Rel`
+      from \<open>(Pa, !Q) \<in> bangRel Rel\<close>
       show ?case
       proof(induct rule: BRBangCases)
         case(BRBang P)
-        from `(P, Q) \<in> Rel` have "(!P, !Q) \<in> bangRel Rel" by(rule bangRel.BRBang)
-        with `(P, Q) \<in> Rel` have "(P \<parallel> !P, Q \<parallel> !Q) \<in> bangRel Rel" by(rule bangRel.BRPar)
+        from \<open>(P, Q) \<in> Rel\<close> have "(!P, !Q) \<in> bangRel Rel" by(rule bangRel.BRBang)
+        with \<open>(P, Q) \<in> Rel\<close> have "(P \<parallel> !P, Q \<parallel> !Q) \<in> bangRel Rel" by(rule bangRel.BRPar)
         then obtain P' where "P \<parallel> !P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel'" using cBang
           by blast
-        from `P \<parallel> !P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'` 
+        from \<open>P \<parallel> !P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'\<close> 
         show ?case
         proof(induct rule: weakTransCases)
           case Base
           have "!P \<Longrightarrow>\<^sup>^\<tau> \<prec> !P" by simp
-          moreover from `(P', Q') \<in> Rel'` `P \<parallel> !P = P'` have "(!P, Q') \<in> Rel'" by(blast intro: C3)
+          moreover from \<open>(P', Q') \<in> Rel'\<close> \<open>P \<parallel> !P = P'\<close> have "(!P, Q') \<in> Rel'" by(blast intro: C3)
           ultimately show ?case by blast
         next
           case Step
-          from `P \<parallel> !P \<Longrightarrow>\<alpha> \<prec> P'` have "!P \<Longrightarrow>\<alpha> \<prec> P'" by(rule weakCongRepl)
+          from \<open>P \<parallel> !P \<Longrightarrow>\<alpha> \<prec> P'\<close> have "!P \<Longrightarrow>\<alpha> \<prec> P'" by(rule weakCongRepl)
           hence "!P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" by(simp add: weakTrans_def)
-          with `(P', Q') \<in> Rel'` show ?case by blast
+          with \<open>(P', Q') \<in> Rel'\<close> show ?case by blast
         qed
       qed
     qed
   }
 
-  moreover from `(P, Q) \<in> Rel` have "(!P, !Q) \<in> bangRel Rel" by(rule BRBang) 
-  ultimately show ?case using `!Q \<longmapsto> \<alpha> \<prec> Q'` by blast
+  moreover from \<open>(P, Q) \<in> Rel\<close> have "(!P, !Q) \<in> bangRel Rel" by(rule BRBang) 
+  ultimately show ?case using \<open>!Q \<longmapsto> \<alpha> \<prec> Q'\<close> by blast
 qed
 
 end

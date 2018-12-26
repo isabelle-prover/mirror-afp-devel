@@ -1,9 +1,9 @@
-section {* Attribute Combinators *}
+section \<open>Attribute Combinators\<close>
 theory Attr_Comb
 imports Refine_Util
 begin
 
-ML {*
+ML \<open>
   infixr 5 THEN_ATTR
   infixr 4 ELSE_ATTR
 
@@ -103,6 +103,6 @@ ML {*
           raise ATTR_EXC ("RSm_attr: " ^ @{make_string} exc)))
 
   end
-*}
+\<close>
 
 end

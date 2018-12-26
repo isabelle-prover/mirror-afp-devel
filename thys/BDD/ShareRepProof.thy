@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {*Proof of Procedure ShareRep*}
+section \<open>Proof of Procedure ShareRep\<close>
 theory ShareRepProof imports ProcedureSpecs Simpl.HeapList begin
 
 lemma (in ShareRep_impl) ShareRep_modifies:

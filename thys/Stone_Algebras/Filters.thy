@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Filters *}
+section \<open>Filters\<close>
 
-text {*
+text \<open>
 This theory develops filters based on orders, semilattices, lattices and distributive lattices.
 We prove the ultrafilter lemma for orders with a least element.
 We show the following structure theorems:
@@ -19,7 +19,7 @@ We also prove a lemma of Gr\"atzer and Schmidt about principal filters.
 
 We apply these results in proving the construction theorem for Stone algebras (described in a separate theory).
 See, for example, \cite{BalbesDwinger1974,Birkhoff1967,Blyth2005,DaveyPriestley2002,Graetzer1971} for further results about filters.
-*}
+\<close>
 
 theory Filters
 
@@ -27,12 +27,12 @@ imports Lattice_Basics
 
 begin
 
-subsection {* Orders *}
+subsection \<open>Orders\<close>
 
-text {*
+text \<open>
 This section gives the basic definitions related to filters in terms of orders.
 The main result is the ultrafilter lemma.
-*}
+\<close>
 
 context ord
 begin
@@ -61,9 +61,9 @@ abbreviation is_up_set :: "'a set \<Rightarrow> bool"
 abbreviation is_principal_up :: "'a set \<Rightarrow> bool"
   where "is_principal_up X \<equiv> \<exists>x . X = \<up>x"
 
-text {*
+text \<open>
 A filter is a non-empty, downward directed, up-closed set.
-*}
+\<close>
 
 definition filter :: "'a set \<Rightarrow> bool"
   where "filter F \<equiv> (F \<noteq> {}) \<and> (\<forall>x\<in>F . \<forall>y\<in>F . \<exists>z\<in>F . z \<le> x \<and> z \<le> y) \<and> is_up_set F"
@@ -120,11 +120,11 @@ lemma up_bot [simp]:
   "\<up>bot = UNIV"
   by simp
 
-text {*
+text \<open>
 The following result is the ultrafilter lemma, generalised from \cite[10.17]{DaveyPriestley2002} to orders with a least element.
-Its proof uses Isabelle/HOL's @{text Zorn_Lemma}, which requires closure under union of arbitrary (possibly empty) chains.
-Actually, the proof does not use any of the underlying order properties except @{text bot_least}.
-*}
+Its proof uses Isabelle/HOL's \<open>Zorn_Lemma\<close>, which requires closure under union of arbitrary (possibly empty) chains.
+Actually, the proof does not use any of the underlying order properties except \<open>bot_least\<close>.
+\<close>
 
 lemma ultra_filter:
   assumes "proper_filter F"
@@ -241,9 +241,9 @@ lemma top_in_filter [simp]:
 
 end
 
-text {*
+text \<open>
 The existence of proper filters and ultrafilters requires that the underlying order contains at least two elements.
-*}
+\<close>
 
 context non_trivial_order
 begin
@@ -285,12 +285,12 @@ lemma ultra_filter_top:
 
 end
 
-subsection {* Lattices *}
+subsection \<open>Lattices\<close>
 
-text {*
+text \<open>
 This section develops the lattice structure of filters based on a semilattice structure of the underlying order.
 The main results are that filters over a directed semilattice form a lattice with a greatest element and that filters over a bounded semilattice form a bounded lattice.
-*}
+\<close>
 
 context semilattice_sup
 begin
@@ -311,9 +311,9 @@ lemma filter_univ:
   "filter UNIV"
   by (meson UNIV_I UNIV_not_empty filter_def inf.cobounded1 inf.cobounded2)
 
-text {*
-The operation @{text filter_sup} is the join operation in the lattice of filters.
-*}
+text \<open>
+The operation \<open>filter_sup\<close> is the join operation in the lattice of filters.
+\<close>
 
 abbreviation "filter_sup F G \<equiv> { z . \<exists>x\<in>F . \<exists>y\<in>G . x \<sqinter> y \<le> z }"
 
@@ -420,9 +420,9 @@ next
   qed
 qed
 
-text {*
+text \<open>
 The following result is part of \cite[Exercise 2.23]{DaveyPriestley2002}.
-*}
+\<close>
 
 lemma filter_inf_filter [simp]:
   assumes "filter F"
@@ -456,9 +456,9 @@ end
 context directed_semilattice_inf
 begin
 
-text {*
+text \<open>
 Set intersection is the meet operation in the lattice of filters.
-*}
+\<close>
 
 lemma filter_inf:
   assumes "filter F"
@@ -483,9 +483,9 @@ qed
 
 end
 
-text {*
+text \<open>
 We introduce the following type of filters to instantiate the lattice classes and thereby inherit the results shown about lattices.
-*}
+\<close>
 
 typedef (overloaded) 'a filter = "{ F::'a::order set . filter F }"
   by (meson mem_Collect_eq up_filter)
@@ -496,9 +496,9 @@ lemma simp_filter [simp]:
 
 setup_lifting type_definition_filter
 
-text {*
+text \<open>
 The set of filters over a directed semilattice forms a lattice with a greatest element.
-*}
+\<close>
 
 instantiation filter :: (directed_semilattice_inf) bounded_lattice_top
 begin
@@ -539,9 +539,9 @@ abbreviation "filter_complements F G \<equiv> filter F \<and> filter G \<and> fi
 
 end
 
-text {*
+text \<open>
 The set of filters over a bounded semilattice forms a bounded lattice.
-*}
+\<close>
 
 instantiation filter :: (bounded_semilattice_inf_top) bounded_lattice
 begin
@@ -563,11 +563,11 @@ lemma up_dist_sup:
 
 end
 
-text {*
+text \<open>
 For convenience, the following function injects principal filters into the filter type.
-We cannot define it in the @{text order} class since the type filter requires the sort constraint @{text order} that is not available in the class.
-The result of the function is a filter by lemma @{text up_filter}.
-*}
+We cannot define it in the \<open>order\<close> class since the type filter requires the sort constraint \<open>order\<close> that is not available in the class.
+The result of the function is a filter by lemma \<open>up_filter\<close>.
+\<close>
 
 abbreviation up_filter :: "'a::order \<Rightarrow> 'a filter"
   where "up_filter x \<equiv> Abs_filter (\<up>x)"
@@ -588,10 +588,10 @@ lemma up_filter_antitone:
   "x \<le> y \<longleftrightarrow> up_filter y \<le> up_filter x"
   by (metis eq_onp_same_args less_eq_filter.abs_eq up_antitone up_filter)
 
-text {*
+text \<open>
 The following definition applies a function to each element of a filter.
 The subsequent lemma gives conditions under which the result of this application is a filter.
-*}
+\<close>
 
 abbreviation filter_map :: "('a::order \<Rightarrow> 'b::order) \<Rightarrow> 'a filter \<Rightarrow> 'b filter"
   where "filter_map f F \<equiv> Abs_filter (f ` Rep_filter F)"
@@ -636,14 +636,14 @@ next
   qed
 qed
 
-subsection {* Distributive Lattices *}
+subsection \<open>Distributive Lattices\<close>
 
-text {*
+text \<open>
 In this section we additionally assume that the underlying order forms a distributive lattice.
 Then filters form a bounded distributive lattice if the underlying order has a greatest element.
 Moreover ultrafilters are prime filters.
 We also prove a lemma of Gr\"atzer and Schmidt about principal filters.
-*}
+\<close>
 
 context distrib_lattice
 begin
@@ -764,10 +764,10 @@ proof -
     by blast
 qed
 
-text {*
+text \<open>
 The following result is \cite[Lemma II]{GraetzerSchmidt1958}.
 If both join and meet of two filters are principal filters, both filters are principal filters.
-*}
+\<close>
 
 lemma inf_sup_principal:
   assumes "filter F"
@@ -808,9 +808,9 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
 The following result generalises \cite[10.11]{DaveyPriestley2002} to distributive lattices as remarked after that section.
-*}
+\<close>
 
 lemma ultra_filter_prime:
   assumes "ultra_filter F"
@@ -881,9 +881,9 @@ qed
 
 end
 
-text {*
+text \<open>
 The set of filters over a distributive lattice with a greatest element forms a bounded distributive lattice.
-*}
+\<close>
 
 instantiation filter :: (distrib_lattice_top) bounded_distrib_lattice
 begin

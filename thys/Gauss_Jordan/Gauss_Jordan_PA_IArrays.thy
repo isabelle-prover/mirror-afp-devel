@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Obtaining explicitly the invertible matrix which transforms a matrix to its reduced row echelon form over nested iarrays*}
+section\<open>Obtaining explicitly the invertible matrix which transforms a matrix to its reduced row echelon form over nested iarrays\<close>
 
 theory Gauss_Jordan_PA_IArrays
 imports 
@@ -12,7 +12,7 @@ imports
   Gauss_Jordan_IArrays
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
 definition "Gauss_Jordan_in_ij_iarrays_PA A' i j =
 (let  P = fst A'; A = snd A'; n = least_non_zero_position_of_vector_from_index (column_iarray j A) i; interchange_A = interchange_rows_iarray A i n;
@@ -30,9 +30,9 @@ definition Gauss_Jordan_upt_k_iarrays_PA :: "'a::{field} iarray iarray => nat =>
 definition Gauss_Jordan_iarrays_PA :: "'a::{field} iarray iarray => ('a iarray iarray  \<times> 'a iarray iarray)"
   where "Gauss_Jordan_iarrays_PA A = Gauss_Jordan_upt_k_iarrays_PA A (ncols_iarray A - 1)"
 
-subsection{*Proofs*}
+subsection\<open>Proofs\<close>
 
-subsubsection{*Properties of @{term "Gauss_Jordan_in_ij_iarrays_PA"}*}
+subsubsection\<open>Properties of @{term "Gauss_Jordan_in_ij_iarrays_PA"}\<close>
 
 lemma Gauss_Jordan_in_ij_iarrays_PA_def'[code]: 
 "Gauss_Jordan_in_ij_iarrays_PA A' i j =
@@ -99,7 +99,7 @@ unfolding length_eq_card_rows nrows_eq_card_rows ..
 qed
 
 
-subsubsection{*Properties about @{term "Gauss_Jordan_column_k_iarrays_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_column_k_iarrays_PA"}\<close>
 
 lemma matrix_to_iarray_fst_Gauss_Jordan_column_k_PA:
 assumes i: "i\<le>nrows A" and k: "k<ncols A"
@@ -147,7 +147,7 @@ unfolding snd_Gauss_Jordan_in_ij_iarrays_PA
 unfolding snd_if_conv snd_Gauss_Jordan_in_ij_PA_eq by fast
 
 
-subsubsection{*Properties about @{term "Gauss_Jordan_upt_k_iarrays_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_upt_k_iarrays_PA"}\<close>
 
 lemma
 assumes "k<ncols A"
@@ -261,7 +261,7 @@ show "fst (snd (foldl Gauss_Jordan_column_k_PA (mat 1, 0, A) [0..<Suc (Suc k)]))
 by (metis snd_foldl_Gauss_Jordan_column_k_eq Suc_k fst_foldl_Gauss_Jordan_column_k_less)
 qed
 
-subsubsection{*Properties about @{term "Gauss_Jordan_iarrays_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_iarrays_PA"}\<close>
 
 lemma matrix_to_iarray_fst_Gauss_Jordan_PA: 
 shows "matrix_to_iarray (fst (Gauss_Jordan_PA A)) = fst (Gauss_Jordan_iarrays_PA (matrix_to_iarray A))"

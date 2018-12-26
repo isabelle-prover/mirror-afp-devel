@@ -1,14 +1,14 @@
-section {* Machine Words *}
+section \<open>Machine Words\<close>
 theory WordRefine
 imports "../Refine_Monadic" "HOL-Word.Word"
 begin
 
-text {* This theory provides a simple example to show refinement of natural
+text \<open>This theory provides a simple example to show refinement of natural
   numbers to machine words. The setup is not yet very elaborated, but shows 
   the direction to go.
-*}
+\<close>
 
-subsection {* Setup *}
+subsection \<open>Setup\<close>
 definition [simp]: "word_nat_rel \<equiv> build_rel (unat) (\<lambda>_. True)"
 lemma word_nat_RELEATES[refine_dref_RELATES]: 
   "RELATES word_nat_rel" by (simp add: RELATES_def)
@@ -27,7 +27,7 @@ lemma [simp, relator_props]: "single_valued (converse word_nat_rel)"
 lemmas [refine_hsimp] = 
   word_less_nat_alt word_le_nat_alt unat_sub iffD1[OF unat_add_lem]
 
-subsection {* Example *}
+subsection \<open>Example\<close>
 type_synonym word32 = "32 word"
 
 definition test :: "nat \<Rightarrow> nat \<Rightarrow> nat set nres" where "test x0 y0 \<equiv> do {

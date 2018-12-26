@@ -1,33 +1,33 @@
-section {* Writer monad transformer *}
+section \<open>Writer monad transformer\<close>
 
 theory Writer_Transformer
 imports Writer_Monad
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
-text {* Below is the standard Haskell definition of a writer monad
-transformer: *}
+text \<open>Below is the standard Haskell definition of a writer monad
+transformer:\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 newtype WriterT w m a = WriterT { runWriterT :: m (a, w) }
 \end{verbatim}
-*}
+\<close>
 
-text {* In this development, since a lazy pair type is not pre-defined
+text \<open>In this development, since a lazy pair type is not pre-defined
 in HOLCF, we will use an equivalent formulation in terms of our
-previous \texttt{Writer} type: *}
+previous \texttt{Writer} type:\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 data Writer w a = Writer w a
 newtype WriterT w m a = WriterT { runWriterT :: m (Writer w a) }
 \end{verbatim}
-*}
+\<close>
 
-text {* We can translate this definition directly into HOLCF using
-@{text tycondef}. \medskip *}
+text \<open>We can translate this definition directly into HOLCF using
+\<open>tycondef\<close>. \medskip\<close>
 
 tycondef 'a\<cdot>('m::"functor",'w) writerT =
   WriterT (runWriterT :: "('a\<cdot>'w writer)\<cdot>'m")
@@ -83,7 +83,7 @@ lemma runWriterT_coerce [simp]:
   "runWriterT\<cdot>(coerce\<cdot>k) = coerce\<cdot>(runWriterT\<cdot>k)"
 by (induct k rule: writerT_induct, simp)
 
-subsection {* Functor class instance *}
+subsection \<open>Functor class instance\<close>
 
 lemma fmap_writer_def: "fmap = writer_map\<cdot>ID"
 apply (rule cfun_eqI, rename_tac f)
@@ -111,18 +111,18 @@ proof
     done
 qed
 
-subsection {* Monad operations *}
+subsection \<open>Monad operations\<close>
 
-text {* The writer monad transformer does not yield a monad in the
-usual sense: We cannot prove a @{text monad} class instance, because
-type @{text "'a\<cdot>('m,'w) writerT"} contains values that break the monad
+text \<open>The writer monad transformer does not yield a monad in the
+usual sense: We cannot prove a \<open>monad\<close> class instance, because
+type \<open>'a\<cdot>('m,'w) writerT\<close> contains values that break the monad
 laws. However, it turns out that such values are inaccessible: The
 monad laws are satisfied by all values constructible from the abstract
-operations. *}
+operations.\<close>
 
-text {* To explore the properties of the writer monad transformer
+text \<open>To explore the properties of the writer monad transformer
 operations, we define them all as non-overloaded functions. \medskip
-*}
+\<close>
 
 definition unitWT :: "'a \<rightarrow> 'a\<cdot>('m::monad,'w::monoid) writerT"
   where "unitWT = (\<Lambda> x. WriterT\<cdot>(return\<cdot>(Writer\<cdot>mempty\<cdot>x)))"
@@ -168,11 +168,10 @@ lemma runWriterT_fmapWT [simp]:
     runWriterT\<cdot>m \<bind> (\<Lambda> (Writer\<cdot>w\<cdot>x). return\<cdot>(Writer\<cdot>w\<cdot>(f\<cdot>x)))"
 by (simp add: fmapWT_def bindWT_def mempty_right)
 
-subsection {* Laws *}
+subsection \<open>Laws\<close>
 
-text {* The @{text liftWT} function maps @{text return} and
-@{text bind} on the inner monad to @{text unitWT} and @{text
-bindWT}, as expected. \medskip *}
+text \<open>The \<open>liftWT\<close> function maps \<open>return\<close> and
+\<open>bind\<close> on the inner monad to \<open>unitWT\<close> and \<open>bindWT\<close>, as expected. \medskip\<close>
 
 lemma liftWT_return:
   "liftWT\<cdot>(return\<cdot>x) = unitWT\<cdot>x"
@@ -183,8 +182,8 @@ lemma liftWT_bind:
 by (rule writerT_eqI)
    (simp add: monad_fmap bind_bind mempty_left)
 
-text {* The composition rule holds unconditionally for fmap. The fmap
-function also interacts as expected with unit and bind. \medskip *}
+text \<open>The composition rule holds unconditionally for fmap. The fmap
+function also interacts as expected with unit and bind. \medskip\<close>
 
 lemma fmapWT_fmapWT:
   "fmapWT\<cdot>f\<cdot>(fmapWT\<cdot>g\<cdot>m) = fmapWT\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>m"
@@ -213,7 +212,7 @@ apply (rule cfun_arg_cong, rule cfun_eqI, rename_tac x, simp)
 apply (case_tac x, simp add: bind_strict, simp add: mempty_right)
 done
 
-text {* The left unit monad law is not satisfied in general. \medskip *}
+text \<open>The left unit monad law is not satisfied in general. \medskip\<close>
 
 lemma bindWT_unitWT_counterexample:
   fixes k :: "'a \<rightarrow> 'b\<cdot>('m::monad,'w::monoid) writerT"
@@ -222,8 +221,8 @@ lemma bindWT_unitWT_counterexample:
   shows "bindWT\<cdot>(unitWT\<cdot>x)\<cdot>k \<noteq> k\<cdot>x"
 by (simp add: writerT_eq_iff mempty_left assms)
 
-text {* However, left unit is satisfied for inner monads with a strict
-@{text return} function. *}
+text \<open>However, left unit is satisfied for inner monads with a strict
+\<open>return\<close> function.\<close>
 
 lemma bindWT_unitWT_restricted:
   fixes k :: "'a \<rightarrow> 'b\<cdot>('m::monad,'w::monoid) writerT"
@@ -237,8 +236,8 @@ apply (rule cfun_eqI)
 apply (case_tac x, simp_all add: assms)
 done
 
-text {* The associativity of @{text bindWT} holds
-unconditionally. \medskip *}
+text \<open>The associativity of \<open>bindWT\<close> holds
+unconditionally. \medskip\<close>
 
 lemma bindWT_bindWT:
   "bindWT\<cdot>(bindWT\<cdot>m\<cdot>h)\<cdot>k = bindWT\<cdot>m\<cdot>(\<Lambda> x. bindWT\<cdot>(h\<cdot>x)\<cdot>k)"
@@ -262,7 +261,7 @@ apply (simp add: bind_strict)
 apply (simp add: mappend_assoc)
 done
 
-text {* The right unit monad law is not satisfied in general. \medskip *}
+text \<open>The right unit monad law is not satisfied in general. \medskip\<close>
 
 lemma bindWT_unitWT_right_counterexample:
   fixes m :: "'a\<cdot>('m::monad,'w::monoid) writerT"
@@ -271,8 +270,7 @@ lemma bindWT_unitWT_right_counterexample:
   shows "bindWT\<cdot>m\<cdot>unitWT \<noteq> m"
 by (simp add: writerT_eq_iff assms)
 
-text {* Right unit is satisfied for inner monads with a strict @{text
-return} function. \medskip *}
+text \<open>Right unit is satisfied for inner monads with a strict \<open>return\<close> function. \medskip\<close>
 
 lemma bindWT_unitWT_right_restricted:
   fixes m :: "'a\<cdot>('m::monad,'w::monoid) writerT"
@@ -286,11 +284,11 @@ apply (rule cfun_eqI)
 apply (case_tac x, simp_all add: assms mempty_right)
 done
 
-subsection {* Writer monad transformer invariant *}
+subsection \<open>Writer monad transformer invariant\<close>
 
-text {* We inductively define a predicate that includes all values
-that can be constructed from the standard @{text writerT} operations.
-\medskip *}
+text \<open>We inductively define a predicate that includes all values
+that can be constructed from the standard \<open>writerT\<close> operations.
+\medskip\<close>
 
 inductive invar :: "'a\<cdot>('m::monad, 'w::monoid) writerT \<Rightarrow> bool"
   where invar_bottom: "invar \<bottom>"
@@ -300,8 +298,8 @@ inductive invar :: "'a\<cdot>('m::monad, 'w::monoid) writerT \<Rightarrow> bool"
   | invar_tellWT: "\<And>x w. invar (tellWT\<cdot>x\<cdot>w)"
   | invar_liftWT: "\<And>m. invar (liftWT\<cdot>m)"
 
-text {* Right unit is satisfied for arguments built from standard
-functions. \medskip *}
+text \<open>Right unit is satisfied for arguments built from standard
+functions. \medskip\<close>
 
 lemma bindWT_unitWT_right_invar:
   fixes m :: "'a\<cdot>('m::monad,'w::monoid) writerT"
@@ -332,8 +330,8 @@ next
     by (rule writerT_eqI, simp add: monad_fmap bind_bind mempty_right)
 qed
 
-text {* Left unit is also satisfied for arguments built from standard
-functions. \medskip *}
+text \<open>Left unit is also satisfied for arguments built from standard
+functions. \medskip\<close>
 
 lemma writerT_left_unit_invar_lemma:
   assumes "invar m"
@@ -374,12 +372,12 @@ apply (simp add: writerT_eq_iff mempty_left)
 apply (rule writerT_left_unit_invar_lemma [OF assms])
 done
 
-subsection {* Invariant expressed as a deflation *}
+subsection \<open>Invariant expressed as a deflation\<close>
 
 definition invar' :: "'a\<cdot>('m::monad, 'w::monoid) writerT \<Rightarrow> bool"
   where "invar' m \<longleftrightarrow> fmapWT\<cdot>ID\<cdot>m = m"
 
-text {* All standard operations preserve the invariant. *}
+text \<open>All standard operations preserve the invariant.\<close>
 
 lemma invar'_bottom: "invar' \<bottom>"
   unfolding invar'_def by (simp add: writerT_eq_iff bind_strict)
@@ -412,7 +410,7 @@ lemma invar'_tellWT: "invar' (tellWT\<cdot>x\<cdot>w)"
 lemma invar'_liftWT: "invar' (liftWT\<cdot>m)"
   unfolding invar'_def by (simp add: writerT_eq_iff monad_fmap bind_bind)
 
-text {* Left unit is satisfied for arguments built from fmap. *}
+text \<open>Left unit is satisfied for arguments built from fmap.\<close>
 
 lemma bindWT_unitWT_fmapWT:
   "bindWT\<cdot>(unitWT\<cdot>x)\<cdot>(\<Lambda> x. fmapWT\<cdot>f\<cdot>(k\<cdot>x))
@@ -422,7 +420,7 @@ apply (rule cfun_arg_cong, rule cfun_eqI, simp)
 apply (case_tac x, simp_all add: bind_strict mempty_left)
 done
 
-text {* Right unit is satisfied for arguments built from fmap. *}
+text \<open>Right unit is satisfied for arguments built from fmap.\<close>
 
 lemma bindWT_fmapWT_unitWT:
   shows "bindWT\<cdot>(fmapWT\<cdot>f\<cdot>m)\<cdot>unitWT = fmapWT\<cdot>f\<cdot>m"
@@ -430,7 +428,7 @@ apply (simp add: bindWT_fmapWT)
 apply (simp add: fmapWT_def)
 done
 
-text {* All monad laws are preserved by values satisfying the invariant. *}
+text \<open>All monad laws are preserved by values satisfying the invariant.\<close>
 
 lemma invar'_right_unit: "invar' m \<Longrightarrow> bindWT\<cdot>m\<cdot>unitWT = m"
 unfolding invar'_def by (erule subst, rule bindWT_fmapWT_unitWT)

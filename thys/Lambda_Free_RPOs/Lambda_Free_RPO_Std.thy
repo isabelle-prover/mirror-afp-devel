@@ -14,7 +14,7 @@ abbrevs ">t" = ">\<^sub>t"
 begin
 
 text \<open>
-This theory defines the graceful recursive path order (RPO) for @{text \<lambda>}-free
+This theory defines the graceful recursive path order (RPO) for \<open>\<lambda>\<close>-free
 higher-order terms.
 \<close>
 

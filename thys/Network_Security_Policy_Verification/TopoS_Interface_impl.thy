@@ -2,15 +2,15 @@ theory TopoS_Interface_impl
 imports "Lib/FiniteGraph" "Lib/FiniteListGraph" TopoS_Interface TopoS_Helper
 begin
 
-section{*Executable Implementation with Lists*}
-  text {*Correspondence List Implementation and set Specification*}
+section\<open>Executable Implementation with Lists\<close>
+  text \<open>Correspondence List Implementation and set Specification\<close>
   
-  subsection{*Abstraction from list implementation to set specification*}
-  text{*Nomenclature: @{text "_spec"} is the specification, @{text "_impl"} the corresponding implementation.*}
+  subsection\<open>Abstraction from list implementation to set specification\<close>
+  text\<open>Nomenclature: \<open>_spec\<close> is the specification, \<open>_impl\<close> the corresponding implementation.\<close>
 
-  text{*@{text "_spec"} and @{text "_impl"} only need to comply for @{const wf_graph}s. 
+  text\<open>\<open>_spec\<close> and \<open>_impl\<close> only need to comply for @{const wf_graph}s. 
    We will always require the stricter @{const wf_list_graph}, which implies @{const wf_graph}.
-  *}
+\<close>
   lemma "wf_list_graph G \<Longrightarrow> wf_graph (list_graph_to_graph G)"
     by %invisible (metis wf_list_graph_def wf_list_graph_iff_wf_graph)
 
@@ -40,9 +40,9 @@ section{*Executable Implementation with Lists*}
      SecurityInvariant.eval sinvar_spec default_node_properties (list_graph_to_graph G) P ) = 
      (eval_impl G P)"
 
-  subsection {* Security Invariants Packed*}
+  subsection \<open>Security Invariants Packed\<close>
 
-  text {* We pack all necessary functions and properties of a security invariant in a struct-like data structure.*}
+  text \<open>We pack all necessary functions and properties of a security invariant in a struct-like data structure.\<close>
   record ('v::vertex, 'a) TopoS_packed =
     nm_name :: "string"
     nm_receiver_violation :: "bool"
@@ -54,7 +54,7 @@ section{*Executable Implementation with Lists*}
     
 
 
-   text{*The packed list implementation must comply with the formal definition. *}
+   text\<open>The packed list implementation must comply with the formal definition.\<close>
    locale TopoS_modelLibrary =
     fixes m :: "('v::vertex, 'a) TopoS_packed" \<comment> \<open>concrete model implementation\<close>
     and sinvar_spec::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" \<comment> \<open>specification\<close>
@@ -72,9 +72,9 @@ section{*Executable Implementation with Lists*}
 
 
 
-  subsection{*Helpful Lemmata*}
+  subsection\<open>Helpful Lemmata\<close>
 
-  text{*show that @{term "sinvar"} complies*}
+  text\<open>show that @{term "sinvar"} complies\<close>
   lemma TopoS_eval_impl_proofrule: 
     assumes inst: "SecurityInvariant sinvar_spec default_node_properties receiver_violation"
     assumes ev: "\<And>nP. wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
@@ -101,19 +101,19 @@ section{*Executable Implementation with Lists*}
   qed
 
 
-subsection {*Helper lemmata*}
+subsection \<open>Helper lemmata\<close>
 
-  text{* Provide @{term sinvar} function and get back a function that computes the list of offending flows
+  text\<open>Provide @{term sinvar} function and get back a function that computes the list of offending flows
   
   Exponential time!
-  *}
+\<close>
   definition Generic_offending_list:: "('v list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> bool )\<Rightarrow> 'v list_graph \<Rightarrow> ('v \<Rightarrow> 'a) \<Rightarrow> ('v \<times> 'v) list list" where
     "Generic_offending_list sinvar G nP = [f \<leftarrow> (subseqs (edgesL G)). 
     (\<not> sinvar G nP \<and> sinvar (FiniteListGraph.delete_edges G f) nP) \<and> 
       (\<forall>(e1, e2)\<in>set f. \<not> sinvar (add_edge e1 e2 (FiniteListGraph.delete_edges G f)) nP)]"
   
   
-  text{*proof rule: if @{term sinvar} complies, @{const Generic_offending_list} complies *}
+  text\<open>proof rule: if @{term sinvar} complies, @{const Generic_offending_list} complies\<close>
   lemma Generic_offending_list_correct: 
     assumes valid: "wf_list_graph G"
     assumes spec_impl: "\<And>G nP. wf_list_graph G \<Longrightarrow> sinvar_spec (list_graph_to_graph G) nP = sinvar_impl G nP"
@@ -193,7 +193,7 @@ subsection {*Helper lemmata*}
     apply (metis FiniteListGraph.delete_edges_wf delete_edges_list_set list_graph_correct(5))
     done
 
-  text{*With @{const minimalize_offending_overapprox}, we can get one offending flow*}
+  text\<open>With @{const minimalize_offending_overapprox}, we can get one offending flow\<close>
   lemma minimalize_offending_overapprox_gives_some_offending_flow:
     assumes wf: "wf_list_graph G"
         and NetModelLib: "TopoS_modelLibrary m sinvar_spec"
@@ -265,7 +265,7 @@ subsection {*Helper lemmata*}
 
 
 (*TODO: this should be a header of TopoS_Libary. The header should be printed BEFORE the imports are processed. *)
-section{*Security Invariant Library*}
+section\<open>Security Invariant Library\<close>
 (*The SINVAR_* theory files all use the "subsection" command. Here is the top-section.*)
 
 end

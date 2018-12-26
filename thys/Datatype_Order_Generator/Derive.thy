@@ -22,7 +22,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Loading derive-commands *}
+section \<open>Loading derive-commands\<close>
 theory Derive
 imports 
   Order_Generator
@@ -30,11 +30,11 @@ imports
   Deriving.Countable_Generator
 begin
 
-text{*
+text\<open>
 We just load the commands to derive (linear) orders, hash-functions, and the
 command to show that a datatype is countable, so that now all of them are available.
 There are further generators available in the AFP entries of lightweight containers and Show.
-*}
+\<close>
 
 print_derives
 

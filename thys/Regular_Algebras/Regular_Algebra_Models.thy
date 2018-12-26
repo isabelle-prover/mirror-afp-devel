@@ -4,13 +4,13 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-section {* Models of Regular Algebra *}
+section \<open>Models of Regular Algebra\<close>
 
 theory Regular_Algebra_Models
   imports Regular_Algebras Kleene_Algebra.Kleene_Algebra_Models
 begin
 
-subsection {* Language Model of Salomaa Algebra *}
+subsection \<open>Language Model of Salomaa Algebra\<close>
 
 abbreviation w_length :: "'a list \<Rightarrow> nat" ( "|_|")
   where "|x| \<equiv> length x"
@@ -106,7 +106,7 @@ lemma word_suicide_lang_l: "\<lbrakk> \<not> l_ewp X; Y \<noteq> {} \<rbrakk> \<
 lemma word_suicide_lang_r: "\<lbrakk> \<not> l_ewp X; Y \<noteq> {} \<rbrakk> \<Longrightarrow> \<exists> n. \<not> (Y \<le> Y \<cdot> X\<^bsup>Suc n\<^esup>)"
   by (metis Set.set_eqI empty_iff in_mono word_suicide_r)
 
-text {* These duality results cannot be relocated easily *}
+text \<open>These duality results cannot be relocated easily\<close>
 
 context K1_algebra
 begin
@@ -162,7 +162,7 @@ proof (rule antisym)
   qed
 qed
 
-text {* The following two facts provide counterexamples to Arden's rule if the empty word property is not considered. *}
+text \<open>The following two facts provide counterexamples to Arden's rule if the empty word property is not considered.\<close>
 
 lemma arden_l_counter: "\<exists> (x::'a lan) (y::'a lan) (z::'a lan). x = y \<cdot> x + z \<and> x \<noteq> y\<^sup>\<star> \<cdot> z"
 proof -
@@ -220,7 +220,7 @@ proof
     by (metis arden_r)
 qed
 
-subsection {* Regular Language Model of Salomaa Algebra *}
+subsection \<open>Regular Language Model of Salomaa Algebra\<close>
 
 notation
   Atom ("\<langle>_\<rangle>") and

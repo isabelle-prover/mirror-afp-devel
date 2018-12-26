@@ -2,15 +2,15 @@
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory VDM_OBJ imports OBJ begin
 
-subsection{*Program logic*} 
+subsection\<open>Program logic\<close> 
 
-text{*\label{sec:ObjLogic}Apart from the addition of proof rules for the three new
+text\<open>\label{sec:ObjLogic}Apart from the addition of proof rules for the three new
 instructions, this section is essentially identical to Section
-\ref{sec:VDM}.*}
+\ref{sec:VDM}.\<close>
 
-subsubsection {*Assertions and their semantic validity*}
+subsubsection \<open>Assertions and their semantic validity\<close>
 
-text{*Assertions are binary state predicates, as before.*}
+text\<open>Assertions are binary state predicates, as before.\<close>
 
 type_synonym "Assn" = "State \<Rightarrow> State \<Rightarrow> bool"
 
@@ -89,7 +89,7 @@ lemma ctxt_consn: "\<lbrakk> \<Turnstile>\<^sub>n G;  \<Turnstile>\<^sub>n Call:
 by (simp add: Ctxt_validn_def) 
 (*>*)
 
-subsubsection{*Proof system*}
+subsubsection\<open>Proof system\<close>
 
 inductive_set VDM_proof :: "(Assn set \<times> OBJ \<times> Assn) set"
 where
@@ -151,7 +151,7 @@ abbreviation VDM_deriv :: "[Assn set, OBJ, Assn] \<Rightarrow> bool"
                    ("_ \<rhd> _ : _" [100,100] 50)
 where "G \<rhd> c : A == (G,c,A) \<in> VDM_proof"
 
-text{*The while-rule is in fact inter-derivable with the following rule.*}
+text\<open>The while-rule is in fact inter-derivable with the following rule.\<close>
 lemma Hoare_While: 
  "G \<rhd> c : (\<lambda> s t . \<forall> r . evalB b (fst s) \<longrightarrow> I s r \<longrightarrow> I t r) \<Longrightarrow>
   G \<rhd> While b c : (\<lambda> s t. \<forall> r . I s r \<longrightarrow> (I t r \<and> \<not> evalB b (fst t)))"
@@ -162,7 +162,7 @@ apply simp
 apply (rule VDMWhile) apply assumption apply simp apply simp
 done
 
-text{*Here's the proof in the opposite direction.*}
+text\<open>Here's the proof in the opposite direction.\<close>
 
 
 lemma VDMWhile_derivable:
@@ -175,14 +175,14 @@ apply (erule VDMConseq) apply clarsimp
 apply fast
 done
 
-subsubsection{*Soundness*}
+subsubsection\<open>Soundness\<close>
 (*<*)
 lemma MAX:"Suc (max k m) \<le> n \<Longrightarrow> k \<le> n \<and> m \<le> n"
 by (simp add: max_def, case_tac "k \<le> m", simp+)
 (*>*)
 
-text{*The following auxiliary lemma for loops is proven by induction
-on $n$.*}
+text\<open>The following auxiliary lemma for loops is proven by induction
+on $n$.\<close>
 
 lemma SoundWhile[rule_format]:
  "(\<forall>n. G \<Turnstile>\<^sub>n c : B) 
@@ -261,7 +261,7 @@ theorem VDM_Sound: "G \<rhd> c: A \<Longrightarrow> G \<Turnstile> c:A"
 by (drule VDM_Sound_n, erule validn_valid) 
 (*>*)
 
-text{*A simple corollary is soundness w.r.t.~an empty context.*}
+text\<open>A simple corollary is soundness w.r.t.~an empty context.\<close>
 
 lemma VDM_Sound_emptyCtxt:"{} \<rhd> c : A \<Longrightarrow>  \<Turnstile> c : A"
 (*<*)
@@ -271,7 +271,7 @@ apply (simp add: Ctxt_valid_def)
 done
 (*>*)
 
-subsubsection{*Derived rules*}
+subsubsection\<open>Derived rules\<close>
 
 lemma WEAK[rule_format]:
   "G \<rhd> c : A \<Longrightarrow> (\<forall> H . G \<subseteq> H \<longrightarrow> H \<rhd> c :A)"
@@ -407,7 +407,7 @@ theorem Mutrec:
 by (rule MutrecAux, fast)
 (*>*)
 
-subsubsection{*Completeness*}
+subsubsection\<open>Completeness\<close>
 definition SSpec::"OBJ \<Rightarrow> Assn"
 where "SSpec c s t = (s,c \<Down> t)"
 
@@ -538,5 +538,5 @@ apply (rule Mutrec, assumption)
 done
 (*>*)
 
-text{*End of theory VDM_Obj*}
+text\<open>End of theory VDM_Obj\<close>
 end

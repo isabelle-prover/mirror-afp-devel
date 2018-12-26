@@ -9,12 +9,12 @@ imports
 
 begin
 
-section {* Additional theorems for base libraries *}
+section \<open>Additional theorems for base libraries\<close>
 
-text {*
+text \<open>
   This section contains lemmas unrelated to graph theory which might be
   interesting for the Isabelle distribution
-*}
+\<close>
 
 lemma ereal_Inf_finite_Min:
   fixes S :: "ereal set"
@@ -48,7 +48,7 @@ using assms by (auto simp: sym_def)
 
 
 
-subsection {* List *}
+subsection \<open>List\<close>
 
 lemmas list_exhaust2 = list.exhaust[case_product list.exhaust]
 
@@ -105,7 +105,7 @@ proof (induct ws)
     then obtain xs ys where "ws = xs @ w # ys" "w \<notin> set xs"
       using Cons.prems by (fastforce dest: split_list_first)
     then have "distinct (xs @ [w])" "w # ws = [] @ w # xs @ w # ys"
-      using `distinct ws` by auto
+      using \<open>distinct ws\<close> by auto
     then show ?thesis by blast
   next
     case False
@@ -125,27 +125,27 @@ lemma list_set_tl: "x \<in> set (tl xs) \<Longrightarrow> x \<in> set xs"
 by (cases xs) auto
 
 
-section {* NOMATCH simproc *}
+section \<open>NOMATCH simproc\<close>
 
-text {*
+text \<open>
  The simplification procedure can be used to avoid simplification of terms of a certain form
-*}
+\<close>
 
 definition NOMATCH :: "'a \<Rightarrow> 'a \<Rightarrow> bool" where "NOMATCH val pat \<equiv> True"
 lemma NOMATCH_cong[cong]: "NOMATCH val pat = NOMATCH val pat" by (rule refl)
 
-simproc_setup NOMATCH ("NOMATCH val pat") = {* fn _ => fn ctxt => fn ct =>
+simproc_setup NOMATCH ("NOMATCH val pat") = \<open>fn _ => fn ctxt => fn ct =>
   let
     val thy = Proof_Context.theory_of ctxt
     val dest_binop = Term.dest_comb #> apfst (Term.dest_comb #> snd)
     val m = Pattern.matches thy (dest_binop (Thm.term_of ct))
   in if m then NONE else SOME @{thm NOMATCH_def} end
-*}
+\<close>
 
-text {*
+text \<open>
   This setup ensures that a rewrite rule of the form @{term "NOMATCH val pat \<Longrightarrow> t"}
   is only applied, if the pattern @{term pat} does not match the value @{term val}.
-*}
+\<close>
 
 
 end

@@ -12,20 +12,20 @@ begin
 
 no_notation fun_rel_syn (infixr "\<rightarrow>" 60)
 
-text_raw {*\label{sec:absalgo}*}
-text {* This theory defines tree automata algorithms on an abstract level, 
+text_raw \<open>\label{sec:absalgo}\<close>
+text \<open>This theory defines tree automata algorithms on an abstract level, 
   that is using non-executable datatypes and constructs like sets, 
   set-collecting operations, etc. 
     
   These algorithms are then refined to executable algorithms in 
   Section~\ref{sec:taimpl}.
-  *}
+\<close>
 
-subsection {* Word Problem *}
+subsection \<open>Word Problem\<close>
   
-text {*
+text \<open>
   First, a recursive version of the @{const accs}-predicate is defined.
-*}
+\<close>
 
 fun r_match :: "'a set list \<Rightarrow> 'a list \<Rightarrow> bool" where
   "r_match [] [] \<longleftrightarrow> True" |
@@ -94,7 +94,7 @@ lemmas faccs_correct = faccs_correct1 faccs_correct2
 
 lemma faccs_alt: "faccs \<delta> t = {q. accs \<delta> t q}" by (auto intro: faccs_correct)
 
-subsection {* Backward Reduction and Emptiness Check *}
+subsection \<open>Backward Reduction and Emptiness Check\<close>
 subsubsection "Auxiliary Definitions"
 
 \<comment> \<open>Step function, that maps a set of states to those states 
@@ -125,7 +125,7 @@ qed
 
 subsubsection "Algorithms"
 
-text {*
+text \<open>
   First, the basic workset algorithm is specified. 
   Then, it is refined to contain a counter for each rule, 
   that counts the number of undiscovered states on the RHS. 
@@ -137,16 +137,16 @@ text {*
   
   Levels of abstraction:
   \begin{itemize} 
-    \item[@{text \<alpha>}] On this level, the state consists of a set of 
+    \item[\<open>\<alpha>\<close>] On this level, the state consists of a set of 
       discovered states and a workset.
-    \item[@{text \<alpha>'}] On this level, the state consists of a set of 
+    \item[\<open>\<alpha>'\<close>] On this level, the state consists of a set of 
       discovered states, a workset and a map from rules to number of 
       undiscovered rhs states. This map can be used to make the discovery of
       rules that have to be considered more efficient.
   \end{itemize}
-*}
+\<close>
 
-text_raw {* \paragraph {@{text \<alpha>} - Level:} *}
+text_raw \<open>\paragraph {\<open>\<alpha>\<close> - Level:}\<close>
 
   \<comment> \<open>A state contains the set of discovered states and a workset\<close>
 type_synonym ('Q,'L) br_state = "'Q set \<times> 'Q set"
@@ -373,8 +373,8 @@ theorem bre_while_algo:
               dest: set_rev_mp[OF _ bre_cond_imp_br_cond])
   done
 
-text_raw {* \paragraph{@{text \<alpha>'} - Level} *}
-text {*
+text_raw \<open>\paragraph{\<open>\<alpha>'\<close> - Level}\<close>
+text \<open>
   Here, an optimization is added:
     For each rule, the algorithm now maintains a counter that counts the number
     of undiscovered states on the rules RHS. Whenever a new state is discovered,
@@ -384,7 +384,7 @@ text {*
     checking whether all states on the rule's RHS have been discovered.
 
   A similar algorithm is sketched in \cite{tata2007}(Exercise~1.18).
-*}
+\<close>
 type_synonym ('Q,'L) br'_state = "'Q set \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
 
   \<comment> \<open>Abstraction to @{text \<alpha>}-level\<close>
@@ -704,11 +704,11 @@ theorem bre'_while_algo:
 lemmas bre'_invar_final = 
   bre'_pref.transfer_correctness[OF bre_invar_final, unfolded fst_br'_\<alpha>]
 
-text_raw {* \paragraph{Implementing a Step} *}
-text {*
+text_raw \<open>\paragraph{Implementing a Step}\<close>
+text \<open>
   In this paragraph, it is shown how to implement a step of the br'-algorithm 
   by iteration over the rules that have the discovered state on their RHS.
-*}
+\<close>
 
 definition br'_inner_step 
   :: "('Q,'L) ta_rule \<Rightarrow> ('Q,'L) br'_state \<Rightarrow> ('Q,'L) br'_state" 
@@ -799,12 +799,12 @@ proof -
 qed
 
 
-text_raw {* \paragraph{Computing Witnesses} *}
-text {*
+text_raw \<open>\paragraph{Computing Witnesses}\<close>
+text \<open>
   The algorithm is now refined further, such that it stores, for each discovered
   state, a witness for non-emptiness, i.e. a tree that is accepted with the
   discovered state.
-*}
+\<close>
 
 \<comment> \<open>A map from states to trees has the witness-property, if it maps states to 
     trees that are accepted with that state:\<close>
@@ -841,10 +841,10 @@ lemma construct_witness_eq:
   apply auto
   done
 
-text {*
+text \<open>
   The set of discovered states is refined by a map from discovered states to 
   their witnesses:
-*}
+\<close>
 type_synonym ('Q,'L) brw_state = "('Q\<rightharpoonup>'L tree) \<times> 'Q set \<times> (('Q,'L) ta_rule \<rightharpoonup> nat)"
 
 definition brw_\<alpha> :: "('Q,'L) brw_state \<Rightarrow> ('Q,'L) br'_state" 
@@ -1002,7 +1002,7 @@ proof -
     } moreover {
       fix r
       assume "r\<in>dsqr" and [simp]: "q=lhs r" "t=construct_witness Q r"
-      from `r\<in>dsqr` have 1: "r\<in>\<delta>" "set (rhsq r) \<subseteq> dom Q" 
+      from \<open>r\<in>dsqr\<close> have 1: "r\<in>\<delta>" "set (rhsq r) \<subseteq> dom Q" 
         by (auto simp add: DSQR_ALT)
       from construct_witness_correct[OF WP 1] have "accs \<delta> t q" by simp
     } ultimately show "accs \<delta> t q" by blast
@@ -1042,7 +1042,7 @@ theorem brw_invar_final:
   done
      
 
-text_raw {* \paragraph{Implementing a Step} *}
+text_raw \<open>\paragraph{Implementing a Step}\<close>
 inductive_set brw_inner_step 
   :: "('Q,'L) ta_rule \<Rightarrow> (('Q,'L) brw_state \<times> ('Q,'L) brw_state) set" 
   for r where
@@ -1228,15 +1228,15 @@ proof -
     done
 qed
 
-subsection {* Product Automaton *}
+subsection \<open>Product Automaton\<close>
 
-text {*
+text \<open>
   The forward-reduced product automaton can be described as a state-space
   exploration problem. 
 
   In this section, the DFS-algorithm for state-space exploration 
   (cf. Theory~@{theory Collections_Examples.Exploration} in the Isabelle Collections Framework) is refined to compute the product automaton.
-*}
+\<close>
 
 type_synonym ('Q1,'Q2,'L) frp_state = 
   "('Q1\<times>'Q2) set \<times> ('Q1\<times>'Q2) list \<times> (('Q1\<times>'Q2),'L) ta_rule set"

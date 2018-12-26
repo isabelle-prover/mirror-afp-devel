@@ -4195,7 +4195,7 @@ apply (simp add:finite_generator_def [of "R" "N"])
 done
     
 subsection "Sum up coefficients" 
- text{* Symbolic calculation. *}    
+ text\<open>Symbolic calculation.\<close>    
 
 lemma (in Module) similar_termTr:"\<lbrakk>ideal R A; a \<in> A\<rbrakk> \<Longrightarrow>
  \<forall>s. \<forall>f. s \<in> {j. j \<le> (n::nat)} \<rightarrow> A \<and> 

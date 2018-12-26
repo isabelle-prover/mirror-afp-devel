@@ -9,7 +9,7 @@ theory DualCategory
 imports Category
 begin
 
-  text{*
+  text\<open>
     The locale defined here constructs the dual (opposite) of a category.
     The arrows of the dual category are directly identified with the arrows of
     the given category and simplification rules are introduced that automatically
@@ -17,7 +17,7 @@ begin
     notions on the original category.  This makes it easy to use the dual of
     a category in the same context as the category itself, without having to
     worry about whether an arrow belongs to the category or its dual.
-  *}
+\<close>
     
   locale dual_category =
     C: category C

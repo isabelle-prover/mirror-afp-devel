@@ -1,10 +1,10 @@
-chapter {* Instantiating the Framework with a simple While-Language using procedures *}
+chapter \<open>Instantiating the Framework with a simple While-Language using procedures\<close>
 
-section {* Commands *}
+section \<open>Commands\<close>
 
 theory Com imports "../StaticInter/BasicDefs" begin
 
-subsection {* Variables and Values *}
+subsection \<open>Variables and Values\<close>
 
 type_synonym vname = string \<comment> \<open>names for variables\<close>
 type_synonym pname = string \<comment> \<open>names for procedures\<close>
@@ -17,7 +17,7 @@ abbreviation "true == Bool True"
 abbreviation "false == Bool False"
 
 
-subsection {* Expressions *}
+subsection \<open>Expressions\<close>
 
 datatype bop = Eq | And | Less | Add | Sub     \<comment> \<open>names of binary operations\<close>
 
@@ -36,7 +36,7 @@ where "binop Eq v\<^sub>1 v\<^sub>2               = Some(Bool(v\<^sub>1 = v\<^su
   | "binop bop v\<^sub>1 v\<^sub>2                = None"
 
 
-subsection {* Commands *}
+subsection \<open>Commands\<close>
 
 datatype cmd
   = Skip

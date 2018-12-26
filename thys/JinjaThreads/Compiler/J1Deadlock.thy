@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Deadlock perservation for the intermediate language *}
+section \<open>Deadlock perservation for the intermediate language\<close>
 
 theory J1Deadlock imports
   J1
@@ -40,7 +40,7 @@ next
     and L: "collect_locks \<lbrace>ta'\<rbrace>\<^bsub>l\<^esub> \<subseteq> collect_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub> \<and> set \<lbrace>ta'\<rbrace>\<^bsub>c\<^esub> \<subseteq> set \<lbrace>ta\<rbrace>\<^bsub>c\<^esub> \<and> collect_interrupts \<lbrace>ta'\<rbrace>\<^bsub>i\<^esub> \<subseteq> collect_interrupts \<lbrace>ta\<rbrace>\<^bsub>i\<^esub>"
     and aok: "\<exists>s. Red1_mthr.actions_ok s t ta'"
     by blast
-  from `False,P,t \<turnstile>1 \<langle>e,s\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle>` have "False,P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) e, s\<rangle> -ta'\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e', s'\<rangle>"
+  from \<open>False,P,t \<turnstile>1 \<langle>e,s\<rangle> -ta'\<rightarrow> \<langle>e',s'\<rangle>\<close> have "False,P,t \<turnstile>1 \<langle>insync\<^bsub>V\<^esub> (a) e, s\<rangle> -ta'\<rightarrow> \<langle>insync\<^bsub>V\<^esub> (a) e', s'\<rangle>"
     by(rule red1_reds1.Synchronized1Red2)
   thus ?case using L aok by blast
 next

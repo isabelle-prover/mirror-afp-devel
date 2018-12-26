@@ -26,10 +26,10 @@ datatype ('s, dead 'p, dead 'f) ann =
 
 type_synonym ('s, 'p, 'f) ann_triple = "('s, 'p, 'f) ann \<times> 's assn \<times> 's assn"
 
-text {*
- The list of @{text ann_triple} is useful if the code calls the same function multiple times
+text \<open>
+ The list of \<open>ann_triple\<close> is useful if the code calls the same function multiple times
  and require different annotations for the function body each time.
-*}
+\<close>
 type_synonym ('s,'p,'f) proc_assns = "'p \<Rightarrow> (('s, 'p, 'f) ann) list option"
 
 abbreviation  (input) pres:: "('s, 'p, 'f) ann_triple \<Rightarrow> ('s, 'p, 'f) ann"
@@ -105,7 +105,7 @@ lemma weaken_pre_empty[simp]:
   "weaken_pre r {} = r"
   by (induct r) auto
 
-text {* Annotations for call definition (see Language.thy) *}
+text \<open>Annotations for call definition (see Language.thy)\<close>
 definition
  ann_call :: "'s assn \<Rightarrow> 's assn \<Rightarrow> nat \<Rightarrow>  's assn \<Rightarrow>'s assn \<Rightarrow>  's assn \<Rightarrow> 's assn \<Rightarrow> ('s,'p,'f) ann"
 where

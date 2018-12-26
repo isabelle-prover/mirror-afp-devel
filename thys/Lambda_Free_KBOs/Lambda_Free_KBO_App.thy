@@ -12,7 +12,7 @@ abbrevs ">t" = ">\<^sub>t"
 begin
 
 text \<open>
-This theory defines the applicative Knuth--Bendix order, a variant of KBO for @{text \<lambda>}-free
+This theory defines the applicative Knuth--Bendix order, a variant of KBO for \<open>\<lambda>\<close>-free
 higher-order terms. It corresponds to the order obtained by applying the standard first-order KBO on
 the applicative encoding of higher-order terms and assigning the lowest precedence to the
 application symbol.

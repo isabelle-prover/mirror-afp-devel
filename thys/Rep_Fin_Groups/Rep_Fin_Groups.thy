@@ -10,16 +10,16 @@ begin
 
 
 
-section {* Preliminaries *}
+section \<open>Preliminaries\<close>
 
-text {*
+text \<open>
   In this section, we establish some basic facts about logic, sets, and functions that are not
   available in the HOL library. As well, we develop some theory for almost-everywhere-zero functions
   in preparation of the definition of the group ring.
-*}
+\<close>
 
 
-subsection {* Logic *}
+subsection \<open>Logic\<close>
 
 lemma conjcases [case_names BothTrue OneTrue OtherTrue BothFalse] :
   assumes BothTrue: "P \<and> Q    \<Longrightarrow> R"
@@ -31,7 +31,7 @@ lemma conjcases [case_names BothTrue OneTrue OtherTrue BothFalse] :
   by      fast
 
 
-subsection {* Sets *}
+subsection \<open>Sets\<close>
 
 lemma empty_set_diff_single : "A - {x} = {} \<Longrightarrow> A = {} \<or> A = {x}"
   by auto
@@ -45,9 +45,9 @@ lemma prod_ballI : "(\<And>a b. (a,b) \<in> AxB \<Longrightarrow> P a b) \<Longr
 lemma good_card_imp_finite : "of_nat (card A) \<noteq> (0::'a::semiring_1) \<Longrightarrow> finite A"
   using card_ge_0_finite[of A] by fastforce
 
-subsection {* Lists *}
+subsection \<open>Lists\<close>
 
-subsubsection {* @{text zip} *}
+subsubsection \<open>\<open>zip\<close>\<close>
 
 lemma zip_truncate_left : "zip xs ys = zip (take (length ys) xs) ys"
   by (induct xs ys rule:list_induct2') auto
@@ -55,10 +55,10 @@ lemma zip_truncate_left : "zip xs ys = zip (take (length ys) xs) ys"
 lemma zip_truncate_right : "zip xs ys = zip xs (take (length xs) ys)"
   by (induct xs ys rule:list_induct2') auto
 
-text {*
-  Lemmas @{text "zip_append1"} and @{text"zip_append2"} in theory @{theory HOL.List} have unnecessary
-  @{text "take (length _)"} in them. Here are replacements.
-*}
+text \<open>
+  Lemmas \<open>zip_append1\<close> and \<open>zip_append2\<close> in theory @{theory HOL.List} have unnecessary
+  \<open>take (length _)\<close> in them. Here are replacements.
+\<close>
 
 lemma zip_append_left :
   "zip (xs@ys) zs = zip xs zs @ zip ys (drop (length xs) zs)"
@@ -80,7 +80,7 @@ lemma set_zip_map2 :
   "(a,z) \<in> set (zip xs (map f ys)) \<Longrightarrow> \<exists>b. (a,b) \<in> set (zip xs ys) \<and> z = f b"
   by (induct xs ys rule: list_induct2') auto
 
-subsubsection {* @{text concat} *}
+subsubsection \<open>\<open>concat\<close>\<close>
 
 lemma concat_eq :
   "list_all2 (\<lambda>xs ys. length xs = length ys) xss yss \<Longrightarrow> concat xss = concat yss
@@ -118,13 +118,13 @@ next
     by fast
 qed 
 
-subsubsection {* @{text strip_while} *}
+subsubsection \<open>\<open>strip_while\<close>\<close>
 
 lemma strip_while_0_nnil :
   "as \<noteq> [] \<Longrightarrow> set as \<noteq> 0 \<Longrightarrow> strip_while ((=) 0) as \<noteq> []"
   by (induct as rule: rev_nonempty_induct) auto
 
-subsubsection {* @{text sum_list} *}
+subsubsection \<open>\<open>sum_list\<close>\<close>
 
 lemma const_sum_list :
   "\<forall>x \<in> set xs. f x = a \<Longrightarrow> sum_list (map f xs) = a * (length xs)"
@@ -174,7 +174,7 @@ qed simp
 lemma sum_list_replicate0 : "sum_list (replicate n 0) = 0"
   by (induct n) auto
 
-subsubsection {* @{text listset} *}
+subsubsection \<open>\<open>listset\<close>\<close>
 
 lemma listset_ConsI : "x \<in> X \<Longrightarrow> xs \<in> listset Xs \<Longrightarrow> x#xs \<in> listset (X#Xs)"
   unfolding listset_def set_Cons_def by simp
@@ -274,9 +274,9 @@ proof-
 qed
 
 
-subsection {* Functions *}
+subsection \<open>Functions\<close>
 
-subsubsection {* Miscellaneous facts *}
+subsubsection \<open>Miscellaneous facts\<close>
 
 lemma sum_fun_apply : "finite A \<Longrightarrow> (\<Sum>a\<in>A. f a) x = (\<Sum>a\<in>A. f a x)"
   by (induct set: finite) auto
@@ -303,7 +303,7 @@ qed simp
 lemma distrib_comp_sum_right : "(T + T') \<circ> S = (T \<circ> S) + (T' \<circ> S)"
   by auto
 
-subsubsection {* Support of a function *}
+subsubsection \<open>Support of a function\<close>
 
 definition supp :: "('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a set" where "supp f = {x. f x \<noteq> 0}"
 
@@ -358,7 +358,7 @@ lemma bij_betw_restrict0 : "bij_betw f A B \<Longrightarrow> bij_betw (f \<down>
   by        auto
 
 
-subsubsection {* Convolution *}
+subsubsection \<open>Convolution\<close>
 
 definition convolution ::
   "('a::group_add \<Rightarrow> 'b::{comm_monoid_add,times}) \<Rightarrow> ('a\<Rightarrow>'b) \<Rightarrow> ('a\<Rightarrow>'b)"
@@ -447,9 +447,9 @@ proof-
 qed
 
 
-subsection {* Almost-everywhere-zero functions *}
+subsection \<open>Almost-everywhere-zero functions\<close>
 
-subsubsection {* Definition and basic properties *}
+subsubsection \<open>Definition and basic properties\<close>
 
 definition "aezfun_set = {f::'a\<Rightarrow>'b::zero. finite (supp f)}"
 
@@ -497,10 +497,10 @@ proof (rule aezfun_setI)
     using aezfun_setD finite_subset[of "supp (f\<down>A)"] by auto
 qed
 
-subsubsection {* Delta (impulse) functions *}
+subsubsection \<open>Delta (impulse) functions\<close>
 
-text {* The notation is set up in the order output-input so that later when these are used to define
-        the group ring RG, it will be in order ring-element-group-element. *}
+text \<open>The notation is set up in the order output-input so that later when these are used to define
+        the group ring RG, it will be in order ring-element-group-element.\<close>
 
 definition deltafun :: "'b::zero \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow> 'b)" (infix "\<delta>" 70)
   where "b \<delta> a = (\<lambda>x. if x = a then b else 0)"
@@ -576,7 +576,7 @@ next
   ultimately show ?case by fast
 qed
 
-subsubsection {* Convolution of almost-everywhere-zero functions *}
+subsubsection \<open>Convolution of almost-everywhere-zero functions\<close>
 
 lemma convolution_eq_sum_over_supp_right :
   fixes   g f :: "'a::group_add \<Rightarrow> 'b::{comm_monoid_add,mult_zero}"
@@ -625,7 +625,7 @@ proof (cases "b = 0")
   proof-
     from True have "convolution (b \<delta> a) f = convolution 0 f"
       using deltafun0[of a] arg_cong[of "0 \<delta> a" "0::'a\<Rightarrow>'b"]
-      by (simp add: `0 \<delta> a = 0` `b = 0`)
+      by (simp add: \<open>0 \<delta> a = 0\<close> \<open>b = 0\<close>)
     thus ?thesis using convolution_zero by auto
   qed
   ultimately show ?thesis by auto
@@ -646,7 +646,7 @@ proof (cases "b = 0")
   proof-
     from True have "convolution f (b \<delta> a) = convolution f 0"
       using deltafun0[of a] arg_cong[of "0 \<delta> a" "0::'a\<Rightarrow>'b"] 
-      by (simp add: `0 \<delta> a = 0`)
+      by (simp add: \<open>0 \<delta> a = 0\<close>)
     thus ?thesis using convolution_zero by auto
   qed
   ultimately show ?thesis by auto
@@ -809,7 +809,7 @@ proof
     by    fastforce
 qed
 
-subsubsection {* Type definition, instantiations, and instances *}
+subsubsection \<open>Type definition, instantiations, and instances\<close>
 
 typedef (overloaded) ('a::zero,'b) aezfun = "aezfun_set :: ('b\<Rightarrow>'a) set"
   morphisms aezfun Abs_aezfun
@@ -1055,7 +1055,7 @@ qed
 
 instance aezfun :: (ring_1, group_add) ring_1 ..
 
-subsubsection {* Transfer facts *}
+subsubsection \<open>Transfer facts\<close>
 
 abbreviation aezdeltafun :: "'b::zero \<Rightarrow> 'a \<Rightarrow> ('b,'a) aezfun" (infix "\<delta>\<delta>" 70)
   where "b \<delta>\<delta> a \<equiv> Abs_aezfun (b \<delta> a)"
@@ -1112,10 +1112,10 @@ proof-
   thus ?thesis using supp_convolution_subset_sum_supp by fast
 qed
 
-subsubsection {* Almost-everywhere-zero functions with constrained support *}
+subsubsection \<open>Almost-everywhere-zero functions with constrained support\<close>
 
-text {* The name of the next definition anticipates @{text "aezfun_common_supp_spanning_set"}
-        below. *}
+text \<open>The name of the next definition anticipates \<open>aezfun_common_supp_spanning_set\<close>
+        below.\<close>
 
 definition aezfun_setspan :: "'a set \<Rightarrow> ('b::zero,'a) aezfun set"
   where "aezfun_setspan A = {x. supp (aezfun x) \<subseteq> A}"
@@ -1241,10 +1241,10 @@ proof-
     by    auto
 qed
 
-text {*
+text \<open>
   The following definition constrains the support of arbitrary almost-everywhere-zero functions, as
-  a sort of projection onto a @{text aezfun_setspan}.
-*}
+  a sort of projection onto a \<open>aezfun_setspan\<close>.
+\<close>
 
 definition aezfun_setspan_proj :: "'a set \<Rightarrow> ('b::zero,'a) aezfun \<Rightarrow> ('b::zero,'a) aezfun"
   where "aezfun_setspan_proj A x \<equiv> Abs_aezfun ((aezfun x)\<down>A)"
@@ -1338,7 +1338,7 @@ lemma aezfun_setspan_proj_sum_list_prod :
   by    simp
 
 
-subsection {* Polynomials *}
+subsection \<open>Polynomials\<close>
 
 lemma nonzero_coeffs_nonzero_poly : "as \<noteq> [] \<Longrightarrow> set as \<noteq> 0 \<Longrightarrow> Poly as \<noteq> 0"
   using coeffs_Poly[of as] strip_while_0_nnil[of as] by fastforce
@@ -1380,9 +1380,9 @@ next
 qed
 
 
-subsection {* Algebra of sets *}
+subsection \<open>Algebra of sets\<close>
 
-subsubsection {* General facts *}
+subsubsection \<open>General facts\<close>
 
 lemma zeroset_eqI: "0 \<in> A \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> a = 0) \<Longrightarrow> A = 0"
   by auto
@@ -1393,7 +1393,7 @@ lemma sum_list_sets_single : "(\<Sum>X\<leftarrow>[A]. X) = A"
 lemma sum_list_sets_double : "(\<Sum>X\<leftarrow>[A,B]. X) = A + B"
   using add_0_right[of B] by simp
 
-subsubsection {* Additive independence of sets *}
+subsubsection \<open>Additive independence of sets\<close>
 
 primrec add_independentS :: "'a::monoid_add set list \<Rightarrow> bool"
   where "add_independentS [] = True"
@@ -1504,12 +1504,12 @@ proof (induct As)
   qed
 qed simp
 
-subsubsection {* Inner direct sums *}
+subsubsection \<open>Inner direct sums\<close>
 
 definition inner_dirsum :: "'a::monoid_add set list \<Rightarrow> 'a set"
   where "inner_dirsum As = (if add_independentS As then \<Sum>A\<leftarrow>As. A else 0)"
 
-text{* Some syntactic sugar for @{text "inner_dirsum"}, borrowed from theory @{theory HOL.List}. *}
+text\<open>Some syntactic sugar for \<open>inner_dirsum\<close>, borrowed from theory @{theory HOL.List}.\<close>
 
 syntax 
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b"
@@ -1576,15 +1576,15 @@ lemma sum_list_listset_dirsum :
 
 
 
-section {* Groups *}
+section \<open>Groups\<close>
 
-subsection {* Locales and basic facts *}
+subsection \<open>Locales and basic facts\<close>
 
-subsubsection {* Locale @{text Group} and finite variant @{text FinGroup} *}
+subsubsection \<open>Locale \<open>Group\<close> and finite variant \<open>FinGroup\<close>\<close>
 
-text {*
-  Define a @{text Group} to be a closed subset of @{term UNIV} for the @{text "group_add"} class.
-*}
+text \<open>
+  Define a \<open>Group\<close> to be a closed subset of @{term UNIV} for the \<open>group_add\<close> class.
+\<close>
 
 locale Group =
   fixes G :: "'g::group_add set"
@@ -1687,7 +1687,7 @@ lemma right_translate_sum : "g \<in> G \<Longrightarrow> (\<Sum>h\<in>G. f h) = 
 
 end (* context Group *)
 
-subsubsection {* Abelian variant locale @{text AbGroup} *}
+subsubsection \<open>Abelian variant locale \<open>AbGroup\<close>\<close>
 
 locale AbGroup = Group G
   for G :: "'g::ab_group_add set"
@@ -1715,7 +1715,7 @@ lemma subset_plus_left : "A \<subseteq> A + G"
 end (* context AbGroup *)
 
 
-subsection {* Right cosets *}
+subsection \<open>Right cosets\<close>
 
 context Group
 begin
@@ -1946,9 +1946,9 @@ qed
 
 
 
-subsection {* Group homomorphisms *}
+subsection \<open>Group homomorphisms\<close>
 
-subsubsection {* Preliminaries *}
+subsubsection \<open>Preliminaries\<close>
 
 definition ker :: "('a\<Rightarrow>'b::zero) \<Rightarrow> 'a set"
   where "ker f = {a. f a = 0}"
@@ -1988,10 +1988,10 @@ next
   ultimately show "A \<noteq> {} \<and> A \<subseteq> ker f" by fast
 qed
 
-subsubsection {* Locales *}
+subsubsection \<open>Locales\<close>
 
-text {* The @{text supp} condition is not strictly necessary, but helps with equality
-        and uniqueness arguments. *}
+text \<open>The \<open>supp\<close> condition is not strictly necessary, but helps with equality
+        and uniqueness arguments.\<close>
 
 locale GroupHom = Group G
   for   G :: "'g::group_add set"
@@ -2013,7 +2013,7 @@ locale GroupIso = GroupHom G T
 + fixes H :: "'h set"
   assumes bijective: "bij_betw T G H"
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 lemma (in Group) trivial_GroupHom : "GroupHom G (0::('g\<Rightarrow>'h::group_add))"
 proof
@@ -2151,7 +2151,7 @@ lemma idhom_left : "T ` G \<subseteq> H \<Longrightarrow> (id\<down>H) \<circ> T
 
 end (* context GroupHom *)
 
-subsubsection {* Basic facts about endomorphisms *}
+subsubsection \<open>Basic facts about endomorphisms\<close>
 
 context GroupEnd
 begin
@@ -2197,7 +2197,7 @@ qed
 
 end (* context GroupEnd *)
 
-subsubsection {* Basic facts about isomorphisms *}
+subsubsection \<open>Basic facts about isomorphisms\<close>
 
 context GroupIso
 begin
@@ -2240,7 +2240,7 @@ qed
 
 end (* context GroupIso *)
 
-subsubsection {* Hom-sets *}
+subsubsection \<open>Hom-sets\<close>
 
 definition GroupHomSet :: "'g::group_add set \<Rightarrow> 'h::group_add set \<Rightarrow> ('g \<Rightarrow> 'h) set"
   where "GroupHomSet G H \<equiv> {T. GroupHom G T} \<inter> {T. T ` G \<subseteq> H}"
@@ -2292,7 +2292,7 @@ qed
 
 
 
-subsection {* Facts about collections of groups *}
+subsection \<open>Facts about collections of groups\<close>
 
 lemma listset_Group_plus_closed :
   "\<lbrakk> \<forall>G\<in>set Gs. Group G; as \<in> listset Gs; bs \<in> listset Gs\<rbrakk>
@@ -2397,9 +2397,9 @@ next
 qed
 
 
-subsection {* Inner direct sums of Abelian groups *}
+subsection \<open>Inner direct sums of Abelian groups\<close>
 
-subsubsection {* General facts *}
+subsubsection \<open>General facts\<close>
 
 lemma AbGroup_inner_dirsum :
   "\<forall>G\<in>set Gs. AbGroup G \<Longrightarrow> AbGroup (\<Oplus>G\<leftarrow>Gs. G)"
@@ -2589,7 +2589,7 @@ next
   qed
 qed
 
-subsubsection {* Element decomposition and projection *}
+subsubsection \<open>Element decomposition and projection\<close>
 
 definition inner_dirsum_el_decomp ::
   "'g::ab_group_add set list \<Rightarrow> ('g \<Rightarrow> 'g list)" ("\<Oplus>_\<leftarrow>")
@@ -2754,17 +2754,17 @@ proof (intro_locales)
 qed
 
 
-subsection {* Rings *}
+subsection \<open>Rings\<close>
 
-subsubsection {* Preliminaries *}
+subsubsection \<open>Preliminaries\<close>
 
 lemma (in ring_1) map_times_neg1_eq_map_uminus : "[(-1)*r. r\<leftarrow>rs] = [-r. r\<leftarrow>rs]"
   using map_eq_conv by simp
 
-subsubsection {* Locale and basic facts *}
+subsubsection \<open>Locale and basic facts\<close>
 
-text {* Define a @{text Ring1} to be a multiplicatively closed additive subgroup of @{term UNIV} for
-        the @{text "ring_1"} class. *}
+text \<open>Define a \<open>Ring1\<close> to be a multiplicatively closed additive subgroup of @{term UNIV} for
+        the \<open>ring_1\<close> class.\<close>
 
 (* Don't need to use AbGroup for R because ring_1 already assumes add_commute *)
 locale Ring1 = Group R
@@ -2796,17 +2796,17 @@ lemma (in ring_1) full_Ring1 : "Ring1 UNIV"
   by unfold_locales auto
 
 
-subsection {* The group ring *}
+subsection \<open>The group ring\<close>
 
-subsubsection {* Definition and basic facts *}
+subsubsection \<open>Definition and basic facts\<close>
 
-text {*
+text \<open>
   Realize the group ring as the set of almost-every-zero functions from group to ring. One can
   recover the usual notion of group ring element by considering such a function to send group
   elements to their coefficients. Here the codomain of such functions is not restricted to some
-  @{text Ring1} subset since we will not be interested in having the ability to change the ring of
+  \<open>Ring1\<close> subset since we will not be interested in having the ability to change the ring of
   scalars for a group ring.
-*}
+\<close>
 
 context Group
 begin
@@ -2903,7 +2903,7 @@ lemma (in FinGroup) group_ring_spanning_set :
   using     finite aezfun_common_supp_spanning_set_decomp[of G] group_ringD
   by        fast
 
-subsubsection {* Projecting almost-everywhere-zero functions onto a group ring *}
+subsubsection \<open>Projecting almost-everywhere-zero functions onto a group ring\<close>
 
 context Group
 begin
@@ -2989,12 +2989,12 @@ lemma RG_proj_mult_right :
 end (* context Group *)
 
 
-section {* Modules *}
+section \<open>Modules\<close>
 
 
-subsection {* Locales and basic facts *}
+subsection \<open>Locales and basic facts\<close>
 
-subsubsection {* Locales *}
+subsubsection \<open>Locales\<close>
 
 locale scalar_mult =
   fixes smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
@@ -3029,7 +3029,7 @@ locale Module = RModule UNIV smult M
 
 lemmas ModuleI = RModuleI[of UNIV, OF full_Ring1, THEN Module.intro]
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 lemma trivial_RModule :
   fixes   smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)  
@@ -3184,7 +3184,7 @@ lemmas SubmoduleI = RSubmoduleI
 
 end (* context Module *)
 
-subsubsection {* Module and submodule instances *}
+subsubsection \<open>Module and submodule instances\<close>
 
 lemma (in R_scalar_mult) trivial_RModule :
   "(\<And>r. r \<in> R \<Longrightarrow> r \<cdot> 0 = 0) \<Longrightarrow> RModule R smult 0"
@@ -3258,9 +3258,9 @@ qed
 end (* context RModule *)
 
 
-subsection {* Linear algebra in modules *}
+subsection \<open>Linear algebra in modules\<close>
 
-subsubsection {* Linear combinations: @{text lincomb} *}
+subsubsection \<open>Linear combinations: \<open>lincomb\<close>\<close>
 
 context scalar_mult
 begin
@@ -3268,7 +3268,7 @@ begin
 definition lincomb :: "'r list \<Rightarrow> 'm list \<Rightarrow> 'm" (infix "\<bullet>\<cdot>" 70)
   where "rs \<bullet>\<cdot> ms = (\<Sum>(r,m)\<leftarrow>zip rs ms. r \<cdot> m)"
 
-text {* Note: @{text zip} will truncate if lengths of coefficient and vector lists differ. *}
+text \<open>Note: \<open>zip\<close> will truncate if lengths of coefficient and vector lists differ.\<close>
 
 lemma lincomb_Nil : "rs = [] \<or> ms = [] \<Longrightarrow> rs \<bullet>\<cdot> ms = 0"
   unfolding lincomb_def by auto
@@ -3484,7 +3484,7 @@ end (* context RModule *)
 lemmas (in Module) lincomb_obtain_same_length_coeffs = lincomb_obtain_same_length_Rcoeffs
 lemmas (in Module) lincomb_concat                    = lincomb_concat
 
-subsubsection {* Spanning: @{text RSpan} and @{text Span} *}
+subsubsection \<open>Spanning: \<open>RSpan\<close> and \<open>Span\<close>\<close>
 
 context R_scalar_mult
 begin
@@ -3810,17 +3810,17 @@ lemmas Submodule_Span                     = RSubmodule_RSpan
 
 end (* context Module *)
 
-subsubsection {* Finitely generated modules *}
+subsubsection \<open>Finitely generated modules\<close>
 
 context R_scalar_mult
 begin
 
 abbreviation "R_fingen M \<equiv> (\<exists>ms. set ms \<subseteq> M \<and> RSpan ms = M)"
 
-text {*
-  Similar to definition of @{text card} for finite sets, we default @{text dim} to 0 if no finite
+text \<open>
+  Similar to definition of \<open>card\<close> for finite sets, we default \<open>dim\<close> to 0 if no finite
   spanning set exists. Note that @{term "RSpan [] = 0"} implies that @{term "dim_R {0} = 0"}.
-*}
+\<close>
 
 definition dim_R :: "'m set \<Rightarrow> nat"
   where "dim_R M = (if R_fingen M then (
@@ -3850,7 +3850,7 @@ abbreviation (in scalar_mult) "dim    \<equiv> R_scalar_mult.dim_R UNIV smult"
 
 lemmas (in Module) dim_nonzero = dim_R_nonzero
 
-subsubsection {* @{term R}-linear independence *}
+subsubsection \<open>@{term R}-linear independence\<close>
 
 context R_scalar_mult
 begin
@@ -4198,7 +4198,7 @@ qed simp
 
 end (* context RModule *)
 
-subsubsection {* Linear independence over @{text UNIV} *}
+subsubsection \<open>Linear independence over \<open>UNIV\<close>\<close>
 
 context scalar_mult
 begin
@@ -4229,7 +4229,7 @@ lemmas lin_independent_append_imp_independent_Spans
 
 end (* context Module *)
 
-subsubsection {* Rank *}
+subsubsection \<open>Rank\<close>
 
 context R_scalar_mult
 begin
@@ -4267,9 +4267,9 @@ lemmas submodule_finrank
 end (* context scalar_mult *)
 
 
-subsection {* Module homomorphisms *}
+subsection \<open>Module homomorphisms\<close>
 
-subsubsection {* Locales *}
+subsubsection \<open>Locales\<close>
 
 locale RModuleHom = Domain?: RModule R smult M
 + Codomain?: scalar_mult smult'
@@ -4335,7 +4335,7 @@ proof (rule RModuleIso.intro)
     using GroupIso.bijective by unfold_locales
 qed
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 lemma (in RModule) trivial_RModuleHom :
   "\<forall>r\<in>R. smult' r 0 = 0 \<Longrightarrow> RModuleHom R smult M smult' 0"
@@ -4490,7 +4490,7 @@ proof (rule RModule.RSubmoduleI)
   qed
 qed
 
-subsubsection {* Basic facts about endomorphisms *}
+subsubsection \<open>Basic facts about endomorphisms\<close>
 
 lemma (in RModule) Rmap_endomorph_is_RModuleEnd :
   assumes grpend: "GroupEnd M T"
@@ -4524,7 +4524,7 @@ proof (rule ModuleEnd.intro, rule ModuleHom.intro)
     using RModuleEnd.endomorph by unfold_locales
 qed
 
-subsubsection {* Basic facts about isomorphisms *}
+subsubsection \<open>Basic facts about isomorphisms\<close>
 
 context RModuleIso
 begin
@@ -4556,7 +4556,7 @@ qed
 end (* context RModuleIso *)
 
 
-subsection {* Inner direct sums of RModules *}
+subsection \<open>Inner direct sums of RModules\<close>
 
 lemma (in RModule) RModule_inner_dirsum_el_decomp_Rsmult :
   assumes "\<forall>N\<in>set Ns. RSubmodule N" "add_independentS Ns" "r \<in> R"
@@ -4607,12 +4607,12 @@ qed
 
 
 
-section {* Vector Spaces *}
+section \<open>Vector Spaces\<close>
 
 
-subsection {* Locales and basic facts *}
+subsection \<open>Locales and basic facts\<close>
 
-text {* Here we don't care about being able to switch scalars. *}
+text \<open>Here we don't care about being able to switch scalars.\<close>
 
 locale fscalar_mult = scalar_mult smult
   for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
@@ -4675,9 +4675,9 @@ lemma cancel_scalar: "\<lbrakk> a \<noteq> 0; u \<in> V; v \<in> V; a \<cdot> u 
 end (* context VectorSpace *)
 
 
-subsection {* Linear algebra in vector spaces *}
+subsection \<open>Linear algebra in vector spaces\<close>
 
-subsubsection {* Linear independence and spanning *}
+subsubsection \<open>Linear independence and spanning\<close>
 
 context VectorSpace
 begin
@@ -4787,7 +4787,7 @@ qed
 
 end (* context VectorSpace *)
 
-subsubsection {* Basis for a vector space: @{text basis_for} *}
+subsubsection \<open>Basis for a vector space: \<open>basis_for\<close>\<close>
 
 abbreviation (in fscalar_mult) basis_for :: "'v set \<Rightarrow> 'v list \<Rightarrow> bool"
   where "basis_for V vs \<equiv> (set vs \<subseteq> V \<and> V = Span vs \<and> lin_independent vs)"
@@ -5036,7 +5036,7 @@ lemma finrank_Span : "set vs \<subseteq> V \<Longrightarrow> finrank (Span vs)"
 end (* context VectorSpace *)
 
 
-subsection {* Finite dimensional spaces *}
+subsection \<open>Finite dimensional spaces\<close>
 
 context VectorSpace
 begin
@@ -5169,9 +5169,9 @@ qed
 end (* context FinDimVectorSpace *)
 
 
-subsection {* Vector space homomorphisms *}
+subsection \<open>Vector space homomorphisms\<close>
 
-subsubsection {* Locales *}
+subsubsection \<open>Locales\<close>
 
 locale VectorSpaceHom = ModuleHom smult V smult' T
   for smult  :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
@@ -5224,7 +5224,7 @@ abbreviation (in VectorSpace) isomorphic ::
   "('f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w) \<Rightarrow> 'w set \<Rightarrow> bool"
   where "isomorphic smult' W \<equiv> (\<exists> T. VectorSpaceIso smult V smult' T W)"
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 lemma (in VectorSpace) trivial_VectorSpaceHom :
   "(\<And>a. smult' a 0 = 0) \<Longrightarrow> VectorSpaceHom smult V smult' 0"
@@ -5364,7 +5364,7 @@ next
     by    fastforce  (* slow *)
 qed
 
-subsubsection {* Hom-sets *}
+subsubsection \<open>Hom-sets\<close>
 
 definition VectorSpaceHomSet ::
   "('f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v) \<Rightarrow> 'v set \<Rightarrow> ('f \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w)
@@ -5528,7 +5528,7 @@ qed
 
 end (* context VectorSpace *)
 
-subsubsection {* Basic facts about endomorphisms *}
+subsubsection \<open>Basic facts about endomorphisms\<close>
 
 lemma ModuleEnd_over_field_is_VectorSpaceEnd :
   fixes   smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v"
@@ -5673,7 +5673,7 @@ lemma (in VectorSpace) n_inj_comp_end :
   "\<lbrakk> VEnd S; VEnd T; \<not> inj_on (S \<circ> T) V \<rbrakk> \<Longrightarrow> \<not> inj_on S V \<or> \<not> inj_on T V"
   using inj_comp_end by fast
 
-subsubsection {* Polynomials of endomorphisms *}
+subsubsection \<open>Polynomials of endomorphisms\<close>
 
 context VectorSpaceEnd
 begin
@@ -5960,7 +5960,7 @@ lemma n_inj_polymap_times :
         \<Longrightarrow> \<not> inj_on (polymap p) V \<or> \<not> inj_on (polymap q) V"
   using polymap_times VEnd_polymap n_inj_comp_end by fastforce
 
-text {* In the following lemma, @{term "[:-c, 1:]"} is the linear polynomial @{term "x - c"}. *}
+text \<open>In the following lemma, @{term "[:-c, 1:]"} is the linear polynomial @{term "x - c"}.\<close>
 
 lemma n_inj_polymap_findlinear :
   assumes alg_closed: "\<And>p::'f poly. degree p > 0 \<Longrightarrow> \<exists>c. poly p c = 0"
@@ -5994,7 +5994,7 @@ qed
 
 end (* context VectorSpaceEnd *)
 
-subsubsection {* Existence of eigenvectors of endomorphisms of finite-dimensional vector spaces *}
+subsubsection \<open>Existence of eigenvectors of endomorphisms of finite-dimensional vector spaces\<close>
 
 lemma (in FinDimVectorSpace) endomorph_has_eigenvector :
   assumes alg_closed: "\<And>p::'a poly. degree p > 0 \<Longrightarrow> \<exists>c. poly p c = 0"
@@ -6061,9 +6061,9 @@ qed
 
 
 
-section {* Modules Over a Group Ring *}
+section \<open>Modules Over a Group Ring\<close>
 
-subsection {* Almost-everywhere-zero functions as scalars *}
+subsection \<open>Almost-everywhere-zero functions as scalars\<close>
 
 locale aezfun_scalar_mult = scalar_mult smult
   for smult ::
@@ -6116,7 +6116,7 @@ qed simp
 
 end (* context aezfun_scalar_mult *)
 
-subsection {* Locale and basic facts *}
+subsection \<open>Locale and basic facts\<close>
 
 locale FGModule = ActingGroup?: Group G
 + FGMod?: RModule ActingGroup.group_ring smult V
@@ -6270,7 +6270,7 @@ lemma negGorbit_list_Cons0 :
 
 end (* context FGModule *)
 
-subsection {* Modules over a group ring as a vector spaces *}
+subsection \<open>Modules over a group ring as a vector spaces\<close>
 
 context FGModule
 begin
@@ -6364,9 +6364,9 @@ lemma GSubspace_is_Subspace :
 
 end (* context FGModule *)
 
-subsection {* Homomorphisms of modules over a group ring *}
+subsection \<open>Homomorphisms of modules over a group ring\<close>
 
-subsubsection {* Locales *}
+subsubsection \<open>Locales\<close>
 
 locale FGModuleHom = ActingGroup?: Group G
 + RModHom?: RModuleHom ActingGroup.group_ring smult V smult' T
@@ -6406,7 +6406,7 @@ abbreviation (in FGModule) isomorphic ::
   "(('f,'g) aezfun \<Rightarrow> 'w::ab_group_add \<Rightarrow> 'w) \<Rightarrow> 'w set \<Rightarrow> bool"
   where "isomorphic smult' W \<equiv> (\<exists> T. FGModuleIso G smult V smult' T W)"
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 context FGModule
 begin
@@ -6620,7 +6620,7 @@ proof-
   with E show ?thesis using aezfun_scalar_mult.fsmultD[of smult] by simp
 qed
 
-subsubsection {* Basic facts about endomorphisms *}
+subsubsection \<open>Basic facts about endomorphisms\<close>
 
 lemma RModuleEnd_over_group_ring_is_FGModuleEnd :
   fixes   G     :: "'g::group_add set"
@@ -6671,7 +6671,7 @@ lemmas FGModuleHom_restrict0_GSubspace = FGModuleHom_restrict0_GSubspace
 
 end (* context FGModuleEnd *)
 
-subsubsection {* Basic facts about isomorphisms *}
+subsubsection \<open>Basic facts about isomorphisms\<close>
 
 context FGModuleIso
 begin
@@ -6787,7 +6787,7 @@ lemma isomorphic_refl : "isomorphic smult V" using FGModIso_idhom by fast
 
 end (* context FGModule *)
 
-subsubsection {* Hom-sets *}
+subsubsection \<open>Hom-sets\<close>
 
 definition FGModuleHomSet ::
   "'g::group_add set \<Rightarrow> (('f::field,'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v) \<Rightarrow> 'v set
@@ -6955,9 +6955,9 @@ lemma VectorSpace_FGModuleHomSet :
 
 end (* context FGModule *)
 
-subsection {* Induced modules *}
+subsection \<open>Induced modules\<close>
 
-subsubsection {* Additive function spaces *}
+subsubsection \<open>Additive function spaces\<close>
 
 definition addfunset ::
   "'a::monoid_add set \<Rightarrow> 'm::monoid_add set \<Rightarrow> ('a \<Rightarrow> 'm) set"
@@ -7012,8 +7012,8 @@ next
   qed
 qed
 
-subsubsection {* Spaces of functions which transform under scalar multiplication by
-                 almost-everywhere-zero functions *}
+subsubsection \<open>Spaces of functions which transform under scalar multiplication by
+                 almost-everywhere-zero functions\<close>
 
 context aezfun_scalar_mult
 begin
@@ -7033,7 +7033,7 @@ lemma smultfunsetI :
 
 end (* context aezfun_scalar_mult *)
 
-subsubsection {* General induced spaces of functions on a group ring *}
+subsubsection \<open>General induced spaces of functions on a group ring\<close>
 
 context aezfun_scalar_mult
 begin
@@ -7128,7 +7128,7 @@ qed
 
 end (* context FGModule *)
 
-subsubsection {* The right regular action *}
+subsubsection \<open>The right regular action\<close>
 
 context Ring1
 begin
@@ -7224,13 +7224,13 @@ qed (unfold_locales)
 
 end (* context Ring1 *)
 
-subsubsection {* Locale and basic facts *}
+subsubsection \<open>Locale and basic facts\<close>
 
-text {*
+text \<open>
   In the following locale, @{term G} is a subgroup of @{term H}, @{term V} is a module over the
   group ring for @{term G}, and the induced space @{term indV} will be shown to be a module over the
   group ring for @{term H} under the right regular scalar multiplication @{term rrsmult}.
-*}
+\<close>
 
 locale InducedFHModule = Supgroup?: Group H
 + BaseFGMod?    : FGModule G smult V
@@ -7535,17 +7535,17 @@ end (* context InducedFHModule *)
 
 
 
-section {* Representations of Finite Groups *}
+section \<open>Representations of Finite Groups\<close>
 
-subsection {* Locale and basic facts *}
+subsection \<open>Locale and basic facts\<close>
 
-text {*
+text \<open>
   Define a group representation to be a module over the group ring that is finite-dimensional as
   a vector space. The only restriction on the characteristic of the field is that it does not
   divide the order of the group. Also, we don't explicitly assume that the group is finite;
-  instead, the @{text "good_char"} assumption implies that the cardinality of G is not zero, which
-  implies G is finite. (See lemma @{text "good_card_imp_finite"}.)
-*}
+  instead, the \<open>good_char\<close> assumption implies that the cardinality of G is not zero, which
+  implies G is finite. (See lemma \<open>good_card_imp_finite\<close>.)
+\<close>
 
 locale FinGroupRepresentation = FGModule G smult V
   for G     :: "'g::group_add set"
@@ -7617,7 +7617,7 @@ qed
 end (* context FinGroupRepresentation *)
 
 
-subsection {* Irreducible representations *}
+subsection \<open>Irreducible representations\<close>
 
 locale IrrFinGroupRepresentation = FinGroupRepresentation
 + assumes irr: "GSubspace U \<Longrightarrow> U = 0 \<or> U = V"
@@ -7686,9 +7686,9 @@ lemma notIrr :
 end (* context FinGroupRepresentation *)
 
 
-subsection {* Maschke's theorem *}
+subsection \<open>Maschke's theorem\<close>
 
-subsubsection {* Averaged projection onto a G-subspace *}
+subsubsection \<open>Averaged projection onto a G-subspace\<close>
 
 context FinGroupRepresentation
 begin
@@ -7871,7 +7871,7 @@ lemma avg_proj_is_proj_right :
 
 end (* context FinGroupRepresentation *)
 
-subsubsection {* The theorem *}
+subsubsection \<open>The theorem\<close>
 
 context FinGroupRepresentation
 begin
@@ -7937,7 +7937,7 @@ qed
 
 end (* context FinGroupRepresentation *)
 
-subsubsection {* Consequence: complete reducibility *}
+subsubsection \<open>Consequence: complete reducibility\<close>
 
 lemma (in FinGroupRepresentation) notIrr_decompose :
   "\<not> IrrFinGroupRepresentation G smult V
@@ -7945,10 +7945,10 @@ lemma (in FinGroupRepresentation) notIrr_decompose :
           \<and> W \<noteq> V \<and> V = U \<oplus> W"
   using notIrr Maschke_proper by blast
 
-text {*
+text \<open>
   In the following decomposition lemma, we do not need to explicitly include the condition that all
-  @{term U} in @{term "set Us"} are subsets of @{term V}. (See lemma @{text "AbGroup_subset_inner_dirsum"}.)
-*}
+  @{term U} in @{term "set Us"} are subsets of @{term V}. (See lemma \<open>AbGroup_subset_inner_dirsum\<close>.)
+\<close>
 
 lemma FinGroupRepresentation_reducible' :
   fixes n::nat
@@ -8070,7 +8070,7 @@ theorem (in FinGroupRepresentation) reducible :
         \<and> V = (\<Oplus>U\<leftarrow>Us. U)"
   using FinGroupRepresentation_axioms FinGroupRepresentation_reducible' by fast
 
-subsubsection {* Consequence: decomposition relative to a homomomorphism *}
+subsubsection \<open>Consequence: decomposition relative to a homomomorphism\<close>
 
 lemma (in FinGroupRepresentation) GRepHom_decomp :
   fixes   T   :: "'v \<Rightarrow> 'w::ab_group_add"
@@ -8123,7 +8123,7 @@ proof-
 qed
 
 
-subsection {* Schur's lemma *}
+subsection \<open>Schur's lemma\<close>
 
 lemma (in IrrFinGroupRepresentation) Schur_Ker :
   "GRepHom smult' T \<Longrightarrow> T ` V \<noteq> 0 \<Longrightarrow> inj_on T V"
@@ -8185,9 +8185,9 @@ proof-
 qed
 
 
-subsection {* The group ring as a representation space *}
+subsection \<open>The group ring as a representation space\<close>
 
-subsubsection {* The group ring is a representation space *}
+subsubsection \<open>The group ring is a representation space\<close>
 
 lemma (in Group) FGModule_FG :
   defines FG: "FG \<equiv> group_ring :: ('f::field, 'g) aezfun set"
@@ -8257,7 +8257,7 @@ lemma (in Group) FG_reducible :
   using   assms FinGroupRepresentation_FG FinGroupRepresentation.reducible
   by      fast
 
-subsubsection {* Irreducible representations are constituents of the group ring *}
+subsubsection \<open>Irreducible representations are constituents of the group ring\<close>
 
 lemma (in FGModuleIso) isomorphic_to_irr_right :
   assumes "IrrFinGroupRepresentation G smult' W"
@@ -8373,14 +8373,14 @@ proof-
 qed
 
 
-subsection {* Isomorphism classes of irreducible representations *}
+subsection \<open>Isomorphism classes of irreducible representations\<close>
 
-text {*
-  We have already demonstrated that the relation @{text "FGModule.isomorphic"} is reflexive
-  (lemma @{text "FGModule.isomorphic_refl"}), symmetric (lemma @{text "FGModule.isomorphic_sym"}),
-  and transitive (lemma @{text "FGModule.isomorphic_trans"}). In this section, we provide a finite
+text \<open>
+  We have already demonstrated that the relation \<open>FGModule.isomorphic\<close> is reflexive
+  (lemma \<open>FGModule.isomorphic_refl\<close>), symmetric (lemma \<open>FGModule.isomorphic_sym\<close>),
+  and transitive (lemma \<open>FGModule.isomorphic_trans\<close>). In this section, we provide a finite
   set of representatives for the resulting isomorphism classes of irreducible representations.
-*}
+\<close>
 
 context Group
 begin
@@ -8537,9 +8537,9 @@ theorem (in Group) iso_class_reps :
   by    auto
 
 
-subsection {* Induced representations *}
+subsection \<open>Induced representations\<close>
 
-subsubsection {* Locale and basic facts *}
+subsubsection \<open>Locale and basic facts\<close>
 
 locale InducedFinGroupRepresentation = Supgroup?: Group H
 + BaseRep?: FinGroupRepresentation G smult V
@@ -8583,7 +8583,7 @@ lemmas ex_rcoset_replist_hd0
 
 end (* context InducedFinGroupRepresentation *)
 
-subsubsection {* A basis for the induced space *}
+subsubsection \<open>A basis for the induced space\<close>
 
 context InducedFinGroupRepresentation
 begin
@@ -8883,7 +8883,7 @@ qed
 
 end (* context InducedFinGroupRepresentation *)
 
-subsubsection {* The induced space is a representation space *}
+subsubsection \<open>The induced space is a representation space\<close>
 
 context InducedFinGroupRepresentation
 begin
@@ -8915,12 +8915,12 @@ qed
 end (* context InducedFinGroupRepresentation *)
 
 
-subsection {* Frobenius reciprocity *}
+subsection \<open>Frobenius reciprocity\<close>
 
-subsubsection {* Locale and basic facts *}
+subsubsection \<open>Locale and basic facts\<close>
 
-text {* There are a number of defined objects and lemmas concerning those objects leading up to the
-        theorem of Frobenius reciprocity, so we create a locale to contain it all. *}
+text \<open>There are a number of defined objects and lemmas concerning those objects leading up to the
+        theorem of Frobenius reciprocity, so we create a locale to contain it all.\<close>
 
 locale FrobeniusReciprocity
 = GRep?: InducedFinGroupRepresentation H G smult V rrsmult
@@ -8955,10 +8955,10 @@ lemma FGModuleW: "FGModule G smult' W"
  using FHModuleW Subgroup HRep.restriction_to_subgroup_is_module
  by    fast
 
-text {*
+text \<open>
   In order to build an inverse for the required isomorphism of Hom-sets, we will need a basis for
   the induced @{term H}-space.
-*}
+\<close>
 
 definition Vfbasis :: "'v list" where "Vfbasis \<equiv> (SOME vs. is_Vfbasis vs)"
 
@@ -9010,13 +9010,13 @@ lemma indVfbasis_indV : "hfvs \<in> set indVfbasis \<Longrightarrow> set hfvs \<
 
 end (* context FrobeniusReciprocity *)
 
-subsubsection {* The required isomorphism of Hom-sets *}
+subsubsection \<open>The required isomorphism of Hom-sets\<close>
 
 context FrobeniusReciprocity
 begin
 
-text {* The following function will demonstrate the required isomorphism of Hom-sets (as vector
-        spaces). *}
+text \<open>The following function will demonstrate the required isomorphism of Hom-sets (as vector
+        spaces).\<close>
 
 definition \<phi> :: "((('f, 'g) aezfun \<Rightarrow> 'v) \<Rightarrow> 'w) \<Rightarrow> ('v \<Rightarrow> 'w)"
   where "\<phi> \<equiv> restrict0 (\<lambda>T. T \<circ> GRep.induced_vector) (HRepHomSet smult' W)"
@@ -9046,9 +9046,9 @@ qed
 
 end (* context FrobeniusReciprocity *)
 
-subsubsection {* The inverse map of Hom-sets *}
+subsubsection \<open>The inverse map of Hom-sets\<close>
 
-text {* In this section we build an inverse for the required isomorphism, @{term "\<phi>"}. *}
+text \<open>In this section we build an inverse for the required isomorphism, @{term "\<phi>"}.\<close>
 
 context FrobeniusReciprocity
 begin
@@ -9332,9 +9332,9 @@ lemma \<psi>_im : "\<psi> ` GRepHomSet (\<star>) W \<subseteq> HRepHomSet (\<sta
 
 end (* context FrobeniusReciprocity *)
 
-subsubsection {* Demonstration of bijectivity *}
+subsubsection \<open>Demonstration of bijectivity\<close>
 
-text {* Now we demonstrate that @{term "\<phi>"} is bijective via the inverse @{term "\<psi>"}. *}
+text \<open>Now we demonstrate that @{term "\<phi>"} is bijective via the inverse @{term "\<psi>"}.\<close>
 
 context FrobeniusReciprocity
 begin
@@ -9454,12 +9454,12 @@ qed
 
 end (* context FrobeniusReciprocity *)
 
-subsubsection {* The theorem *}
+subsubsection \<open>The theorem\<close>
 
-text {*
+text \<open>
   Finally we demonstrate that @{term "\<phi>"} is an isomorphism of vector spaces between the two
   hom-sets, leading to Frobenius reciprocity.
-*}
+\<close>
 
 context FrobeniusReciprocity
 begin

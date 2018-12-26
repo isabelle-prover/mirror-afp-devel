@@ -1,4 +1,4 @@
-section {* Nondeterministic Finite Automata *}
+section \<open>Nondeterministic Finite Automata\<close>
 
 theory NFA
 imports

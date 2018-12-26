@@ -138,12 +138,12 @@ proof (unfold poly_add_def, rule poly_resultant_zero[OF disjI2])
 qed (insert x y, simp_all)
 
 
-subsubsection {* @{const poly_add} is nonzero *}
+subsubsection \<open>@{const poly_add} is nonzero\<close>
 
-text {*
+text \<open>
   We first prove that @{const poly_lift} preserves factorization. The result will be essential
   also in the next section for division of algebraic numbers.
- *}
+\<close>
 
 interpretation coeff_lift_hom:
   factor_preserving_hom "coeff_lift :: 'a :: {comm_semiring_1,semiring_no_zero_divisors} \<Rightarrow> _"
@@ -190,11 +190,11 @@ proof unfold_locales
   qed
 qed
 
-text {*
+text \<open>
   We now show that @{const poly_x_minus_y} is a factor-preserving homomorphism. This is
   essential for this section. This is easy since @{const poly_x_minus_y} can be represented
   as the composition of two factor-preserving homomorphisms.
-*}
+\<close>
 
 lemma poly_x_minus_y_as_comp: "poly_x_minus_y = (\<lambda>p. p \<circ>\<^sub>p x_y) \<circ> poly_lift"
   by (intro ext, unfold poly_x_minus_y_def, auto)
@@ -215,9 +215,9 @@ proof-
     by (unfold poly_x_minus_y_as_comp, rule factor_preserving_hom_comp, unfold_locales)
 qed
 
-text {*
+text \<open>
   Now we show that results of @{const poly_x_minus_y} and @{const poly_lift} are coprime.
-*}
+\<close>
 
 lemma poly_y_x_const[simp]: "poly_y_x [:[:a:]:] = [:[:a:]:]" by (simp add: poly_y_x_def monom_0)
 
@@ -339,7 +339,7 @@ qed
 
 subsubsection \<open>Summary for addition\<close>
 
-text {* Now we lift the results to one that uses @{const ipoly}, by showing some homomorphism lemmas. *}
+text \<open>Now we lift the results to one that uses @{const ipoly}, by showing some homomorphism lemmas.\<close>
 
 lemma (in comm_ring_hom) map_poly_x_minus_y:
   "map_poly (map_poly hom) (poly_x_minus_y p) = poly_x_minus_y (map_poly hom p)"
@@ -472,7 +472,7 @@ qed
 definition poly_div :: "'a :: comm_ring_1 poly \<Rightarrow> 'a poly \<Rightarrow> 'a poly" where
   "poly_div p q = resultant (poly_x_mult_y p) (poly_lift q)"
 
-text {* @{const poly_div} has desired roots. *}
+text \<open>@{const poly_div} has desired roots.\<close>
 
 lemma poly2_poly_x_mult_y:
   fixes p :: "'a :: comm_ring_1 poly"
@@ -491,7 +491,7 @@ proof (unfold poly_div_def, rule poly_resultant_zero[OF disjI2])
 qed (insert x y y0, simp_all add: poly2_poly_x_mult_y)
 
 
-text {* @{const poly_div} is nonzero. *}
+text \<open>@{const poly_div} is nonzero.\<close>
 
 interpretation poly_x_mult_y_hom: ring_hom "poly_x_mult_y :: 'a :: {idom,ring_char_0} poly \<Rightarrow> _"
   by (unfold_locales, auto intro: poly2_ext simp: poly2_poly_x_mult_y hom_distribs)
@@ -633,7 +633,7 @@ qed
 
 subsubsection \<open>Summary for division\<close>
 
-text {* Now we lift the results to one that uses @{const ipoly}, by showing some homomorphism lemmas. *}
+text \<open>Now we lift the results to one that uses @{const ipoly}, by showing some homomorphism lemmas.\<close>
 
 lemma (in inj_comm_ring_hom) poly_x_mult_y_hom:
   "poly_x_mult_y (map_poly hom p) = map_poly (map_poly hom) (poly_x_mult_y p)"

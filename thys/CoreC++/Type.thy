@@ -5,7 +5,7 @@
     Based on the Jinja theory Common/Decl.thy by David von Oheimb and Tobias Nipkow 
 *)
 
-section {* CoreC++ types *}
+section \<open>CoreC++ types\<close>
 
 theory Type imports Auxiliary begin
 

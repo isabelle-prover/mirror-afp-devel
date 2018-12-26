@@ -14,9 +14,9 @@ imports
   ArrayHashSet
   ArraySetImpl
 begin
-text_raw {*\label{thy:SetStdImpl}*}
-text {*
+text_raw \<open>\label{thy:SetStdImpl}\<close>
+text \<open>
   This theory summarizes standard set implementations, namely list-sets RB-tree-sets, trie-sets and hashsets.
-*}
+\<close>
 
 end

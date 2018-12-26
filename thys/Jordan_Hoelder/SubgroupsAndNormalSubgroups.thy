@@ -10,9 +10,9 @@ theory SubgroupsAndNormalSubgroups
   "HOL-Algebra.Coset"
 begin
 
-section {* Preliminary lemmas *}
+section \<open>Preliminary lemmas\<close>
 
-text {* A group of order 1 is always the trivial group. *}
+text \<open>A group of order 1 is always the trivial group.\<close>
 
 
 lemma (in group) order_one_triv_iff:
@@ -40,7 +40,7 @@ lemma iso_order_closed:
 using assms
 unfolding order_def iso_def by (metis (no_types) bij_betw_same_card mem_Collect_eq)
 
-section {* More Facts about Subgroups *}
+section \<open>More Facts about Subgroups\<close>
 
 lemma (in subgroup) subgroup_of_restricted_group:
   assumes "subgroup U (G\<lparr> carrier := H\<rparr>)"
@@ -67,12 +67,12 @@ next
   fix x
   assume "x \<in> U"
   with assms(2) have "inv\<^bsub>G\<lparr> carrier := H\<rparr>\<^esub> x \<in> U" by (rule subgroup.m_inv_closed)
-  moreover from assms `x \<in> U` have "x \<in> H" by (metis in_mono subgroup_of_restricted_group)
-  with assms(1) `subgroup H G` have "inv\<^bsub>G\<lparr> carrier := H\<rparr>\<^esub> x = inv x" by (rule group.m_inv_consistent)
+  moreover from assms \<open>x \<in> U\<close> have "x \<in> H" by (metis in_mono subgroup_of_restricted_group)
+  with assms(1) \<open>subgroup H G\<close> have "inv\<^bsub>G\<lparr> carrier := H\<rparr>\<^esub> x = inv x" by (rule group.m_inv_consistent)
   ultimately show "inv x \<in> U" by simp
 qed
 
-text {* Being a subgroup is preserved by surjective homomorphisms *}
+text \<open>Being a subgroup is preserved by surjective homomorphisms\<close>
 
 lemma (in subgroup) surj_hom_subgroup:
   assumes \<phi>:"group_hom G F \<phi>"
@@ -99,7 +99,7 @@ next
   with \<phi> g subset show "inv\<^bsub>F\<^esub> f \<in> \<phi> ` H" using group_hom.hom_inv by fastforce
 qed
 
-text {* ... and thus of course by isomorphisms of groups. *}
+text \<open>... and thus of course by isomorphisms of groups.\<close>
 
 lemma iso_subgroup:
   assumes groups:"group G" "group F"
@@ -113,7 +113,7 @@ proof -
   ultimately show ?thesis by (metis subgroup.surj_hom_subgroup)
 qed
 
-text {* An isomorphism restricts to an isomorphism of subgroups. *}
+text \<open>An isomorphism restricts to an isomorphism of subgroups.\<close>
 
 lemma iso_restrict:
   assumes groups:"group G" "group F"
@@ -138,7 +138,7 @@ next
   with eq show "g = h" using \<phi> unfolding iso_def bij_betw_def inj_on_def by auto
 qed
 
-text {* The intersection of two subgroups is, again, a subgroup *}
+text \<open>The intersection of two subgroups is, again, a subgroup\<close>
 
 lemma (in group) subgroup_intersect:
   assumes "subgroup H G"
@@ -146,13 +146,13 @@ lemma (in group) subgroup_intersect:
   shows "subgroup (H \<inter> H') G"
 using assms unfolding subgroup_def by auto
 
-section {* Facts about Normal Subgroups *}
+section \<open>Facts about Normal Subgroups\<close>
 
 lemma (in normal) is_normal:
   shows "H \<lhd> G"
 by (metis coset_eq is_subgroup normalI)
 
-text {* Being a normal subgroup is preserved by surjective homomorphisms. *}
+text \<open>Being a normal subgroup is preserved by surjective homomorphisms.\<close>
 
 lemma (in normal) surj_hom_normal_subgroup:
   assumes \<phi>:"group_hom G F \<phi>"
@@ -181,7 +181,7 @@ next
   qed
 qed
 
-text {* Being a normal subgroup is preserved by group isomorphisms. *}
+text \<open>Being a normal subgroup is preserved by group isomorphisms.\<close>
 
 lemma iso_normal_subgroup:
   assumes groups:"group G" "group F"
@@ -195,13 +195,13 @@ proof -
   ultimately show ?thesis using normal.surj_hom_normal_subgroup by metis
 qed
 
-text {* The trivial subgroup is a subgroup: *}
+text \<open>The trivial subgroup is a subgroup:\<close>
 
 lemma (in group) triv_subgroup:
   shows "subgroup {\<one>} G"
 unfolding subgroup_def by auto
 
-text {* The cardinality of the right cosets of the trivial subgroup is the cardinality of the group itself: *}
+text \<open>The cardinality of the right cosets of the trivial subgroup is the cardinality of the group itself:\<close>
 
 lemma (in group) card_rcosets_triv:
   assumes "finite (carrier G)"
@@ -213,14 +213,14 @@ proof -
   thus ?thesis by (auto simp:card_Suc_eq)
 qed
 
-text {* The intersection of two normal subgroups is, again, a normal subgroup. *}
+text \<open>The intersection of two normal subgroups is, again, a normal subgroup.\<close>
 
 lemma (in group) normal_subgroup_intersect:
   assumes "M \<lhd> G" and "N \<lhd> G"
   shows "M \<inter> N \<lhd> G"
 using assms subgroup_intersect is_group normal_inv_iff by simp
 
-text {* The set product of two normal subgroups is a normal subgroup. *}
+text \<open>The set product of two normal subgroups is a normal subgroup.\<close>
 
 lemma (in group) setmult_lcos_assoc:
      "\<lbrakk>H \<subseteq> carrier G; K \<subseteq> carrier G; x \<in> carrier G\<rbrakk>
@@ -248,8 +248,8 @@ next
   qed
 qed
 
-text {* The following is a very basic lemma about subgroups: If restricting the carrier of
-  a group yields a group it's a subgroup of the group we've started with. *}
+text \<open>The following is a very basic lemma about subgroups: If restricting the carrier of
+  a group yields a group it's a subgroup of the group we've started with.\<close>
 
 lemma (in group) restrict_group_imp_subgroup:
   assumes "H \<subseteq> carrier G" "group (G\<lparr>carrier := H\<rparr>)"
@@ -275,7 +275,7 @@ next
   thus "inv x \<in> H" using assms(2) group.inv_closed x by fastforce
 qed
 
-text {* A subgroup relation survives factoring by a normal subgroup. *}
+text \<open>A subgroup relation survives factoring by a normal subgroup.\<close>
 
 lemma (in group) normal_subgroup_factorize:
   assumes "N \<lhd> G" and "N \<subseteq> H" and "subgroup H G"
@@ -294,7 +294,7 @@ proof -
   ultimately show ?thesis using GModN.is_group group.restrict_group_imp_subgroup by auto
 qed
 
-text {* A normality relation survives factoring by a normal subgroup. *}
+text \<open>A normality relation survives factoring by a normal subgroup.\<close>
 
 lemma (in group) normality_factorization:
   assumes NG:"N \<lhd> G" and NH:"N \<subseteq> H" and HG:"H \<lhd> G"
@@ -324,7 +324,7 @@ proof -
   qed
 qed
 
-text {* Factoring by a normal subgroups yields the trivial group iff the subgroup is the whole group. *}
+text \<open>Factoring by a normal subgroups yields the trivial group iff the subgroup is the whole group.\<close>
 
 lemma (in normal) fact_group_trivial_iff:
   assumes "finite (carrier G)"
@@ -345,14 +345,14 @@ next
   thus "carrier (G Mod H) = {\<one>\<^bsub>G Mod H\<^esub>}" using factorgroup_is_group by (metis group.order_one_triv_iff)
 qed
 
-text {* Finite groups have finite quotients. *}
+text \<open>Finite groups have finite quotients.\<close>
 
 lemma (in normal) factgroup_finite:
   assumes "finite (carrier G)"
   shows "finite (rcosets H)"
 using assms unfolding RCOSETS_def by auto
 
-text {* The union of all the cosets contained in a subgroup of a quotient group acts as a represenation for that subgroup. *}
+text \<open>The union of all the cosets contained in a subgroup of a quotient group acts as a represenation for that subgroup.\<close>
 
 lemma (in normal) factgroup_subgroup_union_char:
   assumes "subgroup A (G Mod H)"
@@ -439,7 +439,7 @@ proof -
     hence xcoset:"x \<otimes> (inv x \<otimes> x' \<otimes> x) \<in> x <# {x \<in> carrier G. H #> x \<in> A}" unfolding l_coset_def using x(1) by auto
     have "x \<otimes> (inv x \<otimes> x' \<otimes> x) = (x \<otimes> inv x) \<otimes> x' \<otimes> x" by (metis Units_eq Units_inv_Units m_assoc m_closed x'(1) x(1))
     also have "\<dots> = x' \<otimes> x" by (metis l_one r_inv x'(1) x(1))
-    also have "\<dots> = y" by (metis `y = x' \<otimes> x`)
+    also have "\<dots> = y" by (metis \<open>y = x' \<otimes> x\<close>)
     finally have "x \<otimes> (inv x \<otimes> x' \<otimes> x) = y".
     with xcoset show "y \<in> x <# {x \<in> carrier G. H #> x \<in> A}" by auto
   next
@@ -461,7 +461,7 @@ proof -
     hence xcoset:"(x \<otimes> x' \<otimes> inv x) \<otimes> x \<in> {x \<in> carrier G. H #> x \<in> A} #> x" unfolding r_coset_def using invx by auto
     have "(x \<otimes> x' \<otimes> inv x) \<otimes> x = (x \<otimes> x') \<otimes> (inv x \<otimes> x)" by (metis Units_eq Units_inv_Units m_assoc m_closed x'(1) x(1))
     also have "\<dots> = x \<otimes> x'" using x(1) l_inv x'(1) m_closed r_one by auto
-    also have "\<dots> = y" by (metis `y = x \<otimes> x'`)
+    also have "\<dots> = y" by (metis \<open>y = x \<otimes> x'\<close>)
     finally have "x \<otimes> x' \<otimes> inv x \<otimes> x = y".
     with xcoset show "y \<in> {x \<in> carrier G. H #> x \<in> A} #> x" by auto
   qed
@@ -490,10 +490,10 @@ proof -
 qed
 
 
-section  {* Flattening the type of group carriers *}
+section  \<open>Flattening the type of group carriers\<close>
 
-text {* Flattening here means to convert the type of group elements from 'a set to 'a.
-This is possible whenever the empty set is not an element of the group. *}
+text \<open>Flattening here means to convert the type of group elements from 'a set to 'a.
+This is possible whenever the empty set is not an element of the group.\<close>
 
 
 definition flatten where

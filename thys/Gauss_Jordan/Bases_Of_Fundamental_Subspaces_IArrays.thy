@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Bases of the four fundamental subspaces over IArrays*}
+section\<open>Bases of the four fundamental subspaces over IArrays\<close>
 
 theory Bases_Of_Fundamental_Subspaces_IArrays
 imports 
@@ -12,9 +12,9 @@ imports
   Gauss_Jordan_PA_IArrays  
 begin
 
-subsection{*Computation of bases of the fundamental subspaces using IArrays*}
+subsection\<open>Computation of bases of the fundamental subspaces using IArrays\<close>
 
-text{*We have made the definitions as efficient as possible.*}
+text\<open>We have made the definitions as efficient as possible.\<close>
 definition "basis_left_null_space_iarrays A 
   = (let GJ = Gauss_Jordan_iarrays_PA A;
           rank_A = length [x\<leftarrow>IArray.list_of (snd GJ) . \<not> is_zero_iarray x]
@@ -30,8 +30,8 @@ definition "basis_row_space_iarrays A =
 definition "basis_col_space_iarrays A = basis_row_space_iarrays (transpose_iarray A)"
 
 
-text{*The following lemmas make easier the proofs of equivalence between abstract versions and concrete versions.
-      They are false if we remove @{text "matrix_to_iarray"}*}
+text\<open>The following lemmas make easier the proofs of equivalence between abstract versions and concrete versions.
+      They are false if we remove \<open>matrix_to_iarray\<close>\<close>
 
 lemma basis_null_space_iarrays_eq:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
@@ -61,7 +61,7 @@ unfolding matrix_to_iarray_ncols[symmetric]
 unfolding ncols_transpose
 unfolding matrix_to_iarray_nrows ..
 
-subsection{*Code equations*}
+subsection\<open>Code equations\<close>
 
 lemma vec_to_iarray_basis_null_space[code_unfold]:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"

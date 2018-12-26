@@ -1,22 +1,22 @@
-section {* Syntax and proof rules for graphical diagrams *}
+section \<open>Syntax and proof rules for graphical diagrams\<close>
 
 theory Ribbons_Graphical imports 
   Ribbons_Interfaces
 begin
 
-text {* We introduce a graphical syntax for diagrams, describe how to extract 
-  commands and interfaces, and give proof rules for graphical diagrams. *}
+text \<open>We introduce a graphical syntax for diagrams, describe how to extract 
+  commands and interfaces, and give proof rules for graphical diagrams.\<close>
 
-subsection {* Syntax of graphical diagrams *}
+subsection \<open>Syntax of graphical diagrams\<close>
 
-text {* Fix a type for node identifiers *}
+text \<open>Fix a type for node identifiers\<close>
 typedecl node
 
-text {* Note that this datatype is necessarily an overapproximation of 
+text \<open>Note that this datatype is necessarily an overapproximation of 
   syntactically-wellformed diagrams, for the reason that we can't impose the 
   well-formedness constraints while maintaining admissibility of the datatype 
   declarations. So, we shall impose well-formedness in a separate definition. 
-  *}
+\<close>
   
 datatype assertion_gadget =
   Rib "assertion"
@@ -32,7 +32,7 @@ and diagram = Graph
 type_synonym labelling = "node \<Rightarrow> assertion_gadget"
 type_synonym edge = "node fset \<times> command_gadget \<times> node fset"
 
-text {* Projecting components from a graph *}
+text \<open>Projecting components from a graph\<close>
 
 fun vertices :: "diagram \<Rightarrow> node fset" ("_^V" [1000] 1000)
 where "(Graph V \<Lambda> E)^V = V"
@@ -45,7 +45,7 @@ where "(Graph V \<Lambda> E)^\<Lambda> = \<Lambda>"
 fun edges :: "diagram \<Rightarrow> edge list" ("_^E" [1000] 1000)
 where "(Graph V \<Lambda> E)^E = E"
 
-subsection {* Well formedness of graphical diagrams *}
+subsection \<open>Well formedness of graphical diagrams\<close>
 
 definition acyclicity :: "edge list \<Rightarrow> bool"
 where
@@ -100,7 +100,7 @@ apply -  (* This acts as an intro rule for &&& *)
 apply (elim wf_dia_inv', simp)+
 done
 
-subsection {* Initial and terminal nodes *}
+subsection \<open>Initial and terminal nodes\<close>
 
 definition
   initials :: "diagram \<Rightarrow> node fset"
@@ -128,7 +128,7 @@ lemma terminals_in_vertices:
    "terminals G |\<subseteq>| G^V"
 unfolding terminals_def by auto
 
-subsection {* Top and bottom interfaces *}
+subsection \<open>Top and bottom interfaces\<close>
 
 primrec
   top_ass :: "assertion_gadget \<Rightarrow> interface" and
@@ -147,7 +147,7 @@ where
 | "bot_ass (Exists_dia x G) = Exists_int x (bot_dia G)"
 
 
-subsection {* Proof rules for graphical diagrams *}
+subsection \<open>Proof rules for graphical diagrams\<close>
 
 inductive
   prov_dia :: "[diagram, interface, interface] \<Rightarrow> bool" and
@@ -173,15 +173,15 @@ inductive_cases basic_inv: "prov_com (Com c) P Q"
 inductive_cases exists_inv: "prov_ass (Exists_dia x G)"
 inductive_cases skip_inv: "prov_ass (Rib p)"
 
-subsection {* Extracting commands from diagrams *}
+subsection \<open>Extracting commands from diagrams\<close>
 
 type_synonym lin = "(node + edge) list"
 
-text {* A linear extension (lin) of a diagram is a list of its nodes and edges
+text \<open>A linear extension (lin) of a diagram is a list of its nodes and edges
   which respects the order of those nodes and edges. That is, if an edge
   @{term e} goes from node @{term v} to node @{term w}, then @{term v} and 
   @{term e} and @{term w} must have strictly increasing positions in the list. 
-  *}
+\<close>
 
 definition lins :: "diagram \<Rightarrow> lin set"
 where
@@ -207,10 +207,10 @@ apply (unfold lins_def Collect_iff)
 apply (elim conjE, assumption)+
 done
 
-text {* The following lemma enables the inductive definition below to be
+text \<open>The following lemma enables the inductive definition below to be
   proved monotonic. It does this by showing how one of the premises of the
   @{term coms_main} rule can be rewritten in a form that is more verbose but 
-  easier to prove monotonic. *}
+  easier to prove monotonic.\<close>
 
 lemma coms_mono_helper:
   "(\<forall>i<length \<pi>. case_sum (coms_ass \<circ> \<Lambda>) (coms_com \<circ> snd3) (\<pi>!i) (cs!i)) 
@@ -224,13 +224,13 @@ apply auto[1]
 apply (intro allI impI, case_tac "\<pi>!i", auto)
 done
     
-text {* The @{term coms_dia} function extracts a set of commands from a 
+text \<open>The @{term coms_dia} function extracts a set of commands from a 
   diagram. Each command in @{term "coms_dia G"} is obtained by extracting a 
   command from each of @{term G}'s nodes and edges (using @{term coms_ass} or 
   @{term coms_com} respectively), then picking a linear extension @{term \<pi>} of 
   these nodes and edges (using @{term lins}), and composing the extracted 
   commands in accordance with @{term \<pi>}.
-*}
+\<close>
 
 inductive
   coms_dia :: "[diagram, command] \<Rightarrow> bool" and

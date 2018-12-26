@@ -4,7 +4,7 @@ imports Sepref_Basic Sepref_Id_Op
 begin
 
 
-text {*
+text \<open>
   In this phase, a monadic program is converted to complete monadic form,
   that is, computation of compound expressions are made visible as top-level 
   operations in the monad.
@@ -18,7 +18,7 @@ text {*
     \item In a second step, computation of compound operands is flattened,
       introducing new bindings for the intermediate values. 
   \end{enumerate}
-*}
+\<close>
 
 
 definition SP \<comment> \<open>Tag to protect content from further application of arity 
@@ -32,17 +32,17 @@ definition RCALL \<comment> \<open>Tag that marks recursive call\<close>
 definition EVAL \<comment> \<open>Tag that marks evaluation of plain expression for monadify phase\<close>
   where [simp]: "EVAL x \<equiv> RETURN x"
 
-text {*
+text \<open>
   Internally, the package first applies rewriting rules from 
-  @{text sepref_monadify_arity}, which use eta-expansion to ensure that
+  \<open>sepref_monadify_arity\<close>, which use eta-expansion to ensure that
   every combinator has enough actual parameters. Moreover, this phase will
   mark recursive calls by the tag @{const RCALL}.
 
-  Next, rewriting rules from @{text sepref_monadify_comb} are used to
+  Next, rewriting rules from \<open>sepref_monadify_comb\<close> are used to
   add @{const EVAL}-tags to plain expressions that should be evaluated
   in the monad. The @{const EVAL} tags are flattened using a default simproc 
   that generates left-to-right argument order.
-*}
+\<close>
 
 lemma monadify_simps: 
   "Refine_Basic.bind$(RETURN$x)$(\<lambda>\<^sub>2x. f x) = f x" 
@@ -67,7 +67,7 @@ lemma RET_COPY_PASS_eq: "RETURN$(COPY$p) = PASS$p" by simp
 named_theorems_rev sepref_monadify_arity "Sepref.Monadify: Arity alignment equations"
 named_theorems_rev sepref_monadify_comb "Sepref.Monadify: Combinator equations"
 
-ML {*
+ML \<open>
   structure Sepref_Monadify = struct
     local
       fun cr_var (i,T) = ("v"^string_of_int i, Free ("__v"^string_of_int i,T))
@@ -262,7 +262,7 @@ ML {*
     end
 
   end
-*}
+\<close>
 
 lemma dflt_arity[sepref_monadify_arity]:
   "RETURN \<equiv> \<lambda>\<^sub>2x. SP RETURN$x" 

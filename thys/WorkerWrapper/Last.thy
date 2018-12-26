@@ -13,11 +13,11 @@ imports
 begin
 
 (*>*)
-section{* Optimise ``last''. *}
+section\<open>Optimise ``last''.\<close>
 
-text{* Andy Gill's solution, mechanised. No fusion, works fine using their rule. *}
+text\<open>Andy Gill's solution, mechanised. No fusion, works fine using their rule.\<close>
 
-subsection{* The @{term "last"} function. *}
+subsection\<open>The @{term "last"} function.\<close>
 
 fixrec llast :: "'a llist \<rightarrow> 'a"
 where

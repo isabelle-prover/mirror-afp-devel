@@ -1,4 +1,4 @@
-section {* Deep representation of HyperCTL* -- syntax and semantics *}
+section \<open>Deep representation of HyperCTL* -- syntax and semantics\<close>
 
 (*<*)
 theory Deep
@@ -6,11 +6,11 @@ imports Shallow "HOL-Library.Infinite_Set"
 begin
 (*>*)
 
-subsection{* Path variables and environments *}
+subsection\<open>Path variables and environments\<close>
 
 datatype pvar = Pvariable (natOf : nat)
 
-text {* Deeply embedded (syntactic) formulas *}
+text \<open>Deeply embedded (syntactic) formulas\<close>
 
 datatype 'aprop dfmla =
   Atom 'aprop pvar |
@@ -18,7 +18,7 @@ datatype 'aprop dfmla =
   Next "'aprop dfmla" | Until "'aprop dfmla" "'aprop dfmla" |
   Exi pvar "'aprop dfmla"
 
-text{* Derived operators *}
+text\<open>Derived operators\<close>
 
 definition "Tr \<equiv> Neg Fls"
 definition "Con \<phi> \<psi> \<equiv> Neg (Dis (Neg \<phi>) (Neg \<psi>))"
@@ -33,9 +33,9 @@ definition "Fall2 p p' \<phi> \<equiv> Fall p (Fall p' \<phi>)"
 lemmas der_Op_defs =
 Tr_def Con_def Imp_def Eq_def Ev_def Alw_def Wuntil_def Fall_def Fall2_def
 
-text{* Well-formed formulas are those that do not have a temporal operator
+text\<open>Well-formed formulas are those that do not have a temporal operator
 outside the scope of any quantifier -- indeed, in HyperCTL* such a situation does not make sense, 
-since the temporal operators refer to previously introduced/quantified paths. *}
+since the temporal operators refer to previously introduced/quantified paths.\<close>
 
 primrec wff :: "'aprop dfmla \<Rightarrow> bool" where
  "wff (Atom a p) = True"
@@ -47,7 +47,7 @@ primrec wff :: "'aprop dfmla \<Rightarrow> bool" where
 |"wff (Exi p \<phi>) = True"
 
 
-text {* The ability to pick a fresh variable *}
+text \<open>The ability to pick a fresh variable\<close>
 
 lemma finite_fresh_pvar:
 assumes "finite (P :: pvar set)"
@@ -67,7 +67,7 @@ assumes "finite P" shows "getFresh P \<notin> P"
 by (metis assms exE_some finite_fresh_pvar getFresh_def)
 
 
-text {* The free-variables operator *}
+text \<open>The free-variables operator\<close>
 
 primrec FV :: "'aprop dfmla \<Rightarrow> pvar set" where
  "FV (Atom a p) = {p}"
@@ -78,7 +78,7 @@ primrec FV :: "'aprop dfmla \<Rightarrow> pvar set" where
 |"FV (Until \<phi> \<psi>) = FV \<phi> \<union> FV \<psi>"
 |"FV (Exi p \<phi>) = FV \<phi> - {p}"
 
-text{* Environments *}
+text\<open>Environments\<close>
 
 type_synonym env = "pvar \<Rightarrow> nat"
 
@@ -100,17 +100,17 @@ unfolding eqOn_def by auto
 context Shallow
 begin
 
-subsection {* The semantic operator *}
+subsection \<open>The semantic operator\<close>
 
 
-text{* The semantics will interpret deep (syntactic) formulas as shallow formulas.
+text\<open>The semantics will interpret deep (syntactic) formulas as shallow formulas.
 Recall that the latter are predicates on lists of paths -- the interpretation will
 be parameterized by an environment mapping each path variable to a number indicating
 the index (in the list) for the path denoted by the variable.
 
 The semantics will only
 be meaningful if the indexes of a formula's free variables are smaller than the length
-of the path list -- we call this property ``compatibility''. *}
+of the path list -- we call this property ``compatibility''.\<close>
 
 primrec sem :: "'aprop dfmla \<Rightarrow> env \<Rightarrow> ('state,'aprop) sfmla" where
  "sem (Atom a p) env = atom a (env p)"
@@ -145,8 +145,8 @@ lemma sem_Fall2[simp]:
 unfolding Fall2_def fall2_def by (auto simp add: fall_def exi_def[abs_def] neg_def[abs_def])
 
 
-text{* Compatibility of a pair (environment,path list) on a set of variables means
-no out-or-range references: *}
+text\<open>Compatibility of a pair (environment,path list) on a set of variables means
+no out-or-range references:\<close>
 
 definition "cpt P env \<pi>l \<equiv> \<forall> p \<in> P. env p < length \<pi>l"
 
@@ -163,14 +163,14 @@ lemma cpt_map_stl[simp]:
 unfolding cpt_def by auto
 
 
-text {* Next we prove that the semantics of well-formed formulas only depends on the interpretation
+text \<open>Next we prove that the semantics of well-formed formulas only depends on the interpretation
 of the free variables of a formula and on the current state of the last recorded path --
-we call the latter the ``pointer'' of the path list. *}
+we call the latter the ``pointer'' of the path list.\<close>
 
 fun pointerOf :: "('state,'aprop) path list \<Rightarrow> 'state" where
 "pointerOf \<pi>l = (if \<pi>l \<noteq> [] then stateOf (last \<pi>l) else s0)"
 
-text{* Equality of two pairs (environment,path list) on a set of variables: *}
+text\<open>Equality of two pairs (environment,path list) on a set of variables:\<close>
 
 definition eqOn ::
 "pvar set \<Rightarrow> env \<Rightarrow> ('state,'aprop) path list \<Rightarrow> env \<Rightarrow> ('state,'aprop) path list \<Rightarrow> bool"
@@ -233,9 +233,9 @@ next
   by (intro iff_exI) (metis append_is_Nil_conv last_snoc)
 qed(auto simp: last_map op_defs)
 
-text{* The next theorem states that the semantics of a formula on an environment
+text\<open>The next theorem states that the semantics of a formula on an environment
 and a list of paths only depends on the pointer of the list of paths.
- *}
+\<close>
 
 theorem eqOn_FV_sem:
 assumes "wff \<phi>" and "pointerOf \<pi>l = pointerOf \<pi>l1"
@@ -262,9 +262,9 @@ shows "sem \<phi> env \<pi>l = sem \<phi> env1 \<pi>l"
 apply(rule eqOn_FV_sem)
 using assms unfolding eqOn_def by auto
 
-text{* As a consequence, the interpretation of a closed formula (i.e., a formula
+text\<open>As a consequence, the interpretation of a closed formula (i.e., a formula
 with no free variables) will not depend on the environment and, from the
-list of paths, will only depend on its pointer: *}
+list of paths, will only depend on its pointer:\<close>
 
 corollary interp_closed:
 assumes "wff \<phi>" and "FV \<phi> = {}" and "pointerOf \<pi>l = pointerOf \<pi>l1"
@@ -273,9 +273,9 @@ apply(rule eqOn_FV_sem)
 using assms unfolding eqOn_def cpt_def by auto
 
 
-text{* Therefore, it makes sense to define the interpretation of a closed formula
+text\<open>Therefore, it makes sense to define the interpretation of a closed formula
 by choosing any environment and any list of paths such that its pointer is the initial state
-(e.g., the empty list) -- knowing that the choices are irrelevant. *}
+(e.g., the empty list) -- knowing that the choices are irrelevant.\<close>
 
 definition "semClosed \<phi> \<equiv> sem \<phi> (any::env) (SOME \<pi>l. pointerOf \<pi>l = s0)"
 
@@ -295,11 +295,11 @@ using assms semClosed by auto
 
 
 
-subsection{* The conjunction of a finite set of formulas *}
+subsection\<open>The conjunction of a finite set of formulas\<close>
 
 
-text{* This is defined by making the set into a list (by choosing any ordering of the
-elements) and iterating binary conjunction. *}
+text\<open>This is defined by making the set into a list (by choosing any ordering of the
+elements) and iterating binary conjunction.\<close>
 
 definition Scon :: "'aprop dfmla set \<Rightarrow> 'aprop dfmla" where
 "Scon \<phi>s \<equiv> foldr Con (asList \<phi>s) Tr"
@@ -330,7 +330,7 @@ qed
 end (* context Shallow  *)
 (*>*)
 
-text{* end-of-context Shallow  *}
+text\<open>end-of-context Shallow\<close>
 
 
 (*<*)

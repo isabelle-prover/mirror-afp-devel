@@ -7,7 +7,7 @@ imports
   Graph_Theory.Graph_Theory
 begin
 
-subsection {* An abstract graph datatype *}
+subsection \<open>An abstract graph datatype\<close>
 
 type_synonym ig_vertex = nat
 type_synonym ig_edge = "ig_vertex \<times> ig_vertex"
@@ -53,7 +53,7 @@ definition ig_neighbors :: "IGraph => ig_vertex => ig_vertex set" where
 
 
 
-subsection {* Code *}
+subsection \<open>Code\<close>
 
 procedures is_subgraph (G :: IGraph, H :: IGraph | R :: bool)
   where

@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Stateful Protocols: Foundations *}
+subsection \<open>Stateful Protocols: Foundations\<close>
 theory 
   StatefulCore 
   imports 
@@ -43,7 +43,7 @@ theory
     LTL_alike
 begin
 
-text{* 
+text\<open>
   The simple system of a stateless packet filter is not enough to model all common real-world 
   scenarios. Some protocols need further actions in order to be secured.  A prominent example is 
   the File Transfer Protocol (FTP), which is a popular means to move files across the Internet. 
@@ -65,16 +65,16 @@ text{*
 
   At first we hence need a state. It is a tuple from some memory to be refined later and the 
   current policy. 
-*}
+\<close>
   
 type_synonym ('\<alpha>,'\<beta>,'\<gamma>) FWState = "'\<alpha> \<times> (('\<beta>,'\<gamma>) packet \<mapsto> unit)"  
 
 
 
-text{* Having a state, we need of course some state transitions. Such
+text\<open>Having a state, we need of course some state transitions. Such
   a transition can happen every time a new packet arrives. State
   transitions can be modelled using a state-exception monad.  
-*}
+\<close>
 
 
 type_synonym ('\<alpha>,'\<beta>,'\<gamma>) FWStateTransitionP =
@@ -83,7 +83,7 @@ type_synonym ('\<alpha>,'\<beta>,'\<gamma>) FWStateTransitionP =
 type_synonym ('\<alpha>,'\<beta>,'\<gamma>) FWStateTransition = 
              "(('\<beta>,'\<gamma>) packet \<times> ('\<alpha>,'\<beta>,'\<gamma>) FWState) \<rightharpoonup> ('\<alpha>,'\<beta>,'\<gamma>) FWState"
 
-text{* The memory could be modelled as a list of accepted packets. *}
+text\<open>The memory could be modelled as a list of accepted packets.\<close>
 type_synonym ('\<beta>,'\<gamma>) history = "('\<beta>,'\<gamma>) packet list"
 
 

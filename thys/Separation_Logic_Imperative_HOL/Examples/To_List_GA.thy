@@ -1,12 +1,12 @@
-section {* Generic Algorithm to Convert Sets to Lists *}
+section \<open>Generic Algorithm to Convert Sets to Lists\<close>
 theory To_List_GA
 imports Imp_Set_Spec Imp_List_Spec Hash_Set_Impl Open_List
 begin
-  text {* This theory demonstrates how to develop a generic to-list 
+  text \<open>This theory demonstrates how to develop a generic to-list 
     algorithm, and gives a sample instantiation for hash sets and open lists.
-    *}
+\<close>
 
-  subsection {* Algorithm *}
+  subsection \<open>Algorithm\<close>
   partial_function (heap) to_list_ga_rec where [code]: 
     "to_list_ga_rec 
       it_has_next it_next 
@@ -84,7 +84,7 @@ begin
       by (sep_auto simp: FIN)
   qed
 
-  subsection {* Sample Instantiation for hash set and open list *}
+  subsection \<open>Sample Instantiation for hash set and open list\<close>
   definition "hs_to_ol 
     \<equiv> to_list_ga hs_it_init hs_it_has_next hs_it_next
         os_empty os_prepend"

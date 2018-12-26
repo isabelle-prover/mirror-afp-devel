@@ -69,7 +69,7 @@ abbreviation meqL:: "e\<Rightarrow>e\<Rightarrow>wo" (infix "\<^bold>\<approx>\<
       
 subsection \<open>Validity\<close>
 text\<open>\noindent{Validity is defined as truth in \emph{all} worlds and represented by wrapping the formula
-in special brackets (@{text "\<lfloor>-\<rfloor>"}).}\<close>  
+in special brackets (\<open>\<lfloor>-\<rfloor>\<close>).}\<close>  
 abbreviation valid::"wo\<Rightarrow>bool" ("\<lfloor>_\<rfloor>") where "\<lfloor>\<psi>\<rfloor> \<equiv>  \<forall>w.(\<psi> w)"
   
 subsection \<open>Verifying the Embedding\<close>
@@ -87,7 +87,7 @@ text\<open>\noindent{(Converse-)Barcan formulas are validated in this embedding.
 lemma "\<lfloor>(\<^bold>\<forall>x.\<^bold>\<box>(\<phi> x)) \<^bold>\<rightarrow> \<^bold>\<box>(\<^bold>\<forall>x.(\<phi> x))\<rfloor>" by simp
 lemma "\<lfloor>\<^bold>\<box>(\<^bold>\<forall>x.(\<phi> x)) \<^bold>\<rightarrow> (\<^bold>\<forall>x.\<^bold>\<box>(\<phi> x))\<rfloor>" by simp  
      
-text\<open>\noindent{@{text "\<beta>"}-redex is valid.}\<close>
+text\<open>\noindent{\<open>\<beta>\<close>-redex is valid.}\<close>
 lemma "\<lfloor>(\<lambda>\<alpha>. \<phi> \<alpha>) (\<tau>::w\<Rightarrow>e) \<^bold>\<leftrightarrow> (\<phi>  \<tau>)\<rfloor>" by simp
 lemma "\<lfloor>(\<lambda>\<alpha>. \<phi> \<alpha>) (\<tau>::e) \<^bold>\<leftrightarrow> (\<phi>  \<tau>)\<rfloor>" by simp
 lemma "\<lfloor>(\<lambda>\<alpha>. \<^bold>\<box>\<phi> \<alpha>) (\<tau>::w\<Rightarrow>e) \<^bold>\<leftrightarrow> (\<^bold>\<box>\<phi> \<tau>)\<rfloor>" by simp

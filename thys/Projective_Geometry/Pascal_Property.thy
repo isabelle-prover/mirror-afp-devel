@@ -6,7 +6,7 @@ begin
 
 text \<open>
 Contents:
-\<^item> A hexagon is pascal if its three opposite sides meet in collinear points [@{text "is_pascal"}].
+\<^item> A hexagon is pascal if its three opposite sides meet in collinear points [\<open>is_pascal\<close>].
 \<^item> A plane is pascal, or has Pascal's property, if for every hexagon of that plane
 Pascal property is stable under any permutation of that hexagon. 
 \<close>

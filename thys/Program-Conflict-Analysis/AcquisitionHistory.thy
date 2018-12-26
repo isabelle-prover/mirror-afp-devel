@@ -6,9 +6,9 @@ section "Acquisition Histories"
 theory AcquisitionHistory
 imports ConsInterleave
 begin
-text_raw {*\label{thy:AcquisitionHistory}*}
+text_raw \<open>\label{thy:AcquisitionHistory}\<close>
 
-text {* The concept of {\em acquisition histories} was introduced by Kahlon, Ivancic, and Gupta \cite{KIG05} as a bounded size abstraction of executions that acquire and release locks that contains enough information
+text \<open>The concept of {\em acquisition histories} was introduced by Kahlon, Ivancic, and Gupta \cite{KIG05} as a bounded size abstraction of executions that acquire and release locks that contains enough information
   to decide consistent interleavability. In this work, we use this concept for reentrant monitors.
   As in Section~\ref{thy:ConsInterleave}, we encode monitor usage information in pairs of sets of monitors, and regard lists of such pairs as (abstract) executions.
   An item @{term "(E,U)"} of such a list describes a sequence of steps of the concrete execution that first enters the monitors in @{term E} and then passes through the monitors in @{term U}. The monitors in @{term E} are
@@ -23,12 +23,12 @@ text {* The concept of {\em acquisition histories} was introduced by Kahlon, Iva
   for our setting with reentrant monitors. 
 
   This theory contains the definition of acquisition histories and acquisition history interleavability, an ordering on acquisition histories that reflects the blocking potential of acquisition histories, 
-  and a mapping function from paths to acquisition histories that is shown to be compatible with monitor consistent interleaving.  *}
+  and a mapping function from paths to acquisition histories that is shown to be compatible with monitor consistent interleaving.\<close>
 
 subsection "Definitions"
-text {* Acquisition histories are modeled as functions from monitors to sets of monitors. Intuitively @{term "m'\<in>h m"} models that an execution finally is in @{term m}, and monitor @{term m'} has been used (i.e. passed or entered)
+text \<open>Acquisition histories are modeled as functions from monitors to sets of monitors. Intuitively @{term "m'\<in>h m"} models that an execution finally is in @{term m}, and monitor @{term m'} has been used (i.e. passed or entered)
   after or at the same time @{term m} has been finally entered. By convention, we have @{term "m\<in>h m"} or @{term "h m = {}"}.
-*}
+\<close>
 
   (* TODO: Make acquisition histories an own type, with access and update operator of sort order  *)
 definition "ah == { (h::'m \<Rightarrow> 'm set) . \<forall> m. h m = {} \<or> m\<in>h m }"
@@ -37,24 +37,24 @@ lemma ah_cases[cases set]: "\<lbrakk>h\<in>ah; h m = {} \<Longrightarrow> P ; m 
   by (unfold ah_def) blast
 
 subsection "Interleavability"
-text {* Two acquisition histories @{term h1} and @{term h2} are considered interleavable, iff there is no conflicting pair of monitors @{term m1} and @{term m2}, 
-  where a pair of monitors @{term m1} and @{term m2} is called {\em conflicting} iff @{term m1} is used in @{term h2} after entering @{term m2} and, vice versa, @{term m2} is used in @{term h1} after entering @{term m1}. *}  
+text \<open>Two acquisition histories @{term h1} and @{term h2} are considered interleavable, iff there is no conflicting pair of monitors @{term m1} and @{term m2}, 
+  where a pair of monitors @{term m1} and @{term m2} is called {\em conflicting} iff @{term m1} is used in @{term h2} after entering @{term m2} and, vice versa, @{term m2} is used in @{term h1} after entering @{term m1}.\<close>  
 definition
   ah_il :: "('m \<Rightarrow> 'm set) \<Rightarrow> ('m \<Rightarrow> 'm set) \<Rightarrow> bool" (infix "[*]" 65) 
   where
   "h1 [*] h2 == \<not>(\<exists>m1 m2. m1\<in>h2 m2 \<and> m2 \<in> h1 m1)"
 
-text {* From our convention, it follows (as expected) that the sets of entered monitors (lock-sets) of two interleavable acquisition histories are disjoint *}
+text \<open>From our convention, it follows (as expected) that the sets of entered monitors (lock-sets) of two interleavable acquisition histories are disjoint\<close>
 lemma ah_il_lockset_disjoint: 
   "\<lbrakk> h1\<in>ah; h2\<in>ah; h1 [*] h2 \<rbrakk> \<Longrightarrow> h1 m = {} \<or> h2 m = {}"
   by (unfold ah_il_def) (auto elim: ah_cases)    
 
-text {* Of course, acquisition history interleavability is commutative *}
+text \<open>Of course, acquisition history interleavability is commutative\<close>
 lemma ah_il_commute: "h1 [*] h2 \<Longrightarrow> h2 [*] h1"
   by (unfold ah_il_def) auto
 
 subsection "Used monitors"
-text {* Let's define the monitors of an acquisition history, as all monitors that occur in the acquisition history *}
+text \<open>Let's define the monitors of an acquisition history, as all monitors that occur in the acquisition history\<close>
 definition 
   mon_ah :: "('m \<Rightarrow> 'm set) \<Rightarrow> 'm set"
   where
@@ -62,8 +62,8 @@ definition
 
 
 subsection "Ordering"
-text {* The element-wise subset-ordering on acquisition histories intuitively reflects the blocking potential: The bigger the acquisition history, the fewer acquisition histories are interleavable with it.*}
-text {* Note that the Isabelle standard library automatically lifts the subset ordering to functions, so we need no explicit definition here. *}
+text \<open>The element-wise subset-ordering on acquisition histories intuitively reflects the blocking potential: The bigger the acquisition history, the fewer acquisition histories are interleavable with it.\<close>
+text \<open>Note that the Isabelle standard library automatically lifts the subset ordering to functions, so we need no explicit definition here.\<close>
   
 \<comment> \<open>The ordering is compatible with interleavability, i.e.\ smaller acquisition histories are more likely to be interleavable.\<close>
 lemma ah_leq_il: "\<lbrakk> h1 [*] h2; h1' \<le> h1; h2' \<le> h2 \<rbrakk> \<Longrightarrow> h1' [*] h2'"
@@ -73,7 +73,7 @@ lemma ah_leq_il_left: "\<lbrakk> h1 [*] h2; h1' \<le> h1 \<rbrakk> \<Longrightar
   by (unfold ah_il_def le_fun_def [where 'b="'a set"]) blast+
 
 subsection "Acquisition histories of executions"
-text {* Next we define a function that abstracts from executions (lists of enter/use pairs) to acquisition histories *}
+text \<open>Next we define a function that abstracts from executions (lists of enter/use pairs) to acquisition histories\<close>
 primrec \<alpha>ah :: "('m set \<times> 'm set) list \<Rightarrow> 'm \<Rightarrow> 'm set" where
   "\<alpha>ah [] m = {}"
 | "\<alpha>ah (e#w) m = (if m\<in>fst e then fst e \<union> snd e \<union> mon_pl w else \<alpha>ah w m)"
@@ -129,17 +129,17 @@ next
     thus "x \<in> \<alpha>ah (b # l) m"
     proof (cases rule: \<alpha>ah_cons_cases)
       case hd
-      with mon_pl_ileq[OF take.hyps(2)] and `a = b`
+      with mon_pl_ileq[OF take.hyps(2)] and \<open>a = b\<close>
       show ?thesis by auto
     next
       case tl
-      with take.hyps(3)[unfolded le_fun_def [where 'b="'a set"]] and `a = b`
+      with take.hyps(3)[unfolded le_fun_def [where 'b="'a set"]] and \<open>a = b\<close>
       show ?thesis by auto
     qed
   qed
 qed
       
-text {* We can now prove the relation of monitor consistent interleavability and interleavability of the acquisition histories. *}
+text \<open>We can now prove the relation of monitor consistent interleavability and interleavability of the acquisition histories.\<close>
 lemma ah_interleavable1: 
   "w \<in> w1 \<otimes>\<^bsub>\<alpha>\<^esub> w2 \<Longrightarrow> \<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)" 
   \<comment> \<open>The lemma is shown by induction on the structure of the monitor consistent interleaving operator\<close>
@@ -248,27 +248,27 @@ proof -
 qed
               
   
-text {* Finally, we can state the relationship between monitor consistent interleaving and interleaving of acquisition histories *}
+text \<open>Finally, we can state the relationship between monitor consistent interleaving and interleaving of acquisition histories\<close>
 theorem ah_interleavable: 
   "(\<alpha>ah (map \<alpha> w1) [*] \<alpha>ah (map \<alpha> w2)) \<longleftrightarrow> (w1\<otimes>\<^bsub>\<alpha>\<^esub>w2\<noteq>{})" 
   using ah_interleavable1 ah_interleavable2 by blast
 
 subsection "Acquisition history backward update"
-text {* We define a function to update an acquisition history backwards. This function is useful for constructing acquisition histories in backward constraint systems. *}
+text \<open>We define a function to update an acquisition history backwards. This function is useful for constructing acquisition histories in backward constraint systems.\<close>
 definition
   ah_update :: "('m \<Rightarrow> 'm set) \<Rightarrow> ('m set * 'm set) \<Rightarrow> 'm set \<Rightarrow> ('m \<Rightarrow> 'm set)"
   where
   "ah_update h F M m == if m\<in>fst F then fst F \<union> snd F \<union> M else h m"
 
-text {*
+text \<open>
   Intuitively, @{term "ah_update h (E,U) M m"} means to prepend a step @{term "(E,U)"} to the acquisition history @{term h} of a path that uses monitors @{term M}. Note that we need the extra parameter @{term M}, since
   an acquisition history does not contain information about the monitors that are used on a path before the first monitor that will not be left has been entered. 
-*}
+\<close>
 lemma ah_update_cons: "\<alpha>ah (e#w) = ah_update (\<alpha>ah w) e (mon_pl w)"
   by (auto intro!: ext simp add: ah_update_def)
 
-text {* The backward-update function is monotonic in the first and third argument as well as in the used monitors of the second argument. 
-  Note that it is, in general, not monotonic in the entered monitors of the second argument. *}
+text \<open>The backward-update function is monotonic in the first and third argument as well as in the used monitors of the second argument. 
+  Note that it is, in general, not monotonic in the entered monitors of the second argument.\<close>
 lemma ah_update_mono: "\<lbrakk>h \<le> h'; F=F'; M\<subseteq>M'\<rbrakk> 
   \<Longrightarrow> ah_update h F M \<le> ah_update h' F' M'"
   by (auto simp add: ah_update_def le_fun_def [where 'b="'a set"])

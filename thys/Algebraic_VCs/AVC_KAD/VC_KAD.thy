@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Components Based on Kleene Algebra with Domain *}
+section \<open>Components Based on Kleene Algebra with Domain\<close>
 
 theory VC_KAD
 
@@ -12,10 +12,10 @@ imports KAD.Modal_Kleene_Algebra_Models "../P2S2R"
 
 begin
 
-subsection{* Verification Component for Backward Reasoning *}
+subsection\<open>Verification Component for Backward Reasoning\<close>
 
-text {* This component supports the verification of simple while programs
-in a partial correctness setting. *}
+text \<open>This component supports the verification of simple while programs
+in a partial correctness setting.\<close>
 
 no_notation Archimedean_Field.ceiling ("\<lceil>_\<rceil>")
 no_notation Archimedean_Field.floor ("\<lfloor>_\<rfloor>")
@@ -26,12 +26,12 @@ notation r2p ("\<lfloor>_\<rfloor>")
 context antidomain_kleene_algebra
 begin
 
-subsubsection {* Additional Facts for KAD*}
+subsubsection \<open>Additional Facts for KAD\<close>
 
 lemma fbox_shunt: "d p \<cdot> d q \<le> |x] t \<longleftrightarrow> d p \<le> ad q + |x] t"
   by (metis a_6 a_antitone' a_loc add_commute addual.ars_r_def am_d_def da_shunt2 fbox_def)
 
-subsubsection {* Syntax for Conditionals and Loops *}
+subsubsection \<open>Syntax for Conditionals and Loops\<close>
 
 definition cond :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
   "if p then x else y fi = d p \<cdot> x + ad p \<cdot> y"
@@ -42,10 +42,10 @@ definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [6
 definition whilei :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _ od" [64,64,64] 63) where
   "while p inv i do x od = while p do x od"
 
-subsubsection {* Basic Weakest (Liberal) Precondition Calculus *}
+subsubsection \<open>Basic Weakest (Liberal) Precondition Calculus\<close>
 
-text {* In the setting of Kleene algebra with domain, the wlp operator is the forward modal box operator 
-of antidomain Kleene algebra. *}
+text \<open>In the setting of Kleene algebra with domain, the wlp operator is the forward modal box operator 
+of antidomain Kleene algebra.\<close>
 
 lemma fbox_export1: "ad p + |x] q = |d p \<cdot> x] q"
   using a_d_add_closure addual.ars_r_def fbox_def fbox_mult by auto
@@ -145,13 +145,13 @@ proof -
     using a1 dual_order.trans by blast
 qed
 
-text {* The next rule is used for dealing with while loops after a series of sequential steps. *}
+text \<open>The next rule is used for dealing with while loops after a series of sequential steps.\<close>
 
 lemma fbox_whilei_break: "d p \<le> |y] i \<Longrightarrow> d i \<cdot> ad t \<le> d q \<Longrightarrow> d i \<cdot> d t \<le> |x] i \<Longrightarrow> d p \<le> |y \<cdot> (while t inv i do x od)] q"
   apply (rule fbox_seq_var, rule fbox_whilei, simp_all, blast)
   using fbox_simp by auto
 
-text {* Finally we derive a frame rule. *}
+text \<open>Finally we derive a frame rule.\<close>
 
 lemma fbox_frame: "d p \<cdot> x \<le> x \<cdot> d p \<Longrightarrow> d q \<le> |x] t \<Longrightarrow> d p \<cdot> d q \<le> |x] (d p \<cdot> d t)"    
   using dual.mult_isol_var fbox_add1 fbox_demodalisation3 fbox_simp by auto
@@ -161,7 +161,7 @@ lemma fbox_frame_var: "d p \<le> |x] p \<Longrightarrow> d q \<le> |x] t \<Longr
 
 end
 
-subsubsection {* Store and Assignment *}
+subsubsection \<open>Store and Assignment\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
@@ -183,7 +183,7 @@ lemma wp_assign_var [simp]: "\<lfloor>wp (v ::= e) \<lceil>Q\<rceil>\<rfloor> = 
 lemma wp_assign_det: "wp (v ::= e) \<lceil>Q\<rceil> = relfdia (v ::= e) \<lceil>Q\<rceil>"
   by (auto simp add: rel_antidomain_kleene_algebra.fbox_def rel_antidomain_kleene_algebra.fdia_def gets_def p2r_def rel_ad_def, fast)
  
-subsubsection {* Simplifications *}
+subsubsection \<open>Simplifications\<close>
 
 notation rel_antidomain_kleene_algebra.ads_d ("rdom")
 

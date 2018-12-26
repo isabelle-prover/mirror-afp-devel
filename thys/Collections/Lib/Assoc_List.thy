@@ -1,11 +1,11 @@
-section {* \isaheader{The type of associative lists} *}
+section \<open>\isaheader{The type of associative lists}\<close>
 theory Assoc_List 
   imports 
   "HOL-Library.AList" 
   "../Iterator/SetIteratorOperations"
 begin
 
-subsection {* Type @{text "('a, 'b) assoc_list" } *}
+subsection \<open>Type \<open>('a, 'b) assoc_list\<close>\<close>
 
 typedef ('k, 'v) assoc_list = "{xs :: ('k \<times> 'v) list. distinct (map fst xs)}"
 morphisms impl_of Assoc_List
@@ -27,7 +27,7 @@ unfolding distinct_map by simp
 lemma Assoc_List_impl_of [code abstype]: "Assoc_List (impl_of al) = al"
 by(rule impl_of_inverse)
 
-subsection {* Primitive operations *}
+subsection \<open>Primitive operations\<close>
 
 definition empty :: "('k, 'v) assoc_list"
 where [code del]: "empty = Assoc_List []"
@@ -55,7 +55,7 @@ lemma impl_of_delete [code abstract]:
   "impl_of (delete k al) = AList.delete_aux k (impl_of al)"
 by(simp add: delete_def Assoc_List_inverse)
 
-subsection {* Abstract operation properties *}
+subsection \<open>Abstract operation properties\<close>
 
 lemma lookup_empty [simp]: "lookup empty k = None"
 by(simp add: empty_def lookup_def Assoc_List_inverse)
@@ -79,7 +79,7 @@ unfolding iteratei_def[abs_def] lookup_def map_to_set_def
 by (simp add: set_iterator_foldli_correct)
 
 
-subsection {* Derived operations *}
+subsection \<open>Derived operations\<close>
 
 definition update :: "'key \<Rightarrow> 'val \<Rightarrow> ('key, 'val) assoc_list \<Rightarrow> ('key, 'val) assoc_list"
 where "update k v = update_with v k (\<lambda>_. v)"
@@ -105,7 +105,7 @@ by(simp add: update_def set_update_with)
 lemma set_delete: "set (delete k al) = set al - {k} \<times> UNIV"
 by(simp add: set_def delete_def Assoc_List_inverse set_delete_aux)
 
-subsection {* Type classes *}
+subsection \<open>Type classes\<close>
 
 instantiation assoc_list :: (equal, equal) equal begin
 
@@ -126,9 +126,9 @@ end
 
 hide_const (open) impl_of empty lookup update_with set update delete iteratei 
 
-subsection {* @{const map_ran} *}
+subsection \<open>@{const map_ran}\<close>
 
-text {* @{term map_ran} with more general type - lemmas replicated from AList in HOL/Library *}
+text \<open>@{term map_ran} with more general type - lemmas replicated from AList in HOL/Library\<close>
 
 hide_const (open) map_ran
 
@@ -154,7 +154,7 @@ lemma clearjunk_map_ran: "AList.clearjunk (map_ran f al)
   = map_ran f (AList.clearjunk al)"
   by (induct al rule: clearjunk.induct) (simp_all add: AList.delete_eq map_ran_filter)
 
-text {* new lemmas and definitions *}
+text \<open>new lemmas and definitions\<close>
 
 lemma map_ran_cong [fundef_cong]:
   "\<lbrakk> al = al'; \<And>k v. (k, v) \<in> set al \<Longrightarrow> f k v = g k v \<rbrakk> \<Longrightarrow> map_ran f al = map_ran g al'"
@@ -185,7 +185,7 @@ by(induct al)(auto simp add: card_insert_if finite_dom_map_of dom_map_of_conv_im
 lemma map_of_map_inj_fst:
   assumes "inj f"
   shows "map_of (map (\<lambda>(k, v). (f k, v)) xs) (f x) = map_of xs x"
-by(induct xs)(auto dest: injD[OF `inj f`])
+by(induct xs)(auto dest: injD[OF \<open>inj f\<close>])
 
 lemma length_map_ran [simp]: "length (map_ran f xs) = length xs"
 by(induct xs) simp_all

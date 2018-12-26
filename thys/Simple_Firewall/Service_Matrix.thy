@@ -447,7 +447,7 @@ definition "runFw s d c rs = simple_fw rs \<lparr>p_iiface=pc_iiface c,p_oiface=
                           p_tcp_flags={TCP_SYN},
                           p_payload=''''\<rparr>"
 
-text{*We use @{const runFw} for executable code, but in general, everything applies to generic packets*}
+text\<open>We use @{const runFw} for executable code, but in general, everything applies to generic packets\<close>
 definition runFw_scheme :: "'i::len word \<Rightarrow> 'i word \<Rightarrow> 'b parts_connection_scheme \<Rightarrow>
                               ('i, 'a) simple_packet_scheme \<Rightarrow> 'i simple_rule list \<Rightarrow> state"
   where

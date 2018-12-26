@@ -1,11 +1,11 @@
-section {* Backwards Compatibility for Version 1 *}
+section \<open>Backwards Compatibility for Version 1\<close>
 theory CollectionsV1
 imports Collections
 begin
-  text {*
+  text \<open>
     This theory defines some stuff to establish (partial) backwards
     compatibility with ICF Version 1.
-  *}
+\<close>
 
   (*
     TODO: Dirty hack to workaround a problem that occurs with sublocale here:
@@ -28,14 +28,14 @@ begin
   sets.
 *)
 
-  attribute_setup locale_witness_add = {*
+  attribute_setup locale_witness_add = \<open>
     Scan.succeed (Locale.witness_add)
-    *} "Add witness for locale instantiation. HACK, use 
+\<close> "Add witness for locale instantiation. HACK, use 
       sublocale or interpretation whereever possible!"
 
 
-  subsection {* Iterators *}
-  text {* We define all the monomorphic iterator locales *}
+  subsection \<open>Iterators\<close>
+  text \<open>We define all the monomorphic iterator locales\<close>
   subsubsection "Set"
 locale set_iteratei = finite_set \<alpha> invar for \<alpha> :: "'s \<Rightarrow> 'x set" and invar +
   fixes iteratei :: "'s \<Rightarrow> ('x, '\<sigma>) set_iterator"
@@ -66,7 +66,7 @@ begin
     apply simp_all
   done
 
-  text {* Versions without break condition. *}
+  text \<open>Versions without break condition.\<close>
   lemma iterate_rule_P:
     "\<lbrakk>
       invar S;
@@ -455,11 +455,11 @@ qed
     by (rule v1_reverse_iterateoi_impl)
     *)
 
-  subsection {* Concrete Operation Names *}
-  text {* We define abbreviations to recover the @{text "xx_op"}-names *}
+  subsection \<open>Concrete Operation Names\<close>
+  text \<open>We define abbreviations to recover the \<open>xx_op\<close>-names\<close>
 
   (* TODO: This may take long, as Local_Theory.abbrev seems to be really slow *)
-  local_setup {* let
+  local_setup \<open>let
     val thy = @{theory}
     val ctxt = Proof_Context.init_global thy;
     val pats = [
@@ -508,7 +508,7 @@ qed
     fold do_abbrevs pats
   end
 
-    *}
+\<close>
 
 
 lemmas hs_correct = hs.correct

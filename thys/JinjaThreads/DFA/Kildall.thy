@@ -5,7 +5,7 @@
 Kildall's algorithm.
 *)
 
-section {* Kildall's Algorithm \label{sec:Kildall} *}
+section \<open>Kildall's Algorithm \label{sec:Kildall}\<close>
 
 theory Kildall
 imports SemilatAlg "../Basic/Auxiliary"
@@ -224,7 +224,7 @@ qed
 
 context Kildall begin
 
-subsection {* @{term propa} *}
+subsection \<open>@{term propa}\<close>
 
 lemma decomp_propa:
   "\<And>ss w. (\<forall>(q,t)\<in>set qs. q < size ss) \<Longrightarrow> 
@@ -399,7 +399,7 @@ end
 
 context Kildall begin
 
-subsection {* @{term iter} *}
+subsection \<open>@{term iter}\<close>
 
 lemma iter_properties[rule_format]: assumes "Semilat A r f"
 shows "\<lbrakk> acc A r; pres_type step n A; mono r step n A;
@@ -555,7 +555,7 @@ proof -
   interpret Semilat A r f by fact
   show "PROP ?P"
   apply(unfold is_bcv_def wt_step_def)
-  apply(insert `Semilat A r f` semilat kildall_properties[of A])
+  apply(insert \<open>Semilat A r f\<close> semilat kildall_properties[of A])
   apply(simp add:stables_def)
   apply clarify
   apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0 \<in> list n A")

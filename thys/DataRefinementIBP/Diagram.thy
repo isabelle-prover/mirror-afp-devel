@@ -1,10 +1,10 @@
-section {*  Predicate Transformers Semantics of Invariant Diagrams  *}
+section \<open>Predicate Transformers Semantics of Invariant Diagrams\<close>
 
 theory Diagram
 imports Hoare
 begin
 
-text {*
+text \<open>
 This theory introduces the concept of a transition diagram and proves
 a number of Hoare total corectness rules for these diagrams. As before
 the diagrams are introduced using their predicate transformer semantics.
@@ -30,7 +30,7 @@ one step of diagram $D$. The predicate $step\ D\ Q\ i$ is true for those
 states $s$ from which the execution of one step of $D$ starting in situation 
 $i$ ends in one of the situations $j$ such that $Q \, j$ is true.
 
-*}
+\<close>
 
 definition
   "step D Q i = (INF j . D (i, j) (Q j) :: _ :: complete_lattice)"
@@ -52,13 +52,13 @@ theorem mono_step [simp]:
   apply (rule INF_lower)
   by auto
 
-text {*
+text \<open>
 The indexed predicate transformer of a transition diagram is defined as the least
 fixpoint of the unfolding of the execution of the diagram. The indexed predicate
 transformer $dgr\ D\ U$ is the choice between executing one step of $D$ follwed by
 $U$ ($(\mathit{step}\ D)\circ U$) or skip if no transion of $D$ is enabled 
 ($\mathit{assume}\ \neg \mathit{grd} (\mathit{step}\ D)$).
-*}
+\<close>
 
 definition
   "dgr D U = ((step D) o U) \<sqinter> [.-(grd (step D)).]"
@@ -89,7 +89,7 @@ theorem mono_mono_dgr [simp]: "dmono D \<Longrightarrow> mono_mono (dgr D)"
 definition
   "pt D = lfp (dgr D)"
 
-text {*
+text \<open>
 If $U$ is an indexed predicate transformer and if $P, Q:I\to \mathit{State} \ \mathit{set}$
 are indexed predicates, then the meaning of the Hoare triple defined earlier,
 $\models P \{ | U | \} Q$, is that if
@@ -99,7 +99,7 @@ $s'\in Q\ j$ is true.
 
 Next theorem shows that in a diagram all transitions are correct
 if and only if $\mathit{step}\ D$ is correct.
-*}
+\<close>
 
 theorem hoare_step:
   "(\<forall> i j . \<Turnstile> (P i) {| D(i,j) |} (Q j) ) = (\<Turnstile> P {| step D |} Q)"
@@ -115,12 +115,12 @@ theorem hoare_step:
   apply (rule INF_lower)
   by auto
 
-text {*
+text \<open>
 Next theorem provides the first proof rule for total correctnes of transition
 diagrams. If all transitions are correct and if a global variant decreases 
 on every transition then the diagram is correct and it terminates. The variant
 must decrease according to a well founded and transitive relation.
-*}
+\<close>
 
 theorem hoare_diagram:
   "dmono D \<Longrightarrow> (\<forall> w i j . \<Turnstile> X w i  {| D(i,j) |} Sup_less X w j) \<Longrightarrow> 
@@ -137,16 +137,16 @@ theorem hoare_diagram:
   apply (rule le_infI1)
   by (rule SUP_upper, auto)
 
-text{*
+text\<open>
 This theorem is a more general form of the more familiar form with a variant $t$
 which must decrease. If we take $X\ w\ i = (Y \ i \land t\ i = w)$, then the
 second hypothesis of the theorem above becomes
 $\models Y \ i \land t\ i = w \{| D(i,j) |\} Y \ i \land t \ i < w$. However,
 the more general form of the theorem is needed, because
 in data refinements, the form $Y\ i \land t\ i = w$ cannot be preserved.
-*}
+\<close>
 
-text {*
+text \<open>
 The drawback of this theorem is that the variant must be decreased on every
 transitions which may be too cumbersome for practical applications. A similar 
 situation occur when introducing proof rules for mutually recursive procedures.
@@ -158,7 +158,7 @@ in which the variant is required to decrease only in a sequence of recursive
 calls before calling again a procedure in this sequence. We introduce a
 similar proof rule in which the variant depends also on the situation
 indexes.
-*}
+\<close>
 
 locale DiagramTermination =
   fixes pair:: "'a \<Rightarrow> 'b \<Rightarrow> ('c::well_founded_transitive)"
@@ -245,9 +245,9 @@ theorem (in DiagramTermination) hoare_diagram3:
   apply (rule hoare_diagram2)
   by auto
 
-text{*
+text\<open>
 The following definition introduces the concept of correct Hoare triples for diagrams.
-*}
+\<close>
 
 definition (in DiagramTermination)
   Hoare_dgr :: "('b \<Rightarrow> ('u::{complete_distrib_lattice, boolean_algebra})) \<Rightarrow> ('b \<times> 'b \<Rightarrow> 'u \<Rightarrow> 'u) \<Rightarrow> ('b \<Rightarrow> 'u) \<Rightarrow> bool" ("\<turnstile> (_){| _ |}(_) " 

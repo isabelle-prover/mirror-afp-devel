@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* Termination theorem for uniform tie-breaking *}
+section \<open>Termination theorem for uniform tie-breaking\<close>
 
 theory UniformTieBreaking
 
@@ -26,8 +26,8 @@ Universes
 begin
 
 
-subsection {* Uniform tie breaking: definitions *}
-text{* Let us repeat the general context. Each bidder has made their bids and the VCG algorithm up
+subsection \<open>Uniform tie breaking: definitions\<close>
+text\<open>Let us repeat the general context. Each bidder has made their bids and the VCG algorithm up
  to now allocates goods to the higher bidders. If there are several high bidders tie breaking has 
 to take place. To do tie breaking we generate out of a random number a second bid vector so that 
 the same algorithm can be run again to determine a unique allocation.
@@ -39,7 +39,7 @@ By construction, the revenue of an auction run using this bid is maximal on the 
 and this maximal is unique.
 We can then use the bid constructed this way @{term tiebids} to break ties by running an auction 
 having the same form as a normal auction (that is why we use the adjective ``uniform''), 
-only with this special bid vector. *}
+only with this special bid vector.\<close>
 
 (* omega pair is a tool to compute cardinalities of pairs, e.g. for a pair made of a participant 1 and a set of goods {11,12,13}, the result will be the set of pairs: {(1,{11}), (1,{12}), (1,{13})}.
 *)
@@ -99,7 +99,7 @@ abbreviation "chosenAllocation N G bids random ==
 abbreviation "resolvingBid N G bids random == 
   tiebids (chosenAllocation N G bids random) N (set G)"
 
-subsection {* Termination theorem for the uniform tie-breaking scheme *}
+subsection \<open>Termination theorem for the uniform tie-breaking scheme\<close>
 
 corollary winningAllocationPossible: 
   "winningAllocationsRel N G b \<subseteq> allAllocations N G" 
@@ -205,7 +205,7 @@ corollary lm015:
 
 
 
-subsection {* Results on summed bid vectors *}
+subsection \<open>Results on summed bid vectors\<close>
 
 lemma lm016: 
   "summedBidVectorRel bids N G = 
@@ -686,7 +686,7 @@ qed
 
 
 
-subsection {* From Pseudo-allocations to allocations  *}
+subsection \<open>From Pseudo-allocations to allocations\<close>
 
 (* pseudoAllocationInv inverts pseudoAllocation *)
 abbreviation "pseudoAllocationInv pseudo == {(x, \<Union> (pseudo `` {x}))| x. x \<in> Domain pseudo}"
@@ -1012,7 +1012,7 @@ abbreviation "terminatingAuctionRel N G bids random ==
               argmax (sum (resolvingBid N G bids random)) 
                      (argmax (sum bids) (allAllocations N (set G)))"
 
-text{* Termination theorem: it assures that the number of winning allocations is exactly one *}
+text\<open>Termination theorem: it assures that the number of winning allocations is exactly one\<close>
 theorem winningAllocationUniqueness: 
   assumes "N \<noteq> {}" "distinct G" "set G \<noteq> {}" "finite N"
   shows "terminatingAuctionRel N G (bids) random = {chosenAllocation N G bids random}"
@@ -1039,7 +1039,7 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-text {* The computable variant of Else is defined next as Elsee. *}
+text \<open>The computable variant of Else is defined next as Elsee.\<close>
 definition "toFunctionWithFallbackAlg R fallback == 
             (% x. if (x \<in> Domain R) then (R,,x) else fallback)"
 notation toFunctionWithFallbackAlg (infix "Elsee" 75) 

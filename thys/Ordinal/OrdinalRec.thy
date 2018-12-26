@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Recursive Definitions *}
+section \<open>Recursive Definitions\<close>
 
 theory OrdinalRec
 imports OrdinalCont
@@ -61,7 +61,7 @@ lemma ordinal_rec0_limit_ordinal:
 done
 
 
-subsection {* Partial orders *}
+subsection \<open>Partial orders\<close>
 
 locale porder =
   fixes le  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "<<" 55)
@@ -185,7 +185,7 @@ shows "ordinal_rec0 z s lub (oLimit f) =
 done
 
 
-subsection {* Recursive definitions for @{typ "ordinal => ordinal"} *}
+subsection \<open>Recursive definitions for @{typ "ordinal => ordinal"}\<close>
 
 definition
   ordinal_rec ::

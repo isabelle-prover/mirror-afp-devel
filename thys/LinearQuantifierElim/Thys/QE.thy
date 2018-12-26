@@ -1,25 +1,25 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-section{* Quantifier elimination *}
+section\<open>Quantifier elimination\<close>
 
 theory QE
 imports Logic
 begin
 
-text{* \noindent
+text\<open>\noindent
 The generic, i.e.\ theory-independent part of quantifier elimination.
-Both DNF and an NNF-based procedures are defined and proved correct. *}
+Both DNF and an NNF-based procedures are defined and proved correct.\<close>
 
 notation (input) Collect ("|_|")
 
-subsection{*No Equality*}
+subsection\<open>No Equality\<close>
 
 context ATOM
 begin
 
-subsubsection{*DNF-based*}
+subsubsection\<open>DNF-based\<close>
 
-text{* \noindent Taking care of atoms independent of variable 0: *}
+text\<open>\noindent Taking care of atoms independent of variable 0:\<close>
 
 definition
 "qelim qe as =
@@ -30,9 +30,9 @@ definition
 abbreviation is_dnf_qe :: "('a list \<Rightarrow> 'a fm) \<Rightarrow> 'a list \<Rightarrow> bool" where
 "is_dnf_qe qe as \<equiv> \<forall>xs. I(qe as) xs = (\<exists>x.\<forall>a\<in>set as. I\<^sub>a a (x#xs))"
 
-text{*\noindent
+text\<open>\noindent
 Note that the exported abbreviation will have as a first parameter
-the type @{typ"'b"} of values @{text xs} ranges over. *}
+the type @{typ"'b"} of values \<open>xs\<close> ranges over.\<close>
 
 lemma I_qelim:
 assumes qe: "\<And>as. (\<forall>a \<in> set as. depends\<^sub>0 a) \<Longrightarrow> is_dnf_qe qe as"
@@ -59,7 +59,7 @@ proof
   finally show "?P xs" .
 qed
 
-text{* \noindent The generic DNF-based quantifier elimination procedure: *}
+text\<open>\noindent The generic DNF-based quantifier elimination procedure:\<close>
 
 fun lift_dnf_qe :: "('a list \<Rightarrow> 'a fm) \<Rightarrow> 'a fm \<Rightarrow> 'a fm" where
 "lift_dnf_qe qe (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (lift_dnf_qe qe \<phi>\<^sub>1) (lift_dnf_qe qe \<phi>\<^sub>2)" |
@@ -96,7 +96,7 @@ shows "I (lift_dnf_qe qe \<phi>) xs = I \<phi> xs"
 using assms in_lists_conv_set[where ?'a = 'a]
 by(simp add:Pi_def I_lift_dnf_qe)
 
-text{*\noindent Quantifier elimination with invariant (needed for Presburger): *}
+text\<open>\noindent Quantifier elimination with invariant (needed for Presburger):\<close>
 
 lemma I_qelim_anormal:
 assumes qe: "\<And>xs as. \<forall>a \<in> set as. depends\<^sub>0 a \<and> anormal a \<Longrightarrow> is_dnf_qe qe as"
@@ -177,7 +177,7 @@ using assms in_lists_conv_set[where ?'a = 'a]
 by(simp add:Pi_def I_lift_dnf_qe_anormal Int_def)
 
 
-subsubsection{*NNF-based*}
+subsubsection\<open>NNF-based\<close>
 
 fun lift_nnf_qe :: "('a fm \<Rightarrow> 'a fm) \<Rightarrow> 'a fm \<Rightarrow> 'a fm" where
 "lift_nnf_qe qe (And \<phi>\<^sub>1 \<phi>\<^sub>2) = and (lift_nnf_qe qe \<phi>\<^sub>1) (lift_nnf_qe qe \<phi>\<^sub>2)" |
@@ -238,10 +238,10 @@ using assms by(simp add:Pi_def I_lift_nnf_qe_normal Int_def)
 end
 
 
-subsection{*With equality*}
+subsection\<open>With equality\<close>
 
-text{* DNF-based quantifier elimination can accommodate equality atoms
-in a generic fashion. *}
+text\<open>DNF-based quantifier elimination can accommodate equality atoms
+in a generic fashion.\<close>
 
 locale ATOM_EQ = ATOM +
 fixes solvable\<^sub>0 :: "'a \<Rightarrow> bool"
@@ -286,7 +286,7 @@ proof -
       by (auto simp: filter_eq_Cons_iff)
     then obtain e where "I\<^sub>a eq (e#xs)" by(metis solvable)
     have "\<forall>a \<in> set as. I\<^sub>a a (e # xs) = I\<^sub>a (subst\<^sub>0 eq a) xs"
-      by(simp add: subst\<^sub>0[OF `solvable\<^sub>0 eq` `\<not> trivial eq` `I\<^sub>a eq (e#xs)`] dep)
+      by(simp add: subst\<^sub>0[OF \<open>solvable\<^sub>0 eq\<close> \<open>\<not> trivial eq\<close> \<open>I\<^sub>a eq (e#xs)\<close>] dep)
     thus ?thesis using Cons dep
       apply(simp add: lift_eq_qe_def,
             clarsimp simp: filter_eq_Cons_iff ball_Un)

@@ -10,9 +10,9 @@ imports Kripke Traces
 begin
 (*>*)
 
-section{* Knowledge-based Programs *}
+section\<open>Knowledge-based Programs\<close>
 
-text {*
+text \<open>
 
 \label{sec:kbps-theory-kbps-semantics}
 
@@ -20,7 +20,7 @@ A knowledge-based programs (KBPs) encodes the dependency of action on
 knowledge by a sequence of guarded commands, and a \emph{joint
 knowledge-based program} (JKBP) assigns a KBP to each agent:
 
-*}
+\<close>
 
 record ('a, 'p, 'aAct) GC =
   guard  :: "('a, 'p) Kform"
@@ -29,7 +29,7 @@ record ('a, 'p, 'aAct) GC =
 type_synonym ('a, 'p, 'aAct) KBP = "('a, 'p, 'aAct) GC list"
 type_synonym ('a, 'p, 'aAct) JKBP = "'a \<Rightarrow> ('a, 'p, 'aAct) KBP"
 
-text{*
+text\<open>
 
 We use a list of guarded commands just so we can reuse this definition
 and others in algorithmic contexts; we would otherwise use a set as
@@ -47,7 +47,7 @@ is possible.
 Thus we restrict the guards of the JKBP to be boolean combinations of
 \emph{subjective} formulas:
 
-*}
+\<close>
 
 fun subjective :: "'a \<Rightarrow> ('a, 'p) Kform \<Rightarrow> bool" where
   "subjective a (Kprop p)      = False"
@@ -56,7 +56,7 @@ fun subjective :: "'a \<Rightarrow> ('a, 'p) Kform \<Rightarrow> bool" where
 | "subjective a (Kknows a' f)  = (a = a')"
 | "subjective a (Kcknows as f) = (a \<in> set as)"
 
-text{*
+text\<open>
 
 All JKBPs in the following sections are assumed to be subjective.
 
@@ -64,7 +64,7 @@ This syntactic restriction implies the desired semantic property, that
 we can evaluate a guard at an arbitrary world that is compatible with
 a given observation \citep[\S3]{DBLP:journals/dc/FaginHMV97}.
 
-*}
+\<close>
 
 lemma S5n_subjective_eq:
   assumes S5n: "S5n M"
@@ -80,7 +80,7 @@ proof(induct \<phi> rule: subjective.induct[case_names Kprop Knot Kand Kknows Kc
 qed (auto dest: S5n_rels_eq[OF S5n])
 
 (*>*)
-text{*
+text\<open>
 
 The proof is by induction over the formula @{term "\<phi>"}, using the
 properties of $S5_n$ Kripke structures in the knowledge cases.
@@ -88,7 +88,7 @@ properties of $S5_n$ Kripke structures in the knowledge cases.
 We capture the fixed but arbitrary JKBP using a locale, and work in
 this context for the rest of this section.
 
-*}
+\<close>
 
 locale JKBP =
   fixes jkbp :: "('a, 'p, 'aAct) JKBP"
@@ -97,17 +97,17 @@ locale JKBP =
 context JKBP
 begin
 
-text{*
+text\<open>
 
 The action of the JKBP at a world is the list of all actions that are
 enabled at that world:
 
-*}
+\<close>
 
 definition jAction :: "('a, 'p, 'w) KripkeStructure \<Rightarrow> 'w \<Rightarrow> 'a \<Rightarrow> 'aAct list"
 where "jAction \<equiv> \<lambda>M w a. [ action gc. gc \<leftarrow> jkbp a, M, w \<Turnstile> guard gc ]"
 
-text{*
+text\<open>
 
 All of our machinery on Kripke structures lifts from the models
 relation of \S\ref{sec:kbps-logic-of-knowledge} through @{term
@@ -115,7 +115,7 @@ relation of \S\ref{sec:kbps-logic-of-knowledge} through @{term
 KBP for agent $a$ behaves the same at worlds that $a$ cannot
 distinguish amongst:
 
-*}
+\<close>
 
 lemma S5n_jAction_eq:
   assumes S5n: "S5n M"
@@ -133,12 +133,12 @@ proof -
 qed
 (*>*)
 
-text{*
+text\<open>
 
 Also the JKBP behaves the same on relevant generated models for all
 agents:
 
-*}
+\<close>
 
 lemma gen_model_jAction_eq:
   assumes S: "gen_model M w = gen_model M' w"
@@ -151,11 +151,11 @@ lemma gen_model_jAction_eq:
   by (auto iff: gen_model_eq[OF M M' S w'])
 (*>*)
 
-text{*
+text\<open>
 
 Finally, @{term "jAction"} is invariant under simulations:
 
-*}
+\<close>
 
 lemma simulation_jAction_eq:
   assumes M: "kripke M"
@@ -169,9 +169,9 @@ lemma simulation_jAction_eq:
 
 end
 
-section{* Environments and Views *}
+section\<open>Environments and Views\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-environments}
 
@@ -197,7 +197,7 @@ A \emph{pre-environment} consists of the following:
 \end{itemize}
 We extend the @{term "JKBP"} locale with these constants:
 
-*}
+\<close>
 
 locale PreEnvironment = JKBP jkbp for jkbp :: "('a, 'p, 'aAct) JKBP"
 + fixes envInit :: "'s list"
@@ -205,7 +205,7 @@ locale PreEnvironment = JKBP jkbp for jkbp :: "('a, 'p, 'aAct) JKBP"
     and envTrans :: "'eAct \<Rightarrow> ('a \<Rightarrow> 'aAct) \<Rightarrow> 's \<Rightarrow> 's"
     and envVal :: "'s \<Rightarrow> 'p \<Rightarrow> bool"
 
-text{*
+text\<open>
 
 \label{sec:kbps-views}
 
@@ -225,12 +225,12 @@ history of the system, suitably conditioned by what the agents can
 observe. We capture this notion of observation with a \emph{view}
 \citep{Ron:1996}, which is an arbitrary function of a trace:
 
-*}
+\<close>
 
 type_synonym ('s, 'tview) View = "'s Trace \<Rightarrow> 'tview"
 type_synonym ('a, 's, 'tview) JointView = "'a \<Rightarrow> 's Trace \<Rightarrow> 'tview"
 
-text{*
+text\<open>
 
 \label{sec:kbps-synchrony}
 
@@ -241,7 +241,7 @@ that the JKBP has an essentially unique implementation.
 
 We extend the @{term "PreEnvironment"} locale with a view:
 
-*}
+\<close>
 
 locale PreEnvironmentJView =
   PreEnvironment jkbp envInit envAction envTrans envVal
@@ -253,7 +253,7 @@ locale PreEnvironmentJView =
 + fixes jview :: "('a, 's, 'tview) JointView"
   assumes sync: "\<forall>a t t'. jview a t = jview a t' \<longrightarrow> tLength t = tLength t'"
 
-text{*
+text\<open>
 
 The two principle synchronous views are the clock view and the
 perfect-recall view which we discuss further in
@@ -266,7 +266,7 @@ that yield the same view. To obtain an S$5_n$ structure we also need a
 way to evaluate propositions: we apply @{term "envVal"} to the final
 state of a trace:
 
-*}
+\<close>
 
 definition (in PreEnvironmentJView)
   mkM :: "'s Trace set \<Rightarrow> ('a, 'p, 's Trace) KripkeStructure"
@@ -305,7 +305,7 @@ proof -
 qed
 
 (*>*)
-text{*
+text\<open>
 
 This construction supplants the role of the \emph{local states} of
 \citet{FHMV:1995}.
@@ -313,11 +313,11 @@ This construction supplants the role of the \emph{local states} of
 The following section shows how we can canonically interpret the JKBP
 with respect to this structure.
 
-*}
+\<close>
 
-section{* Canonical Structures *}
+section\<open>Canonical Structures\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-canonical-kripke}
 
@@ -329,7 +329,7 @@ We inductively define an \emph{interpretation} of a JKBP with respect
 to an arbitrary set of traces @{term "T"} by constructing a sequence
 of sets of traces of increasing length:
 
-*}
+\<close>
 
 fun jkbpTn :: "nat \<Rightarrow> 's Trace set \<Rightarrow> 's Trace set"(*<*)("jkbpT\<^bsub>_\<^esub>")(*>*) where
   "jkbpT\<^bsub>0\<^esub> T     = { tInit s |s. s \<in> set envInit }"
@@ -337,7 +337,7 @@ fun jkbpTn :: "nat \<Rightarrow> 's Trace set \<Rightarrow> 's Trace set"(*<*)("
                              t \<in> jkbpT\<^bsub>n\<^esub> T \<and> eact \<in> set (envAction (tLast t))
                           \<and> (\<forall>a. aact a \<in> set (jAction (mkM T) t a)) }"
 
-text{*
+text\<open>
 
 This model reflects the failure of any agent to provide an action as
 failure of the entire system. In general @{term "envTrans"} may
@@ -345,7 +345,7 @@ incorporate a scheduler and communication failure models.
 
 The union of this sequence gives us a closure property:
 
-*}
+\<close>
 
 definition jkbpT :: "'s Trace set \<Rightarrow> 's Trace set" where
   "jkbpT T \<equiv> \<Union>n. jkbpT\<^bsub>n\<^esub> T"
@@ -366,12 +366,12 @@ lemma jkbpT_traces_of_length:
   unfolding jkbpT_def by (bestsimp simp: jkbpTn_length)
 
 (*>*)
-text{*
+text\<open>
 
 We say that a set of traces @{term "T"} \emph{represents} a JKBP if it
 is closed under @{term "jkbpT"}:
 
-*}
+\<close>
 
 definition represents :: "'s Trace set \<Rightarrow> bool" where
   "represents T \<equiv> jkbpT T = T"
@@ -386,7 +386,7 @@ lemma representsD:
   unfolding represents_def by simp
 
 (*>*)
-text{*
+text\<open>
 
 This is the vicious cycle that we break using our assumption that the
 view is synchronous. The key property of such views is that the
@@ -394,7 +394,7 @@ satisfaction of an epistemic formula is determined by the set of
 traces in the model that have the same length. Lifted to @{term
 "jAction"}, we have:
 
-*}
+\<close>
 
 (*<*)
 lemma sync_tLength_eq_trc:
@@ -442,15 +442,15 @@ lemma sync_jview_jAction_eq:
   done
 
 (*>*)
-text{*
+text\<open>
 
 This implies that for a synchronous view we can inductively define the
 \emph{canonical traces} of a JKBP. These are the traces that a JKBP
 generates when it is interpreted with respect to those very same
-traces. We do this by constructing the sequence @{text "jkbpC\<^sub>n"} of
+traces. We do this by constructing the sequence \<open>jkbpC\<^sub>n\<close> of
 \emph{(canonical) temporal slices} similarly to @{term "jkbpT\<^bsub>n\<^esub>"}:
 
-*}
+\<close>
 
 fun jkbpCn :: "nat \<Rightarrow> 's Trace set"(*<*)("jkbpC\<^bsub>_\<^esub>")(*>*) where
   "jkbpC\<^bsub>0\<^esub>      = { tInit s |s. s \<in> set envInit }"
@@ -479,12 +479,12 @@ lemma jkbpCn_tFirst_init_inv[intro]:
   by (induct n arbitrary: t) (auto iff: Let_def)
 
 (*>*)
-text{*
+text\<open>
 
 The canonical set of traces for a JKBP with respect to a joint view is
 the set of canonical traces of all lengths.
 
-*}
+\<close>
 
 definition jkbpC :: "'s Trace set" where
   "jkbpC \<equiv> \<Union>n. jkbpC\<^bsub>n\<^esub>"
@@ -538,12 +538,12 @@ lemma jkbpC_tFirst_init_inv[intro]:
   unfolding jkbpC_def by blast
 
 (*>*)
-text{*
+text\<open>
 
 We can show that @{term "jkbpC"} represents the joint knowledge-based
 program @{term "jkbp"} with respect to @{term "jview"}:
 
-*}
+\<close>
 
 lemma jkbpC_jkbpCn_jAction_eq:
   assumes tCn: "t \<in> jkbpC\<^bsub>n\<^esub>"
@@ -553,12 +553,12 @@ lemma jkbpC_jkbpCn_jAction_eq:
   by - (rule sync_jview_jAction_eq, auto iff: jkbpC_traces_of_length)
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma jkbpTn_jkbpCn_represents: "jkbpT\<^bsub>n\<^esub> jkbpC = jkbpC\<^bsub>n\<^esub>"
   by (induct n) (fastforce simp: Let_def jkbpC_jkbpCn_jAction_eq)+
 
-text{**}
+text\<open>\<close>
 
 theorem jkbpC_represents: "represents jkbpC"
 (*<*)
@@ -566,11 +566,11 @@ theorem jkbpC_represents: "represents jkbpC"
   by (simp add: representsI jkbpC_def jkbpT_def)
 
 (*>*)
-text{*
+text\<open>
 
 We can show uniqueness too, by a similar argument:
 
-*}
+\<close>
 
 theorem jkbpC_represents_uniquely:
   assumes repT: "represents T"
@@ -611,7 +611,7 @@ qed
 
 end (* context PreEnvironmentJView *)
 
-text{*
+text\<open>
 
 Thus, at least with synchronous views, we are justified in talking
 about \emph{the} representation of a JKBP in a given environment. More
@@ -625,7 +625,7 @@ a useful generalisation in asynchronous settings.
 The next section shows how we can construct canonical representations
 of JKBPs using automata.
 
-*}
+\<close>
 
 (*<*)
 end

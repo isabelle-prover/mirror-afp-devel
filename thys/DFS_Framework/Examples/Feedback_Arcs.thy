@@ -135,7 +135,7 @@ next
     by (rule find_fas_correct_aux)
 qed (rule assms)+
 
-subsection {* Implementation *}
+subsection \<open>Implementation\<close>
 
 (* Implementation with stack and sso_visited set *)
 record 'v fas_state_impl = "'v simple_state" +

@@ -102,7 +102,7 @@ subsubsection\<open>inverting a DNF\<close>
     by(simp add: map_a_and dnf_to_bool_append)
   
   
-  text\<open>We use @{text "\<exists>"} to model the big @{text "\<or>"} operation\<close>
+  text\<open>We use \<open>\<exists>\<close> to model the big \<open>\<or>\<close> operation\<close>
   lemma listprepend_correct: "dnf_to_bool \<gamma> (listprepend as ds) \<longleftrightarrow> (\<exists>a\<in> set as. dnf_to_bool \<gamma> [[a]] \<and> dnf_to_bool \<gamma> ds)"
     apply(induction as)
      apply(simp)

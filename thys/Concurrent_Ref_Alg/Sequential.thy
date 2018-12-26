@@ -1,17 +1,17 @@
-section {* Sequential Operator \label{S:sequential} *}
+section \<open>Sequential Operator \label{S:sequential}\<close>
 
 
 theory Sequential
 imports Refinement_Lattice
 begin
 
-subsection {* Basic sequential *}
+subsection \<open>Basic sequential\<close>
 
-text {*
+text \<open>
   The sequential composition operator ``$;$'' is associative and 
   has identity nil but it is not commutative. 
   It has $\bot$ as a left annihilator.
-*}
+\<close>
 
 locale seq =
   fixes seq :: "'a::refinement_lattice \<Rightarrow> 'a \<Rightarrow> 'a" (infixl ";" 90)
@@ -20,10 +20,10 @@ locale seq =
 locale nil =
   fixes nil :: "'a::refinement_lattice" ("nil")
 
-text {*
+text \<open>
   The monoid axioms imply ``;'' is associative and has identity nil.
   Abort is a left annihilator of sequential composition.
-*}
+\<close>
 locale sequential = seq + nil + seq: monoid seq nil
 begin
 
@@ -35,9 +35,9 @@ lemmas seq_nil_left = seq.left_neutral   (* 32 *)
 
 end
 
-subsection {* Distributed sequential *}
+subsection \<open>Distributed sequential\<close>
 
-text {*
+text \<open>
   Sequential composition distributes across arbitrary infima 
   from the right but only across the binary (finite) infima from the left
   and hence it is monotonic in both arguments. 
@@ -45,14 +45,14 @@ text {*
   Note that Section \ref{S:conjunctive-sequential} considers the
   case in which the weak-seq-inf-distrib axiom is strengthened to
   an equality.
-*}
+\<close>
 
 locale seq_distrib_left = sequential +
   assumes weak_seq_inf_distrib: 
     "(c::'a::refinement_lattice);(d\<^sub>0 \<sqinter> d\<^sub>1) \<sqsubseteq> (c;d\<^sub>0 \<sqinter> c;d\<^sub>1)"  (* 33 *)
 begin
 
-text {* Left distribution implies sequential composition is monotonic is its right argument *}
+text \<open>Left distribution implies sequential composition is monotonic is its right argument\<close>
 lemma seq_mono_right: "c\<^sub>0 \<sqsubseteq> c\<^sub>1 \<Longrightarrow> d ; c\<^sub>0 \<sqsubseteq> d ; c\<^sub>1"
   by (metis inf.absorb_iff2 le_inf_iff weak_seq_inf_distrib)
 

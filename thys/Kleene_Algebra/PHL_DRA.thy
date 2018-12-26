@@ -4,10 +4,10 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Propositional Hoare Logic for Demonic Refinement Algebra *}
+section \<open>Propositional Hoare Logic for Demonic Refinement Algebra\<close>
 
-text {* In this section the generic iteration operator is instantiated to the strong iteration operator of 
-demonic refinement algebra that models possibly infinite iteration. *}
+text \<open>In this section the generic iteration operator is instantiated to the strong iteration operator of 
+demonic refinement algebra that models possibly infinite iteration.\<close>
 
 theory PHL_DRA
   imports DRA PHL_KA

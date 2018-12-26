@@ -7,7 +7,7 @@ begin
 
 section\<open>Example: Synology Diskstation 2014\<close>
 text\<open>We analyze a dump of a NAS. The dump was created 2014. Unfortunately, we don't have an 
-      @{text "iptables-save"} dump from that time and have to rely on the @{text "iptables -L -n"}
+      \<open>iptables-save\<close> dump from that time and have to rely on the \<open>iptables -L -n\<close>
       dump. This dump was translated by our legacy python importer.\<close>
 
 
@@ -187,7 +187,7 @@ lemma "length (normalize_rules_dnf (unfold_ruleset_INPUT action.Accept example_r
 
 
 section\<open>Synology Diskstation 2015\<close>
-text\<open>This is a snapshot from 2015, available as @{text "iptables-save"} format. The firewall definition
+text\<open>This is a snapshot from 2015, available as \<open>iptables-save\<close> format. The firewall definition
       and structure has changed with various firmware updates to the device.
       Also, the new parser also parses ports and interfaces\<close>
 

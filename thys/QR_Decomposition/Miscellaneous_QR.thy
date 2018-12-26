@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Miscellaneous file for the QR algorithm*}
+section\<open>Miscellaneous file for the QR algorithm\<close>
 
 theory Miscellaneous_QR
 imports
@@ -12,15 +12,15 @@ imports
 begin
 
 
-text{*These two lemmas maybe should be in the file @{text "Code_Matrix.thy"} of the Gauss-Jordan
-  development.*}
+text\<open>These two lemmas maybe should be in the file \<open>Code_Matrix.thy\<close> of the Gauss-Jordan
+  development.\<close>
 
 lemma [code abstract]: "vec_nth (a - b) =  (%i. a$i - b$i)" by (metis vector_minus_component)
 lemma [code abstract]: "vec_nth (c *\<^sub>R x) = (\<lambda>i. c *\<^sub>R (x$i))" by auto
 
 
-text{*This lemma maybe should be in the file @{text "Mod_Type.thy"} of the Gauss-Jordan
-  development.*}
+text\<open>This lemma maybe should be in the file \<open>Mod_Type.thy\<close> of the Gauss-Jordan
+  development.\<close>
 
 lemma from_nat_le:
   fixes i::"'a::{mod_type}"
@@ -29,7 +29,7 @@ lemma from_nat_le:
   shows "i < from_nat k"
   by (metis (full_types) from_nat_mono from_nat_to_nat_id i k)
 
-text{*Some properties about orthogonal matrices.*}
+text\<open>Some properties about orthogonal matrices.\<close>
 
 lemma orthogonal_mult:
   assumes "orthogonal a b"
@@ -334,8 +334,8 @@ lemma invertible_transpose:
   shows "invertible (transpose A)"
   by (metis invertible_det_nz assms det_transpose)
 
-text{*The following lemmas are generalizations of some parts of the library. They should be 
-  in the file @{text "Generalizations.thy"} of the Gauss-Jordan AFP entry.*}
+text\<open>The following lemmas are generalizations of some parts of the library. They should be 
+  in the file \<open>Generalizations.thy\<close> of the Gauss-Jordan AFP entry.\<close>
 
 context vector_space
 begin
@@ -359,8 +359,8 @@ proof (induct rule: finite_induct)
     done
 next
   case (insert a B)
-  note fB = `finite B` and aB = `a \<notin> B`
-  from `\<exists>C. finite C \<and> card C \<le> card B \<and> span C = span B \<and> pairwise orthogonal C`
+  note fB = \<open>finite B\<close> and aB = \<open>a \<notin> B\<close>
+  from \<open>\<exists>C. finite C \<and> card C \<le> card B \<and> span C = span B \<and> pairwise orthogonal C\<close>
   obtain C where C: "finite C" "card C \<le> card B"
     "span C = span B" "pairwise orthogonal C" by blast
   let ?a = "a - sum (\<lambda>x. (x \<bullet> a / (x \<bullet> x)) *\<^sub>R x) C"
@@ -396,14 +396,14 @@ next
     have "orthogonal ?a y"
       unfolding orthogonal_def
       unfolding inner_diff inner_sum_left right_minus_eq
-      unfolding sum.remove [OF `finite C` `y \<in> C`]
+      unfolding sum.remove [OF \<open>finite C\<close> \<open>y \<in> C\<close>]
       apply (clarsimp simp add: inner_commute[of y a])
       apply (rule sum.neutral)
       apply clarsimp
       apply (rule C(4)[unfolded pairwise_def orthogonal_def, rule_format])
-      using `y \<in> C` by auto
+      using \<open>y \<in> C\<close> by auto
   }
-  with `pairwise orthogonal C` have CPO: "pairwise orthogonal ?C"
+  with \<open>pairwise orthogonal C\<close> have CPO: "pairwise orthogonal ?C"
     by (rule pairwise_orthogonal_insert)
   from fC cC SC CPO have "?P (insert a B) ?C"
     by blast

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Correctness of Stage 2: The multithreaded setting *}
+section \<open>Correctness of Stage 2: The multithreaded setting\<close>
 
 theory Correctness2
 imports
@@ -150,7 +150,7 @@ next
   thus "\<exists>s2' s2'' tl2. \<tau>trsys.silent_moves (mexecd (compP2 P) t) (\<tau>MOVE2 (compP2 P)) s2 s2' \<and> 
                        mexecd (compP2 P) t s2' tl2 s2'' \<and> \<not> \<tau>MOVE2 (compP2 P) s2' tl2 s2'' \<and>
                        wbisim1 t s1' s2'' \<and> ta_bisim wbisim1 tl1 tl2"
-    using bisim' exec2 \<tau>' s1 s1' s2 ta' unfolding `h2 = h`
+    using bisim' exec2 \<tau>' s1 s1' s2 ta' unfolding \<open>h2 = h\<close>
     apply(subst (1 2) split_paired_Ex)
     apply(subst (1 2) split_paired_Ex)
     by clarify ((rule exI conjI|assumption)+, auto)
@@ -180,7 +180,7 @@ next
     by(rule \<tau>Red1r_rtranclpD)
   thus "\<exists>s1' s1'' tl1. \<tau>trsys.silent_moves (mred1 P t) (\<tau>MOVE1 P) s1 s1' \<and> mred1 P t s1' tl1 s1'' \<and>
                       \<not> \<tau>MOVE1 P s1' tl1 s1'' \<and> wbisim1 t s1'' s2' \<and> ta_bisim wbisim1 tl1 tl2"
-    using bisim' red2 \<tau>' s1 s2 s2' `h1 = h` ta'
+    using bisim' red2 \<tau>' s1 s2 s2' \<open>h1 = h\<close> ta'
     apply -
     apply(rule exI[where x="(((e', xs'), exs'), h)"])
     apply(rule exI[where x="(((e'', xs''), exs''), h2')"])
@@ -281,7 +281,7 @@ proof -
     ultimately have [simp]: "m2 = m1" "exs = []"
       and "bisim1_list1 t m1 (e, xs) [] xcp frs" 
       and "final e" by auto
-    from `bisim1_list1 t m1 (e, xs) [] xcp frs` `final e`
+    from \<open>bisim1_list1 t m1 (e, xs) [] xcp frs\<close> \<open>final e\<close>
     show "\<exists>s2'. ?\<tau>exec t s2 s2' \<and> wbisim1 t s1 s2' \<and> (\<lambda>(x2, m). JVM_final x2) s2'"
     proof cases
       case (bl1_Normal stk loc C M pc frs' Ts T body D)
@@ -290,7 +290,7 @@ proof -
         and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D"
         and bisim: "P,blocks1 0 (Class D # Ts) body,m1 \<turnstile> (e, xs) \<leftrightarrow> (stk, loc, pc, xcp)"
         and var: "max_vars e \<le> length xs" by auto
-      from `final e` show ?thesis
+      from \<open>final e\<close> show ?thesis
       proof cases
         fix v
         assume [simp]: "e = Val v"
@@ -384,7 +384,7 @@ proof -
     from \<tau>exec have \<tau>exec': "\<tau>Exec_1_dr (compP2 P) t (fst x2, m2, snd x2) (fst x2', m2, snd x2')"
       unfolding \<tau>Exec_1_dr_conv_rtranclp by simp
     with b' tconf have "compTP P \<turnstile> t: (fst x2', m2, snd x2') \<surd>"
-      using `preallocated m2`
+      using \<open>preallocated m2\<close>
       apply(cases x1, cases x2)
       apply(erule \<tau>Exec_1_dr_preserves_correct_state[OF wt_compTP_compP2[OF wf]])
       apply(auto elim!: bisim1_list1.cases simp add: correct_state_def)

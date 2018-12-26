@@ -2,12 +2,12 @@
     Author:     Florian Kammuller and Henry Sudhof, 2006
 *)
 
-section {* First Order Types for Sigma terms *}
+section \<open>First Order Types for Sigma terms\<close>
 
 theory TypedSigma imports "../preliminary/Environments" Sigma begin
 
-subsubsection {* Types and typing rules *}
-text{* The inductive definition of the typing relation.*}
+subsubsection \<open>Types and typing rules\<close>
+text\<open>The inductive definition of the typing relation.\<close>
 
 definition
   return :: "(type \<times> type) \<Rightarrow> type" where
@@ -58,8 +58,8 @@ inductive_cases typing_elims [elim!]:
   "e \<turnstile> Call a l b : T"
   "e \<turnstile> Upd a l n : T"
 
-subsubsection {*Basic lemmas *}
-text{*Basic treats of the type system.*}
+subsubsection \<open>Basic lemmas\<close>
+text\<open>Basic treats of the type system.\<close>
 lemma not_bvar: "e \<turnstile> t : T \<Longrightarrow> \<forall>i. t \<noteq> Bvar i"
   by (erule typing.cases, simp_all)
 
@@ -156,7 +156,7 @@ proof -
                   \<and> (\<forall>s p. s \<notin> F' \<union> F \<and> p \<notin> F' \<union> F \<and> s \<noteq> p
                       \<longrightarrow> P y s p))"
       by simp
-    from insert(3)[OF `finite F` this]
+    from insert(3)[OF \<open>finite F\<close> this]
     obtain F1 where 
       "finite F1" and
       pred_S: "\<forall>y\<in>S. \<forall>s p. s \<notin> F1 \<union> F \<and> p \<notin> F1 \<union> F \<and> s \<noteq> p
@@ -172,7 +172,7 @@ proof -
                         \<longrightarrow> P y s p"
       by auto
     moreover
-    from `finite F1` `finite F2` have "finite (F1 \<union> F2)" by simp
+    from \<open>finite F1\<close> \<open>finite F2\<close> have "finite (F1 \<union> F2)" by simp
     ultimately
     show ?case by blast
   qed
@@ -211,22 +211,22 @@ proof (intro strip, elim conjE)
   {
     fix a assume "a \<notin> FV t'" and "a \<in> {s,p,x,y}"
     with 
-      `FV t' \<subseteq> F'` nin_sa nin_pa `sa \<noteq> pa` 
+      \<open>FV t' \<subseteq> F'\<close> nin_sa nin_pa \<open>sa \<noteq> pa\<close> 
       sopen_FV[of 0 "Fvar sa" "Fvar pa" t']
     have "a \<notin> FV (t'\<^bsup>[Fvar sa,Fvar pa]\<^esup>)" by (auto simp: openz_def)
   } note 
-      this[OF `s \<notin> FV t'`] this[OF `p \<notin> FV t'`] 
-      this[OF `x \<notin> FV t'`] this[OF `y \<notin> FV t'`]
+      this[OF \<open>s \<notin> FV t'\<close>] this[OF \<open>p \<notin> FV t'\<close>] 
+      this[OF \<open>x \<notin> FV t'\<close>] this[OF \<open>y \<notin> FV t'\<close>]
   moreover
   from 
-    not_in_env_bigger_2[OF `x \<notin> env_dom env'`] 
-    not_in_env_bigger_2[OF `y \<notin> env_dom env'`]
+    not_in_env_bigger_2[OF \<open>x \<notin> env_dom env'\<close>] 
+    not_in_env_bigger_2[OF \<open>y \<notin> env_dom env'\<close>]
     nin_sa nin_pa
   have 
     "x \<notin> env_dom (env'\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr>) 
     \<and> y \<notin> env_dom (env'\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr>)" by auto
   moreover
-  from `t = {Suc n \<rightarrow> [Fvar s, Fvar p]} t'` sopen_commute[OF Suc_not_Zero] 
+  from \<open>t = {Suc n \<rightarrow> [Fvar s, Fvar p]} t'\<close> sopen_commute[OF Suc_not_Zero] 
   have "(t\<^bsup>[Fvar sa,Fvar pa]\<^esup>) = {Suc n \<rightarrow> [Fvar s,Fvar p]} (t'\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
     by (auto simp: openz_def)
   moreover
@@ -234,14 +234,14 @@ proof (intro strip, elim conjE)
     subst_add[of s sa env' A T] subst_add[of sa p "env'\<lparr>s:A\<rparr>" T B] 
     subst_add[of s pa "env'\<lparr>sa:T\<rparr>" A "param(the(T^l))"]
     subst_add[of p pa "env'\<lparr>sa:T\<rparr>\<lparr>s:A\<rparr>" B "param(the(T^l))"]
-    `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` nin_sa nin_pa
+    \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> nin_sa nin_pa
   have "env\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr> = env'\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr>\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>"
     by auto
   ultimately
   have 
     "env'\<lparr>sa:T\<rparr>\<lparr>pa:param(the T^l)\<rparr>\<lparr>x:A\<rparr>\<lparr>y:B\<rparr>
      \<turnstile> {Suc n \<rightarrow> [Fvar x, Fvar y]} (t'\<^bsup>[Fvar sa,Fvar pa]\<^esup>) : return(the(T^l))"
-    using `s \<noteq> p` `x \<noteq> y` pred_bnd by auto
+    using \<open>s \<noteq> p\<close> \<open>x \<noteq> y\<close> pred_bnd by auto
   moreover
   from 
     subst_add[of y sa "env'\<lparr>x:A\<rparr>" B T] subst_add[of x sa env' A T] 
@@ -269,54 +269,54 @@ lemma type_renaming'[rule_format]:
     \<Longrightarrow> env\<lparr>x:A\<rparr>\<lparr>y:B\<rparr> \<turnstile> {n \<rightarrow> [Fvar x,Fvar y]} t' : C)"
 proof (induct set:typing)
   case (T_Call env t1 T t2 l env' t' s p x y A B n)
-  with sopen_eq_Call[OF sym[OF `Call t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'`]]
+  with sopen_eq_Call[OF sym[OF \<open>Call t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]]
   show ?case by auto
 next
   case (T_Var env a T env' t' s p x y A B n)
-  from `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` ok_add_2[of env' s A p B] 
+  from \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> ok_add_2[of env' s A p B] 
   have "ok env'" by simp
   from 
-    ok_add_ok[OF ok_add_ok[OF this `x \<notin> env_dom env'`]
-                 not_in_env_bigger[OF `y \<notin> env_dom env'` not_sym[OF `x \<noteq> y`]]]
+    ok_add_ok[OF ok_add_ok[OF this \<open>x \<notin> env_dom env'\<close>]
+                 not_in_env_bigger[OF \<open>y \<notin> env_dom env'\<close> not_sym[OF \<open>x \<noteq> y\<close>]]]
   have ok: "ok (env'\<lparr>x:A\<rparr>\<lparr>y:B\<rparr>)" by assumption
 
-  from sopen_eq_Fvar[OF sym[OF `Fvar a = {n \<rightarrow> [Fvar s,Fvar p]} t'`]] 
+  from sopen_eq_Fvar[OF sym[OF \<open>Fvar a = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]] 
   show ?case
   proof (elim disjE conjE)
     assume "t' = Fvar a" with T_Var(4-7)
     obtain "a \<noteq> s" and "a \<noteq> p" and "a \<noteq> x" and "a \<noteq> y" by auto
     note in_env_smaller2[OF _ this(1-2)]
-    from `a \<in> env_dom env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` this[of env' A B]
+    from \<open>a \<in> env_dom env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> this[of env' A B]
     have "a \<in> env_dom env'" by simp
-    from env_bigger2[OF `x \<notin> env_dom env'` `y \<notin> env_dom env'` this `x \<noteq> y`]
+    from env_bigger2[OF \<open>x \<notin> env_dom env'\<close> \<open>y \<notin> env_dom env'\<close> this \<open>x \<noteq> y\<close>]
     have inenv: "a \<in> env_dom (env'\<lparr>x:A\<rparr>\<lparr>y:B\<rparr>)" by assumption
-    note get_env_bigger2[OF _ `a \<noteq> s` `a \<noteq> p`]
+    note get_env_bigger2[OF _ \<open>a \<noteq> s\<close> \<open>a \<noteq> p\<close>]
     from 
-      this[of env' A B] `a \<in> env_dom env` `the env!a = T` 
-      `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` get_env_bigger2[OF inenv `a \<noteq> x` `a \<noteq> y`] 
+      this[of env' A B] \<open>a \<in> env_dom env\<close> \<open>the env!a = T\<close> 
+      \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> get_env_bigger2[OF inenv \<open>a \<noteq> x\<close> \<open>a \<noteq> y\<close>] 
     have "the (env'\<lparr>x:A\<rparr>\<lparr>y:B\<rparr>!a) = T" by simp
-    from typing.T_Var[OF ok inenv this] `t' = Fvar a` show ?case by simp
+    from typing.T_Var[OF ok inenv this] \<open>t' = Fvar a\<close> show ?case by simp
   next
     assume "a = s" and "t' = Bvar (Self n)"
     from 
-      this(1) `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` `the env!a = T` 
+      this(1) \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> \<open>the env!a = T\<close> 
       add_get2_1[of env' s A p B]
     have "T = A" by simp
     moreover
-    from `t' = Bvar (Self n)` have "{n \<rightarrow> [Fvar x,Fvar y]} t' = Fvar x" by simp
+    from \<open>t' = Bvar (Self n)\<close> have "{n \<rightarrow> [Fvar x,Fvar y]} t' = Fvar x" by simp
     ultimately
     show ?case using in_add_2[OF ok] typing.T_Var[OF ok _ add_get2_1[OF ok]]
       by simp
   next
-    note subst = subst_add[OF `x \<noteq> y`] 
+    note subst = subst_add[OF \<open>x \<noteq> y\<close>] 
     from subst[of env' A B] ok have ok': "ok (env'\<lparr>y:B\<rparr>\<lparr>x:A\<rparr>)" by simp
     assume "a = p" and "t' = Bvar (Param n)"
     from 
-      this(1) `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` `the env!a = T`
+      this(1) \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> \<open>the env!a = T\<close>
       add_get2_2[of env' s A p B]
     have "T = B" by simp
     moreover
-    from `t' = Bvar (Param n)` have "{n \<rightarrow> [Fvar x,Fvar y]} t' = Fvar y" by simp
+    from \<open>t' = Bvar (Param n)\<close> have "{n \<rightarrow> [Fvar x,Fvar y]} t' = Fvar y" by simp
     ultimately
     show ?case 
       using 
@@ -326,7 +326,7 @@ next
   qed
 next
   case (T_Upd F env T l t2 t1 env' t' s p x y A B n)
-  from sopen_eq_Upd[OF sym[OF `Upd t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'`]]
+  from sopen_eq_Upd[OF sym[OF \<open>Upd t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]]
   obtain t1' t2' where 
     t1: "t1 = {n \<rightarrow> [Fvar s,Fvar p]} t1'" and
     t2: "t2 = {Suc n \<rightarrow> [Fvar s,Fvar p]} t2'" and
@@ -334,19 +334,19 @@ next
     by auto
   { fix a assume "a \<notin> FV t'" with t' have "a \<notin> FV t1'" by simp } 
   note 
-    t1' = T_Upd(4)[OF this[OF `s \<notin> FV t'`] this[OF `p \<notin> FV t'`] 
-                      this[OF `x \<notin> FV t'`] this[OF `y \<notin> FV t'`] 
-                      `x \<notin> env_dom env'` `y \<notin> env_dom env'`
-                      `s \<noteq> p` `x \<noteq> y` t1 `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>`]
+    t1' = T_Upd(4)[OF this[OF \<open>s \<notin> FV t'\<close>] this[OF \<open>p \<notin> FV t'\<close>] 
+                      this[OF \<open>x \<notin> FV t'\<close>] this[OF \<open>y \<notin> FV t'\<close>] 
+                      \<open>x \<notin> env_dom env'\<close> \<open>y \<notin> env_dom env'\<close>
+                      \<open>s \<noteq> p\<close> \<open>x \<noteq> y\<close> t1 \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close>]
   from ok_finite[of env'] ok_add_2[OF typing_regular'[OF this]]
   have findom: "finite (env_dom env')" by simp
 
   { fix a assume "a \<notin> FV t'" with t' have "a \<notin> FV t2'" by simp }
   note 
-    bnd_renaming_lem[OF this[OF `s \<notin> FV t'`] this[OF `p \<notin> FV t'`] 
-                        this[OF `x \<notin> FV t'`] this[OF `y \<notin> FV t'`] 
-                        `x \<notin> env_dom env'` `y \<notin> env_dom env'`
-                        `s \<noteq> p` `x \<noteq> y` t2 `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>`]
+    bnd_renaming_lem[OF this[OF \<open>s \<notin> FV t'\<close>] this[OF \<open>p \<notin> FV t'\<close>] 
+                        this[OF \<open>x \<notin> FV t'\<close>] this[OF \<open>y \<notin> FV t'\<close>] 
+                        \<open>x \<notin> env_dom env'\<close> \<open>y \<notin> env_dom env'\<close>
+                        \<open>s \<noteq> p\<close> \<open>x \<noteq> y\<close> t2 \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close>]
   from this[of F T l "FV t2'"] T_Upd(2)
   have 
     "\<forall>sa pa. sa \<notin> F \<union> {s, p, x, y} \<union> FV t2' \<union> env_dom env' 
@@ -356,30 +356,30 @@ next
           \<turnstile> ({Suc n \<rightarrow> [Fvar x,Fvar y]} t2'\<^bsup>[Fvar sa,Fvar pa]\<^esup>) : return(the(T^l))"
     by simp
   from 
-    typing.T_Upd[OF _ this t1' `l \<in> do T`]
-    `finite F` findom t' 
+    typing.T_Upd[OF _ this t1' \<open>l \<in> do T\<close>]
+    \<open>finite F\<close> findom t' 
   show ?case by simp
 next
   case (T_Obj env f T F env' t' s p x y A B n)
-  from `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` ok_add_2[of env' s A p B] 
+  from \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> ok_add_2[of env' s A p B] 
   have "ok env'" by simp
   from 
-    ok_add_ok[OF ok_add_ok[OF this `x \<notin> env_dom env'`]
-                 not_in_env_bigger[OF `y \<notin> env_dom env'` not_sym[OF `x \<noteq> y`]]]
+    ok_add_ok[OF ok_add_ok[OF this \<open>x \<notin> env_dom env'\<close>]
+                 not_in_env_bigger[OF \<open>y \<notin> env_dom env'\<close> not_sym[OF \<open>x \<noteq> y\<close>]]]
   have ok: "ok (env'\<lparr>x:A\<rparr>\<lparr>y:B\<rparr>)" by assumption
-  from sopen_eq_Obj[OF sym[OF `Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'`]] 
+  from sopen_eq_Obj[OF sym[OF \<open>Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]] 
   obtain f' where 
     obj: "{n \<rightarrow> [Fvar s,Fvar p]} Obj f' T = Obj f T" and
     t': "t' = Obj f' T" by auto
   from 
-    this(1) `dom f = do T`
+    this(1) \<open>dom f = do T\<close>
     sym[OF dom_sopenoption_lem[of "Suc n" "Fvar s" "Fvar p" f']]
     dom_sopenoption_lem[of "Suc n" "Fvar x" "Fvar y" f']
   have dom: "dom (\<lambda>l. sopen_option (Suc n) (Fvar x) (Fvar y) (f' l)) = do T" 
     by simp
     
   from 
-    `finite F` finite_FV[of "Obj f' T"] 
+    \<open>finite F\<close> finite_FV[of "Obj f' T"] 
     ok_finite[of env'] ok_add_2[OF ok]
   have finF: "finite (F \<union> {s,p,x,y} \<union>  FV (Obj f' T) \<union> env_dom env')"
     by simp
@@ -407,7 +407,7 @@ next
                    \<turnstile> {n' \<rightarrow> [Fvar x',Fvar y']} t'' : return(the(T^l)))"
       by simp
     from 
-      `l \<in> do T` `dom f = do T` `Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'` obj t'
+      \<open>l \<in> do T\<close> \<open>dom f = do T\<close> \<open>Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close> obj t'
       dom_sopenoption_lem[of "Suc n" "Fvar s" "Fvar p" f']
     have indomf': "l \<in> dom f'" by auto
     hence 
@@ -416,15 +416,15 @@ next
       by force
     from indomf' have FVsubset: "FV (the(f' l)) \<subseteq> FV (Obj f' T)" by force
     with 
-      `s \<notin> FV t'` `p \<notin> FV t'` `x \<notin> FV t'` `y \<notin> FV t'` obj t'
+      \<open>s \<notin> FV t'\<close> \<open>p \<notin> FV t'\<close> \<open>x \<notin> FV t'\<close> \<open>y \<notin> FV t'\<close> obj t'
       indomf' FV_option_lem[of f']
     obtain 
       "s \<notin> FV (the(f' l))" and "p \<notin> FV (the(f' l))" and
       "x \<notin> FV (the(f' l))" and "y \<notin> FV (the(f' l))" and
       "the(f l) = {Suc n \<rightarrow> [Fvar s,Fvar p]} the(f' l)" by auto
     from 
-      bnd_renaming_lem[OF this(1-4) `x \<notin> env_dom env'` `y \<notin> env_dom env'`
-                          `s \<noteq> p` `x \<noteq> y` this(5) `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` 
+      bnd_renaming_lem[OF this(1-4) \<open>x \<notin> env_dom env'\<close> \<open>y \<notin> env_dom env'\<close>
+                          \<open>s \<noteq> p\<close> \<open>x \<noteq> y\<close> this(5) \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> 
                           cof FVsubset]
     show 
       "\<forall>sa pa. sa \<notin> F \<union> {s, p, x, y} \<union> FV (Obj f' T) \<union> env_dom env' 
@@ -462,20 +462,20 @@ proof (cases rule: typing.cases)
   thus ?thesis 
   proof (simp, intro strip)
     fix l assume "l \<in> do U"
-    from `finite F` finite_FV[of "Obj f U"] have "finite (F \<union> FV (Obj f U) \<union> {s,p})"
+    from \<open>finite F\<close> finite_FV[of "Obj f U"] have "finite (F \<union> FV (Obj f U) \<union> {s,p})"
       by simp
     from exFresh_s_p_cof[OF this]
     obtain sa pa where 
       "sa \<noteq> pa" and
       nin_sa: "sa \<notin> F \<union> FV (Obj f U)" and
       nin_pa: "pa \<notin> F \<union> FV (Obj f U)" by auto
-    with `l \<in> do U` T_Obj(4)
+    with \<open>l \<in> do U\<close> T_Obj(4)
     have 
       "e\<lparr>sa:U\<rparr>\<lparr>pa:param(the(U^l))\<rparr> 
        \<turnstile> (the(f l)\<^bsup>[Fvar sa,Fvar pa]\<^esup>) : return(the(U^l))"
       by simp
     moreover
-    from `l \<in> do U` `dom f = do U`  
+    from \<open>l \<in> do U\<close> \<open>dom f = do U\<close>  
     have "l \<in> dom f" by simp
     with nin_s nin_p nin_sa nin_pa FV_option_lem[of f]
     have 
@@ -486,7 +486,7 @@ proof (cases rule: typing.cases)
     show 
       "e\<lparr>s:U\<rparr>\<lparr>p:param(the(U^l))\<rparr> 
        \<turnstile> (the(f l)\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(U^l))"
-      using type_renaming[OF _ _ _ _ _ _ _ `s \<noteq> p` `sa \<noteq> pa`]
+      using type_renaming[OF _ _ _ _ _ _ _ \<open>s \<noteq> p\<close> \<open>sa \<noteq> pa\<close>]
       by (simp add: openz_def)
   qed
 qed
@@ -510,14 +510,14 @@ proof (cases rule: typing.cases)
                 \<longrightarrow> e\<lparr>s:U\<rparr>\<lparr>p: param(the(U^l))\<rparr> \<turnstile> (the(f l)\<^bsup>[Fvar s,Fvar p]\<^esup>) : T) 
           \<Longrightarrow> P"
   from 
-    `T = return(the(A^l))`
-    `e \<turnstile> Obj f U : A` `l \<in> do A` obj_inv[of e f U A]
+    \<open>T = return(the(A^l))\<close>
+    \<open>e \<turnstile> Obj f U : A\<close> \<open>l \<in> do A\<close> obj_inv[of e f U A]
   obtain "e \<turnstile> (Obj f U) : U" and "T = return(the(U^l))" and "l \<in> do U" 
     by simp
   from obj_inv_elim[OF this(1)] this(2-3) cof show ?thesis by blast
 qed
 
-subsubsection {* Substitution preserves Well-Typedness *}
+subsubsection \<open>Substitution preserves Well-Typedness\<close>
 lemma bigger_env_lemma[rule_format]: 
   assumes "e \<turnstile> t : T"
   shows "\<forall>x X. x \<notin> env_dom e \<longrightarrow> e\<lparr>x:X\<rparr> \<turnstile> t: T"
@@ -538,10 +538,10 @@ proof -
     proof (intro strip)
       fix x X assume "x \<notin> env_dom env"
       from 
-        get_env_smaller[OF `xa \<in> env_dom env` this]
-        T_Var[OF ok_add_ok[OF `ok env` this]
-        env_bigger[OF this `xa \<in> env_dom env`]]
-        `the env!xa = Ta`
+        get_env_smaller[OF \<open>xa \<in> env_dom env\<close> this]
+        T_Var[OF ok_add_ok[OF \<open>ok env\<close> this]
+        env_bigger[OF this \<open>xa \<in> env_dom env\<close>]]
+        \<open>the env!xa = Ta\<close>
       show "env\<lparr>x:X\<rparr> \<turnstile> Fvar xa : Ta" by simp
     qed
   next
@@ -560,14 +560,14 @@ proof -
           env\<lparr>x:X\<rparr>\<lparr>s:Ta\<rparr>\<lparr>p:param (the(Ta^l))\<rparr> \<turnstile> (the b\<^bsup>[Fvar s,Fvar p]\<^esup>) : return (the(Ta^l))"
         for s p b l
       assume "x \<notin> env_dom env"
-      with pred fmap_ex_cof[of f pred_bnd] `dom f = do Ta`
+      with pred fmap_ex_cof[of f pred_bnd] \<open>dom f = do Ta\<close>
       obtain L where
         "finite L" and "\<forall>l\<in>do Ta. pred_cof L (env\<lparr>x:X\<rparr>) (the(f l)) Ta l"
         unfolding pred_bnd_def pred_cof_def pred_cof'_def
         by auto
       from 
-        T_Obj[OF ok_add_ok[OF `ok env` `x \<notin> env_dom env`] 
-                 `dom f = do Ta` this(1)]
+        T_Obj[OF ok_add_ok[OF \<open>ok env\<close> \<open>x \<notin> env_dom env\<close>] 
+                 \<open>dom f = do Ta\<close> this(1)]
         this(2)
       show "env\<lparr>x:X\<rparr> \<turnstile> Obj f Ta : Ta"
         unfolding pred_cof_def
@@ -581,7 +581,7 @@ proof -
       fix x X assume "x \<notin> env_dom env" 
       with pred_u obtain L where
         "finite L" and "pred_cof L (env\<lparr>x:X\<rparr>) u Ta l" by auto
-      with `l \<in> do Ta` `x \<notin> env_dom env` pred_t
+      with \<open>l \<in> do Ta\<close> \<open>x \<notin> env_dom env\<close> pred_t
       show "env\<lparr>x:X\<rparr> \<turnstile> Upd t l u : Ta" 
         unfolding pred_cof_def
         by auto
@@ -592,20 +592,20 @@ proof -
     proof (intro strip)
       fix x X assume "x \<notin> env_dom env"
       thus "\<exists>L. finite L \<and> pred_cof L (env\<lparr>x:X\<rparr>) t Ta l"
-      proof (rule_tac x = "L \<union> {x}" in exI, simp add: `finite L`, 
+      proof (rule_tac x = "L \<union> {x}" in exI, simp add: \<open>finite L\<close>, 
           unfold pred_cof_def, auto)
         fix s p
         assume 
           "s \<notin> L" and "p \<notin> L" and "s \<noteq> p" and
           "s \<noteq> x" and "p \<noteq> x"
         note 
-          subst_add[OF not_sym[OF `s \<noteq> x`]]
-          subst_add[OF not_sym[OF `p \<noteq> x`]]
+          subst_add[OF not_sym[OF \<open>s \<noteq> x\<close>]]
+          subst_add[OF not_sym[OF \<open>p \<noteq> x\<close>]]
         from 
           this(1)[of env X Ta] this(2)[of "env\<lparr>s:Ta\<rparr>" X "param (the(Ta^l))"]
-          pred `s \<notin> L` `p \<notin> L` `s \<noteq> p`
-          not_in_env_bigger_2[OF `x \<notin> env_dom env` 
-                                 not_sym[OF `s \<noteq> x`] not_sym[OF `p \<noteq> x`]]
+          pred \<open>s \<notin> L\<close> \<open>p \<notin> L\<close> \<open>s \<noteq> p\<close>
+          not_in_env_bigger_2[OF \<open>x \<notin> env_dom env\<close> 
+                                 not_sym[OF \<open>s \<noteq> x\<close>] not_sym[OF \<open>p \<noteq> x\<close>]]
         show 
           "env\<lparr>x:X\<rparr>\<lparr>s:Ta\<rparr>\<lparr>p:param (the(Ta^l))\<rparr> 
           \<turnstile> (t\<^bsup>[Fvar s,Fvar p]\<^esup>) : return (the(Ta^l))"
@@ -637,8 +637,8 @@ proof (intro strip, elim conjE)
     assms(2) env_app_dom[OF assms(1-3)]
   have "env_dom (e1\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l))\<rparr>) \<inter> env_dom e2 = {}" by simp
   with 
-    env_app_add2[OF assms(1-3) _ _ _ _ `s \<noteq> p`]
-    env_app_dom[OF assms(1-3)] `ok e2` assms(4) nin_s nin_p `s \<noteq> p`
+    env_app_add2[OF assms(1-3) _ _ _ _ \<open>s \<noteq> p\<close>]
+    env_app_dom[OF assms(1-3)] \<open>ok e2\<close> assms(4) nin_s nin_p \<open>s \<noteq> p\<close>
   show "(e1+e2)\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l))\<rparr> \<turnstile> (t2\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l))"
     by auto
 qed
@@ -653,34 +653,34 @@ proof (induct rule: typing.induct)
 next
   case (T_Var env x T)
   from 
-    env_app_dom[OF `ok env` `env_dom env \<inter> env_dom e' = {}` `ok e'`]
-    `x \<in> env_dom env`
+    env_app_dom[OF \<open>ok env\<close> \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close>]
+    \<open>x \<in> env_dom env\<close>
   have indom: "x \<in> env_dom (env+e')" by simp
   from 
-    `ok env` `x \<in> env_dom env` `the env!x = T` `env_dom env \<inter> env_dom e' = {}`
-    `ok e'` 
+    \<open>ok env\<close> \<open>x \<in> env_dom env\<close> \<open>the env!x = T\<close> \<open>env_dom env \<inter> env_dom e' = {}\<close>
+    \<open>ok e'\<close> 
   have "the (env+e')!x = T" by simp
   from 
-    typing.T_Var[OF env_app_ok[OF `ok env` `env_dom env \<inter> env_dom e' = {}` 
-                                  `ok e'`] 
+    typing.T_Var[OF env_app_ok[OF \<open>ok env\<close> \<open>env_dom env \<inter> env_dom e' = {}\<close> 
+                                  \<open>ok e'\<close>] 
                     indom this] 
   show ?case by assumption
 next
   case (T_Upd F env T l t2 t1)
   from 
-    typing.T_Upd[OF _ bnd_disj_env_lem[OF typing_regular'[OF `env \<turnstile> t1 : T`] 
-                                          `env_dom env \<inter> env_dom e' = {}` `ok e'` 
+    typing.T_Upd[OF _ bnd_disj_env_lem[OF typing_regular'[OF \<open>env \<turnstile> t1 : T\<close>] 
+                                          \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close> 
                                           T_Upd(2)] 
-                    T_Upd(4)[OF `env_dom env \<inter> env_dom e' = {}` `ok e'`] 
-                    `l \<in> do T`]
-    `finite F` ok_finite[OF env_app_ok[OF typing_regular'[OF `env \<turnstile> t1 : T`] 
-                                          `env_dom env \<inter> env_dom e' = {}` `ok e'`]]
+                    T_Upd(4)[OF \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close>] 
+                    \<open>l \<in> do T\<close>]
+    \<open>finite F\<close> ok_finite[OF env_app_ok[OF typing_regular'[OF \<open>env \<turnstile> t1 : T\<close>] 
+                                          \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close>]]
   show ?case by simp
 next
   case (T_Obj env f T F)
   from 
-    ok_finite[OF env_app_ok[OF `ok env` `env_dom env \<inter> env_dom e' = {}` `ok e'`]]
-    `finite F` 
+    ok_finite[OF env_app_ok[OF \<open>ok env\<close> \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close>]]
+    \<open>finite F\<close> 
   have finF: "finite (F \<union> env_dom (env+e'))" by simp
   note 
     ball_Tltsp[of F
@@ -694,19 +694,19 @@ next
                  \<turnstile> (t\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l))"]
   from 
     this[OF _ T_Obj(4)] 
-    bnd_disj_env_lem[OF `ok env` `env_dom env \<inter> env_dom e' = {}` `ok e'`] 
-    typing.T_Obj[OF env_app_ok[OF `ok env` 
-                    `env_dom env \<inter> env_dom e' = {}` `ok e'`] 
-                    `dom f = do T` finF]
+    bnd_disj_env_lem[OF \<open>ok env\<close> \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close>] 
+    typing.T_Obj[OF env_app_ok[OF \<open>ok env\<close> 
+                    \<open>env_dom env \<inter> env_dom e' = {}\<close> \<open>ok e'\<close>] 
+                    \<open>dom f = do T\<close> finF]
   show ?case by simp
 qed
 
-text {* Typed in the Empty Environment implies typed in any Environment *}
+text \<open>Typed in the Empty Environment implies typed in any Environment\<close>
 lemma empty_env: 
   assumes "(Env Map.empty) \<turnstile> t : A" and "ok env"
   shows "env \<turnstile> t : A"
 proof -
-  from `ok env` have "env = (Env Map.empty)+env" by (cases env, auto)
+  from \<open>ok env\<close> have "env = (Env Map.empty)+env" by (cases env, auto)
   with disjunct_env[OF assms(1) _ assms(2)] show ?thesis by simp
 qed
 
@@ -740,26 +740,26 @@ proof (intro strip, elim conjE)
   {
     fix a assume "a \<notin> FV t'' \<union> FV x \<union> FV y" and "a \<in> {s,p}"
     with 
-      `FV t' \<subseteq> FV t''` nin_sa nin_pa `sa \<noteq> pa` 
+      \<open>FV t' \<subseteq> FV t''\<close> nin_sa nin_pa \<open>sa \<noteq> pa\<close> 
       sopen_FV[of 0 "Fvar sa" "Fvar pa" t']
     have "a \<notin> FV (t'\<^bsup>[Fvar sa,Fvar pa]\<^esup>) \<union> FV x \<union> FV y" by (auto simp: openz_def)
   } note 
-      this[OF `s \<notin> FV t'' \<union> FV x \<union> FV y`] 
-      this[OF `p \<notin> FV t'' \<union> FV x \<union> FV y`]
+      this[OF \<open>s \<notin> FV t'' \<union> FV x \<union> FV y\<close>] 
+      this[OF \<open>p \<notin> FV t'' \<union> FV x \<union> FV y\<close>]
   moreover
   {
-    from `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` ok_add_2[of env' s A p B]
+    from \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> ok_add_2[of env' s A p B]
     have "ok env'" by simp
-    from nin_sa nin_pa `sa \<noteq> pa` env_add_dom[OF this] 
+    from nin_sa nin_pa \<open>sa \<noteq> pa\<close> env_add_dom[OF this] 
     obtain "sa \<notin> env_dom env'" and "pa \<notin> env_dom (env'\<lparr>sa:T\<rparr>)" by auto
     note 
-      bigger_env_lemma[OF bigger_env_lemma[OF `env' \<turnstile> x : A` this(1)] this(2)]
-      bigger_env_lemma[OF bigger_env_lemma[OF `env' \<turnstile> y : B` this(1)] this(2)]
+      bigger_env_lemma[OF bigger_env_lemma[OF \<open>env' \<turnstile> x : A\<close> this(1)] this(2)]
+      bigger_env_lemma[OF bigger_env_lemma[OF \<open>env' \<turnstile> y : B\<close> this(1)] this(2)]
   }note 
       this(1)[of "param(the(T^l))"] 
       this(2)[of "param(the(T^l))"]
   moreover
-  from `t = {Suc n \<rightarrow> [Fvar s,Fvar p]} t'` sopen_commute[of 0 "Suc n" sa pa s p t']
+  from \<open>t = {Suc n \<rightarrow> [Fvar s,Fvar p]} t'\<close> sopen_commute[of 0 "Suc n" sa pa s p t']
   have "(t\<^bsup>[Fvar sa,Fvar pa]\<^esup>) = {Suc n \<rightarrow> [Fvar s,Fvar p]} (t'\<^bsup>[Fvar sa,Fvar pa]\<^esup>)"
     by (simp add: openz_def)
   moreover
@@ -767,7 +767,7 @@ proof (intro strip, elim conjE)
     subst_add[of p sa "env'\<lparr>s:A\<rparr>" B T] subst_add[of s sa env' A T]
     subst_add[of p pa "env'\<lparr>sa:T\<rparr>\<lparr>s:A\<rparr>" B "param(the(T^l))"] 
     subst_add[of s pa "env'\<lparr>sa:T\<rparr>" A "param(the(T^l))"]
-    `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` nin_sa nin_pa
+    \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> nin_sa nin_pa
   have "env\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr> = env'\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr>\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>"
     by auto
   ultimately
@@ -775,10 +775,10 @@ proof (intro strip, elim conjE)
     "env'\<lparr>sa:T\<rparr>\<lparr>pa:param(the(T^l))\<rparr>
      \<turnstile> ({Suc n \<rightarrow> [x,y]} t'\<^bsup>[Fvar sa, Fvar pa]\<^esup>) : return(the(T^l))"
     using 
-      pred_bnd `s \<noteq> p`
+      pred_bnd \<open>s \<noteq> p\<close>
       sopen_commute_gen[OF lc_Fvar[of sa] lc_Fvar[of pa] 
-                           typing_regular''[OF `env' \<turnstile> x : A`] 
-                           typing_regular''[OF `env' \<turnstile> y : B`]
+                           typing_regular''[OF \<open>env' \<turnstile> x : A\<close>] 
+                           typing_regular''[OF \<open>env' \<turnstile> y : B\<close>]
                            not_sym[OF Suc_not_Zero]]
     by (auto simp: openz_def)
 qed
@@ -796,71 +796,71 @@ lemma open_lemma':
          \<Longrightarrow> env \<turnstile> {n \<rightarrow> [x,y]} t' : C)"
 proof (induct set:typing)
   case (T_Var env x T env' t' s p y z A B n)
-  from sopen_eq_Fvar[OF sym[OF `Fvar x = {n \<rightarrow> [Fvar s,Fvar p]} t'`]] 
+  from sopen_eq_Fvar[OF sym[OF \<open>Fvar x = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]] 
   show ?case
   proof (elim disjE conjE)
     assume "t' = Fvar x" 
-    with `s \<notin> FV t' \<union> FV y \<union> FV z` `p \<notin> FV t' \<union> FV y \<union> FV z` 
+    with \<open>s \<notin> FV t' \<union> FV y \<union> FV z\<close> \<open>p \<notin> FV t' \<union> FV y \<union> FV z\<close> 
     obtain "x \<noteq> s" and "x \<noteq> p" by auto
-    from `x \<in> env_dom env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` in_env_smaller2[OF _ this]
+    from \<open>x \<in> env_dom env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> in_env_smaller2[OF _ this]
     have indom: "x \<in> env_dom env'" by simp
     from 
-      `ok env` `the env!x = T` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>`
-      ok_add_2[of env' s A p B] get_env_smaller2[OF this _ _ `s \<noteq> p`]
+      \<open>ok env\<close> \<open>the env!x = T\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close>
+      ok_add_2[of env' s A p B] get_env_smaller2[OF this _ _ \<open>s \<noteq> p\<close>]
     have "the env'!x = T" by simp
     from 
-      `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` `t' = Fvar x`
+      \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> \<open>t' = Fvar x\<close>
       ok_add_2[of env' s A p B] typing.T_Var[OF _ indom this]
     show ?case by simp
   next
     assume "x = s"
     with 
-      `ok env` `the env!x = T` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` 
+      \<open>ok env\<close> \<open>the env!x = T\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> 
       add_get2_1[of env' s A p B] 
     have "T = A" by simp
     moreover assume "t' = Bvar (Self n)"
-    ultimately show ?thesis using `env' \<turnstile> y : A` by simp
+    ultimately show ?thesis using \<open>env' \<turnstile> y : A\<close> by simp
   next
     assume "x = p" 
     with 
-      `ok env` `the env!x = T` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` 
+      \<open>ok env\<close> \<open>the env!x = T\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> 
       add_get2_2[of env' s A p B] have "T = B" by simp
     moreover assume "t' = Bvar (Param n)"
-    ultimately show ?thesis using `env' \<turnstile> z : B` by simp
+    ultimately show ?thesis using \<open>env' \<turnstile> z : B\<close> by simp
   qed
 next
   case (T_Upd F env T l t2 t1 env' t' s p x y A B n)
-  from sopen_eq_Upd[OF sym[OF `Upd t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'`]]
+  from sopen_eq_Upd[OF sym[OF \<open>Upd t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]]
   obtain t1' t2' where 
     t1': "t1 = {n \<rightarrow> [Fvar s,Fvar p]} t1'" and
     t2': "t2 = {Suc n \<rightarrow> [Fvar s,Fvar p]} t2'" and
     t': "t' = Upd t1' l t2'" by auto
   hence "FV t2' \<subseteq> FV t'" by auto
   from 
-    `s \<notin> FV t' \<union> FV x \<union> FV y` `p \<notin> FV t' \<union> FV x \<union> FV y`
-    t' `finite F` ok_finite[OF typing_regular'[OF `env' \<turnstile> x : A`]]
+    \<open>s \<notin> FV t' \<union> FV x \<union> FV y\<close> \<open>p \<notin> FV t' \<union> FV x \<union> FV y\<close>
+    t' \<open>finite F\<close> ok_finite[OF typing_regular'[OF \<open>env' \<turnstile> x : A\<close>]]
     typing.T_Upd[OF _ bnd_open_lem[OF T_Upd(2) 
-                    typing_regular'[OF `env \<turnstile> t1 : T`] 
-                    `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` 
-                    `s \<notin> FV t' \<union> FV x \<union> FV y` 
-                    `p \<notin> FV t' \<union> FV x \<union> FV y` `s \<noteq> p`
-                    `env' \<turnstile> x : A` `env' \<turnstile> y : B` t2' this]
-    T_Upd(4)[OF _ _ `s \<noteq> p` `env' \<turnstile> x : A` `env' \<turnstile> y : B` 
-                t1' `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>`] `l \<in> do T`]
+                    typing_regular'[OF \<open>env \<turnstile> t1 : T\<close>] 
+                    \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> 
+                    \<open>s \<notin> FV t' \<union> FV x \<union> FV y\<close> 
+                    \<open>p \<notin> FV t' \<union> FV x \<union> FV y\<close> \<open>s \<noteq> p\<close>
+                    \<open>env' \<turnstile> x : A\<close> \<open>env' \<turnstile> y : B\<close> t2' this]
+    T_Upd(4)[OF _ _ \<open>s \<noteq> p\<close> \<open>env' \<turnstile> x : A\<close> \<open>env' \<turnstile> y : B\<close> 
+                t1' \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close>] \<open>l \<in> do T\<close>]
   show ?case by simp
 next
   case (T_Obj env f T F env' t' s p x y A B n)
-  from sopen_eq_Obj[OF sym[OF `Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'`]]
+  from sopen_eq_Obj[OF sym[OF \<open>Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]]
   obtain f' where 
     obj: "Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} Obj f' T" and 
     t': "t' = Obj f' T" by auto
   from 
-    sym[OF this(1)] `dom f = do T`
+    sym[OF this(1)] \<open>dom f = do T\<close>
     sym[OF dom_sopenoption_lem[of "Suc n" "Fvar s" "Fvar p" f']]
     dom_sopenoption_lem[of "Suc n" x y f']
   have dom: "dom (\<lambda>l. sopen_option (Suc n) x y (f' l)) = do T" by simp
 
-  from `finite F` ok_finite[OF typing_regular'[OF `env' \<turnstile> x : A`]] 
+  from \<open>finite F\<close> ok_finite[OF typing_regular'[OF \<open>env' \<turnstile> x : A\<close>]] 
   have finF: "finite (F \<union> {s,p} \<union> env_dom env')"
     by simp
 
@@ -885,7 +885,7 @@ next
                \<longrightarrow> env'' \<turnstile> {n' \<rightarrow> [x',y']} t'' : return(the(T^l)))"
       by simp
     from 
-      `l \<in> do T` `dom f = do T` `Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'` obj t'
+      \<open>l \<in> do T\<close> \<open>dom f = do T\<close> \<open>Obj f T = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close> obj t'
       dom_sopenoption_lem[of "Suc n" "Fvar s" "Fvar p" f']
     have indomf': "l \<in> dom f'" by auto
     with obj sopen_option_lem[of f' "Suc n" "Fvar s" "Fvar p"] FV_option_lem[of f'] t'
@@ -893,9 +893,9 @@ next
       "the(f l) = {Suc n \<rightarrow> [Fvar s,Fvar p]} the(f' l)" and
       "FV (the(f' l)) \<subseteq> FV t'" by auto
     from 
-      bnd_open_lem[OF cof `ok env` `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>` 
-                      `s \<notin> FV t' \<union> FV x \<union> FV y` `p \<notin> FV t' \<union> FV x \<union> FV y`
-                      `s \<noteq> p` `env' \<turnstile> x : A` `env' \<turnstile> y : B` this]
+      bnd_open_lem[OF cof \<open>ok env\<close> \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close> 
+                      \<open>s \<notin> FV t' \<union> FV x \<union> FV y\<close> \<open>p \<notin> FV t' \<union> FV x \<union> FV y\<close>
+                      \<open>s \<noteq> p\<close> \<open>env' \<turnstile> x : A\<close> \<open>env' \<turnstile> y : B\<close> this]
       indomf' sopen_option_lem[of f' "Suc n" x y] T_Obj(4)
     show 
       "\<forall>sa pa. sa \<notin> F \<union> {s,p} \<union> env_dom env' 
@@ -904,11 +904,11 @@ next
             \<turnstile> (the(sopen_option (Suc n) x y (f' l))\<^bsup>[Fvar sa,Fvar pa]\<^esup>) : return(the(T^l))"
       by simp
   qed
-  from typing.T_Obj[OF typing_regular'[OF `env' \<turnstile> x : A`] dom finF this] t' 
+  from typing.T_Obj[OF typing_regular'[OF \<open>env' \<turnstile> x : A\<close>] dom finF this] t' 
   show ?case by simp
 next
   case (T_Call env t1 T t2 l env' t' s p x y A B n)
-  from sopen_eq_Call[OF sym[OF `Call t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'`]]
+  from sopen_eq_Call[OF sym[OF \<open>Call t1 l t2 = {n \<rightarrow> [Fvar s,Fvar p]} t'\<close>]]
   obtain t1' t2' where 
     t1: "t1 = {n \<rightarrow> [Fvar s,Fvar p]} t1'" and
     t2: "t2 = {n \<rightarrow> [Fvar s,Fvar p]} t2'" and
@@ -916,19 +916,19 @@ next
   { fix a assume "a \<notin> FV t' \<union> FV x \<union> FV y" 
     with t' have "a \<notin> FV t1' \<union> FV x \<union> FV y" by simp
   }note 
-      t1' = T_Call(2)[OF this[OF `s \<notin> FV t' \<union> FV x \<union> FV y`]
-                        this[OF `p \<notin> FV t' \<union> FV x \<union> FV y`]
-                        `s \<noteq> p` `env' \<turnstile> x : A` `env' \<turnstile> y : B`
-                        t1 `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>`]
+      t1' = T_Call(2)[OF this[OF \<open>s \<notin> FV t' \<union> FV x \<union> FV y\<close>]
+                        this[OF \<open>p \<notin> FV t' \<union> FV x \<union> FV y\<close>]
+                        \<open>s \<noteq> p\<close> \<open>env' \<turnstile> x : A\<close> \<open>env' \<turnstile> y : B\<close>
+                        t1 \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close>]
   { fix a assume "a \<notin> FV t' \<union> FV x \<union> FV y" 
     with t' have "a \<notin> FV t2' \<union> FV x \<union> FV y" by simp
   }
   from 
-    typing.T_Call[OF t1' T_Call(4)[OF this[OF `s \<notin> FV t' \<union> FV x \<union> FV y`]
-                                     this[OF `p \<notin> FV t' \<union> FV x \<union> FV y`]
-                                     `s \<noteq> p` `env' \<turnstile> x : A` `env' \<turnstile> y : B`
-                                     t2 `env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>`] 
-                     `l \<in> do T`]
+    typing.T_Call[OF t1' T_Call(4)[OF this[OF \<open>s \<notin> FV t' \<union> FV x \<union> FV y\<close>]
+                                     this[OF \<open>p \<notin> FV t' \<union> FV x \<union> FV y\<close>]
+                                     \<open>s \<noteq> p\<close> \<open>env' \<turnstile> x : A\<close> \<open>env' \<turnstile> y : B\<close>
+                                     t2 \<open>env = env'\<lparr>s:A\<rparr>\<lparr>p:B\<rparr>\<close>] 
+                     \<open>l \<in> do T\<close>]
     t'
   show ?case by simp
 qed
@@ -940,7 +940,7 @@ lemma open_lemma:
   \<Longrightarrow> env \<turnstile> {n \<rightarrow> [x,y]} t : T"  
   by (simp add: open_lemma')
 
-subsubsection {* Subject reduction *}
+subsubsection \<open>Subject reduction\<close>
 lemma type_dom[simp]: "env \<turnstile> (Obj a A) : A \<Longrightarrow> dom a = do A" 
   by (erule typing.cases, auto)
 
@@ -955,12 +955,12 @@ lemma select_preserve_type[simp]:
          \<longrightarrow> env\<lparr>s:(Object t)\<rparr>\<lparr>p:param(the(t l1))\<rparr>
              \<turnstile> (the((f(l2 \<mapsto> a)) l1)\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(t l1)))"
 proof -
-  from ok_finite[OF typing_regular'[OF `env \<turnstile> Obj f (Object t) : Object t`]]
+  from ok_finite[OF typing_regular'[OF \<open>env \<turnstile> Obj f (Object t) : Object t\<close>]]
   have finF: "finite ({s,p} \<union> env_dom env)" by simp
 
   { 
     note 
-      ok_env = typing_regular'[OF `env \<turnstile> Obj f (Object t) : Object t`] and
+      ok_env = typing_regular'[OF \<open>env \<turnstile> Obj f (Object t) : Object t\<close>] and
       ok_env_sp = typing_regular'[OF assms(4)]
     fix sa pa assume 
       nin_sa: "sa \<notin> {s,p} \<union> env_dom env" and
@@ -975,7 +975,7 @@ proof -
       aT_sa: "env\<lparr>sa:Object t\<rparr>\<lparr>s:Object t\<rparr>\<lparr>p:param(the(t l2))\<rparr>
               \<turnstile> (a\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(t l2))" by simp
     from 
-      `sa \<noteq> pa` nin_sa nin_pa env_add_dom[OF ok_env] 
+      \<open>sa \<noteq> pa\<close> nin_sa nin_pa env_add_dom[OF ok_env] 
       ok_add_2[OF ok_env_sp]
     obtain 
       "s \<notin> env_dom (env\<lparr>sa:Object t\<rparr>)" and
@@ -994,7 +994,7 @@ proof -
       aT_sapa: 
       "env\<lparr>sa:Object t\<rparr>\<lparr>pa:param(the(t l2))\<rparr>\<lparr>s:Object t\<rparr>\<lparr>p:param(the(t l2))\<rparr>
       \<turnstile> {0 \<rightarrow> [Fvar s, Fvar p]} a : return(the(t l2))" by (simp add: openz_def)
-    from nin_sa nin_pa `s \<notin> FV a` `p \<notin> FV a` ok_add_2[OF ok_env_sp] 
+    from nin_sa nin_pa \<open>s \<notin> FV a\<close> \<open>p \<notin> FV a\<close> ok_add_2[OF ok_env_sp] 
     obtain 
       ninFV_s: "s \<notin> FV a \<union> FV (Fvar sa) \<union> FV (Fvar pa)" and
       ninFV_p: "p \<notin> FV a \<union> FV (Fvar sa) \<union> FV (Fvar pa)" and "s \<noteq> p"
@@ -1007,7 +1007,7 @@ proof -
       by simp
 
     from 
-      open_lemma[OF aT_sapa ninFV_s ninFV_p `s \<noteq> p` _
+      open_lemma[OF aT_sapa ninFV_s ninFV_p \<open>s \<noteq> p\<close> _
                     T_Var[OF ok_env_sapa in_add[OF ok_env_sapa] 
                              add_get2_2[OF ok_env_sapa]]]
       T_Var[OF ok_env_pasa in_add[OF ok_env_pasa] add_get2_2[OF ok_env_pasa]]
@@ -1026,7 +1026,7 @@ proof -
           auto simp: finF alem)
   next
     case False
-    from obj_inv_elim[OF `env \<turnstile> Obj f (Object t) : Object t`]
+    from obj_inv_elim[OF \<open>env \<turnstile> Obj f (Object t) : Object t\<close>]
     obtain F where 
       "finite F" and
       "\<forall>l\<in>dom t. 
@@ -1034,30 +1034,30 @@ proof -
          \<longrightarrow> env\<lparr>s:Object t\<rparr>\<lparr>p:param(the(Object t^l))\<rparr>
              \<turnstile> (the(f l)\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(Object t^l))"
       by auto
-    from this(2) `l1 \<in> dom t`
+    from this(2) \<open>l1 \<in> dom t\<close>
     have 
       "\<forall>s p. s \<notin> F \<and> p \<notin> F \<and> s \<noteq> p
         \<longrightarrow> env\<lparr>s:Object t\<rparr>\<lparr>p:param(the(Object t^l1))\<rparr>
             \<turnstile> (the(f l1)\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(Object t^l1))"
       by auto
-    thus ?thesis using `finite F` `l1 \<noteq> l2` by (simp,blast)
+    thus ?thesis using \<open>finite F\<close> \<open>l1 \<noteq> l2\<close> by (simp,blast)
   qed
 qed
 
-text {* Main Lemma *}
+text \<open>Main Lemma\<close>
 (* TODO: refactor to work with typing_induct *)
 lemma subject_reduction: "e \<turnstile> t : T \<Longrightarrow> (\<And>t'. t \<rightarrow>\<^sub>\<beta> t' \<Longrightarrow> e \<turnstile> t' : T)"
 proof (induct set: typing)
   case (T_Var env x T t') 
-  from Fvar_beta[OF `Fvar x \<rightarrow>\<^sub>\<beta> t'`] show ?case by simp 
+  from Fvar_beta[OF \<open>Fvar x \<rightarrow>\<^sub>\<beta> t'\<close>] show ?case by simp 
 next
   case (T_Upd F env T l t2 t1 t')
-  from Upd_beta[OF `Upd t1 l t2 \<rightarrow>\<^sub>\<beta> t'`] show ?case
+  from Upd_beta[OF \<open>Upd t1 l t2 \<rightarrow>\<^sub>\<beta> t'\<close>] show ?case
   proof (elim disjE exE conjE)
     fix t1' assume "t1 \<rightarrow>\<^sub>\<beta> t1'" and "t' = Upd t1' l t2"
     from 
       this(2) T_Upd(2) 
-      typing.T_Upd[OF `finite F` _ T_Upd(4)[OF this(1)] `l \<in> do T`]
+      typing.T_Upd[OF \<open>finite F\<close> _ T_Upd(4)[OF this(1)] \<open>l \<in> do T\<close>]
     show ?case by simp
   next
     fix t2' F' 
@@ -1078,22 +1078,22 @@ next
       with beta_lc[OF this(1)] sopen_sclose_eq_t[of t'' 0 s p]
       have "t2\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> (t2'\<^bsup>[Fvar s,Fvar p]\<^esup>)" 
         by (simp add: openz_def closez_def)
-      with nin_s nin_p `s \<noteq> p` T_Upd(2) 
+      with nin_s nin_p \<open>s \<noteq> p\<close> T_Upd(2) 
       show "env\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l))\<rparr> \<turnstile> (t2'\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l))"
         by auto
     qed
-    from t' `finite F` `finite F'` typing.T_Upd[OF _ this `env \<turnstile> t1 : T` `l \<in> do T`]
+    from t' \<open>finite F\<close> \<open>finite F'\<close> typing.T_Upd[OF _ this \<open>env \<turnstile> t1 : T\<close> \<open>l \<in> do T\<close>]
     show ?case by simp
   next
     fix f U assume 
       "l \<in> dom f" and "Obj f U = t1" and 
       t': "t' = Obj (f(l \<mapsto> t2)) U"
-    from this(1-2) `env \<turnstile> t1 : T` obj_inv[of env f U T]
+    from this(1-2) \<open>env \<turnstile> t1 : T\<close> obj_inv[of env f U T]
     obtain t where 
       objT: "env \<turnstile> Obj f (Object t) : (Object t)" and 
       "Object t = T" and "T = U" 
       by (cases T, auto)
-    from obj_inv_elim[OF objT] `Object t = T` `l \<in> dom f` 
+    from obj_inv_elim[OF objT] \<open>Object t = T\<close> \<open>l \<in> dom f\<close> 
     have domf': "dom (f(l \<mapsto> t2)) = do T" by auto
     have 
       exF: "\<forall>l'\<in>do T. 
@@ -1103,23 +1103,23 @@ next
                          \<turnstile> (the ((f(l \<mapsto> t2)) l')\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l'))))"
     proof
       fix l' assume "l' \<in> do T"
-      with dom_lem[OF objT] `l \<in> dom f` `Object t = T`
+      with dom_lem[OF objT] \<open>l \<in> dom f\<close> \<open>Object t = T\<close>
       obtain ll': "l' \<in> dom t" and "l \<in> dom t" by auto
 
-      from `finite F` have "finite (F \<union> FV t2)" by simp
+      from \<open>finite F\<close> have "finite (F \<union> FV t2)" by simp
       from exFresh_s_p_cof[OF this]
       obtain s p where 
         nin_s: "s \<notin> F \<union> FV t2" and 
         nin_p: "p \<notin> F \<union> FV t2" and "s \<noteq> p"
         by auto
-      with T_Upd(2) `Object t = T` 
+      with T_Upd(2) \<open>Object t = T\<close> 
       have 
         "env\<lparr>s:Object t\<rparr>\<lparr>p:param(the(t l))\<rparr> 
          \<turnstile> (t2\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(t l))"
         by auto
       from 
-        select_preserve_type[OF objT _ _ this ll'] sym[OF `Object t = T`]
-        nin_s nin_p `l \<in> dom t`
+        select_preserve_type[OF objT _ _ this ll'] sym[OF \<open>Object t = T\<close>]
+        nin_s nin_p \<open>l \<in> dom t\<close>
       obtain F' where 
         "finite F'" and
         "\<forall>s p. s \<notin> F' \<and> p \<notin> F' \<and> s \<noteq> p
@@ -1135,7 +1135,7 @@ next
     qed
     { fix Ta from finite_dom_fmap have "finite (do Ta)" by (cases Ta, auto) }
     note fin_doT = this ball_ex_finite[of "do T" "F \<union> FV t2"]
-    from this(2)[OF this(1)[of T] _ exF] `finite F`
+    from this(2)[OF this(1)[of T] _ exF] \<open>finite F\<close>
     obtain F' where 
       "finite F'" and
       "\<forall>l'\<in>do T. \<forall>s p. s \<notin> F' \<union> (F \<union> FV t2) \<and> p \<notin> F' \<union> (F \<union> FV t2) \<and> s \<noteq> p
@@ -1143,20 +1143,20 @@ next
                        \<turnstile> (the ((f(l \<mapsto> t2)) l')\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l'))"
       by auto
     moreover
-    from `finite F'` `finite F` have "finite (F' \<union> (F \<union> FV t2))" by simp
-    note typing.T_Obj[OF typing_regular'[OF `env \<turnstile> t1 : T`] domf' this]
-    ultimately show ?case using t' `T = U` by auto
+    from \<open>finite F'\<close> \<open>finite F\<close> have "finite (F' \<union> (F \<union> FV t2))" by simp
+    note typing.T_Obj[OF typing_regular'[OF \<open>env \<turnstile> t1 : T\<close>] domf' this]
+    ultimately show ?case using t' \<open>T = U\<close> by auto
   qed
 next
   case (T_Obj env f T F t')
-  from Obj_beta[OF `Obj f T \<rightarrow>\<^sub>\<beta> t'`] show ?case
+  from Obj_beta[OF \<open>Obj f T \<rightarrow>\<^sub>\<beta> t'\<close>] show ?case
   proof (elim exE conjE)
     fix l f' a a' F' assume 
       "dom f = dom f'" and "f = f'(l \<mapsto> a)" and "l \<in> dom f'" and
       t': "t' = Obj (f'(l \<mapsto> a')) T" and "finite F'" and
       red_sp: "\<forall>s p. s \<notin> F' \<and> p \<notin> F' \<and> s \<noteq> p 
                 \<longrightarrow> (\<exists>t''. a\<^bsup>[Fvar s, Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> t'' \<and> a' = \<sigma>[s,p] t'')"
-    from this(2) `dom f = do T` have domf': "dom (f'(l \<mapsto> a')) = do T" by auto
+    from this(2) \<open>dom f = do T\<close> have domf': "dom (f'(l \<mapsto> a')) = do T" by auto
     have 
       exF: "\<forall>l'\<in>do T. \<forall>s p. s \<notin> F \<union> F' \<and> p \<notin> F \<union> F' \<and> s \<noteq> p 
              \<longrightarrow> env\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l'))\<rparr>
@@ -1170,39 +1170,39 @@ next
         by auto
       with 
         beta_lc[OF this(1)] sopen_sclose_eq_t[of t'' 0 s p] 
-        `f = f'(l \<mapsto> a)`
+        \<open>f = f'(l \<mapsto> a)\<close>
       have "the (f l)\<^bsup>[Fvar s,Fvar p]\<^esup> \<rightarrow>\<^sub>\<beta> (the((f'(l \<mapsto> a')) l)\<^bsup>[Fvar s,Fvar p]\<^esup>)" 
         by (simp add: openz_def closez_def)
-      with T_Obj(4) nin_s nin_p `s \<noteq> p` `l' \<in> do T` `f = f'(l \<mapsto> a)`
+      with T_Obj(4) nin_s nin_p \<open>s \<noteq> p\<close> \<open>l' \<in> do T\<close> \<open>f = f'(l \<mapsto> a)\<close>
       show 
         "env\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l'))\<rparr>
          \<turnstile> (the((f'(l \<mapsto> a')) l')\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l'))"
         by auto
     qed
-    from typing.T_Obj[OF `ok env` domf' _ this] `finite F` `finite F'` t'
+    from typing.T_Obj[OF \<open>ok env\<close> domf' _ this] \<open>finite F\<close> \<open>finite F'\<close> t'
     show ?case by (simp (no_asm_simp))
   qed
 next
   case (T_Call env t1 T t2 l t')
-  from Call_beta[OF `Call t1 l t2 \<rightarrow>\<^sub>\<beta> t'`] show ?case
+  from Call_beta[OF \<open>Call t1 l t2 \<rightarrow>\<^sub>\<beta> t'\<close>] show ?case
   proof (elim disjE conjE exE)
     fix t1' assume "t1 \<rightarrow>\<^sub>\<beta> t1'" and "t' = Call t1' l t2"
     from 
       typing.T_Call[OF T_Call(2)[OF this(1)] 
-                       `env \<turnstile> t2 : param(the(T^l))` `l \<in> do T`]
+                       \<open>env \<turnstile> t2 : param(the(T^l))\<close> \<open>l \<in> do T\<close>]
       this(2)
     show ?case by simp
   next
     fix t2' assume "t2 \<rightarrow>\<^sub>\<beta> t2'" and "t' = Call t1 l t2'"
     from 
-      typing.T_Call[OF `env \<turnstile> t1 : T` T_Call(4)[OF this(1)] `l \<in> do T`]
+      typing.T_Call[OF \<open>env \<turnstile> t1 : T\<close> T_Call(4)[OF this(1)] \<open>l \<in> do T\<close>]
       this(2) 
     show ?case by simp
   next
     fix f U assume "Obj f U = t1" and "l \<in> dom f" and t': "t' = (the(f l)\<^bsup>[Obj f U,t2]\<^esup>)"
     from 
-      typing.T_Call[OF `env \<turnstile> t1 : T` `env \<turnstile> t2 : param(the(T^l))` `l \<in> do T`]
-      sym[OF this(1)] `env \<turnstile> t1 : T` `env \<turnstile> t2 : param(the(T^l))` 
+      typing.T_Call[OF \<open>env \<turnstile> t1 : T\<close> \<open>env \<turnstile> t2 : param(the(T^l))\<close> \<open>l \<in> do T\<close>]
+      sym[OF this(1)] \<open>env \<turnstile> t1 : T\<close> \<open>env \<turnstile> t2 : param(the(T^l))\<close> 
       obj_inv[of env f U T]
     obtain 
       objT: "env \<turnstile> (Obj f T) : T" and "T = U" and
@@ -1234,16 +1234,16 @@ next
         type_opened: "env\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l))\<rparr>
                       \<turnstile> {0 \<rightarrow> [Fvar s,Fvar p]} the(f l) : return(the(T^l))"
         by (auto simp: openz_def)
-      from nin_s nin_p FV_option_lem[of f] objT `l \<in> do T`
+      from nin_s nin_p FV_option_lem[of f] objT \<open>l \<in> do T\<close>
       obtain 
         "s \<notin> FV (the(f l)) \<union> FV (Obj f T) \<union> FV t2" and
         "p \<notin> FV (the(f l)) \<union> FV (Obj f T) \<union> FV t2" by auto
       from 
-        open_lemma[OF type_opened this `s \<noteq> p` 
-        objT `env \<turnstile> t2 : param(the(T^l))`]
+        open_lemma[OF type_opened this \<open>s \<noteq> p\<close> 
+        objT \<open>env \<turnstile> t2 : param(the(T^l))\<close>]
       show ?thesis by (simp add: openz_def)
     qed
-    with abs_typeE[OF callT] t' `T = U` show ?case by auto
+    with abs_typeE[OF callT] t' \<open>T = U\<close> show ?case by auto
   qed
 qed
 
@@ -1258,9 +1258,9 @@ proof (cases A)
   case (Object ta) thus ?thesis
   proof (cases B)
     case (Object tb)
-    from `\<forall>i. (A^i) = (B^i)` `A = Object ta` `B = Object tb` 
+    from \<open>\<forall>i. (A^i) = (B^i)\<close> \<open>A = Object ta\<close> \<open>B = Object tb\<close> 
     have "\<And>i. ta i = tb i" by auto
-    with `A = Object ta` `B = Object tb` show ?thesis by (simp add: ext)
+    with \<open>A = Object ta\<close> \<open>B = Object tb\<close> show ?thesis by (simp add: ext)
   qed
 qed
 
@@ -1287,7 +1287,7 @@ lemma no_var: "\<exists>T. Env Map.empty \<turnstile> Fvar x : T \<Longrightarro
 lemma no_bvar: "e \<turnstile> Bvar x : T \<Longrightarrow> False" 
   by (erule typing.cases, auto)
 
-subsubsection{*Unique Type*}
+subsubsection\<open>Unique Type\<close>
 theorem type_unique[rule_format]: 
   assumes "env \<turnstile> a: T"
   shows "\<forall>T'. env \<turnstile> a: T' \<longrightarrow> T = T'"
@@ -1302,8 +1302,8 @@ next
   case T_Upd from this(4) show ?case by auto
 qed
 
-subsubsection{*Progress*}
-text {* Final Type Soundness Lemma *}
+subsubsection\<open>Progress\<close>
+text \<open>Final Type Soundness Lemma\<close>
 theorem progress: 
   assumes "Env Map.empty \<turnstile> t : A" and "\<not>(\<exists>c A. t = Obj c A)"
   shows "\<exists>b. t \<rightarrow>\<^sub>\<beta> b"
@@ -1332,17 +1332,17 @@ proof -
         "Env Map.empty \<turnstile> t1 : T" and "Env Map.empty \<turnstile> t2 : param(the(T^l))" and "l \<in> do T"
       note lc = typing_regular''[OF this(1)] typing_regular''[OF this(2)]
       from 
-        `Env Map.empty \<turnstile> t1 : T` 
-        `\<forall>A. Env Map.empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)`
+        \<open>Env Map.empty \<turnstile> t1 : T\<close> 
+        \<open>\<forall>A. Env Map.empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)\<close>
       have "(\<exists>c B. t1 = Obj c B) \<or> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)" by auto
       thus "\<exists>b. Call t1 l t2 \<rightarrow>\<^sub>\<beta> b"
       proof (elim disjE exE)
         fix c B assume "t1 = Obj c B" 
         with 
-          `Env Map.empty \<turnstile> t1 : T` obj_inv[of "Env Map.empty" c B T] 
-          `l \<in> do T` obj_inv_elim[of "Env Map.empty" c B]
+          \<open>Env Map.empty \<turnstile> t1 : T\<close> obj_inv[of "Env Map.empty" c B T] 
+          \<open>l \<in> do T\<close> obj_inv_elim[of "Env Map.empty" c B]
         have "l \<in> dom c" by auto
-        with `t1 = Obj c B` lc beta.beta[of l c B t2]
+        with \<open>t1 = Obj c B\<close> lc beta.beta[of l c B t2]
         show ?thesis by auto
       next
         fix b assume "t1 \<rightarrow>\<^sub>\<beta> b"
@@ -1363,21 +1363,21 @@ proof -
       from typing_regular''[OF T_Upd[OF this]] lc_upd[of t1 l t2]
       obtain "lc t1" and "body t2" by auto
       from 
-        `Env Map.empty \<turnstile> t1 : T` 
-        `\<forall>A. Env Map.empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)`
+        \<open>Env Map.empty \<turnstile> t1 : T\<close> 
+        \<open>\<forall>A. Env Map.empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)\<close>
       have "(\<exists>c B. t1 = Obj c B) \<or> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)" by auto
       thus "\<exists>b. Upd t1 l t2 \<rightarrow>\<^sub>\<beta> b"
       proof (elim disjE exE)
         fix c B assume "t1 = Obj c B" 
         with 
-          `Env Map.empty \<turnstile> t1 : T` obj_inv[of "Env Map.empty" c B T] 
-          `l \<in> do T` obj_inv_elim[of "Env Map.empty" c B]
+          \<open>Env Map.empty \<turnstile> t1 : T\<close> obj_inv[of "Env Map.empty" c B T] 
+          \<open>l \<in> do T\<close> obj_inv_elim[of "Env Map.empty" c B]
         have "l \<in> dom c" by auto
-        with `t1 = Obj c B` `lc t1` `body t2` beta.beta_Upd[of l c B t2]
+        with \<open>t1 = Obj c B\<close> \<open>lc t1\<close> \<open>body t2\<close> beta.beta_Upd[of l c B t2]
         show ?thesis by auto
       next
         fix b assume "t1 \<rightarrow>\<^sub>\<beta> b"
-        from beta.beta_UpdL[OF this `body t2`] show ?thesis by auto
+        from beta.beta_UpdL[OF this \<open>body t2\<close>] show ?thesis by auto
       qed
     qed
   qed

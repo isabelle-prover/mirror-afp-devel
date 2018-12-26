@@ -17,7 +17,7 @@ lemma tauPres:
   shows "\<tau>.(P) \<sim> \<tau>.(Q)"
 proof -
   let ?X = "{(\<tau>.(P), \<tau>.(Q)) | P Q. P \<sim> Q}"
-  from `P \<sim> Q` have "(\<tau>.(P), \<tau>.(Q)) \<in> ?X" by auto
+  from \<open>P \<sim> Q\<close> have "(\<tau>.(P), \<tau>.(Q)) \<in> ?X" by auto
   thus ?thesis
     by(coinduct rule: bisimCoinduct) (auto intro: tauPres dest: bisimE)
 qed
@@ -56,7 +56,7 @@ proof -
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim P Q)
-    thus ?case using `eqvt ?X`
+    thus ?case using \<open>eqvt ?X\<close>
       by(force intro: inputPres)
   next
     case(cSym P Q)
@@ -76,7 +76,7 @@ lemma outputPres:
   shows "a{b}.P \<sim> a{b}.Q"
 proof -
   let ?X = "{(a{b}.P, a{b}.Q) | a b P Q. P \<sim> Q}"
-  from `P \<sim> Q` have "(a{b}.P, a{b}.Q) \<in> ?X" by auto
+  from \<open>P \<sim> Q\<close> have "(a{b}.P, a{b}.Q) \<in> ?X" by auto
   thus ?thesis
     by(coinduct rule: bisimCoinduct) (blast intro: outputPres dest: bisimE)+
 qed
@@ -184,8 +184,8 @@ proof -
       moreover have Res: "\<And>P Q x. (P, Q) \<in> ?X \<Longrightarrow> (<\<nu>x>P, <\<nu>x>Q) \<in> ?X"
         by(auto, rule_tac x="x#lst" in exI) auto
       moreover {
-        from `P \<sim> Q` have "P \<leadsto>[bisim] Q" by(rule bisimE)
-        moreover note `P \<sim> Q`
+        from \<open>P \<sim> Q\<close> have "P \<leadsto>[bisim] Q" by(rule bisimE)
+        moreover note \<open>P \<sim> Q\<close>
         moreover have "\<And>P Q R. P \<sim> Q \<Longrightarrow> (P \<parallel> R, Q \<parallel> R) \<in> ?X"
           by(blast intro: BC)
         ultimately have "P \<parallel> R \<leadsto>[?X] Q \<parallel> R" using Res
@@ -268,7 +268,7 @@ proof -
           ultimately show "<\<nu>a>P \<leadsto>[?X] <\<nu>a>Q" using BRRes by(blast intro: Strong_Early_Sim_Pres.resPres)
         qed
       }
-      with `(bP, bQ) \<in> ?X` show ?case by blast
+      with \<open>(bP, bQ) \<in> ?X\<close> show ?case by blast
     next
       case(cSym bP bQ)
       thus ?case by(metis bangRelSymetric bisimE)

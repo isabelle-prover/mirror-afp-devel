@@ -2,11 +2,11 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Set Implementation by List} *}
+section \<open>\isaheader{Set Implementation by List}\<close>
 theory ListSetImpl
 imports "../spec/SetSpec" "../gen_algo/SetGA" "../../Lib/Dlist_add"
 begin
-text_raw {*\label{thy:ListSetImpl}*}
+text_raw \<open>\label{thy:ListSetImpl}\<close>
 
 (*@impl Set
   @type 'a ls
@@ -70,7 +70,7 @@ interpretation ls: StdSet_no_invar ls_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "ls"*}
+setup \<open>ICF_Tools.revert_abbrevs "ls"\<close>
 
 lemma pi_ls[proper_it]:
   "proper_it' dlist_iteratei dlist_iteratei"

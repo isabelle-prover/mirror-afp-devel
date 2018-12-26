@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Policy Core *}
+subsection \<open>Policy Core\<close>
 theory 
   PolicyCore
   imports 
@@ -44,25 +44,25 @@ theory
 begin
 
 
-text{* A policy is seen as a partial mapping from packet to packet out. *}
+text\<open>A policy is seen as a partial mapping from packet to packet out.\<close>
 
 type_synonym ('\<alpha>, '\<beta>) FWPolicy = "('\<alpha>, '\<beta>) packet \<mapsto> unit" 
 
-text{*
+text\<open>
   When combining several rules, the firewall is supposed to apply the
   first matching one. In our setting this means the first rule which
-  maps the packet in question to @{text "Some (packet out)"}. This is
-  exactly what happens when using the map-add operator (@{text "rule1
-  ++ rule2"}). The only difference is that the rules must be given in
+  maps the packet in question to \<open>Some (packet out)\<close>. This is
+  exactly what happens when using the map-add operator (\<open>rule1
+  ++ rule2\<close>). The only difference is that the rules must be given in
   reverse order. 
-*}
+\<close>
 
 
 
-text{*   
-  The constant @{text p_accept} is @{text "True"} iff the policy
+text\<open>
+  The constant \<open>p_accept\<close> is \<open>True\<close> iff the policy
   accepts the packet. 
-*}
+\<close>
 
 definition
   p_accept :: "('\<alpha>, '\<beta>) packet \<Rightarrow> ('\<alpha>, '\<beta>) FWPolicy \<Rightarrow> bool" where

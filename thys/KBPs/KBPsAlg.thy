@@ -4,9 +4,9 @@ imports KBPsAuto DFS MapOps
 begin
 (*>*)
 
-subsection{* An algorithm for automata synthesis *}
+subsection\<open>An algorithm for automata synthesis\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-alg}
 
@@ -17,7 +17,7 @@ of \S\ref{sec:dfs}.
 From here on we assume that the environment consists of only a finite
 set of states:
 
-*}
+\<close>
 
 locale FiniteEnvironment =
   Environment jkbp envInit envAction envTrans envVal envObs
@@ -28,10 +28,10 @@ locale FiniteEnvironment =
     and envVal :: "'s \<Rightarrow> 'p \<Rightarrow> bool"
     and envObs :: "'a \<Rightarrow> 's \<Rightarrow> 'obs"
 
-text_raw{*
+text_raw\<open>
 \begin{figure}[p]
 \begin{isabellebody}%
-*}
+\<close>
 locale Algorithm =
   FiniteEnvironment jkbp envInit envAction envTrans envVal envObs
 + AlgSimIncrEnvironment jkbp envInit envAction envTrans envVal jview envObs
@@ -64,14 +64,14 @@ locale Algorithm =
 
   assumes aOps: "MapOps simAbs jkbpSEC aOps"
       and tOps: "MapOps (\<lambda>k. (simAbs (fst k), snd k)) (jkbpSEC \<times> UNIV) tOps"
-text_raw{*
+text_raw\<open>
   \end{isabellebody}%
-  \caption{The @{text "Algorithm"} locale.}
+  \caption{The \<open>Algorithm\<close> locale.}
   \label{fig:kbps-alg-alg-locale}
 \end{figure}
-*}
+\<close>
 
-text (in Algorithm) {*
+text (in Algorithm) \<open>
 
 The @{term "Algorithm"} locale, shown in
 Figure~\ref{fig:kbps-alg-alg-locale}, also extends the @{term
@@ -84,10 +84,9 @@ classes of type @{typ "'ss"} must be finite, but there is no
 restriction on the representation type @{typ "'rep"}.
 
 We develop the algorithm for a single, fixed agent, which requires us
-to define a new locale @{term "AlgorithmForAgent"} that extends @{text
-"Algorithm"} with an extra parameter designating the agent:
+to define a new locale @{term "AlgorithmForAgent"} that extends \<open>Algorithm\<close> with an extra parameter designating the agent:
 
-*}
+\<close>
 
 locale AlgorithmForAgent =
   Algorithm jkbp envInit envAction envTrans envVal jview envObs
@@ -123,13 +122,13 @@ locale AlgorithmForAgent =
   \<comment> \<open>...\<close>
 + fixes a :: "'a"
 
-subsubsection{* DFS operations *}
+subsubsection\<open>DFS operations\<close>
 
-text{*
+text\<open>
 
 We represent the automaton under construction using a record:
 
-*}
+\<close>
 
 record ('ma, 'mt) AlgState =
   aActs :: "'ma"
@@ -138,52 +137,52 @@ record ('ma, 'mt) AlgState =
 context AlgorithmForAgent
 begin
 
-text{*
+text\<open>
 
 We instantiate the DFS theory with the following functions.
 
 A node is an equivalence class of represented simulated traces.
 
-*}
+\<close>
 
 definition k_isNode :: "'rep \<Rightarrow> bool" where
   "k_isNode ec \<equiv> simAbs ec \<in> sim_equiv_class a ` jkbpC"
 
-text{*
+text\<open>
 
 The successors of a node are those produced by the simulated
 transition function.
 
-*}
+\<close>
 
 abbreviation k_succs :: "'rep \<Rightarrow> 'rep list" where
   "k_succs \<equiv> simTrans a"
 
-text{*
+text\<open>
 
 The initial automaton has no transitions and no actions.
 
-*}
+\<close>
 
 definition k_empt :: "('ma, 'mt) AlgState" where
   "k_empt \<equiv> \<lparr> aActs = empty aOps, aTrans = empty tOps \<rparr>"
 
-text{*
+text\<open>
 
 We use the domain of the action map to track the set of nodes the DFS
 has visited.
 
-*}
+\<close>
 
 definition k_memb :: "'rep \<Rightarrow> ('ma, 'mt) AlgState \<Rightarrow> bool" where
   "k_memb s A \<equiv> isSome (lookup aOps (aActs A) s)"
 
-text{*
+text\<open>
 
 We integrate a new equivalence class into the automaton by updating
 the action and transition maps:
 
-*}
+\<close>
 
 definition actsUpdate :: "'rep \<Rightarrow> ('ma, 'mt) AlgState \<Rightarrow> 'ma" where
   "actsUpdate ec A \<equiv> update aOps ec (simAction a ec) (aActs A)"
@@ -195,11 +194,11 @@ definition k_ins :: "'rep \<Rightarrow> ('ma, 'mt) AlgState \<Rightarrow> ('ma, 
   "k_ins ec A \<equiv> \<lparr> aActs = actsUpdate ec A,
                    aTrans = foldr (transUpdate ec) (k_succs ec) (aTrans A) \<rparr>"
 
-text{*
+text\<open>
 
 The required properties are straightforward to show.
 
-*}
+\<close>
 
 (*<*)
 
@@ -247,9 +246,9 @@ lemma k_memb_empt[simp]:
 
 (*>*)
 
-subsubsection{* Algorithm invariant *}
+subsubsection\<open>Algorithm invariant\<close>
 
-text{*
+text\<open>
 
 The invariant for the automata construction is straightforward, viz
 that at each step of the process the state represents an automaton
@@ -257,7 +256,7 @@ that concords with @{term "mkAutoSim"} on the visited equivalence
 classes. We also need to know that the state has preserved the @{term
 "MapOps"} invariants.
 
-*}
+\<close>
 
 definition k_invariant :: "('ma, 'mt) AlgState \<Rightarrow> bool" where
   "k_invariant A \<equiv>
@@ -504,7 +503,7 @@ qed
 
 (*>*)
 
-text{*
+text\<open>
 
 Showing that the invariant holds of @{term "k_empt"} and is respected
 by @{term "k_ins"} is routine.
@@ -512,7 +511,7 @@ by @{term "k_ins"} is routine.
 The initial frontier is the partition of the set of initial states
 under the initial observation function.
 
-*}
+\<close>
 
 definition (in Algorithm) k_frontier :: "'a \<Rightarrow> 'rep list" where
   "k_frontier a \<equiv> map (simInit a \<circ> envObs a) envInit"
@@ -526,14 +525,14 @@ lemma k_frontier_is_node[intro, simp]:
 
 end (* context AlgorithmForAgent *)
 
-text{*
+text\<open>
 
 We now instantiate the @{term "DFS"} locale with respect to the @{term
 "AlgorithmForAgent"} locale. The instantiated lemmas are given the
-mandatory prefix @{text "KBPAlg"} in the @{term "AlgorithmForAgent"}
+mandatory prefix \<open>KBPAlg\<close> in the @{term "AlgorithmForAgent"}
 locale.
 
-*}
+\<close>
 
 sublocale AlgorithmForAgent
         < KBPAlg: DFS k_succs k_isNode k_invariant k_ins k_memb k_empt simAbs
@@ -553,10 +552,10 @@ sublocale AlgorithmForAgent
   done
 (*>*)
 
-text_raw{*
+text_raw\<open>
 \begin{figure}
 \begin{isabellebody}%
-*}
+\<close>
 definition
   alg_dfs :: "('ma, 'rep, 'aAct list) MapOps
          \<Rightarrow> ('mt, 'rep \<times> 'obs, 'rep) MapOps
@@ -576,7 +575,7 @@ where
                          aTrans = foldr (transUpdate ec) (k_succs ec) (aTrans A) \<rparr>
      in gen_dfs k_succs k_ins k_memb k_empt"
 
-text{**}
+text\<open>\<close>
 
 definition
   mkAlgAuto :: "('ma, 'rep, 'aAct list) MapOps
@@ -595,13 +594,13 @@ where
           pTrans = \<lambda>obs ec. the (lookup tOps (aTrans auto) (ec, obs)),
           pAct = \<lambda>ec. the (lookup aOps (aActs auto) ec) \<rparr>"
 
-text_raw{*
+text_raw\<open>
   \end{isabellebody}%
   \caption{The algorithm. The function @{term "the"} projects a value from the
     @{typ "'a option"} type, diverging on @{term "None"}.}
   \label{fig:kbps-alg-algorithm}
 \end{figure}
-*}
+\<close>
 (*<*)
 lemma mkAutoSim_simps[simp]:
   "pInit (mkAlgAuto aOps tOps simObs simInit simTrans simAction frontier a) = simInit a"
@@ -633,16 +632,16 @@ where
 context AlgorithmForAgent
 begin
 
-text{*
+text\<open>
 
 The final algorithm, with the constants inlined, is shown in
 Figure~\ref{fig:kbps-alg-algorithm}. The rest of this section shows
 its correctness.
 
-Firstly it follows immediately from @{text "dfs_invariant"} that the
+Firstly it follows immediately from \<open>dfs_invariant\<close> that the
 invariant holds of the result of the DFS:
 
-*}
+\<close>
 (*<*)
 
 abbreviation
@@ -664,13 +663,13 @@ lemma k_dfs_invariant: "k_invariant k_dfs"
   by simp
 
 (*>*)
-text{*
+text\<open>
 
 Secondly we can see that the set of reachable equivalence classes
 coincides with the partition of @{term "jkbpC"} under the simulation
 and representation functions:
 
-*}
+\<close>
 
 lemma k_reachable:
   "simAbs ` KBPAlg.reachable (set (k_frontier a)) = sim_equiv_class a ` jkbpC"
@@ -769,7 +768,7 @@ next
    qed
 qed
 (*>*)
-text{*
+text\<open>
 
 Left to right follows from an induction on the reflexive, transitive
 closure, and right to left by induction over canonical traces.
@@ -777,7 +776,7 @@ closure, and right to left by induction over canonical traces.
 This result immediately yields the same result at the level of
 representations:
 
-*}
+\<close>
 
 lemma k_memb_rep:
   assumes N: "k_isNode rec"
@@ -813,14 +812,14 @@ qed
 
 end (* context AlgorithmForAgent *)
 
-text{*
+text\<open>
 
 This concludes our agent-specific reasoning; we now show that the
 algorithm works for all agents. The following command generalises all
 our lemmas in the @{term "AlgorithmForAgent"} to the @{term
-"Algorithm"} locale, giving them the mandatory prefix @{text "KBP"}:
+"Algorithm"} locale, giving them the mandatory prefix \<open>KBP\<close>:
 
-*}
+\<close>
 
 sublocale Algorithm
         < KBP: AlgorithmForAgent
@@ -888,12 +887,12 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 Running the automata produced by the DFS on a canonical trace @{term
 "t"} yields some representation of the expected equivalence class:
 
-*}
+\<close>
 
 lemma k_mkAlgAuto_ec:
   assumes tC: "t \<in> jkbpC"
@@ -903,7 +902,7 @@ lemma k_mkAlgAuto_ec:
   by simp
 
 (*>*)
-text{*
+text\<open>
 
 This involves an induction over the canonical trace @{term "t"}.
 
@@ -911,7 +910,7 @@ That the DFS and @{term "mkAutoSim"} yield the same actions on
 canonical traces follows immediately from this result and the
 invariant:
 
-*}
+\<close>
 
 lemma k_mkAlgAuto_mkAutoSim_act_eq:
   assumes tC: "t \<in> jkbpC"
@@ -942,13 +941,13 @@ proof
 qed
 (*>*)
 
-text{*
+text\<open>
 
 Therefore these two constructions are behaviourally equivalent, and so
 the DFS generates an implementation of @{term "jkbp"} in the given
 environment:
 
-*}
+\<close>
 
 theorem k_mkAlgAuto_implements: "implements k_mkAlgAuto"
 (*<*)
@@ -962,14 +961,14 @@ qed
 
 end (* context Algorithm *)
 
-text{*
+text\<open>
 
 Clearly the automata generated by this algorithm are large. We discuss
 this issue in \S\ref{sec:kbps-alg-auto-min}.
 
 \FloatBarrier
 
-*}
+\<close>
 
 (*<*)
 end

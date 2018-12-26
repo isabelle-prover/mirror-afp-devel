@@ -8,23 +8,23 @@ keywords
 begin
 
 ML_file "nominal_dt_data.ML"
-ML {* open Nominal_Dt_Data *}
+ML \<open>open Nominal_Dt_Data\<close>
 
 ML_file "nominal_dt_rawfuns.ML"
-ML {* open Nominal_Dt_RawFuns *}
+ML \<open>open Nominal_Dt_RawFuns\<close>
 
 ML_file "nominal_dt_alpha.ML"
-ML {* open Nominal_Dt_Alpha *}
+ML \<open>open Nominal_Dt_Alpha\<close>
 
 ML_file "nominal_dt_quot.ML"
-ML {* open Nominal_Dt_Quot *}
+ML \<open>open Nominal_Dt_Quot\<close>
 
 (*****************************************)
 (* setup for induction principles method *)
 ML_file "nominal_induct.ML"
 method_setup nominal_induct =
-  {* NominalInduct.nominal_induct_method *}
-  {* nominal induction *}
+  \<open>NominalInduct.nominal_induct_method\<close>
+  \<open>nominal induction\<close>
 
 (****************************************************)
 (* inductive definition involving nominal datatypes *)
@@ -40,15 +40,15 @@ ML_file "nominal_mutual.ML"
 ML_file "nominal_function.ML"
 ML_file "nominal_termination.ML"
 
-ML {*
+ML \<open>
 val eqvt_attr = Attrib.internal (K Nominal_ThmDecls.eqvt_add)
 val simp_attr = Attrib.internal (K Simplifier.simp_add)
 val induct_attr = Attrib.internal (K Induct.induct_simp_add)
-*}
+\<close>
 
-section{* Interface for @{text nominal_datatype} *}
+section\<open>Interface for \<open>nominal_datatype\<close>\<close>
 
-ML {*
+ML \<open>
 fun get_cnstrs dts =
   map snd dts
 
@@ -61,12 +61,12 @@ fun get_cnstr_strs dts =
 
 fun get_bn_fun_strs bn_funs =
   map (fn (bn_fun, _, _) => Binding.name_of bn_fun) bn_funs
-*}
+\<close>
 
 
-text {* Infrastructure for adding @{text "_raw"} to types and terms *}
+text \<open>Infrastructure for adding \<open>_raw\<close> to types and terms\<close>
 
-ML {*
+ML \<open>
 fun add_raw s = s ^ "_raw"
 fun add_raws ss = map add_raw ss
 fun raw_bind bn = Binding.suffix_name "_raw" bn
@@ -96,13 +96,13 @@ fun replace_aterm trm_ss (Const (a, T)) = Const (replace_str trm_ss a, T)
 
 fun replace_term trm_ss ty_ss trm =
   trm |> Term.map_aterms (replace_aterm trm_ss) |> map_types (replace_typ ty_ss)
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun rawify_dts dts dts_env = raw_dts dts_env dts
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun rawify_bn_funs dts_env cnstrs_env bn_fun_env bn_funs bn_eqs =
 let
   val bn_funs' = map (fn (bn, ty, _) =>
@@ -113,9 +113,9 @@ let
 in
   (bn_funs', bn_eqs')
 end
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun rawify_bclauses dts_env cnstrs_env bn_fun_env bclauses =
 let
   fun rawify_bnds bnds =
@@ -125,10 +125,10 @@ let
 in
   (map o map o map) rawify_bclause bclauses
 end
-*}
+\<close>
 
 
-ML {*
+ML \<open>
 (* definition of the raw datatype *)
 
 fun define_raw_dts dts cnstr_names cnstr_tys bn_funs bn_eqs bclauses lthy =
@@ -204,10 +204,10 @@ let
 in
   (raw_bclauses, raw_bn_funs, raw_bn_eqs, raw_result, lthy1)
 end
-*}
+\<close>
 
 
-ML {*
+ML \<open>
 fun nominal_datatype2 opt_thms_name dts bn_funs bn_eqs bclauses lthy =
 let
   val cnstr_names = get_cnstr_strs dts
@@ -532,21 +532,21 @@ let
 in
   lthy9'
 end
-*}
+\<close>
 
 
-section {* Preparing and parsing of the specification *}
+section \<open>Preparing and parsing of the specification\<close>
 
-ML {*
+ML \<open>
 (* adds the default sort @{sort fs} to nominal specifications *)
 
 fun augment_sort thy S = Sign.inter_sort thy (@{sort fs}, S)
 
 fun augment_sort_typ thy =
   map_type_tfree (fn (s, S) => TFree (s, augment_sort thy S))
-*}
+\<close>
 
-ML {*
+ML \<open>
 (* generates the parsed datatypes and declares the constructors *)
 
 fun prepare_dts dt_strs thy =
@@ -579,9 +579,9 @@ let
 in
   (dts', thy')
 end
-*}
+\<close>
 
-ML {*
+ML \<open>
 (* parsing the binding function specifications and *)
 (* declaring the function constants                *)
 fun prepare_bn_funs bn_fun_strs bn_eq_strs thy =
@@ -600,10 +600,10 @@ in
   |> Sign.add_consts bn_funs'
   |> pair (bn_funs', bn_eqs)
 end
-*}
+\<close>
 
-text {* associates every SOME with the index in the list; drops NONEs *}
-ML {*
+text \<open>associates every SOME with the index in the list; drops NONEs\<close>
+ML \<open>
 fun indexify xs =
 let
   fun mapp _ [] = []
@@ -617,9 +617,9 @@ fun index_lookup xs x =
   case AList.lookup ((=)) xs x of
     SOME x => x
   | NONE => error ("Cannot find " ^ x ^ " as argument annotation.");
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun prepare_bclauses dt_strs thy =
 let
   val annos_bclauses =
@@ -651,14 +651,14 @@ let
 in
   ((map o map) prep_bclauses annos_bclauses, thy)
 end
-*}
+\<close>
 
-text {*
+text \<open>
   adds an empty binding clause for every argument
   that is not already part of a binding clause
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun included i bcs =
 let
   fun incl (BC (_, bns, bds)) =
@@ -666,9 +666,9 @@ let
 in
   exists incl bcs
 end
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun complete dt_strs bclauses =
 let
   val args =
@@ -684,9 +684,9 @@ let
 in
   (map2 o map2) complt args bclauses
 end
-*}
+\<close>
 
-ML {*
+ML \<open>
 fun nominal_datatype2_cmd (opt_thms_name, dt_strs, bn_fun_strs, bn_eq_strs) lthy =
 let
   (* this theory is used just for parsing *)
@@ -702,9 +702,9 @@ let
 in
   nominal_datatype2 opt_thms_name dts bn_funs bn_eqs bclauses' lthy
 end
-*}
+\<close>
 
-ML {*
+ML \<open>
 (* nominal datatype parser *)
 local
   fun triple1 ((x, y), z) = (x, y, z)
@@ -746,6 +746,6 @@ end
 val _ = Outer_Syntax.local_theory @{command_keyword nominal_datatype}
   "declaration of nominal datatypes"
     (main_parser >> nominal_datatype2_cmd)
-*}
+\<close>
 
 end

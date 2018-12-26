@@ -1,6 +1,6 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Cardinality of Equivalence Relations *}
+section \<open>Cardinality of Equivalence Relations\<close>
 
 theory Card_Equiv_Relations
 imports
@@ -8,14 +8,14 @@ imports
   Bell_Numbers_Spivey.Bell_Numbers
 begin
 
-subsection {* Bijection between Equivalence Relations and Set Partitions *}
+subsection \<open>Bijection between Equivalence Relations and Set Partitions\<close>
 
-subsubsection {* Possibly Interesting Theorem for @{theory HOL.Equiv_Relations} *}
+subsubsection \<open>Possibly Interesting Theorem for @{theory HOL.Equiv_Relations}\<close>
 
-text {* This theorem was historically useful in this theory, but
+text \<open>This theorem was historically useful in this theory, but
 is now after some proof refactoring not needed here anymore.
 Possibly it is an interesting fact about equivalence relations, though.
-*}
+\<close>
 
 lemma equiv_quotient_eq_quotient_on_UNIV:
   assumes "equiv A R"
@@ -45,7 +45,7 @@ next
   qed
 qed
 
-subsubsection {* Dedicated Facts for Bijection Proof *}
+subsubsection \<open>Dedicated Facts for Bijection Proof\<close>
 
 (* TODO: rename to fit Disjoint_Sets' naming scheme and move to Disjoint_Sets *)
 lemma equiv_relation_of_partition_of:
@@ -88,7 +88,7 @@ next
   qed
 qed
 
-subsubsection {* Bijection Proof *}
+subsubsection \<open>Bijection Proof\<close>
 
 lemma bij_betw_partition_of:
   "bij_betw (\<lambda>R. A // R) {R. equiv A R} {P. partition_on A P}"
@@ -116,7 +116,7 @@ proof (rule bij_betw_byWitness[where f'="\<lambda>P. {(x, y). \<exists>X\<in>P. 
     using equiv_partition_on by (auto simp add: partition_on_eq_quotient)
 qed
 
-subsection {* Finiteness of Equivalence Relations *}
+subsection \<open>Finiteness of Equivalence Relations\<close>
 
 lemma finite_equiv:
   assumes "finite A"
@@ -128,7 +128,7 @@ proof -
     using \<open>finite A\<close> finitely_many_partition_on by (simp add: bij_betw_finite)
 qed
 
-subsection {* Cardinality of Equivalence Relations *}
+subsection \<open>Cardinality of Equivalence Relations\<close>
 
 theorem card_equiv_rel_eq_card_partitions:
   "card {R. equiv A R} = card {P. partition_on A P}"

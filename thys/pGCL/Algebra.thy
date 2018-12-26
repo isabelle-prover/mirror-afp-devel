@@ -9,20 +9,20 @@ section "The Algebra of pGCL"
 
 theory Algebra imports WellDefined begin
 
-text_raw {* \label{s:Algebra} *}
+text_raw \<open>\label{s:Algebra}\<close>
 
-text {* Programs in pGCL have a rich algebraic structure, largely mirroring that for GCL. We show
+text \<open>Programs in pGCL have a rich algebraic structure, largely mirroring that for GCL. We show
 that programs form a lattice under refinement, with @{term "a \<Sqinter> b"} and @{term "a \<Squnion> b"} as the meet
 and join operators, respectively. We also take advantage of the algebraic structure to establish a
-framwork for the modular decomposition of proofs. *}
+framwork for the modular decomposition of proofs.\<close>
 
-subsection {* Program Refinement *}
+subsection \<open>Program Refinement\<close>
 
-text_raw {* \label{s:progref} *}
+text_raw \<open>\label{s:progref}\<close>
 
-text {* Refinement in pGCL relates to refinement in GCL exactly as probabilistic entailment relates
+text \<open>Refinement in pGCL relates to refinement in GCL exactly as probabilistic entailment relates
 to implication. It turns out to have a very similar algebra, the rules of which we establish
-shortly. *}
+shortly.\<close>
 
 definition
   refines :: "'s prog \<Rightarrow> 's prog \<Rightarrow> bool" (infix "\<sqsubseteq>" 70)
@@ -37,8 +37,8 @@ lemma refinesD[dest]:
   "\<lbrakk> prog \<sqsubseteq> prog'; sound P \<rbrakk> \<Longrightarrow> wp prog P \<tturnstile> wp prog' P"
   unfolding refines_def by(simp)
 
-text {* The equivalence relation below will turn out to be that induced by refinement. It is also
-the application of @{term equiv_trans} to the weakest precondition. *}
+text \<open>The equivalence relation below will turn out to be that induced by refinement. It is also
+the application of @{term equiv_trans} to the weakest precondition.\<close>
 
 definition
   pequiv :: "'s prog \<Rightarrow> 's prog \<Rightarrow> bool" (infix "\<simeq>" 70)
@@ -57,12 +57,12 @@ lemma pequiv_equiv_trans:
   "a \<simeq> b \<longleftrightarrow> equiv_trans (wp a) (wp b)"
   by(auto)
 
-subsection {* Simple Identities *}
+subsection \<open>Simple Identities\<close>
 
-text {* The following identities involve only the primitive operations as defined in
-\autoref{s:syntax}, and refinement as defined above. *}
+text \<open>The following identities involve only the primitive operations as defined in
+\autoref{s:syntax}, and refinement as defined above.\<close>
 
-subsubsection {* Laws following from the basic arithmetic of the operators seperately *}
+subsubsection \<open>Laws following from the basic arithmetic of the operators seperately\<close>
 
 lemma DC_comm[ac_simps]:
   "a \<Sqinter> b = b \<Sqinter> a"
@@ -104,7 +104,7 @@ lemma Abort_refines[intro]:
   "well_def a \<Longrightarrow> Abort \<sqsubseteq> a"
   by(rule refinesI, unfold wp_eval, auto dest!:well_def_wp_healthy)
 
-subsubsection {* Laws relating demonic choice and refinement *}
+subsubsection \<open>Laws relating demonic choice and refinement\<close>
 
 lemma left_refines_DC:
   "(a \<Sqinter> b) \<sqsubseteq> a"
@@ -139,7 +139,7 @@ proof(rule refinesI, unfold wp_eval, rule le_funI)
     by(auto)
 qed
 
-subsubsection {* Laws relating angelic choice and refinement *}
+subsubsection \<open>Laws relating angelic choice and refinement\<close>
 
 lemma left_refines_AC:
   "a \<sqsubseteq> (a \<Squnion> b)"
@@ -175,8 +175,8 @@ proof(rule refinesI, unfold wp_eval, rule le_funI)
     by(auto)
 qed
 
-subsubsection {* Laws depending on the arithmetic of @{term "a \<^bsub>p\<^esub>\<oplus> b"} and @{term "a \<Sqinter> b"}
-together *}
+subsubsection \<open>Laws depending on the arithmetic of @{term "a \<^bsub>p\<^esub>\<oplus> b"} and @{term "a \<Sqinter> b"}
+together\<close>
 
 lemma DC_refines_PC:
   assumes unit: "unitary p"
@@ -218,8 +218,8 @@ proof(rule refinesI, unfold wp_eval, rule le_funI)
   qed
 qed
 
-subsubsection {* Laws depending on the arithmetic of @{term "a \<^bsub>p\<^esub>\<oplus> b"} and @{term "a \<Squnion> b"}
-together *}
+subsubsection \<open>Laws depending on the arithmetic of @{term "a \<^bsub>p\<^esub>\<oplus> b"} and @{term "a \<Squnion> b"}
+together\<close>
 
 lemma PC_refines_AC:
   assumes unit: "unitary p"
@@ -259,14 +259,14 @@ proof(rule refinesI, unfold wp_eval, rule le_funI)
   qed
 qed
 
-subsubsection {* Laws depending on the arithmetic of @{term "a \<Squnion> b"} and @{term "a \<Sqinter> b"} together
-*}
+subsubsection \<open>Laws depending on the arithmetic of @{term "a \<Squnion> b"} and @{term "a \<Sqinter> b"} together
+\<close>
 
 lemma DC_refines_AC:
   "(a \<Sqinter> b) \<sqsubseteq> (a \<Squnion> b)"
   by(auto intro!:refinesI simp:wp_eval)
 
-subsubsection {* Laws Involving Refinement and Equivalence *}
+subsubsection \<open>Laws Involving Refinement and Equivalence\<close>
 
 lemma pr_trans[trans]:
   fixes A::"'a prog"
@@ -305,7 +305,7 @@ lemma pr_pequiv_trans[intro,trans]:
   "\<lbrakk> a \<sqsubseteq> b; b \<simeq> c \<rbrakk> \<Longrightarrow> a \<sqsubseteq> c"
   unfolding pequiv_def refines_def by(simp)
 
-text {* Refinement induces equivalence by antisymmetry: *}
+text \<open>Refinement induces equivalence by antisymmetry:\<close>
 lemma pequiv_antisym:
   "\<lbrakk> a \<sqsubseteq> b; b \<sqsubseteq> a \<rbrakk> \<Longrightarrow> a \<simeq> b"
   by(auto intro:antisym)
@@ -318,11 +318,11 @@ lemma pequiv_AC:
   "\<lbrakk> a \<simeq> c; b \<simeq> d \<rbrakk> \<Longrightarrow> (a \<Squnion> b) \<simeq> (c \<Squnion> d)"
   by(auto intro!:AC_mono pequiv_antisym simp:ac_simps)
 
-subsection {* Deterministic Programs are Maximal *}
+subsection \<open>Deterministic Programs are Maximal\<close>
 
-text {* Any sub-additive refinement of a deterministic program is in fact an equivalence.
+text \<open>Any sub-additive refinement of a deterministic program is in fact an equivalence.
 Deterministic programs are thus maximal (under the refinement order) among sub-additive programs.
-*}
+\<close>
 lemma refines_determ:
   fixes a::"'s prog"
   assumes da: "determ (wp a)"
@@ -330,17 +330,17 @@ lemma refines_determ:
       and wb: "well_def b"
       and dr: "a \<sqsubseteq> b"
   shows "a \<simeq> b"
-  txt {* Proof by contradiction. *}
+  txt \<open>Proof by contradiction.\<close>
 proof(rule pequivI, rule contrapos_pp)
   from wb have "feasible (wp b)" by(auto)
   with wb have sab: "sub_add (wp b)"
     by(auto dest: sublinear_subadd[OF well_def_wp_sublinear])
   fix P::"'s \<Rightarrow> real" assume sP: "sound P"
-  txt {* Assume that @{term a} and @{term b} are not equivalent: *}
+  txt \<open>Assume that @{term a} and @{term b} are not equivalent:\<close>
   assume ne: "wp a P \<noteq> wp b P"
-  txt {* Find a point at which they differ.  As @{term "a \<sqsubseteq> b"},
+  txt \<open>Find a point at which they differ.  As @{term "a \<sqsubseteq> b"},
     @{term "wp b P s"} must by strictly greater than @{term "wp a P s"}
-    here: *}
+    here:\<close>
   hence "\<exists>s. wp a P s < wp b P s"
   proof(rule contrapos_np)
     assume "\<not>(\<exists>s. wp a P s < wp b P s)"
@@ -350,7 +350,7 @@ proof(rule pequivI, rule contrapos_pp)
     ultimately show "wp a P = wp b P" by(auto)
   qed
   then obtain s where less: "wp a P s < wp b P s" by(blast)
-  txt {* Take a carefully constructed expectation: *}
+  txt \<open>Take a carefully constructed expectation:\<close>
   let ?Pc = "\<lambda>s. bound_of P - P s"
   have sPc: "sound ?Pc"
   proof(rule soundI)
@@ -361,8 +361,8 @@ proof(rule pequivI, rule contrapos_pp)
     hence "\<And>s. 0 \<le> ?Pc s" by(auto simp:sign_simps)
     thus "nneg ?Pc" by(auto)
   qed
-  txt {* We then show that @{term "wp b"} violates feasibility, and
-    thus healthiness. *}
+  txt \<open>We then show that @{term "wp b"} violates feasibility, and
+    thus healthiness.\<close>
   from sP have "0 \<le> bound_of P" by(auto)
   with da have "bound_of P = wp a (\<lambda>s. bound_of P) s"
     by(simp add:maximalD determ_maximalD)
@@ -381,7 +381,7 @@ proof(rule pequivI, rule contrapos_pp)
   thus "\<not>bounded_by (bound_of P) (wp b (\<lambda>s. bound_of P))"
     by(auto)
 next  
-  txt {* However, *}
+  txt \<open>However,\<close>
   fix P::"'s \<Rightarrow> real" assume sP: "sound P"
   hence "nneg (\<lambda>s. bound_of P)" by(auto)
   moreover have "bounded_by (bound_of P) (\<lambda>s. bound_of P)" by(auto)
@@ -390,14 +390,14 @@ next
     using wb by(auto dest!:well_def_wp_healthy)
 qed
 
-subsection {* The Algebraic Structure of Refinement *}
+subsection \<open>The Algebraic Structure of Refinement\<close>
 
-text {* Well-defined programs form a half-bounded semilattice under refinement, where @{term Abort}
+text \<open>Well-defined programs form a half-bounded semilattice under refinement, where @{term Abort}
 is bottom, and @{term "a \<Sqinter> b"} is @{term inf}. There is no unique top element, but all
 fully-deterministic programs are maximal.
 
 The type that we construct here is not especially useful, but serves as a convenient way to express
-this result. *}
+this result.\<close>
 
 quotient_type 's program =
   "'s prog" / partial : "\<lambda>a b. a \<simeq> b \<and> well_def a \<and> well_def b"
@@ -563,11 +563,11 @@ lemma determ_maximal:
   "\<lbrakk> pdeterm a; a \<le> x \<rbrakk> \<Longrightarrow> a = x"
   by(transfer, auto intro:refines_determ)
 
-subsection {* Data Refinement *}
+subsection \<open>Data Refinement\<close>
 
-text {* A projective data refinement construction for pGCL. By projective, we mean that the abstract
+text \<open>A projective data refinement construction for pGCL. By projective, we mean that the abstract
 state is always a function (@{term \<phi>}) of the concrete state. Refinement may be predicated (@{term
-G}) on the state. *}
+G}) on the state.\<close>
 
 definition
   drefines :: "('b \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a prog \<Rightarrow> 'b prog \<Rightarrow> bool"
@@ -580,7 +580,7 @@ lemma drefinesD[dest]:
    \<guillemotleft>G\<guillemotright> && (P o \<phi>) \<tturnstile> wp B (Q o \<phi>)"
   unfolding drefines_def by(blast)
 
-text {* We can alternatively use G as an assumption: *}
+text \<open>We can alternatively use G as an assumption:\<close>
 lemma drefinesD2:
   assumes dr:  "drefines \<phi> G A B"
       and uP:  "unitary P"
@@ -596,7 +596,7 @@ proof -
   finally show "(P o \<phi>) s \<le> ..." .
 qed
 
-text {* This additional form is sometimes useful: *}
+text \<open>This additional form is sometimes useful:\<close>
 lemma drefinesD3:
   assumes dr: "drefines \<phi> G a b"
       and G:  "G s"
@@ -620,7 +620,7 @@ lemma drefinesI[intro]:
    drefines \<phi> G A B"
   unfolding drefines_def by(blast)
 
-text {* Use G as an assumption, when showing refinement: *}
+text \<open>Use G as an assumption, when showing refinement:\<close>
 lemma drefinesI2:
   fixes   A::"'a prog"
     and   B::"'b prog"
@@ -665,9 +665,9 @@ proof(intro drefinesI)
   finally show "\<guillemotleft>F\<guillemotright> && (P o \<phi>) \<tturnstile> wp b (Q o \<phi>)" .
 qed
 
-text {* Probabilistic correspondence, @{term pcorres}, is equality on distribution transformers,
+text \<open>Probabilistic correspondence, @{term pcorres}, is equality on distribution transformers,
 modulo a guard. It is the analogue, for data refinement, of program equivalence for program
-refinement. *}
+refinement.\<close>
 definition
   pcorres :: "('b \<Rightarrow> 'a) \<Rightarrow> ('b \<Rightarrow> bool) \<Rightarrow> 'a prog \<Rightarrow> 'b prog \<Rightarrow> bool"
 where
@@ -679,7 +679,7 @@ lemma pcorresI:
    pcorres \<phi> G A B"
   by(simp add:pcorres_def)
 
-text {* Often easier to use, as it allows one to assume the precondition. *}
+text \<open>Often easier to use, as it allows one to assume the precondition.\<close>
 lemma pcorresI2[intro]:
   fixes A::"'a prog" and B::"'b prog"
   assumes withG: "\<And>Q s. \<lbrakk> unitary Q; G s \<rbrakk> \<Longrightarrow> wp A Q (\<phi> s)= wp B (Q o \<phi>) s"
@@ -714,7 +714,7 @@ lemma pcorresD:
   "\<lbrakk> pcorres \<phi> G A B; unitary Q \<rbrakk> \<Longrightarrow> \<guillemotleft>G\<guillemotright> && (wp A Q o \<phi>) = \<guillemotleft>G\<guillemotright> && wp B (Q o \<phi>)"
   unfolding pcorres_def by(simp)
 
-text {* Again, easier to use if the precondition is known to hold. *}
+text \<open>Again, easier to use if the precondition is known to hold.\<close>
 lemma pcorresD2:
   assumes pc: "pcorres \<phi> G A B"
       and uQ: "unitary Q"
@@ -739,9 +739,9 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* The Algebra of Data Refinement *}
+subsection \<open>The Algebra of Data Refinement\<close>
 
-text {* Program refinement implies a trivial data refinement: *}
+text \<open>Program refinement implies a trivial data refinement:\<close>
 lemma refines_drefines:
   fixes a::"'s prog"
   assumes rab: "a \<sqsubseteq> b" and wb: "well_def b"
@@ -754,7 +754,7 @@ proof(intro drefinesI2 wb, simp add:o_def)
   finally show "P s \<le> wp b Q s" .
 qed
 
-text {* Data refinement is transitive: *}
+text \<open>Data refinement is transitive:\<close>
 lemma dr_trans[trans]:
   fixes A::"'a prog" and B::"'b prog" and C::"'c prog"
   assumes drAB: "drefines \<phi> G A B"
@@ -800,7 +800,7 @@ proof(rule drefinesI)
     by(simp add:o_assoc)
 qed
 
-text {* Data refinement composes with program refinement: *}
+text \<open>Data refinement composes with program refinement:\<close>
 lemma pr_dr_trans[trans]:
   assumes prAB: "A \<sqsubseteq> B"
       and drBC: "drefines \<phi> G B C"
@@ -833,8 +833,8 @@ proof(rule drefinesI)
   finally show "\<guillemotleft>G\<guillemotright> && (P o \<phi>) \<tturnstile> ..." .
 qed
 
-text {* If the projection @{term \<phi>} commutes with the transformer, then data refinement is
-reflexive: *}
+text \<open>If the projection @{term \<phi>} commutes with the transformer, then data refinement is
+reflexive:\<close>
 lemma dr_refl:
   assumes wa: "well_def a"
       and comm: "\<And>Q. unitary Q \<Longrightarrow> wp a Q o \<phi> \<tturnstile> wp a (Q o \<phi>)"
@@ -854,7 +854,7 @@ proof(intro drefinesI2 wa)
   finally show  "(P o \<phi>) s \<le> wp a (Q o \<phi>) s" .
 qed
 
-text {* Correspondence implies data refinement *}
+text \<open>Correspondence implies data refinement\<close>
 lemma pcorres_drefine:
   assumes corres: "pcorres \<phi> G A C"
       and wC: "well_def C"
@@ -891,8 +891,8 @@ proof
   finally show "\<guillemotleft>G\<guillemotright> && (P o \<phi>) \<tturnstile> wp C (Q o \<phi>)" .
 qed
 
-text {* Any \emph{data} refinement of a deterministic program is correspondence. This is the
-analogous result to that relating program refinement and equivalence. *}
+text \<open>Any \emph{data} refinement of a deterministic program is correspondence. This is the
+analogous result to that relating program refinement and equivalence.\<close>
 lemma drefines_determ:
   fixes a::"'a prog" and b::"'b prog"
   assumes da: "determ (wp a)"
@@ -900,10 +900,10 @@ lemma drefines_determ:
       and wb: "well_def b"
       and dr: "drefines \<phi> G a b"
   shows "pcorres \<phi> G a b"
-  txt {* The proof follows exactly the same form
+  txt \<open>The proof follows exactly the same form
     as that for program refinement: Assuming that correspondence
     \emph{doesn't} hold, we show that @{term "wp b"} is not feasible,
-    and thus not healthy, contradicting the assumption. *}
+    and thus not healthy, contradicting the assumption.\<close>
 proof(rule pcorresI, rule contrapos_pp)
   from wb show "feasible (wp b)" by(auto)
 
@@ -920,8 +920,8 @@ proof(rule pcorresI, rule contrapos_pp)
   assume ne: "\<guillemotleft>G\<guillemotright> && (wp a Q o \<phi>) \<noteq> \<guillemotleft>G\<guillemotright> && wp b (Q o \<phi>)"
   hence ne': "wp a Q o \<phi> \<noteq> wp b (Q o \<phi>)" by(auto)
 
-  txt {* From refinement, @{term "\<guillemotleft>G\<guillemotright> && (wp a Q o \<phi>)"}
-    lies below @{term "\<guillemotleft>G\<guillemotright> && wp b (Q o \<phi>)"}. *}
+  txt \<open>From refinement, @{term "\<guillemotleft>G\<guillemotright> && (wp a Q o \<phi>)"}
+    lies below @{term "\<guillemotleft>G\<guillemotright> && wp b (Q o \<phi>)"}.\<close>
   from ha uQ
   have gle: "\<guillemotleft>G\<guillemotright> && (wp a Q o \<phi>) \<tturnstile> wp b (Q o \<phi>)" by(blast intro!:drefinesD[OF dr])
   have le: "\<guillemotleft>G\<guillemotright> && (wp a Q o \<phi>) \<tturnstile> \<guillemotleft>G\<guillemotright> && wp b (Q o \<phi>)"
@@ -941,8 +941,8 @@ proof(rule pcorresI, rule contrapos_pp)
       by(simp add:pconj_assoc)
   qed
 
-  txt {* If the programs do not correspond, the terms must differ somewhere, and given the previous
-  result, the second must be somewhere strictly larger than the first: *}
+  txt \<open>If the programs do not correspond, the terms must differ somewhere, and given the previous
+  result, the second must be somewhere strictly larger than the first:\<close>
   have nle: "\<exists>s. (\<guillemotleft>G\<guillemotright> && (wp a Q o \<phi>)) s < (\<guillemotleft>G\<guillemotright> && wp b (Q o \<phi>)) s"
   proof(rule contrapos_np[OF ne], rule ext, rule antisym)
     fix s
@@ -957,7 +957,7 @@ proof(rule pcorresI, rule contrapos_pp)
   from this obtain s where less_s:
     "(\<guillemotleft>G\<guillemotright> && (wp a Q \<circ> \<phi>)) s < (\<guillemotleft>G\<guillemotright> && wp b (Q \<circ> \<phi>)) s"
     by(blast)
-  txt {* The transformers themselves must differ at this point: *}
+  txt \<open>The transformers themselves must differ at this point:\<close>
   hence larger: "wp a Q (\<phi> s) < wp b (Q \<circ> \<phi>) s"
   proof(cases "G s")
     case True
@@ -984,7 +984,7 @@ proof(rule pcorresI, rule contrapos_pp)
   qed
   from less_s have "(\<guillemotleft>G\<guillemotright> && (wp a Q \<circ> \<phi>)) s \<noteq> (\<guillemotleft>G\<guillemotright> && wp b (Q \<circ> \<phi>)) s"
     by(force)
-  txt {* @{term G} must also hold, as otherwise both would be zero. *}
+  txt \<open>@{term G} must also hold, as otherwise both would be zero.\<close>
   hence G_s: "G s"
   proof(rule contrapos_np)
     assume nG: "\<not> G s"
@@ -1003,7 +1003,7 @@ proof(rule pcorresI, rule contrapos_pp)
       by(simp add:exp_conj_def)
   qed
 
-  txt {* Take a carefully constructed expectation: *}
+  txt \<open>Take a carefully constructed expectation:\<close>
   let ?Qc = "\<lambda>s. bound_of Q - Q s"
   have bQc: "bounded_by 1 ?Qc"
   proof(rule bounded_byI)
@@ -1023,8 +1023,8 @@ proof(rule pcorresI, rule contrapos_pp)
     qed
   qed
 
-  txt {* By the maximality of @{term "wp a"}, @{term "wp b"} must violate feasibility, by mapping
-  @{term s} to something strictly greater than @{term "bound_of Q"}. *}
+  txt \<open>By the maximality of @{term "wp a"}, @{term "wp b"} must violate feasibility, by mapping
+  @{term s} to something strictly greater than @{term "bound_of Q"}.\<close>
   from uQ have "0 \<le> bound_of Q" by(auto)
   with da have "bound_of Q = wp a (\<lambda>s. bound_of Q) (\<phi> s)"
     by(simp add:maximalD determ_maximalD)
@@ -1076,13 +1076,13 @@ proof(rule pcorresI, rule contrapos_pp)
   qed
 qed
 
-subsection {* Structural Rules for Correspondence *}
+subsection \<open>Structural Rules for Correspondence\<close>
 
 lemma pcorres_Skip:
   "pcorres \<phi> G Skip Skip"
   by(simp add:pcorres_def wp_eval)
 
-text {* Correspondence composes over sequential composition. *}
+text \<open>Correspondence composes over sequential composition.\<close>
 lemma pcorres_Seq:
   fixes A::"'b prog" and B::"'c prog"
     and C::"'b prog" and D::"'c prog"
@@ -1146,7 +1146,7 @@ proof(rule pcorresI)
   qed
 qed
 
-subsection {* Structural Rules for Data Refinement *}
+subsection \<open>Structural Rules for Data Refinement\<close>
 
 lemma dr_Skip:
   fixes \<phi>::"'c \<Rightarrow> 'b"

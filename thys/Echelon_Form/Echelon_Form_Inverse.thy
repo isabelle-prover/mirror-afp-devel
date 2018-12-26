@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Inverse matrix over principal ideal rings*}
+section\<open>Inverse matrix over principal ideal rings\<close>
 
 theory Echelon_Form_Inverse
   imports 
@@ -12,7 +12,7 @@ theory Echelon_Form_Inverse
     Gauss_Jordan.Inverse
 begin
 
-subsection{*Computing the inverse of matrix over rings*}
+subsection\<open>Computing the inverse of matrix over rings\<close>
 
 lemma scalar_mult_mat: 
   fixes x :: "'a::comm_semiring_0"

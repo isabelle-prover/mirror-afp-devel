@@ -35,16 +35,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Formalizing IPv4 Addresses *}
+subsection \<open>Formalizing IPv4 Addresses\<close>
 theory 
   IPv4
   imports 
     NetworkCore
 begin
-text{* 
+text\<open>
   A theory describing IPv4 addresses with ports. The host address is a four-tuple of Integers, 
   the port number is a single Integer.
-*}
+\<close>
 
 type_synonym 
   ipv4_ip = "(int \<times> int \<times> int \<times> int)" 

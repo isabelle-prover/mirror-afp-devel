@@ -4,7 +4,7 @@ imports Three_Step_MRU "../HO_Transition_System" Heard_Of.Majorities "../Quorums
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
 type_synonym p_TS_state = "(nat \<times> (process \<Rightarrow> (val pstate)))"
 
@@ -54,7 +54,7 @@ qed
 
 type_synonym rHO = "nat \<Rightarrow> process HO"
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition coord_vote_to_set :: "nat \<Rightarrow> (process \<Rightarrow> (val pstate)) \<Rightarrow> val set" where
@@ -273,7 +273,7 @@ next
     done
 qed
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
 theorem Paxos_termination:

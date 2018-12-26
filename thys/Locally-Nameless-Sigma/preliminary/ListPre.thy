@@ -4,7 +4,7 @@
 List lemmata and other general stuff as preparation for ASP.
 *)
 
-section {* List features *}
+section \<open>List features\<close>
 
 theory ListPre
 imports Main
@@ -98,16 +98,16 @@ lemma list_induct3: (* Similar to induction for 2: see ML "thm \"list_induct2\""
   \<rbrakk> \<Longrightarrow> P xs ys zs"
 proof (induct xs, simp)
   case (Cons a xs ys zs) 
-  from `length (a#xs) = length ys` `length zs = length (a#xs)` 
+  from \<open>length (a#xs) = length ys\<close> \<open>length zs = length (a#xs)\<close> 
   have "ys \<noteq> [] \<and> zs \<noteq> []" by auto
   then obtain b ly c lz where "ys = b#ly" and "zs = c#lz"
     by (auto simp: neq_Nil_conv)
-  with `length (a#xs) = length ys` `length zs = length (a#xs)` 
+  with \<open>length (a#xs) = length ys\<close> \<open>length zs = length (a#xs)\<close> 
   obtain "length xs = length ly" and "length lz = length xs" 
     by auto
   from 
-    Cons(5)[OF this Cons(1)[OF this `P [] [] []`]] 
-    Cons(5) `ys = b#ly` `zs = c#lz` 
+    Cons(5)[OF this Cons(1)[OF this \<open>P [] [] []\<close>]] 
+    Cons(5) \<open>ys = b#ly\<close> \<open>zs = c#lz\<close> 
   show ?case by simp
 qed
 

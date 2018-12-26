@@ -2,16 +2,16 @@ theory Bexp
 imports Aexp
 begin
 
-section {* Boolean Expressions *}
+section \<open>Boolean Expressions\<close>
 
-text {* We proceed as in \verb?Aexp.thy?. *}
+text \<open>We proceed as in \verb?Aexp.thy?.\<close>
 
-subsection{* Basic definitions *}
+subsection\<open>Basic definitions\<close>
 
-subsubsection {* The $\mathit{bexp}$ type-synonym *}
+subsubsection \<open>The $\mathit{bexp}$ type-synonym\<close>
 
-text {* We represent boolean expressions, their set of variables and the notion of freshness of a 
-variable in the same way than for arithmetic expressions. *}
+text \<open>We represent boolean expressions, their set of variables and the notion of freshness of a 
+variable in the same way than for arithmetic expressions.\<close>
 
 type_synonym ('v,'d) bexp = "('v,'d) state \<Rightarrow> bool"
 
@@ -28,10 +28,10 @@ where
   "fresh v e \<equiv> v \<notin> vars e"
 
 
-subsubsection{* Satisfiability of an expression *}
+subsubsection\<open>Satisfiability of an expression\<close>
 
-text {* A boolean expression @{term "e"} is satisfiable if there exists a state @{term "\<sigma>"} such 
-that @{term "e \<sigma>"} is \emph{true}. *}
+text \<open>A boolean expression @{term "e"} is satisfiable if there exists a state @{term "\<sigma>"} such 
+that @{term "e \<sigma>"} is \emph{true}.\<close>
 
 
 definition sat ::
@@ -40,10 +40,10 @@ where
   "sat e = (\<exists> \<sigma>. e \<sigma>)"
 
 
-subsubsection {* Entailment *}
+subsubsection \<open>Entailment\<close>
 
-text {* A boolean expression @{term "\<phi>"} entails another boolean expression @{term "\<psi>"} if all 
-states making @{term "\<phi>"} true also make @{term "\<psi>"} true. *}
+text \<open>A boolean expression @{term "\<phi>"} entails another boolean expression @{term "\<psi>"} if all 
+states making @{term "\<phi>"} true also make @{term "\<psi>"} true.\<close>
 
 definition entails ::
   "('v,'d) bexp \<Rightarrow> ('v,'d) bexp \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>B" 55) 
@@ -51,12 +51,12 @@ where
   "\<phi> \<Turnstile>\<^sub>B \<psi> \<equiv> (\<forall> \<sigma>. \<phi> \<sigma> \<longrightarrow> \<psi> \<sigma>)"
 
 
-subsubsection {* Conjunction *}
+subsubsection \<open>Conjunction\<close>
 
-text {* In the following, path predicates are represented by sets of boolean expressions. We define 
+text \<open>In the following, path predicates are represented by sets of boolean expressions. We define 
 the conjunction of a set of boolean expressions @{term "E"} as the expression that 
-associates \emph{true} to a state @{term "\<sigma>"} if, for all elements @{text "e"} of 
-@{term "E"}, @{term "e"} associates \emph{true} to @{term "\<sigma>"}. *}
+associates \emph{true} to a state @{term "\<sigma>"} if, for all elements \<open>e\<close> of 
+@{term "E"}, @{term "e"} associates \emph{true} to @{term "\<sigma>"}.\<close>
 
 
 definition conjunct :: 
@@ -66,9 +66,9 @@ where
 
 
 
-subsection{* Properties about the variables of an expression *}
+subsection\<open>Properties about the variables of an expression\<close>
 
-text {* As said earlier, our definition of symbolic execution requires the existence of a fresh 
+text \<open>As said earlier, our definition of symbolic execution requires the existence of a fresh 
 symbolic variable in the case of an assignment. In the following, a number of proof relies on this 
 fact. We will show the existence of such variables assuming the set of symbolic variables already in 
 use is finite and show that symbolic execution preserves the finiteness of this set, under certain 
@@ -83,13 +83,13 @@ In the following, we prove that:
 finite set of variables,
   \item the equality of two arithmetic expressions whose sets of variables are finite has a finite 
 set of variables.
-\end{enumerate} *}
+\end{enumerate}\<close>
 
-subsubsection {* Variables of a conjunction *}
+subsubsection \<open>Variables of a conjunction\<close>
 
-text {* The set of variables of the conjunction of two expressions is a subset of the union of the 
+text \<open>The set of variables of the conjunction of two expressions is a subset of the union of the 
 sets of variables of the two sub-expressions. As a consequence, the set of variables of the conjunction 
-of a finite set of expressions whose sets of variables are finite is also finite. *} 
+of a finite set of expressions whose sets of variables are finite is also finite.\<close> 
 
 
 lemma vars_of_conj :
@@ -126,9 +126,9 @@ next
 qed
 
 
-subsubsection {* Variables of an equality *}
+subsubsection \<open>Variables of an equality\<close>
 
-text {* We proceed analogously for the equality of two arithmetic expressions. *}
+text \<open>We proceed analogously for the equality of two arithmetic expressions.\<close>
 
 
 lemma vars_of_eq_a :

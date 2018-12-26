@@ -1,19 +1,19 @@
-section {* Collecting Statistics about Algorithms *}
+section \<open>Collecting Statistics about Algorithms\<close>
 theory Statistics
 imports Main
 begin
 
-text {*
+text \<open>
   This theory contains an infrastructure to collect statistics about
   algorithms by instrumenting the formalization with dummy constants that
   get translated to functions that update the statistics as a side-effect.
-*}
+\<close>
 
 code_printing
   (* HACK: code_modules seem to be sorted alphabetically when written to SML. 
     However, other code_modules will depend on this, so we put an A in front 
     of the name to get this first. *)
-  code_module AStatistics \<rightharpoonup> (SML) {*
+  code_module AStatistics \<rightharpoonup> (SML) \<open>
   structure Statistics : sig
     type stat_entry = string * (unit -> bool) * (unit -> string)
   
@@ -86,7 +86,7 @@ code_printing
   end
   *)
 
-*}
+\<close>
 code_reserved SML Statistics Timer
 
 

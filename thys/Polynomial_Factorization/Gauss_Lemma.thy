@@ -260,7 +260,7 @@ proof -
     from quotient_of_denom_pos[OF irs'] have "d > 0" .
     from not quotient_of_div[OF irs'] have "d \<noteq> 1" "d \<noteq> 0" and irs: "?irs = ?r n / ?r d" by auto
     with irs0 have n0: "n \<noteq> 0" by auto
-    from `d > 0` `d \<noteq> 1` have "d \<ge> 2" and "\<not> d dvd 1" by auto
+    from \<open>d > 0\<close> \<open>d \<noteq> 1\<close> have "d \<ge> 2" and "\<not> d dvd 1" by auto
     with content_iff[of d p, unfolded cp] obtain c where 
       c: "c \<in> set (coeffs p)" and dc: "\<not> d dvd c" 
       by auto
@@ -283,7 +283,7 @@ proof -
     with quotient_of_div[OF quot] have "prod = ?r n'" by auto
     from arg_cong[OF this, of quotient_of, unfolded prod_def rat_divide_code qr Let_def split]
     have "Rat.normalize (n * c, d) = (n',1)" by simp
-    from normalize_crossproduct[OF `d \<noteq> 0`, of 1 "n * c" n', unfolded this]
+    from normalize_crossproduct[OF \<open>d \<noteq> 0\<close>, of 1 "n * c" n', unfolded this]
     have id: "n * c = n' * d" by auto 
     from quotient_of_coprime[OF irs'] have "coprime n d" .
     with id have "d dvd c"

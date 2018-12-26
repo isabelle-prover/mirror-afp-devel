@@ -1,18 +1,18 @@
-section {*\isaheader{Verified BFS Implementation in ML}*}
+section \<open>\isaheader{Verified BFS Implementation in ML}\<close>
 theory Bfs_Impl
 imports 
   Refine_Monadic.Breadth_First_Search
   Collections.Refine_Dflt_Only_ICF
 begin
-  text {*
+  text \<open>
     Originally, this was part of our submission to the 
     VSTTE 2010 Verification Competition. Some slight changes have been applied
     since the submitted version.
-    *}
+\<close>
 
 
-  text {*
-    In the @{text "Breadth_First_Search"}-theory, we verified an abstract 
+  text \<open>
+    In the \<open>Breadth_First_Search\<close>-theory, we verified an abstract 
     version of the algorithm. This abstract version tried to reflect the
     given pseudocode specification as precisely as possible.
 
@@ -25,16 +25,16 @@ begin
     to provide efficient set implementations. We choose a hashset 
     (backed by a Red Black Tree) for the visited set, and lists for
     all other sets. Moreover, we fix the node type to natural numbers.
-    *}
+\<close>
 
-  text {*
+  text \<open>
     The following algorithm is a straightforward rewriting of the 
     original algorithm. We only exchanged the abstract set operations by
     concrete operations on the data structures provided by the ICF.
 
     The operations of the list-set implementation are named
-    @{text "ls_xxx"}, the ones of the hashset are named @{text "hs_xxx"}.
-    *}
+    \<open>ls_xxx\<close>, the ones of the hashset are named \<open>hs_xxx\<close>.
+\<close>
 
   definition bfs_impl :: "(nat \<Rightarrow> nat ls) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (nat option nres)"
     where "bfs_impl succ src dst \<equiv> do {
@@ -61,7 +61,7 @@ begin
     if f then RETURN (Some d) else RETURN None
     }"
 
-  text {* Auxilliary lemma to initialize the refinement prover. *}
+  text \<open>Auxilliary lemma to initialize the refinement prover.\<close>
   (*lemma [refine]: "(ls.\<alpha> \<circ> succ) v = ls.\<alpha> (succ v)"
     by auto*)
 
@@ -72,27 +72,27 @@ begin
     the rb-interface
     *)
 
-  text {*
+  text \<open>
     It is quite easy to show that the implementation respects the 
-    specification, as most work is done by the refinement framework. *}
+    specification, as most work is done by the refinement framework.\<close>
   theorem bfs_impl_correct:
     shows "bfs_impl succ src dst \<le> Graph.bfs_spec (ls.\<alpha>\<circ>succ) src dst"
   proof -
-    txt {* As list-sets are always finite, our setting satisfies the
-      finitely-branching assumption made about graphs *}
+    txt \<open>As list-sets are always finite, our setting satisfies the
+      finitely-branching assumption made about graphs\<close>
     interpret Graph "ls.\<alpha>\<circ>succ"
       by unfold_locales simp
 
-    txt {* The refinement framework can prove automatically that
+    txt \<open>The refinement framework can prove automatically that
       the implementation refines the abstract algorithm.
 
-      The notation @{text "S \<le> \<Down>R S'"} means, that the program @{text "S"}
-      refines the program @{text "S'"} w.r.t.\ the refinement relation 
-      (also called coupling invariant occasionally) @{text "R"}.
+      The notation \<open>S \<le> \<Down>R S'\<close> means, that the program \<open>S\<close>
+      refines the program \<open>S'\<close> w.r.t.\ the refinement relation 
+      (also called coupling invariant occasionally) \<open>R\<close>.
 
       In our case, the refinement relation is the identity, as
       the result type was not refined.
-      *}
+\<close>
 
     have "bfs_impl succ src dst \<le> \<Down>Id (Graph.bfs (ls.\<alpha>\<circ>succ) src dst)"
       unfolding bfs_impl_def bfs_def
@@ -108,26 +108,26 @@ begin
         hs.correct hs.sng_correct ls.correct ls.sng_correct
         split: prod.split prod.split_asm)
       done
-    txt {* The result then follows due to transitivity of refinement. *}
+    txt \<open>The result then follows due to transitivity of refinement.\<close>
     also have "\<dots> \<le> bfs_spec src dst"
       by (simp add: bfs_correct)
     finally show ?thesis .
   qed
 
-  text {* The last step is to actually generate executable ML-code.
-    *}
+  text \<open>The last step is to actually generate executable ML-code.
+\<close>
 
-  text {*
+  text \<open>
     We first use the partial-correctness code generator of our framework
     to automatically turn the algorithm described in our framework into
     a function that is independent from our framework. This step also
     removes the last nondeterminism, that has remained in the iteration order
     of the inner loop.
 
-    The result of the function is an option type, returning @{text "None"}
+    The result of the function is an option type, returning \<open>None\<close>
     for nontermination. Inside this option-type, there is the option type
     that encodes whether we return with failure or a distance.
-    *}
+\<close>
   schematic_goal bfs_code_refine_aux: 
     "nres_of ?bfs_code \<le> bfs_impl succ src dst"
     unfolding bfs_impl_def
@@ -136,7 +136,7 @@ begin
 
   concrete_definition bfs_code for succ src dst uses bfs_code_refine_aux
 
-  text {*
+  text \<open>
     As a last step, we make the correctness property independent of our 
     refinement framework. This step drastically decreases the trusted code 
     base, as it completely eliminates the specifications made in the
@@ -145,7 +145,7 @@ begin
     The following theorem solves both verification tasks, without depending
     on any concepts of the refinement framework, except the deterministic result
     monad.
-    *}
+\<close>
   theorem bfs_code_correct:
     "bfs_code succ src dst = dRETURN None 
       \<Longrightarrow> \<not>(Graph.conn (ls.\<alpha> \<circ> succ) src dst)" 
@@ -169,18 +169,18 @@ begin
       done
   qed
       
-  text {* Now we can use the code-generator of Isabelle/HOL to generate
-    code into various target languages: *}
+  text \<open>Now we can use the code-generator of Isabelle/HOL to generate
+    code into various target languages:\<close>
   export_code bfs_code in SML
   export_code bfs_code in OCaml
   export_code bfs_code in Haskell
   export_code bfs_code in Scala
 
-  text {* The generated code is most conveniently executed within 
-    Isabelle/HOL itself. We use a small test graph here: *}
+  text \<open>The generated code is most conveniently executed within 
+    Isabelle/HOL itself. We use a small test graph here:\<close>
 
   definition nat_list:: "nat list \<Rightarrow> _" where "nat_list \<equiv> dlist_of_list"
-  ML_val {*
+  ML_val \<open>
     fun il l = @{code nat_list} (map @{code nat_of_integer} l)
     fun bfs succ s d = 
       @{code bfs_code} (succ o @{code integer_of_nat})
@@ -199,6 +199,6 @@ begin
     bfs succ 1 2;
     bfs succ 1 5;
     bfs succ 1 7;
-    *}
+\<close>
 
 end

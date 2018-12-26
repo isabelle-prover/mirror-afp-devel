@@ -1,8 +1,8 @@
-section {* Named Theorems with Explicit Filtering and Sorting *}
+section \<open>Named Theorems with Explicit Filtering and Sorting\<close>
 theory Named_Sorted_Thms
 imports Attr_Comb
 begin
-ML {*
+ML \<open>
   signature NAMED_SORTED_THMS =
   sig
     val member: Proof.context -> thm -> bool
@@ -69,6 +69,6 @@ ML {*
 
   end;
 
-*}
+\<close>
 
 end

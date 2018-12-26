@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-section {* Setup for Isabelle's quotient package for lazy lists *}
+section \<open>Setup for Isabelle's quotient package for lazy lists\<close>
 
 theory Quotient_Coinductive_List imports
   "HOL-Library.Quotient_List"
@@ -11,7 +11,7 @@ theory Quotient_Coinductive_List imports
   Coinductive_List
 begin
 
-subsection {* Rules for the Quotient package *}
+subsection \<open>Rules for the Quotient package\<close>
 
 declare llist.rel_eq[id_simps]
 
@@ -72,14 +72,14 @@ proof
     apply(clarsimp simp add: lset_conv_lnth)
     apply(metis Quotient3_rel[OF assms] llist_all2_lnthD)
     done
-  moreover from `?lhs` have "llist_all2 R s s"
+  moreover from \<open>?lhs\<close> have "llist_all2 R s s"
     apply -
     apply(rule llist_all2_reflI)
     apply(clarsimp simp add: lset_conv_lnth)
     apply(metis Quotient3_rel[OF assms] llist_all2_lnthD2)
     done
-  moreover from `?lhs` have "llength r = llength s" by(rule llist_all2_llengthD)
-  hence "lmap Abs r = lmap Abs s" using `?lhs`
+  moreover from \<open>?lhs\<close> have "llength r = llength s" by(rule llist_all2_llengthD)
+  hence "lmap Abs r = lmap Abs s" using \<open>?lhs\<close>
     unfolding lmap_eq_lmap_conv_llist_all2
     apply -
     apply(erule llist_all2_all_lnthI)

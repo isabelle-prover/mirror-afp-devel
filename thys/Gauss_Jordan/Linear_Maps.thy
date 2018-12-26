@@ -5,7 +5,7 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-section{*Linear Maps*}
+section\<open>Linear Maps\<close>
 
 theory Linear_Maps
 imports
@@ -20,7 +20,7 @@ lemma "((\<lambda>(x, y). (x::real , - y::real)) has_derivative (\<lambda>h. (fs
   by (auto intro!: derivative_eq_intros)
 
 
-subsection{*Properties about ranks and linear maps*}
+subsection\<open>Properties about ranks and linear maps\<close>
 
 lemma rank_matrix_dim_range:
 assumes lf: "linear ((*s)) ((*s)) f"
@@ -28,7 +28,7 @@ shows "rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = vec.di
 unfolding rank_col_rank[of "matrix f"] col_rank_def
 unfolding col_space_eq' using matrix_works[OF lf] by metis
 
-text{*The following two lemmas are the demonstration of theorem 2.11 that appears the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>The following two lemmas are the demonstration of theorem 2.11 that appears the book "Advanced Linear Algebra" by Steven Roman.\<close>
 
 lemma linear_injective_rank_eq_ncols:
   assumes lf: "linear ((*s)) ((*s)) f"
@@ -80,7 +80,7 @@ lemma linear_bij_rank_eq_ncols:
   using lf linear_injective_rank_eq_ncols vec.linear_inj_imp_surj by auto
 
 
-subsection{*Invertible linear maps*}
+subsection\<open>Invertible linear maps\<close>
 
 locale invertible_lf = Vector_Spaces.linear +
   assumes invertible: "(\<exists>g. g \<circ> f = id \<and> f \<circ> g = id)"
@@ -140,7 +140,7 @@ proof -
       unfolding matrix_eq matrix_vector_mul_assoc[symmetric]
       by (metis i.linear_axioms matrix_vector_mul_lid pointfree_idE fg linear_g matrix_vector_mul)
     show "matrix g ** matrix f = mat 1"
-      by (metis `matrix f ** matrix g = mat 1` matrix_left_right_inverse)
+      by (metis \<open>matrix f ** matrix g = mat 1\<close> matrix_left_right_inverse)
   qed
 qed
 
@@ -300,18 +300,18 @@ lemma invertible_matrices_rank':
   assumes invertible_P: "invertible P" and invertible_Q: "invertible Q" and B_eq_PA: "B = P**A**Q"
   shows "rank B = rank A" by (metis B_eq_PA invertible_P invertible_Q invertible_matrices_mult_rank)
 
-subsection{*Definition and properties of the set of a vector*}
+subsection\<open>Definition and properties of the set of a vector\<close>
 
-text{*Some definitions:*}
+text\<open>Some definitions:\<close>
 
-text{*In the file @{text "Generalizations.thy"} there exists the following definition: 
-  @{thm "cart_basis_def"}.*}
+text\<open>In the file \<open>Generalizations.thy\<close> there exists the following definition: 
+  @{thm "cart_basis_def"}.\<close>
   
-text{*@{text "cart_basis"} returns a set which is a basis and it works properly in my development.
+text\<open>\<open>cart_basis\<close> returns a set which is a basis and it works properly in my development.
   But in this file, I need to know the order of the elements of the basis, because is very important
   for the coordenates of a vector and the matrices of change of bases. So, I have defined a new
-  @{text "cart_basis'"}, which will be a matrix. The columns of this matrix are the elements of
-  the basis.*}
+  \<open>cart_basis'\<close>, which will be a matrix. The columns of this matrix are the elements of
+  the basis.\<close>
 
 definition set_of_vector :: "'a^'n \<Rightarrow> 'a set"
   where "set_of_vector A = {A $ i |i. i \<in> UNIV}"
@@ -343,7 +343,7 @@ proof (rule iffD1[OF independent_is_basis], rule conjI)
 qed
 
 
-text{*Properties about @{thm "cart_basis'_def"}*}
+text\<open>Properties about @{thm "cart_basis'_def"}\<close>
 
 lemma set_of_vector_cart_basis': 
   shows "(set_of_vector cart_basis') = {axis i 1 :: 'a::{field}^'n | i. i \<in> (UNIV :: 'n set)}"
@@ -381,7 +381,7 @@ lemma basis_expansion_cart_basis'_unique': "sum (\<lambda>i. f i *s cart_basis' 
   using basis_expansion_unique unfolding cart_basis'_def
   by (simp add: vec_eq_iff if_distrib cong del: if_weak_cong)
 
-text{*Properties of @{thm "is_basis_def"}.*}
+text\<open>Properties of @{thm "is_basis_def"}.\<close>
 
 lemma sum_basis_eq:
   fixes X::"'a::{field}^'n^'n"
@@ -500,14 +500,14 @@ proof (rule ccontr)
 qed
 
 
-subsection{*Coordinates of a vector*}
+subsection\<open>Coordinates of a vector\<close>
 
-text{*Definition and properties of the coordinates of a vector (in terms of a particular ordered basis).*}
+text\<open>Definition and properties of the coordinates of a vector (in terms of a particular ordered basis).\<close>
 
 definition coord :: "'a::{field}^'n^'n\<Rightarrow>'a::{field}^'n\<Rightarrow>'a::{field}^'n"
 where "coord X v = (\<chi> i. (THE f. v = sum (\<lambda>x. f x *s X$x) UNIV) i)"
 
-text{*@{term "coord X v"} are the coordinates of vector @{term "v"} with respect to the basis @{term "X"}*}
+text\<open>@{term "coord X v"} are the coordinates of vector @{term "v"} with respect to the basis @{term "X"}\<close>
 
 lemma bij_coord:
   fixes X::"'a::{field}^'n^'n"
@@ -645,20 +645,20 @@ proof -
 qed
 
 
-subsection{*Matrix of change of basis and coordinate matrix of a linear map*}
+subsection\<open>Matrix of change of basis and coordinate matrix of a linear map\<close>
 
-text{*Definitions of matrix of change of basis and matrix of a linear transformation with respect to two bases:*}
+text\<open>Definitions of matrix of change of basis and matrix of a linear transformation with respect to two bases:\<close>
 
 definition matrix_change_of_basis :: "'a::{field}^'n^'n \<Rightarrow>'a^'n^'n\<Rightarrow>'a^'n^'n"
   where "matrix_change_of_basis X Y = (\<chi> i j. (coord Y (X$j)) $ i)"
 
-text{*There exists in the library the definition @{thm "matrix_def"}, which is the coordinate matrix of a linear map with respect to the standard bases.
-      Now we generalise that concept to the coordinate matrix of a linear map with respect to any two bases.*}
+text\<open>There exists in the library the definition @{thm "matrix_def"}, which is the coordinate matrix of a linear map with respect to the standard bases.
+      Now we generalise that concept to the coordinate matrix of a linear map with respect to any two bases.\<close>
 
 definition matrix' :: "'a::{field}^'n^'n \<Rightarrow> 'a^'m^'m \<Rightarrow> ('a^'n => 'a^'m) \<Rightarrow> 'a^'n^'m"
   where "matrix' X Y f= (\<chi> i j. (coord Y (f(X$j))) $ i)"
 
-text{*Properties of @{thm "matrix'_def"}*}
+text\<open>Properties of @{thm "matrix'_def"}\<close>
 
 lemma matrix'_eq_matrix:
   defines cart_basis_Rn: "cart_basis_Rn == (cart_basis')::'a::{field}^'n^'n" 
@@ -729,7 +729,7 @@ proof -
   qed
 qed
 
-text{*This is the theorem 2.14 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>This is the theorem 2.14 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 lemma coord_matrix':
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'m^'m"
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"
@@ -780,7 +780,7 @@ proof (unfold matrix_mult_sum matrix'_def column_def coord_def, vector, auto)
   qed
 qed
 
-text{*This is the second part of the theorem 2.15 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>This is the second part of the theorem 2.15 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 lemma matrix'_compose:
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'m^'m" and Z::"'a^'p^'p"
   assumes basis_X: "is_basis (set_of_vector X)" and basis_Y: "is_basis (set_of_vector Y)"  and basis_Z: "is_basis (set_of_vector Z)"
@@ -851,9 +851,9 @@ proof (unfold surj_def, clarify)
 qed
 
 
-text{*Properties of @{thm "matrix_change_of_basis_def"}.*}
+text\<open>Properties of @{thm "matrix_change_of_basis_def"}.\<close>
 
-text{*This is the first part of the theorem 2.12 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>This is the first part of the theorem 2.12 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 
 lemma matrix_change_of_basis_works:
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'n^'n"
@@ -935,8 +935,8 @@ proof (unfold matrix_change_of_basis_def coord_def mat_def, vector, auto)
 qed
 
 
-text{*Relationships between @{thm "matrix'_def"} and @{thm "matrix_change_of_basis_def"}.
-      This is the theorem 2.16 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>Relationships between @{thm "matrix'_def"} and @{thm "matrix_change_of_basis_def"}.
+      This is the theorem 2.16 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 
 lemma matrix'_matrix_change_of_basis:
   fixes B::"'a::{field}^'n^'n" and B'::"'a^'n^'n" and C::"'a^'m^'m" and C'::"'a^'m^'m"
@@ -963,9 +963,9 @@ lemma matrix'_id_eq_matrix_change_of_basis:
   shows "matrix' X Y (id) = matrix_change_of_basis X Y"
   unfolding matrix'_def matrix_change_of_basis_def unfolding id_def ..
 
-text{*Relationships among @{thm "invertible_lf_def"}, @{thm "matrix_change_of_basis_def"}, @{thm "matrix'_def"} and @{thm "invertible_def"}.*}
+text\<open>Relationships among @{thm "invertible_lf_def"}, @{thm "matrix_change_of_basis_def"}, @{thm "matrix'_def"} and @{thm "invertible_def"}.\<close>
 
-text{*This is the second part of the theorem 2.12 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>This is the second part of the theorem 2.12 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 
 lemma matrix_inv_matrix_change_of_basis:
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'n^'n"
@@ -989,7 +989,7 @@ proof (rule matrix_inv_unique[symmetric])
   finally show "matrix_change_of_basis X Y ** matrix_change_of_basis Y X = mat 1" .
 qed
 
-text{*The following four lemmas are the proof of the theorem 2.13 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>The following four lemmas are the proof of the theorem 2.13 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 
 corollary invertible_matrix_change_of_basis:
   fixes X::"'a::{field}^'n^'n" and Y::"'a^'n^'n"
@@ -1040,9 +1040,9 @@ proof (auto)
 qed
 
 
-subsection{*Equivalent Matrices*}
+subsection\<open>Equivalent Matrices\<close>
 
-text{*Next definition follows the one presented in Modern Algebra by Seth Warner.*}
+text\<open>Next definition follows the one presented in Modern Algebra by Seth Warner.\<close>
 
 definition "equivalent_matrices A B = (\<exists>P Q. invertible P \<and> invertible Q \<and> B = (matrix_inv P)**A**Q)"
 
@@ -1093,7 +1093,7 @@ proof (unfold equivalent_matrices_def, rule exI[of _ "matrix_change_of_basis Y' 
   finally show "B = matrix_inv (matrix_change_of_basis Y' Y) ** A ** matrix_change_of_basis X' X" unfolding inv unfolding A .
 qed
 
-text{*This is the proof of the theorem 2.18 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>This is the proof of the theorem 2.18 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 corollary equivalent_iff_exist_matrix':
   shows "equivalent_matrices A B \<longleftrightarrow> (\<exists>X Y X' Y' f::'a::{field}^'n\<Rightarrow>'a^'m. 
   linear ((*s)) ((*s)) f \<and> matrix' X Y f = A \<and> matrix' X' Y' f = B 
@@ -1102,7 +1102,7 @@ corollary equivalent_iff_exist_matrix':
   by (rule, auto simp add: exist_matrix'_implies_equivalent equivalent_implies_exist_matrix')
 
 
-subsection{*Similar matrices*}
+subsection\<open>Similar matrices\<close>
 
 definition similar_matrices :: "'a::{semiring_1}^'n^'n \<Rightarrow> 'a::{semiring_1}^'n^'n \<Rightarrow> bool"
   where "similar_matrices A B = (\<exists>P. invertible P \<and> B=(matrix_inv P)**A**P)"
@@ -1140,7 +1140,7 @@ proof (unfold similar_matrices_def, rule exI[of _ "matrix_change_of_basis Y X"],
   show "invertible (matrix_change_of_basis Y X)" using invertible_matrix_change_of_basis[OF Y X] .
 qed
 
-text{*This is the proof of the theorem 2.19 in the book "Advanced Linear Algebra" by Steven Roman.*}
+text\<open>This is the proof of the theorem 2.19 in the book "Advanced Linear Algebra" by Steven Roman.\<close>
 corollary similar_iff_exist_matrix':
   fixes A B::"'a::{field}^'n^'n"
   shows "similar_matrices A B \<longleftrightarrow> (\<exists>X Y f. linear ((*s)) ((*s)) f \<and> matrix' X X f = A 

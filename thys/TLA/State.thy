@@ -5,13 +5,13 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* Representing state in TLA*  *}
+section \<open>Representing state in TLA*\<close>
 
 theory State 
 imports Liveness 
 begin
 
-text{*
+text\<open>
   We adopt the hidden state appraoch, as used in the existing 
   Isabelle/HOL TLA embedding \cite{Merz98}. This approach is also used
   in \cite{Ehmety01}.
@@ -19,9 +19,9 @@ text{*
   unknown. Thus, a variable is a projection of the state space, and has the same
   type as a state function. Moreover, strong typing is achieved, since the projection
   function may have any result type. To achieve this, the state space is represented
-  by an undefined type, which is an instance of the @{text world} class to enable
-  use with the @{text Intensional} theory.
-*}
+  by an undefined type, which is an instance of the \<open>world\<close> class to enable
+  use with the \<open>Intensional\<close> theory.
+\<close>
 
 typedecl state
 
@@ -32,7 +32,7 @@ type_synonym statepred  = "bool statefun"
 type_synonym 'a tempfun = "(state,'a) formfun"
 type_synonym temporal = "state formula"
 
-text {* 
+text \<open>
   Formalizing type state would require formulas to be tagged with
   their underlying state space and would result in a system that is
   much harder to use. (Unlike Hoare logic or Unity, TLA has quantification
@@ -44,8 +44,8 @@ text {*
   of flexible quantification later on. Nevertheless, we need to distinguish
   state variables, mainly to define the enabledness of actions. The user
   identifies (tuples of) ``base'' state variables in a specification via the
-  ``meta predicate'' @{text basevars}, which is defined here.
-*}
+  ``meta predicate'' \<open>basevars\<close>, which is defined here.
+\<close>
 
 definition stvars    :: "'a statefun \<Rightarrow> bool"
 where basevars_def:  "stvars \<equiv> surj" 
@@ -58,13 +58,13 @@ translations
   "PRED P"   \<rightharpoonup>  "(P::state => _)"
   "_stvars"  \<rightleftharpoons>  "CONST stvars"
 
-text {* 
+text \<open>
   Base variables may be assigned arbitrary (type-correct) values.
-  In the following lemma, note that @{text vs} may be a tuple of variables.
+  In the following lemma, note that \<open>vs\<close> may be a tuple of variables.
   The correct identification of base variables is up to the user who must
   take care not to introduce an inconsistency. For example, @{term "basevars (x,x)"}
   would definitely be inconsistent.
-*}
+\<close>
 
 lemma basevars: "basevars vs \<Longrightarrow> \<exists>u. vs u = c"
 proof (unfold basevars_def surj_def)
@@ -78,7 +78,7 @@ lemma baseE:
   shows "Q"
   using H1[THEN basevars] H2 by auto
 
-text {* A variant written for sequences rather than single states. *}
+text \<open>A variant written for sequences rather than single states.\<close>
 lemma first_baseE:
   assumes H1: "basevars v" and H2: "\<And>x. v (first x) = c \<Longrightarrow> Q"
   shows "Q"
@@ -105,19 +105,19 @@ qed
 lemma base_pair: "basevars (x,y) \<Longrightarrow> basevars x \<and> basevars y"
   by (auto elim: base_pair1 base_pair2)
 
-text {* 
+text \<open>
   Since the @{typ unit} type has just one value, any state function of unit type
-  satisfies the predicate @{text basevars}. The following theorem can sometimes
-  be useful because it gives a trivial solution for @{text basevars} premises.
-*}
+  satisfies the predicate \<open>basevars\<close>. The following theorem can sometimes
+  be useful because it gives a trivial solution for \<open>basevars\<close> premises.
+\<close>
 
 lemma unit_base: "basevars (v::state \<Rightarrow> unit)"
   by (auto simp: basevars_def)
 
-text {*
-  A pair of the form @{text "(x,x)"} will generally not satisfy the predicate
-  @{text basevars} -- except for pathological cases such as @{text "x::unit"}.
-*}
+text \<open>
+  A pair of the form \<open>(x,x)\<close> will generally not satisfy the predicate
+  \<open>basevars\<close> -- except for pathological cases such as \<open>x::unit\<close>.
+\<close>
 lemma
   fixes x :: "state \<Rightarrow> bool"
   assumes h1: "basevars (x,x)"
@@ -136,14 +136,14 @@ proof -
   thus False by auto
 qed
 
-text {*
+text \<open>
   The following theorem reduces the reasoning about the existence of a
   state sequence satisfiyng an enabledness predicate to finding a suitable
-  value @{text c} at the successor state for the base variables of the 
+  value \<open>c\<close> at the successor state for the base variables of the 
   specification. This rule is intended for reasoning about standard TLA
-  specifications, where @{text Enabled} is applied to actions, not arbitrary
+  specifications, where \<open>Enabled\<close> is applied to actions, not arbitrary
   pre-formulas.
-*}
+\<close>
 lemma base_enabled:
   assumes h1: "basevars vs"
   and h2: "\<And>u. vs (first u) = c \<Longrightarrow> ((first s) ## u) \<Turnstile> F"
@@ -158,7 +158,7 @@ qed
 
 subsection "Temporal Quantifiers"
 
-text{*
+text\<open>
   In \cite{Lamport94}, Lamport gives a stuttering invariant definition
   of quantification over (flexible) variables. It relies on similarity
   of two sequences (as supported in our @{theory TLA.Sequence} theory), and
@@ -169,7 +169,7 @@ text{*
   Thus, we need to axiomatise quantification over (flexible) variables.
   Note that with a state representation supporting this, our theory should
   allow such an encoding.
-*}
+\<close>
 
 consts
   EEx        :: "('a statefun \<Rightarrow> temporal) \<Rightarrow> temporal"       (binder "Eex " 10)
@@ -193,10 +193,10 @@ and  history: "\<turnstile> (I \<and> \<box>[A]_v) = (\<exists>\<exists> h. ($h 
 
 lemmas eexI_unl = eexI[unlift_rule] \<comment> \<open>@{text "w \<Turnstile> F x \<Longrightarrow> w \<Turnstile> (\<exists>\<exists> x. F x)"}\<close>
 
-text {*
-  @{text tla_defs} can be used to unfold TLA definitions into lowest predicate level.
+text \<open>
+  \<open>tla_defs\<close> can be used to unfold TLA definitions into lowest predicate level.
   This is particularly useful for reasoning about enabledness of formulas.
-*}
+\<close>
 lemmas tla_defs = unch_def before_def after_def first_def second_def suffix_def 
                   tail_def nexts_def app_def angle_actrans_def actrans_def
 

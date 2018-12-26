@@ -1,4 +1,4 @@
-section {* Stuttering *}
+section \<open>Stuttering\<close>
 
 theory Stuttering
 imports

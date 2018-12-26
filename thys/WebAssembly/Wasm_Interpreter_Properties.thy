@@ -1,4 +1,4 @@
-section {* Soundness of Interpreter *}
+section \<open>Soundness of Interpreter\<close>
 
 theory Wasm_Interpreter_Properties imports Wasm_Interpreter Wasm_Properties begin
 

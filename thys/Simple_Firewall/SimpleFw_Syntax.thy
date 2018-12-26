@@ -15,8 +15,8 @@ begin
         However, Most match expressions can still be transformed into simple match expressions.
         
         A negated IP address range can be represented as a set of non-negated IP ranges.
-        For example @{text "!8 = {0..7} \<union> {8 .. ipv4max}"}.
-        Using CIDR notation (i.e. the @{text "a.b.c.d/n"} notation), we can represent negated IP
+        For example \<open>!8 = {0..7} \<union> {8 .. ipv4max}\<close>.
+        Using CIDR notation (i.e. the \<open>a.b.c.d/n\<close> notation), we can represent negated IP
         ranges as a set of non-negated IP ranges with only fair blowup.
         Another handy result is that the conjunction of two IP ranges in CIDR notation is 
         either the smaller of the two ranges or the empty set.
@@ -24,7 +24,7 @@ begin
         If one wants to represent the empty range, then the complete rule needs to be removed.
 
         The same holds for layer 4 ports.
-        In addition, there exists an empty port range, e.g. @{text "(1,0)"}.
+        In addition, there exists an empty port range, e.g. \<open>(1,0)\<close>.
         The conjunction of two port ranges is again just one port range.
         
         But negation of interfaces is not supported. Since interfaces support a wildcard character,
@@ -40,7 +40,7 @@ begin
         The same discussion holds for negated protocols.
 
         Noteworthy, simple match expressions are both expressive and support conjunction:
-        @{text "simple-match1 \<and> simple-match2 = simple-match3"}
+        \<open>simple-match1 \<and> simple-match2 = simple-match3\<close>
 \<close>
         (*It took very long to design the simple match such that it can represent everything we need
         and that you can calculate with it. Disjunction is easy: just have two consecutive rules with the same action.

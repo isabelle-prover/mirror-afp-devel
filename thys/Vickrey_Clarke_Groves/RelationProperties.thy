@@ -14,8 +14,8 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* Additional properties of relations, and operators on relations,
-  as they have been defined by Relations.thy *}
+section \<open>Additional properties of relations, and operators on relations,
+  as they have been defined by Relations.thy\<close>
 
 theory RelationProperties
 imports
@@ -23,7 +23,7 @@ imports
 
 begin
 
-subsection {* Right-Uniqueness *}
+subsection \<open>Right-Uniqueness\<close>
 
 (* flip is applied to pairs so that (flip (x, y)) = (y, x) *)
 lemma injflip: "inj_on flip A" 
@@ -53,7 +53,7 @@ lemma doubleRestriction:  "((P || X) || Y) = (P || (X \<inter> Y))"
 lemma restrictedDomain: "Domain (R||X) = Domain R \<inter> X" 
   using restrict_def by fastforce
 
-text {* A subrelation of a right-unique relation is right-unique. *}
+text \<open>A subrelation of a right-unique relation is right-unique.\<close>
 
 lemma subrel_runiq: 
   assumes "runiq Q" "P \<subseteq> Q" 
@@ -68,12 +68,12 @@ lemma rightUniqueInjectiveOnFirstImplication:
         the_elem_eq surjective_pairing subsetI Image_singleton_iff 
   by (metis(no_types))
 
-text {* alternative characterization of right-uniqueness: the image of a singleton set is
-   @{const trivial}, i.e.\ an empty or a singleton set. *}
+text \<open>alternative characterization of right-uniqueness: the image of a singleton set is
+   @{const trivial}, i.e.\ an empty or a singleton set.\<close>
 lemma runiq_alt: "runiq R \<longleftrightarrow> (\<forall> x . trivial (R `` {x}))" 
   unfolding runiq_def by (metis Image_empty2 trivial_empty_or_singleton trivial_singleton) 
  
-text {* an alternative definition of right-uniqueness in terms of @{const eval_rel} *}
+text \<open>an alternative definition of right-uniqueness in terms of @{const eval_rel}\<close>
 (* Note that R `` {x} is the image of {x} under R and R ,, x gives you an element y such that R x y. Because of right-uniqueness in this case the element is determined, otherwise it may be undetermined *)
 lemma runiq_wrt_eval_rel: "runiq R = (\<forall>x . R `` {x} \<subseteq> {R ,, x})" 
   by (metis eval_rel.simps runiq_alt trivial_def)
@@ -144,7 +144,7 @@ lemma rightUniqueSetCardinality:
   by (metis runiq_alt)
 
 
-text {* The image of a singleton set under a right-unique relation is a singleton set. *}
+text \<open>The image of a singleton set under a right-unique relation is a singleton set.\<close>
 lemma Image_runiq_eq_eval: 
   assumes "x \<in> Domain R" "runiq R" 
   shows "R `` {x} = {R ,, x}" 
@@ -157,11 +157,11 @@ lemma lm06:
   using assms trivial_subset_non_empty runiq_basic snd_conv
   by fastforce
 
-text {* A singleton relation is right-unique. *}
+text \<open>A singleton relation is right-unique.\<close>
 corollary runiq_singleton_rel: "runiq {(x, y)}" 
   using trivial_singleton lm06 by fast
 
-text {* The empty relation is right-unique *}
+text \<open>The empty relation is right-unique\<close>
 lemma runiq_emptyrel: "runiq {}" 
   using trivial_empty lm06 by blast
 
@@ -170,17 +170,17 @@ lemma runiq_wrt_ex1:
   "runiq R \<longleftrightarrow> (\<forall> a \<in> Domain R . \<exists>! b . (a, b) \<in> R)"
   using runiq_basic by (metis Domain.DomainI Domain.cases)
 
-text {* alternative characterization of the fact that, if a relation @{term R} is right-unique,
+text \<open>alternative characterization of the fact that, if a relation @{term R} is right-unique,
   its evaluation @{term "R,,x"} on some argument @{term x} in its domain, occurs in @{term R}'s
-  range. Note that we need runiq R in order to get a definite value for @{term "R,,x"} *}
+  range. Note that we need runiq R in order to get a definite value for @{term "R,,x"}\<close>
 lemma eval_runiq_rel:
   assumes domain: "x \<in> Domain R"
       and runiq: "runiq R" 
   shows "(x, R,,x) \<in> R"
   using assms by (metis rightUniquePair runiq_wrt_ex1)
 
-text {* Evaluating a right-unique relation as a function on the relation's domain yields an
-  element from its range. *}
+text \<open>Evaluating a right-unique relation as a function on the relation's domain yields an
+  element from its range.\<close>
 lemma eval_runiq_in_Range:
   assumes "runiq R"
       and "a \<in> Domain R"
@@ -191,11 +191,11 @@ lemma eval_runiq_in_Range:
 
 
 
-subsection {* Converse *}
+subsection \<open>Converse\<close>
 
-text {* The inverse image of the image of a singleton set under some relation is the same
+text \<open>The inverse image of the image of a singleton set under some relation is the same
   singleton set, if both the relation and its converse are right-unique and the singleton set
-  is in the relation's domain. *}
+  is in the relation's domain.\<close>
 lemma converse_Image_singleton_Domain:
   assumes runiq: "runiq R"
       and runiq_conv: "runiq (R\<inverse>)"
@@ -210,7 +210,7 @@ proof -
     using sup by (metis singleton_sub_trivial_uniq subset_antisym trivial_def)
 qed
 
-text {* The images of two disjoint sets under an injective function are disjoint. *}
+text \<open>The images of two disjoint sets under an injective function are disjoint.\<close>
 
 lemma disj_Domain_imp_disj_Image: 
   assumes "Domain R \<inter> X \<inter> Y = {}" 
@@ -241,13 +241,13 @@ qed
 
 
 
-subsection {* Injectivity *}
+subsection \<open>Injectivity\<close>
 
-text {* The following is a classical definition of the set of all injective functions from @{term X} to @{term Y}. *}
+text \<open>The following is a classical definition of the set of all injective functions from @{term X} to @{term Y}.\<close>
 definition injections :: "'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<times> 'b) set set"
   where "injections X Y = {R . Domain R = X \<and> Range R \<subseteq> Y \<and> runiq R \<and> runiq (R\<inverse>)}"
 
-text {* The following definition is a constructive (computational) characterization of the set of all injections X Y, represented by a list. That is, we define the list of all injective functions (represented as relations) from one set (represented as a list) to another set. We formally prove the equivalence of the constructive and the classical definition in Universes.thy. *}
+text \<open>The following definition is a constructive (computational) characterization of the set of all injections X Y, represented by a list. That is, we define the list of all injective functions (represented as relations) from one set (represented as a list) to another set. We formally prove the equivalence of the constructive and the classical definition in Universes.thy.\<close>
 fun injections_alg (* :: "'a list \<Rightarrow> 'b::linorder set \<Rightarrow> ('a \<times> 'b) set list" *)
   where "injections_alg [] Y = [{}]" |
         "injections_alg (x # xs) Y = concat [ [ R +* {(x,y)} . y \<leftarrow> sorted_list_of_set (Y - Range R) ]

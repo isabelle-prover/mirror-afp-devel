@@ -1,4 +1,4 @@
-section {* Bit Block Transfer and Other Array Optimizations *}
+section \<open>Bit Block Transfer and Other Array Optimizations\<close>
 theory Array_Blit
 imports 
   "../Sep_Main" 
@@ -67,7 +67,7 @@ ML_val Array.update
 
 subsection "Code Generator Setup"
   code_printing code_module "array_blit" \<rightharpoonup> (SML)
-    {*
+    \<open>
    fun array_blit src si dst di len = (
       src=dst andalso raise Fail ("array_blit: Same arrays");
       ArraySlice.copy {
@@ -79,7 +79,7 @@ subsection "Code Generator Setup"
     fun array_upd_oo f i x a () = 
       (Array.update(a,IntInf.toInt i,x); a) handle Subscript => f () | Overflow => f ()
 
-    *}
+\<close>
 
   definition blit' where
     [code del]: "blit' src si dst di len 
@@ -112,14 +112,14 @@ subsection "Code Generator Setup"
     "upd_oo f == upd_oo' f o integer_of_nat"
     by (simp_all add: nth_oo'_def upd_oo'_def o_def)
 
-  text {* Fallbacks *}
+  text \<open>Fallbacks\<close>
   lemmas [code] = nth_oo'_def[unfolded nth_oo_def[abs_def]]
   lemmas [code] = upd_oo'_def[unfolded upd_oo_def[abs_def]]
 
   code_printing constant nth_oo' \<rightharpoonup> (SML) "array'_nth'_oo _ _ _"
     | constant upd_oo' \<rightharpoonup> (SML) "array'_upd'_oo _ _ _ _"
 
-subsection {* Derived Functions *}
+subsection \<open>Derived Functions\<close>
   definition "array_shrink a s \<equiv> do {
     \<comment> \<open>Avoiding the need for default value\<close>
     l\<leftarrow>Array.len a;

@@ -1,7 +1,7 @@
 (*<*)
 (* Author: Dmitriy Traytel *)
 
-section {* A Codatatype of Formal Languages *}
+section \<open>A Codatatype of Formal Languages\<close>
 
 theory Coinductive_Language
 imports Main
@@ -10,18 +10,18 @@ begin
 hide_const (open) Inter
 (*>*)
 
-section {* Introduction *}
+section \<open>Introduction\<close>
 
-text {*
+text \<open>
 We define formal languages as a codataype of infinite trees branching over the
 alphabet @{typ 'a}. Each node in such a tree indicates whether the path to this
 node constitutes a word inside or outside of the language.
 
-*}
+\<close>
 
 codatatype 'a language = Lang (\<oo>: bool) (\<dd>: "'a \<Rightarrow> 'a language")
 
-text {*
+text \<open>
 This codatatype is isormorphic to the set of lists representation of languages,
 but caters for definitions by corecursion and proofs by coinduction.
 
@@ -36,13 +36,13 @@ axioms of Kleene algebra for the defined regular operations.
 Furthermore, a language for context-free grammars given by productions in Greibach
 normal form and an initial nonterminal is constructed by primitive corecursion,
 yielding an executable decision procedure for the word problem without further ado.
-*}
+\<close>
 (*<*)
 (* custom coinduction theorem (getting rid of rel_fun) *)
 declare language.coinduct_strong[unfolded rel_fun_def, simplified, case_names Lang, coinduct pred]
 (*>*)
 
-section {* Regular Languages *}
+section \<open>Regular Languages\<close>
 
 primcorec Zero :: "'a language" where
   "\<oo> Zero = False"
@@ -89,11 +89,11 @@ lemma Plus_OneL[simp]: "\<oo> r \<Longrightarrow> Plus One r = r"
 lemma Plus_OneR[simp]: "\<oo> r \<Longrightarrow> Plus r One = r"
   by (coinduction arbitrary: r) auto
 
-text {*
+text \<open>
   Concatenation is not primitively corecursive---the corecursive call of its derivative is
   guarded by @{term Plus}. However, it can be defined as a composition of two primitively
   corecursive functions.
-*}
+\<close>
 
 primcorec TimesLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a \<times> bool) language" where
   "\<oo> (TimesLR r s) = (\<oo> r \<and> \<oo> s)"
@@ -162,10 +162,10 @@ theorem Times_OneR[simp]: "Times r One = r"
 
 
 
-text {*
+text \<open>
   Coinduction up-to @{term Plus}--congruence relaxes the coinduction hypothesis by requiring
   membership in the congruence closure of the bisimulation rather than in the bisimulation itself.
-*}
+\<close>
 
 inductive Plus_cong for R where
   Refl[intro]: "x = y \<Longrightarrow> Plus_cong R x y"
@@ -193,10 +193,10 @@ theorem Times_PlusR[simp]: "Times r (Plus s t) = Plus (Times r s) (Times r t)"
 theorem Times_assoc[simp]: "Times (Times r s) t = Times r (Times s t)"
   by (coinduction arbitrary: r s t rule: language_coinduct_upto_Plus) fastforce
 
-text {*
+text \<open>
   Similarly to @{term Times}, iteration is not primitively corecursive (guardedness by
   @{term Times} is required). We apply a similar trick to obtain its definition.
-*}
+\<close>
 
 primcorec StarLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> 'a language" where
   "\<oo> (StarLR r s) = \<oo> r"
@@ -255,11 +255,11 @@ primcorec Full :: "'a language" ("\<Sigma>\<^sup>*") where
   "\<oo> Full = True"
 | "\<dd> Full = (\<lambda>_. Full)"
 
-text {*
+text \<open>
   Shuffle product is not primitively corecursive---the corecursive call of its derivative is
   guarded by @{term Plus}. However, it can be defined as a composition of two primitively
   corecursive functions.
-*}
+\<close>
 
 primcorec ShuffleLR :: "'a language \<Rightarrow> 'a language \<Rightarrow> ('a \<times> bool) language" where
   "\<oo> (ShuffleLR r s) = (\<oo> r \<and> \<oo> s)"
@@ -326,9 +326,9 @@ theorem Shuffle_comm[simp]: "Shuffle r s = Shuffle s r"
   by (coinduction arbitrary: r s rule: language_coinduct_upto_Plus)
     (auto intro!: Trans[OF Plus[OF Base Base] Refl])
 
-text {*
+text \<open>
   We generalize coinduction up-to @{term Plus} to coinduction up-to all previously defined concepts.
-*}
+\<close>
 
 inductive regular_cong for R where
   Refl[intro]: "x = y \<Longrightarrow> regular_cong R x y"
@@ -410,10 +410,10 @@ lemma \<oo>_mono[dest]: "r \<le> s \<Longrightarrow> \<oo> r \<Longrightarrow> \
 lemma \<dd>_mono[dest]: "r \<le> s \<Longrightarrow> \<dd> r a \<le> \<dd> s a"
   unfolding less_eq_language_def by (metis Plus.simps(2))
 
-text {*
+text \<open>
   For reasoning about @{term "(\<le>)"}, we prove a coinduction principle and generalize it
   to support up-to reasoning.
-*}
+\<close>
 
 theorem language_simulation_coinduction[consumes 1, case_names Lang, coinduct pred]:
   assumes "R L K"
@@ -462,10 +462,10 @@ lemma Inter_mono: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> 
 lemma Times_mono: "\<lbrakk>r1 \<le> s1; r2 \<le> s2\<rbrakk> \<Longrightarrow> Times r1 r2 \<le> Times s1 s2"
   by (coinduction arbitrary: r1 r2 s1 s2) (auto 0 3 elim!: \<dd>_mono)
 
-text {*
+text \<open>
   We prove the missing axioms of Kleene Algebras about @{term Star}, as well as monotonicity
   properties and three standard interesting rules: bisimulation, sliding, and denesting.
-*}
+\<close>
 
 theorem le_StarL: "Plus One (Times r (Star r)) \<le> Star r"
   by coinduction auto
@@ -595,10 +595,10 @@ next
     by (metis Plus_comm Star_unfoldL Times_PlusR Times_assoc ardenR bisimulation le_PlusR)
 qed simp
 
-text {*
+text \<open>
 It is useful to lift binary operators @{term Plus} and @{term Times}
 to $n$-ary operators (that take a list as input).
-*}
+\<close>
 
 definition PLUS :: "'a language list \<Rightarrow> 'a language" where
   "PLUS xs \<equiv> foldr Plus xs Zero"
@@ -648,12 +648,12 @@ lemma \<dd>_TIMES[simp]: "\<dd> (TIMES xs) a = (let n = length (takeWhile \<oo> 
 
 
 
-section {* Word-theoretic Semantics of Languages *}
+section \<open>Word-theoretic Semantics of Languages\<close>
 
-text {*
+text \<open>
 We show our @{type language} codatatype being isomorphic to the standard
 language representation as a set of lists.
-*}
+\<close>
 
 primrec in_language :: "'a language \<Rightarrow> 'a list \<Rightarrow> bool" where
   "in_language L [] = \<oo> L"

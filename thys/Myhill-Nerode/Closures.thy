@@ -3,14 +3,14 @@ theory Closures
 imports Myhill "HOL-Library.Infinite_Set"
 begin
 
-section {* Closure properties of regular languages *}
+section \<open>Closure properties of regular languages\<close>
 
 abbreviation
   regular :: "'a lang \<Rightarrow> bool"
 where
   "regular A \<equiv> \<exists>r. A = lang r"
 
-subsection {* Closure under @{text "\<union>"}, @{text "\<cdot>"} and @{text "\<star>"} *}
+subsection \<open>Closure under \<open>\<union>\<close>, \<open>\<cdot>\<close> and \<open>\<star>\<close>\<close>
 
 lemma closure_union [intro]:
   assumes "regular A" "regular B" 
@@ -39,10 +39,10 @@ proof -
   then show "regular (A\<star>)" by blast
 qed
 
-subsection {* Closure under complementation *}
+subsection \<open>Closure under complementation\<close>
 
-text {* Closure under complementation is proved via the 
-  Myhill-Nerode theorem *}
+text \<open>Closure under complementation is proved via the 
+  Myhill-Nerode theorem\<close>
 
 lemma closure_complement [intro]:
   fixes A::"('a::finite) lang"
@@ -54,7 +54,7 @@ proof -
   then show "regular (- A)" by (simp add: Myhill_Nerode)
 qed
 
-subsection {* Closure under @{text "-"} and @{text "\<inter>"} *}
+subsection \<open>Closure under \<open>-\<close> and \<open>\<inter>\<close>\<close>
 
 lemma closure_difference [intro]:
   fixes A::"('a::finite) lang"
@@ -80,7 +80,7 @@ proof -
   ultimately show "regular (A \<inter> B)" by simp
 qed
 
-subsection {* Closure under string reversal *}
+subsection \<open>Closure under string reversal\<close>
 
 fun
   Rev :: "'a rexp \<Rightarrow> 'a rexp"
@@ -144,7 +144,7 @@ proof -
   then show "regular (rev` A)" by blast
 qed
   
-subsection {* Closure under left-quotients *}
+subsection \<open>Closure under left-quotients\<close>
 
 abbreviation
   "Deriv_lang A B \<equiv> \<Union>x \<in> A. Derivs x B"
@@ -164,7 +164,7 @@ proof -
   then show "regular (Deriv_lang B A)" by auto
 qed
 
-subsection {* Finite and co-finite sets are regular *}
+subsection \<open>Finite and co-finite sets are regular\<close>
 
 lemma singleton_regular:
   shows "regular {s}"
@@ -209,7 +209,7 @@ proof -
 qed
 
 
-subsection {* Continuation lemma for showing non-regularity of languages *}
+subsection \<open>Continuation lemma for showing non-regularity of languages\<close>
 
 lemma continuation_lemma:
   fixes A B::"'a::finite lang"
@@ -243,7 +243,7 @@ proof -
 qed
 
 
-subsection {* The language @{text "a\<^sup>n b\<^sup>n"} is not regular *}
+subsection \<open>The language \<open>a\<^sup>n b\<^sup>n\<close> is not regular\<close>
 
 abbreviation
   replicate_rev ("_ ^^^ _" [100, 100] 100)

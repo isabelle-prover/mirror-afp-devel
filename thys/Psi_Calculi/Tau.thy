@@ -82,7 +82,7 @@ proof -
     apply(subgoal_tac "\<Psi> \<otimes> \<one> \<rhd> (nameTerm x)\<lparr>\<lambda>*([]) (nameTerm x)\<rparr>.\<zero> \<longmapsto>(nameTerm x)\<lparr>((nameTerm x)[([])::=[]])\<rparr> \<prec> (\<zero>[[]::=[]])")
     apply(simp add: subst4)
     by(rule_tac Input) auto
-  moreover from `x \<sharp> \<Psi>` `x \<sharp> P` have "\<Psi> \<rhd> P \<sim> \<lparr>\<nu>x\<rparr>(\<zero> \<parallel> P)"
+  moreover from \<open>x \<sharp> \<Psi>\<close> \<open>x \<sharp> P\<close> have "\<Psi> \<rhd> P \<sim> \<lparr>\<nu>x\<rparr>(\<zero> \<parallel> P)"
     by(metis bisimTransitive bisimParNil bisimScopeExtSym bisimResNil bisimParPresSym bisimParComm bisimE(4))
   ultimately show ?thesis by blast
 qed
@@ -172,11 +172,11 @@ proof -
   note Trans
   moreover have "length [] = inputLength(\<lparr>\<nu>x\<rparr>P)" and "distinct []"
     by(auto simp add: inputLength_inputLength'_inputLength''.simps)
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')` `distinct(bn x\<alpha>)`
-  ultimately show ?thesis using `bn x\<alpha> \<sharp>* \<Psi>` `bn x\<alpha> \<sharp>* P` `bn x\<alpha> \<sharp>* subject x\<alpha>` `x \<sharp> \<Psi>` `x \<sharp> x\<alpha>` `x \<sharp> xP'` `distinct(bn x\<alpha>)` rScope rOpen
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')\<close> \<open>distinct(bn x\<alpha>)\<close>
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')\<close> \<open>distinct(bn x\<alpha>)\<close>
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')\<close> \<open>distinct(bn x\<alpha>)\<close>
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xP')\<close> \<open>distinct(bn x\<alpha>)\<close>
+  ultimately show ?thesis using \<open>bn x\<alpha> \<sharp>* \<Psi>\<close> \<open>bn x\<alpha> \<sharp>* P\<close> \<open>bn x\<alpha> \<sharp>* subject x\<alpha>\<close> \<open>x \<sharp> \<Psi>\<close> \<open>x \<sharp> x\<alpha>\<close> \<open>x \<sharp> xP'\<close> \<open>distinct(bn x\<alpha>)\<close> rScope rOpen
     apply(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ _ x x]) 
     apply(auto simp add: psi.inject alpha abs_fresh residualInject boundOutputApp boundOutput.inject eqvts)
     apply(subgoal_tac "y \<in> supp Na")
@@ -224,13 +224,13 @@ proof -
   note Trans
   moreover have "length [] = inputLength(P \<parallel> Q)" and "distinct []"
     by(auto simp add: inputLength_inputLength'_inputLength''.simps)
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
-  moreover note `length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)` `distinct(bn x\<alpha>)`
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)\<close> \<open>distinct(bn x\<alpha>)\<close>
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)\<close> \<open>distinct(bn x\<alpha>)\<close>
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)\<close> \<open>distinct(bn x\<alpha>)\<close>
+  moreover note \<open>length(bn x\<alpha>) = residualLength(x\<alpha> \<prec> xT)\<close> \<open>distinct(bn x\<alpha>)\<close>
   moreover obtain x::name where "x \<sharp> \<Psi>" and "x \<sharp> P" and "x \<sharp> Q" and "x \<sharp> x\<alpha>" and "x \<sharp> xT"
     by(generate_fresh "name") auto
-  ultimately show ?thesis using `bn x\<alpha> \<sharp>* \<Psi>` `bn x\<alpha> \<sharp>* P` `bn x\<alpha> \<sharp>* Q` `bn x\<alpha> \<sharp>* subject x\<alpha>` using rPar1 rPar2 rComm1 rComm2
+  ultimately show ?thesis using \<open>bn x\<alpha> \<sharp>* \<Psi>\<close> \<open>bn x\<alpha> \<sharp>* P\<close> \<open>bn x\<alpha> \<sharp>* Q\<close> \<open>bn x\<alpha> \<sharp>* subject x\<alpha>\<close> using rPar1 rPar2 rComm1 rComm2
     by(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ C x x]) (auto simp add: psi.inject residualInject residualInject')
 qed
 
@@ -261,15 +261,15 @@ proof -
     have "length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')" by simp
     note Trans
     moreover have "length xvec = inputLength(M\<lparr>\<lambda>*xvec N\<rparr>.P)" by auto
-    moreover note `distinct xvec`
-    moreover note `length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')` `distinct(bn \<alpha>)`
-    moreover note `length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')` `distinct(bn \<alpha>)`
-    moreover note `length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')` `distinct(bn \<alpha>)`
-    moreover note `length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')` `distinct(bn \<alpha>)`
-    moreover note `length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')` `distinct(bn \<alpha>)`
+    moreover note \<open>distinct xvec\<close>
+    moreover note \<open>length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')\<close> \<open>distinct(bn \<alpha>)\<close>
+    moreover note \<open>length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')\<close> \<open>distinct(bn \<alpha>)\<close>
+    moreover note \<open>length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')\<close> \<open>distinct(bn \<alpha>)\<close>
+    moreover note \<open>length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')\<close> \<open>distinct(bn \<alpha>)\<close>
+    moreover note \<open>length(bn \<alpha>) = residualLength(\<alpha> \<prec> P')\<close> \<open>distinct(bn \<alpha>)\<close>
     moreover obtain x::name where "x \<sharp> \<Psi>" and "x \<sharp> P" and "x \<sharp> M" and "x \<sharp> xvec" and "x \<sharp> \<alpha>" and "x \<sharp> P'" and "x \<sharp> N"
       by(generate_fresh "name") auto
-    ultimately have "Prop \<alpha> P'" using `bn \<alpha> = []` `xvec \<sharp>* \<Psi>``xvec \<sharp>* M` `xvec \<sharp>* \<alpha>` `xvec \<sharp>* P'` rInput
+    ultimately have "Prop \<alpha> P'" using \<open>bn \<alpha> = []\<close> \<open>xvec \<sharp>* \<Psi>\<close>\<open>xvec \<sharp>* M\<close> \<open>xvec \<sharp>* \<alpha>\<close> \<open>xvec \<sharp>* P'\<close> rInput
       apply(cases rule: semanticsCases[of _ _ _ _ _ _ _ _ _ C x])  
       by(fastforce simp add: residualInject psi.inject inputChainFresh)+
   }
@@ -278,30 +278,30 @@ proof -
                                     and "(p \<bullet> xvec) \<sharp>* \<alpha>" and "(p \<bullet> xvec) \<sharp>* P'" and S: "set p \<subseteq> set xvec \<times> set(p \<bullet> xvec)"
                                     and "distinctPerm p"
     by(rule_tac xvec=xvec and c="(\<Psi>, M, N, P, \<alpha>, P')" in name_list_avoiding) auto
-  from Trans `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P` S have "\<Psi> \<rhd> M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) \<longmapsto>\<alpha> \<prec> P'"
+  from Trans \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close> S have "\<Psi> \<rhd> M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) \<longmapsto>\<alpha> \<prec> P'"
     by(simp add: inputChainAlpha')
   moreover {
     fix K Tvec
     assume "\<Psi> \<turnstile> M \<leftrightarrow> K"
     moreover assume "set(p \<bullet> xvec) \<subseteq> supp(p \<bullet> N)"
     hence "(p \<bullet> set(p \<bullet> xvec)) \<subseteq> (p \<bullet> supp(p \<bullet> N))" by simp
-    with `distinctPerm p` have "set xvec \<subseteq> supp N" by(simp add: eqvts)
+    with \<open>distinctPerm p\<close> have "set xvec \<subseteq> supp N" by(simp add: eqvts)
     moreover assume "length(p \<bullet> xvec) = length(Tvec::'a list)"
     hence "length xvec = length Tvec" by simp
     moreover assume "distinct xvec"
     moreover assume "\<alpha>=K\<lparr>(p \<bullet> N)[(p \<bullet> xvec)::=Tvec]\<rparr>" and "P' = (p \<bullet> P)[(p \<bullet> xvec)::=Tvec]"
-    with `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* N` `distinctPerm p` `length xvec = length Tvec` S
+    with \<open>(p \<bullet> xvec) \<sharp>* P\<close> \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>distinctPerm p\<close> \<open>length xvec = length Tvec\<close> S
     have "\<alpha>=K\<lparr>(N[xvec::=Tvec])\<rparr>" and "P' = P[xvec::=Tvec]"
       by(simp add: renaming substTerm.renaming)+
     ultimately have "Prop (K\<lparr>N[xvec::=Tvec]\<rparr>) (P[xvec::=Tvec])" 
       by(rule rInput)
-    with `length xvec = length Tvec` S `distinctPerm p` `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P`
+    with \<open>length xvec = length Tvec\<close> S \<open>distinctPerm p\<close> \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close>
     have "Prop (K\<lparr>(p \<bullet> N)[(p \<bullet> xvec)::=Tvec]\<rparr>) ((p \<bullet> P)[(p \<bullet> xvec)::=Tvec])"
       by(simp add: renaming substTerm.renaming)
   }
   moreover from Trans have "distinct xvec" by(rule inputDistinct)
   hence "distinct(p \<bullet> xvec)" by simp
-  ultimately show ?thesis using `(p \<bullet> xvec) \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* M` `(p \<bullet> xvec) \<sharp>* \<alpha>` `(p \<bullet> xvec) \<sharp>* P'` `distinct xvec`
+  ultimately show ?thesis using \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* M\<close> \<open>(p \<bullet> xvec) \<sharp>* \<alpha>\<close> \<open>(p \<bullet> xvec) \<sharp>* P'\<close> \<open>distinct xvec\<close>
     by(rule_tac Goal) assumption+
 qed
 
@@ -516,9 +516,9 @@ proof(induct arbitrary: thesis rule: tauChainInduct)
   thus ?case by auto
 next
   case(TauStep P P' P''')
-  from `\<Psi> \<rhd> P \<sim> P''` obtain P'''' where P''Chain: "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''''" and "\<Psi> \<rhd> P' \<sim> P''''"
+  from \<open>\<Psi> \<rhd> P \<sim> P''\<close> obtain P'''' where P''Chain: "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''''" and "\<Psi> \<rhd> P' \<sim> P''''"
     by(rule_tac TauStep) auto
-  from `\<Psi> \<rhd> P' \<sim> P''''` `\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P'''` 
+  from \<open>\<Psi> \<rhd> P' \<sim> P''''\<close> \<open>\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P'''\<close> 
   obtain P''''' where P''''Trans: "\<Psi> \<rhd> P'''' \<longmapsto>\<tau> \<prec> P'''''" and "\<Psi> \<rhd> P''' \<sim> P'''''"
     apply(drule_tac bisimE(4))
     apply(drule_tac bisimE(2))
@@ -527,7 +527,7 @@ next
     apply(drule_tac bisimE(4))
     by blast
   from P''Chain P''''Trans have "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''''" by(drule_tac tauActTauChain) auto
-  with `\<Psi> \<rhd> P''' \<sim> P'''''` show ?case
+  with \<open>\<Psi> \<rhd> P''' \<sim> P'''''\<close> show ?case
     by(metis TauStep)
 qed
 
@@ -543,10 +543,10 @@ proof -
   assume Goal: "\<And>P''. \<lbrakk>\<Psi> \<rhd> \<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P''; \<Psi> \<rhd> P' \<sim> P''\<rbrakk> \<Longrightarrow> thesis"
   obtain P'' where PTrans: "\<Psi> \<rhd> \<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and "\<Psi> \<rhd> P \<sim> P''" using tauActionI
     by auto
-  from PChain `\<Psi> \<rhd> P \<sim> P''` obtain P''' where P''Chain: "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" and "\<Psi> \<rhd> P' \<sim> P'''"
+  from PChain \<open>\<Psi> \<rhd> P \<sim> P''\<close> obtain P''' where P''Chain: "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" and "\<Psi> \<rhd> P' \<sim> P'''"
     by(rule tauChainBisim)
   from PTrans P''Chain have "\<Psi> \<rhd> \<tau>.(P) \<Longrightarrow>\<^sub>\<tau> P'''" by(drule_tac tauActTauStepChain) auto
-  thus ?thesis using `\<Psi> \<rhd> P' \<sim> P'''`
+  thus ?thesis using \<open>\<Psi> \<rhd> P' \<sim> P'''\<close>
     by(rule Goal)
 qed
 
@@ -585,10 +585,10 @@ proof -
     by(blast dest: weakTransitionE)
 
   from PChain obtain P''' where tPChain: "\<Psi> \<rhd> \<tau>.(P) \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" and "\<Psi> \<rhd> P'' \<sim> P'''" by(rule tauChainCons)
-  moreover from QimpP'' `\<Psi> \<rhd> P'' \<sim> P'''` have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame P''') \<Psi>"
+  moreover from QimpP'' \<open>\<Psi> \<rhd> P'' \<sim> P'''\<close> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame P''') \<Psi>"
     by(metis bisimE FrameStatEq_def FrameStatImpTrans)
-  moreover from tPChain `bn \<alpha> \<sharp>* P` have "bn \<alpha> \<sharp>* P'''" by(force intro: tauChainFreshChain)
-  with `\<Psi> \<rhd> P'' \<sim> P'''` P''Trans `bn \<alpha> \<sharp>* \<Psi>` obtain P'''' where "\<Psi> \<rhd> P''' \<longmapsto>\<alpha> \<prec> P''''" and "\<Psi> \<rhd> P' \<sim> P''''"
+  moreover from tPChain \<open>bn \<alpha> \<sharp>* P\<close> have "bn \<alpha> \<sharp>* P'''" by(force intro: tauChainFreshChain)
+  with \<open>\<Psi> \<rhd> P'' \<sim> P'''\<close> P''Trans \<open>bn \<alpha> \<sharp>* \<Psi>\<close> obtain P'''' where "\<Psi> \<rhd> P''' \<longmapsto>\<alpha> \<prec> P''''" and "\<Psi> \<rhd> P' \<sim> P''''"
     by(metis bisimE simE)
   ultimately show ?thesis
     by(rule_tac Goal) (blast intro: weakTransitionI)

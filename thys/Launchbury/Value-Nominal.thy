@@ -2,7 +2,7 @@ theory "Value-Nominal"
 imports Value "Nominal-Utils" "Nominal-HOLCF"
 begin
 
-text {* Values are pure, i.e. contain no variables. *}
+text \<open>Values are pure, i.e. contain no variables.\<close>
 
 instantiation Value :: pure
 begin

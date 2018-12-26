@@ -3,21 +3,21 @@
     Author:     David Trachtenherz
 *)
 
-section {* Set operations with results of type enat *}
+section \<open>Set operations with results of type enat\<close>
 
 theory InfiniteSet2
 imports SetInterval2
 begin
 
-subsection {* Set operations with @{typ enat} *}
+subsection \<open>Set operations with @{typ enat}\<close>
 
-subsubsection {* Basic definitions *}
+subsubsection \<open>Basic definitions\<close>
 
 definition icard :: "'a set \<Rightarrow> enat"
   where "icard A \<equiv> if finite A then enat (card A) else \<infinity>"
 
 
-subsection {* Results for @{text icard} *}
+subsection \<open>Results for \<open>icard\<close>\<close>
 
 lemma icard_UNIV_nat: "icard (UNIV::nat set) = \<infinity>"
 by (simp add: icard_def)

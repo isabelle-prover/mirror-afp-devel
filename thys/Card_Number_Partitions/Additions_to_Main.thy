@@ -1,12 +1,12 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Additions to Isabelle's Main Theories *}
+section \<open>Additions to Isabelle's Main Theories\<close>
 
 theory Additions_to_Main
 imports "HOL-Library.Multiset"
 begin
 
-subsection {* Addition to Finite-Set Theory *}
+subsection \<open>Addition to Finite-Set Theory\<close>
 
 lemma bound_domain_and_range_impl_finitely_many_functions:
   "finite {f::nat\<Rightarrow>nat. (\<forall>i. f i \<le> n) \<and> (\<forall>i\<ge>m. f i = 0)}"
@@ -27,7 +27,7 @@ next
   from this Suc show ?case by simp
 qed
 
-subsection {* Addition to Set-Interval Theory *}
+subsection \<open>Addition to Set-Interval Theory\<close>
 
 lemma sum_atMost_remove_nat:
   assumes "k \<le> (n :: nat)"

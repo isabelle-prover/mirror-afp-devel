@@ -5,10 +5,10 @@
 
 chapter "Equivalence of Categories"
 
-text {*
+text \<open>
   In this chapter we define the notions of equivalence and adjoint equivalence of categories
   and establish some properties of functors that are part of an equivalence.
-*}
+\<close>
 
 theory EquivalenceOfCategories
 imports Adjunction
@@ -168,12 +168,12 @@ begin
 
   end
 
-  text {*
+  text \<open>
     Traditionally the term "equivalence of categories" is also used for a functor
     that is part of an equivalence of categories.  However, it seems best to use
     that term for a situation in which all of the structure of an equivalence is
     explicitly given, and to have a different term for one of the functors involved.
-  *}
+\<close>
 
   locale equivalence_functor =
     C: category C +
@@ -193,9 +193,9 @@ begin
   sublocale equivalence_of_categories \<subseteq> equivalence_functor C D G
     using equivalence_of_categories_axioms by (unfold_locales, blast)
 
-  text {*
+  text \<open>
     An equivalence functor is fully faithful and essentially surjective.
-  *}
+\<close>
 
   sublocale equivalence_functor \<subseteq> fully_faithful_functor C D G
   proof -
@@ -217,10 +217,10 @@ begin
       using G_is_essentially_surjective by auto
   qed
 
-  text {*
-    A special case of an equivalence functor is an endofunctor @{text F} equipped with
-    a natural isomorphism from @{text F} to the identity functor.
-  *}
+  text \<open>
+    A special case of an equivalence functor is an endofunctor \<open>F\<close> equipped with
+    a natural isomorphism from \<open>F\<close> to the identity functor.
+\<close>
 
   context endofunctor
   begin
@@ -253,9 +253,9 @@ begin
 
   end
 
-  text {*
+  text \<open>
     An adjoint equivalence is an equivalence of categories that is also an adjunction.
-  *}
+\<close>
 
   locale adjoint_equivalence =
     unit_counit_adjunction C D F G \<eta> \<epsilon> +
@@ -268,19 +268,19 @@ begin
   and \<eta> :: "'d \<Rightarrow> 'd"
   and \<epsilon> :: "'c \<Rightarrow> 'c"
 
-  text {*
+  text \<open>
     An adjoint equivalence is clearly an equivalence of categories.
-  *}
+\<close>
 
   sublocale adjoint_equivalence \<subseteq> equivalence_of_categories ..
 
   context adjoint_equivalence
   begin
 
-    text {*
+    text \<open>
       The triangle identities for an adjunction reduce to inverse relations when
-      @{text \<eta>} and @{text \<epsilon>} are natural isomorphisms.
-    *}
+      \<open>\<eta>\<close> and \<open>\<epsilon>\<close> are natural isomorphisms.
+\<close>
 
     lemma triangle_G':
     assumes "C.ide a"
@@ -302,11 +302,11 @@ begin
         using assms C.section_retraction_of_iso [of "\<epsilon> (F b)" "F (\<eta> b)"] by auto
     qed
 
-    text {*
+    text \<open>
       An adjoint equivalence can be dualized by interchanging the two functors and inverting
       the natural isomorphisms.  This is somewhat awkward to prove, but probably useful to have
       done it once and for all.
-    *}
+\<close>
 
     lemma dual_equivalence:
     assumes "adjoint_equivalence C D F G \<eta> \<epsilon>"
@@ -387,14 +387,14 @@ begin
 
   end
 
-  text {*
+  text \<open>
     Every fully faithful and essentially surjective functor underlies an adjoint equivalence.
     To prove this without repeating things that were already proved in @{theory Category3.Adjunction},
     we first show that a fully faithful and essentially surjective functor is a left adjoint
     functor, and then we show that if the left adjoint in a unit-counit adjunction is
     fully faithful and essentially surjective, then the unit and counit are natural isomorphisms;
     hence the adjunction is in fact an adjoint equivalence.
-  *}
+\<close>
 
   locale fully_faithful_and_essentially_surjective_functor =
     C: category C +

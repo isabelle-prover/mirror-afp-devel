@@ -6,18 +6,18 @@ theory POPLmarkRecordCtxt
 imports POPLmarkRecord
 begin
 
-section {* Evaluation contexts *}
+section \<open>Evaluation contexts\<close>
 
-text {*
+text \<open>
 \label{sec:evaluation-ctxt}
 In this section, we present a different way of formalizing the evaluation relation.
-Rather than using additional congruence rules, we first formalize a set @{text ctxt}
+Rather than using additional congruence rules, we first formalize a set \<open>ctxt\<close>
 of evaluation contexts, describing the locations in a term where reductions
 can occur. We have chosen a higher-order formalization of evaluation contexts as
-functions from terms to terms. We define simultaneously a set @{text rctxt}
+functions from terms to terms. We define simultaneously a set \<open>rctxt\<close>
 of evaluation contexts for records represented as functions from terms to lists
 of fields.
-*}
+\<close>
 
 inductive_set
   ctxt :: "(trm \<Rightarrow> trm) set"
@@ -41,13 +41,13 @@ lemma rctxt_labels:
   shows "E t\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow> E t'\<langle>l\<rangle>\<^sub>? = \<bottom>" using H
   by (induct rule: rctxt_induct) auto
 
-text {*
-The evaluation relation @{text "t \<longmapsto>\<^sub>c t'"} is now characterized by the rule @{text E_Ctxt},
-which allows reductions in arbitrary contexts, as well as the rules @{text E_Abs},
-@{text E_TAbs}, @{text E_LetV}, and @{text E_ProjRcd} describing the ``immediate''
+text \<open>
+The evaluation relation \<open>t \<longmapsto>\<^sub>c t'\<close> is now characterized by the rule \<open>E_Ctxt\<close>,
+which allows reductions in arbitrary contexts, as well as the rules \<open>E_Abs\<close>,
+\<open>E_TAbs\<close>, \<open>E_LetV\<close>, and \<open>E_ProjRcd\<close> describing the ``immediate''
 reductions, which have already been presented in \secref{sec:evaluation} and
 \secref{sec:evaluation-rcd}.
-*}
+\<close>
 
 inductive
   eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<longmapsto>\<^sub>c" 50)
@@ -58,14 +58,14 @@ where
 | E_LetV: "v \<in> value \<Longrightarrow> \<turnstile> p \<rhd> v \<Rightarrow> ts \<Longrightarrow> (LET p = v IN t) \<longmapsto>\<^sub>c t[0 \<mapsto>\<^sub>s ts]"
 | E_ProjRcd: "fs\<langle>l\<rangle>\<^sub>? = \<lfloor>v\<rfloor> \<Longrightarrow> v \<in> value \<Longrightarrow> Rcd fs..l \<longmapsto>\<^sub>c v"
 
-text {*
-In the proof of the preservation theorem, the case corresponding to the rule @{text E_Ctxt}
+text \<open>
+In the proof of the preservation theorem, the case corresponding to the rule \<open>E_Ctxt\<close>
 requires a lemma stating that replacing
 a term @{term t} in a well-typed term of the form @{term "E t"}, where @{term E} is
 a context, by a term @{term t'} of the same type does not change the type of the
 resulting term @{term "E t'"}.
 The proof is by mutual induction on the typing derivations for terms and records.
-*}
+\<close>
 
 lemma context_typing: \<comment> \<open>A.18\<close>
   "\<Gamma> \<turnstile> u : T \<Longrightarrow> E \<in> ctxt \<Longrightarrow> u = E t \<Longrightarrow>
@@ -74,27 +74,27 @@ lemma context_typing: \<comment> \<open>A.18\<close>
      (\<And>T\<^sub>0. \<Gamma> \<turnstile> t : T\<^sub>0 \<Longrightarrow> \<Gamma> \<turnstile> t' : T\<^sub>0) \<Longrightarrow> \<Gamma> \<turnstile> E\<^sub>r t' [:] fTs"
 proof (induct arbitrary: E t t' and E\<^sub>r t t' set: typing typings)
   case (T_Var \<Gamma> i U T E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   have "E = (\<lambda>t. t)" using T_Var by cases simp_all
   with T_Var show ?case by (blast intro: typing_typings.intros)
 next
   case (T_Abs T\<^sub>1 T\<^sub>2 \<Gamma> t\<^sub>2 E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   have "E = (\<lambda>t. t)" using T_Abs by cases simp_all
   with T_Abs show ?case by (blast intro: typing_typings.intros)
 next
   case (T_App \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2 E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   show ?case using T_App
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   have "E = (\<lambda>t. t)" using T_TAbs by cases simp_all
   with T_TAbs show ?case by (blast intro: typing_typings.intros)
 next
   case (T_TApp \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   show ?case using T_TApp
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
@@ -102,36 +102,36 @@ next
   thus ?case by (blast intro: typing_typings.intros)
 next
   case (T_Let \<Gamma> t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   show ?case using T_Let
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Rcd \<Gamma> fs fTs E t t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   show ?case using T_Rcd
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Proj \<Gamma> t fTs l T E ta t')
-  from `E \<in> ctxt`
+  from \<open>E \<in> ctxt\<close>
   show ?case using T_Proj
     by cases (simp_all, (blast intro: typing_typings.intros)+)
 next
   case (T_Nil \<Gamma> E t t')
-  from `E \<in> rctxt`
+  from \<open>E \<in> rctxt\<close>
   show ?case using T_Nil
     by cases simp_all
 next
   case (T_Cons \<Gamma> t T fs fTs l E ta t')
-  from `E \<in> rctxt`
+  from \<open>E \<in> rctxt\<close>
   show ?case using T_Cons
     by cases (blast intro: typing_typings.intros rctxt_labels)+
 qed
 
-text {*
+text \<open>
 The fact that immediate reduction preserves the types of terms is
 proved in several parts. The proof of each statement is by induction
 on the typing derivation.
-*}
+\<close>
 
 theorem Abs_preservation: \<comment> \<open>A.19(1)\<close>
   assumes H: "\<Gamma> \<turnstile> (\<lambda>:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet> t\<^sub>2 : T"
@@ -139,12 +139,12 @@ theorem Abs_preservation: \<comment> \<open>A.19(1)\<close>
   using H
 proof (induct \<Gamma> "(\<lambda>:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet> t\<^sub>2" T arbitrary: T\<^sub>1\<^sub>1 t\<^sub>1\<^sub>2 t\<^sub>2 rule: typing_induct)
   case (T_App \<Gamma> T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2 T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
-  from `\<Gamma> \<turnstile> (\<lambda>:T\<^sub>1\<^sub>1'. t\<^sub>1\<^sub>2) : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2`
+  from \<open>\<Gamma> \<turnstile> (\<lambda>:T\<^sub>1\<^sub>1'. t\<^sub>1\<^sub>2) : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2\<close>
   obtain S'
     where T\<^sub>1\<^sub>1: "\<Gamma> \<turnstile> T\<^sub>1\<^sub>1 <: T\<^sub>1\<^sub>1'"
     and t\<^sub>1\<^sub>2: "VarB T\<^sub>1\<^sub>1' \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : S'"
     and S': "\<Gamma> \<turnstile> S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau> <: T\<^sub>1\<^sub>2" by (rule Abs_type' [simplified]) blast
-  from `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
+  from \<open>\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1\<close>
   have "\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1'" using T\<^sub>1\<^sub>1 by (rule T_Sub)
   with t\<^sub>1\<^sub>2 have "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto> t\<^sub>2] : S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
     by (rule subst_type [where \<Delta>="[]", simplified])
@@ -160,12 +160,12 @@ theorem TAbs_preservation: \<comment> \<open>A.19(2)\<close>
   using H
 proof (induct \<Gamma> "(\<lambda><:T\<^sub>1\<^sub>1. t\<^sub>1\<^sub>2) \<bullet>\<^sub>\<tau> T\<^sub>2" T arbitrary: T\<^sub>1\<^sub>1 t\<^sub>1\<^sub>2 T\<^sub>2 rule: typing_induct)
   case (T_TApp \<Gamma> T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
-  from `\<Gamma> \<turnstile> (\<lambda><:T\<^sub>1\<^sub>1'. t\<^sub>1\<^sub>2) : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2)`
+  from \<open>\<Gamma> \<turnstile> (\<lambda><:T\<^sub>1\<^sub>1'. t\<^sub>1\<^sub>2) : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2)\<close>
   obtain S'
     where "TVarB T\<^sub>1\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : S'"
     and "TVarB T\<^sub>1\<^sub>1 \<Colon> \<Gamma> \<turnstile> S' <: T\<^sub>1\<^sub>2" by (rule TAbs_type') blast
   hence "TVarB T\<^sub>1\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : T\<^sub>1\<^sub>2" by (rule T_Sub)
-  then show ?case using `\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1`
+  then show ?case using \<open>\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1\<close>
     by (rule substT_type [where \<Delta>="[]", simplified])
 next
   case T_Sub
@@ -178,7 +178,7 @@ theorem Let_preservation: \<comment> \<open>A.19(3)\<close>
   using H
 proof (induct \<Gamma> "LET p = t\<^sub>1 IN t\<^sub>2" T arbitrary: p t\<^sub>1 t\<^sub>2 ts rule: typing_induct)
   case (T_Let \<Gamma> t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 ts)
-  from `\<turnstile> p : T\<^sub>1 \<Rightarrow> \<Delta>` `\<Gamma> \<turnstile> t\<^sub>1 : T\<^sub>1` `\<Delta> @ \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2` `\<turnstile> p \<rhd> t\<^sub>1 \<Rightarrow> ts`
+  from \<open>\<turnstile> p : T\<^sub>1 \<Rightarrow> \<Delta>\<close> \<open>\<Gamma> \<turnstile> t\<^sub>1 : T\<^sub>1\<close> \<open>\<Delta> @ \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2\<close> \<open>\<turnstile> p \<rhd> t\<^sub>1 \<Rightarrow> ts\<close>
   show ?case
     by (rule match_type(1) [of _ _ _ _ _ "[]", simplified])
 next
@@ -192,7 +192,7 @@ theorem Proj_preservation: \<comment> \<open>A.19(4)\<close>
   using H
 proof (induct \<Gamma> "Rcd fs..l" T arbitrary: fs l v rule: typing_induct)
   case (T_Proj \<Gamma> fTs l T fs v)
-  from `\<Gamma> \<turnstile> Rcd fs : RcdT fTs`
+  from \<open>\<Gamma> \<turnstile> Rcd fs : RcdT fTs\<close>
   have "\<forall>(l, U)\<in>set fTs. \<exists>u. fs\<langle>l\<rangle>\<^sub>? = \<lfloor>u\<rfloor> \<and> \<Gamma> \<turnstile> u : U"
     by (rule Rcd_type1')
   with T_Proj show ?case by (fastforce dest: assoc_set)
@@ -225,14 +225,14 @@ next
   show ?case by (rule Proj_preservation)
 qed
 
-text {*
+text \<open>
 For the proof of the progress theorem, we need a lemma stating that each well-typed,
 closed term @{term t} is either a canonical value, or can be decomposed into an
 evaluation context @{term E} and a term @{term "t\<^sub>0"} such that @{term "t\<^sub>0"} is a redex.
 The proof of this result, which is called the {\it decomposition lemma}, is again
 by induction on the typing derivation.
 A similar property is also needed for records.
-*}
+\<close>
 
 theorem context_decomp: \<comment> \<open>A.15\<close>
   "[] \<turnstile> t : T \<Longrightarrow> 
@@ -247,13 +247,13 @@ next
   from value.Abs show ?case ..
 next
   case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2)
-  from `t\<^sub>1 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>1 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')`
+  from \<open>t\<^sub>1 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>1 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')\<close>
   show ?case
   proof
     assume t\<^sub>1_val: "t\<^sub>1 \<in> value"
     with T_App obtain t S where t\<^sub>1: "t\<^sub>1 = (\<lambda>:S. t)"
       by (auto dest!: Fun_canonical)
-    from `t\<^sub>2 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>2 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')`
+    from \<open>t\<^sub>2 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>2 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')\<close>
     show ?thesis
     proof
       assume "t\<^sub>2 \<in> value"
@@ -273,7 +273,7 @@ next
   from value.TAbs show ?case ..
 next
   case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2)
-  from `t\<^sub>1 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>1 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')`
+  from \<open>t\<^sub>1 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>1 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')\<close>
   show ?case
   proof
     assume "t\<^sub>1 \<in> value"
@@ -290,7 +290,7 @@ next
   show ?case by (rule T_Sub)
 next
   case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2)
-  from `t\<^sub>1 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>1 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')`
+  from \<open>t\<^sub>1 \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t\<^sub>1 = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')\<close>
   show ?case
   proof
     assume t\<^sub>1: "t\<^sub>1 \<in> value"
@@ -306,7 +306,7 @@ next
   thus ?case by (blast intro: value.intros eval.intros ctxt_rctxt.intros)
 next
   case (T_Proj t fTs l T)
-  from `t \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')`
+  from \<open>t \<in> value \<or> (\<exists>E t\<^sub>0 t\<^sub>0'. E \<in> ctxt \<and> t = E t\<^sub>0 \<and> t\<^sub>0 \<longmapsto>\<^sub>c t\<^sub>0')\<close>
   show ?case
   proof
     assume tv: "t \<in> value"
@@ -340,11 +340,11 @@ proof -
   thus ?thesis by (iprover intro: eval.intros)
 qed
 
-text {*
+text \<open>
 Finally, we prove that the two definitions of the evaluation relation
 are equivalent. The proof that @{term "t \<longmapsto>\<^sub>c t'"} implies @{term "t \<longmapsto> t'"}
-requires a lemma stating that @{text "\<longmapsto>"} is compatible with evaluation contexts.
-*}
+requires a lemma stating that \<open>\<longmapsto>\<close> is compatible with evaluation contexts.
+\<close>
 
 lemma ctxt_imp_eval:
   "E \<in> ctxt \<Longrightarrow> t \<longmapsto> t' \<Longrightarrow> E t \<longmapsto> E t'"

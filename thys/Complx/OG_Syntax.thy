@@ -30,12 +30,12 @@ syntax
 translations
   "\<lbrace>b\<rbrace>" \<rightharpoonup> "CONST Collect \<guillemotleft>b\<guillemotright>"
 
-parse_translation {*
+parse_translation \<open>
   let
     fun quote_tr [t] = Syntax_Trans.quote_tr @{syntax_const "_antiquote"} t
       | quote_tr ts = raise TERM ("quote_tr", ts);
   in [(@{syntax_const "_quote"}, K quote_tr)] end
-*}
+\<close>
 
 syntax
   "_fst" :: "'a \<times> 'b \<Rightarrow> 'a"  ("_\<^sub>," [60] 61)
@@ -54,8 +54,8 @@ parse_translation \<open>
   end
 \<close>
 
-text{* Syntax for commands and for assertions and boolean expressions in 
- commands @{text com} and annotated commands @{text ann_com}. *}
+text\<open>Syntax for commands and for assertions and boolean expressions in 
+ commands \<open>com\<close> and annotated commands \<open>ann_com\<close>.\<close>
 
 syntax
   "_Annotation" :: "('s,'p,'f) ann_com \<Rightarrow> ('s, 'p, 'f) ann"  ("_\<^sub>?" [60] 61)
@@ -242,7 +242,7 @@ translations
   "_oghoare \<Gamma> \<Theta> F c Q A" \<rightharpoonup> "\<Gamma>, \<Theta> \<turnstile>\<^bsub>/F\<^esub> (c\<^sub>?) (c\<^sub>!) Q, A"
   "_oghoare_seq \<Gamma> \<Theta> F P c Q A" \<rightharpoonup> "\<Gamma>, \<Theta> \<tturnstile>\<^bsub>/F\<^esub> P (c\<^sub>?) (c\<^sub>!) Q, A"
 
-ML {* val syntax_debug = false*}
+ML \<open>val syntax_debug = false\<close>
 print_translation \<open> let
   fun quote_tr' f (t :: ts) =
         Term.list_comb (f $ Syntax_Trans.quote_tr' @{syntax_const "_antiquote"} t, ts)

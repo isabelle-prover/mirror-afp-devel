@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Executable semantics for J *}
+section \<open>Executable semantics for J\<close>
 
 theory J_Execute
 imports
@@ -56,7 +56,7 @@ by(auto elim!: red_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oE intro!: red_
 lemma sc_J_start_state_invar: "(\<lambda>_. True) (sc_state_\<alpha> (sc_J_start_state_refine P C M vs))"
 by simp
 
-subsection {* Round-robin scheduler *}
+subsection \<open>Round-robin scheduler\<close>
 
 interpretation J_rr:
   sc_round_robin_base
@@ -94,7 +94,7 @@ apply(rule sc.red_mthr_deterministic[OF sc_deterministic_heap_ops])
 apply(simp add: sc_spurious_wakeups)
 done
 
-subsection {* Random scheduler *}
+subsection \<open>Random scheduler\<close>
 
 interpretation J_rnd:
   sc_random_scheduler_base
@@ -132,8 +132,8 @@ apply(rule sc.red_mthr_deterministic[OF sc_deterministic_heap_ops])
 apply(simp add: sc_spurious_wakeups)
 done
 
-ML_val {* @{code exec_J_rr} *}
+ML_val \<open>@{code exec_J_rr}\<close>
 
-ML_val {* @{code exec_J_rnd} *}
+ML_val \<open>@{code exec_J_rnd}\<close>
 
 end

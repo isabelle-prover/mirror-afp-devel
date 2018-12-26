@@ -6,7 +6,7 @@ imports
   "HOL-Decision_Procs.Approximation"
 begin
 
-section {* Probability Space on Sets of Edges *}
+section \<open>Probability Space on Sets of Edges\<close>
 
 definition cylinder :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> 'a set set" where
   "cylinder S A B = {T \<in> Pow S. A \<subseteq> T \<and> B \<inter> T = {}}"
@@ -30,7 +30,7 @@ proof induct
                   insert.hyps sum.union_disjoint Pow_insert)
 qed simp
 
-text {* Definition of the probability space on edges: *}
+text \<open>Definition of the probability space on edges:\<close>
 locale edge_space =
   fixes n :: nat and p :: real
   assumes p_prob: "0 \<le> p" "p \<le> 1"
@@ -100,7 +100,7 @@ lemma integral_finite_singleton: "integral\<^sup>L P f = (\<Sum>x\<in>Pow S_edge
   using p_prob prob_eq unfolding P_def
   by (subst lebesgue_integral_point_measure_finite) (auto intro!: sum.cong)
 
-text {* Probability of cylinder sets: *}
+text \<open>Probability of cylinder sets:\<close>
 lemma cylinder_prob:
   assumes "A \<subseteq> S_edges" "B \<subseteq> S_edges" "A \<inter> B = {}"
   shows "prob (cylinder S_edges A B) = p ^ (card A) * (1 - p) ^ (card B)" (is "_ = ?pp A B")
@@ -143,13 +143,13 @@ qed
 
 end
 
-subsection {* Graph Probabilities outside of @{term Edge_Space} locale*}
+subsection \<open>Graph Probabilities outside of @{term Edge_Space} locale\<close>
 
-text {*
+text \<open>
  These abbreviations allow a compact expression of probabilities about random
  graphs outside of the @{term Edge_Space} locale. We also transfer a few of the lemmas
  we need from the locale into the toplevel theory.
-*}
+\<close>
 
 abbreviation MGn :: "(nat \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> (uedge set) measure" where
   "MGn p n \<equiv> (edge_space.P n (p n))"
@@ -166,12 +166,12 @@ proof -
     by (auto intro!: E.finite_measure_mono sub simp: E.space_eq E.sets_eq)
 qed
 
-section {* Short cycles *}
+section \<open>Short cycles\<close>
 
 definition short_cycles :: "ugraph \<Rightarrow> nat \<Rightarrow> uwalk set" where
   "short_cycles G k \<equiv> {p \<in> ucycles G. uwalk_length p \<le> k}"
 
-text {* obtains a vertex in a short cycle: *}
+text \<open>obtains a vertex in a short cycle:\<close>
 definition choose_v :: "ugraph \<Rightarrow> nat \<Rightarrow> uvert" where
   "choose_v G k \<equiv> SOME u. \<exists>p. p \<in> short_cycles G k \<and> u \<in> set p"
 
@@ -215,11 +215,11 @@ proof -
       using edges_Gu[of G ?cv] by (auto simp: verts_Gu)
   qed
   moreover have "p \<notin> short_cycles (G -- ?cv) k"
-    using `?cv \<in> set p` by (auto simp: short_cycles_def ucycles_def uwalks_def verts_Gu)
-  ultimately show ?thesis using `p \<in> short_cycles G k` by auto
+    using \<open>?cv \<in> set p\<close> by (auto simp: short_cycles_def ucycles_def uwalks_def verts_Gu)
+  ultimately show ?thesis using \<open>p \<in> short_cycles G k\<close> by auto
 qed
 
-text {* Induction rule for @{term kill_short}: *}
+text \<open>Induction rule for @{term kill_short}:\<close>
 lemma kill_short_induct[consumes 1, case_names empty kill_vert]:
   assumes fin: "finite (uverts G)"
   assumes a_empty: "\<And>G. short_cycles G k = {} \<Longrightarrow> P G k"
@@ -234,7 +234,7 @@ proof -
       (metis kill_step_smaller a_kill a_empty)
 qed
 
-text {* Large Girth (after @{term kill_short}): *}
+text \<open>Large Girth (after @{term kill_short}):\<close>
 lemma kill_short_large_girth:
   assumes "finite (uverts G)"
   shows "k < girth (kill_short G k)"
@@ -246,7 +246,7 @@ proof (induct G k rule: kill_short_induct)
   with empty show ?case by (auto simp: girth_def intro: enat_less_INF_I)
 qed simp
 
-text {* Order of graph (after @{term kill_short}): *}
+text \<open>Order of graph (after @{term kill_short}):\<close>
 lemma kill_short_order_of_graph:
   assumes "finite (uverts G)"
   shows "card (uverts G) - card (short_cycles G k) \<le> card (uverts (kill_short G k))"
@@ -270,7 +270,7 @@ proof (induct G k rule: kill_short_induct)
   ultimately show ?case using kill_vert.hyps by presburger
 qed simp
 
-text {* Independence number (after @{term kill_short}): *}
+text \<open>Independence number (after @{term kill_short}):\<close>
 lemma kill_short_\<alpha>:
   assumes "finite (uverts G)"
   shows "\<alpha> (kill_short G k) \<le> \<alpha> G"
@@ -282,7 +282,7 @@ proof (induct G k rule: kill_short_induct)
   finally show ?case using kill_vert by simp
 qed simp
 
-text {* Wellformedness (after @{term kill_short}): *}
+text \<open>Wellformedness (after @{term kill_short}):\<close>
 lemma kill_short_uwellformed:
   assumes "finite (uverts G)" "uwellformed G"
   shows "uwellformed (kill_short G k)"
@@ -295,9 +295,9 @@ proof (induct G k rule: kill_short_induct)
 qed simp
 
 
-section {* The Chromatic-Girth Theorem *}
+section \<open>The Chromatic-Girth Theorem\<close>
 
-text {* Probability of Independent Edges: *}
+text \<open>Probability of Independent Edges:\<close>
 lemma (in edge_space) random_prob_independent:
   assumes "n \<ge> k" "k \<ge> 2"
   shows "prob {es \<in> space P. k \<le> \<alpha> (edge_ugraph es)}
@@ -325,10 +325,10 @@ proof -
     by (auto intro!: finite_measure_subadditive_finite simp: space_eq sets_eq)
   also have "\<dots> = (n choose k)*((1 - p) ^ (k choose 2))"
     by (simp add: prob_k_indep S_verts_def n_subsets)
-  finally show ?thesis using `k \<ge> 2` by (simp add: le_\<alpha>_iff)
+  finally show ?thesis using \<open>k \<ge> 2\<close> by (simp add: le_\<alpha>_iff)
 qed
 
-text {* Almost never many independent edges: *}
+text \<open>Almost never many independent edges:\<close>
 lemma almost_never_le_\<alpha>:
   fixes k :: nat
     and p :: "nat \<Rightarrow> real"
@@ -442,7 +442,7 @@ proof -
   qed
 qed
 
-text {* Mean number of k-cycles in a graph. (Or rather of paths describing a circle of length @{term k}): *}
+text \<open>Mean number of k-cycles in a graph. (Or rather of paths describing a circle of length @{term k}):\<close>
 lemma (in edge_space) mean_k_cycles:
   assumes "3 \<le> k" "k < n"
   shows "(\<integral>es. card {c \<in> ucycles (edge_ugraph es). uwalk_length c = k} \<partial> P)
@@ -508,20 +508,20 @@ proof -
         with 3 show ?case
           by (auto simp add: uwalks_def Suc_le_eq intro: S_edges_memI)
       qed simp_all}
-    moreover note `3 \<le> k`
+    moreover note \<open>3 \<le> k\<close>
     ultimately
     have "C k = (\<lambda>xs. last xs # xs) ` {xs. length xs = k \<and> distinct xs \<and> set xs \<subseteq> S_verts}"
       by (auto simp: C_def ucycles_def uwalk_length_conv image_mem_iff_inst)
     moreover have "card S_verts = n" by (simp add: S_verts_def)
     ultimately have "card (C k) = fact n div fact (n - k)"
-      using `k < n`
+      using \<open>k < n\<close>
       by (simp add: card_image[OF inj_last_Cons] card_lists_distinct_length_eq' fact_div_fact)
     then show ?thesis by simp
   qed
   finally show ?thesis by simp
 qed
 
-text {* Girth-Chromatic number theorem: *}
+text \<open>Girth-Chromatic number theorem:\<close>
 theorem girth_chromatic:
   fixes l :: nat
   shows "\<exists>G. uwellformed G \<and> l < girth G \<and> l < chromatic_number G"
@@ -537,13 +537,13 @@ proof -
           as we count the number of paths describing a circle, not the circles themselves\<close>
 
   from k_def have "3 \<le> k" "l \<le> k" by auto
-  from `3 \<le> k` have \<epsilon>_props: "0 < \<epsilon>" "\<epsilon> < 1 / k" "\<epsilon> < 1" by (auto simp: \<epsilon>_def field_simps)
+  from \<open>3 \<le> k\<close> have \<epsilon>_props: "0 < \<epsilon>" "\<epsilon> < 1 / k" "\<epsilon> < 1" by (auto simp: \<epsilon>_def field_simps)
 
   have ev_p: "\<forall>\<^sup>\<infinity> n. 0 < p n \<and> p n < 1"
   proof (rule eventually_sequentiallyI)
     fix n :: nat assume "2 \<le> n"
-    with `\<epsilon> < 1` have "n powr (\<epsilon> - 1) < 1" by (auto intro!: powr_less_one)
-    then show "0 < p n \<and> p n < 1" using `2 \<le> n`
+    with \<open>\<epsilon> < 1\<close> have "n powr (\<epsilon> - 1) < 1" by (auto intro!: powr_less_one)
+    then show "0 < p n \<and> p n < 1" using \<open>2 \<le> n\<close>
       by (auto simp: p_def)
   qed
   then
@@ -592,19 +592,19 @@ proof -
         apply (rule sum_mono)
         by (meson A fact_div_fact_le_pow  Suc_leD atLeastAtMost_iff of_nat_le_iff order_trans real_mult_le_cancel_iff1 zero_less_power)
       also have "... \<le> (\<Sum> i\<in>{3..k}. n powr (\<epsilon> * k))"
-        using `1 \<le> n` `0 < \<epsilon>` A
+        using \<open>1 \<le> n\<close> \<open>0 < \<epsilon>\<close> A
         by (intro sum_mono) (auto simp: p_def field_simps powr_mult_base powr_powr
           powr_realpow[symmetric] powr_mult[symmetric] powr_add[symmetric])
       finally show ?thesis by simp
     qed
 
     have "pG.prob {es \<in> space pG.P. n/2 \<le> short_count (?ug n es)} \<le> mean_short_count / (n/2)"
-      unfolding mean_short_count_def using `1 \<le> n`
+      unfolding mean_short_count_def using \<open>1 \<le> n\<close>
       by (intro pG.Markov_inequality) (auto simp: short_count_def)
     also have "\<dots> \<le> 2 * (k - 2) * n powr (\<epsilon> * k - 1)"
     proof -
       have "mean_short_count / (n / 2) \<le> 2 * (k - 2) * (1 / n powr 1) * n powr (\<epsilon> * k)"
-        using mean_short_count_le `1 \<le> n` by (simp add: field_simps)
+        using mean_short_count_le \<open>1 \<le> n\<close> by (simp add: field_simps)
       then show ?thesis by (simp add: powr_diff algebra_simps)
     qed
     finally show "?P n" .
@@ -618,7 +618,7 @@ proof -
   have ev_short_count_le: "\<forall>\<^sup>\<infinity> n. pf_short_count n < 1 / 2"
   proof -
     have "\<epsilon> * k - 1 < 0"
-      using \<epsilon>_props `3 \<le> k` by (auto simp: field_simps)
+      using \<epsilon>_props \<open>3 \<le> k\<close> by (auto simp: field_simps)
     then have "(\<lambda>n. 2 * (k - 2) * n powr (\<epsilon> * k - 1)) \<longlonglongrightarrow> 0" (is "?bound \<longlonglongrightarrow> 0")
       by (intro tendsto_mult_right_zero LIMSEQ_neg_powr)
     then have "\<forall>\<^sup>\<infinity> n. dist (?bound n) 0  < 1 / 2"
@@ -629,7 +629,7 @@ proof -
 
   have lim_\<alpha>: "pf_\<alpha> \<longlonglongrightarrow> 0"
   proof -
-    have "0 < k" using `3 \<le> k` by simp
+    have "0 < k" using \<open>3 \<le> k\<close> by simp
 
     have "\<forall>\<^sup>\<infinity> n. (6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
     proof (rule eventually_sequentiallyI)
@@ -637,7 +637,7 @@ proof -
       then have "(6 * k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * (n powr - 1) \<le> n powr (\<epsilon> - 1)"
         by  (subst powr_minus) (simp add: divide_inverse p_def)
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * ((n powr - 1) / (n powr (\<epsilon> - 1))) \<le> n powr (\<epsilon> - 1) / (n powr (\<epsilon> - 1))"
-        using `1 \<le> n` by (auto simp: field_simps)
+        using \<open>1 \<le> n\<close> by (auto simp: field_simps)
       also have "\<dots> \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1"
         by (simp add: powr_diff [symmetric] )
       finally show "(6*k) * ln n / n \<le> p n \<longleftrightarrow> (6*k) * ln n * n powr - \<epsilon> \<le> 1" .
@@ -649,10 +649,10 @@ proof -
     proof -
       { fix n :: nat assume "0 < n"
         have "ln (real n) \<le> n powr (\<epsilon>/2) / (\<epsilon>/2)"
-          using `0 < n` `0 < \<epsilon>` by (intro ln_powr_bound) auto
+          using \<open>0 < n\<close> \<open>0 < \<epsilon>\<close> by (intro ln_powr_bound) auto
         also have "\<dots> \<le> 2/\<epsilon> * n powr (\<epsilon>/2)" by (auto simp: field_simps)
         finally have "(6*k) * ln n * (n powr - \<epsilon>)  \<le> (6*k) * (2/\<epsilon> * n powr (\<epsilon>/2)) * (n powr - \<epsilon>)"
-          using `0 < n` `0 < k` by (intro mult_right_mono mult_left_mono) auto
+          using \<open>0 < n\<close> \<open>0 < k\<close> by (intro mult_right_mono mult_left_mono) auto
         also have "\<dots> = 12*k/\<epsilon> * n powr (-\<epsilon>/2)"
           unfolding divide_inverse
           by (auto simp: field_simps powr_minus[symmetric] powr_add[symmetric])
@@ -663,14 +663,14 @@ proof -
       also have "\<forall>\<^sup>\<infinity> n. 12*k/\<epsilon> * n powr (-\<epsilon>/2) \<le> 1"
       proof -
         have "(\<lambda>n. 12*k/\<epsilon> * n powr (-\<epsilon>/2)) \<longlonglongrightarrow> 0"
-          using `0 < \<epsilon>` by (intro tendsto_mult_right_zero LIMSEQ_neg_powr) auto
+          using \<open>0 < \<epsilon>\<close> by (intro tendsto_mult_right_zero LIMSEQ_neg_powr) auto
         then show ?thesis
-          using `0 < \<epsilon>` by (auto elim: eventually_mono simp: dist_real_def dest!: tendstoD[where e=1])
+          using \<open>0 < \<epsilon>\<close> by (auto elim: eventually_mono simp: dist_real_def dest!: tendstoD[where e=1])
       qed
       finally (eventually_le_le) show ?thesis .
     qed
     finally have "\<forall>\<^sup>\<infinity> n. real (6 * k) * ln (real n) / real n \<le> p n" .
-    with ev_p `0 < k` show ?thesis unfolding pf_\<alpha>_def by (rule almost_never_le_\<alpha>)
+    with ev_p \<open>0 < k\<close> show ?thesis unfolding pf_\<alpha>_def by (rule almost_never_le_\<alpha>)
   qed
 
   from ev_short_count_le lim_\<alpha>[THEN tendstoD, of "1/2"] ev_p
@@ -707,7 +707,7 @@ proof -
   have "uwellformed G" by (auto simp: G_def uwellformed_def all_edges_def ES.S_edges_def)
   with G_props have T1: "uwellformed H" unfolding H_def by (intro kill_short_uwellformed)
 
-  have "enat l \<le> enat k" using `l \<le> k` by simp
+  have "enat l \<le> enat k" using \<open>l \<le> k\<close> by simp
   also have "\<dots> < girth H" using G_props by (auto simp: kill_short_large_girth H_def)
   finally have T2: "l < girth H" .
 
@@ -720,12 +720,12 @@ proof -
   have \<alpha>_HG: "\<alpha> H \<le> \<alpha> G"
     unfolding H_def G_def by (auto intro: kill_short_\<alpha>)
 
-  have "enat l \<le> ereal k" using `l \<le> k` by auto
-  also have "\<dots> < (n/2) / \<alpha> G" using G_props `3 \<le> k`
+  have "enat l \<le> ereal k" using \<open>l \<le> k\<close> by auto
+  also have "\<dots> < (n/2) / \<alpha> G" using G_props \<open>3 \<le> k\<close>
     by (cases "\<alpha> G") (auto simp: field_simps)
-  also have "\<dots> \<le> (n/2) / \<alpha> H" using \<alpha>_HG `0 < \<alpha> H`
+  also have "\<dots> \<le> (n/2) / \<alpha> H" using \<alpha>_HG \<open>0 < \<alpha> H\<close>
     by (auto simp: ereal_of_enat_pushout intro!: ereal_divide_left_mono)
-  also have "\<dots> \<le> card (uverts H) / \<alpha> H" using card_H `0 < \<alpha> H`
+  also have "\<dots> \<le> card (uverts H) / \<alpha> H" using card_H \<open>0 < \<alpha> H\<close>
     by (auto intro!: ereal_divide_right_mono)
   also have "\<dots> \<le> chromatic_number H" using uverts_H T1 by (intro chromatic_lb) auto
   finally have T3: "l < chromatic_number H"

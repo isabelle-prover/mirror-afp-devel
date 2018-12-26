@@ -1,4 +1,4 @@
-section{*Basics needed*}
+section\<open>Basics needed\<close>
 
 theory PerfectBasics
 imports Main "HOL-Computational_Algebra.Primes" "HOL-Algebra.Exponent"

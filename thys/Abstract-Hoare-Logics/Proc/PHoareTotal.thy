@@ -5,9 +5,9 @@
 
 theory PHoareTotal imports PHoare PTermi begin
 
-subsection{* Hoare logic for total correctness *}
+subsection\<open>Hoare logic for total correctness\<close>
 
-text{*Validity is defined as expected:*} 
+text\<open>Validity is defined as expected:\<close> 
 
 definition
  tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
@@ -51,19 +51,19 @@ abbreviation hoare1 :: "'a cntxt \<Rightarrow> 'a assn \<times> com \<times> 'a 
   "C \<turnstile>\<^sub>t x \<equiv> C \<turnstile>\<^sub>t {fst x}fst (snd x){snd (snd x)}"
 
 
-text{* The side condition in our rule of consequence looks quite different
-from the one by Kleymann, but the two are in fact equivalent:*}
+text\<open>The side condition in our rule of consequence looks quite different
+from the one by Kleymann, but the two are in fact equivalent:\<close>
 
 lemma "((\<forall>s t. (\<forall>z. P' z s \<longrightarrow> Q' z t) \<longrightarrow> (\<forall>z. P z s \<longrightarrow> Q z t)) \<and>
             (\<forall>s. (\<exists>z. P z s) \<longrightarrow> (\<exists>z. P' z s)))
         = (\<forall>z s. P z s \<longrightarrow> (\<forall>t.\<exists>z'. P' z' s \<and> (Q' z' t \<longrightarrow> Q z t)))"
 by blast
 
-text{* The key difference to the work by Kleymann (and America and de
+text\<open>The key difference to the work by Kleymann (and America and de
 Boer) is that soundness and completeness are shown for arbitrary,
 i.e.\ unbounded nondeterminism.  This is a significant extension and
 appears to have been an open problem. The details are found below and
-are explained in a separate paper~\cite{Nipkow-CSL02}. *}
+are explained in a separate paper~\cite{Nipkow-CSL02}.\<close>
 
 lemma strengthen_pre:
  "\<lbrakk> \<forall>z s. P' z s \<longrightarrow> P z s; C \<turnstile>\<^sub>t {P}c{Q}  \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P'}c{Q}"

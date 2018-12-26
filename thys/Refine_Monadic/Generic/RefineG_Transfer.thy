@@ -1,10 +1,10 @@
-section {* Transfer between Domains *}
+section \<open>Transfer between Domains\<close>
 theory RefineG_Transfer
 imports "../Refine_Misc"
 begin
-  text {* Currently, this theory is specialized to 
+  text \<open>Currently, this theory is specialized to 
     transfers that include no data refinement.
-    *}
+\<close>
 
 
 definition "REFINEG_TRANSFER_POST_SIMP x y \<equiv> x=y"
@@ -22,7 +22,7 @@ lemma START_REFINEG_TRANSFER:
 lemma STOP_REFINEG_TRANSFER: "REFINEG_TRANSFER_POST_SIMP c c" 
   unfolding REFINEG_TRANSFER_POST_SIMP_def ..
 
-ML {*
+ML \<open>
 structure RefineG_Transfer = struct
 
   structure Post_Processors = Theory_Data (
@@ -156,24 +156,24 @@ structure RefineG_Transfer = struct
 
   end
 end
-*}
+\<close>
 
-setup {* RefineG_Transfer.setup *}
+setup \<open>RefineG_Transfer.setup\<close>
 method_setup refine_transfer = 
-  {* Scan.lift (Args.mode "post") -- Attrib.thms 
+  \<open>Scan.lift (Args.mode "post") -- Attrib.thms 
   >> (fn (post,thms) => fn ctxt => SIMPLE_METHOD'
     ( if post then RefineG_Transfer.post_transfer_tac thms ctxt
       else RefineG_Transfer.transfer_tac thms ctxt))
-  *} "Invoke transfer rules"
+\<close> "Invoke transfer rules"
 
 
 locale transfer = fixes \<alpha> :: "'c \<Rightarrow> 'a::complete_lattice"
 begin
 
-text {*
+text \<open>
   In the following, we define some transfer lemmas for general
   HOL - constructs.
-*}
+\<close>
 
 lemma transfer_if[refine_transfer]:
   assumes "b \<Longrightarrow> \<alpha> s1 \<le> S1"
@@ -232,12 +232,12 @@ lemma transfer_rec_nat[refine_transfer]:
 
 end
 
-text {* Transfer into complete lattice structure *}
+text \<open>Transfer into complete lattice structure\<close>
 locale ordered_transfer = transfer + 
   constrains \<alpha> :: "'c::complete_lattice \<Rightarrow> 'a::complete_lattice"
 
-text {* Transfer into complete lattice structure with distributive
-  transfer function. *}
+text \<open>Transfer into complete lattice structure with distributive
+  transfer function.\<close>
 locale dist_transfer = ordered_transfer + 
   constrains \<alpha> :: "'c::complete_lattice \<Rightarrow> 'a::complete_lattice"
   assumes \<alpha>_dist: "\<And>A. is_chain A \<Longrightarrow> \<alpha> (Sup A) = Sup (\<alpha>`A)"
@@ -256,12 +256,12 @@ begin
 end
 
 
-text {* Transfer into ccpo *}
+text \<open>Transfer into ccpo\<close>
 locale ccpo_transfer = transfer \<alpha> for
   \<alpha> :: "'c::ccpo \<Rightarrow> 'a::complete_lattice" 
 
-text {* Transfer into ccpo with distributive
-  transfer function. *}
+text \<open>Transfer into ccpo with distributive
+  transfer function.\<close>
 locale dist_ccpo_transfer = ccpo_transfer \<alpha>
   for \<alpha> :: "'c::ccpo \<Rightarrow> 'a::complete_lattice" + 
   assumes \<alpha>_dist: "\<And>A. is_chain A \<Longrightarrow> \<alpha> (Sup A) = Sup (\<alpha>`A)"

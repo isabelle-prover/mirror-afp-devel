@@ -4,14 +4,14 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Vectors *}
+section \<open>Vectors\<close>
 
 theory Relation_Algebra_Vectors
   imports Relation_Algebra
 begin
 
-text {* Vectors can be used for modelling sets of states. In this section we
-follow Maddux's book to derive some of their most important properties. *}
+text \<open>Vectors can be used for modelling sets of states. In this section we
+follow Maddux's book to derive some of their most important properties.\<close>
 
 context relation_algebra
 begin

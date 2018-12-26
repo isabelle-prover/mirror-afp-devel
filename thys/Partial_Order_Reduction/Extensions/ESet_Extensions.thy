@@ -1,4 +1,4 @@
-section {* Sets and Extended Natural Numbers *}
+section \<open>Sets and Extended Natural Numbers\<close>
 
 theory ESet_Extensions
 imports

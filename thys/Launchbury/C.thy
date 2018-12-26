@@ -4,9 +4,9 @@ begin
 
 default_sort cpo
 
-text {*
+text \<open>
 The initial solution to the domain equation $C = C_\bot$, i.e. the completion of the natural numbers.
-*}
+\<close>
 
 domain C = C (lazy "C")
 
@@ -75,7 +75,7 @@ proof-
   have "chain (\<lambda> m. C\<^bsup>f m\<^esup>)" using ch2ch_Rep_cfunL[OF C.chain_take, where x=r, unfolded take].
   hence "mono f" by (auto simp add: mono_iff_le_Suc chain_def elim!:chainE)
   have r: "r = (\<Squnion> m. C\<^bsup>f m\<^esup>)"  by (metis (lifting) take C.reach lub_eq)
-  from `mono f`
+  from \<open>mono f\<close>
   show thesis
   proof(rule nat_mono_characterization)
     fix n
@@ -85,11 +85,11 @@ proof-
       apply simp
       apply (erule n)
       done
-    hence "(\<Squnion> m. C\<^bsup>f m\<^esup>) = C\<^bsup>f n\<^esup>" unfolding  maxinch_is_thelub[OF `chain _`].
+    hence "(\<Squnion> m. C\<^bsup>f m\<^esup>) = C\<^bsup>f n\<^esup>" unfolding  maxinch_is_thelub[OF \<open>chain _\<close>].
     thus ?thesis using that unfolding r by blast
   next
     assume "\<And>m. \<exists>n. m \<le> f n"
-    hence "\<And> n. C\<^bsup>n\<^esup> \<sqsubseteq> r" unfolding r by (fastforce intro: below_lub[OF `chain _`])
+    hence "\<And> n. C\<^bsup>n\<^esup> \<sqsubseteq> r" unfolding r by (fastforce intro: below_lub[OF \<open>chain _\<close>])
     hence "(\<Squnion> n. C\<^bsup>n\<^esup>) \<sqsubseteq> r" 
       by (rule lub_below[OF chain_iterate])
     hence "C\<^sup>\<infinity> \<sqsubseteq> r" unfolding Cinf_def fix_def2.

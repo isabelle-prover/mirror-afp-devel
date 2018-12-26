@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantic properties of lifted predicates *}
+section \<open>Semantic properties of lifted predicates\<close>
 
 theory FWLiftingSem
 imports
@@ -66,13 +66,13 @@ lemma redT_updTs_invariant:
 proof(rule ts_invI)
   fix T X LN
   assume XLN: "(redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', ln'))) T = \<lfloor>(X, LN)\<rfloor>"
-  from tsiP `ts t = \<lfloor>(x, ln)\<rfloor>` obtain i where "I t = \<lfloor>i\<rfloor>" "P i t x m" 
+  from tsiP \<open>ts t = \<lfloor>(x, ln)\<rfloor>\<close> obtain i where "I t = \<lfloor>i\<rfloor>" "P i t x m" 
     by(auto dest: ts_invD)
   show "\<exists>i. upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> T = \<lfloor>i\<rfloor> \<and> P i T X m'"
   proof(cases "T = t")
     case True
-    from red `P i t x m` have "P i t x' m'" by(rule invariant_red)
-    moreover from `I t = \<lfloor>i\<rfloor>` `ts t = \<lfloor>(x, ln)\<rfloor>` tao 
+    from red \<open>P i t x m\<close> have "P i t x' m'" by(rule invariant_red)
+    moreover from \<open>I t = \<lfloor>i\<rfloor>\<close> \<open>ts t = \<lfloor>(x, ln)\<rfloor>\<close> tao 
     have "upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> t = \<lfloor>i\<rfloor>"
       by(simp add: upd_invs_Some)
     ultimately show ?thesis using True XLN by simp
@@ -84,20 +84,20 @@ proof(rule ts_invI)
       with XLN tao False have "\<exists>m'. NewThread T X m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
         by(auto dest: redT_updTs_new_thread)
       with red have nt: "NewThread T X m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>" by(auto dest: new_thread_memory)
-      with red `P i t x m` have "\<exists>i''. P i'' T X m'" by(rule invariant_NewThread)
+      with red \<open>P i t x m\<close> have "\<exists>i''. P i'' T X m'" by(rule invariant_NewThread)
       hence "P (SOME i. P i T X m') T X m'" by(rule someI_ex)
       with nt tao show ?thesis by(auto intro: SOME_new_thread_upd_invs) 
     next
       case (Some a)
       obtain X' LN' where [simp]: "a = (X', LN')" by(cases a)
-      with `ts T = \<lfloor>a\<rfloor>` have esT: "ts T = \<lfloor>(X', LN')\<rfloor>" by simp
+      with \<open>ts T = \<lfloor>a\<rfloor>\<close> have esT: "ts T = \<lfloor>(X', LN')\<rfloor>" by simp
       hence "redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> T = \<lfloor>(X', LN')\<rfloor>"
-        using `thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>` by(auto intro: redT_updTs_Some)
+        using \<open>thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close> by(auto intro: redT_updTs_Some)
       moreover from esT tsiP obtain i' where "I T = \<lfloor>i'\<rfloor>" "P i' T X' m"
         by(auto dest: ts_invD)
-      from red `P i t x m` `P i' T X' m`
+      from red \<open>P i t x m\<close> \<open>P i' T X' m\<close>
       have "P i' T X' m'" by(rule invariant_other)
-      moreover from `I T = \<lfloor>i'\<rfloor>` esT tao have "upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> T = \<lfloor>i'\<rfloor>"
+      moreover from \<open>I T = \<lfloor>i'\<rfloor>\<close> esT tao have "upd_invs I P \<lbrace>ta\<rbrace>\<^bsub>t\<^esub> T = \<lfloor>i'\<rfloor>"
         by(simp add: upd_invs_Some)
       ultimately show ?thesis using XLN False by simp
     qed
@@ -129,10 +129,10 @@ proof(induct rule: RedT_induct)
   case refl thus ?case by(simp (no_asm))
 next
   case (step S TTAS S' T TA S'')
-  note IH = `ts_inv P I (thr S) (shr S) \<Longrightarrow> ts_inv P (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) (thr S') (shr S')`
-  with `ts_inv P I (thr S) (shr S)`
+  note IH = \<open>ts_inv P I (thr S) (shr S) \<Longrightarrow> ts_inv P (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) (thr S') (shr S')\<close>
+  with \<open>ts_inv P I (thr S) (shr S)\<close>
   have "ts_inv P (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) (thr S') (shr S')" by blast
-  with `S' -T\<triangleright>TA\<rightarrow> S''` 
+  with \<open>S' -T\<triangleright>TA\<rightarrow> S''\<close> 
   have "ts_inv P (upd_invs (upd_invs I P (concat (map (thr_a \<circ> snd) TTAS))) P \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>) (thr S'') (shr S'')"
     by(rule redT_invariant)
   thus ?case by(simp add: comp_def)
@@ -169,7 +169,7 @@ proof -
   interpret lifting_inv final r convert_RA "\<lambda>_ :: unit. P" by(rule lifting_inv)
   from esokQ obtain I :: "'t \<rightharpoonup> unit" where "ts_inv (\<lambda>_. P) I ts m" by(rule ts_ok_into_ts_inv_const)
   hence "ts_inv (\<lambda>_. P) (upd_invs I (\<lambda>_. P) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>) (redT_updTs ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', ln'))) m'"
-    using red `thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>` `ts t = \<lfloor>(x, ln)\<rfloor>` by(rule redT_updTs_invariant)
+    using red \<open>thread_oks ts \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close> \<open>ts t = \<lfloor>(x, ln)\<rfloor>\<close> by(rule redT_updTs_invariant)
   thus ?thesis by(rule ts_inv_const_into_ts_ok)
 qed
 

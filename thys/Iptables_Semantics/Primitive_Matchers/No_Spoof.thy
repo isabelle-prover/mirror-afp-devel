@@ -11,8 +11,8 @@ section\<open>No Spoofing\<close>
 subsection\<open>Spoofing Protection\<close>
   text\<open>
   No spoofing means:
-  Every packet that is (potentially) allowed by the firewall and comes from an interface @{text iface} 
-  must have a Source IP Address in the assigned range @{text iface}.
+  Every packet that is (potentially) allowed by the firewall and comes from an interface \<open>iface\<close> 
+  must have a Source IP Address in the assigned range \<open>iface\<close>.
   
   ``potentially allowed'' means we use the upper closure.
   The definition states: For all interfaces which are configured, every packet that comes from this
@@ -61,7 +61,7 @@ and now code to check spoofing protection
 *)
 context
 begin
-  text\<open>The set of any ip addresses which may match for a fixed @{text iface} (overapproximation)\<close>
+  text\<open>The set of any ip addresses which may match for a fixed \<open>iface\<close> (overapproximation)\<close>
   private definition get_exists_matching_src_ips :: "iface \<Rightarrow> 'i::len common_primitive match_expr \<Rightarrow> 'i word set" where
     "get_exists_matching_src_ips iface m \<equiv> let (i_matches, _) = (primitive_extractor (is_Iiface, iiface_sel) m) in
               if (\<forall> is \<in> set i_matches. (case is of Pos i \<Rightarrow> match_iface i (iface_sel iface)
@@ -152,7 +152,7 @@ begin
   lemma "\<not> has_primitive m \<and> matcheq_matchAny m \<longleftrightarrow> (if \<not> has_primitive m then matcheq_matchAny m else False)"
     by simp
 
-  text\<open>The set of ip addresses which definitely match for a fixed @{text iface} (underapproximation)\<close>
+  text\<open>The set of ip addresses which definitely match for a fixed \<open>iface\<close> (underapproximation)\<close>
   private definition get_all_matching_src_ips :: "iface \<Rightarrow> 'i::len common_primitive match_expr \<Rightarrow> 'i word set" where
     "get_all_matching_src_ips iface m \<equiv> let (i_matches, rest1) = (primitive_extractor (is_Iiface, iiface_sel) m) in
               if (\<forall> is \<in> set i_matches. (case is of Pos i \<Rightarrow> match_iface i (iface_sel iface)
@@ -777,8 +777,8 @@ text\<open>Examples\<close>
   text\<open>Example 5:
     Spoofing protection but the algorithm fails.
     The algorithm @{const no_spoofing_iface} is only sound, not complete.
-    The ruleset first drops spoofed packets for TCP and then drops spoofed packets for @{text "\<not> TCP"}.
-    The algorithm cannot detect that @{text "TCP \<union> \<not>TCP"} together will match all spoofed packets.\<close>
+    The ruleset first drops spoofed packets for TCP and then drops spoofed packets for \<open>\<not> TCP\<close>.
+    The algorithm cannot detect that \<open>TCP \<union> \<not>TCP\<close> together will match all spoofed packets.\<close>
 
   lemma "no_spoofing TYPE('pkt_ext) [Iface ''eth0'' \<mapsto> [(ipv4addr_of_dotdecimal (192,168,0,0), 24)]]
           [Rule (MatchAnd (MatchNot (Match (Src (IpAddrNetmask (ipv4addr_of_dotdecimal (192,168,0,0)) 24))))

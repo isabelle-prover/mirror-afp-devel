@@ -17,12 +17,12 @@ definition perm_rem :: "'a \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> ('a
   "perm_rem x f \<equiv> if f x \<noteq> x then x \<rightleftharpoons>\<^sub>F f x o f else f"
 
 
-text {*
+text \<open>
   An example:
 
   @{lemma "perm_rem (2 :: nat) (list_succ [1,2,3,4]) x = list_succ [1,3,4] x"
       by (auto simp: perm_rem_def Fun.swap_def list_succ_def)}
-*}
+\<close>
 
 lemma perm_swap_id[simp]: "perm_swap a b id = id"
   by (auto simp: perm_swap_def)

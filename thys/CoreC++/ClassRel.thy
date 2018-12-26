@@ -6,7 +6,7 @@
     Based on the Jinja theory Common/TypeRel.thy by Tobias Nipkow
 *)
 
-section {* The subclass relation *}
+section \<open>The subclass relation\<close>
 
 theory ClassRel imports Decl begin
 

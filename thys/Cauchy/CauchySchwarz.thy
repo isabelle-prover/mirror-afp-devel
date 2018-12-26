@@ -3,7 +3,7 @@
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
 
-chapter {* The Cauchy-Schwarz Inequality *}
+chapter \<open>The Cauchy-Schwarz Inequality\<close>
 
 theory CauchySchwarz
 imports Complex_Main
@@ -29,31 +29,31 @@ lemma double_sum_equiv:
 
 
 
-section {* Abstract *}
+section \<open>Abstract\<close>
 
-text {* The following document presents a formalised proof of the
+text \<open>The following document presents a formalised proof of the
 Cauchy-Schwarz Inequality for the specific case of $R^n$. The system
 used is Isabelle/Isar. 
 
 {\em Theorem:} Take $V$ to be some vector space possessing a norm and
 inner product, then for all $a,b \in V$ the following inequality
-holds: @{text "\<bar>a\<cdot>b\<bar> \<le> \<parallel>a\<parallel>*\<parallel>b\<parallel>"}. Specifically, in the Real case, the
+holds: \<open>\<bar>a\<cdot>b\<bar> \<le> \<parallel>a\<parallel>*\<parallel>b\<parallel>\<close>. Specifically, in the Real case, the
 norm is the Euclidean length and the inner product is the standard dot
-product. *}
+product.\<close>
 
 
-section {* Formal Proof *}
+section \<open>Formal Proof\<close>
 
-subsection {* Vector, Dot and Norm definitions. *}
+subsection \<open>Vector, Dot and Norm definitions.\<close>
 
-text {* This section presents definitions for a real vector type, a
-dot product function and a norm function. *}
+text \<open>This section presents definitions for a real vector type, a
+dot product function and a norm function.\<close>
 
-subsubsection {* Vector *}
+subsubsection \<open>Vector\<close>
 
-text {* We now define a vector type to be a tuple of (function,
+text \<open>We now define a vector type to be a tuple of (function,
 length). Where the function is of type @{typ "nat\<Rightarrow>real"}. We also
-define some accessor functions and appropriate notation. *}
+define some accessor functions and appropriate notation.\<close>
 
 type_synonym vector = "(nat\<Rightarrow>real) * nat"
 
@@ -65,12 +65,12 @@ definition
   vlen :: "vector \<Rightarrow> nat" where
   "vlen v = snd v"
 
-text {* Now to access the second element of some vector $v$ the syntax
-is $v_2$. *}
+text \<open>Now to access the second element of some vector $v$ the syntax
+is $v_2$.\<close>
 
-subsubsection {* Dot and Norm *}
+subsubsection \<open>Dot and Norm\<close>
 
-text {* We now define the dot product and norm operations. *}
+text \<open>We now define the dot product and norm operations.\<close>
 
 definition
   dot :: "vector \<Rightarrow> vector \<Rightarrow> real" (infixr "\<cdot>" 60) where
@@ -80,8 +80,8 @@ definition
   norm :: "vector \<Rightarrow> real"                  ("\<parallel>_\<parallel>" 100) where
   "norm v = sqrt (\<Sum>j\<in>{1..(vlen v)}. v\<^bsub>j\<^esub>^2)"
 
-text {* Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt
-(v\<cdot>v)"}. We show that our definition leads to this one. *}
+text \<open>Another definition of the norm is @{term "\<parallel>v\<parallel> = sqrt
+(v\<cdot>v)"}. We show that our definition leads to this one.\<close>
 
 lemma norm_dot:
  "\<parallel>v\<parallel> = sqrt (v\<cdot>v)"
@@ -92,7 +92,7 @@ proof -
   finally show ?thesis ..
 qed
 
-text {* A further important property is that the norm is never negative. *}
+text \<open>A further important property is that the norm is never negative.\<close>
 
 lemma norm_pos:
   "\<parallel>v\<parallel> \<ge> 0"
@@ -103,7 +103,7 @@ proof -
   thus ?thesis unfolding norm_def .
 qed
 
-text {* We now prove an intermediary lemma regarding double summation. *}
+text \<open>We now prove an intermediary lemma regarding double summation.\<close>
 
 lemma double_sum_aux:
   fixes f::"nat \<Rightarrow> real"
@@ -139,9 +139,9 @@ proof -
   finally show ?thesis by (auto simp add: inverse_eq_divide)
 qed
 
-text {* The final theorem can now be proven. It is a simple forward
+text \<open>The final theorem can now be proven. It is a simple forward
 proof that uses properties of double summation and the preceding
-lemma.  *}
+lemma.\<close>
 
 theorem CauchySchwarzReal:
   fixes x::vector
@@ -150,13 +150,13 @@ theorem CauchySchwarzReal:
 proof -
   have "\<bar>x\<cdot>y\<bar>^2 \<le> (\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2"
   proof -
-    txt {* We can rewrite the goal in the following form ...*}
+    txt \<open>We can rewrite the goal in the following form ...\<close>
     have "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 \<ge> 0"
     proof -
       obtain n where nx: "n = vlen x" by simp
-      with `vlen x = vlen y` have ny: "n = vlen y" by simp
+      with \<open>vlen x = vlen y\<close> have ny: "n = vlen y" by simp
       {
-        txt {* Some preliminary simplification rules. *}
+        txt \<open>Some preliminary simplification rules.\<close>
         have "(\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2) \<ge> 0" by (simp add: sum_nonneg)
         hence xp: "(sqrt (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2))^2 = (\<Sum>j\<in>{1..n}. x\<^bsub>j\<^esub>^2)"
           by (rule real_sqrt_pow2)
@@ -165,8 +165,7 @@ proof -
         hence yp: "(sqrt (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2))^2 = (\<Sum>j\<in>{1..n}. y\<^bsub>j\<^esub>^2)"
           by (rule real_sqrt_pow2)
 
-        txt {* The main result of this section is that @{text
-        "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2"} can be written as a double sum. *}
+        txt \<open>The main result of this section is that \<open>(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2\<close> can be written as a double sum.\<close>
         have
           "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 = \<parallel>x\<parallel>^2 * \<parallel>y\<parallel>^2"
           by (simp add: real_sq_exp)
@@ -183,7 +182,7 @@ proof -
       }
       moreover
       {
-        txt {* We also show that @{text "\<bar>x\<cdot>y\<bar>^2"} can be expressed as a double sum.*}
+        txt \<open>We also show that \<open>\<bar>x\<cdot>y\<bar>^2\<close> can be expressed as a double sum.\<close>
         have
           "\<bar>x\<cdot>y\<bar>^2 = (x\<cdot>y)^2"
           by simp
@@ -198,8 +197,8 @@ proof -
         finally have
           "\<bar>x\<cdot>y\<bar>^2 = (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>*y\<^bsub>k\<^esub>)*(x\<^bsub>j\<^esub>*y\<^bsub>j\<^esub>)))" .
       }
-      txt {* We now manipulate the double sum expressions to get the
-      required inequality. *}
+      txt \<open>We now manipulate the double sum expressions to get the
+      required inequality.\<close>
       ultimately have
         "(\<parallel>x\<parallel>*\<parallel>y\<parallel>)^2 - \<bar>x\<cdot>y\<bar>^2 =
          (\<Sum>k\<in>{1..n}. (\<Sum>j\<in>{1..n}. (x\<^bsub>k\<^esub>^2)*(y\<^bsub>j\<^esub>^2))) -

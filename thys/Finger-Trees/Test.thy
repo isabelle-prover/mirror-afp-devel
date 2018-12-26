@@ -1,9 +1,9 @@
 theory Test
 imports "HOL-Library.Code_Target_Numeral" FingerTree
 begin
-  text {*
+  text \<open>
     Test code generation, to early detect problems with code generator.
-    *}
+\<close>
 
 definition 
   fti_toList :: "('e,nat) FingerTree \<Rightarrow> _"
@@ -83,7 +83,7 @@ export_code
   in OCaml
   in SML
 
-ML_val {*
+ML_val \<open>
   val t1 = @{code fti_toTree}
     [("a", @{code nat_of_integer} 1), ("b", @{code nat_of_integer} 2), ("c", @{code nat_of_integer} 3)];
   val t2 = @{code fti_toTree}
@@ -110,7 +110,7 @@ ML_val {*
 
   @{code fti_foldl} (fn s => fn (_, a) => s + @{code integer_of_nat} a) 0 t4;
   @{code fti_foldr} (fn (_, a) => fn s => s + @{code integer_of_nat} a) t4 0;
-*}
+\<close>
 
 end
 

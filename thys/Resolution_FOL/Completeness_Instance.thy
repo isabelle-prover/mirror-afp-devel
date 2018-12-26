@@ -1,4 +1,4 @@
-section {* Instance of completeness theorem *}
+section \<open>Instance of completeness theorem\<close>
 
 theory Completeness_Instance imports Unification_Theorem Completeness begin
 

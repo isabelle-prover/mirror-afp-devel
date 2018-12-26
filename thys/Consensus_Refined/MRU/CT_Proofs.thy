@@ -4,7 +4,7 @@ imports Three_Step_MRU "../HO_Transition_System" Heard_Of.Majorities "../Quorums
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 type_synonym ct_TS_state = "(nat \<times> (process \<Rightarrow> (val pstate)))"
 
 definition CT_TS ::
@@ -53,7 +53,7 @@ qed
 
 type_synonym rHO = "nat \<Rightarrow> process HO"
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition ct_ref_rel :: "(three_step_mru_state \<times> ct_TS_state)set" where
@@ -64,8 +64,8 @@ definition ct_ref_rel :: "(three_step_mru_state \<times> ct_TS_state)set" where
     \<and> (three_step r = Suc 0 \<longrightarrow> three_step_mru_state.candidates sa = {commt (sc (coord r))})
   }"
 
-text {* Now we need to use the fact that SHOs = HOs (i.e. the setting is non-Byzantine), and
-  also the fact that the coordinator receives enough messages in each round *}
+text \<open>Now we need to use the fact that SHOs = HOs (i.e. the setting is non-Byzantine), and
+  also the fact that the coordinator receives enough messages in each round\<close>
 
 lemma mru_vote_evolution0:
   "\<forall>p. next0 r p (s p) (msgs p) (crd p) (s' p) \<Longrightarrow> mru_vote o s' = mru_vote o s"
@@ -275,7 +275,7 @@ qed
 
 end (* HO context *)
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
 theorem CT_termination:

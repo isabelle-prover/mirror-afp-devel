@@ -1,4 +1,4 @@
-section {* Compositional Reasoning *}
+section \<open>Compositional Reasoning\<close>
 
 (*<*)
 theory Compositional_Reasoning
@@ -10,7 +10,7 @@ begin
 context BD_Security begin
 
 
-subsection{* Preliminaries *}
+subsection\<open>Preliminaries\<close>
 
 definition "disjAll \<Delta>s s vl s1 vl1 \<equiv> (\<exists>\<Delta> \<in> \<Delta>s. \<Delta> s vl s1 vl1)"
 
@@ -69,7 +69,7 @@ proof
 qed
 
 
-subsection{* Decomposition into an arbitrary network of components *}
+subsection\<open>Decomposition into an arbitrary network of components\<close>
 
 (* Unwind not to itself, but to a disjunction of other relations: *)
 definition unwind_to where
@@ -132,7 +132,7 @@ shows secure
 using init_dec[OF \<Delta>0 i] unwind_dec[OF ne] unwind_secure by metis
 
 
-subsection{* A customization for linear modular reasoning *}
+subsection\<open>A customization for linear modular reasoning\<close>
 
 (* The customization assumes that each component unwinds only into itself,
 its successor or an exit component.  *)
@@ -190,15 +190,15 @@ next
     case True
     show ?thesis proof(cases \<Delta>s')
       case Nil
-      show ?thesis unfolding `\<Delta>s = (\<Delta>3 # \<Delta>s') ## \<Delta>1` Nil True by (rule exI[of _ \<Delta>1]) simp
+      show ?thesis unfolding \<open>\<Delta>s = (\<Delta>3 # \<Delta>s') ## \<Delta>1\<close> Nil True by (rule exI[of _ \<Delta>1]) simp
     next
       case (Cons \<Delta>4 \<Delta>s'')
-      show ?thesis unfolding `\<Delta>s = (\<Delta>3 # \<Delta>s') ## \<Delta>1` Cons True by (rule exI[of _ \<Delta>4]) simp
+      show ?thesis unfolding \<open>\<Delta>s = (\<Delta>3 # \<Delta>s') ## \<Delta>1\<close> Cons True by (rule exI[of _ \<Delta>4]) simp
     qed
   next
     case False hence "\<Delta> \<in> set \<Delta>s'" using Cons by auto
     then obtain \<Delta>2 where "(\<Delta>, \<Delta>2) \<in> allConsec (\<Delta>s' ## \<Delta>1)" using Cons by auto
-    thus ?thesis unfolding `\<Delta>s = (\<Delta>3 # \<Delta>s') ## \<Delta>1` by (intro exI[of _ \<Delta>2]) (cases \<Delta>s', auto)
+    thus ?thesis unfolding \<open>\<Delta>s = (\<Delta>3 # \<Delta>s') ## \<Delta>1\<close> by (intro exI[of _ \<Delta>2]) (cases \<Delta>s', auto)
   qed
 qed
 
@@ -252,7 +252,7 @@ proof-
   qed
 qed
 
-subsection{* Instances *}
+subsection\<open>Instances\<close>
 
 corollary unwind_decomp3_secure:
 assumes

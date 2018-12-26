@@ -3,15 +3,15 @@
     Author:     David Trachtenherz
 *)
 
-section {* Results for natural arithmetics with infinity *}
+section \<open>Results for natural arithmetics with infinity\<close>
 
 theory Util_NatInf
 imports "HOL-Library.Extended_Nat"
 begin
 
-subsection {* Arithmetic operations with @{typ enat} *}
+subsection \<open>Arithmetic operations with @{typ enat}\<close>
 
-subsubsection {* Additional definitions *}
+subsubsection \<open>Additional definitions\<close>
 
 instantiation enat :: modulo
 begin
@@ -43,7 +43,7 @@ lemmas ineq0_conv_enat[simp] = i0_less[symmetric, unfolded zero_enat_def]
 lemmas iless_eSuc0_enat[simp] = iless_eSuc0[unfolded zero_enat_def]
 
 
-subsubsection {* Addition, difference, order *}
+subsubsection \<open>Addition, difference, order\<close>
 
 lemma diff_eq_conv_nat: "(x - y = (z::nat)) = (if y < x then x = y + z else z = 0)"
 by auto
@@ -103,7 +103,7 @@ lemma idiff_iless_mono2: "\<lbrakk> m < (n::enat); m < l \<rbrakk> \<Longrightar
 by (case_tac m, case_tac n, case_tac l, simp_all, case_tac l, simp_all)
 
 
-subsubsection {* Multiplication and division *}
+subsubsection \<open>Multiplication and division\<close>
 
 lemmas imult_infinity_enat[simp] = imult_infinity[unfolded zero_enat_def]
 lemmas imult_infinity_right_enat[simp] = imult_infinity_right[unfolded zero_enat_def]

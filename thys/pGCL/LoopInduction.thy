@@ -5,16 +5,16 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Continuity and Induction for Loops*}
+section \<open>Continuity and Induction for Loops\<close>
 
 theory LoopInduction imports Healthiness Continuity begin
 
-text {* Showing continuity for loops requires a stronger induction principle than we have used
+text \<open>Showing continuity for loops requires a stronger induction principle than we have used
 so far, which in turn relies on the continuity of loops (inductively).  Thus, the proofs are
 intertwined, and broken off from the main set of continuity proofs.  This result is also
-essential in showing the sublinearity of loops. *}
+essential in showing the sublinearity of loops.\<close>
 
-text {* A loop step is monotonic. *}
+text \<open>A loop step is monotonic.\<close>
 lemma wp_loop_step_mono_trans:
   fixes body::"'s prog"
   assumes sP: "sound P"
@@ -29,7 +29,7 @@ proof(intro mono_transI le_funI, simp)
     by(auto dest:le_funD intro:mult_left_mono)
 qed
 
-text {* We can therefore apply the standard fixed-point lemmas to unfold it: *}
+text \<open>We can therefore apply the standard fixed-point lemmas to unfold it:\<close>
 lemma lfp_wp_loop_unfold:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"
@@ -76,10 +76,10 @@ lemma lfp_loop_unitary:
   shows "unitary (lfp_exp (\<lambda>Q s. \<guillemotleft>G\<guillemotright> s * wp body Q s + \<guillemotleft>\<N> G\<guillemotright> s * P s))"
   using assms by(blast intro:lfp_exp_unitary wp_loop_step_unitary)
 
-text {* From the lattice structure on transformers, we establish a transfinite induction
+text \<open>From the lattice structure on transformers, we establish a transfinite induction
   principle for loops.  We use this to show a number of properties, particularly
   subdistributivity, for loops.  This proof follows the pattern of lemma lfp\_ordinal\_induct
-  in HOL/Inductive. *}
+  in HOL/Inductive.\<close>
 lemma loop_induct:
   fixes body::"'s prog"
   assumes hwp:  "healthy (wp body)"
@@ -378,12 +378,12 @@ proof(simp add:wp_eval)
   from PLimit eqt equ show "P (lfp_trans ?X) (gfp_trans ?Y)" by(rule P_equiv)
 qed
 
-subsection {* The Limit of Iterates *}
+subsection \<open>The Limit of Iterates\<close>
 
-text {* The iterates of a loop are its sequence of finite unrollings.  We show shortly that this
+text \<open>The iterates of a loop are its sequence of finite unrollings.  We show shortly that this
 converges on the least fixed point.  This is enormously useful, as we can appeal to various
 properties of the finite iterates (which will follow by finite induction), which we can then
-transfer to the limit. *}
+transfer to the limit.\<close>
 definition iterates :: "'s prog \<Rightarrow> ('s \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> 's trans"
 where "iterates body G i = ((\<lambda>x. wp (body ;; Embed x \<^bsub>\<guillemotleft> G \<guillemotright>\<^esub>\<oplus> Skip)) ^^ i) (\<lambda>P s. 0)"
 
@@ -395,12 +395,12 @@ lemma iterates_Suc[simp]:
   "iterates body G (Suc i) = wp (body ;; Embed (iterates body G i) \<^bsub>\<guillemotleft>G\<guillemotright>\<^esub>\<oplus> Skip)"
   by(simp add:iterates_def)
 
-text {* All iterates are healthy. *}
+text \<open>All iterates are healthy.\<close>
 lemma iterates_healthy:
   "healthy (wp body) \<Longrightarrow> healthy (iterates body G i)"
   by(induct i, auto intro:healthy_intros)
 
-text {* The iterates are an ascending chain. *}
+text \<open>The iterates are an ascending chain.\<close>
 lemma iterates_increasing:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"
@@ -449,8 +449,8 @@ proof(rule bounded_byI, simp add:wp_eval)
   finally show "\<guillemotleft>G\<guillemotright> s * wp body (t Q) s + (1-\<guillemotleft>G\<guillemotright> s) * Q s \<le> b" .
 qed
 
-text {* This is the key result: The loop is equivalent to the supremum of its iterates.  This
-proof follows the pattern of lemma continuous\_lfp in HOL/Library/Continuity. *}
+text \<open>This is the key result: The loop is equivalent to the supremum of its iterates.  This
+proof follows the pattern of lemma continuous\_lfp in HOL/Library/Continuity.\<close>
 lemma lfp_iterates:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"
@@ -583,8 +583,8 @@ proof(rule le_trans_antisym)
   qed
 qed
 
-text {* Therefore, evaluated at a given point (state), the sequence of iterates gives a sequence
-of real values that converges on that of the loop itself. *}
+text \<open>Therefore, evaluated at a given point (state), the sequence of iterates gives a sequence
+of real values that converges on that of the loop itself.\<close>
 corollary loop_iterates:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"
@@ -653,7 +653,7 @@ proof -
   ultimately show ?thesis by(simp)
 qed
 
-text {* The iterates themselves are all continuous. *}
+text \<open>The iterates themselves are all continuous.\<close>
 lemma cts_iterates:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"
@@ -672,7 +672,7 @@ next
                    healthy_intros iterates_healthy cb hb)
 qed
 
-text {* Therefore so is the loop itself. *}
+text \<open>Therefore so is the loop itself.\<close>
 lemma cts_wp_loop:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"

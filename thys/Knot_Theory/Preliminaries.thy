@@ -1,17 +1,17 @@
-section{*Preliminaries: Definitions of tangles and links*}
+section\<open>Preliminaries: Definitions of tangles and links\<close>
 theory Preliminaries
 imports Main
 begin
 
-text{* This theory contains the definition of a link. A link is defined as link diagrams upto 
- equivalence moves. Link diagrams are defined in terms of the constituent tangles*}
+text\<open>This theory contains the definition of a link. A link is defined as link diagrams upto 
+ equivalence moves. Link diagrams are defined in terms of the constituent tangles\<close>
 
-text{*each  block is a horizontal block built by putting basic link bricks next to each other.
+text\<open>each  block is a horizontal block built by putting basic link bricks next to each other.
 (1) vert is the straight line
 (2) cup is the up facing cup
 (3) cap is the bottom facing 
 (4) over is the positive cross
-(5) under is the negative cross*}
+(5) under is the negative cross\<close>
 
 datatype brick = vert
                 |cup
@@ -19,16 +19,16 @@ datatype brick = vert
                 |over
                 |under
          
-text{*block is obtained by putting bricks next to each other*}
+text\<open>block is obtained by putting bricks next to each other\<close>
 
 type_synonym block = "brick list"
 
-text{*wall are link diagrams obtained by placing a horizontal blocks a top each other*}
+text\<open>wall are link diagrams obtained by placing a horizontal blocks a top each other\<close>
 
 datatype wall =  basic block
                 |prod block  wall  (infixr "*" 66)
 
-text{*Concatenate gives us the block obtained by putting two blocks next to each other*}
+text\<open>Concatenate gives us the block obtained by putting two blocks next to each other\<close>
 
 
 primrec concatenate :: "block => block => block" (infixr "\<otimes>" 65) where
@@ -39,7 +39,7 @@ lemma empty_concatenate: "xs \<otimes> Nil = xs"
  by (induction xs) (auto)
 
 
-text{*Associativity properties of Conscatenation*}
+text\<open>Associativity properties of Conscatenation\<close>
 lemma leftright_associativity: "(x\<otimes>y)\<otimes>z = x\<otimes>(y\<otimes>z)"
  by (induction x) (auto)
 
@@ -50,13 +50,13 @@ lemma left_associativity: "(x\<otimes>y)\<otimes>z = x\<otimes>y\<otimes>z"
 lemma right_associativity: "x\<otimes>(y\<otimes>z) =x \<otimes> y \<otimes>z"
  by auto
 
-text{*Compose gives us the wall obtained by putting a wall above another, perhaps in an invalid way.
-*}
+text\<open>Compose gives us the wall obtained by putting a wall above another, perhaps in an invalid way.
+\<close>
 primrec compose :: "wall => wall => wall" (infixr "\<circ>" 66) where
 compose_Nil: "(basic x) \<circ>  ys = prod x ys" |
 compose_Cons: "((prod x xs)\<circ>ys) = prod x (xs\<circ>ys)"
 
-text{*Associativity properties of composition*}
+text\<open>Associativity properties of composition\<close>
 lemma compose_leftassociativity: "(((x::wall) \<circ> y) \<circ> z) = (x\<circ>y \<circ>z)"
  by (induction x) (auto)
 
@@ -66,7 +66,7 @@ lemma compose_rightassociativity: "(x::wall) \<circ> (y \<circ> z) = (x\<circ>y 
 
 
 
-text{*block-length of a block is the number of bricks in a given block*}
+text\<open>block-length of a block is the number of bricks in a given block\<close>
 primrec block_length::"block \<Rightarrow> nat"
 where
 "block_length [] = 0"|
@@ -140,15 +140,15 @@ lemma domain_wall_compose: "domain_wall (xs\<circ>ys) = domain_wall xs"
 lemma codomain_wall_compose: "codomain_wall (xs\<circ>ys) = codomain_wall ys"
  by (induction xs) (auto)
 
-text{*this lemma tells us the number of incoming and outgoing strands
-of a composition of two wall*}
+text\<open>this lemma tells us the number of incoming and outgoing strands
+of a composition of two wall\<close>
 
 
-text{*absolute value*}
+text\<open>absolute value\<close>
 definition abs::"int \<Rightarrow> int" where
 "abs x \<equiv> if (x\<ge>0) then x else (0-x)" 
 
-text{*theorems about abs*}
+text\<open>theorems about abs\<close>
 lemma abs_zero: assumes "abs x = 0" shows "x = 0" 
  using abs_def assms eq_iff_diff_eq_0
  by metis
@@ -169,8 +169,8 @@ shows "abs x= 0" and "abs y = 0"
  apply (metis)
  by (metis abs_non_negative add_nonneg_eq_0_iff assms)
 
-text{*The following lemmas tell us that the number of incoming and outgoing strands of every brick 
-is a non negative integer*}
+text\<open>The following lemmas tell us that the number of incoming and outgoing strands of every brick 
+is a non negative integer\<close>
 
 lemma domain_nonnegative: "(domain x) \<ge> 0" 
  using domain.simps  brick.exhaust le_cases not_numeral_le_zero zero_le_one by (metis)
@@ -179,8 +179,8 @@ lemma domain_nonnegative: "(domain x) \<ge> 0"
 lemma codomain_nonnegative: "(codomain x) \<ge> 0" 
  by (cases x)(auto)
 
-text{*The following lemmas tell us that the number of incoming and outgoing strands of every block 
-is a non negative integer*}
+text\<open>The following lemmas tell us that the number of incoming and outgoing strands of every block 
+is a non negative integer\<close>
 
 lemma domain_block_nonnegative: "domain_block x \<ge> 0" 
  by (induction x)(auto simp add: domain_nonnegative) 
@@ -191,8 +191,8 @@ lemma codomain_block_nonnegative: "(codomain_block x) \<ge> 0"
 
 
 
-text{*The following lemmas tell us that if a block is appended to a block with incoming strands, then
-the resultant block has incoming strands*}
+text\<open>The following lemmas tell us that if a block is appended to a block with incoming strands, then
+the resultant block has incoming strands\<close>
 
 lemma domain_positive: "((domain_block (x#Nil)) > 0) \<or> ((domain_block y) > 0) 
 \<Longrightarrow> (domain_block (x#y) > 0)" 
@@ -235,9 +235,9 @@ shows "(codomain_block (x\<otimes>y)) > 0"
         le_less_trans less_le neg_less_0_iff_less
  by (metis)
 
-text{*We prove that if the first count of a block is zero, then it is composed of cups and empty bricks. In
+text\<open>We prove that if the first count of a block is zero, then it is composed of cups and empty bricks. In
 order to do that we define the functions brick-is-cup and is-cup which check if a given block is 
-composed of cups or if the blocks are composed of blocks*}
+composed of cups or if the blocks are composed of blocks\<close>
 
 primrec brick_is_cup::"brick \<Rightarrow> bool"
 where
@@ -277,11 +277,11 @@ proof(induction x)
                using Cons.IH by (auto) 
    with step1 and domain_zero_sum  
             have "domain a= 0" 
-                       using Cons.prems `domain_block y = 0` by linarith
+                       using Cons.prems \<open>domain_block y = 0\<close> by linarith
    then have "brick_is_cup a" 
                using brickcount_zero_implies_brick_is_cup by auto
    then have "a=cup" 
-        using brick_is_cup_def by (metis `domain a = 0` brickcount_zero_implies_cup)
+        using brick_is_cup_def by (metis \<open>domain a = 0\<close> brickcount_zero_implies_cup)
    with step2 have "is_cup (a#y)" 
         using is_cup_def by auto
    then show ?case by auto
@@ -289,7 +289,7 @@ proof(induction x)
 qed
 
 
-text{* We need a function that checks if a wall represents a knot diagram.*}
+text\<open>We need a function that checks if a wall represents a knot diagram.\<close>
 
 primrec is_tangle_diagram::"wall \<Rightarrow>  bool"
 where

@@ -5,14 +5,14 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Miscellaneous Mathematics *}
+section \<open>Miscellaneous Mathematics\<close>
 
 theory Misc 
 imports 
   "HOL-Analysis.Analysis"
 begin
 
-text_raw {* \label{s:misc} *}
+text_raw \<open>\label{s:misc}\<close>
 
 lemma sum_UNIV:
   fixes S::"'a::finite set"
@@ -319,8 +319,8 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Truncated Subtraction *}
-text_raw {* \label{s:trunc_sub} *}
+subsection \<open>Truncated Subtraction\<close>
+text_raw \<open>\label{s:trunc_sub}\<close>
 
 definition
   tminus :: "real \<Rightarrow> real \<Rightarrow> real" (infixl "\<ominus>" 60)

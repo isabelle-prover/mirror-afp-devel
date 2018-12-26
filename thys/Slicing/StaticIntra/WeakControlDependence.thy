@@ -1,4 +1,4 @@
-section {* Static Weak Control Dependence *}
+section \<open>Static Weak Control Dependence\<close>
 
 theory WeakControlDependence imports 
   "../Basic/Postdomination" 

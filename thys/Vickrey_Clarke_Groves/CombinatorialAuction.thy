@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* VCG auction: definitions and theorems *}
+section \<open>VCG auction: definitions and theorems\<close>
 
 theory CombinatorialAuction
 
@@ -23,7 +23,7 @@ UniformTieBreaking
 
 begin
 
-subsection {* Definition of a VCG auction scheme, through the pair @{term "(vcga, vcgp)"} *}
+subsection \<open>Definition of a VCG auction scheme, through the pair @{term "(vcga, vcgp)"}\<close>
 
 (* b is a bid vector and participants is the set of all participants present in b *) 
 abbreviation "participants b == Domain (Domain b)"
@@ -486,8 +486,8 @@ proof -
   ultimately show "?s b ?a=Max{?s b a| a. a \<in> soldAllocations N (set \<Omega>)}" using 0 by simp
 qed
 
-text {* Adequacy theorem: The allocation satisfies the standard pen-and-paper specification 
-of a VCG auction. See, for example, \cite[\S~1.2]{cramton}. *}
+text \<open>Adequacy theorem: The allocation satisfies the standard pen-and-paper specification 
+of a VCG auction. See, for example, \cite[\S~1.2]{cramton}.\<close>
 theorem vcgaIsMaximal: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" "\<forall> X. b (seller, X) = 0" 
   shows "sum b (vcga' N \<Omega> b r) = Max{sum b a| a. a \<in> soldAllocations N (set \<Omega>)}"
@@ -532,7 +532,7 @@ lemma soldAllocationsFinite:
   using assms allAllocationsFinite finite.emptyI finite.insertI finite_UnI finite_imageI 
   by metis
 
-text{* The price paid by any participant is non-negative. *}
+text\<open>The price paid by any participant is non-negative.\<close>
 theorem NonnegPrices: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" 
   shows "vcgp N \<Omega> b r n >= (0::price)" 
@@ -571,7 +571,7 @@ lemma allocationDisjoint:
   shows "a,,,n1 \<inter> a,,,n2 = {}" 
   using assms allocationDisjointAuxiliary imageEquivalence by fastforce 
 
-text{* No good is assigned twice. *}
+text\<open>No good is assigned twice.\<close>
 (* We assume implicitely that n1, n2 are participants, \<Omega> a goods list and N the participant set
    with "n1 \<in> Domain (vcga' N \<Omega> b r)" "n2 \<in> Domain (vcga' N \<Omega> b r)". However,
    formally these assumptions are not needed for the theorem. *) 
@@ -584,7 +584,7 @@ proof -
   then show ?thesis using allocationDisjoint assms by fast
 qed
 
-text {* Nothing outside the set of goods is allocated. *}
+text \<open>Nothing outside the set of goods is allocated.\<close>
 theorem OnlyGoodsAllocated: 
   assumes "distinct \<Omega>" "set \<Omega> \<noteq> {}" "finite N" "g \<in> (vcga N \<Omega> b r),,,n" 
   shows "g \<in> set \<Omega>"
@@ -600,7 +600,7 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-subsection {* Computable versions of the VCG formalization *}
+subsection \<open>Computable versions of the VCG formalization\<close>
 
 (*  The computable versions are used to extract code.
    Furthermore we prove the equivalence with their classical counterparts. This computes the set of all maximal allocations including the seller. *)

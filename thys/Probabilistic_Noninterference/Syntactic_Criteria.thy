@@ -1,4 +1,4 @@
-section {* Syntactic Criteria *}
+section \<open>Syntactic Criteria\<close>
 theory Syntactic_Criteria
   imports Compositionality
 begin

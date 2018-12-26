@@ -4,18 +4,18 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Two Standalone Components *}
+section \<open>Two Standalone Components\<close>
 
 theory VC_KAT_scratch
   imports Main
 begin
 
-subsection {* Component Based on Kleene Algebra with Tests *}
+subsection \<open>Component Based on Kleene Algebra with Tests\<close>
 
-text {* This component supports the verification and step-wise refinement of simple while programs
-in a partial correctness setting. *}
+text \<open>This component supports the verification and step-wise refinement of simple while programs
+in a partial correctness setting.\<close>
 
-subsubsection {* KAT: Definition and Basic Properties *}
+subsubsection \<open>KAT: Definition and Basic Properties\<close>
 
 notation times (infixl "\<cdot>" 70)
 
@@ -101,7 +101,7 @@ lemma t_idem [simp]: "t x \<cdot> t x = t x"
 lemma t_mult_closed [simp]: "t (t x \<cdot> t y) = t x \<cdot> t y"
   using t_comm t_op_def by auto
 
-subsubsection{* Propositional Hoare Logic *}
+subsubsection\<open>Propositional Hoare Logic\<close>
 
 definition H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "H p x q \<longleftrightarrow> t p \<cdot> x \<le> x \<cdot> t q"
@@ -171,7 +171,7 @@ lemma H_while_inv: "t p \<le> t i \<Longrightarrow> t i \<cdot> at r \<le> t q \
 
 end
 
-subsubsection{* Soundness and Relation KAT *}
+subsubsection\<open>Soundness and Relation KAT\<close>
 
 notation relcomp (infixl ";" 70)
 
@@ -213,7 +213,7 @@ interpretation rel_kat: kat Id "{}" "(\<union>)" "(;)" "(\<subseteq>)" "(\<subse
   apply auto[2]
   by (auto simp: rel_star_contr rel_d.power_inductl rel_star_contl  SUP_least rel_d.power_inductr rel_at_def)
 
-subsubsection{* Embedding Predicates in Relations *}
+subsubsection\<open>Embedding Predicates in Relations\<close>
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
@@ -238,7 +238,7 @@ lemma p2r_disj_hom [simp]: "\<lceil>P\<rceil> \<union> \<lceil>Q\<rceil> = \<lce
 lemma impl_prop [simp]: "\<lceil>P\<rceil> \<subseteq> \<lceil>Q\<rceil> \<longleftrightarrow> (\<forall>s. P s \<longrightarrow>  Q s)"
   by auto 
 
-subsubsection {* Store and Assignment *}
+subsubsection \<open>Store and Assignment\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
@@ -260,7 +260,7 @@ abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> '
 abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> rel_kat.while_inv \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
-subsubsection {* Verification Example *}
+subsubsection \<open>Verification Example\<close>
 
 lemma euclid:
   "PRE (\<lambda>s::nat store. s ''x'' = x \<and> s ''y'' = y)
@@ -277,7 +277,7 @@ lemma euclid:
   apply (rule H_assign_var)
   using gcd_red_nat by auto
 
-subsubsection {* Definition of Refinement KAT *}
+subsubsection \<open>Definition of Refinement KAT\<close>
 
 class rkat = kat +
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -286,7 +286,7 @@ class rkat = kat +
 
 begin
 
-subsubsection {* Propositional Refinement Calculus *}
+subsubsection \<open>Propositional Refinement Calculus\<close>
 
 lemma R_skip: "1 \<le> R p p"
   by (simp add: H_skip R2)
@@ -305,7 +305,7 @@ lemma R_loop: "while q do (R (t p \<cdot> t q) p) od  \<le> R p (t p \<cdot> at 
 
 end
 
-subsubsection {* Soundness and Relation RKAT *}
+subsubsection \<open>Soundness and Relation RKAT\<close>
 
 definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where 
   "rel_R P Q = \<Union>{X. rel_kat.H P X Q}"
@@ -313,7 +313,7 @@ definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
 interpretation rel_rkat: rkat Id "{}" "(\<union>)"  "(;)" "(\<subseteq>)" "(\<subset>)" rtrancl rel_at rel_R
   by (standard, auto simp: rel_R_def rel_kat.H_def rel_kat.t_op_def rel_at_def)
 
-subsubsection {* Assignment Laws *}
+subsubsection \<open>Assignment Laws\<close>
 
 lemma R_assign: "(\<forall>s. P s \<longrightarrow> Q (s (v := e s))) \<Longrightarrow> (v ::= e) \<subseteq> rel_R \<lceil>P\<rceil> \<lceil>Q\<rceil>"
   by (simp add: H_assign_var rel_rkat.R2)
@@ -340,7 +340,7 @@ proof -
     by (meson dual_order.trans rel_d.mult_isor rel_rkat.R_seq)
 qed  
 
-subsubsection {* Refinement Example *}
+subsubsection \<open>Refinement Example\<close>
 
 lemma var_swap_ref1: 
   "rel_R \<lceil>\<lambda>s. s ''x'' = a \<and> s ''y'' = b\<rceil> \<lceil>\<lambda>s. s ''x'' = b \<and> s ''y'' = a\<rceil> 

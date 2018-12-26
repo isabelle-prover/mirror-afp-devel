@@ -137,10 +137,10 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimulationCoinduct)
     case(cSim P R)
-    from `(P, R) \<in> weakBisimulation O weakBisimulation`
+    from \<open>(P, R) \<in> weakBisimulation O weakBisimulation\<close>
     obtain Q where "P \<approx> Q" and "Q \<approx> R" by auto
-    note `P \<approx> Q`
-    moreover from `Q \<approx> R` have "Q \<leadsto>\<^sup>^<weakBisimulation> R" by(rule weakBisimulationE)
+    note \<open>P \<approx> Q\<close>
+    moreover from \<open>Q \<approx> R\<close> have "Q \<leadsto>\<^sup>^<weakBisimulation> R" by(rule weakBisimulationE)
     moreover have "weakBisimulation O weakBisimulation \<subseteq> (weakBisimulation O weakBisimulation) \<union> weakBisimulation"
       by auto
     moreover note weakBisimulationE(1)
@@ -198,36 +198,36 @@ lemma weakBisimWeakUpto[case_names cSim cSym, consumes 1]:
 proof -
   let ?X = "weakBisimulation O X O weakBisimulation"
   let ?Y = "weakBisimulation O X O bisim"
-  from `(P, Q) \<in> X` have "(P, Q) \<in> ?X" by(blast intro: Strong_Bisim.reflexive reflexive)
+  from \<open>(P, Q) \<in> X\<close> have "(P, Q) \<in> ?X" by(blast intro: Strong_Bisim.reflexive reflexive)
   thus ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cSim P Q)
     {
       fix P P' Q' Q
       assume "P \<approx> P'" and "(P', Q') \<in> X" and "Q' \<approx> Q"
-      from `(P', Q') \<in> X` have "(P', Q') \<in> ?Y" by(blast intro: reflexive Strong_Bisim.reflexive)
-      moreover from `Q' \<approx> Q` have "Q' \<leadsto>\<^sup>^<weakBisimulation> Q" by(rule weakBisimulationE)
+      from \<open>(P', Q') \<in> X\<close> have "(P', Q') \<in> ?Y" by(blast intro: reflexive Strong_Bisim.reflexive)
+      moreover from \<open>Q' \<approx> Q\<close> have "Q' \<leadsto>\<^sup>^<weakBisimulation> Q" by(rule weakBisimulationE)
       moreover have "?Y O weakBisimulation \<subseteq> ?X" by(blast dest: bisimWeakBisimulation transitive)
       moreover {
         fix P Q
         assume "(P, Q) \<in> ?Y"
         then obtain P' Q' where "P \<approx> P'" and "(P', Q') \<in> X" and "Q' \<sim> Q" by auto
-        from `(P', Q') \<in> X` have "P' \<leadsto>\<^sup>^<?Y> Q'" by(rule rSim)
-        moreover from `Q' \<sim> Q` have "Q' \<leadsto>[bisim] Q" by(rule bisimE)
+        from \<open>(P', Q') \<in> X\<close> have "P' \<leadsto>\<^sup>^<?Y> Q'" by(rule rSim)
+        moreover from \<open>Q' \<sim> Q\<close> have "Q' \<leadsto>[bisim] Q" by(rule bisimE)
         moreover have "?Y O bisim \<subseteq> ?Y" by(auto dest: Strong_Bisim.transitive)
         ultimately have "P' \<leadsto>\<^sup>^<?Y> Q" by(rule strongAppend)
-        moreover note `P \<approx> P'`
+        moreover note \<open>P \<approx> P'\<close>
         moreover have "weakBisimulation O ?Y \<subseteq> ?Y" by(blast dest: transitive)
         ultimately have "P \<leadsto>\<^sup>^<?Y> Q" using weakBisimulationE(1)
           by(rule_tac Weak_Sim.transitive)
       }
       ultimately have "P' \<leadsto>\<^sup>^<?X> Q" by(rule Weak_Sim.transitive)
-      moreover note `P \<approx> P'`
+      moreover note \<open>P \<approx> P'\<close>
       moreover have "weakBisimulation O ?X \<subseteq> ?X" by(blast dest: transitive)
       ultimately have "P \<leadsto>\<^sup>^<?X> Q" using weakBisimulationE(1)
         by(rule_tac Weak_Sim.transitive)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     thus ?case 

@@ -51,7 +51,7 @@ proof -
     fix w assume "set w \<subseteq> \<Sigma>"
     moreover
     obtain a where "a \<in> \<Sigma>"
-      using `\<Sigma> \<noteq> {}` by blast
+      using \<open>\<Sigma> \<noteq> {}\<close> by blast
     ultimately
     have "foldl \<delta> q\<^sub>0 w = foldl \<delta> q\<^sub>0 (prefix (length w) (w \<frown> (iter [a])))" 
       and "range (w \<frown> (iter [a])) \<subseteq> \<Sigma>"
@@ -73,7 +73,7 @@ proof (cases "\<Sigma> \<noteq> {}")
         fix w \<nu> assume "set w \<subseteq> \<Sigma>" "\<nu> \<in> \<Sigma>"
         moreover
         obtain a where "a \<in> \<Sigma>"
-          using `\<Sigma> \<noteq> {}` by blast
+          using \<open>\<Sigma> \<noteq> {}\<close> by blast
         moreover
         have "w = map (\<lambda>n. if n < length w then w ! n else if n - length w = 0 then [\<nu>] ! (n - length w) else a) [0..<length w]"
           by (simp add: nth_equalityI)  
@@ -138,9 +138,9 @@ lemma run\<^sub>t_finite:
 proof -
   let ?S = "(reach \<Sigma> \<delta> q\<^sub>0) \<times> \<Sigma> \<times> (reach \<Sigma> \<delta> q\<^sub>0)"
   have "\<And>i. w i \<in> \<Sigma>" and "\<And>i. set (map w [0..<i]) \<subseteq> \<Sigma>" and "\<Sigma> \<noteq> {}"
-    using `range w \<subseteq> \<Sigma>` by auto 
+    using \<open>range w \<subseteq> \<Sigma>\<close> by auto 
   hence "\<And>n. r n \<in> ?S"
-    unfolding run\<^sub>t.simps run_foldl reach_foldl_def[OF `\<Sigma> \<noteq> {}`] r_def by blast
+    unfolding run\<^sub>t.simps run_foldl reach_foldl_def[OF \<open>\<Sigma> \<noteq> {}\<close>] r_def by blast
   hence "range r \<subseteq> ?S" and "finite ?S"
     using assms by blast+
   thus "finite (range r)"
@@ -237,7 +237,7 @@ proof (cases "\<Sigma> \<noteq> []")
 
     have "reachable {q\<^sub>0} \<subseteq> Q\<^sub>L \<Sigma> \<delta> q\<^sub>0"
       using reachable_imp_dfs[OF _ list_all_init] unfolding list.set reachable_redef
-      unfolding  reach_redef Q\<^sub>L_def using `\<Sigma> \<noteq> []` by auto
+      unfolding  reach_redef Q\<^sub>L_def using \<open>\<Sigma> \<noteq> []\<close> by auto
 
     moreover
 
@@ -247,7 +247,7 @@ proof (cases "\<Sigma> \<noteq> []")
 
     ultimately
     show ?thesis
-      using `\<Sigma> \<noteq> []` dfs_invariant[of "{}", OF _ list_all_init] by simp+
+      using \<open>\<Sigma> \<noteq> []\<close> dfs_invariant[of "{}", OF _ list_all_init] by simp+
 qed (simp add: reach_def Q\<^sub>L_def)
 
 lemma \<delta>\<^sub>L_reach: 
@@ -299,7 +299,7 @@ proof -
           unfolding reachable_def by auto
         moreover
         have 3: "((?q, \<nu>', ?q'), (?q', \<nu>, \<delta> ?q' \<nu>)) \<in> {(x, y). y \<in> set (?succs x)}"
-          using snoc `\<And>q. \<delta> q \<nu> \<in> set (map (\<delta> q) \<Sigma>)` by simp
+          using snoc \<open>\<And>q. \<delta> q \<nu> \<in> set (map (\<delta> q) \<Sigma>)\<close> by simp
         ultimately
         show ?case
           using rtrancl.rtrancl_into_rtrancl[OF 1 3] 2 unfolding reachable_def foldl_append foldl.simps  by auto
@@ -465,10 +465,10 @@ next
         unfolding x_def using product_run_Some[of \<iota>\<^sub>m k _ \<delta>\<^sub>m] insert.hyps(4) by force 
       ultimately
       have "(the (x k), x(k := None)) \<in> Reach"
-        unfolding Reach_def reach_def using `range w \<subseteq> \<Sigma>` by auto
+        unfolding Reach_def reach_def using \<open>range w \<subseteq> \<Sigma>\<close> by auto
       moreover
       have "x = f (the (x k), x(k := None))"
-        unfolding f_def using `x k = Some (run (\<delta>\<^sub>m k) (the (\<iota>\<^sub>m k)) w n)` by auto 
+        unfolding f_def using \<open>x k = Some (run (\<delta>\<^sub>m k) (the (\<iota>\<^sub>m k)) w n)\<close> by auto 
       ultimately
       show "x \<in> f ` Reach"
          by simp
@@ -694,7 +694,7 @@ proof -
       by auto
     moreover
     hence "(m, \<nu>, m') \<in> \<Union> (\<upharpoonleft>\<^sub>k ` S)"
-      using `(q, \<nu>, q') \<in> S` by force
+      using \<open>(q, \<nu>, q') \<in> S\<close> by force
     ultimately
     show "limit \<rho> \<inter> (\<Union> (\<upharpoonleft>\<^sub>k ` S)) \<noteq> {}"
       by blast
@@ -749,17 +749,17 @@ proof standard+
     define w' where "w' n = (SOME x. B (w n) x)" for n
     
     have "\<And>n. w n \<in> \<Sigma>"
-      using `range w \<subseteq> \<Sigma>` by blast
+      using \<open>range w \<subseteq> \<Sigma>\<close> by blast
     hence "\<And>n. w' n \<in> \<Sigma>'"
-      using assms `rel_set B \<Sigma> \<Sigma>'` by (simp add: w'_def bi_unique_def rel_set_def; metis someI) 
+      using assms \<open>rel_set B \<Sigma> \<Sigma>'\<close> by (simp add: w'_def bi_unique_def rel_set_def; metis someI) 
     hence "run \<delta>' q' w' n \<in> reach \<Sigma>' \<delta>' q'"
       unfolding reach_def by auto
      
     moreover
 
     have "A z (run \<delta>' q' w' n)"
-      apply (unfold `z = run \<delta> q w n`)
-      apply (insert `A q q'` `(A ===> B ===> A) \<delta> \<delta>'` assms(1))  
+      apply (unfold \<open>z = run \<delta> q w n\<close>)
+      apply (insert \<open>A q q'\<close> \<open>(A ===> B ===> A) \<delta> \<delta>'\<close> assms(1))  
       apply (induction n) 
       apply (simp_all add: rel_fun_def bi_total_def w'_def) 
       by (metis tfl_some)  
@@ -781,17 +781,17 @@ proof standard+
     define w' where "w' n = (SOME x. B x (w n))" for n
     
     have "\<And>n. w n \<in> \<Sigma>'"
-      using `range w \<subseteq> \<Sigma>'` by blast
+      using \<open>range w \<subseteq> \<Sigma>'\<close> by blast
     hence "\<And>n. w' n \<in> \<Sigma>"
-      using assms `rel_set B \<Sigma> \<Sigma>'` by (simp add: w'_def bi_unique_def rel_set_def; metis someI)
+      using assms \<open>rel_set B \<Sigma> \<Sigma>'\<close> by (simp add: w'_def bi_unique_def rel_set_def; metis someI)
     hence "run \<delta> q w' n \<in> reach \<Sigma> \<delta> q"
       unfolding reach_def by auto
      
     moreover
 
     have "A (run \<delta> q w' n) z"
-      apply (unfold `z = run \<delta>' q' w n`)
-      apply (insert `A q q'` `(A ===> B ===> A) \<delta> \<delta>'` assms(1))  
+      apply (unfold \<open>z = run \<delta>' q' w n\<close>)
+      apply (insert \<open>A q q'\<close> \<open>(A ===> B ===> A) \<delta> \<delta>'\<close> assms(1))  
       apply (induction n) 
       apply (simp_all add: rel_fun_def bi_total_def w'_def) 
       by (metis tfl_some)  

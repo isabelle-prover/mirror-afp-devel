@@ -1,15 +1,15 @@
-section {* Parallel Operator \label{S:parallel} *}
+section \<open>Parallel Operator \label{S:parallel}\<close>
 
 theory Parallel
 imports Refinement_Lattice
 begin
 
-subsection {* Basic parallel operator *}
+subsection \<open>Basic parallel operator\<close>
 
-text {* 
+text \<open>
   The parallel operator is associative, commutative and has unit skip
   and has as an annihilator the lattice bottom. 
-*}
+\<close>
 
 locale skip = 
   fixes skip :: "'a::refinement_lattice"  ("skip") 
@@ -34,11 +34,11 @@ lemmas par_skip_left = par.left_neutral (* 38 + 37 *)
 end
 
 
-subsection {* Distributed parallel *}
+subsection \<open>Distributed parallel\<close>
 
-text {* 
+text \<open>
   The parallel operator distributes across arbitrary non-empty infima.
-*}
+\<close>
 locale par_distrib = parallel + 
   assumes par_Inf_distrib: "D \<noteq> {} \<Longrightarrow> c \<parallel> (\<Sqinter> D) = (\<Sqinter>d\<in>D. c \<parallel> d)"    (* 39+ *)
 

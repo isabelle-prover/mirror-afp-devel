@@ -82,13 +82,13 @@ lemma trans_Sup_of_chain:
 proof (intro transI)
   fix x y z
   assume "(x,y) \<in> Sup C" and "(y,z) \<in> Sup C"
-  from `(x,y) \<in> Sup C` obtain R where "R \<in> C" and "(x,y) \<in> R" by blast
-  from `(y,z) \<in> Sup C` obtain S where "S \<in> C" and "(y,z) \<in> S" by blast
-  from `R \<in> C` and `S \<in> C` and `set_chain C` have "R \<union> S = R \<or> R \<union> S = S" by blast
-  with `R \<in> C` and `S \<in> C` have "R \<union> S \<in> C" by fastforce
-  with `(x,y) \<in> R` and `(y,z) \<in> S` and trans[of "R \<union> S"]
+  from \<open>(x,y) \<in> Sup C\<close> obtain R where "R \<in> C" and "(x,y) \<in> R" by blast
+  from \<open>(y,z) \<in> Sup C\<close> obtain S where "S \<in> C" and "(y,z) \<in> S" by blast
+  from \<open>R \<in> C\<close> and \<open>S \<in> C\<close> and \<open>set_chain C\<close> have "R \<union> S = R \<or> R \<union> S = S" by blast
+  with \<open>R \<in> C\<close> and \<open>S \<in> C\<close> have "R \<union> S \<in> C" by fastforce
+  with \<open>(x,y) \<in> R\<close> and \<open>(y,z) \<in> S\<close> and trans[of "R \<union> S"]
   have "(x,z) \<in> R \<union> S" unfolding trans_def by blast
-  with `R \<union> S \<in> C` show "(x,z) \<in> \<Union>C" by blast 
+  with \<open>R \<union> S \<in> C\<close> show "(x,z) \<in> \<Union>C" by blast 
 qed
 
 lemma asym_Sup_of_chain:
@@ -98,9 +98,9 @@ proof (intro asymI2 notI)
   fix a b
   assume "(a,b) \<in> Sup C" then obtain "R" where "R \<in> C" and "(a,b) \<in> R" by blast
   assume "(b,a) \<in> Sup C" then obtain "S" where "S \<in> C" and "(b,a) \<in> S" by blast
-  from `R \<in> C` and `S \<in> C` and `set_chain C` have "R \<union> S = R \<or> R \<union> S = S" by blast
-  with `R \<in> C` and `S \<in> C` have "R \<union> S \<in> C" by fastforce
-  with `(a,b) \<in> R` and `(b,a) \<in> S` and asym show "False" unfolding asym.simps by blast
+  from \<open>R \<in> C\<close> and \<open>S \<in> C\<close> and \<open>set_chain C\<close> have "R \<union> S = R \<or> R \<union> S = S" by blast
+  with \<open>R \<in> C\<close> and \<open>S \<in> C\<close> have "R \<union> S \<in> C" by fastforce
+  with \<open>(a,b) \<in> R\<close> and \<open>(b,a) \<in> S\<close> and asym show "False" unfolding asym.simps by blast
 qed
 
 lemma strict_order_lfp:
@@ -163,15 +163,15 @@ lemma strict_order_mult:
   shows "irrefl (mult R)" and "trans (mult R)"
 proof -
   show "irrefl (mult R)" unfolding irrefl_def
-  proof (intro allI notI, elim multE[OF `trans R`])
+  proof (intro allI notI, elim multE[OF \<open>trans R\<close>])
     fix M I J K
     assume "M = I + J" "M = I + K" "J \<noteq> {#}" and *: "\<forall>k \<in> set_mset K. \<exists>j \<in> set_mset J. (k, j) \<in> R"
-    from `M = I + J` and `M = I + K` have "J = K" by simp
+    from \<open>M = I + J\<close> and \<open>M = I + K\<close> have "J = K" by simp
     have "finite (set_mset J)" by simp
-    then have "set_mset J = {}" using * unfolding `J = K`
+    then have "set_mset J = {}" using * unfolding \<open>J = K\<close>
       by (induct rule: finite_induct)
          (simp, metis assms insert_absorb insert_iff insert_not_empty irrefl_def transD)
-    then show "False" using `J \<noteq> {#}` by simp
+    then show "False" using \<open>J \<noteq> {#}\<close> by simp
   qed
 qed (simp add: trans_mult)
 
@@ -222,7 +222,7 @@ next
   using assms unfolding well_order_on_def wf_iff_wfp_on wfp_on_def not_ex not_all de_Morgan_conj
   proof (elim conjE allE exE)
     fix x assume "linear_order r" and "f x \<notin> UNIV \<or> (f (Suc x), f x) \<notin> r - Id"
-    then have "(f x, f (Suc x)) \<in> r" using `linear_order r`
+    then have "(f x, f (Suc x)) \<in> r" using \<open>linear_order r\<close>
     by (force simp: linear_order_on_def Relation.total_on_def partial_order_on_def preorder_on_def
       refl_on_def)
     then show "good (\<lambda>a b. (a, b) \<in> r) f" by (auto simp: good_def)

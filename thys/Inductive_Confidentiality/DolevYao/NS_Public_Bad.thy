@@ -1,4 +1,4 @@
-section{*The Needham-Schroeder Public-Key Protocol against Dolev-Yao --- with Gets event, hence with Reception rule*}
+section\<open>The Needham-Schroeder Public-Key Protocol against Dolev-Yao --- with Gets event, hence with Reception rule\<close>
 
 theory NS_Public_Bad imports Public begin
 
@@ -47,8 +47,8 @@ apply (rule_tac [2] ns_public.Nil [THEN ns_public.NS1, THEN ns_public.Reception,
 by possibility
 
 
-text{*Lemmas about reception invariant: if a message is received it certainly
-was sent*}
+text\<open>Lemmas about reception invariant: if a message is received it certainly
+was sent\<close>
 lemma Gets_imp_Says :
      "\<lbrakk> Gets B X \<in> set evs; evs \<in> ns_public \<rbrakk> \<Longrightarrow> \<exists>A. Says A B X \<in> set evs"
 apply (erule rev_mp)
@@ -215,9 +215,9 @@ apply clarify
 apply (frule_tac A' = A in 
        Says_imp_knows_Spy [THEN parts.Inj, THEN unique_NB], auto)
 apply (rename_tac evs3 B' C)
-txt{*This is the attack!
+txt\<open>This is the attack!
 @{subgoals[display,indent=0,margin=65]}
-*}
+\<close>
 oops
 
 end

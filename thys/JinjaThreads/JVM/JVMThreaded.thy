@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Instantiating the framework semantics with the JVM *}
+section \<open>Instantiating the framework semantics with the JVM\<close>
 
 theory JVMThreaded
 imports
@@ -16,7 +16,7 @@ primrec JVM_final :: "'addr jvm_thread_state \<Rightarrow> bool"
 where
   "JVM_final (xcp, frs) = (frs = [])"
 
-text{* The aggressive JVM *}
+text\<open>The aggressive JVM\<close>
 
 context JVM_heap_base begin
 
@@ -107,7 +107,7 @@ abbreviation mExecT_syntax1 ::
 where
   "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s' \<equiv> exec_mthr.RedT P s ttas s'"
 
-text{* The defensive JVM *}
+text\<open>The defensive JVM\<close>
 
 abbreviation mexecd :: 
   "'addr jvm_prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr jvm_thread_state \<times> 'heap 

@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Polynomials *}
+section \<open>Polynomials\<close>
 
 (* TODO: attempt to turn polynomials into type *)
 
@@ -33,9 +33,9 @@ imports
   Matrix.Utility 
 begin
 
-subsection {*
+subsection \<open>
 Polynomials represented as trees
-*}
+\<close>
 datatype (vars_tpoly: 'v, nums_tpoly: 'a)tpoly = PVar 'v | PNum 'a | PSum "('v,'a)tpoly list" | PMult "('v,'a)tpoly list"
 
 type_synonym ('v,'a)assign = "'v \<Rightarrow> 'a"
@@ -46,24 +46,24 @@ where "eval_tpoly \<alpha> (PVar x) = \<alpha> x"
    |  "eval_tpoly \<alpha> (PSum ps) = sum_list (map (eval_tpoly \<alpha>) ps)"
    |  "eval_tpoly \<alpha> (PMult ps) = prod_list (map (eval_tpoly \<alpha>) ps)"
 
-subsection {* Polynomials represented in normal form as lists of monomials *}
-text {*
+subsection \<open>Polynomials represented in normal form as lists of monomials\<close>
+text \<open>
   The internal representation of polynomials is a sum of products of monomials with coefficients
   where all coefficients are non-zero, and all monomials are different
-*}
+\<close>
  
-text {* Definition of type @{text monom} *}
+text \<open>Definition of type \<open>monom\<close>\<close>
 
 
 type_synonym 'v monom_list = "('v \<times> nat)list" 
-text {* 
+text \<open>
 \begin{itemize}
 \item $[(x,n),(y,m)]$ represent $x^n \cdot y^m$
 \item invariants: all powers are $\geq 1$ and each variable occurs at most once \\
    hence: $[(x,1),(y,2),(x,2)]$ will not occur, but $[(x,3),(y,2)]$;
           $[(x,1),(y,0)]$ will not occur, but $[(x,1)]$
 \end{itemize}
-*}
+\<close>
 
 context linorder
 begin
@@ -83,10 +83,10 @@ definition sum_var_list :: "'a monom_list \<Rightarrow> 'a \<Rightarrow> nat" wh
 lemma sum_var_list_not: "x \<notin> fst ` set m \<Longrightarrow> sum_var_list m x = 0"
   unfolding sum_var_list_def by (induct m, auto)
 
-text {*
+text \<open>
 show that equality of monomials is equivalent to statement that 
 all variables occur with the same (accumulated) power;
-afterwards properties like transitivity, etc. are easy to prove *}
+afterwards properties like transitivity, etc. are easy to prove\<close>
 
 lemma monom_inv_Cons: assumes "monom_inv ((x,p) # m)" 
   and "y \<le> x" shows "y \<notin> fst ` set m" 
@@ -147,10 +147,10 @@ next
   qed
 qed
 
-text {*
+text \<open>
   equality of monomials is also a complete for several carriers, e.g. the naturals, integers, where $x^p = x^q$ implies $p = q$.
   note that it is not complete for carriers like the Booleans where e.g. $x^{Suc(m)} = x^{Suc(n)}$ for all $n,m$.
-*}
+\<close>
 (*
 lemma eq_monom_inv: 
   fixes m :: "'v :: linorder monom_list"
@@ -397,18 +397,18 @@ lift_definition equal_monom :: "'a monom \<Rightarrow> 'a monom \<Rightarrow> bo
 instance by (standard, transfer, auto)
 end
 
-text {*
+text \<open>
 Polynomials are represented with as sum of monomials multiplied by some coefficient 
-*}
+\<close>
 type_synonym ('v,'a)poly = "('v monom \<times> 'a)list"
 
-text {*
+text \<open>
 The polynomials we construct satisfy the following invariants:
 \begin{itemize}
 \item all coefficients are non-zero
 \item the monomial list is distinct 
 \end{itemize}
-*}
+\<close>
 
 definition poly_inv :: "('v,'a :: zero)poly \<Rightarrow> bool"
   where "poly_inv p \<equiv> (\<forall> c \<in> snd ` set p. c \<noteq> 0) \<and> distinct (map fst p)"
@@ -646,7 +646,7 @@ lemma poly_zero_add: "poly_add zero_poly p = p" unfolding zero_poly_def using po
 
 lemma poly_zero_mult: "poly_mult zero_poly p = zero_poly" unfolding zero_poly_def using poly_mult.simps by auto
 
-text {* equality of polynomials *}
+text \<open>equality of polynomials\<close>
 definition eq_poly :: "('v :: linorder, 'a :: comm_semiring_1)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> bool" (infix "=p" 51)
 where "p =p q \<equiv> \<forall> \<alpha>. eval_poly \<alpha> p = eval_poly \<alpha> q"
 
@@ -669,7 +669,7 @@ lemma poly_mult_assoc: "poly_mult p1 (poly_mult p2 p3) =p poly_mult (poly_mult p
 lemma poly_distrib: "poly_mult p (poly_add q1 q2) =p poly_add (poly_mult p q1) (poly_mult p q2)" unfolding eq_poly_def by (auto simp: field_simps)
 
 
-subsection {* Computing normal forms of polynomials *}
+subsection \<open>Computing normal forms of polynomials\<close>
 fun
   poly_of :: "('v :: linorder,'a :: comm_semiring_1)tpoly \<Rightarrow> ('v,'a)poly"
 where "poly_of (PNum i) = (if i = 0 then [] else [(1,i)])"
@@ -679,15 +679,15 @@ where "poly_of (PNum i) = (if i = 0 then [] else [(1,i)])"
     | "poly_of (PMult []) = one_poly" 
     | "poly_of (PMult (p # ps)) = (poly_mult (poly_of p) (poly_of (PMult ps)))"
 
-text {*
+text \<open>
   evaluation is preserved by poly\_of
-*}
+\<close>
 lemma poly_of: "eval_poly \<alpha> (poly_of p) = eval_tpoly \<alpha> p"
 by (induct p rule: poly_of.induct, (simp add: zero_poly_def one_poly_def)+)
 
-text {*
+text \<open>
   poly\_of only generates polynomials that satisfy the invariant
-*}
+\<close>
 lemma poly_of_inv: "poly_inv (poly_of p)"
 by (induct p rule: poly_of.induct, 
     simp add: poly_inv_def monom_inv_def,
@@ -698,7 +698,7 @@ by (induct p rule: poly_of.induct,
     simp add: poly_mult_inv)
 
 
-subsection {* Powers and substitutions of polynomials *}
+subsection \<open>Powers and substitutions of polynomials\<close>
 fun poly_power :: "('v :: linorder, 'a :: comm_semiring_1)poly \<Rightarrow> nat \<Rightarrow> ('v,'a)poly" where 
   "poly_power _ 0 = one_poly"
 | "poly_power p (Suc n) = poly_mult p (poly_power p n)"
@@ -891,9 +891,9 @@ declare poly_subst.simps[simp del]
 
 
 
-subsection {*
+subsection \<open>
   Polynomial orders
-*}
+\<close>
 
 definition pos_assign :: "('v,'a :: ordered_semiring_0)assign \<Rightarrow> bool"
 where "pos_assign \<alpha> = (\<forall> x. \<alpha> x \<ge> 0)"
@@ -986,7 +986,7 @@ proof
 qed
 end
 
-text {* monotonicity of polynomials *}
+text \<open>monotonicity of polynomials\<close>
 
 lemma eval_monom_list_mono: assumes fg: "\<And> x. (f :: ('v :: linorder,'a :: poly_carrier)assign) x \<ge> g x" 
   and g: "\<And> x. g x \<ge> 0"
@@ -1223,7 +1223,7 @@ proof (unfold poly_gt_def, intro impI allI)
 qed
 end
 
-subsection {* Degree of polynomials *}
+subsection \<open>Degree of polynomials\<close>
 
 definition monom_list_degree :: "'v monom_list \<Rightarrow> nat" where 
   "monom_list_degree xps \<equiv> sum_list (map snd xps)"
@@ -1297,9 +1297,9 @@ lemma poly_degree_bound: assumes x: "x \<ge> (1 :: 'a :: poly_carrier)"
     times_right_mono[OF poly_coeff_sum pow_mono_exp[OF x d]]] poly_degree[OF x]])
 
 
-subsection {* Executable and sufficient criteria to compare polynomials and ensure monotonicity *} 
+subsection \<open>Executable and sufficient criteria to compare polynomials and ensure monotonicity\<close> 
 
-text {* poly\_split extracts the coefficient for a given monomial and returns additionally the remaining polynomial *}
+text \<open>poly\_split extracts the coefficient for a given monomial and returns additionally the remaining polynomial\<close>
 definition poly_split :: "('v monom) \<Rightarrow> ('v,'a :: zero)poly \<Rightarrow> 'a \<times> ('v,'a)poly" 
   where "poly_split m p \<equiv> case List.extract (\<lambda> (n,_). m = n) p of None \<Rightarrow> (0,p) | Some (p1,(_,c),p2) \<Rightarrow> (c, p1 @ p2)"
 
@@ -1476,8 +1476,8 @@ proof (rule check_poly_ge)
 qed
 
 
-text {* better check for weak monotonicity for discrete carriers: 
-   $p$ is monotone in $v$ if $p(\ldots v+1 \ldots) \geq p(\ldots v \ldots)$ *}
+text \<open>better check for weak monotonicity for discrete carriers: 
+   $p$ is monotone in $v$ if $p(\ldots v+1 \ldots) \geq p(\ldots v \ldots)$\<close>
 definition check_poly_weak_mono_discrete :: "('v :: linorder,'a :: poly_carrier)poly \<Rightarrow> 'v \<Rightarrow> bool"
   where "check_poly_weak_mono_discrete p v \<equiv> check_poly_ge (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p"
 
@@ -1504,7 +1504,7 @@ proof (intro allI impI)
   and v: "f v \<ge> g v"
   from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_ge have ge: "poly_ge (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_ge ?p1 p") unfolding check_poly_weak_mono_discrete_def by blast
-  from discrete[OF `discrete` v] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
+  from discrete[OF \<open>discrete\<close> v] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
   show "eval_poly f p \<ge> eval_poly g p"
   proof (cases k')
     case 0
@@ -1586,7 +1586,7 @@ proof (intro allI impI)
   and v: "f v \<ge> g v"
   from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_ge have ge: "poly_ge p (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p)" (is "poly_ge p ?p1") unfolding check_poly_weak_anti_mono_discrete_def by blast
-  from discrete[OF `discrete` v] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
+  from discrete[OF \<open>discrete\<close> v] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
   show "eval_poly g p \<ge> eval_poly f p"
   proof (cases k')
     case 0
@@ -1944,7 +1944,7 @@ proof (intro allI impI)
   from gass have g: "\<And> x. g x \<ge> 0" unfolding pos_assign_def ..
   from fgw have w: "\<And> w. v \<noteq> w \<Longrightarrow> f w = g w" by auto
   from assms check_poly_gt have gt: "poly_gt (poly_subst (\<lambda> w. poly_of (if w = v then PSum [PNum 1, PVar v] else PVar w)) p) p" (is "poly_gt ?p1 p") unfolding check_poly_strict_mono_discrete_def by blast
-  from discrete[OF `discrete` gt_imp_ge[OF v]] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
+  from discrete[OF \<open>discrete\<close> gt_imp_ge[OF v]] obtain k' where id: "f v = (((+) 1)^^k') (g v)" by auto
   {
     assume "k' = 0"
     from v[unfolded id this] have "g v \<succ> g v" by simp

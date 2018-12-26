@@ -1,10 +1,10 @@
-section {* Hoare Triples  *}
+section \<open>Hoare Triples\<close>
 
 theory Hoare
 imports Statements
 begin
 
-text {*
+text \<open>
 A hoare triple for $p,q\in \mathit{State}\ \mathit{set}$, and 
 $S : \mathit{State}\ \mathit{set} \to \mathit{State}\ \mathit{set}$ is valid,
 denoted $\models p \{|S|\} q$, if every execution of $S$ starting from state $s\in p$
@@ -15,7 +15,7 @@ to terminate in $q$, that is $p \subseteq S\ q$.
 
 The formal definition of a valid hoare triple only assumes that $p$ (and also $S\ q$) ranges
 over a complete lattice.
-*}
+\<close>
 
 definition
   Hoare :: "'a::complete_distrib_lattice \<Rightarrow> ('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> bool" ("\<Turnstile> (_){| _ |}(_)" [0,0,900] 900) where
@@ -69,9 +69,9 @@ lemma hoare_not_guard:
   apply (drule monoD)
   by auto
 
-subsection {* Hoare rule for recursive statements *}
+subsection \<open>Hoare rule for recursive statements\<close>
 
-text {*
+text \<open>
 A statement $S$ is refined by another statement $S'$ if $\models p \{| S' |\} q$ 
 is true for all $p$ and $q$ such that  $\models p \{| S |\} q$ is true. This
 is equivalent to $S \le S'$. 
@@ -79,7 +79,7 @@ is equivalent to $S \le S'$.
 Next theorem can be used to prove refinement of a recursive program. A recursive
 program is modeled as the least fixpoint of a monotonic mapping from predicate
 transformers to predicate transformers.
-*}
+\<close>
 
 theorem lfp_wf_induction:
   "mono f \<Longrightarrow> (\<forall> w . (p w) \<le> f (Sup_less p w)) \<Longrightarrow> Sup (range p) \<le> lfp f"
@@ -101,12 +101,12 @@ lemma post_refin [simp]: "mono S \<Longrightarrow> ((S p)::'a::bounded_lattice) 
   apply (simp add: le_fun_def post_fun_def, safe)
   by (rule_tac f = S in monoD, simp_all)
 
-text {*
+text \<open>
 Next theorem shows the equivalence between the validity of Hoare
 triples and refinement statements. This theorem together with the
 theorem for refinement of recursive programs will be used to prove
 a Hoare rule for recursive programs.
-*}
+\<close>
 
 theorem hoare_refinement_post:
   "mono f \<Longrightarrow>  (\<Turnstile> x {| f |} y) = ({.x.} o (post_fun y) \<le> f)"
@@ -120,12 +120,12 @@ theorem hoare_refinement_post:
   by (drule_tac x = "y" in spec, simp)
 
 
-text {*
+text \<open>
 Next theorem gives a Hoare rule for recursive programs. If we can prove correct the unfolding 
 of the recursive definition applid to a program $f$, $\models p\ w\ \{| F\  f |\}\  y$, assumming
 that $f$ is correct when starting from $p\  v$, $v<w$, $\models SUP-L\  p\  w\  \{| f |\}\  y$, then
 the recursive program is correct $\models SUP\ p\ \{| lfp\  F |\}\  y$
-*}
+\<close>
 
 lemma assert_Sup: "{.\<Squnion> (X::'a::complete_distrib_lattice set).} = \<Squnion> (assert ` X)"
   by (simp add: fun_eq_iff assert_def Sup_inf)

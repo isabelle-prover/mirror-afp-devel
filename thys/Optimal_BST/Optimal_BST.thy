@@ -64,9 +64,9 @@ subsubsection \<open>Functions \<open>wpl\<close> and \<open>min_wpl\<close>\<cl
 
 sublocale wpl where w = w .
 
-text {* Function \<open>min_wpl i j\<close> computes the minimal weighted path length of any tree \<open>t\<close>
+text \<open>Function \<open>min_wpl i j\<close> computes the minimal weighted path length of any tree \<open>t\<close>
 where @{prop"inorder t = [i..j]"}. It simply tries all possible indices between \<open>i\<close> and \<open>j\<close>
-as the root. Thus it implicitly constructs all possible trees. *}
+as the root. Thus it implicitly constructs all possible trees.\<close>
 
 declare conj_cong [fundef_cong]
 function min_wpl :: "int \<Rightarrow> int \<Rightarrow> nat" where
@@ -95,7 +95,7 @@ next
   case step thus ?case using upto_rec1 upto_rec2 by simp
 qed
 
-text{* Function @{const min_wpl} returns a lower bound for all possible BSTs: *}
+text\<open>Function @{const min_wpl} returns a lower bound for all possible BSTs:\<close>
 
 theorem min_wpl_is_optimal:
   "inorder t = [i..j] \<Longrightarrow> min_wpl i j \<le> wpl i j t"
@@ -135,10 +135,10 @@ is the wpl of an optimal tree that can be computed in the same manner.\<close>
 
 subsubsection \<open>Function \<open>opt_bst\<close>\<close>
 
-text{* This is the functional equivalent of the standard cubic imperative algorithm.
+text\<open>This is the functional equivalent of the standard cubic imperative algorithm.
 Unless it is memoized, the complexity is again exponential.
 The pattern of recursion is the same as for @{const min_wpl} but instead of the minimal weight
-it computes a tree with the minimal weight: *}
+it computes a tree with the minimal weight:\<close>
 
 function opt_bst :: "int \<Rightarrow> int \<Rightarrow> int tree" where
 "opt_bst i j =
@@ -201,7 +201,7 @@ termination
   by (relation "measure (\<lambda>(i,j). nat(j-i+1))")(auto)
 declare opt_bst_wpl.simps[simp del]
 
-text{* Function @{const opt_bst_wpl} returns an optimal tree and its wpl: *}
+text\<open>Function @{const opt_bst_wpl} returns an optimal tree and its wpl:\<close>
 
 lemma opt_bst_wpl_eq_pair:
   "opt_bst_wpl i j = (opt_bst i j, wpl i j (opt_bst i j))"

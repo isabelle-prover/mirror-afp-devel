@@ -61,9 +61,9 @@ proof
   ultimately have *: "set_nebset R' = ?L'" unfolding R'_def by (intro set_nebset_to_set_nebset)
   show ?R unfolding Grp_def relcompp.simps conversep.simps
   proof (intro CollectI case_prodI exI[of _ a] exI[of _ b] exI[of _ R'] conjI refl)
-    from * show "a = map_nebset fst R'" using conjunct1[OF `?L`]
+    from * show "a = map_nebset fst R'" using conjunct1[OF \<open>?L\<close>]
       by (transfer, auto simp add: image_def Int_def split: prod.splits)
-    from * show "b = map_nebset snd R'" using conjunct2[OF `?L`]
+    from * show "b = map_nebset snd R'" using conjunct2[OF \<open>?L\<close>]
       by (transfer, auto simp add: image_def Int_def split: prod.splits)
   qed (auto simp add: *)
 next

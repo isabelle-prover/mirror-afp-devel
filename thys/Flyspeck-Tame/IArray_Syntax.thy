@@ -1,13 +1,13 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-section {* Syntax for operations on immutable arrays *}
+section \<open>Syntax for operations on immutable arrays\<close>
 
 theory IArray_Syntax
 imports Main "HOL-Library.IArray"
 begin
 
-subsection {* Tabulation *}
+subsection \<open>Tabulation\<close>
 
 definition tabulate :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a iarray"
 where
@@ -34,7 +34,7 @@ translations
   "\<lbrakk>f. x < l, y < m, z < n\<rbrakk>" == "CONST tabulate3 l m n (\<lambda>x y z. f)"
 
 
-subsection {* Access *}
+subsection \<open>Access\<close>
 
 abbreviation sub1_syntax :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a"  ("(_\<lbrakk>_\<rbrakk>)" [1000] 999)
 where
@@ -48,7 +48,7 @@ abbreviation sub3_syntax :: "'a iarray iarray iarray \<Rightarrow> nat \<Rightar
 where
   "as\<lbrakk>l, m, n\<rbrakk> \<equiv> IArray.sub (IArray.sub (IArray.sub as l) m) n"
 
-text {* examples:  @{term "\<lbrakk>0. i < 5\<rbrakk>"}, @{term "\<lbrakk>i. i < 5, j < 3\<rbrakk>"}  *}
+text \<open>examples:  @{term "\<lbrakk>0. i < 5\<rbrakk>"}, @{term "\<lbrakk>i. i < 5, j < 3\<rbrakk>"}\<close>
 
 end
 

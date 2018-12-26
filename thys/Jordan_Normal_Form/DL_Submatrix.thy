@@ -32,7 +32,7 @@ proof -
        "j = pick J (card {a\<in>J. a < j})" using pick_card_in_set assms by auto
   have "{a\<in>I. a < i} \<subset> {i. i < dim_row A \<and> i \<in> I}"
        "{a\<in>J. a < j} \<subset> {j. j < dim_col A \<and> j \<in> J}"
-    unfolding set_le_in using `i<dim_row A` `j<dim_col A` Collect_mono less_imp_le less_le_trans `i\<in>I` `j\<in>J` by auto
+    unfolding set_le_in using \<open>i<dim_row A\<close> \<open>j<dim_col A\<close> Collect_mono less_imp_le less_le_trans \<open>i\<in>I\<close> \<open>j\<in>J\<close> by auto
   then have "card {a\<in>I. a < i} < card {i. i < dim_row A \<and> i \<in> I}"
             "card {a\<in>J. a < j} < card {j. j < dim_col A \<and> j \<in> J}" by (simp_all add: psubset_card_mono)
   then show ?thesis

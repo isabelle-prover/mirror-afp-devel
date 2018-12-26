@@ -2,12 +2,12 @@ theory "HOLCF-Meet"
 imports HOLCF
 begin
 
-text {*
+text \<open>
 This theory defines the $\sqcap$ operator on HOLCF domains, and introduces a type class for domains
 where all finite meets exist.
-*}
+\<close>
 
-subsubsection {* Towards meets: Lower bounds *}
+subsubsection \<open>Towards meets: Lower bounds\<close>
 
 context po
 begin
@@ -29,7 +29,7 @@ lemma is_lb_insert [simp]: "(insert x A) >| y = (y \<sqsubseteq> x \<and> A >| y
 lemma is_lb_downward: "[|S >| l; y \<sqsubseteq> l|] ==> S >| y"
   unfolding is_lb_def by (fast intro: below_trans)
 
-subsubsection {* Greatest lower bounds *}
+subsubsection \<open>Greatest lower bounds\<close>
 
 definition is_glb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix ">>|" 55) where
   "S >>| x \<longleftrightarrow> S >| x \<and> (\<forall>u. S >| u --> u \<sqsubseteq> x)"
@@ -37,7 +37,7 @@ definition is_glb :: "'a set \<Rightarrow> 'a \<Rightarrow> bool" (infix ">>|" 5
 definition glb :: "'a set \<Rightarrow> 'a" ("\<Sqinter>_" [60]60) where
   "glb S = (THE x. S >>| x)" 
 
-text {* Access to the definition as inference rule *}
+text \<open>Access to the definition as inference rule\<close>
 
 lemma is_glbD1: "S >>| x ==> S >| x"
   unfolding is_glb_def by fast
@@ -51,12 +51,12 @@ lemma (in po) is_glbI: "[|S >| x; !!u. S >| u ==> u \<sqsubseteq> x|] ==> S >>| 
 lemma is_glb_above_iff: "S >>| x ==> u \<sqsubseteq> x \<longleftrightarrow> S >| u"
   unfolding is_glb_def is_lb_def by (metis below_trans)
 
-text {* glbs are unique *}
+text \<open>glbs are unique\<close>
 
 lemma is_glb_unique: "[|S >>| x; S >>| y|] ==> x = y"
   unfolding is_glb_def is_lb_def by (blast intro: below_antisym)
 
-text {* technical lemmas about @{term glb} and @{term is_glb} *}
+text \<open>technical lemmas about @{term glb} and @{term is_glb}\<close>
 
 lemma is_glb_glb: "M >>| x ==> M >>| glb M"
   unfolding glb_def by (rule theI [OF _ is_glb_unique])
@@ -91,7 +91,7 @@ lemma (in cpo) Meet_insert: "S >>| l \<Longrightarrow> {x, l} >>| l2 \<Longright
   apply (metis is_glb_above_iff is_glb_def is_lb_insert)
   by (metis is_glb_above_iff is_glb_def is_glb_singleton is_lb_insert)
 
-text {* Binary, hence finite meets. *}
+text \<open>Binary, hence finite meets.\<close>
 
 class Finite_Meet_cpo = cpo +
   assumes binary_meet_exists: "\<exists> l. l \<sqsubseteq> x \<and> l \<sqsubseteq> y \<and> (\<forall> z. z \<sqsubseteq> x \<longrightarrow> z \<sqsubseteq> y \<longrightarrow> z \<sqsubseteq> l)"
@@ -106,8 +106,8 @@ begin
     assumes "S \<noteq> {}"
     and "finite S"
     shows "\<exists>x. S >>| x"
-  using `S \<noteq> {}`
-  apply (induct rule: finite_induct[OF `finite S`])
+  using \<open>S \<noteq> {}\<close>
+  apply (induct rule: finite_induct[OF \<open>finite S\<close>])
   apply (erule notE, rule refl)[1]
   apply (case_tac "F = {}")
   apply (metis is_glb_singleton)

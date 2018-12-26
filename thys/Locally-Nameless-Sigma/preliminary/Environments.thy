@@ -4,8 +4,8 @@
 
 theory Environments imports Main begin 
 
-subsection {* Type Environments*}
-text{*Some basic properties of our variable environments.*}
+subsection \<open>Type Environments\<close>
+text\<open>Some basic properties of our variable environments.\<close>
 
 (* We use a wrapped map and an error element *)
 datatype 'a environment = 
@@ -144,7 +144,7 @@ proof (cases e)
 next
   case (Env f) 
   with 
-    not_in_smaller[OF `ok (e\<lparr>a:X\<rparr>\<lparr>b:Y\<rparr>)`] in_add[OF assms]
+    not_in_smaller[OF \<open>ok (e\<lparr>a:X\<rparr>\<lparr>b:Y\<rparr>)\<close>] in_add[OF assms]
     not_in_smaller[OF not_malformed_smaller[OF assms]] 
     in_add[OF not_malformed_smaller[OF assms]]
   show ?thesis
@@ -252,7 +252,7 @@ proof -
   from not_malformed[OF assms(1)] obtain f where f: "e\<lparr>a:X\<rparr> = Env f" by auto
   with assms show ?thesis
   proof (cases e)
-    case Malformed with `e\<lparr>a:X\<rparr> = Env f` 
+    case Malformed with \<open>e\<lparr>a:X\<rparr> = Env f\<close> 
     have False by simp
     then show ?thesis ..
   next
@@ -276,7 +276,7 @@ lemma get_env_bigger:
 proof -
   from not_malformed[OF assms(1)] obtain f where f: "e\<lparr>a:X\<rparr> = Env f" by auto
   thus ?thesis proof (cases e)
-    case Malformed with `e\<lparr>a:X\<rparr> = Env f`
+    case Malformed with \<open>e\<lparr>a:X\<rparr> = Env f\<close>
     show ?thesis by simp (* contradiction *)
   next
     case (Env f') with assms f show ?thesis
@@ -366,9 +366,9 @@ lemma env_app_dom:
   assumes "ok e1" and "env_dom e1 \<inter> env_dom e2 = {}" and "ok e2"
   shows "env_dom (e1+e2) = env_dom e1 \<union> env_dom e2"
 proof -
-  from ok_ok[OF `ok e1`] ok_ok[OF `ok e2`]
+  from ok_ok[OF \<open>ok e1\<close>] ok_ok[OF \<open>ok e2\<close>]
   obtain f1 f2 where "e1 = Env f1" and "e2 = Env f2" by auto
-  with assms(2) ok_finite[OF `ok e1`] ok_finite[OF `ok e2`]
+  with assms(2) ok_finite[OF \<open>ok e1\<close>] ok_finite[OF \<open>ok e2\<close>]
   show ?thesis by auto
 qed
 
@@ -379,9 +379,9 @@ lemma env_app_same[simp]:
   "env_dom e1 \<inter> env_dom e2 = {}" and "ok e2"
   shows "the (e1+e2!x) = the e1!x"
 proof -
-  from ok_ok[OF `ok e1`] ok_ok[OF `ok e2`] 
+  from ok_ok[OF \<open>ok e1\<close>] ok_ok[OF \<open>ok e2\<close>] 
   obtain f1 f2 where "e1 = Env f1" and "e2 = Env f2" by auto
-  with assms(2-3) ok_finite[OF `ok e1`] ok_finite[OF `ok e2`]
+  with assms(2-3) ok_finite[OF \<open>ok e1\<close>] ok_finite[OF \<open>ok e2\<close>]
   show ?thesis proof (auto) 
     fix y :: 'a assume "dom f1 \<inter> dom f2 = {}" and "f1 x = Some y"
     from map_add_comm[OF this(1)] this(2) have "(f1 ++ f2) x = Some y"
@@ -395,7 +395,7 @@ lemma env_app_ok[simp]:
   assumes "ok e1" and "env_dom e1 \<inter> env_dom e2 = {}" and "ok e2"
   shows "ok (e1+e2)"
 proof -
-  from ok_ok[OF `ok e1`] ok_ok[OF `ok e2`] 
+  from ok_ok[OF \<open>ok e1\<close>] ok_ok[OF \<open>ok e2\<close>] 
   obtain f1 f2 where "e1 = Env f1" and "e2 = Env f2" by auto
   with assms show ?thesis by (simp,force)
 qed
@@ -407,7 +407,7 @@ lemma env_app_add[simp]:
   "x \<notin> env_dom e1" and "x \<notin> env_dom e2"
   shows "(e1+e2)\<lparr>x:X\<rparr> = e1\<lparr>x:X\<rparr>+e2"
 proof -
-  from ok_ok[OF `ok e1`] ok_ok[OF `ok e2`] 
+  from ok_ok[OF \<open>ok e1\<close>] ok_ok[OF \<open>ok e2\<close>] 
   obtain f1 f2 where "e1 = Env f1" and "e2 = Env f2" by auto
   with assms show ?thesis proof (clarify, simp, intro impI ext)
     fix xa :: string
@@ -417,7 +417,7 @@ proof -
       case False thus "(f1 ++ f2) xa = (f1(x \<mapsto> X) ++ f2) xa" 
         by (simp add: map_add_def split: option.split)
     next
-      case True with `x \<notin> dom f1` `x \<notin> dom f2` 
+      case True with \<open>x \<notin> dom f1\<close> \<open>x \<notin> dom f2\<close> 
       have "(f1(xa \<mapsto> X) ++ f2) xa = Some X"
         by (auto simp: map_add_Some_iff)
       thus "Some X = (f1(xa \<mapsto> X) ++ f2) xa" by simp
@@ -435,28 +435,28 @@ lemma env_app_add2[simp]:
   "y \<notin> env_dom e2" and "x \<noteq> y"
   shows "(e1+e2)\<lparr>x:X\<rparr>\<lparr>y:Y\<rparr> = e1\<lparr>x:X\<rparr>\<lparr>y:Y\<rparr>+e2"
 proof -
-  from ok_ok[OF `ok e1`] ok_ok[OF `ok e2`] 
+  from ok_ok[OF \<open>ok e1\<close>] ok_ok[OF \<open>ok e2\<close>] 
   obtain f1 f2 where "e1 = Env f1" and "e2 = Env f2" by auto
   with assms show ?thesis proof (clarify, simp, intro impI ext)
     fix xa :: string
     assume "x \<notin> dom f1" and "x \<notin> dom f2" and "y \<notin> dom f1" and "y \<notin> dom f2"
-    with `x \<noteq> y`
+    with \<open>x \<noteq> y\<close>
     show "((f1 ++ f2)(x \<mapsto> X, y \<mapsto> Y)) xa = (f1(x \<mapsto> X, y \<mapsto> Y) ++ f2) xa"
     proof (cases "x = xa", simp)
       case True 
-      with `x \<noteq> y` `x \<notin> dom f1` `x \<notin> dom f2` `y \<notin> dom f1` `y \<notin> dom f2`
+      with \<open>x \<noteq> y\<close> \<open>x \<notin> dom f1\<close> \<open>x \<notin> dom f2\<close> \<open>y \<notin> dom f1\<close> \<open>y \<notin> dom f2\<close>
       have "(f1(xa \<mapsto> X,y \<mapsto> Y) ++ f2) xa = Some X"
         by (auto simp: map_add_Some_iff)
       thus "Some X = (f1(xa \<mapsto> X,y \<mapsto> Y) ++ f2) xa" by simp
     next
       case False thus ?thesis
       proof (cases "y = xa", simp_all)
-        case False with `x \<noteq> xa` 
+        case False with \<open>x \<noteq> xa\<close> 
         show "(f1 ++ f2) xa = (f1(x \<mapsto> X,y \<mapsto> Y) ++ f2) xa" 
           by (simp add: map_add_def split: option.split)
       next
         case True 
-        with `x \<noteq> y` `x \<notin> dom f1` `x \<notin> dom f2` `y \<notin> dom f1` `y \<notin> dom f2`
+        with \<open>x \<noteq> y\<close> \<open>x \<notin> dom f1\<close> \<open>x \<notin> dom f2\<close> \<open>y \<notin> dom f1\<close> \<open>y \<notin> dom f2\<close>
         have "(f1(x \<mapsto> X,xa \<mapsto> Y) ++ f2) xa = Some Y"
           by (auto simp: map_add_Some_iff)
         thus "Some Y = (f1(x \<mapsto> X, xa \<mapsto> Y) ++ f2) xa" by simp

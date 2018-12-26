@@ -1,4 +1,4 @@
-section {* Stack by Reversed Array *}
+section \<open>Stack by Reversed Array\<close>
 theory Impl_Rev_Array_Stack
 imports   
   CAVA_Base.CAVA_Base

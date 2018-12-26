@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* Monadic Second-Order Logic Formulas *}
+section \<open>Monadic Second-Order Logic Formulas\<close>
 
 (*<*)
 theory Formula
@@ -8,7 +8,7 @@ imports Pi_Regular_Operators List_More
 begin
 (*>*)
 
-subsection {* Interpretations and Encodings *}
+subsection \<open>Interpretations and Encodings\<close>
 
 type_synonym 'a interp = "'a list \<times> (nat + nat set) list"
 
@@ -16,7 +16,7 @@ abbreviation "enc_atom_bool I n \<equiv> map (\<lambda>x. case x of Inl p \<Righ
 
 abbreviation "enc_atom I n a \<equiv> (a, enc_atom_bool I n)"
 
-subsection {* Syntax and Semantics of MSO *}
+subsection \<open>Syntax and Semantics of MSO\<close>
 
 datatype 'a formula =
   FQ 'a nat
@@ -104,7 +104,7 @@ lemma max_idx_vars: "pre_wf_formula n \<phi> \<Longrightarrow> \<forall>p \<in> 
 lemma finite_FOV: "finite (FOV \<phi>)"
   by (induct \<phi>) (auto split: if_split_asm)
 
-subsection {* ENC *}
+subsection \<open>ENC\<close>
 
 definition valid_ENC :: "nat \<Rightarrow> nat \<Rightarrow> ('a atom) rexp" where
   "valid_ENC n p = (if n = 0 then Full else

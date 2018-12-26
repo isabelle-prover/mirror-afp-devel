@@ -88,14 +88,14 @@ proof-
   hence [simp]: "insert x (domA \<Gamma> - {x} \<union> upds S)  = (domA \<Gamma> \<union> upds S)"
     by auto
 
-  from Abinds_reorder1[OF `map_of \<Gamma> x = Some e`] `ae x = up\<cdot>0`
+  from Abinds_reorder1[OF \<open>map_of \<Gamma> x = Some e\<close>] \<open>ae x = up\<cdot>0\<close>
   have "ABinds (delete x \<Gamma>)\<cdot>ae \<squnion> Aexp e\<cdot>0 = ABinds \<Gamma>\<cdot>ae" by (auto intro: join_comm)
   moreover have "(\<dots> \<squnion> AEstack as S) f|` (domA \<Gamma> \<union> upds S) \<sqsubseteq> ae"
     using assms(1) by (auto simp add: join_below_iff env_restr_join a_consistent.simps)
   ultimately have "((ABinds (delete x \<Gamma>))\<cdot>ae \<squnion> Aexp e\<cdot>0 \<squnion> AEstack as S) f|` (domA \<Gamma> \<union> upds S) \<sqsubseteq> ae" by simp
   then
   show ?thesis
-     using `ae x = up\<cdot>0` assms(1)
+     using \<open>ae x = up\<cdot>0\<close> assms(1)
      by (auto simp add: join_below_iff env_restr_join  a_consistent.simps)
 qed
 
@@ -115,14 +115,14 @@ proof-
   from below_trans[OF Aexp_Var this]
   have "a \<sqsubseteq> u" by simp
 
-  from `heap_upds_ok (\<Gamma>, S)`
+  from \<open>heap_upds_ok (\<Gamma>, S)\<close>
   have "x \<notin> upds S" by (auto simp add: a_consistent.simps elim!: heap_upds_okE)
   hence [simp]: "(- {x} \<inter> (domA \<Gamma> \<union> upds S)) = (domA \<Gamma> - {x} \<union> upds S)" by auto
 
-  have "Astack S \<sqsubseteq> u" using assms(1) `a \<sqsubseteq> u`
+  have "Astack S \<sqsubseteq> u" using assms(1) \<open>a \<sqsubseteq> u\<close>
     by (auto elim: below_trans simp add: a_consistent.simps)
   
-  from Abinds_reorder1[OF `map_of \<Gamma> x = Some e`] `ae x = up\<cdot>u`
+  from Abinds_reorder1[OF \<open>map_of \<Gamma> x = Some e\<close>] \<open>ae x = up\<cdot>u\<close>
   have "ABinds (delete x \<Gamma>)\<cdot>ae \<squnion> Aexp e\<cdot>u = ABinds \<Gamma>\<cdot>ae" by (auto intro: join_comm)
   moreover
   have "(\<dots> \<squnion> AEstack as S) f|` (domA \<Gamma> \<union> upds S) \<sqsubseteq> ae"
@@ -137,7 +137,7 @@ proof-
     by (simp add: env_delete_restr)
   then
   show ?thesis
-     using `ae x = up\<cdot>u` `Astack S \<sqsubseteq> u` assms(1)
+     using \<open>ae x = up\<cdot>u\<close> \<open>Astack S \<sqsubseteq> u\<close> assms(1)
      by (auto simp add: join_below_iff env_restr_join  a_consistent.simps elim : below_trans)
 qed
 
@@ -157,10 +157,10 @@ proof-
   from below_trans[OF Aexp_Var this]
   have "a \<sqsubseteq> u" by simp
 
-  have "Astack S \<sqsubseteq> u" using assms(1) `a \<sqsubseteq> u`
+  have "Astack S \<sqsubseteq> u" using assms(1) \<open>a \<sqsubseteq> u\<close>
     by (auto elim: below_trans simp add: a_consistent.simps)
   
-  from Abinds_reorder1[OF `map_of \<Gamma> x = Some e`] `ae x = up\<cdot>u`
+  from Abinds_reorder1[OF \<open>map_of \<Gamma> x = Some e\<close>] \<open>ae x = up\<cdot>u\<close>
   have "ABinds ((x,e) # delete x \<Gamma>)\<cdot>ae \<squnion> Aexp e\<cdot>u = ABinds \<Gamma>\<cdot>ae" by (auto intro: join_comm)
   moreover
   have "(\<dots> \<squnion> AEstack as S) f|` (domA \<Gamma> \<union> upds S) \<sqsubseteq> ae"
@@ -169,7 +169,7 @@ proof-
   have "((ABinds ((x,e) # delete x \<Gamma>))\<cdot>ae \<squnion> Aexp e\<cdot>u \<squnion> AEstack as S) f|` (domA \<Gamma> \<union> upds S) \<sqsubseteq> ae" by simp
   then
   show ?thesis
-     using `ae x = up\<cdot>u` `Astack S \<sqsubseteq> u` assms(1)
+     using \<open>ae x = up\<cdot>u\<close> \<open>Astack S \<sqsubseteq> u\<close> assms(1)
      by (auto simp add: join_below_iff env_restr_join  a_consistent.simps)
 qed
 
@@ -188,9 +188,9 @@ lemma a_consistent_let:
   assumes "edom ae \<inter> domA \<Delta> = {}"
   shows "a_consistent (Aheap \<Delta> e\<cdot>a \<squnion> ae, a, as) (\<Delta> @ \<Gamma>, e, S)"
 proof-
-  txt {*
+  txt \<open>
     First some boring stuff about scope:
-  *}
+\<close>
   
   have [simp]: "\<And> S. S \<subseteq> domA \<Delta> \<Longrightarrow> ae f|` S = \<bottom>" using assms(4) by auto
   have [simp]: "ABinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a \<squnion> ae) = ABinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)"

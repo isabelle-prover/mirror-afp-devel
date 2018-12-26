@@ -6,7 +6,7 @@ theory Presburger_Automata
 imports DFS "HOL-Library.Nat_Bijection"
 begin
 
-section {* General automata *}
+section \<open>General automata\<close>
 
 definition
   "reach tr p as q = (q = foldl tr p as)"
@@ -56,7 +56,7 @@ lemma reach_is_node: "\<lbrakk>reach trans p w q; is_node p; list_all is_alpha w
 end
 
 
-section {* BDDs *}
+section \<open>BDDs\<close>
 
 definition
   is_alph :: "nat \<Rightarrow> bool list \<Rightarrow> bool" where
@@ -263,7 +263,7 @@ proof -
 qed
 
 
-section {* DFAs *}
+section \<open>DFAs\<close>
 
 type_synonym bddtable = "nat bdd list"
 type_synonym astate = "bool list"
@@ -319,7 +319,7 @@ abbreviation "dfa_reach A \<equiv> reach (dfa_trans A)"
 lemma dfa_startnode_is_node: "wf_dfa A n \<Longrightarrow> dfa_is_node A 0"
   by (simp add: dfa_is_node_def wf_dfa_def)
 
-subsection {* Minimization *}
+subsection \<open>Minimization\<close>
 
 primrec make_tr :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list"
 where
@@ -730,7 +730,7 @@ using assms proof (induct M T arbitrary: m rule: fixpt_induct)
         with H C[of "Suc n"] show "tr_lookup T q' p'" by simp
       qed
     } hence "\<forall>p q. dfa_is_node M q \<and> p < q \<longrightarrow> tr_lookup T q p = (\<exists>n. dist_nodes M n v p q)" by simp
-    with False `dfa_is_node M q` `p < q` show ?thesis by simp
+    with False \<open>dfa_is_node M q\<close> \<open>p < q\<close> show ?thesis by simp
   qed
 qed
 
@@ -825,7 +825,7 @@ next
     case 0
     show ?thesis proof (cases j)
       case 0
-      with `i=0` Cons(9) show ?thesis by (simp add: tr_lookup_def)
+      with \<open>i=0\<close> Cons(9) show ?thesis by (simp add: tr_lookup_def)
     next
       case (Suc j')
       from 0 Cons(5,9) have 1: "y = Some m \<and> m < l \<or> (y = None \<and> \<not> tr_lookup T jj ii \<and> m = l)" by (cases y, cases "tr_lookup T jj ii", auto)
@@ -919,11 +919,11 @@ next
           with Cons(6)[of "Suc i'"] show "xs ! i' = None" by simp
         qed
         from Cons(7) show "ii < Suc jj" by simp
-        from Cons(8) `i=Suc i'` show "i' < length xs" by simp
-        from Cons(9) `i=Suc i'` show "mk_eqcl' xs ii (Suc jj) l T ! i' = Some m" by simp
+        from Cons(8) \<open>i=Suc i'\<close> show "i' < length xs" by simp
+        from Cons(9) \<open>i=Suc i'\<close> show "mk_eqcl' xs ii (Suc jj) l T ! i' = Some m" by simp
         from Cons(10) Suc show "j' < length xs" by simp
       qed
-      also from Suc `i=Suc i'` have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
+      also from Suc \<open>i=Suc i'\<close> have "\<dots> = (\<not> tr_lookup T (i + jj) (j + jj))" by simp
       finally show ?thesis by simp
     qed
   qed
@@ -1506,7 +1506,7 @@ proof -
 qed
 
 
-section {* NFAs *}
+section \<open>NFAs\<close>
 
 type_synonym nbddtable = "bool list bdd list"
 type_synonym nfa = "nbddtable \<times> astate"
@@ -1614,7 +1614,7 @@ using assms proof (induct bdds q obdd rule: subsetbdd.induct)
         then obtain i where I: "?S i" ..
         { assume "i = 0" with I have "?Q" by simp }
         { assume "i \<noteq> 0" then obtain j where "i = Suc j" by (cases i) simp+ with I have "\<exists>j. ?P j" by auto }
-        with `i=0 \<Longrightarrow> ?Q` show ?thesis by (cases "i=0") simp+
+        with \<open>i=0 \<Longrightarrow> ?Q\<close> show ?thesis by (cases "i=0") simp+
       qed simp
     qed
     finally have "((\<exists>i<length xs. xs ! i \<and> bdd_lookup (bdds ! i) ws ! a) \<or> bdd_lookup (bdd_binop bv_or bdd bdd') ws ! a) =
@@ -1632,7 +1632,7 @@ using assms proof (induct bdds q obdd rule: subsetbdd.induct)
         assume "\<exists>i. ?P i"
         then obtain i where "?P i" ..
         then obtain j where "i = Suc j" by (cases i) simp+
-        with `?P i` show ?thesis by auto
+        with \<open>?P i\<close> show ?thesis by auto
       qed simp
     qed
     with False H show ?thesis by simp
@@ -1751,9 +1751,9 @@ lemma nfa_startnode_is_node: "wf_nfa A n \<Longrightarrow> nfa_is_node A (nfa_st
   by (simp add: nfa_is_node_def wf_nfa_def nfa_startnode_def)
 
 
-section {* Automata Constructions *}
+section \<open>Automata Constructions\<close>
 
-subsection {* Negation *}
+subsection \<open>Negation\<close>
 
 definition
   negate_dfa :: "dfa \<Rightarrow> dfa" where
@@ -1781,7 +1781,7 @@ proof -
 qed
 
 
-subsection {* Product Automaton *}
+subsection \<open>Product Automaton\<close>
 
 definition
   prod_succs :: "dfa \<Rightarrow> dfa \<Rightarrow> nat \<times> nat \<Rightarrow> (nat \<times> nat) list" where
@@ -1884,12 +1884,12 @@ proof -
       show ?thesis
       proof (cases "y2 = j")
         case True
-        with step y `y1 = i` show ?thesis
+        with step y \<open>y1 = i\<close> show ?thesis
           by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append
             prod_invariant_def prod_is_node_def dfa_is_node_def)
       next
         case False
-        with step y `y1 = i` show ?thesis
+        with step y \<open>y1 = i\<close> show ?thesis
           by (auto simp add: prod_ins_def prod_memb_def split_beta nth_append
             prod_invariant_def prod_is_node_def dfa_is_node_def)
       qed
@@ -2071,9 +2071,9 @@ proof -
     proof (induct arbitrary: s\<^sub>1 s\<^sub>2)
       case Nil
       from is_node_s1_s2
-        s1 s2 `dfa_is_node A s\<^sub>1` `dfa_is_node B s\<^sub>2`
+        s1 s2 \<open>dfa_is_node A s\<^sub>1\<close> \<open>dfa_is_node B s\<^sub>2\<close>
       have "(0, 0) = (s\<^sub>1, s\<^sub>2)"
-        using start `fst (prod_dfs A B (0,0)) ! s\<^sub>1 ! s\<^sub>2 = Some 0`
+        using start \<open>fst (prod_dfs A B (0,0)) ! s\<^sub>1 ! s\<^sub>2 = Some 0\<close>
         by (rule prod_dfs_inj)
       moreover have "dfa_reach A 0 [] 0" by (rule reach_nil)
       moreover have "dfa_reach B 0 [] 0" by (rule reach_nil)
@@ -2105,7 +2105,7 @@ proof -
         by (auto simp: wf_dfa_def dfa_is_node_def list_all_iff is_alph_def)
       from snoc(3)[unfolded dfa_trans_def binop_dfa_def Let_def split_beta fst_conv nth_map[OF j] bdd_lookup_binop[OF lh,OF rh], folded dfa_trans_def] k
       have "fst (prod_dfs A B (0,0)) ! s\<^sub>1 ! s\<^sub>2 = Some k" by simp
-      with is_node_s1_s2 `dfa_is_node A s\<^sub>1` `dfa_is_node B s\<^sub>2` s_tr1' s_tr2'
+      with is_node_s1_s2 \<open>dfa_is_node A s\<^sub>1\<close> \<open>dfa_is_node B s\<^sub>2\<close> s_tr1' s_tr2'
       have "(s\<^sub>1, s\<^sub>2) = (dfa_trans A (fst (snd (prod_dfs A B (0,0)) ! j)) bs, dfa_trans B (snd (snd (prod_dfs A B (0,0)) ! j)) bs)"
         using k
         by (rule prod_dfs_inj)
@@ -2277,7 +2277,7 @@ lemma imp_dfa_accepts:
   using assms by (auto simp add: binop_dfa_accepts imp_dfa_def)
 
 
-subsection {* Transforming DFAs to NFAs *}
+subsection \<open>Transforming DFAs to NFAs\<close>
 
 definition
   nfa_of_dfa :: "dfa \<Rightarrow> nfa" where
@@ -2300,7 +2300,7 @@ proof -
   assume q: "q < n" and r: "?lhs = ?rhs"
   { assume "p \<noteq> q"
     with q have "?lhs ! q = True" by simp
-    moreover from `p \<noteq> q` q have "?rhs ! q = False" by simp
+    moreover from \<open>p \<noteq> q\<close> q have "?rhs ! q = False" by simp
     ultimately have "?lhs \<noteq> ?rhs" by auto
   }
   with r show "q = p" by auto
@@ -2342,7 +2342,7 @@ proof -
         from V2 snoc have "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def) moreover
         note JL moreover
         from H have IL: "i < length (fst (nfa_of_dfa M))" by (simp add: nfa_of_dfa_def split_beta) moreover
-        from `?lhs` have "bdd_lookup (subsetbdd (fst (nfa_of_dfa M)) j (nfa_emptybdd (length j))) bs ! i" by (simp add: nfa_trans_def) 
+        from \<open>?lhs\<close> have "bdd_lookup (subsetbdd (fst (nfa_of_dfa M)) j (nfa_emptybdd (length j))) bs ! i" by (simp add: nfa_trans_def) 
         ultimately have "\<exists>x < length j. j ! x \<and> bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by (simp add: bdd_lookup_subsetbdd)
         then obtain x where xl: "x < length j" and xj: "j ! x" and xs: "bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by blast
         with snoc J PL' have "x = p" by (cases "p = x") simp+
@@ -2351,7 +2351,7 @@ proof -
       next
         assume rhs: "?rhs"
         with H mL have "m = i" by (cases "m = i") (simp add: dfa_is_node_def)+
-        from PL snoc(3,4) m_def `m = i` H have "bdd_lookup (fst (nfa_of_dfa M) ! p) bs ! i"
+        from PL snoc(3,4) m_def \<open>m = i\<close> H have "bdd_lookup (fst (nfa_of_dfa M) ! p) bs ! i"
           by (simp add: nfa_of_dfa_def split_beta dfa_is_node_def wf_dfa_def is_alph_def list_all_iff bdd_map_bdd_lookup dfa_trans_def)
         with PL' J have E: "\<exists>p < length j. j ! p \<and> bdd_lookup( fst (nfa_of_dfa M) ! p) bs ! i" by auto
         from snoc(4) V2 have V': "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def)
@@ -2428,7 +2428,7 @@ proof -
 qed
 
 
-subsection {* Transforming NFAs to DFAs *}
+subsection \<open>Transforming NFAs to DFAs\<close>
 
 fun
   bddinsert :: "'a bdd \<Rightarrow> bool list \<Rightarrow> 'a \<Rightarrow> 'a bdd"
@@ -2592,7 +2592,7 @@ proof -
           case False
           with H SS have "vv < length l1" by simp
           with SS have "l2 ! vv = l1 ! vv" by (simp add: nth_append)
-          with False H SS `x = qq` have "vv < length l1 \<and> l1 ! vv = x" by auto
+          with False H SS \<open>x = qq\<close> have "vv < length l1 \<and> l1 ! vv = x" by auto
           with X show ?thesis by auto
         qed (simp add: True)
       qed (auto simp: SS)
@@ -2600,8 +2600,8 @@ proof -
     next
       case False
       hence "(x = qq \<and> length l1 = vv \<or> x \<noteq> qq \<and> bdd_lookup bd1 qq = Some vv) = (x \<noteq> qq \<and> bdd_lookup bd1 qq = Some vv)" by simp
-      also from step(4,5) S `x\<noteq>qq` have "\<dots> = (vv < length l1 \<and> l1 ! vv = qq)" by simp
-      also from SS `x\<noteq>qq` have "\<dots> = (vv < length l2 \<and> l2 ! vv = qq)" by (simp add: nth_append)
+      also from step(4,5) S \<open>x\<noteq>qq\<close> have "\<dots> = (vv < length l1 \<and> l1 ! vv = qq)" by simp
+      also from SS \<open>x\<noteq>qq\<close> have "\<dots> = (vv < length l2 \<and> l2 ! vv = qq)" by (simp add: nth_append)
       finally  show ?thesis .
     qed
     finally show ?case by (simp add: S2)
@@ -2625,7 +2625,7 @@ proof -
     hence Q: "subset_memb q0 S" by (simp add: subset_memb_def split_beta)
     with step have "q0 \<noteq> x" by auto
     from step have I: "bddh (length (fst A)) (fst S)" by (simp add: subset_invariant_def split_beta)
-    with H step `q0\<noteq>x` have V: "\<And>v. bdd_lookup (bddinsert (fst S) x v) q0 = bdd_lookup (fst S) q0" by (simp add: bdd_lookup_bddinsert nfa_is_node_def)
+    with H step \<open>q0\<noteq>x\<close> have V: "\<And>v. bdd_lookup (bddinsert (fst S) x v) q0 = bdd_lookup (fst S) q0" by (simp add: bdd_lookup_bddinsert nfa_is_node_def)
     with step show "bdd_lookup (fst (subset_ins x S)) q0 = Some 0" by (auto simp: subset_ins_def split_beta)
   qed
   thus ?thesis unfolding subset_dfs_def by (auto simp: nfa_is_node_def gen_dfs_simps subset_memb_def subset_empt_def)
@@ -2779,7 +2779,7 @@ proof
     moreover from Nil 1 have "bdd_lookup bd q1 = Some j" by simp
     ultimately have "i = j" by simp
     have "dfa_reach ?M i [] i" by (simp add: reach_nil)
-    with `i=j` Q1 show ?case by simp
+    with \<open>i=j\<close> Q1 show ?case by simp
   next
     case (snoc p bss bs j)
     note S_len = nfa_startnode_is_node[OF well_formed]
@@ -2827,7 +2827,7 @@ next
 
     from snoc have L: "length (fst ?M) = length ls" by (simp add: det_nfa_def)
     with snoc have "dfa_is_node ?M i" by (simp add: dfa_is_node_def) moreover
-    note `dfa_reach ?M i bss j` moreover
+    note \<open>dfa_reach ?M i bss j\<close> moreover
     from snoc have "wf_dfa ?M n" by (simp add: det_wf_nfa) moreover
     from snoc have "list_all (is_alph n) bss" by simp
     ultimately have "dfa_is_node ?M j" by (simp add: dfa_reach_is_node)
@@ -2930,7 +2930,7 @@ proof -
 qed
 
 
-subsection {* Quantifiers *}
+subsection \<open>Quantifiers\<close>
 
 fun quantify_bdd :: "nat \<Rightarrow> bool list bdd \<Rightarrow> bool list bdd" where
   "quantify_bdd i (Leaf q) = Leaf q"
@@ -3156,7 +3156,7 @@ proof -
 qed
 
 
-subsection {* Right Quotient *}
+subsection \<open>Right Quotient\<close>
 
 definition
   rquot_succs :: "nat bdd list \<times> bool list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list" where
@@ -3354,7 +3354,7 @@ proof -
 qed
 
 
-subsection {* Diophantine Equations *}
+subsection \<open>Diophantine Equations\<close>
 
 fun eval_dioph :: "int list \<Rightarrow> nat list \<Rightarrow> int"
 where
@@ -3463,7 +3463,7 @@ next
     (l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) mod 2"
     by simp
   also {
-  from `?r` have "eval_dioph ks (map (\<lambda>x. x div 2) xs) * 2 \<le>
+  from \<open>?r\<close> have "eval_dioph ks (map (\<lambda>x. x div 2) xs) * 2 \<le>
     (l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) div 2 * 2"
     by simp
   also have "\<dots> = l - eval_dioph ks (map (\<lambda>x. x mod 2) xs) -
@@ -3511,8 +3511,8 @@ next
   case False
   then have "a < 0" by auto
   have "\<bar>a div b\<bar> = - (a div b)"
-    by (simp add: div_neg_pos_less0 [OF `a < 0` b] zabs_def)
-  with abs_of_neg [OF `a < 0`] zdiv_zminus1_eq_if [OF `b \<noteq> 0`] mod
+    by (simp add: div_neg_pos_less0 [OF \<open>a < 0\<close> b] zabs_def)
+  with abs_of_neg [OF \<open>a < 0\<close>] zdiv_zminus1_eq_if [OF \<open>b \<noteq> 0\<close>] mod
   show ?thesis by simp
 qed
 
@@ -3947,7 +3947,7 @@ proof (induct bss arbitrary: m)
   case Nil
   have l: "dioph_is_node ks l l"
     by (simp add: dioph_is_node_def)
-  with `(l, m) \<in> (succsr (dioph_succs n ks))\<^sup>*`
+  with \<open>(l, m) \<in> (succsr (dioph_succs n ks))\<^sup>*\<close>
   have m: "dioph_is_node ks l m"
     by (rule dioph_dfs.succsr_is_node)
   with l Nil
@@ -3963,7 +3963,7 @@ next
   case (Cons bs bss)
   have l: "dioph_is_node ks l l"
     by (simp add: dioph_is_node_def)
-  with `(l, m) \<in> (succsr (dioph_succs n ks))\<^sup>*`
+  with \<open>(l, m) \<in> (succsr (dioph_succs n ks))\<^sup>*\<close>
   have m: "dioph_is_node ks l m"
     by (rule dioph_dfs.succsr_is_node)
   with l Cons
@@ -4063,7 +4063,7 @@ proof -
 qed
 
 
-subsection {* Diophantine Inequations *}
+subsection \<open>Diophantine Inequations\<close>
 
 definition
   "dioph_ineq_succs n ks m = map (\<lambda>xs.
@@ -4176,7 +4176,7 @@ proof (induct bss arbitrary: m)
   case Nil
   have l: "dioph_is_node ks l l"
     by (simp add: dioph_is_node_def)
-  with `(l, m) \<in> (succsr (dioph_ineq_succs n ks))\<^sup>*`
+  with \<open>(l, m) \<in> (succsr (dioph_ineq_succs n ks))\<^sup>*\<close>
   have m: "dioph_is_node ks l m"
     by (rule dioph_ineq_dfs.succsr_is_node)
   with l Nil
@@ -4192,7 +4192,7 @@ next
   case (Cons bs bss)
   have l: "dioph_is_node ks l l"
     by (simp add: dioph_is_node_def)
-  with `(l, m) \<in> (succsr (dioph_ineq_succs n ks))\<^sup>*`
+  with \<open>(l, m) \<in> (succsr (dioph_ineq_succs n ks))\<^sup>*\<close>
   have m: "dioph_is_node ks l m"
     by (rule dioph_ineq_dfs.succsr_is_node)
   with l Cons
@@ -4274,7 +4274,7 @@ proof -
 qed
 
 
-section {* Presburger Arithmetic *}
+section \<open>Presburger Arithmetic\<close>
 
 datatype pf =
     Eq "int list" int
@@ -4311,7 +4311,7 @@ where
 | Neg: "dfa_of_pf n (Neg p) = negate_dfa (dfa_of_pf n p)"
   by pat_completeness auto
 
-text {* Auxiliary measure function for termination proof *}
+text \<open>Auxiliary measure function for termination proof\<close>
 
 primrec count_forall :: "pf \<Rightarrow> nat"
 where
@@ -4403,7 +4403,7 @@ next
   then show ?case by simp
 qed
 
-text {* The same with minimization after quantification. *}
+text \<open>The same with minimization after quantification.\<close>
 
 function dfa_of_pf' :: "nat \<Rightarrow> pf \<Rightarrow> dfa"
 where

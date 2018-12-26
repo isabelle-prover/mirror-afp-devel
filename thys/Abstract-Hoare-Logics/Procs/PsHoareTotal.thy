@@ -5,7 +5,7 @@
 
 theory PsHoareTotal imports PsHoare PsTermi begin
 
-subsection{* Hoare logic for total correctness *}
+subsection\<open>Hoare logic for total correctness\<close>
 
 definition
  tvalid :: "'a assn \<Rightarrow> com \<Rightarrow> 'a assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where

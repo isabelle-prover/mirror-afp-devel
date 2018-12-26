@@ -1,16 +1,16 @@
-chapter {* Definition *}
+chapter \<open>Definition\<close>
 
 theory %invisible Definition
 imports Main
 begin
 
-text {* \label{chap:definition} *}
+text \<open>\label{chap:definition}\<close>
 
-text {* In stepwise refinement~\cite{DijkstraConstructive,WirthRefinement},
+text \<open>In stepwise refinement~\cite{DijkstraConstructive,WirthRefinement},
 a program is derived from a specification
-via a sequence of intermediate specifications. *}
+via a sequence of intermediate specifications.\<close>
 
-text {* Pop-refinement (where `pop' stands for `predicates over programs')
+text \<open>Pop-refinement (where `pop' stands for `predicates over programs')
 is an approach to stepwise refinement,
 carried out inside an interactive theorem prover
 (e.g.\ Isabelle/HOL, HOL4, Coq, PVS, ACL2)
@@ -33,7 +33,7 @@ according to decisions that narrow down the possible implementations.
 Conclude the derivation
 with a predicate that characterizes a unique program in explicit syntactic form,
 from which the program text is readily obtained.
-\end{enumerate} *}
+\end{enumerate}\<close>
 
 
 end %invisible

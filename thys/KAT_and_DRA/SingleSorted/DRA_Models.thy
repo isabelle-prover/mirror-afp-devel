@@ -3,18 +3,18 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Models for Demonic Refinement Algebra with Tests *}
+section \<open>Models for Demonic Refinement Algebra with Tests\<close>
 
 theory DRA_Models
   imports DRAT
 begin
 
-text {*
+text \<open>
   We formalise the predicate transformer model of demonic refinement algebra.
   Predicate transformers are formalised as strict and additive functions over a field of sets,
   or alternatively as costrict and multiplicative functions. 
   In the future, this should be merged with Preoteasa's more abstract formalisation~\cite{Preoteasa11}.
-*}
+\<close>
 
 no_notation 
   plus (infixl "+" 65) and 
@@ -25,9 +25,9 @@ notation comp (infixl "\<cdot>" 55)
 
 type_synonym 'a bfun = "'a set \<Rightarrow> 'a set"
 
-text {*
+text \<open>
   Definitions of signature:
-*}
+\<close>
 
 definition top :: "'a bfun" where "top \<equiv> \<lambda>x. UNIV"
 definition bot :: "'a bfun" where "bot \<equiv> \<lambda>x. {}"
@@ -90,9 +90,9 @@ lemma N_de_morgan: "N (N f) o N (N g) = N (N f) \<sqinter> N (N g)"
 lemma conj_pred_aux [simp]: "(\<lambda>p. x p \<union> y p) = y \<Longrightarrow> \<forall>p. x p \<subseteq> y p"
   by (metis Un_upper1)
 
-text {*
+text \<open>
   Next, we define a type for conjuctive or multiplicative predicate transformers.
-*}
+\<close>
 
 typedef 'a bool_op = "{f::'a bfun. (\<forall>g h. mono f \<and> f \<circ> g + f \<circ> h = f \<circ> (g + h) \<and> bot o f = bot)}"
   apply (rule_tac x="\<lambda>x. x" in exI)
@@ -102,9 +102,9 @@ typedef 'a bool_op = "{f::'a bfun. (\<forall>g h. mono f \<and> f \<circ> g + f 
 
 setup_lifting type_definition_bool_op
 
-text {*
+text \<open>
   Conjuctive predicate transformers form a dioid with tests without right annihilator.
-*}
+\<close>
 
 instantiation bool_op :: (type) dioid_one_zerol 
 begin
@@ -153,9 +153,9 @@ definition fun_star :: "'a bfun \<Rightarrow> 'a bfun" where
 definition fun_iteration :: "'a bfun \<Rightarrow> 'a bfun" where
   "fun_iteration f = gfp (\<lambda>g. f o g + id)"
   
-text {*
+text \<open>
   Verifying the iteration laws is left for future work. This could be obtained by integrating
   Preoteasa's approach~\cite{Preoteasa11}.
-*}
+\<close>
 
 end

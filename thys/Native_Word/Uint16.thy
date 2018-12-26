@@ -2,38 +2,38 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Unsigned words of 16 bits *}
+chapter \<open>Unsigned words of 16 bits\<close>
 
 theory Uint16 imports
   Word_Misc
   Bits_Integer
 begin
 
-text {*
+text \<open>
   Restriction for ML code generation:
   This theory assumes that the ML system provides a Word16
   implementation (mlton does, but PolyML 5.5 does not).
-  Therefore, the code setup lives in the target @{text SML_word}
-  rather than @{text SML}.  This ensures that code generation still
-  works as long as @{text "uint16"} is not involved.
-  For the target @{text SML} itself, no special code generation 
+  Therefore, the code setup lives in the target \<open>SML_word\<close>
+  rather than \<open>SML\<close>.  This ensures that code generation still
+  works as long as \<open>uint16\<close> is not involved.
+  For the target \<open>SML\<close> itself, no special code generation 
   for this type is set up. Nevertheless, it should work by emulation via @{typ "16 word"} 
-  if the theory @{text Code_Target_Bits_Int} is imported.
+  if the theory \<open>Code_Target_Bits_Int\<close> is imported.
 
   Restriction for OCaml code generation:
   OCaml does not provide an int16 type, so no special code generation 
   for this type is set up.
-*}
+\<close>
 
 declare prod.Quotient[transfer_rule]
 
-section {* Type definition and primitive operations *}
+section \<open>Type definition and primitive operations\<close>
 
 typedef uint16 = "UNIV :: 16 word set" ..
 
 setup_lifting type_definition_uint16
 
-text {* Use an abstract type for code generation to disable pattern matching on @{term Abs_uint16}. *}
+text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint16}.\<close>
 declare Rep_uint16_inverse[code abstype]
 
 declare Quotient_uint16[transfer_rule]
@@ -102,7 +102,7 @@ lift_definition nat_of_uint16 :: "uint16 \<Rightarrow> nat" is "unat" .
 definition integer_of_uint16 :: "uint16 \<Rightarrow> integer"
 where "integer_of_uint16 = integer_of_int o int_of_uint16"
 
-text {* Use pretty numerals from integer for pretty printing *}
+text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin
 
@@ -135,10 +135,10 @@ by(simp add: zero_uint16_def)
 lemma Abs_uint16_1 [code_post]: "Abs_uint16 1 = 1"
 by(simp add: one_uint16_def)
 
-section {* Code setup *}
+section \<open>Code setup\<close>
 
 code_printing code_module Uint16 \<rightharpoonup> (SML_word)
-{*(* Test that words can handle numbers between 0 and 15 *)
+\<open>(* Test that words can handle numbers between 0 and 15 *)
 val _ = if 4 <= Word.wordSize then () else raise (Fail ("wordSize less than 4"));
 
 structure Uint16 : sig
@@ -167,22 +167,22 @@ fun shiftr_signed x n =
 fun test_bit x n =
   Word16.andb (x, Word16.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word16.fromInt 0
 
-end; (* struct Uint16 *)*}
+end; (* struct Uint16 *)\<close>
 code_reserved SML_word Uint16
 
 code_printing code_module Uint16 \<rightharpoonup> (Haskell)
-{*import qualified Data.Word;
+\<open>import qualified Data.Word;
 import qualified Data.Int;
 
 type Int16 = Data.Int.Int16;
 
-type Word16 = Data.Word.Word16;*}
+type Word16 = Data.Word.Word16;\<close>
 code_reserved Haskell Uint16
 
-text {* Scala provides unsigned 16-bit numbers as Char. *}
+text \<open>Scala provides unsigned 16-bit numbers as Char.\<close>
 
 code_printing code_module Uint16 \<rightharpoonup> (Scala)
-{*object Uint16 {
+\<open>object Uint16 {
 
 def set_bit(x: scala.Char, n: BigInt, b: Boolean) : scala.Char =
   if (b)
@@ -198,10 +198,10 @@ def shiftr_signed(x: scala.Char, n: BigInt) : scala.Char = (x.toShort >> n.intVa
 
 def test_bit(x: scala.Char, n: BigInt) : Boolean = (x & (1.toChar << n.intValue)) != 0
 
-} /* object Uint16 */*}
+} /* object Uint16 */\<close>
 code_reserved Scala Uint16
 
-text {* 
+text \<open>
   Avoid @{term Abs_uint16} in generated code, use @{term Rep_uint16'} instead. 
   The symbolic implementations for code\_simp use @{term Rep_uint16}.
 
@@ -214,7 +214,7 @@ text {*
   these instances will be folded away.)
 
   To convert @{typ "16 word"} values into @{typ uint16}, use @{term "Abs_uint16'"}.
-*}
+\<close>
 
 definition Rep_uint16' where [simp]: "Rep_uint16' = Rep_uint16"
 
@@ -494,7 +494,7 @@ code_printing
   (Haskell) "Prelude.toInteger" and
   (Scala) "BigInt"
 
-section {* Quickcheck setup *}
+section \<open>Quickcheck setup\<close>
 
 definition uint16_of_natural :: "natural \<Rightarrow> uint16"
 where "uint16_of_natural x \<equiv> Uint16 (integer_of_natural x)"

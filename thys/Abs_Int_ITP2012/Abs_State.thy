@@ -8,7 +8,7 @@ imports Abs_Int0
   (* Library import merely to allow string lists to be sorted for output *)
 begin
 
-text{* A concrete type of state with computable @{text"\<sqsubseteq>"}: *}
+text\<open>A concrete type of state with computable \<open>\<sqsubseteq>\<close>:\<close>
 
 datatype 'a st = FunDom "vname \<Rightarrow> 'a" "vname list"
 

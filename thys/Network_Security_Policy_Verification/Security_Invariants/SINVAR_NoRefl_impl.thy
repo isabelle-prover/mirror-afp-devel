@@ -5,7 +5,7 @@ begin
 code_identifier code_module  SINVAR_NoRefl_impl => (Scala) SINVAR_NoRefl
 
 
-subsubsection {* SecurityInvariant NoRefl List Implementation *}
+subsubsection \<open>SecurityInvariant NoRefl List Implementation\<close>
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (s,r) \<in> set (edgesL G). s = r \<longrightarrow> nP s = Refl)"
@@ -50,7 +50,7 @@ interpretation NoRefl_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* PolEnforcePoint packing *}
+subsubsection \<open>PolEnforcePoint packing\<close>
   definition SINVAR_LIB_NoRefl :: "('v::vertex, node_config) TopoS_packed" where
     "SINVAR_LIB_NoRefl \<equiv> 
     \<lparr> nm_name = ''NoRefl'', 
@@ -69,7 +69,7 @@ subsubsection {* PolEnforcePoint packing *}
     apply(simp)
     by(unfold_locales)
 
-text {* Examples*}
+text \<open>Examples\<close>
 
   definition example_net :: "nat list_graph" where
   "example_net \<equiv> \<lparr> nodesL = [1::nat,2,3], 

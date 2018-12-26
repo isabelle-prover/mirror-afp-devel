@@ -5,9 +5,9 @@ theory Card_Datatype
 imports "HOL-Library.Cardinality"
 begin
 
-section {* Definitions to prove equations about the cardinality of data types *}
+section \<open>Definitions to prove equations about the cardinality of data types\<close>
 
-subsection {* Specialised @{term range} constants *}
+subsection \<open>Specialised @{term range} constants\<close>
 
 definition rangeIt :: "'a \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a set"
 where "rangeIt x f = range (\<lambda>n. (f ^^ n) x)"
@@ -94,16 +94,16 @@ proof
         moreover obtain x where x: "x \<in> range f" by auto
         ultimately have "x \<in> rangeC A'" by auto
         then obtain g where "g \<in> A'" "x \<in> range g" by(auto simp add: rangeC_def)
-        with `f \<notin> A'` A have "g \<in> A" "f \<noteq> g" by auto
-        with `f \<in> A` have "\<And>x y. f x \<noteq> g y" by(rule psubset.prems[rule_format])
-        thus False using x `x \<in> range g` by auto
+        with \<open>f \<notin> A'\<close> A have "g \<in> A" "f \<noteq> g" by auto
+        with \<open>f \<in> A\<close> have "\<And>x y. f x \<noteq> g y" by(rule psubset.prems[rule_format])
+        thus False using x \<open>x \<in> range g\<close> by auto
       qed
       hence "rangeC A' \<subset> rangeC A" unfolding rA by auto
       hence "finite A' \<and> (A' \<noteq> {} \<longrightarrow> finite (UNIV :: 'a set))"
         using psubset.prems
         by -(erule psubset.hyps, auto simp add: A)
       with A have "finite A" by simp
-      moreover with `finite (rangeC A)` A `\<forall>f \<in> A. inj f`
+      moreover with \<open>finite (rangeC A)\<close> A \<open>\<forall>f \<in> A. inj f\<close>
       have "finite (UNIV :: 'a set)"
         by(auto simp add: rangeC_def dest: finite_imageD)
       ultimately show ?thesis by blast
@@ -169,16 +169,16 @@ bundle card_datatype =
   conj_cong [cong]
   infinite_rangeIt [simp]
 
-subsection {* Cardinality primitives for polymorphic HOL types *}
+subsection \<open>Cardinality primitives for polymorphic HOL types\<close>
 
-ML {*
+ML \<open>
 structure Card_Simp_Rules = Named_Thms
 (
   val name = @{binding card_simps}
   val description = "Simplification rules for cardinality of types"
 )
-*}
-setup {* Card_Simp_Rules.setup *}
+\<close>
+setup \<open>Card_Simp_Rules.setup\<close>
 
 definition card_fun :: "nat \<Rightarrow> nat \<Rightarrow> nat"
 where "card_fun a b = (if a \<noteq> 0 \<and> b \<noteq> 0 \<or> b = 1 then b ^ a else 0)"

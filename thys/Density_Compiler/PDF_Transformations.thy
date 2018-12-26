@@ -5,7 +5,7 @@
   Provides lemmas for transformations of measure spaces with a density.
 *)
 
-section {* Measure Space Transformations *}
+section \<open>Measure Space Transformations\<close>
 
 theory PDF_Transformations
 imports Density_Predicates
@@ -226,12 +226,12 @@ proof (rule subprob_density_distr_real_eq[OF dens])
   proof (case_tac "inverse (Suc i) \<le> b")
     fix i assume True: "inverse (Suc i) \<le> b"
     let ?a = "inverse (Suc i)"
-    from `a \<le> b` have A: "?A i \<inter> {a..b} = {max ?a a..b}" (is "?E = ?F") by auto
+    from \<open>a \<le> b\<close> have A: "?A i \<inter> {a..b} = {max ?a a..b}" (is "?E = ?F") by auto
     hence "emeasure ?M1 ?E = emeasure ?M1 ?F" by simp
     also have "strict_mono_on ln {max (inverse (real (Suc i))) a..b}"
       by (rule strict_mono_onI, subst ln_less_cancel_iff)
          (auto dest: inv_le simp del: of_nat_Suc)
-    with `a \<le> b` True dens
+    with \<open>a \<le> b\<close> True dens
       have "emeasure ?M1 ?F = emeasure (density lborel (\<lambda>x. f (ln x) * inverse x)) ?F"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less not_le range_exp dest: has_subprob_densityD dest!: inv_le
@@ -274,7 +274,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
     fix x :: real assume "x > 0" "\<not>(\<exists>i. x \<ge> inverse (Suc i))"
     hence "x \<le> 0" by (intro tendsto_lowerbound[OF LIMSEQ_inverse_real_of_nat])
                       (auto intro!: always_eventually less_imp_le simp: not_le)
-    with `x > 0` show False by simp
+    with \<open>x > 0\<close> show False by simp
   qed
   hence A: "(\<Union>i. ?A2 i) = {0<..}" by (auto dest: inv_le simp del: of_nat_Suc)
   moreover have "\<And>x. x < 0 \<Longrightarrow> \<exists>i. x \<le> -inverse (Suc i)"
@@ -283,7 +283,7 @@ proof (rule subprob_density_distr_real_eq[OF dens])
     hence "x \<ge> 0"
       by (intro tendsto_upperbound, simp)
          (auto intro!: always_eventually less_imp_le LIMSEQ_inverse_real_of_nat_add_minus simp: not_le)
-    with `x < 0` show False by simp
+    with \<open>x < 0\<close> show False by simp
   qed
   hence B: "(\<Union>i. ?A1 i) = {..<0}"
     by (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: of_nat_Suc)
@@ -311,12 +311,12 @@ proof (rule subprob_density_distr_real_eq[OF dens])
   proof (case_tac "-inverse (Suc i) \<ge> a")
     fix i assume True: "-inverse (Suc i) \<ge> a"
     let ?a = "-inverse (Suc i)"
-    from `a \<le> b` have A: "?A1 i \<inter> {a..b} = {a..min ?a b}" (is "?F = ?G") by auto
+    from \<open>a \<le> b\<close> have A: "?A1 i \<inter> {a..b} = {a..min ?a b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
     also have "strict_mono_on (\<lambda>x. -inverse x) {a..min ?a b}"
       by (rule strict_mono_onI)
          (auto simp: le_minus_iff[of _ "inverse x" for x] dest!: inv_le simp del: of_nat_Suc)
-    with `a \<le> b` True dens
+    with \<open>a \<le> b\<close> True dens
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less dest: has_subprob_densityD inv_le
@@ -335,11 +335,11 @@ proof (rule subprob_density_distr_real_eq[OF dens])
   proof (case_tac "inverse (Suc i) \<le> b")
     fix i assume True: "inverse (Suc i) \<le> b"
     let ?a = "inverse (Suc i)"
-    from `a \<le> b` have A: "?A2 i \<inter> {a..b} = {max ?a a..b}" (is "?F = ?G") by auto
+    from \<open>a \<le> b\<close> have A: "?A2 i \<inter> {a..b} = {max ?a a..b}" (is "?F = ?G") by auto
     hence "emeasure ?M1 ?F = emeasure ?M1 ?G" by simp
     also have "strict_mono_on (\<lambda>x. -inverse x) {max ?a a..b}"
       by (rule strict_mono_onI) (auto dest!: inv_le simp: not_le simp del: of_nat_Suc)
-    with `a \<le> b` True dens
+    with \<open>a \<le> b\<close> True dens
       have "emeasure ?M1 ?G = emeasure ?M2 ?G"
       by (intro emeasure_density_distr_interval)
          (auto simp: Mf not_less dest: has_subprob_densityD inv_le

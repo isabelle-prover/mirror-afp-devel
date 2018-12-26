@@ -39,7 +39,7 @@ proof
   have "max_in_chain n S"
   proof(rule max_in_chainI)
     fix j
-    assume "n \<le> j" hence "S n \<sqsubseteq> S j" using `chain S` by (metis chain_mono)
+    assume "n \<le> j" hence "S n \<sqsubseteq> S j" using \<open>chain S\<close> by (metis chain_mono)
     also
     have "Rep_Arity (S n) \<le> Rep_Arity (S j)"
       unfolding n image_def

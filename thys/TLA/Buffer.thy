@@ -5,26 +5,26 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* Refining a Buffer Specification *}
+section \<open>Refining a Buffer Specification\<close>
 
 theory Buffer
 imports State
 begin
 
-text {*
+text \<open>
   We specify a simple FIFO buffer and prove that two FIFO buffers
   in a row implement a FIFO buffer.
-*}
+\<close>
 
 subsection "Buffer specification"
 
-text {*
+text \<open>
   The following definitions all take three parameters: a state function
   representing the input channel of the FIFO buffer, another representing
   the internal queue, and a third one representing the output channel.
   These parameters will be instantiated later in the definition of the
   double FIFO.
-*}
+\<close>
 
 definition BInit :: "'a statefun \<Rightarrow> 'a list statefun \<Rightarrow> 'a statefun \<Rightarrow> temporal"
 where "BInit ic q oc \<equiv> TEMP $q = #[]
@@ -56,7 +56,7 @@ where "Spec ic oc == TEMP (\<exists>\<exists> q. ISpec ic q oc)"
 
 subsection "Properties of the buffer"
 
-text {*
+text \<open>
   The buffer never enqueues the same element twice. We therefore
   have the following invariant:
   \begin{itemize}
@@ -69,9 +69,9 @@ text {*
     channels are equal.
   \end{itemize}
 
-  The following auxiliary predicate @{text noreps} is true if no
+  The following auxiliary predicate \<open>noreps\<close> is true if no
   two subsequent elements in a list are identical.
-*}
+\<close>
 
 definition noreps :: "'a list \<Rightarrow> bool"
 where "noreps xs \<equiv> \<forall>i < length xs - 1. xs!i \<noteq> xs!(Suc i)"
@@ -88,7 +88,7 @@ lemma ISpec_stutinv: "STUTINV (ISpec ic q oc)"
 lemma Spec_stutinv: "STUTINV Spec ic oc"
   unfolding buffer_defs by (simp add: bothstutinvs livestutinv eexSTUT)
 
-text {* A lemma about lists that is useful in the following *}
+text \<open>A lemma about lists that is useful in the following\<close>
 lemma tl_self_iff_empty[simp]: "(tl xs = xs) = (xs = [])"
 proof
   assume 1: "tl xs = xs"
@@ -123,13 +123,13 @@ qed
 lemma Deq_enabledE: "\<turnstile> Enabled <Deq ic q oc>_(ic,q,oc) \<longrightarrow> $q ~= #[]"
   by (auto elim!: enabledE simp: Deq_def tla_defs)
 
-text {*
-  We now prove that @{text BInv} is an invariant of the Buffer
+text \<open>
+  We now prove that \<open>BInv\<close> is an invariant of the Buffer
   specification.
 
-  We need several lemmas about @{text noreps} that are used in the
+  We need several lemmas about \<open>noreps\<close> that are used in the
   invariant proof.
-*}
+\<close>
 
 lemma noreps_empty [simp]: "noreps []"
   by (auto simp: noreps_def)
@@ -301,12 +301,12 @@ locale DBuffer =
   assumes DB_base: "basevars vars"
 begin
 
-  text {*
+  text \<open>
     We need to specify the behavior of two FIFO buffers in a row.
     Intuitively, that specification is just the conjunction of
     two buffer specifications, where the first buffer has input
-    channel @{text inp} and output channel @{text mid} whereas
-    the second one receives from @{text mid} and outputs on @{text out}.
+    channel \<open>inp\<close> and output channel \<open>mid\<close> whereas
+    the second one receives from \<open>mid\<close> and outputs on \<open>out\<close>.
     However, this conjunction allows a simultaneous enqueue action
     of the first buffer and dequeue of the second one. It would not
     implement the previous buffer specification, which excludes such
@@ -317,19 +317,19 @@ begin
     and to understand. We therefore impose an interleaving constraint
     on the specification of the double buffer, which requires that
     enqueueing and dequeueing do not happen simultaneously.
-  *}
+\<close>
 
   definition DBSpec
   where "DBSpec \<equiv> TEMP ISpec inp q1 mid
                      \<and> ISpec mid q2 out
                      \<and> \<box>[\<not>(Enq inp q1 mid \<and> Deq mid q2 out)]_vars"
 
-  text {*
+  text \<open>
     The proof rules of TLA are geared towards specifications of the
-    form @{text "Init \<and> \<box>[Next]_vars \<and> L"}, and we prove that
-    @{text DBSpec} corresponds to a specification in this form,
+    form \<open>Init \<and> \<box>[Next]_vars \<and> L\<close>, and we prove that
+    \<open>DBSpec\<close> corresponds to a specification in this form,
     which we now define.
-  *}
+\<close>
 
   definition FullInit
   where "FullInit \<equiv> TEMP (BInit inp q1 mid \<and> BInit mid q2 out)"
@@ -345,9 +345,9 @@ begin
                        \<and> WF(Deq inp q1 mid)_vars
                        \<and> WF(Deq mid q2 out)_vars"
 
-  text {*
+  text \<open>
     The concatenation of the two queues will serve as the refinement mapping.
-  *}
+\<close>
   definition qc :: "'a list statefun"
   where "qc \<equiv> LIFT (q2 @ q1)"
 
@@ -361,17 +361,17 @@ begin
   lemma FullSpec_stutinv: "STUTINV FullSpec"
     unfolding db_defs by (simp add: bothstutinvs livestutinv)
 
-  text {*
-    We prove that @{text DBSpec} implies @{text FullSpec}. (The converse
+  text \<open>
+    We prove that \<open>DBSpec\<close> implies \<open>FullSpec\<close>. (The converse
     implication also holds but is not needed for our implementation proof.)
-  *}
+\<close>
 
-  text {*
+  text \<open>
     The following lemma is somewhat more bureaucratic than we'd like
     it to be. It shows that the conjunction of the next-state relations,
     together with the invariant for the first queue, implies the full
     next-state relation of the combined queues.
-  *}
+\<close>
   lemma DBNxt_then_FullNxt:
     "\<turnstile> \<box>BInv inp q1 mid
         \<and> \<box>[Nxt inp q1 mid]_(inp,q1,mid) 
@@ -448,9 +448,9 @@ begin
     with 1 2 show ?thesis by force
   qed
 
-  text {*
-    It is now easy to show that @{text DBSpec} refines @{text FullSpec}.
-  *}
+  text \<open>
+    It is now easy to show that \<open>DBSpec\<close> refines \<open>FullSpec\<close>.
+\<close>
   theorem DBSpec_impl_FullSpec: "\<turnstile> DBSpec \<longrightarrow> FullSpec"
   proof -
     have 1: "\<turnstile> DBSpec \<longrightarrow> FullInit"
@@ -496,11 +496,11 @@ begin
                      4[unlift_rule])
   qed
 
-  text {* 
+  text \<open>
     We now prove that two FIFO buffers in a row (as specified by formula
-    @{text FullSpec}) implement a FIFO buffer whose internal queue is the
+    \<open>FullSpec\<close>) implement a FIFO buffer whose internal queue is the
     concatenation of the two buffers. We start by proving step simulation.
-  *}  
+\<close>  
 
   lemma FullInit: "\<turnstile> FullInit \<longrightarrow> BInit inp qc out"
     by (auto simp: db_defs tla_defs)
@@ -509,9 +509,9 @@ begin
     "|~ [FullNxt]_vars \<longrightarrow> [Nxt inp qc out]_(inp,qc,out)"
     by (auto simp: db_defs tla_defs)
 
-  text {*
+  text \<open>
     The liveness condition requires that the combined buffer
-    eventually performs a @{text Deq} action on the output channel
+    eventually performs a \<open>Deq\<close> action on the output channel
     if it contains some element. The idea is to use the
     fairness hypothesis for the first buffer to prove that in that
     case, eventually the queue of the second buffer will be
@@ -519,8 +519,8 @@ begin
     some element.
 
     The first step is to establish the enabledness conditions
-    for the two @{text Deq} actions of the implementation.
-  *}
+    for the two \<open>Deq\<close> actions of the implementation.
+\<close>
 
   lemma Deq1_enabled: "\<turnstile> Enabled \<langle>Deq inp q1 mid\<rangle>_vars = ($q1 \<noteq> #[])"
   proof -
@@ -542,12 +542,12 @@ begin
     thus ?thesis by (simp add: 1[int_rewrite])
   qed
 
-  text {*
-    We now use rule @{text WF2} to prove that the combined buffer
-    (behaving according to specification @{text FullSpec})
+  text \<open>
+    We now use rule \<open>WF2\<close> to prove that the combined buffer
+    (behaving according to specification \<open>FullSpec\<close>)
     implements the fairness condition of the single buffer under
     the refinement mapping.
-  *}
+\<close>
   lemma Full_fairness:
     "\<turnstile> \<box>[FullNxt]_vars \<and> WF(Deq mid q2 out)_vars \<and> \<box>WF(Deq inp q1 mid)_vars
        \<longrightarrow> WF(Deq inp qc out)_(inp,qc,out)"
@@ -565,14 +565,14 @@ begin
              \<longrightarrow> Enabled \<langle>Deq mid q2 out\<rangle>_vars"
       unfolding Deq2_enabled[int_rewrite] by auto
   next
-    txt {*
+    txt \<open>
       The difficult part of the proof is to show that the helpful
       condition will eventually always be true provided that the
       combined dequeue action is eventually always enabled and that
       the helpful action is never executed. We prove that (1) the
       helpful condition persists and (2) that it must eventually
       become true.
-    *}
+\<close>
     have "\<turnstile> \<box>\<box>[FullNxt \<and> \<not>(Deq mid q2 out)]_vars
             \<longrightarrow> \<box>($q2 \<noteq> #[] \<longrightarrow> \<box>($q2 \<noteq> #[]))"
     proof (rule STL4)
@@ -635,10 +635,10 @@ begin
       by force
   qed
 
-  text {*
-    Putting everything together, we obtain that @{text FullSpec} refines
+  text \<open>
+    Putting everything together, we obtain that \<open>FullSpec\<close> refines
     the Buffer specification under the refinement mapping.
-  *}
+\<close>
   theorem FullSpec_impl_ISpec: "\<turnstile> FullSpec \<longrightarrow> ISpec inp qc out"
     unfolding FullSpec_def ISpec_def
     using FullInit Full_step_simulation[THEN M11] Full_fairness
@@ -648,9 +648,9 @@ begin
     unfolding Spec_def using FullSpec_impl_ISpec
     by (force intro: eexI[unlift_rule])
 
-  text {*
+  text \<open>
     By transitivity, two buffers in a row also implement a single buffer.
-  *}
+\<close>
   theorem DBSpec_impl_Spec: "\<turnstile> DBSpec \<longrightarrow> Spec inp out"
     by (rule lift_imp_trans[OF DBSpec_impl_FullSpec FullSpec_impl_Spec])
 

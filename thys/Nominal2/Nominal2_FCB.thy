@@ -3,12 +3,12 @@ imports Nominal2_Abs
 begin
 
 
-text {*
+text \<open>
   A tactic which solves all trivial cases in function
   definitions, and leaves the others unchanged.
-*}
+\<close>
 
-ML {*
+ML \<open>
 val all_trivials : (Proof.context -> Proof.method) context_parser =
 Scan.succeed (fn ctxt =>
  let
@@ -16,9 +16,9 @@ Scan.succeed (fn ctxt =>
  in
    Method.SIMPLE_METHOD' (K tac)
  end)
-*}
+\<close>
 
-method_setup all_trivials = {* all_trivials *} {* solves trivial goals *}
+method_setup all_trivials = \<open>all_trivials\<close> \<open>solves trivial goals\<close>
 
 
 lemma Abs_lst1_fcb:

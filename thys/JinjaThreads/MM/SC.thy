@@ -4,7 +4,7 @@
     Based on the Jinja theories Common/Objects.thy and Common/Conform by David von Oheimb
 *)
 
-section {* Sequential consistency *}
+section \<open>Sequential consistency\<close>
 
 theory SC
 imports 
@@ -12,7 +12,7 @@ imports
   MM
 begin
 
-subsection{* Objects and Arrays *}
+subsection\<open>Objects and Arrays\<close>
 
 type_synonym 
   fields = "vname \<times> cname \<rightharpoonup> addr val"       \<comment> \<open>field name, defining class, value\<close>
@@ -63,7 +63,7 @@ lemma obj_ty_blank [iff]:
 by(cases hT)(simp_all)
 
 
-subsection{* Heap *}
+subsection\<open>Heap\<close>
 
 type_synonym heap = "addr \<rightharpoonup> heapobj"
 
@@ -132,7 +132,7 @@ interpretation sc:
     "sc_heap_write"
   for P .
 
-text {* Translate notation from @{text heap_base} *}
+text \<open>Translate notation from \<open>heap_base\<close>\<close>
 
 (* FIXME! Why does sc.preallocated need the type token?? *)
 abbreviation sc_preallocated :: "'m prog \<Rightarrow> heap \<Rightarrow> bool"
@@ -209,7 +209,7 @@ by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def)
 lemma sc_hext_upd_arr: "\<lbrakk> h a = Some (Arr T f e); length e = length e' \<rbrakk> \<Longrightarrow> h \<unlhd>sc h(a\<mapsto>(Arr T f' e'))"
 by(rule sc.hextI)(auto simp:fun_upd_apply sc_typeof_addr_def)
 
-subsection {* Conformance *}
+subsection \<open>Conformance\<close>
 
 definition sc_fconf :: "'m prog \<Rightarrow> cname \<Rightarrow> heap \<Rightarrow> fields \<Rightarrow> bool" ("_,_,_ \<turnstile>sc _ \<surd>" [51,51,51,51] 50)
 where "P,C,h \<turnstile>sc fs \<surd> = (\<forall>F D T fm. P \<turnstile> C has F:T (fm) in D \<longrightarrow> (\<exists>v. fs(F,D) = Some v \<and> P,h \<turnstile>sc v :\<le> T))"
@@ -360,24 +360,24 @@ proof
   from alt show "\<exists>v. sc_heap_read h a al v \<and> P,h \<turnstile>sc v :\<le> T"
   proof(cases)
     case (addr_loc_type_field U F fm D) 
-    note [simp] = `al = CField D F`
+    note [simp] = \<open>al = CField D F\<close>
     show ?thesis
     proof(cases "arrobj")
       case (Obj C' fs)
-      with `sc_typeof_addr h a = \<lfloor>U\<rfloor>` arrobj
+      with \<open>sc_typeof_addr h a = \<lfloor>U\<rfloor>\<close> arrobj
       have [simp]: "C' = class_type_of U" by(auto simp add: sc_typeof_addr_def)
       from hconf arrobj Obj have "P,h \<turnstile>sc Obj (class_type_of U) fs \<surd>" by(auto dest: sc_hconfD)
-      with `P \<turnstile> class_type_of U has F:T (fm) in D` obtain v 
+      with \<open>P \<turnstile> class_type_of U has F:T (fm) in D\<close> obtain v 
         where "fs (F, D) = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T" by(fastforce simp add: sc_fconf_def)
       thus ?thesis using Obj arrobj by(auto intro: sc_heap_read.intros)
     next
       case (Arr T' f el)
-      with `sc_typeof_addr h a = \<lfloor>U\<rfloor>` arrobj
+      with \<open>sc_typeof_addr h a = \<lfloor>U\<rfloor>\<close> arrobj
       have [simp]: "U = Array_type T' (length el)" by(auto simp add: sc_typeof_addr_def)
       from hconf arrobj Arr have "P,h \<turnstile>sc Arr T' f el \<surd>" by(auto dest: sc_hconfD)
-      from `P \<turnstile> class_type_of U has F:T (fm) in D` have [simp]: "D = Object"
+      from \<open>P \<turnstile> class_type_of U has F:T (fm) in D\<close> have [simp]: "D = Object"
         by(auto dest: has_field_decl_above)
-      with `P,h \<turnstile>sc Arr T' f el \<surd>` `P \<turnstile> class_type_of U has F:T (fm) in D`
+      with \<open>P,h \<turnstile>sc Arr T' f el \<surd>\<close> \<open>P \<turnstile> class_type_of U has F:T (fm) in D\<close>
       obtain v where "f (F, Object) = \<lfloor>v\<rfloor>" "P,h \<turnstile>sc v :\<le> T"
         by(fastforce simp add: sc_fconf_def)
       thus ?thesis using Arr arrobj by(auto intro: sc_heap_read.intros)
@@ -447,7 +447,7 @@ where "sc_deterministic_heap_ops \<equiv> sc.deterministic_heap_ops TYPE('m)"
 lemma sc_deterministic_heap_ops: "\<not> sc_spurious_wakeups \<Longrightarrow> sc_deterministic_heap_ops P"
 by(rule sc.deterministic_heap_opsI)(auto elim: sc_heap_read.cases sc_heap_write.cases simp add: sc_allocate_def)
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 code_pred 
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)

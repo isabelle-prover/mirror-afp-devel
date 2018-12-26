@@ -3,13 +3,13 @@ imports LastVotingDefs "../Majorities" "../Reduction"
 begin
 
 
-subsection {* Preliminary Lemmas *}
+subsection \<open>Preliminary Lemmas\<close>
 
-text {*
+text \<open>
   We begin by proving some simple lemmas about the utility functions
   used in the model of \emph{LastVoting}. We also specialize the induction
   rules of the generic CHO model for this particular algorithm.
-*}
+\<close>
 
 lemma timeStampsRcvdFinite:
   "finite {ts . \<exists>q v. (msgs::Proc \<rightharpoonup> 'val msg) q = Some (ValStamp v ts)}"
@@ -45,10 +45,10 @@ lemma phase_Suc:
                    else phase r)"
   unfolding step_def phase_def by presburger
 
-text {*
+text \<open>
   Many proofs are by induction on runs of the LastVoting algorithm, and
   we derive a specific induction rule to support these proofs.
-*}
+\<close>
 
 lemma LV_induct:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -127,10 +127,10 @@ next
   qed
 qed
 
-text {*
+text \<open>
   The following rule similarly establishes a property of two successive
   configurations of a run by case distinction on the step that was executed.
-*}
+\<close>
 
 lemma LV_Suc:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -197,12 +197,12 @@ proof -
   qed
 qed
 
-text {*
+text \<open>
   Sometimes the assertion to prove talks about a specific process and follows
   from the next-state relation of that particular process. We prove corresponding 
   variants of the induction and case-distinction rules. When these variants are
   applicable, they help automating the Isabelle proof.
-*}
+\<close>
 
 lemma LV_induct':
   assumes run: "CHORun LV_M rho HOs coords"
@@ -258,11 +258,11 @@ lemma LV_Suc':
      (auto intro: step0 step1 step2 step3)
 
 
-subsection {* Boundedness and Monotonicity of Timestamps *}
+subsection \<open>Boundedness and Monotonicity of Timestamps\<close>
 
-text {*
+text \<open>
   The timestamp of any process is bounded by the current phase.
-*}
+\<close>
 
 lemma LV_timestamp_bounded:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -272,18 +272,18 @@ lemma LV_timestamp_bounded:
      (auto simp: LV_CHOMachine_def LV_initState_def 
                  next0_def next1_def next2_def next3_def)
 
-text {*
+text \<open>
   Moreover, timestamps can only grow over time.
-*}
+\<close>
 
 lemma LV_timestamp_increasing:
   assumes run: "CHORun LV_M rho HOs coords"
   shows "timestamp (rho n p) \<le> timestamp (rho (Suc n) p)"
     (is "?P p n" is "?ts \<le> _")
 proof (rule LV_Suc'[OF run, where P="?P"])
-  txt {* The case of @{text next1} is the only interesting one because the
+  txt \<open>The case of \<open>next1\<close> is the only interesting one because the
     timestamp may change: here we use the previously established fact that
-    the timestamp is bounded by the phase number. *}
+    the timestamp is bounded by the phase number.\<close>
   assume stp: "step n = 1"
      and nxt: "next1 n p (rho n p)
                      (HOrcvdMsgs LV_M n p (HOs n p) (rho n))
@@ -313,18 +313,18 @@ proof -
   with k show ?thesis by simp
 qed
 
-text {*
+text \<open>
   The following definition collects the set of processes whose timestamp
   is beyond a given bound at a system state.
-*}
+\<close>
 
 definition procsBeyondTS where
   "procsBeyondTS ts cfg \<equiv> { p . ts \<le> timestamp (cfg p) }"
 
-text {*
+text \<open>
   Since timestamps grow monotonically, so does the set of processes
   that are beyond a certain bound.
-*}
+\<close>
 
 lemma procsBeyondTS_monotonic:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -340,18 +340,18 @@ proof -
 qed
 
 
-subsection {* Obvious Facts About the Algorithm *}
+subsection \<open>Obvious Facts About the Algorithm\<close>
 
-text {*
+text \<open>
   The following lemmas state some very obvious facts that follow
   ``immediately'' from the definition of the algorithm. We could
   prove them in one fell swoop by defining a big invariant, but it
   appears more readable to prove them separately.
-*}
+\<close>
 
-text {*
+text \<open>
   Coordinators change only at step 3.
-*}
+\<close>
 
 lemma notStep3EqualCoord:
   assumes run: "CHORun LV_M rho HOs coords" and stp:"step r \<noteq> 3"
@@ -404,9 +404,9 @@ proof -
   show ?thesis by auto
 qed
 
-text {*
+text \<open>
   Votes only change at step 0.
-*}
+\<close>
 
 lemma notStep0EqualVote [rule_format]:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -414,9 +414,9 @@ lemma notStep0EqualVote [rule_format]:
   by (rule LV_Suc'[OF run, where P="?P"])
      (auto simp: next0_def next1_def next2_def next3_def)
 
-text {*
+text \<open>
   Commit status only changes at steps 0 and 3.
-*}
+\<close>
 
 lemma notStep03EqualCommit [rule_format]:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -425,9 +425,9 @@ lemma notStep03EqualCommit [rule_format]:
   by (rule LV_Suc'[OF run, where P="?P"])
      (auto simp: next0_def next1_def next2_def next3_def)
 
-text {*
+text \<open>
   Timestamps only change at step 1.
-*}
+\<close>
 
 lemma notStep1EqualTimestamp [rule_format]:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -436,9 +436,9 @@ lemma notStep1EqualTimestamp [rule_format]:
   by (rule LV_Suc'[OF run, where P="?P"])
      (auto simp: next0_def next1_def next2_def next3_def)
 
-text {*
-  The @{text x} field only changes at step 1.
-*}
+text \<open>
+  The \<open>x\<close> field only changes at step 1.
+\<close>
 
 lemma notStep1EqualX [rule_format]:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -446,15 +446,15 @@ lemma notStep1EqualX [rule_format]:
   by (rule LV_Suc'[OF run, where P="?P"])
      (auto simp: next0_def next1_def next2_def next3_def)
 
-text {*
-  A process $p$ has its @{text commt} flag set only if the following conditions hold:
+text \<open>
+  A process $p$ has its \<open>commt\<close> flag set only if the following conditions hold:
   \begin{itemize}
   \item the step number is at least $1$,
   \item $p$ considers itself to be the coordinator,
-  \item $p$ has a non-null @{text vote},
+  \item $p$ has a non-null \<open>vote\<close>,
   \item a majority of processes consider $p$ as their coordinator.
   \end{itemize}
-*}
+\<close>
 
 lemma commitE:
   assumes run: "CHORun LV_M rho HOs coords" and cmt: "commt (rho r p)"
@@ -507,14 +507,14 @@ proof -
   with cmt show ?thesis by (intro conds, auto)
 qed
 
-text {*
+text \<open>
   A process has a current timestamp only if:
   \begin{itemize}
   \item it is at step 2 or beyond,
   \item its coordinator has committed,
-  \item its @{text x} value is the @{text vote} of its coordinator.
+  \item its \<open>x\<close> value is the \<open>vote\<close> of its coordinator.
   \end{itemize}
-*}
+\<close>
 
 lemma currentTimestampE:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -537,15 +537,15 @@ proof -
     assume "CinitState LV_M p (rho 0 p) (coords 0 p)" thus "?Q p 0"
       by (auto simp: LV_CHOMachine_def LV_initState_def)
   next
-    txt {* The assertion is trivially preserved by step 0 because the timestamp in the
-          post-state cannot be current (cf. lemma @{text LV_timestamp_bounded}). *}
+    txt \<open>The assertion is trivially preserved by step 0 because the timestamp in the
+          post-state cannot be current (cf. lemma \<open>LV_timestamp_bounded\<close>).\<close>
     fix n
     assume stp': "step (Suc n) = 1"
     with run LV_timestamp_bounded[where n="Suc n"] 
     have "?ts (Suc n) \<le> phase (Suc n)" by auto
     thus "?Q p (Suc n)" by simp
   next
-    txt {* Step 1 establishes the assertion by definition of the transition relation. *}
+    txt \<open>Step 1 establishes the assertion by definition of the transition relation.\<close>
     fix n
     assume stp: "step n = 1" and stp':"step (Suc n) = 2"
        and ph: "phase (Suc n) = phase n"
@@ -572,8 +572,8 @@ proof -
                        next1_def send1_def isVote_def)
     qed
   next
-    txt {* For step 2, the assertion follows from the induction hypothesis,
-          observing that none of the relevant state components change. *}
+    txt \<open>For step 2, the assertion follows from the induction hypothesis,
+          observing that none of the relevant state components change.\<close>
     fix n
     assume stp: "step n = 2" and stp': "step (Suc n) = 3"
        and ph: "phase (Suc n) = phase n"
@@ -594,8 +594,8 @@ proof -
         by (auto simp add: next2_def)
     qed
   next
-    txt {* The assertion is trivially preserved by step 3 because the timestamp in the
-          post-state cannot be current (cf. lemma @{text LV_timestamp_bounded}). *}
+    txt \<open>The assertion is trivially preserved by step 3 because the timestamp in the
+          post-state cannot be current (cf. lemma \<open>LV_timestamp_bounded\<close>).\<close>
     fix n
     assume stp': "step (Suc n) = 0"
     with run LV_timestamp_bounded[where n="Suc n"] 
@@ -605,15 +605,15 @@ proof -
   with ts show ?thesis by (intro conds) auto
 qed
 
-text {*
-  If a process @{text p} has its @{text ready} bit set then:
+text \<open>
+  If a process \<open>p\<close> has its \<open>ready\<close> bit set then:
   \begin{itemize}
   \item it is at step 3,
   \item it considers itself to be the coordinator of that phase and
-  \item a majority of processes considers @{text p} to be the coordinator
+  \item a majority of processes considers \<open>p\<close> to be the coordinator
     and has a current timestamp.
   \end{itemize}
-*}
+\<close>
 
 lemma readyE:
   assumes run: "CHORun LV_M rho HOs coords" and rdy: "ready (rho r p)"
@@ -673,14 +673,14 @@ proof -
 qed
 
 
-text {*
+text \<open>
   A process decides only if the following conditions hold:
   \begin{itemize}
   \item it is at step 3,
   \item its coordinator votes for the value the process decides on,
-  \item the coordinator has its @{text ready} and @{text commt} bits set.
+  \item the coordinator has its \<open>ready\<close> and \<open>commt\<close> bits set.
   \end{itemize}
-*}
+\<close>
 
 lemma decisionE:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -696,8 +696,8 @@ proof -
   let ?cfg' = "rho (Suc r)"
   let "?crd p" = "coord\<Phi> (?cfg p)"
   let ?dec' = "decide (?cfg' p)"
-  txt {* Except for the assertion about the @{text commt} field, the assertion can be
-         proved directly from the next-state relation. *}
+  txt \<open>Except for the assertion about the \<open>commt\<close> field, the assertion can be
+         proved directly from the next-state relation.\<close>
   have 1: "step r = 3
            \<and> ?dec' = Some (the (vote (?cfg (?crd p))))
            \<and> ready (?cfg (?crd p))"
@@ -725,8 +725,8 @@ proof -
     with dec show ?thesis by (auto simp: next2_def)
   qed
   hence "ready (?cfg (?crd p))" by blast
-  txt {* Because the coordinator is ready, there is a majority of processes that
-         consider it to be the coordinator and that have a current timestamp. *}
+  txt \<open>Because the coordinator is ready, there is a majority of processes that
+         consider it to be the coordinator and that have a current timestamp.\<close>
   with run
   have "card {q . ?crd q = ?crd p \<and> timestamp (?cfg q) = Suc (phase r)} 
           > N div 2" by (rule readyE)
@@ -742,13 +742,13 @@ proof -
 qed
 
 
-subsection {* Proof of Integrity *}
+subsection \<open>Proof of Integrity\<close>
 
-text {*
+text \<open>
   Integrity is proved using a standard invariance argument that asserts
   that only values present in the initial state appear in the relevant
   fields.
-*}
+\<close>
 
 (*
   The proof mainly relies on lemmas @{text notStep1EqualX},
@@ -779,7 +779,7 @@ proof -
     proof (clarify)
       assume x: "?X n" and vt: "?Vote n" and dec: "?Decide n"
 
-      txt {* Proof of first conjunct *}
+      txt \<open>Proof of first conjunct\<close>
       have x': "?X (Suc n)"
       proof (clarsimp)
         fix p
@@ -830,7 +830,7 @@ proof -
         qed
       qed
 
-      txt {* Proof of second conjunct *}
+      txt \<open>Proof of second conjunct\<close>
       have vt': "?Vote (Suc n)"
       proof (clarsimp simp: image_def)
         fix p v
@@ -888,7 +888,7 @@ proof -
         with v show "\<exists>q. v = x (rho 0 q)" by auto
       qed
 
-      txt {* Proof of third conjunct *}
+      txt \<open>Proof of third conjunct\<close>
       have dec': "?Decide (Suc n)"
       proof (clarsimp simp: image_def)
         fix p v
@@ -917,9 +917,9 @@ proof -
   with inv show ?thesis by simp
 qed
 
-text {* 
+text \<open>
   Integrity now follows immediately.
-*}
+\<close>
 
 theorem lv_integrity:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -932,15 +932,15 @@ proof -
 qed
 
 
-subsection {* Proof of Agreement and Irrevocability *}
+subsection \<open>Proof of Agreement and Irrevocability\<close>
 
-text {*
+text \<open>
   The following lemmas closely follow a hand proof provided by
   Bernadette Charron-Bost.
 
   If a process decides, then a majority of processes have a current
   timestamp.
-*}
+\<close>
 (*
   The proof mainly relies on lemmas @{text decisionE}, @{text readyE}
   and @{text LV_timestamp_bounded}. 
@@ -951,14 +951,14 @@ lemma decisionThenMajorityBeyondTS:
   and dec: "decide (rho (Suc r) p) \<noteq> decide (rho r p)"
   shows "card (procsBeyondTS (Suc (phase r)) (rho r)) > N div 2"
   using run dec proof (rule decisionE)
-  txt {* Lemma @{text decisionE} tells us that we are at step 3 and
-    that the coordinator is ready. *}
+  txt \<open>Lemma \<open>decisionE\<close> tells us that we are at step 3 and
+    that the coordinator is ready.\<close>
   let ?crd = "coord\<Phi> (rho r p)"
   let ?qs = "{ q . coord\<Phi> (rho r q) = ?crd
                  \<and> timestamp (rho r q) = Suc (phase r) }"
   assume stp: "step r = 3" and rdy: "ready (rho r ?crd)"
-  txt {* Now, lemma @{text readyE} implies that a majority of processes
-    have a recent timestamp. *}
+  txt \<open>Now, lemma \<open>readyE\<close> implies that a majority of processes
+    have a recent timestamp.\<close>
   from run rdy have "card ?qs > N div 2" by (rule readyE)
   moreover
   from stp LV_timestamp_bounded[OF run, where n=r]
@@ -970,9 +970,9 @@ lemma decisionThenMajorityBeyondTS:
   ultimately show ?thesis by simp
 qed
 
-text {*
+text \<open>
   No two different processes have their \emph{commit} flag set at any state.
-*}
+\<close>
 
 lemma committedProcsEqual:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -990,9 +990,9 @@ proof -
   thus ?thesis by simp
 qed
 
-text {*
+text \<open>
   No two different processes have their \emph{ready} flag set at any state.
-*}
+\<close>
 
 lemma readyProcsEqual:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -1011,12 +1011,12 @@ proof -
   thus ?thesis by simp
 qed
 
-text {*
-  The following lemma asserts that whenever a process @{text p} commits
-  at a state where a majority of processes have a timestamp beyond @{text ts},
-  then @{text p} votes for a value held by some process whose timestamp is
-  beyond @{text ts}.
-*}
+text \<open>
+  The following lemma asserts that whenever a process \<open>p\<close> commits
+  at a state where a majority of processes have a timestamp beyond \<open>ts\<close>,
+  then \<open>p\<close> votes for a value held by some process whose timestamp is
+  beyond \<open>ts\<close>.
+\<close>
 (*
   The proof mainly relies on lemmas @{text commitE}, @{text highestStampRcvd_max},
   @{text notStep1EqualTimestamp}, @{text notStep1EqualX} and then on
@@ -1034,7 +1034,7 @@ proof -
   let "?bynd n" = "procsBeyondTS ts (rho n)"
   have "card (?bynd r) > N div 2 \<and> commt (rho r p) \<longrightarrow> ?Q r" (is "?P p r")
   proof (rule LV_induct[OF run])
-    txt {* @{text next0} establishes the property *}
+    txt \<open>\<open>next0\<close> establishes the property\<close>
     fix n
     assume stp: "step n = 0"
        and nxt: "\<forall>q. next0 n q (rho n q) 
@@ -1104,12 +1104,12 @@ proof -
     qed
 
   next
-    txt {* We now prove that @{text next1} preserves the property.
-      Observe that @{text next1} may establish a majority of processes
+    txt \<open>We now prove that \<open>next1\<close> preserves the property.
+      Observe that \<open>next1\<close> may establish a majority of processes
       with current timestamps, so we cannot just refer to the induction
       hypothesis. However, if that happens, there is at least one process
       with a fresh timestamp that copies the vote of the (only) committed
-      coordinator, thus establishing the property. *}
+      coordinator, thus establishing the property.\<close>
     fix n
     assume stp: "step n = 1"
        and nxt: "\<forall>q. next1 n q (rho n q) 
@@ -1130,8 +1130,8 @@ proof -
       show "?Q (Suc n)"
       proof (cases "\<exists>q \<in> ?bynd (Suc n). rho (Suc n) q \<noteq> rho n q")
         case True
-        txt {* in this case the property holds because @{text q} updates
-          its @{text x} field to the vote *}
+        txt \<open>in this case the property holds because \<open>q\<close> updates
+          its \<open>x\<close> field to the vote\<close>
         then obtain q where
           q1: "q \<in> ?bynd (Suc n)" and q2: "rho (Suc n) q \<noteq> rho n q" ..
         from nxt have "?nxt q" ..
@@ -1147,8 +1147,8 @@ proof -
         with q1 x' vote vote' show ?thesis by auto
       next
         case False
-        txt {* if no relevant process moves then @{text procsBeyondTS} doesn't 
-          change and we invoke the induction hypothesis *}
+        txt \<open>if no relevant process moves then \<open>procsBeyondTS\<close> doesn't 
+          change and we invoke the induction hypothesis\<close>
         hence bynd: "?bynd (Suc n) = ?bynd n"
         proof (auto simp: procsBeyondTS_def)
           fix r
@@ -1166,7 +1166,7 @@ proof -
     qed
 
   next
-    txt {* @{text step2} preserves the property, via the induction hypothesis. *}
+    txt \<open>\<open>step2\<close> preserves the property, via the induction hypothesis.\<close>
     fix n
     assume stp: "step n = 2"
        and nxt: "\<forall>q. next2 n q (rho n q) 
@@ -1194,18 +1194,18 @@ proof -
         by auto
     qed
 
-  txt {* the initial state and the @{text step3} transition are trivial 
-    because the @{text commt} flag cannot be set. *}
+  txt \<open>the initial state and the \<open>step3\<close> transition are trivial 
+    because the \<open>commt\<close> flag cannot be set.\<close>
   qed (auto elim: commitE[OF run])
   with maj cmt show ?thesis by simp
 qed
 
-text {*
+text \<open>
   The following lemma gives the crucial argument for agreement:
-  after some process @{text p} has decided, all processes whose
+  after some process \<open>p\<close> has decided, all processes whose
   timestamp is beyond the timestamp at the point of decision contain
-  the decision value in their @{text x} field.
-*}
+  the decision value in their \<open>x\<close> field.
+\<close>
 (*
   The proof mainly relies on lemmas @{text LV_timestamp_bounded},
   @{text currentTimestampE}, @{text committedProcsEqual},
@@ -1226,8 +1226,8 @@ proof (induct k)
   proof (clarify)
     fix q
     assume q: "q \<in> ?bynd 0"
-    txt {* use preceding lemmas about the decision value and the 
-      @{text x} field of processes with fresh timestamps *}
+    txt \<open>use preceding lemmas about the decision value and the 
+      \<open>x\<close> field of processes with fresh timestamps\<close>
     from run dec
     have  stp: "step r = 3"
       and v: "decide (rho (Suc r) p) = Some (the (vote (rho r (coord\<Phi> (rho r p)))))"
@@ -1318,11 +1318,11 @@ proof (induct k)
   qed
 qed
 
-text {*
+text \<open>
   We are now in position to prove Agreement: if some process decides
-  at step @{text r} and another (or possibly the same) process decides
-  at step @{text "r+k"} then they decide the same value.
-*}
+  at step \<open>r\<close> and another (or possibly the same) process decides
+  at step \<open>r+k\<close> then they decide the same value.
+\<close>
 
 (*
   The proof mainly relies on lemmas @{text decisionE},
@@ -1367,10 +1367,10 @@ proof -
   with dec q'2 notNone show ?thesis by auto
 qed
 
-text {*
-  A process that holds some decision @{text v} has decided @{text v}
+text \<open>
+  A process that holds some decision \<open>v\<close> has decided \<open>v\<close>
   sometime in the past.
-*}
+\<close>
 
 lemma decisionNonNullThenDecided:
   assumes run: "CHORun LV_M rho HOs coords"
@@ -1405,10 +1405,10 @@ proof -
   with dec show ?thesis by auto
 qed
 
-text {*
+text \<open>
   Irrevocability and Agreement are straightforward consequences
   of the two preceding lemmas.
-*}
+\<close>
 (*
   The proof mainly relies on lemmas @{text decisionNonNullThenDecided}
   and @{text laterProcessDecidesSameValue}. 
@@ -1487,15 +1487,15 @@ proof -
 qed
 
 
-subsection {* Proof of Termination *}
+subsection \<open>Proof of Termination\<close>
 
-text{*
+text\<open>
   The proof of termination relies on the communication predicate,
   which stipulates the existence of some phase
   during which there is a single coordinator that (a) receives a majority
   of messages and (b) is heard by everybody. Therefore, all processes
   successfully execute the protocol, deciding at step $3$ of that phase.
-*}
+\<close>
 (*
   The proof mainly relies on lemmas @{text notStep3EqualCoord},
   @{text commitE} and @{text readyE}.
@@ -1506,8 +1506,8 @@ theorem lv_termination:
       and commG:"CHOcommGlobal LV_M HOs coords" 
   shows "\<exists>r. \<forall>p. decide (rho r p) \<noteq> None"
 proof -
-  txt {* The communication predicate implies the existence of a ``successful'' phase
-    @{text ph}, coordinated by some process @{text c} for all processes. *}
+  txt \<open>The communication predicate implies the existence of a ``successful'' phase
+    \<open>ph\<close>, coordinated by some process \<open>c\<close> for all processes.\<close>
   from commG obtain ph c
     where c: "\<forall>p. coords (4*ph) p = c"
     and maj0: "card (HOs (4*ph) c) > N div 2"
@@ -1521,7 +1521,7 @@ proof -
   let ?r3 = "Suc ?r2"
   let ?r4 = "Suc ?r3"
 
-  txt {* Process @{text c} is the coordinator of all steps of phase @{text ph}. *}
+  txt \<open>Process \<open>c\<close> is the coordinator of all steps of phase \<open>ph\<close>.\<close>
   from run c have c':"\<forall>p. coord\<Phi> (rho ?r p) = c"
     by (auto simp add: phase_def coordinators)
   with run have c1: "\<forall>p. coord\<Phi> (rho ?r1 p) = c"
@@ -1531,9 +1531,9 @@ proof -
   with run have c3: "\<forall>p. coord\<Phi> (rho ?r3 p) = c"
     by (auto simp add: step_def mod_Suc notStep3EqualCoord)
 
-  txt {* The coordinator receives @{text ValStamp} messages from a majority of
-    processes at step $0$ of phase @{text ph} and therefore commits during the
-    transition at the end of step $0$. *}
+  txt \<open>The coordinator receives \<open>ValStamp\<close> messages from a majority of
+    processes at step $0$ of phase \<open>ph\<close> and therefore commits during the
+    transition at the end of step $0$.\<close>
   have 1: "commt (rho ?r1 c)" (is "?P c (4*ph)")
   proof (rule LV_Suc'[OF run, where P="?P"], auto simp: step_def)
     assume "next0 ?r c (rho ?r c) (HOrcvdMsgs LV_M ?r c (HOs ?r c) (rho ?r))
@@ -1543,8 +1543,8 @@ proof -
                      LV_CHOMachine_def HOrcvdMsgs_def LV_sendMsg_def)
   qed
 
-  txt {* All processes receive the vote of @{text c} at step 1 and therefore
-    update their time stamps during the transition at the end of step $1$. *}
+  txt \<open>All processes receive the vote of \<open>c\<close> at step 1 and therefore
+    update their time stamps during the transition at the end of step $1$.\<close>
   have 2: "\<forall>p. timestamp (rho ?r2 p) = Suc ph"
   proof
     fix p
@@ -1562,9 +1562,9 @@ proof -
     qed
   qed
 
-  txt {* The coordinator receives acknowledgements from a majority of processes
-    at step $2$ and sets its @{text ready} flag during the transition at the
-    end of step $2$. *}
+  txt \<open>The coordinator receives acknowledgements from a majority of processes
+    at step $2$ and sets its \<open>ready\<close> flag during the transition at the
+    end of step $2$.\<close>
   have 3: "ready (rho ?r3 c)" (is "?P c (Suc (Suc (4*ph)))")
   proof (rule LV_Suc'[OF run, where P="?P"], auto simp: step_def mod_Suc)
     assume "next2 ?r2 c (rho ?r2 c) 
@@ -1576,8 +1576,8 @@ proof -
                      isAck_def phase_def)
   qed
 
-  txt {* All processes receive the vote of the coordinator during step $3$
-    and decide during the transition at the end of that step. *}
+  txt \<open>All processes receive the vote of the coordinator during step $3$
+    and decide during the transition at the end of that step.\<close>
   have 4: "\<forall>p. decide (rho ?r4 p) \<noteq> None"
   proof
     fix p
@@ -1596,18 +1596,18 @@ proof -
     qed
   qed
 
-  txt {* This immediately proves the assertion. *}
+  txt \<open>This immediately proves the assertion.\<close>
   from 4 show ?thesis ..
 qed
 
 
-subsection {* \emph{LastVoting} Solves Consensus *}
+subsection \<open>\emph{LastVoting} Solves Consensus\<close>
 
-text {*
+text \<open>
   Summing up, all (coarse-grained) runs of \emph{LastVoting} for
   HO collections that satisfy the communication predicate satisfy
   the Consensus property.
-*}
+\<close>
 
 theorem lv_consensus:
   assumes run: "CHORun LV_M rho HOs coords" 
@@ -1622,10 +1622,10 @@ proof -
   show ?thesis by (auto simp: consensus_def image_def)
 qed
 
-text {*
+text \<open>
   By the reduction theorem, the correctness of the algorithm carries over
   to the fine-grained model of runs.
-*}
+\<close>
 
 theorem lv_consensus_fg:
   assumes run: "fg_run LV_M rho HOs HOs coords"

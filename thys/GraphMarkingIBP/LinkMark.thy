@@ -1,11 +1,11 @@
 
-section {*  Generalization of Deutsch-Schorr-Waite Algorithm  *}
+section \<open>Generalization of Deutsch-Schorr-Waite Algorithm\<close>
 
 theory LinkMark
 imports StackMark
 begin
 
-text {*
+text \<open>
 In the third step the stack diagram is refined to a diagram where no extra 
 memory is used. The relation $next$  is replaced by two new variables $link$ and $label$. 
 The variable $\mathit{label}:\mathit{node}\to \mathit{index}$ associates a label to every node and the variable
@@ -21,7 +21,7 @@ is stored by temporarily modifying the variables $\mathit{link}$ and $\mathit{la
 
 This algorithm is a generalization of the Deutsch-Schorr-Waite graph marking algorithm because
 we have a collection of pointer functions instead of left and right only.
-*}
+\<close>
 
 locale pointer = node +
   fixes none :: "'index"
@@ -39,18 +39,18 @@ sublocale pointer \<subseteq> link?: graph "nil" "root" "next"
   apply (unfold next_def)
   by auto
 
-text{*
+text\<open>
 The locale pointer fixes the initial values for the variables $ \mathit{link}$ and $ \mathit{label}$ and
 it defines the relation next as the union of all $ \mathit{link} \ i$ functions, excluding
 the mappings to $ \mathit{nil}$, the mappings from $ \mathit{nil}$ as well as the mappings from elements which
 are not labeled by $ \mathit{none}$.
-*}
+\<close>
 
-text{*
+text\<open>
 The next two recursive functions, $ \mathit{label}\_0$, $ \mathit{link}\_0$ are used to compute
 the initial values of the variables $ \mathit{label}$ and $ \mathit{link}$ from their current
 values.
-*}
+\<close>
 
 context pointer
 begin
@@ -67,11 +67,11 @@ primrec
   "link_0 lnk lbl p []       = lnk" |
   "link_0 lnk lbl p (x # l)  = link_0 (lnk((lbl x) := ((lnk (lbl x))(x := p)))) lbl x l"
 
-text{*
+text\<open>
 The function $ \mathit{stack}$ defined bellow is the main data refinement relation connecting
 the stack from the abstract algorithm to its concrete representation by temporarily
 modifying the variable $ \mathit{link}$ and $ \mathit{label}$.
-*}
+\<close>
 
 primrec
   stack:: "('index \<Rightarrow> 'node \<Rightarrow> 'node) \<Rightarrow> ('node \<Rightarrow> 'index) \<Rightarrow> 'node \<Rightarrow> ('node list) \<Rightarrow> bool" where
@@ -112,7 +112,7 @@ lemma g_cong [cong]: "mrk = mrk1 \<Longrightarrow> lbl = lbl1 \<Longrightarrow> 
        pointer.g n m mrk lbl ptr x = pointer.g n m mrk1 lbl1 ptr1 x1"
 by simp
 
-subsection {* Transitions *}
+subsection \<open>Transitions\<close>
 
 definition
   "Q1''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' .
@@ -146,7 +146,7 @@ definition
   "Q6''_a \<equiv> [: p, t, lnk, lbl, mrk \<leadsto> p', t', lnk', lbl', mrk' . p = nil \<and>  
          p' = p \<and> t' = t \<and> lnk' = lnk \<and> lbl' =  lbl \<and> mrk' = mrk :]"
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 
 definition
   "Init'' \<equiv> { (p, t, lnk, lbl, mrk) . lnk = link0 \<and> lbl = label0}"
@@ -157,7 +157,7 @@ definition
 definition
   "Final'' \<equiv> Init''"
 
-subsection {* Data refinement relations *}
+subsection \<open>Data refinement relations\<close>
 
 definition 
   "R1'_a \<equiv> {: p, t, lnk, lbl, mrk \<leadsto> stk, mrk' . (p, t, lnk, lbl, mrk) \<in> Init'' \<and> mrk' = mrk:}"
@@ -184,7 +184,7 @@ definition [simp]:
 
 lemma [simp]: "Disjunctive_fun R'_a" by (simp add: Disjunctive_fun_def)
 
-subsection{* Diagram *}
+subsection\<open>Diagram\<close>
 
 definition 
   "LinkMark = (\<lambda> (i, j) . (case (i, j) of
@@ -199,7 +199,7 @@ definition [simp]:
       I.loop  \<Rightarrow> Loop'' |
       I.final \<Rightarrow> Final'')"
 
-subsection {* Data refinement of the transitions *}
+subsection \<open>Data refinement of the transitions\<close>
 
 theorem init1_a [simp]:
   "DataRefinement ({.Init'.} o Q1'_a) R1'_a R2'_a Q1''_a"
@@ -282,7 +282,7 @@ theorem final_a [simp]:
    apply safe
    by simp_all
 
-subsection {* Diagram data refinement *}
+subsection \<open>Diagram data refinement\<close>
 
 lemma apply_fun_index [simp]: "(r .. P) i = (r i) (P i)" by (simp add: apply_fun_def)
 
@@ -314,7 +314,7 @@ lemma [simp]: "dmono StackMark_a"
   apply (unfold dmono_def StackMark_a_def)
   by simp
 
-subsection {* Diagram correctness *}
+subsection \<open>Diagram correctness\<close>
 
 theorem LinkMark_correct:
   "Hoare_dgr (R'_a .. (R_a .. SetMarkInv)) LinkMark ((R'_a .. (R_a .. SetMarkInv)) \<sqinter> (- grd (step LinkMark)))"

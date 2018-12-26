@@ -2,7 +2,7 @@
     Author:     Roelof Oosterhuis, 2007  Rijksuniversiteit Groningen
 *)
 
-section {* Lagrange's four-square theorem *}
+section \<open>Lagrange's four-square theorem\<close>
 
 theory FourSquares
   imports "HOL-Number_Theory.Number_Theory"
@@ -38,12 +38,12 @@ proof -
   qed
 qed
 
-text {* Shows that all nonnegative integers can be written as the sum of four squares. The proof consists of the following steps:
+text \<open>Shows that all nonnegative integers can be written as the sum of four squares. The proof consists of the following steps:
 \begin{itemize}\item For every prime $p=2n+1$ the two sets of residue classes $$\{x^2 \bmod p\mid 0\le x\le n\} ~{\rm and}~ \{-1-y^2 \bmod p \mid 0 \le y \le n\}$$ both contain $n+1$ different elements and therefore they must have at least one element in common.
 \item Hence there exist $x,y$ such that $x^2+y^2+1^2+0^2$ is a multiple of $p$.
 \item The next step is to show, by an infinite descent, that $p$ itself can be written as the sum of four squares.
 \item Finally, using the multiplicity of this form, the same holds for all positive numbers.
-\end{itemize} *}
+\end{itemize}\<close>
 
 private definition
   sum4sq_int :: "int \<times> int \<times> int \<times> int \<Rightarrow> int" where

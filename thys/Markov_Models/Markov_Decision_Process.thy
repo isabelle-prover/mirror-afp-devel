@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Markov Decision Processes *}
+section \<open>Markov Decision Processes\<close>
 
 theory Markov_Decision_Process
   imports Discrete_Time_Markov_Chain
@@ -11,16 +11,16 @@ definition "some_elem s = (SOME x. x \<in> s)"
 lemma some_elem_ne: "s \<noteq> {} \<Longrightarrow> some_elem s \<in> s"
   unfolding some_elem_def by (auto intro: someI)
 
-subsection {* Configurations *}
+subsection \<open>Configurations\<close>
 
-text {*
+text \<open>
 
 We want to construct a \emph{non-free} codatatype
-  @{text "'s cfg = Cfg (state: 's) (action: 's pmf) (cont: 's \<Rightarrow> 's cfg)"}.
+  \<open>'s cfg = Cfg (state: 's) (action: 's pmf) (cont: 's \<Rightarrow> 's cfg)\<close>.
 with the restriction
   @{term "state (cont cfg s) = s"}
 
-*}
+\<close>
 
 hide_const cont
 
@@ -145,7 +145,7 @@ proof safe
     by (coinduction arbitrary: cfg2) (auto intro!: rel_pmf_reflI)
 qed
 
-subsection {* Configuration with Memoryless Scheduler *}
+subsection \<open>Configuration with Memoryless Scheduler\<close>
 
 definition "memoryless_on f s = cfg_corec s f (\<lambda>_ t. t) s"
 
@@ -164,7 +164,7 @@ lemma set_K_cfg: "set_pmf (K_cfg cfg) = cont cfg ` set_pmf (action cfg)"
 lemma nn_integral_K_cfg: "(\<integral>\<^sup>+cfg. f cfg \<partial>K_cfg cfg) = (\<integral>\<^sup>+s. f (cont cfg s) \<partial>action cfg)"
   by (simp add: K_cfg_def map_pmf_rep_eq nn_integral_distr)
 
-subsection {* MDP Kernel and Induced Configurations *}
+subsection \<open>MDP Kernel and Induced Configurations\<close>
 
 locale Markov_Decision_Process =
   fixes K :: "'s \<Rightarrow> 's pmf set"
@@ -375,7 +375,7 @@ proof -
         have "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (\<integral>\<^sup>+t. ?v (cfg' t) + e \<partial>D)"
           by (intro nn_integral_mono_AE) (simp add: v_cfg' AE_measure_pmf_iff)
         also have "\<dots> = (\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) + e"
-          using `0 < e` measure_pmf.emeasure_space_1[of D]
+          using \<open>0 < e\<close> measure_pmf.emeasure_space_1[of D]
           by (subst nn_integral_add) (auto intro: cfg_on_cfg' )
         also have "(\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) = (\<integral>\<^sup>+t. ?v t \<partial>K_cfg ?cfg)"
           by (simp add: cfg map_pmf_rep_eq nn_integral_distr)
@@ -475,7 +475,7 @@ proof -
   have "P_sup s (\<lambda>x. \<Squnion>i. P i x) = (\<Squnion>cfg\<in>cfg_on s. emeasure (T cfg) (\<Union>i. {x\<in>space St. P i x}))"
     by (auto simp: P_sup_def intro!: SUP_cong arg_cong2[where f=emeasure])
   also have "\<dots> = (\<Squnion>cfg\<in>cfg_on s. \<Squnion>i. emeasure (T cfg) {x\<in>space St. P i x})"
-    using `mono P` by (auto intro!: SUP_cong SUP_emeasure_incseq[symmetric] simp: mono_def le_fun_def)
+    using \<open>mono P\<close> by (auto intro!: SUP_cong SUP_emeasure_incseq[symmetric] simp: mono_def le_fun_def)
   also have "\<dots> = (\<Squnion>i. P_sup s (P i))"
     by (subst SUP_commute) (simp add: P_sup_def)
   finally show ?thesis
@@ -540,12 +540,12 @@ proof -
             by (auto simp: top_add simp del: cfg_on_not_empty)
         next
           assume p_finite: "?p t \<noteq> \<infinity>"
-          note `t \<in> D`
+          note \<open>t \<in> D\<close>
           moreover have "(INF cfg \<in> cfg_on t. ?v cfg) = ?p t"
             unfolding E_inf_def by (simp add: cfg_on_def)
           ultimately have "(INF cfg \<in> cfg_on t. ?v cfg) \<noteq> \<infinity>"
             using p_finite by auto
-          from INF_approx_ennreal[OF `0 < e` refl this]
+          from INF_approx_ennreal[OF \<open>0 < e\<close> refl this]
           show "\<exists>cfg\<in>cfg_on t. ?v cfg \<le> ?p t + e"
             by (auto simp: E_inf_def intro: less_imp_le)
         qed
@@ -564,7 +564,7 @@ proof -
       then have "(INF cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t + e \<partial>D)"
         by (rule INF_lower2) (auto simp: cfg map_pmf_rep_eq nn_integral_distr v_cfg' AE_measure_pmf_iff intro!: nn_integral_mono_AE)
       also have "\<dots> = (\<integral>\<^sup>+ t. ?p t \<partial>D) + e"
-        using `0 < e` by (simp add: nn_integral_add measure_pmf.emeasure_space_1[simplified])
+        using \<open>0 < e\<close> by (simp add: nn_integral_add measure_pmf.emeasure_space_1[simplified])
       finally show "(INF cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t \<partial>D) + e" .
     qed
   qed
@@ -613,7 +613,7 @@ proof (rule antisym)
     also have "\<dots> = lfp ?F s"
       by (rewrite in "_ = \<hole>" lfp_unfold[OF mono_F]) auto
     finally have "\<exists>D. D \<in> K s \<and> (lfp ?F s = ?I D)"
-      using `D \<in> K s` by auto
+      using \<open>D \<in> K s\<close> by auto
     then have "ct s \<in> K s \<and> (lfp ?F s = ?I (ct s))"
       unfolding ct_def by (rule someI_ex)
     then have "ct s \<in> K s" "lfp ?F s = ?I (ct s)"
@@ -669,7 +669,7 @@ proof (rule antisym)
         { fix cfg assume "cfg \<in> cfg_on t"
           have "(\<integral>\<^sup>+ \<omega>. g (state cfg) (lfp l \<omega>) \<partial>T cfg) = g (state cfg) (\<integral>\<^sup>+ \<omega>. (lfp l \<omega>) \<partial>T cfg)"
             using l by (rule int_g)
-          with `cfg \<in> cfg_on t` have *: "(\<integral>\<^sup>+ \<omega>. g t (lfp l \<omega>) \<partial>T cfg) = g t (\<integral>\<^sup>+ \<omega>. (lfp l \<omega>) \<partial>T cfg)"
+          with \<open>cfg \<in> cfg_on t\<close> have *: "(\<integral>\<^sup>+ \<omega>. g t (lfp l \<omega>) \<partial>T cfg) = g t (\<integral>\<^sup>+ \<omega>. (lfp l \<omega>) \<partial>T cfg)"
             by simp }
         then
         have *: "g t (\<Sqinter>cfg\<in>cfg_on t. integral\<^sup>N (T cfg) (lfp l)) \<le> (\<Sqinter>cfg\<in>cfg_on t. \<integral>\<^sup>+ \<omega>. g t (lfp l \<omega>) \<partial>T cfg)"
@@ -711,7 +711,7 @@ proof -
   have "P_inf s (\<lambda>x. \<Sqinter>i. P i x) = (\<Sqinter>cfg\<in>cfg_on s. emeasure (T cfg) (\<Inter>i. {x\<in>space St. P i x}))"
     by (auto simp: P_inf_def intro!: INF_cong arg_cong2[where f=emeasure])
   also have "\<dots> = (\<Sqinter>cfg\<in>cfg_on s. \<Sqinter>i. emeasure (T cfg) {x\<in>space St. P i x})"
-    using `decseq P` by (auto intro!: INF_cong INF_emeasure_decseq[symmetric] simp: decseq_def le_fun_def)
+    using \<open>decseq P\<close> by (auto intro!: INF_cong INF_emeasure_decseq[symmetric] simp: decseq_def le_fun_def)
   also have "\<dots> = (\<Sqinter>i. P_inf s (P i))"
     by (subst INF_commute) (simp add: P_inf_def)
   finally show ?thesis

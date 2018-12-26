@@ -1,4 +1,4 @@
-section {* Static backward slice *}
+section \<open>Static backward slice\<close>
 
 theory Slice 
   imports Observable Distance DataDependence "../Basic/SemanticsCFG"  
@@ -31,7 +31,7 @@ proof -
   show ?thesis
   proof(cases "card(obs n (backward_slice S)) = 0")
     case True
-    with `finite(obs n (backward_slice S))` have "obs n (backward_slice S) = {}"
+    with \<open>finite(obs n (backward_slice S))\<close> have "obs n (backward_slice S) = {}"
       by simp
     thus ?thesis by simp
   next
@@ -50,7 +50,7 @@ lemma obs_singleton_element:
 proof -
   have "(\<exists>m. obs n (backward_slice S) = {m}) \<or> obs n (backward_slice S) = {}"
     by(rule obs_singleton_disj)
-  with `m \<in> obs n (backward_slice S)` show ?thesis by fastforce
+  with \<open>m \<in> obs n (backward_slice S)\<close> show ?thesis by fastforce
 qed
 
 
@@ -59,10 +59,10 @@ lemma obs_the_element:
 by(fastforce dest:obs_singleton_element)
 
 
-subsection {* Traversing the sliced graph *}
+subsection \<open>Traversing the sliced graph\<close>
 
-text {* @{text "slice_kind S a"} conforms to @{term "kind a"} in the
-  sliced graph *}
+text \<open>\<open>slice_kind S a\<close> conforms to @{term "kind a"} in the
+  sliced graph\<close>
 
 definition slice_kind :: "'node set \<Rightarrow> 'edge \<Rightarrow> 'state edge_kind"
   where "slice_kind S a = (let S' = backward_slice S; n = sourcenode a in 
@@ -124,7 +124,7 @@ lemma slice_kind_Pred_obs_nearer_SOME:
                                           valid_edge a' \<and> targetnode a' = n')"
   shows "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
 proof -
-  from `m \<in> obs (sourcenode a) (backward_slice S)`
+  from \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
   have "m = (THE m. m \<in> obs (sourcenode a) (backward_slice S))"
     by(rule obs_the_element[THEN sym])
   with assms show ?thesis
@@ -141,7 +141,7 @@ lemma slice_kind_Pred_obs_nearer_not_SOME:
                                           valid_edge a' \<and> targetnode a' = nx')"
   shows "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
 proof -
-  from `m \<in> obs (sourcenode a) (backward_slice S)`
+  from \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
   have "m = (THE m. m \<in> obs (sourcenode a) (backward_slice S))"
     by(rule obs_the_element[THEN sym])
   with assms show ?thesis
@@ -161,7 +161,7 @@ proof -
   from dist have "\<not> (\<exists>x. distance (targetnode a) m x \<and> 
                             distance (sourcenode a) m (x + 1))"
     by(fastforce dest:distance_det)
-  with `sourcenode a \<notin> backward_slice S` `kind a = (Q)\<^sub>\<surd>` in_obs the show ?thesis
+  with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close> in_obs the show ?thesis
     by(fastforce simp:slice_kind_def Let_def)
 qed
 
@@ -177,14 +177,14 @@ proof(atomize_elim)
     proof(cases "targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                                valid_edge a' \<and> targetnode a' = n')")
       case True
-      with `sourcenode a \<notin> backward_slice S` `kind a = (Q)\<^sub>\<surd>`
-        `obs (sourcenode a) (backward_slice S) = {}`
+      with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close>
+        \<open>obs (sourcenode a) (backward_slice S) = {}\<close>
       have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>" by(rule slice_kind_Pred_empty_obs_SOME)
       thus ?thesis by simp
     next
       case False
-      with `sourcenode a \<notin> backward_slice S` `kind a = (Q)\<^sub>\<surd>`
-        `obs (sourcenode a) (backward_slice S) = {}`
+      with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close>
+        \<open>obs (sourcenode a) (backward_slice S) = {}\<close>
       have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
         by(rule slice_kind_Pred_empty_obs_not_SOME)
       thus ?thesis by simp
@@ -203,28 +203,28 @@ proof(atomize_elim)
                                                  distance (targetnode a') m x \<and>
                                                  valid_edge a' \<and> targetnode a' = n')")
         case True
-        with `sourcenode a \<notin> backward_slice S` `kind a = (Q)\<^sub>\<surd>`
-          `m \<in> obs (sourcenode a) (backward_slice S)`
-          `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
+        with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close>
+          \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
+          \<open>distance (targetnode a) m x\<close> \<open>distance (sourcenode a) m (x + 1)\<close>
         have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
           by(rule slice_kind_Pred_obs_nearer_SOME)
         thus ?thesis by simp
       next
         case False
-        with `sourcenode a \<notin> backward_slice S` `kind a = (Q)\<^sub>\<surd>`
-          `m \<in> obs (sourcenode a) (backward_slice S)`
-          `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
+        with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close>
+          \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
+          \<open>distance (targetnode a) m x\<close> \<open>distance (sourcenode a) m (x + 1)\<close>
         have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
           by(rule slice_kind_Pred_obs_nearer_not_SOME)
         thus ?thesis by simp
       qed
     next
       case False
-      from `m \<in> obs (sourcenode a) (backward_slice S)`
+      from \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
       have "m = (THE m. m \<in> obs (sourcenode a) (backward_slice S))"
         by(rule obs_the_element[THEN sym])
-      with `sourcenode a \<notin> backward_slice S` `kind a = (Q)\<^sub>\<surd>` False
-        `m \<in> obs (sourcenode a) (backward_slice S)`
+      with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close> False
+        \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
       have "slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
         by(fastforce simp:slice_kind_def Let_def)
       thus ?thesis by simp
@@ -250,7 +250,7 @@ proof(rule ex_ex1I)
       apply(unfold some_eq_ex[of "\<lambda>n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                             valid_edge a' \<and> targetnode a' = n'"])
       by simp
-    also have "\<dots>" using `valid_edge a` by blast
+    also have "\<dots>" using \<open>valid_edge a\<close> by blast
     finally show ?thesis .
   qed
 next
@@ -273,17 +273,17 @@ proof -
   from assms obtain Q Q' where "kind a = (Q)\<^sub>\<surd>"
     and "kind a' = (Q')\<^sub>\<surd>" and det:"\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     by(auto dest:deterministic)
-  from `valid_edge a` have ex1:"\<exists>!a'. sourcenode a = sourcenode a' \<and> valid_edge a' \<and>
+  from \<open>valid_edge a\<close> have ex1:"\<exists>!a'. sourcenode a = sourcenode a' \<and> valid_edge a' \<and>
                targetnode a' = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                               valid_edge a' \<and> targetnode a' = n')"
     by(rule only_one_SOME_edge)
   show ?thesis
   proof(cases "sourcenode a \<in> backward_slice S")
     case True
-    with `slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (Q)\<^sub>\<surd>` have "Q = (\<lambda>s. True)"
+    with \<open>slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close> have "Q = (\<lambda>s. True)"
       by(simp add:slice_kind_def Let_def)
     with det have "Q' = (\<lambda>s. False)" by(simp add:fun_eq_iff)
-    with True `kind a' = (Q')\<^sub>\<surd>` `sourcenode a = sourcenode a'` show ?thesis
+    with True \<open>kind a' = (Q')\<^sub>\<surd>\<close> \<open>sourcenode a = sourcenode a'\<close> show ?thesis
       by(simp add:slice_kind_def Let_def)
   next
     case False
@@ -291,8 +291,8 @@ proof -
     thus ?thesis
     proof(cases "obs (sourcenode a) (backward_slice S) = {}")
       case True
-      with `sourcenode a \<notin> backward_slice S` `slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>`
-        `kind a = (Q)\<^sub>\<surd>`
+      with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>\<close>
+        \<open>kind a = (Q)\<^sub>\<surd>\<close>
       have target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                                  valid_edge a' \<and> targetnode a' = n')"
         by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
@@ -304,12 +304,12 @@ proof -
         hence "targetnode a' = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                               valid_edge a' \<and> targetnode a' = n')"
           by simp
-        with ex1 target `sourcenode a = sourcenode a'` `valid_edge a`
-          `valid_edge a'` have "a = a'" by blast
-        with `targetnode a \<noteq> targetnode a'` show False by simp
+        with ex1 target \<open>sourcenode a = sourcenode a'\<close> \<open>valid_edge a\<close>
+          \<open>valid_edge a'\<close> have "a = a'" by blast
+        with \<open>targetnode a \<noteq> targetnode a'\<close> show False by simp
       qed
-      with `sourcenode a \<notin> backward_slice S` True `kind a' = (Q')\<^sub>\<surd>`
-        `sourcenode a = sourcenode a'` show ?thesis 
+      with \<open>sourcenode a \<notin> backward_slice S\<close> True \<open>kind a' = (Q')\<^sub>\<surd>\<close>
+        \<open>sourcenode a = sourcenode a'\<close> show ?thesis 
         by(auto simp:slice_kind_def Let_def fun_eq_iff split:if_split_asm)
     next
       case False
@@ -317,9 +317,9 @@ proof -
       then obtain m where "m \<in> obs (sourcenode a) (backward_slice S)" by auto
       hence "m = (THE m. m \<in> obs (sourcenode a) (backward_slice S))"
         by(auto dest:obs_the_element)
-      with `sourcenode a \<notin> backward_slice S` 
-        `obs (sourcenode a) (backward_slice S) \<noteq> {}` 
-        `slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>` `kind a = (Q)\<^sub>\<surd>`
+      with \<open>sourcenode a \<notin> backward_slice S\<close> 
+        \<open>obs (sourcenode a) (backward_slice S) \<noteq> {}\<close> 
+        \<open>slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close>
       obtain x x' where "distance (targetnode a) m x" 
         "distance (sourcenode a) m (x + 1)"
         and target:"targetnode a = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and>
@@ -329,15 +329,15 @@ proof -
       show ?thesis
       proof(cases "distance (targetnode a') m x")
         case False
-        with `sourcenode a \<notin> backward_slice S` `kind a' = (Q')\<^sub>\<surd>`
-          `m \<in> obs (sourcenode a) (backward_slice S)`
-          `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
-          `sourcenode a = sourcenode a'` show ?thesis
+        with \<open>sourcenode a \<notin> backward_slice S\<close> \<open>kind a' = (Q')\<^sub>\<surd>\<close>
+          \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
+          \<open>distance (targetnode a) m x\<close> \<open>distance (sourcenode a) m (x + 1)\<close>
+          \<open>sourcenode a = sourcenode a'\<close> show ?thesis
           by(fastforce intro:slice_kind_Pred_obs_not_nearer)
       next
         case True
-        from `valid_edge a` `distance (targetnode a) m x`
-          `distance (sourcenode a) m (x + 1)`
+        from \<open>valid_edge a\<close> \<open>distance (targetnode a) m x\<close>
+          \<open>distance (sourcenode a) m (x + 1)\<close>
         have ex1:"\<exists>!a'. sourcenode a = sourcenode a' \<and> 
                distance (targetnode a') m x \<and> valid_edge a' \<and>
                targetnode a' = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
@@ -355,16 +355,16 @@ proof -
                                                 distance (targetnode a') m x \<and>
                                                 valid_edge a' \<and> targetnode a' = n')"
             by simp
-          with ex1 target `sourcenode a = sourcenode a'` 
-            `valid_edge a` `valid_edge a'` 
-            `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
+          with ex1 target \<open>sourcenode a = sourcenode a'\<close> 
+            \<open>valid_edge a\<close> \<open>valid_edge a'\<close> 
+            \<open>distance (targetnode a) m x\<close> \<open>distance (sourcenode a) m (x + 1)\<close>
           have "a = a'" by auto
-          with `targetnode a \<noteq> targetnode a'` show False by simp
+          with \<open>targetnode a \<noteq> targetnode a'\<close> show False by simp
         qed
-        with `sourcenode a \<notin> backward_slice S` 
-          `kind a' = (Q')\<^sub>\<surd>` `m \<in> obs (sourcenode a) (backward_slice S)`
-          `distance (targetnode a) m x` `distance (sourcenode a) m (x + 1)`
-          True `sourcenode a = sourcenode a'` show ?thesis
+        with \<open>sourcenode a \<notin> backward_slice S\<close> 
+          \<open>kind a' = (Q')\<^sub>\<surd>\<close> \<open>m \<in> obs (sourcenode a) (backward_slice S)\<close>
+          \<open>distance (targetnode a) m x\<close> \<open>distance (sourcenode a) m (x + 1)\<close>
+          True \<open>sourcenode a = sourcenode a'\<close> show ?thesis
           by(fastforce intro:slice_kind_Pred_obs_nearer_not_SOME)
       qed
     qed
@@ -382,7 +382,7 @@ proof(atomize_elim)
     where "kind a = (Q)\<^sub>\<surd>" and "kind a' = (Q')\<^sub>\<surd>" 
     and det:"\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     by(auto dest:deterministic)
-  from `valid_edge a` have ex1:"\<exists>!a'. sourcenode a = sourcenode a' \<and> valid_edge a' \<and>
+  from \<open>valid_edge a\<close> have ex1:"\<exists>!a'. sourcenode a = sourcenode a' \<and> valid_edge a' \<and>
                targetnode a' = (SOME n'. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                               valid_edge a' \<and> targetnode a' = n')"
     by(rule only_one_SOME_edge)
@@ -390,28 +390,28 @@ proof(atomize_elim)
                 (\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s))"
   proof(cases "sourcenode a \<in> backward_slice S")
     case True
-    with `kind a = (Q)\<^sub>\<surd>` have "slice_kind S a = (Q)\<^sub>\<surd>"
+    with \<open>kind a = (Q)\<^sub>\<surd>\<close> have "slice_kind S a = (Q)\<^sub>\<surd>"
       by(simp add:slice_kind_def Let_def)
-    from True `kind a' = (Q')\<^sub>\<surd>` `sourcenode a = sourcenode a'`
+    from True \<open>kind a' = (Q')\<^sub>\<surd>\<close> \<open>sourcenode a = sourcenode a'\<close>
     have "slice_kind S a' = (Q')\<^sub>\<surd>"
       by(simp add:slice_kind_def Let_def)
-    with `slice_kind S a = (Q)\<^sub>\<surd>` det show ?thesis by blast
+    with \<open>slice_kind S a = (Q)\<^sub>\<surd>\<close> det show ?thesis by blast
   next
     case False
-    with `kind a = (Q)\<^sub>\<surd>` 
+    with \<open>kind a = (Q)\<^sub>\<surd>\<close> 
     have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd> \<or> slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
       by(simp add:slice_kind_def Let_def)
     thus ?thesis
     proof
       assume true:"slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
-      with `sourcenode a = sourcenode a'` `targetnode a \<noteq> targetnode a'`
-        `valid_edge a` `valid_edge a'`
+      with \<open>sourcenode a = sourcenode a'\<close> \<open>targetnode a \<noteq> targetnode a'\<close>
+        \<open>valid_edge a\<close> \<open>valid_edge a'\<close>
       have "slice_kind S a' = (\<lambda>s. False)\<^sub>\<surd>"
         by(rule slice_kind_only_one_True_edge)
       with true show ?thesis by simp
     next
       assume false:"slice_kind S a = (\<lambda>s. False)\<^sub>\<surd>"
-      from False `kind a' = (Q')\<^sub>\<surd>` `sourcenode a = sourcenode a'`
+      from False \<open>kind a' = (Q')\<^sub>\<surd>\<close> \<open>sourcenode a = sourcenode a'\<close>
       have "slice_kind S a' = (\<lambda>s. True)\<^sub>\<surd> \<or> slice_kind S a' = (\<lambda>s. False)\<^sub>\<surd>"
         by(simp add:slice_kind_def Let_def)
       with false show ?thesis by auto
@@ -422,7 +422,7 @@ qed
 
 
 
-subsection {* Observable and silent moves *}
+subsection \<open>Observable and silent moves\<close>
 
 inductive silent_move :: 
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge \<Rightarrow> 
@@ -452,10 +452,10 @@ proof(induct rule:silent_moves.induct)
   case silent_moves_Nil thus ?case by simp
 next
   case (silent_moves_Cons S f n s a n' s' as n'' s'')
-  from `nx \<in> obs n'' (backward_slice S)`
-    `nx \<in> obs n'' (backward_slice S) \<Longrightarrow> nx \<in> obs n' (backward_slice S)`
+  from \<open>nx \<in> obs n'' (backward_slice S)\<close>
+    \<open>nx \<in> obs n'' (backward_slice S) \<Longrightarrow> nx \<in> obs n' (backward_slice S)\<close>
   have obs:"nx \<in> obs n' (backward_slice S)" by simp
-  from `S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n',s')`
+  from \<open>S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n',s')\<close>
   have "n = sourcenode a" and "n' = targetnode a" and "valid_edge a" 
     and "n \<notin> (backward_slice S)"
     by(auto elim:silent_move.cases)
@@ -472,18 +472,18 @@ proof(induct rule:silent_moves.induct)
   case silent_moves_Nil thus ?case by(simp add:path.empty_path)
 next
   case (silent_moves_Cons S f n s a n' s' as n'' s'')
-  note IH = `valid_node n' \<Longrightarrow>
-    preds (map f as) s' \<and> transfers (map f as) s' = s'' \<and> n' -as\<rightarrow>* n''`
-  from `S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n',s')` have "pred (f a) s" and "transfer (f a) s = s'"
+  note IH = \<open>valid_node n' \<Longrightarrow>
+    preds (map f as) s' \<and> transfers (map f as) s' = s'' \<and> n' -as\<rightarrow>* n''\<close>
+  from \<open>S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n',s')\<close> have "pred (f a) s" and "transfer (f a) s = s'"
     and "n = sourcenode a" and "n' = targetnode a" and "valid_edge a"
     by(auto elim:silent_move.cases)
-  from `n' = targetnode a` `valid_edge a` have "valid_node n'" by simp
+  from \<open>n' = targetnode a\<close> \<open>valid_edge a\<close> have "valid_node n'" by simp
   from IH[OF this] have "preds (map f as) s'" and "transfers (map f as) s' = s''"
     and "n' -as\<rightarrow>* n''" by simp_all
-  from `n = sourcenode a` `n' = targetnode a` `valid_edge a` `n' -as\<rightarrow>* n''`
+  from \<open>n = sourcenode a\<close> \<open>n' = targetnode a\<close> \<open>valid_edge a\<close> \<open>n' -as\<rightarrow>* n''\<close>
   have "n -a#as\<rightarrow>* n''" by(fastforce intro:Cons_path)
-  with `pred (f a) s` `preds (map f as) s'` `transfer (f a) s = s'` 
-    `transfers (map f as) s' = s''` show ?case by simp
+  with \<open>pred (f a) s\<close> \<open>preds (map f as) s'\<close> \<open>transfer (f a) s = s'\<close> 
+    \<open>transfers (map f as) s' = s''\<close> show ?case by simp
 qed
 
 
@@ -491,14 +491,14 @@ lemma obs_silent_moves:
   assumes "obs n (backward_slice S) = {n'}"
   obtains as where "S,slice_kind S \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s)"
 proof(atomize_elim)
-  from `obs n (backward_slice S) = {n'}` 
+  from \<open>obs n (backward_slice S) = {n'}\<close> 
   have "n' \<in> obs n (backward_slice S)" by simp
   then obtain as where "n -as\<rightarrow>* n'" 
     and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> (backward_slice S)"
     and "n' \<in> (backward_slice S)" by(erule obsE)
-  from `n -as\<rightarrow>* n'` obtain x where "distance n n' x" and "x \<le> length as"
+  from \<open>n -as\<rightarrow>* n'\<close> obtain x where "distance n n' x" and "x \<le> length as"
     by(erule every_path_distance)
-  from `distance n n' x` `n' \<in> obs n (backward_slice S)` 
+  from \<open>distance n n' x\<close> \<open>n' \<in> obs n (backward_slice S)\<close> 
   show "\<exists>as. S,slice_kind S \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s)"
   proof(induct x arbitrary:n s rule:nat.induct)
     fix n s assume "distance n n' 0"
@@ -513,63 +513,63 @@ proof(atomize_elim)
     assume "distance n n' (Suc x)" and "n' \<in> obs n (backward_slice S)"
       and IH:"\<And>n s. \<lbrakk>distance n n' x; n' \<in> obs n (backward_slice S)\<rbrakk> 
               \<Longrightarrow> \<exists>as. S,slice_kind S \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s)"
-    from `n' \<in> obs n (backward_slice S)`
+    from \<open>n' \<in> obs n (backward_slice S)\<close>
     have "valid_node n" by(rule in_obs_valid)
-    with `distance n n' (Suc x)`
+    with \<open>distance n n' (Suc x)\<close>
     have "n \<noteq> n'" by(fastforce elim:distance.cases dest:empty_path)
     have "n \<notin> backward_slice S"
     proof
       assume isin:"n \<in> backward_slice S"
-      with `valid_node n` have "obs n (backward_slice S) = {n}"
+      with \<open>valid_node n\<close> have "obs n (backward_slice S) = {n}"
         by(fastforce intro!:n_in_obs)
-      with `n' \<in> obs n (backward_slice S)` `n \<noteq> n'` show False by simp
+      with \<open>n' \<in> obs n (backward_slice S)\<close> \<open>n \<noteq> n'\<close> show False by simp
     qed
-    from `distance n n' (Suc x)` obtain a where "valid_edge a" 
+    from \<open>distance n n' (Suc x)\<close> obtain a where "valid_edge a" 
       and "n = sourcenode a" and "distance (targetnode a) n' x"
       and target:"targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and> 
                                      distance (targetnode a') n' x \<and>
                                      valid_edge a' \<and> targetnode a' = nx)"
       by -(erule distance_successor_distance,simp+)
-    from `n' \<in> obs n (backward_slice S)`
+    from \<open>n' \<in> obs n (backward_slice S)\<close>
     have "obs n (backward_slice S) = {n'}"
       by(rule obs_singleton_element)
-    with `valid_edge a` `n \<notin> backward_slice S` `n = sourcenode a`
+    with \<open>valid_edge a\<close> \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close>
     have disj:"obs (targetnode a) (backward_slice S) = {} \<or> 
                obs (targetnode a) (backward_slice S) = {n'}"
       by -(drule_tac S="backward_slice S" in edge_obs_subset,auto)
-    from `distance (targetnode a) n' x` obtain asx where "targetnode a -asx\<rightarrow>* n'" 
+    from \<open>distance (targetnode a) n' x\<close> obtain asx where "targetnode a -asx\<rightarrow>* n'" 
       and "length asx = x" and "\<forall>as'. targetnode a -as'\<rightarrow>* n' \<longrightarrow> x \<le> length as'" 
       by(auto elim:distance.cases)
-    from `targetnode a -asx\<rightarrow>* n'` `n' \<in> (backward_slice S)`
+    from \<open>targetnode a -asx\<rightarrow>* n'\<close> \<open>n' \<in> (backward_slice S)\<close>
     obtain m where "\<exists>m. m \<in> obs (targetnode a) (backward_slice S)"
       by(fastforce elim:path_ex_obs)
     with disj have "n' \<in> obs (targetnode a) (backward_slice S)" by fastforce
-    from IH[OF `distance (targetnode a) n' x` this,of "transfer (slice_kind S a) s"]
+    from IH[OF \<open>distance (targetnode a) n' x\<close> this,of "transfer (slice_kind S a) s"]
     obtain asx' where 
     moves:"S,slice_kind S \<turnstile> (targetnode a,transfer (slice_kind S a) s) =asx'\<Rightarrow>\<^sub>\<tau> 
                                (n',transfer (slice_kind S a) s)" by blast
     have "pred (slice_kind S a) s \<and> transfer (slice_kind S a) s = s"
     proof(cases "kind a")
       case (Update f)
-      with `n \<notin> backward_slice S` `n = sourcenode a` have "slice_kind S a = \<Up>id" 
+      with \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close> have "slice_kind S a = \<Up>id" 
         by(fastforce intro:slice_kind_Upd)
       thus ?thesis by simp
     next
       case (Predicate Q)
-      with `n \<notin> backward_slice S` `n = sourcenode a`
-        `n' \<in> obs n (backward_slice S)` `distance (targetnode a) n' x`
-        `distance n n' (Suc x)` target
+      with \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close>
+        \<open>n' \<in> obs n (backward_slice S)\<close> \<open>distance (targetnode a) n' x\<close>
+        \<open>distance n n' (Suc x)\<close> target
       have "slice_kind S a =  (\<lambda>s. True)\<^sub>\<surd>"
         by(fastforce intro:slice_kind_Pred_obs_nearer_SOME)
       thus ?thesis by simp
     qed
     hence "pred (slice_kind S a) s" and "transfer (slice_kind S a) s = s"
       by simp_all
-    with `n \<notin> backward_slice S` `n = sourcenode a` `valid_edge a`
+    with \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close> \<open>valid_edge a\<close>
     have "S,slice_kind S \<turnstile> (sourcenode a,s) -a\<rightarrow>\<^sub>\<tau> 
                              (targetnode a,transfer (slice_kind S a) s)"
       by(fastforce intro:silent_moveI)
-    with moves `transfer (slice_kind S a) s = s` `n = sourcenode a`
+    with moves \<open>transfer (slice_kind S a) s = s\<close> \<open>n = sourcenode a\<close>
     have "S,slice_kind S \<turnstile> (n,s) =a#asx'\<Rightarrow>\<^sub>\<tau> (n',s)"
       by(fastforce intro:silent_moves_Cons)
     thus "\<exists>as. S,slice_kind S \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s)" by blast
@@ -606,9 +606,9 @@ lemma silent_move_observable_moves:
   \<Longrightarrow> S,f \<turnstile> (n,s) =a#as\<Rightarrow> (n',s')"
 proof(induct rule:observable_moves.induct)
   case (observable_moves_snoc S f nx sx as n' s' a' n'' s'')
-  from `S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (nx,sx)` `S,f \<turnstile> (nx,sx) =as\<Rightarrow>\<^sub>\<tau> (n',s')`
+  from \<open>S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (nx,sx)\<close> \<open>S,f \<turnstile> (nx,sx) =as\<Rightarrow>\<^sub>\<tau> (n',s')\<close>
   have "S,f \<turnstile> (n,s) =a#as\<Rightarrow>\<^sub>\<tau> (n',s')" by(rule silent_moves_Cons)
-  with `S,f \<turnstile> (n',s') -a'\<rightarrow> (n'',s'')`
+  with \<open>S,f \<turnstile> (n',s') -a'\<rightarrow> (n'',s'')\<close>
   have "S,f \<turnstile> (n,s) =(a#as)@[a']\<Rightarrow> (n'',s'')"
     by -(rule observable_moves.observable_moves_snoc)
   thus ?case by simp
@@ -623,34 +623,34 @@ proof(induct rule:observable_moves.induct)
   have "valid_node n"
   proof(cases as)
     case Nil
-    with `S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')` have "n = n'" and "s = s'"
+    with \<open>S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')\<close> have "n = n'" and "s = s'"
       by(auto elim:silent_moves.cases)
-    with `S,f \<turnstile> (n',s') -a\<rightarrow> (n'',s'')` show ?thesis
+    with \<open>S,f \<turnstile> (n',s') -a\<rightarrow> (n'',s'')\<close> show ?thesis
       by(fastforce elim:observable_move.cases)
   next
     case (Cons a' as')
-    with `S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')` show ?thesis
+    with \<open>S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')\<close> show ?thesis
       by(fastforce elim:silent_moves.cases silent_move.cases)
   qed
-  with `S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')`
+  with \<open>S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')\<close>
   have "preds (map f as) s" and "transfers (map f as) s = s'"
     and "n -as\<rightarrow>* n'" by(auto dest:silent_moves_preds_transfers_path)
-  from `S,f \<turnstile> (n',s') -a\<rightarrow> (n'',s'')` have "pred (f a) s'" 
+  from \<open>S,f \<turnstile> (n',s') -a\<rightarrow> (n'',s'')\<close> have "pred (f a) s'" 
     and "transfer (f a) s' = s''" and "n' = sourcenode a" and "n'' = targetnode a" 
     and "valid_edge a"
     by(auto elim:observable_move.cases)
-  from `n' = sourcenode a` `n'' = targetnode a` `valid_edge a`
+  from \<open>n' = sourcenode a\<close> \<open>n'' = targetnode a\<close> \<open>valid_edge a\<close>
   have "n' -[a]\<rightarrow>* n''" by(fastforce intro:path.intros)
-  with `n -as\<rightarrow>* n'` have "n -as@[a]\<rightarrow>* n''" by(rule path_Append)
-  with `preds (map f as) s` `pred (f a) s'` `transfer (f a) s' = s''`
-    `transfers (map f as) s = s'`
+  with \<open>n -as\<rightarrow>* n'\<close> have "n -as@[a]\<rightarrow>* n''" by(rule path_Append)
+  with \<open>preds (map f as) s\<close> \<open>pred (f a) s'\<close> \<open>transfer (f a) s' = s''\<close>
+    \<open>transfers (map f as) s = s'\<close>
   show ?case by(simp add:transfers_split preds_split)
 qed
 
 
 
 
-subsection {* Relevant variables *}
+subsection \<open>Relevant variables\<close>
 
 inductive_set relevant_vars :: "'node set \<Rightarrow> 'node \<Rightarrow> 'var set" ("rv _")
 for S :: "'node set" and n :: "'node"
@@ -674,19 +674,19 @@ lemma eq_obs_in_rv:
   assumes obs_eq:"obs n (backward_slice S) = obs n' (backward_slice S)" 
   and "x \<in> rv S n" shows "x \<in> rv S n'"
 proof -
-  from `x \<in> rv S n` obtain as m 
+  from \<open>x \<in> rv S n\<close> obtain as m 
     where "n -as\<rightarrow>* m" and "m \<in> backward_slice S" and "x \<in> Use m"
     and "\<forall>nx\<in>set (sourcenodes as). x \<notin> Def nx"
     by(erule rvE)
-  from `n -as\<rightarrow>* m` have "valid_node m" by(fastforce dest:path_valid_node)
-  from `n -as\<rightarrow>* m` `m \<in> backward_slice S` 
+  from \<open>n -as\<rightarrow>* m\<close> have "valid_node m" by(fastforce dest:path_valid_node)
+  from \<open>n -as\<rightarrow>* m\<close> \<open>m \<in> backward_slice S\<close> 
   have "\<exists>nx as' as''. nx \<in> obs n (backward_slice S) \<and> n -as'\<rightarrow>* nx \<and> 
                                      nx -as''\<rightarrow>* m \<and> as = as'@as''"
   proof(cases "\<forall>nx \<in> set(sourcenodes as). nx \<notin> backward_slice S")
     case True
-    with `n -as\<rightarrow>* m` `m \<in> backward_slice S` have "m \<in> obs n (backward_slice S)"
+    with \<open>n -as\<rightarrow>* m\<close> \<open>m \<in> backward_slice S\<close> have "m \<in> obs n (backward_slice S)"
       by -(rule obs_elem)
-    with `n -as\<rightarrow>* m` `valid_node m` show ?thesis by(blast intro:empty_path)
+    with \<open>n -as\<rightarrow>* m\<close> \<open>valid_node m\<close> show ?thesis by(blast intro:empty_path)
   next
     case False
     hence "\<exists>nx \<in> set(sourcenodes as). nx \<in> backward_slice S" by simp
@@ -694,77 +694,77 @@ proof -
       and "nx' \<in> backward_slice S" 
       and "\<forall>x \<in> set ns. x \<notin> backward_slice S"
       by(fastforce elim!:split_list_first_propE)
-    from `sourcenodes as = ns@nx'#ns'`
+    from \<open>sourcenodes as = ns@nx'#ns'\<close>
     obtain as' a' as'' where "ns = sourcenodes as'"
       and "as = as'@a'#as''" and "sourcenode a' = nx'"
       by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-    from `n -as\<rightarrow>* m` `as = as'@a'#as''` `sourcenode a' = nx'`
+    from \<open>n -as\<rightarrow>* m\<close> \<open>as = as'@a'#as''\<close> \<open>sourcenode a' = nx'\<close>
     have "n -as'\<rightarrow>* nx'" and "valid_edge a'" and "targetnode a' -as''\<rightarrow>* m"
       by(fastforce dest:path_split)+
-    with `sourcenode a' = nx'` have "nx' -a'#as''\<rightarrow>* m" by(fastforce intro:Cons_path)
-    from `n -as'\<rightarrow>* nx'` `nx' \<in> backward_slice S`
-      `\<forall>x \<in> set ns. x \<notin> backward_slice S` `ns = sourcenodes as'` 
+    with \<open>sourcenode a' = nx'\<close> have "nx' -a'#as''\<rightarrow>* m" by(fastforce intro:Cons_path)
+    from \<open>n -as'\<rightarrow>* nx'\<close> \<open>nx' \<in> backward_slice S\<close>
+      \<open>\<forall>x \<in> set ns. x \<notin> backward_slice S\<close> \<open>ns = sourcenodes as'\<close> 
     have "nx' \<in> obs n (backward_slice S)" 
       by(fastforce intro:obs_elem)
-    with `n -as'\<rightarrow>* nx'` `nx' -a'#as''\<rightarrow>* m` `as = as'@a'#as''` show ?thesis by blast
+    with \<open>n -as'\<rightarrow>* nx'\<close> \<open>nx' -a'#as''\<rightarrow>* m\<close> \<open>as = as'@a'#as''\<close> show ?thesis by blast
   qed
   then obtain nx as' as'' where "nx \<in> obs n (backward_slice S)"
     and "n -as'\<rightarrow>* nx" and "nx -as''\<rightarrow>* m" and "as = as'@as''"
     by blast
-  from `nx \<in> obs n (backward_slice S)` obs_eq 
+  from \<open>nx \<in> obs n (backward_slice S)\<close> obs_eq 
   have "nx \<in> obs n' (backward_slice S)" by auto
   then obtain asx where "n' -asx\<rightarrow>* nx" 
     and "\<forall>ni \<in> set(sourcenodes asx). ni \<notin> backward_slice S" 
     and "nx \<in> backward_slice S"
     by(erule obsE)
-  from `as = as'@as''` `\<forall>nx\<in>set (sourcenodes as). x \<notin> Def nx` 
+  from \<open>as = as'@as''\<close> \<open>\<forall>nx\<in>set (sourcenodes as). x \<notin> Def nx\<close> 
   have "\<forall>ni\<in>set (sourcenodes as''). x \<notin> Def ni"
     by(auto simp:sourcenodes_def)
-  from `\<forall>ni \<in> set(sourcenodes asx). ni \<notin> backward_slice S` `n' -asx\<rightarrow>* nx`
+  from \<open>\<forall>ni \<in> set(sourcenodes asx). ni \<notin> backward_slice S\<close> \<open>n' -asx\<rightarrow>* nx\<close>
   have "\<forall>ni \<in> set(sourcenodes asx). x \<notin> Def ni"
   proof(induct asx arbitrary:n')
     case Nil thus ?case by(simp add:sourcenodes_def)
   next
     case (Cons ax' asx')
-    note IH = `\<And>n'. \<lbrakk>\<forall>ni\<in>set (sourcenodes asx'). ni \<notin> backward_slice S; 
+    note IH = \<open>\<And>n'. \<lbrakk>\<forall>ni\<in>set (sourcenodes asx'). ni \<notin> backward_slice S; 
       n' -asx'\<rightarrow>* nx\<rbrakk> 
-        \<Longrightarrow> \<forall>ni\<in>set (sourcenodes asx'). x \<notin> Def ni`
-    from `n' -ax'#asx'\<rightarrow>* nx` have "n' -[]@ax'#asx'\<rightarrow>* nx" by simp
+        \<Longrightarrow> \<forall>ni\<in>set (sourcenodes asx'). x \<notin> Def ni\<close>
+    from \<open>n' -ax'#asx'\<rightarrow>* nx\<close> have "n' -[]@ax'#asx'\<rightarrow>* nx" by simp
     hence "targetnode ax' -asx'\<rightarrow>* nx" and "n' = sourcenode ax'"
       by(fastforce dest:path_split)+
-    from `\<forall>ni\<in>set (sourcenodes (ax'#asx')). ni \<notin> backward_slice S`
+    from \<open>\<forall>ni\<in>set (sourcenodes (ax'#asx')). ni \<notin> backward_slice S\<close>
     have all:"\<forall>ni\<in>set (sourcenodes asx'). ni \<notin> backward_slice S" 
       and "sourcenode ax' \<notin> backward_slice S"
       by(auto simp:sourcenodes_def)
-    from IH[OF all `targetnode ax' -asx'\<rightarrow>* nx`]
+    from IH[OF all \<open>targetnode ax' -asx'\<rightarrow>* nx\<close>]
     have "\<forall>ni\<in>set (sourcenodes asx'). x \<notin> Def ni" .
-    with `\<forall>ni\<in>set (sourcenodes as''). x \<notin> Def ni`
+    with \<open>\<forall>ni\<in>set (sourcenodes as''). x \<notin> Def ni\<close>
     have "\<forall>ni\<in>set (sourcenodes (asx'@as'')). x \<notin> Def ni"
       by(auto simp:sourcenodes_def)
-    from `n' -ax'#asx'\<rightarrow>* nx` `nx -as''\<rightarrow>* m` have "n' -(ax'#asx')@as''\<rightarrow>* m" 
+    from \<open>n' -ax'#asx'\<rightarrow>* nx\<close> \<open>nx -as''\<rightarrow>* m\<close> have "n' -(ax'#asx')@as''\<rightarrow>* m" 
       by-(rule path_Append)
     hence "n' -ax'#asx'@as''\<rightarrow>* m" by simp
     have "x \<notin> Def (sourcenode ax')"
     proof
       assume "x \<in> Def (sourcenode ax')"
-      with `x \<in> Use m` `\<forall>ni\<in>set (sourcenodes (asx'@as'')). x \<notin> Def ni`
-        `n' -ax'#asx'@as''\<rightarrow>* m` `n' = sourcenode ax'` 
+      with \<open>x \<in> Use m\<close> \<open>\<forall>ni\<in>set (sourcenodes (asx'@as'')). x \<notin> Def ni\<close>
+        \<open>n' -ax'#asx'@as''\<rightarrow>* m\<close> \<open>n' = sourcenode ax'\<close> 
       have "n' influences x in m"
         by(auto simp:data_dependence_def)
-      with `m \<in> backward_slice S` dd_closed have "n' \<in> backward_slice S" 
+      with \<open>m \<in> backward_slice S\<close> dd_closed have "n' \<in> backward_slice S" 
         by(auto simp:dd_closed)
-      with `n' = sourcenode ax'` `sourcenode ax' \<notin> backward_slice S`
+      with \<open>n' = sourcenode ax'\<close> \<open>sourcenode ax' \<notin> backward_slice S\<close>
       show False by simp
     qed
-    with `\<forall>ni\<in>set (sourcenodes (asx'@as'')). x \<notin> Def ni`
+    with \<open>\<forall>ni\<in>set (sourcenodes (asx'@as'')). x \<notin> Def ni\<close>
     show ?case by(simp add:sourcenodes_def)
   qed
-  with `\<forall>ni\<in>set (sourcenodes as''). x \<notin> Def ni` 
+  with \<open>\<forall>ni\<in>set (sourcenodes as''). x \<notin> Def ni\<close> 
   have "\<forall>ni\<in>set (sourcenodes (asx@as'')). x \<notin> Def ni"
     by(auto simp:sourcenodes_def)
-  from `n' -asx\<rightarrow>* nx` `nx -as''\<rightarrow>* m` have "n' -asx@as''\<rightarrow>* m" by(rule path_Append)
-  with `m \<in> backward_slice S` `x \<in> Use m` 
-    `\<forall>ni\<in>set (sourcenodes (asx@as'')). x \<notin> Def ni` show "x \<in> rv S n'" by -(rule rvI)
+  from \<open>n' -asx\<rightarrow>* nx\<close> \<open>nx -as''\<rightarrow>* m\<close> have "n' -asx@as''\<rightarrow>* m" by(rule path_Append)
+  with \<open>m \<in> backward_slice S\<close> \<open>x \<in> Use m\<close> 
+    \<open>\<forall>ni\<in>set (sourcenodes (asx@as'')). x \<notin> Def ni\<close> show "x \<in> rv S n'" by -(rule rvI)
 qed
 
 
@@ -777,13 +777,13 @@ proof
   show "rv S n \<subseteq> rv S n'"
   proof
     fix x assume "x \<in> rv S n"
-    with `valid_node n` obs_eq show "x \<in> rv S n'" by -(rule eq_obs_in_rv)
+    with \<open>valid_node n\<close> obs_eq show "x \<in> rv S n'" by -(rule eq_obs_in_rv)
   qed
 next
   show "rv S n' \<subseteq> rv S n"
   proof
     fix x assume "x \<in> rv S n'"
-    with `valid_node n'` obs_eq[THEN sym] show "x \<in> rv S n" by -(rule eq_obs_in_rv)
+    with \<open>valid_node n'\<close> obs_eq[THEN sym] show "x \<in> rv S n" by -(rule eq_obs_in_rv)
   qed
 qed
 
@@ -804,49 +804,49 @@ proof
     proof(cases "sourcenode a \<in> backward_slice S")
       case True
       hence "slice_kind S a = kind a" by(rule slice_kind_in_slice)
-      with `preds (slice_kinds S (a#as)) s` have "pred (kind a) s"
+      with \<open>preds (slice_kinds S (a#as)) s\<close> have "pred (kind a) s"
         by(simp add:slice_kinds_def)
-      from `slice_kind S a = kind a` `preds (slice_kinds S (a#asx)) s'`
+      from \<open>slice_kind S a = kind a\<close> \<open>preds (slice_kinds S (a#asx)) s'\<close>
       have "pred (kind a) s'"
         by(simp add:slice_kinds_def)
-      from `valid_edge a` `sourcenode a = n` have "n -[]\<rightarrow>* n"
+      from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> have "n -[]\<rightarrow>* n"
         by(fastforce intro:empty_path)
-      with True `sourcenode a = n` have "\<forall>V \<in> Use n. V \<in> rv S n"
+      with True \<open>sourcenode a = n\<close> have "\<forall>V \<in> Use n. V \<in> rv S n"
         by(fastforce intro:rvI simp:sourcenodes_def)
-      with `\<forall>V\<in>rv S n. state_val s V = state_val s' V` `sourcenode a = n`
+      with \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close> \<open>sourcenode a = n\<close>
       have "\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V" by blast
-      from `valid_edge a` this `pred (kind a) s` `pred (kind a) s'`
+      from \<open>valid_edge a\<close> this \<open>pred (kind a) s\<close> \<open>pred (kind a) s'\<close>
       have "\<forall>V \<in> Def (sourcenode a). state_val (transfer (kind a) s) V =
         state_val (transfer (kind a) s') V"
         by(rule CFG_edge_transfer_uses_only_Use)
-      with `V \<in> Def n` `sourcenode a = n` `slice_kind S a = kind a`
+      with \<open>V \<in> Def n\<close> \<open>sourcenode a = n\<close> \<open>slice_kind S a = kind a\<close>
       show ?thesis by simp
     next
       case False
-      from `V \<in> rv S n''` obtain xs nx where "n'' -xs\<rightarrow>* nx"
+      from \<open>V \<in> rv S n''\<close> obtain xs nx where "n'' -xs\<rightarrow>* nx"
         and "nx \<in> backward_slice S" and "V \<in> Use nx"
         and "\<forall>nx' \<in> set(sourcenodes xs). V \<notin> Def nx'" by(erule rvE)
-      from `valid_edge a` `sourcenode a = n` `targetnode a = n''` 
-        `n'' -xs\<rightarrow>* nx`
+      from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = n''\<close> 
+        \<open>n'' -xs\<rightarrow>* nx\<close>
       have "n -a#xs\<rightarrow>* nx" by -(rule path.Cons_path)
-      with `V \<in> Def n` `V \<in> Use nx` `\<forall>nx' \<in> set(sourcenodes xs). V \<notin> Def nx'`
+      with \<open>V \<in> Def n\<close> \<open>V \<in> Use nx\<close> \<open>\<forall>nx' \<in> set(sourcenodes xs). V \<notin> Def nx'\<close>
       have "n influences V in nx" by(fastforce simp:data_dependence_def)
-      with `nx \<in> backward_slice S` have "n \<in> backward_slice S"
+      with \<open>nx \<in> backward_slice S\<close> have "n \<in> backward_slice S"
         by(rule dd_closed)
-      with `sourcenode a = n` False have False by simp
+      with \<open>sourcenode a = n\<close> False have False by simp
       thus ?thesis by simp
     qed
   next
     case False
-    from `V \<in> rv S n''` obtain xs nx where "n'' -xs\<rightarrow>* nx"
+    from \<open>V \<in> rv S n''\<close> obtain xs nx where "n'' -xs\<rightarrow>* nx"
       and "nx \<in> backward_slice S" and "V \<in> Use nx"
       and "\<forall>nx' \<in> set(sourcenodes xs). V \<notin> Def nx'" by(erule rvE)
-    from `valid_edge a` `sourcenode a = n` `targetnode a = n''` `n'' -xs\<rightarrow>* nx`
+    from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = n''\<close> \<open>n'' -xs\<rightarrow>* nx\<close>
     have "n -a#xs\<rightarrow>* nx" by -(rule path.Cons_path)
-    from False `\<forall>nx' \<in> set(sourcenodes xs). V \<notin> Def nx'` `sourcenode a = n`
+    from False \<open>\<forall>nx' \<in> set(sourcenodes xs). V \<notin> Def nx'\<close> \<open>sourcenode a = n\<close>
     have "\<forall>nx' \<in> set(sourcenodes (a#xs)). V \<notin> Def nx'"
       by(simp add:sourcenodes_def)
-    with `n -a#xs\<rightarrow>* nx` `nx \<in> backward_slice S` `V \<in> Use nx`
+    with \<open>n -a#xs\<rightarrow>* nx\<close> \<open>nx \<in> backward_slice S\<close> \<open>V \<in> Use nx\<close>
     have "V \<in> rv S n" by(rule rvI)
     show ?thesis
     proof(cases "kind a")
@@ -856,13 +856,13 @@ proof
         case True
         with Predicate have "slice_kind S a = (Q)\<^sub>\<surd>"
           by(simp add:slice_kind_in_slice)
-        with `\<forall>V\<in>rv S n. state_val s V = state_val s' V` `V \<in> rv S n`
+        with \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close> \<open>V \<in> rv S n\<close>
         show ?thesis by simp
       next
         case False
         with Predicate obtain Q' where "slice_kind S a = (Q')\<^sub>\<surd>" 
           by -(erule kind_Predicate_notin_slice_slice_kind_Predicate)
-        with `\<forall>V\<in>rv S n. state_val s V = state_val s' V` `V \<in> rv S n`
+        with \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close> \<open>V \<in> rv S n\<close>
         show ?thesis by simp
       qed
     next
@@ -872,21 +872,21 @@ proof
         case True
         hence "slice_kind S a = kind a" by(rule slice_kind_in_slice)
         from Update have "pred (kind a) s" by simp
-        with `valid_edge a` `sourcenode a = n` `V \<notin> Def n`
+        with \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>V \<notin> Def n\<close>
         have "state_val (transfer (kind a) s) V = state_val s V"
           by(fastforce intro:CFG_edge_no_Def_equal)
         from Update have "pred (kind a) s'" by simp
-        with `valid_edge a` `sourcenode a = n` `V \<notin> Def n`
+        with \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>V \<notin> Def n\<close>
         have "state_val (transfer (kind a) s') V = state_val s' V"
           by(fastforce intro:CFG_edge_no_Def_equal)
-        with `\<forall>V\<in>rv S n. state_val s V = state_val s' V` `V \<in> rv S n`
-          `state_val (transfer (kind a) s) V = state_val s V`
-          `slice_kind S a = kind a`
+        with \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close> \<open>V \<in> rv S n\<close>
+          \<open>state_val (transfer (kind a) s) V = state_val s V\<close>
+          \<open>slice_kind S a = kind a\<close>
         show ?thesis by fastforce
       next
         case False
         with Update have "slice_kind S a = \<Up>id" by -(rule slice_kind_Upd)
-        with `\<forall>V\<in>rv S n. state_val s V = state_val s' V` `V \<in> rv S n`
+        with \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close> \<open>V \<in> rv S n\<close>
         show ?thesis by fastforce
       qed
     qed
@@ -903,13 +903,13 @@ lemma rv_branching_edges_slice_kinds_False:
   and "\<forall>V\<in>rv S n. state_val s V = state_val s' V"
   shows False
 proof -
-  from `valid_edge a` `valid_edge ax` `sourcenode a = n` `sourcenode ax = n`
-    `targetnode a = n''` `targetnode ax \<noteq> n''`
+  from \<open>valid_edge a\<close> \<open>valid_edge ax\<close> \<open>sourcenode a = n\<close> \<open>sourcenode ax = n\<close>
+    \<open>targetnode a = n''\<close> \<open>targetnode ax \<noteq> n''\<close>
   obtain Q Q' where "kind a = (Q)\<^sub>\<surd>" and "kind ax = (Q')\<^sub>\<surd>"
     and "\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)"
     by(auto dest:deterministic)
-  from `valid_edge a` `valid_edge ax` `sourcenode a = n` `sourcenode ax = n`
-    `targetnode a = n''` `targetnode ax \<noteq> n''`
+  from \<open>valid_edge a\<close> \<open>valid_edge ax\<close> \<open>sourcenode a = n\<close> \<open>sourcenode ax = n\<close>
+    \<open>targetnode a = n''\<close> \<open>targetnode ax \<noteq> n''\<close>
   obtain P P' where "slice_kind S a = (P)\<^sub>\<surd>" 
     and "slice_kind S ax = (P')\<^sub>\<surd>"
     and "\<forall>s. (P s \<longrightarrow> \<not> P' s) \<and> (P' s \<longrightarrow> \<not> P s)"
@@ -918,40 +918,40 @@ proof -
   proof(cases "sourcenode a \<in> backward_slice S")
     case True
     hence "slice_kind S a = kind a" by(rule slice_kind_in_slice)
-    with `preds (slice_kinds S (a#as)) s` `kind a = (Q)\<^sub>\<surd>` 
-      `slice_kind S a = (P)\<^sub>\<surd>` have "pred (kind a) s"
+    with \<open>preds (slice_kinds S (a#as)) s\<close> \<open>kind a = (Q)\<^sub>\<surd>\<close> 
+      \<open>slice_kind S a = (P)\<^sub>\<surd>\<close> have "pred (kind a) s"
       by(simp add:slice_kinds_def)
-    from True `sourcenode a = n` `sourcenode ax = n`
+    from True \<open>sourcenode a = n\<close> \<open>sourcenode ax = n\<close>
     have "slice_kind S ax = kind ax" by(fastforce simp:slice_kind_in_slice)
-    with `preds (slice_kinds S (ax#asx)) s'` `kind ax = (Q')\<^sub>\<surd>`
-      `slice_kind S ax = (P')\<^sub>\<surd>` have "pred (kind ax) s'" 
+    with \<open>preds (slice_kinds S (ax#asx)) s'\<close> \<open>kind ax = (Q')\<^sub>\<surd>\<close>
+      \<open>slice_kind S ax = (P')\<^sub>\<surd>\<close> have "pred (kind ax) s'" 
       by(simp add:slice_kinds_def)
-    with `kind ax = (Q')\<^sub>\<surd>` have "Q' s'" by simp
-    from `valid_edge a` `sourcenode a = n` have "n -[]\<rightarrow>* n"
+    with \<open>kind ax = (Q')\<^sub>\<surd>\<close> have "Q' s'" by simp
+    from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> have "n -[]\<rightarrow>* n"
       by(fastforce intro:empty_path)
-    with True `sourcenode a = n` have "\<forall>V \<in> Use n. V \<in> rv S n"
+    with True \<open>sourcenode a = n\<close> have "\<forall>V \<in> Use n. V \<in> rv S n"
       by(fastforce intro:rvI simp:sourcenodes_def)
-    with `\<forall>V\<in>rv S n. state_val s V = state_val s' V` `sourcenode a = n`
+    with \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close> \<open>sourcenode a = n\<close>
     have "\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V" by blast
-    with `valid_edge a` `pred (kind a) s` have "pred (kind a) s'"
+    with \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> have "pred (kind a) s'"
       by(rule CFG_edge_Uses_pred_equal)
-    with `kind a = (Q)\<^sub>\<surd>` have "Q s'" by simp
-    with `Q' s'` `\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)` have False by simp
+    with \<open>kind a = (Q)\<^sub>\<surd>\<close> have "Q s'" by simp
+    with \<open>Q' s'\<close> \<open>\<forall>s. (Q s \<longrightarrow> \<not> Q' s) \<and> (Q' s \<longrightarrow> \<not> Q s)\<close> have False by simp
     thus ?thesis by simp
   next
     case False
-    with `kind a = (Q)\<^sub>\<surd>` `slice_kind S a = (P)\<^sub>\<surd>`
+    with \<open>kind a = (Q)\<^sub>\<surd>\<close> \<open>slice_kind S a = (P)\<^sub>\<surd>\<close>
     have "P = (\<lambda>s. False) \<or> P = (\<lambda>s. True)"
       by(fastforce elim:kind_Predicate_notin_slice_slice_kind_Predicate)
-    with `slice_kind S a = (P)\<^sub>\<surd>` `preds (slice_kinds S (a#as)) s`
+    with \<open>slice_kind S a = (P)\<^sub>\<surd>\<close> \<open>preds (slice_kinds S (a#as)) s\<close>
     have "P = (\<lambda>s. True)" by(fastforce simp:slice_kinds_def)
-    from `kind ax = (Q')\<^sub>\<surd>` `slice_kind S ax = (P')\<^sub>\<surd>` 
-      `sourcenode a = n` `sourcenode ax = n` False
+    from \<open>kind ax = (Q')\<^sub>\<surd>\<close> \<open>slice_kind S ax = (P')\<^sub>\<surd>\<close> 
+      \<open>sourcenode a = n\<close> \<open>sourcenode ax = n\<close> False
     have "P' = (\<lambda>s. False) \<or> P' = (\<lambda>s. True)"
       by(fastforce elim:kind_Predicate_notin_slice_slice_kind_Predicate)
-    with `slice_kind S ax = (P')\<^sub>\<surd>` `preds (slice_kinds S (ax#asx)) s'`
+    with \<open>slice_kind S ax = (P')\<^sub>\<surd>\<close> \<open>preds (slice_kinds S (ax#asx)) s'\<close>
     have "P' = (\<lambda>s. True)" by(fastforce simp:slice_kinds_def)
-    with `P = (\<lambda>s. True)` `\<forall>s. (P s \<longrightarrow> \<not> P' s) \<and> (P' s \<longrightarrow> \<not> P s)`
+    with \<open>P = (\<lambda>s. True)\<close> \<open>\<forall>s. (P s \<longrightarrow> \<not> P' s) \<and> (P' s \<longrightarrow> \<not> P s)\<close>
     have False by blast
     thus ?thesis by simp
   qed
@@ -959,7 +959,7 @@ qed
 
 
 
-subsection {* The set @{text WS} *}
+subsection \<open>The set \<open>WS\<close>\<close>
 
 inductive_set WS :: "'node set \<Rightarrow> (('node \<times> 'state) \<times> ('node \<times> 'state)) set"
 for S :: "'node set"
@@ -981,64 +981,64 @@ lemma WS_silent_move:
   assumes "((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S" and "S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (n\<^sub>1',s\<^sub>1')"
   and "obs n\<^sub>1' (backward_slice S) \<noteq> {}" shows "((n\<^sub>1',s\<^sub>1'),(n\<^sub>2,s\<^sub>2)) \<in> WS S"
 proof -
-  from `((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S` have "valid_node n\<^sub>1" and "valid_node n\<^sub>2"
+  from \<open>((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> have "valid_node n\<^sub>1" and "valid_node n\<^sub>2"
     by(auto dest:WSD)
-  from `S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (n\<^sub>1',s\<^sub>1')` have "sourcenode a = n\<^sub>1"
+  from \<open>S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) -a\<rightarrow>\<^sub>\<tau> (n\<^sub>1',s\<^sub>1')\<close> have "sourcenode a = n\<^sub>1"
     and "targetnode a = n\<^sub>1'" and "transfer (kind a) s\<^sub>1 = s\<^sub>1'"
     and "n\<^sub>1 \<notin> backward_slice S" and "valid_edge a" and "pred (kind a) s\<^sub>1"
     by(auto elim:silent_move.cases)
-  from `targetnode a = n\<^sub>1'` `valid_edge a` have "valid_node n\<^sub>1'"
+  from \<open>targetnode a = n\<^sub>1'\<close> \<open>valid_edge a\<close> have "valid_node n\<^sub>1'"
     by(auto simp:valid_node_def)
   have "(\<exists>m. obs n\<^sub>1' (backward_slice S) = {m}) \<or> obs n\<^sub>1' (backward_slice S) = {}"
     by(rule obs_singleton_disj)
-  with `obs n\<^sub>1' (backward_slice S) \<noteq> {}` obtain n 
+  with \<open>obs n\<^sub>1' (backward_slice S) \<noteq> {}\<close> obtain n 
     where "obs n\<^sub>1' (backward_slice S) = {n}" by fastforce
   hence "n \<in> obs n\<^sub>1' (backward_slice S)" by auto
   then obtain as where "n\<^sub>1' -as\<rightarrow>* n" 
     and "\<forall>nx \<in> set(sourcenodes as). nx \<notin> (backward_slice S)" 
     and "n \<in> (backward_slice S)" by(erule obsE)
-  from `n\<^sub>1' -as\<rightarrow>* n` `valid_edge a` `sourcenode a = n\<^sub>1` `targetnode a = n\<^sub>1'`
+  from \<open>n\<^sub>1' -as\<rightarrow>* n\<close> \<open>valid_edge a\<close> \<open>sourcenode a = n\<^sub>1\<close> \<open>targetnode a = n\<^sub>1'\<close>
   have "n\<^sub>1 -a#as\<rightarrow>* n" by(rule Cons_path)
   moreover
-  from `\<forall>nx \<in> set(sourcenodes as). nx \<notin> (backward_slice S)` `sourcenode a = n\<^sub>1`
-    `n\<^sub>1 \<notin> backward_slice S` 
+  from \<open>\<forall>nx \<in> set(sourcenodes as). nx \<notin> (backward_slice S)\<close> \<open>sourcenode a = n\<^sub>1\<close>
+    \<open>n\<^sub>1 \<notin> backward_slice S\<close> 
   have "\<forall>nx \<in> set(sourcenodes (a#as)). nx \<notin> (backward_slice S)"
     by(simp add:sourcenodes_def)
-  ultimately have "n \<in> obs n\<^sub>1 (backward_slice S)" using `n \<in> (backward_slice S)` 
+  ultimately have "n \<in> obs n\<^sub>1 (backward_slice S)" using \<open>n \<in> (backward_slice S)\<close> 
     by(rule obs_elem)
   hence "obs n\<^sub>1 (backward_slice S) = {n}" by(rule obs_singleton_element)
-  with `obs n\<^sub>1' (backward_slice S) = {n}` 
+  with \<open>obs n\<^sub>1' (backward_slice S) = {n}\<close> 
   have "obs n\<^sub>1 (backward_slice S) = obs n\<^sub>1' (backward_slice S)"
     by simp
-  with `valid_node n\<^sub>1` `valid_node n\<^sub>1'` have "rv S n\<^sub>1 = rv S n\<^sub>1'"
+  with \<open>valid_node n\<^sub>1\<close> \<open>valid_node n\<^sub>1'\<close> have "rv S n\<^sub>1 = rv S n\<^sub>1'"
     by(rule closed_eq_obs_eq_rvs)
-  from `n \<in> obs n\<^sub>1 (backward_slice S)` `((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S` 
+  from \<open>n \<in> obs n\<^sub>1 (backward_slice S)\<close> \<open>((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> 
   have "obs n\<^sub>1 (backward_slice S) = obs n\<^sub>2 (backward_slice S)"
     and "\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V"
     by(fastforce dest:WSD)+
-  from `obs n\<^sub>1 (backward_slice S) = obs n\<^sub>2 (backward_slice S)`
-    `obs n\<^sub>1 (backward_slice S) = {n}` `obs n\<^sub>1' (backward_slice S) = {n}` 
+  from \<open>obs n\<^sub>1 (backward_slice S) = obs n\<^sub>2 (backward_slice S)\<close>
+    \<open>obs n\<^sub>1 (backward_slice S) = {n}\<close> \<open>obs n\<^sub>1' (backward_slice S) = {n}\<close> 
   have "obs n\<^sub>1' (backward_slice S) = obs n\<^sub>2 (backward_slice S)" by simp
   have "\<forall>V \<in> rv S n\<^sub>1'. state_val s\<^sub>1' V = state_val s\<^sub>2 V"
   proof
     fix V assume "V \<in> rv S n\<^sub>1'"
-    with `rv S n\<^sub>1 = rv S n\<^sub>1'` have "V \<in> rv S n\<^sub>1" by simp
+    with \<open>rv S n\<^sub>1 = rv S n\<^sub>1'\<close> have "V \<in> rv S n\<^sub>1" by simp
     then obtain as n' where "n\<^sub>1 -as\<rightarrow>* n'" and "n' \<in> (backward_slice S)"
       and "V \<in> Use n'" and "\<forall>nx \<in> set(sourcenodes as). V \<notin> Def nx"
       by(erule rvE)
-    with `n\<^sub>1 \<notin> backward_slice S` have "V \<notin> Def n\<^sub>1"
+    with \<open>n\<^sub>1 \<notin> backward_slice S\<close> have "V \<notin> Def n\<^sub>1"
       by(auto elim:path.cases simp:sourcenodes_def)
-    with `valid_edge a` `sourcenode a = n\<^sub>1` `pred (kind a) s\<^sub>1`
+    with \<open>valid_edge a\<close> \<open>sourcenode a = n\<^sub>1\<close> \<open>pred (kind a) s\<^sub>1\<close>
     have "state_val (transfer (kind a) s\<^sub>1) V = state_val s\<^sub>1 V"
       by(fastforce intro:CFG_edge_no_Def_equal)
-    with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` have "state_val s\<^sub>1' V = state_val s\<^sub>1 V" by simp
-    from `V \<in> rv S n\<^sub>1` `\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V`
+    with \<open>transfer (kind a) s\<^sub>1 = s\<^sub>1'\<close> have "state_val s\<^sub>1' V = state_val s\<^sub>1 V" by simp
+    from \<open>V \<in> rv S n\<^sub>1\<close> \<open>\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V\<close>
     have "state_val s\<^sub>1 V = state_val s\<^sub>2 V" by simp
-    with `state_val s\<^sub>1' V = state_val s\<^sub>1 V` 
+    with \<open>state_val s\<^sub>1' V = state_val s\<^sub>1 V\<close> 
     show "state_val s\<^sub>1' V = state_val s\<^sub>2 V" by simp
   qed
-  with `obs n\<^sub>1' (backward_slice S) = obs n\<^sub>2 (backward_slice S)`
-    `valid_node n\<^sub>1'` `valid_node n\<^sub>2` show ?thesis by(fastforce intro:WSI)
+  with \<open>obs n\<^sub>1' (backward_slice S) = obs n\<^sub>2 (backward_slice S)\<close>
+    \<open>valid_node n\<^sub>1'\<close> \<open>valid_node n\<^sub>2\<close> show ?thesis by(fastforce intro:WSI)
 qed
 
 
@@ -1050,13 +1050,13 @@ proof(induct rule:silent_moves.induct)
   case silent_moves_Nil thus ?case by simp
 next
   case (silent_moves_Cons S f n s a n' s' as n'' s'')
-  note IH = `\<lbrakk>((n',s'),(n\<^sub>2,s\<^sub>2)) \<in> WS S; f = kind; obs n'' (backward_slice S) \<noteq> {}\<rbrakk>
-             \<Longrightarrow> ((n'',s''),(n\<^sub>2,s\<^sub>2)) \<in> WS S`
-  from `S,f \<turnstile> (n',s') =as\<Rightarrow>\<^sub>\<tau> (n'',s'')` `obs n'' (backward_slice S) \<noteq> {}`
+  note IH = \<open>\<lbrakk>((n',s'),(n\<^sub>2,s\<^sub>2)) \<in> WS S; f = kind; obs n'' (backward_slice S) \<noteq> {}\<rbrakk>
+             \<Longrightarrow> ((n'',s''),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close>
+  from \<open>S,f \<turnstile> (n',s') =as\<Rightarrow>\<^sub>\<tau> (n'',s'')\<close> \<open>obs n'' (backward_slice S) \<noteq> {}\<close>
   have "obs n' (backward_slice S) \<noteq> {}" by(fastforce dest:silent_moves_obs_slice)
-  with `((n,s),(n\<^sub>2,s\<^sub>2)) \<in> WS S` `S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n',s')` `f = kind`
+  with \<open>((n,s),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> \<open>S,f \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n',s')\<close> \<open>f = kind\<close>
   have "((n',s'),(n\<^sub>2,s\<^sub>2)) \<in> WS S" by -(rule WS_silent_move,simp+)
-  from IH[OF this `f = kind` `obs n'' (backward_slice S) \<noteq> {}`]
+  from IH[OF this \<open>f = kind\<close> \<open>obs n'' (backward_slice S) \<noteq> {}\<close>]
   show ?case .
 qed
 
@@ -1067,36 +1067,36 @@ lemma WS_observable_move:
   obtains as where "((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S"
   and "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (n\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
 proof(atomize_elim)
-  from `((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S` have "valid_node n\<^sub>1" by(auto dest:WSD)
-  from `S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) -a\<rightarrow> (n\<^sub>1',s\<^sub>1')` have [simp]:"n\<^sub>1 = sourcenode a" 
+  from \<open>((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> have "valid_node n\<^sub>1" by(auto dest:WSD)
+  from \<open>S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) -a\<rightarrow> (n\<^sub>1',s\<^sub>1')\<close> have [simp]:"n\<^sub>1 = sourcenode a" 
     and [simp]:"n\<^sub>1' = targetnode a" and "pred (kind a) s\<^sub>1"
     and "transfer (kind a) s\<^sub>1 = s\<^sub>1'" and "n\<^sub>1 \<in> (backward_slice S)" 
     and "valid_edge a" and "pred (kind a) s\<^sub>1"
     by(auto elim:observable_move.cases)
-  from  `valid_edge a` have "valid_node n\<^sub>1'" by(auto simp:valid_node_def)
-  from `valid_node n\<^sub>1` `n\<^sub>1 \<in> (backward_slice S)` 
+  from  \<open>valid_edge a\<close> have "valid_node n\<^sub>1'" by(auto simp:valid_node_def)
+  from \<open>valid_node n\<^sub>1\<close> \<open>n\<^sub>1 \<in> (backward_slice S)\<close> 
   have "obs n\<^sub>1 (backward_slice S) = {n\<^sub>1}" by(rule n_in_obs)
-  with `((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S` have "obs n\<^sub>2 (backward_slice S) = {n\<^sub>1}" 
+  with \<open>((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> have "obs n\<^sub>2 (backward_slice S) = {n\<^sub>1}" 
     and "\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V" by(auto dest:WSD)
-  from `valid_node n\<^sub>1` have "n\<^sub>1 -[]\<rightarrow>* n\<^sub>1" by(rule empty_path)
-  with `n\<^sub>1 \<in> (backward_slice S)` have "\<forall>V \<in> Use n\<^sub>1. V \<in> rv S n\<^sub>1"
+  from \<open>valid_node n\<^sub>1\<close> have "n\<^sub>1 -[]\<rightarrow>* n\<^sub>1" by(rule empty_path)
+  with \<open>n\<^sub>1 \<in> (backward_slice S)\<close> have "\<forall>V \<in> Use n\<^sub>1. V \<in> rv S n\<^sub>1"
     by(fastforce intro:rvI simp:sourcenodes_def)
-  with `\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V`
+  with \<open>\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V\<close>
   have "\<forall>V \<in> Use n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V" by blast
-  with `valid_edge a`  `pred (kind a) s\<^sub>1` have "pred (kind a) s\<^sub>2"
+  with \<open>valid_edge a\<close>  \<open>pred (kind a) s\<^sub>1\<close> have "pred (kind a) s\<^sub>2"
     by(fastforce intro:CFG_edge_Uses_pred_equal)
-  with `n\<^sub>1 \<in> (backward_slice S)` have "pred (slice_kind S a) s\<^sub>2"
+  with \<open>n\<^sub>1 \<in> (backward_slice S)\<close> have "pred (slice_kind S a) s\<^sub>2"
     by(simp add:slice_kind_in_slice)
-  from `n\<^sub>1 \<in> (backward_slice S)` obtain s\<^sub>2' 
+  from \<open>n\<^sub>1 \<in> (backward_slice S)\<close> obtain s\<^sub>2' 
     where "transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'"
     by(simp add:slice_kind_in_slice)
-  with `pred (slice_kind S a) s\<^sub>2` `n\<^sub>1 \<in> (backward_slice S)` `valid_edge a` 
+  with \<open>pred (slice_kind S a) s\<^sub>2\<close> \<open>n\<^sub>1 \<in> (backward_slice S)\<close> \<open>valid_edge a\<close> 
   have "S,slice_kind S \<turnstile> (n\<^sub>1,s\<^sub>2) -a\<rightarrow> (n\<^sub>1',s\<^sub>2')"
     by(fastforce intro:observable_moveI)
-  from `obs n\<^sub>2 (backward_slice S) = {n\<^sub>1}`
+  from \<open>obs n\<^sub>2 (backward_slice S) = {n\<^sub>1}\<close>
   obtain as where "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as\<Rightarrow>\<^sub>\<tau> (n\<^sub>1,s\<^sub>2)"
     by(erule obs_silent_moves)
-  with `S,slice_kind S \<turnstile> (n\<^sub>1,s\<^sub>2) -a\<rightarrow> (n\<^sub>1',s\<^sub>2')` 
+  with \<open>S,slice_kind S \<turnstile> (n\<^sub>1,s\<^sub>2) -a\<rightarrow> (n\<^sub>1',s\<^sub>2')\<close> 
   have "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (n\<^sub>1',s\<^sub>2')"
     by -(rule observable_moves_snoc)
   have "\<forall>V \<in> rv S n\<^sub>1'. state_val s\<^sub>1' V = state_val s\<^sub>2' V"
@@ -1108,42 +1108,42 @@ proof(atomize_elim)
       thus ?thesis
       proof(cases "kind a")
         case (Update f)
-        with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` have "s\<^sub>1' = f s\<^sub>1" by simp
-        from Update[THEN sym] `n\<^sub>1 \<in> (backward_slice S)` 
+        with \<open>transfer (kind a) s\<^sub>1 = s\<^sub>1'\<close> have "s\<^sub>1' = f s\<^sub>1" by simp
+        from Update[THEN sym] \<open>n\<^sub>1 \<in> (backward_slice S)\<close> 
         have "slice_kind S a = \<Up>f"
           by(fastforce intro:slice_kind_in_slice)
-        with `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'` have "s\<^sub>2' = f s\<^sub>2" by simp
-        from `valid_edge a` `\<forall>V \<in> Use n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V`
-          True Update `s\<^sub>1' = f s\<^sub>1` `s\<^sub>2' = f s\<^sub>2` show ?thesis
+        with \<open>transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'\<close> have "s\<^sub>2' = f s\<^sub>2" by simp
+        from \<open>valid_edge a\<close> \<open>\<forall>V \<in> Use n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V\<close>
+          True Update \<open>s\<^sub>1' = f s\<^sub>1\<close> \<open>s\<^sub>2' = f s\<^sub>2\<close> show ?thesis
           by(fastforce dest:CFG_edge_transfer_uses_only_Use)
       next
         case (Predicate Q)
-        with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` have "s\<^sub>1' = s\<^sub>1" by simp
-        from Predicate[THEN sym] `n\<^sub>1 \<in> (backward_slice S)`
+        with \<open>transfer (kind a) s\<^sub>1 = s\<^sub>1'\<close> have "s\<^sub>1' = s\<^sub>1" by simp
+        from Predicate[THEN sym] \<open>n\<^sub>1 \<in> (backward_slice S)\<close>
         have "slice_kind S a = (Q)\<^sub>\<surd>"
           by(fastforce intro:slice_kind_in_slice)
-        with `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'` have "s\<^sub>2' = s\<^sub>2" by simp
-        with `valid_edge a` `\<forall>V \<in> Use n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V` 
-          True Predicate `s\<^sub>1' = s\<^sub>1` `pred (kind a) s\<^sub>1` `pred (kind a) s\<^sub>2`
+        with \<open>transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'\<close> have "s\<^sub>2' = s\<^sub>2" by simp
+        with \<open>valid_edge a\<close> \<open>\<forall>V \<in> Use n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V\<close> 
+          True Predicate \<open>s\<^sub>1' = s\<^sub>1\<close> \<open>pred (kind a) s\<^sub>1\<close> \<open>pred (kind a) s\<^sub>2\<close>
         show ?thesis by(auto dest:CFG_edge_transfer_uses_only_Use)
       qed
     next
       case False
-      with `valid_edge a` `transfer (kind a) s\<^sub>1 = s\<^sub>1'`[THEN sym] 
-        `pred (kind a) s\<^sub>1` `pred (kind a) s\<^sub>2`
+      with \<open>valid_edge a\<close> \<open>transfer (kind a) s\<^sub>1 = s\<^sub>1'\<close>[THEN sym] 
+        \<open>pred (kind a) s\<^sub>1\<close> \<open>pred (kind a) s\<^sub>2\<close>
       have "state_val s\<^sub>1' V = state_val s\<^sub>1 V"
         by(fastforce intro:CFG_edge_no_Def_equal)
       have "state_val s\<^sub>2' V = state_val s\<^sub>2 V"
       proof(cases "kind a")
         case (Update f)
-        with  `n\<^sub>1 \<in> (backward_slice S)` have "slice_kind S a = kind a"
+        with  \<open>n\<^sub>1 \<in> (backward_slice S)\<close> have "slice_kind S a = kind a"
           by(fastforce intro:slice_kind_in_slice)
-        with `valid_edge a` `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'`[THEN sym] 
-          False `pred (kind a) s\<^sub>2`
+        with \<open>valid_edge a\<close> \<open>transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'\<close>[THEN sym] 
+          False \<open>pred (kind a) s\<^sub>2\<close>
         show ?thesis by(fastforce intro:CFG_edge_no_Def_equal)
       next
         case (Predicate Q)
-        with `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'` have "s\<^sub>2 = s\<^sub>2'"
+        with \<open>transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'\<close> have "s\<^sub>2 = s\<^sub>2'"
           by(cases "slice_kind S a",
             auto split:if_split_asm simp:slice_kind_def Let_def)
         thus ?thesis by simp
@@ -1152,22 +1152,22 @@ proof(atomize_elim)
         and "nx \<in> (backward_slice S)"
         and "V \<in> Use nx" and "\<forall>nx \<in> set(sourcenodes as'). V \<notin> Def nx"
         by(erule rvE)
-      from `\<forall>nx \<in> set(sourcenodes as'). V \<notin> Def nx` False
+      from \<open>\<forall>nx \<in> set(sourcenodes as'). V \<notin> Def nx\<close> False
       have "\<forall>nx \<in> set(sourcenodes (a#as')). V \<notin> Def nx"
         by(auto simp:sourcenodes_def)
-      from  `valid_edge a` `n\<^sub>1' -as'\<rightarrow>* nx` have "n\<^sub>1 -a#as'\<rightarrow>* nx"
+      from  \<open>valid_edge a\<close> \<open>n\<^sub>1' -as'\<rightarrow>* nx\<close> have "n\<^sub>1 -a#as'\<rightarrow>* nx"
         by(fastforce intro:Cons_path)
-      with `nx \<in> (backward_slice S)` `V \<in> Use nx` 
-        `\<forall>nx \<in> set(sourcenodes (a#as')). V \<notin> Def nx`
+      with \<open>nx \<in> (backward_slice S)\<close> \<open>V \<in> Use nx\<close> 
+        \<open>\<forall>nx \<in> set(sourcenodes (a#as')). V \<notin> Def nx\<close>
       have "V \<in> rv S n\<^sub>1" by -(rule rvI)
-      with `\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V` 
-        `state_val s\<^sub>1' V = state_val s\<^sub>1 V` `state_val s\<^sub>2' V = state_val s\<^sub>2 V`
+      with \<open>\<forall>V \<in> rv S n\<^sub>1. state_val s\<^sub>1 V = state_val s\<^sub>2 V\<close> 
+        \<open>state_val s\<^sub>1' V = state_val s\<^sub>1 V\<close> \<open>state_val s\<^sub>2' V = state_val s\<^sub>2 V\<close>
       show ?thesis by fastforce
     qed
   qed
-  with `valid_node n\<^sub>1'` have "((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',s\<^sub>2')) \<in> WS S" by(fastforce intro:WSI)
-  with `S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (n\<^sub>1',s\<^sub>2')`
-    `transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'` 
+  with \<open>valid_node n\<^sub>1'\<close> have "((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',s\<^sub>2')) \<in> WS S" by(fastforce intro:WSI)
+  with \<open>S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (n\<^sub>1',s\<^sub>2')\<close>
+    \<open>transfer (slice_kind S a) s\<^sub>2 = s\<^sub>2'\<close> 
   show "\<exists>as. ((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',transfer (slice_kind S a) s\<^sub>2)) \<in> WS S \<and>
     S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as@[a]\<Rightarrow> (n\<^sub>1',transfer (slice_kind S a) s\<^sub>2)"
     by blast
@@ -1190,36 +1190,36 @@ lemma WS_weak_sim:
   (\<exists>as'. S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as'@[last as]\<Rightarrow> 
                              (n\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2))"
 proof -
-  from `S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow> (n\<^sub>1',s\<^sub>1')` obtain a' as' n' s'
+  from \<open>S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow> (n\<^sub>1',s\<^sub>1')\<close> obtain a' as' n' s'
     where "S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as'\<Rightarrow>\<^sub>\<tau> (n',s')" 
     and "S,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^sub>1',s\<^sub>1')" and "as = as'@[a']"
     by(fastforce elim:observable_moves.cases)
-  from `S,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^sub>1',s\<^sub>1')` have "obs n' (backward_slice S) = {n'}"
+  from \<open>S,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^sub>1',s\<^sub>1')\<close> have "obs n' (backward_slice S) = {n'}"
     by(fastforce elim:observable_move.cases intro!:n_in_obs)
   hence "obs n' (backward_slice S) \<noteq> {}" by fast
-  with `S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as'\<Rightarrow>\<^sub>\<tau> (n',s')` `((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S` 
+  with \<open>S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as'\<Rightarrow>\<^sub>\<tau> (n',s')\<close> \<open>((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> 
   have "((n',s'),(n\<^sub>2,s\<^sub>2)) \<in> WS S"
     by -(rule WS_silent_moves,simp+)
-  with `S,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^sub>1',s\<^sub>1')` obtain asx 
+  with \<open>S,kind \<turnstile> (n',s') -a'\<rightarrow> (n\<^sub>1',s\<^sub>1')\<close> obtain asx 
     where "((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',transfer (slice_kind S a') s\<^sub>2)) \<in> WS S"
     and "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =asx@[a']\<Rightarrow> 
     (n\<^sub>1',transfer (slice_kind S a') s\<^sub>2)"
     by(fastforce elim:WS_observable_move)
-  with `as = as'@[a']` show
+  with \<open>as = as'@[a']\<close> show
     "((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2)) \<in> WS S \<and>
     (\<exists>as'. S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as'@[last as]\<Rightarrow> 
            (n\<^sub>1',transfer (slice_kind S (last as)) s\<^sub>2))" by simp blast
 qed
 
-text {* The following lemma states the correctness of static intraprocedural slicing:\\
-  the simulation @{text "WS S"} is a desired weak simulation *}
+text \<open>The following lemma states the correctness of static intraprocedural slicing:\\
+  the simulation \<open>WS S\<close> is a desired weak simulation\<close>
 
 theorem WS_is_weak_sim:"is_weak_sim (WS S) S"
 by(fastforce dest:WS_weak_sim simp:is_weak_sim_def)
 
 
-subsection {* @{term "n -as\<rightarrow>* n'"} and transitive closure of 
-  @{term "S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')"} *}
+subsection \<open>@{term "n -as\<rightarrow>* n'"} and transitive closure of 
+  @{term "S,f \<turnstile> (n,s) =as\<Rightarrow>\<^sub>\<tau> (n',s')"}\<close>
 
 inductive trans_observable_moves :: 
   "'node set \<Rightarrow> ('edge \<Rightarrow> 'state edge_kind) \<Rightarrow> 'node \<Rightarrow> 'state \<Rightarrow> 'edge list \<Rightarrow> 
@@ -1256,12 +1256,12 @@ proof(induct as)
   case Nil thus ?case by(simp add:slice_edges_def sourcenodes_def)
 next
   case (Cons a' as')
-  note IH = `slice_edges S as' = [] \<Longrightarrow>
-    \<forall>nx\<in>set (sourcenodes as'). nx \<notin> backward_slice S`
-  from `slice_edges S (a'#as') = []` have "slice_edges S as' = []"
+  note IH = \<open>slice_edges S as' = [] \<Longrightarrow>
+    \<forall>nx\<in>set (sourcenodes as'). nx \<notin> backward_slice S\<close>
+  from \<open>slice_edges S (a'#as') = []\<close> have "slice_edges S as' = []"
     and "sourcenode a' \<notin> backward_slice S"
     by(auto simp:slice_edges_def split:if_split_asm)
-  from IH[OF `slice_edges S as' = []`] `sourcenode a' \<notin> backward_slice S`
+  from IH[OF \<open>slice_edges S as' = []\<close>] \<open>sourcenode a' \<notin> backward_slice S\<close>
   show ?case by(simp add:sourcenodes_def)
 qed
 
@@ -1273,67 +1273,67 @@ lemma sliced_path_determ:
     \<forall>V \<in> rv S n. state_val s V = state_val s' V\<rbrakk> \<Longrightarrow> as = as'"
 proof(induct arbitrary:as' s s' rule:path.induct)
   case (empty_path n)
-  from `slice_edges S [] = slice_edges S as'` 
+  from \<open>slice_edges S [] = slice_edges S as'\<close> 
   have "\<forall>nx \<in> set(sourcenodes as'). nx \<notin> (backward_slice S)"
     by(fastforce intro!:slice_edges_no_nodes_in_slice simp:slice_edges_def)
-  with `n -as'\<rightarrow>* n` show ?case
+  with \<open>n -as'\<rightarrow>* n\<close> show ?case
   proof(induct nx\<equiv>"n" as' nx'\<equiv>"n" rule:path.induct)
     case (Cons_path n'' as a)
-    from `valid_node n` `n \<in> S` have "n \<in> backward_slice S" by(rule refl)
-    with `\<forall>nx\<in>set (sourcenodes (a # as)). nx \<notin> backward_slice S` 
-      `sourcenode a = n`
+    from \<open>valid_node n\<close> \<open>n \<in> S\<close> have "n \<in> backward_slice S" by(rule refl)
+    with \<open>\<forall>nx\<in>set (sourcenodes (a # as)). nx \<notin> backward_slice S\<close> 
+      \<open>sourcenode a = n\<close>
     have False by(simp add:sourcenodes_def)
     thus ?case by simp
   qed simp
 next
   case (Cons_path n'' as n' a n)
-  note IH = `\<And>as' s s'. \<lbrakk>n'' -as'\<rightarrow>* n'; slice_edges S as = slice_edges S as';
+  note IH = \<open>\<And>as' s s'. \<lbrakk>n'' -as'\<rightarrow>* n'; slice_edges S as = slice_edges S as';
     preds (slice_kinds S as) s; preds (slice_kinds S as') s'; n' \<in> S;
-    \<forall>V\<in>rv S n''. state_val s V = state_val s' V\<rbrakk> \<Longrightarrow> as = as'`
+    \<forall>V\<in>rv S n''. state_val s V = state_val s' V\<rbrakk> \<Longrightarrow> as = as'\<close>
   show ?case
   proof(cases as')
     case Nil
-    with `n -as'\<rightarrow>* n'` have "n = n'" by fastforce
-    from Nil `slice_edges S (a#as) = slice_edges S as'` `sourcenode a = n`
+    with \<open>n -as'\<rightarrow>* n'\<close> have "n = n'" by fastforce
+    from Nil \<open>slice_edges S (a#as) = slice_edges S as'\<close> \<open>sourcenode a = n\<close>
     have "n \<notin> backward_slice S" by(fastforce simp:slice_edges_def)
-    from `valid_edge a` `sourcenode a = n` `n = n'` `n' \<in> S`
+    from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>n = n'\<close> \<open>n' \<in> S\<close>
     have "n \<in> backward_slice S" by(fastforce intro:refl)
-    with `n = n'` `n \<notin> backward_slice S` have False by simp
+    with \<open>n = n'\<close> \<open>n \<notin> backward_slice S\<close> have False by simp
     thus ?thesis by simp
   next
     case (Cons ax asx)
-    with `n -as'\<rightarrow>* n'` have "n = sourcenode ax" and "valid_edge ax" 
+    with \<open>n -as'\<rightarrow>* n'\<close> have "n = sourcenode ax" and "valid_edge ax" 
       and "targetnode ax -asx\<rightarrow>* n'" by(auto elim:path_split_Cons)
     show ?thesis
     proof(cases "targetnode ax = n''")
       case True
-      with `targetnode ax -asx\<rightarrow>* n'` have "n'' -asx\<rightarrow>* n'" by simp
-      from `valid_edge ax` `valid_edge a` `n = sourcenode ax` `sourcenode a = n`
-        True `targetnode a = n''` have "ax = a" by(fastforce intro:edge_det)
-      from `slice_edges S (a#as) = slice_edges S as'` Cons 
-        `n = sourcenode ax` `sourcenode a = n`
+      with \<open>targetnode ax -asx\<rightarrow>* n'\<close> have "n'' -asx\<rightarrow>* n'" by simp
+      from \<open>valid_edge ax\<close> \<open>valid_edge a\<close> \<open>n = sourcenode ax\<close> \<open>sourcenode a = n\<close>
+        True \<open>targetnode a = n''\<close> have "ax = a" by(fastforce intro:edge_det)
+      from \<open>slice_edges S (a#as) = slice_edges S as'\<close> Cons 
+        \<open>n = sourcenode ax\<close> \<open>sourcenode a = n\<close>
       have "slice_edges S as = slice_edges S asx"
         by(cases "n \<in> backward_slice S")(auto simp:slice_edges_def)
-      from `preds (slice_kinds S (a#as)) s` 
+      from \<open>preds (slice_kinds S (a#as)) s\<close> 
       have preds1:"preds (slice_kinds S as) (transfer (slice_kind S a) s)"
         by(simp add:slice_kinds_def)
-      from `preds (slice_kinds S as') s'` Cons `ax = a`
+      from \<open>preds (slice_kinds S as') s'\<close> Cons \<open>ax = a\<close>
       have preds2:"preds (slice_kinds S asx) (transfer (slice_kind S a) s')"
         by(simp add:slice_kinds_def)
-      from `valid_edge a` `sourcenode a = n` `targetnode a = n''`
-        `preds (slice_kinds S (a#as)) s` `preds (slice_kinds S as') s'`
-        `ax = a` Cons `\<forall>V\<in>rv S n. state_val s V = state_val s' V`
+      from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = n''\<close>
+        \<open>preds (slice_kinds S (a#as)) s\<close> \<open>preds (slice_kinds S as') s'\<close>
+        \<open>ax = a\<close> Cons \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close>
       have "\<forall>V\<in>rv S n''. state_val (transfer (slice_kind S a) s) V =
                           state_val (transfer (slice_kind S a) s') V"
         by -(rule rv_edge_slice_kinds,auto)
-      from IH[OF `n'' -asx\<rightarrow>* n'` `slice_edges S as = slice_edges S asx`
-        preds1 preds2 `n' \<in> S` this] Cons `ax = a` show ?thesis by simp
+      from IH[OF \<open>n'' -asx\<rightarrow>* n'\<close> \<open>slice_edges S as = slice_edges S asx\<close>
+        preds1 preds2 \<open>n' \<in> S\<close> this] Cons \<open>ax = a\<close> show ?thesis by simp
     next
       case False
-      with `valid_edge a` `valid_edge ax` `sourcenode a = n` `n = sourcenode ax`
-        `targetnode a = n''` `preds (slice_kinds S (a#as)) s`
-        `preds (slice_kinds S as') s'` Cons
-        `\<forall>V\<in>rv S n. state_val s V = state_val s' V`
+      with \<open>valid_edge a\<close> \<open>valid_edge ax\<close> \<open>sourcenode a = n\<close> \<open>n = sourcenode ax\<close>
+        \<open>targetnode a = n''\<close> \<open>preds (slice_kinds S (a#as)) s\<close>
+        \<open>preds (slice_kinds S as') s'\<close> Cons
+        \<open>\<forall>V\<in>rv S n. state_val s V = state_val s' V\<close>
       have False by -(erule rv_branching_edges_slice_kinds_False,auto)
       thus ?thesis by simp
     qed
@@ -1348,17 +1348,17 @@ lemma path_trans_observable_moves:
   and "S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',s')" 
   and "slice_edges S as = slice_edges S as''" and "n -as''@as'\<rightarrow>* n'"
 proof(atomize_elim)
-  from `n -as\<rightarrow>* n'` `preds (kinds as) s` `transfers (kinds as) s = s'`
+  from \<open>n -as\<rightarrow>* n'\<close> \<open>preds (kinds as) s\<close> \<open>transfers (kinds as) s = s'\<close>
   show "\<exists>n'' s'' as' as''. 
     S,kind \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* (n'',s'') \<and>
     S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',s') \<and> slice_edges S as = slice_edges S as'' \<and>
     n -as''@as'\<rightarrow>* n'"
   proof(induct arbitrary:s rule:path.induct)
     case (empty_path n)
-    from `transfers (kinds []) s = s'` have "s = s'" by(simp add:kinds_def)
+    from \<open>transfers (kinds []) s = s'\<close> have "s = s'" by(simp add:kinds_def)
     have "S,kind \<turnstile> (n,s) =[]\<Rightarrow>* (n,s)" by(rule tom_Nil)
     have "S,kind \<turnstile> (n,s) =[]\<Rightarrow>\<^sub>\<tau> (n,s)" by(rule silent_moves_Nil)
-    with `S,kind \<turnstile> (n,s) =[]\<Rightarrow>* (n,s)` `s = s'` `valid_node n`
+    with \<open>S,kind \<turnstile> (n,s) =[]\<Rightarrow>* (n,s)\<close> \<open>s = s'\<close> \<open>valid_node n\<close>
     show ?case
       apply(rule_tac x="n" in exI)
       apply(rule_tac x="s" in exI)
@@ -1367,11 +1367,11 @@ proof(atomize_elim)
       by(fastforce intro:path.empty_path simp:slice_edges_def)
   next
     case (Cons_path n'' as n' a n)
-    note IH = `\<And>s. \<lbrakk>preds (kinds as) s; transfers (kinds as) s = s'\<rbrakk>
+    note IH = \<open>\<And>s. \<lbrakk>preds (kinds as) s; transfers (kinds as) s = s'\<rbrakk>
       \<Longrightarrow> \<exists>nx s'' as' as''. S,kind \<turnstile> (n'',s) =slice_edges S as\<Rightarrow>* (nx,s'') \<and>
             S,kind \<turnstile> (nx,s'') =as'\<Rightarrow>\<^sub>\<tau> (n',s') \<and> 
-            slice_edges S as = slice_edges S as'' \<and> n'' -as''@as'\<rightarrow>* n'`
-    from `preds (kinds (a#as)) s` `transfers (kinds (a#as)) s = s'`
+            slice_edges S as = slice_edges S as'' \<and> n'' -as''@as'\<rightarrow>* n'\<close>
+    from \<open>preds (kinds (a#as)) s\<close> \<open>transfers (kinds (a#as)) s = s'\<close>
     have "preds (kinds as) (transfer (kind a) s)" 
       "transfers (kinds as) (transfer (kind a) s) = s'" by(simp_all add:kinds_def)
     from IH[OF this] obtain nx sx asx asx'
@@ -1380,21 +1380,21 @@ proof(atomize_elim)
       and "slice_edges S as = slice_edges S asx'"
       and "n'' -asx'@asx\<rightarrow>* n'"
       by clarsimp
-    from `preds (kinds (a#as)) s` have "pred (kind a) s" by(simp add:kinds_def)
+    from \<open>preds (kinds (a#as)) s\<close> have "pred (kind a) s" by(simp add:kinds_def)
     show ?case
     proof(cases "n \<in> backward_slice S")
       case True
-      with `valid_edge a` `sourcenode a = n` `targetnode a = n''` `pred (kind a) s`
+      with \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = n''\<close> \<open>pred (kind a) s\<close>
       have "S,kind \<turnstile> (n,s) -a\<rightarrow> (n'',transfer (kind a) s)"
         by(fastforce intro:observable_moveI)
       hence "S,kind \<turnstile> (n,s) =[]@[a]\<Rightarrow> (n'',transfer (kind a) s)"
         by(fastforce intro:observable_moves_snoc silent_moves_Nil)
-      with `S,kind \<turnstile> (n'',transfer (kind a) s) =slice_edges S as\<Rightarrow>* (nx,sx)`
+      with \<open>S,kind \<turnstile> (n'',transfer (kind a) s) =slice_edges S as\<Rightarrow>* (nx,sx)\<close>
       have "S,kind \<turnstile> (n,s) =a#slice_edges S as\<Rightarrow>* (nx,sx)"
         by(fastforce dest:tom_Cons)
-      with `S,kind \<turnstile> (nx,sx) =asx\<Rightarrow>\<^sub>\<tau> (n',s')`
-        `slice_edges S as = slice_edges S asx'` `n'' -asx'@asx\<rightarrow>* n'`
-        `sourcenode a = n` `valid_edge a` `targetnode a = n''` True
+      with \<open>S,kind \<turnstile> (nx,sx) =asx\<Rightarrow>\<^sub>\<tau> (n',s')\<close>
+        \<open>slice_edges S as = slice_edges S asx'\<close> \<open>n'' -asx'@asx\<rightarrow>* n'\<close>
+        \<open>sourcenode a = n\<close> \<open>valid_edge a\<close> \<open>targetnode a = n''\<close> True
       show ?thesis
         apply(rule_tac x="nx" in exI)
         apply(rule_tac x="sx" in exI)
@@ -1403,32 +1403,32 @@ proof(atomize_elim)
         by(auto intro:path.Cons_path simp:slice_edges_def)
     next
       case False
-      with `valid_edge a` `sourcenode a = n` `targetnode a = n''` `pred (kind a) s`
+      with \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = n''\<close> \<open>pred (kind a) s\<close>
       have "S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n'',transfer (kind a) s)"
         by(fastforce intro:silent_moveI)
-      from `S,kind \<turnstile> (n'',transfer (kind a) s) =slice_edges S as\<Rightarrow>* (nx,sx)`
+      from \<open>S,kind \<turnstile> (n'',transfer (kind a) s) =slice_edges S as\<Rightarrow>* (nx,sx)\<close>
       obtain f s'' asx'' where "S,f \<turnstile> (n'',s'') =asx''\<Rightarrow>* (nx,sx)"
         and "f = kind" and "s'' = transfer (kind a) s" 
         and "asx'' = slice_edges S as" by simp
-      from `S,f \<turnstile> (n'',s'') =asx''\<Rightarrow>* (nx,sx)` `f = kind`
-        `asx'' = slice_edges S as` `s'' = transfer (kind a) s`
-        `S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n'',transfer (kind a) s)` 
-        `S,kind \<turnstile> (nx,sx) =asx\<Rightarrow>\<^sub>\<tau> (n',s')` `slice_edges S as = slice_edges S asx'`
-        `n'' -asx'@asx\<rightarrow>* n'` False
+      from \<open>S,f \<turnstile> (n'',s'') =asx''\<Rightarrow>* (nx,sx)\<close> \<open>f = kind\<close>
+        \<open>asx'' = slice_edges S as\<close> \<open>s'' = transfer (kind a) s\<close>
+        \<open>S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (n'',transfer (kind a) s)\<close> 
+        \<open>S,kind \<turnstile> (nx,sx) =asx\<Rightarrow>\<^sub>\<tau> (n',s')\<close> \<open>slice_edges S as = slice_edges S asx'\<close>
+        \<open>n'' -asx'@asx\<rightarrow>* n'\<close> False
       show ?thesis
       proof(induct rule:trans_observable_moves.induct)
         case (tom_Nil S f ni si)
         have "S,kind \<turnstile> (n,s) =[]\<Rightarrow>* (n,s)" by(rule trans_observable_moves.tom_Nil)
-        from `S,kind \<turnstile> (ni,si) =asx\<Rightarrow>\<^sub>\<tau> (n',s')`
-          `S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (ni,transfer (kind a) s)` 
-          `si = transfer (kind a) s`
+        from \<open>S,kind \<turnstile> (ni,si) =asx\<Rightarrow>\<^sub>\<tau> (n',s')\<close>
+          \<open>S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (ni,transfer (kind a) s)\<close> 
+          \<open>si = transfer (kind a) s\<close>
         have "S,kind \<turnstile> (n,s) =a#asx\<Rightarrow>\<^sub>\<tau> (n',s')"
           by(fastforce intro:silent_moves_Cons)
-        with `valid_edge a` `sourcenode a = n`
+        with \<open>valid_edge a\<close> \<open>sourcenode a = n\<close>
         have "n -a#asx\<rightarrow>* n'" by(fastforce dest:silent_moves_preds_transfers_path)
-        with `sourcenode a = n` `valid_edge a` `targetnode a = n''`
-          `[] = slice_edges S as` `n \<notin> backward_slice S`
-          `S,kind \<turnstile> (n,s) =a#asx\<Rightarrow>\<^sub>\<tau> (n',s')`
+        with \<open>sourcenode a = n\<close> \<open>valid_edge a\<close> \<open>targetnode a = n''\<close>
+          \<open>[] = slice_edges S as\<close> \<open>n \<notin> backward_slice S\<close>
+          \<open>S,kind \<turnstile> (n,s) =a#asx\<Rightarrow>\<^sub>\<tau> (n',s')\<close>
         show ?case
           apply(rule_tac x="n" in exI)
           apply(rule_tac x="s" in exI)
@@ -1437,22 +1437,22 @@ proof(atomize_elim)
           by(fastforce simp:slice_edges_def intro:trans_observable_moves.tom_Nil)
       next
         case (tom_Cons S f ni si asi ni' si' asi' n'' s'')
-        from `S,f \<turnstile> (ni,si) =asi\<Rightarrow> (ni',si')` have "asi \<noteq> []"
+        from \<open>S,f \<turnstile> (ni,si) =asi\<Rightarrow> (ni',si')\<close> have "asi \<noteq> []"
           by(fastforce dest:observable_move_notempty)
-        from `S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (ni,transfer (kind a) s)`
+        from \<open>S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (ni,transfer (kind a) s)\<close>
         have "valid_edge a" and "sourcenode a = n" and "targetnode a = ni"
           by(auto elim:silent_move.cases)
-        from `S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (ni,transfer (kind a) s)` `f = kind`
-          `si = transfer (kind a) s` `S,f \<turnstile> (ni,si) =asi\<Rightarrow> (ni',si')`
+        from \<open>S,kind \<turnstile> (n,s) -a\<rightarrow>\<^sub>\<tau> (ni,transfer (kind a) s)\<close> \<open>f = kind\<close>
+          \<open>si = transfer (kind a) s\<close> \<open>S,f \<turnstile> (ni,si) =asi\<Rightarrow> (ni',si')\<close>
         have "S,f \<turnstile> (n,s) =a#asi\<Rightarrow> (ni',si')"
           by(fastforce intro:silent_move_observable_moves)
-        with `S,f \<turnstile> (ni',si') =asi'\<Rightarrow>* (n'',s'')`
+        with \<open>S,f \<turnstile> (ni',si') =asi'\<Rightarrow>* (n'',s'')\<close>
         have "S,f \<turnstile> (n,s) =(last (a#asi))#asi'\<Rightarrow>* (n'',s'')"
           by -(rule trans_observable_moves.tom_Cons)
-        with `f = kind` `last asi # asi' = slice_edges S as` `n \<notin> backward_slice S`
-          `S,kind \<turnstile> (n'',s'') =asx\<Rightarrow>\<^sub>\<tau> (n',s')`  `sourcenode a = n` `asi \<noteq> []`
-          `ni -asx'@asx\<rightarrow>* n'` `slice_edges S as = slice_edges S asx'`
-          `valid_edge a` `sourcenode a = n` `targetnode a = ni`
+        with \<open>f = kind\<close> \<open>last asi # asi' = slice_edges S as\<close> \<open>n \<notin> backward_slice S\<close>
+          \<open>S,kind \<turnstile> (n'',s'') =asx\<Rightarrow>\<^sub>\<tau> (n',s')\<close>  \<open>sourcenode a = n\<close> \<open>asi \<noteq> []\<close>
+          \<open>ni -asx'@asx\<rightarrow>* n'\<close> \<open>slice_edges S as = slice_edges S asx'\<close>
+          \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = ni\<close>
         show ?case
           apply(rule_tac x="n''" in exI)
           apply(rule_tac x="s''" in exI)
@@ -1472,27 +1472,27 @@ lemma WS_weak_sim_trans:
          S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as\<Rightarrow>* (n\<^sub>1',transfers (slice_kinds S as) s\<^sub>2)"
 proof -
   obtain f where "f = kind" by simp
-  with `S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow>* (n\<^sub>1',s\<^sub>1')` 
+  with \<open>S,kind \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow>* (n\<^sub>1',s\<^sub>1')\<close> 
   have "S,f \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow>* (n\<^sub>1',s\<^sub>1')" by simp
-  from `S,f \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow>* (n\<^sub>1',s\<^sub>1')` `((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S` `as \<noteq> []` `f = kind`
+  from \<open>S,f \<turnstile> (n\<^sub>1,s\<^sub>1) =as\<Rightarrow>* (n\<^sub>1',s\<^sub>1')\<close> \<open>((n\<^sub>1,s\<^sub>1),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> \<open>as \<noteq> []\<close> \<open>f = kind\<close>
   show "((n\<^sub>1',s\<^sub>1'),(n\<^sub>1',transfers (slice_kinds S as) s\<^sub>2)) \<in> WS S \<and>
     S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as\<Rightarrow>* (n\<^sub>1',transfers (slice_kinds S as) s\<^sub>2)"
   proof(induct arbitrary:n\<^sub>2 s\<^sub>2 rule:trans_observable_moves.induct)
     case tom_Nil thus ?case by simp
   next
     case (tom_Cons S f n s as n' s' as' n'' s'')
-    note IH = `\<And>n\<^sub>2 s\<^sub>2. \<lbrakk>((n',s'),(n\<^sub>2,s\<^sub>2)) \<in> WS S; as' \<noteq> []; f = kind\<rbrakk>
+    note IH = \<open>\<And>n\<^sub>2 s\<^sub>2. \<lbrakk>((n',s'),(n\<^sub>2,s\<^sub>2)) \<in> WS S; as' \<noteq> []; f = kind\<rbrakk>
       \<Longrightarrow> ((n'',s''),(n'',transfers (slice_kinds S as') s\<^sub>2)) \<in> WS S \<and>
-      S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as'\<Rightarrow>* (n'',transfers (slice_kinds S as') s\<^sub>2)`
-    from `S,f \<turnstile> (n,s) =as\<Rightarrow> (n',s')`
+      S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =as'\<Rightarrow>* (n'',transfers (slice_kinds S as') s\<^sub>2)\<close>
+    from \<open>S,f \<turnstile> (n,s) =as\<Rightarrow> (n',s')\<close>
     obtain asx ax nx sx where "S,f \<turnstile> (n,s) =asx\<Rightarrow>\<^sub>\<tau> (nx,sx)"
       and "S,f \<turnstile> (nx,sx) -ax\<rightarrow> (n',s')" and "as = asx@[ax]"
       by(fastforce elim:observable_moves.cases)
-    from `S,f \<turnstile> (nx,sx) -ax\<rightarrow> (n',s')` have "obs nx (backward_slice S) = {nx}"
+    from \<open>S,f \<turnstile> (nx,sx) -ax\<rightarrow> (n',s')\<close> have "obs nx (backward_slice S) = {nx}"
       by(fastforce intro!:n_in_obs elim:observable_move.cases)
-    with `S,f \<turnstile> (n,s) =asx\<Rightarrow>\<^sub>\<tau> (nx,sx)` `((n,s),(n\<^sub>2,s\<^sub>2)) \<in> WS S` `f = kind`
+    with \<open>S,f \<turnstile> (n,s) =asx\<Rightarrow>\<^sub>\<tau> (nx,sx)\<close> \<open>((n,s),(n\<^sub>2,s\<^sub>2)) \<in> WS S\<close> \<open>f = kind\<close>
     have "((nx,sx),(n\<^sub>2,s\<^sub>2)) \<in> WS S" by(fastforce intro:WS_silent_moves)
-    with `S,f \<turnstile> (nx,sx) -ax\<rightarrow> (n',s')` `f = kind`
+    with \<open>S,f \<turnstile> (nx,sx) -ax\<rightarrow> (n',s')\<close> \<open>f = kind\<close>
     obtain asx' where "((n',s'),(n',transfer (slice_kind S ax) s\<^sub>2)) \<in> WS S"
       and "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =asx'@[ax]\<Rightarrow> 
       (n',transfer (slice_kind S ax) s\<^sub>2)"
@@ -1500,32 +1500,32 @@ proof -
     show ?case
     proof(cases "as' = []")
       case True
-      with `S,f \<turnstile> (n',s') =as'\<Rightarrow>* (n'',s'')` have "n' = n'' \<and> s' = s''"
+      with \<open>S,f \<turnstile> (n',s') =as'\<Rightarrow>* (n'',s'')\<close> have "n' = n'' \<and> s' = s''"
         by(fastforce elim:trans_observable_moves.cases dest:observable_move_notempty)
-      from `S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =asx'@[ax]\<Rightarrow> 
-                               (n',transfer (slice_kind S ax) s\<^sub>2)`
+      from \<open>S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =asx'@[ax]\<Rightarrow> 
+                               (n',transfer (slice_kind S ax) s\<^sub>2)\<close>
       have "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =(last (asx'@[ax]))#[]\<Rightarrow>* 
                                (n',transfer (slice_kind S ax) s\<^sub>2)"
         by(fastforce intro:trans_observable_moves.intros)
-      with `((n',s'),(n',transfer (slice_kind S ax) s\<^sub>2)) \<in> WS S` `as = asx@[ax]`
-        `n' = n'' \<and> s' = s''` True
+      with \<open>((n',s'),(n',transfer (slice_kind S ax) s\<^sub>2)) \<in> WS S\<close> \<open>as = asx@[ax]\<close>
+        \<open>n' = n'' \<and> s' = s''\<close> True
       show ?thesis by(fastforce simp:slice_kinds_def)
     next
       case False
-      from IH[OF `((n',s'),(n',transfer (slice_kind S ax) s\<^sub>2)) \<in> WS S` this 
-        `f = kind`]
+      from IH[OF \<open>((n',s'),(n',transfer (slice_kind S ax) s\<^sub>2)) \<in> WS S\<close> this 
+        \<open>f = kind\<close>]
       have "((n'',s''),(n'',transfers (slice_kinds S as') 
         (transfer (slice_kind S ax) s\<^sub>2))) \<in> WS S"
         and "S,slice_kind S \<turnstile> (n',transfer (slice_kind S ax) s\<^sub>2) 
         =as'\<Rightarrow>* (n'',transfers (slice_kinds S as')
                      (transfer (slice_kind S ax) s\<^sub>2))" by simp_all
-      with `S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =asx'@[ax]\<Rightarrow> 
-                               (n',transfer (slice_kind S ax) s\<^sub>2)`
+      with \<open>S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =asx'@[ax]\<Rightarrow> 
+                               (n',transfer (slice_kind S ax) s\<^sub>2)\<close>
       have "S,slice_kind S \<turnstile> (n\<^sub>2,s\<^sub>2) =(last (asx'@[ax]))#as'\<Rightarrow>* 
         (n'',transfers (slice_kinds S as') (transfer (slice_kind S ax) s\<^sub>2))"
         by(fastforce intro:trans_observable_moves.tom_Cons)
-      with `((n'',s''),(n'',transfers (slice_kinds S as') 
-        (transfer (slice_kind S ax) s\<^sub>2))) \<in> WS S` False `as = asx@[ax]`
+      with \<open>((n'',s''),(n'',transfers (slice_kinds S as') 
+        (transfer (slice_kind S ax) s\<^sub>2))) \<in> WS S\<close> False \<open>as = asx@[ax]\<close>
       show ?thesis by(fastforce simp:slice_kinds_def)
     qed
   qed
@@ -1538,8 +1538,8 @@ proof(induct as arbitrary:s)
   case Nil thus ?case by(simp add:slice_kinds_def slice_edges_def)
 next
   case (Cons a' as')
-  note IH = `\<And>s. transfers (slice_kinds S (slice_edges S as')) s =
-                  transfers (slice_kinds S as') s`
+  note IH = \<open>\<And>s. transfers (slice_kinds S (slice_edges S as')) s =
+                  transfers (slice_kinds S as') s\<close>
   show ?case
   proof(cases "sourcenode a' \<in> backward_slice S")
     case True
@@ -1571,32 +1571,32 @@ lemma trans_observable_moves_preds:
   obtains as' where "preds (map f as') s" and "slice_edges S as' = as"
   and "n -as'\<rightarrow>* n'"
 proof(atomize_elim)
-  from `S,f \<turnstile> (n,s) =as\<Rightarrow>* (n',s')` `valid_node n`
+  from \<open>S,f \<turnstile> (n,s) =as\<Rightarrow>* (n',s')\<close> \<open>valid_node n\<close>
   show "\<exists>as'. preds (map f as') s \<and> slice_edges S as' = as \<and> n -as'\<rightarrow>* n'"
   proof(induct rule:trans_observable_moves.induct)
     case tom_Nil thus ?case 
       by(rule_tac x="[]" in exI,fastforce intro:empty_path simp:slice_edges_def)
   next
     case (tom_Cons S f n s as n' s' as' n'' s'')
-    note IH = `valid_node n' 
-      \<Longrightarrow> \<exists>asx. preds (map f asx) s' \<and> slice_edges S asx = as' \<and> n' -asx\<rightarrow>* n''`
-    from `S,f \<turnstile> (n,s) =as\<Rightarrow> (n',s')`
+    note IH = \<open>valid_node n' 
+      \<Longrightarrow> \<exists>asx. preds (map f asx) s' \<and> slice_edges S asx = as' \<and> n' -asx\<rightarrow>* n''\<close>
+    from \<open>S,f \<turnstile> (n,s) =as\<Rightarrow> (n',s')\<close>
     have "preds (map f as) s" and "transfers (map f as) s = s'"
       and "n -as\<rightarrow>* n'"
       by(fastforce dest:observable_moves_preds_transfers_path)+
-    from `n -as\<rightarrow>* n'` have "valid_node n'" by(fastforce dest:path_valid_node)
-    from `S,f \<turnstile> (n,s) =as\<Rightarrow> (n',s')` have "slice_edges S as = [last as]"
+    from \<open>n -as\<rightarrow>* n'\<close> have "valid_node n'" by(fastforce dest:path_valid_node)
+    from \<open>S,f \<turnstile> (n,s) =as\<Rightarrow> (n',s')\<close> have "slice_edges S as = [last as]"
       by(rule observable_moves_last_slice_edges)
-    from IH[OF `valid_node n'`]
+    from IH[OF \<open>valid_node n'\<close>]
     obtain asx where "preds (map f asx) s'" and "slice_edges S asx = as'"
       and "n' -asx\<rightarrow>* n''"
       by blast
-    from `n -as\<rightarrow>* n'` `n' -asx\<rightarrow>* n''` have "n -as@asx\<rightarrow>* n''" by(rule path_Append)
-    from `preds (map f asx) s'` `transfers (map f as) s = s'`[THEN sym]
-      `preds (map f as) s`
+    from \<open>n -as\<rightarrow>* n'\<close> \<open>n' -asx\<rightarrow>* n''\<close> have "n -as@asx\<rightarrow>* n''" by(rule path_Append)
+    from \<open>preds (map f asx) s'\<close> \<open>transfers (map f as) s = s'\<close>[THEN sym]
+      \<open>preds (map f as) s\<close>
     have "preds (map f (as@asx)) s" by(simp add:preds_split)
-    with `slice_edges S as = [last as]` `slice_edges S asx = as'` 
-      `n -as@asx\<rightarrow>* n''` show ?case
+    with \<open>slice_edges S as = [last as]\<close> \<open>slice_edges S asx = as'\<close> 
+      \<open>n -as@asx\<rightarrow>* n''\<close> show ?case
       by(rule_tac x="as@asx" in exI,auto simp:slice_edges_def)
   qed
 qed
@@ -1608,31 +1608,31 @@ lemma exists_sliced_path_preds:
   obtains as' where "n -as'\<rightarrow>* n'" and "preds (slice_kinds S as') s"
   and "slice_edges S as' = []"
 proof(atomize_elim)
-  from `slice_edges S as = []`
+  from \<open>slice_edges S as = []\<close>
   have "\<forall>nx \<in> set(sourcenodes as). nx \<notin> (backward_slice S)"
     by(rule slice_edges_no_nodes_in_slice)
-  with `n -as\<rightarrow>* n'` `n' \<in> backward_slice S` have "n' \<in> obs n (backward_slice S)"
+  with \<open>n -as\<rightarrow>* n'\<close> \<open>n' \<in> backward_slice S\<close> have "n' \<in> obs n (backward_slice S)"
     by -(rule obs_elem)
   hence "obs n (backward_slice S) = {n'}" by(rule obs_singleton_element)
-  from `n -as\<rightarrow>* n'` have "valid_node n" and "valid_node n'"
+  from \<open>n -as\<rightarrow>* n'\<close> have "valid_node n" and "valid_node n'"
     by(fastforce dest:path_valid_node)+
-  from `n -as\<rightarrow>* n'` obtain x where "distance n n' x" and "x \<le> length as"
+  from \<open>n -as\<rightarrow>* n'\<close> obtain x where "distance n n' x" and "x \<le> length as"
     by(erule every_path_distance)
-  from `distance n n' x` `obs n (backward_slice S) = {n'}`
+  from \<open>distance n n' x\<close> \<open>obs n (backward_slice S) = {n'}\<close>
   show "\<exists>as'. n -as'\<rightarrow>* n' \<and> preds (slice_kinds S as') s \<and> 
               slice_edges S as' = []"
   proof(induct x arbitrary:n rule:nat.induct)
     case zero
-    from `distance n n' 0` have "n = n'" by(fastforce elim:distance.cases)
-    with `valid_node n'` show ?case
+    from \<open>distance n n' 0\<close> have "n = n'" by(fastforce elim:distance.cases)
+    with \<open>valid_node n'\<close> show ?case
       by(rule_tac x="[]" in exI,
         auto intro:empty_path simp:slice_kinds_def slice_edges_def)
   next
     case (Suc x)
-    note IH = `\<And>n. \<lbrakk>distance n n' x; obs n (backward_slice S) = {n'}\<rbrakk>
+    note IH = \<open>\<And>n. \<lbrakk>distance n n' x; obs n (backward_slice S) = {n'}\<rbrakk>
       \<Longrightarrow> \<exists>as'. n -as'\<rightarrow>* n' \<and> preds (slice_kinds S as') s \<and> 
-               slice_edges S as' = []`
-    from `distance n n' (Suc x)` obtain a 
+               slice_edges S as' = []\<close>
+    from \<open>distance n n' (Suc x)\<close> obtain a 
       where "valid_edge a" and "n = sourcenode a" 
       and "distance (targetnode a) n' x"
       and target:"targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and> 
@@ -1642,58 +1642,58 @@ proof(atomize_elim)
     have "n \<notin> backward_slice S"
     proof
       assume "n \<in> backward_slice S"
-      from `valid_edge a` `n = sourcenode a` have "valid_node n" by simp
-      with `n \<in> backward_slice S` have "obs n (backward_slice S) = {n}"
+      from \<open>valid_edge a\<close> \<open>n = sourcenode a\<close> have "valid_node n" by simp
+      with \<open>n \<in> backward_slice S\<close> have "obs n (backward_slice S) = {n}"
         by -(rule n_in_obs)
-      with `obs n (backward_slice S) = {n'}` have "n = n'" by simp
-      with `valid_node n` have "n -[]\<rightarrow>* n'" by(fastforce intro:empty_path)
-      with `distance n n' (Suc x)` show False
+      with \<open>obs n (backward_slice S) = {n'}\<close> have "n = n'" by simp
+      with \<open>valid_node n\<close> have "n -[]\<rightarrow>* n'" by(fastforce intro:empty_path)
+      with \<open>distance n n' (Suc x)\<close> show False
         by(fastforce elim:distance.cases)
     qed
-    from `distance (targetnode a) n' x` `n' \<in> backward_slice S`
+    from \<open>distance (targetnode a) n' x\<close> \<open>n' \<in> backward_slice S\<close>
     obtain m where "m \<in> obs (targetnode a) (backward_slice S)"
       by(fastforce elim:distance.cases path_ex_obs)
-    from `valid_edge a` `n \<notin> backward_slice S` `n = sourcenode a`
+    from \<open>valid_edge a\<close> \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close>
     have "obs (targetnode a) (backward_slice S) \<subseteq> 
       obs (sourcenode a) (backward_slice S)"
       by -(rule edge_obs_subset,auto)
-    with `m \<in> obs (targetnode a) (backward_slice S)` `n = sourcenode a`
-      `obs n (backward_slice S) = {n'}`
+    with \<open>m \<in> obs (targetnode a) (backward_slice S)\<close> \<open>n = sourcenode a\<close>
+      \<open>obs n (backward_slice S) = {n'}\<close>
     have "n' \<in> obs (targetnode a) (backward_slice S)" by auto
     hence "obs (targetnode a) (backward_slice S) = {n'}" 
       by(rule obs_singleton_element)
-    from IH[OF `distance (targetnode a) n' x` this]
+    from IH[OF \<open>distance (targetnode a) n' x\<close> this]
     obtain as where "targetnode a -as\<rightarrow>* n'" and "preds (slice_kinds S as) s"
       and "slice_edges S as = []" by blast
-    from `targetnode a -as\<rightarrow>* n'` `valid_edge a` `n = sourcenode a`
+    from \<open>targetnode a -as\<rightarrow>* n'\<close> \<open>valid_edge a\<close> \<open>n = sourcenode a\<close>
     have "n -a#as\<rightarrow>* n'" by(fastforce intro:Cons_path)
-    from `slice_edges S as = []` `n \<notin> backward_slice S` `n = sourcenode a`
+    from \<open>slice_edges S as = []\<close> \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close>
     have "slice_edges S (a#as) = []" by(simp add:slice_edges_def)
     show ?case
     proof(cases "kind a")
       case (Update f)
-      with `n \<notin> backward_slice S` `n = sourcenode a` have "slice_kind S a = \<Up>id"
+      with \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close> have "slice_kind S a = \<Up>id"
         by(fastforce intro:slice_kind_Upd)
       hence "transfer (slice_kind S a) s = s" and "pred (slice_kind S a) s"
         by simp_all
-      with `preds (slice_kinds S as) s` have "preds (slice_kinds S (a#as)) s"
+      with \<open>preds (slice_kinds S as) s\<close> have "preds (slice_kinds S (a#as)) s"
         by(simp add:slice_kinds_def)
-      with `n -a#as\<rightarrow>* n'` `slice_edges S (a#as) = []` show ?thesis
+      with \<open>n -a#as\<rightarrow>* n'\<close> \<open>slice_edges S (a#as) = []\<close> show ?thesis
         by blast
     next
       case (Predicate Q)
-      with `n \<notin> backward_slice S` `n = sourcenode a` `distance n n' (Suc x)`  
-        `obs n (backward_slice S) = {n'}` `distance (targetnode a) n' x`
-        `targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and> 
+      with \<open>n \<notin> backward_slice S\<close> \<open>n = sourcenode a\<close> \<open>distance n n' (Suc x)\<close>  
+        \<open>obs n (backward_slice S) = {n'}\<close> \<open>distance (targetnode a) n' x\<close>
+        \<open>targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and> 
         distance (targetnode a') n' x \<and>
-        valid_edge a' \<and> targetnode a' = nx)`
+        valid_edge a' \<and> targetnode a' = nx)\<close>
       have "slice_kind S a = (\<lambda>s. True)\<^sub>\<surd>"
         by(fastforce intro:slice_kind_Pred_obs_nearer_SOME)
       hence "transfer (slice_kind S a) s = s" and "pred (slice_kind S a) s"
         by simp_all
-      with `preds (slice_kinds S as) s` have "preds (slice_kinds S (a#as)) s"
+      with \<open>preds (slice_kinds S as) s\<close> have "preds (slice_kinds S (a#as)) s"
         by(simp add:slice_kinds_def)
-      with `n -a#as\<rightarrow>* n'` `slice_edges S (a#as) = []` show ?thesis by blast
+      with \<open>n -a#as\<rightarrow>* n'\<close> \<open>slice_edges S (a#as) = []\<close> show ?thesis by blast
     qed
   qed
 qed
@@ -1714,11 +1714,11 @@ proof(atomize_elim)
     by -(erule_tac S="S" in path_trans_observable_moves,auto)
   from path have "valid_node n" and "valid_node n'" 
     by(fastforce dest:path_valid_node)+
-  from `valid_node n` have "((n,s),(n,s)) \<in> WS S" by(fastforce intro:WSI)
-  from `valid_node n'` `n' \<in> S` have "obs n' (backward_slice S) = {n'}"
+  from \<open>valid_node n\<close> have "((n,s),(n,s)) \<in> WS S" by(fastforce intro:WSI)
+  from \<open>valid_node n'\<close> \<open>n' \<in> S\<close> have "obs n' (backward_slice S) = {n'}"
     by(fastforce intro!:n_in_obs refl)
-  from `valid_node n'` have "n'-[]\<rightarrow>* n'" by(fastforce intro:empty_path)
-  with `valid_node n'` `n' \<in> S` have "\<forall>V \<in> Use n'. V \<in> rv S n'"
+  from \<open>valid_node n'\<close> have "n'-[]\<rightarrow>* n'" by(fastforce intro:empty_path)
+  with \<open>valid_node n'\<close> \<open>n' \<in> S\<close> have "\<forall>V \<in> Use n'. V \<in> rv S n'"
     by(fastforce intro:rvI refl simp:sourcenodes_def)
   show "\<exists>as'. preds (slice_kinds S as') s \<and>
     (\<forall>V \<in> Use n'. state_val (transfers (slice_kinds S as') s) V = 
@@ -1728,95 +1728,95 @@ proof(atomize_elim)
     case True
     hence "preds (slice_kinds S []) s" and "slice_edges S [] = slice_edges S as"
       by(simp_all add:slice_kinds_def slice_edges_def)
-    from `S,kind \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* (n'',s'')` True
+    from \<open>S,kind \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* (n'',s'')\<close> True
     have "n = n''" and "s = s''"
       by(fastforce elim:trans_observable_moves.cases)+
-    with `S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)`
+    with \<open>S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)\<close>
     have "S,kind \<turnstile> (n,s) =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)" by simp
-    with `valid_node n` have "n -as'\<rightarrow>* n'"
+    with \<open>valid_node n\<close> have "n -as'\<rightarrow>* n'"
       by(fastforce dest:silent_moves_preds_transfers_path)
-    from `S,kind \<turnstile> (n,s) =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)`
+    from \<open>S,kind \<turnstile> (n,s) =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)\<close>
     have "slice_edges S as' = []" by(fastforce dest:silent_moves_no_slice_edges)
-    with `n -as'\<rightarrow>* n'` `valid_node n'` `n' \<in> S` obtain asx
+    with \<open>n -as'\<rightarrow>* n'\<close> \<open>valid_node n'\<close> \<open>n' \<in> S\<close> obtain asx
       where "n -asx\<rightarrow>* n'" and "preds (slice_kinds S asx) s"
       and "slice_edges S asx = []"
       by -(erule exists_sliced_path_preds,auto intro:refl)
-    from `S,kind \<turnstile> (n,s) =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)`
-      `((n,s),(n,s)) \<in> WS S` `obs n' (backward_slice S) = {n'}`
+    from \<open>S,kind \<turnstile> (n,s) =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)\<close>
+      \<open>((n,s),(n,s)) \<in> WS S\<close> \<open>obs n' (backward_slice S) = {n'}\<close>
     have "((n',transfers (kinds as) s),(n,s)) \<in> WS S"
       by(fastforce intro:WS_silent_moves)
     with True have "\<forall>V \<in> rv S n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (slice_edges S as)) s) V"
       by(fastforce dest:WSD simp:slice_edges_def slice_kinds_def)
-    with `\<forall>V \<in> Use n'. V \<in> rv S n'`
+    with \<open>\<forall>V \<in> Use n'. V \<in> rv S n'\<close>
     have "\<forall>V \<in> Use n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (slice_edges S as)) s) V" by simp
-    with `slice_edges S asx = []` `slice_edges S [] = slice_edges S as`
+    with \<open>slice_edges S asx = []\<close> \<open>slice_edges S [] = slice_edges S as\<close>
     have "\<forall>V \<in> Use n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (slice_edges S asx)) s) V"
       by(simp add:slice_edges_def)
     hence "\<forall>V \<in> Use n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S asx) s) V"
       by(simp add:transfers_slice_kinds_slice_edges)
-    with `n -asx\<rightarrow>* n'` `preds (slice_kinds S asx) s`
-      `slice_edges S asx = []` `slice_edges S [] = slice_edges S as`
+    with \<open>n -asx\<rightarrow>* n'\<close> \<open>preds (slice_kinds S asx) s\<close>
+      \<open>slice_edges S asx = []\<close> \<open>slice_edges S [] = slice_edges S as\<close>
     show ?thesis
       by(rule_tac x="asx" in exI,simp add:slice_edges_def)
   next
     case False
-    with `S,kind \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* (n'',s'')` `((n,s),(n,s)) \<in> WS S`
+    with \<open>S,kind \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* (n'',s'')\<close> \<open>((n,s),(n,s)) \<in> WS S\<close>
     have "((n'',s''),(n'',transfers (slice_kinds S (slice_edges S as)) s)) \<in> WS S"
       "S,slice_kind S \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* 
       (n'',transfers (slice_kinds S (slice_edges S as)) s)"
       by(fastforce dest:WS_weak_sim_trans)+
-    from `S,slice_kind S \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* 
-                             (n'',transfers (slice_kinds S (slice_edges S as)) s)`
-      `valid_node n`
+    from \<open>S,slice_kind S \<turnstile> (n,s) =slice_edges S as\<Rightarrow>* 
+                             (n'',transfers (slice_kinds S (slice_edges S as)) s)\<close>
+      \<open>valid_node n\<close>
     obtain asx where "preds (slice_kinds S asx) s" 
       and "slice_edges S asx = slice_edges S as"
       and "n -asx\<rightarrow>* n''"
       by(fastforce elim:trans_observable_moves_preds simp:slice_kinds_def)
-    from `n -asx\<rightarrow>* n''` have "valid_node n''" by(fastforce dest:path_valid_node)
-    with `S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)`
+    from \<open>n -asx\<rightarrow>* n''\<close> have "valid_node n''" by(fastforce dest:path_valid_node)
+    with \<open>S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)\<close>
     have "n'' -as'\<rightarrow>* n'"
       by(fastforce dest:silent_moves_preds_transfers_path)
-    from `S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)`
+    from \<open>S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)\<close>
     have "slice_edges S as' = []" by(fastforce dest:silent_moves_no_slice_edges)
-    with `n'' -as'\<rightarrow>* n'` `valid_node n'` `n' \<in> S` obtain asx'
+    with \<open>n'' -as'\<rightarrow>* n'\<close> \<open>valid_node n'\<close> \<open>n' \<in> S\<close> obtain asx'
       where "n'' -asx'\<rightarrow>* n'" and "slice_edges S asx' = []"
       and "preds (slice_kinds S asx') (transfers (slice_kinds S asx) s)"
       by -(erule exists_sliced_path_preds,auto intro:refl)
-    from `n -asx\<rightarrow>* n''` `n'' -asx'\<rightarrow>* n'` have "n -asx@asx'\<rightarrow>* n'"
+    from \<open>n -asx\<rightarrow>* n''\<close> \<open>n'' -asx'\<rightarrow>* n'\<close> have "n -asx@asx'\<rightarrow>* n'"
       by(rule path_Append)
-    from `slice_edges S asx = slice_edges S as` `slice_edges S asx' = []`
+    from \<open>slice_edges S asx = slice_edges S as\<close> \<open>slice_edges S asx' = []\<close>
     have "slice_edges S as = slice_edges S (asx@asx')"
       by(auto simp:slice_edges_def)
-    from `preds (slice_kinds S asx') (transfers (slice_kinds S asx) s)`
-      `preds (slice_kinds S asx) s`
+    from \<open>preds (slice_kinds S asx') (transfers (slice_kinds S asx) s)\<close>
+      \<open>preds (slice_kinds S asx) s\<close>
     have "preds (slice_kinds S (asx@asx')) s" 
       by(simp add:slice_kinds_def preds_split)
-    from `obs n' (backward_slice S) = {n'}`
-      `S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)`
-      `((n'',s''),(n'',transfers (slice_kinds S (slice_edges S as)) s)) \<in> WS S`
+    from \<open>obs n' (backward_slice S) = {n'}\<close>
+      \<open>S,kind \<turnstile> (n'',s'') =as'\<Rightarrow>\<^sub>\<tau> (n',transfers (kinds as) s)\<close>
+      \<open>((n'',s''),(n'',transfers (slice_kinds S (slice_edges S as)) s)) \<in> WS S\<close>
     have "((n',transfers (kinds as) s),
       (n'',transfers (slice_kinds S (slice_edges S as)) s)) \<in> WS S"
       by(fastforce intro:WS_silent_moves)
     hence "\<forall>V \<in> rv S n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (slice_edges S as)) s) V"
       by(fastforce dest:WSD)
-    with `\<forall>V \<in> Use n'. V \<in> rv S n'` `slice_edges S asx = slice_edges S as`
+    with \<open>\<forall>V \<in> Use n'. V \<in> rv S n'\<close> \<open>slice_edges S asx = slice_edges S as\<close>
     have "\<forall>V \<in> Use n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (slice_edges S asx)) s) V"
       by fastforce
-    with `slice_edges S asx' = []`
+    with \<open>slice_edges S asx' = []\<close>
     have "\<forall>V \<in> Use n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (slice_edges S (asx@asx'))) s) V"
       by(auto simp:slice_edges_def)
     hence "\<forall>V \<in> Use n'. state_val (transfers (kinds as) s) V = 
       state_val (transfers (slice_kinds S (asx@asx')) s) V"
       by(simp add:transfers_slice_kinds_slice_edges)
-    with `preds (slice_kinds S (asx@asx')) s` `n -asx@asx'\<rightarrow>* n'`
-      `slice_edges S as = slice_edges S (asx@asx')`
+    with \<open>preds (slice_kinds S (asx@asx')) s\<close> \<open>n -asx@asx'\<rightarrow>* n'\<close>
+      \<open>slice_edges S as = slice_edges S (asx@asx')\<close>
     show ?thesis by simp blast
   qed
 qed
@@ -1825,7 +1825,7 @@ qed
 end
 
 
-subsection {* The fundamental property of (static) slicing related to the semantics *}
+subsection \<open>The fundamental property of (static) slicing related to the semantics\<close>
 
 locale BackwardSlice_wf = 
   BackwardSlice sourcenode targetnode kind valid_edge Entry Def Use state_val 
@@ -1848,18 +1848,18 @@ theorem fundamental_property_of_path_slicing_semantically:
   obtains n' as where "n -as\<rightarrow>* n'" and "preds (slice_kinds {n'} as) s" and "n' \<triangleq> c'"
   and "\<forall>V \<in> Use n'. state_val (transfers (slice_kinds {n'} as) s) V = state_val s' V"
 proof(atomize_elim)
-  from `n \<triangleq> c` `\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>` obtain n' as where "n -as\<rightarrow>* n'"
+  from \<open>n \<triangleq> c\<close> \<open>\<langle>c,s\<rangle> \<Rightarrow> \<langle>c',s'\<rangle>\<close> obtain n' as where "n -as\<rightarrow>* n'"
     and "transfers (kinds as) s = s'" and "preds (kinds as) s" and "n' \<triangleq> c'"
     by(fastforce dest:fundamental_property)
-  from `n -as\<rightarrow>* n'` `preds (kinds as) s` obtain as'
+  from \<open>n -as\<rightarrow>* n'\<close> \<open>preds (kinds as) s\<close> obtain as'
     where "preds (slice_kinds {n'} as') s"
     and vals:"\<forall>V \<in> Use n'. state_val (transfers (slice_kinds {n'} as') s) V = 
     state_val (transfers (kinds as) s) V" and "n -as'\<rightarrow>* n'"
     by -(erule fundamental_property_of_static_slicing,auto)
-  from `transfers (kinds as) s = s'` vals have "\<forall>V \<in> Use n'.
+  from \<open>transfers (kinds as) s = s'\<close> vals have "\<forall>V \<in> Use n'.
     state_val (transfers (slice_kinds {n'} as') s) V = state_val s' V"
     by simp
-  with `preds (slice_kinds {n'} as') s` `n -as'\<rightarrow>* n'` ` n' \<triangleq> c'`
+  with \<open>preds (slice_kinds {n'} as') s\<close> \<open>n -as'\<rightarrow>* n'\<close> \<open> n' \<triangleq> c'\<close>
   show "\<exists>as n'. n -as\<rightarrow>* n' \<and> preds (slice_kinds {n'} as) s \<and> n' \<triangleq> c' \<and>
     (\<forall>V\<in>Use n'. state_val (transfers (slice_kinds {n'} as) s) V = state_val s' V)"
     by blast

@@ -126,7 +126,7 @@ declare quot_hfm.simps[simp del]
 section \<open>Fitch's proof\<close>
 
 text \<open>
-For simplicity, Fitch (and we) restrict the week to two days. Propositions @{text Q\<^sub>1} and @{text Q\<^sub>2}
+For simplicity, Fitch (and we) restrict the week to two days. Propositions \<open>Q\<^sub>1\<close> and \<open>Q\<^sub>2\<close>
 represent the propositions that the hanging occurs on the first resp.\@ the second day, but
 these can obviously be any propositions.
 \<close>

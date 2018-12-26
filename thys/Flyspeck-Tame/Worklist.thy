@@ -98,19 +98,19 @@ proof -
     assume "?b(ws,s)"
     then obtain x ws' where "ws = x # ws'" by(auto simp: neq_Nil_conv)
     then have "?Q (succs x @ ws') (f x s) (done @ [x])"
-      using `?Q ws s done`
+      using \<open>?Q ws s done\<close>
       apply simp
       apply(erule thin_rl)+
       apply (auto simp add: Image_Un Image_Rel_set)
       apply (blast elim: rtranclE intro: rtrancl_into_trancl1)
       done
-    hence "?P(?c(ws,s))" using `ws=x#ws'`
+    hence "?P(?c(ws,s))" using \<open>ws=x#ws'\<close>
       by(simp only: split_conv list.cases) blast
   }
   then have "?P(ws',s')"
     using while_option_rule[where P="?P", OF _ 0 init]
     by auto
-  then show ?thesis using `ws'=[]` by auto
+  then show ?thesis using \<open>ws'=[]\<close> by auto
 qed
 
 definition "worklist_tree succs f ws s =

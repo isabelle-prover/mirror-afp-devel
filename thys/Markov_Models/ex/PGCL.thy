@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Probabilistic Guarded Command Language (pGCL) *}
+section \<open>Probabilistic Guarded Command Language (pGCL)\<close>
 
 theory PGCL
   imports "../Markov_Decision_Process"
@@ -136,7 +136,7 @@ lemma E_inf_r_induct[consumes 1, case_names step]:
     (\<And>s y. P s y \<Longrightarrow> F s \<le> y) \<Longrightarrow> (\<And>s. F s \<le> step.E_inf s (r f)) \<Longrightarrow>
     (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>measure_pmf D) \<le> y"
   shows "step.E_inf s (r f) \<le> y"
-  using `P s y`
+  using \<open>P s y\<close>
   unfolding E_inf_r
 proof (induction arbitrary: s y rule: lfp_ordinal_induct[OF mono_r'[where f=f]])
   case (1 F) with *[of s y F] show ?case

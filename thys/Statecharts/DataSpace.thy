@@ -4,12 +4,12 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Partitoned Data Spaces for Statecharts *}
+section \<open>Partitoned Data Spaces for Statecharts\<close>
 theory DataSpace
 imports Contrib
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 definition
   DataSpace :: "('d set) list
@@ -39,9 +39,9 @@ definition
  PartDom :: "['d dataspace, nat] => ('d set)" (infixl "!D!" 101) where
  "PartDom d n = (Rep_dataspace d) ! n" 
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
-subsubsection {* @{text "DataSpace"} *}
+subsubsection \<open>\<open>DataSpace\<close>\<close>
 
 lemma DataSpace_UNIV [simp]:
  "DataSpace [UNIV]"
@@ -92,7 +92,7 @@ lemma InlInr_InlInl_Inr_dataspace [simp]:
   "[Part UNIV (Inl o Inr), Part UNIV (Inl o Inl), Part UNIV Inr] : dataspace"
 by (unfold dataspace_def, auto)
 
-subsubsection {* @{text "PartNum"} *}
+subsubsection \<open>\<open>PartNum\<close>\<close>
 
 lemma PartDom_PartNum_distinct: 
       "\<lbrakk> i < PartNum d; j < PartNum d;        

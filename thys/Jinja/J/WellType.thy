@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Well-typedness of Jinja expressions *}
+section \<open>Well-typedness of Jinja expressions\<close>
 
 theory WellType
 imports "../Common/Objects" Expr

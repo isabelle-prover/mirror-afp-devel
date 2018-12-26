@@ -1,13 +1,13 @@
 (* Author: Dmitriy Traytel *)
 
-section {* $\Pi$-Extended Dual Regular Expressions *}
+section \<open>$\Pi$-Extended Dual Regular Expressions\<close>
 
 (*<*)
 theory Pi_Regular_Exp_Dual
 imports Pi_Derivatives "HOL-Library.List_Lexorder" "HOL-Library.Code_Target_Nat"
 begin
 (*>*)
-subsection {* Syntax of regular expressions *}
+subsection \<open>Syntax of regular expressions\<close>
 
 datatype 'a rexp_dual =
   CoZero (co: bool) |

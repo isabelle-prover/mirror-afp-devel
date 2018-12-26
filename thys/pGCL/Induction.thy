@@ -11,13 +11,13 @@ theory Induction
   imports Expectations Transformers
 begin
 
-text_raw {* \label{s:induction} *}
+text_raw \<open>\label{s:induction}\<close>
 
-subsection {* The Lattice of Expectations *}
+subsection \<open>The Lattice of Expectations\<close>
 
-text_raw {* \label{s:exp_induct} *}
+text_raw \<open>\label{s:exp_induct}\<close>
 
-text {* Defining recursive (or iterative) programs requires us to reason about
+text \<open>Defining recursive (or iterative) programs requires us to reason about
 fixed points on the semantic objects, in this case expectations.  The
 complication here, compared to the standard Knaster-Tarski theorem (for example,
 as shown in @{theory HOL.Inductive}), is that we do not have a complete lattice.
@@ -38,7 +38,7 @@ doubly healthy, that is @{term "\<forall>P. sound P \<longrightarrow> healthy (t
 @{term "\<forall>Q. sound Q \<longrightarrow> healthy (\<lambda>P. t P Q)"}.  Thus by feasibility, @{term "t P Q"}
 must be bounded by @{term "bound_of P"}.  Thus, as by definition @{term "x \<le> t P x"}
 for any fixed point, all must lie in the
-set of sound expectations bounded above by @{term "\<lambda>_. bound_of P"}. *}
+set of sound expectations bounded above by @{term "\<lambda>_. bound_of P"}.\<close>
 
 definition Inf_exp :: "'s expect set \<Rightarrow> 's expect"
 where "Inf_exp S = (\<lambda>s. Inf {f s |f. f \<in> S})"
@@ -218,18 +218,18 @@ lemma gfp_exp_unfold:
    gfp_exp t = t (gfp_exp t)"
   by(iprover intro:antisym gfp_exp_lemma2 gfp_exp_lemma3)
 
-subsection {* The Lattice of Transformers *}
+subsection \<open>The Lattice of Transformers\<close>
 
-text_raw {* \label{s:trans_induct} *}
+text_raw \<open>\label{s:trans_induct}\<close>
 
-text {* In addition to fixed points on expectations, we also need
+text \<open>In addition to fixed points on expectations, we also need
 to reason about fixed points on expectation transformers.  The
 interpretation of a recursive program in pGCL is as a fixed
 point of a function from transformers to transformers.  In contrast
 to the case of expectations, \emph{healthy} transformers do form
 a complete lattice, where the bottom element is @{term "\<lambda>_. (\<lambda>_. 0)"},
 and the top element is the greatest allowed by feasibility:
-@{term "\<lambda>P. (\<lambda>_. bound_of P)"}. *}
+@{term "\<lambda>P. (\<lambda>_. bound_of P)"}.\<close>
 
 definition Inf_trans :: "'s trans set \<Rightarrow> 's trans"
 where "Inf_trans S = (\<lambda>P. Inf_exp {t P |t. t \<in> S})"
@@ -492,13 +492,13 @@ lemma gfp_trans_unfold:
   shows "equiv_utrans (gfp_trans T) (T (gfp_trans T))"
   using assms by(auto intro!: le_utrans_antisym gfp_trans_lemma2 gfp_trans_lemma3)
 
-subsection {* Tail Recursion *}
+subsection \<open>Tail Recursion\<close>
 
-text_raw {* \label{s:tail} *}
+text_raw \<open>\label{s:tail}\<close>
 
-text {* The least (greatest) fixed point of a tail-recursive expression on transformers is
+text \<open>The least (greatest) fixed point of a tail-recursive expression on transformers is
 equivalent (given appropriate side conditions) to the least (greatest) fixed point on
-expectations. *}
+expectations.\<close>
 
 lemma gfp_pulldown:
   fixes P::"'s expect"

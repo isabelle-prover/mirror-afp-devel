@@ -8,9 +8,9 @@ imports
   List_Fusion
 begin
 
-section {* More on red-black trees *}
+section \<open>More on red-black trees\<close>
 
-subsection {* More lemmas *}
+subsection \<open>More lemmas\<close>
 
 context linorder begin
 
@@ -37,7 +37,7 @@ qed
 
 end
 
-subsection {* Build the cross product of two RBTs *}
+subsection \<open>Build the cross product of two RBTs\<close>
 
 context fixes f :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> 'e" begin
 
@@ -84,7 +84,7 @@ next
   case (Cons x xs)
   obtain a b where x: "x = (a, b)" by(cases x)
   have "distinct (map (fst \<circ> (\<lambda>(c, d). ((a, c), f a b c d))) ys)"
-    using `distinct (map fst ys)` by(induct ys)(auto intro: rev_image_eqI)
+    using \<open>distinct (map fst ys)\<close> by(induct ys)(auto intro: rev_image_eqI)
   thus ?case using Cons x by(auto simp add: set_alist_product intro: rev_image_eqI)
 qed
 
@@ -178,7 +178,7 @@ end
 
 hide_const less_eq_prod' less_prod'
 
-subsection {* Build an RBT where keys are paired with themselves *}
+subsection \<open>Build an RBT where keys are paired with themselves\<close>
 
 primrec RBT_Impl_diag :: "('a, 'b) rbt \<Rightarrow> ('a \<times> 'a, 'b) rbt"
 where
@@ -216,7 +216,7 @@ lemma (in linorder) rbt_lookup_RBT_Impl_diag:
   (\<lambda>(k, k'). if k = k' then ord.rbt_lookup (<) t k else None)"
 by(induct t)(auto simp add: ord.rbt_lookup.simps fun_eq_iff)
 
-subsection {* Folding and quantifiers over RBTs *}
+subsection \<open>Folding and quantifiers over RBTs\<close>
 
 definition RBT_Impl_fold1 :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a, unit) RBT_Impl.rbt \<Rightarrow> 'a"
 where "RBT_Impl_fold1 f rbt = fold f (tl (RBT_Impl.keys rbt)) (hd (RBT_Impl.keys rbt))"
@@ -244,7 +244,7 @@ lemma RBT_Impl_rbt_ex_simps [simp, code]:
   "RBT_Impl_rbt_ex P (Branch c l k v r) \<longleftrightarrow> P k v \<or> RBT_Impl_rbt_ex P l \<or> RBT_Impl_rbt_ex P r"
 by(auto simp add: RBT_Impl_rbt_ex_def)
 
-subsection {* List fusion for RBTs *}
+subsection \<open>List fusion for RBTs\<close>
 
 type_synonym ('a, 'b, 'c) rbt_generator_state = "('c \<times> ('a, 'b) RBT_Impl.rbt) list \<times> ('a, 'b) RBT_Impl.rbt"
 

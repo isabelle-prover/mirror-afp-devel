@@ -3,7 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Program annotation *}
+section \<open>Program annotation\<close>
 
 theory Annotate imports WellType begin
 

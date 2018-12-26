@@ -2,16 +2,16 @@ theory Samplers
   imports Main "HOL-Library.Omega_Words_Fun"
 begin
 
-section {* Utility Lemmas *}
+section \<open>Utility Lemmas\<close>
 
-text {*
+text \<open>
   The following lemmas about strictly monotonic functions could go
   to the standard library of Isabelle/HOL.
-*}
+\<close>
 
-text {*
+text \<open>
   Strongly monotonic functions over the integers grow without bound.
-*}
+\<close>
 lemma strict_mono_exceeds:
   assumes f: "strict_mono (f::nat \<Rightarrow> nat)"
   shows "\<exists>k. n < f k"
@@ -28,10 +28,10 @@ next
   finally show "\<exists>k. Suc n < f k" ..
 qed
 
-text {*
-  More precisely, any natural number @{text "n \<ge> f 0"} lies in the interval
-  between @{text "f k"} and @{text "f (Suc k)"}, for some @{text k}.
-*}
+text \<open>
+  More precisely, any natural number \<open>n \<ge> f 0\<close> lies in the interval
+  between \<open>f k\<close> and \<open>f (Suc k)\<close>, for some \<open>k\<close>.
+\<close>
 lemma strict_mono_interval:
   assumes f: "strict_mono (f::nat \<Rightarrow> nat)" and n: "f 0 \<le> n"
   obtains k where "f k \<le> n" and "n < f (Suc k)"
@@ -65,21 +65,21 @@ lemma strict_mono_comp:
   shows "strict_mono (f \<circ> g)"
   using assms by (auto simp: strict_mono_def)
 
-section {* Stuttering Sampling Functions *}
+section \<open>Stuttering Sampling Functions\<close>
 
-text {*
-  Given an @{text \<omega>}-sequence @{text "\<sigma>"}, a stuttering sampling function 
-  is a strictly monotonic function @{text "f::nat \<Rightarrow> nat"} such that
-  @{text "f 0 = 0"} and for all @{text i} and all @{text "f i \<le> k < f (i+1)"},
-  the elements @{text "\<sigma> k"} are the same. In other words, @{text f} skips some
+text \<open>
+  Given an \<open>\<omega>\<close>-sequence \<open>\<sigma>\<close>, a stuttering sampling function 
+  is a strictly monotonic function \<open>f::nat \<Rightarrow> nat\<close> such that
+  \<open>f 0 = 0\<close> and for all \<open>i\<close> and all \<open>f i \<le> k < f (i+1)\<close>,
+  the elements \<open>\<sigma> k\<close> are the same. In other words, \<open>f\<close> skips some
   (but not necessarily all) stuttering steps, but never skips a non-stuttering step.
-  Given such @{text "\<sigma>"} and @{text f}, the (stuttering-)sampled
-  reduction of @{text "\<sigma>"} is the sequence of elements of @{text "\<sigma>"} at the
-  indices @{text "f i"}, which can simply be written as @{text "\<sigma> \<circ> f"}.
-*}
+  Given such \<open>\<sigma>\<close> and \<open>f\<close>, the (stuttering-)sampled
+  reduction of \<open>\<sigma>\<close> is the sequence of elements of \<open>\<sigma>\<close> at the
+  indices \<open>f i\<close>, which can simply be written as \<open>\<sigma> \<circ> f\<close>.
+\<close>
 
 
-subsection {* Definition and elementary properties *}
+subsection \<open>Definition and elementary properties\<close>
 
 definition stutter_sampler where
   \<comment> \<open>f is a stuttering sampling function for @{text "\<sigma>"}\<close>
@@ -107,15 +107,15 @@ using f[THEN stutter_sampler_mono] proof (rule strict_mono_interval)
   from f show "f 0 \<le> n" by (simp add: stutter_sampler_0)
 qed
 
-text {*
-  The identity function is a stuttering sampling function for any @{text "\<sigma>"}.
-*}
+text \<open>
+  The identity function is a stuttering sampling function for any \<open>\<sigma>\<close>.
+\<close>
 lemma id_stutter_sampler [iff]: "stutter_sampler id \<sigma>"
   by (auto simp: stutter_sampler_def strict_mono_def)
 
-text {*
+text \<open>
   Stuttering sampling functions compose, sort of.
-*}
+\<close>
 lemma stutter_sampler_comp:
   assumes f: "stutter_sampler f \<sigma>"
       and g: "stutter_sampler g (\<sigma> \<circ> f)"
@@ -139,9 +139,9 @@ next
   with 3 show "\<sigma> k = \<sigma> (f (g i))" by simp
 qed
 
-text {*
+text \<open>
   Stuttering sampling functions can be extended to suffixes.
-*}
+\<close>
 lemma stutter_sampler_suffix:
   assumes f: "stutter_sampler f \<sigma>"
   shows "stutter_sampler (\<lambda>k. f (n+k) - f n) (suffix (f n) \<sigma>)"
@@ -173,12 +173,12 @@ next
 qed
 
 
-subsection {* Preservation of properties through stuttering sampling *}
+subsection \<open>Preservation of properties through stuttering sampling\<close>
 
-text {*
+text \<open>
   Stuttering sampling preserves the initial element of the sequence, as well as
   the presence and relative ordering of different elements.
-*}
+\<close>
 
 lemma stutter_sampled_0:
   assumes "stutter_sampler f \<sigma>"
@@ -214,13 +214,13 @@ proof -
 qed
 
 
-subsection {* Maximal stuttering sampling *}
+subsection \<open>Maximal stuttering sampling\<close>
 
-text {*
+text \<open>
   We define a particular sampling function that is maximal in the sense that it
   eliminates all finite stuttering. If a sequence ends with infinite stuttering
   then it behaves as the identity over the (maximal such) suffix.
-*}
+\<close>
 
 fun max_stutter_sampler where
   "max_stutter_sampler \<sigma> 0 = 0"
@@ -230,9 +230,9 @@ fun max_stutter_sampler where
          then Suc prev
          else (LEAST k. prev < k \<and> \<sigma> k \<noteq> \<sigma> prev))"
 
-text {*
-  @{text max_stutter_sampler} is indeed a stuttering sampling function.
-*}
+text \<open>
+  \<open>max_stutter_sampler\<close> is indeed a stuttering sampling function.
+\<close>
 lemma max_stutter_sampler: 
   "stutter_sampler (max_stutter_sampler \<sigma>) \<sigma>" (is "stutter_sampler ?ms _")
 proof -
@@ -275,12 +275,12 @@ proof -
   ultimately show ?thesis unfolding stutter_sampler_def by blast
 qed
 
-text {*
-  We write @{text "\<natural>\<sigma>"} for the sequence @{text "\<sigma>"} sampled by the
+text \<open>
+  We write \<open>\<natural>\<sigma>\<close> for the sequence \<open>\<sigma>\<close> sampled by the
   maximal stuttering sampler. Also, a sequence is \emph{stutter free}
   if it contains no finite stuttering: whenever two subsequent
   elements are equal then all subsequent elements are the same.
-*}
+\<close>
 definition stutter_reduced ("\<natural>_" [100] 100) where
   "\<natural>\<sigma> = \<sigma> \<circ> (max_stutter_sampler \<sigma>)"
 
@@ -297,9 +297,9 @@ lemma stutter_freeD:
   shows "\<sigma> n = \<sigma> k"
   using assms unfolding stutter_free_def by blast
 
-text {*
+text \<open>
   Any suffix of a stutter free sequence is itself stutter free.
-*}
+\<close>
 lemma stutter_free_suffix: 
   assumes sigma: "stutter_free \<sigma>"
   shows "stutter_free (suffix k \<sigma>)"
@@ -345,12 +345,12 @@ proof -
   thus ?thesis by (auto simp: stutter_reduced_def)
 qed
 
-text {*
+text \<open>
   Whenever two sequence elements at two consecutive sampling points of the 
   maximal stuttering sampler are equal then the sequence stutters infinitely 
-  from the first sampling point onwards. In particular, @{text "\<natural>\<sigma>"} is
+  from the first sampling point onwards. In particular, \<open>\<natural>\<sigma>\<close> is
   stutter free.
-*}
+\<close>
 lemma max_stutter_sampler_nostuttering:
   assumes stut: "\<sigma> (max_stutter_sampler \<sigma> (Suc k)) = \<sigma> (max_stutter_sampler \<sigma> k)"
       and n: "n > max_stutter_sampler \<sigma> k" (is "_ > ?ms k")
@@ -385,18 +385,18 @@ qed
 lemma stutter_reduced_reduced: "\<natural>\<natural>\<sigma> = \<natural>\<sigma>"
   by (insert stutter_reduced_suffix[of 0 "\<sigma>", simplified])
   
-text {*
+text \<open>
   One can define a partial order on sampling functions for a given sequence
-  @{text "\<sigma>"} by saying that function @{text g} is better than function @{text f}
-  if the reduced sequence induced by @{text f} can be further reduced to obtain
-  the reduced sequence corresponding to @{text g}, i.e. if there exists a
-  stuttering sampling function @{text h} for the reduced sequence @{text "\<sigma> \<circ> f"}
-  such that @{text "\<sigma> \<circ> f \<circ> h = \<sigma> \<circ> g"}. (Note that @{text "f \<circ> h"} is indeed a stuttering
-  sampling function for @{text "\<sigma>"}, by theorem @{text "stutter_sampler_comp"}.)
+  \<open>\<sigma>\<close> by saying that function \<open>g\<close> is better than function \<open>f\<close>
+  if the reduced sequence induced by \<open>f\<close> can be further reduced to obtain
+  the reduced sequence corresponding to \<open>g\<close>, i.e. if there exists a
+  stuttering sampling function \<open>h\<close> for the reduced sequence \<open>\<sigma> \<circ> f\<close>
+  such that \<open>\<sigma> \<circ> f \<circ> h = \<sigma> \<circ> g\<close>. (Note that \<open>f \<circ> h\<close> is indeed a stuttering
+  sampling function for \<open>\<sigma>\<close>, by theorem \<open>stutter_sampler_comp\<close>.)
 
-  We do not formalize this notion but prove that @{text "max_stutter_sampler \<sigma>"}
+  We do not formalize this notion but prove that \<open>max_stutter_sampler \<sigma>\<close>
   is the best sampling function according to this order.
-*}
+\<close>
 
 theorem sample_max_sample:
   assumes f: "stutter_sampler f \<sigma>"
@@ -406,13 +406,13 @@ proof -
   let ?mssf = "max_stutter_sampler (\<sigma> \<circ> f)"
   from f have mssf: "stutter_sampler (f \<circ> ?mssf) \<sigma>"
     by (blast intro: stutter_sampler_comp max_stutter_sampler)
-  txt {*
+  txt \<open>
     The following is the core invariant of the proof: the sampling functions
-    @{text "max_stutter_sampler \<sigma>"} and @{text "f \<circ> (max_stutter_sampler (\<sigma> \<circ> f))"}
-    work in lock-step (i.e., sample the same points), except if @{text "\<sigma>"} ends
-    in infinite stuttering, at which point function @{text f} may make larger
+    \<open>max_stutter_sampler \<sigma>\<close> and \<open>f \<circ> (max_stutter_sampler (\<sigma> \<circ> f))\<close>
+    work in lock-step (i.e., sample the same points), except if \<open>\<sigma>\<close> ends
+    in infinite stuttering, at which point function \<open>f\<close> may make larger
     steps than the maximal sampling functions.
-  *}
+\<close>
   {
     fix k
     have "  ?mss k = f (?mssf k)

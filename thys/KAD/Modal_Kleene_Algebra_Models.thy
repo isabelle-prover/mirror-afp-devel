@@ -5,7 +5,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Models of Modal Kleene Algebras *}
+section \<open>Models of Modal Kleene Algebras\<close>
 
 theory Modal_Kleene_Algebra_Models
 imports Kleene_Algebra.Kleene_Algebra_Models
@@ -13,12 +13,12 @@ imports Kleene_Algebra.Kleene_Algebra_Models
 
 begin
 
-text {*
+text \<open>
   This section develops the relation model. We also briefly develop the trace model for
   antidomain Kleene algebras, but not for antirange or full modal Kleene algebras.
   The reason is that traces are implemented as lists; we therefore expect tedious inductive
   proofs in the presence of range. The language model is not particularly interesting.
-*}
+\<close>
 
 definition rel_ad :: "'a rel \<Rightarrow> 'a rel" where
   "rel_ad R = {(x,x) | x. \<not> (\<exists>y. (x,y) \<in> R)}"
@@ -39,7 +39,7 @@ proof
     by (auto simp: trace_a_def t_one_def)
 qed
 
-text {* The trace model should be extended to cover modal Kleene algebras in the future. *}
+text \<open>The trace model should be extended to cover modal Kleene algebras in the future.\<close>
 
 definition rel_ar :: "'a rel \<Rightarrow> 'a rel" where
   "rel_ar R = {(y,y) | y. \<not> (\<exists>x. (x,y) \<in> R)}"

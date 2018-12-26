@@ -1,4 +1,4 @@
-section {*\isaheader{Implementation of Priority Queues by Finger Trees}*}
+section \<open>\isaheader{Implementation of Priority Queues by Finger Trees}\<close>
 theory FTPrioImpl
 imports FTAnnotatedListImpl 
   "../gen_algo/PrioByAnnotatedList"
@@ -23,7 +23,7 @@ interpretation alprioi: StdPrio alprioi_ops
   by (rule alprio_ga.alprio_ops_impl)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "alprioi"*}
+setup \<open>ICF_Tools.revert_abbrevs "alprioi"\<close>
 
 
 definition test_codegen where "test_codegen \<equiv> (

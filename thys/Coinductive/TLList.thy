@@ -3,19 +3,19 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-section {* Terminated coinductive lists and their operations *}
+section \<open>Terminated coinductive lists and their operations\<close>
 
 theory TLList imports
   Coinductive_List
 begin
 
-text {*
-  Terminated coinductive lists @{text "('a, 'b) tllist"} are the codatatype defined by the construtors
-  @{text "TNil"} of type @{text "'b \<Rightarrow> ('a, 'b) tllist"} and
-  @{text "TCons"} of type @{text "'a \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"}.
-*}
+text \<open>
+  Terminated coinductive lists \<open>('a, 'b) tllist\<close> are the codatatype defined by the construtors
+  \<open>TNil\<close> of type \<open>'b \<Rightarrow> ('a, 'b) tllist\<close> and
+  \<open>TCons\<close> of type \<open>'a \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist\<close>.
+\<close>
 
-subsection {* Auxiliary lemmas *}
+subsection \<open>Auxiliary lemmas\<close>
 
 lemma split_fst: "R (fst p) = (\<forall>x y. p = (x, y) \<longrightarrow> R x)"
 by(cases p) simp
@@ -23,7 +23,7 @@ by(cases p) simp
 lemma split_fst_asm: "R (fst p) \<longleftrightarrow> (\<not> (\<exists>x y. p = (x, y) \<and> \<not> R x))"
 by(cases p) simp
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 consts terminal0 :: "'a"
 
@@ -70,9 +70,9 @@ declare
   unfold_tllist.ctr(1) [simp]
   tllist.corec(1) [simp]
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
-text {* Test quickcheck setup *}
+text \<open>Test quickcheck setup\<close>
 
 lemma "xs = TNil x"
 quickcheck[random, expect=counterexample]
@@ -83,7 +83,7 @@ lemma "TCons x xs = TCons x xs"
 quickcheck[narrowing, expect=no_counterexample]
 oops
 
-text {* More lemmas about generated constants *}
+text \<open>More lemmas about generated constants\<close>
 
 lemma ttl_unfold_tllist:
   "ttl (unfold_tllist IS_TNIL TNIL THD TTL a) = 
@@ -141,7 +141,7 @@ theorem set2_tllist_induct[consumes 1, case_names find step]:
 using assms by(induct)(fastforce simp del: tllist.disc(1) iff: tllist.disc(1), auto)
 
 
-subsection {* Connection with @{typ "'a llist"} *}
+subsection \<open>Connection with @{typ "'a llist"}\<close>
 
 context fixes b :: 'b begin
 primcorec tllist_of_llist :: "'a llist \<Rightarrow> ('a, 'b) tllist" where
@@ -195,7 +195,7 @@ by(cases xs) simp_all
 lemma tllist_of_llist_cong [cong]:
   assumes "xs = xs'" "lfinite xs' \<Longrightarrow> b = b'"
   shows "tllist_of_llist b xs = tllist_of_llist b' xs'"
-proof(unfold `xs = xs'`)
+proof(unfold \<open>xs = xs'\<close>)
   from assms have "lfinite xs' \<longrightarrow> b = b'" by simp
   thus "tllist_of_llist b xs' = tllist_of_llist b' xs'"
     by(coinduction arbitrary: xs') auto
@@ -222,8 +222,8 @@ next
   thus "xs = ys"
     by(coinduction arbitrary: xs ys)(auto simp add: lnull_def neq_LNil_conv)
   assume "lfinite ys"
-  thus "b = c" using `?lhs`
-    unfolding `xs = ys` by(induct) simp_all
+  thus "b = c" using \<open>?lhs\<close>
+    unfolding \<open>xs = ys\<close> by(induct) simp_all
 qed
 
 lemma tllist_of_llist_inverse [simp]:
@@ -350,12 +350,12 @@ apply(auto intro!: GrpI)
 apply(transfer, auto intro: GrpI split: if_split_asm)+
 done
 
-subsection {* Library function definitions *}
+subsection \<open>Library function definitions\<close>
 
-text {* 
+text \<open>
   We lift the constants from @{typ "'a llist"} to @{typ "('a, 'b) tllist"} using the lifting package.
   This way, many results are transferred easily.
-*}
+\<close>
 
 lift_definition tappend :: "('a, 'b) tllist \<Rightarrow> ('b \<Rightarrow> ('a, 'c) tllist) \<Rightarrow> ('a, 'c) tllist"
 is "\<lambda>(xs, b) f. apfst (lappend xs) (f b)"
@@ -385,7 +385,7 @@ is "apfst \<circ> ldropn" by auto
 abbreviation tfinite :: "('a, 'b) tllist \<Rightarrow> bool"
 where "tfinite xs \<equiv> lfinite (llist_of_tllist xs)"
 
-subsection {* @{term "tfinite"} *}
+subsection \<open>@{term "tfinite"}\<close>
 
 lemma tfinite_induct [consumes 1, case_names TNil TCons]:
   assumes "tfinite xs"
@@ -398,7 +398,7 @@ by transfer (clarsimp, erule lfinite.induct)
 lemma is_TNil_tfinite [simp]: "is_TNil xs \<Longrightarrow> tfinite xs"
 by transfer clarsimp
 
-subsection {* The terminal element @{term "terminal"} *}
+subsection \<open>The terminal element @{term "terminal"}\<close>
 
 lemma terminal_tinfinite:
   assumes "\<not> tfinite xs"
@@ -419,7 +419,7 @@ by(force simp add: cr_tllist_def pcr_tllist_def terminal_tllist_of_llist dest: l
 lemma terminal_tmap [simp]: "tfinite xs \<Longrightarrow> terminal (tmap f g xs) = g (terminal xs)"
 by(induct rule: tfinite_induct) simp_all
 
-subsection {* @{term "tmap"} *}
+subsection \<open>@{term "tmap"}\<close>
 
 lemma tmap_eq_TCons_conv:
   "tmap f g xs = TCons y ys \<longleftrightarrow>
@@ -431,7 +431,7 @@ lemma TCons_eq_tmap_conv:
   (\<exists>z zs. xs = TCons z zs \<and> f z = y \<and> tmap f g zs = ys)"
 by(cases xs) auto
 
-subsection {* Appending two terminated lazy lists @{term "tappend" } *}
+subsection \<open>Appending two terminated lazy lists @{term "tappend" }\<close>
 
 lemma tappend_TNil [simp, code, nitpick_simp]:
   "tappend (TNil b) f = f b"
@@ -461,11 +461,11 @@ is "\<lambda>(xs, a). (xs, undefined)" by clarsimp
 lemma tappend_inf: "\<not> tfinite xs \<Longrightarrow> tappend xs f = tcast xs"
 by(transfer)(auto simp add: apfst_def map_prod_def split_beta lappend_inf)
 
-text {* @{term tappend} is the monadic bind on @{typ "('a, 'b) tllist"} *}
+text \<open>@{term tappend} is the monadic bind on @{typ "('a, 'b) tllist"}\<close>
 
 lemmas tllist_monad = tappend_TNil tappend_TNil2 tappend_assoc
 
-subsection {* Appending a terminated lazy list to a lazy list @{term "lappendt"} *}
+subsection \<open>Appending a terminated lazy list to a lazy list @{term "lappendt"}\<close>
 
 lemma lappendt_LNil [simp, code, nitpick_simp]: "lappendt LNil tr = tr"
 by transfer auto
@@ -487,7 +487,7 @@ lemma tset_lappendt_lfinite [simp]:
   "lfinite xs \<Longrightarrow> tset (lappendt xs ys) = lset xs \<union> tset ys"
 by transfer auto
 
-subsection {* Filtering terminated lazy lists @{term tfilter} *}
+subsection \<open>Filtering terminated lazy lists @{term tfilter}\<close>
 
 lemma tfilter_TNil [simp]:
   "tfilter b' P (TNil b) = TNil b"
@@ -510,7 +510,7 @@ lemma tfilter_eq_TConsD:
    \<exists>us vs. ys = lappendt us (TCons x vs) \<and> lfinite us \<and> (\<forall>u\<in>lset us. \<not> P u) \<and> P x \<and> xs = tfilter a P vs"
 by transfer(fastforce dest: lfilter_eq_LConsD[OF sym])
 
-text {* Use a version of @{term "tfilter"} for code generation that does not evaluate the first argument *}
+text \<open>Use a version of @{term "tfilter"} for code generation that does not evaluate the first argument\<close>
 
 definition tfilter' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> ('a, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 where [simp, code del]: "tfilter' b = tfilter (b ())"
@@ -528,7 +528,7 @@ end
 
 hide_const (open) tfilter'
 
-subsection {* Concatenating a terminated lazy list of lazy lists @{term tconcat} *}
+subsection \<open>Concatenating a terminated lazy list of lazy lists @{term tconcat}\<close>
 
 lemma tconcat_TNil [simp]: "tconcat b (TNil b') = TNil b'"
 by transfer auto
@@ -536,7 +536,7 @@ by transfer auto
 lemma tconcat_TCons [simp]: "tconcat b (TCons a tr) = lappendt a (tconcat b tr)"
 by transfer auto
 
-text {* Use a version of @{term "tconcat"} for code generation that does not evaluate the first argument *}
+text \<open>Use a version of @{term "tconcat"} for code generation that does not evaluate the first argument\<close>
 
 definition tconcat' :: "(unit \<Rightarrow> 'b) \<Rightarrow> ('a llist, 'b) tllist \<Rightarrow> ('a, 'b) tllist"
 where [simp, code del]: "tconcat' b = tconcat (b ())"
@@ -551,7 +551,7 @@ by simp_all
 
 hide_const (open) tconcat'
 
-subsection {* @{term tllist_all2} *}
+subsection \<open>@{term tllist_all2}\<close>
 
 lemmas tllist_all2_TNil = tllist.rel_inject(1)
 lemmas tllist_all2_TCons = tllist.rel_inject(2)
@@ -585,7 +585,7 @@ apply(rule conjI)
 apply (rule impI)
 subgoal premises prems for X xs b ys c
 proof -
-  from `lfinite xs` `X (xs, b) (ys, c)`
+  from \<open>lfinite xs\<close> \<open>X (xs, b) (ys, c)\<close>
   show "R b c"
     by(induct arbitrary: ys rule: lfinite_induct)(auto dest: prems(2))
 qed
@@ -703,7 +703,7 @@ lemma tllist_all2_tllist_of_llist [simp]:
   llist_all2 A xs ys \<and> (lfinite xs \<longrightarrow> B b c)"
 by transfer auto
 
-subsection {* From a terminated lazy list to a lazy list @{term llist_of_tllist} *}
+subsection \<open>From a terminated lazy list to a lazy list @{term llist_of_tllist}\<close>
 
 lemma llist_of_tllist_tmap [simp]:
   "llist_of_tllist (tmap f g xs) = lmap f (llist_of_tllist xs)"
@@ -730,7 +730,7 @@ lemma llist_of_tllist_eq_lappend_conv:
   (\<exists>ys. xs = lappendt us ys \<and> vs = llist_of_tllist ys \<and> terminal xs = terminal ys)"
 by transfer auto
 
-subsection {* The nth element of a terminated lazy list @{term "tnth"} *}
+subsection \<open>The nth element of a terminated lazy list @{term "tnth"}\<close>
 
 lemma tnth_TNil [nitpick_simp]:
   "tnth (TNil b) n = undefined n"
@@ -752,7 +752,7 @@ by(transfer)(auto)
 lemma tnth_tmap [simp]: "enat n < tlength xs \<Longrightarrow> tnth (tmap f g xs) n = f (tnth xs n)"
 by transfer simp
 
-subsection {* The length of a terminated lazy list @{term "tlength"} *}
+subsection \<open>The length of a terminated lazy list @{term "tlength"}\<close>
 
 lemma [simp, nitpick_simp]:
   shows tlength_TNil: "tlength (TNil b) = 0"
@@ -778,7 +778,7 @@ by(simp_all add: gen_tlength_def iadd_Suc eSuc_enat[symmetric] iadd_Suc_right)
 lemma tlength_code [code]: "tlength = gen_tlength 0"
 by(simp add: gen_tlength_def fun_eq_iff zero_enat_def)
 
-subsection {* @{term "tdropn"} *}
+subsection \<open>@{term "tdropn"}\<close>
 
 lemma tdropn_0 [simp, code, nitpick_simp]: "tdropn 0 xs = xs"
 by transfer auto
@@ -810,7 +810,7 @@ by transfer auto
 lemma tnth_tdropn [simp]: "enat (n + m) < tlength xs \<Longrightarrow> tnth (tdropn n xs) m = tnth xs (m + n)"
 by transfer auto
 
-subsection {* @{term "tset"} *}
+subsection \<open>@{term "tset"}\<close>
 
 lemma tset_induct [consumes 1, case_names find step]:
   assumes "x \<in> tset xs"
@@ -826,13 +826,13 @@ by transfer(simp add: lset_conv_lnth)
 lemma in_tset_conv_tnth: "x \<in> tset xs \<longleftrightarrow> (\<exists>n. enat n < tlength xs \<and> tnth xs n = x)"
 using tset_conv_tnth[of xs] by auto
 
-subsection {* Setup for Lifting/Transfer *}
+subsection \<open>Setup for Lifting/Transfer\<close>
 
-subsubsection {* Relator and predicator properties *}
+subsubsection \<open>Relator and predicator properties\<close>
 
 abbreviation "tllist_all == pred_tllist"
 
-subsubsection {* Transfer rules for the Transfer package *}
+subsubsection \<open>Transfer rules for the Transfer package\<close>
 
 context includes lifting_syntax
 begin
@@ -873,7 +873,7 @@ proof(rule rel_funI)+
     "(A ===> C) THD1 THD2" "(A ===> A) TTL1 TTL2"
     and "A x y"
   show "tllist_all2 C B (unfold_tllist IS_TNIL1 TERMINAL1 THD1 TTL1 x) (unfold_tllist IS_TNIL2 TERMINAL2 THD2 TTL2 y)"
-    using `A x y`
+    using \<open>A x y\<close>
     apply(coinduction arbitrary: x y)
     using rel by(auto 4 4 elim: rel_funE)
 qed
@@ -888,7 +888,7 @@ proof(rule rel_funI)+
     "(A ===> tllist_all2 C B) STOP1 STOP2" "(A ===> A) TTL1 TTL2"
     and "A x y"
   show "tllist_all2 C B (corec_tllist IS_TNIL1 TERMINAL1 THD1 MORE1 STOP1 TTL1 x) (corec_tllist IS_TNIL2 TERMINAL2 THD2 MORE2 STOP2 TTL2 y)"
-    using `A x y`
+    using \<open>A x y\<close>
     apply(coinduction arbitrary: x y)
     using rel by(auto 4 4 elim: rel_funE)
 qed
@@ -988,12 +988,12 @@ declare tllist_all2_transfer [transfer_rule]
 
 end
 
-text {* 
+text \<open>
   Delete lifting rules for @{typ "('a, 'b) tllist"} 
   because the parametricity rules take precedence over
   most of the transfer rules. They can be restored by 
-  including the bundle @{text "tllist.lifting"}.
-*}
+  including the bundle \<open>tllist.lifting\<close>.
+\<close>
 
 lifting_update tllist.lifting
 lifting_forget tllist.lifting

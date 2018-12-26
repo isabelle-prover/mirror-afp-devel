@@ -40,7 +40,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section{* Policy Transformations *}
+section\<open>Policy Transformations\<close>
 theory 
   Normalisation
   imports 
@@ -48,75 +48,75 @@ theory
     ParallelComposition
 begin
   
-text{* 
+text\<open>
   This theory provides the formalisations required for the transformation of UPF policies. 
   A typical usage scenario can be observed in the firewall case 
   study~\cite{brucker.ea:formal-fw-testing:2014}.
-*}
+\<close>
   
-subsection{* Elementary Operators *}
-text{* 
+subsection\<open>Elementary Operators\<close>
+text\<open>
   We start by providing several operators and theorems useful when reasoning about a list of 
   rules which should eventually be interpreted as combined using the standard override operator. 
-*}
+\<close>
   
-text{* 
+text\<open>
   The following definition takes as argument a list of rules and returns a policy where the
   rules are combined using the standard override operator.
-*}
+\<close>
 definition list2policy::"('a \<mapsto> 'b) list \<Rightarrow> ('a \<mapsto> 'b)"  where
   "list2policy l = foldr (\<lambda> x y. (x \<Oplus> y)) l \<emptyset>"
   
-text{* 
+text\<open>
   Determine the position of element of a list. 
-*}
+\<close>
 fun position :: "'\<alpha> \<Rightarrow> '\<alpha> list \<Rightarrow>  nat" where
   "position a []       = 0"
 |"(position a (x#xs)) = (if a = x then 1 else (Suc (position a xs)))" 
   
-text{* 
+text\<open>
   Provides the first applied rule of a policy given as a list of rules. 
-*}
+\<close>
 fun  applied_rule where
   "applied_rule C a (x#xs) = (if a \<in> dom (C x) then (Some x)
                                  else (applied_rule C a xs))"
 |"applied_rule C a []    = None"
   
-text {* 
+text \<open>
   The following is used if the list is constructed backwards. 
-*}
+\<close>
 definition applied_rule_rev where
   "applied_rule_rev C a x =  applied_rule C a (rev x)"
   
-text{* 
+text\<open>
   The following is a typical policy transformation. It can be applied to any type of policy and
   removes all the rules from a policy with an empty domain. It takes two arguments: a semantic
   interpretation function and a list of rules. 
-*}
+\<close>
 fun rm_MT_rules  where
   "rm_MT_rules C (x#xs) = (if dom (C x)= {}
                              then rm_MT_rules C xs
                              else x#(rm_MT_rules C xs))"
 |"rm_MT_rules C [] = []"
   
-text {* 
+text \<open>
   The following invariant establishes that there are no rules with an empty domain in a list 
   of rules. 
-*}
+\<close>
 fun none_MT_rules where 
   "none_MT_rules C (x#xs) = (dom (C x) \<noteq> {} \<and>  (none_MT_rules C xs))"
 |"none_MT_rules C [] = True" 
   
-text{* 
+text\<open>
   The following related invariant establishes that the policy has not a completely empty domain. 
-*}
+\<close>
 fun not_MT where
   "not_MT C (x#xs) = (if (dom (C x) = {}) then (not_MT C xs) else True)"
 |"not_MT C [] = False"
   
-text{* 
+text\<open>
 Next, a few theorems about the two invariants and the transformation:
-*}
+\<close>
 lemma none_MT_rules_vs_notMT: "none_MT_rules  C p \<Longrightarrow> p \<noteq> [] \<Longrightarrow> not_MT C p" 
   apply (induct p) 
    apply (simp_all)
@@ -174,7 +174,7 @@ lemma NMPrm: "not_MT C  p \<Longrightarrow> not_MT C (rm_MT_rules C p)"
    apply (simp_all)
   done
     
-text{* Next, a few theorems about applied\_rule: *}
+text\<open>Next, a few theorems about applied\_rule:\<close>
 lemma mrconc: "applied_rule_rev C x p = Some a \<Longrightarrow> applied_rule_rev C x (b#p) = Some a"
 proof (induct p rule: rev_induct)
   case Nil show ?case using Nil
@@ -236,8 +236,8 @@ next
 qed
   
 
-subsection{* Distributivity of the Transformation. *}
-text{*
+subsection\<open>Distributivity of the Transformation.\<close>
+text\<open>
   The scenario is the following (can be applied iteratively):
   \begin{itemize}
     \item Two policies are combined using one of the parallel combinators
@@ -246,12 +246,12 @@ text{*
     \item policies that are semantically equivalent to the original policy if
     \item combined from left to right using the override operator.
   \end{itemize}
-*}
+\<close>
 
-text{* 
+text\<open>
   The following function is crucial for the distribution. Its arguments are a policy, a list
   of policies, a parallel combinator, and a range and a domain coercion function. 
-*}
+\<close>
 fun prod_list :: "('\<alpha> \<mapsto>'\<beta>) \<Rightarrow> (('\<gamma> \<mapsto>'\<delta>) list) \<Rightarrow> 
                   (('\<alpha> \<mapsto>'\<beta>) \<Rightarrow> ('\<gamma> \<mapsto>'\<delta>) \<Rightarrow> (('\<alpha> \<times> '\<gamma>) \<mapsto> ('\<beta> \<times> '\<delta>))) \<Rightarrow>
                   (('\<beta> \<times> '\<delta>) \<Rightarrow> 'y) \<Rightarrow> ('x \<Rightarrow> ('\<alpha> \<times> '\<gamma>)) \<Rightarrow>  
@@ -260,9 +260,9 @@ fun prod_list :: "('\<alpha> \<mapsto>'\<beta>) \<Rightarrow> (('\<gamma> \<maps
   ((ran_adapt o_f ((par_comb x y) o dom_adapt))#(prod_list x ys par_comb ran_adapt dom_adapt))"
 | "prod_list x [] par_comb ran_adapt dom_adapt = []"
   
-text{* 
+text\<open>
   An instance, as usual there are four of them. 
-*}
+\<close>
   
 definition prod_2_list :: "[('\<alpha> \<mapsto>'\<beta>), (('\<gamma> \<mapsto>'\<delta>) list)] \<Rightarrow> 
                   (('\<beta> \<times> '\<delta>) \<Rightarrow> 'y) \<Rightarrow> ('x \<Rightarrow> ('\<alpha> \<times> '\<gamma>)) \<Rightarrow> 
@@ -277,10 +277,10 @@ lemma list2listNMT:  "x \<noteq> [] \<Longrightarrow> map sem x \<noteq> []"
 lemma two_conc: "(prod_list x (y#ys) p r d) = ((r o_f ((p x y) o d))#(prod_list x ys p r d))"
   by simp
 
-text{* 
+text\<open>
   The following two invariants establish if the law of distributivity holds for a combinator
   and if an operator is strict regarding undefinedness. 
-*}
+\<close>
 definition is_distr where
  "is_distr p = (\<lambda> g f. (\<forall> N P1 P2. ((g o_f ((p N (P1 \<Oplus> P2)) o f)) = 
                ((g o_f ((p N P1) o f)) \<Oplus> (g o_f ((p N P2)  o f))))))"
@@ -320,9 +320,9 @@ lemma notDom: "x \<in> dom A \<Longrightarrow> \<not> A x = None"
   apply auto
   done
     
-text{* 
+text\<open>
   The following theorems are crucial: they establish the correctness of the distribution.
-*}
+\<close>
 lemma Norm_Distr_1:  "((r o_f (((\<Otimes>\<^sub>1) P1 (list2policy P2)) o d)) x = 
                                                    ((list2policy ((P1 \<Otimes>\<^sub>L P2) (\<Otimes>\<^sub>1) r d)) x))"
 proof (induct P2) 
@@ -395,7 +395,7 @@ next
   qed
 qed
   
-text {* Some domain reasoning *}
+text \<open>Some domain reasoning\<close>
 lemma domSubsetDistr1: "dom A = UNIV \<Longrightarrow> dom ((\<lambda>(x, y). x) o_f (A \<Otimes>\<^sub>1 B) o (\<lambda> x. (x,x))) = dom B"
   apply (rule set_eqI)
   apply (rule iffI)

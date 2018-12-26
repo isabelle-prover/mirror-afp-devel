@@ -1,4 +1,4 @@
-section {* Correctness Theorem of Partial Order Reduction *}
+section \<open>Correctness Theorem of Partial Order Reduction\<close>
 
 theory Ample_Correctness
 imports

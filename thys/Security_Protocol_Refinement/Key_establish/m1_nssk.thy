@@ -24,10 +24,10 @@ text \<open>We add augment the basic abstract key distribution model such that
 the server reads and stores the initiator's nonce. We show three refinements, 
 namley that this model refines
 \begin{enumerate}
-\item the basic key distribution model @{text "m1a"}, and
-\item the injective agreement model @{text "a0i"}, instantiated such that 
+\item the basic key distribution model \<open>m1a\<close>, and
+\item the injective agreement model \<open>a0i\<close>, instantiated such that 
 the initiator agrees with the server on the session key and its nonce.
-\item the non-injective agreement model @{text "a0n"}, instantiated such that 
+\item the non-injective agreement model \<open>a0n\<close>, instantiated such that 
 the responder agrees with the server on the session key.
 \end{enumerate}
 \<close>
@@ -243,7 +243,7 @@ declare PO_m1_inv0_fin [THEN subsetD, intro]
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "m1a"}\<close>
+subsection \<open>Refinement of \<open>m1a\<close>\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>
@@ -428,7 +428,7 @@ done
 subsubsection \<open>inv (inherited): Initiator auth server.\<close>
 (*invh*************************************************************************)
 
-text \<open>Simplified version of invariant @{text "m1a_inv2i_serv"}.\<close>
+text \<open>Simplified version of invariant \<open>m1a_inv2i_serv\<close>.\<close>
 
 definition 
   m1_inv2i_serv :: "'x m1r_pred" 
@@ -467,7 +467,7 @@ declare PO_m1_inv2i_serv [THEN subsetD, intro]
 subsubsection \<open>inv (inherited): Responder auth server.\<close>
 (*invh*************************************************************************)
 
-text \<open>Simplified version of invarant @{text "m1a_inv2r_serv"}.\<close>
+text \<open>Simplified version of invarant \<open>m1a_inv2r_serv\<close>.\<close>
 
 definition 
   m1_inv2r_serv :: "'x m1r_pred"
@@ -528,7 +528,7 @@ done
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0i"} for initiator/responder\<close>
+subsection \<open>Refinement of \<open>a0i\<close> for initiator/responder\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>
@@ -753,7 +753,7 @@ by (rule refinement_soundness) (fast)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0i"} for responder/initiator\<close>
+subsection \<open>Refinement of \<open>a0i\<close> for responder/initiator\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>

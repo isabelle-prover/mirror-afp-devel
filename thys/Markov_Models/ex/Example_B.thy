@@ -2,9 +2,9 @@ theory Example_B
   imports "../Classifying_Markov_Chain_States"
 begin
 
-section {* Example B *} text_raw {* \label{ex:B} *}
+section \<open>Example B\<close> text_raw \<open>\label{ex:B}\<close>
 
-text {*
+text \<open>
 
 We now formalize the following Markov chain:
 
@@ -43,26 +43,26 @@ We now formalize the following Markov chain:
 As state space we have the set of natural numbers, the transition function @{term tau} has three
 cases:
 
-*}
+\<close>
 
 definition K :: "nat \<Rightarrow> nat pmf" where
   "K x = map_pmf (\<lambda>True \<Rightarrow> x + 1 | False \<Rightarrow> x - 1) (bernoulli_pmf (1/3))"
 
-text {* For the special case when @{term "x = (0::nat)"} we have @{term "x - 1 = (0::nat)"} and hence
-@{term "tau 0 0 = 2 / 3"}. *}
+text \<open>For the special case when @{term "x = (0::nat)"} we have @{term "x - 1 = (0::nat)"} and hence
+@{term "tau 0 0 = 2 / 3"}.\<close>
 
-text {* We pack this transition function into a discrete Markov kernel. *}
+text \<open>We pack this transition function into a discrete Markov kernel.\<close>
 
-text {* We call the locale of the Markov chain @{text B}, hence all constants and theorems
-  from this Markov chain get a @{text B} prefix. *}
+text \<open>We call the locale of the Markov chain \<open>B\<close>, hence all constants and theorems
+  from this Markov chain get a \<open>B\<close> prefix.\<close>
 
 interpretation B: MC_syntax K .
 
-subsection {* Enabled, accessible and communicating states *}
+subsection \<open>Enabled, accessible and communicating states\<close>
 
-text {* For each step the predecessor and the successor are enabled (in the @{term 0} case, the
+text \<open>For each step the predecessor and the successor are enabled (in the @{term 0} case, the
 predecessor is again @{term 0}. Hence every state is accessible from everywhere and every states is
-communicating with each other state. Finally we know that the state space is an essential class. *}
+communicating with each other state. Finally we know that the state space is an essential class.\<close>
 
 lemma B_E_eq: "set_pmf (K x) = {x - 1, x + 1}"
   by (auto simp: set_pmf_bernoulli K_def split: bool.split)
@@ -85,7 +85,7 @@ lemma B_communicating[intro]: "(i, j) \<in> B.communicating"
 lemma B_essential: "B.essential_class UNIV"
   by (rule B.essential_classI2) auto
 
-subsection {* B is aperiodic *}
+subsection \<open>B is aperiodic\<close>
 
 lemma B_aperiodic: "B.aperiodic UNIV"
   unfolding B.aperiodic_def
@@ -101,7 +101,7 @@ proof safe
   finally show "B.period UNIV = 1" .
 qed
 
-subsection {* The stationary distribution @{text N} *}
+subsection \<open>The stationary distribution \<open>N\<close>\<close>
 
 abbreviation N :: "nat pmf" where
   "N \<equiv> geometric_pmf (1 / 2)"
@@ -116,7 +116,7 @@ proof (rule pmf_eqI)
     done
 qed
 
-subsection {* Limit behavior and recurrence times *}
+subsection \<open>Limit behavior and recurrence times\<close>
 
 lemma limit: "(B.p i j) \<longlonglongrightarrow> (1/2)^Suc j"
 proof -

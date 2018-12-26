@@ -20,7 +20,7 @@ imports
   Bivariate_Polynomials
 begin
 
-subsubsection {* Sylvester matrices and vector representation of polynomials *}
+subsubsection \<open>Sylvester matrices and vector representation of polynomials\<close>
 
 definition vec_of_poly_rev_shifted where
   "vec_of_poly_rev_shifted p n j \<equiv>
@@ -172,7 +172,7 @@ qed
 lemma degree_sum_smaller:
   assumes "n > 0" "finite A"
   shows "(\<And> x. x \<in>A \<Longrightarrow> degree (f x) < n) \<Longrightarrow> degree (\<Sum>x\<in>A. f x) < n"
-  using `finite A`
+  using \<open>finite A\<close>
   by(induct rule: finite_induct)
     (simp_all add: degree_add_less assms)
 
@@ -446,7 +446,7 @@ qed
   
 subsubsection\<open>Resultant as Polynomial Expression\<close>
 context begin
-text {* This context provides notions for proving Lemma 7.2.1 of the textbook. *}
+text \<open>This context provides notions for proving Lemma 7.2.1 of the textbook.\<close>
 
 private fun mk_poly_sub where
   "mk_poly_sub A l 0 = A"
@@ -732,7 +732,7 @@ proof -
   finally show ?thesis.
 qed
 
-text {* The next lemma corresponds to Lemma 7.2.1. *}
+text \<open>The next lemma corresponds to Lemma 7.2.1.\<close>
 lemma resultant_as_poly:
   fixes p q :: "'a :: comm_ring_1 poly"
   assumes degp: "degree p > 0" and degq: "degree q > 0"

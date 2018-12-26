@@ -1,12 +1,12 @@
 (*  Title:       Interuptible Fold
     Author:      Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* Interuptible Fold *}
+section \<open>Interuptible Fold\<close>
 theory Foldi
 imports Main 
 begin
 
-subsection {* Left folding *}
+subsection \<open>Left folding\<close>
 
 primrec foldli where
    "foldli [] c f \<sigma> = \<sigma>"
@@ -24,7 +24,7 @@ lemma foldli_cong [fundef_cong]:
 unfolding assms using ff'
 by(induct l' arbitrary: \<sigma>') auto
 
-text {* Notice that @{term foldli} is a generalisation of folding that respects the abortion condition. *}
+text \<open>Notice that @{term foldli} is a generalisation of folding that respects the abortion condition.\<close>
 lemma foldli_foldl :
   "foldli xs (\<lambda>_. True) f \<sigma> = foldl (\<lambda>\<sigma> x. f x \<sigma>) \<sigma> xs"
 by (induct xs arbitrary: \<sigma>) simp_all
@@ -71,7 +71,7 @@ lemma fold_fold_prod_conv: "fold (\<lambda>i. fold (f i) l1) l2 s = fold (\<lamb
   using foldli_foldli_prod_conv[of l2 "\<lambda>_. True" l1 f s]
   by (simp add: foldli_foldl foldl_conv_fold)
     
-subsection {* Right folding *}
+subsection \<open>Right folding\<close>
 
 definition foldri :: "'x list \<Rightarrow> ('\<sigma> \<Rightarrow> bool) \<Rightarrow> ('x \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"  where
   "foldri l = foldli (rev l)"
@@ -101,7 +101,7 @@ lemma foldri_cong [fundef_cong]:
 unfolding assms using ff'
 by(induct l' arbitrary: \<sigma>') auto
 
-text {* Notice that @{term foldli} is a generalisation of folding that respects the abortion condition. *}
+text \<open>Notice that @{term foldli} is a generalisation of folding that respects the abortion condition.\<close>
 lemma foldri_foldr :
   "foldri xs (\<lambda>_. True) f \<sigma> = foldr (\<lambda>x \<sigma>. f x \<sigma>) xs \<sigma>"
 by (induct xs arbitrary: \<sigma>) simp_all

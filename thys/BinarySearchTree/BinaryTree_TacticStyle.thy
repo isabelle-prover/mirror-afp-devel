@@ -4,17 +4,17 @@
     License:     LGPL
 *)
 
-section {* Tactic-Style Reasoning for Binary Tree Operations *}
+section \<open>Tactic-Style Reasoning for Binary Tree Operations\<close>
 theory BinaryTree_TacticStyle imports Main begin
 
-text {* This example theory illustrates automated proofs of correctness
+text \<open>This example theory illustrates automated proofs of correctness
    for binary tree operations using tactic-style reasoning.
    The current proofs for remove operation are by Tobias Nipkow, 
    some modifications and the remaining tree operations are 
-   by Viktor Kuncak. *}
+   by Viktor Kuncak.\<close>
 
 (*============================================================*)
-section {* Definition of a sorted binary tree *}
+section \<open>Definition of a sorted binary tree\<close>
 (*============================================================*)
 
 datatype tree = Tip | Nd tree nat tree
@@ -33,7 +33,7 @@ where
     (sorted l & sorted r & (\<forall>x \<in> set_of l. x < y) & (\<forall>z \<in> set_of r. y < z))"
 
 (*============================================================*)
-section {* Tree Membership *}
+section \<open>Tree Membership\<close>
 (*============================================================*)
 
 primrec
@@ -49,7 +49,7 @@ lemma member_set: "sorted t --> memb e t = (e : set_of t)"
 by (induct t) auto
 
 (*============================================================*)
-section {* Insertion operation *}
+section \<open>Insertion operation\<close>
 (*============================================================*)
 
 primrec binsert :: "nat => tree => tree"
@@ -76,7 +76,7 @@ corollary binsert_spec:  (* summary specification of binsert *)
 by (simp add: binsert_sorted)
 
 (*============================================================*)
-section {* Remove operation *}
+section \<open>Remove operation\<close>
 (*============================================================*)
 
 primrec
@@ -131,8 +131,8 @@ corollary remove_spec: \<comment> \<open>summary specification of remove\<close>
    set_of (remove x t) = set_of t - {x}"
 by (simp add: remove_sorted)
 
-text {* Finally, note that rem and rm can be computed
-        using a single tree traversal given by remrm. *}
+text \<open>Finally, note that rem and rm can be computed
+        using a single tree traversal given by remrm.\<close>
 
 primrec remrm :: "tree => tree * nat"
 where
@@ -142,7 +142,7 @@ where
 lemma "t ~= Tip ==> remrm t = (rem t, rm t)"
 by (induct t) (auto simp:Let_def)
 
-text {* We can test this implementation by generating code. *}
+text \<open>We can test this implementation by generating code.\<close>
 
 definition "test = memb 4 (remove (3::nat) (binsert 4 (binsert 3 Tip)))"
 

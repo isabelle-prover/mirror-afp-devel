@@ -397,7 +397,7 @@ proof-
   
 end
 
-subsection {* Being in the lattice is being a multiple modulo *}
+subsection \<open>Being in the lattice is being a multiple modulo\<close>
 
 lemma (in semiring_hom) hom_poly_of_vec: "map_poly hom (poly_of_vec v) = poly_of_vec (map_vec hom v)"
   by (auto simp add: coeff_poly_of_vec poly_eq_iff)

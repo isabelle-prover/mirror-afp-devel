@@ -3,7 +3,7 @@ imports SINVAR_DomainHierarchyNG "../TopoS_Interface_impl"
 begin
 
 
-subsubsection {* SecurityInvariant DomainHierarchy List Implementation *}
+subsubsection \<open>SecurityInvariant DomainHierarchy List Implementation\<close>
 
 code_identifier code_module SINVAR_DomainHierarchyNG_impl => (Scala) SINVAR_DomainHierarchyNG
 
@@ -85,7 +85,7 @@ interpretation DomainHierarchyNG_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* DomainHierarchyNG packing *}
+subsubsection \<open>DomainHierarchyNG packing\<close>
   definition SINVAR_LIB_DomainHierarchyNG :: "('v::vertex, domainNameTrust) TopoS_packed" where
     "SINVAR_LIB_DomainHierarchyNG \<equiv> 
     \<lparr> nm_name = ''DomainHierarchyNG'', 
@@ -109,7 +109,7 @@ subsubsection {* DomainHierarchyNG packing *}
 
 
 
-text {*Examples:*}
+text \<open>Examples:\<close>
 definition example_TUM_net :: "string list_graph" where
   "example_TUM_net \<equiv> \<lparr> nodesL=[''Gateway'', ''LowerSVR'', ''UpperSRV''], 
         edgesL=[

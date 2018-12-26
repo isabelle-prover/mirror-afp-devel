@@ -1,4 +1,4 @@
-section {* Operation Identification *}
+section \<open>Operation Identification\<close>
 theory Autoref_Id_Ops
 imports 
   "../Lib/Refine_Lib" 
@@ -8,7 +8,7 @@ imports
   "../Parametricity/Parametricity"
 begin
 
-subsection {* Main Tool *}
+subsection \<open>Main Tool\<close>
 
 typedecl interface
 
@@ -33,23 +33,23 @@ consts
 abbreviation i_ANNOT :: "'a \<Rightarrow> interface \<Rightarrow> 'a" (infixr ":::\<^sub>i" 10) where
   "t:::\<^sub>iI \<equiv> ANNOT t (i_annot I)"
 
-text {* Declaration of interface-type for constant *}
+text \<open>Declaration of interface-type for constant\<close>
 definition CONST_INTF :: "'a \<Rightarrow> interface \<Rightarrow> bool" (infixr "::\<^sub>i" 10)
   where [simp]: "c::\<^sub>i I \<equiv> True"
 
 
-text {*
-  Predicate for operation identification. @{text "ID_OP t t' I"} means
-  that term @{text "t"} has been annotated as @{text "t'"}, and its interface
-  is @{text "I"}.
-*}
+text \<open>
+  Predicate for operation identification. \<open>ID_OP t t' I\<close> means
+  that term \<open>t\<close> has been annotated as \<open>t'\<close>, and its interface
+  is \<open>I\<close>.
+\<close>
 definition ID_OP :: "'a \<Rightarrow> 'a \<Rightarrow> interface \<Rightarrow> bool" 
   where [simp]: "ID_OP t t' I \<equiv> t=t'"
 
-text {*
+text \<open>
   Interface inference rules. 
   Caution: Some of these must be applied with custom unification!
-*}
+\<close>
 lemma ID_abs: \<comment> \<open>Tag abs first\<close>
   "\<lbrakk> \<And>x. ID_OP x x I1 \<Longrightarrow> ID_OP (f x) (f' x) I2 \<rbrakk> 
   \<Longrightarrow> ID_OP (\<lambda>'x. f x) (\<lambda>'x. f' x) (I1\<rightarrow>\<^sub>iI2)"
@@ -99,7 +99,7 @@ lemma itypeI: "(c::'t) ::\<^sub>i I" by simp
 consts depth_limit_dummy :: 'a
 notation (output) depth_limit_dummy ("\<dots>")
 
-ML {*
+ML \<open>
   fun limit_depth _ (t as Const _) = t
     | limit_depth _ (t as Var _) = t
     | limit_depth _ (t as Free _) = t
@@ -140,18 +140,18 @@ ML {*
   end
 
 
-*}
+\<close>
 
-ML_val {*
+ML_val \<open>
   depth_of @{term "f [1] [2] []"};
 
   limit_depth 2 @{term "[1,2,3,4,5,6,7]"}
   |> Thm.cterm_of @{context}
 
-*}
+\<close>
 
 
-ML {*
+ML \<open>
   fun index_rewr_thms thms = let
     fun lhs thm = case Thm.concl_of thm of
       @{mpat "?lhs == _"} => [lhs]
@@ -175,9 +175,9 @@ ML {*
     end
   )
 
-*}
+\<close>
 
-ML {*
+ML \<open>
   signature AUTOREF_ID_OPS = sig
     val id_tac: Proof.context -> tactic'
 
@@ -519,7 +519,7 @@ ML {*
   end
 
 
-*}
+\<close>
 
 setup Autoref_Id_Ops.setup
 
@@ -580,7 +580,7 @@ lemma ROI_init:
 
 lemma REL_OF_INTF_I: "REL_OF_INTF I R" by simp
 
-ML {*
+ML \<open>
 signature AUTOREF_REL_INF = sig
   val roi_tac: Proof.context -> tactic'
   val roi_step_tac: Proof.context -> tactic'
@@ -685,7 +685,7 @@ structure Autoref_Rel_Inf :AUTOREF_REL_INF = struct
   val setup = rel_indirect.setup
 
 end
-*}
+\<close>
 
 setup Autoref_Rel_Inf.setup
 

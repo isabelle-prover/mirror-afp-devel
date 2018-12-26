@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of execution using symbolic computation*}
+section\<open>Examples of execution using symbolic computation\<close>
 
 theory Examples_QR_Abstract_Symbolic
 imports
@@ -12,12 +12,12 @@ imports
  Real_Impl.Real_Unique_Impl
 begin
 
-subsection{*Execution of the QR decomposition using symbolic computation*}
+subsection\<open>Execution of the QR decomposition using symbolic computation\<close>
 
-subsubsection{*Some previous definitions and lemmas*}
+subsubsection\<open>Some previous definitions and lemmas\<close>
 
-text{*The symbolic computation is based on the René Thiemann's work about implementing
-field extensions of the form Q[sqrt(b)].*}
+text\<open>The symbolic computation is based on the René Thiemann's work about implementing
+field extensions of the form Q[sqrt(b)].\<close>
 
 definition "show_vec_real v = (\<chi> i. show_real (v $ i))"
 
@@ -29,7 +29,7 @@ definition "show_matrix_real A = (\<chi> i. show_vec_real (A $ i))"
 lemma[code abstract]: "vec_nth (show_matrix_real A) = (% i. show_vec_real (A $ i))"
 unfolding show_matrix_real_def by auto
 
-subsubsection{*Examples*}
+subsubsection\<open>Examples\<close>
 
 value "let A = list_of_list_to_matrix [[1,2,4],[9,4,5],[0,0,0]]::real^3^3 in 
   matrix_to_list_of_list (show_matrix_real (divide_by_norm A))"

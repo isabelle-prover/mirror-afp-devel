@@ -4,25 +4,25 @@
   Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Improvements to get better performance of the algorithm*}
+section\<open>Improvements to get better performance of the algorithm\<close>
 
 theory QR_Efficient
 imports QR_Decomposition_IArrays
 begin
 
-subsection{*Improvements for computing the Gram Schmidt algorithm and QR decomposition using vecs*}
+subsection\<open>Improvements for computing the Gram Schmidt algorithm and QR decomposition using vecs\<close>
 
-text{*Essentialy, we try to avoid removing duplicates in each iteration. 
-  They will not affect the @{const sum_list} since the duplicates will be the vector zero.*}
+text\<open>Essentialy, we try to avoid removing duplicates in each iteration. 
+  They will not affect the @{const sum_list} since the duplicates will be the vector zero.\<close>
 
-subsubsection{*New definitions*}
+subsubsection\<open>New definitions\<close>
 
 definition "Gram_Schmidt_column_k_efficient A k 
   = (\<chi> a b. (if b = from_nat k 
   then column b A - sum_list (map (\<lambda>x. ((column b A \<bullet> x) / (x \<bullet> x)) *\<^sub>R x) 
   ((map (\<lambda>n. column (from_nat n) A) [0..<to_nat b]))) else column b A) $ a)"
 
-subsubsection{*General properties about @{const sum_list}*}
+subsubsection\<open>General properties about @{const sum_list}\<close>
 
 lemma sum_list_remdups:
   assumes "!!i j. i<length xs \<and> j<length xs \<and> i \<noteq> j 
@@ -95,7 +95,7 @@ next
   qed
 qed
 
-subsubsection{*Proving a code equation to improve the performance*}
+subsubsection\<open>Proving a code equation to improve the performance\<close>
 
 lemma set_map_column:
   "set (map (\<lambda>n. column (from_nat n) G) [0..<to_nat b]) =  {column i G|i. i<b}"
@@ -344,9 +344,9 @@ next
   finally show ?case .
 qed
 
-text{*This equation is now more efficient than the original definition of the algoritm, since it is not
+text\<open>This equation is now more efficient than the original definition of the algoritm, since it is not
   removing duplicates in each iteration, which is more expensive in time than adding zeros (if there appear 
-  duplicates while applying the algorithm, they are zeros and then the @{const sum_list} is the same in each step).*}
+  duplicates while applying the algorithm, they are zeros and then the @{const sum_list} is the same in each step).\<close>
 
 lemma Gram_Schmidt_matrix_efficient[code_unfold]:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}" 
@@ -361,10 +361,10 @@ proof -
 qed
 
 
-subsection{*Improvements for computing the Gram Schmidt algorithm and QR decomposition 
-  using immutable arrays*}
+subsection\<open>Improvements for computing the Gram Schmidt algorithm and QR decomposition 
+  using immutable arrays\<close>
 
-subsubsection{*New definitions*}
+subsubsection\<open>New definitions\<close>
 
 definition "Gram_Schmidt_column_k_iarrays_efficient A k = 
   tabulate2 (nrows_iarray A) (ncols_iarray A) (\<lambda>a b. let column_b_A = column_iarray b A in 
@@ -380,7 +380,7 @@ definition "QR_decomposition_iarrays_efficient A =
   (let Q = divide_by_norm_iarray (Gram_Schmidt_matrix_iarrays_efficient A) 
   in (Q, transpose_iarray Q **i A))"
 
-subsubsection{*General properties*}
+subsubsection\<open>General properties\<close>
 
 lemma tabulate2_nth:
   assumes i: "i<nr" and j: "j<nc"
@@ -460,7 +460,7 @@ next
   qed
 qed
 
-subsubsection{*Proving the equivalence*}
+subsubsection\<open>Proving the equivalence\<close>
 
 lemma matrix_to_iarray_Gram_Schmidt_column_k_efficient:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}" 
@@ -665,7 +665,7 @@ lemma QR_decomposition_iarrays_efficient[code]:
   unfolding matrix_to_iarray_Gram_Schmidt_matrix_efficient[symmetric]
   unfolding matrix_to_iarray_Gram_Schmidt_matrix ..
 
-subsection{*Other code equations that improve the performance*}
+subsection\<open>Other code equations that improve the performance\<close>
 
 lemma inner_iarray_code[code]:
   "inner_iarray A B = sum_list (map (\<lambda>n. A !! n * B !! n) [0..<IArray.length A])"

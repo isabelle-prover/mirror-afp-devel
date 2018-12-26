@@ -2,8 +2,8 @@ theory SINVAR_SecGwExt
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant PolEnforcePointExtended*}
-text {* A PolEnforcePoint is an application-level central policy enforcement point.
+subsection \<open>SecurityInvariant PolEnforcePointExtended\<close>
+text \<open>A PolEnforcePoint is an application-level central policy enforcement point.
 Legacy note: The old verions called it a SecurityGateway.
 
 Hosts may belong to a certain domain. 
@@ -13,7 +13,7 @@ We call such a central instance PolEnforcePoint and present a template for this 
 Five host roles are distinguished:. 
 A PolEnforcePoint, aPolEnforcePointIN which accessible from the outside, a DomainMember,
 a less-restricted AccessibleMember which is accessible from the outside world, 
-and a default value Unassigned that reflects none of these roles. *}
+and a default value Unassigned that reflects none of these roles.\<close>
 
 datatype secgw_member = PolEnforcePoint | PolEnforcePointIN | DomainMember  | AccessibleMember | Unassigned
 
@@ -39,7 +39,7 @@ fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> secgw_member) \<Rightarr
 
 definition receiver_violation :: "bool" where "receiver_violation = False"
 
-subsubsection {*Preliminaries*}
+subsubsection \<open>Preliminaries\<close>
   lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
     apply(simp only: SecurityInvariant_withOffendingFlows.sinvar_mono_def)
     apply(clarify)
@@ -57,7 +57,7 @@ subsubsection {*Preliminaries*}
     apply(fact SecurityInvariant_withOffendingFlows.sinvar_mono_imp_is_offending_flows_mono[OF sinvar_mono])
    done
 
-subsubsection{*ENF*}
+subsubsection\<open>ENF\<close>
   lemma PolEnforcePoint_ENFnr: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl sinvar allowed_secgw_flow"
     by(simp add: SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl_def)
   lemma Unassigned_botdefault: "\<forall> e1 e2. e2 \<noteq> Unassigned \<longrightarrow> \<not> allowed_secgw_flow e1 e2 \<longrightarrow> \<not> allowed_secgw_flow Unassigned e2"

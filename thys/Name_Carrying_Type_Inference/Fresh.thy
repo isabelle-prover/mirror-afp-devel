@@ -24,7 +24,7 @@ begin
       next
       case 2
         have "Max S + 1 \<notin> S"
-          using `finite S` Max.coboundedI add_le_same_cancel1 not_one_le_zero
+          using \<open>finite S\<close> Max.coboundedI add_le_same_cancel1 not_one_le_zero
           by blast
         thus "(if Set.is_empty S then 0 else Max S + 1) \<notin> S" using 2 by auto
       next

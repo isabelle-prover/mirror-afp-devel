@@ -16,17 +16,17 @@ WhileTrue: "\<lbrakk> bval b s1;  (c,s1) \<Rightarrow> x \<Down> s2;  (WHILE b D
     \<Longrightarrow> (WHILE b DO c, s1) \<Rightarrow> z \<Down> s3"
 
 
-text{* We want to execute the big-step rules: *}
+text\<open>We want to execute the big-step rules:\<close>
 
 code_pred big_step_t .
 
-text{* For inductive definitions we need command
-       \texttt{values} instead of \texttt{value}. *}
+text\<open>For inductive definitions we need command
+       \texttt{values} instead of \texttt{value}.\<close>
 
 values "{(t, x). (SKIP, \<lambda>_. 0) \<Rightarrow> x \<Down> t}"
 
-text{* We need to translate the result state into a list
-to display it. *}
+text\<open>We need to translate the result state into a list
+to display it.\<close>
 
 values "{map t [''x''] |t x. (SKIP, <''x'' := 42>) \<Rightarrow> x \<Down> t}"
 
@@ -37,7 +37,7 @@ values "{map t [''x'',''y''] |t x.
    <''x'' := 0, ''y'' := 13>) \<Rightarrow> x \<Down> t}"
 
 
-text{* Proof automation: *}
+text\<open>Proof automation:\<close>
  
 declare big_step_t.intros [intro]
   
@@ -45,17 +45,17 @@ lemmas big_step_t_induct = big_step_t.induct[split_format(complete)]
 
 subsection "Rule inversion"
 
-text{* What can we deduce from @{prop "(SKIP,s) \<Rightarrow> x \<Down> t"} ?
-That @{prop "s = t"}. This is how we can automatically prove it: *}
+text\<open>What can we deduce from @{prop "(SKIP,s) \<Rightarrow> x \<Down> t"} ?
+That @{prop "s = t"}. This is how we can automatically prove it:\<close>
 
 inductive_cases Skip_tE[elim!]: "(SKIP,s) \<Rightarrow> x \<Down> t"
 thm Skip_tE
 
-text{* This is an \emph{elimination rule}. The [elim] attribute tells auto,
+text\<open>This is an \emph{elimination rule}. The [elim] attribute tells auto,
 blast and friends (but not simp!) to use it automatically; [elim!] means that
 it is applied eagerly.
 
-Similarly for the other commands: *}
+Similarly for the other commands:\<close>
 
 inductive_cases Assign_tE[elim!]: "(x ::= a,s) \<Rightarrow> p \<Down> t"
 thm Assign_tE
@@ -66,14 +66,14 @@ thm If_tE
 
 inductive_cases While_tE[elim]: "(WHILE b DO c,s) \<Rightarrow> x \<Down> t"
 thm While_tE
-text{* Only [elim]: [elim!] would not terminate. *}
+text\<open>Only [elim]: [elim!] would not terminate.\<close>
 
-text{* An automatic example: *}
+text\<open>An automatic example:\<close>
 
 lemma "(IF b THEN SKIP ELSE SKIP, s) \<Rightarrow> x \<Down> t \<Longrightarrow> t = s"
 by blast
 
-text{* Rule inversion by hand via the ``cases'' method: *}
+text\<open>Rule inversion by hand via the ``cases'' method:\<close>
 
 lemma assumes "(IF b THEN SKIP ELSE SKIP, s) \<Rightarrow> x \<Down> t"
 shows "t = s"
@@ -92,7 +92,7 @@ lemma assign_t_simp:
   "(x ::= a,s) \<Rightarrow> Suc 0 \<Down>  s' \<longleftrightarrow> (s' = s(x := aval a s))"
   by (auto)
 
-text {* An example combining rule inversion and derivations *}
+text \<open>An example combining rule inversion and derivations\<close>
 lemma Seq_t_assoc:
   "((c1;; c2;; c3, s) \<Rightarrow> p \<Down>  s') \<longleftrightarrow> ((c1;; (c2;; c3), s) \<Rightarrow> p \<Down> s')"
 proof
@@ -142,7 +142,7 @@ qed
  
 subsection "Execution is deterministic"
 
-text {* This proof is automatic. *}
+text \<open>This proof is automatic.\<close>
 
 theorem big_step_t_determ: "\<lbrakk> (c,s) \<Rightarrow> p \<Down> t; (c,s) \<Rightarrow> q \<Down> u \<rbrakk> \<Longrightarrow> u = t"
   apply (induction arbitrary: u q rule: big_step_t.induct)

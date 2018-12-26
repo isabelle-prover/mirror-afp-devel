@@ -2,12 +2,12 @@
     Author:     Sebastian Ullrich
 *)
 
-section {* SSA Representation *}
+section \<open>SSA Representation\<close>
 
-subsection {* Inductive Graph Paths *}
+subsection \<open>Inductive Graph Paths\<close>
 
-text {* We extend the Graph framework with inductively defined paths.
-  We adopt the convention of separating locale definitions into assumption-less base locales. *}
+text \<open>We extend the Graph framework with inductively defined paths.
+  We adopt the convention of separating locale definitions into assumption-less base locales.\<close>
 
 theory Graph_path imports
   FormalSSA_Misc
@@ -32,7 +32,7 @@ lemma get_edge_simps [simp]:
   "getTo (f,d,t) = t"
   by (simp_all add: getFrom_def getData_def getTo_def)
 
-  text {* Predecessors of a node. *}
+  text \<open>Predecessors of a node.\<close>
   definition pred :: "('v,'w) graph \<Rightarrow> 'v \<Rightarrow> ('v\<times>'w) set"
     where "pred G v \<equiv> {(v',w). (v',w,v)\<in>edges G}"
 
@@ -199,7 +199,7 @@ begin
   lemma edge_to_node:
     assumes "invar g" and "e \<in> \<alpha>e g"
     obtains "getFrom e \<in> set (\<alpha>n g)" and "getTo e \<in> set (\<alpha>n g)"
-  using assms(2) \<alpha>n_correct [OF `invar g`]
+  using assms(2) \<alpha>n_correct [OF \<open>invar g\<close>]
     by (cases e) (auto 4 3 intro: rev_image_eqI)
 
   lemma inEdge_to_edge:
@@ -441,7 +441,7 @@ begin
         case (Cons n' ns')
         with False have "ns' = []" by (cases ns', auto)
         with Cons 1(2) have "n' = n" "m = n" unfolding path2_def by auto
-        with Cons `ns' = []` 1(2) show ?thesis by (auto intro:empty)
+        with Cons \<open>ns' = []\<close> 1(2) show ?thesis by (auto intro:empty)
       qed
     next
       case True
@@ -661,9 +661,9 @@ begin
   declare path2_not_Nil3 [simp del]
 end
 
-subsection {* Domination *}
+subsection \<open>Domination\<close>
 
-text {* We fix an entry node per graph and use it to define node domination. *}
+text \<open>We fix an entry node per graph and use it to define node domination.\<close>
 
 locale graph_Entry_base = graph_path_base \<alpha>e \<alpha>n invar inEdges'
 for
@@ -780,15 +780,15 @@ begin
   proof (rule ccontr)
     assume "n \<noteq> n'"
     from dom2 have "n \<in> set (\<alpha>n g)" by auto
-    with `invar g` obtain ns where p: "g \<turnstile> Entry g-ns\<rightarrow>n" and "n \<notin> set (butlast ns)"
+    with \<open>invar g\<close> obtain ns where p: "g \<turnstile> Entry g-ns\<rightarrow>n" and "n \<notin> set (butlast ns)"
       by (rule simple_Entry_path)
     with dom2 have "n' \<in> set ns" by - (erule dominatesE, auto)
     then obtain as where prefix: "prefix (as@[n']) ns" by (auto intro:prefix_split_first)
     with p have "g \<turnstile> Entry g-as@[n']\<rightarrow>n'" by (rule path2_prefix)
     with dom1 have "n \<in> set (as@[n'])" unfolding dominates_def by auto
-    with `n \<noteq> n'` have "n \<in> set as" by auto
-    with `prefix (as@[n']) ns` have "n \<in> set (butlast ns)" by -(erule prefixE, auto iff:butlast_append)
-    with `n \<notin> set (butlast ns)` show False..
+    with \<open>n \<noteq> n'\<close> have "n \<in> set as" by auto
+    with \<open>prefix (as@[n']) ns\<close> have "n \<in> set (butlast ns)" by -(erule prefixE, auto iff:butlast_append)
+    with \<open>n \<notin> set (butlast ns)\<close> show False..
   qed
 
   lemma dominates_unsnoc:

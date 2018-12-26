@@ -5,7 +5,7 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
  are: Sylvia Grewe, Heiko Mantel, Daniel Schoepe)
 *)
 
-section {* Definition of the SIFUM-Security Property *}
+section \<open>Definition of the SIFUM-Security Property\<close>
 
 theory Security
 imports Preliminaries
@@ -37,7 +37,7 @@ where
 
 context sifum_security_init begin
 
-subsection {* Evaluation of Concurrent Programs *}
+subsection \<open>Evaluation of Concurrent Programs\<close>
 
 abbreviation eval_abv :: "('Com, 'Var, 'Val) LocalConf \<Rightarrow> (_, _, _) LocalConf \<Rightarrow> bool"
   (infixl "\<leadsto>" 70)
@@ -116,7 +116,7 @@ lemma meval_sched_det:
    apply(auto dest: deterministic)
   done
 
-subsection {* Low-equivalence and Strong Low Bisimulations *}
+subsection \<open>Low-equivalence and Strong Low Bisimulations\<close>
 
 (* Low-equality between memory states: *)
 definition 
@@ -202,7 +202,7 @@ definition low_indistinguishable :: "'Var Mds \<Rightarrow> 'Com \<Rightarrow> '
 where 
   "c\<^sub>1 \<sim>\<^bsub>mds\<^esub> c\<^sub>2 = (\<forall> mem\<^sub>1 mem\<^sub>2. mem\<^sub>1 =\<^bsub>mds\<^esub>\<^sup>l mem\<^sub>2 \<longrightarrow> \<langle> c\<^sub>1, mds, mem\<^sub>1 \<rangle> \<approx> \<langle> c\<^sub>2, mds, mem\<^sub>2 \<rangle>)"
 
-subsection {* SIFUM-Security *}
+subsection \<open>SIFUM-Security\<close>
 
 (* SIFUM-security for commands: *)
 definition 
@@ -243,7 +243,7 @@ lemma prog_sifum_secure_cont_def2:
    apply(blast dest: meval_sched_det)
   by fastforce
 
-subsection {* Sound Mode Use *}
+subsection \<open>Sound Mode Use\<close>
 
 
 (* Suggestive notation for substitution / function application *)
@@ -336,7 +336,7 @@ proof(induct rule: neval.induct)
     thus ?case by simp
 next
   case (neval_S_n x y n z)
-  from `x \<in> loc_reach lc` and `x \<leadsto> y` have "y \<in> loc_reach lc" 
+  from \<open>x \<in> loc_reach lc\<close> and \<open>x \<leadsto> y\<close> have "y \<in> loc_reach lc" 
     (* TODO: can we get rid of this case_tac nonsense? *)
     apply(case_tac x, rename_tac a b, case_tac a, clarsimp)
     apply(case_tac y, rename_tac c d, case_tac c, clarsimp)

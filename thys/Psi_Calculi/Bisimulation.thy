@@ -161,7 +161,7 @@ proof -
           insertAssertion (extractFrame(p \<bullet> P)) (p \<bullet> \<Psi>) \<simeq>\<^sub>F insertAssertion (extractFrame(p \<bullet> Q))  (p \<bullet> \<Psi>)"
       by(drule_tac p = p in FrameStatEqClosed) (simp add: eqvts)
       
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case by(blast dest: bisimE)
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case by(blast dest: bisimE)
   next
     case(cSim \<Psi> P Q)
     {
@@ -178,7 +178,7 @@ proof -
       ultimately have "((p::name prm) \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<leadsto>[?X] (p \<bullet> Q)"
         by(rule_tac simClosed)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: bisimE)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -191,7 +191,7 @@ proof -
         apply(rule_tac x="\<Psi> \<otimes> (rev p \<bullet> \<Psi>')" in exI)
         by(auto simp add: eqvts)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: bisimE)
   next
     case(cSym \<Psi> P Q)
@@ -216,13 +216,13 @@ lemma statEqBisim:
   shows "\<Psi>' \<rhd> P \<sim> Q"
 proof -
   let ?X = "{(\<Psi>', P, Q) | \<Psi> P Q \<Psi>'. \<Psi> \<rhd> P \<sim> Q \<and> \<Psi> \<simeq> \<Psi>'}"
-  from `\<Psi> \<rhd> P \<sim> Q` `\<Psi> \<simeq> \<Psi>'` have "(\<Psi>', P, Q) \<in> ?X" by auto
+  from \<open>\<Psi> \<rhd> P \<sim> Q\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close> have "(\<Psi>', P, Q) \<in> ?X" by auto
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cStatEq \<Psi>' P Q)
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<sim> Q` have PeqQ: "insertAssertion (extractFrame P) \<Psi> \<simeq>\<^sub>F insertAssertion (extractFrame Q) \<Psi>"
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have PeqQ: "insertAssertion (extractFrame P) \<Psi> \<simeq>\<^sub>F insertAssertion (extractFrame Q) \<Psi>"
       by(rule bisimE)
 
     obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* \<Psi>" and "A\<^sub>P \<sharp>* \<Psi>'"
@@ -230,36 +230,36 @@ proof -
     obtain A\<^sub>Q \<Psi>\<^sub>Q where FrQ: "extractFrame Q = \<langle>A\<^sub>Q, \<Psi>\<^sub>Q\<rangle>" and "A\<^sub>Q \<sharp>* \<Psi>" and "A\<^sub>Q \<sharp>* \<Psi>'"
       by(rule_tac C="(\<Psi>, \<Psi>')" in freshFrame) auto
 
-    from PeqQ FrP FrQ `A\<^sub>P \<sharp>* \<Psi>` `A\<^sub>Q \<sharp>* \<Psi>` `\<Psi> \<simeq> \<Psi>'`
+    from PeqQ FrP FrQ \<open>A\<^sub>P \<sharp>* \<Psi>\<close> \<open>A\<^sub>Q \<sharp>* \<Psi>\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close>
     have "\<langle>A\<^sub>P, \<Psi>' \<otimes> \<Psi>\<^sub>P\<rangle> \<simeq>\<^sub>F \<langle>A\<^sub>Q, \<Psi>' \<otimes> \<Psi>\<^sub>Q\<rangle>"
       by simp (metis frameIntComposition FrameStatEqTrans FrameStatEqSym)
-    with FrP FrQ `A\<^sub>P \<sharp>* \<Psi>'` `A\<^sub>Q \<sharp>* \<Psi>'` show ?case by simp
+    with FrP FrQ \<open>A\<^sub>P \<sharp>* \<Psi>'\<close> \<open>A\<^sub>Q \<sharp>* \<Psi>'\<close> show ?case by simp
   next
     case(cSim \<Psi>' P Q)
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<sim> Q` have "\<Psi> \<rhd> P \<leadsto>[bisim] Q" by(blast dest: bisimE)
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have "\<Psi> \<rhd> P \<leadsto>[bisim] Q" by(blast dest: bisimE)
     moreover have "eqvt ?X"
       by(auto simp add: eqvt_def) (metis bisimClosed AssertionStatEqClosed)
     hence "eqvt(?X \<union> bisim)" by auto
-    moreover note `\<Psi> \<simeq> \<Psi>'`
+    moreover note \<open>\<Psi> \<simeq> \<Psi>'\<close>
     moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> bisim"
       by auto
     ultimately show ?case
       by(rule statEqSim)
   next
     case(cExt \<Psi>' P Q \<Psi>'')
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<sim> Q` have "\<Psi> \<otimes> \<Psi>'' \<rhd> P \<sim> Q" by(rule bisimE)
-    moreover from `\<Psi> \<simeq> \<Psi>'` have "\<Psi> \<otimes> \<Psi>'' \<simeq> \<Psi>' \<otimes> \<Psi>''" by(rule Composition)
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have "\<Psi> \<otimes> \<Psi>'' \<rhd> P \<sim> Q" by(rule bisimE)
+    moreover from \<open>\<Psi> \<simeq> \<Psi>'\<close> have "\<Psi> \<otimes> \<Psi>'' \<simeq> \<Psi>' \<otimes> \<Psi>''" by(rule Composition)
     ultimately show ?case by blast
   next
     case(cSym \<Psi>' P Q)
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<sim> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<sim> Q` have "\<Psi> \<rhd> Q \<sim> P" by(rule bisimE)
-    thus ?case using `\<Psi> \<simeq> \<Psi>'` by auto
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have "\<Psi> \<rhd> Q \<sim> P" by(rule bisimE)
+    thus ?case using \<open>\<Psi> \<simeq> \<Psi>'\<close> by auto
   qed
 qed
 
@@ -292,7 +292,7 @@ proof -
       ultimately have "\<Psi> \<rhd> P \<leadsto>[(?X \<union> bisim)] R"
         by(force intro: transitive)
     }
-    with `(\<Psi>, P, R) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, R) \<in> ?X\<close> show ?case
       by(blast dest: bisimE)
   next
     case(cExt \<Psi> P R \<Psi>')
@@ -335,7 +335,7 @@ proof -
       assume "\<Psi> \<rhd> P \<leadsto>[bisim] P'"
       moreover assume P'RelQ': "(\<Psi>, P', Q') \<in> X"
       hence "\<Psi> \<rhd> P' \<leadsto>[?X] Q'" by(rule rSim)
-      moreover from `eqvt X` P'RelQ' have "eqvt ?X"
+      moreover from \<open>eqvt X\<close> P'RelQ' have "eqvt ?X"
         apply(auto simp add: eqvt_def)
         apply(drule_tac p=p in bisimClosed)
         apply(drule_tac p=p in bisimClosed)
@@ -344,10 +344,10 @@ proof -
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q'"
         by(force intro: transitive dest: bisimTransitive)
       moreover assume "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q"
-      ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using `eqvt ?X`
+      ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using \<open>eqvt ?X\<close>
         by(force intro: transitive dest: bisimTransitive)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: bisimE)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -391,7 +391,7 @@ proof -
       assume "\<Psi> \<rhd> P \<leadsto>[bisim] P'"
       moreover assume P'RelQ': "(\<Psi>, P', Q') \<in> X"
       hence "\<Psi> \<rhd> P' \<leadsto>[?X] Q'" by(rule rSim)
-      moreover from `eqvt X` P'RelQ' have "eqvt ?X"
+      moreover from \<open>eqvt X\<close> P'RelQ' have "eqvt ?X"
         apply(auto simp add: eqvt_def)
         apply(drule_tac p=p in bisimClosed)
         apply(drule_tac p=p in bisimClosed)
@@ -400,10 +400,10 @@ proof -
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q'"
         by(force intro: transitive dest: bisimTransitive)
       moreover assume "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q"
-      ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using `eqvt ?X`
+      ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using \<open>eqvt ?X\<close>
         by(force intro: transitive dest: bisimTransitive)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: bisimE)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -452,7 +452,7 @@ proof -
       assume "\<Psi> \<rhd> P \<leadsto>[bisim] P'"
       moreover assume P'RelQ': "(\<Psi>, P', Q') \<in> X"
       hence "\<Psi> \<rhd> P' \<leadsto>[?X] Q'" by(rule rSim)
-      moreover from `eqvt X` P'RelQ' have "eqvt ?X"
+      moreover from \<open>eqvt X\<close> P'RelQ' have "eqvt ?X"
         apply(auto simp add: eqvt_def)
         apply(drule_tac p=p in bisimClosed)
         apply(drule_tac p=p in bisimClosed)
@@ -461,10 +461,10 @@ proof -
       ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q'"
         by(force intro: transitive dest: bisimTransitive)
       moreover assume "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q"
-      ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using `eqvt ?X`
+      ultimately have "\<Psi> \<rhd> P \<leadsto>[?X] Q" using \<open>eqvt ?X\<close>
         by(force intro: transitive dest: bisimTransitive)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: bisimE)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -495,7 +495,7 @@ lemma transitiveCoinduct[case_names cStatEq cSim cExt cSym, case_conclusion bisi
 proof -
   from p have "(\<Psi>, P, Q) \<in> (X \<union> bisim)"
     by blast
-  moreover from `eqvt X` bisimEqvt have "eqvt (X \<union> bisim)"
+  moreover from \<open>eqvt X\<close> bisimEqvt have "eqvt (X \<union> bisim)"
     by auto
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveCoinduct')
@@ -540,7 +540,7 @@ lemma transitiveCoinduct'[case_names cStatEq cSim cExt cSym, case_conclusion bis
 proof -
   from p have "(\<Psi>, P, Q) \<in> (X \<union> bisim)"
     by blast
-  moreover from `eqvt X` bisimEqvt have "eqvt (X \<union> bisim)"
+  moreover from \<open>eqvt X\<close> bisimEqvt have "eqvt (X \<union> bisim)"
     by auto
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveCoinduct')

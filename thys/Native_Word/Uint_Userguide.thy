@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* User guide for native words *}
+chapter \<open>User guide for native words\<close>
 
 (*<*)
 theory Uint_Userguide imports
@@ -12,7 +12,7 @@ theory Uint_Userguide imports
 begin
 (*>*)
 
-text {*
+text \<open>
   This tutorial explains how to best use the types for native
   words like @{typ "uint32"} in your formalisation.
   You can base your formalisation
@@ -25,7 +25,7 @@ text {*
   The first option causes the least overhead if you have to prove only
   little about the words you use and start a fresh formalisation.
   Just use the native type @{typ uint32} instead of @{typ "32 word"}
-  and similarly for @{text uint64}, @{text uint16}, and @{text uint8}.
+  and similarly for \<open>uint64\<close>, \<open>uint16\<close>, and \<open>uint8\<close>.
   As native word types are meant only for code generation, the lemmas
   about @{typ "'a word"}  have not been duplicated, but you can transfer
   theorems between native word types and @{typ "'a word"} using the
@@ -52,29 +52,29 @@ text {*
   You can still use these theories provided that you also import
   the theory @{theory Native_Word.Code_Target_Bits_Int} (which implements
   @{typ int} by target-language integers), but these words will
-  be implemented via Isabelle's @{text "HOL-Word"} library, i.e.,
+  be implemented via Isabelle's \<open>HOL-Word\<close> library, i.e.,
   you do not gain anything in terms of efficiency.
 
-  \textbf{There is a separate code target @{text "SML_word"} for SML.}
+  \textbf{There is a separate code target \<open>SML_word\<close> for SML.}
   If you use one of the native words that PolyML does not support
-  (such as @{text "uint16"} and @{text uint64} in 32-bit mode), but would
+  (such as \<open>uint16\<close> and \<open>uint64\<close> in 32-bit mode), but would
   like to map its operations to the Standard Basis Library functions,
-  make sure to use the target @{text "SML_word"} instead of @{text "SML"};
+  make sure to use the target \<open>SML_word\<close> instead of \<open>SML\<close>;
   if you only use native word sizes that PolyML supports, you can stick
-  with @{text "SML"}.  This ensures that code generation within Isabelle
-  as used by @{text Quickcheck}, @{text value} and @\{code\} in ML blocks
+  with \<open>SML\<close>.  This ensures that code generation within Isabelle
+  as used by \<open>Quickcheck\<close>, \<open>value\<close> and @\{code\} in ML blocks
   continues to work.
-*}
+\<close>
 
-section {* Lifting functions from @{typ "'a word"} to native words *}
+section \<open>Lifting functions from @{typ "'a word"} to native words\<close>
 
-text {*
+text \<open>
   This section shows how to convert functions from @{typ "'a word"} to native 
-  words. For example, the following function @{text sum_squares} computes 
+  words. For example, the following function \<open>sum_squares\<close> computes 
   the sum of the first @{term n} square numbers in 16 bit arithmetic using
-  a tail-recursive function @{text gen_sum_squares} with accumulator;
-  for convenience, @{text sum_squares_int} takes an integer instead of a word.
-*}
+  a tail-recursive function \<open>gen_sum_squares\<close> with accumulator;
+  for convenience, \<open>sum_squares_int\<close> takes an integer instead of a word.
+\<close>
 
 function gen_sum_squares :: "16 word \<Rightarrow> 16 word \<Rightarrow> 16 word" where (*<*)[simp del]:(*>*)
 
@@ -91,7 +91,7 @@ definition sum_squares :: "16 word \<Rightarrow> 16 word" where
 definition sum_squares_int :: "int \<Rightarrow> 16 word" where
   "sum_squares_int n = sum_squares (word_of_int n)"
 
-text {*
+text \<open>
   The generated code for @{term sum_squares} and @{term sum_squares_int} 
   emulates words with unbounded integers and explicit modulus as specified 
   in the theory @{theory "HOL-Word.Word"}. But for efficiency, we want that the
@@ -106,58 +106,58 @@ text {*
   @{term sum_squares_int} in our case. The theory @{theory Native_Word.Uint16} sets
   up the lifting package for this and has already taken care of the
   arithmetic and bit-wise operations.
-*}
+\<close>
 lift_definition gen_sum_squares_uint :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" 
   is gen_sum_squares .
 lift_definition sum_squares_uint :: "uint16 \<Rightarrow> uint16" is sum_squares .
 lift_definition sum_squares_int_uint :: "int \<Rightarrow> uint16" is sum_squares_int .
 
-text {*
+text \<open>
   Second, we also have to transfer the code equations for our functions.
-  The attribute @{text Transfer.transferred} takes care of that, but it is
+  The attribute \<open>Transfer.transferred\<close> takes care of that, but it is
   better to check that the transfer succeeded: inspect the theorem to check
   that the new constants are used throughout.
-*}
+\<close>
 
 lemmas [Transfer.transferred, code] =
   gen_sum_squares.simps
   sum_squares_def
   sum_squares_int_def
 
-text {*
+text \<open>
   Finally, we export the code to standard ML.  We use the target
-  @{text "SML_word"} instead of @{text "SML"} to have the operations
+  \<open>SML_word\<close> instead of \<open>SML\<close> to have the operations
   on @{typ uint16} mapped to the Standard Basis Library. As PolyML
   does not provide a Word16 type, the mapping for @{typ uint16} is only
-  active in the refined target @{text "SML_word"}.
-*}
+  active in the refined target \<open>SML_word\<close>.
+\<close>
 export_code sum_squares_int_uint in SML_word
 
-text {*
+text \<open>
   Nevertheless, we can still evaluate terms with @{term "uint16"} within 
   Isabelle, i.e., PolyML, but this will be translated to @{typ "16 word"}
   and therefore less efficient.
-*}
+\<close>
 
 value "sum_squares_int_uint 40"
 
-section {* Storing native words in datatypes *}
+section \<open>Storing native words in datatypes\<close>
 
-text {*
+text \<open>
   The above lifting is necessary for all functions whose type mentions
   the word type. Fortunately, we do not have to duplicate functions that
   merely operate on datatypes that contain words. Nevertheless, we have
   to tell the code generator that these functions should call the new ones,
   which operate on machine words. This section shows how to achieve this
   with data refinement.
-*}
+\<close>
 
-subsection {* Example: expressions and two semantics *}
+subsection \<open>Example: expressions and two semantics\<close>
 
-text {*
+text \<open>
   As the running example, we consider a language of expressions (literal values, less-than comparisions and conditional) where values are either booleans or 32-bit words.
   The original specification uses the type @{typ "32 word"}.
-*}
+\<close>
 
 datatype val = Bool bool | Word "32 word"
 datatype expr = Lit val | LT expr expr | IF expr expr expr
@@ -188,16 +188,16 @@ inductive step :: "expr \<Rightarrow> expr \<Rightarrow> bool" ("_ \<rightarrow>
 \<comment> \<open>Compile the inductive definition with the predicate compiler\<close>
 code_pred (modes: i \<Rightarrow> o \<Rightarrow> bool as reduce, i \<Rightarrow> i \<Rightarrow> bool as step') step .
 
-subsection {* Change the datatype to use machine words *}
+subsection \<open>Change the datatype to use machine words\<close>
 
-text {* 
+text \<open>
   Now, we want to use @{typ uint32} instead of @{typ "32 word"}.
   The goal is to make the code generator use the new type without
   duplicating any of the types (@{typ val}, @{typ expr}) or the
   functions (@{term eval}, @{term reduce}) on such types.
 
   The constructor @{term Word} has @{typ "32 word"} in its type, so
-  we have to lift it to @{text "Word'"}, and the same holds for the
+  we have to lift it to \<open>Word'\<close>, and the same holds for the
   case combinator @{term case_val}, which @{term case_val'} replaces.%
   \footnote{%
     Note that we should not declare a case translation for the new
@@ -217,10 +217,10 @@ text {*
     evaluates all possible cases before it decides which one is taken.
 
     Case certificates are described in Haftmann's PhD thesis
-    \cite[Def.\ 27]{Haftmann2009PhD}. For a datatype @{text dt}
-    with constructors @{text "C\<^sub>1"} to @{text "C\<^sub>n"}
-    where each constructor @{text "C\<^sub>i"} takes @{text "k\<^sub>i"} parameters,
-    the certificate for the case combinator @{text "case_dt"}
+    \cite[Def.\ 27]{Haftmann2009PhD}. For a datatype \<open>dt\<close>
+    with constructors \<open>C\<^sub>1\<close> to \<open>C\<^sub>n\<close>
+    where each constructor \<open>C\<^sub>i\<close> takes \<open>k\<^sub>i\<close> parameters,
+    the certificate for the case combinator \<open>case_dt\<close>
     looks as follows:
 
     {
@@ -235,7 +235,7 @@ text {*
   We delete the code equations for the old constructor @{term Word}
   and case combinator @{term case_val} such that the code generator
   reports missing adaptations.
-*}
+\<close>
 
 lift_definition Word' :: "uint32 \<Rightarrow> val" is Word .
 
@@ -256,12 +256,12 @@ setup \<open>Code.declare_case_global @{thm case_val'_cert}\<close>
 declare [[code drop: case_val Word]]
 
 
-subsection {* Make functions use functions on machine words *}
+subsection \<open>Make functions use functions on machine words\<close>
 
-text {*
+text \<open>
   Finally, we merely have to change the code equations to use the 
   new functions that operate on @{typ uint32}. As before, the
-  attribute @{text Transfer.transferred} does the job. In our example,
+  attribute \<open>Transfer.transferred\<close> does the job. In our example,
   we adapt the equality test on @{typ val} (code equations
   @{thm [source] val.eq.simps}) and the denotational and small-step 
   semantics (code equations @{thm [source] eval.simps} and
@@ -269,8 +269,8 @@ text {*
 
   We check that the adaptation has suceeded by exporting the functions.
   As we only use native word sizes that PolyML supports, we can use 
-  the usual target @{text "SML"} instead of @{text "SML_word"}.
-*}
+  the usual target \<open>SML\<close> instead of \<open>SML_word\<close>.
+\<close>
 
 lemmas [code] = 
   val.eq.simps[THEN meta_eq_to_obj_eq, Transfer.transferred, THEN eq_reflection]
@@ -279,36 +279,36 @@ lemmas [code] =
 
 export_code reduce step' eval in SML
 
-section {* Troubleshooting *}
+section \<open>Troubleshooting\<close>
 
-text {*
+text \<open>
   This section explains some possible problems when using native words.
   If you experience other difficulties, please contact the author.
-*}
+\<close>
 
-subsection {* @{text export_code} raises an exception \label{section:export_code:exception} *}
+subsection \<open>\<open>export_code\<close> raises an exception \label{section:export_code:exception}\<close>
 
-text {*
+text \<open>
   Probably, you have defined and are using a function on a native word type,
   but the code equation refers to emulated words. For example, the following
-  defines a function @{text double} that doubles a word. When we try to export
-  code for @{text double} without any further setup, @{text export_code} will
+  defines a function \<open>double\<close> that doubles a word. When we try to export
+  code for \<open>double\<close> without any further setup, \<open>export_code\<close> will
   raise an exception or generate code that does not compile.
-*}
+\<close>
 
 lift_definition double :: "uint32 \<Rightarrow> uint32" is "\<lambda>x. x + x" .
 
-text {*
+text \<open>
   We have to prove a code equation that only uses the existing operations on
-  @{typ uint32}. Then, @{text export_code} works again.
-*}
+  @{typ uint32}. Then, \<open>export_code\<close> works again.
+\<close>
 
 lemma double_code [code]: "double n = n + n"
 by transfer simp
 
-subsection {* The generated code does not compile *}
+subsection \<open>The generated code does not compile\<close>
 
-text {*
+text \<open>
   Probably, you have been exporting to a target language for which there
   is no setup, or your compiler does not provide the required API. Every
   theory for native words mentions at the start the limitations on code
@@ -320,11 +320,11 @@ text {*
 
   For Haskell, you have to enable the extension TypeSynonymInstances with \texttt{-XTypeSynonymInstances}
   if you are using polymorphic bit operations on the native word types.
-*}
+\<close>
 
-subsection {* The generated code is too slow *}
+subsection \<open>The generated code is too slow\<close>
 
-text {*
+text \<open>
   The generated code will most likely not be as fast as a direct implementation in the target language with manual tuning.
   This is because we want the configuration of the code generation to be sound (as it can be used to prove theorems in Isabelle).
   Therefore, the bit operations sometimes perform range checks before they call the target language API.
@@ -340,6 +340,6 @@ text {*
   \end{itemize}
   
   If you have better ideas how to eliminate such checks and speed up the generated code without sacrificing soundness, please contact the author!
-*}
+\<close>
 
 (*<*)end(*>*)

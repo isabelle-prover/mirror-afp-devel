@@ -1,19 +1,19 @@
 (* Authors:  Florian Haftmann and René Neumann, TU Muenchen *)
 
-section {* Abstract priority queues *}
+section \<open>Abstract priority queues\<close>
 
 theory PQ
 imports Main
 begin
 
-subsection {* Generic Lemmas *}
+subsection \<open>Generic Lemmas\<close>
 
 lemma tl_set:
   "distinct q \<Longrightarrow> set (tl q) = set q - {hd q}"
   by (cases q) simp_all
 
 
-subsection {* Type of abstract priority queues *}
+subsection \<open>Type of abstract priority queues\<close>
 
 typedef (overloaded) ('a, 'b::linorder) pq =
   "{xs :: ('a \<times> 'b) list. distinct (map fst xs) \<and> sorted (map snd xs)}"

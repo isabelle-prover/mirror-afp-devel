@@ -4,14 +4,14 @@
     Based on the Jinja theory Common/Type.thy by Tobias Nipkow
 *)
 
-section {* Relations between Jinja Types *}
+section \<open>Relations between Jinja Types\<close>
 
 theory TypeRel
 imports
   Decl
 begin
 
-subsection{* The subclass relations *}
+subsection\<open>The subclass relations\<close>
 
 inductive subcls1 :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool" ("_ \<turnstile> _ \<prec>\<^sup>1 _" [71, 71, 71] 70)
   for P :: "'m prog"
@@ -50,7 +50,7 @@ by(auto elim: converse_tranclpE dest!: subcls1D simp add: is_class_def)
 lemma subcls_is_class1: "\<lbrakk> P \<turnstile> C \<preceq>\<^sup>* D; is_class P D \<rbrakk> \<Longrightarrow> is_class P C"
 by(auto elim: converse_rtranclpE dest!: subcls1D simp add: is_class_def)
 
-subsection{* The subtype relations *}
+subsection\<open>The subtype relations\<close>
 
 inductive widen :: "'m prog \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _ \<le> _"   [71,71,71] 70)
   for P :: "'m prog"
@@ -201,7 +201,7 @@ lemma is_lubI [code_pred_intro]:
   "\<lbrakk>P \<turnstile> U \<le> T; P \<turnstile> V \<le> T; \<forall>T'. P \<turnstile> U \<le> T' \<longrightarrow> P \<turnstile> V \<le> T' \<longrightarrow> P \<turnstile> T \<le> T'\<rbrakk> \<Longrightarrow> P \<turnstile> lub(U, V) = T"
 by(blast intro: is_lub.intros)
 
-subsection{* Method lookup *}
+subsection\<open>Method lookup\<close>
 
 inductive Methods :: "'m prog \<Rightarrow> cname \<Rightarrow> (mname \<rightharpoonup> (ty list \<times> ty \<times> 'm option) \<times> cname) \<Rightarrow> bool" 
   ("_ \<turnstile> _ sees'_methods _" [51,51,51] 50)
@@ -223,11 +223,11 @@ proof(induction arbitrary: Mm')
   case sees_methods_Object thus ?case by(auto elim: Methods.cases)
 next
   case (sees_methods_rec C D fs ms Dres Cres Cres')
-  from `P \<turnstile> C sees_methods Cres'` `C \<noteq> Object` `class P C = \<lfloor>(D, fs, ms)\<rfloor>`
+  from \<open>P \<turnstile> C sees_methods Cres'\<close> \<open>C \<noteq> Object\<close> \<open>class P C = \<lfloor>(D, fs, ms)\<rfloor>\<close>
   obtain Dres' where Dmethods': "P \<turnstile> D sees_methods Dres'"
     and Cres': "Cres' = Dres' ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms)"
     by cases auto
-  from sees_methods_rec.IH[OF Dmethods'] `Cres = Dres ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms)` Cres'
+  from sees_methods_rec.IH[OF Dmethods'] \<open>Cres = Dres ++ (map_option (\<lambda>m. (m,C)) \<circ> map_of ms)\<close> Cres'
   show ?case by simp
 qed
 
@@ -259,8 +259,8 @@ proof (induction rule: converse_rtranclp_induct)
   thus "\<exists>Mm' Mm2. ?Q C C Mm' Mm2" by blast
 next
   case (step C'' C')
-  note sub1 = `P \<turnstile> C'' \<prec>\<^sup>1 C'` and sub = `P \<turnstile> C' \<preceq>\<^sup>* C`
-    and Csees = `P \<turnstile> C sees_methods Mm`
+  note sub1 = \<open>P \<turnstile> C'' \<prec>\<^sup>1 C'\<close> and sub = \<open>P \<turnstile> C' \<preceq>\<^sup>* C\<close>
+    and Csees = \<open>P \<turnstile> C sees_methods Mm\<close>
   from step.IH[OF Csees] obtain Mm' Mm2 where C'sees: "P \<turnstile> C' sees_methods Mm'"
     and Mm': "Mm' = Mm ++ Mm2"
     and subC: "\<forall>M m D. Mm2 M = Some(m,D) \<longrightarrow> P \<turnstile> D \<preceq>\<^sup>* C" by blast
@@ -281,10 +281,10 @@ where
   "P \<turnstile> C sees M: Ts\<rightarrow>T = m in D  \<equiv>
   \<exists>Mm. P \<turnstile> C sees_methods Mm \<and> Mm M = Some((Ts,T,m),D)"
 
-text {*
-  Output translation to replace @{term "None"} with its notation @{text "Native"}
+text \<open>
+  Output translation to replace @{term "None"} with its notation \<open>Native\<close>
   when used as method body in @{term "Method"}.
-*}
+\<close>
 abbreviation (output)
   Method_native :: "'m prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> cname \<Rightarrow> bool"
   ("_ \<turnstile> _ sees _: _\<rightarrow>_ = Native in _" [51,51,51,51,51,51] 50)
@@ -334,7 +334,7 @@ lemma sees_method_is_class:
   "P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<Longrightarrow> is_class P C"
 by (auto simp add: is_class_def Method_def elim: Methods.cases)
 
-subsection{* Field lookup *}
+subsection\<open>Field lookup\<close>
 
 inductive Fields :: "'m prog \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> (ty \<times> fmod)) list \<Rightarrow> bool"
   ("_ \<turnstile> _ has'_fields _" [51,51,51] 50)
@@ -357,11 +357,11 @@ proof(induction arbitrary: FDTs')
   case has_fields_Object thus ?case by(auto elim: Fields.cases)
 next
   case (has_fields_rec C D fs ms Dres Cres Cres')
-  from `P \<turnstile> C has_fields Cres'` `C \<noteq> Object` `class P C = Some (D, fs, ms)`
+  from \<open>P \<turnstile> C has_fields Cres'\<close> \<open>C \<noteq> Object\<close> \<open>class P C = Some (D, fs, ms)\<close>
   obtain Dres' where DFields': "P \<turnstile> D has_fields Dres'"
     and Cres': "Cres' = map (\<lambda>(F,Tm). ((F,C),Tm)) fs @ Dres'"
     by cases auto
-  from has_fields_rec.IH[OF DFields'] `Cres = map (\<lambda>(F,Tm). ((F,C),Tm)) fs @ Dres` Cres'
+  from has_fields_rec.IH[OF DFields'] \<open>Cres = map (\<lambda>(F,Tm). ((F,C),Tm)) fs @ Dres\<close> Cres'
   show ?case by simp
 qed
 
@@ -521,9 +521,9 @@ lemma has_field_map_of_fields [simp]:
   "P \<turnstile> C has F:T (fm) in D \<Longrightarrow> map_of (fields P C) (F, D) = \<lfloor>(T, fm)\<rfloor>"
 by(auto simp add: has_field_def)
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
-text {* New introduction rules for subcls1 *}
+text \<open>New introduction rules for subcls1\<close>
 
 code_pred
   \<comment> \<open>Disallow mode @{text "i_o_o"} to force @{text code_pred} in subsequent predicates not to use this inefficient mode\<close>
@@ -531,10 +531,10 @@ code_pred
   subcls1
 .
 
-text {*
-  Introduce proper constant @{text "subcls'"} for @{term "subcls"}
-  and generate executable equation for @{text "subcls'"} 
-*}
+text \<open>
+  Introduce proper constant \<open>subcls'\<close> for @{term "subcls"}
+  and generate executable equation for \<open>subcls'\<close> 
+\<close>
 
 definition subcls' where "subcls' = subcls"
 
@@ -548,10 +548,10 @@ lemma subcls_conv_subcls' [code_unfold]:
   "(subcls1 P)^** = subcls' P"
 by(simp add: subcls'_def)
 
-text {* 
+text \<open>
   Change rule @{thm widen_array_object} such that predicate compiler
-  tests on class @{term Object} first. Otherwise @{text "widen_i_o_i"} never terminates.
-*}
+  tests on class @{term Object} first. Otherwise \<open>widen_i_o_i\<close> never terminates.
+\<close>
 
 lemma widen_array_object_code:
   "C = Object \<Longrightarrow> P \<turnstile> Array A \<le> Class C"
@@ -564,7 +564,7 @@ code_pred
   widen 
 by(erule widen.cases) auto
 
-text {* 
+text \<open>
   Readjust the code equations for @{term widen} such that @{term widen_i_i_i} is guaranteed to
   contain @{term "()"} at most once (even in the code representation!). This is important
   for the scheduler and the small-step semantics because of the weaker code equations
@@ -572,7 +572,7 @@ text {*
 
   A similar problem cannot hit the subclass relation because, for acyclic subclass hierarchies, 
   the paths in the hieararchy are unique and cycle-free.
-*}
+\<close>
 
 definition widen_i_i_i' where "widen_i_i_i' = widen_i_i_i"
 

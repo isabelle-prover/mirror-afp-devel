@@ -421,7 +421,7 @@ definition
               \<Rightarrow> (nat \<Rightarrow> 'a) Ring" (infixl "\<Oplus>\<^sub>r" 80) where
   "A1 \<Oplus>\<^sub>r A2 = prodrg {0, Suc 0} (prodB1 A1 A2)"
 
-text {* Don't try @{text "(Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n))"} *}
+text \<open>Don't try \<open>(Prod_ring (Nset n) B) \<Oplus>\<^sub>r (B (Suc n))\<close>\<close>
 
 lemma carr_prodrg_mem_eq:"\<lbrakk>f \<in> carrier (r\<Pi>\<^bsub>I\<^esub> A); g \<in> carrier (r\<Pi>\<^bsub>I\<^esub> A);
        \<forall>i\<in>I. f i = g i \<rbrakk> \<Longrightarrow> f = g" 
@@ -898,8 +898,8 @@ apply (cut_tac t = n in Suc_pred[THEN sym], simp)
 apply blast
 done
 
-text{* A direct product of a finite number of rings defined with
- @{text "ac_fProd_Rg"} is equal to that defined by using @{text "carr_prodag"}. *}
+text\<open>A direct product of a finite number of rings defined with
+ \<open>ac_fProd_Rg\<close> is equal to that defined by using \<open>carr_prodag\<close>.\<close>
 
 definition
  fprodrg :: "[nat, nat \<Rightarrow> ('a, 'more) Ring_scheme] \<Rightarrow> 
@@ -1041,9 +1041,9 @@ lemma (in Ring) coprime_2_n:"\<lbrakk>ideal R A; ideal R B\<rbrakk> \<Longrighta
 apply (simp add:Prod2Rg_def Nset_1)
 done
 
-text{* In this and following lemmata, ideals A and B are of type 
-       @{text "('a, 'more) RingType_scheme"}. Don't try 
-       @{text "(r\<Pi>\<^sub>(Nset n) B) \<Oplus>\<^sub>r B (Suc n)"} *}
+text\<open>In this and following lemmata, ideals A and B are of type 
+       \<open>('a, 'more) RingType_scheme\<close>. Don't try 
+       \<open>(r\<Pi>\<^sub>(Nset n) B) \<Oplus>\<^sub>r B (Suc n)\<close>\<close>
 
 lemma (in Ring) A_to_prodag2_hom:"\<lbrakk>ideal R A; ideal R B; S 0 = pj R A; 
       S (Suc 0) = pj R B\<rbrakk>  \<Longrightarrow> 
@@ -1648,8 +1648,8 @@ apply (rule ballI)
  apply (simp add:ideal_ring_multiple [of "A"])
 done
 
-section {* Addition of finite elements of a ring and @{text "ideal_multiplication"} *}
-text{* We consider sum in an abelian group *}
+section \<open>Addition of finite elements of a ring and \<open>ideal_multiplication\<close>\<close>
+text\<open>We consider sum in an abelian group\<close>
 
 lemma (in aGroup) nsum_mem1Tr:" A +> J  \<Longrightarrow>  
                      (\<forall>j \<le> n. f j \<in> J)  \<longrightarrow> nsum A f n \<in> J"
@@ -2806,7 +2806,7 @@ apply simp
 apply (rule principal_ideal_n_pow1[of "a" "n"], assumption+)
 done
 
-text{* more about @{text "ideal_n_prod"} *}
+text\<open>more about \<open>ideal_n_prod\<close>\<close>
 
 lemma (in Ring) nprod_eqTr:" f \<in> {j. j \<le> (n::nat)} \<rightarrow> carrier R \<and>
        g \<in> {j. j \<le> n} \<rightarrow> carrier R \<and> (\<forall>j \<le> n. f j = g j) \<longrightarrow>
@@ -3287,8 +3287,8 @@ done
 
 section "Polynomial ring" 
 
-text{* In this section, we treat a ring of polynomials over a ring S.
-       Numbers are of type ant *}
+text\<open>In this section, we treat a ring of polynomials over a ring S.
+       Numbers are of type ant\<close>
 
 definition
   pol_coeff :: "[('a, 'more) Ring_scheme, (nat \<times> (nat \<Rightarrow> 'a))] \<Rightarrow> bool" where
@@ -3321,9 +3321,9 @@ locale PolynRg = Ring +
            \<exists>f. pol_coeff S f \<and> x = polyn_expr R X (fst f) f"
 
 (** a polynomial is an element of a polynomial ring **)
-section {* Addition and multiplication of @{text "polyn_exprs"} *}
+section \<open>Addition and multiplication of \<open>polyn_exprs\<close>\<close>
 
-subsection {* Simple properties of a @{text "polyn_ring"} *}
+subsection \<open>Simple properties of a \<open>polyn_ring\<close>\<close>
 
 lemma Subring_subset:"Subring R S \<Longrightarrow> carrier S \<subseteq> carrier R"
 by (simp add:Subring_def)
@@ -3467,7 +3467,7 @@ lemma (in PolynRg) Slide_pol_coeff:"\<lbrakk>pol_coeff S c; n < (fst c)\<rbrakk>
 apply (simp add: pol_coeff_def)
 done
 
-subsection {* Addition of @{text "polyn_exprs"} *}
+subsection \<open>Addition of \<open>polyn_exprs\<close>\<close>
 
 lemma (in PolynRg) monomial_mem:"pol_coeff S c \<Longrightarrow> 
                         \<forall>j \<le> (fst c). (snd c) j \<cdot>\<^sub>r X^\<^bsup>R j\<^esup> \<in> carrier R"
@@ -3964,7 +3964,7 @@ apply (rule allI, rule impI,
 apply (cases c)
 using algfree [simplified algfree_cond_def] by (auto simp add: polyn_expr_def)
 
-subsection {* Multiplication of @{text "pol_exprs"} *}
+subsection \<open>Multiplication of \<open>pol_exprs\<close>\<close>
 
 subsection "Multiplication"
 

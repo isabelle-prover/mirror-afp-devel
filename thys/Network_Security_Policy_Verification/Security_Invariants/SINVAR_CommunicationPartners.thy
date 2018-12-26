@@ -2,10 +2,10 @@ theory SINVAR_CommunicationPartners
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant CommunicationPartners *}
+subsection \<open>SecurityInvariant CommunicationPartners\<close>
 
 
-text{*
+text\<open>
 Idea of this securityinvariant:
   Only some nodes can communicate with Master nodes.
     It constrains who may access master nodes, Master nodes can access the world (except other prohibited master nodes).
@@ -15,13 +15,13 @@ Idea of this securityinvariant:
   all other DontCare nodes and Care nodes.
 
   TL;DR: An access control list determines who can access a master node.
-*}
+\<close>
 datatype 'v node_config = DontCare | Care | Master "'v list"
 
 definition default_node_properties :: "'v node_config"
   where  "default_node_properties = DontCare"
 
-text{* Unrestricted accesses among DontCare nodes! *}
+text\<open>Unrestricted accesses among DontCare nodes!\<close>
 
 fun allowed_flow :: "'v node_config \<Rightarrow> 'v \<Rightarrow> 'v node_config \<Rightarrow> 'v \<Rightarrow> bool" where
   "allowed_flow DontCare _ DontCare _ = True" |
@@ -42,7 +42,7 @@ definition receiver_violation :: "bool" where "receiver_violation = False"
 
 
 
-subsubsection {*Preliminaries*}
+subsubsection \<open>Preliminaries\<close>
   lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
     apply(simp only: SecurityInvariant_withOffendingFlows.sinvar_mono_def)
     apply(clarify)
@@ -61,7 +61,7 @@ subsubsection {*Preliminaries*}
    done
 
 
-subsubsection {*ENRnr*}
+subsubsection \<open>ENRnr\<close>
   lemma CommunicationPartners_ENRnrSR: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl_SR sinvar allowed_flow"
     by(simp add: SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_not_refl_SR_def)
   lemma Unassigned_weakrefl: "\<forall> s r. allowed_flow DontCare s DontCare r"
@@ -137,7 +137,7 @@ done
   unfolding receiver_violation_def by unfold_locales
 
 
-text{*Example: *}
+text\<open>Example:\<close>
 lemma "sinvar \<lparr>nodes = {''db1'', ''db2'', ''h1'', ''h2'', ''foo'', ''bar''},
                edges = {(''h1'', ''db1''), (''h2'', ''db1''), (''h1'', ''h2''),
                         (''db1'', ''h1''), (''db1'', ''foo''), (''db1'', ''db2''), (''db1'', ''db1''),

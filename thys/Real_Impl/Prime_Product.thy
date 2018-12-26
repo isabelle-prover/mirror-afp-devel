@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Prime products *}
+section \<open>Prime products\<close>
 
 theory Prime_Product
 imports 
@@ -29,19 +29,19 @@ imports
   Sqrt_Babylonian.Sqrt_Babylonian
 begin
 
-text {*
+text \<open>
   Prime products are natural numbers where no prime factor occurs more than once.
-*}
+\<close>
 definition prime_product 
   where "prime_product (n :: nat) = (\<forall> p. prime p \<longrightarrow> multiplicity p n \<le> 1)"
 
-text {*
+text \<open>
   The main property is that whenever $b_1$ and $b_2$ are different prime products,
   then $p_1 + q_1 \sqrt{b_1} = p_2 + q_2 \sqrt{b_2}$ implies $(p_1,q_1,b_1) = (p_2,q_2,b_2)$
   for all rational numbers $p_1,q_1,p_2,q_2$. This is the key property to uniquely
   represent numbers in $\ratsb$ by triples. In the following we develop an algorithm
   to decompose any natural number $n$ into $n = s^2 \cdot p$ for some $s$ and prime product $p$.
-*}
+\<close>
 
 
 (* factor a number into square * a prime product *)

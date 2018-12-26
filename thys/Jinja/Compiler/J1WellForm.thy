@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Well-Formedness of Intermediate Language *}
+section \<open>Well-Formedness of Intermediate Language\<close>
 
 theory J1WellForm
 imports "../J/JWellForm" J1
@@ -180,7 +180,7 @@ done
 (*>*)
 
 
-subsection{* Well-formedness*}
+subsection\<open>Well-formedness\<close>
 
 \<comment> \<open>Indices in blocks increase by 1\<close>
 

@@ -2,13 +2,13 @@ theory UvProof
 imports UvDefs "../Reduction"
 begin
 
-subsection {* Preliminary Lemmas *}
+subsection \<open>Preliminary Lemmas\<close>
 
-text {*
-  At any round, given two processes @{text p} and @{text q}, there is always
-  some process which is heard by both of them, and from which @{text p} and
-  @{text q} have received the same message.
-*}
+text \<open>
+  At any round, given two processes \<open>p\<close> and \<open>q\<close>, there is always
+  some process which is heard by both of them, and from which \<open>p\<close> and
+  \<open>q\<close> have received the same message.
+\<close>
 lemma some_common_msg:
   assumes "HOcommPerRd UV_M (HOs r)"
   shows "\<exists>pq. pq \<in> msgRcvd (HOrcvdMsgs UV_M r p (HOs r p) (rho r))
@@ -19,9 +19,9 @@ lemma some_common_msg:
   by (auto simp: UV_HOMachine_def UV_commPerRd_def HOrcvdMsgs_def
                  UV_sendMsg_def send0_def send1_def msgRcvd_def)
 
-text {* 
+text \<open>
   When executing step 0, the minimum received value is always well defined.
-*}
+\<close>
 
 lemma minval_step0:
   assumes com: "HOcommPerRd UV_M (HOs r)" and s0: "step r = 0"
@@ -40,10 +40,10 @@ next
                    UV_sendMsg_def send0_def)
 qed
 
-text {*
+text \<open>
   When executing step 1 and no vote has been received, the minimum among values received
   in messages carrying no vote is well defined.
-*}
+\<close>
 
 lemma minval_step1:
   assumes  com: "HOcommPerRd UV_M (HOs r)" and s1: "step r \<noteq> 0"
@@ -64,9 +64,9 @@ next
                    UV_HOMachine_def UV_sendMsg_def send1_def)
 qed
 
-text {*
-  The @{text vote} field is reset every time a new phase begins. 
-*}
+text \<open>
+  The \<open>vote\<close> field is reset every time a new phase begins. 
+\<close>
 
 lemma reset_vote:
   assumes run: "HORun UV_M rho HOs" and s0: "step r' = 0"
@@ -89,9 +89,9 @@ next
     by (auto simp: UV_HOMachine_def nextState_def UV_nextState_def next1_def)
 qed
 
-text {*
-  Processes only vote for the value they hold in their @{text x} field.
-*}
+text \<open>
+  Processes only vote for the value they hold in their \<open>x\<close> field.
+\<close>
 (* The proof relies on previous lemmas @{text reset_vote} and @{text some_common_msg}. *)
 
 lemma x_vote_eq:
@@ -130,10 +130,10 @@ next
 qed
 
 
-subsection {* Proof of Irrevocability, Agreement and Integrity *}
+subsection \<open>Proof of Irrevocability, Agreement and Integrity\<close>
 
 
-text {* A decision can only be taken in the second round of a phase. *}
+text \<open>A decision can only be taken in the second round of a phase.\<close>
 
 lemma decide_step:
   assumes run: "HORun UV_M rho HOs"
@@ -148,7 +148,7 @@ proof -
                    next0_def step_def)
 qed
 
-text {* No process ever decides @{text None}. *}
+text \<open>No process ever decides \<open>None\<close>.\<close>
 lemma decide_nonnull:
   assumes run: "HORun UV_M rho HOs"
       and decide: "decide (rho (Suc r) p) \<noteq> decide (rho r p)" 
@@ -163,10 +163,10 @@ proof -
     by (auto simp: next1_def dec_update_def)
 qed
 
-text {*
-  If some process @{text p} votes for @{text v} at some round @{text r}, then any message
-  that @{text p} received in @{text r} was holding @{text v} as a value.
-*}
+text \<open>
+  If some process \<open>p\<close> votes for \<open>v\<close> at some round \<open>r\<close>, then any message
+  that \<open>p\<close> received in \<open>r\<close> was holding \<open>v\<close> as a value.
+\<close>
 
 lemma msgs_unanimity:
   assumes run: "HORun UV_M rho HOs"
@@ -189,9 +189,9 @@ proof -
   with novote vote q show ?thesis by (auto simp: next0_def)
 qed
 
-text {*
+text \<open>
   Any two processes can only vote for the same value.
-*}
+\<close>
 (* The proof relies on previous lemmas @{text some_common_msg} and @{text msgs_unanimity}. *)
 
 lemma vote_agreement:
@@ -223,10 +223,10 @@ next
   show ?thesis by simp
 qed
 
-text {*
-  If a process decides value @{text v} then all processes must have @{text v}
-  in their @{text x} fields.
-*}
+text \<open>
+  If a process decides value \<open>v\<close> then all processes must have \<open>v\<close>
+  in their \<open>x\<close> fields.
+\<close>
 (* The proof relies on previous lemmas @{text decide_step}, @{text some_common_msg},
    @{text vote_agreement}. *)
 
@@ -265,10 +265,10 @@ proof -
                    someVoteRcvd_def msgRcvd_def vote_agreement[OF run com])
 qed
 
-text {*
-  If at some point all processes hold value @{text v} in their @{text x}
+text \<open>
+  If at some point all processes hold value \<open>v\<close> in their \<open>x\<close>
   fields, then this will still be the case at the next step.
-*}
+\<close>
 (* The proof relies on the previous lemma @{text x_vote_eq}. *)
 
 lemma same_x_stable:
@@ -333,10 +333,10 @@ proof -
   qed
 qed
 
-text {*
+text \<open>
   Combining the last two lemmas, it follows that as soon as some process
-  decides value @{text v}, all processes hold @{text v} in their @{text x} fields.
-*}
+  decides value \<open>v\<close>, all processes hold \<open>v\<close> in their \<open>x\<close> fields.
+\<close>
 
 lemma safety_argument:
   assumes run: "HORun UV_M rho HOs"
@@ -354,10 +354,10 @@ next
     by (auto dest: same_x_stable)
 qed
 
-text {*
+text \<open>
   Any process that holds a non-null decision value has made a decision
   sometime in the past.
-*}
+\<close>
 
 lemma decided_then_past_decision:
   assumes run: "HORun UV_M rho HOs"
@@ -380,10 +380,10 @@ proof -
   with dec show ?thesis by auto
 qed
 
-text {*
+text \<open>
   We can now prove the safety properties of the algorithm, and start with
   proving Integrity.
-*}
+\<close>
 
 lemma x_values_initial:
   assumes run:"HORun UV_M rho HOs"
@@ -462,9 +462,9 @@ proof -
     by (auto dest: x_values_initial)
 qed
 
-text {*
+text \<open>
   We now turn to Agreement.
-*}
+\<close>
 
 lemma two_decisions_agree:
   assumes run: "HORun UV_M rho HOs"
@@ -512,10 +512,10 @@ proof -
   qed
 qed
 
-text {*
+text \<open>
   Irrevocability is a consequence of Agreement and the fact that no process
-  can decide @{text None}.
-*}
+  can decide \<open>None\<close>.
+\<close>
 
 theorem uv_irrevocability:
   assumes run: "HORun UV_M rho HOs"
@@ -538,12 +538,12 @@ next
 qed
 
 
-subsection {* Proof of Termination *}
+subsection \<open>Proof of Termination\<close>
 
-text {*
+text \<open>
   Two processes having the same \emph{Heard-Of} set at some round will
-  hold the same value in their @{text x} variable at the next round.
-*}
+  hold the same value in their \<open>x\<close> variable at the next round.
+\<close>
 (* The proof relies on the previous lemma @{text vote_agreement}. *)
 
 lemma hoeq_xeq:
@@ -597,9 +597,9 @@ proof -
   qed
 qed
 
-text {*
+text \<open>
   We now prove that \emph{UniformVoting} terminates.
-*}
+\<close>
 
 theorem uv_termination:
   assumes run: "HORun UV_M rho HOs"
@@ -607,14 +607,14 @@ theorem uv_termination:
       and commG: "HOcommGlobal UV_M HOs"
   shows "\<exists>r v. decide (rho r p) = Some v"
 proof -
-  txt {* First obtain a round where all @{text x} values agree. *}
+  txt \<open>First obtain a round where all \<open>x\<close> values agree.\<close>
   from commG obtain r0 where r0: "\<forall>q. HOs r0 q = HOs r0 p"
     by (force simp: UV_HOMachine_def UV_commGlobal_def)
   let ?v = "x (rho (Suc r0) p)"
   from run commR r0 have xs: "\<forall>q. x (rho (Suc r0) q) = ?v"
     by (auto dest: hoeq_xeq)
 
-  txt {* Now obtain a round where all votes agree. *}
+  txt \<open>Now obtain a round where all votes agree.\<close>
   define r' where "r' = (if step (Suc r0) = 0 then Suc r0 else Suc (Suc r0))"
   have stp': "step r' = 0"
     by (simp add: r'_def step_def mod_Suc)
@@ -646,7 +646,7 @@ proof -
       by (auto simp: next0_def)
   qed
 
-  txt {* At the subsequent round, process @{text p} will decide. *}
+  txt \<open>At the subsequent round, process \<open>p\<close> will decide.\<close>
   let ?r'' = "Suc r'"
   let ?msgs' = "HOrcvdMsgs UV_M ?r'' p (HOs ?r'' p) (rho ?r'')"
   from stp' have stp'': "step ?r'' = 1"
@@ -672,13 +672,13 @@ proof -
 qed
 
 
-subsection {* \emph{UniformVoting} Solves Consensus *}
+subsection \<open>\emph{UniformVoting} Solves Consensus\<close>
 
-text {*
+text \<open>
   Summing up, all (coarse-grained) runs of \emph{UniformVoting} for
   HO collections that satisfy the communication predicate satisfy
   the Consensus property.
-*}
+\<close>
 
 theorem uv_consensus:
   assumes run: "HORun UV_M rho HOs" 
@@ -688,10 +688,10 @@ theorem uv_consensus:
   using assms unfolding consensus_def image_def
   by (auto elim: uv_integrity uv_agreement uv_termination)
 
-text {*
+text \<open>
   By the reduction theorem, the correctness of the algorithm carries over
   to the fine-grained model of runs.
-*}
+\<close>
 
 theorem uv_consensus_fg:
   assumes run: "fg_run UV_M rho HOs HOs (\<lambda>r q. undefined)"

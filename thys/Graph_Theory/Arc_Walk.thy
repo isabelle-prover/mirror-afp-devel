@@ -7,20 +7,20 @@ imports
   Digraph
 begin
 
-section {* Arc Walks *}
+section \<open>Arc Walks\<close>
 
-text {*
+text \<open>
   We represent a walk in a graph by the list of its arcs.
-*}
+\<close>
 
 type_synonym 'b awalk = "'b list"
 
 context pre_digraph begin
 
-text {*
+text \<open>
   The list of vertices of a walk. The additional vertex
   argument is there to deal with the case of empty walks.
-*}
+\<close>
 primrec awalk_verts :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a list" where
     "awalk_verts u [] = [u]"
   | "awalk_verts u (e # es) = tail G e # awalk_verts (head G e) es"
@@ -31,11 +31,11 @@ abbreviation awhd :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a" where
 abbreviation awlast:: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a" where
   "awlast u p \<equiv> last (awalk_verts u p)"
 
-text {*
+text \<open>
   Tests whether a list of arcs is a consistent arc sequence,
   i.e. a list of arcs, where the head G node of each arc is
   the tail G node of the following arc.
-*}
+\<close>
 fun cas :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
   "cas u [] v = (u = v)" |
   "cas u (e # es) v = (tail G e = u \<and> cas (head G e) es v)"
@@ -57,7 +57,7 @@ definition apath :: "'a \<Rightarrow>'b awalk \<Rightarrow> 'a \<Rightarrow> boo
 
 end
 
-subsection {* Basic Lemmas *}
+subsection \<open>Basic Lemmas\<close>
 
 lemma (in pre_digraph) awalk_verts_conv:
   "awalk_verts u p = (if p = [] then [u] else map (tail G) p @ [head G (last p)])"
@@ -264,7 +264,7 @@ qed
 
 
 
-subsection {* Appending awalks *}
+subsection \<open>Appending awalks\<close>
 
 lemma (in pre_digraph) cas_append_iff[simp]:
   "cas u (p @ q) v \<longleftrightarrow> cas u p (awlast u p) \<and> cas (awlast u p) q v"
@@ -360,7 +360,7 @@ lemma apath_append_iff:
 proof
   assume ?L
   then have "distinct (awalk_verts (awlast u p) q)" by (auto simp: apath_def awalk_verts_append2)
-  with `?L` show ?R by (auto simp: apath_def awalk_verts_append)
+  with \<open>?L\<close> show ?R by (auto simp: apath_def awalk_verts_append)
 next
   assume ?R
   then show ?L by (auto simp: apath_def awalk_verts_append dest: distinct_tl)
@@ -430,7 +430,7 @@ proof -
   define q r where "q = take (length xs) p" and "r = drop (length xs) p"
   then have p: "p = q @ r" by simp
   moreover from p have "cas u q (awlast u q)" "cas (awlast u q) r v"
-    using `cas u p v` by auto
+    using \<open>cas u p v\<close> by auto
   moreover have "awlast u q = y"
     using q_def and assms by (auto simp: awalk_verts_take_conv)
   moreover have *: "awalk_verts u q = xs @ [awlast u q]"
@@ -475,15 +475,15 @@ proof -
     "awalk_verts y r = y # ys @ [y]" "awalk_verts y s = y # zs"
     using p'_props by (rule awalk_decomp_verts) auto
 
-  have "p = q @ r @ s" using `p = q @ p'` `p' = r @ s` by simp
+  have "p = q @ r @ s" using \<open>p = q @ p'\<close> \<open>p' = r @ s\<close> by simp
   moreover
-  have "distinct (awalk_verts u q)" using `awalk_verts u q = xs @ [y]` and xs_y_props  by simp
+  have "distinct (awalk_verts u q)" using \<open>awalk_verts u q = xs @ [y]\<close> and xs_y_props  by simp
   moreover
-  have "0 < length r" using `awalk_verts y r = y # ys @ [y]` by auto
+  have "0 < length r" using \<open>awalk_verts y r = y # ys @ [y]\<close> by auto
   moreover
   from pv_decomp assms have "y \<in> verts G" by auto
   then have "awalk u q y" "awalk y r y" "awalk y s v"
-    using `awalk u p v` `cas u q y` `cas y r y` `cas y s v` unfolding `p = q @ r @ s`
+    using \<open>awalk u p v\<close> \<open>cas u q y\<close> \<open>cas y r y\<close> \<open>cas y s v\<close> unfolding \<open>p = q @ r @ s\<close>
     by (auto simp: awalk_def)
   ultimately show ?thesis by blast
 qed
@@ -497,12 +497,12 @@ using assms by (auto simp: apath_def awalk_verts_append)
 
 
 
-subsection {* Cycles *}
+subsection \<open>Cycles\<close>
 
 definition closed_w :: "'b awalk \<Rightarrow> bool" where
   "closed_w p \<equiv> \<exists>u. awalk u p u \<and> 0 < length p"
 
-text {*
+text \<open>
   The definitions of cycles in textbooks vary w.r.t to the minimial length
   of a cycle.
 
@@ -511,7 +511,7 @@ text {*
   Volkmann (Lutz Volkmann: Graphen an allen Ecken und Kanten, 2006 (?))
   places no restriction on the length in the definition, but later
   usage assumes cycles to be non-empty.
-*}
+\<close>
 definition (in pre_digraph) cycle :: "'b awalk \<Rightarrow> bool" where
   "cycle p \<equiv> \<exists>u. awalk u p u \<and> distinct (tl (awalk_verts u p)) \<and> p \<noteq> []"
 
@@ -573,14 +573,14 @@ proof (induct "length p" arbitrary: p rule: less_induct)
       by (auto simp: awalk_Cons_iff)
     obtain q r s where "es = q @ r @ s" "\<exists>w. awalk w r w" "closed_w r"
       using awalk_not_distinct_decomp[OF **] by (auto simp: closed_w_def)
-    then have "length r < length p" using `p = _` by auto
-    then show ?thesis using `closed_w r` by (rule less)
+    then have "length r < length p" using \<open>p = _\<close> by auto
+    then show ?thesis using \<open>closed_w r\<close> by (rule less)
   qed
 qed
 
 
 
-subsection {* Reachability *}
+subsection \<open>Reachability\<close>
 
 lemma reachable1_awalk:
   "u \<rightarrow>\<^sup>+ v \<longleftrightarrow> (\<exists>p. awalk u p v \<and> p \<noteq> [])"
@@ -593,7 +593,7 @@ proof
     case (step x y)
     then obtain p where "awalk y p v" "p \<noteq> []" by auto
     moreover
-    from `x \<rightarrow> y` obtain e where "tail G e = x" "head G e = y" "e \<in> arcs G"
+    from \<open>x \<rightarrow> y\<close> obtain e where "tail G e = x" "head G e = y" "e \<in> arcs G"
       by auto
     ultimately
     have "awalk x (e # p) v"
@@ -616,12 +616,12 @@ proof cases
   have "u \<rightarrow>\<^sup>*u \<longleftrightarrow> awalk u [] u" by (auto simp: awalk_Nil_iff reachable_in_verts)
   also have "\<dots> \<longleftrightarrow> (\<exists>p. awalk u p u)"
     by (metis awalk_Nil_iff awalk_hd_in_verts)
-  finally show ?thesis using `u = v` by simp
+  finally show ?thesis using \<open>u = v\<close> by simp
 next
   assume "u \<noteq> v"
   then have "u \<rightarrow>\<^sup>* v \<longleftrightarrow> u \<rightarrow>\<^sup>+ v" by auto
   also have "\<dots> \<longleftrightarrow> (\<exists>p. awalk u p v)"
-    using `u \<noteq> v` unfolding reachable1_awalk by force
+    using \<open>u \<noteq> v\<close> unfolding reachable1_awalk by force
   finally show ?thesis .
 qed
 
@@ -639,10 +639,10 @@ lemma reachable_arc_trans:
   assumes "u \<rightarrow>\<^sup>* v" "arc e (v,w)"
   shows "u \<rightarrow>\<^sup>* w"
 proof -
-  from `u \<rightarrow>\<^sup>* v` obtain p where "awalk u p v"
+  from \<open>u \<rightarrow>\<^sup>* v\<close> obtain p where "awalk u p v"
     by (auto simp: reachable_awalk)
   moreover have "awalk v [e] w"
-    using `arc e (v,w)`
+    using \<open>arc e (v,w)\<close>
     by (auto simp: arc_def awalk_def)
   ultimately have "awalk u (p @ [e]) w"
     by (rule awalk_appendI)
@@ -667,7 +667,7 @@ qed
 
 
 
-subsection {* Paths *}
+subsection \<open>Paths\<close>
 
 lemma (in fin_digraph) length_apath_less:
   assumes "apath u p v"
@@ -676,9 +676,9 @@ proof -
   have "length p < length (awalk_verts u p)" unfolding awalk_verts_conv
     by (auto simp: awalk_verts_conv)
   also have "length (awalk_verts u p) = card (set (awalk_verts u p))"
-    using `apath u p v` by (auto simp: apath_def distinct_card)
+    using \<open>apath u p v\<close> by (auto simp: apath_def distinct_card)
   also have "\<dots> \<le> card (verts G)"
-    using `apath u p v` unfolding apath_def awalk_conv
+    using \<open>apath u p v\<close> unfolding apath_def awalk_conv
     by (auto intro: card_mono)
   finally show ?thesis .
 qed
@@ -753,8 +753,8 @@ proof
   obtain u' w' v' where obt_awalk: "awalk u' q w'" "awalk w' r w'" "awalk w' s v'"
     using awalk_cyc_decomp_has_prop[OF p_props] and dec by auto
   then have "awalk u' p v'"
-    using `p = q @ r @ s` by simp
-  then have "u = u'" and "v = v'" using `p \<noteq> []` `awalk u p v` by (metis awalk_ends)+
+    using \<open>p = q @ r @ s\<close> by simp
+  then have "u = u'" and "v = v'" using \<open>p \<noteq> []\<close> \<open>awalk u p v\<close> by (metis awalk_ends)+
   then have "awalk u q w'" "awalk w' r w'" "awalk w' s v"
     using obt_awalk by auto
   then show "\<exists>w. awalk u q w \<and> awalk w r w \<and> awalk w s v" by auto

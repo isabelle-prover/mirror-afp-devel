@@ -1,8 +1,8 @@
-chapter {* Static Intraprocedural Slicing *}
+chapter \<open>Static Intraprocedural Slicing\<close>
 
 theory Distance imports "../Basic/CFG" begin
 
-text {*
+text \<open>
   Static Slicing analyses a CFG prior to execution. Whereas dynamic
   slicing can provide better results for certain inputs (i.e.\ trace and
   initial state), static slicing is more conservative but provides
@@ -26,9 +26,9 @@ text {*
   weak control and weak order dependence. The correctness proof for
   slicing is independent of the control dependence used, it bases only
   on one property every control dependence definition hass to fulfill.
-*}
+\<close>
 
-section {* Distance of Paths *}
+section \<open>Distance of Paths\<close>
 
 context CFG begin
 
@@ -52,24 +52,24 @@ proof -
     hence "n -as'\<rightarrow>* n'" and all:"\<forall>asx. n -asx\<rightarrow>* n' \<longrightarrow> length as' \<le> length asx"
       by simp_all
     hence "distance n n' (length as')" by(fastforce intro:distanceI)
-    from `n -as\<rightarrow>* n'` all have "length as' \<le> length as" by fastforce
-    with `distance n n' (length as')` show ?thesis by blast
+    from \<open>n -as\<rightarrow>* n'\<close> all have "length as' \<le> length as" by fastforce
+    with \<open>distance n n' (length as')\<close> show ?thesis by blast
   next
     case False
     hence all:"\<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> (\<exists>asx. n -asx\<rightarrow>* n' \<and> length as' > length asx)"
       by fastforce
     have "wf (measure length)" by simp
-    from `n -as\<rightarrow>* n'` have "as \<in> {as. n -as\<rightarrow>* n'}" by simp
-    with `wf (measure length)` obtain as' where "as' \<in> {as. n -as\<rightarrow>* n'}" 
+    from \<open>n -as\<rightarrow>* n'\<close> have "as \<in> {as. n -as\<rightarrow>* n'}" by simp
+    with \<open>wf (measure length)\<close> obtain as' where "as' \<in> {as. n -as\<rightarrow>* n'}" 
       and notin:"\<And>as''. (as'',as') \<in> (measure length) \<Longrightarrow> as'' \<notin> {as. n -as\<rightarrow>* n'}"
       by(erule wfE_min)
-    from `as' \<in> {as. n -as\<rightarrow>* n'}` have "n -as'\<rightarrow>* n'" by simp
+    from \<open>as' \<in> {as. n -as\<rightarrow>* n'}\<close> have "n -as'\<rightarrow>* n'" by simp
     with all obtain asx where "n -asx\<rightarrow>* n'"
       and "length as' > length asx"
       by blast
     with notin have  "asx \<notin> {as. n -as\<rightarrow>* n'}" by simp
     hence "\<not> n -asx\<rightarrow>* n'" by simp
-    with `n -asx\<rightarrow>* n'` have False by simp
+    with \<open>n -asx\<rightarrow>* n'\<close> have False by simp
     thus ?thesis by simp
   qed
   with that show ?thesis by blast
@@ -149,46 +149,46 @@ proof -
                                                  distance (targetnode a') n' (x - 1) \<and>
                                                  valid_edge a' \<and> targetnode a' = nx)
                  \<longrightarrow> \<not> distance (targetnode a) n' (x - 1)" by blast
-    from `distance n n' x` obtain as where "n -as\<rightarrow>* n'" and "x = length as"
+    from \<open>distance n n' x\<close> obtain as where "n -as\<rightarrow>* n'" and "x = length as"
       and "\<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> x \<le> length as'"
       by(auto elim:distance.cases)
     thus False using imp
     proof(induct rule:path.induct)
       case (empty_path n)
-      from `x = length []` `x \<noteq> 0` show False by simp
+      from \<open>x = length []\<close> \<open>x \<noteq> 0\<close> show False by simp
     next
       case (Cons_path n'' as n' a n)
-      note imp = `\<forall>a. valid_edge a \<and> n = sourcenode a \<and>
+      note imp = \<open>\<forall>a. valid_edge a \<and> n = sourcenode a \<and>
                       targetnode a = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
                                                  distance (targetnode a') n' (x - 1) \<and>
                                                  valid_edge a' \<and> targetnode a' = nx)
-                    \<longrightarrow> \<not> distance (targetnode a) n' (x - 1)`
-      note all = `\<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> x \<le> length as'`
-      from `n'' -as\<rightarrow>* n'` obtain y where "distance n'' n' y"
+                    \<longrightarrow> \<not> distance (targetnode a) n' (x - 1)\<close>
+      note all = \<open>\<forall>as'. n -as'\<rightarrow>* n' \<longrightarrow> x \<le> length as'\<close>
+      from \<open>n'' -as\<rightarrow>* n'\<close> obtain y where "distance n'' n' y"
         and "y \<le> length as" by(erule every_path_distance)
-      from `distance n'' n' y` obtain as' where "n'' -as'\<rightarrow>* n'"
+      from \<open>distance n'' n' y\<close> obtain as' where "n'' -as'\<rightarrow>* n'"
         and "y = length as'"
         by(auto elim:distance.cases)
       show False
       proof(cases "y < length as")
         case True
-        from `valid_edge a` `sourcenode a = n` `targetnode a = n''` `n'' -as'\<rightarrow>* n'`
+        from \<open>valid_edge a\<close> \<open>sourcenode a = n\<close> \<open>targetnode a = n''\<close> \<open>n'' -as'\<rightarrow>* n'\<close>
         have "n -a#as'\<rightarrow>* n'" by -(rule path.Cons_path)
         with all have "x \<le> length (a#as')" by blast
-        with `x = length (a#as)` True `y = length as'` show False by simp
+        with \<open>x = length (a#as)\<close> True \<open>y = length as'\<close> show False by simp
       next
         case False
-        with `y \<le> length as` `x = length (a#as)` have "y = x - 1" by simp
-        from `targetnode a = n''` `distance n'' n' y`
+        with \<open>y \<le> length as\<close> \<open>x = length (a#as)\<close> have "y = x - 1" by simp
+        from \<open>targetnode a = n''\<close> \<open>distance n'' n' y\<close>
         have "distance (targetnode a) n' y" by simp
-        with `valid_edge a`
+        with \<open>valid_edge a\<close>
         obtain a' where "sourcenode a = sourcenode a'"
           and "distance (targetnode a') n' y" and "valid_edge a'"
           and "targetnode a' = (SOME nx. \<exists>a'. sourcenode a = sourcenode a' \<and>
                                               distance (targetnode a') n' y \<and>
                                               valid_edge a' \<and> targetnode a' = nx)"
           by(auto dest:only_one_SOME_dist_edge)
-        with imp `sourcenode a = n` `y = x - 1` show False by fastforce
+        with imp \<open>sourcenode a = n\<close> \<open>y = x - 1\<close> show False by fastforce
       qed
     qed
   qed

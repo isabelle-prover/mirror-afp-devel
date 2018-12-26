@@ -3,34 +3,34 @@
     Author:     David Trachtenherz
 *)
 
-section {* Additional definitions and results for lists *}
+section \<open>Additional definitions and results for lists\<close>
 
 theory ListInf
 imports List2 "../CommonSet/InfiniteSet2"
 begin
 
-subsection {* Infinite lists *}
+subsection \<open>Infinite lists\<close>
 
-text {*
+text \<open>
   We define infinite lists as functions over natural numbers, i. e.,
   we use functions @{typ "nat \<Rightarrow> 'a"}
   as infinite lists over elements of @{typ "'a"}.
-  Mapping functions to intervals lists @{text "[m..<n]"}
-  yiels common finite lists. *}
+  Mapping functions to intervals lists \<open>[m..<n]\<close>
+  yiels common finite lists.\<close>
 
 
-subsubsection {* Appending a functions to a list *}
+subsubsection \<open>Appending a functions to a list\<close>
 
 type_synonym 'a ilist = "nat \<Rightarrow> 'a"
 
 definition i_append :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> 'a ilist" (infixr "\<frown>" 65)
   where "xs \<frown> f \<equiv> \<lambda>n. if n < length xs then xs ! n else f (n - length xs)"
 
-text {*
-  Synonym for the lemma @{text fun_eq_iff}
+text \<open>
+  Synonym for the lemma \<open>fun_eq_iff\<close>
   from the HOL library to unify lemma names for finite and infinite lists,
-  providing @{text list_eq_iff} for finite and
-  @{text ilist_eq_iff} for infinite lists. *}
+  providing \<open>list_eq_iff\<close> for finite and
+  \<open>ilist_eq_iff\<close> for infinite lists.\<close>
 lemmas expand_ilist_eq = fun_eq_iff
 lemmas ilist_eq_iff = expand_ilist_eq
 
@@ -238,7 +238,7 @@ apply simp
 done
 
 
-text {* @{text nth} *}
+text \<open>\<open>nth\<close>\<close>
 
 lemma i_append_nth_Cons_0[simp]: "((x # xs) \<frown> f) 0 = x"
 by simp
@@ -303,13 +303,13 @@ lemma range_update_memI: "x \<in> range (f(n := x))"
 by fastforce
 
 
-subsubsection {* @{term take} and @{term drop} for infinite lists *}
+subsubsection \<open>@{term take} and @{term drop} for infinite lists\<close>
 
-text {*
+text \<open>
   The @{term i_take} operator takes the first @{term n} elements of an infinite list,
-  i.e. @{text "i_take f n = [f 0, f 1, \<dots>, f (n-1)]"}.
+  i.e. \<open>i_take f n = [f 0, f 1, \<dots>, f (n-1)]\<close>.
   The @{term i_drop} operator drops the first @{term n} elements of an infinite list,
-  i.e. @{text "(i_take f n) 0 = f n, (i_take f n) 1 = f (n + 1), \<dots>"}. *}
+  i.e. \<open>(i_take f n) 0 = f n, (i_take f n) 1 = f (n + 1), \<dots>\<close>.\<close>
 
 definition i_take  :: "nat \<Rightarrow> 'a ilist \<Rightarrow> 'a list"
   where "i_take n f \<equiv> map f [0..<n]"
@@ -327,7 +327,7 @@ lemma "f \<Up> n = (\<lambda>x. f (n + x))"
 by (simp add: i_drop_def)
 
 
-text {* Basic results for @{term i_take} and @{term i_drop} *}
+text \<open>Basic results for @{term i_take} and @{term i_drop}\<close>
 
 lemma i_take_first: "f \<Down> Suc 0 = [f 0]"
 by (simp add: i_take_def)
@@ -507,7 +507,7 @@ lemma i_take_i_drop: "f \<Up> m \<Down> n = f \<Down> (n + m) \<up> m"
 by (simp add: expand_list_eq)
 
 
-text {* Appending an interval of a function *}
+text \<open>Appending an interval of a function\<close>
 lemma i_take_int_append: "
   m \<le> n \<Longrightarrow> (f \<Down> m) @ map f [m..<n] = f \<Down> n"
 by (simp add: expand_list_eq nth_append)
@@ -634,7 +634,7 @@ corollary i_append_eq_o_conv: "
 by (fastforce simp: o_eq_i_append_imp)
 
 
-subsubsection {* @{term zip} for infinite lists *}
+subsubsection \<open>@{term zip} for infinite lists\<close>
 
 definition i_zip :: "'a ilist \<Rightarrow> 'b ilist \<Rightarrow> ('a \<times> 'b) ilist"
   where "i_zip f g \<equiv> \<lambda>n. (f n, g n)"
@@ -689,7 +689,7 @@ lemma i_zip_const: "i_zip (\<lambda>n. x) (\<lambda>n. y) = (\<lambda>n. (x, y))
 by (simp add: expand_ilist_eq i_zip_nth)
 
 
-subsubsection {* Mapping functions with two arguments to infinite lists *}
+subsubsection \<open>Mapping functions with two arguments to infinite lists\<close>
 
 definition i_map2 :: "
   \<comment> \<open>Function taking two parameters\<close>
@@ -768,9 +768,9 @@ lemma i_map2_i_zip_conv: "
 by (simp add: fun_eq_iff i_map2_nth i_zip_nth)
 
 
-subsection {* Generalised lists as combination of finite and infinite lists *}
+subsection \<open>Generalised lists as combination of finite and infinite lists\<close>
 
-subsubsection {* Basic definitions *}
+subsubsection \<open>Basic definitions\<close>
 
 datatype (gset: 'a) glist = FL "'a list" | IL "'a ilist" for map: gmap
 
@@ -821,7 +821,7 @@ abbreviation g_drop' :: "'a glist \<Rightarrow> enat \<Rightarrow> 'a glist"  (i
   where "a \<up>\<^sub>g n \<equiv> gdrop n a"
 
 
-subsubsection {* @{text glength} *}
+subsubsection \<open>\<open>glength\<close>\<close>
 
 lemma glength_fin[simp]: "glength (FL xs) = enat (length xs)"
 by (simp add: glength_def)
@@ -875,7 +875,7 @@ by (simp add: eq_commute[of _ "glength a"] glength_gSuc_conv)
 
 
 
-subsubsection {* @{text "@"}\ensuremath{{}_g} -- gappend *}
+subsubsection \<open>\<open>@\<close>\ensuremath{{}_g} -- gappend\<close>
 
 lemma gappend_Nil[simp]: "(FL []) @\<^sub>g a = a"
 by (unfold gappend_def, case_tac a, simp+)
@@ -908,7 +908,7 @@ lemma same_gappend_eq: "
 by fastforce
 
 
-subsubsection {* @{text gmap} *}
+subsubsection \<open>\<open>gmap\<close>\<close>
 
 lemma gmap_gappend[simp]: "gmap f (a @\<^sub>g b) = gmap f a @\<^sub>g gmap f b"
 by (unfold gappend_def, induct a, induct b, simp+)
@@ -930,7 +930,7 @@ lemma gmap_eq_imp_glength_eq: "
 by (drule arg_cong[where f=glength], simp)
 
 
-subsubsection {* @{text gset} *}
+subsubsection \<open>\<open>gset\<close>\<close>
 
 lemma gset_gappend[simp]: "
   gset (a @\<^sub>g b) =
@@ -954,7 +954,7 @@ apply (simp add: card_length)+
 done
 
 
-subsubsection {* @{text "!"}\ensuremath{{}_g} -- gnth *}
+subsubsection \<open>\<open>!\<close>\ensuremath{{}_g} -- gnth\<close>
 
 lemma gnth_gCons_0[simp]: "(x #\<^sub>g a) !\<^sub>g 0 = x"
 by (unfold gCons_def gnth_def, case_tac a, simp+)
@@ -983,7 +983,7 @@ apply (fastforce simp: in_set_conv_nth)+
 done
 
 
-subsubsection {* @{text gtake} and @{text gdrop} *}
+subsubsection \<open>\<open>gtake\<close> and \<open>gdrop\<close>\<close>
 
 lemma gtake_0[simp]: "a \<down>\<^sub>g 0 = FL []"
 by (unfold gtake_def, case_tac a, simp+)

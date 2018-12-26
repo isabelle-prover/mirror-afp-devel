@@ -1,12 +1,12 @@
-chapter{*Syntax of Terms and Formulas using Nominal Logic*}
+chapter\<open>Syntax of Terms and Formulas using Nominal Logic\<close>
 
 theory SyntaxN
 imports Nominal2.Nominal2 HereditarilyFinite.OrdArith
 begin
 
-section{*Terms and Formulas*}
+section\<open>Terms and Formulas\<close>
 
-subsection{* Hf is a pure permutation type *}
+subsection\<open>Hf is a pure permutation type\<close>
 
 instantiation hf :: pt
 begin
@@ -25,7 +25,7 @@ declare fresh_set_empty [simp]
 lemma supp_name [simp]: fixes i::name shows "supp i = {atom i}"
   by (rule supp_at_base)
 
-subsection{*The datatypes*}
+subsection\<open>The datatypes\<close>
 
 nominal_datatype tm = Zero | Var name | Eats tm tm
 
@@ -36,11 +36,11 @@ nominal_datatype fm =
   | Neg fm
   | Ex x::name f::fm binds x in f
 
-text {*Mem, Eq are atomic formulas; Disj, Neg, Ex are non-atomic*}
+text \<open>Mem, Eq are atomic formulas; Disj, Neg, Ex are non-atomic\<close>
 
 declare tm.supp [simp] fm.supp [simp]
 
-subsection{*Substitution*}
+subsection\<open>Substitution\<close>
 
 nominal_function subst :: "name \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm"
   where
@@ -115,10 +115,10 @@ lemma subst_fm_Ex_with_renaming:
   by (rule subst [of "Ex i' ((i \<leftrightarrow> i') \<bullet> A)" "Ex i A"])
      (auto simp: Abs1_eq_iff flip_def swap_commute)
 
-text {* the simplifier cannot apply the rule above, because
-it introduces a new variable at the right hand side. *}
+text \<open>the simplifier cannot apply the rule above, because
+it introduces a new variable at the right hand side.\<close>
 
-simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = {* fn _ => fn ctxt => fn ctrm =>
+simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = \<open>fn _ => fn ctxt => fn ctrm =>
   let
      val _ $ (_ $ i $ A) $ j $ t = Thm.term_of ctrm
 
@@ -138,9 +138,9 @@ simproc_setup subst_fm_renaming ("(Ex i A)(j ::= t)") = {* fn _ => fn ctxt => fn
   in
     get_first get_thm atoms
   end
-*}
+\<close>
 
-subsection{*Semantics*}
+subsection\<open>Semantics\<close>
 
 definition e0 :: "(name, hf) finfun"    \<comment> \<open>the null environment\<close>
   where "e0 \<equiv> finfun_const 0"
@@ -228,9 +228,9 @@ lemma eval_subst_fm: "eval_fm e (fm(i::= t)) = eval_fm (finfun_update e i \<lbra
   by (nominal_induct fm avoiding: i t e rule: fm.strong_induct)
      (simp_all add: eval_subst_tm finfun_update_twist fresh_at_base)
 
-subsection{*Derived syntax*}
+subsection\<open>Derived syntax\<close>
 
-subsubsection{*Ordered pairs*}
+subsubsection\<open>Ordered pairs\<close>
 
 definition HPair :: "tm \<Rightarrow> tm \<Rightarrow> tm"
   where "HPair a b = Eats (Eats Zero (Eats (Eats Zero b) a)) (Eats (Eats Zero a) a)"
@@ -250,7 +250,7 @@ lemma subst_tm_HPair [simp]: "subst i x (HPair a b) = HPair (subst i x a) (subst
 lemma eval_tm_HPair [simp]: "\<lbrakk>HPair a b\<rbrakk>e = hpair \<lbrakk>a\<rbrakk>e \<lbrakk>b\<rbrakk>e"
   by (auto simp: HPair_def hpair_def)
 
-subsubsection{*Ordinals*}
+subsubsection\<open>Ordinals\<close>
 
 definition
   SUCC  :: "tm \<Rightarrow> tm"  where
@@ -282,7 +282,7 @@ lemma ORD_OF_fresh [simp]: "a \<sharp> ORD_OF n"
 lemma ORD_OF_eqvt [eqvt]: "(p \<bullet> ORD_OF n) = ORD_OF (p \<bullet> n)"
   by (induct n) (auto simp: permute_pure SUCC_eqvt)
 
-subsection{*Derived logical connectives*}
+subsection\<open>Derived logical connectives\<close>
 
 abbreviation Imp :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "IMP" 125)
   where "Imp A B \<equiv> Disj (Neg A) B"
@@ -293,7 +293,7 @@ abbreviation All :: "name \<Rightarrow> fm \<Rightarrow> fm"
 abbreviation All2 :: "name \<Rightarrow> tm \<Rightarrow> fm \<Rightarrow> fm" \<comment> \<open>bounded universal quantifier, for Sigma formulas\<close>
   where "All2 i t A \<equiv> All i ((Var i IN t) IMP A)"
 
-subsubsection{*Conjunction*}
+subsubsection\<open>Conjunction\<close>
 
 definition Conj :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "AND" 135)
   where "Conj A B \<equiv> Neg (Disj (Neg A) (Neg B))"
@@ -319,7 +319,7 @@ lemma subst_fm_Conj [simp]: "(A AND B)(i::=x) = (A(i::=x)) AND (B(i::=x))"
 lemma eval_fm_Conj [simp]: "eval_fm e (Conj A B) \<longleftrightarrow> (eval_fm e A \<and> eval_fm e B)"
   by (auto simp: Conj_def)
 
-subsubsection{*If and only if*}
+subsubsection\<open>If and only if\<close>
 
 definition Iff :: "fm \<Rightarrow> fm \<Rightarrow> fm"   (infixr "IFF" 125)
   where "Iff A B = Conj (Imp A B) (Imp B A)"
@@ -343,9 +343,9 @@ lemma eval_fm_Iff [simp]: "eval_fm e (Iff A B) \<longleftrightarrow> (eval_fm e 
   by (auto simp: Iff_def)
 
 
-section{*Axioms and Theorems*}
+section\<open>Axioms and Theorems\<close>
 
-subsection{*Logical axioms*}
+subsection\<open>Logical axioms\<close>
 
 inductive_set boolean_axioms :: "fm set"
   where
@@ -380,7 +380,7 @@ lemma twist_forget_eval_fm [simp]:
 lemma induction_axioms_hold: "A \<in> induction_axioms \<Longrightarrow> eval_fm e A"
   by (induction rule: induction_axioms.induct) (auto simp: eval_subst_fm intro: hf_induct_ax)
 
-subsection {* Concrete variables *}
+subsection \<open>Concrete variables\<close>
 
 declare Abs_name_inject[simp]
 
@@ -401,7 +401,7 @@ abbreviation
   "X4 \<equiv> Abs_name (Atom (Sort ''SyntaxN.name'' []) 4)"
 
 
-subsection{*The HF axioms*}
+subsection\<open>The HF axioms\<close>
 
 definition HF1 :: fm where  \<comment> \<open>the axiom @{term"z=0 \<longleftrightarrow> (\<forall>x. \<not> x \<^bold>\<in> z)"}\<close>
   "HF1 = (Var X0 EQ Zero) IFF (All X1 (Neg (Var X1 IN Var X0)))"
@@ -422,7 +422,7 @@ definition HF_axioms where "HF_axioms = {HF1, HF2}"
 lemma HF_axioms_hold: "A \<in> HF_axioms \<Longrightarrow> eval_fm e A"
   by (auto simp: HF_axioms_def HF1_holds HF2_holds)
 
-subsection{*Equality axioms*}
+subsection\<open>Equality axioms\<close>
 
 definition refl_ax :: fm where
   "refl_ax = Var X1 EQ Var X1"
@@ -457,12 +457,12 @@ definition equality_axioms :: "fm set" where
 lemma equality_axioms_hold: "A \<in> equality_axioms \<Longrightarrow> eval_fm e A"
   by (auto simp: equality_axioms_def refl_ax_holds eq_cong_ax_holds mem_cong_ax_holds eats_cong_ax_holds)
 
-subsection{*The proof system*}
+subsection\<open>The proof system\<close>
 
-text{*This arbitrary additional axiom generalises the statements of the incompleteness theorems
+text\<open>This arbitrary additional axiom generalises the statements of the incompleteness theorems
   and other results to any formal system stronger than the HF theory. The additional axiom
   could be the conjunction of any finite number of assertions. Any more general extension
-  must be a form that can be formalised for the proof predicate.*}
+  must be a form that can be formalised for the proof predicate.\<close>
 consts  extra_axiom :: fm
 
 specification (extra_axiom)
@@ -481,7 +481,7 @@ inductive hfthm :: "fm set \<Rightarrow> fm \<Rightarrow> bool" (infixl "\<turns
   | MP:     "H \<turnstile> A IMP B \<Longrightarrow> H' \<turnstile> A \<Longrightarrow> H \<union> H' \<turnstile> B"
   | Exists: "H \<turnstile> A IMP B \<Longrightarrow> atom i \<sharp> B \<Longrightarrow> \<forall>C \<in> H. atom i \<sharp> C \<Longrightarrow> H \<turnstile> (Ex i A) IMP B"
 
-text{*Soundness theorem!*}
+text\<open>Soundness theorem!\<close>
 theorem hfthm_sound: assumes "H \<turnstile> A" shows "(\<forall>B\<in>H. eval_fm e B) \<Longrightarrow> eval_fm e A"
 using assms
 proof (induct arbitrary: e)
@@ -513,7 +513,7 @@ next
     by auto (metis forget_eval_fm)
 qed
 
-subsection{*Derived rules of inference*}
+subsection\<open>Derived rules of inference\<close>
 
 lemma contraction: "insert A (insert A H) \<turnstile> B \<Longrightarrow> insert A H \<turnstile> B"
   by (metis insert_absorb2)
@@ -657,7 +657,7 @@ lemma Imp_Imp_commute: "H \<turnstile> B IMP (A IMP C) \<Longrightarrow> H \<tur
   by (metis DisjAssoc1 DisjAssoc2 Disj_Semicong_1 Disj_commute_Imp)
 
 
-subsection{*The Deduction Theorem*}
+subsection\<open>The Deduction Theorem\<close>
 
 lemma deduction_Diff: assumes "H \<turnstile> B" shows "H - {C} \<turnstile> C IMP B"
 using assms
@@ -713,7 +713,7 @@ theorem Imp_I [intro!]: "insert A H \<turnstile> B \<Longrightarrow> H \<turnsti
 lemma anti_deduction: "H \<turnstile> A IMP B \<Longrightarrow> insert A H \<turnstile> B"
    by (metis Assume MP_same thin1)
 
-subsection{*Cut rules*}
+subsection\<open>Cut rules\<close>
 
 lemma cut:  "H \<turnstile> A \<Longrightarrow> insert A H' \<turnstile> B \<Longrightarrow> H \<union> H' \<turnstile> B"
   by (metis MP Un_commute Imp_I)
@@ -746,7 +746,7 @@ lemma cut4: "\<lbrakk>{A,B,C,D} \<turnstile> E; H \<turnstile> A; H \<turnstile>
   by (metis MP_same cut3 [of B C D] Imp_I)
 
 
-section{*Miscellaneous logical rules*}
+section\<open>Miscellaneous logical rules\<close>
 
 lemma Disj_I1: "H \<turnstile> A \<Longrightarrow> H \<turnstile> A OR B"
   by (metis Bool MP_same boolean_axioms.DisjI1)
@@ -938,7 +938,7 @@ lemmas Disj_IE1H = Disj_IE1 Disj_IE1 [THEN rotate2] Disj_IE1 [THEN rotate3] Disj
                  Disj_IE1 [THEN rotate6] Disj_IE1 [THEN rotate7] Disj_IE1 [THEN rotate8]
 declare Disj_IE1H [intro!]
 
-subsection{*Quantifier reasoning*}
+subsection\<open>Quantifier reasoning\<close>
 
 lemma Ex_I: "H \<turnstile> A(i::=x) \<Longrightarrow> H \<turnstile> Ex i A"
   by (metis MP_same Spec special_axioms.intros)
@@ -987,7 +987,7 @@ lemma All2_E': "\<lbrakk>H \<turnstile> All2 i t A; H \<turnstile> x IN t; inser
   by (metis All2_E cut_same)
 
 
-subsection{*Congruence rules*}
+subsection\<open>Congruence rules\<close>
 
 lemma Neg_cong: "H \<turnstile> A IFF A' \<Longrightarrow> H \<turnstile> Neg A IFF Neg A'"
   by (metis Iff_def Conj_E1 Conj_E2 Conj_I Contrapos1)
@@ -1017,9 +1017,9 @@ lemma Subst: "H \<turnstile> A \<Longrightarrow> \<forall>B \<in> H. atom i \<sh
   by (metis All_D All_I)
 
 
-section{*Equality reasoning*}
+section\<open>Equality reasoning\<close>
 
-subsection{*The congruence property for @{term Eq}, and other basic properties of equality*}
+subsection\<open>The congruence property for @{term Eq}, and other basic properties of equality\<close>
 
 lemma Eq_cong1: "{} \<turnstile> (t EQ t' AND u EQ u') IMP (t EQ u IMP t' EQ u')"
 proof -
@@ -1064,7 +1064,7 @@ proof -
     by (metis empty_subsetI thin)
 qed
 
-text{*Apparently necessary in order to prove the congruence property.*}
+text\<open>Apparently necessary in order to prove the congruence property.\<close>
 lemma Sym: assumes "H \<turnstile> t EQ u" shows "H \<turnstile> u EQ t"
 proof -
   have "{} \<turnstile>  (t EQ u AND t EQ t) IMP (t EQ t IMP u EQ t)"
@@ -1108,7 +1108,7 @@ qed
 lemma Eq_Trans_E: "H \<turnstile> x EQ u \<Longrightarrow> insert (t EQ u) H \<turnstile> A \<Longrightarrow> insert (x EQ t) H \<turnstile> A"
   by (metis Assume Sym_L Trans cut_same thin1 thin2)
 
-subsection{*The congruence property for @{term Mem}*}
+subsection\<open>The congruence property for @{term Mem}\<close>
 
 lemma Mem_cong1: "{} \<turnstile> (t EQ t' AND u EQ u') IMP (t IN u IMP t' IN u')"
 proof -
@@ -1152,7 +1152,7 @@ proof -
     by (metis Iff_def Conj_I cut2 assms Sym)
 qed
 
-subsection{*The congruence properties for @{term Eats} and @{term HPair}*}
+subsection\<open>The congruence properties for @{term Eats} and @{term HPair}\<close>
 
 lemma Eats_cong1: "{} \<turnstile> (t EQ t' AND u EQ u') IMP (Eats t u EQ Eats t' u')"
 proof -
@@ -1194,7 +1194,7 @@ lemma HPair_cong: "\<lbrakk>H \<turnstile> t EQ t'; H \<turnstile> u EQ u'\<rbra
 lemma SUCC_cong: "H \<turnstile> t EQ t' \<Longrightarrow> H \<turnstile> SUCC t EQ SUCC t'"
   by (metis Eats_cong SUCC_def)
 
-subsection{*Substitution for Equalities*}
+subsection\<open>Substitution for Equalities\<close>
 
 lemma Eq_subst_tm_Iff: "{t EQ u} \<turnstile> subst i t tm EQ subst i u tm"
   by (induct tm rule: tm.induct) (auto simp: Eats_cong)
@@ -1214,7 +1214,7 @@ lemma Var_Eq_subst_Iff: "insert (Var i EQ t) H \<turnstile> A(i::=t) IFF A"
 lemma Var_Eq_imp_subst_Iff: "H \<turnstile> Var i EQ t \<Longrightarrow> H \<turnstile> A(i::=t) IFF A"
   by (metis Var_Eq_subst_Iff cut_same)
 
-subsection{*Congruence Rules for Predicates*}
+subsection\<open>Congruence Rules for Predicates\<close>
 
 lemma P1_cong:
   fixes tms :: "tm list"
@@ -1284,7 +1284,7 @@ proof -
 qed
 
 
-section{*Zero and Falsity*}
+section\<open>Zero and Falsity\<close>
 
 lemma Mem_Zero_iff:
   assumes "atom i \<sharp> t" shows "H \<turnstile> (t EQ Zero) IFF (All i (Neg ((Var i) IN t)))"
@@ -1326,7 +1326,7 @@ declare Mem_Zero_E [THEN rotate7, intro!]
 declare Mem_Zero_E [THEN rotate8, intro!]
 
 
-subsection{*The Formula @{term Fls}*}
+subsection\<open>The Formula @{term Fls}\<close>
 
 definition Fls  where "Fls \<equiv> Zero IN Zero"
 
@@ -1351,7 +1351,7 @@ declare Neg_E [THEN rotate6, intro!]
 declare Neg_E [THEN rotate7, intro!]
 declare Neg_E [THEN rotate8, intro!]
 
-text{*We need these because Neg (A IMP B) doesn't have to be syntactically a conjunction.*}
+text\<open>We need these because Neg (A IMP B) doesn't have to be syntactically a conjunction.\<close>
 lemma Neg_Imp_I [intro!]: "H \<turnstile> A \<Longrightarrow> insert B H \<turnstile> Fls \<Longrightarrow> H \<turnstile> Neg (A IMP B)"
   by (metis NegNeg_I Neg_Disj_I Neg_I)
 
@@ -1386,7 +1386,7 @@ lemma truth_provable: "H \<turnstile> (Neg Fls)"
 lemma ExFalso: "H \<turnstile> Fls \<Longrightarrow> H \<turnstile> A"
   by (metis Neg_D truth_provable)
 
-subsection{*More properties of @{term Zero}*}
+subsection\<open>More properties of @{term Zero}\<close>
 
 lemma Eq_Zero_D:
   assumes "H \<turnstile> t EQ Zero" "H \<turnstile> u IN t" shows "H \<turnstile> A"
@@ -1415,7 +1415,7 @@ proof -
     by (metis cut_same  cut [OF Eq_Zero_thm [OF i1] Hyp] insertCI insert_is_Un)
 qed
 
-subsection{*Basic properties of @{term Eats}*}
+subsection\<open>Basic properties of @{term Eats}\<close>
 
 lemma Eq_Eats_iff:
   assumes "atom i \<sharp> (z,t,u)"
@@ -1518,7 +1518,7 @@ lemmas Eats_EQ_Zero_E2H = Eats_EQ_Zero_E2 Eats_EQ_Zero_E2 [THEN rotate2] Eats_EQ
 declare Eats_EQ_Zero_E2H [intro!]
 
 
-section{*Bounded Quantification involving @{term Eats}*}
+section\<open>Bounded Quantification involving @{term Eats}\<close>
 
 lemma All2_cong: "H \<turnstile> t EQ t' \<Longrightarrow> H \<turnstile> A IFF A' \<Longrightarrow> \<forall>C \<in> H. atom i \<sharp> C \<Longrightarrow> H \<turnstile> (All2 i t A) IFF (All2 i t' A')"
   by (metis All_cong Imp_cong Mem_cong Refl)
@@ -1570,7 +1570,7 @@ lemma All2_SUCC_E':
     shows "insert (All2 i u A) H \<turnstile> B"
   by (metis All2_SUCC_E Iff_MP_left' Iff_refl All2_cong assms)
 
-section{*Induction*}
+section\<open>Induction\<close>
 
 lemma Ind:
   assumes j: "atom (j::name) \<sharp> (i,A)"

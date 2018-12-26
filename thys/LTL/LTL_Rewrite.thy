@@ -619,7 +619,7 @@ next
         define i where "i = (LEAST i. suffix i w \<Turnstile>\<^sub>n \<psi>)"
         ultimately
         have "\<forall>j < i. \<not>suffix j w \<Turnstile>\<^sub>n \<psi>" and "suffix i w \<Turnstile>\<^sub>n \<psi>"
-          by (blast dest: not_less_Least , metis LeastI `\<exists>i. suffix i w \<Turnstile>\<^sub>n \<psi>` i_def)  
+          by (blast dest: not_less_Least , metis LeastI \<open>\<exists>i. suffix i w \<Turnstile>\<^sub>n \<psi>\<close> i_def)  
         hence "\<forall>j < i. suffix j w \<Turnstile>\<^sub>n \<phi>" and "suffix i w \<Turnstile>\<^sub>n \<psi>"
           using syntactical_implies_correct[OF A] by auto
       }
@@ -645,7 +645,7 @@ next
         define i where "i = (LEAST i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>)"
         ultimately
         have "\<forall>j < i. suffix j w \<Turnstile>\<^sub>n \<psi>" and "\<not> suffix i w \<Turnstile>\<^sub>n \<psi>"
-          by (blast dest: not_less_Least , metis LeastI `\<exists>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>` i_def)  
+          by (blast dest: not_less_Least , metis LeastI \<open>\<exists>i. \<not>suffix i w \<Turnstile>\<^sub>n \<psi>\<close> i_def)  
         hence "\<forall>j < i. \<not>suffix j w \<Turnstile>\<^sub>n \<phi>" and "\<not> suffix i w \<Turnstile>\<^sub>n \<psi>"
           using syntactical_implies_correct[OF A] by auto
       }

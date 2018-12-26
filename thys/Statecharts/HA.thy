@@ -4,12 +4,12 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Syntax of Hierarchical Automata *}
+section \<open>Syntax of Hierarchical Automata\<close>
 theory HA
 imports SA
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 (* unique root automaton *)
 
@@ -61,7 +61,7 @@ definition
                     (OneAncestor F G) \<and> 
                     (NoCycles F G))"
 
-subsubsection {* Well-formedness for the syntax of HA *}
+subsubsection \<open>Well-formedness for the syntax of HA\<close>
 
 definition
   HierAuto :: "['d data,
@@ -134,7 +134,7 @@ definition
   HAInitState :: "(('s,'e,'d) hierauto) => 's" where
   "HAInitState HA == InitState (HARoot HA)"
 
-subsubsection {* State successor function *}
+subsubsection \<open>State successor function\<close>
 
 (* state successor function Chi *)
   
@@ -168,7 +168,7 @@ definition
              \<lambda> (t,t') \<in> (HADelta A) \<times> (HADelta A).
                           (source t',source t) \<in>  ChiPlus A"
 
-subsubsection {* Configurations *}
+subsubsection \<open>Configurations\<close>
 
 (* initial configuration *)
 
@@ -208,7 +208,7 @@ definition
                ((((ChiRel A) \<inter> ((HAInitStates A) \<times> (HAInitStates A)))\<^sup>+) 
                    `` (((ChiRel A)`` (Target TS)) \<inter> (HAInitStates A)))"
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
 lemma Rep_hierauto_tuple:
 "Rep_hierauto HA = (HAInitValue HA, SAs HA, HAEvents HA, CompFun HA)"
@@ -222,7 +222,7 @@ lemma HierAuto_select [simp]:
   "HierAuto (HAInitValue HA) (SAs HA) (HAEvents HA) (CompFun HA)"
 by (cut_tac Rep_hierauto_select, unfold hierauto_def, simp)
 
-subsubsection {* @{text "HAStates"} *}
+subsubsection \<open>\<open>HAStates\<close>\<close>
 
 lemma finite_HAStates [simp]:
   "finite (HAStates HA)"
@@ -251,7 +251,7 @@ apply (unfold ChiRel_def)
 apply auto
 done
 
-subsubsection {* @{text "HAEvents"} *}
+subsubsection \<open>\<open>HAEvents\<close>\<close>
 
 lemma HAEvents_SAEvents_SAs:
   "\<Union>(SAEvents ` (SAs HA)) \<subseteq> HAEvents HA"
@@ -260,7 +260,7 @@ apply (unfold hierauto_def HierAuto_def)
 apply fast
 done
 
-subsubsection {* @{text "NoCycles"} *}
+subsubsection \<open>\<open>NoCycles\<close>\<close>
 
 lemma NoCycles_EmptySet [simp]:
   "NoCycles {} S"
@@ -273,7 +273,7 @@ apply (unfold hierauto_def HierAuto_def IsCompFun_def)
 apply auto
 done
 
-subsubsection {* @{text "OneAncestor"} *}
+subsubsection \<open>\<open>OneAncestor\<close>\<close>
 
 lemma OneAncestor_HA [simp]:
   "OneAncestor (SAs HA) (CompFun HA)"
@@ -282,7 +282,7 @@ apply (unfold hierauto_def HierAuto_def IsCompFun_def)
 apply auto
 done
 
-subsubsection {* @{text "MutuallyDistinct"} *}
+subsubsection \<open>\<open>MutuallyDistinct\<close>\<close>
 
 lemma MutuallyDistinct_Single [simp]:
   "MutuallyDistinct {SA}"
@@ -310,7 +310,7 @@ apply (unfold hierauto_def HierAuto_def IsCompFun_def)
 apply auto
 done
 
-subsubsection {* @{text "RootEx"} *}
+subsubsection \<open>\<open>RootEx\<close>\<close>
 
 lemma RootEx_Root [simp]:
   "RootEx F G \<Longrightarrow> Root F G \<in> F"
@@ -365,7 +365,7 @@ apply (unfold hierauto_def HierAuto_def IsCompFun_def)
 apply fast
 done
 
-subsubsection {* @{text "HARoot"} *}
+subsubsection \<open>\<open>HARoot\<close>\<close>
 
 lemma HARoot_SAs [simp]:  
   "(HARoot HA) \<in> SAs HA"
@@ -411,7 +411,7 @@ apply (unfold IsCompFun_def hierauto_def HierAuto_def)
 apply fast
 done
 
-subsubsection {* @{text "CompFun"} *}
+subsubsection \<open>\<open>CompFun\<close>\<close>
 
 lemma IsCompFun_HA [simp]:
   "IsCompFun (SAs HA) (CompFun HA)"
@@ -523,7 +523,7 @@ apply fast
 apply simp
 done
 
-subsubsection {* @{text "SAs"} *}
+subsubsection \<open>\<open>SAs\<close>\<close>
 
 lemma finite_SAs [simp]:
   "finite (SAs HA)"
@@ -552,7 +552,7 @@ lemma SAs_States_HAStates:
  "SA \<in> SAs A \<Longrightarrow> States SA \<subseteq> HAStates A"
 by (unfold HAStates_def, auto)
 
-subsubsection {* @{text "HAInitState"} *}
+subsubsection \<open>\<open>HAInitState\<close>\<close>
 
 lemma HAInitState_HARoot [simp]:
   "HAInitState A \<in> States (HARoot A)"
@@ -647,7 +647,7 @@ apply (case_tac "AAA = SA")
 apply auto
 done
 
-subsubsection {* @{text "Chi"} *}
+subsubsection \<open>\<open>Chi\<close>\<close>
 
 lemma HARootStates_notmem_Chi [simp]:
   "\<lbrakk> S \<in> HAStates A;  T \<in> States (HARoot A) \<rbrakk> \<Longrightarrow> T \<notin>  Chi A S"
@@ -756,7 +756,7 @@ apply (erule_tac x=SAAA in ballE)
 apply auto
 done
 
-subsubsection {* @{text "ChiRel"} *}
+subsubsection \<open>\<open>ChiRel\<close>\<close>
 
 lemma finite_ChiRel [simp]:
   "finite (ChiRel A)"
@@ -995,7 +995,7 @@ apply (rule r_into_trancl')
 apply auto
 done
 
-subsubsection {* @{text "ChiPlus"} *}
+subsubsection \<open>\<open>ChiPlus\<close>\<close>
 
 lemma ChiPlus_ChiRel [simp]:
   "(S,T) \<in> ChiRel A \<Longrightarrow> (S,T) \<in> ChiPlus A"
@@ -1388,7 +1388,7 @@ apply (frule ChiRel_SA_OneAncestor)
 apply fast+
 done
 
-subsubsection {* @{text "ChiStar"} *}
+subsubsection \<open>\<open>ChiStar\<close>\<close>
 
 lemma ChiPlus_ChiStar [simp]:
   "\<lbrakk> (S,T) \<in> ChiPlus A  \<rbrakk> \<Longrightarrow> (S,T) \<in> ChiStar A"
@@ -1426,7 +1426,7 @@ apply (unfold ChiStar_def)
 apply auto
 done
 
-subsubsection {* @{text "InitConf"} *}
+subsubsection \<open>\<open>InitConf\<close>\<close>
 
 lemma InitConf_HAStates [simp]:
   "InitConf A \<subseteq> HAStates A"
@@ -1600,7 +1600,7 @@ apply (rule CompFun_ChiRel)
 apply auto
 done
 
-subsubsection {* @{text "StepConf"} *}
+subsubsection \<open>\<open>StepConf\<close>\<close>
 
 lemma StepConf_EmptySet [simp]:
   "StepConf A C {} = C"

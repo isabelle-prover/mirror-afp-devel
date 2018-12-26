@@ -8,7 +8,7 @@
   2009-12-10: OrderedMap, transfer of iterators to OrderedSet
 
 *)
-section {* \isaheader{Implementing Sets by Maps} *}
+section \<open>\isaheader{Implementing Sets by Maps}\<close>
 theory SetByMap
 imports 
   "../spec/SetSpec"
@@ -16,17 +16,17 @@ imports
   SetGA
   MapGA
 begin
-text_raw {*\label{thy:SetByMap}*}
+text_raw \<open>\label{thy:SetByMap}\<close>
 
-text {*
+text \<open>
   In this theory, we show how to implement sets
   by maps.
-*}
+\<close>
 
 (* TODO: We could also define some more operations directly,
   e.g. union, ball, bex, \<dots> *)
 
-text {* Auxiliary lemma *}
+text \<open>Auxiliary lemma\<close>
 lemma foldli_foldli_map_eq:
   "foldli (foldli l (\<lambda>x. True) (\<lambda>x l. l@[f x]) []) c f' \<sigma>0
     = foldli l c (f' o f) \<sigma>0"
@@ -50,7 +50,7 @@ begin
   definition list_it :: "'s \<Rightarrow> ('x,'x list) set_iterator" 
     where "list_it s c f \<sigma>0 \<equiv> it_to_it (map.list_it s) c (f o fst) \<sigma>0"
 
-  local_setup {* Locale_Code.lc_decl_del @{term list_it} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term list_it}\<close>
 
   lemma list_it_alt: "list_it s = map_iterator_dom (map.iteratei s)"
   proof -
@@ -78,15 +78,15 @@ begin
     bset_op_delete = delete,
     bset_op_list_it = list_it
     \<rparr>"
-  local_setup {* Locale_Code.lc_decl_del @{term dflt_basic_ops} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term dflt_basic_ops}\<close>
 
 end
 
-setup {*
+setup \<open>
   (Record_Intf.add_unf_thms_global @{thms 
     SetByMapDefs.list_it_def[abs_def]
   })
-*} 
+\<close> 
 
 
 (*lemmas [code_unfold] = SetByMapDefs.list_it_def[abs_def]*)
@@ -156,12 +156,12 @@ begin
     where "ordered_list_it s c f \<sigma>0 
     \<equiv> it_to_it (map.ordered_list_it s) c (f o fst) \<sigma>0"
     (*where "list_it s c f \<sigma>0 \<equiv> it_to_it (map.list_it s) c (f o fst) \<sigma>0"*)
-  local_setup {* Locale_Code.lc_decl_del @{term ordered_list_it} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term ordered_list_it}\<close>
 
   definition rev_list_it :: "'s \<Rightarrow> ('x,'x list) set_iterator" 
     where "rev_list_it s c f \<sigma>0 \<equiv> it_to_it (map.rev_list_it s) c (f o fst) \<sigma>0"
     (*where "rev_list_it s c f \<sigma>0 \<equiv> map.rev_iterateoi s c (f o fst) \<sigma>0"*)
-  local_setup {* Locale_Code.lc_decl_del @{term rev_list_it} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term rev_list_it}\<close>
 
 
   definition [icf_rec_def]: "dflt_basic_oops \<equiv> 
@@ -169,16 +169,16 @@ begin
       bset_op_ordered_list_it = ordered_list_it,
       bset_op_rev_list_it = rev_list_it
       \<rparr>"
-  local_setup {* Locale_Code.lc_decl_del @{term dflt_basic_oops} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term dflt_basic_oops}\<close>
 
 end
 
-setup {*
+setup \<open>
   (Record_Intf.add_unf_thms_global @{thms 
     OSetByOMapDefs.ordered_list_it_def[abs_def]
     OSetByOMapDefs.rev_list_it_def[abs_def]
   })
-*} 
+\<close> 
 
 (*lemmas [code_unfold] = OSetByOMapDefs.ordered_list_it_def[abs_def]
   OSetByOMapDefs.rev_list_it_def[abs_def]*)

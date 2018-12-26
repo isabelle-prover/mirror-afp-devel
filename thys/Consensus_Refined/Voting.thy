@@ -1,9 +1,9 @@
-section {* The Voting Model *}
+section \<open>The Voting Model\<close>
 
 theory Voting imports Refinement Consensus_Misc Quorums
 begin
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 
 record v_state = 
@@ -13,8 +13,8 @@ record v_state =
   votes :: "round \<Rightarrow> (process, val) map"
   decisions :: "(process, val)map"
 
-text {* Initially, no rounds have been executed (the next round is 0), no votes have been
-  cast, and no decisions have been made. *}
+text \<open>Initially, no rounds have been executed (the next round is 0), no votes have been
+  cast, and no decisions have been made.\<close>
 
 definition v_init :: "v_state set" where
   "v_init = { \<lparr> next_round = 0, votes = \<lambda>r a. None, decisions = Map.empty \<rparr> }"  
@@ -25,7 +25,7 @@ definition quorum_for :: "process set \<Rightarrow> val \<Rightarrow> (process, 
   quorum_for_def':
   "quorum_for Q v v_f \<equiv> Q \<in> Quorum \<and> v_f ` Q = {Some v}"
 
-text {* The following definition of @{term quorum_for} is easier to reason about in Isabelle. *}
+text \<open>The following definition of @{term quorum_for} is easier to reason about in Isabelle.\<close>
 
 lemma quorum_for_def:
   "quorum_for Q v v_f = (Q \<in> Quorum \<and> (\<forall>p \<in> Q. v_f p = Some v))"
@@ -46,7 +46,7 @@ definition no_defection :: "v_state \<Rightarrow> (process, val)map \<Rightarrow
   "no_defection s r_votes r \<equiv> 
     \<forall>r' < r. \<forall>Q \<in> Quorum. \<forall>v. (votes s r') ` Q = {Some v} \<longrightarrow> r_votes ` Q \<subseteq> {None, Some v}"
 
-text {* The following definition of @{term no_defection} is easier to reason about in Isabelle. *}
+text \<open>The following definition of @{term no_defection} is easier to reason about in Isabelle.\<close>
 
 lemma no_defection_def:
   "no_defection s round_votes r =
@@ -58,7 +58,7 @@ lemma no_defection_def:
 definition locked :: "v_state \<Rightarrow> val set" where
   "locked s = {v. \<exists>r. locked_in s r v}"
 
-text {* The sole system event. *}
+text \<open>The sole system event.\<close>
 
 definition v_round :: "round \<Rightarrow> (process, val)map \<Rightarrow> (process, val)map \<Rightarrow> (v_state \<times> v_state) set" where
   "v_round r r_votes r_decisions = {(s, s').
@@ -85,11 +85,11 @@ definition v_TS :: "v_state TS" where
 lemmas v_TS_defs = v_TS_def v_init_def v_trans_def
 
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
-text {* The only rounds where votes could have been cast are the ones 
-  preceding the next round. *}
+text \<open>The only rounds where votes could have been cast are the ones 
+  preceding the next round.\<close>
 definition Vinv1 where
   "Vinv1 = {s. \<forall>r. next_round s \<le> r \<longrightarrow> votes s r = Map.empty }"
 
@@ -97,7 +97,7 @@ lemmas Vinv1I = Vinv1_def [THEN setc_def_to_intro, rule_format]
 lemmas Vinv1E [elim] = Vinv1_def [THEN setc_def_to_elim, rule_format]
 lemmas Vinv1D = Vinv1_def [THEN setc_def_to_dest, rule_format]
 
-text {* The votes cast must respect the @{term no_defection} property. *} 
+text \<open>The votes cast must respect the @{term no_defection} property.\<close> 
 definition Vinv2 where
   "Vinv2 = {s. \<forall>r. no_defection s (votes s r) r }"
 
@@ -112,7 +112,7 @@ lemmas Vinv3I = Vinv3_def [THEN setc_def_to_intro, rule_format]
 lemmas Vinv3E [elim] = Vinv3_def [THEN setc_def_to_elim, rule_format]
 lemmas Vinv3D = Vinv3_def [THEN setc_def_to_dest, rule_format]
 
-subsubsection {* Proofs of invariants *}
+subsubsection \<open>Proofs of invariants\<close>
 (******************************************************************************)
 
 (*************************) 
@@ -131,8 +131,8 @@ lemma Vinv1_inductive:
 lemma Vinv1_invariant: "reach v_TS \<subseteq> Vinv1"
   by (rule inv_rule_basic, auto intro!: Vinv1_inductive)
 
-text {* The following two lemmas will be useful later, when we
-  start taking votes with the maximum timestamp. *}
+text \<open>The following two lemmas will be useful later, when we
+  start taking votes with the maximum timestamp.\<close>
 
 lemma Vinv1_finite_map_graph:
    "s \<in> Vinv1 \<Longrightarrow> finite (map_graph (case_prod (votes s)))"
@@ -240,17 +240,17 @@ lemma Vinv3_invariant: "reach v_TS \<subseteq> Vinv3"
   by (rule inv_rule_incr, auto intro: Vinv3_inductive Vinv1_invariant del: subsetI)
 
 
-subsection {* Agreement and stability *}
+subsection \<open>Agreement and stability\<close>
 (******************************************************************************)
 
-text {* Only a singe value can be locked within the votes for one round. *}
+text \<open>Only a singe value can be locked within the votes for one round.\<close>
 lemma locked_in_vf_same:
   "\<lbrakk> locked_in_vf v_f v; locked_in_vf v_f w \<rbrakk> \<Longrightarrow> v = w" using qintersect
   apply(auto simp add: locked_in_vf_def quorum_for_def image_iff)
   by (metis Int_iff all_not_in_conv option.inject)
 
-text {* In any reachable state, no two different values can be locked in
-  different rounds. *}
+text \<open>In any reachable state, no two different values can be locked in
+  different rounds.\<close>
 theorem locked_in_different:
 assumes
   "s \<in> Vinv2"
@@ -266,15 +266,15 @@ proof-
     by(auto simp add: locked_in_def locked_in_vf_def quorum_for_def)
   \<comment> \<open>By the quorum intersection property, some process from @{term Q1} voted for @{term w}:\<close>
   then obtain a where "a \<in> Q1" "votes s r2 a = Some w" 
-    using qintersect[OF `Q1 \<in> Quorum` `Q2 \<in> Quorum`]
+    using qintersect[OF \<open>Q1 \<in> Quorum\<close> \<open>Q2 \<in> Quorum\<close>]
     by(auto simp add: quorum_for_def)
   \<comment> \<open>But from @{term Vinv2} we conclude that @{term a} could not have defected by voting
         @{term w}, so @{term ?thesis}:\<close>
-  thus ?thesis using `s \<in> Vinv2` `quorum_for Q1 v (votes s r1)` `r1 < r2`
+  thus ?thesis using \<open>s \<in> Vinv2\<close> \<open>quorum_for Q1 v (votes s r1)\<close> \<open>r1 < r2\<close>
     by(fastforce simp add: Vinv2_def no_defection_def quorum_for_def')
 qed
 
-text {* It is simple to extend the previous theorem to any two (not necessarily different) rounds. *}
+text \<open>It is simple to extend the previous theorem to any two (not necessarily different) rounds.\<close>
 theorem locked_unique: 
 assumes 
   "s \<in> Vinv2"
@@ -290,12 +290,12 @@ proof -
     assume "r1 = r2"
     with quoIn show ?thesis
       by(simp add: locked_in_def locked_in_vf_same)
-  qed(auto intro: locked_in_different[OF `s \<in> Vinv2`] quoIn sym)
+  qed(auto intro: locked_in_different[OF \<open>s \<in> Vinv2\<close>] quoIn sym)
 qed
 
-text {* We now prove that decisions are stable; once a process makes a decision, it never
+text \<open>We now prove that decisions are stable; once a process makes a decision, it never
   changes it, and it does not go back to an undecided state. Note that behaviors grow at 
-  the front; hence @{term "tr ! (i-j)"} is later in the trace than @{term "tr ! i"}. *}
+  the front; hence @{term "tr ! (i-j)"} is later in the trace than @{term "tr ! i"}.\<close>
 lemma stable_decision:
   assumes beh: "tr \<in> beh v_TS"
   and len: "i < length tr"
@@ -358,8 +358,8 @@ proof-
   qed
 qed
 
-text {* Finally, we prove that the Voting model ensures agreement. Without a loss 
-  of generality, we assume that @{text t} preceeds @{text s} in the trace. *}
+text \<open>Finally, we prove that the Voting model ensures agreement. Without a loss 
+  of generality, we assume that \<open>t\<close> preceeds \<open>s\<close> in the trace.\<close>
 lemma Voting_agreement:
   assumes beh: "tr \<in> beh v_TS"
   and len: "i < length tr"
@@ -403,9 +403,9 @@ proof-
         by(blast dest: Vinv2_invariant[THEN subsetD] Vinv3_invariant[THEN subsetD])+
       from dec_t have "v \<in> locked t" using invs(2)
         by(auto intro: ranI) 
-      moreover have locked_w_t: "w \<in> locked t" using Suc `t \<in> Vinv3`[THEN Vinv3D]
+      moreover have locked_w_t: "w \<in> locked t" using Suc \<open>t \<in> Vinv3\<close>[THEN Vinv3D]
         by(auto intro: ranI)
-      ultimately show ?thesis using locked_unique[OF `t \<in> Vinv2`]
+      ultimately show ?thesis using locked_unique[OF \<open>t \<in> Vinv2\<close>]
         by blast
     qed(auto)
   qed

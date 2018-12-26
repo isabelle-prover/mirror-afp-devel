@@ -1,8 +1,8 @@
 (* This work was done by Denis Lohner (denis.lohner@kit.edu). *)
 
-chapter {* A Control Flow Graph for Jinja Byte Code *}
+chapter \<open>A Control Flow Graph for Jinja Byte Code\<close>
 
-section {* Formalizing the CFG *}
+section \<open>Formalizing the CFG\<close>
 
 theory JVMCFG imports "../Basic/BasicDefs" Jinja.BVExample begin
 
@@ -10,9 +10,9 @@ theory JVMCFG imports "../Basic/BasicDefs" Jinja.BVExample begin
 declare lesub_list_impl_same_size [simp del]
 declare listE_length [simp del]
 
-subsection {* Type definitions *}
+subsection \<open>Type definitions\<close>
 
-subsubsection {* Wellformed Programs *}
+subsubsection \<open>Wellformed Programs\<close>
 
 definition "wf_jvmprog = {(P, Phi). wf_jvm_prog\<^bsub>Phi\<^esub> P}"
 
@@ -36,17 +36,17 @@ lemma wf_jvmprog_is_wf: "wf_jvm_prog\<^bsub>P\<^bsub>\<Phi>\<^esub>\<^esub> (P\<
 using Rep_wf_jvmprog [of P]
   by (auto simp: wf_jvmprog_def split_beta)
 
-subsubsection {* Basic Types *}
+subsubsection \<open>Basic Types\<close>
 
-text {*
+text \<open>
 We consider a program to be a well-formed Jinja program,
 together with a given base class and a main method
-*}
+\<close>
 
 type_synonym jvmprog = "wf_jvmprog \<times> cname \<times> mname"
 type_synonym callstack = "(cname \<times> mname \<times> pc) list"
 
-text {*
+text \<open>
 The state is modeled as $\textrm{heap} \times \textrm{stack-variables} \times \textrm{local-variables}$
 
 stack and local variables are modeled as pairs of natural numbers. The first number
@@ -56,7 +56,7 @@ the second the position in the method's stack or array of local variables resp.
 The stack variables are numbered from bottom up (which is the reverse order of the
 array for the stack in Jinja's state representation), whereas local variables are identified
 by their position in the array of local variables of Jinja's state representation.
-*}
+\<close>
 
 type_synonym state = "heap \<times> ((nat \<times> nat) \<Rightarrow> val) \<times> ((nat \<times> nat) \<Rightarrow> val)"
 
@@ -74,11 +74,11 @@ where
   "loc_of s \<equiv> snd(snd(s))"
 
 
-subsection {* Basic Definitions *}
+subsection \<open>Basic Definitions\<close>
 
-subsubsection {* State update (instruction execution) *}
+subsubsection \<open>State update (instruction execution)\<close>
 
-text {*
+text \<open>
 This function models instruction execution for our state representation.
 
 Additional parameters are the call depth of the current program point,
@@ -87,7 +87,7 @@ the length of the stack in the underlying call frame (needed for {\sc Return}),
 and (for {\sc Invoke}) the length of the array of local variables of the invoked method.
 
 Exception handling is not covered by this function.
-*}
+\<close>
 
 fun exec_instr :: "instr \<Rightarrow> wf_jvmprog \<Rightarrow> state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> state"
 where
@@ -174,10 +174,10 @@ where
   )"
 
 
-subsubsection {* length of stack and local variables *}
+subsubsection \<open>length of stack and local variables\<close>
 
-text {* The following terms extract the stack length at a given program point
-from the well-typing of the given program *}
+text \<open>The following terms extract the stack length at a given program point
+from the well-typing of the given program\<close>
 
 abbreviation stkLength :: "wf_jvmprog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> pc \<Rightarrow> nat"
   where
@@ -188,14 +188,14 @@ abbreviation locLength :: "wf_jvmprog \<Rightarrow> cname \<Rightarrow> mname \<
   "locLength P C M pc \<equiv> length (snd(the(((P\<^bsub>\<Phi>\<^esub>) C M)!pc)))"
 
 
-subsubsection {* Conversion functions  *}
+subsubsection \<open>Conversion functions\<close>
 
-text {*
-This function takes a natural number n and a function f with domain @{text nat}
+text \<open>
+This function takes a natural number n and a function f with domain \<open>nat\<close>
 and creates the array [f 0, f 1, f 2, ..., f (n - 1)].
 
 This is used for extracting the array of local variables
-*}
+\<close>
 
 (*
 fun locs :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list"
@@ -207,12 +207,12 @@ where
 abbreviation locs :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list"
 where "locs n loc \<equiv> map loc [0..<n]"
 
-text {*
-This function takes a natural number n and a function f with domain @{text nat}
+text \<open>
+This function takes a natural number n and a function f with domain \<open>nat\<close>
 and creates the array [f (n - 1), ..., f 1, f 0].
 
 This is used for extracting the stack as a list
-*}
+\<close>
 
 (*
 fun stks :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list"
@@ -224,10 +224,10 @@ where
 abbreviation stks :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list"
 where "stks n stk \<equiv> map stk (rev [0..<n])"
 
-text {*
+text \<open>
 This function creates a list of the arrays for local variables from the given state
 corresponding to the given callstack
-*}
+\<close>
 
 fun locss :: "wf_jvmprog \<Rightarrow> callstack \<Rightarrow> ((nat \<times> nat) \<Rightarrow> 'a) \<Rightarrow> 'a list list"
 where
@@ -235,10 +235,10 @@ where
 | "locss P ((C,M,pc)#cs) loc =
     (locs (locLength P C M pc) (\<lambda>a. loc (length cs, a)))#(locss P cs loc)"
 
-text {*
+text \<open>
 This function creates a list of the (methods') stacks from the given state
 corresponding to the given callstack
-*}
+\<close>
 
 fun stkss :: "wf_jvmprog \<Rightarrow> callstack \<Rightarrow> ((nat \<times> nat) \<Rightarrow> 'a) \<Rightarrow> 'a list list"
 where
@@ -246,34 +246,34 @@ where
 | "stkss P ((C,M,pc)#cs) stk =
   (stks (stkLength P C M pc) (\<lambda>a. stk (length cs, a)))#(stkss P cs stk)"
 
-text {* Given a callstack and a state, this abbreviation converts the state
+text \<open>Given a callstack and a state, this abbreviation converts the state
 to Jinja's state representation
-*}
+\<close>
 
 abbreviation state_to_jvm_state :: "wf_jvmprog \<Rightarrow> callstack \<Rightarrow> state \<Rightarrow> jvm_state"
 where "state_to_jvm_state P cs s \<equiv> 
   (None, heap_of s, zip (stkss P cs (stk_of s)) (zip (locss P cs (loc_of s)) cs))"
 
-text {* This function extracts the call stack from a given frame stack (as it is given
+text \<open>This function extracts the call stack from a given frame stack (as it is given
 by Jinja's state representation)
-*}
+\<close>
 
 definition framestack_to_callstack :: "frame list \<Rightarrow> callstack"
 where "framestack_to_callstack frs \<equiv> map snd (map snd frs)"
 
 
-subsubsection {* State Conformance *}
+subsubsection \<open>State Conformance\<close>
 
-text {* Now we lift byte code verifier conformance to our state representation *}
+text \<open>Now we lift byte code verifier conformance to our state representation\<close>
 
 definition bv_conform :: "wf_jvmprog \<Rightarrow> callstack \<Rightarrow> state \<Rightarrow> bool"
   ("_,_ \<turnstile>\<^bsub>BV\<^esub> _ \<surd>")
 where "P,cs \<turnstile>\<^bsub>BV\<^esub> s \<surd> \<equiv> correct_state (P\<^bsub>wf\<^esub>) (P\<^bsub>\<Phi>\<^esub>) (state_to_jvm_state P cs s)"
 
 
-subsubsection {* Statically determine catch-block *}
+subsubsection \<open>Statically determine catch-block\<close>
 
-text {* This function is equivalent to Jinja's @{text "find_handler"} function *}
+text \<open>This function is equivalent to Jinja's \<open>find_handler\<close> function\<close>
 fun find_handler_for :: "wf_jvmprog \<Rightarrow> cname \<Rightarrow> callstack \<Rightarrow> callstack"
 where
   "find_handler_for P C [] = []"
@@ -283,7 +283,7 @@ where
         | Some pc_d \<Rightarrow> (C', M', fst pc_d)#cs))"
 
 
-subsection {* Simplification lemmas *}
+subsection \<open>Simplification lemmas\<close>
 
 lemma find_handler_decr [simp]: "find_handler_for P Exc cs \<noteq> c#cs"
 proof
@@ -464,35 +464,35 @@ lemma f2c_append [simp]:
   by (simp add: framestack_to_callstack_def)
 
 
-subsection {* CFG construction *}
+subsection \<open>CFG construction\<close>
 
-subsection {* Datatypes *}
+subsection \<open>Datatypes\<close>
 
-text {* Nodes are labeled with a callstack and an optional tuple (consisting of
+text \<open>Nodes are labeled with a callstack and an optional tuple (consisting of
 a callstack and a flag).
 
 The first callstack determines the current program point (i.e. the next statement
 to execute). If the second parameter is not None, we are at an intermediate state,
 where the target of the instruction is determined (the second callstack)
 and the flag is set to whether an exception is thrown or not.
-*}
+\<close>
 datatype j_node =
    Entry  ("'('_Entry'_')")
  | Node "callstack" "(callstack \<times> bool) option" ("'('_ _,_ '_')")
 
-text {* The empty callstack indicates the exit node *}
+text \<open>The empty callstack indicates the exit node\<close>
 
 abbreviation j_node_Exit :: "j_node" ("'('_Exit'_')")
 where "j_node_Exit \<equiv> (_ [],None _)"
 
-text {* An edge is a triple, consisting of two nodes and the edge kind *}
+text \<open>An edge is a triple, consisting of two nodes and the edge kind\<close>
 
 type_synonym j_edge = "(j_node \<times> state edge_kind \<times> j_node)"
 
 
-subsection {* CFG *}
+subsection \<open>CFG\<close>
 
-text {*
+text \<open>
 The CFG is constructed by a case analysis on the instructions and
 their different behavior in different states. E.g. the exceptional behavior of
 {\sc New}, if there is no more space in the heap, vs. the normal behavior.
@@ -500,7 +500,7 @@ their different behavior in different states. E.g. the exceptional behavior of
 Note: The set of edges defined by this predicate is a first approximation to the
 real set of edges in the CFG. We later (theory JVMInterpretation) add some well-formedness
 requirements to the nodes.
-*}
+\<close>
 
 inductive JVM_CFG :: "jvmprog \<Rightarrow> j_node \<Rightarrow> state edge_kind \<Rightarrow> j_node \<Rightarrow> bool"
   ("_ \<turnstile> _ -_\<rightarrow> _")
@@ -769,7 +769,7 @@ where
     \<Longrightarrow> prog \<turnstile> (_ (C, M, pc)#cs,\<lfloor>([],True)\<rfloor> _) -\<Up>id\<rightarrow> (_Exit_)"
 
 
-subsection {* CFG properties *}
+subsection \<open>CFG properties\<close>
 
 lemma JVMCFG_Exit_no_sourcenode [dest]:
   assumes edge:"prog \<turnstile> (_Exit_) -et\<rightarrow> n'"

@@ -246,7 +246,7 @@ begin
     then obtain d' where dstd': "dst \<in> Vd d'"
       by (auto simp: in_Vd_conv)
 
-    txt {* We make a case-distinction whether @{text "d'\<le>d"}: *}
+    txt \<open>We make a case-distinction whether \<open>d'\<le>d\<close>:\<close>
     have "d'\<le>d \<or> Suc d \<le> d'" by auto  
     moreover {
       assume "d'\<le>d"
@@ -254,13 +254,13 @@ begin
       with dst_ne_VIS have False by auto
     } moreover {
       assume "Suc d \<le> d'"
-      txt {* In the case @{text "d+1 \<le> d'"}, we also obtain a node
-        that has a shortest path of length @{text "d+1"}: *}
+      txt \<open>In the case \<open>d+1 \<le> d'\<close>, we also obtain a node
+        that has a shortest path of length \<open>d+1\<close>:\<close>
       with min_dist_le[OF C] dstd' obtain v' where "v' \<in> Vd (Suc d)"
         by (auto simp: in_Vd_conv)
-      txt {* However, the invariant states that such nodes are either in
-        @{text "N"} or are successors of @{text "C"}. As @{text "N"} 
-        and @{text "C"} are both empty, we again get a contradiction. *}
+      txt \<open>However, the invariant states that such nodes are either in
+        \<open>N\<close> or are successors of \<open>C\<close>. As \<open>N\<close> 
+        and \<open>C\<close> are both empty, we again get a contradiction.\<close>
       with N_eq have False by auto  
     } ultimately show False by blast
   qed

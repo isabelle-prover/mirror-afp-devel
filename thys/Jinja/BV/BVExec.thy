@@ -4,7 +4,7 @@
     Copyright   2000 TUM
 *)
 
-section {* Kildall for the JVM \label{sec:JVM} *}
+section \<open>Kildall for the JVM \label{sec:JVM}\<close>
 
 theory BVExec
 imports "../DFA/Abstract_BV" TF_JVM

@@ -12,9 +12,9 @@ imports
   "../BV/JVMDeadlocked"
 begin
 
-text {*
+text \<open>
   Do not interpret these locales, it just takes too long to generate all definitions and theorems.
-*}
+\<close>
 
 lemma sc_J_typesafe:
   "J_typesafe addr2thread_id thread_id2addr sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read sc_heap_write (sc_hconf P) P"

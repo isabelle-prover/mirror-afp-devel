@@ -2,14 +2,14 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Map Implementation by Associative Lists} *}
+section \<open>\isaheader{Map Implementation by Associative Lists}\<close>
 theory ListMapImpl
 imports 
   "../spec/MapSpec" 
   "../../Lib/Assoc_List" 
   "../gen_algo/MapGA"
 begin
-text_raw {*\label{thy:ListMapImpl}*}
+text_raw \<open>\label{thy:ListMapImpl}\<close>
 
 (*@impl Map
   @type 'a lm
@@ -51,7 +51,7 @@ interpretation lm: StdMap_no_invar lm_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "lm"*}
+setup \<open>ICF_Tools.revert_abbrevs "lm"\<close>
 
 lemma pi_lm[proper_it]: 
   "proper_it' Assoc_List.iteratei Assoc_List.iteratei"
@@ -74,7 +74,7 @@ interpretation pi_lm': proper_it_loc lm.iteratei lm.iteratei
   done
 
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 definition "test_codegen \<equiv> (
   lm.add ,
   lm.add_dj ,

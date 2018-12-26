@@ -1,20 +1,20 @@
-chapter{*Quotations of the Free Variables*}
+chapter\<open>Quotations of the Free Variables\<close>
 
 theory Quote
 imports Pseudo_Coding
 begin
 
-section {*Sequence version of the ``Special p-Function, F*''*}
+section \<open>Sequence version of the ``Special p-Function, F*''\<close>
 
-text{*The definition below describes a relation, not a function. 
-      This material relates to Section 8, but omits the ordering of the universe.*}
+text\<open>The definition below describes a relation, not a function. 
+      This material relates to Section 8, but omits the ordering of the universe.\<close>
 
 definition SeqQuote :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
 where "SeqQuote x x' s k \<equiv> 
        BuildSeq2 (\<lambda>y y'. y=0 \<and> y' = 0)
                  (\<lambda>u u' v v' w w'. u = v \<triangleleft> w \<and> u' = q_Eats v' w') s k x x'"
 
-subsection {*Defining the syntax: quantified body*}
+subsection \<open>Defining the syntax: quantified body\<close>
 
 nominal_function SeqQuoteP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl,sl',m,n,sm,sm',sn,sn'); 
@@ -85,7 +85,7 @@ qed
 
 declare SeqQuoteP.simps [simp del]
 
-subsection {*Correctness properties*}
+subsection \<open>Correctness properties\<close>
 
 lemma SeqQuoteP_lemma:
   fixes m::name and sm::name and sm'::name and n::name and sn::name and sn'::name
@@ -140,12 +140,12 @@ proof -
     done
 qed
 
-section {*The ``special function'' itself*}
+section \<open>The ``special function'' itself\<close>
 
 definition Quote :: "hf \<Rightarrow> hf \<Rightarrow> bool"
   where "Quote x x' \<equiv> \<exists>s k. SeqQuote x x' s k"
 
-subsection {*Defining the syntax*}
+subsection \<open>Defining the syntax\<close>
 
 nominal_function QuoteP :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (t,u,k); atom k \<sharp> (t,u)\<rbrakk> \<Longrightarrow>
@@ -178,7 +178,7 @@ qed
 
 declare QuoteP.simps [simp del]
 
-subsection {*Correctness properties*}
+subsection \<open>Correctness properties\<close>
 
 lemma Quote_0: "Quote 0 0"
   by (auto simp: Quote_def SeqQuote_def intro: BuildSeq2_exI)
@@ -452,9 +452,9 @@ qed
 lemmas QuoteP_I = SeqQuoteP_imp_QuoteP [THEN cut1]
 
 
-section {*The Operator @{term quote_all}*}
+section \<open>The Operator @{term quote_all}\<close>
 
-subsection {*Definition and basic properties*}
+subsection \<open>Definition and basic properties\<close>
 
 definition quote_all :: "[perm, name set] \<Rightarrow> fm set"
   where "quote_all p V = {QuoteP (Var i) (Var (p \<bullet> i)) | i. i \<in> V}"
@@ -482,7 +482,7 @@ proof -
   { fix W
     assume w: "W \<subseteq> V"
     have "finite W"
-      by (metis `finite V` finite_subset w)
+      by (metis \<open>finite V\<close> finite_subset w)
     hence "quote_all ((atom i \<rightleftharpoons> atom i') + p) W = quote_all p W" using w
         apply induction  using assms
         apply (auto simp: fresh_Pair perm_commute)
@@ -493,7 +493,7 @@ proof -
 qed
 
 
-subsection {*Transferring theorems to the level of derivability*}
+subsection \<open>Transferring theorems to the level of derivability\<close>
 
 context quote_perm
 begin
@@ -501,7 +501,7 @@ begin
 lemma QuoteP_imp_ConstP_F_hyps:
   assumes "Us \<subseteq> Vs" "{ConstP (F i) | i. i \<in> Us} \<turnstile> A"  shows "quote_all p Us \<turnstile> A"
 proof -
-  show ?thesis using finite_V [OF `Us \<subseteq> Vs`]  assms
+  show ?thesis using finite_V [OF \<open>Us \<subseteq> Vs\<close>]  assms
   proof (induction arbitrary: A rule: finite_induct)
     case empty thus ?case by simp
   next
@@ -511,7 +511,7 @@ proof -
   qed
 qed
 
-text{*Lemma 8.3*}
+text\<open>Lemma 8.3\<close>
 theorem quote_all_PfP_ssubst:
   assumes \<beta>: "{} \<turnstile> \<beta>"
       and V: "V \<subseteq> Vs"
@@ -526,7 +526,7 @@ proof -
     by (rule QuoteP_imp_ConstP_F_hyps [OF V])
 qed
 
-text{*Lemma 8.4*}
+text\<open>Lemma 8.4\<close>
 corollary quote_all_MonPon_PfP_ssubst:
   assumes A: "{} \<turnstile> \<alpha> IMP \<beta>"
       and V: "V \<subseteq> Vs"
@@ -535,7 +535,7 @@ corollary quote_all_MonPon_PfP_ssubst:
 using quote_all_PfP_ssubst [OF A V] s
   by (auto simp: V vquot_fm_def intro: PfP_implies_ModPon_PfP thin1)
 
-text{*Lemma 8.4b*}
+text\<open>Lemma 8.4b\<close>
 corollary quote_all_MonPon2_PfP_ssubst:
   assumes A: "{} \<turnstile> \<alpha>1 IMP \<alpha>2 IMP \<beta>"
       and V: "V \<subseteq> Vs"
@@ -608,7 +608,7 @@ lemma fresh_ssubst_fm:
 end
 
 
-section {*Star Property. Equality and Membership: Lemmas 9.3 and 9.4*}
+section \<open>Star Property. Equality and Membership: Lemmas 9.3 and 9.4\<close>
 
 lemma SeqQuoteP_Mem_imp_QMem_and_Subset:
   assumes "atom i \<sharp> (j,j',i',si,ki,sj,kj)" "atom i' \<sharp> (j,j',si,ki,sj,kj)"
@@ -973,7 +973,7 @@ proof -
 qed
 
 
-section {*Star Property. Universal Quantifier: Lemma 9.7*}
+section \<open>Star Property. Universal Quantifier: Lemma 9.7\<close>
 
 lemma (in quote_perm) SeqQuoteP_Mem_imp_All2:
   assumes IH: "insert (QuoteP (Var i) (Var i')) (quote_all p Vs) 
@@ -1102,7 +1102,7 @@ proof -
     by simp
   hence "quote_all p Vs 
          \<turnstile> (QuoteP (Var i) (Var sn') IMP (\<alpha> IMP PfP (ssubst \<lfloor>\<alpha>(i::=Var sn)\<rfloor>V' V' F'))) (i::=Var sn)"
-    using `atom i \<sharp> _`
+    using \<open>atom i \<sharp> _\<close>
     by (force intro!: Subst elim!: fresh_quote_all_mem)
   hence "quote_all p Vs 
          \<turnstile> (QuoteP (Var sn) (Var sn') IMP 
@@ -1272,7 +1272,7 @@ proof -
 qed
 
 
-section {*The Derivability Condition, Theorem 9.1*}
+section \<open>The Derivability Condition, Theorem 9.1\<close>
 
 lemma SpecI: "H \<turnstile> A IMP Ex i A"
   by (metis Imp_I Assume Ex_I subst_fm_id)
@@ -1331,17 +1331,17 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
     define p' where "p' = (atom i \<rightleftharpoons> atom i') + p" 
     define F' where "F' = make_F (insert i V) p'"
     have p'_apply [simp]: "!!v. p' \<bullet> v = (if v=i then i' else if v=i' then i else p \<bullet> v)"
-      using  `atom i \<sharp> p`  i'
+      using  \<open>atom i \<sharp> p\<close>  i'
       by (auto simp: p'_def fresh_Pair fresh_at_base_permI) 
          (metis atom_eq_iff fresh_at_base_permI permute_eq_iff swap_at_base_simps(3)) 
     have p'V: "p' \<bullet> V = p \<bullet> V"
-      by (metis i' p'_def permute_plus fresh_Pair qp.fresh_pVs swap_fresh_fresh `atom i \<sharp> p`)
+      by (metis i' p'_def permute_plus fresh_Pair qp.fresh_pVs swap_fresh_fresh \<open>atom i \<sharp> p\<close>)
     have i: "i \<notin> V" "i \<notin> p \<bullet> V"  "atom i \<sharp> V" "atom i \<sharp> p \<bullet> V"  "atom i \<sharp> p' \<bullet> V" using ExI
       by (auto simp: p'V fresh_finite_set_at_base notin_V)
     interpret qp': quote_perm p' "insert i V" F' 
-      by (auto simp: qp.qp_insert i' p'_def F'_def  `atom i \<sharp> p`)
+      by (auto simp: qp.qp_insert i' p'_def F'_def  \<open>atom i \<sharp> p\<close>)
     { fix W t assume W: "W \<subseteq> V" "i\<notin>W" "i'\<notin>W"
-      hence "finite W" by (metis `finite V` infinite_super)
+      hence "finite W" by (metis \<open>finite V\<close> infinite_super)
       hence "ssubst t W F' = ssubst t W F" using W
         by induct (auto simp: qp.ssubst_insert_if qp'.ssubst_insert_if qp.F_unfold qp'.F_unfold)
     }
@@ -1359,8 +1359,8 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
            \<turnstile> PfP (ssubst \<lfloor>Ex i A\<rfloor>(insert i V) (insert i V) F')"
       apply (rule MP_thin)
       apply (rule ExI(3) [of "insert i V" p' F'])
-      apply (metis `finite V` finite_insert)
-      using `supp (Ex i A) \<subseteq> _` qp'.p qp'.pinv i'
+      apply (metis \<open>finite V\<close> finite_insert)
+      using \<open>supp (Ex i A) \<subseteq> _\<close> qp'.p qp'.pinv i'
       apply (auto simp: F'_def fresh_finite_insert)
       done
     hence "insert (QuoteP (Var i) (Var i')) (insert A (quote_all p V)) 
@@ -1385,16 +1385,16 @@ proof (nominal_induct avoiding: p arbitrary: V F rule: ss_fm.strong_induct)
     define p' where "p' = (atom i \<rightleftharpoons> atom i') + p" 
     define F' where "F' = make_F (insert i V) p'"
     interpret qp': quote_perm p' "insert i V" F' 
-      using `atom i \<sharp> p` i'
+      using \<open>atom i \<sharp> p\<close> i'
       by (auto simp: qp.qp_insert p'_def F'_def)
     have p'_apply [simp]: "p' \<bullet> i = i'"
-      using `atom i \<sharp> p` by (auto simp: p'_def fresh_at_base_permI)
+      using \<open>atom i \<sharp> p\<close> by (auto simp: p'_def fresh_at_base_permI)
     have qa_p': "quote_all p' V = quote_all p V" using i' All2I
       by (auto simp: p'_def quote_all_perm_eq)
     have "insert A (quote_all p' (insert i V)) 
           \<turnstile> PfP (ssubst \<lfloor>A\<rfloor>(insert i V) (insert i V) F')"
       apply (rule All2I.hyps)
-      using `supp (All2 i _ A) \<subseteq> _`   qp'.p qp'.pinv
+      using \<open>supp (All2 i _ A) \<subseteq> _\<close>   qp'.p qp'.pinv
       apply (auto simp: F'_def fresh_finite_insert)
       done
     hence "insert (QuoteP (Var i) (Var i')) (quote_all p V) 

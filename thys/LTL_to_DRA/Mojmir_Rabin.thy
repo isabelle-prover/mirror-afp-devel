@@ -84,7 +84,7 @@ next
     have "(\<lambda>(f,a). f(r:=a)) ` (?F' \<times> A) = ?X"
       by auto
     hence "finite ?X"
-      using finite_imageI[OF `finite (?F' \<times> A)`, of "(\<lambda>(f,a). f(r:=a))"] by presburger
+      using finite_imageI[OF \<open>finite (?F' \<times> A)\<close>, of "(\<lambda>(f,a). f(r:=a))"] by presburger
     ultimately
     have "finite ?F"
       by (blast intro: finite_subset)
@@ -107,7 +107,7 @@ proof (rule finite_subset)
     obtain a where "a \<in> \<Sigma>"
       using nonempty_\<Sigma> by blast
     have "range (w \<frown> (\<lambda>i. a)) \<subseteq> \<Sigma>"
-      using `set w \<subseteq> \<Sigma>` `a \<in> \<Sigma>` unfolding conc_def by auto
+      using \<open>set w \<subseteq> \<Sigma>\<close> \<open>a \<in> \<Sigma>\<close> unfolding conc_def by auto
     then interpret \<HH>: semi_mojmir \<Sigma> \<delta> q\<^sub>0 "(w \<frown> (\<lambda>i. a))"
       using finite_reach finite_\<Sigma> by (unfold_locales; simp_all)
     have "x = (\<lambda>q. \<HH>.state_rank q (length w))" 
@@ -143,7 +143,7 @@ proof (rule imp_and_not_imp_eq)
     assume "x > Max (A \<union> {0})"
     moreover
     have "finite (A \<union> {0})"
-      using `finite A` by simp
+      using \<open>finite A\<close> by simp
     ultimately
     have "x \<notin> A"
       using Max.coboundedI 
@@ -165,7 +165,7 @@ next
   hence "finite (f ` A)"
     by (metis infinite_iff_countable_subset subset_UNIV subset_image_iff)
   then obtain y where "y \<in> f ` A" and "\<exists>\<^sub>\<infinity>n. f n = y"
-    unfolding Inf_many_def using pigeonhole_infinite[OF `infinite A`] by fast
+    unfolding Inf_many_def using pigeonhole_infinite[OF \<open>infinite A\<close>] by fast
   ultimately
   show "limit f \<inter> B \<noteq> {}"
     using limit_iff_frequent by fast
@@ -208,7 +208,7 @@ proof
 
   have "finite (range r)"
     using finite_range_run r_def by simp
-  note finite_limit_rule = finite_limit_intersection[OF `finite (range r)`]
+  note finite_limit_rule = finite_limit_intersection[OF \<open>finite (range r)\<close>]
  
   {
     assume "?lhs"
@@ -216,16 +216,16 @@ proof
       unfolding finite_fail_t finite_merge_t finite_succeed_t by blast+
 
     have "limit r \<inter> fail\<^sub>R = {}"
-      by (metis finite_limit_rule F `finite (fail_t)`)
+      by (metis finite_limit_rule F \<open>finite (fail_t)\<close>)
     moreover
     have "limit r \<inter> merge\<^sub>R i = {}"
-      by (metis finite_limit_rule B `finite (merge_t i)`)
+      by (metis finite_limit_rule B \<open>finite (merge_t i)\<close>)
     ultimately
     have "limit r \<inter> fst (Acc\<^sub>\<R> i) = {}"
       by auto
     moreover
     have "limit r \<inter> succeed\<^sub>R i \<noteq> {}"
-      by (metis finite_limit_rule S `infinite (succeed_t i)`)
+      by (metis finite_limit_rule S \<open>infinite (succeed_t i)\<close>)
     hence "limit r \<inter> snd (Acc\<^sub>\<R> i) \<noteq> {}"
       by auto
     ultimately
@@ -239,13 +239,13 @@ proof
       unfolding r_def by auto 
 
     have "finite fail_t"
-      by (metis finite_limit_rule F `limit r \<inter> fail\<^sub>R = {}`)
+      by (metis finite_limit_rule F \<open>limit r \<inter> fail\<^sub>R = {}\<close>)
     moreover
     have "finite (merge_t i)"
-      by (metis finite_limit_rule B `limit r \<inter> merge\<^sub>R i = {}`)
+      by (metis finite_limit_rule B \<open>limit r \<inter> merge\<^sub>R i = {}\<close>)
     moreover
     have "infinite (succeed_t i)"
-      by (metis finite_limit_rule S `limit r \<inter> (succeed\<^sub>R i) \<noteq> {}`)
+      by (metis finite_limit_rule S \<open>limit r \<inter> (succeed\<^sub>R i) \<noteq> {}\<close>)
     ultimately
     show ?lhs
       unfolding finite_fail_t finite_merge_t finite_succeed_t by blast

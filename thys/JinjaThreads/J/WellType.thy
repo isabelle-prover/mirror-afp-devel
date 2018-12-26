@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Well-typedness of Jinja expressions *}
+section \<open>Well-typedness of Jinja expressions\<close>
 
 theory WellType
 imports
@@ -289,34 +289,34 @@ lemma
   and WTs_change_is_lub: "\<lbrakk> is_lub1,P,E \<turnstile> es [::] Ts; ran E \<subseteq> types P \<rbrakk> \<Longrightarrow> is_lub2,P,E \<turnstile> es [::] Ts"
 proof(induct rule: WT_WTs.inducts)
   case (WTBlock U E V e' T vo)
-  from `is_type P U` `ran E \<subseteq> types P`
+  from \<open>is_type P U\<close> \<open>ran E \<subseteq> types P\<close>
   have "ran (E(V \<mapsto> U)) \<subseteq> types P" by(auto simp add: ran_def)
   hence "is_lub2,P,E(V \<mapsto> U) \<turnstile> e' :: T" by(rule WTBlock)
-  with `is_type P U` show ?case
-    using `case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> U` by auto
+  with \<open>is_type P U\<close> show ?case
+    using \<open>case vo of None \<Rightarrow> True | \<lfloor>v\<rfloor> \<Rightarrow> \<exists>T'. typeof v = \<lfloor>T'\<rfloor> \<and> P \<turnstile> T' \<le> U\<close> by auto
 next
   case (WTCond E e e1 T1 e2 T2 T)
-  from `ran E \<subseteq> types P` have "is_lub2,P,E \<turnstile> e :: Boolean" "is_lub2,P,E \<turnstile> e1 :: T1" "is_lub2,P,E \<turnstile> e2 :: T2"
+  from \<open>ran E \<subseteq> types P\<close> have "is_lub2,P,E \<turnstile> e :: Boolean" "is_lub2,P,E \<turnstile> e1 :: T1" "is_lub2,P,E \<turnstile> e2 :: T2"
     by(rule WTCond)+
-  moreover from is_lub2_is_type wf `is_lub2,P,E \<turnstile> e1 :: T1` `ran E \<subseteq> types P`
+  moreover from is_lub2_is_type wf \<open>is_lub2,P,E \<turnstile> e1 :: T1\<close> \<open>ran E \<subseteq> types P\<close>
   have "is_type P T1" by(rule WT_is_type)
-  from is_lub2_is_type wf `is_lub2,P,E \<turnstile> e2 :: T2` `ran E \<subseteq> types P`
+  from is_lub2_is_type wf \<open>is_lub2,P,E \<turnstile> e2 :: T2\<close> \<open>ran E \<subseteq> types P\<close>
   have "is_type P T2" by(rule WT_is_type)
-  with `\<turnstile>1 lub(T1, T2) = T` `is_type P T1`
+  with \<open>\<turnstile>1 lub(T1, T2) = T\<close> \<open>is_type P T1\<close>
   have "\<turnstile>2 lub(T1, T2) = T" by(rule is_lub1_into_is_lub2)
   ultimately show ?case ..
 next
   case (WTTry E e1 T V C e2)
-  from `ran E \<subseteq> types P` have "is_lub2,P,E \<turnstile> e1 :: T" by(rule WTTry)
-  moreover from `P \<turnstile> C \<preceq>\<^sup>* Throwable` have "is_class P C"
+  from \<open>ran E \<subseteq> types P\<close> have "is_lub2,P,E \<turnstile> e1 :: T" by(rule WTTry)
+  moreover from \<open>P \<turnstile> C \<preceq>\<^sup>* Throwable\<close> have "is_class P C"
     by(rule is_class_sub_Throwable[OF wf])
-  with `ran E \<subseteq> types P` have "ran (E(V \<mapsto> Class C)) \<subseteq> types P"
+  with \<open>ran E \<subseteq> types P\<close> have "ran (E(V \<mapsto> Class C)) \<subseteq> types P"
     by(auto simp add: ran_def)
   hence "is_lub2,P,E(V \<mapsto> Class C) \<turnstile> e2 :: T" by(rule WTTry)
-  ultimately show ?case using `P \<turnstile> C \<preceq>\<^sup>* Throwable` ..
+  ultimately show ?case using \<open>P \<turnstile> C \<preceq>\<^sup>* Throwable\<close> ..
 qed auto
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 lemma WTBlock_code:
   "\<And>is_lub. \<lbrakk> is_type P T; is_lub,P,E(V \<mapsto> T) \<turnstile> e :: T'; 

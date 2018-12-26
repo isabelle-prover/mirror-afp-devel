@@ -424,7 +424,7 @@ next
   next
     case False
       then have phi_is: "\<xi> \<Turnstile>\<^sub>n \<phi>" and "\<xi> \<Turnstile>\<^sub>n X\<^sub>n (\<phi> U\<^sub>n \<psi>)" 
-        using `?rhs` by auto
+        using \<open>?rhs\<close> by auto
       then obtain i where psi_suc_is: "suffix (Suc i) \<xi> \<Turnstile>\<^sub>n \<psi>"
         and phi_suc_is: "\<forall>j<i. suffix (Suc j) \<xi> \<Turnstile>\<^sub>n \<phi>" by auto
       have sbgoal: "\<forall>j \<le> i. suffix j \<xi> \<Turnstile>\<^sub>n \<phi>"

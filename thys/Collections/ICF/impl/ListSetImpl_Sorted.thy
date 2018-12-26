@@ -2,14 +2,14 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* \isaheader{Set Implementation by sorted Lists} *}
+section \<open>\isaheader{Set Implementation by sorted Lists}\<close>
 theory ListSetImpl_Sorted
 imports 
   "../spec/SetSpec"
   "../gen_algo/SetGA"
   "../../Lib/Sorted_List_Operations"
 begin
-text_raw {*\label{thy:ListSetImpl_Sorted}*}
+text_raw \<open>\label{thy:ListSetImpl_Sorted}\<close>
 
 (*@impl Set
   @type 'a::linorder lss
@@ -257,7 +257,7 @@ proof -
 qed
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "lss"*}
+setup \<open>ICF_Tools.revert_abbrevs "lss"\<close>
 
 lemma pi_lss[proper_it]: 
   "proper_it' lss_iteratei lss_iteratei"

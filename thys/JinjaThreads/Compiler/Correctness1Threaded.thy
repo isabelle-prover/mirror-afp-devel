@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Unlocking a sync block never fails *}
+section \<open>Unlocking a sync block never fails\<close>
 
 theory Correctness1Threaded imports 
   J0J1Bisim
@@ -104,7 +104,7 @@ lemma assumes "sync_ok e'"
   shows sync_ok_inline_call: "sync_ok e \<Longrightarrow> sync_ok (inline_call e' e)"
   and sync_oks_inline_calls: "sync_oks es \<Longrightarrow> sync_oks (inline_calls e' es)"
 apply(induct e and es rule: sync_ok.induct sync_oks.induct)
-apply(insert `sync_ok e'`)
+apply(insert \<open>sync_ok e'\<close>)
 apply auto
 done
 
@@ -125,7 +125,7 @@ lemma assumes "final e'"
   and expr_lockss_inline_calls_final:
   "expr_lockss (inline_calls e' es) = expr_lockss es"
 apply(induct e and es rule: expr_locks.induct expr_lockss.induct)
-apply(insert `final e'`)
+apply(insert \<open>final e'\<close>)
 apply(auto simp add: is_vals_conv intro: ext)
 done
 
@@ -202,15 +202,15 @@ lemma shows red1_preserves_el_loc_ok:
   "\<lbrakk> uf,P,t \<turnstile>1 \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle>; sync_oks es; els_loc_ok es (lcl s) \<rbrakk> \<Longrightarrow> els_loc_ok es' (lcl s')"
 proof(induct rule: red1_reds1.inducts)
   case (Synchronized1Red2 e s ta e' s' V a)
-  from `el_loc_ok (insync\<^bsub>V\<^esub> (a) e) (lcl s)`
+  from \<open>el_loc_ok (insync\<^bsub>V\<^esub> (a) e) (lcl s)\<close>
   have "el_loc_ok e (lcl s)" "unmod e V" "lcl s ! V = Addr a" by auto
-  from `sync_ok (insync\<^bsub>V\<^esub> (a) e)` have "sync_ok e" by simp
+  from \<open>sync_ok (insync\<^bsub>V\<^esub> (a) e)\<close> have "sync_ok e" by simp
   hence "el_loc_ok e' (lcl s')"
-    using `el_loc_ok e (lcl s)`
+    using \<open>el_loc_ok e (lcl s)\<close>
     by(rule Synchronized1Red2)
-  moreover from `uf,P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` `unmod e V` have "unmod e' V"
+  moreover from \<open>uf,P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> \<open>unmod e V\<close> have "unmod e' V"
     by(rule red1_unmod_preserved)
-  moreover from red1_preserves_unmod[OF `uf,P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>` `unmod e V`] `lcl s ! V = Addr a`
+  moreover from red1_preserves_unmod[OF \<open>uf,P,t \<turnstile>1 \<langle>e,s\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close> \<open>unmod e V\<close>] \<open>lcl s ! V = Addr a\<close>
   have "lcl s' ! V = Addr a" by simp
   ultimately show ?case by auto
 qed(auto elim: el_loc_ok_not_contains_insync_local_change els_loc_ok_not_contains_insyncs_local_change)
@@ -299,9 +299,9 @@ proof(intro ext)
     assume "?lhs" thus ?rhs
     proof cases
       case (redT_normal t x ta x' m')
-      from `mred1 P t (x, shr s) ta (x', m')` have "mred1' P t (x, shr s) ta (x', m')"
-        unfolding mred1_eq_mred1'[OF lok elo `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta`] .
-      thus ?thesis using redT_normal(3-) unfolding `tta = (t, ta)` ..
+      from \<open>mred1 P t (x, shr s) ta (x', m')\<close> have "mred1' P t (x, shr s) ta (x', m')"
+        unfolding mred1_eq_mred1'[OF lok elo \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> \<open>Red1_mthr.actions_ok s t ta\<close>] .
+      thus ?thesis using redT_normal(3-) unfolding \<open>tta = (t, ta)\<close> ..
     next
       case (redT_acquire t x ln n)
       from this(2-) show ?thesis unfolding redT_acquire(1) ..
@@ -310,9 +310,9 @@ proof(intro ext)
     assume ?rhs thus ?lhs
     proof(cases)
       case (redT_normal t x ta x' m')
-      from `mred1' P t (x, shr s) ta (x', m')` have "mred1 P t (x, shr s) ta (x', m')"
-        unfolding mred1_eq_mred1'[OF lok elo `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `Red1_mthr.actions_ok s t ta`] .
-      thus ?thesis using redT_normal(3-) unfolding `tta = (t, ta)` ..
+      from \<open>mred1' P t (x, shr s) ta (x', m')\<close> have "mred1 P t (x, shr s) ta (x', m')"
+        unfolding mred1_eq_mred1'[OF lok elo \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> \<open>Red1_mthr.actions_ok s t ta\<close>] .
+      thus ?thesis using redT_normal(3-) unfolding \<open>tta = (t, ta)\<close> ..
     next
       case (redT_acquire t x ln n)
       from this(2-) show ?thesis unfolding redT_acquire(1) ..
@@ -378,21 +378,21 @@ lemma Red1'_preserves_lock_oks:
 using Red
 proof(cases rule: Red1_mthr.redT.cases)
   case (redT_normal t x ta x' m')
-  note [simp] = `ta1 = (t, ta)`
+  note [simp] = \<open>ta1 = (t, ta)\<close>
   obtain ex exs where x: "x = (ex, exs)" by (cases x)
   obtain ex' exs' where x': "x' = (ex', exs')" by (cases x')
-  note thrst = `thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>`
-  note aoe = `Red1_mthr.actions_ok s1 t ta`
-  from `mred1' P t (x, shr s1) ta (x', m')`
+  note thrst = \<open>thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
+  note aoe = \<open>Red1_mthr.actions_ok s1 t ta\<close>
+  from \<open>mred1' P t (x, shr s1) ta (x', m')\<close>
   have red: "False,P,t \<turnstile>1 \<langle>ex/exs,shr s1\<rangle> -ta\<rightarrow> \<langle>ex'/exs',m'\<rangle>"
     unfolding x x' by simp_all
-  note s1' = `redT_upd s1 t ta x' m' s1'`
+  note s1' = \<open>redT_upd s1 t ta x' m' s1'\<close>
   moreover from red 
   have "lock_oks1 (locks s1') (thr s1')"
   proof cases
     case (red1Red e x TA e' x')
-    note [simp] = `ex = (e, x)` `ta = extTA2J1 P TA` `ex' = (e', x')` `exs' = exs`
-      and red = `False,P,t \<turnstile>1 \<langle>e,(shr s1, x)\<rangle> -TA\<rightarrow> \<langle>e',(m', x')\<rangle>`
+    note [simp] = \<open>ex = (e, x)\<close> \<open>ta = extTA2J1 P TA\<close> \<open>ex' = (e', x')\<close> \<open>exs' = exs\<close>
+      and red = \<open>False,P,t \<turnstile>1 \<langle>e,(shr s1, x)\<rangle> -TA\<rightarrow> \<langle>e',(m', x')\<rangle>\<close>
     { fix t'
       assume None: "(redT_updTs (thr s1) (map (convert_new_thread_action (extNTA2J1 P)) \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>)(t \<mapsto> (((e', x'), exs), redT_updLns (locks s1) t (snd (the (thr s1 t))) \<lbrace>TA\<rbrace>\<^bsub>l\<^esub>))) t' = None"
       { fix l
@@ -442,16 +442,16 @@ proof(cases rule: Red1_mthr.redT.cases)
             ultimately show ?thesis using lao False by simp
           next
             case False
-            with Some `t \<noteq> t'` tok 
+            with Some \<open>t \<noteq> t'\<close> tok 
             have "thr s1 t' = \<lfloor>((eX, eXS), LN)\<rfloor>" by(fastforce dest: redT_updTs_Some[OF _ tok])
-            with loks tok lao `t \<noteq> t'` show ?thesis by(cases eX)(auto simp add: lock_oks1_def)
+            with loks tok lao \<open>t \<noteq> t'\<close> show ?thesis by(cases eX)(auto simp add: lock_oks1_def)
           qed
         qed }
       hence "\<forall>l. has_locks ((redT_updLs (locks s1) t \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>) $ l) t' + LN $ l = expr_lockss (map fst (eX # eXS)) l" .. }
     ultimately show ?thesis using s1' unfolding lock_oks1_def x' by(clarsimp simp del: fun_upd_apply)
   next
     case (red1Call e a M vs U Ts T body D x)
-    from wf `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D`
+    from wf \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>body\<rfloor> in D\<close>
     obtain T' where "P,Class D # Ts \<turnstile>1 body :: T'"
       by(auto simp add: wf_mdecl_def dest!: sees_wf_mdecl)
     hence "expr_locks (blocks1 0 (Class D#Ts) body) = (\<lambda>l. 0)"
@@ -474,7 +474,7 @@ proof(cases rule: Red1_mthr.redT.cases)
       apply fastforce
       done
   qed
-  moreover from sync `mred1' P t (x, shr s1) ta (x', m')` thrst aoe s1'
+  moreover from sync \<open>mred1' P t (x, shr s1) ta (x', m')\<close> thrst aoe s1'
   have "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr s1') (shr s1')"
     by(auto intro: lifting_wf.redT_updTs_preserves[OF Red1_el_loc_ok[OF wf]])
   ultimately show ?thesis by simp
@@ -606,15 +606,15 @@ proof(cases)
   from this(2-) show ?thesis unfolding redT_acquire(1) ..
 next
   case (redT_normal t x ta x' m')
-  note aok = `Red1_mthr.if.actions_ok s t ta`
-    and tst = `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
-  from `Red1_mthr.init_fin uf P t (x, shr s) ta (x', m')`
+  note aok = \<open>Red1_mthr.if.actions_ok s t ta\<close>
+    and tst = \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
+  from \<open>Red1_mthr.init_fin uf P t (x, shr s) ta (x', m')\<close>
   have "Red1_mthr.init_fin (\<not> uf) P t (x, shr s) ta (x', m')"
   proof(cases)
     case InitialThreadAction show ?thesis unfolding InitialThreadAction ..
   next
     case (ThreadFinishAction exexs)
-    from `final_expr1 exexs` show ?thesis unfolding ThreadFinishAction ..
+    from \<open>final_expr1 exexs\<close> show ?thesis unfolding ThreadFinishAction ..
   next
     case (NormalAction exexs ta' exexs')
     let ?s = "init_fin_descend_state s"
@@ -622,18 +622,18 @@ next
     from lok have "lock_oks1 (locks ?s) (thr ?s)" by(simp)
     moreover from elo have elo: "ts_ok (\<lambda>t exexs h. el_loc_ok1 exexs) (thr ?s) (shr ?s)"
       by(simp add: ts_ok_init_fin_descend_state)
-    moreover from tst `x = (Running, exexs)`
+    moreover from tst \<open>x = (Running, exexs)\<close>
     have "thr ?s t = \<lfloor>(exexs, no_wait_locks)\<rfloor>" by simp
     moreover from aok have "Red1_mthr.actions_ok ?s t ta'"
-      using `ta = convert_TA_initial (convert_obs_initial ta')` by auto
+      using \<open>ta = convert_TA_initial (convert_obs_initial ta')\<close> by auto
     ultimately have "mred1 P t (exexs, shr ?s) ta' = mred1' P t (exexs, shr ?s) ta'"
       by(rule mred1_eq_mred1')
-    with `mred1g uf P t (exexs, shr s) ta' (exexs', m')`
+    with \<open>mred1g uf P t (exexs, shr s) ta' (exexs', m')\<close>
     have "mred1g (\<not> uf) P t (exexs, shr s) ta' (exexs', m')"
       by(cases uf) simp_all
     thus ?thesis unfolding NormalAction(1-3) by(rule Red1_mthr.init_fin.NormalAction)
   qed
-  thus ?thesis using tst aok `redT_upd s t ta x' m' s'` unfolding `tta = (t, ta)` ..
+  thus ?thesis using tst aok \<open>redT_upd s t ta x' m' s'\<close> unfolding \<open>tta = (t, ta)\<close> ..
 qed
 
 lemma if_Red1_mthr_eq_if_Red1_mthr':
@@ -670,8 +670,8 @@ proof -
     thus ?thesis by simp
   next
     case (redT_normal t sx ta sx' m')
-    note tst = `thr s1 t = \<lfloor>(sx, no_wait_locks)\<rfloor>`
-    from `Red1_mthr.init_fin False P t (sx, shr s1) ta (sx', m')`
+    note tst = \<open>thr s1 t = \<lfloor>(sx, no_wait_locks)\<rfloor>\<close>
+    from \<open>Red1_mthr.init_fin False P t (sx, shr s1) ta (sx', m')\<close>
     show ?thesis
     proof(cases)
       case (InitialThreadAction x) thus ?thesis using redT_normal loks
@@ -681,14 +681,14 @@ proof -
         by(cases x)(auto 4 3 simp add: init_fin_descend_thr_def redT_updLns_def expand_finfun_eq fun_eq_iff intro: lock_oks1_thr_updI)
     next
       case (NormalAction x ta' x')
-      note ta = `ta = convert_TA_initial (convert_obs_initial ta')`
-      from `mred1' P t (x, shr s1) ta' (x', m')`
+      note ta = \<open>ta = convert_TA_initial (convert_obs_initial ta')\<close>
+      from \<open>mred1' P t (x, shr s1) ta' (x', m')\<close>
       have "mred1' P t (x, shr ?s1) ta' (x', m')" by simp
       moreover have tst': "thr ?s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>" 
-        using tst `sx = (Running, x)` by simp
+        using tst \<open>sx = (Running, x)\<close> by simp
       moreover have "Red1_mthr.actions_ok ?s1 t ta'"
-        using ta `Red1_mthr.if.actions_ok s1 t ta` by simp
-      moreover from `redT_upd s1 t ta sx' m' s1'` tst tst' ta `sx' = (Running, x')`
+        using ta \<open>Red1_mthr.if.actions_ok s1 t ta\<close> by simp
+      moreover from \<open>redT_upd s1 t ta sx' m' s1'\<close> tst tst' ta \<open>sx' = (Running, x')\<close>
       have "redT_upd ?s1 t ta' x' m' ?s1'" by auto
       ultimately have "Red1_mthr.redT False P ?s1 (t, ta') ?s1'" ..
       with wf have "lock_oks1 (locks ?s1') (thr ?s1')" using loks' sync' by(rule Red1'_preserves_lock_oks)

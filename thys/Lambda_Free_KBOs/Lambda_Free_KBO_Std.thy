@@ -15,7 +15,7 @@ abbrevs ">t" = ">\<^sub>t"
 begin
 
 text \<open>
-This theory defines the standard version of the graceful Knuth--Bendix order for @{text \<lambda>}-free
+This theory defines the standard version of the graceful Knuth--Bendix order for \<open>\<lambda>\<close>-free
 higher-order terms. Standard means that one symbol is allowed to have a weight of 0.
 \<close>
 

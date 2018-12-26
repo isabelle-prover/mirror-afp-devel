@@ -1,6 +1,6 @@
-section {* Uniform Strategies *}
+section \<open>Uniform Strategies\<close>
 
-text {* Theorems about how to get a uniform strategy given strategies for each node. *}
+text \<open>Theorems about how to get a uniform strategy given strategies for each node.\<close>
 
 theory UniformStrategy
 imports
@@ -10,7 +10,7 @@ begin
 
 context ParityGame begin
 
-subsection {* A Uniform Attractor Strategy *}
+subsection \<open>A Uniform Attractor Strategy\<close>
 
 lemma merge_attractor_strategies:
   assumes "S \<subseteq> V"
@@ -22,7 +22,7 @@ proof-
   obtain r where r: "well_order_on ?G r" using well_order_on by blast
 
   interpret WellOrderedStrategies G "S - W" p good r proof
-    show "S - W \<subseteq> V" using `S \<subseteq> V` by blast
+    show "S - W \<subseteq> V" using \<open>S \<subseteq> V\<close> by blast
   next
     show "\<And>v. v \<in> S - W \<Longrightarrow> \<exists>\<sigma>. \<sigma> \<in> good v" unfolding good_def using strategies_ex by blast
   next
@@ -47,7 +47,7 @@ proof-
 
       hence "lset P \<subseteq> S - W" proof (induct rule: vmc_path_lset_induction)
         case base
-        show "v0 \<in> S - W" using `v0 \<in> S` contra visits_via_trivial by blast
+        show "v0 \<in> S - W" using \<open>v0 \<in> S\<close> contra visits_via_trivial by blast
       next
         case (step P v0)
         interpret vmc_path_no_deadend G P v0 p well_ordered_strategy using step.hyps(1) .
@@ -72,31 +72,31 @@ proof-
       have "\<not>lfinite P" proof
         assume "lfinite P"
         hence "deadend (llast P)" using P_maximal P_not_null maximal_ends_on_deadend by blast
-        moreover have "llast P \<in> S - W" using `lset P \<subseteq> S - W` P_not_null `lfinite P` lfinite_lset by blast
+        moreover have "llast P \<in> S - W" using \<open>lset P \<subseteq> S - W\<close> P_not_null \<open>lfinite P\<close> lfinite_lset by blast
         ultimately show False using S_W_no_deadends by blast
       qed
 
       obtain n where n: "path_conforms_with_strategy p (ldropn n P) (path_strategies P $ n)"
-        using path_eventually_conforms_to_\<sigma>_map_n[OF `lset P \<subseteq> S - W` P_valid P_conforms]
+        using path_eventually_conforms_to_\<sigma>_map_n[OF \<open>lset P \<subseteq> S - W\<close> P_valid P_conforms]
           by blast
       define \<sigma>' where [simp]: "\<sigma>' = path_strategies P $ n"
       define P' where [simp]: "P' = ldropn n P"
       interpret vmc_path G P' "lhd P'" p \<sigma>'
       proof
         show "\<not>lnull P'" unfolding P'_def
-          using `\<not>lfinite P` lfinite_ldropn lnull_imp_lfinite by blast
+          using \<open>\<not>lfinite P\<close> lfinite_ldropn lnull_imp_lfinite by blast
       qed (simp_all add: n)
       have "strategy p \<sigma>'" unfolding \<sigma>'_def
-        using path_strategies_strategy `lset P \<subseteq> S - W` `\<not>lfinite P` infinite_small_llength
+        using path_strategies_strategy \<open>lset P \<subseteq> S - W\<close> \<open>\<not>lfinite P\<close> infinite_small_llength
         by blast
       moreover have "strategy_attracts_via p \<sigma>' (lhd P') S W" proof-
-        have "P $ n \<in> S - W" using `lset P \<subseteq> S - W` `\<not>lfinite P` lset_nth_member_inf by blast
+        have "P $ n \<in> S - W" using \<open>lset P \<subseteq> S - W\<close> \<open>\<not>lfinite P\<close> lset_nth_member_inf by blast
         hence "\<sigma>' \<in> good (P $ n)"
-          using path_strategies_good \<sigma>'_def `\<not>lfinite P` `lset P \<subseteq> S - W` by blast
+          using path_strategies_good \<sigma>'_def \<open>\<not>lfinite P\<close> \<open>lset P \<subseteq> S - W\<close> by blast
         hence "strategy_attracts_via p \<sigma>' (P $ n) S W" unfolding good_def by blast
-        thus ?thesis unfolding P'_def using P_0 by (simp add: `\<not>lfinite P` infinite_small_llength)
+        thus ?thesis unfolding P'_def using P_0 by (simp add: \<open>\<not>lfinite P\<close> infinite_small_llength)
       qed
-      moreover from `lset P \<subseteq> S - W` have "lset P' \<subseteq> S - W"
+      moreover from \<open>lset P \<subseteq> S - W\<close> have "lset P' \<subseteq> S - W"
         unfolding P'_def using lset_ldropn_subset[of n P] by blast
       ultimately show False using strategy_attracts_via_lset by blast
     qed
@@ -105,12 +105,12 @@ proof-
 qed
 
 
-subsection {* A Uniform Winning Strategy *}
+subsection \<open>A Uniform Winning Strategy\<close>
 
-text {*
+text \<open>
   Let @{term S} be the winning region of player @{term p}.
   Then there exists a uniform winning strategy on @{term S}.
-*}
+\<close>
 
 lemma merge_winning_strategies:
   shows "\<exists>\<sigma>. strategy p \<sigma> \<and> (\<forall>v \<in> winning_region p. winning_strategy p \<sigma> v)"
@@ -133,11 +133,11 @@ proof-
     hence "winning_strategy p \<sigma> w" proof (cases)
       assume *: "v \<in> VV p"
       hence **: "\<sigma> v = w" using v(3) by blast
-      have "\<not>deadend v" using no_VVp_deadends `v \<in> VV p` v(1) by blast
+      have "\<not>deadend v" using no_VVp_deadends \<open>v \<in> VV p\<close> v(1) by blast
       with * ** show ?thesis using strategy_extends_VVp \<sigma> by blast
     next
       assume "v \<notin> VV p"
-      thus ?thesis using strategy_extends_VVpstar \<sigma> `v\<rightarrow>w` by blast
+      thus ?thesis using strategy_extends_VVpstar \<sigma> \<open>v\<rightarrow>w\<close> by blast
     qed
     thus "\<sigma> \<in> good w" unfolding good_def using \<sigma>(1) by blast
   qed (insert winning_region_in_V r)
@@ -156,7 +156,7 @@ proof-
       }
       hence "choose v0 \<in> good w0" using strategies_continue choose_good step.hyps(2) by simp
       thus ?case unfolding good_def winning_region_def using w0_V by blast
-    qed (insert `v0 \<in> winning_region p`)
+    qed (insert \<open>v0 \<in> winning_region p\<close>)
 
     have "winning_path p P" proof (rule ccontr)
       assume contra: "\<not>winning_path p P"
@@ -165,48 +165,48 @@ proof-
         assume "lfinite P"
         hence "deadend (llast P)" using maximal_ends_on_deadend by simp
         moreover have "llast P \<in> winning_region p"
-          using `lset P \<subseteq> winning_region p` P_not_null `lfinite P` lfinite_lset by blast
+          using \<open>lset P \<subseteq> winning_region p\<close> P_not_null \<open>lfinite P\<close> lfinite_lset by blast
         moreover have "llast P \<in> VV p"
-          using contra paths_are_winning_for_one_player `lfinite P`
+          using contra paths_are_winning_for_one_player \<open>lfinite P\<close>
           unfolding winning_path_def by simp
         ultimately show False using no_VVp_deadends by blast
       qed
 
       obtain n where n: "path_conforms_with_strategy p (ldropn n P) (path_strategies P $ n)"
-        using path_eventually_conforms_to_\<sigma>_map_n[OF `lset P \<subseteq> winning_region p` P_valid P_conforms] by blast
+        using path_eventually_conforms_to_\<sigma>_map_n[OF \<open>lset P \<subseteq> winning_region p\<close> P_valid P_conforms] by blast
       define \<sigma>' where [simp]: "\<sigma>' = path_strategies P $ n"
       define P' where [simp]: "P' = ldropn n P"
       interpret P': vmc_path G P' "lhd P'" p \<sigma>' proof
-        show "\<not>lnull P'" using `\<not>lfinite P` unfolding P'_def
+        show "\<not>lnull P'" using \<open>\<not>lfinite P\<close> unfolding P'_def
           using lfinite_ldropn lnull_imp_lfinite by blast
       qed (simp_all add: n)
       have "strategy p \<sigma>'" unfolding \<sigma>'_def
-        using path_strategies_strategy `lset P \<subseteq> winning_region p` `\<not>lfinite P` by blast
+        using path_strategies_strategy \<open>lset P \<subseteq> winning_region p\<close> \<open>\<not>lfinite P\<close> by blast
       moreover have "winning_strategy p \<sigma>' (lhd P')" proof-
         have "P $ n \<in> winning_region p"
-          using `lset P \<subseteq> winning_region p` `\<not>lfinite P` lset_nth_member_inf by blast
+          using \<open>lset P \<subseteq> winning_region p\<close> \<open>\<not>lfinite P\<close> lset_nth_member_inf by blast
         hence "\<sigma>' \<in> good (P $ n)"
-          using path_strategies_good choose_good \<sigma>'_def `\<not>lfinite P` `lset P \<subseteq> winning_region p`
+          using path_strategies_good choose_good \<sigma>'_def \<open>\<not>lfinite P\<close> \<open>lset P \<subseteq> winning_region p\<close>
           by blast
         hence "winning_strategy p \<sigma>' (P $ n)" unfolding good_def by blast
         thus ?thesis
-          unfolding P'_def using P_0 `\<not>lfinite P` by (simp add: infinite_small_llength lhd_ldropn)
+          unfolding P'_def using P_0 \<open>\<not>lfinite P\<close> by (simp add: infinite_small_llength lhd_ldropn)
       qed
       ultimately have "winning_path p P'" unfolding winning_strategy_def
         using P'.vmc_path_axioms by blast
-      moreover have "\<not>lfinite P'" using `\<not>lfinite P` P'_def by simp
+      moreover have "\<not>lfinite P'" using \<open>\<not>lfinite P\<close> P'_def by simp
       ultimately show False using contra winning_path_drop_add[OF P_valid] by auto
     qed
   }
   thus ?thesis unfolding winning_strategy_def using well_ordered_strategy_valid by auto
 qed
 
-subsection {* Extending Winning Regions *}
+subsection \<open>Extending Winning Regions\<close>
 
-text {*
-  Now we are finally able to prove the complement of @{text winning_region_extends_VVp} for
+text \<open>
+  Now we are finally able to prove the complement of \<open>winning_region_extends_VVp\<close> for
   @{term "VV p**"} nodes, which was still missing.
-*}
+\<close>
 
 lemma winning_region_extends_VVpstar:
   assumes v: "v \<in> VV p**" and w: "\<And>w. v\<rightarrow>w \<Longrightarrow> w \<in> winning_region p"
@@ -218,7 +218,7 @@ proof-
   thus ?thesis unfolding winning_region_def using v \<sigma>(1) by blast
 qed
 
-text {* It immediately follows that removing a winning region cannot create new deadends. *}
+text \<open>It immediately follows that removing a winning region cannot create new deadends.\<close>
 
 lemma removing_winning_region_induces_no_deadends:
   assumes "v \<in> V - winning_region p" "\<not>deadend v"

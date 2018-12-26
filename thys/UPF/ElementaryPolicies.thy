@@ -41,20 +41,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section{* Elementary Policies *}
+section\<open>Elementary Policies\<close>
 theory 
   ElementaryPolicies
   imports 
     UPFCore
 begin
-text{*
+text\<open>
   In this theory, we introduce the elementary policies of UPF that build the basis 
   for more complex policies. These complex policies, respectively, embedding of 
   well-known access control or security models, are build by composing the elementary 
   policies defined in this theory. 
-*}
+\<close>
 
-subsection{* The Core Policy Combinators: Allow and Deny Everything *}
+subsection\<open>The Core Policy Combinators: Allow and Deny Everything\<close>
 
 definition
    deny_pfun    :: "('\<alpha> \<rightharpoonup>'\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("AllD")
@@ -113,7 +113,7 @@ lemma neq_Allow_Deny: "pf \<noteq> \<emptyset> \<Longrightarrow> (deny_pfun pf) 
     done
   done
 
-subsection{* Common Instances *}
+subsection\<open>Common Instances\<close>
 
 definition allow_all_fun :: "('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<alpha> \<mapsto> '\<beta>)" ("A\<^sub>f")
   where "allow_all_fun f =  allow_pfun (Some o f)"
@@ -137,7 +137,7 @@ definition
   deny_all :: "('\<alpha> \<mapsto> unit)" ("D\<^sub>U") where
   "deny_all p   = \<lfloor>deny ()\<rfloor>"              
 
-text{* ... and resulting properties: *}
+text\<open>... and resulting properties:\<close>
 
 lemma "A\<^sub>I  \<Oplus> Map.empty  = A\<^sub>I"
   by simp 
@@ -160,9 +160,9 @@ lemma deny_left_cancel :"dom pf = UNIV \<Longrightarrow> (deny_pfun pf) \<Oplus>
   apply (rule ext)+
   by (auto simp: deny_pfun_def option.splits)
 
-subsection{* Domain, Range, and Restrictions *}
+subsection\<open>Domain, Range, and Restrictions\<close>
 
-text{* 
+text\<open>
   Since policies are essentially maps, we inherit the basic definitions for 
   domain and range on  Maps: \\
   \verb+Map.dom_def+ :  @{thm Map.dom_def} \\
@@ -186,11 +186,11 @@ text{*
   \item\verb+Map.dom_if+ @{thm Map.dom_if}
   \item\verb+Map.dom_map_add+ @{thm Map.dom_map_add}
   \end{itemize}
-*}
+\<close>
 
-text{* 
+text\<open>
   However, some properties are specific to policy concepts: 
-*}
+\<close>
 lemma sub_ran : "ran p  \<subseteq> Allow \<union> Deny"
   apply (auto simp: Allow_def Deny_def ran_def full_SetCompr_eq[symmetric])[1]
   subgoal for x a
@@ -261,7 +261,7 @@ lemma ran_deny_all: "ran(D\<^sub>f id) = Deny"
   done
 
 
-text{*
+text\<open>
   Reasoning over \verb+dom+ is most crucial since it paves the way for simplification and 
   reordering of policies composed by override (i.e. by the normal left-to-right rule composition
   method.
@@ -275,7 +275,7 @@ text{*
     \item \verb+Map.map_add_upd_left+ @{thm Map.map_add_upd_left}
   \end{itemize}
   The latter rule also applies to allow- and deny-override.
-*}
+\<close>
 
 definition dom_restrict :: "['\<alpha> set, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixr "\<triangleleft>" 55)
 where     "S \<triangleleft> p \<equiv> (\<lambda>x. if x \<in> S then p x else \<bottom>)"

@@ -47,8 +47,8 @@ proof(induct rule: tauChainInduct)
   thus ?case by simp
 next
   case(TauStep P P' P'')
-  note `\<Psi> \<otimes> \<Psi>' \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'`
-  moreover from `\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P''` have "\<Psi> \<otimes> \<Psi>' \<rhd> P' \<longmapsto>\<tau> \<prec> P''" by(rule weakenTransition)
+  note \<open>\<Psi> \<otimes> \<Psi>' \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'\<close>
+  moreover from \<open>\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P''\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> P' \<longmapsto>\<tau> \<prec> P''" by(rule weakenTransition)
   ultimately show ?case by(auto dest: tauActTauChain)
 qed
 

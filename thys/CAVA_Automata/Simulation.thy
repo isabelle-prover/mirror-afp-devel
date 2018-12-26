@@ -1,4 +1,4 @@
-section {* Simulation *}
+section \<open>Simulation\<close>
 theory Simulation
 imports Automata
 begin
@@ -20,10 +20,10 @@ begin
   qed
 
 
-  section {* Simulation *}
+  section \<open>Simulation\<close>
 
 
-  subsection {* Functional Relations *}
+  subsection \<open>Functional Relations\<close>
 
   definition "the_br_\<alpha> R \<equiv> \<lambda> x. SOME y. (x, y) \<in> R"
   abbreviation (input) "the_br_invar R \<equiv> \<lambda> x. x \<in> Domain R"
@@ -43,7 +43,7 @@ begin
     unfolding the_br_\<alpha>_def build_rel_def[abs_def]
     by auto
 
-  subsection {* Relation between Runs *}
+  subsection \<open>Relation between Runs\<close>
 
   definition run_rel :: "('a \<times> 'b) set \<Rightarrow> ('a word \<times> 'b word) set" where
     "run_rel R \<equiv> {(ra, rb). \<forall> i. (ra i, rb i) \<in> R}"
@@ -59,7 +59,7 @@ begin
     apply (metis DomainE someI_ex)
     done
 
-  subsection {* Simulation *}
+  subsection \<open>Simulation\<close>
   locale simulation =
     a: graph A +
     b: graph B
@@ -221,7 +221,7 @@ begin
   lemma (in sa) lsimulation_refl[simp]: "lsimulation Id G G" by unfold_locales auto
 
 
-  subsection {* Bisimulation *}
+  subsection \<open>Bisimulation\<close>
 
   locale bisimulation = 
     a: graph A +
@@ -270,7 +270,7 @@ begin
       fix i
       from E have "\<alpha> (r1 i) = \<alpha> (r2 i)"
         by (simp add: comp_def) metis
-      with `inj \<alpha>` show "r1 i = r2 i" 
+      with \<open>inj \<alpha>\<close> show "r1 i = r2 i" 
         by (auto dest: injD)
     qed
 

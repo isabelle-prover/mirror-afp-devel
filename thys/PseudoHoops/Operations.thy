@@ -1,4 +1,4 @@
-section{* Operations *}
+section\<open>Operations\<close>
 
 theory Operations
 imports Main

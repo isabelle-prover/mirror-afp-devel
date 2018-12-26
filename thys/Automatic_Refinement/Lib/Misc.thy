@@ -13,7 +13,7 @@
 
 *)
 
-section {* Miscellaneous Definitions and Lemmas *}
+section \<open>Miscellaneous Definitions and Lemmas\<close>
 
 theory Misc
 imports Main
@@ -23,7 +23,7 @@ imports Main
   "HOL-Library.Infinite_Set"
   "HOL-Eisbach.Eisbach"
 begin
-text_raw {*\label{thy:Misc}*}
+text_raw \<open>\label{thy:Misc}\<close>
 
   
 subsection \<open>Isabelle Distribution Move Proposals\<close>  
@@ -235,7 +235,7 @@ lemma list_ee_eq_leel[simp]:
 
 subsubsection \<open>Transitive Closure\<close>
 
-text {* A point-free induction rule for elements reachable from an initial set *}
+text \<open>A point-free induction rule for elements reachable from an initial set\<close>
 lemma rtrancl_reachable_induct[consumes 0, case_names base step]:
   assumes I0: "I \<subseteq> INV"
   assumes IS: "E``INV \<subseteq> INV"
@@ -267,11 +267,11 @@ end
     
     
     
-text {* Here we provide a collection of miscellaneous definitions and helper lemmas *}
+text \<open>Here we provide a collection of miscellaneous definitions and helper lemmas\<close>
 
 subsection "Miscellaneous (1)"
 
-text {* This stuff is used in this theory itself, and thus occurs in first place or is simply not sorted into any other section of this theory. *}
+text \<open>This stuff is used in this theory itself, and thus occurs in first place or is simply not sorted into any other section of this theory.\<close>
 
 lemma IdD: "(a,b)\<in>Id \<Longrightarrow> a=b" by simp
 
@@ -290,7 +290,7 @@ method repeat_all_new methods m = m;(repeat_all_new \<open>m\<close>)?
     
 subsubsection "AC-operators"
 
-text {* Locale to declare AC-laws as simplification rules *}
+text \<open>Locale to declare AC-laws as simplification rules\<close>
 locale Assoc =
   fixes f
   assumes assoc[simp]: "f (f x y) z = f x (f y z)"
@@ -303,7 +303,7 @@ lemma (in AC) left_commute[simp]: "f x (f y z) = f y (f x z)"
 
 lemmas (in AC) AC_simps = commute assoc left_commute
 
-text {* Locale to define functions from surjective, unique relations *}
+text \<open>Locale to define functions from surjective, unique relations\<close>
 locale su_rel_fun =
   fixes F and f
   assumes unique: "\<lbrakk>(A,B)\<in>F; (A,B')\<in>F\<rbrakk> \<Longrightarrow> B=B'"
@@ -372,7 +372,7 @@ lemma cnv_conj_to_meta: "(P \<and> Q \<Longrightarrow> PROP X) \<equiv> (\<lbrak
     
     
 
-subsection {* Sets *}
+subsection \<open>Sets\<close>
   lemma remove_subset: "x\<in>S \<Longrightarrow> S-{x} \<subset> S" by auto
 
   lemma subset_minus_empty: "A\<subseteq>B \<Longrightarrow> A-B = {}" by auto
@@ -435,9 +435,9 @@ subsection {* Sets *}
   lemma inter_eq_subsetI: "\<lbrakk> S\<subseteq>S'; A\<inter>S' = B\<inter>S' \<rbrakk> \<Longrightarrow> A\<inter>S = B\<inter>S"
     by auto
 
-text {*
+text \<open>
   Decompose general union over sum types.
-*}
+\<close>
 lemma Union_plus:
   "(\<Union> x \<in> A <+> B. f x) = (\<Union> a \<in> A. f (Inl a)) \<union> (\<Union>b \<in> B. f (Inr b))"
 by auto
@@ -455,7 +455,7 @@ qed
   
 
 
-  subsubsection {* Finite Sets *}
+  subsubsection \<open>Finite Sets\<close>
 
   lemma card_1_singletonI: "\<lbrakk>finite S; card S = 1; x\<in>S\<rbrakk> \<Longrightarrow> S={x}"
   proof (safe, rule ccontr, goal_cases)
@@ -564,12 +564,12 @@ lemma Un_interval:
   apply (rule_tac x=i in exI, auto) []
   done
 
-text {*
+text \<open>
   The standard library proves that a generalized union is finite
   if the index set is finite and if for every index the component
   set is itself finite. Conversely, we show that every component
   set must be finite when the union is finite.
-*}
+\<close>
 lemma finite_UNION_then_finite:
   "finite (\<Union>(B ` A)) \<Longrightarrow> a \<in> A \<Longrightarrow> finite (B a)"
 by (metis Set.set_insert UN_insert Un_infinite)
@@ -629,7 +629,7 @@ proof (rule finite_subset)
 qed
 
 
-subsubsection {* Infinite Set *}
+subsubsection \<open>Infinite Set\<close>
 lemma INFM_nat_inductI:
   assumes P0: "P (0::nat)"
   assumes PS: "\<And>i. P i \<Longrightarrow> \<exists>j>i. P j \<and> Q j"
@@ -645,7 +645,7 @@ proof -
   thus ?thesis unfolding INFM_nat by blast
 qed
 
-subsection {* Functions *}
+subsection \<open>Functions\<close>
 
 lemma fun_neq_ext_iff: "m\<noteq>m' \<longleftrightarrow> (\<exists>x. m x \<noteq> m' x)" by auto  
 
@@ -682,7 +682,7 @@ notation
 definition [code_unfold, simp]: "swap_args2 f x y \<equiv> f y x"
   
 
-subsection {* Multisets *}
+subsection \<open>Multisets\<close>
 
 (*
   The following is a syntax extension for multisets. Unfortunately, it depends on a change in the Library/Multiset.thy, so it is commented out here, until it will be incorporated
@@ -717,13 +717,13 @@ lemma count_mset_set_finite_iff:
 lemma ex_Melem_conv: "(\<exists>x. x \<in># A) = (A \<noteq> {#})"
   by (simp add: ex_in_conv)
 
-subsubsection {* Count *}
+subsubsection \<open>Count\<close>
         lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
           by (auto)
   lemma mset_empty_count[simp]: "(\<forall>p. count M p = 0) = (M={#})"
     by (auto simp add: multiset_eq_iff)
 
-subsubsection {* Union, difference and intersection *}
+subsubsection \<open>Union, difference and intersection\<close>
 
   lemma size_diff_se: "t \<in># S \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
                 let ?SIZE = "sum (count S) (set_mset S)"
@@ -940,7 +940,7 @@ subsubsection {* Union, difference and intersection *}
   qed
 
 
-subsubsection {* Singleton multisets *}
+subsubsection \<open>Singleton multisets\<close>
 
 lemma mset_size_le1_cases[case_names empty singleton,consumes 1]: "\<lbrakk> size M \<le> Suc 0; M={#} \<Longrightarrow> P; !!m. M={#m#} \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   by (cases M) auto
@@ -954,7 +954,7 @@ lemma mset_contains_eq: "(m \<in># M) = ({#m#}+(M-{#m#})=M)"
   using diff_single_trivial by fastforce
 
 
-subsubsection {* Pointwise ordering *}
+subsubsection \<open>Pointwise ordering\<close>
 
 
   (*declare mset_le_trans[trans] Seems to be in there now. Why is this not done in Multiset.thy or order-class ? *)
@@ -1054,7 +1054,7 @@ lemma mset_le_mono_add_single: "\<lbrakk>a \<in># ys; b \<in># ws\<rbrakk> \<Lon
     by (auto elim: mset_le_addE)
 
 
-subsubsection {* Image under function *}
+subsubsection \<open>Image under function\<close>
 
 notation image_mset (infixr "`#" 90)
 
@@ -1064,17 +1064,17 @@ lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"
   by (induct X) auto
 
-text {* The following is a very specialized lemma. Intuitively, it splits the original multiset
+text \<open>The following is a very specialized lemma. Intuitively, it splits the original multiset
   by a splitting of some pointwise supermultiset of its image.
 
   Application:
   This lemma came in handy when proving the correctness of a constraint system that collects at most k sized submultisets of the sets of spawned threads.
-*}
+\<close>
 lemma mset_map_split_orig_le: assumes A: "f `# P \<subseteq># M1+M2" and EX: "!!P1 P2. \<lbrakk>P=P1+P2; f `# P1 \<subseteq># M1; f `# P2 \<subseteq># M2\<rbrakk> \<Longrightarrow> Q" shows "Q"
   using A EX by (auto elim: mset_le_distrib mset_map_split_orig)
 
 
-subsection {* Lists *}
+subsection \<open>Lists\<close>
 
 
 lemma len_greater_imp_nonempty[simp]: "length l > x \<Longrightarrow> l\<noteq>[]"
@@ -1120,7 +1120,7 @@ lemma length_dropWhile_takeWhile:
   using assms
   by (induct xs) auto
 
-text {* Elim-version of @{thm neq_Nil_conv}. *}  
+text \<open>Elim-version of @{thm neq_Nil_conv}.\<close>  
 lemma neq_NilE: 
   assumes "l\<noteq>[]"
   obtains x xs where "l=x#xs" 
@@ -1131,7 +1131,7 @@ lemma length_Suc_rev_conv: "length xs = Suc n \<longleftrightarrow> (\<exists>ys
   by (cases xs rule: rev_cases) auto
 
     
-subsubsection {* List Destructors *}
+subsubsection \<open>List Destructors\<close>
 lemma not_hd_in_tl:
   "x \<noteq> hd xs \<Longrightarrow> x \<in> set xs \<Longrightarrow> x \<in> set (tl xs)"
 by (induct xs) simp_all
@@ -1217,7 +1217,7 @@ end
   
     
     
-subsubsection {* @{text "list_all2"} *}
+subsubsection \<open>\<open>list_all2\<close>\<close>
 lemma list_all2_induct[consumes 1, case_names Nil Cons]:
   assumes "list_all2 P l l'"
   assumes "Q [] []"
@@ -1272,7 +1272,7 @@ lemma insert_swap_set_eq: "i<length l \<Longrightarrow> insert (l!i) (set (l[i:=
   by (auto simp: in_set_conv_nth nth_list_update split: if_split_asm)
     
     
-subsubsection {* Reverse lists *}
+subsubsection \<open>Reverse lists\<close>
   lemma neq_Nil_revE: 
     assumes "l\<noteq>[]" 
     obtains ll e  where "l = ll@[e]"
@@ -1281,7 +1281,7 @@ subsubsection {* Reverse lists *}
   lemma neq_Nil_rev_conv: "l\<noteq>[] \<longleftrightarrow> (\<exists>xs x. l = xs@[x])"
     by (cases l rule: rev_cases) auto
 
-  text {* Caution: Same order of case variables in snoc-case as @{thm [source] rev_exhaust}, the other way round than @{thm [source] rev_induct} ! *}
+  text \<open>Caution: Same order of case variables in snoc-case as @{thm [source] rev_exhaust}, the other way round than @{thm [source] rev_induct} !\<close>
   lemma length_compl_rev_induct[case_names Nil snoc]: "\<lbrakk>P []; !! l e . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (l@[e])\<rbrakk> \<Longrightarrow> P l"
     apply(induct_tac l rule: length_induct)
     apply(case_tac "xs" rule: rev_cases)
@@ -1401,7 +1401,7 @@ lemma (in monoid_mult) foldl_absorb1: "x*foldl (*) 1 zs = foldl (*) x zs"
   apply (auto simp add: mult.assoc)
 done
 
-text {* Towards an invariant rule for foldl *}
+text \<open>Towards an invariant rule for foldl\<close>
 lemma foldl_rule_aux:
   fixes I :: "'\<sigma> \<Rightarrow> 'a list \<Rightarrow> bool"
   assumes initial: "I \<sigma>0 l0"
@@ -1432,11 +1432,11 @@ lemma foldl_rule:
   apply auto
   done
 
-text {*
+text \<open>
   Invariant rule for foldl. The invariant is parameterized with
   the state, the list of items that have already been processed and
   the list of items that still have to be processed.
-*}
+\<close>
 lemma foldl_rule_P:
   fixes I :: "'\<sigma> \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
   \<comment> \<open>The invariant holds for the initial state, no items processed yet and all items to be processed:\<close>
@@ -1449,8 +1449,8 @@ lemma foldl_rule_P:
   using foldl_rule[of I, OF initial step] by (simp add: final)
 
 
-text {* Invariant reasoning over @{const foldl} for distinct lists. Invariant rule makes no
-  assumptions about ordering. *}
+text \<open>Invariant reasoning over @{const foldl} for distinct lists. Invariant rule makes no
+  assumptions about ordering.\<close>
 lemma distinct_foldl_invar:
   "\<lbrakk> distinct S; I (set S) \<sigma>0;
      \<And>x it \<sigma>. \<lbrakk>x \<in> it; it \<subseteq> set S; I it \<sigma>\<rbrakk> \<Longrightarrow> I (it - {x}) (f \<sigma> x)
@@ -1541,7 +1541,7 @@ proof -
 qed
 
 
-subsubsection {* Sorting *}
+subsubsection \<open>Sorting\<close>
 
 lemma sorted_in_between:
   assumes A: "0\<le>i" "i<j" "j<length l"
@@ -1611,7 +1611,7 @@ lemma sorted_filter':
   "sorted l \<Longrightarrow> sorted (filter P l)"
   using sorted_filter[where f=id, simplified] .
 
-subsubsection {* Map *}
+subsubsection \<open>Map\<close>
 (* List.thy has:
  declare map_eq_Cons_D [dest!]  Cons_eq_map_D [dest!] *)  
 lemma map_eq_consE: "\<lbrakk>map f ls = fa#fl; !!a l. \<lbrakk> ls=a#l; f a=fa; map f l = fl \<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
@@ -1764,8 +1764,8 @@ next
 qed
 
 
-subsubsection {* Generalized Zip*}
-text {* Zip two lists element-wise, where the combination of two elements is specified by a function. Note that this function is underdefined for lists of different length. *}
+subsubsection \<open>Generalized Zip\<close>
+text \<open>Zip two lists element-wise, where the combination of two elements is specified by a function. Note that this function is underdefined for lists of different length.\<close>
 fun zipf :: "('a\<Rightarrow>'b\<Rightarrow>'c) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'c list" where
   "zipf f [] [] = []" |
   "zipf f (a#as) (b#bs) = f a b # zipf f as bs"
@@ -1891,7 +1891,7 @@ lemma list_collect_set_alt: "list_collect_set f l = \<Union>{ f (l!i) | i. i<len
 lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
   by (unfold list_collect_set_def) auto
 
-subsubsection {* Sorted List with arbitrary Relations *}
+subsubsection \<open>Sorted List with arbitrary Relations\<close>
 
 lemma (in linorder) sorted_wrt_rev_linord [simp] :
   "sorted_wrt (\<ge>) l \<longleftrightarrow> sorted (rev l)"
@@ -1908,7 +1908,7 @@ lemma (in linorder) sorted_wrt_map_rev_linord [simp] :
 by (induct l) (auto simp add: sorted_append)
 
     
-subsubsection {* Take and Drop *}
+subsubsection \<open>Take and Drop\<close>
   lemma take_update[simp]: "take n (l[i:=x]) = (take n l)[i:=x]"
     apply (induct l arbitrary: n i)
     apply (auto split: nat.split)
@@ -2055,7 +2055,7 @@ lemma map_add_upt': "map (\<lambda>i. i + ofs) [a..<b] = [a+ofs..<b + ofs]"
   by (induct b) simp_all
     
     
-subsubsection {* Last and butlast *}
+subsubsection \<open>Last and butlast\<close>
 lemma butlast_upt: "butlast [m..<n] = [m..<n - 1]"
   apply (cases "m<n")
     apply (cases n)
@@ -2138,7 +2138,7 @@ lemma slice_complete[simp]: "slice 0 (length xs) xs = xs"
 
   
   
-subsubsection {* Miscellaneous *}
+subsubsection \<open>Miscellaneous\<close>
   lemma length_compl_induct[case_names Nil Cons]: "\<lbrakk>P []; !! e l . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (e#l)\<rbrakk> \<Longrightarrow> P l"
     apply(induct_tac l rule: length_induct)
     apply(case_tac "xs")
@@ -2177,7 +2177,7 @@ lemma in_set_upd_eq:
   by (metis in_set_upd_cases in_set_upd_eq_aux assms)
 
 
-  text {* Simultaneous induction over two lists, prepending an element to one of the lists in each step *}
+  text \<open>Simultaneous induction over two lists, prepending an element to one of the lists in each step\<close>
   lemma list_2pre_induct[case_names base left right]: assumes BASE: "P [] []" and LEFT: "!!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2" and RIGHT: "!!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2')" shows "P w1 w2"
   proof -
     { \<comment> \<open>The proof is done by induction over the sum of the lengths of the lists\<close>
@@ -2302,14 +2302,14 @@ lemma filter_upt_last:
   shows "\<not> P (l!i)"
 proof
   assume A: "P (l!i)"
-  have "[0..<length l] = [0..<i]@[i..<length l]" using `i<length l`
+  have "[0..<length l] = [0..<i]@[i..<length l]" using \<open>i<length l\<close>
     by (simp add: upt_append)
-  also have "[i..<length l] = i#[Suc i..<length l]" using `i<length l`
+  also have "[i..<length l] = i#[Suc i..<length l]" using \<open>i<length l\<close>
     by (auto simp: upt_conv_Cons)
   finally
   have "[k\<leftarrow>[0..<i] . P (l!k)]@i#[k\<leftarrow>[Suc i..<length l] . P (l!k)] = js@[j]"
     unfolding E[symmetric]
-    using `P (l!i)` by simp
+    using \<open>P (l!i)\<close> by simp
   hence "j = last (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])"
     by (metis last_appendR last_snoc list.distinct(1))
   also have "\<dots> \<ge> i"
@@ -2320,7 +2320,7 @@ proof
       by (rule sorted_hd_last) simp
     thus ?thesis by simp
   qed
-  finally have "i\<le>j" . thus False using `j<i` by simp
+  finally have "i\<le>j" . thus False using \<open>j<i\<close> by simp
 qed
 
 lemma all_set_conv_nth: "(\<forall>x\<in>set l. P x) \<longleftrightarrow> (\<forall>i<length l. P (l!i))"
@@ -2377,13 +2377,13 @@ proof(induct xs)
   show ?case
   proof(cases "k' = k")
     case True
-    with `map_of (x # xs) k = Some v` x have "x # xs = [] @ (k, v) # xs" "map_of [] k = None" by simp_all
+    with \<open>map_of (x # xs) k = Some v\<close> x have "x # xs = [] @ (k, v) # xs" "map_of [] k = None" by simp_all
     thus ?thesis by blast
   next
     case False
-    with `map_of (x # xs) k = Some v` x
+    with \<open>map_of (x # xs) k = Some v\<close> x
     have "map_of xs k = Some v" by simp
-    from `map_of xs k = Some v \<Longrightarrow> \<exists>ys zs. xs = ys @ (k, v) # zs \<and> map_of ys k = None`[OF this]
+    from \<open>map_of xs k = Some v \<Longrightarrow> \<exists>ys zs. xs = ys @ (k, v) # zs \<and> map_of ys k = None\<close>[OF this]
     obtain ys zs where "xs = ys @ (k, v) # zs" "map_of ys k = None" by blast
     with False x have "x # xs = (x # ys) @ (k, v) # zs" "map_of (x # ys) k = None" by simp_all
     thus ?thesis by blast
@@ -2447,7 +2447,7 @@ next
   show ?case
   proof(cases "P x")
     case [simp]: False
-    from `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
+    from \<open>n < length (filter P (xs @ [x]))\<close> have "n < length (filter P xs)" by simp
     hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)" by(rule snoc)
     thus ?thesis by(auto simp add: nth_append)
   next
@@ -2455,7 +2455,7 @@ next
     show ?thesis
     proof(cases "n = length (filter P xs)")
       case False
-      with `n < length (filter P (xs @ [x]))` have "n < length (filter P xs)" by simp
+      with \<open>n < length (filter P (xs @ [x]))\<close> have "n < length (filter P xs)" by simp
       moreover hence "\<exists>m\<ge>n. m < length xs \<and> filter P xs ! n = xs ! m \<and> filter P (take m xs) = take n (filter P xs)"
         by(rule snoc)
       ultimately show ?thesis by(auto simp add: nth_append)
@@ -2479,11 +2479,11 @@ lemma set_map_filter:
     
     
 
-subsection {* Quicksort by Relation *}
+subsection \<open>Quicksort by Relation\<close>
 
-text {* A functional implementation of quicksort on lists. It it similar to the
+text \<open>A functional implementation of quicksort on lists. It it similar to the
 one in Isabelle/HOL's example directory. However, it uses tail-recursion for append and arbitrary
-relations. *}
+relations.\<close>
 
 fun partition_rev :: "('a \<Rightarrow> bool) \<Rightarrow> ('a list \<times> 'a list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a list)" where
    "partition_rev P (yes, no) [] = (yes, no)"
@@ -2620,11 +2620,11 @@ lemma [code]: "quicksort = quicksort_by_rel (\<le>) []"
   apply (subst sort_quicksort[symmetric])
   by (rule sort_quicksort_by_rel)
 
-subsection {* Mergesort by Relation *}
+subsection \<open>Mergesort by Relation\<close>
 
-text {* A functional implementation of mergesort on lists. It it similar to the
+text \<open>A functional implementation of mergesort on lists. It it similar to the
 one in Isabelle/HOL's example directory. However, it uses tail-recursion for append and arbitrary
-relations. *}
+relations.\<close>
 
 fun mergesort_by_rel_split :: "('a list \<times> 'a list) \<Rightarrow> 'a list \<Rightarrow> ('a list \<times> 'a list)" where
    "mergesort_by_rel_split (xs1, xs2) [] = (xs1, xs2)"
@@ -2833,7 +2833,7 @@ definition "mergesort = mergesort_by_rel (\<le>)"
 lemma sort_mergesort: "sort = mergesort"
   unfolding mergesort_def by (rule sort_mergesort_by_rel)
 
-subsubsection {* Mergesort with Remdup *}
+subsubsection \<open>Mergesort with Remdup\<close>
 term merge
 
 fun merge :: "'a::{linorder} list \<Rightarrow> 'a list \<Rightarrow> 'a list" where
@@ -3007,7 +3007,7 @@ proof (rule classical)
   thus "\<exists>n'\<le>n. P n'" by auto
 qed
 
-subsubsection {* Induction on nat *}
+subsubsection \<open>Induction on nat\<close>
   lemma nat_compl_induct[case_names 0 Suc]: "\<lbrakk>P 0; \<And>n . \<forall>nn. nn \<le> n \<longrightarrow> P nn \<Longrightarrow> P (Suc n)\<rbrakk> \<Longrightarrow> P n"
     apply(induct_tac n rule: nat_less_induct)
     apply(case_tac n)
@@ -3029,9 +3029,9 @@ subsubsection {* Induction on nat *}
     by auto
     
     
-subsection {* Integer *}
+subsection \<open>Integer\<close>
 
-text {* Some setup from @{text "int"} transferred to @{text "integer"} *}
+text \<open>Some setup from \<open>int\<close> transferred to \<open>integer\<close>\<close>
 
 lemma atLeastLessThanPlusOne_atLeastAtMost_integer: "{l..<u+1} = {l..(u::integer)}"
   apply (auto simp add: atLeastAtMost_def atLeastLessThan_def)
@@ -3093,7 +3093,7 @@ lemma finite_greaterThanLessThan_integer [iff]: "finite {l<..<u::integer}"
   by (subst atLeastPlusOneLessThan_greaterThanLessThan_integer [THEN sym], simp)
 
 
-subsection {* Functions of type @{typ "bool\<Rightarrow>bool"}*}
+subsection \<open>Functions of type @{typ "bool\<Rightarrow>bool"}\<close>
   lemma boolfun_cases_helper: "g=(\<lambda>x. False) | g=(\<lambda>x. x) | g=(\<lambda>x. True) | g= (\<lambda>x. \<not>x)"
   proof -
     { assume "g False" "g True"
@@ -3118,7 +3118,7 @@ subsection {* Functions of type @{typ "bool\<Rightarrow>bool"}*}
   qed
 
 
-subsection {* Definite and indefinite description *}
+subsection \<open>Definite and indefinite description\<close>
         text "Combined definite and indefinite description for binary predicate"
   lemma some_theI: assumes EX: "\<exists>a b . P a b" and BUN: "!! b1 b2 . \<lbrakk>\<exists>a . P a b1; \<exists>a . P a b2\<rbrakk> \<Longrightarrow> b1=b2"
     shows "P (SOME a . \<exists>b . P a b) (THE b . \<exists>a . P a b)"
@@ -3136,7 +3136,7 @@ subsection {* Definite and indefinite description *}
   lemma some_elem[simp]: "S\<noteq>{} \<Longrightarrow> (SOME x. x\<in>S) \<in> S"
     by (auto intro: someI)
 
-subsubsection{* Hilbert Choice with option *}
+subsubsection\<open>Hilbert Choice with option\<close>
 
 definition Eps_Opt where
   "Eps_Opt P = (if (\<exists>x. P x) then Some (SOME x. P x) else None)"
@@ -3169,7 +3169,7 @@ using P_prop
 unfolding Eps_Opt_def
 by (metis option.inject option.simps(2) someI_ex)
 
-subsection {* Product Type *}
+subsection \<open>Product Type\<close>
 
 lemma nested_case_prod_simp: "(\<lambda>(a,b) c. f a b c) x y =
   (case_prod (\<lambda>a b. f a b y) x)"
@@ -3269,7 +3269,7 @@ lemma map_sum_Inl_conv: "map_sum fl fr s = Inl y \<longleftrightarrow> (\<exists
   by (cases s) auto
   
   
-subsection {* Directed Graphs and Relations *}
+subsection \<open>Directed Graphs and Relations\<close>
 
   subsubsection "Reflexive-Transitive Closure"
   lemma r_le_rtrancl[simp]: "S\<subseteq>S\<^sup>*" by auto
@@ -3284,7 +3284,7 @@ subsection {* Directed Graphs and Relations *}
     by (auto simp: trancl_insert)
 
 
-  text {* Pick first non-reflexive step *}
+  text \<open>Pick first non-reflexive step\<close>
   lemma converse_rtranclE'[consumes 1, case_names base step]:
     assumes "(u,v)\<in>R\<^sup>*"
     obtains "u=v"
@@ -3311,7 +3311,7 @@ subsection {* Directed Graphs and Relations *}
 
 
 
-  text {* A path in a graph either does not use nodes from S at all, or it has a prefix leading to a node in S and a suffix that does not use nodes in S *}
+  text \<open>A path in a graph either does not use nodes from S at all, or it has a prefix leading to a node in S and a suffix that does not use nodes in S\<close>
   lemma rtrancl_last_visit[cases set, case_names no_visit last_visit_point]:
     shows
     "\<lbrakk> (q,q')\<in>R\<^sup>*;
@@ -3342,7 +3342,7 @@ subsection {* Directed Graphs and Relations *}
     qed
   qed
 
-  text {* Less general version of @{text rtrancl_last_visit}, but there's a short automatic proof *}
+  text \<open>Less general version of \<open>rtrancl_last_visit\<close>, but there's a short automatic proof\<close>
   lemma rtrancl_last_visit': "\<lbrakk> (q,q')\<in>R\<^sup>*; (q,q')\<in>(R-UNIV\<times>S)\<^sup>* \<Longrightarrow> P; !!qt. \<lbrakk> qt\<in>S; (q,qt)\<in>R\<^sup>*; (qt,q')\<in>(R-UNIV\<times>S)\<^sup>* \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (induct rule: converse_rtrancl_induct) (auto intro: converse_rtrancl_into_rtrancl)
 
@@ -3362,7 +3362,7 @@ subsection {* Directed Graphs and Relations *}
           by auto
       } moreover {
         assume "st\<noteq>sh"
-        with `(s,st)\<in>R` have "(s,st)\<in>(R \<inter> UNIV \<times> - {sh})\<^sup>*" by auto
+        with \<open>(s,st)\<in>R\<close> have "(s,st)\<in>(R \<inter> UNIV \<times> - {sh})\<^sup>*" by auto
         also note P
         finally have ?case by blast
       } ultimately have ?case by blast
@@ -3373,11 +3373,11 @@ subsection {* Directed Graphs and Relations *}
     } ultimately show ?case by blast
   qed
 
-  text {* Find last point where a path touches a set *}
+  text \<open>Find last point where a path touches a set\<close>
   lemma rtrancl_last_touch: "\<lbrakk> (q,q')\<in>R\<^sup>*; q\<in>S; !!qt. \<lbrakk> qt\<in>S; (q,qt)\<in>R\<^sup>*; (qt,q')\<in>(R-UNIV\<times>S)\<^sup>* \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (erule rtrancl_last_visit') auto
 
-  text {* A path either goes over edge once, or not at all *}
+  text \<open>A path either goes over edge once, or not at all\<close>
   lemma trancl_over_edgeE:
     assumes "(u,w)\<in>(insert (v1,v2) E)\<^sup>+"
     obtains "(u,w)\<in>E\<^sup>+"
@@ -3571,7 +3571,7 @@ lemma Restr_trancl_mono:
     by (unfold acyclic_def) (auto simp add: trancl_insert)
 
 
-  text {*
+  text \<open>
     This lemma makes a case distinction about a path in a graph where a couple of edges with the same
     endpoint have been inserted: If there is a path from a to b, then there's such a path in the original graph, or
     there's a path that uses an inserted edge only once.
@@ -3580,7 +3580,7 @@ lemma Restr_trancl_mono:
     this graph is either already contained in the original graph, or passes via an
     inserted edge. Because all the inserted edges point to the same target node, in the
     second case, the path can be short-circuited to use exactly one inserted edge.
-    *}
+\<close>
   lemma trancl_multi_insert[cases set, case_names orig via]:
     "\<lbrakk> (a,b)\<in>(r\<union>X\<times>{m})\<^sup>+;
       (a,b)\<in>r\<^sup>+ \<Longrightarrow> P;
@@ -3615,9 +3615,9 @@ lemma Restr_trancl_mono:
     qed
   qed
 
-  text {*
+  text \<open>
     Version of @{thm [source] trancl_multi_insert} for inserted edges with the same startpoint.
-    *}
+\<close>
   lemma trancl_multi_insert2[cases set, case_names orig via]:
     "\<lbrakk>(a,b)\<in>(r\<union>{m}\<times>X)\<^sup>+; (a,b)\<in>r\<^sup>+ \<Longrightarrow> P; !!x. \<lbrakk> x\<in>X; (a,m)\<in>r\<^sup>*; (x,b)\<in>r\<^sup>* \<rbrakk> \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   proof goal_cases
@@ -3640,7 +3640,7 @@ lemma cyclic_subset:
 
 
 
-  subsubsection {* Wellfoundedness *}
+  subsubsection \<open>Wellfoundedness\<close>
   lemma wf_min: assumes A: "wf R" "R\<noteq>{}" "!!m. m\<in>Domain R - Range R \<Longrightarrow> P" shows P proof -
     have H: "!!x. wf R \<Longrightarrow> \<forall>y. (x,y)\<in>R \<longrightarrow> x\<in>Domain R - Range R \<or> (\<exists>m. m\<in>Domain R - Range R)"
       by (erule_tac wf_induct_rule[where P="\<lambda>x. \<forall>y. (x,y)\<in>R \<longrightarrow> x\<in>Domain R - Range R \<or> (\<exists>m. m\<in>Domain R - Range R)"]) auto
@@ -3688,7 +3688,7 @@ lemma cyclic_subset:
     apply (rule wf_no_loop)
     by simp
 
-text {* Extend a wf-relation by a break-condition *}
+text \<open>Extend a wf-relation by a break-condition\<close>
 definition "brk_rel R \<equiv>
     {((False,x),(False,y)) | x y. (x,y)\<in>R}
   \<union> {((True,x),(False,y)) | x y. True}"
@@ -3712,7 +3712,7 @@ proof -
 qed
 
 
-subsubsection {* Restrict Relation *}
+subsubsection \<open>Restrict Relation\<close>
 definition rel_restrict :: "('a \<times> 'a) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set"
 where
   "rel_restrict R A \<equiv> {(v,w). (v,w) \<in> R \<and> v \<notin> A \<and> w \<notin> A}"
@@ -3903,7 +3903,7 @@ lemma single_valued_below_Id: "R\<subseteq>Id \<Longrightarrow> single_valued R"
   by (auto intro: single_valuedI)
   
 
-subsubsection {* Bijective Relations *}
+subsubsection \<open>Bijective Relations\<close>
 definition "bijective R \<equiv>
   (\<forall>x y z. (x,y)\<in>R \<and> (x,z)\<in>R \<longrightarrow> y=z) \<and>
   (\<forall>x y z. (x,z)\<in>R \<and> (y,z)\<in>R \<longrightarrow> x=y)"
@@ -3917,7 +3917,7 @@ lemma bijective_Id[simp, intro!]: "bijective Id"
 lemma bijective_Empty[simp, intro!]: "bijective {}"
   by (auto simp: bijective_def)
 
-subsubsection {* Miscellaneous *}
+subsubsection \<open>Miscellaneous\<close>
 
   lemma pair_vimage_is_Image[simp]: "(Pair u -` E) = E``{u}"
     by auto
@@ -3978,7 +3978,7 @@ proof -
 qed  
     
 
-subsection {* @{text "option"} Datatype *}
+subsection \<open>\<open>option\<close> Datatype\<close>
 lemma le_some_optE: "\<lbrakk>Some m\<le>x; !!m'. \<lbrakk>x=Some m'; m\<le>m'\<rbrakk> \<Longrightarrow> P\<rbrakk> \<Longrightarrow> P"
   by (cases x) auto
 
@@ -4178,7 +4178,7 @@ corollary eq_f_restr_ss_eq: "\<lbrakk> s\<subseteq>dom (f A) \<rbrakk> \<Longrig
 
     
 
-subsection{* Connection between Maps and Sets of Key-Value Pairs *}
+subsection\<open>Connection between Maps and Sets of Key-Value Pairs\<close>
 
 definition map_to_set where
   "map_to_set m = {(k, v) . m k = Some v}"
@@ -4358,7 +4358,7 @@ lemma map_to_set_map_of :
 "distinct (map fst l) \<Longrightarrow> map_to_set (map_of l) = set l"
 by (metis map_of_map_to_set)
 
-subsubsection {* Mapping empty set to None *}
+subsubsection \<open>Mapping empty set to None\<close>
 definition "dflt_None_set S \<equiv> if S={} then None else Some S"
 
 lemma the_dflt_None_empty[simp]: "dflt_None_set {} = None"
@@ -4370,7 +4370,7 @@ lemma the_dflt_None_nonempty[simp]: "S\<noteq>{} \<Longrightarrow> dflt_None_set
 lemma the_dflt_None_set[simp]: "the_default {} (dflt_None_set x) = x"
   unfolding dflt_None_set_def by auto
 
-subsection {* Orderings *}
+subsection \<open>Orderings\<close>
 
   
   
@@ -4447,7 +4447,7 @@ lemma mlex_bound:
   using assms
   using mlex_fst_decrI by fastforce
     
-subsection {* CCPOs *}
+subsection \<open>CCPOs\<close>
 
 context ccpo
 begin

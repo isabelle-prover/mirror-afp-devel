@@ -6,12 +6,12 @@
     Based on the Jinja theory J/Progress.thy by Tobias Nipkow 
 *)
 
-section {* Progress of Small Step Semantics *}
+section \<open>Progress of Small Step Semantics\<close>
 
 theory Progress imports Equivalence DefAss Conform begin
 
 
-subsection {* Some pre-definitions *}
+subsection \<open>Some pre-definitions\<close>
 
 lemma final_refE:
   "\<lbrakk> P,E,h \<turnstile> e : Class C; final e;
@@ -84,7 +84,7 @@ qed
 
 
 
-text{* Derivation of new induction scheme for well typing: *}
+text\<open>Derivation of new induction scheme for well typing:\<close>
 
 inductive
   WTrt' :: "[prog,env,heap,expr,     ty     ] \<Rightarrow> bool"
@@ -145,7 +145,7 @@ inductive_cases WTrt'_elim_cases[elim!]:
   "P,E,h \<turnstile> V :=e :' T"
 
 
-text{* ... and some easy consequences: *}
+text\<open>... and some easy consequences:\<close>
 
 lemma [iff]: "P,E,h \<turnstile> e\<^sub>1;;e\<^sub>2 :' T\<^sub>2 = (\<exists>T\<^sub>1. P,E,h \<turnstile> e\<^sub>1:' T\<^sub>1 \<and> P,E,h \<turnstile> e\<^sub>2:' T\<^sub>2)"
 
@@ -205,7 +205,7 @@ lemmas WTrt_inducts2 = WTrt'_inducts [unfolded wt'_iff_wt wts'_iff_wts,
   WTrtNil WTrtCons, consumes 1]
 
 
-subsection{* The theorem @{text"progress"} *}
+subsection\<open>The theorem \<open>progress\<close>\<close>
 
 
 lemma mdc_leq_dyn_type:

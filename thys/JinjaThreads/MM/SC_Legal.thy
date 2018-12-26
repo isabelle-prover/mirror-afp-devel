@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Sequentially consistent executions are legal *}
+section \<open>Sequentially consistent executions are legal\<close>
 
 theory SC_Legal imports
   JMM_Spec
@@ -107,7 +107,7 @@ proof -
           moreover assume "i < n'"
           hence "enat i < enat n'" by simp
           ultimately have "i \<in> read_actions E'" by(rule read_actions_change_prefix)
-          with hb[rule_format, OF this] `i < n'`
+          with hb[rule_format, OF this] \<open>i < n'\<close>
           have "ws' i = ws i" by simp }
         ultimately have "?P n (E', ws')" by simp
         thus ?thesis by(rule someI)
@@ -305,7 +305,7 @@ proof -
         hence "r' \<ge> n" by simp
         hence "enat (Suc n) \<le> llength E" using False r'
           by(auto split: if_split_asm dest!: read_actions_actions elim!: actionsE) (metis Suc_ile_eq enat_ord_code(2) not_le_imp_less order_less_le_trans)
-        hence ?hb using P[of "Suc n"] r' `r' \<ge> n` by simp
+        hence ?hb using P[of "Suc n"] r' \<open>r' \<ge> n\<close> by simp
         thus ?thesis ..
       qed }
 
@@ -330,7 +330,7 @@ proof -
         moreover from r' have "r' \<in> read_actions (justifying_exec (?\<phi> (Suc n)))" by simp
         moreover then obtain ad al v where "action_obs (justifying_exec (?\<phi> (Suc n))) r' = NormalAction (ReadMem ad al v)"
           by cases auto
-        with wfn[of "Suc n"] `r' \<in> read_actions _` len_E obtain adal 
+        with wfn[of "Suc n"] \<open>r' \<in> read_actions _\<close> len_E obtain adal 
           where "ws' (Suc n) r' \<in> write_actions (justifying_exec (?\<phi> (Suc n)))"
           and "adal \<in> action_loc P (justifying_exec (?\<phi> (Suc n))) r'"
           and "adal \<in> action_loc P (justifying_exec (?\<phi> (Suc n))) (ws' (Suc n) r')"
@@ -341,15 +341,15 @@ proof -
           fix a assume "a \<in> read_actions (justifying_exec (?\<phi> (Suc n)))" and "a < r'"
           hence "a \<in> read_actions (E' (Suc n))" "enat a < enat (Suc n)" using len_E by simp_all
           with sim[OF len_E] have a: "a \<in> read_actions E" by -(rule read_actions_change_prefix)
-          with `a < r'` have mrw: "P,E \<turnstile> a \<leadsto>mrw ws a" using sc by(simp add: sequentially_consistent_def)
-          from P[of "Suc n"] `a < r'` a len_E have "ws a = ws' (Suc n) a" by simp
+          with \<open>a < r'\<close> have mrw: "P,E \<turnstile> a \<leadsto>mrw ws a" using sc by(simp add: sequentially_consistent_def)
+          from P[of "Suc n"] \<open>a < r'\<close> a len_E have "ws a = ws' (Suc n) a" by simp
           with mrw have mrw': "P,E \<turnstile> a \<leadsto>mrw ws' (Suc n) a" by simp
           moreover from wfn[of "Suc n"] wf len_E have "thread_start_actions_ok (E' (Suc n))" by(simp)
           moreover note sim[OF len_E, symmetric]
           moreover from E wf mrw' have "ws' (Suc n) a < a" 
             by(rule mrw_before)(erule sequentially_consistentE[OF sc])
-          with `a < r'` have "ws' (Suc n) a < r'" by simp
-          ultimately have "P,E' (Suc n) \<turnstile> a \<leadsto>mrw ws' (Suc n) a" using `a < r'`
+          with \<open>a < r'\<close> have "ws' (Suc n) a < r'" by simp
+          ultimately have "P,E' (Suc n) \<turnstile> a \<leadsto>mrw ws' (Suc n) a" using \<open>a < r'\<close>
             by -(rule mrw_change_prefix, simp+)
           hence "P,justifying_exec (?\<phi> (Suc n)) \<turnstile> a \<leadsto>mrw justifying_ws (?\<phi> (Suc n)) a" using len_E by simp
         }

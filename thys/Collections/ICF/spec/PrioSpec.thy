@@ -1,4 +1,4 @@
-section {*\isaheader{Specification of Priority Queues}*}
+section \<open>\isaheader{Specification of Priority Queues}\<close>
 theory PrioSpec
 imports ICF_Spec_Base "HOL-Library.Multiset"
 begin
@@ -8,10 +8,10 @@ begin
   Priority queues that may contain duplicate elements.
 *)
 
-text {* 
+text \<open>
   We specify priority queues, that are abstracted to
   multisets of pairs of elements and priorities.
- *}
+\<close>
 
 locale prio = 
   fixes \<alpha> :: "'p \<Rightarrow> ('e \<times> 'a::linorder) multiset" \<comment> \<open>Abstraction to multiset\<close>
@@ -62,7 +62,7 @@ locale prio_meld = prio +
   "\<lbrakk>invar p; invar p'\<rbrakk> \<Longrightarrow> \<alpha> (meld p p') = (\<alpha> p) + (\<alpha> p')"
 
 subsubsection "Delete Minimal Element"
-text {* Delete the same element that find will return *}
+text \<open>Delete the same element that find will return\<close>
 locale prio_delete = prio_find +
   constrains \<alpha> :: "'p \<Rightarrow> ('e \<times> 'a::linorder) multiset"
   fixes delete :: "'p \<Rightarrow> 'p"

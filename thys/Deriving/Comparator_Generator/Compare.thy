@@ -65,10 +65,10 @@ end
 
 ML_file "compare_code.ML"
 
-text \<open>@{text "Compare_Code.change_compare_code const ty-vars"} changes the code equations of some constant such that
+text \<open>\<open>Compare_Code.change_compare_code const ty-vars\<close> changes the code equations of some constant such that
   two consecutive comparisons via @{term "(<=)"}, @{term "(<)"}", or @{term "(=)"} are turned into one
   invocation of @{const compare}. 
-  The difference to a standard @{text "code_unfold"} is that here we change the code-equations
+  The difference to a standard \<open>code_unfold\<close> is that here we change the code-equations
   where an additional sort-constraint on @{class compare_order} can be added. Otherwise, there would
   be no @{const compare}-function.\<close>
 

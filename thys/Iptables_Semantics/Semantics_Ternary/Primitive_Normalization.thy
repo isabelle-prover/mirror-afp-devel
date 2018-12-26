@@ -7,8 +7,8 @@ section\<open>Primitive Normalization\<close>
 subsection\<open>Normalized Primitives\<close>
 
 text\<open>
-  Test if a @{text disc} is in the match expression.
-  For example, it call tell whether there are some matches for @{text "Src ip"}.
+  Test if a \<open>disc\<close> is in the match expression.
+  For example, it call tell whether there are some matches for \<open>Src ip\<close>.
 \<close>
 fun has_disc :: "('a \<Rightarrow> bool) \<Rightarrow> 'a match_expr \<Rightarrow> bool" where
   "has_disc _ MatchAny = False" |
@@ -218,7 +218,7 @@ subsection\<open>Primitive Extractor\<close>
 text\<open>
   The following function takes a tuple of functions (@{typ "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 'b))"}) and a @{typ "'a match_expr"}.
   The passed function tuple must be the discriminator and selector of the datatype package.
-  @{text primitive_extractor} filters the @{typ "'a match_expr"} and returns a tuple.
+  \<open>primitive_extractor\<close> filters the @{typ "'a match_expr"} and returns a tuple.
   The first element of the returned tuple is the filtered primitive matches, the second element is the remaining match expression.
 
   It requires a @{const normalized_nnf_match}.
@@ -234,14 +234,14 @@ fun primitive_extractor :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> 
  "primitive_extractor _ _ = undefined"
 
 text\<open>
-  The first part returned by @{const primitive_extractor}, here @{text as}:
+  The first part returned by @{const primitive_extractor}, here \<open>as\<close>:
     A list of primitive match expressions.
-    For example, let @{text "m = MatchAnd (Src ip1) (Dst ip2)"} then, using the src @{text "(disc, sel)"}, the result is @{text "[ip1]"}.
-    Note that @{text Src} is stripped from the result.
+    For example, let \<open>m = MatchAnd (Src ip1) (Dst ip2)\<close> then, using the src \<open>(disc, sel)\<close>, the result is \<open>[ip1]\<close>.
+    Note that \<open>Src\<close> is stripped from the result.
 
-    The second part, here @{text ms} is the match expression which was not extracted.
+    The second part, here \<open>ms\<close> is the match expression which was not extracted.
 
-    Together, the first and second part match iff @{text m} matches.
+    Together, the first and second part match iff \<open>m\<close> matches.
 \<close>
 
 
@@ -446,16 +446,16 @@ using primitive_extractor_correct(1,2,3,4) by metis
 
 text\<open>The lemmas @{thm primitive_extractor_matchesE} and @{thm primitive_extractor_matches_lastE} can be used as
   erule to solve goals about consecutive application of @{const primitive_extractor}.
-  They should be used as @{text "primitive_extractor_matchesE[OF wf_disc_sel_for_first_extracted_thing]"}.
+  They should be used as \<open>primitive_extractor_matchesE[OF wf_disc_sel_for_first_extracted_thing]\<close>.
 \<close>
 
 
 
 subsection\<open>Normalizing and Optimizing Primitives\<close>
   text\<open>
-    Normalize primitives by a function @{text f} with type @{typ "'b negation_type list \<Rightarrow> 'b list"}.
+    Normalize primitives by a function \<open>f\<close> with type @{typ "'b negation_type list \<Rightarrow> 'b list"}.
     @{typ "'b"} is a primitive type, e.g. ipt-ipv4range.
-    @{text f} takes a conjunction list of negated primitives and must compress them such that:
+    \<open>f\<close> takes a conjunction list of negated primitives and must compress them such that:
     \begin{enumerate}
       \item no negation occurs in the output
       \item the output is a disjunction of the primitives, i.e. multiple primitives in one rule are compressed to at most one primitive (leading to multiple rules)
@@ -479,7 +479,7 @@ subsection\<open>Normalizing and Optimizing Primitives\<close>
                 (*if f spts is empty, we get back an empty list. *)
   
   text\<open>
-    If @{text f} has the properties described above, then @{const normalize_primitive_extract} is a valid transformation of a match expression\<close>
+    If \<open>f\<close> has the properties described above, then @{const normalize_primitive_extract} is a valid transformation of a match expression\<close>
   lemma normalize_primitive_extract: assumes "normalized_nnf_match m" and "wf_disc_sel disc_sel C" and
         "\<forall>ml. (match_list \<gamma> (map (Match \<circ> C) (f ml)) a p \<longleftrightarrow> matches \<gamma> (alist_and (NegPos_map C ml)) a p)"
         shows "match_list \<gamma> (normalize_primitive_extract disc_sel C f m) a p \<longleftrightarrow> matches \<gamma> m a p"
@@ -532,7 +532,7 @@ subsection\<open>Normalizing and Optimizing Primitives\<close>
   apply(cases disc_sel)
   using normalize_primitive_extract_preserves_nnf_normalized by fast
 
-  text\<open>If something is normalized for disc2 and disc2 @{text \<noteq>} disc1 and we do something on disc1, then disc2 remains normalized\<close>
+  text\<open>If something is normalized for disc2 and disc2 \<open>\<noteq>\<close> disc1 and we do something on disc1, then disc2 remains normalized\<close>
   lemma normalize_primitive_extract_preserves_unrelated_normalized_n_primitive:
   assumes "normalized_nnf_match m"
       and "normalized_n_primitive (disc2, sel2) P m"

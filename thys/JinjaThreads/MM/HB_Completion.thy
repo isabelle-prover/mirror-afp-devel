@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Happens-before consistent completion of executions in the JMM *}
+section \<open>Happens-before consistent completion of executions in the JMM\<close>
 
 theory HB_Completion imports
   Non_Speculative
@@ -44,9 +44,9 @@ proof(coinduction arbitrary: obs0 obs)
     thus ?thesis ..
   next
     case (LCons tob obs'')
-    note obs = `obs = LCons tob obs''`
+    note obs = \<open>obs = LCons tob obs''\<close>
     obtain t ob where tob: "tob = (t, ob)" by(cases tob)
-    from `ta_hb_consistent P (obs0 @ [tob]) obs''` tob obs
+    from \<open>ta_hb_consistent P (obs0 @ [tob]) obs''\<close> tob obs
     have "?CH (w_value P ?vs ob) (lmap snd obs'')" by(auto intro!: exI)
     moreover {
       fix ad al v
@@ -88,13 +88,13 @@ proof(induction arbitrary: E)
   case lfinite_LNil thus ?case by simp
 next
   case (lfinite_LConsI E' tob)
-  from `ta_hb_consistent P E (LCons tob E')`
+  from \<open>ta_hb_consistent P E (LCons tob E')\<close>
   have "ta_hb_consistent P (E @ [tob]) E'" by cases
-  moreover from `ta_hb_consistent P (E @ list_of (LCons tob E')) E''` `lfinite E'`
+  moreover from \<open>ta_hb_consistent P (E @ list_of (LCons tob E')) E''\<close> \<open>lfinite E'\<close>
   have "ta_hb_consistent P ((E @ [tob]) @ list_of E') E''" by simp
   ultimately have "ta_hb_consistent P (E @ [tob]) (lappend E' E'')" by(rule lfinite_LConsI.IH)
   thus ?case unfolding lappend_code apply(rule ta_hb_consistent.LCons)
-    using `ta_hb_consistent P E (LCons tob E')`
+    using \<open>ta_hb_consistent P E (LCons tob E')\<close>
     by cases (simp split: prod.split_asm action.split_asm obs_event.split_asm)
 qed
 
@@ -137,7 +137,7 @@ proof -
           and fin: "lfinite tobs''' \<Longrightarrow> X (E @ list_of tobs''') tobs'''' \<or>
                                       ta_hb_consistent P (E @ list_of tobs''') tobs''''"
           by blast
-        from `tobs''' \<noteq> LNil` obtain t ob tobs''''' where tobs''': "tobs''' = LCons (t, ob) tobs'''''"
+        from \<open>tobs''' \<noteq> LNil\<close> obtain t ob tobs''''' where tobs''': "tobs''' = LCons (t, ob) tobs'''''"
           unfolding neq_LNil_conv by auto
         with Nil tobs'' tobs have concl1: "tobs = LCons (t, ob) (lappend tobs''''' tobs'''')" by simp
         
@@ -207,7 +207,7 @@ proof -
     proof(induction a arbitrary: E obs rule: wf_induct[consumes 1, case_names wf])
       case (wf a)
       note IH = wf.IH[rule_format]
-      from step[OF `X E obs a`]
+      from step[OF \<open>X E obs a\<close>]
       show ?case
       proof
         assume "obs = LNil" thus ?thesis ..
@@ -434,7 +434,7 @@ proof(intro exI conjI strip)
           case True
           hence "w' \<in> new_actions_for P E'' (ad, al)" using w' adal by(simp add: new_actions_for_def)
           moreover from ao True have "is_new_action (action_obs E'' w)" by(cases rule: action_orderE) simp_all
-          with `w \<in> write_actions E''` `(ad, al) \<in> action_loc P E'' w`
+          with \<open>w \<in> write_actions E''\<close> \<open>(ad, al) \<in> action_loc P E'' w\<close>
           have "w \<in> new_actions_for P E'' (ad, al)" by(simp add: new_actions_for_def)
           ultimately show "w' = w" by(rule new_actions_for_fun)
         next
@@ -443,9 +443,9 @@ proof(intro exI conjI strip)
           hence w'_a: "enat w' < enat (Suc a')" by simp
           with hbso w_a' have "?hbso ?E''"
             by(auto 4 3 elim: happens_before_change_prefix[OF _ tsa' sim[symmetric]] sync_order_change_prefix[OF _ sim[symmetric]] del: disjCI intro: disjI1 disjI2)
-          moreover from w' `w' \<le> a'` a' a lnth a'_E' have "w' \<in> write_actions ?E''"
+          moreover from w' \<open>w' \<le> a'\<close> a' a lnth a'_E' have "w' \<in> write_actions ?E''"
             by(cases)(cases "w' < a'", auto intro!: write_actions.intros simp add: E'''_def actions_def action_obs_def lnth_lappend min_def zero_enat_def eSuc_enat lnth_ltake a_def E''_def not_le not_less)
-          moreover from adal `w' \<le> a'` a a' lnth w' a'_E' have "(ad, al) \<in> action_loc P ?E'' w'"
+          moreover from adal \<open>w' \<le> a'\<close> a a' lnth w' a'_E' have "(ad, al) \<in> action_loc P ?E'' w'"
             by(cases "w' < a'")(cases "w' < length E'", auto simp add: E'''_def action_obs_def lnth_lappend lappend_assoc[symmetric] min_def lnth_ltake less_trans[where y="enat a"] a_def E''_def lnth_ltake elim: write_actions.cases)
           ultimately show "w' = w" by(blast dest: in_between_so in_between_hb)
         qed }
@@ -461,9 +461,9 @@ proof(intro exI conjI strip)
       show "\<not> P,E'' \<turnstile> a' \<le>hb ?ws a'"
       proof
         assume "P,E'' \<turnstile> a' \<le>hb ?ws a'"
-        with `P,E'' \<turnstile> ?ws a' \<le>hb a'` have "a' = ?ws a'"
+        with \<open>P,E'' \<turnstile> ?ws a' \<le>hb a'\<close> have "a' = ?ws a'"
           by(blast dest: antisymPD[OF antisym_action_order] happens_before_into_action_order)
-        with read `?ws a' \<in> write_actions E''` show False
+        with read \<open>?ws a' \<in> write_actions E''\<close> show False
           by(auto dest: read_actions_not_write_actions)
       qed
 
@@ -471,9 +471,9 @@ proof(intro exI conjI strip)
       proof
         assume "P,E'' \<turnstile> a' \<le>so ?ws a'"
         hence "E'' \<turnstile> a' \<le>a ?ws a'" by(blast elim: sync_orderE)
-        with `P,E'' \<turnstile> ?ws a' \<le>hb a'` have "a' = ?ws a'"
+        with \<open>P,E'' \<turnstile> ?ws a' \<le>hb a'\<close> have "a' = ?ws a'"
           by(blast dest: antisymPD[OF antisym_action_order] happens_before_into_action_order)
-        with read `?ws a' \<in> write_actions E''` show False
+        with read \<open>?ws a' \<in> write_actions E''\<close> show False
           by(auto dest: read_actions_not_write_actions)
       qed
       
@@ -620,12 +620,12 @@ proof(coinduction arbitrary: s E)
     hence "\<exists>x. ?P x"
     proof(cases)
       case (redT_normal x x' m')
-      from hb_completionD[OF Runs _ _ `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>` `actions_ok s t ta`, of "[]" 0]
+      from hb_completionD[OF Runs _ _ \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> \<open>t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>\<close> \<open>actions_ok s t ta\<close>, of "[]" 0]
       obtain ta' x'' m'' where "t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
         and "actions_ok s t ta'" "ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))" 
         by fastforce
       moreover obtain ws' where "redT_updWs t (wset s) \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws'" by (metis redT_updWs_total)
-      ultimately show ?thesis using `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+      ultimately show ?thesis using \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
         by(cases ta')(auto intro!: exI redT.redT_normal)
     next
       case (redT_acquire x n ln)
@@ -653,7 +653,7 @@ lemma complete_hb_ta_hb_consistent:
   (is "ta_hb_consistent _ _ (?obs (complete_hb s E))")
 proof -
   define obs a where "obs = ?obs (complete_hb s E)" and "a = complete_hb s E"
-  with `hb_completion s E` have "\<exists>s. hb_completion s E \<and> obs = ?obs (complete_hb s E) \<and> a = complete_hb s E" by blast
+  with \<open>hb_completion s E\<close> have "\<exists>s. hb_completion s E \<and> obs = ?obs (complete_hb s E) \<and> a = complete_hb s E" by blast
   moreover have "wf (inv_image {(m, n). m < n} (llength \<circ> ltakeWhile (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub> = [])))"
     (is "wf ?R") by(rule wf_inv_image)(rule wellorder_class.wf)
   ultimately show "ta_hb_consistent P E obs"
@@ -676,12 +676,12 @@ proof -
       hence "\<exists>x. ?P x"
       proof(cases)
         case (redT_normal x x' m')
-        from hb_completionD[OF hb_c _ _ `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` `t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>` `actions_ok s t ta`, of "[]" 0]
+        from hb_completionD[OF hb_c _ _ \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> \<open>t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>\<close> \<open>actions_ok s t ta\<close>, of "[]" 0]
         obtain ta' x'' m'' where "t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
           and "actions_ok s t ta'" "ta_hb_consistent P E (llist_of (map (Pair t) \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>))"
           by fastforce
         moreover obtain ws' where "redT_updWs t (wset s) \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub> ws'" by (metis redT_updWs_total)
-        ultimately show ?thesis using `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+        ultimately show ?thesis using \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
           by(cases ta')(auto intro!: exI redT.redT_normal)
       next
         case (redT_acquire x n ln)

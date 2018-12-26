@@ -28,16 +28,16 @@ lemma let\<^sub>1_closed:
   assumes "domA \<Delta> \<inter> upds S = {}"
   shows "(\<Gamma>, Let \<Delta> e, S) \<Rightarrow> (\<Delta>@\<Gamma>, e , S)"
 proof
-  from `domA \<Delta> \<inter> domA \<Gamma> = {}` and `domA \<Delta> \<inter> upds S = {}`
+  from \<open>domA \<Delta> \<inter> domA \<Gamma> = {}\<close> and \<open>domA \<Delta> \<inter> upds S = {}\<close>
   have "domA \<Delta> \<inter> (domA \<Gamma> \<union> upds S) = {}" by auto
-  with `closed _`
+  with \<open>closed _\<close>
   have "domA \<Delta> \<inter> fv (\<Gamma>, S) = {}" by auto
   hence "atom ` domA \<Delta> \<sharp>* (\<Gamma>, S)"
     by (auto simp add: fresh_star_def fv_def fresh_def)
   thus "atom` domA \<Delta> \<sharp>* \<Gamma>" and "atom ` domA \<Delta> \<sharp>* S" by (auto simp add: fresh_star_Pair)
 qed
   
-text {* An induction rule that skips the annoying case of a lambda taken off the heap *}
+text \<open>An induction rule that skips the annoying case of a lambda taken off the heap\<close>
 
 lemma step_invariant_induction[consumes 4, case_names app\<^sub>1 app\<^sub>2 thunk lamvar var\<^sub>2 let\<^sub>1 if\<^sub>1 if\<^sub>2 refl trans]:
   assumes "c \<Rightarrow>\<^sup>* c'"
@@ -69,49 +69,49 @@ proof-
     proof
       assume "P c y"
 
-      note t = trans[OF `c \<Rightarrow>\<^sup>* y` r_into_rtranclp[where r = step, OF `y \<Rightarrow> z`]]
+      note t = trans[OF \<open>c \<Rightarrow>\<^sup>* y\<close> r_into_rtranclp[where r = step, OF \<open>y \<Rightarrow> z\<close>]]
       
-      from `y \<Rightarrow> z`
+      from \<open>y \<Rightarrow> z\<close>
       show ?thesis
       proof (cases)
-        case app\<^sub>1 hence "P y z" using assms(5) `I y` by metis
-        with `P c y` show ?thesis by (metis t)
+        case app\<^sub>1 hence "P y z" using assms(5) \<open>I y\<close> by metis
+        with \<open>P c y\<close> show ?thesis by (metis t)
       next
-        case app\<^sub>2 hence "P y z" using assms(6) `I y` by metis
-        with `P c y` show ?thesis by (metis t)
+        case app\<^sub>2 hence "P y z" using assms(6) \<open>I y\<close> by metis
+        with \<open>P c y\<close> show ?thesis by (metis t)
       next
         case (var\<^sub>1 \<Gamma> x e S)
         show ?thesis
         proof (cases "isVal e")
-          case False with var\<^sub>1 have "P y z" using assms(7) `I y` by metis
-          with `P c y` show ?thesis by (metis t)
+          case False with var\<^sub>1 have "P y z" using assms(7) \<open>I y\<close> by metis
+          with \<open>P c y\<close> show ?thesis by (metis t)
         next
           case True
           have *: "y \<Rightarrow>\<^sup>* ((x,e) # delete x \<Gamma>, e , S)" using var\<^sub>1 True lambda_var by metis
 
           have "boring_step (delete x \<Gamma>, e, Upd x # S)" using True ..
           moreover
-          have "P y ((x,e) # delete x \<Gamma>, e , S)" using var\<^sub>1 True assms(8) `I y` by metis
-          with `P c y` have "P c ((x,e) # delete x \<Gamma>, e , S)" by (rule trans[OF `c \<Rightarrow>\<^sup>* y` *])
+          have "P y ((x,e) # delete x \<Gamma>, e , S)" using var\<^sub>1 True assms(8) \<open>I y\<close> by metis
+          with \<open>P c y\<close> have "P c ((x,e) # delete x \<Gamma>, e , S)" by (rule trans[OF \<open>c \<Rightarrow>\<^sup>* y\<close> *])
           ultimately
           show ?thesis using var\<^sub>1(2,3) True by (auto elim!: step.cases)
         qed
       next
-        case var\<^sub>2 hence "P y z" using assms(9) `I y` by metis
-        with `P c y` show ?thesis by (metis t)
+        case var\<^sub>2 hence "P y z" using assms(9) \<open>I y\<close> by metis
+        with \<open>P c y\<close> show ?thesis by (metis t)
       next
-        case let\<^sub>1 hence "P y z" using assms(10) `I y` by metis
-        with `P c y` show ?thesis by (metis t)
+        case let\<^sub>1 hence "P y z" using assms(10) \<open>I y\<close> by metis
+        with \<open>P c y\<close> show ?thesis by (metis t)
       next
-        case if\<^sub>1 hence "P y z" using assms(11) `I y` by metis
-        with `P c y` show ?thesis by (metis t)
+        case if\<^sub>1 hence "P y z" using assms(11) \<open>I y\<close> by metis
+        with \<open>P c y\<close> show ?thesis by (metis t)
       next
-        case if\<^sub>2 hence "P y z" using assms(12) `I y` by metis
-        with `P c y` show ?thesis by (metis t)
+        case if\<^sub>2 hence "P y z" using assms(12) \<open>I y\<close> by metis
+        with \<open>P c y\<close> show ?thesis by (metis t)
       qed
     next
       assume "boring_step y \<and> (\<forall>c''. y \<Rightarrow> c'' \<longrightarrow> P c c'')"
-      with `y \<Rightarrow> z`
+      with \<open>y \<Rightarrow> z\<close>
       have "P c z" by blast
       thus ?thesis..
     qed
@@ -137,7 +137,7 @@ lemma step_induction[consumes 2, case_names app\<^sub>1 app\<^sub>2 thunk lamvar
   shows "P c c'"
 by (rule step_invariant_induction[OF _ _ invariant_True, simplified, OF assms])
 
-subsubsection {* Equivariance *}
+subsubsection \<open>Equivariance\<close>
 
 lemma step_eqvt[eqvt]: "step x y \<Longrightarrow> step (\<pi> \<bullet> x) (\<pi> \<bullet> y)"
   apply (induction  rule: step.induct)
@@ -155,7 +155,7 @@ lemma step_eqvt[eqvt]: "step x y \<Longrightarrow> step (\<pi> \<bullet> x) (\<p
   apply (perm_simp, rule step.intros)
   done  
 
-subsubsection {* Invariants *}
+subsubsection \<open>Invariants\<close>
 
 lemma closed_invariant:
   "invariant step closed"

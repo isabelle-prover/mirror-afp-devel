@@ -1,11 +1,11 @@
-section {*\isaheader{Implementing Priority Queues by Annotated Lists}*}
+section \<open>\isaheader{Implementing Priority Queues by Annotated Lists}\<close>
 theory PrioByAnnotatedList
 imports 
   "../spec/AnnotatedListSpec"
   "../spec/PrioSpec"
 begin
 
-text {*
+text \<open>
   In this theory, we implement priority queues by annotated lists.
 
   The implementation is realized as a generic adapter from the
@@ -21,7 +21,7 @@ text {*
   splitting the sequence at the point where the minimum priority
   of the elements read so far becomes equal to the minimum priority of 
   all elements.
-*}
+\<close>
 
 subsection "Definitions"
 subsubsection "Monoid"

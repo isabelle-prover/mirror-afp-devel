@@ -6,7 +6,7 @@ theory IND_CPA_PK imports
   CryptHOL.Negligible
 begin
 
-subsection {* The IND-CPA game for public-key encryption with oracle access *}
+subsection \<open>The IND-CPA game for public-key encryption with oracle access\<close>
 
 locale ind_cpa_pk = 
   fixes key_gen :: "('pubkey \<times> 'privkey, 'call, 'ret) gpv" \<comment> \<open>probabilistic\<close>
@@ -15,12 +15,12 @@ locale ind_cpa_pk =
   and valid_plains :: "'plain \<Rightarrow> 'plain \<Rightarrow> bool" \<comment> \<open>checks whether a pair of plaintexts is valid, i.e., they have the right format\<close>
 begin
 
-text {*
+text \<open>
   We cannot incorporate the predicate @{term valid_plain} in the type @{typ "'plain"} of plaintexts,
   because the single @{typ "'plain"} must contain plaintexts for all values of the security parameter,
   as HOL does not have dependent types.  Consequently, the game has to ensure that the received
   plaintexts are valid.
-*}
+\<close>
 
 type_synonym ('pubkey', 'plain', 'cipher', 'call', 'ret', 'state) adversary = 
   "('pubkey' \<Rightarrow> (('plain' \<times> 'plain') \<times> 'state, 'call', 'ret') gpv)

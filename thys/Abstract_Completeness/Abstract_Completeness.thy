@@ -10,7 +10,7 @@ imports
 begin
 (*>*)
 
-section{* General Tree Concepts *}
+section\<open>General Tree Concepts\<close>
 
 codatatype 'a tree = Node (root: 'a) (cont: "'a tree fset")
 
@@ -35,7 +35,7 @@ lemma Konig: "\<not> tfinite t \<Longrightarrow> ipath t (konig t)"
   by (coinduction arbitrary: t) (metis (lifting) tfinite.simps konig.simps someI_ex)
 
 
-section{* Rule Systems *}
+section\<open>Rule Systems\<close>
 
 (*<*)(* A step consists of a pair (s,r) such that the rule r is taken in state s. *)(*>*)
 type_synonym ('state, 'rule) step = "'state \<times> 'rule"
@@ -63,8 +63,8 @@ abbreviation "effStep step \<equiv> eff (snd step) (fst step)"
 abbreviation "enabledAtStep r step \<equiv> enabled r (fst step)"
 abbreviation "takenAtStep r step \<equiv> snd step = r"
 
-text {* Saturation is a very strong notion of fairness:
-  If a rule is enabled at some point, it will eventually be taken. *}
+text \<open>Saturation is a very strong notion of fairness:
+  If a rule is enabled at some point, it will eventually be taken.\<close>
 definition "saturated r \<equiv> alw (holds (enabledAtStep r) impl ev (holds (takenAtStep r)))"
 definition "Saturated steps \<equiv> \<forall> r \<in> R. saturated r steps"
 
@@ -100,7 +100,7 @@ lemma sdrop_fair: "fair rs \<Longrightarrow> fair (sdrop m rs)"
   using alw_sdrop unfolding fair_def by (metis alw.coinduct alw_nxt fair_def fair_stl)
 
 
-section{* A Fair Enumeration of the Rules *}
+section\<open>A Fair Enumeration of the Rules\<close>
 
 (*<*)(* The fair enumeration of rules *)(*>*)
 definition "fenum \<equiv> flat (smap (\<lambda>n. stake n rules) (fromN 1))"
@@ -274,7 +274,7 @@ lemma ipath_mkTree_ev:
   and alw: "alw (holds (enabledAtStep r)) steps"
   shows "ev (holds (takenAtStep r)) steps"
 using s rs i alw proof (induction "pos rs r" arbitrary: rs s steps rule: less_induct)
-  case (less rs s steps) note s = `s \<in> S` and trim_def' = trim_alt[OF s `fair rs`]
+  case (less rs s steps) note s = \<open>s \<in> S\<close> and trim_def' = trim_alt[OF s \<open>fair rs\<close>]
   let ?t = "mkTree rs s"
   from less(4,3) s in_cont_mkTree obtain t' :: "('state, 'rule) step tree" and s' where
     rt: "root ?t = shd steps" and i: "ipath (mkTree (stl (trim rs s)) s') (stl steps)" and
@@ -289,7 +289,7 @@ using s rs i alw proof (induction "pos rs r" arbitrary: rs s steps rule: less_in
     with False r less.prems(2) have 2: "minWait rs s < pos rs r" using minWait_le_pos by force
     let ?m1 = "pos rs r - Suc (minWait rs s)"
     have "Suc ?m1 \<le> pos rs r" using 2 by auto
-    moreover have "?m1 = pos (stl (trim rs s)) r" using e `fair rs` 2 r s
+    moreover have "?m1 = pos (stl (trim rs s)) r" using e \<open>fair rs\<close> 2 r s
       by (auto intro: stake_pos_minWait[symmetric])
     moreover have "fair (stl (trim rs s))" "alw (holds (enabledAtStep r)) (stl steps)"
       using less.prems by (metis fair_stl trim_fair, metis alw.simps)
@@ -297,7 +297,7 @@ using s rs i alw proof (induction "pos rs r" arbitrary: rs s steps rule: less_in
   qed
 qed
 
-section{* Persistent rules *}
+section\<open>Persistent rules\<close>
 
 definition
   "per r \<equiv>
@@ -376,7 +376,7 @@ end \<comment> \<open>context PersistentRuleSystem\<close>
 
 
 
-section{* Code generation *}
+section\<open>Code generation\<close>
 
 (* Here we assume a deterministic effect eff': *)
 

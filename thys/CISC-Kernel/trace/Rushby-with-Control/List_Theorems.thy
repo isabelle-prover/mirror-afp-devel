@@ -1,4 +1,4 @@
-subsection {* Theorems on lists *}
+subsection \<open>Theorems on lists\<close>
 
 theory List_Theorems
   imports Main

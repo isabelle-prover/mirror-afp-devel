@@ -1,12 +1,12 @@
-section {* The case $y \neq new\_last$ *}
+section \<open>The case $y \neq new\_last$\<close>
 
 theory Y_neq_new_last imports MengerInduction begin
 
-text {*
+text \<open>
   Let us now consider the case that @{term "y \<noteq> v1 \<and> y \<noteq> new_last"}.  Our goal is to show that
   this is inconsistent: The following locale will be unsatisfiable, proving that
   @{term "y = v1 \<or> y = new_last"} holds.
-*}
+\<close>
 locale ProofStepInduct_y_neq_new_last = ProofStepInduct_NonTrivial_P_k_pre +
   assumes y_neq_v1: "y \<noteq> v1" and y_neq_new_last: "y \<noteq> new_last"
 begin
@@ -19,11 +19,11 @@ proof-
   then show ?thesis using that by (meson split_list)
 qed
 
-text {*
+text \<open>
   We open an anonymous context because we do not want to export any lemmas except the final lemma
   proving the contradiction.  This is also an easy way to get the decomposition of @{term Q_hit},
   whose existence we have established above.
-*}
+\<close>
 
 context
   fixes Q_hit Q_hit_pre Q_hit_post
@@ -68,11 +68,11 @@ begin
       by (metis Q.first_edge_first P_k(2) Q.second_vertices_first_edge Q_hit(1) Q_hit_decomp
           Q_hit_v0_v1 Un_iff v' tl_Q_hit_pre first_edge_in_edges walk_edges_decomp)
 
-    text {*
+    text \<open>
       Then @{term P_k} and @{term P_i} intersect in @{term y}, which is not one of @{term v0},
       @{term v1}, or @{term new_last}.  So we get a contradiction because these two paths should be
       disjoint on all other vertices.
-    *}
+\<close>
 
     moreover have "v1 \<notin> set (Q_hit_pre @ [y])"
       using Q_hit_v0_v1 Q_hit_decomp y_neq_v1 by (simp add: Q.path_from_to_last')

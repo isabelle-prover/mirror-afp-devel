@@ -1,11 +1,11 @@
-section {* Recoverable Data Types *}
+section \<open>Recoverable Data Types\<close>
 
 theory RDR
 imports Main Sequences
 begin
 
-subsection {* The pre-RDR locale contains definitions later used in the RDR locale 
-  to state the properties of RDRs *}
+subsection \<open>The pre-RDR locale contains definitions later used in the RDR locale 
+  to state the properties of RDRs\<close>
 
 locale pre_RDR = Sequences +
   fixes \<delta>::"'a \<Rightarrow> ('b \<times> 'c) \<Rightarrow> 'a" (infix "\<bullet>" 65)
@@ -35,7 +35,7 @@ definition contains where
 definition inf  (infix "\<sqinter>" 65) where
   "inf s1 s2 \<equiv> THE s . is_glb s s1 s2"
 
-subsection {* Useful Lemmas in the pre-RDR locale *}
+subsection \<open>Useful Lemmas in the pre-RDR locale\<close>
 
 lemma exec_cons: 
   "s \<star> (rs # r)= (s \<star> rs) \<bullet> r" by simp
@@ -77,7 +77,7 @@ by (metis pre_RDR.exec.simps(1) pre_RDR.exec.simps(2) pre_RDR.less_eq_def trans)
 
 end
 
-subsection {* The RDR locale *}
+subsection \<open>The RDR locale\<close>
 
 locale RDR = pre_RDR +
   assumes idem1:"contains s r \<Longrightarrow> s \<bullet> r = s"
@@ -151,7 +151,7 @@ qed
 
 notation F ("\<Sqinter> _" [99])
 
-subsection {* Some useful lemmas *}
+subsection \<open>Some useful lemmas\<close>
 
 lemma idem_star: 
 fixes r s rs

@@ -11,12 +11,12 @@ theory PreFormulas
 imports Semantics
 begin
 
-text{* 
+text\<open>
   Semantic separation of formulas and pre-formulas requires a deep embedding.
-  We introduce a syntactically distinct notion of validity, written @{text "|~ A"},
-  for pre-formulas. Although it is semantically identical to @{text "\<turnstile> A"}, it
+  We introduce a syntactically distinct notion of validity, written \<open>|~ A\<close>,
+  for pre-formulas. Although it is semantically identical to \<open>\<turnstile> A\<close>, it
   helps users distinguish pre-formulas from formulas in \tlastar{} proofs.
-*}
+\<close>
 
 definition PreValid :: "('w::world) form \<Rightarrow> bool"
 where "PreValid A \<equiv> \<forall> w. w \<Turnstile> A"
@@ -33,10 +33,10 @@ lemma prefD[dest]: "|~ A \<Longrightarrow> w \<Turnstile> A"
 lemma prefI[intro!]: "(\<And> w. w \<Turnstile> A) \<Longrightarrow> |~ A"
   by (simp add: PreValid_def)
 
-method_setup pref_unlift = {*
+method_setup pref_unlift = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD'
     (resolve_tac ctxt @{thms prefI} THEN' rewrite_goal_tac ctxt @{thms intensional_rews}))
-*} "int_unlift for PreFormulas"
+\<close> "int_unlift for PreFormulas"
 
 lemma prefeq_reflection: assumes P1: "|~ x=y" shows  "(x \<equiv> y)"
 using P1 by (intro eq_reflection) force
@@ -67,14 +67,14 @@ lemma pref_imp_trans:
   shows "|~ F \<longrightarrow> H"
   using assms by force
 
-subsection "Lemmas about @{text Unchanged}"
+subsection "Lemmas about \<open>Unchanged\<close>"
 
-text {* 
+text \<open>
   Many of the \tlastar{} axioms only require a state function witness
   which leaves the state space unchanged. An obvious witness is the
   @{term id} function. The lemmas require that the given formula is
   invariant under stuttering.
-*}
+\<close>
 
 lemma pre_id_unch: assumes h: "stutinv F"
   shows "|~ F \<and> Unchanged id \<longrightarrow> \<circle>F"
@@ -103,7 +103,7 @@ lemma angle_actrans_sem: "|~ \<langle>F\<rangle>_v = (F \<and> v$ \<noteq> $v)"
 
 lemmas angle_actrans_sem_eq = angle_actrans_sem[THEN pref_eq]
 
-subsection "Lemmas about @{text after}"
+subsection "Lemmas about \<open>after\<close>"
 
 lemma after_const: "|~ (#c)` = #c"
   by (auto simp: nexts_def before_def after_def)
@@ -135,7 +135,7 @@ lemmas all_after = after_const after_fun1 after_fun2 after_fun3 after_fun4
 lemmas all_after_unl = all_after[THEN prefD]
 lemmas all_after_eq = all_after[THEN prefeq_reflection]
 
-subsection "Lemmas about @{text before}"
+subsection "Lemmas about \<open>before\<close>"
 
 lemma before_const: "\<turnstile> $(#c) = #c"
   by (auto simp: before_def)
@@ -184,8 +184,8 @@ lemma pref_eq_true: "|~ P \<Longrightarrow> |~ P = #True"
 
 subsection "Unlifting attributes and methods"
 
-text {* Attribute which unlifts an intensional formula or preformula *}
-ML {*
+text \<open>Attribute which unlifts an intensional formula or preformula\<close>
+ML \<open>
 fun unl_rewr ctxt thm = 
     let
        val unl = (thm RS @{thm intD}) handle THM _ => (thm RS @{thm prefD})
@@ -194,38 +194,38 @@ fun unl_rewr ctxt thm =
      in
        unl |> rewr
      end;
-*}
-attribute_setup unlifted = {*
+\<close>
+attribute_setup unlifted = \<open>
   Scan.succeed (Thm.rule_attribute [] (unl_rewr o Context.proof_of))
-*} "unlift intensional formulas"
+\<close> "unlift intensional formulas"
 
-attribute_setup unlift_rule = {*
+attribute_setup unlift_rule = \<open>
   Scan.succeed
     (Thm.rule_attribute []
       (Context.proof_of #> (fn ctxt => Object_Logic.rulify ctxt o unl_rewr ctxt)))
-*} "unlift and rulify intensional formulas"
+\<close> "unlift and rulify intensional formulas"
 
 
-text {*
+text \<open>
   Attribute which turns an intensional formula or preformula into a rewrite rule.
-  Formulas @{text F} that are not equalities are turned into @{text "F \<equiv> #True"}.
-*}
-ML {*
+  Formulas \<open>F\<close> that are not equalities are turned into \<open>F \<equiv> #True\<close>.
+\<close>
+ML \<open>
 fun int_rewr thm = 
    (thm RS @{thm inteq_reflection})
      handle THM _ => (thm RS @{thm prefeq_reflection})
      handle THM _ => ((thm RS @{thm int_eq_true}) RS @{thm inteq_reflection})
      handle THM _ => ((thm RS @{thm pref_eq_true}) RS @{thm prefeq_reflection});
-*}
+\<close>
 
-attribute_setup simp_unl = {*
+attribute_setup simp_unl = \<open>
     Attrib.add_del
       (Thm.declaration_attribute
         (fn th => Simplifier.map_ss (Simplifier.add_simp (int_rewr th))))
       (K (NONE, NONE))  (* note only adding -- removing is ignored *)
-*} "add thm unlifted from rewrites from intensional formulas or preformulas"
+\<close> "add thm unlifted from rewrites from intensional formulas or preformulas"
 
-attribute_setup int_rewrite = {* Scan.succeed (Thm.rule_attribute [] (fn _ => int_rewr)) *}
+attribute_setup int_rewrite = \<open>Scan.succeed (Thm.rule_attribute [] (fn _ => int_rewr))\<close>
   "produce rewrites from intensional formulas or preformulas"
 
 end

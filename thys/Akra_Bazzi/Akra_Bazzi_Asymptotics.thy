@@ -5,7 +5,7 @@
    Akra Bazzi theorem with variation functions in the recursive calls.
 *)
 
-section {* Asymptotic bounds *}
+section \<open>Asymptotic bounds\<close>
 theory Akra_Bazzi_Asymptotics
 imports
   Complex_Main
@@ -21,9 +21,9 @@ begin
 context
 begin
 
-text {*
+text \<open>
   Functions that are negligible w.r.t. @{term "ln (b*x) powr (e/2 + 1)"}.
-*}
+\<close>
 private abbreviation (input) negl :: "(real \<Rightarrow> real) \<Rightarrow> bool" where
   "negl f \<equiv> f \<in> o(\<lambda>x. ln (b*x) powr (-(e/2 + 1)))"
 

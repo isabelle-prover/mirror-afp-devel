@@ -750,7 +750,7 @@ proof -
         from croots2[OF this] show ?thesis unfolding l by (simp add: croots2_def Let_def)
       next
         case False
-        with `degree p \<noteq> 1` `degree p \<noteq> 2` `\<not> (degree p \<ge> 3)` have True: "degree p = 0" by auto
+        with \<open>degree p \<noteq> 1\<close> \<open>degree p \<noteq> 2\<close> \<open>\<not> (degree p \<ge> 3)\<close> have True: "degree p = 0" by auto
         hence l: "?l = []" unfolding d by auto
         from True have "degree ?p = 0" unfolding deg by auto
         from roots0[OF _ this] show ?thesis unfolding l by simp
@@ -1001,7 +1001,7 @@ proof -
       unfolding prod_list_power by (rule arg_cong[of _ _ prod_list], auto)
     also have "(\<Prod> x \<leftarrow> ?rts. [:- x, 1:]) = p" 
     proof -
-      from fundamental_theorem_algebra_factorized[of p, unfolded `monic p`]
+      from fundamental_theorem_algebra_factorized[of p, unfolded \<open>monic p\<close>]
       obtain as where as: "p = (\<Prod>a\<leftarrow>as. [:- a, 1:])" by auto
       also have "\<dots> = (\<Prod>a\<in>set as. [:- a, 1:])"
       proof (rule sym, rule prod.distinct_set_conv_list, rule ccontr)
@@ -1015,7 +1015,7 @@ proof -
         also have "\<dots> = [:-a,1:] * [:-a,1:] * q" by simp
         finally have "p = ([:-a,1:] * [:-a,1:]) * q" by simp
         hence "[:-a,1:] * [:-a,1:] dvd p" unfolding dvd_def ..
-        with `square_free p`[unfolded square_free_def, THEN conjunct2, rule_format, of "[:-a,1:]"] 
+        with \<open>square_free p\<close>[unfolded square_free_def, THEN conjunct2, rule_format, of "[:-a,1:]"] 
         show False by auto
       qed
       also have "set as = {x. poly p x = 0}" unfolding as poly_prod_list 

@@ -1,4 +1,4 @@
-section {* Lists *}
+section \<open>Lists\<close>
 
 theory List_Extensions
 imports "HOL-Library.Sublist"

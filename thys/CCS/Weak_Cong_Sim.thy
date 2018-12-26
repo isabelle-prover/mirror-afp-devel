@@ -89,27 +89,27 @@ lemma simE2:
   obtains P' where "P \<Longrightarrow>\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
 proof -
   assume Goal: "\<And>P'. \<lbrakk>P \<Longrightarrow>\<alpha> \<prec> P'; (P', Q') \<in> Rel\<rbrakk> \<Longrightarrow> thesis"
-  from `Q \<Longrightarrow>\<alpha> \<prec> Q'` obtain Q''' Q''
+  from \<open>Q \<Longrightarrow>\<alpha> \<prec> Q'\<close> obtain Q''' Q''
     where QChain: "Q \<Longrightarrow>\<^sub>\<tau> Q'''" and Q'''Trans: "Q''' \<longmapsto>\<alpha> \<prec> Q''" and Q''Chain: "Q'' \<Longrightarrow>\<^sub>\<tau> Q'"
     by(rule weakCongTransE)
   from QChain Q'''Trans show ?thesis
   proof(induct rule: tauChainCasesSym)
     case cTauNil
-    from `P \<leadsto><Rel> Q` `Q \<longmapsto>\<alpha> \<prec> Q''` obtain P''' where PTrans: "P \<Longrightarrow>\<alpha> \<prec> P'''" and "(P''', Q'') \<in> Rel"
+    from \<open>P \<leadsto><Rel> Q\<close> \<open>Q \<longmapsto>\<alpha> \<prec> Q''\<close> obtain P''' where PTrans: "P \<Longrightarrow>\<alpha> \<prec> P'''" and "(P''', Q'') \<in> Rel"
       by(blast dest: weakSimE)
-    moreover from Q''Chain `(P''', Q'') \<in> Rel` Sim obtain P' where P''Chain: "P''' \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
+    moreover from Q''Chain \<open>(P''', Q'') \<in> Rel\<close> Sim obtain P' where P''Chain: "P''' \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
       by(rule simTauChain)
     with PTrans P''Chain show ?thesis
       by(force intro: Goal simp add: weakCongTrans_def weakTrans_def)
   next
     case(cTauStep Q'''')
-    from `P \<leadsto><Rel> Q` `Q \<longmapsto>\<tau> \<prec> Q''''` obtain P'''' where  PChain: "P \<Longrightarrow>\<tau> \<prec> P''''" and "(P'''', Q'''') \<in> Rel"
+    from \<open>P \<leadsto><Rel> Q\<close> \<open>Q \<longmapsto>\<tau> \<prec> Q''''\<close> obtain P'''' where  PChain: "P \<Longrightarrow>\<tau> \<prec> P''''" and "(P'''', Q'''') \<in> Rel"
       by(drule_tac weakSimE) auto
-    from `Q'''' \<Longrightarrow>\<^sub>\<tau> Q'''` `(P'''', Q'''') \<in> Rel` Sim obtain P''' where P''''Chain: "P'''' \<Longrightarrow>\<^sub>\<tau> P'''" and "(P''', Q''') \<in> Rel"
+    from \<open>Q'''' \<Longrightarrow>\<^sub>\<tau> Q'''\<close> \<open>(P'''', Q'''') \<in> Rel\<close> Sim obtain P''' where P''''Chain: "P'''' \<Longrightarrow>\<^sub>\<tau> P'''" and "(P''', Q''') \<in> Rel"
       by(rule simTauChain)
-    from `(P''', Q''') \<in> Rel` have "P''' \<leadsto>\<^sup>^<Rel> Q'''" by(rule Sim)
+    from \<open>(P''', Q''') \<in> Rel\<close> have "P''' \<leadsto>\<^sup>^<Rel> Q'''" by(rule Sim)
     then obtain P'' where P'''Trans: "P''' \<Longrightarrow>\<^sup>^\<alpha> \<prec> P''" and "(P'', Q'') \<in> Rel" using Q'''Trans by(rule Weak_Sim.weakSimE)
-    from Q''Chain `(P'', Q'') \<in> Rel` Sim obtain P' where P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
+    from Q''Chain \<open>(P'', Q'') \<in> Rel\<close> Sim obtain P' where P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
       by(rule simTauChain)
     from PChain P''''Chain P'''Trans P''Chain
     have "P \<Longrightarrow>\<alpha> \<prec> P'"
@@ -120,7 +120,7 @@ proof -
       apply blast
       by(auto simp add: tauChain_def)
 
-    with `(P', Q') \<in> Rel` show ?thesis
+    with \<open>(P', Q') \<in> Rel\<close> show ?thesis
       by(force intro: Goal simp add: weakCongTrans_def weakTrans_def)
   qed
 qed

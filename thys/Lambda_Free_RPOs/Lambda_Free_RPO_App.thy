@@ -13,7 +13,7 @@ begin
 
 text \<open>
 This theory defines the applicative recursive path order (RPO), a variant of RPO
-for @{text \<lambda>}-free higher-order terms. It corresponds to the order obtained by
+for \<open>\<lambda>\<close>-free higher-order terms. It corresponds to the order obtained by
 applying the standard first-order RPO on the applicative encoding of higher-order
 terms and assigning the lowest precedence to the application symbol.
 \<close>

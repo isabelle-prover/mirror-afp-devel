@@ -34,7 +34,7 @@ lemma grid_transitive: "\<lbrakk> a \<in> grid b ds ; b \<in> grid c ds' ; ds' \
 
 lemma grid_child[intro?]: assumes "d \<in> ds" and p_grid: "p \<in> grid (child b dir d) ds"
   shows "p \<in> grid b ds"
-  using `d \<in> ds` grid_transitive[OF p_grid] by auto
+  using \<open>d \<in> ds\<close> grid_transitive[OF p_grid] by auto
 
 lemma grid_single_level[simp]: assumes "p \<in> grid b ds" and "d < length b"
   shows "lv b d \<le> lv p d"
@@ -49,7 +49,7 @@ lemma grid_child_level:
   and p_grid: "p \<in> grid (child b dir d) ds"
   shows "lv b d < lv p d"
 proof -
-  have "lv b d < lv (child b dir d) d" using child_lv[OF `d < length b`] by auto
+  have "lv b d < lv (child b dir d) d" using child_lv[OF \<open>d < length b\<close>] by auto
   also have "\<dots> \<le> lv p d" using p_grid assms by (intro grid_single_level) auto
   finally show ?thesis .
 qed
@@ -74,8 +74,8 @@ proof induct
     proof (cases "d' = d")
       case True
       hence "lv b d \<le> lv p' d" and "lv p' d < lv (child p' dir d) d"
-        using child_single_level Child `d' < length p'` by auto
-      hence False using Child and `d' = d` and lv_def and `\<not> d' \<ge> length p'` by auto
+        using child_single_level Child \<open>d' < length p'\<close> by auto
+      hence False using Child and \<open>d' = d\<close> and lv_def and \<open>\<not> d' \<ge> length p'\<close> by auto
       thus ?thesis ..
     next
       case False
@@ -85,7 +85,7 @@ proof induct
         assume "d < length b"
         hence "d < length p'" using Child by auto
         hence "child p' dir d' ! d = p' ! d" using child_invariant and False by auto
-        thus ?thesis using Child and `d < length b` by auto
+        thus ?thesis using Child and \<open>d < length b\<close> by auto
       qed
       hence "p' \<in> grid b ds" using Child by auto
       ultimately show ?thesis using grid.Child by auto
@@ -128,7 +128,7 @@ lemma grid_level[intro]: assumes "p \<in> grid b ds" shows "level b \<le> level 
 proof -
   have *: "length p = length b" using grid_length assms by auto
   { fix i assume "i \<in> {0 ..< length p}"
-    hence "lv b i \<le> lv p i" using `p \<in> grid b ds` and grid_single_level * by auto
+    hence "lv b i \<le> lv p i" using \<open>p \<in> grid b ds\<close> and grid_single_level * by auto
   } thus ?thesis unfolding level_def * by (auto intro!: sum_mono)
 qed
 lemma grid_empty_ds[simp]: "grid b {} = { b }"
@@ -152,7 +152,7 @@ proof induct
     ultimately have "level p = level b" by auto
     hence "p = b " using Child(2) by auto
     with Child(4) have "level (child b dir d) = level b" by auto
-    moreover have "level (child b dir d) \<noteq>  level b" using child_level and `d < length b` by auto
+    moreover have "level (child b dir d) \<noteq>  level b" using child_level and \<open>d < length b\<close> by auto
     ultimately show ?thesis by auto
   next
     case False
@@ -173,7 +173,7 @@ proof induct
   proof (cases "d = d'")
     case False with Child show ?thesis unfolding child_def lv_def ix_def by auto
   next
-    case True with child_estimate_child and Child and `d < length b`
+    case True with child_estimate_child and Child and \<open>d < length b\<close>
     show ?thesis using grid_single_level by auto
   qed
 qed auto
@@ -184,16 +184,16 @@ proof induct
   case (Child p d' dir)
   show ?case
   proof (cases "d = d'")
-    case True with child_odd and `d < length b` and Child show ?thesis by auto
+    case True with child_odd and \<open>d < length b\<close> and Child show ?thesis by auto
   next
-    case False with Child and `d < length b` show ?thesis using child_def and ix_def and lv_def by auto
+    case False with Child and \<open>d < length b\<close> show ?thesis using child_def and ix_def and lv_def by auto
   qed
 qed auto
 lemma grid_invariant: assumes "d < length b" and "d \<notin> ds" and p_grid: "p \<in> grid b ds"
   shows "p ! d = b ! d"
   using p_grid
 proof (induct)
-  case (Child p d' dir) hence "d' \<noteq> d" using `d \<notin> ds` by auto
+  case (Child p d' dir) hence "d' \<noteq> d" using \<open>d \<notin> ds\<close> by auto
   thus ?case using child_def and Child by auto
 qed auto
 lemma grid_part: assumes "d < length b" and p_valid: "p \<in> grid b {d}" and p'_valid: "p' \<in> grid b {d}"
@@ -210,7 +210,7 @@ proof induct
   show ?case
   proof (cases "lv p d = lv ?child d")
     case False
-    moreover have "lv ?child d = lv p' d + 1" using child_lv and `d < length b` and Child and `d = d'` by auto
+    moreover have "lv ?child d = lv p' d + 1" using child_lv and \<open>d < length b\<close> and Child and \<open>d = d'\<close> by auto
     ultimately have "lv p d < lv p' d + 1" using Child by auto
     hence lv: "Suc (lv p' d) - lv p d = Suc (lv p' d - lv p d)" by auto
 
@@ -218,7 +218,7 @@ proof induct
     proof (cases dir)
       case left
       with Child have "2 * ix p' d - 1 \<le> (ix p d + 1) * 2^(Suc (lv p' d) - lv p d)"
-        using `d = d'` and `d < length b` by (auto simp add: child_def ix_def lv_def)
+        using \<open>d = d'\<close> and \<open>d < length b\<close> by (auto simp add: child_def ix_def lv_def)
       also have "\<dots> = 2 * (ix p d + 1) * 2^(lv p' d - lv p d)" using lv by auto
       finally have "2 * ix p' d - 2 < 2 * (ix p d + 1) * 2^(lv p' d - lv p d)" by auto
       also have "\<dots> = 2 * ((ix p d + 1) * 2^(lv p' d - lv p d))" by auto
@@ -227,14 +227,14 @@ proof induct
       have "2 * ((ix p d - 1) * 2^(lv p' d - lv p d)) = 2 * (ix p d - 1) * 2^(lv p' d - lv p d)" by auto
       also have "\<dots> = (ix p d - 1) * 2^(Suc (lv p' d) - lv p d)" using lv by auto
       also have "\<dots> \<le> 2 * ix p' d - 1"
-        using left and Child and `d = d'` and `d < length b` by (auto simp add: child_def ix_def lv_def)
+        using left and Child and \<open>d = d'\<close> and \<open>d < length b\<close> by (auto simp add: child_def ix_def lv_def)
       finally have right_r: "((ix p d - 1) * 2^(lv p' d - lv p d)) \<le> ix p' d" by auto
 
       show ?thesis using left_r and right_r by auto
     next
       case right
       with Child have "2 * ix p' d + 1 \<le> (ix p d + 1) * 2^(Suc (lv p' d) - lv p d)"
-        using `d = d'` and `d < length b` by (auto simp add: child_def ix_def lv_def)
+        using \<open>d = d'\<close> and \<open>d < length b\<close> by (auto simp add: child_def ix_def lv_def)
       also have "\<dots> = 2 * (ix p d + 1) * 2^(lv p' d - lv p d)" using lv by auto
       finally have "2 * ix p' d < 2 * (ix p d + 1) * 2^(lv p' d - lv p d)" by auto
       also have "\<dots> = 2 * ((ix p d + 1) * 2^(lv p' d - lv p d))" by auto
@@ -243,14 +243,14 @@ proof induct
       have "2 * ((ix p d - 1) * 2^(lv p' d - lv p d)) = 2 * (ix p d - 1) * 2^(lv p' d - lv p d)" by auto
       also have "\<dots> = (ix p d - 1) * 2^(Suc (lv p' d) - lv p d)" using lv by auto
       also have "\<dots> \<le> 2 * ix p' d + 1"
-        using right and Child and `d = d'` and `d < length b` by (auto simp add: child_def ix_def lv_def)
+        using right and Child and \<open>d = d'\<close> and \<open>d < length b\<close> by (auto simp add: child_def ix_def lv_def)
       also have "\<dots> < 2 * (ix p' d + 1)" by auto
       finally have right_r: "((ix p d - 1) * 2^(lv p' d - lv p d)) \<le> ix p' d" by auto
 
       show ?thesis using left_r and right_r by auto
     qed
     with Child and lv have "p' \<in> grid p {d}" by auto
-    thus ?thesis using `d = d'` by auto
+    thus ?thesis using \<open>d = d'\<close> by auto
   next
     case True
     moreover with Child have "?left p ?child d \<and> ?right p ?child d" by auto
@@ -259,50 +259,50 @@ proof induct
     have "p ! d \<noteq> b ! d"
     proof (rule ccontr)
       assume "\<not> (p ! d \<noteq> b ! d)"
-      with `lv p d = lv ?child d` have "lv b d = lv ?child d" by (auto simp add: lv_def)
-      hence "lv b d = lv p' d + 1" using `d = d'` and Child and `d < length b` and child_lv by auto
-      moreover have "lv b d \<le> lv p' d" using `d = d'` and Child and `d < length b` and grid_single_level by auto
+      with \<open>lv p d = lv ?child d\<close> have "lv b d = lv ?child d" by (auto simp add: lv_def)
+      hence "lv b d = lv p' d + 1" using \<open>d = d'\<close> and Child and \<open>d < length b\<close> and child_lv by auto
+      moreover have "lv b d \<le> lv p' d" using \<open>d = d'\<close> and Child and \<open>d < length b\<close> and grid_single_level by auto
       ultimately show False by auto
     qed
-    hence "odd (ix p d)" using grid_odd and `p \<in> grid b {d}` and `d < length b` by auto
+    hence "odd (ix p d)" using grid_odd and \<open>p \<in> grid b {d}\<close> and \<open>d < length b\<close> by auto
     hence "\<not> odd (ix p d + 1)" and "\<not> odd (ix p d - 1)" by auto
 
-    have "d < length p'" using `p' \<in> grid b {d}` and `d < length b` by auto
-    hence odd_child: "odd (ix ?child d)" using child_odd and `d = d'` by auto
+    have "d < length p'" using \<open>p' \<in> grid b {d}\<close> and \<open>d < length b\<close> by auto
+    hence odd_child: "odd (ix ?child d)" using child_odd and \<open>d = d'\<close> by auto
 
     have "ix p d - 1 \<noteq> ix ?child d"
     proof (rule ccontr)
       assume "\<not> (ix p d - 1 \<noteq> ix ?child d)"
       hence "odd (ix p d - 1)" using odd_child by auto
-      thus False using `\<not> odd (ix p d - 1)` by auto
+      thus False using \<open>\<not> odd (ix p d - 1)\<close> by auto
     qed
     moreover
     have "ix p d + 1 \<noteq> ix ?child d"
     proof (rule ccontr)
       assume "\<not> (ix p d + 1 \<noteq> ix ?child d)"
       hence "odd (ix p d + 1)" using odd_child by auto
-      thus False using `\<not> odd (ix p d + 1)` by auto
+      thus False using \<open>\<not> odd (ix p d + 1)\<close> by auto
     qed
     ultimately have "ix p d = ix ?child d" using range by auto
     with True have d_eq: "p ! d = (?child) ! d" by (auto simp add: prod_eqI ix_def lv_def)
 
-    have "length p = length ?child" using `p \<in> grid b {d}` and `p' \<in> grid b {d}` by auto
+    have "length p = length ?child" using \<open>p \<in> grid b {d}\<close> and \<open>p' \<in> grid b {d}\<close> by auto
     moreover have "p ! d'' = ?child ! d''" if "d'' < length p" for d''
     proof -
-      have "d'' < length b" using that `p \<in> grid b {d}` by auto
+      have "d'' < length b" using that \<open>p \<in> grid b {d}\<close> by auto
       show "p ! d'' = ?child ! d''"
       proof (cases "d = d''")
         case True with d_eq show ?thesis by auto
       next
         case False hence "d'' \<notin> {d}" by auto
-        from `d'' < length b` and this and `p \<in> grid b {d}`
+        from \<open>d'' < length b\<close> and this and \<open>p \<in> grid b {d}\<close>
         have "p ! d'' = b ! d''" by (rule grid_invariant)
-        also have "\<dots> = p' ! d''" using `d'' < length b` and `d'' \<notin> {d}` and `p' \<in> grid b {d}`
+        also have "\<dots> = p' ! d''" using \<open>d'' < length b\<close> and \<open>d'' \<notin> {d}\<close> and \<open>p' \<in> grid b {d}\<close>
           by (rule grid_invariant[symmetric])
         also have "\<dots> = ?child ! d''"
         proof -
-          have "d'' < length p'" using `d'' < length b` and `p' \<in> grid b {d}` by auto
-          hence "?child ! d'' = p' ! d''" using child_invariant and `d \<noteq> d''` and `d = d'` by auto
+          have "d'' < length p'" using \<open>d'' < length b\<close> and \<open>p' \<in> grid b {d}\<close> by auto
+          hence "?child ! d'' = p' ! d''" using child_invariant and \<open>d \<noteq> d''\<close> and \<open>d = d'\<close> by auto
           thus ?thesis by auto
         qed
         finally show ?thesis .
@@ -313,7 +313,7 @@ proof induct
   qed
 next
   case Start
-  moreover hence "lv b d \<le> lv p d" using grid_single_level and `d < length b` by auto
+  moreover hence "lv b d \<le> lv p d" using grid_single_level and \<open>d < length b\<close> by auto
   ultimately have "lv b d = lv p d" by auto
 
   have "level p = level b"
@@ -322,17 +322,17 @@ next
       assume "d' < length b"
       have "lv b d' = lv p d'"
       proof (cases "d = d'")
-        case True with `lv b d = lv p d` show ?thesis by auto
+        case True with \<open>lv b d = lv p d\<close> show ?thesis by auto
       next
         case False hence "d' \<notin> {d}" by auto
-        from `d' < length b` and this and `p \<in> grid b {d}`
+        from \<open>d' < length b\<close> and this and \<open>p \<in> grid b {d}\<close>
         have "p ! d' = b ! d'" by (rule grid_invariant)
         thus ?thesis by (auto simp add: lv_def)
       qed }
-    moreover have "length b = length p" using `p \<in> grid b {d}` by auto
+    moreover have "length b = length p" using \<open>p \<in> grid b {d}\<close> by auto
     ultimately show ?thesis by (rule level_all_eq)
   qed
-  hence "p = b" using grid_Start and `p \<in> grid b {d}` by auto
+  hence "p = b" using grid_Start and \<open>p \<in> grid b {d}\<close> by auto
   thus ?case by auto
 qed
 lemma grid_disjunct: assumes "d < length p"
@@ -343,8 +343,8 @@ proof (intro set_eqI iffI)
   assume "x \<in> grid ?l ds \<inter> grid ?r ds"
   hence "ix x d < (ix ?l d + 1) * 2^(lv x d - lv ?l d)"
     and "ix x d > (ix ?r d - 1) * 2^(lv x d - lv ?r d)"
-    using grid_estimate `d < length p` by auto
-  thus "x \<in> {}" using `d < length p` and child_lv and child_ix by auto
+    using grid_estimate \<open>d < length p\<close> by auto
+  thus "x \<in> {}" using \<open>d < length p\<close> and child_lv and child_ix by auto
 qed auto
 
 lemma grid_level_eq: assumes eq: "\<forall> d \<in> ds. lv p d = lv b d" and grid: "p \<in> grid b ds"
@@ -354,7 +354,7 @@ proof (rule level_all_eq)
     show "lv b i = lv p i"
     proof (cases "i \<in> ds")
       case True with eq show ?thesis by auto
-    next case False with `i < length b` and grid show ?thesis
+    next case False with \<open>i < length b\<close> and grid show ?thesis
         using lv_def ix_def grid_invariant by auto
     qed }
   show "length b = length p" using grid by auto
@@ -372,33 +372,33 @@ proof -
     let "?nr_r p" = "ix x d > (ix p d + 1) * 2 ^ (lv x d - lv p d)"
     let "?nr_l p" = "(ix p d - 1) * 2 ^ (lv x d - lv p d) > ix x d"
 
-    have ix_r_eq: "ix ?r d = 2 * ix p d + 1" using `d < length p` and child_ix by auto
-    have lv_r_eq: "lv ?r d = lv p d + 1" using `d < length p` and child_lv by auto
+    have ix_r_eq: "ix ?r d = 2 * ix p d + 1" using \<open>d < length p\<close> and child_ix by auto
+    have lv_r_eq: "lv ?r d = lv p d + 1" using \<open>d < length p\<close> and child_lv by auto
 
-    have ix_l_eq: "ix ?l d = 2 * ix p d - 1" using `d < length p` and child_ix by auto
-    have lv_l_eq: "lv ?l d = lv p d + 1" using `d < length p` and child_lv by auto
+    have ix_l_eq: "ix ?l d = 2 * ix p d - 1" using \<open>d < length p\<close> and child_ix by auto
+    have lv_l_eq: "lv ?l d = lv p d + 1" using \<open>d < length p\<close> and child_lv by auto
 
     assume "x \<in> grid p {d}" and "x \<noteq> p" and "x \<notin> grid ?r {d}"
-    hence "lv p d \<le> lv x d" using grid_single_level and `d < length p` by auto
+    hence "lv p d \<le> lv x d" using grid_single_level and \<open>d < length p\<close> by auto
     moreover have "lv p d \<noteq> lv x d"
     proof (rule ccontr)
       assume "\<not> lv p d \<noteq> lv x d"
-      hence "level x = level p" using `x \<in> grid p {d}` and grid_level_eq[where ds="{d}"] by auto
-      hence "x = p" using grid_Start and `x \<in> grid p {d}` by auto
-      thus False using `x \<noteq> p` by auto
+      hence "level x = level p" using \<open>x \<in> grid p {d}\<close> and grid_level_eq[where ds="{d}"] by auto
+      hence "x = p" using grid_Start and \<open>x \<in> grid p {d}\<close> by auto
+      thus False using \<open>x \<noteq> p\<close> by auto
     qed
     ultimately have "lv p d < lv x d" by auto
-    hence "lv ?r d \<le> lv x d" and "?r \<in> grid p {d}" using child_lv and `d < length p` by auto
-    with `d < length p` and `x \<in> grid p {d}`
+    hence "lv ?r d \<le> lv x d" and "?r \<in> grid p {d}" using child_lv and \<open>d < length p\<close> by auto
+    with \<open>d < length p\<close> and \<open>x \<in> grid p {d}\<close>
     have r_range: "\<not> ?nr_r ?r \<and> \<not> ?nr_l ?r \<Longrightarrow> x \<in> grid ?r {d}"
       using grid_part[where p="?r" and p'=x and b=p and d=d] by auto
     have "x \<notin> grid ?r {d} \<Longrightarrow> ?nr_l ?r \<or> ?nr_r ?r" by (rule ccontr, auto simp add: r_range)
-    hence "?nr_l ?r \<or> ?nr_r ?r" using `x \<notin> grid ?r {d}` by auto
+    hence "?nr_l ?r \<or> ?nr_r ?r" using \<open>x \<notin> grid ?r {d}\<close> by auto
 
-    have gt0: "lv x d - lv p d > 0" using `lv p d < lv x d` by auto
+    have gt0: "lv x d - lv p d > 0" using \<open>lv p d < lv x d\<close> by auto
 
     have ix_shift: "ix ?r d = ix ?l d + 2" and lv_lr: "lv ?r d = lv ?l d" and right1: "!! x :: int. x + 2 - 1 = x + 1"
-      using `d < length p` and child_ix and child_lv by auto
+      using \<open>d < length p\<close> and child_ix and child_lv by auto
 
     have "lv x d - lv p d = Suc (lv x d - (lv p d + 1))"
       using gt0 by auto
@@ -406,10 +406,10 @@ proof -
       by auto
 
     have "ix x d < (ix p d + 1) * 2 ^ (lv x d - lv p d)"
-      using `x \<in> grid p {d}` grid_estimate and `d < length p` by auto
+      using \<open>x \<in> grid p {d}\<close> grid_estimate and \<open>d < length p\<close> by auto
     also have "\<dots> = (ix ?r d + 1) * 2 ^ (lv x d - lv ?r d)"
-      using `lv p d < lv x d` and ix_r_eq and lv_r_eq lv_shift[where y="ix p d + 1"] by auto
-    finally have "?nr_l ?r" using `?nr_l ?r \<or> ?nr_r ?r` by auto
+      using \<open>lv p d < lv x d\<close> and ix_r_eq and lv_r_eq lv_shift[where y="ix p d + 1"] by auto
+    finally have "?nr_l ?r" using \<open>?nr_l ?r \<or> ?nr_r ?r\<close> by auto
     hence r_bound: "(ix ?l d + 1) * 2 ^ (lv x d - lv ?l d) > ix x d"
       unfolding ix_shift lv_lr using right1 by auto
 
@@ -418,10 +418,10 @@ proof -
     also have "\<dots> = (ix p d - 1) * 2 ^ (lv x d - lv p d)"
       using lv_shift[where y="ix p d - 1"] by auto
     also have " \<dots> < ix x d"
-      using `x \<in> grid p {d}` grid_estimate and `d < length p` by auto
+      using \<open>x \<in> grid p {d}\<close> grid_estimate and \<open>d < length p\<close> by auto
     finally have l_bound: "(ix ?l d - 1) * 2 ^ (lv x d - lv ?l d) < ix x d" .
 
-    from l_bound r_bound `d < length p` and `x \<in> grid p {d}` `lv ?r d \<le> lv x d` and lv_lr
+    from l_bound r_bound \<open>d < length p\<close> and \<open>x \<in> grid p {d}\<close> \<open>lv ?r d \<le> lv x d\<close> and lv_lr
     show "x \<in> grid ?l {d}" using grid_part[where p="?l" and p'=x and d=d] by auto
   qed (auto simp add: child_def)
   thus ?thesis by (auto intro: grid_child)
@@ -436,18 +436,18 @@ proof induct
     case True
     have "(child p dir d')[d := X] = child (p[d := X]) dir d'"
       unfolding child_def and ix_def and lv_def
-      unfolding list_update_swap[OF `d \<noteq> d'`] and nth_list_update_neq[OF `d \<noteq> d'`] ..
+      unfolding list_update_swap[OF \<open>d \<noteq> d'\<close>] and nth_list_update_neq[OF \<open>d \<noteq> d'\<close>] ..
     thus ?thesis using Child by auto
   next
     case False hence "d = d'" by auto
-    with Child show ?thesis unfolding child_def `d = d'` list_update_overwrite by auto
+    with Child show ?thesis unfolding child_def \<open>d = d'\<close> list_update_overwrite by auto
   qed
 qed auto
 lemma grid_change_dim_child: assumes grid: "p \<in> grid b ds" and "d \<notin> ds"
   shows "child p dir d \<in> grid (child b dir d) ds"
 proof (cases "d < length b")
   case True thus ?thesis using grid_change_dim[OF grid]
-    unfolding child_def lv_def ix_def grid_invariant[OF True `d \<notin> ds` grid] by auto
+    unfolding child_def lv_def ix_def grid_invariant[OF True \<open>d \<notin> ds\<close> grid] by auto
 next
   case False hence "length b \<le> d" and "length p \<le> d" using grid by auto
   thus ?thesis unfolding child_def using list_update_beyond assms by auto
@@ -463,9 +463,9 @@ proof induct
     case False
     hence "d \<in> ds" using Child by auto
     obtain x where "x \<in> grid b ds" and "p \<in> grid x ds'" using Child by auto
-    hence "child x dir d \<in> grid b ds" using `d \<in> ds` by auto
+    hence "child x dir d \<in> grid b ds" using \<open>d \<in> ds\<close> by auto
     moreover have "child p dir d \<in> grid (child x dir d) ds'"
-      using `p \<in> grid x ds'` False and grid_change_dim_child by auto
+      using \<open>p \<in> grid x ds'\<close> False and grid_change_dim_child by auto
     ultimately show ?thesis by auto
   qed
 qed auto
@@ -485,7 +485,7 @@ lemma grid_child_without_parent: assumes grid: "p \<in> grid (child b dir d) ds"
   shows "p \<noteq> b"
 proof -
   have "level ?c \<le> level p" using grid by (rule grid_level)
-  hence "level b < level p" using child_level and `d < length b` by auto
+  hence "level b < level p" using child_level and \<open>d < length b\<close> by auto
   thus ?thesis by auto
 qed
 lemma grid_disjunct':
@@ -493,7 +493,7 @@ lemma grid_disjunct':
   shows "x \<notin> grid p' ds'"
 proof (rule ccontr)
   assume "\<not> x \<notin> grid p' ds'" hence "x \<in> grid p' ds'" by auto
-  have l: "length b = length p" and l': "length b = length p'" using `p \<in> grid b ds` and `p' \<in> grid b ds` by auto
+  have l: "length b = length p" and l': "length b = length p'" using \<open>p \<in> grid b ds\<close> and \<open>p' \<in> grid b ds\<close> by auto
   hence "length p' = length p" by auto
   moreover have "\<forall> d < length p'. p' ! d = p ! d"
   proof (rule allI, rule impI)
@@ -501,19 +501,19 @@ proof (rule ccontr)
     hence dl: "d < length p" using l by auto
     show "p' ! d = p ! d"
     proof (cases "d \<in> ds'")
-      case True with `ds \<inter> ds' = {}` have "d \<notin> ds" by auto
+      case True with \<open>ds \<inter> ds' = {}\<close> have "d \<notin> ds" by auto
       hence "p' ! d = b ! d" and "p ! d = b ! d"
-        using `d < length b` `p' \<in> grid b ds` and `p \<in> grid b ds` and grid_invariant by auto
+        using \<open>d < length b\<close> \<open>p' \<in> grid b ds\<close> and \<open>p \<in> grid b ds\<close> and grid_invariant by auto
       thus ?thesis by auto
     next
       case False
       show ?thesis
-        using grid_invariant[OF dl' False `x \<in> grid p' ds'`]
-          and grid_invariant[OF dl False `x \<in> grid p ds'`] by auto
+        using grid_invariant[OF dl' False \<open>x \<in> grid p' ds'\<close>]
+          and grid_invariant[OF dl False \<open>x \<in> grid p ds'\<close>] by auto
     qed
   qed
   ultimately have "p' = p" by (metis nth_equalityI)
-  thus False using `p \<noteq> p'` by auto
+  thus False using \<open>p \<noteq> p'\<close> by auto
 qed
 lemma grid_split1: assumes grid: "p \<in> grid b (ds' \<union> ds)" and "ds \<inter> ds' = {}"
   shows "\<exists>! x \<in> grid b ds. p \<in> grid x ds'"
@@ -527,8 +527,8 @@ next
   show "x = y"
   proof (rule ccontr)
     assume "x \<noteq> y"
-    from grid_disjunct'[OF `x \<in> grid b ds` `y \<in> grid b ds` `p \<in> grid x ds'` this `ds \<inter> ds' = {}`]
-    show False using `p \<in> grid y ds'` by auto
+    from grid_disjunct'[OF \<open>x \<in> grid b ds\<close> \<open>y \<in> grid b ds\<close> \<open>p \<in> grid x ds'\<close> this \<open>ds \<inter> ds' = {}\<close>]
+    show False using \<open>p \<in> grid y ds'\<close> by auto
   qed
 qed
 
@@ -562,7 +562,7 @@ lemma lgrid_empty': assumes "lm \<le> level p" shows "lgrid p ds lm = {}"
 proof (rule equals0I)
   fix p' assume "p' \<in> lgrid p ds lm"
   hence "level p' < lm" and "level p \<le> level p'" by auto
-  thus False using `lm \<le> level p` by auto
+  thus False using \<open>lm \<le> level p\<close> by auto
 qed
 
 lemma grid_not_child:
@@ -571,7 +571,7 @@ lemma grid_not_child:
 proof (rule ccontr)
   assume "\<not> ?thesis"
   have "level p < level (child p dir d)" by auto
-  with grid_level[OF `\<not> ?thesis`[unfolded not_not]]
+  with grid_level[OF \<open>\<not> ?thesis\<close>[unfolded not_not]]
   show False by auto
 qed
 
@@ -679,7 +679,7 @@ proof (induct l arbitrary: p ds)
         have "?union ?sub (Suc dm) = ?union ?sub dm \<union> ({p} \<union> ?sub left dm \<union> ?sub right dm)"
           unfolding ds_eq' by auto
         also have "\<dots> = lgrid p {d \<in> ds. d < dm} (level p + Suc l) \<union> ?sub left dm \<union> ?sub right dm"
-          unfolding Suc.hyps[OF `dm \<le> length p`] using p_lgrid by auto
+          unfolding Suc.hyps[OF \<open>dm \<le> length p\<close>] using p_lgrid by auto
         also have "\<dots> = {p' \<in> grid p {d \<in> ds. d<dm} \<union> (grid ?l ?ds) \<union> (grid ?r ?ds).
           level p' < level p + Suc l}" unfolding lgrid_def ds_eq by auto
         also have "\<dots> = lgrid p {d \<in> ds. d < Suc dm} (level p + Suc l)"
@@ -687,8 +687,8 @@ proof (induct l arbitrary: p ds)
         finally show ?thesis .
       next
         case False hence "{d \<in> ds. d < Suc dm} = {d \<in> ds. d < dm \<or> d = dm}" by auto
-        hence ds_eq: "{d \<in> ds. d < Suc dm} = {d \<in> ds. d < dm}" using `dm \<notin> ds` by auto
-        show ?thesis unfolding ds_eq Suc.hyps[OF `dm \<le> length p`] ..
+        hence ds_eq: "{d \<in> ds. d < Suc dm} = {d \<in> ds. d < dm}" using \<open>dm \<notin> ds\<close> by auto
+        show ?thesis unfolding ds_eq Suc.hyps[OF \<open>dm \<le> length p\<close>] ..
       qed
     next case 0 thus ?case unfolding lgrid_def by auto
     qed }
@@ -723,11 +723,11 @@ proof (induct l arbitrary: p ds)
       hence "d < length p" and "d \<in> set ?ds" and "d' < length p" by auto
       assume *: "?sub d = ?sub d'"
       have in_d: "child p left d \<in> set (?sub d)"
-        using `d \<in> set ?ds` Suc
+        using \<open>d \<in> set ?ds\<close> Suc
         by (auto simp add: gridgen_lgrid_eq lgrid_def grid_Start)
 
       have in_d': "child p left d' \<in> set (?sub d')"
-        using `d \<in> set ?ds` Suc
+        using \<open>d \<in> set ?ds\<close> Suc
         by (auto simp add: gridgen_lgrid_eq lgrid_def grid_Start)
 
       { fix p' d assume "d \<in> set ?ds" and "p' \<in> set (?sub d)"
@@ -740,17 +740,17 @@ proof (induct l arbitrary: p ds)
       show False
       proof (cases "d' < d")
         case True
-        with in_d' `?sub d = ?sub d'` level_less[OF `d \<in> set ?ds`]
+        with in_d' \<open>?sub d = ?sub d'\<close> level_less[OF \<open>d \<in> set ?ds\<close>]
         have "lv p d < lv (child p left d') d" by simp
         thus False unfolding lv_def
-          using child_invariant[OF `d < length p`, of left d'] `d \<noteq> d'`
+          using child_invariant[OF \<open>d < length p\<close>, of left d'] \<open>d \<noteq> d'\<close>
           by auto
       next
-        case False hence "d < d'" using `d \<noteq> d'` by auto
-        with in_d `?sub d = ?sub d'` level_less[OF `d' \<in> set ?ds`]
+        case False hence "d < d'" using \<open>d \<noteq> d'\<close> by auto
+        with in_d \<open>?sub d = ?sub d'\<close> level_less[OF \<open>d' \<in> set ?ds\<close>]
         have "lv p d' < lv (child p left d) d'" by simp
         thus False unfolding lv_def
-          using child_invariant[OF `d' < length p`, of left d] `d \<noteq> d'`
+          using child_invariant[OF \<open>d' < length p\<close>, of left d] \<open>d \<noteq> d'\<close>
           by auto
       qed
     qed
@@ -765,8 +765,8 @@ proof (induct l arbitrary: p ds)
         and *: "ys = ?sub d" by auto
 
       show "distinct ys" unfolding *
-        using grid_disjunct[OF `d < length p`, of "{d' \<in> ds. d' \<le> d}"]
-          gridgen_lgrid_eq lgrid_def `distinct (?left d)` `distinct (?right d)`
+        using grid_disjunct[OF \<open>d < length p\<close>, of "{d' \<in> ds. d' \<le> d}"]
+          gridgen_lgrid_eq lgrid_def \<open>distinct (?left d)\<close> \<open>distinct (?right d)\<close>
         by auto
     next
       fix ys zs
@@ -788,28 +788,28 @@ proof (induct l arbitrary: p ds)
           unfolding ys zs by auto
 
         hence "lv p d < lv p' d" "lv p d' < lv p' d'"
-          using grid_child_level `d \<in> set ?ds` `d' \<in> set ?ds`
+          using grid_child_level \<open>d \<in> set ?ds\<close> \<open>d' \<in> set ?ds\<close>
           by (auto simp add: gridgen_lgrid_eq lgrid_def grid_child_level)
 
         show False
         proof (cases "d < d'")
           case True
-          from `p' \<in> set (?sub d)`
+          from \<open>p' \<in> set (?sub d)\<close>
           have "p ! d' = p' ! d'"
             using grid_invariant[of d' "child p right d" "{d' \<in> ds. d' \<le> d}"]
             using grid_invariant[of d' "child p left d" "{d' \<in> ds. d' \<le> d}"]
-            using child_invariant[of d' _ _ d] `d < d'` `d' < length p`
+            using child_invariant[of d' _ _ d] \<open>d < d'\<close> \<open>d' < length p\<close>
             using gridgen_lgrid_eq lgrid_def by auto
-          thus False using `lv p d' < lv p' d'` unfolding lv_def by auto
+          thus False using \<open>lv p d' < lv p' d'\<close> unfolding lv_def by auto
         next
-          case False hence "d' < d" using `d' \<noteq> d` by simp
-          from `p' \<in> set (?sub d')`
+          case False hence "d' < d" using \<open>d' \<noteq> d\<close> by simp
+          from \<open>p' \<in> set (?sub d')\<close>
           have "p ! d = p' ! d"
             using grid_invariant[of d "child p right d'" "{d \<in> ds. d \<le> d'}"]
             using grid_invariant[of d "child p left d'" "{d \<in> ds. d \<le> d'}"]
-            using child_invariant[of d _ _ d'] `d' < d` `d < length p`
+            using child_invariant[of d _ _ d'] \<open>d' < d\<close> \<open>d < length p\<close>
             using gridgen_lgrid_eq lgrid_def by auto
-          thus False using `lv p d < lv p' d` unfolding lv_def by auto
+          thus False using \<open>lv p d < lv p' d\<close> unfolding lv_def by auto
         qed
       qed
     qed
@@ -844,11 +844,11 @@ lemma lgrid_sum:
   (is "(\<Sum> p \<in> ?grid b. F p) = (\<Sum> p \<in> ?grid ?l . F p) + (?sum (?grid ?r)) + F b")
 proof -
   have "!! dir. b \<notin> ?grid (child b dir d)"
-    using grid_child_without_parent[where ds="{d}"] and `d < length b` and lgrid_def by auto
+    using grid_child_without_parent[where ds="{d}"] and \<open>d < length b\<close> and lgrid_def by auto
   hence b_distinct: "b \<notin> (?grid ?l \<union> ?grid ?r)" by auto
 
   have "?grid ?l \<inter> ?grid ?r = {}"
-    unfolding lgrid_def using grid_disjunct and `d < length b` by auto
+    unfolding lgrid_def using grid_disjunct and \<open>d < length b\<close> by auto
   from lgrid_finite lgrid_finite and this
   have child_eq: "?sum ((?grid ?l) \<union> (?grid ?r)) = ?sum (?grid ?l) + ?sum (?grid ?r)"
     by (rule sum.union_disjoint)
@@ -926,14 +926,14 @@ proof -
 qed
 lemma base_in[simp]: assumes "d < dm" and "d \<in> ds" and p_grid: "p \<in> sparsegrid' dm" shows "base ds p ! d = start dm ! d"
 proof -
-  have ds: "d \<notin> {0..<dm} - ds" using `d \<in> ds` by auto
-  have "d < length (start dm)" using `d < dm` by auto
+  have ds: "d \<notin> {0..<dm} - ds" using \<open>d \<in> ds\<close> by auto
+  have "d < length (start dm)" using \<open>d < dm\<close> by auto
   with grid_invariant[OF this ds] baseE(1)[OF p_grid] show ?thesis by auto
 qed
 lemma base_out[simp]: assumes "d < dm" and "d \<notin> ds" and p_grid: "p \<in> sparsegrid' dm" shows "base ds p ! d = p ! d"
 proof -
-  have "d < length (base ds p)" using base_length[OF p_grid] `d < dm` by auto
-  with grid_invariant[OF this `d \<notin> ds`] baseE(2)[OF p_grid] show ?thesis by auto
+  have "d < length (base ds p)" using base_length[OF p_grid] \<open>d < dm\<close> by auto
+  with grid_invariant[OF this \<open>d \<notin> ds\<close>] baseE(2)[OF p_grid] show ?thesis by auto
 qed
 lemma base_base: assumes p_grid: "p \<in> sparsegrid' dm" shows "base ds (base ds' p) = base (ds \<union> ds') p"
 proof (rule nth_equalityI)
@@ -949,14 +949,14 @@ proof (rule nth_equalityI)
       case True
       show ?thesis
       proof (cases "i \<in> ds")
-        case True from base_in[OF `i < dm` `i \<in> ds \<union> ds'` p_grid] base_in[OF `i < dm` this b_spg] show ?thesis by auto
+        case True from base_in[OF \<open>i < dm\<close> \<open>i \<in> ds \<union> ds'\<close> p_grid] base_in[OF \<open>i < dm\<close> this b_spg] show ?thesis by auto
       next
-        case False hence "i \<in> ds'" using `i \<in> ds \<union> ds'` by auto
-        from base_in[OF `i < dm` `i \<in> ds \<union> ds'` p_grid] base_out[OF `i < dm` `i \<notin> ds` b_spg] base_in[OF `i < dm` `i \<in> ds'` p_grid] show ?thesis by auto
+        case False hence "i \<in> ds'" using \<open>i \<in> ds \<union> ds'\<close> by auto
+        from base_in[OF \<open>i < dm\<close> \<open>i \<in> ds \<union> ds'\<close> p_grid] base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds\<close> b_spg] base_in[OF \<open>i < dm\<close> \<open>i \<in> ds'\<close> p_grid] show ?thesis by auto
       qed
     next
       case False hence "i \<notin> ds" and "i \<notin> ds'" by auto
-      from base_out[OF `i < dm` `i \<notin> ds \<union> ds'` p_grid] base_out[OF `i < dm` `i \<notin> ds` b_spg] base_out[OF `i < dm` `i \<notin> ds'` p_grid] show ?thesis by auto
+      from base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds \<union> ds'\<close> p_grid] base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds\<close> b_spg] base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds'\<close> p_grid] show ?thesis by auto
     qed
   qed
 qed
@@ -983,10 +983,10 @@ proof (rule inj_onI)
   have "fst x = fst y"
   proof (rule ccontr)
     assume "fst x \<noteq> fst y"
-    from grid_disjunct'[OF `fst x \<in> grid b ds` `fst y \<in> grid b ds` `snd x \<in> grid (fst x) ds'` this `ds \<inter> ds' = {}`]
-    show False using `snd y \<in> grid (fst y) ds'` unfolding `snd x = snd y` by auto
+    from grid_disjunct'[OF \<open>fst x \<in> grid b ds\<close> \<open>fst y \<in> grid b ds\<close> \<open>snd x \<in> grid (fst x) ds'\<close> this \<open>ds \<inter> ds' = {}\<close>]
+    show False using \<open>snd y \<in> grid (fst y) ds'\<close> unfolding \<open>snd x = snd y\<close> by auto
   qed
-  show "x = y" using prod_eqI[OF `fst x = fst y` `snd x = snd y`] .
+  show "x = y" using prod_eqI[OF \<open>fst x = fst y\<close> \<open>snd x = snd y\<close>] .
 qed
 
 lemma grid_level_d: assumes "d < length b" and p_grid: "p \<in> grid b {d}" and "p \<noteq> b" shows "lv p d > lv b d"
@@ -998,7 +998,7 @@ qed
 lemma grid_base_base: assumes "b \<in> sparsegrid' dm"
   shows "base ds' b \<in> grid (base ds (base ds' b)) (ds \<union> ds')"
 proof -
-  from base_grid[OF `b \<in> sparsegrid' dm`] have "base ds' b \<in> sparsegrid' dm" by auto
+  from base_grid[OF \<open>b \<in> sparsegrid' dm\<close>] have "base ds' b \<in> sparsegrid' dm" by auto
   from grid_union_dims[OF _ baseE(2)[OF this], of ds "ds \<union> ds'"] show ?thesis by auto
 qed
 
@@ -1018,7 +1018,7 @@ proof -
     show "length ?b = length ?p" using base_length[OF bp_spg] base_length[OF bb_spg] by auto
     show "?b ! i = ?p ! i" if "i < length ?b" for i
     proof -
-      have "i < dm" and "i < length (base ds b)" using that base_length[OF bb_spg] `dm = length (base ds b)` by auto
+      have "i < dm" and "i < length (base ds b)" using that base_length[OF bb_spg] \<open>dm = length (base ds b)\<close> by auto
       show "?b ! i = ?p ! i"
       proof (cases "i \<in> ds \<union> ds'")
         case True
@@ -1026,17 +1026,17 @@ proof -
         proof - fix x assume x_spg: "x \<in> sparsegrid' dm" and xb_spg: "base ds x \<in> sparsegrid' dm"
           show "base ds' (base ds x) ! i = (start dm) ! i"
           proof (cases "i \<in> ds'")
-            case True from base_in[OF `i < dm` this xb_spg] show ?thesis .
+            case True from base_in[OF \<open>i < dm\<close> this xb_spg] show ?thesis .
           next
-            case False hence "i \<in> ds" using `i \<in> ds \<union> ds'` by auto
-            from base_out[OF `i < dm` False xb_spg] base_in[OF `i < dm` this x_spg] show ?thesis by auto
+            case False hence "i \<in> ds" using \<open>i \<in> ds \<union> ds'\<close> by auto
+            from base_out[OF \<open>i < dm\<close> False xb_spg] base_in[OF \<open>i < dm\<close> this x_spg] show ?thesis by auto
           qed
         qed
         from this[OF bp_spg p_spg] this[OF bb_spg b_spg] show ?thesis by auto
       next
         case False hence "i \<notin> ds" and "i \<notin> ds'" by auto
-        from grid_invariant[OF `i < length (base ds b)` `i \<notin> ds` p_grid]
-          base_out[OF `i < dm` `i \<notin> ds'` bp_spg] base_out[OF `i < dm` `i \<notin> ds` p_spg] base_out[OF `i < dm` `i \<notin> ds'` bb_spg]
+        from grid_invariant[OF \<open>i < length (base ds b)\<close> \<open>i \<notin> ds\<close> p_grid]
+          base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds'\<close> bp_spg] base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds\<close> p_spg] base_out[OF \<open>i < dm\<close> \<open>i \<notin> ds'\<close> bb_spg]
         show ?thesis by auto
       qed
     qed
@@ -1065,8 +1065,8 @@ proof induct
   thus ?case
   proof (cases "d' = d")
     case True
-    from grid.Child[OF p''_grid `d' \<in> ds`]
-    show ?thesis unfolding child_def ix_def lv_def list_update_overwrite `d' = d` nth_list_update_eq[OF `d < length p''`] nth_list_update_eq[OF `d < length p`] .
+    from grid.Child[OF p''_grid \<open>d' \<in> ds\<close>]
+    show ?thesis unfolding child_def ix_def lv_def list_update_overwrite \<open>d' = d\<close> nth_list_update_eq[OF \<open>d < length p''\<close>] nth_list_update_eq[OF \<open>d < length p\<close>] .
   next
     case False
     show ?thesis unfolding child_def nth_list_update_neq[OF False] using Child by auto
@@ -1091,10 +1091,10 @@ proof -
     show ?case
     proof (cases "d' \<in> ds'")
       case True hence "d' \<notin> ds" and "d' \<in> ds' \<union> ds" using ds_dj by auto
-      have "{0..<dm} - {d \<in> ds'. d < d'} = ({0..<dm} - {d \<in> ds'. d < d'}) - {d'} \<union> {d'}" using `Suc d' \<le> dm` by auto
+      have "{0..<dm} - {d \<in> ds'. d < d'} = ({0..<dm} - {d \<in> ds'. d < d'}) - {d'} \<union> {d'}" using \<open>Suc d' \<le> dm\<close> by auto
       also have "\<dots> = ({0..<dm} - {d \<in> ds'. d < Suc d'}) \<union> {d'}" by auto
       finally have x_g: "x \<in> grid (start dm) ({d'} \<union> ({0..<dm} - {d \<in> ds'. d < Suc d'}))" using Suc by auto
-      from grid_invariant[OF d'_b `d' \<notin> ds` x_grid] base_in[OF _ `d' \<in> ds' \<union> ds` b_spg] `Suc d' \<le> dm`
+      from grid_invariant[OF d'_b \<open>d' \<notin> ds\<close> x_grid] base_in[OF _ \<open>d' \<in> ds' \<union> ds\<close> b_spg] \<open>Suc d' \<le> dm\<close>
       have "x ! d' = start dm ! d'" by auto
       from grid_dim_remove[OF x_g this] show ?thesis .
     next
@@ -1139,9 +1139,9 @@ proof -
         and "(lm - level b) + level b = lm"
         and b_grid: "b \<in> grid (start dm) ({0..<dm} - {d})"
         using lgrid_def gridgen_lgrid_eq by auto
-      note F = Fintro[OF this(1,2) `p \<in> sparsegrid dm lm`]
+      note F = Fintro[OF this(1,2) \<open>p \<in> sparsegrid dm lm\<close>]
 
-      have "b \<notin> set bs" using `distinct (b#bs)` by auto
+      have "b \<notin> set bs" using \<open>distinct (b#bs)\<close> by auto
 
       show ?case
       proof (cases "base {d} p \<in> set (b#bs)")
@@ -1153,8 +1153,8 @@ proof -
           moreover
           { fix p' assume "p' \<in> lgrid b {d} lm"
             hence "p' \<in> grid b {d}" and "level p' < lm" unfolding lgrid_def by auto
-            from grid_transitive[OF this(1) b_grid, of "{0..<dm}"] `d < dm`
-              baseI[OF b_grid `p' \<in> grid b {d}`] `b \<notin> set bs`
+            from grid_transitive[OF this(1) b_grid, of "{0..<dm}"] \<open>d < dm\<close>
+              baseI[OF b_grid \<open>p' \<in> grid b {d}\<close>] \<open>b \<notin> set bs\<close>
               Cons.prems Cons.hyps[of p'] this(2)
             have "foldr ?f bs \<beta> p' = \<beta> p'" unfolding sparsegrid_def lgrid_def by auto }
           ultimately show ?thesis
@@ -1171,21 +1171,21 @@ proof -
         hence "b \<noteq> base {d} p" by auto
         from False Cons.hyps[of p] Cons.prems
         have "foldr ?f bs \<beta> p = \<beta> p" by auto
-        thus ?thesis using False F `b \<noteq> base {d} p` by auto
+        thus ?thesis using False F \<open>b \<noteq> base {d} p\<close> by auto
       qed
     qed auto
   }
   moreover have "base {d} p \<in> set ?gridgen"
   proof -
     have "p \<in> grid (base {d} p) {d}"
-      using `p \<in> sparsegrid dm lm`[THEN sparsegrid_subset] by (rule baseE)
-    from grid_level[OF this] baseE(1)[OF sparsegrid_subset[OF `p \<in> sparsegrid dm lm`]]
-    show ?thesis using `p \<in> sparsegrid dm lm`
+      using \<open>p \<in> sparsegrid dm lm\<close>[THEN sparsegrid_subset] by (rule baseE)
+    from grid_level[OF this] baseE(1)[OF sparsegrid_subset[OF \<open>p \<in> sparsegrid dm lm\<close>]]
+    show ?thesis using \<open>p \<in> sparsegrid dm lm\<close>
       unfolding gridgen_lgrid_eq sparsegrid'_def lgrid_def sparsegrid_def
       by auto
   qed
   ultimately show ?thesis unfolding lift_def
-    using gridgen_distinct `p \<in> sparsegrid dm lm` by auto
+    using gridgen_distinct \<open>p \<in> sparsegrid dm lm\<close> by auto
 qed
 
 subsection \<open> Parent Points \<close>
@@ -1207,22 +1207,22 @@ proof (intro set_eqI iffI)
     have "d < length b"
     proof (rule ccontr)
       assume "\<not> d < length b" hence empty: "{d' \<in> {d}. d' < length b} = {}" by auto
-      have "x = b" using `x \<in> grid b {d}`
+      have "x = b" using \<open>x \<in> grid b {d}\<close>
         unfolding grid_dim_remove_outer[where ds="{d}" and b=b] empty
         using grid_empty_ds by auto
-      thus False using `\<not> x = b` by auto
+      thus False using \<open>\<not> x = b\<close> by auto
     qed
     have "x \<notin> grid ?chid {d}"
     proof (rule ccontr)
       assume "\<not> x \<notin> grid ?chid {d}"
-      hence "p \<in> grid ?chid {d}" using grid_transitive[OF `p \<in> grid x {d}`, where ds'="{d}"]
+      hence "p \<in> grid ?chid {d}" using grid_transitive[OF \<open>p \<in> grid x {d}\<close>, where ds'="{d}"]
         by auto
-      hence "p \<notin> grid ?chd {d}" using grid_disjunct[OF `d < length b`] by (cases dir, auto)
-      thus False using `p \<in> grid ?chd {d}` ..
+      hence "p \<notin> grid ?chd {d}" using grid_disjunct[OF \<open>d < length b\<close>] by (cases dir, auto)
+      thus False using \<open>p \<in> grid ?chd {d}\<close> ..
     qed
     with False and x_split
     have "x \<in> grid ?chd {d}" by auto
-    thus ?thesis unfolding parents_def using `p \<in> grid x {d}` by auto
+    thus ?thesis unfolding parents_def using \<open>p \<in> grid x {d}\<close> by auto
   qed auto
 next
   let ?chd = "child b dir d" and ?chid = "child b (inv dir) d"
@@ -1234,7 +1234,7 @@ next
     thus ?thesis unfolding parents_def using grid_child[where b=b] by auto
   next
     from p_grid have "p \<in> grid b {d}" using grid_child[where b=b] by auto
-    case True thus ?thesis unfolding parents_def using `p \<in> grid b {d}` by auto
+    case True thus ?thesis unfolding parents_def using \<open>p \<in> grid b {d}\<close> by auto
   qed
 qed
 
@@ -1242,7 +1242,7 @@ lemma parents_no_parent: assumes "d < length b" shows "b \<notin> parents d (chi
 proof
   assume "b \<in> parents d ?ch p" hence "b \<in> grid ?ch {d}" unfolding parents_def by auto
   from grid_level[OF this]
-  have "level b + 1 \<le> level b" unfolding child_level[OF `d < length b`] .
+  have "level b + 1 \<le> level b" unfolding child_level[OF \<open>d < length b\<close>] .
   thus False by auto
 qed
 
@@ -1260,7 +1260,7 @@ lemma parents_finite: "finite (parents d b p)"
 
 lemma parent_sum: assumes p_grid: "p \<in> grid (child b dir d) {d}" and "d < length b"
   shows "(\<Sum> x \<in> parents d b p. F x) = F b + (\<Sum> x \<in> parents d (child b dir d) p. F x)"
-  unfolding parents_split[OF p_grid] using parents_no_parent[OF `d < length b`, where dir=dir and p=p] using parents_finite
+  unfolding parents_split[OF p_grid] using parents_no_parent[OF \<open>d < length b\<close>, where dir=dir and p=p] using parents_finite
   by auto
 
 lemma parents_single: "parents d b b = { b }"
@@ -1293,14 +1293,14 @@ next
   proof (rule linorder_cases)
     assume "i = ix b d * 2^(Suc l')"
     hence "even i" by auto
-    thus ?thesis using `odd i` by blast
+    thus ?thesis using \<open>odd i\<close> by blast
   next
     assume *: "i < ix b d * 2^(Suc l')"
 
     let ?b = "child b left d"
 
     have "d < length ?b" using Suc by auto
-    moreover note `odd i`
+    moreover note \<open>odd i\<close>
     moreover have "lv ?b d + l' = l"
       and "i < (ix ?b d + 1) * 2^l'"
       and "(ix ?b d - 1) * 2^l' < i"
@@ -1309,7 +1309,7 @@ next
     ultimately have "?b[d := (l,i)] \<in> grid ?b {d}"
       by (rule Suc.hyps)
     thus ?thesis
-      by (auto intro!: grid_child[OF `d \<in> {d}`, of _ b left]
+      by (auto intro!: grid_child[OF \<open>d \<in> {d}\<close>, of _ b left]
         simp add: child_def)
   next
     assume *: "ix b d * 2^(Suc l') < i"
@@ -1317,7 +1317,7 @@ next
     let ?b = "child b right d"
 
     have "d < length ?b" using Suc by auto
-    moreover note `odd i`
+    moreover note \<open>odd i\<close>
     moreover have "lv ?b d + l' = l"
       and "i < (ix ?b d + 1) * 2^l'"
       and "(ix ?b d - 1) * 2^l' < i"
@@ -1326,7 +1326,7 @@ next
     ultimately have "?b[d := (l,i)] \<in> grid ?b {d}"
       by (rule Suc.hyps)
     thus ?thesis
-      by (auto intro!: grid_child[OF `d \<in> {d}`, of _ b right]
+      by (auto intro!: grid_child[OF \<open>d \<in> {d}\<close>, of _ b right]
         simp add: child_def)
   qed
 qed
@@ -1352,14 +1352,14 @@ next
 
   let ?p = "p[dm := b ! dm]"
 
-  note `dm \<le> length b`
-  moreover have "length ?p = length b" using `length p = length b` by simp
+  note \<open>dm \<le> length b\<close>
+  moreover have "length ?p = length b" using \<open>length p = length b\<close> by simp
   moreover
   {
     fix d assume "d < dm"
     hence *: "d < Suc dm" and "dm \<noteq> d" by auto
     have "?p ! d = p ! d"
-      by (rule nth_list_update_neq[OF `dm \<noteq> d`])
+      by (rule nth_list_update_neq[OF \<open>dm \<noteq> d\<close>])
     hence "?bounded ?p d"
       using Suc.prems(3)[OF *] lv_def ix_def
       by simp
@@ -1369,11 +1369,11 @@ next
     fix d assume "dm \<le> d" and "d < length b"
     have "?p ! d = b ! d"
     proof (cases "d = dm")
-      case True thus ?thesis using `d < length b` `length p = length b` by auto
+      case True thus ?thesis using \<open>d < length b\<close> \<open>length p = length b\<close> by auto
     next
       case False
-      hence "Suc dm \<le> d" using `dm \<le> d` by auto
-      thus ?thesis using Suc.prems(4) `d < length b` by auto
+      hence "Suc dm \<le> d" using \<open>dm \<le> d\<close> by auto
+      thus ?thesis using Suc.prems(4) \<open>d < length b\<close> by auto
     qed
   }
   ultimately
@@ -1382,13 +1382,13 @@ next
 
   have "lv b dm \<le> lv p dm" using Suc.prems(3)[OF lessI] by simp
 
-  have [simp]: "lv ?p dm = lv b dm" using lv_def `dm < length p` by auto
-  have [simp]: "ix ?p dm = ix b dm" using ix_def `dm < length p` by auto
+  have [simp]: "lv ?p dm = lv b dm" using lv_def \<open>dm < length p\<close> by auto
+  have [simp]: "ix ?p dm = ix b dm" using ix_def \<open>dm < length p\<close> by auto
   have [simp]: "p[dm := (lv p dm, ix p dm)] = p"
-    using lv_def ix_def `dm < length p` by auto
+    using lv_def ix_def \<open>dm < length p\<close> by auto
   have "dm < length ?p" and
     [simp]: "lv b dm + (lv p dm - lv b dm) = lv p dm"
-    using `dm < length p` `lv b dm \<le> lv p dm` by auto
+    using \<open>dm < length p\<close> \<open>lv b dm \<le> lv p dm\<close> by auto
   from grid_single_dimensional_specification[OF this(1),
     where l="lv p dm" and i="ix p dm" and l'="lv p dm - lv b dm", simplified]
   have "p \<in> grid ?p {dm}"
@@ -1413,15 +1413,15 @@ proof (rule equalityI[OF subsetI subsetI])
     have "odd (ix p d)"
     proof (cases "p ! d = start dm ! d")
       case True
-      thus ?thesis unfolding start_def using `d < dm` ix_def by auto
+      thus ?thesis unfolding start_def using \<open>d < dm\<close> ix_def by auto
     next
       case False
       from grid_odd[OF _ this **]
-      show ?thesis using `d < dm` by auto
+      show ?thesis using \<open>d < dm\<close> by auto
     qed
     hence "odd (ix p d) \<and> 0 < ix p d \<and> ix p d < 2^(lv p d + 1)"
-      using grid_estimate[OF `d < length (start dm)` **]
-      unfolding ix_def lv_def start_def using `d < dm` by auto
+      using grid_estimate[OF \<open>d < length (start dm)\<close> **]
+      unfolding ix_def lv_def start_def using \<open>d < dm\<close> by auto
   }
   ultimately show "p \<in> ?set"
     using sparsegrid_def lgrid_def by auto

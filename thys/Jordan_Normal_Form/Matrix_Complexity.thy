@@ -63,7 +63,7 @@ proof -
     from mat_gtD[OF this] obtain i j where
       ge: "A \<ge>\<^sub>m B" and ij: "i < sd" "j < sd" and wgt: "weak_gt (A $$ (i,j)) (B $$ (i,j))"
       by auto
-    from ij `sd \<le> n` have ij': "i < n" "j < n" by auto
+    from ij \<open>sd \<le> n\<close> have ij': "i < n" "j < n" by auto
     have gt: "gt (A $$ (i,j)) (B $$ (i,j))"
       by (rule orient2, insert ij' AB wgt, force)
     show "mat_gt gt sd A B" using ij gt ge by auto

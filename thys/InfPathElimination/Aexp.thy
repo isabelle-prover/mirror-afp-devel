@@ -2,34 +2,34 @@ theory Aexp
 imports Main
 begin
 
-section{* Arithmetic Expressions*}
+section\<open>Arithmetic Expressions\<close>
 
-text {* In this section, we model arithmetic expressions as total functions from valuations of 
+text \<open>In this section, we model arithmetic expressions as total functions from valuations of 
 program variables to values. This modeling does not take into consideration the syntactic aspects 
 of arithmetic expressions. Thus, our modeling holds for any operator. However, some classical 
 notions, like the set of variables occurring in a given expression for example, must be rethought 
-and defined accordingly.  *}
+and defined accordingly.\<close>
 
-subsection{* Variables and their domain *}
+subsection\<open>Variables and their domain\<close>
 
-text {* \textbf{Note}: in the following theories, we distinguish the set of \emph{program variables} 
+text \<open>\textbf{Note}: in the following theories, we distinguish the set of \emph{program variables} 
 and the set 
 of \emph{symbolic variables}. A number of types we define are parameterized by a type of variables. 
 For example, we make a distinction between expressions (arithmetic or boolean) over program 
 variables and expressions over symbolic variables. This distinction eases some parts of the following 
-formalization. *}
+formalization.\<close>
 
-paragraph {* Symbolic variables. *}
+paragraph \<open>Symbolic variables.\<close>
 
-text {* A \emph{symbolic variable} is an indexed version of a program variable. In the following 
-type-synonym, we consider that the abstract type @{text "'v"} represent the set of program 
+text \<open>A \emph{symbolic variable} is an indexed version of a program variable. In the following 
+type-synonym, we consider that the abstract type \<open>'v\<close> represent the set of program 
 variables. By set 
 of program variables, we do not mean \emph{the set of variables of a given program}, but 
 \emph{the set of variables of all possible programs}. This distinction justifies some of the 
 modeling choices done later. Within Isabelle/HOL, nothing is known about this set. The set of 
 program variables is infinite, though it is not needed to make this assumption. On the other hand, 
 the set of symbolic variables is infinite, independently of the fact that the set of program 
-variables is finite or not. *}
+variables is finite or not.\<close>
 
 
 type_synonym 'v symvar = "'v \<times> nat"
@@ -39,49 +39,49 @@ lemma
   "\<not> finite (UNIV::'v symvar set)"
 by (simp add : finite_prod)
 
-text {* The previous lemma has no name and thus cannot be referenced in the following. Indeed, it is 
+text \<open>The previous lemma has no name and thus cannot be referenced in the following. Indeed, it is 
 of no use for proving the properties we are interested in. In the following, we will give other
 unnamed lemmas when we think they might help the reader to understand the ideas behind our modeling 
-choices. *}
+choices.\<close>
 
 
-paragraph {* Domain of variables. *}
+paragraph \<open>Domain of variables.\<close>
 
-text {* We call @{term "D"} the domain of program and symbolic variables. In the following, we 
-suppose that @{term "D"} is the set of integers. *}
+text \<open>We call @{term "D"} the domain of program and symbolic variables. In the following, we 
+suppose that @{term "D"} is the set of integers.\<close>
 
 
-subsection{* Program and symbolic states *}
+subsection\<open>Program and symbolic states\<close>
 
-text {* A state is a total function giving values in @{term "D"} to variables. The latter are 
-represented by elements of type @{text "'v"}. Unlike in the @{text "'v symvar"} type-synonym, here 
-the type @{text "'v"} can stand for program variables as well as symbolic variables. States over 
+text \<open>A state is a total function giving values in @{term "D"} to variables. The latter are 
+represented by elements of type \<open>'v\<close>. Unlike in the \<open>'v symvar\<close> type-synonym, here 
+the type \<open>'v\<close> can stand for program variables as well as symbolic variables. States over 
 program variables are called \emph{program states}, and states over symbolic variables are called 
-\emph{symbolic states}. *}
+\emph{symbolic states}.\<close>
 type_synonym ('v,'d) state = "'v \<Rightarrow> 'd"
 
 
-subsection{* The \emph{aexp} type-synonym *}
+subsection\<open>The \emph{aexp} type-synonym\<close>
 
-text {* Arithmetic (and boolean, see \verb?Bexp.thy?) expressions are represented by their 
+text \<open>Arithmetic (and boolean, see \verb?Bexp.thy?) expressions are represented by their 
 semantics, i.e.\ 
 total functions giving values in @{term "D"} to states. This way of representing expressions has 
 the benefit that it is not necessary to define the syntax of terms (and formulae) appearing 
-in program statements and path predicates. *}
+in program statements and path predicates.\<close>
 
 type_synonym ('v,'d) aexp =  "('v,'d) state \<Rightarrow> 'd"
 
 
-text {* In order to represent expressions over program variables as well as symbolic variables, 
+text \<open>In order to represent expressions over program variables as well as symbolic variables, 
 the type synonym @{type "aexp"} is parameterized by the type of variables. Arithmetic and boolean 
 expressions over program variables are used to express program statements. Arithmetic and boolean 
 expressions over symbolic variables are used to represent the constraints occurring in path 
-predicates during symbolic execution. *}
+predicates during symbolic execution.\<close>
 
 
-subsection{* Variables of an arithmetic expression *}
+subsection\<open>Variables of an arithmetic expression\<close>
 
-text{* Expressions being represented by total functions, one can not say that a given variable is 
+text\<open>Expressions being represented by total functions, one can not say that a given variable is 
 occurring in a given expression. We define the set of variables of an expression as the set of 
 variables that can actually have an influence on the value associated by an expression to a state. 
 For example, the set of variables of the expression @{term "\<lambda> \<sigma>. \<sigma> x - \<sigma> y"} is @{term "{x,y}"}, 
@@ -90,7 +90,7 @@ the second case, this expression would evaluate to $0$ for any state @{term
 "\<sigma>"}. Similarly, an expression like
  @{term "\<lambda> \<sigma>.  \<sigma> x * (0::nat)"} is considered as having no
  variable as if a static evaluation of the multiplication had occurred.
- *}
+\<close>
 
 
 definition vars :: 
@@ -132,14 +132,14 @@ lemma vars_example_2 :
 using assms by (auto simp add : vars_def)
 
 
-subsection{* Fresh variables *}
+subsection\<open>Fresh variables\<close>
 
-text {* Our notion of symbolic execution suppose \emph{static single assignment 
+text \<open>Our notion of symbolic execution suppose \emph{static single assignment 
 form}. In order to symbolically execute an assignment, we require the existence of a fresh 
 symbolic variable for the configuration from which symbolic execution is performed. We define here 
-the notion of \emph{freshness} of a variable for an arithmetic expression.*}
+the notion of \emph{freshness} of a variable for an arithmetic expression.\<close>
 
-text {* A variable is fresh for an expression if does not belong to its set of variables. *}
+text \<open>A variable is fresh for an expression if does not belong to its set of variables.\<close>
 
 
 abbreviation fresh ::

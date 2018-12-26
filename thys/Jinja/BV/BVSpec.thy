@@ -5,17 +5,17 @@
 
 *)
 
-section {* The Bytecode Verifier \label{sec:BVSpec} *}
+section \<open>The Bytecode Verifier \label{sec:BVSpec}\<close>
 
 theory BVSpec
 imports Effect
 begin
 
-text {*
+text \<open>
   This theory contains a specification of the BV. The specification
   describes correct typings of method bodies; it corresponds 
   to type \emph{checking}.
-*}
+\<close>
 
 
 definition

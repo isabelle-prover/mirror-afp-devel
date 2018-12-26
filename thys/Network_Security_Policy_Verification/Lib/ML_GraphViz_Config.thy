@@ -2,7 +2,7 @@ theory ML_GraphViz_Config
 imports Main
 begin
 
-ML{*
+ML\<open>
 
 signature GRAPHVIZ_PLATFORM_CONFIG =
 sig
@@ -33,6 +33,6 @@ struct
   end
 
 end
-*}
+\<close>
 
 end

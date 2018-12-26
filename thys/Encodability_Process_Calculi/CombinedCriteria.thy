@@ -2,15 +2,15 @@ theory CombinedCriteria
   imports DivergenceReflection SuccessSensitiveness FullAbstraction OperationalCorrespondence
 begin
 
-section {* Combining Criteria *}
+section \<open>Combining Criteria\<close>
 
-text {* So far we considered the effect of single criteria on encodings. Often the quality of an
+text \<open>So far we considered the effect of single criteria on encodings. Often the quality of an
         encoding is prescribed by a set of different criteria. In the following we analyse the
         combined effect of criteria. This way we can compare criteria as well as identify side
         effects that result from combinations of criteria. We start with some technical lemmata. To
         combine the effect of different criteria we combine the conditions they induce. If their
         effect can be described by a predicate on the pairs of the relation, as in the case of
-        success sensitiveness or divergence reflection, combining the effects is simple. *}
+        success sensitiveness or divergence reflection, combining the effects is simple.\<close>
 
 lemma (in encoding) criterion_iff_source_target_relation_impl_indRelR:
   fixes Cond :: "('procS \<Rightarrow> 'procT) \<Rightarrow> bool"
@@ -68,9 +68,9 @@ lemma (in encoding) combine_conditions_on_sets_and_pairs_of_relations:
       using assms
     by blast
 
-text {* We mapped several criteria on conditions on relations that relate at least all source terms
+text \<open>We mapped several criteria on conditions on relations that relate at least all source terms
         and their literal translations. The following lemmata help us to combine such conditions by
-        switching to the witness indRelR. *}
+        switching to the witness indRelR.\<close>
 
 lemma (in encoding) combine_conditions_on_relations_indRelR:
   fixes RelA RelB   :: "(('procS, 'procT) Proc \<times>('procS, 'procT) Proc) set"
@@ -151,12 +151,12 @@ next
     by blast
 qed
 
-subsection {* Divergence Reflection and Success Sensitiveness *}
+subsection \<open>Divergence Reflection and Success Sensitiveness\<close>
 
-text {* We combine results on divergence reflection and success sensitiveness to analyse their
+text \<open>We combine results on divergence reflection and success sensitiveness to analyse their
         combined effect on an encoding function. An encoding is success sensitive and reflects
         divergence iff there exists a relation that relates source terms and their literal
-        translations that reflects divergence and respects success. *}
+        translations that reflects divergence and respects success.\<close>
 
 lemma (in encoding_wrt_barbs) WSS_DR_iff_source_target_rel:
   fixes success :: "'barbs"
@@ -206,13 +206,13 @@ proof -
     by simp
 qed
 
-subsection {* Adding Operational Correspondence *}
+subsection \<open>Adding Operational Correspondence\<close>
 
-text {* The effect of operational correspondence includes conditions (TRel is included,
+text \<open>The effect of operational correspondence includes conditions (TRel is included,
         transitivity) that require a witness like indRelRTPO. In order to combine operational
         correspondence with success sensitiveness, we show that if the encoding and TRel (weakly)
         respects barbs than indRelRTPO (weakly) respects barbs. Since success is only a specific
-        kind of barbs, the same holds for success sensitiveness. *}
+        kind of barbs, the same holds for success sensitiveness.\<close>
 
 lemma (in encoding_wrt_barbs) enc_and_TRel_impl_indRelRTPO_weakly_respects_success:
   fixes success :: "'barbs"
@@ -602,10 +602,10 @@ next
   qed
 qed
 
-text {* An encoding is success sensitive and operational corresponding w.r.t. a bisimulation TRel
+text \<open>An encoding is success sensitive and operational corresponding w.r.t. a bisimulation TRel
         that respects success iff there exists a bisimultion that includes TRel and respects
         success. The same holds if we consider not only success sensitiveness but barb
-        sensitiveness in general. *}
+        sensitiveness in general.\<close>
 
 lemma (in encoding_wrt_barbs) OC_SS_iff_source_target_rel:
   fixes success :: "'barbs"
@@ -1145,10 +1145,10 @@ next
     by fast
 qed
 
-text {* An encoding is success sensitive and weakly operational corresponding w.r.t. a
+text \<open>An encoding is success sensitive and weakly operational corresponding w.r.t. a
         correspondence simulation TRel that respects success iff there exists a correspondence
         simultion that includes TRel and respects success. The same holds if we consider not only
-        success sensitiveness but barb sensitiveness in general. *}
+        success sensitiveness but barb sensitiveness in general.\<close>
 
 lemma (in encoding_wrt_barbs) WOC_SS_wrt_preorder_iff_source_target_rel:
   fixes success :: "'barbs"
@@ -1407,10 +1407,10 @@ next
     by fast
 qed
 
-text {* An encoding is strongly success sensitive and strongly operational corresponding w.r.t. a
+text \<open>An encoding is strongly success sensitive and strongly operational corresponding w.r.t. a
         strong bisimulation TRel that strongly respects success iff there exists a strong
         bisimultion that includes TRel and strongly respects success. The same holds if we consider
-        not only strong success sensitiveness but strong barb sensitiveness in general. *}
+        not only strong success sensitiveness but strong barb sensitiveness in general.\<close>
 
 lemma (in encoding_wrt_barbs) SOC_SS_wrt_preorder_iff_source_target_rel:
   fixes success :: "'barbs"
@@ -1658,8 +1658,8 @@ next
     by fast
 qed
 
-text {* Next we also add divergence reflection to operational correspondence and success
-        sensitiveness. *}
+text \<open>Next we also add divergence reflection to operational correspondence and success
+        sensitiveness.\<close>
 
 lemma (in encoding) enc_and_TRelimpl_indRelRTPO_reflect_divergence:
   fixes TRel    :: "('procT \<times> 'procT) set"
@@ -2237,13 +2237,13 @@ next
     by fast
 qed
 
-subsection {* Full Abstraction and Operational Correspondence *}
+subsection \<open>Full Abstraction and Operational Correspondence\<close>
 
-text {* To combine full abstraction and operational correspondence we consider a symmetric version
+text \<open>To combine full abstraction and operational correspondence we consider a symmetric version
         of the induced relation and assume that the relations SRel and TRel are equivalences. Then
         an encoding is fully abstract w.r.t. SRel and TRel and operationally corresponding w.r.t.
         TRel such that TRel is a bisimulation iff the induced relation contains both SRel and TRel
-        and is a transitive bisimulation. *}
+        and is a transitive bisimulation.\<close>
 
 lemma (in encoding) FS_OC_modulo_equivalences_iff_source_target_relation:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -2475,9 +2475,9 @@ next
     by simp
 qed
 
-text {* An encoding that is fully abstract w.r.t. the equivalences SRel and TRel and operationally
+text \<open>An encoding that is fully abstract w.r.t. the equivalences SRel and TRel and operationally
         corresponding w.r.t. TRel ensures that SRel is a bisimulation iff TRel is a bisimulation.
-      *}
+\<close>
 
 lemma (in encoding) FA_and_OC_and_TRel_impl_SRel_bisimulation:
   fixes SRel :: "('procS \<times> 'procS) set"

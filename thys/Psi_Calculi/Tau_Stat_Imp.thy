@@ -23,7 +23,7 @@ proof -
   moreover have "insertAssertion (extractFrame(\<tau>.(P))) \<Psi> \<simeq>\<^sub>F \<langle>\<epsilon>, \<Psi>\<rangle>" by(rule insertTauAssertion)
   hence "insertAssertion (extractFrame(\<tau>.(P))) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q) \<Psi>"
     by(metis FrameStatImpTrans FrameStatEq_def insertAssertionWeaken)
-  ultimately show ?thesis using `(\<Psi>, \<tau>.(P), Q) \<in> Rel`
+  ultimately show ?thesis using \<open>(\<Psi>, \<tau>.(P), Q) \<in> Rel\<close>
     by(rule weakenStatImpI)
 qed
 
@@ -38,26 +38,26 @@ lemma tauLaw1StatImpRight:
   shows "\<Psi> \<rhd> P \<lessapprox><Rel'> \<tau>.(Q)"
 proof(induct rule: weakStatImpI)
   case(cStatImp \<Psi>')
-  from `\<Psi> \<rhd> P \<lessapprox><Rel> Q` obtain Q' Q'' 
+  from \<open>\<Psi> \<rhd> P \<lessapprox><Rel> Q\<close> obtain Q' Q'' 
     where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'" and PImpQ': "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>" 
       and Q'Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and PRelQ'': "(\<Psi> \<otimes> \<Psi>', P, Q'') \<in> Rel"
     by(rule weakStatImpE)
     
   obtain Q''' where QTrans: "\<Psi> \<rhd> \<tau>.(Q) \<longmapsto>\<tau> \<prec> Q'''" and "\<Psi> \<rhd> Q \<sim> Q'''" using tauActionI by auto
   
-  from `\<Psi> \<rhd> Q \<sim> Q'''` QChain bisimE(2) obtain Q'''' where Q'''Chain: "\<Psi> \<rhd> Q''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" and "\<Psi> \<rhd> Q' \<sim> Q''''"
+  from \<open>\<Psi> \<rhd> Q \<sim> Q'''\<close> QChain bisimE(2) obtain Q'''' where Q'''Chain: "\<Psi> \<rhd> Q''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" and "\<Psi> \<rhd> Q' \<sim> Q''''"
     by(metis bisimE(4) simTauChain)
   
   from QTrans Q'''Chain have "\<Psi> \<rhd> \<tau>.(Q) \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" by(drule_tac tauActTauChain) auto
-  moreover from `\<Psi> \<rhd> Q' \<sim> Q''''` have "insertAssertion (extractFrame Q') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'''') \<Psi>"
+  moreover from \<open>\<Psi> \<rhd> Q' \<sim> Q''''\<close> have "insertAssertion (extractFrame Q') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'''') \<Psi>"
     by(metis bisimE FrameStatEq_def)
   with PImpQ'  have "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'''') \<Psi>"
     by(rule FrameStatImpTrans)
-  moreover from `\<Psi> \<rhd> Q' \<sim> Q''''` have "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<sim> Q''''" by(rule bisimE) 
+  moreover from \<open>\<Psi> \<rhd> Q' \<sim> Q''''\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<sim> Q''''" by(rule bisimE) 
   then obtain Q''''' where Q''''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q'''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'''''" and "\<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<sim> Q'''''" using Q'Chain bisimE(2) 
     by(metis bisimE(4) simTauChain)
   note Q''''Chain
-  moreover from `(\<Psi> \<otimes> \<Psi>', P, Q'') \<in> Rel` `\<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<sim> Q'''''` have "(\<Psi> \<otimes> \<Psi>', P, Q''''') \<in> Rel'"
+  moreover from \<open>(\<Psi> \<otimes> \<Psi>', P, Q'') \<in> Rel\<close> \<open>\<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<sim> Q'''''\<close> have "(\<Psi> \<otimes> \<Psi>', P, Q''''') \<in> Rel'"
     by(rule C1)
   ultimately show ?case by blast
 qed

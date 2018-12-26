@@ -58,7 +58,7 @@ lemma weakCongSimClosedAux:
   shows "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<leadsto>\<guillemotleft>Rel\<guillemotright> (p \<bullet> Q)"
 proof(induct rule: weakCongSimI)
   case(cTau Q')
-  from `p \<bullet> \<Psi> \<rhd> p \<bullet> Q \<longmapsto>\<tau> \<prec> Q'` 
+  from \<open>p \<bullet> \<Psi> \<rhd> p \<bullet> Q \<longmapsto>\<tau> \<prec> Q'\<close> 
   have "(rev p \<bullet> p \<bullet> \<Psi>) \<rhd> (rev p \<bullet> p \<bullet> Q) \<longmapsto>(rev p \<bullet> (\<tau> \<prec> Q'))"
     by(blast dest: semantics.eqvt)
   hence "\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> (rev p \<bullet> Q')" by(simp add: eqvts)
@@ -111,21 +111,21 @@ lemma weakStepSimTauChain:
   obtains P' where "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
 proof -
   assume A: "\<And>P'. \<lbrakk>\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'; (\<Psi>, P', Q') \<in> Rel\<rbrakk> \<Longrightarrow> thesis"
-  from `\<Psi> \<rhd> Q \<Longrightarrow>\<^sub>\<tau> Q'` `\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q` A show ?thesis
+  from \<open>\<Psi> \<rhd> Q \<Longrightarrow>\<^sub>\<tau> Q'\<close> \<open>\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q\<close> A show ?thesis
   proof(induct arbitrary: P thesis rule: tauStepChainInduct)
     case(TauBase Q Q' P)
-    with `\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q` `\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'` obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(\<Psi>, P', Q') \<in> Rel"
+    with \<open>\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q\<close> \<open>\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'\<close> obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(\<Psi>, P', Q') \<in> Rel"
       by(rule_tac weakCongSimE)
     thus ?case by(rule TauBase)
   next
     case(TauStep Q Q' Q'' P)
-    from `\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q` obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
+    from \<open>\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel\<guillemotright> Q\<close> obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
       by(rule TauStep)
-    from `(\<Psi>, P', Q') \<in> Rel` have "\<Psi> \<rhd> P' \<leadsto><Rel> Q'" by(rule Sim)
+    from \<open>(\<Psi>, P', Q') \<in> Rel\<close> have "\<Psi> \<rhd> P' \<leadsto><Rel> Q'" by(rule Sim)
     then obtain P'' where P'Chain: "\<Psi> \<rhd> P' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''" and "(\<Psi>, P'', Q'') \<in> Rel"
-      using `\<Psi> \<rhd> Q' \<longmapsto>\<tau> \<prec> Q''` by(blast dest: weakSimE)
+      using \<open>\<Psi> \<rhd> Q' \<longmapsto>\<tau> \<prec> Q''\<close> by(blast dest: weakSimE)
     from PChain P'Chain have "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P''" by simp
-    thus ?case using `(\<Psi>, P'', Q'') \<in> Rel` by(rule TauStep)
+    thus ?case using \<open>(\<Psi>, P'', Q'') \<in> Rel\<close> by(rule TauStep)
   qed
 qed
 
@@ -147,7 +147,7 @@ lemma weakCongSimTransitive:
   shows "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>Rel''\<guillemotright> R"
 proof(induct rule: weakCongSimI)
   case(cTau R')
-  from QSimR `\<Psi> \<rhd> R \<longmapsto>\<tau> \<prec> R'` obtain Q' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sub>\<tau> Q'" and Q'RelR': "(\<Psi>, Q', R') \<in> Rel'" 
+  from QSimR \<open>\<Psi> \<rhd> R \<longmapsto>\<tau> \<prec> R'\<close> obtain Q' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sub>\<tau> Q'" and Q'RelR': "(\<Psi>, Q', R') \<in> Rel'" 
     by(blast dest: weakCongSimE)
   from QChain PSimQ Sim obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(\<Psi>, P', Q') \<in> Rel"
     by(rule weakStepSimTauChain)
@@ -169,13 +169,13 @@ lemma weakCongSimStatEq:
   shows "\<Psi>' \<rhd> P \<leadsto>\<guillemotleft>Rel'\<guillemotright> Q"
 proof(induct rule: weakCongSimI)
   case(cTau Q')
-  from `\<Psi>' \<rhd> Q \<longmapsto>\<tau> \<prec> Q'` `\<Psi> \<simeq> \<Psi>'`
+  from \<open>\<Psi>' \<rhd> Q \<longmapsto>\<tau> \<prec> Q'\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close>
   have "\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'" by(metis statEqTransition AssertionStatEqSym)
   with PSimQ obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" and P'RelQ': "(\<Psi>, P', Q') \<in> Rel"
     by(blast dest: weakCongSimE)
   
-  from PChain `\<Psi> \<simeq> \<Psi>'` have "\<Psi>' \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" by(rule tauStepChainStatEq)
-  moreover from `(\<Psi>, P', Q') \<in> Rel` `\<Psi> \<simeq> \<Psi>'` have "(\<Psi>', P', Q') \<in> Rel'"
+  from PChain \<open>\<Psi> \<simeq> \<Psi>'\<close> have "\<Psi>' \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'" by(rule tauStepChainStatEq)
+  moreover from \<open>(\<Psi>, P', Q') \<in> Rel\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close> have "(\<Psi>', P', Q') \<in> Rel'"
     by(rule C1)
   ultimately show ?case by blast
 qed

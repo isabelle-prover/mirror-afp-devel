@@ -8,66 +8,66 @@
 theory Logic imports Language begin
 (*>*)
 
-section{*Axiomatic semantics*}
+section\<open>Axiomatic semantics\<close>
 
-subsection{*Assertion forms *}
+subsection\<open>Assertion forms\<close>
 
-text{*We introduce two further kinds of states. Initial states do not
+text\<open>We introduce two further kinds of states. Initial states do not
 contain operand stacks, terminal states lack operand stacks and local
-variables, but include return values.*}
+variables, but include return values.\<close>
 
 type_synonym InitState = "Store \<times> Heap"
 type_synonym TermState = "Heap \<times> Val"
 
-text{*A judgements relating to a specific program point $C.m.l$
+text\<open>A judgements relating to a specific program point $C.m.l$
 consists of pre- and post-conditions, an invariant, and
 -- optionally -- a local annotation. Local pre-conditions and
 annotations relate initial states to states,
-i.e.~are of type*}
+i.e.~are of type\<close>
 
 type_synonym Assn = "InitState \<Rightarrow> State \<Rightarrow> bool"
 
-text{*Post-conditions additionally depend on a terminal state*}
+text\<open>Post-conditions additionally depend on a terminal state\<close>
 
 type_synonym Post = "InitState \<Rightarrow> State \<Rightarrow> TermState \<Rightarrow> bool"
 
-text{*Invariants hold for the heap components of all future
+text\<open>Invariants hold for the heap components of all future
 (reachable) states in the current frame as well as its subframes. They
 relate these heaps to the current state and the initial state of the
-current frame.*}
+current frame.\<close>
 
 type_synonym Inv = "InitState \<Rightarrow> State \<Rightarrow> Heap \<Rightarrow> bool"
 
-text{*Local annotations of a method implementation are collected in a
-table of type*}
+text\<open>Local annotations of a method implementation are collected in a
+table of type\<close>
 
 type_synonym ANNO = "(Label, Assn) AssList"
 
-text{*Implicitly, the labels are always interpreted with respect to
+text\<open>Implicitly, the labels are always interpreted with respect to
 the current method. In addition to such a table, the behaviour of
-methods is specified by a partial-correctness assertion of type*}
+methods is specified by a partial-correctness assertion of type\<close>
 
 type_synonym MethSpec = "InitState \<Rightarrow> TermState \<Rightarrow> bool"
 
-text{*and a method invariant of type*}
+text\<open>and a method invariant of type\<close>
 
 type_synonym MethInv = "InitState \<Rightarrow> Heap \<Rightarrow> bool"
 
-text{*A method invariant is expected to be satisfied by the heap
+text\<open>A method invariant is expected to be satisfied by the heap
 components of all states during the execution of the method, including
-states in subframes, irrespectively of the termination behaviour.*}
+states in subframes, irrespectively of the termination behaviour.\<close>
 
-text{*All method specifications are collected in a table of type*}
+text\<open>All method specifications are collected in a table of type\<close>
 
 type_synonym MSPEC = "(Class \<times> Method, MethSpec \<times> MethInv \<times> ANNO) AssList"
 
-text{*A table of this type assigns to each method a
+text\<open>A table of this type assigns to each method a
 partial-correctness specification, a method invariant, and a table of
-local annotations for the instructions in this method.*}
+local annotations for the instructions in this method.\<close>
 
-subsection{*Proof system \label{SectionSPJudgementProofSystem}*} 
+subsection\<open>Proof system \label{SectionSPJudgementProofSystem}\<close> 
 
-text{*The proof system derives judgements of the form $G \rhd \lbrace
+text\<open>The proof system derives judgements of the form $G \rhd \lbrace
 A \rbrace C,m,l \lbrace B \rbrace\; I$ where $A$ is a pre-condition,
 $B$ is a post-condition, $I$ is a strong invariant, $C.m.l$ represents
 a program point, and $G$ is a proof context (see below). The proof
@@ -79,35 +79,35 @@ require the derivation of related statements for the control flow
 successor instructions. Judgements occurring as hypotheses involve
 assertions that are notationally constrained, and relate to the
 conclusions' assertions via uniform constructions that resemble
-strongest postconditions in Hoare-style logics.*}
+strongest postconditions in Hoare-style logics.\<close>
 
-text{*On pre-conditions, the operator *}
+text\<open>On pre-conditions, the operator\<close>
 
 definition SP_pre::"Mbody \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Assn"
 where "SP_pre M l A = (\<lambda> s0 r . (\<exists> s l1 n. A s0 s \<and> (M,l,s,n,l1,r):Step))"
 
-text{*constructs an assertion that holds of a state $r$ precisely if
+text\<open>constructs an assertion that holds of a state $r$ precisely if
 the argument assertion $A$ held at the predecessor state of
-$r$. Similar readings explain the constructions on post-conditions*}
+$r$. Similar readings explain the constructions on post-conditions\<close>
 
 definition SP_post::"Mbody \<Rightarrow> Label \<Rightarrow> Post \<Rightarrow> Post"
 where "SP_post M l B = (\<lambda> s0 r t . (\<forall> s l1 n. (M,l,s,n,l1,r):Step \<longrightarrow> B s0 s t))"
 
-text{*and invariants*}
+text\<open>and invariants\<close>
 
 definition SP_inv::"Mbody \<Rightarrow> Label \<Rightarrow> Inv \<Rightarrow> Inv"
 where "SP_inv M l I = (\<lambda> s0 r h . \<forall> s l1 n. (M,l,s,n,l1,r):Step \<longrightarrow> I s0 s h)"
 
-text{*For the basic instructions, the appearance of the single-step
+text\<open>For the basic instructions, the appearance of the single-step
 execution relation in these constructions makes the
 strongest-postcondition interpretation apparent, but could easily be
-eliminated by unfolding the definition of @{text Step}. In the proof
+eliminated by unfolding the definition of \<open>Step\<close>. In the proof
 rule for static method invocations, such a direct reference to the
 operational semantics is clearly undesirable. Instead, the proof rule
 extracts the invoked method's specification from the specification
 table. In order to simplify the formulation of the proof rule, we
 introduce three operators which manipulate the extracted assertions in
-a similar way as the above @{text SP}-operators.*}
+a similar way as the above \<open>SP\<close>-operators.\<close>
 
 definition SINV_pre::"Var list \<Rightarrow> MethSpec \<Rightarrow> Assn \<Rightarrow> Assn" where
 "SINV_pre par T A =
@@ -127,19 +127,18 @@ definition SINV_inv::"Var list \<Rightarrow> MethSpec \<Rightarrow> Inv \<Righta
                 (ops1,par,R,ops2) : Frame \<longrightarrow> T (R,k) (h,w) \<longrightarrow> 
                 s=(w#ops2,S,h) \<longrightarrow> I s0 (ops1,S,k) h')"
 
-text{*The derivation system is formulated using contexts $G$ of
+text\<open>The derivation system is formulated using contexts $G$ of
 proof-theoretic assumptions representing local judgements. The type of
-contexts is*}
+contexts is\<close>
 
 type_synonym CTXT = "(Class \<times> Method \<times> Label, Assn \<times> Post \<times> Inv) AssList"
 
-text{*The existence of the proof context also motivates that the
+text\<open>The existence of the proof context also motivates that the
 hypotheses in the syntax-directed rules are formulated using an
 auxiliary judgement form, $G \rhd \langle A \rangle C,m,l \langle B
 \rangle\; I$. Statements for this auxiliary form can be derived by
-essentially two rules. The first rule, @{text AX}, allows us to
-extract assumptions from the context, while the second rule, @{text
-INJECT}, converts an ordinary judgement $G \rhd \lbrace A \rbrace C,m,l
+essentially two rules. The first rule, \<open>AX\<close>, allows us to
+extract assumptions from the context, while the second rule, \<open>INJECT\<close>, converts an ordinary judgement $G \rhd \lbrace A \rbrace C,m,l
 \lbrace B \rbrace\; I$ into $G \rhd \langle A \rangle C,m,l \langle B
 \rangle\; I$. No rule is provided for a direct embedding in the
 opposite direction. As a consequence of this formulation, contextual
@@ -161,20 +160,20 @@ trivial discharge of any context entry. The introduction of the
 auxiliary judgement form $G \rhd \langle A \rangle C,m,l \langle B
 \rangle\; I$ thus ensures that the discharge of a contextual
 assumption involves at least one application of a "proper"
-(i.e.~syntax-directed) rule. Rule @{text INJECT} is used to chain
+(i.e.~syntax-directed) rule. Rule \<open>INJECT\<close> is used to chain
 together syntax-directed rules. Indeed, it allows us to discharge a
 hypothesis $G \rhd \langle A \rangle C,m,l \langle B \rangle\; I$ of a
 syntax-directed rule using a derivation of $G \rhd \lbrace A \rbrace
-C,m,l \lbrace B \rbrace\; I$.*}
+C,m,l \lbrace B \rbrace\; I$.\<close>
 
-text{*The proof rules are defined relative to a fixed method
-specification table $\mathit{MST}$.*}
+text\<open>The proof rules are defined relative to a fixed method
+specification table $\mathit{MST}$.\<close>
 
 axiomatization MST::MSPEC
 
-text{*In Isabelle, the distinction between the two judgement forms may
+text\<open>In Isabelle, the distinction between the two judgement forms may
 for example be achieved by introducing a single judgement form that
-includes a boolean flag, and definiing two pretty-printing notions.*}
+includes a boolean flag, and definiing two pretty-printing notions.\<close>
 
 inductive_set SP_Judgement ::
   "(bool \<times> CTXT \<times> Class \<times> Method \<times> Label \<times> Assn \<times> Post \<times> Inv) set"
@@ -265,9 +264,9 @@ AX:
     \<forall> s0 s . A s0 s \<longrightarrow> I s0 s (heap s)\<rbrakk> 
  \<Longrightarrow> G \<rhd> \<langle> A \<rangle> C,m,l \<langle> B \<rangle> I"
 
-text{*As a first consequence, we can prove by induction on the proof
+text\<open>As a first consequence, we can prove by induction on the proof
 system that a derivable judgement entails its strong invariant and an
-annotation that may be attached to the instruction.*}
+annotation that may be attached to the instruction.\<close>
 
 (*<*)
 lemma AssertionsImplyInvariantsAux[rule_format]:
@@ -301,9 +300,9 @@ lemma AssertionsImplyAnnoInvariants:
 by (drule AssertionsImplyInvariantsAux, fast) 
 (*>*)
 
-text{*For \emph{verified} \emph{programs}, all preconditions can be
+text\<open>For \emph{verified} \emph{programs}, all preconditions can be
 justified by proof derivations, and initial labels of all methods
-(again provably) satisfy the method preconditions.*}
+(again provably) satisfy the method preconditions.\<close>
 
 definition mkState::"InitState \<Rightarrow> State"
 where "mkState s0 = ([],fst s0,snd s0)"

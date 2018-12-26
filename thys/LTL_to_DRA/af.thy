@@ -292,10 +292,10 @@ proof (induction \<phi> arbitrary: w)
       then obtain i where "w' = drop i w" and "i < length w"
         by (auto simp add: suffixes_alt_def subsequence_def)
       hence "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')"
-        using LTLGlobal.prems `G \<phi> \<in> \<G>` by simp
+        using LTLGlobal.prems \<open>G \<phi> \<in> \<G>\<close> by simp
       hence "S \<Turnstile>\<^sub>P x"
-        using LTLGlobal(1)[OF `S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')`] LTLGlobal(3-4) drop_drop
-        unfolding `x = af \<phi> w'` `w' = drop i w` by simp
+        using LTLGlobal(1)[OF \<open>S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')\<close>] LTLGlobal(3-4) drop_drop
+        unfolding \<open>x = af \<phi> w'\<close> \<open>w' = drop i w\<close> by simp
     }
     ultimately
     show ?case
@@ -309,7 +309,7 @@ next
     proof (cases "x \<noteq> F \<phi>")
       case True
         then obtain w' where "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')" and "w' \<in> set (suffixes w)"
-          using x_def `S \<Turnstile>\<^sub>P x` by auto
+          using x_def \<open>S \<Turnstile>\<^sub>P x\<close> by auto
         hence "\<And>\<psi> i. G \<psi> \<in> \<G> \<Longrightarrow> i < length w' \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<psi> (drop i w'))"
           using LTLFinal.prems by (auto simp add: suffixes_alt_def subsequence_def)
         moreover
@@ -317,9 +317,9 @@ next
           using LTLFinal by simp
         ultimately
         have "S \<Turnstile>\<^sub>P af \<phi> w'"
-          using LTLFinal.IH[OF `S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')`] using assms(2) by blast 
+          using LTLFinal.IH[OF \<open>S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (af\<^sub>G \<phi> w')\<close>] using assms(2) by blast 
         thus ?thesis
-          using `w' \<in> set (suffixes w)` by auto
+          using \<open>w' \<in> set (suffixes w)\<close> by auto
     qed simp
     thus ?case
       unfolding af_F Or_prop_entailment eval\<^sub>G_Or_map by simp

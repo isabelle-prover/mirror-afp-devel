@@ -91,7 +91,7 @@ subsection \<open>Reduced Binary Decision Trees\<close>
 
 subsubsection \<open>Normalisation\<close>
 
-text \<open>A normalisation avoiding duplicate variables and collapsing @{term "If x t t"} to @{text t}.\<close>
+text \<open>A normalisation avoiding duplicate variables and collapsing @{term "If x t t"} to \<open>t\<close>.\<close>
 
 definition mkIF :: "'a \<Rightarrow> 'a ifex \<Rightarrow> 'a ifex \<Rightarrow> 'a ifex" 
 where

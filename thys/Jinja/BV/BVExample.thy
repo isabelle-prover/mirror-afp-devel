@@ -3,20 +3,20 @@
     Author:     Gerwin Klein
 *)
 
-section {* Example Welltypings \label{sec:BVExample} *}
+section \<open>Example Welltypings \label{sec:BVExample}\<close>
 
 theory BVExample
 imports "../JVM/JVMListExample" BVSpecTypeSafe BVExec
   "HOL-Library.Code_Target_Numeral"
 begin
 
-text {*
+text \<open>
   This theory shows type correctness of the example program in section 
   \ref{sec:JVMListExample} (p. \pageref{sec:JVMListExample}) by
   explicitly providing a welltyping. It also shows that the start
   state of the program conforms to the welltyping; hence type safe
   execution is guaranteed.
-*}
+\<close>
 
 subsection "Setup"
 
@@ -46,15 +46,15 @@ lemma distinct_fields:
   "next_name \<noteq> val_name"
   by (simp_all add: val_name_def next_name_def)
 
-text {* Abbreviations for definitions we will have to use often in the
-proofs below: *}
+text \<open>Abbreviations for definitions we will have to use often in the
+proofs below:\<close>
 lemmas system_defs = SystemClasses_def ObjectC_def NullPointerC_def 
                      OutOfMemoryC_def ClassCastC_def
 lemmas class_defs  = list_class_def test_class_def
 
-text {* These auxiliary proofs are for efficiency: class lookup,
+text \<open>These auxiliary proofs are for efficiency: class lookup,
 subclass relation, method and field lookup are computed only once:
-*}
+\<close>
 lemma class_Object [simp]:
   "class E Object = Some (undefined, [],[])"
   by (simp add: class_def system_defs E_def)
@@ -84,7 +84,7 @@ lemma E_classes [simp]:
                         ClassCast, OutOfMemory, Object}"
   by (auto simp add: is_class_def class_def system_defs E_def class_defs)
 
-text {* The subclass releation spelled out: *}
+text \<open>The subclass releation spelled out:\<close>
 lemma subcls1:
   "subcls1 E = {(list_name,Object), (test_name,Object), (NullPointer, Object),
                 (ClassCast, Object), (OutOfMemory, Object)}"
@@ -97,7 +97,7 @@ lemma subcls1:
   done
 (*>*)
 
-text {* The subclass relation is acyclic; hence its converse is well founded: *}
+text \<open>The subclass relation is acyclic; hence its converse is well founded:\<close>
 lemma notin_rtrancl:
   "(a,b) \<in> r\<^sup>* \<Longrightarrow> a \<noteq> b \<Longrightarrow> (\<And>y. (a,y) \<notin> r) \<Longrightarrow> False"
   by (auto elim: converse_rtranclE)
@@ -119,7 +119,7 @@ lemma wf_subcls1_E: "wf ((subcls1 E)\<inverse>)"
   done  
 (*>*)
 
-text {* Method and field lookup: *}
+text \<open>Method and field lookup:\<close>
 
 lemma method_append [simp]:
   "method E list_name append_name =
@@ -184,9 +184,9 @@ lemmas [simp] = is_class_def
 
 subsection "Program structure"
 
-text {*
+text \<open>
   The program is structurally wellformed:
-*}
+\<close>
 lemma wf_struct:
   "wf_prog (\<lambda>G C mb. True) E" (is "wf_prog ?mb E")
 (*<*)
@@ -230,10 +230,10 @@ qed
 (*>*)
 
 subsection "Welltypings"
-text {*
+text \<open>
   We show welltypings of the methods @{term append_name} in class @{term list_name}, 
   and @{term makelist_name} in class @{term test_name}:
-*}
+\<close>
 lemmas eff_simps [simp] = eff_def norm_eff_def xcpt_eff_def
 (*declare app'Invoke [simp del]*)
 
@@ -259,19 +259,19 @@ where
    (    [Class list_name, Class list_name], [Class list_name, Class list_name]),
    (                                [Void], [Class list_name, Class list_name])]"
 
-text {*
+text \<open>
   The next definition and three proof rules implement an algorithm to
-  enumarate natural numbers. The command @{text "apply (elim pc_end pc_next pc_0"} 
+  enumarate natural numbers. The command \<open>apply (elim pc_end pc_next pc_0\<close> 
   transforms a goal of the form
   @{prop [display] "pc < n \<Longrightarrow> P pc"} 
   into a series of goals
   @{prop [display] "P 0"} 
   @{prop [display] "P (Suc 0)"} 
 
-  @{text "\<dots>"}
+  \<open>\<dots>\<close>
 
   @{prop [display] "P n"} 
-*}
+\<close>
 definition intervall :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" ("_ \<in> [_, _')")
 where
   "x \<in> [a, b) \<equiv> a \<le> x \<and> x < b"
@@ -332,7 +332,7 @@ lemma wt_append [simp]:
   done
 (*>*)
 
-text {* Some abbreviations for readability *} 
+text \<open>Some abbreviations for readability\<close> 
 abbreviation "Clist == Class list_name"
 abbreviation "Ctest == Class test_name"
 
@@ -430,7 +430,7 @@ lemma wf_md'E:
   done
 (*>*)
 
-text {* The whole program is welltyped: *}
+text \<open>The whole program is welltyped:\<close>
 definition Phi :: ty\<^sub>P ("\<Phi>")
 where
   "\<Phi> C mn \<equiv> if C = test_name \<and> mn = makelist_name then \<phi>\<^sub>m else 
@@ -452,8 +452,8 @@ lemma wf_prog:
 
 
 subsection "Conformance"
-text {* Execution of the program will be typesafe, because its
-  start state conforms to the welltyping: *}
+text \<open>Execution of the program will be typesafe, because its
+  start state conforms to the welltyping:\<close>
 
 lemma "E,\<Phi> \<turnstile> start_state E test_name makelist_name \<surd>"
 (*<*)
@@ -506,7 +506,7 @@ definition some_elem :: "'a set \<Rightarrow> 'a" where [code del]:
 code_printing
   constant some_elem \<rightharpoonup> (SML) "(case/ _ of/ Set/ xs/ =>/ hd/ xs)"
 
-text {* This code setup is just a demonstration and \emph{not} sound! *}
+text \<open>This code setup is just a demonstration and \emph{not} sound!\<close>
 notepad begin
   have "some_elem (set [False, True]) = False" by eval
   moreover have "some_elem (set [True, False]) = True" by eval
@@ -571,9 +571,9 @@ definition test2 where
 definition test3 where "test3 = \<phi>\<^sub>a"
 definition test4 where "test4 = \<phi>\<^sub>m"
 
-ML_val {* 
+ML_val \<open>
   if @{code test1} = @{code map} @{code OK} @{code test3} then () else error "wrong result";
   if @{code test2} = @{code map} @{code OK} @{code test4} then () else error "wrong result" 
-*}
+\<close>
 
 end

@@ -1,4 +1,4 @@
-section {* Parity Games *}
+section \<open>Parity Games\<close>
 
 theory ParityGame
 imports
@@ -6,21 +6,21 @@ imports
   MoreCoinductiveList
 begin
 
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 
-text {* @{typ "'a"} is the node type.  Edges are pairs of nodes. *}
+text \<open>@{typ "'a"} is the node type.  Edges are pairs of nodes.\<close>
 type_synonym 'a Edge = "'a \<times> 'a"
 
-text {* A path is a possibly infinite list of nodes. *}
+text \<open>A path is a possibly infinite list of nodes.\<close>
 type_synonym 'a Path = "'a llist"
 
-subsection {* Graphs *}
+subsection \<open>Graphs\<close>
 
-text {*
+text \<open>
   We define graphs as a locale over a record.
   The record contains nodes (AKA vertices) and edges.
   The locale adds the assumption that the edges are pairs of nodes.
-*}
+\<close>
 
 record 'a Graph =
   verts :: "'a set" ("V\<index>")
@@ -34,14 +34,14 @@ locale Digraph =
 begin
 lemma edges_are_in_V [intro]: "v\<rightarrow>w \<Longrightarrow> v \<in> V" "v\<rightarrow>w \<Longrightarrow> w \<in> V" using valid_edge_set by blast+
 
-text {* A node without successors is a \emph{deadend}. *}
+text \<open>A node without successors is a \emph{deadend}.\<close>
 abbreviation deadend :: "'a \<Rightarrow> bool" where "deadend v \<equiv> \<not>(\<exists>w \<in> V. v \<rightarrow> w)"
 
-subsection {* Valid Paths *}
+subsection \<open>Valid Paths\<close>
 
-text {*
+text \<open>
   We say that a path is \emph{valid} if it is empty or if it starts in @{term V} and walks along edges.
-*}
+\<close>
 coinductive valid_path :: "'a Path \<Rightarrow> bool" where
   valid_path_base: "valid_path LNil"
 | valid_path_base': "v \<in> V \<Longrightarrow> valid_path (LCons v LNil)"
@@ -76,7 +76,7 @@ proof-
   moreover have "P' $ Suc 0 = P $ Suc n"
     by (metis One_nat_def P'_def Suc_eq_plus1 add.commute assms(2) lnth_ldropn)
   ultimately have "\<exists>Ps. P' = LCons (P $ n) (LCons (P $ Suc n) Ps)"
-    by (metis P'_def `enat n < llength P` assms(2) ldropn_Suc_conv_ldropn)
+    by (metis P'_def \<open>enat n < llength P\<close> assms(2) ldropn_Suc_conv_ldropn)
   moreover have "valid_path P'" by (simp add: P'_def assms(1) valid_path_drop)
   ultimately show ?thesis using valid_path_edges' by blast
 qed
@@ -136,20 +136,20 @@ proof (cases, cases)
   qed (metis llist.disc(1) lnull_lappend ltl_lappend ltl_simps(2))
 qed (simp_all add: assms(1,2) lappend_lnull1 lappend_lnull2)
 
-text {* A valid path is still valid in a supergame. *}
+text \<open>A valid path is still valid in a supergame.\<close>
 lemma valid_path_supergame:
   assumes "valid_path P" and G': "Digraph G'" "V \<subseteq> V\<^bsub>G'\<^esub>" "E \<subseteq> E\<^bsub>G'\<^esub>"
   shows "Digraph.valid_path G' P"
-using `valid_path P` proof (coinduction arbitrary: P
+using \<open>valid_path P\<close> proof (coinduction arbitrary: P
   rule: Digraph.valid_path_coinduct[OF G'(1), case_names base step])
   case base thus ?case using G'(2) valid_path_cons_simp by auto
 qed (meson G'(3) subset_eq valid_path_edges' valid_path_ltl')
 
-subsection {* Maximal Paths *}
+subsection \<open>Maximal Paths\<close>
 
-text {*
+text \<open>
   We say that a path is \emph{maximal} if it is empty or if it ends in a deadend.
-*}
+\<close>
 coinductive maximal_path where
   maximal_path_base: "maximal_path LNil"
 | maximal_path_base': "deadend v \<Longrightarrow> maximal_path (LCons v LNil)"
@@ -185,7 +185,7 @@ lemma maximal_ends_on_deadend:
   assumes "maximal_path P" "lfinite P" "\<not>lnull P"
   shows "deadend (llast P)"
 proof-
-  from `lfinite P` `\<not>lnull P` obtain n where n: "llength P = enat (Suc n)"
+  from \<open>lfinite P\<close> \<open>\<not>lnull P\<close> obtain n where n: "llength P = enat (Suc n)"
     by (metis enat_ord_simps(2) gr0_implies_Suc lfinite_llength_enat lnull_0_llength)
   define P' where "P' = ldropn n P"
   hence "maximal_path P'" using assms(1) maximal_drop by blast
@@ -219,9 +219,9 @@ lemma infinite_path_is_maximal: "\<lbrakk> valid_path P; \<not>lfinite P \<rbrak
 
 end \<comment> \<open>locale Digraph\<close>
 
-subsection {* Parity Games *}
+subsection \<open>Parity Games\<close>
 
-text {* Parity games are games played by two players, called \Even and \Odd. *}
+text \<open>Parity games are games played by two players, called \Even and \Odd.\<close>
 
 datatype Player = Even | Odd
 
@@ -229,10 +229,10 @@ abbreviation "other_player p \<equiv> (if p = Even then Odd else Even)"
 notation other_player ("(_**)" [1000] 1000)
 lemma other_other_player [simp]: "p**** = p" using Player.exhaust by auto
 
-text {*
+text \<open>
   A parity game is tuple $(V,E,V_0,\omega)$, where $(V,E)$ is a graph, $V_0 \subseteq V$
   and @{term \<omega>} is a function from $V \to \mathbb{N}$ with finite image.
-*}
+\<close>
 
 record 'a ParityGame = "'a Graph" +
   player0 :: "'a set" ("V0\<index>")
@@ -242,7 +242,7 @@ locale ParityGame = Digraph G for G :: "('a, 'b) ParityGame_scheme" (structure) 
   assumes valid_player0_set: "V0 \<subseteq> V"
     and priorities_finite: "finite (\<omega> ` V)"
 begin
-text {* @{text "VV p"} is the set of nodes belonging to player @{term p}. *}
+text \<open>\<open>VV p\<close> is the set of nodes belonging to player @{term p}.\<close>
 abbreviation VV :: "Player \<Rightarrow> 'a set" where "VV p \<equiv> (if p = Even then V0 else V - V0)"
 lemma VVp_to_V [intro]: "v \<in> VV p \<Longrightarrow> v \<in> V" using valid_player0_set by (cases p) auto
 lemma VV_impl1: "v \<in> VV p \<Longrightarrow> v \<notin> VV p**" by auto
@@ -250,14 +250,14 @@ lemma VV_impl2: "v \<in> VV p** \<Longrightarrow> v \<notin> VV p" by auto
 lemma VV_equivalence [iff]: "v \<in> V \<Longrightarrow> v \<notin> VV p \<longleftrightarrow> v \<in> VV p**" by auto
 lemma VV_cases [consumes 1]: "\<lbrakk> v \<in> V ; v \<in> VV p \<Longrightarrow> P ; v \<in> VV p** \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P" by auto
 
-subsection {* Sets of Deadends *}
+subsection \<open>Sets of Deadends\<close>
 
 definition "deadends p \<equiv> {v \<in> VV p. deadend v}"
 lemma deadends_in_V: "deadends p \<subseteq> V" unfolding deadends_def by blast
 
-subsection {* Subgames *}
+subsection \<open>Subgames\<close>
 
-text {* We define a subgame by restricting the set of nodes to a given subset. *}
+text \<open>We define a subgame by restricting the set of nodes to a given subset.\<close>
 
 definition subgame where
   "subgame V' \<equiv> G\<lparr>
@@ -337,24 +337,24 @@ proof-
        (cases rule: maximal_path.cases, auto)
 qed
 
-subsection {* Priorities Occurring Infinitely Often *}
+subsection \<open>Priorities Occurring Infinitely Often\<close>
 
-text {*
+text \<open>
   The set of priorities that occur infinitely often on a given path.  We need this to define the
   winning condition of parity games.
-*}
+\<close>
 definition path_inf_priorities :: "'a Path \<Rightarrow> nat set" where
   "path_inf_priorities P \<equiv> {k. \<forall>n. k \<in> lset (ldropn n (lmap \<omega> P))}"
 
-text {*
+text \<open>
   Because @{term \<omega>} is image-finite, by the pigeon-hole principle every infinite path has at least
   one priority that occurs infinitely often.
-*}
+\<close>
 lemma path_inf_priorities_is_nonempty:
   assumes P: "valid_path P" "\<not>lfinite P"
   shows "\<exists>k. k \<in> path_inf_priorities P"
 proof-
-  text {* Define a map from indices to priorities on the path. *}
+  text \<open>Define a map from indices to priorities on the path.\<close>
   define f where "f i = \<omega> (P $ i)" for i
   have "range f \<subseteq> \<omega> ` V" unfolding f_def
     using valid_path_in_V[OF P(1)] lset_nth_member_inf[OF P(2)]
@@ -364,7 +364,7 @@ proof-
   then obtain n0 where n0: "\<not>(finite {n. f n = f n0})"
     using pigeonhole_infinite[of UNIV f] by auto
   define k where "k = f n0"
-  text {* The priority @{term k} occurs infinitely often. *}
+  text \<open>The priority @{term k} occurs infinitely often.\<close>
   have "lmap \<omega> P $ n0 = k" unfolding f_def k_def
     using assms(2) by (simp add: infinite_small_llength)
   moreover {
@@ -410,9 +410,9 @@ corollary path_inf_priorities_ltl: "path_inf_priorities P = path_inf_priorities 
   by (metis llist.exhaust ltl_simps path_inf_priorities_LCons)
 
 
-subsection {* Winning Condition *}
+subsection \<open>Winning Condition\<close>
 
-text {*
+text \<open>
   Let $G = (V,E,V_0,\omega)$ be a parity game.
   An infinite path $v_0,v_1,\ldots$ in $G$ is winning for player \Even (\Odd) if the minimum
   priority occurring infinitely often is even (odd).
@@ -421,7 +421,7 @@ text {*
 
   Empty paths are irrelevant, but it is useful to assign a fixed winner to them in order to get
   simpler lemmas.
-*}
+\<close>
 
 abbreviation "winning_priority p \<equiv> (if p = Even then even else odd)"
 
@@ -432,7 +432,7 @@ definition winning_path :: "Player \<Rightarrow> 'a Path \<Rightarrow> bool" whe
     \<or> (\<not>lnull P \<and> lfinite P \<and> llast P \<in> VV p**)
     \<or> (lnull P \<and> p = Even)"
 
-text {* Every path has a unique winner. *}
+text \<open>Every path has a unique winner.\<close>
 lemma paths_are_winning_for_one_player:
   assumes "valid_path P"
   shows "winning_path p P \<longleftrightarrow> \<not>winning_path p** P"
@@ -450,7 +450,7 @@ proof (cases)
       using assms ex_least_nat_le[of "\<lambda>a. a \<in> path_inf_priorities P"] path_inf_priorities_is_nonempty
       by blast
     hence "\<forall>q. winning_priority q a \<longleftrightarrow> winning_path q P"
-      unfolding winning_path_def using `\<not>lnull P` `\<not>lfinite P` by (metis le_antisym not_le)
+      unfolding winning_path_def using \<open>\<not>lnull P\<close> \<open>\<not>lfinite P\<close> by (metis le_antisym not_le)
     moreover have "\<forall>q. winning_priority p q \<longleftrightarrow> \<not>winning_priority p** q" by simp
     ultimately show ?thesis by blast
   qed
@@ -514,9 +514,9 @@ qed
 
 end \<comment> \<open>locale ParityGame\<close>
 
-subsection {* Valid Maximal Paths *}
+subsection \<open>Valid Maximal Paths\<close>
 
-text {* Define a locale for valid maximal paths, because we need them often. *}
+text \<open>Define a locale for valid maximal paths, because we need them often.\<close>
 
 locale vm_path = ParityGame +
   fixes P v0
@@ -573,7 +573,7 @@ lemma finite_llast_deadend [simp]: "lfinite P \<Longrightarrow> deadend (llast P
 lemma finite_llast_V [simp]: "lfinite P \<Longrightarrow> llast P \<in> V"
   using P_not_null lfinite_lset lset_P_V by blast
 
-text {* If a path visits a deadend, it is winning for the other player. *}
+text \<open>If a path visits a deadend, it is winning for the other player.\<close>
 lemma visits_deadend:
   assumes "lset P \<inter> deadends p \<noteq> {}"
   shows "winning_path p** P"

@@ -31,9 +31,9 @@ next
     by (simp only: cong: measurable_cong)
 qed simp_all
 
-section {* Built-in Probability Distributions *}
+section \<open>Built-in Probability Distributions\<close>
 
-subsection {* Bernoulli *}
+subsection \<open>Bernoulli\<close>
 
 definition bernoulli_density :: "real \<Rightarrow> bool \<Rightarrow> ennreal" where
   "bernoulli_density p b = (if p \<in> {0..1} then (if b then p else 1 - p) else 0)"
@@ -52,7 +52,7 @@ lemma measurable_bernoulli[measurable]: "bernoulli \<in> measurable REAL (subpro
              ennreal_plus[symmetric]
            simp del: ennreal_plus)
 
-subsection {* Uniform *}
+subsection \<open>Uniform\<close>
 
 definition uniform_real_density :: "real \<times> real \<Rightarrow> real \<Rightarrow> ennreal" where
   "uniform_real_density \<equiv> \<lambda>(a,b) x. ennreal (if a < b \<and> x \<in> {a..b} then inverse (b - a) else 0)"
@@ -123,7 +123,7 @@ proof (rule measurable measurable_subprob_algebra_density)+
   qed (simp add: uniform_real_density_def comp_def)
 qed (auto simp: comp_def borel_prod)
 
-subsection {* Gaussian *}
+subsection \<open>Gaussian\<close>
 
 definition gaussian_density :: "real \<times> real \<Rightarrow> real \<Rightarrow> ennreal" where
   "gaussian_density \<equiv>
@@ -154,7 +154,7 @@ proof (rule measurable measurable_subprob_algebra_density)+
     then have "integral\<^sup>N lborel (gaussian_density x) = (\<integral>\<^sup>+y. normal_density (fst x) (snd x) y \<partial>lborel)"
       by (auto simp add: gaussian_density_def normal_density_def split_beta' intro!: nn_integral_cong)
     also have "\<dots> = 1"
-      using `snd x > 0`
+      using \<open>snd x > 0\<close>
       by (subst nn_integral_eq_integral) (auto intro!: normal_density_nonneg)
     finally show ?thesis
       by (cases x) (simp add: nn_integral_RealVal comp_def)
@@ -165,7 +165,7 @@ proof (rule measurable measurable_subprob_algebra_density)+
   qed
 qed (auto simp: comp_def borel_prod)
 
-subsection {* Poisson *}
+subsection \<open>Poisson\<close>
 
 definition poisson_density' :: "real \<Rightarrow> int \<Rightarrow> ennreal" where
   "poisson_density' rate k = pmf (poisson_pmf rate) (nat k) * indicator ({0 <..} \<times> {0..}) (rate, k)"
@@ -204,9 +204,9 @@ proof (rule measurable measurable_subprob_algebra_density)+
        (auto simp: nn_integral_IntVal poisson_density'_def zero_ennreal_def[symmetric])
 qed (auto simp: comp_def)
 
-section {* Source Language Syntax and Semantics *}
+section \<open>Source Language Syntax and Semantics\<close>
 
-subsection {* Expressions *}
+subsection \<open>Expressions\<close>
 
 class expr = fixes free_vars :: "'a \<Rightarrow> vname set"
 
@@ -352,7 +352,7 @@ proof-
 qed
 
 
-subsection {* Typing *}
+subsection \<open>Typing\<close>
 
 primrec op_type :: "pdf_operator \<Rightarrow> pdf_type \<Rightarrow> pdf_type option" where
   "op_type Add x =
@@ -403,7 +403,7 @@ primrec op_type :: "pdf_operator \<Rightarrow> pdf_type \<Rightarrow> pdf_type o
 | "op_type Snd x = (case x of PRODUCT _ t  \<Rightarrow> Some t | _ \<Rightarrow> None)"
 
 
-subsection {* Semantics *}
+subsection \<open>Semantics\<close>
 
 abbreviation (input) de_bruijn_insert (infixr "\<cdot>" 65) where
   "de_bruijn_insert x f \<equiv> case_nat x f"
@@ -488,7 +488,7 @@ lemma expr_type_Some_iff: "expr_type \<Gamma> e = Some t \<longleftrightarrow> \
 lemmas expr_typing_code[code_unfold] = expr_type_Some_iff[symmetric]
 
 
-subsubsection {* Countable types *}
+subsubsection \<open>Countable types\<close>
 
 primrec countable_type :: "pdf_type \<Rightarrow> bool" where
   "countable_type UNIT = True"
@@ -537,7 +537,7 @@ qed (simp add: return_val_def)
 
 
 
-subsection {* Semantics *}
+subsection \<open>Semantics\<close>
 
 definition bool_to_int :: "bool \<Rightarrow> int" where
   "bool_to_int b = (if b then 1 else 0)"
@@ -599,7 +599,7 @@ fun op_sem :: "pdf_operator \<Rightarrow> val \<Rightarrow> val" where
 | "op_sem Snd = snd \<circ> extract_pair"
 
 
-text {* The semantics of expressions. Assumes that the expression given is well-typed. *}
+text \<open>The semantics of expressions. Assumes that the expression given is well-typed.\<close>
 
 primrec expr_sem :: "state \<Rightarrow> expr \<Rightarrow> val measure" where
   "expr_sem \<sigma> (Var x) = return_val (\<sigma> x)"
@@ -636,9 +636,9 @@ lemma expr_sem_pair_vars: "expr_sem \<sigma> <Var x, Var y> = return_val <|\<sig
   by (simp add: return_val_def bind_return[where N="PRODUCT (val_type (\<sigma> x)) (val_type (\<sigma> y))"]
            cong: bind_cong_strong)
 
-text {*
+text \<open>
   Well-typed expressions produce a result in the measure space that corresponds to their type
-*}
+\<close>
 
 lemma op_sem_val_type:
     "op_type oper (val_type v) = Some t' \<Longrightarrow> val_type (op_sem oper v) = t'"
@@ -754,7 +754,7 @@ next
 qed simp_all
 
 
-subsection {* Measurability *}
+subsection \<open>Measurability\<close>
 
 lemma borel_measurable_eq[measurable (raw)]:
   assumes [measurable]: "f \<in> borel_measurable M" "g \<in> borel_measurable M"
@@ -945,7 +945,7 @@ next
 qed
 
 
-subsection {* Randomfree expressions *}
+subsection \<open>Randomfree expressions\<close>
 
 fun randomfree :: "expr \<Rightarrow> bool" where
   "randomfree (Val _) = True"
@@ -1119,9 +1119,9 @@ next
   also from et_let have Me2[measurable]: "(\<lambda>\<sigma>. expr_sem_rf \<sigma> e2) \<in> measurable ?N (stock_measure t2)"
     using subset_shift_var_set by (intro measurable_expr_sem_rf) auto
   have "(\<lambda>(\<sigma>,y). case_nat y \<sigma>) \<circ> (\<lambda>y. (\<sigma>, y)) \<in> measurable (stock_measure t1) ?N"
-    using `\<sigma> \<in> space ?M` by simp
+    using \<open>\<sigma> \<in> space ?M\<close> by simp
   have  "return_val (expr_sem_rf \<sigma> e1) \<bind> (\<lambda>v. return_val (expr_sem_rf (case_nat v \<sigma>) e2)) =
-              return_val (expr_sem_rf ?\<sigma>' e2)" using `\<sigma> \<in> space ?M`
+              return_val (expr_sem_rf ?\<sigma>' e2)" using \<open>\<sigma> \<in> space ?M\<close>
   by (subst return_val_def, intro bind_return, subst A)
      (rule measurable_compose[OF _ measurable_return_val[of t2]], simp_all)
   finally show ?case by simp

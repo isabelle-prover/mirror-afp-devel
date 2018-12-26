@@ -12,8 +12,8 @@ imports
 
 begin
 
-section {* PD property*}
-text {* The 13 time interval relations (i.e. e, b, m, s, f, d, ov and their inverse relations) are pairwise disjoint. *}
+section \<open>PD property\<close>
+text \<open>The 13 time interval relations (i.e. e, b, m, s, f, d, ov and their inverse relations) are pairwise disjoint.\<close>
 
 
  (**e**)
@@ -334,7 +334,7 @@ by (metis converse_iff subrelI subset_antisym)
 lemma rdisj_sym:"A \<inter> B = {} \<Longrightarrow> B \<inter> A = {}"
 by auto
 
-subsection {* Intersection rules *}
+subsection \<open>Intersection rules\<close>
 named_theorems e_rules declare em[e_rules] and eb[e_rules] and eov[e_rules] and es[e_rules] and ef[e_rules] and ed[e_rules] and emi[e_rules] and ebi[e_rules] and eovi[e_rules] 
 and esi[e_rules] and efi[e_rules] and edi[e_rules]
 

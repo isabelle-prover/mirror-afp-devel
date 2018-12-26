@@ -1,17 +1,17 @@
-section{* FLPSystem *}
+section\<open>FLPSystem\<close>
 
-text {*
+text \<open>
   \file{FLPSystem} extends \file{AsynchronousSystem} with concepts of consensus
   and decisions. It develops a concept of non-uniformity regarding pending
   decision possibilities, where non-uniform configurations can always
   reach other non-uniform ones.
-*}
+\<close>
 
 theory FLPSystem
 imports AsynchronousSystem ListUtilities
 begin
 
-subsection{* Locale for the FLP consensus setting *}
+subsection\<open>Locale for the FLP consensus setting\<close>
 
 locale flpSystem =
   asynchronousSystem trans sends start    
@@ -24,7 +24,7 @@ assumes finiteProcs: "finite Proc"
     and noInSends: "sends p s m <p2, inM v> = 0"
 begin
 
-subsection{* Decidedness and uniformity of configurations*}
+subsection\<open>Decidedness and uniformity of configurations\<close>
 
 abbreviation vDecided ::
   "bool \<Rightarrow> ('p, 'v, 's) configuration \<Rightarrow> bool"
@@ -60,13 +60,13 @@ where
     \<not>(vUniform False c) \<and> 
     \<not>(vUniform True c)"
 
-subsection{* Agreement, validity, termination *}
+subsection\<open>Agreement, validity, termination\<close>
 
-text{*
+text\<open>
   Völzer defines consensus in terms of the classical notions
   of agreement, validity, and termination. The proof then mostly applies a
   weakened notion of termination, which we refer to as ,,pseudo termination''.
-*}
+\<close>
 
 definition agreement ::
   "('p, 'v, 's) configuration \<Rightarrow> bool"
@@ -93,19 +93,19 @@ where
       (\<forall>v. (<\<bottom>, outM v> \<in># msgs c) 
         \<longrightarrow> (\<exists>p. (<p, inM v> \<in># msgs i)))"
 
-text{*
+text\<open>
   The termination concept which is implied by the concept of "pseudo-consensus"
   in the paper.
-*}
+\<close>
 definition terminationPseudo ::
   "nat \<Rightarrow> ('p, 'v, 's) configuration \<Rightarrow> 'p set \<Rightarrow> bool"
 where
   "terminationPseudo t c Q \<equiv> ((initReachable c \<and> card Q + t \<ge> card Proc) 
     \<longrightarrow> (\<exists>c'. qReachable c Q c' \<and> decided c'))"
 
-subsection {* Propositions about decisions *}
+subsection \<open>Propositions about decisions\<close>
 
-text{*
+text\<open>
   For every process \var{p} and every configuration that is reachable from an
   initial configuration (i.e. \isb{initReachable} \var{c}) we have
   $\var{val(p,c)} \neq \emptyset$.
@@ -115,7 +115,7 @@ text{*
   reachable configuration that is decided.
   
   \voelzer{Proposition 2(a)}
-*}
+\<close>
 lemma DecisionValuesExist:
 fixes
   c :: "('p, 'v, 's) configuration" and
@@ -140,7 +140,7 @@ proof -
     using Reachable by auto
 qed
 
-text{*
+text\<open>
   The lemma \isb{DecidedImpliesUniform} proves that every \isb{vDecided}
   configuration \var{c} is also \isb{vUniform}. Völzer claims that this
   follows directly from the definitions of \isb{vDecided} and \isb{vUniform}.
@@ -148,7 +148,7 @@ text{*
   and \isb{agreement} for all reachable configurations.
 
   \voelzer{Proposition 2(b)}
-*}
+\<close>
 lemma DecidedImpliesUniform:
 fixes
   c :: "('p, 'v, 's) configuration" and
@@ -209,13 +209,13 @@ shows
 using DecidedImpliesUniform[OF assms(1,2,4)] assms(3)
   by (cases v, simp_all)
       
-text{*
+text\<open>
   All three parts of Völzer's Proposition 3 consider a single step from an
   arbitrary \isb{initReachable} configuration \var{c} with a message
   $\var{msg}$ to a succeeding configuration \var{c'}.
-*}
+\<close>
 
-text{*
+text\<open>
   The silent decision values of a process which is not active in a step only
   decrease or stay the same.
   
@@ -223,7 +223,7 @@ text{*
   reachability properties \isb{reachable} and \isb{qReachable}.
 
   \voelzer{Proposition 3(a)}
-*}
+\<close>
 lemma InactiveProcessSilentDecisionValuesDecrease:
 fixes 
   p q :: 'p and
@@ -260,7 +260,7 @@ proof(auto simp add: pSilDecVal_def assms(4))
       0 < msgs c'a <\<bottom>, outM x>" by blast
 qed
 
-text{*
+text\<open>
   ...while the silent decision values of the process which is active in
   a step may only increase or stay the same.
   
@@ -270,7 +270,7 @@ text{*
   \isb{NoOutMessageLoss}.
 
   \voelzer{Proposition 3(b)}
-*}
+\<close>
 lemma ActiveProcessSilentDecisionValuesIncrease :
 fixes 
   p q :: 'p and
@@ -304,7 +304,7 @@ proof (auto simp add: pSilDecVal_def assms(4))
     using C''(2) Init by blast
 qed
 
-text{*
+text\<open>
   As a result from the previous two propositions, the silent decision values
   of a process cannot go from {0} to {1} or vice versa in a step.
 
@@ -313,7 +313,7 @@ text{*
   interested in the situation starting with $\var{val(q,c) = \{0\}}$.
 
   \voelzer{Proposition 3(c)}
-*}
+\<close>
 lemma SilentDecisionValueNotInverting:
 fixes 
   p q :: 'p and
@@ -339,9 +339,9 @@ proof(cases "p = q")
     with Val show "val[q,c'] \<noteq> {\<not> v}" by auto
 qed
 
-subsection{* Towards a proof of FLP *}
+subsection\<open>Towards a proof of FLP\<close>
 
-text{*
+text\<open>
   There is an \isb{initial} configuration that is \isb{nonUniform} under
   the assumption of \isb{validity}, \isb{agreement} and \isb{terminationPseudo}.
 
@@ -350,7 +350,7 @@ text{*
   final contradiction.
 
   \voelzer{Lemma 1}
-*}
+\<close>
 lemma InitialNonUniformCfg:
 assumes
   Termination: "\<And>cc Q . terminationPseudo 1 cc Q" and
@@ -765,14 +765,14 @@ proof-
     using CJ1Init by blast
 qed
 
-text{*  
+text\<open>
   Völzer's Lemma 2 proves that for every process $p$ in the consensus setting 
   \isb{nonUniform} configurations can reach a configuration where the silent
   decision values of $p$ are True and False. This is key to the construction of
   non-deciding executions.
 
   \voelzer{Lemma 2}
-*}
+\<close>
 lemma NonUniformCanReachSilentBivalence:
 fixes 
   p:: 'p and

@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* A unique representation of real numbers via triples *}
+section \<open>A unique representation of real numbers via triples\<close>
 theory Real_Unique_Impl
 imports
   Prime_Product
@@ -30,12 +30,12 @@ imports
   Show.Show_Real
 begin
 
-text {* We implement the real numbers again using triples, but now we require an additional
+text \<open>We implement the real numbers again using triples, but now we require an additional
  invariant on the triples, namely that the base has to be a prime product. This has the consequence
  that the mapping of triples into $\reals$ is injective. Hence, equality on reals is now equality
  on triples, which can even be executed in case of different bases. Similarly, we now also allow
  different basis in comparisons. Ultimately, injectivity allows us to define a show-function for
- real numbers, which pretty prints real numbers into strings. *}
+ real numbers, which pretty prints real numbers into strings.\<close>
 
 typedef mini_alg_unique =
   "{ r :: mini_alg . ma_coeff r = 0 \<and> ma_base r = 0 \<or> ma_coeff r \<noteq> 0 \<and> prime_product (ma_base r)}"
@@ -289,8 +289,8 @@ lemma mau_ge_0: "ge_0 (real_of_u x) = mau_ge_0 x" using ma_ge_0
 
 definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_lt = (<)"
 
-text{* The following code equation terminates if it is started on two
-  different inputs. *}
+text\<open>The following code equation terminates if it is started on two
+  different inputs.\<close>
 lemma real_lt [code equation]: "real_lt x y = (let fx = floor x; fy = floor y in
   (if fx < fy then True else if fx > fy then False else real_lt (x * 1024) (y * 1024)))"
 proof (cases "floor x < floor y")
@@ -309,7 +309,7 @@ next
   qed
 qed
 
-text {* For comparisons we first check for equality. Then, if the bases are
+text \<open>For comparisons we first check for equality. Then, if the bases are
   compatible we can just compare the differences with 0. Otherwise, we start
   the recursive algorithm @{const real_lt} which works on arbitrary bases.
   In this way, we have an implementation of comparisons which can compare
@@ -317,7 +317,7 @@ text {* For comparisons we first check for equality. Then, if the bases are
 
   Note that in @{theory Real_Impl.Real_Impl} we did not use @{const real_lt} as there
   the code-equations for equality already require identical bases.
- *}
+\<close>
 lemma comparison_impl:
   "real_of_u x \<le> real_of_u y \<longleftrightarrow> real_of_u x = real_of_u y \<or>
     (if mau_compatible x y then ge_0 (real_of_u y - real_of_u x) else real_lt (real_of_u x) (real_of_u y))"
@@ -365,8 +365,8 @@ declare [[code drop:
 lemmas mau_code_eqns [code] = mau_floor mau_0 mau_1 mau_uminus mau_inverse mau_sqrt mau_plus mau_times mau_equal mau_ge_0 mau_is_rat
   mau_show_real comparison_impl
 
-text {* Some tests with small numbers. To work on larger number, one should
-  additionally import the theories for efficient calculation on numbers *}
+text \<open>Some tests with small numbers. To work on larger number, one should
+  additionally import the theories for efficient calculation on numbers\<close>
 
 value "\<lfloor>101.1 * (sqrt 18 + 6 * sqrt 0.5)\<rfloor>"
 value "\<lfloor>324 * sqrt 7 + 0.001\<rfloor>"

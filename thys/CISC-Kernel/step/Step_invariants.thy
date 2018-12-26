@@ -1,16 +1,16 @@
-subsection {* Preconditions and invariants for the atomic step \label{sect:step_invariants} *}
+subsection \<open>Preconditions and invariants for the atomic step \label{sect:step_invariants}\<close>
 
 theory Step_invariants
   imports Step
 begin
 
-text {* The dynamic/implementation policies have to be compatible with the static configuration. *}
+text \<open>The dynamic/implementation policies have to be compatible with the static configuration.\<close>
 
 definition "sp_subset s \<equiv>
    (\<forall> p1 p2 . sp_impl_subj_subj s p1 p2 \<longrightarrow> Policy.sp_spec_subj_subj p1 p2)
    \<and> (\<forall> p1 p2 m. sp_impl_subj_obj s p1 p2 m \<longrightarrow> Policy.sp_spec_subj_obj p1 p2 m)"
 
-text {* The following predicate expresses the precondition for the atomic step. The precondition depends on the type of the atomic action. *}
+text \<open>The following predicate expresses the precondition for the atomic step. The precondition depends on the type of the atomic action.\<close>
 (*
 [SK_IPC dir PREP partner page,SK_IPC dir WAIT partner page,SK_IPC dir (BUF page') partner page]
 *)
@@ -30,13 +30,13 @@ definition atomic_step_precondition :: "state_t \<Rightarrow> thread_id_t \<Righ
          \<comment> \<open>No precondition for other interrupt points.\<close>
          True"
 
-text {* The invariant to be preserved by the atomic step function. The invariant is independent from the type of the atomic action. *}
+text \<open>The invariant to be preserved by the atomic step function. The invariant is independent from the type of the atomic action.\<close>
 
 definition atomic_step_invariant :: "state_t \<Rightarrow> bool" where
   "atomic_step_invariant s \<equiv>
      sp_subset s"
 
-subsubsection {* Atomic steps of SK\_IPC preserve invariants *}
+subsubsection \<open>Atomic steps of SK\_IPC preserve invariants\<close>
 
 
 lemma set_object_value_invariant:
@@ -114,10 +114,10 @@ lemma atomic_ev_signal_preserves_invariants:
    by auto  
  qed
 
-subsubsection {* Summary theorems on atomic step invariants *}
+subsubsection \<open>Summary theorems on atomic step invariants\<close>
 
-text {* Now we are ready to show that an atomic step from the current interrupt point
-        in any thread preserves invariants. *}
+text \<open>Now we are ready to show that an atomic step from the current interrupt point
+        in any thread preserves invariants.\<close>
 
 theorem atomic_step_preserves_invariants:
   fixes s :: state_t
@@ -151,9 +151,9 @@ proof (cases a)
    by auto  
 qed
 
-text {* Finally, the invariants do not depend on the current thread. That is, 
+text \<open>Finally, the invariants do not depend on the current thread. That is, 
 the context switch preserves the invariants, and an atomic step that is 
-not a context switch does not change the current thread. *}
+not a context switch does not change the current thread.\<close>
 
 theorem cswitch_preserves_invariants:
   fixes s :: state_t

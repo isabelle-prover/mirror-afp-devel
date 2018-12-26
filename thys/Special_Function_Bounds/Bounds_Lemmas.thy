@@ -1,11 +1,11 @@
-chapter {* General Lemmas for Proving Function Inequalities *}
+chapter \<open>General Lemmas for Proving Function Inequalities\<close>
 
 theory Bounds_Lemmas
 imports Complex_Main
 
 begin
 
-text{*These are for functions that are differentiable over a closed interval.*}
+text\<open>These are for functions that are differentiable over a closed interval.\<close>
 
 lemma gen_lower_bound_increasing:
   fixes a :: real

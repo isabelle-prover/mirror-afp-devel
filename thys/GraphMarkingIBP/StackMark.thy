@@ -1,10 +1,10 @@
-section {*  Marking Using a Stack  *}
+section \<open>Marking Using a Stack\<close>
 
 theory StackMark
 imports SetMark DataRefinementIBP.DataRefinement
 begin
 
-text{*
+text\<open>
 In this theory we refine the set marking diagram to a diagram in which the
 set is replaced by a list (stack). Iniatially the list contains the root element
 and as long as the list is nonempty and the top of the list has an unmarked
@@ -14,9 +14,9 @@ the list is empty.
 
 The data refinement relation of the two diagrams is true if the list
 has distinct elements and the elements of the list and the set are the same.
-*}
+\<close>
 
-subsection {* Transitions *}
+subsection \<open>Transitions\<close>
 
 definition (in graph)
   "Q1'_a \<equiv> [:\<lambda> (stk::('node list), mrk::('node set)) . {(stk'::('node list), mrk') . 
@@ -37,7 +37,7 @@ definition (in graph)
 definition
   "Q5'_a \<equiv> [:\<lambda> (stk, mrk) . {(stk', mrk') . stk = [] \<and> mrk' = mrk}:]"
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 
 definition
   "Init' \<equiv> UNIV"
@@ -54,7 +54,7 @@ definition [simp]:
       I.loop  \<Rightarrow> Loop' |
       I.final \<Rightarrow> Final')"
 
-subsection {* Data refinement relations *}
+subsection \<open>Data refinement relations\<close>
 
 definition
   "R1_a \<equiv> {: stk, mrk \<leadsto> X, mrk' . mrk' = mrk :}"
@@ -85,7 +85,7 @@ definition (in graph)
       (I.loop, I.final) \<Rightarrow> Q5'_a |
        _ \<Rightarrow> \<top>))"
 
-subsection {* Data refinement of the transitions *}
+subsection \<open>Data refinement of the transitions\<close>
 
 theorem (in graph) init_nil [simp]:
   "DataRefinement ({.Init.} o Q1_a) R1_a R2_a Q1'_a"
@@ -119,7 +119,7 @@ theorem (in graph) final [simp]:
     Loop'_def R2_a_def R1_a_def Q5_a_def Q5'_a_def angelic_def subset_eq)
   by (simp add: simp_eq_emptyset)
 
-subsection {* Diagram data refinement *}
+subsection \<open>Diagram data refinement\<close>
 
 lemma assert_comp_choice: "{.p.} o (S \<sqinter> T) = ({.p.} o S) \<sqinter> ({.p.} o T)"
   apply (rule antisym)
@@ -145,7 +145,7 @@ theorem (in graph) StackMark_DataRefinement [simp]:
   by (simp add: DgrDataRefinement2_def  StackMark_a_def SetMark_def demonic_sup_inf 
     SetMarkInv_def data_refinement_choice2 assert_comp_choice)
 
-subsection {* Diagram correctness *}
+subsection \<open>Diagram correctness\<close>
 
 theorem (in graph) StackMark_correct:
   "Hoare_dgr (R_a .. SetMarkInv) StackMark_a ((R_a .. SetMarkInv) \<sqinter> (- grd (step (StackMark_a))))"

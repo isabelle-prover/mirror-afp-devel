@@ -11,7 +11,7 @@ theory IpurgeUnwinding
 imports Noninterference_CSP.CSPNoninterference List_Interleaving.ListInterleaving
 begin
 
-text {*
+text \<open>
 \null
 
 The definition of noninterference security for Communicating Sequential Processes given in \cite{R1}
@@ -37,17 +37,17 @@ The contents of this paper are based on those of \cite{R1}. The salient points o
 proofs are commented; for additional information, cf. Isabelle documentation, particularly
 \cite{R5}, \cite{R6}, \cite{R7}, and \cite{R8}.
 
-For the sake of brevity, given a function @{text F} of type
-@{text "'a\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>m \<Rightarrow> 'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b"}, the explanatory text may discuss of @{text F}
-using attributes that would more exactly apply to a term of type @{text "'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b"}.
+For the sake of brevity, given a function \<open>F\<close> of type
+\<open>'a\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>m \<Rightarrow> 'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b\<close>, the explanatory text may discuss of \<open>F\<close>
+using attributes that would more exactly apply to a term of type \<open>'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b\<close>.
 In this case, it shall be understood that strictly speaking, such attributes apply to a term
-matching pattern @{text "F a\<^sub>1 \<dots> a\<^sub>m"}.
-*}
+matching pattern \<open>F a\<^sub>1 \<dots> a\<^sub>m\<close>.
+\<close>
 
 
 subsection "Propaedeutic definitions and lemmas"
 
-text {*
+text \<open>
 The definition of CSP noninterference security formulated in \cite{R1} requires that some sets of
 events be refusals, i.e. sets of refused events, for some traces. Therefore, a sufficient condition
 for security just involving individual refused events will require that some single events be
@@ -106,7 +106,7 @@ requiring the equality of subsequent accepted and refused events to hold only fo
 allowed to be affected by some event domain.
 
 \null
-*}
+\<close>
 
 type_synonym ('a, 'd) dom_rel_map = "'d \<Rightarrow> ('a list \<times> 'a list) set"
 
@@ -143,14 +143,14 @@ definition weakly_future_consistent ::
     next_dom_events P D u xs = next_dom_events P D u ys \<and>
     ref_dom_events P D u xs = ref_dom_events P D u ys"
 
-text {*
+text \<open>
 \null
 
 Here below are some lemmas propaedeutic for the proof of the Ipurge Unwinding Theorem, just
 involving constants defined in \cite{R1}.
 
 \null
-*}
+\<close>
 
 lemma process_rule_2_traces:
  "xs @ xs' \<in> traces P \<Longrightarrow> xs \<in> traces P"
@@ -240,7 +240,7 @@ lemma sinks_interference_eq:
 proof (rule iffI, erule_tac [2] contrapos_pp, simp_all (no_asm_simp))
 qed (erule contrapos_nn, rule sinks_interference)
 
-text {*
+text \<open>
 \null
 
 In what follows, some lemmas concerning the constants defined above are proven.
@@ -258,7 +258,7 @@ both are not traces. Finally, it is demonstrated that future consistency implies
 consistency.
 
 \null
-*}
+\<close>
 
 lemma
   assumes A: "\<forall>xs A. (\<forall>X \<in> A. (xs, X) \<in> failures P) \<longrightarrow>
@@ -390,15 +390,15 @@ lemma fc_implies_wfc:
  "future_consistent P D R \<Longrightarrow> weakly_future_consistent P I D R"
 by (simp only: future_consistent_def weakly_future_consistent_def, blast)
 
-text {*
+text \<open>
 \null
 
-Finally, the definition is given of an auxiliary function @{text singleton_set}, whose output is the
+Finally, the definition is given of an auxiliary function \<open>singleton_set\<close>, whose output is the
 set of the singleton subsets of a set taken as input, and then some basic properties of this
 function are proven.
 
 \null
-*}
+\<close>
 
 definition singleton_set :: "'a set \<Rightarrow> 'a set set" where
 "singleton_set X \<equiv> {Y. \<exists>x \<in> X. Y = {x}}"
@@ -436,20 +436,20 @@ qed
 
 subsection "Additional intransitive purge functions and their properties"
 
-text {*
-Functions @{text sinks_aux}, @{text ipurge_tr_aux}, and @{text ipurge_ref_aux}, defined here below,
+text \<open>
+Functions \<open>sinks_aux\<close>, \<open>ipurge_tr_aux\<close>, and \<open>ipurge_ref_aux\<close>, defined here below,
 are auxiliary versions of functions @{term sinks}, @{term ipurge_tr}, and @{term ipurge_ref} taking
 as input a set of domains rather than a single domain. As shown below, these functions are useful
 for the study of single domain ones, involved in the definition of CSP noninterference security
 \cite{R1}, since they distribute over list concatenation, while being susceptible to be expressed in
 terms of the corresponding single domain functions in case the input set of domains is a singleton.
 
-A further function, @{text unaffected_domains}, takes as inputs a set of domains @{text U} and an
-event list @{text xs}, and outputs the set of the event domains not allowed to be affected by
-@{text U} after the occurrence of @{text xs}.
+A further function, \<open>unaffected_domains\<close>, takes as inputs a set of domains \<open>U\<close> and an
+event list \<open>xs\<close>, and outputs the set of the event domains not allowed to be affected by
+\<open>U\<close> after the occurrence of \<open>xs\<close>.
 
 \null
-*}
+\<close>
 
 function sinks_aux ::
  "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd set \<Rightarrow> 'a list \<Rightarrow> 'd set" where
@@ -481,44 +481,44 @@ definition unaffected_domains ::
 "unaffected_domains I D U xs \<equiv>
   {u \<in> range D. \<forall>v \<in> sinks_aux I D U xs. (v, u) \<notin> I}"
 
-text {*
+text \<open>
 \null
 
-Function @{text ipurge_tr_rev}, defined here below in terms of function @{text sources}, is the
+Function \<open>ipurge_tr_rev\<close>, defined here below in terms of function \<open>sources\<close>, is the
 reverse of function @{term ipurge_tr} with regard to both the order in which events are considered,
 and the criterion by which they are purged.
 
-In some detail, both functions @{text sources} and @{text ipurge_tr_rev} take as inputs a domain
-@{text u} and an event list @{text xs}, whose recursive decomposition is performed by item
+In some detail, both functions \<open>sources\<close> and \<open>ipurge_tr_rev\<close> take as inputs a domain
+\<open>u\<close> and an event list \<open>xs\<close>, whose recursive decomposition is performed by item
 prepending rather than appending. Then:
 
 \begin{itemize}
 
 \item
-@{text sources} outputs the set of the domains of the events in @{text xs} allowed to affect
-@{text u};
+\<open>sources\<close> outputs the set of the domains of the events in \<open>xs\<close> allowed to affect
+\<open>u\<close>;
 
 \item
-@{text ipurge_tr_rev} outputs the sublist of @{text xs} obtained by recursively deleting the events
-not allowed to affect @{text u}, as detected via function @{text sources}.
+\<open>ipurge_tr_rev\<close> outputs the sublist of \<open>xs\<close> obtained by recursively deleting the events
+not allowed to affect \<open>u\<close>, as detected via function \<open>sources\<close>.
 
 \end{itemize}
 
 In other words, these functions follow Rushby's ones \emph{sources} and \emph{ipurge} \cite{R4},
-formalized in \cite{R1} as @{text c_sources} and @{text c_ipurge}. The only difference consists of
+formalized in \cite{R1} as \<open>c_sources\<close> and \<open>c_ipurge\<close>. The only difference consists of
 dropping the implicit supposition that the noninterference policy be reflexive, as done in the
 definition of CPS noninterference security \cite{R1}. This goal is achieved by defining the output
-of function @{text sources}, when it is applied to the empty list, as being the empty set rather
+of function \<open>sources\<close>, when it is applied to the empty list, as being the empty set rather
 than the singleton comprised of the input domain.
 
-As for functions @{text sources_aux} and @{text ipurge_tr_rev_aux}, they are auxiliary versions of
-functions @{text sources} and @{text ipurge_tr_rev} taking as input a set of domains rather than a
+As for functions \<open>sources_aux\<close> and \<open>ipurge_tr_rev_aux\<close>, they are auxiliary versions of
+functions \<open>sources\<close> and \<open>ipurge_tr_rev\<close> taking as input a set of domains rather than a
 single domain. As shown below, these functions distribute over list concatenation, while being
 susceptible to be expressed in terms of the corresponding single domain functions in case the input
 set of domains is a singleton.
 
 \null
-*}
+\<close>
 
 primrec sources :: "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd \<Rightarrow> 'a list \<Rightarrow> 'd set" where
 "sources _ _ _ [] = {}" |
@@ -547,7 +547,7 @@ primrec ipurge_tr_rev_aux ::
   then x # ipurge_tr_rev_aux I D U xs
   else ipurge_tr_rev_aux I D U xs)"
 
-text {*
+text \<open>
 \null
 
 Here below are some lemmas on functions @{term sinks_aux}, @{term ipurge_tr_aux},
@@ -556,7 +556,7 @@ essentially concern distributivity over list concatenation and expressions in te
 functions in the degenerate case of a singleton set of domains.
 
 \null
-*}
+\<close>
 
 lemma sinks_aux_subset:
  "U \<subseteq> sinks_aux I D U xs"
@@ -669,7 +669,7 @@ lemma unaffected_domains_single_dom:
  "{x \<in> X. D x \<in> unaffected_domains I D {u} xs} = ipurge_ref I D u xs X"
 by (simp add: ipurge_ref_def unaffected_domains_def sinks_aux_single_dom)
 
-text {*
+text \<open>
 \null
 
 Here below are some lemmas on functions @{term sources}, @{term ipurge_tr_rev}, @{term sources_aux},
@@ -678,7 +678,7 @@ concern distributivity over list concatenation and expressions in terms of singl
 in the degenerate case of a singleton set of domains.
 
 \null
-*}
+\<close>
 
 lemma sources_sinks:
  "sources I D u xs = sinks (I\<inverse>) D u (rev xs)"
@@ -849,15 +849,15 @@ proof (induction xs, simp, rule impI, simp, erule conjE)
   with B show "\<exists>u \<in> sources_aux I D U xs. (D x, u) \<in> I" ..
 qed
 
-text {*
+text \<open>
 \null
 
 Here below, further properties of the functions defined above are investigated thanks to the
-introduction of function @{text offset}, which searches a list for a given item and returns the
+introduction of function \<open>offset\<close>, which searches a list for a given item and returns the
 offset of its first occurrence, if any, from the first item of the list.
 
 \null
-*}
+\<close>
 
 primrec offset :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> nat option" where
 "offset _ _ [] = None" |
@@ -1072,7 +1072,7 @@ lemma ipurge_tr_rev_aux_append_nil:
   (ipurge_tr_rev_aux I D U ys = [])"
 by (rule iffI, erule ipurge_tr_rev_aux_append_nil_2, rule ipurge_tr_rev_aux_append_nil_1)
 
-text {*
+text \<open>
 \null
 
 In what follows, it is proven by induction that the lists output by functions @{term ipurge_tr} and
@@ -1083,7 +1083,7 @@ respectively. Then, some lemmas on the aforesaid functions are demonstrated with
 previous lemmas along with the properties of predicate @{term Interleaves}.
 
 \null
-*}
+\<close>
 
 lemma Interleaves_ipurge_tr:
  "xs \<cong> {ipurge_tr_rev I D u xs, rev (ipurge_tr (I\<inverse>) D u (rev xs)),
@@ -1191,26 +1191,26 @@ qed (simp (no_asm_simp))
 
 subsection "A domain-relation map based on intransitive purge"
 
-text {*
-In what follows, constant @{text rel_ipurge} is defined as the domain-relation map that associates
-each domain @{text u} to the relation comprised of the pairs of traces whose images under function
-@{term "ipurge_tr_rev I D u"} are equal, viz. whose events affecting @{text u} are the same.
+text \<open>
+In what follows, constant \<open>rel_ipurge\<close> is defined as the domain-relation map that associates
+each domain \<open>u\<close> to the relation comprised of the pairs of traces whose images under function
+@{term "ipurge_tr_rev I D u"} are equal, viz. whose events affecting \<open>u\<close> are the same.
 
-An auxiliary domain set-relation map, @{text rel_ipurge_aux}, is also defined by replacing
+An auxiliary domain set-relation map, \<open>rel_ipurge_aux\<close>, is also defined by replacing
 @{term ipurge_tr_rev} with @{term ipurge_tr_rev_aux}, so as to exploit the distributivity of the
 latter function over list concatenation. Unsurprisingly, since @{term ipurge_tr_rev_aux} degenerates
 into @{term ipurge_tr_rev} for a singleton set of domains, the same happens for
-@{text rel_ipurge_aux} and @{text rel_ipurge}.
+\<open>rel_ipurge_aux\<close> and \<open>rel_ipurge\<close>.
 
-Subsequently, some basic properties of domain-relation map @{text rel_ipurge} are proven, namely
+Subsequently, some basic properties of domain-relation map \<open>rel_ipurge\<close> are proven, namely
 that it is a view partition, and is future consistent if and only if it is weakly future consistent.
 The nontrivial implication, viz. the direct one, derives from the fact that for each domain
-@{text u} allowed to be affected by any event domain, function @{term "ipurge_tr_rev I D u"} matches
-the identity function, so that two traces are correlated by the image of @{text rel_ipurge} under
-@{text u} just in case they are equal.
+\<open>u\<close> allowed to be affected by any event domain, function @{term "ipurge_tr_rev I D u"} matches
+the identity function, so that two traces are correlated by the image of \<open>rel_ipurge\<close> under
+\<open>u\<close> just in case they are equal.
 
 \null
-*}
+\<close>
 
 definition rel_ipurge ::
  "'a process \<Rightarrow> ('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> ('a, 'd) dom_rel_map" where
@@ -1290,8 +1290,8 @@ qed
 
 subsection "The Ipurge Unwinding Theorem: proof of condition sufficiency"
 
-text {*
-The Ipurge Unwinding Theorem, formalized in what follows as theorem @{text ipurge_unwinding}, states
+text \<open>
+The Ipurge Unwinding Theorem, formalized in what follows as theorem \<open>ipurge_unwinding\<close>, states
 that a necessary and sufficient condition for the CSP noninterference security \cite{R1} of a
 process being refusals union closed is that domain-relation map @{term rel_ipurge} be weakly future
 consistent. Notwithstanding the equivalence of future consistency and weak future consistency for
@@ -1312,7 +1312,7 @@ Here below, it is proven that the condition expressed by the Ipurge Unwinding Th
 for security.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_rev_ipurge_tr_aux_1 [rule_format]:
  "U \<subseteq> unaffected_domains I D (D ` set ys) zs \<longrightarrow>
@@ -1367,7 +1367,7 @@ next
       ipurge_tr_rev_aux I D ?U' (xs @ ipurge_tr_aux I D (D ` set ys) zs)"
      using A .
     moreover have "?U' \<subseteq> unaffected_domains I D (D ` set ys) zs"
-     by (simp add: C, simp add: unaffected_domains_def `?P` [simplified])
+     by (simp add: C, simp add: unaffected_domains_def \<open>?P\<close> [simplified])
     ultimately show ?Q ..
   qed
   show "ipurge_tr_rev_aux I D U (xs @ ys @ zs @ [z]) =
@@ -1483,7 +1483,7 @@ next
       ipurge_tr_rev_aux I D ?U' (xs @ ys @ ipurge_tr_aux I D (D ` set ys) zs)"
      using A .
     moreover have "?U' \<subseteq> unaffected_domains I D (D ` set ys) zs"
-     by (simp add: C, simp add: unaffected_domains_def `?P` [simplified])
+     by (simp add: C, simp add: unaffected_domains_def \<open>?P\<close> [simplified])
     ultimately show ?Q ..
   qed
   show "ipurge_tr_rev_aux I D U (xs @ zs @ [z]) =
@@ -1930,13 +1930,13 @@ qed
 
 subsection "The Ipurge Unwinding Theorem: proof of condition necessity"
 
-text {*
+text \<open>
 Here below, it is proven that the condition expressed by the Ipurge Unwinding Theorem is necessary
 for security. Finally, the lemmas concerning condition sufficiency and necessity are gathered in the
 main theorem.
 
 \null
-*}
+\<close>
 
 lemma secure_implies_failure_consistency_aux [rule_format]:
   assumes S: "secure P I D"

@@ -3,21 +3,21 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Two sorted Demonic Refinement Algebras *}
+section \<open>Two sorted Demonic Refinement Algebras\<close>
 
 theory DRAT2
   imports Kleene_Algebra.DRA
 begin
 
-text {*
+text \<open>
   As an alternative to the one-sorted implementation of demonic refinement algebra with tests, 
   we provide a two-sorted, more conventional one.
   This alternative can be developed further along the lines of the one-sorted implementation.
-*}
+\<close>
 
 syntax "_dra" :: "'a \<Rightarrow> 'a" ("`_`")
 
-ML {*
+ML \<open>
 val dra_test_vars = ["p","q","r","s","t","p'","q'","r'","s'","t'","p''","q''","r''","s''","t''"]
 
 fun map_ast_variables ast =
@@ -40,21 +40,21 @@ fun dra_hom_tac ctxt n =
   in
     asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps rev_rules) n
   end
-*}
+\<close>
 
-setup {* DRAHomRules.setup *}
+setup \<open>DRAHomRules.setup\<close>
 
-method_setup kat_hom = {*
+method_setup kat_hom = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (dra_hom_tac ctxt 1)))
-*}
+\<close>
 
-parse_ast_translation {*
+parse_ast_translation \<open>
 let
   fun dra_tr ctxt [t] = map_ast_variables t
 in [(@{syntax_const "_dra"}, dra_tr)] end
-*}
+\<close>
 
-ML {*
+ML \<open>
 structure VCGRules = Named_Thms
   (val name = @{binding "vcg"}
    val description = "verification condition generator rules")
@@ -69,13 +69,13 @@ fun vcg_tac ctxt n =
         THEN dra_hom_tac ctxt n
         THEN TRY (resolve_tac ctxt @{thms order_refl} n ORELSE asm_full_simp_tac (put_simpset HOL_basic_ss ctxt) n)))
   end
-*}
+\<close>
 
-method_setup vcg = {*
+method_setup vcg = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (CHANGED (vcg_tac ctxt 1)))
-*}
+\<close>
 
-setup {* VCGRules.setup *}
+setup \<open>VCGRules.setup\<close>
 
 locale drat =
   fixes test :: "'a::boolean_algebra \<Rightarrow> 'b::dra"
@@ -94,7 +94,7 @@ notation test ("\<iota>")
 lemma test_eq [kat_hom]: "p = q \<longleftrightarrow> `p = q`"
   by (metis eq_iff test_iso_eq)
 
-ML_val {* map (fn thm => thm RS @{thm sym}) (DRAHomRules.get @{context}) *}
+ML_val \<open>map (fn thm => thm RS @{thm sym}) (DRAHomRules.get @{context})\<close>
 
 lemma test_iso: "p \<le> q \<Longrightarrow> `p \<le> q`"
   by (simp add: test_iso_eq)

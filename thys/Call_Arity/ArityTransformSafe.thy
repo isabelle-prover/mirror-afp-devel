@@ -90,22 +90,22 @@ begin
     hence "x \<in> thunks \<Gamma>" by auto
     hence [simp]: "x \<in> domA \<Gamma>" by (rule set_mp[OF thunks_domA])
 
-    from `heap_upds_ok_conf (\<Gamma>, Var x, S)`
+    from \<open>heap_upds_ok_conf (\<Gamma>, Var x, S)\<close>
     have "x \<notin> upds S"  by (auto dest!: heap_upds_okE)
     
     have "x \<in> edom ae" using thunk by auto
-    have "ae x = up\<cdot>0" using thunk `x \<in> thunks \<Gamma>` by (auto)
+    have "ae x = up\<cdot>0" using thunk \<open>x \<in> thunks \<Gamma>\<close> by (auto)
 
-    have "a_consistent (ae, 0, as) (delete x \<Gamma>, e, Upd x # S)" using thunk `ae x = up\<cdot>0`
+    have "a_consistent (ae, 0, as) (delete x \<Gamma>, e, Upd x # S)" using thunk \<open>ae x = up\<cdot>0\<close>
       by (auto intro!: a_consistent_thunk_0 simp del: restr_delete)
-    hence "consistent (ae, 0, as) (delete x \<Gamma>, e, Upd x # S)" using thunk `ae x = up\<cdot>0` 
+    hence "consistent (ae, 0, as) (delete x \<Gamma>, e, Upd x # S)" using thunk \<open>ae x = up\<cdot>0\<close> 
       by (auto simp add:  restr_delete_twist)
     moreover
   
-    from  `map_of \<Gamma> x = Some e` `ae x = up\<cdot>0`
+    from  \<open>map_of \<Gamma> x = Some e\<close> \<open>ae x = up\<cdot>0\<close>
     have "map_of (map_transform Aeta_expand ae (map_transform ccTransform ae \<Gamma>)) x = Some (transform 0 e)"
       by (simp add: map_of_map_transform)
-    with `\<not> isVal e`
+    with \<open>\<not> isVal e\<close>
     have "a_transform (ae, a, as) (\<Gamma>, Var x, S) \<Rightarrow> a_transform (ae, 0, as) (delete x \<Gamma>, e, Upd x # S)"
       by (auto simp add: map_transform_delete restr_delete_twist intro!: step.intros  simp del: restr_delete)
     ultimately
@@ -121,21 +121,21 @@ begin
     obtain u where "ae x = up\<cdot>u" by (cases "ae x") (auto simp add: edom_def)
     hence "x \<in> edom ae" by (auto simp add: edomIff)
 
-    have "a_consistent (ae, u, as) ((x,e) # delete x \<Gamma>, e, S)" using lamvar `ae x = up\<cdot>u`
+    have "a_consistent (ae, u, as) ((x,e) # delete x \<Gamma>, e, S)" using lamvar \<open>ae x = up\<cdot>u\<close>
       by (auto intro!: a_consistent_lamvar simp del: restr_delete)
     hence "consistent (ae, u, as) ((x, e) # delete x \<Gamma>, e, S)"
       using lamvar by (auto simp add:  thunks_Cons restr_delete_twist elim: below_trans)
     moreover
 
-    from `a_consistent _ _`
+    from \<open>a_consistent _ _\<close>
     have "Astack (transform_alts as S) \<sqsubseteq> u" by (auto elim: a_consistent_stackD)
   
     {
-    from `isVal e`
+    from \<open>isVal e\<close>
     have "isVal (transform u e)" by simp
     hence "isVal (Aeta_expand u (transform u e))" by (rule isVal_Aeta_expand)
     moreover
-    from  `map_of \<Gamma> x = Some e`  `ae x = up \<cdot> u`  `isVal (transform u e)`
+    from  \<open>map_of \<Gamma> x = Some e\<close>  \<open>ae x = up \<cdot> u\<close>  \<open>isVal (transform u e)\<close>
     have "map_of (map_transform Aeta_expand ae (map_transform transform ae \<Gamma>)) x = Some (Aeta_expand u (transform u e))"
       by (simp add: map_of_map_transform)
     ultimately
@@ -143,10 +143,10 @@ begin
           ((x, Aeta_expand u (transform u e)) # delete x (map_transform Aeta_expand ae (map_transform transform ae \<Gamma>)), Aeta_expand u (transform u e), transform_alts as S)"
        by (auto intro: lambda_var simp del: restr_delete)
     also have "\<dots> = ((map_transform Aeta_expand ae (map_transform transform ae ((x,e) # delete x \<Gamma>))), Aeta_expand u (transform u e), transform_alts as S)"
-      using `ae x = up \<cdot> u` `isVal (transform u e)`
+      using \<open>ae x = up \<cdot> u\<close> \<open>isVal (transform u e)\<close>
       by (simp add: map_transform_Cons map_transform_delete  del: restr_delete)
     also(subst[rotated]) have "\<dots> \<Rightarrow>\<^sup>* a_transform (ae, u, as) ((x, e) # delete x \<Gamma>, e, S)"
-      by (simp add: restr_delete_twist) (rule Aeta_expand_safe[OF `Astack _ \<sqsubseteq> u`])
+      by (simp add: restr_delete_twist) (rule Aeta_expand_safe[OF \<open>Astack _ \<sqsubseteq> u\<close>])
     finally(rtranclp_trans)
     have "a_transform (ae, a, as) (\<Gamma>, Var x, S) \<Rightarrow>\<^sup>* a_transform (ae, u, as) ((x, e) # delete x \<Gamma>, e, S)".
     }
@@ -161,11 +161,11 @@ begin
     have "a_consistent (ae, a, as) ((x, e) # \<Gamma>, e, S)"
       using var\<^sub>2 by (auto intro!: a_consistent_var\<^sub>2)
     hence "consistent (ae, 0, as) ((x, e) # \<Gamma>, e, S)"
-      using var\<^sub>2 `a = 0`
+      using var\<^sub>2 \<open>a = 0\<close>
       by (auto simp add: thunks_Cons elim: below_trans)
     moreover
     have "a_transform (ae, a, as) (\<Gamma>, e, Upd x # S) \<Rightarrow> a_transform (ae, 0, as) ((x, e) # \<Gamma>, e, S)"
-      using `ae x = up\<cdot>0` `a = 0` var\<^sub>2
+      using \<open>ae x = up\<cdot>0\<close> \<open>a = 0\<close> var\<^sub>2
       by (auto intro!: step.intros simp add: map_transform_Cons)
     ultimately show ?case by (blast del: consistentI consistentE)
   next
@@ -197,7 +197,7 @@ begin
     have "a_consistent (ae, a, as) (\<Gamma>, Let \<Delta> e, S)"
       using let\<^sub>1 by auto
     hence "a_consistent (?ae \<squnion> ae, a, as) (\<Delta> @ \<Gamma>, e, S)"
-      using let\<^sub>1(1,2) `edom ae \<inter> domA \<Delta> = {}` 
+      using let\<^sub>1(1,2) \<open>edom ae \<inter> domA \<Delta> = {}\<close> 
       by (auto intro!:  a_consistent_let simp del: join_comm)
     ultimately
     have "consistent (?ae \<squnion> ae, a, as) (\<Delta> @ \<Gamma>, e, S)"
@@ -213,7 +213,7 @@ begin
          by (auto intro!: map_transform_cong restrictA_cong simp add: edomIff)
       moreover
   
-      from `edom ae \<subseteq> domA \<Gamma> \<union> upds S`
+      from \<open>edom ae \<subseteq> domA \<Gamma> \<union> upds S\<close>
       have  "\<And> x. x \<in> domA \<Delta> \<Longrightarrow> x \<notin> edom ae"
          using fresh_distinct[OF let\<^sub>1(1)] fresh_distinct_fv[OF let\<^sub>1(2)] 
          by (auto dest!:  set_mp[OF ups_fv_subset])

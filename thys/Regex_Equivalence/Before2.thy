@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-section {* Linear Time Optimization for ``Mark Before Atom'' (for a Fixed Alphabet) *}
+section \<open>Linear Time Optimization for ``Mark Before Atom'' (for a Fixed Alphabet)\<close>
 
 (*<*)
 theory Before2

@@ -2,9 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-chapter {* The generic multithreaded semantics *}
+chapter \<open>The generic multithreaded semantics\<close>
 
-section {* State of the multithreaded semantics *}
+section \<open>State of the multithreaded semantics\<close>
 
 theory FWState
 imports 
@@ -49,7 +49,7 @@ type_synonym
    't conditional_action list \<times> ('t, 'w) wait_set_action list \<times> 
    't interrupt_action list \<times> 'o list"
 (* pretty printing for thread_action type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [Const (@{type_syntax finfun}, _) $ l $
@@ -67,7 +67,7 @@ print_translation {*
       else raise Match;
   in [(@{type_syntax "prod"}, K tr')]
   end
-*}
+\<close>
 typ "('l,'t,'x,'m,'w,'o) thread_action"
  
 definition locks_a :: "('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'l lock_actions" ("\<lbrace>_\<rbrace>\<^bsub>l\<^esub>" [0] 1000) where
@@ -132,19 +132,19 @@ abbreviation empty_ta :: "('l,'t,'x,'m,'w,'o) thread_action" where
 
 notation (input) empty_ta ("\<epsilon>")
 
-text {*
+text \<open>
   Pretty syntax for specifying thread actions:
-  Write @{text "\<lbrace> Lock\<rightarrow>l, Unlock\<rightarrow>l, Suspend w, Interrupt t\<rbrace>"} instead of
+  Write \<open>\<lbrace> Lock\<rightarrow>l, Unlock\<rightarrow>l, Suspend w, Interrupt t\<rbrace>\<close> instead of
   @{term "((K$ [])(l $:= [Lock, Unlock]), [], [Suspend w], [Interrupt t], [])"}.
 
-  @{text "thread_action'"} is a type that contains of all basic thread actions.
+  \<open>thread_action'\<close> is a type that contains of all basic thread actions.
   Automatically coerce basic thread actions into that type and then dispatch to the right
   update function by pattern matching.
-  For coercion, adhoc overloading replaces the generic injection @{text "inject_thread_action"}
+  For coercion, adhoc overloading replaces the generic injection \<open>inject_thread_action\<close>
   by the specific ones, i.e. constructors.
-  To avoid ambiguities with observable actions, the observable actions must be of sort @{text "obs_action"},
+  To avoid ambiguities with observable actions, the observable actions must be of sort \<open>obs_action\<close>,
   which the basic thread action types are not.
-*}
+\<close>
 
 class obs_action
 
@@ -156,9 +156,9 @@ datatype ('l,'t,'x,'m,'w,'o) thread_action'
   | InterruptAction "'t interrupt_action"
   | ObsAction 'o
 
-setup {*
+setup \<open>
   Sign.add_const_constraint (@{const_name ObsAction}, SOME @{typ "'o :: obs_action \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action'"})
-*}
+\<close>
 
 fun thread_action'_to_thread_action :: 
   "('l,'t,'x,'m,'w,'o :: obs_action) thread_action' \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action"
@@ -292,7 +292,7 @@ translations
   (type) "('l, 't, 'x) thread_info" <= (type) "'t \<rightharpoonup> ('x \<times> ('l \<Rightarrow>f nat))"
 
 (* pretty printing for state type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [Const (@{type_syntax finfun}, _) $ l1 $
@@ -314,7 +314,7 @@ print_translation {*
       else raise Match;
   in [(@{type_syntax "prod"}, K tr')]
   end
-*}
+\<close>
 typ "('l,'t,'x,'m,'w) state"
 
 
@@ -330,10 +330,10 @@ lemma neq_no_wait_locksE:
 using assms
 by(auto simp add: neq_no_wait_locks_conv)
 
-text {*
+text \<open>
   Use type variables for components instead of @{typ "('l,'t,'x,'m,'w) state"} in types for state projections
   to allow to reuse them for refined state implementations for code generation.
-*}
+\<close>
 
 definition locks :: "('locks \<times> ('thread_info \<times> 'm) \<times> 'wsets \<times> 'interrupts) \<Rightarrow> 'locks" where
   "locks lstsmws \<equiv> fst lstsmws"
@@ -440,7 +440,7 @@ by(simp add: convert_extTA_def)
 lemma obs_a_convert_extTA [simp]: "obs_a (convert_extTA f ta) = obs_a ta"
 by(cases ta) simp
 
-text {* Actions for thread start/finish *}
+text \<open>Actions for thread start/finish\<close>
 
 datatype 'o action =
     NormalAction 'o
@@ -484,7 +484,7 @@ type_synonym
     "'t \<Rightarrow> 'x \<times> 'm \<Rightarrow> ('l,'t,'x,'m,'w,'o) thread_action \<Rightarrow> 'x \<times> 'm \<Rightarrow> bool"
 
 (* pretty printing for semantics *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [t4,
@@ -511,7 +511,7 @@ print_translation {*
       else raise Match;
   in [(@{type_syntax fun}, K tr')]
   end
-*}
+\<close>
 typ "('l,'t,'x,'m,'w,'o) semantics"
 
 end

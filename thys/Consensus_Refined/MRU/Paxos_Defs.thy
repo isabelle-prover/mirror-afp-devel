@@ -1,18 +1,18 @@
-section {* The Paxos Algorithm *}
+section \<open>The Paxos Algorithm\<close>
 
 theory Paxos_Defs
 imports Heard_Of.HOModel "../Consensus_Types" "../Consensus_Misc" Three_Steps
 begin
 
-text {* 
+text \<open>
   This is a modified version (closer to the original Paxos) of PaxosDefs from the Heard Of 
-  entry in the AFP.  *}
+  entry in the AFP.\<close>
 
-subsection {* Model of the algorithm *}
+subsection \<open>Model of the algorithm\<close>
 
-text {*
+text \<open>
   The following record models the local state of a process.
-*}
+\<close>
 
 record 'val pstate =
   x :: 'val                \<comment> \<open>current value held by process\<close>
@@ -20,21 +20,21 @@ record 'val pstate =
   commt :: "'val option"   \<comment> \<open>for coordinators: the value processes are asked to commit to\<close>
   decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
-text {* The algorithm relies on a coordinator for each phase of the algorithm.
+text \<open>The algorithm relies on a coordinator for each phase of the algorithm.
   A phase lasts three rounds. The HO model formalization already provides the 
   infrastructure for this, but unfortunately the coordinator is not passed to
   the @{term sendMsg} function. Using the infrastructure would thus require 
   additional invariants and proofs; for simplicity, we use a global 
-  constant instead. *}
+  constant instead.\<close>
 
 consts coord :: "nat \<Rightarrow> process"
 specification (coord)
   coord_phase[rule_format]: "\<forall>r r'. three_phase r = three_phase r' \<longrightarrow> coord r = coord r'"
   by(auto)
 
-text {*
+text \<open>
   Possible messages sent during the execution of the algorithm.
-*}
+\<close>
 
 datatype 'val msg =
   ValStamp "'val" "nat"
@@ -42,27 +42,27 @@ datatype 'val msg =
 | Vote "'val"
 | Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
-text {*
+text \<open>
   Characteristic predicates on messages.
-*}
+\<close>
 
 definition isValStamp where "isValStamp m \<equiv> \<exists>v ts. m = ValStamp v ts"
 
 definition isVote where "isVote m \<equiv> \<exists>v. m = Vote v"
 
-text {*
+text \<open>
   Selector functions to retrieve components of messages. These functions
   have a meaningful result only when the message is of an appropriate kind.
-*}
+\<close>
 
 fun val where
   "val (ValStamp v ts) = v"
 | "val (Vote v) = v"
 
-text {*
-  The @{text x} field of the initial state is unconstrained, all other
+text \<open>
+  The \<open>x\<close> field of the initial state is unconstrained, all other
   fields are initialized appropriately.
-*}
+\<close>
 
 definition Paxos_initState where
   "Paxos_initState p st crd \<equiv>
@@ -143,10 +143,10 @@ definition next2 where
    else st' = st
  "
 
-text {*
+text \<open>
   The overall send function and next-state relation are simply obtained as
   the composition of the individual relations defined above.
-*}
+\<close>
 
 definition Paxos_sendMsg :: "nat \<Rightarrow> process \<Rightarrow> process \<Rightarrow> 'val pstate \<Rightarrow> 'val msg" where
   "Paxos_sendMsg (r::nat) \<equiv>
@@ -176,12 +176,12 @@ definition
          \<and> (\<forall>p. c \<in> HOs (nr_steps*ph+1) p)
          \<and> (\<forall>p. card (HOs (nr_steps*ph+2) p) > N div 2)"
 
-subsection {* The \emph{Paxos} Heard-Of machine *}
+subsection \<open>The \emph{Paxos} Heard-Of machine\<close>
 
-text {*
+text \<open>
   We now define the coordinated HO machine for the \emph{Paxos} algorithm
   by assembling the algorithm definition and its communication-predicate.
-*}
+\<close>
 
 definition Paxos_Alg where
   "Paxos_Alg \<equiv>

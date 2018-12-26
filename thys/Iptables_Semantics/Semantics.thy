@@ -485,7 +485,7 @@ proof -
 qed
 
 text\<open>
-The notation we prefer in the paper. The semantics are defined for fixed @{text \<Gamma>} and @{text \<gamma>}
+The notation we prefer in the paper. The semantics are defined for fixed \<open>\<Gamma>\<close> and \<open>\<gamma>\<close>
 \<close>
 locale iptables_bigstep_fixedbackground =
   fixes \<Gamma>::"'a ruleset"

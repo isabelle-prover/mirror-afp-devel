@@ -8,7 +8,7 @@ section \<open>Finite Rings and Fields\<close>
 
 text \<open>We start by establishing some preliminary results about finite rings and finite fields\<close>
 
-subsection {* Finite Rings *}
+subsection \<open>Finite Rings\<close>
 
 theory Finite_Field
 imports 
@@ -113,7 +113,7 @@ lemma range_to_int_mod_ring:
   apply (elim rangeE, transfer, force)
   by (auto intro!: range_eqI to_int_mod_ring_of_int_mod_ring[symmetric])
 
-subsection {* Nontrivial Finite Rings *}
+subsection \<open>Nontrivial Finite Rings\<close>
 
 class nontriv = assumes nontriv: "CARD('a) > 1"
 
@@ -228,9 +228,9 @@ qed
 lemma Rep_mod_ring_mod[simp]: "Rep_mod_ring (a :: 'a :: nontriv mod_ring) mod CARD('a) = Rep_mod_ring a"
   using Rep_mod_ring[where 'a = 'a] by auto
 
-subsection {* Finite Fields *}
+subsection \<open>Finite Fields\<close>
 
-text {* When the domain is prime, the ring becomes a field *}
+text \<open>When the domain is prime, the ring becomes a field\<close>
 
 class prime_card = assumes prime_card: "prime (CARD('a))"
 begin

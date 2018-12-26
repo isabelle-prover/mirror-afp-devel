@@ -10,8 +10,8 @@ imports Multiset_More Syntactic_Ordinal
 begin
 
 text \<open>
-The @{text goodstein} function returns the successive values of the Goodstein
-sequence. It is defined in terms of @{text encode} and @{text decode} functions,
+The \<open>goodstein\<close> function returns the successive values of the Goodstein
+sequence. It is defined in terms of \<open>encode\<close> and \<open>decode\<close> functions,
 which convert between natural numbers and ordinals. The development culminates
 with a proof of Goodstein's theorem.
 \<close>
@@ -27,7 +27,7 @@ lemma power_div_same_base:
   by (metis add_diff_inverse leD nonzero_mult_div_cancel_left power_add)
 
 
-subsection \<open>Hereditary and Nonhereditary Base-@{text n} Systems\<close>
+subsection \<open>Hereditary and Nonhereditary Base-\<open>n\<close> Systems\<close>
 
 context
   fixes base :: nat

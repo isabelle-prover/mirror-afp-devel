@@ -3,7 +3,7 @@
                 2007  Rijksuniversiteit Groningen
 *)
 
-section {* Pythagorean triples and Fermat's last theorem, case $n=4$ *}
+section \<open>Pythagorean triples and Fermat's last theorem, case $n=4$\<close>
 
 theory Fermat4
 imports "HOL-Computational_Algebra.Primes"
@@ -73,7 +73,7 @@ proof (cases "a = 0")
   thus ?thesis using assms(2) int_nat_eq[of "a"] by fastforce
 qed (simp add: zero_power[of n] assms(1))
 
-text {* Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$ *}
+text \<open>Proof of Fermat's last theorem for the case $n=4$: $$\forall x,y,z:~x^4 + y^4 = z^4 \Longrightarrow xyz=0.$$\<close>
 
 (* 
 NB: this lemma is quite slow, maybe use more steps *)
@@ -108,7 +108,7 @@ proof -
   thus ?thesis by (rule power_inject_base)
 qed
   
-subsection {* Parametrisation of Pythagorean triples (over $\mathbb{N}$ and $\mathbb{Z}$) *}
+subsection \<open>Parametrisation of Pythagorean triples (over $\mathbb{N}$ and $\mathbb{Z}$)\<close>
 
 private theorem nat_euclid_pyth_triples:
   assumes abc: "(a::nat)^2 + b^2 = c^2" and ab_relprime: "coprime a b" and aodd: "odd a"
@@ -290,7 +290,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text {* Now for the case of integers. Based on \textit{nat-euclid-pyth-triples}. *}
+text \<open>Now for the case of integers. Based on \textit{nat-euclid-pyth-triples}.\<close>
   
 private corollary int_euclid_pyth_triples: "\<lbrakk> coprime (a::int) b; odd a; a^2 + b^2 = c^2 \<rbrakk>
   \<Longrightarrow> \<exists> p q. a = p^2 - q^2 \<and> b = 2*p*q \<and> \<bar>c\<bar> = p^2 + q^2 \<and> coprime p q"
@@ -364,9 +364,9 @@ proof -
   qed
 qed
 
-subsection {* Fermat's last theorem, case $n=4$ *}
+subsection \<open>Fermat's last theorem, case $n=4$\<close>
 
-text {* Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,coprime\,a\,b\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$ *}
+text \<open>Core of the proof. Constructs a smaller solution over $\mathbb{Z}$ of $$a^4+b^4=c^2\,\land\,coprime\,a\,b\,\land\,abc\ne 0\,\land\,a~{\rm odd}.$$\<close>
 
 private lemma smaller_fermat4:
   assumes abc: "(a::int)^4+b^4=c^2" and abc0: "a*b*c \<noteq> 0" and aodd: "odd a" 
@@ -540,7 +540,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text {* Show that no solution exists, by infinite descent of $c^2$. *}
+text \<open>Show that no solution exists, by infinite descent of $c^2$.\<close>
 
 private lemma no_rewritten_fermat4:
   "\<not> (\<exists> (a::int) b. (a^4 + b^4 = c^2 \<and> a*b*c \<noteq> 0 \<and> odd a \<and> coprime a b))"
@@ -565,7 +565,7 @@ next
   with pqr show ?case by auto
 qed
 
-text {* The theorem. Puts equation in requested shape. *}
+text \<open>The theorem. Puts equation in requested shape.\<close>
 
 theorem fermat_4:
   assumes ass: "(x::int)^4 + y^4 = z^4"

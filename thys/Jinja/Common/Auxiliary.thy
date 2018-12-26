@@ -4,9 +4,9 @@
     Copyright   1999 TU Muenchen
 *)
 
-chapter {* Jinja Source Language \label{cha:j} *}
+chapter \<open>Jinja Source Language \label{cha:j}\<close>
 
-section {* Auxiliary Definitions *}
+section \<open>Auxiliary Definitions\<close>
 
 theory Auxiliary imports Main begin
 (* FIXME move and possibly turn into a general simproc *)
@@ -30,7 +30,7 @@ declare
 (*>*)
 
 
-subsection {*@{text distinct_fst}*}
+subsection \<open>\<open>distinct_fst\<close>\<close>
  
 definition distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
 where
@@ -67,13 +67,13 @@ lemma map_of_SomeI:
 (*<*)by (induct kxs) (auto simp:fun_upd_apply)(*>*)
 
 
-subsection {* Using @{term list_all2} for relations *}
+subsection \<open>Using @{term list_all2} for relations\<close>
 
 definition fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
 where
   "fun_of S \<equiv> \<lambda>x y. (x,y) \<in> S"
 
-text {* Convenience lemmas *}
+text \<open>Convenience lemmas\<close>
 (*<*)
 declare fun_of_def [simp]
 (*>*)

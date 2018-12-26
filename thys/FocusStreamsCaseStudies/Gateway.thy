@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-section {* Gateway: Specification *}
+section \<open>Gateway: Specification\<close>
 
 theory Gateway 
 imports Gateway_types

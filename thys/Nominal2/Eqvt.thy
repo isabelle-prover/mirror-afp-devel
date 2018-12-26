@@ -78,7 +78,7 @@ oops
 
 declare [[trace_eqvt = false]]
 
-text {* there is no raw eqvt-rule for The *}
+text \<open>there is no raw eqvt-rule for The\<close>
 lemma "p \<bullet> (THE x. P x) = foo"
 apply(perm_strict_simp exclude: The)
 apply(perm_simp exclude: The)
@@ -99,7 +99,7 @@ oops
 thm eqvts
 thm eqvts_raw
 
-ML {* Nominal_ThmDecls.is_eqvt @{context} @{term "supp"} *}
+ML \<open>Nominal_ThmDecls.is_eqvt @{context} @{term "supp"}\<close>
 
 
 end

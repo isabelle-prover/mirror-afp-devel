@@ -20,7 +20,7 @@ fun choose_u :: "int poly list \<Rightarrow> int poly"
  | "choose_u [gi] = gi" 
  | "choose_u (gi # gj # gs) = max_degree_poly gi (choose_u (gj # gs))"
 
-subsection {* A real problem of Algorithm 16.22 *}
+subsection \<open>A real problem of Algorithm 16.22\<close>
 
 text \<open>Bogus example for Modern Computer Algebra (2nd edition), Algorithm 16.22, step 9:
   After having detected the factor @{term "[:1,1,0,1 :: int:]"}, the remaining polynomial
@@ -41,13 +41,13 @@ lemma "let f = [:1,1:] * [:1,1,0,1:];
    f_star = primitive_part h_star
   in (hs' = [] \<and> f_star = 1)" by eval
 
-subsection {* Another potential problem of Algorithm 16.22 *}
+subsection \<open>Another potential problem of Algorithm 16.22\<close>
 
-text {*
+text \<open>
   Suppose that $g^*$ is $p^l$. (It is is not yet clear whether lattices exists 
   where this $g^*$ is short enough).
   Then $pp(g^*) = 1$ is detected as \emph{irreducible} factor and the algorithm stops.
-*}
+\<close>
 
 
 definition "input_poly = [: 1,0,0,0,1,1,0,0,1,0,1,0,1 :: int :]" 
@@ -103,7 +103,7 @@ text \<open>
 \<^item> @{term "norm g_star"}: $\approx 5.02568 \cdot 10^{110}$, namely 502567871888893789258107599397950338997348731386301514804539180088146716526330518979464688385872213886910747667
 \<close>
 
-subsection {* Verified wrong results *}
+subsection \<open>Verified wrong results\<close>
 
 text \<open>An equality in example 16.24 of the textbook which is not valid.\<close> 
 

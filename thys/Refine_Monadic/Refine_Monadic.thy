@@ -1,4 +1,4 @@
-section {* Refinement Framework *}
+section \<open>Refinement Framework\<close>
 theory Refine_Monadic
 imports 
   Refine_Chapter
@@ -13,9 +13,9 @@ imports
   Refine_Automation
   Autoref_Monadic
 begin
-  text {*
+  text \<open>
     This theory summarizes all default theories of the refinement framework.
-    *}
+\<close>
 
   subsection \<open>Convenience Constructs\<close>
 
@@ -30,7 +30,7 @@ begin
     and C: "\<And>r. post x r \<Longrightarrow> \<Phi> r"
     shows "REC_annot pre post body x \<le> SPEC \<Phi>"
   proof -
-    from `trimono body` have [refine_mono]:
+    from \<open>trimono body\<close> have [refine_mono]:
       "\<And>f g x xa. (\<And>x. flat_ge (f x) (g x)) \<Longrightarrow> flat_ge (body f x) (body g x)"
       "\<And>f g x xa. (\<And>x. f x \<le> g x) \<Longrightarrow> body f x \<le> body g x"
       apply -

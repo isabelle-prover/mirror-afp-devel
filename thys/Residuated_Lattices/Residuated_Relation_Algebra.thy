@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Residuated Relation Algebras *}
+section \<open>Residuated Relation Algebras\<close>
 
 theory Residuated_Relation_Algebra
   imports Residuated_Boolean_Algebras Relation_Algebra.Relation_Algebra
@@ -11,9 +11,9 @@ begin
 
 context boolean_algebra begin
 
-text {*
+text \<open>
   The notation used in the relation algebra AFP entry differs a little from ours.
-*}
+\<close>
 
 notation
   times (infixl "\<cdot>" 70)
@@ -29,21 +29,21 @@ no_notation
 
 end
 
-text {*
+text \<open>
   We prove that a unital residuated boolean algebra enriched with two simple
   equalities form a non-associative relation algebra, that is, a relation
   algebra where the associativity law does not hold.
-*}
+\<close>
 
 class nra = unital_residuated_boolean +
   assumes conv1: "x \<rhd> y = (x \<rhd> 1)\<cdot>y"
   and conv2: "x \<lhd> y = x\<cdot>(1 \<lhd> y)"
 begin
 
-text {*
+text \<open>
   When the converse operation is set to be $\lambda x.\  x \rhd 1$,
   a unital residuated boolean algebra forms a non associative relation algebra.
-*}
+\<close>
   
 lemma conv_invol: "x \<rhd> 1 \<rhd> 1 = x"
   by (metis local.conv1 local.jonsson1b local.mult_onel)
@@ -57,10 +57,10 @@ lemma conv_contrav: "x\<cdot>y \<rhd> 1 = (y \<rhd> 1)\<cdot>(x \<rhd> 1)"
 lemma conv_res: "(x \<rhd> 1)\<cdot>- (x\<cdot>y) \<le> - y"
   by (metis local.comp_anti local.conjugate_r_def local.conv1 local.double_compl local.res_rc1)
 
-text {*
+text \<open>
   Similarly, for $x^\smile = 1 \lhd x$, since $x \rhd 1 = 1 \lhd x$ when
   $x \rhd 1 \rhd 1 = x$ holds.
-*}
+\<close>
 
 lemma conv_invol': "1 \<lhd> (1 \<lhd> x) = x"
   by (metis local.conv_invol local.jonsson3c)
@@ -76,11 +76,11 @@ lemma conv_res': "(1 \<lhd> x)\<cdot>- (x\<cdot>y) \<le> - y"
   
 end (* nra *)
 
-text {*
+text \<open>
   Since the previous axioms are equivalent when multiplication is associative
   in a residuated boolean monoid, one of them are sufficient to
   derive a relation algebra.
-*}
+\<close>
 
 class residuated_ra = residuated_boolean_monoid +
   assumes conv: "x \<rhd> y = (x \<rhd> 1)\<cdot>y"

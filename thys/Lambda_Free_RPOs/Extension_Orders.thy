@@ -13,7 +13,7 @@ begin
 
 text \<open>
 This theory defines locales for categorizing extension orders used for orders on
-@{text \<lambda>}-free higher-order terms and defines variants of the lexicographic and
+\<open>\<lambda>\<close>-free higher-order terms and defines variants of the lexicographic and
 multiset orders.
 \<close>
 

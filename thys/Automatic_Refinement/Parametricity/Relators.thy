@@ -1,38 +1,38 @@
-section {* Relators *}
+section \<open>Relators\<close>
 theory Relators
 imports "../Lib/Refine_Lib"
 begin
 
-text {*
+text \<open>
   We define the concept of relators. The relation between a concrete type and
-  an abstract type is expressed by a relation of type @{text "('c\<times>'a) set"}.
-  For each composed type, say @{text "'a list"}, we can define a {\em relator},
+  an abstract type is expressed by a relation of type \<open>('c\<times>'a) set\<close>.
+  For each composed type, say \<open>'a list\<close>, we can define a {\em relator},
   that takes as argument a relation for the element type, and returns a relation
   for the list type. For most datatypes, there exists a {\em natural relator}.
   For algebraic datatypes, this is the relator that preserves the structure
   of the datatype, and changes the components. For example, 
-  @{text "list_rel::('c\<times>'a) set \<Rightarrow> ('c list\<times>'a list) set"} is the natural 
+  \<open>list_rel::('c\<times>'a) set \<Rightarrow> ('c list\<times>'a list) set\<close> is the natural 
   relator for lists. 
 
   However, relators can also be used to change the representation, and thus 
   relate an implementation with an abstract type. For example, the relator
-  @{text "list_set_rel::('c\<times>'a) set \<Rightarrow> ('c list\<times>'a set) set"} relates lists
+  \<open>list_set_rel::('c\<times>'a) set \<Rightarrow> ('c list\<times>'a set) set\<close> relates lists
   with the set of their elements.
 
   In this theory, we define some basic notions for relators, and
   then define natural relators for all HOL-types, including the function type.
   For each relator, we also show a single-valuedness property, and initialize a
   solver for single-valued properties.
-*}
+\<close>
 
-subsection {* Basic Definitions *}
+subsection \<open>Basic Definitions\<close>
 
-text {*
+text \<open>
   For smoother handling of relator unification, we require relator arguments to
   be applied by a special operator, such that we avoid higher-order 
   unification problems. We try to set up some syntax to make this more 
   transparent, and give relators a type-like prefix-syntax.
-*}
+\<close>
 
 definition relAPP 
   :: "(('c1\<times>'a1) set \<Rightarrow> _) \<Rightarrow> ('c1\<times>'a1) set \<Rightarrow> _" 
@@ -45,7 +45,7 @@ translations
   "\<langle>x\<rangle>R" == "CONST relAPP R x"
 
 
-ML {*
+ML \<open>
   structure Refine_Relators_Thms = struct
     structure rel_comb_def_rules = Named_Thms ( 
       val name = @{binding refine_rel_defs}
@@ -53,12 +53,12 @@ ML {*
           "Relator definitions" 
     );
   end
-*}
+\<close>
 
 setup Refine_Relators_Thms.rel_comb_def_rules.setup
 
-subsection {* Basic HOL Relators *}
-subsubsection {* Function *}
+subsection \<open>Basic HOL Relators\<close>
+subsubsection \<open>Function\<close>
 definition fun_rel where 
   fun_rel_def_internal: "fun_rel A B \<equiv> { (f,f'). \<forall>(a,a')\<in>A. (f a, f' a')\<in>B }"
 abbreviation fun_rel_syn (infixr "\<rightarrow>" 60) where "A\<rightarrow>B \<equiv> \<langle>A,B\<rangle>fun_rel"
@@ -100,14 +100,14 @@ lemma fun_relE2:
   shows "(t,f' x)\<in>Rv" using assms
   by (auto elim: fun_relD)
 
-subsubsection {* Terminal Types *}
+subsubsection \<open>Terminal Types\<close>
 abbreviation unit_rel :: "(unit\<times>unit) set" where "unit_rel == Id"
 
 abbreviation "nat_rel \<equiv> Id::(nat\<times>_) set"
 abbreviation "int_rel \<equiv> Id::(int\<times>_) set"
 abbreviation "bool_rel \<equiv> Id::(bool\<times>_) set"
 
-subsubsection {* Product *}
+subsubsection \<open>Product\<close>
 definition prod_rel where
   prod_rel_def_internal: "prod_rel R1 R2 
     \<equiv> { ((a,b),(a',b')) . (a,a')\<in>R1 \<and> (b,b')\<in>R2 }"
@@ -139,7 +139,7 @@ lemma prod_rel_comp: "(A \<times>\<^sub>r B) O (C \<times>\<^sub>r D) = (A O C) 
   by auto
     
     
-subsubsection {*Option*}
+subsubsection \<open>Option\<close>
 definition option_rel where
   option_rel_def_internal:
   "option_rel R \<equiv> { (Some a,Some a') | a a'. (a,a')\<in>R } \<union> {(None,None)}"
@@ -166,7 +166,7 @@ lemma option_rel_simp[simp]:
   by (auto intro: option_relI elim: option_relE)
 
 
-subsubsection {* Sum *}
+subsubsection \<open>Sum\<close>
 definition sum_rel where sum_rel_def_internal: 
   "sum_rel Rl Rr 
    \<equiv> { (Inl a, Inl a') | a a'. (a,a')\<in>Rl } \<union>
@@ -198,7 +198,7 @@ lemma sum_relE:
   using assms by (auto simp: sum_rel_def)
 
 
-subsubsection {* Lists *}
+subsubsection \<open>Lists\<close>
 definition list_rel where list_rel_def_internal:
   "list_rel R \<equiv> {(l,l'). list_all2 (\<lambda>x x'. (x,x')\<in>R) l l'}"
 
@@ -281,10 +281,10 @@ lemma list_rel_split_left_iff:
   "(l,y#ys)\<in>\<langle>R\<rangle>list_rel \<longleftrightarrow> (\<exists>x xs. l=x#xs \<and> (x,y)\<in>R \<and> (xs,ys)\<in>\<langle>R\<rangle>list_rel)"
   by (cases l) auto
     
-subsubsection {* Sets *}
-text {* Pointwise refinement: The abstract set is the image of
+subsubsection \<open>Sets\<close>
+text \<open>Pointwise refinement: The abstract set is the image of
   the concrete set, and the concrete set only contains elements that
-  have an abstract counterpart *}
+  have an abstract counterpart\<close>
   
 definition set_rel where
   set_rel_def_internal: 
@@ -351,8 +351,8 @@ lemma set_relE2[consumes 2]:
   obtains x where "x\<in>s" "(x,x')\<in>R"
   using set_relD2[OF assms] ..
     
-subsection {* Automation *} 
-subsubsection {* A solver for relator properties *}
+subsection \<open>Automation\<close> 
+subsubsection \<open>A solver for relator properties\<close>
 lemma relprop_triggers: 
   "\<And>R. single_valued R \<Longrightarrow> single_valued R" 
   "\<And>R. R=Id \<Longrightarrow> R=Id"
@@ -362,7 +362,7 @@ lemma relprop_triggers:
   "\<And>R R'. R\<subseteq>R' \<Longrightarrow> R\<subseteq>R'"
   by auto
 
-ML {*
+ML \<open>
   structure relator_props = Named_Thms (
     val name = @{binding relator_props}
     val description = "Additional relator properties"
@@ -373,11 +373,11 @@ ML {*
     val description = "Relator properties that solve goal"
   )
 
-*}
+\<close>
 setup relator_props.setup
 setup solve_relator_props.setup
 
-declaration {*
+declaration \<open>
   Tagged_Solver.declare_solver 
     @{thms relprop_triggers} 
     @{binding relator_props_solver}
@@ -386,9 +386,9 @@ declaration {*
       match_tac ctxt (solve_relator_props.get ctxt) ORELSE'
       match_tac ctxt (relator_props.get ctxt)
     ))))
-*}
+\<close>
 
-declaration {*
+declaration \<open>
   Tagged_Solver.declare_solver 
     []
     @{binding force_relator_props_solver}
@@ -397,7 +397,7 @@ declaration {*
       resolve_tac ctxt (solve_relator_props.get ctxt) ORELSE'
       match_tac ctxt (relator_props.get ctxt)
     ))))
-*}
+\<close>
 
 lemma 
   relprop_id_orient[relator_props]: "R=Id \<Longrightarrow> Id=R" and
@@ -408,9 +408,9 @@ lemma
   relprop_UNIV_orient[relator_props]: "R=UNIV \<Longrightarrow> UNIV=R"
   by auto
 
-subsubsection {* ML-Level utilities *}
+subsubsection \<open>ML-Level utilities\<close>
 
-ML {*
+ML \<open>
   signature RELATORS = sig
     val mk_relT: typ * typ -> typ
     val dest_relT: typ -> typ * typ
@@ -573,11 +573,11 @@ ML {*
         @{binding natural_relator} natural_relator_attr "Declare natural relator"
 
   end
-*}
+\<close>
 
 setup Relators.setup
 
-subsection {* Setup *}
+subsection \<open>Setup\<close>
 subsubsection "Natural Relators"
 
 declare [[natural_relator 
@@ -597,7 +597,7 @@ declare [[natural_relator
 end
 *}*)
 
-ML_val {*
+ML_val \<open>
   Relators.mk_natural_relator 
     @{context} 
     [@{term "Ra::('c\<times>'a) set"},@{term "\<langle>Rb\<rangle>option_rel"}] 
@@ -607,7 +607,7 @@ ML_val {*
 ;
   Relators.mk_fun_rel @{term "\<langle>Id\<rangle>option_rel"} @{term "\<langle>Id\<rangle>list_rel"}
   |> Thm.cterm_of @{context}
-*}
+\<close>
 
 subsubsection "Additional Properties"
 lemmas [relator_props] = 
@@ -777,7 +777,7 @@ lemma bijective_imp_sv:
 declare bijective_Id[relator_props]
 declare bijective_Empty[relator_props]
 
-text {* Pointwise refinement for set types: *}
+text \<open>Pointwise refinement for set types:\<close>
   
   
   
@@ -796,14 +796,14 @@ lemma set_rel_csv[relator_props]:
   unfolding single_valued_def set_rel_def converse_iff
   by fast 
 
-subsection {* Invariant and Abstraction *}
+subsection \<open>Invariant and Abstraction\<close>
 
-text {*
+text \<open>
   Quite often, a relation can be described as combination of an
   abstraction function and an invariant, such that the invariant describes valid
   values on the concrete domain, and the abstraction function maps valid 
   concrete values to its corresponding abstract value.
-*}
+\<close>
 definition build_rel where 
   "build_rel \<alpha> I \<equiv> {(c,a) . a=\<alpha> c \<and> I c}"
 abbreviation "br\<equiv>build_rel"
@@ -858,7 +858,7 @@ lemma br_Image_conv[simp]: "br \<alpha> I `` S = {\<alpha> x | x. x\<in>S \<and>
   by (auto simp: br_def)
 
 
-subsection {* Miscellanneous *}
+subsection \<open>Miscellanneous\<close>
 lemma rel_cong: "(f,g)\<in>Id \<Longrightarrow> (x,y)\<in>Id \<Longrightarrow> (f x, g y)\<in>Id" by simp
 lemma rel_fun_cong: "(f,g)\<in>Id \<Longrightarrow> (f x, g x)\<in>Id" by simp
 lemma rel_arg_cong: "(x,y)\<in>Id \<Longrightarrow> (f x, f y)\<in>Id" by simp

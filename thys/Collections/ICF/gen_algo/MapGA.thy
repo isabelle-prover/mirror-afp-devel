@@ -9,12 +9,12 @@
 
 *)
 
-section {* \isaheader{Generic Algorithms for Maps} *}
+section \<open>\isaheader{Generic Algorithms for Maps}\<close>
 theory MapGA
 imports SetIteratorCollectionsGA
 begin
 
-text_raw {*\label{thy:MapGA}*}
+text_raw \<open>\label{thy:MapGA}\<close>
 
 record ('k,'v,'s) map_basic_ops =
   bmap_op_\<alpha> :: "('k,'v,'s) map_\<alpha>"
@@ -133,7 +133,7 @@ context StdBasicMapDefs begin
         map_op_to_map = g_list_to_map
       \<rparr>"
 
-  local_setup {* Locale_Code.lc_decl_del @{term dflt_ops}*}
+  local_setup \<open>Locale_Code.lc_decl_del @{term dflt_ops}\<close>
 
 end
 
@@ -417,7 +417,7 @@ begin
         map_op_to_sorted_list = g_to_sorted_list,
         map_op_to_rev_list = g_to_rev_list
       \<rparr>"
-  local_setup {* Locale_Code.lc_decl_del @{term dflt_oops}*}
+  local_setup \<open>Locale_Code.lc_decl_del @{term dflt_oops}\<close>
 
 end
 

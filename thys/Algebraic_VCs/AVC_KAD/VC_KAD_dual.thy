@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsection{* Verification Component for Forward Reasoning *}
+subsection\<open>Verification Component for Forward Reasoning\<close>
 
 theory VC_KAD_dual
   imports VC_KAD
@@ -13,15 +13,15 @@ begin
 context modal_kleene_algebra
 begin
 
-text {* This component supports the verification of simple while programs
-in a partial correctness setting. *}
+text \<open>This component supports the verification of simple while programs
+in a partial correctness setting.\<close>
 
-subsubsection {* Basic Strongest Postcondition Calculus *}
+subsubsection \<open>Basic Strongest Postcondition Calculus\<close>
 
-text {* In modal Kleene algebra, strongest postconditions are backward diamond operators. These
+text \<open>In modal Kleene algebra, strongest postconditions are backward diamond operators. These
 are linked with forward boxes aka weakest preconditions by a Galois connection.  This duality has been
 implemented in the AFP entry for Kleene algebra with domain and is picked up automatically in
-the following proofs. *}
+the following proofs.\<close>
 
 lemma r_ad [simp]: "r (ad p) = ad p"
   using a_closure addual.ars_r_def am_d_def domrangefix by auto
@@ -74,7 +74,7 @@ lemma bdia_whilei_break: "\<langle>y| p \<le> r i \<Longrightarrow> r i \<cdot> 
  
 end
 
-subsubsection {* Floyd's Assignment Rule *}
+subsubsection \<open>Floyd's Assignment Rule\<close>
 
 lemma bdia_assign [simp]: "rel_antirange_kleene_algebra.bdia (v ::= e) \<lceil>P\<rceil> = \<lceil>\<lambda>s. \<exists>w. s v = e (s(v := w)) \<and> P (s(v:=w))\<rceil>"
   apply (simp add: rel_antirange_kleene_algebra.bdia_def gets_def p2r_def rel_ar_def)

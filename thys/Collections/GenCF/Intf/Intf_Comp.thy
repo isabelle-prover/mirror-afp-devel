@@ -1,10 +1,10 @@
-section {* \isaheader{Orderings By Comparison Operator} *}
+section \<open>\isaheader{Orderings By Comparison Operator}\<close>
 theory Intf_Comp
 imports 
   Automatic_Refinement.Automatic_Refinement
 begin
 
-subsection {* Basic Definitions *}
+subsection \<open>Basic Definitions\<close>
 
 datatype comp_res = LESS | EQUAL | GREATER
 
@@ -93,9 +93,9 @@ lemma restrict_linorder: "\<lbrakk>linorder_on D cmp ; D'\<subseteq>D\<rbrakk> \
   apply (erule (5) linorder_on.trans)
   done
 
-subsection {* Operations on Linear Orderings *}
+subsection \<open>Operations on Linear Orderings\<close>
 
-text {* Map with injective function *}
+text \<open>Map with injective function\<close>
 definition cmp_img where "cmp_img f cmp a b \<equiv> cmp (f a) (f b)"
 
 lemma img_linorder[intro?]: 
@@ -111,7 +111,7 @@ lemma img_linorder[intro?]:
   apply (erule (1) linorder_on.trans[OF LO, rotated -2], auto) []
   done
 
-text {* Combine *}
+text \<open>Combine\<close>
 definition "cmp_combine D1 cmp1 D2 cmp2 a b \<equiv> 
   if a\<in>D1 \<and> b\<in>D1 then cmp1 a b
   else if a\<in>D1 \<and> b\<in>D2 then LESS
@@ -166,8 +166,8 @@ lemma combine_linorder[intro?]:
   apply (erule (5) linorder_on.trans)
   done
 
-subsection {* Universal Linear Ordering *}
-text {* With Zorn's Lemma, we get a universal linear (even wf) ordering *}
+subsection \<open>Universal Linear Ordering\<close>
+text \<open>With Zorn's Lemma, we get a universal linear (even wf) ordering\<close>
 
 definition "univ_order_rel \<equiv> (SOME r. well_order_on UNIV r)"
 definition "univ_cmp x y \<equiv> 
@@ -194,7 +194,7 @@ lemma univ_linorder[intro?]: "linorder univ_cmp"
   apply (auto simp add: antisym_def) []
   done
 
-text {* Extend any linear order to a universal order *}
+text \<open>Extend any linear order to a universal order\<close>
 definition "cmp_extend D cmp \<equiv> 
   cmp_combine D cmp UNIV univ_cmp"
 
@@ -206,7 +206,7 @@ lemma extend_linorder[intro?]:
   apply rule
   by simp
 
-subsubsection {* Lexicographic Order on Lists *}  
+subsubsection \<open>Lexicographic Order on Lists\<close>  
 
 fun cmp_lex where
   "cmp_lex cmp [] [] = EQUAL"
@@ -313,7 +313,7 @@ next
   }
 qed
 
-subsubsection {* Lexicographic Order on Pairs *}  
+subsubsection \<open>Lexicographic Order on Pairs\<close>  
 
 fun cmp_prod where 
   "cmp_prod cmp1 cmp2 (a1,a2) (b1,b2) 
@@ -361,10 +361,10 @@ proof -
     done
 qed
 
-subsection {* Universal Ordering for Sets that is Effective for Finite Sets *}
+subsection \<open>Universal Ordering for Sets that is Effective for Finite Sets\<close>
 
-subsubsection {* Sorted Lists of Sets *}
-text {* Some more results about sorted lists of finite sets *}
+subsubsection \<open>Sorted Lists of Sets\<close>
+text \<open>Some more results about sorted lists of finite sets\<close>
 
 lemma set_to_map_set_is_map_of: 
   "distinct (map fst l) \<Longrightarrow> set_to_map (set l) = map_of l"
@@ -400,10 +400,10 @@ context linorder begin
     shows "A=B"
     using assms
   proof -
-    from `finite B` have "B = set (sorted_list_of_set B)" by simp
+    from \<open>finite B\<close> have "B = set (sorted_list_of_set B)" by simp
     also from assms have "\<dots> = set (sorted_list_of_set (A))"
       by simp
-    also from `finite A` 
+    also from \<open>finite A\<close> 
     have "set (sorted_list_of_set (A)) = A"
       by simp
     finally show ?thesis by simp
@@ -437,7 +437,7 @@ context linorder begin
     hence "sorted_list_of_map (map_of l) 
       = map (\<lambda>k. (k, the (map_of l k))) (map fst l)"
       unfolding sorted_list_of_map_def by simp
-    also have "\<dots> = l" using `distinct (map fst l)`
+    also have "\<dots> = l" using \<open>distinct (map fst l)\<close>
     proof (induct l)
       case Nil thus ?case by simp
     next
@@ -795,7 +795,7 @@ lemma cmp_unit_eq_linorder:
   "eq_linorder cmp_unit"
   by unfold_locales simp_all
   
-subsection {* Parametricity *}  
+subsection \<open>Parametricity\<close>  
   
 lemma param_cmp_extend[param]:
   assumes "(cmp,cmp')\<in>R \<rightarrow> R \<rightarrow> Id"

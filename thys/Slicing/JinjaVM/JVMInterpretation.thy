@@ -1,6 +1,6 @@
 theory JVMInterpretation imports JVMCFG "../Basic/CFGExit" begin
 
-section {* Instatiation of the @{text CFG} locale *}
+section \<open>Instatiation of the \<open>CFG\<close> locale\<close>
 
 abbreviation sourcenode :: "j_edge \<Rightarrow> j_node"
   where "sourcenode e \<equiv> fst e"
@@ -11,10 +11,10 @@ abbreviation targetnode :: "j_edge \<Rightarrow> j_node"
 abbreviation kind :: "j_edge \<Rightarrow> state edge_kind"
   where "kind e \<equiv> fst(snd e)"
 
-text {*
+text \<open>
 The following predicates define the aforementioned well-formedness requirements
-for nodes. Later, @{text "valid_callstack"} will be implied by Jinja's state conformance.
-*}
+for nodes. Later, \<open>valid_callstack\<close> will be implied by Jinja's state conformance.
+\<close>
 
 fun valid_callstack :: "jvmprog \<Rightarrow> callstack \<Rightarrow> bool"
 where

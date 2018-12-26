@@ -3,14 +3,14 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Definite assignment *}
+section \<open>Definite assignment\<close>
 
 theory DefAss
 imports BigStep
 begin
 
 
-subsection {*Hypersets*}
+subsection \<open>Hypersets\<close>
 
 type_synonym hyperset = "vname set option"
 
@@ -54,7 +54,7 @@ lemma hyper_insert_comm: "A \<squnion> \<lfloor>{a}\<rfloor> = \<lfloor>{a}\<rfl
 by(simp add:hyperset_defs)
 
 
-subsection {*Definite assignment*}
+subsection \<open>Definite assignment\<close>
 
 primrec \<A> :: "expr \<Rightarrow> hyperset" and \<A>s :: "expr list \<Rightarrow> hyperset" where
 "\<A> (new C) = \<lfloor>{}\<rfloor>" |

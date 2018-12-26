@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Bisimulation relations for the multithreaded semantics *}
+section \<open>Bisimulation relations for the multithreaded semantics\<close>
 
 theory FWBisimulation
 imports
@@ -10,7 +10,7 @@ imports
   Bisimulation
 begin
 
-subsection {* Definitions for lifting bisimulation relations *}
+subsection \<open>Definitions for lifting bisimulation relations\<close>
 
 primrec nta_bisim :: "('t \<Rightarrow> ('x1 \<times> 'm1, 'x2 \<times> 'm2) bisim) \<Rightarrow> (('t,'x1,'m1) new_thread_action, ('t,'x2,'m2) new_thread_action) bisim"
   where
@@ -221,21 +221,21 @@ proof(induct tas2 arbitrary: tas1 ts1 ts2)
   case Nil thus ?case by(simp)
 next
   case (Cons ta2 TAS2 tas1 TS1 TS2)
-  note IH = `\<And>ts1 tas1 ts2. \<lbrakk> \<forall>t. ts1 t = None \<longleftrightarrow> ts2 t = None; list_all2 (nta_bisim bisim) tas1 TAS2 \<rbrakk>
-             \<Longrightarrow> thread_oks ts1 tas1 \<longleftrightarrow> thread_oks ts2 TAS2`
-  note eqNone = `\<forall>t. TS1 t = None \<longleftrightarrow> TS2 t = None`[rule_format]
+  note IH = \<open>\<And>ts1 tas1 ts2. \<lbrakk> \<forall>t. ts1 t = None \<longleftrightarrow> ts2 t = None; list_all2 (nta_bisim bisim) tas1 TAS2 \<rbrakk>
+             \<Longrightarrow> thread_oks ts1 tas1 \<longleftrightarrow> thread_oks ts2 TAS2\<close>
+  note eqNone = \<open>\<forall>t. TS1 t = None \<longleftrightarrow> TS2 t = None\<close>[rule_format]
   hence fti: "free_thread_id TS1 = free_thread_id TS2" by(auto simp add: free_thread_id_def)
-  from `list_all2 (nta_bisim bisim) tas1 (ta2 # TAS2)`
+  from \<open>list_all2 (nta_bisim bisim) tas1 (ta2 # TAS2)\<close>
   obtain ta1 TAS1 where "tas1 = ta1 # TAS1" "nta_bisim bisim ta1 ta2" "list_all2 (nta_bisim bisim) TAS1 TAS2"
     by(auto simp add: list_all2_Cons2)
   moreover
   { fix t
-    from `nta_bisim bisim ta1 ta2` have "redT_updT' TS1 ta1 t = None \<longleftrightarrow> redT_updT' TS2 ta2 t = None"
+    from \<open>nta_bisim bisim ta1 ta2\<close> have "redT_updT' TS1 ta1 t = None \<longleftrightarrow> redT_updT' TS2 ta2 t = None"
       by(cases ta1, auto split: if_split_asm simp add: eqNone) }
   ultimately have "thread_oks (redT_updT' TS1 ta1) TAS1 \<longleftrightarrow> thread_oks (redT_updT' TS2 ta2) TAS2"
     by -(rule IH, auto)
-  moreover from `nta_bisim bisim ta1 ta2` fti have "thread_ok TS1 ta1 = thread_ok TS2 ta2" by(cases ta1, auto)
-  ultimately show ?case using `tas1 = ta1 # TAS1` by auto
+  moreover from \<open>nta_bisim bisim ta1 ta2\<close> fti have "thread_ok TS1 ta1 = thread_ok TS2 ta2" by(cases ta1, auto)
+  ultimately show ?case using \<open>tas1 = ta1 # TAS1\<close> by auto
 qed
 
 lemma redT_updT_nta_bisim_inv:
@@ -249,15 +249,15 @@ proof(induct tas1 arbitrary: tas2 ts1 ts2)
   case Nil thus ?case by(simp)
 next
   case (Cons TA1 TAS1 tas2 TS1 TS2)
-  note IH = `\<And>tas2 ts1 ts2. \<lbrakk>list_all2 (nta_bisim bisim) TAS1 tas2; (ts1 T = None) = (ts2 T = None)\<rbrakk>
-            \<Longrightarrow> (redT_updTs ts1 TAS1 T = None) = (redT_updTs ts2 tas2 T = None)`
-  from `list_all2 (nta_bisim bisim) (TA1 # TAS1) tas2`
+  note IH = \<open>\<And>tas2 ts1 ts2. \<lbrakk>list_all2 (nta_bisim bisim) TAS1 tas2; (ts1 T = None) = (ts2 T = None)\<rbrakk>
+            \<Longrightarrow> (redT_updTs ts1 TAS1 T = None) = (redT_updTs ts2 tas2 T = None)\<close>
+  from \<open>list_all2 (nta_bisim bisim) (TA1 # TAS1) tas2\<close>
   obtain TA2 TAS2 where "tas2 = TA2 # TAS2" "nta_bisim bisim TA1 TA2" "list_all2 (nta_bisim bisim) TAS1 TAS2"
     by(auto simp add: list_all2_Cons1)
-  from `nta_bisim bisim TA1 TA2` `(TS1 T = None) = (TS2 T = None)`
+  from \<open>nta_bisim bisim TA1 TA2\<close> \<open>(TS1 T = None) = (TS2 T = None)\<close>
   have "redT_updT TS1 TA1 T = None \<longleftrightarrow> redT_updT TS2 TA2 T = None"
     by(rule redT_updT_nta_bisim_inv)
-  with IH[OF `list_all2 (nta_bisim bisim) TAS1 TAS2`, of "redT_updT TS1 TA1" "redT_updT TS2 TA2"] `tas2 = TA2 # TAS2`
+  with IH[OF \<open>list_all2 (nta_bisim bisim) TAS1 TAS2\<close>, of "redT_updT TS1 TA1" "redT_updT TS2 TA2"] \<open>tas2 = TA2 # TAS2\<close>
   show ?case by simp
 qed
 
@@ -356,7 +356,7 @@ sublocale FWbisimulation_base_aux < mthr:
 
 declare split_paired_Ex [simp del]
 
-subsection {* Lifting for delay bisimulations *}
+subsection \<open>Lifting for delay bisimulations\<close>
 
 locale FWdelay_bisimulation_base =
   FWbisimulation_base _ _ _ r2 convert_RA bisim bisim_wait +
@@ -686,7 +686,7 @@ proof
       from \<tau>1 have "ta1 = \<epsilon>" by(rule r1.silent_tl)
       with mred1 \<tau>1 tst1 tst1' ln1 have red1: "t \<turnstile> (x1, m1) -1-ta1\<rightarrow> (x1', m1')"
         by(auto elim!: r1.redT.cases rtrancl3p_cases)
-      from tasim `ta1 = \<epsilon>` have [simp]: "ta2 = \<epsilon>" by(simp)
+      from tasim \<open>ta1 = \<epsilon>\<close> have [simp]: "ta2 = \<epsilon>" by(simp)
       with mred2 ln1 ln tst2 tst2' have red2: "t \<turnstile> (x2, m2) -2-\<epsilon>\<rightarrow> (x2', m2')"
         by(fastforce elim!: r2.redT.cases rtrancl3p_cases)
       from \<tau>1 \<tau>inv[OF bisim red1 red2] bisim' tasim
@@ -699,12 +699,12 @@ proof
       from \<tau>2 have "ta2 = \<epsilon>" by(rule r2.silent_tl)
       with mred2 \<tau>2 tst2 tst2' ln2 have red2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')"
         by(auto elim!: r2.redT.cases rtrancl3p_cases)
-      from tasim `ta2 = \<epsilon>` have [simp]: "ta1 = \<epsilon>" by simp
+      from tasim \<open>ta2 = \<epsilon>\<close> have [simp]: "ta1 = \<epsilon>" by simp
       with mred1 ln2 ln tst1 tst1' have red1: "t \<turnstile> (x1, m1) -1-\<epsilon>\<rightarrow> (x1', m1')"
         by(fastforce elim!: r1.redT.cases rtrancl3p_cases)
       from \<tau>2 \<tau>inv[OF bisim red1 red2] bisim' tasim
       have \<tau>1: "\<tau>move1 (x1, m1) \<epsilon> (x1', m1')" by auto
-      with tst1 tst1' ln ln2 show ?lhs unfolding `ta1 = \<epsilon>`
+      with tst1 tst1' ln ln2 show ?lhs unfolding \<open>ta1 = \<epsilon>\<close>
         by-(rule r1.m\<tau>move.intros, auto)
     qed
   qed
@@ -833,18 +833,18 @@ lemma cond_actions_oks_bisim_ex_\<tau>1_inv:
 using tbisim ts1t ct unfolding s1'_def
 proof(induct cts arbitrary: ts1)
   case (Cons ct cts)
-  note IH1 = `\<And>ts1. \<lbrakk>\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
+  note IH1 = \<open>\<And>ts1. \<lbrakk>\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
                     r2.cond_action_oks (ls, (ts2, m2), ws, is) t cts\<rbrakk>
-              \<Longrightarrow> \<tau>mred1\<^sup>*\<^sup>* (ls, (ts1, m1), ws, is) (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts)`
-  note IH2 = `\<And>t' ts1. \<lbrakk>t' \<noteq> t; \<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
+              \<Longrightarrow> \<tau>mred1\<^sup>*\<^sup>* (ls, (ts1, m1), ws, is) (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts)\<close>
+  note IH2 = \<open>\<And>t' ts1. \<lbrakk>t' \<noteq> t; \<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
                         r2.cond_action_oks (ls, (ts2, m2), ws, is) t cts\<rbrakk>
-           \<Longrightarrow> tbisim (ws t' = None) t' (thr (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts) t') m1 (ts2 t') m2`
-  note IH3 = `\<And>ts1. \<lbrakk>\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
+           \<Longrightarrow> tbisim (ws t' = None) t' (thr (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts) t') m1 (ts2 t') m2\<close>
+  note IH3 = \<open>\<And>ts1. \<lbrakk>\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
                      r2.cond_action_oks (ls, (ts2, m2), ws, is) t cts\<rbrakk>
-              \<Longrightarrow> r1.cond_action_oks (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts) t cts`
-  note IH4 = `\<And>ts1. \<lbrakk>\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
+              \<Longrightarrow> r1.cond_action_oks (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts) t cts\<close>
+  note IH4 = \<open>\<And>ts1. \<lbrakk>\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2; ts1 t = \<lfloor>xln\<rfloor>;
                      r2.cond_action_oks (ls, (ts2, m2), ws, is) t cts\<rbrakk>
-              \<Longrightarrow> thr (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts) t = \<lfloor>xln\<rfloor>`
+              \<Longrightarrow> thr (activate_cond_actions1 (ls, (ts1, m1), ws, is) (ls, (ts2, m2), ws, is) cts) t = \<lfloor>xln\<rfloor>\<close>
   { fix ts1
     assume tbisim: "\<And>t'. t' \<noteq> t \<Longrightarrow> tbisim (ws t' = None) t' (ts1 t') m1 (ts2 t') m2"
       and ts1t: "ts1 t = \<lfloor>xln\<rfloor>"
@@ -907,66 +907,66 @@ lemma mfinal1_inv_simulation:
   assumes "s1 \<approx>m s2" 
   shows "\<exists>s2'. r2.mthr.silent_moves s2 s2' \<and> s1 \<approx>m s2' \<and> r1.final_threads s1 \<subseteq> r2.final_threads s2' \<and> shr s2' = shr s2"
 proof -
-  from `s1 \<approx>m s2` have "finite (dom (thr s1))" by(auto dest: mbisim_finite1)
+  from \<open>s1 \<approx>m s2\<close> have "finite (dom (thr s1))" by(auto dest: mbisim_finite1)
   moreover have "r1.final_threads s1 \<subseteq> dom (thr s1)" by(auto simp add: r1.final_thread_def)
   ultimately have "finite (r1.final_threads s1)" by(blast intro: finite_subset)
-  thus ?thesis using `s1 \<approx>m s2`
+  thus ?thesis using \<open>s1 \<approx>m s2\<close>
   proof(induct A\<equiv>"r1.final_threads s1" arbitrary: s1 s2 rule: finite_induct)
     case empty
-    from `{} = r1.final_threads s1`[symmetric] have "\<forall>t. \<not> r1.final_thread s1 t" by(auto)
-    with `s1 \<approx>m s2` show ?case by blast
+    from \<open>{} = r1.final_threads s1\<close>[symmetric] have "\<forall>t. \<not> r1.final_thread s1 t" by(auto)
+    with \<open>s1 \<approx>m s2\<close> show ?case by blast
   next
     case (insert t A)
     define s1' where "s1' = (locks s1, ((thr s1)(t := None), shr s1), wset s1, interrupts s1)"
     define s2' where "s2' = (locks s2, ((thr s2)(t := None), shr s2), wset s2, interrupts s2)"
-    from `t \<notin> A` `insert t A = r1.final_threads s1` have "A = r1.final_threads s1'"
+    from \<open>t \<notin> A\<close> \<open>insert t A = r1.final_threads s1\<close> have "A = r1.final_threads s1'"
       unfolding s1'_def by(auto simp add: r1.final_thread_def r1.final_threads_def)
-    moreover from `insert t A = r1.final_threads s1` have "r1.final_thread s1 t" by auto
+    moreover from \<open>insert t A = r1.final_threads s1\<close> have "r1.final_thread s1 t" by auto
     hence "wset s1 t = None" by(auto simp add: r1.final_thread_def)
-    with `s1 \<approx>m s2` have "s1' \<approx>m s2'" unfolding s1'_def s2'_def
+    with \<open>s1 \<approx>m s2\<close> have "s1' \<approx>m s2'" unfolding s1'_def s2'_def
       by(auto simp add: mbisim_def intro: tbisim_NoneI intro!: wset_thread_okI dest: wset_thread_okD split: if_split_asm)
     ultimately have "\<exists>s2''. r2.mthr.silent_moves s2' s2'' \<and> s1' \<approx>m s2'' \<and> r1.final_threads s1' \<subseteq> r2.final_threads s2'' \<and> shr s2'' = shr s2'" by(rule insert)
     then obtain s2'' where reds: "r2.mthr.silent_moves s2' s2''" 
       and "s1' \<approx>m s2''" and fin: "\<And>t. r1.final_thread s1' t \<Longrightarrow> r2.final_thread s2'' t" and "shr s2'' = shr s2'" by blast
     have "thr s2' t = None" unfolding s2'_def by simp
-    with `r2.mthr.silent_moves s2' s2''`
+    with \<open>r2.mthr.silent_moves s2' s2''\<close>
     have "r2.mthr.silent_moves (locks s2', (thr s2'(t \<mapsto> the (thr s2 t)), shr s2'), wset s2', interrupts s2')
       (locks s2'', (thr s2''(t \<mapsto> the (thr s2 t)), shr s2''), wset s2'', interrupts s2'')"
       by(rule r2.\<tau>mRedT_add_thread_inv)
     also let ?s2'' = "(locks s2, (thr s2''(t \<mapsto> the (thr s2 t)), shr s2), wset s2, interrupts s2)"
-    from `shr s2'' = shr s2'` `s1' \<approx>m s2''` `s1 \<approx>m s2`
+    from \<open>shr s2'' = shr s2'\<close> \<open>s1' \<approx>m s2''\<close> \<open>s1 \<approx>m s2\<close>
     have "(locks s2'', (thr s2''(t \<mapsto> the (thr s2 t)), shr s2''), wset s2'', interrupts s2'') = ?s2''"
       unfolding s2'_def s1'_def by(simp add: mbisim_def)
-    also (back_subst) from `s1 \<approx>m s2` have "dom (thr s1) = dom (thr s2)" by(rule mbisim_dom_eq)
-    with `r1.final_thread s1 t` have "t \<in> dom (thr s2)" by(auto simp add: r1.final_thread_def)
+    also (back_subst) from \<open>s1 \<approx>m s2\<close> have "dom (thr s1) = dom (thr s2)" by(rule mbisim_dom_eq)
+    with \<open>r1.final_thread s1 t\<close> have "t \<in> dom (thr s2)" by(auto simp add: r1.final_thread_def)
     then obtain x2 ln where tst2: "thr s2 t = \<lfloor>(x2, ln)\<rfloor>" by auto
     hence "(locks s2', (thr s2'(t \<mapsto> the (thr s2 t)), shr s2'), wset s2', interrupts s2') = s2"
       unfolding s2'_def by(cases s2)(auto intro!: ext)
-    also from `s1 \<approx>m s2` tst2 obtain x1
+    also from \<open>s1 \<approx>m s2\<close> tst2 obtain x1
       where tst1: "thr s1 t = \<lfloor>(x1, ln)\<rfloor>"
       and bisim: "t \<turnstile> (x1, shr s1) \<approx> (x2, shr s2)" by(auto dest: mbisim_thrD2)
-    from `shr s2'' = shr s2'` have "shr ?s2'' = shr s2" by(simp add: s2'_def)
-    from `r1.final_thread s1 t` tst1
+    from \<open>shr s2'' = shr s2'\<close> have "shr ?s2'' = shr s2" by(simp add: s2'_def)
+    from \<open>r1.final_thread s1 t\<close> tst1
     have final: "final1 x1" "ln = no_wait_locks" "wset s1 t = None" by(auto simp add: r1.final_thread_def)
-    with final1_simulation[OF bisim] `shr ?s2'' = shr s2` obtain x2' m2'
+    with final1_simulation[OF bisim] \<open>shr ?s2'' = shr s2\<close> obtain x2' m2'
       where red: "r2.silent_moves t (x2, shr ?s2'') (x2', m2')"
       and bisim': "t \<turnstile> (x1, shr s1) \<approx> (x2', m2')" and "final2 x2'" by auto
-    from `wset s1 t = None` `s1 \<approx>m s2` have "wset s2 t = None" by(simp add: mbisim_def) 
-    with bisim r2.silent_moves_into_RedT_\<tau>_inv[OF red] tst2 `ln = no_wait_locks`
+    from \<open>wset s1 t = None\<close> \<open>s1 \<approx>m s2\<close> have "wset s2 t = None" by(simp add: mbisim_def) 
+    with bisim r2.silent_moves_into_RedT_\<tau>_inv[OF red] tst2 \<open>ln = no_wait_locks\<close>
     have "r2.mthr.silent_moves ?s2'' (redT_upd_\<epsilon> ?s2'' t x2' m2')" unfolding s2'_def by auto
     also (rtranclp_trans)
     from bisim r2.red_rtrancl_\<tau>_heapD_inv[OF red] have "m2' = shr s2" by auto
     hence "s1 \<approx>m (redT_upd_\<epsilon> ?s2'' t x2' m2')"
-      using `s1' \<approx>m s2''` `s1 \<approx>m s2` tst1 tst2 `shr ?s2'' = shr s2` bisim' `shr s2'' = shr s2'` `wset s2 t = None`
+      using \<open>s1' \<approx>m s2''\<close> \<open>s1 \<approx>m s2\<close> tst1 tst2 \<open>shr ?s2'' = shr s2\<close> bisim' \<open>shr s2'' = shr s2'\<close> \<open>wset s2 t = None\<close>
       unfolding s1'_def s2'_def by(auto simp add: mbisim_def redT_updLns_def split: if_split_asm intro: tbisim_SomeI)
     moreover { 
       fix t'
       assume "r1.final_thread s1 t'"
-      with fin[of t'] `final2 x2'` tst2 `ln = no_wait_locks` `wset s2 t = None` `s1' \<approx>m s2''` `s1 \<approx>m s2`
+      with fin[of t'] \<open>final2 x2'\<close> tst2 \<open>ln = no_wait_locks\<close> \<open>wset s2 t = None\<close> \<open>s1' \<approx>m s2''\<close> \<open>s1 \<approx>m s2\<close>
       have "r2.final_thread (redT_upd_\<epsilon> ?s2'' t x2' m2') t'" unfolding s1'_def
         by(fastforce split: if_split_asm simp add: r2.final_thread_def r1.final_thread_def redT_updLns_def finfun_Diag_const2 o_def mbisim_def)
     }
-    moreover have "shr (redT_upd_\<epsilon> ?s2'' t x2' m2') = shr s2" using `m2' = shr s2` by simp
+    moreover have "shr (redT_upd_\<epsilon> ?s2'' t x2' m2') = shr s2" using \<open>m2' = shr s2\<close> by simp
     ultimately show ?case by blast
   qed
 qed
@@ -980,20 +980,20 @@ lemma mfinal1_simulation:
   assumes "s1 \<approx>m s2" and "r1.mfinal s1"
   shows "\<exists>s2'. r2.mthr.silent_moves s2 s2' \<and> s1 \<approx>m s2' \<and> r2.mfinal s2' \<and> shr s2' = shr s2"
 proof -
-  from mfinal1_inv_simulation[OF `s1 \<approx>m s2`]
+  from mfinal1_inv_simulation[OF \<open>s1 \<approx>m s2\<close>]
   obtain s2' where 1: "r2.mthr.silent_moves s2 s2'" "s1 \<approx>m s2'" "shr s2' = shr s2"
     and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread s2' t" by blast
   have "r2.mfinal s2'"
   proof(rule r2.mfinalI)
     fix t x2 ln
     assume "thr s2' t = \<lfloor>(x2, ln)\<rfloor>"
-    with `s1 \<approx>m s2'` obtain x1 where "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" "t \<turnstile> (x1, shr s1) \<approx> (x2, shr s2')"
+    with \<open>s1 \<approx>m s2'\<close> obtain x1 where "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" "t \<turnstile> (x1, shr s1) \<approx> (x2, shr s2')"
       by(auto dest: mbisim_thrD2)
-    from `thr s1 t = \<lfloor>(x1, ln)\<rfloor>` `r1.mfinal s1` have "r1.final_thread s1 t"
+    from \<open>thr s1 t = \<lfloor>(x1, ln)\<rfloor>\<close> \<open>r1.mfinal s1\<close> have "r1.final_thread s1 t"
       by(auto elim!: r1.mfinalE simp add: r1.final_thread_def)
     hence "r2.final_thread s2' t" by(rule fin)
     thus "final2 x2 \<and> ln = no_wait_locks \<and> wset s2' t = None"
-      using `thr s2' t = \<lfloor>(x2, ln)\<rfloor>` by(auto simp add: r2.final_thread_def)
+      using \<open>thr s2' t = \<lfloor>(x2, ln)\<rfloor>\<close> by(auto simp add: r2.final_thread_def)
   qed
   with 1 show ?thesis by blast
 qed
@@ -1120,7 +1120,7 @@ next
     case None
     with tst have "t \<noteq> T" by auto
     with tbisim[OF this] None have tsT': "thr s2 T = None" by(simp add: tbisim_def)
-    from None `t \<noteq> T` tsT aoe1 s1' obtain M1
+    from None \<open>t \<noteq> T\<close> tsT aoe1 s1' obtain M1
       where ntset: "NewThread T X1 M1 \<in> set \<lbrace>ta1\<rbrace>\<^bsub>t\<^esub>" and [simp]: "LN = no_wait_locks"
       by(auto dest!: redT_updTs_new_thread)
     from ntset obtain tas1 tas1' where "\<lbrace>ta1\<rbrace>\<^bsub>t\<^esub> = tas1 @ NewThread T X1 M1 # tas1'"
@@ -1129,13 +1129,13 @@ next
       "length tas2 = length tas2" "length tas1' = length tas2'" and Bisim: "T \<turnstile> (X1, M1) \<approx> (X2, M2)"
       by(auto simp add: list_all2_append1 list_all2_Cons1 ta_bisim_def)
     hence ntset': "NewThread T X2 M2 \<in> set \<lbrace>ta2\<rbrace>\<^bsub>t\<^esub>" by auto
-    with tsT' `t \<noteq> T` aoe2 s2' have "thr s2' T = \<lfloor>(X2, no_wait_locks)\<rfloor>"
+    with tsT' \<open>t \<noteq> T\<close> aoe2 s2' have "thr s2' T = \<lfloor>(X2, no_wait_locks)\<rfloor>"
       by(auto intro: redT_updTs_new_thread_ts)
     moreover from ntset' red2 have "m2' = M2" by(auto dest: r2.new_thread_memory)
     moreover from ntset red1 have "m1' = M1"
       by(auto dest: r1.new_thread_memory)
     moreover from wsts None have "wset s1 T = None" by(rule wset_thread_okD)
-    ultimately show ?thesis using Bisim `t \<noteq> T` s1' s2'
+    ultimately show ?thesis using Bisim \<open>t \<noteq> T\<close> s1' s2'
       by(auto simp add: redT_updWs_None_implies_None)
   next
     case (Some a)
@@ -1268,7 +1268,7 @@ proof -
         by(auto dest: mbisim_thrD1)
       from aoe Some have wakeup: "Notified \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub> \<or> WokenUp \<in> set \<lbrace>ta1\<rbrace>\<^bsub>w\<^esub>"
         by(auto simp add: wset_actions_ok_def split: if_split_asm)
-      from simulation_Wakeup1[OF bisim `x1 \<approx>w x2` red this]
+      from simulation_Wakeup1[OF bisim \<open>x1 \<approx>w x2\<close> red this]
       obtain ta2 x2' m2' where red2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')"
         and bisim': "t \<turnstile> (x1', M1') \<approx> (x2', m2')"
         and tasim: "ta1 \<sim>m ta2" by auto
@@ -1584,17 +1584,17 @@ lemma m\<tau>diverge_simulation1:
   and "r1.mthr.\<tau>diverge s1"
   shows "r2.mthr.\<tau>diverge s2"
 proof -
-  from `s1 \<approx>m s2` have "finite (dom (thr s1))"
+  from \<open>s1 \<approx>m s2\<close> have "finite (dom (thr s1))"
     by(rule mbisim_finite1)+
-  from r1.\<tau>diverge_\<tau>mredTD[OF `r1.mthr.\<tau>diverge s1` this]
+  from r1.\<tau>diverge_\<tau>mredTD[OF \<open>r1.mthr.\<tau>diverge s1\<close> this]
   obtain t x where "thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>" "wset s1 t = None" "r1.\<tau>diverge t (x, shr s1)" by blast
-  from `s1 \<approx>m s2` `thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>` obtain x'
+  from \<open>s1 \<approx>m s2\<close> \<open>thr s1 t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> obtain x'
     where "thr s2 t = \<lfloor>(x', no_wait_locks)\<rfloor>" "t \<turnstile> (x, shr s1) \<approx> (x', shr s2)"
     by(auto dest: mbisim_thrD1)
-  from `s1 \<approx>m s2` `wset s1 t = None` have "wset s2 t = None" by(simp add: mbisim_def)
-  from `t \<turnstile> (x, shr s1) \<approx> (x', shr s2)` `r1.\<tau>diverge t (x, shr s1)`
+  from \<open>s1 \<approx>m s2\<close> \<open>wset s1 t = None\<close> have "wset s2 t = None" by(simp add: mbisim_def)
+  from \<open>t \<turnstile> (x, shr s1) \<approx> (x', shr s2)\<close> \<open>r1.\<tau>diverge t (x, shr s1)\<close>
   have "r2.\<tau>diverge t (x', shr s2)" by(simp add: \<tau>diverge_bisim_inv)
-  thus ?thesis using `thr s2 t = \<lfloor>(x', no_wait_locks)\<rfloor>` `wset s2 t = None`
+  thus ?thesis using \<open>thr s2 t = \<lfloor>(x', no_wait_locks)\<rfloor>\<close> \<open>wset s2 t = None\<close>
     by(rule r2.\<tau>diverge_into_\<tau>mredT)
 qed
 
@@ -1637,7 +1637,7 @@ sublocale FWdelay_bisimulation_diverge <
   mthr: delay_bisimulation_diverge_final r1.redT r2.redT mbisim mta_bisim m\<tau>move1 m\<tau>move2 r1.mfinal r2.mfinal
 by(rule mthr_delay_bisimulation_diverge_final)
 
-subsection {* Strong bisimulation as corollary *}
+subsection \<open>Strong bisimulation as corollary\<close>
 
 locale FWbisimulation = FWbisimulation_base _ _ _ r2 convert_RA bisim "\<lambda>x1 x2. True" +
   r1: multithreaded final1 r1 convert_RA +
@@ -1715,10 +1715,10 @@ by(auto dest: FWbisimulation.FWbisimulation_flip simp only: flip_flip)
 
 context FWbisimulation begin
 
-text {*
+text \<open>
   The notation for mbisim is lost because @{term "bisim_wait"} is instantiated to @{term "\<lambda>x1 x2. True"}.
   This reintroduces the syntax, but it does not work for output mode. This would require a new abbreviation.
-*}
+\<close>
 notation mbisim ("_ \<approx>m _" [50, 50] 60)
 
 theorem mbisim_bisimulation:

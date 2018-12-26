@@ -18,12 +18,12 @@ lemma mod_integer_ge:
   by (metis dual_order.trans less_add_one order.strict_trans
     unique_euclidean_semiring_numeral_class.pos_mod_sign)
 
-text {* 
+text \<open>
   After having defined the datastructures, we present in this theory how to construct the transition system and how to generate the successors of a state, \ie the real semantics of a Promela program.
   For the first task, we take the enriched AST as input, the second one operates on the transition system.
-*}
+\<close>
 
-subsection {* Misc Helpers*}
+subsection \<open>Misc Helpers\<close>
 definition add_label :: "String.literal \<Rightarrow> labels \<Rightarrow> nat \<Rightarrow> labels" where
   "add_label l lbls pos = (
      case lm.lookup l lbls of 
@@ -70,13 +70,13 @@ lemma find_remove_length:
 unfolding find_remove_def
 by (induct xs arbitrary: res xs') (auto split: if_splits option.splits)
 
-subsection {* Variable handling *}
+subsection \<open>Variable handling\<close>
 
-text {* 
+text \<open>
   Handling variables, with their different scopes (global vs. local), 
   and their different types (array vs channel vs bounded) is one of the main challenges
   of the implementation. 
-*}
+\<close>
 
 fun lookupVar :: "variable \<Rightarrow> integer option \<Rightarrow> integer" where
   "lookupVar (Var _ val) None = val"
@@ -277,11 +277,11 @@ where
                                       InvChannel \<Rightarrow> abort ()
                                     | _ \<Rightarrow> f i c) g p)"
 
-subsection {* Expressions *}
+subsection \<open>Expressions\<close>
 
-text {* Expressions are free of side-effects. 
+text \<open>Expressions are free of side-effects. 
 
-This is in difference to SPIN, where @{term run} is an expression with side-effect. We treat @{term run} as a statement. *}
+This is in difference to SPIN, where @{term run} is an expression with side-effect. We treat @{term run} as a statement.\<close>
 
 abbreviation "trivCond x \<equiv> if x then 1 else 0"
 
@@ -410,7 +410,7 @@ where
         | RecvArgVar var \<Rightarrow> True
         | RecvArgEval e \<Rightarrow> exprArith g p e = v ) \<and> recvArgsCheck g p rs vs)"
 
-text {* @{const getVar'} etc.\ do operate on name, index, \ldots directly. Lift them to use @{const VarRef} instead. *}
+text \<open>@{const getVar'} etc.\ do operate on name, index, \ldots directly. Lift them to use @{const VarRef} instead.\<close>
 
 fun liftVar where
   "liftVar f (VarRef gl v idx) argm g p = 
@@ -444,7 +444,7 @@ lemma setVar_cl_inv:
 unfolding setVar_def 
 by (cases v) (auto simp add: setVar'_cl_inv assms)
 
-subsection {* Variable declaration *}
+subsection \<open>Variable declaration\<close>
 
 lemma channel_inv_code [code]:
   "channel_inv (Channel cap ts q) 
@@ -698,11 +698,11 @@ lemma mkVarChannelProc_cl_inv:
 unfolding mkVarChannelProc_def using assms
 by (auto intro!: mkVarChannel_cl_inv)
 
-subsection {* Folding *}
-text {* 
+subsection \<open>Folding\<close>
+text \<open>
   Fold over lists (and lists of lists) of @{typ step}/@{typ stmnt}. The folding functions are 
   doing a bit more than that, e.g.\ ensuring the offset into the program array is correct. 
-*}
+\<close>
 
 definition step_fold' where
   "step_fold' g steps (lbls :: labels) pri pos 
@@ -784,7 +784,7 @@ apply (cases stepss')
   apply (force intro!: foldr_cong step_foldL_step_cong)
 done
 
-subsection {* Starting processes *}
+subsection \<open>Starting processes\<close>
 definition modProcArg 
   :: "(procArg * integer) \<Rightarrow> String.literal * variable" 
 where
@@ -945,7 +945,7 @@ proof -
     "varDeclName ` set decls \<subseteq> 
       process_names (states prog !! sidx) (processes prog !! sidx)" 
     by auto
-  with `gState_inv prog g` have 
+  with \<open>gState_inv prog g\<close> have 
     F_inv: "\<And>p. \<lbrakk> pState_inv prog p; sidx = pState.idx p; cl_inv (g,p) \<rbrakk>
                 \<Longrightarrow> pState_inv prog 
                    (snd (foldl (\<lambda>(g,p) d. mkVarChannel d (apsnd \<circ> pState.vars_update) g p) 
@@ -1119,22 +1119,22 @@ proof -
     "length (channels g) \<le> length (channels g')" 
     by (simp add: gState_progress_rel_def)
   moreover from * runProc_pState_id have "p' = p" by (metis snd_conv)
-  ultimately show ?thesis by (metis `cl_inv (g,p)` * cl_inv_trans)
+  ultimately show ?thesis by (metis \<open>cl_inv (g,p)\<close> * cl_inv_trans)
 qed
 
-subsection {* AST to edges *}
+subsection \<open>AST to edges\<close>
 
 type_synonym ast = "AST.module list"
 
-text {* In this section, the AST is translated into the transition system. *}
+text \<open>In this section, the AST is translated into the transition system.\<close>
 
-text {* 
+text \<open>
   Handling atomic blocks is non-trivial. Therefore, we do this in an extra pass:
   @{term lp} and @{term hp} are the positions of the start and the end of
   the atomic block. Every edge pointing into this range is therefore marked as 
   @{term Atomic}. If they are pointing somewhere else, they are set to @{term InAtomic},
   meaning: they start \emph{in} an atomic block, but leave it afterwards.
-*}
+\<close>
 definition atomize :: "nat \<Rightarrow> nat \<Rightarrow> edge list \<Rightarrow> edge list" where
   "atomize lp hp es = fold (\<lambda>e es. 
      let e' = case target e of
@@ -1159,7 +1159,7 @@ where
        effect = EEId, target = nxt, prio = pri, 
        atomic = NonAtomic\<rparr>]], Index pos, lbls)"
 
-text {*
+text \<open>
    The AST is walked backwards. This allows to know the next state directly.
 
    Parameters used:
@@ -1171,7 +1171,7 @@ text {*
       \item[onxt] Previous 'next state' (where to jump after a 'do')
       \item[inBlock] Needed for certain constructs to calculate the layout of the array
    \end{description}
-*}
+\<close>
 
 fun stepToState 
   :: "step 
@@ -1295,7 +1295,7 @@ where
 
 | "stmntToState StmntSkip d = skip d"
 
-subsubsection {* Setup *}
+subsubsection \<open>Setup\<close>
 definition endState :: "edge list" where
   \<comment> \<open>An extra state added to each process marking its end.\<close>
   "endState = [\<lparr> cond = ECFalse, effect = EEEnd, target = Index 0, prio = 0, 
@@ -1394,11 +1394,11 @@ lemma toProcess_startE:
   using toProcess_start[OF assms]
   by blast
 
-text {* 
+text \<open>
   The main construction function. Takes an AST 
   and returns  an initial state, 
   and the program (= transition system).
-*}
+\<close>
 
 definition setUp :: "ast \<Rightarrow> program \<times> gState" where
   "setUp ast = (
@@ -1518,17 +1518,17 @@ proof -
 qed
 
 
-subsection {* Semantic Engine *}
+subsection \<open>Semantic Engine\<close>
 
-text {* 
+text \<open>
   After constructing the transition system, we are missing the final part:
   The successor function on this system. We use SPIN-nomenclature and call it
   \emph{semantic engine}.
-*}
+\<close>
 
 definition "assertVar \<equiv> VarRef True (STR ''__assert__'') None"
 
-subsubsection {* Evaluation of Edges *}
+subsubsection \<open>Evaluation of Edges\<close>
 
 fun evalRecvArgs 
   :: "recvArg list \<Rightarrow> integer list \<Rightarrow> gState\<^sub>I \<Rightarrow> pState \<Rightarrow> gState\<^sub>I * pState"
@@ -1895,12 +1895,12 @@ next
     done
 qed (simp_all add: setVar_cl_inv mkVarChannelProc_cl_inv)
 
-subsubsection {* Executable edges *}
+subsubsection \<open>Executable edges\<close>
 
-text {*
+text \<open>
   To find a successor global state, we first need to find all those edges which are executable
   (\ie the condition evaluates to true).
-*}
+\<close>
 type_synonym choices = "(edge * pState) list"
   \<comment> \<open>A choice is an executable edge and the process it belongs to.\<close>
 
@@ -2103,7 +2103,7 @@ by (refine_transfer)
 
 concrete_definition executable_impl for s g uses executable_refine
 
-subsubsection {* Successor calculation *}
+subsubsection \<open>Successor calculation\<close>
 
 function to\<^sub>I where
   "to\<^sub>I \<lparr> gState.vars = v, channels = ch, timeout = t, procs = p \<rparr> 
@@ -2445,12 +2445,12 @@ schematic_goal nexts_code_aux:
 concrete_definition nexts_code_aux for prog g uses nexts_code_aux
 prepare_code_thms nexts_code_aux_def
 
-subsubsection {* Handle non-termination *}
+subsubsection \<open>Handle non-termination\<close>
 
-text {* 
+text \<open>
   A Promela model may include non-terminating parts. Therefore we cannot guarantee, that @{const nexts} will actually terminate.
   To avoid having to deal with this in the model checker, we fail in case of non-termination.
-*}
+\<close>
 
 (* TODO: Integrate such a concept into refine_transfer! *)
 definition SUCCEED_abort where
@@ -2476,11 +2476,11 @@ lemma dSUCCEED_abort_SUCCEED_abort:
 unfolding dSUCCEED_abort_def SUCCEED_abort_def ref_succeed_def
 by (auto split: dres.splits nres.splits)
 
-text {* The final successor function now incorporates:
+text \<open>The final successor function now incorporates:
   \begin{enumerate}
     \item @{const Promela.nexts}
     \item handling of non-termination
-  \end{enumerate} *}
+  \end{enumerate}\<close>
 definition nexts_code where 
   "nexts_code prog g = 
      the_res (dSUCCEED_abort (STR ''The Universe is broken!'') 
@@ -2498,7 +2498,7 @@ using assms
 using order_trans[OF nexts_code_aux.refine nexts_SPEC[OF assms(1,2)]]
 by (auto split: dres.splits simp: ls.correct)
 
-subsection {* Finiteness of the state space *}
+subsection \<open>Finiteness of the state space\<close>
 
 inductive_set reachable_states
   for P :: program
@@ -2527,7 +2527,7 @@ proof (rule finite_subset[OF _ gStates_finite[of _ g]])
       case (step g g')
       from step(2,3) have 
         "(g, g') \<in> gState_progress_rel prog"
-        using nexts_code_SPEC[OF _ `program_inv prog`]
+        using nexts_code_SPEC[OF _ \<open>program_inv prog\<close>]
         unfolding INV_def by auto
       thus ?case using step(2) unfolding INV_def by auto
     qed
@@ -2538,13 +2538,13 @@ proof (rule finite_subset[OF _ gStates_finite[of _ g]])
     unfolding INV_def by auto
 qed
 
-subsection {* Traces *}
+subsection \<open>Traces\<close>
 
-text {* When trying to generate a lasso, we have a problem: We only have a list of global
+text \<open>When trying to generate a lasso, we have a problem: We only have a list of global
 states. But what are the transitions to come from one to the other?
 
 This problem shall be tackled by @{term replay}: Given two states, it generates a list of
-transitions that was taken. *}
+transitions that was taken.\<close>
 
 (* Give a list of edges that lead from g\<^sub>1 to g\<^sub>2 *)
 definition replay :: "program \<Rightarrow> gState \<Rightarrow> gState \<Rightarrow> choices nres" where
@@ -2588,7 +2588,7 @@ by (refine_transfer the_resI executable_dRETURN)
 concrete_definition replay_code for prog g\<^sub>1 g\<^sub>2 uses replay_code_aux
 prepare_code_thms replay_code_def
 
-subsubsection {* Printing of traces *}
+subsubsection \<open>Printing of traces\<close>
 (* Might go to another theory *)
 
 definition procDescr 
@@ -2622,7 +2622,7 @@ where
 
 definition "printConfigFromAST f \<equiv> printConfig f o fst o setUp"
 
-subsection {* Code export *}
+subsection \<open>Code export\<close>
 
 code_identifier
   code_module "PromelaInvariants" \<rightharpoonup> (SML) Promela

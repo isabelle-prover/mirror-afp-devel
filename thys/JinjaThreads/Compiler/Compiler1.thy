@@ -4,7 +4,7 @@
     Based on Jinja/Compiler/Compiler1
 *)
 
-section {* Compilation Stage 1 *}
+section \<open>Compilation Stage 1\<close>
 
 theory Compiler1 imports
   PCompiler
@@ -23,7 +23,7 @@ proof -
     by auto
 qed
 
-text{* Replacing variable names by indices. *}
+text\<open>Replacing variable names by indices.\<close>
 
 function compE1  :: "vname list \<Rightarrow> 'addr expr      \<Rightarrow> 'addr expr1"
   and compEs1 :: "vname list \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr1 list"
@@ -123,7 +123,7 @@ lemma fixes e :: "'addr expr" and es :: "'addr expr list"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Block Vs V ty vo exp)
   have IH: "fv exp \<subseteq> set (Vs @ [V]) \<Longrightarrow> fv (compE1 (Vs @ [V]) exp) = index (Vs @ [V]) ` fv exp" by fact
-  from `fv {V:ty=vo; exp} \<subseteq> set Vs` have fv': "fv exp \<subseteq> set (Vs @ [V])" by auto
+  from \<open>fv {V:ty=vo; exp} \<subseteq> set Vs\<close> have fv': "fv exp \<subseteq> set (Vs @ [V])" by auto
   from IH[OF this] have IH': "fv (compE1 (Vs @ [V]) exp) = index (Vs @ [V]) ` fv exp" .
   have "fv (compE1 (Vs @ [V]) exp) - {length Vs} = index Vs ` (fv exp - {V})"
   proof(rule equalityI[OF subsetI subsetI])
@@ -140,11 +140,11 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
       proof
         assume [simp]: "y = V"
         hence "x = length Vs" by simp
-        with `x \<noteq> length Vs` show False by contradiction
+        with \<open>x \<noteq> length Vs\<close> show False by contradiction
       qed
       moreover with fv' y have "y \<in> set Vs" by auto
       ultimately have "index (Vs @ [V]) y = index Vs y" by(simp)
-      thus ?thesis using y `y \<noteq> V` by auto
+      thus ?thesis using y \<open>y \<noteq> V\<close> by auto
     qed
   next
     fix x
@@ -157,7 +157,7 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
       with fv' have "y \<in> set Vs" "y \<noteq> V" by auto
       hence "index Vs y = index (Vs @ [V]) y" by simp
       with y have "x \<in> index (Vs @ [V]) ` fv exp" by auto
-      thus ?thesis using IH' `y \<in> set Vs` by simp
+      thus ?thesis using IH' \<open>y \<in> set Vs\<close> by simp
     qed
   qed
   thus ?case by simp
@@ -166,7 +166,7 @@ next
   have IH1: "fv exp1 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp1) = index Vs ` fv exp1" 
     and IH2: "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> fv (compE1 (Vs @ [fresh_var Vs]) exp2) = index (Vs @ [fresh_var Vs]) ` fv exp2"
     by fact+
-  from `fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
+  from \<open>fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs\<close> have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set Vs" by auto
   from fv2 have fv2': "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "index (Vs @ [fresh_var Vs]) ` fv exp2 = index Vs ` fv exp2"
@@ -201,7 +201,7 @@ next
   case (InSynchronized Vs V a exp)
   have IH: "fv exp \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> fv (compE1 (Vs @ [fresh_var Vs]) exp) = index (Vs @ [fresh_var Vs]) ` fv exp"
     by fact
-  from `fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs` have fv: "fv exp \<subseteq> set Vs" by simp
+  from \<open>fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs\<close> have fv: "fv exp \<subseteq> set Vs" by simp
   hence fv': "fv exp \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "index (Vs @ [fresh_var Vs]) ` fv exp = index Vs ` fv exp"
   proof(rule equalityI[OF subsetI subsetI])
@@ -237,7 +237,7 @@ next
   have IH1: "fv exp1 \<subseteq> set Vs \<Longrightarrow> fv (compE1 Vs exp1) = index Vs ` fv exp1" 
     and IH2: "fv exp2 \<subseteq> set (Vs @ [V]) \<Longrightarrow> fv (compE1 (Vs @ [V]) exp2) = index (Vs @ [V]) ` fv exp2"
     by fact+
-  from `fv (try exp1 catch(C V) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
+  from \<open>fv (try exp1 catch(C V) exp2) \<subseteq> set Vs\<close> have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set (Vs @ [V])" by auto
   have "index (Vs @ [V]) ` fv exp2 - {length Vs} = index Vs ` (fv exp2 - {V})" 
   proof(rule equalityI[OF subsetI subsetI])
@@ -254,11 +254,11 @@ next
       proof
         assume [simp]: "y = V"
         hence "x = length Vs" by simp
-        with `x \<noteq> length Vs` show False by contradiction
+        with \<open>x \<noteq> length Vs\<close> show False by contradiction
       qed
       moreover with fv2 y have "y \<in> set Vs" by auto
       ultimately have "index (Vs @ [V]) y = index Vs y" by(simp)
-      thus ?thesis using y `y \<noteq> V` by auto
+      thus ?thesis using y \<open>y \<noteq> V\<close> by auto
     qed
   next
     fix x
@@ -271,7 +271,7 @@ next
       with fv2 have "y \<in> set Vs" "y \<noteq> V" by auto
       hence "index Vs y = index (Vs @ [V]) y" by simp
       with y have "x \<in> index (Vs @ [V]) ` fv exp2" by auto
-      thus ?thesis using `y \<in> set Vs` by simp
+      thus ?thesis using \<open>y \<in> set Vs\<close> by simp
     qed
   qed
   with IH1[OF fv1] IH2[OF fv2] show ?case by auto
@@ -282,13 +282,13 @@ lemma fixes e :: "'addr expr" and es :: "'addr expr list"
   and syncvarss_compEs1: "fvs es \<subseteq> set Vs \<Longrightarrow> syncvarss (compEs1 Vs es)"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Block Vs V ty vo exp)
-  from `fv {V:ty=vo; exp} \<subseteq> set Vs` have "fv exp \<subseteq> set (Vs @ [V])" by auto
-  from `fv exp \<subseteq> set (Vs @ [V]) \<Longrightarrow> syncvars (compE1 (Vs @ [V]) exp)`[OF this] show ?case by(simp)
+  from \<open>fv {V:ty=vo; exp} \<subseteq> set Vs\<close> have "fv exp \<subseteq> set (Vs @ [V])" by auto
+  from \<open>fv exp \<subseteq> set (Vs @ [V]) \<Longrightarrow> syncvars (compE1 (Vs @ [V]) exp)\<close>[OF this] show ?case by(simp)
 next
   case (Synchronized Vs V exp1 exp2)
-  note IH1 = `fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)`
-  note IH2 = `fv exp2 \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> syncvars (compE1 (Vs @ [fresh_var Vs]) exp2)`
-  from `fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
+  note IH1 = \<open>fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)\<close>
+  note IH2 = \<open>fv exp2 \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> syncvars (compE1 (Vs @ [fresh_var Vs]) exp2)\<close>
+  from \<open>fv (sync\<^bsub>V\<^esub> (exp1) exp2) \<subseteq> set Vs\<close> have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set Vs" and fv2': "fv exp2 \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "length Vs \<notin> index (Vs @ [fresh_var Vs]) ` fv exp2"
   proof
@@ -305,8 +305,8 @@ next
   with IH1[OF fv1] IH2[OF fv2'] fv2' show ?case by(simp add: fv_compE1)
 next
   case (InSynchronized Vs V a exp)
-  note IH = `fv exp \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> syncvars (compE1 (Vs @ [fresh_var Vs]) exp)`
-  from `fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs` have fv: "fv exp \<subseteq> set Vs"
+  note IH = \<open>fv exp \<subseteq> set (Vs @ [fresh_var Vs]) \<Longrightarrow> syncvars (compE1 (Vs @ [fresh_var Vs]) exp)\<close>
+  from \<open>fv (insync\<^bsub>V\<^esub> (a) exp) \<subseteq> set Vs\<close> have fv: "fv exp \<subseteq> set Vs"
     and fv': "fv exp \<subseteq> set (Vs @ [fresh_var Vs])" by auto
   have "length Vs \<notin> index (Vs @ [fresh_var Vs]) ` fv exp"
   proof
@@ -323,9 +323,9 @@ next
   with IH[OF fv'] fv' show ?case by(simp add: fv_compE1)
 next
   case (TryCatch Vs exp1 C V exp2)
-  note IH1 = `fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)`
-  note IH2 = `fv exp2 \<subseteq> set (Vs @ [V]) \<Longrightarrow> syncvars (compE1 (Vs @ [V]) exp2)`
-  from `fv (try exp1 catch(C V) exp2) \<subseteq> set Vs` have fv1: "fv exp1 \<subseteq> set Vs"
+  note IH1 = \<open>fv exp1 \<subseteq> set Vs \<Longrightarrow> syncvars (compE1 Vs exp1)\<close>
+  note IH2 = \<open>fv exp2 \<subseteq> set (Vs @ [V]) \<Longrightarrow> syncvars (compE1 (Vs @ [V]) exp2)\<close>
+  from \<open>fv (try exp1 catch(C V) exp2) \<subseteq> set Vs\<close> have fv1: "fv exp1 \<subseteq> set Vs"
     and fv2: "fv exp2 \<subseteq> set (Vs @ [V])" by auto
   from IH1[OF fv1] IH2[OF fv2] show ?case by auto
 qed auto
@@ -348,7 +348,7 @@ lemma fixes e :: "'addr expr" and es :: "'addr expr list"
   and "max_varss (compEs1 Vs es) = max_varss es"
 by (induct Vs e and Vs es rule: compE1_compEs1_induct)(simp_all)
 
-text{* Compiling programs: *}
+text\<open>Compiling programs:\<close>
 
 definition compP1 :: "'addr J_prog \<Rightarrow> 'addr J1_prog"
 where

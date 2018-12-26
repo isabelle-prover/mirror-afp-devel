@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Axiomatic specification of the JMM *}
+section \<open>Axiomatic specification of the JMM\<close>
 
 theory JMM_Spec
 imports
@@ -11,7 +11,7 @@ imports
   Coinductive.Coinductive_List
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 type_synonym JMM_action = nat
 type_synonym ('addr, 'thread_id) execution = "('thread_id \<times> ('addr, 'thread_id) obs_event action) llist"
@@ -37,7 +37,7 @@ where
   NewHeapElem: "is_write_action (NormalAction (NewHeapElem ad hT))"
 | WriteMem: "is_write_action (NormalAction (WriteMem ad al v))"
 
-text {*
+text \<open>
   Initialisation actions are synchronisation actions iff they initialize volatile
   fields -- cf. JMM mailing list, message no. 62 (5 Nov. 2006).
   However, intuitively correct programs might not be correctly synchronized:
@@ -70,7 +70,7 @@ r1 = x | r2 = x
   Instead, we leave every initialisation action in the thread it belongs to, but order it explicitly
   before the thread's start action and add synchronizes-with edges from \emph{all} initialisation
   actions to \emph{all} thread start actions.
-*}
+\<close>
 
 inductive saction :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool"
 for P :: "'m prog"
@@ -96,23 +96,23 @@ for E :: "('addr, 'thread_id) execution"
 where 
   write_actionsI: "\<lbrakk> a \<in> actions E; is_write_action (action_obs E a) \<rbrakk> \<Longrightarrow> a \<in> write_actions E"
 
-text {*
+text \<open>
   @{term NewObj} and @{term NewArr} actions only initialize those fields and array cells that
   are in fact in the object or array. Hence, they are not a write for
   - reads from addresses for which no object/array is created during the whole execution
   - reads from fields/cells that are not part of the object/array at the specified address.
-*}
+\<close>
 
 primrec addr_locs :: "'m prog \<Rightarrow> htype \<Rightarrow> addr_loc set"
 where 
   "addr_locs P (Class_type C) = {CField D F|D F. \<exists>fm T. P \<turnstile> C has F:T (fm) in D}"
 | "addr_locs P (Array_type T n) = ({ACell n'|n'. n' < n} \<union> {CField Object F|F. \<exists>fm T. P \<turnstile> Object has F:T (fm) in Object})"
 
-text {*
-  @{text "action_loc_aux"} would naturally be an inductive set,
+text \<open>
+  \<open>action_loc_aux\<close> would naturally be an inductive set,
   but inductive\_set does not allow to pattern match on parameters.
   Hence, specify it using function and derive the setup manually.
-*}
+\<close>
 
 fun action_loc_aux :: "'m prog \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> ('addr \<times> addr_loc) set"
 where
@@ -294,7 +294,7 @@ where
   "sequentially_consistent P (E, ws) \<longleftrightarrow> (\<forall>r \<in> read_actions E. P,E \<turnstile> r \<leadsto>mrw ws r)"
 
 
-subsection {* Actions *}
+subsection \<open>Actions\<close>
 
 inductive_cases is_new_action_cases [elim!]:
   "is_new_action (NormalAction (ExternalCall a M vs v))"
@@ -481,8 +481,8 @@ lemma addr_locsI:
   "\<lbrakk> hT = Array_type T n; n' < n \<rbrakk> \<Longrightarrow> ACell n' \<in> addr_locs P hT"
 by(cases hT)(auto dest: has_field_decl_above)
 
-subsection {* Orders *}
-subsection {* Action order *}
+subsection \<open>Orders\<close>
+subsection \<open>Action order\<close>
 
 lemma action_orderI:
   assumes "a \<in> actions E" "a' \<in> actions E"
@@ -552,7 +552,7 @@ proof(intro strip)
     show ?thesis
     proof(cases "Q \<inter> actions E = {}")
       case True
-      with `x \<in> Q` show ?thesis by(auto elim: action_orderE)
+      with \<open>x \<in> Q\<close> show ?thesis by(auto elim: action_orderE)
     next
       case False
       define a' where "a' = (LEAST a'. a' \<in> Q \<and> a' \<in> actions E \<and> \<not> is_new_action (action_obs E a'))"
@@ -567,8 +567,8 @@ proof(intro strip)
         proof
           assume "y \<in> Q"
           hence y_not_new: "\<not> is_new_action (action_obs E y)"
-            using `y \<in> actions E` by(rule not_new)
-          with `y \<in> Q` `y \<in> actions E` have "a' \<le> y"
+            using \<open>y \<in> actions E\<close> by(rule not_new)
+          with \<open>y \<in> Q\<close> \<open>y \<in> actions E\<close> have "a' \<le> y"
             unfolding a'_def by -(rule Least_le, blast)
           with y_le_a' y_not_new show False by(auto elim: action_orderE)
         qed }
@@ -581,7 +581,7 @@ lemma action_order_is_new_actionD:
   "\<lbrakk> E \<turnstile> a \<le>a a'; is_new_action (action_obs E a') \<rbrakk> \<Longrightarrow> is_new_action (action_obs E a)"
 by(auto elim: action_orderE)
 
-subsection {* Program order *}
+subsection \<open>Program order\<close>
 
 lemma program_orderI:
   assumes "E \<turnstile> a \<le>a a'" and "action_tid E a = action_tid E a'"
@@ -619,7 +619,7 @@ lemma total_program_order_on_tactions:
 by(rule total_onPI)(auto elim: tactionsE simp add: program_order_def dest: total_onD[OF total_action_order])
 
 
-subsection {* Synchronization order *}
+subsection \<open>Synchronization order\<close>
 
 lemma sync_orderI:
   "\<lbrakk> E \<turnstile> a \<le>a a'; a \<in> sactions P E; a' \<in> sactions P E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<le>so a'"
@@ -659,7 +659,7 @@ lemma torder_sync_order:
   "torder_on (sactions P E) (sync_order P E)"
 by(blast intro: torder_onI porder_sync_order total_sync_order)
 
-subsection {* Synchronizes with *}
+subsection \<open>Synchronizes with\<close>
 
 lemma sync_withI:
   "\<lbrakk> P,E \<turnstile> a \<le>so a'; P \<turnstile> (action_tid E a, action_obs E a) \<leadsto>sw (action_tid E a', action_obs E a') \<rbrakk>
@@ -695,7 +695,7 @@ lemma consistent_program_order_sync_with:
   "order_consistent (program_order E) (sync_with P E)"
 by(rule order_consistent_subset[OF consistent_program_order_sync_order])(blast elim: sync_withE)+
 
-subsection {* Happens before *}
+subsection \<open>Happens before\<close>
 
 lemma porder_happens_before:
   "porder_on (actions E) (happens_before P E)"
@@ -749,15 +749,15 @@ proof(induct rule: converse_tranclp_induct)
 next
   case (step a a'')
   
-  note po_sw = `po_sw P E a a''`
-    and new = `is_new_action (action_obs E a'')`
-    and tid = `action_tid E a'' = action_tid E a'`
+  note po_sw = \<open>po_sw P E a a''\<close>
+    and new = \<open>is_new_action (action_obs E a'')\<close>
+    and tid = \<open>action_tid E a'' = action_tid E a'\<close>
   
   case 1 from new po_sw show ?case
     by(auto dest: po_sw_into_action_order elim: action_orderE)
   case 2 from new po_sw tid show ?case
     by(auto simp add: po_sw_def elim!: sync_withE elim: program_orderE synchronizes_with.cases)
-  case 3 from new po_sw `a'' \<le> a'` show ?case
+  case 3 from new po_sw \<open>a'' \<le> a'\<close> show ?case
     by(auto dest!: po_sw_into_action_order elim!: action_orderE)
 qed
 
@@ -765,7 +765,7 @@ lemma external_actions_not_new:
   "\<lbrakk> a \<in> external_actions E; is_new_action (action_obs E a) \<rbrakk> \<Longrightarrow> False"
 by(erule external_actions.cases)(simp)
 
-subsection {* Most recent writes and sequential consistency *}
+subsection \<open>Most recent writes and sequential consistency\<close>
 
 lemma most_recent_write_for_fun:
   "\<lbrakk> P,E \<turnstile> ra \<leadsto>mrw wa; P,E \<turnstile> ra \<leadsto>mrw wa' \<rbrakk> \<Longrightarrow> wa = wa'"
@@ -874,9 +874,9 @@ using assms by simp
 
 declare sequentially_consistent.simps [simp del]
 
-subsection {* Similar actions *}
+subsection \<open>Similar actions\<close>
 
-text {* Similar actions differ only in the values written/read. *}
+text \<open>Similar actions differ only in the values written/read.\<close>
 
 inductive sim_action :: 
   "('addr, 'thread_id) obs_event action \<Rightarrow> ('addr, 'thread_id) obs_event action \<Rightarrow> bool" 
@@ -994,7 +994,7 @@ lemma eq_into_sim_actions:
 unfolding sim_actions_def assms
 by(rule llist_all2_reflI)(auto)
 
-subsection {* Well-formedness conditions for execution sets *}
+subsection \<open>Well-formedness conditions for execution sets\<close>
 
 locale executions_base =
   fixes \<E> :: "('addr, 'thread_id) execution set"
@@ -1041,7 +1041,7 @@ locale jmm_consistent =
   for \<E> :: "('addr, 'thread_id) execution set"
   and P :: "'m prog"
 
-subsection {* Legal executions *}
+subsection \<open>Legal executions\<close>
 
 record ('addr, 'thread_id) pre_justifying_execution =
   committed :: "JMM_action set"
@@ -1073,12 +1073,12 @@ context
   and J :: "('addr, 'thread_id) justification"
 begin
 
-text {* 
+text \<open>
   This context defines the causality constraints for the JMM.
   The weak versions are for the fixed JMM as presented by Sevcik and Aspinall at ECOOP 2008.
-*}
+\<close>
 
-text {* Committed actions are an ascending chain with all actions of E as a limit *}
+text \<open>Committed actions are an ascending chain with all actions of E as a limit\<close>
 definition is_commit_sequence :: bool where 
   "is_commit_sequence \<longleftrightarrow> 
    committed (J 0) = {} \<and>
@@ -1123,7 +1123,7 @@ definition write_seen_committed :: bool where \<comment> \<open>JMM constraint 5
            r'' = inv_into (actions (justifying_exec (J (Suc n)))) (action_translation (J (Suc n))) r
        in action_translation (J (Suc n)) (justifying_ws (J (Suc n)) r'') = ws r)"
 
-text {* uncommited reads see writes that happen before them -- JMM constraint 6 *}
+text \<open>uncommited reads see writes that happen before them -- JMM constraint 6\<close>
 (* this constraint does not apply to the 0th justifying execution, so reads may see arbitrary writes,
    but this cannot be exploited because reads cannot be committed in the 1st justifying execution
    since no writes are committed in the 0th execution *)
@@ -1133,10 +1133,10 @@ definition uncommitted_reads_see_hb :: bool where
        action_translation (J (Suc n)) r' \<in> action_translation (J n) ` committed (J n) \<or> 
        P,justifying_exec (J (Suc n)) \<turnstile> justifying_ws (J (Suc n)) r' \<le>hb r')"
 
-text {*
+text \<open>
   newly committed reads see already committed writes and write-seen
   relationship must not change any more  -- JMM constraint 7
-*}
+\<close>
 definition committed_reads_see_committed_writes :: bool where
   "committed_reads_see_committed_writes \<longleftrightarrow>
   (\<forall>n. \<forall>r' \<in> read_actions (justifying_exec (J (Suc n))) \<inter> committed (J (Suc n)).
@@ -1151,26 +1151,26 @@ definition committed_reads_see_committed_writes_weak :: bool where
            committed_n = action_translation (J n) ` committed (J n)
        in r \<in> committed_n \<or> ws r \<in> committed_n)"
 
-text {* external actions must be committed as soon as hb-subsequent actions are committed  -- JMM constraint 9 *}
+text \<open>external actions must be committed as soon as hb-subsequent actions are committed  -- JMM constraint 9\<close>
 definition external_actions_committed :: bool where
   "external_actions_committed \<longleftrightarrow>
   (\<forall>n. \<forall>a \<in> external_actions (justifying_exec (J n)). \<forall>a' \<in> committed (J n).
        P,justifying_exec (J n) \<turnstile> a \<le>hb a' \<longrightarrow> a \<in> committed (J n))"
 
-text {* well-formedness conditions for action translations *}
+text \<open>well-formedness conditions for action translations\<close>
 definition wf_action_translations :: bool where
   "wf_action_translations \<longleftrightarrow>
   (\<forall>n. wf_action_translation_on (justifying_exec (J n)) E (committed (J n)) (action_translation (J n)))"
 
 end
 
-text {*
+text \<open>
   Rule 8 of the justification for the JMM is incorrect because there might be no
   transitive reduction of the happens-before relation for an infinite execution, if
   infinitely many initialisation actions have to be ordered before the start
   action of every thread.
-  Hence, @{text "is_justified_by"} omits this constraint.
-*}
+  Hence, \<open>is_justified_by\<close> omits this constraint.
+\<close>
 
 primrec is_justified_by ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> ('addr, 'thread_id) justification \<Rightarrow> bool" 
@@ -1189,13 +1189,13 @@ where
    external_actions_committed P J \<and> 
    wf_action_translations E J"
 
-text {*
+text \<open>
   Sevcik requires in the fixed JMM that external actions may
   only be committed when everything that happens before has 
   already been committed. On the level of legality, this constraint
   is vacuous because it is always possible to delay committing
   external actions, so we omit it here.
-*}
+\<close>
 primrec is_weakly_justified_by ::
   "'m prog \<Rightarrow> ('addr, 'thread_id) execution \<times> write_seen \<Rightarrow> ('addr, 'thread_id) justification \<Rightarrow> bool" 
   ("_ \<turnstile> _ weakly'_justified'_by _" [51, 50, 50] 50)
@@ -1212,7 +1212,7 @@ where
    committed_reads_see_committed_writes_weak ws J \<and> 
    wf_action_translations E J"
 
-text {*
+text \<open>
   Notion of conflict is strengthened to explicitly exclude volatile locations.
   Otherwise, the following program is not correctly synchronised:
 
@@ -1228,7 +1228,7 @@ text {*
 
   The JLS considers conflicting volatiles for data races, but this is only a 
   remark on the DRF guarantee. See JMM mailing list posts \#2477 to 2488.
-*}
+\<close>
 (* Problem already exists in Sevcik's formalisation *)
 
 definition non_volatile_conflict ::
@@ -1329,7 +1329,7 @@ next
     and ?C = "\<lambda>n. committed (J n)"
     and ?\<phi> = "\<lambda>n. action_translation (J n)"
     
-  note r = `r \<in> read_actions (?E (Suc n))`
+  note r = \<open>r \<in> read_actions (?E (Suc n))\<close>
   hence "r \<in> actions (?E (Suc n))" by simp
   
   from J have wfan: "wf_action_translation_on (?E n) E (?C n) (?\<phi> n)"
@@ -1360,7 +1360,7 @@ next
     moreover from r' CnCSn have "?\<phi> (Suc n) r \<in> ?\<phi> (Suc n) ` ?C (Suc n)" 
       unfolding r_r' by auto
     hence "r \<in> ?C (Suc n)"
-      unfolding inj_on_image_mem_iff[OF injSn C_sub_A `r \<in> actions (?E (Suc n))`] .
+      unfolding inj_on_image_mem_iff[OF injSn C_sub_A \<open>r \<in> actions (?E (Suc n))\<close>] .
     with wfaSn have "action_tid (?E (Suc n)) r = action_tid E (?\<phi> (Suc n) r)"
       and "action_obs (?E (Suc n)) r \<approx> action_obs E (?\<phi> (Suc n) r)"
       by(blast dest: wf_action_translation_on_actionD)+
@@ -1375,9 +1375,9 @@ next
     hence ws: "ws (?\<phi> n r') \<in> ?\<phi> n ` ?C n" using r' by(rule Suc)
 
     have r_conv_inv: "r = inv_into (actions (?E (Suc n))) (?\<phi> (Suc n)) (?\<phi> n r')"
-      using `r \<in> actions (?E (Suc n))` unfolding r_r'[symmetric]
+      using \<open>r \<in> actions (?E (Suc n))\<close> unfolding r_r'[symmetric]
       by(simp add: inv_into_f_f[OF injSn])
-    with `r' \<in> ?C n` r J `r' \<in> read_actions (?E n)`
+    with \<open>r' \<in> ?C n\<close> r J \<open>r' \<in> read_actions (?E n)\<close>
     have ws_eq: "?\<phi> (Suc n) (?ws (Suc n) r) = ws (?\<phi> n r')"
       by(simp add: Let_def write_seen_committed_def)
     with ws CnCSn have "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)" by auto
@@ -1388,7 +1388,7 @@ next
     ultimately show ?thesis by simp
   next
     case False
-    with r `r \<in> ?C (Suc n)` J
+    with r \<open>r \<in> ?C (Suc n)\<close> J
     have "ws (?\<phi> (Suc n) r) \<in> ?\<phi> n ` ?C n"
       unfolding is_weakly_justified_by.simps Let_def committed_reads_see_committed_writes_weak_def
       by blast
@@ -1417,7 +1417,7 @@ proof -
       and ?C = "\<lambda>n. committed (J n)"
       and ?\<phi> = "\<lambda>n. action_translation (J n)"
     
-    note r = `r \<in> read_actions (?E (Suc n))`
+    note r = \<open>r \<in> read_actions (?E (Suc n))\<close>
     hence "r \<in> actions (?E (Suc n))" by simp
     
     from J have wfan: "wf_action_translation_on (?E n) E (?C n) (?\<phi> n)"
@@ -1448,7 +1448,7 @@ proof -
       moreover from r' CnCSn have "?\<phi> (Suc n) r \<in> ?\<phi> (Suc n) ` ?C (Suc n)" 
         unfolding r_r' by auto
       hence "r \<in> ?C (Suc n)"
-        unfolding inj_on_image_mem_iff[OF injSn C_sub_A `r \<in> actions (?E (Suc n))`] .
+        unfolding inj_on_image_mem_iff[OF injSn C_sub_A \<open>r \<in> actions (?E (Suc n))\<close>] .
       with wfaSn have "action_tid (?E (Suc n)) r = action_tid E (?\<phi> (Suc n) r)"
         and "action_obs (?E (Suc n)) r \<approx> action_obs E (?\<phi> (Suc n) r)"
         by(blast dest: wf_action_translation_on_actionD)+
@@ -1464,9 +1464,9 @@ proof -
       then obtain ws: "ws (?\<phi> n r') \<in> ?\<phi> n ` ?C n" ..
 
       have r_conv_inv: "r = inv_into (actions (?E (Suc n))) (?\<phi> (Suc n)) (?\<phi> n r')"
-        using `r \<in> actions (?E (Suc n))` unfolding r_r'[symmetric]
+        using \<open>r \<in> actions (?E (Suc n))\<close> unfolding r_r'[symmetric]
         by(simp add: inv_into_f_f[OF injSn])
-      with `r' \<in> ?C n` r J `r' \<in> read_actions (?E n)`
+      with \<open>r' \<in> ?C n\<close> r J \<open>r' \<in> read_actions (?E n)\<close>
       have ws_eq: "?\<phi> (Suc n) (?ws (Suc n) r) = ws (?\<phi> n r')"
         by(simp add: Let_def write_seen_committed_def)
       with ws CnCSn have "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> (Suc n) ` ?C (Suc n)" by auto
@@ -1477,7 +1477,7 @@ proof -
       ultimately show ?thesis by simp
     next
       case False
-      with r `r \<in> ?C (Suc n)` J
+      with r \<open>r \<in> ?C (Suc n)\<close> J
       have "?\<phi> (Suc n) (?ws (Suc n) r) \<in> ?\<phi> n ` ?C n" 
         and "ws (?\<phi> (Suc n) r) \<in> ?\<phi> n ` ?C n"
         unfolding is_justified_by.simps Let_def committed_reads_see_committed_writes_def
@@ -1670,7 +1670,7 @@ proof(intro conjI strip)
   thus "wf_action_translation E (?J n)" using assms by(simp add: wf_action_translations_def)
 qed auto
 
-subsection {* Executions with common prefix *}
+subsection \<open>Executions with common prefix\<close>
 
 lemma actions_change_prefix:
   assumes read: "a \<in> actions E"
@@ -1841,18 +1841,18 @@ proof -
   obtain i where "i \<le> a'"
     and obs_i: "action_obs E i = InitialThreadAction" 
     and "action_tid E i = action_tid E a'" by auto
-  from `i \<le> a'` a' have "i \<in> actions E"
+  from \<open>i \<le> a'\<close> a' have "i \<in> actions E"
     by(auto simp add: actions_def le_less_trans[where y="enat a'"])
-  with `i \<le> a'` obs_i a' new_a' have "E \<turnstile> i \<le>a a'" by(simp add: action_order_def)
-  hence "E \<turnstile> i \<le>po a'" using `action_tid E i = action_tid E a'`
+  with \<open>i \<le> a'\<close> obs_i a' new_a' have "E \<turnstile> i \<le>a a'" by(simp add: action_order_def)
+  hence "E \<turnstile> i \<le>po a'" using \<open>action_tid E i = action_tid E a'\<close>
     by(rule program_orderI)
   
   moreover {
-    from `i \<in> actions E` obs_i
+    from \<open>i \<in> actions E\<close> obs_i
     have "i \<in> sactions P E" by(auto intro: sactionsI)
-    from a `i \<in> actions E` new_a obs_i have "E \<turnstile> a \<le>a i" by(simp add: action_order_def)
+    from a \<open>i \<in> actions E\<close> new_a obs_i have "E \<turnstile> a \<le>a i" by(simp add: action_order_def)
     moreover from a new_a have "a \<in> sactions P E" by(auto intro: sactionsI)
-    ultimately have "P,E \<turnstile> a \<le>so i" using `i \<in> sactions P E` by(rule sync_orderI)
+    ultimately have "P,E \<turnstile> a \<le>so i" using \<open>i \<in> sactions P E\<close> by(rule sync_orderI)
     moreover from new_a obs_i have "P \<turnstile> (action_tid E a, action_obs E a) \<leadsto>sw (action_tid E i, action_obs E i)"
       by cases(auto intro: synchronizes_with.intros)
     ultimately have "P,E \<turnstile> a \<le>sw i" by(rule sync_withI) }
@@ -1875,36 +1875,36 @@ next
   show ?case
   proof(cases "is_new_action (action_obs E a') \<and> \<not> is_new_action (action_obs E a'')")
     case False
-    from `po_sw P E a' a''` have "E \<turnstile> a' \<le>a a''" by(rule po_sw_into_action_order)
-    with `enat a'' < n` False have "enat a' < n"
+    from \<open>po_sw P E a' a''\<close> have "E \<turnstile> a' \<le>a a''" by(rule po_sw_into_action_order)
+    with \<open>enat a'' < n\<close> False have "enat a' < n"
       by(safe elim!: action_orderE)(metis Suc_leI Suc_n_not_le_n enat_ord_simps(2) le_trans nat_neq_iff xtrans(10))+
-    with `enat a < n` have "P,E' \<turnstile> a \<le>hb a'" by(rule step)
-    moreover from `po_sw P E a' a''` prefix `enat a' < n` `enat a'' < n`
+    with \<open>enat a < n\<close> have "P,E' \<turnstile> a \<le>hb a'" by(rule step)
+    moreover from \<open>po_sw P E a' a''\<close> prefix \<open>enat a' < n\<close> \<open>enat a'' < n\<close>
     have "po_sw P E' a' a''" by(rule po_sw_change_prefix)
     ultimately show ?thesis ..
   next
     case True
     then obtain new_a': "is_new_action (action_obs E a')"
       and "\<not> is_new_action (action_obs E a'')" ..
-    from `P,E \<turnstile> a \<le>hb a'` new_a'
+    from \<open>P,E \<turnstile> a \<le>hb a'\<close> new_a'
     have new_a: "is_new_action (action_obs E a)"
       and tid: "action_tid E a = action_tid E a'"
       and "a \<le> a'" by(rule happens_before_new_actionD)+
     
     note tsa_ok moreover
     from porder_happens_before[of E P] have "a \<in> actions E"
-      by(rule porder_onE)(erule refl_onPD1, rule `P,E \<turnstile> a \<le>hb a'`)
+      by(rule porder_onE)(erule refl_onPD1, rule \<open>P,E \<turnstile> a \<le>hb a'\<close>)
     hence "a \<in> actions E'" using an by(rule actions_change_prefix[OF _ prefix])
     moreover
-    from `po_sw P E a' a''` refl_on_program_order[of E] refl_on_sync_order[of P E]
+    from \<open>po_sw P E a' a''\<close> refl_on_program_order[of E] refl_on_sync_order[of P E]
     have "a'' \<in> actions E"
       unfolding po_sw_def by(auto dest: refl_onPD2 elim!: sync_withE)
-    hence "a'' \<in> actions E'" using `enat a'' < n` by(rule actions_change_prefix[OF _ prefix])
+    hence "a'' \<in> actions E'" using \<open>enat a'' < n\<close> by(rule actions_change_prefix[OF _ prefix])
     moreover
     from new_a action_obs_change_prefix[OF prefix an] 
     have "is_new_action (action_obs E' a)" by(cases) auto
     moreover
-    from `\<not> is_new_action (action_obs E a'')` action_obs_change_prefix[OF prefix `enat a'' < n`]
+    from \<open>\<not> is_new_action (action_obs E a'')\<close> action_obs_change_prefix[OF prefix \<open>enat a'' < n\<close>]
     have "\<not> is_new_action (action_obs E' a'')" by(auto elim: is_new_action.cases)
     ultimately show "P,E' \<turnstile> a \<le>hb a''" by(rule happens_before_new_not_new)
   qed
@@ -1920,15 +1920,15 @@ proof(rule thread_start_actions_okI)
   from sim have len_eq: "llength E = llength E'" by(simp add: sim_actions_def)(rule llist_all2_llengthD)
   with sim have sim': "ltake (llength E) E [\<approx>] ltake (llength E) E'" by(simp add: ltake_all)
 
-  from `a \<in> actions E'` len_eq have "enat a < llength E" by(simp add: actions_def)
-  with `a \<in> actions E'` sim'[symmetric] have "a \<in> actions E" by(rule actions_change_prefix)
+  from \<open>a \<in> actions E'\<close> len_eq have "enat a < llength E" by(simp add: actions_def)
+  with \<open>a \<in> actions E'\<close> sim'[symmetric] have "a \<in> actions E" by(rule actions_change_prefix)
   moreover have "\<not> is_new_action (action_obs E a)"
-    using action_obs_change_prefix[OF sim' `enat a < llength E`] `\<not> is_new_action (action_obs E' a)`
+    using action_obs_change_prefix[OF sim' \<open>enat a < llength E\<close>] \<open>\<not> is_new_action (action_obs E' a)\<close>
     by(auto elim!: is_new_action.cases)
   ultimately obtain i where "i \<le> a" "action_obs E i = InitialThreadAction" "action_tid E i = action_tid E a"
     by(blast dest: thread_start_actions_okD[OF tsa])
   thus "\<exists>i \<le> a. action_obs E' i = InitialThreadAction \<and> action_tid E' i = action_tid E' a"
-    using action_tid_change_prefix[OF sim', of i] action_tid_change_prefix[OF sim', of a] `enat a < llength E`
+    using action_tid_change_prefix[OF sim', of i] action_tid_change_prefix[OF sim', of a] \<open>enat a < llength E\<close>
       action_obs_change_prefix[OF sim', of i]
     by(cases "llength E")(auto intro!: exI[where x=i])
 qed
@@ -2055,7 +2055,7 @@ proof(cases rule: action_orderE)
   case 1
   from init_before_read[OF E r adal(1) sc]
   obtain i where "i < r" "i \<in> new_actions_for P E adal" by blast
-  moreover from `is_new_action (action_obs E w)` adal(2) `w \<in> actions E`
+  moreover from \<open>is_new_action (action_obs E w)\<close> adal(2) \<open>w \<in> actions E\<close>
   have "w \<in> new_actions_for P E adal" by(simp add: new_actions_for_def)
   ultimately show "w < r" using E by(auto dest: \<E>_new_actions_for_fun)
 next

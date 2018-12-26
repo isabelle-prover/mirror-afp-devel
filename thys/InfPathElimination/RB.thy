@@ -2,22 +2,22 @@ theory RB
 imports LTS ArcExt SubExt
 begin
 
-section {* Red-Black Graphs *}
+section \<open>Red-Black Graphs\<close>
 
-text {* In this section we define red\hyp{}black graphs and the five operators that perform over 
+text \<open>In this section we define red\hyp{}black graphs and the five operators that perform over 
 them. Then, we state and prove a number of intermediate lemmas about red\hyp{}black graphs 
 built using only these five operators, in other words: invariants about our method of transformation 
 of red\hyp{}black graphs.
 
 Then, we define the notion of red\hyp{}black paths and state and prove the main properties of our 
 method, namely its correctness and the fact that it preserves the set of feasible paths of the 
-program under analysis. *}
+program under analysis.\<close>
 
-subsection {* Basic Definitions *}
+subsection \<open>Basic Definitions\<close>
 
-subsubsection {* The type of Red-Black Graphs *}
+subsubsection \<open>The type of Red-Black Graphs\<close>
 
-text {* We represent red-black graph with the following record. We detail its fields:
+text \<open>We represent red-black graph with the following record. We detail its fields:
 \begin{itemize}
   \item @{term "red"} is the red graph, called \emph{red part}, which represents the unfolding of 
 the black part. Its vertices are indexed black vertices,
@@ -35,7 +35,7 @@ the configuration associated to the ``strengthened'' red vertex has to model.
 
 We are only interested by red-black graphs obtained by the inductive relation 
 @{term "RedBlack"}. From now on, we call ``red-black graphs" the @{term pre_RedBlack}'s 
-obtained by @{term "RedBlack"} and ``pre-red-black graphs" all other ones. *}
+obtained by @{term "RedBlack"} and ``pre-red-black graphs" all other ones.\<close>
 
 record ('vert,'var,'d) pre_RedBlack =
   red            :: "('vert \<times> nat) rgraph"
@@ -47,7 +47,7 @@ record ('vert,'var,'d) pre_RedBlack =
   strengthenings :: "('vert \<times> nat) \<Rightarrow> ('var,'d) bexp"
 
 
-text{* We call \emph{red vertices} the set of vertices of the red graph. *}
+text\<open>We call \emph{red vertices} the set of vertices of the red graph.\<close>
 
 
 abbreviation red_vertices :: 
@@ -56,8 +56,8 @@ where
   "red_vertices lts \<equiv> Graph.vertices (red lts)"
 
 
-text{* @{term "ui_edge"} is the operation of ``unindexing'' the ends of a red edge, thus giving the 
-corresponding black edge. *}
+text\<open>@{term "ui_edge"} is the operation of ``unindexing'' the ends of a red edge, thus giving the 
+corresponding black edge.\<close>
 
 
 abbreviation ui_edge :: 
@@ -66,7 +66,7 @@ where
   "ui_edge e \<equiv> \<lparr> src = fst (src e), tgt = fst (tgt e) \<rparr>"
 
 
-text {* We extend this idea to sequences of edges. *}
+text \<open>We extend this idea to sequences of edges.\<close>
 
 
 abbreviation ui_es ::
@@ -76,18 +76,18 @@ where
 
 
 
-subsubsection {* Well-formed and finite red-black graphs *}
+subsubsection \<open>Well-formed and finite red-black graphs\<close>
 
 locale pre_RedBlack =
   fixes prb :: "('vert,'var,'d) pre_RedBlack" (structure)
 
 
-text {* A pre-red-black graph is well-formed if :
+text \<open>A pre-red-black graph is well-formed if :
 \begin{itemize}
   \item its red and black parts are well-formed,
   \item the root of its red part is an indexed version of the root of its black part,
   \item all red edges are indexed versions of black edges. 
-\end{itemize} *}
+\end{itemize}\<close>
 
 locale wf_pre_RedBlack = pre_RedBlack +
   assumes red_wf           : "wf_rgraph (red prb)"
@@ -99,12 +99,12 @@ begin
 end
 
 
-text{* We say that a pre-red-black graph is finite if :
+text\<open>We say that a pre-red-black graph is finite if :
 \begin{itemize}
   \item the path predicate of its initial configuration contains a finite number of constraints,
   \item each of these constraints contains a finite number of variables,
   \item its black part is finite (cf. definition of @{term "finite_lts"}.).
-\end{itemize} *}
+\end{itemize}\<close>
 
 
 locale finite_RedBlack = pre_RedBlack +
@@ -120,9 +120,9 @@ end
 
 
 
-subsection {* Extensions of Red-Black Graphs *}
+subsection \<open>Extensions of Red-Black Graphs\<close>
 
-text {* We now define the five basic operations that can be performed over red-black graphs. Since 
+text \<open>We now define the five basic operations that can be performed over red-black graphs. Since 
 we do not want to model the heuristics part of our prototype, a number of conditions must be met 
 for each operator to apply. For example, in our prototype abstractions are performed at nodes that 
 actually have successors, and these abstractions must be propagated to these successors in order to 
@@ -131,14 +131,14 @@ in Isabelle/HOL. This is partially due to the fact that we model the red part as
 propagation might not terminate. Instead, we suppose that abstraction must be performed only at 
 leaves of the red part. This is equivalent to implicitly assume the existence of an oracle that 
 would tell that we will need to abstract some red vertex and how to abstract it, as soon as this red 
-vertex is added to the red part. *}
+vertex is added to the red part.\<close>
 
-text {* As in the previous theories, we use predicates instead of functions to model these 
-transformations to ease writing and reading definitions, proofs, etc. *}
+text \<open>As in the previous theories, we use predicates instead of functions to model these 
+transformations to ease writing and reading definitions, proofs, etc.\<close>
 
-subsubsection {* Extension by symbolic execution *}
+subsubsection \<open>Extension by symbolic execution\<close>
 
-text{* The core abstract operation of symbolic execution: take a black edge and
+text\<open>The core abstract operation of symbolic execution: take a black edge and
 turn it red, by symbolic execution of its label. In the following abbreviation, @{term re} is the 
 red edge obtained from the (hypothetical) black edge @{term e} that we want to symbolically execute 
 and @{term c} the configuration obtained by symbolic execution of the label of @{term e}. Note that 
@@ -146,7 +146,7 @@ this extension could have been defined as a
 predicate that takes only two @{term pre_RedBlack}s and evaluates to \emph{true} if and only if 
 the second has been obtained by adding a red edge as a result of symbolic execution. However, 
 making the red edge and the configuration explicit allows for lighter definitions, lemmas and proofs 
-in the following.  *}
+in the following.\<close>
 
 abbreviation se_extends :: 
   "('vert,'var,'d) pre_RedBlack 
@@ -168,10 +168,10 @@ where
               strengthenings = strengthenings prb \<rparr>"
 
 
-text {* Hiding the new red edge (using an existential quantifier) and the new configuration makes 
+text \<open>Hiding the new red edge (using an existential quantifier) and the new configuration makes 
 the following abbreviation more 
 intuitive. However, this would require using \verb?obtain? or \verb?let ... = ... in ...? constructs 
-in the following lemmas and proofs, making them harder to read and write. *}
+in the following lemmas and proofs, making them harder to read and write.\<close>
 
 abbreviation se_extends2 :: 
   "('vert,'var,'d) pre_RedBlack \<Rightarrow> ('vert,'var,'d) pre_RedBlack \<Rightarrow> bool"
@@ -190,11 +190,11 @@ where
    \<and> strengthenings prb' = strengthenings prb"
 
 
-subsubsection {* Extension by marking *}
+subsubsection \<open>Extension by marking\<close>
 
-text{* The abstract operation of mark-as-unsat. It manages the information
+text\<open>The abstract operation of mark-as-unsat. It manages the information
 - provided, for example, by an external automated prover -, that the 
-configuration of the red vertex @{term rv} has been proved unsatisfiable. *}
+configuration of the red vertex @{term rv} has been proved unsatisfiable.\<close>
 
 abbreviation mark_extends ::
   "('vert,'var,'d) pre_RedBlack \<Rightarrow> ('vert \<times> nat) \<Rightarrow> ('vert,'var,'d) pre_RedBlack \<Rightarrow> bool"
@@ -215,9 +215,9 @@ where
               \<dots>        = more prb \<rparr> "
 
 
-subsubsection {* Extension by subsumption *}
+subsubsection \<open>Extension by subsumption\<close>
 
-text{* The abstract operation of introducing a subsumption link. *}
+text\<open>The abstract operation of introducing a subsumption link.\<close>
 
 abbreviation subsum_extends ::
   "('vert,'var,'d) pre_RedBlack \<Rightarrow> 'vert sub_t \<Rightarrow> ('vert,'var,'d) pre_RedBlack \<Rightarrow> bool"
@@ -237,12 +237,12 @@ where
               \<dots>        = more prb \<rparr>"
 
 
-subsubsection {* Extension by abstraction *}
+subsubsection \<open>Extension by abstraction\<close>
 
-text{* This operation replaces the configuration of a red vertex @{term rv} by an abstraction of 
+text\<open>This operation replaces the configuration of a red vertex @{term rv} by an abstraction of 
 this configuration. The way the abstraction is computed is not specified. However, besides a number 
 of side conditions, it must subsume the former configuration of @{term rv} and must entail its 
-safeguard condition, if any. *}
+safeguard condition, if any.\<close>
 
 abbreviation abstract_extends ::
   "('vert,'var,'d) pre_RedBlack 
@@ -270,10 +270,10 @@ where
                \<dots>        = more prb \<rparr>"
       
 
-subsubsection {* Extension by strengthening *}
+subsubsection \<open>Extension by strengthening\<close>
 
-text {* This operation consists in labeling a red vertex with a safeguard condition. It does not 
-actually change the red part, but model the mechanism of preventing too crude abstractions. *}
+text \<open>This operation consists in labeling a red vertex with a safeguard condition. It does not 
+actually change the red part, but model the mechanism of preventing too crude abstractions.\<close>
 
 abbreviation strengthen_extends ::
   "('vert,'var,'d) pre_RedBlack 
@@ -297,12 +297,12 @@ where
 
 
 
-subsection {* Building Red-Black Graphs using Extensions *}
+subsection \<open>Building Red-Black Graphs using Extensions\<close>
 
 
-text{* Red-black graphs are pre-red-black graphs built with the following inductive relation, i.e.\ 
+text\<open>Red-black graphs are pre-red-black graphs built with the following inductive relation, i.e.\ 
 using only the five previous pre-red-black graphs transformation operators, starting from an 
-empty red part. *}
+empty red part.\<close>
 
 inductive RedBlack ::
   "('vert,'var,'d) pre_RedBlack \<Rightarrow> bool"
@@ -336,12 +336,12 @@ where
      strengthen_extends prb rv e prb'             \<Longrightarrow> RedBlack prb'"
 
 
-subsection {* Properties of Red-Black-Graphs *}
+subsection \<open>Properties of Red-Black-Graphs\<close>
 
-subsubsection{* Invariants of the Red\hyp{}Black Graphs *}
+subsubsection\<open>Invariants of the Red\hyp{}Black Graphs\<close>
 
 
-text{* The red part of a red-black graph is loop free. *}
+text\<open>The red part of a red-black graph is loop free.\<close>
 
 lemma
   assumes "RedBlack prb"
@@ -349,7 +349,7 @@ lemma
 using assms by (induct prb) auto
 
 
-text{* A red edge can not lead to the (red) root. *}
+text\<open>A red edge can not lead to the (red) root.\<close>
 
 
 lemma 
@@ -359,7 +359,7 @@ lemma
 using assms by (induct prb) (auto simp add : vertices_def)
 
 
-text{* Red edges are specific versions of black edges. *}
+text\<open>Red edges are specific versions of black edges.\<close>
 
 lemma ui_re_is_be :
   assumes "RedBlack prb"
@@ -368,8 +368,8 @@ lemma ui_re_is_be :
 using assms by (induct rule : RedBlack.induct) auto
 
 
-text{* The set of out-going edges from a red vertex is a subset of the set of out-going edges from 
-the black location it represents. *}
+text\<open>The set of out-going edges from a red vertex is a subset of the set of out-going edges from 
+the black location it represents.\<close>
 
 lemma red_OA_subset_black_OA :
   assumes "RedBlack prb"
@@ -377,7 +377,7 @@ lemma red_OA_subset_black_OA :
 using assms by (induct prb) (fastforce simp add : vertices_def)+
 
 
-text {* The red root is an indexed version of the black initial location. *}
+text \<open>The red root is an indexed version of the black initial location.\<close>
 
 lemma consistent_roots :
   assumes "RedBlack prb"
@@ -386,7 +386,7 @@ using assms by (induct prb) auto
 
 
 
-text{* The red part of a red-black graph is a tree. *}
+text\<open>The red part of a red-black graph is a tree.\<close>
 
 lemma 
   assumes "RedBlack prb"
@@ -395,7 +395,7 @@ using assms
 by (induct prb) (auto simp add : empty_graph_is_tree ArcExt.extends_is_tree)
 
  
-text {* A red-black graph whose black part is well-formed is also well-formed. *}
+text \<open>A red-black graph whose black part is well-formed is also well-formed.\<close>
 
 lemma
   assumes "RedBlack prb"
@@ -411,7 +411,7 @@ proof -
 qed
 
 
-text {* Red locations of a red-black graph are indexed versions of its black locations. *}
+text \<open>Red locations of a red-black graph are indexed versions of its black locations.\<close>
 
 lemma ui_rv_is_bv :
   assumes "RedBlack prb"
@@ -422,7 +422,7 @@ by (auto simp add : vertices_def image_def Bex_def) fastforce+
 
 
 
-text {* The subsumption of a red-black graph is a sub-relation of its red part. *}
+text \<open>The subsumption of a red-black graph is a sub-relation of its red part.\<close>
 
 lemma subs_sub_rel_of :
   assumes "RedBlack prb"
@@ -444,7 +444,7 @@ qed
 
 
 
-text{* The subsumption relation of red-black graph is well-formed. *}
+text\<open>The subsumption relation of red-black graph is well-formed.\<close>
 
 lemma subs_wf_sub_rel :
   assumes "RedBlack prb"
@@ -465,8 +465,8 @@ next
 qed
 
 
-text {* Using the two previous lemmas, we have that the subsumption relation of a red-black graph 
-is a well-formed sub-relation of its red-part. *}
+text \<open>Using the two previous lemmas, we have that the subsumption relation of a red-black graph 
+is a well-formed sub-relation of its red-part.\<close>
 
 lemma subs_wf_sub_rel_of :
   assumes "RedBlack prb"
@@ -474,7 +474,7 @@ lemma subs_wf_sub_rel_of :
 using assms subs_sub_rel_of subs_wf_sub_rel by (simp add : wf_sub_rel_of_def) fast
 
 
-text{* Subsumptions only involve red locations representing the same black location. *}
+text\<open>Subsumptions only involve red locations representing the same black location.\<close>
 
 lemma subs_to_same_BL :
   assumes "RedBlack prb"
@@ -483,9 +483,9 @@ lemma subs_to_same_BL :
 using assms subs_wf_sub_rel unfolding wf_sub_rel_def by fast
 
 
-text{* If a red edge sequence @{term "res"} is consistent between red locations @{term "rv1"} and 
+text\<open>If a red edge sequence @{term "res"} is consistent between red locations @{term "rv1"} and 
 @{term "rv2"} with respect to the subsumption relation of a red-black graph, then its unindexed 
-version is consistent between the black locations represented by @{term "rv1"} and @{term "rv2"}. *}
+version is consistent between the black locations represented by @{term "rv1"} and @{term "rv2"}.\<close>
 
 lemma rces_imp_bces :
   assumes "RedBlack prb"
@@ -516,10 +516,10 @@ next
 qed
 
 
-text{* The unindexed version of a subpath in the red part of a red-black graph is a subpath in its 
+text\<open>The unindexed version of a subpath in the red part of a red-black graph is a subpath in its 
 black part. This is an important fact: in the end, it helps proving that set of paths we consider 
 in red-black graphs are paths of the original LTS. Thus, the same states are computed along 
-these paths. *}
+these paths.\<close>
 
 theorem red_sp_imp_black_sp :
   assumes "RedBlack prb"
@@ -529,8 +529,8 @@ using assms rces_imp_bces ui_rv_is_bv ui_re_is_be
 unfolding subpath_def Graph.subpath_def by (intro conjI) (fast, fast, fastforce)
 
 
-text{* Any constraint in the path predicate of a configuration associated to a red location of a 
-red-black graph contains a finite number of variables. *}
+text\<open>Any constraint in the path predicate of a configuration associated to a red location of a 
+red-black graph contains a finite number of variables.\<close>
 
 lemma finite_pred_constr_symvars :
   assumes "RedBlack prb"
@@ -586,8 +586,8 @@ next
 qed
 
 
-text {* The path predicate of a configuration associated to a red location of a 
-red-black graph contains a finite number of constraints. *}
+text \<open>The path predicate of a configuration associated to a red location of a 
+red-black graph contains a finite number of constraints.\<close>
 
 lemma finite_pred :
   assumes "RedBlack prb"
@@ -631,9 +631,9 @@ next
 qed
 
 
-text{* Hence, for a red location @{term "rv"} of a red-black graph and any label @{term "l"}, 
+text\<open>Hence, for a red location @{term "rv"} of a red-black graph and any label @{term "l"}, 
 there exists a configuration that can be obtained by symbolic execution of @{term "l"} from the 
-configuration associated to @{term "rv"}. *}
+configuration associated to @{term "rv"}.\<close>
 
 lemma (in finite_RedBlack) ex_se_succ :
   assumes "RedBlack prb"
@@ -647,7 +647,7 @@ unfolding finite_RedBlack_def by fast
 
 
 
-text{* Generalization of the previous lemma to a list of labels. *}
+text\<open>Generalization of the previous lemma to a list of labels.\<close>
 
 lemma (in finite_RedBlack) ex_se_star_succ :
   assumes "RedBlack prb"
@@ -661,8 +661,8 @@ using finite_RedBlack assms
 unfolding finite_RedBlack_def by simp
 
 
-text{* Hence, for any red sub-path, there exists a configuration that can be obtained by symbolic 
-execution of its trace from the configuration associated to its source. *}
+text\<open>Hence, for any red sub-path, there exists a configuration that can be obtained by symbolic 
+execution of its trace from the configuration associated to its source.\<close>
 
 lemma (in finite_RedBlack) sp_imp_ex_se_star_succ :
   assumes "RedBlack prb"
@@ -675,7 +675,7 @@ using finite_RedBlack assms ex_se_star_succ
 by (simp add : subpath_def finite_RedBlack_def)
 
 
-text{* The configuration associated to a red location @{term "rl"} is update-able. *}
+text\<open>The configuration associated to a red location @{term "rl"} is update-able.\<close>
 
 lemma (in finite_RedBlack)
   assumes "RedBlack prb"
@@ -688,8 +688,8 @@ using finite_RedBlack assms
 unfolding finite_RedBlack_def by fast
 
 
-text{* The configuration associated to the first member of a subsumption is subsumed by the 
-configuration at its second member. *}
+text\<open>The configuration associated to the first member of a subsumption is subsumed by the 
+configuration at its second member.\<close>
 
 lemma sub_subsumed :
   assumes "RedBlack prb"
@@ -739,13 +739,13 @@ next
                                 "confs prb' (subsumer sub)"]
          by (simp add : subsums_refl)
   next
-    assume "rv \<noteq> subsumer sub" thus ?thesis using abstract_step `rv \<noteq> subsumee sub` by simp
+    assume "rv \<noteq> subsumer sub" thus ?thesis using abstract_step \<open>rv \<noteq> subsumee sub\<close> by simp
   qed
 next
   case strengthen_step thus ?case by simp
 qed
 
-subsubsection{* Simplification lemmas for sub-paths of the red part. *}
+subsubsection\<open>Simplification lemmas for sub-paths of the red part.\<close>
 
 lemma rb_Nil_sp :
   assumes "RedBlack prb"
@@ -782,16 +782,16 @@ lemma rb_sp_append_one :
 using assms subs_wf_sub_rel wf_sub_rel.sp_append_one sp_append_one by fast
 
 
-subsection {* Relation between red-vertices *}
+subsection \<open>Relation between red-vertices\<close>
 
-text{* The following key-theorem describes the relation between two red locations that are linked by 
+text\<open>The following key-theorem describes the relation between two red locations that are linked by 
 a red sub-path. In a classical symbolic execution tree, the configuration at the end should be the 
 result of symbolic execution of the trace of the sub-path from the configuration at its source. 
 Here, due to the facts that abstractions might have occurred and that we consider sub-paths going 
 through subsumption links, the configuration at the end subsumes the configuration one would obtain 
 by symbolic execution of the trace. Note however that this is only true for configurations computed 
 during the analysis: concrete execution of the sub-paths would yield the same program states 
-than their counterparts in the original LTS. *} 
+than their counterparts in the original LTS.\<close> 
 
 thm RedBlack.induct[of x P]
 
@@ -884,8 +884,8 @@ next
       have "c' \<sqsubseteq> (confs prb (src re))" using se_step by fastforce
 
       thus ?thesis 
-           using se_step `rv1 \<noteq> tgt re` 2 
-                 `se c' (labelling (black prb) (ui_edge re)) c`
+           using se_step \<open>rv1 \<noteq> tgt re\<close> 2 
+                 \<open>se c' (labelling (black prb) (ui_edge re)) c\<close>
            by (auto simp add : se_mono_for_sub)
     qed
   next
@@ -906,7 +906,7 @@ next
       hence "rv1 \<in> subsumees (subs prb)" using se_step(3) by force
 
       thus ?thesis 
-           using se_step `rv1 = tgt re` subs_sub_rel_of[OF se_step(1)] 
+           using se_step \<open>rv1 = tgt re\<close> subs_sub_rel_of[OF se_step(1)] 
            by (auto simp add  : sub_rel_of_def)
     qed
 
@@ -969,7 +969,7 @@ next
            configuration at rv1. We conclude using reflexivity of subsumption. *)
         assume "rv1 = rv2" 
         thus ?thesis 
-             using subsum_step(5) `res = []` 
+             using subsum_step(5) \<open>res = []\<close> 
              by (simp add : subsums_refl)
       next
         (* If (rv1, rv2) is in the new subsumption relation, then the configuration at rv1 is 
@@ -977,7 +977,7 @@ next
            at rv1. *) 
         assume "(rv1, rv2) \<in> (subs prb')" 
         thus ?thesis 
-             using subsum_step(5) `res = []` 
+             using subsum_step(5) \<open>res = []\<close> 
                    sub_subsumed[OF RB', of "(rv1,rv2)"] 
              by simp
       qed
@@ -1017,7 +1017,7 @@ next
         qed
 
         thus ?case 
-        using subsum_step(3) 1(2) `rv1 = subsumee sub` by simp
+        using subsum_step(3) 1(2) \<open>rv1 = subsumee sub\<close> by simp
 
       next
         (* Inductive case : the red subpath has the form res@[ra]. *)
@@ -1054,7 +1054,7 @@ next
         obtain c''
         where E : "se (confs prb' (src re)) (labelling (black prb') (ui_edge re)) c''"
         using subsum_step(6-8)
-              `subpath (red prb') (src re) [re] (tgt re) (subs prb')`
+              \<open>subpath (red prb') (src re) [re] (tgt re) (subs prb')\<close>
               RB' finite_RedBlack.ex_se_succ[of prb' "src re"]
         unfolding finite_RedBlack_def
         by (simp add : se_star_one fst_of_sp_is_vert) blast        
@@ -1169,13 +1169,13 @@ next
       proof -
         have "c1 \<sqsubseteq> confs prb' (subsumee sub)" 
              using subsum_step(2,3,6-8) 
-                   `subpath (red prb) rv1 res1 (subsumee sub) (subs prb)`
-                   `se_star (confs prb' rv1) t_res1 c1`
+                   \<open>subpath (red prb) rv1 res1 (subsumee sub) (subs prb)\<close>
+                   \<open>se_star (confs prb' rv1) t_res1 c1\<close>
              by (auto simp add : t_res1_def t_res2_def)
         
         thus ?thesis
-             using `se_star c1 t_res2 c` 
-                   `se_star (confs prb' (subsumee sub)) t_res2 c2`
+             using \<open>se_star c1 t_res2 c\<close> 
+                   \<open>se_star (confs prb' (subsumee sub)) t_res2 c2\<close>
                    se_star_mono_for_sub
              by fast
       qed
@@ -1183,8 +1183,8 @@ next
       moreover
       (* Here we have to proceed by beckward induction on res2. *)
       have "c2 \<sqsubseteq> confs prb' rv2"
-           using `subpath (red prb') (subsumee sub) res2 rv2 (subs prb')`
-                 `se_star (confs prb' (subsumee sub)) t_res2 c2`
+           using \<open>subpath (red prb') (subsumee sub) res2 rv2 (subs prb')\<close>
+                 \<open>se_star (confs prb' (subsumee sub)) t_res2 c2\<close>
            unfolding t_res2_def
            proof (induct res2 arbitrary : rv2 c2 rule : rev_induct, goal_cases)
            (* If the suffix is empty, then either subsumee sub equals rv2, either 
@@ -1338,7 +1338,7 @@ next
     have  "rv2 = rv" 
     proof -
       have "rv1 = rv2 \<or> (rv1, rv2) \<in> (subs prb)"
-           using abstract_step `res = []` 
+           using abstract_step \<open>res = []\<close> 
                  rb_Nil_sp[OF RedBlack.abstract_step[OF abstract_step(1,3)]]
            by simp 
 
@@ -1392,9 +1392,9 @@ qed
 
 
 
-subsection{* Properties about marking. *}
+subsection\<open>Properties about marking.\<close>
 
-text {* A configuration which is indeed satisfiable can not be marked. *}
+text \<open>A configuration which is indeed satisfiable can not be marked.\<close>
 
 lemma sat_not_marked :
   assumes "RedBlack prb"
@@ -1445,7 +1445,7 @@ next
 qed
 
 
-text{* On the other hand, a red-location which is marked unsat is indeed logically unsatisfiable. *}
+text\<open>On the other hand, a red-location which is marked unsat is indeed logically unsatisfiable.\<close>
 
 lemma
   assumes "RedBlack prb"
@@ -1471,7 +1471,7 @@ next
     ultimately
     have "\<not> sat (confs prb rv)" by (rule se_step(2))
 
-    thus ?thesis using se_step(3) `rv \<noteq> tgt re` by auto
+    thus ?thesis using se_step(3) \<open>rv \<noteq> tgt re\<close> by auto
   next
     case 2
 
@@ -1481,7 +1481,7 @@ next
     ultimately
     have "\<not> sat (confs prb (src re))" using se_step(2,3) by auto
 
-    thus ?thesis using se_step(3) `rv = tgt re` unsat_imp_se_unsat by (elim conjE) auto
+    thus ?thesis using se_step(3) \<open>rv = tgt re\<close> unsat_imp_se_unsat by (elim conjE) auto
   qed
 next
   case (mark_step prb rv' prb') thus ?case by (case_tac "rv' = rv") auto
@@ -1498,7 +1498,7 @@ qed
 
 
 
-text{* Red vertices involved in subsumptions are not marked. *}
+text\<open>Red vertices involved in subsumptions are not marked.\<close>
 
 
 lemma subsumee_not_marked :
@@ -1562,7 +1562,7 @@ qed
 
 
 
-text{* If the target of a red edge is not marked, then its source is also not marked. *}
+text\<open>If the target of a red edge is not marked, then its source is also not marked.\<close>
 
 lemma tgt_not_marked_imp :
   assumes "RedBlack prb"
@@ -1586,9 +1586,9 @@ next
   case strengthen_step thus ?case by simp
 qed
 
-text{* Given a red subpath leading from red location @{term "rv1"} to red location @{term "rv2"},
+text\<open>Given a red subpath leading from red location @{term "rv1"} to red location @{term "rv2"},
 if @{term "rv2"} is not marked, then @{term "rv1"} is also not marked (this
-lemma is not used). *}
+lemma is not used).\<close>
 
 lemma
   assumes "RedBlack prb"
@@ -1629,21 +1629,21 @@ next
 qed
 
 
-subsection{* Fringe of a red-black graph *}
+subsection\<open>Fringe of a red-black graph\<close>
 
-text {* We have stated and proved a number of properties of red-black graphs. In the end, we are 
+text \<open>We have stated and proved a number of properties of red-black graphs. In the end, we are 
 mainly interested in proving that the set of paths of such red-black graphs are subsets of the set 
 of feasible paths of their black part. Before defining the set of paths of red-black graphs, we 
 first introduce the intermediate concept of \emph{fringe} of the red part. Intuitively, the fringe 
 is the set of red vertices from which we can approximate more precisely the set of feasible paths of 
 the black part. This includes red vertices that have not been subsumed yet, that are not marked and 
 from which some black edges have not been yet symbolically executed (i.e.\ that have no red 
-counterpart from these red vertices). *}
+counterpart from these red vertices).\<close>
 
-subsubsection {* Definition *}
+subsubsection \<open>Definition\<close>
 
-text{* The fringe is the set of red locations from which there exist black edges that have not 
-been followed yet. *}
+text\<open>The fringe is the set of red locations from which there exist black edges that have not 
+been followed yet.\<close>
 
 definition fringe :: 
   "('vert, 'var, 'd, 'x) pre_RedBlack_scheme \<Rightarrow> ('vert \<times> nat) set"
@@ -1654,10 +1654,10 @@ where
                    ui_edge ` out_edges (red prb) rv \<subset> out_edges (black prb) (fst rv)}"
 
 
-subsubsection {* Fringe of an empty red-part *}
+subsubsection \<open>Fringe of an empty red-part\<close>
 
-text{* At the beginning of the analysis, i.e.\ when the red part is empty, the fringe consists of the 
-red root. *}
+text\<open>At the beginning of the analysis, i.e.\ when the red part is empty, the fringe consists of the 
+red root.\<close>
 
 lemma fringe_of_empty_red1 :
   assumes "edges (red prb) = {}"
@@ -1668,13 +1668,13 @@ lemma fringe_of_empty_red1 :
 using assms by (auto simp add : fringe_def vertices_def)
 
 
-subsubsection {* Evolution of the fringe after extension *}
+subsubsection \<open>Evolution of the fringe after extension\<close>
 
-text{* Simplification lemmas for the fringe of the new red-black graph after adding an edge by 
+text\<open>Simplification lemmas for the fringe of the new red-black graph after adding an edge by 
 symbolic execution. If the configuration from which symbolic execution is performed is not marked 
 yet, and if there exists black edges going out of the target of the executed edge, the target of 
 the new red edge enters the fringe. Moreover, if there still exist black edges that have no red 
-counterpart yet at the source of the new edge, then its source was and stays in the fringe. *}
+counterpart yet at the source of the new edge, then its source was and stays in the fringe.\<close>
 
 lemma seE_fringe1 :
   assumes "sub_rel_of (red prb) (subs prb)"
@@ -1719,7 +1719,7 @@ next
       assume "rv = src re" thus ?thesis using assms(2,4) by auto
     next
       assume "rv \<noteq> src re" thus ?thesis 
-      using assms(2) `rv \<in> fringe prb`
+      using assms(2) \<open>rv \<in> fringe prb\<close>
       by (auto simp add : fringe_def)
     qed
   next
@@ -1746,8 +1746,8 @@ next
   show ?case by (simp add : fringe_def)
 qed
 
-text {* On the other hand, if all possible black edges have been executed from the source of the new 
-edge after the extension, then the source is removed from the fringe.  *}
+text \<open>On the other hand, if all possible black edges have been executed from the source of the new 
+edge after the extension, then the source is removed from the fringe.\<close>
 
 lemma  seE_fringe4 :
   assumes "sub_rel_of (red prb) (subs prb)"
@@ -1813,8 +1813,8 @@ next
   show ?case by (simp add : fringe_def)
 qed
 
-text {* If the source of the new edge is marked, then its target does not enter the fringe (and the 
-source was not part of it in the first place). *}
+text \<open>If the source of the new edge is marked, then its target does not enter the fringe (and the 
+source was not part of it in the first place).\<close>
 
 lemma seE_fringe2 :
   assumes "se_extends prb re c prb'"
@@ -1862,8 +1862,8 @@ next
   qed
 qed
 
-text {* If there exists no black edges going out of the target of the new edge, then this target 
-does not enter the fringe. *}
+text \<open>If there exists no black edges going out of the target of the new edge, then this target 
+does not enter the fringe.\<close>
 
 lemma seE_fringe3 :
   assumes "se_extends prb re c' prb'"
@@ -1909,8 +1909,8 @@ next
 qed
 
 
-text {* Moreover, if all possible black edges have been executed from the source of the new edge 
-after the extension, then this source is removed from the fringe. *}
+text \<open>Moreover, if all possible black edges have been executed from the source of the new edge 
+after the extension, then this source is removed from the fringe.\<close>
 
 lemma seE_fringe5 :
   assumes "se_extends prb re c' prb'"
@@ -1932,9 +1932,9 @@ proof (intro allI iffI, goal_cases)
 
     have "marked prb' rv"
     proof -
-      have "rv \<noteq> tgt re" using assms(1) `rv \<in> red_vertices prb` by auto
+      have "rv \<noteq> tgt re" using assms(1) \<open>rv \<in> red_vertices prb\<close> by auto
       
-      thus ?thesis using assms(1) `marked prb rv` by auto
+      thus ?thesis using assms(1) \<open>marked prb rv\<close> by auto
     qed
   
     thus False using 1 by (auto simp add : fringe_def)
@@ -1968,8 +1968,8 @@ next
 qed
 
 
-text{* Adding a subsumption to the subsumption relation removes the first member of the 
-subsumption from the fringe. *}
+text\<open>Adding a subsumption to the subsumption relation removes the first member of the 
+subsumption from the fringe.\<close>
 
 lemma subsumE_fringe :
   assumes "subsum_extends prb sub prb'"
@@ -1978,9 +1978,9 @@ using assms by (auto simp add : fringe_def)
 
 
 
-subsection{* Red-Black Sub-Paths and Paths *}
+subsection\<open>Red-Black Sub-Paths and Paths\<close>
 
-text{* The set of red-black subpaths starting in red location @{term "rv"} is the union of :
+text\<open>The set of red-black subpaths starting in red location @{term "rv"} is the union of :
 \begin{itemize}
   \item the set of black sub-paths that have a red counterpart starting at @{term "rv"} and leading 
 to a non-marked red location,
@@ -1989,7 +1989,7 @@ at @{term "rv"} and leading to an element of the fringe. Moreover, the remaining
 sub-paths must have no non-empty counterpart in the red part. Otherwise, the set of red-black paths 
 would simply be the set of paths of the black part.
 \end{itemize}
-*}
+\<close>
 
 definition RedBlack_subpaths_from ::
   "('vert, 'var, 'd, 'x) pre_RedBlack_scheme \<Rightarrow> ('vert \<times> nat) \<Rightarrow> 'vert edge list set"
@@ -2006,7 +2006,7 @@ where
 
 
 
-text{* Red-black paths are red-black subpaths starting at the root of the red part. *}
+text\<open>Red-black paths are red-black subpaths starting at the root of the red part.\<close>
 
 abbreviation RedBlack_paths :: 
   "('vert, 'var, 'd, 'x) pre_RedBlack_scheme \<Rightarrow> 'vert edge list set"
@@ -2014,8 +2014,8 @@ where
   "RedBlack_paths prb \<equiv> RedBlack_subpaths_from prb (root (red prb))"
 
 
-text{* When the red part is empty, the set of red-black subpaths starting at the red root is the set 
-of black paths. *}
+text\<open>When the red part is empty, the set of red-black subpaths starting at the red root is the set 
+of black paths.\<close>
 
 lemma (in finite_RedBlack) base_RedBlack_paths :
   assumes "fst (root (red prb)) = init (black prb)"
@@ -2056,7 +2056,7 @@ proof -
        hence "res1 = []" using assms by (simp add : subpath_def)
    
        ultimately
-       show ?thesis using assms `rv \<in> fringe prb` by (simp add : fringe_def vertices_def)
+       show ?thesis using assms \<open>rv \<in> fringe prb\<close> by (simp add : fringe_def vertices_def)
      qed
   next
     fix bes
@@ -2077,8 +2077,8 @@ proof -
                show "\<not> marked prb (root (red prb))" using assms(5) by simp
              next
                show "bes = ui_es []" 
-               using `bes \<in> Graph.paths (black prb)` 
-                     `out_edges (black prb) (init (black prb)) = {}`
+               using \<open>bes \<in> Graph.paths (black prb)\<close> 
+                     \<open>out_edges (black prb) (init (black prb)) = {}\<close>
                by (cases bes) (auto simp add : Graph.sp_Cons)
              qed
             next
@@ -2093,7 +2093,7 @@ proof -
                          unfolding Bex_def
                          proof (rule_tac ?x="root (red prb)" in exI, intro conjI, goal_cases)          
                              show "root (red prb) \<in> fringe prb"
-                                 using assms(1-3,5) `out_edges (black prb) (init (black prb)) \<noteq> {}` 
+                                 using assms(1-3,5) \<open>out_edges (black prb) (init (black prb)) \<noteq> {}\<close> 
                                  fringe_of_empty_red1 
                                  by fastforce
                          next
@@ -2113,7 +2113,7 @@ proof -
                                 qed
                         next
                              case 4 show ?case 
-                                using assms `bes \<in> Graph.paths (black prb)` by simp
+                                using assms \<open>bes \<in> Graph.paths (black prb)\<close> by simp
                         qed
                  qed
             qed     
@@ -2131,7 +2131,7 @@ qed
 
 
 
-text {* Red-black sub-paths and paths are sub-paths and paths of the black part. *}
+text \<open>Red-black sub-paths and paths are sub-paths and paths of the black part.\<close>
 
 lemma RedBlack_subpaths_are_black_subpaths :
   assumes "RedBlack prb"
@@ -2156,16 +2156,16 @@ by simp
 
 
 
-subsection {* Preservation of feasible paths *}
+subsection \<open>Preservation of feasible paths\<close>
 
 
-text{* The following theorem states that we do not loose feasible paths using
+text\<open>The following theorem states that we do not loose feasible paths using
 our five operators,
 and moreover, configurations @{term "c"} at the end of feasible red paths in
 some graph @{term "prb"} will have corresponding feasible red paths in
 successors that
 lead to configurations that subsume @{term "c"}. As a corollary, our calculus is correct
-wrt. to execution. *}
+wrt. to execution.\<close>
 
 
 
@@ -2233,7 +2233,7 @@ next
 
       ultimately
       have  "bes \<in> RedBlack_subpaths_from prb rv"
-            using se_step `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)`
+            using se_step \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close>
             by fastforce
 
       thus ?thesis 
@@ -2301,10 +2301,10 @@ next
                   show "subpath (red prb') rv res1 rv1 (subs prb')" 
                   using se_step(3) C by (auto simp add : sp_in_extends_w_subs)
                 next
-                  have "rv1 \<noteq> tgt re" using se_step(3) `rv1 = src re` by auto
+                  have "rv1 \<noteq> tgt re" using se_step(3) \<open>rv1 = src re\<close> by auto
                   thus "\<not> marked prb' rv1" using se_step(3) B by (auto simp add : fringe_def)
                 next
-                  show "bes = ui_es res1" using A `bes2 = []` by simp
+                  show "bes = ui_es res1" using A \<open>bes2 = []\<close> by simp
                 qed
         
             next
@@ -2334,22 +2334,22 @@ next
                      apply (rule_tac ?x="tgt re" in exI)
                      proof (intro conjI)
                        show "subpath (red prb') rv (res1 @ [re]) (tgt re) (subs prb')"
-                       using se_step(3) `rv1 = src re` C
+                       using se_step(3) \<open>rv1 = src re\<close> C
                              sp_in_extends_w_subs[of re "red prb" "red prb'" rv res1 rv1 "subs prb"]
                              rb_sp_append_one[OF RB', of rv res1 re "tgt re"]
                        by auto
                      next
                        show "\<not> marked prb' (tgt re)" 
-                       using se_step(3) `rv1 = src re` B 
+                       using se_step(3) \<open>rv1 = src re\<close> B 
                        by (auto simp add : fringe_def)
                      next
                        have "bes2' = []"
-                       using F `bes2 = be # bes2'` 
-                             `be = ui_edge re` `out_edges (black prb) (fst (tgt re)) = {}`
+                       using F \<open>bes2 = be # bes2'\<close> 
+                             \<open>be = ui_edge re\<close> \<open>out_edges (black prb) (fst (tgt re)) = {}\<close>
                        by (cases bes2') (auto simp add:  Graph.sp_Cons)
                        
                        thus "bes = ui_es (res1 @ [re])"
-                       using `bes = ui_es res1 @ bes2` `bes2 = be # bes2'` `be = ui_edge re` by simp
+                       using \<open>bes = ui_es res1 @ bes2\<close> \<open>bes2 = be # bes2'\<close> \<open>be = ui_edge re\<close> by simp
                      qed
         
                 next
@@ -2363,21 +2363,21 @@ next
                   apply (rule_tac ?x="bes2'"     in exI)
                   proof (intro conjI, goal_cases)
                     show "bes = ui_es (res1 @ [re]) @ bes2'"
-                    using `bes = ui_es res1 @ bes2` `bes2 = be # bes2'` `be = ui_edge re` 
+                    using \<open>bes = ui_es res1 @ bes2\<close> \<open>bes2 = be # bes2'\<close> \<open>be = ui_edge re\<close> 
                     by simp
                   next
                     case 2 show ?case 
                     proof (rule_tac ?x="tgt re" in exI, intro conjI)
                       have "\<not> marked prb (src re)" 
-                           using B `rv1 = src re` by (simp add : fringe_def)        
+                           using B \<open>rv1 = src re\<close> by (simp add : fringe_def)        
                       thus "tgt re \<in> fringe prb'" 
-                         using se_step(3) `out_edges (black prb) (fst (tgt re)) \<noteq> {}` 
+                         using se_step(3) \<open>out_edges (black prb) (fst (tgt re)) \<noteq> {}\<close> 
                                seE_fringe1[OF subs_sub_rel_of[OF se_step(1)] se_step(3)] 
                                seE_fringe4[OF subs_sub_rel_of[OF se_step(1)] se_step(3)] 
                          by auto
                     next
                       show "subpath (red prb') rv (res1 @ [re]) (tgt re) (subs prb')" 
-                         using se_step(3) `rv1 = src re` C
+                         using se_step(3) \<open>rv1 = src re\<close> C
                                sp_in_extends_w_subs[of re "red prb" "red prb'" 
                                                        rv res1 rv1 "subs prb"]
                                rb_sp_append_one[OF RB', of rv res1 re "tgt re"]
@@ -2399,7 +2399,7 @@ next
                       qed
                     next
                       show "Graph.subpath_from (black prb') (fst (tgt re)) bes2'" 
-                           using se_step(3) F `bes2 = be # bes2'` `be = ui_edge re` 
+                           using se_step(3) F \<open>bes2 = be # bes2'\<close> \<open>be = ui_edge re\<close> 
                            by (auto simp add : Graph.sp_Cons) 
                     qed
                   qed  
@@ -2420,7 +2420,7 @@ next
                 apply (rule_tac ?x="res1" in exI)
                 apply (rule_tac ?x="bes2" in exI)
                 apply (intro conjI)
-                 apply (rule `bes = ui_es res1 @ bes2`)
+                 apply (rule \<open>bes = ui_es res1 @ bes2\<close>)
                 apply (rule_tac ?x="rv1" in exI)
                 proof (intro conjI)
        
@@ -2434,7 +2434,7 @@ next
                          using se_step(3) B by (auto simp add : fringe_def)
                        next
                          show "\<not> marked prb' rv1" 
-                         using B se_step(3) `rv1 \<noteq> tgt re` `rv1 = src re`
+                         using B se_step(3) \<open>rv1 \<noteq> tgt re\<close> \<open>rv1 = src re\<close>
                          by (auto simp add : fringe_def)
                        next
                          have "be \<notin> ui_edge ` out_edges (red prb') rv1"
@@ -2452,17 +2452,17 @@ next
                                 apply (rule_tac ?x="bes2'" in exI)
                                 proof (intro conjI)
                                   show "bes2 = ui_es [re'] @ bes2'"
-                                  using `bes2 = be # bes2'` `be = ui_edge re'` by simp
+                                  using \<open>bes2 = be # bes2'\<close> \<open>be = ui_edge re'\<close> by simp
                                 next
                                   show "[re'] \<noteq> []" by simp
                                 next
                                   have "re' \<in> edges (red prb)" 
-                                  using se_step(3) `rv1 = src re` `re' \<in> out_edges (red prb') rv1` 
-                                        `be \<noteq> ui_edge re` `be = ui_edge re'` 
+                                  using se_step(3) \<open>rv1 = src re\<close> \<open>re' \<in> out_edges (red prb') rv1\<close> 
+                                        \<open>be \<noteq> ui_edge re\<close> \<open>be = ui_edge re'\<close> 
                                   by (auto simp add : vertices_def)
                             
                                   thus "subpath_from (red prb) rv1 [re'] (subs prb)"
-                                  using `re' \<in> out_edges (red prb') rv1` 
+                                  using \<open>re' \<in> out_edges (red prb') rv1\<close> 
                                         subs_sub_rel_of[OF se_step(1)]
                                   by (rule_tac ?x="tgt re'" in exI) 
                                      (simp add : rb_sp_one[OF se_step(1)])
@@ -2471,7 +2471,7 @@ next
                        
                          moreover
                          have "be \<in> out_edges (black prb) (fst rv1)" 
-                              using F `bes2 = be # bes2'` by (simp add : Graph.sp_Cons)
+                              using F \<open>bes2 = be # bes2'\<close> by (simp add : Graph.sp_Cons)
                        
                          ultimately
                          show "ui_edge ` out_edges (red prb') rv1 \<subset> out_edges (black prb') (fst rv1)"
@@ -2495,7 +2495,7 @@ next
                     moreover
                     then obtain re' res21' where "res21 = re' # res21'" 
                                            and   "be = ui_edge re'"
-                         using `bes2 = be # bes2'` unfolding neq_Nil_conv   by (elim exE) simp        
+                         using \<open>bes2 = be # bes2'\<close> unfolding neq_Nil_conv   by (elim exE) simp        
                     ultimately
                     have "re' \<in> edges (red prb')" by (simp add : sp_Cons)       
                     moreover
@@ -2507,15 +2507,15 @@ next
                          apply (rule_tac ?x="bes2'" in exI)
                          proof (intro conjI)
                            show "bes2 = ui_es [re'] @ bes2'" 
-                           using `bes2 = be # bes2'` `be = ui_edge re'` by simp
+                           using \<open>bes2 = be # bes2'\<close> \<open>be = ui_edge re'\<close> by simp
                          next
                            show "[re'] \<noteq> []" by simp
                          next
                            assume "re' \<in> edges (red prb)"                           
                            thus   "subpath_from (red prb) rv1 [re'] (subs prb)"
                                   using  subs_sub_rel_of[OF se_step(1)]
-                                        `subpath (red prb') rv1 res21 rv3 (subs prb')` 
-                                        `res21 = re' # res21'`
+                                        \<open>subpath (red prb') rv1 res21 rv3 (subs prb')\<close> 
+                                        \<open>res21 = re' # res21'\<close>
                                   apply (rule_tac ?x="tgt re'" in exI)
                                   apply (simp add: rb_sp_Cons[OF RB'])
                                   apply (simp add : rb_sp_one[OF se_step(1)])
@@ -2524,7 +2524,7 @@ next
         
                     ultimately
                     show False 
-                         using se_step(3) `be \<noteq> ui_edge re` `be = ui_edge re'`   by auto
+                         using se_step(3) \<open>be \<noteq> ui_edge re\<close> \<open>be = ui_edge re'\<close>   by auto
                   qed                           
                 next
                   show "Graph.subpath_from (black prb') (fst rv1) bes2" 
@@ -2545,13 +2545,13 @@ next
             apply (rule_tac ?x="bes2" in exI)
              apply (intro conjI, goal_cases)
              proof -
-               show "bes = ui_es res1 @ bes2" by (rule `bes = ui_es res1 @ bes2`)
+               show "bes = ui_es res1 @ bes2" by (rule \<open>bes = ui_es res1 @ bes2\<close>)
              next
                case 2 show ?case 
                apply (rule_tac ?x="rv1" in exI)
                proof (intro conjI, goal_cases)      
                  show "rv1 \<in> fringe prb'" 
-                      using se_step(3) B `rv1 \<noteq> src re` `rv1 \<noteq> tgt re`
+                      using se_step(3) B \<open>rv1 \<noteq> src re\<close> \<open>rv1 \<noteq> tgt re\<close>
                             seE_fringe1[OF subs_sub_rel_of[OF se_step(1)] se_step(3)]
                             seE_fringe2[OF se_step(3)]
                             seE_fringe3[OF se_step(3)]
@@ -2584,26 +2584,26 @@ next
                    and    "res21 \<noteq> []"
                    and    "subpath (red prb') rv1 res21 rv2 (subs prb')"             
                    then obtain re' res21' where "res21 = re' # res21'" 
-                        using `res21 \<noteq> []` unfolding neq_Nil_conv by blast
+                        using \<open>res21 \<noteq> []\<close> unfolding neq_Nil_conv by blast
              
                    have "rv1 = src re' \<or> (rv1,src re') \<in> subs prb"
                    and  "re' \<in> edges (red prb')"
                         using se_step(3) rb_sp_Cons[OF RB']
-                             `subpath (red prb') rv1 res21 rv2 (subs prb')` `res21 = re' # res21'`
+                             \<open>subpath (red prb') rv1 res21 rv2 (subs prb')\<close> \<open>res21 = re' # res21'\<close>
                         by auto
              
                    moreover
                    have "re' \<in> edges (red prb)"
                         proof -
                           have "re' \<noteq> re"
-                               using `rv1 = src re' \<or> (rv1,src re') \<in> subs prb`
+                               using \<open>rv1 = src re' \<or> (rv1,src re') \<in> subs prb\<close>
                                proof (elim disjE, goal_cases)
-                                 case 1 thus ?thesis using `rv1 \<noteq> src re` by auto
+                                 case 1 thus ?thesis using \<open>rv1 \<noteq> src re\<close> by auto
                                next
                                  case 2 thus ?case 
                                              using B unfolding fringe_def subsumees_conv by fast
                                qed                              
-                               thus ?thesis using se_step(3) `re' \<in> edges (red prb')` by simp
+                               thus ?thesis using se_step(3) \<open>re' \<in> edges (red prb')\<close> by simp
                         qed
                    
                    show False 
@@ -2613,14 +2613,14 @@ next
                         apply (rule_tac ?x="ui_es res21' @ bes22" in exI)
                         proof (intro conjI)
                           show "bes2 = ui_es [re'] @ ui_es res21' @ bes22"
-                               using `bes2 = ui_es res21 @ bes22` `res21 = re' # res21'` by simp
+                               using \<open>bes2 = ui_es res21 @ bes22\<close> \<open>res21 = re' # res21'\<close> by simp
                         next
                          show "[re'] \<noteq> []" by simp
                         next
                           show "subpath_from (red prb) rv1 [re'] (subs prb)"
                                using se_step(1) 
-                                     `rv1 = src re' \<or> (rv1,src re') \<in> subs prb` 
-                                     `re' \<in> edges (red prb)`
+                                     \<open>rv1 = src re' \<or> (rv1,src re') \<in> subs prb\<close> 
+                                     \<open>re' \<in> edges (red prb)\<close>
                                      rb_sp_one subs_sub_rel_of 
                                by fast
                         qed
@@ -2650,11 +2650,11 @@ next
            apply (rule_tac ?x="[]" in exI)
            proof (intro conjI, rule_tac ?x="tgt re" in exI, intro conjI)
              show "subpath (red prb') rv [] (tgt re) (subs prb')"
-                  using se_step(3) `rv = tgt re` rb_Nil_sp[OF RB'] by (auto simp add : vertices_def)
+                  using se_step(3) \<open>rv = tgt re\<close> rb_Nil_sp[OF RB'] by (auto simp add : vertices_def)
            next
              have "sat (confs prb' (tgt re))" 
-                  using `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)`
-                       `rv = tgt re` se_star_sat_imp_sat
+                  using \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close>
+                       \<open>rv = tgt re\<close> se_star_sat_imp_sat
                   by (auto simp add : feasible_def)
           
              thus "\<not> marked prb' (tgt re)" 
@@ -2662,8 +2662,8 @@ next
                   by (auto simp add : vertices_def)
            next
              show "bes = ui_es []" 
-                  using se_step(3) `rv = tgt re` `out_edges (black prb) (fst (tgt re)) = {}`
-                        `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)`
+                  using se_step(3) \<open>rv = tgt re\<close> \<open>out_edges (black prb) (fst (tgt re)) = {}\<close>
+                        \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close>
                   by (cases bes) (auto simp add : Graph.sp_Cons)
            qed
 
@@ -2684,8 +2684,8 @@ next
             have "\<not> marked prb (src re)" 
             proof -
               have "sat (confs prb' (tgt re))" 
-                   using `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)`
-                         `rv = tgt re` se_star_sat_imp_sat
+                   using \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close>
+                         \<open>rv = tgt re\<close> se_star_sat_imp_sat
                    by (auto simp add : feasible_def)
 
               hence "sat (confs prb' (src re))" 
@@ -2703,7 +2703,7 @@ next
             qed
   
             thus "rv \<in> fringe prb'" 
-                 using se_step(3) `rv = tgt re` `out_edges (black prb) (fst (tgt re)) \<noteq> {}` 
+                 using se_step(3) \<open>rv = tgt re\<close> \<open>out_edges (black prb) (fst (tgt re)) \<noteq> {}\<close> 
                        seE_fringe1[OF subs_sub_rel_of[OF se_step(1)] se_step(3)] 
                        seE_fringe4[OF subs_sub_rel_of[OF se_step(1)]  se_step(3)] 
                  by auto
@@ -2711,7 +2711,7 @@ next
           next
   
             show "subpath (red prb') rv [] rv (subs prb')" 
-                 using se_step(3) `rv = tgt re` subs_sub_rel_of[OF RB']
+                 using se_step(3) \<open>rv = tgt re\<close> subs_sub_rel_of[OF RB']
                  by (auto simp add : subpath_def vertices_def)
   
           next
@@ -2730,10 +2730,10 @@ next
               have "out_edges (red prb') (tgt re) \<noteq> {} \<or> tgt re \<in> subsumees (subs prb')"
               proof -
                 obtain re' res2 where "res1 = re'#res2" 
-                       using `res1 \<noteq> []` unfolding neq_Nil_conv by blast
+                       using \<open>res1 \<noteq> []\<close> unfolding neq_Nil_conv by blast
   
                 hence "rv = src re' \<or> (rv,src re') \<in> subs prb"
-                      using se_step(3) `subpath (red prb') rv res1 rv' (subs prb')`
+                      using se_step(3) \<open>subpath (red prb') rv res1 rv' (subs prb')\<close>
                             rb_sp_Cons[OF RB', of rv re' res2 rv']
                       by auto
                 
@@ -2743,8 +2743,8 @@ next
                   
                   moreover
                   hence "re' \<in> out_edges (red prb') (tgt re)" 
-                        using `subpath (red prb') rv res1 rv' (subs prb')` 
-                              `res1 = re'#res2` `rv = tgt re` 
+                        using \<open>subpath (red prb') rv res1 rv' (subs prb')\<close> 
+                              \<open>res1 = re'#res2\<close> \<open>rv = tgt re\<close> 
                         by (auto simp add : sp_Cons)
                   
                   ultimately
@@ -2753,7 +2753,7 @@ next
                   assume "(rv,src re') \<in> subs prb"
   
                   hence "tgt re \<in> red_vertices prb" 
-                        using se_step(3) `rv = tgt re` subs_sub_rel_of[OF se_step(1)]
+                        using se_step(3) \<open>rv = tgt re\<close> subs_sub_rel_of[OF se_step(1)]
                         unfolding sub_rel_of_def by force
   
                   thus ?thesis using se_step(3) by auto
@@ -2778,7 +2778,7 @@ next
           next
             show "Graph.subpath_from (black prb') (fst rv) bes" 
                  using se_step(3) 
-                       `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)`
+                       \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close>
                  by simp
           qed
         qed
@@ -2800,12 +2800,12 @@ next
     assume "bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)"
     then obtain c where "se_star (confs prb rv1) (trace bes (labelling (black prb))) c"
                   and   "sat c"
-         using mark_step(3) `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)`
+         using mark_step(3) \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)\<close>
          by (simp add : feasible_def) blast
 
     have "bes \<in> RedBlack_subpaths_from prb rv1" 
          using mark_step(2)[of rv1] mark_step(3-7) 
-               `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)` 
+               \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)\<close> 
          by auto
     
     thus "bes \<in> RedBlack_subpaths_from prb' rv1" 
@@ -2829,7 +2829,7 @@ next
         apply (rule_tac ?x="rv3" in exI)
         proof (intro conjI)       
           show "subpath (red prb') rv1 res rv3 (subs prb')"
-               using mark_step(3) `subpath (red prb) rv1 res rv3 (subs prb)`
+               using mark_step(3) \<open>subpath (red prb) rv1 res rv3 (subs prb)\<close>
                by auto
         next
           (* We then show that rv3 is not marked. *)
@@ -2843,21 +2843,21 @@ next
                   proof -
                     have "c \<sqsubseteq> confs prb rv3"
                          using mark_step(1) 
-                                 `subpath (red prb) rv1 res rv3 (subs prb)` 
-                                 `bes = ui_es res`
-                                 `se_star (confs prb rv1) (trace bes (labelling (black prb))) c`
-                                 `finite_RedBlack prb`
+                                 \<open>subpath (red prb) rv1 res rv3 (subs prb)\<close> 
+                                 \<open>bes = ui_es res\<close>
+                                 \<open>se_star (confs prb rv1) (trace bes (labelling (black prb))) c\<close>
+                                 \<open>finite_RedBlack prb\<close>
                                  finite_RedBlack.SE_rel
                          by simp
                 
                     thus ?thesis 
-                         using `se_star (confs prb rv1) (trace bes (labelling (black prb))) c` 
-                               `sat c`
+                         using \<open>se_star (confs prb rv1) (trace bes (labelling (black prb))) c\<close> 
+                               \<open>sat c\<close>
                                sat_sub_by_sat
                          by fast
                   qed 
             thus ?thesis 
-                 using mark_step(3) `subpath (red prb) rv1 res rv3 (subs prb)`
+                 using mark_step(3) \<open>subpath (red prb) rv1 res rv3 (subs prb)\<close>
                        lst_of_sp_is_vert[of "red prb" rv1 res rv3 "subs prb"]
                        sat_not_marked[OF RedBlack.mark_step[OF mark_step(1,3)]]
                  by auto
@@ -2866,7 +2866,7 @@ next
 
       next
         (* By construction, res represents bes. *)
-        show "bes = ui_es res" by (rule `bes = ui_es res`)
+        show "bes = ui_es res" by (rule \<open>bes = ui_es res\<close>)
       qed
 
     next
@@ -2889,7 +2889,7 @@ next
       apply (rule_tac ?x="res1" in exI)
       apply (rule_tac ?x="bes2" in exI)
       proof (intro conjI, goal_cases)    
-        show "bes = ui_es res1 @ bes2" by (rule `bes = ui_es res1 @ bes2`)
+        show "bes = ui_es res1 @ bes2" by (rule \<open>bes = ui_es res1 @ bes2\<close>)
       next
         case 2 show ?case
         apply (rule_tac ?x="rv3" in exI)
@@ -2901,12 +2901,12 @@ next
             where "se_star (confs prb rv1) (trace (ui_es res1) (labelling (black prb))) c'"
             and   "se_star c' (trace bes2 (labelling (black prb))) c"
             and   "sat c'"
-                  using A `se_star (confs prb rv1) (trace bes (labelling (black prb))) c` `sat c`
+                  using A \<open>se_star (confs prb rv1) (trace bes (labelling (black prb))) c\<close> \<open>sat c\<close>
                   by (simp add : se_star_append se_star_sat_imp_sat) blast
               
             moreover
             hence "c' \<sqsubseteq> confs prb rv3"
-                  using `finite_RedBlack prb` mark_step(1) C finite_RedBlack.SE_rel by fast
+                  using \<open>finite_RedBlack prb\<close> mark_step(1) C finite_RedBlack.SE_rel by fast
   
             ultimately
             show ?thesis by (simp add : sat_sub_by_sat)
@@ -2915,7 +2915,7 @@ next
           thus "rv3 \<in> fringe prb'" using mark_step(3) B by (auto simp add : fringe_def)       
         next
           show "subpath (red prb') rv1 res1 rv3 (subs prb')"
-               using mark_step(3) `subpath (red prb) rv1 res1 rv3 (subs prb)`
+               using mark_step(3) \<open>subpath (red prb) rv1 res1 rv3 (subs prb)\<close>
                by auto
         next
           (* We show that res1 is a maximal prefix, which is trivial because the new red part 
@@ -2935,13 +2935,13 @@ next
                       using E
                       proof (elim notE,rule_tac ?x="res21" in exI,
                              rule_tac ?x="bes22" in exI,intro conjI)
-                        show "bes2 = ui_es res21 @ bes22" by (rule `bes2 = ui_es res21 @ bes22`)
+                        show "bes2 = ui_es res21 @ bes22" by (rule \<open>bes2 = ui_es res21 @ bes22\<close>)
                       next
-                        show "res21 \<noteq> []" by (rule `res21 \<noteq> []`)
+                        show "res21 \<noteq> []" by (rule \<open>res21 \<noteq> []\<close>)
                       next
                         show "subpath_from (red prb) rv3 res21 (subs prb)"
                              using mark_step(3) 
-                                   `subpath (red prb') rv3 res21 rv4 (subs prb')`
+                                   \<open>subpath (red prb') rv3 res21 rv4 (subs prb')\<close>
                              by (simp del : split_paired_Ex)  blast
                       qed
                qed
@@ -3016,7 +3016,7 @@ next
         assume "rv' = subsumee sub" 
 
         show ?thesis
-             using `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)` A C F
+             using \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close> A C F
              proof (induct bes2 arbitrary : bes bl rule : rev_induct, goal_cases)
                (* Suppose that the black suffix is empty, then bes is entirely representend by res1 in 
                   the new red part and ends in rv' which is not marked, qed. *)
@@ -3059,14 +3059,14 @@ next
                                    (trace (ui_es res1@bes2) (labelling (black prb'))) 
                                    c2"
                           using subsum_step 
-                                `se_star (confs prb' rv) (trace (ui_es res1) 
-                                         (labelling (black prb))) (c1)`
-                                `se_star c1 (trace bes2 (labelling (black prb))) c2`
+                                \<open>se_star (confs prb' rv) (trace (ui_es res1) 
+                                         (labelling (black prb))) (c1)\<close>
+                                \<open>se_star c1 (trace bes2 (labelling (black prb))) c2\<close>
                      by (simp add : se_star_append) blast
                
                      moreover
                      have "sat c2" 
-                          using `se c2 (labelling (black prb) be) c3` `sat c3`  
+                          using \<open>se c2 (labelling (black prb) be) c3\<close> \<open>sat c3\<close>  
                           by (simp add : se_sat_imp_sat)
                
                      ultimately
@@ -3116,7 +3116,7 @@ next
                         apply (rule_tac ?x="res@[re]" in exI)
                         proof (intro conjI,rule_tac ?x="tgt re" in exI,intro conjI)
                           show "subpath (red prb') rv (res@[re]) (tgt re) (subs prb')" 
-                               using 1(2) `re \<in> out_edges (red prb') rv''` 
+                               using 1(2) \<open>re \<in> out_edges (red prb') rv''\<close> 
                                by (simp add : sp_append_one)
                         next
                           show "\<not> marked prb' (tgt re)" 
@@ -3124,7 +3124,7 @@ next
                             have "sat (confs prb' (tgt re))"
                             proof -
                               have "subpath (red prb') rv (res@[re]) (tgt re) (subs prb')" 
-                                   using 1(2) `re \<in> out_edges (red prb') rv''` 
+                                   using 1(2) \<open>re \<in> out_edges (red prb') rv''\<close> 
                                    by (simp add : sp_append_one)
                         
                               then obtain c 
@@ -3139,11 +3139,11 @@ next
                         
                               hence "sat c" 
                                     using 1(1)
-                                          `se_star (confs prb' rv) (trace (ui_es res1) 
-                                                   (labelling (black prb))) (c1)`
-                                          `se_star c1 (trace bes2 (labelling (black prb))) c2`
-                                          `se c2 (labelling (black prb) be) c3` 
-                                          `sat c3` `be = ui_edge re`
+                                          \<open>se_star (confs prb' rv) (trace (ui_es res1) 
+                                                   (labelling (black prb))) (c1)\<close>
+                                          \<open>se_star c1 (trace bes2 (labelling (black prb))) c2\<close>
+                                          \<open>se c2 (labelling (black prb) be) c3\<close> 
+                                          \<open>sat c3\<close> \<open>be = ui_edge re\<close>
                                           se_star_succs_states
                                                   [of "confs prb' rv" 
                                                       "trace(ui_es(res@[re]))(labelling(black prb))" 
@@ -3155,9 +3155,9 @@ next
                               moreover
                               have "c \<sqsubseteq> confs prb' (tgt re)" 
                                    using subsum_step(3,5,6,7) 
-                                         `subpath (red prb') rv (res@[re]) (tgt re) (subs prb')` 
-                                         `se_star (confs prb' rv)(trace (ui_es (res@[re])) 
-                                                  (labelling (black prb)))(c)`
+                                         \<open>subpath (red prb') rv (res@[re]) (tgt re) (subs prb')\<close> 
+                                         \<open>se_star (confs prb' rv)(trace (ui_es (res@[re])) 
+                                                  (labelling (black prb)))(c)\<close>
                                          finite_RedBlack.SE_rel[of prb'] RB'
                                    by (simp add : finite_RedBlack_def)
                         
@@ -3166,12 +3166,12 @@ next
                             qed
                         
                             thus ?thesis 
-                                 using `re \<in> out_edges (red prb') rv''` 
+                                 using \<open>re \<in> out_edges (red prb') rv''\<close> 
                                        sat_not_marked[OF RB', of "tgt re"]
                                  by (auto simp add : vertices_def)
                           qed
                         next
-                          show "bes = ui_es (res@[re])" using 1(1) 2(3) `be = ui_edge re` by simp
+                          show "bes = ui_es (res@[re])" using 1(1) 2(3) \<open>be = ui_edge re\<close> by simp
                         qed
                         
                  next
@@ -3191,7 +3191,7 @@ next
                      then obtain arv'' where "(rv'',arv'') \<in> (subs prb')" by auto
                
                      hence "subpath (red prb') rv res arv'' (subs prb')" 
-                           using `subpath (red prb') rv res rv'' (subs prb')`
+                           using \<open>subpath (red prb') rv res rv'' (subs prb')\<close>
                            by (simp add : sp_append_sub)
                
                      show ?thesis
@@ -3214,8 +3214,8 @@ next
                             proof (intro conjI,rule_tac ?x="tgt re" in exI,intro conjI)
                             
                               show "subpath (red prb') rv (res @ [re]) (tgt re) (subs prb')"
-                                   using `subpath (red prb') rv res arv'' (subs prb')` 
-                                         `re \<in> out_edges (red prb') arv''`
+                                   using \<open>subpath (red prb') rv res arv'' (subs prb')\<close> 
+                                         \<open>re \<in> out_edges (red prb') arv''\<close>
                                    by (simp add : sp_append_one)
                             
                             next
@@ -3223,8 +3223,8 @@ next
                               have "sat (confs prb' (tgt re))"
                               proof -
                                 have "subpath (red prb') rv (res@[re]) (tgt re) (subs prb')" 
-                                     using `subpath (red prb') rv res arv'' (subs prb')` 
-                                             `re \<in> out_edges (red prb') arv''`
+                                     using \<open>subpath (red prb') rv res arv'' (subs prb')\<close> 
+                                             \<open>re \<in> out_edges (red prb') arv''\<close>
                                      by (simp add : sp_append_one)
                             
                                 then obtain c 
@@ -3238,11 +3238,11 @@ next
                             
                                 hence "sat c" 
                                       using 1(1)
-                                            `se_star (confs prb' rv) (trace (ui_es res1) 
-                                                     (labelling (black prb))) (c1)`
-                                            `se_star c1 (trace bes2 (labelling (black prb))) c2`
-                                            `se c2 (labelling (black prb) be) c3` `sat c3` 
-                                            `be = ui_edge re`
+                                            \<open>se_star (confs prb' rv) (trace (ui_es res1) 
+                                                     (labelling (black prb))) (c1)\<close>
+                                            \<open>se_star c1 (trace bes2 (labelling (black prb))) c2\<close>
+                                            \<open>se c2 (labelling (black prb) be) c3\<close> \<open>sat c3\<close> 
+                                            \<open>be = ui_edge re\<close>
                                             se_star_succs_states
                                                     [of "confs prb' rv" 
                                                         "trace (ui_es(res@[re]))
@@ -3256,7 +3256,7 @@ next
                                 have "c \<sqsubseteq> confs prb' (tgt re)" 
                                      using subsum_step(3,5,6,7) se RB' 
                                            finite_RedBlack.SE_rel[of prb']
-                                           `subpath (red prb') rv (res@[re]) (tgt re) (subs prb')`                          
+                                           \<open>subpath (red prb') rv (res@[re]) (tgt re) (subs prb')\<close>                          
                                      by (simp add : finite_RedBlack_def)
                             
                                 ultimately
@@ -3264,16 +3264,16 @@ next
                               qed
                             
                               thus "\<not> marked prb' (tgt re)" 
-                              using `re \<in> out_edges (red prb') arv''` 
+                              using \<open>re \<in> out_edges (red prb') arv''\<close> 
                                     sat_not_marked[OF RB', of "tgt re"]
                               by (auto simp add : vertices_def)
                             
                             next
                             
                               show "bes = ui_es (res @ [re])" 
-                              using `bes = ui_es res1 @ bes2 @ [be]` 
-                                    `ui_es res1 @ bes2 = ui_es res`
-                                    `be = ui_edge re`
+                              using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                    \<open>ui_es res1 @ bes2 = ui_es res\<close>
+                                    \<open>be = ui_edge re\<close>
                               by simp
                             
                             qed
@@ -3286,15 +3286,15 @@ next
                        have "src be = fst arv''"
                        proof -
                          have "Graph.subpath (black prb') (fst rv) (ui_es res1 @ bes2) (fst arv'')"
-                         using `ui_es res1 @ bes2 = ui_es res` 
-                               `subpath (red prb') rv res arv'' (subs prb')` 
+                         using \<open>ui_es res1 @ bes2 = ui_es res\<close> 
+                               \<open>subpath (red prb') rv res arv'' (subs prb')\<close> 
                                red_sp_imp_black_sp[OF RB']
                          by auto
                
                          moreover
                          have "Graph.subpath (black prb') (fst rv) (ui_es res1 @ bes2) (src be)"
-                         using `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)`
-                               `bes = ui_es res1 @ bes2 @ [be]`
+                         using \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv) (fst rv)\<close>
+                               \<open>bes = ui_es res1 @ bes2 @ [be]\<close>
                          by (auto simp add : Graph.sp_append Graph.sp_append_one Graph.sp_one)
                
                          ultimately
@@ -3310,8 +3310,8 @@ next
                        proof (intro conjI, goal_cases)
                          
                          show "bes = ui_es res @ [be]" 
-                         using `bes = ui_es res1 @ bes2 @ [be]` 
-                               `ui_es res1 @ bes2 = ui_es res`
+                         using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                               \<open>ui_es res1 @ bes2 = ui_es res\<close>
                          by simp
                
                        next
@@ -3324,33 +3324,33 @@ next
                            unfolding fringe_def mem_Collect_eq
                            proof (intro conjI)
                              show "arv'' \<in> red_vertices prb'" 
-                             using `subpath (red prb') rv res arv'' (subs prb')`
+                             using \<open>subpath (red prb') rv res arv'' (subs prb')\<close>
                              by (simp add : lst_of_sp_is_vert)
                            next
                              show "arv'' \<notin> subsumees (subs prb')" 
-                             using `(rv'',arv'') \<in> subs prb'` subs_wf_sub_rel[OF RB']
+                             using \<open>(rv'',arv'') \<in> subs prb'\<close> subs_wf_sub_rel[OF RB']
                              unfolding wf_sub_rel_def Ball_def
                              by (force simp del : split_paired_All)
                            next
                              show "\<not> marked prb' arv''"
-                             using `(rv'',arv'') \<in> (subs prb')` subsumer_not_marked[OF RB']
+                             using \<open>(rv'',arv'') \<in> (subs prb')\<close> subsumer_not_marked[OF RB']
                              by fastforce
                            next
                              have "be \<in> edges (black prb')" 
                              using subsum_step(3)
-                                   `Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl`
+                                   \<open>Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl\<close>
                              by (simp add : Graph.sp_append_one)
                
                              thus "ui_edge ` out_edges (red prb') arv'' \<subset> out_edges (black prb') 
                                                                                     (fst arv'')"
-                             using `src be = fst arv''` A  red_OA_subset_black_OA[OF RB', of arv'']
+                             using \<open>src be = fst arv''\<close> A  red_OA_subset_black_OA[OF RB', of arv'']
                              by auto
                            qed
                
                          next
                
                            show "subpath (red prb') rv res arv'' (subs prb')"
-                           by (rule `subpath (red prb') rv res arv'' (subs prb')`)
+                           by (rule \<open>subpath (red prb') rv res arv'' (subs prb')\<close>)
                
                          next
                
@@ -3367,21 +3367,21 @@ next
                
                                have "be = ui_edge re" and  "re \<in> out_edges (red prb') arv''" 
                                proof -
-                                 show "be = ui_edge re" using 1(1) `res21 = re # res21'` by simp
+                                 show "be = ui_edge re" using 1(1) \<open>res21 = re # res21'\<close> by simp
                                next
                                  have "re \<in> edges (red prb')"
-                                      using 1(3) `res21 = re # res21'` by (simp add : sp_Cons)
+                                      using 1(3) \<open>res21 = re # res21'\<close> by (simp add : sp_Cons)
                                  
                                  moreover
                                  have "src re = arv''"
                                  proof -
                                    have "(arv'',src re) \<notin> subs prb'" 
-                                        using `(rv'',arv'') \<in> subs prb'` subs_wf_sub_rel[OF RB']
+                                        using \<open>(rv'',arv'') \<in> subs prb'\<close> subs_wf_sub_rel[OF RB']
                                         unfolding wf_sub_rel_def Ball_def 
                                         by (force simp del : split_paired_All)
                
                                    thus ?thesis
-                                        using 1(3) `res21 = re # res21'`
+                                        using 1(3) \<open>res21 = re # res21'\<close>
                                         by (simp add : rb_sp_Cons[OF RB'])
                                  qed
                
@@ -3399,10 +3399,10 @@ next
                
                            show "Graph.subpath_from (black prb') (fst arv'') [be]" 
                                 using subsum_step(3)
-                                      `Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl`
-                                      `(rv'',arv'') \<in> subs prb'`
-                                      `subpath (red prb') rv res arv'' (subs prb')`
-                                      `src be = fst arv''`
+                                      \<open>Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl\<close>
+                                      \<open>(rv'',arv'') \<in> subs prb'\<close>
+                                      \<open>subpath (red prb') rv res arv'' (subs prb')\<close>
+                                      \<open>src be = fst arv''\<close>
                                       RB' red_sp_imp_black_sp subs_to_same_BL
                                 by (simp add : Graph.sp_append_one Graph.sp_one)
                          qed
@@ -3433,8 +3433,8 @@ next
                             apply (intro conjI)
                             proof (rule_tac ?x="tgt re" in exI,intro conjI)
                               show "subpath (red prb') rv (res @ [re]) (tgt re) (subs prb')"
-                                   using `subpath (red prb') rv res rv'' (subs prb')`
-                                         `re \<in> out_edges (red prb') rv''`
+                                   using \<open>subpath (red prb') rv res rv'' (subs prb')\<close>
+                                         \<open>re \<in> out_edges (red prb') rv''\<close>
                                    by (simp add : sp_append_one)
                             next
                               show "\<not> marked prb' (tgt re)"
@@ -3442,8 +3442,8 @@ next
                                 have "sat (confs prb' (tgt re))"
                                 proof -
                                   have "subpath (red prb') rv (res@[re]) (tgt re) (subs prb')" 
-                                       using `subpath (red prb') rv res rv'' (subs prb')` 
-                                               `re \<in> out_edges (red prb') rv''`
+                                       using \<open>subpath (red prb') rv res rv'' (subs prb')\<close> 
+                                               \<open>re \<in> out_edges (red prb') rv''\<close>
                                        by (simp add : sp_append_one)
                             
                                   then obtain c 
@@ -3457,11 +3457,11 @@ next
                             
                                   hence "sat c" 
                                         using 1(1)
-                                        `se_star (confs prb' rv) (trace (ui_es res1) 
-                                                 (labelling (black prb))) (c1)`
-                                        `se_star c1 (trace bes2 (labelling (black prb))) c2`
-                                        `se c2 (labelling (black prb) be) c3` `sat c3` 
-                                        `be = ui_edge re` 
+                                        \<open>se_star (confs prb' rv) (trace (ui_es res1) 
+                                                 (labelling (black prb))) (c1)\<close>
+                                        \<open>se_star c1 (trace bes2 (labelling (black prb))) c2\<close>
+                                        \<open>se c2 (labelling (black prb) be) c3\<close> \<open>sat c3\<close> 
+                                        \<open>be = ui_edge re\<close> 
                                         se_star_succs_states
                                               [of "confs prb' rv" 
                                                   "trace (ui_es (res@[re])) (labelling (black prb))" 
@@ -3474,7 +3474,7 @@ next
                                   have "c \<sqsubseteq> confs prb' (tgt re)" 
                                        using subsum_step(3,5,6,7) se RB' 
                                              finite_RedBlack.SE_rel[of prb']
-                                             `subpath (red prb') rv (res@[re]) (tgt re) (subs prb')`  
+                                             \<open>subpath (red prb') rv (res@[re]) (tgt re) (subs prb')\<close>  
                                        by (simp add : finite_RedBlack_def)
                             
                                   ultimately
@@ -3482,15 +3482,15 @@ next
                                 qed
                             
                                 thus ?thesis
-                                     using `re \<in> out_edges (red prb') rv''` 
+                                     using \<open>re \<in> out_edges (red prb') rv''\<close> 
                                            sat_not_marked[OF RB', of "tgt re"]
                                      by (auto simp add : vertices_def)
                               qed
                             next
                               show "bes = ui_es (res @ [re])" 
-                                   using `bes = ui_es res1 @ bes2 @ [be]` 
-                                         `ui_es res1 @ bes2 = ui_es res`
-                                         `be = ui_edge re`
+                                   using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                         \<open>ui_es res1 @ bes2 = ui_es res\<close>
+                                         \<open>be = ui_edge re\<close>
                                    by simp
                             qed
                      
@@ -3504,8 +3504,8 @@ next
                             apply (rule_tac ?x="[be]" in exI)
                             proof (intro conjI, goal_cases)
                               show "bes = ui_es res @ [be]" 
-                                   using `ui_es res1 @ bes2 = ui_es res` 
-                                         `bes = ui_es res1 @ bes2 @ [be]`
+                                   using \<open>ui_es res1 @ bes2 = ui_es res\<close> 
+                                         \<open>bes = ui_es res1 @ bes2 @ [be]\<close>
                                    by simp
                             next
                             
@@ -3514,18 +3514,18 @@ next
                               have "src be = fst rv''"
                               proof -
                                 have "Graph.subpath (black prb') (fst rv) (ui_es res) (src be)"
-                                     using `bes \<in> feasible_subpaths_from (black prb') 
-                                                                         (confs prb' rv) (fst rv)`
-                                           `bes = ui_es res1 @ bes2 @ [be]` 
-                                           `ui_es res1 @ bes2 = ui_es res`
+                                     using \<open>bes \<in> feasible_subpaths_from (black prb') 
+                                                                         (confs prb' rv) (fst rv)\<close>
+                                           \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                           \<open>ui_es res1 @ bes2 = ui_es res\<close>
                                            red_sp_imp_black_sp
-                                               [OF RB' `subpath (red prb') rv res rv'' (subs prb')`]
+                                               [OF RB' \<open>subpath (red prb') rv res rv'' (subs prb')\<close>]
                                      by (subst (asm)(2) eq_commute) 
                                         (auto simp add : Graph.sp_append Graph.sp_one)
                             
                                 thus ?thesis 
                                 using red_sp_imp_black_sp
-                                          [OF RB' `subpath (red prb') rv res rv'' (subs prb')`]
+                                          [OF RB' \<open>subpath (red prb') rv res rv'' (subs prb')\<close>]
                                 by (rule sp_same_src_imp_same_tgt)
                               qed
                             
@@ -3537,22 +3537,22 @@ next
                                 unfolding fringe_def mem_Collect_eq
                                 proof (intro conjI)
                                   show "rv'' \<in> red_vertices prb'" 
-                                       using `subpath (red prb') rv res rv'' (subs prb')`
+                                       using \<open>subpath (red prb') rv res rv'' (subs prb')\<close>
                                        by (simp add : lst_of_sp_is_vert)
                                 next
                                   show "rv'' \<notin> subsumees (subs prb')" 
-                                  by (rule `rv'' \<notin> subsumees (subs prb')`)
+                                  by (rule \<open>rv'' \<notin> subsumees (subs prb')\<close>)
                                 next
-                                  show "\<not> marked prb' rv''" by (rule `\<not> marked prb' rv''`)
+                                  show "\<not> marked prb' rv''" by (rule \<open>\<not> marked prb' rv''\<close>)
                                 next
                                   have "be \<in> edges (black prb')" 
                                        using subsum_step(3)
-                                            `Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl`
+                                            \<open>Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl\<close>
                                        by (simp add : Graph.sp_append_one)
                             
                                   thus "ui_edge ` out_edges (red prb') rv'' \<subset> 
                                            out_edges (black prb') (fst rv'')"
-                                       using `src be = fst rv''` A 
+                                       using \<open>src be = fst rv''\<close> A 
                                              red_OA_subset_black_OA[OF RB', of rv'']
                                        by auto
                                 qed
@@ -3560,7 +3560,7 @@ next
                               next
                             
                                 show "subpath (red prb') rv res rv'' (subs prb')"
-                                     by (rule `subpath (red prb') rv res rv'' (subs prb')`)
+                                     by (rule \<open>subpath (red prb') rv res rv'' (subs prb')\<close>)
                             
                               next
                             
@@ -3579,19 +3579,19 @@ next
                                     have "be = ui_edge re"
                                     and  "re \<in> out_edges (red prb') rv''" 
                                     proof -
-                                      show "be = ui_edge re" using 1(1) `res21 = re#res21'` by simp
+                                      show "be = ui_edge re" using 1(1) \<open>res21 = re#res21'\<close> by simp
                                     next
                                       have "re \<in> edges (red prb')"
-                                      using 1(3) `res21 = re # res21'` by (simp add : sp_Cons)
+                                      using 1(3) \<open>res21 = re # res21'\<close> by (simp add : sp_Cons)
                                       
                                       moreover
                                       have "src re = rv''"
                                       proof -
                                         have "(rv'',src re) \<notin> subs prb'" 
-                                             using `rv'' \<notin> subsumees (subs prb')` by force
+                                             using \<open>rv'' \<notin> subsumees (subs prb')\<close> by force
                             
                                         thus ?thesis
-                                              using 1(3) `res21 = re # res21'`
+                                              using 1(3) \<open>res21 = re # res21'\<close>
                                               by (simp add : rb_sp_Cons[OF RB'])
                                       qed
                             
@@ -3609,8 +3609,8 @@ next
                             
                                 show "Graph.subpath_from (black prb') (fst rv'') [be]"
                                      using subsum_step(3) 
-                                           `Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl` 
-                                           `src be = fst rv''`
+                                           \<open>Graph.subpath (black prb) (fst rv') (bes2 @ [be]) bl\<close> 
+                                           \<open>src be = fst rv''\<close>
                                      by (rule_tac ?x="tgt be" in exI) 
                                         (simp add : Graph.sp_append_one Graph.sp_one)
                             
@@ -3646,12 +3646,12 @@ next
                      proof -
                        have "Graph.subpath (black prb') (fst rv') bes2 (src be)"
                             using subsum_step(3) 
-                                  `Graph.subpath (black prb) (fst rv') (bes2@[be]) bl`
+                                  \<open>Graph.subpath (black prb) (fst rv') (bes2@[be]) bl\<close>
                             by (simp add : Graph.sp_append_one)
                
                        moreover
                        have "subpath (red prb') rv res1 rv' (subs prb')"
-                            using subsum_step(3) `subpath (red prb) rv res1 rv' (subs prb)`
+                            using subsum_step(3) \<open>subpath (red prb) rv res1 rv' (subs prb)\<close>
                             by (auto simp add : sp_in_extends)
                
                        hence "Graph.subpath (black prb') (fst rv) (ui_es res1) (fst rv')"
@@ -3659,13 +3659,13 @@ next
                
                        ultimately
                        show ?thesis 
-                            using `ui_es res1 @ bes2 = ui_es res1' @ bes2'` `bes2' = []`
+                            using \<open>ui_es res1 @ bes2 = ui_es res1' @ bes2'\<close> \<open>bes2' = []\<close>
                             by (subst (asm) eq_commute) (auto simp add : Graph.sp_append)
                      qed
                
                      moreover
                      have "Graph.subpath (black prb') (src be) [be] bl" 
-                          using subsum_step(3) `Graph.subpath (black prb) (fst rv') (bes2@[be]) bl`
+                          using subsum_step(3) \<open>Graph.subpath (black prb) (fst rv') (bes2@[be]) bl\<close>
                           by (simp add : Graph.sp_append_one Graph.sp_one)
                
                      ultimately
@@ -3680,12 +3680,12 @@ next
                    have "fst rv'' = src be"
                    proof -
                      have "Graph.subpath (black prb') (fst rv) (ui_es res1') (fst rv'')"
-                          using `subpath (red prb') rv res1' rv'' (subs prb')` 
+                          using \<open>subpath (red prb') rv res1' rv'' (subs prb')\<close> 
                                 red_sp_imp_black_sp[OF RB']
                           by fast
                
                      thus ?thesis 
-                          using `Graph.subpath (black prb') (fst rv) (ui_es res1') (src be)`
+                          using \<open>Graph.subpath (black prb') (fst rv) (ui_es res1') (src be)\<close>
                           by (simp add : sp_same_src_imp_same_tgt)
                    qed
                
@@ -3711,8 +3711,8 @@ next
                           apply (rule_tac ?x="tgt re" in exI)
                           proof (intro conjI)
                             show "subpath (red prb') rv (res1' @ [re]) (tgt re) (subs prb')"
-                                 using `subpath (red prb') rv res1' rv'' (subs prb')` 
-                                       `re \<in> out_edges (red prb') rv''`
+                                 using \<open>subpath (red prb') rv res1' rv'' (subs prb')\<close> 
+                                       \<open>re \<in> out_edges (red prb') rv''\<close>
                                  by (simp add : sp_append_one)
                           next
                             show "\<not> marked prb' (tgt re)" 
@@ -3720,8 +3720,8 @@ next
                               have "sat (confs prb' (tgt re))" 
                                    proof -
                                      have "subpath (red prb') rv (res1'@[re]) (tgt re) (subs prb')" 
-                                          using `subpath (red prb') rv res1' rv'' (subs prb')` 
-                                                  `re \<in> out_edges (red prb') rv''`
+                                          using \<open>subpath (red prb') rv res1' rv'' (subs prb')\<close> 
+                                                  \<open>re \<in> out_edges (red prb') rv''\<close>
                                           by (simp add : sp_append_one)
                                    
                                      then obtain c 
@@ -3736,16 +3736,16 @@ next
                                      hence "sat c"
                                            proof -
                                              have "bes = ui_es (res1'@[re])" 
-                                                  using `bes = ui_es res1 @ bes2 @ [be]` 
-                                                        `be = ui_edge re` `bes2' = []`
-                                                        `ui_es res1 @ bes2 = ui_es res1' @ bes2'` 
+                                                  using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                                        \<open>be = ui_edge re\<close> \<open>bes2' = []\<close>
+                                                        \<open>ui_es res1 @ bes2 = ui_es res1' @ bes2'\<close> 
                                                   by simp
                                            
                                              thus ?thesis 
                                                   using subsum_step(3) se_star_succs_states[OF se]
-                                                        `bes \<in> feasible_subpaths_from (black prb') 
+                                                        \<open>bes \<in> feasible_subpaths_from (black prb') 
                                                                                    (confs prb' rv) 
-                                                                                   (fst rv)`           
+                                                                                   (fst rv)\<close>           
                                                   by (auto simp add : feasible_def sat_eq)
                                            qed
                                    
@@ -3753,8 +3753,8 @@ next
                                      have "c \<sqsubseteq> confs prb' (tgt re)" 
                                           using subsum_step(3,5,6,7) se 
                                                 finite_RedBlack.SE_rel[of prb'] RB'
-                                                `subpath (red prb') (rv) (res1'@[re]) 
-                                                         (tgt re) (subs prb')` 
+                                                \<open>subpath (red prb') (rv) (res1'@[re]) 
+                                                         (tgt re) (subs prb')\<close> 
                                           by (simp add : finite_RedBlack_def)
                                    
                                      ultimately
@@ -3762,15 +3762,15 @@ next
                                    qed
                           
                               thus ?thesis 
-                                   using `re \<in> out_edges (red prb') rv''` 
+                                   using \<open>re \<in> out_edges (red prb') rv''\<close> 
                                          sat_not_marked[OF RB', of "tgt re"]
                                    by (auto simp add : vertices_def)
                             qed
                           next
                             show "bes = ui_es (res1' @ [re])"
-                            using `bes = ui_es res1 @ bes2 @ [be]` 
-                                  `ui_es res1 @ bes2 = ui_es res1' @ bes2'`
-                                  `bes2' = []` `be = ui_edge re`
+                            using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                  \<open>ui_es res1 @ bes2 = ui_es res1' @ bes2'\<close>
+                                  \<open>bes2' = []\<close> \<open>be = ui_edge re\<close>
                             by simp
                           qed
                    
@@ -3788,9 +3788,9 @@ next
                           proof (intro conjI, goal_cases)
                           
                             show "bes = ui_es res1' @ [be]"
-                                 using `bes = ui_es res1 @ bes2 @ [be]` 
-                                       `ui_es res1 @ bes2 = ui_es res1' @ bes2'`
-                                       `bes2' = []` 
+                                 using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                       \<open>ui_es res1 @ bes2 = ui_es res1' @ bes2'\<close>
+                                       \<open>bes2' = []\<close> 
                                  by simp
                           
                           next
@@ -3799,12 +3799,12 @@ next
                             apply (rule_tac ?x="rv''" in exI)
                             proof (intro conjI)
                           
-                              show "rv'' \<in> fringe prb'" by (rule `rv'' \<in> fringe prb'`)
+                              show "rv'' \<in> fringe prb'" by (rule \<open>rv'' \<in> fringe prb'\<close>)
                           
                             next
                           
                               show "subpath (red prb') rv res1' rv'' (subs prb')"
-                                   by (rule `subpath (red prb') rv res1' rv'' (subs prb')`)
+                                   by (rule \<open>subpath (red prb') rv res1' rv'' (subs prb')\<close>)
                           
                             (*next
                           
@@ -3825,7 +3825,7 @@ next
                                 
                                 moreover
                                 hence "re \<in> out_edges (red prb') rv''"
-                                      using 1(3) `rv'' \<in> fringe prb'` RB'
+                                      using 1(3) \<open>rv'' \<in> fringe prb'\<close> RB'
                                       unfolding subsumees_conv by (force simp add : fringe_def 
                                                                                     rb_sp_Cons)
                                   
@@ -3836,8 +3836,8 @@ next
                             next
                           
                               show "Graph.subpath_from (black prb') (fst rv'') [be]"
-                                   using `Graph.subpath (black prb') (fst rv)(ui_es res1'@[be]) bl` 
-                                         `fst rv'' = src be` 
+                                   using \<open>Graph.subpath (black prb') (fst rv)(ui_es res1'@[be]) bl\<close> 
+                                         \<open>fst rv'' = src be\<close> 
                                    by (auto simp add : Graph.sp_append_one Graph.sp_one)
                           
                             qed
@@ -3860,8 +3860,8 @@ next
                         proof (intro conjI, goal_cases)
                         
                           show "bes = ui_es res1' @ bes2' @ [be]"
-                          using `bes = ui_es res1 @ bes2 @ [be]` 
-                                `ui_es res1 @ bes2 = ui_es res1' @ bes2'`
+                          using \<open>bes = ui_es res1 @ bes2 @ [be]\<close> 
+                                \<open>ui_es res1 @ bes2 = ui_es res1' @ bes2'\<close>
                           by simp
                         
                         next
@@ -3870,12 +3870,12 @@ next
                               apply (rule_tac ?x="rv''" in exI)
                               proof (intro conjI)
                               
-                                show " rv'' \<in> fringe prb'" by (rule ` rv'' \<in> fringe prb'`)
+                                show " rv'' \<in> fringe prb'" by (rule \<open> rv'' \<in> fringe prb'\<close>)
                               
                               next
                               
                                 show "subpath (red prb') rv res1' rv'' (subs prb')"
-                                     by (rule `subpath (red prb') rv res1' rv'' (subs prb')`)
+                                     by (rule \<open>subpath (red prb') rv res1' rv'' (subs prb')\<close>)
                               
                               next
                               
@@ -3888,28 +3888,28 @@ next
                               
                                   then obtain re res21' where "res21 = re # res21'"
                                                         and   "be' = ui_edge re"
-                                  using `bes2' = be' # bes2''` unfolding neq_Nil_conv by auto
+                                  using \<open>bes2' = be' # bes2''\<close> unfolding neq_Nil_conv by auto
                               
                                   show False 
-                                       using `\<not> (\<exists>res21 bes22. bes2' = ui_es res21 @ bes22 
+                                       using \<open>\<not> (\<exists>res21 bes22. bes2' = ui_es res21 @ bes22 
                                                              \<and> res21 \<noteq> [] 
                                                              \<and> subpath_from (red prb') (rv'') 
-                                                                             (res21) (subs prb'))`
+                                                                             (res21) (subs prb'))\<close>
                                        apply (elim notE)
                                        apply (rule_tac ?x="[re]" in exI)
                                        apply (rule_tac ?x="bes2''" in exI)
                                        proof (intro conjI)
                                          show "bes2' = ui_es [re] @ bes2''"
-                                              using `bes2' @ [be] = ui_es res21 @ bes22` 
-                                                    `bes2' = be' # bes2''`
-                                                    `be' = ui_edge re`
+                                              using \<open>bes2' @ [be] = ui_es res21 @ bes22\<close> 
+                                                    \<open>bes2' = be' # bes2''\<close>
+                                                    \<open>be' = ui_edge re\<close>
                                               by simp
                                        next
                                          show "[re] \<noteq> []" by simp
                                        next
                                          show "subpath_from (red prb') rv'' [re] (subs prb')"
-                                              using `subpath (red prb') rv'' res21 rv'''(subs prb')` 
-                                                    `res21 = re # res21'`
+                                              using \<open>subpath (red prb') rv'' res21 rv'''(subs prb')\<close> 
+                                                    \<open>res21 = re # res21'\<close>
                                               by (fastforce simp add : sp_Cons Nil_sp vertices_def)
                                        qed
                                 qed
@@ -3923,22 +3923,22 @@ next
                                   proof -
                                     have "Graph.subpath (black prb') (fst rv) 
                                                         (ui_es res1 @ bes2) (src be)"
-                                         using `bes \<in> feasible_subpaths_from (black prb') 
+                                         using \<open>bes \<in> feasible_subpaths_from (black prb') 
                                                                              (confs prb' rv) 
-                                                                             (fst rv)`
-                                               `bes = ui_es res1 @ bes2 @ [be]`
+                                                                             (fst rv)\<close>
+                                               \<open>bes = ui_es res1 @ bes2 @ [be]\<close>
                                          by (auto simp add : Graph.sp_append Graph.sp_one)
                               
-                                    thus ?thesis using `ui_es res1 @ bes2 = ui_es res1'@bes2'` 
+                                    thus ?thesis using \<open>ui_es res1 @ bes2 = ui_es res1'@bes2'\<close> 
                                                  by simp
                                   qed
                               
                                   moreover
                                   have "Graph.subpath (black prb')(fst rv)(ui_es res1' @ bes2') bl'"
-                                       using `Graph.subpath (black prb') (fst rv'') bes2' bl'`
+                                       using \<open>Graph.subpath (black prb') (fst rv'') bes2' bl'\<close>
                                              red_sp_imp_black_sp[OF RB' 
-                                                                   `subpath (red prb')(rv)(res1') 
-                                                                            (rv'') (subs prb')`]
+                                                                   \<open>subpath (red prb')(rv)(res1') 
+                                                                            (rv'') (subs prb')\<close>]
                                        by (auto simp add : Graph.sp_append)
                                   
                                   ultimately
@@ -3947,12 +3947,12 @@ next
                                   moreover
                                   have "Graph.subpath (black prb') (src be) [be] (tgt be)" 
                                        using subsum_step(3) 
-                                             `Graph.subpath (black prb) (fst rv') (bes2@[be]) bl` 
+                                             \<open>Graph.subpath (black prb) (fst rv') (bes2@[be]) bl\<close> 
                                        by (auto simp add : Graph.sp_append_one Graph.sp_one)
                               
                                   ultimately
                                   show ?thesis 
-                                       using `Graph.subpath (black prb') (fst rv'') bes2' bl'`
+                                       using \<open>Graph.subpath (black prb') (fst rv'') bes2' bl'\<close>
                                        by (simp add : Graph.sp_append_one Graph.sp_one)
                                 qed
                               qed
@@ -3973,14 +3973,14 @@ next
              apply (rule_tac ?x="res1" in exI)
              apply (rule_tac ?x="bes2" in exI)
              proof (intro conjI, goal_cases)
-               show "bes = ui_es res1 @ bes2" by (rule `bes = ui_es res1 @ bes2`)
+               show "bes = ui_es res1 @ bes2" by (rule \<open>bes = ui_es res1 @ bes2\<close>)
              next
              
                case 2 show ?case
                apply (rule_tac ?x="rv'" in exI)
                proof (intro conjI)
                  show "rv'\<in> fringe prb'" 
-                 using subsum_step(3) subsumE_fringe[OF subsum_step(3)] B `rv' \<noteq> subsumee sub` 
+                 using subsum_step(3) subsumE_fringe[OF subsum_step(3)] B \<open>rv' \<noteq> subsumee sub\<close> 
                  by simp
                next
                  show "subpath (red prb') rv res1 rv' (subs prb')" 
@@ -4003,11 +4003,11 @@ next
              
                    have "subpath (red prb) rv' [re] (tgt re) (subs prb)"
                    proof -
-                     have "\<not> uses_sub rv' [re] (tgt re) sub" using `rv' \<noteq> subsumee sub` by auto
+                     have "\<not> uses_sub rv' [re] (tgt re) sub" using \<open>rv' \<noteq> subsumee sub\<close> by auto
              
                      thus ?thesis 
                      using subsum_step(3)
-                         `subpath (red prb') rv' res21 rv'' (subs prb')` `res21 = re # res21'`
+                         \<open>subpath (red prb') rv' res21 rv'' (subs prb')\<close> \<open>res21 = re # res21'\<close>
                          wf_sub_rel_of.sp_in_extends_not_using_sub
                          [OF subs_wf_sub_rel_of[OF subsum_step(1)],
                           of "subsumee sub" "subsumer sub" "subs prb'" rv' "[re]" "tgt re"]
@@ -4024,15 +4024,15 @@ next
                    apply (rule_tac ?x="ui_es res21'@bes22" in exI)
                    proof (intro conjI)
                      show "bes2 = ui_es [re] @ ui_es res21' @ bes22"
-                     using `bes2 = ui_es res21 @ bes22` `res21 = re # res21'` by simp
+                     using \<open>bes2 = ui_es res21 @ bes22\<close> \<open>res21 = re # res21'\<close> by simp
                    next
                      show "[re] \<noteq> []" by simp
                    next
                      show "subpath_from (red prb) rv' [re] (subs prb)"
                      apply (rule_tac ?x="tgt re" in exI)
                      using subsum_step(3)
-                         `rv' \<noteq> subsumee sub` `subpath (red prb') rv' res21 rv'' (subs prb')`
-                         `res21 = re # res21'`
+                         \<open>rv' \<noteq> subsumee sub\<close> \<open>subpath (red prb') rv' res21 rv'' (subs prb')\<close>
+                         \<open>res21 = re # res21'\<close>
                          rb_sp_Cons[OF RB', of rv' re res21' rv'']
                          rb_sp_one[OF subsum_step(1), of rv' re "tgt re"]
                          subs_sub_rel_of[OF subsum_step(1)] subs_sub_rel_of[OF RB']
@@ -4084,11 +4084,11 @@ next
                         show "subpath (red prb') rv1 [] rv1 (subs prb')"
                         using abstract_step(4) rb_Nil_sp[OF RB'] by fast
                       next
-                        show "\<not> marked prb' rv1" using abstract_step(3) `rv2 = rv1` by simp
+                        show "\<not> marked prb' rv1" using abstract_step(3) \<open>rv2 = rv1\<close> by simp
                       next
                         show "bes = ui_es []"
-                        using `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)`
-                              `out_edges (black prb') (fst rv1) = {}`
+                        using \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)\<close>
+                              \<open>out_edges (black prb') (fst rv1) = {}\<close>
                         by (cases bes) (auto simp add : Graph.sp_Cons)
                       qed
                 
@@ -4111,13 +4111,13 @@ next
                  proof (intro conjI)
              
                    show "rv1 \<in> fringe prb'" 
-                   using abstract_step(1,3) `rv2 = rv1` `out_edges (black prb') (fst rv1) \<noteq> {}`
+                   using abstract_step(1,3) \<open>rv2 = rv1\<close> \<open>out_edges (black prb') (fst rv1) \<noteq> {}\<close>
                    by (auto simp add : fringe_def)
              
                  next
              
                    show "subpath (red prb') rv1 [] rv1 (subs prb')" 
-                   using abstract_step(3) `rv2 = rv1` 
+                   using abstract_step(3) \<open>rv2 = rv1\<close> 
                          rb_Nil_sp[OF RedBlack.abstract_step[OF abstract_step(1,3)]]
                    by auto
              
@@ -4142,18 +4142,18 @@ next
              
                      ultimately
                      have "re \<in> out_edges (red prb') rv1"
-                     using abstract_step(3) `rv2 = rv1`
+                     using abstract_step(3) \<open>rv2 = rv1\<close>
                            rb_sp_Cons[OF RedBlack.abstract_step[OF abstract_step(1,3)], 
                                       of rv1 re res21' rv3]
                      unfolding subsumees_conv by fastforce
              
-                     thus False using abstract_step(3) `rv2 = rv1` by auto
+                     thus False using abstract_step(3) \<open>rv2 = rv1\<close> by auto
                    qed
              
                  next
              
                    show "Graph.subpath_from (black prb') (fst rv1) bes"
-                   using `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)`
+                   using \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)\<close>
                    by simp
              
                  qed
@@ -4170,13 +4170,13 @@ next
         moreover
         hence "feasible (confs prb rv1) (trace bes (labelling (black prb)))"
               using abstract_step(3) 
-                    `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)`
+                    \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)\<close>
               by simp 
     
         ultimately
         have "bes \<in> RedBlack_subpaths_from prb rv1"
               using abstract_step(2)[of rv1] abstract_step(3-7)
-                    `bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)`
+                    \<open>bes \<in> feasible_subpaths_from (black prb') (confs prb' rv1) (fst rv1)\<close>
               by auto
     
         thus ?thesis 
@@ -4212,7 +4212,7 @@ next
                     apply (rule_tac ?x="res1" in exI)
                     apply (rule_tac ?x="bes2" in exI)
                     proof (intro conjI, goal_cases)
-                      show "bes = ui_es res1 @ bes2" by (rule `bes = ui_es res1 @ bes2`)
+                      show "bes = ui_es res1 @ bes2" by (rule \<open>bes = ui_es res1 @ bes2\<close>)
                     next
                       case 2 show ?case
                       using abstract_step(3) B C E F unfolding fringe_def
@@ -4268,7 +4268,7 @@ next
                 apply (rule_tac ?x="res1" in exI)
                 apply (rule_tac ?x="bes2" in exI)
                 proof (intro conjI, goal_cases)
-                  show "bes = ui_es res1 @ bes2" by (rule `bes = ui_es res1 @ bes2`)
+                  show "bes = ui_es res1 @ bes2" by (rule \<open>bes = ui_es res1 @ bes2\<close>)
                 next
                   case 2 
                   show ?case
@@ -4281,10 +4281,10 @@ next
 qed
 
 
-text {* Red-black paths being red-black sub-path starting from the red root, and feasible paths 
+text \<open>Red-black paths being red-black sub-path starting from the red root, and feasible paths 
 being feasible sub-paths starting at the black initial location, it follows from the previous 
 theorem that the set of feasible paths when considering the configuration of the root is a 
-subset of the set of red-black paths. *}
+subset of the set of red-black paths.\<close>
 
 theorem (in finite_RedBlack) feasible_path_inclusion :
   assumes "RedBlack prb"
@@ -4292,9 +4292,9 @@ theorem (in finite_RedBlack) feasible_path_inclusion :
 using feasible_subpaths_preserved[OF assms, of "root (red prb)"] consistent_roots[OF assms]
 by (simp add : vertices_def)
 
-text {* The configuration at the red root might have been abstracted. In this case, the initial 
+text \<open>The configuration at the red root might have been abstracted. In this case, the initial 
 configuration is subsumed by the current configuration at the root. Thus the set of feasible paths 
-when considering the initial configuration is also a subset of the set of red-black paths.*}
+when considering the initial configuration is also a subset of the set of red-black paths.\<close>
 
 lemma init_subsumed :
   assumes "RedBlack prb"

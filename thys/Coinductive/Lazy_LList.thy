@@ -1,13 +1,13 @@
 (*  Title:       Lazy_LList.thy
     Author:      Andreas Lochbihler
 *)
-section {* Code generator setup to implement lazy lists lazily *}
+section \<open>Code generator setup to implement lazy lists lazily\<close>
 
 theory Lazy_LList imports
   Coinductive_List
 begin
 
-subsection {* Lazy lists *}
+subsection \<open>Lazy lists\<close>
 
 code_identifier code_module Lazy_LList \<rightharpoonup>
   (SML) Coinductive_List and
@@ -277,9 +277,9 @@ by(auto split: llist.split)
 declare option.splits [split del]
 declare Lazy_llist_def [simp del]
 
-text {* Simple ML test for laziness *}
+text \<open>Simple ML test for laziness\<close>
 
-ML_val {*
+ML_val \<open>
   val zeros = @{code iterates} (fn x => x + 1) 0;
   val lhd = @{code lhd} zeros;
   val ltl = @{code ltl} zeros;
@@ -294,7 +294,7 @@ ML_val {*
   val hd = @{code lhd} ldropWhile;
   
   val lfilter = @{code lfilter} (fn _ => false) zeros;
-*}
+\<close>
 
 hide_const (open) force
 

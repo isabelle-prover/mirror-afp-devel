@@ -29,9 +29,9 @@ text \<open>
   \item add rules to replace derivative terms: declare elimders [cterms\_elimders]
   \end{enumerate}
 
-  To configure the tactic for a process environment (@{text \<Gamma>}):
+  To configure the tactic for a process environment (\<open>\<Gamma>\<close>):
   \begin{enumerate}
-  \item add simp rules: declare @{text \<Gamma>}.simps [cterms\_env]
+  \item add simp rules: declare \<open>\<Gamma>\<close>.simps [cterms\_env]
   \item add case rules: declare aodv\_proc\_cases [ctermsl\_cases]
   \item add invariant intros
       declare

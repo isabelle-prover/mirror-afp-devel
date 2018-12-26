@@ -51,7 +51,7 @@ proof-
   then show ?thesis by (force elim!: irreducible\<^sub>dE)
 qed
 
-subsection {* Transferring to class-based mod-ring *}
+subsection \<open>Transferring to class-based mod-ring\<close>
 
 locale poly_mod_type = poly_mod m
   for m and ty :: "'a :: nontriv itself" +

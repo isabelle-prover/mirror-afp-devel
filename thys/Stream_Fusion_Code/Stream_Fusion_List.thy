@@ -3,7 +3,7 @@
           Andreas Lochbihler, ETH Zurich
 *)
 
-section {* Stream fusion for finite lists *}
+section \<open>Stream fusion for finite lists\<close>
 
 theory Stream_Fusion_List
 imports Stream_Fusion
@@ -16,18 +16,18 @@ apply (drule (1) monotoneD)
 apply (auto simp add: flat_ord_def split: option.split)
 done
 
-subsection {* The type of generators for finite lists *}
+subsection \<open>The type of generators for finite lists\<close>
 
 datatype ('a, 's) step = Done | is_Skip: Skip 's | is_Yield: Yield 'a 's
 
 type_synonym ('a, 's) raw_generator = "'s \<Rightarrow> ('a,'s) step"
 
-text {*
+text \<open>
   Raw generators may not end in @{const Done}, but may lead to infinitely many @{const Yield}s 
   in a row. Such generators cannot be converted to finite lists, because it corresponds to an
   infinite list. Therefore, we introduce the type of generators that always end in @{const Done}
   after finitely many steps.
-*}
+\<close>
 
 inductive_set terminates_on :: "('a, 's) raw_generator \<Rightarrow> 's set"
   for g :: "('a, 's) raw_generator"
@@ -58,7 +58,7 @@ lemma wf_terminates:
   shows "terminates g"
 proof (rule terminatesI)
   fix s
-  from `wf R` show "s \<in> terminates_on g"
+  from \<open>wf R\<close> show "s \<in> terminates_on g"
   proof (induction rule: wf_induct [rule_format, consumes 1, case_names wf])
     case (wf s)
     show ?case
@@ -106,11 +106,11 @@ next
     next
       case (Skip s')
       hence "s' \<in> terminates_on g" using 1 by(auto)
-      thus ?thesis using `g s = Skip s'` by (simp add: terminates_on.pause)
+      thus ?thesis using \<open>g s = Skip s'\<close> by (simp add: terminates_on.pause)
     next
       case (Yield a s')
       hence "s' \<in> terminates_on g" using 1 by(auto)
-      thus ?thesis using `g s = Yield a s'` by (auto intro: terminates_on.unfold)
+      thus ?thesis using \<open>g s = Yield a s'\<close> by (auto intro: terminates_on.unfold)
     qed
   qed
 qed
@@ -156,7 +156,7 @@ qed
 
 setup_lifting type_definition_generator
 
-subsection {* Conversion to @{typ "'a list"} *}
+subsection \<open>Conversion to @{typ "'a list"}\<close>
 
 context fixes g :: "('a, 's) generator" begin
 
@@ -215,11 +215,11 @@ qed
 
 end
 
-setup {* Context.theory_map (Stream_Fusion.add_unstream @{const_name unstream}) *}
+setup \<open>Context.theory_map (Stream_Fusion.add_unstream @{const_name unstream})\<close>
 
-subsection {* Producers *}
+subsection \<open>Producers\<close>
 
-subsubsection {* Conversion to streams *}
+subsubsection \<open>Conversion to streams\<close>
 
 fun stream_raw :: "'a list \<Rightarrow> ('a, 'a list) step"
 where
@@ -238,7 +238,7 @@ lift_definition stream :: "('a, 'a list) generator" is "stream_raw" by(rule term
 lemma unstream_stream: "unstream stream xs = xs"
 by(induction xs)(auto simp add: stream.rep_eq)
 
-subsubsection {* @{const replicate} *}
+subsubsection \<open>@{const replicate}\<close>
 
 fun replicate_raw :: "'a \<Rightarrow> ('a, nat) raw_generator"
 where
@@ -258,7 +258,7 @@ by(rule terminates_replicate_raw)
 lemma unstream_replicate_prod [stream_fusion]: "unstream (replicate_prod x) n = replicate n x"
 by(induction n)(simp_all add: replicate_prod.rep_eq)
 
-subsubsection {* @{const upt} *}
+subsubsection \<open>@{const upt}\<close>
 
 definition upt_raw :: "nat \<Rightarrow> (nat, nat) raw_generator"
 where "upt_raw n m = (if m \<ge> n then Done else Yield m (Suc m))"
@@ -276,7 +276,7 @@ lemma unstream_upt_prod [stream_fusion]: "unstream (upt_prod n) m = upt m n"
 by(induction "n-m" arbitrary: n m)(simp_all add: upt_prod.rep_eq upt_conv_Cons upt_raw_def unstream.simps)
 
 
-subsubsection {* @{const upto} *}
+subsubsection \<open>@{const upto}\<close>
 
 definition upto_raw :: "int \<Rightarrow> (int, int) raw_generator"
 where "upto_raw n m = (if m \<le> n then Yield m (m + 1) else Done)"
@@ -293,7 +293,7 @@ lift_definition upto_prod :: "int \<Rightarrow> (int, int) generator" is "upto_r
 lemma unstream_upto_prod [stream_fusion]: "unstream (upto_prod n) m = upto m n"
 by(induction "nat (n - m + 1)" arbitrary: m)(simp_all add: upto_prod.rep_eq upto.simps upto_raw_def)
 
-subsubsection {* @{term "[]"} *}
+subsubsection \<open>@{term "[]"}\<close>
 
 lift_definition Nil_prod :: "('a, unit) generator" is "\<lambda>_. Done"
 by(auto simp add: terminates_def intro: terminates_on.intros)
@@ -304,9 +304,9 @@ by(fact Nil_prod.rep_eq)
 lemma unstream_Nil_prod [stream_fusion]: "unstream Nil_prod () = []"
 by(simp add: generator_Nil_prod)
 
-subsection {* Consumers *}
+subsection \<open>Consumers\<close>
 
-subsubsection {* @{const nth} *}
+subsubsection \<open>@{const nth}\<close>
 
 context fixes g :: "('a, 's) generator" begin
 
@@ -322,7 +322,7 @@ by(cases "generator g s")(simp_all add: nth_cons_def nth_def split: nat.split)
 
 end
 
-subsubsection {* @{term length} *}
+subsubsection \<open>@{term length}\<close>
 
 context fixes g :: "('a, 's) generator" begin
 
@@ -353,7 +353,7 @@ by(simp add: List.gen_length_def gen_length_cons_def)
 
 end
 
-subsubsection {* @{const foldr} *}
+subsubsection \<open>@{const foldr}\<close>
 
 context 
   fixes g :: "('a, 's) generator"
@@ -374,7 +374,7 @@ by(cases "generator g s")(simp_all add: foldr_cons_def)
 
 end
 
-subsubsection {* @{const foldl} *}
+subsubsection \<open>@{const foldl}\<close>
 
 context
   fixes g :: "('b, 's) generator"
@@ -394,7 +394,7 @@ by (cases "generator g s")(simp_all add: foldl_cons_def)
 
 end
 
-subsubsection {* @{const fold} *}
+subsubsection \<open>@{const fold}\<close>
 
 context
   fixes g :: "('a, 's) generator"
@@ -414,7 +414,7 @@ by (cases "generator g s")(simp_all add: fold_cons_def)
 
 end
 
-subsubsection {* @{const List.null} *}
+subsubsection \<open>@{const List.null}\<close>
 
 definition null_cons :: "('a, 's) generator \<Rightarrow> 's \<Rightarrow> bool"
 where [stream_fusion]: "null_cons g s = List.null (unstream g s)"
@@ -423,7 +423,7 @@ lemma null_cons_code [code]:
   "null_cons g s = (case generator g s of Done \<Rightarrow> True | Skip s' \<Rightarrow> null_cons g s' | Yield _ _ \<Rightarrow> False)"
 by(cases "generator g s")(simp_all add: null_cons_def null_def)
 
-subsubsection {* @{const hd} *}
+subsubsection \<open>@{const hd}\<close>
 
 context fixes g :: "('a, 's) generator" begin
 
@@ -440,7 +440,7 @@ by (cases "generator g s")(simp_all add: hd_cons_def hd_def)
 
 end
 
-subsubsection {* @{const last} *}
+subsubsection \<open>@{const last}\<close>
 
 context fixes g :: "('a, 's) generator" begin
 
@@ -459,7 +459,7 @@ by (simp add: last_cons_def last_def option.the_def)
 
 end
 
-subsubsection {* @{const sum_list} *}
+subsubsection \<open>@{const sum_list}\<close>
 
 context fixes g :: "('a :: monoid_add, 's) generator" begin
 
@@ -476,7 +476,7 @@ by (cases "generator g s")(simp_all add: sum_list_cons_def)
 
 end
 
-subsubsection {* @{const list_all2} *}
+subsubsection \<open>@{const list_all2}\<close>
 
 context
   fixes g :: "('a, 's1) generator"
@@ -508,7 +508,7 @@ by(simp split: step.split add: list_all2_cons_def null_cons_def List.null_def li
 
 end
 
-subsubsection {* @{const list_all} *}
+subsubsection \<open>@{const list_all}\<close>
 
 context
   fixes g :: "('a, 's) generator"
@@ -526,7 +526,7 @@ by(simp add: list_all_cons_def split: step.split)
 
 end
 
-subsubsection {* @{const ord.lexordp} *}
+subsubsection \<open>@{const ord.lexordp}\<close>
 
 context ord begin
 
@@ -570,9 +570,9 @@ lemmas [stream_fusion] =
   lexord_fusion_def ord.lexord_fusion_def
   lexord_eq_fusion_def ord.lexord_eq_fusion_def
 
-subsection {* Transformers *}
+subsection \<open>Transformers\<close>
 
-subsubsection {* @{const map} *}
+subsubsection \<open>@{const map}\<close>
 
 definition map_raw :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('b, 's) raw_generator"
 where
@@ -601,7 +601,7 @@ proof (induction s taking: g rule: unstream.induct)
   show ?case using "1.IH" by (cases "generator g s")(simp_all add: map_trans.rep_eq map_raw_def)
 qed
 
-subsubsection {* @{const drop} *}
+subsubsection \<open>@{const drop}\<close>
 
 fun drop_raw :: "('a, 's) raw_generator \<Rightarrow> ('a, (nat \<times> 's)) raw_generator"
 where
@@ -616,7 +616,7 @@ proof (rule terminatesI)
   fix st :: "nat \<times> 'a"
   obtain n s where "st = (n, s)" by(cases st)
   from assms have "s \<in> terminates_on g" by (simp add: terminates_def)
-  thus "st \<in> terminates_on (drop_raw g)" unfolding `st = (n, s)`
+  thus "st \<in> terminates_on (drop_raw g)" unfolding \<open>st = (n, s)\<close>
     apply(induction arbitrary: n)
     apply(case_tac [!] n)
     apply(auto intro: terminates_on.intros)
@@ -634,7 +634,7 @@ proof (induction s arbitrary: n taking: g rule: unstream.induct)
       (simp_all add: drop_trans.rep_eq)
 qed
 
-subsubsection {* @{const dropWhile} *}
+subsubsection \<open>@{const dropWhile}\<close>
 
 fun dropWhile_raw :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, bool \<times> 's) raw_generator"
   \<comment> \<open>Boolean flag indicates whether we are still in dropping phase\<close>
@@ -688,7 +688,7 @@ proof (induction s taking: g rule: unstream.induct)
   qed(simp_all add: dropWhile_trans.rep_eq)
 qed
 
-subsubsection {* @{const take} *}
+subsubsection \<open>@{const take}\<close>
 
 fun take_raw :: "('a, 's) raw_generator \<Rightarrow> ('a, (nat \<times> 's)) raw_generator"
 where
@@ -721,7 +721,7 @@ proof (induction s arbitrary: n taking: g rule: unstream.induct)
       (simp_all add: take_trans.rep_eq)
 qed
 
-subsubsection {* @{const takeWhile} *}
+subsubsection \<open>@{const takeWhile}\<close>
 
 definition takeWhile_raw :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, 's) raw_generator"
 where
@@ -751,7 +751,7 @@ proof (induction s taking: g rule: unstream.induct)
   then show ?case by(cases "generator g s")(simp_all add: takeWhile_trans.rep_eq takeWhile_raw_def)
 qed
 
-subsubsection{* @{const append} *}
+subsubsection\<open>@{const append}\<close>
 
 fun append_raw :: "('a, 'sg) raw_generator \<Rightarrow> ('a, 'sh) raw_generator \<Rightarrow> 'sh \<Rightarrow> ('a, 'sg + 'sh) raw_generator"
 where
@@ -799,7 +799,7 @@ proof(induction sg taking: g rule: unstream.induct)
     by (cases "generator g sg")(simp_all add: append_trans.rep_eq)
 qed
 
-subsubsection{* @{const filter} *}
+subsubsection\<open>@{const filter}\<close>
 
 definition filter_raw :: "('a \<Rightarrow> bool) \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, 's) raw_generator"
 where 
@@ -829,7 +829,7 @@ proof (induction s taking: g rule: unstream.induct)
   then show ?case by(cases "generator g s")(simp_all add: filter_trans.rep_eq filter_raw_def)
 qed
 
-subsubsection{* @{const zip} *}
+subsubsection\<open>@{const zip}\<close>
 
 fun zip_raw :: "('a, 'sg) raw_generator \<Rightarrow> ('b, 'sh) raw_generator \<Rightarrow> ('a \<times> 'b, 'sg \<times> 'sh \<times> 'a option) raw_generator"
   \<comment> \<open>We search first the left list for the next element and cache it in the @{typ "'a option"}
@@ -892,7 +892,7 @@ proof (induction sg arbitrary: sh taking: g rule: unstream.induct)
   qed(simp_all add: zip_trans.rep_eq)
 qed
 
-subsubsection {* @{const tl} *}
+subsubsection \<open>@{const tl}\<close>
 
 fun tl_raw :: "('a, 'sg) raw_generator \<Rightarrow> ('a, bool \<times> 'sg) raw_generator"
   \<comment> \<open>The Boolean flag stores whether we have already skipped the first element\<close>
@@ -935,7 +935,7 @@ proof (induction s taking: g rule: unstream.induct)
     by (cases "generator g s")(simp_all add: tl_trans.rep_eq)
 qed
 
-subsubsection {* @{const butlast} *}
+subsubsection \<open>@{const butlast}\<close>
 
 fun butlast_raw :: "('a, 's) raw_generator \<Rightarrow> ('a, 'a option \<times> 's) raw_generator"
   \<comment> \<open>The @{typ "'a option"} caches the previous element we have seen\<close>
@@ -977,12 +977,12 @@ proof (induction s taking: g rule: unstream.induct)
     by (cases "generator g s")(simp_all add: butlast_trans.rep_eq)
 qed
 
-subsubsection {* @{const concat} *}
+subsubsection \<open>@{const concat}\<close>
 
-text {*
+text \<open>
   We only do the easy version here where
   the generator has type @{typ "('a list,'s) generator"}, not @{typ "(('a, 'si) generator, 's) generator"}
-*}
+\<close>
 
 fun concat_raw :: "('a list, 's) raw_generator \<Rightarrow> ('a, 'a list \<times> 's) raw_generator"
 where
@@ -997,7 +997,7 @@ proof (rule terminatesI)
   fix st :: "'b list \<times> 'a"
   obtain xs s where "st = (xs, s)" by (cases st)
   from assms have "s \<in> terminates_on g" by (simp add: terminates_def)
-  then show "st \<in> terminates_on (concat_raw g)" unfolding `st = (xs, s)`
+  then show "st \<in> terminates_on (concat_raw g)" unfolding \<open>st = (xs, s)\<close>
   proof (induction s arbitrary: xs)
     case (stop s xs)
     then show ?case by (induction xs)(auto intro: terminates_on.stop terminates_on.unfold)
@@ -1035,7 +1035,7 @@ lemma unstream_concat_trans [stream_fusion]:
   "unstream (concat_trans g) ([], s) = concat (unstream g s)"
 by(simp only: unstream_concat_trans_gen append_Nil)
 
-subsubsection {* @{const splice} *}
+subsubsection \<open>@{const splice}\<close>
 
 datatype ('a, 'b) splice_state = Left 'a 'b | Right 'a 'b | Left_only 'a | Right_only 'b
 
@@ -1136,7 +1136,7 @@ proof (induction sg arbitrary: sh taking: g rule: unstream.induct)
 qed
 
 
-subsubsection {* @{const list_update} *}
+subsubsection \<open>@{const list_update}\<close>
 
 fun list_update_raw :: "('a,'s) raw_generator \<Rightarrow> 'a \<Rightarrow> ('a, nat \<times> 's) raw_generator"
 where
@@ -1188,7 +1188,7 @@ proof(induction s arbitrary: n taking: g rule: unstream.induct)
   qed
 qed
 
-subsubsection {* @{const removeAll} *}
+subsubsection \<open>@{const removeAll}\<close>
 
 definition removeAll_raw :: "'a \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, 's) raw_generator"
 where
@@ -1224,7 +1224,7 @@ proof (induction s taking: g rule: unstream.induct)
   qed(auto simp add: removeAll_trans.rep_eq removeAll_raw_def)
 qed
 
-subsubsection {* @{const remove1} *}
+subsubsection \<open>@{const remove1}\<close>
 
 fun remove1_raw :: "'a \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, bool \<times> 's) raw_generator"
 where
@@ -1239,7 +1239,7 @@ proof (rule terminatesI)
   fix st :: "bool \<times> 'a"
   obtain c s where "st = (c, s)" by (cases st)
   from assms have "s \<in> terminates_on g" by (simp add: terminates_def)
-  then show "st \<in> terminates_on (remove1_raw b g)" unfolding `st = (c, s)`
+  then show "st \<in> terminates_on (remove1_raw b g)" unfolding \<open>st = (c, s)\<close>
   proof (induction s arbitrary: c)
     case (stop s)
     then show ?case by (cases c)(simp_all add: terminates_on.stop)
@@ -1275,7 +1275,7 @@ proof(induction s taking: g rule: unstream.induct)
   qed(simp_all add: remove1_trans.rep_eq)
 qed
 
-subsubsection {* @{term "(#)"} *}
+subsubsection \<open>@{term "(#)"}\<close>
 
 fun Cons_raw :: "'a \<Rightarrow> ('a, 's) raw_generator \<Rightarrow> ('a, bool \<times> 's) raw_generator"
 where
@@ -1291,7 +1291,7 @@ proof (rule terminatesI)
   from assms have "s \<in> terminates_on g" by (simp add: terminates_def)
   hence "(False, s) \<in> terminates_on (Cons_raw x g)"
     by(induction s arbitrary: b)(auto intro: terminates_on.intros)
-  then show "st \<in> terminates_on (Cons_raw x g)" unfolding `st = (b, s)`
+  then show "st \<in> terminates_on (Cons_raw x g)" unfolding \<open>st = (b, s)\<close>
     by(cases b)(auto intro: terminates_on.intros)
 qed
 
@@ -1304,23 +1304,23 @@ proof(induction s taking: g rule: unstream.induct)
   then show ?case by(cases "generator g s")(auto simp add: Cons_trans.rep_eq)
 qed
 
-text {*
+text \<open>
   We do not declare @{const Cons_trans} as a transformer.
   Otherwise, literal lists would be transformed into streams which adds a significant overhead
   to the stream state.
-*}
+\<close>
 lemma unstream_Cons_trans: "unstream (Cons_trans x g) (True, s) = x # unstream g s"
 using unstream_Cons_trans_False[of x g s] by(simp add: Cons_trans.rep_eq)
 
-subsubsection {* @{const List.maps} *}
+subsubsection \<open>@{const List.maps}\<close>
 
-text {* Stream version based on Coutts \cite{Coutts2010PhD}. *}
+text \<open>Stream version based on Coutts \cite{Coutts2010PhD}.\<close>
 
-text {*
+text \<open>
   We restrict the function for generating the inner lists to terminating
   generators because the code generator does not directly supported nesting abstract
   datatypes in other types.
-*}
+\<close>
 
 fun maps_raw
   :: "('a \<Rightarrow> ('b, 'sg) generator \<times> 'sg) \<Rightarrow> ('a, 's) raw_generator
@@ -1377,18 +1377,18 @@ proof(induction s taking: g rule: unstream.induct)
   qed(simp_all add: maps_trans.rep_eq maps_simps)
 qed
 
-text {*
+text \<open>
   The rule @{thm [source] unstream_map_trans} is too complicated for fusion because of @{term split},
   which does not arise naturally from stream fusion rules. Moreover, according to Farmer et al.
   \cite{FarmerHoenerGill2014PEPM}, this fusion is too general for further optimisations because the
   generators of the inner list are generated by the outer generator and therefore compilers may
   think that is was not known statically. 
 
-  Instead, they propose a weaker version using @{text flatten} below.
+  Instead, they propose a weaker version using \<open>flatten\<close> below.
   (More precisely, Coutts already mentions this approach in his PhD thesis \cite{Coutts2010PhD},
   but dismisses it because it requires a stronger rewriting engine than GHC has. But Isabelle's
   simplifier language is sufficiently powerful.
-*}
+\<close>
 
 fun fix_step :: "'a \<Rightarrow> ('b, 's) step \<Rightarrow> ('b, 'a \<times> 's) step"
 where
@@ -1464,7 +1464,7 @@ proof(induction s' taking: g'' rule: unstream.induct)
   thus ?case by(cases "generator g'' s'")(simp_all add: flatten.rep_eq)
 qed
 
-text {* HO rewrite equations can express the variable capture in the generator unlike GHC rules *}
+text \<open>HO rewrite equations can express the variable capture in the generator unlike GHC rules\<close>
 
 lemma unstream_flatten_fix_gen [stream_fusion]:
   "unstream (flatten (\<lambda>s. (s, f s)) (fix_gen g'') g) (s, None) =
@@ -1480,9 +1480,9 @@ proof(induction s taking: g rule: unstream.induct)
   qed(simp_all add: flatten.rep_eq maps_simps)
 qed
 
-text {*
+text \<open>
   Separate fusion rule when the inner generator does not depend on the elements of the outer stream.
-*}
+\<close>
 lemma unstream_flatten [stream_fusion]:
   "unstream (flatten f g'' g) (s, None) = List.maps (\<lambda>s'. unstream g'' (f s')) (unstream g s)"
 proof(induction s taking: g rule: unstream.induct)

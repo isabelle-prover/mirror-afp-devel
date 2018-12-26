@@ -6,15 +6,15 @@
 
 theory DiskPaxos_Chosen imports DiskPaxos_Inv5 begin
 
-subsection {* Lemma I2f *}
+subsection \<open>Lemma I2f\<close>
 
-text {*
+text \<open>
   To prove the final conjunct we will use the predicate $valueChosen(v)$.
   This predicate is true if $v$ is the only possible value that can be 
   chosen as output. It also asserts that, for every disk $d$ in $D$, if $q$
   has already read $disk s d p$, then it has read a block with $bal$ field 
   at least $b$.
-*}
+\<close>
 
 definition valueChosen :: "state \<Rightarrow> InputsOrNi \<Rightarrow> bool"
 where

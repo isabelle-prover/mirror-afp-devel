@@ -2,43 +2,43 @@ theory FullAbstraction
   imports SourceTargetRelation
 begin
 
-section {* Full Abstraction *}
+section \<open>Full Abstraction\<close>
 
-text {* An encoding is fully abstract w.r.t. some source term relation SRel and some target term
+text \<open>An encoding is fully abstract w.r.t. some source term relation SRel and some target term
         relation TRel if two source terms S1 and S2 form a pair (S1, S2) in SRel iff their literal
-        translations form a pair (enc S1, enc S2) in TRel. *}
+        translations form a pair (enc S1, enc S2) in TRel.\<close>
 
 abbreviation (in encoding) fully_abstract
     :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> bool"
   where
   "fully_abstract SRel TRel \<equiv> \<forall>S1 S2. (S1, S2) \<in> SRel \<longleftrightarrow> (\<lbrakk>S1\<rbrakk>, \<lbrakk>S2\<rbrakk>) \<in> TRel"
 
-subsection {* Trivial Full Abstraction Results *}
+subsection \<open>Trivial Full Abstraction Results\<close>
 
-text {* We start with some trivial full abstraction results. Each injective encoding is fully
+text \<open>We start with some trivial full abstraction results. Each injective encoding is fully
         abstract w.r.t. to the identity relation on the source and the identity relation on the
-        target. *}
+        target.\<close>
 
 lemma (in encoding) inj_enc_is_fully_abstract_wrt_identities:
   assumes injectivity: "\<forall>S1 S2. \<lbrakk>S1\<rbrakk> = \<lbrakk>S2\<rbrakk> \<longrightarrow> S1 = S2"
   shows "fully_abstract {(S1, S2). S1 = S2} {(T1, T2). T1 = T2}"
     by (auto simp add: injectivity)
 
-text {* Each encoding is fully abstract w.r.t. the empty relation on the source and the target. *}
+text \<open>Each encoding is fully abstract w.r.t. the empty relation on the source and the target.\<close>
 
 lemma (in encoding) fully_abstract_wrt_empty_relation:
   shows "fully_abstract {} {}"
     by auto
 
-text {* Similarly, each encoding is fully abstract w.r.t. the all-relation on the source and the
-        target. *}
+text \<open>Similarly, each encoding is fully abstract w.r.t. the all-relation on the source and the
+        target.\<close>
 
 lemma (in encoding) fully_abstract_wrt_all_relation:
   shows "fully_abstract {(S1, S2). True} {(T1, T2). True}"
     by auto
 
-text {* If the encoding is injective then for each source term relation RelS there exists a target
-        term relation RelT such that the encoding is fully abstract w.r.t. RelS and RelT. *}
+text \<open>If the encoding is injective then for each source term relation RelS there exists a target
+        term relation RelT such that the encoding is fully abstract w.r.t. RelS and RelT.\<close>
 
 lemma (in encoding) fully_abstract_wrt_source_relation:
   fixes RelS :: "('procS \<times> 'procS) set"
@@ -52,9 +52,9 @@ proof -
     by blast
 qed
 
-text {* If all source terms that are translated to the same target term are related by a trans
+text \<open>If all source terms that are translated to the same target term are related by a trans
         source term relation RelS, then there exists a target term relation RelT such that the
-        encoding is fully abstract w.r.t. RelS and RelT. *}
+        encoding is fully abstract w.r.t. RelS and RelT.\<close>
 
 lemma (in encoding) fully_abstract_wrt_trans_source_relation:
   fixes RelS :: "('procS \<times> 'procS) set"
@@ -99,8 +99,8 @@ lemma (in encoding) fully_abstract_wrt_trans_closure_of_source_relation:
             fully_abstract_wrt_trans_source_relation[where RelS="RelS\<^sup>+"]
     by blast
 
-text {* For every encoding and every target term relation RelT there exists a source term relation
-        RelS such that the encoding is fully abstract w.r.t. RelS and RelT. *}
+text \<open>For every encoding and every target term relation RelT there exists a source term relation
+        RelS such that the encoding is fully abstract w.r.t. RelS and RelT.\<close>
 
 lemma (in encoding) fully_abstract_wrt_target_relation:
   fixes RelT :: "('procT \<times> 'procT) set"
@@ -113,15 +113,15 @@ proof -
     by blast
 qed
 
-subsection {* Fully Abstract Encodings *}
+subsection \<open>Fully Abstract Encodings\<close>
 
-text {* Thus, as long as we can choose one of the two relations, full abstraction is trivial. For
+text \<open>Thus, as long as we can choose one of the two relations, full abstraction is trivial. For
         fixed source and target term relations encodings are not trivially fully abstract. For all
         encodings and relations SRel and TRel we can construct a relation on the disjunctive union
         of source and target terms, whose reduction to source terms is SRel and whose reduction to
         target terms is TRel. But full abstraction ensures that each trans relation that
         relates source terms and their literal translations in both directions includes SRel iff it
-        includes TRel restricted to translated source terms. *}
+        includes TRel restricted to translated source terms.\<close>
 
 lemma (in encoding) full_abstraction_and_trans_relation_contains_SRel_impl_TRel:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -255,12 +255,12 @@ proof -
     by simp
 qed
 
-text {* Full abstraction ensures that SRel and TRel satisfy the same basic properties that can be
+text \<open>Full abstraction ensures that SRel and TRel satisfy the same basic properties that can be
         defined on their pairs. In particular:
         (1) SRel is refl iff TRel reduced to translated source terms is refl
         (2) if the encoding is surjective then SRel is refl iff TRel is refl
         (3) SRel is sym iff TRel reduced to translated source terms is sym
-        (4) SRel is trans iff TRel reduced to translated source terms is trans *}
+        (4) SRel is trans iff TRel reduced to translated source terms is trans\<close>
 
 lemma (in encoding) full_abstraction_impl_SRel_iff_TRel_is_refl:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -335,9 +335,9 @@ lemma (in encoding) full_abstraction_and_surjectivity_impl_SRel_iff_TRel_is_tran
             full_abstraction_impl_SRel_iff_TRel_is_trans[where SRel="SRel" and TRel="TRel"]
     by auto
 
-text {* Similarly, a fully abstract encoding that respects a predicate ensures the this predicate
+text \<open>Similarly, a fully abstract encoding that respects a predicate ensures the this predicate
         is preserved, reflected, or respected by SRel iff it is preserved, reflected, or respected
-        by TRel. *}
+        by TRel.\<close>
 
 lemma (in encoding) full_abstraction_and_enc_respects_pred_impl_SRel_iff_TRel_preserve:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -554,11 +554,11 @@ lemma (in encoding) full_abstraction_and_enc_respects_binary_pred_impl_SRel_iff_
               SRel="SRel" and TRel="TRel" and Pred="Pred"]
     by auto
 
-subsection {* Full Abstraction w.r.t. Preorders *}
+subsection \<open>Full Abstraction w.r.t. Preorders\<close>
 
-text {* If there however exists a trans relation Rel that relates source terms and their
+text \<open>If there however exists a trans relation Rel that relates source terms and their
         literal translations in both directions, then the encoding is fully abstract with respect
-        to the reduction of Rel to source terms and the reduction of Rel to target terms. *}
+        to the reduction of Rel to source terms and the reduction of Rel to target terms.\<close>
 
 lemma (in encoding) trans_source_target_relation_impl_full_abstraction:
   fixes Rel :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -658,8 +658,8 @@ next
     by simp
 qed
 
-text {* If an encoding is fully abstract w.r.t. SRel and TRel, then we can conclude from a pair in
-        indRelRTPO or indRelSTEQ on a pair in TRel and SRel. *}
+text \<open>If an encoding is fully abstract w.r.t. SRel and TRel, then we can conclude from a pair in
+        indRelRTPO or indRelSTEQ on a pair in TRel and SRel.\<close>
 
 lemma (in encoding) full_abstraction_impl_indRelRSTPO_to_SRel_and_TRel:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -896,10 +896,10 @@ next
   qed
 qed
 
-text {* If an encoding is fully abstract w.r.t. a preorder SRel on the source and a trans
+text \<open>If an encoding is fully abstract w.r.t. a preorder SRel on the source and a trans
         relation TRel on the target, then there exists a trans relation, namely indRelSTEQ,
         that relates source terms and their literal translations in both direction such that its
-        reductions to source terms is SRel and its reduction to target terms is TRel. *}
+        reductions to source terms is SRel and its reduction to target terms is TRel.\<close>
 
 lemma (in encoding) full_abstraction_wrt_preorders_impl_trans_source_target_relation:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -954,10 +954,10 @@ proof -
     by blast
 qed
 
-text {* Thus an encoding is fully abstract w.r.t. a preorder SRel on the source and a trans
+text \<open>Thus an encoding is fully abstract w.r.t. a preorder SRel on the source and a trans
         relation TRel on the target iff there exists a trans relation that relates source
         terms and their literal translations in both directions and whose reduction to
-        source/target terms is SRel/TRel. *}
+        source/target terms is SRel/TRel.\<close>
 
 theorem (in encoding) fully_abstract_wrt_preorders_iff_source_target_relation_is_trans:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -1013,11 +1013,11 @@ next
     by blast
 qed
 
-subsection {* Full Abstraction w.r.t. Equivalences *}
+subsection \<open>Full Abstraction w.r.t. Equivalences\<close>
 
-text {* If there exists a relation Rel that relates source terms and their literal translations
+text \<open>If there exists a relation Rel that relates source terms and their literal translations
         and whose sym closure is trans, then the encoding is fully abstract with respect
-        to the reduction of the sym closure of Rel to source/target terms. *}
+        to the reduction of the sym closure of Rel to source/target terms.\<close>
 
 lemma (in encoding) source_target_relation_with_trans_symcl_impl_full_abstraction:
   fixes Rel :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -1049,9 +1049,9 @@ next
     by blast
 qed
 
-text {* If an encoding is fully abstract w.r.t. the equivalences SRel and TRel, then there exists a
+text \<open>If an encoding is fully abstract w.r.t. the equivalences SRel and TRel, then there exists a
         preorder, namely indRelRSTPO, that relates source terms and their literal translations such
-        that its reductions to source terms is SRel and its reduction to target terms is TRel. *}
+        that its reductions to source terms is SRel and its reduction to target terms is TRel.\<close>
 
 lemma (in encoding) fully_abstract_wrt_equivalences_impl_symcl_source_target_relation_is_preorder:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -1531,10 +1531,10 @@ proof -
     by blast
 qed
 
-text {* Thus an encoding is fully abstract w.r.t. an equivalence SRel on the source and an
+text \<open>Thus an encoding is fully abstract w.r.t. an equivalence SRel on the source and an
         equivalence TRel on the target iff there exists a relation that relates source terms and
         their literal translations, whose sym closure is a preorder such that the reduction
-        of this sym closure to source/target terms is SRel/TRel. *}
+        of this sym closure to source/target terms is SRel/TRel.\<close>
 
 lemma (in encoding) fully_abstract_wrt_equivalences_iff_symcl_source_target_relation_is_preorder:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -1626,11 +1626,11 @@ next
     by blast
 qed
 
-subsection {* Full Abstraction without Relating Translations to their Source Terms *}
+subsection \<open>Full Abstraction without Relating Translations to their Source Terms\<close>
 
-text {* Let Rel be the result of removing from indRelSTEQ all pairs of two source or two target
+text \<open>Let Rel be the result of removing from indRelSTEQ all pairs of two source or two target
         terms that are not contained in SRel or TRel. Then a fully abstract encoding ensures that
-        Rel is trans iff SRel is refl and TRel is trans. *}
+        Rel is trans iff SRel is refl and TRel is trans.\<close>
 
 lemma (in encoding) full_abstraction_impl_indRelSTEQ_is_trans:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -1846,9 +1846,9 @@ next
     by simp
 qed
 
-text {* Whenever an encoding induces a trans relation that includes SRel and TRel and relates
+text \<open>Whenever an encoding induces a trans relation that includes SRel and TRel and relates
         source terms to their literal translations in both directions, the encoding is fully
-        abstract w.r.t. SRel and TRel. *}
+        abstract w.r.t. SRel and TRel.\<close>
 
 lemma (in encoding) trans_source_target_relation_impl_fully_abstract:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -1882,10 +1882,10 @@ next
     by simp
 qed
 
-text {* Assume TRel is a preorder. Then an encoding is fully abstract w.r.t. SRel and TRel iff
+text \<open>Assume TRel is a preorder. Then an encoding is fully abstract w.r.t. SRel and TRel iff
         there exists a relation that relates add least all source terms to their literal
         translations, includes SRel and TRel, and whose union with the relation that relates
-        exactly all literal translations to their source terms is trans. *}
+        exactly all literal translations to their source terms is trans.\<close>
 
 lemma (in encoding) source_target_relation_with_trans_impl_full_abstraction:
   fixes Rel :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
@@ -1958,8 +1958,8 @@ next
     by blast
 qed
 
-text {* The same holds if to obtain transitivity the union may contain additional pairs that do
-        neither relate two source nor two target terms. *}
+text \<open>The same holds if to obtain transitivity the union may contain additional pairs that do
+        neither relate two source nor two target terms.\<close>
 
 lemma (in encoding) fully_abstract_wrt_preorders_iff_source_target_relation_union_is_trans:
   fixes SRel :: "('procS \<times> 'procS) set"

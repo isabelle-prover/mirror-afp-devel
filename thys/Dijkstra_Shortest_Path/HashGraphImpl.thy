@@ -1,13 +1,13 @@
-section {* Graphs by Hashmaps *}
+section \<open>Graphs by Hashmaps\<close>
 theory HashGraphImpl
 imports 
   GraphByMap 
 begin
 
 
-text {*
+text \<open>
   Abbreviation: hlg
-*}
+\<close>
 
 type_synonym ('V,'E) hlg = 
   "('V,('V,'E ls) HashMap.hashmap) HashMap.hashmap"
@@ -27,7 +27,7 @@ interpretation hlg: StdGraph hlg_ops
   unfolding hlg_ops_def
   by (rule hlg_gbm.gbm_ops_impl)
 setup Locale_Code.close_block
-setup {* ICF_Tools.revert_abbrevs "HashGraphImpl.hlg" *}
+setup \<open>ICF_Tools.revert_abbrevs "HashGraphImpl.hlg"\<close>
 
 thm map_iterator_dom_def set_iterator_image_def
   set_iterator_image_filter_def

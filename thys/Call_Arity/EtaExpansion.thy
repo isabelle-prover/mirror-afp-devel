@@ -48,16 +48,16 @@ case (Suc n)
   have "(eta_expand (Suc n) e)[x::=y] = (Lam [fresh_var e]. eta_expand n (App e (fresh_var e)))[x::=y]" by simp
   also have "\<dots> = (Lam [z]. eta_expand n (App e z))[x::=y]"
     apply (subst change_Lam_Variable[where y' = z])
-    using `atom z \<sharp> _`
+    using \<open>atom z \<sharp> _\<close>
     by (auto simp add: fresh_Pair eta_expand_eqvt pure_fresh permute_pure flip_fresh_fresh intro!: eqvt_fresh_cong2[where f = eta_expand, OF eta_expand_eqvt])
   also have "\<dots> = Lam [z]. (eta_expand n (App e z))[x::=y]"
-    using `atom z \<sharp> _` by simp
+    using \<open>atom z \<sharp> _\<close> by simp
   also have "\<dots> = Lam [z]. eta_expand n (App e z)[x::=y]" unfolding Suc.IH..
   also have "\<dots> = Lam [z]. eta_expand n (App e[x::=y] z)"
-    using `atom z \<sharp> _` by simp
+    using \<open>atom z \<sharp> _\<close> by simp
   also have "\<dots> = Lam [fresh_var (e[x::=y])]. eta_expand n (App e[x::=y] (fresh_var (e[x::=y])))"
     apply (subst change_Lam_Variable[where y' = "fresh_var (e[x::=y])"])
-    using `atom z \<sharp> _`
+    using \<open>atom z \<sharp> _\<close>
     by (auto simp add: fresh_Pair eqvt_fresh_cong2[where f = eta_expand, OF eta_expand_eqvt] pure_fresh eta_expand_eqvt  flip_fresh_fresh subst_pres_fresh simp del: exp_assn.eq_iff)
   also have "\<dots> = eta_expand (Suc n) e[x::=y]" by simp
   finally show ?case.

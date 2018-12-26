@@ -6,14 +6,14 @@ each car can perceive its the physical size and the concrete
 braking distance, but can only perceive the physical size of all other cars.
 *)
 
-section {*Regular Sensors*}
-text{*
+section \<open>Regular Sensors\<close>
+text\<open>
 This section contains an instantiations of the sensor function for 
 "regular sensors". That is, each car can perceive its own physical
 size and braking distance. However, it can only perceive
 the physical size of other cars, and does not know about
 their braking distance.
-*}
+\<close>
 
 theory Regular_Sensors
   imports  "../Length"
@@ -38,12 +38,12 @@ qed
 notation regular_sensors.space ("space")
 notation regular_sensors.len ("len")
 
-text{* 
+text\<open>
 Similar to the situation with perfect sensors, we can show that the perceived length of a car
 is independent of the spatial transitions between traffic snapshots. The 
 length may only change during evolutions, in particular if the car changes its dynamical
 behaviour.
-*}
+\<close>
 
 lemma create_reservation_length_stable:
   "(ts\<^bold>\<midarrow>r(d)\<^bold>\<rightarrow>ts') \<longrightarrow> len v ts c = len v ts' c"
@@ -169,11 +169,11 @@ proof
   qed
 qed
 
-text{*
+text\<open>
 Since the perceived length of cars depends on the owner of the view,
 we can now prove how this perception changes if we change the
 perspective of a view.
-*}
+\<close>
 
 lemma sensors_le:"e \<noteq> c \<longrightarrow> regular e ts c < regular c ts c"
   using  traffic.sdGeZero by (simp add: regular_def) 

@@ -1,8 +1,8 @@
-chapter {* The Framework *}
+chapter \<open>The Framework\<close>
 
 theory BasicDefs imports AuxLemmas begin
 
-text {*
+text \<open>
   As slicing is a program analysis that can be completely based on the
   information given in the CFG, we want to provide a framework which
   allows us to formalize and prove properties of slicing regardless of
@@ -14,17 +14,17 @@ text {*
   basis for static intraprocedural slicing as well as for dynamic slicing, 
   if in the dynamic case all method calls are inlined (i.e., abstract CFG 
   paths conform to traces).
-*}
+\<close>
 
-section {* Basic Definitions *}
+section \<open>Basic Definitions\<close>
 
-subsection{* Edge kinds *}
+subsection\<open>Edge kinds\<close>
 
 datatype 'state edge_kind = Update "'state \<Rightarrow> 'state"           ("\<Up>_")
                           | Predicate "'state \<Rightarrow> bool"      ("'(_')\<^sub>\<surd>")
 
 
-subsection {* Transfer and predicate functions *}
+subsection \<open>Transfer and predicate functions\<close>
 
 fun transfer :: "'state edge_kind \<Rightarrow> 'state \<Rightarrow> 'state"
 where "transfer (\<Up>f) s = f s"

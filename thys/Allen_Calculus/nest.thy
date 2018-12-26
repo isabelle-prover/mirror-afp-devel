@@ -13,10 +13,10 @@ imports
 
 begin
 
-section {* Nests *}
-text{* Nests are sets of intervals that share a meeting point. We define relation before between nests that give the ordering properties of points. *}
+section \<open>Nests\<close>
+text\<open>Nests are sets of intervals that share a meeting point. We define relation before between nests that give the ordering properties of points.\<close>
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 type_synonym 'a nest = "'a set"
 
@@ -32,7 +32,7 @@ where "NEST S \<equiv> \<exists>i. \<I> i \<and> (S = BEGIN i \<or> S = END i)"
 definition (in arelations) before :: "'a nest \<Rightarrow> 'a nest \<Rightarrow> bool" (infix "\<lless>" 100)
 where "before N M \<equiv> NEST N \<and> NEST M \<and> (\<exists>n m. \<^cancel>\<open>\<I> m \<and> \<I> n \<and>\<close> n \<in> N \<and> m \<in> M \<and> (n,m) \<in> b)"
 
-subsection {* Properties of Nests *}
+subsection \<open>Properties of Nests\<close>
 
 lemma intv1:
 assumes "\<I> i" 
@@ -429,7 +429,7 @@ proof
       with a3 have False  by (simp add: before_irrefl)}
 
       from c1 have c1':"(i,j) \<in> b \<union> m \<union> ov \<union> f\<inverse> \<union> d\<inverse> \<union> d " 
-      using `(i, j) \<in> s \<or> (i, j) \<in> s\<inverse> \<or> (i, j) \<in> e \<Longrightarrow> False` by blast
+      using \<open>(i, j) \<in> s \<or> (i, j) \<in> s\<inverse> \<or> (i, j) \<in> e \<Longrightarrow> False\<close> by blast
 
      {assume "(i,j) \<in> d" with pi have "(p,j) \<in> e \<union>  s \<union> d \<union> ov \<union> ov^-1 \<union> s^-1 \<union> f \<union> f^-1  \<union> d^-1"
       using ovsmfidiesi_d using relcomp.relcompI subsetCE by blast
@@ -505,10 +505,10 @@ proof
      proof  ( simp_all,elim disjE, simp_all)
            assume "(i,j) \<in> e" 
            obtain l k where l:"l\<parallel>i" and "i\<parallel>k" using M3 meets_wd assms  by blast
-           with `(i,j) \<in> e` have k:"j\<parallel>k" by (simp add: e)
+           with \<open>(i,j) \<in> e\<close> have k:"j\<parallel>k" by (simp add: e)
            from l k have "(l,i) \<in> m" and "(k,j) \<in> m^-1" using m by auto
            then  have "l \<in> BEGIN i" and "k \<in> END j" using BEGIN_def END_def by auto 
-           moreover from l `i\<parallel>k` have "(l,k) \<in> b" using b by auto
+           moreover from l \<open>i\<parallel>k\<close> have "(l,k) \<in> b" using b by auto
            ultimately show ?thesis using before_def assms NEST_BEGIN NEST_END  by blast
           next
            assume "(i,j) \<in> b"
@@ -517,7 +517,7 @@ proof
             assume "(i,j) \<in> m"
             obtain l where "l\<parallel>i" using M3 assms by blast
             then have "l\<in>BEGIN i" using m BEGIN_def by auto
-            moreover from `(i,j)\<in>m` `l\<parallel>i` have "(l,j) \<in> b" using b m by blast
+            moreover from \<open>(i,j)\<in>m\<close> \<open>l\<parallel>i\<close> have "(l,j) \<in> b" using b m by blast
             ultimately show ?thesis using intv2[of j] assms NEST_BEGIN NEST_END before_def by blast
           next
            assume "(i,j) \<in> ov"
@@ -543,7 +543,7 @@ proof
            then obtain l v where li:"l\<parallel>i" and lu:"l\<parallel>j" and "j\<parallel>v" using s by blast
            then have "v \<in> END j" using m END_def by auto
            moreover from li have "l \<in> BEGIN i" using m BEGIN_def by auto
-           moreover from lu `j\<parallel>v` have "(l,v) \<in> b" using b by auto
+           moreover from lu \<open>j\<parallel>v\<close> have "(l,v) \<in> b" using b by auto
            ultimately show ?thesis using  assms NEST_BEGIN NEST_END before_def by blast
           next
            assume "(i,j) : f"
@@ -630,8 +630,8 @@ proof
        next
         assume "(i,j) \<in> m" 
         obtain v where "j\<parallel>v" using M3 assms by blast
-        with `(i,j) \<in> m` have "(i,v) \<in>b" using b m by blast
-        moreover from `j\<parallel>v` have "v \<in> END j" using m END_def by auto
+        with \<open>(i,j) \<in> m\<close> have "(i,v) \<in>b" using b m by blast
+        moreover from \<open>j\<parallel>v\<close> have "v \<in> END j" using m END_def by auto
         ultimately show ?thesis using intv2[of i] assms NEST_END before_def by blast
        next
         assume "(i,j) : ov"
@@ -690,7 +690,7 @@ proof
 
 qed
 
-subsection {* Ordering of nests *}
+subsection \<open>Ordering of nests\<close>
 
 class  strict_order =
 fixes ls::"'a nest \<Rightarrow> 'a nest \<Rightarrow> bool"
@@ -711,7 +711,7 @@ by (simp add: before_irrefl) } note  irrefl_nest = this
 {fix a c::"'a nest"
 assume  "a = c"
 show "\<not> a \<lless> c \<and> \<not> c \<lless> a" 
-by (simp add: `a = c` irrefl_nest)} note trichotomy_nest = this
+by (simp add: \<open>a = c\<close> irrefl_nest)} note trichotomy_nest = this
 
 {fix a c g::"'a nest"
 assume a:"a \<lless> c" and c:" c \<lless> g"

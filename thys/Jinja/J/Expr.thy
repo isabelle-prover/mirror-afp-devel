@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Expressions *}
+section \<open>Expressions\<close>
 
 theory Expr
 imports "../Common/Exceptions"
@@ -35,7 +35,7 @@ type_synonym
 type_synonym
   J_prog = "J_mb prog"          \<comment> \<open>Jinja program\<close>
 
-text{*The semantics of binary operators: *}
+text\<open>The semantics of binary operators:\<close>
 
 fun binop :: "bop \<times> val \<times> val \<Rightarrow> val option" where
   "binop(Eq,v\<^sub>1,v\<^sub>2) = Some(Bool (v\<^sub>1 = v\<^sub>2))"
@@ -74,7 +74,7 @@ abbreviation
   "THROW xc == Throw(addr_of_sys_xcpt xc)"
 
 
-subsection{*Free Variables*}
+subsection\<open>Free Variables\<close>
 
 primrec fv :: "expr \<Rightarrow> vname set" and fvs :: "expr list \<Rightarrow> vname set" where
   "fv(new C) = {}"

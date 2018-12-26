@@ -10,8 +10,8 @@ term Matching_Ternary.matches
 
 
 text\<open>The two matching semantics are related. However, due to the ternary logic, we cannot directly translate one to the other.
-The problem are @{const MatchNot} expressions which evaluate to @{const TernaryUnknown} because @{text "MatchNot TernaryUnknown"} and
-@{text TernaryUnknown} are semantically equal!\<close>
+The problem are @{const MatchNot} expressions which evaluate to @{const TernaryUnknown} because \<open>MatchNot TernaryUnknown\<close> and
+\<open>TernaryUnknown\<close> are semantically equal!\<close>
 lemma "\<exists>m \<beta> \<alpha> a. Matching_Ternary.matches (\<beta>, \<alpha>) m a p \<noteq> 
   Semantics.matches (\<lambda> atm p. case \<beta> atm p of TernaryTrue \<Rightarrow> True | TernaryFalse \<Rightarrow> False | TernaryUnknown \<Rightarrow> \<alpha> a p) m p"
 apply(rule_tac x="MatchNot (Match X)" in exI) \<comment> \<open>any @{term "X::'a"}\<close>

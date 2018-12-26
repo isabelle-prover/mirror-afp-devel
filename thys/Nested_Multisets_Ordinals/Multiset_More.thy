@@ -521,7 +521,7 @@ lemma repeat_mset_prod: "repeat_mset (m * n) A = (((+) (repeat_mset n A)) ^^ m) 
 subsection \<open>Cartesian Product\<close>
 
 text \<open>Definition of the cartesian products over multisets. The construction mimics of the cartesian
-  product on sets and use the same theorem names (adding only the suffix @{text "_mset"} to Sigma
+  product on sets and use the same theorem names (adding only the suffix \<open>_mset\<close> to Sigma
   and Times). See file @{file "~~/src/HOL/Product_Type.thy"}\<close>
 
 definition Sigma_mset :: "'a multiset \<Rightarrow> ('a \<Rightarrow> 'b multiset) \<Rightarrow> ('a \<times> 'b) multiset" where

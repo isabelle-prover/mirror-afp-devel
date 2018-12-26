@@ -5,15 +5,15 @@
 
 chapter "Monoidal Functor"
 
-text_raw{*
+text_raw\<open>
 \label{monoidal-functor-chap}
-*}
+\<close>
 
 theory MonoidalFunctor
 imports MonoidalCategory
 begin
 
-    text {*
+    text \<open>
       A monoidal functor is a functor @{term F} between monoidal categories @{term C}
       and @{term D} that preserves the monoidal structure up to isomorphism.
       The traditional definition assumes a monoidal functor to be equipped with
@@ -27,7 +27,7 @@ begin
       is sufficient for there to be a canonical definition of @{term \<psi>} from which the
       coherence conditions can be derived.  This leads to a more economical definition
       of monoidal functor, which is the one we adopt here.
-    *}
+\<close>
 
   locale monoidal_functor =
     C: monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C +
@@ -72,25 +72,25 @@ begin
     shows "\<guillemotleft>\<phi> (a, b) : F a \<otimes>\<^sub>D F b \<rightarrow>\<^sub>D F (a \<otimes>\<^sub>C b)\<guillemotright>"
       using assms by auto
 
-    text {*
+    text \<open>
       We wish to exhibit a canonical definition of an isomorphism
       @{term "\<psi> \<in> D.hom \<I>\<^sub>D (F \<I>\<^sub>C)"} that satisfies certain coherence conditions that
       involve the left and right unitors.  In \cite{Etingof15}, the isomorphism @{term \<psi>}
       is defined by the equation @{term "\<l>\<^sub>D[F \<I>\<^sub>C] = F \<l>\<^sub>C[\<I>\<^sub>C] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F \<I>\<^sub>C)"},
-      which suffices for the definition because the functor @{text "- \<otimes>\<^sub>D F \<I>\<^sub>C"} is fully faithful.
+      which suffices for the definition because the functor \<open>- \<otimes>\<^sub>D F \<I>\<^sub>C\<close> is fully faithful.
       It is then asserted (Proposition 2.4.3) that the coherence condition
       @{term "\<l>\<^sub>D[F a] = F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a)"} is satisfied for any object @{term a}
-      of @{text C}, as well as the corresponding condition for the right unitor.
+      of \<open>C\<close>, as well as the corresponding condition for the right unitor.
       However, the proof is left as an exercise (Exercise 2.4.4).
       The organization of the presentation suggests that that one should derive the
       general coherence condition from the special case
       @{term "\<l>\<^sub>D[F \<I>\<^sub>C] = F \<l>\<^sub>C[\<I>\<^sub>C] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F \<I>\<^sub>C)"} used as the definition of @{term \<psi>}.
       However, I did not see how to do it that way, so I used a different approach.
       The isomorphism @{term "\<iota>\<^sub>D' \<equiv> F \<iota>\<^sub>C \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C)"} serves as an alternative unit for the
-      monoidal category @{text D}.  There is consequently a unique isomorphism that maps
+      monoidal category \<open>D\<close>.  There is consequently a unique isomorphism that maps
       @{term "\<iota>\<^sub>D"} to @{term "\<iota>\<^sub>D'"}.  We define @{term \<psi>} to be this isomorphism and then use
       the definition to establish the desired coherence conditions.
-    *}
+\<close>
 
     abbreviation \<iota>\<^sub>1
     where "\<iota>\<^sub>1 \<equiv> F \<iota>\<^sub>C \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C)"
@@ -207,17 +207,17 @@ begin
       have "D.par (\<l>\<^sub>1[F a] \<cdot>\<^sub>D (\<psi> \<otimes>\<^sub>D F a)) \<l>\<^sub>D[F a]"
         using assms D.C\<^sub>1.lunit_in_hom D.tensor_in_hom D.lunit_in_hom \<psi>_char(1) C.\<iota>_in_hom
         by auto
-      text {*
+      text \<open>
         The upper left triangle in the following diagram commutes.
-      *}
-      text {*
+\<close>
+      text \<open>
 \newcommand\xIc{{\cal I}}
 \newcommand\xId{{\cal I}}
-\newcommand\xac[3]{{\scriptsize @{text "\<a>"}}[{#1},{#2},{#3}]}
-\newcommand\xad[3]{{\scriptsize @{text "\<a>"}}[{#1},{#2},{#3}]}
-\newcommand\xlc[1]{{\scriptsize @{text "\<l>"}}[{#1}]}
-\newcommand\xld[1]{{\scriptsize @{text "\<l>"}}[{#1}]}
-\newcommand\xldp[1]{{\scriptsize @{text "\<l>"}}_1[{#1}]}
+\newcommand\xac[3]{{\scriptsize \<open>\<a>\<close>}[{#1},{#2},{#3}]}
+\newcommand\xad[3]{{\scriptsize \<open>\<a>\<close>}[{#1},{#2},{#3}]}
+\newcommand\xlc[1]{{\scriptsize \<open>\<l>\<close>}[{#1}]}
+\newcommand\xld[1]{{\scriptsize \<open>\<l>\<close>}[{#1}]}
+\newcommand\xldp[1]{{\scriptsize \<open>\<l>\<close>}_1[{#1}]}
 $$\xymatrix{
   {\xId\otimes F a}
      \ar[rrr]^{\psi\otimes F a}
@@ -247,7 +247,7 @@ $$\xymatrix{
      \ar[uuuuu]_{\iota_1\otimes F a}
      \ar[uul]^{\xad{F\xIc}{F\xIc}{F a}}
 }$$
-      *}
+\<close>
       moreover have "(\<I>\<^sub>D \<otimes>\<^sub>D \<l>\<^sub>1[F a]) \<cdot>\<^sub>D (\<I>\<^sub>D \<otimes>\<^sub>D \<psi> \<otimes>\<^sub>D F a) = \<I>\<^sub>D \<otimes>\<^sub>D \<l>\<^sub>D[F a]"
       proof -
         have "(\<I>\<^sub>D \<otimes>\<^sub>D \<l>\<^sub>1[F a]) \<cdot>\<^sub>D (\<I>\<^sub>D \<otimes>\<^sub>D \<psi> \<otimes>\<^sub>D F a)
@@ -302,17 +302,17 @@ $$\xymatrix{
     assumes "C.ide a"
     shows "F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) = \<l>\<^sub>1[F a]"
     proof -
-      text {*
+      text \<open>
         We show that the lower left triangle in the following diagram commutes.
-      *}
-      text {*
+\<close>
+      text \<open>
 \newcommand\xIc{{\cal I}}
 \newcommand\xId{{\cal I}}
-\newcommand\xac[3]{{\scriptsize @{text "\<a>"}}[{#1},{#2},{#3}]}
-\newcommand\xad[3]{{\scriptsize @{text "\<a>"}}[{#1},{#2},{#3}]}
-\newcommand\xlc[1]{{\scriptsize @{text "\<l>"}}[{#1}]}
-\newcommand\xld[1]{{\scriptsize @{text "\<l>"}}[{#1}]}
-\newcommand\xldp[1]{{\scriptsize @{text "\<l>"}}_1[{#1}]}
+\newcommand\xac[3]{{\scriptsize \<open>\<a>\<close>}[{#1},{#2},{#3}]}
+\newcommand\xad[3]{{\scriptsize \<open>\<a>\<close>}[{#1},{#2},{#3}]}
+\newcommand\xlc[1]{{\scriptsize \<open>\<l>\<close>}[{#1}]}
+\newcommand\xld[1]{{\scriptsize \<open>\<l>\<close>}[{#1}]}
+\newcommand\xldp[1]{{\scriptsize \<open>\<l>\<close>}_1[{#1}]}
 $$\xymatrix{
   {(F\xIc\otimes F\xIc)\otimes F a}
       \ar[rrrrr]^{\phi(\xIc,\xIc)\otimes F a}
@@ -338,7 +338,7 @@ $$\xymatrix{
   &&&&&{F(\xIc\otimes (\xIc \otimes a))}
       \ar[uuull]^{F(\xIc\otimes\xlc{a})}
 }$$
-      *}
+\<close>
       have "(F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D (F \<I>\<^sub>C \<otimes>\<^sub>D \<phi> (\<I>\<^sub>C, a)) = F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a]"
       proof -
         have "(F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D (F \<I>\<^sub>C \<otimes>\<^sub>D \<phi> (\<I>\<^sub>C, a))
@@ -440,11 +440,11 @@ $$\xymatrix{
         using D.C\<^sub>1.L.is_faithful [of "F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)" "\<l>\<^sub>1[F a]"] D.C\<^sub>1.unity_def by simp
     qed
 
-    text {*
+    text \<open>
       Combining the two previous lemmas yields the coherence result we seek.
       This is the condition that is traditionally taken as part of the definition
       of monoidal functor.
-    *}
+\<close>
 
     lemma lunit_coherence:
     assumes "C.ide a"
@@ -466,16 +466,16 @@ $$\xymatrix{
         using assms \<psi>_char(1) D.comp_assoc by auto
     qed
 
-    text {*
+    text \<open>
       We now want to obtain the corresponding result for the right unitor.
       To avoid a repetition of what would amount to essentially the same tedious diagram chases
       that were carried out above, we instead show here that @{term F} becomes a monoidal functor
-      from the opposite of @{text C} to the opposite of @{text D},
+      from the opposite of \<open>C\<close> to the opposite of \<open>D\<close>,
       with @{term "\<lambda>f. \<phi> (snd f, fst f)"} as the structure map.
       The fact that in the opposite monoidal categories the left and right unitors are exchanged
       then permits us to obtain the result for the right unitor from the result already proved
       for the left unitor.
-    *}
+\<close>
 
     interpretation C': opposite_monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C ..
     interpretation D': opposite_monoidal_category D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D ..
@@ -544,9 +544,9 @@ $$\xymatrix{
 
   section "Strict Monoidal Functor"
 
-  text {*
+  text \<open>
     A strict monoidal functor preserves the monoidal structure ``on the nose''.
-  *}
+\<close>
 
   locale strict_monoidal_functor =
     C: monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C +
@@ -655,12 +655,12 @@ $$\xymatrix{
       thus ?thesis using assms D.runit_eqI by simp
     qed
 
-    text {*
+    text \<open>
       The following are used to simplify the expression of the sublocale relationship between
       @{locale strict_monoidal_functor} and @{locale monoidal_functor}, as the definition of
       the latter mentions the structure map @{term \<phi>}.  For a strict monoidal functor,
       this is an identity transformation.
-    *}
+\<close>
 
     interpretation FF: product_functor C C D D F F ..
     interpretation FoT\<^sub>C: composite_functor C.CC.comp C D T\<^sub>C F ..
@@ -692,9 +692,9 @@ $$\xymatrix{
 
   end
 
-  text {*
+  text \<open>
     A strict monoidal functor is a monoidal functor.
-  *}
+\<close>
 
   sublocale strict_monoidal_functor \<subseteq> monoidal_functor C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D F \<phi>
   proof -
@@ -739,10 +739,10 @@ $$\xymatrix{
       by (unfold_locales, simp_all)
   qed
 
-  text {*
+  text \<open>
     An equivalence of monoidal categories is a monoidal functor whose underlying
     ordinary functor is also part of an ordinary equivalence of categories.
-  *}
+\<close>
 
   locale equivalence_of_monoidal_categories =
     C: monoidal_category C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C +

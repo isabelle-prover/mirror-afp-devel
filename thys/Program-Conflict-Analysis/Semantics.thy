@@ -6,26 +6,26 @@ section "Operational Semantics"
 theory Semantics
 imports Main Flowgraph "HOL-Library.Multiset" LTS Interleave ThreadTracking
 begin
-text_raw {*\label{thy:Semantics}*}
+text_raw \<open>\label{thy:Semantics}\<close>
 
 subsection "Configurations and labels"
-text {*
+text \<open>
   The state of a single thread is described by a stack of control nodes. The top node is the current control node and the nodes deeper in the stack are stored return addresses. 
   The configuration of a whole program is described by a multiset of stacks. 
 
   Note that we model stacks as lists here, the first element being the top element.
-*}
+\<close>
 type_synonym 'n conf = "('n list) multiset"
 
-text {*
+text \<open>
   A step is labeled according to the executed edge. Additionally, we introduce a label for a procedure return step, that has no corresponding edge. 
-*}
+\<close>
 datatype ('p,'ba) label = LBase 'ba | LCall 'p | LRet | LSpawn 'p
 
-subsection {* Monitors *}
-text {*
+subsection \<open>Monitors\<close>
+text \<open>
   The following defines the monitors of nodes, stacks, configurations, step labels and paths (sequences of step labels)
-*}
+\<close>
 definition
   \<comment> \<open>The monitors of a node are the monitors the procedure of the node synchronizes on\<close>
   "mon_n fg n == mon fg (proc_of fg n)"
@@ -122,9 +122,9 @@ lemma mon_w_ileq: "w\<preceq>w' \<Longrightarrow> mon_w fg w \<subseteq> mon_w f
 
 
 
-subsection {* Valid configurations *}
-text_raw {*\label{sec:Semantics:validity}*}
-text {* We call a configuration {\em valid} if each monitor is owned by at most one thread. *}
+subsection \<open>Valid configurations\<close>
+text_raw \<open>\label{sec:Semantics:validity}\<close>
+text \<open>We call a configuration {\em valid} if each monitor is owned by at most one thread.\<close>
 definition
   "valid fg c == \<forall>s s'. {#s, s'#} \<subseteq># c \<longrightarrow> mon_s fg s \<inter> mon_s fg s' = {}"
 
@@ -171,7 +171,7 @@ proof (unfold valid_def, intro allI impI)
   thus "mon_s fg s \<inter> mon_s fg s' = {}" by blast
 qed
 
-subsection {* Configurations at control points *}
+subsection \<open>Configurations at control points\<close>
 
 \<comment> \<open>A stack is {\em at} @{term U} if its top node is from the set @{term U}\<close>
 primrec atU_s :: "'n set \<Rightarrow> 'n list \<Rightarrow> bool" where
@@ -261,10 +261,10 @@ lemma atUV_union_cases[case_names left right lr rl, consumes 1]: "\<lbrakk>
   \<rbrakk> \<Longrightarrow> P"
   by auto
 
-subsection {* Operational semantics *}
+subsection \<open>Operational semantics\<close>
 
 subsubsection "Semantic reference point"
-text {* We now define our semantic reference point. We assess correctness and completeness of analyses relative to this reference point. *}
+text \<open>We now define our semantic reference point. We assess correctness and completeness of analyses relative to this reference point.\<close>
 inductive_set 
   refpoint :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme \<Rightarrow> 
                  ('n conf \<times> ('p,'ba) label \<times> 'n conf) set"
@@ -286,13 +286,13 @@ where
   refpoint_spawn: "\<lbrakk> (u,Spawn p,v)\<in>edges fg; valid fg (add_mset (u#r) c) \<rbrakk> 
     \<Longrightarrow> (add_mset (u#r) c,LSpawn p, add_mset (v#r) (add_mset [entry fg p] c))\<in>refpoint fg"
 
-text {*
+text \<open>
   Instead of working directly with the reference point semantics, we define the operational semantics of flowgraphs by describing how a single stack is transformed in a context of environment threads, 
   and then use the theory developed in Section~\ref{thy:ThreadTracking} to derive an interleaving semantics. 
   Note that this semantics is also defined for invalid configurations (cf. Section~\ref{sec:Semantics:validity}). In Section~\ref{sec:Semantics:valid_preserve} we will show that it preserves validity
   of a configuration, and in Section~\ref{sec:Semantics: refpoint_eq} we show that it is equivalent 
   to the reference point semantics on valid configurations.
-*}
+\<close>
 
 inductive_set
   trss :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme \<Rightarrow> 
@@ -326,7 +326,7 @@ abbreviation trp where "trp fg == gtrp (trss fg)"
 
 subsection "Basic properties"
 subsubsection "Validity"
-text_raw{*\label{sec:Semantics:valid_preserve}*}
+text_raw\<open>\label{sec:Semantics:valid_preserve}\<close>
 lemma (in flowgraph) trss_valid_preserve_s: 
   "\<lbrakk>valid fg (add_mset s c); ((s,c),e,(s',c'))\<in>trss fg\<rbrakk> \<Longrightarrow> valid fg (add_mset s' c')"
   apply (erule trss.cases)
@@ -355,7 +355,7 @@ lemma (in flowgraph) trp_valid_preserve:
 
 
 subsubsection "Equivalence to reference point"
-text_raw {* \label{sec:Semantics: refpoint_eq} *}
+text_raw \<open>\label{sec:Semantics: refpoint_eq}\<close>
 \<comment> \<open>The equivalence between the semantics that we derived using the techniques from Section~\ref{thy:ThreadTracking} and the semantic reference point is shown nearly automatically.\<close>
 lemma refpoint_eq_s: "valid fg c \<Longrightarrow> ((c,e,c')\<in>refpoint fg) \<longleftrightarrow> ((c,e,c')\<in>tr fg)"
   apply rule
@@ -374,7 +374,7 @@ proof -
   ultimately show "valid fg c \<Longrightarrow> ((c,w,c')\<in>trcl (refpoint fg)) = ((c,w,c')\<in>trcl (tr fg))" ..
 qed
 
-subsubsection {* Case distinctions *}
+subsubsection \<open>Case distinctions\<close>
 
 lemma trss_c_cases_s[cases set, case_names no_spawn spawn]: "\<lbrakk> 
     ((s,c),e,(s',c'))\<in>trss fg; 

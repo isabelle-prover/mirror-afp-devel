@@ -4,13 +4,13 @@
    Author:    Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-section {* FlexRay: Specification *}
+section \<open>FlexRay: Specification\<close>
 
 theory  FR 
 imports FR_types
 begin
 
-subsection {* Auxiliary predicates *}
+subsection \<open>Auxiliary predicates\<close>
 
 \<comment> \<open>The predicate DisjointSchedules is true  for sheaf of channels of type Config,\<close>
 \<comment> \<open>if all bus configurations have disjoint scheduling tables.\<close>
@@ -90,7 +90,7 @@ where
      else (get t) = (activation t) \<and> (send t) = (return t)  )"   
     
  
-subsection {* Specifications of the FlexRay components *}
+subsection \<open>Specifications of the FlexRay components\<close>
 
 definition
    FlexRay :: 

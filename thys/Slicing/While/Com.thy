@@ -1,10 +1,10 @@
-chapter {* Instantiating the Framework with a simple While-Language *}
+chapter \<open>Instantiating the Framework with a simple While-Language\<close>
 
-section {* Commands *}
+section \<open>Commands\<close>
 
 theory Com imports Main begin
 
-subsection {* Variables and Values *}
+subsection \<open>Variables and Values\<close>
 
 type_synonym vname = string \<comment> \<open>names for variables\<close>
 
@@ -15,7 +15,7 @@ datatype val
 abbreviation "true == Bool True"
 abbreviation "false == Bool False"
 
-subsection {* Expressions and Commands*}
+subsection \<open>Expressions and Commands\<close>
 
 datatype bop = Eq | And | Less | Add | Sub     \<comment> \<open>names of binary operations\<close>
 
@@ -57,7 +57,7 @@ by(induct c) auto
 lemma [dest]:"#:c = 0 \<Longrightarrow> False"
 by(induct c) auto
 
-subsection {* The state *}
+subsection \<open>The state\<close>
 
 type_synonym state = "vname \<rightharpoonup> val"
 

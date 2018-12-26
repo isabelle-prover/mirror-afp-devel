@@ -10,16 +10,16 @@ imports Main
 begin
 (*>*)
 
-section{* Traces *}
+section\<open>Traces\<close>
 
-text{*
+text\<open>
 
 A \emph{trace} is a non-empty sequence of states. This custom type has
 the advantage over the standard HOL list type of providing a more
 suitable induction rule. We use these to give a semantics to
 knowledge-based programs in \S\ref{sec:kbps-theory-kbps-semantics}.
 
-*}
+\<close>
 
 datatype 's Trace = tInit "'s"
                   | tStep "'s Trace" "'s" (infixl "\<leadsto>" 65)
@@ -37,13 +37,13 @@ lemma tLast_tInit_comp[simp]: "tLast \<circ> tInit = id"
   by (rule ext) simp
 (*>*)
 
-text{*
+text\<open>
 
 We provide a few of the standard list operations: @{term "tLength"},
 @{term "tMap"} and @{term "tZip"}. Our later ease hinges on taking the
 length of a trace to be zero-based.
 
-*}
+\<close>
 
 fun tLength :: "'s Trace \<Rightarrow> nat" where
     "tLength (tInit s) = 0"

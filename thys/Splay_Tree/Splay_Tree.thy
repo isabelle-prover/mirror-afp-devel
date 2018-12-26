@@ -9,9 +9,9 @@ begin
 
 declare sorted_wrt.simps(2)[simp del]
 
-text{* Splay trees were invented by Sleator and Tarjan~\cite{SleatorT-JACM85}. *}
+text\<open>Splay trees were invented by Sleator and Tarjan~\cite{SleatorT-JACM85}.\<close>
 
-subsection "Function @{text splay}"
+subsection "Function \<open>splay\<close>"
 
 function splay :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
 "splay x Leaf = Leaf" |
@@ -277,9 +277,9 @@ qed fastforce+
 
 subsubsection "Verification of Is-in Test"
 
-text{* To test if an element @{text a} is in @{text t}, first perform
-@{term"splay a t"}, then check if the root is @{text a}. One could
-put this into one function that returns both a new tree and the test result. *}
+text\<open>To test if an element \<open>a\<close> is in \<open>t\<close>, first perform
+@{term"splay a t"}, then check if the root is \<open>a\<close>. One could
+put this into one function that returns both a new tree and the test result.\<close>
 
 lemma is_root_splay: "bst t \<Longrightarrow> is_root a (splay a t) \<longleftrightarrow> a \<in> set_tree t"
 by(auto simp add: is_root_def splay_to_root split: tree.split)
@@ -300,7 +300,7 @@ using bst_splay[of t a] splay_bstL[of t a] splay_bstR[of t a]
 by(auto simp: ball_Un split: tree.split)
 
 
-subsubsection "Verification of @{text splay_max}"
+subsubsection "Verification of \<open>splay_max\<close>"
 
 lemma size_splay_max: "size(splay_max t) = size t"
 apply(induction t rule: splay_max.induct)
@@ -335,7 +335,7 @@ lemma splay_max_Leaf: "splay_max t = Node l a r \<Longrightarrow> r = Leaf"
 by(induction t arbitrary: l rule: splay_max.induct)
   (auto split: tree.splits if_splits)
 
-text{* For sanity purposes only: *}
+text\<open>For sanity purposes only:\<close>
 
 lemma splay_max_eq_splay:
   "bst t \<Longrightarrow> \<forall>x \<in> set_tree t. x \<le> a \<Longrightarrow> splay_max t = splay a t"

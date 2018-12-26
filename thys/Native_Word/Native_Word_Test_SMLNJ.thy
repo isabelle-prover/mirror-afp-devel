@@ -6,7 +6,7 @@ theory Native_Word_Test_SMLNJ imports
   Native_Word_Test
 begin
 
-section {* Test with SML/NJ *}
+section \<open>Test with SML/NJ\<close>
 
 test_code
   test_uint64 "test_uint64' = 0x12"
@@ -19,14 +19,14 @@ test_code
   test_casts_uint''
 in SMLNJ
 
-text {* SMLNJ provides a \texttt{Word64} structure. To test it in the
+text \<open>SMLNJ provides a \texttt{Word64} structure. To test it in the
   SML\_word target, we have to associate a driver with the combination.
   As SMLNj does not implement a Word16 structure, we remove the code module
   that refers to it. After this, @{typ uint16} no longer works in the target
   \texttt{SML\_word} as intended!
-*}
+\<close>
 
-setup {* Code_Test.add_driver ("SMLNJ_word", (Code_Test.evaluate_in_smlnj, "SML_word")) *}
+setup \<open>Code_Test.add_driver ("SMLNJ_word", (Code_Test.evaluate_in_smlnj, "SML_word"))\<close>
 code_printing code_module Uint16 \<rightharpoonup> (SML_word) \<open>\<close>
 
 test_code

@@ -1,4 +1,4 @@
-section {* Word Problem for Context-Free Grammars  *}
+section \<open>Word Problem for Context-Free Grammars\<close>
 (*<*)
 theory Context_Free_Grammar
 imports Coinductive_Language "HOL-Library.FSet"
@@ -6,14 +6,14 @@ begin
 (*>*)
 
 
-section {* Context Free Languages *}
+section \<open>Context Free Languages\<close>
 
-text {*
+text \<open>
 A context-free grammar consists of a list of productions for every nonterminal
 and an initial nonterminal. The productions are required to be in weak Greibach
 normal form, i.e. each right hand side of a production must either be empty or
 start with a terminal.
-*}
+\<close>
 
 abbreviation "wgreibach \<alpha> \<equiv> (case \<alpha> of (Inr N # _) \<Rightarrow> False | _ \<Rightarrow> True)"
 
@@ -126,11 +126,11 @@ qed
 
 end
 
-text {*
+text \<open>
 The function @{term in_language} decides the word problem for a given language.
 Since we can construct the language of a CFG using @{const cfg_wgreibach.lang} we obtain an
 executable (but not very efficient) decision procedure for CFGs for free.
-*}
+\<close>
 
 abbreviation "\<aa> \<equiv> Inl True"
 abbreviation "\<bb> \<equiv> Inl False"

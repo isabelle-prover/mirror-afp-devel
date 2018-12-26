@@ -1,10 +1,10 @@
-section {* Boolean Programs *}
+section \<open>Boolean Programs\<close>
 theory BoolProgs
 imports 
   CAVA_Base.CAVA_Base
 begin
 
-subsection {* Syntax and Semantics *}
+subsection \<open>Syntax and Semantics\<close>
 
 datatype bexp = TT | FF | V nat | Not bexp | And bexp bexp | Or bexp bexp
 
@@ -27,7 +27,7 @@ datatype instr =
 type_synonym config = "nat * state"
 type_synonym bprog = "instr array"
 
-text {*
+text \<open>
   Semantics Notice:
   To be equivalent in semantics with SPIN, there is no such thing as a
   finite run:
@@ -35,7 +35,7 @@ text {*
     \item Deadlocks (i.e. empty Choice) are self-loops
     \item program termination is self-loop
   \end{itemize}
-*}
+\<close>
 
 fun exec :: "instr \<Rightarrow> config \<Rightarrow> config list" where
 "exec instr (pc,s) = (case instr of
@@ -157,7 +157,7 @@ definition opt :: "instr list \<Rightarrow> instr list" where
 definition optcomp :: "com \<Rightarrow> bprog" where
   "optcomp \<equiv> array_of_list \<circ> opt \<circ> comp'"
 
-subsection {* Finiteness of reachable configurations *}
+subsection \<open>Finiteness of reachable configurations\<close>
 
 inductive_set reachable_configs
   for bp :: bprog

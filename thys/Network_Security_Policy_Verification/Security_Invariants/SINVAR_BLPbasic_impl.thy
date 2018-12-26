@@ -3,7 +3,7 @@ imports SINVAR_BLPbasic "../TopoS_Interface_impl"
 begin
 
 
-subsubsection {* SecurityInvariant BLPbasic List Implementation *}
+subsubsection \<open>SecurityInvariant BLPbasic List Implementation\<close>
 
 code_identifier code_module SINVAR_BLPbasic_impl => (Scala) SINVAR_BLPbasic
 
@@ -52,7 +52,7 @@ interpretation BLPbasic_impl:TopoS_List_Impl
 
 
 
-subsubsection {* BLPbasic packing *}
+subsubsection \<open>BLPbasic packing\<close>
   definition SINVAR_LIB_BLPbasic :: "('v::vertex, security_level) TopoS_packed" where
     "SINVAR_LIB_BLPbasic \<equiv> 
     \<lparr> nm_name = ''BLPbasic'', 
@@ -71,7 +71,7 @@ subsubsection {* BLPbasic packing *}
     apply(simp)
     by(unfold_locales)
 
-subsubsection{* Example *}
+subsubsection\<open>Example\<close>
   definition fabNet :: "string list_graph" where
   "fabNet \<equiv> \<lparr> nodesL = [''Statistics'', ''SensorSink'', ''PresenceSensor'', ''Webcam'', ''TempSensor'', ''FireSesnsor'',
                      ''MissionControl1'', ''MissionControl2'', ''Watchdog'', ''Bot1'', ''Bot2''], 
@@ -101,7 +101,7 @@ subsubsection{* Example *}
   value "BLP_offending_list fabNet sensorProps_try3"
   value "sinvar fabNet sensorProps_try3"
 
-  text {* Another parameter set for confidential controlling information*}
+  text \<open>Another parameter set for confidential controlling information\<close>
   definition sensorProps_conf :: "string \<Rightarrow> security_level" where
     "sensorProps_conf \<equiv> (\<lambda> n. SINVAR_BLPbasic.default_node_properties)(''MissionControl1'' := 1, ''MissionControl2'' := 2,
       ''Bot1'' := 1, ''Bot2'' := 2 )"
@@ -109,7 +109,7 @@ subsubsection{* Example *}
   value "sinvar fabNet sensorProps_conf"
 
 
-text {* Complete example:*}
+text \<open>Complete example:\<close>
   
   definition sensorProps_NMParams_try3 :: "(string, nat) TopoS_Params" where
   "sensorProps_NMParams_try3 \<equiv> \<lparr> node_properties = [''PresenceSensor'' \<mapsto> 2, 

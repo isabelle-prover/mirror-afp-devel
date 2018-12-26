@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Non-speculative prefixes of executions *}
+section \<open>Non-speculative prefixes of executions\<close>
 
 theory Non_Speculative imports
   JMM_Spec
@@ -11,7 +11,7 @@ begin
 
 declare addr_locsI [simp]
 
-subsection {* Previously written values *}
+subsection \<open>Previously written values\<close>
 
 fun w_value :: 
   "'m prog \<Rightarrow> (('addr \<times> addr_loc) \<Rightarrow> 'addr val set) \<Rightarrow> ('addr, 'thread_id) obs_event action
@@ -57,7 +57,7 @@ next
   case (snoc ob obs)
   from snoc.IH show ?case
   proof(cases "v \<in> w_values P vs0 obs (ad, al)")
-    case False thus ?thesis using `v \<in> w_values P vs0 (obs @ [ob]) (ad, al)`
+    case False thus ?thesis using \<open>v \<in> w_values P vs0 (obs @ [ob]) (ad, al)\<close>
       by(cases ob rule: w_value_cases)(auto 4 4 intro: action_loc_aux_intros split: if_split_asm simp add: addr_locs_def split: htype.split_asm)
   qed fastforce
 qed
@@ -111,7 +111,7 @@ apply(auto dest!: w_values_new_actionD[where ?vs0.0=vs0 and P=P] w_values_WriteM
 apply blast
 done
 
-subsection {* Coinductive version of non-speculative prefixes *}
+subsection \<open>Coinductive version of non-speculative prefixes\<close>
 
 coinductive non_speculative :: 
   "'m prog \<Rightarrow> ('addr \<times> addr_loc \<Rightarrow> 'addr val set) \<Rightarrow> ('addr, 'thread_id) obs_event action llist \<Rightarrow> bool"
@@ -138,7 +138,7 @@ proof(induct arbitrary: vs)
 next
   case (lfinite_LConsI obs ob)
   have "?concl (w_value P vs ob) obs" by fact
-  thus ?case using `lfinite obs` by simp
+  thus ?case using \<open>lfinite obs\<close> by simp
 qed
 
 lemma
@@ -191,7 +191,7 @@ proof -
           and fin: "lfinite obs''' \<Longrightarrow> X (w_values P vs (list_of obs''')) obs'''' \<or>
                                       non_speculative P (w_values P vs (list_of obs''')) obs''''"
           by blast
-        from `obs''' \<noteq> LNil` obtain ob obs''''' where obs''': "obs''' = LCons ob obs'''''"
+        from \<open>obs''' \<noteq> LNil\<close> obtain ob obs''''' where obs''': "obs''' = LCons ob obs'''''"
           unfolding neq_LNil_conv by blast
         with Nil obs'' obs have concl1: "obs = LCons ob (lappend obs''''' obs'''')" by simp
         have concl2: "case ob of NormalAction (ReadMem ad al v) \<Rightarrow> v \<in> vs (ad, al) | _ \<Rightarrow> True"
@@ -264,7 +264,7 @@ proof -
     proof(induct a arbitrary: vs obs rule: wf_induct[consumes 1, case_names wf])
       case (wf a)
       note IH = wf.hyps[rule_format]
-      from step[OF `X vs obs a`]
+      from step[OF \<open>X vs obs a\<close>]
       show ?case
       proof
         assume "obs = LNil" thus ?thesis ..
@@ -413,17 +413,17 @@ proof -
   proof
     fix wa''
     assume wa'': "wa'' \<in> write_actions E" "(ad, al) \<in> action_loc P E wa''"
-    from `wa'' \<in> write_actions E` ra
+    from \<open>wa'' \<in> write_actions E\<close> ra
     have "ra \<noteq> wa''" by(auto dest: read_actions_not_write_actions)
     show "E \<turnstile> wa'' \<le>a wa' \<or> E \<turnstile> ra \<le>a wa''"
     proof(rule disjCI)
       assume "\<not> E \<turnstile> ra \<le>a wa''"
       with total_onPD[OF total_action_order, of ra E wa''] 
-        `ra \<noteq> wa''` `ra \<in> read_actions E` `wa'' \<in> write_actions E`
+        \<open>ra \<noteq> wa''\<close> \<open>ra \<in> read_actions E\<close> \<open>wa'' \<in> write_actions E\<close>
       have "E \<turnstile> wa'' \<le>a ra" by simp
       with wa'' have "wa'' \<in> Q" by(simp add: Q_def)
       with finQ show "E \<turnstile> wa'' \<le>a wa'"
-        using `Q \<subseteq> actions E` unfolding wa'_def
+        using \<open>Q \<subseteq> actions E\<close> unfolding wa'_def
         by(rule Max_torder_above[OF torder_action_order])
     qed
   qed

@@ -5,7 +5,7 @@
   Lemma bucket for the Akra-Bazzi theorem.
 *)
 
-section {* Auxiliary lemmas *}
+section \<open>Auxiliary lemmas\<close>
 theory Akra_Bazzi_Library
 imports 
   Complex_Main

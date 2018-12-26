@@ -2652,10 +2652,10 @@ apply (frule_tac j = ja in val_LI_noninf[of "n" "P" "I"], assumption+,
 done
 
 
-text{* We write the element 
-        @{text "e\<Sigma> K (\<lambda>k. (Zl_mI K P I k) \<cdot>\<^sub>K ((mprod_exp K (K_gamma k) (Kb\<^bsub>K n P\<^esub>)
-                    n)\<^sub>K\<^sup>(m_zmax_pdsI K n P I))) n"}
-      as @{text "mIg\<^bsub>K G a i n P I\<^esub>"} *}
+text\<open>We write the element 
+        \<open>e\<Sigma> K (\<lambda>k. (Zl_mI K P I k) \<cdot>\<^sub>K ((mprod_exp K (K_gamma k) (Kb\<^bsub>K n P\<^esub>)
+                    n)\<^sub>K\<^sup>(m_zmax_pdsI K n P I))) n\<close>
+      as \<open>mIg\<^bsub>K G a i n P I\<^esub>\<close>\<close>
 
 definition
   mIg :: "[_, nat, nat \<Rightarrow> ('b \<Rightarrow> ant) set,
@@ -2663,7 +2663,7 @@ definition
   "mIg\<^bsub>K n P I\<^esub> = \<Sigma>\<^sub>e K (\<lambda>k. (Zl_mI K P I k) \<cdot>\<^sub>r\<^bsub>K\<^esub>
              ((mprod_exp K (K_gamma k) (Kb\<^bsub>K n P\<^esub>) n)\<^bsub>K\<^esub>\<^bsup>(m_zmax_pdsI K n P I)\<^esup>)) n"
 
-text{* We can rewrite above two lemmas by using @{text "mIg\<^bsub>K G a i n P I\<^esub>"} *} 
+text\<open>We can rewrite above two lemmas by using \<open>mIg\<^bsub>K G a i n P I\<^esub>\<close>\<close> 
 
 lemma (in Corps) value_mI_gen1:"\<lbrakk>0 < n; distinct_pds K n P; ideal (O\<^bsub>K P n\<^esub>) I;
  I \<noteq> {\<zero>\<^bsub>(O\<^bsub>K P n\<^esub>)\<^esub>}; I \<noteq> carrier (O\<^bsub>K P n\<^esub>)\<rbrakk> \<Longrightarrow> 
@@ -2704,7 +2704,7 @@ apply (rule equalityI)
  apply (rule mI_gen_in_I1[of  "n" "P" "I"], assumption+)
 done
 
-subsection {* @{text "prime_n_pd"} *}
+subsection \<open>\<open>prime_n_pd\<close>\<close>
 
 lemma (in Corps) prime_n_pd_principal:"\<lbrakk>distinct_pds K n P; j \<le> n\<rbrakk> \<Longrightarrow>  
        (P\<^bsub>K P n\<^esub> j) = Rxa (O\<^bsub>K P n\<^esub>) (((Kb\<^bsub>K n P\<^esub>) j))"

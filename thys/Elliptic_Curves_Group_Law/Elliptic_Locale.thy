@@ -86,15 +86,15 @@ lemma curve_elt_opp:
   and "x\<^sub>1 = x\<^sub>2"
   shows "p\<^sub>1 = p\<^sub>2 \<or> p\<^sub>1 = opp p\<^sub>2"
 proof -
-  from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `on_curve a b p\<^sub>1`
+  from \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>on_curve a b p\<^sub>1\<close>
   have "y\<^sub>1 \<in> carrier R" "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
     by (simp_all add: on_curve_def)
-  moreover from `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `on_curve a b p\<^sub>2` `x\<^sub>1 = x\<^sub>2`
+  moreover from \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>x\<^sub>1 = x\<^sub>2\<close>
   have "y\<^sub>2 \<in> carrier R" "x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b = y\<^sub>2 [^] (2::nat)"
     by (simp_all add: on_curve_def)
   ultimately have "y\<^sub>1 = y\<^sub>2 \<or> y\<^sub>1 = \<ominus> y\<^sub>2"
     by (simp add: square_eq_iff power2_eq_square)
-  with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `x\<^sub>1 = x\<^sub>2` show ?thesis
+  with \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>x\<^sub>1 = x\<^sub>2\<close> show ?thesis
     by (auto simp add: opp_def)
 qed
 
@@ -120,7 +120,7 @@ proof (cases p\<^sub>1)
           by (simp add: on_curve_def add_def)
       next
         case False
-        from `on_curve a b p\<^sub>1` Point' True'
+        from \<open>on_curve a b p\<^sub>1\<close> Point' True'
         have "x\<^sub>2 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and
           on_curve1: "y\<^sub>1 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
           by (simp_all add: on_curve_def)
@@ -139,11 +139,11 @@ proof (cases p\<^sub>1)
       qed
     next
       case False
-      from `on_curve a b p\<^sub>1` Point'
+      from \<open>on_curve a b p\<^sub>1\<close> Point'
       have  "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
         and on_curve1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
         by (simp_all add: on_curve_def)
-      from `on_curve a b p\<^sub>2` Point
+      from \<open>on_curve a b p\<^sub>2\<close> Point
       have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
         and on_curve2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
         by (simp_all add: on_curve_def)
@@ -155,12 +155,12 @@ proof (cases p\<^sub>1)
     qed
   next
     case Infinity
-    with Point `on_curve a b p\<^sub>1` show ?thesis
+    with Point \<open>on_curve a b p\<^sub>1\<close> show ?thesis
       by (simp add: add_def)
   qed
 next
   case Infinity
-  with `on_curve a b p\<^sub>2` show ?thesis
+  with \<open>on_curve a b p\<^sub>2\<close> show ?thesis
     by (simp add: add_def)
 qed
 
@@ -214,13 +214,13 @@ next
       show ?thesis
       proof (cases "y\<^sub>1 = \<ominus> y\<^sub>2")
         case True
-        with p Point Point' True' R3 [of p] `y\<^sub>2 \<in> carrier R` show ?thesis
+        with p Point Point' True' R3 [of p] \<open>y\<^sub>2 \<in> carrier R\<close> show ?thesis
           by (simp add: add_def opp_def)
       next
         case False
         have "(y\<^sub>1 \<ominus> y\<^sub>2) \<otimes> (y\<^sub>1 \<oplus> y\<^sub>2) = \<zero>"
           by (ring True' p' q')
-        with False `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R` have "y\<^sub>1 = y\<^sub>2"
+        with False \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> have "y\<^sub>1 = y\<^sub>2"
           by (simp add: eq_neg_iff_add_eq_0 integral_iff eq_diff0)
         with False True' Point Point' show ?thesis
           apply simp
@@ -265,7 +265,7 @@ next
   show ?case by (rule R2)
 next
   case (Opp p)
-  from `on_curve a b p` show ?case by (rule R3)
+  from \<open>on_curve a b p\<close> show ?case by (rule R3)
 next
   case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
   with a b show ?case
@@ -320,7 +320,7 @@ next
   then show ?case by (simp add: is_generic_def)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  with a b `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+  with a b \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
   show ?case
   proof (induct rule: add_case)
     case InfL
@@ -336,9 +336,9 @@ next
     then show ?case by (simp add: is_generic_def)
   next
     case (Gen p\<^sub>2 x\<^sub>2' y\<^sub>2' p\<^sub>3 x\<^sub>3 y\<^sub>3 p\<^sub>5 x\<^sub>5 y\<^sub>5 l\<^sub>1)
-    from a b `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3` `p\<^sub>5 = add a p\<^sub>2 p\<^sub>3`
+    from a b \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close> \<open>p\<^sub>5 = add a p\<^sub>2 p\<^sub>3\<close>
     have "on_curve a b p\<^sub>5" by (simp add: add_closed)
-    with a b `on_curve a b p\<^sub>1` show ?case using Gen [simplified `p\<^sub>2 = Point x\<^sub>2' y\<^sub>2'`]
+    with a b \<open>on_curve a b p\<^sub>1\<close> show ?case using Gen [simplified \<open>p\<^sub>2 = Point x\<^sub>2' y\<^sub>2'\<close>]
     proof (induct rule: add_case)
       case InfL
       then show ?case by (simp add: is_generic_def)
@@ -347,17 +347,17 @@ next
       then show ?case by (simp add: is_generic_def)
     next
       case (Opp p)
-      from `on_curve a b p` `is_generic p (opp p)`
+      from \<open>on_curve a b p\<close> \<open>is_generic p (opp p)\<close>
       show ?case by (simp add: is_generic_def opp_opp)
     next
       case Tan
       then show ?case by (simp add: is_generic_def)
     next
       case (Gen p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>5' x\<^sub>5' y\<^sub>5' p\<^sub>6 x\<^sub>6 y\<^sub>6 l\<^sub>2)
-      from a b `on_curve a b p\<^sub>1` `on_curve a b (Point x\<^sub>2' y\<^sub>2')`
-        `p\<^sub>4 = add a p\<^sub>1 (Point x\<^sub>2' y\<^sub>2')`
+      from a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b (Point x\<^sub>2' y\<^sub>2')\<close>
+        \<open>p\<^sub>4 = add a p\<^sub>1 (Point x\<^sub>2' y\<^sub>2')\<close>
       have "on_curve a b p\<^sub>4" by (simp add: add_closed)
-      with a b show ?case using `on_curve a b p\<^sub>3` Gen
+      with a b show ?case using \<open>on_curve a b p\<^sub>3\<close> Gen
       proof (induct rule: add_case)
         case InfL
         then show ?case by (simp add: is_generic_def)
@@ -366,90 +366,90 @@ next
         then show ?case by (simp add: is_generic_def)
       next
         case (Opp p)
-        from `on_curve a b p` `is_generic p (opp p)`
+        from \<open>on_curve a b p\<close> \<open>is_generic p (opp p)\<close>
         show ?case by (simp add: is_generic_def opp_opp)
       next
         case Tan
         then show ?case by (simp add: is_generic_def)
       next
         case (Gen p\<^sub>4' x\<^sub>4' y\<^sub>4' p\<^sub>3' x\<^sub>3' y\<^sub>3' p\<^sub>7 x\<^sub>7 y\<^sub>7 l\<^sub>3)
-        from `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'` `p\<^sub>4' = Point x\<^sub>4 y\<^sub>4`
+        from \<open>p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'\<close> \<open>p\<^sub>4' = Point x\<^sub>4 y\<^sub>4\<close>
         have p\<^sub>4: "x\<^sub>4' = x\<^sub>4" "y\<^sub>4' = y\<^sub>4" by simp_all
-        from `p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'` `p\<^sub>3' = Point x\<^sub>3 y\<^sub>3`
+        from \<open>p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'\<close> \<open>p\<^sub>3' = Point x\<^sub>3 y\<^sub>3\<close>
         have p\<^sub>3: "x\<^sub>3' = x\<^sub>3" "y\<^sub>3' = y\<^sub>3" by simp_all
-        from `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+        from \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
         have p\<^sub>1: "x\<^sub>1' = x\<^sub>1" "y\<^sub>1' = y\<^sub>1" by simp_all
-        from `p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'` `p\<^sub>5' = Point x\<^sub>5 y\<^sub>5`
+        from \<open>p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'\<close> \<open>p\<^sub>5' = Point x\<^sub>5 y\<^sub>5\<close>
         have p\<^sub>5: "x\<^sub>5' = x\<^sub>5" "y\<^sub>5' = y\<^sub>5" by simp_all
-        from `Point x\<^sub>2' y\<^sub>2' = Point x\<^sub>2 y\<^sub>2`
+        from \<open>Point x\<^sub>2' y\<^sub>2' = Point x\<^sub>2 y\<^sub>2\<close>
         have p\<^sub>2: "x\<^sub>2' = x\<^sub>2" "y\<^sub>2' = y\<^sub>2" by simp_all
         note ps = p\<^sub>1 p\<^sub>2 p\<^sub>3 p\<^sub>4 p\<^sub>5
         from
-          `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
-          `on_curve a b p\<^sub>3` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
+          \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
+          \<open>on_curve a b p\<^sub>3\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
         have
           "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
           "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b" and
           "x\<^sub>3 \<in> carrier R" "y\<^sub>3 \<in> carrier R" and y3: "y\<^sub>3 [^] (2::nat) = x\<^sub>3 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>3 \<oplus> b"
           by (simp_all add: on_curve_def)
         show ?case
-          apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
+          apply (simp add: \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>7 = Point x\<^sub>7 y\<^sub>7\<close>)
           apply (simp only: ps
-            `x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'` `x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'`
-            `y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')` `y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')`
-            `l\<^sub>2 = (y\<^sub>5' \<ominus> y\<^sub>1') \<oslash> (x\<^sub>5' \<ominus> x\<^sub>1')` `l\<^sub>3 = (y\<^sub>3' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>3' \<ominus> x\<^sub>4')`
-            `l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')` `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
-            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3` `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
-            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`)
+            \<open>x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'\<close> \<open>x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'\<close>
+            \<open>y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')\<close> \<open>y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')\<close>
+            \<open>l\<^sub>2 = (y\<^sub>5' \<ominus> y\<^sub>1') \<oslash> (x\<^sub>5' \<ominus> x\<^sub>1')\<close> \<open>l\<^sub>3 = (y\<^sub>3' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>3' \<ominus> x\<^sub>4')\<close>
+            \<open>l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')\<close> \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>
+            \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3\<close> \<open>y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')\<close>
+            \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close> \<open>y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)\<close>)
           apply (rule conjI)
           apply (field y1 y2 y3)
           apply (rule conjI)
-          apply (simp add: eq_diff0 `x\<^sub>3 \<in> carrier R` `x\<^sub>2 \<in> carrier R`
-            not_sym [OF `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`]])
+          apply (simp add: eq_diff0 \<open>x\<^sub>3 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
+            not_sym [OF \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>]])
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3`
-            `l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')` `y\<^sub>2' = y\<^sub>2` `x\<^sub>2' = x\<^sub>2`])
+          apply (cut_tac \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified \<open>x\<^sub>5' = x\<^sub>5\<close> \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3\<close>
+            \<open>l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>2' = x\<^sub>2\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: eq_diff0 `x\<^sub>3 \<in> carrier R` `x\<^sub>2 \<in> carrier R`
-            not_sym [OF `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`]])
+          apply (simp add: eq_diff0 \<open>x\<^sub>3 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
+            not_sym [OF \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>]])
           apply (rule conjI)
-          apply (simp add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (simp add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
-            `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`])
+          apply (cut_tac \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>3\<close> \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (simp add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (field y1 y2 y3)
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3`
-            `l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')` `y\<^sub>2' = y\<^sub>2` `x\<^sub>2' = x\<^sub>2`])
+          apply (cut_tac \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified \<open>x\<^sub>5' = x\<^sub>5\<close> \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> x\<^sub>2' \<ominus> x\<^sub>3\<close>
+            \<open>l\<^sub>1 = (y\<^sub>3 \<ominus> y\<^sub>2') \<oslash> (x\<^sub>3 \<ominus> x\<^sub>2')\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>2' = x\<^sub>2\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: eq_diff0 `x\<^sub>3 \<in> carrier R` `x\<^sub>2 \<in> carrier R`
-            not_sym [OF `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`]])
+          apply (simp add: eq_diff0 \<open>x\<^sub>3 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
+            not_sym [OF \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>]])
           apply (rule conjI)
-          apply (simp add: eq_diff0 `x\<^sub>3 \<in> carrier R` `x\<^sub>2 \<in> carrier R`
-            not_sym [OF `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`]])
+          apply (simp add: eq_diff0 \<open>x\<^sub>3 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
+            not_sym [OF \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>]])
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
-            `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`])
+          apply (cut_tac \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>3\<close> \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp_all add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (simp_all add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           done
       qed
     qed
@@ -482,7 +482,7 @@ next
   then show ?case by (simp add: is_generic_def)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  with a b `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+  with a b \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
   show ?case
   proof (induct rule: add_case)
     case InfL
@@ -495,9 +495,9 @@ next
     then show ?case by (simp add: is_generic_def)
   next
     case (Tan p\<^sub>2 x\<^sub>2' y\<^sub>2' p\<^sub>5 x\<^sub>5 y\<^sub>5 l\<^sub>1)
-    from a b `on_curve a b p\<^sub>2` `p\<^sub>5 = add a p\<^sub>2 p\<^sub>2`
+    from a b \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>2 p\<^sub>2\<close>
     have "on_curve a b p\<^sub>5" by (simp add: add_closed)
-    with a b `on_curve a b p\<^sub>1` show ?case using Tan
+    with a b \<open>on_curve a b p\<^sub>1\<close> show ?case using Tan
     proof (induct rule: add_case)
       case InfL
       then show ?case by (simp add: is_generic_def)
@@ -506,16 +506,16 @@ next
       then show ?case by (simp add: is_generic_def)
     next
       case (Opp p)
-      from `is_generic p (opp p)` `on_curve a b p`
+      from \<open>is_generic p (opp p)\<close> \<open>on_curve a b p\<close>
       show ?case by (simp add: is_generic_def opp_opp)
     next
       case Tan
       then show ?case by (simp add: is_generic_def)
     next
       case (Gen p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>5' x\<^sub>5' y\<^sub>5' p\<^sub>6 x\<^sub>6 y\<^sub>6 l\<^sub>2)
-      from a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2`
+      from a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close>
       have "on_curve a b p\<^sub>4" by (simp add: add_closed)
-      with a b show ?case using `on_curve a b p\<^sub>2` Gen
+      with a b show ?case using \<open>on_curve a b p\<^sub>2\<close> Gen
       proof (induct rule: add_case)
         case InfL
         then show ?case by (simp add: is_generic_def)
@@ -524,7 +524,7 @@ next
         then show ?case by (simp add: is_generic_def)
       next
         case (Opp p)
-        from `is_generic p (opp p)` `on_curve a b p`
+        from \<open>is_generic p (opp p)\<close> \<open>on_curve a b p\<close>
         show ?case by (simp add: is_generic_def opp_opp)
       next
         case Tan
@@ -532,86 +532,86 @@ next
       next
         case (Gen p\<^sub>4' x\<^sub>4' y\<^sub>4' p\<^sub>3' x\<^sub>3' y\<^sub>3' p\<^sub>7 x\<^sub>7 y\<^sub>7 l\<^sub>3)
         from
-          `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+          \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
         have
           "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
           "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
           by (simp_all add: on_curve_def)
         from
-          `p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'`
-          `p\<^sub>5' = Point x\<^sub>5 y\<^sub>5`
-          `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'`
-          `p\<^sub>4' = Point x\<^sub>4 y\<^sub>4`
-          `p\<^sub>3' = Point x\<^sub>2' y\<^sub>2'`
-          `p\<^sub>3' = Point x\<^sub>2 y\<^sub>2`
-          `p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'`
-          `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'`
-          `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+          \<open>p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'\<close>
+          \<open>p\<^sub>5' = Point x\<^sub>5 y\<^sub>5\<close>
+          \<open>p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'\<close>
+          \<open>p\<^sub>4' = Point x\<^sub>4 y\<^sub>4\<close>
+          \<open>p\<^sub>3' = Point x\<^sub>2' y\<^sub>2'\<close>
+          \<open>p\<^sub>3' = Point x\<^sub>2 y\<^sub>2\<close>
+          \<open>p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
         have ps:
           "x\<^sub>5' = x\<^sub>5" "y\<^sub>5' = y\<^sub>5"
           "x\<^sub>4' = x\<^sub>4" "y\<^sub>4' = y\<^sub>4" "x\<^sub>3' = x\<^sub>2" "y\<^sub>3' = y\<^sub>2" "x\<^sub>2' = x\<^sub>2" "y\<^sub>2' = y\<^sub>2"
           "x\<^sub>1' = x\<^sub>1" "y\<^sub>1' = y\<^sub>1"
           by simp_all
         show ?case
-          apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
+          apply (simp add: \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>7 = Point x\<^sub>7 y\<^sub>7\<close>)
           apply (simp only: ps
-            `x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'`
-            `y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')`
-            `l\<^sub>3 = (y\<^sub>3' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>3' \<ominus> x\<^sub>4')`
-            `x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'`
-            `y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')`
-            `l\<^sub>2 = (y\<^sub>5' \<ominus> y\<^sub>1') \<oslash> (x\<^sub>5' \<ominus> x\<^sub>1')`
-            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
-            `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
-            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
-            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
-            `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`
-            `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`)
+            \<open>x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>3'\<close>
+            \<open>y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')\<close>
+            \<open>l\<^sub>3 = (y\<^sub>3' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>3' \<ominus> x\<^sub>4')\<close>
+            \<open>x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>5'\<close>
+            \<open>y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')\<close>
+            \<open>l\<^sub>2 = (y\<^sub>5' \<ominus> y\<^sub>1') \<oslash> (x\<^sub>5' \<ominus> x\<^sub>1')\<close>
+            \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'\<close>
+            \<open>y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')\<close>
+            \<open>l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')\<close>
+            \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>
+            \<open>y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)\<close>
+            \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>)
           apply (rule conjI)
           apply (field y1 y2)
           apply (intro conjI)
-          apply (simp add: integral_iff [OF _ `y\<^sub>2 \<in> carrier R`] `y\<^sub>2' \<noteq> \<zero>` [simplified `y\<^sub>2' = y\<^sub>2`])
+          apply (simp add: integral_iff [OF _ \<open>y\<^sub>2 \<in> carrier R\<close>] \<open>y\<^sub>2' \<noteq> \<zero>\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified
-            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
-            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
-            `x\<^sub>1' = x\<^sub>1` `x\<^sub>2' = x\<^sub>2` `y\<^sub>2' = y\<^sub>2` `x\<^sub>5' = x\<^sub>5`]])
+          apply (rule notE [OF \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified
+            \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'\<close>
+            \<open>l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')\<close>
+            \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>2' = x\<^sub>2\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>5' = x\<^sub>5\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: integral_iff [OF _ `y\<^sub>2 \<in> carrier R`] `y\<^sub>2' \<noteq> \<zero>` [simplified `y\<^sub>2' = y\<^sub>2`])
-          apply (simp add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (simp add: integral_iff [OF _ \<open>y\<^sub>2 \<in> carrier R\<close>] \<open>y\<^sub>2' \<noteq> \<zero>\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
+          apply (simp add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified
-            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
-            `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
-            `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>2`]])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified
+            \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>
+            \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>2\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (simp add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (field y1 y2)
           apply (intro conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified
-            `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
-            `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
-            `x\<^sub>1' = x\<^sub>1` `x\<^sub>2' = x\<^sub>2` `y\<^sub>2' = y\<^sub>2` `x\<^sub>5' = x\<^sub>5`]])
+          apply (rule notE [OF \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified
+            \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'\<close>
+            \<open>l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')\<close>
+            \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>2' = x\<^sub>2\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>5' = x\<^sub>5\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: integral_iff [OF _ `y\<^sub>2 \<in> carrier R`] `y\<^sub>2' \<noteq> \<zero>` [simplified `y\<^sub>2' = y\<^sub>2`])
-          apply (simp add: integral_iff [OF _ `y\<^sub>2 \<in> carrier R`] `y\<^sub>2' \<noteq> \<zero>` [simplified `y\<^sub>2' = y\<^sub>2`])
+          apply (simp add: integral_iff [OF _ \<open>y\<^sub>2 \<in> carrier R\<close>] \<open>y\<^sub>2' \<noteq> \<zero>\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
+          apply (simp add: integral_iff [OF _ \<open>y\<^sub>2 \<in> carrier R\<close>] \<open>y\<^sub>2' \<noteq> \<zero>\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified
-            `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
-            `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
-            `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>2`]])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified
+            \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>
+            \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>2\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp_all add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (simp_all add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           done
       qed
     qed
@@ -647,7 +647,7 @@ next
   then show ?case by (simp add: is_generic_def)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  with a b `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+  with a b \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
   show ?case
   proof (induct rule: add_case)
     case InfL
@@ -660,9 +660,9 @@ next
     then show ?case by (simp add: is_tangent_def opp_opp)
   next
     case (Tan p\<^sub>2 x\<^sub>2' y\<^sub>2' p\<^sub>5 x\<^sub>5 y\<^sub>5 l\<^sub>1)
-    from a b `on_curve a b p\<^sub>2` `p\<^sub>5 = add a p\<^sub>2 p\<^sub>2`
+    from a b \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>2 p\<^sub>2\<close>
     have "on_curve a b p\<^sub>5" by (simp add: add_closed)
-    with a b `on_curve a b p\<^sub>1` show ?case using Tan
+    with a b \<open>on_curve a b p\<^sub>1\<close> show ?case using Tan
     proof (induct rule: add_case)
       case InfL
       then show ?case by (simp add: is_generic_def)
@@ -674,9 +674,9 @@ next
       then show ?case by (simp add: is_tangent_def opp_opp)
     next
       case (Tan p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>6 x\<^sub>6 y\<^sub>6 l\<^sub>2)
-      from a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2`
+      from a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close>
       have "on_curve a b p\<^sub>4" by (simp add: add_closed)
-      with a b show ?case using `on_curve a b p\<^sub>2` Tan
+      with a b show ?case using \<open>on_curve a b p\<^sub>2\<close> Tan
       proof (induct rule: add_case)
         case InfL
         then show ?case by (simp add: is_generic_def)
@@ -685,7 +685,7 @@ next
         then show ?case by (simp add: is_generic_def)
       next
         case (Opp p)
-        from `is_generic p (opp p)` `on_curve a b p`
+        from \<open>is_generic p (opp p)\<close> \<open>on_curve a b p\<close>
         show ?case by (simp add: is_generic_def opp_opp)
       next
         case Tan
@@ -693,108 +693,108 @@ next
       next
         case (Gen p\<^sub>4' x\<^sub>4' y\<^sub>4' p\<^sub>2' x\<^sub>2'' y\<^sub>2'' p\<^sub>7 x\<^sub>7 y\<^sub>7 l\<^sub>3)
         from
-          `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+          \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
         have
           "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b" and
           "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
           by (simp_all add: on_curve_def)
         from
-          `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'`
-          `p\<^sub>4' = Point x\<^sub>4 y\<^sub>4`
-          `p\<^sub>2' = Point x\<^sub>2' y\<^sub>2'`
-          `p\<^sub>2' = Point x\<^sub>2 y\<^sub>2`
-          `p\<^sub>2' = Point x\<^sub>2'' y\<^sub>2''`
-          `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'`
-          `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `p\<^sub>1 = Point x\<^sub>5 y\<^sub>5`
+          \<open>p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'\<close>
+          \<open>p\<^sub>4' = Point x\<^sub>4 y\<^sub>4\<close>
+          \<open>p\<^sub>2' = Point x\<^sub>2' y\<^sub>2'\<close>
+          \<open>p\<^sub>2' = Point x\<^sub>2 y\<^sub>2\<close>
+          \<open>p\<^sub>2' = Point x\<^sub>2'' y\<^sub>2''\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>5 y\<^sub>5\<close>
         have ps:
           "x\<^sub>4' = x\<^sub>4" "y\<^sub>4' = y\<^sub>4" "x\<^sub>2' = x\<^sub>2" "y\<^sub>2' = y\<^sub>2" "x\<^sub>2'' = x\<^sub>2" "y\<^sub>2'' = y\<^sub>2"
           "x\<^sub>1' = x\<^sub>5" "y\<^sub>1' = y\<^sub>5" "x\<^sub>1 = x\<^sub>5" "y\<^sub>1 = y\<^sub>5"
           by simp_all
         note qs =
-          `x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>2''`
-          `y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')`
-          `l\<^sub>3 = (y\<^sub>2'' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>2'' \<ominus> x\<^sub>4')`
-          `x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1'`
-          `y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')`
-          `x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'`
-          `y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')`
-          `l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')`
-          `l\<^sub>2 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1')`
-          `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`
-          `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)`
-          `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`
-        from `y\<^sub>2 \<in> carrier R` `y\<^sub>2' \<noteq> \<zero>` `y\<^sub>2' = y\<^sub>2`
+          \<open>x\<^sub>7 = l\<^sub>3 [^] 2 \<ominus> x\<^sub>4' \<ominus> x\<^sub>2''\<close>
+          \<open>y\<^sub>7 = \<ominus> y\<^sub>4' \<ominus> l\<^sub>3 \<otimes> (x\<^sub>7 \<ominus> x\<^sub>4')\<close>
+          \<open>l\<^sub>3 = (y\<^sub>2'' \<ominus> y\<^sub>4') \<oslash> (x\<^sub>2'' \<ominus> x\<^sub>4')\<close>
+          \<open>x\<^sub>6 = l\<^sub>2 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1'\<close>
+          \<open>y\<^sub>6 = \<ominus> y\<^sub>1' \<ominus> l\<^sub>2 \<otimes> (x\<^sub>6 \<ominus> x\<^sub>1')\<close>
+          \<open>x\<^sub>5 = l\<^sub>1 [^] 2 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2'\<close>
+          \<open>y\<^sub>5 = \<ominus> y\<^sub>2' \<ominus> l\<^sub>1 \<otimes> (x\<^sub>5 \<ominus> x\<^sub>2')\<close>
+          \<open>l\<^sub>1 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2')\<close>
+          \<open>l\<^sub>2 = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1' [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1')\<close>
+          \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>
+          \<open>y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)\<close>
+          \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>
+        from \<open>y\<^sub>2 \<in> carrier R\<close> \<open>y\<^sub>2' \<noteq> \<zero>\<close> \<open>y\<^sub>2' = y\<^sub>2\<close>
         have "\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>" by (simp add: integral_iff)
         show ?case
-          apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
+          apply (simp add: \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>7 = Point x\<^sub>7 y\<^sub>7\<close>)
           apply (simp only: ps qs)
           apply (rule conjI)
           apply (field y2)
           apply (intro conjI)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `y\<^sub>1' \<noteq> \<zero>`])
+          apply (rule notE [OF \<open>y\<^sub>1' \<noteq> \<zero>\<close>])
           apply (simp only: ps qs)
           apply field
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>2''`])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>2''\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
           apply (intro conjI)
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (erule thin_rl)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (field y2)
           apply (intro conjI)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `y\<^sub>1' \<noteq> \<zero>`])
+          apply (rule notE [OF \<open>y\<^sub>1' \<noteq> \<zero>\<close>])
           apply (simp only: ps qs)
           apply field
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>2''`])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>2''\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
           apply (erule thin_rl)
           apply (rule conjI)
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>`)
+          apply (rule \<open>\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>2 \<noteq> \<zero>\<close>)
           done
       qed
     next
@@ -825,7 +825,7 @@ proof (cases p\<^sub>1)
 next
   case (Point x\<^sub>1 y\<^sub>1)
   note Point' = this
-  with `on_curve a b p\<^sub>1`
+  with \<open>on_curve a b p\<^sub>1\<close>
   have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
     and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
     by (simp_all add: on_curve_def)
@@ -835,7 +835,7 @@ next
     then show ?thesis by (simp add: add_0_l add_0_r)
   next
     case (Point x\<^sub>2 y\<^sub>2)
-    with `on_curve a b p\<^sub>2` have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
+    with \<open>on_curve a b p\<^sub>2\<close> have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
       and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
       by (simp_all add: on_curve_def)
     show ?thesis
@@ -844,11 +844,11 @@ next
       show ?thesis
       proof (cases "y\<^sub>1 = \<ominus> y\<^sub>2")
         case True
-        with Point Point' `x\<^sub>1 = x\<^sub>2` `y\<^sub>2 \<in> carrier R` show ?thesis
+        with Point Point' \<open>x\<^sub>1 = x\<^sub>2\<close> \<open>y\<^sub>2 \<in> carrier R\<close> show ?thesis
           by (simp add: add_def)
       next
         case False
-        with y1 y2 [symmetric] `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R` `x\<^sub>1 = x\<^sub>2` Point Point'
+        with y1 y2 [symmetric] \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 = x\<^sub>2\<close> Point Point'
         show ?thesis
           by (simp add: power2_eq_square square_eq_iff)
       qed
@@ -858,10 +858,10 @@ next
         apply (simp add: add_def Let_def)
         apply (rule conjI)
         apply field
-        apply (cut_tac `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R`)
+        apply (cut_tac \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>)
         apply (simp add: eq_diff0)
         apply field
-        apply (cut_tac `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R`)
+        apply (cut_tac \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>)
         apply (simp add: eq_diff0)
         done
     qed
@@ -896,15 +896,15 @@ next
   then show ?case by (simp add: opp_def split: point.split_asm)
 next
   case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
-  from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+  from \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
   have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" by (simp_all add: on_curve_def)
-  with a `l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1)` `y\<^sub>1 \<noteq> \<zero>`
+  with a \<open>l = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] 2 \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> y\<^sub>1)\<close> \<open>y\<^sub>1 \<noteq> \<zero>\<close>
   have "l \<in> carrier R" by (simp add: integral_iff)
-  from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>2 = p\<^sub>1`
+  from \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>2 = p\<^sub>1\<close>
   have "x\<^sub>2 = x\<^sub>1" "y\<^sub>2 = y\<^sub>1" by simp_all
-  with `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R` `l \<in> carrier R` `y\<^sub>2 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1)` `y\<^sub>1 \<noteq> \<zero>`
+  with \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close> \<open>l \<in> carrier R\<close> \<open>y\<^sub>2 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1)\<close> \<open>y\<^sub>1 \<noteq> \<zero>\<close>
   have "\<ominus> y\<^sub>1 = y\<^sub>1" by (simp add: r_neg minus_eq)
-  with `y\<^sub>1 \<in> carrier R` `y\<^sub>1 \<noteq> \<zero>`
+  with \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<noteq> \<zero>\<close>
   show ?case by (simp add: neg_equal_zero)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
@@ -912,59 +912,59 @@ next
     and y1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
     and y2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
     by (simp_all add: on_curve_def)
-  with `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `x\<^sub>1 \<noteq> x\<^sub>2`
+  with \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>
   have "l \<in> carrier R" by (simp add: eq_diff0)
-  from `p\<^sub>3 = p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
+  from \<open>p\<^sub>3 = p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
   have ps: "x\<^sub>3 = x\<^sub>2" "y\<^sub>3 = y\<^sub>2" by simp_all
-  with `y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1)`
+  with \<open>y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1)\<close>
   have "y\<^sub>2 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1)" by simp
-  also from `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `x\<^sub>1 \<noteq> x\<^sub>2`
-    `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R`
+  also from \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>
+    \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close>
   have "l \<otimes> (x\<^sub>2 \<ominus> x\<^sub>1) = y\<^sub>2 \<ominus> y\<^sub>1"
     by (simp add: m_div_def m_assoc eq_diff0)
-  also from `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R`
+  also from \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close>
   have "\<ominus> y\<^sub>1 \<ominus> (y\<^sub>2 \<ominus> y\<^sub>1) = (\<ominus> y\<^sub>1 \<oplus> y\<^sub>1) \<oplus> \<ominus> y\<^sub>2"
     by (simp add: minus_eq minus_add a_ac)
-  finally have "y\<^sub>2 = \<zero>" using `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R`
+  finally have "y\<^sub>2 = \<zero>" using \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close>
     by (simp add: l_neg equal_neg_zero)
-  with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `on_curve a b p\<^sub>2`
-    `a \<in> carrier R` `b \<in> carrier R` `x\<^sub>2 \<in> carrier R`
+  with \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>on_curve a b p\<^sub>2\<close>
+    \<open>a \<in> carrier R\<close> \<open>b \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
   have x2: "x\<^sub>2 [^] (3::nat) = \<ominus> (a \<otimes> x\<^sub>2 \<oplus> b)"
     by (simp add: on_curve_def nat_pow_zero eq_neg_iff_add_eq_0 a_assoc)
-  from `x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `x\<^sub>3 = x\<^sub>2`
+  from \<open>x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close> \<open>x\<^sub>3 = x\<^sub>2\<close>
   have "l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<ominus> x\<^sub>2 = x\<^sub>2 \<ominus> x\<^sub>2" by simp
-  with `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `l \<in> carrier R`
+  with \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>l \<in> carrier R\<close>
   have "l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>"
     by (simp add: of_int_2 l_distr minus_eq a_ac minus_add r_neg)
   then have "x\<^sub>2 \<otimes> (l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2) = x\<^sub>2 \<otimes> \<zero>" by simp
   then have "(x\<^sub>2 \<ominus> x\<^sub>1) \<otimes> (\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> b) = \<zero>"
-    apply (simp add: `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `y\<^sub>2 = \<zero>`)
+    apply (simp add: \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close> \<open>y\<^sub>2 = \<zero>\<close>)
     apply (field (prems) y1 x2)
     apply (ring y1 x2)
-    apply (simp add: eq_diff0 `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+    apply (simp add: eq_diff0 \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
     done
-  with not_sym [OF `x\<^sub>1 \<noteq> x\<^sub>2`]
-    `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R` `a \<in> carrier R` `b \<in> carrier R`
+  with not_sym [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>]
+    \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close> \<open>a \<in> carrier R\<close> \<open>b \<in> carrier R\<close>
   have "\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> b = \<zero>"
     by (simp add: integral_iff eq_diff0)
-  with `a \<in> carrier R` `b \<in> carrier R` `x\<^sub>2 \<in> carrier R`
+  with \<open>a \<in> carrier R\<close> \<open>b \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
   have "\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)"
     by (simp add: eq_neg_iff_add_eq_0)
-  from y2 [symmetric] `y\<^sub>2 = \<zero>` `a \<in> carrier R`
+  from y2 [symmetric] \<open>y\<^sub>2 = \<zero>\<close> \<open>a \<in> carrier R\<close>
   have "\<ominus> (\<guillemotleft>2\<guillemotright> \<otimes> a) [^] (3::nat) \<otimes> (x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b) = \<zero>"
     by (simp add: nat_pow_zero)
   then have "b \<otimes> (\<guillemotleft>4\<guillemotright> \<otimes> a [^] (3::nat) \<oplus> \<guillemotleft>27\<guillemotright> \<otimes> b [^] (2::nat)) = \<zero>"
-    apply (ring (prems) `\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)`)
-    apply (ring `\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)`)
+    apply (ring (prems) \<open>\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)\<close>)
+    apply (ring \<open>\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 = \<ominus> (\<guillemotleft>3\<guillemotright> \<otimes> b)\<close>)
     done
   with ab a b have "b = \<zero>" by (simp add: nonsingular_def integral_iff)
-  with `\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> b = \<zero>` ab a b `x\<^sub>2 \<in> carrier R`
+  with \<open>\<guillemotleft>2\<guillemotright> \<otimes> a \<otimes> x\<^sub>2 \<oplus> \<guillemotleft>3\<guillemotright> \<otimes> b = \<zero>\<close> ab a b \<open>x\<^sub>2 \<in> carrier R\<close>
   have "x\<^sub>2 = \<zero>" by (simp add: nonsingular_def nat_pow_zero integral_iff)
-  from `l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>`
+  from \<open>l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2 = \<zero>\<close>
   show ?case
-    apply (simp add: `x\<^sub>2 = \<zero>` `y\<^sub>2 = \<zero>` `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`)
-    apply (field (prems) y1 `b = \<zero>`)
-    apply (insert a b ab `x\<^sub>1 \<in> carrier R` `b = \<zero>` `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>2 = \<zero>`)
+    apply (simp add: \<open>x\<^sub>2 = \<zero>\<close> \<open>y\<^sub>2 = \<zero>\<close> \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>)
+    apply (field (prems) y1 \<open>b = \<zero>\<close>)
+    apply (insert a b ab \<open>x\<^sub>1 \<in> carrier R\<close> \<open>b = \<zero>\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> \<open>x\<^sub>2 = \<zero>\<close>)
     apply (simp add: nonsingular_def nat_pow_zero integral_iff)
     apply (simp add: trans [OF eq_commute eq_neg_iff_add_eq_0])
     done
@@ -984,15 +984,15 @@ next
   show ?thesis
   proof (cases p\<^sub>2)
     case Infinity
-    with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` show ?thesis
+    with \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> show ?thesis
       by (simp add: add_def opp_def)
   next
     case (Point x\<^sub>2 y\<^sub>2)
-    with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` p\<^sub>1 p\<^sub>2
+    with \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> p\<^sub>1 p\<^sub>2
     have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" "x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b = y\<^sub>1 [^] (2::nat)"
       "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R" "x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b = y\<^sub>2 [^] (2::nat)"
       by (simp_all add: on_curve_def)
-    with Point `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` show ?thesis
+    with Point \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> show ?thesis
       apply (cases "x\<^sub>1 = x\<^sub>2")
       apply (cases "y\<^sub>1 = \<ominus> y\<^sub>2")
       apply (simp add: add_def opp_def Let_def)
@@ -1032,14 +1032,14 @@ next
 next
   case (Opp p)
   then have "add a p p = Infinity" by (simp add: opp_opp)
-  with `on_curve a b p` have "p = opp p" by (rule uniq_opp)
-  with `p \<noteq> opp p` show ?case ..
+  with \<open>on_curve a b p\<close> have "p = opp p" by (rule uniq_opp)
+  with \<open>p \<noteq> opp p\<close> show ?case ..
 next
   case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
   then have "add a p\<^sub>1 p\<^sub>1 = Infinity"
     by (simp add: add_opp)
-  with `on_curve a b p\<^sub>1` have "p\<^sub>1 = opp p\<^sub>1" by (rule uniq_opp)
-  with `p\<^sub>1 \<noteq> opp p\<^sub>1` show ?case ..
+  with \<open>on_curve a b p\<^sub>1\<close> have "p\<^sub>1 = opp p\<^sub>1" by (rule uniq_opp)
+  with \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close> show ?case ..
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
   then have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R" "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
@@ -1052,10 +1052,10 @@ next
     by (simp add: add_def opp_def Let_def)
   then show ?case
     apply (field (prems))
-    apply (insert `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R` `p\<^sub>1 \<noteq> opp p\<^sub>1`
-      `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `\<guillemotleft>4\<guillemotright> \<noteq> \<zero>`)[1]
+    apply (insert \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close>
+      \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>\<guillemotleft>4\<guillemotright> \<noteq> \<zero>\<close>)[1]
     apply (simp add: integral_iff opp_def eq_neg_iff_add_eq_0 mult2)
-    apply (insert `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<noteq> x\<^sub>2`)
+    apply (insert \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>)
     apply (simp add: eq_diff0)
     done
 qed
@@ -1071,7 +1071,7 @@ lemma compat_add_triple:
   using a b add_closed [OF a b p p] opp_closed [OF p] assms
 proof (induct "add a p p" "opp p" rule: add_case)
   case InfL
-  from `p \<noteq> opp p` uniq_opp [OF p `Infinity = add a p p` [symmetric]]
+  from \<open>p \<noteq> opp p\<close> uniq_opp [OF p \<open>Infinity = add a p p\<close> [symmetric]]
   show ?case ..
 next
   case InfR
@@ -1079,9 +1079,9 @@ next
 next
   case Opp
   then have "opp (opp (add a p p)) = opp (opp p)" by simp
-  with `on_curve a b (add a p p)` `on_curve a b p`
+  with \<open>on_curve a b (add a p p)\<close> \<open>on_curve a b p\<close>
   have "add a p p = p" by (simp add: opp_opp)
-  with uniq_zero [OF a b ab p p] `p \<noteq> opp p`
+  with uniq_zero [OF a b ab p p] \<open>p \<noteq> opp p\<close>
   show ?case by (simp add: opp_def)
 next
   case Tan
@@ -1091,42 +1091,42 @@ next
   with opp_closed [OF p]
   have  "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
     by (simp_all add: on_curve_def)
-  from `opp p = Point x\<^sub>2 y\<^sub>2` p
+  from \<open>opp p = Point x\<^sub>2 y\<^sub>2\<close> p
   have "p = Point x\<^sub>2 (\<ominus> y\<^sub>2)"
     by (auto simp add: opp_def on_curve_def neg_equal_swap split: point.split_asm)
-  with `add a p p = Point x\<^sub>1 y\<^sub>1` [symmetric]
+  with \<open>add a p p = Point x\<^sub>1 y\<^sub>1\<close> [symmetric]
   obtain l' where l':
     "l' = (\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>2 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> \<ominus> y\<^sub>2)"
     and xy: "x\<^sub>1 = l' [^] (2::nat) \<ominus> \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>2"
     "y\<^sub>1 = \<ominus> (\<ominus> y\<^sub>2) \<ominus> l' \<otimes> (x\<^sub>1 \<ominus> x\<^sub>2)"
     and y2: "\<ominus> y\<^sub>2 \<noteq> \<ominus> (\<ominus> y\<^sub>2)"
     by (simp add: add_def Let_def split: if_split_asm)
-  from l' `x\<^sub>2 \<in> carrier R` `y\<^sub>2 \<in> carrier R` a y2
+  from l' \<open>x\<^sub>2 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> a y2
   have "l' \<in> carrier R" by (simp add: neg_equal_zero neg_equal_swap integral_iff)
   have "x\<^sub>3 = x\<^sub>2"
     apply (simp add: xy
-      `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)` `x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2`)
+      \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close> \<open>x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close>)
     apply field
-    apply (insert `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>2 \<in> carrier R` `l' \<in> carrier R`)
+    apply (insert \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>l' \<in> carrier R\<close>)
     apply (simp add: xy eq_diff0)
     done
   then have "p\<^sub>3 = p \<or> p\<^sub>3 = opp p"
-    by (rule curve_elt_opp [OF `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3` `p = Point x\<^sub>2 (\<ominus> y\<^sub>2)`
+    by (rule curve_elt_opp [OF \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close> \<open>p = Point x\<^sub>2 (\<ominus> y\<^sub>2)\<close>
       add_closed [OF a b add_closed [OF a b p p] opp_closed [OF p],
-        folded `p\<^sub>3 = add a (add a p p) (opp p)`]
-     `on_curve a b p`])
+        folded \<open>p\<^sub>3 = add a (add a p p) (opp p)\<close>]
+     \<open>on_curve a b p\<close>])
   then show ?case
   proof
     assume "p\<^sub>3 = p"
-    with `p\<^sub>3 = add a (add a p p) (opp p)`
+    with \<open>p\<^sub>3 = add a (add a p p) (opp p)\<close>
     show ?thesis by simp
   next
     assume "p\<^sub>3 = opp p"
-    with `p\<^sub>3 = add a (add a p p) (opp p)`
+    with \<open>p\<^sub>3 = add a (add a p p) (opp p)\<close>
     have "add a (add a p p) (opp p) = opp p" by simp
     with a b ab add_closed [OF a b p p] opp_closed [OF p]
     have "add a p p = Infinity" by (rule uniq_zero)
-    with `add a p p = Point x\<^sub>1 y\<^sub>1` show ?thesis by simp
+    with \<open>add a p p = Point x\<^sub>1 y\<^sub>1\<close> show ?thesis by simp
   qed
 qed
 
@@ -1142,7 +1142,7 @@ proof (cases "p\<^sub>1 = opp p\<^sub>1")
   case True
   with assms have "add a p\<^sub>2 p\<^sub>1 = p\<^sub>1" by (simp add: add_comm)
   with a b ab p\<^sub>2 p\<^sub>1 have "p\<^sub>2 = Infinity" by (rule uniq_zero)
-  also from `on_curve a b p\<^sub>1` have "\<dots> = add a p\<^sub>1 (opp p\<^sub>1)"
+  also from \<open>on_curve a b p\<^sub>1\<close> have "\<dots> = add a p\<^sub>1 (opp p\<^sub>1)"
     by (simp add: add_opp)
   also from True have "\<dots> = add a (opp p\<^sub>1) (opp p\<^sub>1)" by simp
   finally show ?thesis .
@@ -1160,22 +1160,22 @@ next
     then show ?case by (simp add: add_0_l)
   next
     case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
-    from `p\<^sub>2 = opp p\<^sub>1` `on_curve a b p\<^sub>1`
+    from \<open>p\<^sub>2 = opp p\<^sub>1\<close> \<open>on_curve a b p\<^sub>1\<close>
     have "p\<^sub>1 = opp p\<^sub>2" by (simp add: opp_opp)
-    also note `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1`
-    finally show ?case using a b `on_curve a b p\<^sub>1`
+    also note \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close>
+    finally show ?case using a b \<open>on_curve a b p\<^sub>1\<close>
       by (simp add: opp_add)
   next
     case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
-    from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+    from \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
     have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
       and y\<^sub>1: "y\<^sub>1 [^] (2::nat) = x\<^sub>1 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>1 \<oplus> b"
       by (simp_all add: on_curve_def)
-    from `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+    from \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
     have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
       and y\<^sub>2: "y\<^sub>2 [^] (2::nat) = x\<^sub>2 [^] (3::nat) \<oplus> a \<otimes> x\<^sub>2 \<oplus> b"
       by (simp_all add: on_curve_def)
-    from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>1 \<noteq> opp p\<^sub>1` `y\<^sub>1 \<in> carrier R`
+    from \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close> \<open>y\<^sub>1 \<in> carrier R\<close>
     have "y\<^sub>1 \<noteq> \<zero>"
       by (simp add: opp_Point integral_iff equal_neg_zero)
     from Gen have "x\<^sub>1 = ((y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)) [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2"
@@ -1185,7 +1185,7 @@ next
       apply (field (prems) y\<^sub>1 y\<^sub>2)
       apply (field y\<^sub>1 y\<^sub>2)
       apply simp
-      apply (insert `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R`)
+      apply (insert \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>)
       apply (simp add: eq_diff0)
       done
     then have "(x\<^sub>2 \<ominus> (((\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> (\<ominus> y\<^sub>1))) [^] (2::nat) \<ominus>
@@ -1193,52 +1193,52 @@ next
       apply (drule_tac f="\<lambda>x. x [^] (2::nat)" in arg_cong)
       apply (field (prems) y\<^sub>1 y\<^sub>2)
       apply (field y\<^sub>1 y\<^sub>2)
-      apply (insert `y\<^sub>1 \<noteq> \<zero>` `y\<^sub>1 \<in> carrier R`)
+      apply (insert \<open>y\<^sub>1 \<noteq> \<zero>\<close> \<open>y\<^sub>1 \<in> carrier R\<close>)
       apply (simp_all add: integral_iff neg_equal_swap)
       done
-    with a `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R`
-      `y\<^sub>1 \<noteq> \<zero>` `x\<^sub>1 \<noteq> x\<^sub>2`
+    with a \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close>
+      \<open>y\<^sub>1 \<noteq> \<zero>\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>
     have "x\<^sub>2 = ((\<guillemotleft>3\<guillemotright> \<otimes> x\<^sub>1 [^] (2::nat) \<oplus> a) \<oslash> (\<guillemotleft>2\<guillemotright> \<otimes> (\<ominus> y\<^sub>1))) [^] (2::nat) \<ominus>
       \<guillemotleft>2\<guillemotright> \<otimes> x\<^sub>1"
       by (simp add: integral_iff eq_diff0 neg_equal_swap)
-    with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` _ `on_curve a b p\<^sub>2`
+    with \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> _ \<open>on_curve a b p\<^sub>2\<close>
       add_closed [OF a b
-        opp_closed [OF `on_curve a b p\<^sub>1`] opp_closed [OF `on_curve a b p\<^sub>1`]]
+        opp_closed [OF \<open>on_curve a b p\<^sub>1\<close>] opp_closed [OF \<open>on_curve a b p\<^sub>1\<close>]]
     have "p\<^sub>2 = add a (opp p\<^sub>1) (opp p\<^sub>1) \<or> p\<^sub>2 = opp (add a (opp p\<^sub>1) (opp p\<^sub>1))"
       apply (rule curve_elt_opp)
-      apply (insert `y\<^sub>1 \<in> carrier R` `y\<^sub>1 \<noteq> \<zero>`)
-      apply (simp add: add_def opp_Point neg_equal_zero Let_def `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`)
+      apply (insert \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<noteq> \<zero>\<close>)
+      apply (simp add: add_def opp_Point neg_equal_zero Let_def \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>)
       done
     then show ?case
     proof
       assume "p\<^sub>2 = opp (add a (opp p\<^sub>1) (opp p\<^sub>1))"
-      with a b `on_curve a b p\<^sub>1`
+      with a b \<open>on_curve a b p\<^sub>1\<close>
       have "p\<^sub>2 = add a p\<^sub>1 p\<^sub>1"
         by (simp add: opp_add opp_opp opp_closed)
       show ?case
       proof (cases "add a p\<^sub>1 p\<^sub>1 = opp p\<^sub>1")
         case True
-        from a b `on_curve a b p\<^sub>1`
+        from a b \<open>on_curve a b p\<^sub>1\<close>
         show ?thesis
-          apply (simp add: opp_add [symmetric] `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` True)
-          apply (simp add: `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2` [simplified `p\<^sub>3 = opp p\<^sub>1`])
-          apply (simp add: `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` True add_opp)
+          apply (simp add: opp_add [symmetric] \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> True)
+          apply (simp add: \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close> [simplified \<open>p\<^sub>3 = opp p\<^sub>1\<close>])
+          apply (simp add: \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> True add_opp)
           done
       next
         case False
-        from a b `on_curve a b p\<^sub>1`
+        from a b \<open>on_curve a b p\<^sub>1\<close>
         have "add a p\<^sub>1 (opp p\<^sub>2) = opp (add a (add a p\<^sub>1 p\<^sub>1) (opp p\<^sub>1))"
-          by (simp add: `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1`
+          by (simp add: \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close>
             opp_add add_closed opp_closed opp_opp add_comm)
-        with a b ab `on_curve a b p\<^sub>1` `p\<^sub>1 \<noteq> opp p\<^sub>1` False
+        with a b ab \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close> False
         have "add a p\<^sub>1 (opp p\<^sub>2) = opp p\<^sub>1"
           by (simp add: compat_add_triple)
-        with `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>3 = opp p\<^sub>1`
+        with \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>3 = opp p\<^sub>1\<close>
         have "add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)" by simp
-        with a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
-        have "p\<^sub>2 = opp p\<^sub>2" using `p\<^sub>1 \<noteq> opp p\<^sub>1`
+        with a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
+        have "p\<^sub>2 = opp p\<^sub>2" using \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close>
           by (rule compat_add_opp)
-        with a b `on_curve a b p\<^sub>1` `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1`
+        with a b \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close>
         show ?thesis by (simp add: opp_add)
       qed
     qed
@@ -1261,64 +1261,64 @@ proof (induct rule: add_casew)
 next
   case (InfR p)
   with a b p\<^sub>3 have "add a p\<^sub>3 p = p" by (simp add: add_comm)
-  with a b ab p\<^sub>3 `on_curve a b p`
+  with a b ab p\<^sub>3 \<open>on_curve a b p\<close>
   show ?case by (rule uniq_zero [symmetric])
 next
   case (Opp p)
-  from p\<^sub>3 `Infinity = add a p p\<^sub>3` [symmetric]
+  from p\<^sub>3 \<open>Infinity = add a p p\<^sub>3\<close> [symmetric]
   show ?case by (rule uniq_opp [symmetric])
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+  from \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
   have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
     by (simp_all add: on_curve_def)
-  from `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+  from \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
   have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
     by (simp_all add: on_curve_def)
-  from add_closed [OF a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`]
-    `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` [symmetric] `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4`
+  from add_closed [OF a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>]
+    \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> [symmetric] \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close>
   have "x\<^sub>4 \<in> carrier R" "y\<^sub>4 \<in> carrier R"
     by (simp_all add: on_curve_def)
-  from `_ \<or> _` a `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
-    `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R`
-    `x\<^sub>2 \<in> carrier R` `y\<^sub>2 \<in> carrier R`
+  from \<open>_ \<or> _\<close> a \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
+    \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close>
+    \<open>x\<^sub>2 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close>
   have "l \<in> carrier R"
     by (auto simp add: opp_Point equal_neg_zero integral_iff eq_diff0)
-  from a b `on_curve a b p\<^sub>1` p\<^sub>3 `on_curve a b p\<^sub>1` p\<^sub>3 `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-    `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>3` `p\<^sub>1 \<noteq> opp p\<^sub>2`
+  from a b \<open>on_curve a b p\<^sub>1\<close> p\<^sub>3 \<open>on_curve a b p\<^sub>1\<close> p\<^sub>3 \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+    \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>3\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close>
   show ?case
   proof (induct rule: add_casew)
     case InfL
     then show ?case by (simp add: add_0_l)
   next
     case (InfR p)
-    with a b `on_curve a b p\<^sub>2`
+    with a b \<open>on_curve a b p\<^sub>2\<close>
     have "add a p\<^sub>2 p = p" by (simp add: add_comm)
-    with a b ab `on_curve a b p\<^sub>2` `on_curve a b p`
+    with a b ab \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<close>
     show ?case by (rule uniq_zero)
   next
     case (Opp p)
     then have "add a p p\<^sub>2 = Infinity" by simp
-    with `on_curve a b p\<^sub>2` show ?case by (rule uniq_opp)
+    with \<open>on_curve a b p\<^sub>2\<close> show ?case by (rule uniq_opp)
   next
     case (Gen p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>3 x\<^sub>3 y\<^sub>3 p\<^sub>5 x\<^sub>5 y\<^sub>5 l')
-    from `on_curve a b p\<^sub>3` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
+    from \<open>on_curve a b p\<^sub>3\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
     have "x\<^sub>3 \<in> carrier R" "y\<^sub>3 \<in> carrier R"
       by (simp_all add: on_curve_def)
-    from `x\<^sub>1' = x\<^sub>3 \<and> _ \<or> _` a `p\<^sub>1 \<noteq> opp p\<^sub>3`
-      `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
-      `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R`
-      `x\<^sub>3 \<in> carrier R` `y\<^sub>3 \<in> carrier R`
+    from \<open>x\<^sub>1' = x\<^sub>3 \<and> _ \<or> _\<close> a \<open>p\<^sub>1 \<noteq> opp p\<^sub>3\<close>
+      \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
+      \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close>
+      \<open>x\<^sub>3 \<in> carrier R\<close> \<open>y\<^sub>3 \<in> carrier R\<close>
     have "l' \<in> carrier R"
       by (auto simp add: opp_Point equal_neg_zero integral_iff eq_diff0)
-    from `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
-      `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-      `y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)` `y\<^sub>5 = \<ominus> y\<^sub>1' \<ominus> l' \<otimes> (x\<^sub>5 \<ominus> x\<^sub>1')`
-      `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R` `x\<^sub>4 \<in> carrier R` `l' \<in> carrier R`
+    from \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close> \<open>p\<^sub>5 = Point x\<^sub>5 y\<^sub>5\<close>
+      \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+      \<open>y\<^sub>4 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1)\<close> \<open>y\<^sub>5 = \<ominus> y\<^sub>1' \<ominus> l' \<otimes> (x\<^sub>5 \<ominus> x\<^sub>1')\<close>
+      \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>4 \<in> carrier R\<close> \<open>l' \<in> carrier R\<close>
     have "\<zero> = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1) \<ominus> (\<ominus> y\<^sub>1 \<ominus> l' \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1))"
       by (auto simp add: trans [OF eq_commute eq_diff0])
-    with `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R` `x\<^sub>4 \<in> carrier R`
-      `l \<in> carrier R` `l' \<in> carrier R`
+    with \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>4 \<in> carrier R\<close>
+      \<open>l \<in> carrier R\<close> \<open>l' \<in> carrier R\<close>
     have "(l' \<ominus> l) \<otimes> (x\<^sub>4 \<ominus> x\<^sub>1) = \<zero>"
       apply simp
       apply (rule eq_diff0 [THEN iffD1])
@@ -1326,19 +1326,19 @@ next
       apply simp
       apply ring
       done
-    with `x\<^sub>1 \<in> carrier R` `x\<^sub>4 \<in> carrier R` `l \<in> carrier R` `l' \<in> carrier R`
+    with \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>4 \<in> carrier R\<close> \<open>l \<in> carrier R\<close> \<open>l' \<in> carrier R\<close>
     have "l' = l \<or> x\<^sub>4 = x\<^sub>1"
       by (simp add: integral_iff eq_diff0)
     then show ?case
     proof
       assume "l' = l"
-      with `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
-        `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-        `x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `x\<^sub>5 = l' [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>3`
-        `x\<^sub>1 \<in> carrier R` `x\<^sub>3 \<in> carrier R` `l \<in> carrier R`
+      with \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close> \<open>p\<^sub>5 = Point x\<^sub>5 y\<^sub>5\<close>
+        \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+        \<open>x\<^sub>4 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close> \<open>x\<^sub>5 = l' [^] 2 \<ominus> x\<^sub>1' \<ominus> x\<^sub>3\<close>
+        \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>3 \<in> carrier R\<close> \<open>l \<in> carrier R\<close>
       have "\<zero> = l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>2 \<ominus> (l [^] (2::nat) \<ominus> x\<^sub>1 \<ominus> x\<^sub>3)"
         by (simp add: trans [OF eq_commute eq_diff0])
-      with `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `x\<^sub>3 \<in> carrier R` `l \<in> carrier R`
+      with \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>3 \<in> carrier R\<close> \<open>l \<in> carrier R\<close>
       have "x\<^sub>2 = x\<^sub>3"
         apply (rule_tac eq_diff0 [THEN iffD1, THEN sym])
         apply simp_all
@@ -1346,31 +1346,31 @@ next
         apply simp_all[2]
         apply ring
         done
-      with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3` `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+      with \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
       have "p\<^sub>2 = p\<^sub>3 \<or> p\<^sub>2 = opp p\<^sub>3" by (rule curve_elt_opp)
       then show ?case
       proof
         assume "p\<^sub>2 = opp p\<^sub>3"
-        with `on_curve a b p\<^sub>3` have "opp p\<^sub>2 = p\<^sub>3"
+        with \<open>on_curve a b p\<^sub>3\<close> have "opp p\<^sub>2 = p\<^sub>3"
           by (simp add: opp_opp)
-        with `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>5 = add a p\<^sub>1 p\<^sub>3`
+        with \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>1 p\<^sub>3\<close>
         have "add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)" by simp
         show ?case
         proof (cases "p\<^sub>1 = opp p\<^sub>1")
           case True
-          with `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>1 \<noteq> opp p\<^sub>3`
+          with \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>3\<close>
           have "p\<^sub>1 \<noteq> p\<^sub>2" "p\<^sub>1 \<noteq> p\<^sub>3" by auto
-          with `l' = l` `x\<^sub>1 = x\<^sub>2 \<and> _\<or> _` `x\<^sub>1' = x\<^sub>3 \<and> _ \<or> _`
-            `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'`
-            `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
-            `p\<^sub>2 = opp p\<^sub>3`
+          with \<open>l' = l\<close> \<open>x\<^sub>1 = x\<^sub>2 \<and> _\<or> _\<close> \<open>x\<^sub>1' = x\<^sub>3 \<and> _ \<or> _\<close>
+            \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close>
+            \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
+            \<open>p\<^sub>2 = opp p\<^sub>3\<close>
           have eq: "(y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1) = (y\<^sub>3 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)" and "x\<^sub>1 \<noteq> x\<^sub>2"
             by (auto simp add: opp_Point)
           from eq have "y\<^sub>2 = y\<^sub>3"
             apply (field (prems))
             apply (rule eq_diff0 [THEN iffD1])
-            apply (insert `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>1 \<in> carrier R` `y\<^sub>1 \<in> carrier R`
-              `x\<^sub>2 \<in> carrier R` `y\<^sub>2 \<in> carrier R` `y\<^sub>3 \<in> carrier R`)
+            apply (insert \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> \<open>x\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>1 \<in> carrier R\<close>
+              \<open>x\<^sub>2 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> \<open>y\<^sub>3 \<in> carrier R\<close>)
             apply simp_all
             apply (erule subst)
             apply (rule eq_diff0 [THEN iffD1])
@@ -1378,45 +1378,45 @@ next
             apply ring
             apply (simp add: eq_diff0)
             done
-          with `p\<^sub>2 = opp p\<^sub>3` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
+          with \<open>p\<^sub>2 = opp p\<^sub>3\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
           show ?thesis by (simp add: opp_Point)
         next
           case False
-          with a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
-            `add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)`
+          with a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
+            \<open>add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)\<close>
           have "p\<^sub>2 = opp p\<^sub>2" by (rule compat_add_opp)
-          with `opp p\<^sub>2 = p\<^sub>3` show ?thesis by simp
+          with \<open>opp p\<^sub>2 = p\<^sub>3\<close> show ?thesis by simp
         qed
       qed
     next
       assume "x\<^sub>4 = x\<^sub>1"
-      with `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` [simplified `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2`]
-        `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-        add_closed [OF a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`]
-        `on_curve a b p\<^sub>1`
+      with \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close> [simplified \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close>]
+        \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+        add_closed [OF a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>]
+        \<open>on_curve a b p\<^sub>1\<close>
       have "add a p\<^sub>1 p\<^sub>2 = p\<^sub>1 \<or> add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1" by (rule curve_elt_opp)
       then show ?case
       proof
         assume "add a p\<^sub>1 p\<^sub>2 = p\<^sub>1"
-        with a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
+        with a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
         have "add a p\<^sub>2 p\<^sub>1 = p\<^sub>1" by (simp add: add_comm)
-        with a b ab `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>1`
+        with a b ab \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>1\<close>
         have "p\<^sub>2 = Infinity" by (rule uniq_zero)
-        moreover from `add a p\<^sub>1 p\<^sub>2 = p\<^sub>1`
-          `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>5 = add a p\<^sub>1 p\<^sub>3`
-          a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>3`
+        moreover from \<open>add a p\<^sub>1 p\<^sub>2 = p\<^sub>1\<close>
+          \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>1 p\<^sub>3\<close>
+          a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>3\<close>
         have "add a p\<^sub>3 p\<^sub>1 = p\<^sub>1" by (simp add: add_comm)
-        with a b ab `on_curve a b p\<^sub>3` `on_curve a b p\<^sub>1`
+        with a b ab \<open>on_curve a b p\<^sub>3\<close> \<open>on_curve a b p\<^sub>1\<close>
         have "p\<^sub>3 = Infinity" by (rule uniq_zero)
         ultimately show ?case by simp
       next
         assume "add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1"
-        with a b ab `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
+        with a b ab \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
         have "p\<^sub>2 = add a (opp p\<^sub>1) (opp p\<^sub>1)" by (rule add_opp_double_opp)
-        moreover from `add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1`
-          `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>5 = add a p\<^sub>1 p\<^sub>3`
+        moreover from \<open>add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1\<close>
+          \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>1 p\<^sub>3\<close>
         have "add a p\<^sub>1 p\<^sub>3 = opp p\<^sub>1" by simp
-        with a b ab `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>3`
+        with a b ab \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>3\<close>
         have "p\<^sub>3 = add a (opp p\<^sub>1) (opp p\<^sub>1)" by (rule add_opp_double_opp)
         ultimately show ?case by simp
       qed
@@ -1454,26 +1454,26 @@ next
     then show ?case by (simp add: opp_opp add_0_l)
   next
     case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
-    note a b ab `on_curve a b p\<^sub>1`
-    moreover from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+    note a b ab \<open>on_curve a b p\<^sub>1\<close>
+    moreover from \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
     have "y\<^sub>1 \<in> carrier R" by (simp add: on_curve_def)
-    with `y\<^sub>1 \<noteq> \<zero>` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+    with \<open>y\<^sub>1 \<noteq> \<zero>\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
     have "p\<^sub>1 \<noteq> opp p\<^sub>1" by (simp add: opp_Point equal_neg_zero)
-    moreover from `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` `p\<^sub>2 \<noteq> opp p\<^sub>1`
+    moreover from \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>1\<close>
     have "add a p\<^sub>1 p\<^sub>1 \<noteq> opp p\<^sub>1" by simp
     ultimately have "add a (add a p\<^sub>1 p\<^sub>1) (opp p\<^sub>1) = p\<^sub>1"
       by (rule compat_add_triple)
-    with `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` show ?case by simp
+    with \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> show ?case by simp
   next
     case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
-    from `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2` `on_curve a b p\<^sub>2`
+    from \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close> \<open>on_curve a b p\<^sub>2\<close>
     have "p\<^sub>3 = add a p\<^sub>1 (opp (opp p\<^sub>2))" by (simp add: opp_opp)
     with a b
-      add_closed [OF a b `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`,
-        folded `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2`]
-      opp_closed [OF `on_curve a b p\<^sub>2`]
-      opp_closed [OF `on_curve a b p\<^sub>2`]
-      opp_opp [OF `on_curve a b p\<^sub>2`]
+      add_closed [OF a b \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>,
+        folded \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close>]
+      opp_closed [OF \<open>on_curve a b p\<^sub>2\<close>]
+      opp_closed [OF \<open>on_curve a b p\<^sub>2\<close>]
+      opp_opp [OF \<open>on_curve a b p\<^sub>2\<close>]
       Gen
     show ?case
     proof (induct rule: add_case)
@@ -1484,36 +1484,36 @@ next
       then show ?case by (simp add: add_0_r)
     next
       case (Opp p)
-      from `on_curve a b p` `p = add a p\<^sub>1 (opp (opp p))`
+      from \<open>on_curve a b p\<close> \<open>p = add a p\<^sub>1 (opp (opp p))\<close>
       have "add a p\<^sub>1 p = p" by (simp add: opp_opp)
-      with a b ab `on_curve a b p\<^sub>1` `on_curve a b p`
+      with a b ab \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<close>
       show ?case by (rule uniq_zero [symmetric])
     next
       case Tan
       then show ?case by simp
     next
       case (Gen p\<^sub>4 x\<^sub>4 y\<^sub>4 p\<^sub>5 x\<^sub>5 y\<^sub>5 p\<^sub>6 x\<^sub>6 y\<^sub>6 l')
-      from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+      from \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
       have "x\<^sub>1 \<in> carrier R" "y\<^sub>1 \<in> carrier R"
         by (simp_all add: on_curve_def)
-      from `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+      from \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
       have "x\<^sub>2 \<in> carrier R" "y\<^sub>2 \<in> carrier R"
         by (simp_all add: on_curve_def)
-      from `on_curve a b p\<^sub>5` `opp p\<^sub>5 = p\<^sub>2`
-        `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
+      from \<open>on_curve a b p\<^sub>5\<close> \<open>opp p\<^sub>5 = p\<^sub>2\<close>
+        \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>5 = Point x\<^sub>5 y\<^sub>5\<close>
       have "y\<^sub>5 = \<ominus> y\<^sub>2" "x\<^sub>5 = x\<^sub>2"
         by (auto simp add: opp_Point on_curve_def)
-      from `p\<^sub>4 = Point x\<^sub>3 y\<^sub>3` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4`
+      from \<open>p\<^sub>4 = Point x\<^sub>3 y\<^sub>3\<close> \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close>
       have "x\<^sub>4 = x\<^sub>3" "y\<^sub>4 = y\<^sub>3" by simp_all
-      from `x\<^sub>4 \<noteq> x\<^sub>5` show ?case
+      from \<open>x\<^sub>4 \<noteq> x\<^sub>5\<close> show ?case
         apply (simp add:
-          `y\<^sub>5 = \<ominus> y\<^sub>2` `x\<^sub>5 = x\<^sub>2`
-          `x\<^sub>4 = x\<^sub>3` `y\<^sub>4 = y\<^sub>3`
-          `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `x\<^sub>6 = l' [^] 2 \<ominus> x\<^sub>4 \<ominus> x\<^sub>5` `y\<^sub>6 = \<ominus> y\<^sub>4 \<ominus> l' \<otimes> (x\<^sub>6 \<ominus> x\<^sub>4)`
-          `l' = (y\<^sub>5 \<ominus> y\<^sub>4) \<oslash> (x\<^sub>5 \<ominus> x\<^sub>4)`
-          `x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2` `y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1)`
-          `l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)`)
+          \<open>y\<^sub>5 = \<ominus> y\<^sub>2\<close> \<open>x\<^sub>5 = x\<^sub>2\<close>
+          \<open>x\<^sub>4 = x\<^sub>3\<close> \<open>y\<^sub>4 = y\<^sub>3\<close>
+          \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>x\<^sub>6 = l' [^] 2 \<ominus> x\<^sub>4 \<ominus> x\<^sub>5\<close> \<open>y\<^sub>6 = \<ominus> y\<^sub>4 \<ominus> l' \<otimes> (x\<^sub>6 \<ominus> x\<^sub>4)\<close>
+          \<open>l' = (y\<^sub>5 \<ominus> y\<^sub>4) \<oslash> (x\<^sub>5 \<ominus> x\<^sub>4)\<close>
+          \<open>x\<^sub>3 = l [^] 2 \<ominus> x\<^sub>1 \<ominus> x\<^sub>2\<close> \<open>y\<^sub>3 = \<ominus> y\<^sub>1 \<ominus> l \<otimes> (x\<^sub>3 \<ominus> x\<^sub>1)\<close>
+          \<open>l = (y\<^sub>2 \<ominus> y\<^sub>1) \<oslash> (x\<^sub>2 \<ominus> x\<^sub>1)\<close>)
         apply (rule conjI)
         apply field
         apply (rule conjI)
@@ -1522,19 +1522,19 @@ next
         apply (ring (prems))
         apply (rule sym)
         apply field
-        apply (simp_all add: eq_diff0 [OF `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R`]
-          `x\<^sub>1 \<noteq> x\<^sub>2` [THEN not_sym])
+        apply (simp_all add: eq_diff0 [OF \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close>]
+          \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [THEN not_sym])
         apply field
         apply (rule conjI)
-        apply (simp add: eq_diff0 [OF `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R`]
-          `x\<^sub>1 \<noteq> x\<^sub>2` [THEN not_sym])
+        apply (simp add: eq_diff0 [OF \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close>]
+          \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [THEN not_sym])
         apply (rule notI)
         apply (erule notE)
         apply (ring (prems))
         apply (rule sym)
         apply field
-        apply (simp add: eq_diff0 [OF `x\<^sub>2 \<in> carrier R` `x\<^sub>1 \<in> carrier R`]
-          `x\<^sub>1 \<noteq> x\<^sub>2` [THEN not_sym])
+        apply (simp add: eq_diff0 [OF \<open>x\<^sub>2 \<in> carrier R\<close> \<open>x\<^sub>1 \<in> carrier R\<close>]
+          \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [THEN not_sym])
         done
     qed
   qed
@@ -1593,7 +1593,7 @@ next
     by (simp add: add_opp)
   also from a b p\<^sub>2 have "\<dots> = add a (add a (opp p\<^sub>2) p\<^sub>2) p\<^sub>3"
     by (simp add: add_comm opp_closed)
-  finally show ?thesis using `p\<^sub>1 = opp p\<^sub>2` by simp
+  finally show ?thesis using \<open>p\<^sub>1 = opp p\<^sub>2\<close> by simp
 next
   assume "p\<^sub>2 = opp p\<^sub>3"
   from a b p\<^sub>3
@@ -1602,7 +1602,7 @@ next
   also from a b ab p\<^sub>1 p\<^sub>3
   have "\<dots> = add a (add a p\<^sub>1 (opp p\<^sub>3)) (opp (opp p\<^sub>3))"
     by (simp add: add_opp add_minus_id add_0_r opp_closed)
-  finally show ?thesis using p\<^sub>3 `p\<^sub>2 = opp p\<^sub>3`
+  finally show ?thesis using p\<^sub>3 \<open>p\<^sub>2 = opp p\<^sub>3\<close>
     by (simp add: opp_opp)
 next
   assume eq: "opp p\<^sub>1 = add a p\<^sub>2 p\<^sub>3"
@@ -1687,9 +1687,9 @@ next
             show ?thesis
             proof (cases "p\<^sub>1 = add a p\<^sub>2 p\<^sub>2")
               case True
-              from a b p\<^sub>1 p\<^sub>2 `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>2 \<noteq> opp p\<^sub>2`
-                `opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2` `opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2`
-                `p\<^sub>1 \<noteq> Infinity` `p\<^sub>2 \<noteq> Infinity`
+              from a b p\<^sub>1 p\<^sub>2 \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>2\<close>
+                \<open>opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2\<close> \<open>opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2\<close>
+                \<open>p\<^sub>1 \<noteq> Infinity\<close> \<open>p\<^sub>2 \<noteq> Infinity\<close>
               show ?thesis
                 apply (simp add: True)
                 apply (rule spec3_assoc [OF a b])
@@ -1722,9 +1722,9 @@ next
                     by (simp add: add_comm add_closed)
                 next
                   case False
-                  with a b p\<^sub>1 p\<^sub>2 `p\<^sub>1 \<noteq> Infinity` `p\<^sub>2 \<noteq> Infinity`
-                    `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>2 \<noteq> opp p\<^sub>2`
-                    `p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2` `p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2` `opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2`
+                  with a b p\<^sub>1 p\<^sub>2 \<open>p\<^sub>1 \<noteq> Infinity\<close> \<open>p\<^sub>2 \<noteq> Infinity\<close>
+                    \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>2\<close>
+                    \<open>p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2\<close> \<open>opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2\<close>
                   show ?thesis
                     apply (rule_tac spec2_assoc [OF a b])
                     apply (simp_all add: is_generic_def is_tangent_def)
@@ -1737,7 +1737,7 @@ next
                     apply (erule notE [of "p\<^sub>2 = opp p\<^sub>2"])
                     apply (rule uniq_opp)
                     apply assumption+
-                    apply (rule notE [OF `opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2`])
+                    apply (rule notE [OF \<open>opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2\<close>])
                     apply (simp add: opp_opp [OF add_closed [OF a b p\<^sub>2 p\<^sub>2]])
                     done
                 qed
@@ -1855,9 +1855,9 @@ next
                     next
                       case False
                       with a b p\<^sub>1 p\<^sub>2 p\<^sub>3
-                        `p\<^sub>1 \<noteq> Infinity` `p\<^sub>2 \<noteq> Infinity` `p\<^sub>3 \<noteq> Infinity`
-                        `p\<^sub>1 \<noteq> p\<^sub>2` `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>2 \<noteq> p\<^sub>3` `p\<^sub>2 \<noteq> opp p\<^sub>3`
-                        `opp p\<^sub>3 \<noteq> add a p\<^sub>1 p\<^sub>2` `p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3`
+                        \<open>p\<^sub>1 \<noteq> Infinity\<close> \<open>p\<^sub>2 \<noteq> Infinity\<close> \<open>p\<^sub>3 \<noteq> Infinity\<close>
+                        \<open>p\<^sub>1 \<noteq> p\<^sub>2\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> p\<^sub>3\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>3\<close>
+                        \<open>opp p\<^sub>3 \<noteq> add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3\<close>
                       show ?thesis
                         apply (rule_tac spec1_assoc [of a b])
                         apply (simp_all add: is_generic_def)
@@ -1871,7 +1871,7 @@ next
                         apply (rule uniq_opp)
                         apply assumption
                         apply (simp add: add_comm)
-                        apply (rule notE [OF `opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3`])
+                        apply (rule notE [OF \<open>opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3\<close>])
                         apply (simp add: opp_opp [OF add_closed [OF a b p\<^sub>2 p\<^sub>3]])
                         done
                     qed
@@ -2014,11 +2014,11 @@ proof (induct p rule: prod_induct3)
     show "on_curvep a b (x, y, z)"
     proof (cases "z = \<zero>")
       case True
-      with `in_carrierp (x, y, z)` show ?thesis
+      with \<open>in_carrierp (x, y, z)\<close> show ?thesis
         by (simp add: on_curvep_def in_carrierp_def)
     next
       case False
-      from `in_carrierp (x, y, z)`
+      from \<open>in_carrierp (x, y, z)\<close>
       have carrier: "x \<in> carrier R" "y \<in> carrier R" "z \<in> carrier R"
         by (simp_all add: in_carrierp_def)
       from H show ?thesis
@@ -2100,14 +2100,14 @@ proof (induct p\<^sub>1 rule: prod_induct3)
         proof (cases "x\<^sub>2 \<otimes> z\<^sub>1 \<ominus> x\<^sub>1 \<otimes> z\<^sub>2 = \<zero>")
           case True
           note x = this
-          with `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `z\<^sub>1 \<in> carrier R` ` z\<^sub>2 \<in> carrier R`
+          with \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>z\<^sub>1 \<in> carrier R\<close> \<open> z\<^sub>2 \<in> carrier R\<close>
           have x': "x\<^sub>2 \<otimes> z\<^sub>1 = x\<^sub>1 \<otimes> z\<^sub>2" by (simp add: eq_diff0)
           show ?thesis
           proof (cases "y\<^sub>2 \<otimes> z\<^sub>1 \<ominus> y\<^sub>1 \<otimes> z\<^sub>2 = \<zero>")
             case True
-            with `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R` `z\<^sub>1 \<in> carrier R` ` z\<^sub>2 \<in> carrier R`
+            with \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> \<open>z\<^sub>1 \<in> carrier R\<close> \<open> z\<^sub>2 \<in> carrier R\<close>
             have y: "y\<^sub>2 \<otimes> z\<^sub>1 = y\<^sub>1 \<otimes> z\<^sub>2" by (simp add: eq_diff0)
-            from `z\<^sub>1 \<noteq> \<zero>` `z\<^sub>2 \<noteq> \<zero>` x
+            from \<open>z\<^sub>1 \<noteq> \<zero>\<close> \<open>z\<^sub>2 \<noteq> \<zero>\<close> x
             have "make_affine (x\<^sub>2, y\<^sub>2, z\<^sub>2) = make_affine (x\<^sub>1, y\<^sub>1, z\<^sub>1)"
               apply (simp add: make_affine_def)
               apply (rule conjI)
@@ -2116,13 +2116,13 @@ proof (induct p\<^sub>1 rule: prod_induct3)
               apply (field y)
               apply simp
               done
-            with True x `z\<^sub>1 \<noteq> \<zero>` `z\<^sub>2 \<noteq> \<zero>` p\<^sub>1' fields a show ?thesis
+            with True x \<open>z\<^sub>1 \<noteq> \<zero>\<close> \<open>z\<^sub>2 \<noteq> \<zero>\<close> p\<^sub>1' fields a show ?thesis
               by (simp add: padd_def pdouble_correct)
           next
             case False
             have "y\<^sub>2 [^] (2::nat) \<otimes> z\<^sub>1 [^] (3::nat) \<otimes> z\<^sub>2 =
               y\<^sub>1 [^] (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 [^] (3::nat)"
-              by (ring yz\<^sub>1 [OF `z\<^sub>1 \<noteq> \<zero>`] yz\<^sub>2 [OF `z\<^sub>2 \<noteq> \<zero>`] x')
+              by (ring yz\<^sub>1 [OF \<open>z\<^sub>1 \<noteq> \<zero>\<close>] yz\<^sub>2 [OF \<open>z\<^sub>2 \<noteq> \<zero>\<close>] x')
             then have "y\<^sub>2 [^] (2::nat) \<otimes> z\<^sub>1 [^] (3::nat) \<otimes> z\<^sub>2 \<oslash> z\<^sub>1 \<oslash> z\<^sub>2 =
               y\<^sub>1 [^] (2::nat) \<otimes> z\<^sub>1 \<otimes> z\<^sub>2 [^] (3::nat) \<oslash> z\<^sub>1 \<oslash> z\<^sub>2"
               by simp
@@ -2130,13 +2130,13 @@ proof (induct p\<^sub>1 rule: prod_induct3)
               apply (field (prems))
               apply (field)
               apply (rule TrueI)
-              apply (simp add: `z\<^sub>1 \<noteq> \<zero>` `z\<^sub>2 \<noteq> \<zero>`)
+              apply (simp add: \<open>z\<^sub>1 \<noteq> \<zero>\<close> \<open>z\<^sub>2 \<noteq> \<zero>\<close>)
               done
             with False
             have y\<^sub>2z\<^sub>1: "y\<^sub>2 \<otimes> z\<^sub>1 = \<ominus> (y\<^sub>1 \<otimes> z\<^sub>2)"
               by (simp add: square_eq_iff eq_diff0
-                `y\<^sub>1 \<in> carrier R` `y\<^sub>2 \<in> carrier R` `z\<^sub>1 \<in> carrier R` `z\<^sub>2 \<in> carrier R`)
-            from x False `z\<^sub>1 \<noteq> \<zero>` `z\<^sub>2 \<noteq> \<zero>` show ?thesis
+                \<open>y\<^sub>1 \<in> carrier R\<close> \<open>y\<^sub>2 \<in> carrier R\<close> \<open>z\<^sub>1 \<in> carrier R\<close> \<open>z\<^sub>2 \<in> carrier R\<close>)
+            from x False \<open>z\<^sub>1 \<noteq> \<zero>\<close> \<open>z\<^sub>2 \<noteq> \<zero>\<close> show ?thesis
               apply (simp add: padd_def add_def make_affine_def Let_def)
               apply (rule conjI)
               apply (rule impI)
@@ -2154,10 +2154,10 @@ proof (induct p\<^sub>1 rule: prod_induct3)
             apply (drule sym)
             apply (field (prems))
             apply ring
-            apply (simp add: `z\<^sub>1 \<noteq> \<zero>` `z\<^sub>2 \<noteq> \<zero>`)
+            apply (simp add: \<open>z\<^sub>1 \<noteq> \<zero>\<close> \<open>z\<^sub>2 \<noteq> \<zero>\<close>)
             done
-          with False `z\<^sub>1 \<noteq> \<zero>` `z\<^sub>2 \<noteq> \<zero>`
-            `x\<^sub>1 \<in> carrier R` `x\<^sub>2 \<in> carrier R` `z\<^sub>1 \<in> carrier R` `z\<^sub>2 \<in> carrier R`
+          with False \<open>z\<^sub>1 \<noteq> \<zero>\<close> \<open>z\<^sub>2 \<noteq> \<zero>\<close>
+            \<open>x\<^sub>1 \<in> carrier R\<close> \<open>x\<^sub>2 \<in> carrier R\<close> \<open>z\<^sub>1 \<in> carrier R\<close> \<open>z\<^sub>2 \<in> carrier R\<close>
           show ?thesis
             apply (auto simp add: padd_def add_def make_affine_def Let_def integral_iff)
             apply field
@@ -2175,21 +2175,21 @@ lemma (in ell_field) pdouble_closed:
   assumes "a \<in> carrier R" "b \<in> carrier R" "on_curvep a b p"
   shows "on_curvep a b (pdouble a p)"
 proof -
-  from `on_curvep a b p` have "in_carrierp p" by simp
+  from \<open>on_curvep a b p\<close> have "in_carrierp p" by simp
   from assms show ?thesis
     by (simp add: on_curvep_iff_on_curve pdouble_in_carrierp pdouble_correct
-      add_closed `in_carrierp p`)
+      add_closed \<open>in_carrierp p\<close>)
 qed
 
 lemma (in ell_field) padd_closed:
   assumes "a \<in> carrier R" "b \<in> carrier R" "on_curvep a b p\<^sub>1" "on_curvep a b p\<^sub>2"
   shows "on_curvep a b (padd a p\<^sub>1 p\<^sub>2)"
 proof -
-  from `on_curvep a b p\<^sub>1` have "in_carrierp p\<^sub>1" by simp
-  from `on_curvep a b p\<^sub>2` have "in_carrierp p\<^sub>2" by simp
+  from \<open>on_curvep a b p\<^sub>1\<close> have "in_carrierp p\<^sub>1" by simp
+  from \<open>on_curvep a b p\<^sub>2\<close> have "in_carrierp p\<^sub>2" by simp
   from assms show ?thesis
     by (simp add: on_curvep_iff_on_curve padd_in_carrierp padd_correct
-      add_closed `in_carrierp p\<^sub>1` `in_carrierp p\<^sub>2`)
+      add_closed \<open>in_carrierp p\<^sub>1\<close> \<open>in_carrierp p\<^sub>2\<close>)
 qed
 
 primrec (in cring) ppoint_mult :: "'a \<Rightarrow> nat \<Rightarrow> 'a ppoint \<Rightarrow> 'a ppoint"
@@ -2237,10 +2237,10 @@ proof (induct p rule: prod_induct3)
         "x' \<otimes> z'' = x'' \<otimes> z'"
         "y' \<otimes> z'' = y'' \<otimes> z'"
         by (simp_all add: in_carrierp_def proj_eq_def)
-      from `x \<otimes> z' \<otimes> z'' = x' \<otimes> z \<otimes> z''`
+      from \<open>x \<otimes> z' \<otimes> z'' = x' \<otimes> z \<otimes> z''\<close>
       have "(x \<otimes> z'') \<otimes> z' = (x'' \<otimes> z) \<otimes> z'"
         by (ring (prems) xy) (ring xy)
-      moreover from `y \<otimes> z' \<otimes> z'' = y' \<otimes> z \<otimes> z''`
+      moreover from \<open>y \<otimes> z' \<otimes> z'' = y' \<otimes> z \<otimes> z''\<close>
       have "(y \<otimes> z'') \<otimes> z' = (y'' \<otimes> z) \<otimes> z'"
         by (ring (prems) xy) (ring xy)
       ultimately show ?case using z
@@ -2284,20 +2284,20 @@ proof (induct p rule: prod_induct3)
         case False
         with H have "z' \<noteq> \<zero>" "x \<oslash> z = x' \<oslash> z'" "y \<oslash> z = y' \<oslash> z'"
           by (simp_all add: make_affine_def split: if_split_asm)
-        from `x \<oslash> z = x' \<oslash> z'`
+        from \<open>x \<oslash> z = x' \<oslash> z'\<close>
         have "x \<otimes> z' = x' \<otimes> z"
           apply (field (prems))
           apply field
-          apply (simp_all add: `z \<noteq> \<zero>` `z' \<noteq> \<zero>`)
+          apply (simp_all add: \<open>z \<noteq> \<zero>\<close> \<open>z' \<noteq> \<zero>\<close>)
           done
-        moreover from `y \<oslash> z = y' \<oslash> z'`
+        moreover from \<open>y \<oslash> z = y' \<oslash> z'\<close>
         have "y \<otimes> z' = y' \<otimes> z"
           apply (field (prems))
           apply field
-          apply (simp_all add: `z \<noteq> \<zero>` `z' \<noteq> \<zero>`)
+          apply (simp_all add: \<open>z \<noteq> \<zero>\<close> \<open>z' \<noteq> \<zero>\<close>)
           done
         ultimately show ?thesis
-          by (simp add: proj_eq_def `z \<noteq> \<zero>` `z' \<noteq> \<zero>`)
+          by (simp add: proj_eq_def \<open>z \<noteq> \<zero>\<close> \<open>z' \<noteq> \<zero>\<close>)
       qed
     qed
   qed

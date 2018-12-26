@@ -136,7 +136,7 @@ proof (rule acyclicI, rule allI, rule ccontr, simp)
   txt \<open>Assume there is a cycle in the condensation graph.\<close>
   assume cyclic: "(x, x) \<in> (condensation_edges g P)\<^sup>+"
   have nonrefl: "(x, x) \<notin> (condensation_edges g P)" unfolding condensation_edges_def by auto
-  txt \<open>Then there must be a second SCC @{text b} on this path.\<close>
+  txt \<open>Then there must be a second SCC \<open>b\<close> on this path.\<close>
   from this cyclic
   obtain b where b_on_path: "(x, b) \<in> (condensation_edges g P)" "(b, x) \<in> (condensation_edges g P)\<^sup>+"
    by (meson converse_tranclE)
@@ -870,7 +870,7 @@ proof (rule ccontr)
       from refl.prems refl.hyps show ?case
       proof (induction arbitrary: p\<^sub>m p\<^sub>n rule: reachable.induct)
         case refl
-        txt \<open>The first case, in which @{text "\<phi>\<^sub>r = \<phi>\<^sub>s = \<phi>"}, is trivial -- @{text \<phi>} suffices.\<close>
+        txt \<open>The first case, in which \<open>\<phi>\<^sub>r = \<phi>\<^sub>s = \<phi>\<close>, is trivial -- \<open>\<phi>\<close> suffices.\<close>
         have "old.pathsConverge g n p\<^sub>n m p\<^sub>m (defNode g \<phi>)"
         proof (rule old.pathsConvergeI)
           show "1 < length p\<^sub>n" "1 < length p\<^sub>m"

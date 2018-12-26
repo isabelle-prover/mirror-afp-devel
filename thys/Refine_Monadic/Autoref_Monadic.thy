@@ -3,7 +3,7 @@ theory Autoref_Monadic
 imports Refine_Transfer
 begin
 
-text {* Default setup of the autoref-tool for the monadic framework. *}
+text \<open>Default setup of the autoref-tool for the monadic framework.\<close>
 
 lemma autoref_monadicI1:
   assumes "(b,a)\<in>\<langle>R\<rangle>nres_rel"
@@ -23,7 +23,7 @@ lemma autoref_monadicI2:
 
 lemmas autoref_monadicI = autoref_monadicI1 autoref_monadicI2
 
-ML {*
+ML \<open>
   structure Autoref_Monadic = struct
 
     val cfg_plain = Attrib.setup_config_bool @{binding autoref_plain} (K false)
@@ -43,9 +43,9 @@ ML {*
 
     end
   end
-*}
+\<close>
 
-method_setup autoref_monadic = {* let
+method_setup autoref_monadic = \<open>let
     open Refine_Util Autoref_Monadic
     val autoref_flags = 
           parse_bool_config "trace" Autoref_Phases.cfg_trace
@@ -63,7 +63,7 @@ method_setup autoref_monadic = {* let
 
   end
 
- *} 
+\<close> 
  "Automatic Refinement and Determinization for the Monadic Refinement Framework"
 
 end

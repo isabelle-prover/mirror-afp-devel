@@ -14,7 +14,7 @@ imports
 begin
 (*>*)
 
-text{*
+text\<open>
 
 Define a type of ordered distinct lists, intended to represent sets.
 
@@ -23,16 +23,16 @@ set of finite sets. Conversely it requires the carrier type to be a
 linear order.  Note that this representation does not arise from a
 quotient on lists: all the unsorted lists are junk.
 
-*}
+\<close>
 
 context linorder
 begin
 
-text{*
+text\<open>
 
 "Absorbing" msort, a variant of Tobias Nipkow's proofs from 1992.
 
-*}
+\<close>
 
 fun
   merge :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -59,7 +59,7 @@ lemma mset_merge [simp]:
   by (induct xs ys rule: merge.induct) (simp_all add: ac_simps)
 (*>*)
 
-text{* The "absorbing" sort itself. *}
+text\<open>The "absorbing" sort itself.\<close>
 
 fun msort :: "'a list \<Rightarrow> 'a list"
 where
@@ -98,7 +98,7 @@ lemma msort_sort[simp]:
 end (* context linorder *)
 
 
-section {* The @{term "odlist"} type *}
+section \<open>The @{term "odlist"} type\<close>
 
 typedef (overloaded) ('a :: linorder) odlist = "{ x::'a list . sorted x \<and> distinct x }"
   morphisms toList odlist_Abs by (auto iff: sorted.simps(1))
@@ -109,11 +109,11 @@ lemma distinct_toList[simp]: "distinct (toList xs)"
 lemma sorted_toList[simp]: "sorted (toList xs)"
   using toList by auto
 
-text{*
+text\<open>
 
 Code generator voodoo: this is the constructor for the abstract type.
 
-*}
+\<close>
 
 definition
   ODList :: "('a :: linorder) list \<Rightarrow> 'a odlist"
@@ -130,13 +130,13 @@ lemma ODList_toList[simp, code abstype]:
   unfolding ODList_def
   by (cases xs) (simp add: odlist_Abs_inverse)
 
-text{*
+text\<open>
 
 Runtime cast from @{typ "'a list"} into @{typ "'a odlist"}. This is
 just a renaming of @{term "ODList"} -- names are significant to the
 code generator's abstract type machinery.
 
-*}
+\<close>
 
 definition
   fromList :: "('a :: linorder) list \<Rightarrow> 'a odlist"
@@ -148,7 +148,7 @@ lemma toList_fromList[code abstract]:
   unfolding fromList_def
   by (simp add: toList_ODList)
 
-subsection{* Basic properties: equality, finiteness *}
+subsection\<open>Basic properties: equality, finiteness\<close>
 
 (*<*)
 declare toList_inject[iff]
@@ -186,7 +186,7 @@ proof
 qed
 (*>*)
 
-subsection{* Constants *}
+subsection\<open>Constants\<close>
 
 definition
   empty :: "('a :: linorder) odlist"
@@ -197,9 +197,9 @@ lemma toList_empty[simp, code abstract]:
   "toList empty = []"
   unfolding empty_def by (simp add: toList_ODList)
 
-subsection{* Operations *}
+subsection\<open>Operations\<close>
 
-subsubsection{* toSet *}
+subsubsection\<open>toSet\<close>
 
 definition
   toSet :: "('a :: linorder) odlist \<Rightarrow> 'a set"
@@ -231,7 +231,7 @@ lemma toSet_eq_iff:
   "X = Y \<longleftrightarrow> toSet X = toSet Y"
   by (blast dest: injD[OF toSet_inj])
 
-subsubsection{* head *}
+subsubsection\<open>head\<close>
 
 definition
   hd :: "('a :: linorder) odlist \<Rightarrow> 'a"
@@ -241,7 +241,7 @@ where
 lemma hd_toList: "toList xs = y # ys \<Longrightarrow> ODList.hd xs = y"
   unfolding hd_def by simp
 
-subsubsection{* member *}
+subsubsection\<open>member\<close>
 
 definition
   member :: "('a :: linorder) odlist \<Rightarrow> 'a \<Rightarrow> bool"
@@ -252,7 +252,7 @@ lemma member_toSet[iff]:
   "member xs x \<longleftrightarrow>x \<in> toSet xs"
   unfolding member_def toSet_def by (simp add: in_set_member)
 
-subsubsection{* Filter *}
+subsubsection\<open>Filter\<close>
 
 definition
   filter :: "(('a :: linorder) \<Rightarrow> bool) \<Rightarrow> 'a odlist \<Rightarrow> 'a odlist"
@@ -270,7 +270,7 @@ lemma toSet_filter[simp]:
   apply (simp add: toSet_def)
   done
 
-subsubsection{* All *}
+subsubsection\<open>All\<close>
 
 definition
   odlist_all :: "('a :: linorder \<Rightarrow> bool) \<Rightarrow> 'a odlist \<Rightarrow> bool"
@@ -285,7 +285,7 @@ lemma odlist_all_cong [fundef_cong]:
   "xs = ys \<Longrightarrow> (\<And>x. x \<in> toSet ys \<Longrightarrow> f x = g x) \<Longrightarrow> odlist_all f xs = odlist_all g ys"
   by (simp add: odlist_all_iff)
 
-subsubsection{* Difference *}
+subsubsection\<open>Difference\<close>
 
 definition
   difference :: "('a :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'a odlist"
@@ -303,7 +303,7 @@ lemma toSet_difference[simp]:
   apply (simp add: toSet_def)
   done
 
-subsubsection{* Intersection *}
+subsubsection\<open>Intersection\<close>
 
 definition
   intersect :: "('a :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'a odlist"
@@ -321,7 +321,7 @@ lemma toSet_intersect[simp]:
   apply (simp add: toSet_def)
   done
 
-subsubsection{* Union *}
+subsubsection\<open>Union\<close>
 
 definition
   union :: "('a :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'a odlist"
@@ -354,14 +354,14 @@ proof -
      unfolding big_union_def by simp
 qed
 
-subsubsection{* Case distinctions *}
+subsubsection\<open>Case distinctions\<close>
 
-text{*
+text\<open>
 
 We construct ODLists out of lists, so talk in terms of those, not a
 one-step constructor we don't use.
 
-*}
+\<close>
 
 lemma distinct_sorted_induct [consumes 2, case_names Nil insert]:
   assumes "distinct xs"
@@ -369,8 +369,8 @@ lemma distinct_sorted_induct [consumes 2, case_names Nil insert]:
   assumes base: "P []"
   assumes step: "\<And>x xs. \<lbrakk> distinct (x # xs); sorted (x # xs); P xs \<rbrakk> \<Longrightarrow> P (x # xs)"
   shows "P xs"
-using `distinct xs` `sorted xs` proof (induct xs)
-  case Nil from `P []` show ?case .
+using \<open>distinct xs\<close> \<open>sorted xs\<close> proof (induct xs)
+  case Nil from \<open>P []\<close> show ?case .
 next
   case (Cons x xs)
   then have "distinct (x # xs)" and "sorted (x # xs)" and "P xs" by (simp_all)
@@ -386,7 +386,7 @@ proof (cases dxs)
   case (odlist_Abs xs)
   then have dxs: "dxs = ODList xs" and distinct: "distinct xs" and sorted: "sorted xs"
     by (simp_all add: ODList_def)
-  from `distinct xs` and `sorted xs` have "P (ODList xs)"
+  from \<open>distinct xs\<close> and \<open>sorted xs\<close> have "P (ODList xs)"
   proof (induct xs rule: distinct_sorted_induct)
     case Nil from empty show ?case by (simp add: empty_def)
   next
@@ -418,24 +418,24 @@ proof (cases dxs)
   qed
 qed
 
-subsubsection{* Relations *}
+subsubsection\<open>Relations\<close>
 
-text{*
+text\<open>
 
 Relations, represented as a list of pairs.
 
-*}
+\<close>
 
 type_synonym 'a odrelation = "('a \<times> 'a) odlist"
 
-subsubsection{* Image *}
+subsubsection\<open>Image\<close>
 
-text{*
+text\<open>
 
 The output of @{term "List_local.image"} is not guaranteed to be
 ordered or distinct. Also the relation need not be monomorphic.
 
-*}
+\<close>
 
 definition
   image :: "('a :: linorder \<times> 'b :: linorder) odlist \<Rightarrow> 'a odlist \<Rightarrow> 'b odlist"
@@ -450,13 +450,13 @@ lemma toSet_image[simp]:
   "toSet (image R xs) = toSet R `` toSet xs"
   unfolding image_def by (simp add: toSet_def toList_ODList)
 
-subsubsection{* Linear order *}
+subsubsection\<open>Linear order\<close>
 
-text{*
+text\<open>
 
 Lexicographic ordering on lists. Executable, unlike in List.thy.
 
-*}
+\<close>
 
 instantiation odlist :: (linorder) linorder
 begin
@@ -548,9 +548,9 @@ instance
 
 end
 
-subsubsection{* Finite maps *}
+subsubsection\<open>Finite maps\<close>
 
-text{*
+text\<open>
 
 A few operations on finite maps.
 
@@ -559,14 +559,14 @@ representations, so we can order them. Our tabulate has the wrong type
 (we want to take an odlist, not a list) so we can't use that
 part of the framework.
 
-*}
+\<close>
 
 definition
   lookup :: "('a :: linorder \<times> 'b :: linorder) odlist \<Rightarrow> ('a \<rightharpoonup> 'b)"
 where
   [code]: "lookup = map_of \<circ> toList"
 
-text{* Specific to ODLists. *}
+text\<open>Specific to ODLists.\<close>
 
 definition
   tabulate :: "('a :: linorder) odlist \<Rightarrow> ('a \<Rightarrow> 'b :: linorder) \<Rightarrow> ('a \<times> 'b) odlist"

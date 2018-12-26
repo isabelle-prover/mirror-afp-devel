@@ -1,10 +1,10 @@
-section {* Implementing Automata *}
+section \<open>Implementing Automata\<close>
 (* Author: Peter Lammich *)
 theory Automata_Impl
 imports Digraph_Impl Automata
 begin
 
-subsection {* Indexed Generalized Buchi Graphs *}
+subsection \<open>Indexed Generalized Buchi Graphs\<close>
 
 
 consts
@@ -78,7 +78,7 @@ lemma gen_igbg_refine:
   unfolding gen_igbg_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation with bit-set *}
+subsubsection \<open>Implementation with bit-set\<close>
 
 definition igbg_impl_rel_eext_internal_def: 
   "igbg_impl_rel_eext Rm Rv \<equiv> \<langle>Rm, Rv \<rightarrow> \<langle>nat_rel\<rangle>bs_set_rel\<rangle>gen_igbg_impl_rel_eext"
@@ -146,7 +146,7 @@ schematic_goal "(?c,
   apply (autoref (keep_goal))
   done
 
-subsection {* Indexed Generalized Buchi Automata *}
+subsection \<open>Indexed Generalized Buchi Automata\<close>
 
 consts
   i_igba_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -215,7 +215,7 @@ lemma gen_igba_refine:
     gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation as function *}
+subsubsection \<open>Implementation as function\<close>
 definition igba_impl_rel_eext_internal_def: 
   "igba_impl_rel_eext Rm Rv Rl \<equiv> \<langle>Rm, Rv \<rightarrow> Rl \<rightarrow> bool_rel\<rangle>gen_igba_impl_rel_eext"
 
@@ -284,7 +284,7 @@ schematic_goal
   apply (autoref (keep_goal))
   done
 
-subsection {* Generalized Buchi Graphs *}
+subsection \<open>Generalized Buchi Graphs\<close>
 
 consts
   i_gbg_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -349,7 +349,7 @@ lemma gen_gbg_refine:
   unfolding gen_gbg_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation with list of lists *}
+subsubsection \<open>Implementation with list of lists\<close>
 
 definition gbg_impl_rel_eext_internal_def: 
   "gbg_impl_rel_eext Rm Rv 
@@ -409,7 +409,7 @@ schematic_goal "(?c::?'c, it_to_sorted_list (\<lambda>_ _. True) {1,2::nat} )\<i
   apply (autoref (keep_goal))
   done
 
-subsection {* GBAs *}
+subsection \<open>GBAs\<close>
 
 consts
   i_gba_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -477,7 +477,7 @@ lemma gen_gba_refine:
     gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation as function *}
+subsubsection \<open>Implementation as function\<close>
 definition gba_impl_rel_eext_internal_def: 
   "gba_impl_rel_eext Rm Rv Rl \<equiv> \<langle>Rm, Rv \<rightarrow> Rl \<rightarrow> bool_rel\<rangle>gen_gba_impl_rel_eext"
 
@@ -538,7 +538,7 @@ schematic_goal
   apply (autoref (keep_goal))
   done
 
-subsection {* Buchi Graphs *}
+subsection \<open>Buchi Graphs\<close>
 
 consts
   i_bg_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -602,7 +602,7 @@ lemma gen_bg_refine:
   unfolding gen_bg_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation with Characteristic Functions *}
+subsubsection \<open>Implementation with Characteristic Functions\<close>
 
 definition bg_impl_rel_eext_internal_def: 
   "bg_impl_rel_eext Rm Rv 
@@ -658,7 +658,7 @@ schematic_goal
   apply (autoref (keep_goal))
   done
 
-subsection {* System Automata *}
+subsection \<open>System Automata\<close>
 
 consts
   i_sa_eext :: "interface \<Rightarrow> interface \<Rightarrow> interface \<Rightarrow> interface"
@@ -723,7 +723,7 @@ lemma gen_sa_refine:
   unfolding gen_sa_impl_rel_eext_def gen_g_impl_rel_ext_def
   by auto
 
-subsubsection {* Implementation with Function *}
+subsubsection \<open>Implementation with Function\<close>
 
 definition sa_impl_rel_eext_internal_def: 
   "sa_impl_rel_eext Rm Rv Rl
@@ -785,7 +785,7 @@ schematic_goal
   apply (autoref (keep_goal))
   done
 
-subsection {* Index Conversion *}
+subsection \<open>Index Conversion\<close>
 
 schematic_goal gbg_to_idx_ext_impl_aux:
   fixes Re and Rv :: "('qi \<times> 'q) set"
@@ -842,7 +842,7 @@ schematic_goal gba_to_idx_ext_code_aux:
 concrete_definition gba_to_idx_ext_code for ecnv G uses gba_to_idx_ext_code_aux
 lemmas [refine_transfer] = gba_to_idx_ext_code.refine
 
-subsection {* Degeneralization *}
+subsection \<open>Degeneralization\<close>
 
 context igb_graph begin
 
@@ -929,7 +929,7 @@ schematic_goal
   apply (autoref (keep_goal))
   done
 
-subsection {* Product Construction *}
+subsection \<open>Product Construction\<close>
 
 context igba_sys_prod_precond begin
 

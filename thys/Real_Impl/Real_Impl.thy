@@ -21,20 +21,20 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* A representation of real numbers via triples *}
+section \<open>A representation of real numbers via triples\<close>
 
 theory Real_Impl
 imports
   Sqrt_Babylonian.Sqrt_Babylonian
 begin
 
-text {* We represent real numbers of the form $p + q \cdot \sqrt{b}$ for $p,q \in \rats$, $n \in \nats$
+text \<open>We represent real numbers of the form $p + q \cdot \sqrt{b}$ for $p,q \in \rats$, $n \in \nats$
 by triples $(p,q,b)$. However, we require the invariant that $\sqrt{b}$ is irrational.
 Most binary operations are implemented via partial functions where the common the restriction is that
 the numbers $b$ in both triples have to be identical. So, we support addition of $\sqrt{2} + \sqrt{2}$,
-but not $\sqrt{2} + \sqrt{3}$.*}
+but not $\sqrt{2} + \sqrt{3}$.\<close>
 
-text {* The set of natural numbers whose sqrt is irrational *}
+text \<open>The set of natural numbers whose sqrt is irrational\<close>
 
 definition "sqrt_irrat = { q :: nat. \<not> (\<exists> p. p * p = rat_of_nat q)}"
 
@@ -58,8 +58,8 @@ proof (cases "q = 0")
   with sqrt_irrat show ?thesis unfolding sqrt_irrat_def by blast
 qed
 
-text {* To represent  numbers of the form $p + q \cdot \sqrt{b}$, use mini algebraic numbers, i.e.,
-  triples $(p,q,b)$ with irrational $\sqrt{b}$. *}
+text \<open>To represent  numbers of the form $p + q \cdot \sqrt{b}$, use mini algebraic numbers, i.e.,
+  triples $(p,q,b)$ with irrational $\sqrt{b}$.\<close>
 typedef mini_alg =
   "{(p,q,b) | (p :: rat) (q :: rat) (b :: nat).
   q = 0 \<or> b \<in> sqrt_irrat}"
@@ -329,21 +329,21 @@ proof (transfer, unfold equal_real_def, clarsimp)
     thus "p1 = p2 \<and> q1 = q2 \<and> (q1 = 0 \<or> b1 = b2)"
     proof
       assume q1: "q1 = 0"
-      with `?m` have "real_of_rat (p2 - p1) + real_of_rat q2 * sqrt (of_nat b2) = 0" by auto
+      with \<open>?m\<close> have "real_of_rat (p2 - p1) + real_of_rat q2 * sqrt (of_nat b2) = 0" by auto
       with sqrt_irrat b2 have q2: "q2 = 0" by auto
-      with q1 `?m` show ?thesis by auto
+      with q1 \<open>?m\<close> show ?thesis by auto
     next
       assume "q1 \<noteq> 0 \<and> q2 = 0 \<or> q1 \<noteq> 0 \<and> q2 \<noteq> 0 \<and> b1 = b2"
       thus ?thesis
       proof
         assume ass: "q1 \<noteq> 0 \<and> q2 = 0"
-        with `?m` have "real_of_rat (p1 - p2) + real_of_rat q1 * sqrt (of_nat b1) = 0"
+        with \<open>?m\<close> have "real_of_rat (p1 - p2) + real_of_rat q1 * sqrt (of_nat b1) = 0"
           by (auto simp: of_rat_diff)
         with b1 have "q1 = 0" using sqrt_irrat by auto
         with ass show ?thesis by auto
       next
         assume ass: "q1 \<noteq> 0 \<and> q2 \<noteq> 0 \<and> b1 = b2"
-        with `?m` have *: "real_of_rat (p2 - p1) + real_of_rat (q2 - q1) * sqrt (of_nat b2) = 0"
+        with \<open>?m\<close> have *: "real_of_rat (p2 - p1) + real_of_rat (q2 - q1) * sqrt (of_nat b2) = 0"
           by (auto simp: field_simps of_rat_diff)
         have "q2 - q1 = 0"
           by (rule sqrt_irrat[OF _ *], insert ass b2, auto)
@@ -487,8 +487,8 @@ lemma [code equation]:
   "(x :: real) - (y :: real) = x + (- y)"
   by (simp_all add: divide_inverse)
 
-text {* Some tests with small numbers. To work on larger number, one should
-  additionally import the theories for efficient calculation on numbers *}
+text \<open>Some tests with small numbers. To work on larger number, one should
+  additionally import the theories for efficient calculation on numbers\<close>
 
 value "\<lfloor>101.1 * (3 * sqrt 2 + 6 * sqrt 0.5)\<rfloor>"
 value "\<lfloor>606.2 * sqrt 2 + 0.001\<rfloor>"

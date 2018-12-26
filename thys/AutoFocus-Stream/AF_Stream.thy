@@ -3,15 +3,15 @@
     Author:     David Trachtenherz
 *)
 
-section {* \textsc{AutoFocus} message streams *}
+section \<open>\textsc{AutoFocus} message streams\<close>
 
 theory AF_Stream
 imports ListSlice
 begin
 
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 
-subsubsection {* Time-synchronous streams *}
+subsubsection \<open>Time-synchronous streams\<close>
 
 datatype 'a message_af = NoMsg | Msg 'a
 
@@ -19,10 +19,10 @@ notation (latex)
   NoMsg  ("\<NoMsg>") and
   Msg  ("\<Msg>")
 
-text {* Abbreviation for finite streams *}
+text \<open>Abbreviation for finite streams\<close>
 type_synonym 'a fstream_af = "'a message_af list"
 
-text {* Abbreviation for infinite streams *}
+text \<open>Abbreviation for infinite streams\<close>
 type_synonym 'a istream_af = "'a message_af ilist"
 
 lemma not_NoMsg_eq: "(m \<noteq> \<NoMsg>) = (\<exists>x. m = \<Msg> x)"
@@ -34,11 +34,11 @@ by (case_tac m, simp_all)
 primrec the_af :: "'a message_af \<Rightarrow> 'a"
   where "the_af (\<Msg> x) = x"
 
-text {*
+text \<open>
   By this definition one can determine,
   whether data elements of different data structures with messages,
   especially product types of arbitrary sizes and records,
-  are pointwise equal to NoMsg, i.e., contain only NoMsg entries. *}
+  are pointwise equal to NoMsg, i.e., contain only NoMsg entries.\<close>
 
 consts is_NoMsg :: "'a \<Rightarrow> bool"
 
@@ -98,7 +98,7 @@ lemma is_Msg_message_af_conv2: "is_Msg m = (m \<noteq> \<NoMsg>)"
 by (unfold is_Msg_def, case_tac m, simp+)
 
 
-text {* Collection for definitions for @{text is_NoMsg}. *}
+text \<open>Collection for definitions for \<open>is_NoMsg\<close>.\<close>
 
 named_theorems is_NoMsg_defs
 
@@ -139,7 +139,7 @@ lemma "is_Msg  \<lparr> Field1 = \<NoMsg>, Field2 = Msg 1, Field3 = \<NoMsg> \<r
 by (simp add: is_NoMsg_defs)
 
 
-subsubsection {* Time abstraction *}
+subsubsection \<open>Time abstraction\<close>
 
 (* Time abstraction:
    Extracts non-empty messages from a stream =
@@ -158,8 +158,8 @@ apply (induct s, simp)
 apply (case_tac a, simp_all)
 done
 
-text {* The following lemma involves @{term the_af} function
-  and thus is some more limited than the previous lemma *}
+text \<open>The following lemma involves @{term the_af} function
+  and thus is some more limited than the previous lemma\<close>
 corollary untime_eq_filter2[rule_format]: "
   untime s = map (\<lambda>x. the_af x) (filter (\<lambda>x. x \<noteq> \<NoMsg>) s)"
 by (induct s, simp_all)
@@ -234,9 +234,9 @@ corollary untime_last_eq_filter_last2: "
 by (simp add: untime_last_eq_filter_last[symmetric])
 
 
-subsection {* Expanding and compressing lists and streams *}
+subsection \<open>Expanding and compressing lists and streams\<close>
 
-subsubsection {* Expanding message streams *}
+subsubsection \<open>Expanding message streams\<close>
 
 primrec f_expand :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl "\<odot>\<^sub>f" 100)
 where
@@ -560,7 +560,7 @@ lemma i_expand_eq_conv': "
 by (fastforce simp: ilist_eq_iff i_expand_nth_if)
 
 
-subsubsection {* Aggregating lists *}
+subsubsection \<open>Aggregating lists\<close>
 
 definition f_aggregate :: "'a list \<Rightarrow> nat \<Rightarrow> ('a list \<Rightarrow> 'a) \<Rightarrow> 'a list"
   where "f_aggregate s k ag \<equiv> map ag (list_slice s k)"
@@ -767,9 +767,9 @@ lemma i_aggregate_commute: "
 by (simp add: i_aggregate_assoc mult.commute[of _ b])
 
 
-subsubsection {* Compressing message streams *}
+subsubsection \<open>Compressing message streams\<close>
 
-text {* Determines the last non-empty message. *}
+text \<open>Determines the last non-empty message.\<close>
 primrec last_message :: "'a fstream_af \<Rightarrow> 'a message_af"
 where
   "last_message [] = \<NoMsg>"
@@ -1188,7 +1188,7 @@ lemma i_shrink_commute: "f \<div>\<^sub>i a \<div>\<^sub>i b = f \<div>\<^sub>i 
 by (simp add: i_shrink_assoc mult.commute[of a])
 
 
-subsubsection {* Holding last messages in everly cycle of a stream *}
+subsubsection \<open>Holding last messages in everly cycle of a stream\<close>
 
 primrec last_message_hold_init :: "'a fstream_af \<Rightarrow> 'a message_af \<Rightarrow> 'a fstream_af"
 where
@@ -1281,9 +1281,9 @@ lemma last_message_hold_idem[simp]: "
 by (simp add: list_eq_iff last_message_hold_nth last_message_hold_take)
 
 
-text {*
+text \<open>
   Returns for each point in time the currently last non-empty message
-  of the current stream cycle of length @{text k}. *}
+  of the current stream cycle of length \<open>k\<close>.\<close>
 
 definition f_last_message_hold :: "'a fstream_af \<Rightarrow> nat \<Rightarrow> 'a fstream_af" (infixl "\<longmapsto>\<^sub>f" 100)
   where "f_last_message_hold xs k \<equiv> concat (map last_message_hold (list_slice2 xs k))"
@@ -1439,15 +1439,15 @@ lemma i_shrink_nth_eq_i_last_message_hold_last: "
 by (simp add: last_nth i_shrink_nth_eq_i_last_message_hold_nth)
 
 
-subsubsection {* Compressing lists *}
+subsubsection \<open>Compressing lists\<close>
 
-text {*
+text \<open>
   Lists/Non-message streams
-  do not have to permit the empty message @{text \<NoMsg>}
+  do not have to permit the empty message \<open>\<NoMsg>\<close>
   to be element.
   Thus, they are compressed by factor @{term k}
   by just aggregating every sequence of length k
-  to its last element. *}
+  to its last element.\<close>
 
 definition f_shrink_last :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list"   (infixl "\<div>\<^bsub>fl\<^esub>" 100)
   where "f_shrink_last xs k \<equiv> f_aggregate xs k last"
@@ -1623,10 +1623,10 @@ lemma i_shrink_last_commute: "f \<div>\<^bsub>il\<^esub> a \<div>\<^bsub>il\<^es
 by (simp add: i_shrink_last_assoc mult.commute[of a])
 
 
-text {*
-  Shrinking a message stream with @{text last_message} as aggregation function
+text \<open>
+  Shrinking a message stream with \<open>last_message\<close> as aggregation function
   corresponds to shrinking the stream holding last message in each cycle
-  with @{text last} as aggregation function. *}
+  with \<open>last\<close> as aggregation function.\<close>
 
 lemma f_shrink_eq_f_last_message_hold_shrink_last: "
   xs \<div>\<^sub>f k = xs \<longmapsto>\<^sub>f k \<div>\<^bsub>fl\<^esub> k"

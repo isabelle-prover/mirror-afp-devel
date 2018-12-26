@@ -1,4 +1,4 @@
-section {* Foreach Loops *}
+section \<open>Foreach Loops\<close>
 theory Refine_Foreach
 imports 
   Refine_While 
@@ -9,30 +9,30 @@ imports
   "../Collections/Lib/Proper_Iterator"*)
 begin
 
-text {*
+text \<open>
   A common pattern for loop usage is iteration over the elements of a set.
-  This theory provides the @{text "FOREACH"}-combinator, that iterates over 
+  This theory provides the \<open>FOREACH\<close>-combinator, that iterates over 
   each element of a set.
-*}
+\<close>
 
-subsection {* Auxilliary Lemmas *}
-text {* The following lemma is commonly used when reasoning about iterator
+subsection \<open>Auxilliary Lemmas\<close>
+text \<open>The following lemma is commonly used when reasoning about iterator
   invariants.
   It helps converting the set of elements that remain to be iterated over to
-  the set of elements already iterated over. *}
+  the set of elements already iterated over.\<close>
 lemma it_step_insert_iff: 
   "it \<subseteq> S \<Longrightarrow> x\<in>it \<Longrightarrow> S-(it-{x}) = insert x (S-it)" by auto
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
-text {*
+text \<open>
   Foreach-loops come in different versions, depending on whether they have an 
   annotated invariant (I), a termination condition (C), and an order (O).
 
   Note that asserting that the set is finite is not necessary to guarantee
   termination. However, we currently provide only iteration over finite sets,
   as this also matches the ICF concept of iterators.
-*}
+\<close>
    
 definition "FOREACH_body f \<equiv> \<lambda>(xs, \<sigma>). do {
   let x = hd xs; \<sigma>'\<leftarrow>f x \<sigma>; RETURN (tl xs,\<sigma>')
@@ -40,7 +40,7 @@ definition "FOREACH_body f \<equiv> \<lambda>(xs, \<sigma>). do {
 
 definition FOREACH_cond where "FOREACH_cond c \<equiv> (\<lambda>(xs,\<sigma>). xs\<noteq>[] \<and> c \<sigma>)"
 
-text {* Foreach with continuation condition, order and annotated invariant: *}
+text \<open>Foreach with continuation condition, order and annotated invariant:\<close>
 
 definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FOREACHoci R \<Phi> S c f \<sigma>0 \<equiv> do {
   ASSERT (finite S);
@@ -49,27 +49,27 @@ definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FORE
     (\<lambda>(it,\<sigma>). \<exists>xs'. xs = xs' @ it \<and> \<Phi> (set it) \<sigma>) (FOREACH_cond c) (FOREACH_body f) (xs,\<sigma>0); 
   RETURN \<sigma> }"
 
-text {* Foreach with continuation condition and annotated invariant: *}
+text \<open>Foreach with continuation condition and annotated invariant:\<close>
 definition FOREACHci ("FOREACH\<^sub>C\<^bsup>_\<^esup>") where "FOREACHci \<equiv> FOREACHoci (\<lambda>_ _. True)"
 
-text {* Foreach with continuation condition: *}
+text \<open>Foreach with continuation condition:\<close>
 definition FOREACHc ("FOREACH\<^sub>C") where "FOREACHc \<equiv> FOREACHci (\<lambda>_ _. True)"
 
-text {* Foreach with annotated invariant: *}
+text \<open>Foreach with annotated invariant:\<close>
 definition FOREACHi ("FOREACH\<^bsup>_\<^esup>") where 
   "FOREACHi \<Phi> S \<equiv> FOREACHci \<Phi> S (\<lambda>_. True)"
 
-text {* Foreach with annotated invariant and order: *}
+text \<open>Foreach with annotated invariant and order:\<close>
 definition FOREACHoi ("FOREACH\<^sub>O\<^bsup>_,_\<^esup>") where 
   "FOREACHoi R \<Phi> S \<equiv> FOREACHoci R \<Phi> S (\<lambda>_. True)"
 
-text {* Basic foreach *}
+text \<open>Basic foreach\<close>
 definition "FOREACH S \<equiv> FOREACHc S (\<lambda>_. True)"
 
 lemmas FOREACH_to_oci_unfold
   = FOREACHci_def FOREACHc_def FOREACHi_def FOREACHoi_def FOREACH_def
 
-subsection {* Proof Rules *}
+subsection \<open>Proof Rules\<close>
 
 lemma FOREACHoci_rule[refine_vcg]:
   assumes FIN: "finite S"
@@ -111,12 +111,12 @@ proof -
   from dist S_eq have S_diff: "S - set xs' = set xs" by blast
 
   { assume "xs' \<noteq> []" "c \<sigma>"
-    from `xs' \<noteq> []` obtain x xs'' where xs'_eq: "xs' = x # xs''" by (cases xs', auto)
+    from \<open>xs' \<noteq> []\<close> obtain x xs'' where xs'_eq: "xs' = x # xs''" by (cases xs', auto)
 
     have x_in_xs': "x \<in> set xs'" and x_nin_xs'': "x \<notin> set xs''" 
-       using `distinct xs'` unfolding xs'_eq by simp_all
+       using \<open>distinct xs'\<close> unfolding xs'_eq by simp_all
   
-    from IP[of \<sigma> x "set xs'", OF `c \<sigma>` x_in_xs' `set xs' \<subseteq> S` `I (set xs') \<sigma>`] x_nin_xs''
+    from IP[of \<sigma> x "set xs'", OF \<open>c \<sigma>\<close> x_in_xs' \<open>set xs' \<subseteq> S\<close> \<open>I (set xs') \<sigma>\<close>] x_nin_xs''
          sorted_xs_xs' S_diff
     show "f (hd xs') \<sigma> \<le> SPEC
             (\<lambda>x. (\<exists>xs'a. xs @ xs' = xs'a @ tl xs') \<and>
@@ -129,14 +129,14 @@ proof -
   { assume "xs' = [] \<or> \<not>(c \<sigma>)"
     show "P \<sigma>" 
     proof (cases "xs' = []")
-      case True thus "P \<sigma>" using `I (set xs') \<sigma>` by (simp add: II1)
+      case True thus "P \<sigma>" using \<open>I (set xs') \<sigma>\<close> by (simp add: II1)
     next
       case False note xs'_neq_nil = this
-      with `xs' = [] \<or> \<not> c \<sigma>` have "\<not> c \<sigma>" by simp
+      with \<open>xs' = [] \<or> \<not> c \<sigma>\<close> have "\<not> c \<sigma>" by simp
  
       from II2 [of "set xs'" \<sigma>] S_diff sorted_xs_xs'
       show "P \<sigma>" 
-        apply (simp add: xs'_neq_nil S_eq `\<not> c \<sigma>` I_xs')
+        apply (simp add: xs'_neq_nil S_eq \<open>\<not> c \<sigma>\<close> I_xs')
         apply (simp add: sorted_wrt_append)
       done
     qed
@@ -165,12 +165,12 @@ lemma FOREACHci_rule[refine_vcg]:
   unfolding FOREACHci_def
   by (rule FOREACHoci_rule) (simp_all add: assms)
 
-subsubsection {* Refinement: *}
+subsubsection \<open>Refinement:\<close>
 
-text {*
+text \<open>
   Refinement rule using a coupling invariant over sets of remaining
   items and the state.
-*}
+\<close>
 
 lemma FOREACHoci_refine_genR:
   fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
@@ -387,7 +387,7 @@ lemma FOREACHoci_weaken_order:
   done
 
 
-subsubsection {* Rules for Derived Constructs *}
+subsubsection \<open>Rules for Derived Constructs\<close>
 
 lemma FOREACHoi_refine_genR:
   fixes \<alpha> :: "'S \<Rightarrow> 'Sa" \<comment> \<open>Abstraction mapping of elements\<close>
@@ -873,10 +873,10 @@ lemma FOREACHi_refine_rcg'[refine]:
   apply (rule REFSTEP, assumption+)
   done
 
-subsubsection {* Alternative set of FOREACHc-rules *}
-text {* Here, we provide an alternative set of FOREACH rules with 
+subsubsection \<open>Alternative set of FOREACHc-rules\<close>
+text \<open>Here, we provide an alternative set of FOREACH rules with 
   interruption. In some cases, they are easier to use, as they avoid 
-  redundancy between the final cases for interruption and non-interruption *}
+  redundancy between the final cases for interruption and non-interruption\<close>
 
 lemma FOREACHoci_rule':
   assumes FIN: "finite S"
@@ -922,7 +922,7 @@ lemma FOREACHc_rule':
 
 
 
-subsection {* FOREACH with empty sets *}
+subsection \<open>FOREACH with empty sets\<close>
 
 lemma FOREACHoci_emp [simp] :
   "FOREACHoci R \<Phi> {} c f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"
@@ -994,16 +994,16 @@ lemma FOREACHoci_mono[unfolded trimono_spec_defs,refine_mono]:
 
 end
 
-subsection {* Nres-Fold with Interruption (nfoldli) *}
-text {*
+subsection \<open>Nres-Fold with Interruption (nfoldli)\<close>
+text \<open>
   A foreach-loop can be conveniently expressed as an operation that converts
   the set to a list, followed by folding over the list.
   
   This representation is handy for automatic refinement, as the complex 
   foreach-operation is expressed by two relatively simple operations.
-*}
+\<close>
 
-text {* We first define a fold-function in the nres-monad *}
+text \<open>We first define a fold-function in the nres-monad\<close>
 partial_function (nrec) nfoldli where
   "nfoldli l c f s = (case l of 
     [] \<Rightarrow> RETURN s 
@@ -1055,8 +1055,8 @@ proof -
 qed  
   
   
-text {* The fold-function over the nres-monad is transfered to a plain 
-  foldli function *}
+text \<open>The fold-function over the nres-monad is transfered to a plain 
+  foldli function\<close>
 lemma nfoldli_transfer_plain[refine_transfer]:
   assumes "\<And>x s. RETURN (f x s) \<le> f' x s"
   shows "RETURN (foldli l c f s) \<le> (nfoldli l c f' s)"
@@ -1103,8 +1103,8 @@ lemma nfoldli_mono[refine_mono]:
   apply refine_mono
   done
 
-text {* We relate our fold-function to the while-loop that we used in
-  the original definition of the foreach-loop *}
+text \<open>We relate our fold-function to the while-loop that we used in
+  the original definition of the foreach-loop\<close>
 lemma nfoldli_while: "nfoldli l c f \<sigma>
           \<le>
          (WHILE\<^sub>T\<^bsup>I\<^esup>
@@ -1388,15 +1388,15 @@ lemma dres_foldli_ne_bot[refine_transfer]:
   apply (simp add: dres_ne_bot_basic)
   done
 
-subsection {* LIST FOREACH combinator *}
-text {*
-  Foreach-loops are mapped to the combinator @{text "LIST_FOREACH"}, that
-  takes as first argument an explicit @{text "to_list"} operation. 
+subsection \<open>LIST FOREACH combinator\<close>
+text \<open>
+  Foreach-loops are mapped to the combinator \<open>LIST_FOREACH\<close>, that
+  takes as first argument an explicit \<open>to_list\<close> operation. 
   This mapping is done during operation identification. 
   It is then the responsibility of the various implementations to further map
-  the @{text "to_list"} operations to custom @{text "to_list"} operations, like
-  @{text "set_to_list"}, @{text "map_to_list"}, @{text "nodes_to_list"}, etc.
-*}
+  the \<open>to_list\<close> operations to custom \<open>to_list\<close> operations, like
+  \<open>set_to_list\<close>, \<open>map_to_list\<close>, \<open>nodes_to_list\<close>, etc.
+\<close>
 
   
 text \<open>We define a relation between distinct lists and sets.\<close>  
@@ -1408,8 +1408,8 @@ lemma autoref_nfoldli[autoref_rules]:
   \<in> \<langle>Ra\<rangle>list_rel \<rightarrow> (Rb \<rightarrow> bool_rel) \<rightarrow> (Ra \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel) \<rightarrow> Rb \<rightarrow> \<langle>Rb\<rangle>nres_rel"
   by (rule param_nfoldli)
 
-text {* This constant is a placeholder to be converted to
-  custom operations by pattern rules *}
+text \<open>This constant is a placeholder to be converted to
+  custom operations by pattern rules\<close>
 definition "it_to_sorted_list R s 
   \<equiv> SPEC (\<lambda>l. distinct l \<and> s = set l \<and> sorted_wrt R l)"
 
@@ -1427,9 +1427,9 @@ lemma FOREACHoci_by_LIST_FOREACH:
   unfolding OP_def FOREACHoci_def LIST_FOREACH_def it_to_sorted_list_def 
   by simp
 
-text {* Patterns that convert FOREACH-constructs 
-  to @{text "LIST_FOREACH"}
-*}
+text \<open>Patterns that convert FOREACH-constructs 
+  to \<open>LIST_FOREACH\<close>
+\<close>
 context begin interpretation autoref_syn .
 
 lemma FOREACH_patterns[autoref_op_pat_def]:
@@ -1542,7 +1542,7 @@ lemma LIST_FOREACH'_transfer_nres[refine_transfer]:
   using assms
   by refine_transfer
 
-text {* Simplification rules to summarize iterators *}
+text \<open>Simplification rules to summarize iterators\<close>
 lemma [refine_transfer_post_simp]: 
   "do {
     xs \<leftarrow> dRETURN tsl;
@@ -1737,7 +1737,7 @@ lemmas FOREACHc_refines_FOREACHcd[refine]
   = order_trans[OF FOREACHc_refines_FOREACHcd_aux FOREACHcd_refine]
     
     
-subsection {* Miscellanneous Utility Lemmas *}
+subsection \<open>Miscellanneous Utility Lemmas\<close>
 
 (* TODO: Can we make this somewhat more general ? *)
 lemma map_foreach:

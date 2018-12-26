@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Bit operations for target language integers *}
+chapter \<open>Bit operations for target language integers\<close>
 
 theory Bits_Integer imports
   More_Bits_Int
@@ -20,7 +20,7 @@ using assms unfolding Quotient_alt_def by blast
 
 bundle undefined_transfer = undefined_transfer[transfer_rule]
 
-section {* More lemmas about @{typ integer}s *}
+section \<open>More lemmas about @{typ integer}s\<close>
 
 context
 includes integer.lifting
@@ -56,9 +56,9 @@ by transfer simp
 lemma dup_1 [simp]: "Code_Numeral.dup 1 = 2"
 by transfer simp
 
-section {* Bit operations on @{typ integer} *}
+section \<open>Bit operations on @{typ integer}\<close>
 
-text {* Bit operations on @{typ integer} are the same as on @{typ int} *}
+text \<open>Bit operations on @{typ integer} are the same as on @{typ int}\<close>
 
 lift_definition bin_rest_integer :: "integer \<Rightarrow> integer" is bin_rest .
 lift_definition bin_last_integer :: "integer \<Rightarrow> bool" is bin_last .
@@ -89,9 +89,9 @@ end
 abbreviation (input) wf_set_bits_integer
 where "wf_set_bits_integer \<equiv> wf_set_bits_int"
 
-section {* Target language implementations *}
+section \<open>Target language implementations\<close>
 
-text {* 
+text \<open>
   Unfortunately, this is not straightforward,
   because these API functions have different signatures and preconditions on the parameters:
 
@@ -108,13 +108,13 @@ text {*
 
   For normalisation by evaluation, we derive custom code equations, because NBE
   does not know these code\_printing serialisations and would otherwise loop.
-*}
+\<close>
 
 code_identifier code_module Bits_Integer \<rightharpoonup>
   (SML) Bit_Int and (OCaml) Bit_Int and (Haskell) Bit_Int and (Scala) Bit_Int
 
 code_printing code_module Bits_Integer \<rightharpoonup> (SML)
-{*structure Bits_Integer : sig
+\<open>structure Bits_Integer : sig
   val set_bit : IntInf.int -> IntInf.int -> bool -> IntInf.int
   val shiftl : IntInf.int -> IntInf.int -> IntInf.int
   val shiftr : IntInf.int -> IntInf.int -> IntInf.int
@@ -141,11 +141,11 @@ fun test_bit x n =
   if n < maxWord then IntInf.andb (x, IntInf.<< (1, Word.fromLargeInt (IntInf.toLarge n))) <> 0
   else raise (Fail ("Bit index too large: " ^ IntInf.toString n));
 
-end; (*struct Bits_Integer*)*}
+end; (*struct Bits_Integer*)\<close>
 code_reserved SML Bits_Integer
 
 code_printing code_module Data_Bits \<rightharpoonup> (Haskell)
-{*import qualified Data.Bits;
+\<open>import qualified Data.Bits;
 
 {-
   The ...Bounded functions assume that the Integer argument for the shift 
@@ -205,14 +205,14 @@ shiftrUnbounded x n
 ;
 
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Integer -> a;
-shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);*}
+shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);\<close>
 
   and \<comment> \<open>@{theory HOL.Quickcheck_Narrowing} maps @{typ integer} to 
             Haskell's Prelude.Int type instead of Integer. For compatibility
             with the Haskell target, we nevertheless provide bounded and 
             unbounded functions.\<close>
   (Haskell_Quickcheck)
-{*import qualified Data.Bits;
+\<open>import qualified Data.Bits;
 
 {-
   The functions assume that the Int argument for the shift or bit index is 
@@ -259,11 +259,11 @@ shiftrUnbounded :: Data.Bits.Bits a => a -> Prelude.Int -> a;
 shiftrUnbounded = Data.Bits.shiftR;
 
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Prelude.Int -> a;
-shiftrBounded = Data.Bits.shiftR;*}
+shiftrBounded = Data.Bits.shiftR;\<close>
 code_reserved Haskell Data_Bits
 
 code_printing code_module Bits_Integer \<rightharpoonup> (OCaml)
-{*module Bits_Integer : sig
+\<open>module Bits_Integer : sig
   val and_pninteger : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
   val or_pninteger : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
   val shiftl : Big_int.big_int -> Big_int.big_int -> Big_int.big_int
@@ -303,11 +303,11 @@ let test_bit x n =
     (Big_int.extract_big_int x (Big_int.int_of_big_int n) 1) 
     Big_int.unit_big_int
 
-end;; (*struct Bits_Integer*)*}
+end;; (*struct Bits_Integer*)\<close>
 code_reserved OCaml Bits_Integer
 
 code_printing code_module Bits_Integer \<rightharpoonup> (Scala)
-{*object Bits_Integer {
+\<open>object Bits_Integer {
 
 def setBit(x: BigInt, n: BigInt, b: Boolean) : BigInt =
   if (n.isValidInt)
@@ -336,7 +336,7 @@ def testBit(x: BigInt, n: BigInt) : Boolean =
   else
     sys.error("Bit index too large: " + n.toString)
 
-} /* object Bits_Integer */*}
+} /* object Bits_Integer */\<close>
 
 code_printing
   constant "bitAND :: integer \<Rightarrow> integer \<Rightarrow> integer" \<rightharpoonup>
@@ -459,10 +459,10 @@ code_printing constant integer_set_bit \<rightharpoonup>
   (Haskell_Quickcheck) "(Data'_Bits.setBitUnbounded :: Prelude.Int -> Prelude.Int -> Bool -> Prelude.Int)" and
   (Scala) "Bits'_Integer.setBit"
 
-text {* 
+text \<open>
   OCaml.Big\_int does not have a method for changing an individual bit, so we emulate that with masks.
   We prefer an Isabelle implementation, because this then takes care of the signs for AND and OR.
-*}
+\<close>
 lemma integer_set_bit_code [code]:
   "integer_set_bit x n b =
   (if n < 0 then undefined x n b else
@@ -557,7 +557,7 @@ lemma msb_integer_code [code]:
   "msb (x :: integer) \<longleftrightarrow> x < 0"
 by transfer(simp add: msb_int_def)
 
-subsection {* OCaml implementation for @{text "AND"}, @{text "OR"}, and @{text "XOR"} *}
+subsection \<open>OCaml implementation for \<open>AND\<close>, \<open>OR\<close>, and \<open>XOR\<close>\<close>
 
 definition and_pint :: "int \<Rightarrow> int \<Rightarrow> int" where
   "and_pint i j = 
@@ -641,13 +641,13 @@ lemma xor_pinteger_code [code]:
   "xor_pinteger (Code_Numeral.Pos n) (Code_Numeral.Pos m) = (case bitXOR_num n m of None \<Rightarrow> 0 | Some n' \<Rightarrow> Code_Numeral.Pos n')"
 including undefined_transfer by(transfer, simp add: xor_pint_def Bit_def int_xor_code[unfolded Int.Pos_def])+
 
-text {* 
+text \<open>
   If one argument is positive and the other negative, AND and OR
   cannot be expressed with XOR/NOT and only positive arguments.
   To handle this case, we define @{term "and_pninteger"} and @{term "or_pninteger"}
   and implement them manually in the code\_include Bits\_Integer.
   The following proves that the implementation is correct.
-*}
+\<close>
 
 definition and_pnint :: "int \<Rightarrow> int \<Rightarrow> int" where
   "and_pnint i j = 
@@ -763,10 +763,10 @@ proof(induct n\<equiv>"nat (y - x)" arbitrary: y)
   case 0 thus ?case by simp
 next
   case (Suc n)
-  from `Suc n = nat (y - x)` Suc.prems
+  from \<open>Suc n = nat (y - x)\<close> Suc.prems
   have "n = nat (y - 1 - x)" "x \<le> y - 1" by simp_all
   hence "log2 x \<le> log2 (y - 1)" by(rule Suc)
-  also have "\<dots> \<le> log2 y" using log2_le_plus1[of "y - 1"] x `x \<le> y - 1` by simp
+  also have "\<dots> \<le> log2 y" using log2_le_plus1[of "y - 1"] x \<open>x \<le> y - 1\<close> by simp
   finally show ?case .
 qed
 
@@ -783,7 +783,7 @@ proof(induct i rule: log2.induct)
   proof(cases "i = 0")
     case True thus ?thesis by simp
   next
-    case False with `0 \<le> i` have "i > 0" by simp
+    case False with \<open>0 \<le> i\<close> have "i > 0" by simp
     thus ?thesis using IH by(subst log2.simps)(simp add: nat_add_distrib)
   qed
 qed
@@ -796,7 +796,7 @@ proof(induct n arbitrary: i)
   case 0 thus ?case by simp
 next
   case (Suc n)
-  from Suc(1)[of "bin_rest i"] `0 \<le> i` Suc(2)
+  from Suc(1)[of "bin_rest i"] \<open>0 \<le> i\<close> Suc(2)
   show ?case by(cases "i = 0")(auto intro: bin_rl_eqI)
 qed
 
@@ -805,7 +805,7 @@ proof(induct n arbitrary: i)
   case 0 thus ?case by simp
 next
   case (Suc n)
-  from Suc(1)[of "bin_rest i"] `0 \<le> i` Suc(2)
+  from Suc(1)[of "bin_rest i"] \<open>0 \<le> i\<close> Suc(2)
   show ?case by(cases "i = 0")(auto intro: bin_rl_eqI)
 qed
 
@@ -845,7 +845,7 @@ proof -
   ultimately have "bin_mask k XOR NOT y = bin_mask k AND NOT NOT y"
     by(rule bin_mask_XOR_conv_and_not)
   moreover have "bin_mask k XOR x \<ge> 0" using x bin_mask_ge0[of k] by simp
-  ultimately show ?thesis using x y kx `log2 (NOT y) \<le> k` `0 \<le> NOT y`
+  ultimately show ?thesis using x y kx \<open>log2 (NOT y) \<le> k\<close> \<open>0 \<le> NOT y\<close>
     by(simp add: or_pnint_def int_or_def and_pint_def int_not_def xor_pint_def bin_mask_XOR_conv_and_not int_and_assoc)
       (subst bbw_lcs(1), subst (3) int_and_comm, simp add: int_and_mask)
 qed
@@ -861,7 +861,7 @@ hide_const (open)
   log2 and_pint and_pnint or_pint or_pnint xor_pint
   log2_integer bin_mask_integer and_pinteger and_pninteger or_pinteger or_pninteger xor_pinteger
 
-section {* Test code generator setup *}
+section \<open>Test code generator setup\<close>
 
 definition bit_integer_test :: "bool" where
   "bit_integer_test =
@@ -893,7 +893,7 @@ have bit_integer_test by eval
 have bit_integer_test by normalization
 have bit_integer_test by code_simp
 end
-ML_val {* val true = @{code bit_integer_test} *}
+ML_val \<open>val true = @{code bit_integer_test}\<close>
 
 lemma "x AND y = x OR (y :: integer)"
 quickcheck[random, expect=counterexample]

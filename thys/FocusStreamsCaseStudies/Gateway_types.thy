@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
- section {* Gateway: Types*} 
+ section \<open>Gateway: Types\<close> 
 
 theory Gateway_types 
 imports stream

@@ -1,16 +1,16 @@
-section {* Generic Computability *}
+section \<open>Generic Computability\<close>
 
 theory Computability
 imports HOLCF HOLCFUtils
 begin
 
-text {*
-Shivers proves the computability of the abstract semantics functions only by generic and slightly simplified example. This theory contains the abstract treatment in Section 4.4.3. Later, we will work out the details apply this to @{text \<aPR>}.
-*}
+text \<open>
+Shivers proves the computability of the abstract semantics functions only by generic and slightly simplified example. This theory contains the abstract treatment in Section 4.4.3. Later, we will work out the details apply this to \<open>\<aPR>\<close>.
+\<close>
 
-subsection {* Non-branching case *}
+subsection \<open>Non-branching case\<close>
 
-text {*
+text \<open>
 
 After the following lemma (which could go into @{theory HOL.Set_Interval}), we show Shivers' Theorem 10. This says that the least fixed point of the equation
 \[
@@ -22,7 +22,7 @@ f\ x = \bigcup_{i\ge 0} g\ (r^i\ x).
 \]
 
 The proof follows the standard proof of showing an equality involving a fixed point: First we show that the right hand side fulfills the above equation and then show that our solution is less than any other solution to that equation.
-*}
+\<close>
 
 lemma insert_greaterThan:
   "insert (n::nat) {n<..} = {n..}"
@@ -72,9 +72,9 @@ case (least f x)
     apply (subst sqsubset_is_subset) by auto
 qed
 
-subsection {* Branching case *}
+subsection \<open>Branching case\<close>
 
-text {*
+text \<open>
 Actually, our functions are more complicated than the one above: The abstract semantics functions recurse with multiple arguments. So we have to handle a recursive equation of the kind
 \[
 f\ x = g\ x \cup \bigcup_{a \in R\ x} f\ r.
@@ -90,7 +90,7 @@ the equation becomes
 (which is shown in Lemma 11) and we can apply Theorem 10 to obtain Theorem 12.
 
 We define the power-set relative for a function together with some properties.
-*}
+\<close>
 
 definition powerset_lift :: "('a::cpo \<rightarrow> 'b::type set) \<Rightarrow> 'a set \<rightarrow> 'b set" ("\<^ps>")
   where "\<^ps>f = (\<Lambda> S. (\<Union>y\<in>S . f\<cdot>y))"
@@ -117,10 +117,10 @@ by (induct i, auto simp add:powerset_lift_UNION)
 lemmas powerset_distr = powerset_lift_UNION powerset_lift_iterate_UNION
 
 
-text {*
+text \<open>
 Lemma 11 shows that if a function satisfies the relation with the branching $R$, its power-set function satisfies the powerset variant of the equation.
 
-*}
+\<close>
 
 lemma lemma11:
   fixes f :: "'a \<rightarrow> 'b set" and g :: "'a \<rightarrow> 'b set" and R :: "'a \<rightarrow> 'a set"
@@ -134,16 +134,16 @@ proof-
   show ?thesis .
 qed
 
-text {*
+text \<open>
 Theorem 10 as it will be used in Theorem 12.
-*}
+\<close>
 lemmas theorem10ps = theorem10[of "\<^ps>g" "\<^ps>r"] for g r
 
-text {*
+text \<open>
 Now we can show Lemma 12: If $F$ is the least solution to the recursive power-set equation, then $x \mapsto F\ {x}$ is the least solution to the equation with branching $R$.
 
-We fix the type variable @{text 'a} to be a discrete cpo, as otherwise $x \mapsto \{x\}$ is not continuous.
-*}
+We fix the type variable \<open>'a\<close> to be a discrete cpo, as otherwise $x \mapsto \{x\}$ is not continuous.
+\<close>
 
 (* discrete_cpo, otherwise x \<mapsto> {x} not continous *)
 lemma theorem12':

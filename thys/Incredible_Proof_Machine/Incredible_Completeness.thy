@@ -280,11 +280,11 @@ proof
   next
     case (Some c "is")
 
-    from `c \<in> set conclusions` `is \<in> it_paths (it' c)`
+    from \<open>c \<in> set conclusions\<close> \<open>is \<in> it_paths (it' c)\<close>
     have "path (c, 0#is) (c, []) (terminal_path_from c is)"
       by (rule path_terminal_path_from)
     moreover
-    from `c \<in> set conclusions`
+    from \<open>c \<in> set conclusions\<close>
     have "terminal_vertex (c, [])" by simp
     ultimately
     have "(v', p') \<in> snd ` set (terminal_path_from c is)"
@@ -296,17 +296,17 @@ proof
     show "scope' v' p' (c, 0#is)"
     proof(cases "is'" rule: rev_cases)
       case Nil
-      with `(v',p') = edge_to c is'`
+      with \<open>(v',p') = edge_to c is'\<close>
       have "v' = (c, [])" and "p' = plain_ant c"
         by (auto simp add: edge_to_def)
-      with `c \<in> set conclusions` `is \<in> it_paths (it' c)`
+      with \<open>c \<in> set conclusions\<close> \<open>is \<in> it_paths (it' c)\<close>
       show ?thesis  by (auto intro!: scope'.intros)
     next
       case (snoc is'' i)
-      with `(v',p') = edge_to c is'`
+      with \<open>(v',p') = edge_to c is'\<close>
       have "v' = (c, 0 # is'')" and "p' = in_port_at v' i"
         by (auto simp add: edge_to_def)
-      with `c \<in> set conclusions` `is \<in> it_paths (it' c)` `prefix is' is`[unfolded snoc]
+      with \<open>c \<in> set conclusions\<close> \<open>is \<in> it_paths (it' c)\<close> \<open>prefix is' is\<close>[unfolded snoc]
       show ?thesis
         by (auto intro!: scope'.intros)
     qed
@@ -320,8 +320,8 @@ next
     "is \<in> (#) 0 ` it_paths (it' c)" and  "prefix (is' @ [i]) is"
     by (auto simp add: scope'.simps)
 
-  from `scope' v' p' v`
-  have "(c, is) |\<in>| vertices" unfolding `v = _` by (rule scope_valid)
+  from \<open>scope' v' p' v\<close>
+  have "(c, is) |\<in>| vertices" unfolding \<open>v = _\<close> by (rule scope_valid)
   hence "(c, is) \<in> scope ((c, is'), p')"
   proof(rule scope.intros)
     fix pth t
@@ -330,10 +330,10 @@ next
     assume "terminal_vertex t"
     hence "snd t = []" by auto
 
-    from path_has_prefixes[OF `path (c,is) t pth` `snd t = []`, simplified, OF `prefix (is' @ [i]) is`]
-    show "((c, is'), p') \<in> snd ` set pth" unfolding `p' = _ ` `v' = _ `.
+    from path_has_prefixes[OF \<open>path (c,is) t pth\<close> \<open>snd t = []\<close>, simplified, OF \<open>prefix (is' @ [i]) is\<close>]
+    show "((c, is'), p') \<in> snd ` set pth" unfolding \<open>p' = _ \<close> \<open>v' = _ \<close>.
   qed
-  thus "v \<in> scope (v', p')" using `v =_` `v' = _` by simp
+  thus "v \<in> scope (v', p')" using \<open>v =_\<close> \<open>v' = _\<close> by simp
 qed
 
 sublocale Port_Graph nodes inPorts outPorts vertices nodeOf edges
@@ -389,9 +389,9 @@ proof
   have "\<exists> i. fst v\<^sub>1 = fst v\<^sub>2 \<and> prefix (snd v\<^sub>1@[i]) (snd v\<^sub>2) \<and> p' = in_port_at v\<^sub>1 i"
     by (cases v\<^sub>1; cases v\<^sub>2; auto elim!: edge_step)
   hence "scope' v\<^sub>1 p' v\<^sub>2"
-    unfolding scope_valid_inport[OF `v\<^sub>2 |\<in>| vertices`].
+    unfolding scope_valid_inport[OF \<open>v\<^sub>2 |\<in>| vertices\<close>].
   hence "v\<^sub>2 \<in> scope (v\<^sub>1, p')"
-    unfolding in_scope[OF `valid_in_port (v\<^sub>1, p')`].
+    unfolding in_scope[OF \<open>valid_in_port (v\<^sub>1, p')\<close>].
   thus "(v\<^sub>2, p\<^sub>2) = (v\<^sub>1, p') \<or> v\<^sub>2 \<in> scope (v\<^sub>1, p')" ..
 qed
 
@@ -416,11 +416,11 @@ proof
     show "\<exists>e\<in>edges. snd e = ((c, cis), p)"
     proof(cases cis)
       case Nil
-      with `valid_in_port ((c, cis), p)`
+      with \<open>valid_in_port ((c, cis), p)\<close>
       have [simp]: "p = plain_ant c" by simp
 
       have "[] \<in> it_paths (it' c)" by simp
-      with `c \<in> set conclusions`
+      with \<open>c \<in> set conclusions\<close>
       have "edge_at c [] \<in> edges" by (rule regular_edge)
       moreover
       have "snd (edge_at c []) = ((c, []), plain_ant c)"
@@ -429,7 +429,7 @@ proof
       show ?thesis by (auto simp add: Nil simp del: snd_edge_at)
     next
       case (Cons c' "is")
-      with `valid_in_port ((c, cis), p)`
+      with \<open>valid_in_port ((c, cis), p)\<close>
       have [simp]: "c' = 0" and "is \<in> it_paths (it' c)"
         and "p |\<in>| inPorts (iNodeOf (tree_at (it' c) is))" by auto
        
@@ -445,25 +445,25 @@ proof
         proof(cases r)
           case I
           hence "\<not> isHNode (tree_at (it' c) is)" by simp
-          from iwf_length_inPorts_not_HNode[OF iwf_it[OF `c \<in> set conclusions`]  `is \<in> it_paths (it' c)` this]
-               `i < length (inPorts' (iNodeOf (tree_at (it' c) is)))`
+          from iwf_length_inPorts_not_HNode[OF iwf_it[OF \<open>c \<in> set conclusions\<close>]  \<open>is \<in> it_paths (it' c)\<close> this]
+               \<open>i < length (inPorts' (iNodeOf (tree_at (it' c) is)))\<close>
           have "i < length (children (tree_at (it' c) is))" by simp
-          with `is \<in> it_paths (it' c)`
+          with \<open>is \<in> it_paths (it' c)\<close>
           have "is@[i] \<in> it_paths (it' c)" by (rule it_path_SnocI)
-          from `c \<in> set conclusions` this
+          from \<open>c \<in> set conclusions\<close> this
           have "edge_at c (is@[i]) \<in> edges" by (rule regular_edge)
           moreover
           have "snd (edge_at c (is@[i])) = ((c, 0 # is),  inPorts' (iNodeOf (tree_at (it' c) is)) ! i)"
             by (simp add: edge_to_def)
           ultimately
-          show ?thesis by (auto simp add: Cons `p = _` simp del: snd_edge_at)
+          show ?thesis by (auto simp add: Cons \<open>p = _\<close> simp del: snd_edge_at)
         next
           case (H n s)
           hence "tree_at (it' c) is = HNode n s ants" by simp
-          from `c \<in> set conclusions` `is \<in> it_paths (it' c)`  this
+          from \<open>c \<in> set conclusions\<close> \<open>is \<in> it_paths (it' c)\<close>  this
           have "hyp_edge_at c is n s \<in> edges"..
           moreover
-          from H `p |\<in>| inPorts (iNodeOf (tree_at (it' c) is))`
+          from H \<open>p |\<in>| inPorts (iNodeOf (tree_at (it' c) is))\<close>
           have [simp]: "p = plain_ant anyP" by simp
   
           have "snd (hyp_edge_at c is n s) = ((c, 0 # is), p)"
@@ -507,7 +507,7 @@ proof
   proof(cases rule:edges.cases)
     case (regular_edge c "is")
    
-    from `((v\<^sub>1, p\<^sub>1), v\<^sub>2, p\<^sub>2) = edge_at c is`
+    from \<open>((v\<^sub>1, p\<^sub>1), v\<^sub>2, p\<^sub>2) = edge_at c is\<close>
     have "(v\<^sub>1,p\<^sub>1) = edge_from c is" using fst_edge_at by (metis fst_conv)
     hence [simp]: "v\<^sub>1 = (c, 0 # is)" by (simp add: edge_from_def)
 
@@ -519,10 +519,10 @@ proof
         using regular_edge Nil by (simp add: labelAtOut_def edge_at_def edge_from_def)
       also have "vidx v\<^sub>1 = iAnnot ?t'" by (simp add:  Nil)
       also have "subst (iSubst ?t') (freshen (iAnnot ?t') (iOutPort ?t')) = snd (fst (root (ts c)))"
-        unfolding iwf_subst_freshen_outPort[OF iwf_it[OF `c \<in> set conclusions`]]..
-      also have "\<dots> = c" using `c \<in> set conclusions` by (simp add: ts_conc)
+        unfolding iwf_subst_freshen_outPort[OF iwf_it[OF \<open>c \<in> set conclusions\<close>]]..
+      also have "\<dots> = c" using \<open>c \<in> set conclusions\<close> by (simp add: ts_conc)
       also have "\<dots> = labelAtIn v\<^sub>2 p\<^sub>2"
-        using  `c \<in> set conclusions`  regular_edge Nil
+        using  \<open>c \<in> set conclusions\<close>  regular_edge Nil
         by (simp add: labelAtIn_def edge_at_def freshen_closed conclusions_closed closed_no_lconsts)
       finally show ?thesis.
     next
@@ -534,7 +534,7 @@ proof
       also have "vidx v\<^sub>1 = iAnnot ?t1" using snoc regular_edge(3) by simp
       also have "subst (iSubst ?t1) (freshen (iAnnot ?t1) (iOutPort ?t1))
           = subst (iSubst ?t2) (freshen (iAnnot ?t2) (a_conc (inPorts' (iNodeOf ?t2) ! i)))"
-        by (rule iwf_edge_match[OF iwf_it[OF `c \<in> set conclusions`] `is \<in> it_paths (it' c)`[unfolded snoc]])
+        by (rule iwf_edge_match[OF iwf_it[OF \<open>c \<in> set conclusions\<close>] \<open>is \<in> it_paths (it' c)\<close>[unfolded snoc]])
       also have "iAnnot ?t2 = vidx (c, 0 # is')" by simp
       also have "subst (iSubst ?t2) (freshen (vidx (c, 0 # is')) (a_conc (inPorts' (iNodeOf ?t2) ! i))) = labelAtIn v\<^sub>2 p\<^sub>2"
         using regular_edge snoc by (simp add: labelAtIn_def edge_at_def)
@@ -548,11 +548,11 @@ proof
     let "?t1" = "tree_at (it' c) ?his"
     let "?t2" = "tree_at (it' c) is"
 
-    from `c \<in> set conclusions` `is \<in> it_paths (it' c)` `tree_at (it' c) is = HNode n s ants`
+    from \<open>c \<in> set conclusions\<close> \<open>is \<in> it_paths (it' c)\<close> \<open>tree_at (it' c) is = HNode n s ants\<close>
     have "?f \<in> hyps_along (it' c) is"
       by (rule hyps_exist')
 
-    from `((v\<^sub>1, p\<^sub>1), v\<^sub>2, p\<^sub>2) = hyp_edge_at c is n s`
+    from \<open>((v\<^sub>1, p\<^sub>1), v\<^sub>2, p\<^sub>2) = hyp_edge_at c is n s\<close>
     have "(v\<^sub>1,p\<^sub>1) = hyp_edge_from c is n s" using fst_hyp_edge_at by (metis fst_conv)
     hence [simp]: "v\<^sub>1 = (c, 0 # ?his)" by (simp add: hyp_edge_from_def)
 
@@ -560,7 +560,7 @@ proof
     have "labelAtOut v\<^sub>1 p\<^sub>1 = subst (iSubst ?t1) (freshen (vidx v\<^sub>1) (labelsOut (iNodeOf ?t1) ?h))"
       using hyp_edge by (simp add: hyp_edge_at_def hyp_edge_from_def labelAtOut_def)
     also have "vidx v\<^sub>1 = iAnnot ?t1" by simp
-    also have "subst (iSubst ?t1) (freshen (iAnnot ?t1) (labelsOut (iNodeOf ?t1) ?h)) = ?f" using `?f \<in> hyps_along (it' c) is` by (rule local.hyp_port_eq[symmetric])
+    also have "subst (iSubst ?t1) (freshen (iAnnot ?t1) (labelsOut (iNodeOf ?t1) ?h)) = ?f" using \<open>?f \<in> hyps_along (it' c) is\<close> by (rule local.hyp_port_eq[symmetric])
     also have "\<dots> = subst (iSubst ?t2) (freshen (iAnnot ?t2) anyP)"  using hyp_edge by simp
     also have "subst (iSubst ?t2) (freshen (iAnnot ?t2) anyP) = labelAtIn v\<^sub>2 p\<^sub>2"
         using hyp_edge by (simp add: labelAtIn_def  hyp_edge_at_def hyp_edge_to_def)
@@ -585,11 +585,11 @@ proof
   
   obtain c "is" where "v = (c,is)"  by (cases v, auto)
 
-  from `valid_in_port (v, p)` `v= _`
+  from \<open>valid_in_port (v, p)\<close> \<open>v= _\<close>
   have "(c,is) |\<in>| vertices"  and "p |\<in>| inPorts (nodeOf (c, is))"  by simp_all
   hence "c \<in> set conclusions" by (simp add: mem_vertices)
   
-  from `p |\<in>| _` obtain i where
+  from \<open>p |\<in>| _\<close> obtain i where
     "i < length (inPorts' (nodeOf (c, is)))" and
     "p = inPorts' (nodeOf (c, is)) ! i" by (auto simp add: inPorts_fset_of in_set_conv_nth)
   hence "p = in_port_at (c, is) i" by (cases "is") auto
@@ -602,20 +602,20 @@ proof
 
   assume "freshenLC (vidx v) var \<in> subst_lconsts (inst v')"
   then obtain is'' where "is' = 0#is''" and "is'' \<in> it_paths (it' c')"
-    using `v' |\<in>| vertices`
-    by (cases is') (auto simp add: `v'=_`)
+    using \<open>v' |\<in>| vertices\<close>
+    by (cases is') (auto simp add: \<open>v'=_\<close>)
 
-  note `freshenLC (vidx v) var \<in> subst_lconsts (inst v')`
+  note \<open>freshenLC (vidx v) var \<in> subst_lconsts (inst v')\<close>
   also
   have "subst_lconsts (inst v') = subst_lconsts (iSubst (tree_at (it' c') is''))"
-    by (simp add: `v'=_` `is'=_`)
+    by (simp add: \<open>v'=_\<close> \<open>is'=_\<close>)
   also
-  from `is'' \<in> it_paths (it' c')`
+  from \<open>is'' \<in> it_paths (it' c')\<close>
   have "\<dots> \<subseteq> fresh_at_path (it' c') is'' \<union> range (freshenLC v_away)"
     by (rule globalize_local_consts)
   finally
   have "freshenLC (vidx v) var \<in> fresh_at_path (it' c') is''"
-    using `v |\<in>| vertices` by auto
+    using \<open>v |\<in>| vertices\<close> by auto
   then obtain is''' where "prefix is''' is''"  and "freshenLC (vidx v) var \<in> fresh_at (it' c') is'''"
     unfolding fresh_at_path_def by auto
   then obtain i' is'''' where "prefix (is''''@[i']) is''" 
@@ -626,43 +626,43 @@ proof
     apply metis
     done
 
-  from  `is'' \<in> it_paths (it' c')` `prefix (is''''@[i']) is''`
+  from  \<open>is'' \<in> it_paths (it' c')\<close> \<open>prefix (is''''@[i']) is''\<close>
   have "(is''''@[i']) \<in> it_paths (it' c')" by (rule it_paths_prefix)
   hence "is'''' \<in> it_paths (it' c')" using append_prefixD it_paths_prefix by blast
 
-  from this `freshenLC (vidx v) var \<in> fresh_at (it' c') (is''''@[i'])`
+  from this \<open>freshenLC (vidx v) var \<in> fresh_at (it' c') (is''''@[i'])\<close>
   have "c = c' \<and> is = 0 # is'''' \<and> var \<in> a_fresh (inPorts' (iNodeOf (tree_at (it' c') is'''')) ! i')"
-    unfolding fresh_at_def' using `v |\<in>| vertices`  `v' |\<in>| vertices`
+    unfolding fresh_at_def' using \<open>v |\<in>| vertices\<close>  \<open>v' |\<in>| vertices\<close>
     apply (cases "is")
-    apply (auto split: if_splits simp add:  iAnnot_globalize it_paths_butlast `v=_` `v'=_` `is'=_` simp del: iAnnot.simps)
+    apply (auto split: if_splits simp add:  iAnnot_globalize it_paths_butlast \<open>v=_\<close> \<open>v'=_\<close> \<open>is'=_\<close> simp del: iAnnot.simps)
     done
   hence "c' = c" and "is = 0 # is''''" and "var \<in> a_fresh (inPorts' (iNodeOf (tree_at (it' c') is'''')) ! i')" by simp_all
 
-  from `(is''''@[i']) \<in> it_paths (it' c')`
+  from \<open>(is''''@[i']) \<in> it_paths (it' c')\<close>
   have "i' < length (inPorts' (nodeOf (c, is)))"
-    using iwf_length_inPorts[OF iwf_it[OF `c \<in> set conclusions`]]
-    by (auto elim!: it_paths_SnocE simp add: `is=_` `c' = _` order.strict_trans2)
+    using iwf_length_inPorts[OF iwf_it[OF \<open>c \<in> set conclusions\<close>]]
+    by (auto elim!: it_paths_SnocE simp add: \<open>is=_\<close> \<open>c' = _\<close> order.strict_trans2)
 
   have "nodeOf (c, is) \<in> sset nodes"
-    unfolding `is = _` `c' = _` nodeOf.simps
-    by (rule iNodeOf_tree_at[OF iwf_it[OF `c \<in> set conclusions`]  `is'''' \<in> it_paths (it' c')`[unfolded `c' = _`]])
+    unfolding \<open>is = _\<close> \<open>c' = _\<close> nodeOf.simps
+    by (rule iNodeOf_tree_at[OF iwf_it[OF \<open>c \<in> set conclusions\<close>]  \<open>is'''' \<in> it_paths (it' c')\<close>[unfolded \<open>c' = _\<close>]])
     
-  from `var \<in> a_fresh (inPorts' (iNodeOf (tree_at (it' c') is'''')) ! i')`
-       `var \<in> a_fresh p` `p = inPorts' (nodeOf (c, is)) ! i`
+  from \<open>var \<in> a_fresh (inPorts' (iNodeOf (tree_at (it' c') is'''')) ! i')\<close>
+       \<open>var \<in> a_fresh p\<close> \<open>p = inPorts' (nodeOf (c, is)) ! i\<close>
        node_disjoint_fresh_vars[OF
-          `nodeOf (c, is) \<in> sset nodes`
-          `i < length (inPorts' (nodeOf (c, is)))` `i' < length (inPorts' (nodeOf (c, is)))`]
-  have "i' = i" by (auto simp add: `is=_` `c'=c`)
+          \<open>nodeOf (c, is) \<in> sset nodes\<close>
+          \<open>i < length (inPorts' (nodeOf (c, is)))\<close> \<open>i' < length (inPorts' (nodeOf (c, is)))\<close>]
+  have "i' = i" by (auto simp add: \<open>is=_\<close> \<open>c'=c\<close>)
    
-  from  `prefix (is''''@[i']) is''`
-  have "prefix (is @ [i']) is'" by (simp add: `is'=_` `is=_`)
+  from  \<open>prefix (is''''@[i']) is''\<close>
+  have "prefix (is @ [i']) is'" by (simp add: \<open>is'=_\<close> \<open>is=_\<close>)
 
  
-  from `c \<in> set conclusions`  `is'' \<in> it_paths (it' c')` `prefix (is @ [i']) is'`
-      `p = in_port_at (c, is) i`
+  from \<open>c \<in> set conclusions\<close>  \<open>is'' \<in> it_paths (it' c')\<close> \<open>prefix (is @ [i']) is'\<close>
+      \<open>p = in_port_at (c, is) i\<close>
   have "scope' v p v'"
-  unfolding `v=_` `v'=_` `c' = _` `is' = _`  `i'=_` by (auto intro: scope'.intros)
-  thus "v' \<in> scope (v, p)" using `valid_in_port (v, p)` by (simp add: in_scope)
+  unfolding \<open>v=_\<close> \<open>v'=_\<close> \<open>c' = _\<close> \<open>is' = _\<close>  \<open>i'=_\<close> by (auto intro: scope'.intros)
+  thus "v' \<in> scope (v, p)" using \<open>valid_in_port (v, p)\<close> by (simp add: in_scope)
 qed
 
 sublocale Scoped_Proof_Graph freshenLC renameLCs lconsts closed subst subst_lconsts subst_renameLCs anyP  inPorts outPorts nodeOf hyps nodes vertices labelsIn labelsOut vidx inst edges local_vars..

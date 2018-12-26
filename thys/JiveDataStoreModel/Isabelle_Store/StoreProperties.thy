@@ -4,21 +4,21 @@
     License:     LGPL
 *)
 
-section {* Store Properties *}
+section \<open>Store Properties\<close>
 
 theory StoreProperties
 imports Store
 begin
 
-text {* This theory formalizes advanced concepts and properties of stores. *}
+text \<open>This theory formalizes advanced concepts and properties of stores.\<close>
 
-subsection {* Reachability of a Location from a Reference *}
+subsection \<open>Reachability of a Location from a Reference\<close>
 
-text {* For a given store, the function @{text "reachS"} yields the set of all pairs 
+text \<open>For a given store, the function \<open>reachS\<close> yields the set of all pairs 
 $(l,v)$ where $l$ is a location that is reachable from the value $v$ (which must be a reference)
 in the given store.
-The predicate @{text "reach"} decides whether a location is reachable from a value in a store.
-*}
+The predicate \<open>reach\<close> decides whether a location is reachable from a value in a store.
+\<close>
 
 inductive
   reach :: "Store \<Rightarrow> Location \<Rightarrow> Value \<Rightarrow> bool" 
@@ -29,19 +29,19 @@ where
 | Indirect: "\<lbrakk>s\<turnstile> l reachable_from (s@@k); ref k \<noteq> nullV\<rbrakk> 
              \<Longrightarrow> s\<turnstile> l reachable_from (ref k)" 
 
-text {* Note that we explicitly exclude @{text "nullV"} as legal reference
+text \<open>Note that we explicitly exclude \<open>nullV\<close> as legal reference
 for reachability. 
 Keep in mind that static fields are not associated to any object,
-therefore @{text "ref"} yields @{text "nullV"} if invoked on static fields 
+therefore \<open>ref\<close> yields \<open>nullV\<close> if invoked on static fields 
 (see the
-definition of the function @{text "ref"}, Sect. \ref{ref_def}).
+definition of the function \<open>ref\<close>, Sect. \ref{ref_def}).
 Reachability only describes the locations directly 
 reachable from the object or array by following the pointers and should not include 
-the static fields if we encounter a @{text "nullV"} reference in the pointer 
-chain.*}
+the static fields if we encounter a \<open>nullV\<close> reference in the pointer 
+chain.\<close>
 
-text {* We formalize some properties of reachability. 
-Especially, Lemma 3.2 as given in \cite[p. 53]{Poetzsch-Heffter97specification} is proven. *}
+text \<open>We formalize some properties of reachability. 
+Especially, Lemma 3.2 as given in \cite[p. 53]{Poetzsch-Heffter97specification} is proven.\<close>
 
 lemma unreachable_Null: 
   assumes reach: "s\<turnstile> l reachable_from x" shows "x\<noteq>nullV"
@@ -93,7 +93,7 @@ lemma reachable_from_ObjLoc_impl_Obj [simp,intro]:
   by simp
 
 
-text {* Lemma 3.2 (i) *}
+text \<open>Lemma 3.2 (i)\<close>
 lemma reach_update [simp]:
   assumes unreachable_l_x: "\<not> s\<turnstile> l reachable_from x" 
   shows "s\<langle>l:=y\<rangle>\<turnstile> k reachable_from  x = s\<turnstile> k reachable_from x"
@@ -143,12 +143,12 @@ next
 qed
 
 
-text {* Lemma 3.2 (ii) *}
+text \<open>Lemma 3.2 (ii)\<close>
 lemma reach2: 
   "\<not> s\<turnstile> l reachable_from x \<Longrightarrow> \<not> s\<langle>l:=y\<rangle>\<turnstile> l reachable_from x"
   by (simp)
 
-text {* Lemma 3.2 (iv) *}
+text \<open>Lemma 3.2 (iv)\<close>
 lemma reach4: "\<not> s \<turnstile> l reachable_from (ref k) \<Longrightarrow> k \<noteq> l \<or> (ref k) = nullV"
   by (auto intro: reach.intros)
 
@@ -189,7 +189,7 @@ proof -
     by (rule access_alloc)
 qed
  
-text {* Lemma 3.2 (v) *}
+text \<open>Lemma 3.2 (v)\<close>
 lemma reach_alloc [simp]: "s\<langle>t\<rangle>\<turnstile> l reachable_from x = s\<turnstile> l reachable_from x"
 proof 
   assume "s\<langle>t\<rangle>\<turnstile> l reachable_from x"
@@ -258,7 +258,7 @@ next
 qed
        
 
-text {* Lemma 3.2 (vi) *}
+text \<open>Lemma 3.2 (vi)\<close>
 lemma reach6: "isprimitive(typeof x) \<Longrightarrow> \<not> s \<turnstile> l reachable_from x"
 proof 
   assume prim: "isprimitive(typeof x)"
@@ -269,7 +269,7 @@ proof
     by (cases x) simp_all
 qed
 
-text {* Lemma 3.2 (iii) *}
+text \<open>Lemma 3.2 (iii)\<close>
 lemma reach3: 
   assumes k_y: "\<not> s\<turnstile> k reachable_from y"
   assumes k_x: "\<not> s\<turnstile> k reachable_from x"
@@ -324,7 +324,7 @@ qed
 
 
 
-text {* Lemma 3.2 (vii). *}
+text \<open>Lemma 3.2 (vii).\<close>
 
 lemma unreachable_from_init [simp,intro]: "\<not> s\<turnstile> l reachable_from (init T)"
   using reach6 by (cases T) simp_all
@@ -370,7 +370,7 @@ next
 qed
  
 
-text {* Lemma 3.2 (viii) *}
+text \<open>Lemma 3.2 (viii)\<close>
 lemma alive_reach_alive: 
   assumes alive_x: "alive x s" 
   assumes reach_l: "s \<turnstile> l reachable_from x" 
@@ -388,7 +388,7 @@ next
     by iprover
 qed
  
-text {* Lemma 3.2 (ix) *}
+text \<open>Lemma 3.2 (ix)\<close>
 lemma reach9: 
   assumes reach_impl_access_eq: "\<forall>l. s1\<turnstile>l reachable_from x \<longrightarrow> (s1@@l = s2@@l)"
   shows "s1\<turnstile> l reachable_from x = s2\<turnstile> l reachable_from x"
@@ -455,24 +455,24 @@ next
 qed
 
 
-subsection {* Reachability of a Reference from a Reference *}
+subsection \<open>Reachability of a Reference from a Reference\<close>
 
-text {* The predicate @{text "rreach"} tests whether a value is reachable from
-another value. This is an extension of the predicate @{text "oreach"} as described
+text \<open>The predicate \<open>rreach\<close> tests whether a value is reachable from
+another value. This is an extension of the predicate \<open>oreach\<close> as described
 in \cite[p. 54]{Poetzsch-Heffter97specification} because now arrays are handled as well.
-*}
+\<close>
 
 definition rreach:: "Store \<Rightarrow> Value \<Rightarrow> Value \<Rightarrow> bool" 
   ("_\<turnstile>Ref _ reachable'_from _" [91,91,91]90) where
 "s\<turnstile>Ref y reachable_from x = (\<exists> l. s\<turnstile> l reachable_from x \<and> y = ref l)"
 
 
-subsection {* Disjointness of Reachable Locations *}
+subsection \<open>Disjointness of Reachable Locations\<close>
 
-text {* The predicate @{text "disj"} tests whether two values are disjoint
+text \<open>The predicate \<open>disj\<close> tests whether two values are disjoint
 in a given store. Its properties as given in 
 \cite[Lemma 3.3, p. 54]{Poetzsch-Heffter97specification} are then proven.
-*}
+\<close>
 
 definition disj:: "Value \<Rightarrow> Value \<Rightarrow> Store \<Rightarrow> bool" where
 "disj x y s = (\<forall> l. \<not> s\<turnstile> l reachable_from x \<or> \<not> s\<turnstile> l reachable_from y)"
@@ -493,12 +493,12 @@ lemma disj_cases [consumes 1]:
   shows "P"
   using assms by (auto simp add: disj_def)
 
-text {* Lemma 3.3 (i) in \cite{Poetzsch-Heffter97specification} *}
+text \<open>Lemma 3.3 (i) in \cite{Poetzsch-Heffter97specification}\<close>
 lemma disj1: "\<lbrakk>disj x y s; \<not> s\<turnstile> l reachable_from x; \<not> s\<turnstile> l reachable_from y\<rbrakk> 
               \<Longrightarrow> disj x y (s\<langle>l:=z\<rangle>)"
   by (auto simp add: disj_def)
 
-text {* Lemma 3.3 (ii) *}
+text \<open>Lemma 3.3 (ii)\<close>
 lemma disj2: 
   assumes disj_x_y: "disj x y s" 
   assumes disj_x_z: "disj x z s"
@@ -525,7 +525,7 @@ qed
 
    
 
-text {* Lemma 3.3 (iii) *}
+text \<open>Lemma 3.3 (iii)\<close>
 lemma disj3: assumes alive_x_s: "alive x s" 
   shows "disj x (new s t) (s\<langle>t\<rangle>)"
 proof (rule disjI1,simp only: reach_alloc)
@@ -547,7 +547,7 @@ proof (rule disjI1,simp only: reach_alloc)
   qed
 qed
 
-text {* Lemma 3.3 (iv) *}
+text \<open>Lemma 3.3 (iv)\<close>
 lemma disj4: "\<lbrakk>disj (objV C a) y s; CClassT C \<le> dtype f \<rbrakk>  
               \<Longrightarrow> disj (s@@(objV C a)..f) y s"
   by (auto simp add: disj_def)
@@ -557,15 +557,15 @@ lemma disj4': "\<lbrakk>disj (arrV T a) y s \<rbrakk>
   by (auto simp add: disj_def)
 
 
-subsection {* X-Equivalence *}
+subsection \<open>X-Equivalence\<close>
 
-text {* We call two stores $s_1$ and $s_2$ equivalent wrt. a given value $X$
+text \<open>We call two stores $s_1$ and $s_2$ equivalent wrt. a given value $X$
 (which is called X-equivalence)
  iff $X$ and all values
 reachable from $X$ in $s_1$ or $s_2$ have the same state \cite[p. 55]{Poetzsch-Heffter97specification}. 
 This is tested by  the predicate
-@{text "xeq"}. Lemma 3.4 of  \cite{Poetzsch-Heffter97specification} is then proven for @{text "xeq"}.
-*} 
+\<open>xeq\<close>. Lemma 3.4 of  \cite{Poetzsch-Heffter97specification} is then proven for \<open>xeq\<close>.
+\<close> 
 
 definition xeq:: "Value \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool" where
 "xeq x s t = (alive x s = alive x t \<and> 
@@ -581,11 +581,11 @@ lemma xeqI: "\<lbrakk>alive x s = alive x t;
              \<rbrakk> \<Longrightarrow> s \<equiv>[x] t"
   by (auto simp add: xeq_def)
 
-text {* Lemma 3.4 (i) in  \cite{Poetzsch-Heffter97specification}.  *}
+text \<open>Lemma 3.4 (i) in  \cite{Poetzsch-Heffter97specification}.\<close>
 lemma xeq1_refl: "s \<equiv>[x] s"
   by (simp add: xeq_def)
 
-text {* Lemma 3.4 (i)  *}
+text \<open>Lemma 3.4 (i)\<close>
 lemma xeq1_sym': 
   assumes s_t: "s \<equiv>[x] t"
   shows "t \<equiv>[x] s"
@@ -605,7 +605,7 @@ lemma xeq1_sym: "s \<equiv>[x] t = t \<equiv>[x] s"
   by (auto intro: xeq1_sym')
 
 
-text {* Lemma 3.4 (i) *}
+text \<open>Lemma 3.4 (i)\<close>
 lemma xeq1_trans [trans]: 
   assumes s_t: "s \<equiv>[x] t" 
   assumes t_r: "t \<equiv>[x] r" 
@@ -641,7 +641,7 @@ qed
    
 
   
-text {* Lemma 3.4 (ii) *}
+text \<open>Lemma 3.4 (ii)\<close>
 lemma xeq2: 
   assumes xeq: "\<forall> x. s \<equiv>[x] t" 
   assumes static_eq: "\<forall> f. s@@(staticLoc f) = t@@(staticLoc f)" 
@@ -686,7 +686,7 @@ next
 qed
 
 
-text {* Lemma 3.4 (iii) *}
+text \<open>Lemma 3.4 (iii)\<close>
 lemma xeq3: 
   assumes unreach_l: "\<not> s\<turnstile> l reachable_from x" 
   shows "s \<equiv>[x] s\<langle>l:=y\<rangle>"
@@ -703,7 +703,7 @@ qed
 
 
 
-text {* Lemma 3.4 (iv) *}
+text \<open>Lemma 3.4 (iv)\<close>
 lemma xeq4: assumes not_new: "x \<noteq> new s t" 
   shows "s \<equiv>[x] s\<langle>t\<rangle>"
 proof (rule xeqI)
@@ -732,41 +732,41 @@ next
   qed
 qed
 
-text {* Lemma 3.4 (v) *}
+text \<open>Lemma 3.4 (v)\<close>
 lemma xeq5: "s \<equiv>[x] t \<Longrightarrow> s\<turnstile> l reachable_from x = t\<turnstile> l reachable_from x"
   by (rule reach9) (simp add:  xeq_def)
   
 
-subsection {* T-Equivalence *}
+subsection \<open>T-Equivalence\<close>
 
-text {* T-equivalence is the extension of X-equivalence from values to types. Two stores are
+text \<open>T-equivalence is the extension of X-equivalence from values to types. Two stores are
 T-equivalent iff they are X-equivalent for all values of type T. This is formalized by the
-predicate @{text "teq"} \cite[p. 55]{Poetzsch-Heffter97specification}. *}
+predicate \<open>teq\<close> \cite[p. 55]{Poetzsch-Heffter97specification}.\<close>
 
 definition teq:: "Javatype \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool" where
 "teq t s1 s2 = (\<forall> x. typeof x \<le> t \<longrightarrow> s1 \<equiv>[x] s2)"
 
-subsection {* Less Alive *}
+subsection \<open>Less Alive\<close>
 
-text {* To specify that methods have no side-effects, the following binary relation on stores 
+text \<open>To specify that methods have no side-effects, the following binary relation on stores 
 plays a prominent role. It expresses that the two stores differ only in values that are alive
-in the store passed as first argument. This is formalized by the predicate @{text "lessalive"}
+in the store passed as first argument. This is formalized by the predicate \<open>lessalive\<close>
 \cite[p. 55]{Poetzsch-Heffter97specification}.
 The stores have to be X-equivalent for the references of the
 first store that are alive, and the values of the static fields have to be the same in both stores.
-*}
+\<close>
 
 definition lessalive:: "Store \<Rightarrow> Store \<Rightarrow> bool" ("_/ \<lless> _" [70,71] 70)
   where "lessalive s t = ((\<forall> x. alive x s \<longrightarrow> s \<equiv>[x] t) \<and> (\<forall> f. s@@staticLoc f = t@@staticLoc f))"
 
-text {* We define an introduction rule for the new operator. *}
+text \<open>We define an introduction rule for the new operator.\<close>
 
 lemma lessaliveI: 
   "\<lbrakk>\<And> x. alive x s \<Longrightarrow>  s \<equiv>[x] t; \<And> f. s@@staticLoc f = t@@staticLoc f\<rbrakk>
    \<Longrightarrow> s \<lless> t"
 by (simp add: lessalive_def)
 
-text {* It can be shown that @{text "lessalive"} is reflexive, transitive and antisymmetric. *}
+text \<open>It can be shown that \<open>lessalive\<close> is reflexive, transitive and antisymmetric.\<close>
 
 lemma lessalive_refl: "s \<lless> s"
   by (simp add: lessalive_def xeq1_refl)
@@ -838,10 +838,10 @@ next
     by (simp add: lessalive_def)
 qed
 
-text {* This gives us a partial ordering on the store. Thus, the type @{typ "Store"}
+text \<open>This gives us a partial ordering on the store. Thus, the type @{typ "Store"}
 can be added to the appropriate type class @{term "ord"} which lets us define the $<$ and
 $\leq$ symbols, and to the type class  @{term "order"} which axiomatizes partial orderings.
-*}
+\<close>
 
 instantiation Store :: order
 begin
@@ -852,10 +852,10 @@ definition
 definition
   less_Store_def: "(s::Store) < t \<longleftrightarrow> s \<le> t \<and> \<not> t \<le> s"
 
-text {* We prove Lemma 3.5 of \cite[p. 56]{Poetzsch-Heffter97specification} for this relation.
-*}
+text \<open>We prove Lemma 3.5 of \cite[p. 56]{Poetzsch-Heffter97specification} for this relation.
+\<close>
 
-text {* Lemma 3.5 (i) *}
+text \<open>Lemma 3.5 (i)\<close>
 
 instance  proof 
   fix s t w:: "Store"
@@ -878,12 +878,12 @@ qed
 
 end
 
-text {* Lemma 3.5 (ii) *}
+text \<open>Lemma 3.5 (ii)\<close>
 lemma lessalive2: "\<lbrakk>s \<lless> t; alive x s\<rbrakk> \<Longrightarrow> alive x t"
   by (simp add: lessalive_def xeq_def)
   
 
-text {* Lemma 3.5 (iii) *}
+text \<open>Lemma 3.5 (iii)\<close>
 lemma lessalive3: 
   assumes s_t: "s \<lless> t" 
   assumes alive: "alive x s \<or> \<not> alive x t"
@@ -916,7 +916,7 @@ next
   qed
 qed
    
-text {* Lemma 3.5 (iv) *}
+text \<open>Lemma 3.5 (iv)\<close>
 lemma lessalive_update [simp,intro]: 
   assumes s_t: "s \<lless> t" 
   assumes unalive_l: "\<not> alive (ref l) t"
@@ -939,22 +939,22 @@ qed
 
   
 
-text {* Lemma 3.5 (v)  *}
+text \<open>Lemma 3.5 (v)\<close>
 lemma lessalive_alloc [simp,intro]: "s \<lless> s\<langle>t\<rangle>"
   by (simp add: lessalive_def Xequ4')
  
 
-subsection {* Reachability of Types from Types *}
+subsection \<open>Reachability of Types from Types\<close>
 
-text {* The predicate @{text "treach"} denotes the fact that the first type reaches 
+text \<open>The predicate \<open>treach\<close> denotes the fact that the first type reaches 
 the second type by stepping finitely many times from a type to the range type of one 
 of its fields. This formalization diverges from \cite[p. 106]{Poetzsch-Heffter97specification} 
 in that it does not include the number of steps that are allowed to reach the second type.
 Reachability of types is a static approximation of reachability in
 the store. If I cannot reach the type of a location from the type of a
 reference, I cannot reach the location from the reference. See lemma  
-@{text "not_treach_ref_impl_not_reach"} below.
-*}
+\<open>not_treach_ref_impl_not_reach\<close> below.
+\<close>
 
 inductive
   treach :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool"
@@ -1059,7 +1059,7 @@ proof
   qed
 qed
 
-text {* Lemma 4.6 in \cite[p. 107]{Poetzsch-Heffter97specification}.  *}
+text \<open>Lemma 4.6 in \cite[p. 107]{Poetzsch-Heffter97specification}.\<close>
 lemma treach1: 
   assumes x_t: "typeof x \<le> T" 
   assumes not_treach: "\<not> treach T (typeof (ref l))"

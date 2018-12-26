@@ -37,7 +37,7 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
       by simp
   next
     case False
-    from False `x \<in> set L \<union> domA \<Gamma>` reds_avoids_live[OF Application.hyps(8)] 
+    from False \<open>x \<in> set L \<union> domA \<Gamma>\<close> reds_avoids_live[OF Application.hyps(8)] 
     show ?thesis by (auto simp add: lookup_HSem_other)
   qed
 
@@ -47,7 +47,7 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> z e')
     by (rule CEApp_no_restr)
   also have "((\<N>\<lbrakk> e \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)) \<sqsubseteq> ((\<N>\<lbrakk> Lam [y]. e' \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>))"
     using Application.hyps(9)[OF prem1].
-  also note `((\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>) x) \<sqsubseteq> (\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x`
+  also note \<open>((\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>) x) \<sqsubseteq> (\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x\<close>
   also have "(\<N>\<lbrakk> Lam [y]. e' \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>)\<cdot>r \<sqsubseteq> (CFn\<cdot>(\<Lambda> v. (\<N>\<lbrakk> e' \<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>\<rho>)(y := v)\<^esub>)))"
     by (rule CELam_no_restr)
   also have "CFn\<cdot>(\<Lambda> v. (\<N>\<lbrakk> e' \<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>\<rho>)(y := v)\<^esub>)) \<down>CFn ((\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x) = (\<N>\<lbrakk> e' \<rbrakk>\<^bsub>(\<N>\<lbrace>\<Delta>\<rbrace>\<rho>)(y := (\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x)\<^esub>)"
@@ -80,7 +80,7 @@ case (Variable \<Gamma> x e L \<Delta> z)
 
   let "?new" = "domA \<Delta> - domA \<Gamma>"
   have "fv (delete x \<Gamma>, e) \<union> {x} \<subseteq> fv (\<Gamma>, Var x)"
-    by (rule fv_delete_heap[OF `map_of \<Gamma> x = Some e`])
+    by (rule fv_delete_heap[OF \<open>map_of \<Gamma> x = Some e\<close>])
   hence prem: "fv (delete x \<Gamma>, e) \<subseteq> set (x # L) \<union> domA (delete x \<Gamma>)" using 2 by auto
   hence fv_subset: "fv (delete x \<Gamma>, e) - domA (delete x \<Gamma>) \<subseteq> - ?new"
     using reds_avoids_live'[OF Variable.hyps(2)] by auto
@@ -116,11 +116,11 @@ case (Variable \<Gamma> x e L \<Delta> z)
       by (auto intro!: fun_belowI simp add: lookup_override_on_eq  lookup_env_restr_eq elim: env_restr_belowD)
   qed
   also have "\<dots> = (\<mu> \<rho>'. (\<rho> ++\<^bsub>domA \<Delta>\<^esub> (\<N>\<lbrace>\<Delta>\<rbrace>\<rho>'))( x := \<N>\<lbrakk> z \<rbrakk>\<^bsub>\<rho>'\<^esub>)) f|` (-?new)"
-    by (rule arg_cong[OF iterative_HSem'[symmetric], OF `x \<notin> domA \<Delta>`])
+    by (rule arg_cong[OF iterative_HSem'[symmetric], OF \<open>x \<notin> domA \<Delta>\<close>])
   also have "\<dots> = (\<N>\<lbrace>(x,z) # \<Delta>\<rbrace>\<rho>)  f|` (-?new)"
-    by (rule arg_cong[OF iterative_HSem[symmetric], OF `x \<notin> domA \<Delta>`])
+    by (rule arg_cong[OF iterative_HSem[symmetric], OF \<open>x \<notin> domA \<Delta>\<close>])
   finally
-  show le: ?case by (rule env_restr_below_subset[OF `domA \<Gamma> \<subseteq> (-?new)`]) (intro cont2cont)+
+  show le: ?case by (rule env_restr_below_subset[OF \<open>domA \<Gamma> \<subseteq> (-?new)\<close>]) (intro cont2cont)+
 
   have "\<N>\<lbrakk> Var x \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> \<sqsubseteq> (\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>) x" by (rule CESem_simps_no_tick)
   also have "\<dots> \<sqsubseteq> (\<N>\<lbrace>(x, z) # \<Delta>\<rbrace>\<rho>) x"
@@ -157,7 +157,7 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
     by (intro monofun_cfun_fun monofun_cfun_arg  IfThenElse.hyps(2)[OF prem1])
   also have "\<dots> = (\<N>\<lbrakk> ?e \<rbrakk>\<^bsub>\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>)\<cdot>r" by (cases r) simp_all
   also have "\<dots> \<sqsubseteq> (\<N>\<lbrakk> ?e \<rbrakk>\<^bsub>\<N>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>)\<cdot>r"
-    proof(rule monofun_cfun_fun[OF ESem_fresh_cong_below_subset[OF  `fv ?e \<subseteq> domA \<Gamma> \<union> set L` Env.env_restr_belowI]])
+    proof(rule monofun_cfun_fun[OF ESem_fresh_cong_below_subset[OF  \<open>fv ?e \<subseteq> domA \<Gamma> \<union> set L\<close> Env.env_restr_belowI]])
       fix x
       assume "x \<in> domA \<Gamma> \<union> set L"
       thus "(\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>) x \<sqsubseteq> (\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) x"
@@ -165,10 +165,10 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> z)
         assume "x \<in> domA \<Gamma>"
         from IfThenElse.hyps(3)[OF prem1]
         have "((\<N>\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma>) x \<sqsubseteq> ((\<N>\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>) x" by (rule fun_belowD)
-        with `x \<in> domA \<Gamma>` show ?thesis by simp
+        with \<open>x \<in> domA \<Gamma>\<close> show ?thesis by simp
       next
         assume "x \<notin> domA \<Gamma>"
-        from this `x \<in> domA \<Gamma> \<union> set L` reds_avoids_live[OF IfThenElse.hyps(1)]
+        from this \<open>x \<in> domA \<Gamma> \<union> set L\<close> reds_avoids_live[OF IfThenElse.hyps(1)]
         show ?thesis
           by (simp add: lookup_HSem_other)
       qed

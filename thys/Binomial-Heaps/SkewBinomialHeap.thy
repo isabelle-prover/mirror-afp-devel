@@ -4,7 +4,7 @@ theory SkewBinomialHeap
 imports Main "HOL-Library.Multiset"
 begin
 
-text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
+text \<open>Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
   are a data structure for priority queues with worst case O(1) {\em findMin}, 
   {\em insert}, and {\em meld} operations, and worst-case logarithmic 
   {\em deleteMin} operation.
@@ -24,7 +24,7 @@ text {* Skew Binomial Queues as specified by Brodal and Okasaki \cite{BrOk96}
   In this theory, we combine Steps~2 and 3, i.e. we first implement skew binomial
   queues, and then bootstrap them. The bootstrapping implicitly introduces a 
   global root, such that we also get a constant time findMin operation.
-*}
+\<close>
 
 locale SkewBinomialHeapStruc_loc
 begin
@@ -37,7 +37,7 @@ datatype ('e, 'a) SkewBinomialTree =
 type_synonym ('e, 'a) SkewBinomialQueue = "('e, 'a::linorder) SkewBinomialTree list"
 
 subsubsection "Abstraction to Multisets"
-text {* Returns a multiset with all (element, priority) pairs from a queue *}
+text \<open>Returns a multiset with all (element, priority) pairs from a queue\<close>
 fun tree_to_multiset 
   :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> ('e \<times> 'a) multiset" 
 and queue_to_multiset 
@@ -63,7 +63,7 @@ lemma qtm_conc[simp]: "queue_to_multiset (q@q')
 
 subsubsection "Invariant"
 
-text {* Link two trees of rank $r$ to a new tree of rank $r+1$ *}
+text \<open>Link two trees of rank $r$ to a new tree of rank $r+1$\<close>
 fun  link :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> ('e, 'a) SkewBinomialTree \<Rightarrow> 
   ('e, 'a) SkewBinomialTree" where
   "link (Node e1 a1 r1 ts1) (Node e2 a2 r2 ts2) = 
@@ -71,8 +71,8 @@ fun  link :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> ('e, 'a) SkewBin
      then (Node e1 a1 (Suc r1) ((Node e2 a2 r2 ts2)#ts1))
      else (Node e2 a2 (Suc r2) ((Node e1 a1 r1 ts1)#ts2)))"
 
-text {* Link two trees of rank $r$ and a new element to a new tree of 
-  rank $r+1$ *}
+text \<open>Link two trees of rank $r$ and a new element to a new tree of 
+  rank $r+1$\<close>
 fun skewlink :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) SkewBinomialTree \<Rightarrow> 
   ('e, 'a) SkewBinomialTree \<Rightarrow> ('e, 'a) SkewBinomialTree" where
   "skewlink e a t t' = (if a \<le> (prio t) \<and> a \<le> (prio t')
@@ -83,10 +83,10 @@ fun skewlink :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) SkewBinomi
    else 
     Node (val t') (prio t') (Suc (rank t')) (Node e a 0 [] # t # children t')))"
 
-text {* 
+text \<open>
   The invariant for trees claims that a tree labeled rank $0$ has no children, 
   and a tree labeled rank $r + 1$ is the result of an ordinary link or 
-  a skew link of two trees with rank $r$. *}
+  a skew link of two trees with rank $r$.\<close>
 function tree_invar :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> bool" where
   "tree_invar (Node e a 0 ts) = (ts = [])" |
   "tree_invar (Node e a (Suc r) ts) = (\<exists> e1 a1 ts1 e2 a2 ts2 e' a'. 
@@ -99,12 +99,12 @@ termination
   apply auto
 done
 
-text {* A heap satisfies the invariant, if all contained trees satisfy the 
+text \<open>A heap satisfies the invariant, if all contained trees satisfy the 
   invariant, the ranks of the trees in the heap are distinct, except that the
   first two trees may have same rank, and the ranks are ordered in ascending 
-  order.*}
+  order.\<close>
 
-text {* First part: All trees inside the queue satisfy the invariant. *}
+text \<open>First part: All trees inside the queue satisfy the invariant.\<close>
 definition queue_invar :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> bool" where
   "queue_invar q \<equiv> (\<forall>t \<in> set q. tree_invar t)"
 
@@ -116,17 +116,17 @@ lemma queue_invar_simps[simp]:
   unfolding queue_invar_def by auto
 
 
-text {* Second part: The ranks of the trees in the heap are distinct, 
+text \<open>Second part: The ranks of the trees in the heap are distinct, 
   except that the first two trees may have same rank, and the ranks are 
-  ordered in ascending order.*}
+  ordered in ascending order.\<close>
 
-text {* For tail of queue *}
+text \<open>For tail of queue\<close>
 fun rank_invar :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> bool" where
   "rank_invar [] = True" |
   "rank_invar [t] = True" |
   "rank_invar (t # t' # bq) = (rank t < rank t' \<and> rank_invar (t' # bq))"
 
-text {* For whole queue: First two elements may have same rank *}
+text \<open>For whole queue: First two elements may have same rank\<close>
 fun rank_skew_invar :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> bool" where
   "rank_skew_invar [] = True" |
   "rank_skew_invar [t] = True" |
@@ -229,7 +229,7 @@ proof (induct bq)
   then show ?case by (simp add: tail_invar_def)
 next
   case (Cons a bq)
-  from `tail_invar (a # bq)` have "tail_invar bq" 
+  from \<open>tail_invar (a # bq)\<close> have "tail_invar bq" 
     by (rule tail_invar_cons_down)
   with Cons have "tail_invar (bq @ [t'])" by simp
   with Cons show ?case 
@@ -309,7 +309,7 @@ fun heap_ordered :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> bool" whe
    = (\<forall>x \<in> set_mset (queue_to_multiset ts). a \<le> snd x)"
 
 
-text {* The invariant for trees implies heap order. *}
+text \<open>The invariant for trees implies heap order.\<close>
 lemma tree_invar_heap_ordered: 
   fixes t :: "('e, 'a::linorder) SkewBinomialTree"
   assumes "tree_invar t"
@@ -344,15 +344,15 @@ qed
 
 
 subsubsection "Height and Length"
-text {*
+text \<open>
   Although complexity of HOL-functions cannot be expressed within 
   HOL, we can express the height and length of a binomial heap.
   By showing that both, height and length, are logarithmic in the number 
   of contained elements, we give strong evidence that our functions have
   logarithmic complexity in the number of elements.
-*}
+\<close>
 
-text {* Height of a tree and queue *}
+text \<open>Height of a tree and queue\<close>
 fun height_tree :: "('e, ('a::linorder)) SkewBinomialTree \<Rightarrow> nat" and
     height_queue :: "('e, ('a::linorder)) SkewBinomialQueue \<Rightarrow> nat" 
   where
@@ -451,8 +451,8 @@ next
     done
 qed
 
-text {* A skew binomial tree of height $h$ contains at most  $2^{h+1} - 1$
-  elements *}
+text \<open>A skew binomial tree of height $h$ contains at most  $2^{h+1} - 1$
+  elements\<close>
 theorem tree_height_estimate_upper:
   "tree_invar t \<Longrightarrow> 
   size (tree_to_multiset t) \<le> (2::nat)^(Suc (height_tree t)) - 1"
@@ -462,7 +462,7 @@ theorem tree_height_estimate_upper:
   apply (simp only: )
   done
 
-text {* A skew binomial tree of height $h$ contains at least  $2^{h}$ elements *}
+text \<open>A skew binomial tree of height $h$ contains at least  $2^{h}$ elements\<close>
 theorem tree_height_estimate_lower:
   "tree_invar t \<Longrightarrow> size (tree_to_multiset t) \<ge> (2::nat)^(height_tree t)"
   apply (cases t, simp only:)
@@ -530,9 +530,9 @@ lemma size_queue_sum_list:
   "size (queue_to_multiset bq) = sum_list (map (size \<circ> tree_to_multiset) bq)"
   by (induct bq) simp_all
 
-text {*
+text \<open>
   A skew binomial heap of length $l$ contains at least $2^{l-1} - 1$ elements. 
-*}
+\<close>
 theorem queue_length_estimate_lower: 
   "invar bq \<Longrightarrow> (size (queue_to_multiset bq)) \<ge> 2^(length bq - 1) - 1"
 proof (induct bq rule: rev_induct)
@@ -585,9 +585,9 @@ lemma empty_correct: "q=Nil \<longleftrightarrow> queue_to_multiset q = {#}"
   done
 
 subsubsection "Insert"
-text {* Inserts a tree into the queue, such that two trees of same rank get 
+text \<open>Inserts a tree into the queue, such that two trees of same rank get 
   linked and are recursively inserted. This is the same definition as for 
-  binomial queues and is used for melding. *}
+  binomial queues and is used for melding.\<close>
 fun ins :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> ('e, 'a) SkewBinomialQueue \<Rightarrow> 
   ('e, 'a) SkewBinomialQueue" where
   "ins t [] = [t]" |
@@ -598,7 +598,7 @@ fun ins :: "('e, 'a::linorder) SkewBinomialTree \<Rightarrow> ('e, 'a) SkewBinom
         then t # (ins t' bq) 
         else ins (link t' t) bq))"
 
-text {* Insert an element with priority into a queue using skewlinks. *}
+text \<open>Insert an element with priority into a queue using skewlinks.\<close>
 fun insert :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) SkewBinomialQueue \<Rightarrow> 
   ('e, 'a) SkewBinomialQueue" where
   "insert e a [] = [Node e a 0 []]" |
@@ -721,16 +721,16 @@ theorem insert_correct:
   unfolding invar_def by simp_all
 
 subsubsection "meld"
-text {* Remove duplicate tree ranks by inserting the first tree of the 
-  queue into the rest of the queue. *}
+text \<open>Remove duplicate tree ranks by inserting the first tree of the 
+  queue into the rest of the queue.\<close>
 fun uniqify 
   :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> ('e, 'a) SkewBinomialQueue" 
   where
   "uniqify [] = []" |
   "uniqify (t#bq) = ins t bq"
 
-text {* Meld two uniquified queues using the same definition as for 
-  binomial queues. *}
+text \<open>Meld two uniquified queues using the same definition as for 
+  binomial queues.\<close>
 fun meldUniq 
   :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> ('e,'a) SkewBinomialQueue \<Rightarrow>
   ('e, 'a) SkewBinomialQueue" where
@@ -742,7 +742,7 @@ fun meldUniq
               then t2 # (meldUniq (t1#bq1) bq2)
               else ins (link t1 t2) (meldUniq bq1 bq2)))"
 
-text {* Meld two queues using above functions. *}
+text \<open>Meld two queues using above functions.\<close>
 definition meld 
   :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> ('e, 'a) SkewBinomialQueue \<Rightarrow> 
       ('e, 'a) SkewBinomialQueue" where
@@ -930,10 +930,10 @@ next
     from inv1 and inv2 and prems have 
       mm: "min (rank (hd bq1)) (rank (hd bq2)) \<le> rank (hd (meldUniq bq1 bq2))" 
       by simp
-    from `rank_invar (t1 # bq1)` have "bq1 \<noteq> [] \<Longrightarrow> rank t1 < rank (hd bq1)" 
+    from \<open>rank_invar (t1 # bq1)\<close> have "bq1 \<noteq> [] \<Longrightarrow> rank t1 < rank (hd bq1)" 
       by (simp add: rank_invar_not_empty_hd)
     with prems have r1: "bq1 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq1)" by simp
-    from `rank_invar (t2 # bq2)` have r2: "bq2 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq2)"
+    from \<open>rank_invar (t2 # bq2)\<close> have r2: "bq2 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq2)"
       by (simp add: rank_invar_not_empty_hd)
     
     from inv1 r r1 rank_ins_min[of bq1 "(link t1 t2)"] have 
@@ -944,7 +944,7 @@ next
     from r1 r2 mm have 
       "\<lbrakk>bq1 \<noteq> []; bq2 \<noteq> []\<rbrakk> \<Longrightarrow> rank t2 < rank (hd (meldUniq bq1 bq2))" 
       by (simp)
-    with `rank_invar (meldUniq bq1 bq2)` r 
+    with \<open>rank_invar (meldUniq bq1 bq2)\<close> r 
       rank_ins_min[of "meldUniq bq1 bq2" "link t1 t2"] 
     have "\<lbrakk>bq1 \<noteq> []; bq2 \<noteq> []\<rbrakk> \<Longrightarrow> 
       rank t2 < rank (hd (ins (link t1 t2) (meldUniq bq1 bq2)))" 
@@ -986,7 +986,7 @@ theorem meld_correct:
 
 
 subsubsection "Find Minimal Element"
-text {* Find the tree containing the minimal element. *}
+text \<open>Find the tree containing the minimal element.\<close>
 fun getMinTree :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> 
   ('e, 'a) SkewBinomialTree" where
   "getMinTree [t] = t" |
@@ -995,7 +995,7 @@ fun getMinTree :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow>
       then t
       else (getMinTree bq))"
 
-text {* Find the minimal Element in the queue. *}
+text \<open>Find the minimal Element in the queue.\<close>
 definition findMin :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> ('e \<times> 'a)" where
   "findMin bq = (let min = getMinTree bq in (val min, prio min))"
 
@@ -1075,14 +1075,14 @@ theorem findMin_correct:
 
 subsubsection "Delete Minimal Element"
 
-text {* Insert the roots of a given queue into an other queue. *}
+text \<open>Insert the roots of a given queue into an other queue.\<close>
 fun insertList :: 
   "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> ('e, 'a) SkewBinomialQueue \<Rightarrow> 
    ('e, 'a) SkewBinomialQueue" where
   "insertList [] tbq = tbq" |
   "insertList (t#bq) tbq = insertList bq (insert (val t) (prio t) tbq)"
 
-text {* Remove the first tree, which has the priority $a$ within his root. *}
+text \<open>Remove the first tree, which has the priority $a$ within his root.\<close>
 fun remove1Prio :: "'a \<Rightarrow> ('e, 'a::linorder) SkewBinomialQueue \<Rightarrow>
   ('e, 'a) SkewBinomialQueue" where
   "remove1Prio a [] = []" |
@@ -1111,7 +1111,7 @@ next
   qed
 qed
 
-text {* Return the queue without the minimal element found by findMin *}
+text \<open>Return the queue without the minimal element found by findMin\<close>
 definition deleteMin :: "('e, 'a::linorder) SkewBinomialQueue \<Rightarrow> 
   ('e, 'a) SkewBinomialQueue" where
   "deleteMin bq = (let min = getMinTree bq in insertList
@@ -1580,7 +1580,7 @@ interpretation SkewBinomialHeapStruc: SkewBinomialHeapStruc_loc .
 
 
 subsection "Bootstrapping"
-text {*
+text \<open>
   In this section, we implement datastructural bootstrapping, to
   reduce the complexity of meld-operations to $O(1)$.
   The bootstrapping also contains a {\em global root}, caching the
@@ -1601,17 +1601,17 @@ text {*
   The correctness proofs are done by defining a mapping from teh specialized to 
   the original data structure, and reusing the correctness statements of the 
   original data structure.
-*}
+\<close>
 
 subsubsection "Auxiliary"
-text {*
+text \<open>
   We first have to state some auxiliary lemmas and functions, mainly
   about multisets.
-*}
+\<close>
 (* TODO: Some of these should be moved into the multiset library, they are
   marked by *MOVE* *)
 
-text {* Finding the preimage of an element *}
+text \<open>Finding the preimage of an element\<close>
 (*MOVE*)
 lemma in_image_msetE:
   assumes "x\<in>#image_mset f M"
@@ -1622,8 +1622,8 @@ lemma in_image_msetE:
   apply (force split: if_split_asm)
   done
 
-text {* Very special lemma for images multisets of pairs, where the second
-  component is a function of the first component *}
+text \<open>Very special lemma for images multisets of pairs, where the second
+  component is a function of the first component\<close>
 lemma mset_image_fst_dep_pair_diff_split:
   "(\<forall>e a. (e,a)\<in>#M \<longrightarrow> a=f e) \<Longrightarrow>
   image_mset fst (M - {#(e, f e)#}) = image_mset fst M - {#e#}"
@@ -1658,11 +1658,11 @@ locale Bootstrapped
 begin
 
 subsubsection "Datatype"
-text {* We manually specialize the binomial tree to contain elements, that, in, 
+text \<open>We manually specialize the binomial tree to contain elements, that, in, 
   turn, may contain trees.
   Note that we specify nodes without explicit priority,
   as the priority is contained in the elements stored in the nodes.
-*}
+\<close>
 
 
 datatype ('e, 'a) BsSkewBinomialTree = 
@@ -1676,21 +1676,21 @@ type_synonym ('e,'a) BsSkewHeap = "unit + ('e,'a) BsSkewElem"
 type_synonym ('e,'a) BsSkewBinomialQueue = "('e,'a) BsSkewBinomialTree list"
 
 subsubsection "Specialization Boilerplate"
-text {*
+text \<open>
   In this section, we re-define the functions
   on the specialized priority queues, and show there correctness.
   This is done by defining a mapping to original priority queues,
   and re-using the correctness lemmas proven there.
-*}
+\<close>
 
-text {* Mapping to original binomial trees and queues*}
+text \<open>Mapping to original binomial trees and queues\<close>
 fun bsmapt where
   "bsmapt (BsNode e r q) = SkewBinomialHeapStruc.Node e (eprio e) r (map bsmapt q)"
 
 abbreviation bsmap where
   "bsmap q == map bsmapt q"
 
-text {* Invariant and mapping to multiset are defined via the mapping *}
+text \<open>Invariant and mapping to multiset are defined via the mapping\<close>
 abbreviation "invar q == SkewBinomialHeapStruc.invar (bsmap q)"
 abbreviation "queue_to_multiset q 
   == image_mset fst (SkewBinomialHeapStruc.queue_to_multiset (bsmap q))"
@@ -1701,7 +1701,7 @@ abbreviation "queue_to_multiset_aux q
   == (SkewBinomialHeapStruc.queue_to_multiset (bsmap q))"
 
 
-text {* Now starts the re-implementation of the functions*}
+text \<open>Now starts the re-implementation of the functions\<close>
 primrec prio :: "('e, 'a::linorder) BsSkewBinomialTree \<Rightarrow> 'a" where
   "prio (BsNode e r ts) = eprio e"
 
@@ -1724,8 +1724,8 @@ fun  link :: "('e, 'a::linorder) BsSkewBinomialTree
      then (BsNode e1 (Suc r1) ((BsNode e2 r2 ts2)#ts1))
      else (BsNode e2 (Suc r2) ((BsNode e1 r1 ts1)#ts2)))"
 
-text {* Link two trees of rank $r$ and a new element to a new tree of 
-  rank $r+1$ *}
+text \<open>Link two trees of rank $r$ and a new element to a new tree of 
+  rank $r+1$\<close>
 fun skewlink :: "('e,'a::linorder) BsSkewElem \<Rightarrow> ('e, 'a) BsSkewBinomialTree \<Rightarrow> 
   ('e, 'a) BsSkewBinomialTree \<Rightarrow> ('e, 'a) BsSkewBinomialTree" where
   "skewlink e t t' = (if eprio e \<le> (prio t) \<and> eprio e \<le> (prio t')
@@ -1759,7 +1759,7 @@ lemma ins_xlate:
   by (induct q arbitrary: t) (auto simp add: proj_xlate link_xlate)
 
 
-text {* Insert an element with priority into a queue using skewlinks. *}
+text \<open>Insert an element with priority into a queue using skewlinks.\<close>
 fun insert :: "('e,'a::linorder) BsSkewElem \<Rightarrow>
   ('e, 'a) BsSkewBinomialQueue \<Rightarrow> 
   ('e, 'a) BsSkewBinomialQueue" where
@@ -1992,7 +1992,7 @@ declare insert.simps[simp del]
 
 
 subsubsection "Bootstrapping: Phase 1"
-text {*
+text \<open>
   In this section, we define the ticked versions
   of the functions, as defined in \cite{BrOk96}.
   These functions work on elements, i.e. only on 
@@ -2000,7 +2000,7 @@ text {*
   Additionally, we define an invariant for elements, and
   a mapping to multisets of entries, and prove correct
   the ticked functions.
-*}
+\<close>
 
 primrec findMin' where "findMin' (Element e a q) = (e,a)"
 fun meld':: "('e,'a::linorder) BsSkewElem \<Rightarrow> 
@@ -2020,9 +2020,9 @@ fun deleteMin' where
         Element ey ay (meld q1 (deleteMin q))
   )"
 
-text {*
+text \<open>
   Size-function for termination proofs
-*}
+\<close>
 fun tree_level and queue_level where
   "tree_level (BsNode (Element _ _ qd) _ q) = 
   max (Suc (queue_level qd)) (queue_level q)" |
@@ -2047,9 +2047,9 @@ lemma level_measure:
   apply (auto dest: level_m simp del: set_image_mset)
   done
 
-text {*
+text \<open>
   Invariant for elements
-*}
+\<close>
 function elem_invar where
   "elem_invar (Element e a q) \<longleftrightarrow>
   (\<forall>x. x\<in># (queue_to_multiset q) \<longrightarrow> a \<le> eprio x \<and> elem_invar x) \<and> 
@@ -2061,9 +2061,9 @@ proof
 qed (rule level_measure)
 
 
-text {*
+text \<open>
   Abstraction to multisets
-*}
+\<close>
 function elem_to_mset where
   "elem_to_mset (Element e a q) = {# (e,a) #} 
   + Union_mset (image_mset elem_to_mset (queue_to_multiset q))"
@@ -2181,10 +2181,10 @@ proof -
 qed
 
 subsubsection "Bootstrapping: Phase 2"
-text {*
+text \<open>
   In this phase, we extend the ticked versions to also work with
   empty priority queues.
-*}
+\<close>
 
 definition bs_empty where "bs_empty \<equiv> Inl ()"
 
@@ -2355,11 +2355,11 @@ begin
     else Abs_SkewBinomialHeap (
             BsSkewBinomialHeapStruc.bs_deleteMin (Rep_SkewBinomialHeap q))"
 
-  text {*
+  text \<open>
     We don't use equality here, to prevent the code-generator
-    from introducing equality-class parameter for type @{text 'a}.
+    from introducing equality-class parameter for type \<open>'a\<close>.
     Instead we use a case-distinction to check for emptiness.
-    *}
+\<close>
   lemma [code abstract]: "Rep_SkewBinomialHeap (deleteMin q) =
     (case (Rep_SkewBinomialHeap q) of Inl _ \<Rightarrow> BsSkewBinomialHeapStruc.bs_empty |
      _ \<Rightarrow> BsSkewBinomialHeapStruc.bs_deleteMin (Rep_SkewBinomialHeap q))"
@@ -2443,7 +2443,7 @@ begin
     apply (simp_all add: BsSkewBinomialHeapStruc.bs_meld_correct)
     done
 
-  text {* Correctness lemmas to be used with simplifier *}
+  text \<open>Correctness lemmas to be used with simplifier\<close>
   lemmas correct = empty_correct deleteMin_correct meld_correct
 
   end
@@ -2479,51 +2479,51 @@ subsection "Documentation"
 *)
 
 
-text {*
+text \<open>
    \underline{@{term_type "SkewBinomialHeap.to_mset"}}\\
         Abstraction to multiset.\\
 
 
     \underline{@{term_type "SkewBinomialHeap.empty"}}\\
         The empty heap. ($O(1)$)\\
-    {\bf Spec} @{text "SkewBinomialHeap.empty_correct"}:
+    {\bf Spec} \<open>SkewBinomialHeap.empty_correct\<close>:
     @{thm [display] SkewBinomialHeap.empty_correct[no_vars]}
 
 
     \underline{@{term_type "SkewBinomialHeap.isEmpty"}}\\
         Checks whether heap is empty. Mainly used to work around
     code-generation issues. ($O(1)$)\\
-    {\bf Spec} @{text "SkewBinomialHeap.isEmpty_correct"}:
+    {\bf Spec} \<open>SkewBinomialHeap.isEmpty_correct\<close>:
     @{thm [display] SkewBinomialHeap.isEmpty_correct[no_vars]}
 
 
     \underline{@{term "SkewBinomialHeap.insert"}}
     @{term_type [display] "SkewBinomialHeap.insert"}
         Inserts element ($O(1)$)\\
-    {\bf Spec} @{text "SkewBinomialHeap.insert_correct"}:
+    {\bf Spec} \<open>SkewBinomialHeap.insert_correct\<close>:
     @{thm [display] SkewBinomialHeap.insert_correct[no_vars]}
 
 
     \underline{@{term_type "SkewBinomialHeap.findMin"}}\\
         Returns a minimal element ($O(1)$)\\
-    {\bf Spec} @{text "SkewBinomialHeap.findMin_correct"}:
+    {\bf Spec} \<open>SkewBinomialHeap.findMin_correct\<close>:
     @{thm [display] SkewBinomialHeap.findMin_correct[no_vars]}
 
 
     \underline{@{term "SkewBinomialHeap.deleteMin"}}
     @{term_type [display] "SkewBinomialHeap.deleteMin"}
         Deletes {\em the} element that is returned by {\em find\_min}. $O(\log(n))$\\
-    {\bf Spec} @{text "SkewBinomialHeap.deleteMin_correct"}:
+    {\bf Spec} \<open>SkewBinomialHeap.deleteMin_correct\<close>:
     @{thm [display] SkewBinomialHeap.deleteMin_correct[no_vars]}
 
 
     \underline{@{term "SkewBinomialHeap.meld"}}
     @{term_type [display] "SkewBinomialHeap.meld"}
         Melds two heaps ($O(1)$)\\
-    {\bf Spec} @{text "SkewBinomialHeap.meld_correct"}:
+    {\bf Spec} \<open>SkewBinomialHeap.meld_correct\<close>:
     @{thm [display] SkewBinomialHeap.meld_correct[no_vars]}
 
-*}
+\<close>
 
 
 end

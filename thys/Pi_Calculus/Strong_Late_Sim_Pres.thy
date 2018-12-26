@@ -48,13 +48,13 @@ lemma inputPres:
 using Eqvt
 proof(induct rule: simCasesCont[where C="(x, a, P, Q)"])
   case(Bound b y Q')
-  from `y \<sharp> (x, a, P, Q)` have "y \<noteq> x" "y \<noteq> a" "y \<sharp> P" "y \<sharp> Q" by simp+
-  from `a<x>.Q \<longmapsto>b\<guillemotleft>y\<guillemotright> \<prec> Q'` `y \<noteq> a` `y \<noteq> x` `y \<sharp> Q` show ?case
+  from \<open>y \<sharp> (x, a, P, Q)\<close> have "y \<noteq> x" "y \<noteq> a" "y \<sharp> P" "y \<sharp> Q" by simp+
+  from \<open>a<x>.Q \<longmapsto>b\<guillemotleft>y\<guillemotright> \<prec> Q'\<close> \<open>y \<noteq> a\<close> \<open>y \<noteq> x\<close> \<open>y \<sharp> Q\<close> show ?case
   proof(induct rule: inputCases)
     case cInput
     
     have "a<x>.P \<longmapsto> a<x> \<prec> P" by(rule Input) 
-    hence "a<x>.P \<longmapsto> a<y> \<prec> ([(x, y)] \<bullet> P)" using `y \<sharp> P`
+    hence "a<x>.P \<longmapsto> a<y> \<prec> ([(x, y)] \<bullet> P)" using \<open>y \<sharp> P\<close>
       by(simp add: alphaBoundResidual)
 
     moreover have "derivative ([(x, y)] \<bullet> P) ([(x, y)] \<bullet> Q) (InputS a) y Rel"
@@ -80,7 +80,7 @@ proof(induct rule: simCasesCont[where C="(x, a, P, Q)"])
             from PRelQ have "(P[x::=y], Q[x::=y]) \<in> Rel" by blast
             with Eqvt have "([(y, x)] \<bullet> (P[x::=y]), [(y, x)] \<bullet> (Q[x::=y])) \<in> Rel"
               by(rule eqvtRelI)
-            with `y \<noteq> x` show ?thesis
+            with \<open>y \<noteq> x\<close> show ?thesis
               by(simp add: eqvt_subs name_calc)
           qed
           ultimately show ?thesis by simp
@@ -91,7 +91,7 @@ proof(induct rule: simCasesCont[where C="(x, a, P, Q)"])
             from PRelQ have "(P[x::=u], Q[x::=u]) \<in> Rel" by blast
             with Eqvt have "([(y, x)] \<bullet> (P[x::=u]), [(y, x)] \<bullet> (Q[x::=u])) \<in> Rel"
               by(rule eqvtRelI)
-            with `y \<noteq> x`  xinequ yinequ show ?thesis
+            with \<open>y \<noteq> x\<close>  xinequ yinequ show ?thesis
               by(simp add: eqvt_subs name_calc)
           qed
           thus ?thesis by simp
@@ -166,7 +166,7 @@ proof -
         by(blast dest: simE)
 
       from PTrans have "[a\<frown>a]P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> P'" by(rule Late_Semantics.Match)
-      moreover from Pderivative `Rel \<subseteq> Rel'` have "derivative P' Q' c x Rel'"
+      moreover from Pderivative \<open>Rel \<subseteq> Rel'\<close> have "derivative P' Q' c x Rel'"
         by(cases c) (auto simp add: derivative_def)
       ultimately show ?case by blast
     qed
@@ -181,7 +181,7 @@ proof -
                              and PRel: "(P', Q') \<in> Rel"
           by(blast dest: simE)
       from PTrans have "[a\<frown>a]P \<longmapsto>\<alpha> \<prec> P'" by(rule Late_Semantics.Match)
-      with PRel `Rel \<subseteq> Rel'` show ?case by blast
+      with PRel \<open>Rel \<subseteq> Rel'\<close> show ?case by blast
     qed
   qed
 qed
@@ -202,7 +202,7 @@ proof(induct rule: simCases)
   case(Bound c x Q')
   have "x \<sharp> [a\<noteq>b]P" by fact
   hence xFreshP: "x \<sharp> P" by simp
-  from `[a\<noteq>b]Q \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> Q'` show ?case
+  from \<open>[a\<noteq>b]Q \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> Q'\<close> show ?case
   proof(induct rule: mismatchCases)
     case cMismatch
     have "Q \<longmapsto>c\<guillemotleft>x\<guillemotright> \<prec> Q'" by fact
@@ -210,8 +210,8 @@ proof(induct rule: simCases)
                                    and Pderivative: "derivative P' Q' c x Rel"
       by(blast dest: simE)
 
-    from PTrans `a \<noteq> b` have "[a\<noteq>b]P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> P'" by(rule Late_Semantics.Mismatch)
-    moreover from Pderivative `Rel \<subseteq> Rel'` have "derivative P' Q' c x Rel'"
+    from PTrans \<open>a \<noteq> b\<close> have "[a\<noteq>b]P \<longmapsto> c\<guillemotleft>x\<guillemotright> \<prec> P'" by(rule Late_Semantics.Mismatch)
+    moreover from Pderivative \<open>Rel \<subseteq> Rel'\<close> have "derivative P' Q' c x Rel'"
       by(cases c) (auto simp add: derivative_def)
     ultimately show ?case by blast
   qed
@@ -225,8 +225,8 @@ next
     with PSimQ obtain P' where PTrans: "P \<longmapsto> \<alpha> \<prec> P'"
                            and PRel: "(P', Q') \<in> Rel"
       by(blast dest: simE)
-    from PTrans `a \<noteq> b` have "[a\<noteq>b]P \<longmapsto>\<alpha> \<prec> P'" by(rule Late_Semantics.Mismatch)
-    with PRel `Rel \<subseteq> Rel'` show ?case by blast
+    from PTrans \<open>a \<noteq> b\<close> have "[a\<noteq>b]P \<longmapsto>\<alpha> \<prec> P'" by(rule Late_Semantics.Mismatch)
+    with PRel \<open>Rel \<subseteq> Rel'\<close> show ?case by blast
   qed
 qed
 
@@ -256,13 +256,13 @@ proof -
         by(blast dest: simE)
 
       from PTrans have "P \<oplus> R \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P'" by(rule Late_Semantics.Sum1)
-      moreover from Pderivative `Rel \<subseteq> Rel'` have "derivative P' QR a x Rel'"
+      moreover from Pderivative \<open>Rel \<subseteq> Rel'\<close> have "derivative P' QR a x Rel'"
         by(cases a) (auto simp add: derivative_def)
       ultimately show ?case by blast
     next
       case cSum2
-      from `R \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> QR` have "P \<oplus> R \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> QR" by(rule Sum2)
-      thus ?case using `Id \<subseteq> Rel'` by(blast intro: derivativeReflexive)
+      from \<open>R \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> QR\<close> have "P \<oplus> R \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> QR" by(rule Sum2)
+      thus ?case using \<open>Id \<subseteq> Rel'\<close> by(blast intro: derivativeReflexive)
     qed
   next
     case(Free \<alpha> QR)
@@ -274,11 +274,11 @@ proof -
       with PSimQ obtain P' where PTrans: "P \<longmapsto>\<alpha> \<prec> P'" and PRel: "(P', QR) \<in> Rel" 
         by(blast dest: simE)
       from PTrans have "P \<oplus> R \<longmapsto>\<alpha> \<prec> P'" by(rule Late_Semantics.Sum1)
-      with PRel `Rel \<subseteq> Rel'` show ?case by blast
+      with PRel \<open>Rel \<subseteq> Rel'\<close> show ?case by blast
     next
       case cSum2
-      from `R \<longmapsto>\<alpha> \<prec> QR` have "P \<oplus> R \<longmapsto>\<alpha> \<prec> QR" by(rule Sum2)
-      thus ?case using `Id \<subseteq> Rel'` by(blast intro: derivativeReflexive)
+      from \<open>R \<longmapsto>\<alpha> \<prec> QR\<close> have "P \<oplus> R \<longmapsto>\<alpha> \<prec> QR" by(rule Sum2)
+      thus ?case using \<open>Id \<subseteq> Rel'\<close> by(blast intro: derivativeReflexive)
     qed
   qed
 qed
@@ -309,7 +309,7 @@ proof(induct rule: simCasesCont[where C="()"])
   have "x \<sharp> P \<parallel> R" and "x \<sharp> Q \<parallel> T" by fact+
   hence xFreshP: "x \<sharp> P" and xFreshR: "x \<sharp> R" and "x \<sharp> Q" and "x \<sharp> T" by simp+
   have QTTrans: "Q \<parallel> T \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> Q'" by fact
-  thus ?case using `x \<sharp> Q` `x \<sharp> T`
+  thus ?case using \<open>x \<sharp> Q\<close> \<open>x \<sharp> T\<close>
   proof(induct rule: parCasesB)
     case(cPar1 Q')
     have QTrans: "Q \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> Q'" and xFreshT: "x \<sharp> T" by fact+
@@ -357,8 +357,8 @@ next
     ultimately show ?case by blast
   next
     case(cComm1 Q' T' a b x)
-    from `x \<sharp> (P, R)` have "x \<sharp> P" by simp
-    with `P \<leadsto>[Rel] Q` `Q \<longmapsto> a<x> \<prec> Q'` `x \<sharp> P`
+    from \<open>x \<sharp> (P, R)\<close> have "x \<sharp> P" by simp
+    with \<open>P \<leadsto>[Rel] Q\<close> \<open>Q \<longmapsto> a<x> \<prec> Q'\<close> \<open>x \<sharp> P\<close>
     obtain P' where PTrans: "P \<longmapsto>a<x> \<prec> P'" 
                 and Pderivative: "derivative P' Q' (InputS a) x Rel"
       by(blast dest: simE)
@@ -377,8 +377,8 @@ next
     then obtain P' where PTrans: "P \<longmapsto>a[b] \<prec> P'" and PRel: "(P', Q') \<in> Rel"
       by(blast dest: simE)
     
-    from `x \<sharp> (P, R)` have "x \<sharp> R" by simp
-    with `R \<leadsto>[Rel'] T` `T \<longmapsto>a<x> \<prec> T'`
+    from \<open>x \<sharp> (P, R)\<close> have "x \<sharp> R" by simp
+    with \<open>R \<leadsto>[Rel'] T\<close> \<open>T \<longmapsto>a<x> \<prec> T'\<close>
     obtain R' where RTrans: "R \<longmapsto>a<x> \<prec> R'"
                 and Rderivative: "derivative R' T' (InputS a) x Rel'"
       by(blast dest: simE)
@@ -389,39 +389,39 @@ next
     ultimately show "\<exists>P'. P \<parallel> R \<longmapsto> \<tau> \<prec> P' \<and> (P', Q' \<parallel> T'[x::=b]) \<in> Rel''" by blast
   next
     case(cClose1 Q' T' a x y)
-    from `x \<sharp> (P, R)` have "x \<sharp> P" by simp
-    with `P \<leadsto>[Rel] Q` `Q \<longmapsto>a<x> \<prec> Q'`
+    from \<open>x \<sharp> (P, R)\<close> have "x \<sharp> P" by simp
+    with \<open>P \<leadsto>[Rel] Q\<close> \<open>Q \<longmapsto>a<x> \<prec> Q'\<close>
     obtain P' where PTrans: "P \<longmapsto>a<x> \<prec> P'"
                 and Pderivative: "derivative P' Q' (InputS a) x Rel"
       by(blast dest: simE)
     from Pderivative have PRel: "(P'[x::=y], Q'[x::=y]) \<in> Rel" by(simp add: derivative_def)
       
-    from `y \<sharp> (P, R)` have "y \<sharp> R" and "y \<sharp> P" by simp+
-    from `R \<leadsto>[Rel'] T` `T \<longmapsto>a<\<nu>y> \<prec> T'` `y \<sharp> R`
+    from \<open>y \<sharp> (P, R)\<close> have "y \<sharp> R" and "y \<sharp> P" by simp+
+    from \<open>R \<leadsto>[Rel'] T\<close> \<open>T \<longmapsto>a<\<nu>y> \<prec> T'\<close> \<open>y \<sharp> R\<close>
     obtain R' where RTrans: "R \<longmapsto>a<\<nu>y> \<prec> R'"
                 and Rderivative: "derivative R' T' (BoundOutputS a) y Rel'"
       by(blast dest: simE)
     from Rderivative have RRel: "(R', T') \<in> Rel'" by(simp add: derivative_def)
     
-    from PTrans RTrans `y \<sharp> P` have Trans: "P \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>(P'[x::=y] \<parallel> R')"
+    from PTrans RTrans \<open>y \<sharp> P\<close> have Trans: "P \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>(P'[x::=y] \<parallel> R')"
       by(rule Late_Semantics.Close1)
     moreover from PRel RRel have "(<\<nu>y>(P'[x::=y] \<parallel> R'), <\<nu>y>(Q'[x::=y] \<parallel> T')) \<in> Rel''"
       by(blast intro: Par Res)
     ultimately show ?case by blast
   next
     case(cClose2 Q' T' a x y)
-    from `y \<sharp> (P, R)` have "y \<sharp> P" and "y \<sharp> R" by simp+
-    from `P \<leadsto>[Rel] Q` `Q \<longmapsto>a<\<nu>y> \<prec> Q'` `y \<sharp> P`
+    from \<open>y \<sharp> (P, R)\<close> have "y \<sharp> P" and "y \<sharp> R" by simp+
+    from \<open>P \<leadsto>[Rel] Q\<close> \<open>Q \<longmapsto>a<\<nu>y> \<prec> Q'\<close> \<open>y \<sharp> P\<close>
     obtain P' where PTrans: "P \<longmapsto>a<\<nu>y> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
       by(force dest: simE simp add: derivative_def)
     
-    from `x \<sharp> (P, R)` have "x \<sharp> R" by simp+
-    with `R \<leadsto>[Rel'] T` `T \<longmapsto>a<x> \<prec> T'`
+    from \<open>x \<sharp> (P, R)\<close> have "x \<sharp> R" by simp+
+    with \<open>R \<leadsto>[Rel'] T\<close> \<open>T \<longmapsto>a<x> \<prec> T'\<close>
     obtain R' where RTrans: "R \<longmapsto>a<x> \<prec> R'"
                 and R'Rel'T': "(R'[x::=y], T'[x::=y]) \<in> Rel'" 
       by(force dest: simE simp add: derivative_def)
       
-    from PTrans RTrans `y \<sharp> R` have Trans: "P \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>(P' \<parallel> R'[x::=y])"
+    from PTrans RTrans \<open>y \<sharp> R\<close> have Trans: "P \<parallel> R \<longmapsto> \<tau> \<prec> <\<nu>y>(P' \<parallel> R'[x::=y])"
       by(rule Close2)
     moreover from P'RelQ' R'Rel'T' have "(<\<nu>y>(P' \<parallel> R'[x::=y]), <\<nu>y>(Q' \<parallel> T'[x::=y])) \<in> Rel''"
       by(blast intro: Par Res)
@@ -452,7 +452,7 @@ proof -
   moreover note PRelQ moreover have "(R, R) \<in> Id" by auto
   moreover from Par have "\<And>P Q R T. \<lbrakk>(P, Q) \<in> Rel; (R, T) \<in> Id\<rbrakk> \<Longrightarrow> (P \<parallel> R, Q \<parallel> T) \<in> Rel'"
     by auto
-  moreover note Res `eqvt Rel`
+  moreover note Res \<open>eqvt Rel\<close>
   moreover have "eqvt Id" by(auto simp add: eqvt_def)
   ultimately show ?thesis using EqvtRel' by(rule parCompose)
 qed
@@ -635,22 +635,22 @@ proof -
 
           from PTrans xFreshR have "P \<parallel> R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> (P' \<parallel> R)"
             by(force intro: Late_Semantics.Par1B)
-          moreover from P'RelQ' PBRQ `x \<sharp> Q` `x \<sharp> R` have "derivative (P' \<parallel> R) (Q' \<parallel> !Q) a x (bangRel Rel)"
+          moreover from P'RelQ' PBRQ \<open>x \<sharp> Q\<close> \<open>x \<sharp> R\<close> have "derivative (P' \<parallel> R) (Q' \<parallel> !Q) a x (bangRel Rel)"
             by(cases a) (auto simp add: derivative_def forget intro: Rel.BRPar)
           ultimately show "\<exists>P'. P \<parallel> R \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P' \<and> derivative P' (Q' \<parallel> !Q) a x (bangRel Rel)" by blast
         next
           fix y
           assume "(y::name) \<sharp> Q'" and "y \<sharp> P" and "y \<sharp> R" and "y \<sharp> Q"
-          from QTrans `y \<sharp> Q'` have "Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> Q')"
+          from QTrans \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> Q')"
             by(simp add: alphaBoundResidual)
           moreover from PRelQ have "P \<leadsto>[Rel] Q" by(rule Sim)
           ultimately obtain P' where PTrans: "P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P'" and P'RelQ': "derivative P' ([(x, y)] \<bullet> Q') a y Rel"
-            using `y \<sharp> P`
+            using \<open>y \<sharp> P\<close>
             by(blast dest: simE)
-          from PTrans `y \<sharp> R` have "P \<parallel> R \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> (P' \<parallel> R)" by(force intro: Late_Semantics.Par1B)
-          moreover from P'RelQ' PBRQ `y \<sharp> Q` `y \<sharp> R` have "derivative (P' \<parallel> R) (([(x, y)] \<bullet> Q') \<parallel> !Q) a y (bangRel Rel)"
+          from PTrans \<open>y \<sharp> R\<close> have "P \<parallel> R \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> (P' \<parallel> R)" by(force intro: Late_Semantics.Par1B)
+          moreover from P'RelQ' PBRQ \<open>y \<sharp> Q\<close> \<open>y \<sharp> R\<close> have "derivative (P' \<parallel> R) (([(x, y)] \<bullet> Q') \<parallel> !Q) a y (bangRel Rel)"
             by(cases a) (auto simp add: derivative_def forget intro: Rel.BRPar)
-          with `x \<sharp> Q` `y \<sharp> Q` have "derivative (P' \<parallel> R) (([(y, x)] \<bullet> Q') \<parallel> !([(y, x)] \<bullet> Q)) a y (bangRel Rel)"
+          with \<open>x \<sharp> Q\<close> \<open>y \<sharp> Q\<close> have "derivative (P' \<parallel> R) (([(y, x)] \<bullet> Q') \<parallel> !([(y, x)] \<bullet> Q)) a y (bangRel Rel)"
             by(simp add: name_fresh_fresh name_swap)
           ultimately show "\<exists>P'. P \<parallel> R \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P' \<and> derivative P' (([(y, x)] \<bullet> Q') \<parallel> !([(y, x)] \<bullet> Q)) a y (bangRel Rel)"
             by blast
@@ -686,24 +686,24 @@ proof -
         have "x \<sharp> P \<parallel> R" by fact
         hence xFreshP: "x \<sharp> P" and xFreshR: "x \<sharp> R" by simp+
 
-        from EqvtBangRel `x \<sharp> Q` show "?Sim (P \<parallel> R) (a\<guillemotleft>x\<guillemotright> \<prec> (Q \<parallel> Q'))"
+        from EqvtBangRel \<open>x \<sharp> Q\<close> show "?Sim (P \<parallel> R) (a\<guillemotleft>x\<guillemotright> \<prec> (Q \<parallel> Q'))"
         proof(auto simp add: residual.inject alpha' name_fresh_fresh)
           from RBRQ have "?Sim R (a\<guillemotleft>x\<guillemotright> \<prec> Q')" by(rule IH)
           with xFreshR obtain R' where RTrans: "R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> R'" and R'BRQ': "derivative R' Q' a x (bangRel Rel)"
             by(auto simp add: residual.inject)
           from RTrans xFreshP have "P \<parallel> R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> (P \<parallel> R')" by(auto intro: Par2B)
-          moreover from PRelQ R'BRQ' `x \<sharp> Q` `x \<sharp> P` have "derivative (P \<parallel> R') (Q \<parallel> Q') a x (bangRel Rel)" 
+          moreover from PRelQ R'BRQ' \<open>x \<sharp> Q\<close> \<open>x \<sharp> P\<close> have "derivative (P \<parallel> R') (Q \<parallel> Q') a x (bangRel Rel)" 
             by(cases a) (auto simp add: derivative_def forget intro: Rel.BRPar)
           ultimately show "\<exists>P'. P \<parallel> R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> P' \<and> derivative P' (Q \<parallel> Q') a x (bangRel Rel)" by blast
         next
           fix y
           assume "(y::name) \<sharp> Q" and "y \<sharp> Q'" and "y \<sharp> P" and "y \<sharp> R"
           from RBRQ have "?Sim R (a\<guillemotleft>x\<guillemotright> \<prec> Q')" by(rule IH)
-          with `y \<sharp> Q'` have "?Sim R (a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> Q'))" by(simp add: alphaBoundResidual)
-          with `y \<sharp> R` obtain R' where RTrans: "R \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> R'" and R'BRQ': "derivative R' ([(x, y)] \<bullet> Q') a y (bangRel Rel)"
+          with \<open>y \<sharp> Q'\<close> have "?Sim R (a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> Q'))" by(simp add: alphaBoundResidual)
+          with \<open>y \<sharp> R\<close> obtain R' where RTrans: "R \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> R'" and R'BRQ': "derivative R' ([(x, y)] \<bullet> Q') a y (bangRel Rel)"
             by(auto simp add: residual.inject)
-          from RTrans `y \<sharp> P` have "P \<parallel> R \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> (P \<parallel> R')" by(auto intro: Par2B)
-          moreover from PRelQ R'BRQ' `y \<sharp> P` `y \<sharp> Q` have "derivative (P \<parallel> R') (Q \<parallel> ([(x, y)] \<bullet> Q')) a y (bangRel Rel)" 
+          from RTrans \<open>y \<sharp> P\<close> have "P \<parallel> R \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> (P \<parallel> R')" by(auto intro: Par2B)
+          moreover from PRelQ R'BRQ' \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> have "derivative (P \<parallel> R') (Q \<parallel> ([(x, y)] \<bullet> Q')) a y (bangRel Rel)" 
             by(cases a) (auto simp add: derivative_def forget intro: Rel.BRPar)
           hence "derivative (P \<parallel> R') (Q \<parallel> ([(y, x)] \<bullet> Q')) a y (bangRel Rel)"
             by(simp add: name_swap)
@@ -735,15 +735,15 @@ proof -
       hence IH: "\<And>Pa. (Pa, !Q) \<in> bangRel Rel \<Longrightarrow> ?Sim Pa (a[b] \<prec> Q'')" by simp
       have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" by fact
       have "(Pa, Q \<parallel> !Q) \<in> bangRel Rel" by fact
-      thus ?case using `x \<sharp> Pa`
+      thus ?case using \<open>x \<sharp> Pa\<close>
       proof(induct rule: BRParCases)
         case(BRPar P R)
         have PRelQ: "(P, Q) \<in> Rel" and RBRQ: "(R, !Q) \<in> bangRel Rel" by fact+
-        from `x \<sharp> P \<parallel> R` have "x \<sharp> P" and "x \<sharp> R" by simp+
+        from \<open>x \<sharp> P \<parallel> R\<close> have "x \<sharp> P" and "x \<sharp> R" by simp+
         show ?case
         proof(auto simp add: residual.inject)
           from PRelQ have "P \<leadsto>[Rel] Q" by(rule Sim)
-          with QTrans `x \<sharp> P` obtain P' where PTrans: "P \<longmapsto> a<x> \<prec> P'" and P'RelQ': "(P'[x::=b], Q'[x::=b]) \<in> Rel"
+          with QTrans \<open>x \<sharp> P\<close> obtain P' where PTrans: "P \<longmapsto> a<x> \<prec> P'" and P'RelQ': "(P'[x::=b], Q'[x::=b]) \<in> Rel"
             by(drule_tac simE) (auto simp add: derivative_def)
           
           from IH RBRQ have RTrans: "\<exists>R'. R \<longmapsto> a[b] \<prec> R' \<and> (R', Q'') \<in> bangRel Rel"
@@ -761,18 +761,18 @@ proof -
       hence IH: "\<And>Pa. (Pa, !Q) \<in> bangRel Rel \<Longrightarrow> ?Sim Pa (a<x> \<prec> Q'')" by simp
       have QTrans: "Q \<longmapsto> a[b] \<prec> Q'" by fact
       have "(Pa, Q \<parallel> !Q) \<in> bangRel Rel" by fact
-      thus ?case using `x \<sharp> Pa`
+      thus ?case using \<open>x \<sharp> Pa\<close>
       proof(induct rule: BRParCases)
         case(BRPar P R)
         have PRelQ: "(P, Q) \<in> Rel" and RBRQ: "(R, !Q) \<in> bangRel Rel" by fact+
-        from `x \<sharp> P \<parallel> R` have "x \<sharp> P" and "x \<sharp> R" by simp+
+        from \<open>x \<sharp> P \<parallel> R\<close> have "x \<sharp> P" and "x \<sharp> R" by simp+
         show ?case
         proof(auto simp add: residual.inject)
           from PRelQ have "P \<leadsto>[Rel] Q" by(rule Sim)
           with QTrans obtain P' where PTrans: "P \<longmapsto> a[b] \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
             by(blast dest: simE)
 
-          from IH RBRQ `x \<sharp> R` have RTrans: "\<exists>R'. R \<longmapsto> a<x> \<prec> R' \<and> (R'[x::=b], Q''[x::=b]) \<in> bangRel Rel"
+          from IH RBRQ \<open>x \<sharp> R\<close> have RTrans: "\<exists>R'. R \<longmapsto> a<x> \<prec> R' \<and> (R'[x::=b], Q''[x::=b]) \<in> bangRel Rel"
             by(fastforce simp add: derivative_def residual.inject)
           then obtain R' where RTrans: "R \<longmapsto> a<x> \<prec> R'" and R'RelQ'': "(R'[x::=b], Q''[x::=b]) \<in> bangRel Rel"
             by blast
@@ -788,7 +788,7 @@ proof -
       have QTrans: "Q \<longmapsto> a<x> \<prec> Q'" by fact
       have "(Pa, Q \<parallel> !Q) \<in> bangRel Rel" by fact
       moreover have xFreshPa: "x \<sharp> Pa" by fact
-      ultimately show ?case using `y \<sharp> Pa`
+      ultimately show ?case using \<open>y \<sharp> Pa\<close>
       proof(induct rule: BRParCases)
         case(BRPar P R)
         have PRelQ: "(P, Q) \<in> Rel" and RBRQ: "(R, !Q) \<in> bangRel Rel" by fact+
@@ -800,12 +800,12 @@ proof -
           with QTrans xFreshP obtain P' where PTrans: "P \<longmapsto>a<x> \<prec> P'" and P'RelQ': "(P'[x::=y], Q'[x::=y]) \<in> Rel"
             by(fastforce dest: simE simp add: derivative_def)
 
-           from RBRQ `y \<sharp> R` IH have "\<exists>R'. R \<longmapsto>a<\<nu>y> \<prec> R' \<and> (R', Q'') \<in> bangRel Rel"
+           from RBRQ \<open>y \<sharp> R\<close> IH have "\<exists>R'. R \<longmapsto>a<\<nu>y> \<prec> R' \<and> (R', Q'') \<in> bangRel Rel"
              by(auto simp add: residual.inject derivative_def)
            then obtain R' where RTrans: "R \<longmapsto>a<\<nu>y> \<prec> R'" and R'RelQ'': "(R', Q'') \<in> bangRel Rel"
              by blast
 
-           from PTrans RTrans `y \<sharp> P` have "P \<parallel> R \<longmapsto>\<tau> \<prec> <\<nu>y>(P'[x::=y] \<parallel> R')"
+           from PTrans RTrans \<open>y \<sharp> P\<close> have "P \<parallel> R \<longmapsto>\<tau> \<prec> <\<nu>y>(P'[x::=y] \<parallel> R')"
              by(rule Close1)     
            moreover from P'RelQ' R'RelQ'' have "(<\<nu>y>(P'[x::=y] \<parallel> R'), <\<nu>y>(Q'[x::=y] \<parallel> Q'')) \<in> bangRel Rel"
              by(force intro: Rel.BRPar BRRes)
@@ -829,7 +829,7 @@ proof -
           with QTrans xFreshP obtain P' where PTrans: "P \<longmapsto>a<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel"
             by(fastforce dest: simE simp add: derivative_def)
 
-          from RBRQ IH `y \<sharp> R` have "\<exists>R'.  R \<longmapsto>a<y> \<prec> R' \<and> (R'[y::=x], Q''[y::=x]) \<in> bangRel Rel"
+          from RBRQ IH \<open>y \<sharp> R\<close> have "\<exists>R'.  R \<longmapsto>a<y> \<prec> R' \<and> (R'[y::=x], Q''[y::=x]) \<in> bangRel Rel"
             by(fastforce simp add: derivative_def residual.inject)
           then obtain R' where RTrans: "R \<longmapsto>a<y> \<prec> R'" and R'RelQ'': "(R'[y::=x], Q''[y::=x]) \<in> bangRel Rel"
             by blast

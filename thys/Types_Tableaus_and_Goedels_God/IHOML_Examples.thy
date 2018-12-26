@@ -14,20 +14,20 @@ text\<open>  In this section we provide further evidence that our embedded logic
   
 subsection \<open>Modal Logic - Syntax and Semantics (Chapter 7)\<close>
 
-text\<open> Reminder: We call a term \emph{relativized} if it is of the form @{text "\<down>\<alpha>"}
+text\<open> Reminder: We call a term \emph{relativized} if it is of the form \<open>\<down>\<alpha>\<close>
 (i.e. an intensional term preceded by the \emph{extension-of} operator), otherwise it is \emph{non-relativized}.
 Relativized terms are non-rigid and non-relativized terms are rigid. \<close>
   
-subsubsection \<open>Considerations Regarding @{text "\<beta>\<eta>"}-redex  (p. 94)\<close>
+subsubsection \<open>Considerations Regarding \<open>\<beta>\<eta>\<close>-redex  (p. 94)\<close>
 
-text\<open>  @{text "\<beta>\<eta>"}-redex is valid for non-relativized (intensional or extensional) terms:  \<close>
+text\<open>  \<open>\<beta>\<eta>\<close>-redex is valid for non-relativized (intensional or extensional) terms:  \<close>
 lemma "\<lfloor>((\<lambda>\<alpha>. \<phi> \<alpha>)  (\<tau>::\<up>\<zero>)) \<^bold>\<leftrightarrow> (\<phi>  \<tau>)\<rfloor>" by simp
 lemma "\<lfloor>((\<lambda>\<alpha>. \<phi> \<alpha>)  (\<tau>::\<zero>)) \<^bold>\<leftrightarrow> (\<phi>  \<tau>)\<rfloor>" by simp
 lemma "\<lfloor>((\<lambda>\<alpha>. \<^bold>\<box>\<phi> \<alpha>) (\<tau>::\<up>\<zero>)) \<^bold>\<leftrightarrow> (\<^bold>\<box>\<phi> \<tau>)\<rfloor>" by simp
 lemma "\<lfloor>((\<lambda>\<alpha>. \<^bold>\<box>\<phi> \<alpha>) (\<tau>::\<zero>)) \<^bold>\<leftrightarrow> (\<^bold>\<box>\<phi> \<tau>)\<rfloor>" by simp    
-text\<open>  @{text "\<beta>\<eta>"}-redex is valid for relativized terms as long as no modal operators occur inside the predicate abstract:  \<close>
+text\<open>  \<open>\<beta>\<eta>\<close>-redex is valid for relativized terms as long as no modal operators occur inside the predicate abstract:  \<close>
 lemma "\<lfloor>((\<lambda>\<alpha>. \<phi> \<alpha>) \<downharpoonleft>(\<tau>::\<up>\<zero>)) \<^bold>\<leftrightarrow> (\<phi> \<downharpoonleft>\<tau>)\<rfloor>" by simp
-text\<open>  @{text "\<beta>\<eta>"}-redex is non-valid for relativized terms when modal operators are present:  \<close>
+text\<open>  \<open>\<beta>\<eta>\<close>-redex is non-valid for relativized terms when modal operators are present:  \<close>
 lemma "\<lfloor>((\<lambda>\<alpha>. \<^bold>\<box>\<phi> \<alpha>) \<downharpoonleft>(\<tau>::\<up>\<zero>)) \<^bold>\<leftrightarrow> (\<^bold>\<box>\<phi> \<downharpoonleft>\<tau>)\<rfloor>" nitpick oops   \<comment> \<open>countersatisfiable\<close>
 lemma "\<lfloor>((\<lambda>\<alpha>. \<^bold>\<diamond>\<phi> \<alpha>) \<downharpoonleft>(\<tau>::\<up>\<zero>)) \<^bold>\<leftrightarrow> (\<^bold>\<diamond>\<phi> \<downharpoonleft>\<tau>)\<rfloor>" nitpick oops   \<comment> \<open>countersatisfiable\<close>
     

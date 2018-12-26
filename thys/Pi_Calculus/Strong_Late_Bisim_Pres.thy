@@ -16,7 +16,7 @@ lemma tauPres:
 proof -
   let ?X = "{(\<tau>.(P), \<tau>.(Q)), (\<tau>.(Q), \<tau>.(P))}"
   have "(\<tau>.(P), \<tau>.(Q)) \<in> ?X" by auto
-  thus ?thesis using `P \<sim> Q`
+  thus ?thesis using \<open>P \<sim> Q\<close>
     by(coinduct rule: bisimCoinduct)
       (auto intro: Strong_Late_Sim_Pres.tauPres dest: symmetric)
 qed
@@ -56,7 +56,7 @@ proof -
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim P Q)
-    thus ?case using `eqvt ?X`
+    thus ?case using \<open>eqvt ?X\<close>
       by(force intro: inputPres)
   next
     case(cSym P Q)
@@ -77,7 +77,7 @@ lemma outputPres:
 proof -
   let ?X = "{(a{b}.P, a{b}.Q), (a{b}.Q, a{b}.P)}"
   have "(a{b}.P, a{b}.Q) \<in> ?X" by auto
-  thus ?thesis using `P \<sim> Q`
+  thus ?thesis using \<open>P \<sim> Q\<close>
     by(coinduct rule: bisimCoinduct)
       (auto intro: Strong_Late_Sim_Pres.outputPres dest: symmetric)
 qed
@@ -94,7 +94,7 @@ lemma matchPres:
 proof -
   let ?X = "{([a\<frown>b]P, [a\<frown>b]Q), ([a\<frown>b]Q, [a\<frown>b]P)}"
   have "([a\<frown>b]P, [a\<frown>b]Q) \<in> ?X" by auto
-  thus ?thesis using `P \<sim> Q`
+  thus ?thesis using \<open>P \<sim> Q\<close>
     by(coinduct rule: bisimCoinduct)
       (auto intro: Strong_Late_Sim_Pres.matchPres dest: symmetric bisimE)
 qed
@@ -111,7 +111,7 @@ lemma mismatchPres:
 proof -
   let ?X = "{([a\<noteq>b]P, [a\<noteq>b]Q), ([a\<noteq>b]Q, [a\<noteq>b]P)}"
   have "([a\<noteq>b]P, [a\<noteq>b]Q) \<in> ?X" by auto
-  thus ?thesis using `P \<sim> Q`
+  thus ?thesis using \<open>P \<sim> Q\<close>
     by(coinduct rule: bisimCoinduct)
       (auto intro: Strong_Late_Sim_Pres.mismatchPres dest: symmetric bisimE)
 qed
@@ -127,7 +127,7 @@ lemma sumPres:
 proof -
   let ?X = "{(P \<oplus> R, Q \<oplus> R), (Q \<oplus> R, P \<oplus> R)}"
   have "(P \<oplus> R, Q \<oplus> R) \<in> ?X" by auto
-  thus ?thesis using `P \<sim> Q`
+  thus ?thesis using \<open>P \<sim> Q\<close>
     by(coinduct rule: bisimCoinduct)
       (auto intro: Strong_Late_Sim_Pres.sumPres reflexive dest: symmetric bisimE)
 qed
@@ -142,7 +142,7 @@ lemma resPres:
   shows "<\<nu>x>P \<sim> <\<nu>x>Q"
 proof -
   let ?X = "{x. \<exists>P Q. P \<sim> Q \<and> (\<exists>a. x = (<\<nu>a>P, <\<nu>a>Q))}"
-  from `P \<sim> Q` have "(<\<nu>x>P, <\<nu>x>Q) \<in> ?X" by blast
+  from \<open>P \<sim> Q\<close> have "(<\<nu>x>P, <\<nu>x>Q) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim xP xQ)
@@ -158,7 +158,7 @@ proof -
       ultimately have "<\<nu>a>P \<leadsto>[(?X \<union> bisim)] <\<nu>a>Q"
         by(rule Strong_Late_Sim_Pres.resPres)
     }
-    with `(xP, xQ) \<in> ?X` show ?case
+    with \<open>(xP, xQ) \<in> ?X\<close> show ?case
       by(auto dest: bisimE)
   next
     case(cSym xP xQ)
@@ -177,7 +177,7 @@ lemma parPres:
 proof -
   let ?X = "{(resChain lst (P \<parallel> R), resChain lst (Q \<parallel> R)) | lst P R Q. P \<sim> Q}"
   have EmptyChain: "\<And>P Q. P \<parallel> Q = resChain [] (P \<parallel> Q)" by auto
-  with `P \<sim> Q` have "(P \<parallel> R, Q \<parallel> R) \<in> ?X" by blast
+  with \<open>P \<sim> Q\<close> have "(P \<parallel> R, Q \<parallel> R) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim PR QR)
@@ -187,7 +187,7 @@ proof -
       assume "P \<sim> Q"
 
       hence "P \<leadsto>[bisim] Q" by(rule bisimE)
-      moreover note `P \<sim> Q`
+      moreover note \<open>P \<sim> Q\<close>
       moreover have "\<And>P Q R. P \<sim> Q \<Longrightarrow> (P \<parallel> R, Q \<parallel> R) \<in> ?X"
         by auto (blast intro: EmptyChain)
       moreover 
@@ -206,12 +206,12 @@ proof -
       moreover have "eqvt ?X"
         by(auto simp add: eqvt_def) (blast intro: bisimClosed)
       ultimately have "P \<parallel> R \<leadsto>[(?X)] Q \<parallel> R" by(rule parPres)
-      hence "resChain lst (P \<parallel> R) \<leadsto>[?X] (resChain lst (Q \<parallel> R))" using `eqvt ?X` ResPres 
+      hence "resChain lst (P \<parallel> R) \<leadsto>[?X] (resChain lst (Q \<parallel> R))" using \<open>eqvt ?X\<close> ResPres 
         by(rule resChainI)
       hence "resChain lst (P \<parallel> R) \<leadsto>[(?X \<union> bisim)] (resChain lst (Q \<parallel> R))"
         by(force intro: Strong_Late_Sim.monotonic)
     }
-    with `(PR, QR) \<in> ?X` show ?case
+    with \<open>(PR, QR) \<in> ?X\<close> show ?case
       by auto
   next
     case(cSym PR QR)
@@ -258,7 +258,7 @@ proof -
       qed
       hence "P \<leadsto>[((bangRel bisim) \<union> bisim)] Q" by(rule_tac Strong_Late_Sim.monotonic) auto
     }
-    with `(bP, bQ) \<in> ?X` show ?case by auto
+    with \<open>(bP, bQ) \<in> ?X\<close> show ?case by auto
   next
     case(cSym bP bQ)
     thus ?case by(metis bangRelSymetric symmetric)

@@ -4,7 +4,7 @@ theory Amortized_Framework
 imports Complex_Main
 begin
 
-text{* This theory provides a framework for amortized analysis. *}
+text\<open>This theory provides a framework for amortized analysis.\<close>
 
 datatype 'a rose_tree = T 'a "'a rose_tree list"
 

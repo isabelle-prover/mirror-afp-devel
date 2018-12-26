@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of computations using immutable arrays*}
+section\<open>Examples of computations using immutable arrays\<close>
 
 theory Examples_Echelon_Form_IArrays
 imports
@@ -14,17 +14,17 @@ imports
   Examples_Echelon_Form_Abstract
 begin
 
-text{*The file @{file "Examples_Echelon_Form_Abstract.thy"} is only imported to 
+text\<open>The file @{file "Examples_Echelon_Form_Abstract.thy"} is only imported to 
   include the definitions of matrices that we use in the following examples. 
-  Otherwise, it could be removed.*}
+  Otherwise, it could be removed.\<close>
 
-subsection{*Computing echelon forms, determinants, characteristic polynomials and so on using
-  immutable arrays*}
+subsection\<open>Computing echelon forms, determinants, characteristic polynomials and so on using
+  immutable arrays\<close>
 
-subsubsection{*Serializing gcd*}
+subsubsection\<open>Serializing gcd\<close>
 
-text{*First of all, we serialize the gcd to the ones of PolyML and MLton as we did in the
-  Gauss-Jordan development.*}
+text\<open>First of all, we serialize the gcd to the ones of PolyML and MLton as we did in the
+  Gauss-Jordan development.\<close>
 
 context
 includes integer.lifting
@@ -57,7 +57,7 @@ declare [[code drop: "abs :: real \<Rightarrow> real"]]
 code_printing
 constant "divmod_integer :: integer => _ => _" \<rightharpoonup> (SML) "(IntInf.divMod ((_),(_)))"
 
-subsubsection{*Examples*}
+subsubsection\<open>Examples\<close>
 
 value "det test_int_3x3"
 
@@ -79,7 +79,7 @@ value "matrix_to_iarray (echelon_form_of test_int_3x3 euclid_ext2)"
 
 value "matrix_to_iarray (echelon_form_of test_int_8x8 euclid_ext2)"
 
-text{*The following computations are much faster when code is exported.*}
+text\<open>The following computations are much faster when code is exported.\<close>
 
 (*value "matrix_to_iarray (echelon_form_of_euclidean test_int_20x20)"*)
 
@@ -87,13 +87,13 @@ text{*The following computations are much faster when code is exported.*}
 
 (*value "matrix_to_iarray (echelon_form_of test_int_20x20 euclid_ext2)"*)
 
-text{*The following matrix will have an integer inverse since its determinant is equal to one*}
+text\<open>The following matrix will have an integer inverse since its determinant is equal to one\<close>
 
 value "det test_int_3x3_03"
 
 value "the (matrix_to_iarray_option (inverse_matrix test_int_3x3_03))"
 
-text{*We check that the previous inverse has been correctly computed:*}
+text\<open>We check that the previous inverse has been correctly computed:\<close>
 
 value "matrix_matrix_mult_iarray 
               (matrix_to_iarray test_int_3x3_03) 
@@ -103,8 +103,8 @@ value "matrix_matrix_mult_iarray
               (the (matrix_to_iarray_option (inverse_matrix test_int_3x3_03)))
               (matrix_to_iarray test_int_3x3_03)"
 
-text{*The following matrices have determinant different from zero, 
-    and thus do not have an integer inverse*}
+text\<open>The following matrices have determinant different from zero, 
+    and thus do not have an integer inverse\<close>
               
 value "det test_int_6x6"
               
@@ -114,7 +114,7 @@ value "det test_int_20x20"
              
 value "matrix_to_iarray_option (inverse_matrix test_int_20x20)"
 
-text{*The inverse in dimension 20 has (trivial) inverse.*}
+text\<open>The inverse in dimension 20 has (trivial) inverse.\<close>
 
 value "the (matrix_to_iarray_option (inverse_matrix (mat 1::int^20^20)))"
 
@@ -123,13 +123,13 @@ value "the (matrix_to_iarray_option (inverse_matrix (mat 1::int^20^20))) = matri
 
 definition "print_echelon_int (A::int^20^20) = echelon_form_of_iarrays (matrix_to_iarray A) euclid_ext2"
 
-text{*Performance is better when code is exported. In addition, it depends on the growth of 
-the integer coefficients of the matrices. For instance, @{text "test_int_20x20"}
+text\<open>Performance is better when code is exported. In addition, it depends on the growth of 
+the integer coefficients of the matrices. For instance, \<open>test_int_20x20\<close>
 is a matrix of integer numbers between $-10$ and $10$. The computation of its echelon form (by means
-of @{text "print_echelon_int"}) needs about 2 seconds. However, the matrix @{text "test_int_20x20_2"}
+of \<open>print_echelon_int\<close>) needs about 2 seconds. However, the matrix \<open>test_int_20x20_2\<close>
 has elements between $0$ and $1010$. The computation of its echelon form (by means
-of @{text "print_echelon_int"} too) needs about 0.310 seconds. These benchmarks have been carried
-out in a laptop with an i5-3360M processor with 4 GB of RAM.*}
+of \<open>print_echelon_int\<close> too) needs about 0.310 seconds. These benchmarks have been carried
+out in a laptop with an i5-3360M processor with 4 GB of RAM.\<close>
 
 export_code charpoly det echelon_form_of test_int_8x8 test_int_20x20 test_int_20x20_2 print_echelon_int
   in SML module_name Echelon (*file "Echelon.sml"*)

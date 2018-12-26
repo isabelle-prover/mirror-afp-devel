@@ -1,12 +1,12 @@
-section {* State monad transformer *}
+section \<open>State monad transformer\<close>
 
 theory State_Transformer
 imports Monad_Zero_Plus
 begin
 
-text {*
+text \<open>
   This version has non-lifted product, and a non-lifted function space.
-*}
+\<close>
 
 tycondef 'a\<cdot>('f::"functor", 's) stateT =
   StateT (runStateT :: "'s \<rightarrow> ('a \<times> 's)\<cdot>'f")
@@ -43,7 +43,7 @@ lemma runStateT_coerce [simp]:
   "runStateT\<cdot>(coerce\<cdot>k)\<cdot>s = coerce\<cdot>(runStateT\<cdot>k\<cdot>s)"
 by (induct k rule: stateT_induct, simp)
 
-subsection {* Functor class instance *}
+subsection \<open>Functor class instance\<close>
 
 lemma fmapU_StateT [simp]:
   "fmapU\<cdot>f\<cdot>(StateT\<cdot>k) =
@@ -67,7 +67,7 @@ done
 
 end
 
-subsection {* Monad class instance *}
+subsection \<open>Monad class instance\<close>
 
 instantiation stateT :: (monad, "domain") monad
 begin
@@ -106,7 +106,7 @@ qed
 
 end
 
-subsection {* Monad zero instance *}
+subsection \<open>Monad zero instance\<close>
 
 instantiation stateT :: (monad_zero, "domain") monad_zero
 begin
@@ -126,7 +126,7 @@ qed
 
 end
 
-subsection {* Monad plus instance *}
+subsection \<open>Monad plus instance\<close>
 
 instantiation stateT :: (monad_plus, "domain") monad_plus
 begin
@@ -151,7 +151,7 @@ qed
 
 end
 
-subsection {* Monad zero plus instance *}
+subsection \<open>Monad zero plus instance\<close>
 
 instance stateT :: (monad_zero_plus, "domain") monad_zero_plus
 proof
@@ -164,7 +164,7 @@ next
     by (rule stateT_eqI, simp add: mplus_mzero_right)
 qed
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma coerce_csplit [coerce_simp]:
   shows "coerce\<cdot>(csplit\<cdot>f\<cdot>p) = csplit\<cdot>(\<Lambda> x y. coerce\<cdot>(f\<cdot>x\<cdot>y))\<cdot>p"
@@ -200,8 +200,7 @@ apply (simp add: coerce_idem domain_defl_simps monofun_cfun)
 apply (simp add: eta_cfun)
 done
 
-text "TODO: add @{text coerce_idem} to @{text coerce_simps}, along
-with monotonicity rules for DEFL."
+text "TODO: add \<open>coerce_idem\<close> to \<open>coerce_simps\<close>, along\010with monotonicity rules for DEFL."
 
 lemma bind_stateT_simps [simp]:
   "bind\<cdot>(StateT\<cdot>m :: 'a\<cdot>('m::monad,'s) stateT)\<cdot>k =

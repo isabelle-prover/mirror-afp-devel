@@ -3,26 +3,26 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Demonic Refinement Algebra with Tests *}
+section \<open>Demonic Refinement Algebra with Tests\<close>
 
 theory DRAT
   imports KAT Kleene_Algebra.DRA
 begin
 
-text {*
+text \<open>
   In this section, we define demonic refinement algebras with tests and prove the most important theorems from
   the literature. In this context, tests are also known as guards.
-*}
+\<close>
 
 class drat = dra + test_semiring_zerol
 begin
 
 subclass kat_zerol ..
 
-text {*
+text \<open>
   An assertion is a mapping from a guard to a subset similar to tests, but it aborts if the predicate does
   not hold.
-*}
+\<close>
 
 definition assertion :: "'a \<Rightarrow> 'a" ("_\<^sup>o" [101] 100) where
   "test p \<Longrightarrow> p\<^sup>o = !p\<cdot>\<top> + 1"
@@ -86,7 +86,7 @@ lemma test_iteration_sim: "\<lbrakk>test p; p\<cdot>x \<le> x\<cdot>p\<rbrakk> \
 lemma test_iteration_annir: "test p \<Longrightarrow> !p\<cdot>(p\<cdot>x)\<^sup>\<infinity> = !p"
   by (metis annil test_comp_mult1 iteration_idep mult.assoc)
 
-text {* Next we give an example of a program transformation from von Wright~\cite{Wright02}. *}
+text \<open>Next we give an example of a program transformation from von Wright~\cite{Wright02}.\<close>
 
 lemma loop_refinement: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p\<cdot>x)\<^sup>\<infinity>\<cdot>!p \<le> (p\<cdot>q\<cdot>x)\<^sup>\<infinity>\<cdot>!(p\<cdot>q)\<cdot>(p\<cdot>x)\<^sup>\<infinity>\<cdot>!p"
 proof -
@@ -105,7 +105,7 @@ proof -
     by (metis coinduction add.commute mult.assoc)
 qed
 
-text {* Finally, we prove different versions of Back's atomicity refinement theorem for action systems. *}
+text \<open>Finally, we prove different versions of Back's atomicity refinement theorem for action systems.\<close>
 
 lemma atom_step1: "r\<cdot>b \<le> b\<cdot>r \<Longrightarrow> (a + b + r)\<^sup>\<infinity> = b\<^sup>\<infinity>\<cdot>r\<^sup>\<infinity>\<cdot>(a\<cdot>b\<^sup>\<infinity>\<cdot>r\<^sup>\<infinity>)\<^sup>\<infinity>"
   apply (subgoal_tac "(a + b + r)\<^sup>\<infinity> = (b + r)\<^sup>\<infinity>\<cdot>(a\<cdot>(b + r)\<^sup>\<infinity>)\<^sup>\<infinity>")
@@ -149,9 +149,9 @@ proof -
     by (metis add.commute add.left_commute iteration_sep)
 qed
 
-text {*
+text \<open>
   This is Back's atomicity refinement theorem, as specified by von Wright~\cite {Wright02}.
-*}
+\<close>
 
 theorem atom_ref_back: 
   assumes "s = s\<cdot>q" "a = q\<cdot>a" "q\<cdot>b = 0"
@@ -174,9 +174,9 @@ proof -
     by (metis add.commute add.left_commute)
 qed
 
-text {*
+text \<open>
   This variant is due to H\"ofner, Struth and Sutcliffe~\cite{HofnerSS09}.
-*}
+\<close>
 
 theorem atom_ref_back_struth: 
   assumes "s \<le> s\<cdot>q" "a \<le> q\<cdot>a" "q\<cdot>b = 0"
@@ -219,7 +219,7 @@ proof -
 qed
     
 
-text {* Finally, we prove Cohen's~\cite{Cohen00} variation of the atomicity refinement theorem. *}
+text \<open>Finally, we prove Cohen's~\cite{Cohen00} variation of the atomicity refinement theorem.\<close>
 
 lemma atom_ref_cohen: 
   assumes "r\<cdot>p\<cdot>y \<le> y\<cdot>r" "y\<cdot>p\<cdot>l \<le> l\<cdot>y" "r\<cdot>p\<cdot>l \<le> l\<cdot>r"

@@ -203,7 +203,7 @@ proof -
       hence init: "?q\<^sub>2 q = Some (semi_mojmir_def.initial (q\<^sub>0\<^sub>M (theG q)))" 
         and "Mapping.lookup (run ?\<delta>\<^sub>2' ?q\<^sub>2' w i) q = Some (run ((nxt \<Sigma> \<delta>\<^sub>M \<circ> q\<^sub>0\<^sub>M \<circ> theG) q) ((init \<circ> q\<^sub>0\<^sub>M \<circ> theG) q) w i)"
         apply (simp del: nxt.simps)  
-        apply (metis G_eq_G_list `q \<in> \<^bold>G \<phi>` lookup_tabulate product_abs_run_Some) 
+        apply (metis G_eq_G_list \<open>q \<in> \<^bold>G \<phi>\<close> lookup_tabulate product_abs_run_Some) 
         done
       hence "run ?\<delta>\<^sub>2 ?q\<^sub>2 w i q = (\<lambda>m. (map_option rk) o (Mapping.lookup m)) (run ?\<delta>\<^sub>2' ?q\<^sub>2' w i) q"
         unfolding product_run_Some[of "\<iota>\<^sub>\<times> (\<^bold>G \<phi>) (\<lambda>\<chi>. semi_mojmir_def.initial (q\<^sub>0\<^sub>M (theG \<chi>)))" q, OF init] 
@@ -241,15 +241,15 @@ proof -
 
   have FF [simp]: "fail_filt \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs (dom \<pi>)) (the (Mapping.lookup y \<chi>), \<nu>, []) 
     = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.fail\<^sub>R \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q})"
-    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] fail_filt_eq[where y = "[]", symmetric] by simp  
+    unfolding option.map_sel[OF \<open>Mapping.lookup y \<chi> \<noteq> None\<close>] fail_filt_eq[where y = "[]", symmetric] by simp  
 
   have MF [simp]: "\<And>i. merge_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs (dom \<pi>)) i (the (Mapping.lookup y \<chi>), \<nu>, [])
     = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.merge\<^sub>R \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} i)"
-    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] merge_filt_eq[where y = "[]", symmetric] by simp  
+    unfolding option.map_sel[OF \<open>Mapping.lookup y \<chi> \<noteq> None\<close>] merge_filt_eq[where y = "[]", symmetric] by simp  
 
   have SF [simp]: "\<And>i. succeed_filt \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) (ltl_prop_entails_abs (dom \<pi>)) i (the (Mapping.lookup y \<chi>), \<nu>, [])
     = ((the (map_option rk (Mapping.lookup y \<chi>)), \<nu>, (\<lambda>x. Some 0)) \<in> mojmir_to_rabin_def.succeed\<^sub>R \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q} i)"
-    unfolding option.map_sel[OF `Mapping.lookup y \<chi> \<noteq> None`] succeed_filt_eq[where y = "[]", symmetric] by simp  
+    unfolding option.map_sel[OF \<open>Mapping.lookup y \<chi> \<noteq> None\<close>] succeed_filt_eq[where y = "[]", symmetric] by simp  
 
   note mojmir_to_rabin_def.fail\<^sub>R_def [simp] 
   note mojmir_to_rabin_def.merge\<^sub>R_def [simp]
@@ -293,7 +293,7 @@ proof
 
     have "accepting_pair\<^sub>G\<^sub>R ?\<delta> ?q\<^sub>0 ?F w \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R ?\<delta>\<^sub>C  ?q\<^sub>0\<^sub>C (?fin, ?inf) w" (is "?l \<longleftrightarrow> _")
       by (rule accepting_pair\<^sub>G\<^sub>R_abstract[OF finite_reach' finite_reach\<^sub>C bounded_w];
-          insert `dom \<pi> \<subseteq> \<^bold>G \<phi>` M_fin\<^sub>C_correct Acc_fin\<^sub>C_correct Acc_inf\<^sub>C_correct run_abstraction_correct'; blast)
+          insert \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> M_fin\<^sub>C_correct Acc_fin\<^sub>C_correct Acc_inf\<^sub>C_correct run_abstraction_correct'; blast)
     also 
     have "\<dots> \<longleftrightarrow> accepting_pair\<^sub>G\<^sub>R_LTS ?reach\<^sub>C ?q\<^sub>0\<^sub>C (?fin \<inter> ?reach\<^sub>C, (\<lambda>I. I \<inter> ?reach\<^sub>C) ` ?inf) w" (is "_ \<longleftrightarrow> ?r")
       using bounded_w by (simp only: accepting_pair\<^sub>G\<^sub>R_LTS[symmetric] accepting_pair\<^sub>G\<^sub>R_restrict[symmetric])
@@ -317,13 +317,13 @@ proof
 
     have acc_pair_LTS: "accepting_pair\<^sub>G\<^sub>R_LTS ?reach\<^sub>C ?q\<^sub>0\<^sub>C (({t. M_fin\<^sub>C \<phi> \<pi>' t} \<union> {t. \<exists>\<chi> \<in> Mapping.keys \<pi>'. Acc_fin\<^sub>C \<Sigma> \<pi>' \<chi> t}) \<inter> ?reach\<^sub>C,
         (\<lambda>I. I \<inter> ?reach\<^sub>C) ` {{t. Acc_inf\<^sub>C \<pi>' \<chi> t} | \<chi>. \<chi> \<in> Mapping.keys \<pi>'}) w"
-      using 3 unfolding X[OF 1] unfolding `dom \<pi> = Mapping.keys \<pi>'` \<pi>'_def[symmetric] by simp
+      using 3 unfolding X[OF 1] unfolding \<open>dom \<pi> = Mapping.keys \<pi>'\<close> \<pi>'_def[symmetric] by simp
 
     show ?rhs
       apply (unfold ltl_to_generalized_rabin\<^sub>C.simps Let_def)
       apply (intro accept\<^sub>G\<^sub>R_LTS_I)
       apply (insert acc_pair_LTS; auto simp add: assms[symmetric] mappings\<^sub>C_def)
-      apply (insert 1 2; unfold  `dom \<pi> = Mapping.keys \<pi>'`; unfold `\<pi> = Mapping.lookup \<pi>'`)
+      apply (insert 1 2; unfold  \<open>dom \<pi> = Mapping.keys \<pi>'\<close>; unfold \<open>\<pi> = Mapping.lookup \<pi>'\<close>)
       by (auto simp add: assms[symmetric] Set.filter_def image_def mappings\<^sub>C_def)
   }
   
@@ -333,7 +333,7 @@ proof
     assume ?rhs
     obtain Fin Inf where "(Fin, Inf) \<in> snd (snd (ltl_to_generalized_rabin\<^sub>C \<Sigma>' \<phi>))"
       and 4: "accepting_pair\<^sub>G\<^sub>R_LTS ?reach\<^sub>C (initial\<^sub>C \<phi>) (Fin, Inf) w"
-       using accept\<^sub>G\<^sub>R_LTS_E[OF `?rhs`] apply (simp add: Let_def assms del: accept\<^sub>G\<^sub>R_LTS.simps) by auto
+       using accept\<^sub>G\<^sub>R_LTS_E[OF \<open>?rhs\<close>] apply (simp add: Let_def assms del: accept\<^sub>G\<^sub>R_LTS.simps) by auto
     
     then obtain \<pi> where Y: "(Fin, Inf) = (Set.filter (\<lambda>t. M_fin\<^sub>C \<phi> \<pi> t \<or> (\<exists>\<chi> \<in> Mapping.keys \<pi>. Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> t)) ?reach\<^sub>C,
         (\<lambda>\<chi>. Set.filter (Acc_inf\<^sub>C \<pi> \<chi>) ?reach\<^sub>C) ` (Mapping.keys \<pi>))"
@@ -349,7 +349,7 @@ proof
       = ((Collect (M_fin\<^sub>C \<phi> \<pi>) \<union> {t. \<exists>\<chi>\<in>Mapping.keys \<pi>. Acc_fin\<^sub>C \<Sigma> \<pi> \<chi> t}) \<inter> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>), {y. \<exists>x\<in>{Collect (Acc_inf\<^sub>C \<pi> \<chi>) |\<chi>. \<chi> \<in> Mapping.keys \<pi>}. y = x \<inter> reach\<^sub>t \<Sigma> (delta\<^sub>C \<Sigma>) (initial\<^sub>C \<phi>)})" 
       by auto
     hence "accepting_pair\<^sub>G\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi>' \<union> \<Union>{Acc_fin \<Sigma> \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}, {Acc_inf \<pi>' \<chi> | \<chi>. \<chi> \<in> dom \<pi>'}) w"
-      unfolding X[OF 1] using 4 unfolding Y Set.filter_def unfolding `dom \<pi>' = Mapping.keys \<pi>` `Mapping.Mapping \<pi>' = \<pi>` image_def by simp    
+      unfolding X[OF 1] using 4 unfolding Y Set.filter_def unfolding \<open>dom \<pi>' = Mapping.keys \<pi>\<close> \<open>Mapping.Mapping \<pi>' = \<pi>\<close> image_def by simp    
     ultimately
     show ?lhs  
       unfolding ltl_to_generalized_rabin.simps

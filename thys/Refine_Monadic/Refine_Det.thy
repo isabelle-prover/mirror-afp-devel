@@ -1,4 +1,4 @@
-section {* Deterministic Monad *}
+section \<open>Deterministic Monad\<close>
 theory Refine_Det
 imports 
   "HOL-Library.Monad_Syntax"
@@ -6,10 +6,10 @@ imports
   "Generic/RefineG_While"
 begin
 
-subsection {* Deterministic Result Lattice *}
-text {*
+subsection \<open>Deterministic Result Lattice\<close>
+text \<open>
   We define the flat complete lattice of deterministic program results:
-*}
+\<close>
 (* TODO: Library/Quickcheck_Types.thy:flat_complete_lattice provides
   an isomorphic contruction. *)
 datatype 'a dres = 
@@ -264,7 +264,7 @@ lemma dres_internal_simps[simp]:
   "dFAILi = dFAIL"
   unfolding top_dres_def bot_dres_def by auto
  
-subsubsection {* Monad Operations *}
+subsubsection \<open>Monad Operations\<close>
 function dbind where 
   "dbind dFAIL _ = dFAIL"
 | "dbind dSUCCEED _ = dSUCCEED"
@@ -366,9 +366,9 @@ lemmas [code] =
   dres_while.WHILE_unfold
 
 
-text {* 
-  Syntactic criteria to prove @{text "s \<noteq> dSUCCEED"}
-*}
+text \<open>
+  Syntactic criteria to prove \<open>s \<noteq> dSUCCEED\<close>
+\<close>
 lemma dres_ne_bot_basic[refine_transfer]:
   "dFAIL \<noteq> dSUCCEED"
   "\<And>x. dRETURN x \<noteq> dSUCCEED"

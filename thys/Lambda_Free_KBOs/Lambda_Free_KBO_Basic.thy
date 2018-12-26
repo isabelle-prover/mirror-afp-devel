@@ -11,7 +11,7 @@ begin
 
 text \<open>
 This theory defines the basic version of the graceful Knuth--Bendix order (KBO) for
-@{text \<lambda>}-free higher-order terms. Basic means that all symbols must have a
+\<open>\<lambda>\<close>-free higher-order terms. Basic means that all symbols must have a
 positive weight. The results are lifted from the standard KBO.
 \<close>
 

@@ -77,7 +77,7 @@ context DFS_invar begin
       by auto
 
     from path obtain u where "path E u xs w" by (auto simp add: path_simps)
-    moreover note cb `xs \<noteq> []`
+    moreover note cb \<open>xs \<noteq> []\<close>
     moreover { fix k define k' where "k' = Suc k"
       assume "k < length xs - 1"
       with k'_def have "k' < length xs" by simp
@@ -123,7 +123,7 @@ context DFS_invar begin
 
         show ?thesis
         proof (cases "j' = 0")
-          case True with * j `k=0` show ?thesis by simp
+          case True with * j \<open>k=0\<close> show ?thesis by simp
         next
           case False with True have "j' > k" by simp
           with cons.IH[OF p j'_le] have "(xs!k, xs!j') \<in> (tree_edges s)\<^sup>+" .
@@ -133,7 +133,7 @@ context DFS_invar begin
       next
         case False 
         define k' where "k' = k - 1"
-        with False `k \<le> j'` have "k' < j'" and k: "k = Suc k'" by simp_all
+        with False \<open>k \<le> j'\<close> have "k' < j'" and k: "k = Suc k'" by simp_all
         with cons.IH[OF p j'_le] have "(xs!k', xs!j') \<in> (tree_edges s)\<^sup>+" by metis
         hence "((x#xs)!Suc k', (x#xs)!Suc j') \<in> (tree_edges s)\<^sup>+" by simp
         with k j show ?thesis by simp
@@ -265,14 +265,14 @@ context DFS_invar begin
     hence [simp]: "p\<noteq>[]" by (simp add: lowlink_path_def)
     
     from p have "hd p = v" by (auto simp add: lowlink_path_def path_hd)
-    with hd_conv_nth[OF `p\<noteq>[]`] have v: "p!0 = v" by simp
+    with hd_conv_nth[OF \<open>p\<noteq>[]\<close>] have v: "p!0 = v" by simp
 
     show False
     proof (cases "length p > 1")
       case True with p have "(p!0,p!1) \<in> tree_edges s" by (simp add: lowlink_path_def)
       with v assms show False by auto
     next
-      case False with `p\<noteq>[]` have "length p = 1" by (cases p) auto
+      case False with \<open>p\<noteq>[]\<close> have "length p = 1" by (cases p) auto
       hence "last p = v" by (simp add: last_conv_nth v)
       with p have "(v,w) \<in> edges s" by (simp add: lowlink_path_def)
       with assms show False by auto
@@ -388,10 +388,10 @@ context begin interpretation timing_syntax .
       and "r \<in> ?scc" "r \<in> dom (discovered s)"
 
       have "v \<in> ?scc" by simp
-      with `r \<in> ?scc` is_scc have "(v,r) \<in> (Restr E ?scc)\<^sup>*"
+      with \<open>r \<in> ?scc\<close> is_scc have "(v,r) \<in> (Restr E ?scc)\<^sup>*"
         by (simp add: is_scc_connected')
       
-      hence "(v,r) \<in> (tree_edges s)\<^sup>+" using `r\<noteq>v`
+      hence "(v,r) \<in> (tree_edges s)\<^sup>+" using \<open>r\<noteq>v\<close>
       proof (induction rule: rtrancl_induct)
         case (step y z) hence "(v,z) \<in> (Restr E ?scc)\<^sup>*"
           by (metis rtrancl_into_rtrancl)
@@ -402,11 +402,11 @@ context begin interpretation timing_syntax .
         {
           assume z_disc: "z \<in> dom (discovered s)"
           and "\<exists>p. lowlink_path s v p z" 
-          with `(z,v)\<in>E\<^sup>*` `(v,z)\<in>E\<^sup>*` have ll: "z \<in> lowlink_set s v"
+          with \<open>(z,v)\<in>E\<^sup>*\<close> \<open>(v,z)\<in>E\<^sup>*\<close> have ll: "z \<in> lowlink_set s v"
             by (metis lowlink_setI)
           have "\<delta> s v < \<delta> s z"
           proof (rule ccontr)
-            presume "\<delta> s v \<ge> \<delta> s z" with `z\<noteq>v` v_disc z_disc disc_unequal have "\<delta> s z < \<delta> s v" by fastforce
+            presume "\<delta> s v \<ge> \<delta> s z" with \<open>z\<noteq>v\<close> v_disc z_disc disc_unequal have "\<delta> s z < \<delta> s v" by fastforce
             with ll have "LowLink s v < \<delta> s v" by (metis LowLink_lessI)
             with LL show False by simp
           qed simp
@@ -482,7 +482,7 @@ context begin interpretation timing_syntax .
               proof (rule ccontr)
                 assume "z \<notin> dom (finished s)"
                 with z_disc have "z \<in> set (stack s)" by (simp add: stack_set_def)
-                with `z\<noteq>v` st have "z \<in> set (tl (stack s))" by (cases "stack s") auto
+                with \<open>z\<noteq>v\<close> st have "z \<in> set (tl (stack s))" by (cases "stack s") auto
                 with st tl_lt_stack_hd_discover \<delta>z show False by force
               qed
               with \<delta>z parenthesis_impl_tree_path_not_finished v_disc False show ?thesis by simp

@@ -238,14 +238,14 @@ proof-
     hence "getQ ?state' = (getQ state) @ s"
       by (rule sym)
     thus ?thesis
-      using `getQ state \<noteq> []`
+      using \<open>getQ state \<noteq> []\<close>
       using hd_append[of "getQ state" "s"]
       by auto
   qed
     
   hence "set (getQ ?state'') = set (removeAll ?uLiteral (getQ ?state'))"
     using assms
-    using `InvariantUniqQ (getQ ?state')`
+    using \<open>InvariantUniqQ (getQ ?state')\<close>
     unfolding InvariantUniqQ_def
     using uniqHeadTailSet[of "getQ ?state'"]
     unfolding applyUnitPropagate_def
@@ -284,12 +284,12 @@ proof-
     by auto
   hence "getQ ?state' = getQ state @ s"
     by (rule sym)
-  with `getQ state \<noteq> []`
+  with \<open>getQ state \<noteq> []\<close>
   have "getQ ?state' \<noteq> []"
     by simp
   ultimately
   show ?thesis
-    using `getQ state \<noteq> []`
+    using \<open>getQ state \<noteq> []\<close>
     unfolding InvariantUniqQ_def
     unfolding applyUnitPropagate_def
     using hd_Cons_tl[of "getQ ?state'"]
@@ -351,13 +351,13 @@ proof-
         from *
         have "elementLevel l (getM state) > 0"
           using elementLevelAppend[of "l" "getM state" "[(hd (getQ state), False)]"]
-          using `l el (elements (getM state))`
+          using \<open>l el (elements (getM state))\<close>
           by simp
         show ?thesis
-          using `InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))`
-          using `l el (elements (getM state))`
-          using `\<not> l el (decisions (getM state))`
-          using `elementLevel l (getM state) > 0`
+          using \<open>InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))\<close>
+          using \<open>l el (elements (getM state))\<close>
+          using \<open>\<not> l el (decisions (getM state))\<close>
+          using \<open>elementLevel l (getM state) > 0\<close>
           unfolding InvariantGetReasonIsReason_def
           by (auto simp add: isReasonAppend)
       next
@@ -375,27 +375,27 @@ proof-
           by (simp add: markedElementsAppend)
         moreover
         have "hd (getQ ?state0) el (getQ state)"
-          using `getQ state \<noteq> []`
+          using \<open>getQ state \<noteq> []\<close>
           by simp
         ultimately
         obtain reason
           where "getReason state (hd (getQ state)) = Some reason" "0 \<le> reason \<and> reason < length (getF state)"
           "isUnitClause (nth (getF state) reason) (hd (getQ state)) (elements (getM state)) \<or> 
            clauseFalse (nth (getF state) reason) (elements (getM state))" 
-          using `InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))`
+          using \<open>InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))\<close>
           unfolding InvariantGetReasonIsReason_def
           by auto
         hence "isUnitClause (nth (getF state) reason) (hd (getQ state)) (elements (getM state))"
-          using `\<not> getConflictFlag state`
-          using `InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)`
+          using \<open>\<not> getConflictFlag state\<close>
+          using \<open>InvariantConflictFlagCharacterization (getConflictFlag state) (getF state) (getM state)\<close>
           unfolding InvariantConflictFlagCharacterization_def
           using nth_mem[of "reason" "getF state"]
           using formulaFalseIffContainsFalseClause[of "getF state" "elements (getM state)"]
           by simp
         thus ?thesis
-          using `getReason state (hd (getQ state)) = Some reason` `0 \<le> reason \<and> reason < length (getF state)`
+          using \<open>getReason state (hd (getQ state)) = Some reason\<close> \<open>0 \<le> reason \<and> reason < length (getF state)\<close>
           using isUnitClauseIsReason[of "nth (getF state) reason" "hd (getQ state)" "elements (getM state)" "[hd (getQ state)]"]
-          using `l = hd (getQ state)`
+          using \<open>l = hd (getQ state)\<close>
           by simp
      qed
     }
@@ -415,8 +415,8 @@ proof-
         where "getReason state literal = Some reason" "0 \<le> reason \<and> reason < length (getF state)" and
         *: "isUnitClause (nth (getF state) reason) literal (elements (getM state)) \<or> 
             clauseFalse (nth (getF state) reason) (elements (getM state))"
-        using `currentLevel (getM state) > 0`
-        using `InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))`
+        using \<open>currentLevel (getM state) > 0\<close>
+        using \<open>InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))\<close>
         unfolding InvariantGetReasonIsReason_def
         by auto
       hence "\<exists> reason. getReason ?state0 literal = Some reason \<and> 0 \<le> reason \<and> reason < length (getF ?state0) \<and> 
@@ -428,19 +428,19 @@ proof-
         proof (cases "opposite literal = hd (getQ state)")
           case True
           thus ?thesis
-            using `isUnitClause (nth (getF state) reason) literal (elements (getM state))`
-            using `getReason state literal = Some reason`
-            using `literal \<noteq> hd (getQ state)`
-            using `0 \<le> reason \<and> reason < length (getF state)`
+            using \<open>isUnitClause (nth (getF state) reason) literal (elements (getM state))\<close>
+            using \<open>getReason state literal = Some reason\<close>
+            using \<open>literal \<noteq> hd (getQ state)\<close>
+            using \<open>0 \<le> reason \<and> reason < length (getF state)\<close>
             unfolding isUnitClause_def
             by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
         next
           case False
           thus ?thesis
-            using `isUnitClause (nth (getF state) reason) literal (elements (getM state))`
-            using `getReason state literal = Some reason`
-            using `literal \<noteq> hd (getQ state)`
-            using `0 \<le> reason \<and> reason < length (getF state)`
+            using \<open>isUnitClause (nth (getF state) reason) literal (elements (getM state))\<close>
+            using \<open>getReason state literal = Some reason\<close>
+            using \<open>literal \<noteq> hd (getQ state)\<close>
+            using \<open>0 \<le> reason \<and> reason < length (getF state)\<close>
             unfolding isUnitClause_def
             by auto
         qed
@@ -450,8 +450,8 @@ proof-
         have "clauseFalse (nth (getF state) reason) (elements (getM state))"
           by simp
         thus ?thesis
-          using `getReason state literal = Some reason`
-          using `0 \<le> reason \<and> reason < length (getF state)`
+          using \<open>getReason state literal = Some reason\<close>
+          using \<open>0 \<le> reason \<and> reason < length (getF state)\<close>
           using clauseFalseAppendValuation[of "nth (getF state) reason" "elements (getM state)" "[hd (getQ state)]"]
           by auto
       qed
@@ -484,13 +484,13 @@ proof-
     by simp
   hence "hd (getQ ?state') = hd (getQ state)"
     using hd_append2[of "getQ state" "s"]
-    using `getQ state \<noteq> []`
+    using \<open>getQ state \<noteq> []\<close>
     by simp
 
   have " set (removeAll (hd (getQ state)) (getQ state)) \<union> (set (getQ ?state') - set (getQ state)) = 
          set (removeAll (hd (getQ state)) (getQ ?state'))"
-    using `getQ ?state' = getQ state @ s`
-    using `getQ state \<noteq> []`
+    using \<open>getQ ?state' = getQ state @ s\<close>
+    using \<open>getQ state \<noteq> []\<close>
     by auto
 
   have "uniq (getQ ?state')"
@@ -500,17 +500,17 @@ proof-
     by (simp add: Let_def)
   
   have "set (getQ ?state'') = set (removeAll (hd (getQ state)) (getQ ?state'))"
-    using `uniq (getQ ?state')`
-    using `hd (getQ ?state') = hd (getQ state)`
+    using \<open>uniq (getQ ?state')\<close>
+    using \<open>hd (getQ ?state') = hd (getQ state)\<close>
     using uniqHeadTailSet[of "getQ ?state'"]
     unfolding applyUnitPropagate_def
     by (simp add: Let_def)
 
   thus ?thesis
-    using `InvariantGetReasonIsReason (getReason ?state') (getF ?state') (getM ?state') (set (removeAll (hd (getQ state)) (getQ state)) \<union> (set (getQ ?state') - set (getQ state)))`
-    using `set (getQ ?state'') = set (removeAll (hd (getQ state)) (getQ ?state'))`
-    using `set (removeAll (hd (getQ state)) (getQ state)) \<union> (set (getQ ?state') - set (getQ state)) = 
-         set (removeAll (hd (getQ state)) (getQ ?state'))`
+    using \<open>InvariantGetReasonIsReason (getReason ?state') (getF ?state') (getM ?state') (set (removeAll (hd (getQ state)) (getQ state)) \<union> (set (getQ ?state') - set (getQ state)))\<close>
+    using \<open>set (getQ ?state'') = set (removeAll (hd (getQ state)) (getQ ?state'))\<close>
+    using \<open>set (removeAll (hd (getQ state)) (getQ state)) \<union> (set (getQ ?state') - set (getQ state)) = 
+         set (removeAll (hd (getQ state)) (getQ ?state'))\<close>
     unfolding applyUnitPropagate_def
     by (simp add: Let_def)
 qed
@@ -556,17 +556,17 @@ proof-
     
     have "?FM' = ?FM @ [[?uLiteral]]"
       using *
-      using `(getM ?state') = (getM state) @ [(?uLiteral, False)]`
+      using \<open>(getM ?state') = (getM state) @ [(?uLiteral, False)]\<close>
       using prefixToLevelAppend[of "0" "getM state" "[(?uLiteral, False)]"]
-      using `currentLevel (getM state) = 0`
-      using `getM state = prefixToLevel 0 (getM state)`
+      using \<open>currentLevel (getM state) = 0\<close>
+      using \<open>getM state = prefixToLevel 0 (getM state)\<close>
       by (auto simp add: val2formAppend)
 
     have "formulaEntailsLiteral ?FM ?uLiteral"
       using *
       using unitLiteralIsEntailed [of "uClause" "?uLiteral" "elements (getM state)" "(getF state)"]
-      using `InvariantEquivalentZL (getF state) (getM state) Phi`
-      using `getM state = prefixToLevel 0 (getM state)`
+      using \<open>InvariantEquivalentZL (getF state) (getM state) Phi\<close>
+      using \<open>getM state = prefixToLevel 0 (getM state)\<close>
       unfolding InvariantEquivalentZL_def
       by simp
     hence "formulaEntailsClause ?FM [?uLiteral]"
@@ -575,9 +575,9 @@ proof-
       by (auto simp add: clauseTrueIffContainsTrueLiteral)
 
     show ?thesis
-      using `InvariantEquivalentZL (getF state) (getM state) Phi`
-      using `?FM' = ?FM @ [[?uLiteral]]`
-      using `formulaEntailsClause ?FM [?uLiteral]`
+      using \<open>InvariantEquivalentZL (getF state) (getM state) Phi\<close>
+      using \<open>?FM' = ?FM @ [[?uLiteral]]\<close>
+      using \<open>formulaEntailsClause ?FM [?uLiteral]\<close>
       unfolding InvariantEquivalentZL_def
       using extendEquivalentFormulaWithEntailedClause[of "Phi" "?FM" "[?uLiteral]"]
       by (simp add: equivalentFormulaeSymmetry)
@@ -588,7 +588,7 @@ proof-
       using prefixToLevelAppend[of "0" "getM state" "[(?uLiteral, False)]"]
       by (simp add: Let_def)
     thus ?thesis
-      using `InvariantEquivalentZL (getF state) (getM state) Phi`
+      using \<open>InvariantEquivalentZL (getF state) (getM state) Phi\<close>
       unfolding InvariantEquivalentZL_def
       by (simp add: Let_def)
   qed
@@ -648,7 +648,7 @@ proof-
   have "(getQ ?state') \<noteq> []"
     using assms
     using assertLiteralEffect[of "state" "hd (getQ state)" "False"]
-    using `getQ state \<noteq> []`
+    using \<open>getQ state \<noteq> []\<close>
     unfolding isPrefix_def
     by auto
   ultimately
@@ -658,8 +658,8 @@ proof-
     by (simp add: Let_def)
   moreover
   have "var (hd (getQ state)) \<in> vars F0 \<union> Vbl"
-    using `getQ state \<noteq> []`
-    using `InvariantVarsQ (getQ state) F0 Vbl`
+    using \<open>getQ state \<noteq> []\<close>
+    using \<open>InvariantVarsQ (getQ state) F0 Vbl\<close>
     using hd_in_set[of "getQ state"]
     using clauseContainsItsLiteralsVariable[of "hd (getQ state)" "getQ state"]
     unfolding InvariantVarsQ_def
@@ -717,21 +717,21 @@ proof (induct rule: wf_induct[of "lexLessState (vars F0 \<union> Vbl)"])
         fix Q :: "State set" and state :: State
         assume "state \<in> Q"
         let ?Q1 = "{M::LiteralTrail. \<exists> state. state \<in> Q \<and> (getM state) = M}"
-        from `state \<in> Q`
+        from \<open>state \<in> Q\<close>
         have "getM state \<in> ?Q1"
           by auto
         have "wf (lexLessRestricted (vars F0 \<union> Vbl))"
-          using `finite Vbl`
+          using \<open>finite Vbl\<close>
           using finiteVarsFormula[of "F0"]
           using  wfLexLessRestricted[of "vars F0 \<union> Vbl"]
           by simp
-        with `getM state \<in> ?Q1`
+        with \<open>getM state \<in> ?Q1\<close>
         obtain Mmin where "Mmin \<in> ?Q1" "\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> Vbl) \<longrightarrow> M' \<notin> ?Q1"
           unfolding wf_eq_minimal
           apply (erule_tac x="?Q1" in allE)
           apply (erule_tac x="getM state" in allE)
           by auto 
-        from `Mmin \<in> ?Q1` obtain stateMin
+        from \<open>Mmin \<in> ?Q1\<close> obtain stateMin
           where "stateMin \<in> Q" "(getM stateMin) = Mmin"
           by auto
         have "\<forall>state'. (state', stateMin) \<in> lexLessState (vars F0 \<union> Vbl) \<longrightarrow> state' \<notin> Q"
@@ -743,16 +743,16 @@ proof (induct rule: wf_induct[of "lexLessState (vars F0 \<union> Vbl)"])
             hence "(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> Vbl)"
               unfolding lexLessState_def
               by auto
-            from `\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> Vbl) \<longrightarrow> M' \<notin> ?Q1`
-              `(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> Vbl)` `getM stateMin = Mmin`
+            from \<open>\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> Vbl) \<longrightarrow> M' \<notin> ?Q1\<close>
+              \<open>(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> Vbl)\<close> \<open>getM stateMin = Mmin\<close>
             have "getM state' \<notin> ?Q1"
               by simp
-            with `getM stateMin = Mmin`
+            with \<open>getM stateMin = Mmin\<close>
             show "state' \<notin> Q"
               by auto
           qed
         qed
-        with `stateMin \<in> Q`
+        with \<open>stateMin \<in> Q\<close>
         have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> lexLessState (vars F0 \<union> Vbl) \<longrightarrow> state' \<notin> Q)"
           by auto
       }
@@ -817,7 +817,7 @@ next
     moreover
     have "InvariantVarsM (getM ?state'') F0 Vbl" "InvariantVarsQ (getQ ?state'') F0 Vbl"
       using ih
-      using `\<not> (getQ state' = [] \<or> getConflictFlag state')`
+      using \<open>\<not> (getQ state' = [] \<or> getConflictFlag state')\<close>
       using InvariantsVarsAfterApplyUnitPropagate[of "state'" "F0" "Vbl"]
       by (auto simp add: Let_def)
     moreover
@@ -838,16 +838,16 @@ next
         unfolding lexLessState_def
         unfolding lexLessRestricted_def
         using lexLessAppend[of "[(hd (getQ state'), False)]" "getM state'"]
-        using `InvariantConsistent (getM ?state'')`
+        using \<open>InvariantConsistent (getM ?state'')\<close>
         unfolding InvariantConsistent_def
-        using `InvariantConsistent (getM state')`
+        using \<open>InvariantConsistent (getM state')\<close>
         unfolding InvariantConsistent_def
-        using `InvariantUniq (getM ?state'')`
+        using \<open>InvariantUniq (getM ?state'')\<close>
         unfolding InvariantUniq_def
-        using `InvariantUniq (getM state')`
+        using \<open>InvariantUniq (getM state')\<close>
         unfolding InvariantUniq_def
-        using `InvariantVarsM (getM ?state'') F0 Vbl`
-        using `InvariantVarsM (getM state') F0 Vbl`
+        using \<open>InvariantVarsM (getM ?state'') F0 Vbl\<close>
+        using \<open>InvariantVarsM (getM state') F0 Vbl\<close>
         unfolding InvariantVarsM_def
         by simp
     qed
@@ -1085,7 +1085,7 @@ proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
     moreover
     have "InvariantVarsM (getM ?state'') F0 Vbl" "InvariantVarsQ (getQ ?state'') F0 Vbl"
       using ih
-      using `\<not> (getConflictFlag state' \<or> getQ state' = [])`
+      using \<open>\<not> (getConflictFlag state' \<or> getQ state' = [])\<close>
       using InvariantsVarsAfterApplyUnitPropagate[of "state'" "F0" "Vbl"]
       by (auto simp add: Let_def)
     moreover
@@ -1148,7 +1148,7 @@ proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
     moreover
     have "InvariantConflictClauseCharacterization (getConflictFlag ?state'') (getConflictClause ?state'') (getF ?state'') (getM ?state'')"
       using ih(2) ih(3) ih(4) ih(5) ih(6)
-      using `\<not> (getConflictFlag state' \<or> getQ state' = [])`
+      using \<open>\<not> (getConflictFlag state' \<or> getQ state' = [])\<close>
       using InvariantConflictClauseCharacterizationAfterApplyUnitPropagate[of "state'"]
       by (auto simp add: Let_def)
     ultimately

@@ -35,7 +35,7 @@ next
   then have 0:"vec_smult \<alpha> (vec_plus (a # as') bs) = (\<alpha>*(a+b)) # vec_smult \<alpha> (vec_plus as' bs')"
     unfolding vec_smult_def vec_plus_def using Cons.IH[of bs'] by simp
   have "length bs' = length as'" using Cons.prems \<open>bs = b # bs'\<close> by auto
-  then show ?case unfolding 0 unfolding  `bs = b # bs'` vec_smult_Cons vec_plus_Cons
+  then show ?case unfolding 0 unfolding  \<open>bs = b # bs'\<close> vec_smult_Cons vec_plus_Cons
     by (simp add: Cons.IH distrib_left)
 qed
 
@@ -87,7 +87,7 @@ proof (rule tensor_eqI)
     using dims_smult dims_subtensor assms(1) assms(2) by simp
   show "vec (\<alpha> \<cdot> subtensor A i) = vec (subtensor (\<alpha> \<cdot> A) i)"
     unfolding vec_smult
-    unfolding vec_subtensor[OF `dims A \<noteq> []` `i < hd (dims A)`]
+    unfolding vec_subtensor[OF \<open>dims A \<noteq> []\<close> \<open>i < hd (dims A)\<close>]
     using vec_subtensor[of "\<alpha> \<cdot> A" i]
     by (simp add: assms(1) assms(2) drop_map fixed_length_sublist_def take_map)
 qed
@@ -100,13 +100,13 @@ using assms proof (induction A arbitrary:"is" rule:subtensor_induct)
   then have "length (vec A) = 1" by (simp add: length_vec)
   then have "hd (vec_smult \<alpha> (vec A)) = \<alpha> * hd (vec A)" unfolding vec_smult_def by (metis list.map_sel(1) list.size(3) zero_neq_one)
   moreover have "is = []" using order_0 by auto
-  ultimately show ?case unfolding smult_def by (auto simp add: `length (Tensor.vec A) = 1` lookup_def length_vec_smult order_0.hyps)
+  ultimately show ?case unfolding smult_def by (auto simp add: \<open>length (Tensor.vec A) = 1\<close> lookup_def length_vec_smult order_0.hyps)
 next
   case (order_step A "is")
   then obtain i is' where "is = i # is'" by blast
   then have "lookup (\<alpha> \<cdot> subtensor A i) is' = \<alpha> * lookup (subtensor A i) is'"
     by (metis (no_types, lifting) dims_subtensor list.sel(1) list.sel(3) order_step.IH order_step.hyps order_step.prems valid_index_dimsE)
-  then show ?case using smult_subtensor `is = i # is'` dims_smult lookup_subtensor1
+  then show ?case using smult_subtensor \<open>is = i # is'\<close> dims_smult lookup_subtensor1
     list.sel(1) order_step.hyps order_step.prems valid_index_dimsE
     by metis
 qed

@@ -579,7 +579,7 @@ proof-
       assume "\<not> to_fract c =dff 1"
       from this[unfolded eq_dff_def One_fract_def to_fract_def[symmetric] divides_ff_def to_fract_mult]
       have c1: "\<And> r. 1 \<noteq> c * r" by (auto simp: ac_simps simp del: to_fract_hom.hom_mult simp: to_fract_hom.hom_mult[symmetric])
-      with `c dvd 1` show False unfolding dvd_def by blast
+      with \<open>c dvd 1\<close> show False unfolding dvd_def by blast
     qed
     with False irr_p' show ?thesis by auto
   qed
@@ -724,18 +724,18 @@ proof -
     show ?l 
     proof (cases "q = 0")
       case True
-      with `?r` show ?l by auto
+      with \<open>?r\<close> show ?l by auto
     next
       case False note q = this
       hence q': "?E q \<noteq> 0" by auto
-      from `?r` obtain rr where qpr: "?E q = ?E p * rr" unfolding dvd_def by auto
+      from \<open>?r\<close> obtain rr where qpr: "?E q = ?E p * rr" unfolding dvd_def by auto
       with q have p: "p \<noteq> 0" and Ep: "?E p \<noteq> 0" and rr: "rr \<noteq> 0" by auto
       from gauss_lemma[of "?E p" rr, folded qpr] 
       have ct: "content_ff_ff q =dff content_ff_ff p * content_ff rr"
         by auto
       from content_ff_map_poly_to_fract[of p] obtain cp where cp: "content_ff_ff p = to_fract cp" by auto
       from content_ff_map_poly_to_fract[of q] obtain cq where cq: "content_ff_ff q = to_fract cq" by auto
-      from `?r`[unfolded cp cq] have "divides_ff (to_fract cp) (to_fract cq)" ..
+      from \<open>?r\<close>[unfolded cp cq] have "divides_ff (to_fract cp) (to_fract cq)" ..
       with ct[unfolded cp cq eq_dff_def] have "content_ff rr \<in> range to_fract"
         by (metis (no_types, lifting) Ep content_ff_0_iff cp divides_ff_def 
           divides_ff_trans mult.commute mult_right_cancel range_eqI)
@@ -819,7 +819,7 @@ proof (fold factorial_condition_one, intro conjI)
         from divides_degree[OF this] have dp: "degree p = 0" by auto
         from degree0_coeffs[OF this] p obtain a where p: "p = [:a:]" and a: "a \<noteq> 0" by auto
         with choice have irr: "irreducible a" by auto
-        from `p dvd 1`[unfolded p] have "a dvd 1" by auto
+        from \<open>p dvd 1\<close>[unfolded p] have "a dvd 1" by auto
         with irr show False unfolding irreducible_def by auto
       qed
       fix q r :: "'a poly"

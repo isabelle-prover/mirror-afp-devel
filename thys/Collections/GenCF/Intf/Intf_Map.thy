@@ -1,4 +1,4 @@
-section {*\isaheader{Map Interface}*}
+section \<open>\isaheader{Map Interface}\<close>
 theory Intf_Map
 imports Refine_Monadic.Refine_Monadic
 begin
@@ -143,7 +143,7 @@ definition "finite_map_rel R \<equiv> Range R \<subseteq> Collect (finite \<circ
 lemma finite_map_rel_trigger: "finite_map_rel R \<Longrightarrow> finite_map_rel R" .
 
 
-declaration {* Tagged_Solver.add_triggers 
-  "Relators.relator_props_solver" @{thms finite_map_rel_trigger} *}
+declaration \<open>Tagged_Solver.add_triggers 
+  "Relators.relator_props_solver" @{thms finite_map_rel_trigger}\<close>
 
 end

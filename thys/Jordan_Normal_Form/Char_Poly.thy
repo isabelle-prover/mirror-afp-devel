@@ -79,7 +79,7 @@ proof -
     next
       assume ?id2
       have "A *\<^sub>v v + - e \<cdot>\<^sub>v v + e \<cdot>\<^sub>v v = A *\<^sub>v v" using A v by auto
-      from arg_cong[OF `?id2`, of "\<lambda> w. w + e \<cdot>\<^sub>v v", unfolded this]
+      from arg_cong[OF \<open>?id2\<close>, of "\<lambda> w. w + e \<cdot>\<^sub>v v", unfolded this]
       show ?id1 using A v by simp
     qed
     also have "(A *\<^sub>v v + (-e) \<cdot>\<^sub>v v) = char_matrix A e *\<^sub>v v" unfolding char_matrix_def
@@ -188,7 +188,7 @@ proof -
   from v(1) have v1: "?v \<in> carrier_vec n" by simp
   from v(1-2) obtain i where "i < n" and "v $ i \<noteq> 0" by force
   with v(1) have "?v $ i \<noteq> 0" by auto
-  hence v2: "?v \<noteq> 0\<^sub>v n" using `i < n` v(1) by force
+  hence v2: "?v \<noteq> 0\<^sub>v n" using \<open>i < n\<close> v(1) by force
   from arg_cong[OF v(3), of "vec\<^sub>h", unfolded mult_mat_vec_hom[OF A v(1)] vec_hom_smult]
   have v3: "?A *\<^sub>v ?v = ?ev \<cdot>\<^sub>v ?v" .
   from v1 v2 v3
@@ -212,7 +212,7 @@ proof -
   have v: "v \<in> carrier_vec n" "?v \<noteq> 0\<^sub>v n" "?A *\<^sub>v ?v = ?ev \<cdot>\<^sub>v ?v" by auto
   from v(1-2) obtain i where "i < n" and "v $ i \<noteq> 0" by force
   with v(1) have "v $ i \<noteq> 0" by auto
-  hence v2: "v \<noteq> 0\<^sub>v n" using `i < n` v(1) by force
+  hence v2: "v \<noteq> 0\<^sub>v n" using \<open>i < n\<close> v(1) by force
   from vec_hom_inj[OF v(3)[folded mult_mat_vec_hom[OF A v(1)] vec_hom_smult]]
   have v3: "A *\<^sub>v v = ev \<cdot>\<^sub>v v" .
   from v(1) v2 v3

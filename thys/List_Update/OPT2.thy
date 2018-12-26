@@ -362,9 +362,9 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                           apply(rule ccontr) by (simp add: less(3) mtf2_def)
                       }
                       have t1: "t\<^sub>p [x, y] y (hd Strat) \<ge> 1" unfolding t\<^sub>p_def apply(simp add: split_def)
-                        apply(cases "(snd (hd Strat))") using `x \<noteq> y` by auto
+                        apply(cases "(snd (hd Strat))") using \<open>x \<noteq> y\<close> by auto
                       have t2: "t\<^sub>p [y,x] x (hd (tl Strat)) \<ge> 1" unfolding t\<^sub>p_def apply(simp add: split_def)
-                        apply(cases "(snd (hd (tl Strat)))") using `x \<noteq> y` by auto
+                        apply(cases "(snd (hd (tl Strat)))") using \<open>x \<noteq> y\<close> by auto
                       have "T\<^sub>p [x, y] (y # x # rest2) Strat
                           = t\<^sub>p [x, y] y (hd Strat) + t\<^sub>p (step [x, y] y (hd Strat)) x (hd (tl Strat)) + T\<^sub>p [y, x] rest2 (tl (tl Strat))"
                             by(rule k)
@@ -485,7 +485,7 @@ proof (induct "length \<sigma>" arbitrary: x y \<sigma> rule: less_induct)
                       then have "t\<^sub>p ?L1 y (hd (tl Strat)) > 0" unfolding T
                       unfolding t\<^sub>p_def apply(simp add: split_def)
                         apply(cases "snd (hd (tl Strat)) = []")
-                          using `x \<noteq> y` by auto
+                          using \<open>x \<noteq> y\<close> by auto
                       with l k show ?thesis by auto
                     next
 

@@ -86,7 +86,7 @@ proof -
     by (auto intro: ccontr)
   from assms have *: "\<And>q. P dvd M * q \<Longrightarrow> P dvd q"
     using primekeyrewrite [of P M] unfolding dvd_eq_mod_eq_0 [symmetric] by blast 
-  from equalmodstrick2 [OF assms(1)] `M > 0` show ?thesis
+  from equalmodstrick2 [OF assms(1)] \<open>M > 0\<close> show ?thesis
     apply -
     apply (rule equalmodstrick1)
     apply (auto intro: * dvdI simp add: dvd_eq_mod_eq_0 [symmetric] diff_mult_distrib2 [symmetric])

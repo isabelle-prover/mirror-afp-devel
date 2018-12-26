@@ -8,9 +8,9 @@ section "Proof of Disk Paxos' Invariant"
 
 theory DiskPaxos_Inv1 imports DiskPaxos_Model begin
 
-subsection {* Invariant 1 *}
+subsection \<open>Invariant 1\<close>
 
-text{* This is just a type Invariant. *}
+text\<open>This is just a type Invariant.\<close>
 
 definition Inv1 :: "state \<Rightarrow> bool"
 where
@@ -27,16 +27,16 @@ where
 
 declare HInv1_def [simp]
 
-text {*
+text \<open>
   We added the assertion that the set $allRdBlks p$ is finite
   for every process $p$; one may therefore choose a block with a
   maximum ballot number in action $EndPhase1$.
-*}
+\<close>
 
-text {* 
+text \<open>
   With the following the lemma, it will be enough to prove 
   Inv1 s' for every action, without taking the history variables in account.
-*}
+\<close>
 
 lemma HNextPart_Inv1: "\<lbrakk> HInv1 s; HNextPart s s'; Inv1 s' \<rbrakk> \<Longrightarrow> HInv1 s'"
   by(auto simp add: HNextPart_def Inv1_def)
@@ -187,7 +187,7 @@ qed
 
 declare HInv1_def [simp del]
 
-text {* $HInv1$ is an invariant of $HNext$ *}
+text \<open>$HInv1$ is an invariant of $HNext$\<close>
  
 lemma I2a:
   assumes nxt: "HNext s s'"

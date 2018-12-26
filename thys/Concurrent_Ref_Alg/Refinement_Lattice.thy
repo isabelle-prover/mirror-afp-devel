@@ -1,4 +1,4 @@
-section {* Refinement Lattice \label{S:lattice} *}
+section \<open>Refinement Lattice \label{S:lattice}\<close>
 
 theory Refinement_Lattice
 imports
@@ -6,22 +6,22 @@ imports
   "HOL-Library.Lattice_Syntax"
 begin
 
-text {* 
+text \<open>
   The underlying lattice of commands is complete and distributive.
   We follow the refinement calculus tradition so that $\nondet$ 
   is non-deterministic choice and $c \refsto d$ means $c$ is refined 
   (or implemented) by $d$.
-*}
+\<close>
 
 declare [[show_sorts]]
 
-text {* Remove existing notation for quotient as it interferes with the rely quotient *}
+text \<open>Remove existing notation for quotient as it interferes with the rely quotient\<close>
 no_notation Equiv_Relations.quotient  (infixl "'/'/" 90)
 
 class refinement_lattice = complete_distrib_lattice
 begin
 
-text {* The refinement lattice infimum corresponds to non-deterministic choice for commands. *}
+text \<open>The refinement lattice infimum corresponds to non-deterministic choice for commands.\<close>
 
 abbreviation
   refine :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>" 50)
@@ -33,14 +33,14 @@ abbreviation
 where
   "c \<sqsubset> d \<equiv> less c d"
 
-text {* Non-deterministic choice is monotonic in both arguments *}
+text \<open>Non-deterministic choice is monotonic in both arguments\<close>
 lemma inf_mono_left: "a \<sqsubseteq> b \<Longrightarrow> a \<sqinter> c \<sqsubseteq> b \<sqinter> c"
   using inf_mono by auto
 
 lemma inf_mono_right: "c \<sqsubseteq> d \<Longrightarrow> a \<sqinter> c \<sqsubseteq> a \<sqinter> d"
   using inf_mono by auto
 
-text {* Binary choice is a special case of choice over a set. *}
+text \<open>Binary choice is a special case of choice over a set.\<close>
 lemma Inf2_inf: "\<Sqinter>{ f x | x. x \<in> {c, d}} = f c \<sqinter> f d"
 proof -
   have "{ f x | x. x \<in> {c, d}} = {f c, f d}" by blast
@@ -49,7 +49,7 @@ proof -
   finally show ?thesis .
 qed
 
-text {* Helper lemma for choice over indexed set. *}
+text \<open>Helper lemma for choice over indexed set.\<close>
 lemma INF_Inf: "(\<Sqinter>x\<in>X. f x) = (\<Sqinter>{f x |x. x \<in> X})"
   by (simp add: Setcompr_eq_image)
 
@@ -69,8 +69,8 @@ qed
 lemma (in -) nested_Collect: "{f y |y. y \<in> {g x |x. x \<in> X}} = {f (g x) |x. x \<in> X}"
   by blast
 
-text {* A transition lemma for INF distributivity properties, going from Inf to INF,
-  qualified version followed by a straightforward one. *}
+text \<open>A transition lemma for INF distributivity properties, going from Inf to INF,
+  qualified version followed by a straightforward one.\<close>
 
 lemma Inf_distrib_INF_qual:
   fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -96,7 +96,7 @@ end
 
 lemmas refine_trans = order.trans
 
-text {* More transitivity rules to make calculational reasoning smoother *}
+text \<open>More transitivity rules to make calculational reasoning smoother\<close>
 declare ord_eq_le_trans[trans]
 declare ord_le_eq_trans[trans]
 declare dual_order.trans[trans]

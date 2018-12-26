@@ -1,10 +1,10 @@
-section {* I/O Automata with Finite-Trace Semantics *}
+section \<open>I/O Automata with Finite-Trace Semantics\<close>
 
 theory IOA
 imports Main Sequences
 begin
 
-text {* This theory is inspired and draws material from the IOA theory of Nipkow and Müller *}
+text \<open>This theory is inspired and draws material from the IOA theory of Nipkow and Müller\<close>
 
 locale IOA = Sequences
 
@@ -16,7 +16,7 @@ record 'a signature =
 context IOA
 begin 
 
-subsection {* Signatures *}
+subsection \<open>Signatures\<close>
 
 definition actions :: "'a signature \<Rightarrow> 'a set" where
   "actions asig \<equiv> inputs asig \<union> outputs asig \<union> internals asig"
@@ -45,7 +45,7 @@ definition hide_asig where
 
 end
 
-subsection {* I/O Automata *}
+subsection \<open>I/O Automata\<close>
 
 type_synonym
   ('s,'a) transition = "'s \<times> 'a \<times> 's"
@@ -89,7 +89,7 @@ definition rename where
    start = start A,
    trans = {tr. \<exists> x . ren (fst (snd tr)) = Some x \<and> (fst tr) \<midarrow>x\<midarrow>A\<longrightarrow> (snd (snd tr))}\<rparr>"
 
-text {* Reachable states and invariants *}
+text \<open>Reachable states and invariants\<close>
 
 inductive
   reachable :: "('s,'a) ioa \<Rightarrow> 's \<Rightarrow> bool"
@@ -124,7 +124,7 @@ qed
 
 end
 
-subsection {* Composition of Families of I/O Automata *}
+subsection \<open>Composition of Families of I/O Automata\<close>
 
 record ('id, 'a) family =
   ids :: "'id set"
@@ -191,7 +191,7 @@ lemmas ioa_simps = rename_def rename_set_def is_trans_def is_ioa_def par_def
 
 end
 
-subsection {* Executions and Traces *}
+subsection \<open>Executions and Traces\<close>
 
 type_synonym
    ('s,'a)pairs = "('a\<times>'s) list"
@@ -275,7 +275,7 @@ definition proj_trace::"'a trace \<Rightarrow> ('a signature) \<Rightarrow> 'a t
 definition ioa_implements :: "('s1,'a)ioa \<Rightarrow> ('s2,'a)ioa \<Rightarrow> bool"   (infixr "=<|" 12) where
   "A =<| B \<equiv> inp A = inp B \<and> out A = out B \<and> traces A \<subseteq> traces B"
 
-subsection {* Operations on Executions *}
+subsection \<open>Operations on Executions\<close>
 
 definition cons_exec where
   "cons_exec e p \<equiv> (fst e, (snd e)#p)"

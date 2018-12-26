@@ -3,7 +3,7 @@
                 2007  Rijksuniversiteit Groningen
 *)
 
-section {* The quadratic form $x^2 + Ny^2$ *}
+section \<open>The quadratic form $x^2 + Ny^2$\<close>
 
 theory Quad_Form
 imports
@@ -13,9 +13,9 @@ begin
 context
 begin
 
-text {* Shows some properties of the quadratic form $x^2+Ny^2$, such as how to multiply and divide them. The second part focuses on the case $N=3$ and is used in the proof of the case $n=3$ of Fermat's last theorem. The last part -- not used for FLT3 -- shows which primes can be written as $x^2 + 3y^2$. *}
+text \<open>Shows some properties of the quadratic form $x^2+Ny^2$, such as how to multiply and divide them. The second part focuses on the case $N=3$ and is used in the proof of the case $n=3$ of Fermat's last theorem. The last part -- not used for FLT3 -- shows which primes can be written as $x^2 + 3y^2$.\<close>
 
-subsection {* Definitions and auxiliary results *}
+subsection \<open>Definitions and auxiliary results\<close>
 
 (* TODO: move this lemma to the distribution (?). (It is used also in TwoSquares and FourSquares) *)
 private lemma best_division_abs: "(n::int) > 0 \<Longrightarrow> \<exists> k. 2 * \<bar>a - k*n\<bar> \<le> n"
@@ -64,7 +64,7 @@ qed
 
 private lemma prime_3_nat: "prime (3::nat)" by auto
 
-subsection {* Basic facts if $N \ge 1$ *}
+subsection \<open>Basic facts if $N \ge 1$\<close>
 
 lemma qfN_pos: "\<lbrakk> N \<ge> 1; is_qfN A N \<rbrakk> \<Longrightarrow> A \<ge> 0"
 proof -
@@ -112,7 +112,7 @@ proof -
   qed
 qed
 
-subsection {* Multiplication and division *}
+subsection \<open>Multiplication and division\<close>
 
 lemma qfN_mult1: "((a::int)^2 + N*b^2)*(c^2 + N*d^2)
   = (a*c+N*b*d)^2 + N*(a*d-b*c)^2"
@@ -681,7 +681,7 @@ proof -
     by blast
 qed
 
-subsection {* Uniqueness ($N>1$)*}
+subsection \<open>Uniqueness ($N>1$)\<close>
 
 lemma qfN_prime_unique:
   "\<lbrakk> prime (a^2+N*b^2::int); N > 1; a^2+N*b^2 = c^2+N*d^2 \<rbrakk>
@@ -856,7 +856,7 @@ proof -
   with f g show ?thesis by (auto simp add: abs_mult)
 qed
 
-subsection {* The case $N=3$ *}
+subsection \<open>The case $N=3$\<close>
 
 lemma qf3_even: "even (a^2+3*b^2) \<Longrightarrow> \<exists> B. a^2+3*b^2 = 4*B \<and> is_qfN B 3"
 proof -
@@ -1104,12 +1104,12 @@ next
     hence "?h dvd d" by (rule dvd_trans)
     have "?h dvd x" by simp
     hence "?h dvd m*x" by (rule dvd_mult)
-    with `?h dvd c` have "?h dvd c+m*x" by (rule dvd_add)
+    with \<open>?h dvd c\<close> have "?h dvd c+m*x" by (rule dvd_add)
     with cm have "?h dvd a" by simp
-    from `?h dvd x` have "?h dvd n*x" by (rule dvd_mult)
-    with `?h dvd d` have "?h dvd d+n*x" by (rule dvd_add)
+    from \<open>?h dvd x\<close> have "?h dvd n*x" by (rule dvd_mult)
+    with \<open>?h dvd d\<close> have "?h dvd d+n*x" by (rule dvd_add)
     with dn have "?h dvd b" by simp
-    with `?h dvd a` have "?h dvd gcd a b" by simp
+    with \<open>?h dvd a\<close> have "?h dvd gcd a b" by simp
     with abx have "?h dvd 1" by simp
     hence "?h = 1" by simp
     hence "coprime (?g^2) x" by (auto intro: gcd_eq_1_imp_coprime)
@@ -1147,12 +1147,12 @@ next
     { assume "?g^2 =1" with w wy have False by simp }
     moreover
     { assume g1: "?g^2 >1"
-      with `w>0` have "w*1 < w*?g^2" by (auto dest: zmult_zless_mono2)
+      with \<open>w>0\<close> have "w*1 < w*?g^2" by (auto dest: zmult_zless_mono2)
       with w have "w < y" by (simp add: ac_simps)
       with wy have False by auto }
     ultimately show False by blast
   qed
-  from Ewx E3 abx `w>0` have
+  from Ewx E3 abx \<open>w>0\<close> have
     "prime x \<and> odd x \<and> w > 0 \<and> is_qfN (x*w) 3 \<and> \<not> is_qfN x 3" by simp
   then obtain z where z: "prime z \<and> odd z \<and> z dvd w \<and> \<not> is_qfN z 3"
     by (frule_tac P="x" in qf3_oddprimedivisor_not, auto)
@@ -1165,7 +1165,7 @@ next
     have "z \<le> w"
     proof (rule ccontr)
       assume "\<not> z \<le> w" hence "w < z" by auto
-      with `w>0` have "\<not> z dvd w" by (rule zdvd_not_zless)
+      with \<open>w>0\<close> have "\<not> z dvd w" by (rule zdvd_not_zless)
       with z show False by simp
     qed
     with w_le_y yx have "z < x" by simp
@@ -1398,11 +1398,11 @@ proof -
   with ass show ?thesis by (auto dest: qf3_cube_primelist_impl_cube_form)
 qed
 
-subsection {* Existence ($N=3$) *}
+subsection \<open>Existence ($N=3$)\<close>
 
-text {* This part contains the proof that all prime numbers $\equiv 1 \bmod 6$ can be written as $x^2 + 3y^2$. *}
+text \<open>This part contains the proof that all prime numbers $\equiv 1 \bmod 6$ can be written as $x^2 + 3y^2$.\<close>
 
-text {* First show $(\frac{a}{p})(\frac{b}{p}) = (\frac{ab}{p})$, where $p$ is an odd prime. *}
+text \<open>First show $(\frac{a}{p})(\frac{b}{p}) = (\frac{ab}{p})$, where $p$ is an odd prime.\<close>
 lemma Legendre_zmult: "\<lbrakk> p > 2; prime p \<rbrakk>
   \<Longrightarrow> (Legendre (a*b) p) = (Legendre a p)*(Legendre b p)"
 proof -
@@ -1449,7 +1449,7 @@ proof -
  with k show ?thesis by auto
 qed
 
-text {* Now show $(\frac{-3}{p}) = +1$ for primes $p \equiv 1 \bmod 6$. *}
+text \<open>Now show $(\frac{-3}{p}) = +1$ for primes $p \equiv 1 \bmod 6$.\<close>
 
 lemma Legendre_1mod6: "prime (6*m+1) \<Longrightarrow> Legendre (-3) (6*m+1) = 1"
 proof -
@@ -1526,7 +1526,7 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text {* Use this to prove that such primes can be written as $x^2 + 3y^2$. *}
+text \<open>Use this to prove that such primes can be written as $x^2 + 3y^2$.\<close>
 
 lemma qf3_prime_exists: "prime (6*m+1::int) \<Longrightarrow> \<exists> x y. 6*m+1 = x^2 + 3*y^2"
 proof -

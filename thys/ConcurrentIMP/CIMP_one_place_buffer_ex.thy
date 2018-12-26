@@ -15,9 +15,9 @@ imports
 begin
 
 (*>*)
-section{* One-place buffer example *}
+section\<open>One-place buffer example\<close>
 
-text{*
+text\<open>
 
 \label{sec:one_place_buffer}
 
@@ -32,7 +32,7 @@ historical variant of CSP (i.e., not the one in
 We introduce some syntax for fixed-topology (static channel-based)
 scenarios.
 
-*}
+\<close>
 
 abbreviation
   Receive :: "'location \<Rightarrow> 'channel \<Rightarrow> ('val \<Rightarrow> 'state \<Rightarrow> 'state)
@@ -46,11 +46,11 @@ abbreviation
 where
   "\<lbrace>l\<rbrace> ch\<triangleleft>f \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (ch, f s)) (\<lambda>ans s. {s})"
 
-text{*
+text\<open>
 
 We further specialise these for our particular example.
 
-*}
+\<close>
 
 abbreviation
   Receive' :: "'location \<Rightarrow> 'channel \<Rightarrow> (unit, 'location, 'channel \<times> 'state, 'state) com" ("\<lbrace>_\<rbrace>/ _\<triangleright>")
@@ -62,13 +62,13 @@ abbreviation
 where
  "\<lbrace>l\<rbrace> ch\<triangleleft> \<equiv> \<lbrace>l\<rbrace> ch\<triangleleft>id"
 
-text{*
+text\<open>
 
 These definitions largely follow
 \citet{DBLP:journals/toplas/LamportS84}. We have three processes
 communicating over two channels. We enumerate program locations.
 
-*}
+\<close>
 
 datatype ex_chname = \<xi>12 | \<xi>23
 type_synonym ex_val = nat
@@ -89,11 +89,11 @@ where
 | "ex_pgms p2 = LOOP DO \<lbrace>r12\<rbrace> \<xi>12\<triangleright>;; \<lbrace>s23\<rbrace> \<xi>23\<triangleleft> OD"
 | "ex_pgms p3 = \<lbrace>r23\<rbrace> \<xi>23\<triangleright>"
 
-text{*
+text\<open>
 
 Each process starts with an arbitrary initial local state.
 
-*}
+\<close>
 
 abbreviation ex_init :: "(ex_proc \<Rightarrow> ex_val) \<Rightarrow> bool" where
   "ex_init \<equiv> \<langle>True\<rangle>"
@@ -101,7 +101,7 @@ abbreviation ex_init :: "(ex_proc \<Rightarrow> ex_val) \<Rightarrow> bool" wher
 abbreviation ex_system :: "ex_system" where
   "ex_system \<equiv> (ex_pgms, ex_init)"
 
-text{*
+text\<open>
 
 PeteG: I don't understand how
 \citeauthor{DBLP:journals/toplas/LamportS84} justify their invariants.
@@ -110,9 +110,9 @@ The following adapts Kai Engelhardt's, from his notes titled
 \emph{Proving an Asynchronous Message Passing Program Correct},
 2011. The history variable tracks the causality of the system, which I
 feel is missing in Lamport's treatment. We tack on Lamport's invariant
-so we can establish @{text "Etern_pred"}.
+so we can establish \<open>Etern_pred\<close>.
 
-*}
+\<close>
 
 abbreviation
   filter_on_channel :: "ex_chname \<Rightarrow> ex_history \<Rightarrow> ex_val list"
@@ -141,22 +141,22 @@ definition I_pred :: ex_pred where
 
 lemmas I_defs = Ip1_0_def Ip1_1_def Ip2_0_def Ip2_1_def Ip3_0_def Ip3_1_def
 
-text{*
+text\<open>
 
 If process three terminates, then it has process one's value. This is
 stronger than \citeauthor{DBLP:journals/toplas/LamportS84}'s as we
 don't ask that the first process has also terminated.
 
-*}
+\<close>
 
 definition Etern_pred :: ex_pred where
   "Etern_pred \<equiv> terminated p3 imp (\<lambda>s. LST s p1 = LST s p3)"
 
-text{*
+text\<open>
 
 Proofs from here down.
 
-*}
+\<close>
 
 lemma correct_system:
   "I_pred sh \<Longrightarrow> Etern_pred sh"
@@ -187,7 +187,7 @@ apply (case_tac p)
   apply (auto simp: p1 p2_1)
 done
 
-text{* *}
+text\<open>\<close>
 (*<*)
 
 end

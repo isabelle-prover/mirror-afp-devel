@@ -6,30 +6,30 @@ A countably infinite type to denote cars in the model of HMLSL.
 
 section\<open>Cars\<close>
 
-text {* 
+text \<open>
 We define a type to refer to cars. For simplicity, we assume that (countably)
 infinite cars exist.
-*}
+\<close>
 
 theory Cars
   imports Main
 begin
 
-text {*
+text \<open>
 The type of cars consists of the natural numbers. However, we do not
 define or prove any additional structure about it.
-*}
+\<close>
 
 typedef cars = "{n::nat. True} " by blast 
 
 locale cars 
 begin
 
-text {*
+text \<open>
 For the construction of possible counterexamples, it is beneficial to 
 prove that at least two cars exist. Furthermore, we show that there indeed
 exist infinitely many cars.
-*}
+\<close>
 
 lemma at_least_two_cars_exists:"\<exists>c d ::cars . c\<noteq>d" 
 proof -

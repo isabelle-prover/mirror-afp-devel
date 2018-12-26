@@ -1,10 +1,10 @@
-section {* Execution rules for kernels *}
+section \<open>Execution rules for kernels\<close>
 
 theory KPL_execution_kernel imports 
   KPL_execution_group
 begin
 
-text {* Inter-group race detection *}
+text \<open>Inter-group race detection\<close>
 definition kernel_race 
   :: "gid set \<Rightarrow> (gid \<rightharpoonup> group_state) \<Rightarrow> bool"
 where "kernel_race G \<kappa> \<equiv> 
@@ -12,7 +12,7 @@ where "kernel_race G \<kappa> \<equiv>
   (snd ` (W_group (the (\<kappa> i)))) \<inter> 
   (snd ` (R_group (the (\<kappa> j))) \<union> snd ` (W_group (the (\<kappa> j)))) \<noteq> {}"
 
-text {* Replaces top-level @{term Break} with @{text "v := true"} *}
+text \<open>Replaces top-level @{term Break} with \<open>v := true\<close>\<close>
 fun belim :: "stmt \<Rightarrow> V \<Rightarrow> stmt"
 where 
   "belim (Basic b) v = Basic b"
@@ -27,7 +27,7 @@ where
 | "belim Continue v = Continue"
 | "belim Return v = Return"
 
-text {* Replaces top-level @{term Continue} with @{text "v := true"} *}
+text \<open>Replaces top-level @{term Continue} with \<open>v := true\<close>\<close>
 fun celim :: "stmt \<Rightarrow> V \<Rightarrow> stmt"
 where 
   "celim (Basic b) v = Basic b"
@@ -42,13 +42,13 @@ where
 | "celim Continue v = Basic (Assign (Var v) eTrue)"
 | "celim Return v = Return"
 
-text {* @{term "subst_basic_stmt n v loc"} replaces @{term n} with @{term v} inside @{term loc} *}
+text \<open>@{term "subst_basic_stmt n v loc"} replaces @{term n} with @{term v} inside @{term loc}\<close>
 fun subst_loc :: "name \<Rightarrow> V \<Rightarrow> loc \<Rightarrow> loc"
 where
   "subst_loc n v (Var w) = Var w"
 | "subst_loc n v (Name m) = (if n = m then Var v else Name m)"
 
-text {* @{term "subst_local_expr n v e"} replaces @{term n} with @{term v} inside @{term e} *}
+text \<open>@{term "subst_local_expr n v e"} replaces @{term n} with @{term v} inside @{term e}\<close>
 fun subst_local_expr 
   :: "name \<Rightarrow> V \<Rightarrow> local_expr \<Rightarrow> local_expr"
 where
@@ -60,7 +60,7 @@ where
   (subst_local_expr n v e1 \<and>* subst_local_expr n v e2)"
 | "subst_local_expr n v (\<not>* e) = \<not>* (subst_local_expr n v e)"
 
-text {* @{term "subst_basic_stmt n v b"} replaces @{term n} with @{term v} inside @{term b} *}
+text \<open>@{term "subst_basic_stmt n v b"} replaces @{term n} with @{term v} inside @{term b}\<close>
 fun subst_basic_stmt :: "name \<Rightarrow> V \<Rightarrow> basic_stmt \<Rightarrow> basic_stmt"
 where 
   "subst_basic_stmt n v (Assign loc e) = 
@@ -70,8 +70,8 @@ where
 | "subst_basic_stmt n v (Write e1 e2) =
   Write (subst_local_expr n v e1) (subst_local_expr n v e2)"
 
-text {* @{term "subst_stmt n v s t"} holds if @{term t} is the result 
-  of replacing @{term n} with @{term v} inside @{term s} *}
+text \<open>@{term "subst_stmt n v s t"} holds if @{term t} is the result 
+  of replacing @{term n} with @{term v} inside @{term s}\<close>
 inductive subst_stmt :: "name \<Rightarrow> V \<Rightarrow> stmt \<Rightarrow> stmt \<Rightarrow> bool"
 where 
   "subst_stmt n v (Basic b) (Basic (subst_basic_stmt n v b))"
@@ -89,13 +89,13 @@ where
 | "subst_stmt n v Continue Continue"
 | "subst_stmt n v Return Return"
 
-text {* @{term "param_subst f u"} replaces @{term f}'s parameter with @{term u} *}
+text \<open>@{term "param_subst f u"} replaces @{term f}'s parameter with @{term u}\<close>
 definition param_subst :: "proc list \<Rightarrow> proc_name \<Rightarrow> V \<Rightarrow> stmt"
 where "param_subst fs f u \<equiv> 
   let proc = THE proc. proc \<in> set fs \<and> proc_name proc = f in
   THE S'. subst_stmt (param proc) u (body proc) S'"
 
-text {* Replace @{term "Return"} with @{text "v := true"} *}
+text \<open>Replace @{term "Return"} with \<open>v := true\<close>\<close>
 fun relim :: "stmt \<Rightarrow> V \<Rightarrow> stmt"
 where 
   "relim (Basic b) v = Basic b"
@@ -111,11 +111,11 @@ where
 | "relim Continue v = Continue"
 | "relim Return v = Basic (Assign (Var v) eTrue)"
 
-text {* Fresh variables *}
+text \<open>Fresh variables\<close>
 definition fresh :: "V \<Rightarrow> V list \<Rightarrow> bool"
 where "fresh v vs \<equiv> v \<notin> set vs"
 
-text {* The rules of Figure 6 *}
+text \<open>The rules of Figure 6\<close>
 inductive step_k
   :: "abs_level \<Rightarrow> proc list \<Rightarrow> threadset \<Rightarrow> kernel_state \<Rightarrow> kernel_state option \<Rightarrow> bool"
 where

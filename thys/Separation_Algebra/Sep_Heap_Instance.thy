@@ -9,10 +9,10 @@ theory Sep_Heap_Instance
 imports Separation_Algebra
 begin
 
-text {*
+text \<open>
   Example instantiation of a the separation algebra to a map, i.e.\ a
   function from any type to @{typ "'a option"}.
-*}
+\<close>
 
 class opt =
   fixes none :: 'a
@@ -59,10 +59,10 @@ instance
 
 end
 
-text {*
-  For the actual option type @{const domain} and @{text "+"} are
-  just @{const dom} and @{text "++"}:
-*}
+text \<open>
+  For the actual option type @{const domain} and \<open>+\<close> are
+  just @{const dom} and \<open>++\<close>:
+\<close>
 
 lemma domain_conv: "domain = dom"
   by (rule ext) (simp add: domain_def dom_def)
@@ -72,9 +72,9 @@ lemma plus_fun_conv: "a + b = a ++ b"
 
 lemmas map_convs = domain_conv plus_fun_conv
 
-text {*
+text \<open>
   Any map can now act as a separation heap without further work:
-*}
+\<close>
 lemma
   fixes h :: "(nat => nat) => 'foo option"
   shows "(P ** Q ** H) h = (Q ** H ** P) h"

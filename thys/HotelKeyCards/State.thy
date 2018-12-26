@@ -11,15 +11,15 @@ begin
 declare if_split_asm[split]
 (*>*)
 
-section{*A state based model*}
+section\<open>A state based model\<close>
 
-text{* The model is based on three opaque types @{typ guest},
+text\<open>The model is based on three opaque types @{typ guest},
 @{typ key} and @{typ room}. Type @{typ card} is just an abbreviation
 for @{typ"key \<times> key"}.
 
 The state of the system is modelled as a record which combines the
 information about the front desk, the rooms and the guests.
-*}
+\<close>
 
 record state =
  owns :: "room \<Rightarrow> guest option"
@@ -30,7 +30,7 @@ record state =
  isin :: "room \<Rightarrow> guest set"
  safe :: "room \<Rightarrow> bool"
 
-text{*\noindent Reception records who @{const owns} a room (if anybody, hence
+text\<open>\noindent Reception records who @{const owns} a room (if anybody, hence
 @{typ"guest option"}), the current key @{const currk} that has been
 issued for a room, and which keys have been @{const issued} so
 far. Each guest has a set of @{const cards}. Each room has a key
@@ -47,9 +47,9 @@ definition. Each clause of the definition corresponds to a
 transition/operation/event. This is the standard approach to modelling
 state machines in theorem provers.
 
-The set of reachable states of the system (called @{text reach}) is
+The set of reachable states of the system (called \<open>reach\<close>) is
 defined by four transitions: initialization, checking in, entering a room,
-and leaving a room: *}
+and leaving a room:\<close>
 
 (*<*)
 inductive_set reach :: "state set"
@@ -80,31 +80,31 @@ s\<lparr> isin := (isin s)(r := isin s r \<union> {g}),
 "\<lbrakk> s \<in> reach;  g \<in> isin s r \<rbrakk> \<Longrightarrow>
 s\<lparr> isin := (isin s)(r := isin s r - {g}) \<rparr> \<in> reach"
 
-text{*\bigskip There is no check-out event because it is implicit in the next
+text\<open>\bigskip There is no check-out event because it is implicit in the next
 check-in for that room: this covers the cases where a guest leaves without checking out (in which case the room should not be blocked forever) or where
 the hotel decides to rent out a room prematurely, probably by accident.
 Neither do guests have to return their cards at any point because they may
 loose cards or may pretended to have lost them.
 We will now explain the events.
 \begin{description}
-\item[@{text init}]
+\item[\<open>init\<close>]
 Initialization requires that every room has a different key, i.e.\
 that @{const currk} is injective. Nobody
 owns a room, the keys of all rooms are recorded as issued, nobody has
 a card, and all rooms are empty.
 \item[@{thm[source] enter_room}]
 A guest may enter if either of the two keys on his card equal the room key.
-Then @{text g} is added to the occupants of @{text r} and
+Then \<open>g\<close> is added to the occupants of \<open>r\<close> and
 the room key is set to the second key on the card.
 Normally this has no effect because the second key is already the room key.
 But when entering for the first time, the first key on the card equals
 the room key and then the lock is actually recoded.
-\item[@{text exit_room}]
+\item[\<open>exit_room\<close>]
 removes an occupant from the occupants of a room.
-\item[@{text check_in}] for room @{text r} and guest @{text g}
+\item[\<open>check_in\<close>] for room \<open>r\<close> and guest \<open>g\<close>
 issues the card @{term"(currk s r, k)"}
-to @{text g}, where @{text k} is new, makes @{text g} the owner of the room,
-and sets @{term"currk s r"} to the new key @{text k}.
+to \<open>g\<close>, where \<open>k\<close> is new, makes \<open>g\<close> the owner of the room,
+and sets @{term"currk s r"} to the new key \<open>k\<close>.
 \end{description}
 
 The reader can easily check that our specification allows the intended
@@ -124,7 +124,7 @@ The main difference to Jackson's model is that his can talk about
 transitions between states rather than merely about reachable
 states. This means that he can specify that unauthorized entry into a
 room should not occur. Because our specification does not formalize
-the transition relation itself, we need to include the @{text isin}
+the transition relation itself, we need to include the \<open>isin\<close>
 component in order to
 express the same requirement. In the end, we would like to establish
 that the system is \emph{safe}: only the owner of a room can be in a
@@ -196,13 +196,13 @@ manner, then only the owner can be in the room.
 Now we explain how @{const safe} is modified with each event:
 
 \begin{description}
-\item[@{text init}] sets @{const safe} to @{const True} for every room.
-\item[@{text check_in}] for room @{text r} resets @{prop"safe s r"}
+\item[\<open>init\<close>] sets @{const safe} to @{const True} for every room.
+\item[\<open>check_in\<close>] for room \<open>r\<close> resets @{prop"safe s r"}
 because it is not safe for the new owner yet.
-\item[@{thm[source] enter_room}] for room @{text r} sets @{prop"safe s r"} if
+\item[@{thm[source] enter_room}] for room \<open>r\<close> sets @{prop"safe s r"} if
 the owner entered an empty room using the latest card issued for that room
 by reception, or if the room was already safe.
-\item[@{text exit_room}] does not modify @{const safe}.
+\item[\<open>exit_room\<close>] does not modify @{const safe}.
 \end{description}
 
 The reader should convince his or herself that @{const safe}
@@ -211,11 +211,11 @@ guest may find his room non-empty the first time he enters, and
 @{const safe} will not be set, but he may come back later, find the
 room empty, and then @{const safe} will be set. Furthermore, it is
 important that @{thm[source] enter_room} cannot reset @{const safe}
-due to the disjunct @{text"\<or> safe s r"}.  Hence @{text check_in} is
+due to the disjunct \<open>\<or> safe s r\<close>.  Hence \<open>check_in\<close> is
 the only event that can reset @{const safe}.  That is, a room stays
-safe until the next @{text check_in}.  Additionally @{const safe} is
+safe until the next \<open>check_in\<close>.  Additionally @{const safe} is
 initially @{const True}, which is fine because initially injectivity
-of @{text initk} prohibits illegal entries by non-owners.
+of \<open>initk\<close> prohibits illegal entries by non-owners.
 
 Note that because none of the other state components depend on @{const
 safe}, it is truly auxiliary: it can be deleted from the system and
@@ -224,10 +224,9 @@ the same set of reachable states is obtained, modulo the absence of
 
 We have formalized a very general safety policy of always using the
 latest card. A special case of this policy is the one called
-\emph{NoIntervening} by Jackson~\cite[p.~200]{Jackson06}: every @{text
-check_in} must immediately be followed by the corresponding @{thm[source]
+\emph{NoIntervening} by Jackson~\cite[p.~200]{Jackson06}: every \<open>check_in\<close> must immediately be followed by the corresponding @{thm[source]
 enter_room}.
-*}
+\<close>
 
 (*<*)
 lemma currk_issued[simp]: "s : reach \<Longrightarrow> currk s r : issued s"
@@ -275,11 +274,11 @@ proof induct
                  (r1 :=
                     owns s r1 = Some g1 \<and> isin s r1 = {} \<and> k1 = currk s r1 \<or>
                     safe s r1)\<rparr>"
-  note s = `s \<in> reach`
-  and IH = `\<lbrakk> safe s r; (k', roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g`
-  and card_g1 = `(k,k1) \<in> cards s g1` and safe = `safe ?s' r`
-  and card_g = `(k',roomk ?s' r) \<in> cards ?s' g`
-  have "roomk s r1 = k \<or> roomk s r1 = k1" using `roomk s r1 \<in> {k,k1}` by simp
+  note s = \<open>s \<in> reach\<close>
+  and IH = \<open>\<lbrakk> safe s r; (k', roomk s r) \<in> cards s g \<rbrakk> \<Longrightarrow> owns s r = Some g\<close>
+  and card_g1 = \<open>(k,k1) \<in> cards s g1\<close> and safe = \<open>safe ?s' r\<close>
+  and card_g = \<open>(k',roomk ?s' r) \<in> cards ?s' g\<close>
+  have "roomk s r1 = k \<or> roomk s r1 = k1" using \<open>roomk s r1 \<in> {k,k1}\<close> by simp
   thus ?case
   proof
     assume [symmetric,simp]: "roomk s r1 = k"
@@ -321,10 +320,10 @@ proof induct
                  (r1 :=
                     owns s r1 = Some g1 \<and> isin s r1 = {} \<and> k2 = currk s r1 \<or>
                     safe s r1)\<rparr>"
-  note s = `s \<in> reach`
-  and IH = `\<lbrakk> safe s r; g \<in> isin s r \<rbrakk> \<Longrightarrow> owns s r = Some g`
-  and card_g1 = `(k1,k2) \<in> cards s g1` and safe = `safe ?s' r`
-  and isin = `g \<in> isin ?s' r`
+  note s = \<open>s \<in> reach\<close>
+  and IH = \<open>\<lbrakk> safe s r; g \<in> isin s r \<rbrakk> \<Longrightarrow> owns s r = Some g\<close>
+  and card_g1 = \<open>(k1,k2) \<in> cards s g1\<close> and safe = \<open>safe ?s' r\<close>
+  and isin = \<open>g \<in> isin ?s' r\<close>
   show ?case
     proof (cases "r1 = r")
       assume "r1 \<noteq> r" with IH isin safe show ?thesis by simp
@@ -339,7 +338,7 @@ proof induct
       next
         assume [simp]: "g = g1"
         have "k2 = roomk s r1 \<or> k1 = roomk s r1"
-          using `roomk s r1 \<in> {k1,k2}` by auto
+          using \<open>roomk s r1 \<in> {k1,k2}\<close> by auto
         thus ?thesis
         proof
           assume "k2 = roomk s r1"
@@ -362,7 +361,7 @@ proof induct
 qed auto
 (*>*)
 
-text{*
+text\<open>
 
 \subsection{Verifying safety}
 \label{sec:verisafe}
@@ -387,13 +386,13 @@ The complete list, culminating in the main theorem, is this:
 \end{theorem}
 The lemmas and the theorem are proved in this order, each one is marked as a
 simplification rule, and each proof is a one-liner: induction on
-@{prop"s \<in> reach"} followed by @{text auto}.
+@{prop"s \<in> reach"} followed by \<open>auto\<close>.
 
 Although, or maybe even because these proofs work so smoothly one may
 like to understand why. Hence we examine the proof of
 Theorem~\ref{safe-state} in more detail. The only interesting case is
-@{thm[source] enter_room}. We assume that guest @{text g\<^sub>1} enters room
-@{text r\<^sub>1} with card @{term"(k\<^sub>1,k\<^sub>2)"} and call the new state @{text t}.
+@{thm[source] enter_room}. We assume that guest \<open>g\<^sub>1\<close> enters room
+\<open>r\<^sub>1\<close> with card @{term"(k\<^sub>1,k\<^sub>2)"} and call the new state \<open>t\<close>.
 We assume @{prop"safe t r"} and @{prop"g \<in> isin t r"} and prove
 @{prop"owns t r = \<lfloor>g\<rfloor>"} by case distinction.
 If @{prop"r\<^sub>1 \<noteq> r"}, the claim follows directly from the induction hypothesis
@@ -420,9 +419,9 @@ Lemma~\ref{state-lemmas}.\ref{key1_not_currk}.
 
 This detailed proof shows that a number of case distinctions are
 required. Luckily, they all suggest themselves to Isabelle via the
-definition of function update (@{text":="}) or via disjunctions that
+definition of function update (\<open>:=\<close>) or via disjunctions that
 arise automatically.
-*}
+\<close>
 
 (*<*)
 end

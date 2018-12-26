@@ -478,7 +478,7 @@ lemma find_path1_correct:
     dest!: restr_invar_imp_not_reachable tranclD)
   done
 
-subsection {* Implementation *}
+subsection \<open>Implementation\<close>
 
 (* Implementation with stack *)
 record 'v fp0_state_impl = "'v simple_state" +

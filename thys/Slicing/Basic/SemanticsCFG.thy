@@ -1,4 +1,4 @@
-section {* CFG and semantics conform *}
+section \<open>CFG and semantics conform\<close>
 
 theory SemanticsCFG imports CFG begin
 

@@ -2,7 +2,7 @@ theory SINVAR_BLPtrusted
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant Basic Bell LaPadula with trusted entities *}
+subsection \<open>SecurityInvariant Basic Bell LaPadula with trusted entities\<close>
 
 type_synonym security_level = nat
 
@@ -17,7 +17,7 @@ fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> node_config) \<Rightarro
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (if trusted (nP e2) then True else security_level (nP e1) \<le> security_level (nP e2) ))"
 
 
-text{*A simplified version of the Bell LaPadula model was presented in @{file "SINVAR_BLPbasic.thy"}. 
+text\<open>A simplified version of the Bell LaPadula model was presented in @{file "SINVAR_BLPbasic.thy"}. 
 In this theory, we extend this template with a notion of trust by adding a Boolean flag @{const trusted} to the host attributes. 
 This is a refinement to represent real-world scenarios more accurately and analogously happened to the 
 original Bell LaPadula model (see publication ``Looking Back at the Bell-La Padula Model''
@@ -25,7 +25,7 @@ A trusted host can receive information of any security level and may declassify 
 i.e. distribute the information with its own security level. 
 For example, a @{term "trusted (sc::node_config) = True"} host is allowed to receive any information 
 and with the @{term "0::security_level"} level, it is allowed to reveal it to anyone. 
-*}
+\<close>
 
 
 definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
@@ -78,7 +78,7 @@ lemma BLP_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarro
   done
 
 
-subsubsection {*ENF*}
+subsubsection \<open>ENF\<close>
   definition BLP_P where "BLP_P \<equiv> (\<lambda>n1 n2.(if trusted n2 then True else security_level n1 \<le> security_level n2 ))"
   lemma zero_default_candidate: "\<forall>nP e1 e2. \<not> BLP_P (nP e1) (nP e2) \<longrightarrow> \<not> BLP_P (nP e1) default_node_properties"
     apply(rule allI)+

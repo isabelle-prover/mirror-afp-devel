@@ -8,9 +8,9 @@ imports
   "HOL-Algebra.Coset"
 begin
 
-section {* Isomorphism Classes of Groups *}
+section \<open>Isomorphism Classes of Groups\<close>
 
-text {* We construct a quotient type for isomorphism classes of groups. *}
+text \<open>We construct a quotient type for isomorphism classes of groups.\<close>
 
 typedef 'a group = "{G :: 'a monoid. group G}"
 proof
@@ -53,12 +53,12 @@ next
   qed
 qed
 
-text {* This assigns to a given group the group isomorphism class *}
+text \<open>This assigns to a given group the group isomorphism class\<close>
 
 definition (in group) iso_class :: "'a group_iso_class"
   where "iso_class = Abs_group_iso (Abs_group (monoid.truncate G))"
 
-text {* Two isomorphic groups do indeed have the same isomorphism class: *}
+text \<open>Two isomorphic groups do indeed have the same isomorphism class:\<close>
 
 lemma iso_classes_iff:
   assumes "group G"

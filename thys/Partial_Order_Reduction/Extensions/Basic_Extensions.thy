@@ -1,14 +1,14 @@
-section {* Basics *}
+section \<open>Basics\<close>
 
 theory Basic_Extensions
 imports "HOL-Library.Infinite_Set"
 begin
 
-  subsection {* Types *}
+  subsection \<open>Types\<close>
 
     type_synonym 'a step = "'a \<Rightarrow> 'a"
 
-  subsection {* Rules *}
+  subsection \<open>Rules\<close>
 
     declare less_imp_le[dest, simp]
   
@@ -69,7 +69,7 @@ begin
       finally show ?case by this
     qed
 
-  subsection {* Constants *}
+  subsection \<open>Constants\<close>
 
     definition const :: "'a \<Rightarrow> 'b \<Rightarrow> 'a"
       where "const x \<equiv> \<lambda> _. x"
@@ -173,7 +173,7 @@ begin
   
     lemma label_select[simp]: "label (p, a, q) = a" unfolding label_def by simp
 
-  subsection {* Theorems for @term{curry} and @term{split} *}
+  subsection \<open>Theorems for @term{curry} and @term{split}\<close>
 
     lemma curry_split[simp]: "curry \<circ> case_prod = id" by auto
     lemma split_curry[simp]: "case_prod \<circ> curry = id" by auto

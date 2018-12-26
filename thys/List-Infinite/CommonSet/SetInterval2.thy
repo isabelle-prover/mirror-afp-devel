@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-section {* Sets of natural numbers *}
+section \<open>Sets of natural numbers\<close>
 
 theory SetInterval2
 imports
@@ -14,9 +14,9 @@ imports
   "../CommonArith/Util_Div"
 begin
 
-subsection {* Auxiliary results for monotonic, injective and surjective functions over sets *}
+subsection \<open>Auxiliary results for monotonic, injective and surjective functions over sets\<close>
 
-subsubsection {* Monotonicity *}
+subsubsection \<open>Monotonicity\<close>
 
 definition mono_on :: "('a::order \<Rightarrow> 'b::order) \<Rightarrow> 'a set \<Rightarrow> bool"
   where "mono_on f A \<equiv> \<forall>a\<in>A. \<forall>b\<in>A. a \<le> b \<longrightarrow> f a \<le> f b"
@@ -49,7 +49,7 @@ apply (fastforce simp: order_le_less)
 done
 
 
-subsubsection {* Injectivity *}
+subsubsection \<open>Injectivity\<close>
 
 lemma inj_imp_inj_on: "inj f \<Longrightarrow> inj_on f A"
 unfolding inj_on_def by blast
@@ -92,7 +92,7 @@ corollary inj_on_union_image_Int: "
 by (rule inj_on_image_Int[OF _ Un_upper1 Un_upper2])
 
 
-subsubsection {* Surjectivity *}
+subsubsection \<open>Surjectivity\<close>
 
 definition surj_on :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> bool"
   where "surj_on f A B \<equiv> \<forall>b\<in>B. \<exists>a\<in>A. b = f a"
@@ -164,7 +164,7 @@ lemma bij_betw_inj_on_surj_on_conv: "
 unfolding bij_betw_def surj_on_image_conv by blast
 
 
-subsubsection {* Induction over natural sets *}
+subsubsection \<open>Induction over natural sets\<close>
 
 lemma image_nat_induct: "
   \<lbrakk> P (f 0); \<And>n. P (f n) \<Longrightarrow> P (f (Suc n)); surj_on f UNIV I; a \<in> I \<rbrakk> \<Longrightarrow> P a"
@@ -257,7 +257,7 @@ corollary interval_induct_rule:"
 by (blast intro: interval_induct)
 
 
-subsubsection {* Monotonicity and injectivity of artithmetic operators *}
+subsubsection \<open>Monotonicity and injectivity of artithmetic operators\<close>
 
 lemma add_left_inj: "inj (\<lambda>x. n + (x::'a::cancel_ab_semigroup_add))"
 by (simp add: inj_on_def)
@@ -320,16 +320,16 @@ corollary mod_eq_imp_div_right_inj_on: "
 by (rule strict_mono_on_imp_inj_on[OF mod_eq_div_right_strict_mono_on])
 
 
-subsection {* @{text Min} and @{text Max} elements of a set *}
+subsection \<open>\<open>Min\<close> and \<open>Max\<close> elements of a set\<close>
 
-text {* A special minimum operator is required for dealing with infinite wellordered sets
-  because the standard operator @{term "Min"} is usable only with finite sets. *}
+text \<open>A special minimum operator is required for dealing with infinite wellordered sets
+  because the standard operator @{term "Min"} is usable only with finite sets.\<close>
 
 definition iMin :: "'a::wellorder set \<Rightarrow> 'a"
   where "iMin I \<equiv> LEAST x. x \<in> I"
 
 
-subsubsection {* Basic results, as for @{text Least} *}
+subsubsection \<open>Basic results, as for \<open>Least\<close>\<close>
 
 lemma iMinI: "k \<in> I \<Longrightarrow> iMin I \<in> I"
 unfolding iMin_def
@@ -588,7 +588,7 @@ lemma iMin_le_Max: "\<lbrakk> finite A; A \<noteq> {} \<rbrakk> \<Longrightarrow
 by (rule ssubst[OF iMin_Min_conv], assumption+, rule Min_le_Max)
 
 
-subsubsection {* @{text Max} for sets over @{text enat} *}
+subsubsection \<open>\<open>Max\<close> for sets over \<open>enat\<close>\<close>
 
 definition iMax :: "nat set \<Rightarrow> enat"
   where "iMax i \<equiv> if (finite i) then (enat (Max i)) else \<infinity>"
@@ -668,7 +668,7 @@ lemma "\<lbrakk> finite A; A \<noteq>{} \<rbrakk> \<Longrightarrow> \<forall>x\<
 by simp
 
 
-subsubsection {* @{text Min} and @{text Max} for set operations *}
+subsubsection \<open>\<open>Min\<close> and \<open>Max\<close> for set operations\<close>
 
 lemma iMin_subset: "\<lbrakk> A \<noteq> {}; A \<subseteq> B \<rbrakk> \<Longrightarrow> iMin B \<le> iMin A"
 by (blast intro: iMin_le iMinI_ex2)
@@ -825,18 +825,18 @@ apply (rule_tac t="h (iMin I)" and s="min (h (iMin I)) (h x)" in subst)
 apply simp
 done
 
-text {* Synonyms for similarity with theorem names for @{term Min}" *}
+text \<open>Synonyms for similarity with theorem names for @{term Min}"\<close>
 
 lemmas iMin_eqI = iMin_equality
 
 lemmas iMin_in = iMinI_ex2
 
 
-subsection {* Some auxiliary results for set operations *}
+subsection \<open>Some auxiliary results for set operations\<close>
 
-subsubsection {* Some additional abbreviations for relations *}
+subsubsection \<open>Some additional abbreviations for relations\<close>
 
-text {* Abbreviations for @{text "refl"}, @{text "sym"}, @{text "equiv"}, @{text "refl"}, @{text "trans"} *}
+text \<open>Abbreviations for \<open>refl\<close>, \<open>sym\<close>, \<open>equiv\<close>, \<open>refl\<close>, \<open>trans\<close>\<close>
 
 abbreviation (input) reflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool" where
   "reflP r \<equiv> refl {(x, y). r x y}"
@@ -854,24 +854,24 @@ abbreviation (input) irreflP :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Righ
   "irreflP r \<equiv> irrefl {(x, y). r x y}"
 
 
-text {* Example for @{text "reflP"} *}
+text \<open>Example for \<open>reflP\<close>\<close>
 lemma "reflP ((\<le>)::('a::preorder \<Rightarrow> 'a \<Rightarrow> bool))"
 by (simp add: refl_on_def)
 
-text {* Example for @{text "symP"} *}
+text \<open>Example for \<open>symP\<close>\<close>
 lemma "symP (=)"
 by (simp add: sym_def)
 
-text {* Example for @{text "equivP"} *}
+text \<open>Example for \<open>equivP\<close>\<close>
 lemma "equivP (=)"
 by (simp add: trans_def refl_on_def sym_def)
 
-text {* Example for @{text "irreflP"} *}
+text \<open>Example for \<open>irreflP\<close>\<close>
 lemma "irreflP ((<)::('a::preorder \<Rightarrow> 'a \<Rightarrow> bool))"
 by (simp add: irrefl_def)
 
 
-subsubsection {* Auxiliary results for @{text singletons} *}
+subsubsection \<open>Auxiliary results for \<open>singletons\<close>\<close>
 
 lemma singleton_not_empty: "{a} \<noteq> {}" by blast
 lemma singleton_finite: "finite {a}" by blast
@@ -897,7 +897,7 @@ lemma strict_mono_on_singleton: "strict_mono_on f {a}"
 unfolding strict_mono_on_def by blast
 
 
-subsubsection {* Auxiliary results for @{text finite} and @{text infinite} sets *}
+subsubsection \<open>Auxiliary results for \<open>finite\<close> and \<open>infinite\<close> sets\<close>
 
 lemma infinite_imp_not_singleton: "infinite A \<Longrightarrow> \<not> (\<exists>a. A = {a})" by blast
 
@@ -916,7 +916,7 @@ by (blast intro: subset_finite_imp_finite)
 lemma Un_infinite_right: "infinite T \<Longrightarrow> infinite (S \<union> T)" by blast
 lemma Un_infinite_iff: "infinite (S \<union> T) = (infinite S \<or> infinite T)" by blast
 
-text {* Give own name to the lemma about finiteness of the integer image of a nat set *}
+text \<open>Give own name to the lemma about finiteness of the integer image of a nat set\<close>
 corollary finite_A_int_A_conv: "finite A = finite (int ` A)"
 proof -
   have "inj_on int A"
@@ -925,7 +925,7 @@ proof -
     by (simp add: finite_image_iff)
 qed
 
-text {* Corresponding fact fo infinite sets *}
+text \<open>Corresponding fact fo infinite sets\<close>
 corollary infinite_A_int_A_conv: "infinite A = infinite (int ` A)"
 by (simp only: finite_A_int_A_conv)
 
@@ -1001,7 +1001,7 @@ apply blast
 done
 
 
-subsubsection {* Some auxiliary results for disjoint sets *}
+subsubsection \<open>Some auxiliary results for disjoint sets\<close>
 
 lemma disjoint_iff_in_not_in1: "(A \<inter> B = {}) = (\<forall>x\<in>A. x \<notin> B)" by blast
 lemma disjoint_iff_in_not_in2: "(A \<inter> B = {}) = (\<forall>x\<in>B. x \<notin> A)" by blast
@@ -1022,8 +1022,8 @@ by blast
 lemma "{f x |x. x \<in> A} = (\<Union>x\<in>A. {f x})"
 by fastforce
 
-text {* This lemma version drops the superfluous precondition @{term "finite (\<Union>C)"}
-  (and turns the resulting equation to the sensible order @{text "card .. = k * card .."}). *}
+text \<open>This lemma version drops the superfluous precondition @{term "finite (\<Union>C)"}
+  (and turns the resulting equation to the sensible order \<open>card .. = k * card ..\<close>).\<close>
 lemma card_partition: "
   \<lbrakk> finite C; \<And>c. c \<in> C \<Longrightarrow> card c = k; \<And>c1 c2. \<lbrakk>c1 \<in> C; c2 \<in> C; c1 \<noteq> c2\<rbrakk> \<Longrightarrow> c1 \<inter> c2 = {} \<rbrakk> \<Longrightarrow>
   card (\<Union>C) = k * card C"
@@ -1031,7 +1031,7 @@ by (metis card_infinite card_partition finite_Union mult_eq_if)
 
 
 
-subsubsection {* Some auxiliary results for subset relation *}
+subsubsection \<open>Some auxiliary results for subset relation\<close>
 
 lemma subset_image_Int: "A \<subseteq> B \<Longrightarrow> f ` (A \<inter> B) = f ` A \<inter> f ` B"
 by (simp only: Int_absorb2 image_mono)
@@ -1051,7 +1051,7 @@ lemma subset_imp_Int_subset2: "B \<subseteq> C \<Longrightarrow> A \<inter> B \<
 by (simp only: Int_commute[of A], rule subset_imp_Int_subset1)
 
 
-subsubsection {* Auxiliary results for intervals from @{text SetInterval} *}
+subsubsection \<open>Auxiliary results for intervals from \<open>SetInterval\<close>\<close>
 
 lemmas set_interval_defs =
   lessThan_def atMost_def
@@ -1241,7 +1241,7 @@ apply (rule infinite_atMost_int)
 done
 
 
-subsubsection {* Auxiliary results for @{term card} *}
+subsubsection \<open>Auxiliary results for @{term card}\<close>
 
 lemma sum_singleton: "(\<Sum>x\<in>{a}. f x) = f a"
 by simp
@@ -1297,7 +1297,7 @@ by (simp only: card_Un_Int diff_add_inverse)
 
 
 
-text {* Pigeonhole principle, dirichlet's box principle *}
+text \<open>Pigeonhole principle, dirichlet's box principle\<close>
 lemma pigeonhole_principle[rule_format]: "
   card (f ` A) < card A \<longrightarrow> (\<exists>x\<in>A. \<exists>y\<in>A. x \<noteq> y \<and> f x = f y)"
 apply (case_tac "finite A")

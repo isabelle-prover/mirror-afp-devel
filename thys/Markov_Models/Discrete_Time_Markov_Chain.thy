@@ -1,16 +1,16 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Discrete-Time Markov Chain *}
+section \<open>Discrete-Time Markov Chain\<close>
 
 theory Discrete_Time_Markov_Chain
   imports Markov_Models_Auxiliary
 begin
 
-text {*
+text \<open>
 
 Markov chain with discrete time steps and discrete state space.
 
-*}
+\<close>
 
 lemma sstart_eq': "sstart \<Omega> (x # xs) = {\<omega>. shd \<omega> = x \<and> stl \<omega> \<in> sstart \<Omega> xs}"
   by (auto simp: sstart_eq)
@@ -644,8 +644,8 @@ proof -
   define t where "t = s"
   then have "(s, t) \<in> acc_on B"
     by auto
-  moreover note `alw (HLD B) \<omega>`
-  moreover note `enabled s \<omega>`[unfolded `t == s`[symmetric]]
+  moreover note \<open>alw (HLD B) \<omega>\<close>
+  moreover note \<open>enabled s \<omega>\<close>[unfolded \<open>t == s\<close>[symmetric]]
   ultimately show ?thesis
   proof (coinduction arbitrary: t \<omega> rule: alw_coinduct)
     case stl from this(1,2,3) show ?case
@@ -712,7 +712,7 @@ proof eventually_elim
     assume "\<not> ev (HLD B) \<omega>"
     then have "alw (HLD (- B)) \<omega>"
       by (simp add: not_ev_iff HLD_iff[abs_def])
-    from enabled_imp_trancl[OF this `enabled s \<omega>`]
+    from enabled_imp_trancl[OF this \<open>enabled s \<omega>\<close>]
     have "alw (HLD (acc_on (-B) `` {s})) \<omega>"
       by (simp add: Diff_eq)
     from pigeonhole_stream[OF this fin]
@@ -726,9 +726,9 @@ proof eventually_elim
         using fair fair_imp[of u w \<omega>] by auto
     qed fact
     { assume "ev (HLD {t'}) \<omega>" then have "ev (HLD B) \<omega>"
-      by (rule ev_mono) (auto simp: HLD_iff `t' \<in> B`) }
+      by (rule ev_mono) (auto simp: HLD_iff \<open>t' \<in> B\<close>) }
     then show False
-      using `alw (ev (HLD {t'})) \<omega>` `\<not> ev (HLD B) \<omega>` by auto
+      using \<open>alw (ev (HLD {t'})) \<omega>\<close> \<open>\<not> ev (HLD B) \<omega>\<close> by auto
   qed
 qed
 
@@ -760,7 +760,7 @@ proof -
   also have "\<P>(bT in T c. sfirst X (c ## bT) = \<infinity>) = 0"
     using AE by (intro T.prob_eq_0_AE) auto
   finally have "\<exists>N. \<forall>n\<ge>N. norm (?P n - 0) < e"
-    using `0 < e` by (rule LIMSEQ_D)
+    using \<open>0 < e\<close> by (rule LIMSEQ_D)
   then show ?thesis
     by (auto simp: measure_nonneg)
 qed
@@ -783,7 +783,7 @@ proof -
     by (auto intro!: T.finite_measure_mono simp del: enat_ord_code(1) simp: enat_ord_code(1)[symmetric])
 
   have not_H: "\<And>t. (s, t) \<in> acc_on (-H) \<Longrightarrow> t \<notin> H"
-    using `s \<notin> H` by (auto elim: rtrancl.cases)
+    using \<open>s \<notin> H\<close> by (auto elim: rtrancl.cases)
 
   have "\<forall>\<^sub>F n in sequentially. \<forall>t\<in>acc_on (-H)``{s}. ?Pf n t < 1"
   proof (safe intro!: eventually_ball_finite)
@@ -895,7 +895,7 @@ lemma prob_T:
 lemma T_subprob[measurable]: "T \<in> measurable (measure_pmf I) (subprob_algebra S)"
   by (auto intro!: space_bind simp: space_subprob_algebra) unfold_locales
 
-subsection {* Markov chain with Initial Distribution *}
+subsection \<open>Markov chain with Initial Distribution\<close>
 
 definition T' :: "'s pmf \<Rightarrow> 's stream measure" where
   "T' I = bind I (\<lambda>s. distr (T s) S ((##) s))"
@@ -1300,7 +1300,7 @@ proof -
       by (subst sup_continuous_lfp)
          (auto simp add: sup_continuous_def) }
   moreover
-  { fix n from `P s` have "AE \<omega> in T s. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>)"
+  { fix n from \<open>P s\<close> have "AE \<omega> in T s. \<not> ((\<lambda>R. HLD \<psi> or (HLD \<phi> aand nxt R)) ^^ n) \<bottom> (s ## \<omega>)"
     proof (induction n arbitrary: s)
       case (Suc n) then show ?case
         apply (subst AE_T_iff)
@@ -1322,7 +1322,7 @@ lemma AE_not_suntil_coinduct_strong [consumes 1, case_names \<psi> \<phi>]:
   shows "AE \<omega> in T s. not (HLD \<phi> suntil HLD \<psi>) (s ## \<omega>)" (is "?nuntil s")
 proof -
   have "P s \<or> ?nuntil s"
-    using `P s` by auto
+    using \<open>P s\<close> by auto
   then show ?thesis
   proof (coinduction arbitrary: s rule: AE_not_suntil_coinduct)
     case (\<phi> t s) then show ?case
@@ -1420,7 +1420,7 @@ next
   define M where "M = Max ((\<lambda>(s, t). \<rho> s + \<iota> s t) ` (SIGMA t:?L``{s}. K t))"
   have "?L \<subseteq> ?R"
     by (intro rtrancl_mono) auto
-  with `s \<notin> H` have subset: "(SIGMA t:?L``{s}. K t) \<subseteq> (?R``{s} \<times> ?R``{s})"
+  with \<open>s \<notin> H\<close> have subset: "(SIGMA t:?L``{s}. K t) \<subseteq> (?R``{s} \<times> ?R``{s})"
     by (auto intro: rtrancl_into_rtrancl elim: rtrancl.cases)
   then have [simp, intro!]: "finite ((\<lambda>(s, t). \<rho> s + \<iota> s t) ` (SIGMA t:?L``{s}. K t))"
     by (intro finite_imageI) (auto dest: finite_subset)
@@ -1432,13 +1432,13 @@ next
   note le_M = this
 
   have fin_L: "finite (?L `` {s})"
-    by (intro finite_subset[OF _ assms(1)] Image_mono `?L \<subseteq> ?R` order_refl)
+    by (intro finite_subset[OF _ assms(1)] Image_mono \<open>?L \<subseteq> ?R\<close> order_refl)
 
   have "M < \<infinity>"
     unfolding M_def
   proof (subst Max_less_iff, safe)
     show "(SIGMA x:?L `` {s}. set_pmf (K x)) = {} \<Longrightarrow> False"
-      using `s \<notin> H` by (auto simp add: Sigma_empty_iff set_pmf_not_empty)
+      using \<open>s \<notin> H\<close> by (auto simp add: Sigma_empty_iff set_pmf_not_empty)
     fix t t' assume "(s, t) \<in> ?L" "t' \<in> K t" then show "\<rho> t + \<iota> t t' < \<infinity>"
       using \<rho>[of t] \<iota>[of t t'] by simp
   qed
@@ -1446,7 +1446,7 @@ next
   from set_pmf_not_empty[of "K s"] obtain t where "t \<in> K s"
     by auto
   with le_M[of s t] have "0 \<le> M"
-    using set_pmf_not_empty[of "K s"] `s \<notin> H` le_M[of s] \<iota>_nonneg[of s] \<rho>_nonneg[of s]
+    using set_pmf_not_empty[of "K s"] \<open>s \<notin> H\<close> le_M[of s] \<iota>_nonneg[of s] \<rho>_nonneg[of s]
     by (intro order_trans[OF _ le_M]) auto
 
   have "AE \<omega> in T s. reward_until H s \<omega> \<le> M * sfirst (HLD H) (s ## \<omega>)"
@@ -1471,7 +1471,7 @@ next
   then have "(\<integral>\<^sup>+\<omega>. reward_until H s \<omega> \<partial>T s) \<le> (\<integral>\<^sup>+\<omega>. M * sfirst (HLD H) (s ## \<omega>) \<partial>T s)"
     by (rule nn_integral_mono_AE)
   also have "\<dots> < \<infinity>"
-    using `0 \<le> M` `M < \<infinity>` nn_integral_sfirst_finite[OF fin_L ev]
+    using \<open>0 \<le> M\<close> \<open>M < \<infinity>\<close> nn_integral_sfirst_finite[OF fin_L ev]
     by (simp add: nn_integral_cmult  less_top[symmetric] ennreal_mult_eq_top_iff)
   finally show ?thesis
     by simp

@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* Derivatives of $\Pi$-Extended Regular Expressions *}
+section \<open>Derivatives of $\Pi$-Extended Regular Expressions\<close>
 (*<*)
 theory Pi_Derivatives
 imports Pi_Regular_Exp
@@ -16,7 +16,7 @@ fixes embed :: "'a \<Rightarrow> 'a list"
 assumes embed: "\<And>a. a \<in> \<Sigma> n \<Longrightarrow> b \<in> set (embed a) = (b \<in> \<Sigma> (Suc n) \<and> project b = a)"
 begin
 
-subsection {* Syntactic Derivatives *}
+subsection \<open>Syntactic Derivatives\<close>
 
 primrec lderiv :: "'a \<Rightarrow> 'b rexp \<Rightarrow> 'b rexp" where
   "lderiv _ Zero = Zero"
@@ -38,7 +38,7 @@ primrec lderivs where
 
 
 
-subsection {* Finiteness of ACI-Equivalent Derivatives *}
+subsection \<open>Finiteness of ACI-Equivalent Derivatives\<close>
 
 lemma toplevel_summands_lderiv:
   "toplevel_summands (lderiv as r) = (\<Union>s\<in>toplevel_summands r. toplevel_summands (lderiv as s))"
@@ -242,7 +242,7 @@ next
   thus ?case using finite_subset[OF ACI_norm_lderivs_Pr, of r] fin unfolding image_Collect by auto
 qed
 
-subsection {* Wellformedness and language of derivatives *}
+subsection \<open>Wellformedness and language of derivatives\<close>
 
 lemma wf_lderiv[simp]: "wf n r \<Longrightarrow> wf n (lderiv w r)"
   by (induct r arbitrary: n w) (auto simp add: Let_def)
@@ -286,7 +286,7 @@ abbreviation "lderivs_set n r s \<equiv> {(\<guillemotleft>lderivs w r\<guillemo
 
 
 
-subsection {* Deriving preserves ACI-equivalence *}
+subsection \<open>Deriving preserves ACI-equivalence\<close>
 
 lemma ACI_norm_PLUS:
   "list_all2 (\<lambda>r s. \<guillemotleft>r\<guillemotright> = \<guillemotleft>s\<guillemotright>) xs ys \<Longrightarrow> \<guillemotleft>PLUS xs\<guillemotright> = \<guillemotleft>PLUS ys\<guillemotright>"

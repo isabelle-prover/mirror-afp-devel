@@ -1,48 +1,48 @@
 (*File: VS.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory VS imports VDM begin
-section{*Base-line noninterference*}
+section\<open>Base-line noninterference\<close>
 
-text{*\label{sec:BaseLineNI} We now show how to interprete the type
+text\<open>\label{sec:BaseLineNI} We now show how to interprete the type
 system of Volpano, Smith and Irvine~\cite{VolpanoSmithIrvine:JCS1996},
 as described in Section 3 of our
-paper~\cite{BeringerHofmann:CSF2007}.*}
+paper~\cite{BeringerHofmann:CSF2007}.\<close>
 
-subsection{*Basic definitions*}
+subsection\<open>Basic definitions\<close>
 
-text{*Muli-level security being treated in Section
+text\<open>Muli-level security being treated in Section
 \ref{sec:HuntSands}, we restrict our attention in the present section
-to the two-point security lattice.*}
+to the two-point security lattice.\<close>
 
 datatype TP = low | high
 
-text{*A global context assigns a security type to each program
-variable.*}
+text\<open>A global context assigns a security type to each program
+variable.\<close>
 
 consts CONTEXT :: "Var \<Rightarrow> TP"
 
-text{*Next, we define when two states are considered (low)
-equivalent.*}
+text\<open>Next, we define when two states are considered (low)
+equivalent.\<close>
 
 definition twiddle::"State \<Rightarrow> State \<Rightarrow> bool" (" _ \<approx> _ " [100,100] 100)
 where "s \<approx> ss = (\<forall> x. CONTEXT x = low \<longrightarrow> s x = ss x)"
 
-text{*A command $c$ is \emph{secure} if the low equivalence of any two
+text\<open>A command $c$ is \emph{secure} if the low equivalence of any two
 initial states entails the equivalence of the corresponding final
-states.*}
+states.\<close>
 
 definition secure::"IMP \<Rightarrow> bool"
 where "secure c = (\<forall> s t ss tt . s \<approx> t \<longrightarrow> (s,c \<Down> ss) \<longrightarrow> 
                           (t,c \<Down> tt) \<longrightarrow> ss \<approx> tt)"
 
-text {*Here is the definition of the assertion transformer
-that is called $\mathit{Sec}$ in the paper \ldots*}
+text \<open>Here is the definition of the assertion transformer
+that is called $\mathit{Sec}$ in the paper \ldots\<close>
 
 definition Sec :: "((State \<times> State) \<Rightarrow> bool) \<Rightarrow> VDMAssn"
 where "Sec \<Phi> s t = ((\<forall> r . s \<approx> r \<longrightarrow> \<Phi>(t, r)) \<and> (\<forall> r . \<Phi>(r ,s) \<longrightarrow> r \<approx> t))"
 
-text{*\ldots and the proofs of two directions of its characteristic
-property, Proposition 1.*}
+text\<open>\ldots and the proofs of two directions of its characteristic
+property, Proposition 1.\<close>
 
 lemma Prop1A:"\<Turnstile> c : (Sec \<Phi>) \<Longrightarrow> secure c"
 (*<*)
@@ -75,11 +75,11 @@ apply (erule Prop1A)
 done
 (*>*)
 
-subsection{*Derivation of the LOW rules*}
+subsection\<open>Derivation of the LOW rules\<close>
 
-text{*We now derive the interpretation of the LOW rules of Volpano et
+text\<open>We now derive the interpretation of the LOW rules of Volpano et
 al's paper according to the constructions given in the paper. (The
-rules themselves are given later, since they are not yet needed).*}
+rules themselves are given later, since they are not yet needed).\<close>
 
 lemma CAST[rule_format]:
   "G \<rhd> c : twiddle \<longrightarrow> G \<rhd> c : Sec (\<lambda> (s,t) . s \<approx> t)"
@@ -138,16 +138,16 @@ lemma IFF:
 done
 (*>*)
 
-text{*We introduce an explicit fixed point construction over the type
-$TT$ of the invariants $\Phi$.*}
+text\<open>We introduce an explicit fixed point construction over the type
+$TT$ of the invariants $\Phi$.\<close>
 
 type_synonym TT = "(State \<times> State) \<Rightarrow> bool"
 
-text{*We deliberately introduce a new type here since the agreement
-with @{text VDMAssn} (modulo currying) is purely coincidental. In
+text\<open>We deliberately introduce a new type here since the agreement
+with \<open>VDMAssn\<close> (modulo currying) is purely coincidental. In
 particular, in the generalisation for objects in Section
 \ref{sec:Objects} the type of invariants will differ from the
-type of program logic assertions.*}
+type of program logic assertions.\<close>
 
 definition FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
 where "FIX \<phi> = (\<lambda> (s,t). \<forall> \<Phi>. (\<forall> ss tt . \<phi> \<Phi> (ss,tt) \<longrightarrow> \<Phi> (ss,tt)) 
@@ -183,8 +183,8 @@ apply simp
 done
 (*>*)
 
-text{*For monotone invariant transformers $\varphi$, the construction indeed
-yields a fixed point.*}
+text\<open>For monotone invariant transformers $\varphi$, the construction indeed
+yields a fixed point.\<close>
 
 lemma Fix_lemma:"Monotone \<phi> \<Longrightarrow> \<phi> (FIX \<phi>) = FIX \<phi>"
 (*<*)
@@ -194,8 +194,8 @@ apply clarsimp  apply (erule Fix1) apply assumption
 done
 (*>*)
 
-text{*In order to derive the while rule we define the following
-transfomer.*}
+text\<open>In order to derive the while rule we define the following
+transfomer.\<close>
 
 definition PhiWhileOp::"BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
 where "PhiWhileOp b \<Phi> =
@@ -204,7 +204,7 @@ where "PhiWhileOp b \<Phi> =
                                  (\<forall>w. r \<approx> w \<longrightarrow> \<Psi> (s, w)))) \<and> 
              (\<not> evalB b t \<longrightarrow> s \<approx> t)))"
 
-text{*Since this operator is monotone, \ldots*}
+text\<open>Since this operator is monotone, \ldots\<close>
 
 lemma PhiWhileOp_Monotone: "Monotone (PhiWhileOp b \<Phi>)"
 (*<*)
@@ -213,12 +213,12 @@ apply (simp add: PhiWhileOp_def Monotone_def) apply clarsimp
 done
 (*>*)
 
-text{*we may define its fixed point, *}
+text\<open>we may define its fixed point,\<close>
 
 definition PhiWhile::"BExpr \<Rightarrow> TT \<Rightarrow> TT"
 where "PhiWhile b \<Phi> = FIX (PhiWhileOp b \<Phi>)"
 
-text{*which we can use to derive the following rule.*}
+text\<open>which we can use to derive the following rule.\<close>
 
 lemma WHILE:  
   "\<lbrakk> (\<forall> s t. s \<approx> t \<longrightarrow> evalB b s = evalB b t); G \<rhd> c : (Sec \<Phi>)\<rbrakk> \<Longrightarrow>
@@ -255,9 +255,9 @@ apply clarsimp apply (simp add: Sec_def)
 done
 (*>*)
 
-text{*The operator that given $\Phi$ returns the invariant
+text\<open>The operator that given $\Phi$ returns the invariant
 occurring in the conclusion of the rule is itself monotone - this is
-the property required for the rule for procedure invocations.*}
+the property required for the rule for procedure invocations.\<close>
 
 lemma PhiWhileMonotone: "Monotone (\<lambda> \<Phi> . PhiWhile b \<Phi>)"
 (*<*)
@@ -271,11 +271,11 @@ apply (rule_tac x=r in exI, simp)
 done
 (*>*)
 
-text{*We now derive an alternative while rule that employs an
+text\<open>We now derive an alternative while rule that employs an
 inductive formulation of a variant that replaces the fixed point
-construction. This version is given in the paper.*}
+construction. This version is given in the paper.\<close>
 
-text{*First, the inductive definition of the $\mathit{var}$ relation.*}
+text\<open>First, the inductive definition of the $\mathit{var}$ relation.\<close>
 
 inductive_set var::"(BExpr \<times> TT \<times> State \<times> State) set"
 where
@@ -283,8 +283,8 @@ varFalse: "\<lbrakk>\<not> evalB b t; s \<approx> t\<rbrakk> \<Longrightarrow> (
 | varTrue:"\<lbrakk>evalB b t; \<Phi>(r,t); \<forall> w . r \<approx> w \<longrightarrow> (b,\<Phi>,s,w): var\<rbrakk>
            \<Longrightarrow> (b,\<Phi>,s,t):var"
 
-text{*It is easy to prove the equivalence of $\mathit{var}$ and the
-fixed point:*}
+text\<open>It is easy to prove the equivalence of $\mathit{var}$ and the
+fixed point:\<close>
 
 (*<*)
 lemma varFIX: "(b,\<Phi>,s,t):var \<Longrightarrow> PhiWhile b \<Phi> (s,t)"
@@ -343,8 +343,8 @@ lemma FIXvarFIX: "(PhiWhile b) = (\<lambda> \<Phi> . (\<lambda> (s,t) . (b,\<Phi
 by (rule, rule FIXvarFIX')
 (*>*)
 
-text{*From this rule and the rule WHILE above, one may derive the
-while rule we gave in the paper.*} 
+text\<open>From this rule and the rule WHILE above, one may derive the
+while rule we gave in the paper.\<close> 
 
 lemma WHILE_IND:
   "\<lbrakk> (\<forall> s t. s \<approx> t \<longrightarrow> evalB b s = evalB b t); G \<rhd> c : (Sec \<Phi>)\<rbrakk> \<Longrightarrow>
@@ -356,8 +356,8 @@ apply (simp add: FIXvarFIX)
 done
 (*>*)
 
-text{*Not suprisingly, the construction $\mathit{var}$ can be shown to
-be monotone in $\Phi$.*}
+text\<open>Not suprisingly, the construction $\mathit{var}$ can be shown to
+be monotone in $\Phi$.\<close>
 (*<*)
 lemma varMonotoneAux[rule_format]:
   "(b, \<Phi>, s, t) \<in> var \<Longrightarrow> 
@@ -384,8 +384,8 @@ apply (rule PhiWhileMonotone)
 done  
 (*>*)
 
-text{*The call rule is formulated for an arbitrary fixed point of
-a monotone transformer.*}
+text\<open>The call rule is formulated for an arbitrary fixed point of
+a monotone transformer.\<close>
 
 lemma CALL: 
   "\<lbrakk> ({Sec(FIX \<Phi>)} \<union> G) \<rhd> body : Sec(\<Phi> (FIX \<Phi>)); Monotone \<Phi>\<rbrakk> \<Longrightarrow>
@@ -397,9 +397,9 @@ apply (erule Fix_lemma)
 done
 (*>*)
 
-subsection{*Derivation of the HIGH rules*}
+subsection\<open>Derivation of the HIGH rules\<close>
 
-text{*The HIGH rules are easy.*}
+text\<open>The HIGH rules are easy.\<close>
 
 lemma HIGH_SKIP: "G \<rhd> Skip : twiddle"
 (*<*)
@@ -454,11 +454,11 @@ lemma HIGH_CALL:
 by (erule VDMCall)
 (*>*)
 
-subsection{*The type system of Volpano, Smith and Irvine*}
+subsection\<open>The type system of Volpano, Smith and Irvine\<close>
 
-text{*We now give the type system of Volpano et al.~and then prove its
+text\<open>We now give the type system of Volpano et al.~and then prove its
 embedding into the system of derived rules. First, type systems for
-expressions and boolean expressions.*}
+expressions and boolean expressions.\<close>
 
 inductive_set VS_expr :: "(Expr \<times> TP) set"
 where
@@ -474,7 +474,7 @@ VS_BexprOp: "\<lbrakk>(e1,t) : VS_expr; (e2,t):VS_expr\<rbrakk>
              \<Longrightarrow> (compB f e1 e2,t) : VS_Bexpr"
 | VS_BexprHigh: "(e,high) : VS_Bexpr"
 
-text{*Next, the core of the type system, the rules for commands.*}
+text\<open>Next, the core of the type system, the rules for commands.\<close>
 
 inductive_set VS_com :: "(TP \<times> IMP) set"
 where
@@ -501,14 +501,14 @@ VS_comSkip: "(pc,Skip) : VS_com"
 
 | VS_comSub: "(high,c) : VS_com \<Longrightarrow> (low,c):VS_com"
 
-text{*We define the interpretation of expression typings\ldots *}
+text\<open>We define the interpretation of expression typings\ldots\<close>
 
 primrec SemExpr::"Expr \<Rightarrow> TP \<Rightarrow> bool"
 where
 "SemExpr e low = (\<forall> s ss. s \<approx> ss \<longrightarrow> evalE e s = evalE e ss)" |
 "SemExpr e high = True"
 
-text{*\ldots and show the soundness of the typing rules.*}
+text\<open>\ldots and show the soundness of the typing rules.\<close>
 
 lemma ExprSound: "(e,tp):VS_expr \<Longrightarrow> SemExpr e tp"
 (*<*)
@@ -519,7 +519,7 @@ apply (case_tac t, simp_all)
 done
 (*>*)
 
-text{*Likewise for the boolean expressions.*}
+text\<open>Likewise for the boolean expressions.\<close>
 
 primrec SemBExpr::"BExpr \<Rightarrow> TP \<Rightarrow> bool"
 where
@@ -535,8 +535,8 @@ apply (case_tac t, simp_all)
 done
 (*>*)
 
-text{*The proof of the main theorem (called Theorem 2 in our paper)
-proceeds by induction on $(t,c):VS\_com$.*}
+text\<open>The proof of the main theorem (called Theorem 2 in our paper)
+proceeds by induction on $(t,c):VS\_com$.\<close>
 
 theorem VS_com_VDM[rule_format]:
 "(t,c):VS_com \<Longrightarrow> (t=high \<longrightarrow> G \<rhd> c : twiddle) \<and>
@@ -586,11 +586,11 @@ apply clarsimp
 done
 (*>*)
 
-text{*The semantic of typing judgements for commands is now the
+text\<open>The semantic of typing judgements for commands is now the
 expected one: HIGH commands require initial and final state be low
 equivalent (i.e.~the low variables in the final state can't depend on
 the high variables of the initial state), while LOW commands must
-respect the above mentioned security property.*}
+respect the above mentioned security property.\<close>
 
 primrec SemCom::"TP \<Rightarrow> IMP \<Rightarrow> bool"
 where
@@ -598,9 +598,9 @@ where
                                (ss,c \<Down> tt) \<longrightarrow> t \<approx> tt)" |
 "SemCom high c = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> s \<approx> t)"
 
-text{*Combining theorem @{text VS_com_VDM} with the soundness result
+text\<open>Combining theorem \<open>VS_com_VDM\<close> with the soundness result
 of the program logic and the definition of validity yields the
-soundness of Volpano et al.'s type system.*}
+soundness of Volpano et al.'s type system.\<close>
 
 theorem VS_SOUND: "(t,c):VS_com \<Longrightarrow> SemCom t c"
 (*<*)
@@ -612,9 +612,9 @@ apply clarsimp apply (drule VDM_Sound) apply (simp add: valid_def VDM_valid_def 
 done
 (*>*)
 
-text{*As a further minor result, we prove that all judgements
+text\<open>As a further minor result, we prove that all judgements
 interpreting the low rules indeed yield assertions $A$ of the form $A
-= Sec(\Phi(FIX \Phi))$ for some monotone $\Phi$.*}
+= Sec(\Phi(FIX \Phi))$ for some monotone $\Phi$.\<close>
 
 inductive_set Deriv ::"(VDMAssn set \<times> IMP \<times> VDMAssn) set"
 where
@@ -713,8 +713,8 @@ lemma DerivMono:
 by (drule DerivProp_Aux, simp add: DProp_def)
 (*>*)
 
-text{*Also, all rules in the @{text Deriv} relation are indeed
-derivable in the program logic.*}
+text\<open>Also, all rules in the \<open>Deriv\<close> relation are indeed
+derivable in the program logic.\<close>
 
 lemma Deriv_derivable: "(G,c,A):Deriv \<Longrightarrow> G \<rhd> c: A"
 (*<*)
@@ -734,5 +734,5 @@ apply (erule HIGH_WHILE)
 apply (erule HIGH_CALL) 
 done
 (*>*)
-text{*End of theory VS*}
+text\<open>End of theory VS\<close>
 end 

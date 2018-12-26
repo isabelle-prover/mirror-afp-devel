@@ -1,4 +1,4 @@
-section {* Implementing Graphs by Maps *}
+section \<open>Implementing Graphs by Maps\<close>
 theory GraphByMap
 imports 
   GraphSpec 
@@ -88,7 +88,7 @@ begin
     :: "('V,'W,'V list,'m1) graph_nodes_it"
     where
     "gbm_nodes_list_it g \<equiv> map_iterator_dom (m1.iteratei g)"
-  local_setup {* Locale_Code.lc_decl_del @{term gbm_nodes_list_it} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term gbm_nodes_list_it}\<close>
 
   definition gbm_edges_list_it 
     :: "('V,'W,('V\<times>'W\<times>'V) list,'m1) graph_edges_it"
@@ -99,7 +99,7 @@ begin
         (\<lambda>(v,m2). set_iterator_product 
           (m2.iteratei m2) (\<lambda>(w,s3). s3.iteratei s3)))
     "
-  local_setup {* Locale_Code.lc_decl_del @{term gbm_edges_list_it} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term gbm_edges_list_it}\<close>
 
   definition gbm_succ_list_it ::
     "('V,'W,('W\<times>'V) list,'m1) graph_succ_it"
@@ -110,7 +110,7 @@ begin
       set_iterator_image (\<lambda>((v',m2),w). (w,v')) 
         (set_iterator_product (m2.iteratei m2) (\<lambda>(v',s). s3.iteratei s))
     "
-  local_setup {* Locale_Code.lc_decl_del @{term gbm_succ_list_it} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term gbm_succ_list_it}\<close>
 
   definition 
     "gbm_from_list \<equiv> gga_from_list gbm_empty gbm_add_node gbm_add_edge"
@@ -183,7 +183,7 @@ begin
     gop_edges_list_it = gbm_edges_list_it,
     gop_succ_list_it  = gbm_succ_list_it
     \<rparr>"
-  local_setup {* Locale_Code.lc_decl_del @{term gbm_ops} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term gbm_ops}\<close>
 end
 
 locale GraphByMap = GraphByMapDefs m1_ops m2_ops s3_ops m1_mvif +
@@ -477,12 +477,12 @@ begin
     done
 end
 
-setup {*
+setup \<open>
   (Record_Intf.add_unf_thms_global @{thms 
     GraphByMapDefs.gbm_nodes_list_it_unf
     GraphByMapDefs.gbm_edges_list_it_unf
     GraphByMapDefs.gbm_succ_list_it_unf
   })
-*} 
+\<close> 
    
 end

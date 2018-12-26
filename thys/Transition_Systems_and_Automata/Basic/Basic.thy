@@ -1,10 +1,10 @@
-section {* Basics *}
+section \<open>Basics\<close>
 
 theory Basic
 imports Main
 begin
 
-  subsection {* Miscellaneous *}
+  subsection \<open>Miscellaneous\<close>
 
   abbreviation (input) "const x \<equiv> \<lambda> _. x"
 

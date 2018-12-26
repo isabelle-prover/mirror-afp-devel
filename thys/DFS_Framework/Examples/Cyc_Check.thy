@@ -65,7 +65,7 @@ definition "cyc_checkerT G \<equiv> do {
 
 text \<open>
   Next, we define a locale for the cyclicity checker's
-  precondition and invariant, by specializing the @{text "param_DFS"} locale.\<close>
+  precondition and invariant, by specializing the \<open>param_DFS\<close> locale.\<close>
 locale cycc = param_DFS G cycc_params for G :: "('v, 'more) graph_rec_scheme"
 begin
   text \<open>We can easily show that our parametrization does not fail, thus we also
@@ -122,7 +122,7 @@ next
 qed
 
 subsection \<open>Correctness Proof\<close>
-text \<open> We now enter the @{text cycc_invar} locale, and show correctness of 
+text \<open> We now enter the \<open>cycc_invar\<close> locale, and show correctness of 
   our cyclicity checker.
 \<close>
 context cycc_invar begin
@@ -241,13 +241,13 @@ next
 qed
 
 
-subsection {* Implementation *}
+subsection \<open>Implementation\<close>
 text \<open>
   The implementation has two aspects: Structural implementation and data implementation.
   The framework provides recursive and tail-recursive implementations, as well as a variety
   of data structures for the state.
 
-  We will choose the @{text simple_state} implementation, which provides 
+  We will choose the \<open>simple_state\<close> implementation, which provides 
   a stack, an on-stack and a visited set, but no timing information.
 
   Note that it is common for state implementations to omit details from the

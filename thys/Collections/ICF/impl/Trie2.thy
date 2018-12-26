@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-section {* \isaheader{Tries without invariants} *}
+section \<open>\isaheader{Tries without invariants}\<close>
 theory Trie2 imports
   Trie_Impl
 begin
@@ -12,7 +12,7 @@ lemma rev_rev_image: "rev ` rev ` A = A"
 by(auto intro: rev_image_eqI[where x="rev y" for y])
 (*>*)
 
-subsection {* Abstract type definition *}
+subsection \<open>Abstract type definition\<close>
 
 typedef ('key, 'val) trie = 
   "{t :: ('key, 'val) Trie.trie. invar_trie t}"
@@ -27,7 +27,7 @@ using impl_of[of t] by simp
 lemma Trie_impl_of [code abstype]: "Trie (impl_of t) = t"
 by(rule impl_of_inverse)
 
-subsection {* Primitive operations *}
+subsection \<open>Primitive operations\<close>
 
 definition empty :: "('key, 'val) trie"
 where "empty = Trie (empty_trie)"
@@ -64,7 +64,7 @@ by(simp add: update_def Trie_inverse invar_trie_update)
 lemma impl_of_delete [code abstract]: "impl_of (delete ks t) = delete_trie ks (impl_of t)"
 by(simp add: delete_def Trie_inverse invar_trie_delete)
 
-subsection {* Correctness of primitive operations *}
+subsection \<open>Correctness of primitive operations\<close>
 
 lemma lookup_empty [simp]: "lookup empty = Map.empty"
 by(simp add: lookup_def empty_def Trie_inverse)
@@ -92,7 +92,7 @@ proof -
   done
 qed
 
-subsection {* Type classes *}
+subsection \<open>Type classes\<close>
 
 instantiation trie :: (equal, equal) equal begin
 

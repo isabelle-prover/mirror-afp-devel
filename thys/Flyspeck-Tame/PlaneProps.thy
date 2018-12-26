@@ -6,7 +6,7 @@ theory PlaneProps
 imports Invariants
 begin
 
-subsection {* @{const final} *}
+subsection \<open>@{const final}\<close>
 
 lemma plane_final_facesAt:
 assumes "inv g" "final g" "v : \<V> g" "f \<in> set (facesAt g v)" shows "final f"
@@ -30,7 +30,7 @@ apply(fastforce simp:finals_def setFinal_def normFaces_def normFace_def
 done
 
 
-subsection {* @{const degree} *}
+subsection \<open>@{const degree}\<close>
 
 lemma planeN4: "inv g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> 3 \<le> |vertices f|"
 apply(subgoal_tac "2 < | vertices f |")
@@ -94,7 +94,7 @@ lemma not_exceptional:
 by (auto simp add: plane_fin_exceptionalVertex_def except_def filter_empty_conv)
 
 
-subsection {* Misc *}
+subsection \<open>Misc\<close>
 
 lemma in_next_plane0I:
 assumes "g' \<in> set (generatePolygon n v f g)" "f \<in> set (nonFinals g)"
@@ -150,7 +150,7 @@ apply simp
 done
 
 
-subsection{* Increasing final faces *}
+subsection\<open>Increasing final faces\<close>
 
 
 lemma set_finals_splitFace[simp]:
@@ -186,7 +186,7 @@ apply blast
 done
 
 
-subsection{* Increasing vertices *}
+subsection\<open>Increasing vertices\<close>
 
 lemma next_plane0_vertices_subset:
  "\<lbrakk> g' \<in> set (next_plane0\<^bsub>p\<^esub> g); minGraphProps g \<rbrakk> \<Longrightarrow> \<V> g \<subseteq> \<V> g'"
@@ -198,7 +198,7 @@ apply (auto simp: splitFace_def split_def vertices_graph)
 done
 
 
-subsection{* Increasing vertex degrees *}
+subsection\<open>Increasing vertex degrees\<close>
 
 lemma next_plane0_incr_faceListAt:
  "\<lbrakk> g' \<in> set (next_plane0\<^bsub>p\<^esub> g); minGraphProps g \<rbrakk>
@@ -229,7 +229,7 @@ apply(simp add:vertices_graph)
 done
 
 
-subsection{* Increasing @{const except} *}
+subsection\<open>Increasing @{const except}\<close>
 
 lemma next_plane0_incr_except:
 assumes "g' \<in> set (next_plane0\<^bsub>p\<^esub> g)" "inv g" "v \<in> \<V> g"
@@ -237,10 +237,10 @@ shows "except g v \<le> except g' v"
 proof (unfold except_def)
   note inv' = invariantE[OF inv_inv_next_plane0, OF assms(1,2)]
   note mgp = inv_mgp[OF assms(2)] and mgp' = inv_mgp[OF inv']
-  note dist = distinct_filter[OF mgp_dist_facesAt[OF mgp `v : \<V> g`]]
+  note dist = distinct_filter[OF mgp_dist_facesAt[OF mgp \<open>v : \<V> g\<close>]]
   have "v \<in> \<V> g'"
     using assms(3) next_plane0_vertices_subset[OF assms(1) mgp] by blast
-  note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp' `v : \<V> g'`]]
+  note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp' \<open>v : \<V> g'\<close>]]
   have "|[f\<leftarrow>facesAt g v . final f \<and> 5 \<le> |vertices f| ]| =
         card{f\<in> set(facesAt g v) . final f \<and> 5 \<le> |vertices f|}"
     (is "?L = card ?M") using distinct_card[OF dist] by simp
@@ -256,7 +256,7 @@ proof (unfold except_def)
   also have "?M = {f\<in> \<F> g' . v \<in> \<V> f \<and> final f \<and> 5 \<le> |vertices f|}"
     by(auto simp:finals_def)
   also have "\<dots> = {f \<in> set(facesAt g' v) . final f \<and> 5 \<le> |vertices f|}"
-    by(simp add: minGraphProps_facesAt_eq[OF mgp' `v \<in> \<V> g'`])
+    by(simp add: minGraphProps_facesAt_eq[OF mgp' \<open>v \<in> \<V> g'\<close>])
   also have "card \<dots> =
     |[f \<leftarrow> facesAt g' v . final f \<and> 5 \<le> |vertices f| ]|" (is "_ = ?R")
     using distinct_card[OF dist'] by simp
@@ -264,7 +264,7 @@ proof (unfold except_def)
 qed
 
 
-subsection{* Increasing edges *}
+subsection\<open>Increasing edges\<close>
 
 lemma next_plane0_set_edges_subset:
   "\<lbrakk> minGraphProps g;  g [next_plane0\<^bsub>p\<^esub>]\<rightarrow> g' \<rbrakk> \<Longrightarrow> edges g \<subseteq> edges g'"
@@ -276,7 +276,7 @@ apply(rule next_plane0_incr)
 done
 
 
-subsection{* Increasing final vertices *}
+subsection\<open>Increasing final vertices\<close>
 
 (*
 This should really be proved via the (unproven) invariant
@@ -321,7 +321,7 @@ apply(blast dest:next_plane0_incr_finV inv_mgp)
 done
 
 
-subsection{* Preservation of @{const facesAt} at final vertices *}
+subsection\<open>Preservation of @{const facesAt} at final vertices\<close>
 
 lemma next_plane0_finalVertex_facesAt_eq:
  "\<lbrakk>g' \<in> set (next_plane0\<^bsub>p\<^esub> g); inv g; v \<in> \<V> g; finalVertex g v \<rbrakk>
@@ -339,10 +339,10 @@ shows "|filter P (facesAt g' v)| = |filter P (facesAt g v)|"
 proof -
   note inv' = invariantE[OF inv_inv_next_plane0, OF assms(1,2)]
   note mgp = inv_mgp[OF assms(2)] and mgp' = inv_mgp[OF inv']
-  note dist = distinct_filter[OF mgp_dist_facesAt[OF mgp `v : \<V> g`]]
+  note dist = distinct_filter[OF mgp_dist_facesAt[OF mgp \<open>v : \<V> g\<close>]]
   have "v \<in> \<V> g'"
     using assms(3) next_plane0_vertices_subset[OF assms(1) mgp] by blast
-  note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp' `v : \<V> g'`]]
+  note dist' = distinct_filter[OF mgp_dist_facesAt[OF mgp' \<open>v : \<V> g'\<close>]]
   have "|filter P (facesAt g' v)| = card{f \<in> set(facesAt g' v) . P f}"
     using distinct_card[OF dist'] by simp
   also have "\<dots> = card{f \<in> set(facesAt g v) . P f}"
@@ -353,7 +353,7 @@ proof -
 qed
 
 
-subsection{* Properties of @{const subdivFace'} *}
+subsection\<open>Properties of @{const subdivFace'}\<close>
 
 lemma new_edge_subdivFace':
   "\<And>f v n g.
@@ -573,9 +573,9 @@ next
         using pre True using [[simp_depth_limit = 5]] by (simp add: pre_subdivFace'_Some2)
       have mt: "ovs = [] \<longrightarrow> 0 = 0 \<and> v = last (verticesFrom f r)"
         using pre by(clarsimp simp:pre_subdivFace'_def)
-      show ?thesis using Some True IH[OF mgp pre' fg mt] `r \<noteq> v`
+      show ?thesis using Some True IH[OF mgp pre' fg mt] \<open>r \<noteq> v\<close>
         by(auto simp: between_next_empty[OF distf]
-          unroll_between_next2[OF distf `r \<in> \<V> f` `u \<in> \<V> f`])
+          unroll_between_next2[OF distf \<open>r \<in> \<V> f\<close> \<open>u \<in> \<V> f\<close>])
     next
       case False
       let ?vs = "[countVertices g..<countVertices g + n]"
@@ -599,15 +599,15 @@ next
       proof -
         assume "r\<noteq>u"
         have r: "r \<in> set (between (vertices f) v u)"
-          using `r\<noteq>u` `r\<noteq>v` `u\<noteq>v` `v \<in> \<V> f` `r \<in> \<V> f` distf ruv
+          using \<open>r\<noteq>u\<close> \<open>r\<noteq>v\<close> \<open>u\<noteq>v\<close> \<open>v \<in> \<V> f\<close> \<open>r \<in> \<V> f\<close> distf ruv
           by(blast intro:rotate_before_vFrom before_between)
         have "between (vertices f) v u =
           between (vertices f) v r @ [r] @ between (vertices f) r u"
-          using split_between[OF distf `v \<in> \<V> f` `u \<in> \<V> f` r] `r\<noteq>v`
+          using split_between[OF distf \<open>v \<in> \<V> f\<close> \<open>u \<in> \<V> f\<close> r] \<open>r\<noteq>v\<close>
           by simp
         moreover hence "v \<notin> set (between (vertices f) r u)"
           using between_not_r1[OF distf, of v u] by simp
-        ultimately show ?thesis using vf\<^sub>2 `r\<noteq>v` `u\<noteq>v` vvs
+        ultimately show ?thesis using vf\<^sub>2 \<open>r\<noteq>v\<close> \<open>u\<noteq>v\<close> vvs
           by (simp add: between_back between_not_r2[OF distf])
       qed
       note mgp' = splitFace_holds_minGraphProps[OF pre_fdg mgp]
@@ -623,7 +623,7 @@ next
           assume "r = u" thus ?thesis by(simp add:vf\<^sub>2)
         next
           assume "r \<noteq> u"
-          hence "r \<in> set ?fvu" using distf `v : \<V> f` `r\<noteq>v` `r : \<V> f` ruv
+          hence "r \<in> set ?fvu" using distf \<open>v : \<V> f\<close> \<open>r\<noteq>v\<close> \<open>r : \<V> f\<close> ruv
             by(blast intro: before_between rotate_before_vFrom)
           thus ?thesis by(simp add:vf\<^sub>2)
         qed
@@ -636,8 +636,8 @@ next
             splitFace_distinct1[OF pre_fdg])
         moreover have "(?f\<^sub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<notin> Edges (u # ?vs @ [v])"
         proof -
-          have "r \<notin> set ?vs" using `r : \<V> f` disj by blast
-          thus ?thesis using `r \<noteq> v`
+          have "r \<notin> set ?vs" using \<open>r : \<V> f\<close> disj by blast
+          thus ?thesis using \<open>r \<noteq> v\<close>
             by(simp add:Edges_Cons Edges_append notinset_notinEdge2) arith
         qed
         ultimately have "(?f\<^sub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> Edges (v # ?fvu @ [u])" by blast
@@ -653,7 +653,7 @@ next
       hence mt: "ovs = [] \<longrightarrow> 0 = 0 \<and> v = last (verticesFrom ?f\<^sub>2 r)"
         using pre' pre by(auto simp:pre_subdivFace'_def splitFace_def
           split_def last_vFrom)
-      from IH[OF mgp' pre' f2g mt] `r \<noteq> v` obtain f' :: face where
+      from IH[OF mgp' pre' f2g mt] \<open>r \<noteq> v\<close> obtain f' :: face where
         f: "f' \<in> set(finals(subdivFace' ?g' ?f\<^sub>2 v 0 ovs)) - set(finals ?g')"
         and ff: "(?f\<^sub>2\<^bsup>-1\<^esup> \<bullet> r, r) \<in> \<E> f'"
         "|vertices f'| = |ovs| + |between (vertices ?f\<^sub>2) r v| + 2"

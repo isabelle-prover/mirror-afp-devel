@@ -1,4 +1,4 @@
-section {* \isaheader{Iterator by get and size } *}
+section \<open>\isaheader{Iterator by get and size }\<close>
 theory Idx_Iterator
 imports
   SetIterator
@@ -66,11 +66,11 @@ proof-
 
   show ?thesis
     unfolding idx_iteratei_def[abs_def]
-    by (simp, intro ext, simp add: aux[OF `(s,s') \<in> arel`])
+    by (simp, intro ext, simp add: aux[OF \<open>(s,s') \<in> arel\<close>])
 qed
 
 
-text {*  Misc. *}
+text \<open>Misc.\<close>
 
 lemma idx_iteratei_aux_nth_conv_foldli_drop:
   fixes xs :: "'b list"
@@ -89,8 +89,8 @@ proof(induct get\<equiv>"(!) :: 'b list \<Rightarrow> nat \<Rightarrow> 'b" sz\<
     hence "idx_iteratei_aux (!) (length l) i l c f \<sigma> = idx_iteratei_aux (!) (length l) (i - 1) l c f (f (l ! (length l - i)) \<sigma>)"
       by(subst idx_iteratei_aux.simps) simp
     also have "\<dots> = foldli (drop (length l - (i - 1)) l) c f (f (l ! (length l - i)) \<sigma>)"
-      using `i \<le> length l` i c by -(rule 1, auto)
-    also from `i \<le> length l` i
+      using \<open>i \<le> length l\<close> i c by -(rule 1, auto)
+    also from \<open>i \<le> length l\<close> i
     have "drop (length l - i) l = (l ! (length l - i)) # drop (length l - (i - 1)) l"
       apply (subst Cons_nth_drop_Suc[symmetric])
       apply simp_all

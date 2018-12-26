@@ -6,9 +6,9 @@ imports
 begin
 (*>*)
 
-subsection{* Worker/wrapper fusion is partially correct *}
+subsection\<open>Worker/wrapper fusion is partially correct\<close>
 
-text{*
+text\<open>
 
 We now examine how Gill and Hutton apply their worker/wrapper fusion
 rule in the context of the fold/unfold framework.
@@ -51,7 +51,7 @@ i.e. to establish:
 We show that worker/wrapper fusion as proposed by Gill and Hutton is
 partially correct using Park induction:
 
-*}
+\<close>
 
 lemma fusion_partially_correct:
   assumes wrap_unwrap: "wrap oo unwrap = ID"
@@ -74,15 +74,15 @@ proof(rule fix_least)
   finally show "body'\<cdot>work = work" by simp
 qed
 
-text{*
+text\<open>
 
 The next section shows the converse does not obtain.
 
-*}
+\<close>
 
-subsection{* A non-strict @{term "unwrap"} may go awry *}
+subsection\<open>A non-strict @{term "unwrap"} may go awry\<close>
 
-text{*
+text\<open>
 
 \label{sec:ww-counterexample}
 
@@ -92,18 +92,18 @@ show this we take a small artificial example. The type @{term "A"} is
 not important, but we need access to a non-bottom inhabitant. The
 target type @{term "B"} is the non-strict lift of @{term "A"}.
 
-*}
+\<close>
 
 domain A = A
 domain B = B (lazy "A")
 
-text{*
+text\<open>
 
 The functions @{term "wrap"} and @{term "unwrap"} that map between
 these types are routine. Note that @{term "wrap"} is (necessarily)
 strict due to the property @{thm "retraction_strict"}.
 
-*}
+\<close>
 
 fixrec wrap :: "B \<rightarrow> A"
 where "wrap\<cdot>(B\<cdot>a) = a"
@@ -116,32 +116,32 @@ lemma wrap_strict[simp]: "wrap\<cdot>\<bottom> = \<bottom>"
 fixrec unwrap :: "A \<rightarrow> B"
 where "unwrap = B"
 
-text{*
+text\<open>
 
 Discharging the worker/wrapper hypothesis is similarly routine.
 
-*}
+\<close>
 
 lemma wrap_unwrap: "wrap oo unwrap = ID"
   by (simp add: cfun_eq_iff)
 
-text{*
+text\<open>
 
 The candidate computation we transform can be any that uses the
 recursion parameter @{term "r"} non-strictly. The following is
 especially trivial.
 
-*}
+\<close>
 
 fixrec body :: "A \<rightarrow> A"
 where "body\<cdot>r = A"
 
-text{*
+text\<open>
 
 The wrinkle is that the transformed worker can be strict in the
 recursion parameter @{term "r"}, as @{term "unwrap"} always lifts it.
 
-*}
+\<close>
 
 fixrec body' :: "B \<rightarrow> B"
 where "body'\<cdot>(B\<cdot>a) = B\<cdot>A"
@@ -151,32 +151,32 @@ lemma body'_strict[simp]: "body'\<cdot>\<bottom> = \<bottom>"
   by fixrec_simp
 
 (*>*)
-text{*
+text\<open>
 
 As explained above, we set up the fusion opportunity:
 
-*}
+\<close>
 
 lemma body_body': "unwrap oo body oo wrap = body' oo unwrap oo wrap"
   by (simp add: cfun_eq_iff)
 
-text{*
+text\<open>
 
 This result depends crucially on @{term "unwrap"} being non-strict.
 
 Our earlier result shows that the proposed transformation is partially
 correct:
 
-*}
+\<close>
 
 lemma "fix\<cdot>body' \<sqsubseteq> fix\<cdot>(unwrap oo body oo wrap)"
   by (rule fusion_partially_correct[OF wrap_unwrap refl body_body'])
 
-text{*
+text\<open>
 
 However it is easy to see that it is not totally correct:
 
-*}
+\<close>
 
 lemma "\<not> fix\<cdot>(unwrap oo body oo wrap) \<sqsubseteq> fix\<cdot>body'"
 proof -
@@ -187,7 +187,7 @@ proof -
   from l r show ?thesis by simp
 qed
 
-text{*
+text\<open>
 
 This trick works whenever @{term "unwrap"} is not strict. In the
 following section we show that requiring @{term "unwrap"} to be strict
@@ -196,7 +196,7 @@ leads to a straightforward proof of total correctness.
 Note that if we have already established that @{term "wrap oo unwrap =
 ID"}, then making @{term "unwrap"} strict preserves this equation:
 
-*}
+\<close>
 
 lemma
   assumes "wrap oo unwrap = ID"
@@ -208,7 +208,7 @@ proof(rule cfun_eqI)
     by (cases "x = \<bottom>") (simp_all add: cfun_eq_iff retraction_strict)
 qed
 
-text{*
+text\<open>
 
 From this we conclude that the worker/wrapper transformation itself
 cannot exploit any laziness in @{term "unwrap"} under the
@@ -216,7 +216,7 @@ context-insensitive assumptions of @{thm [source]
 "worker_wrapper_id"}. This is not to say that other program
 transformations may not be able to.
 
-*}
+\<close>
 
 (*<*)
 lemma

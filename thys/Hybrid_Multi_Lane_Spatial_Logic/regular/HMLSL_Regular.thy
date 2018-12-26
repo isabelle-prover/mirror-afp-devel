@@ -4,10 +4,10 @@
 Defines HMLSL with regular sensors for cars.
 *)
 section\<open>HMLSL for Regular Sensors\<close>
-text {* 
+text \<open>
 Within this section, we instantiate HMLSL for cars with 
 regular sensors.
-*}
+\<close>
 
 
 theory HMLSL_Regular
@@ -28,7 +28,7 @@ notation hmlsl.re ("re'(_')")
 notation hmlsl.cl("cl'(_')")
 notation hmlsl.len ("len")
 
-text {*
+text \<open>
 The spatial atoms are dependent of the perspective of the view,
 hence we cannot prove similar lemmas as for perfect sensors.
 
@@ -39,7 +39,7 @@ proof system for MLSL \cite{Linker2015a}.
 Similar to the situation with perfect sensors, needed to instantiate the 
 sensor function, to ensure that the perceived length does not change
 during spatial transitions.
- *}
+\<close>
   
 lemma backwards_res_act:
   "(ts \<^bold>\<midarrow>r(c) \<^bold>\<rightarrow> ts') \<and> (ts',v \<Turnstile> re(c)) \<longrightarrow> (ts,v \<Turnstile> re(c) \<^bold>\<or> cl(c))"
@@ -107,10 +107,10 @@ lemma backwards_wdr_res_stab:
   by (metis inf.absorb1 order_trans regular_sensors.withdraw_reservation_length_stable
       restrict_def' restriction.restrict_res traffic.withdraw_res_subseteq)
 
-text{*
+text\<open>
 We now proceed to prove the \emph{reservation lemma}, which was 
 crucial in the manual safety proof \cite {Hilscher2011}. 
-*}
+\<close>
 lemma reservation1: "\<Turnstile>(re(c) \<^bold>\<or> cl(c)) \<^bold>\<rightarrow> \<^bold>\<box>r(c) re(c)"
 proof (rule allI| rule impI)+ 
   fix ts v ts'

@@ -13,9 +13,9 @@ imports
 begin
 (*>*)
 
-subsubsection{*Perfect Recall in Independently-Initialised Non-deterministic Broadcast Environments*}
+subsubsection\<open>Perfect Recall in Independently-Initialised Non-deterministic Broadcast Environments\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-spr-non-deterministic-protocols-ind-init}
 
@@ -39,12 +39,12 @@ choice to be made here.
 Again we introduce common and agent-specific abstraction functions:
 
 
-*}
+\<close>
 
-text_raw{*
+text_raw\<open>
 \begin{figure}[ht]
 \begin{isabellebody}%
-*}
+\<close>
 locale FiniteBroadcastEnvironmentIndependentInit =
   FiniteBroadcastEnvironment jkbp envInit envAction envTrans envVal envObs
                              envObsC envActionES envTransES
@@ -74,14 +74,14 @@ locale FiniteBroadcastEnvironmentIndependentInit =
                  , esf \<leftarrow> fst envInitBits ]"
   assumes agents: "set agents = UNIV" "distinct agents"
 
-text_raw{*
+text_raw\<open>
   \end{isabellebody}%
   \caption{Finite broadcast environments with non-deterministic
   KBPs, where the initial private and environment states are
   independent.}
   \label{fig:kbps-theory-broadcast-envs-ind-init}
 \end{figure}
-*}
+\<close>
 
 context FiniteBroadcastEnvironmentIndependentInit
 begin
@@ -130,14 +130,14 @@ lemma agent_ii_abs_inv[dest]:
   unfolding agent_ii_abs_def by blast
 
 (*>*)
-text{*
+text\<open>
 
 The simulation is similar to the single-agent case
 (\S\ref{sec:kbps-spr-single-agent}); for a given canonical trace
 @{term "t"} it pairs the set of worlds that any agent considers
 possible with the final state of @{term "t"}:
 
-*}
+\<close>
 
 type_synonym (in -) ('a, 'ePubAct, 'es, 'pPubAct, 'ps) SPRstate =
   "('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState set
@@ -154,11 +154,11 @@ lemma spr_ii_sim_tFirst_tLast:
   unfolding spr_ii_sim_def by auto
 
 (*>*)
-text{*
+text\<open>
 
 The Kripke structure over simulated traces is also quite similar:
 
-*}
+\<close>
 
 definition
   spr_ii_simRels :: "'a \<Rightarrow> ('a, 'ePubAct, 'es, 'pPubAct, 'ps) SPRstate Relation"
@@ -353,12 +353,12 @@ proof(rule sim_rI)
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The proofs that this simulation is adequate are similar to those in
 the previous section. We elide the details.
 
-*}
+\<close>
 
 lemma spr_ii_sim: "sim SPR.MC spr_ii_simMC spr_ii_sim"
 (*<*)

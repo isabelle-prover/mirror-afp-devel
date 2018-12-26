@@ -3,7 +3,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* Jinja Values *}
+section \<open>Jinja Values\<close>
 
 theory Value imports TypeRel begin
 

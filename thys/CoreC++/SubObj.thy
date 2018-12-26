@@ -3,14 +3,14 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Definition of Subobjects *}
+section \<open>Definition of Subobjects\<close>
 
 theory SubObj
 imports ClassRel
 begin
 
 
-subsection {* General definitions *}
+subsection \<open>General definitions\<close>
 
 type_synonym
   subobj = "cname  \<times> path"
@@ -29,7 +29,7 @@ lemma ldc_tuple [simp]: "ldc (C,Cs) = last Cs"
 by(simp add:ldc_def)
 
 
-subsection {* Subobjects according to Rossie-Friedman *}
+subsection \<open>Subobjects according to Rossie-Friedman\<close>
 
 fun is_subobj :: "prog \<Rightarrow> subobj \<Rightarrow> bool" \<comment> \<open>legal subobject to class hierarchie\<close> where
   "is_subobj P (C, []) \<longleftrightarrow> False"
@@ -189,7 +189,7 @@ qed
 
 
 
-text{* Next three lemmas show subobject property as presented in literature *}
+text\<open>Next three lemmas show subobject property as presented in literature\<close>
 
 lemma class_isSubobj:
   "is_class P C \<Longrightarrow> is_subobj P ((C,[C]))"
@@ -230,7 +230,7 @@ qed
 
 
 
-text{* Auxiliary lemmas *}
+text\<open>Auxiliary lemmas\<close>
 
 
 lemma build_rec_isSubobj_rev:
@@ -329,16 +329,16 @@ qed
 
 
 
-subsection {* Subobject handling and lemmas *}
+subsection \<open>Subobject handling and lemmas\<close>
 
-text{* Subobjects consisting of repeated inheritance relations only: *}
+text\<open>Subobjects consisting of repeated inheritance relations only:\<close>
 
 inductive Subobjs\<^sub>R :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
 where
   SubobjsR_Base: "is_class P C \<Longrightarrow> Subobjs\<^sub>R P C [C]"
 | SubobjsR_Rep: "\<lbrakk>P \<turnstile> C \<prec>\<^sub>R D; Subobjs\<^sub>R P D Cs\<rbrakk> \<Longrightarrow> Subobjs\<^sub>R P C (C # Cs)"
 
-text{* All subobjects: *}
+text\<open>All subobjects:\<close>
 
 inductive Subobjs :: "prog \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" for P :: prog
 where
@@ -594,12 +594,12 @@ by (auto elim:Subobjs.induct SubobjsR_isSubobj
 
 
 
-subsection {* Paths *}
+subsection \<open>Paths\<close>
 
 
-subsection {* Appending paths *}
+subsection \<open>Appending paths\<close>
 
-text{* Avoided name clash by calling one path Path. *}
+text\<open>Avoided name clash by calling one path Path.\<close>
 
 definition path_via :: "prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> path \<Rightarrow> bool" ("_ \<turnstile> Path _ to _ via _ " [51,51,51,51] 50) where
   "P \<turnstile> Path C to D via Cs \<equiv> Subobjs P C Cs \<and> last Cs = D"
@@ -653,7 +653,7 @@ by (induct rule:Casts_to.induct,simp_all)
 
 
 
-subsection {* The relation on paths *}
+subsection \<open>The relation on paths\<close>
 
 inductive_set
   leq_path1 :: "prog \<Rightarrow> cname \<Rightarrow> (path \<times> path) set"
@@ -684,7 +684,7 @@ by(erule leq_pathSh)simp
 
 
 
-subsection{* Member lookups *}
+subsection\<open>Member lookups\<close>
 
 definition FieldDecls :: "prog \<Rightarrow> cname \<Rightarrow> vname \<Rightarrow> (path \<times> ty) set" where
   "FieldDecls P C F \<equiv> 

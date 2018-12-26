@@ -200,7 +200,7 @@ lemma real_poly_factor: fixes p :: "'a :: real_field poly"
   "p \<noteq> 0"
   shows "set (coeffs q) \<subseteq> \<real>" 
 proof -
-  have "q = p * q div p" using `p \<noteq> 0` by simp
+  have "q = p * q div p" using \<open>p \<noteq> 0\<close> by simp
   hence id: "coeffs q = coeffs (p * q div p)" by simp
   show ?thesis unfolding id
     by (rule real_poly_div, insert assms, auto)
@@ -224,7 +224,7 @@ proof -
     thus ?case by simp
   next
     case (Suc m p)
-    note order = order[OF `p \<noteq> 0`]
+    note order = order[OF \<open>p \<noteq> 0\<close>]
     let ?c = "cnj c"
     show ?case
     proof (cases "poly p c = 0")
@@ -248,7 +248,7 @@ proof -
         hence "?fac2 dvd q" unfolding poly_eq_0_iff_dvd .
         from this[unfolded dvd_def] obtain r where q: "q = ?fac2 * r" by auto
         have p: "p = ?fac * r" unfolding p q by algebra
-        from `p \<noteq> 0` have nz: "?fac1 \<noteq> 0" "?fac2 \<noteq> 0" "?fac \<noteq> 0" "r \<noteq> 0" unfolding p by auto
+        from \<open>p \<noteq> 0\<close> have nz: "?fac1 \<noteq> 0" "?fac2 \<noteq> 0" "?fac \<noteq> 0" "r \<noteq> 0" unfolding p by auto
         have id: "?fac = [: ?c * c, - (?c + c), 1 :]" by simp
         have cfac: "coeffs ?fac = [ ?c * c, - (?c + c), 1 ]" unfolding id by simp
         have cfac: "set (coeffs ?fac) \<subseteq> \<real>" unfolding cfac by (cases c, auto simp: Reals_cnj_iff)
@@ -259,10 +259,10 @@ proof -
         finally have "degree p = 2 + degree r" by simp
         with Suc have deg: "degree r \<le> m" by auto
         from real_poly_factor[OF Suc(3)[unfolded p] cfac] nz  have "set (coeffs r) \<subseteq> \<real>" by auto
-        from Suc(1)[OF deg this `r \<noteq> 0`] have IH: "order ?c r = order c r" .
+        from Suc(1)[OF deg this \<open>r \<noteq> 0\<close>] have IH: "order ?c r = order c r" .
         {
           fix cc
-          have "order cc p = order cc ?fac + order cc r" using `p \<noteq> 0` unfolding p
+          have "order cc p = order cc ?fac + order cc r" using \<open>p \<noteq> 0\<close> unfolding p
             by (rule order_mult)
           also have "order cc ?fac = order cc ?fac1 + order cc ?fac2"
             by (rule order_mult, rule nz)

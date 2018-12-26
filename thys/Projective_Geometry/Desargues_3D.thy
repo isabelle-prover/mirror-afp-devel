@@ -8,7 +8,7 @@ text \<open>
 Contents:
 \<^item> We prove Desargues's theorem: if two triangles ABC and A'B'C' are perspective from a point P (ie. 
 the lines AA', BB' and CC' are concurrent in P), then they are perspective from a line (ie. the points
-@{text "\<alpha> = BC \<inter> B'C'"}, @{text "\<beta> = AC \<inter> A'C'"} and @{text "\<gamma> = AB \<inter> A'B'"} are collinear).
+\<open>\<alpha> = BC \<inter> B'C'\<close>, \<open>\<beta> = AC \<inter> A'C'\<close> and \<open>\<gamma> = AB \<inter> A'B'\<close> are collinear).
 In this file we restrict ourself to the case where the two triangles ABC and A'B'C' are not coplanar. 
 \<close>
 

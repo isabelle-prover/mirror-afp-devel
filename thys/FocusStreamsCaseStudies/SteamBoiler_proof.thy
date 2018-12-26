@@ -4,13 +4,13 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *)
 (*>*)
-section {* Steam Boiler System: Verification *}
+section \<open>Steam Boiler System: Verification\<close>
 
 theory  SteamBoiler_proof 
 imports SteamBoiler
 begin
 
-subsection {* Properties of the Boiler Component *}
+subsection \<open>Properties of the Boiler Component\<close>
 
 lemma L1_Boiler:
   assumes "SteamBoiler x s y"
@@ -93,7 +93,7 @@ proof -
 qed
 
 
-subsection {* Properties of the Controller Component *}
+subsection \<open>Properties of the Controller Component\<close>
 
 lemma L1_Controller:
   assumes "Controller_L s (fin_inf_append [Zero] l) l z"
@@ -537,7 +537,7 @@ proof -
 qed
 
 
-subsection {* Properties of the Converter Component *}
+subsection \<open>Properties of the Converter Component\<close>
 
 lemma L1_Converter:
   assumes "Converter z x"
@@ -558,7 +558,7 @@ using assms
 by (simp add: L1_Converter)
  
 
-subsection {* Properties of the System *}
+subsection \<open>Properties of the System\<close>
 
 lemma L1_ControlSystem:
   assumes "ControlSystemArch s"
@@ -676,7 +676,7 @@ proof -
   qed
 qed
 
-subsection {* Proof of the Refinement Relation *}
+subsection \<open>Proof of the Refinement Relation\<close>
 
 lemma L0_ControlSystem:
   assumes h1:"ControlSystemArch s"

@@ -6,9 +6,9 @@
 
 theory DiskPaxos_Inv4 imports DiskPaxos_Inv2  begin
 
-subsection {* Invariant 4 *}
+subsection \<open>Invariant 4\<close>
 
-text {*
+text \<open>
   This invariant expresses relations among $mbal$ and $bal$ values of a 
   processor and of its disk blocks. 
   $HInv4a$ asserts that, when $p$ is not recovering from a failure, its 
@@ -21,7 +21,7 @@ text {*
   of all its blocks on some majority set of disks. 
   $HInv4d$ asserts that the $bal$ field of any of its blocks is at most as 
   large as the $mbal$ field of all its disk blocks on some majority set of disks.
-*}
+\<close>
 
 definition MajoritySet :: "Disk set set"
   where "MajoritySet = {D. IsMajority(D) }"
@@ -49,7 +49,7 @@ definition HInv4d :: "state \<Rightarrow> Proc \<Rightarrow> bool"
 definition HInv4 :: "state \<Rightarrow> bool"
   where "HInv4 s = (\<forall>p. HInv4a s p \<and> HInv4b s p \<and> HInv4c s p \<and> HInv4d s p)"
 
-text {* The initial state implies Invariant 4. *}
+text \<open>The initial state implies Invariant 4.\<close>
 
 theorem HInit_HInv4: "HInit s \<Longrightarrow> HInv4 s"
   using Disk_isMajority
@@ -57,16 +57,16 @@ theorem HInit_HInv4: "HInit s \<Longrightarrow> HInv4 s"
                     HInv4a2_def HInv4b_def HInv4c_def HInv4d_def 
                     MajoritySet_def blocksOf_def InitDB_def rdBy_def)
 
-text {* To prove that the actions preserve $HInv4$,
+text \<open>To prove that the actions preserve $HInv4$,
         we do it for one conjunct at a time.
 
   For each action $action s s' q$ and conjunct $x\in{a,b,c,d}$ of $HInv4x s' p$, 
   we prove two lemmas. 
 The first lemma $action$-$HInv4x$-$p$ proves the case of $p=q$, while 
 lemma $action$-$HInv4x$-$q$ proves the other case.
- *}
+\<close>
 
-subsubsection {* Proofs of Invariant 4a *}
+subsubsection \<open>Proofs of Invariant 4a\<close>
 
 lemma HStartBallot_HInv4a1:
   assumes act: "HStartBallot s s' p"
@@ -588,7 +588,7 @@ theorem HEndPhase0_HInv4a:
   \<Longrightarrow> HInv4a s' q"
   by(blast dest: HEndPhase0_HInv4a_p HEndPhase0_HInv4a_q)
 
-subsubsection {* Proofs of Invariant 4b *}
+subsubsection \<open>Proofs of Invariant 4b\<close>
 
 lemma blocksRead_allBlocksRead: 
   "rb \<in> blocksRead s p d \<Longrightarrow> block rb \<in> allBlocksRead s p"
@@ -1006,7 +1006,7 @@ next
   show ?thesis .
 qed
 
-subsubsection {* Proofs of Invariant 4c *}
+subsubsection \<open>Proofs of Invariant 4c\<close>
 
 lemma  HStartBallot_HInv4c_p:
   "\<lbrakk> HStartBallot s s' p; HInv4c s p\<rbrakk> \<Longrightarrow> HInv4c s' p"
@@ -1250,7 +1250,7 @@ theorem HEndPhase0_HInv4c:
   "\<lbrakk> HEndPhase0 s s' p; HInv4c s q\<rbrakk> \<Longrightarrow> HInv4c s' q"
   by(blast dest: HEndPhase0_HInv4c_p HEndPhase0_HInv4c_q)
 
-subsubsection {* Proofs of Invariant 4d *}
+subsubsection \<open>Proofs of Invariant 4d\<close>
 
 lemma  HStartBallot_HInv4d_p:
   assumes act: "HStartBallot s s' p"
@@ -1701,9 +1701,9 @@ theorem HEndPhase0_HInv4d:
      Inv2c s; Inv1 s\<rbrakk> \<Longrightarrow> HInv4d s' q"
   by(blast dest: HEndPhase0_HInv4d_p HEndPhase0_HInv4d_q)
 
-text{* Since we have already proved $HInv2$ is an invariant of $HNext$,
+text\<open>Since we have already proved $HInv2$ is an invariant of $HNext$,
 $HInv1 \wedge HInv2 \wedge HInv4$ is also an invariant of $HNext$. 
-*}
+\<close>
   
 lemma I2d:
   assumes nxt: "HNext s s'"

@@ -66,10 +66,10 @@ proof-
   then obtain f where f: "\<forall> x\<in> S. x \<in> Y (f x)" by metis
 
   define i where "i = Max (f ` S)"
-  from `finite S`
+  from \<open>finite S\<close>
   have "finite (f ` S)" by simp
   hence "\<forall> x\<in>S. f x \<le> i" unfolding i_def by auto
-  with chain_mono[OF `chain Y`]
+  with chain_mono[OF \<open>chain Y\<close>]
   have "\<forall> x\<in>S. Y (f x) \<subseteq> Y i" by (auto simp add: below_set_def)
   with f
   have "S \<subseteq> Y i" by auto

@@ -3,9 +3,9 @@
   Author:     Diego Marmsoler
 *)
 section "A Theory of Publisher-Subscriber Architectures"
-text{*
+text\<open>
   In the following, we formalize the specification of the publisher subscriber pattern as described in~\cite{Marmsoler2018c}.
-*}
+\<close>
   
 theory Publisher_Subscriber
 imports Singleton
@@ -39,31 +39,31 @@ locale publisher_subscriber =
 begin
 
 subsubsection "Calculus Interpretation"
-text {*
+text \<open>
 \noindent
 @{thm[source] pb.baIA}: @{thm pb.baIA [no_vars]}
-*}
-text {*
+\<close>
+text \<open>
 \noindent
 @{thm[source] sb.baIA}: @{thm sb.baIA [no_vars]}
-*}
+\<close>
 subsubsection "Results from Singleton"
 abbreviation the_pb :: "'pid" where
 "the_pb \<equiv> pb.the_singleton"
 
-text {*
+text \<open>
 \noindent
 @{thm[source] pb.ts_prop(1)}: @{thm pb.ts_prop(1) [no_vars]}
-*}
-text {*
+\<close>
+text \<open>
 \noindent
 @{thm[source] pb.ts_prop(2)}: @{thm pb.ts_prop(2) [no_vars]}
-*}
+\<close>
 
 subsubsection "Architectural Guarantees"
-text {*
+text \<open>
   The following theorem ensures that a subscriber indeed receives all messages associated with an event for which he is subscribed.
-*}
+\<close>
 theorem msgDelivery:
   fixes t n n'' and sid::'sid and E e m
   assumes "t \<in> arch"
@@ -78,9 +78,9 @@ theorem msgDelivery:
   shows "(e,m) \<in> sbnt (\<sigma>\<^bsub>sid\<^esub>(t n''))"
   using assms conn2 pb.ts_prop(2) by simp
 
-text {*
+text \<open>
   Since a publisher is actually a singleton, we can provide an alternative version of constraint @{thm[source] conn1}.
-*}
+\<close>
 lemma conn1A:
   fixes k
   shows "pbsb (\<sigma>\<^bsub>the_pb\<^esub>(k)) = (\<Union>sid\<in>{sid. \<parallel>sid\<parallel>\<^bsub>k\<^esub>}. {sbsb (\<sigma>\<^bsub>sid\<^esub>(k))})"

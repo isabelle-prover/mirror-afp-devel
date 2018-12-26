@@ -14,10 +14,10 @@ begin
 context vector_space
 begin
 
-subsection{*Previous results*}
+subsection\<open>Previous results\<close>
 
-text{*Linear dependency is a monotone property, based on the 
-  monotonocity of linear independence:*}
+text\<open>Linear dependency is a monotone property, based on the 
+  monotonocity of linear independence:\<close>
 
 lemma dependent_mono:
   assumes d:"dependent A"
@@ -25,8 +25,8 @@ lemma dependent_mono:
   shows  "dependent B"
   using independent_mono [OF _ A_in_B] d by auto
 
-text{*Given a finite independent set, a linear combination of its 
-  elements equal to zero is possible only if every coefficient is zero:*}
+text\<open>Given a finite independent set, a linear combination of its 
+  elements equal to zero is possible only if every coefficient is zero:\<close>
 
 lemma scalars_zero_if_independent:
   assumes fin_A: "finite A"
@@ -40,8 +40,8 @@ end
 context finite_dimensional_vector_space
 begin
 
-text{*In an finite dimensional vector space, every independent set is finite, and 
-  thus @{thm [display ]scalars_zero_if_independent [no_vars]} holds:*}
+text\<open>In an finite dimensional vector space, every independent set is finite, and 
+  thus @{thm [display ]scalars_zero_if_independent [no_vars]} holds:\<close>
 
 corollary scalars_zero_if_independent_euclidean:
   assumes ind: "independent A"
@@ -51,26 +51,26 @@ corollary scalars_zero_if_independent_euclidean:
 
 end
 
-text{*The following lemma states that every linear form is injective over the 
+text\<open>The following lemma states that every linear form is injective over the 
   elements which define the basis of the range of the linear form. 
   This property is applied later over the elements of an arbitrary 
   basis which are not in the basis of the nullifier or kernel set 
   (\emph{i.e.}, the candidates to be the basis of the range space 
-  of the linear form).*}
+  of the linear form).\<close>
 
-text{*Thanks to this result, it can be concluded that the cardinal 
+text\<open>Thanks to this result, it can be concluded that the cardinal 
   of the elements of a basis which do not belong to the kernel 
   of a linear form @{term "f::'a => 'b"} is equal to the cardinal 
-  of the set obtained when applying @{term "f::'a => 'b"} to such elements.*}
+  of the set obtained when applying @{term "f::'a => 'b"} to such elements.\<close>
 
-text{*The application of this lemma is not usually found in the pencil and paper 
+text\<open>The application of this lemma is not usually found in the pencil and paper 
   proofs of the ``rank nullity theorem'', but will be crucial to know that,
   being @{term "f::'a => 'b"} a linear form from a finite dimensional
   vector space @{term "V"} to a vector space @{term "V'"}, 
   and given a basis @{term "B::'a set"} of @{term "ker f"}, 
   when @{term "B"} is completed up to a basis of @{term "V::'a set"}
   with a set @{term "W::'a set"}, the cardinal of this set is
-  equal to the cardinal of its range set:*}
+  equal to the cardinal of its range set:\<close>
   
 context vector_space
 begin
@@ -126,17 +126,17 @@ proof (unfold inj_on_def, rule+, rule ccontr)
 qed
 end
 
-subsection{*The proof*}
+subsection\<open>The proof\<close>
 
-text{*Now the rank nullity theorem can be proved; given any linear form 
+text\<open>Now the rank nullity theorem can be proved; given any linear form 
   @{term "f::'a => 'b"}, the sum of the dimensions of its kernel and 
-  range subspaces is equal to the dimension of the source vector space.*}
+  range subspaces is equal to the dimension of the source vector space.\<close>
 
-text{*The statement of the ``rank nullity theorem for linear algebra'', as 
+text\<open>The statement of the ``rank nullity theorem for linear algebra'', as 
   well as its proof, follow the ones on~\cite{AX97}. The proof is the 
   traditional one found in the literature. The theorem is also named 
   ``fundamental theorem of linear algebra'' in some texts (for instance,
-  in~\cite{GO10}).*}
+  in~\cite{GO10}).\<close>
 
 context finite_dimensional_vector_space
 begin
@@ -295,10 +295,10 @@ qed
 
 end
 
-subsection{*The rank nullity theorem for matrices*}
+subsection\<open>The rank nullity theorem for matrices\<close>
 
-text{*The proof of the theorem for matrices
-  is direct, as a consequence of the ``rank nullity theorem''.*}
+text\<open>The proof of the theorem for matrices
+  is direct, as a consequence of the ``rank nullity theorem''.\<close>
 
 lemma rank_nullity_theorem_matrices:
   fixes A::"'a::{field}^'cols::{finite, wellorder}^'rows"

@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Matrix Algebras for Aggregation and Minimisation *}
+section \<open>Matrix Algebras for Aggregation and Minimisation\<close>
 
-text {*
+text \<open>
 This theory formalises aggregation orders and lattices as introduced in \cite{Guttmann2018a}.
 Aggregation in these algebras is an associative and commutative operation satisfying additional properties related to the partial order and its least element.
 We apply the aggregation operation to finite matrices over the aggregation algebras, which shows that they form an s-algebra.
@@ -17,7 +17,7 @@ A second step taken in a separate theory gives concrete instances of edge weight
 
 Lifting the aggregation to matrices requires finite sums over elements taken from commutative semigroups with an element that is a unit on the image of the semigroup operation.
 Because standard sums assume a commutative monoid we have to derive a number of properties of these generalised sums as their statements or proofs are different.
-*}
+\<close>
 
 theory Matrix_Aggregation_Algebras
 
@@ -29,16 +29,16 @@ no_notation
   inf (infixl "\<sqinter>" 70)
   and uminus ("- _" [81] 80)
 
-subsection {* Aggregation Orders and Finite Sums *}
+subsection \<open>Aggregation Orders and Finite Sums\<close>
 
-text {*
+text \<open>
 An aggregation order is a partial order with a least element and an associative commutative operation satisfying certain properties.
-Axiom @{text add_add_bot} introduces almost a commutative monoid; we require that @{text bot} is a unit only on the image of the aggregation operation.
+Axiom \<open>add_add_bot\<close> introduces almost a commutative monoid; we require that \<open>bot\<close> is a unit only on the image of the aggregation operation.
 This is necessary since it is not a unit of a number of aggregation operations we are interested in.
-Axiom @{text add_right_isotone} states that aggregation is $\leq$-isotone on the image of the aggregation operation.
+Axiom \<open>add_right_isotone\<close> states that aggregation is $\leq$-isotone on the image of the aggregation operation.
 Its assumption $x \neq bot$ is necessary because the introduction of new edges can decrease the aggregated value.
-Axiom @{text add_bot} expresses that aggregation is zero-sum-free.
-*}
+Axiom \<open>add_bot\<close> expresses that aggregation is zero-sum-free.
+\<close>
 
 class aggregation_order = order_bot + ab_semigroup_add +
   assumes add_right_isotone: "x \<noteq> bot \<and> x + bot \<le> y + bot \<longrightarrow> x + z \<le> y + z"
@@ -58,11 +58,11 @@ lemma add_bot_bot_bot:
 
 end
 
-text {*
+text \<open>
 We introduce notation for finite sums over aggregation orders.
 The index variable of the summation ranges over the finite universe of its type.
 Finite sums are defined recursively using the binary aggregation and $\bot + \bot$ for the empty sum.
-*}
+\<close>
 
 syntax (xsymbols)
   "_sum_ab_semigroup_add_0" :: "idt \<Rightarrow> 'a::bounded_semilattice_sup_bot \<Rightarrow> 'a" ("(\<Sum>\<^sub>_ _)" [0,10] 10)
@@ -70,9 +70,9 @@ syntax (xsymbols)
 translations
   "\<Sum>\<^sub>x t" => "XCONST ab_semigroup_add_0.sum_0 XCONST plus (XCONST plus XCONST bot XCONST bot) (\<lambda>x . t) { x . CONST True }"
 
-text {*
+text \<open>
 The following are basic properties of such sums.
-*}
+\<close>
 
 lemma agg_sum_bot:
   "(\<Sum>\<^sub>k bot::'a::aggregation_order) = bot + bot"
@@ -212,15 +212,15 @@ proof -
     .
 qed
 
-subsection {* Matrix Aggregation *}
+subsection \<open>Matrix Aggregation\<close>
 
-text {*
+text \<open>
 The following definitions introduce the matrix of unit elements, componentwise aggregation and aggregation on matrices.
 The aggregation of a matrix is a single value, but because s-algebras are single-sorted the result has to be encoded as a matrix of the same type (size) as the input.
 We store the aggregated matrix value in the `first' entry of a matrix, setting all other entries to the unit value.
 The first entry is determined by requiring an enumeration of indices.
 It does not have to be the first entry; any fixed location in the matrix would work as well.
-*}
+\<close>
 
 definition zero_matrix :: "('a,'b::{plus,bot}) square" ("mzero") where "mzero = (\<lambda>e . bot + bot)"
 
@@ -228,9 +228,9 @@ definition plus_matrix :: "('a,'b::plus) square \<Rightarrow> ('a,'b) square \<R
 
 definition sum_matrix :: "('a::enum,'b::{plus,bot}) square \<Rightarrow> ('a,'b) square" ("sum\<^sub>M _" [80] 80) where "sum_matrix f = (\<lambda>(i,j) . if i = hd enum_class.enum \<and> j = i then \<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l) else bot + bot)"
 
-text {*
+text \<open>
 Basic properties of these operations are given in the following.
-*}
+\<close>
 
 lemma bot_plus_bot:
   "mbot \<oplus>\<^sub>M mbot = mzero"
@@ -278,11 +278,11 @@ lemma agg_matrix_bot:
   apply (unfold bot_matrix_def)
   using assms by auto
 
-text {*
+text \<open>
 We consider a different implementation of matrix aggregation which stores the aggregated value in all entries of the matrix instead of a particular one.
 This does not require an enumeration of the indices.
 All results continue to hold using this alternative implementation.
-*}
+\<close>
 
 definition sum_matrix_2 :: "('a,'b::{plus,bot}) square \<Rightarrow> ('a,'b) square" ("sum2\<^sub>M _" [80] 80) where "sum_matrix_2 f = (\<lambda>e . \<Sum>\<^sub>k \<Sum>\<^sub>l f (k,l))"
 
@@ -320,19 +320,19 @@ lemma sum_plus_zero_2:
   shows "sum2\<^sub>M f \<oplus>\<^sub>M mzero = sum2\<^sub>M f"
   by (simp add: plus_matrix_def zero_matrix_def sum_matrix_2_def)
 
-subsection {* Aggregation Lattices *}
+subsection \<open>Aggregation Lattices\<close>
 
-text {*
+text \<open>
 We extend aggregation orders to dense bounded distributive lattices.
-Axiom @{text add_lattice} implements the inclusion-exclusion principle at the level of edge weights.
-*}
+Axiom \<open>add_lattice\<close> implements the inclusion-exclusion principle at the level of edge weights.
+\<close>
 
 class aggregation_lattice = bounded_distrib_lattice + dense_lattice + aggregation_order +
   assumes add_lattice: "x + y = (x \<squnion> y) + (x \<sqinter> y)"
 
-text {*
+text \<open>
 Aggregation lattices form a Stone relation algebra by reusing the meet operation as composition, using identity as converse and a standard implementation of pseudocomplement.
-*}
+\<close>
 
 class aggregation_algebra = aggregation_lattice + uminus + one + times + conv +
   assumes uminus_def [simp]: "-x = (if x = bot then top else bot)"
@@ -352,9 +352,9 @@ subclass stone_relation_algebra
 
 end
 
-text {*
+text \<open>
 We show that matrices over aggregation lattices form an s-algebra using the above operations.
-*}
+\<close>
 
 interpretation agg_square_s_algebra: s_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::enum,'b::aggregation_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and plus = plus_matrix and sum = sum_matrix
 proof
@@ -448,9 +448,9 @@ next
   qed
 qed
 
-text {*
+text \<open>
 We show the same for the alternative implementation that stores the result of aggregation in all elements of the matrix.
-*}
+\<close>
 
 interpretation agg_square_s_algebra_2: s_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::finite,'b::aggregation_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and plus = plus_matrix and sum = sum_matrix_2
 proof
@@ -533,13 +533,13 @@ next
   qed
 qed
 
-subsection {* Matrix Minimisation *}
+subsection \<open>Matrix Minimisation\<close>
 
-text {*
+text \<open>
 We construct an operation that finds the minimum entry of a matrix.
 Because a matrix can have several entries with the same minimum value, we introduce a lexicographic order on the indices to make the operation deterministic.
 The order is obtained by enumerating the universe of the index.
-*}
+\<close>
 
 primrec enum_pos' :: "'a list \<Rightarrow> 'a::enum \<Rightarrow> nat" where
   "enum_pos' Nil x = 0"
@@ -551,9 +551,9 @@ lemma enum_pos'_inverse:
   apply (simp add: member_rec(2))
   by (metis diff_add_inverse enum_pos'.simps(2) less_one member_rec(1) not_add_less1 nth_Cons')
 
-text {*
+text \<open>
 The following function finds the position of an index in the enumerated universe.
-*}
+\<close>
 
 fun enum_pos :: "'a::enum \<Rightarrow> nat" where "enum_pos x = enum_pos' (enum_class.enum::'a list) x"
 
@@ -567,9 +567,9 @@ lemma enum_pos_injective [simp]:
   "enum_pos x = enum_pos y \<Longrightarrow> x = y"
   by (metis enum_pos_inverse)
 
-text {*
+text \<open>
 The position in the enumerated universe determines the order.
-*}
+\<close>
 
 abbreviation enum_pos_less_eq :: "'a::enum \<Rightarrow> 'a \<Rightarrow> bool" where "enum_pos_less_eq x y \<equiv> (enum_pos x \<le> enum_pos y)"
 abbreviation enum_pos_less :: "'a::enum \<Rightarrow> 'a \<Rightarrow> bool" where "enum_pos_less x y \<equiv> (enum_pos x < enum_pos y)"
@@ -578,18 +578,18 @@ sublocale enum < enum_order: order where less_eq = "\<lambda>x y . enum_pos_less
   apply unfold_locales
   by auto
 
-text {*
+text \<open>
 Based on this, a lexicographic order is defined on pairs, which represent locations in a matrix.
-*}
+\<close>
 
 abbreviation enum_lex_less :: "'a::enum \<times> 'a \<Rightarrow> 'a \<times> 'a \<Rightarrow> bool" where "enum_lex_less \<equiv> (\<lambda>(i,j) (k,l) . enum_pos_less i k \<or> (i = k \<and> enum_pos_less j l))"
 abbreviation enum_lex_less_eq :: "'a::enum \<times> 'a \<Rightarrow> 'a \<times> 'a \<Rightarrow> bool" where "enum_lex_less_eq \<equiv> (\<lambda>(i,j) (k,l) . enum_pos_less i k \<or> (i = k \<and> enum_pos_less_eq j l))"
 
-text {*
+text \<open>
 The $m$-operation determines the location of the non-$\bot$ minimum element which is first in the lexicographic order.
 The result is returned as a regular matrix with $\top$ at that location and $\bot$ everywhere else.
 In the weighted-graph model, this represents a single unweighted edge of the graph.
-*}
+\<close>
 
 definition minarc_matrix :: "('a::enum,'b::{bot,ord,plus,top}) square \<Rightarrow> ('a,'b) square" ("minarc\<^sub>M _" [80] 80) where "minarc_matrix f = (\<lambda>e . if f e \<noteq> bot \<and> (\<forall>d . (f d \<noteq> bot \<longrightarrow> (f e + bot \<le> f d + bot \<and> (enum_lex_less d e \<longrightarrow> f e + bot \<noteq> f d + bot)))) then top else bot)"
 
@@ -611,13 +611,13 @@ proof -
     using enum_pos_injective less_linear by auto
 qed
 
-subsection {* Linear Aggregation Lattices *}
+subsection \<open>Linear Aggregation Lattices\<close>
 
-text {*
+text \<open>
 We now assume that the aggregation order is linear and forms a bounded lattice.
 It follows that these structures are aggregation lattices.
 A linear order on matrix entries is necessary to obtain a unique minimum entry.
-*}
+\<close>
 
 class linear_aggregation_lattice = linear_bounded_lattice + aggregation_order
 begin
@@ -632,9 +632,9 @@ sublocale heyting: bounded_heyting_lattice where implies = "\<lambda>x y . if x 
 
 end
 
-text {*
+text \<open>
 Every non-empty set with a transitive total relation has a least element with respect to this relation.
-*}
+\<close>
 
 lemma least_order:
   assumes transitive: "\<forall>x y z . le x y \<and> le y z \<longrightarrow> le x z"
@@ -694,9 +694,9 @@ proof -
     by blast
 qed
 
-text {*
+text \<open>
 Linear aggregation lattices form a Stone relation algebra by reusing the meet operation as composition, using identity as converse and a standard implementation of pseudocomplement.
-*}
+\<close>
 
 class linear_aggregation_algebra = linear_aggregation_lattice + uminus + one + times + conv +
   assumes uminus_def_2 [simp]: "-x = (if x = bot then top else bot)"
@@ -720,9 +720,9 @@ sublocale heyting: heyting_stone_algebra where implies = "\<lambda>x y . if x \<
 
 end
 
-text {*
+text \<open>
 We show that matrices over linear aggregation lattices form an m-algebra using the above operations.
-*}
+\<close>
 
 interpretation agg_square_m_algebra: m_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::enum,'b::linear_aggregation_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and plus = plus_matrix and sum = sum_matrix and minarc = minarc_matrix
 proof
@@ -943,9 +943,9 @@ next
     by (unfold uminus_matrix_def) meson
 qed
 
-text {*
+text \<open>
 We show the same for the alternative implementation that stores the result of aggregation in all elements of the matrix.
-*}
+\<close>
 
 interpretation agg_square_m_algebra_2: m_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::enum,'b::linear_aggregation_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and plus = plus_matrix and sum = sum_matrix_2 and minarc = minarc_matrix
 proof
@@ -985,9 +985,9 @@ next
     by (simp add: agg_square_m_algebra.finite_regular)
 qed
 
-text {*
+text \<open>
 By defining the Kleene star as $\top$ aggregation lattices form a Kleene algebra.
-*}
+\<close>
 
 class aggregation_kleene_algebra = aggregation_algebra + star +
   assumes star_def [simp]: "x\<^sup>\<star> = top"

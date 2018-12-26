@@ -2,8 +2,8 @@
     Author:     Denis Lohner
 *)
 
-section {* Code Generation *}
-subsection {* While Combinator Extensions *}
+section \<open>Code Generation\<close>
+subsection \<open>While Combinator Extensions\<close>
 
 theory While_Combinator_Exts imports
   "HOL-Library.While_Combinator"

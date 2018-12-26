@@ -73,15 +73,15 @@ lemma curve_elt_opp:
   and "x\<^sub>1 = x\<^sub>2"
   shows "p\<^sub>1 = p\<^sub>2 \<or> p\<^sub>1 = opp p\<^sub>2"
 proof -
-  from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `on_curve a b p\<^sub>1`
+  from \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>on_curve a b p\<^sub>1\<close>
   have "y\<^sub>1 ^ 2 = x\<^sub>1 ^ 3 + a * x\<^sub>1 + b"
     by (simp_all add: on_curve_def)
-  moreover from `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `on_curve a b p\<^sub>2` `x\<^sub>1 = x\<^sub>2`
+  moreover from \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>x\<^sub>1 = x\<^sub>2\<close>
   have "x\<^sub>1 ^ 3 + a * x\<^sub>1 + b = y\<^sub>2 ^ 2"
     by (simp_all add: on_curve_def)
   ultimately have "y\<^sub>1 = y\<^sub>2 \<or> y\<^sub>1 = - y\<^sub>2"
     by (simp add: square_eq_iff power2_eq_square)
-  with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `x\<^sub>1 = x\<^sub>2` show ?thesis
+  with \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>x\<^sub>1 = x\<^sub>2\<close> show ?thesis
     by (auto simp add: opp_def)
 qed
 
@@ -106,7 +106,7 @@ proof (cases p\<^sub>1)
           by (simp add: on_curve_def add_def)
       next
         case False
-        note on_curve1 = `on_curve a b p\<^sub>1` [simplified Point' on_curve_def True', simplified]
+        note on_curve1 = \<open>on_curve a b p\<^sub>1\<close> [simplified Point' on_curve_def True', simplified]
         from False True' Point Point' assms
         have "y\<^sub>1 \<noteq> 0" by (auto simp add: on_curve_def)
         with False True' Point Point' assms
@@ -118,8 +118,8 @@ proof (cases p\<^sub>1)
       qed
     next
       case False
-      note on_curve1 = `on_curve a b p\<^sub>1` [simplified Point' on_curve_def, simplified]
-      note on_curve2 = `on_curve a b p\<^sub>2` [simplified Point on_curve_def, simplified]
+      note on_curve1 = \<open>on_curve a b p\<^sub>1\<close> [simplified Point' on_curve_def, simplified]
+      note on_curve2 = \<open>on_curve a b p\<^sub>2\<close> [simplified Point on_curve_def, simplified]
       from assms show ?thesis
         apply (simp add: on_curve_def add_def Let_def False Point Point')
         apply (field on_curve1 on_curve2)
@@ -128,12 +128,12 @@ proof (cases p\<^sub>1)
     qed
   next
     case Infinity
-    with Point `on_curve a b p\<^sub>1` show ?thesis
+    with Point \<open>on_curve a b p\<^sub>1\<close> show ?thesis
       by (simp add: add_def)
   qed
 next
   case Infinity
-  with `on_curve a b p\<^sub>2` show ?thesis
+  with \<open>on_curve a b p\<^sub>2\<close> show ?thesis
     by (simp add: add_def)
 qed
 
@@ -208,7 +208,7 @@ lemma eq_opp_is_zero: "((x::'a::ell_field) = - x) = (x = 0)"
 proof
   assume "x = - x"
   have "2 * x = x + x" by simp
-  also from `x = - x`
+  also from \<open>x = - x\<close>
   have "\<dots> = - x + x" by simp
   also have "\<dots> = 0" by simp
   finally have "2 * x = 0" .
@@ -295,7 +295,7 @@ next
   then show ?case by (simp add: is_generic_def)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  with `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+  with \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
   show ?case
   proof (induct rule: add_case)
     case InfL
@@ -311,9 +311,9 @@ next
     then show ?case by (simp add: is_generic_def)
   next
     case (Gen p\<^sub>2 x\<^sub>2' y\<^sub>2' p\<^sub>3 x\<^sub>3 y\<^sub>3 p\<^sub>5 x\<^sub>5 y\<^sub>5 l\<^sub>1)
-    from `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3` `p\<^sub>5 = add a p\<^sub>2 p\<^sub>3`
+    from \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close> \<open>p\<^sub>5 = add a p\<^sub>2 p\<^sub>3\<close>
     have "on_curve a b p\<^sub>5" by (simp add: add_closed)
-    with `on_curve a b p\<^sub>1` show ?case using Gen [simplified `p\<^sub>2 = Point x\<^sub>2' y\<^sub>2'`]
+    with \<open>on_curve a b p\<^sub>1\<close> show ?case using Gen [simplified \<open>p\<^sub>2 = Point x\<^sub>2' y\<^sub>2'\<close>]
     proof (induct rule: add_case)
       case InfL
       then show ?case by (simp add: is_generic_def)
@@ -322,17 +322,17 @@ next
       then show ?case by (simp add: is_generic_def)
     next
       case (Opp p)
-      from `is_generic p (opp p)`
+      from \<open>is_generic p (opp p)\<close>
       show ?case by (simp add: is_generic_def opp_opp)
     next
       case Tan
       then show ?case by (simp add: is_generic_def)
     next
       case (Gen p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>5' x\<^sub>5' y\<^sub>5' p\<^sub>6 x\<^sub>6 y\<^sub>6 l\<^sub>2)
-      from `on_curve a b p\<^sub>1` `on_curve a b (Point x\<^sub>2' y\<^sub>2')`
-        `p\<^sub>4 = add a p\<^sub>1 (Point x\<^sub>2' y\<^sub>2')`
+      from \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b (Point x\<^sub>2' y\<^sub>2')\<close>
+        \<open>p\<^sub>4 = add a p\<^sub>1 (Point x\<^sub>2' y\<^sub>2')\<close>
       have "on_curve a b p\<^sub>4" by (simp add: add_closed)
-      then show ?case using `on_curve a b p\<^sub>3` Gen
+      then show ?case using \<open>on_curve a b p\<^sub>3\<close> Gen
       proof (induct rule: add_case)
         case InfL
         then show ?case by (simp add: is_generic_def)
@@ -341,81 +341,81 @@ next
         then show ?case by (simp add: is_generic_def)
       next
         case (Opp p)
-        from `is_generic p (opp p)`
+        from \<open>is_generic p (opp p)\<close>
         show ?case by (simp add: is_generic_def opp_opp)
       next
         case Tan
         then show ?case by (simp add: is_generic_def)
       next
         case (Gen p\<^sub>4' x\<^sub>4' y\<^sub>4' p\<^sub>3' x\<^sub>3' y\<^sub>3' p\<^sub>7 x\<^sub>7 y\<^sub>7 l\<^sub>3)
-        from `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'` `p\<^sub>4' = Point x\<^sub>4 y\<^sub>4`
+        from \<open>p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'\<close> \<open>p\<^sub>4' = Point x\<^sub>4 y\<^sub>4\<close>
         have p\<^sub>4: "x\<^sub>4' = x\<^sub>4" "y\<^sub>4' = y\<^sub>4" by simp_all
-        from `p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'` `p\<^sub>3' = Point x\<^sub>3 y\<^sub>3`
+        from \<open>p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'\<close> \<open>p\<^sub>3' = Point x\<^sub>3 y\<^sub>3\<close>
         have p\<^sub>3: "x\<^sub>3' = x\<^sub>3" "y\<^sub>3' = y\<^sub>3" by simp_all
-        from `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+        from \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
         have p\<^sub>1: "x\<^sub>1' = x\<^sub>1" "y\<^sub>1' = y\<^sub>1" by simp_all
-        from `p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'` `p\<^sub>5' = Point x\<^sub>5 y\<^sub>5`
+        from \<open>p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'\<close> \<open>p\<^sub>5' = Point x\<^sub>5 y\<^sub>5\<close>
         have p\<^sub>5: "x\<^sub>5' = x\<^sub>5" "y\<^sub>5' = y\<^sub>5" by simp_all
-        from `Point x\<^sub>2' y\<^sub>2' = Point x\<^sub>2 y\<^sub>2`
+        from \<open>Point x\<^sub>2' y\<^sub>2' = Point x\<^sub>2 y\<^sub>2\<close>
         have p\<^sub>2: "x\<^sub>2' = x\<^sub>2" "y\<^sub>2' = y\<^sub>2" by simp_all
         note ps = p\<^sub>1 p\<^sub>2 p\<^sub>3 p\<^sub>4 p\<^sub>5
         note ps' =
-          `on_curve a b p\<^sub>1` [simplified `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` on_curve_def, simplified]
-          `on_curve a b p\<^sub>2` [simplified `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` on_curve_def, simplified]
-          `on_curve a b p\<^sub>3` [simplified `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3` on_curve_def, simplified]
+          \<open>on_curve a b p\<^sub>1\<close> [simplified \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> on_curve_def, simplified]
+          \<open>on_curve a b p\<^sub>2\<close> [simplified \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> on_curve_def, simplified]
+          \<open>on_curve a b p\<^sub>3\<close> [simplified \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close> on_curve_def, simplified]
         show ?case
-          apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
+          apply (simp add: \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>7 = Point x\<^sub>7 y\<^sub>7\<close>)
           apply (simp only: ps
-            `x\<^sub>6 = l\<^sub>2\<^sup>2 - x\<^sub>1' - x\<^sub>5'` `x\<^sub>7 = l\<^sub>3\<^sup>2 - x\<^sub>4' - x\<^sub>3'`
-            `y\<^sub>6 = - y\<^sub>1' - l\<^sub>2 * (x\<^sub>6 - x\<^sub>1')` `y\<^sub>7 = - y\<^sub>4' - l\<^sub>3 * (x\<^sub>7 - x\<^sub>4')`
-            `l\<^sub>2 = (y\<^sub>5' - y\<^sub>1') / (x\<^sub>5' - x\<^sub>1')` `l\<^sub>3 = (y\<^sub>3' - y\<^sub>4') / (x\<^sub>3' - x\<^sub>4')`
-            `l\<^sub>1 = (y\<^sub>3 - y\<^sub>2') / (x\<^sub>3 - x\<^sub>2')` `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`
-            `x\<^sub>5 = l\<^sub>1\<^sup>2 - x\<^sub>2' - x\<^sub>3` `y\<^sub>5 = - y\<^sub>2' - l\<^sub>1 * (x\<^sub>5 - x\<^sub>2')`
-            `x\<^sub>4 = l\<^sup>2 - x\<^sub>1 - x\<^sub>2` `y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)`)
+            \<open>x\<^sub>6 = l\<^sub>2\<^sup>2 - x\<^sub>1' - x\<^sub>5'\<close> \<open>x\<^sub>7 = l\<^sub>3\<^sup>2 - x\<^sub>4' - x\<^sub>3'\<close>
+            \<open>y\<^sub>6 = - y\<^sub>1' - l\<^sub>2 * (x\<^sub>6 - x\<^sub>1')\<close> \<open>y\<^sub>7 = - y\<^sub>4' - l\<^sub>3 * (x\<^sub>7 - x\<^sub>4')\<close>
+            \<open>l\<^sub>2 = (y\<^sub>5' - y\<^sub>1') / (x\<^sub>5' - x\<^sub>1')\<close> \<open>l\<^sub>3 = (y\<^sub>3' - y\<^sub>4') / (x\<^sub>3' - x\<^sub>4')\<close>
+            \<open>l\<^sub>1 = (y\<^sub>3 - y\<^sub>2') / (x\<^sub>3 - x\<^sub>2')\<close> \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>
+            \<open>x\<^sub>5 = l\<^sub>1\<^sup>2 - x\<^sub>2' - x\<^sub>3\<close> \<open>y\<^sub>5 = - y\<^sub>2' - l\<^sub>1 * (x\<^sub>5 - x\<^sub>2')\<close>
+            \<open>x\<^sub>4 = l\<^sup>2 - x\<^sub>1 - x\<^sub>2\<close> \<open>y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)\<close>)
           apply (rule conjI)
           apply (field ps')
           apply (rule conjI)
-          apply (simp add: `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`, symmetric])
+          apply (simp add: \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>, symmetric])
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) ps'(1-2))
-          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1\<^sup>2 - x\<^sub>2' - x\<^sub>3`
-            `l\<^sub>1 = (y\<^sub>3 - y\<^sub>2') / (x\<^sub>3 - x\<^sub>2')` `y\<^sub>2' = y\<^sub>2` `x\<^sub>2' = x\<^sub>2`])
+          apply (cut_tac \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified \<open>x\<^sub>5' = x\<^sub>5\<close> \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>5 = l\<^sub>1\<^sup>2 - x\<^sub>2' - x\<^sub>3\<close>
+            \<open>l\<^sub>1 = (y\<^sub>3 - y\<^sub>2') / (x\<^sub>3 - x\<^sub>2')\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>2' = x\<^sub>2\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field ps'(1-2))
-          apply (simp add: `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`, symmetric])
+          apply (simp add: \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>, symmetric])
           apply (rule conjI)
-          apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+          apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
           apply (rule notI)
           apply (ring (prems) ps'(1-2))
-          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l\<^sup>2 - x\<^sub>1 - x\<^sub>2`
-            `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`])
+          apply (cut_tac \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>3\<close> \<open>x\<^sub>4 = l\<^sup>2 - x\<^sub>1 - x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field ps'(1-2))
-          apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+          apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
           apply (field ps')
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) ps'(1-2))
-          apply (cut_tac `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified `x\<^sub>5' = x\<^sub>5` `x\<^sub>1' = x\<^sub>1` `x\<^sub>5 = l\<^sub>1\<^sup>2 - x\<^sub>2' - x\<^sub>3`
-            `l\<^sub>1 = (y\<^sub>3 - y\<^sub>2') / (x\<^sub>3 - x\<^sub>2')` `y\<^sub>2' = y\<^sub>2` `x\<^sub>2' = x\<^sub>2`])
+          apply (cut_tac \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified \<open>x\<^sub>5' = x\<^sub>5\<close> \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>5 = l\<^sub>1\<^sup>2 - x\<^sub>2' - x\<^sub>3\<close>
+            \<open>l\<^sub>1 = (y\<^sub>3 - y\<^sub>2') / (x\<^sub>3 - x\<^sub>2')\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>2' = x\<^sub>2\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field ps'(1-2))
-          apply (simp add: `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`, symmetric])
+          apply (simp add: \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>, symmetric])
           apply (rule conjI)
-          apply (simp add: `x\<^sub>2' \<noteq> x\<^sub>3` [simplified `x\<^sub>2' = x\<^sub>2`, symmetric])
+          apply (simp add: \<open>x\<^sub>2' \<noteq> x\<^sub>3\<close> [simplified \<open>x\<^sub>2' = x\<^sub>2\<close>, symmetric])
           apply (rule conjI)
           apply (rule notI)
           apply (ring (prems) ps'(1-2))
-          apply (cut_tac `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>3` `x\<^sub>4 = l\<^sup>2 - x\<^sub>1 - x\<^sub>2`
-            `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`])
+          apply (cut_tac \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>3\<close> \<open>x\<^sub>4 = l\<^sup>2 - x\<^sub>1 - x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>])
           apply (erule notE)
           apply (rule sym)
           apply (field ps'(1-2))
-          apply (simp_all add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+          apply (simp_all add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
           done
       qed
     qed
@@ -446,7 +446,7 @@ next
   then show ?case by (simp add: is_generic_def)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  with `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+  with \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
   show ?case
   proof (induct rule: add_case)
     case InfL
@@ -459,9 +459,9 @@ next
     then show ?case by (simp add: is_generic_def)
   next
     case (Tan p\<^sub>2 x\<^sub>2' y\<^sub>2' p\<^sub>5 x\<^sub>5 y\<^sub>5 l\<^sub>1)
-    from `on_curve a b p\<^sub>2` `p\<^sub>5 = add a p\<^sub>2 p\<^sub>2`
+    from \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>2 p\<^sub>2\<close>
     have "on_curve a b p\<^sub>5" by (simp add: add_closed)
-    with `on_curve a b p\<^sub>1` show ?case using Tan
+    with \<open>on_curve a b p\<^sub>1\<close> show ?case using Tan
     proof (induct rule: add_case)
       case InfL
       then show ?case by (simp add: is_generic_def)
@@ -470,16 +470,16 @@ next
       then show ?case by (simp add: is_generic_def)
     next
       case (Opp p)
-      from `is_generic p (opp p)` `on_curve a b p`
+      from \<open>is_generic p (opp p)\<close> \<open>on_curve a b p\<close>
       show ?case by (simp add: is_generic_def opp_opp)
     next
       case Tan
       then show ?case by (simp add: is_generic_def)
     next
       case (Gen p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>5' x\<^sub>5' y\<^sub>5' p\<^sub>6 x\<^sub>6 y\<^sub>6 l\<^sub>2)
-      from `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2`
+      from \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close>
       have "on_curve a b p\<^sub>4" by (simp add: add_closed)
-      then show ?case using `on_curve a b p\<^sub>2` Gen
+      then show ?case using \<open>on_curve a b p\<^sub>2\<close> Gen
       proof (induct rule: add_case)
         case InfL
         then show ?case by (simp add: is_generic_def)
@@ -488,7 +488,7 @@ next
         then show ?case by (simp add: is_generic_def)
       next
         case (Opp p)
-        from `is_generic p (opp p)`
+        from \<open>is_generic p (opp p)\<close>
         show ?case by (simp add: is_generic_def opp_opp)
       next
         case Tan
@@ -496,86 +496,86 @@ next
       next
         case (Gen p\<^sub>4' x\<^sub>4' y\<^sub>4' p\<^sub>3' x\<^sub>3' y\<^sub>3' p\<^sub>7 x\<^sub>7 y\<^sub>7 l\<^sub>3)
         from
-          `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+          \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
         have
           y1: "y\<^sub>1 ^ 2 = x\<^sub>1 ^ 3 + a * x\<^sub>1 + b" and
           y2: "y\<^sub>2 ^ 2 = x\<^sub>2 ^ 3 + a * x\<^sub>2 + b"
           by (simp_all add: on_curve_def)
         from
-          `p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'`
-          `p\<^sub>5' = Point x\<^sub>5 y\<^sub>5`
-          `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'`
-          `p\<^sub>4' = Point x\<^sub>4 y\<^sub>4`
-          `p\<^sub>3' = Point x\<^sub>2' y\<^sub>2'`
-          `p\<^sub>3' = Point x\<^sub>2 y\<^sub>2`
-          `p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'`
-          `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'`
-          `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+          \<open>p\<^sub>5' = Point x\<^sub>5' y\<^sub>5'\<close>
+          \<open>p\<^sub>5' = Point x\<^sub>5 y\<^sub>5\<close>
+          \<open>p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'\<close>
+          \<open>p\<^sub>4' = Point x\<^sub>4 y\<^sub>4\<close>
+          \<open>p\<^sub>3' = Point x\<^sub>2' y\<^sub>2'\<close>
+          \<open>p\<^sub>3' = Point x\<^sub>2 y\<^sub>2\<close>
+          \<open>p\<^sub>3' = Point x\<^sub>3' y\<^sub>3'\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
         have ps:
           "x\<^sub>5' = x\<^sub>5" "y\<^sub>5' = y\<^sub>5"
           "x\<^sub>4' = x\<^sub>4" "y\<^sub>4' = y\<^sub>4" "x\<^sub>3' = x\<^sub>2" "y\<^sub>3' = y\<^sub>2" "x\<^sub>2' = x\<^sub>2" "y\<^sub>2' = y\<^sub>2"
           "x\<^sub>1' = x\<^sub>1" "y\<^sub>1' = y\<^sub>1"
           by simp_all
         show ?case
-          apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
+          apply (simp add: \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>7 = Point x\<^sub>7 y\<^sub>7\<close>)
           apply (simp only: ps
-            `x\<^sub>7 = l\<^sub>3 ^ 2 - x\<^sub>4' - x\<^sub>3'`
-            `y\<^sub>7 = - y\<^sub>4' - l\<^sub>3 * (x\<^sub>7 - x\<^sub>4')`
-            `l\<^sub>3 = (y\<^sub>3' - y\<^sub>4') / (x\<^sub>3' - x\<^sub>4')`
-            `x\<^sub>6 = l\<^sub>2 ^ 2 - x\<^sub>1' - x\<^sub>5'`
-            `y\<^sub>6 = - y\<^sub>1' - l\<^sub>2 * (x\<^sub>6 - x\<^sub>1')`
-            `l\<^sub>2 = (y\<^sub>5' - y\<^sub>1') / (x\<^sub>5' - x\<^sub>1')`
-            `x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'`
-            `y\<^sub>5 = - y\<^sub>2' - l\<^sub>1 * (x\<^sub>5 - x\<^sub>2')`
-            `l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')`
-            `x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2`
-            `y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)`
-            `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`)
+            \<open>x\<^sub>7 = l\<^sub>3 ^ 2 - x\<^sub>4' - x\<^sub>3'\<close>
+            \<open>y\<^sub>7 = - y\<^sub>4' - l\<^sub>3 * (x\<^sub>7 - x\<^sub>4')\<close>
+            \<open>l\<^sub>3 = (y\<^sub>3' - y\<^sub>4') / (x\<^sub>3' - x\<^sub>4')\<close>
+            \<open>x\<^sub>6 = l\<^sub>2 ^ 2 - x\<^sub>1' - x\<^sub>5'\<close>
+            \<open>y\<^sub>6 = - y\<^sub>1' - l\<^sub>2 * (x\<^sub>6 - x\<^sub>1')\<close>
+            \<open>l\<^sub>2 = (y\<^sub>5' - y\<^sub>1') / (x\<^sub>5' - x\<^sub>1')\<close>
+            \<open>x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'\<close>
+            \<open>y\<^sub>5 = - y\<^sub>2' - l\<^sub>1 * (x\<^sub>5 - x\<^sub>2')\<close>
+            \<open>l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')\<close>
+            \<open>x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close>
+            \<open>y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)\<close>
+            \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>)
           apply (rule conjI)
           apply (field y1 y2)
           apply (intro conjI)
-          apply (simp add: `y\<^sub>2' \<noteq> 0` [simplified `y\<^sub>2' = y\<^sub>2`])
+          apply (simp add: \<open>y\<^sub>2' \<noteq> 0\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified
-            `x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'`
-            `l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')`
-            `x\<^sub>1' = x\<^sub>1` `x\<^sub>2' = x\<^sub>2` `y\<^sub>2' = y\<^sub>2` `x\<^sub>5' = x\<^sub>5`]])
+          apply (rule notE [OF \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified
+            \<open>x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'\<close>
+            \<open>l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')\<close>
+            \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>2' = x\<^sub>2\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>5' = x\<^sub>5\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: `y\<^sub>2' \<noteq> 0` [simplified `y\<^sub>2' = y\<^sub>2`])
-          apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+          apply (simp add: \<open>y\<^sub>2' \<noteq> 0\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
+          apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified
-            `x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2`
-            `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`
-            `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>2`]])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified
+            \<open>x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>
+            \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>2\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+          apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
           apply (field y1 y2)
           apply (intro conjI)
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>1' \<noteq> x\<^sub>5'` [simplified
-            `x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'`
-            `l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')`
-            `x\<^sub>1' = x\<^sub>1` `x\<^sub>2' = x\<^sub>2` `y\<^sub>2' = y\<^sub>2` `x\<^sub>5' = x\<^sub>5`]])
+          apply (rule notE [OF \<open>x\<^sub>1' \<noteq> x\<^sub>5'\<close> [simplified
+            \<open>x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'\<close>
+            \<open>l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')\<close>
+            \<open>x\<^sub>1' = x\<^sub>1\<close> \<open>x\<^sub>2' = x\<^sub>2\<close> \<open>y\<^sub>2' = y\<^sub>2\<close> \<open>x\<^sub>5' = x\<^sub>5\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp add: `y\<^sub>2' \<noteq> 0` [simplified `y\<^sub>2' = y\<^sub>2`])
-          apply (simp add: `y\<^sub>2' \<noteq> 0` [simplified `y\<^sub>2' = y\<^sub>2`])
+          apply (simp add: \<open>y\<^sub>2' \<noteq> 0\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
+          apply (simp add: \<open>y\<^sub>2' \<noteq> 0\<close> [simplified \<open>y\<^sub>2' = y\<^sub>2\<close>])
           apply (rule notI)
           apply (ring (prems) y1 y2)
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>3'` [simplified
-            `x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2`
-            `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`
-            `x\<^sub>4' = x\<^sub>4` `x\<^sub>3' = x\<^sub>2`]])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>3'\<close> [simplified
+            \<open>x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close>
+            \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>
+            \<open>x\<^sub>4' = x\<^sub>4\<close> \<open>x\<^sub>3' = x\<^sub>2\<close>]])
           apply (rule sym)
           apply (field y1 y2)
-          apply (simp_all add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+          apply (simp_all add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
           done
       qed
     qed
@@ -609,7 +609,7 @@ next
   then show ?case by (simp add: is_generic_def)
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  with `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+  with \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
   show ?case
   proof (induct rule: add_case)
     case InfL
@@ -622,9 +622,9 @@ next
     then show ?case by (simp add: is_tangent_def opp_opp)
   next
     case (Tan p\<^sub>2 x\<^sub>2' y\<^sub>2' p\<^sub>5 x\<^sub>5 y\<^sub>5 l\<^sub>1)
-    from `on_curve a b p\<^sub>2` `p\<^sub>5 = add a p\<^sub>2 p\<^sub>2`
+    from \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>2 p\<^sub>2\<close>
     have "on_curve a b p\<^sub>5" by (simp add: add_closed)
-    with `on_curve a b p\<^sub>1` show ?case using Tan
+    with \<open>on_curve a b p\<^sub>1\<close> show ?case using Tan
     proof (induct rule: add_case)
       case InfL
       then show ?case by (simp add: is_generic_def)
@@ -636,9 +636,9 @@ next
       then show ?case by (simp add: is_tangent_def opp_opp)
     next
       case (Tan p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>6 x\<^sub>6 y\<^sub>6 l\<^sub>2)
-      from `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2`
+      from \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close>
       have "on_curve a b p\<^sub>4" by (simp add: add_closed)
-      then show ?case using `on_curve a b p\<^sub>2` Tan
+      then show ?case using \<open>on_curve a b p\<^sub>2\<close> Tan
       proof (induct rule: add_case)
         case InfL
         then show ?case by (simp add: is_generic_def)
@@ -647,7 +647,7 @@ next
         then show ?case by (simp add: is_generic_def)
       next
         case (Opp p)
-        from `is_generic p (opp p)`
+        from \<open>is_generic p (opp p)\<close>
         show ?case by (simp add: is_generic_def opp_opp)
       next
         case Tan
@@ -655,108 +655,108 @@ next
       next
         case (Gen p\<^sub>4' x\<^sub>4' y\<^sub>4' p\<^sub>2' x\<^sub>2'' y\<^sub>2'' p\<^sub>7 x\<^sub>7 y\<^sub>7 l\<^sub>3)
         from
-          `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+          \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
         have
           y1: "y\<^sub>1 ^ 2 = x\<^sub>1 ^ 3 + a * x\<^sub>1 + b" and
           y2: "y\<^sub>2 ^ 2 = x\<^sub>2 ^ 3 + a * x\<^sub>2 + b"
           by (simp_all add: on_curve_def)
         from
-          `p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'`
-          `p\<^sub>4' = Point x\<^sub>4 y\<^sub>4`
-          `p\<^sub>2' = Point x\<^sub>2' y\<^sub>2'`
-          `p\<^sub>2' = Point x\<^sub>2 y\<^sub>2`
-          `p\<^sub>2' = Point x\<^sub>2'' y\<^sub>2''`
-          `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'`
-          `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `p\<^sub>1 = Point x\<^sub>5 y\<^sub>5`
+          \<open>p\<^sub>4' = Point x\<^sub>4' y\<^sub>4'\<close>
+          \<open>p\<^sub>4' = Point x\<^sub>4 y\<^sub>4\<close>
+          \<open>p\<^sub>2' = Point x\<^sub>2' y\<^sub>2'\<close>
+          \<open>p\<^sub>2' = Point x\<^sub>2 y\<^sub>2\<close>
+          \<open>p\<^sub>2' = Point x\<^sub>2'' y\<^sub>2''\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>p\<^sub>1 = Point x\<^sub>5 y\<^sub>5\<close>
         have ps:
           "x\<^sub>4' = x\<^sub>4" "y\<^sub>4' = y\<^sub>4" "x\<^sub>2' = x\<^sub>2" "y\<^sub>2' = y\<^sub>2" "x\<^sub>2'' = x\<^sub>2" "y\<^sub>2'' = y\<^sub>2"
           "x\<^sub>1' = x\<^sub>5" "y\<^sub>1' = y\<^sub>5" "x\<^sub>1 = x\<^sub>5" "y\<^sub>1 = y\<^sub>5"
           by simp_all
         note qs =
-          `x\<^sub>7 = l\<^sub>3 ^ 2 - x\<^sub>4' - x\<^sub>2''`
-          `y\<^sub>7 = - y\<^sub>4' - l\<^sub>3 * (x\<^sub>7 - x\<^sub>4')`
-          `l\<^sub>3 = (y\<^sub>2'' - y\<^sub>4') / (x\<^sub>2'' - x\<^sub>4')`
-          `x\<^sub>6 = l\<^sub>2 ^ 2 - 2 * x\<^sub>1'`
-          `y\<^sub>6 = - y\<^sub>1' - l\<^sub>2 * (x\<^sub>6 - x\<^sub>1')`
-          `x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'`
-          `y\<^sub>5 = - y\<^sub>2' - l\<^sub>1 * (x\<^sub>5 - x\<^sub>2')`
-          `l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')`
-          `l\<^sub>2 = (3 * x\<^sub>1' ^ 2 + a) / (2 * y\<^sub>1')`
-          `x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2`
-          `y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)`
-          `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`
-        from `y\<^sub>2' \<noteq> 0` `y\<^sub>2' = y\<^sub>2`
+          \<open>x\<^sub>7 = l\<^sub>3 ^ 2 - x\<^sub>4' - x\<^sub>2''\<close>
+          \<open>y\<^sub>7 = - y\<^sub>4' - l\<^sub>3 * (x\<^sub>7 - x\<^sub>4')\<close>
+          \<open>l\<^sub>3 = (y\<^sub>2'' - y\<^sub>4') / (x\<^sub>2'' - x\<^sub>4')\<close>
+          \<open>x\<^sub>6 = l\<^sub>2 ^ 2 - 2 * x\<^sub>1'\<close>
+          \<open>y\<^sub>6 = - y\<^sub>1' - l\<^sub>2 * (x\<^sub>6 - x\<^sub>1')\<close>
+          \<open>x\<^sub>5 = l\<^sub>1 ^ 2 - 2 * x\<^sub>2'\<close>
+          \<open>y\<^sub>5 = - y\<^sub>2' - l\<^sub>1 * (x\<^sub>5 - x\<^sub>2')\<close>
+          \<open>l\<^sub>1 = (3 * x\<^sub>2' ^ 2 + a) / (2 * y\<^sub>2')\<close>
+          \<open>l\<^sub>2 = (3 * x\<^sub>1' ^ 2 + a) / (2 * y\<^sub>1')\<close>
+          \<open>x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close>
+          \<open>y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)\<close>
+          \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>
+        from \<open>y\<^sub>2' \<noteq> 0\<close> \<open>y\<^sub>2' = y\<^sub>2\<close>
         have "2 * y\<^sub>2 \<noteq> 0" by simp
         show ?case
-          apply (simp add: `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>7 = Point x\<^sub>7 y\<^sub>7`)
+          apply (simp add: \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>7 = Point x\<^sub>7 y\<^sub>7\<close>)
           apply (simp only: ps qs)
           apply (rule conjI)
           apply (field y2)
           apply (intro conjI)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `y\<^sub>1' \<noteq> 0`])
+          apply (rule notE [OF \<open>y\<^sub>1' \<noteq> 0\<close>])
           apply (simp only: ps qs)
           apply field
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>2''`])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>2''\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
           apply (intro conjI)
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (erule thin_rl)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (field y2)
           apply (intro conjI)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `y\<^sub>1' \<noteq> 0`])
+          apply (rule notE [OF \<open>y\<^sub>1' \<noteq> 0\<close>])
           apply (simp only: ps qs)
           apply field
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>4' \<noteq> x\<^sub>2''`])
+          apply (rule notE [OF \<open>x\<^sub>4' \<noteq> x\<^sub>2''\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
           apply (erule thin_rl)
           apply (rule conjI)
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           apply (rule notI)
           apply (ring (prems))
-          apply (rule notE [OF `x\<^sub>1 \<noteq> x\<^sub>2`])
+          apply (rule notE [OF \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>])
           apply (rule sym)
           apply (simp only: ps qs)
           apply field
-          apply (rule `2 * y\<^sub>2 \<noteq> 0`)
+          apply (rule \<open>2 * y\<^sub>2 \<noteq> 0\<close>)
           done
       qed
     next
@@ -787,7 +787,7 @@ proof (cases p\<^sub>1)
 next
   case (Point x\<^sub>1 y\<^sub>1)
   note Point' = this
-  with `on_curve a b p\<^sub>1`
+  with \<open>on_curve a b p\<^sub>1\<close>
   have y1: "y\<^sub>1 ^ 2 = x\<^sub>1 ^ 3 + a * x\<^sub>1 + b"
     by (simp add: on_curve_def)
   show ?thesis
@@ -796,7 +796,7 @@ next
     then show ?thesis by (simp add: add_0_l add_0_r)
   next
     case (Point x\<^sub>2 y\<^sub>2)
-    with `on_curve a b p\<^sub>2`
+    with \<open>on_curve a b p\<^sub>2\<close>
     have y2: "y\<^sub>2 ^ 2 = x\<^sub>2 ^ 3 + a * x\<^sub>2 + b"
       by (simp add: on_curve_def)
     show ?thesis
@@ -805,11 +805,11 @@ next
       show ?thesis
       proof (cases "y\<^sub>1 = - y\<^sub>2")
         case True
-        with Point Point' `x\<^sub>1 = x\<^sub>2` show ?thesis
+        with Point Point' \<open>x\<^sub>1 = x\<^sub>2\<close> show ?thesis
           by (simp add: add_def)
       next
         case False
-        with y1 y2 [symmetric] `x\<^sub>1 = x\<^sub>2` Point Point'
+        with y1 y2 [symmetric] \<open>x\<^sub>1 = x\<^sub>2\<close> Point Point'
         show ?thesis
           by (simp add: power2_eq_square square_eq_iff)
       qed
@@ -852,58 +852,58 @@ next
   then show ?case by (simp add: opp_def split: point.split_asm)
 next
   case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
-  from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>2 = p\<^sub>1`
+  from \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>2 = p\<^sub>1\<close>
   have "x\<^sub>2 = x\<^sub>1" "y\<^sub>2 = y\<^sub>1" by simp_all
-  with `y\<^sub>2 = - y\<^sub>1 - l * (x\<^sub>2 - x\<^sub>1)` `y\<^sub>1 \<noteq> 0`
+  with \<open>y\<^sub>2 = - y\<^sub>1 - l * (x\<^sub>2 - x\<^sub>1)\<close> \<open>y\<^sub>1 \<noteq> 0\<close>
   have "- y\<^sub>1 = y\<^sub>1" by simp
-  with `y\<^sub>1 \<noteq> 0`
+  with \<open>y\<^sub>1 \<noteq> 0\<close>
   show ?case by simp
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
   then have y1: "y\<^sub>1 ^ 2 = x\<^sub>1 ^ 3 + a * x\<^sub>1 + b"
     and y2: "y\<^sub>2 ^ 2 = x\<^sub>2 ^ 3 + a * x\<^sub>2 + b"
     by (simp_all add: on_curve_def)
-  from `p\<^sub>3 = p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
+  from \<open>p\<^sub>3 = p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
   have ps: "x\<^sub>3 = x\<^sub>2" "y\<^sub>3 = y\<^sub>2" by simp_all
-  with `y\<^sub>3 = - y\<^sub>1 - l * (x\<^sub>3 - x\<^sub>1)`
+  with \<open>y\<^sub>3 = - y\<^sub>1 - l * (x\<^sub>3 - x\<^sub>1)\<close>
   have "y\<^sub>2 = - y\<^sub>1 - l * (x\<^sub>2 - x\<^sub>1)" by simp
-  also from `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)` `x\<^sub>1 \<noteq> x\<^sub>2`
+  also from \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>
   have "l * (x\<^sub>2 - x\<^sub>1) = y\<^sub>2 - y\<^sub>1"
     by simp
   also have "- y\<^sub>1 - (y\<^sub>2 - y\<^sub>1) = (- y\<^sub>1 + y\<^sub>1) + - y\<^sub>2"
     by simp
   finally have "y\<^sub>2 = 0" by simp
-  with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `on_curve a b p\<^sub>2`
+  with \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>on_curve a b p\<^sub>2\<close>
   have x2: "x\<^sub>2 ^ 3 = - (a * x\<^sub>2 + b)"
     by (simp add: on_curve_def eq_neg_iff_add_eq_0 add.assoc del: minus_add_distrib)
-  from `x\<^sub>3 = l ^ 2 - x\<^sub>1 - x\<^sub>2` `x\<^sub>3 = x\<^sub>2`
+  from \<open>x\<^sub>3 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close> \<open>x\<^sub>3 = x\<^sub>2\<close>
   have "l ^ 2 - x\<^sub>1 - x\<^sub>2 - x\<^sub>2 = x\<^sub>2 - x\<^sub>2" by simp
   then have "l ^ 2 - x\<^sub>1 - 2 * x\<^sub>2 = 0" by simp
   then have "x\<^sub>2 * (l ^ 2 - x\<^sub>1 - 2 * x\<^sub>2) = x\<^sub>2 * 0" by simp
   then have "(x\<^sub>2 - x\<^sub>1) * (2 * a * x\<^sub>2 + 3 * b) = 0"
-    apply (simp only: `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)` `y\<^sub>2 = 0`)
+    apply (simp only: \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close> \<open>y\<^sub>2 = 0\<close>)
     apply (field (prems) y1 x2)
     apply (ring y1 x2)
-    apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+    apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
     done
-  with `x\<^sub>1 \<noteq> x\<^sub>2` have "2 * a * x\<^sub>2 + 3 * b = 0" by simp
+  with \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> have "2 * a * x\<^sub>2 + 3 * b = 0" by simp
   then have "2 * a * x\<^sub>2 = - (3 * b)"
     by (simp add: eq_neg_iff_add_eq_0)
-  from y2 [symmetric] `y\<^sub>2 = 0`
+  from y2 [symmetric] \<open>y\<^sub>2 = 0\<close>
   have "(- (2 * a)) ^ 3 * (x\<^sub>2 ^ 3 + a * x\<^sub>2 + b) = 0"
     by simp
   then have "b * (4 * a ^ 3 + 27 * b ^ 2) = 0"
-    apply (ring (prems) `2 * a * x\<^sub>2 = - (3 * b)`)
-    apply (ring `2 * a * x\<^sub>2 = - (3 * b)`)
+    apply (ring (prems) \<open>2 * a * x\<^sub>2 = - (3 * b)\<close>)
+    apply (ring \<open>2 * a * x\<^sub>2 = - (3 * b)\<close>)
     done
   with ab have "b = 0" by (simp add: nonsingular_def)
-  with `2 * a * x\<^sub>2 + 3 * b = 0` ab
+  with \<open>2 * a * x\<^sub>2 + 3 * b = 0\<close> ab
   have "x\<^sub>2 = 0" by (simp add: nonsingular_def)
-  from `l ^ 2 - x\<^sub>1 - 2 * x\<^sub>2 = 0`
+  from \<open>l ^ 2 - x\<^sub>1 - 2 * x\<^sub>2 = 0\<close>
   show ?case
-    apply (simp add: `x\<^sub>2 = 0` `y\<^sub>2 = 0` `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`)
-    apply (field (prems) y1 `b = 0`)
-    apply (insert ab `b = 0` `x\<^sub>1 \<noteq> x\<^sub>2` `x\<^sub>2 = 0`)
+    apply (simp add: \<open>x\<^sub>2 = 0\<close> \<open>y\<^sub>2 = 0\<close> \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>)
+    apply (field (prems) y1 \<open>b = 0\<close>)
+    apply (insert ab \<open>b = 0\<close> \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> \<open>x\<^sub>2 = 0\<close>)
     apply (simp add: nonsingular_def)
     apply simp
     done
@@ -921,15 +921,15 @@ next
   show ?thesis
   proof (cases p\<^sub>2)
     case Infinity
-    with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` show ?thesis
+    with \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> show ?thesis
       by (simp add: add_def opp_def)
   next
     case (Point x\<^sub>2 y\<^sub>2)
-    with `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` p\<^sub>1 p\<^sub>2
+    with \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> p\<^sub>1 p\<^sub>2
     have "x\<^sub>1 ^ 3 + a * x\<^sub>1 + b = y\<^sub>1 ^ 2"
       "x\<^sub>2 ^ 3 + a * x\<^sub>2 + b = y\<^sub>2 ^ 2"
       by (simp_all add: on_curve_def)
-    with Point `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` show ?thesis
+    with Point \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> show ?thesis
       apply (cases "x\<^sub>1 = x\<^sub>2")
       apply (cases "y\<^sub>1 = - y\<^sub>2")
       apply (simp add: add_def opp_def Let_def)
@@ -961,13 +961,13 @@ next
   case (Opp p)
   then have "add a p p = Infinity" by (simp add: opp_opp)
   then have "p = opp p" by (rule uniq_opp)
-  with `p \<noteq> opp p` show ?case ..
+  with \<open>p \<noteq> opp p\<close> show ?case ..
 next
   case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
   then have "add a p\<^sub>1 p\<^sub>1 = Infinity"
     by (simp add: add_opp)
   then have "p\<^sub>1 = opp p\<^sub>1" by (rule uniq_opp)
-  with `p\<^sub>1 \<noteq> opp p\<^sub>1` show ?case ..
+  with \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close> show ?case ..
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
   have "(2::'a) * 2 \<noteq> 0"
@@ -978,10 +978,10 @@ next
     by (simp add: add_def opp_def Let_def)
   then show ?case
     apply (field (prems))
-    apply (insert `p\<^sub>1 \<noteq> opp p\<^sub>1`
-      `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `4 \<noteq> 0`)[1]
+    apply (insert \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close>
+      \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>4 \<noteq> 0\<close>)[1]
     apply (simp add: opp_def eq_neg_iff_add_eq_0)
-    apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+    apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
     done
 qed
 
@@ -994,7 +994,7 @@ lemma compat_add_triple:
   using add_closed [OF p p] opp_closed [OF p] assms
 proof (induct "add a p p" "opp p" rule: add_case)
   case InfL
-  from `p \<noteq> opp p` uniq_opp [OF `Infinity = add a p p` [symmetric]]
+  from \<open>p \<noteq> opp p\<close> uniq_opp [OF \<open>Infinity = add a p p\<close> [symmetric]]
   show ?case ..
 next
   case InfR
@@ -1003,17 +1003,17 @@ next
   case Opp
   then have "opp (opp (add a p p)) = opp (opp p)" by simp
   then have "add a p p = p" by (simp add: opp_opp)
-  with uniq_zero [OF ab p p] `p \<noteq> opp p`
+  with uniq_zero [OF ab p p] \<open>p \<noteq> opp p\<close>
   show ?case by (simp add: opp_def)
 next
   case Tan
   then show ?case by simp
 next
   case (Gen x\<^sub>1 y\<^sub>1 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
-  from `opp p = Point x\<^sub>2 y\<^sub>2`
+  from \<open>opp p = Point x\<^sub>2 y\<^sub>2\<close>
   have "p = Point x\<^sub>2 (- y\<^sub>2)"
     by (auto simp add: opp_def split: point.split_asm)
-  with `add a p p = Point x\<^sub>1 y\<^sub>1` [symmetric]
+  with \<open>add a p p = Point x\<^sub>1 y\<^sub>1\<close> [symmetric]
   obtain l' where l':
     "l' = (3 * x\<^sub>2 ^ 2 + a) / (2 * - y\<^sub>2)"
     and xy: "x\<^sub>1 = l' ^ 2 - 2 * x\<^sub>2"
@@ -1022,28 +1022,28 @@ next
     by (simp add: add_def Let_def split: if_split_asm)
   have "x\<^sub>3 = x\<^sub>2"
     apply (simp add: xy
-      `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)` `x\<^sub>3 = l ^ 2 - x\<^sub>1 - x\<^sub>2`)
+      \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close> \<open>x\<^sub>3 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close>)
     apply field
-    apply (insert `x\<^sub>1 \<noteq> x\<^sub>2`)
+    apply (insert \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>)
     apply (simp add: xy)
     done
   then have "p\<^sub>3 = p \<or> p\<^sub>3 = opp p"
-    by (rule curve_elt_opp [OF `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3` `p = Point x\<^sub>2 (- y\<^sub>2)`
+    by (rule curve_elt_opp [OF \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close> \<open>p = Point x\<^sub>2 (- y\<^sub>2)\<close>
       add_closed [OF add_closed [OF p p] opp_closed [OF p],
-        folded `p\<^sub>3 = add a (add a p p) (opp p)`]
-     `on_curve a b p`])
+        folded \<open>p\<^sub>3 = add a (add a p p) (opp p)\<close>]
+     \<open>on_curve a b p\<close>])
   then show ?case
   proof
     assume "p\<^sub>3 = p"
-    with `p\<^sub>3 = add a (add a p p) (opp p)`
+    with \<open>p\<^sub>3 = add a (add a p p) (opp p)\<close>
     show ?thesis by simp
   next
     assume "p\<^sub>3 = opp p"
-    with `p\<^sub>3 = add a (add a p p) (opp p)`
+    with \<open>p\<^sub>3 = add a (add a p p) (opp p)\<close>
     have "add a (add a p p) (opp p) = opp p" by simp
     with ab add_closed [OF p p] opp_closed [OF p]
     have "add a p p = Infinity" by (rule uniq_zero)
-    with `add a p p = Point x\<^sub>1 y\<^sub>1` show ?thesis by simp
+    with \<open>add a p p = Point x\<^sub>1 y\<^sub>1\<close> show ?thesis by simp
   qed
 qed
 
@@ -1057,7 +1057,7 @@ proof (cases "p\<^sub>1 = opp p\<^sub>1")
   case True
   with assms have "add a p\<^sub>2 p\<^sub>1 = p\<^sub>1" by (simp add: add_comm)
   with ab p\<^sub>2 p\<^sub>1 have "p\<^sub>2 = Infinity" by (rule uniq_zero)
-  also from `on_curve a b p\<^sub>1` have "\<dots> = add a p\<^sub>1 (opp p\<^sub>1)"
+  also from \<open>on_curve a b p\<^sub>1\<close> have "\<dots> = add a p\<^sub>1 (opp p\<^sub>1)"
     by (simp add: add_opp)
   also from True have "\<dots> = add a (opp p\<^sub>1) (opp p\<^sub>1)" by simp
   finally show ?thesis .
@@ -1075,20 +1075,20 @@ next
     then show ?case by (simp add: add_0_l)
   next
     case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
-    from `p\<^sub>2 = opp p\<^sub>1` `on_curve a b p\<^sub>1`
+    from \<open>p\<^sub>2 = opp p\<^sub>1\<close> \<open>on_curve a b p\<^sub>1\<close>
     have "p\<^sub>1 = opp p\<^sub>2" by (simp add: opp_opp)
-    also note `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1`
-    finally show ?case using `on_curve a b p\<^sub>1`
+    also note \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close>
+    finally show ?case using \<open>on_curve a b p\<^sub>1\<close>
       by (simp add: opp_add)
   next
     case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
-    from `on_curve a b p\<^sub>1` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+    from \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
     have y\<^sub>1: "y\<^sub>1 ^ 2 = x\<^sub>1 ^ 3 + a * x\<^sub>1 + b"
       by (simp add: on_curve_def)
-    from `on_curve a b p\<^sub>2` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2`
+    from \<open>on_curve a b p\<^sub>2\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close>
     have y\<^sub>2: "y\<^sub>2 ^ 2 = x\<^sub>2 ^ 3 + a * x\<^sub>2 + b"
       by (simp add: on_curve_def)
-    from `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>1 \<noteq> opp p\<^sub>1`
+    from \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close>
     have "y\<^sub>1 \<noteq> 0"
       by (simp add: opp_Point)
     from Gen have "x\<^sub>1 = ((y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)) ^ 2 - x\<^sub>1 - x\<^sub>2"
@@ -1098,55 +1098,55 @@ next
       apply (field (prems) y\<^sub>1 y\<^sub>2)
       apply (field y\<^sub>1 y\<^sub>2)
       apply simp
-      apply (simp add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+      apply (simp add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
       done
     then have "(x\<^sub>2 - (((3 * x\<^sub>1 ^ 2 + a) / (2 * (- y\<^sub>1))) ^ 2 -
       2 * x\<^sub>1)) * (x\<^sub>2 - x\<^sub>1) ^ 2 = 0"
       apply (drule_tac f="\<lambda>x. x ^ 2" in arg_cong)
       apply (field (prems) y\<^sub>1 y\<^sub>2)
       apply (field y\<^sub>1 y\<^sub>2)
-      apply (simp_all add: `y\<^sub>1 \<noteq> 0`)
+      apply (simp_all add: \<open>y\<^sub>1 \<noteq> 0\<close>)
       done
-    with `x\<^sub>1 \<noteq> x\<^sub>2`
+    with \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close>
     have "x\<^sub>2 = ((3 * x\<^sub>1 ^ 2 + a) / (2 * (- y\<^sub>1))) ^ 2 - 2 * x\<^sub>1"
       by simp
-    with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` _ `on_curve a b p\<^sub>2`
+    with \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> _ \<open>on_curve a b p\<^sub>2\<close>
       add_closed [OF
-        opp_closed [OF `on_curve a b p\<^sub>1`] opp_closed [OF `on_curve a b p\<^sub>1`]]
+        opp_closed [OF \<open>on_curve a b p\<^sub>1\<close>] opp_closed [OF \<open>on_curve a b p\<^sub>1\<close>]]
     have "p\<^sub>2 = add a (opp p\<^sub>1) (opp p\<^sub>1) \<or> p\<^sub>2 = opp (add a (opp p\<^sub>1) (opp p\<^sub>1))"
       apply (rule curve_elt_opp)
-      apply (simp add: add_def opp_Point Let_def `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `y\<^sub>1 \<noteq> 0`)
+      apply (simp add: add_def opp_Point Let_def \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>y\<^sub>1 \<noteq> 0\<close>)
       done
     then show ?case
     proof
       assume "p\<^sub>2 = opp (add a (opp p\<^sub>1) (opp p\<^sub>1))"
-      with `on_curve a b p\<^sub>1`
+      with \<open>on_curve a b p\<^sub>1\<close>
       have "p\<^sub>2 = add a p\<^sub>1 p\<^sub>1"
         by (simp add: opp_add [of a b] opp_opp opp_closed)
       show ?case
       proof (cases "add a p\<^sub>1 p\<^sub>1 = opp p\<^sub>1")
         case True
-        from `on_curve a b p\<^sub>1`
+        from \<open>on_curve a b p\<^sub>1\<close>
         show ?thesis
-          apply (simp add: opp_add [symmetric] `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` True)
-          apply (simp add: `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2` [simplified `p\<^sub>3 = opp p\<^sub>1`])
-          apply (simp add: `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` True add_opp)
+          apply (simp add: opp_add [symmetric] \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> True)
+          apply (simp add: \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close> [simplified \<open>p\<^sub>3 = opp p\<^sub>1\<close>])
+          apply (simp add: \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> True add_opp)
           done
       next
         case False
-        from `on_curve a b p\<^sub>1`
+        from \<open>on_curve a b p\<^sub>1\<close>
         have "add a p\<^sub>1 (opp p\<^sub>2) = opp (add a (add a p\<^sub>1 p\<^sub>1) (opp p\<^sub>1))"
-          by (simp add: `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1`
+          by (simp add: \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close>
             opp_add [of a b] add_closed opp_closed opp_opp add_comm [of a b])
-        with ab `on_curve a b p\<^sub>1` `p\<^sub>1 \<noteq> opp p\<^sub>1` False
+        with ab \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close> False
         have "add a p\<^sub>1 (opp p\<^sub>2) = opp p\<^sub>1"
           by (simp add: compat_add_triple)
-        with `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>3 = opp p\<^sub>1`
+        with \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>3 = opp p\<^sub>1\<close>
         have "add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)" by simp
-        with `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
-        have "p\<^sub>2 = opp p\<^sub>2" using `p\<^sub>1 \<noteq> opp p\<^sub>1`
+        with \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
+        have "p\<^sub>2 = opp p\<^sub>2" using \<open>p\<^sub>1 \<noteq> opp p\<^sub>1\<close>
           by (rule compat_add_opp)
-        with `on_curve a b p\<^sub>1` `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1`
+        with \<open>on_curve a b p\<^sub>1\<close> \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close>
         show ?thesis by (simp add: opp_add)
       qed
     qed
@@ -1167,25 +1167,25 @@ proof (induct rule: add_casew)
 next
   case (InfR p)
   with p\<^sub>3 have "add a p\<^sub>3 p = p" by (simp add: add_comm)
-  with ab p\<^sub>3 `on_curve a b p`
+  with ab p\<^sub>3 \<open>on_curve a b p\<close>
   show ?case by (rule uniq_zero [symmetric])
 next
   case (Opp p)
-  from `Infinity = add a p p\<^sub>3` [symmetric]
+  from \<open>Infinity = add a p p\<^sub>3\<close> [symmetric]
   show ?case by (rule uniq_opp [symmetric])
 next
   case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>4 x\<^sub>4 y\<^sub>4 l)
-  from `on_curve a b p\<^sub>1` p\<^sub>3 `on_curve a b p\<^sub>1` p\<^sub>3 `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-    `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>3` `p\<^sub>1 \<noteq> opp p\<^sub>2`
+  from \<open>on_curve a b p\<^sub>1\<close> p\<^sub>3 \<open>on_curve a b p\<^sub>1\<close> p\<^sub>3 \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+    \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>3\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close>
   show ?case
   proof (induct rule: add_casew)
     case InfL
     then show ?case by (simp add: add_0_l)
   next
     case (InfR p)
-    with `on_curve a b p\<^sub>2`
+    with \<open>on_curve a b p\<^sub>2\<close>
     have "add a p\<^sub>2 p = p" by (simp add: add_comm)
-    with ab `on_curve a b p\<^sub>2` `on_curve a b p`
+    with ab \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<close>
     show ?case by (rule uniq_zero)
   next
     case (Opp p)
@@ -1193,84 +1193,84 @@ next
     then show ?case by (rule uniq_opp)
   next
     case (Gen p\<^sub>1 x\<^sub>1' y\<^sub>1' p\<^sub>3 x\<^sub>3 y\<^sub>3 p\<^sub>5 x\<^sub>5 y\<^sub>5 l')
-    from `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
-      `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-      `y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)` `y\<^sub>5 = - y\<^sub>1' - l' * (x\<^sub>5 - x\<^sub>1')`
+    from \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close> \<open>p\<^sub>5 = Point x\<^sub>5 y\<^sub>5\<close>
+      \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+      \<open>y\<^sub>4 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1)\<close> \<open>y\<^sub>5 = - y\<^sub>1' - l' * (x\<^sub>5 - x\<^sub>1')\<close>
     have "0 = - y\<^sub>1 - l * (x\<^sub>4 - x\<^sub>1) - (- y\<^sub>1 - l' * (x\<^sub>4 - x\<^sub>1))"
       by auto
     then have "l' = l \<or> x\<^sub>4 = x\<^sub>1" by auto
     then show ?case
     proof
       assume "l' = l"
-      with `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
-        `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-        `x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2` `x\<^sub>5 = l' ^ 2 - x\<^sub>1' - x\<^sub>3`
+      with \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close> \<open>p\<^sub>5 = Point x\<^sub>5 y\<^sub>5\<close>
+        \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+        \<open>x\<^sub>4 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close> \<open>x\<^sub>5 = l' ^ 2 - x\<^sub>1' - x\<^sub>3\<close>
       have "0 = l ^ 2 - x\<^sub>1 - x\<^sub>2 - (l ^ 2 - x\<^sub>1 - x\<^sub>3)"
         by simp
       then have "x\<^sub>2 = x\<^sub>3" by simp
-      with `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3` `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>3`
+      with \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close> \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>3\<close>
       have "p\<^sub>2 = p\<^sub>3 \<or> p\<^sub>2 = opp p\<^sub>3" by (rule curve_elt_opp)
       then show ?case
       proof
         assume "p\<^sub>2 = opp p\<^sub>3"
-        with `on_curve a b p\<^sub>3` have "opp p\<^sub>2 = p\<^sub>3"
+        with \<open>on_curve a b p\<^sub>3\<close> have "opp p\<^sub>2 = p\<^sub>3"
           by (simp add: opp_opp)
-        with `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>5 = add a p\<^sub>1 p\<^sub>3`
+        with \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>1 p\<^sub>3\<close>
         have "add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)" by simp
         show ?case
         proof (cases "p\<^sub>1 = opp p\<^sub>1")
           case True
-          with `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>1 \<noteq> opp p\<^sub>3`
+          with \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>3\<close>
           have "p\<^sub>1 \<noteq> p\<^sub>2" "p\<^sub>1 \<noteq> p\<^sub>3" by auto
-          with `l' = l` `x\<^sub>1 = x\<^sub>2 \<and> _\<or> _` `x\<^sub>1' = x\<^sub>3 \<and> _ \<or> _`
-            `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1` `p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'`
-            `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
-            `p\<^sub>2 = opp p\<^sub>3`
+          with \<open>l' = l\<close> \<open>x\<^sub>1 = x\<^sub>2 \<and> _\<or> _\<close> \<open>x\<^sub>1' = x\<^sub>3 \<and> _ \<or> _\<close>
+            \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close> \<open>p\<^sub>1 = Point x\<^sub>1' y\<^sub>1'\<close>
+            \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
+            \<open>p\<^sub>2 = opp p\<^sub>3\<close>
           have eq: "(y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1) = (y\<^sub>3 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)" and "x\<^sub>1 \<noteq> x\<^sub>2"
             by (auto simp add: opp_Point)
           from eq have "y\<^sub>2 = y\<^sub>3"
             apply (field (prems))
-            apply (simp_all add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+            apply (simp_all add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
             done
-          with `p\<^sub>2 = opp p\<^sub>3` `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>3 = Point x\<^sub>3 y\<^sub>3`
+          with \<open>p\<^sub>2 = opp p\<^sub>3\<close> \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>3 = Point x\<^sub>3 y\<^sub>3\<close>
           show ?thesis by (simp add: opp_Point)
         next
           case False
-          with `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
-            `add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)`
+          with \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
+            \<open>add a p\<^sub>1 p\<^sub>2 = add a p\<^sub>1 (opp p\<^sub>2)\<close>
           have "p\<^sub>2 = opp p\<^sub>2" by (rule compat_add_opp)
-          with `opp p\<^sub>2 = p\<^sub>3` show ?thesis by simp
+          with \<open>opp p\<^sub>2 = p\<^sub>3\<close> show ?thesis by simp
         qed
       qed
     next
       assume "x\<^sub>4 = x\<^sub>1"
-      with `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4` [simplified `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2`]
-        `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-        add_closed [OF `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`]
-        `on_curve a b p\<^sub>1`
+      with \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close> [simplified \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close>]
+        \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+        add_closed [OF \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>]
+        \<open>on_curve a b p\<^sub>1\<close>
       have "add a p\<^sub>1 p\<^sub>2 = p\<^sub>1 \<or> add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1" by (rule curve_elt_opp)
       then show ?case
       proof
         assume "add a p\<^sub>1 p\<^sub>2 = p\<^sub>1"
-        with `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
+        with \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
         have "add a p\<^sub>2 p\<^sub>1 = p\<^sub>1" by (simp add: add_comm)
-        with ab `on_curve a b p\<^sub>2` `on_curve a b p\<^sub>1`
+        with ab \<open>on_curve a b p\<^sub>2\<close> \<open>on_curve a b p\<^sub>1\<close>
         have "p\<^sub>2 = Infinity" by (rule uniq_zero)
-        moreover from `add a p\<^sub>1 p\<^sub>2 = p\<^sub>1`
-          `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>5 = add a p\<^sub>1 p\<^sub>3`
-          `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>3`
+        moreover from \<open>add a p\<^sub>1 p\<^sub>2 = p\<^sub>1\<close>
+          \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>1 p\<^sub>3\<close>
+          \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>3\<close>
         have "add a p\<^sub>3 p\<^sub>1 = p\<^sub>1" by (simp add: add_comm)
-        with ab `on_curve a b p\<^sub>3` `on_curve a b p\<^sub>1`
+        with ab \<open>on_curve a b p\<^sub>3\<close> \<open>on_curve a b p\<^sub>1\<close>
         have "p\<^sub>3 = Infinity" by (rule uniq_zero)
         ultimately show ?case by simp
       next
         assume "add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1"
-        with ab `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`
+        with ab \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>
         have "p\<^sub>2 = add a (opp p\<^sub>1) (opp p\<^sub>1)" by (rule add_opp_double_opp)
-        moreover from `add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1`
-          `p\<^sub>4 = p\<^sub>5` `p\<^sub>4 = add a p\<^sub>1 p\<^sub>2` `p\<^sub>5 = add a p\<^sub>1 p\<^sub>3`
+        moreover from \<open>add a p\<^sub>1 p\<^sub>2 = opp p\<^sub>1\<close>
+          \<open>p\<^sub>4 = p\<^sub>5\<close> \<open>p\<^sub>4 = add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>5 = add a p\<^sub>1 p\<^sub>3\<close>
         have "add a p\<^sub>1 p\<^sub>3 = opp p\<^sub>1" by simp
-        with ab `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>3`
+        with ab \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>3\<close>
         have "p\<^sub>3 = add a (opp p\<^sub>1) (opp p\<^sub>1)" by (rule add_opp_double_opp)
         ultimately show ?case by simp
       qed
@@ -1306,23 +1306,23 @@ next
     then show ?case by (simp add: opp_opp add_0_l)
   next
     case (Tan p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 l)
-    note ab `on_curve a b p\<^sub>1`
-    moreover from `y\<^sub>1 \<noteq> 0` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
+    note ab \<open>on_curve a b p\<^sub>1\<close>
+    moreover from \<open>y\<^sub>1 \<noteq> 0\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
     have "p\<^sub>1 \<noteq> opp p\<^sub>1" by (simp add: opp_Point)
-    moreover from `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` `p\<^sub>2 \<noteq> opp p\<^sub>1`
+    moreover from \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>1\<close>
     have "add a p\<^sub>1 p\<^sub>1 \<noteq> opp p\<^sub>1" by simp
     ultimately have "add a (add a p\<^sub>1 p\<^sub>1) (opp p\<^sub>1) = p\<^sub>1"
       by (rule compat_add_triple)
-    with `p\<^sub>2 = add a p\<^sub>1 p\<^sub>1` show ?case by simp
+    with \<open>p\<^sub>2 = add a p\<^sub>1 p\<^sub>1\<close> show ?case by simp
   next
     case (Gen p\<^sub>1 x\<^sub>1 y\<^sub>1 p\<^sub>2 x\<^sub>2 y\<^sub>2 p\<^sub>3 x\<^sub>3 y\<^sub>3 l)
-    from `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2` `on_curve a b p\<^sub>2`
+    from \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close> \<open>on_curve a b p\<^sub>2\<close>
     have "p\<^sub>3 = add a p\<^sub>1 (opp (opp p\<^sub>2))" by (simp add: opp_opp)
     with
-      add_closed [OF `on_curve a b p\<^sub>1` `on_curve a b p\<^sub>2`,
-        folded `p\<^sub>3 = add a p\<^sub>1 p\<^sub>2`]
-      opp_closed [OF `on_curve a b p\<^sub>2`]
-      opp_closed [OF `on_curve a b p\<^sub>2`]
+      add_closed [OF \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<^sub>2\<close>,
+        folded \<open>p\<^sub>3 = add a p\<^sub>1 p\<^sub>2\<close>]
+      opp_closed [OF \<open>on_curve a b p\<^sub>2\<close>]
+      opp_closed [OF \<open>on_curve a b p\<^sub>2\<close>]
       opp_opp [of p\<^sub>2]
       Gen
     show ?case
@@ -1334,30 +1334,30 @@ next
       then show ?case by (simp add: add_0_r)
     next
       case (Opp p)
-      from `p = add a p\<^sub>1 (opp (opp p))`
+      from \<open>p = add a p\<^sub>1 (opp (opp p))\<close>
       have "add a p\<^sub>1 p = p" by (simp add: opp_opp)
-      with ab `on_curve a b p\<^sub>1` `on_curve a b p`
+      with ab \<open>on_curve a b p\<^sub>1\<close> \<open>on_curve a b p\<close>
       show ?case by (rule uniq_zero [symmetric])
     next
       case Tan
       then show ?case by simp
     next
       case (Gen p\<^sub>4 x\<^sub>4 y\<^sub>4 p\<^sub>5 x\<^sub>5 y\<^sub>5 p\<^sub>6 x\<^sub>6 y\<^sub>6 l')
-      from `on_curve a b p\<^sub>5` `opp p\<^sub>5 = p\<^sub>2`
-        `p\<^sub>2 = Point x\<^sub>2 y\<^sub>2` `p\<^sub>5 = Point x\<^sub>5 y\<^sub>5`
+      from \<open>on_curve a b p\<^sub>5\<close> \<open>opp p\<^sub>5 = p\<^sub>2\<close>
+        \<open>p\<^sub>2 = Point x\<^sub>2 y\<^sub>2\<close> \<open>p\<^sub>5 = Point x\<^sub>5 y\<^sub>5\<close>
       have "y\<^sub>5 = - y\<^sub>2" "x\<^sub>5 = x\<^sub>2"
         by (auto simp add: opp_Point on_curve_def)
-      from `p\<^sub>4 = Point x\<^sub>3 y\<^sub>3` `p\<^sub>4 = Point x\<^sub>4 y\<^sub>4`
+      from \<open>p\<^sub>4 = Point x\<^sub>3 y\<^sub>3\<close> \<open>p\<^sub>4 = Point x\<^sub>4 y\<^sub>4\<close>
       have "x\<^sub>4 = x\<^sub>3" "y\<^sub>4 = y\<^sub>3" by simp_all
-      from `x\<^sub>4 \<noteq> x\<^sub>5` show ?case
+      from \<open>x\<^sub>4 \<noteq> x\<^sub>5\<close> show ?case
         apply (simp add:
-          `y\<^sub>5 = - y\<^sub>2` `x\<^sub>5 = x\<^sub>2`
-          `x\<^sub>4 = x\<^sub>3` `y\<^sub>4 = y\<^sub>3`
-          `p\<^sub>6 = Point x\<^sub>6 y\<^sub>6` `p\<^sub>1 = Point x\<^sub>1 y\<^sub>1`
-          `x\<^sub>6 = l' ^ 2 - x\<^sub>4 - x\<^sub>5` `y\<^sub>6 = - y\<^sub>4 - l' * (x\<^sub>6 - x\<^sub>4)`
-          `l' = (y\<^sub>5 - y\<^sub>4) / (x\<^sub>5 - x\<^sub>4)`
-          `x\<^sub>3 = l ^ 2 - x\<^sub>1 - x\<^sub>2` `y\<^sub>3 = - y\<^sub>1 - l * (x\<^sub>3 - x\<^sub>1)`
-          `l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)`)
+          \<open>y\<^sub>5 = - y\<^sub>2\<close> \<open>x\<^sub>5 = x\<^sub>2\<close>
+          \<open>x\<^sub>4 = x\<^sub>3\<close> \<open>y\<^sub>4 = y\<^sub>3\<close>
+          \<open>p\<^sub>6 = Point x\<^sub>6 y\<^sub>6\<close> \<open>p\<^sub>1 = Point x\<^sub>1 y\<^sub>1\<close>
+          \<open>x\<^sub>6 = l' ^ 2 - x\<^sub>4 - x\<^sub>5\<close> \<open>y\<^sub>6 = - y\<^sub>4 - l' * (x\<^sub>6 - x\<^sub>4)\<close>
+          \<open>l' = (y\<^sub>5 - y\<^sub>4) / (x\<^sub>5 - x\<^sub>4)\<close>
+          \<open>x\<^sub>3 = l ^ 2 - x\<^sub>1 - x\<^sub>2\<close> \<open>y\<^sub>3 = - y\<^sub>1 - l * (x\<^sub>3 - x\<^sub>1)\<close>
+          \<open>l = (y\<^sub>2 - y\<^sub>1) / (x\<^sub>2 - x\<^sub>1)\<close>)
         apply (rule conjI)
         apply field
         apply (rule conjI)
@@ -1366,7 +1366,7 @@ next
         apply (ring (prems))
         apply (rule sym)
         apply field
-        apply (simp_all add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+        apply (simp_all add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
         apply field
         apply (rule conjI)
         apply (rule notI)
@@ -1374,7 +1374,7 @@ next
         apply (ring (prems))
         apply (rule sym)
         apply field
-        apply (simp_all add: `x\<^sub>1 \<noteq> x\<^sub>2` [symmetric])
+        apply (simp_all add: \<open>x\<^sub>1 \<noteq> x\<^sub>2\<close> [symmetric])
         done
     qed
   qed
@@ -1429,7 +1429,7 @@ next
     by (simp add: add_opp)
   also from p\<^sub>2 have "\<dots> = add a (add a (opp p\<^sub>2) p\<^sub>2) p\<^sub>3"
     by (simp add: add_comm [of a b] opp_closed)
-  finally show ?thesis using `p\<^sub>1 = opp p\<^sub>2` by simp
+  finally show ?thesis using \<open>p\<^sub>1 = opp p\<^sub>2\<close> by simp
 next
   assume "p\<^sub>2 = opp p\<^sub>3"
   from p\<^sub>3
@@ -1438,7 +1438,7 @@ next
   also from ab p\<^sub>1 p\<^sub>3
   have "\<dots> = add a (add a p\<^sub>1 (opp p\<^sub>3)) (opp (opp p\<^sub>3))"
     by (simp add: add_opp add_minus_id add_0_r opp_closed)
-  finally show ?thesis using p\<^sub>3 `p\<^sub>2 = opp p\<^sub>3`
+  finally show ?thesis using p\<^sub>3 \<open>p\<^sub>2 = opp p\<^sub>3\<close>
     by (simp add: opp_opp)
 next
   assume eq: "opp p\<^sub>1 = add a p\<^sub>2 p\<^sub>3"
@@ -1521,9 +1521,9 @@ next
             show ?thesis
             proof (cases "p\<^sub>1 = add a p\<^sub>2 p\<^sub>2")
               case True
-              from p\<^sub>1 p\<^sub>2 `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>2 \<noteq> opp p\<^sub>2`
-                `opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2` `opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2`
-                `p\<^sub>1 \<noteq> Infinity` `p\<^sub>2 \<noteq> Infinity`
+              from p\<^sub>1 p\<^sub>2 \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>2\<close>
+                \<open>opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2\<close> \<open>opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2\<close>
+                \<open>p\<^sub>1 \<noteq> Infinity\<close> \<open>p\<^sub>2 \<noteq> Infinity\<close>
               show ?thesis
                 apply (simp add: True)
                 apply (rule spec3_assoc)
@@ -1556,9 +1556,9 @@ next
                     by (simp add: add_comm [of a b] add_closed)
                 next
                   case False
-                  with p\<^sub>1 p\<^sub>2 `p\<^sub>1 \<noteq> Infinity` `p\<^sub>2 \<noteq> Infinity`
-                    `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>2 \<noteq> opp p\<^sub>2`
-                    `p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2` `p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2` `opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2`
+                  with p\<^sub>1 p\<^sub>2 \<open>p\<^sub>1 \<noteq> Infinity\<close> \<open>p\<^sub>2 \<noteq> Infinity\<close>
+                    \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>2\<close>
+                    \<open>p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2\<close> \<open>opp p\<^sub>2 \<noteq> add a p\<^sub>1 p\<^sub>2\<close>
                   show ?thesis
                     apply (rule_tac spec2_assoc)
                     apply (simp_all add: is_generic_def is_tangent_def)
@@ -1570,7 +1570,7 @@ next
                     apply (erule notE [of "p\<^sub>2 = opp p\<^sub>2"])
                     apply (rule uniq_opp)
                     apply assumption+
-                    apply (rule notE [OF `opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2`])
+                    apply (rule notE [OF \<open>opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>2\<close>])
                     apply (simp add: opp_opp)
                     done
                 qed
@@ -1686,9 +1686,9 @@ next
                     next
                       case False
                       with p\<^sub>1 p\<^sub>2 p\<^sub>3
-                        `p\<^sub>1 \<noteq> Infinity` `p\<^sub>2 \<noteq> Infinity` `p\<^sub>3 \<noteq> Infinity`
-                        `p\<^sub>1 \<noteq> p\<^sub>2` `p\<^sub>1 \<noteq> opp p\<^sub>2` `p\<^sub>2 \<noteq> p\<^sub>3` `p\<^sub>2 \<noteq> opp p\<^sub>3`
-                        `opp p\<^sub>3 \<noteq> add a p\<^sub>1 p\<^sub>2` `p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3`
+                        \<open>p\<^sub>1 \<noteq> Infinity\<close> \<open>p\<^sub>2 \<noteq> Infinity\<close> \<open>p\<^sub>3 \<noteq> Infinity\<close>
+                        \<open>p\<^sub>1 \<noteq> p\<^sub>2\<close> \<open>p\<^sub>1 \<noteq> opp p\<^sub>2\<close> \<open>p\<^sub>2 \<noteq> p\<^sub>3\<close> \<open>p\<^sub>2 \<noteq> opp p\<^sub>3\<close>
+                        \<open>opp p\<^sub>3 \<noteq> add a p\<^sub>1 p\<^sub>2\<close> \<open>p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3\<close>
                       show ?thesis
                         apply (rule_tac spec1_assoc [of a b])
                         apply (simp_all add: is_generic_def)
@@ -1700,7 +1700,7 @@ next
                         apply (erule notE [of "p\<^sub>2 = opp p\<^sub>3"])
                         apply (rule uniq_opp [of a])
                         apply (simp add: add_comm)
-                        apply (rule notE [OF `opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3`])
+                        apply (rule notE [OF \<open>opp p\<^sub>1 \<noteq> add a p\<^sub>2 p\<^sub>3\<close>])
                         apply (simp add: opp_opp)
                         done
                     qed
@@ -1906,7 +1906,7 @@ proof (induct p\<^sub>1 rule: prod_induct3)
           proof (cases "y\<^sub>2 * z\<^sub>1 - y\<^sub>1 * z\<^sub>2 = 0")
             case True
             then have y: "y\<^sub>2 * z\<^sub>1 = y\<^sub>1 * z\<^sub>2" by simp
-            from `z\<^sub>1 \<noteq> 0` `z\<^sub>2 \<noteq> 0` x
+            from \<open>z\<^sub>1 \<noteq> 0\<close> \<open>z\<^sub>2 \<noteq> 0\<close> x
             have "make_affine (x\<^sub>2, y\<^sub>2, z\<^sub>2) = make_affine (x\<^sub>1, y\<^sub>1, z\<^sub>1)"
               apply (simp add: make_affine_def)
               apply (rule conjI)
@@ -1915,12 +1915,12 @@ proof (induct p\<^sub>1 rule: prod_induct3)
               apply (field y)
               apply simp
               done
-            with True x `z\<^sub>1 \<noteq> 0` `z\<^sub>2 \<noteq> 0` p\<^sub>1' fields show ?thesis
+            with True x \<open>z\<^sub>1 \<noteq> 0\<close> \<open>z\<^sub>2 \<noteq> 0\<close> p\<^sub>1' fields show ?thesis
               by (simp add: padd_def pdouble_correct)
           next
             case False
             have "y\<^sub>2 ^ 2 * z\<^sub>1 ^ 3 * z\<^sub>2 = y\<^sub>1 ^ 2 * z\<^sub>1 * z\<^sub>2 ^ 3"
-              by (ring yz\<^sub>1 [OF `z\<^sub>1 \<noteq> 0`] yz\<^sub>2 [OF `z\<^sub>2 \<noteq> 0`] x')
+              by (ring yz\<^sub>1 [OF \<open>z\<^sub>1 \<noteq> 0\<close>] yz\<^sub>2 [OF \<open>z\<^sub>2 \<noteq> 0\<close>] x')
             then have "y\<^sub>2 ^ 2 * z\<^sub>1 ^ 3 * z\<^sub>2 / z\<^sub>1 / z\<^sub>2 =
               y\<^sub>1 ^ 2 * z\<^sub>1 * z\<^sub>2 ^ 3 / z\<^sub>1 / z\<^sub>2"
               by simp
@@ -1928,12 +1928,12 @@ proof (induct p\<^sub>1 rule: prod_induct3)
               apply (field (prems))
               apply (field)
               apply (rule TrueI)
-              apply (simp add: `z\<^sub>1 \<noteq> 0` `z\<^sub>2 \<noteq> 0`)
+              apply (simp add: \<open>z\<^sub>1 \<noteq> 0\<close> \<open>z\<^sub>2 \<noteq> 0\<close>)
               done
             with False
             have y\<^sub>2z\<^sub>1: "y\<^sub>2 * z\<^sub>1 = - (y\<^sub>1 * z\<^sub>2)"
               by (simp add: square_eq_iff)
-            from x False `z\<^sub>1 \<noteq> 0` `z\<^sub>2 \<noteq> 0` show ?thesis
+            from x False \<open>z\<^sub>1 \<noteq> 0\<close> \<open>z\<^sub>2 \<noteq> 0\<close> show ?thesis
               apply (simp add: padd_def add_def make_affine_def Let_def)
               apply (rule conjI)
               apply (rule impI)
@@ -1951,9 +1951,9 @@ proof (induct p\<^sub>1 rule: prod_induct3)
             apply (drule sym)
             apply (field (prems))
             apply ring
-            apply (simp add: `z\<^sub>1 \<noteq> 0` `z\<^sub>2 \<noteq> 0`)
+            apply (simp add: \<open>z\<^sub>1 \<noteq> 0\<close> \<open>z\<^sub>2 \<noteq> 0\<close>)
             done
-          with False `z\<^sub>1 \<noteq> 0` `z\<^sub>2 \<noteq> 0`
+          with False \<open>z\<^sub>1 \<noteq> 0\<close> \<open>z\<^sub>2 \<noteq> 0\<close>
           show ?thesis
             apply (auto simp add: padd_def add_def make_affine_def Let_def)
             apply field
@@ -2021,10 +2021,10 @@ proof (induct p rule: prod_induct3)
         "x' * z'' = x'' * z'"
         "y' * z'' = y'' * z'"
         by (simp_all add: proj_eq_def)
-      from `x * z' * z'' = x' * z * z''`
+      from \<open>x * z' * z'' = x' * z * z''\<close>
       have "(x * z'') * z' = (x'' * z) * z'"
         by (ring (prems) xy) (ring xy)
-      moreover from `y * z' * z'' = y' * z * z''`
+      moreover from \<open>y * z' * z'' = y' * z * z''\<close>
       have "(y * z'') * z' = (y'' * z) * z'"
         by (ring (prems) xy) (ring xy)
       ultimately show ?case using z
@@ -2064,20 +2064,20 @@ proof (induct p rule: prod_induct3)
         case False
         with H have "z' \<noteq> 0" "x / z = x' / z'" "y / z = y' / z'"
           by (simp_all add: make_affine_def split: if_split_asm)
-        from `x / z = x' / z'`
+        from \<open>x / z = x' / z'\<close>
         have "x * z' = x' * z"
           apply (field (prems))
           apply field
-          apply (simp_all add: `z \<noteq> 0` `z' \<noteq> 0`)
+          apply (simp_all add: \<open>z \<noteq> 0\<close> \<open>z' \<noteq> 0\<close>)
           done
-        moreover from `y / z = y' / z'`
+        moreover from \<open>y / z = y' / z'\<close>
         have "y * z' = y' * z"
           apply (field (prems))
           apply field
-          apply (simp_all add: `z \<noteq> 0` `z' \<noteq> 0`)
+          apply (simp_all add: \<open>z \<noteq> 0\<close> \<open>z' \<noteq> 0\<close>)
           done
         ultimately show ?thesis
-          by (simp add: proj_eq_def `z \<noteq> 0` `z' \<noteq> 0`)
+          by (simp add: proj_eq_def \<open>z \<noteq> 0\<close> \<open>z' \<noteq> 0\<close>)
       qed
     qed
   qed

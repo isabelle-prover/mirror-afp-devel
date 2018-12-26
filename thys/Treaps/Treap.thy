@@ -71,15 +71,15 @@ proof(induction "set_tree t" arbitrary: t rule: treap_of.induct)
     have r: "set_tree r = {p \<in> set_tree t. fst p > fst a}"
       using "1.prems"(1) by(auto simp add: treap_def t ball_Un tree.set_map)
     have "l = treap_of ?L"
-      using "1.hyps"(1)[OF False `a = ?m` l r `treap l`]
-        l `a = ?m` "1.prems"(2)
+      using "1.hyps"(1)[OF False \<open>a = ?m\<close> l r \<open>treap l\<close>]
+        l \<open>a = ?m\<close> "1.prems"(2)
       by (fastforce simp add: inj_on_def)
     have "r = treap_of ?R"
-      using "1.hyps"(2)[OF False `a = ?m` l r `treap r`]
-        r `a = ?m` "1.prems"(2)
+      using "1.hyps"(2)[OF False \<open>a = ?m\<close> l r \<open>treap r\<close>]
+        r \<open>a = ?m\<close> "1.prems"(2)
       by (fastforce simp add: inj_on_def)
     have "t = Node (treap_of ?L) ?m (treap_of ?R)"
-      using `a = ?m` `l = treap_of ?L` `r = treap_of ?R` by(subst t) simp
+      using \<open>a = ?m\<close> \<open>l = treap_of ?L\<close> \<open>r = treap_of ?R\<close> by(subst t) simp
     thus ?thesis using False
       by (subst treap_of.simps) simp
   qed
@@ -156,7 +156,7 @@ lemma treap_rotate1:
   ins: "ins k p l = Node l2 (k2,p2) r2" and treap_ins: "treap (ins k p l)"
   and treap: "treap \<langle>l, (k1, p1), r\<rangle>"
   shows "treap (Node l2 (k2,p2) (Node r2 (k1,p1) r))"
-proof(rule treap_NodeI[OF `treap l2` treap_NodeI[OF `treap r2` `treap r`]])
+proof(rule treap_NodeI[OF \<open>treap l2\<close> treap_NodeI[OF \<open>treap r2\<close> \<open>treap r\<close>]])
   from keys_ins[of k p l] have 1: "keys r2 \<subseteq> {k} \<union> keys l" by(auto simp: ins)
   from treap have 2: "\<forall>k'\<in>keys l. k' < k1" by (simp add: treap_def)
   show "\<forall>k'\<in>keys r2. k' < k1" using 1 2 \<open>k < k1\<close> by blast
@@ -177,7 +177,7 @@ next
           using prios_ins_special[OF ins] \<open>p' \<in> prios r2\<close> 2 by auto
       next
         assume "p2 \<in> prios l"
-        thus "p1 \<le> p'" using 2 `\<not> p1 \<le> p2` by blast
+        thus "p1 \<le> p'" using 2 \<open>\<not> p1 \<le> p2\<close> by blast
       qed
     next
       assume "p' \<in> prios l"
@@ -209,7 +209,7 @@ lemma treap_rotate2:
   ins: "ins k p r = Node l2 (k2,p2) r2" and treap_ins: "treap (ins k p r)"
   and treap: "treap \<langle>l, (k1, p1), r\<rangle>"
   shows "treap (Node (Node l (k1,p1) l2) (k2,p2) r2)"
-proof(rule treap_NodeI[OF treap_NodeI[OF `treap l` `treap l2`] `treap r2`])
+proof(rule treap_NodeI[OF treap_NodeI[OF \<open>treap l\<close> \<open>treap l2\<close>] \<open>treap r2\<close>])
   from keys_ins[of k p r] have 1: "keys l2 \<subseteq> {k} \<union> keys r" by(auto simp: ins)
   from treap have 2: "\<forall>k'\<in>keys r. k1 < k'" by (simp add: treap_def)
   show "\<forall>k'\<in>keys l2. k1 < k'" using 1 2 \<open>k1 < k\<close> by blast
@@ -230,7 +230,7 @@ next
           using prios_ins_special[OF ins] \<open>p' \<in> prios l2\<close> 2 by auto
       next
         assume "p2 \<in> prios r"
-        thus "p1 \<le> p'" using 2 `\<not> p1 \<le> p2` by blast
+        thus "p1 \<le> p'" using 2 \<open>\<not> p1 \<le> p2\<close> by blast
       qed
     next
       assume "p' \<in> prios r"
@@ -267,22 +267,22 @@ next
     assume "k < k1"
     obtain l2 k2 p2 r2 where ins: "ins k p l = Node l2 (k2,p2) r2"
       by (metis ins_neq_Leaf neq_Leaf_iff prod.collapse)
-    note treap_ins = "2.IH"(1)[OF `k < k1` `treap l`]
+    note treap_ins = "2.IH"(1)[OF \<open>k < k1\<close> \<open>treap l\<close>]
     hence "treap l2" "treap r2" using ins by (auto simp add: treap_def)
     show ?thesis
     proof cases
       assume "p1 \<le> p2"
       have "treap (Node (Node l2 (k2,p2) r2) (k1,p1) r)"
-        apply(rule treap_NodeI[OF treap_ins[unfolded ins] `treap r`])
-        using ins treap_ins `k < k1` "2.prems" keys_ins[of k p l]
+        apply(rule treap_NodeI[OF treap_ins[unfolded ins] \<open>treap r\<close>])
+        using ins treap_ins \<open>k < k1\<close> "2.prems" keys_ins[of k p l]
         by (auto simp add: treap_def ball_Un order_trans[OF \<open>p1 \<le> p2\<close>])
-      thus ?thesis using `k < k1` ins `p1 \<le> p2` by simp
+      thus ?thesis using \<open>k < k1\<close> ins \<open>p1 \<le> p2\<close> by simp
     next
       assume "\<not> p1 \<le> p2"
       have "treap (Node l2 (k2,p2) (Node r2 (k1,p1) r))"
         by(rule treap_rotate1[OF \<open>treap l2\<close> \<open>treap r2\<close>  \<open>treap r\<close> \<open>\<not> p1 \<le> p2\<close>
             \<open>k < k1\<close> ins treap_ins "2.prems"])
-      thus ?thesis using `k < k1` ins `\<not> p1 \<le> p2` by simp
+      thus ?thesis using \<open>k < k1\<close> ins \<open>\<not> p1 \<le> p2\<close> by simp
     qed
   next
     assume "\<not> k < k1"
@@ -291,7 +291,7 @@ next
     assume "k > k1"
     obtain l2 k2 p2 r2 where ins: "ins k p r = Node l2 (k2,p2) r2"
       by (metis ins_neq_Leaf neq_Leaf_iff prod.collapse)
-    note treap_ins = "2.IH"(2)[OF `\<not> k < k1` `k > k1` `treap r`]
+    note treap_ins = "2.IH"(2)[OF \<open>\<not> k < k1\<close> \<open>k > k1\<close> \<open>treap r\<close>]
     hence "treap l2" "treap r2" using ins by (auto simp add: treap_def)
     have fst: "\<forall>k' \<in> set_tree (map_tree fst (ins k p r)).
                  k' = k \<or> k' \<in> set_tree (map_tree fst r)"
@@ -300,20 +300,20 @@ next
     proof cases
       assume "p1 \<le> p2"
       have "treap (Node l (k1,p1) (ins k p r))"
-        apply(rule treap_NodeI[OF `treap l` treap_ins])
-        using ins treap_ins `k > k1` "2.prems" keys_ins[of k p r]
+        apply(rule treap_NodeI[OF \<open>treap l\<close> treap_ins])
+        using ins treap_ins \<open>k > k1\<close> "2.prems" keys_ins[of k p r]
         by (auto simp: treap_def ball_Un order_trans[OF \<open>p1 \<le> p2\<close>])
-      thus ?thesis using `\<not> k < k1` `k > k1` ins `p1 \<le> p2` by simp
+      thus ?thesis using \<open>\<not> k < k1\<close> \<open>k > k1\<close> ins \<open>p1 \<le> p2\<close> by simp
     next
       assume "\<not> p1 \<le> p2"
       have "treap (Node (Node l (k1,p1) l2) (k2,p2) r2)"
-        by(rule treap_rotate2[OF `treap l` `treap l2` `treap r2` \<open>\<not> p1 \<le> p2\<close>
-             `k1 < k` ins treap_ins "2.prems"])
-      thus ?thesis using `\<not> k < k1`  `k > k1` ins `\<not> p1 \<le> p2` by simp
+        by(rule treap_rotate2[OF \<open>treap l\<close> \<open>treap l2\<close> \<open>treap r2\<close> \<open>\<not> p1 \<le> p2\<close>
+             \<open>k1 < k\<close> ins treap_ins "2.prems"])
+      thus ?thesis using \<open>\<not> k < k1\<close>  \<open>k > k1\<close> ins \<open>\<not> p1 \<le> p2\<close> by simp
     qed
     next
       assume "\<not> k > k1"
-      hence "k = k1" using `\<not> k < k1` by auto
+      hence "k = k1" using \<open>\<not> k < k1\<close> by auto
       thus ?thesis using "2.prems" by(simp)
     qed
   qed  
@@ -389,13 +389,13 @@ proof(induction "A" rule: treap_of.induct)
             \<subseteq> {p \<in> A. fst p < fst (arg_min_on snd A)}"
         by (rule IH) (use not_inf_or_empty in auto)
       then show "set_tree l \<subseteq> ?L"
-        using `l = treap_of ?L` by auto
+        using \<open>l = treap_of ?L\<close> by auto
     next
       have "set_tree (treap_of {p \<in> A. fst (arg_min_on snd A) < fst p})
             \<subseteq> {p \<in> A. fst (arg_min_on snd A) < fst p}"
         by (rule IH) (use not_inf_or_empty in auto)
       then show "set_tree r \<subseteq> ?R"
-        using `r = treap_of ?R` by auto
+        using \<open>r = treap_of ?R\<close> by auto
     qed
     moreover have "a = ?m"
       using t by (auto elim!: treap_of.elims simp add: Let_def split: if_splits)

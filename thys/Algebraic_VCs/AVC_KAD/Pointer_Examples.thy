@@ -4,17 +4,17 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection{* KAD Component for Pointer Programs *}
+subsubsection\<open>KAD Component for Pointer Programs\<close>
 
 theory Pointer_Examples
   imports VC_KAD_Examples2 "HOL-Hoare.Heap"
 
 begin
 
-text {* This component supports the verification of simple while programs
-with pointers in a partial correctness setting. *}
+text \<open>This component supports the verification of simple while programs
+with pointers in a partial correctness setting.\<close>
 
-text{* All we do here is integrating Nipkow's implementation of pointers and heaps. *}
+text\<open>All we do here is integrating Nipkow's implementation of pointers and heaps.\<close>
 
 type_synonym 'a state = "string  \<Rightarrow> ('a ref + ('a \<Rightarrow> 'a ref))"
 

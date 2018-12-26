@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Temporal logic operators on natural intervals *}
+section \<open>Temporal logic operators on natural intervals\<close>
 
 theory IL_TemporalOperators
 imports IL_IntervalOperators
 begin
 
-text {* Bool : some additional properties  *}
+text \<open>Bool : some additional properties\<close>
 
 instantiation bool :: "{ord, zero, one, plus, times, order}"
 begin
@@ -48,16 +48,16 @@ apply blast+
 done
 
 
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 
 lemma UNIV_nat: "\<nat> = (UNIV::nat set)"
 by (simp add: Nats_def)
 
-text {* Universal temporal operator: Always/Globally *}
+text \<open>Universal temporal operator: Always/Globally\<close>
 definition iAll :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Always\<close>
   where "iAll I P \<equiv> \<forall>t\<in>I. P t"
 
-text {* Existential temporal operator: Eventually/Finally *}
+text \<open>Existential temporal operator: Eventually/Finally\<close>
 definition iEx :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Eventually\<close>
   where "iEx I P \<equiv> \<exists>t\<in>I. P t"
 
@@ -69,11 +69,11 @@ translations
   "\<box> t I. P" \<rightleftharpoons> "CONST iAll I (\<lambda>t. P)"
   "\<diamond> t I. P" \<rightleftharpoons> "CONST iEx I (\<lambda>t. P)"
 
-text {* Future temporal operator: Next *}
+text \<open>Future temporal operator: Next\<close>
 definition iNext :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Next\<close>
   where "iNext t0 I P \<equiv> P (inext t0 I)"
 
-text {* Past temporal operator: Last/Previous *}
+text \<open>Past temporal operator: Last/Previous\<close>
 definition iLast :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Last\<close>
   where "iLast t0 I P \<equiv> P (iprev t0 I)"
 
@@ -87,9 +87,9 @@ translations
 lemma "\<circle> t 10 [0\<dots>]. (t + 10 > 10)"
 by (simp add: iNext_def iT_inext_if)
 
-text {* The following versions of Next and Last operator differ in the cases
+text \<open>The following versions of Next and Last operator differ in the cases
   where no next/previous element exists or specified time point is not in interval:
-  the weak versions return @{term True} and the strong versions return @{term False}. *}
+  the weak versions return @{term True} and the strong versions return @{term False}.\<close>
 
 definition iNextWeak :: "Time \<Rightarrow> iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Weak Next\<close>
   where "iNextWeak t0 I P  \<equiv> (\<box> t {inext t0 I} \<down>> t0. P t)"
@@ -115,7 +115,7 @@ translations
   "\<ominus>\<^sub>S t t0 I. P" \<rightleftharpoons> "CONST iLastStrong t0 I (\<lambda>t. P)"
 
 
-text {* Some examples for Next and Last operator *}
+text \<open>Some examples for Next and Last operator\<close>
 
 lemma "\<circle> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 80)"
 by (simp add: iNext_def iIN_inext)
@@ -124,11 +124,11 @@ lemma "\<ominus> t 5 [0\<dots>,10]. ([0::int,10,20,30,40,50,60,70,80,90] ! t < 8
 by (simp add: iLast_def iIN_iprev)
 
 
-text {* Temporal Until operator *}
+text \<open>Temporal Until operator\<close>
 definition iUntil :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Until\<close>
   where "iUntil I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>< t). P t')"
 
-text {* Temporal Since operator (past operator corresponding to Until) *}
+text \<open>Temporal Since operator (past operator corresponding to Until)\<close>
 definition iSince :: "iT \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> (Time \<Rightarrow> bool) \<Rightarrow> bool"      \<comment> \<open>Since\<close>
   where "iSince I P Q \<equiv> \<diamond> t I. Q t \<and> (\<box> t' (I \<down>> t). P t')"
 
@@ -185,12 +185,12 @@ lemmas iTL_defs =
   iTL_Next_defs
 (* Like in Set.thy *)
 (* To avoid eta-contraction of body: *)
-print_translation {*
+print_translation \<open>
  [Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iAll} @{syntax_const "_iAll"},
   Syntax_Trans.preserve_binder_abs2_tr' @{const_syntax iEx} @{syntax_const "_iEx"}]
-*}
+\<close>
 
-print_translation {*
+print_translation \<open>
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
     let
@@ -201,9 +201,9 @@ in
  [(@{const_syntax "iUntil"}, K (btr' "_iUntil")),
   (@{const_syntax "iSince"}, K (btr' "_iSince"))]
 end
-*}
+\<close>
 
-print_translation {*
+print_translation \<open>
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
     let
@@ -214,9 +214,9 @@ in
  [(@{const_syntax "iWeakUntil"}, K (btr' "_iWeakUntil")),
   (@{const_syntax "iWeakSince"}, K (btr' "_iWeakSince"))]
 end
-*}
+\<close>
 
-print_translation {*
+print_translation \<open>
 let
   fun btr' syn [i,Abs abs,Abs abs'] =
     let
@@ -227,12 +227,12 @@ in
  [(@{const_syntax "iRelease"}, K (btr' "_iRelease")),
   (@{const_syntax "iTrigger"}, K (btr' "_iTrigger"))]
 end
-*}
+\<close>
 
 
-subsection {* Basic lemmata for temporal operators *}
+subsection \<open>Basic lemmata for temporal operators\<close>
 
-subsubsection {* Intro/elim rules *}
+subsubsection \<open>Intro/elim rules\<close>
 
 lemma 
   iexI[intro]:      "\<lbrakk> P t; t \<in> I \<rbrakk> \<Longrightarrow> \<diamond> t I. P t" and
@@ -270,7 +270,7 @@ lemma
 by (unfold iSince_def, blast)
 
 
-subsubsection {* Rewrite rules for trivial simplification *}
+subsubsection \<open>Rewrite rules for trivial simplification\<close>
 
 lemma iall_triv[simp]: "(\<box> t I. P) = ((\<exists>t. t \<in> I) \<longrightarrow> P)"
 by (simp add: iAll_def)
@@ -660,7 +660,7 @@ lemma
 by (simp_all add: iTL_defs ex_in_conv)
 
 
-subsubsection {* Empty sets and singletons *}
+subsubsection \<open>Empty sets and singletons\<close>
 
 lemma iAll_empty[simp]: "\<box> t {}. P t" by blast
 lemma iEx_empty[simp]: "\<not> (\<diamond> t {}. P t)" by blast
@@ -707,7 +707,7 @@ lemmas iTL_singleton =
   iRelease_singleton iTrigger_singleton
 
 
-subsubsection {* Conversions between temporal operators *}
+subsubsection \<open>Conversions between temporal operators\<close>
 
 lemma iAll_iEx_conv: "(\<box> t I. P t) = (\<not> (\<diamond> t I. \<not> P t))" by blast
 lemma iEx_iAll_conv: "(\<diamond> t I. P t) = (\<not> (\<box> t I. \<not> P t))" by blast
@@ -781,11 +781,11 @@ done
 lemma iUntil_not_iRelease_conv: "(P t'. t' \<U> t I. Q t) = (\<not> (\<not> P t'. t' \<R> t I. \<not> Q t))"
 by (simp add: iRelease_not_iUntil_conv)
 
-text {* The Trigger operator \isasymT is a past operator,
+text \<open>The Trigger operator \isasymT is a past operator,
   so that it is used for time intervals,
   that are bounded by a current time point, and thus are finite.
   For an infinite interval
-  the stated relation to the Since operator \isasymS would not be fulfilled. *}
+  the stated relation to the Since operator \isasymS would not be fulfilled.\<close>
 lemma iTrigger_not_iSince_conv: "finite I \<Longrightarrow> (P t'. t' \<T> t I. Q t) = (\<not> (\<not> P t'. t' \<S> t I. \<not> Q t))"
 apply (unfold iTrigger_def iSince_def)
 apply (case_tac "\<box> t I. Q t", blast)
@@ -889,7 +889,7 @@ apply (simp add: conj_disj_distribR conj_disj_absorb)
 done
 
 
-text {* Negation and temporal operators *}
+text \<open>Negation and temporal operators\<close>
  
 lemma 
   not_iNext[simp]: "(\<not> (\<circle> t t0 I. P t)) = (\<circle> t t0 I. \<not> P t)" and
@@ -928,7 +928,7 @@ lemma not_iTrigger_iSince_conv: "
 by (simp add: iSince_not_iTrigger_conv)
 
 
-subsubsection {* Some implication results *}
+subsubsection \<open>Some implication results\<close>
 
 lemma all_imp_iall: "\<forall>x. P x \<Longrightarrow> \<box> t I. P t" by blast
 lemma bex_imp_lex:  "\<diamond> t I. P t \<Longrightarrow> \<exists>x. P x" by blast
@@ -997,7 +997,7 @@ apply (blast intro: Max_in)
 done
 
 
-subsubsection {* Congruence rules for temporal operators' predicates *}
+subsubsection \<open>Congruence rules for temporal operators' predicates\<close>
 
 lemma iAll_cong: "\<box> t I. f t = g t \<Longrightarrow> (\<box> t I. P (f t) t) = (\<box> t I. P (g t) t)"
 unfolding iTL_defs by simp
@@ -1063,7 +1063,7 @@ lemma iEx_subst: "
 by blast
 
 
-subsubsection {* Temporal operators with set unions/intersections and subsets *}
+subsubsection \<open>Temporal operators with set unions/intersections and subsets\<close>
 
 lemma iAll_subset: "\<lbrakk> A \<subseteq> B; \<box> t B. P t \<rbrakk> \<Longrightarrow> \<box> t A. P t"
 by (rule iall_subset_imp_iall)
@@ -1122,7 +1122,7 @@ lemma
 by blast+
 
 
-subsection {* Further results for temporal operators *}
+subsection \<open>Further results for temporal operators\<close>
 
 lemma Collect_minI_iEx: "\<diamond> t I. P t \<Longrightarrow> \<diamond> t I. P t \<and> (\<box> t' (I \<down>< t). \<not> P t')"
 by (unfold iAll_def iEx_def, rule Collect_minI_ex_cut)
@@ -1304,14 +1304,14 @@ lemma iprev_nth_iLast_Suc: "(\<ominus> t (I \<leftarrow> n) I. P t) = P (I \<lef
 by (simp add: iLast_def)
 
 
-subsection {* Temporal operators and arithmetic interval operators *}
+subsection \<open>Temporal operators and arithmetic interval operators\<close>
 
-text {* 
+text \<open>
   Shifting intervals through addition and subtraction of constants. 
   Mirroring intervals through subtraction of intervals from constants. 
-  Expanding and compressing intervals through multiplication and division by constants. *}
+  Expanding and compressing intervals through multiplication and division by constants.\<close>
 
-text {* Always operator *}
+text \<open>Always operator\<close>
 lemma iT_Plus_iAll_conv: "(\<box> t I \<oplus> k. P t) = (\<box> t I. P (t + k))"
 apply (unfold iAll_def Ball_def)
 apply (rule iffI)
@@ -1380,7 +1380,7 @@ lemmas iT_arith_iAll_conv =
   iT_Minus_iAll_conv
   iT_Div_iAll_conv
 
-text {* Eventually operator *}
+text \<open>Eventually operator\<close>
 lemma 
   iT_Plus_iEx_conv: "(\<diamond> t I \<oplus> k. P t) = (\<diamond> t I. P (t + k))" and
   iT_Mult_iEx_conv: "(\<diamond> t I \<otimes> k. P t) = (\<diamond> t I. P (t * k))" and
@@ -1390,7 +1390,7 @@ lemma
 by (simp_all only: iEx_iAll_conv iT_arith_iAll_conv)
 
 
-text {* Until and Since operators *}
+text \<open>Until and Since operators\<close>
 
 lemma iT_Plus_iUntil_conv: "(P t1. t1 \<U> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<U> t2 I. Q (t2 + k))"
 by (simp add: iUntil_def iT_Plus_iAll_conv iT_Plus_iEx_conv iT_Plus_cut_less2)
@@ -1461,7 +1461,7 @@ apply simp+
 done
 
 
-text {* Until and Since operators can be converted into each other through substraction of intervals from constants *}
+text \<open>Until and Since operators can be converted into each other through substraction of intervals from constants\<close>
 
 lemma iUntil_iSince_conv: "
   \<lbrakk> finite I; Max I \<le> k \<rbrakk> \<Longrightarrow> 
@@ -1605,7 +1605,7 @@ apply (rule_tac t=t in iexI)
 done
 
 
-text {* Weak Until and Weak Since operators *}
+text \<open>Weak Until and Weak Since operators\<close>
 
 lemma iT_Plus_iWeakUntil_conv: "(P t1. t1 \<W> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<W> t2 I. Q (t2 + k))"
 by (simp add: iWeakUntil_iUntil_conv iT_Plus_iUntil_conv iT_Plus_iAll_conv)
@@ -1641,7 +1641,7 @@ lemma iT_Div_iWeakSince_conv: "
 by (simp add: iWeakSince_iSince_conv iT_Div_iSince_conv iT_Div_iAll_conv)
 
 
-text {* Release and Trigger operators *}
+text \<open>Release and Trigger operators\<close>
 
 lemma iT_Plus_iRelease_conv: "(P t1. t1 \<R> t2 (I \<oplus> k). Q t2) = (P (t1 + k). t1 \<R> t2 I. Q (t2 + k))"
 by (simp add: iRelease_iWeakUntil_conv iT_Plus_iWeakUntil_conv)

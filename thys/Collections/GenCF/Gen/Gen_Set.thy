@@ -1,4 +1,4 @@
-section {* \isaheader{Generic Set Algorithms} *}
+section \<open>\isaheader{Generic Set Algorithms}\<close>
 theory Gen_Set
 imports "../Intf/Intf_Set" "../../Iterator/Iterator"
 begin
@@ -400,7 +400,7 @@ context begin interpretation autoref_syn .
       \<in> \<langle>Rk\<rangle>nres_rel"
       unfolding gen_pick_def
       apply (parametricity add: the_paramR)
-      using `?fld = Some x`
+      using \<open>?fld = Some x\<close>
       by simp
     ultimately show ?thesis
       unfolding autoref_tag_defs
@@ -467,13 +467,13 @@ end
       have "(foldli (it2 (f x)) (\<lambda>_. True) (\<lambda>y. insX (x, y)) s0, 
         s0' \<union> {x'}\<times>f' x') \<in> \<langle>\<langle>Rk,Rl\<rangle>prod_rel\<rangle>Rs3"
         unfolding FXL 
-        using IT2L `(s0, s0') \<in> \<langle>\<langle>Rk, Rl\<rangle>prod_rel\<rangle>Rs3`
+        using IT2L \<open>(s0, s0') \<in> \<langle>\<langle>Rk, Rl\<rangle>prod_rel\<rangle>Rs3\<close>
         apply (induct  arbitrary: s0 s0' rule: list_rel_induct)
         apply simp
         apply simp
         apply (subst Un_insert_left[symmetric])
         apply (rprems)
-        apply (parametricity add: INS `(x,x')\<in>Rk`)
+        apply (parametricity add: INS \<open>(x,x')\<in>Rk\<close>)
         done
 
       show ?case

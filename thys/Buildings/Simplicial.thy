@@ -1,26 +1,26 @@
-section {* Simplicial complexes *}
+section \<open>Simplicial complexes\<close>
 
-text {*
+text \<open>
   In this section we develop the basic theory of abstract simplicial complexes as a collection of
   finite sets, where the power set of each member set is contained in the collection. Note that in
   this development we allow the empty simplex, since allowing it or not seemed of no logical
   consequence, but of some small practical consequence. 
-*}
+\<close>
 
 theory Simplicial
 imports Prelim
 
 begin
 
-subsection {* Geometric notions *}
+subsection \<open>Geometric notions\<close>
 
-text {*
+text \<open>
   The geometric notions attached to a simplicial complex of main interest to us are those of facets
   (subsets of codimension one), adjacency (sharing a facet in common), and chains of adjacent
   simplices.
-*}
+\<close>
 
-subsubsection {* Facets *}
+subsubsection \<open>Facets\<close>
 
 definition facetrel :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<lhd>" 60)
   where "y \<lhd> x \<equiv> \<exists>v. v \<notin> y \<and> x = insert v y"
@@ -75,7 +75,7 @@ proof
 qed
 
 
-subsubsection {* Adjacency *}
+subsubsection \<open>Adjacency\<close>
 
 definition adjacent :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool" (infix "\<sim>" 70)
   where "x \<sim> y \<equiv> \<exists>z. z\<lhd>x \<and> z\<lhd>y"
@@ -151,7 +151,7 @@ lemma adjacent_to_adjacent_int:
   "\<lbrakk> C \<sim> D; f`C \<sim> f`D; f`C \<noteq> f`D \<rbrakk> \<Longrightarrow> f`(C\<inter>D) = f`C \<inter> f`D"
   using adjacent_to_adjacent_int_subset by fast
 
-subsubsection {* Chains of adjacent sets *}
+subsubsection \<open>Chains of adjacent sets\<close>
 
 abbreviation "adjacentchain  \<equiv> binrelchain adjacent"
 abbreviation "padjacentchain \<equiv> proper_binrelchain adjacent"
@@ -163,7 +163,7 @@ lemma adjacentchain_card: "adjacentchain (x#xs@[y]) \<Longrightarrow> card x = c
   using adjacent_card by (induct xs arbitrary: x) auto
 
 
-subsection {* Locale and basic facts *}
+subsection \<open>Locale and basic facts\<close>
 
 locale SimplicialComplex =
   fixes   X :: "'a set set"
@@ -237,18 +237,18 @@ qed auto
 
 end (* context SimplicialComplex *)
 
-subsection {* Chains of maximal simplices *}
+subsection \<open>Chains of maximal simplices\<close>
 
-text {*
+text \<open>
   Chains of maximal simplices (with respect to adjacency) will allow us to walk through chamber
   complexes. But there is much we can say about them in simplicial complexes. We will call a chain
-  of maximal simplices proper (using the prefix @{text p} as a naming convention to denote proper)
+  of maximal simplices proper (using the prefix \<open>p\<close> as a naming convention to denote proper)
   if no maximal simplex appears more than once in the chain. (Some sources elect to call improper
   chains prechains, and reserve the name chain to describe a proper chain. And usually a slightly
   weaker notion of proper is used, requiring only that no maximal simplex appear twice in succession. But
   it essentially makes no difference, and we found it easier to use @{const distinct} rather than
   @{term "binrelchain not_equal"}.)
-*}
+\<close>
 
 context SimplicialComplex
 begin
@@ -503,14 +503,14 @@ lemma maxsimpchain_in_subcomplex:
 
 end (* context SimplicialComplex *)
 
-subsection {* Isomorphisms of simplicial complexes *}
+subsection \<open>Isomorphisms of simplicial complexes\<close>
 
-text {*
+text \<open>
   Here we develop the concept of isomorphism of simplicial complexes. Note that we have not
   bothered to first develop the concept of morphism of simplicial complexes, since every function
   on the vertex set of a simplicial complex can be considered a morphism of complexes (see lemma
-  @{text "map_is_simplicial_morph"} above).
-*}
+  \<open>map_is_simplicial_morph\<close> above).
+\<close>
 
 locale SimplicialComplexIsomorphism = SimplicialComplex X
   for X :: "'a set set"
@@ -601,12 +601,12 @@ qed
 
 end (* context SimplicialComplexIsomorphism *)
 
-subsection {* The complex associated to a poset *}
+subsection \<open>The complex associated to a poset\<close>
 
-text {*
+text \<open>
   A simplicial complex is naturally a poset under the subset relation. The following develops the
   reverse direction: constructing a simplicial complex from a suitable poset.
-*}
+\<close>
 
 context ordering
 begin
@@ -657,12 +657,12 @@ qed
 
 end (* context ordering *)
 
-text {*
+text \<open>
   When a poset affords a simplicial complex, there is a natural morphism of posets from the
   source poset into the poset of sets in the complex, as above. However, some further assumptions
   are necessary to ensure that this morphism is an isomorphism. These conditions are collected in
   the following locale.
-*}
+\<close>
 
 locale ComplexLikePoset = ordering less_eq less
   for less_eq  :: "'a\<Rightarrow>'a\<Rightarrow>bool" (infix "\<^bold>\<le>"  50)

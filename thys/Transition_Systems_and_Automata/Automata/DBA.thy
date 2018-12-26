@@ -1,4 +1,4 @@
-section {* Deterministic Büchi Automata *}
+section \<open>Deterministic Büchi Automata\<close>
 
 theory DBA
 imports

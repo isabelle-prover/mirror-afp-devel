@@ -1162,7 +1162,7 @@ apply (rule contrapos_pp, simp+)
   apply (erule bexE, simp add:segment_def)
 done
 
-section {* @{text "Ordered_set2"}. Lemmas to prove Zorn's lemma. *}
+section \<open>\<open>Ordered_set2\<close>. Lemmas to prove Zorn's lemma.\<close>
  
 definition
   adjunct_ord ::"[_ , 'a] \<Rightarrow> _" where

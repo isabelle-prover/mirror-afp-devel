@@ -10,7 +10,7 @@ different owners.
 *)
 
 section\<open>Views on Traffic\<close>
-text{* 
+text\<open>
 In this section, we define a notion of locality for each car. These
 local parts of a road are called \emph{views} and define the part of 
 the model currently under consideration by a car. In particular, a 
@@ -20,7 +20,7 @@ view consists of
 \item the \emph{lanes}, a discrete interval, denoting which lanes are perceived,
 \item the \emph{owner}, the car associated with this view.
 \end{itemize} 
- *}
+\<close>
 
 theory Views
   imports NatInt RealInt Cars
@@ -36,10 +36,10 @@ record view =
   lan ::lanes  
   own ::cars
 
-text {* 
+text \<open>
 The orders on discrete and continuous intervals induce an order on views. 
 For two views \(v\) and \(v^\prime\) with \(v \leq v^\prime\), we call \(v\)
-a \emph{subview} of \(v^\prime\).*}
+a \emph{subview} of \(v^\prime\).\<close>
 
 instantiation  view_ext:: (order) order
 begin  
@@ -73,8 +73,8 @@ notation nat_int.maximum ("maximum")
 notation nat_int.minimum ("minimum")
 notation nat_int.consec ("consec")
 
-text{* We lift the chopping relations from discrete and continuous intervals
-to views, and introduce new notation for these relations.*} 
+text\<open>We lift the chopping relations from discrete and continuous intervals
+to views, and introduce new notation for these relations.\<close> 
 
 definition       hchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow> bool" ("_=_\<parallel>_")
   where "(v=u\<parallel>w) == real_int.R_Chop(ext v)(ext u)(ext w) \<and> 
@@ -93,8 +93,8 @@ definition   vchop :: "view \<Rightarrow> view \<Rightarrow>  view \<Rightarrow>
                      more v = more w \<and>
                      more v = more u "
 
-text{* We can also switch the perspective of a view to the car \(c\). That is,
-we substitute \(c\) for the original owner of the view.  *}
+text\<open>We can also switch the perspective of a view to the car \(c\). That is,
+we substitute \(c\) for the original owner of the view.\<close>
 
 definition switch :: "view \<Rightarrow> cars \<Rightarrow> view \<Rightarrow> bool" ("_ = _ > _")
   where   "  (v=c>w) == ext v = ext w \<and> 
@@ -103,12 +103,12 @@ definition switch :: "view \<Rightarrow> cars \<Rightarrow> view \<Rightarrow> b
                         more v = more w"
 
 
-text{* Most of the lemmas in this theory are direct transfers of the corresponding
+text\<open>Most of the lemmas in this theory are direct transfers of the corresponding
 lemmas on discrete and continuous intervals, which implies rather simple proofs.
 The only exception is 
 the connection between subviews and the chopping operations. This proof is rather lengthy,
 since we need to distinguish several cases, and within each case, we need to
- explicitly construct six different views for the chopping relations.*}
+ explicitly construct six different views for the chopping relations.\<close>
 
 lemma h_chop_middle1:"(v=u\<parallel>w) \<longrightarrow> left (ext v) \<le> right (ext u)" 
   by (metis hchop_def real_int.rchop_def real_int.left_leq_right)
@@ -532,12 +532,12 @@ next
 qed
   
 
-text{* The switch relation is compatible with the chopping relations, in the 
+text\<open>The switch relation is compatible with the chopping relations, in the 
 following sense. If we can chop a view \(v\) into two subviews \(u\) and
 \(w\), and we can reach \(v^\prime\) via the switch relation, then
 there also exist two subviews \(u^\prime\), \(w^\prime\) of \(v^\prime\),
 such that \(u^\prime\) is reachable from \(u\) (and respectively for \(w^\prime\), \(w\)).
- *}
+\<close>
   (* switch lemmas *)
 lemma switch_unique:"(v =c> u) \<and> (v =c> w) \<longrightarrow>u = w"
   using switch_def by auto

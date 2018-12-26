@@ -8,7 +8,7 @@ of an object as a finite map of labels to fields in
 a datatype.
 *)
 
-section {* Finite maps with axclasses *}
+section \<open>Finite maps with axclasses\<close>
 
 theory FMap imports ListPre begin
 
@@ -39,7 +39,7 @@ proof (cases "F = Map.empty")
 next
   case False thus ?thesis
   proof (simp)
-    from `F \<noteq> Map.empty` have "\<exists>x. F x \<noteq> None"
+    from \<open>F \<noteq> Map.empty\<close> have "\<exists>x. F x \<noteq> None"
     proof (rule contrapos_np)
       assume "\<not> (\<exists>x. F x \<noteq> None)"
       hence "\<forall>x. F x = None" by simp
@@ -85,27 +85,27 @@ proof (rule ccontr, cases "F a")
   case None hence "a \<notin> dom F" by auto
   hence "(F -- x) a = None" 
     unfolding fmap_minus_direct_def by auto
-  with `(F -- x) a = Some b` show False by simp
+  with \<open>(F -- x) a = Some b\<close> show False by simp
 next
   assume "F a \<noteq> Some b"
   case (Some y) thus False
   proof (cases "fst x = a")
     case True thus False
     proof (cases "snd x = y")
-      case True with `F a = Some y` `fst x = a` 
+      case True with \<open>F a = Some y\<close> \<open>fst x = a\<close> 
       have "(F -- x) a = None" unfolding fmap_minus_direct_def by auto
-      with `(F -- x) a = Some b` show False by simp
+      with \<open>(F -- x) a = Some b\<close> show False by simp
     next
-      case False with `F a = Some y` `fst x = a` 
+      case False with \<open>F a = Some y\<close> \<open>fst x = a\<close> 
       have "F (fst x) \<noteq> Some (snd x)" by auto
-      with `(F -- x) a = Some b` have "F a = Some b" 
+      with \<open>(F -- x) a = Some b\<close> have "F a = Some b" 
         unfolding fmap_minus_direct_def by auto
-      with `F a \<noteq> Some b` show False by simp
+      with \<open>F a \<noteq> Some b\<close> show False by simp
     qed
   next
-    case False with `(F -- x) a = Some b` 
+    case False with \<open>(F -- x) a = Some b\<close> 
     have "F a = Some b" unfolding fmap_minus_direct_def by auto
-    with `F a \<noteq> Some b` show False by simp
+    with \<open>F a \<noteq> Some b\<close> show False by simp
   qed
 qed
 
@@ -125,12 +125,12 @@ next
 next
   fix a b assume "(a,b) \<noteq> x" and "F a = Some b"
   hence "fst x \<noteq> a \<or> F (fst x) \<noteq> Some (snd x)" by auto
-  with `F a = Some b` show "\<exists>y. (F -- x) a = Some y" 
+  with \<open>F a = Some b\<close> show "\<exists>y. (F -- x) a = Some y" 
     unfolding fmap_minus_direct_def by (rule_tac x = b in exI, simp)
 next
   fix a b assume "(a,b) \<noteq> x" and "F a = Some b"
   hence "fst x \<noteq> a \<or> F (fst x) \<noteq> Some (snd x)" by auto
-  with `F a = Some b` show "(F -- x) a = Some b" 
+  with \<open>F a = Some b\<close> show "(F -- x) a = Some b" 
     unfolding fmap_minus_direct_def by simp  
 qed
 
@@ -139,7 +139,7 @@ lemma set_fmap_minus_insert:
   assumes "x \<notin> F" and "insert x F = set_fmap F'"
   shows "F = set_fmap (F' -- x)"
 proof -
-  from `x \<notin> F` sym[OF `insert x F = set_fmap F'`] set_fmap_minus_iff[of F' x] 
+  from \<open>x \<notin> F\<close> sym[OF \<open>insert x F = set_fmap F'\<close>] set_fmap_minus_iff[of F' x] 
   show ?thesis by simp
 qed
 
@@ -156,11 +156,11 @@ proof (rule ccontr, auto)
   have "y \<noteq> snd x"
     unfolding set_fmap_def by auto
   moreover
-  from insert_lem[OF `insert x F = set_fmap F'`] 
+  from insert_lem[OF \<open>insert x F = set_fmap F'\<close>] 
   have "F' (fst x) = Some (snd x)"
     unfolding set_fmap_def by auto
   ultimately show False 
-    using fmap_minus_fmap[OF `(F' -- x) (fst x) = Some y`]
+    using fmap_minus_fmap[OF \<open>(F' -- x) (fst x) = Some y\<close>]
     by simp
 qed
 
@@ -304,9 +304,9 @@ proof (clarify)
   hence notin: "x \<notin> dom F"
     unfolding set_fmap_def image_def dom_def by simp
   moreover
-  from `pred_set_fmap P (set_fmap F)` have "P F" by (simp add: rep_fmap_base)
+  from \<open>pred_set_fmap P (set_fmap F)\<close> have "P F" by (simp add: rep_fmap_base)
   ultimately
-  have "P (F(x \<mapsto> z))" using `\<forall>F x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))` 
+  have "P (F(x \<mapsto> z))" using \<open>\<forall>F x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))\<close> 
     by blast
   hence "(pred_set_fmap P) (set_fmap (F(x \<mapsto> z)))"
     by (simp add: rep_fmap_base)
@@ -342,7 +342,7 @@ proof -
         fix F' :: "'a -~> 'b" assume "{} = set_fmap F'"
         hence "\<And>a. F' a = None" unfolding set_fmap_def by auto
         hence "F' = Map.empty" by (rule ext)
-        with `P Map.empty` rep_fmap_base[of P Map.empty] 
+        with \<open>P Map.empty\<close> rep_fmap_base[of P Map.empty] 
         show "pred_set_fmap P (set_fmap F')" by simp
       qed
     next
@@ -351,20 +351,20 @@ proof -
         fix Fb :: "'a -~> 'b"
         assume "insert x Fa = set_fmap Fb"
         from 
-          set_fmap_minus_insert[OF `x \<notin> Fa` this]
-          `\<forall>F'. Fa = set_fmap F' \<longrightarrow> pred_set_fmap P (set_fmap F')` 
+          set_fmap_minus_insert[OF \<open>x \<notin> Fa\<close> this]
+          \<open>\<forall>F'. Fa = set_fmap F' \<longrightarrow> pred_set_fmap P (set_fmap F')\<close> 
           rep_fmap_base[of P "Fb -- x"]
         have "P (Fb -- x)" by blast
         with 
-          `\<forall>F x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))` 
-          fst_notin_fmap_minus_dom[OF `insert x Fa = set_fmap Fb`]
+          \<open>\<forall>F x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))\<close> 
+          fst_notin_fmap_minus_dom[OF \<open>insert x Fa = set_fmap Fb\<close>]
         have "P ((Fb -- x)(fst x \<mapsto> snd x))" by blast
         moreover
         from 
-          insert_absorb[OF insert_lem[OF `insert x Fa = set_fmap Fb`]]
+          insert_absorb[OF insert_lem[OF \<open>insert x Fa = set_fmap Fb\<close>]]
           set_fmap_minus_iff[of Fb x]
           set_fmap_inv2[OF 
-           fst_notin_fmap_minus_dom[OF `insert x Fa = set_fmap Fb`]] 
+           fst_notin_fmap_minus_dom[OF \<open>insert x Fa = set_fmap Fb\<close>]] 
         have "set_fmap Fb = set_fmap ((Fb -- x)(fst x \<mapsto> snd x))"
           by simp
         ultimately
@@ -389,66 +389,66 @@ lemma fmap_induct3[consumes 2, case_names empty insert]:
   \<Longrightarrow> P F1 F2 F3"
 proof (induct F1 rule: fmap_induct)
   case empty
-  from `dom Map.empty = dom F2` have "F2 = Map.empty" by (simp add: empty_dom)
+  from \<open>dom Map.empty = dom F2\<close> have "F2 = Map.empty" by (simp add: empty_dom)
   moreover
-  from `dom F3 = dom Map.empty` have "F3 = Map.empty" by (simp add: empty_dom)
+  from \<open>dom F3 = dom Map.empty\<close> have "F3 = Map.empty" by (simp add: empty_dom)
   ultimately
-  show ?case using `P Map.empty Map.empty Map.empty` by simp
+  show ?case using \<open>P Map.empty Map.empty Map.empty\<close> by simp
 next
   case (insert F x y) thus ?case
   proof (cases "F2 = Map.empty")
-    case True with `dom (F(x \<mapsto> y)) = dom F2` 
+    case True with \<open>dom (F(x \<mapsto> y)) = dom F2\<close> 
     have "dom (F(x \<mapsto> y)) = {}" by auto
     thus ?thesis by auto
   next
     case False thus ?thesis
     proof (cases "F3 = Map.empty")
-      case True with `dom F3 = dom (F(x \<mapsto> y))` 
+      case True with \<open>dom F3 = dom (F(x \<mapsto> y))\<close> 
       have "dom (F(x \<mapsto> y)) = {}" by simp
       thus ?thesis by simp
     next
       case False thus ?thesis
       proof -
-        from `F2 \<noteq> Map.empty` 
+        from \<open>F2 \<noteq> Map.empty\<close> 
         have "\<forall>l\<in>dom F2. \<exists>f'. F2 = f'(l \<mapsto> the (F2 l)) \<and> l \<notin> dom f'"
           by (simp add: one_more_dom)
         moreover
-        from `dom (F(x \<mapsto> y)) = dom F2` have "x \<in> dom F2" by force
+        from \<open>dom (F(x \<mapsto> y)) = dom F2\<close> have "x \<in> dom F2" by force
         ultimately have "\<exists>f'. F2 = f'(x \<mapsto> the (F2 x)) \<and> x \<notin> dom f'" by blast
         then obtain F2' where "F2 = F2'(x \<mapsto> the (F2 x))" and "x \<notin> dom F2'" 
           by auto
 
-        from `F3 \<noteq> Map.empty` 
+        from \<open>F3 \<noteq> Map.empty\<close> 
         have "\<forall>l\<in>dom F3. \<exists>f'. F3 = f'(l \<mapsto> the (F3 l)) \<and> l \<notin> dom f'"
           by (simp add: one_more_dom)
-        moreover from `dom F3 = dom (F(x \<mapsto> y))` have "x \<in> dom F3" by force
+        moreover from \<open>dom F3 = dom (F(x \<mapsto> y))\<close> have "x \<in> dom F3" by force
         ultimately have "\<exists>f'. F3 = f'(x \<mapsto> the (F3 x)) \<and> x \<notin> dom f'" by blast
         then obtain F3' where "F3 = F3'(x \<mapsto> the (F3 x))" and "x \<notin> dom F3'" 
           by auto
 
         show ?thesis
         proof -
-          from `dom (F(x \<mapsto> y)) = dom F2` `F2 = F2'(x \<mapsto> the (F2 x))`
+          from \<open>dom (F(x \<mapsto> y)) = dom F2\<close> \<open>F2 = F2'(x \<mapsto> the (F2 x))\<close>
           have "dom (F(x \<mapsto> y)) = dom (F2'(x \<mapsto> the (F2 x)))" by simp
-          with `x \<notin> dom F` `x \<notin> dom F2'` have "dom F = dom F2'" by auto
+          with \<open>x \<notin> dom F\<close> \<open>x \<notin> dom F2'\<close> have "dom F = dom F2'" by auto
           
           moreover
-          from `dom F3 = dom (F(x \<mapsto> y))` `F3 = F3'(x \<mapsto> the (F3 x))`
+          from \<open>dom F3 = dom (F(x \<mapsto> y))\<close> \<open>F3 = F3'(x \<mapsto> the (F3 x))\<close>
           have "dom (F(x \<mapsto> y)) = dom (F3'(x \<mapsto> the (F3 x)))" by simp
-          with `x \<notin> dom F` `x \<notin> dom F3'` have "dom F3' = dom F" by auto
+          with \<open>x \<notin> dom F\<close> \<open>x \<notin> dom F3'\<close> have "dom F3' = dom F" by auto
 
           ultimately have "P F F2' F3'" using insert by simp
 
           with 
-            `\<And>F1 F2 F3 x a b c.
+            \<open>\<And>F1 F2 F3 x a b c.
               \<lbrakk> P F1 F2 F3; dom F1 = dom F2; dom F3 = dom F1; x \<notin> dom F1 \<rbrakk>
-              \<Longrightarrow> P (F1(x \<mapsto> a)) (F2(x \<mapsto> b)) (F3(x \<mapsto> c))`
-            `dom F = dom F2'`
-            `dom F3' = dom F`
-            `x \<notin> dom F`
+              \<Longrightarrow> P (F1(x \<mapsto> a)) (F2(x \<mapsto> b)) (F3(x \<mapsto> c))\<close>
+            \<open>dom F = dom F2'\<close>
+            \<open>dom F3' = dom F\<close>
+            \<open>x \<notin> dom F\<close>
           have "P (F(x \<mapsto> y)) (F2'(x \<mapsto> the (F2 x))) (F3'(x \<mapsto> the (F3 x)))" 
             by simp
-          with `F2 = F2'(x \<mapsto> the (F2 x))` `F3 = F3'(x \<mapsto> the (F3 x))`
+          with \<open>F2 = F2'(x \<mapsto> the (F2 x))\<close> \<open>F3 = F3'(x \<mapsto> the (F3 x))\<close>
           show "P (F(x \<mapsto> y)) F2 F3" by simp
         qed
       qed
@@ -472,24 +472,24 @@ next
   define pred_cof where "pred_cof L b b' l \<longleftrightarrow> (\<forall>s p. s \<notin> L \<and> p \<notin> L \<and> s \<noteq> p \<longrightarrow> P s p b b' l)"
     for L b b' l
   from 
-    map_upd_nonempty[of f l t] `dom f' = dom (f(l \<mapsto> t))`
+    map_upd_nonempty[of f l t] \<open>dom f' = dom (f(l \<mapsto> t))\<close>
     one_more_dom[of l f']
   obtain f'a where 
     "f' = f'a(l \<mapsto> the(f' l))" and "l \<notin> dom f'a" and
     "dom (f'a(l \<mapsto> the(f' l))) = dom (f(l \<mapsto> t))"
     by auto
-  from `l \<notin> dom f`
+  from \<open>l \<notin> dom f\<close>
   have
     fla: "\<forall>la\<in>dom f. f la = (f(l \<mapsto> t)) la" and
     "\<forall>la\<in>dom f. f'a la = (f'a(l \<mapsto> the(f' l))) la"
     by auto
-  with `f' = f'a(l \<mapsto> the(f' l))` 
+  with \<open>f' = f'a(l \<mapsto> the(f' l))\<close> 
   have f'ala: "\<forall>la\<in>dom f. f'a la = f' la" by simp
   have "\<exists>L. finite L \<and> (\<forall>la\<in>dom f. pred_cof L (f la) (f'a la) la)"
     unfolding pred_cof_def
   proof 
-    (intro imp[OF insert_dom_less_eq[OF `l \<notin> dom f'a` `l \<notin> dom f` 
-                                        `dom (f'a(l \<mapsto> the(f' l))) = dom (f(l \<mapsto> t))`]],
+    (intro imp[OF insert_dom_less_eq[OF \<open>l \<notin> dom f'a\<close> \<open>l \<notin> dom f\<close> 
+                                        \<open>dom (f'a(l \<mapsto> the(f' l))) = dom (f(l \<mapsto> t))\<close>]],
       intro strip)
     fix la assume "la \<in> dom f"
     with fla f'ala 

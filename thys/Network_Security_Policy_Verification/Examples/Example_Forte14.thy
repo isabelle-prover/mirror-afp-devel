@@ -35,7 +35,7 @@ definition DomainHierarchy_m::"(string SecurityInvariant)" where
             ''P2'' \<mapsto> DN (''aircraft''--''entertain''--''POD''--Leaf, 0)
           ]
           \<rparr> ''Device Hierarchy''"
-  text{*sanity check that the host attributes correspond to the desired hierarchy*}
+  text\<open>sanity check that the host attributes correspond to the desired hierarchy\<close>
   lemma "DomainHierarchyNG_sanity_check_config
     (map snd [
             (''CC'', DN (''aircraft''--''crew''--Leaf, 1)),
@@ -88,12 +88,12 @@ lemma "all_security_requirements_fulfilled security_invariants policy" by eval
 lemma "implc_get_offending_flows security_invariants policy = []" by eval
 
 
-text{*
+text\<open>
 Visualization with a violation.
-*}
-ML{*
+\<close>
+ML\<open>
 visualize_graph @{context} @{term "security_invariants"} @{term "policy\<lparr>edgesL := (''P1'', ''CC'')#edgesL policy\<rparr>"};
-*}
+\<close>
 
 
 
@@ -103,38 +103,38 @@ visualize_graph @{context} @{term "security_invariants"} @{term "policy\<lparr>e
 definition "max_policy = generate_valid_topology security_invariants \<lparr>nodesL = nodesL policy, edgesL = List.product (nodesL policy) (nodesL policy) \<rparr>"
 
 
-text{*calculating the maximum policy*}
+text\<open>calculating the maximum policy\<close>
 value "max_policy"
 
 
-text{*
+text\<open>
 The diff to the maximum policy. It adds reflexive flows and the IFEsrv may send to the PODs.
-*}
-ML_val{*
+\<close>
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "[e \<leftarrow> edgesL max_policy. e \<notin> set (edgesL policy)]"})] ""; 
-*}
+\<close>
 
 
-text{*
+text\<open>
 Visualizing the maximum policy.
-*}
-ML{*
+\<close>
+ML\<open>
 visualize_graph @{context} @{term "security_invariants"} @{term "max_policy"};
-*}
+\<close>
 
 lemma "all_security_requirements_fulfilled security_invariants policy" by eval
 lemma "all_security_requirements_fulfilled security_invariants max_policy" by eval
 
 
-subsection{*A stateful implementation*}
+subsection\<open>A stateful implementation\<close>
 definition "stateful_policy = generate_valid_stateful_policy_IFSACS policy security_invariants"
 value "stateful_policy"
 
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})] ""; 
-*}
+\<close>
 
 
 end

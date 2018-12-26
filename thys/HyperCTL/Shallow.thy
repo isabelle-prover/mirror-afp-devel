@@ -1,4 +1,4 @@
-section {* Shallow embedding of HyperCTL* *}
+section \<open>Shallow embedding of HyperCTL*\<close>
 
 (*<*)
 theory Shallow
@@ -6,12 +6,12 @@ imports Prelim
 begin
 (*>*)
 
-text{* We define a notion of ``shallow'' HyperCTL* formula (sfmla) that captures
+text\<open>We define a notion of ``shallow'' HyperCTL* formula (sfmla) that captures
 HyperCTL* binders as meta-level HOL binders. We also define a proof system for this
-shallow embedding.   *}
+shallow embedding.\<close>
 
 
-subsection{* Kripke structures and paths *}
+subsection\<open>Kripke structures and paths\<close>
 
 type_synonym ('state,'aprop) path = "('state \<times> 'aprop set) stream"
 
@@ -25,7 +25,7 @@ locale Kripke =
   and L : "\<And> s. s \<in> S \<Longrightarrow> L s \<subseteq> AP"
 begin
 
-text{* Well-formed paths *}
+text\<open>Well-formed paths\<close>
 
 coinductive wfp :: "'aprop set \<Rightarrow> ('state,'aprop) path \<Rightarrow> bool"
 for AP' :: "'aprop set"
@@ -61,12 +61,12 @@ unfolding wfp by simp (metis sdrop_add sdrop_simps(1))
 end (* context Kripke *)
 (*>*)
 
-text{* end-of-context Kripke *}
+text\<open>end-of-context Kripke\<close>
 
 
-subsection{* Shallow representations of formulas *}
+subsection\<open>Shallow representations of formulas\<close>
 
-text{* A shallow (representation of a) HyperCTL* formula will be a predicate on lists of paths.  
+text\<open>A shallow (representation of a) HyperCTL* formula will be a predicate on lists of paths.  
 The atomic formulas (operator $\textit{atom}$) are parameterized by atomic propositions (as customary in temporal logic), 
 and additionally by a number indicating the position, in the list of paths, of the path to which the atomic proposition 
 refers -- for example, $\textit{atom}\;a\;i$ holds for the list of paths $\pi l$ just in case proposition $a$ holds 
@@ -77,9 +77,9 @@ the last path in $\pi l$.
 As an example: $\textit{exi}\; (\textit{exi}\; (\textit{until}\; (\textit{atom}\;a\;0)\;(\textit{atom}\;b\;1)))$ holds for the empty list 
 iff there exist two paths $\rho_0$ and $\rho_1$ such that, synchronously,  
 $a$ holds on $\rho_0$ until $b$ holds on $\rho_1$.  Another example will be the formula encoding Goguen-Meseguer noninterference.   
- *}
+\<close>
 
-text{* Shallow HyperCTL* formulas: *}
+text\<open>Shallow HyperCTL* formulas:\<close>
 
 type_synonym ('state,'aprop) sfmla = "('state,'aprop) path list \<Rightarrow> bool"
 
@@ -91,7 +91,7 @@ locale Shallow = Kripke S "s0" \<delta> AP L
   fixes AP' assumes AP_AP': "AP \<subseteq> AP'"
 begin
 
-text{* Primitive operators *}
+text\<open>Primitive operators\<close>
 
 (* I include false as a primitive since otherwise I would have to assume nonemptyness of
   the atomic propositions *)
@@ -124,7 +124,7 @@ definition exi :: "(('state,'aprop) path \<Rightarrow> ('state,'aprop) sfmla) \<
  \<exists> \<pi>. wfp AP' \<pi> \<and> stateOf \<pi> = (if \<pi>l \<noteq> [] then stateOf (last \<pi>l) else s0)
       \<and> F \<pi> \<pi>l"
 
-text{* Derived operators *}
+text\<open>Derived operators\<close>
 
 definition "tr \<equiv> neg fls"
 definition "con \<phi> \<psi> \<equiv> neg (dis (neg \<phi>) (neg \<psi>))"
@@ -144,12 +144,12 @@ tr_def con_def imp_def eq_def ev_def alw_def wuntil_def fall_def
 lemmas op_defs = main_op_defs der_op_defs
 
 
-subsection{* Reasoning rules *}
+subsection\<open>Reasoning rules\<close>
 
-text{* We provide introduction, elimination, unfolding and (co)induction rules
-for the connectives and quantifiers.   *}
+text\<open>We provide introduction, elimination, unfolding and (co)induction rules
+for the connectives and quantifiers.\<close>
 
-text{* Boolean operators *}
+text\<open>Boolean operators\<close>
 
 lemma fls_elim[elim!]:
 assumes "fls \<pi>l" shows \<phi>
@@ -215,7 +215,7 @@ lemma eq_equals: "eq \<phi> \<psi> \<pi>l \<longleftrightarrow> \<phi> \<pi>l = 
 by (metis eq_elimL eq_elimR eq_intro)
 
 
-text{* Quantifiers *}
+text\<open>Quantifiers\<close>
 
 lemma exi_intro[intro]:
 assumes "wfp AP' \<pi>"
@@ -250,7 +250,7 @@ using assms unfolding fall_def
 by (metis exi_def neg_elim neg_intro)
 
 
-text{* Temporal connectives *}
+text\<open>Temporal connectives\<close>
 
 lemma next_intro[intro]:
 assumes "\<phi> (map stl \<pi>l)"  shows "next \<phi> \<pi>l"
@@ -276,7 +276,7 @@ proof-
   thus ?thesis using \<psi> unfolding op_defs by auto
 qed
 
-text{* The elimination rules for until and eventually are induction rules. *}
+text\<open>The elimination rules for until and eventually are induction rules.\<close>
 
 lemma until_induct[induct pred: until, consumes 1, case_names Base Step]:
 assumes u: "until \<phi> \<psi> \<pi>l"
@@ -329,7 +329,7 @@ lemma ev: "ev \<phi> \<pi>l \<longleftrightarrow> (\<exists> i. \<phi> (map (sdr
 unfolding ev_def until_def by auto
 
 
-text{* The introduction rules for always and weak until are coinduction rules. *}
+text\<open>The introduction rules for always and weak until are coinduction rules.\<close>
 
 lemma alw_coinduct[coinduct pred: alw, consumes 1, case_names Hyp]:
 assumes "\<chi> \<pi>l"
@@ -396,9 +396,9 @@ lemma wuntil_unfold:
 by (metis alw_unfold dis_def until_unfold wuntil_def)
 
 
-subsection{* More derived operators *}
+subsection\<open>More derived operators\<close>
 
-text{* The conjunction of an arbitrary set of formulas: *}
+text\<open>The conjunction of an arbitrary set of formulas:\<close>
 
 definition scon ::
 "('state,'aprop) sfmla set \<Rightarrow> ('state,'aprop) sfmla" where
@@ -413,7 +413,7 @@ assumes "scon \<phi>s \<pi>l" and "(\<And> \<phi>. \<phi> \<in> \<phi>s \<Longri
 shows \<chi>
 using assms unfolding scon_def by auto
 
-text{* Double-binding forall: *}
+text\<open>Double-binding forall:\<close>
 
 definition "fall2 F \<equiv> fall (\<lambda> \<pi>. fall (F \<pi>))"
 
@@ -444,7 +444,7 @@ using assms unfolding fall2_def by (auto elim!: fall_elim) (metis fall_elim)
 end (* context Shallow *)
 (*>*)
 
-text{* end-of-context Shallow *}
+text\<open>end-of-context Shallow\<close>
 
 
 (*<*)

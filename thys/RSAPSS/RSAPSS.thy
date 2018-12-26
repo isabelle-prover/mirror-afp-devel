@@ -9,9 +9,9 @@ theory RSAPSS
 imports EMSAPSS Cryptinverts
 begin
 
-text {* We define the RSA-PSS signature and verification operations. Moreover we
+text \<open>We define the RSA-PSS signature and verification operations. Moreover we
   show, that messages signed with RSA-PSS can always be verified
-  *}
+\<close>
 
 definition rsapss_sign_help1:: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bv"
   where "rsapss_sign_help1 em_nat e n =

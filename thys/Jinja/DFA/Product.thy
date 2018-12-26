@@ -5,7 +5,7 @@
 Products as semilattices.
 *)
 
-section {* Products as Semilattices *}
+section \<open>Products as Semilattices\<close>
 
 theory Product
 imports Err

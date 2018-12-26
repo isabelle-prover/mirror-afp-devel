@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* Definitions of Procedures *}
+section \<open>Definitions of Procedures\<close>
 theory ProcedureSpecs
 imports General Simpl.Vcg
 begin

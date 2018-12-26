@@ -9,40 +9,40 @@ theory Submission
   imports Main 
 begin
 
-text {*
+text \<open>
   This is an example submission to the Archive of Formal Proofs.
 
   The scope of the archive encompasses examples, textbook-style
   proofs, libraries and larger scientific developments.
-*}
+\<close>
 
 section "Format of a submission"
 
-text {*
+text \<open>
   Submission should be via the web page @{url "https://ci.isabelle.systems/afp-submission/"}.
 
   The tar file submission of the example you are reading is at
   @{url "http://isa-afp.org/release/afp-Example-Submission-current.tar.gz"}.
-*}
+\<close>
 
 section "Proof styles"
 
-text {*
+text \<open>
   We accept proofs in \isakeyword{apply}-script style like the
   following.
-*}
+\<close>
 
 lemma true: "True" 
   apply blast
   done
 
-text {*
+text \<open>
   We encourage structured proofs with comments and
   explanations. The Isabelle document preparation tools support
   antiquotations like @{thm true}, normal {\LaTeX} commands and BibTeX
   citations. See \cite{LNCS2283} and the Isabelle documentation for
   more information.  
-*}
+\<close>
 lemma very_true: "True"
 proof -
   \<comment> \<open>a very roundabout way\<close>
@@ -53,7 +53,7 @@ qed
 
 section "The anatomy of a submission"
 
-text {*
+text \<open>
   The directory structure of this example submission is the following  
 \begin{verbatim}
 Example-Submission/
@@ -88,7 +88,7 @@ theory My_Theory
   imports MiniML.W
 begin
 \end{verbatim}
-*}
+\<close>
 
 end
 

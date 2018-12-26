@@ -3,20 +3,20 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-section{* MoreList *}
+section\<open>MoreList\<close>
 
 theory MoreList
 imports Main "HOL-Library.Multiset"
 begin
 
-text{* Theory contains some additional lemmas and functions for the
+text\<open>Theory contains some additional lemmas and functions for the
 @{term List} datatype. Warning: some of these notions are obsolete
-because they already exist in {\em List.thy} in similiar form. *}
+because they already exist in {\em List.thy} in similiar form.\<close>
 
 (*********************************************************)
 (*               last and butlast                        *)
 (*********************************************************)
-subsection{* @{term "last"} and @{term "butlast"} - last element of list and elements before it *}
+subsection\<open>@{term "last"} and @{term "butlast"} - last element of list and elements before it\<close>
 lemma listEqualsButlastAppendLast: 
   assumes "list \<noteq> []"
   shows "list = (butlast list) @ [last list]"
@@ -44,7 +44,7 @@ by (induct list1) auto
 (*********************************************************)
 (*                   removeAll                           *)
 (*********************************************************)
-subsection{* @{term removeAll} - element removal *}
+subsection\<open>@{term removeAll} - element removal\<close>
 
 lemma removeAll_multiset:
   assumes "distinct a" "x \<in> set a"
@@ -55,27 +55,27 @@ proof (induct a)
   thus ?case
   proof (cases "x = y")
     case True
-    with `distinct (y # a')` `x \<in> set (y # a')`
+    with \<open>distinct (y # a')\<close> \<open>x \<in> set (y # a')\<close>
     have "\<not>  x \<in> set a'"
       by auto
     hence "removeAll x a' = a'"
       by (rule removeAll_id)
-    with `x = y` show ?thesis
+    with \<open>x = y\<close> show ?thesis
       by (simp add: union_commute)
   next
     case False
-    with `x \<in> set (y # a')` 
+    with \<open>x \<in> set (y # a')\<close> 
     have "x \<in> set a'"
       by simp
-    with `distinct (y # a')`
+    with \<open>distinct (y # a')\<close>
     have "x \<noteq> y" "distinct a'"
       by auto
     hence "mset a' = {#x#} + mset (removeAll x a')"
-      using `x \<in> set a'`
+      using \<open>x \<in> set a'\<close>
       using Cons(1)
       by simp
     thus ?thesis
-      using `x \<noteq> y`
+      using \<open>x \<noteq> y\<close>
       by (simp add: union_assoc)
   qed
 qed simp
@@ -90,9 +90,9 @@ by (induct a arbitrary: x) auto
 (*********************************************************)
 (*                   uniq                                *)
 (*********************************************************)
-subsection{* @{term uniq} - no duplicate elements. *}
-text{* @{term "(uniq list)"} holds iff there are no repeated elements
-in a list.  Obsolete: same as @{term "distinct"} in {\em List.thy}. *}
+subsection\<open>@{term uniq} - no duplicate elements.\<close>
+text\<open>@{term "(uniq list)"} holds iff there are no repeated elements
+in a list.  Obsolete: same as @{term "distinct"} in {\em List.thy}.\<close>
 
 primrec uniq :: "'a list => bool"
 where
@@ -132,7 +132,7 @@ next
   hence "l = butlast l @ [last l]"
     by (rule listEqualsButlastAppendLast)
   moreover
-  with `uniq l` 
+  with \<open>uniq l\<close> 
   have "uniq (butlast l)"
     using uniqAppend[of "butlast l" "[last l]"]
     by simp
@@ -207,10 +207,10 @@ qed
 (*********************************************************)
 (*                   firstPos                            *)
 (*********************************************************)
-subsection {* @{term firstPos} - first position of an element *}
-text{* @{term "firstPos"} returns the zero-based index of the first
+subsection \<open>@{term firstPos} - first position of an element\<close>
+text\<open>@{term "firstPos"} returns the zero-based index of the first
   occurrence of an element int a list, or the length of the list if the
-  element does not occur. *}
+  element does not occur.\<close>
 
 primrec firstPos :: "'a => 'a list => nat"
 where
@@ -257,20 +257,20 @@ proof-
         assume "a = m"
         have "b = m"
         proof-
-          from `a = m` 
+          from \<open>a = m\<close> 
           have "firstPos a (m # l') = 0"
             by simp
           with Cons 
           have "firstPos b (m # l') = 0"
             by simp
-          with `b \<in> set (m # l')` 
+          with \<open>b \<in> set (m # l')\<close> 
           have "firstPos b (m # l') = 0"
             by simp
           thus ?thesis
             using firstPosEqualZero[of "b" "m" "l'"]
             by simp
         qed
-        with `a = m` 
+        with \<open>a = m\<close> 
         have ?case
           by simp
       }
@@ -280,20 +280,20 @@ proof-
         assume "b = m"
         have "a = m"
         proof-
-          from `b = m` 
+          from \<open>b = m\<close> 
           have "firstPos b (m # l') = 0"
             by simp
           with Cons 
           have "firstPos a (m # l') = 0"
             by simp
-          with `a \<in> set (m # l')` 
+          with \<open>a \<in> set (m # l')\<close> 
           have "firstPos a (m # l') = 0"
             by simp
           thus ?thesis
             using firstPosEqualZero[of "a" "m" "l'"]
             by simp
         qed
-        with `b = m` 
+        with \<open>b = m\<close> 
         have ?case
           by simp
       }
@@ -301,13 +301,13 @@ proof-
       moreover
       {
         assume Q: "a \<noteq> m" "b \<noteq> m"
-        from Q `a \<in> set (m # l')`
+        from Q \<open>a \<in> set (m # l')\<close>
         have "a \<in> set l'"
           by simp
-        from Q `b \<in> set (m # l')`
+        from Q \<open>b \<in> set (m # l')\<close>
         have "b \<in> set l'"
           by simp
-        from `a \<in> set l'` `b \<in> set l'` Cons
+        from \<open>a \<in> set l'\<close> \<open>b \<in> set l'\<close> Cons
         have "firstPos a l' = firstPos b l'"
           by (simp split: if_split_asm)
         with Cons 
@@ -335,7 +335,7 @@ proof-
             by (rule **)
         next
           case False
-          with `a \<noteq> m` show ?thesis
+          with \<open>a \<noteq> m\<close> show ?thesis
             by (rule ***)
         qed
       qed
@@ -354,7 +354,7 @@ by (induct l) auto
 (*********************************************************)
 (*                   precedes                            *)
 (*********************************************************)
-subsection{* @{term precedes} - ordering relation induced by @{term firstPos} *}
+subsection\<open>@{term precedes} - ordering relation induced by @{term firstPos}\<close>
 definition precedes :: "'a => 'a => 'a list => bool"
 where
 "precedes a b l == (a \<in> set l \<and> b \<in> set l \<and>  firstPos a l <= firstPos b l)"
@@ -370,7 +370,7 @@ proof-
       by (auto split: if_split_asm)
     hence  "firstPos a (b # list) = 0"
       by auto
-    with `a \<noteq> b` 
+    with \<open>a \<noteq> b\<close> 
     have False
       using firstPosEqualZero[of "a" "b" "list"]
       by simp
@@ -393,19 +393,19 @@ proof-
       by auto
     hence "length l - 1 \<le> firstPos a l"
       using firstPosLast[of "l" "last l"]
-      using `uniq l`
+      using \<open>uniq l\<close>
       by force
     hence "firstPos a l = length l - 1"
       using firstPosDomainForElements[of "a" "l"]
-      using `a \<in> set l`
+      using \<open>a \<in> set l\<close>
       by auto
     hence "a = last l"
       using firstPosLast[of "l" "last l"]
-      using `a \<in> set l` `last l \<in> set l`
-      using `uniq l`
+      using \<open>a \<in> set l\<close> \<open>last l \<in> set l\<close>
+      using \<open>uniq l\<close>
       using firstPosEqual[of "a" "l" "last l"]
       by force
-    with `a \<noteq> last l`
+    with \<open>a \<noteq> last l\<close>
     have False
       by simp
   }
@@ -417,7 +417,7 @@ lemma precedesAppend:
   assumes "precedes a b l" 
   shows "precedes a b (l @ l')"
 proof-
-  from `precedes a b l` 
+  from \<open>precedes a b l\<close> 
   have "a \<in> set l" "b \<in> set l" "firstPos a l \<le> firstPos b l"
     unfolding precedes_def
     by (auto split: if_split_asm)
@@ -432,17 +432,17 @@ lemma precedesMemberHeadMemberTail:
   assumes "a \<in> set l1" and "b \<notin> set l1" and "b \<in> set l2"
   shows "precedes a b (l1 @ l2)"
 proof-
-  from `a \<in> set l1` 
+  from \<open>a \<in> set l1\<close> 
   have "firstPos a l1 < length l1"
     using firstPosLeLength [of "a" "l1"]
     by simp
   moreover
-  from `a \<in> set l1` 
+  from \<open>a \<in> set l1\<close> 
   have "firstPos a (l1 @ l2) = firstPos a l1"
     using firstPosAppend[of "a" "l1" "l2"]
     by simp
   moreover
-  from `b \<notin> set l1` `b \<in> set l2`
+  from \<open>b \<notin> set l1\<close> \<open>b \<in> set l2\<close>
   have "firstPos b (l1 @ l2) = length l1 + firstPos b l2"
     by (rule firstPosAppendNonMemberFirstMemberSecond)
   moreover
@@ -451,7 +451,7 @@ proof-
   ultimately
   show ?thesis
     unfolding precedes_def
-    using `a \<in> set l1` `b \<in> set l2`
+    using \<open>a \<in> set l1\<close> \<open>b \<in> set l2\<close>
     by simp
 qed
 
@@ -506,12 +506,12 @@ proof (induct list)
       assume "a = l"
       have ?case
       proof-
-        from `a = l` 
+        from \<open>a = l\<close> 
         have "firstPos (f a) (map f (l # list')) = 0"
           using firstPosEqualZero[of "f a" "f l" "map f list'"]
           by simp
         moreover
-        from `precedes a b (l # list')` 
+        from \<open>precedes a b (l # list')\<close> 
         have "b \<in> set (l # list')"
           unfolding precedes_def
           by simp
@@ -522,7 +522,7 @@ proof (induct list)
           by auto
         ultimately
         show ?thesis
-          using `a = l` `f b \<in> set (map f (l # list'))`
+          using \<open>a = l\<close> \<open>f b \<in> set (map f (l # list'))\<close>
           unfolding precedes_def
           by simp
       qed
@@ -530,11 +530,11 @@ proof (induct list)
     moreover
     {
       assume "b = l"
-      with `precedes a b (l # list')`
+      with \<open>precedes a b (l # list')\<close>
       have "a = l"
         using noElementsPrecedesFirstElement[of "a" "l" "list'"]
         by auto
-      from `a = l` `b = l` 
+      from \<open>a = l\<close> \<open>b = l\<close> 
       have ?case
         unfolding precedes_def
         by simp
@@ -542,14 +542,14 @@ proof (induct list)
     moreover
     {
       assume "a \<noteq> l" "b \<noteq> l"
-      with `\<forall> x y. x \<noteq> y \<longrightarrow> f x \<noteq> f y`
+      with \<open>\<forall> x y. x \<noteq> y \<longrightarrow> f x \<noteq> f y\<close>
       have "f a \<noteq> f l" "f b \<noteq> f l"
         by auto
-      from `precedes a b (l # list')` 
+      from \<open>precedes a b (l # list')\<close> 
       have "b \<in> set(l # list')" "a \<in> set(l # list')" "firstPos a (l # list') \<le> firstPos b (l # list')"
         unfolding precedes_def
         by auto
-      with `a \<noteq> l` `b \<noteq> l` 
+      with \<open>a \<noteq> l\<close> \<open>b \<noteq> l\<close> 
       have "a \<in> set list'" "b \<in> set list'" "firstPos a list' \<le> firstPos b list'"
         by auto
       hence "precedes a b list'"
@@ -558,7 +558,7 @@ proof (induct list)
       with Cons
       have "precedes (f a) (f b) (map f list')"
         by simp
-      with `f a \<noteq> f l` `f b \<noteq> f l`
+      with \<open>f a \<noteq> f l\<close> \<open>f b \<noteq> f l\<close>
       have ?case
         unfolding precedes_def
         by auto
@@ -581,15 +581,15 @@ proof(induct list)
   case (Cons l list')
   show ?case
   proof-
-    from `precedes a b (l # list')` 
+    from \<open>precedes a b (l # list')\<close> 
     have "a \<in> set(l # list')" "b \<in> set(l # list')" "firstPos a (l # list') \<le> firstPos b (l # list')"
       unfolding precedes_def
       by auto
-    from `f a` `a \<in> set(l # list')` 
+    from \<open>f a\<close> \<open>a \<in> set(l # list')\<close> 
     have "a \<in> set(filter f (l # list'))"
       by auto
     moreover
-    from `f b` `b \<in> set(l # list')` 
+    from \<open>f b\<close> \<open>b \<in> set(l # list')\<close> 
     have "b \<in> set(filter f (l # list'))"
       by auto
     moreover
@@ -597,17 +597,17 @@ proof(induct list)
     proof- 
       {
         assume "a = l"
-        with `f a` 
+        with \<open>f a\<close> 
         have "firstPos a (filter f (l # list')) = 0"
           by auto
-        with `b \<in> set (filter f (l # list'))` 
+        with \<open>b \<in> set (filter f (l # list'))\<close> 
         have ?thesis
           by auto
       }
       moreover
       {
         assume "b = l"
-        with `precedes a b (l # list')`
+        with \<open>precedes a b (l # list')\<close>
         have "a = b"
           using noElementsPrecedesFirstElement[of "a" "b" "list'"]
           by auto
@@ -617,26 +617,26 @@ proof(induct list)
       moreover
       {
         assume "a \<noteq> l" "b \<noteq> l"
-        with `precedes a b (l # list')` 
+        with \<open>precedes a b (l # list')\<close> 
         have "firstPos a list' \<le> firstPos b list'"
           unfolding precedes_def
           by auto
         moreover
-        from `a \<noteq> l` `a \<in> set (l # list')` 
+        from \<open>a \<noteq> l\<close> \<open>a \<in> set (l # list')\<close> 
         have "a \<in> set list'"
           by simp
         moreover
-        from `b \<noteq> l` `b \<in> set (l # list')` 
+        from \<open>b \<noteq> l\<close> \<open>b \<in> set (l # list')\<close> 
         have "b \<in> set list'"
           by simp
         ultimately
         have "precedes a b list'"
           unfolding precedes_def
           by simp
-        with `f a` `f b` Cons(1)
+        with \<open>f a\<close> \<open>f b\<close> Cons(1)
         have "precedes a b (filter f list')"
           by simp
-        with `a \<noteq> l` `b \<noteq> l`
+        with \<open>a \<noteq> l\<close> \<open>b \<noteq> l\<close>
         have ?thesis
           unfolding precedes_def
           by auto
@@ -697,10 +697,10 @@ proof-
               unfolding precedesOrder_def
               unfolding precedes_def
               by simp
-            with `a \<in> Q`
+            with \<open>a \<in> Q\<close>
             have "a \<in> set ?listQ"
               by (induct list) auto
-            with `?listQ = []` 
+            with \<open>?listQ = []\<close> 
             have "False"
               by simp
             hence "a' \<notin> Q"
@@ -709,7 +709,7 @@ proof-
           thus ?thesis
             by simp
         qed
-        with `a \<in> Q` obtain aMin where "aMin \<in> Q" "\<forall> a'. (a', aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
+        with \<open>a \<in> Q\<close> obtain aMin where "aMin \<in> Q" "\<forall> a'. (a', aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
           by auto
         thus ?thesis
           by auto
@@ -732,14 +732,14 @@ proof-
             proof-
               {
                 assume "a' \<in> Q"
-                with `?aMin \<in> Q` `precedes a' ?aMin list`
+                with \<open>?aMin \<in> Q\<close> \<open>precedes a' ?aMin list\<close>
                 have "precedes a' ?aMin ?listQ"
                     using precedesFilter[of "a'" "?aMin" "list" "\<lambda> x. x \<in> Q"]
                     by blast
-                from `a' \<noteq> ?aMin` 
+                from \<open>a' \<noteq> ?aMin\<close> 
                 have "\<not> precedes a' (hd ?listQ) (hd ?listQ # tl ?listQ)"
                   by (rule noElementsPrecedesFirstElement)
-                with False `precedes a' ?aMin ?listQ`
+                with False \<open>precedes a' ?aMin ?listQ\<close>
                 have "False"
                   by auto
               }
@@ -749,7 +749,7 @@ proof-
           } thus "(a', ?aMin) \<in> precedesOrder list \<longrightarrow> a' \<notin> Q"
             by simp
         qed
-        with `?aMin \<in> Q`
+        with \<open>?aMin \<in> Q\<close>
         show ?thesis
           ..
       qed
@@ -763,9 +763,9 @@ qed
 (*********************************************************)
 (*                   prefix                              *)
 (*********************************************************)
-subsection{* @{term isPrefix} - prefixes of list. *}
-text{* Check if a list is a prefix of another list. Obsolete: similiar
-notion is defined in {\em List\_prefixes.thy}. *}
+subsection\<open>@{term isPrefix} - prefixes of list.\<close>
+text\<open>Check if a list is a prefix of another list. Obsolete: similiar
+notion is defined in {\em List\_prefixes.thy}.\<close>
 
 definition
   isPrefix :: "'a list => 'a list => bool"
@@ -782,11 +782,11 @@ lemma uniqListImpliesUniqPrefix:
 assumes "isPrefix p l" and "uniq l"
 shows "uniq p"
 proof-
-  from `isPrefix p l` obtain s
+  from \<open>isPrefix p l\<close> obtain s
     where "p @ s = l"
     unfolding isPrefix_def
     by auto
-  with `uniq l`
+  with \<open>uniq l\<close>
   show ?thesis
     using uniqAppend[of "p" "s"]
     by simp
@@ -796,11 +796,11 @@ lemma firstPosPrefixElement:
   assumes "isPrefix p l" and "a \<in> set p"
   shows "firstPos a p = firstPos a l"
 proof-
-  from `isPrefix p l` obtain s
+  from \<open>isPrefix p l\<close> obtain s
     where "p @ s = l"
     unfolding isPrefix_def
     by auto
-  with `a \<in> set p` 
+  with \<open>a \<in> set p\<close> 
   show ?thesis
     using firstPosAppend[of "a" "p" "s"]
     by simp
@@ -812,16 +812,16 @@ lemma laterInPrefixRetainsPrecedes:
   shows 
   "precedes a b p"
 proof-
-  from `isPrefix p l` obtain s
+  from \<open>isPrefix p l\<close> obtain s
     where "p @ s = l"
     unfolding isPrefix_def
     by auto
-  from `precedes a b l` 
+  from \<open>precedes a b l\<close> 
   have "a \<in> set l" "b \<in> set l" "firstPos a l \<le> firstPos b l"
     unfolding precedes_def
     by (auto split: if_split_asm)
 
-  from `p @ s = l` `b \<in> set p` 
+  from \<open>p @ s = l\<close> \<open>b \<in> set p\<close> 
   have "firstPos b l = firstPos b p"
     using firstPosAppend [of "b" "p" "s"]
     by simp
@@ -829,32 +829,32 @@ proof-
   show ?thesis
   proof (cases "a \<in> set p")
     case True
-    from `p @ s = l` `a \<in> set p` 
+    from \<open>p @ s = l\<close> \<open>a \<in> set p\<close> 
     have "firstPos a l = firstPos a p"
       using firstPosAppend [of "a" "p" "s"]
       by simp
 
-    from `firstPos a l = firstPos a p` `firstPos b l = firstPos b p` `firstPos a l \<le> firstPos b l`
-    `a \<in> set p` `b \<in> set p`
+    from \<open>firstPos a l = firstPos a p\<close> \<open>firstPos b l = firstPos b p\<close> \<open>firstPos a l \<le> firstPos b l\<close>
+    \<open>a \<in> set p\<close> \<open>b \<in> set p\<close>
     show ?thesis
       unfolding precedes_def
       by simp
   next
     case False
-    from `a \<notin> set p` `a \<in> set l` `p @ s = l`
+    from \<open>a \<notin> set p\<close> \<open>a \<in> set l\<close> \<open>p @ s = l\<close>
     have "a \<in> set s"
       by auto
-    with `a \<notin> set p` `p @ s = l`
+    with \<open>a \<notin> set p\<close> \<open>p @ s = l\<close>
     have "firstPos a l = length p + firstPos a s"
       using firstPosAppendNonMemberFirstMemberSecond[of "a" "p" "s"]
       by simp
     moreover
-    from `b \<in> set p` 
+    from \<open>b \<in> set p\<close> 
     have "firstPos b p < length p"
       by (rule firstPosLeLength)
     ultimately
     show ?thesis
-      using `firstPos b l = firstPos b p` `firstPos a l \<le> firstPos b l`
+      using \<open>firstPos b l = firstPos b p\<close> \<open>firstPos a l \<le> firstPos b l\<close>
       by simp
   qed
 qed
@@ -862,7 +862,7 @@ qed
 (*********************************************************)
 (*                       List diff                       *)
 (*********************************************************)
-subsection{* @{term "list_diff"} - the set difference operation on two lists. *}
+subsection\<open>@{term "list_diff"} - the set difference operation on two lists.\<close>
 
 primrec list_diff :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where
@@ -919,7 +919,7 @@ lemma listDiffRemoveAllNonMember:
 using assms
 proof (induct b arbitrary: a)
   case (Cons y b')
-  from `x \<notin> set a` 
+  from \<open>x \<notin> set a\<close> 
   have "x \<notin> set (removeAll y a)"
     by auto
   thus ?case
@@ -928,14 +928,14 @@ proof (induct b arbitrary: a)
     thus ?thesis
       using Cons(2)
       using Cons(1)[of "removeAll y a"]
-      using `x \<notin> set (removeAll y a)`
+      using \<open>x \<notin> set (removeAll y a)\<close>
       by auto
   next
     case True
     thus ?thesis
       using Cons(1)[of "removeAll y a"]
-      using `x \<notin> set a`
-      using `x \<notin> set (removeAll y a)`
+      using \<open>x \<notin> set a\<close>
+      using \<open>x \<notin> set (removeAll y a)\<close>
       by auto
   qed
 qed simp
@@ -949,7 +949,7 @@ by (induct b arbitrary: a) (auto simp add: removeAll_map)
 (*********************************************************)
 (*                       Remdups                         *)
 (*********************************************************)
-subsection{* @{term remdups} - removing duplicates *}
+subsection\<open>@{term remdups} - removing duplicates\<close>
 lemma remdupsRemoveAllCommute[simp]:
   shows "remdups (removeAll a list) = removeAll a (remdups list)"
 by (induct list) auto
@@ -987,7 +987,7 @@ next
       proof-
         have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
           set (x # remdups a' @ remdups (list_diff b (x # a')))"
-          using `x \<notin> set a'`
+          using \<open>x \<notin> set a'\<close>
           by auto
         also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
           by auto
@@ -1003,7 +1003,7 @@ next
           by auto
         also have "\<dots> = set (remdups a') \<union> set (remdups (list_diff b a'))"
         proof-
-          from `x \<notin> set a'` `x \<in> set b`
+          from \<open>x \<notin> set a'\<close> \<open>x \<in> set b\<close>
           have "x \<in> set (list_diff b a')"
             using listDiffIff[of "x" "b" "a'"]
             by simp
@@ -1016,7 +1016,7 @@ next
           using Cons(1)
           by simp
         also have "\<dots> = set (remdups ((x # a') @ b))"
-          using `x \<in> set b`
+          using \<open>x \<in> set b\<close>
           by simp
         finally show ?thesis
           by simp
@@ -1027,12 +1027,12 @@ next
       proof-
         have "set (remdups (x # a') @ remdups (list_diff b (x # a'))) = 
           set (x # (remdups a') @ remdups (list_diff b (x # a')))"
-          using `x \<notin> set a'`
+          using \<open>x \<notin> set a'\<close>
           by auto
         also have "\<dots> = set (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
           by auto
         also have "\<dots> = set (x # remdups a' @ remdups (list_diff b a'))"
-          using `x \<notin> set b`
+          using \<open>x \<notin> set b\<close>
           by auto
         also have "\<dots> = {x} \<union> set (remdups (a' @ b))"
           using Cons(1)
@@ -1072,7 +1072,7 @@ next
           mset (x # remdups a' @ remdups (list_diff b (x # a')))"
         proof-
           have "remdups (x # a') = x # remdups a'"
-            using `x \<notin> set a'`
+            using \<open>x \<notin> set a'\<close>
             by auto
           thus ?thesis
             by simp
@@ -1091,7 +1091,7 @@ next
           by simp
         also have "\<dots> = mset (remdups a') + mset (remdups (list_diff b a'))"
         proof-
-          from `x \<notin> set a'` `x \<in> set b`
+          from \<open>x \<notin> set a'\<close> \<open>x \<in> set b\<close>
           have "x \<in> set (list_diff b a')"
             using listDiffIff[of "x" "b" "a'"]
             by simp
@@ -1105,7 +1105,7 @@ next
           using Cons(1)
           by simp
         also have "\<dots> = mset (remdups ((x # a') @ b))"
-          using `x \<in> set b`
+          using \<open>x \<in> set b\<close>
           by simp
         finally show ?thesis
           by simp
@@ -1118,7 +1118,7 @@ next
           mset (x # remdups a' @ remdups (list_diff b (x # a')))"
         proof-
           have "remdups (x # a') = x # remdups a'"
-            using `x \<notin> set a'`
+            using \<open>x \<notin> set a'\<close>
             by auto
           thus ?thesis
             by simp
@@ -1126,14 +1126,14 @@ next
         also have "\<dots> = mset (x # remdups a' @ remdups (list_diff (removeAll x b) a'))"
           by auto
         also have "\<dots> = mset (x # remdups a' @ remdups (list_diff b a'))"
-          using `x \<notin> set b`
+          using \<open>x \<notin> set b\<close>
           using removeAll_id[of "x" "b"]
           by simp
         also have "\<dots> = {#x#} + mset (remdups (a' @ b))"
           using Cons(1)
           by (simp add: union_commute)
         also have "\<dots> = mset (remdups ((x # a') @ b))"
-          using `x \<notin> set a'` `x \<notin> set b`
+          using \<open>x \<notin> set a'\<close> \<open>x \<notin> set b\<close>
           by (auto simp add: union_commute)
         finally show ?thesis
           by simp
@@ -1258,10 +1258,10 @@ qed
 (*********************************************************)
 (*                       Levi                            *)
 (*********************************************************)
-subsection{* Levi's lemma *}
+subsection\<open>Levi's lemma\<close>
 
-text{* Obsolete: these two lemmas are already proved as @{term
-append_eq_append_conv2} and @{term append_eq_Cons_conv}. *}
+text\<open>Obsolete: these two lemmas are already proved as @{term
+append_eq_append_conv2} and @{term append_eq_Cons_conv}.\<close>
 
 lemma FullLevi: 
   shows "(x @ y = z @ w) = 
@@ -1280,7 +1280,7 @@ next
     show ?case
     proof (cases "z = []")
       case True
-      with `(a # x') @ y = z @ w`
+      with \<open>(a # x') @ y = z @ w\<close>
       obtain t where "z @ t = a # x'" "t @ y = w"
         by auto
       thus ?thesis
@@ -1289,13 +1289,13 @@ next
       case False
       then obtain b and z' where "z = b # z'"
         by (auto simp add: neq_Nil_conv)
-      with `(a # x') @ y = z @ w`
+      with \<open>(a # x') @ y = z @ w\<close>
       have "x' @ y = z' @ w" "a = b"
         by auto
       with Cons(1)[of "z'"]
       have "x' = z' \<and> y = w \<or> (\<exists>t. z' @ t = x' \<and> t @ y = w) \<or> (\<exists>t. x' @ t = z' \<and> t @ w = y)"
         by simp
-      with `a = b` `z = b # z'` 
+      with \<open>a = b\<close> \<open>z = b # z'\<close> 
       show ?thesis
         by auto
     qed
@@ -1308,7 +1308,7 @@ lemma SimpleLevi:
               (\<exists> t. p = a # t \<and> t @ s = list))"
 by (induct p) auto
 
-subsection{* Single element lists *}
+subsection\<open>Single element lists\<close>
 lemma lengthOneCharacterisation:
   shows "(length l = 1) = (l = [hd l])"
 by (induct l) auto

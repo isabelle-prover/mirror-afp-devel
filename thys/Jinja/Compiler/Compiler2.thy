@@ -3,7 +3,7 @@
     Copyright   TUM 2003
 *)
 
-section {* Compilation Stage 2 *}
+section \<open>Compilation Stage 2\<close>
 
 theory Compiler2
 imports PCompiler J1 "../JVM/JVMExec"
@@ -46,8 +46,8 @@ primrec compE\<^sub>2 :: "expr\<^sub>1 \<Rightarrow> instr list"
 | "compEs\<^sub>2 []     = []"
 | "compEs\<^sub>2 (e#es) = compE\<^sub>2 e @ compEs\<^sub>2 es"
 
-text{* Compilation of exception table. Is given start address of code
-to compute absolute addresses necessary in exception table. *}
+text\<open>Compilation of exception table. Is given start address of code
+to compute absolute addresses necessary in exception table.\<close>
 
 primrec compxE\<^sub>2  :: "expr\<^sub>1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"
   and compxEs\<^sub>2 :: "expr\<^sub>1 list \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table" where

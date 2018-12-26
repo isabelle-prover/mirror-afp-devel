@@ -30,7 +30,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
 
   subsubsection \<open>Abstraction Relation\<close>
   text \<open>We define an invariant on the concrete gap-buffer, and its mapping to the
-    abstract model. From these two, we define a relation @{text gap_rel} between
+    abstract model. From these two, we define a relation \<open>gap_rel\<close> between
     concrete and abstract buffers. \<close>
   definition "gap_\<alpha> \<equiv> \<lambda>(l,r,buf). BUF l (take l buf @ drop r buf)"
   definition "gap_invar \<equiv> \<lambda>(l,r,buf). l\<le>r \<and> r\<le>length buf"

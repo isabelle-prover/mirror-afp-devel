@@ -17,13 +17,13 @@ text \<open>
   The standard monad laws
   \begin{gather}
     \label{eq:return:bind}
-    @{text "return a \<bind> f = f a"}
+    \<open>return a \<bind> f = f a\<close>
     \\
     \label{eq:bind:return}
-    @{text "x \<bind> return = x"}
+    \<open>x \<bind> return = x\<close>
     \\
     \label{eq:bind:assoc}
-    @{text "(x \<bind> f) \<bind> g = x \<bind> (\<lambda>a. f a \<bind> g)"}
+    \<open>(x \<bind> f) \<bind> g = x \<bind> (\<lambda>a. f a \<bind> g)\<close>
   \end{gather}
   yield a confluent and terminating rewrite system.
   Thus, when these equations are added to the simpset, the simplifier can normalise monadic 
@@ -33,17 +33,17 @@ text \<open>
   In some monads, it is possible to discard unused effects
   \begin{gather}
     \label{eq:discard}
-    @{text "x \<bind> (\<lambda>_. y) = y"}
+    \<open>x \<bind> (\<lambda>_. y) = y\<close>
   \end{gather}
   or duplicate effects
   \begin{gather}
     \label{eq:duplicate}
-    @{text "x \<bind> (\<lambda>a. x \<bind> f a) = x \<bind> (\<lambda>a. f a a)"}
+    \<open>x \<bind> (\<lambda>a. x \<bind> f a) = x \<bind> (\<lambda>a. f a a)\<close>
   \end{gather}
   or commute independent computations
   \begin{gather}
     \label{eq:commute}
-    @{text "x \<bind> (\<lambda>a. y \<bind> f a) = y \<bind> (\<lambda>b. x \<bind> (\<lambda>a. f a b))"}.
+    \<open>x \<bind> (\<lambda>a. y \<bind> f a) = y \<bind> (\<lambda>b. x \<bind> (\<lambda>a. f a b))\<close>.
   \end{gather}
   For example, @{typ "_ option"} satisfies \eqref{eq:duplicate} and \eqref{eq:commute},
   @{typ "_ set"} validates \eqref{eq:commute}, and
@@ -75,10 +75,10 @@ text \<open>
   must be registered with the attribute @{attribute monad_rule}. 
   The simproc does not need \eqref{eq:discard} and \eqref{eq:duplicate}, so these properties need not
   be registered, but can simply be added to the simpset if needed.
-  The simproc is activated by including the bundle @{text monad_normalisation}.
+  The simproc is activated by including the bundle \<open>monad_normalisation\<close>.
 
   Additionally, distributivity laws for control operators like @{const If} and @{const case_nat} 
-  specialised to @{text "\<bind>"} can be declared with the attribute @{attribute monad_distrib}.
+  specialised to \<open>\<bind>\<close> can be declared with the attribute @{attribute monad_distrib}.
   Then, the simproc will also commute computations over these control operators.
 
   The set of registered monad laws can be inspected with the command @{command print_monad_rules}.
@@ -169,7 +169,7 @@ declare [[simproc del: monad_normalisation]]
 
 text \<open>
   The following bundle enables normalisation of monadic expressions by the simplifier.
-  We use @{attribute monad_rule_internal} instead of @{text "monad_rule[simp]"} such that
+  We use @{attribute monad_rule_internal} instead of \<open>monad_rule[simp]\<close> such that
   the theorems in @{thm [source] monad_rule} get dynamically added to the simpset instead of
   only those that are in there when the bundle is declared.
 \<close>

@@ -6,16 +6,16 @@ section "Monitor Consistent Interleaving"
 theory ConsInterleave
 imports Interleave Misc
 begin
-text_raw {*\label{thy:ConsInterleave}*}
+text_raw \<open>\label{thy:ConsInterleave}\<close>
 
-text {* The monitor consistent interleaving operator is defined on two lists of arbitrary elements, provided an abstraction function @{term \<alpha>} that maps list elements to pairs of sets of monitors is available.
+text \<open>The monitor consistent interleaving operator is defined on two lists of arbitrary elements, provided an abstraction function @{term \<alpha>} that maps list elements to pairs of sets of monitors is available.
   @{term "\<alpha> e = (M,M')"} intuitively means that step @{term e} enters the monitors in @{term M} and passes (enters and leaves) the monitors in @{term M'}.
   The consistent interleaving describes all interleavings of the two lists that are consistent w.r.t. the monitor usage. 
- *}
+\<close>
 
 subsection "Monitors of lists of monitor pairs"
-text {* The following defines the set of all monitors that occur in a list of pairs of monitors. This definition is used in the following context:
-  @{text "mon_pl (map \<alpha> w)"} is the set of monitors used by a word @{text w} w.r.t. the abstraction @{text "\<alpha>"} *}
+text \<open>The following defines the set of all monitors that occur in a list of pairs of monitors. This definition is used in the following context:
+  \<open>mon_pl (map \<alpha> w)\<close> is the set of monitors used by a word \<open>w\<close> w.r.t. the abstraction \<open>\<alpha>\<close>\<close>
 definition 
   "mon_pl w == foldl (\<union>) {} (map (\<lambda>e. fst e \<union> snd e) w)"
 
@@ -53,10 +53,10 @@ fun
     else {}
   )"
 
-text {* Note that this definition allows reentrant monitors, because it only checks that a monitor that is going to be entered by one word is not used in the {\em other} word. Thus the same word may enter the same monitor
-  multiple times. *}
+text \<open>Note that this definition allows reentrant monitors, because it only checks that a monitor that is going to be entered by one word is not used in the {\em other} word. Thus the same word may enter the same monitor
+  multiple times.\<close>
 
-text {* The next lemmas are some auxiliary lemmas to simplify the handling of the consistent interleaving operator. *}
+text \<open>The next lemmas are some auxiliary lemmas to simplify the handling of the consistent interleaving operator.\<close>
 lemma cil_last_case_split[cases set, case_names left right]: "
   \<lbrakk> w\<in>e1#w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2; 
     !!w'. \<lbrakk>w=e1#w'; w'\<in>(w1 \<otimes>\<^bsub>\<alpha>\<^esub> e2#w2); 

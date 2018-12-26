@@ -5,7 +5,7 @@
 Lists of a fixed length.
 *)
 
-section {* Fixed Length Lists *}
+section \<open>Fixed Length Lists\<close>
 
 theory Listn
 imports Err

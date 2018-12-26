@@ -6,8 +6,8 @@ theory Abs_Int1
 imports Abs_State
 begin
 
-text{* Abstract interpretation over type @{text st} instead of
-functions. *}
+text\<open>Abstract interpretation over type \<open>st\<close> instead of
+functions.\<close>
 
 context Gamma
 begin
@@ -22,9 +22,9 @@ by (induction a) (auto simp: gamma_num' gamma_plus' \<gamma>_st_def lookup_def)
 
 end
 
-text{* The for-clause (here and elsewhere) only serves the purpose of fixing
+text\<open>The for-clause (here and elsewhere) only serves the purpose of fixing
 the name of the type parameter @{typ 'av} which would otherwise be renamed to
-@{typ 'a}. *}
+@{typ 'a}.\<close>
 
 locale Abs_Int = Gamma where \<gamma>=\<gamma> for \<gamma> :: "'av::SL_top \<Rightarrow> val set"
 begin
@@ -48,14 +48,14 @@ lemma strip_step'[simp]: "strip(step' S c) = strip c"
 by(induct c arbitrary: S) (simp_all add: Let_def)
 
 
-text{* Soundness: *}
+text\<open>Soundness:\<close>
 
 lemma in_gamma_update:
   "\<lbrakk> s : \<gamma>\<^sub>f S; i : \<gamma> a \<rbrakk> \<Longrightarrow> s(x := i) : \<gamma>\<^sub>f(update S x a)"
 by(simp add: \<gamma>_st_def lookup_update)
 
-text{* The soundness proofs are textually identical to the ones for the step
-function operating on states as functions. *}
+text\<open>The soundness proofs are textually identical to the ones for the step
+function operating on states as functions.\<close>
 
 lemma step_preserves_le:
   "\<lbrakk> S \<subseteq> \<gamma>\<^sub>o S'; c \<le> \<gamma>\<^sub>c c' \<rbrakk> \<Longrightarrow> step S c \<le> \<gamma>\<^sub>c (step' S' c')"
@@ -75,10 +75,10 @@ next
       "P \<subseteq> \<gamma>\<^sub>o P'" "c1 \<le> \<gamma>\<^sub>c c1'" "c2 \<le> \<gamma>\<^sub>c c2'"
     by (fastforce simp: If_le map_acom_If)
   moreover have "post c1 \<subseteq> \<gamma>\<^sub>o(post c1' \<squnion> post c2')"
-    by (metis (no_types) `c1 \<le> \<gamma>\<^sub>c c1'` join_ge1 le_post mono_gamma_o order_trans post_map_acom)
+    by (metis (no_types) \<open>c1 \<le> \<gamma>\<^sub>c c1'\<close> join_ge1 le_post mono_gamma_o order_trans post_map_acom)
   moreover have "post c2 \<subseteq> \<gamma>\<^sub>o(post c1' \<squnion> post c2')"
-    by (metis (no_types) `c2 \<le> \<gamma>\<^sub>c c2'` join_ge2 le_post mono_gamma_o order_trans post_map_acom)
-  ultimately show ?case using `S \<subseteq> \<gamma>\<^sub>o S'` by (simp add: If.IH subset_iff)
+    by (metis (no_types) \<open>c2 \<le> \<gamma>\<^sub>c c2'\<close> join_ge2 le_post mono_gamma_o order_trans post_map_acom)
+  ultimately show ?case using \<open>S \<subseteq> \<gamma>\<^sub>o S'\<close> by (simp add: If.IH subset_iff)
 next
   case (While I b c1 P)
   then obtain c1' I' P' where
@@ -86,7 +86,7 @@ next
     "I \<subseteq> \<gamma>\<^sub>o I'" "P \<subseteq> \<gamma>\<^sub>o P'" "c1 \<le> \<gamma>\<^sub>c c1'"
     by (fastforce simp: map_acom_While While_le)
   moreover have "S \<union> post c1 \<subseteq> \<gamma>\<^sub>o (S' \<squnion> post c1')"
-    using `S \<subseteq> \<gamma>\<^sub>o S'` le_post[OF `c1 \<le> \<gamma>\<^sub>c c1'`, simplified]
+    using \<open>S \<subseteq> \<gamma>\<^sub>o S'\<close> le_post[OF \<open>c1 \<le> \<gamma>\<^sub>c c1'\<close>, simplified]
     by (metis (no_types) join_ge1 join_ge2 le_sup_iff mono_gamma_o order_trans)
   ultimately show ?case by (simp add: While.IH subset_iff)
 qed
@@ -145,7 +145,7 @@ lemma acc_inv_image:
   "acc r \<Longrightarrow> acc (inv_image r f)"
 by (metis converse_inv_image strict_inv_image wf_inv_image)
 
-text{* ACC for option type: *}
+text\<open>ACC for option type:\<close>
 
 lemma acc_option: assumes "acc {(x,y::'a::preord). x \<sqsubseteq> y}"
 shows "acc {(x,y::'a::preord option). x \<sqsubseteq> y}"
@@ -156,7 +156,7 @@ proof(auto simp: wf_eq_minimal)
   proof cases
     assume "?Q = {}"
     hence "?P None" by auto
-    moreover have "None \<in> Qo" using `?Q = {}` `xo : Qo`
+    moreover have "None \<in> Qo" using \<open>?Q = {}\<close> \<open>xo : Qo\<close>
       by auto (metis not_Some_eq)
     ultimately show ?thesis by blast
   next
@@ -170,7 +170,7 @@ proof(auto simp: wf_eq_minimal)
   qed
 qed
 
-text{* ACC for abstract states, via measure functions. *}
+text\<open>ACC for abstract states, via measure functions.\<close>
 
 lemma measure_st: assumes "(strict{(x,y::'a::SL_top). x \<sqsubseteq> y})^-1 <= measure m"
 and "\<forall>x y::'a::SL_top. x \<sqsubseteq> y \<and> y \<sqsubseteq> x \<longrightarrow> m x = m y"
@@ -181,57 +181,57 @@ proof-
     let ?X = "set(dom S)" let ?Y = "set(dom S')"
     let ?f = "fun S" let ?g = "fun S'"
     let ?X' = "{x:?X. ~ \<top> \<sqsubseteq> ?f x}" let ?Y' = "{y:?Y. ~ \<top> \<sqsubseteq> ?g y}"
-    from `S \<sqsubseteq> S'` have "\<forall>y\<in>?Y'\<inter>?X. ?f y \<sqsubseteq> ?g y"
+    from \<open>S \<sqsubseteq> S'\<close> have "\<forall>y\<in>?Y'\<inter>?X. ?f y \<sqsubseteq> ?g y"
       by(auto simp: le_st_def lookup_def)
     hence 1: "\<forall>y\<in>?Y'\<inter>?X. m(?g y)+1 \<le> m(?f y)+1"
       using assms(1,2) by(fastforce)
-    from `~ S' \<sqsubseteq> S` obtain u where u: "u : ?X" "~ lookup S' u \<sqsubseteq> ?f u"
+    from \<open>~ S' \<sqsubseteq> S\<close> obtain u where u: "u : ?X" "~ lookup S' u \<sqsubseteq> ?f u"
       by(auto simp: le_st_def)
     hence "u : ?X'" by simp (metis preord_class.le_trans top)
-    have "?Y'-?X = {}" using `S \<sqsubseteq> S'` by(fastforce simp: le_st_def lookup_def)
+    have "?Y'-?X = {}" using \<open>S \<sqsubseteq> S'\<close> by(fastforce simp: le_st_def lookup_def)
     have "?Y'\<inter>?X <= ?X'" apply auto
-      apply (metis `S \<sqsubseteq> S'` le_st_def lookup_def preord_class.le_trans)
+      apply (metis \<open>S \<sqsubseteq> S'\<close> le_st_def lookup_def preord_class.le_trans)
       done
     have "(\<Sum>y\<in>?Y'. m(?g y)+1) = (\<Sum>y\<in>(?Y'-?X) \<union> (?Y'\<inter>?X). m(?g y)+1)"
       by (metis Un_Diff_Int)
     also have "\<dots> = (\<Sum>y\<in>?Y'\<inter>?X. m(?g y)+1)"
-      using `?Y'-?X = {}` by (metis Un_empty_left)
+      using \<open>?Y'-?X = {}\<close> by (metis Un_empty_left)
     also have "\<dots> < (\<Sum>x\<in>?X'. m(?f x)+1)"
     proof cases
       assume "u \<in> ?Y'"
-      hence "m(?g u) < m(?f u)" using assms(1) `S \<sqsubseteq> S'` u
+      hence "m(?g u) < m(?f u)" using assms(1) \<open>S \<sqsubseteq> S'\<close> u
         by (fastforce simp: le_st_def lookup_def)
       have "(\<Sum>y\<in>?Y'\<inter>?X. m(?g y)+1) < (\<Sum>y\<in>?Y'\<inter>?X. m(?f y)+1)"
-        using `u:?X` `u:?Y'` `m(?g u) < m(?f u)`
+        using \<open>u:?X\<close> \<open>u:?Y'\<close> \<open>m(?g u) < m(?f u)\<close>
         by(fastforce intro!: sum_strict_mono_ex1[OF _ 1])
       also have "\<dots> \<le> (\<Sum>y\<in>?X'. m(?f y)+1)"
-        by(simp add: sum_mono2[OF _ `?Y'\<inter>?X <= ?X'`])
+        by(simp add: sum_mono2[OF _ \<open>?Y'\<inter>?X <= ?X'\<close>])
       finally show ?thesis .
     next
       assume "u \<notin> ?Y'"
-      with `?Y'\<inter>?X <= ?X'` have "?Y'\<inter>?X - {u} <= ?X' - {u}" by blast
+      with \<open>?Y'\<inter>?X <= ?X'\<close> have "?Y'\<inter>?X - {u} <= ?X' - {u}" by blast
       have "(\<Sum>y\<in>?Y'\<inter>?X. m(?g y)+1) = (\<Sum>y\<in>?Y'\<inter>?X - {u}. m(?g y)+1)"
       proof-
-        have "?Y'\<inter>?X = ?Y'\<inter>?X - {u}" using `u \<notin> ?Y'` by auto
+        have "?Y'\<inter>?X = ?Y'\<inter>?X - {u}" using \<open>u \<notin> ?Y'\<close> by auto
         thus ?thesis by metis
       qed
       also have "\<dots> < (\<Sum>y\<in>?Y'\<inter>?X-{u}. m(?g y)+1) + (\<Sum>y\<in>{u}. m(?f y)+1)" by simp
       also have "(\<Sum>y\<in>?Y'\<inter>?X-{u}. m(?g y)+1) \<le> (\<Sum>y\<in>?Y'\<inter>?X-{u}. m(?f y)+1)"
         using 1 by(blast intro: sum_mono)
       also have "\<dots> \<le> (\<Sum>y\<in>?X'-{u}. m(?f y)+1)"
-        by(simp add: sum_mono2[OF _ `?Y'\<inter>?X-{u} <= ?X'-{u}`])
+        by(simp add: sum_mono2[OF _ \<open>?Y'\<inter>?X-{u} <= ?X'-{u}\<close>])
       also have "\<dots> + (\<Sum>y\<in>{u}. m(?f y)+1)= (\<Sum>y\<in>(?X'-{u}) \<union> {u}. m(?f y)+1)"
-        using `u:?X'` by(subst sum.union_disjoint[symmetric]) auto
+        using \<open>u:?X'\<close> by(subst sum.union_disjoint[symmetric]) auto
       also have "\<dots> = (\<Sum>x\<in>?X'. m(?f x)+1)"
-        using `u : ?X'` by(simp add:insert_absorb)
+        using \<open>u : ?X'\<close> by(simp add:insert_absorb)
       finally show ?thesis by (blast intro: add_right_mono)
     qed
     finally have "(\<Sum>y\<in>?Y'. m(?g y)+1) < (\<Sum>x\<in>?X'. m(?f x)+1)" .
   } thus ?thesis by(auto simp add: measure_def inv_image_def)
 qed
 
-text{* ACC for acom. First the ordering on acom is related to an ordering on
-lists of annotations. *}
+text\<open>ACC for acom. First the ordering on acom is related to an ordering on
+lists of annotations.\<close>
 
 (* FIXME mv and add [simp] *)
 lemma listrel_Cons_iff:
@@ -262,9 +262,9 @@ qed
 lemma acc_listrel: fixes r :: "('a*'a)set" assumes "refl r" and "trans r"
 and "acc r" shows "acc (listrel r - {([],[])})"
 proof-
-  have refl: "!!x. (x,x) : r" using `refl r` unfolding refl_on_def by blast
+  have refl: "!!x. (x,x) : r" using \<open>refl r\<close> unfolding refl_on_def by blast
   have trans: "!!x y z. (x,y) : r \<Longrightarrow> (y,z) : r \<Longrightarrow> (x,z) : r"
-    using `trans r` unfolding trans_def by blast
+    using \<open>trans r\<close> unfolding trans_def by blast
   from assms(3) obtain mx :: "'a set \<Rightarrow> 'a" where
     mx: "!!S x. x:S \<Longrightarrow> mx S : S \<and> (\<forall>y. (mx S,y) : strict r \<longrightarrow> y \<notin> S)"
     by(simp add: wf_eq_minimal) metis
@@ -279,26 +279,26 @@ proof-
       } note IH = this
       show ?case
       proof(cases xs)
-        case Nil with `xs : Q` have "?P Q []" by auto
+        case Nil with \<open>xs : Q\<close> have "?P Q []" by auto
         thus ?thesis by blast
       next
         case (Cons x ys)
         let ?Q1 = "{a. \<exists>bs. size bs = size ys \<and> a#bs : Q}"
-        have "x : ?Q1" using `xs : Q` Cons by auto
+        have "x : ?Q1" using \<open>xs : Q\<close> Cons by auto
         from mx[OF this] obtain m1 where
           1: "m1 \<in> ?Q1 \<and> (\<forall>y. (m1,y) \<in> strict r \<longrightarrow> y \<notin> ?Q1)" by blast
         then obtain ms1 where "size ms1 = size ys" "m1#ms1 : Q" by blast+
         hence "size ms1 < size xs" using Cons by auto
         let ?Q2 = "{bs. \<exists>m1'. (m1',m1):r \<and> (m1,m1'):r \<and> m1'#bs : Q \<and> size bs = size ms1}"
-        have "ms1 : ?Q2" using `m1#ms1 : Q` by(blast intro: refl)
-        from IH[OF `size ms1 < size xs` this]
+        have "ms1 : ?Q2" using \<open>m1#ms1 : Q\<close> by(blast intro: refl)
+        from IH[OF \<open>size ms1 < size xs\<close> this]
         obtain ms where 2: "?P ?Q2 ms" by auto
         then obtain m1' where m1': "(m1',m1) : r \<and> (m1,m1') : r \<and> m1'#ms : Q"
           by blast
         hence "\<forall>ab. (m1'#ms,ab) : strict ?R \<longrightarrow> ab \<notin> Q" using 1 2
           apply (auto simp: listrel_Cons_iff)
-          apply (metis `length ms1 = length ys` listrel_eq_len trans)
-          by (metis `length ms1 = length ys` listrel_eq_len trans)
+          apply (metis \<open>length ms1 = length ys\<close> listrel_eq_len trans)
+          by (metis \<open>length ms1 = length ys\<close> listrel_eq_len trans)
         with m1' show ?thesis by blast
       qed
     qed
@@ -326,7 +326,7 @@ apply(rule acc_inv_image[OF acc_listrel])
 apply(auto simp: refl_on_def trans_def intro: le_trans)
 done
 
-text{* Termination of the fixed-point finders, assuming monotone functions: *}
+text\<open>Termination of the fixed-point finders, assuming monotone functions:\<close>
 
 lemma pfp_termination:
 fixes x0 :: "'a::preord"

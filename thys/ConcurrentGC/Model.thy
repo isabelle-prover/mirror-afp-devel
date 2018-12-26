@@ -16,13 +16,13 @@ imports
 begin
 
 (*>*)
-section{* The Schism garbage collector *}
+section\<open>The Schism garbage collector\<close>
 
-text {*
+text \<open>
 
 \label{sec:gc-model}
 
-The following formalises Figures~2.8 (@{text "mark_object_fn"}), 2.9
+The following formalises Figures~2.8 (\<open>mark_object_fn\<close>), 2.9
 (load and store but not alloc), and 2.15 (garbage collector) of
 \citet{Pizlo201xPhd}. See also \citet{Pizlo+2010PLDI}.
 
@@ -38,17 +38,17 @@ locations are labelled with strings for readability. We enumerate the
 names of the processes in our system. The safety proof treats an
 arbitary (unbounded) number of mutators.
 
-*}
+\<close>
 
 type_synonym location = "char list"
 
 datatype 'mut process_name = mutator 'mut | gc | sys
 
-text {*
+text \<open>
 
 The garbage collection process can be in one of the following phases.
 
-*}
+\<close>
 
 datatype gc_phase
   = ph_Idle
@@ -56,27 +56,27 @@ datatype gc_phase
   | ph_Mark
   | ph_Sweep
 
-text {*
+text \<open>
 
 The garbage collector instructs mutators to perform certain actions,
 and blocks until the mutators signal these actions are done. The
 mutators always respond with their work list (a set of
 references). The handshake can be of one of the specified types.
 
-*}
+\<close>
 
 datatype handshake_type
   = ht_NOOP
   | ht_GetRoots
   | ht_GetWork
 
-text{*
+text\<open>
 
 We track how many \texttt{noop} and \texttt{get\_roots} handshakes
 each process has participated in as ghost state. See
 \S\ref{sec:gc_ragged_safepoints}.
 
-*}
+\<close>
 
 datatype handshake_phase
   = hp_Idle (* done 1 noop *)
@@ -93,7 +93,7 @@ definition handshake_step :: "handshake_phase \<Rightarrow> handshake_phase" whe
      | hp_Mark          \<Rightarrow> hp_IdleMarkSweep
      | hp_IdleMarkSweep \<Rightarrow> hp_Idle"
 
-text {*
+text \<open>
 
 An object consists of a garbage collection mark and a function that maps
 its fields to values. A value is either a reference or \texttt{NULL}.
@@ -105,7 +105,7 @@ its fields to values. A value is either a reference or \texttt{NULL}.
 For simplicity we assume all objects define all fields and ignore all
 non-reference payload in objects.
 
-*}
+\<close>
 
 type_synonym gc_mark = bool
 
@@ -113,12 +113,11 @@ record ('field, 'ref) object =
   obj_mark :: "gc_mark"
   obj_fields :: "'field \<Rightarrow> 'ref option"
 
-text{*
+text\<open>
 
-The TSO store buffers track write actions, represented by @{text
-"('field, 'ref) mem_write_action"}.
+The TSO store buffers track write actions, represented by \<open>('field, 'ref) mem_write_action\<close>.
 
-*}
+\<close>
 
 datatype ('field, 'ref) mem_write_action
   = mw_Mark 'ref gc_mark
@@ -127,17 +126,16 @@ datatype ('field, 'ref) mem_write_action
   | mw_fM gc_mark
   | mw_Phase gc_phase
 
-text{*
+text\<open>
 
 The following record is the type of all processes's local states. For
 the mutators and the garbage collector, consider these to be local
 variables or registers.
 
-The system's @{text "fA"}, @{text "fM"}, @{text "phase"} and @{text
-"heap"} variables are subject to the TSO memory model, as are all heap
+The system's \<open>fA\<close>, \<open>fM\<close>, \<open>phase\<close> and \<open>heap\<close> variables are subject to the TSO memory model, as are all heap
 operations.
 
-*}
+\<close>
 
 record ('field, 'mut, 'ref) local_state =
   \<comment> \<open>System-specific fields\<close>
@@ -176,12 +174,12 @@ record ('field, 'mut, 'ref) local_state =
   \<comment> \<open>Ghost state\<close>
   ghost_honorary_grey :: "'ref set"
 
-text{*
+text\<open>
 
 An action is a request by a mutator or the garbage collector to the
 system.
 
-*}
+\<close>
 
 datatype ('field, 'ref) mem_read_action
   = mr_Ref 'ref 'field
@@ -227,7 +225,7 @@ datatype ('field, 'ref) response
   | mv_Refs "'ref set"
   | mv_Void
 
-text{* We instantiate CIMP's types as follows: *}
+text\<open>We instantiate CIMP's types as follows:\<close>
 
 type_synonym ('field, 'mut, 'ref) gc_com
   = "(('field, 'ref) response, location, ('field, 'mut, 'ref) request, ('field, 'mut, 'ref) local_state) com"
@@ -254,11 +252,11 @@ type_synonym ('field, 'mut, 'ref) lsts
 type_synonym ('field, 'mut, 'ref) lsts_pred
   = "('field, 'mut, 'ref) lsts \<Rightarrow> bool"
 
-text{*
+text\<open>
 
 We use one locale per process to define a namespace for definitions
 local to these processes. Mutator definitions are parametrised by the
-mutator's identifier @{text "m"}. We never interpret these locales; we
+mutator's identifier \<open>m\<close>. We never interpret these locales; we
 use their contents typically by prefixing their names the locale
 name. This might be considered an abuse. The attributes depend on
 locale scoping somewhat, which is a mixed blessing.
@@ -267,7 +265,7 @@ If we have more than one mutator then we need to show that mutators do
 not mutually interfere. To that end we define an extra locale that
 contains these proofs.
 
-*}
+\<close>
 
 locale mut_m = fixes m :: "'mut"
 locale mut_m' = mut_m + fixes m' :: "'mut" assumes mm'[iff]: "m \<noteq> m'"
@@ -275,9 +273,9 @@ locale gc
 locale sys
 
 
-subsection{* Object marking *}
+subsection\<open>Object marking\<close>
 
-text{*
+text\<open>
 
 \label{sec:gc-marking}
 
@@ -287,7 +285,7 @@ collection. This operation is defined in
 \citet[Figure~2.8]{Pizlo201xPhd}. These definitions are parameterised
 by the name of the process.
 
-*}
+\<close>
 
 context
   fixes p :: "'mut process_name"
@@ -328,7 +326,7 @@ abbreviation add_to_W :: "location \<Rightarrow> (('field, 'mut, 'ref) local_sta
   "add_to_W l r \<equiv> \<lbrace>l\<rbrace> \<lfloor>\<lambda>s. s\<lparr> W := W s \<union> {r s}, ghost_honorary_grey := {} \<rparr>\<rfloor>"
 notation add_to_W ("\<lbrace>_\<rbrace> add'_to'_W")
 
-text{*
+text\<open>
 
 The reference we're marking is given in @{const "ref"}. If the current
 process wins the \texttt{CAS} race then the reference is marked and
@@ -343,7 +341,7 @@ is used to track objects undergoing this transition.
 As CIMP provides no support for function calls, we prefix each
 statement's label with a string from its callsite.
 
-*}
+\<close>
 
 definition mark_object_fn :: "location \<Rightarrow> ('field, 'mut, 'ref) gc_com" where
   "mark_object_fn l \<equiv>
@@ -369,7 +367,7 @@ definition mark_object_fn :: "location \<Rightarrow> ('field, 'mut, 'ref) gc_com
 
 end (* context *)
 
-text{*
+text\<open>
 
 The worklists (field @{term "W"}) are not subject to TSO. As we later
 show (\S\ref{def:valid_W_inv}), these are disjoint and hence
@@ -377,30 +375,29 @@ operations on these are private to each process, with the sole
 exception of when the GC requests them from the mutators. We describe
 that mechanism next.
 
-*}
+\<close>
 
-subsection{* Handshakes *}
+subsection\<open>Handshakes\<close>
 
-text{*
+text\<open>
 
 \label{sec:gc_ragged_safepoints}
 
 The garbage collector needs to synchronise with the mutators. In
 practice this is implemented with some thread synchronisation
 primitives that include memory fences. The scheme we adopt here has
-the GC busy waiting. It sets a @{text "pending"} flag for each mutator
+the GC busy waiting. It sets a \<open>pending\<close> flag for each mutator
 and then waits for each to respond.
 
 The system side of the interface collects the responses from the
 mutators into a single worklist, which acts as a proxy for the garbage
-collector's local worklist during @{text "get_roots"} and @{text
-"get_work"} handshakes. In practise this involves a \texttt{CAS}
+collector's local worklist during \<open>get_roots\<close> and \<open>get_work\<close> handshakes. In practise this involves a \texttt{CAS}
 operation. We carefully model the effect these handshakes have on the
 process's TSO buffers.
 
 The system and mutators track handshake phases using ghost state.
 
-*}
+\<close>
 
 abbreviation hp_step :: "handshake_type \<Rightarrow> handshake_phase \<Rightarrow> handshake_phase" where
   "hp_step ht \<equiv>
@@ -442,13 +439,13 @@ definition handshake :: "('field, 'mut, 'ref) gc_com" where
 
 end
 
-text{*
+text\<open>
 
 The mutator's side of the interface. Also updates the ghost state
 tracking the handshake state for @{const "ht_NOOP"} and @{const
 "ht_GetRoots"} but not @{const "ht_GetWork"}.
 
-*}
+\<close>
 
 context mut_m
 begin
@@ -496,11 +493,11 @@ definition handshake :: "('field, 'mut, 'ref) gc_com" where
 
 end (* context mut_m *)
 
-text{*
+text\<open>
 
 The garbage collector's side of the interface.
 
-*}
+\<close>
 
 context gc
 begin
@@ -569,9 +566,9 @@ where
 end (* context gc *)
 
 
-subsection{* The system process *}
+subsection\<open>The system process\<close>
 
-text {*
+text \<open>
 
 The system process models the environment in which the garbage
 collector and mutators execute.  We translate the x86-TSO memory model
@@ -585,19 +582,19 @@ instructions (and others in general). A processor is not blocked
 (i.e., it can read from memory) when it holds the lock, or no-one
 does.
 
-*}
+\<close>
 
 definition
   not_blocked :: "('field, 'mut, 'ref) local_state \<Rightarrow> 'mut process_name \<Rightarrow> bool"
 where
   "not_blocked s p \<equiv> case mem_lock s of None \<Rightarrow> True | Some p' \<Rightarrow> p = p'"
 
-text{*
+text\<open>
 
 We compute the view a processor has of memory by applying all its
 pending writes.
 
-*}
+\<close>
 
 definition do_write_action :: "('field, 'ref) mem_write_action \<Rightarrow> ('field, 'mut, 'ref) local_state \<Rightarrow> ('field, 'mut, 'ref) local_state" where
   "do_write_action wact \<equiv> \<lambda>s.
@@ -642,7 +639,7 @@ where
 context sys
 begin
 
-text{*
+text\<open>
 
 The semantics of TSO memory following
 \citet[\S3]{DBLP:journals/cacm/SewellSONM10}. This differs from the
@@ -650,10 +647,10 @@ earlier \citet{DBLP:conf/tphol/OwensSS09} by allowing the TSO lock to
 be taken by a process with a non-empty write buffer. We omit their
 treatment of registers; these are handled by the local states of the
 other processes. The system can autonomously take the oldest write in
-the write buffer for processor @{text "p"} and commit it to memory,
-provided @{text "p"} either holds the lock or no processor does.
+the write buffer for processor \<open>p\<close> and commit it to memory,
+provided \<open>p\<close> either holds the lock or no processor does.
 
-*}
+\<close>
 
 definition
   mem_TSO :: "('field, 'mut, 'ref) gc_com"
@@ -672,7 +669,7 @@ where
       \<squnion> \<lbrace>''sys_dequeue_write_buffer''\<rbrace> LocalOp (\<lambda>s. { (do_write_action w s)\<lparr> mem_write_buffers := (mem_write_buffers s)(p := ws) \<rparr>
                                                     | p w ws. mem_write_buffers s p = w # ws \<and> not_blocked s p \<and> p \<noteq> sys })"
 
-text{*
+text\<open>
 
 We track which references are allocated using the domain of @{const
 "heap"}.
@@ -694,7 +691,7 @@ Note that the \texttt{abort} in \citet[Figure~2.9:
 Alloc]{Pizlo201xPhd} means the atomic fails and the mutator can revert
 to activity outside of \texttt{Alloc}, avoiding deadlock.
 
-*}
+\<close>
 
 definition
   alloc :: "('field, 'mut, 'ref) gc_com"
@@ -703,11 +700,11 @@ where
       { ( s\<lparr> heap := (heap s)(r := Some \<lparr> obj_mark = fA s, obj_fields = \<langle>None\<rangle> \<rparr>) \<rparr>, mv_Ref (Some r) )
       |r. r \<notin> dom (heap s) \<and> snd req = ro_Alloc })"
 
-text{*
+text\<open>
 
 References are freed by removing them from @{const "heap"}.
 
-*}
+\<close>
 
 definition
   free :: "('field, 'mut, 'ref) gc_com"
@@ -715,11 +712,11 @@ where
   "free \<equiv> \<lbrace>''sys_free''\<rbrace> Response (\<lambda>req s.
       { (s\<lparr>heap := (heap s)(r := None)\<rparr>, mv_Void) |r. snd req = ro_Free r })"
 
-text{*
+text\<open>
 
 The top-level system process.
 
-*}
+\<close>
 
 definition
   com :: "('field, 'mut, 'ref) gc_com"
@@ -735,9 +732,9 @@ where
 end (* context sys *)
 
 
-subsection{* Mutators *}
+subsection\<open>Mutators\<close>
 
-text{*
+text\<open>
 
 The mutators need to cooperate with the garbage collector. In
 particular, when the garbage collector is not idle the mutators use a
@@ -747,19 +744,19 @@ The local state for each mutator tracks a working set of references,
 which abstracts from how the process's registers and stack are
 traversed to discover roots.
 
-*}
+\<close>
 
 context mut_m
 begin
 
-text{*
+text\<open>
 
 \label{sec:mut_alloc}
 
 Allocation is defined in \citet[Figure~2.9]{Pizlo201xPhd}. See
 \S\ref{sec:sys_alloc} for how we abstract it.
 
-*}
+\<close>
 
 abbreviation (in -) mut_alloc :: "'mut \<Rightarrow> ('field, 'mut, 'ref) gc_com" where
   "mut_alloc m \<equiv>
@@ -769,23 +766,23 @@ abbreviation (in -) mut_alloc :: "'mut \<Rightarrow> ('field, 'mut, 'ref) gc_com
 abbreviation alloc :: "('field, 'mut, 'ref) gc_com" where
   "alloc \<equiv> mut_alloc m"
 
-text{*
+text\<open>
 
 The mutator can always discard any references it holds.
 
-*}
+\<close>
 
 abbreviation discard :: "('field, 'mut, 'ref) gc_com" where
   "discard \<equiv>
     \<lbrace>''discard_refs''\<rbrace> LocalOp (\<lambda>s. { s\<lparr> roots := roots' \<rparr> |roots'. roots' \<subseteq> roots s })"
 
-text{*
+text\<open>
 
 Load and store are defined in \citet[Figure~2.9]{Pizlo201xPhd}.
 
 Dereferencing a reference can increase the set of mutator roots.
 
-*}
+\<close>
 
 abbreviation load :: "('field, 'mut, 'ref) gc_com" where
   "load \<equiv>
@@ -794,7 +791,7 @@ abbreviation load :: "('field, 'mut, 'ref) gc_com" where
                        (\<lambda>mv s. { s\<lparr> roots := roots s \<union> set_option r \<rparr>
                                |r. mv = mv_Ref r })"
 
-text{*
+text\<open>
 
 \label{sec:write-barriers}
 
@@ -808,7 +805,7 @@ discussion.
 Note that the the mutator reads the overwritten reference but does not
 store it in its roots.
 
-*}
+\<close>
 
 abbreviation
   mut_deref :: "location
@@ -854,14 +851,14 @@ where
      \<lbrace>''store_ins''\<rbrace> mark_object ;;
      \<lbrace>''store_ins''\<rbrace> write_ref tmp_ref field new_ref"
 
-text{*
+text\<open>
 
 A mutator makes a non-deterministic choice amongst its possible
 actions. For completeness we allow mutators to issue \texttt{MFENCE}
 instructions. We leave \texttt{CAS} (etc) to future work. Neither has
 a significant impact on the rest of the development.
 
-*}
+\<close>
 
 definition
   com :: "('field, 'mut, 'ref) gc_com"
@@ -880,15 +877,15 @@ where
 end (* context mut_m *)
 
 
-subsection {* Garbage collector *}
+subsection \<open>Garbage collector\<close>
 
-text{*
+text\<open>
 
 \label{sec:gc-model-gc}
 
 We abstract the primitive actions of the garbage collector thread.
 
-*}
+\<close>
 
 abbreviation
   gc_deref :: "location
@@ -935,12 +932,12 @@ abbreviation mark_object :: "location \<Rightarrow> ('field, 'mut, 'ref) gc_com"
 abbreviation free :: "location \<Rightarrow> (('field, 'mut, 'ref) local_state \<Rightarrow> 'ref) \<Rightarrow> ('field, 'mut, 'ref) gc_com" ("\<lbrace>_\<rbrace> free") where
   "\<lbrace>l\<rbrace> free r \<equiv> \<lbrace>l\<rbrace> Request (\<lambda>s. (gc, ro_Free (r s))) (\<lambda>_ s. {s})"
 
-text{*
+text\<open>
 
 The following CIMP program encodes the garbage collector algorithm
 proposed in Figure~2.15 of \citet{Pizlo201xPhd}.
 
-*}
+\<close>
 
 definition (in gc)
   com :: "('field, 'mut, 'ref) gc_com"

@@ -1,7 +1,7 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-section {* Verification of Imperative Heap Sort *}
+section \<open>Verification of Imperative Heap Sort\<close>
 
 theory HeapImperative
 imports Heap
@@ -22,7 +22,7 @@ abbreviation right_val :: "'a Tree \<Rightarrow> 'a" where
 abbreviation set_val :: "'a Tree \<Rightarrow> 'a \<Rightarrow> 'a Tree" where
   "set_val t x \<equiv> T x (left t) (right t)"
 
-text{* The first step is to implement function {\em siftDown}. If some node
+text\<open>The first step is to implement function {\em siftDown}. If some node
 does not satisfy heap property, this function moves it down the heap
 until it does. For a node is checked weather it satisfies heap property or not. If it
 does nothing is changed. If it does not, value of the root node
@@ -31,7 +31,7 @@ becomes the value of the root node. This is the reason this function
 is called {\tt siftDown} -- value of the node is places down in the
 heap. Now, the problem is that the child node may not satisfy the heap
 property and that is the reason why function {\tt siftDown} is
-recursively applied. *}
+recursively applied.\<close>
 
 fun siftDown :: "'a::linorder Tree \<Rightarrow> 'a Tree" where
    "siftDown E = E"
@@ -97,10 +97,10 @@ next
       next
         case False
         hence "in_tree v (siftDown (set_val (T v1 l1 r1) v2))"
-          using `\<not> v2 \<ge> v1` 3(2)
+          using \<open>\<not> v2 \<ge> v1\<close> 3(2)
           by auto
         hence "in_tree v (T v2 l1 r1)"
-          using 3(1) `\<not> v2 \<ge> v1`
+          using 3(1) \<open>\<not> v2 \<ge> v1\<close>
           by auto
         thus ?thesis
         proof(cases "v2 = v")
@@ -110,7 +110,7 @@ next
         next
           case False
           hence "in_tree v (T v1 l1 r1)"
-            using `in_tree v (T v2 l1 r1)`
+            using \<open>in_tree v (T v2 l1 r1)\<close>
             by auto
           thus ?thesis
             by auto
@@ -136,10 +136,10 @@ next
       next
         case False
         hence "in_tree v (siftDown (set_val (T v1 l1 r1) v2))"
-          using `\<not> v2 \<ge> v1` 4(2)
+          using \<open>\<not> v2 \<ge> v1\<close> 4(2)
           by auto
         hence "in_tree v (T v2 l1 r1)"
-          using 4(1) `\<not> v2 \<ge> v1`
+          using 4(1) \<open>\<not> v2 \<ge> v1\<close>
           by auto
         thus ?thesis
         proof(cases "v2 = v")
@@ -149,7 +149,7 @@ next
         next
           case False
           hence "in_tree v (T v1 l1 r1)"
-            using `in_tree v (T v2 l1 r1)`
+            using \<open>in_tree v (T v2 l1 r1)\<close>
             by auto
           thus ?thesis
             by auto
@@ -172,7 +172,7 @@ next
         proof(cases "v' \<ge> v1")
           case True
           thus ?thesis 
-            using `v1 \<ge> v2` "5_1"
+            using \<open>v1 \<ge> v2\<close> "5_1"
             by auto
         next
           case False
@@ -184,14 +184,14 @@ next
           next
             case False
             hence "in_tree v (siftDown (set_val (T v1 l1 r1) v'))"
-              using "5_1"(3) `\<not> in_tree v (T v2 l2 r2)` `v1 \<ge> v2` `\<not> v' \<ge> v1`
-              using ` \<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using "5_1"(3) \<open>\<not> in_tree v (T v2 l2 r2)\<close> \<open>v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v1\<close>
+              using \<open> \<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             hence "in_tree v (T v' l1 r1)"
-              using "5_1"(1) `v1 \<ge> v2` `\<not> v' \<ge> v1`
+              using "5_1"(1) \<open>v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v1\<close>
               by auto
             hence "in_tree v (T v1 l1 r1)"
-              using  `\<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using  \<open>\<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             thus ?thesis
               by auto
@@ -203,7 +203,7 @@ next
         proof(cases "v' \<ge> v2")
           case True
           thus ?thesis 
-            using `\<not> v1 \<ge> v2` "5_1"
+            using \<open>\<not> v1 \<ge> v2\<close> "5_1"
             by auto
         next
           case False
@@ -215,14 +215,14 @@ next
           next
             case False
             hence "in_tree v (siftDown (set_val (T v2 l2 r2) v'))"
-              using "5_1"(3) `\<not> in_tree v (T v1 l1 r1)` `\<not> v1 \<ge> v2` `\<not> v' \<ge> v2`
-              using ` \<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using "5_1"(3) \<open>\<not> in_tree v (T v1 l1 r1)\<close> \<open>\<not> v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v2\<close>
+              using \<open> \<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             hence "in_tree v (T v' l2 r2)"
-              using "5_1"(2) `\<not> v1 \<ge> v2` `\<not> v' \<ge> v2`
+              using "5_1"(2) \<open>\<not> v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v2\<close>
               by auto
             hence "in_tree v (T v2 l2 r2)"
-              using  `\<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using  \<open>\<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             thus ?thesis
               by auto
@@ -246,7 +246,7 @@ next
         proof(cases "v' \<ge> v1")
           case True
           thus ?thesis 
-            using `v1 \<ge> v2` "5_2"
+            using \<open>v1 \<ge> v2\<close> "5_2"
             by auto
         next
           case False
@@ -258,14 +258,14 @@ next
           next
             case False
             hence "in_tree v (siftDown (set_val (T v1 l1 r1) v'))"
-              using "5_2"(3) `\<not> in_tree v (T v2 l2 r2)` `v1 \<ge> v2` `\<not> v' \<ge> v1`
-              using ` \<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using "5_2"(3) \<open>\<not> in_tree v (T v2 l2 r2)\<close> \<open>v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v1\<close>
+              using \<open> \<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             hence "in_tree v (T v' l1 r1)"
-              using "5_2"(1) `v1 \<ge> v2` `\<not> v' \<ge> v1`
+              using "5_2"(1) \<open>v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v1\<close>
               by auto
             hence "in_tree v (T v1 l1 r1)"
-              using  `\<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using  \<open>\<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             thus ?thesis
               by auto
@@ -277,7 +277,7 @@ next
         proof(cases "v' \<ge> v2")
           case True
           thus ?thesis 
-            using `\<not> v1 \<ge> v2` "5_2"
+            using \<open>\<not> v1 \<ge> v2\<close> "5_2"
             by auto
         next
           case False
@@ -289,14 +289,14 @@ next
           next
             case False
             hence "in_tree v (siftDown (set_val (T v2 l2 r2) v'))"
-              using "5_2"(3) `\<not> in_tree v (T v1 l1 r1)` `\<not> v1 \<ge> v2` `\<not> v' \<ge> v2`
-              using ` \<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using "5_2"(3) \<open>\<not> in_tree v (T v1 l1 r1)\<close> \<open>\<not> v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v2\<close>
+              using \<open> \<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             hence "in_tree v (T v' l2 r2)"
-              using "5_2"(2) `\<not> v1 \<ge> v2` `\<not> v' \<ge> v2`
+              using "5_2"(2) \<open>\<not> v1 \<ge> v2\<close> \<open>\<not> v' \<ge> v2\<close>
               by auto
             hence "in_tree v (T v2 l2 r2)"
-              using  `\<not> (v = v' \<or> v = v1 \<or> v = v2)`
+              using  \<open>\<not> (v = v' \<or> v = v1 \<or> v = v2)\<close>
               by auto
             thus ?thesis
               by auto
@@ -349,7 +349,7 @@ next
       proof (cases "v' = v2")
         case True
         thus ?thesis
-          using False `is_heap ?t` *
+          using False \<open>is_heap ?t\<close> *
           by auto
       next
         case False
@@ -368,7 +368,7 @@ next
           using is_heap_max[of v' "T v1 l1 r1"]
           by auto
         thus ?thesis
-          using `is_heap ?t` * `\<not> v2 \<ge> v1`
+          using \<open>is_heap ?t\<close> * \<open>\<not> v2 \<ge> v1\<close>
           by auto
       qed
     qed
@@ -401,7 +401,7 @@ next
     proof(cases "v' = v2")
       case True
       thus ?thesis
-        using * `is_heap ?t` False
+        using * \<open>is_heap ?t\<close> False
         by auto
     next
       case False
@@ -419,7 +419,7 @@ next
         using is_heap_max[of v' "T v1 l1 r1"] 4
         by auto
       thus ?thesis
-        using `is_heap ?t` False *
+        using \<open>is_heap ?t\<close> False *
         by auto
     qed
   qed
@@ -432,7 +432,7 @@ next
     proof(cases "v1 \<ge> v2")
       case True
       thus ?thesis
-        using `v2 \<ge> v3` "5_1"
+        using \<open>v2 \<ge> v3\<close> "5_1"
         by auto
     next
       case False
@@ -445,7 +445,7 @@ next
         apply(induct l rule:is_heap.induct)
         by auto
       hence "is_heap ?t"
-        using "5_1"(1)[of l2 r2 v1] `v2 \<ge> v3` False 
+        using "5_1"(1)[of l2 r2 v1] \<open>v2 \<ge> v3\<close> False 
         by auto
       have "v2 \<ge> v'"
       proof(cases "v' = v1")
@@ -469,7 +469,7 @@ next
           by auto
       qed
       thus ?thesis
-        using `is_heap ?t` `v2 \<ge> v3` * False "5_1"
+        using \<open>is_heap ?t\<close> \<open>v2 \<ge> v3\<close> * False "5_1"
         by auto
     qed
   next
@@ -478,7 +478,7 @@ next
     proof(cases "v1 \<ge> v3")
       case True
       thus ?thesis
-        using `\<not> v2 \<ge> v3` "5_1"
+        using \<open>\<not> v2 \<ge> v3\<close> "5_1"
         by auto
     next
       case False
@@ -491,7 +491,7 @@ next
         apply(induct r rule:is_heap.induct)
         by auto
       hence "is_heap ?t"
-        using "5_1"(2)[of l3 r3 v1] `\<not> v2 \<ge> v3` False 
+        using "5_1"(2)[of l3 r3 v1] \<open>\<not> v2 \<ge> v3\<close> False 
         by auto
       have "v3 \<ge> v'"
       proof(cases "v' = v1")
@@ -515,7 +515,7 @@ next
           by auto
       qed
       thus ?thesis
-        using `is_heap ?t` `\<not> v2 \<ge> v3` * False "5_1"
+        using \<open>is_heap ?t\<close> \<open>\<not> v2 \<ge> v3\<close> * False "5_1"
         by auto
     qed
   qed          
@@ -528,7 +528,7 @@ next
     proof(cases "v1 \<ge> v2")
       case True
       thus ?thesis
-        using `v2 \<ge> v3` "5_2"
+        using \<open>v2 \<ge> v3\<close> "5_2"
         by auto
     next
       case False
@@ -541,7 +541,7 @@ next
         apply(induct l rule:is_heap.induct)
         by auto
       hence "is_heap ?t"
-        using "5_2"(1)[of l2 r2 v1] `v2 \<ge> v3` False 
+        using "5_2"(1)[of l2 r2 v1] \<open>v2 \<ge> v3\<close> False 
         by auto
       have "v2 \<ge> v'"
       proof(cases "v' = v1")
@@ -565,7 +565,7 @@ next
           by auto
       qed
       thus ?thesis
-        using `is_heap ?t` `v2 \<ge> v3` * False "5_2"
+        using \<open>is_heap ?t\<close> \<open>v2 \<ge> v3\<close> * False "5_2"
         by auto
     qed
   next
@@ -574,7 +574,7 @@ next
     proof(cases "v1 \<ge> v3")
       case True
       thus ?thesis
-        using `\<not> v2 \<ge> v3` "5_2"
+        using \<open>\<not> v2 \<ge> v3\<close> "5_2"
         by auto
     next
       case False
@@ -587,7 +587,7 @@ next
         apply(induct r rule:is_heap.induct)
         by auto
       hence "is_heap ?t"
-        using "5_2"(2)[of l3 r3 v1] `\<not> v2 \<ge> v3` False 
+        using "5_2"(2)[of l3 r3 v1] \<open>\<not> v2 \<ge> v3\<close> False 
         by auto
       have "v3 \<ge> v'"
       proof(cases "v' = v1")
@@ -611,14 +611,14 @@ next
           by auto
       qed
       thus ?thesis
-        using `is_heap ?t` `\<not> v2 \<ge> v3` * False "5_2"
+        using \<open>is_heap ?t\<close> \<open>\<not> v2 \<ge> v3\<close> * False "5_2"
         by auto
     qed
   qed          
 qed
 
-text{* Definition of the function {\em heapify} which
-makes a heap from any given binary tree. *}
+text\<open>Definition of the function {\em heapify} which
+makes a heap from any given binary tree.\<close>
 
 primrec heapify where
    "heapify E = E"
@@ -637,8 +637,8 @@ next
     by auto
 qed
 
-text{* Definition of {\em removeLeaf} function.  Function returns two values. The first one
-is the value of romoved leaf element. The second returned value is tree without that leaf. *}
+text\<open>Definition of {\em removeLeaf} function.  Function returns two values. The first one
+is the value of romoved leaf element. The second returned value is tree without that leaf.\<close>
 
 fun removeLeaf:: "'a::linorder Tree \<Rightarrow> 'a \<times> 'a Tree" where
   "removeLeaf (T v E E) = (v, E)"
@@ -646,25 +646,25 @@ fun removeLeaf:: "'a::linorder Tree \<Rightarrow> 'a \<times> 'a Tree" where
 | "removeLeaf (T v E r) = (fst (removeLeaf r), T v E (snd (removeLeaf r)))"
 | "removeLeaf (T v l r) = (fst (removeLeaf l), T v (snd (removeLeaf l)) r)"
 
-text{* Function {\em of\_list\_tree} makes a binary tree from any given
-list. *}
+text\<open>Function {\em of\_list\_tree} makes a binary tree from any given
+list.\<close>
 
 primrec of_list_tree:: "'a::linorder list \<Rightarrow> 'a Tree" where
   "of_list_tree [] = E"
 | "of_list_tree (v # tail) = T v (of_list_tree tail) E"
 
-text{* By applying {\em heapify} binary tree is transformed into
-heap.  *}
+text\<open>By applying {\em heapify} binary tree is transformed into
+heap.\<close>
 
 definition hs_of_list where
   "hs_of_list l = heapify (of_list_tree l)"
 
-text{* Definition of function {\em hs\_remove\_max}. As it is already well
+text\<open>Definition of function {\em hs\_remove\_max}. As it is already well
 established, finding maximum is not a problem, since it is in the root
 element of the heap. The root element is replaced with leaf of the
 heap and that leaf is erased from its previous position. However, now
 the new root element may not satisfy heap property and that is the
-reason to apply function {\em siftDown}. *}
+reason to apply function {\em siftDown}.\<close>
 
 definition hs_remove_max :: "'a::linorder Tree \<Rightarrow> 'a \<times> 'a Tree" where
   "hs_remove_max t \<equiv>
@@ -729,8 +729,8 @@ next
       by auto
     hence "multiset (siftDown (T v1 E (T v l r))) = 
            {#v#} + multiset l + {#v1#} + multiset r"
-      using `multiset (set_val (T v l r) v1) = 
-             multiset l + {#v1#} + multiset r`
+      using \<open>multiset (set_val (T v l r) v1) = 
+             multiset l + {#v1#} + multiset r\<close>
       by (metis union_commute union_lcomm)
     moreover
     have "multiset (T v1 E (T v l r)) =  
@@ -754,14 +754,14 @@ next
     proof(cases "v \<ge> v1")
       case True
       thus ?thesis
-        using `v1 \<ge> v2`
+        using \<open>v1 \<ge> v2\<close>
         by auto
     next
       case False
       hence "multiset (siftDown (T v (T v1 l1 r1) (T v2 l2 r2))) = 
              multiset l1 + {#v#} + multiset r1 + {#v1#} + 
              multiset (T v2 l2 r2)"
-        using `v1 \<ge> v2` "5_1"(1)
+        using \<open>v1 \<ge> v2\<close> "5_1"(1)
         by auto
       moreover
       have "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
@@ -791,7 +791,7 @@ next
       hence "multiset (siftDown (T v (T v1 l1 r1) (T v2 l2 r2))) = 
              multiset (T v1 l1 r1) + {#v2#} + 
              multiset l2 + {#v#} + multiset r2"
-        using `\<not> v1 \<ge> v2` "5_1"(2)
+        using \<open>\<not> v1 \<ge> v2\<close> "5_1"(2)
         by (simp add: ac_simps)
       moreover
       have 
@@ -820,14 +820,14 @@ next
     proof(cases "v \<ge> v1")
       case True
       thus ?thesis
-        using `v1 \<ge> v2`
+        using \<open>v1 \<ge> v2\<close>
         by auto
     next
       case False
       hence "multiset (siftDown (T v (T v1 l1 r1) (T v2 l2 r2))) = 
                multiset l1 + {#v#} + multiset r1 + {#v1#} + 
                multiset (T v2 l2 r2)"
-        using `v1 \<ge> v2` "5_2"(1)
+        using \<open>v1 \<ge> v2\<close> "5_2"(1)
         by auto
       moreover
       have "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
@@ -857,7 +857,7 @@ next
       hence "multiset (siftDown (T v (T v1 l1 r1) (T v2 l2 r2))) = 
                multiset (T v1 l1 r1) + {#v2#} + multiset l2 + {#v#} + 
                multiset r2"
-        using `\<not> v1 \<ge> v2` "5_2"(2)
+        using \<open>\<not> v1 \<ge> v2\<close> "5_2"(2)
         by (simp add: ac_simps)
       moreover
       have "multiset (T v (T v1 l1 r1) (T v2 l2 r2)) = 
@@ -954,7 +954,7 @@ next
       using False removeLeaf_val_val[of "T v1 l1 r1"]
       by auto
     hence "is_heap (T v (snd (removeLeaf (T v1 l1 r1))) E)"
-      using `is_heap (snd (removeLeaf (T v1 l1 r1)))`
+      using \<open>is_heap (snd (removeLeaf (T v1 l1 r1)))\<close>
       by (metis Tree.exhaust is_heap.simps(2) is_heap.simps(4))
     thus ?thesis
       using 2
@@ -983,7 +983,7 @@ next
       using False removeLeaf_val_val[of "T v1 l1 r1"]
       by auto
     hence "is_heap (T v E (snd (removeLeaf (T v1 l1 r1))))"
-      using `is_heap (snd (removeLeaf (T v1 l1 r1)))`
+      using \<open>is_heap (snd (removeLeaf (T v1 l1 r1)))\<close>
       by (metis False Tree.exhaust is_heap.simps(3))
     thus ?thesis
       using 3
@@ -1002,14 +1002,14 @@ next
   proof(cases "?t = E")
     case True
     thus ?thesis
-      using `is_heap (T v2 l2 r2)` `v \<ge> v2`
+      using \<open>is_heap (T v2 l2 r2)\<close> \<open>v \<ge> v2\<close>
       by auto
   next
     case False
     then obtain v1' l1' r1' where "?t = T v1' l1' r1'"
       by (metis Tree.exhaust)
     hence "is_heap (T v1' l1' r1')"
-      using `is_heap (snd (removeLeaf (T v1 l1 r1)))`
+      using \<open>is_heap (snd (removeLeaf (T v1 l1 r1)))\<close>
       by auto
     have "v \<ge> v1"
       using "4_1"(3)
@@ -1018,14 +1018,14 @@ next
       using False removeLeaf_val_val[of "T v1 l1 r1"]
       by auto
     hence "v \<ge> v1'"
-      using `?t = T v1' l1' r1'`
+      using \<open>?t = T v1' l1' r1'\<close>
       by auto
     hence "is_heap (T v (T v1' l1' r1') (T v2 l2 r2))"
-      using `is_heap (T v1' l1' r1')`
-      using `is_heap (T v2 l2 r2)` `v \<ge> v2`
+      using \<open>is_heap (T v1' l1' r1')\<close>
+      using \<open>is_heap (T v2 l2 r2)\<close> \<open>v \<ge> v2\<close>
       by (simp add: is_heap.simps(5))
     thus ?thesis
-      using "4_1" `?t = T v1' l1' r1'`
+      using "4_1" \<open>?t = T v1' l1' r1'\<close>
       by auto
   qed
 next
@@ -1041,14 +1041,14 @@ next
   proof(cases "?t = E")
     case True
     thus ?thesis
-      using `is_heap (T v2 l2 r2)` `v \<ge> v2`
+      using \<open>is_heap (T v2 l2 r2)\<close> \<open>v \<ge> v2\<close>
       by auto
   next
     case False
     then obtain v1' l1' r1' where "?t = T v1' l1' r1'"
       by (metis Tree.exhaust)
     hence "is_heap (T v1' l1' r1')"
-      using `is_heap (snd (removeLeaf (T v1 l1 r1)))`
+      using \<open>is_heap (snd (removeLeaf (T v1 l1 r1)))\<close>
       by auto
     have "v \<ge> v1"
       using "4_2"(3)
@@ -1057,14 +1057,14 @@ next
       using False removeLeaf_val_val[of "T v1 l1 r1"]
       by auto
     hence "v \<ge> v1'"
-      using `?t = T v1' l1' r1'`
+      using \<open>?t = T v1' l1' r1'\<close>
       by auto
     hence "is_heap (T v (T v1' l1' r1') (T v2 l2 r2))"
-      using `is_heap (T v1' l1' r1')`
-      using `is_heap (T v2 l2 r2)` `v \<ge> v2`
+      using \<open>is_heap (T v1' l1' r1')\<close>
+      using \<open>is_heap (T v2 l2 r2)\<close> \<open>v \<ge> v2\<close>
       by (simp add: is_heap.simps(5))
     thus ?thesis
-      using "4_2" `?t = T v1' l1' r1'`
+      using "4_2" \<open>?t = T v1' l1' r1'\<close>
       by auto
   qed
 next
@@ -1073,8 +1073,8 @@ next
     by auto
 qed
 
-text{* Difined functions satisfy conditions of locale {\em Collection} and thus represent 
-       interpretation of this locale. *}
+text\<open>Difined functions satisfy conditions of locale {\em Collection} and thus represent 
+       interpretation of this locale.\<close>
 
 interpretation HS: Collection "E" hs_is_empty hs_of_list multiset
 proof
@@ -1116,7 +1116,7 @@ next
            {#fst (removeLeaf (T v1 l1 r1))#} + 
            multiset (snd (removeLeaf (T v1 l1 r1))) + 
            {#v#}"
-    using `t' = T v (snd (removeLeaf (T v1 l1 r1))) E`
+    using \<open>t' = T v (snd (removeLeaf (T v1 l1 r1))) E\<close>
     by (simp add: ac_simps)
   have "{#fst (removeLeaf (T v1 l1 r1))#} + 
         multiset (snd (removeLeaf (T v1 l1 r1))) = 
@@ -1124,9 +1124,9 @@ next
     using 2(1)
     by auto
   hence "{#v'#} + multiset t' = multiset (T v1 l1 r1) + {#v#}"
-    using `{#v'#} + multiset t' = 
+    using \<open>{#v'#} + multiset t' = 
            {#fst (removeLeaf (T v1 l1 r1))#} + 
-           multiset (snd (removeLeaf (T v1 l1 r1))) + {#v#}`
+           multiset (snd (removeLeaf (T v1 l1 r1))) + {#v#}\<close>
     by auto
   thus ?case
     by auto
@@ -1142,7 +1142,7 @@ next
           {#fst (removeLeaf (T v1 l1 r1))#} + 
           multiset (snd (removeLeaf (T v1 l1 r1))) + 
           {#v#}"
-    using `t' = T v E (snd (removeLeaf (T v1 l1 r1)))`
+    using \<open>t' = T v E (snd (removeLeaf (T v1 l1 r1)))\<close>
     by (simp add: ac_simps)
   have "{#fst (removeLeaf (T v1 l1 r1))#} + 
         multiset (snd (removeLeaf (T v1 l1 r1))) = 
@@ -1150,9 +1150,9 @@ next
     using 3(1)
     by auto
   hence "{#v'#} + multiset t' = multiset (T v1 l1 r1) + {#v#}"
-    using `{#v'#} + multiset t' = 
+    using \<open>{#v'#} + multiset t' = 
            {#fst (removeLeaf (T v1 l1 r1))#} + 
-           multiset (snd (removeLeaf (T v1 l1 r1))) + {#v#}`
+           multiset (snd (removeLeaf (T v1 l1 r1))) + {#v#}\<close>
     by auto
   thus ?case
     by (metis monoid_add_class.add.right_neutral 
@@ -1169,7 +1169,7 @@ next
          {#fst (removeLeaf (T v1 l1 r1))#} + 
          multiset (snd (removeLeaf (T v1 l1 r1))) + 
          {#v#} + multiset (T v2 l2 r2)"
-    using `t' = T v (snd (removeLeaf (T v1 l1 r1))) (T v2 l2 r2)`
+    using \<open>t' = T v (snd (removeLeaf (T v1 l1 r1))) (T v2 l2 r2)\<close>
     by (metis multiset.simps(2) union_assoc)
   have "{#fst (removeLeaf (T v1 l1 r1))#} + 
         multiset (snd (removeLeaf (T v1 l1 r1))) = 
@@ -1178,10 +1178,10 @@ next
     by auto
   hence "{#v'#} + multiset t' = 
            multiset (T v1 l1 r1) + {#v#} + multiset (T v2 l2 r2)"
-    using `{#v'#} + multiset t' = 
+    using \<open>{#v'#} + multiset t' = 
            {#fst (removeLeaf (T v1 l1 r1))#} + 
            multiset (snd (removeLeaf (T v1 l1 r1))) + 
-           {#v#} + multiset (T v2 l2 r2)`
+           {#v#} + multiset (T v2 l2 r2)\<close>
     by auto
   thus ?case
     by auto
@@ -1197,7 +1197,7 @@ next
          {#fst (removeLeaf (T v1 l1 r1))#} + 
          multiset (snd (removeLeaf (T v1 l1 r1))) + 
          {#v#} + multiset (T v2 l2 r2)"
-    using `t' = T v (snd (removeLeaf (T v1 l1 r1))) (T v2 l2 r2)`
+    using \<open>t' = T v (snd (removeLeaf (T v1 l1 r1))) (T v2 l2 r2)\<close>
     by (metis multiset.simps(2) union_assoc)
   have "{#fst (removeLeaf (T v1 l1 r1))#} + 
         multiset (snd (removeLeaf (T v1 l1 r1))) = 
@@ -1206,10 +1206,10 @@ next
     by auto
   hence "{#v'#} + multiset t' = 
          multiset (T v1 l1 r1) + {#v#} + multiset (T v2 l2 r2)"
-    using `{#v'#} + multiset t' = 
+    using \<open>{#v'#} + multiset t' = 
            {#fst (removeLeaf (T v1 l1 r1))#} + 
            multiset (snd (removeLeaf (T v1 l1 r1))) + 
-           {#v#} + multiset (T v2 l2 r2)`
+           {#v#} + multiset (T v2 l2 r2)\<close>
     by auto
   thus ?case
     by auto
@@ -1231,16 +1231,16 @@ proof-
     by auto
   have "{#v'#} + multiset t = 
         {#v'#} + multiset l + {#v#} + multiset r"
-    using `t = T v l r`
+    using \<open>t = T v l r\<close>
     by (metis multiset.simps(2) union_assoc)
   have "{#v'#} + multiset l + {#v#} + multiset r = 
         multiset l + {#v'#} + multiset r + {#v#}"
     by (metis union_commute union_lcomm)
   thus ?thesis
-    using `multiset (set_val t v') + {#val t#} = 
-           multiset l + {#v'#} + multiset r + {#v#}`
-    using `{#v'#} + multiset t = 
-           {#v'#} + multiset l + {#v#} + multiset r`
+    using \<open>multiset (set_val t v') + {#val t#} = 
+           multiset l + {#v'#} + multiset r + {#v#}\<close>
+    using \<open>{#v'#} + multiset t = 
+           {#v'#} + multiset l + {#v#} + multiset r\<close>
     by auto
 qed
 
@@ -1269,7 +1269,7 @@ proof-
       using removeLeaf_multiset[of ?v1 ?t1 t] True assms(2)
       by (metis empty_neutral(2) multiset.simps(1) prod.collapse)
     thus ?thesis
-      using `{#m#} + multiset t' = {#m#}`
+      using \<open>{#m#} + multiset t' = {#m#}\<close>
       by auto
   next
     case False
@@ -1287,22 +1287,22 @@ proof-
       by auto
     have "val t = m"
       using assms(1) False
-      using `t' = siftDown (set_val ?t1 ?v1)`
+      using \<open>t' = siftDown (set_val ?t1 ?v1)\<close>
       unfolding hs_remove_max_def
       by (metis (full_types) fst_conv removeLeaf.simps(1))    
     hence "val ?t1 = m"
-      using `val ?t1 = val t`
+      using \<open>val ?t1 = val t\<close>
       by auto
     hence "multiset t' + {#m#} = multiset t"
-      using `multiset t' + {#val ?t1#} = multiset t`
+      using \<open>multiset t' + {#val ?t1#} = multiset t\<close>
       by metis
     thus ?thesis
       by (metis union_commute)
   qed
 qed
 
-text{* Difined functions satisfy conditions of locale {\em Heap} and thus represent 
-       interpretation of this locale. *}
+text\<open>Difined functions satisfy conditions of locale {\em Heap} and thus represent 
+       interpretation of this locale.\<close>
 
 interpretation Heap "E" hs_is_empty hs_of_list multiset id hs_remove_max
 proof
@@ -1331,14 +1331,14 @@ next
   let ?v1 = "fst (removeLeaf t)"
   let ?t1 = "snd (removeLeaf t)"
   have "is_heap ?t1"
-    using `\<not> hs_is_empty t` `is_heap (id t)`
+    using \<open>\<not> hs_is_empty t\<close> \<open>is_heap (id t)\<close>
     using removeLeaf_heap_is_heap[of t]
     by auto
   show "is_heap (id t')"
   proof(cases "?t1 = E")
     case True
     hence "t' = E"
-      using `(v', t') = hs_remove_max t`
+      using \<open>(v', t') = hs_remove_max t\<close>
       unfolding hs_remove_max_def
       by auto
     thus ?thesis
@@ -1348,23 +1348,23 @@ next
     then obtain v_t1 l_t1 r_t1 where "?t1 = T v_t1 l_t1 r_t1"
       by (metis Tree.exhaust)
     hence "is_heap l_t1" "is_heap r_t1"
-      using `is_heap ?t1`
+      using \<open>is_heap ?t1\<close>
       by (auto, metis (full_types) Tree.exhaust 
          is_heap.simps(1) is_heap.simps(4) is_heap.simps(5))
          (metis (full_types) Tree.exhaust 
           is_heap.simps(1) is_heap.simps(3) is_heap.simps(5))
     have "set_val ?t1 ?v1 = T ?v1 l_t1 r_t1"
-      using `?t1 = T v_t1 l_t1 r_t1`
+      using \<open>?t1 = T v_t1 l_t1 r_t1\<close>
       by auto
     hence "is_heap (siftDown (set_val ?t1 ?v1))"
-      using `is_heap l_t1` `is_heap r_t1`
+      using \<open>is_heap l_t1\<close> \<open>is_heap r_t1\<close>
       using siftDown_heap_is_heap[of l_t1 r_t1 "set_val ?t1 ?v1" ?v1]
       by auto
     have "t' = siftDown (set_val ?t1 ?v1)"
-      using `(v', t') = hs_remove_max t` False
+      using \<open>(v', t') = hs_remove_max t\<close> False
       by (auto simp add: hs_remove_max_def) (metis prod.inject)
     thus ?thesis
-      using `is_heap (siftDown (set_val ?t1 ?v1))`
+      using \<open>is_heap (siftDown (set_val ?t1 ?v1))\<close>
       by auto
   qed
 next

@@ -17,16 +17,16 @@ imports
 begin
 (*>*)
 
-subsection{* The Clock View *}
+subsection\<open>The Clock View\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-clock-view}
 
 The \emph{clock view} records the current time and the observation for
 the most recent state:
 
-*}
+\<close>
 
 definition (in Environment)
   clock_jview :: "('a, 's, nat \<times> 'obs) JointView"
@@ -66,7 +66,7 @@ lemma clock_jview_eq_inv[iff]:
 
 end(*>*)
 
-text{*
+text\<open>
 
 This is the least-information synchronous view, given the requirements
 of \S\ref{sec:kbps-views}. We show that finite-state implementations
@@ -76,7 +76,7 @@ exist for all environments with respect to this view as per
 The corresponding incremental view simply increments the counter
 records the new observation.
 
-*}
+\<close>
 
 definition (in Environment)
   clock_jviewInit :: "'a \<Rightarrow> 'obs \<Rightarrow> nat \<times> 'obs"
@@ -88,13 +88,13 @@ definition (in Environment)
 where
   "clock_jviewIncr \<equiv> \<lambda>a obs' (l, obs). (l + 1, obs')"
 
-text{*
+text\<open>
 
 It is straightforward to demonstrate the assumptions of the
 incremental environment locale (\S\ref{sec:kbps-environments}) with
 respect to an arbitrary environment.
 
-*}
+\<close>
 
 sublocale Environment
         < Clock: IncrEnvironment jkbp envInit envAction envTrans envVal
@@ -105,13 +105,13 @@ sublocale Environment
   done
 
 (*>*)
-text{*
+text\<open>
 
-As we later show, satisfaction of a formula at a trace @{text "t \<in>
-Clock.jkbpC\<^bsub>n\<^esub>"} is determined by the set of final states of traces in
-@{text "Clock.jkbpCn"}:
+As we later show, satisfaction of a formula at a trace \<open>t \<in>
+Clock.jkbpC\<^bsub>n\<^esub>\<close> is determined by the set of final states of traces in
+\<open>Clock.jkbpCn\<close>:
 
-*}
+\<close>
 
 context Environment
 begin
@@ -119,7 +119,7 @@ begin
 abbreviation clock_commonAbs :: "'s Trace \<Rightarrow> 's set" where
   "clock_commonAbs t \<equiv> tLast ` Clock.jkbpCn (tLength t)"
 
-text{*
+text\<open>
 
 Intuitively this set contains the states that the agents commonly
 consider possible at time @{term "n"}, which is sufficient for
@@ -127,21 +127,21 @@ determining knowledge as the clock view ignores paths. Therefore we
 can simulate trace @{term "t"} by pairing this abstraction of @{term
 "t"} with its final state:
 
-*}
+\<close>
 
 type_synonym (in -) 's clock_simWorlds = "'s set \<times> 's"
 
 definition clock_sim :: "'s Trace \<Rightarrow> 's clock_simWorlds" where
   "clock_sim \<equiv> \<lambda>t. (clock_commonAbs t, tLast t)"
 
-text{*
+text\<open>
 
 In the Kripke structure for our simulation, we relate worlds for
 @{term "a"} if the sets of commonly-held states coincide, and the
 observation of the final states of the traces is the
 same. Propositions are evaluated at the final state.
 
-*}
+\<close>
 
 definition clock_simRels :: "'a \<Rightarrow> 's clock_simWorlds Relation" where
   "clock_simRels \<equiv> \<lambda>a. { ((X, s), (X', s')) |X X' s s'.
@@ -187,12 +187,12 @@ lemma clock_sim_r:
   done
 
 (*>*)
-text{*
+text\<open>
 
 That this is in fact a simulation
 (\S\ref{sec:kripke-theory-simulations}) is entirely straightforward.
 
-*}
+\<close>
 
 lemma clock_sim:
   "sim Clock.MC clock_simMC clock_sim"
@@ -204,13 +204,13 @@ lemma clock_sim:
 
 end (* context Environment *)
 
-text{*
+text\<open>
 
-The @{text "SimIncrEnvironment"} of
+The \<open>SimIncrEnvironment\<close> of
 \S\ref{sec:kbps-theory-automata-env-sims} only requires that we
 provide it an @{term "Environment"} and a simulation.
 
-*}
+\<close>
 
 sublocale Environment
         < Clock: SimIncrEnvironment jkbp envInit envAction envTrans envVal
@@ -220,17 +220,17 @@ sublocale Environment
   by (unfold_locales, simp_all add: clock_sim)
 (*>*)
 
-text{*
+text\<open>
 
 We next consider algorithmic issues.
 
-*}
+\<close>
 
 (* **************************************** *)
 
-subsubsection{* Representations *}
+subsubsection\<open>Representations\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-clock-view-rep}
 
@@ -239,11 +239,11 @@ states. As these are used as map keys, it is easiest to represent them
 canonically. A simple approach is to use \emph{ordered distinct lists}
 of type @{typ "'a odlist"} for the sets and \emph{tries} for the
 maps. Therefore we ask that environment states @{typ "'s"} belong to
-the class @{text "linorder"} of linearly-ordered types, and moreover
-that the set @{text "agents"} be effectively presented. We introduce a
+the class \<open>linorder\<close> of linearly-ordered types, and moreover
+that the set \<open>agents\<close> be effectively presented. We introduce a
 new locale capturing these requirements:
 
-*}
+\<close>
 
 locale FiniteLinorderEnvironment =
   Environment jkbp envInit envAction envTrans envVal envObs
@@ -259,7 +259,7 @@ locale FiniteLinorderEnvironment =
 context FiniteLinorderEnvironment
 begin
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-clock-view-algops}
 
@@ -271,29 +271,29 @@ reachable at a particular time, and the subset of these that @{term
 "a"} considers possible. The worlds in our representational Kripke
 structure are therefore a pair of ordered, distinct lists:
 
-*}
+\<close>
 
 type_synonym (in -) 's clock_simWorldsRep = "'s odlist \<times> 's odlist"
 
-text{*
+text\<open>
 
 We can readily abstract a representation to a set of simulated
 equivalence classes:
 
-*}
+\<close>
 
 definition (in -)
   clock_simAbs :: "'s::linorder clock_simWorldsRep \<Rightarrow> 's clock_simWorlds set"
 where
   "clock_simAbs X \<equiv> { (ODList.toSet (fst X), s) |s. s \<in> ODList.toSet (snd X) }"
 
-text{*
+text\<open>
 
 Assuming @{term "X"} represents a simulated equivalence class for
 @{term "t \<in> jkbpC"}, @{term "clock_simAbs X"} decomposes into these
 two functions:
 
-*}
+\<close>
 
 definition
   agent_abs :: "'a \<Rightarrow> 's Trace \<Rightarrow> 's set"
@@ -346,12 +346,12 @@ lemma agent_abs:
   done
 
 (*>*)
-text{*
+text\<open>
 
 This representation is canonical on the domain of interest (though not
 in general):
 
-*}
+\<close>
 
 lemma clock_simAbs_inj_on:
   "inj_on clock_simAbs { x . clock_simAbs x \<in> Clock.jkbpSEC }"
@@ -373,14 +373,13 @@ proof(rule inj_onI)
   ultimately show "x = y" by (simp add: prod_eqI)
 qed
 (*>*)
-text{*
+text\<open>
 
 We could further compress this representation by labelling each
 element of the set of states reachable at time $n$ with a bit to
 indicate whether the agent considers that state possible.  Note,
-however, that the representation would be non-canonical: if @{text
-"(s, True)"} is in the representation, indicating that the agent
-considers @{text "s"} possible, then @{text "(s, False)"} may or may
+however, that the representation would be non-canonical: if \<open>(s, True)\<close> is in the representation, indicating that the agent
+considers \<open>s\<close> possible, then \<open>(s, False)\<close> may or may
 not be. The associated abstraction function is not injective and hence
 would obfuscate the following. Repairing this would entail introducing
 a new type, which would again complicate this development.
@@ -390,7 +389,7 @@ a new type, which would again complicate this development.
 The following lemmas make use of this Kripke structure, constructed
 from the set of final states of a temporal slice @{term "X"}:
 
-*}
+\<close>
 
 definition
   clock_repRels :: "'a \<Rightarrow> ('s \<times> 's) set"
@@ -411,14 +410,14 @@ lemma clock_repMC_S5n[intro, simp]: "S5n (clock_repMC X)"
   by (intro S5nI equivI refl_onI symI transI) auto
 
 (*>*)
-text{*
+text\<open>
 
 We can show that this Kripke structure retains sufficient information
 from @{term "Clock.MCS"} by showing simulation. This is eased by
 introducing an intermediary structure that focusses on a particular
 trace:
 
-*}
+\<close>
 
 abbreviation
   clock_jkbpCSt :: "'b Trace \<Rightarrow> 's clock_simWorlds set"
@@ -453,7 +452,7 @@ lemma clock_repSim_simps[simp]:
   by (auto intro!: image_eqI)
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma clock_repSim:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -491,33 +490,33 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The following sections show how we satisfy the remaining requirements
-of the @{text "Algorithm"} locale of
+of the \<open>Algorithm\<close> locale of
 Figure~\ref{fig:kbps-alg-alg-locale}. Where the proof is routine, we
 simply present the lemma without proof or comment.
 
 Due to a limitation in the code generator in the present version of
 Isabelle (2011), we need to define the equations we wish to execute
-outside of a locale; the syntax @{text "(in -)"} achieves this by
+outside of a locale; the syntax \<open>(in -)\<close> achieves this by
 making definitons at the theory top-level. We then define (but elide)
 locale-local abbreviations that supply the locale-bound variables to
 these definitions.
 
-*}
+\<close>
 
 (* **************************************** *)
 
-subsubsection{* Initial states *}
+subsubsection\<open>Initial states\<close>
 
-text{*
+text\<open>
 
 The initial states of the automaton for an agent is simply @{term
 "envInit"} paired with the partition of @{term "envInit"} under the
 agent's observation.
 
-*}
+\<close>
 
 definition (in -)
   clock_simInit :: "('s::linorder) list \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 'obs)
@@ -534,7 +533,7 @@ where
   "clock_simInit \<equiv> ClockView.clock_simInit envInit envObs"
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma clock_simInit:
   assumes "iobs \<in> envObs a ` set envInit"
@@ -563,14 +562,14 @@ lemma clock_simInit:
 
 (* **************************************** *)
 
-subsubsection{* Simulated observations *}
+subsubsection\<open>Simulated observations\<close>
 
-text{*
+text\<open>
 
 Agent @{term "a"} will make the same observation at any of the worlds
 that it considers possible, so we choose the first one in the list:
 
-*}
+\<close>
 
 definition (in -)
   clock_simObs :: "('a \<Rightarrow> ('s :: linorder) \<Rightarrow> 'obs)
@@ -585,7 +584,7 @@ where
   "clock_simObs \<equiv> ClockView.clock_simObs envObs"
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma clock_simObs:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -607,13 +606,13 @@ qed
 
 (* **************************************** *)
 
-subsubsection{* Evaluation *}
+subsubsection\<open>Evaluation\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-clock-view-eval}
 
-We define our @{text "eval"} function in terms of @{term "evalS"},
+We define our \<open>eval\<close> function in terms of @{term "evalS"},
 which implements boolean logic over @{typ "'s odlist"} in the usual
 way -- see \S\ref{sec:kbps-spr-single-agent-eval} for the relevant
 clauses. It requires three functions specific to the representation:
@@ -621,7 +620,7 @@ one each for propositions, knowledge and common knowledge.
 
 Propositions define subsets of the worlds considered possible:
 
-*}
+\<close>
 
 abbreviation (in -)
   clock_evalProp :: "(('s::linorder) \<Rightarrow> 'p \<Rightarrow> bool)
@@ -629,13 +628,13 @@ abbreviation (in -)
 where
   "clock_evalProp envVal \<equiv> \<lambda>X p. ODList.filter (\<lambda>s. envVal s p) X"
 
-text{*
+text\<open>
 
 The knowledge relation computes the subset of the
-commonly-held-possible worlds @{text "cec"} that agent @{term "a"}
+commonly-held-possible worlds \<open>cec\<close> that agent @{term "a"}
 considers possible at world @{term "s"}:
 
-*}
+\<close>
 
 definition (in -)
   clock_knowledge :: "('a \<Rightarrow> ('s :: linorder) \<Rightarrow> 'obs) \<Rightarrow> 's odlist
@@ -644,14 +643,13 @@ where
   "clock_knowledge envObs cec \<equiv> \<lambda>a s.
      ODList.filter (\<lambda>s'. envObs a s = envObs a s') cec"
 
-text{*
+text\<open>
 
 
 Similarly the common knowledge operation computes the transitive
-closure of the union of the knowledge relations for the agents @{text
-"as"}:
+closure of the union of the knowledge relations for the agents \<open>as\<close>:
 
-*}
+\<close>
 
 definition (in -)
   clock_commonKnowledge :: "('a \<Rightarrow> ('s :: linorder) \<Rightarrow> 'obs) \<Rightarrow> 's odlist
@@ -663,15 +661,15 @@ where
          R = toList (ODList.big_union r as)
       in ODList.fromList (memo_list_trancl R s)"
 
-text{*
+text\<open>
 
-The function @{text "memo_list_trancl"} comes from the executable
+The function \<open>memo_list_trancl\<close> comes from the executable
 transitive closure theory of \citep{AFP:TRANCL}.
 
 The evaluation function evaluates a subjective knowledge formula on
 the representation of an equivalence class:
 
-*}
+\<close>
 
 definition (in -)
   eval :: "(('s :: linorder) \<Rightarrow> 'p \<Rightarrow> bool)
@@ -683,11 +681,11 @@ where
                                       (clock_commonKnowledge envObs cec)
                                       aec"
 
-text{*
+text\<open>
 
 This function corresponds with the standard semantics:
 
-*}
+\<close>
 (*<*)
 
 lemma clock_coEC_relation_image:
@@ -716,7 +714,7 @@ lemma eval_rec_models:
 using XY s
 proof(induct \<phi> arbitrary: X s)
   case (Kknows a' \<phi> X s)
-  from `s \<in> ODList.toSet X` clock_coEC_relation_image[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
+  from \<open>s \<in> ODList.toSet X\<close> clock_coEC_relation_image[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
   show ?case
     apply simp
     apply rule
@@ -735,10 +733,10 @@ next
   case (Kcknows as \<phi> X s)
   show ?case
   proof(cases "as = Nil")
-    case True with `s \<in> ODList.toSet X` show ?thesis by clarsimp
+    case True with \<open>s \<in> ODList.toSet X\<close> show ?thesis by clarsimp
   next
     case False
-    with `s \<in> ODList.toSet X` clock_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
+    with \<open>s \<in> ODList.toSet X\<close> clock_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
     show ?thesis
       apply simp
       apply rule
@@ -888,14 +886,14 @@ lemma eval_models:
 
 (* **************************************** *)
 
-subsubsection{* Simulated actions *}
+subsubsection\<open>Simulated actions\<close>
 
-text{*
+text\<open>
 
 From a common equivalence class and a subjective equivalence class for
 agent @{term "a"}, we can compute the actions enabled for @{term "a"}:
 
-*}
+\<close>
 
 definition (in -)
   clock_simAction :: "('a, 'p, 'aAct) JKBP \<Rightarrow> (('s :: linorder) \<Rightarrow> 'p \<Rightarrow> bool)
@@ -912,14 +910,12 @@ where
   "clock_simAction \<equiv> ClockView.clock_simAction jkbp envVal envObs"
 
 (*>*)
-text{*
+text\<open>
 
-Using the above result about evaluation, we can relate @{text
-"clock_simAction"} to @{term "jAction"}. Firstly, @{text
-"clock_simAction"} behaves the same as @{term "jAction"} using the
+Using the above result about evaluation, we can relate \<open>clock_simAction\<close> to @{term "jAction"}. Firstly, \<open>clock_simAction\<close> behaves the same as @{term "jAction"} using the
 @{term "clock_repMC"} structure:
 
-*}
+\<close>
 
 lemma clock_simAction_jAction:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -990,14 +986,13 @@ next
 qed (insert s, auto)
 
 (*>*)
-text{*
+text\<open>
 
-We can connect the agent's choice of actions on the @{text
-"clock_repMC"} structure to those on the @{text "Clock.MC"}
+We can connect the agent's choice of actions on the \<open>clock_repMC\<close> structure to those on the \<open>Clock.MC\<close>
 structure using our earlier results about actions being preserved by
 generated models and simulations.
 
-*}
+\<close>
 
 lemma clock_simAction':
   assumes tC: "t \<in> Clock.jkbpC"
@@ -1023,12 +1018,12 @@ proof -
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The @{term "Algorithm"} locale requires a specialisation of this
 lemma:
 
-*}
+\<close>
 
 lemma clock_simAction:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -1042,16 +1037,15 @@ lemma clock_simAction:
 
 (* **************************************** *)
 
-subsubsection{* Simulated transitions *}
+subsubsection\<open>Simulated transitions\<close>
 
-text{*
+text\<open>
 
 We need to determine the image of the set of commonly-held-possible
 states under the transition function, and also for the agent's
-subjective equivalence class. We do this with the @{text
-"clock_trans"} function:
+subjective equivalence class. We do this with the \<open>clock_trans\<close> function:
 
-*}
+\<close>
 
 definition (in -)
   clock_trans :: "('a :: linorder) odlist \<Rightarrow> ('a, 'p, 'aAct) JKBP
@@ -1097,7 +1091,7 @@ lemma clock_trans_aux:
   done
 
 (*>*)
-text{*
+text\<open>
 
 The function @{term "listToFuns"} exhibits the isomorphism between @{typ
 "('a \<times> 'b list) list"} and @{typ "('a \<Rightarrow> 'b) list"} for finite types
@@ -1107,7 +1101,7 @@ We can show that the transition function works for both the
 commonly-held set of states and the agent subjective one. The proofs
 are  straightforward.
 
-*}
+\<close>
 
 lemma clock_trans_common:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -1134,7 +1128,7 @@ next
 qed
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma clock_trans_agent:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -1161,14 +1155,14 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 Note that the clock semantics disregards paths, so we simply compute
 the successors of the temporal slice and partition that. Similarly the
 successors of the agent's subjective equivalence class tell us what
 the set of possible observations are:
 
-*}
+\<close>
 
 definition (in -)
   clock_mkSuccs :: "('s :: linorder \<Rightarrow> 'obs) \<Rightarrow> 'obs \<Rightarrow> 's odlist
@@ -1176,11 +1170,11 @@ definition (in -)
 where
   "clock_mkSuccs envObs obs Y' \<equiv> (Y', ODList.filter (\<lambda>s. envObs s = obs) Y')"
 
-text{*
+text\<open>
 
 Finally we can define our transition function on simulated states:
 
-*}
+\<close>
 
 definition (in -)
   clock_simTrans :: "('a :: linorder) odlist \<Rightarrow> ('a, 'p, 'aAct) JKBP
@@ -1202,12 +1196,12 @@ where
   "clock_simTrans \<equiv> ClockView.clock_simTrans agents jkbp envAction envTrans envVal envObs"
 
 (*>*)
-text{*
+text\<open>
 
 Showing that this respects the property asked of it by the @{term
 "Algorithm"} locale is straightforward:
 
-*}
+\<close>
 
 lemma clock_simTrans:
   assumes tC: "t \<in> Clock.jkbpC"
@@ -1316,9 +1310,9 @@ end (* context FiniteLinorderEnvironment *)
 
 (* **************************************** *)
 
-subsubsection{* Maps *}
+subsubsection\<open>Maps\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-clock-view-maps}
 
@@ -1332,7 +1326,7 @@ structure mapping sets of states to an association list mapping
 observations to sets of states, and for actions automaton states map
 directly to agent actions.
 
-*}
+\<close>
 
 type_synonym ('s, 'obs) clock_trans_trie
   = "('s, ('s, ('obs, 's clock_simWorldsRep) mapping) trie) trie"
@@ -1454,7 +1448,7 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 We define two records @{term "acts_MapOps"} and @{term "trans_MapOps"}
 satisfying the @{term "MapOps"} predicate
@@ -1462,15 +1456,15 @@ satisfying the @{term "MapOps"} predicate
 @{term "Algorithm"} locale is routine, leaning on the work of
 \citet{DBLP:conf/itp/LammichL10}.
 
-*}
+\<close>
 
-subsubsection{* Locale instantiation *}
+subsubsection\<open>Locale instantiation\<close>
 
-text{*
+text\<open>
 
 Finally we assemble the algorithm and discharge the proof obligations.
 
-*}
+\<close>
 
 sublocale FiniteLinorderEnvironment
         < Clock: Algorithm
@@ -1501,11 +1495,11 @@ sublocale FiniteLinorderEnvironment
   done
 
 (*>*)
-text{*
+text\<open>
 
 Explicitly, the algorithm for this case is:
 
-*}
+\<close>
 
 definition
   "mkClockAuto \<equiv> \<lambda>agents jkbp envInit envAction envTrans envVal envObs.
@@ -1547,11 +1541,11 @@ lemma (in FiniteLinorderEnvironment)
   unfolding mkClockAuto_def ClockAutoDFS_def mkAlgAuto_def alg_mk_auto_def by (simp add: Let_def)
 
 (*>*)
-text{*
+text\<open>
 
 We discuss the clock semantics further in \S\ref{sec:kbps-alg-clock}.
 
-*}
+\<close>
 
 (*<*)
 end

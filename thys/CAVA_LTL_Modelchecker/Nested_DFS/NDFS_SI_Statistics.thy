@@ -4,7 +4,7 @@ imports
 begin
 
 code_printing
-  code_module NDFS_SI_Statistics \<rightharpoonup> (SML) {*
+  code_module NDFS_SI_Statistics \<rightharpoonup> (SML) \<open>
     structure NDFS_SI_Statistics = struct
       val active = Unsynchronized.ref false
       val cur_limit = Unsynchronized.ref 1000000
@@ -42,10 +42,10 @@ code_printing
         
       val _ = Statistics.register_stat ("NDFS",is_active,to_string)
     end
-*}
+\<close>
 code_reserved SML NDFS_SI_Statistics
 
-ML_val {* @{code hd} *}
+ML_val \<open>@{code hd}\<close>
 
 consts 
   vis_red :: "unit \<Rightarrow> unit"

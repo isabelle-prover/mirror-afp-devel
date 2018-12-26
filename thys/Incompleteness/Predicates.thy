@@ -1,10 +1,10 @@
-chapter{*Basic Predicates*}
+chapter\<open>Basic Predicates\<close>
 
 theory Predicates
 imports SyntaxN
 begin
 
-section {*The Subset Relation*}
+section \<open>The Subset Relation\<close>
 
 nominal_function Subset :: "tm \<Rightarrow> tm \<Rightarrow> fm"   (infixr "SUBS" 150)
   where "atom z \<sharp> (t, u) \<Longrightarrow> t SUBS u = All2 z t ((Var z) IN u)"
@@ -123,7 +123,7 @@ lemma Eats_Subset_E [intro!]:
   "insert (x SUBS z) (insert (y IN z) H) \<turnstile> C \<Longrightarrow> insert (Eats x y SUBS z) H \<turnstile> C"
   by (metis Conj_E Eats_Subset_Iff Iff_MP_left')
 
-text{*A surprising proof: a consequence of @{thm Eats_Subset_Iff} and reflexivity!*}
+text\<open>A surprising proof: a consequence of @{thm Eats_Subset_Iff} and reflexivity!\<close>
 lemma Subset_Eats_I [intro!]: "H \<turnstile> x SUBS Eats x y"
   by (metis Conj_E1 Eats_Subset_Iff Iff_MP_same Subset_refl)
 
@@ -158,7 +158,7 @@ lemma All2_Subset: "\<lbrakk>H \<turnstile> All2 l k P; H \<turnstile> k' SUBS k
   by (rule cut2 [OF All2_Subset_lemma]) auto
 
 
-section{*Extensionality*}
+section\<open>Extensionality\<close>
 
 lemma Extensionality: "H \<turnstile> x EQ y IFF x SUBS y AND y SUBS x"
 proof -
@@ -214,9 +214,9 @@ lemma Equality_E: "insert (t SUBS u) (insert (u SUBS t) H) \<turnstile> A \<Long
   by (metis Conj_E Extensionality Iff_MP_left')
 
 
-section {*The Disjointness Relation*}
+section \<open>The Disjointness Relation\<close>
 
-text{*The following predicate is defined in order to prove Lemma 2.3, Foundation*}
+text\<open>The following predicate is defined in order to prove Lemma 2.3, Foundation\<close>
 
 nominal_function Disjoint :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "atom z \<sharp> (t, u) \<Longrightarrow> Disjoint t u = All2 z t (Neg ((Var z) IN u))"
@@ -337,7 +337,7 @@ lemma Disjoint_Eats_I2 [intro!]: "H \<turnstile> Disjoint z x \<Longrightarrow> 
   by (metis Disjoint_Eats_I Disjoint_commute cut1)
 
 
-section {*The Foundation Theorem*}
+section \<open>The Foundation Theorem\<close>
 
 lemma Foundation_lemma: 
   assumes i: "atom i \<sharp> z"
@@ -403,7 +403,7 @@ lemma Mem_not_sym: "insert (x IN y) (insert (y IN x) H) \<turnstile> A"
   by (rule cut_thin [OF Mem_Neg_sym]) auto
 
   
-section {*The Ordinal Property*}
+section \<open>The Ordinal Property\<close>
 
 nominal_function OrdP :: "tm \<Rightarrow> fm"
   where "\<lbrakk>atom y \<sharp> (x, z); atom z \<sharp> x\<rbrakk> \<Longrightarrow>
@@ -598,7 +598,7 @@ lemmas HPair_Eq_ZeroEH = HPair_Eq_ZeroE HPair_Eq_ZeroE [THEN rotate2] HPair_Eq_Z
                  HPair_Eq_ZeroE [THEN rotate6] HPair_Eq_ZeroE [THEN rotate7] HPair_Eq_ZeroE [THEN rotate8] HPair_Eq_ZeroE [THEN rotate9] HPair_Eq_ZeroE [THEN rotate10]
 declare HPair_Eq_ZeroEH [intro!]
 
-section {*Induction on Ordinals*}
+section \<open>Induction on Ordinals\<close>
 
 lemma OrdInd_lemma:
   assumes j: "atom (j::name) \<sharp> (i,A)"
@@ -649,7 +649,7 @@ lemma OrdIndH:
   by (metis assms thin1 Assume OrdInd)
 
   
-section {*Linearity of Ordinals*}
+section \<open>Linearity of Ordinals\<close>
 
 lemma OrdP_linear_lemma:
   assumes j: "atom j \<sharp> i"
@@ -724,7 +724,7 @@ lemma Zero_In_SUCC: "{OrdP k} \<turnstile> Zero IN SUCC k"
   by (rule OrdP_linear [OF OrdP_Zero OrdP_SUCC_I]) (force simp: SUCC_def)+
 
 
-section {*The predicate @{text OrdNotEqP}*}
+section \<open>The predicate \<open>OrdNotEqP\<close>\<close>
 
 nominal_function OrdNotEqP :: "tm \<Rightarrow> tm \<Rightarrow> fm"  (infixr "NEQ" 150)
   where "OrdNotEqP x y = OrdP x AND OrdP y AND (x IN y OR y IN x)"
@@ -763,7 +763,7 @@ lemma OrdNotEqP_E: "H \<turnstile> x EQ y \<Longrightarrow> insert (x NEQ y) H \
   by (metis ContraProve OrdNotEqP_imp_Neg_Eq rcut1)
 
   
-section {*Predecessor of an Ordinal*}
+section \<open>Predecessor of an Ordinal\<close>
 
 lemma OrdP_set_max_lemma:
   assumes j: "atom (j::name) \<sharp> i" and k: "atom (k::name) \<sharp> (i,j)"
@@ -836,7 +836,7 @@ qed
 declare OrdP.simps [simp del]
 
 
-section {*Case Analysis and Zero/SUCC Induction*}
+section \<open>Case Analysis and Zero/SUCC Induction\<close>
 
 lemma OrdP_cases_lemma:
   assumes p: "atom p \<sharp> x" 
@@ -904,11 +904,11 @@ lemma OrdInd2H:
   by (metis assms thin1 Assume OrdInd2)
 
 
-section {*The predicate @{text HFun_Sigma}*}
+section \<open>The predicate \<open>HFun_Sigma\<close>\<close>
 
-text{*To characterise the concept of a function using only bounded universal quantifiers.*}
+text\<open>To characterise the concept of a function using only bounded universal quantifiers.\<close>
 
-text{*See the note after the proof of Lemma 2.3.*}
+text\<open>See the note after the proof of Lemma 2.3.\<close>
 
 definition hfun_sigma where
  "hfun_sigma r \<equiv> \<forall>z \<^bold>\<in> r. \<forall>z' \<^bold>\<in> r. \<exists>x y x' y'. z = \<langle>x,y\<rangle> \<and> z' = \<langle>x',y'\<rangle> \<and> (x=x' \<longrightarrow> y=y')"
@@ -982,7 +982,7 @@ proof -
     done
 qed
 
-text{*Captures the property of being a relation, using fewer variables than the full definition*}
+text\<open>Captures the property of being a relation, using fewer variables than the full definition\<close>
 lemma HFun_Sigma_Mem_imp_HPair:
   assumes "H \<turnstile> HFun_Sigma r" "H \<turnstile> a IN r"
       and xy: "atom x \<sharp> (y,a,r)" "atom y \<sharp> (a,r)"
@@ -1007,9 +1007,9 @@ proof -
 qed
 
     
-section {*The predicate @{text HDomain_Incl}*}
+section \<open>The predicate \<open>HDomain_Incl\<close>\<close>
 
-text {*This is an internal version of @{term "\<forall>x \<^bold>\<in> d. \<exists>y z. z \<^bold>\<in> r \<and> z = \<langle>x,y\<rangle>"}. *}
+text \<open>This is an internal version of @{term "\<forall>x \<^bold>\<in> d. \<exists>y z. z \<^bold>\<in> r \<and> z = \<langle>x,y\<rangle>"}.\<close>
 
 nominal_function HDomain_Incl :: "tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom x \<sharp> (r,d,y,z); atom y \<sharp> (r,d,z); atom z \<sharp> (r,d)\<rbrakk> \<Longrightarrow>
@@ -1090,7 +1090,7 @@ lemma HDomain_Incl_Eats_I: "H \<turnstile> HDomain_Incl r d \<Longrightarrow> H 
   by (metis HDomain_Incl_Eats cut1)
 
 
-section {*@{term HPair} is Provably Injective*}
+section \<open>@{term HPair} is Provably Injective\<close>
 
 lemma Doubleton_E:
   assumes "insert (a EQ c) (insert (b EQ d) H) \<turnstile> A"
@@ -1162,7 +1162,7 @@ proof -
 qed
 
 
-section {*@{term SUCC} is Provably Injective*}
+section \<open>@{term SUCC} is Provably Injective\<close>
 
 lemma SUCC_SUBS_lemma: "{SUCC x SUBS SUCC y} \<turnstile> x SUBS y"
   apply (rule obtain_fresh [where x="(x,y)"]) 
@@ -1217,7 +1217,7 @@ lemma OrdP_IN_SUCC_Iff: "H \<turnstile> OrdP y \<Longrightarrow> H \<turnstile> 
   by (metis Assume Iff_I OrdP_IN_SUCC OrdP_IN_SUCC_D thin1)
 
 
-section {*The predicate @{text LstSeqP}*}
+section \<open>The predicate \<open>LstSeqP\<close>\<close>
 
 lemma hfun_sigma_ord_iff: "hfun_sigma_ord s \<longleftrightarrow> OrdDom s \<and> hfun_sigma s"
   by (auto simp: hfun_sigma_ord_def OrdDom_def hfun_sigma_def HBall_def, metis+)

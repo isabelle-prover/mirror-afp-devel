@@ -3,18 +3,18 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* Finite sets *}
+section \<open>Finite sets\<close>
 
 theory PRecFinSet
 imports PRecFun
 begin
 
-text {*
-  We introduce a particular mapping @{text "nat_to_set"} from natural
+text \<open>
+  We introduce a particular mapping \<open>nat_to_set\<close> from natural
   numbers to finite sets of natural numbers and a particular mapping
-  @{text "set_to_nat"} from finite sets of natural numbers to natural
+  \<open>set_to_nat\<close> from finite sets of natural numbers to natural
   numbers.  See \cite{Rogers} and \cite{Soare} for more information.
-*}
+\<close>
 
 definition
   c_in :: "nat \<Rightarrow> nat \<Rightarrow> nat" where

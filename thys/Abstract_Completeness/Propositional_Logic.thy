@@ -4,7 +4,7 @@ imports Abstract_Completeness
 begin
 (*>*)
 
-section {* Toy instantiation: Propositional Logic *}
+section \<open>Toy instantiation: Propositional Logic\<close>
 
 datatype fmla = Atom nat | Neg fmla | Conj fmla fmla
 

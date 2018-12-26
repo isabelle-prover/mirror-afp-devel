@@ -114,27 +114,27 @@ next
     assume "a \<le> p"
     show ?thesis
     proof (cases r)
-      case Leaf thus ?thesis using `a \<le> p` "2.prems" by fastforce
+      case Leaf thus ?thesis using \<open>a \<le> p\<close> "2.prems" by fastforce
     next
       case [simp]: (Node rl b rr)
       let ?t = "Node l a r"
       show ?thesis
       proof cases
         assume "b \<le> p"
-        with `a \<le> p` "2.prems" obtain rrl
+        with \<open>a \<le> p\<close> "2.prems" obtain rrl
           where 0: "partition p rr = (rrl, r')" "l' = Node (Node l a rl) b rrl"
           by (auto split: tree.splits prod.splits)
         have "size rrl \<le> size rr"
           using size_partition[OF 0(1)] by (simp add: size1_size)
-        with 0 `a \<le> p` `b \<le> p` "2.prems"(1) "2.IH"(1)[OF _ Node , of rrl r']
+        with 0 \<open>a \<le> p\<close> \<open>b \<le> p\<close> "2.prems"(1) "2.IH"(1)[OF _ Node , of rrl r']
           zig_zig[where s=l and u=rl and r=rr and r1'=rrl and r2'=r' and p=p, of a b]
         show ?thesis by (simp add: algebra_simps)
       next
         assume "\<not> b \<le> p"
-        with `a \<le> p` "2.prems" obtain rll rlr 
+        with \<open>a \<le> p\<close> "2.prems" obtain rll rlr 
           where 0: "partition p rl = (rll, rlr)" "l' = Node l a rll" "r' = Node rlr b rr"
           by (auto split: tree.splits prod.splits)
-        from 0 `a \<le> p` `\<not> b \<le> p` "2.prems"(1) "2.IH"(2)[OF _ Node, of rll rlr]
+        from 0 \<open>a \<le> p\<close> \<open>\<not> b \<le> p\<close> "2.prems"(1) "2.IH"(2)[OF _ Node, of rll rlr]
           size_partition[OF 0(1)]
           zig_zag[where s=l and u=rr and r=rl and r1'=rll and r2'=rlr and p=p, of a b]
         show ?thesis by (simp add: algebra_simps)
@@ -144,28 +144,28 @@ next
     assume "\<not> a \<le> p"
     show ?thesis
     proof (cases l)
-      case Leaf thus ?thesis using `\<not> a \<le> p` "2.prems" by fastforce
+      case Leaf thus ?thesis using \<open>\<not> a \<le> p\<close> "2.prems" by fastforce
     next
       case [simp]: (Node ll b lr)
       let ?t = "Node l a r"
       show ?thesis
       proof cases
         assume "b \<le> p"
-        with `\<not> a \<le> p` "2.prems" obtain lrl lrr 
+        with \<open>\<not> a \<le> p\<close> "2.prems" obtain lrl lrr 
           where 0: "partition p lr = (lrl, lrr)" "l' = Node ll b lrl" "r' = Node lrr a r"
           by (auto split: tree.splits prod.splits)
-        from 0 `\<not> a \<le> p` `b \<le> p` "2.prems"(1) "2.IH"(3)[OF _ Node, of lrl lrr]
+        from 0 \<open>\<not> a \<le> p\<close> \<open>b \<le> p\<close> "2.prems"(1) "2.IH"(3)[OF _ Node, of lrl lrr]
           size_partition[OF 0(1)]
           zig_zag[where s=r and u=ll and r=lr and r1'=lrr and r2'=lrl and p=p, of a b]
         show ?thesis by (auto simp: algebra_simps)
       next
         assume "\<not> b \<le> p"
-        with `\<not> a \<le> p` "2.prems" obtain llr
+        with \<open>\<not> a \<le> p\<close> "2.prems" obtain llr
           where 0: "partition p ll = (l',llr)" "r' = Node llr b (Node lr a r)"
           by (auto split: tree.splits prod.splits)
         have "size llr \<le> size ll"
           using size_partition[OF 0(1)] by (simp add: size1_size)
-        with 0 `\<not> a \<le> p` `\<not> b \<le> p` "2.prems"(1) "2.IH"(4)[OF _ Node, of l' llr]
+        with 0 \<open>\<not> a \<le> p\<close> \<open>\<not> b \<le> p\<close> "2.prems"(1) "2.IH"(4)[OF _ Node, of l' llr]
           zig_zig[where s=r and u=lr and r=ll and r1'=llr and r2'=l' and p=p, of a b]
         show ?thesis by (auto simp: algebra_simps)
       qed

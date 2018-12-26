@@ -4,15 +4,15 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection{* Verification Examples with Automated VCG *}
+subsubsection\<open>Verification Examples with Automated VCG\<close>
 
 theory VC_KAD_Examples2
 imports VC_KAD "HOL-Eisbach.Eisbach"
 begin
 
-text {* We have provide a simple tactic in the Eisbach proof method language. Additional simplification
+text \<open>We have provide a simple tactic in the Eisbach proof method language. Additional simplification
 steps are sometimes needed to bring the resulting verification conditions into shape for first-order automated
-theorem proving. *}
+theorem proving.\<close>
 
 
 named_theorems ht

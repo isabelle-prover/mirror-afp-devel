@@ -196,7 +196,7 @@ proof -
   
   (* Wait until succeeding states can be recognised *)
   obtain n\<^sub>1 where "\<And>m q. m \<ge> n\<^sub>1 \<Longrightarrow> ((\<exists>x \<in> configuration q m. token_succeeds x) \<longrightarrow> q \<in> \<S> m) \<and> (q \<in> \<S> m \<longrightarrow> (\<forall>x \<in> configuration q m. token_succeeds x))"
-    using succeeding_states[OF `smallest_accepting_rank = Some i`] unfolding MOST_nat_le by blast
+    using succeeding_states[OF \<open>smallest_accepting_rank = Some i\<close>] unfolding MOST_nat_le by blast
   (* Wait until all "early" succeeding tokens reached the final states *)
   obtain n\<^sub>2 where "\<And>x. x < k \<Longrightarrow> token_succeeds x \<Longrightarrow> token_run x n\<^sub>2 \<in> ?F"
     by (induction k) (simp, metis token_stays_in_final_states add.commute le_neq_implies_less not_less not_less_eq token_succeeds_def) 
@@ -210,12 +210,12 @@ proof -
     hence "n\<^sub>1 \<le> m"
       unfolding n_def by simp
     hence "((\<exists>x \<in> configuration q m. token_succeeds x) \<longrightarrow> q \<in> \<S> m) \<and> (q \<in> \<S> m \<longrightarrow> (\<forall>x \<in> configuration q m. token_succeeds x))"
-      using `\<And>m q. m \<ge> n\<^sub>1 \<Longrightarrow> ((\<exists>x \<in> configuration q m. token_succeeds x) \<longrightarrow> q \<in> \<S> m) \<and> (q \<in> \<S> m \<longrightarrow> (\<forall>x \<in> configuration q m. token_succeeds x))` by blast
+      using \<open>\<And>m q. m \<ge> n\<^sub>1 \<Longrightarrow> ((\<exists>x \<in> configuration q m. token_succeeds x) \<longrightarrow> q \<in> \<S> m) \<and> (q \<in> \<S> m \<longrightarrow> (\<forall>x \<in> configuration q m. token_succeeds x))\<close> by blast
   }
   hence n_def_1: "\<And>m q. m \<ge> n \<Longrightarrow> ((\<exists>x \<in> configuration q m. token_succeeds x) \<longrightarrow> q \<in> \<S> m) \<and> (q \<in> \<S> m \<longrightarrow> (\<forall>x \<in> configuration q m. token_succeeds x))"
     by presburger
   have n_def_2: "\<And>x m. x < k \<Longrightarrow> m \<ge> n \<Longrightarrow> token_succeeds x \<Longrightarrow> token_run x m \<in> ?F"
-    using `\<And>x. x < k \<Longrightarrow> token_succeeds x \<Longrightarrow> token_run x n\<^sub>2 \<in> ?F` Max.coboundedI[of "{n\<^sub>1, n\<^sub>2, k}"] 
+    using \<open>\<And>x. x < k \<Longrightarrow> token_succeeds x \<Longrightarrow> token_run x n\<^sub>2 \<in> ?F\<close> Max.coboundedI[of "{n\<^sub>1, n\<^sub>2, k}"] 
     using token_stays_in_final_states[of _ n\<^sub>2] le_Suc_ex unfolding n_def by force
   
   {
@@ -228,7 +228,7 @@ proof -
       assume "S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> m" "\<G> \<subseteq> S"
       hence "\<And>x. k \<le> x \<Longrightarrow> x \<le> Suc m \<Longrightarrow> S \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [x \<rightarrow> m])"
         unfolding And_prop_entailment \<F>_def k_def[symmetric] subsequence_def
-        using `k \<le> m` by auto
+        using \<open>k \<le> m\<close> by auto
       fix q assume "q \<in> \<S> m"
 
       have "S \<Turnstile>\<^sub>P Rep q"
@@ -236,18 +236,18 @@ proof -
         case False
           moreover
           from False obtain j where "state_rank q m = Some j" and "j \<ge> i"
-            using `q \<in> \<S> m` `smallest_accepting_rank = Some i` by force
+            using \<open>q \<in> \<S> m\<close> \<open>smallest_accepting_rank = Some i\<close> by force
           then obtain x where x: "x \<in> configuration q m" "token_run x m = q" 
             by force
           moreover
           from x have "token_succeeds x" 
-            using n_def_1[OF `n \<le> m`] `q \<in> \<S> m` by blast
+            using n_def_1[OF \<open>n \<le> m\<close>] \<open>q \<in> \<S> m\<close> by blast
           ultimately
           have "S \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [x \<rightarrow> m])"
-            using `\<And>x. k \<le> x \<Longrightarrow> x \<le> Suc m \<Longrightarrow> S \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [x \<rightarrow> m])`[of x] n_def_2[OF _ `n \<le> m`] by fastforce
+            using \<open>\<And>x. k \<le> x \<Longrightarrow> x \<le> Suc m \<Longrightarrow> S \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [x \<rightarrow> m])\<close>[of x] n_def_2[OF _ \<open>n \<le> m\<close>] by fastforce
           thus ?thesis
-            using Rep_token_run_af unfolding `token_run x m = q`[symmetric] ltl_prop_equiv_def by simp
-       qed (insert `\<G> \<subseteq> S`, blast)
+            using Rep_token_run_af unfolding \<open>token_run x m = q\<close>[symmetric] ltl_prop_equiv_def by simp
+       qed (insert \<open>\<G> \<subseteq> S\<close>, blast)
     }
     
     moreover
@@ -259,8 +259,8 @@ proof -
       have "\<G> \<subseteq> S"
       proof 
         fix x assume "x \<in> \<G>"
-        with `Only_G \<G>` show "x \<in> S"
-          using `\<And>q. q \<in> ?F \<Longrightarrow> S \<Turnstile>\<^sub>P Rep q`[of "Abs x"] by auto
+        with \<open>Only_G \<G>\<close> show "x \<in> S"
+          using \<open>\<And>q. q \<in> ?F \<Longrightarrow> S \<Turnstile>\<^sub>P Rep q\<close>[of "Abs x"] by auto
       qed
 
       { 
@@ -268,13 +268,13 @@ proof -
         define q where "q = token_run x m"
 
         hence "token_succeeds x"
-          using threshold_properties[OF `threshold \<psi> w \<G> = Some k`] `x \<ge> k` Rep_token_run_af  
+          using threshold_properties[OF \<open>threshold \<psi> w \<G> = Some k\<close>] \<open>x \<ge> k\<close> Rep_token_run_af  
           unfolding token_succeeds_def ltl_prop_equiv_def by blast
         hence "q \<in> \<S> m"
-          using n_def_1[OF `n \<le> m`, of q] `x \<le> m`
+          using n_def_1[OF \<open>n \<le> m\<close>, of q] \<open>x \<le> m\<close>
           unfolding q_def configuration.simps by blast
         hence "S \<Turnstile>\<^sub>P Rep q"
-          by (rule `\<And>q. q \<in> \<S> m \<Longrightarrow> S \<Turnstile>\<^sub>P Rep q`)
+          by (rule \<open>\<And>q. q \<in> \<S> m \<Longrightarrow> S \<Turnstile>\<^sub>P Rep q\<close>)
         hence "S \<Turnstile>\<^sub>P af\<^sub>G \<psi> (w [x \<rightarrow> m])"
           using Rep_token_run_af unfolding q_def ltl_prop_equiv_def by simp
       }
@@ -282,7 +282,7 @@ proof -
         unfolding set_map set_upt by fastforce
       hence "S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> m" and "\<G> \<subseteq> S"
         unfolding \<F>_def And_prop_entailment[of S] k_def[symmetric] 
-        using `k \<le> m` `\<G> \<subseteq> S` by simp+ 
+        using \<open>k \<le> m\<close> \<open>\<G> \<subseteq> S\<close> by simp+ 
     }
     ultimately
     have "(S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> m \<and> \<G> \<subseteq> S) \<longleftrightarrow> (\<forall>q. q \<in> \<S> m \<longrightarrow> S \<Turnstile>\<^sub>P Rep q)"
@@ -301,7 +301,7 @@ proof -
   have "Only_G \<G>" and "finite \<G>"
     using assms by simp+
   show ?thesis
-    using almost_all_commutative''[OF `finite \<G>` `Only_G \<G>`] \<F>_eq_\<S>[OF assms] by simp
+    using almost_all_commutative''[OF \<open>finite \<G>\<close> \<open>Only_G \<G>\<close>] \<F>_eq_\<S>[OF assms] by simp
 qed
 
 subsection \<open>Product of Secondary Automata\<close>
@@ -382,9 +382,9 @@ proof
     let ?S = "(reach \<Sigma> (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) ) \<times> \<Sigma> \<times> (reach \<Sigma> (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))))"
 
     have "\<And>n. r n \<in> ?S"
-      unfolding run\<^sub>t.simps run_foldl reach_foldl_def[OF `\<Sigma> \<noteq> {}`] r_def by fastforce 
+      unfolding run\<^sub>t.simps run_foldl reach_foldl_def[OF \<open>\<Sigma> \<noteq> {}\<close>] r_def by fastforce 
     hence "range r \<subseteq> ?S" and  "finite ?S"
-      using ltl_FG_to_generalized_rabin_wellformed assms `finite \<Sigma>` by (blast, fast)
+      using ltl_FG_to_generalized_rabin_wellformed assms \<open>finite \<Sigma>\<close> by (blast, fast)
   }
   hence "finite (range r)"
     by (blast dest: finite_subset)
@@ -392,11 +392,11 @@ proof
   {
     assume ?lhs
     then obtain \<G> where "\<G> \<subseteq> \<^bold>G (G \<phi>)" and "G \<phi> \<in> \<G>" and "\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w"
-      unfolding ltl_to_rabin_correct[OF `finite \<Sigma>` `range w \<subseteq> \<Sigma>`] unfolding ltl_to_rabin.simps by auto
+      unfolding ltl_to_rabin_correct[OF \<open>finite \<Sigma>\<close> \<open>range w \<subseteq> \<Sigma>\<close>] unfolding ltl_to_rabin.simps by auto
     
-    note \<G>_properties[OF `\<G> \<subseteq> \<^bold>G (G \<phi>)`]
+    note \<G>_properties[OF \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close>]
     hence "ltl_FG_to_rabin \<Sigma> \<G> w"
-      using `finite \<Sigma>` `range w \<subseteq> \<Sigma>` unfolding ltl_FG_to_rabin_def by auto
+      using \<open>finite \<Sigma>\<close> \<open>range w \<subseteq> \<Sigma>\<close> unfolding ltl_FG_to_rabin_def by auto
 
     define \<pi> where "\<pi> \<psi> =
         (if \<psi> \<in> \<G> then the (ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<psi>) \<G> w) else 0)"
@@ -411,24 +411,24 @@ proof
         and "\<chi> \<in> \<G>"
         by blast
       hence "\<exists>\<chi>'. \<chi> = G \<chi>'"
-        using `\<G> \<subseteq> \<^bold>G (G \<phi>)` G_nested_propos_alt_def by auto
+        using \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close> G_nested_propos_alt_def by auto
       
       interpret ltl_FG_to_rabin \<Sigma> "theG \<chi>" \<G> w
-        by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
+        by (insert \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>)
      
       define r\<^sub>\<chi> where "r\<^sub>\<chi> = run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
       
       moreover
 
       have "accept" and "accept\<^sub>R (\<delta>\<^sub>\<R>, q\<^sub>\<R>, {Acc\<^sub>\<R> j | j. j < max_rank}) w" 
-        using `\<chi> \<in> \<G>` `\<exists>\<chi>'. \<chi> = G \<chi>'` `\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w` 
+        using \<open>\<chi> \<in> \<G>\<close> \<open>\<exists>\<chi>'. \<chi> = G \<chi>'\<close> \<open>\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w\<close> 
         using mojmir_accept_iff_rabin_accept by auto
 
       hence "smallest_accepting_rank\<^sub>\<R> = Some (\<pi> \<chi>)"
         unfolding \<pi>_def smallest_accepting_rank_def Mojmir_rabin_smallest_accepting_rank[symmetric] 
-        using `\<chi> \<in> \<G>` by simp
+        using \<open>\<chi> \<in> \<G>\<close> by simp
       hence "accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> (\<pi> \<chi>)) w"
-        using `accept\<^sub>R (\<delta>\<^sub>\<R>, q\<^sub>\<R>, {Acc\<^sub>\<R> j | j. j < max_rank}) w` LeastI[of "\<lambda>i. accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> i) w"] 
+        using \<open>accept\<^sub>R (\<delta>\<^sub>\<R>, q\<^sub>\<R>, {Acc\<^sub>\<R> j | j. j < max_rank}) w\<close> LeastI[of "\<lambda>i. accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> i) w"] 
         by (auto simp add: smallest_accepting_rank\<^sub>\<R>_def)
 
       ultimately
@@ -439,12 +439,12 @@ proof
       moreover
 
       have 1: "(\<iota>\<^sub>\<times> (\<^bold>G (G \<phi>)) (\<lambda>\<chi>. ltl_FG_to_rabin_def.q\<^sub>R (theG \<chi>))) \<chi> = Some q\<^sub>\<R>"
-        using `\<chi> \<in> \<G>` `\<G> \<subseteq> \<^bold>G (G \<phi>)` by (simp add: LTL_Rabin.product_initial_state.simps subset_iff) 
+        using \<open>\<chi> \<in> \<G>\<close> \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close> by (simp add: LTL_Rabin.product_initial_state.simps subset_iff) 
       have 2: "finite (range (run\<^sub>t 
               (\<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>)))
               (\<iota>\<^sub>\<times> (\<^bold>G (G \<phi>)) (\<lambda>\<chi>. ltl_FG_to_rabin_def.q\<^sub>R (theG \<chi>))) 
               w))"
-        using `finite (range r)`[unfolded r_def] by simp
+        using \<open>finite (range r)\<close>[unfolded r_def] by simp
       
       ultimately
       have "limit r \<inter> fst P = {}" and "limit r \<inter> snd P \<noteq> {}"
@@ -460,22 +460,22 @@ proof
       fix \<psi>
       assume "\<psi> \<in> \<G>"
       hence "\<exists>\<chi>. \<psi> = G \<chi>" 
-        using `\<G> \<subseteq> \<^bold>G (G \<phi>)` G_nested_propos_alt_def by auto
+        using \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close> G_nested_propos_alt_def by auto
 
       interpret ltl_FG_to_rabin \<Sigma> "theG \<psi>" \<G> w
-        by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
+        by (insert \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>)
 
       have "accept"
-        using `\<psi> \<in> \<G>` `\<exists>\<chi>. \<psi> = G \<chi>` `\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w`  mojmir_accept_iff_rabin_accept by auto
+        using \<open>\<psi> \<in> \<G>\<close> \<open>\<exists>\<chi>. \<psi> = G \<chi>\<close> \<open>\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w\<close>  mojmir_accept_iff_rabin_accept by auto
       then obtain i where "smallest_accepting_rank = Some i" 
         unfolding smallest_accepting_rank_def by fastforce
       hence "\<pi> \<psi> < max_rank\<^sub>R"
-        using smallest_accepting_rank_properties \<pi>_def `\<psi> \<in> \<G>` by auto
+        using smallest_accepting_rank_properties \<pi>_def \<open>\<psi> \<in> \<G>\<close> by auto
     }
     hence "\<And>\<chi>. \<pi> \<chi> < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
-      unfolding \<pi>_def using ltl_FG_to_rabin.max_rank_lowerbound[OF `ltl_FG_to_rabin \<Sigma> \<G> w`] by force
+      unfolding \<pi>_def using ltl_FG_to_rabin.max_rank_lowerbound[OF \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>] by force
     hence "combine_pairs' ?P' \<in> snd (snd (\<P> \<phi>))"
-      using `\<G> \<subseteq> \<^bold>G (G \<phi>)` `G \<phi> \<in> \<G>` by auto
+      using \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close> \<open>G \<phi> \<in> \<G>\<close> by auto
     ultimately
     show ?rhs
       unfolding accept\<^sub>G\<^sub>R_simp2 ltl_FG_to_generalized_rabin.simps fst_conv snd_conv by blast
@@ -490,9 +490,9 @@ proof
     moreover
     hence P'_def: "\<And>P. P \<in> ?P' \<Longrightarrow> accepting_pair\<^sub>R (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) P w"
       using combine_pairs'_prop by meson
-    note \<G>_properties[OF `\<G> \<subseteq> \<^bold>G (G \<phi>)`]
+    note \<G>_properties[OF \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close>]
     hence "ltl_FG_to_rabin \<Sigma> \<G> w"
-      using `finite \<Sigma>` `range w \<subseteq> \<Sigma>` unfolding ltl_FG_to_rabin_def by auto
+      using \<open>finite \<Sigma>\<close> \<open>range w \<subseteq> \<Sigma>\<close> unfolding ltl_FG_to_rabin_def by auto
     have "\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w"
     proof (rule+)
       fix \<psi>
@@ -500,27 +500,27 @@ proof
       define \<chi> where "\<chi> = G \<psi>" 
       define P where "P = \<^bold>\<upharpoonleft>\<^sub>\<chi> (ltl_FG_to_rabin_def.Acc\<^sub>R \<Sigma> \<psi> \<G> (\<pi> \<chi>))"
       hence "\<chi> \<in> \<G>" and "theG \<chi> = \<psi>" 
-        using \<chi>_def `G \<psi> \<in> \<G>` by simp+
+        using \<chi>_def \<open>G \<psi> \<in> \<G>\<close> by simp+
       hence "P \<in> ?P'" 
         unfolding P_def by auto
       hence "accepting_pair\<^sub>R (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) P w"
         using P'_def by blast
 
       interpret ltl_FG_to_rabin \<Sigma> \<psi> \<G> w
-        by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
+        by (insert \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>)
 
       define r\<^sub>\<chi> where "r\<^sub>\<chi> = run\<^sub>t \<delta>\<^sub>\<R> q\<^sub>\<R> w"
       
       have "limit r \<inter> fst P = {}" and "limit r \<inter> snd P \<noteq> {}"
-        using `accepting_pair\<^sub>R (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) P w` 
+        using \<open>accepting_pair\<^sub>R (fst (\<P> \<phi>)) (fst (snd (\<P> \<phi>))) P w\<close> 
         unfolding r_def accepting_pair\<^sub>R_def by metis+
 
       moreover
 
       have 1: "(\<iota>\<^sub>\<times> (\<^bold>G (G \<phi>)) (\<lambda>\<chi>. ltl_FG_to_rabin_def.q\<^sub>R (theG \<chi>))) (G \<psi>) = Some q\<^sub>\<R>"
-        using `G \<psi> \<in> \<G>` `\<G> \<subseteq> \<^bold>G (G \<phi>)` by (auto simp add: LTL_Rabin.product_initial_state.simps subset_iff)
+        using \<open>G \<psi> \<in> \<G>\<close> \<open>\<G> \<subseteq> \<^bold>G (G \<phi>)\<close> by (auto simp add: LTL_Rabin.product_initial_state.simps subset_iff)
       have 2: "finite (range (run\<^sub>t (\<Delta>\<^sub>\<times> (\<lambda>\<chi>. ltl_FG_to_rabin_def.\<delta>\<^sub>R \<Sigma> (theG \<chi>))) (\<iota>\<^sub>\<times> (\<^bold>G (G \<phi>)) (\<lambda>\<chi>. ltl_FG_to_rabin_def.q\<^sub>R (theG \<chi>)))  w))"
-        using `finite (range r)`[unfolded r_def] by simp
+        using \<open>finite (range r)\<close>[unfolded r_def] by simp
       have "\<And>S. limit r \<inter> (\<Union> (\<upharpoonleft>\<^sub>\<chi> ` S)) = {} \<longleftrightarrow> limit r\<^sub>\<chi> \<inter> S = {}"
         using product_run_embed_limit_finiteness[OF 1 2] by (simp add: r_def r\<^sub>\<chi>_def \<chi>_def)
 
@@ -530,14 +530,14 @@ proof
       hence "accepting_pair\<^sub>R \<delta>\<^sub>\<R> q\<^sub>\<R> (Acc\<^sub>\<R> (\<pi> \<chi>)) w"
         unfolding r\<^sub>\<chi>_def by simp 
       hence "accept\<^sub>R (\<delta>\<^sub>\<R>, q\<^sub>\<R>, {Acc\<^sub>\<R> j | j. j < max_rank}) w"
-        using `\<And>\<chi>. \<pi> \<chi> < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)` `theG \<chi> = \<psi>` 
+        using \<open>\<And>\<chi>. \<pi> \<chi> < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)\<close> \<open>theG \<chi> = \<psi>\<close> 
         unfolding accept\<^sub>R_simp accepting_pair\<^sub>R_def fst_conv snd_conv by blast 
       thus "accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w"
         by simp
     qed
     ultimately
     show ?lhs
-      unfolding ltl_to_rabin_correct[OF `finite \<Sigma>` assms] by auto
+      unfolding ltl_to_rabin_correct[OF \<open>finite \<Sigma>\<close> assms] by auto
   }
 qed 
 
@@ -685,7 +685,7 @@ proof -
     and "\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi> \<chi>) w"
     unfolding P_def accepting_pair\<^sub>G\<^sub>R_simp accepting_pair\<^sub>R_simp by blast+ (* Slow... *)
   thus ?thesis
-    using that `dom \<pi> \<subseteq> \<^bold>G \<phi>` `\<forall>\<chi> \<in> dom \<pi>. the (\<pi> \<chi>) < max_rank_of \<Sigma> \<chi>` by blast
+    using that \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> \<open>\<forall>\<chi> \<in> dom \<pi>. the (\<pi> \<chi>) < max_rank_of \<Sigma> \<chi>\<close> by blast
 qed
 
 context
@@ -705,7 +705,7 @@ context
 begin
 
 interpretation \<MM>: mojmir_to_rabin \<Sigma> \<delta>\<^sub>M "q\<^sub>0\<^sub>M \<psi>" w "{q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
-  by (metis mojmir_to_rabin `dom \<pi> \<subseteq> \<^bold>G \<phi>` \<G>_elements)
+  by (metis mojmir_to_rabin \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> \<G>_elements)
 
 lemma Acc_property:
   "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi> (G \<psi>)) w \<longleftrightarrow> accepting_pair\<^sub>R \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> (\<MM>.Acc\<^sub>\<R> (the (\<pi> (G \<psi>)))) w"
@@ -720,12 +720,12 @@ proof -
   proof -
     fix S
     have 1: "snd (initial \<phi>) (G \<psi>) = Some \<MM>.q\<^sub>\<R>"
-      using `G \<psi> \<in> dom \<pi>` `dom \<pi> \<subseteq> \<^bold>G \<phi>` by auto
+      using \<open>G \<psi> \<in> dom \<pi>\<close> \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> by auto
     have 2: "finite (range (run\<^sub>t (\<Delta>\<^sub>\<times> (semi_mojmir_def.step \<Sigma> \<delta>\<^sub>M o q\<^sub>0\<^sub>M o theG)) (snd (initial \<phi>)) w))"
-      using `finite (range r)` r_def comp_apply by (auto intro: product_run_finite_snd)
+      using \<open>finite (range r)\<close> r_def comp_apply by (auto intro: product_run_finite_snd)
     show "?thesis S"
       unfolding r_def r\<^sub>\<psi>_def product_run_embed_limit_finiteness[OF 1 2, unfolded ltl.sel comp_def, symmetric] 
-      using product_run_embed_limit_finiteness_snd[OF  `finite (range r)`[unfolded r_def delta.simps initial.simps]]
+      using product_run_embed_limit_finiteness_snd[OF  \<open>finite (range r)\<close>[unfolded r_def delta.simps initial.simps]]
       by (auto simp del: simple_product.simps product.simps product_initial_state.simps simp add: comp_def cong del: SUP_cong_strong)
   qed
   hence "limit r \<inter> fst (Acc \<Sigma> \<pi> (G \<psi>)) = {} \<and> limit r \<inter> snd (Acc \<Sigma> \<pi> (G \<psi>)) \<noteq> {} 
@@ -777,21 +777,21 @@ proof -
     fix \<chi> assume "\<chi> \<in> dom \<pi>"
   
     interpret \<MM>: mojmir_to_rabin \<Sigma> \<delta>\<^sub>M "q\<^sub>0\<^sub>M (theG \<chi>)" w "{q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
-      by (metis mojmir_to_rabin `dom \<pi> \<subseteq> \<^bold>G \<phi>` \<G>_elements)
+      by (metis mojmir_to_rabin \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> \<G>_elements)
   
-    from `\<chi> \<in> dom \<pi>` have "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi> \<chi>) w"
+    from \<open>\<chi> \<in> dom \<pi>\<close> have "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi> \<chi>) w"
       using assms(4) by blast
     hence "accepting_pair\<^sub>R \<MM>.\<delta>\<^sub>\<R> \<MM>.q\<^sub>\<R> (\<MM>.Acc\<^sub>\<R> (the (\<pi> \<chi>))) w" 
-      by (metis `\<chi> \<in> dom \<pi>` Acc_property[OF _ dom_subset] `Only_G (dom \<pi>)` ltl.sel(8))
+      by (metis \<open>\<chi> \<in> dom \<pi>\<close> Acc_property[OF _ dom_subset] \<open>Only_G (dom \<pi>)\<close> ltl.sel(8))
     moreover
     hence "accept\<^sub>R (\<MM>.\<delta>\<^sub>\<R>, \<MM>.q\<^sub>\<R>, {\<MM>.Acc\<^sub>\<R> j | j. j < \<MM>.max_rank}) w"
-      using assms(2)[OF `\<chi> \<in> dom \<pi>`] unfolding max_rank_of_def by auto
+      using assms(2)[OF \<open>\<chi> \<in> dom \<pi>\<close>] unfolding max_rank_of_def by auto
     ultimately
     have "the (\<MM>.smallest_accepting_rank\<^sub>\<R>) \<le> the (\<pi> \<chi>)" and "\<MM>.smallest_accepting_rank \<noteq> None"
-      using Least_le[of _ "the (\<pi> \<chi>)"] assms(2)[OF `\<chi> \<in> dom \<pi>`] \<MM>.mojmir_accept_iff_rabin_accept option.distinct(1) \<MM>.smallest_accepting_rank_def 
+      using Least_le[of _ "the (\<pi> \<chi>)"] assms(2)[OF \<open>\<chi> \<in> dom \<pi>\<close>] \<MM>.mojmir_accept_iff_rabin_accept option.distinct(1) \<MM>.smallest_accepting_rank_def 
       by (simp add: \<MM>.smallest_accepting_rank\<^sub>\<R>_def)+
     hence "the (\<pi>\<^sub>\<A> \<chi>) \<le> the (\<pi> \<chi>)" and "\<chi> \<in> dom \<pi>\<^sub>\<A>"
-      unfolding \<pi>\<^sub>\<A>_def dom_restrict using assms(2) `\<chi> \<in> dom \<pi>` by (simp add: \<MM>.Mojmir_rabin_smallest_accepting_rank \<G>_def, subst dom_def, simp add: \<G>_def)
+      unfolding \<pi>\<^sub>\<A>_def dom_restrict using assms(2) \<open>\<chi> \<in> dom \<pi>\<close> by (simp add: \<MM>.Mojmir_rabin_smallest_accepting_rank \<G>_def, subst dom_def, simp add: \<G>_def)
   }
   
   hence "dom \<pi> = dom \<pi>\<^sub>\<A>"
@@ -799,10 +799,10 @@ proof -
   
   moreover
   
-  note \<G>_properties[OF dom_subset, unfolded `dom \<pi> = dom \<pi>\<^sub>\<A>`]
+  note \<G>_properties[OF dom_subset, unfolded \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close>]
   
   have "M_fin \<pi>\<^sub>\<A> \<subseteq> M_fin \<pi>" 
-    using `dom \<pi> = dom \<pi>\<^sub>\<A>` by (simp add: M_fin_monotonic `\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi>\<^sub>\<A> \<chi>) \<le> the (\<pi> \<chi>)`)
+    using \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close> by (simp add: M_fin_monotonic \<open>\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> the (\<pi>\<^sub>\<A> \<chi>) \<le> the (\<pi> \<chi>)\<close>)
   hence "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (M_fin \<pi>\<^sub>\<A>, UNIV) w"
     using assms unfolding accepting_pair\<^sub>R_simp by blast
    
@@ -812,24 +812,24 @@ proof -
   {
     fix \<chi> assume "\<chi> \<in> dom \<pi>\<^sub>\<A>"
     hence "\<chi> = G (theG \<chi>)"
-      unfolding `dom \<pi> = dom \<pi>\<^sub>\<A>`[symmetric] `Only_G (dom \<pi>)` by (metis `Only_G (dom \<pi>\<^sub>\<A>)` `\<chi> \<in> dom \<pi>\<^sub>\<A>` ltl.collapse(6) ltl.disc(58)) 
+      unfolding \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close>[symmetric] \<open>Only_G (dom \<pi>)\<close> by (metis \<open>Only_G (dom \<pi>\<^sub>\<A>)\<close> \<open>\<chi> \<in> dom \<pi>\<^sub>\<A>\<close> ltl.collapse(6) ltl.disc(58)) 
     moreover
     hence "G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>"
-      using `\<chi> \<in> dom \<pi>\<^sub>\<A>` by simp
+      using \<open>\<chi> \<in> dom \<pi>\<^sub>\<A>\<close> by simp
     moreover
     hence X: "mojmir_def.accept \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) w {q. dom \<pi> \<up>\<Turnstile>\<^sub>P q}"
-      using assms(1,2,4) `dom \<pi> \<subseteq> \<^bold>G \<phi>` ltl.sel(8) Acc_to_mojmir_accept `dom \<pi> = dom \<pi>\<^sub>\<A>` by (metis max_rank_of_def)  
+      using assms(1,2,4) \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close> ltl.sel(8) Acc_to_mojmir_accept \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close> by (metis max_rank_of_def)  
     have Y: "\<pi>\<^sub>\<A> (G theG \<chi>) = mojmir_def.smallest_accepting_rank \<Sigma> \<delta>\<^sub>M (q\<^sub>0\<^sub>M (theG \<chi>)) w {q. dom \<pi>\<^sub>\<A> \<up>\<Turnstile>\<^sub>P q}"
-      using `G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>` `\<chi> = G (theG \<chi>)` \<pi>\<^sub>\<A>_def `dom \<pi> = dom \<pi>\<^sub>\<A>`[symmetric] by simp
+      using \<open>G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>\<close> \<open>\<chi> = G (theG \<chi>)\<close> \<pi>\<^sub>\<A>_def \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close>[symmetric] by simp
     ultimately
     have "accepting_pair\<^sub>R (delta \<Sigma>) (initial \<phi>) (Acc \<Sigma> \<pi>\<^sub>\<A> \<chi>) w"
-      using mojmir_accept_to_Acc[OF `G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>` `dom \<pi> \<subseteq> \<^bold>G \<phi>`[unfolded `dom \<pi> = dom \<pi>\<^sub>\<A>`] X[unfolded `dom \<pi> = dom \<pi>\<^sub>\<A>`] Y] by simp
+      using mojmir_accept_to_Acc[OF \<open>G (theG \<chi>) \<in> dom \<pi>\<^sub>\<A>\<close> \<open>dom \<pi> \<subseteq> \<^bold>G \<phi>\<close>[unfolded \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close>] X[unfolded \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close>] Y] by simp
   }
 
   ultimately
 
   show ?thesis
-    using that[of \<pi>\<^sub>\<A>] restrict_in unfolding `dom \<pi> = dom \<pi>\<^sub>\<A>` \<G>_def 
+    using that[of \<pi>\<^sub>\<A>] restrict_in unfolding \<open>dom \<pi> = dom \<pi>\<^sub>\<A>\<close> \<G>_def 
     by (metis (no_types, lifting))
 qed
 
@@ -886,7 +886,7 @@ proof
     then obtain \<G> where "\<G> \<subseteq> \<^bold>G \<phi>" and "accept\<^sub>M \<phi> \<G> w" and "closed \<G> w"
       unfolding ltl_logical_characterization by blast
     
-    note \<G>_properties[OF `\<G> \<subseteq> \<^bold>G \<phi>`]
+    note \<G>_properties[OF \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close>]
     hence "ltl_FG_to_rabin \<Sigma> \<G> w"
       using finite_\<Sigma> bounded_w unfolding ltl_FG_to_rabin_def by auto
 
@@ -895,26 +895,26 @@ proof
       for \<chi>
     
     have \<MM>_accept: "\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> ltl_FG_to_rabin_def.accept\<^sub>R' \<psi> \<G> w"
-      using `closed \<G> w` `ltl_FG_to_rabin \<Sigma> \<G> w` ltl_FG_to_rabin.ltl_to_rabin_correct_exposed' by blast
+      using \<open>closed \<G> w\<close> \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close> ltl_FG_to_rabin.ltl_to_rabin_correct_exposed' by blast
     have "\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w"
-      using `closed \<G> w` unfolding ltl_FG_to_rabin.ltl_to_rabin_correct_exposed[OF `ltl_FG_to_rabin \<Sigma> \<G> w`] by simp
+      using \<open>closed \<G> w\<close> unfolding ltl_FG_to_rabin.ltl_to_rabin_correct_exposed[OF \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>] by simp
 
     {
       fix \<psi> assume "G \<psi> \<in> \<G>"
       interpret \<MM>: ltl_FG_to_rabin \<Sigma> \<psi> \<G> w
-        by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
+        by (insert \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>)
       obtain i where "\<MM>.smallest_accepting_rank = Some i"
-        using \<MM>_accept[OF `G \<psi> \<in> \<G>`]
+        using \<MM>_accept[OF \<open>G \<psi> \<in> \<G>\<close>]
         unfolding \<MM>.smallest_accepting_rank_def by fastforce
       hence "the (\<pi> (G \<psi>)) < \<MM>.max_rank" and "\<pi> (G \<psi>) \<noteq> None"
-        using \<MM>.smallest_accepting_rank_properties `G \<psi> \<in> \<G>`
+        using \<MM>.smallest_accepting_rank_properties \<open>G \<psi> \<in> \<G>\<close>
         unfolding \<pi>_def by simp+
     }
     hence "\<G> = dom \<pi>" and "\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)" 
-      using `Only_G \<G>` \<pi>_def unfolding dom_def by auto
+      using \<open>Only_G \<G>\<close> \<pi>_def unfolding dom_def by auto
 
     hence "(M_fin \<pi> \<union> \<Union>{Acc_fin \<Sigma> \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}) \<in> ?F"
-      using `\<G> \<subseteq> \<^bold>G \<phi>` max_rank_of_def by auto
+      using \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close> max_rank_of_def by auto
 
     moreover
 
@@ -924,12 +924,12 @@ proof
         (* Wait until the Mojmir automata provide enough information *)
         obtain i where i_def: 
           "\<And>j. j \<ge> i \<Longrightarrow> \<forall>S. (\<forall>\<psi>. G \<psi> \<in> \<G> \<longrightarrow> S \<Turnstile>\<^sub>P G \<psi> \<and> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (\<F> \<psi> w \<G> j)) \<longrightarrow> S \<Turnstile>\<^sub>P af \<phi> (w [0 \<rightarrow> j])"
-          using `accept\<^sub>M \<phi> \<G> w` unfolding MOST_nat_le accept\<^sub>M_def by blast
+          using \<open>accept\<^sub>M \<phi> \<G> w\<close> unfolding MOST_nat_le accept\<^sub>M_def by blast
   
         (* Wait until the states with succeeding tokens are (prop.) equivalent to \<F> *)
         obtain i' where i'_def: 
           "\<And>j \<psi> S. j \<ge> i' \<Longrightarrow> G \<psi> \<in> \<G> \<Longrightarrow> (S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> j \<and> \<G> \<subseteq> S) = (\<forall>q. q \<in> ltl_FG_to_rabin_def.\<S>\<^sub>R \<Sigma> \<psi> \<G> w j \<longrightarrow> S \<Turnstile>\<^sub>P Rep q)"
-          using \<F>_eq_\<S>_generalized[OF finite_\<Sigma> bounded_w `closed \<G> w`] unfolding MOST_nat_le by presburger 
+          using \<F>_eq_\<S>_generalized[OF finite_\<Sigma> bounded_w \<open>closed \<G> w\<close>] unfolding MOST_nat_le by presburger 
   
         (* From now on the run does not visit forbidden states *)  
         have "\<And>j. j \<ge> max i i' \<Longrightarrow> r j \<notin> M_fin \<pi>"
@@ -953,38 +953,38 @@ proof
               fix \<psi>
               assume "G \<psi> \<in> \<G>"
               hence "G \<psi> \<in> \<^bold>G \<phi>" and "\<G> \<subseteq> S"
-                using `\<G> \<subseteq> \<^bold>G \<phi>` assm1 `Only_G \<G>` by (blast, force)
+                using \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close> assm1 \<open>Only_G \<G>\<close> by (blast, force)
   
               interpret \<MM>: ltl_FG_to_rabin \<Sigma> \<psi> \<G> w
-                by (unfold_locales; insert `Only_G \<G>` finite_\<Sigma> bounded_w; blast) 
+                by (unfold_locales; insert \<open>Only_G \<G>\<close> finite_\<Sigma> bounded_w; blast) 
     
               have "\<And>S. (\<And>q. q \<in> \<MM>.\<S> j \<Longrightarrow> S \<Turnstile>\<^sub>P Rep q) \<Longrightarrow> S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> j"
-                using i'_def `G \<psi> \<in> \<G>` `j \<ge> max i i'` max.bounded_iff by metis
+                using i'_def \<open>G \<psi> \<in> \<G>\<close> \<open>j \<ge> max i i'\<close> max.bounded_iff by metis
               hence "\<And>S. (\<And>q. q \<in> Rep ` \<MM>.\<S> j \<Longrightarrow> S \<Turnstile>\<^sub>P q) \<Longrightarrow> S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> j"
                 by simp
   
               moreover
   
               have \<S>_def: "\<MM>.\<S> j = {q. \<G> \<Turnstile>\<^sub>P Rep q} \<union> {q . \<exists>j'. the (\<pi> (G \<psi>)) \<le> j' \<and> the (?m (G \<psi>)) q = Some j'}"
-                using r_alt_def''[OF `G \<psi> \<in> \<^bold>G \<phi>`, unfolded ltl.sel, of j] `G \<psi> \<in> \<G>` by (simp add: \<pi>_def)
+                using r_alt_def''[OF \<open>G \<psi> \<in> \<^bold>G \<phi>\<close>, unfolded ltl.sel, of j] \<open>G \<psi> \<in> \<G>\<close> by (simp add: \<pi>_def)
               have "\<And>q. \<G> \<Turnstile>\<^sub>P Rep q \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (Rep q)"
-                using `\<G> \<subseteq> S` eval\<^sub>G_prop_entailment by blast
+                using \<open>\<G> \<subseteq> S\<close> eval\<^sub>G_prop_entailment by blast
               hence "\<And>q. q \<in> Rep ` \<MM>.\<S> j \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> q"
-                using assm2 `G \<psi> \<in> \<G>` unfolding \<S>_def by auto
+                using assm2 \<open>G \<psi> \<in> \<G>\<close> unfolding \<S>_def by auto
   
               ultimately
               have "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (\<F> \<psi> w \<G> j)"
                 by (rule eval\<^sub>G_respectfulness_generalized)
             }
             hence "S \<Turnstile>\<^sub>P af \<phi> (w [0 \<rightarrow> j])"
-              by (metis max.bounded_iff i_def `j \<ge> max i i'` `\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P \<chi>`)
+              by (metis max.bounded_iff i_def \<open>j \<ge> max i i'\<close> \<open>\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P \<chi>\<close>)
             hence "S \<Turnstile>\<^sub>P Rep ?\<phi>'"
               using \<phi>'_def ltl_prop_equiv_def by blast
             hence "S \<up>\<Turnstile>\<^sub>P ?\<phi>'"
               using ltl_prop_entails_abs.rep_eq by blast 
           }
           thus "r j \<notin> M_fin \<pi>"
-            using `\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)` `\<G> = dom \<pi>` by fastforce 
+            using \<open>\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> the (\<pi> \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)\<close> \<open>\<G> = dom \<pi>\<close> by fastforce 
         qed
         hence "range (suffix (max i i') r) \<inter> M_fin \<pi> = {}"
           unfolding suffix_def by (blast intro: le_add1 elim: rangeE) 
@@ -992,7 +992,7 @@ proof
           using limit_in_range_suffix[of r] by blast
         moreover
         have "limit r \<inter> UNIV \<noteq> {}"
-          using `finite (range r)` by (simp, metis empty_iff limit_nonemptyE) 
+          using \<open>finite (range r)\<close> by (simp, metis empty_iff limit_nonemptyE) 
         ultimately
         show ?thesis
           unfolding r_def accepting_pair\<^sub>R_simp ..
@@ -1004,16 +1004,16 @@ proof
       proof -
         fix \<chi> assume "\<chi> \<in> \<G>"
         then obtain \<psi> where "\<chi> = G \<psi>" and "G \<psi> \<in> \<G>" 
-          using `Only_G \<G>` by fastforce 
+          using \<open>Only_G \<G>\<close> by fastforce 
         thus "?thesis \<chi>"
-          using `\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w`[OF `G \<psi> \<in> \<G>`]
-          using rabin_accept_to_Acc[of \<psi> \<pi>] `G \<psi> \<in> \<G>` `\<G> \<subseteq> \<^bold>G \<phi>` `\<chi> \<in> \<G>`
-          unfolding ltl.sel unfolding `\<chi> = G \<psi>` `\<G> = dom \<pi>` using \<pi>_def `\<G> = dom \<pi>` ltl.sel(8) unfolding ltl_prop_entails_abs.rep_eq ltl_to_rabin.simps
+          using \<open>\<And>\<psi>. G \<psi> \<in> \<G> \<Longrightarrow> accept\<^sub>R (ltl_to_rabin \<Sigma> \<psi> \<G>) w\<close>[OF \<open>G \<psi> \<in> \<G>\<close>]
+          using rabin_accept_to_Acc[of \<psi> \<pi>] \<open>G \<psi> \<in> \<G>\<close> \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close> \<open>\<chi> \<in> \<G>\<close>
+          unfolding ltl.sel unfolding \<open>\<chi> = G \<psi>\<close> \<open>\<G> = dom \<pi>\<close> using \<pi>_def \<open>\<G> = dom \<pi>\<close> ltl.sel(8) unfolding ltl_prop_entails_abs.rep_eq ltl_to_rabin.simps
           by (metis (no_types, lifting) Collect_cong)
       qed
       ultimately
       have "accepting_pair\<^sub>G\<^sub>R ?\<Delta> ?q\<^sub>0 (M_fin \<pi> \<union> \<Union>{Acc_fin \<Sigma> \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}, {Acc_inf \<pi> \<chi> | \<chi>. \<chi> \<in> dom \<pi>}) w"
-        unfolding accepting_pair\<^sub>G\<^sub>R_def accepting_pair\<^sub>R_def fst_conv snd_conv `\<G> = dom \<pi>` by blast
+        unfolding accepting_pair\<^sub>G\<^sub>R_def accepting_pair\<^sub>R_def fst_conv snd_conv \<open>\<G> = dom \<pi>\<close> by blast
     }
     ultimately
     show ?rhs
@@ -1027,15 +1027,15 @@ proof
       and 1: "\<And>\<chi>. \<chi> \<in> dom \<pi>' \<Longrightarrow> the (\<pi>' \<chi>) < ltl_FG_to_rabin_def.max_rank\<^sub>R \<Sigma> (theG \<chi>)"
       and 2: "accepting_pair\<^sub>R ?\<Delta> ?q\<^sub>0 (M_fin \<pi>', UNIV) w"
       and 3: "\<And>\<chi>. \<chi> \<in> dom \<pi>' \<Longrightarrow> accepting_pair\<^sub>R ?\<Delta> ?q\<^sub>0 (Acc \<Sigma> \<pi>' \<chi>) w"
-      using accept\<^sub>G\<^sub>R_I[OF `?rhs`] unfolding max_rank_of_def by blast
+      using accept\<^sub>G\<^sub>R_I[OF \<open>?rhs\<close>] unfolding max_rank_of_def by blast
 
     define \<G> where "\<G> = dom \<pi>'"
     hence "\<G> \<subseteq> \<^bold>G \<phi>"
-     using `dom \<pi>' \<subseteq> \<^bold>G \<phi>` by simp
+     using \<open>dom \<pi>' \<subseteq> \<^bold>G \<phi>\<close> by simp
 
     moreover
     
-    note \<G>_properties[OF `dom \<pi>' \<subseteq> \<^bold>G \<phi>`[unfolded \<G>_def[symmetric]]]
+    note \<G>_properties[OF \<open>dom \<pi>' \<subseteq> \<^bold>G \<phi>\<close>[unfolded \<G>_def[symmetric]]]
     ultimately
     have \<MM>_Accept: "\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> ltl_FG_to_rabin_def.accept\<^sub>R' (theG \<chi>) \<G> w"
       using Acc_to_mojmir_accept[OF _ 0 3, of "theG _"] 1[of "G theG _", unfolded ltl.sel] \<G>_def 
@@ -1049,11 +1049,11 @@ proof
       using normalize_\<pi>[OF 0 _ 2 3] 1 unfolding max_rank_of_def ltl_prop_entails_abs.rep_eq by blast
 
     have "ltl_FG_to_rabin \<Sigma> \<G> w"
-      using finite_\<Sigma> bounded_w `Only_G \<G>` unfolding ltl_FG_to_rabin_def by auto
+      using finite_\<Sigma> bounded_w \<open>Only_G \<G>\<close> unfolding ltl_FG_to_rabin_def by auto
 
     have "closed \<G> w"
-      using \<MM>_Accept `Only_G \<G>` ltl.sel(8) `finite \<G>` 
-      unfolding ltl_FG_to_rabin.ltl_to_rabin_correct_exposed'[OF `ltl_FG_to_rabin \<Sigma> \<G> w`, symmetric] by fastforce
+      using \<MM>_Accept \<open>Only_G \<G>\<close> ltl.sel(8) \<open>finite \<G>\<close> 
+      unfolding ltl_FG_to_rabin.ltl_to_rabin_correct_exposed'[OF \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>, symmetric] by fastforce
 
     moreover
     
@@ -1061,13 +1061,13 @@ proof
     proof -
       (* Wait until the run gets trapped in the "good" states *)
       obtain i where i_def: "\<And>j. j \<ge> i \<Longrightarrow> r j \<notin> M_fin \<pi>"
-        using `accepting_pair\<^sub>R  ?\<Delta> ?q\<^sub>0 (M_fin \<pi>, UNIV) w` limit_inter_empty[OF `finite (range r)`, of "M_fin \<pi>"]
+        using \<open>accepting_pair\<^sub>R  ?\<Delta> ?q\<^sub>0 (M_fin \<pi>, UNIV) w\<close> limit_inter_empty[OF \<open>finite (range r)\<close>, of "M_fin \<pi>"]
         unfolding r_def[symmetric] MOST_nat_le accepting_pair\<^sub>R_def by auto
       
       (* Wait until the states with succeeding tokens are (prop.) equivalent to \<F> *)
       obtain i' where i'_def: 
         "\<And>j \<psi> S. j \<ge> i' \<Longrightarrow> G \<psi> \<in> \<G> \<Longrightarrow> (S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> j \<and> \<G> \<subseteq> S) = (\<forall>q. q \<in> ltl_FG_to_rabin_def.\<S>\<^sub>R \<Sigma> \<psi> \<G> w j \<longrightarrow> S \<Turnstile>\<^sub>P Rep q)"
-        using \<F>_eq_\<S>_generalized[OF finite_\<Sigma> bounded_w `closed \<G> w`] unfolding MOST_nat_le by presburger 
+        using \<F>_eq_\<S>_generalized[OF finite_\<Sigma> bounded_w \<open>closed \<G> w\<close>] unfolding MOST_nat_le by presburger 
 
       {
         fix j S
@@ -1080,7 +1080,7 @@ proof
         let ?m = "snd (fst (r j))"
         
         have "\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P \<chi>"
-          using \<G>_def' `\<G> \<subseteq> \<^bold>G \<phi>` unfolding G_nested_propos_alt_def by auto
+          using \<G>_def' \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close> unfolding G_nested_propos_alt_def by auto
         moreover
 
         (* Proof that the chosen S propositionally implies all succeeding states of the projected Mojmir automaton *)
@@ -1088,32 +1088,32 @@ proof
           fix \<chi>
           assume "\<chi> \<in> \<G>"
           then obtain \<psi> where "\<chi> = G \<psi>" and "G \<psi> \<in> \<G>"
-            using `Only_G \<G>` by auto
+            using \<open>Only_G \<G>\<close> by auto
           hence "G \<psi> \<in> \<^bold>G \<phi>"
-            using `\<G> \<subseteq> \<^bold>G \<phi>` by blast
+            using \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close> by blast
           
           interpret \<MM>: ltl_FG_to_rabin \<Sigma> \<psi> \<G> w
-            by (insert `ltl_FG_to_rabin \<Sigma> \<G> w`)
+            by (insert \<open>ltl_FG_to_rabin \<Sigma> \<G> w\<close>)
 
           {
             fix q
             assume "q \<in> \<MM>.\<S> j"
             hence "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (\<F> \<psi> w \<G> j)"
-              using \<G>_def' `G \<psi> \<in> \<G>` by simp
+              using \<G>_def' \<open>G \<psi> \<in> \<G>\<close> by simp
             moreover 
             have "S \<supseteq> \<G>"
-              using \<G>_def' `Only_G \<G>` by auto
+              using \<G>_def' \<open>Only_G \<G>\<close> by auto
             hence "\<And>x. x \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> x"
-              using `Only_G \<G>` `S \<supseteq> \<G>` by fastforce
+              using \<open>Only_G \<G>\<close> \<open>S \<supseteq> \<G>\<close> by fastforce
             moreover
             {
               fix S
               assume "\<And>x. x \<in> \<G> \<union> {\<F> \<psi> w \<G> j} \<Longrightarrow> S \<Turnstile>\<^sub>P x" 
               hence "\<G> \<subseteq> S" and "S \<Turnstile>\<^sub>P \<F> \<psi> w \<G> j"
-                using `Only_G \<G>` by fastforce+
+                using \<open>Only_G \<G>\<close> by fastforce+
               hence "S \<Turnstile>\<^sub>P Rep q"
-                using `q \<in> ltl_FG_to_rabin_def.\<S>\<^sub>R \<Sigma> \<psi> \<G> w j`
-                using i'_def[OF `j \<ge> i'` `G \<psi> \<in> \<G>`] by blast
+                using \<open>q \<in> ltl_FG_to_rabin_def.\<S>\<^sub>R \<Sigma> \<psi> \<G> w j\<close>
+                using i'_def[OF \<open>j \<ge> i'\<close> \<open>G \<psi> \<in> \<G>\<close>] by blast
             }
             ultimately
             have "S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (Rep q)"
@@ -1122,19 +1122,19 @@ proof
           }
           moreover 
           have "\<MM>.\<S> j = {q. \<G> \<Turnstile>\<^sub>P Rep q} \<union> {q . \<exists>j'. the \<MM>.smallest_accepting_rank \<le> j' \<and> the (?m (G \<psi>)) q = Some j'}"
-            unfolding \<MM>.\<S>.simps using run_properties(2)[OF `G \<psi> \<in> \<^bold>G \<phi>`] r_def by simp
+            unfolding \<MM>.\<S>.simps using run_properties(2)[OF \<open>G \<psi> \<in> \<^bold>G \<phi>\<close>] r_def by simp
           ultimately
           have "\<And>q j. j \<ge> the (\<pi> \<chi>) \<Longrightarrow> the (?m \<chi>) q = Some j \<Longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (Rep q)"
-            using  `\<chi> \<in> \<G>`[unfolded \<G>_def `dom \<pi>' = dom \<pi>`]
-            unfolding `\<chi> = G \<psi>` `\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> \<pi> \<chi> = ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>) w`[OF `\<chi> \<in> \<G>`[unfolded \<G>_def `dom \<pi>' = dom \<pi>`], unfolded `\<chi> = G \<psi>`] ltl.sel(8)
-            unfolding  `\<G> \<equiv> dom \<pi>'`[symmetric] `dom \<pi>' = dom \<pi>`[symmetric] by blast
+            using  \<open>\<chi> \<in> \<G>\<close>[unfolded \<G>_def \<open>dom \<pi>' = dom \<pi>\<close>]
+            unfolding \<open>\<chi> = G \<psi>\<close> \<open>\<And>\<chi>. \<chi> \<in> dom \<pi> \<Longrightarrow> \<pi> \<chi> = ltl_FG_to_rabin_def.smallest_accepting_rank\<^sub>R \<Sigma> (theG \<chi>) (dom \<pi>) w\<close>[OF \<open>\<chi> \<in> \<G>\<close>[unfolded \<G>_def \<open>dom \<pi>' = dom \<pi>\<close>], unfolded \<open>\<chi> = G \<psi>\<close>] ltl.sel(8)
+            unfolding  \<open>\<G> \<equiv> dom \<pi>'\<close>[symmetric] \<open>dom \<pi>' = dom \<pi>\<close>[symmetric] by blast
         }
         moreover 
 
         have "(\<And>\<chi>. \<chi> \<in> \<G> \<Longrightarrow> S \<Turnstile>\<^sub>P \<chi> \<and> (\<forall>q. \<forall>j' \<ge> the (\<pi> \<chi>). the (?m \<chi>) q = Some j' \<longrightarrow> S \<Turnstile>\<^sub>P eval\<^sub>G \<G> (Rep q))) \<Longrightarrow> S \<Turnstile>\<^sub>P Rep ?\<phi>'"
-          apply (insert i_def[OF `j \<ge> i`])
+          apply (insert i_def[OF \<open>j \<ge> i\<close>])
           apply (simp add: eval\<^sub>G_abs_def ltl_prop_entails_abs.rep_eq case_prod_beta option.case_eq_if)
-          apply (unfold `\<G> \<equiv> dom \<pi>'`[symmetric] `dom \<pi>' = dom \<pi>`[symmetric])
+          apply (unfold \<open>\<G> \<equiv> dom \<pi>'\<close>[symmetric] \<open>dom \<pi>' = dom \<pi>\<close>[symmetric])
           apply meson
           done
         
@@ -1151,7 +1151,7 @@ proof
 
     ultimately
     show ?lhs
-      using `\<G> \<subseteq> \<^bold>G \<phi>` ltl_logical_characterization by blast
+      using \<open>\<G> \<subseteq> \<^bold>G \<phi>\<close> ltl_logical_characterization by blast
   }
 qed
 

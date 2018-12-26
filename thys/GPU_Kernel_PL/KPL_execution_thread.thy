@@ -1,10 +1,10 @@
-section {* Execution rules for threads *}
+section \<open>Execution rules for threads\<close>
 
 theory KPL_execution_thread imports 
   KPL_state
 begin
 
-text {* Evaluate a local expression down to a word *}
+text \<open>Evaluate a local expression down to a word\<close>
 fun eval_word :: "local_expr \<Rightarrow> thread_state \<Rightarrow> word"
 where
   "eval_word (Loc (Var v)) \<tau> = l \<tau> (Inl v)"
@@ -16,16 +16,16 @@ where
   (eval_word e1 \<tau> * eval_word e2 \<tau>)"
 | "eval_word (\<not>* e) \<tau> = (if eval_word e \<tau> = 0 then 1 else 0)"
 
-text {* Evaluate a local expression down to a boolean *}
+text \<open>Evaluate a local expression down to a boolean\<close>
 fun eval_bool :: "local_expr \<Rightarrow> thread_state \<Rightarrow> bool"
 where
   "eval_bool e \<tau> = (eval_word e \<tau> \<noteq> 0)"
 
-text {* Abstraction level: none, equality abstraction, or adversarial abstraction *}
+text \<open>Abstraction level: none, equality abstraction, or adversarial abstraction\<close>
 datatype abs_level = No_Abst | Eq_Abst | Adv_Abst
 
-text {* The rules of Figure 4, plus two additional rules 
-  for adversarial abstraction (Fig 7b) *}
+text \<open>The rules of Figure 4, plus two additional rules 
+  for adversarial abstraction (Fig 7b)\<close>
 inductive step_t 
   :: "abs_level \<Rightarrow> (thread_state \<times> pred_basic_stmt) \<Rightarrow> thread_state \<Rightarrow> bool"  
 where
@@ -51,13 +51,13 @@ where
   "\<lbrakk> eval_bool p \<tau> ; W' = W \<tau> \<union> { eval_word e1 \<tau> } \<rbrakk> 
   \<Longrightarrow> step_t Adv_Abst (\<tau>, (Write e1 e2, p)) (\<tau> (| \<^cancel>\<open>sh := sh',\<close> W := W' |))"
 
-text {* Rephrasing @{text T_Assign} to make it more usable *}
+text \<open>Rephrasing \<open>T_Assign\<close> to make it more usable\<close>
 lemma T_Assign_helper: 
   "\<lbrakk> eval_bool p \<tau> ; l' = (l \<tau>) (Inl v := eval_word e \<tau>) ; \<tau>' = \<tau> (| l := l' |) \<rbrakk> 
   \<Longrightarrow> step_t a (\<tau>, (Assign (Var v) e, p)) \<tau>'"
 by (auto simp add: step_t.T_Assign)
 
-text {* Rephrasing @{text T_Read} to make it more usable *}
+text \<open>Rephrasing \<open>T_Read\<close> to make it more usable\<close>
 lemma T_Read_helper: 
   "\<lbrakk> eval_bool p \<tau> ; l' = (l \<tau>) (Inl v := sh \<tau> (eval_word e \<tau>)) ;
   R' = R \<tau> \<union> { eval_word e \<tau> } ; a \<in> {No_Abst, Eq_Abst} ; 
@@ -65,7 +65,7 @@ lemma T_Read_helper:
   \<Longrightarrow> step_t a (\<tau>, (Read (Var v) e, p)) \<tau>'"
 by (auto simp add: step_t.T_Read)
 
-text {* Rephrasing @{text T_Write} to make it more usable *}
+text \<open>Rephrasing \<open>T_Write\<close> to make it more usable\<close>
 lemma T_Write_helper:
   "\<lbrakk> eval_bool p \<tau> ; 
   sh' = (sh \<tau>) (eval_word e1 \<tau> := eval_word e2 \<tau>) ;

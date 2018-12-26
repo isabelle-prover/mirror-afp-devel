@@ -1,16 +1,16 @@
-section {* Robbins Conjecture *}
+section \<open>Robbins Conjecture\<close>
 
 theory Robbins_Conjecture
 imports Main
 begin
 
-text {* The document gives a formalization of the proof of the Robbins 
+text \<open>The document gives a formalization of the proof of the Robbins 
         conjecture, following A. Mann, \emph{A Complete Proof of the 
-        Robbins Conjecture}, 2003, DOI 10.1.1.6.7838 *}
+        Robbins Conjecture}, 2003, DOI 10.1.1.6.7838\<close>
 
-section {* Axiom Systems *}
+section \<open>Axiom Systems\<close>
 
-text {* The following presents several axiom systems that shall be under study.
+text \<open>The following presents several axiom systems that shall be under study.
 
         The first axiom sets common systems that underly all of 
         the systems we shall be looking at.
@@ -26,9 +26,9 @@ text {* The following presents several axiom systems that shall be under study.
 
         Apart from the common system, all of these systems are demonstrated 
         to be equivalent to the library formulation of Boolean algebra, under 
-        appropriate interpretation. *}
+        appropriate interpretation.\<close>
 
-subsection {* Common Algebras *}
+subsection \<open>Common Algebras\<close>
 
 class common_algebra = uminus +
   fixes inf :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<sqinter>" 70)
@@ -58,7 +58,7 @@ class ext_common_algebra = common_algebra +
   assumes top_eq: "\<top> = \<iota> \<squnion> - \<iota>"
   assumes bot_eq: "\<bottom> = -(\<iota> \<squnion> - \<iota>)"
 
-subsection {* Boolean Algebra *}
+subsection \<open>Boolean Algebra\<close>
 
 class boolean_algebra_II = 
   common_algebra +
@@ -70,33 +70,33 @@ class boolean_algebra_II =
   assumes sup_compl: "x \<squnion> - x = \<top>"
   assumes inf_compl: "x \<sqinter> - x = \<bottom>"
 
-subsection {* Huntington's Algebra *}
+subsection \<open>Huntington's Algebra\<close>
 
 class huntington_algebra = ext_common_algebra +
   assumes huntington: "- (-x \<squnion> -y) \<squnion> - (-x \<squnion>  y) = x"
 
-subsection {* Robbins' Algebra *}
+subsection \<open>Robbins' Algebra\<close>
 
 class robbins_algebra = ext_common_algebra +
   assumes robbins: "- (- (x \<squnion> y) \<squnion> - (x \<squnion> -y)) = x"
 
-section {* Equivalence *}
+section \<open>Equivalence\<close>
 
-text {* With our axiom systems defined, we turn to providing equivalence 
+text \<open>With our axiom systems defined, we turn to providing equivalence 
         results between them.  
         
         We shall begin by illustrating equivalence for our formulation and 
-        the library formulation of Boolean algebra. *}
+        the library formulation of Boolean algebra.\<close>
 
-subsection {* Boolean Algebra *}
+subsection \<open>Boolean Algebra\<close>
 
-text {* The following provides the canonical definitions for order and 
+text \<open>The following provides the canonical definitions for order and 
         relative complementation for Boolean algebras.  These are necessary 
         since the Boolean algebras presented in the Isabelle/HOL library have 
         a lot of structure, while our formulation is considerably simpler.
      
        Since our formulation of Boolean algebras is considerably simple, it is 
-       easy to show that the library instantiates our axioms. *}
+       easy to show that the library instantiates our axioms.\<close>
 
 context boolean_algebra_II begin
 
@@ -124,15 +124,15 @@ done
 
 end
 
-subsection {* Huntington Algebra *}
+subsection \<open>Huntington Algebra\<close>
 
-text {* We shall illustrate here that all Boolean algebra using our 
+text \<open>We shall illustrate here that all Boolean algebra using our 
         formulation are Huntington algebras, and illustrate that every 
         Huntington algebra may be interpreted as a Boolean algebra.
 
         Since the Isabelle/HOL library has good automation, it is convenient 
         to first show that the library instances Huntington algebras to exploit 
-        previous results, and then use our previously derived correspondence. *}
+        previous results, and then use our previously derived correspondence.\<close>
 
 context boolean_algebra begin
 lemma boolean_is_huntington:
@@ -373,7 +373,7 @@ proof -
 qed
 end
 
-subsection {* Robbins' Algebra *}
+subsection \<open>Robbins' Algebra\<close>
 
 context boolean_algebra begin
 lemma boolean_is_robbins:
@@ -406,8 +406,8 @@ proof -
 qed
 end
 
-text {* Before diving into the proof that the Robbins algebra is Boolean,
-        we shall present some shorthand machinery *}
+text \<open>Before diving into the proof that the Robbins algebra is Boolean,
+        we shall present some shorthand machinery\<close>
 
 context common_algebra begin
 
@@ -522,7 +522,7 @@ qed
 
 end
 
-text {* The theorem asserting all Robbins algebras are Boolean  
+text \<open>The theorem asserting all Robbins algebras are Boolean  
        comes in 6 movements.
        
        First: The Winker identity is proved.
@@ -536,7 +536,7 @@ text {* The theorem asserting all Robbins algebras are Boolean
 
        Fifth: The double negation law is proven
 
-       Sixth: Robbin's algebras are proven to be Huntington Algebras. *}
+       Sixth: Robbin's algebras are proven to be Huntington Algebras.\<close>
 
 context robbins_algebra begin
 

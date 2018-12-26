@@ -6,11 +6,11 @@ section "List Interleaving Operator"
 theory Interleave
 imports Main "HOL-Library.Permutation" Misc
 begin
-text_raw {*\label{thy:Interleave}*}
+text_raw \<open>\label{thy:Interleave}\<close>
 
-text {*
+text \<open>
   This theory defines an operator to return the set of all possible interleavings of two lists.
-*}
+\<close>
 
 (*
   Is \<Otimes>-operator needed ?

@@ -14,7 +14,7 @@ text \<open>First, we define a type of trees, with a constructor~@{term tConj} t
 infinite) sets of trees into trees. To avoid paradoxes (note that there is no injection from the
 powerset of trees into the set of trees), the cardinality of the argument set must be bounded.\<close>
 
-text \<open>The effect consequence operator~@{text "\<langle>f\<rangle>"} is always and only used as a prefix to a
+text \<open>The effect consequence operator~\<open>\<langle>f\<rangle>\<close> is always and only used as a prefix to a
 predicate or an action formula. So to simplify the representation of formula trees with effects, the
 effect operator is merged into the predicate or action it precedes.\<close>
 
@@ -1275,7 +1275,7 @@ lemma Act_eq_iff_perm_renaming: "Act f1 \<alpha>1 x1 = Act f2 \<alpha>2 x2 \<lon
 proof
   assume "?l" then have "f1 = f2"
     by (metis Act_eq_iff_perm)
-  moreover from `?l` obtain p where p: "supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2 \<and> (supp x1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> x1 = x2 \<and> supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2 \<and> (supp \<alpha>1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> \<alpha>1 = \<alpha>2"
+  moreover from \<open>?l\<close> obtain p where p: "supp x1 - bn \<alpha>1 = supp x2 - bn \<alpha>2 \<and> (supp x1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> x1 = x2 \<and> supp \<alpha>1 - bn \<alpha>1 = supp \<alpha>2 - bn \<alpha>2 \<and> (supp \<alpha>1 - bn \<alpha>1) \<sharp>* p \<and> p \<bullet> \<alpha>1 = \<alpha>2"
     by (metis Act_eq_iff_perm)
   moreover obtain q where q_p: "\<forall>b\<in>bn \<alpha>1. q \<bullet> b = p \<bullet> b" and supp_q: "supp q \<subseteq> bn \<alpha>1 \<union> p \<bullet> bn \<alpha>1"
     by (metis set_renaming_perm2)

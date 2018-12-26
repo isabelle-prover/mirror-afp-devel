@@ -1,4 +1,4 @@
-section {* Deterministic Rabin Automata *}
+section \<open>Deterministic Rabin Automata\<close>
 
 theory DRA
 imports

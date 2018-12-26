@@ -107,13 +107,13 @@ proof -
     thus ?case by(blast dest: weakPsiCongSym)
   next
     case(cSim P Q)
-    from `\<Psi> \<rhd> P \<doteq> Q \<and> \<Psi> \<simeq> \<Psi>'` have "\<Psi> \<rhd> P \<doteq> Q" and "\<Psi> \<simeq> \<Psi>'" by simp+
-    from `\<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(rule weakPsiCongE)
-    with `\<Psi> \<simeq> \<Psi>'` show ?case using statEqWeakBisim
+    from \<open>\<Psi> \<rhd> P \<doteq> Q \<and> \<Psi> \<simeq> \<Psi>'\<close> have "\<Psi> \<rhd> P \<doteq> Q" and "\<Psi> \<simeq> \<Psi>'" by simp+
+    from \<open>\<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(rule weakPsiCongE)
+    with \<open>\<Psi> \<simeq> \<Psi>'\<close> show ?case using statEqWeakBisim
       by(rule_tac weakCongSimStatEq) auto
   next
     case(cWeakBisim P Q)
-    from `\<Psi> \<rhd> P \<doteq> Q \<and> \<Psi> \<simeq> \<Psi>'`
+    from \<open>\<Psi> \<rhd> P \<doteq> Q \<and> \<Psi> \<simeq> \<Psi>'\<close>
     have "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'" by(auto dest: weakPsiCongE)
     thus ?case by(rule statEqWeakBisim)
   qed
@@ -142,11 +142,11 @@ proof(induct rule: weakPsiCongSymI)
   thus ?case by(rule weakPsiCongSym)
 next
   case(cSim P Q)
-  from `\<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(rule weakPsiCongE)
+  from \<open>\<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(rule weakPsiCongE)
   thus ?case by(drule_tac p=p in weakCongSimClosed(1)[OF weakBisimEqvt]) (simp add: eqvts)
 next
   case(cWeakBisim P Q)
-  from `\<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<approx> Q" by(rule weakPsiCongE)
+  from \<open>\<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<approx> Q" by(rule weakPsiCongE)
   thus ?case by(rule weakBisimClosed)
 qed
 
@@ -169,9 +169,9 @@ proof -
   next
     case(cSim P R)
     hence "\<Psi> \<rhd> P \<doteq> Q" and  "\<Psi> \<rhd> Q \<doteq> R"  by auto
-    moreover from `\<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<approx> Q" by(metis weakBisimE weakPsiCongE)
-    moreover from `\<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(rule weakPsiCongE)
-    moreover from `\<Psi> \<rhd> Q \<doteq> R` have "\<Psi> \<rhd> Q \<leadsto>\<guillemotleft>weakBisim\<guillemotright> R" by(rule weakPsiCongE)
+    moreover from \<open>\<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<approx> Q" by(metis weakBisimE weakPsiCongE)
+    moreover from \<open>\<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(rule weakPsiCongE)
+    moreover from \<open>\<Psi> \<rhd> Q \<doteq> R\<close> have "\<Psi> \<rhd> Q \<leadsto>\<guillemotleft>weakBisim\<guillemotright> R" by(rule weakPsiCongE)
     moreover have "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. \<Psi> \<rhd> P \<approx> Q \<and> \<Psi> \<rhd> Q \<approx> R} \<subseteq> weakBisim"
       by(auto dest: weakBisimTransitive)
     ultimately show ?case using weakBisimE(2) by(rule_tac weakCongSimTransitive)
@@ -192,10 +192,10 @@ lemma strongBisimWeakPsiCong:
 using assms
 proof(induct rule: weakPsiCongSymI)
   case(cSym P Q)
-  from `\<Psi> \<rhd> P \<sim> Q` show ?case by(rule bisimE)
+  from \<open>\<Psi> \<rhd> P \<sim> Q\<close> show ?case by(rule bisimE)
 next
   case(cSim P Q)
-  from `\<Psi> \<rhd> P \<sim> Q` have "\<Psi> \<rhd> P \<leadsto>[bisim] Q" by(rule bisimE)
+  from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have "\<Psi> \<rhd> P \<leadsto>[bisim] Q" by(rule bisimE)
   thus "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" using strongBisimWeakBisim
     by(rule_tac strongSimWeakCongSim) auto
 next

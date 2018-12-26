@@ -221,16 +221,16 @@ lemma substInput[simp]:
 proof -
   obtain y::name where"y \<noteq> a" and "y \<sharp> P" and "y \<noteq> b" and "y \<noteq> c"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `y \<sharp> P` have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" by(simp add: alphaInput)
+  from \<open>y \<sharp> P\<close> have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" by(simp add: alphaInput)
   moreover have "(a[b::=c])<x>.(P[b::=c]) = (a[b::=c])<y>.(([(x, y)] \<bullet> P)[b::=c])" (is "?LHS = ?RHS")
   proof -
-    from `y \<sharp> P` `y \<noteq> c` have "y \<sharp> P[b::=c]" by(rule fresh_fact1)
+    from \<open>y \<sharp> P\<close> \<open>y \<noteq> c\<close> have "y \<sharp> P[b::=c]" by(rule fresh_fact1)
     hence "?LHS = (a[b::=c])<y>.([(x, y)] \<bullet> (P[b::=c]))" by(simp add: alphaInput)
-    moreover with `x \<noteq> b` `x \<noteq> c` `y \<noteq> b` `y \<noteq> c` have "\<dots> = ?RHS"
+    moreover with \<open>x \<noteq> b\<close> \<open>x \<noteq> c\<close> \<open>y \<noteq> b\<close> \<open>y \<noteq> c\<close> have "\<dots> = ?RHS"
       by(auto simp add: eqvt_subs name_calc)
     ultimately show ?thesis by simp
   qed
-  ultimately show ?thesis using `y \<noteq> a` `y \<noteq> b` `y \<noteq> c` by simp
+  ultimately show ?thesis using \<open>y \<noteq> a\<close> \<open>y \<noteq> b\<close> \<open>y \<noteq> c\<close> by simp
 qed
 
 lemma injPermSubst:
@@ -258,7 +258,7 @@ proof(case_tac "a = b")
   thus ?thesis by auto
 next
   assume "a \<noteq> b"
-  moreover with `b \<sharp> P` show ?thesis
+  moreover with \<open>b \<sharp> P\<close> show ?thesis
     apply(simp add: pi.inject abs_fun_eq[OF pt_name_inst, OF at_name_inst])
     apply auto
     apply(simp add: renaming)
@@ -286,7 +286,7 @@ lemma substRes3:
 proof -
   have "(<\<nu>a>P)[a::=b] = <\<nu>a>P"
     using freshRes by(simp add: forget)
-  thus ?thesis using `b \<sharp> P` by(simp add: substRes2)
+  thus ?thesis using \<open>b \<sharp> P\<close> by(simp add: substRes2)
 qed
 
 lemma suppSubst:

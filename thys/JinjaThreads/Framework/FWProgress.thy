@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Progress theorem for the multithreaded semantics *}
+section \<open>Progress theorem for the multithreaded semantics\<close>
 
 theory FWProgress
 imports
@@ -92,10 +92,10 @@ proof -
   show ?thesis
   proof(cases rule: cases)
     case (normal LT)
-    note [simp] = `ln = no_wait_locks` 
-      and nfine' = `\<not> final x`
-      and cl' = `t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong>` 
-      and mw = `\<And>lt. lt\<in>LT \<Longrightarrow> \<not> must_wait s t lt (dom (thr s))`
+    note [simp] = \<open>ln = no_wait_locks\<close> 
+      and nfine' = \<open>\<not> final x\<close>
+      and cl' = \<open>t \<turnstile> \<langle>x, shr s\<rangle> LT \<wrong>\<close> 
+      and mw = \<open>\<And>lt. lt\<in>LT \<Longrightarrow> \<not> must_wait s t lt (dom (thr s))\<close>
     from tst nfine' obtain x'' m'' ta'
       where red: "t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
       by(auto intro: wf_progressE[OF wfs])
@@ -107,7 +107,7 @@ proof -
       where red'': "t \<turnstile> \<langle>x, shr s\<rangle> -ta'''\<rightarrow> \<langle>x''', m'''\<rangle>"
       and L: "LT = collect_waits ta'''"
       by blast
-    from `wset s t = None` have "\<not> waiting (wset s t)" by(simp add: not_waiting_iff)
+    from \<open>wset s t = None\<close> have "\<not> waiting (wset s t)" by(simp add: not_waiting_iff)
     with tst obtain ta'' x'' m''
       where red': "t \<turnstile> \<langle>x, shr s\<rangle> -ta''\<rightarrow> \<langle>x'', m''\<rangle>"
       and aok': "actions_ok s t ta'' \<or> actions_ok' s t ta'' \<and> actions_subset ta'' ta'''"
@@ -125,8 +125,8 @@ proof -
           proof
             assume "has_lock (locks s $ l) t'"
             moreover with lok have "thr s t' \<noteq> None" by(auto dest: lock_thread_okD)
-            ultimately have "must_wait s t (Inl l) (dom (thr s))" using `t \<noteq> t'` by(auto)
-            moreover from `Inl l \<in> LT` have "\<not> must_wait s t (Inl l) (dom (thr s))" by(rule mw)
+            ultimately have "must_wait s t (Inl l) (dom (thr s))" using \<open>t \<noteq> t'\<close> by(auto)
+            moreover from \<open>Inl l \<in> LT\<close> have "\<not> must_wait s t (Inl l) (dom (thr s))" by(rule mw)
             ultimately show False by contradiction
           qed }
         hence "may_lock (locks s $ l) t"
@@ -167,22 +167,22 @@ proof -
       using redT_updWs_total[of t "wset s" "\<lbrace>ta''\<rbrace>\<^bsub>w\<^esub>"] ..
     then obtain s' where "redT_upd s t ta'' x'' m'' s'" by fastforce
     ultimately have "s -t\<triangleright>ta''\<rightarrow> s'"
-      using red' tst `wset s t = None` by(auto intro: redT_normal)
+      using red' tst \<open>wset s t = None\<close> by(auto intro: redT_normal)
     thus ?thesis by blast
   next
     case acquire
     hence "may_acquire_all (locks s) t ln" by(auto)
-    with tst `\<not> waiting (wset s t)` `0 < ln $ l`
+    with tst \<open>\<not> waiting (wset s t)\<close> \<open>0 < ln $ l\<close>
     show ?thesis by(fastforce intro: redT_acquire)
   next
     case (wakeup w)
-    from `wset s t = \<lfloor>PostWS w\<rfloor>`
+    from \<open>wset s t = \<lfloor>PostWS w\<rfloor>\<close>
     have "\<not> waiting (wset s t)" by(simp add: not_waiting_iff)
     from tst wakeup have tst: "thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>" by simp
     from wakeup tst wfin have "\<not> final x" by(auto dest: wset_final_okD)
     from wf_progress[OF wfs tst this]
     obtain ta x' m' where red: "t \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m'\<rangle>" by auto
-    from wf_red[OF wfs tst red `\<not> waiting (wset s t)`]
+    from wf_red[OF wfs tst red \<open>\<not> waiting (wset s t)\<close>]
     obtain ta' x'' m'' 
       where red': "t \<turnstile> \<langle>x, shr s\<rangle> -ta'\<rightarrow> \<langle>x'', m''\<rangle>"
       and aok': "actions_ok s t ta' \<or> actions_ok' s t ta' \<and> actions_subset ta' ta" by blast

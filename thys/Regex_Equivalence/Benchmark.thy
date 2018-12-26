@@ -28,7 +28,7 @@ definition bool_matchers :: "(string * (bool rexp \<Rightarrow> bool list \<Righ
     (''A2'', match_a2)
     ]"
 
-ML {*
+ML \<open>
 structure Rexp =
 struct
   val Zero = @{code Zero};
@@ -40,9 +40,9 @@ struct
   val bool_checkers = @{code bool_checkers};
   val bool_matchers = @{code bool_matchers};
 end
-*}
+\<close>
 
-ML {*
+ML \<open>
 
 val timeout = Time.fromSeconds 10;
 datatype res = Res of bool * Time.time | TO
@@ -61,9 +61,9 @@ fun time f x =
   in
     Res (res, time)
   end handle Timeout.TIMEOUT _ => TO;
-*}
+\<close>
 
-ML {*
+ML \<open>
   fun list_n 0 _ r = ([], r)
     | list_n n g r =
       let
@@ -86,7 +86,7 @@ ML {*
     in
       Generator.chooseL [plus, times, star]
     end;
-*}
+\<close>
 
 (*
 ML {*
@@ -109,7 +109,7 @@ map (map alph) regexes
 declare [[ML_print_depth 10]]
 *)
 
-ML {*
+ML \<open>
 
 fun header checkers =
   warning ("n     " ^  space_implode "    " (map (String.implode o fst) checkers))
@@ -151,7 +151,7 @@ fun run_re mk_eq checkers sizes =
   in
     ()
   end;
-*}
+\<close>
 
 (*
 ML {* run Rexp.bool_checkers [10,20,30,40,50,100] *}
@@ -189,9 +189,9 @@ n     B     B2    A     A2
 1000  2.985 3.280 3.498 3.137
 *)
 
-text {* Asperti's example *}
+text \<open>Asperti's example\<close>
 
-ML {*
+ML \<open>
 fun pow 0 = Rexp.One
   | pow 1 = Rexp.Atom true
   | pow n = Rexp.Times (Rexp.Atom true, pow (n - 1));
@@ -206,7 +206,7 @@ fun sum f 0 = f 0
 fun b n = (Rexp.Times (sum pow (n - 1), Rexp.Star (pow n)), Rexp.Star (Rexp.Atom true));
 fun bl n = (Rexp.Times (sum powl (n - 1), Rexp.Star (powl n)), Rexp.Star (Rexp.Atom true));
 
-*}
+\<close>
 
 (*
 ML {* run_re b Rexp.bool_checkers [30,40,50,70,100,200] *}
@@ -216,9 +216,9 @@ ML {* run_re bl (drop 1 Rexp.bool_checkers) [100,200,300,400,500] *}
 ML {* run_re b (take 3 (drop 1 Rexp.bool_checkers)) [500,600,700,800] *}
 ML {* run_re bl (take 3 (drop 1 Rexp.bool_checkers)) [500,600,700,800] *}
 *)
-text {* Fischer's example (matching) *}
+text \<open>Fischer's example (matching)\<close>
 
-ML {*
+ML \<open>
 fun seq n = Library.foldr1 Rexp.Times o replicate n;
 fun seql n = Library.foldr1 (Rexp.Times o swap) o replicate n;
 fun re n = (Rexp.Times (seq n (Rexp.Plus (Rexp.Atom true, Rexp.One)), seq n (Rexp.Atom true)),
@@ -226,7 +226,7 @@ fun re n = (Rexp.Times (seq n (Rexp.Plus (Rexp.Atom true, Rexp.One)), seq n (Rex
 fun rel n = (Rexp.Times (seql n (Rexp.Plus (Rexp.Atom true, Rexp.One)), seql n (Rexp.Atom true)),
   replicate n true);
 
-*}
+\<close>
 
 (*
 ML {* run_re re Rexp.bool_matchers [30,40,50,70,100] *}
@@ -234,7 +234,7 @@ ML {* run_re rel Rexp.bool_matchers [30,40,50,70,100] *}
 ML {* run_re re (drop 4 Rexp.bool_matchers) [100,300,500,700,1000,1300,1600,2000,2500,3000,4000,5000] *}
 ML {* run_re rel (drop 4 Rexp.bool_matchers) [100,300,500,700,1000,1300,1600,2000,2500,3000,4000,5000] *}
 *)
-ML {*
+ML \<open>
 val monster =
 curry Rexp.Plus (curry Rexp.Plus (curry Rexp.Times (curry Rexp.Times (curry
 Rexp.Times Rexp.One (curry Rexp.Plus (Rexp.Atom false) (Rexp.Star (curry
@@ -508,13 +508,13 @@ Rexp.Plus (Rexp.Atom true) (Rexp.Star Rexp.Zero)) Rexp.Zero)) (Rexp.Star (curry
 Rexp.Plus Rexp.One (curry Rexp.Plus (curry Rexp.Times Rexp.Zero Rexp.One) (curry
 Rexp.Plus (Rexp.Atom true) (Rexp.Atom false)))))))))) (Rexp.Star (Rexp.Star
 (Rexp.Star (Rexp.Star (Rexp.Atom true)))))))));
-*}
+\<close>
 
 (*
 ML {* run_re (K (monster, monster)) Rexp.bool_checkers [1] *}
 *)
 
-ML {*
+ML \<open>
 fun runTO checker sizes =
   let
     val regexes = fst (fold_map (fn f => fn r => f r) (map (list_n 1000 o regex) sizes)
@@ -531,9 +531,9 @@ fun runTO checker sizes =
   in
     ()
   end;
-*}
+\<close>
 
-ML {* local open Rexp in
+ML \<open>local open Rexp in
 
  val evil =
 
@@ -544,7 +544,7 @@ ML {* local open Rexp in
  Star (Plus (Atom false, Atom true))))), Plus (Atom false, Star (Atom false))))))
 
 end
-*}
+\<close>
 (*
 ML {* snd (nth Rexp.bool_checkers 1) evil evil *}
 

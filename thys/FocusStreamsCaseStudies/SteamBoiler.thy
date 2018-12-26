@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-section {* Steam Boiler System: Specification *}
+section \<open>Steam Boiler System: Specification\<close>
 
 theory  SteamBoiler 
 imports stream BitBoolTS

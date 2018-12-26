@@ -62,7 +62,7 @@ lemma max0_id_pos: assumes x: "x \<succeq> \<zero>" and wf: "x \<in> carrier R"
 end
 hide_const (open) gt geq max
 
-subsection {* A connection between class based semirings and set based semirings *}
+subsection \<open>A connection between class based semirings and set based semirings\<close>
 
 definition class_semiring :: "'a itself \<Rightarrow> 'b \<Rightarrow> ('a :: {plus,times,one,zero},'b)ring_scheme" where
   "class_semiring _ b \<equiv> \<lparr> carrier = UNIV, mult = (*), one = 1, zero = 0, add = (+), \<dots> = b\<rparr>"

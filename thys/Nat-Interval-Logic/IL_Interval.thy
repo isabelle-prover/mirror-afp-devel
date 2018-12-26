@@ -3,7 +3,7 @@
     Author:     David Trachtenherz
 *)
 
-section {* Intervals and operations for temporal logic declarations *}
+section \<open>Intervals and operations for temporal logic declarations\<close>
 
 theory IL_Interval
 imports 
@@ -11,32 +11,32 @@ imports
   "List-Infinite.SetIntervalStep"
 begin
 
-subsection {* Time intervals -- definitions and basic lemmata *}
+subsection \<open>Time intervals -- definitions and basic lemmata\<close>
 
-subsubsection {* Definitions *}
+subsubsection \<open>Definitions\<close>
 
 type_synonym Time = nat
 
 (* Time interval *)
 type_synonym iT = "Time set"
 
-text {* Infinite interval starting at some natural @{term "n"}. *}
+text \<open>Infinite interval starting at some natural @{term "n"}.\<close>
 definition 
   iFROM :: "Time \<Rightarrow> iT" ("[_\<dots>]") (* [n, \<infinity>) *) 
 where
   "[n\<dots>] \<equiv> {n..}"
 
-text {* Finite interval starting at @{term "0"} and ending at some natural @{term "n"}. *}
+text \<open>Finite interval starting at @{term "0"} and ending at some natural @{term "n"}.\<close>
 definition
   iTILL :: "Time \<Rightarrow> iT" ("[\<dots>_]") (* [0, n] *) (* Equivalent to [0\<dots>,n] *)
 where
   "[\<dots>n] \<equiv> {..n}"
 
-text {* 
+text \<open>
   Finite bounded interval containing the naturals between 
   @{term "n"} and @{term "n + d"}.
   @{term "d"} denotes the difference between left and right interval bound.
-  The number of elements is @{term "d + 1"} so that an empty interval cannot be defined. *}
+  The number of elements is @{term "d + 1"} so that an empty interval cannot be defined.\<close>
 definition
   iIN   :: "Time \<Rightarrow> nat \<Rightarrow> iT" ( "[_\<dots>,_]") (* [n, n+d] *)
 where
@@ -44,28 +44,28 @@ where
 
 
 
-text {* 
+text \<open>
   Infinite modulo interval containing all naturals
   having the same division remainder modulo @{term "m"}
-  as @{term "r"}, and beginning at @{term "n"}. *}
+  as @{term "r"}, and beginning at @{term "n"}.\<close>
 definition
   iMOD  :: "Time \<Rightarrow> nat \<Rightarrow> iT" ( "[ _, mod _ ]" ) 
 where
   "[r, mod m] \<equiv> { x. x mod m = r mod m \<and> r \<le> x}" 
 
 
-text {* 
+text \<open>
   Finite bounded modulo interval containing all naturals
   having the same division remainder modulo @{term "m"}
   as @{term "r"}, beginning at @{term "n"},
   and ending after @{term "c"} cycles at @{term "r + m * c"}.
-  The number of elements is @{term "c + 1"} so that an empty interval cannot be defined. *}
+  The number of elements is @{term "c + 1"} so that an empty interval cannot be defined.\<close>
 definition
   iMODb :: "Time \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> iT" ( "[ _, mod _, _ ]" ) 
 where
   "[r, mod m, c] \<equiv> { x. x mod m = r mod m \<and> r \<le> x \<and> x \<le> r + m * c}"
 
-subsubsection {* Membership in an interval *}
+subsubsection \<open>Membership in an interval\<close>
 
 lemmas iT_defs = iFROM_def iTILL_def iIN_def iMOD_def iMODb_def
 
@@ -232,7 +232,7 @@ by (simp add: iMODb_iff mod_eq_imp_diff_mod_0)
 
 
 
-subsubsection {* Interval conversions *}
+subsubsection \<open>Interval conversions\<close>
 
 lemma iIN_0_iTILL_conv:"[0\<dots>,n] = [\<dots>n]"
 by (simp add: iTILL_def iIN_def atMost_atLeastAtMost_0_conv)
@@ -303,7 +303,7 @@ lemma iMODb_mod_1: "[r, mod Suc 0, c] = [r\<dots>,c]"
 by (fastforce simp: iT_iff)
 
 
-subsubsection {* Finiteness and emptiness of intervals *}
+subsubsection \<open>Finiteness and emptiness of intervals\<close>
 
 lemma 
   iFROM_not_empty: "[n\<dots>] \<noteq> {}" and
@@ -348,7 +348,7 @@ lemmas iT_infinite =
   iMOD_infinite
 
 
-subsubsection {* @{text Min} and @{text Max} element of an interval *}
+subsubsection \<open>\<open>Min\<close> and \<open>Max\<close> element of an interval\<close>
 
 lemma 
   iTILL_Min: "iMin [\<dots>n] = 0" and
@@ -396,7 +396,7 @@ lemmas iT_iMax =
   iMOD_iMax
 
 
-subsection {* Adding and subtracting constants to interval elements *}
+subsection \<open>Adding and subtracting constants to interval elements\<close>
 
 lemma 
   iFROM_plus: "x \<in> [n\<dots>] \<Longrightarrow> x + k \<in> [n\<dots>]" and
@@ -619,9 +619,9 @@ done
 *)
 
 
-subsection {* Relations between intervals *}
+subsection \<open>Relations between intervals\<close>
 
-subsubsection {* Auxiliary lemmata *}
+subsubsection \<open>Auxiliary lemmata\<close>
 
 
 lemma Suc_in_imp_not_subset_iMOD: "
@@ -647,7 +647,7 @@ corollary Suc_in_imp_neq_iMODb: "
 by (blast dest: Suc_in_imp_not_subset_iMODb)
 
 
-subsubsection {* Subset relation between intervals *}
+subsubsection \<open>Subset relation between intervals\<close>
 
 lemma 
   iIN_iFROM_subset_same: "[n\<dots>,d] \<subseteq> [n\<dots>]" and
@@ -1076,7 +1076,7 @@ apply (simp add: iMODb_iff)
 done
 
 
-subsubsection {* Equality of intervals *}
+subsubsection \<open>Equality of intervals\<close>
 
 lemma iFROM_eq_conv: "([n\<dots>] = [n'\<dots>]) = (n = n')"
 apply (rule iffI)
@@ -1141,7 +1141,7 @@ lemma iMODb_iIN_eq_conv: "
 by (fastforce simp: iMODb_mod_1[symmetric] iMODb_eq_conv)
 
 
-subsubsection {* Inequality of intervals *}
+subsubsection \<open>Inequality of intervals\<close>
 
 lemma iFROM_iIN_neq: "[n'\<dots>] \<noteq> [n\<dots>,d]"
 apply (rule ccontr)
@@ -1208,7 +1208,7 @@ lemmas iT_neq =
   iMOD_iMODb_neq
 
 
-subsection {* Union and intersection of intervals *}
+subsection \<open>Union and intersection of intervals\<close>
 
 lemma iFROM_union': "[n\<dots>] \<union> [n'\<dots>] = [min n n'\<dots>]"
 by (fastforce simp: iFROM_iff)
@@ -1237,14 +1237,14 @@ by (fastforce simp: iT_iff)
 corollary iTILL_inter: "n \<le> n' \<Longrightarrow> [\<dots>n] \<inter> [\<dots>n'] = [\<dots>n]"
 by (simp add: iTILL_inter' min_eqL)
 
-text {* 
+text \<open>
   Union and intersection for iIN 
   only when there intersection is not empty and 
   none of them is other's subset,
   for instance: 
   ..  n    ..   n+d
   ..      n'    ..   n'+d'
-*}
+\<close>
 lemma iIN_union: "
   \<lbrakk> n \<le> n'; n' \<le> Suc (n + d); n + d \<le> n' + d' \<rbrakk> \<Longrightarrow> 
   [n\<dots>,d] \<union> [n'\<dots>,d'] = [n\<dots>,n' - n + d'] "
@@ -1458,7 +1458,7 @@ apply simp
 done
 
 
-subsection {* Cutting intervals *}
+subsection \<open>Cutting intervals\<close>
 
 (*
 lemma "[10\<dots>,5] \<down>< 12 = [10\<dots>,1]"
@@ -2026,7 +2026,7 @@ lemmas iT_cut_ge_greater1 =
   iMODb_cut_greater1
 
 
-subsection {* Cardinality of intervals *}
+subsection \<open>Cardinality of intervals\<close>
 
 lemma iFROM_card: "card [n\<dots>] = 0"
 by (simp add: iFROM_infinite)
@@ -2068,7 +2068,7 @@ lemmas iT_card =
   iMOD_card_if
   iMODb_card_if
 
-text {* Cardinality with @{text icard} *}
+text \<open>Cardinality with \<open>icard\<close>\<close>
 
 lemma iFROM_icard: "icard [n\<dots>] = \<infinity>"
 by (simp add: iFROM_infinite)
@@ -2105,7 +2105,7 @@ lemmas iT_icard =
   iMODb_icard_if
 
 
-subsection {* Functions @{text inext} and @{text iprev} with intervals *}
+subsection \<open>Functions \<open>inext\<close> and \<open>iprev\<close> with intervals\<close>
 
 (*
 lemma "inext 5 [\<dots>10] = 6"
@@ -2270,9 +2270,9 @@ lemmas iT_iprev_if =
   iMOD_iprev_if
   iMODb_iprev_if
 
-text {* 
+text \<open>
   The difference between an element and the next/previous element is constant
-  if the element is different from Min/Max of the interval *}
+  if the element is different from Min/Max of the interval\<close>
 
 lemma iFROM_inext_diff_const: "
   t \<in> [n\<dots>] \<Longrightarrow> inext t [n\<dots>] - t = Suc 0"
@@ -2350,7 +2350,7 @@ lemmas iT_iprev_diff_const =
   iMODb_iprev_diff_const
 
 
-subsubsection {* Mirroring of intervals *}
+subsubsection \<open>Mirroring of intervals\<close>
 
 lemma 
   iIN_mirror_elem: "mirror_elem x [n\<dots>,d] = n + n + d - x" and
@@ -2407,7 +2407,7 @@ lemmas iT_imirror_ident =
   iMODb_imirror_ident
 
 
-subsubsection {* Functions @{term inext_nth} and @{term iprev_nth} on intervals *}
+subsubsection \<open>Functions @{term inext_nth} and @{term iprev_nth} on intervals\<close>
 
 lemma iFROM_inext_nth : "[n\<dots>] \<rightarrow> a = n + a"
 by (simp add: iT_defs inext_nth_atLeast)
@@ -2506,7 +2506,7 @@ by (simp add: iMODb_inext_nth diff_mult_distrib  mult.commute[of m])
 
 
 
-subsection {* Induction with intervals *}
+subsection \<open>Induction with intervals\<close>
 
 lemma iFROM_induct: "
   \<lbrakk> P n; \<And>k. \<lbrakk> k \<in> [n\<dots>]; P k \<rbrakk> \<Longrightarrow> P (Suc k); a \<in> [n\<dots>] \<rbrakk> \<Longrightarrow> P a"

@@ -1,13 +1,13 @@
-section {* Data Refinement of Diagrams *}
+section \<open>Data Refinement of Diagrams\<close>
 
 theory DataRefinement
 imports Diagram
 begin
 
-text{*
+text\<open>
 Next definition introduces the concept of data refinement of $S1$
 to $S2$ using the data abstractions $R$ and $R'$.
-*}
+\<close>
 
 definition
   DataRefinement :: "('a::type \<Rightarrow> 'b::type)
@@ -15,12 +15,12 @@ definition
      \<Rightarrow> ('d::type \<Rightarrow> 'c::ord) \<Rightarrow> bool" where
   "DataRefinement S1 R R' S2 = ((R o S1) \<le> (S2 o R'))"
 
-text{*
+text\<open>
 If $\mathit{demonic}\ Q$ is correct with respect to $p$ and $q$, and 
 $(\mathit{assert} \ p)\circ (\mathit{demonic}\  Q)$ is data refined
 by $S$, then $S$ is correct with respect to $\mathit{angelic}\  R\  p$ and 
 $\mathit{angelic} \ R' \ q$.
-*}
+\<close>
 
 theorem data_refinement:
   "mono R \<Longrightarrow> \<Turnstile> p {| S |} q \<Longrightarrow>  DataRefinement S R R' S' \<Longrightarrow> 
@@ -150,12 +150,12 @@ theorem DgrDataRefinement_mono:
   by (simp_all add: mono_fun_def)
 
 
-text{*
+text\<open>
 Next theorem is the diagram version of the data refinement theorem. If the
 diagram demonic choice $T$ is correct, and it is refined by $D$, then
 $D$ is also correct. One important point in this theorem is that 
 if the diagram demonic choice $T$ terminates, then $D$ also terminates.
-*}
+\<close>
   
 
 theorem (in DiagramTermination) Diagram_DataRefinement1:

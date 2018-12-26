@@ -67,7 +67,7 @@ lemma weakStatImpWeakenStatImp:
 
   shows "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<Rel> Q"
 proof -
-  from `\<Psi> \<rhd> P \<lessapprox><Rel> Q` 
+  from \<open>\<Psi> \<rhd> P \<lessapprox><Rel> Q\<close> 
   obtain Q' Q'' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
                   and PImpQ': "insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q') \<Psi>"
                   and Q'Chain: "\<Psi> \<otimes> \<one> \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "(\<Psi> \<otimes> \<one>, P, Q'') \<in> Rel"
@@ -78,7 +78,7 @@ proof -
     by(rule statImpTauChainDerivative)
   with PImpQ' have "insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q'') \<Psi>"
     by(rule FrameStatImpTrans)
-  moreover from `(\<Psi> \<otimes> \<one>, P, Q'') \<in> Rel` Identity have "(\<Psi>, P, Q'') \<in> Rel" by(rule cStatEq)
+  moreover from \<open>(\<Psi> \<otimes> \<one>, P, Q'') \<in> Rel\<close> Identity have "(\<Psi>, P, Q'') \<in> Rel" by(rule cStatEq)
   ultimately show ?thesis by(rule weakenStatImpI)
 qed
 
@@ -95,14 +95,14 @@ lemma weakenStatImpWeakStatImp:
 proof(induct rule: weakStatImpI)
   case(cStatImp \<Psi>')
      
-  from `\<Psi> \<rhd> P \<lessapprox>\<^sub>w<Rel> Q` 
+  from \<open>\<Psi> \<rhd> P \<lessapprox>\<^sub>w<Rel> Q\<close> 
   obtain Q' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
               and PImpQ': "insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q') \<Psi>"
               and "(\<Psi>, P, Q') \<in> Rel"
     by(rule weakenStatImpE)
   note QChain PImpQ'
   moreover have "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'" by simp
-  moreover from `(\<Psi>, P, Q') \<in> Rel` have "(\<Psi> \<otimes> \<Psi>', P, Q') \<in> Rel" by(rule cExt)
+  moreover from \<open>(\<Psi>, P, Q') \<in> Rel\<close> have "(\<Psi> \<otimes> \<Psi>', P, Q') \<in> Rel" by(rule cExt)
   ultimately show ?case by blast
 qed
 

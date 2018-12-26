@@ -73,7 +73,7 @@ next
       and "xs \<in> paths t" and "ys \<in> paths t'" by (auto simp add: Union_paths_carrier[symmetric])
     hence "xs @ ys \<in> paths (t \<otimes>\<otimes> t')" by (metis paths_both append_interleave)
     moreover
-    from `x \<in> set xs` `y \<in> set ys`
+    from \<open>x \<in> set xs\<close> \<open>y \<in> set ys\<close>
     have "x--y\<in>(ccFromList (xs@ys))" by simp
     ultimately
     show "x--y\<in>(ccApprox (t \<otimes>\<otimes> t'))" by (auto simp add: in_ccApprox simp del: ccFromList_append)
@@ -114,7 +114,7 @@ proof(rule ccApprox_belowI)
  
   note this(2)
   moreover
-  from `ccApprox t \<sqsubseteq> G` and `xs'' \<in> paths t`
+  from \<open>ccApprox t \<sqsubseteq> G\<close> and \<open>xs'' \<in> paths t\<close>
   have  "ccFromList xs'' \<sqsubseteq> G"
     by (auto simp add: ccApprox_below_iff)
   moreover
@@ -134,18 +134,18 @@ proof(rule ccApprox_belowI)
   case (Cons zs f x xs' xs T ys)
     
     have seen_x: "ccProd seen {x} \<sqsubseteq> G"
-      using `ccProd seen (set (x # xs)) \<sqsubseteq> G`
+      using \<open>ccProd seen (set (x # xs)) \<sqsubseteq> G\<close>
       by (auto simp add: ccProd_insert2[where S' = "set xs" for xs] join_below_iff)
 
     show ?case
     proof(cases "x \<in> S")
       case True
 
-      from `ccFromList (x # xs) \<sqsubseteq> G`
+      from \<open>ccFromList (x # xs) \<sqsubseteq> G\<close>
       have "ccProd {x} (set xs) \<sqsubseteq> G" by (auto simp add: join_below_iff)
       hence subset1: "set xs \<subseteq> ccNeighbors x G" by transfer auto
 
-      from `ccProd seen (set (x # xs)) \<sqsubseteq> G`
+      from \<open>ccProd seen (set (x # xs)) \<sqsubseteq> G\<close>
       have subset2: "seen  \<subseteq> ccNeighbors x G"
         by (auto simp add: subset_ccNeighbors ccProd_insert2[where S' = "set xs" for xs] join_below_iff ccProd_comm)
 
@@ -154,20 +154,20 @@ proof(rule ccApprox_belowI)
       hence "ccProd (seen \<union> set xs) (set zs) \<sqsubseteq> ccProd (ccNeighbors x G) (set zs)"
         by (rule ccProd_mono1)
       also
-      from `x \<in> S`  `zs \<in> paths (f x)`
+      from \<open>x \<in> S\<close>  \<open>zs \<in> paths (f x)\<close>
       have "\<dots> \<sqsubseteq> G"
         by (rule Cons.prems(4))
       finally
       have "ccProd (seen \<union> set xs) (set zs) \<sqsubseteq> G" by this simp
      
-      with `x \<in> S` Cons.prems Cons.hyps
+      with \<open>x \<in> S\<close> Cons.prems Cons.hyps
       have "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd (seen) (set ys) \<sqsubseteq> G"
           apply -
           apply (rule Cons.IH)
           apply (auto simp add: f_nxt_def  join_below_iff  interleave_ccFromList interleave_set  ccProd_insert2[where S' = "set xs" for xs]
                   split: if_splits)
           done
-      with  `x \<in> S`  seen_x
+      with  \<open>x \<in> S\<close>  seen_x
       show "ccFromList [x\<leftarrow>x # ys . x \<notin> S] \<sqsubseteq> G  \<and> ccProd seen (set (x#ys)) \<sqsubseteq> G" 
           by (auto simp add: ccProd_insert2[where S' = "set xs" for xs] join_below_iff)
     next
@@ -194,7 +194,7 @@ proof(rule ccApprox_belowI)
         by (auto simp add: join_below_iff  simp add: insert_Diff_if  ccProd_insert2[where S' = "set xs" for xs]   ccProd_insert1[where S' = "seen"])
     qed
   qed
-  with `xs = _`
+  with \<open>xs = _\<close>
   show "ccFromList xs \<sqsubseteq> G" by simp
 qed
 
@@ -216,7 +216,7 @@ proof(rule ccApprox_belowI)
  
   note this(2)
   moreover
-  from `ccApprox t \<sqsubseteq> G` and `xs'' \<in> paths t`
+  from \<open>ccApprox t \<sqsubseteq> G\<close> and \<open>xs'' \<in> paths t\<close>
   have  "ccFromList xs'' \<sqsubseteq> G"
     by (auto simp add: ccApprox_below_iff)
   hence  "ccFromList xs'' G|` (- seen_T) \<sqsubseteq> G"
@@ -255,11 +255,11 @@ proof(rule ccApprox_belowI)
     proof(cases "x \<in> seen_T")
       assume "x \<in> seen_T"
       
-      have [simp]: "f x = empty" using `x \<in> seen_T` Cons.prems by auto
+      have [simp]: "f x = empty" using \<open>x \<in> seen_T\<close> Cons.prems by auto
       have [simp]: "f_nxt f T x = f" by (auto simp add: f_nxt_def split:if_splits)
-      have [simp]: "zs = []" using `zs \<in> paths (f x)` by simp
-      have [simp]: "xs' = xs" using `xs' \<in> xs \<otimes> zs` by simp
-      have [simp]: "x \<in> S" using `x \<in> seen_T` Cons.prems by auto
+      have [simp]: "zs = []" using \<open>zs \<in> paths (f x)\<close> by simp
+      have [simp]: "xs' = xs" using \<open>xs' \<in> xs \<otimes> zs\<close> by simp
+      have [simp]: "x \<in> S" using \<open>x \<in> seen_T\<close> Cons.prems by auto
 
       from Cons.hyps Cons.prems
       have "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd seen (set ys - seen_T) \<sqsubseteq> G"
@@ -268,40 +268,40 @@ proof(rule ccApprox_belowI)
         apply (auto simp add: join_below_iff Diff_eq)
         apply (erule below_trans[OF ccProd_mono[OF order_refl subset4]])
         done
-      thus ?thesis using `x \<in> seen_T` by simp
+      thus ?thesis using \<open>x \<in> seen_T\<close> by simp
     next
       assume "x \<notin> seen_T"
 
       have seen_x: "ccProd seen {x} \<sqsubseteq> G"
-        using `ccProd seen (set (x # xs) - seen_T) \<sqsubseteq> G` `x \<notin> seen_T`
+        using \<open>ccProd seen (set (x # xs) - seen_T) \<sqsubseteq> G\<close> \<open>x \<notin> seen_T\<close>
         by (auto simp add: insert_Diff_if ccProd_insert2[where S' = "set xs - seen_T" for xs] join_below_iff)
   
       show ?case
       proof(cases "x \<in> S")
         case True
   
-        from `cc_restr (- seen_T) (ccFromList (x # xs)) \<sqsubseteq> G`
-        have "ccProd {x} (set xs - seen_T) \<sqsubseteq> G" using `x \<notin> seen_T`  by (auto simp add: join_below_iff Diff_eq)
+        from \<open>cc_restr (- seen_T) (ccFromList (x # xs)) \<sqsubseteq> G\<close>
+        have "ccProd {x} (set xs - seen_T) \<sqsubseteq> G" using \<open>x \<notin> seen_T\<close>  by (auto simp add: join_below_iff Diff_eq)
         hence "set xs - seen_T \<subseteq> ccNeighbors x G" by transfer auto
         moreover
         
         from seen_x
         have "seen  \<subseteq> ccNeighbors x G" by (simp add: subset_ccNeighbors   ccProd_comm)
         moreover
-        have "x \<notin> seen" using True `seen \<inter> S = {}` by auto
+        have "x \<notin> seen" using True \<open>seen \<inter> S = {}\<close> by auto
   
         ultimately
         have "seen \<union> (set xs \<inter> - ?seen_T) \<subseteq> ccNeighbors x G - {x}\<inter>T" by auto
         hence "ccProd (seen \<union> (set xs \<inter> - ?seen_T)) (set zs) \<sqsubseteq> ccProd (ccNeighbors x G - {x}\<inter>T) (set zs)"
           by (rule ccProd_mono1)
         also
-        from `x \<in> S`  `zs \<in> paths (f x)`
+        from \<open>x \<in> S\<close>  \<open>zs \<in> paths (f x)\<close>
         have "\<dots> \<sqsubseteq> G"
           by (rule Cons.prems(4))
         finally
         have "ccProd (seen \<union> (set xs \<inter> - ?seen_T)) (set zs) \<sqsubseteq> G" by this simp
   
-        with `x \<in> S` Cons.prems Cons.hyps(1,2)
+        with \<open>x \<in> S\<close> Cons.prems Cons.hyps(1,2)
         have "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd (seen) (set ys - ?seen_T) \<sqsubseteq> G"
             apply -
             apply (rule Cons.IH[where seen_T = "?seen_T"])
@@ -317,7 +317,7 @@ proof(rule ccApprox_belowI)
             apply (erule below_trans[OF ccProd_mono[OF order_refl subset4]])
             apply (erule below_trans[OF ccProd_mono[OF order_refl subset5]])
             done
-        with  `x \<in> S`  seen_x `x \<notin> seen_T`
+        with  \<open>x \<in> S\<close>  seen_x \<open>x \<notin> seen_T\<close>
         show "ccFromList [x\<leftarrow>x # ys . x \<notin> S] \<sqsubseteq> G  \<and> ccProd seen (set (x#ys) - seen_T) \<sqsubseteq> G" 
             apply (auto simp add: insert_Diff_if ccProd_insert2[where S' = "set ys - seen_T" for xs] join_below_iff)
             apply (rule below_trans[OF ccProd_mono[OF order_refl subset6]])
@@ -331,7 +331,7 @@ proof(rule ccApprox_belowI)
         have *: "ccFromList [x\<leftarrow>ys . x \<notin> S] \<sqsubseteq> G \<and> ccProd ((insert x seen)) (set ys - seen_T) \<sqsubseteq> G"
           apply -
           apply (rule Cons.IH[where seen = "insert x seen" and seen_T = seen_T])
-          apply (auto simp add: `x \<notin> seen_T` Diff_eq ccApprox_both join_below_iff ttree_restr_both interleave_ccFromList insert_Diff_if
+          apply (auto simp add: \<open>x \<notin> seen_T\<close> Diff_eq ccApprox_both join_below_iff ttree_restr_both interleave_ccFromList insert_Diff_if
                      simp add:  ccProd_insert2[where S' = "set xs \<inter> - seen_T" for xs]
                      simp add:  ccProd_insert1[where S' = "seen"])
           done
@@ -343,7 +343,7 @@ proof(rule ccApprox_belowI)
         hence "ccProd {x} {x \<in> set ys - seen_T. x \<notin> S} \<sqsubseteq> G"
           by (rule below_trans[rotated, OF _ ccProd_mono2]) auto
         also have "{x \<in> set ys - seen_T. x \<notin> S} =  {x \<in> set ys. x \<notin> S}"
-          using `seen_T \<subseteq> S` by auto
+          using \<open>seen_T \<subseteq> S\<close> by auto
         finally
         have "ccProd {x} {x \<in> set ys. x \<notin> S} \<sqsubseteq> G".
         }
@@ -355,7 +355,7 @@ proof(rule ccApprox_belowI)
       qed
     qed
   qed
-  with `xs = _`
+  with \<open>xs = _\<close>
   show "ccFromList xs \<sqsubseteq> G" by simp
 qed
 
@@ -390,7 +390,7 @@ lemma valid_lists_chain1:
    assumes "xs \<in> valid_lists (\<Union>(Y ` UNIV)) G"
    shows "\<exists> i. xs \<in> valid_lists (Y i) G"
 proof-
-  note `chain Y`
+  note \<open>chain Y\<close>
   moreover
   from assms(2)
   have "set xs \<subseteq> \<Union>(Y ` UNIV)" by (rule valid_lists_subset)
@@ -415,13 +415,13 @@ proof(induction rule:valid_lists.induct[case_names Nil Cons])
 next
   case (Cons xs x)
 
-  from `chain Y`
+  from \<open>chain Y\<close>
   have "chain (\<lambda> i. ccNeighbors x (Y i))"
     apply (rule ch2ch_monofun[OF monofunI, rotated])
     unfolding below_set_def
     by (rule ccNeighbors_mono)
   moreover
-  from `set xs \<subseteq> ccNeighbors x (\<Squnion> i. Y i)`
+  from \<open>set xs \<subseteq> ccNeighbors x (\<Squnion> i. Y i)\<close>
   have "set xs \<subseteq> (\<Union> i. ccNeighbors x (Y i))"
     by (simp add:  lub_set)
   moreover
@@ -435,14 +435,14 @@ next
 
   from i
   have "set xs \<subseteq> ccNeighbors x (Y (max i j))"
-    by (rule order_trans[OF _ ccNeighbors_mono[OF chain_mono[OF `chain Y` max.cobounded1]]])
+    by (rule order_trans[OF _ ccNeighbors_mono[OF chain_mono[OF \<open>chain Y\<close> max.cobounded1]]])
   moreover
   from j
   have "xs \<in> valid_lists S (Y (max i j))" 
     by (induction rule: valid_lists.induct)
-       (auto del: subsetI elim: order_trans[OF _ ccNeighbors_mono[OF chain_mono[OF `chain Y` max.cobounded2]]])
+       (auto del: subsetI elim: order_trans[OF _ ccNeighbors_mono[OF chain_mono[OF \<open>chain Y\<close> max.cobounded2]]])
   moreover
-  note `x \<in> S`
+  note \<open>x \<in> S\<close>
   ultimately
   have "x # xs \<in> valid_lists S (Y (max i j))" by rule
   thus ?case..
@@ -463,42 +463,42 @@ proof (induction rule:interleave_induct)
 next
   case (left ys zs xs x)
 
-  from `x # ys \<in> valid_lists S G`
+  from \<open>x # ys \<in> valid_lists S G\<close>
   have "x \<in> S" and "set ys \<subseteq> ccNeighbors x G" and "ys \<in> valid_lists S G"
     by auto
  
-  from `xs \<in> ys \<otimes> zs`
+  from \<open>xs \<in> ys \<otimes> zs\<close>
   have "set xs = set ys \<union> set zs" by (rule interleave_set)
-  with `set ys \<subseteq> ccNeighbors x G` valid_lists_subset[OF `zs \<in> valid_lists S' G'`]
+  with \<open>set ys \<subseteq> ccNeighbors x G\<close> valid_lists_subset[OF \<open>zs \<in> valid_lists S' G'\<close>]
   have "set xs \<subseteq> ccNeighbors x (G \<squnion> (G' \<squnion> ccProd S S'))"
-    by (auto simp add: ccNeighbors_ccProd `x \<in> S`)
+    by (auto simp add: ccNeighbors_ccProd \<open>x \<in> S\<close>)
   moreover
-  from `ys \<in> valid_lists S G` `zs \<in> valid_lists S' G'`
+  from \<open>ys \<in> valid_lists S G\<close> \<open>zs \<in> valid_lists S' G'\<close>
   have "xs \<in> valid_lists (S \<union> S') (G \<squnion> (G' \<squnion> ccProd S S'))"
     by (rule left.IH)
   moreover
-  from `x \<in> S`
+  from \<open>x \<in> S\<close>
   have "x \<in> S \<union> S'" by simp
   ultimately
   show ?case..
 next
   case (right ys zs xs x)
 
-  from `x # zs \<in> valid_lists S' G'`
+  from \<open>x # zs \<in> valid_lists S' G'\<close>
   have "x \<in> S'" and "set zs \<subseteq> ccNeighbors x G'" and "zs \<in> valid_lists S' G'"
     by auto
  
-  from `xs \<in> ys \<otimes> zs`
+  from \<open>xs \<in> ys \<otimes> zs\<close>
   have "set xs = set ys \<union> set zs" by (rule interleave_set)
-  with `set zs \<subseteq> ccNeighbors x G'` valid_lists_subset[OF `ys \<in> valid_lists S G`]
+  with \<open>set zs \<subseteq> ccNeighbors x G'\<close> valid_lists_subset[OF \<open>ys \<in> valid_lists S G\<close>]
   have "set xs \<subseteq> ccNeighbors x (G \<squnion> (G' \<squnion> ccProd S S'))"
-    by (auto simp add: ccNeighbors_ccProd `x \<in> S'`)
+    by (auto simp add: ccNeighbors_ccProd \<open>x \<in> S'\<close>)
   moreover
-  from `ys \<in> valid_lists S G` `zs \<in> valid_lists S' G'`
+  from \<open>ys \<in> valid_lists S G\<close> \<open>zs \<in> valid_lists S' G'\<close>
   have "xs \<in> valid_lists (S \<union> S') (G \<squnion> (G' \<squnion> ccProd S S'))"
     by (rule right.IH)
   moreover
-  from `x \<in> S'`
+  from \<open>x \<in> S'\<close>
   have "x \<in> S \<union> S'" by simp
   ultimately
   show ?case..
@@ -512,32 +512,32 @@ next
   case (Cons xs x)
   then obtain ys zs where "xs \<in> ys \<otimes> zs" "ys \<in> valid_lists S G" "zs \<in> valid_lists S' G" by auto
 
-    from `xs \<in> ys \<otimes> zs` have "set xs = set ys \<union> set zs" by (rule interleave_set)
-    with `set xs \<subseteq> ccNeighbors x G` 
+    from \<open>xs \<in> ys \<otimes> zs\<close> have "set xs = set ys \<union> set zs" by (rule interleave_set)
+    with \<open>set xs \<subseteq> ccNeighbors x G\<close> 
     have "set ys \<subseteq> ccNeighbors x G" and "set zs \<subseteq> ccNeighbors x G"  by auto
   
-  from `x \<in> S \<union> S'`
+  from \<open>x \<in> S \<union> S'\<close>
   show ?case
   proof
     assume "x \<in> S"
-    with `set ys \<subseteq> ccNeighbors x G` `ys \<in> valid_lists S G`
+    with \<open>set ys \<subseteq> ccNeighbors x G\<close> \<open>ys \<in> valid_lists S G\<close>
     have "x # ys \<in> valid_lists S G"
       by rule
     moreover
-    from `xs \<in> ys \<otimes> zs`
+    from \<open>xs \<in> ys \<otimes> zs\<close>
     have "x#xs \<in> x#ys \<otimes> zs"..
     ultimately
-    show ?thesis using `zs \<in> valid_lists S' G` by blast
+    show ?thesis using \<open>zs \<in> valid_lists S' G\<close> by blast
   next
     assume "x \<in> S'"
-    with `set zs \<subseteq> ccNeighbors x G` `zs \<in> valid_lists S' G`
+    with \<open>set zs \<subseteq> ccNeighbors x G\<close> \<open>zs \<in> valid_lists S' G\<close>
     have "x # zs \<in> valid_lists S' G"
       by rule
     moreover
-    from `xs \<in> ys \<otimes> zs`
+    from \<open>xs \<in> ys \<otimes> zs\<close>
     have "x#xs \<in> ys \<otimes> x#zs"..
     ultimately
-    show ?thesis using `ys \<in> valid_lists S G` by blast
+    show ?thesis using \<open>ys \<in> valid_lists S G\<close> by blast
   qed
 qed
 
@@ -602,16 +602,16 @@ proof
   case Nil thus ?case by simp
   next
   case (Cons x xs)
-    from `x # xs \<in> paths t`
+    from \<open>x # xs \<in> paths t\<close>
     have "possible t x" and "xs \<in> paths (nxt t x)" by (auto simp add: Cons_path)
 
     have "ccProd {x} (set xs) \<sqsubseteq> ccFromList (x # xs)" by simp
     also
-    from `x # xs \<in> paths t` 
+    from \<open>x # xs \<in> paths t\<close> 
     have "\<dots> \<sqsubseteq> ccApprox t"
       by (rule ccFromList_below_ccApprox)
     also
-    note `ccApprox t \<sqsubseteq> G`
+    note \<open>ccApprox t \<sqsubseteq> G\<close>
     finally
     have "ccProd {x} (set xs) \<sqsubseteq> G" by this simp_all
     hence "set xs \<subseteq> ccNeighbors x G" unfolding subset_ccNeighbors.
@@ -620,16 +620,16 @@ proof
     proof(rule Cons.IH)
       show "xs \<in> paths (nxt t x)" by fact
     next
-      from `carrier t \<subseteq> S`
+      from \<open>carrier t \<subseteq> S\<close>
       show "carrier (nxt t x) \<subseteq> S" 
         by (rule order_trans[OF carrier_nxt_subset])
     next
-      from `ccApprox t \<sqsubseteq> G`
+      from \<open>ccApprox t \<sqsubseteq> G\<close>
       show "ccApprox (nxt t x) \<sqsubseteq> G" 
         by (rule below_trans[OF ccApprox_nxt_below])
     qed
     moreover
-    from  `carrier t \<subseteq> S` and `possible t x`
+    from  \<open>carrier t \<subseteq> S\<close> and \<open>possible t x\<close>
     have "x \<in> S" by (rule carrier_possible_subset)
     ultimately
     show ?case..
@@ -741,17 +741,17 @@ next
   hence "\<forall>x \<in> set xs. P x" by auto
   hence [simp]: "filter P xs = xs" by (rule filter_True)
   
-  from Cons.IH[OF `xs \<in> _`]
+  from Cons.IH[OF \<open>xs \<in> _\<close>]
   have "xs \<in> filter P ` valid_lists S G".
 
-  from  `xs \<in> valid_lists {x' \<in> S. P x'} G`
+  from  \<open>xs \<in> valid_lists {x' \<in> S. P x'} G\<close>
   have "xs \<in> valid_lists S G" by (rule set_mp[OF valid_lists_mono1, rotated]) auto
 
-  from `set xs \<subseteq> ccNeighbors x G` this `x \<in> S`
+  from \<open>set xs \<subseteq> ccNeighbors x G\<close> this \<open>x \<in> S\<close>
   have "x # xs \<in> valid_lists S G" by rule
 
   hence "filter P (x # xs) \<in> filter P ` valid_lists S G" by (rule imageI)
-  thus ?case using `P x` `filter P xs =xs` by simp
+  thus ?case using \<open>P x\<close> \<open>filter P xs =xs\<close> by simp
 qed
 
 lemma without_ccTTree[simp]:
@@ -767,7 +767,7 @@ lemma repeatable_ccTTree_ccSquare: "S \<subseteq> S' \<Longrightarrow> repeatabl
    by transfer (auto simp add:ccNeighbors_ccSquare dest: set_mp[OF valid_lists_subset])
 
 
-text {* An alternative definition *}
+text \<open>An alternative definition\<close>
 
 inductive valid_lists' :: "var set \<Rightarrow> CoCalls \<Rightarrow> var set \<Rightarrow> var list \<Rightarrow> bool"
   for S G
@@ -813,7 +813,7 @@ next
          intro: valid_lists'_valid_lists_aux)
 qed
 
-text {* Yet another definition *}
+text \<open>Yet another definition\<close>
 
 lemma valid_lists_characterization:
   "xs \<in> valid_lists S G \<longleftrightarrow> set xs \<subseteq> S \<and> (\<forall>n. ccProd (set (take n xs)) (set (drop n xs)) \<sqsubseteq> G)"
@@ -849,12 +849,12 @@ next
     case Nil thus ?case by simp
   next
     case (Cons x xs)
-    from `\<forall>n. ccProd (set (take n (x # xs))) (set (drop n (x # xs))) \<sqsubseteq> G`
+    from \<open>\<forall>n. ccProd (set (take n (x # xs))) (set (drop n (x # xs))) \<sqsubseteq> G\<close>
     have "\<forall>n. ccProd (set (take n xs)) (set (drop n xs)) \<sqsubseteq> G"
       by -(rule, erule_tac x = "Suc n" in allE, auto simp add: ccProd_insert1[where S' = "set xs" for xs] join_below_iff)
     from Cons.prems Cons.IH[OF _ this]
     have "xs \<in> valid_lists S G" by auto
-    with Cons.prems(1)  spec[OF `\<forall>n. ccProd (set (take n (x # xs))) (set (drop n (x # xs))) \<sqsubseteq> G`, where x = 1]
+    with Cons.prems(1)  spec[OF \<open>\<forall>n. ccProd (set (take n (x # xs))) (set (drop n (x # xs))) \<sqsubseteq> G\<close>, where x = 1]
     show ?case by (simp add: subset_ccNeighbors)
   qed
 qed

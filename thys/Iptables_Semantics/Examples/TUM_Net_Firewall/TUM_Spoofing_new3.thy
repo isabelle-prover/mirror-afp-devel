@@ -151,7 +151,7 @@ subsubsection\<open>Try 1\<close>
     (''eth1.1024'', False)
    ]" by eval
    text\<open>Spoofing protection fails for all but the 96 VLAN.
-   The reason is that the @{text filter_96} chain allows spoofed packets.
+   The reason is that the \<open>filter_96\<close> chain allows spoofed packets.
 
    An empirical test reveals that the kernel's automatic reverse-path filter (rp) blocks most spoofing attempts.
    Without rp, spoofed packets pass the firewall. We got lucky that rp could be used in our scenario.
@@ -161,7 +161,7 @@ subsubsection\<open>Try 1\<close>
 \<close>
 
    text\<open>Here is a spoofed packet from IP address @{term "0::ipv4addr"} which is (probably, @{const in_doubt_allow}) accepted in
-         the @{text filter_96} chain.
+         the \<open>filter_96\<close> chain.
          Manual inspection of the ruleset and an empirical test demonstrate that this kind of packets is actually accepted.\<close>
    lemma "approximating_bigstep_fun (common_matcher, in_doubt_allow)
     \<lparr>p_iiface = ''anything but 1.96'', p_oiface = ''eth1.96'',

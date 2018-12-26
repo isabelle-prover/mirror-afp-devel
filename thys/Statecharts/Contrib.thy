@@ -3,15 +3,15 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Contributions to the Standard Library of HOL *}
+section \<open>Contributions to the Standard Library of HOL\<close>
 
 theory Contrib
 imports Main
 begin
 
-subsection {* Basic definitions and lemmas *}
+subsection \<open>Basic definitions and lemmas\<close>
 
-subsubsection {* Lambda expressions *}                  
+subsubsection \<open>Lambda expressions\<close>                  
 
 definition restrict :: "['a => 'b, 'a set] => ('a => 'b)" where
  "restrict f A = (%x. if x : A then f x else (@ y. True))"
@@ -24,7 +24,7 @@ translations
   "\<lambda>x\<in>A. f"  == "CONST restrict (%x. f) A"
 
 
-subsubsection {* Maps *}                  
+subsubsection \<open>Maps\<close>                  
 
 definition chg_map :: "('b => 'b) => 'a => ('a \<rightharpoonup> 'b) => ('a \<rightharpoonup> 'b)" where  
  "chg_map f a m = (case m a of None => m | Some b => m(a|->f b))"
@@ -53,7 +53,7 @@ lemma dom_map_upd: "dom(m(a|->b)) = insert a (dom m)"
 apply auto
 done
 
-subsubsection {* @{text "rtrancl"} *}
+subsubsection \<open>\<open>rtrancl\<close>\<close>
 
 lemma rtrancl_Int:
  "\<lbrakk> (a,b) \<in> A; (a,b) \<in> B \<rbrakk> \<Longrightarrow> (a,b) \<in> (A \<inter>  B)^*"
@@ -130,7 +130,7 @@ lemma Int_expand:
   "{(S,S'). P S S' \<and>  Q S S'} = ({(S,S'). P S S'} \<inter> {(S,S'). Q S S'})"
 by auto
 
-subsubsection {* @{text "finite"} *}
+subsubsection \<open>\<open>finite\<close>\<close>
 
 lemma finite_conj:  
  "finite ({(S,S'). P S S'}::(('a*'b)set)) \<longrightarrow>  
@@ -145,7 +145,7 @@ lemma finite_conj2:
   "\<lbrakk> finite A; finite B \<rbrakk> \<Longrightarrow> finite ({(S,S'). S: A \<and> S' : B})"
 by auto
 
-subsubsection {* @{text "override"} *}
+subsubsection \<open>\<open>override\<close>\<close>
 
 lemma dom_override_the:
   "(x \<in> (dom G2)) \<longrightarrow> ((G1 ++ G2) x) = (G2 x)"
@@ -213,7 +213,7 @@ apply (case_tac "T = A")
 apply auto
 done
 
-subsubsection {* @{text "Part"} *}
+subsubsection \<open>\<open>Part\<close>\<close>
 
 definition  Part :: "['a set, 'b => 'a] => 'a set" where
             "Part A h = A \<inter> {x. \<exists> z. x = h(z)}"
@@ -259,7 +259,7 @@ by blast
 lemma Part_Collect: "Part (A \<inter> {x. P x}) h = (Part A h) \<inter> {x. P x}"
 by blast
 
-subsubsection {* Set operators *}
+subsubsection \<open>Set operators\<close>
 
 lemma subset_lemma:
   "\<lbrakk> A \<inter> B = {}; A \<subseteq> B \<rbrakk> \<Longrightarrow> A = {}"
@@ -306,7 +306,7 @@ apply (rule_tac F="M" in finite_induct)
 apply auto
 done 
   
-subsubsection {* One point rule *}
+subsubsection \<open>One point rule\<close>
 
 lemma Ex1_one_point [simp]: 
   "(\<exists>! x. P x \<and> x = a) = P a"

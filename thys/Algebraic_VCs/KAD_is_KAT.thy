@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Bringing KAT Components into Scope of KAD *}
+section \<open>Bringing KAT Components into Scope of KAD\<close>
 
 theory KAD_is_KAT
 imports KAD.Antidomain_Semiring 
@@ -17,8 +17,8 @@ begin
 context antidomain_kleene_algebra
 begin
 
-text {* Every Kleene algebra with domain is a Kleene algebra with tests. This fact should eventually move into
-the AFP KAD entry.  *}
+text \<open>Every Kleene algebra with domain is a Kleene algebra with tests. This fact should eventually move into
+the AFP KAD entry.\<close>
 
 sublocale kat "(+)" "(\<cdot>)" "1" "0" "(\<le>)" "(<)" star antidomain_op
   apply standard
@@ -27,7 +27,7 @@ sublocale kat "(+)" "(\<cdot>)" "1" "0" "(\<le>)" "(<)" star antidomain_op
   using dpdz.dom_weakly_local apply auto[1]
   using a_d_add_closure a_de_morgan by presburger
 
-text {* The next statement links the wp operator with the Hoare triple. *}
+text \<open>The next statement links the wp operator with the Hoare triple.\<close>
 
 lemma H_kat_to_kad: "H p x q \<longleftrightarrow> d p \<le> |x] (d q)"
   using H_def addual.ars_r_def fbox_demodalisation3 by auto
@@ -46,7 +46,7 @@ no_notation VC_KAD.spec_sugar ("PRE _ _ POST _" [64,64,64] 63)
 and VC_KAD.cond_sugar ("IF _ THEN _ ELSE _ FI" [64,64,64] 63)
 and VC_KAD.gets ("_ ::= _" [70, 65] 61)
 
-text {* Next we provide some syntactic sugar. *}
+text \<open>Next we provide some syntactic sugar.\<close>
 
 lemma H_from_kat: "PRE p x POST q = (\<lceil>p\<rceil> \<le> (rel_antidomain_kleene_algebra.fbox x) \<lceil>q\<rceil>)"
   apply (subst H_eq)
@@ -65,7 +65,7 @@ lemma cond_iff: "rel_kat.ifthenelse \<lceil>P\<rceil> X Y = rel_antidomain_kleen
 lemma gets_iff: "v ::= e = VC_KAD.gets v e"
   by (auto simp: VC_KAT.gets_def VC_KAD.gets_def)
 
-text {* Finally we present two examples to test the integration. *}
+text \<open>Finally we present two examples to test the integration.\<close>
 
 lemma maximum: 
   "PRE (\<lambda>s:: nat store. True)

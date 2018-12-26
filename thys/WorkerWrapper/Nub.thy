@@ -15,11 +15,11 @@ imports
 begin
 (*>*)
 
-section{* Transforming $O(n^2)$ \emph{nub} into an $O(n\lg n)$ one *}
+section\<open>Transforming $O(n^2)$ \emph{nub} into an $O(n\lg n)$ one\<close>
 
-text{* Andy Gill's solution, mechanised. *}
+text\<open>Andy Gill's solution, mechanised.\<close>
 
-subsection{* The @{term "nub"} function. *}
+subsection\<open>The @{term "nub"} function.\<close>
 
 fixrec nub :: "Nat llist \<rightarrow> Nat llist"
 where
@@ -39,10 +39,10 @@ lemma nub_nub_body_eq: "nub = fix\<cdot>nub_body"
 
 (* **************************************** *)
 
-subsection{* Optimised data type. *}
+subsection\<open>Optimised data type.\<close>
 
-text {* Implement sets using lazy lists for now. Lifting up HOL's @{typ "'a
-set"} type causes continuity grief. *}
+text \<open>Implement sets using lazy lists for now. Lifting up HOL's @{typ "'a
+set"} type causes continuity grief.\<close>
 
 type_synonym NatSet = "Nat llist"
 
@@ -64,7 +64,7 @@ lemma SetMem_SetEmpty[simp]: "SetMem\<cdot>x\<cdot>SetEmpty = FF"
 lemma SetMem_SetInsert: "SetMem\<cdot>v\<cdot>(SetInsert\<cdot>x\<cdot>s) = (SetMem\<cdot>v\<cdot>s orelse x =\<^sub>B v)"
   by (simp add: SetMem_def SetInsert_def)
 
-text {* AndyG's new type. *}
+text \<open>AndyG's new type.\<close>
 
 domain R = R (lazy resultR :: "Nat llist") (lazy exceptR :: "NatSet")
 
@@ -111,7 +111,7 @@ lemma wrap_unwrap_id: "wrap oo unwrap = ID"
   using cfun_fun_cong[OF a2c_c2a_id]
   by - ((rule cfun_eqI)+, simp add: wrap_def unwrap_def)
 
-text {* Equivalences needed for later. *}
+text \<open>Equivalences needed for later.\<close>
 
 lemma TR_deMorgan: "neg\<cdot>(x orelse y) = (neg\<cdot>x andalso neg\<cdot>y)"
   by (rule trE[where p=x], simp_all)
@@ -158,8 +158,8 @@ lemma filter_filterR: "lfilter\<cdot>(neg oo (\<Lambda> y. x =\<^sub>B y))\<cdot
   unfolding a2c_def filterR_def
   by (cases r, simp_all add: SetMem_SetInsert TR_deMorgan)
 
-text{* Apply worker/wrapper. Unlike Gill/Hutton, we manipulate the body of
-the worker into the right form then apply the lemma. *}
+text\<open>Apply worker/wrapper. Unlike Gill/Hutton, we manipulate the body of
+the worker into the right form then apply the lemma.\<close>
 
 definition
   nub_body' :: "(R \<rightarrow> Nat llist) \<rightarrow> R \<rightarrow> Nat llist" where
@@ -194,7 +194,7 @@ lemma nub_body''_nub_body'''_eq: "nub_body'' = nub_body''' oo (unwrap oo wrap)"
   unfolding nub_body''_def nub_body'''_def wrap_def unwrap_def
   by ((rule cfun_eqI)+, simp add: filter_filterR)
 
-text{* Finally glue it all together. *}
+text\<open>Finally glue it all together.\<close>
 
 lemma nub_wrap_nub_body''': "nub = wrap\<cdot>(fix\<cdot>nub_body''')"
   using worker_wrapper_fusion_new[OF wrap_unwrap_id unwrap_strict, where body=nub_body]

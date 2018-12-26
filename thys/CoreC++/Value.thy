@@ -5,7 +5,7 @@
    Based on the Jinja theory Common/Value.thy by David von Oheimb and Tobias Nipkow 
 *)
 
-section {* CoreC++ values *}
+section \<open>CoreC++ values\<close>
 
 theory Value imports Type begin
 

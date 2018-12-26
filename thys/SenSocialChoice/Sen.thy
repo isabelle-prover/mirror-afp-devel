@@ -12,17 +12,17 @@ imports SCFs
 begin
 (*>*)
 
-section{* Sen's Liberal Paradox *}
+section\<open>Sen's Liberal Paradox\<close>
 
-subsection{* Social Decision Functions (SDFs) *}
+subsection\<open>Social Decision Functions (SDFs)\<close>
 
-text{* To make progress in the face of Arrow's Theorem, the demands placed
+text\<open>To make progress in the face of Arrow's Theorem, the demands placed
 on the social choice function need to be weakened. One approach is to only
 require that the set of alternatives that society ranks highest (and is
 otherwise indifferent about) be non-empty.
 
 Following \cite[Chapter~4*]{Sen:70a}, a \emph{Social Decision Function}
-(SDF) yields a choice function for every profile. *}
+(SDF) yields a choice function for every profile.\<close>
 
 definition
   SDF :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> ('a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> bool) \<Rightarrow> bool"
@@ -38,9 +38,9 @@ lemma SWF_SDF:
   shows "SWF scf A Is universal_domain \<Longrightarrow> SDF scf A Is universal_domain"
   unfolding SDF_def SWF_def by (blast dest: rpr_choiceFn[OF finiteA])
 
-text{* In contrast to SWFs, there are SDFs satisfying Arrow's (relevant)
+text\<open>In contrast to SWFs, there are SDFs satisfying Arrow's (relevant)
 requirements. The lemma uses a witness to show the absence of a
-dictatorship. *}
+dictatorship.\<close>
 
 lemma SDF_nodictator_witness:
   assumes has2A: "hasw [x,y] A"
@@ -137,21 +137,21 @@ proof -
   ultimately show thesis ..
 qed
 
-text {* Sen makes several other stronger statements about SDFs later in the
-chapter. I leave these for future work. *}
+text \<open>Sen makes several other stronger statements about SDFs later in the
+chapter. I leave these for future work.\<close>
 
 (* **************************************** *)
 
-subsection{* Sen's Liberal Paradox *}
+subsection\<open>Sen's Liberal Paradox\<close>
 
-text{* Having side-stepped Arrow's Theorem, Sen proceeds to other conditions
+text\<open>Having side-stepped Arrow's Theorem, Sen proceeds to other conditions
 one may ask of an SCF. His analysis of \emph{liberalism}, mechanised in this
 section, has attracted much criticism over the years
 \cite{AnalyseKritik:1996}.
 
 Following \cite[Chapter~6*]{Sen:70a}, a \emph{liberal} social choice rule is
 one that, for each individual, there is a pair of alternatives that she is
-decisive over. *}
+decisive over.\<close>
 
 definition liberal :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "liberal scf A Is \<equiv>
@@ -164,9 +164,9 @@ lemma liberalE:
          \<and> decisive scf A Is {i} x y \<and> decisive scf A Is {i} y x"
   by (simp add: liberal_def)
 
-text{* This condition can be weakened to require just two such decisive
+text\<open>This condition can be weakened to require just two such decisive
 individuals; if we required just one, we would allow dictatorships, which
-are clearly not liberal. *}
+are clearly not liberal.\<close>
 
 definition minimally_liberal :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "minimally_liberal scf A Is \<equiv>
@@ -189,7 +189,7 @@ proof -
     unfolding minimally_liberal_def by (blast intro: liberalE)
 qed
 
-text{*
+text\<open>
 
 The key observation is that once we have at least two decisive individuals
 we can complete the Condorcet (paradox of voting) cycle using the weak
@@ -199,7 +199,7 @@ Firstly we need three types of profile witnesses (one of which we saw
 previously). The main proof proceeds by case distinctions on which
 alternatives the two liberal agents are decisive for.
 
-*}
+\<close>
 
 lemmas liberal_witness_two = SDF_nodictator_witness
 
@@ -273,8 +273,8 @@ proof -
   ultimately show thesis ..
 qed
 
-text{* The Liberal Paradox: having two decisive individuals, an SDF and the
-weak pareto assumption is inconsistent. *}
+text\<open>The Liberal Paradox: having two decisive individuals, an SDF and the
+weak pareto assumption is inconsistent.\<close>
 
 theorem LiberalParadox:
   assumes SDF: "SDF sdf A Is universal_domain"

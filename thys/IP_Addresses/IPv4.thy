@@ -259,7 +259,7 @@ subsection\<open>IP Ranges: Examples\<close>
   *)
 
 
-  text\<open>This @{text "len_of TYPE('a)"} is 32 for IPv4 addresses.\<close>
+  text\<open>This \<open>len_of TYPE('a)\<close> is 32 for IPv4 addresses.\<close>
   lemma ipv4cidr_to_interval_simps[code_unfold]: "ipcidr_to_interval ((pre::ipv4addr), len) = (
       let netmask = (mask len) << (32 - len);
           network_prefix = (pre AND netmask)

@@ -1,4 +1,4 @@
-section {* \isaheader{Set Implementation by Arrays} *}
+section \<open>\isaheader{Set Implementation by Arrays}\<close>
 theory ArraySetImpl
 imports 
   "../spec/SetSpec" 
@@ -6,7 +6,7 @@ imports
   "../gen_algo/SetByMap" 
   "../gen_algo/SetGA"
 begin
-text_raw {*\label{thy:ArraySetImpl}*}
+text_raw \<open>\label{thy:ArraySetImpl}\<close>
 
 (*@impl Set
   @type ias
@@ -31,7 +31,7 @@ interpretation ias: StdSet_no_invar ias_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "ias"*}
+setup \<open>ICF_Tools.revert_abbrevs "ias"\<close>
 
 lemmas ias_it_to_it_map_code_unfold[code_unfold] = 
   it_to_it_map_fold'[OF pi_iam]

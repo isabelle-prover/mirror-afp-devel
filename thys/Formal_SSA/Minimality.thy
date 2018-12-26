@@ -2,10 +2,10 @@
     Author:     Sebastian Ullrich
 *)
 
-section {* Minimality *}
+section \<open>Minimality\<close>
 
-text {* We show that every reducible CFG without trivial \pf s is minimal, recreating the proof in~\cite{braun13cc}.
-  The original proof is inlined as prose text. *}
+text \<open>We show that every reducible CFG without trivial \pf s is minimal, recreating the proof in~\cite{braun13cc}.
+  The original proof is inlined as prose text.\<close>
 
 theory Minimality
 imports SSA_CFG Serial_Rel
@@ -13,11 +13,11 @@ begin
 
 context graph_path
 begin
-  text {* Cytron's definition of path convergence *}
+  text \<open>Cytron's definition of path convergence\<close>
   definition "pathsConverge g x xs y ys z \<equiv> g \<turnstile> x-xs\<rightarrow>z \<and> g \<turnstile> y-ys\<rightarrow>z \<and> length xs > 1 \<and> length ys > 1 \<and> x \<noteq> y \<and>
     (\<forall>j \<in> {0..< length xs}. \<forall>k \<in> {0..<length ys}. xs ! j = ys ! k \<longrightarrow> j = length xs - 1 \<or> k = length ys - 1)"
 
-  text {* Simplified definition *}
+  text \<open>Simplified definition\<close>
   definition "pathsConverge' g x xs y ys z \<equiv> g \<turnstile> x-xs\<rightarrow>z \<and> g \<turnstile> y-ys\<rightarrow>z \<and> length xs > 1 \<and> length ys > 1 \<and> x \<noteq> y \<and>
     set (butlast xs) \<inter> set (butlast ys) = {}"
 
@@ -68,13 +68,13 @@ begin
   qed
 end
 
-text {* A (control) flow graph G is reducible iff for each cycle C of G there is a node of C that dominates all other nodes in C. *}
+text \<open>A (control) flow graph G is reducible iff for each cycle C of G there is a node of C that dominates all other nodes in C.\<close>
 definition (in graph_Entry) "reducible g \<equiv> \<forall>n ns. g \<turnstile> n-ns\<rightarrow>n \<longrightarrow> (\<exists>m \<in> set ns. \<forall>n \<in> set ns. dominates g m n)"
 
 context CFG_SSA_Transformed
 begin
-  text {* A $\phi$ function for variable v is necessary in block Z iff two non-null paths $X \rightarrow^+ Z$ and $Y \rightarrow^+ Z$ converge at a block Z,
-    such that the blocks X and Y contain assignments to v. *}
+  text \<open>A $\phi$ function for variable v is necessary in block Z iff two non-null paths $X \rightarrow^+ Z$ and $Y \rightarrow^+ Z$ converge at a block Z,
+    such that the blocks X and Y contain assignments to v.\<close>
   definition "necessaryPhi g v z \<equiv> \<exists>n ns m ms. old.pathsConverge g n ns m ms z \<and> v \<in> oldDefs g n \<and> v \<in> oldDefs g m"
   abbreviation "necessaryPhi' g val \<equiv> necessaryPhi g (var g val) (defNode g val)"
   definition "unnecessaryPhi g val \<equiv> phi g val \<noteq> None \<and> \<not>necessaryPhi' g val"
@@ -82,25 +82,25 @@ begin
   lemma necessaryPhiI: "old.pathsConverge g n ns m ms z \<Longrightarrow> v \<in> oldDefs g n \<Longrightarrow> v \<in> oldDefs g m \<Longrightarrow> necessaryPhi g v z"
     by (auto simp: necessaryPhi_def)
 
-  text {* A program with only necessary $\phi$ functions is in minimal SSA form. *}
+  text \<open>A program with only necessary $\phi$ functions is in minimal SSA form.\<close>
   definition "cytronMinimal g \<equiv> \<forall>v \<in> allVars g. phi g v \<noteq> None \<longrightarrow> necessaryPhi' g v"
 
-  text {* Let p be a $\phi$ function in a block P. Furthermore, let q in a block Q
+  text \<open>Let p be a $\phi$ function in a block P. Furthermore, let q in a block Q
 and r in a block R be two operands of p, such that p, q and r are pairwise distinct.
-Then at least one of Q and R does not dominate P. *}
+Then at least one of Q and R does not dominate P.\<close>
   lemma 2:
     assumes "phiArg g p q" "phiArg g p r" "distinct [p, q, r]" and[simp]: "p \<in> allVars g"
     shows "\<not>(def_dominates g q p \<and> def_dominates g r p)"
   proof (rule, erule conjE)
-    txt {* Proof. Assume that Q and R dominate P, i.e., every path from the start block to P contains Q and R. *}
+    txt \<open>Proof. Assume that Q and R dominate P, i.e., every path from the start block to P contains Q and R.\<close>
     assume asm: "def_dominates g q p" "def_dominates g r p"
 
-    txt {*  Since immediate dominance forms a tree, Q dominates R or R dominates Q. *}
+    txt \<open>Since immediate dominance forms a tree, Q dominates R or R dominates Q.\<close>
     hence "def_dominates g q r \<or> def_dominates g r q"
       by - (rule old.dominates_antitrans[of g "defNode g q" "defNode g p" "defNode g r"], auto)
     moreover
     {
-      txt {*  Without loss of generality, let Q dominate R. *}
+      txt \<open>Without loss of generality, let Q dominate R.\<close>
       fix q r
       assume assms: "phiArg g p q" "phiArg g p r" "distinct [p, q, r]"
       assume asm: "def_dominates g q p" "def_dominates g r p"
@@ -108,10 +108,10 @@ Then at least one of Q and R does not dominate P. *}
 
       have[simp]: "var g q = var g r" using phiArg_same_var[OF assms(1)] phiArg_same_var[OF assms(2)] by simp
 
-      txt {*  Furthermore, let S be the corresponding predecessor block of P where p is using q. *}
+      txt \<open>Furthermore, let S be the corresponding predecessor block of P where p is using q.\<close>
       obtain S where S: "q \<in> phiUses g S" "S \<in> set (old.predecessors g (defNode g p))" by (rule phiUses_exI'[OF assms(1)], simp)
 
-      txt {* Then there is a path from the start block crossing Q then R and S. *}
+      txt \<open>Then there is a path from the start block crossing Q then R and S.\<close>
       have "defNode g p \<noteq> defNode g q" using assms(1,3)
         by - (rule phiArg_distinct_nodes, auto)
       with S have "old.dominates g (defNode g q) S"
@@ -134,7 +134,7 @@ Then at least one of Q and R does not dominate P. *}
         show ?thesis by (metis append_Nil in_set_conv_decomp list.sel(1) tl_append2)
       qed
 
-      txt {* This violates the SSA property. *}
+      txt \<open>This violates the SSA property.\<close>
       moreover have "q \<in> allDefs g (defNode g q)" using assms S(1) by simp
       moreover have "r \<in> allDefs g (defNode g r)" using assms S(1) by simp
       ultimately have "var g r \<noteq> var g q" using S(1)
@@ -455,7 +455,7 @@ Then at least one of Q and R does not dominate P. *}
         have "defNode g r \<notin> set ms\<^sub>2"
         proof
           assume "defNode g r \<in> set ms\<^sub>2"
-          moreover note `defNode g r \<noteq> defNode g s`
+          moreover note \<open>defNode g r \<noteq> defNode g s\<close>
           ultimately have "defNode g r \<in> set (butlast ms\<^sub>1)" "defNode g r \<in> set (butlast ms\<^sub>2)" using True ms\<^sub>1(2) ms\<^sub>2(2)
             by (auto simp:old.path2_def intro:in_set_butlastI)
           with ms show False by auto
@@ -525,8 +525,8 @@ Then at least one of Q and R does not dominate P. *}
     qed
   qed
 
-  text {* Lemma 3. If a $\phi$ function p in a block P for a variable v is unnecessary, but non-trivial, then it has an operand q in a block Q,
-    such that q is an unnecessary $\phi$ function and Q does not dominate P.*}
+  text \<open>Lemma 3. If a $\phi$ function p in a block P for a variable v is unnecessary, but non-trivial, then it has an operand q in a block Q,
+    such that q is an unnecessary $\phi$ function and Q does not dominate P.\<close>
   lemma 3:
     assumes "unnecessaryPhi g p" "\<not>trivial g p" and[simp]: "p \<in> allVars g"
     obtains q where "phiArg g p q" "unnecessaryPhi g q" "\<not>def_dominates g q p"
@@ -534,18 +534,18 @@ Then at least one of Q and R does not dominate P. *}
     note unnecessaryPhi_def[simp]
     let ?P = "defNode g p"
 
-    txt {* The node p must have at least two different operands r and s, which are not p itself. Otherwise, p is trivial. *}
+    txt \<open>The node p must have at least two different operands r and s, which are not p itself. Otherwise, p is trivial.\<close>
     from assms obtain r s where rs: "phiArg g p r" "phiArg g p s" "distinct [p, r, s]"
       by - (rule nontrivialE, auto)
     hence[simp]: "var g r = var g p" "var g s = var g p" "r \<in> allVars g" "s \<in> allVars g"
       by (simp_all add:phiArg_same_var)
 
-    txt {* They can either be:
+    txt \<open>They can either be:
       \<^item> The result of a direct assignment to v.
       \<^item> The result of a necessary $\phi$ function r' . This however means that r' was
         reachable by at least two different direct assignments to v. So there is a path
         from a direct assignment of v to p.
-      \<^item> Another unnecessary $\phi$ function. *}
+      \<^item> Another unnecessary $\phi$ function.\<close>
 
     let ?R = "defNode g r"
     let ?S = "defNode g s"
@@ -555,11 +555,11 @@ Then at least one of Q and R does not dominate P. *}
     have one_unnec: "unnecessaryPhi g r \<or> unnecessaryPhi g s"
     proof (rule ccontr, simp only: de_Morgan_disj not_not)
 
-      txt {* Assume neither r in a block R nor s in a block S is an unnecessary $\phi$ function. *}
+      txt \<open>Assume neither r in a block R nor s in a block S is an unnecessary $\phi$ function.\<close>
       assume asm: "\<not>unnecessaryPhi g r \<and> \<not>unnecessaryPhi g s"
 
-      txt {* Then a path from an assignment to v in a block n crosses R and a path from an assignment to v in a block m crosses S. *}
-      txt {* AMENDMENT: ...so that the paths are disjoint! *}
+      txt \<open>Then a path from an assignment to v in a block n crosses R and a path from an assignment to v in a block m crosses S.\<close>
+      txt \<open>AMENDMENT: ...so that the paths are disjoint!\<close>
       obtain n ns m ms where ns: "var g p \<in> oldDefs g n" "g \<turnstile> n-ns\<rightarrow>?R" "n \<notin> set (tl ns)"
         and ms: "var g p \<in> oldDefs g m" "g \<turnstile> m-ms\<rightarrow>defNode g s" "m \<notin> set (tl ms)"
         and ns_ms: "set ns \<inter> set ms = {}"
@@ -577,7 +577,7 @@ Then at least one of Q and R does not dominate P. *}
       from ns(1) ms(1) obtain v v' where v: "v \<in> defs g n" and v': "v' \<in> defs g m" and[simp]: "var g v = var g p" "var g v' = var g p"
         by (auto simp:oldDefs_def)
 
-      txt {* They converge at P or earlier. *}
+      txt \<open>They converge at P or earlier.\<close>
       obtain ns' n' where ns': "g \<turnstile> ?R-ns'\<rightarrow>n'" "r \<in> phiUses g n'" "n' \<in> set (old.predecessors g ?P)" "?R \<notin> set (tl ns')"
         by (rule phiArg_path_ex'[OF rs(1)], auto elim: old.simple_path2)
       obtain ms' m' where ms': "g \<turnstile> ?S-ms'\<rightarrow>m'" "s \<in> phiUses g m'" "m' \<in> set (old.predecessors g ?P)" "?S \<notin> set (tl ms')"
@@ -615,12 +615,12 @@ Then at least one of Q and R does not dominate P. *}
       show False
       proof (cases "z = ?P")
 
-        txt {* Convergence at P is not possible because p is unnecessary. *}
+        txt \<open>Convergence at P is not possible because p is unnecessary.\<close>
         case True
         thus False using assms(1) necessary by simp
       next
 
-        txt {* An earlier convergence would imply a necessary $\phi$ function at this point, which violates the SSA property. *}
+        txt \<open>An earlier convergence would imply a necessary $\phi$ function at this point, which violates the SSA property.\<close>
         case False
         from z(1) have "z \<in> set ns'' \<inter> set ms''" by (auto simp: old.pathsConverge'_def)
         with False have "z \<in> set (ns@tl ns') \<inter> set (ms@tl ms')"
@@ -666,9 +666,9 @@ Then at least one of Q and R does not dominate P. *}
       qed
     qed
 
-    txt {*
+    txt \<open>
 So r or s must be an unnecessary $\phi$ function. Without loss of generality, let
-this be r. *}
+this be r.\<close>
     {
       fix r s
       assume r: "unnecessaryPhi g r" and[simp]: "var g r = var g p"
@@ -684,17 +684,17 @@ this be r. *}
       proof (cases "old.dominates g ?R ?P")
         case False
 
-        txt {* If R does not dominate P, then r is the sought-after q. *}
+        txt \<open>If R does not dominate P, then r is the sought-after q.\<close>
         thus thesis using r rs(1) by - (rule that)
       next
         case True
 
-        txt {* So let R dominate P.
-Due to Lemma 2, S does not dominate P. *}
+        txt \<open>So let R dominate P.
+Due to Lemma 2, S does not dominate P.\<close>
         hence 4: "\<not>old.dominates g ?S ?P" using 2[OF rs] by simp
 
-        txt {* Employing the SSA property, r /= p
-yields R /= P. *}
+        txt \<open>Employing the SSA property, r /= p
+yields R /= P.\<close>
         (* actually not SSA property *)
         have "?R \<noteq> ?P"
         proof (rule notI, rule allDefs_var_disjoint[of ?R g p r, simplified])
@@ -702,32 +702,32 @@ yields R /= P. *}
           show "p \<noteq> r" using rs(3) by auto
         qed auto
 
-        txt {* Thus, R strictly dominates P. *}
+        txt \<open>Thus, R strictly dominates P.\<close>
         hence "old.strict_dom g ?R ?P" using True by simp
 
-        txt {* This implies that R dominates all
+        txt \<open>This implies that R dominates all
 predecessors of P, which contain the uses of p, especially the predecessor S' that
-contains the use of s. *}
+contains the use of s.\<close>
         moreover obtain ss' S' where ss': "g \<turnstile> ?S-ss'\<rightarrow>S'"
           and S': "s \<in> phiUses g S'" "S' \<in> set (old.predecessors g ?P)"
           by (rule phiArg_path_ex'[OF rs(2)], simp)
         ultimately have 5: "old.dominates g ?R S'" by - (rule old.dominates_unsnoc, auto)
 
-        txt {* Due to the SSA property, there is a path from S to S' that
-does not contain R. *}
+        txt \<open>Due to the SSA property, there is a path from S to S' that
+does not contain R.\<close>
         from ss' obtain ss' where ss': "g \<turnstile> ?S-ss'\<rightarrow>S'" "?S \<notin> set (tl ss')" by (rule old.simple_path2)
         hence "?R \<notin> set (tl ss')" using rs(1,2) S'(1)
           by - (rule conventional'[where v=s and v'=r], auto simp del: phiArg_def)
 
-        txt {* Employing R dominates S' this yields R dominates S. *}
+        txt \<open>Employing R dominates S' this yields R dominates S.\<close>
         hence dom: "old.dominates g ?R ?S" using 5 ss' by - (rule old.dominates_extend)
 
-        txt {* Now assume that s is necessary. *}
+        txt \<open>Now assume that s is necessary.\<close>
         have "unnecessaryPhi g s"
         proof (rule ccontr)
           assume s: "\<not>unnecessaryPhi g s"
 
-          txt {* Let X contain the most recent definition of v on a path from the start block to R. *}
+          txt \<open>Let X contain the most recent definition of v on a path from the start block to R.\<close>
           from rs(1) obtain X xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "var g r \<in> oldDefs g X" "old.EntryPath g xs"
             by - (rule allDef_path_from_simpleDef[of r g], auto simp del: phiArg_def)
           then obtain X xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "var g r \<in> oldDefs g X" "\<forall>x \<in> set (tl xs). var g r \<notin> oldDefs g x" "old.EntryPath g xs"
@@ -737,9 +737,9 @@ does not contain R. *}
           from xs obtain xs where xs: "g \<turnstile> X-xs\<rightarrow>?R" "X \<notin> set (tl xs)" "old.EntryPath g xs"
             by - (rule old.simple_path2, auto dest: old.EntryPath_suffix)
 
-          txt {* By Definition 2 there are two definitions
+          txt \<open>By Definition 2 there are two definitions
 of v that render s necessary. Since R dominates S, the SSA property yields that
-one of these definitions is contained in a block Y on a path $R \rightarrow^+ S$. *}
+one of these definitions is contained in a block Y on a path $R \rightarrow^+ S$.\<close>
           (* actually not SSA property *)
           obtain Y ys ys' where Y: "var g s \<in> oldDefs g Y"
             and ys: "g \<turnstile> Y-ys\<rightarrow>?S" "?R \<notin> set ys"
@@ -779,8 +779,8 @@ one of these definitions is contained in a block Y on a path $R \rightarrow^+ S$
           with R' obtain rr where rr: "g \<turnstile> ?R-rr\<rightarrow>?P" and[simp]: "rr = rr' @ [?P]" by (auto intro: old.path2_snoc)
           from ss' S' obtain ss where ss: "g \<turnstile> ?S-ss\<rightarrow>?P" and[simp]: "ss = ss' @ [?P]" by (auto intro: old.path2_snoc)
 
-          txt {* Thus, there are paths $X \rightarrow^+ P$ and $Y \rightarrow^+ P$ rendering p necessary. Since this is a
-contradiction, s is unnecessary and the sought-after q. *}
+          txt \<open>Thus, there are paths $X \rightarrow^+ P$ and $Y \rightarrow^+ P$ rendering p necessary. Since this is a
+contradiction, s is unnecessary and the sought-after q.\<close>
           have "old.pathsConverge g X (butlast xs@rr) Y (ys@tl ss) ?P"
           proof (rule old.pathsConvergeI)
             show "g \<turnstile> X-butlast xs@rr\<rightarrow>?P" using xs rr by auto
@@ -892,15 +892,15 @@ contradiction, s is unnecessary and the sought-after q. *}
     from one_unnec this[of r s] this[of s r] rs show thesis by auto
   qed
 
-text {* Theorem 1. A program in SSA form with a reducible CFG G without any trivial $\phi$ functions is in minimal SSA form. *}
+text \<open>Theorem 1. A program in SSA form with a reducible CFG G without any trivial $\phi$ functions is in minimal SSA form.\<close>
   theorem reducible_nonredundant_imp_minimal:
     assumes "old.reducible g" "\<not>redundant g"
     shows "cytronMinimal g"
   unfolding cytronMinimal_def
   proof (rule, rule)
-    txt {*
+    txt \<open>
 Proof. Assume G is not in minimal SSA form and contains no trivial $\phi$ functions.
-We choose an unnecessary $\phi$ function p. *}
+We choose an unnecessary $\phi$ function p.\<close>
     fix p
     assume[simp]: "p \<in> allVars g" and phi: "phi g p \<noteq> None"
     show "necessaryPhi' g p"
@@ -912,10 +912,10 @@ We choose an unnecessary $\phi$ function p. *}
       let ?r' = "{(p,q). ?r p q}"
       note phiArg_def[simp del]
 
-      txt {*  Due to Lemma 3, p has an operand q,
+      txt \<open>Due to Lemma 3, p has an operand q,
 which is unnecessary and does not dominate p. By induction q has an unnecessary
 $\phi$ function as operand as well and so on. Since the program only has a finite
-number of operations, there must be a cycle when following the q chain. *}
+number of operations, there must be a cycle when following the q chain.\<close>
       obtain q where q: "(q,q) \<in> ?r'\<^sup>+" "q \<in> ?A"
       proof (rule serial_on_finite_cycle)
         show "serial_on ?A ?r'"
@@ -924,22 +924,22 @@ number of operations, there must be a cycle when following the q chain. *}
           assume "x \<in> ?A"
           then obtain y where "unnecessaryPhi g y" "phiArg g x y" "\<not>def_dominates g y x"
             using assms(2) by - (rule 3, auto simp: redundant_def)
-          thus "\<exists>y \<in> ?A. (x,y) \<in> ?r'" using `x \<in> ?A` by - (rule bexI[where x=y], auto)
+          thus "\<exists>y \<in> ?A. (x,y) \<in> ?r'" using \<open>x \<in> ?A\<close> by - (rule bexI[where x=y], auto)
         qed
         show "?A \<noteq> {}" using asm by (auto intro!: exI)
       qed auto
 
-      txt {* A cycle in the $\phi$ functions implies a cycle in G. *}
+      txt \<open>A cycle in the $\phi$ functions implies a cycle in G.\<close>
       then obtain ns where ns: "g \<turnstile> defNode g q-ns\<rightarrow>defNode g q" "length ns > 1"
         "\<forall>n \<in> set (butlast ns). \<exists>p q m ns'. ?r p q \<and> g \<turnstile> defNode g q-ns'\<rightarrow>m \<and> (defNode g q) \<notin> set (tl ns') \<and> q \<in> phiUses g m \<and> m \<in> set (old.predecessors g (defNode g p)) \<and> n \<in> set ns' \<and> set ns' \<subseteq> set ns \<and> defNode g p \<in> set ns"
         by - (rule phiArg_tranclp_path_ex[where r="?r"], auto simp: tranclp_unfold)
 
-      txt {* As G is reducible, the control flow
-cycle contains one entry block, which dominates all other blocks in the cycle. *}
+      txt \<open>As G is reducible, the control flow
+cycle contains one entry block, which dominates all other blocks in the cycle.\<close>
       obtain n where n: "n \<in> set ns" "\<forall>m \<in> set ns. old.dominates g n m"
         using assms(1)[unfolded old.reducible_def, rule_format, OF ns(1)] by auto
 
-      txt {* Without loss of generality, let q be in the entry block, which means it dominates p. *}
+      txt \<open>Without loss of generality, let q be in the entry block, which means it dominates p.\<close>
       have "n \<in> set (butlast ns)"
       proof (cases "n = last ns")
         case False
@@ -955,7 +955,7 @@ cycle contains one entry block, which dominates all other blocks in the cycle. *
       moreover from ns' n(2) have n_dom: "old.dominates g n (defNode g q)" "old.dominates g n (defNode g p)" by - (auto elim!:bspec)
       ultimately have "defNode g q = n" by auto
 
-      txt {* Therefore, our assumption is wrong and G is either in minimal SSA form or there exist trivial $\phi$ functions. *}
+      txt \<open>Therefore, our assumption is wrong and G is either in minimal SSA form or there exist trivial $\phi$ functions.\<close>
       with ns'(1) n_dom(2) show False by auto
     qed
   qed

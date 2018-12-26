@@ -4,7 +4,7 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
 (*>*)
-section {* Auxiliary Theory ListExtras.thy*}
+section \<open>Auxiliary Theory ListExtras.thy\<close>
 
 theory ListExtras 
 imports Main

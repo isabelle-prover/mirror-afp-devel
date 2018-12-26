@@ -2,9 +2,9 @@ theory SuccessSensitiveness
   imports SourceTargetRelation
 begin
 
-section {* Success Sensitiveness and Barbs *}
+section \<open>Success Sensitiveness and Barbs\<close>
 
-text {* To compare the abstract behavior of two terms, often some notion of success or successful
+text \<open>To compare the abstract behavior of two terms, often some notion of success or successful
         termination is used. Daniele Gorla assumes a constant process (similar to the empty
         process) that represents successful termination in order to compare the behavior of source
         terms with their literal translations. Then an encoding is success sensitive if, for all
@@ -12,7 +12,7 @@ text {* To compare the abstract behavior of two terms, often some notion of succ
         termination can be considered as some special kind of barb. Accordingly we generalize
         successful termination to the respection of an arbitrary subset of barbs. An encoding
         respects a set of barbs if, for every source term S and all considered barbs a, S reaches a
-        iff the translation of S reaches a. *}
+        iff the translation of S reaches a.\<close>
 
 abbreviation (in encoding_wrt_barbs) enc_weakly_preserves_barb_set :: "'barbs set \<Rightarrow> bool" where
   "enc_weakly_preserves_barb_set Barbs \<equiv> enc_preserves_binary_pred (\<lambda>P a. a \<in> Barbs \<and> P\<Down>.a)"
@@ -56,8 +56,8 @@ proof -
     apply simp by blast
 qed
 
-text {* An encoding strongly respects some set of barbs if, for every source term S and all
-        considered barbs a, S has a iff the translation of S has a. *}
+text \<open>An encoding strongly respects some set of barbs if, for every source term S and all
+        considered barbs a, S has a iff the translation of S has a.\<close>
 
 abbreviation (in encoding_wrt_barbs) enc_preserves_barb_set :: "'barbs set \<Rightarrow> bool" where
   "enc_preserves_barb_set Barbs \<equiv> enc_preserves_binary_pred (\<lambda>P a. a \<in> Barbs \<and> P\<down>.a)"
@@ -96,11 +96,11 @@ proof -
     apply simp by blast
 qed
 
-text {* An encoding (weakly) preserves barbs iff
+text \<open>An encoding (weakly) preserves barbs iff
         (1) there exists a relation, like indRelR, that relates source terms and their literal
             translations and preserves (reachability/)existence of barbs, or
         (2) there exists a relation, like indRelL, that relates literal translations and their
-            source terms and reflects (reachability/)existence of barbs. *}
+            source terms and reflects (reachability/)existence of barbs.\<close>
 
 lemma (in encoding_wrt_barbs) enc_weakly_preserves_barb_set_iff_source_target_rel:
   fixes Barbs :: "'barbs set"
@@ -137,11 +137,11 @@ lemma (in encoding_wrt_barbs) enc_preserves_barbs_iff_source_target_rel:
              Pred="\<lambda>P a. P\<down><STCalWB SWB TWB>a"] STCalWB_hasBarbST
     by simp
 
-text {* An encoding (weakly) reflects barbs iff
+text \<open>An encoding (weakly) reflects barbs iff
         (1) there exists a relation, like indRelR, that relates source terms and their literal
             translations and reflects (reachability/)existence of barbs, or
         (2) there exists a relation, like indRelL, that relates literal translations and their
-            source terms and preserves (reachability/)existence of barbs. *}
+            source terms and preserves (reachability/)existence of barbs.\<close>
 
 lemma (in encoding_wrt_barbs) enc_weakly_reflects_barb_set_iff_source_target_rel:
   fixes Barbs :: "'barbs set"
@@ -177,13 +177,13 @@ lemma (in encoding_wrt_barbs) enc_reflects_barbs_iff_source_target_rel:
              Pred="\<lambda>P a. P\<down><STCalWB SWB TWB>a"] STCalWB_hasBarbST
     by simp
 
-text {* An encoding (weakly) respects barbs iff
+text \<open>An encoding (weakly) respects barbs iff
         (1) there exists a relation, like indRelR, that relates source terms and their literal
             translations and respects (reachability/)existence of barbs, or
         (2) there exists a relation, like indRelL, that relates literal translations and their
             source terms and respects (reachability/)existence of barbs, or
         (3) there exists a relation, like indRel, that relates source terms and their literal
-            translations in both directions and respects (reachability/)existence of barbs. *}
+            translations in both directions and respects (reachability/)existence of barbs.\<close>
 
 lemma (in encoding_wrt_barbs) enc_weakly_respects_barb_set_iff_source_target_rel:
   fixes Barbs :: "'barbs set"
@@ -219,8 +219,8 @@ lemma (in encoding_wrt_barbs) enc_respects_barbs_iff_source_target_rel:
              Pred="\<lambda>P a. P\<down><STCalWB SWB TWB>a"] STCalWB_hasBarbST
     by simp
 
-text {* Accordingly an encoding is success sensitive iff there exists such a relation between
-        source and target terms that weakly respects the barb success. *}
+text \<open>Accordingly an encoding is success sensitive iff there exists such a relation between
+        source and target terms that weakly respects the barb success.\<close>
 
 lemma (in encoding_wrt_barbs) success_sensitive_cond:
   fixes success :: "'barbs"

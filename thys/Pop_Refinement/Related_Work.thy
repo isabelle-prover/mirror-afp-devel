@@ -1,12 +1,12 @@
-chapter {* Related Work *}
+chapter \<open>Related Work\<close>
 
 theory %invisible Related_Work
 imports Main
 begin
 
-text {* \label{chap:related} *}
+text \<open>\label{chap:related}\<close>
 
-text {* In existing approaches to stepwise refinement
+text \<open>In existing approaches to stepwise refinement
 (e.g.~\cite{BBook,ZReference,SystematicVDM,RefinementCalculus}),
 specifications express requirements less directly than pop-refinement:
 a specification implicitly characterizes its possible implementations
@@ -15,9 +15,9 @@ via refinement (and code generation).
 This is a more restrictive way to characterize a set of programs
 than defining a predicate over deeply embedded programs
 in a theorem prover's general-purpose logic
-(as in pop-refinement). *}
+(as in pop-refinement).\<close>
 
-text {* This restrictiveness precludes
+text \<open>This restrictiveness precludes
 some of the abilities discussed in \chapref{chap:general},
 e.g.\ the ability to express, and guarantee through refinement,
 certain program-level requirements like constraints on memory footprint.
@@ -30,9 +30,9 @@ the sequence of refinement steps
 (as with pop-refinement).
 Existing refinement approaches could be extended
 to handle additional kinds of requirements (e.g.\ non-functional),
-but for pop-refinement no theorem prover extensions are necessary. *}
+but for pop-refinement no theorem prover extensions are necessary.\<close>
 
-text {* In existing refinement approaches,
+text \<open>In existing refinement approaches,
 each refinement step yields a new specification that characterizes
 a (strict or non-strict) subset of the implementations
 characterized by the old specification,
@@ -41,9 +41,9 @@ However, the restrictiveness explained above,
 together with any inherent constraints
 imposed by the refinement relation over specifications,
 limits the choice of the subset,
-providing less fine-grained control than pop-refinement. *}
+providing less fine-grained control than pop-refinement.\<close>
 
-text {* In existing refinement approaches,
+text \<open>In existing refinement approaches,
 the ``indirection'' between a specification and its set of implementations
 may create a disconnect between
 properties of a specification and properties of its implementations.
@@ -53,7 +53,7 @@ but some of its implementations may not,
 because the refinement relation may reduce the possible behaviors.
 Since a pop-refinement specification directly makes statements
 about the possible implementations of the requirements,
-this kind of disconnect is avoided. *}
+this kind of disconnect is avoided.\<close>
 
 
 end %invisible

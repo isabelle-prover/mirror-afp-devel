@@ -123,19 +123,19 @@ case (wf v p pth)
   from e valid_edges have "v' |\<in>| vertices" and "p' |\<in>| outPorts (nodeOf v')" by auto
   hence "nodeOf v' \<in> sset nodes" using valid_nodes by (meson image_eqI notin_fset set_mp)
 
-  from `?e \<in> edges`
+  from \<open>?e \<in> edges\<close>
   have s: "labelAtOut v' p' = labelAtIn v p"  by (rule solved)
 
-  from `p' |\<in>| outPorts (nodeOf v')`
+  from \<open>p' |\<in>| outPorts (nodeOf v')\<close>
   show ?case
   proof (cases rule: out_port_cases)
     case (Hyp r h c)
 
-    from Hyp `p' |\<in>| outPorts (nodeOf v')`
+    from Hyp \<open>p' |\<in>| outPorts (nodeOf v')\<close>
     have "h |\<in>| a_hyps c" and "c |\<in>| f_antecedent r" by auto
     hence "hyps (nodeOf v') (Hyp h c) = Some c" using Hyp by simp
 
-    from well_scoped[OF ` _ \<in> edges`[unfolded Hyp] this]
+    from well_scoped[OF \<open> _ \<in> edges\<close>[unfolded Hyp] this]
     have "(v, p) = (v', c) \<or> v \<in> scope (v', c)".
     hence "(v', c) \<in> insert (v, p) (snd ` set pth)"
     proof
@@ -150,7 +150,7 @@ case (wf v p pth)
     moreover
 
 
-    from `hyps (nodeOf v') (Hyp h c) = Some c`
+    from \<open>hyps (nodeOf v') (Hyp h c) = Some c\<close>
     have "Hyp h c |\<in>| hyps_for (nodeOf v') c" by simp
     hence "labelAtOut v' (Hyp h c) |\<in>| extra_assms (v',c)" by auto
     ultimately
@@ -166,7 +166,7 @@ case (wf v p pth)
   next
     case (Assumption f)
 
-    from `v' |\<in>| vertices` `nodeOf v' = Assumption f`
+    from \<open>v' |\<in>| vertices\<close> \<open>nodeOf v' = Assumption f\<close>
     have "labelAtOut v' (Reg f) |\<in>| global_assms TYPE('var)"
       by (rule global_assmsI)
     hence "labelAtOut v' (Reg f) |\<in>| ?\<Gamma>" by auto
@@ -175,25 +175,25 @@ case (wf v p pth)
       by (auto intro: exI[where x = ?t] simp add: eff.simps)
   next
     case (Rule r f)
-    with `nodeOf v' \<in> sset nodes`
+    with \<open>nodeOf v' \<in> sset nodes\<close>
     have "r \<in> sset rules"
       by (auto simp add: nodes_def stream.set_map)
 
     from Rule
     have "hyps (nodeOf v') p' = None" by simp
-    with e `terminal_path v t pth`
+    with e \<open>terminal_path v t pth\<close>
     have "terminal_path v' t ?pth'"..
 
-    from Rule  `p' |\<in>| outPorts (nodeOf v')`
+    from Rule  \<open>p' |\<in>| outPorts (nodeOf v')\<close>
     have "f |\<in>| f_consequent r" by simp
     hence "f \<in> set (consequent r)" by (simp add: f_consequent_def)
-    with `r \<in> sset rules`
+    with \<open>r \<in> sset rules\<close>
     have "NatRule (r, f) \<in> sset (smap NatRule n_rules)"
       by (auto simp add: stream.set_map n_rules_def no_empty_conclusions)
     moreover
 
     {
-    from `f |\<in>| f_consequent r`
+    from \<open>f |\<in>| f_consequent r\<close>
     have "f \<in> set (consequent r)" by (simp add: f_consequent_def)
     hence "natEff_Inst (r, f) f (f_antecedent r)"
       by (rule natEff_Inst.intros)
@@ -203,7 +203,7 @@ case (wf v p pth)
     proof (rule eff.intros)
       fix ant f
       assume "ant |\<in>| f_antecedent r"
-      from  `v' |\<in>| vertices` `ant |\<in>| f_antecedent r`
+      from  \<open>v' |\<in>| vertices\<close> \<open>ant |\<in>| f_antecedent r\<close>
       have "valid_in_port (v',ant)" by (simp add: Rule)
 
       assume "f |\<in>| ?\<Gamma>"
@@ -211,21 +211,21 @@ case (wf v p pth)
       proof(induct rule: hyps_alongE)
         case (Hyp v'' p'' h'')
 
-        from Hyp(1) snd_set_path_verties[OF terminal_path_is_path[OF `terminal_path v' t ?pth'`]]
+        from Hyp(1) snd_set_path_verties[OF terminal_path_is_path[OF \<open>terminal_path v' t ?pth'\<close>]]
         have "v'' |\<in>| vertices" by (force simp add: fmember.rep_eq)
 
-        from `terminal_path v' t ?pth'` Hyp(1)
+        from \<open>terminal_path v' t ?pth'\<close> Hyp(1)
         have "v'' \<notin> scope (v', ant)" by (rule hyps_free_path_not_in_scope)
-        with `valid_in_port (v',ant)` `v'' |\<in>| vertices`
+        with \<open>valid_in_port (v',ant)\<close> \<open>v'' |\<in>| vertices\<close>
         have "freshenLC (vidx v') ` local_vars (nodeOf v') ant \<inter> subst_lconsts (inst v'') = {}"
          by (rule out_of_scope)
         moreover
-        from hyps_free_vertices_distinct'[OF `terminal_path v' t ?pth'`] Hyp.hyps(1)
+        from hyps_free_vertices_distinct'[OF \<open>terminal_path v' t ?pth'\<close>] Hyp.hyps(1)
         have "v'' \<noteq> v'" by (metis distinct.simps(2) fst_conv image_eqI list.set_map)
-        hence "vidx v'' \<noteq> vidx v'" using `v' |\<in>| vertices` `v'' |\<in>| vertices` by (meson vidx_inj inj_onD notin_fset)
+        hence "vidx v'' \<noteq> vidx v'" using \<open>v' |\<in>| vertices\<close> \<open>v'' |\<in>| vertices\<close> by (meson vidx_inj inj_onD notin_fset)
         hence "freshenLC (vidx v') ` a_fresh ant \<inter> freshenLC (vidx v'') ` lconsts (labelsOut (nodeOf v'') h'') = {}"by auto
         moreover
-        have "lconsts f \<subseteq> lconsts (freshen (vidx v'') (labelsOut (nodeOf v'') h'')) \<union> subst_lconsts (inst v'') " using `f = _`
+        have "lconsts f \<subseteq> lconsts (freshen (vidx v'') (labelsOut (nodeOf v'') h'')) \<union> subst_lconsts (inst v'') " using \<open>f = _\<close>
           by (simp add: labelAtOut_def fv_subst)
         ultimately
         show ?thesis
@@ -244,10 +244,10 @@ case (wf v p pth)
     next
       fix ant
       assume "ant |\<in>| f_antecedent r"
-      from  `v' |\<in>| vertices` `ant |\<in>| f_antecedent r`
+      from  \<open>v' |\<in>| vertices\<close> \<open>ant |\<in>| f_antecedent r\<close>
       have "valid_in_port (v',ant)" by (simp add: Rule)
       moreover
-      note `v' |\<in>| vertices`
+      note \<open>v' |\<in>| vertices\<close>
       moreover
       hence "v' \<notin> scope (v', ant)" by (rule scopes_not_refl)
       ultimately
@@ -258,7 +258,7 @@ case (wf v p pth)
     also
     have "subst (inst v') (freshen (vidx v') f) = labelAtOut v' p'" using Rule by (simp add: labelAtOut_def)
     also
-    note `labelAtOut v' p' = labelAtIn v p`
+    note \<open>labelAtOut v' p' = labelAtIn v p\<close>
     also
     have "?ants = ((\<lambda>x. (extra_assms (v',x) |\<union>| hyps_along ?pth' \<turnstile> labelAtIn  v' x)) |`| f_antecedent r)"
       by (rule fimage_cong[OF refl])
@@ -277,11 +277,11 @@ case (wf v p pth)
       note this(1)
       moreover
 
-      from  `v' |\<in>| vertices` `a |\<in>| f_antecedent r`
+      from  \<open>v' |\<in>| vertices\<close> \<open>a |\<in>| f_antecedent r\<close>
       have "valid_in_port (v',a)" by (simp add: Rule)
       moreover
 
-      note `terminal_path v' t ?pth'`
+      note \<open>terminal_path v' t ?pth'\<close>
       ultimately
 
       have "\<exists>v p pth. x = tree v p pth \<and> valid_in_port (v,p) \<and>  terminal_path v t pth"
@@ -295,7 +295,7 @@ case (wf v p pth)
     case Helper
     from Helper
     have "hyps (nodeOf v') p' = None" by simp
-    with e `terminal_path v t pth`
+    with e \<open>terminal_path v t pth\<close>
     have "terminal_path v' t ?pth'"..
 
     have "labelAtIn v' (plain_ant anyP) = labelAtIn v p"
@@ -310,11 +310,11 @@ case (wf v p pth)
       note this(1)
       moreover
 
-      from  `v' |\<in>| vertices`
+      from  \<open>v' |\<in>| vertices\<close>
       have "valid_in_port (v',plain_ant anyP)" by (simp add: Helper)
       moreover
 
-      note `terminal_path v' t ?pth'`
+      note \<open>terminal_path v' t ?pth'\<close>
       ultimately
 
       have "\<exists>v p pth. x = tree v p pth \<and> valid_in_port (v,p) \<and>  terminal_path v t pth"
@@ -337,9 +337,9 @@ proof
   have "Assumption pf \<in> sset nodes" by (auto simp add: fmember.rep_eq)
   hence "pf \<in> set assumptions" by (auto simp add: nodes_def stream.set_map)
   hence "closed pf" by (rule  assumptions_closed)
-  with `x = labelAtOut v (Reg pf)`
+  with \<open>x = labelAtOut v (Reg pf)\<close>
   have "x = pf" by (auto simp add: labelAtOut_def lconsts_freshen closed_no_lconsts freshen_closed subst_closed)
-  thus "x |\<in>| ass_forms" using `pf \<in> set assumptions` by (auto simp add: ass_forms_def)
+  thus "x |\<in>| ass_forms" using \<open>pf \<in> set assumptions\<close> by (auto simp add: ass_forms_def)
 qed
 
 primcorec edge_tree :: "'vertex \<Rightarrow> ('form, 'var) in_port \<Rightarrow> ('vertex, 'form, 'var) edge' tree" where
@@ -389,10 +389,10 @@ proof(coinduction arbitrary: v p es)
   obtain t' where "root (edge_tree v p) = shd es" and "t' |\<in>| cont (edge_tree v p)" and "ipath t' ?es'"
     by rule blast
 
-  from `root (edge_tree v p) = shd es`
+  from \<open>root (edge_tree v p) = shd es\<close>
   have [simp]: "shd es = (adjacentTo v p, (v,p))" by simp
 
-  from saturated[OF `valid_in_port (v,p)`]
+  from saturated[OF \<open>valid_in_port (v,p)\<close>]
   obtain v' p'
   where e:"((v',p'),(v,p)) \<in> edges" and [simp]: "adjacentTo v p = (v',p')"
     by (auto simp add: adjacentTo_def, metis (no_types, lifting) eq_fst_iff tfl_some)
@@ -402,17 +402,17 @@ proof(coinduction arbitrary: v p es)
   thus ?case
   proof(cases rule: out_port_cases)
     case Hyp
-    with  `t' |\<in>| cont (edge_tree v p)`
+    with  \<open>t' |\<in>| cont (edge_tree v p)\<close>
     have False by auto
     thus ?thesis..
   next
     case Assumption
-    with  `t' |\<in>| cont (edge_tree v p)`
+    with  \<open>t' |\<in>| cont (edge_tree v p)\<close>
     have False by auto
     thus ?thesis..
   next
     case (Rule r f)
-    from `t' |\<in>| cont (edge_tree v p)` Rule
+    from \<open>t' |\<in>| cont (edge_tree v p)\<close> Rule
     obtain a where [simp]: "t' = edge_tree v' a" and "a |\<in>| f_antecedent r"  by auto
 
     have "es = ?e ## ?es'" by (cases es rule: stream.exhaust_sel) simp
@@ -421,22 +421,22 @@ proof(coinduction arbitrary: v p es)
     have "?e \<in> edges" using e by simp
     moreover
 
-    from `p' = Reg f` `nodeOf v' = Rule r`
+    from \<open>p' = Reg f\<close> \<open>nodeOf v' = Rule r\<close>
     have "hyps (nodeOf v') p' = None" by simp
     moreover
 
     from e valid_edges have "v' |\<in>| vertices"  by auto
-    with `nodeOf v' = Rule r` `a |\<in>| f_antecedent r`
+    with \<open>nodeOf v' = Rule r\<close> \<open>a |\<in>| f_antecedent r\<close>
     have "valid_in_port (v', a)" by simp
     moreover
 
-    have "ipath (edge_tree v' a) ?es'" using `ipath t' _` by simp
+    have "ipath (edge_tree v' a) ?es'" using \<open>ipath t' _\<close> by simp
     ultimately
 
     show ?thesis by metis
   next
     case Helper
-    from `t' |\<in>| cont (edge_tree v p)` Helper
+    from \<open>t' |\<in>| cont (edge_tree v p)\<close> Helper
     have [simp]: "t' = edge_tree v' (plain_ant anyP)" by simp
 
     have "es = ?e ## ?es'" by (cases es rule: stream.exhaust_sel) simp
@@ -445,16 +445,16 @@ proof(coinduction arbitrary: v p es)
     have "?e \<in> edges" using e by simp
     moreover
 
-    from `p' = Reg anyP` `nodeOf v' = Helper`
+    from \<open>p' = Reg anyP\<close> \<open>nodeOf v' = Helper\<close>
     have "hyps (nodeOf v') p' = None" by simp
     moreover
 
     from e valid_edges have "v' |\<in>| vertices"  by auto
-    with `nodeOf v' = Helper`
+    with \<open>nodeOf v' = Helper\<close>
     have "valid_in_port (v', plain_ant anyP)" by simp
     moreover
 
-    have "ipath (edge_tree v' (plain_ant anyP)) ?es'" using `ipath t' _` by simp
+    have "ipath (edge_tree v' (plain_ant anyP)) ?es'" using \<open>ipath t' _\<close> by simp
     ultimately
 
     show ?thesis by metis
@@ -497,12 +497,12 @@ proof(rule ccontr)
   hence "\<not> tfinite (edge_tree v p)" unfolding finite_tree_edge_tree.
   then obtain es  :: "('vertex, 'form, 'var) edge' stream"
     where "ipath (edge_tree v p) es" using Konig by blast
-  with `valid_in_port (v,p)`
+  with \<open>valid_in_port (v,p)\<close>
   have "forbidden_path v es" by (rule path_is_forbidden)
   from forbidden_path_prefix_is_path[OF this] forbidden_path_prefix_is_hyp_free[OF this]
   obtain v' where "path v' v (rev (stake ?n es))" and "hyps_free (rev (stake ?n es))"
     by blast
-  from this `terminal_vertex v`
+  from this \<open>terminal_vertex v\<close>
   have "terminal_path  v' v (rev (stake ?n es))" by (rule terminal_pathI)
   hence "length (rev (stake ?n es)) \<le> fcard vertices"
     by (rule hyps_free_limited)
@@ -522,27 +522,27 @@ proof(intro ballI allI conjI impI)
     by (auto, metis (no_types, lifting) image_iff image_subset_iff notin_fset)
 
   have "valid_in_port (v, (plain_ant c))"
-    using `v |\<in>| vertices` `nodeOf _ = _ `  by simp
+    using \<open>v |\<in>| vertices\<close> \<open>nodeOf _ = _ \<close>  by simp
 
-  have "terminal_vertex v" using `v |\<in>| vertices` `nodeOf v = Conclusion c` by auto
+  have "terminal_vertex v" using \<open>v |\<in>| vertices\<close> \<open>nodeOf v = Conclusion c\<close> by auto
 
   let ?t = "tree v (plain_ant c) []"
 
   have "fst (root ?t) = (global_assms TYPE('var), c)"
-    using `c \<in> set conclusions` `nodeOf _ = _`
+    using \<open>c \<in> set conclusions\<close> \<open>nodeOf _ = _\<close>
     by (auto simp add: labelAtIn_def conclusions_closed closed_no_lconsts  freshen_def rename_closed subst_closed)
   moreover
 
   have "global_assms TYPE('var) |\<subseteq>| ass_forms" by (rule global_in_ass)
   moreover
 
-  from  `terminal_vertex v`
+  from  \<open>terminal_vertex v\<close>
   have "terminal_path v v []" by (rule terminal_path_empty)
-  with `valid_in_port (v, (plain_ant c))`
+  with \<open>valid_in_port (v, (plain_ant c))\<close>
   have "wf ?t" by (rule wf_tree)
   moreover
 
-  from `valid_in_port (v, plain_ant c)` `terminal_vertex v`
+  from \<open>valid_in_port (v, plain_ant c)\<close> \<open>terminal_vertex v\<close>
   have "tfinite ?t" by (rule finite_tree)
   ultimately
 

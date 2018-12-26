@@ -223,7 +223,7 @@ next
   thus ?case by (auto intro: equiv_liftn)
 next
   case (ap_cong f f' x x')
-  from `x \<simeq> x'` have iorder_eq: "iorder x = iorder x'" by (rule iorder_equiv)
+  from \<open>x \<simeq> x'\<close> have iorder_eq: "iorder x = iorder x'" by (rule iorder_equiv)
   have "unlift' n (f \<diamondop> x) i = unlift' n f (i + iorder x) \<degree> unlift' n x i" by simp
   moreover have "unlift' n (f' \<diamondop> x') i = unlift' n f' (i + iorder x) \<degree> unlift' n x' i"
     using iorder_eq by simp
@@ -243,7 +243,7 @@ lemma unlift_equiv: "x \<simeq> y \<Longrightarrow> unlift x \<leftrightarrow> u
 proof -
   assume "x \<simeq> y"
   then have "unlift' (iorder y) x 0 \<leftrightarrow> unlift' (iorder y) y 0" by (rule unlift'_equiv)
-  moreover from `x \<simeq> y` have "iorder x = iorder y" by (rule iorder_equiv)
+  moreover from \<open>x \<simeq> y\<close> have "iorder x = iorder y" by (rule iorder_equiv)
   ultimately show ?thesis by auto
 qed
 
@@ -329,21 +329,21 @@ lemma cf_similarI:
 using assms proof (induction arbitrary: y)
   case (pure_cf x)
   hence "opaque y = []" by auto
-  with `y \<in> CF` obtain y' where "y = Pure y'" by cases auto
+  with \<open>y \<in> CF\<close> obtain y' where "y = Pure y'" by cases auto
   with pure_cf.prems show ?case by auto
 next
   case (ap_cf f x)
-  from `opaque (f \<diamondop> Opaque x) = opaque y`
+  from \<open>opaque (f \<diamondop> Opaque x) = opaque y\<close>
   obtain y1 y2 where "opaque y = y1 @ y2"
     and "opaque f = y1" and "[x] = y2" by fastforce
-  from `[x] = y2` obtain y' where "y2 = [y']" and "x = y'"
+  from \<open>[x] = y2\<close> obtain y' where "y2 = [y']" and "x = y'"
     by auto
-  with `y \<in> CF` and `opaque y = y1 @ y2` obtain g
+  with \<open>y \<in> CF\<close> and \<open>opaque y = y1 @ y2\<close> obtain g
     where "opaque g = y1" and y_split: "y = g \<diamondop> Opaque y'" "g \<in> CF" by cases auto
-  with ap_cf.prems `opaque f = y1`
+  with ap_cf.prems \<open>opaque f = y1\<close>
   have "opaque f = opaque g" "CF_pure f \<leftrightarrow> CF_pure g" by auto
-  with ap_cf.IH `g \<in> CF` have "f \<cong> g" by simp
-  with ap_cf.prems y_split `x = y'` show ?case by (auto intro: ap_cong)
+  with ap_cf.IH \<open>g \<in> CF\<close> have "f \<cong> g" by simp
+  with ap_cf.prems y_split \<open>x = y'\<close> show ?case by (auto intro: ap_cong)
 qed
 
 lemma cf_similarD:
@@ -436,9 +436,9 @@ using assms(2,1) proof (induction n' arbitrary: n)
 next
   case (ap_cf n' x)
   have "norm_nn (norm_pn \<B> n) n' \<diamondop> Opaque x \<simeq> Pure \<B> \<diamondop> n \<diamondop> n' \<diamondop> Opaque x" proof
-    from `n \<in> CF` have "norm_pn \<B> n \<in> CF" by (rule norm_pn_in_cf)
+    from \<open>n \<in> CF\<close> have "norm_pn \<B> n \<in> CF" by (rule norm_pn_in_cf)
     with ap_cf.IH have "norm_nn (norm_pn \<B> n) n' \<simeq> norm_pn \<B> n \<diamondop> n'" .
-    also have "... \<simeq> Pure \<B> \<diamondop> n \<diamondop> n'" using norm_pn_equiv `n \<in> CF` by blast
+    also have "... \<simeq> Pure \<B> \<diamondop> n \<diamondop> n'" using norm_pn_equiv \<open>n \<in> CF\<close> by blast
     finally show "norm_nn (norm_pn \<B> n) n' \<simeq> Pure \<B> \<diamondop> n \<diamondop> n'" .
   qed
   also have "... \<simeq> n \<diamondop> (n' \<diamondop> Opaque x)" using itrm_comp .
@@ -739,10 +739,10 @@ proof -
       fix i assume "i < length vs"
       then have "i < n" unfolding vs_length .
       then have "vs ! i < n" using perm_vars perm_vars_nth_lt by simp
-      with `i < n` have "vs' ! (n - vs ! i - 1) = n - perm_vars_inv n vs (vs ! i) - 1"
+      with \<open>i < n\<close> have "vs' ! (n - vs ! i - 1) = n - perm_vars_inv n vs (vs ! i) - 1"
         unfolding vs'_def by simp
-      also from `i < n` have "... = n - i - 1" using perm_vars perm_vars_inv_nth by simp
-      also from `i < n` have "... = rev [0..<n] ! i" by (simp add: rev_nth)
+      also from \<open>i < n\<close> have "... = n - i - 1" using perm_vars perm_vars_inv_nth by simp
+      also from \<open>i < n\<close> have "... = rev [0..<n] ! i" by (simp add: rev_nth)
       finally show "vs' ! (n - vs ! i - 1) = rev [0..<n] ! i" .
     qed
     then show ?thesis
@@ -789,7 +789,7 @@ proof (induction t arbitrary: k k')
       from Abs.prems(2) have "\<forall>i. free t (Suc i) \<longrightarrow> i < k \<or> k' \<le> i" by auto
       then have "\<forall>i. 0 < i \<and> free t i \<longrightarrow> i - 1 < k \<or> k' \<le> i - 1" by simp
       then have "\<forall>i. 0 < i \<and> free t i \<longrightarrow> i < Suc k \<or> Suc k' \<le> i" by auto
-      with `i \<noteq> 0` `i \<in> frees t` show ?thesis by simp
+      with \<open>i \<noteq> 0\<close> \<open>i \<in> frees t\<close> show ?thesis by simp
     qed
   qed
   with Abs.IH Abs.prems(1) show ?case by auto

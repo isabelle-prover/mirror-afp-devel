@@ -164,16 +164,16 @@ using assms proof (induction rule: converse_rtrancl_induct)
     by auto
   with S1 set_pmf_closed[of s D] have in_S: "\<And>t. t \<in> D \<Longrightarrow> t \<in> S"
     by auto
-  from `t' \<in> D` `0 < p t'` have "0 < pmf D t' * p t'"
+  from \<open>t' \<in> D\<close> \<open>0 < p t'\<close> have "0 < pmf D t' * p t'"
     by (auto simp add: ennreal_zero_less_mult_iff pmf_positive)
   also have "\<dots> \<le> (\<integral>\<^sup>+t. p t' * indicator {t'} t\<partial>D)"
-    using in_S[OF `t' \<in> D`]
+    using in_S[OF \<open>t' \<in> D\<close>]
     by (subst nn_integral_cmult_indicator) (auto simp: ac_simps emeasure_pmf_single)
   also have "\<dots> \<le> (\<integral>\<^sup>+t. p t \<partial>D)"
     by (auto intro!: nn_integral_mono_AE split: split_indicator simp: in_S AE_measure_pmf_iff
       simp del: nn_integral_indicator_singleton)
   also have "\<dots> \<le> p s"
-    using `s \<in> S1` `D \<in> K s` by (auto intro: SUP_upper simp add: p_S1)
+    using \<open>s \<in> S1\<close> \<open>D \<in> K s\<close> by (auto intro: SUP_upper simp add: p_S1)
   finally show ?case .
 qed simp
 
@@ -222,7 +222,7 @@ proof -
     qed (auto simp: sup_continuous_def)
     also have "\<dots> = (SUP i. (F_sup ^^ i) (\<lambda>x\<in>S. 0) s)"
     proof (rule SUP_cong)
-      fix i from `s \<in> S` show "P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s##\<omega>)) = (F_sup ^^ i) (\<lambda>x\<in>S. 0) s"
+      fix i from \<open>s \<in> S\<close> show "P_sup s (\<lambda>\<omega>. (?F ^^ i) \<bottom> (s##\<omega>)) = (F_sup ^^ i) (\<lambda>x\<in>S. 0) s"
       proof (induct i arbitrary: s)
         case (Suc n) show ?case
         proof (subst P_sup_iterate)
@@ -238,7 +238,7 @@ proof -
           show "(\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## t ## \<omega>)) \<partial>measure_pmf D) =
             (F_sup ^^ Suc n) (\<lambda>x\<in>S. 0) s"
             unfolding funpow.simps comp_def
-            using S1 S2 `s \<in> S`
+            using S1 S2 \<open>s \<in> S\<close>
             by (subst F_sup_cong[OF Suc(1)[symmetric]])
                (auto simp add: F_sup_def measure_pmf.emeasure_space_1[simplified] K_wf subset_eq)
         qed
@@ -376,7 +376,7 @@ proof atomize_elim
   { fix s assume "s \<in> S\<^sub>r"
     then have "s \<in> directed_towards S2 {(s, t) | s t. s \<in> S\<^sub>r \<and> (s, t) \<in> E}"
       by (rule S\<^sub>r_directed_towards_S2)
-    from this `s\<in>S\<^sub>r` have "\<exists>n. s \<in> r n"
+    from this \<open>s\<in>S\<^sub>r\<close> have "\<exists>n. s \<in> r n"
     proof induction
       case (step s t)
       show ?case
@@ -387,7 +387,7 @@ proof atomize_elim
         assume "t \<notin> S2"
         with step obtain n where "t \<in> r n" "t \<in> S\<^sub>r"
           by (auto elim: directed_towards.cases)
-        with `t\<in>S\<^sub>r` step.hyps show ?thesis
+        with \<open>t\<in>S\<^sub>r\<close> step.hyps show ?thesis
           by (intro exI[of _ "Suc n"]) force
       qed
     qed (simp add: S\<^sub>r_def) }
@@ -404,11 +404,11 @@ proof atomize_elim
         by (intro notI) (auto simp: S\<^sub>r_def)
       then obtain n' where "n = Suc n'"
         by (cases n) auto
-      with `s \<in> r n` obtain t D where "D \<in> K s" "t \<in> D" "t \<in> r n'"
+      with \<open>s \<in> r n\<close> obtain t D where "D \<in> K s" "t \<in> D" "t \<in> r n'"
         by (auto simp: E_def)
-      with n `n = Suc n'` s show ?thesis
+      with n \<open>n = Suc n'\<close> s show ?thesis
         by (auto intro!: bexI[of _ D] bexI[of _ t] exI[of _ n'] simp: not_less_eq[symmetric])
-    qed (insert K_wf `s\<in>S`, auto) }
+    qed (insert K_wf \<open>s\<in>S\<close>, auto) }
   then obtain ct where ct: "\<And>s. s \<in> S \<Longrightarrow> ct s \<in> K s"
     "\<And>s. s \<in> S \<Longrightarrow> s \<in> S\<^sub>r \<Longrightarrow> \<exists>t\<in>ct s. \<exists>n. t \<in> r n \<and> (\<forall>m. s \<in> r m \<longrightarrow> n < m)"
     by metis
@@ -419,13 +419,13 @@ proof atomize_elim
   { fix s assume "s \<in> S\<^sub>r"
     then obtain n where "s \<in> r n"
       by (metis r)
-    with `s \<in> S\<^sub>r` have "s \<in> directed_towards S2 (SIGMA s : S\<^sub>r. ct s)"
+    with \<open>s \<in> S\<^sub>r\<close> have "s \<in> directed_towards S2 (SIGMA s : S\<^sub>r. ct s)"
     proof (induction n arbitrary: s rule: less_induct)
       case (less n s)
       moreover with S\<^sub>r have "s \<in> S" by auto
       ultimately obtain t m where "t \<in> ct s" "t \<in> r m" "m < n"
         using ct[of s] by (auto simp: E_def)
-      with less.IH[of m t] `s \<in> S\<^sub>r` show ?case
+      with less.IH[of m t] \<open>s \<in> S\<^sub>r\<close> show ?case
         by (cases m) (auto intro: directed_towards.intros)
     qed }
 
@@ -458,7 +458,7 @@ proof -
     then obtain l where l: "l \<in> X \<rightarrow> X \<union> S2" and desc: "\<And>s. s \<in> X \<Longrightarrow> l_desc X ct l s"
       by auto
     obtain x where x: "x \<in> S\<^sub>r - X"
-      using `X \<subset> S\<^sub>r` by auto
+      using \<open>X \<subset> S\<^sub>r\<close> by auto
     then have "x \<in> S"
       by (auto simp: S\<^sub>r_def)
 
@@ -484,7 +484,7 @@ proof -
       let ?S\<^sub>m = "maximal ?v (S\<^sub>r - X)"
 
       have "finite (S\<^sub>r - X)" "S\<^sub>r - X \<noteq> {}"
-        using `X \<subset> S\<^sub>r` by (auto intro!: finite_subset[OF _ S_finite] simp: S\<^sub>r_def)
+        using \<open>X \<subset> S\<^sub>r\<close> by (auto intro!: finite_subset[OF _ S_finite] simp: S\<^sub>r_def)
       from maximal_ne[OF this] obtain s\<^sub>m where s\<^sub>m: "s\<^sub>m \<in> ?S\<^sub>m"
         by force
 
@@ -492,16 +492,16 @@ proof -
       proof (rule ccontr)
         assume "\<not> ?thesis"
         then have S\<^sub>m: "\<And>s\<^sub>0 t. s\<^sub>0 \<in> ?S\<^sub>m \<Longrightarrow> t \<in> ?E s\<^sub>0 \<Longrightarrow> t \<in> ?S\<^sub>m" by blast
-        from `s\<^sub>m \<in> ?S\<^sub>m` have [simp]: "s\<^sub>m \<in> S" and "s\<^sub>m \<in> S\<^sub>r"
+        from \<open>s\<^sub>m \<in> ?S\<^sub>m\<close> have [simp]: "s\<^sub>m \<in> S" and "s\<^sub>m \<in> S\<^sub>r"
           by (auto simp: S\<^sub>r_def dest: maximalD1)
 
-        from `s\<^sub>m \<in> ?S\<^sub>m` have "v (?C s\<^sub>m) = 0"
+        from \<open>s\<^sub>m \<in> ?S\<^sub>m\<close> have "v (?C s\<^sub>m) = 0"
         proof (coinduction arbitrary: s\<^sub>m rule: v_eq_0_coinduct)
           case (cont t s\<^sub>m) with S1 show ?case
             by (intro exI[of _ "state t"] disjCI conjI S\<^sub>m[of s\<^sub>m "state t"])
                (auto simp: set_K_cfg)
         qed (auto simp: S\<^sub>r_def ct_Pi dest!: maximalD1)
-        with `s\<^sub>m \<in> S\<^sub>r` `proper ct` show False
+        with \<open>s\<^sub>m \<in> S\<^sub>r\<close> \<open>proper ct\<close> show False
           by (auto simp: proper_def)
       qed
       then obtain s\<^sub>0 t where "s\<^sub>0 \<in> ?S\<^sub>m" and t: "t \<in> ?E s\<^sub>0" "t \<notin> ?S\<^sub>m"
@@ -509,7 +509,7 @@ proof -
       with S\<^sub>r_S1 have s\<^sub>0: "s\<^sub>0 \<in> S\<^sub>r - X" and [simp]: "s\<^sub>0 \<in> S" and "s\<^sub>0 \<in> S1"
         by (auto simp: S\<^sub>r_def dest: maximalD1)
 
-      from `proper ct` `s\<^sub>0 \<in> S` s\<^sub>0 have "?v s\<^sub>0 \<noteq> 0"
+      from \<open>proper ct\<close> \<open>s\<^sub>0 \<in> S\<close> s\<^sub>0 have "?v s\<^sub>0 \<noteq> 0"
         by (auto simp add: proper_def)
       then have "0 < ?v s\<^sub>0" by (simp add: zero_less_iff_neq_zero)
 
@@ -517,22 +517,22 @@ proof -
         moreover have "t \<in> S\<^sub>e \<Longrightarrow> ?v t = 0"
           by (simp add: p_eq_0_imp S\<^sub>e_def ct_Pi)
         ultimately have t: "t \<in> S2 \<union> X" "t \<in> ?E s\<^sub>0"
-          using `0 < ?v s\<^sub>0` by (auto simp: S\<^sub>e_def)
+          using \<open>0 < ?v s\<^sub>0\<close> by (auto simp: S\<^sub>e_def)
 
         have "maximal ?v (?E s\<^sub>0 \<inter> (S2 \<union> X)) \<noteq> {}"
           using finite_E t by (intro maximal_ne) auto
         moreover
         { fix x y assume x: "x \<in> S2 \<union> X" "x \<in> ?E s\<^sub>0"
             and *: "\<forall>y\<in>?E s\<^sub>0 \<inter> (S2 \<union> X). ?v y \<le> ?v x" and y: "y \<in> ?E s\<^sub>0"
-          with S2 `s\<^sub>0 \<in> S`[THEN ct_closed] have [simp]: "x \<in> S" "y \<in> S"
+          with S2 \<open>s\<^sub>0 \<in> S\<close>[THEN ct_closed] have [simp]: "x \<in> S" "y \<in> S"
             by auto
 
           have "?v y \<le> ?v x"
           proof cases
             assume "y \<in> S\<^sub>r - X"
             then have "?v y \<le> ?v s\<^sub>0"
-              using `s\<^sub>0 \<in> ?S\<^sub>m` by (auto intro: maximalD2)
-            also note `?v s\<^sub>0 \<le> ?v t`
+              using \<open>s\<^sub>0 \<in> ?S\<^sub>m\<close> by (auto intro: maximalD2)
+            also note \<open>?v s\<^sub>0 \<le> ?v t\<close>
             also have "?v t \<le> ?v x"
               using * t by auto
             finally show ?thesis .
@@ -551,7 +551,7 @@ proof -
       let ?K = "ct s\<^sub>0"
 
       have "?v s\<^sub>0 = (\<integral>\<^sup>+ x. ?v x \<partial>?K)"
-        using v_S1[of "?C s\<^sub>0"] `s\<^sub>0 \<in> S1` `s\<^sub>0 \<in> S`
+        using v_S1[of "?C s\<^sub>0"] \<open>s\<^sub>0 \<in> S1\<close> \<open>s\<^sub>0 \<in> S\<close>
         by (auto simp add: ct_Pi intro!: nn_integral_cong_AE AE_pmfI)
       also have "\<dots> < (\<integral>\<^sup>+x. ?v s\<^sub>0 \<partial>?K)"
       proof (intro nn_integral_less)
@@ -570,7 +570,7 @@ proof -
           with t(1) ct_closed[of s\<^sub>0 t] have "t \<in> S\<^sub>r - X"
             unfolding S\<^sub>r_def by (auto simp: E_def)
           with t(2) show ?thesis
-            using `s\<^sub>0 \<in> ?S\<^sub>m` by (auto simp: maximal_def not_le intro: less_le_trans)
+            using \<open>s\<^sub>0 \<in> ?S\<^sub>m\<close> by (auto simp: maximal_def not_le intro: less_le_trans)
         qed
         then show "\<not> (AE x in ?K. ?v s\<^sub>0 \<le> ?v x)"
           using t by (auto simp: not_le AE_measure_pmf_iff E_def cong del: AE_cong intro!: exI[of _ "t"])
@@ -583,19 +583,19 @@ proof -
             assume "t \<in> S\<^sub>e \<union> S2 \<union> X" then show ?thesis
               using less_s\<^sub>0[of t] t by simp
           next
-            assume "t \<notin> S\<^sub>e \<union> S2 \<union> X" with t `s\<^sub>0 \<in> ?S\<^sub>m` `s\<^sub>0 \<in> S` show ?thesis
+            assume "t \<notin> S\<^sub>e \<union> S2 \<union> X" with t \<open>s\<^sub>0 \<in> ?S\<^sub>m\<close> \<open>s\<^sub>0 \<in> S\<close> show ?thesis
               by (elim maximalD2) (auto simp: S\<^sub>r_def intro!: ct_closed[of _ t])
           qed
         qed
       qed (insert ct_closed[of s\<^sub>0], auto simp: AE_measure_pmf_iff)
       also have "\<dots> = ?v s\<^sub>0"
-        using `s\<^sub>0 \<in> S` measure_pmf.emeasure_space_1[of "ct s\<^sub>0"] by simp
+        using \<open>s\<^sub>0 \<in> S\<close> measure_pmf.emeasure_space_1[of "ct s\<^sub>0"] by simp
       finally show False
         by simp
     qed
     then obtain s t where s: "s \<in> S\<^sub>r - X" and t: "t \<in> S2 \<union> X" "t \<in> ?M s"
       by auto
-    with S2 `X \<subset> S\<^sub>r` have "s \<notin> S2" and "s \<in> S \<and> s \<notin> S2" and "s \<notin> X"and [simp]: "t \<in> S"
+    with S2 \<open>X \<subset> S\<^sub>r\<close> have "s \<notin> S2" and "s \<in> S \<and> s \<notin> S2" and "s \<notin> X"and [simp]: "t \<in> S"
       by (auto simp add: S\<^sub>r_def)
     define l' where "l' = l(s := t)"
     then have l'_s[simp, intro]: "l' s = t"
@@ -604,7 +604,7 @@ proof -
     let ?D = "\<lambda>X l. directed_towards S2 (SIGMA s : X. {l s})"
     { fix s' assume "s' \<in> ?D X l" "s' \<in> X"
       from this(1) have "s' \<in> ?D (insert s X) l'"
-        by (rule directed_towards_mono) (auto simp: l'_def `s \<notin> X`) }
+        by (rule directed_towards_mono) (auto simp: l'_def \<open>s \<notin> X\<close>) }
     note directed_towards_l' = this
 
     show ?case
@@ -618,13 +618,13 @@ proof -
       from desc[OF s'] have "s' \<in> ?D X l" and *: "?v s' \<le> ?v (l s')" "l s' \<in> ?M s'"
         by (auto simp: l_desc_def)
       moreover have "l' s' = l s'"
-        using `s' \<in> X` s by (auto simp add: l'_def)
+        using \<open>s' \<in> X\<close> s by (auto simp add: l'_def)
       ultimately show "l_desc (insert s X) ct l' s'"
         by (auto simp: l_desc_def intro!: directed_towards_l')
     next
       fix s' assume "s' = s"
       show "l_desc (insert s X) ct l' s'"
-        unfolding `s' = s` l_desc_def l'_s
+        unfolding \<open>s' = s\<close> l_desc_def l'_s
       proof (intro conjI)
         show "s \<in> ?D (insert s X) l'"
         proof cases
@@ -633,10 +633,10 @@ proof -
           with desc have "t \<in> ?D X l"
             by (simp add: l_desc_def)
           then show ?thesis
-            by (force intro: directed_towards.step[OF directed_towards_l'] `t \<in> X`)
+            by (force intro: directed_towards.step[OF directed_towards_l'] \<open>t \<in> X\<close>)
         qed (force intro: directed_towards.step directed_towards.start)
 
-        from `s \<in> S\<^sub>r - X` S\<^sub>r_S1 have [simp]: "s \<in> S1" "s \<in> S"
+        from \<open>s \<in> S\<^sub>r - X\<close> S\<^sub>r_S1 have [simp]: "s \<in> S1" "s \<in> S"
           by (auto simp: S\<^sub>r_def)
         show "?v s \<le> ?v t"
           using t(2)[THEN maximalD2] ct
@@ -674,7 +674,7 @@ proof atomize_elim
     then have valid_ct'[simp]: "\<And>s. s \<in> S \<Longrightarrow> simple ct' s \<in> cfg_on s"
       by simp
 
-    from exists_l_desc[OF `proper ct`]
+    from exists_l_desc[OF \<open>proper ct\<close>]
     obtain l where l: "l \<in> S\<^sub>r \<rightarrow> S\<^sub>r \<union> S2" and "\<And>s. s \<in> S\<^sub>r \<Longrightarrow> l_desc S\<^sub>r ct l s"
       by auto
     then have directed_l: "\<And>s. s \<in> S\<^sub>r \<Longrightarrow> s \<in> directed_towards S2 (SIGMA s:S\<^sub>r. {l s})"
@@ -689,10 +689,10 @@ proof atomize_elim
       using ct' K_closed by (intro rev_finite_subset[OF S_finite]) auto
 
     have "maximal ?v (ct' s) \<noteq> {}"
-      using ct' D `s\<in>S` finite_E[of s] by (intro maximal_ne set_pmf_not_empty) (auto simp del: finite_E)
+      using ct' D \<open>s\<in>S\<close> finite_E[of s] by (intro maximal_ne set_pmf_not_empty) (auto simp del: finite_E)
     then obtain s' where s': "s' \<in> maximal ?v (ct' s)"
       by blast
-    with K_closed[OF `s \<in> S`] D have "s' \<in> S"
+    with K_closed[OF \<open>s \<in> S\<close>] D have "s' \<in> S"
       by (auto dest!: maximalD1)
 
     have "s' \<noteq> s"
@@ -701,24 +701,24 @@ proof atomize_elim
       have "?v s < (\<integral>\<^sup>+t. ?v t \<partial>D)"
         by fact
       also have "\<dots> \<le> (\<integral>\<^sup>+t. ?v s \<partial>D)"
-        using `s \<in> S` s' D by (intro nn_integral_mono_AE) (auto simp: AE_measure_pmf_iff intro: maximalD2)
+        using \<open>s \<in> S\<close> s' D by (intro nn_integral_mono_AE) (auto simp: AE_measure_pmf_iff intro: maximalD2)
       finally show False
-        using measure_pmf.emeasure_space_1[of D] by (simp add: `s \<in> S` ct)
+        using measure_pmf.emeasure_space_1[of D] by (simp add: \<open>s \<in> S\<close> ct)
     qed
 
     have "p s' \<noteq> 0"
     proof
       assume "p s' = 0"
       then have "?v s' = 0"
-        using v_le_p[of "simple ct s'"] ct `s' \<in> S` by (auto intro!: antisym ct)
+        using v_le_p[of "simple ct s'"] ct \<open>s' \<in> S\<close> by (auto intro!: antisym ct)
       then have "(\<integral>\<^sup>+t. ?v t \<partial>D) = 0"
-        using maximalD2[OF s'] by (subst nn_integral_0_iff_AE) (auto simp: `s\<in>S` D AE_measure_pmf_iff)
+        using maximalD2[OF s'] by (subst nn_integral_0_iff_AE) (auto simp: \<open>s\<in>S\<close> D AE_measure_pmf_iff)
       then have "?v s < 0"
         using not_maximal by auto
       then show False
-        using `s\<in>S` by (simp add: ct)
+        using \<open>s\<in>S\<close> by (simp add: ct)
     qed
-    with `s' \<in> S` have "s' \<in> S2 \<union> S\<^sub>r"
+    with \<open>s' \<in> S\<close> have "s' \<in> S2 \<union> S\<^sub>r"
       by (auto simp: S\<^sub>r_def S\<^sub>e_def)
 
     have l_acyclic: "(s', s) \<notin> (SIGMA s:S\<^sub>r. {l s})^+"
@@ -729,17 +729,17 @@ proof atomize_elim
       also have "\<dots> < (\<integral>\<^sup>+t. ?v t \<partial>D)"
         using not_maximal .
       also have "\<dots> \<le> (\<integral>\<^sup>+t. ?v s' \<partial>D)"
-        using s' by (intro nn_integral_mono_AE) (auto simp: `s \<in> S` D AE_measure_pmf_iff intro: maximalD2)
+        using s' by (intro nn_integral_mono_AE) (auto simp: \<open>s \<in> S\<close> D AE_measure_pmf_iff intro: maximalD2)
       finally show False
-        using measure_pmf.emeasure_space_1[of D] by (simp add:`s' \<in> S` ct)
+        using measure_pmf.emeasure_space_1[of D] by (simp add:\<open>s' \<in> S\<close> ct)
     qed
 
-    from `s' \<in> S2 \<union> S\<^sub>r` have "s' \<in> ?D ct'"
+    from \<open>s' \<in> S2 \<union> S\<^sub>r\<close> have "s' \<in> ?D ct'"
     proof
       assume "s' \<in> S\<^sub>r"
       then have "l s' \<in> directed_towards S2 (SIGMA s:S\<^sub>r. {l s})"
         using l directed_l[of "l s'"] by (auto intro: directed_towards.start)
-      moreover from `s' \<in> S\<^sub>r` have "(s', l s') \<in> (SIGMA s:S\<^sub>r. {l s})^+"
+      moreover from \<open>s' \<in> S\<^sub>r\<close> have "(s', l s') \<in> (SIGMA s:S\<^sub>r. {l s})^+"
         by auto
       ultimately have "l s' \<in> ?D ct'"
       proof induct
@@ -754,7 +754,7 @@ proof atomize_elim
       qed (rule directed_towards.start)
       then show "s' \<in> ?D ct'"
         by (rule directed_towards.step)
-           (simp add: l_in_Ea `s' \<in> S\<^sub>r` `s \<in> S\<^sub>r` `s' \<noteq> s`)
+           (simp add: l_in_Ea \<open>s' \<in> S\<^sub>r\<close> \<open>s \<in> S\<^sub>r\<close> \<open>s' \<noteq> s\<close>)
     qed (rule directed_towards.start)
 
     have proper: "proper ct'"
@@ -767,9 +767,9 @@ proof atomize_elim
         show ?case
         proof cases
           assume "t = s"
-          with `s \<in> S\<^sub>r` s'[THEN maximalD1] have "(t, s') \<in> ?E ct'"
+          with \<open>s \<in> S\<^sub>r\<close> s'[THEN maximalD1] have "(t, s') \<in> ?E ct'"
             by auto
-          with `s' \<in> ?D ct'` show ?thesis
+          with \<open>s' \<in> ?D ct'\<close> show ?thesis
             by (rule directed_towards.step)
         next
           assume "t \<noteq> s"
@@ -788,13 +788,13 @@ proof atomize_elim
         by (metis v_nS simple_valid_cfg_iff ct' ct order.irrefl)
 
       define \<Delta> where "\<Delta> t = enn2real (?v t) - enn2real (?v' t)" for t
-      with * `t' \<in> S` have "0 < \<Delta> t'"
+      with * \<open>t' \<in> S\<close> have "0 < \<Delta> t'"
         by (cases "?v t'" "?v' t'" rule: ennreal2_cases) (auto simp add: ct' ct ennreal_less_iff)
 
       { fix t assume t: "t \<in> maximal \<Delta> S"
-        with `t' \<in> S` have "\<Delta> t' \<le> \<Delta> t"
+        with \<open>t' \<in> S\<close> have "\<Delta> t' \<le> \<Delta> t"
           by (auto intro: maximalD2)
-        with `0 < \<Delta> t'` have "0 < \<Delta> t" by simp
+        with \<open>0 < \<Delta> t'\<close> have "0 < \<Delta> t" by simp
         with t have "t \<in> S\<^sub>r"
           by (auto simp add: S\<^sub>r_def v_S\<^sub>e ct ct' \<Delta>_def dest!: maximalD1) }
       note max_is_S\<^sub>r = this
@@ -807,17 +807,17 @@ proof atomize_elim
       then have ennreal_\<Delta>: "\<And>s. s \<in> S \<Longrightarrow> \<Delta> s = ?v s - ?v' s"
         by (auto simp add: \<Delta>_def v_def T.emeasure_eq_measure ct ct' ennreal_minus)
 
-      from `s \<in> S` S_finite have "maximal \<Delta> S \<noteq> {}"
+      from \<open>s \<in> S\<close> S_finite have "maximal \<Delta> S \<noteq> {}"
         by (intro maximal_ne) auto
       then obtain t where "t \<in> maximal \<Delta> S" by auto
       from max_is_S\<^sub>r[OF this] proper have "t \<in> ?D ct'"
         unfolding proper_eq[OF ct'_E] by auto
-      from this `t \<in> maximal \<Delta> S` show False
+      from this \<open>t \<in> maximal \<Delta> S\<close> show False
       proof induct
         case (start t)
         then have "t \<in> S\<^sub>r"
           by (intro max_is_S\<^sub>r)
-        with `t \<in> S2` show False
+        with \<open>t \<in> S2\<close> show False
           by (auto simp: S\<^sub>r_def)
       next
         case (step t t')
@@ -837,10 +837,10 @@ proof atomize_elim
               using t' less by (auto simp add: emeasure_pmf_single_eq_zero_iff)
             show "AE s in ct' t. \<Delta> s \<le> \<Delta> t"
               using ct' ct t D
-              by (auto simp add: AE_measure_pmf_iff ct `t\<in>S` Pi_iff E_def Pi_closed[OF ct']
+              by (auto simp add: AE_measure_pmf_iff ct \<open>t\<in>S\<close> Pi_iff E_def Pi_closed[OF ct']
                        intro!: maximalD2[of t \<Delta>] intro: Pi_closed[OF ct'] maximalD1)
             show "integrable (ct' t) (\<lambda>_. \<Delta> t)" "integrable (ct' t) \<Delta>"
-              using ct ct' `t \<in> S` D
+              using ct ct' \<open>t \<in> S\<close> D
               by (auto intro!: measure_pmf.integrable_const_bound[where B=1] \<Delta>_le_1
                        simp: AE_measure_pmf_iff dest: Pi_closed)
           qed
@@ -852,39 +852,39 @@ proof atomize_elim
             proof cases
               assume "t = s" with not_maximal show ?thesis by simp
             next
-              assume "t \<noteq> s" with S1 `t\<in>S1` \<open>t \<in> S\<close> ct ct' show ?thesis
+              assume "t \<noteq> s" with S1 \<open>t\<in>S1\<close> \<open>t \<in> S\<close> ct ct' show ?thesis
                 by (subst v_S1) (auto intro!: nn_integral_mono_AE AE_pmfI)
             qed
             also have "\<dots> = ennreal (\<integral>s. enn2real (?v s) \<partial>ct' t)"
-              using ct ct' `t\<in>S`
+              using ct ct' \<open>t\<in>S\<close>
               by (intro measure_pmf.ennreal_integral_real[symmetric, where B=1])
                  (auto simp: AE_measure_pmf_iff one_ennreal_def[symmetric]
                        intro!: v_le_1 simple_valid_cfg intro: Pi_closed)
             finally have "enn2real (?v t) \<le> (\<integral>s. enn2real (?v s) \<partial>ct' t)"
-              using ct `t\<in>S` by (simp add: v_def T.emeasure_eq_measure)
+              using ct \<open>t\<in>S\<close> by (simp add: v_def T.emeasure_eq_measure)
             moreover
             { have "?v' t = (\<integral>\<^sup>+s. ?v' s \<partial>ct' t)"
-                using ct ct' \<open>t \<in> S\<close> `t \<in> S1` S1 by (subst v_S1) (auto intro!: nn_integral_cong_AE AE_pmfI)
+                using ct ct' \<open>t \<in> S\<close> \<open>t \<in> S1\<close> S1 by (subst v_S1) (auto intro!: nn_integral_cong_AE AE_pmfI)
               also have "\<dots> = ennreal (\<integral>s. enn2real (?v' s) \<partial>ct' t)"
-                using ct' `t\<in>S`
+                using ct' \<open>t\<in>S\<close>
                 by (intro measure_pmf.ennreal_integral_real[symmetric, where B=1])
                    (auto simp: AE_measure_pmf_iff one_ennreal_def[symmetric]
                          intro!:  v_le_1 simple_valid_cfg intro: Pi_closed)
               finally have "enn2real (?v' t) = (\<integral>s. enn2real (?v' s) \<partial>ct' t)"
-                using ct' `t\<in>S` by (simp add: v_def T.emeasure_eq_measure) }
+                using ct' \<open>t\<in>S\<close> by (simp add: v_def T.emeasure_eq_measure) }
             ultimately show ?thesis
-              using `t \<in> S` by (simp add: \<Delta>_def ennreal_minus_mono)
+              using \<open>t \<in> S\<close> by (simp add: \<Delta>_def ennreal_minus_mono)
           qed
           also have "\<dots> = (\<integral>s. \<Delta> s \<partial>ct' t)"
-            unfolding \<Delta>_def using Pi_closed[OF ct `t\<in>S`] Pi_closed[OF ct' `t\<in>S`] ct ct'
+            unfolding \<Delta>_def using Pi_closed[OF ct \<open>t\<in>S\<close>] Pi_closed[OF ct' \<open>t\<in>S\<close>] ct ct'
             by (intro Bochner_Integration.integral_diff[symmetric] measure_pmf.integrable_const_bound[where B=1])
                (auto simp: AE_measure_pmf_iff real_v)
           finally show False
             by simp
         qed
-        with t[THEN  maximalD2] `t \<in> S` `t' \<in> S` have "\<Delta> t = \<Delta> t'"
+        with t[THEN  maximalD2] \<open>t \<in> S\<close> \<open>t' \<in> S\<close> have "\<Delta> t = \<Delta> t'"
           by (auto intro: antisym)
-        with t `t' \<in> S` have "t' \<in> maximal \<Delta> S"
+        with t \<open>t' \<in> S\<close> have "t' \<in> maximal \<Delta> S"
           by (auto simp: maximal_def)
         then show ?case
           by fact
@@ -895,10 +895,10 @@ proof atomize_elim
       have "?v s < (\<integral>\<^sup>+t. ?v t \<partial>D)"
         by fact
       also have "\<dots> \<le> (\<integral>\<^sup>+t. ?v' t \<partial>D)"
-        using `?v \<le> ?v'` `s\<in>S` D ct ct'
+        using \<open>?v \<le> ?v'\<close> \<open>s\<in>S\<close> D ct ct'
         by (intro nn_integral_mono) (auto simp: le_fun_def)
       also have "\<dots> = ?v' s"
-        using `s\<in>S1` S1 ct' \<open>s \<in> S\<close> by (subst (2) v_S1) (auto intro!: nn_integral_cong_AE AE_pmfI)
+        using \<open>s\<in>S1\<close> S1 ct' \<open>s \<in> S\<close> by (subst (2) v_S1) (auto intro!: nn_integral_cong_AE AE_pmfI)
       finally show ?thesis .
     qed
     ultimately have "?v < ?v'"
@@ -927,7 +927,7 @@ proof atomize_elim
     by (auto simp: ct_def proper_eq[OF properD1[OF ct']] subset_eq S\<^sub>r_def)
 
   show "\<exists>ct. ct \<in> Pi\<^sub>E S K \<and> v\<circ>simple ct = F_sup (v\<circ>simple ct)"
-  proof (rule wfE_min[OF `wf R` ct])
+  proof (rule wfE_min[OF \<open>wf R\<close> ct])
     fix ct assume ct: "ct \<in> {ct \<in> Pi\<^sub>E S K. proper ct}"
     then have "ct \<in> Pi S K" "proper ct"
       by (auto simp: proper_def)
@@ -938,26 +938,26 @@ proof atomize_elim
         by (auto simp: v_S1 PiE_def intro!: nn_integral_mono_AE AE_pmfI)
       moreover
       { have "0 \<le> ?v s"
-          using `s\<in>S` ct by (simp add: PiE_def)
+          using \<open>s\<in>S\<close> ct by (simp add: PiE_def)
         also assume v_less: "?v s < (\<Squnion>D\<in>K s. \<integral>\<^sup>+ s. v (simple ct s) \<partial>measure_pmf D)"
         also have "\<dots> \<le> p s"
-          unfolding p_S1[OF `s\<in>S1`] using `s\<in>S` ct v_le_p[OF simple_valid_cfg, OF `ct \<in> Pi S K`]
+          unfolding p_S1[OF \<open>s\<in>S1\<close>] using \<open>s\<in>S\<close> ct v_le_p[OF simple_valid_cfg, OF \<open>ct \<in> Pi S K\<close>]
           by (auto intro!: SUP_mono nn_integral_mono_AE bexI
                    simp: PiE_def AE_measure_pmf_iff set_pmf_closed)
         finally have "s \<in> S\<^sub>r"
-          using `s\<in>S` `s\<notin>S2` by (simp add: S\<^sub>r_def S\<^sub>e_def)
+          using \<open>s\<in>S\<close> \<open>s\<notin>S2\<close> by (simp add: S\<^sub>r_def S\<^sub>e_def)
 
         from v_less obtain D where "D \<in> K s" "?v s < integral\<^sup>N D ?v"
           by (auto simp: less_SUP_iff)
-        with ct `s\<in>S` `s\<in>S\<^sub>r` have "(ct(s:=D), ct) \<in> R" "ct(s:=D) \<in> Pi\<^sub>E S K"
+        with ct \<open>s\<in>S\<close> \<open>s\<in>S\<^sub>r\<close> have "(ct(s:=D), ct) \<in> R" "ct(s:=D) \<in> Pi\<^sub>E S K"
           unfolding R_def by (auto simp: PiE_def extensional_def)
-        from proper[OF this(1)] min[OF this(1)] ct `D \<in> K s` `s\<in>S` this(2)
+        from proper[OF this(1)] min[OF this(1)] ct \<open>D \<in> K s\<close> \<open>s\<in>S\<close> this(2)
         have False
           by simp }
       ultimately have "?v s = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ s. ?v s \<partial>measure_pmf D)"
         by (auto intro: antisym SUP_upper2[where i="ct s"] leI)
       also have "\<dots> = (\<Squnion>D\<in>K s. integral\<^sup>N (measure_pmf D) (\<lambda>s\<in>S. ?v s))"
-        using `s\<in>S` by (auto intro!: SUP_cong nn_integral_cong v_nS simp: ct simple_valid_cfg_iff `ct \<in> Pi S K`)
+        using \<open>s\<in>S\<close> by (auto intro!: SUP_cong nn_integral_cong v_nS simp: ct simple_valid_cfg_iff \<open>ct \<in> Pi S K\<close>)
       finally have "?v s = (\<Squnion>D\<in>K s. integral\<^sup>N (measure_pmf D) (\<lambda>s\<in>S. ?v s))" . }
     then have "?v = F_sup ?v"
       unfolding F_sup_def using ct
@@ -1036,7 +1036,7 @@ lemma n_pos:
   assumes "P s" "s \<in> S1" "wf R"
   assumes cont: "\<And>s D. P s \<Longrightarrow> s \<in> S1 \<Longrightarrow> D \<in> K s \<Longrightarrow> \<exists>w\<in>D. ((w, s) \<in> R \<and> w \<in> S1 \<and> P w) \<or> 0 < n w"
   shows "0 < n s"
-  using `wf R` `P s` `s\<in>S1`
+  using \<open>wf R\<close> \<open>P s\<close> \<open>s\<in>S1\<close>
 proof (induction s)
   case (less s)
   with S1 have [simp]: "s \<in> S" by auto
@@ -1044,23 +1044,23 @@ proof (induction s)
   have "0 < Min (?I`K s)"
   proof (safe intro!: Min_gr_iff [THEN iffD2])
     fix D assume [simp]: "D \<in> K s"
-    from cont[OF `P s` `s \<in> S1` `D \<in> K s`]
+    from cont[OF \<open>P s\<close> \<open>s \<in> S1\<close> \<open>D \<in> K s\<close>]
     obtain w where w: "w \<in> D" "0 < n w"
       by (force intro: less.IH)
     have in_S: "\<And>t. t \<in> D \<Longrightarrow> t \<in> S"
-      using set_pmf_closed[OF `s \<in> S` `D \<in> K s`] by auto
+      using set_pmf_closed[OF \<open>s \<in> S\<close> \<open>D \<in> K s\<close>] by auto
     from w have "0 < pmf D w * n w"
       by (simp add: pmf_positive ennreal_zero_less_mult_iff)
     also have "\<dots> = (\<integral>\<^sup>+t. n w * indicator {w} t \<partial>D)"
       by (subst nn_integral_cmult_indicator)
-         (auto simp: ac_simps emeasure_pmf_single in_S `w \<in> D`)
+         (auto simp: ac_simps emeasure_pmf_single in_S \<open>w \<in> D\<close>)
     also have "\<dots> \<le> (\<integral>\<^sup>+t. n t \<partial>D)"
       by (intro nn_integral_mono_AE) (auto split: split_indicator simp: AE_measure_pmf_iff in_S)
     finally show "0 < (\<integral>\<^sup>+t. n t \<partial>D)" .
-  qed (insert K_wf K_finite `s\<in>S`, auto)
+  qed (insert K_wf K_finite \<open>s\<in>S\<close>, auto)
   also have "\<dots> = n s"
-    unfolding n_S1[OF `s \<in> S1`]
-    using K_wf K_finite `s\<in>S` by (intro Min_Inf) auto
+    unfolding n_S1[OF \<open>s \<in> S1\<close>]
+    using K_wf K_finite \<open>s\<in>S\<close> by (intro Min_Inf) auto
   finally show "0 < n s" .
 qed
 
@@ -1094,7 +1094,7 @@ proof (intro antisym lfp_lowerbound le_funI)
     also have "s \<in> S1 \<Longrightarrow> \<dots> = lfp F_inf s"
       using s S1_S2 by (subst (3) lfp_unfold[OF mono_F_inf]) (auto simp add: F_inf_def)
     finally have "\<exists>D. D \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I D)"
-      using `D \<in> K s` by auto
+      using \<open>D \<in> K s\<close> by auto
     then have "ct s \<in> K s \<and> (s \<in> S1 \<longrightarrow> lfp F_inf s = ?I (ct s))"
       unfolding ct_def by (rule someI_ex)
     then have "ct s \<in> K s" "s \<in> S1 \<Longrightarrow> lfp F_inf s = ?I (ct s)"
@@ -1114,7 +1114,7 @@ proof (intro antisym lfp_lowerbound le_funI)
       by (intro n_le_v) (auto intro: simple_cfg_on[OF Pi_ct])
     also have "\<dots> = emeasure (T (simple ct s)) {x\<in>space (T (simple ct s)). lfp ?F (s ## x)}"
       using S1_S2
-      by (simp add: v_eq[OF simple_valid_cfg[OF Pi_ct `s\<in>S`]])
+      by (simp add: v_eq[OF simple_valid_cfg[OF Pi_ct \<open>s\<in>S\<close>]])
          (simp add: suntil_lfp space_T[symmetric, of "simple ct s"] del: space_T)
     also have "\<dots> = (\<Squnion>n. P s n)" unfolding P_def
       apply (rule emeasure_lfp2[where P="\<lambda>M. \<exists>s. M = T (simple ct s)" and M="T (simple ct s)"])
@@ -1132,7 +1132,7 @@ proof (intro antisym lfp_lowerbound le_funI)
     qed
     also have "\<dots> \<le> lfp F_inf s"
     proof (intro SUP_least)
-      fix n from `s\<in>S` show "P s n \<le> lfp F_inf s"
+      fix n from \<open>s\<in>S\<close> show "P s n \<le> lfp F_inf s"
       proof (induct n arbitrary: s)
         case 0 with S1 show ?case
           by (subst lfp_unfold[OF mono_F_inf]) (auto simp: P_def)
@@ -1151,13 +1151,13 @@ proof (intro antisym lfp_lowerbound le_funI)
                         intro!: nn_integral_cong_AE AE_pmfI)
             done
           also have "\<dots> \<le> (\<integral>\<^sup>+t. lfp F_inf t \<partial>ct s)"
-            using Pi_closed[OF Pi_ct `s \<in> S`]
+            using Pi_closed[OF Pi_ct \<open>s \<in> S\<close>]
             by (auto intro!: nn_integral_mono_AE Suc simp: AE_measure_pmf_iff)
           also have "\<dots> = lfp F_inf s"
             by (intro ct(2)[symmetric]) auto
           finally show ?thesis .
         next
-          assume "s \<notin> S1" with S2 `s \<in> S` show ?case
+          assume "s \<notin> S1" with S2 \<open>s \<in> S\<close> show ?case
             using T.emeasure_space_1[of "simple ct s"]
             by (subst lfp_unfold[OF mono_F_inf]) (auto simp: F_inf_def P_def)
         qed
@@ -1229,9 +1229,9 @@ proof -
         unfolding p_eq using real_v_integral_eq[of "simple sc s"]
         by (auto simp add: v_S1 sc_Pi intro!: integral_mono_AE integrable_measure_pmf_finite AE_pmfI)
       show "(\<integral> t. x t \<partial>sc s) + 0 \<le> x s"
-        using solution[OF `s \<in> S1` sch[OF `s \<in> S`]]
+        using solution[OF \<open>s \<in> S1\<close> sch[OF \<open>s \<in> S\<close>]]
         by (subst integral_measure_pmf[where A=S])
-           (auto intro: S_finite Pi_closed[OF sc_Pi] `s \<in> S` simp: ac_simps)
+           (auto intro: S_finite Pi_closed[OF sc_Pi] \<open>s \<in> S\<close> simp: ac_simps)
 
       define X where "X = (SIGMA x:UNIV. sc x)"
       show "\<exists>t\<in>N. (s, t) \<in> X\<^sup>*"
@@ -1239,7 +1239,7 @@ proof -
         assume "\<not> ?thesis"
         then have *: "\<forall>t\<in>N. (s, t) \<notin> X\<^sup>*"
           by auto
-        with `s\<in>S` have "v (simple sc s) = 0"
+        with \<open>s\<in>S\<close> have "v (simple sc s) = 0"
         proof (coinduction arbitrary: s rule: v_eq_0_coinduct)
           case (valid t) with sch show ?case
             by auto
@@ -1256,14 +1256,14 @@ proof -
         qed
         then have "p s = 0"
           unfolding p_eq by simp
-        with `s\<in>S` have "s\<in>N"
+        with \<open>s\<in>S\<close> have "s\<in>N"
           by (auto simp: N_def)
         with * show False
           by auto
       qed
     qed
   next
-    assume "s \<notin> S - N" with `s \<in> S` show "?p s \<le> x s"
+    assume "s \<notin> S - N" with \<open>s \<in> S\<close> show "?p s \<le> x s"
       by (auto simp: N_def solution_0 solution_S2)
   qed
 qed
@@ -1282,10 +1282,10 @@ proof -
       by (subst n_eq_lfp_F_inf, subst lfp_unfold[OF mono_F_inf])
          (auto simp add: F_inf_def n_eq_lfp_F_inf)
     moreover have "(\<Sqinter>D\<in>K s. \<integral>\<^sup>+x. n x \<partial>measure_pmf D) = Min (?I`K s)"
-      using `s \<in> S1` S1 K_wf
+      using \<open>s \<in> S1\<close> S1 K_wf
       by (intro cInf_eq_Min finite_imageI K_finite) auto
     moreover have "Min (?I`K s) \<in> ?I`K s"
-      using `s \<in> S1` S1 K_wf by (intro Min_in finite_imageI K_finite) auto
+      using \<open>s \<in> S1\<close> S1 K_wf by (intro Min_in finite_imageI K_finite) auto
     ultimately have "\<exists>D\<in>K s. (\<integral>\<^sup>+x. n x \<partial>D) = n s"
       by auto }
   then have "\<And>s. s \<in> S \<Longrightarrow> \<exists>D\<in>K s. s \<in> S1 \<longrightarrow> (\<integral>\<^sup>+x. n x \<partial>D) = n s"
@@ -1335,9 +1335,9 @@ proof -
         by simp
 
       show "x s \<le> (\<integral> t. x t \<partial>sc s) + 0"
-        using solution[OF `s \<in> S1` sch[OF `s \<in> S`]]
+        using solution[OF \<open>s \<in> S1\<close> sch[OF \<open>s \<in> S\<close>]]
         by (subst integral_measure_pmf[where A=S])
-           (auto intro: S_finite Pi_closed[OF sc_Pi] `s \<in> S` simp: ac_simps)
+           (auto intro: S_finite Pi_closed[OF sc_Pi] \<open>s \<in> S\<close> simp: ac_simps)
 
       define X where "X = (SIGMA x:UNIV. sc x)"
       show "\<exists>t\<in>N. (s, t) \<in> X\<^sup>*"
@@ -1345,7 +1345,7 @@ proof -
         assume "\<not> ?thesis"
         then have *: "\<forall>t\<in>N. (s, t) \<notin> X\<^sup>*"
           by auto
-        with `s\<in>S` have "v (simple sc s) = 0"
+        with \<open>s\<in>S\<close> have "v (simple sc s) = 0"
         proof (coinduction arbitrary: s rule: v_eq_0_coinduct)
           case (valid t) with sch show ?case
             by auto
@@ -1360,16 +1360,16 @@ proof -
             by (auto simp: set_K_cfg intro!: exI intro: Pi_closed[OF sc_Pi])
                (blast intro: rtrancl_trans)
         qed
-        from n_eq_0[OF `s \<in> S` simple_cfg_on this] have "n s = 0"
+        from n_eq_0[OF \<open>s \<in> S\<close> simple_cfg_on this] have "n s = 0"
           by (auto simp: sc_Pi)
-        with `s\<in>S` have "s\<in>N"
+        with \<open>s\<in>S\<close> have "s\<in>N"
           by (auto simp: N_def)
         with * show False
           by auto
       qed
     qed
   next
-    assume "s \<notin> S - N" with `s \<in> S` show "x s \<le> ?n s"
+    assume "s \<notin> S - N" with \<open>s \<in> S\<close> show "x s \<le> ?n s"
       by (auto simp: N_def solution_n0 solution_S2)
   qed
 qed

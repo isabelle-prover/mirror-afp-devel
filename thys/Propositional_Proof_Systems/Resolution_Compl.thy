@@ -74,7 +74,7 @@ proof -
     So, there must be a set of clauses to heal and a set of clauses to reinsert to get the original.
     (Mind you, this is not exactly what is happening, because e.g. both
    @{term C} and @{term "{k\<inverse>} \<union> C"} might be in there and get reduced to one @{term C}.
-    You then heal that @{term C} to @{term "{k\<inverse>} \<union> C"} and insert the shadowed @{term C}@{text "\<dots>"} Details.)
+    You then heal that @{term C} to @{term "{k\<inverse>} \<union> C"} and insert the shadowed @{term C}\<open>\<dots>\<close> Details.)
  \<close>
   obtain n where S:
     "(\<lambda>c. if c \<in> n then {make_lit (\<not> v) a} \<union> c else c) ` restrict_cnf_atom a v S \<subseteq> S"

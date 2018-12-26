@@ -21,11 +21,11 @@ type_synonym funcs = "string \<times> nat"
 datatype faults = Overflow | InvalidMem
 type_synonym 'a array = "'a list"
  
-text {* Sumarr computes the combined sum of all the elements of
+text \<open>Sumarr computes the combined sum of all the elements of
 multiple arrays. It does this by running a number of threads in
 parallel, each computing the sum of elements of one of the arrays,
 and then adding the result to a global variable gsum shared by all threads.
-*}
+\<close>
 record sumarr_state =
  \<comment> \<open>local variables of threads\<close>
   tarr :: "routine \<Rightarrow> word32 array"
@@ -303,7 +303,7 @@ lemma word_min_0[simp]:
  "min 0 (x::'a::len0 word) = 0"
  by (simp add:min_def)+
 
-ML {* fun TRY' tac i = TRY (tac i) *}
+ML \<open>fun TRY' tac i = TRY (tac i)\<close>
 
 
 lemma imp_disjL_context':

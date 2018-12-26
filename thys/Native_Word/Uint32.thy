@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Unsigned words of 32 bits *}
+chapter \<open>Unsigned words of 32 bits\<close>
 
 theory Uint32 imports
   Word_Misc
@@ -11,13 +11,13 @@ begin
 
 declare prod.Quotient[transfer_rule]
 
-section {* Type definition and primitive operations *}
+section \<open>Type definition and primitive operations\<close>
 
 typedef uint32 = "UNIV :: 32 word set" .. 
 
 setup_lifting type_definition_uint32
 
-text {* Use an abstract type for code generation to disable pattern matching on @{term Abs_uint32}. *}
+text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint32}.\<close>
 declare Rep_uint32_inverse[code abstype]
 
 declare Quotient_uint32[transfer_rule]
@@ -90,7 +90,7 @@ lemma bitval_integer_transfer [transfer_rule]:
   "(rel_fun (=) pcr_integer) of_bool of_bool"
 by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
-text {* Use pretty numerals from integer for pretty printing *}
+text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin
 
@@ -123,10 +123,10 @@ by(simp add: zero_uint32_def)
 lemma Abs_uint32_1 [code_post]: "Abs_uint32 1 = 1"
 by(simp add: one_uint32_def)
 
-section {* Code setup *}
+section \<open>Code setup\<close>
 
 code_printing code_module Uint32 \<rightharpoonup> (SML)
-{*(* Test that words can handle numbers between 0 and 31 *)
+\<open>(* Test that words can handle numbers between 0 and 31 *)
 val _ = if 5 <= Word.wordSize then () else raise (Fail ("wordSize less than 5"));
 
 structure Uint32 : sig
@@ -155,24 +155,24 @@ fun shiftr_signed x n =
 fun test_bit x n =
   Word32.andb (x, Word32.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word32.fromInt 0
 
-end; (* struct Uint32 *)*}
+end; (* struct Uint32 *)\<close>
 code_reserved SML Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Haskell)
-{*import qualified Data.Word;
+\<open>import qualified Data.Word;
 import qualified Data.Int;
 
 type Int32 = Data.Int.Int32;
 
-type Word32 = Data.Word.Word32;*}
+type Word32 = Data.Word.Word32;\<close>
 code_reserved Haskell Uint32
 
-text {*
+text \<open>
   OCaml and Scala provide only signed 32bit numbers, so we use these and 
   implement sign-sensitive operations like comparisons manually.
-*}
+\<close>
 code_printing code_module "Uint32" \<rightharpoonup> (OCaml)
-{*module Uint32 : sig
+\<open>module Uint32 : sig
   val less : int32 -> int32 -> bool
   val less_eq : int32 -> int32 -> bool
   val set_bit : int32 -> Big_int.big_int -> bool -> int32
@@ -211,11 +211,11 @@ let test_bit x n =
     Int32.zero
   <> 0;;
 
-end;; (*struct Uint32*)*}
+end;; (*struct Uint32*)\<close>
 code_reserved OCaml Uint32
 
 code_printing code_module Uint32 \<rightharpoonup> (Scala)
-{*object Uint32 {
+\<open>object Uint32 {
 
 def less(x: Int, y: Int) : Boolean =
   if (x < 0) y < 0 && x < y
@@ -240,13 +240,13 @@ def shiftr_signed(x: Int, n: BigInt) : Int = x >> n.intValue
 def test_bit(x: Int, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
-} /* object Uint32 */*}
+} /* object Uint32 */\<close>
 code_reserved Scala Uint32
 
-text {*
+text \<open>
   OCaml's conversion from Big\_int to int32 demands that the value fits int a signed 32-bit integer.
   The following justifies the implementation.
-*}
+\<close>
 
 definition Uint32_signed :: "integer \<Rightarrow> uint32" 
 where "Uint32_signed i = (if i < -(0x80000000) \<or> i \<ge> 0x80000000 then undefined Uint32 i else Uint32 i)"
@@ -264,7 +264,7 @@ lemma Uint32_signed_code [code abstract]:
 unfolding Uint32_signed_def Uint32_def int_of_integer_symbolic_def word_of_integer_def
 by(simp add: Abs_uint32_inverse)
 
-text {* 
+text \<open>
   Avoid @{term Abs_uint32} in generated code, use @{term Rep_uint32'} instead. 
   The symbolic implementations for code\_simp use @{term Rep_uint32}.
 
@@ -277,7 +277,7 @@ text {*
   these instances will be folded away.)
 
   To convert @{typ "32 word"} values into @{typ uint32}, use @{term "Abs_uint32'"}.
-*}
+\<close>
 
 definition Rep_uint32' where [simp]: "Rep_uint32' = Rep_uint32"
 
@@ -435,10 +435,10 @@ lemma uint32_sdiv_code [code abstract]:
     else Rep_uint32 x sdiv Rep_uint32 y)"
 unfolding uint32_sdiv_def by(simp add: Abs_uint32_inverse)
 
-text {* 
+text \<open>
   Note that we only need a translation for signed division, but not for the remainder
   because @{thm uint32_divmod_code} computes both with division only.
-*}
+\<close>
 
 code_printing
   constant uint32_div \<rightharpoonup>
@@ -628,7 +628,7 @@ code_printing
   (OCaml) "Big'_int.big'_int'_of'_int32" and
   (Scala) "BigInt"
 
-section {* Quickcheck setup *}
+section \<open>Quickcheck setup\<close>
 
 definition uint32_of_natural :: "natural \<Rightarrow> uint32"
 where "uint32_of_natural x \<equiv> Uint32 (integer_of_natural x)"

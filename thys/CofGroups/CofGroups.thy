@@ -7,9 +7,9 @@ theory CofGroups
 imports Main "HOL-Library.Nat_Bijection"
 begin
 
-section {* Introduction *}
+section \<open>Introduction\<close>
 
-text {* Cofinitary groups have received a lot of attention in Set
+text \<open>Cofinitary groups have received a lot of attention in Set
 Theory.  I will start by giving some references, that together give a
 nice view of the area.  See also Kastermans \cite {Kques} for my view
 of where the study of these groups (other than formalization) is
@@ -56,9 +56,9 @@ Since this note is also written to be read by the proverbial
 in Isabelle as they related to common notation.  We do expect this
 proverbial mathematician to be somewhat flexible though.  He or she
 will need to be flexible in reading, this is just like reading any
-other article; part of reading is reconstructing.  *}
+other article; part of reading is reconstructing.\<close>
 
-text {* We end this introduction with a quick overview of the paper.
+text \<open>We end this introduction with a quick overview of the paper.
 In Section \ref {sect:mainnotions} we define the notion of cofinitary
 group.  In Section \ref {sect:theFunction} we define the function
 @{term upOne} and give some of its basic properties.  In Section \ref
@@ -81,22 +81,22 @@ is acts well with respect to the group operations, use it to define
 construction, and show the basic properties of @{term Ex2}.  Finally
 in Section \ref {sect:concl} we quickly show that all the work in the
 section before it combines to show that @{term Ex2} is a cofinitary
-group. *}
+group.\<close>
 
 
 
-section {* The Main Notions *}
+section \<open>The Main Notions\<close>
 
-text {* \label {sect:mainnotions} First we define the two main notions.
+text \<open>\label {sect:mainnotions} First we define the two main notions.
 
 We write @{term S_inf} for the symmetric group on the natural numbers
-(we do not define this as a group, only as the set of bijections). *}
+(we do not define this as a group, only as the set of bijections).\<close>
 
 definition S_inf :: "(nat \<Rightarrow> nat) set"
 where
 "S_inf = {f::(nat \<Rightarrow> nat). bij f}"
 
-text {* Note here that @{term bij} @{term f} is the predicate that
+text \<open>Note here that @{term bij} @{term f} is the predicate that
 @{term f} is a bijection.  This is common notation in Isabelle, a
 predicate applied to an object.  Related to this @{term inj} @{term f}
 means @{term f} is injective, and @{term surj} @{term f} means @{term
@@ -104,21 +104,21 @@ f} is surjective.
 
 The same notation is used for functionn application.  Next we define a
 function @{term Fix}, applying it to an object is also written by
-juxtaposition. *}
+juxtaposition.\<close>
 
-text {* Given any function @{term f} we define @{term Fix} @{term f}
-to be the set of fixed points for this function. *}
+text \<open>Given any function @{term f} we define @{term Fix} @{term f}
+to be the set of fixed points for this function.\<close>
 
 definition Fix :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a set)"
 where
 "Fix f = { n . f(n) = n }"
 
-text {* We then define a locale @{term CofinitaryGroup} that
+text \<open>We then define a locale @{term CofinitaryGroup} that
 represents the notion of a cofinitary group. An interpretation is
 given by giving a set of functions $nat \rightarrow nat$ and showing
 that it satisfies the identities the locale assumes.  A locale is a
 way to collect together some information that can then later be used
-in a flexible way (we will not make a lot of use of that here). *}
+in a flexible way (we will not make a lot of use of that here).\<close>
 
 locale CofinitaryGroup =
   fixes
@@ -134,11 +134,11 @@ locale CofinitaryGroup =
 
 
 
-section {* The Function @{term upOne} *}
+section \<open>The Function @{term upOne}\<close>
 
-text {* \label{sect:theFunction} Here we define the function, @{term
+text \<open>\label{sect:theFunction} Here we define the function, @{term
 upOne}, translation up by 1 and proof some of its basic properties.
-*}
+\<close>
 
 definition upOne :: "int \<Rightarrow> int"
 where
@@ -146,11 +146,11 @@ where
 
 declare upOne_def [simp] \<comment> \<open>automated tools can use the definition\<close>
 
-text {* First we show that this function is a bijection.  This is done
+text \<open>First we show that this function is a bijection.  This is done
 in the usual two parts; we show it is injective by showing from the
 assumption that outputs on two numbers are equal that these two
 numbers are equal.  Then we show it is surjective by finding the
-number that maps to a given number. *}
+number that maps to a given number.\<close>
 
 lemma inj_upOne: "inj upOne" 
 by (rule Fun.injI, simp)
@@ -166,10 +166,10 @@ theorem bij_upOne: "bij upOne"
 by (unfold bij_def, rule conjI [OF inj_upOne surj_upOne])
 
 
-text {* Now we show that the set of fixed points of @{term upOne}
+text \<open>Now we show that the set of fixed points of @{term upOne}
 is empty.  We show this in two steps, first we show that no number
 is a fixed point, and then derive from this that the set of fixed
-points is empty. *}
+points is empty.\<close>
 
 
 lemma no_fix_upOne: "upOne n \<noteq> n"
@@ -187,10 +187,10 @@ proof -
   with Set.empty_def show "Fix upOne = {}" by auto
 qed
 
-text {* Finally we derive the equation for the inverse of @{term
-upOne}.  The rule we use references @{text Hilbert_Choice} since the @{term
+text \<open>Finally we derive the equation for the inverse of @{term
+upOne}.  The rule we use references \<open>Hilbert_Choice\<close> since the @{term
 inv} operator, the operator that gives an inverse of a function, is
-defined using Hilbert's choice operator. *}
+defined using Hilbert's choice operator.\<close>
 
 lemma inv_upOne_eq: "(inv upOne) (n::int) = n - 1"
 proof -
@@ -201,9 +201,9 @@ proof -
 qed
 
 
-text {* We can also show this quickly using Hilbert\_Choice.inv\_f\_eq
+text \<open>We can also show this quickly using Hilbert\_Choice.inv\_f\_eq
 properly instantiated : @{thm Hilbert_Choice.inv_f_eq[of upOne "n - 1"
-n, OF inj_upOne]}. *}
+n, OF inj_upOne]}.\<close>
 
 lemma "(inv upOne) n = n - 1"
 by (rule Hilbert_Choice.inv_f_eq[of upOne "n - 1" n, OF inj_upOne], simp)
@@ -212,24 +212,24 @@ by (rule Hilbert_Choice.inv_f_eq[of upOne "n - 1" n, OF inj_upOne], simp)
 
 
 
-section {* The Set of Functions and Normal Forms *}
+section \<open>The Set of Functions and Normal Forms\<close>
 
-text {* \label {sect:setOFunc} We define the set @{term Ex1} of all
+text \<open>\label {sect:setOFunc} We define the set @{term Ex1} of all
 powers of @{term upOne} and study some of its properties, note that
 this is the group generated by @{term upOne} (in Section \ref
 {sect:Ex1Closed} we prove it closed under composition and inverse).
 In Section \ref {sect:Ex1CofBij} we show that all its elements are
 cofinitary and bijections (bijections with finitely many fixed
 points).  Note that this is not a cofinitary group, since our
-definition requires the group to be a subset of @{term S_inf} *}
+definition requires the group to be a subset of @{term S_inf}\<close>
 
 inductive_set Ex1 :: "(int \<Rightarrow> int) set" where
 base_func: "upOne \<in> Ex1" |
 comp_func: "f \<in> Ex1 \<Longrightarrow> (upOne \<circ> f) \<in> Ex1" |
 comp_inv : "f \<in> Ex1 \<Longrightarrow> ((inv upOne) \<circ> f) \<in> Ex1"
 
-text {* We start by showing a \emph{normal form} for elements in this
-set. *}
+text \<open>We start by showing a \emph{normal form} for elements in this
+set.\<close>
 
 lemma Ex1_Normal_form_part1: "f \<in> Ex1 \<Longrightarrow> \<exists>k. \<forall> n. f(n) = n + k"
 proof (rule Ex1.induct [of "f"], blast) 
@@ -248,21 +248,20 @@ next
   with fa_k show "\<exists>k. \<forall>n. (inv upOne \<circ> fa) n = n + k" by auto
 qed
 
-text {* Now we'll show the other direction.  Then we apply rule @{text
-int_induct} which allows us to do the induction by first showing it
+text \<open>Now we'll show the other direction.  Then we apply rule \<open>int_induct\<close> which allows us to do the induction by first showing it
 true for $k = 1$, then showing that if true for $k = i$ it is also
 true for $k = i+1$ and finally showing that if true for $k = i$ then
 it is also true for $k = i - 1$.
 
 All proofs are fairly straightforward and use extensionality for
 functions.  In the base case we are just dealing with @{term upOne}.
-In the other cases we define the function @{text ?h} which satisfies
+In the other cases we define the function \<open>?h\<close> which satisfies
 the induction hypothesis.  Then @{term f} is obtained from this by
 adding or subtracting one pointwise. 
 
 In this proof we use some pattern matching to save on writing.  In the
-statement of the theorem, we match the theorem against @{text "?P k"} thereby
-defining the predicate @{text "?P"}. *}
+statement of the theorem, we match the theorem against \<open>?P k\<close> thereby
+defining the predicate \<open>?P\<close>.\<close>
 
 lemma Ex1_Normal_form_part2: 
   "(\<forall>f. ((\<forall>n. f n = n + k) \<longrightarrow> f \<in> Ex1))" (is "?P k")
@@ -320,8 +319,8 @@ next
   qed
 qed
 
-text {* Combining the two directions we get the normal form
-theorem. *}
+text \<open>Combining the two directions we get the normal form
+theorem.\<close>
 
 theorem Ex1_Normal_form: "(f \<in> Ex1) = (\<exists>k. \<forall>n. f(n) = n + k)"
 proof
@@ -336,11 +335,11 @@ qed
 
 
 
-section {* All Elements Cofinitary Bijections. *}
+section \<open>All Elements Cofinitary Bijections.\<close>
 
-text {* \label {sect:Ex1CofBij} We now show all elements in @{term
+text \<open>\label {sect:Ex1CofBij} We now show all elements in @{term
 Ex1} are bijections, Theorem @{term all_bij}, and have no fixed
-points, Theorem @{term no_fixed_pt}. *}
+points, Theorem @{term no_fixed_pt}.\<close>
 
 theorem all_bij: "f \<in> Ex1 \<Longrightarrow> bij f"
 proof (unfold bij_def)
@@ -395,12 +394,12 @@ qed
 
 
 
-section {* Closed under Composition and Inverse *}
+section \<open>Closed under Composition and Inverse\<close>
 
-text {* \label {sect:Ex1Closed} We start by showing that this set is
+text \<open>\label {sect:Ex1Closed} We start by showing that this set is
 closed under composition.  These facts can later be conjugated to
 easily obtain the corresponding results for the group on the natural
-numbers. *}
+numbers.\<close>
 
 theorem closed_comp: "f \<in> Ex1 \<and> g \<in> Ex1 \<Longrightarrow> f \<circ> g \<in> Ex1"
 proof (rule Ex1.induct [of f], blast)
@@ -420,9 +419,9 @@ next
     show "(inv upOne) \<circ> fa \<circ> g \<in> Ex1" by auto
 qed
 
-text {* Now we show the set is closed under inverses.  This is
+text \<open>Now we show the set is closed under inverses.  This is
 done by an induction on the definition of @{term Ex1} only using
-the normal form theorem and rewriting of expressions. *}
+the normal form theorem and rewriting of expressions.\<close>
 
 theorem closed_inv: "f \<in> Ex1 \<Longrightarrow> inv f \<in> Ex1"
 proof (rule Ex1.induct [of "f"], blast)
@@ -538,21 +537,21 @@ qed
 
 
 
-section {* Conjugation with a Bijection *}
+section \<open>Conjugation with a Bijection\<close>
 
-text {* \label {sect:moveNN} An abbreviation of the bijection from the
+text \<open>\label {sect:moveNN} An abbreviation of the bijection from the
 natural numbers to the integers defined in the library.  This will be
-used to coerce the functions above to be on the natural numbers. *}
+used to coerce the functions above to be on the natural numbers.\<close>
 
 abbreviation "ni_bij == int_decode"
 
 lemma bij_f_o_inf_f: "bij f \<Longrightarrow> f \<circ> inv f = id"
   unfolding bij_def surj_iff by simp
 
-text {* The following theorem is a key theorem in showing that the
+text \<open>The following theorem is a key theorem in showing that the
 group we are interested in is cofinitary.  It states that when you
 conjugate a function with a bijection the fixed points get mapped
-over. *}
+over.\<close>
 
 theorem conj_fix_pt: "\<And>f::('a \<Rightarrow> 'b). \<And>g::('b \<Rightarrow> 'b). (bij f) 
   \<Longrightarrow> ((inv f)`(Fix g)) = Fix ((inv f) \<circ> g \<circ> f)"
@@ -604,13 +603,13 @@ proof -
   qed
 qed
 
-section {* Bijections on $\mathbb{N}$ *}
+section \<open>Bijections on $\mathbb{N}$\<close>
 
-text {* \label {sect:bijN} In this section we define the subset @{term
+text \<open>\label {sect:bijN} In this section we define the subset @{term
 Ex2} of @{term S_inf} that is the conjugate of @{term Ex1} bij @{term
 ni_bij}, and show its basic properties. 
 
-@{term CONJ} is the function that will conjugate @{term Ex1} to @{term Ex2}. *}
+@{term CONJ} is the function that will conjugate @{term Ex1} to @{term Ex2}.\<close>
 
 definition CONJ :: "(int \<Rightarrow> int) \<Rightarrow> (nat \<Rightarrow> nat)"
 where
@@ -618,9 +617,9 @@ where
 
 declare CONJ_def [simp] \<comment> \<open>automated tools can use the definition\<close>
 
-text {* We quickly check that this function is of the right type, and
+text \<open>We quickly check that this function is of the right type, and
 then show three of its properties that are very useful in showing
-@{term Ex2} is a group. *}
+@{term Ex2} is a group.\<close>
 
 lemma type_CONJ: "f \<in> Ex1 \<Longrightarrow> (inv ni_bij) \<circ> f \<circ> ni_bij \<in> S_inf"
 proof -
@@ -650,7 +649,7 @@ proof -
     (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto
   with st1 have st2: "?left =
     (inv ni_bij) \<circ> (inv ((inv ni_bij) \<circ> f))" by auto
-  from inv_ni_bij_bij and `bij f` and o_inv_distrib
+  from inv_ni_bij_bij and \<open>bij f\<close> and o_inv_distrib
     have h1: "inv (inv ni_bij \<circ> f) = inv f \<circ> inv (inv (ni_bij))" by auto
   from bij_int_decode and inv_inv_eq[of ni_bij] 
     have "inv (inv ni_bij) = ni_bij" by auto
@@ -683,8 +682,8 @@ proof (unfold CONJ_def)
   thus "(inv ni_bij \<circ> id) \<circ> ni_bij = id" by auto
 qed
 
-text {* We now define the group we are interested in, and show the
-basic facts that together will show this is a cofinitary group. *}
+text \<open>We now define the group we are interested in, and show the
+basic facts that together will show this is a cofinitary group.\<close>
 
 definition Ex2 :: "(nat \<Rightarrow> nat) set"
 where
@@ -729,11 +728,11 @@ proof -
   assume "f \<in> Ex2"
   with mem_Ex2_rule obtain "g" where "g \<in> Ex1" and "f = CONJ g" by auto
   with closed_inv have "inv g \<in> Ex1" by auto
-  from `f = CONJ g` have if_iCg: "inv f = inv (CONJ g)" by auto
-  from all_bij and `g \<in> Ex1` have "bij g" by auto
+  from \<open>f = CONJ g\<close> have if_iCg: "inv f = inv (CONJ g)" by auto
+  from all_bij and \<open>g \<in> Ex1\<close> have "bij g" by auto
   with if_iCg and inv_CONJ have "inv f = CONJ (inv g)" by auto
-  from `g \<in> Ex1` and "closed_inv" have "inv g \<in> Ex1" by auto
-  with `inv f = CONJ (inv g)` and mem_Ex2_rule show "inv f \<in> Ex2" by auto
+  from \<open>g \<in> Ex1\<close> and "closed_inv" have "inv g \<in> Ex1" by auto
+  with \<open>inv f = CONJ (inv g)\<close> and mem_Ex2_rule show "inv f \<in> Ex2" by auto
 qed
 
 lemma comp_Ex2:
@@ -759,12 +758,12 @@ qed
 
 
 
-section {* The Conclusion *}
+section \<open>The Conclusion\<close>
 
-text {* \label{sect:concl} With all that we have shown we have already
+text \<open>\label{sect:concl} With all that we have shown we have already
 clearly shown @{term Ex2} to be a cofinitary group.  The formalization
 also shows this, we just have to refer to the correct theorems proved
-above. *}
+above.\<close>
 
 interpretation CofinitaryGroup Ex2
 proof

@@ -4,14 +4,14 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-section {* FlexRay: Verification *}
+section \<open>FlexRay: Verification\<close>
 
 theory  FR_proof
 imports FR
 begin
 
 
-subsection {* Properties of the function Send *}
+subsection \<open>Properties of the function Send\<close>
 
 lemma Send_L1:
 assumes "Send return send get activation"
@@ -27,7 +27,7 @@ shows  "(send t) \<noteq> []"
 using assms  by (simp add: Send_def) 
 
 
-subsection {* Properties of the component Scheduler *}
+subsection \<open>Properties of the component Scheduler\<close>
 
 lemma Scheduler_L1:
 assumes h1:"Scheduler C activation"
@@ -84,7 +84,7 @@ proof -
 qed
 
 
-subsection {* Disjoint Frames *}
+subsection \<open>Disjoint Frames\<close>
 
 lemma disjointFrame_L1:
 assumes h1:"DisjointSchedules n nC"  
@@ -174,7 +174,7 @@ proof -
 qed
 
 
-subsection {* Properties of the sheaf of channels nSend *}
+subsection \<open>Properties of the sheaf of channels nSend\<close>
 
 lemma fr_Send1:
 assumes frc:"FlexRayController (nReturn i) recv (nC i) (nStore i) (nSend i) (nGet i)"
@@ -327,7 +327,7 @@ using assms
 by (metis Broadcast_def)
 
 
-subsection {* Properties of the sheaf of channels  nGet *}
+subsection \<open>Properties of the sheaf of channels  nGet\<close>
 
 lemma fr_nGet1a:
 assumes h1:"FlexRayController (nReturn k) recv (nC k) (nStore k) (nSend k) (nGet k)" 
@@ -417,7 +417,7 @@ using assms
 by (metis msg_nGet1) 
 
 
-subsection {* Properties of the sheaf of channels nStore *}
+subsection \<open>Properties of the sheaf of channels nStore\<close>
 
 lemma fr_nStore_nReturn1:
  assumes h0:"Broadcast n nSend recv"
@@ -644,7 +644,7 @@ using assms
   by (simp add: length_nStore)
 
 
-subsection {* Refinement Properties *} 
+subsection \<open>Refinement Properties\<close> 
 
 lemma fr_refinement_FrameTransmission:
 assumes "Cable n nSend recv"

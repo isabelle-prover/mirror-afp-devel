@@ -1,4 +1,4 @@
-section {* Sums in monoids*}
+section \<open>Sums in monoids\<close>
 
 theory MonoidSums
 
@@ -8,10 +8,10 @@ imports Main
   FunctionLemmas
 begin
 
-text {* We build on the finite product simplifications in FiniteProduct.thy and the analogous ones
-for finite sums (see "lemmas" in Ring.thy).*}
+text \<open>We build on the finite product simplifications in FiniteProduct.thy and the analogous ones
+for finite sums (see "lemmas" in Ring.thy).\<close>
 
-text {*Use as an intro rule*}
+text \<open>Use as an intro rule\<close>
 lemma (in comm_monoid) factors_equal:
   "\<lbrakk>a=b; c=d\<rbrakk> \<Longrightarrow> a\<otimes>\<^bsub>G\<^esub>c =  b\<otimes>\<^bsub>G\<^esub>d"
   by simp
@@ -31,7 +31,7 @@ proof -
 (*Pi_def is key for automation here*)
 qed
 
-text {*Scalar multiplication distributes over scalar multiplication (on left). *}(*Add to module.*)
+text \<open>Scalar multiplication distributes over scalar multiplication (on left).\<close>(*Add to module.*)
 lemma (in module) finsum_smult:
   "[| c\<in> carrier R; g \<in> A \<rightarrow> carrier M |] ==>
    (c \<odot>\<^bsub>M\<^esub> finsum M g A) = finsum M (%x. c \<odot>\<^bsub>M\<^esub> g x) A "
@@ -45,7 +45,7 @@ proof (induct A rule: infinite_finite_induct)
     by (auto simp add:1 2 smult_r_distr)
 qed auto
 
-text {*Scalar multiplication distributes over scalar multiplication (on right). *}(*Add to module.*)
+text \<open>Scalar multiplication distributes over scalar multiplication (on right).\<close>(*Add to module.*)
 lemma (in module) finsum_smult_r:
   "[| v\<in> carrier M; f \<in> A \<rightarrow> carrier R |] ==>
    (finsum R f A \<odot>\<^bsub>M\<^esub> v) = finsum M (%x. f x \<odot>\<^bsub>M\<^esub> v) A "
@@ -59,8 +59,8 @@ proof (induct A rule: infinite_finite_induct)
     by (auto simp add:1 2 smult_l_distr)
 qed auto
 
-text {*A sequence of lemmas that shows that the product does not depend on the ambient group. 
-Note I had to dig back into the definitions of foldSet to show this. *}
+text \<open>A sequence of lemmas that shows that the product does not depend on the ambient group. 
+Note I had to dig back into the definitions of foldSet to show this.\<close>
 (*Add the following 2 lemmas to Group.*)
 lemma foldSet_not_depend:
   fixes A E 

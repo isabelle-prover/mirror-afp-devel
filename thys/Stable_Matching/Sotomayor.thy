@@ -245,8 +245,8 @@ text\<open>
 \citeauthor[p137]{Sotomayor:1996} provides an alternative definition
 of @{const "weakly_preferred_by_men"}. The syntax @{theory_text "(is
 ?lhs \<longleftrightarrow> pat)"} binds the @{emph \<open>schematic
-variables\<close>} @{text "?lhs"} and @{text "?rhs"} to the terms
-separated by @{text "\<longleftrightarrow>"}.
+variables\<close>} \<open>?lhs\<close> and \<open>?rhs\<close> to the terms
+separated by \<open>\<longleftrightarrow>\<close>.
 
 \<close>
 

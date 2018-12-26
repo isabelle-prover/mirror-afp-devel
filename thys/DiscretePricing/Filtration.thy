@@ -2,14 +2,14 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* Filtrations *}
+section \<open>Filtrations\<close>
 
-text {* This theory introduces basic notions about filtrations, which permit to define adaptable processes
-and predictable processes in the case where the filtration is indexed by natural numbers. *}
+text \<open>This theory introduces basic notions about filtrations, which permit to define adaptable processes
+and predictable processes in the case where the filtration is indexed by natural numbers.\<close>
 
 theory Filtration imports "HOL-Probability.Probability"
 begin
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 class linorder_bot = linorder + bot
 instantiation nat::linorder_bot
 begin
@@ -115,15 +115,15 @@ qed
 
 
 
-subsection {* Stochastic processes *}
+subsection \<open>Stochastic processes\<close>
 
-text  {* Stochastic processes are collections of measurable functions. Those of a particular interest when
-there is a filtration are the adapted stochastic processes. *}
+text  \<open>Stochastic processes are collections of measurable functions. Those of a particular interest when
+there is a filtration are the adapted stochastic processes.\<close>
 
 definition stoch_procs where
   "stoch_procs M N = {X. \<forall>t. (X t) \<in> measurable M N}"
 
-subsubsection {* Adapted stochastic processes *}
+subsubsection \<open>Adapted stochastic processes\<close>
 
 definition adapt_stoch_proc where
   "(adapt_stoch_proc F X N) \<longleftrightarrow> (\<forall>t. (X t) \<in> measurable (F t) N)"
@@ -214,7 +214,7 @@ proof
 qed
 
 
-subsubsection {* Predictable stochastic processes *}
+subsubsection \<open>Predictable stochastic processes\<close>
 
 definition predict_stoch_proc where
   "(predict_stoch_proc F X N) \<longleftrightarrow> (X 0 \<in> measurable (F 0) N \<and> (\<forall>n. (X (Suc n)) \<in> measurable (F n) N))"
@@ -458,8 +458,8 @@ proof -
   thus "open (open_exclude_set x A)" and "(open_exclude_set x A) \<inter> A = {x}" by (auto simp add: open_exclude_setI)
 qed
 
-subsection {* Initially trivial filtrations *}
-text {* Intuitively, these are filtrations that can be used to denote the fact that there is no information at the start. *}
+subsection \<open>Initially trivial filtrations\<close>
+text \<open>Intuitively, these are filtrations that can be used to denote the fact that there is no information at the start.\<close>
 
 definition init_triv_filt::"'a measure \<Rightarrow> ('i::linorder_bot \<Rightarrow> 'a measure) \<Rightarrow> bool" where
   "init_triv_filt M F \<longleftrightarrow> filtration M F \<and> sets (F bot) = {{}, space M}"
@@ -546,10 +546,10 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-subsection {* Filtration-equivalent measure spaces *}
-text {* This is a relaxation of the notion of equivalent probability spaces, where equivalence is tested modulo a
+subsection \<open>Filtration-equivalent measure spaces\<close>
+text \<open>This is a relaxation of the notion of equivalent probability spaces, where equivalence is tested modulo a
 filtration. Equivalent measure spaces agree on events that have a zero probability of occurring; here, filtration-equivalent
-measure spaces agree on such events when they belong to the filtration under consideration. *}
+measure spaces agree on such events when they belong to the filtration under consideration.\<close>
 
 definition filt_equiv where
 "filt_equiv F M N \<longleftrightarrow> sets M = sets N \<and> filtration M F  \<and> (\<forall> t A. A \<in> sets (F t) \<longrightarrow> (emeasure M A = 0) \<longleftrightarrow> (emeasure N A = 0))"

@@ -6,13 +6,13 @@
   target language
 *)
 
-section {* Concrete Density Contexts *}
+section \<open>Concrete Density Contexts\<close>
 
 theory PDF_Target_Density_Contexts
 imports PDF_Density_Contexts PDF_Target_Semantics
 begin
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
 type_synonym cdens_ctxt = "vname list \<times> vname list \<times> tyenv \<times> cexpr"
 
@@ -73,7 +73,7 @@ proof (unfold density_context_def, intro allI ballI conjI impI subprob_spaceI)
 qed (insert cdens_ctxt_invarD[OF assms], simp_all add: nonneg_cexpr_def)
 
 
-subsection {* Expressions for density context operations *}
+subsection \<open>Expressions for density context operations\<close>
 
 definition marg_dens_cexpr :: "tyenv \<Rightarrow> vname list \<Rightarrow> vname \<Rightarrow> cexpr \<Rightarrow> cexpr" where
   "marg_dens_cexpr \<Gamma> vs x e =
@@ -247,7 +247,7 @@ proof-
                   \<partial>state_measure (set ?vs) \<Gamma> \<partial>state_measure {x,y} \<Gamma>)" by simp
   also have "... = \<integral>\<^sup>+z. \<integral>\<^sup>+\<sigma>. ?f (merge (set vs) (set vs') (\<sigma>(x := fst z, y := snd z), \<rho>))
                      \<partial>state_measure (set ?vs) \<Gamma> \<partial>(stock_measure (\<Gamma> x) \<Otimes>\<^sub>M stock_measure (\<Gamma> y))"
-    (is "_ = ?I") using `x \<noteq> y` meas_upd2 \<rho> invar unfolding state_measure_def
+    (is "_ = ?I") using \<open>x \<noteq> y\<close> meas_upd2 \<rho> invar unfolding state_measure_def
     by (subst product_nn_integral_pair, subst measurable_split_conv,
         intro sf_PiM.borel_measurable_nn_integral)
        (auto simp: measurable_split_conv state_measure_def intro!: measurable_compose[OF _ measurable_ennreal]

@@ -3,9 +3,9 @@ theory Myhill_2
   imports Myhill_1 "HOL-Library.Sublist"
 begin
 
-section {* Second direction of MN: @{text "regular language \<Rightarrow> finite partition"} *}
+section \<open>Second direction of MN: \<open>regular language \<Rightarrow> finite partition\<close>\<close>
 
-subsection {* Tagging functions *}
+subsection \<open>Tagging functions\<close>
 
 definition 
    tag_eq :: "('a list \<Rightarrow> 'b) \<Rightarrow> ('a list \<times> 'a list) set" ("=_=")
@@ -117,7 +117,7 @@ next
 qed
 
 
-subsection {* Base cases: @{const Zero}, @{const One} and @{const Atom} *}
+subsection \<open>Base cases: @{const Zero}, @{const One} and @{const Atom}\<close>
 
 lemma quot_zero_eq:
   shows "UNIV // \<approx>{} = {UNIV}"
@@ -181,7 +181,7 @@ lemma quot_atom_finiteI [intro]:
 by (rule finite_subset[OF quot_atom_subset]) (simp)
 
 
-subsection {* Case for @{const Plus} *}
+subsection \<open>Case for @{const Plus}\<close>
 
 definition 
   tag_Plus :: "'a lang \<Rightarrow> 'a lang \<Rightarrow> 'a list \<Rightarrow> ('a lang \<times> 'a lang)"
@@ -204,7 +204,7 @@ next
 qed
 
 
-subsection {* Case for @{text "Times"} *}
+subsection \<open>Case for \<open>Times\<close>\<close>
 
 definition
   "Partitions x \<equiv> {(x\<^sub>p, x\<^sub>s). x\<^sub>p @ x\<^sub>s = x}"
@@ -309,7 +309,7 @@ next
 qed
 
 
-subsection {* Case for @{const "Star"} *}
+subsection \<open>Case for @{const "Star"}\<close>
 
 lemma star_partitions_elim:
   assumes "x @ z \<in> A\<star>" "x \<noteq> []"
@@ -459,7 +459,7 @@ next
        (auto simp add: quotient_def)
 qed
 
-subsection {* The conclusion of the second direction *}
+subsection \<open>The conclusion of the second direction\<close>
 
 lemma Myhill_Nerode2:
   fixes r::"'a rexp"

@@ -3,16 +3,16 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Kleene Algebra with Tests *}
+section \<open>Kleene Algebra with Tests\<close>
 
 theory KAT
   imports Kleene_Algebra.Kleene_Algebra Conway_Tests
 begin
 
-text {*
+text \<open>
   First, we study left Kleene algebras with tests which also have only a left zero.
   These structures can be expanded to demonic refinement algebras.
-*}
+\<close>
 
 class left_kat_zerol =  left_kleene_algebra_zerol + test_semiring_zerol
 begin
@@ -104,7 +104,7 @@ lemma star_sim_right_var: "test p \<Longrightarrow> p \<cdot> x = x \<cdot> p \<
 
 end
 
-text {* Finally, we define Kleene algebra with tests. *}
+text \<open>Finally, we define Kleene algebra with tests.\<close>
 
 class kat = kleene_algebra + test_semiring
 

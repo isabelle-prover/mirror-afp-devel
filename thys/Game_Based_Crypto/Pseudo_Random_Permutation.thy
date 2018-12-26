@@ -1,7 +1,7 @@
 (* Title: Pseudo_Random_Permutation.thy
   Author: Andreas Lochbihler, ETH Zurich *)
 
-subsection {* Random permutation *}
+subsection \<open>Random permutation\<close>
 
 theory Pseudo_Random_Permutation imports
   CryptHOL.Computational_Model

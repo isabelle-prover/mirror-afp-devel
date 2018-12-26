@@ -4,20 +4,20 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsection {* Two Extensions *}
+subsection \<open>Two Extensions\<close>
 
-subsubsection {* KAD Component with Trace Semantics *}
+subsubsection \<open>KAD Component with Trace Semantics\<close>
 
 theory Path_Model_Example
   imports VC_KAD "HOL-Eisbach.Eisbach"
 begin
 
-text {* This component supports the verification of simple while programs
-in a partial correctness setting based on a program trace semantics. *}
+text \<open>This component supports the verification of simple while programs
+in a partial correctness setting based on a program trace semantics.\<close>
 
-text {* Program traces are modelled as non-empty paths or state sequences. The non-empty path model 
+text \<open>Program traces are modelled as non-empty paths or state sequences. The non-empty path model 
 of Kleene algebra is taken from the AFP entry for Kleene algebra. Here we show that sets of paths form
-antidomain Kleene Algebras. *}
+antidomain Kleene Algebras.\<close>
 
 definition pp_a ::  "'a ppath set \<Rightarrow> 'a ppath set" where
   "pp_a X = {(Node u) |u. \<not> (\<exists>v \<in> X. u = pp_first v)}"
@@ -28,8 +28,8 @@ interpretation ppath_aka: antidomain_kleene_algebra pp_a "(\<union>)" pp_prod pp
   apply (simp add: pp_prod_def pp_a_def, safe, metis pp_first.simps(1) pp_first_pp_fusion)
   by (auto simp: pp_a_def pp_one_def)   
 
-text {* A verification component can then be built with little effort, by and large reusing
-parts of the relational components that are generic with respect to the store. *}      
+text \<open>A verification component can then be built with little effort, by and large reusing
+parts of the relational components that are generic with respect to the store.\<close>      
 
 definition pp_gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store ppath set" ("_ ::= _" [70, 65] 61) where 
   "v ::= e = {Cons s (Node (s (v := e s))) | s. True}"
@@ -133,7 +133,7 @@ lemma integer_division:
    POST (\<lambda>s. x = s ''q'' * y + s ''r'' \<and> s ''r'' \<ge> 0 \<and> s ''r'' < y)"
   by (rule ppath_aka.fbox_whilei_break, auto)
  
-text {* We now reconsider these examples with an Eisbach tactic. *}
+text \<open>We now reconsider these examples with an Eisbach tactic.\<close>
 
 named_theorems ht
 

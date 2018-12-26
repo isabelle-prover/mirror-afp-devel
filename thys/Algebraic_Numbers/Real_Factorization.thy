@@ -41,7 +41,7 @@ proof (induct x si xis rule: delete_cnj.induct)
   case (2 x si)
   hence "order x 1 \<ge> 1" by auto
   hence "[:-x,1:]^1 dvd 1" unfolding order_divides by simp
-  from power_le_dvd[OF this, of 1] `si \<noteq> 0` have "[:- x, 1:] dvd 1" by simp
+  from power_le_dvd[OF this, of 1] \<open>si \<noteq> 0\<close> have "[:- x, 1:] dvd 1" by simp
   from divides_degree[OF this] 
   show ?case by auto
 next

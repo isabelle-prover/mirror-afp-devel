@@ -1,4 +1,4 @@
-section {* Lassos *}
+section \<open>Lassos\<close>
 (* Author: Peter Lammich *)
 theory Lasso
 imports Automata
@@ -181,7 +181,7 @@ begin
       from RUN have [simp]: "r 0 \<in> V0" and RUN': "ipath E r" 
         by (simp_all add: is_run_def)
 
-      txt {* Choose a node that is visited infinitely often *}
+      txt \<open>Choose a node that is visited infinitely often\<close>
       from RUN have RAN_REACH: "range r \<subseteq> E\<^sup>*``V0"
         by (auto simp: is_run_def dest: ipath_to_rtrancl)
       hence "finite (range r)" by (auto intro: finite_subset)
@@ -190,13 +190,13 @@ begin
       then obtain v0 "pr" where PR: "v0\<in>V0" "path E v0 pr u" 
         by (auto intro: rtrancl_is_path)
       moreover
-      txt {* Build a path from @{text "u"} to @{text "u"}, that contains nodes from
-        each acceptance set *}
+      txt \<open>Build a path from \<open>u\<close> to \<open>u\<close>, that contains nodes from
+        each acceptance set\<close>
       have "\<exists>pl. pl\<noteq>[] \<and> path E u pl u \<and> (\<forall>A\<in>F. set pl \<inter> A \<noteq> {})"
         using finite_F ACC
       proof (induction rule: finite_induct)
         case empty
-        from run_limit_two_connectedI[OF RUN' `u\<in>limit r` `u\<in>limit r`] 
+        from run_limit_two_connectedI[OF RUN' \<open>u\<in>limit r\<close> \<open>u\<in>limit r\<close>] 
         obtain p where [simp]: "p\<noteq>[]" and P: "path E u p u" 
           by (rule trancl_is_path) 
         thus ?case by blast
@@ -208,12 +208,12 @@ begin
             and ACC: "(\<forall>A'\<in>F. set pl \<inter> A' \<noteq> {})"
           by auto
         from insert.prems obtain v where VACC: "v\<in>A" "v\<in>limit r" by auto
-        from run_limit_two_connectedI[OF RUN' `u\<in>limit r` `v\<in>limit r`] 
+        from run_limit_two_connectedI[OF RUN' \<open>u\<in>limit r\<close> \<open>v\<in>limit r\<close>] 
         obtain p1 where [simp]: "p1\<noteq>[]" 
           and P1: "path E u p1 v" 
           by (rule trancl_is_path) 
 
-        from run_limit_two_connectedI[OF RUN' `v\<in>limit r` `u\<in>limit r`] 
+        from run_limit_two_connectedI[OF RUN' \<open>v\<in>limit r\<close> \<open>u\<in>limit r\<close>] 
         obtain p2 where [simp]: "p2\<noteq>[]" 
           and P2: "path E v p2 u" 
           by (rule trancl_is_path) 
@@ -369,7 +369,7 @@ begin
             using PS by (cases pl') (auto simp: path_simps)
           then obtain q2 pl''' where 
             [simp]: "pl'' = (q2,(i + 1) mod num_acc)#pl'''"
-            using PS `i\<in>acc q` `Suc i < num_acc`
+            using PS \<open>i\<in>acc q\<close> \<open>Suc i < num_acc\<close>
             apply (cases pl'') 
             apply (auto 
               simp: path_simps degeneralize_ext_def 
@@ -377,7 +377,7 @@ begin
             done
           from PS have 
             "path (degen.E T m) (q2,Suc i) pl'' (q,i)"
-            using `Suc i < num_acc`
+            using \<open>Suc i < num_acc\<close>
             by (auto simp: path_simps)
           from degen_visit_acc[OF this] obtain qa 
             where "(qa,Suc i)\<in>set pl''" "Suc i \<in> acc qa" 
@@ -495,7 +495,7 @@ begin
 
 
 
-  subsection {* Implementing runs by lassos *}
+  subsection \<open>Implementing runs by lassos\<close>
   
   definition lasso_run_rel_def_internal: 
     "lasso_run_rel R \<equiv> br run_of_lasso (\<lambda>_. True) O (nat_rel \<rightarrow> R)"

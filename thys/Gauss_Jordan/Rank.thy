@@ -5,16 +5,16 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-section{*Rank of a matrix*}
+section\<open>Rank of a matrix\<close>
 
 theory Rank
 imports 
       Rank_Nullity_Theorem.Dim_Formula
 begin
 
-subsection{*Row rank, column rank and rank*}
+subsection\<open>Row rank, column rank and rank\<close>
 
-text{*Definitions of row rank, column rank and rank*}
+text\<open>Definitions of row rank, column rank and rank\<close>
 
 definition row_rank :: "'a::{field}^'n^'m=>nat"
   where "row_rank A = vec.dim (row_space A)"
@@ -25,7 +25,7 @@ definition col_rank :: "'a::{field}^'n^'m=>nat"
 lemma rank_def: "rank A = row_rank A"
   by (auto simp: row_rank_def row_rank_def_gen row_space_def)
 
-subsection{*Properties*}
+subsection\<open>Properties\<close>
 
 lemma rrk_is_preserved:
 fixes A::"'a::{field}^'cols^'rows::{finite, wellorder}"

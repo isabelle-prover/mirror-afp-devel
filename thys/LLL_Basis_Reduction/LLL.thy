@@ -294,7 +294,7 @@ proof -
   with len have F1: "set fs' \<subseteq> carrier_vec n" "length fs' = m" unfolding fs' by (auto simp: set_conv_nth)
   hence F1': "length (RAT fs') = m" "SRAT fs' \<subseteq> Rn" by auto
   from indep have dist: "distinct (RAT fs)" by (auto simp: gs.lin_indpt_list_def)
-  have Fij': "(RAT fs) ! i \<in> Rn" "(RAT fs) ! j \<in> Rn" using add'[unfolded set_conv_nth] i `j < m` len by auto
+  have Fij': "(RAT fs) ! i \<in> Rn" "(RAT fs) ! j \<in> Rn" using add'[unfolded set_conv_nth] i \<open>j < m\<close> len by auto
   have uminus': "(RAT fs) ! i - ?R c \<cdot>\<^sub>v (RAT fs) ! j = (RAT fs) ! i + - ?R c \<cdot>\<^sub>v (RAT fs) ! j" 
     by (subst minus_add_uminus_vec[where n = n], insert Fij', auto) 
   have span_F_F1: "gs.span (SRAT fs) = gs.span (SRAT fs')" unfolding RAT_F1 uminus' 

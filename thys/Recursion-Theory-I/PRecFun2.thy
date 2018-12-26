@@ -3,13 +3,13 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* Primitive recursive functions of one variable *}
+section \<open>Primitive recursive functions of one variable\<close>
 
 theory PRecFun2
 imports PRecFun
 begin
 
-subsection {* Alternative definition of primitive recursive functions of one variable *}
+subsection \<open>Alternative definition of primitive recursive functions of one variable\<close>
 
 definition
   UnaryRecOp :: "(nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat) \<Rightarrow> (nat \<Rightarrow> nat)" where
@@ -193,7 +193,7 @@ proof -
   from S1 S2 show ?thesis by blast
 qed
 
-subsection {* The scheme datatype *}
+subsection \<open>The scheme datatype\<close>
 
 datatype PrimScheme = Base_zero | Base_suc | Base_fst | Base_snd
                       | Comp_op PrimScheme PrimScheme
@@ -465,7 +465,7 @@ apply(insert loc_srj_0)
 apply(simp)
 done
 
-subsection {* Indexes of primitive recursive functions of one variables *}
+subsection \<open>Indexes of primitive recursive functions of one variables\<close>
 
 definition
   nat_to_pr :: "nat \<Rightarrow> (nat \<Rightarrow> nat)" where
@@ -566,7 +566,7 @@ lemma rec_by_index_inj2: "rec_by_index x1 y1 = rec_by_index x2 y2 \<Longrightarr
 
 lemma rec_by_index_main: "nat_to_pr (rec_by_index n1 n2) = UnaryRecOp (nat_to_pr n1) (nat_to_pr n2)" by (unfold rec_by_index_def, unfold nat_to_pr_def, simp add: loc_srj_5_1)
 
-subsection {* s-1-1 theorem for primitive recursive functions of one variable *}
+subsection \<open>s-1-1 theorem for primitive recursive functions of one variable\<close>
 
 definition
   index_of_const :: "nat \<Rightarrow> nat" where

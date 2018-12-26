@@ -4,21 +4,21 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Bases of the four fundamental subspaces*}
+section\<open>Bases of the four fundamental subspaces\<close>
 
 theory Bases_Of_Fundamental_Subspaces
 imports 
   Gauss_Jordan_PA
 begin
 
-subsection{*Computation of the bases of the fundamental subspaces*}
+subsection\<open>Computation of the bases of the fundamental subspaces\<close>
 
 definition "basis_null_space A = {row i (P_Gauss_Jordan (transpose A)) | i. to_nat i \<ge> rank A}"
 definition "basis_row_space A = {row i (Gauss_Jordan A) |i. row i (Gauss_Jordan A) \<noteq> 0}"
 definition "basis_col_space A = {row i (Gauss_Jordan (transpose A)) |i. row i (Gauss_Jordan (transpose A)) \<noteq> 0}"
 definition "basis_left_null_space A = {row i (P_Gauss_Jordan A) | i. to_nat i \<ge> rank A}"
 
-subsection{*Relatioships amongst the bases*}
+subsection\<open>Relatioships amongst the bases\<close>
 
 lemma basis_null_space_eq_basis_left_null_space_transpose: 
   "basis_null_space A = basis_left_null_space (transpose A)"
@@ -34,9 +34,9 @@ lemma basis_col_space_eq_basis_row_space_transpose:
   "basis_col_space A = basis_row_space (transpose A)"
 unfolding basis_col_space_def basis_row_space_def ..
 
-subsection{*Code equations*}
+subsection\<open>Code equations\<close>
 
-text{*Code equations to make more efficient the computations.*}
+text\<open>Code equations to make more efficient the computations.\<close>
 lemma basis_null_space_code[code]: "basis_null_space A = (let GJ = Gauss_Jordan_PA (transpose A); 
                                                                rank_A = (if A = 0 then 0 else to_nat (GREATEST a. row a (snd GJ) \<noteq> 0) + 1) 
                                                                in {row i (fst GJ) | i. to_nat i \<ge> rank_A})"
@@ -62,9 +62,9 @@ unfolding rank_Gauss_Jordan_code[of "A"]
 unfolding Let_def
 unfolding transpose_zero ..
 
-subsection{*Demonstrations that they are bases*}
+subsection\<open>Demonstrations that they are bases\<close>
 
-text{*We prove that we have obtained a basis for each subspace*}
+text\<open>We prove that we have obtained a basis for each subspace\<close>
 
 lemma independent_basis_left_null_space:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"

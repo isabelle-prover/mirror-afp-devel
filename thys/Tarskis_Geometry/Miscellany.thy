@@ -98,13 +98,13 @@ lemma dot2_rearrange_1:
   assumes "u \<bullet> x = 0" and "x$1 \<noteq> 0"
   shows "u = (u$2 / x$1) *\<^sub>R (rotate2 x)" (is "u = ?u'")
 proof -
-  from `u \<bullet> x = 0` have "u$1 * x$1 = -(u$2) * (x$2)"
+  from \<open>u \<bullet> x = 0\<close> have "u$1 * x$1 = -(u$2) * (x$2)"
     unfolding inner_vec_def
     by (simp add: sum_2)
   hence "u$1 * x$1 / x$1 = -u$2 / x$1 * x$2" by simp
-  with `x$1 \<noteq> 0` have "u$1 = ?u'$1" by simp
-  from `x$1 \<noteq> 0` have "u$2 = ?u'$2" by simp
-  with `u$1 = ?u'$1` and real2_eq show "u = ?u'" by simp
+  with \<open>x$1 \<noteq> 0\<close> have "u$1 = ?u'$1" by simp
+  from \<open>x$1 \<noteq> 0\<close> have "u$2 = ?u'$2" by simp
+  with \<open>u$1 = ?u'$1\<close> and real2_eq show "u = ?u'" by simp
 qed
 
 lemma dot2_rearrange_2:
@@ -123,11 +123,11 @@ lemma dot2_rearrange:
   shows "\<exists>k. u = k *\<^sub>R (rotate2 x)"
 proof cases
   assume "x$1 = 0"
-  with real2_eq [of x 0] and `x \<noteq> 0` have "x$2 \<noteq> 0" by auto
-  with dot2_rearrange_2 and `u \<bullet> x = 0` show ?thesis by blast
+  with real2_eq [of x 0] and \<open>x \<noteq> 0\<close> have "x$2 \<noteq> 0" by auto
+  with dot2_rearrange_2 and \<open>u \<bullet> x = 0\<close> show ?thesis by blast
 next
   assume "x$1 \<noteq> 0"
-  with dot2_rearrange_1 and `u \<bullet> x = 0` show ?thesis by blast
+  with dot2_rearrange_1 and \<open>u \<bullet> x = 0\<close> show ?thesis by blast
 qed
 
 lemma real2_orthogonal_dep2:
@@ -190,7 +190,7 @@ proof -
     and real_sqrt_eq_iff [of "4 * a * b" "(a + b) * (a + b)"] have
     "sqrt (4 * a * b) \<le> sqrt ((a + b) * (a + b))"
     and "sqrt (4 * a * b) = sqrt ((a + b) * (a + b)) \<longleftrightarrow> a = b" by simp+
-  with `a \<ge> 0` and `b \<ge> 0` have "sqrt (4 * a * b) \<le> a + b"
+  with \<open>a \<ge> 0\<close> and \<open>b \<ge> 0\<close> have "sqrt (4 * a * b) \<le> a + b"
     and "sqrt (4 * a * b) = a + b \<longleftrightarrow> a = b" by simp+
   with real_sqrt_abs2 [of 2] and real_sqrt_mult [of 4 "a * b"] show
     "sqrt (a * b) \<le> (a + b) / 2"
@@ -205,7 +205,7 @@ lemma refl_on_restrict:
   assumes "refl_on A r"
   shows "refl_on (A \<inter> B) (r \<inter> B \<times> B)"
 proof -
-  from `refl_on A r` and refl_on_allrel [of B] and refl_on_Int
+  from \<open>refl_on A r\<close> and refl_on_allrel [of B] and refl_on_Int
   show ?thesis by auto
 qed
 
@@ -217,7 +217,7 @@ lemma sym_restrict:
   assumes "sym r"
   shows "sym (r \<inter> A \<times> A)"
 proof -
-  from `sym r` and sym_allrel and sym_Int
+  from \<open>sym r\<close> and sym_allrel and sym_Int
   show ?thesis by auto
 qed
 
@@ -243,7 +243,7 @@ lemma equiv_restrict:
   assumes "equiv A r"
   shows "equiv (A \<inter> B) (r \<inter> B \<times> B)"
 proof -
-  from `equiv A r` and equiv_allrel [of B] and equiv_Int
+  from \<open>equiv A r\<close> and equiv_allrel [of B] and equiv_Int
   show ?thesis by auto
 qed
 
@@ -267,7 +267,7 @@ lemma Image_refl_on_nonempty:
   assumes "refl_on A r" and "x \<in> A"
   shows "x \<in> r``{x}"
 proof
-  from `refl_on A r` and `x \<in> A` show "(x, x) \<in> r"
+  from \<open>refl_on A r\<close> and \<open>x \<in> A\<close> show "(x, x) \<in> r"
     unfolding refl_on_def
     by simp
 qed
@@ -301,17 +301,17 @@ lemma card_insert_ge: "card (insert x A) \<ge> card A"
 lemma choose_1:
   assumes "card S = 1"
   shows "\<exists> x. S = {x}"
-  using `card S = 1` and card_eq_SucD [of S 0]
+  using \<open>card S = 1\<close> and card_eq_SucD [of S 0]
   by simp
 
 lemma choose_2:
   assumes "card S = 2"
   shows "\<exists> x y. S = {x,y}"
 proof -
-  from `card S = 2` and card_eq_SucD [of S 1]
+  from \<open>card S = 2\<close> and card_eq_SucD [of S 1]
   obtain x and T where "S = insert x T" and "card T = 1" by auto
-  from `card T = 1` and choose_1 obtain y where "T = {y}" by auto
-  with `S = insert x T` have "S = {x,y}" by simp
+  from \<open>card T = 1\<close> and choose_1 obtain y where "T = {y}" by auto
+  with \<open>S = insert x T\<close> have "S = {x,y}" by simp
   thus "\<exists> x y. S = {x,y}" by auto
 qed
 
@@ -319,10 +319,10 @@ lemma choose_3:
   assumes "card S = 3"
   shows "\<exists> x y z. S = {x,y,z}"
 proof -
-  from `card S = 3` and card_eq_SucD [of S 2]
+  from \<open>card S = 3\<close> and card_eq_SucD [of S 2]
   obtain x and T where "S = insert x T" and "card T = 2" by auto
-  from `card T = 2` and choose_2 [of T] obtain y and z where "T = {y,z}" by auto
-  with `S = insert x T` have "S = {x,y,z}" by simp
+  from \<open>card T = 2\<close> and choose_2 [of T] obtain y and z where "T = {y,z}" by auto
+  with \<open>S = insert x T\<close> have "S = {x,y,z}" by simp
   thus "\<exists> x y z. S = {x,y,z}" by auto
 qed
 
@@ -330,8 +330,8 @@ lemma card_gt_0_diff_singleton:
   assumes "card S > 0" and "x \<in> S"
   shows "card (S - {x}) = card S - 1"
 proof -
-  from `card S > 0` have "finite S" by (rule card_ge_0_finite)
-  with `x \<in> S`
+  from \<open>card S > 0\<close> have "finite S" by (rule card_ge_0_finite)
+  with \<open>x \<in> S\<close>
   show "card (S - {x}) = card S - 1" by (simp add: card_Diff_singleton)
 qed
 
@@ -352,8 +352,8 @@ proof (induct j)
       by simp
   next
     assume "j_int \<noteq> 3"
-    with `j_int \<le> 3` have "j_int < 3" by simp
-    with `0 \<le> j_int` have "j_int \<in> {0..<3}" by simp
+    with \<open>j_int \<le> 3\<close> have "j_int < 3" by simp
+    with \<open>0 \<le> j_int\<close> have "j_int \<in> {0..<3}" by simp
     hence "Rep_bit1 (Abs_bit1 j_int :: 3) = j_int"
       by (simp add: bit1.Abs_inverse)
     hence "of_int j_int = of_int (Rep_bit1 (Abs_bit1 j_int :: 3))" by simp

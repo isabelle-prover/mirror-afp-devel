@@ -52,7 +52,7 @@ proof -
       by(force simp add: fresh_prod name_fresh)
 
     from Trans cFreshQ' have "Q \<longmapsto> a<\<nu>c> \<prec> ([(y, c)] \<bullet> Q')" by(simp add: alphaBoundOutput)
-    hence "\<exists>P'. P \<longmapsto> a<\<nu>c> \<prec> P' \<and> (P', [(y, c)] \<bullet> Q') \<in> Rel" using `c \<sharp> P` `c \<sharp> Q` `c \<sharp> C`
+    hence "\<exists>P'. P \<longmapsto> a<\<nu>c> \<prec> P' \<and> (P', [(y, c)] \<bullet> Q') \<in> Rel" using \<open>c \<sharp> P\<close> \<open>c \<sharp> Q\<close> \<open>c \<sharp> C\<close>
       by(rule Bound)
     then obtain P' where PTrans: "P \<longmapsto> a<\<nu>c> \<prec> P'" and P'RelQ': "(P', [(y, c)] \<bullet> Q') \<in> Rel"
       by blast
@@ -184,10 +184,10 @@ proof -
     case(Bound a y R')
     have RTrans: "R \<longmapsto> a<\<nu>y> \<prec> R'" by fact
 
-    from QSimR RTrans `y \<sharp> Q` have "\<exists>Q'. Q \<longmapsto> a<\<nu>y> \<prec> Q' \<and> (Q', R') \<in> Rel'"
+    from QSimR RTrans \<open>y \<sharp> Q\<close> have "\<exists>Q'. Q \<longmapsto> a<\<nu>y> \<prec> Q' \<and> (Q', R') \<in> Rel'"
       by(rule elim)
     then obtain Q' where QTrans: "Q \<longmapsto> a<\<nu>y> \<prec> Q'" and Q'Rel'R': "(Q', R') \<in> Rel'" by blast
-    from PSimQ QTrans `y \<sharp> P` have "\<exists>P'. P \<longmapsto> a<\<nu>y> \<prec> P' \<and> (P', Q') \<in> Rel"
+    from PSimQ QTrans \<open>y \<sharp> P\<close> have "\<exists>P'. P \<longmapsto> a<\<nu>y> \<prec> P' \<and> (P', Q') \<in> Rel"
       by(rule elim)
     then obtain P' where PTrans: "P \<longmapsto> a<\<nu>y> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" by blast
 

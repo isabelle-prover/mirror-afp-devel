@@ -2,16 +2,16 @@ theory SINVAR_TaintingTrusted
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant Tainting with Untainting-Feature for IFS *}
+subsection \<open>SecurityInvariant Tainting with Untainting-Feature for IFS\<close>
 
 context
 begin
   qualified datatype taints_raw = TaintsUntaints_Raw (taints_raw: "string set") (untaints_raw: "string set")
 
-  text{*The @{const untaints_raw} set must be a subset of @{const taints_raw}.
+  text\<open>The @{const untaints_raw} set must be a subset of @{const taints_raw}.
         Otherwise, there can be entries in the untaints set, which do not affect anything.
         This is certainly undesirable.
-        In addition, a unique default parameter cannot exist if we allow such dead entries.*}
+        In addition, a unique default parameter cannot exist if we allow such dead entries.\<close>
   qualified typedef taints = "{ts::taints_raw. untaints_raw ts \<subseteq> taints_raw ts}"
     morphisms raw_of_taints Abs_taints
   proof
@@ -47,7 +47,7 @@ begin
   lemma untaints_TaintsUntaints[code]: "untaints (TaintsUntaints ts uts) = uts"
     by(simp add: untaints_def raw_of_taints_TaintsUntaints)
 
-  text{*The things in the first set are tainted, those in the second set are untainted.
+  text\<open>The things in the first set are tainted, those in the second set are untainted.
     For example, a machine produces @{term "''foo''"}:
       @{term "TaintsUntaints {''foo''} {}"}
 
@@ -55,7 +55,7 @@ begin
     way that they are no longer critical and outputs @{term "''baz''"}:
       @{term "TaintsUntaints {''foo'', ''bar'', ''baz''} {''foo'', ''bar''}"}
       abbreviated: @{term "TaintsUntaints {''baz''} {''foo'', ''bar''}"}
-      *}
+\<close>
   lemma "TaintsUntaints {''foo'', ''bar'', ''baz''} {''foo'', ''bar''} = 
          TaintsUntaints {''baz''} {''foo'', ''bar''}"
     apply(simp add: taints_eq_iff raw_of_taints_TaintsUntaints)
@@ -69,7 +69,7 @@ begin
     "sinvar G nP \<equiv> \<forall> (v1,v2) \<in> edges G.
         taints (nP v1) - untaints (nP v1) \<subseteq> taints (nP v2)"
   
-  text{*Information Flow Security*}
+  text\<open>Information Flow Security\<close>
   qualified definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
   
   
@@ -97,7 +97,7 @@ begin
   
   
   
-  text{*Needs the well-formedness condition that @{term "untaints otherbot \<subseteq> taints otherbot"}*}
+  text\<open>Needs the well-formedness condition that @{term "untaints otherbot \<subseteq> taints otherbot"}\<close>
   private lemma Taints_def_unique: "otherbot \<noteq> default_node_properties \<Longrightarrow>
       \<exists>G p i f. wf_graph G \<and> \<not> sinvar G p \<and> f \<in> (SecurityInvariant_withOffendingFlows.set_offending_flows sinvar G p) \<and>
          sinvar (delete_edges G f) p \<and>
@@ -138,7 +138,7 @@ begin
   
   
   
-  subsubsection {*ENF*}
+  subsubsection \<open>ENF\<close>
     private lemma Taints_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form
         sinvar (\<lambda>c1 c2. taints c1 - untaints c1 \<subseteq> taints c2)"
       unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def sinvar_def

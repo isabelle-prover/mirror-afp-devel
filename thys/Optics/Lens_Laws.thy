@@ -37,7 +37,7 @@ text \<open>
 
 named_theorems lens_defs
 
-text \<open> @{text lens_source} gives the set of constructible sources; that is those that can be built
+text \<open> \<open>lens_source\<close> gives the set of constructible sources; that is those that can be built
   by putting a value into an arbitrary source. \<close>
 
 definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" ("\<S>\<index>") where

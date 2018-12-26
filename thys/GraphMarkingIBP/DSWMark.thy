@@ -1,10 +1,10 @@
-section {* Deutsch-Schorr-Waite Marking Algorithm *}
+section \<open>Deutsch-Schorr-Waite Marking Algorithm\<close>
 
 theory DSWMark
 imports LinkMark
 begin
 
-text{*
+text\<open>
 Finally, we construct the Deutsch-Schorr-Waite marking algorithm by assuming that there 
 are only two pointers ($\mathit{left}$, $\mathit{right}$) from every node. There is also a new variable,
 $\mathit{atom}: \mathit{node} \to  \mathit{bool}$ which associates to every node a Boolean value.
@@ -15,7 +15,7 @@ if and only if $\mathit{label}\ x = \mathit{some}$.
 
 We use a new locale which fixes the initial values of the variables $\mathit{left}$, $\mathit{right}$, and
 $\mathit{atom}$ in $\mathit{left0}$, $\mathit{right0}$, and $\mathit{atom0}$ respectively.
-*}
+\<close>
 
 datatype Index = none | some
 
@@ -46,7 +46,7 @@ lemma [simp]:
 definition
   "gg mrk atom ptr x \<equiv> ptr x \<noteq> nil \<and> ptr x \<notin> mrk \<and> \<not> atom x"
 
-subsection {* Transitions *}
+subsection \<open>Transitions\<close>
 
 definition
   "QQ1_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
@@ -99,7 +99,7 @@ definition
   "QQ8_a \<equiv> [: p, t, left, right, atom, mrk \<leadsto> p', t', left', right', atom', mrk' . 
      p = nil \<and> p' = p \<and> t' = t \<and> mrk' = mrk \<and> left' = left \<and> right' = right \<and> atom' = atom:]"
 
-section {* Data refinement relation *}
+section \<open>Data refinement relation\<close>
 
 definition
   "RR_a \<equiv> {: p, t, left, right, atom, mrk \<leadsto> p', t', lnk, lbl, mrk' .
@@ -117,7 +117,7 @@ definition
       (I.loop, I.final) \<Rightarrow> QQ8_a |
        _ \<Rightarrow> \<top>))"
 
-subsection {* Data refinement of the transitions *}
+subsection \<open>Data refinement of the transitions\<close>
 
 theorem init1_a [simp]:
   "DataRefinement ({.Init''.} o Q1''_a) RR_a RR_a QQ1_a"
@@ -200,7 +200,7 @@ theorem final_step_a [simp]:
        Loop''_def subset_eq RR_a_def simp_eq_emptyset)
 
 
-subsection {* Diagram data refinement *}
+subsection \<open>Diagram data refinement\<close>
 
 lemma [simp]: "mono RR_a" by (simp add: RR_a_def)
 lemma [simp]: "RR_a \<in> Apply.Disjunctive" by (simp add: RR_a_def)
@@ -236,7 +236,7 @@ theorem ClassicMark_DataRefinement_a [simp]:
   apply (rule data_refinement_choice1)
   by simp_all
 
-subsection {* Diagram corectness *}
+subsection \<open>Diagram corectness\<close>
 
 theorem ClassicMark_correct_a [simp]:
   "Hoare_dgr  (R''_a .. (R'_a .. (R_a .. SetMarkInv)))  ClassicMark 
@@ -245,7 +245,7 @@ theorem ClassicMark_correct_a [simp]:
   apply auto
   by (rule LinkMark_correct)
 
-text {*
+text \<open>
 We have proved the correctness of the final algorithm, but the pre and the post conditions
 involve the angelic choice operator and they depend on all data refinement steps we 
 have used to prove the final diagram. We simplify these conditions and we show that
@@ -261,7 +261,7 @@ and the variable $mrk$ records all reachable nodes. The reachable nodes are defi
 $\mathit{next}$ relation, however if we unfold all locale interpretations and definitions we see easeily
 that a node $x$ is reachable if there is a path from $root$ to $x$ along $\mathit{left}$ and $\mathit{right}$ functions,
 and all nodes in this path have the atom bit false.
-*}
+\<close>
 
 definition 
   "ClassicInit = {(p, t, left, right, atom, mrk) .
@@ -292,11 +292,11 @@ theorem [simp]:
   apply auto
   by (simp_all add: link0_def)
 
-text{*
+text\<open>
 The indexed predicate $\mathit{ClassicPre}$ is the precondition of the diagram, and since we are only interested
 in starting the marking diagram in the $init$ situation we set 
 $\mathit{ClassicPre} \ loop = \mathit{ClassicPre} \ \mathit{final} = \emptyset$. 
-*}
+\<close>
 
 definition [simp]:
   "ClassicPre i =  (case i of
@@ -304,11 +304,11 @@ definition [simp]:
       I.loop  \<Rightarrow> {} |
       I.final \<Rightarrow> {})"
 
-text{*
+text\<open>
 We are interested on the other hand that the marking diagram terminates only in the $\mathit{final}$ situation. In order to
 achieve this we define the postcondition of the diagram as the indexed predicate $\mathit{ClassicPost}$ which is empty
 on every situation except $final$. 
-*}
+\<close>
 
 definition [simp]:
   "ClassicPost i =  (case i of
@@ -342,11 +342,11 @@ lemma [simp]:
   apply (case_tac "a \<noteq> nil")
   by auto
 
-text {*
+text \<open>
 The final theorem states the correctness of the marking diagram with respect to the precondition
 $\mathit{ClassicPre}$ and the postcondition $\mathit{ClassicPost}$, that is, if the diagram starts in the initial 
 situation, then it will terminate in the final situation, and it will mark all reachable nodes.
-*}
+\<close>
 
 lemma [simp]: "mono QQ1_a" by (simp add: QQ1_a_def)
 lemma [simp]: "mono QQ2_a" by (simp add: QQ2_a_def)

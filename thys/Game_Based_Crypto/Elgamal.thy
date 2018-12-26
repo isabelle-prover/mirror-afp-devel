@@ -11,7 +11,7 @@ theory Elgamal imports
   CryptHOL.Negligible
 begin
 
-subsection {* Elgamal encryption scheme *}
+subsection \<open>Elgamal encryption scheme\<close>
 
 locale elgamal_base =
   fixes \<G> :: "'grp cyclic_group" (structure)

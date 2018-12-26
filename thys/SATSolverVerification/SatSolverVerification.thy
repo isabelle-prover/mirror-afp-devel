@@ -3,23 +3,23 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-section{* Verification of DPLL based SAT solvers. *}
+section\<open>Verification of DPLL based SAT solvers.\<close>
 theory SatSolverVerification
 imports CNF Trail
 begin
 
-text{* This theory contains a number of lemmas used in verification of
+text\<open>This theory contains a number of lemmas used in verification of
 different SAT solvers. Although this file does not contain any
 theorems significant on their own, it is an essential part of the SAT
 solver correctness proof because it contains most of the technical
 details used in the proofs that follow. These lemmas serve as a basis
 for partial correctness proof for pseudo-code implementation of modern
-SAT solvers described in \cite{JARrad}, in terms of Hoare logic. *}
+SAT solvers described in \cite{JARrad}, in terms of Hoare logic.\<close>
 
 (******************************************************************************)
-subsection{* Literal Trail *}
+subsection\<open>Literal Trail\<close>
 (******************************************************************************)
-text{* LiteralTrail is a Trail consisting of literals, where decision literals are marked. *}
+text\<open>LiteralTrail is a Trail consisting of literals, where decision literals are marked.\<close>
 
 type_synonym LiteralTrail = "Literal Trail"
 
@@ -42,11 +42,11 @@ abbreviation prefixBeforeLastDecision :: "LiteralTrail \<Rightarrow> LiteralTrai
 (*                            I N V A R I A N T S                           *)
 (*--------------------------------------------------------------------------*)
 (******************************************************************************)
-subsection{* Invariants *}
+subsection\<open>Invariants\<close>
 (******************************************************************************)
-text{* In this section a number of conditions will be formulated and
+text\<open>In this section a number of conditions will be formulated and
 it will be shown that these conditions are invariant after applying
-different DPLL-based transition rules. *}
+different DPLL-based transition rules.\<close>
 
 definition
 "InvariantConsistent (M::LiteralTrail) == consistent (elements M)"
@@ -67,7 +67,7 @@ definition
 "InvariantVarsF (F::Formula) (F0::Formula) (Vbl::Variable set) == vars F \<subseteq> vars F0 \<union> Vbl"
 
 
-text{* The following invariants are used in conflict analysis. *}
+text\<open>The following invariants are used in conflict analysis.\<close>
 definition
 "InvariantCFalse (conflictFlag::bool) (M::LiteralTrail) (C::Clause) == conflictFlag \<longrightarrow> clauseFalse C (elements M)"
 
@@ -84,12 +84,12 @@ definition
 (*----------------------------------------------------------------------*)
 (*           V E R I F I C A T I O N     L E M M A S                    *)
 (*----------------------------------------------------------------------*)
-subsubsection{* Auxiliary lemmas *}
-text{* This section contains some auxiliary lemmas that additionally 
-  characterize some of invariants that have been defined. *}
+subsubsection\<open>Auxiliary lemmas\<close>
+text\<open>This section contains some auxiliary lemmas that additionally 
+  characterize some of invariants that have been defined.\<close>
 
 (*-------------------------   InvariantImpliedLiterals    ---------------------*)
-text{* Lemmas about @{term InvariantImpliedLiterals}. *}
+text\<open>Lemmas about @{term InvariantImpliedLiterals}.\<close>
 lemma InvariantImpliedLiteralsWeakerVariant:
   fixes M :: LiteralTrail and F :: Formula
   assumes "\<forall> l. l el elements M \<longrightarrow> formulaEntailsLiteral (F @ val2form (decisionsTo l M)) l"
@@ -109,7 +109,7 @@ proof -
       by auto
     hence "(decisions M) = (decisionsTo l M) @ s"
       by (rule sym)
-    with `formulaEntailsLiteral (F @ val2form (decisionsTo l M)) l`
+    with \<open>formulaEntailsLiteral (F @ val2form (decisionsTo l M)) l\<close>
     have "formulaEntailsLiteral (F @ val2form (decisions M)) l"
       using formulaEntailsLiteralAppend [of "F @ val2form (decisionsTo l M)" "l" "val2form s"]
       by (auto simp add:formulaEntailsLiteralAppend val2formAppend)
@@ -131,22 +131,22 @@ proof -
     {
       fix l :: Literal
       assume "l el (elements M)"
-      from `InvariantImpliedLiterals F M`
+      from \<open>InvariantImpliedLiterals F M\<close>
       have "\<forall> l. l el (elements M) \<longrightarrow> formulaEntailsLiteral (F @ val2form (decisions M)) l"
         by (simp add: InvariantImpliedLiteralsWeakerVariant InvariantImpliedLiterals_def)
-      with `l el (elements M)`
+      with \<open>l el (elements M)\<close>
       have "formulaEntailsLiteral (F @ val2form (decisions M)) l"
         by simp
-      with `model valuation (F @ val2form (decisions M))`
+      with \<open>model valuation (F @ val2form (decisions M))\<close>
       have "literalTrue l valuation"
         by (simp add: formulaEntailsLiteral_def)
     } 
     hence "formulaTrue (val2form (elements M)) valuation"
       by (simp add: val2formFormulaTrue)
-    with `formulaTrue F valuation` `consistent valuation`
+    with \<open>formulaTrue F valuation\<close> \<open>consistent valuation\<close>
     have "model valuation (F @ (val2form (elements M)))"
       by (auto simp add:formulaTrueAppend)
-    with `formulaEntailsLiteral (F @ (val2form (elements M))) literal`
+    with \<open>formulaEntailsLiteral (F @ (val2form (elements M))) literal\<close>
     have "literalTrue literal valuation"
       by (simp add: formulaEntailsLiteral_def)
   }
@@ -159,11 +159,11 @@ lemma InvariantImpliedLiteralsAndFormulaFalseThenFormulaAndDecisionsAreNotSatisf
   assumes "InvariantImpliedLiterals F M" and "formulaFalse F (elements M)" 
   shows "\<not> satisfiable (F @ val2form (decisions M))"
 proof -
-  from `formulaFalse F (elements M)`
+  from \<open>formulaFalse F (elements M)\<close>
   have "formulaFalse (F @ val2form (decisions M)) (elements M)"
     by (simp add: formulaFalseAppend)
   moreover
-  from `InvariantImpliedLiterals F M`
+  from \<open>InvariantImpliedLiterals F M\<close>
   have "formulaEntailsValuation (F @ val2form (decisions M)) (elements M)"
     unfolding formulaEntailsValuation_def
     unfolding InvariantImpliedLiterals_def
@@ -184,20 +184,20 @@ proof -
     fix l :: Literal
     assume *: "l el elements prefix"
 
-    from * `isPrefix prefix M`
+    from * \<open>isPrefix prefix M\<close>
     have "l el elements M"
       unfolding isPrefix_def
       by auto
 
-    from * and `isPrefix prefix M`
+    from * and \<open>isPrefix prefix M\<close>
     have "decisionsTo l prefix = decisionsTo l M"
       using markedElementsToPrefixElement [of "prefix" "M" "l"]
       by simp
 
-    from `InvariantImpliedLiterals F M` and `l el elements M`
+    from \<open>InvariantImpliedLiterals F M\<close> and \<open>l el elements M\<close>
     have "formulaEntailsLiteral (F @ val2form (decisionsTo l M)) l"
       by (simp add:InvariantImpliedLiterals_def)
-    with `decisionsTo l prefix = decisionsTo l M`
+    with \<open>decisionsTo l prefix = decisionsTo l M\<close>
     have "formulaEntailsLiteral (F @ val2form (decisionsTo l prefix)) l"
       by simp
   } thus ?thesis
@@ -206,30 +206,30 @@ qed
 
 
 (*-------------------------   InvariantReasonClauses    ---------------------*)
-text{* Lemmas about @{term InvariantReasonClauses}. *}
+text\<open>Lemmas about @{term InvariantReasonClauses}.\<close>
 lemma InvariantReasonClausesHoldsForPrefix:
   fixes F::Formula and M::LiteralTrail and p::LiteralTrail
   assumes "InvariantReasonClauses F M" and "InvariantUniq M"  and
   "isPrefix p M" 
   shows "InvariantReasonClauses F p"
 proof-
-  from `InvariantReasonClauses F M`
+  from \<open>InvariantReasonClauses F M\<close>
   have *: "\<forall> literal. literal el elements M \<and> \<not> literal el decisions M \<longrightarrow> 
                     (\<exists> clause. formulaEntailsClause F clause \<and> isReason clause literal (elements M))"
     unfolding InvariantReasonClauses_def 
     by simp
-  from `InvariantUniq M`
+  from \<open>InvariantUniq M\<close>
   have "uniq (elements M)"
     unfolding InvariantUniq_def 
     by simp
   {
     fix literal::Literal
     assume "literal el elements p" and "\<not> literal el decisions p"
-      from `isPrefix p M` `literal el (elements p)`
+      from \<open>isPrefix p M\<close> \<open>literal el (elements p)\<close>
       have "literal el (elements M)"
         by (auto simp add: isPrefix_def)
       moreover
-      from `isPrefix p M` `literal el (elements p)` `\<not> literal el (decisions p)` `uniq (elements M)`
+      from \<open>isPrefix p M\<close> \<open>literal el (elements p)\<close> \<open>\<not> literal el (decisions p)\<close> \<open>uniq (elements M)\<close>
       have "\<not> literal el decisions M"
         using markedElementsTrailMemPrefixAreMarkedElementsPrefix [of "M" "p" "literal"]
         by auto
@@ -238,11 +238,11 @@ proof-
         "formulaEntailsClause F clause" "isReason clause literal (elements M)"
         using *
         by auto
-      with `literal el elements p` `\<not>  literal el decisions p` `isPrefix p M`
+      with \<open>literal el elements p\<close> \<open>\<not>  literal el decisions p\<close> \<open>isPrefix p M\<close>
       have "isReason clause literal (elements p)"
         using isReasonHoldsInPrefix[of "literal" "elements p" "elements M" "clause"]
         by (simp add:isPrefixElements)
-      with `formulaEntailsClause F clause`
+      with \<open>formulaEntailsClause F clause\<close>
       have "\<exists> clause. formulaEntailsClause F clause \<and> isReason clause literal (elements p)"
         by auto
   }
@@ -258,20 +258,20 @@ lemma InvariantReasonClausesHoldsForPrefixElements:
   "literal el (elements p)" and "\<not> literal el decisions M"
   shows "\<exists> clause. formulaEntailsClause F clause \<and> isReason clause literal (elements M)"
 proof -
-  from `isPrefix p M` `\<not> literal el (decisions M)`
+  from \<open>isPrefix p M\<close> \<open>\<not> literal el (decisions M)\<close>
   have "\<not> literal el (decisions p)"
     using markedElementsPrefixAreMarkedElementsTrail[of "p" "M" "literal"]
     by auto
 
-  from `InvariantReasonClauses F p` `literal el (elements p)` `\<not> literal el (decisions p)` obtain clause :: Clause
+  from \<open>InvariantReasonClauses F p\<close> \<open>literal el (elements p)\<close> \<open>\<not> literal el (decisions p)\<close> obtain clause :: Clause
     where "formulaEntailsClause F clause" "isReason clause literal (elements p)"
     unfolding InvariantReasonClauses_def
     by auto
-  with `isPrefix p M`
+  with \<open>isPrefix p M\<close>
   have "isReason clause literal (elements M)"
     using isReasonAppend [of "clause" "literal" "elements p"]
     by (auto simp add: isPrefix_def)
-  with `formulaEntailsClause F clause`
+  with \<open>formulaEntailsClause F clause\<close>
   show ?thesis
     by auto
 qed
@@ -279,17 +279,17 @@ qed
 (*----------------------------------------------------------------------*)
 (*           V E R I F I C A T I O N     L E M M A S                    *)
 (*----------------------------------------------------------------------*)
-subsubsection{* Transition rules preserve invariants *}
+subsubsection\<open>Transition rules preserve invariants\<close>
 
-text{* In this section it will be proved that the different DPLL-based
+text\<open>In this section it will be proved that the different DPLL-based
 transition rules preserves given invariants. Rules are implicitly given
 in their most general form. Explicit definition of transition rules will be
-done in theories that describe specific solvers. *}
+done in theories that describe specific solvers.\<close>
 
 (************************************************************************)
 (*                       A P P L Y    D E C I D E                       *)
 (************************************************************************)
-text{* $Decide$ transition rule. *}
+text\<open>$Decide$ transition rule.\<close>
 lemma InvariantUniqAfterDecide: 
   fixes M :: LiteralTrail and literal :: Literal and M' :: LiteralTrail
   assumes "InvariantUniq M" and 
@@ -297,20 +297,20 @@ lemma InvariantUniqAfterDecide:
   "M' = M @ [(literal, True)]"
   shows "InvariantUniq M'"
 proof -
-  from `InvariantUniq M`
+  from \<open>InvariantUniq M\<close>
   have "uniq (elements M)"
     unfolding InvariantUniq_def 
     .
   {
     assume "\<not> uniq (elements M')"
-    with `uniq (elements M)` `M' = M @ [(literal, True)]`
+    with \<open>uniq (elements M)\<close> \<open>M' = M @ [(literal, True)]\<close>
     have "literal el (elements M)"
       using uniqButlastNotUniqListImpliesLastMemButlast [of "elements M'"]
       by auto
     hence "var literal \<in> vars (elements M)"
       using valuationContainsItsLiteralsVariable [of "literal" "elements M"]
       by simp
-    with `var literal \<notin> vars (elements M)`
+    with \<open>var literal \<notin> vars (elements M)\<close>
     have "False"
       by simp
   }
@@ -332,15 +332,15 @@ proof -
     have "formulaEntailsLiteral (F @ val2form (decisionsTo l M')) l"
     proof (cases "l el elements M")
       case True
-      with `M' = M @ [(literal, True)]`
+      with \<open>M' = M @ [(literal, True)]\<close>
       have "decisionsTo l M' = decisionsTo l M"
         by (simp add: markedElementsToAppend)
-      with `InvariantImpliedLiterals F M` `l el elements M`
+      with \<open>InvariantImpliedLiterals F M\<close> \<open>l el elements M\<close>
       show ?thesis
         by (simp add: InvariantImpliedLiterals_def)
     next
       case False
-      with `l el elements M'` and `M' = M @ [(literal, True)]`
+      with \<open>l el elements M'\<close> and \<open>M' = M @ [(literal, True)]\<close>
       have "l = literal"
         by (auto split: if_split_asm)
       have "clauseEntailsLiteral [literal] literal" 
@@ -353,7 +353,7 @@ proof -
         have "isDecision (last (M @ [(literal, True)]))"
           by simp
         moreover
-        from `var literal \<notin> vars (elements M)`
+        from \<open>var literal \<notin> vars (elements M)\<close>
         have "\<not> literal el (elements M)"
           using valuationContainsItsLiteralsVariable[of "literal" "elements M"]
           by auto
@@ -364,7 +364,7 @@ proof -
       }
       ultimately
       show ?thesis
-         using `M' = M @ [(literal, True)]` `l = literal` 
+         using \<open>M' = M @ [(literal, True)]\<close> \<open>l = literal\<close> 
            clauseEntailsLiteralThenFormulaEntailsLiteral [of "[literal]" "F @ val2form (decisions M) @ [[literal]]" "literal"] 
          by (simp add:val2formAppend)
     qed
@@ -380,10 +380,10 @@ lemma InvariantVarsMAfterDecide:
   "M' = M @ [(literal, True)]"
   shows "InvariantVarsM M' F0 Vbl"
 proof -
-  from `InvariantVarsM M F0 Vbl`
+  from \<open>InvariantVarsM M F0 Vbl\<close>
   have "vars (elements M) \<subseteq> vars F0 \<union> Vbl"
     by (simp only:InvariantVarsM_def)
-  from `M' = M @ [(literal, True)]`
+  from \<open>M' = M @ [(literal, True)]\<close>
   have "vars (elements M') = vars (elements (M @ [(literal, True)]))"
     by simp
   also have "... = vars (elements M @ [literal])"
@@ -393,7 +393,7 @@ proof -
     by simp
   finally
   show ?thesis
-    using `vars (elements M) \<subseteq> (vars F0) \<union> Vbl` `var literal \<in> Vbl`
+    using \<open>vars (elements M) \<subseteq> (vars F0) \<union> Vbl\<close> \<open>var literal \<in> Vbl\<close>
     unfolding InvariantVarsM_def
     by auto
 qed
@@ -405,28 +405,28 @@ lemma InvariantConsistentAfterDecide:
   "M' = M @ [(literal, True)]"
   shows "InvariantConsistent M'"
 proof -
-  from `InvariantConsistent M`
+  from \<open>InvariantConsistent M\<close>
   have "consistent (elements M)"
     unfolding InvariantConsistent_def 
     .
   {
     assume "inconsistent (elements M')"
-    with `M' = M @ [(literal, True)]`
+    with \<open>M' = M @ [(literal, True)]\<close>
     have "inconsistent (elements M) \<or> inconsistent [literal] \<or> (\<exists> l. literalTrue l (elements M) \<and> literalFalse l [literal])"
       using inconsistentAppend [of "elements M" "[literal]"]
       by simp
-    with `consistent (elements M)` obtain l :: Literal 
+    with \<open>consistent (elements M)\<close> obtain l :: Literal 
       where "literalTrue l (elements M)" and "literalFalse l [literal]"
       by auto
     hence "(opposite l) = literal"
       by auto
     hence "var literal = var l"
       by auto
-    with `literalTrue l (elements M)`
+    with \<open>literalTrue l (elements M)\<close>
     have "var l \<in> vars (elements M)"
       using valuationContainsItsLiteralsVariable [of "l" "elements M"]
       by simp
-    with `var literal = var l` `var literal \<notin> vars (elements M)`
+    with \<open>var literal = var l\<close> \<open>var literal \<notin> vars (elements M)\<close>
     have "False"
       by simp
   }
@@ -448,7 +448,7 @@ proof -
     have "\<exists> clause. formulaEntailsClause F clause \<and> isReason clause literal' (elements M')"
     proof (cases "literal' el elements M")
       case True
-      with assms `\<not> literal' el decisions M'` obtain clause::Clause
+      with assms \<open>\<not> literal' el decisions M'\<close> obtain clause::Clause
         where "formulaEntailsClause F clause \<and> isReason clause literal' (elements M')"
         using InvariantReasonClausesHoldsForPrefixElements [of "F" "M" "M'" "literal'"]
         by (auto simp add:isPrefix_def)
@@ -456,14 +456,14 @@ proof -
         by auto
     next
       case False
-      with `M' = M @ [(literal, True)]` `literal' el elements M'`
+      with \<open>M' = M @ [(literal, True)]\<close> \<open>literal' el elements M'\<close>
       have "literal = literal'"
         by (simp split: if_split_asm)
-      with `M' = M @ [(literal, True)]` 
+      with \<open>M' = M @ [(literal, True)]\<close> 
       have "literal' el decisions M'"
         using markedElementIsMarkedTrue[of "literal" "M'"]
         by simp
-      with `\<not> literal' el decisions M'`
+      with \<open>\<not> literal' el decisions M'\<close>
       have "False"
         by simp
       thus ?thesis
@@ -484,14 +484,14 @@ proof
   assume "conflictFlag"
   show "clauseFalse C (elements M')"
   proof -
-    from `InvariantCFalse conflictFlag M C`
+    from \<open>InvariantCFalse conflictFlag M C\<close>
     have "conflictFlag \<longrightarrow> clauseFalse C (elements M)"
       unfolding InvariantCFalse_def 
       .
-    with `conflictFlag`
+    with \<open>conflictFlag\<close>
     have "clauseFalse C (elements M)"
       by simp
-    with `M' = M @ [(literal, True)]`
+    with \<open>M' = M @ [(literal, True)]\<close>
     show ?thesis
       by (simp add:clauseFalseAppendValuation)
   qed
@@ -500,7 +500,7 @@ qed
 (************************************************************************)
 (*             A P P L Y    U N I T   P R O P A G A T E                 *)
 (************************************************************************)
-text{* $UnitPropagate$ transition rule. *}
+text\<open>$UnitPropagate$ transition rule.\<close>
 
 lemma InvariantImpliedLiteralsHoldsForUnitLiteral:
   fixes M :: LiteralTrail and F :: Formula and uClause :: Clause and uLiteral :: Literal
@@ -511,21 +511,21 @@ lemma InvariantImpliedLiteralsHoldsForUnitLiteral:
 proof-
   have "decisionsTo uLiteral M' = decisions M"
   proof -
-    from `isUnitClause uClause uLiteral (elements M)`
+    from \<open>isUnitClause uClause uLiteral (elements M)\<close>
     have "\<not> uLiteral el (elements M)"
       by (simp add: isUnitClause_def)
-    with `M' = M @ [(uLiteral, False)]`
+    with \<open>M' = M @ [(uLiteral, False)]\<close>
     show ?thesis
       using markedElementsToAppend[of "uLiteral" "M" "[(uLiteral, False)]"]
       unfolding markedElementsTo_def
       by simp
   qed
   moreover
-  from `formulaEntailsClause F uClause` `isUnitClause uClause uLiteral (elements M)` 
+  from \<open>formulaEntailsClause F uClause\<close> \<open>isUnitClause uClause uLiteral (elements M)\<close> 
   have "formulaEntailsLiteral (F @ val2form (elements M)) uLiteral"
     using unitLiteralIsEntailed [of "uClause" "uLiteral" "elements M" "F"]
     by simp
-  with `InvariantImpliedLiterals F M`
+  with \<open>InvariantImpliedLiterals F M\<close>
   have "formulaEntailsLiteral (F @ val2form (decisions M)) uLiteral"
     by (simp add: InvariantImpliedLiteralsAndElementsEntailLiteralThenDecisionsEntailLiteral)
   ultimately
@@ -546,11 +546,11 @@ proof -
     have "formulaEntailsLiteral (F @ val2form (decisionsTo l M')) l"
     proof (cases "l el elements M")
       case True
-      with `InvariantImpliedLiterals F M`
+      with \<open>InvariantImpliedLiterals F M\<close>
       have "formulaEntailsLiteral (F @ val2form (decisionsTo l M)) l"
         by (simp add:InvariantImpliedLiterals_def)
       moreover
-      from `M' = M @ [(uLiteral, False)]`
+      from \<open>M' = M @ [(uLiteral, False)]\<close>
       have "(isPrefix M M')"
         by (simp add:isPrefix_def)
       with True
@@ -561,7 +561,7 @@ proof -
         by simp
     next
       case False
-      with `l el (elements M')` `M' = M @ [(uLiteral, False)]`
+      with \<open>l el (elements M')\<close> \<open>M' = M @ [(uLiteral, False)]\<close>
       have "l = uLiteral"
         by (auto split: if_split_asm)
       moreover
@@ -585,14 +585,14 @@ lemma InvariantVarsMAfterUnitPropagate:
   "M' = M @ [(uLiteral, False)]"
   shows "InvariantVarsM M' F0 Vbl"
 proof -
-  from `InvariantVarsM M F0 Vbl`
+  from \<open>InvariantVarsM M F0 Vbl\<close>
   have "vars (elements M) \<subseteq>  vars F0 \<union> Vbl"
     unfolding InvariantVarsM_def 
     .
   thus ?thesis
     unfolding InvariantVarsM_def
-    using `var uLiteral \<in> vars F0 \<union> Vbl`
-    using `M' = M @ [(uLiteral, False)]`
+    using \<open>var uLiteral \<in> vars F0 \<union> Vbl\<close>
+    using \<open>M' = M @ [(uLiteral, False)]\<close>
       varsAppendClauses [of "elements M" "[uLiteral]"]
     by auto
 qed
@@ -604,26 +604,26 @@ lemma InvariantConsistentAfterUnitPropagate:
   "M' = M @ [(uLiteral, False)]"
   shows "InvariantConsistent M'"
 proof -
-  from `InvariantConsistent M`
+  from \<open>InvariantConsistent M\<close>
   have "consistent (elements M)"
     unfolding InvariantConsistent_def 
     .
-  from `isUnitClause uClause uLiteral (elements M)`
+  from \<open>isUnitClause uClause uLiteral (elements M)\<close>
   have "\<not> literalFalse uLiteral (elements M)"
     unfolding isUnitClause_def
     by simp
   {
     assume "inconsistent (elements M')"
-    with `M' = M @ [(uLiteral, False)]`
+    with \<open>M' = M @ [(uLiteral, False)]\<close>
     have "inconsistent (elements M) \<or> inconsistent [unitLiteral] \<or> (\<exists> l. literalTrue l (elements M) \<and> literalFalse l [uLiteral])"
       using inconsistentAppend [of "elements M" "[uLiteral]"]
       by simp
-    with `consistent (elements M)` obtain literal::Literal
+    with \<open>consistent (elements M)\<close> obtain literal::Literal
       where "literalTrue literal (elements M)" and "literalFalse literal [uLiteral]"
       by auto
     hence "literal = opposite uLiteral"
       by auto
-    with `literalTrue literal (elements M)` `\<not> literalFalse uLiteral (elements M)`
+    with \<open>literalTrue literal (elements M)\<close> \<open>\<not> literalFalse uLiteral (elements M)\<close>
     have False
       by simp
   } thus ?thesis
@@ -638,18 +638,18 @@ lemma InvariantUniqAfterUnitPropagate:
   "M' = M @ [(uLiteral, False)]"
   shows "InvariantUniq M'"
 proof-
-  from `InvariantUniq M`
+  from \<open>InvariantUniq M\<close>
   have "uniq (elements M)"
     unfolding InvariantUniq_def 
     .
   moreover
-  from `isUnitClause uClause uLiteral (elements M)`
+  from \<open>isUnitClause uClause uLiteral (elements M)\<close>
   have "\<not> literalTrue uLiteral (elements M)"
     unfolding isUnitClause_def
     by simp
   ultimately
   show ?thesis
-    using `M' = M @ [(uLiteral, False)]` uniqAppendElement[of "elements M" "uLiteral"]
+    using \<open>M' = M @ [(uLiteral, False)]\<close> uniqAppendElement[of "elements M" "uLiteral"]
     unfolding InvariantUniq_def
     by simp
 qed
@@ -661,7 +661,7 @@ lemma InvariantReasonClausesAfterUnitPropagate:
   "M' = M @ [(uLiteral, False)]"
   shows "InvariantReasonClauses F M'"
 proof -
-  from `InvariantReasonClauses F M`
+  from \<open>InvariantReasonClauses F M\<close>
   have *: "(\<forall> literal. (literal el (elements M)) \<and> \<not> (literal el (decisions M)) \<longrightarrow> 
     (\<exists> clause. formulaEntailsClause F clause \<and> (isReason clause literal (elements M))))"
     unfolding InvariantReasonClauses_def 
@@ -672,7 +672,7 @@ proof -
     have "\<exists> clause. formulaEntailsClause F clause \<and> isReason clause literal (elements M')" 
     proof (cases "literal el elements M")
       case True
-      with assms `\<not> literal el decisions M'` obtain clause::Clause
+      with assms \<open>\<not> literal el decisions M'\<close> obtain clause::Clause
         where "formulaEntailsClause F clause \<and> isReason clause literal (elements M')"
         using InvariantReasonClausesHoldsForPrefixElements [of "F" "M" "M'" "literal"]
         by (auto simp add:isPrefix_def)
@@ -680,10 +680,10 @@ proof -
         by auto
     next
       case False
-      with `literal el (elements M')` `M' = M @ [(uLiteral, False)]`
+      with \<open>literal el (elements M')\<close> \<open>M' = M @ [(uLiteral, False)]\<close>
       have "literal = uLiteral"
         by simp
-      with `M' = M @ [(uLiteral, False)]` `isUnitClause uClause uLiteral (elements M)` `formulaEntailsClause F uClause`
+      with \<open>M' = M @ [(uLiteral, False)]\<close> \<open>isUnitClause uClause uLiteral (elements M)\<close> \<open>formulaEntailsClause F uClause\<close>
       show ?thesis
         using isUnitClauseIsReason [of "uClause" "uLiteral" "elements M"]
         by auto
@@ -699,13 +699,13 @@ lemma InvariantCFalseAfterUnitPropagate:
   "M' = M @ [(uLiteral, False)]"
   shows "InvariantCFalse conflictFlag M' C"
 proof-
-  from `InvariantCFalse conflictFlag M C` 
+  from \<open>InvariantCFalse conflictFlag M C\<close> 
   have *: "conflictFlag \<longrightarrow> clauseFalse C (elements M)"
     unfolding InvariantCFalse_def 
     .
   {
     assume "conflictFlag" 
-    with `M' = M @ [(uLiteral, False)]` * 
+    with \<open>M' = M @ [(uLiteral, False)]\<close> * 
     have "clauseFalse C (elements M')"
       by (simp add:clauseFalseAppendValuation)
   }
@@ -717,7 +717,7 @@ qed
 (************************************************************************)
 (*                   A P P L Y    B A C K T R A C K                     *)
 (************************************************************************)
-text{* $Backtrack$ transition rule. *}
+text\<open>$Backtrack$ transition rule.\<close>
 lemma InvariantImpliedLiteralsAfterBacktrack:
   fixes F::Formula and M::LiteralTrail
   assumes "InvariantImpliedLiterals F M" and "InvariantUniq M" and "InvariantConsistent M" and 
@@ -735,17 +735,17 @@ proof -
     have "formulaEntailsLiteral (F @ val2form (decisionsTo l' M')) l'"
     proof (cases "l' el (elements ?p)")
       case True
-      with `isPrefix ?p M`
+      with \<open>isPrefix ?p M\<close>
       have "l' el (elements M)"
         using prefixElementsAreTrailElements[of "?p" "M"]
         by auto
 
-      with `InvariantImpliedLiterals F M` 
+      with \<open>InvariantImpliedLiterals F M\<close> 
       have "formulaEntailsLiteral (F @ val2form (decisionsTo l' M)) l'"
         unfolding InvariantImpliedLiterals_def
         by simp
       moreover
-      from `M' = ?p @ [(opposite ?l, False)]` True `isPrefix ?p M`
+      from \<open>M' = ?p @ [(opposite ?l, False)]\<close> True \<open>isPrefix ?p M\<close>
       have "(decisionsTo l' M') = (decisionsTo l' M)"
         using prefixToElementToPrefixElement[of "?p" "M" "l'"]
         unfolding markedElementsTo_def
@@ -755,36 +755,36 @@ proof -
         by auto
     next
       case False
-      with `l' el (elements M')` and `M' = ?p @ [(opposite ?l, False)]`
+      with \<open>l' el (elements M')\<close> and \<open>M' = ?p @ [(opposite ?l, False)]\<close>
       have "?l = (opposite l')"
         by (auto split: if_split_asm)
       hence "l' = (opposite ?l)"
         by simp
 
-      from `InvariantUniq M` and `markedElements M \<noteq> []`
+      from \<open>InvariantUniq M\<close> and \<open>markedElements M \<noteq> []\<close>
       have "(decisionsTo ?l M) = (decisions M)"
         unfolding InvariantUniq_def
         using markedElementsToLastMarkedAreAllMarkedElements
         by auto
       moreover
-      from `decisions M \<noteq> []` 
+      from \<open>decisions M \<noteq> []\<close> 
       have "?l el (elements M)"
         by (simp add: lastMarkedIsMarkedElement markedElementsAreElements)
-      with `InvariantConsistent M` 
+      with \<open>InvariantConsistent M\<close> 
       have "\<not> (opposite ?l) el (elements M)"
         unfolding InvariantConsistent_def
         by (simp add: inconsistentCharacterization)
-      with `isPrefix ?p M`
+      with \<open>isPrefix ?p M\<close>
       have "\<not> (opposite ?l) el (elements ?p)"
         using prefixElementsAreTrailElements[of "?p" "M"]
         by auto
-      with `M' = ?p @ [(opposite ?l, False)]` 
+      with \<open>M' = ?p @ [(opposite ?l, False)]\<close> 
       have "decisionsTo (opposite ?l) M' = decisions ?p"
         using markedElementsToAppend [of "opposite ?l" "?p" "[(opposite ?l, False)]"]
         unfolding markedElementsTo_def
         by simp
       moreover
-      from `InvariantUniq M` `decisions M \<noteq> []`
+      from \<open>InvariantUniq M\<close> \<open>decisions M \<noteq> []\<close>
       have "\<not> ?l el (elements ?p)"
         unfolding InvariantUniq_def
         using lastMarkedNotInPrefixBeforeLastMarked[of "M"]
@@ -795,33 +795,33 @@ proof -
         by (simp add: removeAll_id)
       hence "(removeAll ?l ((decisions ?p) @ [?l])) = (decisions ?p)"
         by simp
-      from `decisions M \<noteq> []` False `l' = (opposite ?l)`
+      from \<open>decisions M \<noteq> []\<close> False \<open>l' = (opposite ?l)\<close>
       have "(decisions ?p) @ [?l] = (decisions M)"
         using markedElementsAreElementsBeforeLastDecisionAndLastDecision[of "M"]
         by simp
-      with `(removeAll ?l ((decisions ?p) @ [?l])) = (decisions ?p)`
+      with \<open>(removeAll ?l ((decisions ?p) @ [?l])) = (decisions ?p)\<close>
       have "(decisions ?p) = (removeAll ?l (decisions M))"
         by simp
       moreover
-      from `formulaFalse F (elements M)` `InvariantImpliedLiterals F M`
+      from \<open>formulaFalse F (elements M)\<close> \<open>InvariantImpliedLiterals F M\<close>
       have "\<not> satisfiable (F @ (val2form (decisions M)))"
         using InvariantImpliedLiteralsAndFormulaFalseThenFormulaAndDecisionsAreNotSatisfiable[of "F" "M"]
         by simp
 
-      from `decisions M \<noteq> []` 
+      from \<open>decisions M \<noteq> []\<close> 
       have "?l el (decisions M)"
         unfolding lastMarked_def
         by simp
       hence "[?l] el val2form (decisions M)"
         using val2FormEl[of "?l" "(decisions M)"]
         by simp
-      with `\<not> satisfiable (F @ (val2form (decisions M)))`
+      with \<open>\<not> satisfiable (F @ (val2form (decisions M)))\<close>
       have "formulaEntailsLiteral (removeAll [?l] (F @ val2form (decisions M))) (opposite ?l)"
         using unsatisfiableFormulaWithSingleLiteralClause[of "F @ val2form (decisions M)" "lastDecision M"]
         by auto
       ultimately
       show ?thesis
-        using `l' = (opposite ?l)`
+        using \<open>l' = (opposite ?l)\<close>
         using formulaEntailsLiteralRemoveAllAppend[of "[?l]" "F" "val2form (removeAll ?l (decisions M))" "opposite ?l"]
         by (auto simp add: val2FormRemoveAll)
     qed
@@ -838,13 +838,13 @@ lemma InvariantConsistentAfterBacktrack:
   "M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]"
   shows "InvariantConsistent M'"
 proof-
-  from `decisions M \<noteq> []` `InvariantUniq M`
+  from \<open>decisions M \<noteq> []\<close> \<open>InvariantUniq M\<close>
   have "\<not> lastDecision M el elements (prefixBeforeLastDecision M)" 
     unfolding InvariantUniq_def
     using lastMarkedNotInPrefixBeforeLastMarked
     by simp
   moreover
-  from `InvariantConsistent M` 
+  from \<open>InvariantConsistent M\<close> 
   have "consistent (elements (prefixBeforeLastDecision M))"
     unfolding InvariantConsistent_def
     using isPrefixPrefixBeforeLastMarked[of "M"]
@@ -854,7 +854,7 @@ proof-
   ultimately 
   show ?thesis
     unfolding InvariantConsistent_def 
-    using `M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]`
+    using \<open>M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]\<close>
     using inconsistentAppend[of "elements (prefixBeforeLastDecision M)" "[opposite (lastDecision M)]"]
     by (auto split: if_split_asm)
 qed
@@ -866,7 +866,7 @@ lemma InvariantUniqAfterBacktrack:
   "M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]"
   shows "InvariantUniq M'"
 proof-
-  from `InvariantUniq M`
+  from \<open>InvariantUniq M\<close>
   have "uniq (elements (prefixBeforeLastDecision M))"
     unfolding InvariantUniq_def
     using isPrefixPrefixBeforeLastMarked[of "M"]
@@ -874,12 +874,12 @@ proof-
     using uniqListImpliesUniqPrefix
     by simp
   moreover
-  from `decisions M \<noteq> []`
+  from \<open>decisions M \<noteq> []\<close>
   have "lastDecision M el (elements M)"
     using lastMarkedIsMarkedElement[of "M"]
     using markedElementsAreElements[of "lastDecision M" "M"]
     by simp
-  with `InvariantConsistent M`
+  with \<open>InvariantConsistent M\<close>
   have "\<not> opposite (lastDecision M) el (elements M)"
     unfolding InvariantConsistent_def
     using inconsistentCharacterization
@@ -892,7 +892,7 @@ proof-
   ultimately
   show ?thesis
     using 
-      `M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]`
+      \<open>M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]\<close>
       uniqAppendElement[of "elements (prefixBeforeLastDecision M)" "opposite (lastDecision M)"]
     unfolding InvariantUniq_def
     by simp
@@ -905,7 +905,7 @@ lemma InvariantVarsMAfterBacktrack:
   "M' = (prefixBeforeLastDecision M) @ [(opposite (lastDecision M), False)]"
   shows "InvariantVarsM M' F0 Vbl"
 proof-
-  from `decisions M \<noteq> []`
+  from \<open>decisions M \<noteq> []\<close>
   have "lastDecision M el (elements M)"
     using lastMarkedIsMarkedElement[of "M"]
     using markedElementsAreElements[of "lastDecision M" "M"]
@@ -931,7 +931,7 @@ qed
 (************************************************************************)
 (*                     A P P L Y    B A C K J U M P                     *)
 (************************************************************************)
-text{* $Backjump$ transition rule. *}
+text\<open>$Backjump$ transition rule.\<close>
 
 lemma InvariantImpliedLiteralsAfterBackjump:
   fixes F::Formula and M::LiteralTrail and p::LiteralTrail and bClause::Clause and bLiteral::Literal
@@ -940,7 +940,7 @@ lemma InvariantImpliedLiteralsAfterBackjump:
   "M' = p @ [(bLiteral, False)]"
   shows "InvariantImpliedLiterals F M'"
 proof -
-  from `InvariantImpliedLiterals F M` `isPrefix p M` 
+  from \<open>InvariantImpliedLiterals F M\<close> \<open>isPrefix p M\<close> 
   have "InvariantImpliedLiterals F p"
     using InvariantImpliedLiteralsHoldsForPrefix [of "F" "M" "p"]
     by simp
@@ -958,12 +958,12 @@ lemma InvariantVarsMAfterBackjump:
   "M' = p @ [(bLiteral, False)]"
   shows "InvariantVarsM M' F0 Vbl"
 proof -
-  from `InvariantVarsM M F0 Vbl`
+  from \<open>InvariantVarsM M F0 Vbl\<close>
   have "vars (elements M) \<subseteq> vars F0 \<union> Vbl"
     unfolding InvariantVarsM_def
     . 
   moreover
-  from `isPrefix p M`
+  from \<open>isPrefix p M\<close>
   have "vars (elements p) \<subseteq> vars (elements M)"
     using varsPrefixValuation [of "elements p" "elements M"]
     by (simp add: isPrefixElements)
@@ -971,7 +971,7 @@ proof -
   have "vars (elements p) \<subseteq> vars F0 \<union> Vbl"
     by simp
 
-  with `vars (elements p) \<subseteq> vars F0 \<union> Vbl` assms
+  with \<open>vars (elements p) \<subseteq> vars F0 \<union> Vbl\<close> assms
   show ?thesis
     using InvariantVarsMAfterUnitPropagate[of  "p" "F0" "Vbl" "bLiteral" "M'"]
     unfolding InvariantVarsM_def
@@ -985,11 +985,11 @@ lemma InvariantConsistentAfterBackjump:
   "M' = p @ [(bLiteral, False)]"
   shows "InvariantConsistent M'"
 proof-
-  from `InvariantConsistent M`
+  from \<open>InvariantConsistent M\<close>
   have "consistent (elements M)"
     unfolding InvariantConsistent_def
     .
-  with `isPrefix p M`
+  with \<open>isPrefix p M\<close>
   have "consistent (elements p)"
     using consistentPrefix [of "elements p" "elements M"]
     by (simp add: isPrefixElements)
@@ -1008,11 +1008,11 @@ lemma InvariantUniqAfterBackjump:
   "M' = p @ [(bLiteral, False)]" 
   shows "InvariantUniq M'"
 proof -
-  from `InvariantUniq M`
+  from \<open>InvariantUniq M\<close>
   have "uniq (elements M)"
     unfolding InvariantUniq_def
     .
-  with `isPrefix p M`
+  with \<open>isPrefix p M\<close>
   have "uniq (elements p)"
     using uniqElementsTrailImpliesUniqElementsPrefix [of "p" "M"]
     by simp
@@ -1031,7 +1031,7 @@ lemma InvariantReasonClausesAfterBackjump:
   "M' = p @ [(bLiteral, False)]"
   shows "InvariantReasonClauses F M'"
 proof -
-  from `InvariantReasonClauses F M` `InvariantUniq M` `isPrefix p M`
+  from \<open>InvariantReasonClauses F M\<close> \<open>InvariantUniq M\<close> \<open>isPrefix p M\<close>
   have "InvariantReasonClauses F p"
     by (rule InvariantReasonClausesHoldsForPrefix)
   with assms
@@ -1043,7 +1043,7 @@ qed
 (************************************************************************)
 (*                       A P P L Y    L E A R N                         *)
 (************************************************************************)
-text{* $Learn$ transition rule. *}
+text\<open>$Learn$ transition rule.\<close>
 
 lemma InvariantImpliedLiteralsAfterLearn: 
   fixes F :: Formula and F' :: Formula and M :: LiteralTrail and C :: Clause
@@ -1051,7 +1051,7 @@ lemma InvariantImpliedLiteralsAfterLearn:
   "F' = F @ [C]"
   shows "InvariantImpliedLiterals F' M"
 proof -
-  from `InvariantImpliedLiterals F M` 
+  from \<open>InvariantImpliedLiterals F M\<close> 
   have *: "\<forall> l. l el (elements M) \<longrightarrow> formulaEntailsLiteral (F @ val2form (decisionsTo l M)) l"
     unfolding InvariantImpliedLiterals_def
     .
@@ -1076,14 +1076,14 @@ proof -
         } thus ?thesis
           by auto
       qed
-      with `formulaEntailsLiteral (F @ val2form (decisionsTo literal M)) literal`
+      with \<open>formulaEntailsLiteral (F @ val2form (decisionsTo literal M)) literal\<close>
       show ?thesis
         by (rule formulaEntailsLiteralSubset)
     qed
   }
   thus ?thesis
     unfolding InvariantImpliedLiterals_def
-    using `F' = F @ [C]`
+    using \<open>F' = F @ [C]\<close>
     by auto
 qed
 
@@ -1097,14 +1097,14 @@ proof -
   {
     fix literal :: Literal
     assume "literal el elements M \<and> \<not> literal el decisions M"
-    with `InvariantReasonClauses F M` obtain clause::Clause
+    with \<open>InvariantReasonClauses F M\<close> obtain clause::Clause
       where "formulaEntailsClause F clause" "isReason clause literal (elements M)"
       unfolding InvariantReasonClauses_def
       by auto
-    from `formulaEntailsClause F clause` `F' = F @ [C]`
+    from \<open>formulaEntailsClause F clause\<close> \<open>F' = F @ [C]\<close>
     have "formulaEntailsClause F' clause"
       by (simp add:formulaEntailsClauseAppend)
-    with `isReason clause literal (elements M)`
+    with \<open>isReason clause literal (elements M)\<close>
     have "\<exists> clause. formulaEntailsClause F' clause \<and> isReason clause literal (elements M)"
       by auto
   } thus ?thesis
@@ -1131,17 +1131,17 @@ lemma InvariantEquivalentAfterLearn:
   "F' = F @ [C]"
   shows "InvariantEquivalent F0 F'"
 proof-
-  from `InvariantEquivalent F0 F`
+  from \<open>InvariantEquivalent F0 F\<close>
   have "equivalentFormulae F0 F"
     unfolding InvariantEquivalent_def
     .
-  with `formulaEntailsClause F C` `F' = F @ [C]`
+  with \<open>formulaEntailsClause F C\<close> \<open>F' = F @ [C]\<close>
   have "equivalentFormulae F0 (F @ [C])"
     using extendEquivalentFormulaWithEntailedClause [of "F0" "F" "C"]
     by simp
   thus ?thesis
     unfolding InvariantEquivalent_def
-    using `F' = F @ [C]`
+    using \<open>F' = F @ [C]\<close>
     by simp
 qed
 
@@ -1157,7 +1157,7 @@ by (auto simp add:formulaEntailsClauseAppend)
 (************************************************************************)
 (*                     A P P L Y    E X P L A I N                       *)
 (************************************************************************)
-text{* $Explain$ transition rule. *}
+text\<open>$Explain$ transition rule.\<close>
 
 lemma InvariantCFalseAfterExplain: 
   fixes conflictFlag::bool and M::LiteralTrail and C::Clause and literal :: Literal
@@ -1168,20 +1168,20 @@ lemma InvariantCFalseAfterExplain:
 unfolding InvariantCFalse_def
 proof
   assume "conflictFlag"
-  with `InvariantCFalse conflictFlag M C`
+  with \<open>InvariantCFalse conflictFlag M C\<close>
   have "clauseFalse C (elements M)"
     unfolding InvariantCFalse_def
     by simp
   hence "clauseFalse (removeAll (opposite literal) C) (elements M)"
     by (simp add: clauseFalseIffAllLiteralsAreFalse)
   moreover
-  from `isReason reason literal (elements M)`
+  from \<open>isReason reason literal (elements M)\<close>
   have "clauseFalse (removeAll literal reason) (elements M)"
     unfolding isReason_def
     by simp
   ultimately 
   show "clauseFalse C' (elements M)"
-    using `C' = resolve C reason (opposite literal)`
+    using \<open>C' = resolve C reason (opposite literal)\<close>
     resolveFalseClauses [of "opposite literal" "C" "elements M" "reason"]
     by simp
 qed
@@ -1194,13 +1194,13 @@ lemma InvariantCEntailedAfterExplain:
 unfolding InvariantCEntailed_def
 proof
   assume "conflictFlag"
-  with `InvariantCEntailed conflictFlag F C`
+  with \<open>InvariantCEntailed conflictFlag F C\<close>
   have "formulaEntailsClause F C"
     unfolding InvariantCEntailed_def
     by simp
-  with `formulaEntailsClause F reason`
+  with \<open>formulaEntailsClause F reason\<close>
   show "formulaEntailsClause F C'"
-    using `C' = (resolve C reason (opposite l))`
+    using \<open>C' = (resolve C reason (opposite l))\<close>
     by (simp add:formulaEntailsResolvent)
 qed
 
@@ -1208,7 +1208,7 @@ qed
 (************************************************************************)
 (*                     A P P L Y    C O N F L I C T                     *)
 (************************************************************************)
-text{* $Conflict$ transition rule. *}
+text\<open>$Conflict$ transition rule.\<close>
 
 lemma invariantCFalseAfterConflict:
   fixes conflictFlag::bool and conflictFlag'::bool and M::LiteralTrail and F :: Formula and clause :: Clause and C' :: Clause
@@ -1218,9 +1218,9 @@ lemma invariantCFalseAfterConflict:
   shows "InvariantCFalse conflictFlag' M C'"
 unfolding InvariantCFalse_def
 proof
-  from `conflictFlag' = True`
+  from \<open>conflictFlag' = True\<close>
   show "clauseFalse C' (elements M)"
-    using `clauseFalse clause (elements M)` `C' = clause`
+    using \<open>clauseFalse clause (elements M)\<close> \<open>C' = clause\<close>
     by simp
 qed
   
@@ -1232,9 +1232,9 @@ lemma invariantCEntailedAfterConflict:
   shows "InvariantCEntailed conflictFlag' F C'"
 unfolding InvariantCEntailed_def
 proof
-  from `conflictFlag' = True`
+  from \<open>conflictFlag' = True\<close>
   show "formulaEntailsClause F C'"
-    using `clause el F` `C' = clause`
+    using \<open>clause el F\<close> \<open>C' = clause\<close>
     by (simp add:formulaEntailsItsClauses)
 qed
 
@@ -1242,7 +1242,7 @@ qed
 (************************************************************************)
 (*                   U N S A T     R E P O R T                          *)
 (************************************************************************)
-text{* UNSAT report *}
+text\<open>UNSAT report\<close>
 
 lemma unsatReport: 
   fixes F :: Formula and M :: LiteralTrail and F0 :: Formula
@@ -1255,10 +1255,10 @@ proof-
     {
       fix literal::Literal
       assume "literal el (elements M)"
-      from `decisions M = []`
+      from \<open>decisions M = []\<close>
       have "decisionsTo literal M = []"
         by (simp add:markedElementsEmptyImpliesMarkedElementsToEmpty)
-      with `literal el (elements M)` `InvariantImpliedLiterals F M`
+      with \<open>literal el (elements M)\<close> \<open>InvariantImpliedLiterals F M\<close>
       have "formulaEntailsLiteral F literal"
         unfolding InvariantImpliedLiterals_def
         by auto
@@ -1267,10 +1267,10 @@ proof-
       unfolding formulaEntailsValuation_def
       by simp
   qed
-  with `formulaFalse F (elements M)`
+  with \<open>formulaFalse F (elements M)\<close>
   have "\<not> satisfiable F"
     by (simp add:formulaFalseInEntailedValuationIsUnsatisfiable)
-  with `InvariantEquivalent F0 F`
+  with \<open>InvariantEquivalent F0 F\<close>
   show ?thesis
     unfolding InvariantEquivalent_def
     by (simp add:satisfiableEquivalent)
@@ -1282,14 +1282,14 @@ lemma unsatReportExtensiveExplain:
   "conflictFlag" and "C = []"
   shows "\<not> satisfiable F0"
 proof-
-  from `conflictFlag` `InvariantCEntailed conflictFlag F C`
+  from \<open>conflictFlag\<close> \<open>InvariantCEntailed conflictFlag F C\<close>
   have "formulaEntailsClause F C"
     unfolding InvariantCEntailed_def
     by simp
-  with `C=[]`
+  with \<open>C=[]\<close>
   have "\<not> satisfiable F"
     by (simp add:formulaUnsatIffImpliesEmptyClause)
-  with `InvariantEquivalent F0 F`
+  with \<open>InvariantEquivalent F0 F\<close>
   show ?thesis
     unfolding InvariantEquivalent_def
     by (simp add:satisfiableEquivalent)
@@ -1298,7 +1298,7 @@ qed
 (************************************************************************)
 (*                       S A T     R E P O R T                          *)
 (************************************************************************)
-text{* SAT Report *}
+text\<open>SAT Report\<close>
 
 lemma satReport:
   fixes F0 :: Formula and F :: Formula and M::LiteralTrail
@@ -1306,30 +1306,30 @@ lemma satReport:
   "\<not> formulaFalse F (elements M)" and "vars (elements M) \<supseteq> Vbl"
   shows "model (elements M) F0"
 proof-
-  from `InvariantConsistent M`
+  from \<open>InvariantConsistent M\<close>
   have "consistent (elements M)"
     unfolding InvariantConsistent_def
     .
   moreover
-  from `InvariantVarsF F F0 Vbl` 
+  from \<open>InvariantVarsF F F0 Vbl\<close> 
   have "vars F \<subseteq> vars F0 \<union> Vbl"
     unfolding InvariantVarsF_def
     .
-  with `vars F0 \<subseteq> Vbl` 
+  with \<open>vars F0 \<subseteq> Vbl\<close> 
   have "vars F \<subseteq> Vbl"
     by auto
-  with `vars (elements M) \<supseteq> Vbl`
+  with \<open>vars (elements M) \<supseteq> Vbl\<close>
   have "vars F \<subseteq> vars (elements M)"
     by simp
   hence "formulaTrue F (elements M) \<or> formulaFalse F (elements M)"
     by (simp add:totalValuationForFormulaDefinesItsValue)
-  with `\<not> formulaFalse F (elements M)`
+  with \<open>\<not> formulaFalse F (elements M)\<close>
   have "formulaTrue F (elements M)"
     by simp
   ultimately
   have "model (elements M) F"
     by simp
-  with `InvariantEquivalent F0 F`
+  with \<open>InvariantEquivalent F0 F\<close>
   show ?thesis
     unfolding InvariantEquivalent_def
     unfolding equivalentFormulae_def
@@ -1338,21 +1338,21 @@ qed
 
 
 (******************************************************************************)
-subsection{* Different characterizations of backjumping *}
+subsection\<open>Different characterizations of backjumping\<close>
 (******************************************************************************)
-text{* In this section, different characterization of applicability of
-backjumping will be given. *}
+text\<open>In this section, different characterization of applicability of
+backjumping will be given.\<close>
 
-text{* The clause satisfies the @{term "Unique Implication Point (UIP)"} condition
-  if the level of all its literals is stricly lower then the level of its last asserted literal *}
+text\<open>The clause satisfies the @{term "Unique Implication Point (UIP)"} condition
+  if the level of all its literals is stricly lower then the level of its last asserted literal\<close>
 definition
 "isUIP l c M ==
   isLastAssertedLiteral (opposite l) (oppositeLiteralList c)(elements M)  \<and> 
   (\<forall> l'. l' el c \<and> l' \<noteq> l \<longrightarrow> elementLevel (opposite l') M < elementLevel (opposite l) M)"
 
-text{* @{term "Backjump level"} is a nonegative integer such that it is stricly 
+text\<open>@{term "Backjump level"} is a nonegative integer such that it is stricly 
   lower than the level of the last asserted literal of a clause, and greater or 
-  equal then levels of all its other literals. *}
+  equal then levels of all its other literals.\<close>
 definition
 "isBackjumpLevel level l c M == 
   isLastAssertedLiteral (opposite l) (oppositeLiteralList c)(elements M)  \<and> 
@@ -1374,18 +1374,18 @@ proof -
         by simp
     next
       case False
-      from `isLastAssertedLiteral literal clause (elements M)` 
+      from \<open>isLastAssertedLiteral literal clause (elements M)\<close> 
       have "literalTrue literal (elements M)" 
         "\<forall> l. l el clause \<and> l \<noteq> literal \<longrightarrow> \<not>  precedes literal l (elements M)"
         by (auto simp add:isLastAssertedLiteral_def)
-      with `l' el clause` False 
+      with \<open>l' el clause\<close> False 
       have "\<not> precedes literal l' (elements M)"
         by simp
-      with False `l' el (elements M)` `literalTrue literal (elements M)`
+      with False \<open>l' el (elements M)\<close> \<open>literalTrue literal (elements M)\<close>
       have "precedes l' literal (elements M)"
         using precedesTotalOrder [of "l'"  "elements M" "literal"]
         by simp
-      with `uniq (elements M)`
+      with \<open>uniq (elements M)\<close>
       show ?thesis
         using elementLevelPrecedesLeq [of "l'" "literal" "M"]
         by auto
@@ -1395,7 +1395,7 @@ proof -
     by simp
 qed
 
-text{* When backjump clause contains only a single literal, then the backjump level is 0. *}
+text\<open>When backjump clause contains only a single literal, then the backjump level is 0.\<close>
 (* additional assumption: (elementLevel l M) > 0 *)
 lemma backjumpLevelZero:
   fixes M :: LiteralTrail and C :: Clause and l :: Literal
@@ -1412,20 +1412,20 @@ proof-
       fix l'::Literal
       assume "l' el C \<and> l' \<noteq> l"
       hence "False"
-        using `set C = {l}`
+        using \<open>set C = {l}\<close>
         by auto
     } thus ?thesis
       by auto
   qed
-  with `elementLevel (opposite l) M > 0`
-    `isLastAssertedLiteral (opposite l) (oppositeLiteralList C) (elements M)`
+  with \<open>elementLevel (opposite l) M > 0\<close>
+    \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList C) (elements M)\<close>
   show ?thesis
     unfolding isBackjumpLevel_def
     by auto
 qed
 
-text{* When backjump clause contains more than one literal, then the level of the 
-  second last asserted literal can be taken as a backjump level. *}
+text\<open>When backjump clause contains more than one literal, then the level of the 
+  second last asserted literal can be taken as a backjump level.\<close>
 lemma backjumpLevelLastLast:
   fixes M :: LiteralTrail and C :: Clause and l :: Literal
   assumes 
@@ -1436,12 +1436,12 @@ lemma backjumpLevelLastLast:
   shows
   "isBackjumpLevel (elementLevel (opposite ll) M) l C M"
 proof-
-  from `isUIP l C M` 
+  from \<open>isUIP l C M\<close> 
   have "isLastAssertedLiteral (opposite l) (oppositeLiteralList C) (elements M)"
     unfolding isUIP_def
     by simp
 
-  from `isLastAssertedLiteral (opposite ll) (removeAll (opposite l) (oppositeLiteralList C)) (elements M)`
+  from \<open>isLastAssertedLiteral (opposite ll) (removeAll (opposite l) (oppositeLiteralList C)) (elements M)\<close>
   have "literalTrue (opposite ll) (elements M)" "(opposite ll) el (removeAll (opposite l) (oppositeLiteralList C))"
     unfolding isLastAssertedLiteral_def
     by auto
@@ -1454,7 +1454,7 @@ proof-
       hence "opposite l' el C"
         using literalElListIffOppositeLiteralElOppositeLiteralList[of "opposite l'" "C"]
         by simp
-      with `clauseFalse C (elements M)`
+      with \<open>clauseFalse C (elements M)\<close>
       have "literalTrue l' (elements M)"
         by (auto simp add: clauseFalseIffAllLiteralsAreFalse)
     }
@@ -1474,14 +1474,14 @@ proof-
       hence "opposite l' el (removeAll (opposite l) (oppositeLiteralList C))"
         by simp
       
-      from `opposite l' el (oppositeLiteralList C)`
-        `\<forall> l'. l' el (oppositeLiteralList C) \<longrightarrow> literalTrue l' (elements M)`
+      from \<open>opposite l' el (oppositeLiteralList C)\<close>
+        \<open>\<forall> l'. l' el (oppositeLiteralList C) \<longrightarrow> literalTrue l' (elements M)\<close>
       have "literalTrue (opposite l') (elements M)"
         by simp
 
-      with `opposite l' el (removeAll (opposite l) (oppositeLiteralList C))` 
-        `isLastAssertedLiteral (opposite ll) (removeAll (opposite l) (oppositeLiteralList C)) (elements M)`
-        `uniq (elements M)`
+      with \<open>opposite l' el (removeAll (opposite l) (oppositeLiteralList C))\<close> 
+        \<open>isLastAssertedLiteral (opposite ll) (removeAll (opposite l) (oppositeLiteralList C)) (elements M)\<close>
+        \<open>uniq (elements M)\<close>
       have "elementLevel (opposite l') M <= elementLevel (opposite ll) M"
         using lastAssertedLiteralHasHighestElementLevel[of "opposite ll" "removeAll (opposite l) (oppositeLiteralList C)" "M"]
         by auto
@@ -1490,29 +1490,29 @@ proof-
       by simp
   qed
   moreover
-  from `literalTrue (opposite ll) (elements M)`
+  from \<open>literalTrue (opposite ll) (elements M)\<close>
   have "elementLevel (opposite ll) M \<ge> 0"
     by simp
   moreover 
-  from `(opposite ll) el (removeAll (opposite l) (oppositeLiteralList C))`
+  from \<open>(opposite ll) el (removeAll (opposite l) (oppositeLiteralList C))\<close>
   have "ll el C" and "ll \<noteq> l"
     using literalElListIffOppositeLiteralElOppositeLiteralList[of "ll" "C"]
     by auto
-  from `isUIP l C M` 
+  from \<open>isUIP l C M\<close> 
   have "\<forall> l'. l' el C \<and> l' \<noteq> l \<longrightarrow> elementLevel (opposite l') M < elementLevel (opposite l) M"
     unfolding isUIP_def
     by simp
-  with `ll el C` `ll \<noteq> l`
+  with \<open>ll el C\<close> \<open>ll \<noteq> l\<close>
   have "elementLevel (opposite ll) M < elementLevel (opposite l) M"
     by simp
   ultimately
   show ?thesis
-    using `isLastAssertedLiteral (opposite l) (oppositeLiteralList C) (elements M)`
+    using \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList C) (elements M)\<close>
     unfolding isBackjumpLevel_def
     by simp
 qed
 
-text{* if UIP is reached then there exists correct backjump level. *}
+text\<open>if UIP is reached then there exists correct backjump level.\<close>
 (* additional assumption: (elementLevel l M) > 0 *)
 lemma isUIPExistsBackjumpLevel:
   fixes M :: LiteralTrail and c :: Clause and l :: Literal
@@ -1524,14 +1524,14 @@ lemma isUIPExistsBackjumpLevel:
   shows
   "\<exists> level. (isBackjumpLevel level l c M)"
 proof-
-  from `isUIP l c M`
+  from \<open>isUIP l c M\<close>
   have "isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)"
     unfolding isUIP_def
     by simp
   show ?thesis
   proof (cases "set c = {l}")
     case True
-    with `elementLevel (opposite l) M > 0` `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+    with \<open>elementLevel (opposite l) M > 0\<close> \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close>
     have "isBackjumpLevel 0 l c M"
       using backjumpLevelZero[of "l" "c" "M"]
       by auto
@@ -1543,7 +1543,7 @@ proof-
     proof-
       let ?ll = "getLastAssertedLiteral (oppositeLiteralList (removeAll l c)) (elements M)"
       
-      from `clauseFalse c (elements M)`
+      from \<open>clauseFalse c (elements M)\<close>
       have "clauseFalse (removeAll l c) (elements M)"
         by (simp add:clauseFalseRemove)
       moreover
@@ -1552,7 +1552,7 @@ proof-
         have "(set c) \<subseteq> {l} \<union> set (removeAll l c)"
           by auto
         
-        from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)` 
+        from \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close> 
         have "(opposite l) el oppositeLiteralList c"
           unfolding isLastAssertedLiteral_def
           by simp
@@ -1565,10 +1565,10 @@ proof-
           assume "\<not> ?thesis"
           hence "set (removeAll l c) = {}"
             by simp
-          with `(set c) \<subseteq> {l} \<union> set (removeAll l c)`
+          with \<open>(set c) \<subseteq> {l} \<union> set (removeAll l c)\<close>
           have "set c \<subseteq> {l}"
             by simp
-          with `l \<in> set c`
+          with \<open>l \<in> set c\<close>
           have "set c = {l}"
             by auto
           with False
@@ -1580,7 +1580,7 @@ proof-
       qed
       ultimately
       have "isLastAssertedLiteral ?ll (oppositeLiteralList (removeAll l c)) (elements M)"
-        using `uniq (elements M)`
+        using \<open>uniq (elements M)\<close>
         using getLastAssertedLiteralCharacterization [of "removeAll l c" "elements M"] 
         by simp
       hence "isLastAssertedLiteral ?ll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
@@ -1592,7 +1592,7 @@ proof-
     then obtain ll::Literal where "isLastAssertedLiteral ll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
       by auto
   
-    with `uniq (elements M)` `clauseFalse c (elements M)` `isUIP l c M` 
+    with \<open>uniq (elements M)\<close> \<open>clauseFalse c (elements M)\<close> \<open>isUIP l c M\<close> 
     have "isBackjumpLevel (elementLevel ll M) l c M"
       using backjumpLevelLastLast[of "l" "c" "M" "opposite ll"]
       by auto
@@ -1601,33 +1601,33 @@ proof-
   qed
 qed
 
-text{* Backjump level condition ensures that the backjump clause is
-unit in the prefix to backjump level. *}
+text\<open>Backjump level condition ensures that the backjump clause is
+unit in the prefix to backjump level.\<close>
 lemma isBackjumpLevelEnsuresIsUnitInPrefix: 
   fixes M :: LiteralTrail and conflictFlag :: bool and c :: Clause and l :: Literal
   assumes "consistent (elements M)" and "uniq (elements M)" and
   "clauseFalse c (elements M)" and "isBackjumpLevel level l c M"
   shows "isUnitClause c l (elements (prefixToLevel level M))"
 proof -
-  from `isBackjumpLevel level l c M` 
+  from \<open>isBackjumpLevel level l c M\<close> 
   have "isLastAssertedLiteral (opposite l) (oppositeLiteralList c)(elements M)"
     "0 \<le> level"   "level < elementLevel (opposite l) M" and
     *: "\<forall> l'. l' el c \<and> l' \<noteq> l \<longrightarrow> elementLevel (opposite l') M \<le> level"
     unfolding isBackjumpLevel_def
     by auto
 
-  from `isLastAssertedLiteral (opposite l)(oppositeLiteralList c) (elements M)`
+  from \<open>isLastAssertedLiteral (opposite l)(oppositeLiteralList c) (elements M)\<close>
   have "l el c" "literalTrue (opposite l) (elements M)"
     using isLastAssertedCharacterization [of "opposite l" "c" "elements M"]
     by auto
 
   have "\<not> literalFalse l (elements (prefixToLevel level M))"
-    using `level < elementLevel (opposite l) M` `0 <= level` `uniq (elements M)`
+    using \<open>level < elementLevel (opposite l) M\<close> \<open>0 <= level\<close> \<open>uniq (elements M)\<close>
     by (simp add: literalNotInEarlierLevelsThanItsLevel)
   moreover
   have "\<not> literalTrue l (elements (prefixToLevel level M))" 
   proof -
-    from `consistent (elements M)` `literalTrue (opposite l) (elements M)`
+    from \<open>consistent (elements M)\<close> \<open>literalTrue (opposite l) (elements M)\<close>
     have "\<not> literalFalse (opposite l) (elements M)"
       by (auto simp add:inconsistentCharacterization)
     thus ?thesis
@@ -1643,20 +1643,20 @@ proof -
     fix l' :: Literal
     assume "l' el c" "l' \<noteq> l"
 
-    from `l' el c` `clauseFalse c (elements M)`
+    from \<open>l' el c\<close> \<open>clauseFalse c (elements M)\<close>
     have "literalFalse l' (elements M)"
       by (simp add:clauseFalseIffAllLiteralsAreFalse)
 
     have "literalFalse l' (elements (prefixToLevel level M))"
     proof -
-      from `l' el c` `l' \<noteq> l`
+      from \<open>l' el c\<close> \<open>l' \<noteq> l\<close>
       have "elementLevel (opposite l') M <= level"
         using *
         by auto
 
       thus ?thesis
-        using `literalFalse l' (elements M)` 
-          `0 <= level`
+        using \<open>literalFalse l' (elements M)\<close> 
+          \<open>0 <= level\<close>
           elementLevelLtLevelImpliesMemberPrefixToLevel[of "opposite l'" "M" "level"]
         by simp
     qed
@@ -1665,14 +1665,14 @@ proof -
   qed
   ultimately
   show ?thesis
-    using `l el c`
+    using \<open>l el c\<close>
     unfolding isUnitClause_def
     by simp
 qed
 
-text{* Backjump level is minimal if there is no smaller level which
+text\<open>Backjump level is minimal if there is no smaller level which
        satisfies the backjump level condition. The following definition gives
-       operative characterization of this notion. *}
+       operative characterization of this notion.\<close>
 definition 
 "isMinimalBackjumpLevel level l c M ==
      isBackjumpLevel level l c M \<and> 
@@ -1697,27 +1697,27 @@ proof
   proof (cases "set c = {l}")
     case True
     thus ?thesis
-      using `?lhs`
+      using \<open>?lhs\<close>
       unfolding isMinimalBackjumpLevel_def
       by auto
   next
     case False
-    with `?lhs`
+    with \<open>?lhs\<close>
     obtain ll 
       where "ll el c" "elementLevel (opposite ll) M = level" "isBackjumpLevel level l c M"
       unfolding isMinimalBackjumpLevel_def
       by auto
     have "l \<noteq> ll"
-      using `isMinimalBackjumpLevel level l c M`
-      using `elementLevel (opposite ll) M = level`
+      using \<open>isMinimalBackjumpLevel level l c M\<close>
+      using \<open>elementLevel (opposite ll) M = level\<close>
       unfolding isMinimalBackjumpLevel_def
       unfolding isBackjumpLevel_def
       by auto
     
     show ?thesis
-      using `isBackjumpLevel level l c M`
-      using `elementLevel (opposite ll) M = level`
-      using `ll el c` `l \<noteq> ll` 
+      using \<open>isBackjumpLevel level l c M\<close>
+      using \<open>elementLevel (opposite ll) M = level\<close>
+      using \<open>ll el c\<close> \<open>l \<noteq> ll\<close> 
       unfolding isBackjumpLevel_def
       by force
   qed
@@ -1727,14 +1727,14 @@ next
   proof (cases "set c = {l}")
     case True
     thus ?thesis
-      using `?rhs`
+      using \<open>?rhs\<close>
       using backjumpLevelZero[of "l" "c" "M"]
       unfolding isMinimalBackjumpLevel_def
       unfolding isBackjumpLevel_def
       by auto
   next
     case False
-    from `?rhs`
+    from \<open>?rhs\<close>
     have "l el c"
       unfolding isBackjumpLevel_def
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "l" "c"]
@@ -1744,7 +1744,7 @@ next
     let ?oll = "getLastAssertedLiteral (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
 
     have "clauseFalse (removeAll l c) (elements M)"
-      using `clauseFalse c (elements M)`
+      using \<open>clauseFalse c (elements M)\<close>
       by (simp add: clauseFalseIffAllLiteralsAreFalse)
     moreover
     have "removeAll l c \<noteq> []"
@@ -1756,15 +1756,15 @@ next
         hence "set c \<subseteq> {l}"
           by simp
         hence False
-          using `set c \<noteq> {l}`
-          using `l el c`
+          using \<open>set c \<noteq> {l}\<close>
+          using \<open>l el c\<close>
           by auto
       } thus ?thesis
         by auto
     qed
     ultimately
     have "isLastAssertedLiteral ?oll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)"
-      using `uniq (elements M)`
+      using \<open>uniq (elements M)\<close>
       using getLastAssertedLiteralCharacterization[of "removeAll l c" "elements M"]
       using oppositeLiteralListRemove[of "l" "c"]
       by simp
@@ -1774,7 +1774,7 @@ next
       by auto
 
     have "?oll el (removeAll (opposite l) (oppositeLiteralList c))"
-      using `isLastAssertedLiteral ?oll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)`
+      using \<open>isLastAssertedLiteral ?oll (removeAll (opposite l) (oppositeLiteralList c)) (elements M)\<close>
       unfolding isLastAssertedLiteral_def
       by simp
     hence "?oll el (oppositeLiteralList c)" "?oll \<noteq> opposite l"
@@ -1782,7 +1782,7 @@ next
     hence "opposite ?oll el c"
       using literalElListIffOppositeLiteralElOppositeLiteralList[of "?oll" "oppositeLiteralList c"]
       by simp
-    from `?oll \<noteq> opposite l`
+    from \<open>?oll \<noteq> opposite l\<close>
     have "opposite ?oll \<noteq> l"
       using oppositeSymmetry[of "?oll" "l"]
       by simp
@@ -1792,29 +1792,29 @@ next
       {
         assume "elementLevel ?oll M < level"
         hence "\<not> isBackjumpLevel  (elementLevel ?oll M) l c M"
-          using `?rhs`
+          using \<open>?rhs\<close>
           by simp
-        with `isBackjumpLevel  (elementLevel ?oll M) l c M`
+        with \<open>isBackjumpLevel  (elementLevel ?oll M) l c M\<close>
         have False
           by simp
       } thus ?thesis
         by force
     qed
     moreover
-    from `?rhs`
+    from \<open>?rhs\<close>
     have "elementLevel ?oll M \<le> level"
-      using `opposite ?oll el c`
-      using `opposite ?oll \<noteq> l`
+      using \<open>opposite ?oll el c\<close>
+      using \<open>opposite ?oll \<noteq> l\<close>
       unfolding isBackjumpLevel_def
       by auto
     ultimately
     have "elementLevel ?oll M = level"
       by simp
     show ?thesis
-      using `opposite ?oll el c`
-      using `elementLevel ?oll M = level`
-      using `?rhs`
-      using `set c \<noteq> {l}`
+      using \<open>opposite ?oll el c\<close>
+      using \<open>elementLevel ?oll M = level\<close>
+      using \<open>?rhs\<close>
+      using \<open>set c \<noteq> {l}\<close>
       unfolding isMinimalBackjumpLevel_def
       by (auto simp del: set_removeAll)
   qed
@@ -1827,7 +1827,7 @@ lemma isMinimalBackjumpLevelEnsuresIsNotUnitBeforePrefix:
   "level' < level"
   shows "\<not> (\<exists> l'. isUnitClause c l' (elements (prefixToLevel level' M)))"
 proof-
-  from `isMinimalBackjumpLevel level l c M`
+  from \<open>isMinimalBackjumpLevel level l c M\<close>
   have "isUnitClause c l (elements (prefixToLevel level M))"
     using assms
     using isBackjumpLevelEnsuresIsUnitInPrefix[of "M" "c" "level" "l"]
@@ -1851,32 +1851,32 @@ proof-
       by auto
   next
     case False
-    with `\<not> literalFalse l (elements M) \<or> elementLevel (opposite l) M > level`
+    with \<open>\<not> literalFalse l (elements M) \<or> elementLevel (opposite l) M > level\<close>
     have "level < elementLevel (opposite l) M"
       by simp
     thus ?thesis
       using prefixToLevelElementsElementLevel[of "opposite l" "level'" "M"]
-      using `level' < level`
+      using \<open>level' < level\<close>
       by auto
   qed
 
   show ?thesis
   proof (cases "set c \<noteq> {l}")
     case True
-    from `isMinimalBackjumpLevel level l c M`
+    from \<open>isMinimalBackjumpLevel level l c M\<close>
     obtain ll 
       where "ll el c" "elementLevel (opposite ll) M = level"
-      using `set c \<noteq> {l}`
+      using \<open>set c \<noteq> {l}\<close>
       unfolding isMinimalBackjumpLevel_def
       by auto
     hence "\<not> literalFalse ll (elements (prefixToLevel level' M))"
       using literalNotInEarlierLevelsThanItsLevel[of "level'" "opposite ll" "M"]
-      using `level' < level`
+      using \<open>level' < level\<close>
       by simp
 
     have "l \<noteq> ll"
-      using `isMinimalBackjumpLevel level l c M`
-      using `elementLevel (opposite ll) M = level`
+      using \<open>isMinimalBackjumpLevel level l c M\<close>
+      using \<open>elementLevel (opposite ll) M = level\<close>
       unfolding isMinimalBackjumpLevel_def
       unfolding isBackjumpLevel_def
       by auto
@@ -1890,15 +1890,15 @@ proof-
       proof (cases "l = l'")
         case True
         thus ?thesis
-          using `l \<noteq> ll` `ll el c`
-          using `\<not> literalFalse ll (elements (prefixToLevel level' M))`
-          using `isUnitClause c l' (elements (prefixToLevel level' M))`
+          using \<open>l \<noteq> ll\<close> \<open>ll el c\<close>
+          using \<open>\<not> literalFalse ll (elements (prefixToLevel level' M))\<close>
+          using \<open>isUnitClause c l' (elements (prefixToLevel level' M))\<close>
           unfolding isUnitClause_def
           by auto
       next
         case False
         have "l el c"
-          using `isMinimalBackjumpLevel level l c M`
+          using \<open>isMinimalBackjumpLevel level l c M\<close>
           unfolding isMinimalBackjumpLevel_def
           unfolding isBackjumpLevel_def
           unfolding isLastAssertedLiteral_def
@@ -1906,8 +1906,8 @@ proof-
           by simp
         thus ?thesis
           using False
-          using `\<not> literalFalse l (elements (prefixToLevel level' M))`
-          using `isUnitClause c l' (elements (prefixToLevel level' M))`
+          using \<open>\<not> literalFalse l (elements (prefixToLevel level' M))\<close>
+          using \<open>isUnitClause c l' (elements (prefixToLevel level' M))\<close>
           unfolding isUnitClause_def
           by auto
       qed
@@ -1915,17 +1915,17 @@ proof-
       by auto
   next
     case False
-    with `isMinimalBackjumpLevel level l c M`
+    with \<open>isMinimalBackjumpLevel level l c M\<close>
     have "level = 0"
       unfolding isMinimalBackjumpLevel_def
       by simp
-    with `level' < level`
+    with \<open>level' < level\<close>
     show ?thesis
       by simp
   qed
 qed
 
-text{* If all literals in a clause are decision literals, then UIP is reached. *}
+text\<open>If all literals in a clause are decision literals, then UIP is reached.\<close>
 lemma allDecisionsThenUIP:
   fixes M :: LiteralTrail and c:: Clause
   assumes "(uniq (elements M))" and
@@ -1933,13 +1933,13 @@ lemma allDecisionsThenUIP:
   "isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)"
   shows "isUIP l c M"
 proof-
-  from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+  from \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close>
   have "l el c" "(opposite l) el (elements M)"
     and *: "\<forall>l'. l' el (oppositeLiteralList c) \<and> l' \<noteq> opposite l \<longrightarrow> \<not> precedes (opposite l) l' (elements M)"
     unfolding isLastAssertedLiteral_def
     using "literalElListIffOppositeLiteralElOppositeLiteralList"
     by auto
-  with `\<forall> l'. l' el c \<longrightarrow> (opposite l') el (decisions M)`
+  with \<open>\<forall> l'. l' el c \<longrightarrow> (opposite l') el (decisions M)\<close>
   have "(opposite l) el (decisions M)"
     by simp
   {
@@ -1952,22 +1952,22 @@ proof-
     have "\<not> precedes (opposite l) (opposite l') (elements M)"
       by simp
 
-    from `l' el c` `\<forall> l. l el c \<longrightarrow> (opposite l) el (decisions M)`
+    from \<open>l' el c\<close> \<open>\<forall> l. l el c \<longrightarrow> (opposite l) el (decisions M)\<close>
     have "(opposite l') el (decisions M)"
       by auto
     hence "(opposite l') el (elements M)"
       by (simp add:markedElementsAreElements)
 
-    from `(opposite l) el (elements M)` `(opposite l') el (elements M)` `l' \<noteq> l` 
-      `\<not> precedes (opposite l) (opposite l') (elements M)` 
+    from \<open>(opposite l) el (elements M)\<close> \<open>(opposite l') el (elements M)\<close> \<open>l' \<noteq> l\<close> 
+      \<open>\<not> precedes (opposite l) (opposite l') (elements M)\<close> 
     have "precedes (opposite l') (opposite l) (elements M)"
       using precedesTotalOrder [of "opposite l" "elements M" "opposite l'"]
       by simp
-    with `uniq (elements M)`
+    with \<open>uniq (elements M)\<close>
     have "elementLevel (opposite l') M <= elementLevel (opposite l) M"
       by (auto simp add:elementLevelPrecedesLeq)
     moreover
-    from `uniq (elements M)` `(opposite l) el (decisions M)` `(opposite l') el (decisions M)` `l' \<noteq> l`
+    from \<open>uniq (elements M)\<close> \<open>(opposite l) el (decisions M)\<close> \<open>(opposite l') el (decisions M)\<close> \<open>l' \<noteq> l\<close>
     have "elementLevel (opposite l) M \<noteq> elementLevel (opposite l') M"
       using differentMarkedElementsHaveDifferentLevels[of "M" "opposite l" "opposite l'"]
       by simp
@@ -1976,12 +1976,12 @@ proof-
       by simp
   }
   thus ?thesis
-    using `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+    using \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close>
     unfolding isUIP_def
     by simp
 qed
 
-text{* If last asserted literal of a clause is a decision literal, then UIP is reached. *}
+text\<open>If last asserted literal of a clause is a decision literal, then UIP is reached.\<close>
 lemma lastDecisionThenUIP:
   fixes M :: LiteralTrail and c:: Clause
   assumes "(uniq (elements M))" and
@@ -1990,7 +1990,7 @@ lemma lastDecisionThenUIP:
   "isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)"
   shows "isUIP l c M"
 proof-
-  from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+  from \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close>
   have "l el c" "(opposite l) el (elements M)"
     and *: "\<forall>l'. l' el (oppositeLiteralList c) \<and> l' \<noteq> opposite l \<longrightarrow> \<not> precedes (opposite l) l' (elements M)"
     unfolding isLastAssertedLiteral_def
@@ -2007,30 +2007,30 @@ proof-
       by simp
 
     have "(opposite l') el (elements M)"
-      using `l' el c` `clauseFalse c (elements M)`
+      using \<open>l' el c\<close> \<open>clauseFalse c (elements M)\<close>
       by (simp add: clauseFalseIffAllLiteralsAreFalse)
 
-    from `(opposite l) el (elements M)` `(opposite l') el (elements M)` `l' \<noteq> l` 
-      `\<not> precedes (opposite l) (opposite l') (elements M)` 
+    from \<open>(opposite l) el (elements M)\<close> \<open>(opposite l') el (elements M)\<close> \<open>l' \<noteq> l\<close> 
+      \<open>\<not> precedes (opposite l) (opposite l') (elements M)\<close> 
     have "precedes (opposite l') (opposite l) (elements M)"
       using precedesTotalOrder [of "opposite l" "elements M" "opposite l'"]
       by simp
 
     hence "elementLevel (opposite l') M < elementLevel (opposite l) M"
       using elementLevelPrecedesMarkedElementLt[of "M" "opposite l'" "opposite l"]
-      using `uniq (elements M)`
-      using `opposite l el (decisions M)`
-      using `l' \<noteq> l`
+      using \<open>uniq (elements M)\<close>
+      using \<open>opposite l el (decisions M)\<close>
+      using \<open>l' \<noteq> l\<close>
       by simp
   }
   thus ?thesis
-    using `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+    using \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close>
     unfolding SatSolverVerification.isUIP_def
     by simp
 qed
 
-text{* If all literals in a clause are decision literals, then there
-exists a backjump level for that clause. *}
+text\<open>If all literals in a clause are decision literals, then there
+exists a backjump level for that clause.\<close>
 lemma allDecisionsThenExistsBackjumpLevel:
   fixes M :: LiteralTrail and c:: Clause
   assumes "(uniq (elements M))" and
@@ -2043,16 +2043,16 @@ proof-
     using allDecisionsThenUIP
     by simp
   moreover
-  from `isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)`
+  from \<open>isLastAssertedLiteral (opposite l) (oppositeLiteralList c) (elements M)\<close>
   have "l el c"
     unfolding isLastAssertedLiteral_def
     using literalElListIffOppositeLiteralElOppositeLiteralList
     by simp
-  with `\<forall> l'. l' el c \<longrightarrow> (opposite l') el (decisions M)`
+  with \<open>\<forall> l'. l' el c \<longrightarrow> (opposite l') el (decisions M)\<close>
   have "(opposite l) el (decisions M)"
     by simp
   hence "elementLevel (opposite l) M > 0"
-    using `uniq (elements M)`
+    using \<open>uniq (elements M)\<close>
       elementLevelMarkedGeq1[of "M" "opposite l"]
     by auto
   moreover
@@ -2061,7 +2061,7 @@ proof-
     {
       fix l'::Literal
       assume "l' el c"
-      with `\<forall> l'. l' el c \<longrightarrow> (opposite l') el (decisions M)`
+      with \<open>\<forall> l'. l' el c \<longrightarrow> (opposite l') el (decisions M)\<close>
       have "(opposite l') el (decisions M)"
         by simp
       hence "literalFalse l' (elements M)"
@@ -2074,26 +2074,26 @@ proof-
   qed
   ultimately
   show ?thesis
-    using `uniq (elements M)`
+    using \<open>uniq (elements M)\<close>
     using isUIPExistsBackjumpLevel
     by simp
 qed
 
-text{* $Explain$ is applicable to each non-decision literal in a clause. *}
+text\<open>$Explain$ is applicable to each non-decision literal in a clause.\<close>
 lemma explainApplicableToEachNonDecision:
   fixes F :: Formula and M :: LiteralTrail and conflictFlag :: bool and C :: Clause and literal :: Literal
   assumes "InvariantReasonClauses F M" and "InvariantCFalse conflictFlag M C" and
   "conflictFlag = True" and "opposite literal el C" and "\<not> literal el (decisions M)"
   shows "\<exists> clause. formulaEntailsClause F clause \<and> isReason clause literal (elements M)"
 proof-
-  from `conflictFlag = True` `InvariantCFalse conflictFlag M C`
+  from \<open>conflictFlag = True\<close> \<open>InvariantCFalse conflictFlag M C\<close>
   have "clauseFalse C (elements M)"
     unfolding InvariantCFalse_def
     by simp
-  with `opposite literal el C`
+  with \<open>opposite literal el C\<close>
   have "literalTrue literal (elements M)"
     by (auto simp add:clauseFalseIffAllLiteralsAreFalse)
-  with `\<not> literal el (decisions M)` `InvariantReasonClauses F M`
+  with \<open>\<not> literal el (decisions M)\<close> \<open>InvariantReasonClauses F M\<close>
   show ?thesis
     unfolding InvariantReasonClauses_def
     by auto
@@ -2103,13 +2103,13 @@ qed
 (**************************************************************************)
 (*                          T E R M I N A T I O N                         *)
 (**************************************************************************)
-subsection{* Termination *}
-text{* In this section different ordering relations will be defined. These 
+subsection\<open>Termination\<close>
+text\<open>In this section different ordering relations will be defined. These 
   well-founded orderings will be the basic building blocks of termination 
-  orderings that will prove the termination of the SAT solving procedures *}
+  orderings that will prove the termination of the SAT solving procedures\<close>
   
 
-text{* First we prove a simple lemma about acyclic orderings. *}
+text\<open>First we prove a simple lemma about acyclic orderings.\<close>
 lemma transIrreflexiveOrderingIsAcyclic:
   assumes "trans r" and "\<forall> x. (x, x) \<notin> r"
   shows "acyclic r"
@@ -2119,13 +2119,13 @@ proof (rule acyclicI)
     then obtain x where "(x, x) \<in> r^+"
       by auto
     moreover
-    from `trans r`
+    from \<open>trans r\<close>
     have "r^+ = r"
       by (rule trancl_id)
     ultimately
     have "(x, x) \<in> r"
       by simp
-    with `\<forall> x. (x, x) \<notin> r`
+    with \<open>\<forall> x. (x, x) \<notin> r\<close>
     have False
       by simp
   }
@@ -2136,13 +2136,13 @@ qed
 
  
 (*-----------------------------------------------------------------------*)
-subsubsection{* Trail ordering *}
+subsubsection\<open>Trail ordering\<close>
 (*-----------------------------------------------------------------------*)
 
-text{* We define a lexicographic ordering of trails, based on the
+text\<open>We define a lexicographic ordering of trails, based on the
 number of literals on the different decision levels. It will be used
 for transition rules that change the trail, i.e., for $Decide$,
-$UnitPropagate$, $Backjump$ and $Backtrack$ transition rules.  *}
+$UnitPropagate$, $Backjump$ and $Backtrack$ transition rules.\<close>
 
 definition
 "decisionLess = {(l1::('a*bool), l2::('a*bool)). isDecision l1 \<and> \<not> isDecision l2}"
@@ -2150,15 +2150,15 @@ definition
 "lexLess = {(M1::'a Trail, M2::'a Trail). (M2, M1) \<in> lexord decisionLess}"
 
 
-text{* Following several lemmas will help prove that application of
+text\<open>Following several lemmas will help prove that application of
 some DPLL-based transition rules decreases the trail in the @{term
-lexLess} ordering. *}
+lexLess} ordering.\<close>
 
 lemma lexLessAppend:
   assumes "b \<noteq> []" 
   shows "(a @ b, a) \<in> lexLess"
 proof-
-  from `b \<noteq> []`
+  from \<open>b \<noteq> []\<close>
   have "\<exists> aa list. b = aa # list"
     by (simp add: neq_Nil_conv)
   then obtain aa::"'a \<times> bool" and list :: "'a Trail"
@@ -2178,7 +2178,7 @@ proof-
   have "\<exists> rest. prefixToLevel level a @ rest = a \<and> rest \<noteq> [] \<and> isDecision (hd rest)"
     using isProperPrefixPrefixToLevel
     by auto
-  with `p = prefixToLevel level a` 
+  with \<open>p = prefixToLevel level a\<close> 
   obtain rest 
     where "p @ rest = a \<and> rest \<noteq> [] \<and> isDecision (hd rest)"
     by auto
@@ -2199,9 +2199,9 @@ unfolding currentLevel_def
 by auto
 
 
-text{* The following several lemmas prover that @{term lexLess} is
+text\<open>The following several lemmas prover that @{term lexLess} is
 acyclic. This property will play an important role in building a
-well-founded ordering based on @{term lexLess}. *}
+well-founded ordering based on @{term lexLess}.\<close>
 lemma transDecisionLess:
   shows "trans decisionLess"
 proof-
@@ -2266,15 +2266,15 @@ proof (rule transIrreflexiveOrderingIsAcyclic)
     by auto
 qed
 
-text{* The @{term lexLess} ordering is not well-founded. In order to
+text\<open>The @{term lexLess} ordering is not well-founded. In order to
   get a well-founded ordering, we restrict the @{term lexLess}
-  ordering to cosistent and uniq trails with fixed variable set. *}
+  ordering to cosistent and uniq trails with fixed variable set.\<close>
 definition "lexLessRestricted (Vbl::Variable set) == {(M1, M2). 
   vars (elements M1) \<subseteq> Vbl \<and> consistent (elements M1) \<and> uniq (elements M1) \<and>
   vars (elements M2) \<subseteq> Vbl \<and> consistent (elements M2) \<and> uniq (elements M2) \<and>
   (M1, M2) \<in> lexLess}"
 
-text{* First we show that the set of those trails is finite. *}
+text\<open>First we show that the set of those trails is finite.\<close>
 lemma finiteVarsClause:
   fixes c :: Clause
   shows "finite (vars c)"
@@ -2314,7 +2314,7 @@ next
           by auto
         then obtain a' where "a' = x # a"
           by auto
-        from `k = (a, b)` `x # l' = a @ b` 
+        from \<open>k = (a, b)\<close> \<open>x # l' = a @ b\<close> 
         show "k \<in> ?S' x l'"
           using SimpleLevi[of "a" "b" "x" "l'"]
           by auto
@@ -2330,7 +2330,7 @@ next
         moreover
         {
           assume "a' = []" "b = x # l'"
-          with `k = (a', b)`
+          with \<open>k = (a', b)\<close>
           have "k \<in> ?S (x # l')"
             by simp
         }
@@ -2340,7 +2340,7 @@ next
           then obtain a where
             "a' = x # a \<and> (a, b) \<in> ?S l'"
             by auto
-          with `k = (a', b)`
+          with \<open>k = (a', b)\<close>
           have "k \<in> ?S (x # l')"
             by auto
         }
@@ -2382,7 +2382,7 @@ proof-
   moreover
   have "finite (\<Union> l \<in> L. {(a, b). l = a @ b})"
   proof (rule finite_UN_I)
-    from `finite L`
+    from \<open>finite L\<close>
     show "finite L" 
       .
   next
@@ -2476,10 +2476,10 @@ next
               by auto
           next
             case False
-            with `l el elements (m # M1)`
+            with \<open>l el elements (m # M1)\<close>
             have "l el elements M1"
               by simp
-            with Cons(1) `var l = v`
+            with Cons(1) \<open>var l = v\<close>
             obtain M1' M'' d where "M1 = M1' @ [(l, d)] @ M''"
               by auto
             hence "m # M1 = (m # M1') @ [(l, d)] @ M''"
@@ -2493,14 +2493,14 @@ next
         then obtain M' M'' d where "M = M' @ [(l, d)] @ M''"
           by auto
         moreover
-        from `var l = v`
+        from \<open>var l = v\<close>
         have "l : {Pos v, Neg v}"
           by (cases l) auto
         moreover
         have *: "vars (elements (M' @ M'')) = vars (elements M') \<union> vars (elements M'')"
           using varsAppendClauses[of "elements M'" "elements M''"]
           by simp
-        from `M = M' @ [(l, d)] @ M''` `var l = v`
+        from \<open>M = M' @ [(l, d)] @ M''\<close> \<open>var l = v\<close>
         have **: "vars (elements M) = (vars (elements M')) \<union> {v} \<union> (vars (elements M''))"
           using varsAppendClauses[of "elements M'" "elements ([(l, d)] @ M'')"]
           using varsAppendClauses[of "elements [(l, d)]" "elements M''"]
@@ -2510,7 +2510,7 @@ next
           by simp
         have "M' @ M'' \<in> (?trails V')"
         proof-
-          from `uniq (elements M)` `M = M' @ [(l, d)] @ M''`
+          from \<open>uniq (elements M)\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
           have "uniq (elements (M' @ M''))"
             by (auto iff: uniqAppendIff)
           moreover
@@ -2520,12 +2520,12 @@ next
               assume "\<not> consistent (elements (M' @ M''))"
               then obtain l' where "literalTrue l' (elements (M' @ M''))" "literalFalse l' (elements (M' @ M''))"
                 by (auto simp add:inconsistentCharacterization)
-              with `M = M' @ [(l, d)] @ M''`
+              with \<open>M = M' @ [(l, d)] @ M''\<close>
               have "literalTrue l' (elements M)" "literalFalse l' (elements M)"
                 by auto
               hence "\<not> consistent (elements M)"
                 by (auto simp add: inconsistentCharacterization)
-              with `consistent (elements M)`
+              with \<open>consistent (elements M)\<close>
               have False
                 by simp
             }
@@ -2547,17 +2547,17 @@ next
                   by (induct M') auto
                 then obtain l' where "var l' = v" "l' el elements M'"
                   by auto
-                from `var l = v` `var l' = v`
+                from \<open>var l = v\<close> \<open>var l' = v\<close>
                 have "l = l' \<or> opposite l = l'"
                   using literalsWithSameVariableAreEqualOrOpposite[of "l" "l'"]
                   by simp
                 moreover
                 {
                   assume "l = l'"
-                  with `l' el elements M'` `M = M' @ [(l, d)] @ M''`
+                  with \<open>l' el elements M'\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
                   have "\<not> uniq (elements M)"
                     by (auto iff: uniqAppendIff)
-                  with `uniq (elements M)`
+                  with \<open>uniq (elements M)\<close>
                   have False
                     by simp
                 }
@@ -2566,18 +2566,18 @@ next
                   assume "opposite l = l'"
                   have "\<not> consistent (elements M)"
                   proof-
-                    from `l' el elements M'` `M = M' @ [(l, d)] @ M''`
+                    from \<open>l' el elements M'\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
                     have "literalTrue l' (elements M)"
                       by simp
                     moreover
-                    from `l' el elements M'` `opposite l = l'` `M = M' @ [(l, d)] @ M''`
+                    from \<open>l' el elements M'\<close> \<open>opposite l = l'\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
                     have "literalFalse l' (elements M)"
                       by simp
                     ultimately
                     show ?thesis
                       by (auto simp add: inconsistentCharacterization)
                   qed
-                  with `consistent (elements M)`
+                  with \<open>consistent (elements M)\<close>
                   have False
                     by simp
                 }
@@ -2592,17 +2592,17 @@ next
                   by (induct M'') auto
                 then obtain l' where "var l' = v" "l' el (elements M'')"
                   by auto
-                from `var l = v` `var l' = v`
+                from \<open>var l = v\<close> \<open>var l' = v\<close>
                 have "l = l' \<or> opposite l = l'"
                   using literalsWithSameVariableAreEqualOrOpposite[of "l" "l'"]
                   by simp
                 moreover
                 {
                   assume "l = l'"
-                  with `l' el elements M''` `M = M' @ [(l, d)] @ M''`
+                  with \<open>l' el elements M''\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
                   have "\<not> uniq (elements M)"
                     by (auto iff: uniqAppendIff)
-                  with `uniq (elements M)`
+                  with \<open>uniq (elements M)\<close>
                   have False
                     by simp
                 }
@@ -2611,18 +2611,18 @@ next
                   assume "opposite l = l'"
                   have "\<not> consistent (elements M)"
                   proof-
-                    from `l' el elements M''` `M = M' @ [(l, d)] @ M''`
+                    from \<open>l' el elements M''\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
                     have "literalTrue l' (elements M)"
                       by simp
                     moreover
-                    from `l' el elements M''` `opposite l = l'` `M = M' @ [(l, d)] @ M''`
+                    from \<open>l' el elements M''\<close> \<open>opposite l = l'\<close> \<open>M = M' @ [(l, d)] @ M''\<close>
                     have "literalFalse l' (elements M)"
                       by simp
                     ultimately
                     show ?thesis
                       by (auto simp add: inconsistentCharacterization)
                   qed
-                  with `consistent (elements M)`
+                  with \<open>consistent (elements M)\<close>
                   have False
                     by simp
                 }
@@ -2639,9 +2639,9 @@ next
           qed
           from 
             * ** ***
-            `v \<notin> vars (elements (M' @ M''))` 
-            `vars (elements M) = insert v V'` 
-            `\<not> v \<in> V'`
+            \<open>v \<notin> vars (elements (M' @ M''))\<close> 
+            \<open>vars (elements M) = insert v V'\<close> 
+            \<open>\<not> v \<in> V'\<close>
           have "vars (elements (M' @ M'')) = V'"
             by (auto simp del: vars_clause_def)
           ultimately
@@ -2662,41 +2662,41 @@ next
           "vars (elements (M' @ M'')) = V'" 
           "uniq (elements (M' @ M''))" "consistent (elements (M' @ M''))" "l \<in> {Pos v, Neg v}"
           by auto
-        from `l \<in> {Pos v, Neg v}`
+        from \<open>l \<in> {Pos v, Neg v}\<close>
         have "var l = v"
           by auto
         have *: "vars (elements (M' @ M'')) = vars (elements M') \<union> vars (elements M'')"
           using varsAppendClauses[of "elements M'" "elements M''"]
           by simp
-        from `var l = v` `M = M' @ [(l, d)] @ M''` 
+        from \<open>var l = v\<close> \<open>M = M' @ [(l, d)] @ M''\<close> 
         have **: "vars (elements M) = vars (elements M') \<union> {v} \<union> vars (elements M'')"
           using varsAppendClauses[of "elements M'" "elements ([(l, d)] @ M'')"]
           using varsAppendClauses[of "elements [(l, d)]" "elements M''"]
           by simp
-        from * ** `vars (elements (M' @ M'')) = V'`
+        from * ** \<open>vars (elements (M' @ M'')) = V'\<close>
         have "vars (elements M) = insert v V'"
           by (auto simp del: vars_clause_def)
         moreover
         from *
-          `var l = v` 
-          `v \<notin> V'` 
-          `vars (elements (M' @ M'')) = V'` 
+          \<open>var l = v\<close> 
+          \<open>v \<notin> V'\<close> 
+          \<open>vars (elements (M' @ M'')) = V'\<close> 
         have "var l \<notin> vars (elements M')" "var l \<notin> vars (elements M'')"
           by auto
-        from `var l \<notin> vars (elements M')`
+        from \<open>var l \<notin> vars (elements M')\<close>
         have "\<not> literalTrue l (elements M')" "\<not> literalFalse l (elements M')"
           using valuationContainsItsLiteralsVariable[of "l" "elements M'"]
           using valuationContainsItsLiteralsVariable[of "opposite l" "elements M'"]
           by auto
-        from `var l \<notin> vars (elements M'')`
+        from \<open>var l \<notin> vars (elements M'')\<close>
         have "\<not> literalTrue l (elements M'')" "\<not> literalFalse l (elements M'')"
           using valuationContainsItsLiteralsVariable[of "l" "elements M''"]
           using valuationContainsItsLiteralsVariable[of "opposite l" "elements M''"]
           by auto
         have "uniq (elements M)"
-          using `M = M' @ [(l, d)] @ M''` `uniq (elements (M' @ M''))`
-            `\<not> literalTrue l (elements M'')` `\<not> literalFalse l (elements M'')`
-            `\<not> literalTrue l (elements M')` `\<not> literalFalse l (elements M')`
+          using \<open>M = M' @ [(l, d)] @ M''\<close> \<open>uniq (elements (M' @ M''))\<close>
+            \<open>\<not> literalTrue l (elements M'')\<close> \<open>\<not> literalFalse l (elements M'')\<close>
+            \<open>\<not> literalTrue l (elements M')\<close> \<open>\<not> literalFalse l (elements M')\<close>
           by (auto iff: uniqAppendIff)
         moreover
         have "consistent (elements M)"
@@ -2708,32 +2708,32 @@ next
             have False 
             proof (cases "l' = l")
               case True
-              with `literalFalse l' (elements M)` `M = M' @ [(l, d)] @ M''` 
+              with \<open>literalFalse l' (elements M)\<close> \<open>M = M' @ [(l, d)] @ M''\<close> 
               have "literalFalse l' (elements (M' @ M''))"
                 using oppositeIsDifferentFromLiteral[of "l"]
                 by (auto split: if_split_asm)
-              with `\<not> literalFalse l (elements M')` `\<not> literalFalse l (elements M'')` `l' = l`
+              with \<open>\<not> literalFalse l (elements M')\<close> \<open>\<not> literalFalse l (elements M'')\<close> \<open>l' = l\<close>
               show ?thesis
                 by auto
             next
               case False
-              with `literalTrue l' (elements M)` `M = M' @ [(l, d)] @ M''` 
+              with \<open>literalTrue l' (elements M)\<close> \<open>M = M' @ [(l, d)] @ M''\<close> 
               have "literalTrue l' (elements (M' @ M''))"
                 by (auto split: if_split_asm)
-              with `consistent (elements (M' @ M''))`
+              with \<open>consistent (elements (M' @ M''))\<close>
               have "\<not> literalFalse l' (elements (M' @ M''))"
                 by (auto simp add: inconsistentCharacterization)
-              with `literalFalse l' (elements M)` `M = M' @ [(l, d)] @ M''` 
+              with \<open>literalFalse l' (elements M)\<close> \<open>M = M' @ [(l, d)] @ M''\<close> 
               have "opposite l' = l"
                 by (auto split: if_split_asm)
-              with `var l = v`
+              with \<open>var l = v\<close>
               have "var l' = v"
                 by auto
-              with `literalTrue l' (elements (M' @ M''))` `vars (elements (M' @ M'')) = V'`
+              with \<open>literalTrue l' (elements (M' @ M''))\<close> \<open>vars (elements (M' @ M'')) = V'\<close>
               have "v \<in> V'"
                 using valuationContainsItsLiteralsVariable[of "l'" "elements (M' @ M'')"]
                 by simp
-              with `v \<notin> V'`
+              with \<open>v \<notin> V'\<close>
               show ?thesis
                 by simp
             qed
@@ -2778,7 +2778,7 @@ next
         assume "M \<in> ?rhs"
         then obtain p l d where P: "M = ?f (p, l, d)" "p \<in> ?Mset" "l \<in> ?lSet" "d \<in> ?dSet"
           by auto
-        from `p \<in> ?Mset`
+        from \<open>p \<in> ?Mset\<close>
         obtain M' M'' where "M' @ M'' \<in> ?trails V'"
           by auto
         thus "M \<in> ?lhs"
@@ -2810,13 +2810,13 @@ proof-
   moreover
   have "finite (\<Union> v \<in> Pow V.{M. vars (elements M) = v \<and> uniq (elements M) \<and> consistent (elements M)})"
   proof (rule finite_UN_I)
-    from `finite V`
+    from \<open>finite V\<close>
     show "finite (Pow V)"
       by simp
   next
     fix v
     assume "v \<in> Pow V"
-    with `finite V`
+    with \<open>finite V\<close>
     have "finite v"
       by (auto simp add: finite_subset)
     thus "finite {M. vars (elements M) = v \<and> uniq (elements M) \<and> consistent (elements M)}"
@@ -2828,8 +2828,8 @@ proof-
     by simp
 qed
 
-text{* Since the restricted ordering is acyclic and its domain is
-finite, it has to be well-founded.  *}
+text\<open>Since the restricted ordering is acyclic and its domain is
+finite, it has to be well-founded.\<close>
 lemma wfLexLessRestricted:
   assumes "finite Vbl"
   shows "wf (lexLessRestricted Vbl)"
@@ -2845,7 +2845,7 @@ proof (rule finite_acyclic_wf)
     moreover
     have "finite ?Y"
       using finiteUniqAndConsistentTrailsWithGivenVariableSuperset[of "Vbl"]
-        `finite Vbl`
+        \<open>finite Vbl\<close>
       by auto
     ultimately
     have "finite ?X"
@@ -2873,12 +2873,12 @@ next
       proof
         fix a
         assume "a \<in> (lexLessRestricted Vbl)^+"
-        with `lexLessRestricted Vbl \<subseteq> lexLess`
+        with \<open>lexLessRestricted Vbl \<subseteq> lexLess\<close>
         show "a \<in> lexLess^+"
           using trancl_mono[of "a" "lexLessRestricted Vbl" "lexLess"]
           by blast
       qed
-      with `(x, x) \<in> (lexLessRestricted Vbl)^+`
+      with \<open>(x, x) \<in> (lexLessRestricted Vbl)^+\<close>
       have "(x, x) \<in> lexLess^+"
         by auto
       moreover
@@ -2899,7 +2899,7 @@ next
   qed
 qed
 
-text{* @{term lexLessRestricted} is also transitive. *}
+text\<open>@{term lexLessRestricted} is also transitive.\<close>
 lemma transLexLessRestricted:
   shows "trans (lexLessRestricted Vbl)"
 proof-
@@ -2919,19 +2919,19 @@ qed
 
 
 (*-----------------------------------------------------------------------*)
-subsubsection{* Conflict clause ordering *}
+subsubsection\<open>Conflict clause ordering\<close>
 (*-----------------------------------------------------------------------*)
 
-text{* The ordering of conflict clauses is the multiset ordering induced by the ordering of elements in the trail.
+text\<open>The ordering of conflict clauses is the multiset ordering induced by the ordering of elements in the trail.
 Since, resolution operator is defined so that it removes all occurrences of clashing literal, it is also neccessary 
-to remove duplicate literals before comparison. *}
+to remove duplicate literals before comparison.\<close>
 
 definition
 "multLess M = inv_image  (mult (precedesOrder (elements M))) (\<lambda> x. mset (remdups (oppositeLiteralList x)))"
 
-text{* The following lemma will help prove that application of the
+text\<open>The following lemma will help prove that application of the
 $Explain$ DPLL transition rule decreases the conflict clause in the
-@{term multLess} ordering. *}
+@{term multLess} ordering.\<close>
 lemma multLessResolve:
   assumes 
   "opposite l el C" and
@@ -2947,7 +2947,7 @@ proof-
     let ?Z = "mset (remdups (oppositeLiteralList (removeAll (opposite l) C)))"
     let ?W = "mset (remdups (oppositeLiteralList (removeAll l (list_diff reason C))))"
     let ?a = "l"
-    from `(opposite l) el C`
+    from \<open>(opposite l) el C\<close>
     have "?X = ?Z + {#?a#}"
       using removeAll_multiset[of "remdups (oppositeLiteralList C)" "l"]
       using oppositeLiteralListRemove[of "opposite l" "C"]
@@ -2959,7 +2959,7 @@ proof-
       have "list_diff (oppositeLiteralList (removeAll l reason)) (oppositeLiteralList (removeAll (opposite l) C)) = 
         oppositeLiteralList (removeAll l (list_diff reason C))"
       proof-
-        from `isReason reason l (elements M)`
+        from \<open>isReason reason l (elements M)\<close>
         have "opposite l \<notin> set (removeAll l reason)"
           unfolding isReason_def
           by auto
@@ -2986,7 +2986,7 @@ proof-
         assume "b \<in># ?W"
         hence "opposite b \<in> set (removeAll l reason)"
         proof-
-          from `b \<in># ?W` 
+          from \<open>b \<in># ?W\<close> 
           have "b el remdups (oppositeLiteralList (removeAll l (list_diff reason C)))"
             by simp
           hence "opposite b el removeAll l (list_diff reason C)"
@@ -2998,7 +2998,7 @@ proof-
             using listDiffIff[of "opposite b" "removeAll l reason" "C"]
             by simp
         qed
-        with `isReason reason l (elements M)`
+        with \<open>isReason reason l (elements M)\<close>
         have "precedes b l (elements M)" "b \<noteq> l"
           unfolding isReason_def
           unfolding precedes_def
@@ -3047,7 +3047,7 @@ proof-
   have "multiset_le (mset (list_diff (?f a) (?f x)))
                     (mset (?f a))
                     ?pOrd"
-    using `trans ?pOrd`
+    using \<open>trans ?pOrd\<close>
     using multisetLeListDiff[of "?pOrd" "?f a" "?f x"]
     by simp
   ultimately
@@ -3082,7 +3082,7 @@ proof-
     by simp
 qed
 
-text{* Now we show that @{term multLess} is well-founded. *}
+text\<open>Now we show that @{term multLess} is well-founded.\<close>
 lemma wfMultLess: 
   shows "wf (multLess M)"
 proof-
@@ -3098,15 +3098,15 @@ qed
 
 
 (*-----------------------------------------------------------------------*)
-subsubsection{* ConflictFlag ordering *}
+subsubsection\<open>ConflictFlag ordering\<close>
 (*-----------------------------------------------------------------------*)
 
-text{* A trivial ordering on Booleans. It will be used for the
-$Conflict$ transition rule. *}
+text\<open>A trivial ordering on Booleans. It will be used for the
+$Conflict$ transition rule.\<close>
 definition
   "boolLess = {(True, False)}"
 
-text{* We show that it is well-founded *}
+text\<open>We show that it is well-founded\<close>
 lemma transBoolLess:
   shows "trans boolLess"
 proof-
@@ -3120,7 +3120,7 @@ proof-
     hence "y = True" "z = False"
       unfolding boolLess_def
       by auto
-    from `y = False` `y = True`
+    from \<open>y = False\<close> \<open>y = True\<close>
     have False
       by simp
     hence "(x, z) \<in> boolLess"
@@ -3149,15 +3149,15 @@ qed
 
 
 (*-----------------------------------------------------------------------*)
-subsubsection{* Formulae ordering *}
+subsubsection\<open>Formulae ordering\<close>
 (*-----------------------------------------------------------------------*)
 
-text{* A partial ordering of formulae, based on a membersip of a
+text\<open>A partial ordering of formulae, based on a membersip of a
 single fixed clause. This ordering will be used for the $Learn$
-transtion rule. *}
+transtion rule.\<close>
 definition "learnLess (C::Clause) == {((F1::Formula), (F2::Formula)). C el F1 \<and> \<not> C el F2}"
 
-text{* We show that it is well founded *}
+text\<open>We show that it is well founded\<close>
 lemma wfLearnLess:
   fixes C::Clause
   shows "wf (learnLess C)"
@@ -3182,13 +3182,13 @@ proof-
               hence "\<not> C el Fc"
                 unfolding learnLess_def
                 by auto
-              with `C el Fc` have False
+              with \<open>C el Fc\<close> have False
                 by simp
               thus "F' \<notin> Q"
                 by simp
             qed
           qed
-          with `Fc \<in> Q`
+          with \<open>Fc \<in> Q\<close>
           show ?thesis
             by auto
         next
@@ -3207,7 +3207,7 @@ proof-
                 by auto
             qed
           qed
-          with `F \<in> Q` 
+          with \<open>F \<in> Q\<close> 
           show ?thesis
             by auto
         qed
@@ -3218,7 +3218,7 @@ proof-
 qed
 
 (*-----------------------------------------------------------------------*)
-subsubsection{* Properties of well-founded relations. *}
+subsubsection\<open>Properties of well-founded relations.\<close>
 (*-----------------------------------------------------------------------*)
 lemma wellFoundedEmbed: 
   fixes rel :: "('a \<times> 'a) set" and rel' :: "('a \<times> 'a) set"
@@ -3233,7 +3233,7 @@ proof-
       assume "x \<in> Q"
       have "\<exists>zmin\<in>Q. \<forall>z. (z, zmin) \<in> rel \<longrightarrow> z \<notin> Q"
       proof-
-        from `wf rel'` `x \<in> Q`
+        from \<open>wf rel'\<close> \<open>x \<in> Q\<close>
         obtain zmin::"'a"
           where "zmin \<in> Q" and "\<forall>z. (z, zmin) \<in> rel' \<longrightarrow> z \<notin> Q"
           unfolding wf_eq_minimal
@@ -3243,15 +3243,15 @@ proof-
           assume "(z, zmin) \<in> rel"
           have "z \<notin> Q"
           proof-
-            from `\<forall> x y. (x, y) \<in> rel \<longrightarrow> (x, y) \<in> rel'` `(z, zmin) \<in> rel`
+            from \<open>\<forall> x y. (x, y) \<in> rel \<longrightarrow> (x, y) \<in> rel'\<close> \<open>(z, zmin) \<in> rel\<close>
             have "(z, zmin) \<in> rel'"
               by simp
-            with `\<forall>z. (z, zmin) \<in> rel' \<longrightarrow> z \<notin> Q`
+            with \<open>\<forall>z. (z, zmin) \<in> rel' \<longrightarrow> z \<notin> Q\<close>
             show ?thesis
               by simp
           qed
         }
-        with `zmin \<in> Q`
+        with \<open>zmin \<in> Q\<close>
         show ?thesis
           by auto
       qed

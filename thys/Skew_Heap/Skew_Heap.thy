@@ -9,11 +9,11 @@ begin
 
 unbundle pattern_aliases
 
-text{* Skew heaps~\cite{SleatorT-SIAM86} are possibly the simplest functional
+text\<open>Skew heaps~\cite{SleatorT-SIAM86} are possibly the simplest functional
 priority queues that have logarithmic (albeit amortized) complexity.
 
 The implementation below should be generalized to separate the elements from
-their priorities. *}
+their priorities.\<close>
 
 type_synonym 'a heap = "'a tree"
 
@@ -57,7 +57,7 @@ lemma merge_code: "merge h1 h2 =
         else Node (merge h1 r2) a2 l2)))"
 by(auto split: tree.split)
 
-text{* An alternative version that always walks to the Leaf of both heaps: *}
+text\<open>An alternative version that always walks to the Leaf of both heaps:\<close>
 function merge2 :: "('a::linorder) heap \<Rightarrow> 'a heap \<Rightarrow> 'a heap" where
 "merge2 Leaf Leaf = Leaf" |
 "merge2 Leaf (Node l2 a2 r2) = Node (merge2 r2 Leaf) a2 l2" |

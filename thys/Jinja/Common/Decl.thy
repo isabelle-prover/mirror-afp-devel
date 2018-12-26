@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* Class Declarations and Programs *}
+section \<open>Class Declarations and Programs\<close>
 
 theory Decl imports Type begin
 

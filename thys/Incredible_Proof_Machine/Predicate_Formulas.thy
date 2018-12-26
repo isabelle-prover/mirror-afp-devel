@@ -14,7 +14,7 @@ type_synonym var = nat
 type_synonym lconst = nat
 
 text \<open>
-We support higher order variables, in order to express @{text "\<forall>x.?P x"}. But we stay first order,
+We support higher order variables, in order to express \<open>\<forall>x.?P x\<close>. But we stay first order,
 i.e. the parameters of such a variables will only be instantiated with ground terms.
 \<close>
 
@@ -207,8 +207,8 @@ lemma map_lc_subst'[simp]: "map_lc p (subst' s f) = subst' (map_lc_subst p s) (m
 done
 
 text \<open>Since subst' happily renames quantified variables, we have a simple wrapper that
-ensures that the substitution is minimal, and is empty if @{text f} is closed. This is 
-a hack to support lemma  @{text subst_noop}. \<close>
+ensures that the substitution is minimal, and is empty if \<open>f\<close> is closed. This is 
+a hack to support lemma  \<open>subst_noop\<close>. \<close>
 
 fun subst :: "subst \<Rightarrow> form \<Rightarrow> form" where
   "subst s f = subst' (filter (\<lambda> (v,s). v \<in> fv f) s) f"

@@ -11,16 +11,16 @@ imports
   GroupIsoClasses
 begin
 
-section {* The Jordan-H\"older Theorem *}
+section \<open>The Jordan-H\"older Theorem\<close>
 
 locale jordan_hoelder = group
   + comp\<HH>?: composition_series G \<HH>
   + comp\<GG>?: composition_series G \<GG> for \<HH> and \<GG>
   + assumes finite:"finite (carrier G)"
 
-text {* Before we finally start the actual proof of the theorem, one last lemma: Cancelling
+text \<open>Before we finally start the actual proof of the theorem, one last lemma: Cancelling
   the last entry of a normal series results in a normal series with quotients being all but the last
-  of the original ones. *}
+  of the original ones.\<close>
 
 lemma (in normal_series) quotients_butlast:
   assumes "length \<GG> > 1"
@@ -29,10 +29,10 @@ proof (rule nth_equalityI )
   define n where "n = length \<GG> - 1"
   hence "n = length (take n \<GG>)" "n > 0" "n < length \<GG>" using assms notempty by auto
   interpret normal\<GG>butlast: normal_series "(G\<lparr>carrier := \<GG> ! (n - 1)\<rparr>)" "take n \<GG>" 
-    using normal_series_prefix_closed `n > 0` `n < length \<GG>` by auto
+    using normal_series_prefix_closed \<open>n > 0\<close> \<open>n < length \<GG>\<close> by auto
   have "length (butlast quotients) = length quotients - 1" by (metis length_butlast)
   also have "\<dots> = length \<GG> - 1 - 1" by (metis add_diff_cancel_right' quotients_length)
-  also have "\<dots> = length (take n \<GG>) - 1" by (metis `n = length (take n \<GG>)` n_def)
+  also have "\<dots> = length (take n \<GG>) - 1" by (metis \<open>n = length (take n \<GG>)\<close> n_def)
   also have "\<dots> = length normal\<GG>butlast.quotients" by (metis normal\<GG>butlast.quotients_length diff_add_inverse2)
   finally show "length (butlast quotients) = length normal\<GG>butlast.quotients" .
   have "\<forall>i<length (butlast quotients). butlast quotients ! i = normal\<GG>butlast.quotients ! i"
@@ -52,9 +52,9 @@ proof (rule nth_equalityI )
     unfolding n_def by auto
 qed
 
-text {* The main part of the Jordan Hölder theorem is its statement about the uniqueness of 
+text \<open>The main part of the Jordan Hölder theorem is its statement about the uniqueness of 
   a composition series. Here, uniqueness up to reordering and isomorphism is modelled by stating
-  that the multisets of isomorphism classes of all quotients are equal. *}
+  that the multisets of isomorphism classes of all quotients are equal.\<close>
 
 theorem jordan_hoelder_multisets:
   assumes "group G"
@@ -116,8 +116,8 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
     define \<HH>Pm where "\<HH>Pm = G\<lparr>carrier := \<HH> ! (m - 1)\<rparr>"
     then interpret grp\<GG>Pn: group \<GG>Pn unfolding \<GG>Pn_def using n' by (metis comp\<GG>.normal_series_subgroups comp\<GG>.subgroup_imp_group)
     interpret grp\<HH>Pm: group \<HH>Pm unfolding \<HH>Pm_def using m' comp\<HH>.normal_series_subgroups 1(2) group.subgroup_imp_group by force
-    have finGbl:"finite (carrier \<GG>Pn)" using `n - 1 < length \<GG>` 1(3) unfolding \<GG>Pn_def using comp\<GG>.normal_series_subgroups comp\<GG>.subgroup_finite by auto
-    have finHbl:"finite (carrier \<HH>Pm)" using `m - 1 < length \<HH>` 1(3) unfolding \<HH>Pm_def using comp\<HH>.normal_series_subgroups comp\<GG>.subgroup_finite by auto
+    have finGbl:"finite (carrier \<GG>Pn)" using \<open>n - 1 < length \<GG>\<close> 1(3) unfolding \<GG>Pn_def using comp\<GG>.normal_series_subgroups comp\<GG>.subgroup_finite by auto
+    have finHbl:"finite (carrier \<HH>Pm)" using \<open>m - 1 < length \<HH>\<close> 1(3) unfolding \<HH>Pm_def using comp\<HH>.normal_series_subgroups comp\<GG>.subgroup_finite by auto
     have quots\<GG>notempty:"comp\<GG>.quotients \<noteq> []" using comp\<GG>.quotients_length length by auto
     have quots\<HH>notempty:"comp\<HH>.quotients \<noteq> []" using comp\<HH>.quotients_length length\<HH>big by auto
     
@@ -134,7 +134,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       have lasteq:"last comp\<GG>.quotients = last comp\<HH>.quotients"
       proof -
         from length have lg:"length \<GG> - 1 - 1 + 1 = length \<GG> - 1" by (metis Suc_diff_1 Suc_eq_plus1 n'(1) n_def)
-        from length\<HH>big have lh:"length \<HH> - 1 - 1 + 1 = length \<HH> - 1" by (metis Suc_diff_1 Suc_eq_plus1 `0 < m` m_def)
+        from length\<HH>big have lh:"length \<HH> - 1 - 1 + 1 = length \<HH> - 1" by (metis Suc_diff_1 Suc_eq_plus1 \<open>0 < m\<close> m_def)
         have "last comp\<GG>.quotients =  G Mod \<GG> ! (n - 1)" using length comp\<GG>.last_quotient unfolding n_def by auto
         also have "\<dots> = G Mod \<HH> ! (m - 1)" using True by simp
         also have "\<dots> = last comp\<HH>.quotients" using length\<HH>big comp\<HH>.last_quotient unfolding m_def by auto
@@ -251,7 +251,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       qed
       hence \<LL>sndlast:"\<HH>PmInt\<GG>Pn = (\<GG>Pn\<lparr>carrier := \<LL> ! (length \<LL> - 1 - 1)\<rparr>)" unfolding \<HH>PmInt\<GG>Pn_def \<GG>Pn_def by auto
       then interpret \<LL>butlast: composition_series \<HH>PmInt\<GG>Pn "take (length \<LL> - 1) \<LL>" using length\<LL>' \<LL>.composition_series_prefix_closed by metis
-      from `length \<LL> > 1` have quots\<LL>notemtpy:"\<LL>.quotients \<noteq> []" unfolding \<LL>.quotients_def by auto
+      from \<open>length \<LL> > 1\<close> have quots\<LL>notemtpy:"\<LL>.quotients \<noteq> []" unfolding \<LL>.quotients_def by auto
 
       \<comment> \<open>Apply the induction hypothesis on @{text \<LL>butlast} and @{text \<KK>butlast}\<close>
       have "length \<KK> > 1"
@@ -315,7 +315,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       also have "\<dots> = mset (map group.iso_class ((butlast \<LL>.quotients) @ [last \<LL>.quotients])) + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
         using multisets\<GG>butlast\<LL> quots\<LL>notemtpy by simp
       also have "\<dots> = mset (map group.iso_class (\<LL>butlast.quotients @ [\<GG>Pn Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)])) + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
-        using \<LL>.quotients_butlast \<LL>.last_quotient `length \<LL> > 1` \<LL>sndlast Inteq\<LL>sndlast unfolding n_def by auto
+        using \<LL>.quotients_butlast \<LL>.last_quotient \<open>length \<LL> > 1\<close> \<LL>sndlast Inteq\<LL>sndlast unfolding n_def by auto
       also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<GG>Pn Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<GG> ! (n - 1)) #}"
         using multisets\<KK>\<LL>butlast by simp
       also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #} + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #}"
@@ -324,7 +324,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       also have "\<dots> = mset (map group.iso_class \<KK>butlast.quotients) + {# group.iso_class (\<HH>Pm Mod \<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)) #} + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
         by simp
       also have "\<dots> = mset (map group.iso_class ((butlast \<KK>.quotients) @ [last \<KK>.quotients])) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
-        using \<KK>.quotients_butlast \<KK>.last_quotient `length \<KK> > 1` \<KK>sndlast Inteq\<KK>sndlast unfolding m_def by auto
+        using \<KK>.quotients_butlast \<KK>.last_quotient \<open>length \<KK> > 1\<close> \<KK>sndlast Inteq\<KK>sndlast unfolding m_def by auto
       also have "\<dots> = mset (map group.iso_class \<HH>butlast.quotients) + {# group.iso_class (G Mod \<HH> ! (m - 1)) #}"
         using multisets\<HH>butlast\<KK> quots\<KK>notemtpy by simp
       also have "\<dots> = mset (map group.iso_class ((butlast comp\<HH>.quotients) @ [last comp\<HH>.quotients]))"
@@ -335,7 +335,7 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
   qed
 qed
 
-text {* As a corollary, we see that the composition series of a fixed group all have the same length. *}
+text \<open>As a corollary, we see that the composition series of a fixed group all have the same length.\<close>
 
 corollary (in jordan_hoelder) jordan_hoelder_size:
   shows "length \<GG> = length \<HH>"

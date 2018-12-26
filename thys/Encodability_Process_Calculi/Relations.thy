@@ -2,17 +2,17 @@ theory Relations
   imports Main "HOL-Library.LaTeXsugar" "HOL-Library.OptionalSugar"
 begin
 
-section {* Relations *}
+section \<open>Relations\<close>
 
-subsection {* Basic Conditions *}
+subsection \<open>Basic Conditions\<close>
 
-text {* We recall the standard definitions for reflexivity, symmetry, transitivity, preoders,
-        equivalence, and inverse relations. *}
+text \<open>We recall the standard definitions for reflexivity, symmetry, transitivity, preoders,
+        equivalence, and inverse relations.\<close>
 
 abbreviation "preorder Rel \<equiv> preorder_on UNIV Rel"
 abbreviation "equivalence Rel \<equiv> equiv UNIV Rel"
 
-text {* A symmetric preorder is an equivalence. *}
+text \<open>A symmetric preorder is an equivalence.\<close>
 
 lemma symm_preorder_is_equivalence:
   fixes Rel :: "('a \<times> 'a) set"
@@ -23,12 +23,12 @@ lemma symm_preorder_is_equivalence:
       unfolding preorder_on_def equiv_def
     by simp
 
-text {* The symmetric closure of a relation is the union of this relation and its inverse. *}
+text \<open>The symmetric closure of a relation is the union of this relation and its inverse.\<close>
 
 definition symcl :: "('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) set" where
   "symcl Rel = Rel \<union> Rel\<inverse>"
 
-text {* For all (a, b) in R, the symmetric closure of R contains (a, b) as well as (b, a). *}
+text \<open>For all (a, b) in R, the symmetric closure of R contains (a, b) as well as (b, a).\<close>
 
 lemma elem_of_symcl:
   fixes Rel :: "('a \<times> 'a) set"
@@ -38,22 +38,22 @@ lemma elem_of_symcl:
     and "(b, a) \<in> symcl Rel"
     by (auto simp add: elem symcl_def)
 
-text {* The symmetric closure of a relation is symmetric. *}
+text \<open>The symmetric closure of a relation is symmetric.\<close>
 
 lemma sym_symcl:
   fixes Rel :: "('a \<times> 'a) set"
   shows "sym (symcl Rel)"
     by (simp add: symcl_def sym_Un_converse)
 
-text {* The reflexive and symmetric closure of a relation is equal to its symmetric and reflexive
-        closure. *}
+text \<open>The reflexive and symmetric closure of a relation is equal to its symmetric and reflexive
+        closure.\<close>
 
 lemma refl_symm_closure_is_symm_refl_closure:
   fixes Rel :: "('a \<times> 'a) set"
   shows "symcl (Rel\<^sup>=) = (symcl Rel)\<^sup>="
     by (auto simp add: symcl_def refl)
 
-text {* The symmetric closure of a reflexive relation is reflexive. *}
+text \<open>The symmetric closure of a reflexive relation is reflexive.\<close>
 
 lemma refl_symcl_of_refl_rel:
   fixes Rel :: "('a \<times> 'a) set"
@@ -63,8 +63,8 @@ lemma refl_symcl_of_refl_rel:
       using assms
     by (auto simp add: refl_on_def' symcl_def)
 
-text {* Accordingly, the reflexive, symmetric, and transitive closure of a relation is equal to its
-        symmetric, reflexive, and transitive closure. *}
+text \<open>Accordingly, the reflexive, symmetric, and transitive closure of a relation is equal to its
+        symmetric, reflexive, and transitive closure.\<close>
 
 lemma refl_symm_trans_closure_is_symm_refl_trans_closure:
   fixes Rel :: "('a \<times> 'a) set"
@@ -72,7 +72,7 @@ lemma refl_symm_trans_closure_is_symm_refl_trans_closure:
       using refl_symm_closure_is_symm_refl_closure[where Rel="Rel"]
     by simp
 
-text {* The reflexive closure of a symmetric relation is symmetric. *}
+text \<open>The reflexive closure of a symmetric relation is symmetric.\<close>
 
 lemma sym_reflcl_of_symm_rel:
   fixes Rel :: "('a \<times> 'a) set"
@@ -81,7 +81,7 @@ lemma sym_reflcl_of_symm_rel:
       using assms
     by (simp add: sym_Id sym_Un)
 
-text {* The reflexive closure of a reflexive relation is the relation itself. *}
+text \<open>The reflexive closure of a reflexive relation is the relation itself.\<close>
 
 lemma reflcl_of_refl_rel:
   fixes Rel :: "('a \<times> 'a) set"
@@ -91,7 +91,7 @@ lemma reflcl_of_refl_rel:
       unfolding refl_on_def
     by auto
 
-text {* The symmetric closure of a symmetric relation is the relation itself. *}
+text \<open>The symmetric closure of a symmetric relation is the relation itself.\<close>
 
 lemma symm_closure_of_symm_rel:
   fixes Rel :: "('a \<times> 'a) set"
@@ -101,7 +101,7 @@ lemma symm_closure_of_symm_rel:
       unfolding symcl_def sym_def
     by auto
 
-text {* The reflexive and transitive closure of a preorder Rel is Rel. *}
+text \<open>The reflexive and transitive closure of a preorder Rel is Rel.\<close>
 
 lemma rtrancl_of_preorder:
   fixes Rel :: "('a \<times> 'a) set"
@@ -111,8 +111,8 @@ lemma rtrancl_of_preorder:
       unfolding preorder_on_def
     by auto
 
-text {* The reflexive and transitive closure of a relation is a subset of its reflexive, symmetric,
-        and transtive closure. *}
+text \<open>The reflexive and transitive closure of a relation is a subset of its reflexive, symmetric,
+        and transtive closure.\<close>
 
 lemma refl_trans_closure_subset_of_refl_symm_trans_closure:
   fixes Rel :: "('a \<times> 'a) set"
@@ -128,11 +128,11 @@ proof clarify
     by simp
 qed
 
-text {* If a preorder Rel satisfies the following two conditions, then its symmetric closure is
+text \<open>If a preorder Rel satisfies the following two conditions, then its symmetric closure is
         transitive:
         (1) If (a, b) and (c, b) in Rel but not (a, c) in Rel, then (b, a) in Rel or (b, c) in Rel.
         (2) If (a, b) and (a, c) in Rel but not (b, c) in Rel, then (b, a) in Rel or (c, a) in Rel.
-        *}
+\<close>
 
 lemma symm_closure_of_preorder_is_trans:
   fixes Rel :: "('a \<times> 'a) set"
@@ -213,9 +213,9 @@ proof clarify
     by (auto simp add: symcl_def)
 qed
 
-subsection {* Preservation, Reflection, and Respection of Predicates *}
+subsection \<open>Preservation, Reflection, and Respection of Predicates\<close>
 
-text {* A relation R preserves some predicate P if P(a) implies P(b) for all (a, b) in R. *}
+text \<open>A relation R preserves some predicate P if P(a) implies P(b) for all (a, b) in R.\<close>
 
 abbreviation rel_preserves_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "rel_preserves_pred Rel Pred \<equiv> \<forall>a b. (a, b) \<in> Rel \<and> Pred a \<longrightarrow> Pred b"
@@ -223,7 +223,7 @@ abbreviation rel_preserves_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Rig
 abbreviation rel_preserves_binary_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" where
   "rel_preserves_binary_pred Rel Pred \<equiv> \<forall>a b x. (a, b) \<in> Rel \<and> Pred a x \<longrightarrow> Pred b x"
 
-text {* A relation R reflects some predicate P if P(b) implies P(a) for all (a, b) in R. *}
+text \<open>A relation R reflects some predicate P if P(b) implies P(a) for all (a, b) in R.\<close>
 
 abbreviation rel_reflects_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "rel_reflects_pred Rel Pred \<equiv> \<forall>a b. (a, b) \<in> Rel \<and> Pred b \<longrightarrow> Pred a"
@@ -231,7 +231,7 @@ abbreviation rel_reflects_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Righ
 abbreviation rel_reflects_binary_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool" where
   "rel_reflects_binary_pred Rel Pred \<equiv> \<forall>a b x. (a, b) \<in> Rel \<and> Pred b x \<longrightarrow> Pred a x"
 
-text {* A relation respects a predicate if it preserves and reflects it. *}
+text \<open>A relation respects a predicate if it preserves and reflects it.\<close>
 
 abbreviation rel_respects_pred :: "('a \<times> 'a) set \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool" where
   "rel_respects_pred Rel Pred \<equiv> rel_preserves_pred Rel Pred \<and> rel_reflects_pred Rel Pred"
@@ -240,8 +240,8 @@ abbreviation rel_respects_binary_pred :: "('a \<times> 'a) set \<Rightarrow> ('a
   "rel_respects_binary_pred Rel Pred \<equiv>
    rel_preserves_binary_pred Rel Pred \<and> rel_reflects_binary_pred Rel Pred"
 
-text {* For symmetric relations preservation, reflection, and respection of predicates means the
-        same. *}
+text \<open>For symmetric relations preservation, reflection, and respection of predicates means the
+        same.\<close>
 
 lemma symm_relation_impl_preservation_equals_reflection:
   fixes Rel  :: "('a \<times> 'a) set"
@@ -265,8 +265,8 @@ lemma symm_relation_impl_preservation_equals_reflection_of_binary_predicates:
       unfolding sym_def
     by blast+
 
-text {* If a relation preserves a predicate then so does its reflexive or/and transitive closure.
-      *}
+text \<open>If a relation preserves a predicate then so does its reflexive or/and transitive closure.
+\<close>
 
 lemma preservation_and_closures:
   fixes Rel  :: "('a \<times> 'a) set"
@@ -318,7 +318,7 @@ proof -
     by fast
 qed
 
-text {* If a relation reflects a predicate then so does its reflexive or/and transitive closure. *}
+text \<open>If a relation reflects a predicate then so does its reflexive or/and transitive closure.\<close>
 
 lemma reflection_and_closures:
   fixes Rel  :: "('a \<times> 'a) set"
@@ -369,8 +369,8 @@ proof -
     by fast
 qed
 
-text {* If a relation respects a predicate then so does its reflexive, symmetric, or/and transitive
-        closure. *}
+text \<open>If a relation respects a predicate then so does its reflexive, symmetric, or/and transitive
+        closure.\<close>
 
 lemma respection_and_closures:
   fixes Rel  :: "('a \<times> 'a) set"

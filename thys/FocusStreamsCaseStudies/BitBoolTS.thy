@@ -5,7 +5,7 @@
 *)
 (*>*)
 
-section {*  Properties of time-synchronous streams of types bool and bit *}
+section \<open>Properties of time-synchronous streams of types bool and bit\<close>
 
 theory BitBoolTS 
 imports Main stream

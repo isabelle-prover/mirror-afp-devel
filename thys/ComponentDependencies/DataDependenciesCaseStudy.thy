@@ -12,7 +12,7 @@ theory DataDependenciesCaseStudy
 begin
 
 
-subsection {* Correct composition of components *}
+subsection \<open>Correct composition of components\<close>
 
 \<comment> \<open>the lemmas  AbstrLevels X Y with corresponding proofs can be composend\<close>
 \<comment> \<open>and proven automatically, their proofs are identical\<close>
@@ -623,7 +623,7 @@ lemma correctDeCompositionVARSYSTEM_holds:
 by (simp add: correctDeCompositionVARSYSTEM_def, clarify, case_tac S, (simp add: correctDeCompositionVAR_def)+)
 
 
-subsection {* Correct specification of the relations between channels *}
+subsection \<open>Correct specification of the relations between channels\<close>
 
 lemma OUTfromChCorrect_data1: "OUTfromChCorrect data1"
 by (simp add: OUTfromChCorrect_def)
@@ -848,7 +848,7 @@ lemma VARusefulSYSTEM_holds:
 by (simp add: VARusefulSYSTEM_def, auto, case_tac v, auto)
 
 
-subsection {* Elementary components *}
+subsection \<open>Elementary components\<close>
 
 \<comment> \<open>On the abstraction level 0 only the components sA5 and sA6 are elementary\<close>
 
@@ -975,7 +975,7 @@ by  (simp add: elementaryCompDD_def)
 lemma elementaryCompDD_sA93: "elementaryCompDD sA93" 
 by  (simp add: elementaryCompDD_def)
 
-subsection {* Source components *}
+subsection \<open>Source components\<close>
 
 \<comment> \<open>Abstraction level 0\<close>
 
@@ -1666,7 +1666,7 @@ proof -
 qed
 
 
-subsection {* Minimal sets of components to prove certain properties *}
+subsection \<open>Minimal sets of components to prove certain properties\<close>
 
 lemma minSetOfComponentsTestL2p1:
 "minSetOfComponents level2 {data10, data13} = {sS1}"

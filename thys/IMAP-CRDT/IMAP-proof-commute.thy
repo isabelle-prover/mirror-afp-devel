@@ -1,4 +1,4 @@
-section {* Commutativity of IMAP Commands *}
+section \<open>Commutativity of IMAP Commands\<close>
 
 text\<open>In this section we prove the commutativity of operations and identify the edge cases.\<close>
 

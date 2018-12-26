@@ -13,9 +13,9 @@ begin
 no_notation test_bit (infixl "!!" 100)
 (*>*)
 
-subsection {* Abstract Syntax Tree \emph{after} preprocessing *}
+subsection \<open>Abstract Syntax Tree \emph{after} preprocessing\<close>
 
-text {* 
+text \<open>
   From the plain AST stemming from the parser, we'd like to have one containing more information while also removing duplicated constructs. This is achieved in the preprocessing step.
 
   The additional information contains:
@@ -28,7 +28,7 @@ text {*
   AST are collapsed into one parametrized node (e.g.\ the different send-operations).
 
   This preprocessing phase also tries to detect certain static errors and will bail out with an exception if such is encountered.
- *}
+\<close>
 
 datatype binOp = BinOpAdd
                | BinOpSub
@@ -71,7 +71,7 @@ datatype expr = ExprBinOp binOp (*left*) expr (*right*) expr
 datatype varType = VTBounded integer integer
                  | VTChan
 
-text {* Variable declarations at the beginning of a proctype or at global level. *}
+text \<open>Variable declarations at the beginning of a proctype or at global level.\<close>
 datatype varDecl = VarDeclNum (*bounds*) integer integer
                               (*name*) String.literal
                               (*size*) "integer option"
@@ -80,7 +80,7 @@ datatype varDecl = VarDeclNum (*bounds*) integer integer
                                (*size*) "integer option"
                                (*capacityTypes*) "(integer * varType list) option"
 
-text {* Variable declarations during a proctype. *}
+text \<open>Variable declarations during a proctype.\<close>
 datatype procVarDecl = ProcVarDeclNum  (*bounds*) integer integer
                                        (*name*) String.literal
                                        (*size*) "integer option"
@@ -121,19 +121,19 @@ datatype proc = ProcType (*active*) "(integer option) option"
 type_synonym ltl = "\<comment> \<open>name:\<close> String.literal \<times> \<comment> \<open>formula:\<close> String.literal"
 type_synonym promela = "varDecl list \<times> proc list \<times> ltl list"
 
-subsection {* Preprocess the AST of the parser into our variant *}
+subsection \<open>Preprocess the AST of the parser into our variant\<close>
 
-text {* We setup some functionality for printing warning or even errors.
+text \<open>We setup some functionality for printing warning or even errors.
 
 All those constants are logically @{term undefined}, but replaced by the parser
-for something meaningful. *}
+for something meaningful.\<close>
 consts 
   warn :: "String.literal \<Rightarrow> unit"
 
 abbreviation "with_warn msg e \<equiv> let _ = warn msg in e"
 abbreviation "the_warn opt msg \<equiv> case opt of None \<Rightarrow> () | _ \<Rightarrow> warn msg"
 
-text {* @{text usc}: "Unsupported Construct" *}
+text \<open>\<open>usc\<close>: "Unsupported Construct"\<close>
 definition [code del]: "usc (c :: String.literal) \<equiv> undefined"
 
 definition  [code del]: "err (e :: String.literal) = undefined"
@@ -143,7 +143,7 @@ definition [simp, code del]: "abort (msg :: String.literal) f = f ()"
 abbreviation "abortv msg v f \<equiv> abort (msg + v) f"
 
 code_printing
-  code_module PromelaUtils \<rightharpoonup> (SML) {*
+  code_module PromelaUtils \<rightharpoonup> (SML) \<open>
     structure PromelaUtils = struct
       exception UnsupportedConstruct of string
       exception StaticError of string
@@ -152,7 +152,7 @@ code_printing
       fun usc  c   = raise (UnsupportedConstruct c)
       fun err  e   = raise (StaticError e)
       fun abort msg _ = raise (RuntimeError msg)
-    end *}
+    end\<close>
 | constant warn \<rightharpoonup> (SML) "PromelaUtils.warn"
 | constant usc \<rightharpoonup> (SML) "PromelaUtils.usc"
 | constant err \<rightharpoonup> (SML) "PromelaUtils.err"
@@ -161,10 +161,10 @@ code_reserved SML PromelaUtils
 
 
 (*<*)
-ML_val {* @{code hd} *} (* Test code-printing setup. If this fails, the setup is skewed. *)
+ML_val \<open>@{code hd}\<close> (* Test code-printing setup. If this fails, the setup is skewed. *)
 (*>*)
 
-text {* The preprocessing is done for each type on its own. *}
+text \<open>The preprocessing is done for each type on its own.\<close>
 
 primrec ppBinOp :: "AST.binOp \<Rightarrow> binOp"
 where
@@ -193,7 +193,7 @@ where
 | "ppUnOp AST.UnOpNeg = UnOpNeg"
 | "ppUnOp AST.UnOpComp = usc STR ''UnOpComp''"
 
-text {* The data structure holding all information on variables we found so far. *}
+text \<open>The data structure holding all information on variables we found so far.\<close>
 type_synonym var_data = "
      (String.literal, (integer option \<times> bool)) lm \<comment> \<open>channels\<close>
      \<times> (String.literal, (integer option \<times> bool)) lm \<comment> \<open>variables\<close>
@@ -414,10 +414,10 @@ where
 
 | "ppProcArg _ _ _ (AST.VarDeclUnsigned _ _ _) = usc STR ''VarDeclUnsigned''"
 
-text {* Some preprocessing functions enrich the @{typ var_data} argument and hence return
+text \<open>Some preprocessing functions enrich the @{typ var_data} argument and hence return
 a new updated one. When chaining multiple calls to such functions after another, we need to make
 sure, the @{typ var_data} is passed accordingly. @{term cvm_fold} does exactly that for such a
-function @{term g} and a list of nodes @{term ss}. *}
+function @{term g} and a list of nodes @{term ss}.\<close>
 
 definition cvm_fold where
   "cvm_fold g cvm ss = foldl (\<lambda>(cvm,ss) s. apsnd (\<lambda>s'. ss@[s']) (g cvm s)) 
@@ -461,7 +461,7 @@ definition incr :: "varRef \<Rightarrow> stmnt" where
 definition decr :: "varRef \<Rightarrow> stmnt" where
   "decr v = StmntAssign v (ExprBinOp BinOpSub (ExprVarRef v) (ExprConst 1))"
 
-text {* 
+text \<open>
    Transforms
      \verb+for (i : lb .. ub) steps+
    into 
@@ -472,7 +472,7 @@ text {*
      :: else -> break
    od
 } \end{verbatim}
-*}
+\<close>
 definition forFromTo :: "varRef \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> step list \<Rightarrow> stmnt" where
   "forFromTo i lb ub steps = (
       let
@@ -493,7 +493,7 @@ definition forFromTo :: "varRef \<Rightarrow> expr \<Rightarrow> expr \<Rightarr
       in
         StmntSeq [loop_pre, loop])"
 
-text {* 
+text \<open>
    Transforms (where @{term a} is an array with @{term N} entries)
      \verb+for (i in a) steps+
    into
@@ -504,7 +504,7 @@ text {*
      :: else -> break
    od
 }\end{verbatim}
-*}
+\<close>
 definition forInArray :: "varRef \<Rightarrow> integer \<Rightarrow> step list \<Rightarrow> stmnt" where
   "forInArray i N steps = (
       let
@@ -526,7 +526,7 @@ definition forInArray :: "varRef \<Rightarrow> integer \<Rightarrow> step list \
       in
         StmntSeq [loop_pre, loop])"
 
-text {* 
+text \<open>
    Transforms (where @{term c} is a channel)
      \verb+for (msg in c) steps+
    into 
@@ -540,7 +540,7 @@ text {*
      :: else -> break
    od
 }\end{verbatim}
-*}
+\<close>
 definition forInChan :: "varRef \<Rightarrow> chanRef \<Rightarrow> step list \<Rightarrow> stmnt" where
   "forInChan msg c steps = (
       let  
@@ -569,7 +569,7 @@ definition forInChan :: "varRef \<Rightarrow> chanRef \<Rightarrow> step list \<
       in
         StmntSeq [loop_pre, loop])"
 
-text {* 
+text \<open>
    Transforms
      \verb+select (i : lb .. ub)+
    into 
@@ -580,7 +580,7 @@ text {*
      :: break
    od
 }\end{verbatim}
-*}
+\<close>
 definition select :: "varRef \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> stmnt" where
   "select i lb ub = (
       let
@@ -807,15 +807,15 @@ definition lookupLTL
   :: "AST.module list \<Rightarrow> String.literal \<Rightarrow> String.literal option"
   where "lookupLTL ast k = lm.lookup k (extractLTLs ast)"
 
-subsection {* The transition system *}
+subsection \<open>The transition system\<close>
 
-text {* 
+text \<open>
   The edges in our transition system consist of a condition (evaluated under the current environment) and an effect (modifying the current environment). 
   Further they may be atomic, \ie a whole row of such edges is taken before yielding a new state. 
   Additionally, they carry a priority: the edges are checked from highest to lowest priority, and if one edge on a higher level can be taken, the lower levels are ignored.
 
   The states of the system do not carry any information.
-*}
+\<close>
 
 datatype edgeCond = ECElse 
                   | ECTrue
@@ -851,7 +851,7 @@ definition isAtomic :: "edge \<Rightarrow> bool" where
 definition inAtomic :: "edge \<Rightarrow> bool" where
   "inAtomic e = (case atomic e of NonAtomic \<Rightarrow> False | _ \<Rightarrow> True)"
 
-subsection {* State *}
+subsection \<open>State\<close>
 
 datatype variable = Var varType integer
                   | VArray varType nat "integer iarray"
@@ -901,7 +901,7 @@ record gState\<^sub>I = gState + \<comment> \<open>Additional internal infos\<cl
   exclusive :: nat     \<comment> \<open>Set to the PID of the process, which is in an exclusive (= atomic) state.\<close>
   else      :: bool    \<comment> \<open>Set to True for each process, if it can not take a transition. Used before timeout.\<close>
 
-subsection {* Printing *}
+subsection \<open>Printing\<close>
 
 primrec printBinOp :: "binOp \<Rightarrow> string" where
   "printBinOp BinOpAdd = ''+''"
@@ -1165,8 +1165,8 @@ begin
   qed
 end
 
-text {* Instead of operating on the list representation of an @{const IArray}, we walk it directly,
-using the indices. *}
+text \<open>Instead of operating on the list representation of an @{const IArray}, we walk it directly,
+using the indices.\<close>
 
 primrec walk_iarray' :: "('b \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a iarray \<Rightarrow> 'b \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'b" where
   "walk_iarray' _ _ x 0 _ = x"
@@ -1220,7 +1220,7 @@ begin
     done
 end
 
-text {* Same for arrays from the ICF. *}
+text \<open>Same for arrays from the ICF.\<close>
 primrec walk_array' :: "('b \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a array \<Rightarrow> 'b \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'b" where
   "walk_array' _ _ x 0 _ = x"
 | "walk_array' f a x (Suc l) p = (let y = f x (array_get a p)

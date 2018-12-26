@@ -15,15 +15,15 @@ imports
 begin
 
 (*>*)
-section{* Top-level safety *}
+section\<open>Top-level safety\<close>
 
-text{*
+text\<open>
 
 \label{sec:top-level-correctness}
 
-*}
+\<close>
 
-subsection{* Invariants *}
+subsection\<open>Invariants\<close>
 
 definition (in gc) invsL :: "('field, 'mut, 'ref) gc_pred" where
   "invsL \<equiv>
@@ -81,13 +81,13 @@ apply (rule valid_pre)
 apply ( rule valid_conj_lift valid_all_lift | fastforce )+
 done
 
-text{*
+text\<open>
 
 We need to separately treat the two cases of a single mutator and
 multiple mutators. In the latter case we have the additional
 obligation of showing mutual non-interference amongst mutators.
 
-*}
+\<close>
 
 lemma mut_invsL[intro]:
   "\<lbrace>I\<rbrace> mutator m \<lbrace>mut_m.invsL m'\<rbrace>"
@@ -121,9 +121,9 @@ done
 
 (* **************************************** *)
 
-subsection{* Initial conditions *}
+subsection\<open>Initial conditions\<close>
 
-text{*
+text\<open>
 
 We ask that the GC and system initially agree on some things:
 \begin{itemize}
@@ -143,7 +143,7 @@ We ask that the GC and system initially agree on some things:
 Note that these are merely sufficient initial conditions and can be
 weakened.
 
-*}
+\<close>
 
 locale gc_system =
   fixes initial_mark :: gc_mark
@@ -189,11 +189,11 @@ definition gc_system_init :: "('field, 'mut, 'ref) lsts_pred" where
      and (\<lambda>s. sys_initial_state (s sys))
      and valid_refs"
 
-text{*
+text\<open>
 
 The system consists of the programs and these constraints on the initial state.
 
-*}
+\<close>
 
 abbreviation gc_system :: "('field, 'mut, 'ref) gc_system" where
   "gc_system \<equiv> (gc_pgms, gc_system_init)"
@@ -279,7 +279,7 @@ lemma init_inv: "\<forall>s\<in>initial_states gc_system. I (mkP (s, []))"
 by (simp add: I_def init_inv_sys init_inv_gc init_inv_mut)
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 theorem inv: "s \<in> reachable_states gc_system \<Longrightarrow> I (mkP s)"
 (*<*)
@@ -293,11 +293,11 @@ apply (rule sys.I[unfolded valid_proc_def, simplified])
 done
 
 (*>*)
-text{*
+text\<open>
 
 Our headline safety result follows directly.
 
-*}
+\<close>
 
 corollary safety:
   "s \<in> reachable_states gc_system \<Longrightarrow> valid_refs (mkP s)\<down>"
@@ -311,28 +311,28 @@ apply (drule_tac x=xa in spec, fastforce simp: mut_m.reachable_def)
 done
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 end (* locale gc_system *)
 
-text{*
+text\<open>
 
 The GC is correct for the remaining fixed-but-arbitrary initial
 conditions.
 
-*}
+\<close>
 
 interpretation gc_system_interpretation: gc_system undefined .
 
-subsection{* A concrete system state *}
+subsection\<open>A concrete system state\<close>
 
-text{*
+text\<open>
 
 We demonstrate that our definitions are not vacuous by exhibiting a
 concrete initial state that satisfies the initial conditions. We use
 Isabelle's notation for types of a given size.
 
-*}
+\<close>
 (*<*)
 
 end

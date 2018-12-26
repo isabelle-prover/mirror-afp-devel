@@ -700,7 +700,7 @@ apply (subst val_t2p[of v _ x], assumption+,
        simp add: distrib_right)
 done
 
-text{* exponent in a field *}
+text\<open>exponent in a field\<close>
 lemma (in Corps) val_exp:"\<lbrakk> valuation K v; x \<in> carrier K; x \<noteq> \<zero>\<rbrakk> \<Longrightarrow>
                         z *\<^sub>a (v x) = v (x\<^bsub>K\<^esub>\<^bsup>z\<^esup>)"
 apply (simp add:npowf_def)
@@ -1943,7 +1943,7 @@ apply (rule contrapos_pp, simp+)
 apply (simp add: zero_val_gen_whole[THEN sym])
 done
 
-text{* We prove that Vr K v is a principal ideal ring *}
+text\<open>We prove that Vr K v is a principal ideal ring\<close>
 
 definition
   LI :: "[('r, 'm) Ring_scheme, 'r \<Rightarrow> ant, 'r set] \<Rightarrow> ant" where
@@ -2486,7 +2486,7 @@ lemma (in Corps) Vr_ideal_powTr1:"\<lbrakk>valuation K v; ideal (Vr K v) I;
  I \<noteq> carrier (Vr K v); b \<in> I\<rbrakk>  \<Longrightarrow> b \<in> (vp K v)"
 by (frule ideal_sub_vp[of v I], assumption+, simp add:subsetD)
 
-section {* pow of vp and @{text "n_value"} -- convergence -- *}
+section \<open>pow of vp and \<open>n_value\<close> -- convergence --\<close>
 
 lemma (in Corps) n_value_x_1:"\<lbrakk>valuation K v; 0 \<le> n;
                     x \<in> (vp K v) \<^bsup>(Vr K v) n\<^esup>\<rbrakk> \<Longrightarrow>  n \<le> (n_val K v x)"
@@ -2827,7 +2827,7 @@ apply (frule aposs_na_poss[of "n"], subst less_le, simp,
        simp add:aeq_nat_eq[THEN sym])
 done
 
-text{* the following two lemma (in Corps) s are used in completion of K *}
+text\<open>the following two lemma (in Corps) s are used in completion of K\<close>
 
 lemma (in Corps) Vr_prime_maximalTr1:"\<lbrakk>valuation K v; x \<in> carrier (Vr K v);
        Suc 0 < n\<rbrakk>  \<Longrightarrow> x \<cdot>\<^sub>r\<^bsub>(Vr K v)\<^esub> (x^\<^bsup>K (n - Suc 0)\<^esup>) \<in> (Vr K v) \<diamondsuit>\<^sub>p (x^\<^bsup>K n\<^esup>)"
@@ -2944,7 +2944,7 @@ apply (rule Ring.npClose[of "Vr K v" "Pg K v"], assumption+)
 apply simp
 done
 
-text{* From the above lemma (in Corps) , we see that a valuation ring is of dimension one. *}
+text\<open>From the above lemma (in Corps) , we see that a valuation ring is of dimension one.\<close>
 
 lemma (in Corps) field_frac1:"\<lbrakk>1\<^sub>r \<noteq> \<zero>; x \<in> carrier K\<rbrakk> \<Longrightarrow> x = x \<cdot>\<^sub>r ((1\<^sub>r)\<^bsup>\<hyphen>K\<^esup>)"
 by (simp add:invf_one,

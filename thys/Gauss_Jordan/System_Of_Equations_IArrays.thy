@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Solving systems of equations using the Gauss Jordan algorithm over nested IArrays*}
+section\<open>Solving systems of equations using the Gauss Jordan algorithm over nested IArrays\<close>
 
 theory System_Of_Equations_IArrays
 imports 
@@ -12,7 +12,7 @@ imports
   Bases_Of_Fundamental_Subspaces_IArrays
 begin
 
-subsection{*Previous definitions and properties*}
+subsection\<open>Previous definitions and properties\<close>
 
 definition greatest_not_zero :: "'a::{zero} iarray => nat"
   where "greatest_not_zero A = the (List.find (\<lambda>n. A !! n \<noteq> 0) (rev [0..<IArray.length A]))"
@@ -94,7 +94,7 @@ thus ?thesis unfolding greatest_not_zero_def a unfolding to_nat_eq[symmetric]
   unfolding to_nat_from_nat_id[OF a_less_card] by simp
 qed
 
-subsection{*Consistency and inconsistency*}
+subsection\<open>Consistency and inconsistency\<close>
 
 definition "consistent_iarrays A b = (let GJ=Gauss_Jordan_iarrays_PA A; 
                                            rank_A = length [x\<leftarrow>IArray.list_of (snd GJ) . \<not> is_zero_iarray x];
@@ -264,7 +264,7 @@ using vec_to_iarray_nth' by metis
 qed
 qed
 
-subsection{*Independence and dependence*}
+subsection\<open>Independence and dependence\<close>
 
 definition "independent_and_consistent_iarrays A b = 
   (let GJ = Gauss_Jordan_iarrays_PA A; 
@@ -308,7 +308,7 @@ unfolding snd_Gauss_Jordan_iarrays_PA_eq[symmetric]
 unfolding Let_def ..
 
 
-subsection{*Solve a system of equations over nested IArrays*}
+subsection\<open>Solve a system of equations over nested IArrays\<close>
 
 definition "solve_system_iarrays A b = (let A' = Gauss_Jordan_iarrays_PA A in (snd A', fst A' *iv b))"
 

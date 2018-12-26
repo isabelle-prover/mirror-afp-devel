@@ -1,4 +1,4 @@
-subsection {* SK (Separation Kernel) \label{sec:sep_kernel} *}
+subsection \<open>SK (Separation Kernel) \label{sec:sep_kernel}\<close>
 
 theory SK
   imports K
@@ -6,7 +6,7 @@ begin
 
 
 
-text {*
+text \<open>
   Locale Kernel is now refined to a generic model of a separation kernel.
   The security policy is represented using function \emph{ia}.
   Function \emph{vpeq} is adopted from Rushby and is an equivalence relation represeting whether two states are equivalent from the point of view of the given domain.   
@@ -21,7 +21,7 @@ text {*
   the state as updated by the control function remains in vpeq (next\_state\_consistent, locally\_respects\_next\_state).
   Finally, function control cannot change which domain is active (current\_next\_state).
   \end{description}
-*}
+\<close>
 definition actions_in_execution:: "'action_t execution \<Rightarrow> 'action_t set"
 where "actions_in_execution exec \<equiv> { a . \<exists> aseq \<in> set exec . a \<in> set aseq }"
 
@@ -61,77 +61,77 @@ assumes vpeq_transitive: " \<forall> a b c u. (vpeq u a b \<and> vpeq u b c) \<l
 begin
 
 
-text {*
+text \<open>
   Note that there are no proof obligations on function ``interrupt''.
   Its typing enforces the assumptions that switching is based on time and not on state.
   This assumption is sufficient for these proofs, i.e., no further assumptions are required.
-*}
+\<close>
 
-subsubsection {* Security for non-interfering domains *}
-text {*
+subsubsection \<open>Security for non-interfering domains\<close>
+text \<open>
   We define security for domains that are completely non-interfering.
   That is, for all domains $u$ and $v$ such that $v$ may not interfere in any way with domain $u$, we prove that the behavior of domain $u$ is independent of the actions performed by $v$.
   In other words, the output of domain $u$ in some run is at all times equivalent to the output of domain $u$ when the actions of domain $v$ are replaced by some other set actions.
-*}
+\<close>
 
-text {*
+text \<open>
   A domain is unrelated to $u$ if and only if the security policy dictates that there is no path from the domain to $u$.
-*}
+\<close>
 abbreviation unrelated :: "'dom_t \<Rightarrow> 'dom_t \<Rightarrow> bool"
 where "unrelated d u \<equiv> \<not>ifp^** d u"
-text {*
+text \<open>
   To formulate the new theorem to prove, we redefine purging: all domains that may not influence domain u are replaced by arbitrary action sequences.
-*}
+\<close>
 definition purge ::
   "('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'dom_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution)"
 where "purge execs u \<equiv> \<lambda> d . (if unrelated d u then
                                 (SOME alpha . realistic_execution alpha)
                               else execs d)"
-text {*
+text \<open>
   A normal run from initial state $s0$ ending in state $s\_f$ is equivalent to a run purged for domain $(\mbox{current} s\_f)$.
-*}
+\<close>
 definition NI_unrelated where "NI_unrelated
   \<equiv> \<forall> execs a n . run n (Some s0) execs \<rightharpoonup>
                    (\<lambda> s_f . run n (Some s0) (purge execs (current s_f)) \<rightharpoonup>
                                   (\<lambda> s_f2 . output_f s_f a = output_f s_f2 a \<and> current s_f = current s_f2))"
 
 
-text {* The following properties are proven inductive over states $s$ and $t$:
+text \<open>The following properties are proven inductive over states $s$ and $t$:
 \begin{enumerate}
 \item Invariably, states $s$ and $t$ are equivalent for any domain $v$ that may influence the purged domain $u$.
 This is more general than proving that ``vpeq u s t'' is inductive. The reason we need to prove equivalence
 over all domains $v$ is so that we can use \emph{weak} step consistency.
 \item Invariably, states $s$ and $t$ have the same active domain.\
 \end{enumerate}
-*}
+\<close>
 abbreviation equivalent_states :: "'state_t option  \<Rightarrow> 'state_t option \<Rightarrow> 'dom_t \<Rightarrow> bool"
 where "equivalent_states s t u \<equiv> s \<parallel> t \<rightharpoonup> (\<lambda> s t . (\<forall> v . ifp^** v u \<longrightarrow> vpeq v s t) \<and> current s = current t)"
 
-text {*
+text \<open>
   Rushby's view partitioning is redefined.
   Two states that are initially $u$-equivalent are $u$-equivalent after performing respectively a realistic run and a realistic purged run.
-*}
+\<close>
 definition view_partitioned::bool where "view_partitioned
   \<equiv> \<forall> execs ms mt n u . equivalent_states ms mt u  \<longrightarrow>
         (run n ms execs \<parallel>
          run n mt (purge execs u) \<rightharpoonup>
          (\<lambda> rs rt . vpeq u rs rt \<and> current rs = current rt))"
-text {*
+text \<open>
   We formulate a version of predicate view\_partitioned that is on one hand more general, but on the other hand easier to prove inductive over function run. 
   Instead of reasoning over execs and (purge execs u), we reason over any two executions execs1 and execs2 for which the following relation holds:
-*}
+\<close>
 definition purged_relation :: "'dom_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> bool"
 where "purged_relation u execs1 execs2 \<equiv> \<forall> d . ifp^** d u \<longrightarrow> execs1 d = execs2 d"
-text{*
+text\<open>
   The inductive version of view partitioning says that runs on two states that are $u$-equivalent and on two executions that are purged\_related yield $u$-equivalent states.
-*}
+\<close>
 definition view_partitioned_ind::bool where "view_partitioned_ind
   \<equiv> \<forall> execs1 execs2 s t n u . equivalent_states s t u \<and> purged_relation u execs1 execs2 \<longrightarrow> equivalent_states (run n s execs1) (run n t execs2) u"
 
 
-text {*
+text \<open>
   A proof that when state $t$ performs a step but state $s$ not, the states remain equivalent for any domain $v$ that may interfere with $u$.
-*}
+\<close>
 lemma vpeq_s_nt:
   assumes prec_t: "precondition (next_state t execs2) (next_action t execs2)"
   assumes not_ifp_curr_u: "\<not> ifp^** (current t) u"
@@ -153,9 +153,9 @@ proof-
   }
 thus ?thesis by auto
 qed
-text {*
+text \<open>
   A proof that when state $s$ performs a step but state $t$ not, the states remain equivalent for any domain $v$ that may interfere with $u$.
-*}
+\<close>
 lemma vpeq_ns_t:
   assumes prec_s: "precondition (next_state s execs) (next_action s execs)"
   assumes not_ifp_curr_u: "\<not> ifp^** (current s) u"
@@ -178,10 +178,10 @@ proof-
 thus ?thesis by auto
 qed   
 
-text {*
+text \<open>
   A proof that when both states $s$ and $t$ perform a step, the states remain equivalent for any domain $v$ that may interfere with $u$.
   It assumes that the current domain \emph{can} interact with $u$ (the domain for which is purged).
-*}
+\<close>
 lemma vpeq_ns_nt_ifp_u:
 assumes vpeq_s_t: "\<forall> v . ifp^** v u \<longrightarrow> vpeq v s t'"
     and current_s_t: "current s = current t'"
@@ -199,10 +199,10 @@ proof-
     by (cases a,auto)
 qed
       
-text {*
+text \<open>
   A proof that when both states $s$ and $t$ perform a step, the states remain equivalent for any domain $v$ that may interfere with $u$.
   It assumes that the current domain \emph{cannot} interact with $u$ (the domain for which is purged).
-*}
+\<close>
 lemma vpeq_ns_nt_not_ifp_u:
 assumes purged_a_a2: "purged_relation u execs execs2"
     and prec_s: "precondition (next_state s execs) (next_action s execs)"
@@ -243,9 +243,9 @@ proof-
 qed
 
 
-text {*
+text \<open>
   A run with a purged list of actions appears identical to a run without purging, when starting from two states that appear identical.
-*}
+\<close>
 lemma unwinding_implies_view_partitioned_ind: 
 shows view_partitioned_ind
 proof-
@@ -591,10 +591,10 @@ thus ?thesis
   unfolding view_partitioned_ind_def by auto
 qed
 
-text {*
+text \<open>
   From the previous lemma, we can prove that the system is view partitioned.
   The previous lemma was inductive, this lemma just instantiates the previous lemma replacing s and t by the initial state.
-*}
+\<close>
 lemma unwinding_implies_view_partitioned: 
 shows view_partitioned
 proof-
@@ -616,9 +616,9 @@ have purged_relation: "\<forall> u execs . purged_relation u execs (purge execs 
 thus ?thesis unfolding view_partitioned_def Let_def by auto
 qed
 
-text {*
+text \<open>
   Domains that many not interfere with each other, do not interfere with each other.
-*}
+\<close>
 theorem unwinding_implies_NI_unrelated: 
 shows NI_unrelated
 proof-
@@ -643,12 +643,12 @@ proof-
         from Some this show ?thesis unfolding B_def by simp
       next
       case (Some rt)
-        from `run n (Some s0) execs = Some rs` Some 1[THEN spec,where x="current rs"]
+        from \<open>run n (Some s0) execs = Some rs\<close> Some 1[THEN spec,where x="current rs"]
           have vpeq: "vpeq (current rs) rs rt \<and> current rs = current rt"
           unfolding B_def by auto
         from this output_consistent have "output_f rs a = output_f rt a"
            by auto
-        from this vpeq `run n (Some s0) execs = Some rs` Some
+        from this vpeq \<open>run n (Some s0) execs = Some rs\<close> Some
           show ?thesis unfolding B_def by auto
       qed
     qed
@@ -659,9 +659,9 @@ qed
 
 
 
-subsubsection {* Security for indirectly interfering domains *}
+subsubsection \<open>Security for indirectly interfering domains\<close>
 
-text {* 
+text \<open>
 Consider the following security policy over three domains $A$, $B$ and $C$: $A \leadsto B \leadsto C$,
 but $A \not\leadsto C$.
 The semantics of this policy is that $A$ may communicate with $C$, but \emph{only} via $B$. No direct communication from $A$ to $C$ is allowed.
@@ -673,7 +673,7 @@ Domain $C$ must be independent of domain $A$, when domain $B$ is inactive.
 The aim of this subsection is to formalize the semantics where $A$ can write to $C$ via $B$ \emph{only}.
 We define to two ipurge functions. The first purges all domains $d$ that are \emph{intermediary} for some other domain $v$.
 An intermediary for $u$ is defined as a domain $d$ for which there exists an information flow from some domain $v$ to $u$ via $d$, but no direct information flow from $v$ to $u$ is allowed.
-*}
+\<close>
 definition intermediary :: "'dom_t \<Rightarrow> 'dom_t \<Rightarrow> bool"
 where "intermediary d u \<equiv> \<exists> v . ifp^** v d \<and> ifp d u \<and> \<not>ifp v u \<and> d \<noteq> u"
 primrec remove_gateway_communications :: "'dom_t \<Rightarrow> 'action_t execution \<Rightarrow> 'action_t execution"
@@ -687,10 +687,10 @@ definition ipurge_l ::
                             else if d = u then
                               remove_gateway_communications u (execs u)
                             else execs d"
-text {*
+text \<open>
 The second ipurge removes both the intermediaries and the \emph{indirect sources}.
 An indirect source for $u$ is defined as a domain that may indirectly flow information to $u$, but not directly.
-*}
+\<close>
 abbreviation ind_source :: "'dom_t \<Rightarrow> 'dom_t \<Rightarrow> bool"
 where "ind_source d u \<equiv> ifp^** d u \<and> \<not>ifp d u"
 definition ipurge_r ::
@@ -703,23 +703,23 @@ definition ipurge_r ::
                               remove_gateway_communications u (execs u)
                             else
                               execs d"
-text {*
+text \<open>
 For a system with an intransitive policy to be called secure for domain $u$ any indirect source may not flow information towards $u$ when the intermediaries are purged out.
 This definition of security allows the information flow $A \leadsto B \leadsto C$, but prohibits $A \leadsto C$.
-*}
+\<close>
 definition NI_indirect_sources ::bool
 where "NI_indirect_sources 
   \<equiv> \<forall> execs a n. run n (Some s0) execs \<rightharpoonup>
                    (\<lambda> s_f . (run n (Some s0) (ipurge_l execs (current s_f)) \<parallel>
                              run n (Some s0) (ipurge_r execs  (current s_f)) \<rightharpoonup>
                                  (\<lambda> s_l s_r . output_f s_l a = output_f s_r a)))"
-text {*
+text \<open>
 This definition concerns indirect sources only. It does not enforce that an \emph{unrelated} domain may not flow information to $u$.
 This is expressed by ``secure''.
-*}
+\<close>
 
-text {* This allows us to define security over intransitive policies.
-*}
+text \<open>This allows us to define security over intransitive policies.
+\<close>
 definition isecure::bool
 where "isecure \<equiv> NI_indirect_sources  \<and> NI_unrelated"
 
@@ -740,9 +740,9 @@ definition ipurged_relation1 :: "'dom_t \<Rightarrow> ('dom_t \<Rightarrow> 'act
 where "ipurged_relation1 u execs1 execs2 \<equiv> \<forall> d . (ifp d u \<longrightarrow> execs1 d = execs2 d) \<and> (intermediary d u \<longrightarrow> execs1 d = [])"
 
 
-text {*
+text \<open>
   Proof that if the current is not an intermediary for u, then all domains involved in the next action are vpeq.
-*}
+\<close>
 lemma vpeq_involved_domains:
 assumes ifp_curr: "ifp (current s) u"
     and not_intermediary_curr: "\<not>intermediary (current s) u"
@@ -793,9 +793,9 @@ proof-
 thus ?thesis by auto  
 qed
 
-text {*
+text \<open>
   Proof that purging removes communications of the gateway to domain u.
-*}
+\<close>
 lemma ipurge_l_removes_gateway_communications:
 shows "does_not_communicate_with_gateway u (ipurge_l execs u)"
 proof-
@@ -821,9 +821,9 @@ show ?thesis
   by auto
 qed
 
-text {*
+text \<open>
   Proof of view partitioning. The lemma is structured exactly as lemma unwinding\_implies\_view\_partitioned\_ind and uses the same convention for naming.
-*}
+\<close>
 lemma iunwinding_implies_view_partitioned1:
 shows iview_partitioned
 proof-
@@ -1193,16 +1193,16 @@ thus ?thesis unfolding iview_partitioned_def Let_def by auto
 qed
 
 
-text {*
+text \<open>
   Returns True iff and only if the two states have the same active domain, \emph{or} if one of the states is None.
-*}
+\<close>
 definition mcurrents :: "'state_t option \<Rightarrow> 'state_t option \<Rightarrow> bool"
   where "mcurrents m1 m2 \<equiv> m1 \<parallel> m2 \<rightharpoonup> (\<lambda> s t . current s = current t)"
   
-text {*
+text \<open>
   Proof that switching/interrupts are purely time-based and happen independent of the actions done by the domains.
   As all theorems in this locale, it holds vacuously whenever one of the states is None, i.e., whenver at some point a precondition does not hold.
-*}
+\<close>
 lemma current_independent_of_domain_actions:
 assumes current_s_t: "mcurrents s t"
   shows "mcurrents (run n s execs) (run n t execs2)"
@@ -1353,21 +1353,21 @@ proof-
         show ?thesis
         proof(cases "run n (Some s0) (ipurge_r execs (current s_f))")
         case None
-          from `run n (Some s0) execs = Some s_f` Some this show ?thesis unfolding B_def by simp
+          from \<open>run n (Some s0) execs = Some s_f\<close> Some this show ?thesis unfolding B_def by simp
         next
         case (Some s_ipurge_r)
            from cswitch_independent_of_state
-                `run n (Some s0) execs = Some s_f` `run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l`
+                \<open>run n (Some s0) execs = Some s_f\<close> \<open>run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l\<close>
                 current_independent_of_domain_actions[where n=n and s="Some s0" and t="Some s0" and execs=execs and ?execs2.0="(ipurge_l execs (current s_f))"]
              have 2: "current s_ipurge_l = current s_f" 
              unfolding mcurrents_def B_def by auto
-           from `run n (Some s0) execs = Some s_f`  `run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l`
+           from \<open>run n (Some s0) execs = Some s_f\<close>  \<open>run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l\<close>
                 Some 1[THEN spec,where x="current s_f"]
              have "vpeq (current s_f) s_ipurge_l s_ipurge_r \<and> current s_ipurge_l = current s_ipurge_r"
              unfolding B_def by auto
            from this 2 have "output_f s_ipurge_l a = output_f s_ipurge_r a"
              using output_consistent by auto
-           from `run n (Some s0) execs = Some s_f`  `run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l`
+           from \<open>run n (Some s0) execs = Some s_f\<close>  \<open>run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l\<close>
                 this Some
              show ?thesis unfolding B_def by auto
         qed

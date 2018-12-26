@@ -1,19 +1,19 @@
-section {* Circular Singly Linked Lists *}
+section \<open>Circular Singly Linked Lists\<close>
 theory Circ_List
 imports List_Seg Imp_List_Spec
 begin
 
-text {*
+text \<open>
   Example of circular lists, with efficient append, prepend, pop, and rotate
   operations.
-*}
+\<close>
 
-subsection {* Datatype Definition *}
+subsection \<open>Datatype Definition\<close>
 
 type_synonym 'a cs_list = "'a node ref option"
 
-text {* A circular list is described by a list segment, with special
-  cases for the empty list: *}
+text \<open>A circular list is described by a list segment, with special
+  cases for the empty list:\<close>
 fun cs_list :: "'a::heap list \<Rightarrow> 'a node ref option \<Rightarrow> assn" where
   "cs_list [] None = emp"
 | "cs_list (x#l) (Some p) = lseg (x#l) (Some p) (Some p)"
@@ -34,7 +34,7 @@ lemma [simp]:
   apply sep_auto
   done
 
-subsection {* Precision *}
+subsection \<open>Precision\<close>
 lemma cs_prec: 
   "precise cs_list"
   apply rule
@@ -60,8 +60,8 @@ lemma cs_imp_list_impl: "imp_list cs_list"
   done
 interpretation cs: imp_list cs_list by (rule cs_imp_list_impl)
 
-subsection {* Operations *}
-subsubsection {* Allocate Empty List *}
+subsection \<open>Operations\<close>
+subsubsection \<open>Allocate Empty List\<close>
 definition cs_empty :: "'a::heap cs_list Heap" where
   "cs_empty \<equiv> return None"
 
@@ -73,7 +73,7 @@ lemma cs_empty_impl: "imp_list_empty cs_list cs_empty"
   by unfold_locales (sep_auto heap: cs_empty_rule)
 interpretation cs: imp_list_empty cs_list cs_empty by (rule cs_empty_impl)
 
-subsubsection {* Prepend Element *}
+subsubsection \<open>Prepend Element\<close>
 fun cs_prepend :: "'a \<Rightarrow> 'a::heap cs_list \<Rightarrow> 'a cs_list Heap" where
   "cs_prepend x None = do {
     p \<leftarrow> ref (Node x None); 
@@ -103,7 +103,7 @@ lemma cs_prepend_impl: "imp_list_prepend cs_list cs_prepend"
 interpretation cs: imp_list_prepend cs_list cs_prepend 
   by (rule cs_prepend_impl)
 
-subsubsection {* Append Element *}
+subsubsection \<open>Append Element\<close>
 fun cs_append :: "'a \<Rightarrow> 'a::heap cs_list \<Rightarrow> 'a cs_list Heap" where
   "cs_append x None = do { 
     p \<leftarrow> ref (Node x None); 
@@ -137,7 +137,7 @@ lemma cs_append_impl: "imp_list_append cs_list cs_append"
 interpretation cs: imp_list_append cs_list cs_append
   by (rule cs_append_impl)
 
-subsubsection {* Pop First Element *}
+subsubsection \<open>Pop First Element\<close>
 fun cs_pop :: "'a::heap cs_list \<Rightarrow> ('a\<times>'a cs_list) Heap" where
   "cs_pop None = raise STR ''Pop from empty list''"
 | "cs_pop (Some p) = do {
@@ -181,7 +181,7 @@ lemma cs_pop_impl: "imp_list_pop cs_list cs_pop"
   done
 interpretation cs: imp_list_pop cs_list cs_pop by (rule cs_pop_impl)
 
-subsubsection {* Rotate *}
+subsubsection \<open>Rotate\<close>
 fun cs_rotate :: "'a::heap cs_list \<Rightarrow> 'a cs_list Heap" where
   "cs_rotate None = return None"
 | "cs_rotate (Some p) = do {
@@ -216,7 +216,7 @@ lemma cs_rotate_impl: "imp_list_rotate cs_list cs_rotate"
   done
 interpretation cs: imp_list_rotate cs_list cs_rotate by (rule cs_rotate_impl)
 
-subsection {* Test *}
+subsection \<open>Test\<close>
 definition "test \<equiv> do {
   l \<leftarrow> cs_empty;
   l \<leftarrow> cs_append ''a'' l;
@@ -240,10 +240,10 @@ lemma "<emp> test <\<lambda>r. \<up>(r=test_result) * true>"
   
 export_code test checking SML_imp
 
-ML_val {*
+ML_val \<open>
   val res = @{code test} ();
   if res = @{code test_result} then () else raise Match;
-*}
+\<close>
 
 hide_const (open) test test_result
 

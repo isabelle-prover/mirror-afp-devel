@@ -78,7 +78,7 @@ concept of metaphysical explanation;
 we also got some insight into Lowe's concept of ontological dependence vis-a-vis its
 inferential role in this argument.}\<close>
 text\<open>\noindent{There are still some interesting issues to consider.
-Note that the definitions of existence (@{text Existence_def}) and being "dependent" (@{text Dependent_def})
+Note that the definitions of existence (\<open>Existence_def\<close>) and being "dependent" (\<open>Dependent_def\<close>)
 are not needed in any of the highly optimized proofs found by our automated tools.
 This raises some suspicions concerning the role played by the existence predicate in the
 definitions of necessariness and contingency, as well as putting into question the need for

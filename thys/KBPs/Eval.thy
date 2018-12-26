@@ -13,9 +13,9 @@ imports
 begin
 (*>*)
 
-subsection{*Algorithmic evaluation*}
+subsection\<open>Algorithmic evaluation\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-eval}
 
@@ -34,7 +34,7 @@ only considering the reachable states at the cost of possible
 reevaluation... BDDs give us some better primitives in some cases (but
 not all). Something to ponder.
 
-*}
+\<close>
 
 function
   eval_rec :: "(('rep :: linorder) odlist \<Rightarrow> 'p \<Rightarrow> 'rep odlist)
@@ -67,7 +67,7 @@ termination eval_rec
   done
 
 (*>*)
-text{*
+text\<open>
 
 This function terminates because (recursively) either the formula
 decreases in size or it contains fewer knowledge modalities.
@@ -83,7 +83,7 @@ boolean combinations of knowledge formulas.
 The K cases are terrible. For CK we actually show @{term "K (CK
 \<phi>)"}. might be easier to futz that here.
 
-*}
+\<close>
 
 fun
   evalS :: "(('rep :: linorder) odlist \<Rightarrow> 'p \<Rightarrow> 'rep odlist)
@@ -98,7 +98,7 @@ where
 | "evalS val R CR X (Kknows a \<phi>)   = (eval_rec val R CR X (Knot \<phi>) = ODList.empty)"
 | "evalS val R CR X (Kcknows as \<phi>) = (eval_rec val R CR (ODList.big_union (CR as) (toList X)) (Knot \<phi>) = ODList.empty)"
 
-text{*
+text\<open>
 
 We'd like some generic proofs about these functions but it's simpler
 just to prove concrete instances.
@@ -115,7 +115,7 @@ In general this is less efficient than the tableau approach of
 formulas. However it is often the case that the set of relevant worlds
 is much smaller than the set of all system states.
 
-*}
+\<close>
 (*<*)
 
 end

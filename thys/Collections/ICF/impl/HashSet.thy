@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Hash Set} *}
+section \<open>\isaheader{Hash Set}\<close>
 theory HashSet
   imports 
   "../spec/SetSpec" 
@@ -10,7 +10,7 @@ theory HashSet
   "../gen_algo/SetByMap" 
   "../gen_algo/SetGA"
 begin
-text_raw {*\label{thy:HashSet}*}
+text_raw \<open>\label{thy:HashSet}\<close>
 (*@impl Set
   @type 'a::hashable hs
   @abbrv hs,h
@@ -36,7 +36,7 @@ interpretation hs: StdSet_no_invar hs_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "hs"*}
+setup \<open>ICF_Tools.revert_abbrevs "hs"\<close>
 
 lemmas hs_it_to_it_map_code_unfold[code_unfold] = 
   it_to_it_map_fold'[OF pi_hm]

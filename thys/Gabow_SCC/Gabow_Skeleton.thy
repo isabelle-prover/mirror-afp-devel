@@ -1,4 +1,4 @@
-section {* Skeleton for Gabow's SCC Algorithm \label{sec:skel}*}
+section \<open>Skeleton for Gabow's SCC Algorithm \label{sec:skel}\<close>
 theory Gabow_Skeleton
 imports CAVA_Automata.Digraph
 begin
@@ -10,19 +10,19 @@ locale fr_graph =
   +
   assumes finite_reachableE_V0[simp, intro!]: "finite (E\<^sup>* `` V0)"
 
-text {*
+text \<open>
   In this theory, we formalize a skeleton of Gabow's SCC algorithm. 
   The skeleton serves as a starting point to develop concrete algorithms,
   like enumerating the SCCs or checking emptiness of a generalized Büchi automaton.
-*}
+\<close>
 
-section {* Statistics Setup *}
-text {*
+section \<open>Statistics Setup\<close>
+text \<open>
   We define some dummy-constants that are included into the generated code,
   and may be mapped to side-effecting ML-code that records statistics and debug information
   about the execution. In the skeleton algorithm, we count the number of visited nodes,
   and include a timing for the whole algorithm.
-*}
+\<close>
 
 definition stat_newnode :: "unit => unit"   \<comment> \<open>Invoked if new node is visited\<close>
   where [code]: "stat_newnode \<equiv> \<lambda>_. ()"
@@ -49,13 +49,13 @@ lemma discard_stat_refine[refine]:
   "m1\<le>m2 \<Longrightarrow> stat_stop_nres \<then> m1 \<le> m2"
   by simp_all
 
-section {* Abstract Algorithm *}
-text {*
+section \<open>Abstract Algorithm\<close>
+text \<open>
   In this section, we formalize an abstract version of a path-based SCC algorithm.
   Later, this algorithm will be refined to use Gabow's data structure.
-*}
+\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 definition path_seg :: "'a set list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a set"
   \<comment> \<open>Set of nodes in a segment of the path\<close>
   where "path_seg p i j \<equiv> \<Union>{p!k|k. i\<le>k \<and> k<j}"
@@ -113,10 +113,10 @@ proof -
 qed
 
 
-subsection {* Invariants *}
-text {* The state of the inner loop consists of the path @{text "p"} of
-  collapsed nodes, the set @{text "D"} of finished (done) nodes, and the set
-  @{text "pE"} of pending edges. *}
+subsection \<open>Invariants\<close>
+text \<open>The state of the inner loop consists of the path \<open>p\<close> of
+  collapsed nodes, the set \<open>D\<close> of finished (done) nodes, and the set
+  \<open>pE\<close> of pending edges.\<close>
 type_synonym 'v abs_state = "'v set list \<times> 'v set \<times> ('v\<times>'v) set"
 
 context fr_graph
@@ -240,17 +240,17 @@ begin
 
 end
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 
 context fr_graph 
 begin
-  text {* The termination argument is based on unprocessed edges: 
-    Reachable edges from untouched nodes and pending edges. *}
+  text \<open>The termination argument is based on unprocessed edges: 
+    Reachable edges from untouched nodes and pending edges.\<close>
   definition "unproc_edges v0 p D pE \<equiv> (E \<inter> (E\<^sup>*``{v0} - (D \<union> \<Union>set p)) \<times> UNIV) \<union> pE"
 
-  text {*
+  text \<open>
     In each iteration of the loop, either the number of unprocessed edges
-    decreases, or the path length decreases. *}
+    decreases, or the path length decreases.\<close>
   definition "abs_wf_rel v0 \<equiv> inv_image (finite_psubset <*lex*> measure length)
     (\<lambda>(p,D,pE). (unproc_edges v0 p D pE, p))"
 
@@ -259,7 +259,7 @@ begin
     by auto
 end
 
-subsection {* Abstract Skeleton Algorithm *}
+subsection \<open>Abstract Skeleton Algorithm\<close>
 
 context fr_graph
 begin
@@ -306,7 +306,7 @@ begin
     in
       (p,D,pE)"
 
-  text {* The following lemmas match the definitions presented in the paper: *}
+  text \<open>The following lemmas match the definitions presented in the paper:\<close>
   lemma "select_edge (p,D,pE) \<equiv> do {
       e \<leftarrow> SELECT (\<lambda>e. e \<in> pE \<inter> last p \<times> UNIV);
       case e of
@@ -375,7 +375,7 @@ begin
 
 end
 
-subsection {* Invariant Preservation *}
+subsection \<open>Invariant Preservation\<close>
 
 context fr_graph begin
 
@@ -395,9 +395,9 @@ context fr_graph begin
 
 end
 
-subsubsection {* Corollaries of the invariant *}
-text {* In this section, we prove some more corollaries of the invariant,
-  which are helpful to show invariant preservation *}
+subsubsection \<open>Corollaries of the invariant\<close>
+text \<open>In this section, we prove some more corollaries of the invariant,
+  which are helpful to show invariant preservation\<close>
 
 context invar_loc
 begin
@@ -435,7 +435,7 @@ begin
     from A obtain x where "x\<in>p!i" by (blast dest: p_no_empty_idx)
     with B obtain i' where C: "x\<in>p!i'" "l\<le>i'" "i'<u" 
       by (auto simp: path_seg_def)
-    from p_disjoint_sym[OF `i<length p` _ `x\<in>p!i` `x\<in>p!i'`] `i'<u` `u\<le>length p`
+    from p_disjoint_sym[OF \<open>i<length p\<close> _ \<open>x\<in>p!i\<close> \<open>x\<in>p!i'\<close>] \<open>i'<u\<close> \<open>u\<le>length p\<close>
     have "i=i'" by simp
     with C show "l\<le>i \<and> i<u" by auto
   qed (auto simp: path_seg_def)
@@ -477,25 +477,25 @@ begin
       apply (subst path_seg_ss_eq)
       using step.hyps step.prems by auto
 
-    from p_connected'[OF `Suc j < length p`] obtain u v where 
+    from p_connected'[OF \<open>Suc j < length p\<close>] obtain u v where 
       UV: "(u,v)\<in>lvE" "u\<in>p!j" "v\<in>p!Suc j" by auto
 
     have ISS: "p!j \<subseteq> ?seg'" "p!Suc j \<subseteq> ?seg'" 
       using step.hyps step.prems by simp_all
 
-    from p_no_empty_idx[of j] `Suc j < length p` obtain x' where "x'\<in>p!j" 
+    from p_no_empty_idx[of j] \<open>Suc j < length p\<close> obtain x' where "x'\<in>p!j" 
       by auto
-    with step.IH[of x'] `x\<in>p!i` `Suc j < length p` 
+    with step.IH[of x'] \<open>x\<in>p!i\<close> \<open>Suc j < length p\<close> 
     have t: "(x,x')\<in>(lvE\<inter>?seg\<times>?seg)\<^sup>*" by auto
     have "(x,x')\<in>(lvE\<inter>?seg'\<times>?seg')\<^sup>*" using SSS 
       by (auto intro: rtrancl_mono_mp[OF _ t])
     also 
-    from cnode_connectedI[OF _ `x'\<in>p!j` `u\<in>p!j`] `Suc j < length p` have
+    from cnode_connectedI[OF _ \<open>x'\<in>p!j\<close> \<open>u\<in>p!j\<close>] \<open>Suc j < length p\<close> have
       t: "(x', u) \<in> (lvE \<inter> p ! j \<times> p ! j)\<^sup>*" by auto
     have "(x', u) \<in> (lvE\<inter>?seg'\<times>?seg')\<^sup>*" using ISS
       by (auto intro: rtrancl_mono_mp[OF _ t])
     also have "(u,v)\<in>lvE\<inter>?seg'\<times>?seg'" using UV ISS by auto
-    also from cnode_connectedI[OF `Suc j < length p` `v\<in>p!Suc j` `y\<in>p!Suc j`] 
+    also from cnode_connectedI[OF \<open>Suc j < length p\<close> \<open>v\<in>p!Suc j\<close> \<open>y\<in>p!Suc j\<close>] 
     have t: "(v, y) \<in> (lvE \<inter> p ! Suc j \<times> p ! Suc j)\<^sup>*" by auto
     have "(v, y) \<in> (lvE\<inter>?seg'\<times>?seg')\<^sup>*" using ISS
       by (auto intro: rtrancl_mono_mp[OF _ t])
@@ -563,14 +563,14 @@ begin
     using P ND
   proof (induction)
     case (path_prepend u v l w) 
-    from `(u,v)\<in>lvE` vE_touched have "v\<in>ltouched" by auto
+    from \<open>(u,v)\<in>lvE\<close> vE_touched have "v\<in>ltouched" by auto
     hence "v\<in>\<Union>set p"
       unfolding touched_def
     proof
       assume "v\<in>D"
-      moreover from `path lvE v l w` have "(v,w)\<in>lvE\<^sup>*" by (rule path_is_rtrancl)
+      moreover from \<open>path lvE v l w\<close> have "(v,w)\<in>lvE\<^sup>*" by (rule path_is_rtrancl)
       ultimately have "w\<in>D" using D_closed_vE_rtrancl by auto
-      with `w\<in>last p` p_not_D have False
+      with \<open>w\<in>last p\<close> p_not_D have False
         by (metis IntI Misc.last_in_set Sup_inf_eq_bot_iff assms(2) 
           bex_empty path_prepend.hyps(2))
       thus ?thesis ..
@@ -580,14 +580,14 @@ begin
     have "i=length p - 1"
     proof (rule ccontr)
       assume "i\<noteq>length p - 1"
-      with `i<length p` have "i < length p - 1" by simp
-      with vE_no_back[of i "length p - 1"] `i<length p` 
+      with \<open>i<length p\<close> have "i < length p - 1" by simp
+      with vE_no_back[of i "length p - 1"] \<open>i<length p\<close> 
       have "lvE \<inter> last p \<times> p!i = {}"
         by (simp add: last_conv_nth)
-      with `(u,v)\<in>lvE` `u\<in>last p` `v\<in>p!i` show False by auto
+      with \<open>(u,v)\<in>lvE\<close> \<open>u\<in>last p\<close> \<open>v\<in>p!i\<close> show False by auto
     qed
-    with `v\<in>p!i` have "v\<in>last p" by (simp add: last_conv_nth)
-    with path_prepend.IH `w\<in>last p` `u\<in>last p` show ?case by auto
+    with \<open>v\<in>p!i\<close> have "v\<in>last p" by (simp add: last_conv_nth)
+    with path_prepend.IH \<open>w\<in>last p\<close> \<open>u\<in>last p\<close> show ?case by auto
   qed simp
 
   lemma loop_in_lastnode:
@@ -602,13 +602,13 @@ begin
       by (auto simp: in_set_conv_decomp)
     from P have "path lvE v (v#q2@q1) v" 
       by (auto simp: path_conc_conv path_cons_conv)
-    from path_in_lastnode[OF this `p\<noteq>[]` `v\<in>last p` `v\<in>last p`] 
+    from path_in_lastnode[OF this \<open>p\<noteq>[]\<close> \<open>v\<in>last p\<close> \<open>v\<in>last p\<close>] 
     show "set q \<subseteq> last p" by simp
     from P show "u\<in>last p" 
       apply (cases q, simp)
       
       apply simp
-      using `set q \<subseteq> last p`
+      using \<open>set q \<subseteq> last p\<close>
       apply (auto simp: path_cons_conv)
       done
   qed
@@ -626,7 +626,7 @@ begin
 
 end
 
-subsubsection {* Auxiliary Lemmas Regarding the Operations *}
+subsubsection \<open>Auxiliary Lemmas Regarding the Operations\<close>
 
 lemma (in fr_graph) vE_initial[simp]: "vE [{v0}] {} (E \<inter> {v0} \<times> UNIV) = {}"
   unfolding vE_def touched_def by auto
@@ -668,15 +668,15 @@ begin
     
     {
       assume "u\<in>last p" "v\<notin>last p" 
-      moreover from E NO `u\<in>last p` have "(u,v)\<in>lvE" by auto
+      moreover from E NO \<open>u\<in>last p\<close> have "(u,v)\<in>lvE" by auto
       ultimately have "v\<in>D \<or> v\<in>\<Union>set p" 
         using vE_touched unfolding touched_def by auto
       moreover {
         assume "v\<in>\<Union>set p"
         then obtain j where V: "j<length p" "v\<in>p!j" 
           by (metis UnionE in_set_conv_nth)
-        with `v\<notin>last p` have "j<?i" by (cases "j=?i") auto
-        from vE_no_back[OF `j<?i` _] `(u,v)\<in>lvE` V `u\<in>last p` have False by auto
+        with \<open>v\<notin>last p\<close> have "j<?i" by (cases "j=?i") auto
+        from vE_no_back[OF \<open>j<?i\<close> _] \<open>(u,v)\<in>lvE\<close> V \<open>u\<in>last p\<close> have False by auto
       } ultimately have "v\<in>D" by blast
     } with E UI D_closed show "v\<in>last p \<union> D" by auto
   qed
@@ -686,7 +686,7 @@ begin
 end
 
 
-subsubsection {* Preservation of Invariant by Operations *}
+subsubsection \<open>Preservation of Invariant by Operations\<close>
 
 context fr_graph
 begin
@@ -813,7 +813,7 @@ begin
       unfolding p'_def collapse_aux_def using IL 
       by (auto simp add: nth_append path_seg_drop)
 
-    from `u\<in>last p` have "u\<in>p!(length p - 1)" by (auto simp: last_conv_nth)
+    from \<open>u\<in>last p\<close> have "u\<in>p!(length p - 1)" by (auto simp: last_conv_nth)
 
     have defs_fold: 
       "vE p' D (pE - {(u,v)}) = insert (u,v) lvE" 
@@ -849,18 +849,18 @@ begin
         with A have "v\<in>p!j" by simp
         show False proof (cases)
           assume "k=i"
-          with `v\<in>p'!k` obtain k' where "v\<in>p!k'" "i\<le>k'" "k'<length p" 
+          with \<open>v\<in>p'!k\<close> obtain k' where "v\<in>p!k'" "i\<le>k'" "k'<length p" 
             by (auto simp: path_seg_def)
           hence "p ! j \<inter> p ! k' = {}"
             using A by (auto intro!: p_disjoint)
-          with `v\<in>p!j` `v\<in>p!k'` show False by auto
+          with \<open>v\<in>p!j\<close> \<open>v\<in>p!k'\<close> show False by auto
         next
           assume "k\<noteq>i" with A have "k<i" by simp
           hence "k<length p" using IL by simp
-          note p_disjoint[OF `j<k` this] 
-          also have "p!j = p'!j" using `j<k` `k<i` by simp
-          also have "p!k = p'!k" using `k<i` by simp
-          finally show False using `v\<in>p'!j` `v\<in>p'!k` by auto
+          note p_disjoint[OF \<open>j<k\<close> this] 
+          also have "p!j = p'!j" using \<open>j<k\<close> \<open>k<i\<close> by simp
+          also have "p!k = p'!k" using \<open>k<i\<close> by simp
+          finally show False using \<open>v\<in>p'!j\<close> \<open>v\<in>p'!k\<close> by auto
         qed
       qed
     } note AUX_p_disjoint = this
@@ -891,23 +891,23 @@ begin
           let ?rE = "\<lambda>R. (lvE \<inter> R\<times>R)"
           let ?E = "(insert (u,v) lvE \<inter> ?last_cnode \<times> ?last_cnode)"
 
-          from pathI[OF `x\<in>p!ix` `u\<in>p!(length p - 1)`] have
+          from pathI[OF \<open>x\<in>p!ix\<close> \<open>u\<in>p!(length p - 1)\<close>] have
             "(x,u)\<in>(?rE (path_seg p ix (Suc (length p - 1))))\<^sup>*" using IX by auto
           hence "(x,u)\<in>?E\<^sup>*" 
             apply (rule rtrancl_mono_mp[rotated]) 
             using SS1
             by auto
 
-          also have "(u,v)\<in>?E" using `i<length p`
+          also have "(u,v)\<in>?E" using \<open>i<length p\<close>
             apply (clarsimp)
             apply (intro conjI)
-            apply (rule set_rev_mp[OF `u\<in>p!(length p - 1)`])
+            apply (rule set_rev_mp[OF \<open>u\<in>p!(length p - 1)\<close>])
             apply (simp)
             apply (rule set_rev_mp[OF VMEM])
             apply (simp)
             done
           also 
-          from pathI[OF `v\<in>p!i` `y\<in>p!iy`] have
+          from pathI[OF \<open>v\<in>p!i\<close> \<open>y\<in>p!iy\<close>] have
             "(v,y)\<in>(?rE (path_seg p i (Suc iy)))\<^sup>*" using IY by auto
           hence "(v,y)\<in>?E\<^sup>*"
             apply (rule rtrancl_mono_mp[rotated]) 
@@ -917,11 +917,11 @@ begin
         qed
       next
         assume "j\<noteq>i"
-        with `j<Suc i` have [simp]: "j<i" by simp
-        with `i<length p` have "p!j\<in>set p"
+        with \<open>j<Suc i\<close> have [simp]: "j<i" by simp
+        with \<open>i<length p\<close> have "p!j\<in>set p"
           by (metis Suc_lessD in_set_conv_nth less_trans_Suc) 
 
-        thus ?thesis using p_sc[of U] `p!j\<in>set p`
+        thus ?thesis using p_sc[of U] \<open>p!j\<in>set p\<close>
           apply (clarsimp)
           apply (subgoal_tac "(a,b)\<in>(lvE \<inter> p ! j \<times> p ! j)\<^sup>*")
           apply (erule rtrancl_mono_mp[rotated])
@@ -937,15 +937,15 @@ begin
       proof -
         have "{(u,v)} \<inter> p' ! k \<times> p' ! j = {}" 
           apply auto
-          by (metis IL P_IDX_EQ Suc_lessD VMEM `j < i` 
+          by (metis IL P_IDX_EQ Suc_lessD VMEM \<open>j < i\<close> 
             less_irrefl_nat less_trans_Suc p_disjoint_sym)
         moreover have "lvE \<inter> p' ! k \<times> p' ! j = {}" 
         proof (cases "k<i")
           case True thus ?thesis
-            using vE_no_back[of j k] A `i<length p` by auto
+            using vE_no_back[of j k] A \<open>i<length p\<close> by auto
         next
           case False with A have [simp]: "k=i" by simp
-          show ?thesis proof (rule disjointI, clarsimp simp: `j<i`)
+          show ?thesis proof (rule disjointI, clarsimp simp: \<open>j<i\<close>)
             fix x y
             assume B: "(x,y)\<in>lvE" "x\<in>path_seg p i (length p)" "y\<in>p!j"
             then obtain ix where "x\<in>p!ix" "i\<le>ix" "ix<length p" 
@@ -1058,7 +1058,7 @@ begin
       have "insert (u, v) lvE \<inter> (p @ [{v}]) ! j \<times> (p @ [{v}]) ! i = {}"
       proof (cases "j=length p")
         case False with A have "j<length p" by simp
-        from vE_no_back `i<j` this VNE show ?thesis 
+        from vE_no_back \<open>i<j\<close> this VNE show ?thesis 
           by (auto simp add: nth_append)
       next
         from p_not_D A have PDDJ: "p!i \<inter> D = {}" 
@@ -1090,7 +1090,7 @@ begin
 
       apply (rule AUX_p_connected, assumption+) []
 
-      using p_disjoint `v\<notin>\<Union>set p` apply (auto simp: nth_append) []
+      using p_disjoint \<open>v\<notin>\<Union>set p\<close> apply (auto simp: nth_append) []
 
       apply (rule AUX_p_sc, assumption+) []
 
@@ -1188,11 +1188,11 @@ begin
       proof induction
         case (path_prepend u v p w)
         with fin_D_is_reachable[OF INV] have "u\<in>D" by auto
-        with D_closed `(u,v)\<in>E` have "v\<in>D" by auto
+        with D_closed \<open>(u,v)\<in>E\<close> have "v\<in>D" by auto
         from path_prepend.prems path_prepend.hyps have "v\<in>E\<^sup>*``{v0}" by auto
         with path_prepend.IH fin_D_is_reachable[OF INV] have "path lvE v p w" 
           by simp
-        moreover from `u\<in>D` `v\<in>D` `(u,v)\<in>E` D_vis have "(u,v)\<in>lvE" by auto
+        moreover from \<open>u\<in>D\<close> \<open>v\<in>D\<close> \<open>(u,v)\<in>E\<close> D_vis have "(u,v)\<in>lvE" by auto
         ultimately show ?case by (auto simp: path_cons_conv)
       qed simp
     qed
@@ -1242,7 +1242,7 @@ begin
 
 end
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 
 context invar_loc 
 begin
@@ -1343,7 +1343,7 @@ begin
   qed
 end
 
-subsubsection {* Main Correctness Theorem*}
+subsubsection \<open>Main Correctness Theorem\<close>
 
 context fr_graph 
 begin
@@ -1353,9 +1353,9 @@ begin
     abs_wf_pop abs_wf_collapse abs_wf_push abs_wf_skip 
     outer_invar_initial invar_outer_newnode invar_outer_Dnode
 
-  text {* The main correctness theorem for the dummy-algorithm just states that
+  text \<open>The main correctness theorem for the dummy-algorithm just states that
     it satisfies the invariant when finished, and the path is empty.
-    *}
+\<close>
   theorem skeleton_spec: "skeleton \<le> SPEC (\<lambda>D. outer_invar {} D)"
   proof -
     note [simp del] = Union_iff
@@ -1369,7 +1369,7 @@ begin
       done
   qed
 
-  text {* Short proof, as presented in the paper *}
+  text \<open>Short proof, as presented in the paper\<close>
   context 
     notes [refine] = refine_vcg 
   begin
@@ -1398,23 +1398,23 @@ begin
 end
 
 
-section {* Refinement to Gabow's Data Structure *}text_raw{*\label{sec:algo-ds}*}
+section \<open>Refinement to Gabow's Data Structure\<close>text_raw\<open>\label{sec:algo-ds}\<close>
 
-text {*
+text \<open>
   The implementation due to Gabow \cite{Gabow2000} represents a path as
-  a stack @{text "S"} of single nodes, and a stack @{text "B"} that contains the
-  boundaries of the collapsed segments. Moreover, a map @{text "I"} maps nodes
+  a stack \<open>S\<close> of single nodes, and a stack \<open>B\<close> that contains the
+  boundaries of the collapsed segments. Moreover, a map \<open>I\<close> maps nodes
   to their stack indices.
 
   As we use a tail-recursive formulation, we use another stack 
-  @{text "P :: (nat \<times> 'v set) list"} to represent the pending edges. The
-  entries in @{text "P"} are sorted by ascending first component,
-  and @{text "P"} only contains entries with non-empty second component. 
-  An entry @{text "(i,l)"} means that the edges from the node at 
-  @{text "S[i]"} to the nodes stored in @{text "l"} are pending.
-*}
+  \<open>P :: (nat \<times> 'v set) list\<close> to represent the pending edges. The
+  entries in \<open>P\<close> are sorted by ascending first component,
+  and \<open>P\<close> only contains entries with non-empty second component. 
+  An entry \<open>(i,l)\<close> means that the edges from the node at 
+  \<open>S[i]\<close> to the nodes stored in \<open>l\<close> are pending.
+\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 primrec find_max_nat :: "nat \<Rightarrow> (nat\<Rightarrow>bool) \<Rightarrow> nat" 
   \<comment> \<open>Find the maximum number below an upper bound for which a predicate holds\<close>
   where
@@ -1453,9 +1453,9 @@ context begin interpretation autoref_syn .
 
 end
 
-subsection {* Gabow's Datastructure *}
+subsection \<open>Gabow's Datastructure\<close>
 
-subsubsection {* Definition and Invariant *}
+subsubsection \<open>Definition and Invariant\<close>
 datatype node_state = STACK nat | DONE
 
 type_synonym 'v oGS = "'v \<rightharpoonup> node_state"
@@ -1700,7 +1700,7 @@ begin
 end
 
 
-subsection {* Refinement of the Operations *}
+subsection \<open>Refinement of the Operations\<close>
 
 definition GS_initial_impl :: "'a oGS \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> 'a GS" where
   "GS_initial_impl I v0 succs \<equiv> (
@@ -2155,7 +2155,7 @@ begin
           fix j' succs'
           assume "S ! j' = S ! j" "(j', succs') \<in> set P'"
           with J_UPPER P_bound S_idx_uniq EFMT have "j'=j" by auto
-          with P_distinct `(j', succs') \<in> set P'` EFMT have False by auto
+          with P_distinct \<open>(j', succs') \<in> set P'\<close> EFMT have False by auto
         } note AUX3=this
 
         have G1: "GS.pE_\<alpha> (S,B,I,P' @ [(j, succs - {v})]) = pE_\<alpha> - {(S!j, v)}"
@@ -2228,11 +2228,11 @@ begin
     shows "(find_seg (S_idx_of v)) = idx_of p_\<alpha> v"
   proof -
     note S_idx_of_correct[OF A] idx_of_props[OF p_\<alpha>_disjoint_sym A]
-    from find_seg_correct[OF `S_idx_of v < length S`] have 
+    from find_seg_correct[OF \<open>S_idx_of v < length S\<close>] have 
       "find_seg (S_idx_of v) < length p_\<alpha>" 
       and "S!S_idx_of v \<in> p_\<alpha>!find_seg (S_idx_of v)"
       unfolding p_\<alpha>_def by auto
-    from idx_of_uniq[OF p_\<alpha>_disjoint_sym this] `S ! S_idx_of v = v` 
+    from idx_of_uniq[OF p_\<alpha>_disjoint_sym this] \<open>S ! S_idx_of v = v\<close> 
     show ?thesis by auto
   qed
 
@@ -2272,7 +2272,7 @@ begin
           hence "j<length S" using ILEN seg_end_bound 
           proof -
             note B(2)
-            also from `i<length B` have "(length B - Suc 0) < length B" by auto
+            also from \<open>i<length B\<close> have "(length B - Suc 0) < length B" by auto
             from seg_end_bound[OF this] 
             have "seg_end (length B - Suc 0) \<le> length S" .
             finally show ?thesis .
@@ -2283,8 +2283,8 @@ begin
           proof (intro conjI)
             show "i\<le>find_seg j"
               by (metis le_trans not_less B(1) find_seg_bounds(2) 
-                seg_end_less_start ILEN `j < length S`)
-          qed (simp_all add: find_seg_bounds[OF `j<length S`])
+                seg_end_less_start ILEN \<open>j < length S\<close>)
+          qed (simp_all add: find_seg_bounds[OF \<open>j<length S\<close>])
         } note AUX1 = this
 
         {
@@ -2382,8 +2382,8 @@ begin
 
 end
 
-text {* Technical adjustment for avoiding case-splits for definitions
-  extracted from GS-locale *}
+text \<open>Technical adjustment for avoiding case-splits for definitions
+  extracted from GS-locale\<close>
 lemma opt_GSdef: "f \<equiv> g \<Longrightarrow> f s \<equiv> case s of (S,B,I,P) \<Rightarrow> g (S,B,I,P)" by auto
 
 lemma ext_def: "f\<equiv>g \<Longrightarrow> f x \<equiv> g x" by auto
@@ -2394,7 +2394,7 @@ context fr_graph begin
     push_impl_def[abs_def, 
     THEN ext_def, THEN opt_GSdef, unfolded GS.push_impl_def GS_sel_simps]
 
-  text {* Definition for presentation *}
+  text \<open>Definition for presentation\<close>
   lemma "push_impl v (S,B,I,P) \<equiv> (S@[v], B@[length S], I(v\<mapsto>STACK (length S)),
     if E``{v}={} then P else P@[(length S,E``{v})])"
     unfolding push_impl_def GS.push_impl_def GS.P_def GS.S_def
@@ -2555,7 +2555,7 @@ context fr_graph begin
 
 end
 
-subsection {* Refined Skeleton Algorithm *}
+subsection \<open>Refined Skeleton Algorithm\<close>
 
 context fr_graph begin
 
@@ -2607,7 +2607,7 @@ context fr_graph begin
       RETURN r
     }"
 
-  subsubsection {* Correctness Theorem *}
+  subsubsection \<open>Correctness Theorem\<close>
 
   lemma "skeleton_impl \<le> \<Down>oGS_rel skeleton"
     using [[goals_limit = 1]]
@@ -2638,7 +2638,7 @@ context fr_graph begin
     = GS_rel_def br_def GS.\<alpha>_def oGS_rel_def oGS_\<alpha>_def 
       is_on_stack_refine path_is_empty_refine is_done_refine is_done_orefine
 
-  text {* Short proof, for presentation *}
+  text \<open>Short proof, for presentation\<close>
   context
     notes [[goals_limit = 1]]
     notes [refine] = inj_on_id bind_refine'

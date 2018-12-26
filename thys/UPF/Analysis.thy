@@ -42,7 +42,7 @@
  ******************************************************************************)
 
 
-section{* Properties on Policies *}
+section\<open>Properties on Policies\<close>
 theory 
   Analysis
   imports
@@ -50,19 +50,19 @@ theory
     SeqComposition
 begin
 
-text {* 
+text \<open>
   In this theory, several standard policy properties are paraphrased in UPF terms. 
-*}
+\<close>
 
-subsection{* Basic Properties *}
+subsection\<open>Basic Properties\<close>
 
-subsubsection{* A Policy Has no Gaps *}
+subsubsection\<open>A Policy Has no Gaps\<close>
 
 definition gap_free :: "('a \<mapsto> 'b) \<Rightarrow> bool" 
 where     "gap_free p = (dom p = UNIV)"
 
-subsubsection{* Comparing Policies *}
-text {*   Policy p is more defined than q: *}
+subsubsection\<open>Comparing Policies\<close>
+text \<open>Policy p is more defined than q:\<close>
 definition more_defined :: "('a \<mapsto> 'b) \<Rightarrow>('a \<mapsto> 'b) \<Rightarrow>bool" 
 where     "more_defined p q = (dom q \<subseteq> dom p)"
 
@@ -74,7 +74,7 @@ lemma strictly_more_vs_more: "strictly_more_defined p q \<Longrightarrow> more_d
   unfolding more_defined_def strictly_more_defined_def
   by auto
 
-text{*  Policy p is more permissive than q: *}
+text\<open>Policy p is more permissive than q:\<close>
 definition more_permissive :: "('a \<mapsto> 'b) \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow> bool"  (infixl "\<sqsubseteq>\<^sub>A" 60)
 where " p \<sqsubseteq>\<^sub>A q =  (\<forall> x. (case q x of \<lfloor>allow y\<rfloor> \<Rightarrow> (\<exists> z. (p x = \<lfloor>allow z\<rfloor>))
                                    | \<lfloor>deny y\<rfloor>  \<Rightarrow> True
@@ -97,7 +97,7 @@ lemma more_permissive_trans : "p \<sqsubseteq>\<^sub>A p' \<Longrightarrow> p' \
     by(erule_tac x = x in allE, simp)
   done 
 
-text{* Policy p is more rejective than q: *}
+text\<open>Policy p is more rejective than q:\<close>
 definition more_rejective :: "('a \<mapsto> 'b) \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow> bool" (infixl "\<sqsubseteq>\<^sub>D" 60)
   where " p \<sqsubseteq>\<^sub>D q = (\<forall> x. (case q x of \<lfloor>deny y\<rfloor>  \<Rightarrow> (\<exists> z. (p x = \<lfloor>deny z\<rfloor>))
                                   | \<lfloor>allow y\<rfloor> \<Rightarrow> True
@@ -130,7 +130,7 @@ lemma "A\<^sub>I \<sqsubseteq>\<^sub>A p"
   unfolding more_permissive_def allow_all_fun_def allow_pfun_def allow_all_id_def
   by(auto split: option.split decision.split)
     
-subsection{* Combined Data-Policy Refinement *}
+subsection\<open>Combined Data-Policy Refinement\<close>
   
 definition policy_refinement :: 
   "('a \<mapsto> 'b) \<Rightarrow> ('a' \<Rightarrow> 'a) \<Rightarrow>('b' \<Rightarrow> 'b) \<Rightarrow> ('a' \<mapsto> 'b') \<Rightarrow> bool" 
@@ -168,13 +168,13 @@ theorem polref_trans:
     done
   done 
 
-subsection {* Equivalence of Policies *}
-subsubsection{* Equivalence over domain D *}
+subsection \<open>Equivalence of Policies\<close>
+subsubsection\<open>Equivalence over domain D\<close>
   
 definition p_eq_dom :: "('a \<mapsto> 'b) \<Rightarrow> 'a set \<Rightarrow> ('a \<mapsto> 'b) \<Rightarrow>bool" ("_ \<approx>\<^bsub>_\<^esub> _" [60,60,60]60)
   where     "p \<approx>\<^bsub>D\<^esub> q  = (\<forall>x\<in>D. p x = q x)"
     
-text{* p and q have no conflicts *}
+text\<open>p and q have no conflicts\<close>
 definition no_conflicts :: "('a \<mapsto> 'b) \<Rightarrow>('a \<mapsto> 'b)  \<Rightarrow>bool" where
   "no_conflicts p q = (dom p = dom q \<and> (\<forall>x\<in>(dom p). 
     (case p x of \<lfloor>allow y\<rfloor> \<Rightarrow> (\<exists>z. q x = \<lfloor>allow z\<rfloor>)
@@ -195,7 +195,7 @@ lemma policy_eq:
    apply (metis)+
   done
     
-subsubsection{* Miscellaneous *}
+subsubsection\<open>Miscellaneous\<close>
   
 lemma dom_inter: "\<lbrakk>dom p \<inter> dom q = {}; p x = \<lfloor>y\<rfloor>\<rbrakk> \<Longrightarrow> q x = \<bottom>"
   by (auto)

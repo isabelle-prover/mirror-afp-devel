@@ -202,10 +202,10 @@ begin
       by (metis weak_tau_modality_eqvt)
     ultimately have "Act \<alpha>1 (weak_tau_modality x1) = Act \<alpha>2 (weak_tau_modality x2)"
       using 4 and 5 and 6 and Act_eq_iff_perm by blast
-    moreover from `\<alpha>1 \<noteq> \<tau>` and assms have "\<alpha>2 \<noteq> \<tau>"
+    moreover from \<open>\<alpha>1 \<noteq> \<tau>\<close> and assms have "\<alpha>2 \<noteq> \<tau>"
       by (metis Act_tau_eq_iff)
     ultimately show ?thesis
-      using `\<alpha>1 \<noteq> \<tau>` by (simp add: weak_action_modality_not_tau)
+      using \<open>\<alpha>1 \<noteq> \<tau>\<close> by (simp add: weak_action_modality_not_tau)
   qed
 
 

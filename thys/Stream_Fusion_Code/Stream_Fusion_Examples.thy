@@ -1,7 +1,7 @@
 (* Title: Stream_Fusion_Examples
   Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* Examples and test cases for stream fusion *}
+section \<open>Examples and test cases for stream fusion\<close>
 
 theory Stream_Fusion_Examples imports Stream_Fusion_LList begin
 
@@ -26,7 +26,7 @@ using [[simproc add: stream_fusion, stream_fusion_trace]]
 apply(simp add: concat_map_maps) \<comment> \<open>fuses partially\<close>
 by(unfold rhs_def) rule
 
-subsection {* Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM} *}
+subsection \<open>Micro-benchmarks from Farmer et al. \cite{FarmerHoenerGill2014PEPM}\<close>
 
 definition test_enum :: "nat \<Rightarrow> nat" \<comment> \<open>@{const id} required to avoid eta contraction\<close>
 where "test_enum n = foldl (+) 0 (List.maps (\<lambda>x. upt 1 (id x)) (upt 1 n))"
@@ -37,10 +37,10 @@ where "test_nested n = foldl (+) 0 (List.maps (\<lambda>x. List.maps (\<lambda>y
 definition test_merge :: "integer \<Rightarrow> nat"
 where "test_merge n = foldl (+) 0 (List.maps (\<lambda>x. if 2 dvd x then upt 1 x else upt 2 x) (upt 1 (nat_of_integer n)))"
 
-text {*
-  This rule performs the merge operation from \cite[\S 5.2]{FarmerHoenerGill2014PEPM} for @{text "if"}.
+text \<open>
+  This rule performs the merge operation from \cite[\S 5.2]{FarmerHoenerGill2014PEPM} for \<open>if\<close>.
   In general, we would also need it for all case operators.
-*}
+\<close>
 lemma unstream_if [stream_fusion]:
   "unstream (if b then g else g') (if b then s else s') =
    (if b then unstream g s else unstream g' s')"
@@ -53,13 +53,13 @@ code_thms test_enum
 code_thms test_nested
 code_thms test_merge
 
-subsection {* Test stream fusion in the code generator *}
+subsection \<open>Test stream fusion in the code generator\<close>
 
 definition fuse_test :: integer
 where "fuse_test = 
   integer_of_int (lhd (lfilter (\<lambda>x. x < 1) (lappend (lmap (\<lambda>x. x + 1) (llist_of (map (\<lambda>x. if x = 0 then undefined else x) [-3..5]))) (repeat 3))))"
 
-ML_val {* val ~2 = @{code fuse_test} *} \<comment> \<open>If this test fails with exception Fail, then the stream fusion simproc failed. This test exploits
+ML_val \<open>val ~2 = @{code fuse_test}\<close> \<comment> \<open>If this test fails with exception Fail, then the stream fusion simproc failed. This test exploits
   that stream fusion introduces laziness.\<close>
 
 end

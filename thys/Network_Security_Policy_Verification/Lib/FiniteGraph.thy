@@ -4,11 +4,11 @@ begin
 
 (*Lots of this theory is based on a work by Benedikt Nordhoff and Peter Lammich*)
 
-section {*Specification of a finite directed graph*}
+section \<open>Specification of a finite directed graph\<close>
 
-text{* A graph @{text "G=(V,E)"} consits of a set of vertices @{text V}, also called nodes, 
-       and a set of edges @{text E}. The edges are tuples of vertices. Both, 
-       the set of vertices and edges is finite. *}
+text\<open>A graph \<open>G=(V,E)\<close> consits of a set of vertices \<open>V\<close>, also called nodes, 
+       and a set of edges \<open>E\<close>. The edges are tuples of vertices. Both, 
+       the set of vertices and edges is finite.\<close>
 
 (* Inspired by
 Title: Dijkstra's Shortest Path Algorithm
@@ -16,14 +16,14 @@ Author: Benedikt Nordhoff and Peter Lammich
 http://isa-afp.org/entries/Dijkstra_Shortest_Path.shtml
 *)
 
-section {* Graph  *}
-subsection{*Definitions*}
-  text {* A graph is represented by a record. *}
+section \<open>Graph\<close>
+subsection\<open>Definitions\<close>
+  text \<open>A graph is represented by a record.\<close>
   record 'v graph =
     nodes :: "'v set"
     edges :: "('v \<times>'v) set"
 
-  text {* In a well-formed graph, edges only go from nodes to nodes. *}
+  text \<open>In a well-formed graph, edges only go from nodes to nodes.\<close>
   locale wf_graph = 
     fixes G :: "'v graph"
     \<comment> \<open>Edges only reference to existing nodes\<close>
@@ -48,26 +48,26 @@ subsection{*Definitions*}
     by (auto simp add: E_wfD)
   end
 
-subsection {* Basic operations on Graphs *}
-  text {* The empty graph. *}
+subsection \<open>Basic operations on Graphs\<close>
+  text \<open>The empty graph.\<close>
   definition empty :: "'v graph" where 
     "empty \<equiv> \<lparr> nodes = {}, edges = {} \<rparr>"
 
-  text {* Adds a node to a graph. *}
+  text \<open>Adds a node to a graph.\<close>
   definition add_node :: "'v \<Rightarrow> 'v graph \<Rightarrow> 'v graph" where 
     "add_node v G \<equiv> \<lparr> nodes = ({v} \<union> (nodes G)), edges=edges G \<rparr>"
 
-  text {* Deletes a node from a graph. Also deletes all adjacent edges. *}
+  text \<open>Deletes a node from a graph. Also deletes all adjacent edges.\<close>
   definition delete_node where "delete_node v G \<equiv> \<lparr> 
       nodes = (nodes G) - {v},   
       edges = {(e1, e2). (e1, e2) \<in> edges G \<and> e1 \<noteq> v \<and> e2 \<noteq> v}
     \<rparr>"
 
-  text {* Adds an edge to a graph. *}
+  text \<open>Adds an edge to a graph.\<close>
   definition add_edge where 
   "add_edge v v' G = \<lparr>nodes = nodes G \<union> {v,v'}, edges = {(v, v')} \<union> edges G \<rparr>"
 
-  text {* Deletes an edge from a graph. *}
+  text \<open>Deletes an edge from a graph.\<close>
   definition delete_edge where "delete_edge v v' G \<equiv> \<lparr>
       nodes = nodes G, 
       edges = {(e1,e2). (e1, e2) \<in> edges G \<and> (e1,e2) \<noteq> (v,v')}
@@ -87,12 +87,12 @@ subsection {* Basic operations on Graphs *}
     "fully_connected G \<equiv> \<lparr>nodes = nodes G, edges = nodes G \<times> nodes G \<rparr>"
 
 
-text {* Extended graph operations *}
-  text {* Reflexive transitive successors of a node. Or: All reachable nodes for @{text v} including @{text v}. *}
+text \<open>Extended graph operations\<close>
+  text \<open>Reflexive transitive successors of a node. Or: All reachable nodes for \<open>v\<close> including \<open>v\<close>.\<close>
   definition succ_rtran :: "'v graph \<Rightarrow> 'v \<Rightarrow> 'v set" where
     "succ_rtran G v = {e2. (v,e2) \<in> (edges G)\<^sup>*}"
 
-  text {* Transitive successors of a node. Or: All reachable nodes for @{text v}. *}
+  text \<open>Transitive successors of a node. Or: All reachable nodes for \<open>v\<close>.\<close>
   definition succ_tran :: "'v graph \<Rightarrow> 'v \<Rightarrow> 'v set" where
     "succ_tran G v = {e2. (v,e2) \<in> (edges G)\<^sup>+}"
 
@@ -111,23 +111,23 @@ text {* Extended graph operations *}
     thus "finite (succ_tran G v)" using succ_tran_def by metis
   qed
   
-  text{* If there is no edge leaving from @{text v}, then @{text v} has no successors *}
+  text\<open>If there is no edge leaving from \<open>v\<close>, then \<open>v\<close> has no successors\<close>
   lemma succ_tran_empty: "\<lbrakk> wf_graph G; v \<notin> (fst ` edges G) \<rbrakk> \<Longrightarrow> succ_tran G v = {}"
     unfolding succ_tran_def using image_iff tranclD by fastforce
 
-  text{* @{const succ_tran} is subset of nodes *}
+  text\<open>@{const succ_tran} is subset of nodes\<close>
   lemma succ_tran_subseteq_nodes: "\<lbrakk> wf_graph G \<rbrakk> \<Longrightarrow> succ_tran G v \<subseteq> nodes G"
     unfolding succ_tran_def using tranclD2 wf_graph.E_wfD(2) by fastforce
 
-  text {* The number of reachable nodes from @{text v} *}
+  text \<open>The number of reachable nodes from \<open>v\<close>\<close>
   definition num_reachable :: "'v graph \<Rightarrow> 'v \<Rightarrow> nat" where
     "num_reachable G v = card (succ_tran G v)"
 
   definition num_reachable_norefl :: "'v graph \<Rightarrow> 'v \<Rightarrow> nat" where
     "num_reachable_norefl G v = card (succ_tran G v - {v})"
 
-  text{*@{const card} returns @{term 0} for infinite sets.
-        Here, for a well-formed graph, if @{const num_reachable} is zero, there are actually no nodes reachable.*}
+  text\<open>@{const card} returns @{term 0} for infinite sets.
+        Here, for a well-formed graph, if @{const num_reachable} is zero, there are actually no nodes reachable.\<close>
   lemma num_reachable_zero: "\<lbrakk>wf_graph G; num_reachable G v = 0\<rbrakk> \<Longrightarrow> succ_tran G v = {}"
   unfolding num_reachable_def
   apply(subgoal_tac "finite (succ_tran G v)")
@@ -140,10 +140,10 @@ text {* Extended graph operations *}
   by(metis num_succtran_zero num_reachable_zero)
 
 
-section{*Undirected Graph*}
+section\<open>Undirected Graph\<close>
 
-subsection{*undirected graph simulation*}
-  text {* Create undirected graph from directed graph by adding backward links *}
+subsection\<open>undirected graph simulation\<close>
+  text \<open>Create undirected graph from directed graph by adding backward links\<close>
 
   definition backflows :: "('v \<times> 'v) set \<Rightarrow> ('v \<times> 'v) set" where
     "backflows E \<equiv> {(r,s). (s,r) \<in> E}"
@@ -151,7 +151,7 @@ subsection{*undirected graph simulation*}
   definition undirected :: "'v graph \<Rightarrow> 'v graph"
     where "undirected G = \<lparr> nodes = nodes G, edges = (edges G) \<union> {(b,a). (a,b) \<in> edges G} \<rparr>"
 
-section {*Graph Lemmas*}
+section \<open>Graph Lemmas\<close>
 
   lemma graph_eq_intro: "(nodes (G::'a graph) = nodes G') \<Longrightarrow> (edges G = edges G') \<Longrightarrow> G = G'" by simp
 
@@ -303,7 +303,7 @@ Dijkstra's Shortest Path Algorithm
 http://isa-afp.org/entries/Dijkstra_Shortest_Path.shtml*)
 (*more a literal copy of http://isa-afp.org/browser_info/current/AFP/Dijkstra_Shortest_Path/Graph.html*)
 
-  text {* Successors of a node. *}
+  text \<open>Successors of a node.\<close>
   definition succ :: "'v graph \<Rightarrow> 'v \<Rightarrow> 'v set"
     where "succ G v \<equiv> {v'. (v,v')\<in>edges G}"
 

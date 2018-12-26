@@ -60,7 +60,7 @@ lemma (in comm_semiring_1) coprime_0 [simp]:
 lemma dvd_rewrites: "dvd.dvd ((*)) = (dvd)" by (unfold dvd.dvd_def dvd_def, rule)
 
 
-subsection {* Interfacing UFD properties *}
+subsection \<open>Interfacing UFD properties\<close>
 hide_const (open) Divisibility.irreducible
 
 context comm_monoid_mult_isom begin
@@ -75,7 +75,7 @@ context comm_monoid_mult_isom begin
   qed
 end
 
-subsubsection {* Original part *}
+subsubsection \<open>Original part\<close>
 
 lemma dvd_dvd_imp_smult:
   fixes p q :: "'a :: idom poly"
@@ -162,7 +162,7 @@ class ufd = idom +
   assumes mset_factors_exist: "\<And>x. x \<noteq> 0 \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> \<exists>F. mset_factors F x"
     and mset_factors_unique: "\<And>x F G. mset_factors F x \<Longrightarrow> mset_factors G x \<Longrightarrow> rel_mset (ddvd) F G"
 
-subsubsection {* Connecting to HOL/Divisibility *}
+subsubsection \<open>Connecting to HOL/Divisibility\<close>
 
 context comm_semiring_1 begin
 
@@ -336,7 +336,7 @@ qed
 
 
 
-subsection {* Preservation of Irreducibility *}
+subsection \<open>Preservation of Irreducibility\<close>
 
 
 locale comm_semiring_1_hom = comm_monoid_mult_hom hom + zero_hom hom
@@ -410,7 +410,7 @@ context comm_semiring_isom begin
 end
 
 
-subsubsection{* Back to divisibility *}
+subsubsection\<open>Back to divisibility\<close>
 
 lemma(in comm_semiring_1) mset_factors_mult:
   assumes F: "mset_factors F a"
@@ -899,20 +899,20 @@ lemma listgcd_dvd_some_gcd_listgcd: "listgcd xs dvd some_gcd.listgcd xs"
 
 context factorial_ring_gcd begin
 
-text {* Do not declare the following as subclass, to avoid conflict in
-  @{text "field \<subseteq> gcd_condition"} vs. @{text "factorial_ring_gcd \<subseteq> gcd_condition"}.
- *}
+text \<open>Do not declare the following as subclass, to avoid conflict in
+  \<open>field \<subseteq> gcd_condition\<close> vs. \<open>factorial_ring_gcd \<subseteq> gcd_condition\<close>.
+\<close>
 sublocale as_ufd: ufd
 proof(unfold_locales, goal_cases)
   case (1 x)
-  from prime_factorization_exists[OF `x \<noteq> 0`]
+  from prime_factorization_exists[OF \<open>x \<noteq> 0\<close>]
   obtain F where f: "\<And>f. f \<in># F \<Longrightarrow> prime_elem f" and Fx: "prod_mset F = normalize x" by auto
   from Fx have x: "x = unit_factor x * prod_mset F" by auto
-  from `\<not> is_unit x` Fx have "F \<noteq> {#}" by auto
+  from \<open>\<not> is_unit x\<close> Fx have "F \<noteq> {#}" by auto
   then obtain g G where F: "F = add_mset g G" by (cases F, auto)
   then have "g \<in># F" by auto
   with f[OF this]prime_elem_iff_irreducible
-    irreducible_mult_unit_left[OF unit_factor_is_unit[OF `x \<noteq> 0`]]
+    irreducible_mult_unit_left[OF unit_factor_is_unit[OF \<open>x \<noteq> 0\<close>]]
   have g: "irreducible (unit_factor x * g)" by auto
   show ?case
   proof (intro exI conjI mset_factorsI)

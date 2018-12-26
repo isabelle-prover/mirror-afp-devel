@@ -30,7 +30,7 @@ In this variant we have restated the expressions "necessary abstract" and "neces
 as "necessarily abstract" and "necessarily concrete" correspondingly.
 With this new adverbial reading of the former "necessary" predicate we are no longer talking 
 about the concept of \emph{necessariness}, but of \emph{necessity} instead,
-so we use the modal box operator (@{text "\<box>"}) for its formalization.
+so we use the modal box operator (\<open>\<box>\<close>) for its formalization.
 Note that in this variant we are not concerned with the interpretation of the original ontological argument anymore.
 We are interested, instead, in showing how our method can go beyond simple interpretation
 and foster a creative approach to assessing and improving philosophical arguments.}\<close>
@@ -66,7 +66,7 @@ theorem C10: "\<lfloor>\<^bold>\<exists>x. Godlike x\<rfloor>"
     
 text\<open>\noindent{We postulate further modal axioms (using the \emph{Sahlqvist correspondence})
 and ask Isabelle's \emph{Sledgehammer} for a proof. Sledgehammer is able to
-find a proof for C10 which only relies on the modal axiom T (@{text "\<box>\<phi> \<^bold>\<rightarrow> \<phi>"}).}\<close>
+find a proof for C10 which only relies on the modal axiom T (\<open>\<box>\<phi> \<^bold>\<rightarrow> \<phi>\<close>).}\<close>
   
 axiomatization where 
  T_axiom: "reflexive R" and \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<phi>"}\<close>

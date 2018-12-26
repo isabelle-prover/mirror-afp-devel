@@ -2,21 +2,21 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Round robin scheduler *}
+section \<open>Round robin scheduler\<close>
 
 theory Round_Robin
 imports
   Scheduler
 begin
 
-text {* 
+text \<open>
   A concrete scheduler must pick one possible reduction step from the small-step semantics for invidivual threads.
   Currently, this is only possible if there is only one such by using @{term Predicate.the}.
-*}
+\<close>
 
-subsection {* Concrete schedulers *}
+subsection \<open>Concrete schedulers\<close>
 
-subsection {* Round-robin schedulers *}
+subsection \<open>Round-robin schedulers\<close>
 
 type_synonym 'queue round_robin = "'queue \<times> nat"
   \<comment> \<open>Waiting queue of threads and remaining number of steps of the first thread until it has to return resources\<close>
@@ -100,12 +100,12 @@ proof(induct ntas arbitrary: ts queue)
   case Nil thus ?case by(simp add: enqueue_new_threads_def)
 next
   case (Cons nt ntas)
-  from `thread_oks ts (nt # ntas)`
+  from \<open>thread_oks ts (nt # ntas)\<close>
   have "thread_ok ts nt" and "thread_oks (redT_updT ts nt) ntas" by simp_all
-  from `thread_ok ts nt` `set queue = dom ts` `distinct queue`
+  from \<open>thread_ok ts nt\<close> \<open>set queue = dom ts\<close> \<open>distinct queue\<close>
   have "set (enqueue_new_thread queue nt) = dom (redT_updT ts nt) \<and> distinct (enqueue_new_thread queue nt)"
     by(cases nt)(auto)
-  with `thread_oks (redT_updT ts nt) ntas`
+  with \<open>thread_oks (redT_updT ts nt) ntas\<close>
   have "distinct (enqueue_new_threads (enqueue_new_thread queue nt) ntas)"
     by(blast intro: Cons.hyps)
   thus ?case by(simp add: enqueue_new_threads_def)
@@ -172,17 +172,17 @@ proof(induct queue rule: round_robin_reschedule_induct)
   thus ?case by simp
 next
   case (rotate queue t)
-  from `round_robin_reschedule t0 (t # queue) n0 s = None` `t \<noteq> t0`
+  from \<open>round_robin_reschedule t0 (t # queue) n0 s = None\<close> \<open>t \<noteq> t0\<close>
   have "round_robin_step n0 (t # queue, n0) s t = None" 
     and "round_robin_reschedule t0 (queue @ [t]) n0 s = None"
     by(simp_all add: round_robin_reschedule_Cons)
   from this(1) have "t \<notin> active_threads s" by(rule step_thread_NoneD)
-  moreover from `round_robin_reschedule t0 (queue @ [t]) n0 s = None` 
+  moreover from \<open>round_robin_reschedule t0 (queue @ [t]) n0 s = None\<close> 
   have "set (takeWhile (\<lambda>t'. t' \<noteq> t0) (queue @ [t])) \<inter> active_threads s = {}"
     by(rule rotate.hyps)
   moreover have "takeWhile (\<lambda>t'. t' \<noteq> t0) (queue @ [t]) = takeWhile (\<lambda>t'. t' \<noteq> t0) queue"
-    using `t0 \<in> set queue` by simp
-  ultimately show ?case using `t \<noteq> t0` by simp
+    using \<open>t0 \<in> set queue\<close> by simp
+  ultimately show ?case using \<open>t \<noteq> t0\<close> by simp
 qed
 
 lemma round_robin_reschedule_Some_NoneD:
@@ -197,13 +197,13 @@ next
   show ?case
   proof(cases "round_robin_step n0 (t' # queue, n0) s t'")
     case None
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_reschedule t0 (queue @ [t']) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
     thus ?thesis by(rule rotate.hyps)
   next
     case (Some a)
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
     thus ?thesis by(blast dest: step_thread_Some_NoneD)
@@ -224,16 +224,16 @@ next
   show ?case
   proof(cases "round_robin_step n0 (t' # queue, n0) s t'")
     case None
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_reschedule t0 (queue @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
     thus ?thesis by(rule rotate.hyps)
   next
     case (Some a)
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis using I by(blast dest: step_thread_Some_SomeD[OF `deterministic I`])
+    thus ?thesis using I by(blast dest: step_thread_Some_SomeD[OF \<open>deterministic I\<close>])
   qed
 qed
 
@@ -250,18 +250,18 @@ next
   show ?case
   proof(cases "round_robin_step n0 (t' # queue, n0) s t'")
     case None
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_reschedule t0 (queue @ [t']) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    moreover from `round_robin_invar (t' # queue, n0) (dom (thr s))`
+    moreover from \<open>round_robin_invar (t' # queue, n0) (dom (thr s))\<close>
     have "round_robin_invar (queue @ [t'], n0) (dom (thr s))" by simp
     ultimately show ?thesis by(rule rotate.hyps)
   next
     case (Some a)
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, None, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, None, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis using `round_robin_invar (t' # queue, n0) (dom (thr s))`
+    thus ?thesis using \<open>round_robin_invar (t' # queue, n0) (dom (thr s))\<close>
       by(rule round_robin_step_invar_None)
   qed
 qed
@@ -281,19 +281,19 @@ next
   show ?case
   proof(cases "round_robin_step n0 (t' # queue, n0) s t'")
     case None
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_reschedule t0 (queue @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    moreover from `round_robin_invar (t' # queue, n0) (dom (thr s))`
+    moreover from \<open>round_robin_invar (t' # queue, n0) (dom (thr s))\<close>
     have "round_robin_invar (queue @ [t'], n0) (dom (thr s))" by simp
     ultimately show ?thesis by(rule rotate.hyps)
   next
     case (Some a)
-    with `round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>` `t' \<noteq> t0`
+    with \<open>round_robin_reschedule t0 (t' # queue) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>\<close> \<open>t' \<noteq> t0\<close>
     have "round_robin_step n0 (t' # queue, n0) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>"
       by(simp add: round_robin_reschedule_Cons)
-    thus ?thesis using `round_robin_invar (t' # queue, n0) (dom (thr s))` `s \<in> I`
-      by(rule round_robin_step_invar_Some[OF `deterministic I`])
+    thus ?thesis using \<open>round_robin_invar (t' # queue, n0) (dom (thr s))\<close> \<open>s \<in> I\<close>
+      by(rule round_robin_step_invar_Some[OF \<open>deterministic I\<close>])
   qed
 qed
 
@@ -311,9 +311,9 @@ proof -
     case (Cons t queue')
     with rr \<sigma> have "round_robin_step n0 (t # queue', n) s t = None"
       and "round_robin_reschedule t (queue' @ [t]) n0 s = None" by simp_all
-    from `round_robin_step n0 (t # queue', n) s t = None`
+    from \<open>round_robin_step n0 (t # queue', n) s t = None\<close>
     have "t \<notin> active_threads s" by(rule step_thread_NoneD)
-    moreover from `round_robin_reschedule t (queue' @ [t]) n0 s = None`
+    moreover from \<open>round_robin_reschedule t (queue' @ [t]) n0 s = None\<close>
     have "set (takeWhile (\<lambda>x. x \<noteq> t) (queue' @ [t])) \<inter> active_threads s = {}"
       by(rule round_robin_reschedule_NoneD) simp
     moreover from invar \<sigma> Cons
@@ -359,11 +359,11 @@ proof -
   proof(cases "round_robin_step n0 (t' # queue', n) s t'")
     case (Some a)
     with rr queue \<sigma> have "round_robin_step n0 (t' # queue', n) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis using `s \<in> I` by(blast dest: step_thread_Some_SomeD[OF `deterministic I`])
+    thus ?thesis using \<open>s \<in> I\<close> by(blast dest: step_thread_Some_SomeD[OF \<open>deterministic I\<close>])
   next
     case None
     with rr queue \<sigma> have "round_robin_reschedule t' (queue' @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis by(rule round_robin_reschedule_Some_SomeD[OF `deterministic I`])(simp_all add: `s \<in> I`)
+    thus ?thesis by(rule round_robin_reschedule_Some_SomeD[OF \<open>deterministic I\<close>])(simp_all add: \<open>s \<in> I\<close>)
   qed
 qed
 
@@ -403,13 +403,13 @@ proof -
   proof(cases "round_robin_step n0 (t' # queue', n) s t'")
     case (Some a)
     with rr queue \<sigma> have "round_robin_step n0 (t' # queue', n) s t' = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
-    thus ?thesis using invar unfolding \<sigma> queue by(rule round_robin_step_invar_Some[OF `deterministic I`])
+    thus ?thesis using invar unfolding \<sigma> queue by(rule round_robin_step_invar_Some[OF \<open>deterministic I\<close>])
   next
     case None
     with rr queue \<sigma> have "round_robin_reschedule t' (queue' @ [t']) n0 s = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, \<sigma>')\<rfloor>" by simp
     moreover from invar queue \<sigma>
     have "round_robin_invar (queue' @ [t'], n0) (dom (thr s))" by simp
-    ultimately show ?thesis by(rule round_robin_reschedule_invar_Some[OF `deterministic I`])(simp_all add: `s \<in> I`)
+    ultimately show ?thesis by(rule round_robin_reschedule_invar_Some[OF \<open>deterministic I\<close>])(simp_all add: \<open>s \<in> I\<close>)
   qed
 qed
 
@@ -659,7 +659,7 @@ proof(induct "queue_\<alpha> queue" arbitrary: queue n rule: round_robin_resched
 next
   case (rotate \<alpha>queue' t)
   obtain t' queue' where queue': "queue_dequeue queue = (t', queue')" by(cases "queue_dequeue queue")
-  note [simp] = `t # \<alpha>queue' = queue_\<alpha> queue`[symmetric]
+  note [simp] = \<open>t # \<alpha>queue' = queue_\<alpha> queue\<close>[symmetric]
   { case 1
     with queue' have [simp]: "t' = t" "\<alpha>queue' = queue_\<alpha> queue'" "queue_invar queue'" by(auto elim: queue.removelE)
     from 1 queue' have invar': "round_robin_invar (queue_push t queue', n0) (dom (thr_\<alpha> (thr s)))"
@@ -667,12 +667,12 @@ next
     show ?case
     proof(cases "round_robin_step n0 (queue_push t queue', n0) s t")
       case Some thus ?thesis
-        using queue' `t \<noteq> t0` round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar' `state_\<alpha> s \<in> I`
+        using queue' \<open>t \<noteq> t0\<close> round_robin_step_correct[OF det invar' \<open>state_invar s\<close>, of n0 t] invar' \<open>state_\<alpha> s \<in> I\<close>
         by(subst round_robin_reschedule.simps)(subst \<alpha>.round_robin_reschedule.simps, auto simp add: round_robin_\<alpha>_def queue.push_correct)
     next
       case None
       hence \<alpha>None: "\<alpha>.round_robin_step n0 (queue_\<alpha> (queue_push t queue'), n0) (state_\<alpha> s) t = None"
-        using round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar' `state_\<alpha> s \<in> I`
+        using round_robin_step_correct[OF det invar' \<open>state_invar s\<close>, of n0 t] invar' \<open>state_\<alpha> s \<in> I\<close>
         by(auto simp add: queue.push_correct round_robin_\<alpha>_def)
       have "\<alpha>queue' @ [t] = queue_\<alpha> (queue_enqueue t queue')" by(simp add: queue.enqueue_correct)
       moreover from invar'
@@ -681,8 +681,8 @@ next
       ultimately 
       have "map_option (apsnd (apsnd round_robin_\<alpha>)) (round_robin_reschedule t0 (queue_enqueue t queue') n0 s) =
             \<alpha>.round_robin_reschedule t0 (queue_\<alpha> (queue_enqueue t queue')) n0 (state_\<alpha> s)"
-        using `state_invar s` `state_\<alpha> s \<in> I` by(rule rotate.hyps)
-      thus ?thesis using None \<alpha>None `t \<noteq> t0` invar' queue'
+        using \<open>state_invar s\<close> \<open>state_\<alpha> s \<in> I\<close> by(rule rotate.hyps)
+      thus ?thesis using None \<alpha>None \<open>t \<noteq> t0\<close> invar' queue'
         by(subst round_robin_reschedule.simps)(subst \<alpha>.round_robin_reschedule.simps, auto simp add: queue.enqueue_correct queue.push_correct)
     qed
   next
@@ -693,7 +693,7 @@ next
     show ?case
     proof(cases "round_robin_step n0 (queue_push t queue', n0) s t")
       case Some thus ?thesis
-        using queue' `t \<noteq> t0` round_robin_step_correct[OF det invar' `state_invar s`, of n0 t] invar' `state_\<alpha> s \<in> I`
+        using queue' \<open>t \<noteq> t0\<close> round_robin_step_correct[OF det invar' \<open>state_invar s\<close>, of n0 t] invar' \<open>state_\<alpha> s \<in> I\<close>
         by(subst round_robin_reschedule.simps)(auto simp add: round_robin_\<alpha>_def queue.push_correct)
     next
       case None
@@ -703,8 +703,8 @@ next
         by(auto simp add: queue.enqueue_correct queue.push_correct)
       ultimately 
       have "case_option True (\<lambda>(t, taxm, \<sigma>). round_robin_invar \<sigma> (case_option (dom (thr_\<alpha> (thr s))) (\<lambda>(ta, x', m'). dom (thr_\<alpha> (thr s)) \<union> {t. \<exists>x m. NewThread t x m \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>}) taxm)) (round_robin_reschedule t0 (queue_enqueue t queue') n0 s)"
-        using `state_invar s` `state_\<alpha> s \<in> I` by(rule rotate.hyps)
-      thus ?thesis using None `t \<noteq> t0` invar' queue'
+        using \<open>state_invar s\<close> \<open>state_\<alpha> s \<in> I\<close> by(rule rotate.hyps)
+      thus ?thesis using None \<open>t \<noteq> t0\<close> invar' queue'
         by(subst round_robin_reschedule.simps)(auto simp add: queue.enqueue_correct queue.push_correct)
     qed
   }
@@ -737,14 +737,14 @@ proof -
     proof(cases "round_robin_step n0 (queue_push t queue', n) s t")
       case Some
       with \<sigma> Cons invar show ?thesis
-        using round_robin_step_correct[OF det invar' `state_invar s`, of n0 t]
+        using round_robin_step_correct[OF det invar' \<open>state_invar s\<close>, of n0 t]
         by(auto simp add: queue.isEmpty_correct queue.push_correct round_robin_\<alpha>_def)
     next
       case None
       from invar \<sigma> Cons have "t \<in> set (queue_\<alpha> (queue_enqueue t queue'))"
         by(auto simp add: queue.enqueue_correct)      
-      from round_robin_reschedule_correct[OF det invar'' `state_invar s`, OF `state_\<alpha> s \<in> I` this, of n0] None \<sigma> Cons invar
-        round_robin_step_correct[OF det invar' `state_invar s`, of n0 t]
+      from round_robin_reschedule_correct[OF det invar'' \<open>state_invar s\<close>, OF \<open>state_\<alpha> s \<in> I\<close> this, of n0] None \<sigma> Cons invar
+        round_robin_step_correct[OF det invar' \<open>state_invar s\<close>, of n0 t]
       show ?thesis by(auto simp add: queue.isEmpty_correct queue.push_correct round_robin_\<alpha>_def queue.enqueue_correct)
     qed
   qed
@@ -778,7 +778,7 @@ next
   from round_robin_correct[OF det, OF invar, of n0] rr
   have rr': "\<alpha>.round_robin n0 (round_robin_\<alpha> \<sigma>) (state_\<alpha> s) = \<lfloor>(t, \<lfloor>(ta, x', m')\<rfloor>, round_robin_\<alpha> \<sigma>')\<rfloor>" by simp
   thus "\<exists>x. thr_\<alpha> (thr s) t = \<lfloor>(x, no_wait_locks)\<rfloor> \<and> Predicate.eval (r t (x, shr s)) (ta, x', m') \<and> \<alpha>.actions_ok (state_\<alpha> s) t ta"
-    using `state_\<alpha> s \<in> I` by(rule \<alpha>.round_robin_Some_SomeD[OF det, where s="state_\<alpha> s", unfolded state_\<alpha>_conv])
+    using \<open>state_\<alpha> s \<in> I\<close> by(rule \<alpha>.round_robin_Some_SomeD[OF det, where s="state_\<alpha> s", unfolded state_\<alpha>_conv])
 next
   fix \<sigma> s t \<sigma>'
   assume rr: "round_robin n0 \<sigma> s = \<lfloor>(t, None, \<sigma>')\<rfloor>"

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of the thread action ReleaseAcquire for the thread state *}
+section \<open>Semantics of the thread action ReleaseAcquire for the thread state\<close>
 
 theory FWLockingThread
 imports

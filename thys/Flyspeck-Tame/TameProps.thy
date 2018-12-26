@@ -1,7 +1,7 @@
 (* Author:     Tobias Nipkow
 *)
 
-section{* Tame Properties *}
+section\<open>Tame Properties\<close>
 
 theory TameProps
 imports Tame RTranCl
@@ -43,9 +43,9 @@ next
   show ?case
   proof cases
     assume "ok h'"
-    thus ?thesis using succs `P h'` by(fastforce intro:RTranCl.succs)
+    thus ?thesis using succs \<open>P h'\<close> by(fastforce intro:RTranCl.succs)
   next
-    assume "\<not> ok h'" note fin_tame = ok_untame[OF `P h'` `\<not> ok h'`]
+    assume "\<not> ok h'" note fin_tame = ok_untame[OF \<open>P h'\<close> \<open>\<not> ok h'\<close>]
     have "h'' = h'" using fin_tame
       by(rule_tac RTranCl.cases[OF succs(2)])(auto simp:fin)
     hence False using fin_tame succs by fast

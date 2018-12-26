@@ -408,10 +408,10 @@ proof (induct j)
       hence "A $$ (k, Suc k) = 1"
       proof (cases "k < j")
         case True
-        with IH `k \<ge> i` show ?thesis by auto
+        with IH \<open>k \<ge> i\<close> show ?thesis by auto
       next
         case False
-        with `k < Suc j` have "k = j" by auto
+        with \<open>k < Suc j\<close> have "k = j" by auto
         with True show ?thesis by auto
       qed
     }
@@ -956,10 +956,10 @@ proof -
   thus ?thesis
   proof 
     assume "i < j"
-    from inv_all_diff_evD[OF assms(1) this `j < n` neg] show ?thesis .
+    from inv_all_diff_evD[OF assms(1) this \<open>j < n\<close> neg] show ?thesis .
   next
     assume "j < i"
-    from inv_all_uppertD[OF assms(2) this `i < n`] show ?thesis .
+    from inv_all_uppertD[OF assms(2) this \<open>i < n\<close>] show ?thesis .
   qed
 qed
 
@@ -1070,7 +1070,7 @@ next
   from ibe iek have "i_b \<le> k'" by simp
   have "k' \<noteq> i_b \<longrightarrow> 0 < i_b  \<longrightarrow> A $$ (i_b - 1, i_b) \<noteq> 1" 
     using idb(2) by auto
-  note IH = IH[OF `i_b \<le> k'` this]
+  note IH = IH[OF \<open>i_b \<le> k'\<close> this]
   have cong: "\<And> a b c d. insert a c = d \<Longrightarrow> set (a # b) \<union> c = set b \<union> d" by auto
   show ?case unfolding res IH
   proof (rule cong)
@@ -1093,11 +1093,11 @@ next
         with ij have "i_b \<le> j" "j \<le> i_e" by auto
         {
           assume j: "j < i_e"
-          from idb(3)[OF `i_b \<le> j` this] have 1: "A $$ (j, Suc j) = 1" .
-          from j `Suc i_e \<le> k'` have "Suc j \<noteq> k'" by auto
+          from idb(3)[OF \<open>i_b \<le> j\<close> this] have 1: "A $$ (j, Suc j) = 1" .
+          from j \<open>Suc i_e \<le> k'\<close> have "Suc j \<noteq> k'" by auto
           with ij 1 have False by auto
         }
-        with `j \<le> i_e` have j: "j = i_e" by (cases "j = i_e", auto)
+        with \<open>j \<le> i_e\<close> have j: "j = i_e" by (cases "j = i_e", auto)
         {
           assume i: "i < i_b \<or> i > i_b"
           hence False
@@ -1105,8 +1105,8 @@ next
             assume "i < i_b"
             hence "i_b > 0" by auto
             with idb(2) have *: "A $$ (i_b - 1, i_b) \<noteq> 1" by auto
-            from `i < i_b` `i_b \<le> i_e` `i_e < k'` have "i \<le> i_b - 1" "i_b - 1 \<le> k'" by auto
-            from `i < i_b` `i_b \<le> i_e` j have **: "i \<le> i_b - 1" "i_b - 1 < j" "Suc (i_b - 1) = i_b" by auto
+            from \<open>i < i_b\<close> \<open>i_b \<le> i_e\<close> \<open>i_e < k'\<close> have "i \<le> i_b - 1" "i_b - 1 \<le> k'" by auto
+            from \<open>i < i_b\<close> \<open>i_b \<le> i_e\<close> j have **: "i \<le> i_b - 1" "i_b - 1 < j" "Suc (i_b - 1) = i_b" by auto
             from ij have "\<And> l. l\<ge>i \<Longrightarrow> l < j \<Longrightarrow> A $$ (l, Suc l) = 1" by auto
             from this[OF **(1-2)] **(3) * show False by auto
           next
@@ -1131,7 +1131,7 @@ private lemma identify_blocks_iff: assumes "k < n"
   shows "set (identify_blocks A k) = 
   {(i,j) | i j. i \<le> j \<and> j < k \<and> (\<forall> l. i \<le> l \<longrightarrow> l < j \<longrightarrow> A $$ (l, Suc l) = 1)
   \<and> (Suc j \<noteq> k \<longrightarrow> A $$ (j, Suc j) \<noteq> 1) \<and> (i > 0 \<longrightarrow> A $$ (i - 1, i) \<noteq> 1)}" 
-  unfolding identify_blocks_def using identify_blocks_main_iff[OF le_refl _ `k < n`] by auto
+  unfolding identify_blocks_def using identify_blocks_main_iff[OF le_refl _ \<open>k < n\<close>] by auto
 
 private lemma identify_blocksD: assumes "k < n" and "(i,j) \<in> set (identify_blocks A k)"
   shows "i \<le> j" "j < k" 
@@ -1183,14 +1183,14 @@ proof (intro impI)
   from A have dim: "dim_row A = n" "dim_col A = n" by auto
   note utd = inv_all_uppertD[OF ut]
   let ?i = "i - 1"
-  have "?i < j" using `i \<le> j` `i \<noteq> 0` `i < n` by auto
-  from utd[OF this `j < n`] have Aji: "A $$ (j,?i) = 0" by simp
-  from add_col_sub_row_diag[OF A ut `?i < j` `j < n`]
+  have "?i < j" using \<open>i \<le> j\<close> \<open>i \<noteq> 0\<close> \<open>i < n\<close> by auto
+  from utd[OF this \<open>j < n\<close>] have Aji: "A $$ (j,?i) = 0" by simp
+  from add_col_sub_row_diag[OF A ut \<open>?i < j\<close> \<open>j < n\<close>]
   have diag: "\<And> k. k < n \<Longrightarrow> ?A $$ (k,k) = A $$ (k,k)" .
-  from neq[unfolded diag[OF `i' < n`] diag[OF `j' < n`]] 
+  from neq[unfolded diag[OF \<open>i' < n\<close>] diag[OF \<open>j' < n\<close>]] 
   have neq: "A $$ (i',i') \<noteq> A $$ (j',j')" by auto
   {
-    from inv_partD(3)[OF old `i' < n` `j' < n` choice]
+    from inv_partD(3)[OF old \<open>i' < n\<close> \<open>j' < n\<close> choice]
     have "diff_ev A i' j'" by auto
     with neq ij' have "A $$ (i',j') = 0" unfolding diff_ev_def by auto
   } note zero = this
@@ -1208,7 +1208,7 @@ proof (intro impI)
   } note 2 = this
   from ij' ij choice have "(i' = ?i \<and> j' = j) = False" by arith
   note id = add_col_sub_index_row[of i' A j' j a ?i, unfolded dim this if_False, 
-    OF `i' < n` `i' < n` `j' < n` `j' < n` `j < n`]
+    OF \<open>i' < n\<close> \<open>i' < n\<close> \<open>j' < n\<close> \<open>j' < n\<close> \<open>j < n\<close>]
   show "?A $$ (i',j') = 0" unfolding id zero using 1 2 by auto
 qed
 
@@ -1296,7 +1296,7 @@ proof (induct i j A taking: n rule: step_1_main.induct)
         case True
         hence B: "B = ?A" unfolding B by auto
         from * True have "i < n" by auto
-        note old = add_col_sub_row_diff_ev_part_old[OF A `i \<le> j` `i \<noteq> 0` `i < n` `j < n` 
+        note old = add_col_sub_row_diff_ev_part_old[OF A \<open>i \<le> j\<close> \<open>i \<noteq> 0\<close> \<open>i < n\<close> \<open>j < n\<close> 
           _ _ _ inv(2) inv(1)]
         show ?thesis unfolding B
         proof (rule inv_partI)
@@ -1312,15 +1312,15 @@ proof (induct i j A taking: n rule: step_1_main.induct)
           next
             assume "j' = j \<and> i' = ?i"
             hence ij': "j' = j" "i' = ?i" by auto
-            note diag = add_col_sub_row_diag[OF A inv(1) `?i < j` `j < n`]
-            show ?thesis unfolding ij' diff_ev_def diag[OF `j < n`] diag[OF `?i < n`]
+            note diag = add_col_sub_row_diag[OF A inv(1) \<open>?i < j\<close> \<open>j < n\<close>]
+            show ?thesis unfolding ij' diff_ev_def diag[OF \<open>j < n\<close>] diag[OF \<open>?i < n\<close>]
             proof (intro impI)
               from True have neq: "?evi \<noteq> ?evj" by simp
               note ut = inv_all_uppertD[OF inv(1)]
               obtain i' where i': "i' = i - Suc 0" by auto
               obtain diff where diff: "diff = ?evj - A $$ (i',i')" by auto
               from neq have [simp]: "diff \<noteq> 0" unfolding diff i' by auto
-              from ut[OF `?i < j` `j < n`] have [simp]: "A $$ (j,i') = 0" unfolding diff i' by simp
+              from ut[OF \<open>?i < j\<close> \<open>j < n\<close>] have [simp]: "A $$ (j,i') = 0" unfolding diff i' by simp
               have "?A $$ (?i, j) = 
                 A $$ (i', j) + (A $$ (i', j) * A $$ (i', i') -
                 A $$ (i', j) * A $$ (j, j)) / diff"
@@ -1406,7 +1406,7 @@ proof (induct j A taking: n rule: step_2_main.induct)
         fix i' j' k        
         assume *: "i' < j'" "j' < k" "k < Suc j" and ki: "?A $$ (k,k) = ?A $$ (i',i')" 
         from * jn have "j' < n" "i' < n" "k < n" by auto
-        note id' = Aind[OF `j' < n` `j' < n`] Aind[OF `i' < n` `i' < n`] Aind[OF `k < n` `k < n`]
+        note id' = Aind[OF \<open>j' < n\<close> \<open>j' < n\<close>] Aind[OF \<open>i' < n\<close> \<open>i' < n\<close>] Aind[OF \<open>k < n\<close> \<open>k < n\<close>]
         note inv_ev = dest[OF inv(3)]
         show "?A $$ (j',j') = ?A $$ (i',i')"
         proof (cases "i' < Suc i")
@@ -1436,8 +1436,8 @@ proof (induct j A taking: n rule: step_2_main.induct)
                   with ii' show ?thesis by simp
                 next
                   case False
-                  with `j' < Suc i` have "j' < i" by auto
-                  from ki id inv_ev[OF `i' < j'` this ij] show ?thesis
+                  with \<open>j' < Suc i\<close> have "j' < i" by auto
+                  from ki id inv_ev[OF \<open>i' < j'\<close> this ij] show ?thesis
                     unfolding id' pi pj pk by simp
                 qed
                 thus ?thesis unfolding id' pi pj pk .
@@ -1445,7 +1445,7 @@ proof (induct j A taking: n rule: step_2_main.induct)
                 case False note kf2 = this
                 with kf1 have k: "k > Suc i" by auto
                 hence pk: "?perm k = k - 1" and kj: "k - 1 < j"
-                  using * `k < Suc j` by auto
+                  using * \<open>k < Suc j\<close> by auto
                 from k j' have "j' < k - 1" by auto
                 from inv_ev[OF *(1) this kj] ki
                 show ?thesis unfolding id' pi pj pk by simp
@@ -1459,7 +1459,7 @@ proof (induct j A taking: n rule: step_2_main.induct)
               hence pj: "?perm j' = j" by simp
               from j' * have k: "k > Suc i" by auto
               hence pk: "?perm k = k - 1" and kj: "k - 1 < j"
-                using * `k < Suc j` by auto
+                using * \<open>k < Suc j\<close> by auto
               from ki[unfolded id' pi pj pk] have eq: "A $$ (k - 1, k - 1) = A $$ (i', i')" .
               from * i' k have le: "i' \<le> i" and lt: "i < k - 1" "k - 1 < j" by auto
               from inv_ev[OF _ lt eq] le have "A $$ (i, i) = A $$ (i', i')" 
@@ -1470,7 +1470,7 @@ proof (induct j A taking: n rule: step_2_main.induct)
               with j'f1 have "j' > Suc i" by auto
               hence pj: "?perm j' = j' - 1" and pk: "?perm k = k - 1"   
                 and kj: "i' < j' - 1" "j' - 1 < k - 1" "k - 1 < j"
-                using * i' `k < Suc j` by auto
+                using * i' \<open>k < Suc j\<close> by auto
               from inv_ev[OF kj] ki
               show ?thesis unfolding id' pi pj pk by simp
             qed
@@ -1628,8 +1628,8 @@ proof -
     show "uppert ?A i' j'" unfolding uppert_def
     proof (intro conjI impI)
       assume "j' < i'"
-      with inv_fromD[OF `inv_from uppert A j`, unfolded uppert_def, of i' j'] * ** 
-      show "?A $$ (i',j') = 0" unfolding id2 using * ** `j' < i'` by simp
+      with inv_fromD[OF \<open>inv_from uppert A j\<close>, unfolded uppert_def, of i' j'] * ** 
+      show "?A $$ (i',j') = 0" unfolding id2 using * ** \<open>j' < i'\<close> by simp
     qed
   qed
 qed
@@ -1677,8 +1677,8 @@ next
     have diag: "same_diag A B" unfolding same_diag_def
       by (intro allI impI, insert ij j A Aji B, auto)
     have upto: "same_upto j A B" unfolding B
-      by (rule add_col_sub_row_same_upto[OF `Suc i < j` `j < n` A inv_upto_mono[OF jb_imp_uppert inv(1)]])
-    from add_col_sub_row_inv_from_uppert[OF inv(2) A `Suc i < n` `Suc i < j` `j < n`]
+      by (rule add_col_sub_row_same_upto[OF \<open>Suc i < j\<close> \<open>j < n\<close> A inv_upto_mono[OF jb_imp_uppert inv(1)]])
+    from add_col_sub_row_inv_from_uppert[OF inv(2) A \<open>Suc i < n\<close> \<open>Suc i < j\<close> \<open>j < n\<close>]
     have from_j: "inv_from uppert B j" unfolding B by blast
     have ev: "A $$ (Suc i, Suc i) = A $$ (j,j)" using evbA[of "Suc i" j] ij j by auto
     have evb_B: "ev_block n B"
@@ -1691,15 +1691,15 @@ next
       note id = B add_col_sub_index_row[OF k]
       have "B $$ (k,j) = (if k = i then 0 else A $$ (k,j))" unfolding id
         using inv_uptoD[OF inv(1), of k "Suc i", unfolded jb_def]
-        by (insert * Aji True ij `k < n`, auto simp: ev)
+        by (insert * Aji True ij \<open>k < n\<close>, auto simp: ev)
     } note id2 = this
     have "inv_from_bot (\<lambda>A i. one_zero A i j) B i" unfolding inv_from_bot_def
     proof (intro allI impI)
       fix k
       assume "i \<le> k" "k < n"
       thus "one_zero B k j" using inv(4)[unfolded inv_from_bot_def]
-        upto[unfolded same_upto_def] evbB[OF `k < n` `j < n`]  
-        unfolding one_zero_def id2[OF `k < n`] by auto
+        upto[unfolded same_upto_def] evbB[OF \<open>k < n\<close> \<open>j < n\<close>]  
+        unfolding one_zero_def id2[OF \<open>k < n\<close>] by auto
     qed
     from IH[OF same_upto_inv_upto_jb[OF upto inv(1)] from_j this evb_B]
       same_diag_trans[OF diag]
@@ -1746,7 +1746,7 @@ proof (induct k arbitrary: xs rule: less_induct)
     have res: "?resA = ?recA" "?resB = ?recB" using idA idB by auto
     from k ibe have ibk: "i_b < k" by simp
     with less(3) have "same_upto i_b A B" unfolding same_upto_def by auto
-    from less(1)[OF ibk _ this] ibk `k < n` have "?recA = ?recB" by auto
+    from less(1)[OF ibk _ this] ibk \<open>k < n\<close> have "?recA = ?recB" by auto
     thus ?thesis unfolding k res by simp
   qed simp
 qed
@@ -1840,7 +1840,7 @@ proof -
         from prems ib k have ii: "ii \<ge> i_begin" "ii < n" "ii < k" "ii \<le> i_end"
           and eqs: "ii + iter = i_end" "ll + iter = l" "Suc diff + iter = Suc ?idiff" by auto
         from eqs have diff: "diff < Suc ?idiff" by auto
-        from eqs lb `k < n` have "ll < k" "l < n" by auto
+        from eqs lb \<open>k < n\<close> have "ll < k" "l < n" by auto
         note index = ib lb k i j ll il large ii this
         let ?Aij = "A $$ (i,j)"
         have D: "?D $$ (i,j) = ?mm iter diff i j" using diff i j by (auto split: if_splits)
@@ -1853,14 +1853,14 @@ proof -
           else if i \<noteq> ii \<and> j = ll then B $$ (i, j) + quot * B $$ (i, ii) 
           else B $$ (i, j))" unfolding B_def
           by (rule add_col_sub_index_row(1), insert i j ll, auto)
-        from inv_from_upto_at_all_ev_block[OF inv(1-4) _ `k < n`] 
+        from inv_from_upto_at_all_ev_block[OF inv(1-4) _ \<open>k < n\<close>] 
         have invA: "inv_all uppert A"
           unfolding one_zero_def uppert_def by auto
         note ut = inv_all_uppertD[OF invA]
         note jb = inv_uptoD[OF inv(1), unfolded jb_def]
         note oz = inv_atD[OF inv(3), unfolded one_zero_def]
         note evb = ev_blockD[OF inv(4)]
-        note iblock = identify_blocksD[OF `k < n`]
+        note iblock = identify_blocksD[OF \<open>k < n\<close>]
         note ibe = iblock[OF ib_block]
         let ?ev = "\<lambda> i. A $$ (i,i)"
 
@@ -1869,7 +1869,7 @@ proof -
           assume "(ib,ie) \<in> set (identify_blocks A k)" and i: "ib \<le> i" "i < ie"
           note ibe = iblock[OF this(1)]
           from ibe(3)[OF i] have id: "A $$ (i, Suc i) = 1" by auto
-          from i ibe `k < n` have "i < n" "Suc i < k" by auto
+          from i ibe \<open>k < n\<close> have "i < n" "Suc i < k" by auto
           with oz[OF this(1)] id
           have "A $$ (i,k) = 0" by auto
         } note A_ik = this
@@ -1882,13 +1882,13 @@ proof -
           from index eqs choice have "i \<noteq> ii" by auto
           {
             assume 0: "A $$ (i,ii) \<noteq> 0"
-            from 0 ut[of ii, OF _ i] `i \<noteq> ii` have "i < ii" by force
+            from 0 ut[of ii, OF _ i] \<open>i \<noteq> ii\<close> have "i < ii" by force
             from choice index eqs this have "i < i_begin" by auto
             with index have "i < k" by auto
-            from jb[OF i `ii < n` `ii < k`] 0 `i \<noteq> ii` 
+            from jb[OF i \<open>ii < n\<close> \<open>ii < k\<close>] 0 \<open>i \<noteq> ii\<close> 
             have *: "Suc i = ii" "A $$ (i,ii) = 1" "?ev i = ?ev ii" by auto
-            with index `i < i_begin` have "ii = i_begin" by auto
-            with evb[OF `i < n` `k < n`] ibe(5) * have False by auto
+            with index \<open>i < i_begin\<close> have "ii = i_begin" by auto
+            with evb[OF \<open>i < n\<close> \<open>k < n\<close>] ibe(5) * have False by auto
           }
           hence Aii: "A $$ (i,ii) = 0" by auto
           {
@@ -1933,7 +1933,7 @@ proof -
           assume "i_end - iter = Suc l - iter"
           with iter large eqs have "i_end = Suc l" by auto
           with l_less_i have "l < i_begin" by auto
-          with index `i_end = Suc l` have "i_begin = i_end" by auto
+          with index \<open>i_end = Suc l\<close> have "i_begin = i_end" by auto
         } note block = this
         have Alie: "A $$ (l, i_end) = 0" 
         proof (cases "l < i_end")
@@ -1941,16 +1941,16 @@ proof -
           {
             assume nz: "A $$ (l, i_end) \<noteq> 0"
             from l_less_i[OF True] index have "0 < i_begin" "l < i_begin" "i_end < n" "i_end < k" by auto
-            from jb[OF `l < n` this(3-4)] il nz
+            from jb[OF \<open>l < n\<close> this(3-4)] il nz
             have "i_end = Suc l" "A $$ (l, Suc l) = 1" by auto
             with iblock[OF lbl] have "k = Suc l" by auto
-            with `i_end = Suc l` `i_end < k` have False by auto
+            with \<open>i_end = Suc l\<close> \<open>i_end < k\<close> have False by auto
           }           
           thus ?thesis by auto
         next
           case False
           with il have "i_end < l" by auto
-          from ut[OF this `l < n`] show ?thesis .
+          from ut[OF this \<open>l < n\<close>] show ?thesis .
         qed          
         show "?C $$ (i,j) = ?D $$ (i,j)" 
         proof (cases "i \<ge> i_begin \<and> i \<le> i_end")
@@ -1961,8 +1961,8 @@ proof -
           have D: "?D $$ (i,j) = ?Aij" unfolding D id using choice ib index by auto
           have B: "B $$ (i,j) = ?Aij" unfolding B_outside[OF i j False] ..
           from index eqs False have "i \<noteq> ii" by auto
-          have Bii: "B $$ (i, ii) = A $$ (i,ii)" unfolding B_outside[OF i `ii < n` False] ..
-          hence C: "?C $$ (i,j) = ?Aij" unfolding C B Bii using `i \<noteq> ii` A_outside_ii[OF i False] by auto
+          have Bii: "B $$ (i, ii) = A $$ (i,ii)" unfolding B_outside[OF i \<open>ii < n\<close> False] ..
+          hence C: "?C $$ (i,j) = ?Aij" unfolding C B Bii using \<open>i \<noteq> ii\<close> A_outside_ii[OF i False] by auto
           show ?thesis unfolding D C ..
         next
           case True
@@ -1984,7 +1984,7 @@ proof -
               case True
               from True eqs index have "i \<noteq> ii" by auto
               from True have "?D $$ (i,j) = B $$ (i,j)" unfolding D B by auto
-              also have "B $$ (i,j) = ?C $$ (i,j)" unfolding C using `i \<noteq> ii` by auto
+              also have "B $$ (i,j) = ?C $$ (i,j)" unfolding C using \<open>i \<noteq> ii\<close> by auto
               finally show ?thesis ..
             next
               case False
@@ -1996,18 +1996,18 @@ proof -
                 from eqs have "ll \<le> l" by auto
                 assume "i_begin + Suc diff \<le> ll \<and> ll \<le> i_end"
                 hence "i_begin < ll" "ll \<le> i_end" by auto
-                with `ll \<le> l` have "i_begin < l" by auto
+                with \<open>ll \<le> l\<close> have "i_begin < l" by auto
                 with l_less_i have "\<not> l < i_end" by auto
                 hence "l \<ge> i_end" by simp
                 with il i_less_l have "i_end < lb" by auto
                 from index large eqs have "lb \<le> ll" by auto
-                with `i_end < lb` have "i_end < ll" by auto
-                with `ll \<le> i_end` 
+                with \<open>i_end < lb\<close> have "i_end < ll" by auto
+                with \<open>ll \<le> i_end\<close> 
                 show False by auto
               qed
               have D: "?D $$ (i,j) = ?Aij - quot * A $$ (ll, j)" unfolding D unfolding i ll by simp
               have C: "?C $$ (i,j) = ?Aij - quot * B $$ (ll, j)" unfolding C B unfolding ii i by simp
-              have B: "B $$ (ll, j) = A $$ (ll, j)" unfolding BB[OF `ll < n` j] using index not by auto
+              have B: "B $$ (ll, j) = A $$ (ll, j)" unfolding BB[OF \<open>ll < n\<close> j] using index not by auto
               show ?thesis unfolding C D B unfolding ii i by (simp split: if_splits)
             qed
           next 
@@ -2018,7 +2018,7 @@ proof -
               assume jk: "j = k"
               hence "j \<noteq> Suc l - Suc iter" using index by auto
               hence "?D $$ (i,j) = (if i = i_end then 0 else ?Aij)" unfolding D using jk by auto
-              also have "\<dots> = 0" using A_ik[OF ib_block `i_begin \<le> i`] `i \<le> i_end`  unfolding jk by auto
+              also have "\<dots> = 0" using A_ik[OF ib_block \<open>i_begin \<le> i\<close>] \<open>i \<le> i_end\<close>  unfolding jk by auto
               finally have D: "?D $$ (i,j) = 0" .
               from jk index have "j \<noteq> ll" by auto
               hence C: "?C $$ (i,j) = (if i = ii then B $$ (i, j) - quot * B $$ (ll, j) else B $$ (i, j))" 
@@ -2040,7 +2040,7 @@ proof -
                   with index eqs i have l: "lb \<le> ?l" "?l < l" and diff: "Suc diff \<noteq> Suc ?idiff" by auto
                   from A_ik[OF lbl l] have Alj: "A $$ (ll,j) = 0" unfolding jk ll .
                   from index l jk eqs have "\<not> ((ll, j) = (i_end - iter, Suc l - iter) \<and> iter \<notin> {0, Suc ?idiff})" by auto
-                  hence Bij: "B $$ (ll,j) = 0" unfolding BB[OF `ll < n` j] Alj
+                  hence Bij: "B $$ (ll,j) = 0" unfolding BB[OF \<open>ll < n\<close> j] Alj
                     using l jk diff by auto
                   thus ?thesis unfolding C by simp
                 next
@@ -2056,9 +2056,9 @@ proof -
                   with i eqs have "diff = ?idiff" "ll = l" "iter = 0" by auto
                   hence B: "B $$ (i,j) = A $$ (i_end,k)" unfolding Bij by auto
                   have C: "?C $$ (i,j) = A $$ (i_end,k) - quot * B $$ (l, k)" 
-                    unfolding C B unfolding True `ll =l` jk by simp
+                    unfolding C B unfolding True \<open>ll =l\<close> jk by simp
                   also have "B $$ (l,k) = A $$ (l,k)"
-                    unfolding BB[OF `l < n` `k < n`] using il `iter = 0` by auto
+                    unfolding BB[OF \<open>l < n\<close> \<open>k < n\<close>] using il \<open>iter = 0\<close> by auto
                   also have "A $$ (i_end,k) - quot * \<dots> = 0" unfolding quot_def using Alk by auto
                   finally show ?thesis .
                 next
@@ -2078,18 +2078,18 @@ proof -
                   and *: "diff \<noteq> 0" "i = ii - 1" "j = ll" "ii \<noteq> 0" "i \<noteq> ii" by auto
                 hence D: "?D $$ (i,j) = quot" unfolding D using jk index by auto
                 from * index eqs False jk have i: "ii = Suc i" "i < i_end" by auto
-                from iblock(3)[OF ib_block `i_begin \<le> i` `i < i_end`] 
+                from iblock(3)[OF ib_block \<open>i_begin \<le> i\<close> \<open>i < i_end\<close>] 
                 have Ai: "A $$ (i, ii) = 1" unfolding i .
                 have "ii < k" "i \<noteq> i_end - iter" using index * ** eqs
                   by (blast, force)
-                hence Bi: "B $$ (i,ii) = 1" unfolding BB[OF `i < n` `ii < n`] Ai by auto
-                have "B $$ (i,ll) = A $$ (i,ll)" unfolding BB[OF `i < n` `ll < n`] 
-                  using `i \<noteq> i_end - iter` `ll < k` by auto
+                hence Bi: "B $$ (i,ii) = 1" unfolding BB[OF \<open>i < n\<close> \<open>ii < n\<close>] Ai by auto
+                have "B $$ (i,ll) = A $$ (i,ll)" unfolding BB[OF \<open>i < n\<close> \<open>ll < n\<close>] 
+                  using \<open>i \<noteq> i_end - iter\<close> \<open>ll < k\<close> by auto
                 also have "A $$ (i,ll) = 0"
                 proof (rule ccontr)
                   assume nz: "A $$ (i,ll) \<noteq> 0"
                   from i eqs il have neq: "Suc i \<noteq> ll" by auto
-                  from jb[OF `i < n` `ll < n` `ll < k`] nz neq 
+                  from jb[OF \<open>i < n\<close> \<open>ll < n\<close> \<open>ll < k\<close>] nz neq 
                   have "i = ll" by auto
                   with i have "ii = Suc ll" by simp
                   hence "i_end - iter = Suc l - iter" using eqs by auto
@@ -2113,19 +2113,19 @@ proof -
                     hence "i_end - iter = Suc l - iter" by auto
                     from block[OF this] * index large eqs have False by auto
                   }                    
-                  hence "B $$ (i,i) = ?ev i" unfolding BB[OF `i < n` `i < n`] id if_False by auto
+                  hence "B $$ (i,i) = ?ev i" unfolding BB[OF \<open>i < n\<close> \<open>i < n\<close>] id if_False by auto
                 } note Bdiag = this
                 from eqs have ii: "ii = i_end - iter" "Suc l - iter = Suc ll" by auto
                 have B: "B $$ (i,j) = 
                   (if (i, j) = (ii, Suc ll) \<and> iter \<noteq> 0 then quot else A $$ (i, j))" 
                   unfolding B using ii jk iter by auto
-                have ll_i: "ll \<noteq> i_end - iter" using `ii \<noteq> ll` eqs by auto
-                have "B $$ (ll,ii) = A $$ (ll,ii)" unfolding BB[OF `ll < n` `ii < n`]
-                  using `ii < k` ll_i by auto
+                have ll_i: "ll \<noteq> i_end - iter" using \<open>ii \<noteq> ll\<close> eqs by auto
+                have "B $$ (ll,ii) = A $$ (ll,ii)" unfolding BB[OF \<open>ll < n\<close> \<open>ii < n\<close>]
+                  using \<open>ii < k\<close> ll_i by auto
                 also have "\<dots> = 0"
                 proof (rule ccontr)
                   assume nz: "A $$ (ll,ii) \<noteq> 0"
-                  with jb[OF `ll < n` `ii < n` `ii < k`] `ii \<noteq> ll` have "Suc ll = ii" by auto
+                  with jb[OF \<open>ll < n\<close> \<open>ii < n\<close> \<open>ii < k\<close>] \<open>ii \<noteq> ll\<close> have "Suc ll = ii" by auto
                   with eqs have "i_end - iter = Suc l - iter" by auto
                   from block[OF this] index eqs have "iter = 0" by auto
                   with ii have "ll = l" "ii = i_end" by auto
@@ -2135,12 +2135,12 @@ proof -
                 have C: "?C $$ (i,j) = ?Aij" 
                 proof (cases "i = j")
                   case True
-                  show ?thesis unfolding C unfolding Bdiag[OF `j < n`] True using `ii \<noteq> ll` Bli
+                  show ?thesis unfolding C unfolding Bdiag[OF \<open>j < n\<close>] True using \<open>ii \<noteq> ll\<close> Bli
                     by auto
                 next
                   case False
                   from lb eqs index large have "lb \<le> ll" "ll \<le> l" by auto
-                  note C = C[unfolded Bdiag[OF `i < n`] Bdiag[OF `j < n`]]
+                  note C = C[unfolded Bdiag[OF \<open>i < n\<close>] Bdiag[OF \<open>j < n\<close>]]
                   show ?thesis 
                   proof (cases "(i, j) = (ii, Suc ll) \<and> iter \<noteq> 0")
                     case True
@@ -2150,15 +2150,15 @@ proof -
                     have "\<not> ((ll, j) = (i_end - iter, Suc l - iter) \<and> iter \<notin> {0, Suc ?idiff})"
                       using * index eqs by auto
                     hence B': "B $$ (ll, j) = A $$ (ll, j)" 
-                      unfolding BB[OF `ll < n` `j < n`] using jk by auto
+                      unfolding BB[OF \<open>ll < n\<close> \<open>j < n\<close>] using jk by auto
                     have "?C $$ (i,j) = quot - quot * A $$ (ll, Suc ll)" unfolding C B using * B' by auto
-                    with iblock(3)[OF lbl `lb \<le> ll` `ll < l`] have C: "?C $$ (i,j) = 0" by simp
+                    with iblock(3)[OF lbl \<open>lb \<le> ll\<close> \<open>ll < l\<close>] have C: "?C $$ (i,j) = 0" by simp
                     {
                       assume "A $$ (ii, Suc ll) \<noteq> 0"
-                      with jb[OF `ii < n` `Suc ll < n` `Suc ll < k`] `ii \<noteq> ll`
+                      with jb[OF \<open>ii < n\<close> \<open>Suc ll < n\<close> \<open>Suc ll < k\<close>] \<open>ii \<noteq> ll\<close>
                       have "ii = Suc ll" by auto
                       with eqs have "i_end - iter = Suc l - iter" by auto
-                      from block[OF this] `iter \<noteq> 0` `iter \<noteq> Suc ?idiff` eqs large have False by auto
+                      from block[OF this] \<open>iter \<noteq> 0\<close> \<open>iter \<noteq> Suc ?idiff\<close> eqs large have False by auto
                     }
                     hence "A $$ (ii,Suc ll) = 0" by auto
                     thus ?thesis unfolding C unfolding * by simp
@@ -2176,7 +2176,7 @@ proof -
                       case True
                       let ?diff = "if j = ll then 0 else - quot * A $$ (ll, j)"
                       have Bli: "B $$ (ll, i) = 0" using True Bli by simp
-                      have Blj: "B $$ (ll, j) = A $$ (ll,j)" unfolding BB[OF `ll < n` `j < n`] 
+                      have Blj: "B $$ (ll, j) = A $$ (ll,j)" unfolding BB[OF \<open>ll < n\<close> \<open>j < n\<close>] 
                         using index jk by auto
                       from True have C: "?C $$ (i,j) = ?Aij + ?diff" 
                         unfolding C B evi using Bli Blj evl by auto
@@ -2184,13 +2184,13 @@ proof -
                       proof (rule ccontr)
                         assume "?diff \<noteq> 0"
                         hence jl: "j \<noteq> ll" and Alj: "A $$ (ll,j) \<noteq> 0" by (auto split: if_splits)
-                        with jb[OF `ll < n` `j < n` jk] have "j = Suc ll" "?ev ll = ?ev j" by auto
+                        with jb[OF \<open>ll < n\<close> \<open>j < n\<close> jk] have "j = Suc ll" "?ev ll = ?ev j" by auto
                         with not2 True have "iter = 0" by auto
                         with eqs index jk have id: "A $$ (ll, j) = A $$ (l, Suc l)" and 
                           "j = Suc l" "Suc l < k" "ll = l" 
-                          unfolding `j = Suc ll` by auto
-                        from iblock[OF lbl] `Suc l < k` have "A $$ (l, Suc l) \<noteq> 1" by auto
-                        from jb[OF `l < n` `j < n` jk] Alj this show False unfolding `j = Suc l` `ll = l` by auto
+                          unfolding \<open>j = Suc ll\<close> by auto
+                        from iblock[OF lbl] \<open>Suc l < k\<close> have "A $$ (l, Suc l) \<noteq> 1" by auto
+                        from jb[OF \<open>l < n\<close> \<open>j < n\<close> jk] Alj this show False unfolding \<open>j = Suc l\<close> \<open>ll = l\<close> by auto
                       qed
                       finally show ?thesis by simp
                     next
@@ -2204,13 +2204,13 @@ proof -
                         hence j: "j = ll" and Bi: "B $$ (i, ii) \<noteq> 0" by (auto split: if_splits)
                         from eqs have ii: "i_end - iter = ii" by auto
                         have Bii: "B $$ (i,ii) = A $$ (i, ii)"
-                          unfolding BB[OF `i < n` `ii < n`] using `ii < k` iter ii False by auto
+                          unfolding BB[OF \<open>i < n\<close> \<open>ii < n\<close>] using \<open>ii < k\<close> iter ii False by auto
                         from Bi Bii have Ai: "A $$ (i,ii) \<noteq> 0" by auto
-                        from jb[OF `i < n` `ii < n` `ii < k`] False Ai have ii: "ii = Suc i" 
+                        from jb[OF \<open>i < n\<close> \<open>ii < n\<close> \<open>ii < k\<close>] False Ai have ii: "ii = Suc i" 
                           and Ai: "A $$ (i,ii) = 1" by auto
                         from not ii j have iter: "iter = ?idiff" by auto
                         with eqs index have "ii = i_begin" by auto
-                        with ii `i \<ge> i_begin` 
+                        with ii \<open>i \<ge> i_begin\<close> 
                         show False by auto
                       qed
                       finally show ?thesis by simp
@@ -2256,7 +2256,7 @@ private lemma step_3_c_inv: "A \<in> carrier_mat n n
 proof (induct bs arbitrary: A) 
   case (Nil A)
   note inv = Nil(4-7)
-  from inv_from_upto_at_all_ev_block[OF inv(1-4) _ `k < n`]
+  from inv_from_upto_at_all_ev_block[OF inv(1-4) _ \<open>k < n\<close>]
   have "inv_all uppert A" unfolding one_zero_def diff_ev_def uppert_def by auto
   moreover 
   have "inv_at (single_non_zero l k x) A k" unfolding single_non_zero_def inv_at_def
@@ -2341,12 +2341,12 @@ proof (induct k A taking: n rule: step_3_main.induct)
     {
       fix i
       assume "i < k"
-      with ev_blockD[OF inv(2) _ `k < n`, of i] `k < n` have "A $$ (i,i) = A $$ (k,k)" by auto
+      with ev_blockD[OF inv(2) _ \<open>k < n\<close>, of i] \<open>k < n\<close> have "A $$ (i,i) = A $$ (k,k)" by auto
     }
     hence "inv_from_bot (\<lambda>A i. one_zero A i k) A (k - 1)"
       using inv_all_uppertD[OF inv(1), of k] 
       unfolding inv_from_bot_def one_zero_def by auto
-    from step_3_a_inv[OF A `k - 1 < k` `k < n` inv(3) inv_all_imp_inv_from[OF inv(1)]
+    from step_3_a_inv[OF A \<open>k - 1 < k\<close> \<open>k < n\<close> inv(3) inv_all_imp_inv_from[OF inv(1)]
       this inv(2)] same_diag_ev_block[OF  _ inv(2)]
     have inv: "inv_from uppert B k" "ev_block n B" "inv_upto jb B k" 
       "inv_at one_zero B k" and sd: "same_diag A B" unfolding B by auto
@@ -2377,21 +2377,21 @@ proof (induct k A taking: n rule: step_3_main.induct)
           show ?thesis 
           proof (cases "i = k")
             case False
-            with `i \<le> k` have "i < k" by auto
+            with \<open>i \<le> k\<close> have "i < k" by auto
             with nz oz have ev: "B $$ (i,i) = B $$ (k,k)" unfolding diff_ev_def by auto
             have "(identify_block B i, i) \<in> set all_blocks" unfolding ab
-            proof (rule identify_blocks_rev[OF _ `k < n`]) 
+            proof (rule identify_blocks_rev[OF _ \<open>k < n\<close>]) 
               show "B $$ (i, Suc i) = 0 \<and> Suc i < k \<or> Suc i = k"
               proof (cases "Suc i = k")
                 case False
-                with `i < k` `k < n` have "Suc i < k" "Suc i < n" by simp_all
+                with \<open>i < k\<close> \<open>k < n\<close> have "Suc i < k" "Suc i < n" by simp_all
                 with nz oz have "B $$ (i, Suc i) \<noteq> 1" by simp
-                with inv_uptoD[OF inv(3) `i < n` `Suc i < n` `Suc i < k`, unfolded jb_def]
+                with inv_uptoD[OF inv(3) \<open>i < n\<close> \<open>Suc i < n\<close> \<open>Suc i < k\<close>, unfolded jb_def]
                 have "B $$ (i, Suc i) = 0" by simp
-                thus ?thesis using `Suc i < k` by simp
+                thus ?thesis using \<open>Suc i < k\<close> by simp
               qed simp
             qed
-            with arg_cong[OF `blocks = []`[unfolded blocks], of set] have "B $$ (i,k) = 0" by auto
+            with arg_cong[OF \<open>blocks = []\<close>[unfolded blocks], of set] have "B $$ (i,k) = 0" by auto
             with nz show ?thesis by auto
           qed auto
         qed auto
@@ -2400,10 +2400,10 @@ proof (induct k A taking: n rule: step_3_main.induct)
       proof (rule inv_upto_Suc[OF inv(3)])
         fix i
         assume "i < n"
-        from inv_atD[OF lo `i < n`, unfolded lower_one_def]
+        from inv_atD[OF lo \<open>i < n\<close>, unfolded lower_one_def]
         show "jb B i k" unfolding jb_def by auto
       qed
-      from inv_from_upto_at_all_ev_block[OF inv(3,1) lo inv(2) _ `k < n`] lower_one_diff_uppert
+      from inv_from_upto_at_all_ev_block[OF inv(3,1) lo inv(2) _ \<open>k < n\<close>] lower_one_diff_uppert
       have "inv_all uppert B" by auto
       with inv inv_jb sd
       show ?thesis unfolding F by simp
@@ -2426,8 +2426,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
       } note block_bound = this
       from block_bound[OF lb]
       have lk: "l < k" and lblock: "(l_start, l) \<in> set (identify_blocks B k)" by auto
-      from lk `k < n` have ln: "l < n" by simp
-      from evb[OF `l < n` `k < n`]
+      from lk \<open>k < n\<close> have ln: "l < n" by simp
+      from evb[OF \<open>l < n\<close> \<open>k < n\<close>]
       have Bll: "B $$ (l,l) = B $$ (k,k)" .
       from False have F: "F = E" unfolding E D C x F l Let_def by simp
       from Bn have Cn: "C \<in> carrier_mat n n" unfolding C carrier_mat_def by simp
@@ -2444,8 +2444,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
           have "B $$ (be, Suc be) = 0 \<and> Suc be < k \<or> Suc be = k"
           proof (cases "Suc be = k")
             case False
-            with `be < k` have sbek: "Suc be < k" by auto
-            from inv_uptoD[OF inv(3) `be < n` _ sbek] sbek kn have "jb B be (Suc be)" by auto
+            with \<open>be < k\<close> have sbek: "Suc be < k" by auto
+            from inv_uptoD[OF inv(3) \<open>be < n\<close> _ sbek] sbek kn have "jb B be (Suc be)" by auto
             from this[unfolded jb_def] have 01: "B $$ (be, Suc be) \<in> {0,1}" by auto
             from 01 oz sbek nz have "B $$ (be, Suc be) = 0" by auto
             with sbek show ?thesis by auto
@@ -2454,11 +2454,11 @@ proof (induct k A taking: n rule: step_3_main.induct)
              nz nmem show False unfolding ab blocks by force 
         qed
       }
-      note inv3 = step_3_c_inv[OF Bn `k < n` lblock inv(3,1,4,2) _ this llarge x x0, of blocks, folded C,
+      note inv3 = step_3_c_inv[OF Bn \<open>k < n\<close> lblock inv(3,1,4,2) _ this llarge x x0, of blocks, folded C,
         unfolded ab blocks]
       from inv3 have sdC: "same_diag B C" and suC: "same_upto k B C" by auto
       note sd = same_diag_trans[OF sd sdC]
-      from Bll sdC ln `k < n` 
+      from Bll sdC ln \<open>k < n\<close> 
       have Cll: "C $$ (l,l) = C $$ (k,k)" unfolding same_diag_def by auto
       from same_diag_ev_block[OF sdC inv(2)] same_upto_inv_upto_jb[OF suC inv(3)] inv3 
       have inv: "inv_all uppert C" "ev_block n C"
@@ -2473,15 +2473,15 @@ proof (induct k A taking: n rule: step_3_main.induct)
         let ?x = "inverse x"
         have "D $$ (i,j) = (if i = l \<and> j = k then 1 else if i = k \<and> j \<noteq> k then x * ?c else ?c)"
           unfolding D
-        proof (subst mult_col_div_index_row[OF dC `inverse x \<noteq> 0`], unfold inverse_inverse_eq)
-          note at = inv_atD[OF inv(4) `i < n`, unfolded single_non_zero_def]
+        proof (subst mult_col_div_index_row[OF dC \<open>inverse x \<noteq> 0\<close>], unfold inverse_inverse_eq)
+          note at = inv_atD[OF inv(4) \<open>i < n\<close>, unfolded single_non_zero_def]
           show "(if i = k \<and> j \<noteq> i then x * ?c 
             else if j = k \<and> j \<noteq> i then ?x * ?c else ?c) =
             (if i = l \<and> j = k then 1 else if i = k \<and> j \<noteq> k then x * ?c else ?c)" (is "?l = ?r")
           proof (cases "(i,j) = (l,k)")
             case True
             with lk have "?l = ?x * ?c" by auto
-            also have "\<dots> = 1" using at True `inverse x \<noteq> 0` by auto
+            also have "\<dots> = 1" using at True \<open>inverse x \<noteq> 0\<close> by auto
             finally show ?thesis using True by simp
           next
             case False note neq = this
@@ -2497,8 +2497,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
                 assume *: "j = k \<and> i \<noteq> k"
                 hence "?l = ?x * ?c" using lk by auto
                 from * neq have "i \<noteq> l" and **: "\<not> (i = k \<and> j \<noteq> k)" by auto
-                from at `i \<noteq> l` * have "?c = 0" by auto
-                with `?l = ?x * ?c` ** show ?thesis by auto
+                from at \<open>i \<noteq> l\<close> * have "?c = 0" by auto
+                with \<open>?l = ?x * ?c\<close> ** show ?thesis by auto
               qed
             qed auto
             also have "\<dots> = ?r" using False by auto
@@ -2507,7 +2507,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
         qed
       } note D = this 
       have sD[simp]: "\<And> i. i < n \<Longrightarrow> D $$ (i,i) = C $$ (i,i)" using lk by (auto simp: D)
-      from `C $$ (l,l) = C $$ (k,k)` `l < n` `k < n`
+      from \<open>C $$ (l,l) = C $$ (k,k)\<close> \<open>l < n\<close> \<open>k < n\<close>
       have Dll: "D $$ (l,l) = D $$ (k,k)" by simp      
       have sdD: "same_diag C D" unfolding same_diag_def by simp
       note sd = same_diag_trans[OF sd sdD]
@@ -2525,12 +2525,12 @@ proof (induct k A taking: n rule: step_3_main.induct)
           unfolding D[OF i jn] using j k
            inv(1)[OF i jn j] i j by auto
       qed
-      from same_upto_inv_upto_jb[OF suD `inv_upto jb C k`]
+      from same_upto_inv_upto_jb[OF suD \<open>inv_upto jb C k\<close>]
       have "inv_upto jb D k" .
       moreover 
       let ?single_one = "single_one l k"
       have "inv_at ?single_one D k" 
-        by (intro inv_atI, insert inv(3) D[OF _ `k < n`] ln, auto simp: single_one_def)
+        by (intro inv_atI, insert inv(3) D[OF _ \<open>k < n\<close>] ln, auto simp: single_one_def)
       ultimately
       have inv: "inv_all uppert D" "ev_block n D"
         "inv_upto jb D k" "inv_at ?single_one D k" using invD by blast+
@@ -2544,7 +2544,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
       {
         fix i j
         assume i: "i < n" and j: "j < n"
-        with Dn lk `k < n`
+        with Dn lk \<open>k < n\<close>
         have dims: "i < dim_row D" "i < dim_col D" "j < dim_row D" "j < dim_col D" 
           "Suc l \<le> k" "k < dim_row D" "k < dim_col D" by auto
         have "E $$ (i,j) = D $$ (?I i, ?I j)" 
@@ -2553,22 +2553,22 @@ proof (induct k A taking: n rule: step_3_main.induct)
       {
         fix i
         assume i: "i < n"
-        from `l < k` have "l \<le> Suc l" "Suc l \<le> k" by auto
+        from \<open>l < k\<close> have "l \<le> Suc l" "Suc l \<le> k" by auto
         have "E $$ (i,i) = D $$ (i,i)" unfolding E[OF i i]
-          by (rule inv(4), insert i `k < n`, auto) 
+          by (rule inv(4), insert i \<open>k < n\<close>, auto) 
       } note Ed = this
       from Ed have ed: "same_diag D E" unfolding same_diag_def by auto
       note sd = same_diag_trans[OF sd ed]
-      have "ev_block n E" using same_diag_ev_block[OF ed `ev_block n D`] by auto
+      have "ev_block n E" using same_diag_ev_block[OF ed \<open>ev_block n D\<close>] by auto
       moreover have Eut: "inv_all uppert E" 
       proof (intro inv_allI, unfold uppert_def, intro impI)
         fix i j 
         assume i: "i < n" and j: "j < n" and ji: "j < i"
-        have "?I i < n" using i `k < n` by auto
+        have "?I i < n" using i \<open>k < n\<close> by auto
         show "E $$ (i,j) = 0"
         proof (cases "?I j < ?I i")
           case True
-          from inv(2)[OF this `?I i < n`] show ?thesis unfolding E[OF i j] .
+          from inv(2)[OF this \<open>?I i < n\<close>] show ?thesis unfolding E[OF i j] .
         next
           case False
           have "?I i \<noteq> ?I j" using ji lk by (auto split: if_splits)
@@ -2582,8 +2582,8 @@ proof (induct k A taking: n rule: step_3_main.induct)
         qed
       qed
       moreover 
-      from same_diag_trans[OF `same_diag B C` `same_diag C D`] have "same_diag B D" .
-      from identify_blocks_cong[OF `k < n` this suD] 
+      from same_diag_trans[OF \<open>same_diag B C\<close> \<open>same_diag C D\<close>] have "same_diag B D" .
+      from identify_blocks_cong[OF \<open>k < n\<close> this suD] 
       have idb: "identify_blocks B k = identify_blocks D k" .
       have "inv_upto jb E (Suc k)" 
       proof (intro inv_uptoI)
@@ -2662,7 +2662,7 @@ proof (induct k A taking: n rule: step_3_main.induct)
       ultimately show ?thesis using sd unfolding F by simp
     qed
     hence inv: "inv_all uppert F" "ev_block n F" "inv_upto jb F (Suc k)" 
-      and sd: "same_diag A F" using same_diag_ev_block[OF _ `ev_block n A`] by auto
+      and sd: "same_diag A F" using same_diag_ev_block[OF _ \<open>ev_block n A\<close>] by auto
     have "0 < Suc k" by simp
     note IH = IH[OF Fn this inv(1-3)]
     have id: "step_3_main n k A = step_3_main n (Suc k) F" using kn 
@@ -2853,7 +2853,7 @@ proof (rule inv_uptoI)
   fix i j
   assume "i < n" "j < n" and "j < 1"
   hence j: "j = 0" and jn: "0 < n" by auto
-  show "jb A i j" unfolding jb_def j using inv_all_uppertD[OF ut _ `i < n`, of 0]
+  show "jb A i j" unfolding jb_def j using inv_all_uppertD[OF ut _ \<open>i < n\<close>, of 0]
     by auto
 qed
 
@@ -2896,7 +2896,7 @@ proof -
           show "?FB B C \<in> carrier_mat sk sk" unfolding sk using four_block_carrier_mat[OF B C] .
           fix i j
           assume i: "i < sk" and j: "j < sk"
-          with jb `sk \<le> n` 
+          with jb \<open>sk \<le> n\<close> 
           have jb: "jb A i j" by auto
           have ut: "uppert A i j" by (rule jb_imp_uppert[OF jb])
           have de: "diff_ev A i j" by (rule jb_imp_diff_ev[OF jb])
@@ -2931,7 +2931,7 @@ proof -
                   assume "A $$ (i,j) \<noteq> 0"
                   with jb[unfolded jb_def] *
                   have ji: "j = b" "i = b - 1" "b > 0" and no_border: "A $$ (i, i) = A $$ (j, j)" "A $$ (i,j) = 1" by auto
-                  from no_border[unfolded ji] ib(2) `b > 0` show False by auto                
+                  from no_border[unfolded ji] ib(2) \<open>b > 0\<close> show False by auto                
                 qed
                 thus ?thesis unfolding id by simp
               qed
@@ -2947,8 +2947,8 @@ proof -
                 case True
                 hence id: "?FB B C $$ (i,j) = ?ev" unfolding id by simp
                 from True * have ij: "j = i" by auto
-                have i_n: "i < n" using i `sk \<le> n` by auto 
-                have b_n: "b < n" using `b < sk` `sk \<le> n` by auto
+                have i_n: "i < n" using i \<open>sk \<le> n\<close> by auto 
+                have b_n: "b < n" using \<open>b < sk\<close> \<open>sk \<le> n\<close> by auto
                 from ib(3)[of i] True * i j Suc ev_blockD[OF evb i_n b_n] have "A $$ (i,j) = ?ev" unfolding ij by auto
                 with id show ?thesis by simp
               next

@@ -8,7 +8,7 @@ imports
   ExternalCall_Execute
 begin
 
-subsection {* Manual translation of the JVM to use sets instead of predicates *}
+subsection \<open>Manual translation of the JVM to use sets instead of predicates\<close>
 
 locale JVM_heap_execute = heap_execute +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 

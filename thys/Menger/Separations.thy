@@ -1,4 +1,4 @@
-section {* Separations *}
+section \<open>Separations\<close>
 
 theory Separations imports Helpers Graph begin
 

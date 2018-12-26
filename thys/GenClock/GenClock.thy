@@ -5,10 +5,10 @@
 
 theory GenClock imports Complex_Main begin
 
-subsection{* Types and constants definitions *}
+subsection\<open>Types and constants definitions\<close>
 
-text{* Process is represented by natural numbers. The type 'event' corresponds
-to synchronization rounds. *}
+text\<open>Process is represented by natural numbers. The type 'event' corresponds
+to synchronization rounds.\<close>
 
 type_synonym process = nat
 type_synonym event = nat      (* synchronization rounds *)
@@ -72,9 +72,9 @@ definition
   rho_bound2 :: "[[process, time] \<Rightarrow> Clocktime] \<Rightarrow> bool" where
   "rho_bound2 C \<longleftrightarrow> (\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> (t - s)*(1 - \<rho>) \<le> C p t - C p s)"
 
-subsection{* Clock conditions *}
+subsection\<open>Clock conditions\<close>
 
-text{* Some general assumptions *}
+text\<open>Some general assumptions\<close>
 axiomatization where
   constants_ax: "0 < \<beta> \<and> 0 < \<mu> \<and> 0 < rmin 
   \<and> rmin \<le> rmax \<and> 0 < \<rho> \<and> 0 < np \<and> maxfaults \<le> np"
@@ -88,48 +88,48 @@ axiomatization where
 axiomatization where
   IClock: "\<forall> p t i. correct p t \<longrightarrow> IC p i t = PC p t + Adj p i"
 
-text{* Condition 1: initial skew *}
+text\<open>Condition 1: initial skew\<close>
 axiomatization where
   init: "\<forall> p. correct p 0 \<longrightarrow> 0 \<le> PC p 0 \<and> PC p 0 \<le> \<mu>"
 
-text{* Condition 2: bounded drift *}
+text\<open>Condition 2: bounded drift\<close>
 axiomatization where
   rate_1: "\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> PC p t - PC p s \<le> (t - s)*(1 + \<rho>)" and
   rate_2: "\<forall> p s t. correct p t \<and> s \<le> t \<longrightarrow> (t - s)*(1 - \<rho>) \<le> PC p t - PC p s"
 
-text{* Condition 3: bounded interval *}
+text\<open>Condition 3: bounded interval\<close>
 axiomatization where
   rts0: "\<forall> p t i. correct p t \<and> t \<le> te p (i+1) \<longrightarrow> t - te p i \<le> rmax" and
   rts1: "\<forall> p t i. correct p t \<and> te p (i+1) \<le> t \<longrightarrow> rmin \<le> t - te p i"
 
-text{* Condition 4 : bounded delay *}
+text\<open>Condition 4 : bounded delay\<close>
 axiomatization where
   rts2a: "\<forall> p q t i. correct p t \<and> correct q t \<and> te q i + \<beta> \<le> t \<longrightarrow> te p i \<le> t"  and
   rts2b: "\<forall> p q i. correct p (te p i) \<and> correct q (te q i) \<longrightarrow> abs(te p i - te q i) \<le> \<beta>"
 
-text{* Condition 5: initial synchronization *}
+text\<open>Condition 5: initial synchronization\<close>
 axiomatization where
   synch0: "\<forall> p. te p 0 = 0"
 
-text{* Condition 6: nonoverlap *}
+text\<open>Condition 6: nonoverlap\<close>
 axiomatization where
   nonoverlap: "\<beta> \<le> rmin"
 
-text{* Condition 7: reading errors *}
+text\<open>Condition 7: reading errors\<close>
 axiomatization where
   readerror: "\<forall> p q i. correct p (te p (i+1)) \<and> correct q (te p (i+1)) \<longrightarrow> 
               abs(\<theta> p (i+1) q - IC q i (te p (i+1))) \<le> \<Lambda>"
 
-text{* Condition 8: bounded faults *}
+text\<open>Condition 8: bounded faults\<close>
 axiomatization where
   correct_closed: "\<forall> p s t. s \<le> t \<and> correct p t \<longrightarrow> correct p s" and
   correct_count:  "\<forall> t. np - maxfaults \<le> count (\<lambda> p. correct p t) np"
 
-text{* Condition 9: Translation invariance *}
+text\<open>Condition 9: Translation invariance\<close>
 axiomatization where
   trans_inv: "\<forall> p f x. 0 \<le> x \<longrightarrow> cfn p (\<lambda> y. f y + x) = cfn p f + x"
 
-text{* Condition 10: precision enhancement *}
+text\<open>Condition 10: precision enhancement\<close>
 axiomatization where
   prec_enh: 
   "\<forall> ppred p q f g x y. 
@@ -138,14 +138,14 @@ axiomatization where
           okRead2 f g x ppred \<and> ppred p \<and> ppred q 
       \<longrightarrow> abs(cfn p f - cfn q g) \<le> \<pi> x y"
 
-text{* Condition 11: accuracy preservation *}
+text\<open>Condition 11: accuracy preservation\<close>
 axiomatization where
   acc_prsv:
   "\<forall> ppred p q f x. okRead1 f x ppred \<and> np - maxfaults \<le> count ppred np
           \<and> ppred p \<and> ppred q \<longrightarrow> abs(cfn p f - f q) \<le> \<alpha> x"
 
 
-subsubsection{* Some derived properties of clocks *}
+subsubsection\<open>Some derived properties of clocks\<close>
 
 lemma rts0d: 
 assumes cp: "correct p (te p (i+1))"
@@ -218,7 +218,7 @@ proof-
   from this split Eq2 show ?thesis by simp
 qed
 
-subsubsection{* Bounded-drift for logical clocks (IC) *}
+subsubsection\<open>Bounded-drift for logical clocks (IC)\<close>
 
 lemma bd: 
   assumes ie: "s \<le> t"
@@ -281,7 +281,7 @@ proof-
   qed
 qed
 
-text{* Drift rate of logical clocks *}
+text\<open>Drift rate of logical clocks\<close>
 
 lemma IC_rate1:
 "rho_bound1 (\<lambda> p t. IC p i t)"
@@ -337,8 +337,8 @@ proof-
   thus ?thesis by (simp add: rho_bound2_def)
 qed
 
-text{* Auxilary function @{text ICf}: we introduce this to avoid some
-unification problem in some tactic of isabelle. *}
+text\<open>Auxilary function \<open>ICf\<close>: we introduce this to avoid some
+unification problem in some tactic of isabelle.\<close>
 
 definition
   ICf :: "nat \<Rightarrow> (process \<Rightarrow> time \<Rightarrow> Clocktime)" where
@@ -453,7 +453,7 @@ proof (rule ccontr)
   qed
 qed
 
-subsection{* Agreement property *}
+subsection\<open>Agreement property\<close>
 
 definition "\<gamma>1 x = \<pi> (2*\<rho>*\<beta> + 2*\<Lambda>) (2*\<Lambda> + x + 2*\<rho>*(rmax + \<beta>))"
 definition "\<gamma>2 x = x + 2*\<rho>*rmax"
@@ -558,8 +558,8 @@ proof-
   qed
 qed
 
-text{* This lemma (and the next one pe-cond2) proves an assumption used 
-in the precision enhancement. *}
+text\<open>This lemma (and the next one pe-cond2) proves an assumption used 
+in the precision enhancement.\<close>
 
 lemma pe_cond1: 
 assumes ie: "te q (i+1) \<le> te p (i+1)" 
@@ -887,7 +887,7 @@ proof-
   from this Eq_IC_cfn show ?thesis by (simp)
 qed
 
-text{* Theorem 4.1 in Shankar's paper. *}
+text\<open>Theorem 4.1 in Shankar's paper.\<close>
 
 theorem four_one: 
   assumes ie1: "\<beta> \<le> rmin"
@@ -994,7 +994,7 @@ proof-
   ultimately show ?thesis by simp
 qed
 
-text{* Lemma for the inductive case in Theorem 4.2 *}
+text\<open>Lemma for the inductive case in Theorem 4.2\<close>
 
 lemma four_two_ind:
   assumes ie1: "\<beta> \<le> rmin"
@@ -1229,7 +1229,7 @@ next
   from this ie5 show ?thesis by (simp add: \<gamma>3_def)
 qed
 
-text{* Theorem 4.2 in Shankar's paper. *}
+text\<open>Theorem 4.2 in Shankar's paper.\<close>
 
 theorem four_two: 
   assumes ie1: "\<beta> \<le> rmin"
@@ -1330,8 +1330,8 @@ next
   qed
 qed
     
-text{* The main theorem: all correct clocks are synchronized within the
-bound delta. *}
+text\<open>The main theorem: all correct clocks are synchronized within the
+bound delta.\<close>
 
 theorem agreement: 
   assumes ie1: "\<beta> \<le> rmin"

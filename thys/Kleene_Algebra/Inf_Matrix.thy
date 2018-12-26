@@ -4,13 +4,13 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Infinite Matrices *}
+section \<open>Infinite Matrices\<close>
 
 theory Inf_Matrix
 imports Finite_Suprema
 begin
 
-text {* Matrices are functions from two index sets into some suitable
+text \<open>Matrices are functions from two index sets into some suitable
 algebra. We consider arbitrary index sets, not necessarily the
 positive natural numbers up to some bounds; our coefficient algebra is
 a dioid. Our only restriction is that summation in the product of
@@ -19,7 +19,7 @@ and Kuich's introductory article in the Handbook of Weighted Automata~\cite{weig
 
 Under these assumptions we show that dioids are closed under matrix
 formation. Our proofs are similar to those for formal power series,
-but simpler. *}
+but simpler.\<close>
 
 type_synonym ('a, 'b, 'c) matrix = "'a \<Rightarrow> 'b \<Rightarrow> 'c"
 
@@ -177,7 +177,7 @@ definition mat_less :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a, '
 interpretation matrix_dioid: dioid_one_zero  mat_add mat_mult mat_one mat_zero mat_less_eq mat_less
   by (unfold_locales) (metis mat_add_assoc mat_add_comm mat_mult_assoc[symmetric] mat_distr mat_onel mat_oner mat_zeror mat_annil mat_annir mat_less_eq_def mat_less_def mat_add_idem mat_distl)+
 
-text {* As in the case of formal power series we currently do not
-implement the Kleene star of matrices, since this is complicated. *}
+text \<open>As in the case of formal power series we currently do not
+implement the Kleene star of matrices, since this is complicated.\<close>
 
 end

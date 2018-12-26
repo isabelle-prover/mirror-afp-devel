@@ -11,7 +11,7 @@ theory Propaedeutics
 imports Noninterference_Ipurge_Unwinding.DeterministicProcesses
 begin
 
-text {*
+text \<open>
 \null
 
 \emph{To our Lord Jesus Christ, my dear parents, and my "little" sister,}
@@ -74,18 +74,18 @@ further definitions and lemmas required for the proof of the target theorem.
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
 information, cf. Isabelle documentation, particularly \cite{R6}, \cite{R7}, \cite{R8}, and
 \cite{R9}.
-*}
+\<close>
 
 
 subsection "Preliminary propaedeutic lemmas"
 
-text {*
+text \<open>
 In what follows, some lemmas required for the demonstration of the target closure lemma are proven.
 
 Here below is the proof of some properties of functions @{term ipurge_tr} and @{term ipurge_ref}.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_length:
  "length (ipurge_tr I D u xs) \<le> length xs"
@@ -106,13 +106,13 @@ proof (cases "(u, D x) \<in> I \<or> (\<exists>v \<in> sinks I D u xs. (v, D x) 
  simp_all add: ipurge_ref_def)
 qed blast
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of some properties of function @{term sinks_aux}.
 
 \null
-*}
+\<close>
 
 lemma sinks_aux_append:
  "sinks_aux I D U (xs @ ys) = sinks_aux I D (sinks_aux I D U xs) ys"
@@ -307,7 +307,7 @@ next
        by simp
       moreover have "ipurge_tr_aux I D V xs @ [x] =
         ipurge_tr_aux I D V (xs @ [x])"
-       using `\<not> ?P` by simp
+       using \<open>\<not> ?P\<close> by simp
       ultimately have ?thesis using E by simp
     }
     moreover {
@@ -371,14 +371,14 @@ next
    using C by (simp add: sinks_aux_single_dom)
 qed
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of some properties of functions @{term ipurge_tr_aux} and
 @{term ipurge_ref_aux}.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_aux_append:
  "ipurge_tr_aux I D U (xs @ ys) =
@@ -450,15 +450,15 @@ by (subst ipurge_ref_aux_def, rule subsetI, simp)
 
 subsection "Intransitive purge of event sets with trivial base case"
 
-text {*
+text \<open>
 Here below are the definitions of variants of functions @{term sinks_aux} and
-@{term ipurge_ref_aux}, respectively named @{text sinks_aux_less} and @{text ipurge_ref_aux_less},
+@{term ipurge_ref_aux}, respectively named \<open>sinks_aux_less\<close> and \<open>ipurge_ref_aux_less\<close>,
 such that their base cases in correspondence with an empty input list are trivial, viz. such that
 @{term "sinks_aux_less I D U [] = {}"} and @{term "ipurge_ref_aux_less I D U [] X = X"}. These
 functions will prove to be useful in what follows.
 
 \null
-*}
+\<close>
 
 function sinks_aux_less ::
  "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd set \<Rightarrow> 'a list \<Rightarrow> 'd set" where
@@ -476,13 +476,13 @@ definition ipurge_ref_aux_less ::
 "ipurge_ref_aux_less I D U xs X \<equiv>
   {x \<in> X. \<forall>v \<in> sinks_aux_less I D U xs. (v, D x) \<notin> I}"
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of some properties of function @{term sinks_aux_less} used in what follows.
 
 \null
-*}
+\<close>
 
 lemma sinks_aux_sinks_aux_less:
  "sinks_aux I D U xs = U \<union> sinks_aux_less I D U xs"
@@ -516,14 +516,14 @@ proof -
    by (cases "\<exists>u \<in> U. (u, D x) \<in> I", simp_all add: sinks_aux_less_single_event)
 qed
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of some properties of function @{term ipurge_ref_aux_less} used in what
 follows.
 
 \null
-*}
+\<close>
 
 lemma ipurge_ref_aux_less_last:
  "ipurge_ref_aux_less I D U (xs @ [x]) X =
@@ -702,7 +702,7 @@ proof (induction xs arbitrary: X rule: rev_induct,
        by (simp only: sinks_interference_eq, simp)
       moreover have "ipurge_ref I D (D x) xs X =
         ipurge_ref I D (D x) (xs @ [x']) X"
-       using `\<not> ?P` by (simp add: ipurge_ref_last)
+       using \<open>\<not> ?P\<close> by (simp add: ipurge_ref_last)
       ultimately show ?thesis by simp
     qed
     finally show ?thesis .
@@ -718,7 +718,7 @@ by (simp add: ipurge_ref_aux_less_def sinks_aux_less_cons)
 
 subsection "Closure of the failures of a secure process under intransitive purge"
 
-text {*
+text \<open>
 The intransitive purge of an event list @{term xs} with regard to a policy @{term I}, an
 event-domain map @{term D}, and a set of domains @{term U} can equivalently be computed as follows:
 for each item @{term x} of @{term xs}, if @{term x} may be affected by some domain in @{term U},
@@ -770,7 +770,7 @@ The starting point is to formulate a naive definition of the function, which wil
 specified by the proof method. A slight complication is due to the preliminary replacement of the
 input event set @{term X} with @{term "ipurge_ref_aux I D U [] X"}, to be performed before the items
 of the input event list start to be consumed recursively. A simple solution to this problem is to
-nest the accumulator of the output list within data type @{text option}. In this way, the initial
+nest the accumulator of the output list within data type \<open>option\<close>. In this way, the initial
 state can be distinguished from the subsequent one, in which the input event list starts to be
 consumed, by assigning the distinct values @{term None} and @{term "Some []"}, respectively, to the
 accumulator.
@@ -778,7 +778,7 @@ accumulator.
 Everything is now ready for giving a naive definition of the function under consideration:
 
 \null
-*}
+\<close>
 
 function (sequential) ipurge_fail_aux_t_naive ::
  "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd set \<Rightarrow> 'a list \<Rightarrow> 'a list option \<Rightarrow> 'a set \<Rightarrow>
@@ -795,12 +795,12 @@ where
 "ipurge_fail_aux_t_naive _ _ _ _ (Some ys) X = (ys, X)"
 oops
 
-text {*
+text \<open>
 \null
 
 The parameter into which the output list is accumulated is the last but one.
 
-As shown by the above informal argument, function @{text ipurge_fail_aux_t_naive} enjoys the
+As shown by the above informal argument, function \<open>ipurge_fail_aux_t_naive\<close> enjoys the
 following properties:
 
 \null
@@ -824,17 +824,17 @@ intransitive purge.
 In what follows, the steps provided for by the aforesaid proof method will be dealt with one after
 the other, with the purpose of proving the target closure lemma in the final step. For more
 information on this proof method, cf. \cite{R1}.
-*}
+\<close>
 
 subsubsection "Step 1"
 
-text {*
-In the definition of the auxiliary tail-recursive function @{text ipurge_fail_aux_t_aux}, the
-Cartesian product of the input parameter types of function @{text ipurge_fail_aux_t_naive} will be
+text \<open>
+In the definition of the auxiliary tail-recursive function \<open>ipurge_fail_aux_t_aux\<close>, the
+Cartesian product of the input parameter types of function \<open>ipurge_fail_aux_t_naive\<close> will be
 implemented as the following record type:
 
 \null
-*}
+\<close>
 
 record ('a, 'd) ipurge_rec =
   Pol :: "('d \<times> 'd) set"
@@ -844,13 +844,13 @@ record ('a, 'd) ipurge_rec =
   ListOp :: "'a list option"
   Set :: "'a set"
 
-text {*
+text \<open>
 \null
 
-Here below is the resulting definition of function @{text ipurge_fail_aux_t_aux}:
+Here below is the resulting definition of function \<open>ipurge_fail_aux_t_aux\<close>:
 
 \null
-*}
+\<close>
 
 function ipurge_fail_aux_t_aux :: "('a, 'd) ipurge_rec \<Rightarrow> ('a, 'd) ipurge_rec"
 where
@@ -893,7 +893,7 @@ proof (simp_all, atomize_elim)
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 The length of the input event list of function @{term ipurge_fail_aux_t_aux} decreases in every
@@ -905,7 +905,7 @@ of function @{term ipurge_fail_aux_t_aux} is guaranteed by the fact that the eve
 function @{term ipurge_tr} are not longer than the corresponding input ones.
 
 \null
-*}
+\<close>
 
 termination ipurge_fail_aux_t_aux
 proof (relation "measure (\<lambda>Y. (if ListOp Y = None then Suc else id)
@@ -932,22 +932,22 @@ where
 "ipurge_fail_aux_t I D U xs X \<equiv>
   ipurge_fail_aux_t_out (ipurge_fail_aux_t_aux (ipurge_fail_aux_t_in I D U xs X))"
 
-text {*
+text \<open>
 \null
 
-Since the significant inputs of function @{text ipurge_fail_aux_t_naive} match pattern
-@{text "_, _, _, _, None, _"}, those of function @{term ipurge_fail_aux_t_aux}, as returned by
+Since the significant inputs of function \<open>ipurge_fail_aux_t_naive\<close> match pattern
+\<open>_, _, _, _, None, _\<close>, those of function @{term ipurge_fail_aux_t_aux}, as returned by
 function @{term ipurge_fail_aux_t_in}, match pattern
-@{text "\<lparr>Pol = _, Map = _, Doms = _, List = _, ListOp = None, Set = _\<rparr>"}.
+\<open>\<lparr>Pol = _, Map = _, Doms = _, List = _, ListOp = None, Set = _\<rparr>\<close>.
 
 Likewise, since the nested output lists returned by function @{term ipurge_fail_aux_t_aux} match
-pattern @{text "Some _"}, function @{term ipurge_fail_aux_t_out} does not need to worry about
+pattern \<open>Some _\<close>, function @{term ipurge_fail_aux_t_out} does not need to worry about
 dealing with nested output lists equal to @{term None}.
 
 In terms of function @{term ipurge_fail_aux_t}, the statements to be proven in order to demonstrate
-the target closure lemma, previously expressed using function @{text ipurge_fail_aux_t_naive} and
-henceforth respectively named @{text ipurge_fail_aux_t_eq_tr}, @{text ipurge_fail_aux_t_eq_ref}, and
-@{text ipurge_fail_aux_t_failures}, take the following form:
+the target closure lemma, previously expressed using function \<open>ipurge_fail_aux_t_naive\<close> and
+henceforth respectively named \<open>ipurge_fail_aux_t_eq_tr\<close>, \<open>ipurge_fail_aux_t_eq_ref\<close>, and
+\<open>ipurge_fail_aux_t_failures\<close>, take the following form:
 
 \null
 
@@ -961,7 +961,7 @@ henceforth respectively named @{text ipurge_fail_aux_t_eq_tr}, @{text ipurge_fai
 
 @{term "\<lbrakk>secure P I D; (xs, X) \<in> failures P\<rbrakk> \<Longrightarrow>
   ipurge_fail_aux_t I D U xs X \<in> failures P"}
-*}
+\<close>
 
 subsubsection "Step 3"
 
@@ -1115,11 +1115,11 @@ where
   secure P I D \<longrightarrow> (xs, X) \<in> failures P \<longrightarrow>
   ((case ListOp Y of None \<Rightarrow> [] | Some ys \<Rightarrow> ys) @ List Y, Set Y) \<in> failures P"
 
-text {*
+text \<open>
 \null
 
-Three invariants have been defined, one for each of lemmas @{text ipurge_fail_aux_t_eq_tr},
-@{text ipurge_fail_aux_t_eq_ref}, and @{text ipurge_fail_aux_t_failures}. More precisely, the
+Three invariants have been defined, one for each of lemmas \<open>ipurge_fail_aux_t_eq_tr\<close>,
+\<open>ipurge_fail_aux_t_eq_ref\<close>, and \<open>ipurge_fail_aux_t_failures\<close>. More precisely, the
 invariants are @{term "ipurge_fail_aux_t_inv_1 I D U xs"},
 @{term "ipurge_fail_aux_t_inv_2 I D U xs X"}, and @{term "ipurge_fail_aux_t_inv_3 P I D xs X"},
 where the free variables are intended to match those appearing in the aforesaid lemmas.
@@ -1152,7 +1152,7 @@ such that the list matches the concatenation of the partial output list with @{t
 the set matches @{term "Set Y"}, is a failure provided that the original input pair is such as well.
 
 \end{itemize}
-*}
+\<close>
 
 subsubsection "Step 6"
 
@@ -1213,7 +1213,7 @@ lemma ipurge_fail_aux_t_invariance_aux:
   Pol Z = Pol Y \<and> Map Z = Map Y \<and> Doms Z = Doms Y"
 by (erule ipurge_fail_aux_t_set.induct, simp_all)
 
-text {*
+text \<open>
 \null
 
 The lemma just proven, stating the invariance of the first three record fields over inductive set
@@ -1224,13 +1224,13 @@ The lemma just proven, stating the invariance of the first three record fields o
 The equality between the free variables appearing in the predicates and the corresponding fields of
 the record generating the set, which is required for such invariance properties to hold, is asserted
 in the enunciation of the properties by means of record updates. In the subsequent proofs of lemmas
-@{text ipurge_fail_aux_t_eq_tr}, @{text ipurge_fail_aux_t_eq_ref}, and
-@{text ipurge_fail_aux_t_failures}, the enforcement of this equality will be ensured by the
+\<open>ipurge_fail_aux_t_eq_tr\<close>, \<open>ipurge_fail_aux_t_eq_ref\<close>, and
+\<open>ipurge_fail_aux_t_failures\<close>, the enforcement of this equality will be ensured by the
 identification of both predicate variables and record fields with the related free variables
 appearing in the lemmas.
 
 \null
-*}
+\<close>
 
 lemma ipurge_fail_aux_t_invariance_1:
  "\<lbrakk>Z \<in> ipurge_fail_aux_t_set (Y\<lparr>Pol := I, Map := D, Doms := U\<rparr>);
@@ -1323,13 +1323,13 @@ qed
 
 subsubsection "Step 10"
 
-text {*
-Here below are the proofs of lemmas @{text ipurge_fail_aux_t_eq_tr},
-@{text ipurge_fail_aux_t_eq_ref}, and @{text ipurge_fail_aux_t_failures}, which are then applied to
+text \<open>
+Here below are the proofs of lemmas \<open>ipurge_fail_aux_t_eq_tr\<close>,
+\<open>ipurge_fail_aux_t_eq_ref\<close>, and \<open>ipurge_fail_aux_t_failures\<close>, which are then applied to
 demonstrate the target closure lemma.
 
 \null
-*}
+\<close>
 
 lemma ipurge_fail_aux_t_eq_tr:
  "fst (ipurge_fail_aux_t I D U xs X) = ipurge_tr_aux I D U xs"
@@ -1415,7 +1415,7 @@ qed (simp add: ipurge_fail_aux_t_eq_tr [where X = X, symmetric]
 
 subsection "Additional propaedeutic lemmas"
 
-text {*
+text \<open>
 In what follows, additional lemmas required for the demonstration of the target security
 conservation theorem are proven.
 
@@ -1425,7 +1425,7 @@ purge for some set of domains are both traces of a secure process, and the purge
 not affected by any purged event, then that future is also a future for the full event list.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_aux_idem:
  "ipurge_tr_aux I D U (ipurge_tr_aux I D U xs) = ipurge_tr_aux I D U xs"
@@ -1567,7 +1567,7 @@ proof (rule equals0I, simp add: ipurge_ref_aux_def, erule conjE)
    by contradiction
 qed
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of some properties of functions @{term sinks}, @{term ipurge_tr}, and
@@ -1577,7 +1577,7 @@ domain are both traces of a secure process, and the purged list has a future not
 purged event, then that future is also a future for the full event list.
 
 \null
-*}
+\<close>
 
 lemma sinks_idem:
  "sinks I D u (ipurge_tr I D u xs) = {}"
@@ -1668,14 +1668,14 @@ next
   with B show "(v, D x) \<in> I" ..
 qed
 
-text {*
+text \<open>
 \null
 
 Finally, in what follows, properties @{term process_prop_1}, @{term process_prop_5}, and
 @{term process_prop_6} of processes (cf. \cite{R2}) are put into the form of introduction rules.
 
 \null
-*}
+\<close>
 
 lemma process_rule_1:
  "([], {}) \<in> failures P"

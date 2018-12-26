@@ -9,10 +9,10 @@ theory BinaryFunctor
 imports ProductCategory NaturalTransformation
 begin
 
-  text{*
+  text\<open>
     This theory develops various properties of binary functors, which are functors
     defined on product categories.
-  *}
+\<close>
 
   locale binary_functor =
     A1: category A1 +
@@ -31,9 +31,9 @@ begin
 
   end
 
-  text{*
+  text\<open>
     A product functor is a binary functor obtained by placing two functors in parallel.
-  *}
+\<close>
 
   locale product_functor =
     A1: category A1 +
@@ -84,9 +84,9 @@ begin
     using is_functor by auto
   sublocale product_functor \<subseteq> binary_functor A1 A2 B1xB2.comp map ..
 
-  text{*
+  text\<open>
     A symmetry functor is a binary functor that exchanges its two arguments.
-  *}
+\<close>
 
   locale symmetry_functor =
   A1: category A1 +
@@ -141,10 +141,10 @@ begin
       ultimately show ?thesis using sym_def by auto
     qed
 
-    text{*
+    text\<open>
       Fixing one or the other argument of a binary functor to be an identity
       yields a functor of the other argument.
-    *}
+\<close>
 
     lemma fixing_ide_gives_functor_1:
     assumes "A1.ide a1"
@@ -166,10 +166,10 @@ begin
       by (metis A1xA2.comp_simp A1xA2.seq_char A2.ideD(1) A2.ide_comp_self fst_conv
           preserves_comp_2 snd_conv)
 
-    text{*
+    text\<open>
       Fixing one or the other argument of a binary functor to be an arrow
       yields a natural transformation.
-    *}
+\<close>
 
     lemma fixing_arr_gives_natural_transformation_1:
     assumes "A1.arr f1"
@@ -205,10 +205,10 @@ begin
       thus ?thesis by simp
     qed
 
-    text{*
+    text\<open>
       Fixing one or the other argument of a binary functor to be a composite arrow
       yields a natural transformation that is a vertical composite.
-    *}
+\<close>
 
     lemma preserves_comp_1:
     assumes "A1.seq f1' f1"
@@ -258,11 +258,11 @@ begin
 
   end
 
-  text{*
+  text\<open>
     A binary functor transformation is a natural transformation between binary functors.
     We need a certain property of such transformations; namely, that if one or the
     other argument is fixed to be an identity, the result is a natural transformation.
-  *}
+\<close>
 
   locale binary_functor_transformation =
     A1: category A1 +

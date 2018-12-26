@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Class for modular arithmetic*}
+section\<open>Class for modular arithmetic\<close>
 
 theory Mod_Type
 imports
@@ -13,9 +13,9 @@ imports
   Dual_Order
 begin
 
-subsection{*Definition and properties*}
+subsection\<open>Definition and properties\<close>
 
-text{*Class for modular arithmetic. It is inspired by the locale mod\_type.*}
+text\<open>Class for modular arithmetic. It is inspired by the locale mod\_type.\<close>
 
 class mod_type = times + wellorder + neg_numeral +
 fixes Rep :: "'a => int"
@@ -76,8 +76,8 @@ done
 lemmas Rep_simps =
   Rep_inject_sym Rep_inverse Rep_Abs_mod Rep_mod Rep_Abs_0 Rep_Abs_1
 
-subsection{*Conversion between a modular class and the subset of natural numbers associated.*}
-text{*Definitions to make transformations among elements of a modular class and naturals*}
+subsection\<open>Conversion between a modular class and the subset of natural numbers associated.\<close>
+text\<open>Definitions to make transformations among elements of a modular class and naturals\<close>
 definition to_nat :: "'a => nat"
   where "to_nat = nat \<circ> Rep"
 
@@ -333,8 +333,8 @@ proof -
     have "to_nat a < to_nat b" using ab by (metis to_nat_mono)
     hence "to_nat a + 1 \<le> to_nat b" by simp
     thus "to_nat b < CARD ('a)" using bij_to_nat unfolding  bij_betw_def by auto
-    hence "to_nat a + 1 < CARD ('a)" by (metis `to_nat a + 1 \<le> to_nat b` preorder_class.le_less_trans)
-    thus "to_nat (a + 1) \<le> to_nat b" by (metis `to_nat a + 1 \<le> to_nat b` to_nat_suc)
+    hence "to_nat a + 1 < CARD ('a)" by (metis \<open>to_nat a + 1 \<le> to_nat b\<close> preorder_class.le_less_trans)
+    thus "to_nat (a + 1) \<le> to_nat b" by (metis \<open>to_nat a + 1 \<le> to_nat b\<close> to_nat_suc)
   qed
   also have "... = b" by (metis from_nat_to_nat_id)
   finally show "a + (1::'a) \<le> b" .
@@ -479,7 +479,7 @@ lemma from_nat_CARD:
   unfolding from_nat_def o_def Abs'_def by (simp add: zero_def)
 
 
-subsection{*Instantiations*}
+subsection\<open>Instantiations\<close>
 
 instantiation bit0 and bit1:: (finite) mod_type
 begin

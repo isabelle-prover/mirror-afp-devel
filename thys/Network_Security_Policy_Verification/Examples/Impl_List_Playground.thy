@@ -3,7 +3,7 @@ imports "../TopoS_Impl"
 begin
 
 
-text{*The executbale models and the composition theory. We can build examples here*}
+text\<open>The executbale models and the composition theory. We can build examples here\<close>
 
 
 definition testGraph :: "string list_graph" where
@@ -34,8 +34,8 @@ definition "max_network = generate_valid_topology reqs
 
 value "max_network"
 
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "reqs"} @{term "max_network"};
-*}
+\<close>
 
 end

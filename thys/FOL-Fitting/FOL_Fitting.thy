@@ -37,12 +37,12 @@ datatype ('a, 'b) form
   | Exists \<open>('a, 'b) form\<close>
 
 text \<open>
-We use @{text \<open>'a\<close>} and @{text \<open>'b\<close>} to denote the type of
+We use \<open>'a\<close> and \<open>'b\<close> to denote the type of
 {\em function symbols} and {\em predicate symbols}, respectively.
-In applications @{text \<open>App a ts\<close>} and predicates
-@{text \<open>Pred a ts\<close>}, the length of @{text \<open>ts\<close>} is considered
-to be a part of the function or predicate name, so @{text \<open>App a [t]\<close>}
-and @{text \<open>App a [t,u]\<close>} refer to different functions.
+In applications \<open>App a ts\<close> and predicates
+\<open>Pred a ts\<close>, the length of \<open>ts\<close> is considered
+to be a part of the function or predicate name, so \<open>App a [t]\<close>
+and \<open>App a [t,u]\<close> refer to different functions.
 
 The size of a formula is used later for wellfounded induction. The
 default implementation provided by the datatype package is not quite
@@ -65,8 +65,8 @@ subsection \<open>Closed terms and formulae\<close>
 text \<open>
 Many of the results proved in the following sections are restricted
 to closed terms and formulae. We call a term or formula {\em closed at
-level @{text i}}, if it only contains ``loose'' bound variables with
-indices smaller than @{text i}.
+level \<open>i\<close>}, if it only contains ``loose'' bound variables with
+indices smaller than \<open>i\<close>.
 \<close>
 
 primrec
@@ -160,8 +160,8 @@ theorem subst_size_form [simp]: \<open>size_form (subst p t i) = size_form p\<cl
 subsection \<open>Parameters\<close>
 
 text \<open>
-The introduction rule @{text ForallI} for the universal quantifier,
-as well as the elimination rule @{text ExistsE} for the existential
+The introduction rule \<open>ForallI\<close> for the universal quantifier,
+as well as the elimination rule \<open>ExistsE\<close> for the existential
 quantifier introduced in \secref{sec:proof-calculus} require the
 quantified variable to be replaced by a ``fresh'' parameter. Fitting's
 solution is to use a new nullary function symbol for this purpose.
@@ -190,7 +190,7 @@ primrec params :: \<open>('a, 'b) form \<Rightarrow> 'a set\<close> where
 
 text\<open>
 We also define parameter substitution functions on terms and formulae
-that apply a function @{text f} to all function symbols.
+that apply a function \<open>f\<close> to all function symbols.
 \<close>
 
 primrec
@@ -269,10 +269,10 @@ text \<open>
 \label{sec:semantics}
 In this section, we define evaluation functions for terms and formulae.
 Evaluation is performed relative to an environment mapping indices of variables
-to values. We also introduce a function, denoted by @{text \<open>e\<langle>i:a\<rangle>\<close>}, for inserting
-a value @{text a} at position @{text i} into the environment. All values of variables
-with indices less than @{text i} are left untouched by this operation, whereas the
-values of variables with indices greater or equal than @{text i} are shifted one
+to values. We also introduce a function, denoted by \<open>e\<langle>i:a\<rangle>\<close>, for inserting
+a value \<open>a\<close> at position \<open>i\<close> into the environment. All values of variables
+with indices less than \<open>i\<close> are left untouched by this operation, whereas the
+values of variables with indices greater or equal than \<open>i\<close> are shifted one
 position up.
 \<close>
 
@@ -316,9 +316,9 @@ primrec eval :: \<open>(nat \<Rightarrow> 'c) \<Rightarrow> ('a \<Rightarrow> 'c
 | \<open>eval e f g (Exists p) = (\<exists>z. eval (e\<langle>0:z\<rangle>) f g p)\<close>
 
 text \<open>
-We write @{text \<open>e,f,g,ps \<Turnstile> p\<close>} to mean that the formula @{text p} is a
-semantic consequence of the list of formulae @{text ps} with respect to an
-environment @{text e} and interpretations @{text f} and @{text g} for
+We write \<open>e,f,g,ps \<Turnstile> p\<close> to mean that the formula \<open>p\<close> is a
+semantic consequence of the list of formulae \<open>ps\<close> with respect to an
+environment \<open>e\<close> and interpretations \<open>f\<close> and \<open>g\<close> for
 function and predicate symbols, respectively.
 \<close>
 
@@ -387,7 +387,7 @@ section \<open>Proof calculus\<close>
 text \<open>
 \label{sec:proof-calculus}
 We now introduce a natural deduction proof calculus for first order logic.
-The derivability judgement @{text \<open>G \<turnstile> a\<close>} is defined as an inductive predicate.
+The derivability judgement \<open>G \<turnstile> a\<close> is defined as an inductive predicate.
 \<close>
 
 inductive deriv :: \<open>('a, 'b) form list \<Rightarrow> ('a, 'b) form \<Rightarrow> bool\<close> ("_ \<turnstile> _" [50,50] 50) where
@@ -600,20 +600,20 @@ actual proof, it is useful to note that the following two formulations of
 completeness are equivalent:
 \begin{enumerate}
 \item All valid formulae are derivable, i.e.
-  @{text \<open>ps \<Turnstile> p \<Longrightarrow> ps \<turnstile> p\<close>}
+  \<open>ps \<Turnstile> p \<Longrightarrow> ps \<turnstile> p\<close>
 \item All consistent sets are satisfiable
 \end{enumerate}
 The latter property is called the {\em model existence theorem}. To see why 2
-implies 1, observe that @{text \<open>Neg p, ps \<notturnstile> FF\<close>} implies
-that @{text \<open>Neg p, ps\<close>} is consistent, which, by the model existence theorem,
-implies that @{text \<open>Neg p, ps\<close>} has a model, which in turn implies that
-@{text \<open>ps \<notTurnstile> p\<close>}. By contraposition, it therefore follows
-from @{text \<open>ps \<Turnstile> p\<close>} that @{text \<open>Neg p, ps \<turnstile> FF\<close>}, which allows us to
-deduce @{text \<open>ps \<turnstile> p\<close>} using rule @{text Class}.
+implies 1, observe that \<open>Neg p, ps \<notturnstile> FF\<close> implies
+that \<open>Neg p, ps\<close> is consistent, which, by the model existence theorem,
+implies that \<open>Neg p, ps\<close> has a model, which in turn implies that
+\<open>ps \<notTurnstile> p\<close>. By contraposition, it therefore follows
+from \<open>ps \<Turnstile> p\<close> that \<open>Neg p, ps \<turnstile> FF\<close>, which allows us to
+deduce \<open>ps \<turnstile> p\<close> using rule \<open>Class\<close>.
 
-In most textbooks on logic, a set @{text S} of formulae is called {\em consistent},
-if no contradiction can be derived from @{text S} using a {\em specific proof calculus},
-i.e.\ @{text \<open>S \<notturnstile> FF\<close>}. Rather than defining consistency relative to
+In most textbooks on logic, a set \<open>S\<close> of formulae is called {\em consistent},
+if no contradiction can be derived from \<open>S\<close> using a {\em specific proof calculus},
+i.e.\ \<open>S \<notturnstile> FF\<close>. Rather than defining consistency relative to
 a {\em specific} calculus, Fitting uses the more general approach of describing
 properties that all consistent sets must have (see \secref{sec:consistent-sets}).
 
@@ -670,8 +670,8 @@ text \<open>
 In \secref{sec:finiteness}, we will show how to extend a consistency property
 to one that is of {\em finite character}. However, the above
 definition of a consistency property cannot be used for this, since there is
-a problem with the treatment of formulae of the form @{text \<open>Exists P\<close>} and
-@{text \<open>Neg (Forall P)\<close>}. Fitting therefore suggests to define an {\em alternative
+a problem with the treatment of formulae of the form \<open>Exists P\<close> and
+\<open>Neg (Forall P)\<close>. Fitting therefore suggests to define an {\em alternative
 consistency property} as follows:
 \<close>
 
@@ -694,10 +694,10 @@ definition alt_consistency :: \<open>('a, 'b) form set set \<Rightarrow> bool\<c
        S \<union> {Neg (P[App x []/0])} \<in> C))\<close>
 
 text \<open>
-Note that in the clauses for @{text \<open>Exists P\<close>} and @{text \<open>Neg (Forall P)\<close>},
-the first definition requires the existence of a parameter @{text x} with a certain
-property, whereas the second definition requires that all parameters @{text x} that
-are new for @{text S} have a certain property. A consistency property can easily be
+Note that in the clauses for \<open>Exists P\<close> and \<open>Neg (Forall P)\<close>,
+the first definition requires the existence of a parameter \<open>x\<close> with a certain
+property, whereas the second definition requires that all parameters \<open>x\<close> that
+are new for \<open>S\<close> have a certain property. A consistency property can easily be
 turned into an alternative consistency property by applying a suitable parameter
 substitution:
 \<close>
@@ -1025,7 +1025,7 @@ theorem close_subset: \<open>C \<subseteq> close C\<close>
   unfolding close_def by blast
 
 text \<open>
-If a consistency property @{text C} is closed under subsets, so is the
+If a consistency property \<open>C\<close> is closed under subsets, so is the
 corresponding alternative consistency property:
 \<close>
 
@@ -1053,9 +1053,9 @@ subsection \<open>Finite character\<close>
 text \<open>
 \label{sec:finiteness}
 In this section, we show that an alternative consistency property can
-be extended to one of finite character. A set of sets @{text C} is said
-to be of finite character, provided that @{text S} is a member of @{text C}
-if and only if every subset of @{text S} is.
+be extended to one of finite character. A set of sets \<open>C\<close> is said
+to be of finite character, provided that \<open>S\<close> is a member of \<open>C\<close>
+if and only if every subset of \<open>S\<close> is.
 \<close>
 
 definition finite_char :: \<open>'a set set \<Rightarrow> bool\<close> where
@@ -1395,9 +1395,9 @@ subsection \<open>Extension to maximal consistent sets\<close>
 
 text \<open>
 \label{sec:extend}
-Given a set @{text C} of finite character, we show that
+Given a set \<open>C\<close> of finite character, we show that
 the least upper bound of a chain of sets that are elements
-of @{text C} is again an element of @{text C}.
+of \<open>C\<close> is again an element of \<open>C\<close>.
 \<close>
 
 definition is_chain :: \<open>(nat \<Rightarrow> 'a set) \<Rightarrow> bool\<close> where
@@ -1472,9 +1472,9 @@ proof -
 qed
 
 text \<open>
-We can now define a function @{text Extend} that extends a consistent
+We can now define a function \<open>Extend\<close> that extends a consistent
 set to a maximal consistent set. To this end, we first define an auxiliary
-function @{text extend} that produces the elements of an ascending chain of
+function \<open>extend\<close> that produces the elements of an ascending chain of
 consistent sets.
 \<close>
 
@@ -1609,10 +1609,10 @@ next
 qed
 
 text \<open>
-The main theorem about @{text Extend} says that if @{text C} is an
+The main theorem about \<open>Extend\<close> says that if \<open>C\<close> is an
 alternative consistency property that is of finite character,
-@{text S} is consistent and @{text S} uses only finitely many
-parameters, then @{text \<open>Extend S C f\<close>} is again consistent.
+\<open>S\<close> is consistent and \<open>S\<close> uses only finitely many
+parameters, then \<open>Extend S C f\<close> is again consistent.
 \<close>
 
 theorem Extend_in_C: \<open>alt_consistency C \<Longrightarrow> finite_char C \<Longrightarrow>
@@ -1631,7 +1631,7 @@ proof
 qed
 
 text \<open>
-The @{text Extend} function yields a maximal set:
+The \<open>Extend\<close> function yields a maximal set:
 \<close>
 
 definition maximal :: \<open>'a set \<Rightarrow> 'a set set \<Rightarrow> bool\<close> where
@@ -1702,8 +1702,8 @@ definition hintikka :: \<open>('a, 'b) form set \<Rightarrow> bool\<close> where
 
 text \<open>
 In Herbrand models, each {\em closed} term is interpreted by itself.
-We introduce a new datatype @{text hterm} (``Herbrand terms''), which
-is similar to the datatype @{text term} introduced in \secref{sec:terms},
+We introduce a new datatype \<open>hterm\<close> (``Herbrand terms''), which
+is similar to the datatype \<open>term\<close> introduced in \secref{sec:terms},
 but without variables. We also define functions for converting between
 closed terms and Herbrand terms.
 \<close>
@@ -1738,7 +1738,7 @@ Note that this theorem cannot be proved by a simple structural induction
 (as claimed in Fitting's book), since a parameter substitution has
 to be applied in the cases for quantifiers. However, since parameter
 substitution does not change the size of formulae, the theorem can
-be proved by well-founded induction on the size of the formula @{text p}.
+be proved by well-founded induction on the size of the formula \<open>p\<close>.
 \<close>
 
 theorem hintikka_model:
@@ -2149,8 +2149,8 @@ subsection \<open>Model existence theorem\<close>
 
 text \<open>
 \label{sec:model-existence}
-Since the result of extending @{text S} is a superset of @{text S},
-it follows that each consistent set @{text S} has a Herbrand model:
+Since the result of extending \<open>S\<close> is a superset of \<open>S\<close>,
+it follows that each consistent set \<open>S\<close> has a Herbrand model:
 \<close>
 
 lemma hintikka_Extend_S:
@@ -2197,7 +2197,7 @@ text \<open>
 Thanks to the model existence theorem, we can now show the completeness
 of the natural deduction calculus introduced in \secref{sec:proof-calculus}.
 In order for the model existence theorem to be applicable, we have to prove
-that the set of sets that are consistent with respect to @{text \<open>\<turnstile>\<close>} is a
+that the set of sets that are consistent with respect to \<open>\<turnstile>\<close> is a
 consistency property:
 \<close>
 
@@ -2857,7 +2857,7 @@ When applying the model existence theorem, there is a technical
 complication. We must make sure that there are infinitely many
 unused parameters. In order to achieve this, we encode parameters
 as natural numbers and multiply each parameter occurring in the
-set @{text S} by @{text 2}.
+set \<open>S\<close> by \<open>2\<close>.
 \<close>
 
 theorem loewenheim_skolem:

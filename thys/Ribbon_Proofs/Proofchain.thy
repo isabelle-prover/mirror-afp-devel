@@ -1,39 +1,39 @@
-section {* Proof chains *}
+section \<open>Proof chains\<close>
 
 theory Proofchain imports
   JHelper  
 begin
 
-text {* An (@{typ 'a}, @{typ 'c}) chain is a sequence of alternating 
+text \<open>An (@{typ 'a}, @{typ 'c}) chain is a sequence of alternating 
   @{typ 'a}'s and @{typ 'c}'s, beginning and ending with an @{typ 'a}. Usually 
   @{typ 'a} represents some sort of assertion, and @{typ 'c} represents some 
   sort of command. Proof chains are useful for stating the SMain proof rule,
-  and for conducting the proof of soundness. *}
+  and for conducting the proof of soundness.\<close>
 
 datatype ('a,'c) chain = 
   cNil "'a"                         ("\<lbrace> _ \<rbrace>")
 | cCons "'a" "'c" "('a,'c) chain"   ("\<lbrace> _ \<rbrace> \<cdot> _ \<cdot> _" [0,0,0] 60) 
 
-text {* For example, @{term "\<lbrace> a \<rbrace> \<cdot> proof \<cdot> \<lbrace> chain \<rbrace> \<cdot> might \<cdot> \<lbrace> look \<rbrace> \<cdot> 
-  like \<cdot> \<lbrace> this \<rbrace>"}. *}
+text \<open>For example, @{term "\<lbrace> a \<rbrace> \<cdot> proof \<cdot> \<lbrace> chain \<rbrace> \<cdot> might \<cdot> \<lbrace> look \<rbrace> \<cdot> 
+  like \<cdot> \<lbrace> this \<rbrace>"}.\<close>
 
-subsection {* Projections *}
+subsection \<open>Projections\<close>
 
-text {* Project first assertion. *}
+text \<open>Project first assertion.\<close>
 fun
   pre :: "('a,'c) chain \<Rightarrow> 'a"
 where
   "pre \<lbrace> P \<rbrace> = P"
 | "pre (\<lbrace> P \<rbrace> \<cdot> _ \<cdot> _) = P"
 
-text {* Project final assertion. *}
+text \<open>Project final assertion.\<close>
 fun 
   post :: "('a,'c) chain \<Rightarrow> 'a"
 where
   "post \<lbrace> P \<rbrace>  = P"
 | "post (\<lbrace> _ \<rbrace> \<cdot> _ \<cdot> \<Pi>) = post \<Pi>"
 
-text {* Project list of commands. *}
+text \<open>Project list of commands.\<close>
 fun
   comlist :: "('a,'c) chain \<Rightarrow> 'c list"
 where
@@ -41,7 +41,7 @@ where
 | "comlist (\<lbrace> _ \<rbrace> \<cdot> x \<cdot> \<Pi>) = x # (comlist \<Pi>)" 
 
 
-subsection {* Chain length *}
+subsection \<open>Chain length\<close>
 
 fun
   chainlen :: "('a,'c) chain \<Rightarrow> nat"
@@ -53,19 +53,19 @@ lemma len_comlist_chainlen:
   "length (comlist \<Pi>) = chainlen \<Pi>"
 by (induct \<Pi>, auto)
 
-subsection {* Extracting triples from chains *}
+subsection \<open>Extracting triples from chains\<close>
 
-text {* @{term "nthtriple \<Pi> n"} extracts the @{term n}th triple of @{term \<Pi>},
+text \<open>@{term "nthtriple \<Pi> n"} extracts the @{term n}th triple of @{term \<Pi>},
   counting from 0. The function is well-defined when @{term "chainlen \<Pi> > n"}. 
-  *}
+\<close>
 fun
   nthtriple :: "('a,'c) chain \<Rightarrow> nat \<Rightarrow> ('a * 'c * 'a)"
 where
   "nthtriple (\<lbrace> P \<rbrace> \<cdot> x \<cdot> \<Pi>) 0 = (P, x, pre \<Pi>)"
 | "nthtriple (\<lbrace> P \<rbrace> \<cdot> x \<cdot> \<Pi>) (Suc n) = nthtriple \<Pi> n"
 
-text {* The list of middle components of @{term \<Pi>}'s triples is the list of
-   @{term \<Pi>}'s commands. *}
+text \<open>The list of middle components of @{term \<Pi>}'s triples is the list of
+   @{term \<Pi>}'s commands.\<close>
 lemma snds_of_triples_form_comlist:
   fixes \<Pi> i
   shows "i < chainlen \<Pi> \<Longrightarrow> snd3 (nthtriple \<Pi> i) = (comlist \<Pi>)!i"
@@ -75,10 +75,10 @@ apply (case_tac i)
 apply (auto simp add: snd3_def)
 done
 
-subsection {* Evaluating a predicate on each triple of a chain *}
+subsection \<open>Evaluating a predicate on each triple of a chain\<close>
 
-text {* @{term "chain_all \<phi>"} holds of @{term \<Pi>} iff @{term \<phi>} holds for each
-  of @{term \<Pi>}'s individual triples. *} 
+text \<open>@{term "chain_all \<phi>"} holds of @{term \<Pi>} iff @{term \<phi>} holds for each
+  of @{term \<Pi>}'s individual triples.\<close> 
 fun
   chain_all :: "(('a \<times> 'c \<times> 'a) \<Rightarrow> bool) \<Rightarrow> ('a,'c) chain \<Rightarrow> bool"
 where
@@ -95,7 +95,7 @@ proof (intro le_funI le_boolI)
   thus "chain_all g \<Pi>"
   apply (induct \<Pi>)
   apply simp
-  apply (metis `f \<le> g` chain_all.simps(2) predicate1D)
+  apply (metis \<open>f \<le> g\<close> chain_all.simps(2) predicate1D)
   done
 qed
   
@@ -140,17 +140,17 @@ next
   qed(auto)
 qed
 
-subsection {* A map function for proof chains *}
+subsection \<open>A map function for proof chains\<close>
 
-text {* @{term "chainmap f g \<Pi>"} maps @{term f} over each of @{term \<Pi>}'s 
-  assertions, and @{term g} over each of @{term \<Pi>}'s commands. *}
+text \<open>@{term "chainmap f g \<Pi>"} maps @{term f} over each of @{term \<Pi>}'s 
+  assertions, and @{term g} over each of @{term \<Pi>}'s commands.\<close>
 fun
   chainmap :: "('a \<Rightarrow> 'b) \<Rightarrow> ('c \<Rightarrow> 'd) \<Rightarrow> ('a,'c) chain \<Rightarrow> ('b,'d) chain"
 where
   "chainmap f g \<lbrace> P \<rbrace> = \<lbrace> f P \<rbrace>"
 | "chainmap f g (\<lbrace> P \<rbrace> \<cdot> x \<cdot> \<Pi>) = \<lbrace> f P \<rbrace> \<cdot> g x \<cdot> chainmap f g \<Pi>"
 
-text {* Mapping over a chain preserves its length. *}
+text \<open>Mapping over a chain preserves its length.\<close>
 lemma chainmap_preserves_length: 
   "chainlen (chainmap f g \<Pi>) = chainlen \<Pi>"
 by (induct \<Pi>, auto)
@@ -174,7 +174,7 @@ proof (induct \<Pi> arbitrary: i)
   by (induct i, auto simp add: pre_chainmap fst3_def snd3_def thd3_def)
 qed (auto)
 
-subsection {* Extending a chain on its right-hand side *}
+subsection \<open>Extending a chain on its right-hand side\<close>
 
 fun
   cSnoc :: "('a,'c) chain \<Rightarrow> 'c \<Rightarrow> 'a \<Rightarrow> ('a,'c) chain"

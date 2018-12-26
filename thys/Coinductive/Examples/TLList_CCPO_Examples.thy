@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-section {* Example definitions using the CCPO structure on terminated lazy lists *}
+section \<open>Example definitions using the CCPO structure on terminated lazy lists\<close>
 
 theory TLList_CCPO_Examples imports
    "../TLList_CCPO"

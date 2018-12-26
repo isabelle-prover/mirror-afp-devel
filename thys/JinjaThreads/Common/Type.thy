@@ -4,9 +4,9 @@
     Based on the Jinja theory Common/Type.thy by David von Oheimb and Tobias Nipkow
 *)
 
-chapter {* Concepts for all JinjaThreads Languages \label{cha:j} *}
+chapter \<open>Concepts for all JinjaThreads Languages \label{cha:j}\<close>
 
-section {* JinjaThreads types *}
+section \<open>JinjaThreads types\<close>
 
 theory Type
 imports
@@ -222,7 +222,7 @@ where
 lemma is_Class_conv [simp]: "is_Class T \<longleftrightarrow> (\<exists>C. T = Class C)"
 by(cases T) simp_all
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 code_pred is_refT .
 

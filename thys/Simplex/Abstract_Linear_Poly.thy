@@ -70,9 +70,9 @@ of Isabelle/HOL \cite{florian-refinement}. Abstract representation of
 polynomials are functions mapping variables to their coefficients,
 where only finitely many variables have non-zero
 coefficients. Operations on polynomials are defined as operations on
-functions. For example, the sum of @{term "p\<^sub>1"} and @{text "p\<^sub>2"} is
+functions. For example, the sum of @{term "p\<^sub>1"} and \<open>p\<^sub>2\<close> is
 defined by @{term "\<lambda> v. p\<^sub>1 v + p\<^sub>2 v"} and the value of a polynomial
-@{term "p"} for a valuation @{term "v"} (denoted by @{text "p\<lbrace>v\<rbrace>"}),
+@{term "p"} for a valuation @{term "v"} (denoted by \<open>p\<lbrace>v\<rbrace>\<close>),
 is defined by @{term "\<Sum>x\<in>{x. p x \<noteq> 0}. p x * v x"}. Executable
 representation of polynomials uses RBT mappings instead of functions.
 \<close>

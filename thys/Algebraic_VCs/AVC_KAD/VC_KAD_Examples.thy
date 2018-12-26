@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection{* Verification Examples *}
+subsubsection\<open>Verification Examples\<close>
 
 theory VC_KAD_Examples
 imports VC_KAD

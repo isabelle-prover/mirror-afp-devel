@@ -19,12 +19,12 @@ section \<open>Secrecy with Leaking (global version)\<close>
 theory s0g_secrecy imports Refinement Agents
 begin
 
-text \<open>This model extends the global secrecy model by adding a @{text leak} 
+text \<open>This model extends the global secrecy model by adding a \<open>leak\<close> 
 event, which models that the adversary can learn messages through leaks of 
 some (unspecified) kind.\<close>
 
 text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"}.\<close>
+\<open>dom\<close>.\<close>
 
 declare domIff [simp, iff del] 
 

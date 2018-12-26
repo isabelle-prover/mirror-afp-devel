@@ -5,10 +5,10 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Modal Kleene Algebras *}
+section \<open>Modal Kleene Algebras\<close>
 
-text {* This section studies laws that relate antidomain and antirange semirings and Kleene algebra,
-notably Galois connections and conjugations as those studied in~\cite{MoellerStruth,DesharnaisStruthSCP}. *}
+text \<open>This section studies laws that relate antidomain and antirange semirings and Kleene algebra,
+notably Galois connections and conjugations as those studied in~\cite{MoellerStruth,DesharnaisStruthSCP}.\<close>
 
 theory Modal_Kleene_Algebra
 imports Range_Semiring
@@ -20,7 +20,7 @@ class modal_semiring = antidomain_semiring + antirange_semiring +
 
 begin
 
-text {* These axioms force that the domain algebra and the range algebra coincide. *}
+text \<open>These axioms force that the domain algebra and the range algebra coincide.\<close>
 
 lemma domrangefix: "d x = x \<longleftrightarrow> r x = x"
   by (metis domrange rangedom)

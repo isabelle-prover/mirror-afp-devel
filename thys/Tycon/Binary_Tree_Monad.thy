@@ -1,10 +1,10 @@
-section {* Binary tree monad *}
+section \<open>Binary tree monad\<close>
 
 theory Binary_Tree_Monad
 imports Monad
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 tycondef 'a\<cdot>btree =
   Leaf (lazy "'a") | Node (lazy "'a\<cdot>btree") (lazy "'a\<cdot>btree")
@@ -30,7 +30,7 @@ apply (subst fix_eq, simp add: Leaf_def)
 apply (subst fix_eq, simp add: Node_def)
 done
 
-subsection {* Class instance proofs *}
+subsection \<open>Class instance proofs\<close>
 
 instance btree :: "functor"
 apply standard
@@ -66,7 +66,7 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_btree_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>btree) = \<bottom>"

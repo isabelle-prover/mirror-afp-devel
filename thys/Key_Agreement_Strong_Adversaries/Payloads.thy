@@ -231,7 +231,7 @@ lemma synth_idem_payload:
 by (auto dest: synth_mono subset_trans [OF _ synth_payload])
 
 
-subsection \<open>@{text "isLtKey"}: is a long term key\<close>
+subsection \<open>\<open>isLtKey\<close>: is a long term key\<close>
 (**************************************************************************************************)
 
 lemma LtKeys_payload [dest]: "NI \<subseteq> payload \<Longrightarrow> NI \<inter> range LtK = {}"
@@ -247,7 +247,7 @@ lemma parts_of_LtKeys [simp]: "K \<subseteq> range LtK \<Longrightarrow> parts K
 by (rule, rule, erule parts.induct, auto) 
 
 
-subsection\<open>@{text "keys_of"}: the long term keys of an agent\<close>
+subsection\<open>\<open>keys_of\<close>: the long term keys of an agent\<close>
 (**************************************************************************************************)
 
 definition
@@ -288,7 +288,7 @@ by (auto intro!: parts_of_LtKeys)
 lemma analz_keys_of [simp]: "analz (keys_of A) = keys_of A"
 by (rule, rule, erule analz.induct, auto)
 
-subsection \<open>@{text "Keys_bad"}: bounds on the attacker's knowledge of long-term keys.\<close>
+subsection \<open>\<open>Keys_bad\<close>: bounds on the attacker's knowledge of long-term keys.\<close>
 (**************************************************************************************************)
 
 text \<open>A set of keys contains all public long term keys, and only the private/shared keys 
@@ -382,7 +382,7 @@ lemma Keys_bad_insert_payload:
 by (auto simp add: Keys_bad_def)
 
 
-subsection \<open>@{text "broken K"}: pairs of agents where at least one is compromised.\<close>
+subsection \<open>\<open>broken K\<close>: pairs of agents where at least one is compromised.\<close>
 (**************************************************************************************************)
 
 text \<open>Set of pairs (A,B) such that the priK of A or B, or their shared key, is in K\<close>
@@ -401,7 +401,7 @@ lemma brokenI [intro!]:
 by (auto simp add: broken_def)
 
 
-subsection \<open>@{text "Enc_keys_clean S"}: messages with ``clean'' symmetric encryptions.\<close>
+subsection \<open>\<open>Enc_keys_clean S\<close>: messages with ``clean'' symmetric encryptions.\<close>
 (**************************************************************************************************)
 
 text \<open>All terms used as symmetric keys in S are either long term keys or messages without 

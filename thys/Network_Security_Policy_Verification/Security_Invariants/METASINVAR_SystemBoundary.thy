@@ -5,7 +5,7 @@ imports SINVAR_BLPtrusted_impl
 begin
 
 
-subsubsection {* Meta SecurityInvariant: System Boundaries *}
+subsubsection \<open>Meta SecurityInvariant: System Boundaries\<close>
 
 
 datatype system_components = SystemComponent

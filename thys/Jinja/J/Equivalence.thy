@@ -3,11 +3,11 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Equivalence of Big Step and Small Step Semantics *}
+section \<open>Equivalence of Big Step and Small Step Semantics\<close>
 
 theory Equivalence imports BigStep SmallStep WWellForm begin
 
-subsection{*Small steps simulate big step*}
+subsection\<open>Small steps simulate big step\<close>
 
 subsubsection "Cast"
 
@@ -606,7 +606,7 @@ done
 
 subsubsection"Call"
 
-text{* First a few lemmas on what happens to free variables during redction. *}
+text\<open>First a few lemmas on what happens to free variables during redction.\<close>
 
 lemma assumes wf: "wwf_J_prog P"
 shows Red_fv: "P \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<langle>e',(h',l')\<rangle> \<Longrightarrow> fv e' \<subseteq> fv e"
@@ -647,7 +647,7 @@ apply(blast dest: Red_fv Red_dom_lcl)
 done
 (*>*)
 
-text{* Now a few lemmas on the behaviour of blocks during reduction. *}
+text\<open>Now a few lemmas on the behaviour of blocks during reduction.\<close>
 
 (* If you want to avoid the premise "distinct" further down \<dots>
 consts upd_vals :: "locals \<Rightarrow> vname list \<Rightarrow> val list \<Rightarrow> val list"
@@ -712,7 +712,7 @@ proof -
 qed
 (*>*)
 
-text{* An now the actual method call reduction lemmas. *}
+text\<open>An now the actual method call reduction lemmas.\<close>
 
 lemma CallRedsObj:
  "P \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e\<bullet>M(es),s\<rangle> \<rightarrow>* \<langle>e'\<bullet>M(es),s'\<rangle>"
@@ -918,12 +918,12 @@ qed
 (*>*)
 
 
-subsection{*Big steps simulates small step*}
+subsection\<open>Big steps simulates small step\<close>
 
-text{* This direction was carried out by Norbert Schirmer and Daniel
-Wasserrab. *}
+text\<open>This direction was carried out by Norbert Schirmer and Daniel
+Wasserrab.\<close>
 
-text {* The big step equivalent of @{text RedWhile}: *} 
+text \<open>The big step equivalent of \<open>RedWhile\<close>:\<close> 
 
 lemma unfold_while: 
   "P \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>  =  P \<turnstile> \<langle>if(b) (c;;while(b) c) else (unit),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -1254,7 +1254,7 @@ declare split_paired_All [simp del] split_paired_Ex [simp del]
   excercise 2: the semantics of exercise 1 is closer to the small step
   semantics. Reformulate equivalence proof by modifying call lemmas.
 *)
-text {* The key lemma: *}
+text \<open>The key lemma:\<close>
 
 lemma
 assumes wf: "wwf_J_prog P"
@@ -1571,7 +1571,7 @@ qed
 declare split_paired_All [simp] split_paired_Ex [simp]
 (*>*)
 
-text {* Its extension to @{text"\<rightarrow>*"}: *} 
+text \<open>Its extension to \<open>\<rightarrow>*\<close>:\<close> 
 
 lemma extend_eval:
 assumes wf: "wwf_J_prog P"
@@ -1606,8 +1606,8 @@ apply assumption
 done
 (*>*)
 
-text {* Finally, small step semantics can be simulated by big step semantics:
-*}
+text \<open>Finally, small step semantics can be simulated by big step semantics:
+\<close>
 
 theorem
 assumes wf: "wwf_J_prog P"
@@ -1635,7 +1635,7 @@ qed
 
 subsection "Equivalence"
 
-text{* And now, the crowning achievement: *}
+text\<open>And now, the crowning achievement:\<close>
 
 corollary big_iff_small:
   "wwf_J_prog P \<Longrightarrow>

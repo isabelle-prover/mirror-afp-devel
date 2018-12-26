@@ -35,7 +35,7 @@ definition
 where
   "trie_update k v t = trie_update_with k v (\<lambda>v'. v) t"
 
-text {* @{term "trie_lookup"} *}
+text \<open>@{term "trie_lookup"}\<close>
 
 lemma lookup_empty_trie [simp]: "lookup_trie empty_trie ks = None"
 by (cases ks) (simp_all)
@@ -55,7 +55,7 @@ lemma lookup_trie_update:
   "lookup_trie (trie_update ks v t) ks' = (if ks = ks' then Some v else lookup_trie t ks')"
   unfolding trie_update_def by (auto simp add: lookup_trie_update_with)
 
-text{* @{term "MapOps"} *}
+text\<open>@{term "MapOps"}\<close>
 
 definition
   trie_MapOps :: "(('k, 'e) trie, 'k list, 'e) MapOps"

@@ -9,13 +9,13 @@ section "Structured Reasoning"
 
 theory StructuredReasoning imports Algebra begin
 
-text {* By linking the algebraic, the syntactic, and the semantic views
+text \<open>By linking the algebraic, the syntactic, and the semantic views
   of computation, we derive a set of rules for decomposing expectation
   entailment proofs, firstly over the syntactic structure of a program,
   and secondly over the refinement relation.  These rules also form the
-  basis for automated reasoning. *}
+  basis for automated reasoning.\<close>
 
-subsection {* Syntactic Decomposition *}
+subsection \<open>Syntactic Decomposition\<close>
 
 lemma wp_Abort:
   "(\<lambda>s. 0) \<tturnstile> wp Abort Q"
@@ -83,7 +83,7 @@ lemma wlp_PC:
   "(\<lambda>s. P s * wlp a Q s + (1 - P s) * wlp b Q s) \<tturnstile> wlp (a \<^bsub>P\<^esub>\<oplus> b) Q"
   by(simp add:wp_eval)
 
-text {* A simpler rule for when the probability does not depend on the state. *}
+text \<open>A simpler rule for when the probability does not depend on the state.\<close>
 lemma PC_fixed:
   assumes wpa: "P \<tturnstile> a ab R"
       and wpb: "Q \<tturnstile> b ab R"
@@ -122,7 +122,7 @@ lemma wlp_DC:
   "(\<lambda>s. min (wlp a Q s) (wlp b Q s)) \<tturnstile> wlp (a \<Sqinter> b) Q"
   unfolding wp_eval by(simp)
 
-text {* Combining annotations for both branches: *}
+text \<open>Combining annotations for both branches:\<close>
 lemma DC_split:
   fixes a::"'s prog" and b
   assumes wpa: "P \<tturnstile> a ab R"
@@ -231,11 +231,11 @@ lemma wlp_repeat:
      well_def a; unitary Q; unitary R \<rbrakk> \<Longrightarrow> P \<tturnstile> wlp (repeat (Suc n) a) R"
   by(auto intro!:wlp_Seq wd_intros)
 
-text {* Note that the loop rules presented in section \autoref{s:loop_rules} are of the same form,
-and would belong here, had they not already been stated. *}
+text \<open>Note that the loop rules presented in section \autoref{s:loop_rules} are of the same form,
+and would belong here, had they not already been stated.\<close>
 
-text {* The following rules are specialisations of those for general
-  transformers, and are easier for the unifier to match. *}
+text \<open>The following rules are specialisations of those for general
+  transformers, and are easier for the unifier to match.\<close>
 lemmas wp_strengthen_post=
   entails_strengthen_post[where t="wp a" for a]
 
@@ -252,12 +252,12 @@ lemmas wlp_weaken_pre=
 lemmas wp_scale=
   entails_scale[where t="wp a" for a, OF _ well_def_wp_healthy]
 
-subsection {* Algebraic Decomposition *}
+subsection \<open>Algebraic Decomposition\<close>
 
-text {* Refinement is a powerful tool for decomposition, belied by the simplicity of the rule.
+text \<open>Refinement is a powerful tool for decomposition, belied by the simplicity of the rule.
 This is an \emph{axiomatic} formulation of refinement (all annotations of the @{term a}
 are annotations of @{term b}), rather than an operational version (all traces of @{term b} are
-traces of @{term a}. *}
+traces of @{term a}.\<close>
 
 lemma wp_refines:
   "\<lbrakk> a \<sqsubseteq> b; P \<tturnstile> wp a Q; sound Q \<rbrakk> \<Longrightarrow> P \<tturnstile> wp b Q"
@@ -265,11 +265,11 @@ lemma wp_refines:
 
 lemmas wp_drefines = drefinesD
 
-subsection {* Hoare triples *}
+subsection \<open>Hoare triples\<close>
 
-text {* The Hoare triple, or validity predicate, is logically equivalent to the weakest-precondition
+text \<open>The Hoare triple, or validity predicate, is logically equivalent to the weakest-precondition
 entailment form. The benefit is that it allows us to define transitivity rules for computational
-(also/finally) reasoning. *}
+(also/finally) reasoning.\<close>
 
 definition
   wp_valid :: "('a \<Rightarrow> real) \<Rightarrow> 'a prog \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool" ("\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>p")
@@ -289,7 +289,7 @@ lemma valid_Seq:
   \<lbrace>P\<rbrace> a ;; b \<lbrace>R\<rbrace>p"
   unfolding wp_valid_def by(rule wp_Seq)
 
-text {* We make it available to the computational reasoner: *}
+text \<open>We make it available to the computational reasoner:\<close>
 declare valid_Seq[trans]
 
 end

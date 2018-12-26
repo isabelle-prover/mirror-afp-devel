@@ -1,11 +1,11 @@
-section{*Showing equivalence of links: An example*}
+section\<open>Showing equivalence of links: An example\<close>
 
 theory Example
 imports Link_Algebra 
 begin
 
-text{*We prove that a link diagram with a single crossing is equivalent to the 
-unknot*}
+text\<open>We prove that a link diagram with a single crossing is equivalent to the 
+unknot\<close>
 
 lemma transitive: assumes "a~b" and "b~c" shows "a~c"
     using Tangle_Equivalence.trans assms(1) assms(2) by metis
@@ -365,15 +365,15 @@ proof-
   moreover  have 15: "((?z) \<circ> ((basic(cap#cap#[]))) \<circ> (basic ([]))) 
                 ~ ((?z) \<circ> (basic(cap#cap#[])))" (is "?bb ~ ?cc")
         using Tangle_Equivalence.codomain_compose  Tangle_Equivalence.sym 
-               `is_tangle_diagram (basic [cap, cap] \<circ> basic [])` codomain_wall_compose 
+               \<open>is_tangle_diagram (basic [cap, cap] \<circ> basic [])\<close> codomain_wall_compose 
                compose_leftassociativity converse_composition_of_tangle_diagrams 
                domain_block.simps(1) domain_wall.simps(1)
         by (metis (hide_lams, mono_tags) Tangle_Equivalence.compose_eq 
                 Tangle_Equivalence.refl 
-                `codomain_wall (basic [cup, cup]) 
-                         = domain_wall (basic [vert, over, vert] \<circ> basic [cap, vert, vert])` 
-                   `domain_wall (basic [cap, cap] \<circ> basic []) 
-          = codomain_wall (basic [cup, cup] \<circ> basic [vert, over, vert])` 
+                \<open>codomain_wall (basic [cup, cup]) 
+                         = domain_wall (basic [vert, over, vert] \<circ> basic [cap, vert, vert])\<close> 
+                   \<open>domain_wall (basic [cap, cap] \<circ> basic []) 
+          = codomain_wall (basic [cup, cup] \<circ> basic [vert, over, vert])\<close> 
                           comp_of_tangle_dgms domain_wall_compose is_tangle_diagram.simps(1))
   ultimately have "(?aa ~ ?bb)\<and> (?bb ~ ?cc) \<Longrightarrow>?aa ~ ?cc"
         using transitive by auto

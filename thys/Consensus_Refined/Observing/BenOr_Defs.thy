@@ -1,4 +1,4 @@
-section {* The Ben-Or Algorithm *}
+section \<open>The Ben-Or Algorithm\<close>
 
 theory BenOr_Defs
 imports Heard_Of.HOModel "../Consensus_Types" "../Quorums" "../Two_Steps"
@@ -76,7 +76,7 @@ definition BenOr_sendMsg where
 definition BenOr_nextState where
   "BenOr_nextState r \<equiv> if two_step r = 0 then next0 r else next1 r"
 
-subsection {* The \emph{Ben-Or} Heard-Of machine *}
+subsection \<open>The \emph{Ben-Or} Heard-Of machine\<close>
 (******************************************************************************)
 
 definition (in quorum_process) BenOr_commPerRd where

@@ -1,9 +1,9 @@
-section {* Less-Equal or Fail *}
+section \<open>Less-Equal or Fail\<close>
 (* TODO: Move to Refinement Framework *)
 theory Refine_Leof
 imports Refine_Basic
 begin
-  text {* A predicate that states refinement or that the LHS fails. *}
+  text \<open>A predicate that states refinement or that the LHS fails.\<close>
 
 
   definition le_or_fail :: "'a nres \<Rightarrow> 'a nres \<Rightarrow> bool" (infix "\<le>\<^sub>n" 50) where

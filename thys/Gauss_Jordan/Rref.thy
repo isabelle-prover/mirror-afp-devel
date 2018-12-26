@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Reduced row echelon form*}
+section\<open>Reduced row echelon form\<close>
 
 theory Rref
 imports
@@ -12,10 +12,10 @@ imports
   Rank_Nullity_Theorem.Miscellaneous
 begin
 
-subsection{*Defining the concept of Reduced Row Echelon Form*}
+subsection\<open>Defining the concept of Reduced Row Echelon Form\<close>
 
-subsubsection{*Previous definitions and properties*}
-text{*This function returns True if each position lesser than k in a column contains a zero.*}
+subsubsection\<open>Previous definitions and properties\<close>
+text\<open>This function returns True if each position lesser than k in a column contains a zero.\<close>
 definition is_zero_row_upt_k :: "'rows => nat =>'a::{zero}^'columns::{mod_type}^'rows => bool"
   where "is_zero_row_upt_k i k A = (\<forall>j::'columns. (to_nat j) < k \<longrightarrow> A $ i $ j = 0)"
 
@@ -65,9 +65,9 @@ assumes "is_zero_row i A"
 shows "is_zero_row_upt_k i k A"
 using assms unfolding  is_zero_row_def is_zero_row_upt_k_def ncols_def by simp
 
-subsubsection{*Definition of reduced row echelon form up to a column*}
+subsubsection\<open>Definition of reduced row echelon form up to a column\<close>
 
-text{*This definition returns True if a matrix is in reduced row echelon form up to the column k (not included), otherwise False.*}
+text\<open>This definition returns True if a matrix is in reduced row echelon form up to the column k (not included), otherwise False.\<close>
 
 (*In the third condition, i<i+1 is assumed to avoid that row i can be the last row (in that case, i+1 would be the first row):*)
 
@@ -104,7 +104,7 @@ lemma rref_upt_condition4:
   shows " (\<forall>i. \<not> (is_zero_row_upt_k i k A) \<longrightarrow> (\<forall>j. i \<noteq> j \<longrightarrow> A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0))"
   using r unfolding reduced_row_echelon_form_upt_k_def by simp
 
-text{*Explicit lemmas for each condition*}
+text\<open>Explicit lemmas for each condition\<close>
 
 lemma rref_upt_condition1_explicit:
 assumes "reduced_row_echelon_form_upt_k A k"
@@ -134,7 +134,7 @@ and "i \<noteq> j"
 shows "A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0"
 using assms rref_upt_condition4 by auto
 
-text{*Intro lemma and general properties*}
+text\<open>Intro lemma and general properties\<close>
 
 lemma reduced_row_echelon_form_upt_k_intro:
   assumes "(\<forall>i. is_zero_row_upt_k i k A \<longrightarrow> \<not> (\<exists>j. j>i \<and> \<not> is_zero_row_upt_k j k A))"
@@ -202,14 +202,14 @@ lemma reduced_row_echelon_if_all_zero:
   shows "reduced_row_echelon_form_upt_k A k"
   using assms unfolding reduced_row_echelon_form_upt_k_def is_zero_row_upt_k_def by auto
 
-subsubsection{*The definition of reduced row echelon form*}
+subsubsection\<open>The definition of reduced row echelon form\<close>
 
-text{*Definition of reduced row echelon form, based on @{text "reduced_row_echelon_form_upt_k_def"}*}
+text\<open>Definition of reduced row echelon form, based on \<open>reduced_row_echelon_form_upt_k_def\<close>\<close>
 definition reduced_row_echelon_form :: "'a::{zero, one}^'m::{mod_type}^'n::{finite, ord, plus, one} => bool"
   where "reduced_row_echelon_form A = reduced_row_echelon_form_upt_k A (ncols A)"
 
-text{*Equivalence between our definition of reduced row echelon form and the one presented
-in Steven Roman's book: Advanced Linear Algebra.*}
+text\<open>Equivalence between our definition of reduced row echelon form and the one presented
+in Steven Roman's book: Advanced Linear Algebra.\<close>
 
 lemma reduced_row_echelon_form_def': 
 "reduced_row_echelon_form A = 
@@ -220,7 +220,7 @@ lemma reduced_row_echelon_form_def':
     (\<forall>i. \<not> (is_zero_row i A) \<longrightarrow> (\<forall>j. i \<noteq> j \<longrightarrow> A $ j $ (LEAST k. A $ i $ k \<noteq> 0) = 0))
   )" unfolding reduced_row_echelon_form_def reduced_row_echelon_form_upt_k_def is_zero_row_def ..
 
-subsection{*Properties of the reduced row echelon form of a matrix*}
+subsection\<open>Properties of the reduced row echelon form of a matrix\<close>
 
 lemma rref_condition1:
   assumes r: "reduced_row_echelon_form A"
@@ -240,7 +240,7 @@ lemma rref_condition4:
   shows " (\<forall>i. \<not> (is_zero_row i A) \<longrightarrow> (\<forall>j. i \<noteq> j \<longrightarrow> A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0))"
   using r unfolding reduced_row_echelon_form_def' by simp
 
-text{*Explicit lemmas for each condition*}
+text\<open>Explicit lemmas for each condition\<close>
 
 lemma rref_condition1_explicit:
 assumes rref_A: "reduced_row_echelon_form A"
@@ -268,7 +268,7 @@ and "i \<noteq> j"
 shows "A $ j $ (LEAST n. A $ i $ n \<noteq> 0) = 0"
 using rref_condition4 assms by blast
 
-text{*Other properties and equivalences*}
+text\<open>Other properties and equivalences\<close>
 
 lemma rref_condition3_equiv1:
 fixes A::"'a::{one, zero}^'cols::{mod_type}^'rows::{mod_type}"

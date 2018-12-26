@@ -182,7 +182,7 @@ schematic_goal "(?f::?'c,
 )\<in>?R"
   by autoref_monadic
 
-text {* A hairy case for the operator identification heuristics for maps: *}
+text \<open>A hairy case for the operator identification heuristics for maps:\<close>
 schematic_goal 
   shows "(?f::?'c,
   \<lambda>m (x::'a::linorder) (y::'b::linorder). case_option
@@ -253,19 +253,19 @@ schematic_goal
 pattern!
 *)
 
-text {* We have an optimized version for add on red-black trees *}
+text \<open>We have an optimized version for add on red-black trees\<close>
 schematic_goal "(?f::?'c,
   [ 1::nat \<mapsto> True, 2::nat \<mapsto> False ] ++ [ 3::nat \<mapsto> True, 4::nat \<mapsto> False ]
 )\<in>?R"
   by (autoref (keep_goal))
 
-text {* The optimized version is also transfered through the map2set converter *}
+text \<open>The optimized version is also transfered through the map2set converter\<close>
 schematic_goal "(?f::?'c,
   {1,2::nat} \<union> {3,4}
 )\<in>?R"
   by (autoref (keep_goal))
 
-text {* For list-sets, the generic version is used *}
+text \<open>For list-sets, the generic version is used\<close>
 schematic_goal "(?f::?'c,
   {1,2::nat} \<union> {3,4} ::: \<langle>Id\<rangle>list_set_rel
 )\<in>?R"
@@ -281,8 +281,8 @@ schematic_goal "(?f::?'c,
   by (autoref (keep_goal))
 
 
-text {* The next two lemmas demonstrate optimization: The insert-operation
-  is translated by @{term "(#)"} *}
+text \<open>The next two lemmas demonstrate optimization: The insert-operation
+  is translated by @{term "(#)"}\<close>
 schematic_goal "(?f::?'c, {1,2,3,4::nat}:::\<langle>Id\<rangle>list_set_rel
   )\<in>?R"
   by (autoref (keep_goal))
@@ -356,7 +356,7 @@ schematic_goal "(?f::?'c,
 
 end
 
-text {* Indirect Annotation *}
+text \<open>Indirect Annotation\<close>
 consts 
   rel_set1 :: rel_name
   rel_set2 :: rel_name
@@ -385,17 +385,17 @@ schematic_goal
 
 
 
-text {* A witness of the red algorithm is a node on the stack and a path
-  to this node *}
+text \<open>A witness of the red algorithm is a node on the stack and a path
+  to this node\<close>
 type_synonym 'v red_witness = "('v list \<times> 'v) option"
-text {* Prepend node to red witness *}
+text \<open>Prepend node to red witness\<close>
 fun prep_wit_red :: "'v \<Rightarrow> 'v red_witness \<Rightarrow> 'v red_witness" where
   "prep_wit_red v None = None"
 | "prep_wit_red v (Some (p,u)) = Some (v#p,u)"
 
-text {* 
-  Initial witness for node @{text "u"} with onstack successor @{text "v"} 
-  *}
+text \<open>
+  Initial witness for node \<open>u\<close> with onstack successor \<open>v\<close> 
+\<close>
 definition red_init_witness :: "'v \<Rightarrow> 'v \<Rightarrow> 'v red_witness" where
   "red_init_witness u v = Some ([u],v)"
 

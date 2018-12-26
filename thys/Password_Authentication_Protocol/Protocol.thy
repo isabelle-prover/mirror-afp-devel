@@ -14,11 +14,11 @@ begin
 
 subsection "Protocol modeling"
 
-text {*
+text \<open>
 The protocol under consideration can be formalized by means of the following inductive definition.
 
 \null
-*}
+\<close>
 
 inductive_set protocol :: "(event list \<times> state \<times> msg set \<times> msg set) set" where
 
@@ -196,7 +196,7 @@ FR5:  "\<lbrakk>(evsFR5, S, A, U) \<in> protocol; User m \<noteq> Spy;
   \<Longrightarrow> (Says n run 5 Spy (User m) (Crypt (sesK (c * f)) (Number 0)) # evsFR5,
        S, A, U) \<in> protocol"
 
-text {*
+text \<open>
 \null
 
 Here below are some comments about the most significant points of this definition.
@@ -212,40 +212,40 @@ to encrypt nonce $s$, so that a wrong value results from the decryption, can be 
 \item
 The spy can disclose session keys as soon as they are established, namely in correspondence with
 rules @{thm [source] R3} and @{thm [source] FR3}.
-\\In the former rule, condition @{term "s' = s"} identifies Diffie-Hellman private key @{text c} as
+\\In the former rule, condition @{term "s' = s"} identifies Diffie-Hellman private key \<open>c\<close> as
 the terminal's ephemeral private key for key agreement, and then $[c \times d \times (s + a \times
 b)]G$ as the terminal's value of the shared secret, which the spy can compute by multiplying the
-card's ephemeral public key $[d \times (s + a \times b)]G$ by @{text c} provided she knows
-@{text c}.
-\\In the latter rule, the spy is required to know private keys @{text s}, @{text b}, and @{text d}
+card's ephemeral public key $[d \times (s + a \times b)]G$ by \<open>c\<close> provided she knows
+\<open>c\<close>.
+\\In the latter rule, the spy is required to know private keys \<open>s\<close>, \<open>b\<close>, and \<open>d\<close>
 to be able to compute and send public key $[d \times (s + a \times b)]G$. This is the only way to
 share with @{term "User m"} the same shared secret's value $[c \times d \times (s + a \times b)]G$,
 which the spy can compute by multiplying the user's ephemeral public key $[c \times (s + a \times
-b)]G$ by @{text d}.
+b)]G$ by \<open>d\<close>.
 
 \item
 Rules @{thm [source] R3} and @{thm [source] FR3} record the user, the communication channel, and the
 protocol run associated to the session key having been established by adding this information to the
 set of the messages already used. In this way, rule @{thm [source] C4} can specify that the session
 key computed by @{term "User m"} is fresh by assuming that a corresponding record be included in set
-@{text U}. In fact, a simple check that the session key be not included in @{text U} would vacuously
+\<open>U\<close>. In fact, a simple check that the session key be not included in \<open>U\<close> would vacuously
 fail, as session keys are added to the set of the messages already used in rules @{thm [source] R3}
 and @{thm [source] FR3}.
 
 \end{itemize}
-*}
+\<close>
 
 
 subsection "Secrecy theorems"
 
-text {*
-This section contains a series of lemmas culminating in the secrecy theorems @{text pr_key_secrecy}
-and @{text pr_passwd_secrecy}. Structured Isar proofs are used, possibly preceded by
+text \<open>
+This section contains a series of lemmas culminating in the secrecy theorems \<open>pr_key_secrecy\<close>
+and \<open>pr_passwd_secrecy\<close>. Structured Isar proofs are used, possibly preceded by
 \emph{apply}-style scripts in case a substantial amount of backward reasoning steps is required at
 the beginning.
 
 \null
-*}
+\<close>
 
 lemma pr_state:
  "(evs, S, A, U) \<in> protocol \<Longrightarrow>
@@ -793,7 +793,7 @@ next
       hence D: "Auth_Data g b' \<in> items ?A"
        by (rule items.Fst)
       have ?Q
-      proof (rule disjE [OF `?P`])
+      proof (rule disjE [OF \<open>?P\<close>])
         assume "Pri_AgrK b' \<in> items ?A"
         moreover from this have "Pri_AgrK g \<in> items ?A"
          by (rule items.Auth_Fst [OF D])
@@ -822,7 +822,7 @@ next
         hence D: "Auth_Data g b' \<in> items ?A"
          by (rule subsetD [OF analz_items_subset])
         have ?Q
-        proof (rule disjE [OF `?P`])
+        proof (rule disjE [OF \<open>?P\<close>])
           assume "Pri_AgrK b' \<in> items ?A"
           moreover from this have "Pri_AgrK g \<in> items ?A"
            by (rule items.Auth_Fst [OF D])
@@ -1435,14 +1435,14 @@ next
     moreover {
       assume "Crypt (sesK (c * f)) ?M' \<in> analz ?C"
       hence "?M' \<in> analz ?C"
-       using `?P` by (rule analz.Decrypt)
+       using \<open>?P\<close> by (rule analz.Decrypt)
       hence "\<lbrace>Auth_Data g b, pubAK g, Crypt (priSK CA) (Hash (pubAK g))\<rbrace>
         \<in> analz ?C"
        by (rule analz.Snd)
       hence G: "Auth_Data g b \<in> analz ?C"
        by (rule analz.Fst)
       have ?R
-      proof (rule disjE [OF `?Q`])
+      proof (rule disjE [OF \<open>?Q\<close>])
         assume "Pri_AgrK b \<in> analz ?C"
         moreover from this have "Pri_AgrK g \<in> analz ?C"
          by (rule analz.Auth_Fst [OF G])
@@ -1469,7 +1469,7 @@ next
       moreover {
         assume G: "Auth_Data g b \<in> analz ?C"
         have ?R
-        proof (rule disjE [OF `?Q`])
+        proof (rule disjE [OF \<open>?Q\<close>])
           assume "Pri_AgrK b \<in> analz ?C"
           moreover from this have "Pri_AgrK g \<in> analz ?C"
            by (rule analz.Auth_Fst [OF G])
@@ -2090,14 +2090,14 @@ next
     moreover {
       assume "Crypt (sesK (c * f)) ?M' \<in> analz ?A"
       hence "?M' \<in> analz ?A"
-       using `?P` by (rule analz.Decrypt)
+       using \<open>?P\<close> by (rule analz.Decrypt)
       hence "\<lbrace>Auth_Data g b, pubAK g, Crypt (priSK CA) (Hash (pubAK g))\<rbrace>
         \<in> analz ?A"
        by (rule analz.Snd)
       hence F: "Auth_Data g b \<in> analz ?A"
        by (rule analz.Fst)
       have ?R
-      proof (rule disjE [OF `?Q`])
+      proof (rule disjE [OF \<open>?Q\<close>])
         assume "Pri_AgrK b \<in> analz ?A"
         moreover from this have "Pri_AgrK g \<in> analz ?A"
          by (rule analz.Auth_Fst [OF F])
@@ -2124,7 +2124,7 @@ next
       moreover {
         assume F: "Auth_Data g b \<in> analz ?A"
         have ?R
-        proof (rule disjE [OF `?Q`])
+        proof (rule disjE [OF \<open>?Q\<close>])
           assume "Pri_AgrK b \<in> analz ?A"
           moreover from this have "Pri_AgrK g \<in> analz ?A"
            by (rule analz.Auth_Fst [OF F])
@@ -4393,14 +4393,14 @@ next
     moreover {
       assume "Crypt (sesK (c * f)) ?M' \<in> analz ?A"
       hence "?M' \<in> analz ?A"
-       using `?P` by (rule analz.Decrypt)
+       using \<open>?P\<close> by (rule analz.Decrypt)
       hence "\<lbrace>Auth_Data g b, pubAK g, Crypt (priSK CA) (Hash (pubAK g))\<rbrace>
         \<in> analz ?A"
        by (rule analz.Snd)
       hence E: "Auth_Data g b \<in> analz ?A"
        by (rule analz.Fst)
       have ?R
-      proof (rule disjE [OF `?Q`])
+      proof (rule disjE [OF \<open>?Q\<close>])
         assume "Pri_AgrK b \<in> analz ?A"
         moreover from this have "Pri_AgrK g \<in> analz ?A"
          by (rule analz.Auth_Fst [OF E])
@@ -4428,7 +4428,7 @@ next
       moreover {
         assume E: "Auth_Data g b \<in> analz ?A"
         have ?R
-        proof (rule disjE [OF `?Q`])
+        proof (rule disjE [OF \<open>?Q\<close>])
           assume "Pri_AgrK b \<in> analz ?A"
           moreover from this have "Pri_AgrK g \<in> analz ?A"
            by (rule analz.Auth_Fst [OF E])
@@ -4570,12 +4570,12 @@ qed
 
 subsection "Authenticity theorems"
 
-text {*
+text \<open>
 This section contains a series of lemmas culminating in the authenticity theorems
-@{text pr_user_authenticity} and @{text pr_card_authenticity}. Structured Isar proofs are used.
+\<open>pr_user_authenticity\<close> and \<open>pr_card_authenticity\<close>. Structured Isar proofs are used.
 
 \null
-*}
+\<close>
 
 lemma pr_passwd_parts [rule_format]:
  "(evs, S, A, U) \<in> protocol \<Longrightarrow>

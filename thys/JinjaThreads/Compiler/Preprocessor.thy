@@ -26,7 +26,7 @@ lemma fixes is_lub
   and WTs_compP: "is_lub,P,E \<turnstile> es [::] Ts \<Longrightarrow> is_lub,compP f P,E \<turnstile> es [::] Ts"
 proof(induct rule: WT_WTs.inducts)
   case (WTCall E e U C M Ts T meth D es Ts')
-  from `P \<turnstile> C sees M: Ts\<rightarrow>T = meth in D`
+  from \<open>P \<turnstile> C sees M: Ts\<rightarrow>T = meth in D\<close>
   have "compP f P \<turnstile> C sees M: Ts\<rightarrow>T = map_option (f D M Ts T) meth in D"
     by(auto dest: sees_method_compP[where f=f])
   with WTCall show ?case by(auto)
@@ -61,10 +61,10 @@ proof -
   { fix C D fs ms M Ts T pns body
     assume "(C, D, fs, ms) \<in> set (classes P)"
       and "(M, Ts, T, \<lfloor>(pns, body)\<rfloor>) \<in> set ms"
-    from `(C, D, fs, ms) \<in> set (classes P)` have "class P C = \<lfloor>(D, fs, ms)\<rfloor>" using wf'
+    from \<open>(C, D, fs, ms) \<in> set (classes P)\<close> have "class P C = \<lfloor>(D, fs, ms)\<rfloor>" using wf'
       by(cases P)(auto simp add: wf_prog_def dest: map_of_SomeI)
     with wf' have sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in C"
-      using `(M, Ts, T, \<lfloor>(pns, body)\<rfloor>) \<in> set ms` by(rule mdecl_visible)
+      using \<open>(M, Ts, T, \<lfloor>(pns, body)\<rfloor>) \<in> set ms\<close> by(rule mdecl_visible)
 
     from sees_method_compP[OF this, where f="annotate_Mb_code P"]
     have sees': "annotate_prog_code P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>(pns, annotate_code P [this \<mapsto> Class C, pns [\<mapsto>] Ts] body)\<rfloor> in C"

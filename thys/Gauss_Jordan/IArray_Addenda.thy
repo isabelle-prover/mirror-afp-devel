@@ -5,14 +5,14 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-section{*IArrays Addenda*}
+section\<open>IArrays Addenda\<close>
 
 theory IArray_Addenda
   imports 
   "HOL-Library.IArray"
 begin
 
-subsection{*Some previous instances*}
+subsection\<open>Some previous instances\<close>
 
 instantiation iarray :: (plus) plus
 begin
@@ -28,7 +28,7 @@ definition minus_iarray :: "'a iarray \<Rightarrow> 'a iarray \<Rightarrow> 'a i
 instance proof qed
 end
 
-subsection{*Some previous definitions and properties for IArrays*}
+subsection\<open>Some previous definitions and properties for IArrays\<close>
 
 (*
 fun find :: "('a => bool) => 'a iarray => 'a option"
@@ -54,7 +54,7 @@ fun filter :: "('a \<Rightarrow> bool) => 'a iarray => 'a iarray"
 hide_const (open) filter
 *)
 
-subsection{*Code generation*}
+subsection\<open>Code generation\<close>
 
 (*
 code_printing

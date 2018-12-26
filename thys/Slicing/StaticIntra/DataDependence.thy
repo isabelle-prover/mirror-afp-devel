@@ -1,4 +1,4 @@
-section {* Static data dependence *}
+section \<open>Static data dependence\<close>
 
 theory DataDependence imports "../Basic/DynDataDependence" begin
 

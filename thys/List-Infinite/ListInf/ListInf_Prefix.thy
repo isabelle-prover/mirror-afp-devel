@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Prefices on finite and infinite lists *}
+section \<open>Prefices on finite and infinite lists\<close>
 
 theory ListInf_Prefix
 imports "HOL-Library.Sublist" ListInf
 begin
 
-subsection {* Additional list prefix results *}
+subsection \<open>Additional list prefix results\<close>
 
 lemma prefix_eq_prefix_take_ex: "prefix xs ys = (\<exists>n. ys \<down> n = xs)"
 apply (unfold prefix_def, safe)
@@ -101,8 +101,8 @@ lemma prefixeq_antisym: "\<lbrakk> prefix xs ys; prefix (ys::'a list) xs \<rbrak
 by (rule prefix_order.antisym)
 
 
-subsection {* Counting equal pairs *}
-text {* Counting number of equal elements in two lists *}
+subsection \<open>Counting equal pairs\<close>
+text \<open>Counting number of equal elements in two lists\<close>
 
 definition mirror_pair :: "('a \<times> 'b) \<Rightarrow> ('b \<times> 'a)"
   where "mirror_pair p \<equiv> (snd p, fst p)"
@@ -208,9 +208,9 @@ lemmas equal_pair_count_maximality =
   equal_pair_count_maximality2a equal_pair_count_maximality2b
 
 
-subsection {* Prefix length *}
+subsection \<open>Prefix length\<close>
 
-text {* Length of the prefix infimum *}
+text \<open>Length of the prefix infimum\<close>
 
 definition inf_prefix_length :: "'a list \<Rightarrow> 'a list \<Rightarrow> nat"
   where "inf_prefix_length xs ys \<equiv> equal_pair_count (zip xs ys)"
@@ -321,7 +321,7 @@ apply (simp add: hd_eq_first)
 done
 
 
-subsection {* Prefix infimum *}
+subsection \<open>Prefix infimum\<close>
 
 definition inf_prefix :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list"  (infixl "\<sqinter>" 70)
   where "xs \<sqinter> ys \<equiv> xs \<down> (inf_prefix_length xs ys)"
@@ -424,7 +424,7 @@ apply (rule le_imp_le_inf_prefix, assumption+)
 done
 
 
-subsection {* Prefices for infinite lists *}
+subsection \<open>Prefices for infinite lists\<close>
 
 definition iprefix :: "'a list \<Rightarrow> 'a ilist \<Rightarrow> bool"  (infixl "\<sqsubseteq>" 50)
   where "xs \<sqsubseteq> f \<equiv> \<exists>g. f = xs \<frown> g"

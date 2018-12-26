@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Inverse matrices over principal ideal rings using immutable arrays*}
+section\<open>Inverse matrices over principal ideal rings using immutable arrays\<close>
 
 theory Echelon_Form_Inverse_IArrays
   imports 
@@ -13,7 +13,7 @@ theory Echelon_Form_Inverse_IArrays
     Gauss_Jordan.Inverse_IArrays
 begin
 
-subsection{*Computing the inverse of matrices over rings using immutable arrays*}
+subsection\<open>Computing the inverse of matrices over rings using immutable arrays\<close>
 
 definition "inverse_matrix_ring_iarray A = (let d=det_iarrays_rings A in 
   if is_unit d then Some(1 div d *ssi adjugate_iarrays A) else None)"

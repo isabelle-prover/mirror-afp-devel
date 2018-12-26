@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Stone Construction *}
+section \<open>Stone Construction\<close>
 
-text {*
+text \<open>
 This theory proves the uniqueness theorem for the triple representation of Stone algebras and the construction theorem of Stone algebras \cite{ChenGraetzer1969,Katrinak1973}.
 Every Stone algebra $S$ has an associated triple consisting of
 \begin{itemize}
@@ -40,7 +40,7 @@ This requires an isomorphism of the Boolean algebras $B$ and $B(S(T))$, an isomo
 We give explicit mappings of the Boolean algebra isomorphism and the distributive lattice isomorphism in both directions.
 This implies the construction theorem of Stone algebras.
 Because $S(T)$ is implemented by lifted pairs, so are $B(S(T))$ and $D(S(T))$; we therefore also lift $B$ and $D$ to establish the isomorphisms.
-*}
+\<close>
 
 theory Stone_Construction
 
@@ -48,12 +48,12 @@ imports P_Algebras Filters
 
 begin
 
-subsection {* Triples *}
+subsection \<open>Triples\<close>
 
-text {*
+text \<open>
 This section gives definitions of lattice homomorphisms and isomorphisms and basic properties.
 It concludes with a locale that represents triples as discussed above.
-*}
+\<close>
 
 class sup_inf_top_bot_uminus = sup + inf + top + bot + uminus
 class sup_inf_top_bot_uminus_ord = sup_inf_top_bot_uminus + ord
@@ -126,28 +126,28 @@ next
     by (simp add: le_iff_sup)
 qed
 
-text {*
+text \<open>
 A triple consists of a Boolean algebra, a distributive lattice with a greatest element, and a structure map.
 The Boolean algebra and the distributive lattice are represented as HOL types.
 Because both occur in the type of the structure map, the triple is determined simply by the structure map and its HOL type.
 The structure map needs to be a bounded lattice homomorphism.
-*}
+\<close>
 
 locale triple =
   fixes phi :: "'a::boolean_algebra \<Rightarrow> 'b::distrib_lattice_top filter"
   assumes hom: "bounded_lattice_homomorphism phi"
 
-subsection {* The Triple of a Stone Algebra *}
+subsection \<open>The Triple of a Stone Algebra\<close>
 
-text {*
+text \<open>
 In this section we construct the triple associated to a Stone algebra.
-*}
+\<close>
 
-subsubsection {* Regular Elements *}
+subsubsection \<open>Regular Elements\<close>
 
-text {*
+text \<open>
 The regular elements of a Stone algebra form a Boolean subalgebra.
-*}
+\<close>
 
 typedef (overloaded) 'a regular = "regular_elements::'a::stone_algebra set"
   by auto
@@ -220,11 +220,11 @@ qed
 
 end
 
-subsubsection {* Dense Elements *}
+subsubsection \<open>Dense Elements\<close>
 
-text {*
+text \<open>
 The dense elements of a Stone algebra form a distributive lattice with a greatest element.
-*}
+\<close>
 
 typedef (overloaded) 'a dense = "dense_elements::'a::stone_algebra set"
   using dense_closed_top by blast
@@ -276,9 +276,9 @@ lemma up_filter_dense_antitone:
   "up_filter (Abs_dense (x \<squnion> -x \<squnion> y \<squnion> z)) \<le> up_filter (Abs_dense (x \<squnion> -x \<squnion> y))"
   by (unfold up_filter_antitone[THEN sym]) (simp add: Abs_dense_inverse less_eq_dense.rep_eq)
 
-text {*
+text \<open>
 The filters of dense elements of a Stone algebra form a bounded distributive lattice.
-*}
+\<close>
 
 type_synonym 'a dense_filter = "'a dense filter"
 
@@ -320,13 +320,13 @@ instance
 
 end
 
-subsubsection {* The Structure Map *}
+subsubsection \<open>The Structure Map\<close>
 
-text {*
+text \<open>
 The structure map of a Stone algebra is a bounded lattice homomorphism.
-It maps a regular element @{text x} to the set of all dense elements above @{text "-x"}.
+It maps a regular element \<open>x\<close> to the set of all dense elements above \<open>-x\<close>.
 This set is a filter.
-*}
+\<close>
 
 abbreviation stone_phi_set :: "'a::stone_algebra regular \<Rightarrow> 'a dense set"
   where "stone_phi_set x \<equiv> { y . -Rep_regular x \<le> Rep_dense y }"
@@ -341,10 +341,10 @@ lemma stone_phi_set_filter:
 definition stone_phi :: "'a::stone_algebra regular \<Rightarrow> 'a dense_filter"
   where "stone_phi x = Abs_filter (stone_phi_set x)"
 
-text {*
-To show that we obtain a triple, we only need to prove that @{text stone_phi} is a bounded lattice homomorphism.
+text \<open>
+To show that we obtain a triple, we only need to prove that \<open>stone_phi\<close> is a bounded lattice homomorphism.
 The Boolean algebra and the distributive lattice requirements are taken care of by the type system.
-*}
+\<close>
 
 interpretation stone_phi: triple "stone_phi"
 proof (unfold_locales, intro conjI)
@@ -414,12 +414,12 @@ next
   qed
 qed
 
-subsection {* Properties of Triples *}
+subsection \<open>Properties of Triples\<close>
 
-text {*
+text \<open>
 In this section we construct a certain set of pairs from a triple, introduce operations on these pairs and develop their properties.
 The given set and operations will form a Stone algebra.
-*}
+\<close>
 
 context triple
 begin
@@ -432,17 +432,17 @@ lemma phi_top:
   "phi top = Abs_filter UNIV"
   by (metis hom top_filter_def)
 
-text {*
-The occurrence of @{text phi} in the following definition of the pairs creates a need for dependent types.
-*}
+text \<open>
+The occurrence of \<open>phi\<close> in the following definition of the pairs creates a need for dependent types.
+\<close>
 
 definition pairs :: "('a \<times> 'b filter) set"
   where "pairs = { (x,y) . \<exists>z . y = phi (-x) \<squnion> up_filter z }"
 
-text {*
+text \<open>
 Operations on pairs are defined in the following.
 They will be used to establish that the pairs form a Stone algebra.
-*}
+\<close>
 
 fun pairs_less_eq :: "('a \<times> 'b filter) \<Rightarrow> ('a \<times> 'b filter) \<Rightarrow> bool"
   where "pairs_less_eq (x,y) (z,w) = (x \<le> z \<and> w \<le> y)"
@@ -500,9 +500,9 @@ proof -
     by auto
 qed
 
-text {*
-Quite a bit of filter theory is involved in showing that the intersection of @{text "phi x"} with a principal filter is a principal filter, so the following function can extract its least element.
-*}
+text \<open>
+Quite a bit of filter theory is involved in showing that the intersection of \<open>phi x\<close> with a principal filter is a principal filter, so the following function can extract its least element.
+\<close>
 
 fun rho :: "'a \<Rightarrow> 'b \<Rightarrow> 'b"
   where "rho x y = (SOME z . up_filter z = phi x \<sqinter> up_filter y)"
@@ -511,9 +511,9 @@ lemma rho_char:
   "up_filter (rho x y) = phi x \<sqinter> up_filter y"
   by (metis (mono_tags) someI_ex rho.simps phi_inf_principal)
 
-text {*
+text \<open>
 The following results show that the pairs are closed under the given operations.
-*}
+\<close>
 
 lemma pairs_sup_closed:
   assumes "(x,y) \<in> pairs"
@@ -576,9 +576,9 @@ lemma pairs_top_closed:
   "pairs_top \<in> pairs"
   by (metis p_bot pairs_uminus.simps pairs_uminus_closed phi_bot)
 
-text {*
+text \<open>
 We prove enough properties of the pair operations so that we can later show they form a Stone algebra.
-*}
+\<close>
 
 lemma pairs_sup_dist_inf:
   "(x,y) \<in> pairs \<Longrightarrow> (z,w) \<in> pairs \<Longrightarrow> (u,v) \<in> pairs \<Longrightarrow> pairs_sup (x,y) (pairs_inf (z,w) (u,v)) = pairs_inf (pairs_sup (x,y) (z,w)) (pairs_sup (x,y) (u,v))"
@@ -615,9 +615,9 @@ lemma pairs_stone:
   "(x,y) \<in> pairs \<Longrightarrow> pairs_sup (pairs_uminus (x,y)) (pairs_uminus (pairs_uminus (x,y))) = pairs_top"
   by (metis hom pairs_sup.simps pairs_uminus.simps phi_bot phi_complemented stone)
 
-text {*
+text \<open>
 The following results show how the regular elements and the dense elements among the pairs look like.
-*}
+\<close>
 
 abbreviation "dense_pairs \<equiv> { (x,y) . (x,y) \<in> pairs \<and> pairs_uminus (x,y) = pairs_bot }"
 abbreviation "regular_pairs \<equiv> { (x,y) . (x,y) \<in> pairs \<and> pairs_uminus (pairs_uminus (x,y)) = (x,y) }"
@@ -638,9 +638,9 @@ lemma regular_pairs:
   "regular_pairs = { (x,y) . y = phi (-x) }"
   using pairs_def pairs_uminus_closed by fastforce
 
-text {*
+text \<open>
 The following extraction function will be used in defining one direction of the Stone algebra isomorphism.
-*}
+\<close>
 
 fun rho_pair :: "'a \<times> 'b filter \<Rightarrow> 'b"
   where "rho_pair (x,y) = (SOME z . up_filter z = phi x \<sqinter> y)"
@@ -663,17 +663,17 @@ lemma sa_iso_pair:
 
 end
 
-subsection {* The Stone Algebra of a Triple *}
+subsection \<open>The Stone Algebra of a Triple\<close>
 
-text {*
+text \<open>
 In this section we prove that the set of pairs constructed in a triple forms a Stone Algebra.
-The following type captures the parameter @{text phi} on which the type of triples depends.
+The following type captures the parameter \<open>phi\<close> on which the type of triples depends.
 This parameter is the structure map that occurs in the definition of the set of pairs.
 The set of all structure maps is the set of all bounded lattice homomorphisms (of appropriate type).
 In order to make it a HOL type, we need to show that at least one such structure map exists.
 To this end we use the ultrafilter lemma: the required bounded lattice homomorphism is essentially the characteristic map of an ultrafilter, but the latter must exist.
 In particular, the underlying Boolean algebra must contain at least two elements.
-*}
+\<close>
 
 typedef (overloaded) ('a,'b) phi = "{ f::'a::non_trivial_boolean_algebra \<Rightarrow> 'b::distrib_lattice_top filter . bounded_lattice_homomorphism f }"
 proof -
@@ -724,12 +724,12 @@ lemma simp_phi [simp]:
 
 setup_lifting type_definition_phi
 
-text {*
+text \<open>
 The following implements the dependent type of pairs depending on structure maps.
 It uses functions from structure maps to pairs with the requirement that, for each structure map, the corresponding pair is contained in the set of pairs constructed for a triple with that structure map.
 
-If this type could be defined in the locale @{text triple} and instantiated to Stone algebras there, there would be no need for the lifting and we could work with triples directly.
-*}
+If this type could be defined in the locale \<open>triple\<close> and instantiated to Stone algebras there, there would be no need for the lifting and we could work with triples directly.
+\<close>
 
 typedef (overloaded) ('a,'b) lifted_pair = "{ pf::('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) phi \<Rightarrow> 'a \<times> 'b filter . \<forall>f . pf f \<in> triple.pairs (Rep_phi f) }"
 proof -
@@ -751,16 +751,16 @@ lemma simp_lifted_pair [simp]:
 
 setup_lifting type_definition_lifted_pair
 
-text {*
+text \<open>
 The lifted pairs form a Stone algebra.
-*}
+\<close>
 
 instantiation lifted_pair :: (non_trivial_boolean_algebra,distrib_lattice_top) stone_algebra
 begin
 
-text {*
+text \<open>
 All operations are lifted point-wise.
-*}
+\<close>
 
 lift_definition sup_lifted_pair :: "('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair \<Rightarrow> ('a,'b) lifted_pair" is "\<lambda>xf yf f . triple.pairs_sup (xf f) (yf f)"
   by (metis (no_types, hide_lams) simp_phi triple_def triple.pairs_sup_closed prod.collapse)
@@ -1020,13 +1020,13 @@ qed
 
 end
 
-subsection {* The Stone Algebra of the Triple of a Stone Algebra *}
+subsection \<open>The Stone Algebra of the Triple of a Stone Algebra\<close>
 
-text {*
+text \<open>
 In this section we specialise the above construction to a particular structure map, namely the one obtained in the triple of a Stone algebra.
 For this particular structure map (as well as for any other particular structure map) the resulting type is no longer a dependent type.
 It is just the set of pairs obtained for the given structure map.
-*}
+\<close>
 
 typedef (overloaded) 'a stone_phi_pair = "triple.pairs (stone_phi::'a::stone_algebra regular \<Rightarrow> 'a dense_filter)"
   using stone_phi.pairs_bot_closed by auto
@@ -1059,30 +1059,30 @@ instance ..
 
 end
 
-text {*
+text \<open>
 The result is a Stone algebra and could be proved so by repeating and specialising the above proof for lifted pairs.
 We choose a different approach, namely by embedding the type of pairs into the lifted type.
-The embedding injects a pair @{text x} into a function as the value at the given structure map; this makes the embedding injective.
+The embedding injects a pair \<open>x\<close> into a function as the value at the given structure map; this makes the embedding injective.
 The value of the function at any other structure map needs to be carefully chosen so that the resulting function is a Stone algebra homomorphism.
-We use @{text "--x"}, which is essentially a projection to the regular element component of @{text x}, whence the image has the structure of a Boolean algebra.
-*}
+We use \<open>--x\<close>, which is essentially a projection to the regular element component of \<open>x\<close>, whence the image has the structure of a Boolean algebra.
+\<close>
 
 fun stone_phi_embed :: "'a::non_trivial_stone_algebra stone_phi_pair \<Rightarrow> ('a regular,'a dense) lifted_pair"
   where "stone_phi_embed x = Abs_lifted_pair (\<lambda>f . if Rep_phi f = stone_phi then Rep_stone_phi_pair x else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (Rep_stone_phi_pair x)))"
 
-text {*
+text \<open>
 The following lemma shows that in both cases the value of the function is a valid pair for the given structure map.
-*}
+\<close>
 
 lemma stone_phi_embed_triple_pair:
   "(if Rep_phi f = stone_phi then Rep_stone_phi_pair x else triple.pairs_uminus (Rep_phi f) (triple.pairs_uminus (Rep_phi f) (Rep_stone_phi_pair x))) \<in> triple.pairs (Rep_phi f)"
   by (metis (no_types, hide_lams) Rep_stone_phi_pair simp_phi surj_pair triple.pairs_uminus_closed triple_def)
 
-text {*
+text \<open>
 The following result shows that the embedding preserves the operations of Stone algebras.
 Of course, it is not (yet) a Stone algebra homomorphism as we do not know (yet) that the domain of the embedding is a Stone algebra.
 To establish the latter is the purpose of the embedding.
-*}
+\<close>
 
 lemma stone_phi_embed_homomorphism:
   "sup_inf_top_bot_uminus_ord_homomorphism stone_phi_embed"
@@ -1285,10 +1285,10 @@ next
   qed
 qed
 
-text {*
+text \<open>
 The following lemmas show that the embedding is injective and reflects the order.
 The latter allows us to easily inherit properties involving inequalities from the target of the embedding, without transforming them to equations.
-*}
+\<close>
 
 lemma stone_phi_embed_injective:
   "inj stone_phi_embed"
@@ -1322,11 +1322,11 @@ proof -
     by (simp add: less_eq_stone_phi_pair.rep_eq)
 qed
 
-text {*
+text \<open>
 Now all Stone algebra axioms can be inherited using the embedding.
 This is due to the fact that the axioms are universally quantified equations or conditional equations (or inequalities); this is called a quasivariety in universal algebra.
 It would be useful to have this construction available for arbitrary quasivarieties.
-*}
+\<close>
 
 instantiation stone_phi_pair :: (non_trivial_stone_algebra) stone_algebra
 begin
@@ -1351,12 +1351,12 @@ instance
 
 end
 
-subsection {* Stone Algebra Isomorphism *}
+subsection \<open>Stone Algebra Isomorphism\<close>
 
-text {*
+text \<open>
 In this section we prove that the Stone algebra of the triple of a Stone algebra is isomorphic to the original Stone algebra.
 The following two definitions give the isomorphism.
-*}
+\<close>
 
 abbreviation sa_iso_inv :: "'a::non_trivial_stone_algebra stone_phi_pair \<Rightarrow> 'a"
   where "sa_iso_inv \<equiv> \<lambda>p . Rep_regular (fst (Rep_stone_phi_pair p)) \<sqinter> Rep_dense (triple.rho_pair stone_phi (Rep_stone_phi_pair p))"
@@ -1420,9 +1420,9 @@ proof -
     by (unfold stone_phi_def, subst less_eq_filter.abs_eq, simp_all add: eq_onp_same_args stone_phi_set_filter)
 qed
 
-text {*
+text \<open>
 The following two results prove that the isomorphisms are mutually inverse.
-*}
+\<close>
 
 lemma sa_iso_left_invertible:
   "sa_iso_inv (sa_iso x) = x"
@@ -1506,9 +1506,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 It remains to show the homomorphism properties, which is done in the following result.
-*}
+\<close>
 
 lemma sa_iso:
   "stone_algebra_isomorphism sa_iso"
@@ -1702,20 +1702,20 @@ next
     by (metis (mono_tags, lifting) sa_iso_left_invertible sa_iso_right_invertible invertible_bij[where g=sa_iso_inv])
 qed
 
-subsection {* Triple Isomorphism *}
+subsection \<open>Triple Isomorphism\<close>
 
-text {*
+text \<open>
 In this section we prove that the triple of the Stone algebra of a triple is isomorphic to the original triple.
 The notion of isomorphism for triples is described in \cite{ChenGraetzer1969}.
 It amounts to an isomorphism of Boolean algebras, an isomorphism of distributive lattices with a greatest element, and a commuting diagram involving the structure maps.
-*}
+\<close>
 
-subsubsection {* Boolean Algebra Isomorphism *}
+subsubsection \<open>Boolean Algebra Isomorphism\<close>
 
-text {*
+text \<open>
 We first define and prove the isomorphism of Boolean algebras.
 Because the Stone algebra of a triple is implemented as a lifted pair, we also lift the Boolean algebra.
-*}
+\<close>
 
 typedef (overloaded) ('a,'b) lifted_boolean_algebra = "{ xf::('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) phi \<Rightarrow> 'a . True }"
   by simp
@@ -1762,9 +1762,9 @@ instance
 
 end
 
-text {*
+text \<open>
 The following two definitions give the Boolean algebra isomorphism.
-*}
+\<close>
 
 abbreviation ba_iso_inv :: "('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) lifted_boolean_algebra \<Rightarrow> ('a,'b) lifted_pair regular"
   where "ba_iso_inv \<equiv> \<lambda>xf . Abs_regular (Abs_lifted_pair (\<lambda>f . (Rep_lifted_boolean_algebra xf f,Rep_phi f (-Rep_lifted_boolean_algebra xf f))))"
@@ -1787,9 +1787,9 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
 The following two results prove that the isomorphisms are mutually inverse.
-*}
+\<close>
 
 lemma ba_iso_left_invertible:
   "ba_iso_inv (ba_iso pf) = pf"
@@ -1850,9 +1850,9 @@ proof -
     using 1 by (simp add: Rep_lifted_boolean_algebra_inverse Abs_lifted_pair_inverse Abs_regular_inverse)
 qed
 
-text {*
+text \<open>
 The isomorphism is established by proving the remaining Boolean algebra homomorphism properties.
-*}
+\<close>
 
 lemma ba_iso:
   "boolean_algebra_isomorphism ba_iso"
@@ -1927,12 +1927,12 @@ next
     by (rule invertible_bij[where g=ba_iso_inv]) (simp_all add: ba_iso_left_invertible ba_iso_right_invertible)
 qed
 
-subsubsection {* Distributive Lattice Isomorphism *}
+subsubsection \<open>Distributive Lattice Isomorphism\<close>
 
-text {*
+text \<open>
 We carry out a similar development for the isomorphism of distributive lattices.
 Again, the original distributive lattice with a greatest element needs to be lifted to match the lifted pairs.
-*}
+\<close>
 
 typedef (overloaded) ('a,'b) lifted_distrib_lattice_top = "{ xf::('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) phi \<Rightarrow> 'b . True }"
   by simp
@@ -1969,10 +1969,10 @@ instance
 
 end
 
-text {*
+text \<open>
 The following function extracts the least element of the filter of a dense pair, which turns out to be a principal filter.
 It is used to define one of the isomorphisms below.
-*}
+\<close>
 
 fun get_dense :: "('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) lifted_pair dense \<Rightarrow> ('a,'b) phi \<Rightarrow> 'b"
   where "get_dense pf f = (SOME z . Rep_lifted_pair (Rep_dense pf) f = (top,up_filter z))"
@@ -1996,9 +1996,9 @@ proof -
     by (metis (mono_tags, lifting) tfl_some get_dense.simps)
 qed
 
-text {*
+text \<open>
 The following two definitions give the distributive lattice isomorphism.
-*}
+\<close>
 
 abbreviation dl_iso_inv :: "('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) lifted_distrib_lattice_top \<Rightarrow> ('a,'b) lifted_pair dense"
   where "dl_iso_inv \<equiv> \<lambda>xf . Abs_dense (Abs_lifted_pair (\<lambda>f . (top,up_filter (Rep_lifted_distrib_lattice_top xf f))))"
@@ -2021,9 +2021,9 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
 The following two results prove that the isomorphisms are mutually inverse.
-*}
+\<close>
 
 lemma dl_iso_left_invertible:
   "dl_iso_inv (dl_iso pf) = pf"
@@ -2080,9 +2080,9 @@ proof -
     by (simp add: Rep_lifted_distrib_lattice_top_inverse)
 qed
 
-text {*
+text \<open>
 To obtain the isomorphism, it remains to show the homomorphism properties of lattices with a greatest element.
-*}
+\<close>
 
 lemma dl_iso:
   "bounded_lattice_top_isomorphism dl_iso"
@@ -2156,13 +2156,13 @@ next
     by (rule invertible_bij[where g=dl_iso_inv]) (simp_all add: dl_iso_left_invertible dl_iso_right_invertible)
 qed
 
-subsubsection {* Structure Map Preservation *}
+subsubsection \<open>Structure Map Preservation\<close>
 
-text {*
+text \<open>
 We finally show that the isomorphisms are compatible with the structure maps.
 This involves lifting the distributive lattice isomorphism to filters of distributive lattices (as these are the targets of the structure maps).
 To this end, we first show that the lifted isomorphism preserves filters.
-*}
+\<close>
 
 lemma phi_iso_filter:
   "filter ((\<lambda>qf::('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) lifted_pair dense . Rep_lifted_distrib_lattice_top (dl_iso qf) f) ` Rep_filter (stone_phi pf))"
@@ -2234,13 +2234,13 @@ next
   qed
 qed
 
-text {*
-The commutativity property states that the same result is obtained in two ways by starting with a regular lifted pair @{text pf}:
+text \<open>
+The commutativity property states that the same result is obtained in two ways by starting with a regular lifted pair \<open>pf\<close>:
 \begin{itemize}
-\item apply the Boolean algebra isomorphism to the pair; then apply a structure map @{text f} to obtain a filter of dense elements; or,
-\item apply the structure map @{text stone_phi} to the pair; then apply the distributive lattice isomorphism lifted to the resulting filter.
+\item apply the Boolean algebra isomorphism to the pair; then apply a structure map \<open>f\<close> to obtain a filter of dense elements; or,
+\item apply the structure map \<open>stone_phi\<close> to the pair; then apply the distributive lattice isomorphism lifted to the resulting filter.
 \end{itemize}
-*}
+\<close>
 
 lemma phi_iso:
   "Rep_phi f (Rep_lifted_boolean_algebra (ba_iso pf) f) = filter_map (\<lambda>qf::('a::non_trivial_boolean_algebra,'b::distrib_lattice_top) lifted_pair dense . Rep_lifted_distrib_lattice_top (dl_iso qf) f) (stone_phi pf)"

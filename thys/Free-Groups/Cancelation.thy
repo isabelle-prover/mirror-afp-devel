@@ -1,28 +1,28 @@
-section {* Cancelation of words of generators and their inverses *}
+section \<open>Cancelation of words of generators and their inverses\<close>
 
 theory Cancelation
 imports
   "HOL-Proofs-Lambda.Commutation"
 begin
 
-text {*
+text \<open>
 This theory defines cancelation via relations. The one-step relation @{term
 "cancels_to_1 a b"} describes that @{term b} is obtained from @{term a} by removing
 exactly one pair of generators, while @{term cancels_to} is the reflexive
 transitive hull of that relation. Due to confluence, this relation has a normal
 form, allowing for the definition of @{term normalize}.
-*}
+\<close>
 
-subsection {* Auxiliary results *}
+subsection \<open>Auxiliary results\<close>
 
-text {* Some lemmas that would be useful in a more general setting are
-collected beforehand. *}
+text \<open>Some lemmas that would be useful in a more general setting are
+collected beforehand.\<close>
 
-subsubsection {* Auxiliary results about relations *}
+subsubsection \<open>Auxiliary results about relations\<close>
 
-text {*
+text \<open>
 These were helpfully provided by Andreas Lochbihler.
-*}
+\<close>
 
 theorem lconfluent_confluent:
   "\<lbrakk> wfP (R^--1); \<And>a b c. R a b \<Longrightarrow> R a c \<Longrightarrow> \<exists>d. R^** b d \<and> R^** c d  \<rbrakk> \<Longrightarrow> confluent R"
@@ -39,25 +39,25 @@ lemma confluent_unique_normal_form:
   "\<lbrakk> confluent R; R^** a b; R^** a c; \<not> Domainp R b; \<not> Domainp R c  \<rbrakk> \<Longrightarrow> b = c"
 by(fastforce dest!: confluentD[of R a b c] dest: tranclp_DomainP rtranclpD[where a=b] rtranclpD[where a=c])
 
-subsection {* Definition of the @{term "canceling"} relation *}
+subsection \<open>Definition of the @{term "canceling"} relation\<close>
 
 type_synonym 'a "g_i" = "(bool \<times> 'a)" (* A generator or its inverse *)
 type_synonym 'a "word_g_i" = "'a g_i list" (* A word in the generators or their inverses *)
 
-text {*
+text \<open>
 These type aliases encode the notion of a ``generator or its inverse''
 (@{typ "'a g_i"}) and the notion of a ``word in generators and their inverses''
 (@{typ "'a word_g_i"}), which form the building blocks of Free Groups.
-*}
+\<close>
 
 definition canceling :: "'a g_i \<Rightarrow> 'a g_i \<Rightarrow> bool"
  where "canceling a b = ((snd a = snd b) \<and> (fst a \<noteq> fst b))"
 
-subsubsection {* Simple results about canceling *}
+subsubsection \<open>Simple results about canceling\<close>
 
-text {*
+text \<open>
 A generators cancels with its inverse, either way. The relation is symmetic.
-*}
+\<close>
 
 lemma cancel_cancel: "\<lbrakk> canceling a b; canceling b c \<rbrakk> \<Longrightarrow> a = c"
 by (auto intro: prod_eqI simp add:canceling_def)
@@ -68,12 +68,12 @@ by (simp add:canceling_def)
 lemma cancel_sym_neg: "\<not>canceling a b \<Longrightarrow> \<not>canceling b a"
 by (rule classical, simp add:canceling_def)
 
-subsection {* Definition of the @{term "cancels_to"} relation *}
+subsection \<open>Definition of the @{term "cancels_to"} relation\<close>
 
-text {*
-First, we define the function that removes the @{term i}th and @{text "(i+1)"}st
+text \<open>
+First, we define the function that removes the @{term i}th and \<open>(i+1)\<close>st
 element from a word of generators, together with basic properties.
-*}
+\<close>
 
 definition cancel_at :: "nat \<Rightarrow> 'a word_g_i \<Rightarrow> 'a word_g_i"
 where "cancel_at i l = take i l @ drop (2+i) l"
@@ -90,25 +90,25 @@ lemma cancel_at_nth2[simp]:
   assumes "n \<ge> i" and "n < length l - 2"
   shows "(cancel_at i l) ! n = l ! (n + 2)"
 proof-
-  from `n \<ge> i` and `n < length l - 2`
+  from \<open>n \<ge> i\<close> and \<open>n < length l - 2\<close>
   have "i = min (length l) i"
     by auto
-  with `n \<ge> i` and `n < length l - 2`
+  with \<open>n \<ge> i\<close> and \<open>n < length l - 2\<close>
   show "(cancel_at i l) ! n = l ! (n + 2)" 
     by(auto simp add: cancel_at_def nth_append nth_via_drop)
 qed
 
-text {*
+text \<open>
 Then we can define the relation @{term "cancels_to_1_at i a b"} which specifies
 that @{term b} can be obtained by @{term a} by canceling the @{term i}th and
-@{text "(i+1)"}st position.
+\<open>(i+1)\<close>st position.
 
-Based on that, we existentially quantify over the position @{text i} to obtain
-the relation @{text "cancels_to_1"}, of which @{text "cancels_to"} is the
+Based on that, we existentially quantify over the position \<open>i\<close> to obtain
+the relation \<open>cancels_to_1\<close>, of which \<open>cancels_to\<close> is the
 reflexive and transitive closure.
 
-A word is @{text "canceled"} if it can not be canceled any futher.
-*}
+A word is \<open>canceled\<close> if it can not be canceled any futher.
+\<close>
 
 definition cancels_to_1_at ::  "nat \<Rightarrow> 'a word_g_i \<Rightarrow> 'a word_g_i \<Rightarrow> bool"
 where  "cancels_to_1_at i l1 l2 = (0\<le>i \<and> (1+i) < length l1
@@ -137,7 +137,7 @@ lemma cancels_to_1_unfold:
     and "canceling x1 x2"
 proof-
   assume a: "(\<And>xs1 x1 x2 xs2. \<lbrakk>x = xs1 @ x1 # x2 # xs2; y = xs1 @ xs2; canceling x1 x2\<rbrakk> \<Longrightarrow> thesis)"
-  from `cancels_to_1 x y`
+  from \<open>cancels_to_1 x y\<close>
   obtain i where "cancels_to_1_at i x y"
     unfolding cancels_to_1_def by auto
   hence "canceling (x ! i) (x ! Suc i)"
@@ -153,12 +153,12 @@ lemma cancels_to_1_fold:
 unfolding cancels_to_1_def and cancels_to_1_at_def and cancel_at_def
 by (rule_tac x="length xs1" in exI, auto simp add:nth_append)
 
-subsubsection {* Existence of the normal form *}
+subsubsection \<open>Existence of the normal form\<close>
 
-text {*
+text \<open>
 One of two steps to show that we have a normal form is the following lemma,
 guaranteeing that by canceling, we always end up at a fully canceled word.
-*}
+\<close>
 
 lemma canceling_terminates: "wfP (cancels_to_1^--1)"
 proof-
@@ -172,39 +172,39 @@ proof-
   thus ?thesis by (simp add:wfP_def)
 qed
 
-text {*
+text \<open>
 The next two lemmas prepare for the proof of confluence. It does not matter in
 which order we cancel, we can obtain the same result.
-*}
+\<close>
 
 lemma canceling_neighbor:
   assumes "cancels_to_1_at i l a" and "cancels_to_1_at (Suc i) l b"
   shows "a = b"
 proof-
-  from `cancels_to_1_at i l a`
+  from \<open>cancels_to_1_at i l a\<close>
     have "canceling (l ! i) (l ! Suc i)" and "i < length l"
     by (auto simp add: cancels_to_1_at_def)
   
-  from `cancels_to_1_at (Suc i) l b`
+  from \<open>cancels_to_1_at (Suc i) l b\<close>
     have "canceling (l ! Suc i) (l ! Suc (Suc i))" and "Suc (Suc i) < length l"
     by (auto simp add: cancels_to_1_at_def)
 
-  from `canceling (l ! i) (l ! Suc i)` and `canceling (l ! Suc i) (l ! Suc (Suc i))`
+  from \<open>canceling (l ! i) (l ! Suc i)\<close> and \<open>canceling (l ! Suc i) (l ! Suc (Suc i))\<close>
     have "l ! i = l ! Suc (Suc i)" by (rule cancel_cancel)
 
-  from `cancels_to_1_at (Suc i) l b`
+  from \<open>cancels_to_1_at (Suc i) l b\<close>
     have "b = take (Suc i) l @ drop (Suc (Suc (Suc i))) l"
     by (simp add: cancels_to_1_at_def cancel_at_def)
-  also from `i < length l`
+  also from \<open>i < length l\<close>
   have "\<dots> = take i l @ [l ! i] @ drop (Suc (Suc (Suc i))) l"
     by(auto simp add: take_Suc_conv_app_nth)
-  also from `l ! i = l ! Suc (Suc i)`
+  also from \<open>l ! i = l ! Suc (Suc i)\<close>
   have "\<dots> = take i l @ [l ! Suc (Suc i)] @ drop (Suc (Suc (Suc i))) l"
     by simp
-  also from `Suc (Suc i) < length l`
+  also from \<open>Suc (Suc i) < length l\<close>
   have "\<dots> = take i l @ drop (Suc (Suc i)) l"
     by (simp add: Cons_nth_drop_Suc)
-  also from `cancels_to_1_at i l a` have "\<dots> = a"
+  also from \<open>cancels_to_1_at i l a\<close> have "\<dots> = a"
     by (simp add: cancels_to_1_at_def cancel_at_def)
   finally show "a = b" by(rule sym)
 qed
@@ -213,14 +213,14 @@ lemma canceling_indep:
   assumes "cancels_to_1_at i l a" and "cancels_to_1_at j l b" and "j > Suc i"
   obtains c where "cancels_to_1_at (j - 2) a c" and "cancels_to_1_at i b c"
 proof(atomize_elim)
-  from `cancels_to_1_at i l a`
+  from \<open>cancels_to_1_at i l a\<close>
     have "Suc i < length l"
      and "canceling (l ! i) (l ! Suc i)"
      and "a = cancel_at i l"
      and "length a = length l - 2"
      and "min (length l) i = i"
     by (auto simp add:cancels_to_1_at_def)
-  from `cancels_to_1_at j l b`
+  from \<open>cancels_to_1_at j l b\<close>
     have "Suc j < length l"
      and "canceling (l ! j) (l ! Suc j)"
      and "b = cancel_at j l"
@@ -228,51 +228,51 @@ proof(atomize_elim)
     by (auto simp add:cancels_to_1_at_def)
 
   let ?c = "cancel_at (j - 2) a"
-  from `j > Suc i`
+  from \<open>j > Suc i\<close>
   have "Suc (Suc (j - 2)) = j"
     and "Suc (Suc (Suc j - 2)) = Suc j"
     by auto
-  with `min (length l) i = i` and `j > Suc i` and `Suc j < length l`
+  with \<open>min (length l) i = i\<close> and \<open>j > Suc i\<close> and \<open>Suc j < length l\<close>
   have "(l ! j) = (cancel_at i l ! (j - 2))"
     and "(l ! (Suc j)) = (cancel_at i l ! Suc (j - 2))"
     by(auto simp add:cancel_at_def simp add:nth_append)
   
-  with `cancels_to_1_at i l a`
-    and `cancels_to_1_at j l b`
+  with \<open>cancels_to_1_at i l a\<close>
+    and \<open>cancels_to_1_at j l b\<close>
   have "canceling (a ! (j - 2)) (a ! Suc (j - 2))"
     by(auto simp add:cancels_to_1_at_def)
   
-  with `j > Suc i` and `Suc j < length l` and `length a = length l - 2`
+  with \<open>j > Suc i\<close> and \<open>Suc j < length l\<close> and \<open>length a = length l - 2\<close>
   have "cancels_to_1_at (j - 2) a ?c" by (auto simp add: cancels_to_1_at_def)
 
-  from `length b = length l - 2` and `j > Suc i` and `Suc j < length l`
+  from \<open>length b = length l - 2\<close> and \<open>j > Suc i\<close> and \<open>Suc j < length l\<close>
   have "Suc i < length b" by auto
   
-  moreover from `b = cancel_at j l` and `j > Suc i` and `Suc i < length l`
+  moreover from \<open>b = cancel_at j l\<close> and \<open>j > Suc i\<close> and \<open>Suc i < length l\<close>
   have "(b ! i) = (l ! i)" and "(b ! Suc i) = (l ! Suc i)"
     by (auto simp add:cancel_at_def nth_append)
-  with `canceling (l ! i) (l ! Suc i)`
+  with \<open>canceling (l ! i) (l ! Suc i)\<close>
   have "canceling (b ! i) (b ! Suc i)" by simp
   
-  moreover from `j > Suc i` and `Suc j < length l`
+  moreover from \<open>j > Suc i\<close> and \<open>Suc j < length l\<close>
   have "min i j = i"
     and "min (j - 2) i = i"
     and "min (length l) j = j"
     and "min (length l) i = i"
     and "Suc (Suc (j - 2)) = j"
     by auto
-  with `a = cancel_at i l` and `b = cancel_at j l` and `Suc (Suc (j - 2)) = j`
+  with \<open>a = cancel_at i l\<close> and \<open>b = cancel_at j l\<close> and \<open>Suc (Suc (j - 2)) = j\<close>
   have "cancel_at (j - 2) a = cancel_at i b"
     by (auto simp add:cancel_at_def take_drop)
   
   ultimately have "cancels_to_1_at i b (cancel_at (j - 2) a)"
     by (auto simp add:cancels_to_1_at_def)
 
-  with `cancels_to_1_at (j - 2) a ?c`
+  with \<open>cancels_to_1_at (j - 2) a ?c\<close>
   show "\<exists>c. cancels_to_1_at (j - 2) a c \<and> cancels_to_1_at i b c" by blast
 qed
 
-text {* This is the confluence lemma *}
+text \<open>This is the confluence lemma\<close>
 lemma confluent_cancels_to_1: "confluent cancels_to_1"
 proof(rule lconfluent_confluent)
   show "wfP cancels_to_1\<inverse>\<inverse>" by (rule canceling_terminates)
@@ -288,11 +288,11 @@ next
   show "\<exists>d. cancels_to_1\<^sup>*\<^sup>* b d \<and> cancels_to_1\<^sup>*\<^sup>* c d"
   proof (cases "i=j")
     assume "i=j"
-    from `cancels_to_1_at i a b`
+    from \<open>cancels_to_1_at i a b\<close>
       have "b = cancel_at i a" by (simp add:cancels_to_1_at_def)
-    moreover from `i=j`
+    moreover from \<open>i=j\<close>
       have "\<dots> = cancel_at j a" by (clarify)
-    moreover from `cancels_to_1_at j a c`
+    moreover from \<open>cancels_to_1_at j a c\<close>
       have "\<dots> = c" by (simp add:cancels_to_1_at_def)
     ultimately have "b = c" by (simp)
     hence "cancels_to_1\<^sup>*\<^sup>* b b"
@@ -303,7 +303,7 @@ next
     show ?thesis
     proof (cases "j = Suc i")
       assume "j = Suc i"
-        with `cancels_to_1_at i a b` and `cancels_to_1_at j a c`
+        with \<open>cancels_to_1_at i a b\<close> and \<open>cancels_to_1_at j a c\<close>
         have "b = c" by (auto elim: canceling_neighbor)
       hence "cancels_to_1\<^sup>*\<^sup>* b b"
         and "cancels_to_1\<^sup>*\<^sup>* c b" by auto
@@ -313,7 +313,7 @@ next
       show ?thesis
       proof (cases "i = Suc j")
         assume "i = Suc j"
-          with `cancels_to_1_at i a b` and `cancels_to_1_at j a c`
+          with \<open>cancels_to_1_at i a b\<close> and \<open>cancels_to_1_at j a c\<close>
           have "c = b" by (auto elim: canceling_neighbor)
         hence "cancels_to_1\<^sup>*\<^sup>* b b"
           and "cancels_to_1\<^sup>*\<^sup>* c b" by auto
@@ -323,8 +323,8 @@ next
         show ?thesis
         proof (cases "i < j")
           assume "i < j"
-            with `j \<noteq> Suc i` have "Suc i < j" by auto
-          with `cancels_to_1_at i a b` and `cancels_to_1_at j a c`
+            with \<open>j \<noteq> Suc i\<close> have "Suc i < j" by auto
+          with \<open>cancels_to_1_at i a b\<close> and \<open>cancels_to_1_at j a c\<close>
           obtain d where "cancels_to_1_at (j - 2) b d" and "cancels_to_1_at i c d"
             by(erule canceling_indep)
           hence "cancels_to_1 b d" and "cancels_to_1 c d" 
@@ -332,8 +332,8 @@ next
           thus "\<exists>d. cancels_to_1\<^sup>*\<^sup>* b d \<and> cancels_to_1\<^sup>*\<^sup>* c d" by (auto)
         next
           assume "\<not> i < j"
-          with `j \<noteq> Suc i` and `i \<noteq> j` and `i \<noteq> Suc j` have "Suc j < i" by auto
-          with `cancels_to_1_at i a b` and `cancels_to_1_at j a c`
+          with \<open>j \<noteq> Suc i\<close> and \<open>i \<noteq> j\<close> and \<open>i \<noteq> Suc j\<close> have "Suc j < i" by auto
+          with \<open>cancels_to_1_at i a b\<close> and \<open>cancels_to_1_at j a c\<close>
           obtain d where "cancels_to_1_at (i - 2) c d" and "cancels_to_1_at j b d"
             by -(erule canceling_indep)
           hence "cancels_to_1 b d" and "cancels_to_1 c d" 
@@ -345,9 +345,9 @@ next
   qed
 qed
 
-text {*
+text \<open>
 And finally, we show that there exists a unique normal form for each word.
-*}
+\<close>
 
 (*
 lemma inv_rtrcl: "R^**^--1 = R^--1^**" (* Did I overlook this in the standard libs? *)
@@ -362,29 +362,29 @@ lemma norm_form_uniq:
 proof-
   have "confluent cancels_to_1" by (rule confluent_cancels_to_1)
   moreover 
-  from `cancels_to a b` have "cancels_to_1^** a b" by (simp add: cancels_to_def)
+  from \<open>cancels_to a b\<close> have "cancels_to_1^** a b" by (simp add: cancels_to_def)
   moreover
-  from `cancels_to a c` have "cancels_to_1^** a c" by (simp add: cancels_to_def)
+  from \<open>cancels_to a c\<close> have "cancels_to_1^** a c" by (simp add: cancels_to_def)
   moreover
-  from `canceled b` have "\<not> Domainp cancels_to_1 b" by (simp add: canceled_def)
+  from \<open>canceled b\<close> have "\<not> Domainp cancels_to_1 b" by (simp add: canceled_def)
   moreover
-  from `canceled c` have "\<not> Domainp cancels_to_1 c" by (simp add: canceled_def)
+  from \<open>canceled c\<close> have "\<not> Domainp cancels_to_1 c" by (simp add: canceled_def)
   ultimately
   show "b = c"
     by (rule confluent_unique_normal_form)
 qed
 
-subsubsection {* Some properties of cancelation *}
+subsubsection \<open>Some properties of cancelation\<close>
 
-text {*
-Distributivity rules of cancelation and @{text append}.
-*}
+text \<open>
+Distributivity rules of cancelation and \<open>append\<close>.
+\<close>
 
 lemma cancel_to_1_append:
   assumes "cancels_to_1 a b"
   shows "cancels_to_1 (l@a@l') (l@b@l')"
 proof-
-  from `cancels_to_1 a b` obtain i where "cancels_to_1_at i a b"
+  from \<open>cancels_to_1 a b\<close> obtain i where "cancels_to_1_at i a b"
     by(simp add: cancels_to_1_def)(erule exE)
   hence "cancels_to_1_at (length l + i) (l@a@l') (l@b@l')"
     by (auto simp add:cancels_to_1_at_def nth_append cancel_at_def)
@@ -401,9 +401,9 @@ proof(induct)
   case base show ?case by (simp add:cancels_to_def)
 next
   case (step b c)
-  from `cancels_to_1 b c`
+  from \<open>cancels_to_1 b c\<close>
   have "cancels_to_1 (l @ b @ l') (l @ c @ l')" by (rule cancel_to_1_append)
-  with `cancels_to_1^** (l @ a @ l') (l @ b @ l')` show ?case
+  with \<open>cancels_to_1^** (l @ a @ l') (l @ b @ l')\<close> show ?case
     by (auto simp add:cancels_to_def)
 qed
 
@@ -411,25 +411,25 @@ lemma cancels_to_append2:
   assumes "cancels_to a a'"
       and "cancels_to b b'"
   shows "cancels_to (a@b) (a'@b')"
-using `cancels_to a a'`
+using \<open>cancels_to a a'\<close>
 unfolding cancels_to_def
 proof(induct)
   case base
-  from `cancels_to b b'` have "cancels_to (a@b@[]) (a@b'@[])"
+  from \<open>cancels_to b b'\<close> have "cancels_to (a@b@[]) (a@b'@[])"
     by (rule cancel_to_append)
   thus ?case unfolding cancels_to_def by simp
 next
   case (step ba c)
-  from `cancels_to_1 ba c` have "cancels_to_1 ([]@ba@b') ([]@c@b')"
+  from \<open>cancels_to_1 ba c\<close> have "cancels_to_1 ([]@ba@b') ([]@c@b')"
     by(rule cancel_to_1_append)
-  with `cancels_to_1^** (a @ b) (ba @ b')`
+  with \<open>cancels_to_1^** (a @ b) (ba @ b')\<close>
   show ?case unfolding cancels_to_def by simp
 qed
 
-text {*
+text \<open>
 The empty list is canceled, a one letter word is canceled and a word is
 trivially cancled from itself.
-*}
+\<close>
 
 lemma empty_canceled[simp]: "canceled []"
 by(auto simp add: canceled_def cancels_to_1_def cancels_to_1_at_def)
@@ -453,26 +453,26 @@ proof(rule ccontr)
   have "cancels_to_1 (a#x) (a#xs1 @ xs2)"
     by simp
   hence "\<not> canceled (a#x)" by (auto simp add:canceled_def)
-  thus False using `canceled (a#x)` by contradiction
+  thus False using \<open>canceled (a#x)\<close> by contradiction
 qed
 
 lemma cancels_to_self[simp]: "cancels_to l l"
 by (simp add:cancels_to_def)
 
-subsection {* Definition of normalization *}
+subsection \<open>Definition of normalization\<close>
 
-text {*
+text \<open>
 Using the THE construct, we can define the normalization function
-@{text normalize} as the unique fully cancled word that the argument cancels
+\<open>normalize\<close> as the unique fully cancled word that the argument cancels
 to.
-*}
+\<close>
 
 definition normalize :: "'a word_g_i \<Rightarrow> 'a word_g_i"
 where "normalize l = (THE l'. cancels_to l l' \<and> canceled l')"
 
-text {*
+text \<open>
 Some obvious properties of the normalize function, and other useful lemmas.
-*}
+\<close>
 
 lemma
   shows normalized_canceled[simp]: "canceled (normalize l)"
@@ -490,27 +490,27 @@ proof-
   then obtain l' where "l' \<in> ?Q" and minimal: "\<And>y. cancels_to_1 l' y \<Longrightarrow> y \<notin> ?Q"
     by auto
   
-  from `l' \<in> ?Q` have "cancels_to l l'" by (auto simp add: cancels_to_def)
+  from \<open>l' \<in> ?Q\<close> have "cancels_to l l'" by (auto simp add: cancels_to_def)
 
   have "canceled l'"
   proof(rule ccontr)
     assume "\<not> canceled l'" hence "Domainp cancels_to_1 l'" by (simp add: canceled_def)
     then obtain y where "cancels_to_1 l' y" by auto
-    with `cancels_to l l'` have "cancels_to l y" by (auto simp add: cancels_to_def)
-    from `cancels_to_1 l' y` have "y \<notin> ?Q" by(rule minimal)
+    with \<open>cancels_to l l'\<close> have "cancels_to l y" by (auto simp add: cancels_to_def)
+    from \<open>cancels_to_1 l' y\<close> have "y \<notin> ?Q" by(rule minimal)
     hence "\<not> cancels_to_1^** l y" by auto
     hence "\<not> cancels_to l y" by (simp add: cancels_to_def)
-    with `cancels_to l y` show False by contradiction
+    with \<open>cancels_to l y\<close> show False by contradiction
   qed
 
-  from `cancels_to l l'` and `canceled l'`
+  from \<open>cancels_to l l'\<close> and \<open>canceled l'\<close>
   have "cancels_to l l' \<and> canceled l'" by simp 
   hence "cancels_to l (normalize l) \<and> canceled (normalize l)"
     unfolding normalize_def
   proof (rule theI)
     fix l'a
     assume "cancels_to l l'a \<and> canceled l'a"
-    thus "l'a = l'" using `cancels_to l l' \<and> canceled l'` by (auto elim:norm_form_uniq)
+    thus "l'a = l'" using \<open>cancels_to l l' \<and> canceled l'\<close> by (auto elim:norm_form_uniq)
   qed
   thus "canceled (normalize l)" and "cancels_to l (normalize l)" by auto
 qed
@@ -520,12 +520,12 @@ lemma normalize_discover:
       and "cancels_to l l'"
   shows "normalize l = l'"
 proof-
-  from `canceled l'` and `cancels_to l l'`
+  from \<open>canceled l'\<close> and \<open>cancels_to l l'\<close>
   have "cancels_to l l' \<and> canceled l'" by auto
   thus ?thesis unfolding normalize_def by (auto elim:norm_form_uniq)
 qed
 
-text {* Words, related by cancelation, have the same normal form. *}
+text \<open>Words, related by cancelation, have the same normal form.\<close>
 
 lemma normalize_canceled[simp]:
   assumes "cancels_to l l'"
@@ -534,11 +534,11 @@ proof(rule normalize_discover)
   show "canceled (normalize l')" by (rule normalized_canceled)
 next
   have "cancels_to l' (normalize l')" by (rule normalized_cancels_to)
-  with `cancels_to l l'`
+  with \<open>cancels_to l l'\<close>
   show "cancels_to l (normalize l')" by (rule cancels_to_trans)
 qed
 
-text {* Normalization is idempotent. *}
+text \<open>Normalization is idempotent.\<close>
 
 lemma normalize_idemp[simp]:
   assumes "canceled l"
@@ -546,10 +546,10 @@ lemma normalize_idemp[simp]:
 using assms
 by(rule normalize_discover)(rule cancels_to_self)
 
-text {*
+text \<open>
 This lemma lifts the distributivity results from above to the normalize
 function.
-*}
+\<close>
 
 lemma normalize_append_cancel_to:
   assumes "cancels_to l1 l1'"
@@ -558,7 +558,7 @@ lemma normalize_append_cancel_to:
 proof(rule normalize_discover)
   show "canceled (normalize (l1' @ l2'))" by (rule normalized_canceled)
 next
-  from `cancels_to l1 l1'` and `cancels_to l2 l2'`
+  from \<open>cancels_to l1 l1'\<close> and \<open>cancels_to l2 l2'\<close>
   have "cancels_to (l1 @ l2) (l1' @ l2')" by (rule cancels_to_append2)
   also
   have "cancels_to (l1' @ l2') (normalize (l1' @ l2'))" by (rule normalized_cancels_to)
@@ -566,13 +566,13 @@ next
   show "cancels_to (l1 @ l2) (normalize (l1' @ l2'))".
 qed
 
-subsection {* Normalization preserves generators *}
+subsection \<open>Normalization preserves generators\<close>
 
-text {*
+text \<open>
 Somewhat obvious, but still required to formalize Free Groups, is the fact that
 canceling a word of generators of a specific set (and their inverses) results
 in a word in generators from that set.
-*}
+\<close>
 
 lemma cancels_to_1_preserves_generators:
   assumes "cancels_to_1 l l'"
@@ -608,9 +608,9 @@ proof-
   thus ?thesis using assms by(rule cancels_to_preserves_generators)
 qed
 
-text {*
+text \<open>
 Two simplification lemmas about lists.
-*}
+\<close>
 
 lemma empty_in_lists[simp]:
   "[] \<in> lists A" by auto
@@ -618,14 +618,14 @@ lemma empty_in_lists[simp]:
 lemma lists_empty[simp]: "lists {} = {[]}"
   by auto
 
-subsection {* Normalization and renaming generators *}
+subsection \<open>Normalization and renaming generators\<close>
 
-text {*
+text \<open>
 Renaming the generators, i.e. mapping them through an injective function, commutes
 with normalization. Similarly, replacing generators by their inverses and
 vica-versa commutes with normalization. Both operations are similar enough to be
 handled at once here.
-*}
+\<close>
 
 lemma rename_gens_cancel_at: "cancel_at i (map f l) = map f (cancel_at i l)"
 unfolding "cancel_at_def" by (auto simp add:take_map drop_map)
@@ -635,28 +635,28 @@ lemma rename_gens_cancels_to_1:
       and "cancels_to_1 l l'"
     shows "cancels_to_1 (map (map_prod f g) l) (map (map_prod f g) l')"
 proof-
-  from `cancels_to_1 l l'`
+  from \<open>cancels_to_1 l l'\<close>
   obtain ls1 l1 l2 ls2
     where "l = ls1 @ l1 # l2 # ls2"
       and "l' = ls1 @ ls2"
       and "canceling l1 l2"
   by (rule cancels_to_1_unfold)
 
-  from `canceling l1 l2`
+  from \<open>canceling l1 l2\<close>
   have "fst l1 \<noteq> fst l2" and "snd l1 = snd l2"
     unfolding canceling_def by auto
-  from `fst l1 \<noteq> fst l2` and `inj f`
+  from \<open>fst l1 \<noteq> fst l2\<close> and \<open>inj f\<close>
   have "f (fst l1) \<noteq> f (fst l2)" by(auto dest!:inj_on_contraD)
   hence "fst (map_prod f g l1) \<noteq> fst (map_prod f g l2)" by auto
   moreover
-  from `snd l1 = snd l2`
+  from \<open>snd l1 = snd l2\<close>
   have "snd (map_prod f g l1) = snd (map_prod f g l2)" by auto
   ultimately
   have "canceling (map_prod f g (l1)) (map_prod f g (l2))"
     unfolding canceling_def by auto
   hence "cancels_to_1 (map (map_prod f g) ls1 @ map_prod f g l1 # map_prod f g l2 # map (map_prod f g) ls2) (map (map_prod f g) ls1 @ map (map_prod f g) ls2)"
    by(rule cancels_to_1_fold)
-  with `l = ls1 @ l1 # l2 # ls2` and `l' = ls1 @ ls2`
+  with \<open>l = ls1 @ l1 # l2 # ls2\<close> and \<open>l' = ls1 @ ls2\<close>
   show "cancels_to_1 (map (map_prod f g) l) (map (map_prod f g) l')"
    by simp
 qed
@@ -665,14 +665,14 @@ lemma rename_gens_cancels_to:
   assumes "inj f"
       and "cancels_to l l'"
     shows "cancels_to (map (map_prod f g) l) (map (map_prod f g) l')"
-using `cancels_to l l'`
+using \<open>cancels_to l l'\<close>
 unfolding cancels_to_def
 proof(induct rule:rtranclp_induct)
   case (step x z)
-    from `cancels_to_1 x z` and `inj f`
+    from \<open>cancels_to_1 x z\<close> and \<open>inj f\<close>
     have "cancels_to_1 (map (map_prod f g) x) (map (map_prod f g) z)"
       by -(rule rename_gens_cancels_to_1)
-    with `cancels_to_1^** (map (map_prod f g) l) (map (map_prod f g) x)`
+    with \<open>cancels_to_1^** (map (map_prod f g) l) (map (map_prod f g) x)\<close>
     show "cancels_to_1^** (map (map_prod f g) l) (map (map_prod f g) z)" by auto
 qed(auto)
 
@@ -694,25 +694,25 @@ proof
   hence "f (fst (l ! i)) \<noteq> f (fst (l ! Suc i))"
     and "g (snd (l ! i)) = g (snd (l ! Suc i))"
     by(auto simp add:canceling_def)
-  from `f (fst (l ! i)) \<noteq> f (fst (l ! Suc i))`
+  from \<open>f (fst (l ! i)) \<noteq> f (fst (l ! Suc i))\<close>
   have "fst (l ! i) \<noteq> fst (l ! Suc i)" by -(erule different_images)
   moreover
-  from `Suc i < length l`
+  from \<open>Suc i < length l\<close>
   have "snd (l ! i) \<in> snd ` set l" and "snd (l ! Suc i) \<in> snd ` set l" by auto
-  with `g (snd (l ! i)) = g (snd (l ! Suc i))`
+  with \<open>g (snd (l ! i)) = g (snd (l ! Suc i))\<close>
   have "snd (l ! i) = snd (l ! Suc i)" 
-    using `inj_on g (image snd (set l))`
+    using \<open>inj_on g (image snd (set l))\<close>
     by (auto dest: inj_onD)
   ultimately
   have "canceling (l ! i) (l ! Suc i)" unfolding canceling_def by simp
-  with `Suc i < length l`
+  with \<open>Suc i < length l\<close>
   have "cancels_to_1_at i l (cancel_at i l)" 
     unfolding cancels_to_1_at_def by auto
   hence "cancels_to_1 l (cancel_at i l)"
     unfolding cancels_to_1_def by auto
   hence "\<not>canceled l"
     unfolding canceled_def by auto
-  with `canceled l` show False by contradiction
+  with \<open>canceled l\<close> show False by contradiction
 qed
 
 lemma rename_gens_normalize:
@@ -720,7 +720,7 @@ lemma rename_gens_normalize:
   and "inj_on g (snd ` set l)"
   shows "normalize (map (map_prod f g) l) = map (map_prod f g) (normalize l)"
 proof(rule normalize_discover)
-  from `inj_on g (image snd (set l))`
+  from \<open>inj_on g (image snd (set l))\<close>
   have "inj_on g (image snd (set (normalize l)))"
   proof (rule subset_inj_on)
     
@@ -741,7 +741,7 @@ proof(rule normalize_discover)
    qed
   thus "canceled (map (map_prod f g) (normalize l))" by(rule rename_gens_canceled,simp)
 next
-  from `inj f`
+  from \<open>inj f\<close>
   show "cancels_to (map (map_prod f g) l) (map (map_prod f g) (normalize l))"
     by (rule rename_gens_cancels_to, simp)
 qed

@@ -4,13 +4,13 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Action Algebras *}
+section \<open>Action Algebras\<close>
 
 theory Action_Algebra
 imports "../Residuated_Lattices/Residuated_Lattices" Kleene_Algebra.Kleene_Algebra
 begin
 
-text {* Action algebras have been defined and discussed in œ
+text \<open>Action algebras have been defined and discussed in œ
 Pratt's paper on \emph{Action Logic and Pure
 Induction}~\cite{pratt90action}. They are expansions of Kleene
 algebras by operations of left and right residuation. They are
@@ -21,13 +21,13 @@ defined equationally.
 
 Action algebras can be based on residuated
 semilattices. Many important properties of action
-algebras already arise at this level. *}
+algebras already arise at this level.\<close>
 
-text {* We can define an action algebra as a residuated join
+text \<open>We can define an action algebra as a residuated join
 semilattice that is also a dioid. Following Pratt, we also add a star
 operation that is axiomatised as a reflexive transitive closure
 operation.
-*}
+\<close>
 
 class action_algebra = residuated_sup_lgroupoid + dioid_one_zero + star_op +
   assumes star_rtc1: "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<le> x\<^sup>\<star>"
@@ -37,7 +37,7 @@ begin
 lemma plus_sup: "(+) = (\<squnion>)"
   by (rule ext)+ (simp add: local.join.sup_unique)
 
-text {* We first prove a reflexivity property for residuals. *}
+text \<open>We first prove a reflexivity property for residuals.\<close>
 
 lemma residual_r_refl: "1 \<le> x \<rightarrow> x"
   by (simp add: local.resrI)
@@ -45,7 +45,7 @@ lemma residual_r_refl: "1 \<le> x \<rightarrow> x"
 lemma residual_l_refl: "1 \<le> x \<leftarrow> x"
   by (simp add: local.reslI)
 
-text {* We now derive pure induction laws for residuals. *}
+text \<open>We now derive pure induction laws for residuals.\<close>
 
 
 lemma residual_l_pure_induction: "(x \<leftarrow> x)\<^sup>\<star> \<le> x \<leftarrow> x"
@@ -65,9 +65,9 @@ proof -
     by (fact star_rtc2)
 qed
 
-text {* Next we show that every action algebra is a Kleene
+text \<open>Next we show that every action algebra is a Kleene
 algebra. First, we derive the star unfold law and the star induction
-laws in action algebra. Then we prove a subclass statement. *}
+laws in action algebra. Then we prove a subclass statement.\<close>
 
 lemma star_unfoldl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
 proof -
@@ -135,9 +135,9 @@ qed
 end (* action_algebra *)
 
 
-subsection {* Equational Action Algebras *}
+subsection \<open>Equational Action Algebras\<close>
 
-text {* The induction axioms of Kleene algebras are universal Horn
+text \<open>The induction axioms of Kleene algebras are universal Horn
 formulas. This is unavoidable, because due to a well known result of
 Redko, there is no finite equational axiomatisation for the equational
 theory of regular expressions.
@@ -148,7 +148,7 @@ result. Consequently, the equational action algebra axioms, which
 imply those based on Galois connections, which in turn imply those of
 Kleene algebras, are complete with respect to the equational theory of
 regular expressions. However, this completeness result does not
-account for residuation. *}
+account for residuation.\<close>
 
 class equational_action_algebra = residuated_sup_lgroupoid + dioid_one_zero + star_op +
   assumes star_ax: "1 + x\<^sup>\<star> \<cdot> x\<^sup>\<star> + x \<le> x\<^sup>\<star>"
@@ -156,12 +156,12 @@ class equational_action_algebra = residuated_sup_lgroupoid + dioid_one_zero + st
   and right_pure_induction: "(x \<rightarrow> x)\<^sup>\<star> \<le> x \<rightarrow> x"
 begin
 
-text {* We now show that the equational axioms of action algebra
+text \<open>We now show that the equational axioms of action algebra
 satisfy those based on the Galois connections. Since we can use our
 correspondence between the two variants of residuated semilattice, it
 remains to derive the second reflexive transitive closure axiom for
 the star, essentially copying Pratt's proof step by step. We then
-prove a subclass statement. *}
+prove a subclass statement.\<close>
 
 lemma star_rtc_2: "1 + y \<cdot> y + x \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y"
 proof -
@@ -177,7 +177,7 @@ proof -
   hence "y \<cdot> x\<^sup>\<star> \<le> y"
     by (simp add: local.resr_galois)
   thus "x\<^sup>\<star> \<le> y"
-    by (metis `1 \<le> y` local.dual_order.trans local.mult_onel local.resl_galois)
+    by (metis \<open>1 \<le> y\<close> local.dual_order.trans local.mult_onel local.resl_galois)
 qed
 
 subclass action_algebra
@@ -185,22 +185,22 @@ subclass action_algebra
 
 end (* equational_action_algebra *)
 
-text {*
+text \<open>
 Conversely, every action algebra satisfies the equational axioms of
 equational action algebras.
 
 Because the subclass relation must be acyclic in Isabelle, we can only
 establish this for the corresponding locales. Again this proof is
 based on the residuated semilattice result.
-*}
+\<close>
 
 sublocale action_algebra \<subseteq> equational_action_algebra
   by (unfold_locales, metis star_rtc1, metis star_subdist, metis residual_r_pure_induction)
 
-subsection {* Another Variant *}
+subsection \<open>Another Variant\<close>
 
-text {* Finally we show that Pratt and Kozen's star axioms generate
-precisely the same theory. *}
+text \<open>Finally we show that Pratt and Kozen's star axioms generate
+precisely the same theory.\<close>
 
 class action_algebra_var = residuated_sup_lgroupoid + dioid_one_zero + star_op +
   assumes star_unfold': "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"

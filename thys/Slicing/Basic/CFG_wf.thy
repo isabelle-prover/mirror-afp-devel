@@ -1,8 +1,8 @@
-section {* CFG well-formedness *}
+section \<open>CFG well-formedness\<close>
 
 theory CFG_wf imports CFG begin
 
-subsection {* Well-formedness of the abstract CFG *}
+subsection \<open>Well-formedness of the abstract CFG\<close>
 
 locale CFG_wf = CFG sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
@@ -46,18 +46,18 @@ proof(induct arbitrary:s rule:path.induct)
   thus ?case by(simp add:sourcenodes_def kinds_def)
 next
   case (Cons_path n'' as n' a n)
-  note IH = `\<And>s. \<lbrakk>\<forall>n\<in>set (sourcenodes as). V \<notin> Def n; preds (kinds as) s\<rbrakk> \<Longrightarrow>
-            state_val (transfers (kinds as) s) V = state_val s V`
-  from `preds (kinds (a#as)) s` have "pred (kind a) s"
+  note IH = \<open>\<And>s. \<lbrakk>\<forall>n\<in>set (sourcenodes as). V \<notin> Def n; preds (kinds as) s\<rbrakk> \<Longrightarrow>
+            state_val (transfers (kinds as) s) V = state_val s V\<close>
+  from \<open>preds (kinds (a#as)) s\<close> have "pred (kind a) s"
     and "preds (kinds as) (transfer (kind a) s)" by(simp_all add:kinds_def)
-  from `\<forall>n\<in>set (sourcenodes (a#as)). V \<notin> Def n`
+  from \<open>\<forall>n\<in>set (sourcenodes (a#as)). V \<notin> Def n\<close>
     have noDef:"V \<notin> Def (sourcenode a)" 
     and all:"\<forall>n\<in>set (sourcenodes as). V \<notin> Def n"
     by(auto simp:sourcenodes_def)
-  from `valid_edge a` noDef `pred (kind a) s`
+  from \<open>valid_edge a\<close> noDef \<open>pred (kind a) s\<close>
   have "state_val (transfer (kind a) s) V = state_val s V"
     by(rule CFG_edge_no_Def_equal)
-  with IH[OF all `preds (kinds as) (transfer (kind a) s)`] show ?case
+  with IH[OF all \<open>preds (kinds as) (transfer (kind a) s)\<close>] show ?case
     by(simp add:kinds_def)
 qed
 

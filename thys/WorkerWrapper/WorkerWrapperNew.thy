@@ -13,21 +13,20 @@ imports
 begin
 
 (*>*)
-section{* A totally-correct fusion rule *}
+section\<open>A totally-correct fusion rule\<close>
 
-text{*
+text\<open>
 \label{sec:ww-fixed}
 
 We now show that a termination-preserving worker/wrapper fusion rule
 can be obtained by requiring @{term "unwrap"} to be strict. (As we
 observed earlier, @{term "wrap"} must always be strict due to the
-assumption that @{text "wrap oo unwrap = ID"}.)
+assumption that \<open>wrap oo unwrap = ID\<close>.)
 
 Our first result shows that a combined worker/wrapper transformation
-and fusion rule is sound, using the assumptions of @{text
-"worker_wrapper_id"} and the ubiquitous @{text "lfp_fusion"} rule.
+and fusion rule is sound, using the assumptions of \<open>worker_wrapper_id\<close> and the ubiquitous \<open>lfp_fusion\<close> rule.
 
-*}
+\<close>
 
 lemma worker_wrapper_fusion_new:
   fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
@@ -50,13 +49,13 @@ proof -
   with wrap_unwrap show ?thesis by simp
 qed
 
-text{*
+text\<open>
 
 We can also show a more general result which allows fusion to be
 optionally performed on a per-recursive-call basis using
 \texttt{parallel\_fix\_ind}:
 
-*}
+\<close>
 
 lemma worker_wrapper_fusion_new_general:
   fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
@@ -87,7 +86,7 @@ proof -
     using worker_wrapper_id[OF wrap_unwrap refl] by simp
 qed
 
-text{*
+text\<open>
 
 This justifies the syntactically-oriented rules shown in
 Figure~\ref{fig:wwc2}; note the scoping of the fusion rule.
@@ -117,7 +116,7 @@ equational fusion rule.
 \caption{The syntactic worker/wrapper transformation and fusion rule.}\label{fig:wwc2}
 \end{figure}
 
-*}
+\<close>
 
 (*<*)
 end

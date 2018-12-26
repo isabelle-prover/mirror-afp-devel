@@ -1,11 +1,11 @@
-section{*Tangle\_Algebra: Tensor product of tangles and its properties*}
+section\<open>Tangle\_Algebra: Tensor product of tangles and its properties\<close>
 theory Tangle_Algebra
 imports Tangles
 begin
 
-section{*Definition of tensor product of walls*}
+section\<open>Definition of tensor product of walls\<close>
 
-text{*the following definition is used to construct a block of n vert strands*}
+text\<open>the following definition is used to construct a block of n vert strands\<close>
 primrec make_vert_block:: "nat \<Rightarrow> block"
 where
 "make_vert_block 0 = []"
@@ -39,7 +39,7 @@ where
 |4:"tensor (x*xs) (y*ys) = (x \<otimes> y)* (xs \<otimes> ys)"
 
 
-section{*Properties of tensor product of tangles*}
+section\<open>Properties of tensor product of tangles\<close>
 
 lemma Nil_left_tensor:"xs \<otimes> (basic ([])) = xs"
  by (cases xs) (auto simp add:empty_concatenate)
@@ -50,8 +50,8 @@ lemma Nil_right_tensor:"(basic ([])) \<otimes> xs = xs"
 
  
 
-text{*The definition of tensors is extended to diagrams by using the 
-following function*}
+text\<open>The definition of tensors is extended to diagrams by using the 
+following function\<close>
 definition tensor_Tangle ::"Tangle_Diagram \<Rightarrow> Tangle_Diagram \<Rightarrow> Tangle_Diagram" (infixl "\<otimes>" 65)
 where
 "tensor_Tangle x y = Abs_Tangle_Diagram ((Rep_Tangle_Diagram x) \<otimes> (Rep_Tangle_Diagram y))" 
@@ -60,9 +60,9 @@ where
 lemma "tensor (basic [vert]) (basic ([vert])) = (basic (([vert]) \<otimes> ([vert])))"
  by simp
 
-text{*domain\_wall of a tensor product of two walls is the sum of 
+text\<open>domain\_wall of a tensor product of two walls is the sum of 
 the domain\_wall of each of the tensor
- products*}
+ products\<close>
 
 lemma tensor_domain_wall_additivity:
  "domain_wall (xs \<otimes> ys) = domain_wall xs + domain_wall ys"
@@ -100,7 +100,7 @@ proof(cases xs)
      have "(xs \<otimes> ys)  
                  = (x \<otimes> z)
                     *((basic (make_vert_block (nat (codomain_block x))))\<otimes> zs)"
-          using tensor.simps(3) A C `codomain_block x \<noteq> 0`  by auto
+          using tensor.simps(3) A C \<open>codomain_block x \<noteq> 0\<close>  by auto
      then have "domain_wall (xs \<otimes> ys) = domain_block (x \<otimes> z)"
           by auto   
      moreover have "domain_wall ys = domain_block z"
@@ -125,7 +125,7 @@ proof(cases xs)
     proof(cases "codomain_block y = 0")
       assume "codomain_block y = 0"
       have "(xs \<otimes> ys) = (z \<otimes> y)*zs"  
-          using tensor.simps(2)  D E `codomain_block y = 0` by auto 
+          using tensor.simps(2)  D E \<open>codomain_block y = 0\<close> by auto 
       then have "domain_wall (xs \<otimes> ys) = domain_block (z \<otimes> y)" 
           by auto
       moreover have "domain_wall xs = domain_block z"
@@ -141,7 +141,7 @@ proof(cases xs)
                = 
                 (z \<otimes> y)
                   *(zs\<otimes>(basic (make_vert_block (nat (codomain_block y)))))"
-          using tensor.simps(3) D E `codomain_block y \<noteq> 0`  by auto
+          using tensor.simps(3) D E \<open>codomain_block y \<noteq> 0\<close>  by auto
      then have "domain_wall (xs \<otimes> ys) = domain_block (z \<otimes> y)"
           by auto   
      moreover have "domain_wall ys = domain_block y"
@@ -171,8 +171,8 @@ proof(cases xs)
   then show ?thesis by auto
 qed
 
-text{*codomain of tensor of two walls is the sum of the respective
-codomain's is shown by the following theorem*}
+text\<open>codomain of tensor of two walls is the sum of the respective
+codomain's is shown by the following theorem\<close>
 
 lemma tensor_codomain_wall_additivity:
  "codomain_wall (xs \<otimes> ys) = codomain_wall xs + codomain_wall ys"
@@ -274,7 +274,7 @@ next
                 by auto
      then have "... = codomain_wall (basic x) + codomain_wall (y*ys)"
                 using codomain_wall.simps by auto
-        then show ?thesis by (metis `basic x \<otimes> y * ys = (x \<otimes> y) * (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys)` `codomain_wall ((x \<otimes> y) * (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys)) = codomain_wall (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys)` `codomain_wall (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys) = codomain_block x + codomain_wall ys`)   
+        then show ?thesis by (metis \<open>basic x \<otimes> y * ys = (x \<otimes> y) * (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys)\<close> \<open>codomain_wall ((x \<otimes> y) * (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys)) = codomain_wall (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys)\<close> \<open>codomain_wall (basic (make_vert_block (nat (codomain_block x))) \<otimes> ys) = codomain_block x + codomain_wall ys\<close>)   
    qed
    next
     fix x xs y ys
@@ -291,7 +291,7 @@ next
                 using case_4 by auto
     then have "... = codomain_wall (x*xs) + (codomain_wall (y*ys))"
          using codomain_wall.simps(2) by auto
-    then show ?case by (metis `codomain_wall ((x \<otimes> y) * (xs \<otimes> ys)) = codomain_wall (xs \<otimes> ys)` `x * xs \<otimes> y * ys = (x \<otimes> y) * (xs \<otimes> ys)` case_4)
+    then show ?case by (metis \<open>codomain_wall ((x \<otimes> y) * (xs \<otimes> ys)) = codomain_wall (xs \<otimes> ys)\<close> \<open>x * xs \<otimes> y * ys = (x \<otimes> y) * (xs \<otimes> ys)\<close> case_4)
 qed
 
 (*the following theorem tells us that 
@@ -494,8 +494,8 @@ proof-
  then have "
        is_tangle_diagram (x * xs) \<and> is_tangle_diagram (basic y) \<longrightarrow>
                is_tangle_diagram ((x*xs) \<otimes> (basic y))"
-        by (metis "Tangle_Algebra.2" `
-        codomain_block y \<noteq> 0` is_tangle_make_vert_right)           
+        by (metis "Tangle_Algebra.2" \<open>
+        codomain_block y \<noteq> 0\<close> is_tangle_make_vert_right)           
  then show ?thesis by auto
 qed
 

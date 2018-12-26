@@ -4,7 +4,7 @@
 
 *)
 
-section {* Auxiliary lemmas *}
+section \<open>Auxiliary lemmas\<close>
 theory Prime_Harmonic_Misc
 imports
   Complex_Main

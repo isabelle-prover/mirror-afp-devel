@@ -1,4 +1,4 @@
-section {* Actual Implementation of the CAVA Model Checker *}
+section \<open>Actual Implementation of the CAVA Model Checker\<close>
 theory CAVA_Impl
 imports
   CAVA_Abstract
@@ -21,7 +21,7 @@ imports
 begin
 
 (*<*)
-subsection {* Exporting Graphs *}
+subsection \<open>Exporting Graphs\<close>
 
 (* TODO: frv_export is going to be replaced by more explicit implementation 
   of graphs.
@@ -118,11 +118,11 @@ lemmas [refine_transfer] = frv_export_code.refine
 
 (*>*)
 
-subsection {* Setup *}
+subsection \<open>Setup\<close>
 
-subsubsection {* LTL to GBA conversion *}
+subsubsection \<open>LTL to GBA conversion\<close>
 
-text {* In the following, we set up the algorithms for LTL to GBA conversion. *}
+text \<open>In the following, we set up the algorithms for LTL to GBA conversion.\<close>
 
 definition is_ltl_to_gba_algo 
   :: "('a ltlc \<Rightarrow> (nat, 'a \<Rightarrow> bool, unit) igbav_impl_scheme) \<Rightarrow> bool"
@@ -178,8 +178,8 @@ proof -
 qed
 
 
-text {* We define a function that chooses between the possible conversion 
-  algorithms. (Currently there is only one) *}
+text \<open>We define a function that chooses between the possible conversion 
+  algorithms. (Currently there is only one)\<close>
 datatype config_l2b = CFG_L2B_GERTHS
 
 definition "ltl_to_gba_code cfg 
@@ -194,7 +194,7 @@ lemma ltl_to_gba_code_refine:
   apply simp
   done
 
-subsubsection {* Counterexample Search *}
+subsubsection \<open>Counterexample Search\<close>
 definition is_find_ce_algo 
   :: "(('a, unit)igbg_impl_scheme \<Rightarrow> 'a lasso option option) \<Rightarrow> bool" 
   \<comment> \<open>Predicate that must be satisfied by counterexample search algorithm\<close>
@@ -330,8 +330,8 @@ proof (intro fun_relI plain_nres_relI)
     by (simp add: lasso_rel_ext_id)
 qed
 
-text {* We define a function that chooses between the emptiness check 
-  algorithms *}
+text \<open>We define a function that chooses between the emptiness check 
+  algorithms\<close>
 
 datatype config_ce = CFG_CE_SCC_GABOW | CFG_CE_NDFS
 
@@ -346,13 +346,13 @@ lemma find_ce_code_refine: "is_find_ce_algo (find_ce_code cfg)"
   apply (auto split: config_ce.split)
   done
   
-subsection {* System-Agnostic Model-Checker *}
-text {*
+subsection \<open>System-Agnostic Model-Checker\<close>
+text \<open>
   In this section, we implement the part of the model-checker that does not 
   depend on the language used to describe the system to be checked. 
-*}
+\<close>
 
-subsubsection {* Default Implementation of Lazy Intersection *}
+subsubsection \<open>Default Implementation of Lazy Intersection\<close>
 
 locale cava_inter_impl_loc =
   igba_sys_prod_precond G S
@@ -368,10 +368,10 @@ begin
     by unfold_locales
 
   (*<*)
-  text {* TODO/FIXME:
+  text \<open>TODO/FIXME:
     Some black-magic is going on here: The performance of the mc seems to depend on the ordering of states,
     so we do some adjustments of the ordering here.
-  *}
+\<close>
   lemma prod_impl_aux_alt_cava_reorder:
     "prod = (\<lparr>
       g_V = Collect (\<lambda>(q,s). q \<in> igba.V \<and> s \<in> sa.V),
@@ -541,9 +541,9 @@ proof -
      (inter_spec S G)" .
 qed
 
-subsubsection {* Definition of Model-Checker *}
-text {* In this section, we instantiate the parametrized model checker
-  with the actual implementations. *}
+subsubsection \<open>Definition of Model-Checker\<close>
+text \<open>In this section, we instantiate the parametrized model checker
+  with the actual implementations.\<close>
 
 setup Locale_Code.open_block
 interpretation cava_sys_agn: impl_model_checker 
@@ -572,9 +572,9 @@ setup Locale_Code.close_block
 
 definition "cava_sys_agn \<equiv> cava_sys_agn.impl_model_check"
 
-text {* The correctness theorem states correctness of the model checker wrt.\ 
+text \<open>The correctness theorem states correctness of the model checker wrt.\ 
   a model given as system automata. In the following sections, we will then 
-  refine the model description to Boolean programs and Promela. *}
+  refine the model description to Boolean programs and Promela.\<close>
 theorem cava_sys_agn_correct:
   fixes sysi :: "('s::hashable, 'p::linorder \<Rightarrow> bool, unit) sa_impl_scheme" 
     and sys :: "('s, 'p set) sa_rec" 
@@ -593,7 +593,7 @@ theorem cava_sys_agn_correct:
   by (auto split: option.splits simp: lasso_run_rel_def br_def)
 
 
-subsection {* Model Checker for Boolean Programs *}
+subsection \<open>Model Checker for Boolean Programs\<close>
 
 definition bpc_to_sa 
   :: "bprog \<times> BoolProgs.config \<Rightarrow> (BoolProgs.config,nat set) sa_rec" 
@@ -680,11 +680,11 @@ lemma bpc_to_sa_lang_conv[simp]: "sa.lang (bpc_to_sa bpc) = bpc_lang bpc"
 
 definition "cava_bpc cfg bpc \<phi> \<equiv> cava_sys_agn cfg (bpc_to_sa_impl bpc) \<phi>"
 
-text {*
+text \<open>
   Correctness theorem for the model checker on boolean programs.
   Note that the semantics of Boolean programs is given 
   by @{const "bpc_lang"}.
-*}
+\<close>
 theorem cava_bpc_correct:
   "case cava_bpc cfg bpc \<phi> of 
     None \<Rightarrow> bpc_lang bpc \<subseteq> language_ltlc \<phi>
@@ -699,7 +699,7 @@ theorem cava_bpc_correct:
 
 export_code cava_bpc checking SML
 
-subsection {* Model Checker for Promela Programs *}
+subsection \<open>Model Checker for Promela Programs\<close>
 
 definition promela_to_sa 
   :: "PromelaDatastructures.program \<times> APs \<times> gState \<Rightarrow> (gState, nat set) sa_rec" 
@@ -747,11 +747,11 @@ definition "cava_promela cfg ast \<phi> \<equiv>
   in
      cava_sys_agn (fst cfg) (promela_to_sa_impl promg) \<phi>\<^sub>i"
 
-text {*
+text \<open>
   The next theorem states correctness of the Promela model checker.
 
   The correctness is specified for some AST.
-*}
+\<close>
 lemma cava_promela_correct:
   shows 
   "case cava_promela cfg ast \<phi> of 
@@ -817,7 +817,7 @@ qed
 
 export_code cava_promela checking SML
 
-subsection {* Extraction of SML Code *}
+subsection \<open>Extraction of SML Code\<close>
 
 definition "dflt_cfg \<equiv> (CFG_L2B_GERTHS,(),CFG_CE_SCC_GABOW)"
 

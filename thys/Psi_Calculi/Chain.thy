@@ -84,10 +84,10 @@ lemma supp_member:
 
   obtains X where "(X::'b) \<in> Xs" and "x \<in> supp X"
 proof -
-  from `finite Xs` `x \<in> supp Xs` have "\<exists>X::'b. (X \<in> Xs) \<and> (x \<in> (supp X))"
+  from \<open>finite Xs\<close> \<open>x \<in> supp Xs\<close> have "\<exists>X::'b. (X \<in> Xs) \<and> (x \<in> (supp X))"
   proof(induct rule: finite_induct)
     case empty
-    from `x \<in> ((supp {})::'a set)` have False
+    from \<open>x \<in> ((supp {})::'a set)\<close> have False
       by(simp add: supp_set_empty)
     thus ?case by simp
   next
@@ -98,9 +98,9 @@ proof -
       thus ?case by force
     next
       assume "x \<notin> supp y"
-      with `x \<in> supp(insert y Xs)` have "x \<in> supp Xs"
-        by(simp add: supp_fin_insert[OF pt, OF at, OF fs, OF `finite Xs`])
-      with `x \<in> supp Xs \<Longrightarrow> \<exists>X. X \<in> Xs \<and> x \<in> supp X`
+      with \<open>x \<in> supp(insert y Xs)\<close> have "x \<in> supp Xs"
+        by(simp add: supp_fin_insert[OF pt, OF at, OF fs, OF \<open>finite Xs\<close>])
+      with \<open>x \<in> supp Xs \<Longrightarrow> \<exists>X. X \<in> Xs \<and> x \<in> supp X\<close>
       show ?case by force
     qed
   qed
@@ -288,9 +288,9 @@ next
   then have "set ((pi\<bullet>x,y)#pi) \<subseteq> (insert x Xs) \<times> ({y}\<union>Ys)" using a4 by auto
   moreover 
   have "finite ({y}\<union>Ys)" using a5 by simp
-  moreover from `Ys \<inter> As = {}` `(insert x Xs) \<subseteq> As` `finite Ys` have "x \<notin> Ys"
+  moreover from \<open>Ys \<inter> As = {}\<close> \<open>(insert x Xs) \<subseteq> As\<close> \<open>finite Ys\<close> have "x \<notin> Ys"
     by(auto simp add: fresh_def at_fin_set_supp[OF at])
-  with a6 `pi \<bullet> x = x` `x \<notin> Xs` `(set pi) \<subseteq> Xs \<times> Ys` e have "distinctPerm((pi \<bullet> x, y)#pi)"
+  with a6 \<open>pi \<bullet> x = x\<close> \<open>x \<notin> Xs\<close> \<open>(set pi) \<subseteq> Xs \<times> Ys\<close> e have "distinctPerm((pi \<bullet> x, y)#pi)"
     apply(auto simp add: distinctPerm_def fresh_prod at_fresh[OF at])
     proof -
       fix a b
@@ -346,10 +346,10 @@ lemma supp_subset:
 proof(rule subsetI)
   fix x
   assume "x \<in> ((supp Xs)::name set)"
-  with `finite Xs` obtain X where "X \<in> Xs" and "x \<in> supp X"
+  with \<open>finite Xs\<close> obtain X where "X \<in> Xs" and "x \<in> supp X"
     by(rule supp_member[OF pt_name_inst, OF at_name_inst, OF fs_name_inst])
-  from `X \<in> Xs` `Xs \<subseteq> Ys` have "X \<in> Ys" by auto
-  with `finite Ys` `x \<in> supp X` show "x \<in> supp Ys"
+  from \<open>X \<in> Xs\<close> \<open>Xs \<subseteq> Ys\<close> have "X \<in> Ys" by auto
+  with \<open>finite Ys\<close> \<open>x \<in> supp X\<close> show "x \<in> supp Ys"
     by(induct rule: finite_induct)
       (auto simp add: supp_fin_insert[OF pt_name_inst, OF at_name_inst, OF fs_name_inst])
 qed
@@ -639,7 +639,7 @@ lemma consPerm:
   shows "((x, y)#p) \<bullet> C = [(x, y)] \<bullet> p \<bullet> C"
 by(simp add: pt2[OF pt_name_inst, THEN sym])
 
-simproc_setup consPerm ("((x, y)#p) \<bullet> C") = {*
+simproc_setup consPerm ("((x, y)#p) \<bullet> C") = \<open>
   fn _ => fn _ => fn ct => 
     case Thm.term_of ct of 
       Const (@{const_name perm}, _ ) $ (Const (@{const_name Cons}, _) $ _ $ p) $ _ =>
@@ -647,7 +647,7 @@ simproc_setup consPerm ("((x, y)#p) \<bullet> C") = {*
           Const (@{const_name Nil}, _) => NONE
         | _ => SOME(mk_meta_eq @{thm consPerm}))
     | _ => NONE
-*}
+\<close>
 
 lemma distinctEqvt[eqvt]:
   fixes p  :: "name prm"

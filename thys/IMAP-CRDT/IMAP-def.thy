@@ -1,4 +1,4 @@
-section {* IMAP-CRDT Definitions *}
+section \<open>IMAP-CRDT Definitions\<close>
 
 text\<open>We begin by defining the operations on a mailbox state. In addition to the interpretation of 
 the operations, we define valid behaviours for the operations as assumptions for the network.

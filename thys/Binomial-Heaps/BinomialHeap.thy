@@ -7,14 +7,14 @@ begin
 locale BinomialHeapStruc_loc
 begin
 
-subsection {* Datatype Definition *}
+subsection \<open>Datatype Definition\<close>
 
-text {* Binomial heaps are lists of binomial trees. *}
+text \<open>Binomial heaps are lists of binomial trees.\<close>
 datatype ('e, 'a) BinomialTree = 
   Node (val: 'e) (prio: "'a::linorder") (rank: nat) (children: "('e , 'a) BinomialTree list")
 type_synonym ('e, 'a) BinomialQueue_inv = "('e, 'a::linorder) BinomialTree list"
 
-text {* Combine two binomial trees (of rank $r$) to one (of rank $r+1$). *}
+text \<open>Combine two binomial trees (of rank $r$) to one (of rank $r+1$).\<close>
 fun  link :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialTree \<Rightarrow> 
   ('e, 'a) BinomialTree" where
   "link (Node e1 a1 r1 ts1) (Node e2 a2 r2 ts2) = 
@@ -24,7 +24,7 @@ fun  link :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialTre
 
 
 subsubsection "Abstraction to Multiset"
-text {* Return a multiset with all (element, priority) pairs from a queue. *}
+text \<open>Return a multiset with all (element, priority) pairs from a queue.\<close>
 fun tree_to_multiset 
   :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e \<times> 'a) multiset" 
 and queue_to_multiset 
@@ -49,12 +49,12 @@ done
 
 subsubsection "Invariant"
 
-text {* We first formulate the invariant for single binomial trees,
+text \<open>We first formulate the invariant for single binomial trees,
   and then extend the invariant to binomial heaps (lists of binomial trees).
   The invariant for trees claims that a tree labeled rank $0$ has no children,
   and a tree labeled rank $r+1$ is the result of a link operation of
   two rank $r$ trees.
-*}
+\<close>
 function tree_invar :: "('e, 'a::linorder) BinomialTree \<Rightarrow> bool" where
   "tree_invar (Node e a 0 ts) = (ts = [])" |
   "tree_invar (Node e a (Suc r) ts) = 
@@ -68,16 +68,16 @@ termination
   apply auto
 done
 
-text {* A queue satisfies the invariant, iff all trees inside the queue satisfy 
+text \<open>A queue satisfies the invariant, iff all trees inside the queue satisfy 
   the invariant, and the queue contains only trees of distinct rank and 
-  is ordered by rank *}
+  is ordered by rank\<close>
 
-text {* First part: All trees of the queue satisfy the tree invariant: *}
+text \<open>First part: All trees of the queue satisfy the tree invariant:\<close>
 definition queue_invar :: "('e, 'a::linorder) BinomialQueue_inv \<Rightarrow> bool" where
   "queue_invar q \<equiv> (\<forall>t \<in> set q. tree_invar t)"
 
-text {* Second part: Trees have distinct rank, and are ordered by 
-  ascending rank: *}
+text \<open>Second part: Trees have distinct rank, and are ordered by 
+  ascending rank:\<close>
 fun rank_invar :: "('e, 'a::linorder) BinomialQueue_inv \<Rightarrow> bool" where
   "rank_invar [] = True" |
   "rank_invar [t] = True" |
@@ -89,7 +89,7 @@ lemma queue_invar_simps[simp]:
   "queue_invar (q@q') \<longleftrightarrow> queue_invar q \<and> queue_invar q'"
   unfolding queue_invar_def by auto
 
-text {* Invariant for binomial queues: *}
+text \<open>Invariant for binomial queues:\<close>
 definition "invar q == queue_invar q \<and> rank_invar q"
 
 lemma mset_link[simp]: "(tree_to_multiset (link t1 t2)) 
@@ -183,7 +183,7 @@ proof (induct bq)
   then show ?case by (simp add: invar_def)
 next
   case (Cons a bq)
-  from `invar (a # bq)` have "invar bq" by (rule invar_cons_down)
+  from \<open>invar (a # bq)\<close> have "invar bq" by (rule invar_cons_down)
   with Cons have "invar (bq @ [t'])" by simp
   with Cons show ?case by (cases bq) (simp_all add: invar_def)
 qed
@@ -192,7 +192,7 @@ subsubsection "Heap Ordering"
 fun heap_ordered :: "('e, 'a::linorder) BinomialTree \<Rightarrow> bool" where
   "heap_ordered (Node e a r ts) = (\<forall>x \<in> set_mset(queue_to_multiset ts). a \<le> snd x)"
 
-text {* The invariant for trees implies heap order. *}
+text \<open>The invariant for trees implies heap order.\<close>
 lemma tree_invar_heap_ordered:
   assumes "tree_invar t"
   shows "heap_ordered t"
@@ -218,15 +218,15 @@ proof (cases t)
 qed
 
 subsubsection "Height and Length"
-text {*
+text \<open>
   Although complexity of HOL-functions cannot be expressed within 
   HOL, we can express the height and length of a binomial heap.
   By showing that both, height and length, are logarithmic in the number 
   of contained elements, we give strong evidence that our functions have
   logarithmic complexity in the number of elements.
-*}
+\<close>
 
-text {* Height of a tree and queue *}
+text \<open>Height of a tree and queue\<close>
 fun height_tree :: "('e, ('a::linorder)) BinomialTree \<Rightarrow> nat" and
     height_queue :: "('e, ('a::linorder)) BinomialQueue_inv \<Rightarrow> nat" 
   where
@@ -273,7 +273,7 @@ next
     by (cases "a1 \<le> a2") simp_all
 qed
 
-text {* A binomial tree of height $h$ contains exactly $2^{h}$ elements *}
+text \<open>A binomial tree of height $h$ contains exactly $2^{h}$ elements\<close>
 theorem tree_height_estimate:
   "tree_invar t \<Longrightarrow> size (tree_to_multiset t) = (2::nat)^(height_tree t)"
   apply (cases t, simp only:)
@@ -332,9 +332,9 @@ lemma size_queue_sum_list:
   "size (queue_to_multiset bq) = sum_list (map (size \<circ> tree_to_multiset) bq)"
   by (induct bq) simp_all
 
-text {*
+text \<open>
   A binomial heap of length $l$ contains at least $2^l - 1$ elements. 
-*}
+\<close>
 theorem queue_length_estimate_lower: 
   "invar bq \<Longrightarrow> (size (queue_to_multiset bq)) \<ge> 2^(length bq) - 1"
 proof (induct bq rule: rev_induct)
@@ -367,7 +367,7 @@ next
   with eq show ?case by simp
 qed
 
-subsection {* Operations *}
+subsection \<open>Operations\<close>
 
 subsubsection "Empty"
 lemma empty_correct[simp]: 
@@ -375,7 +375,7 @@ lemma empty_correct[simp]:
   "queue_to_multiset Nil = {#}"
   by (simp_all add: invar_def)
   
-text {* The empty multiset is represented by exactly the empty queue *}
+text \<open>The empty multiset is represented by exactly the empty queue\<close>
 lemma empty_iff: "t=Nil \<longleftrightarrow> queue_to_multiset t = {#}"
   apply (cases t)
   apply auto
@@ -384,8 +384,8 @@ lemma empty_iff: "t=Nil \<longleftrightarrow> queue_to_multiset t = {#}"
   done
 
 subsubsection "Insert"
-text {* Inserts a binomial tree into a binomial queue, such that the queue 
-  does not contain two trees of same rank. *}
+text \<open>Inserts a binomial tree into a binomial queue, such that the queue 
+  does not contain two trees of same rank.\<close>
 fun  ins :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialQueue_inv \<Rightarrow> 
   ('e, 'a) BinomialQueue_inv" where
   "ins t [] = [t]" |
@@ -395,7 +395,7 @@ fun  ins :: "('e, 'a::linorder) BinomialTree \<Rightarrow> ('e, 'a) BinomialQueu
             then t # (ins t' bq)       
             else ins (link t' t) bq))" 
   
-text {* Inserts an element with priority into the queue. *}
+text \<open>Inserts an element with priority into the queue.\<close>
 definition insert :: "'e \<Rightarrow> 'a::linorder \<Rightarrow> ('e, 'a) BinomialQueue_inv \<Rightarrow> 
   ('e, 'a) BinomialQueue_inv" where
   "insert e a bq = ins (Node e a 0 []) bq"
@@ -419,7 +419,7 @@ proof (induct q arbitrary: t)
     from Cons.prems have 
       inv_a: "tree_invar a" and inv_q: "queue_invar q" 
       by (simp_all)
-    note inv_link = link_tree_invar[OF `tree_invar t` inv_a True]
+    note inv_link = link_tree_invar[OF \<open>tree_invar t\<close> inv_a True]
     from iv[OF inv_link inv_q] show ?thesis by simp
   next
     case False
@@ -448,8 +448,8 @@ proof goal_cases
     apply(auto simp add: rank_link)
   proof goal_cases
     case 1
-    note * = this and `\<And>t' t. \<lbrakk>rank_invar (t # bq); rank t' = rank t\<rbrakk>
-      \<Longrightarrow> rank t \<le> rank (hd (ins (link t' t) bq))`[of a "(link t' t)"] 
+    note * = this and \<open>\<And>t' t. \<lbrakk>rank_invar (t # bq); rank t' = rank t\<rbrakk>
+      \<Longrightarrow> rank t \<le> rank (hd (ins (link t' t) bq))\<close>[of a "(link t' t)"] 
     show ?case
     proof (cases "rank (hd (ins (link (link t' t) a) bq)) = rank a")
       case True
@@ -507,7 +507,7 @@ lemma insert_correct:
   unfolding invar_def by auto
 
 subsubsection "Meld"
-text {* Melds two queues. *}
+text \<open>Melds two queues.\<close>
 fun meld :: "('e, 'a::linorder) BinomialQueue_inv \<Rightarrow> ('e, 'a) BinomialQueue_inv
   \<Rightarrow> ('e, 'a) BinomialQueue_inv" 
   where
@@ -623,10 +623,10 @@ next
     from inv1 and inv2 and prems
     have mm: "min (rank (hd bq1)) (rank (hd bq2)) \<le> rank (hd (meld bq1 bq2))"
       by simp
-    from `rank_invar (t1 # bq1)` have "bq1 \<noteq> [] \<Longrightarrow> rank t1 < rank (hd bq1)" 
+    from \<open>rank_invar (t1 # bq1)\<close> have "bq1 \<noteq> [] \<Longrightarrow> rank t1 < rank (hd bq1)" 
       by (simp add: rank_invar_not_empty_hd)
     with prems have r1: "bq1 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq1)" by simp
-    from `rank_invar (t2 # bq2)` 
+    from \<open>rank_invar (t2 # bq2)\<close> 
     have r2: "bq2 \<noteq> [] \<Longrightarrow> rank t2 < rank (hd bq2)" 
       by (simp add: rank_invar_not_empty_hd)
     
@@ -638,7 +638,7 @@ next
       by simp
     from r1 r2 mm have 
       "\<lbrakk>bq1 \<noteq> []; bq2 \<noteq> []\<rbrakk> \<Longrightarrow> rank t2 < rank (hd (meld bq1 bq2))" by simp
-    with `rank_invar (meld bq1 bq2)` 
+    with \<open>rank_invar (meld bq1 bq2)\<close> 
       r rank_ins_min[of "meld bq1 bq2" "link t1 t2"] 
     have "\<lbrakk>bq1 \<noteq> []; bq2 \<noteq> []\<rbrakk> \<Longrightarrow> 
       rank t2 < rank (hd (ins (link t1 t2) (meld bq1 bq2)))" by simp
@@ -675,7 +675,7 @@ lemma meld_correct:
   by (simp_all add: meld_queue_invar rank_invar_meld meld_mset)
 
 subsubsection "Find Minimal Element"
-text {* Finds the tree containing the minimal element. *}
+text \<open>Finds the tree containing the minimal element.\<close>
 fun getMinTree :: "('e, 'a::linorder) BinomialQueue_inv \<Rightarrow> 
   ('e, 'a) BinomialTree" where
   "getMinTree [t] = t" |
@@ -747,7 +747,7 @@ proof -
   with getMinTree_min_tree[OF O(1)] show ?thesis by simp
 qed
 
-text {* Finds the minimal Element in the queue. *}
+text \<open>Finds the minimal Element in the queue.\<close>
 definition findMin :: "('e, 'a::linorder) BinomialQueue_inv \<Rightarrow> ('e \<times> 'a)" where
   "findMin bq = (let min = getMinTree bq in (val min, prio min))"
 
@@ -768,14 +768,14 @@ qed
 
 subsubsection "Delete Minimal Element"
 
-text {* Removes the first tree, which has the priority $a$ within his root. *}
+text \<open>Removes the first tree, which has the priority $a$ within his root.\<close>
 fun remove1Prio :: "'a \<Rightarrow> ('e, 'a::linorder) BinomialQueue_inv \<Rightarrow>
   ('e, 'a) BinomialQueue_inv" where
   "remove1Prio a [] = []" |
   "remove1Prio a (t#bq) = 
   (if (prio t) = a then bq else t # (remove1Prio a bq))"
 
-text {* Returns the queue without the minimal element. *}
+text \<open>Returns the queue without the minimal element.\<close>
 definition deleteMin :: "('e, 'a::linorder) BinomialQueue_inv \<Rightarrow> 
   ('e, 'a) BinomialQueue_inv" where
   "deleteMin bq \<equiv> (let min = getMinTree bq in 
@@ -1082,11 +1082,11 @@ begin
     if q=empty then empty 
     else Abs_BinomialHeap (BinomialHeapStruc.deleteMin (Rep_BinomialHeap q))"
 
-  text {*
+  text \<open>
     In this lemma, we do not use equality, but case-distinction for checking 
     non-emptyness. That prevents the code generator from introducing
-    an equality-class parameter for the entry type @{text 'a}.
-    *}
+    an equality-class parameter for the entry type \<open>'a\<close>.
+\<close>
   lemma [code abstract]: "Rep_BinomialHeap (deleteMin q) =
     (case (Rep_BinomialHeap q) of [] \<Rightarrow> [] |
      _ \<Rightarrow> BinomialHeapStruc.deleteMin (Rep_BinomialHeap q))"
@@ -1162,7 +1162,7 @@ begin
     apply (simp_all add: BinomialHeapStruc.meld_correct)
     done
 
-  text {* Correctness lemmas to be used with simplifier *}
+  text \<open>Correctness lemmas to be used with simplifier\<close>
   lemmas correct = empty_correct deleteMin_correct meld_correct
 
   end
@@ -1198,49 +1198,49 @@ subsection "Documentation"
 *)
 
 
-text {*
+text \<open>
     \underline{@{term_type "BinomialHeap.to_mset"}}\\
         Abstraction to multiset.\\
 
 
     \underline{@{term_type "BinomialHeap.empty"}}\\
         The empty heap. ($O(1)$)\\
-    {\bf Spec} @{text "BinomialHeap.empty_correct"}:
+    {\bf Spec} \<open>BinomialHeap.empty_correct\<close>:
     @{thm [display] BinomialHeap.empty_correct[no_vars]}
 
 
     \underline{@{term_type "BinomialHeap.isEmpty"}}\\
         Checks whether heap is empty. Mainly used to work around
     code-generation issues. ($O(1)$)\\
-    {\bf Spec} @{text "BinomialHeap.isEmpty_correct"}:
+    {\bf Spec} \<open>BinomialHeap.isEmpty_correct\<close>:
     @{thm [display] BinomialHeap.isEmpty_correct[no_vars]}
 
 
     \underline{@{term_type "BinomialHeap.insert"}}\\
         Inserts element ($O(\log(n))$)\\
-    {\bf Spec} @{text "BinomialHeap.insert_correct"}:
+    {\bf Spec} \<open>BinomialHeap.insert_correct\<close>:
     @{thm [display] BinomialHeap.insert_correct[no_vars]}
 
 
     \underline{@{term_type "BinomialHeap.findMin"}}\\
         Returns a minimal element ($O(\log(n))$)\\
-    {\bf Spec} @{text "BinomialHeap.findMin_correct"}:
+    {\bf Spec} \<open>BinomialHeap.findMin_correct\<close>:
     @{thm [display] BinomialHeap.findMin_correct[no_vars]}
 
 
     \underline{@{term_type "BinomialHeap.deleteMin"}}\\
         Deletes {\em the} element that is returned by {\em find\_min}\\
-    {\bf Spec} @{text "BinomialHeap.deleteMin_correct"}:
+    {\bf Spec} \<open>BinomialHeap.deleteMin_correct\<close>:
     @{thm [display] BinomialHeap.deleteMin_correct[no_vars]}
 
 
     \underline{@{term "BinomialHeap.meld"}}
     @{term_type [display] "BinomialHeap.meld"}
         Melds two heaps ($O(\log(n+m))$)\\
-    {\bf Spec} @{text "BinomialHeap.meld_correct"}:
+    {\bf Spec} \<open>BinomialHeap.meld_correct\<close>:
     @{thm [display] BinomialHeap.meld_correct[no_vars]}
 
-*}
+\<close>
 
 
 end

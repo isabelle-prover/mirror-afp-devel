@@ -14,8 +14,8 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* VCG auction: three simple examples evaluating the VCG allocation algorithm
-          vcgaAlg and the price determination algorithm vcgpAlg in Isabelle *}
+section \<open>VCG auction: three simple examples evaluating the VCG allocation algorithm
+          vcgaAlg and the price determination algorithm vcgpAlg in Isabelle\<close>
 
 theory CombinatorialAuctionExamples
 

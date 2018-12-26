@@ -3,17 +3,17 @@ imports
   Girth_Chromatic_Misc
 begin
 
-section {* Undirected Simple Graphs *}
+section \<open>Undirected Simple Graphs\<close>
 
-text {*
+text \<open>
   In this section, we define some basics of graph theory needed to formalize
   the Chromatic-Girth theorem.
-*}
+\<close>
 
-text {*
+text \<open>
   For readability, we introduce synonyms for the types of vertexes, edges,
   graphs and walks.
-*}
+\<close>
 type_synonym uvert = nat
 type_synonym uedge = "nat set"
 type_synonym ugraph = "uvert set \<times> uedge set"
@@ -28,7 +28,7 @@ abbreviation uverts :: "ugraph \<Rightarrow> uvert set" where
 fun mk_uedge :: "uvert \<times> uvert \<Rightarrow> uedge" where
    "mk_uedge (u,v) = {u,v}"
 
-text {* All edges over a set of vertexes @{term S}: *}
+text \<open>All edges over a set of vertexes @{term S}:\<close>
 definition "all_edges S \<equiv> mk_uedge ` {uv \<in> S \<times> S. fst uv \<noteq> snd uv}"
 
 definition uwellformed :: "ugraph \<Rightarrow> bool" where
@@ -52,7 +52,7 @@ definition remove_vertex :: "ugraph \<Rightarrow> nat \<Rightarrow> ugraph" ("_ 
   "remove_vertex G u \<equiv> (uverts G - {u}, uedges G - {A \<in> uedges G. u \<in> A})"
 
 
-subsection {* Basic Properties *}
+subsection \<open>Basic Properties\<close>
 
 lemma uwalk_length_conv: "uwalk_length p = length p - 1"
   by (induct p rule: uwalk_edges.induct) (auto simp: uwalk_length_def)
@@ -90,7 +90,7 @@ proof -
     with assms have "card (set (tl p)) \<le> card (uverts G)"
       by (rule card_mono)
     then have "length (p) \<le> 1 + card (uverts G)"
-      using distinct_card[OF `distinct (tl p)`] by auto
+      using distinct_card[OF \<open>distinct (tl p)\<close>] by auto
     ultimately show "set p \<subseteq> uverts G \<and> length p \<le> Suc (card (uverts G))" by auto
   qed
   moreover
@@ -139,13 +139,13 @@ proof (induct A)
     case (Suc n)
     have "{(a,b). a \<in> insert x A \<and> b \<in> insert x A \<and> a < b}
         = {(a,b). a \<in> A \<and> b \<in> A \<and> a < b} \<union> (\<lambda>a. if a < x then (a,x) else (x,a)) ` A"
-      using `x \<notin> A` by (auto simp: order_less_le)
+      using \<open>x \<notin> A\<close> by (auto simp: order_less_le)
     moreover
     have "finite {(a,b). a \<in> A \<and> b \<in> A \<and> a < b}"
       using insert by (auto intro: finite_subset[of _ "A \<times> A"])
     moreover 
     have "{(a,b). a \<in> A \<and> b \<in> A \<and> a < b} \<inter> (\<lambda>a. if a < x then (a,x) else (x,a)) ` A = {}"
-      using `x \<notin> A` by auto
+      using \<open>x \<notin> A\<close> by auto
     moreover have "inj_on (\<lambda>a. if a < x then (a, x) else (x, a)) A"
       by (auto intro: inj_onI split: if_split_asm)
     ultimately show ?thesis using insert Suc
@@ -178,7 +178,7 @@ lemma edges_Gu: "uedges (G -- u) \<subseteq> uedges G"
   unfolding remove_vertex_def by auto
 
 
-subsection {* Girth, Independence and Vertex Colorings *}
+subsection \<open>Girth, Independence and Vertex Colorings\<close>
 
 definition girth :: "ugraph \<Rightarrow> enat" where
   "girth G \<equiv> INF p\<in> ucycles G. enat (uwalk_length p)"
@@ -193,7 +193,7 @@ definition vertex_colorings :: "ugraph \<Rightarrow> uvert set set set" where
   "vertex_colorings G \<equiv> {C. \<Union>C = uverts G \<and> (\<forall>c1\<in>C. \<forall>c2\<in>C. c1 \<noteq> c2 \<longrightarrow> c1 \<inter> c2 = {}) \<and>
     (\<forall>c\<in>C. c \<noteq> {} \<and> (\<forall>u \<in> c. \<forall>v \<in> c. {u,v} \<notin> uedges G))}"
 
-text {* The chromatic number $\chi$: *}
+text \<open>The chromatic number $\chi$:\<close>
 definition chromatic_number :: "ugraph \<Rightarrow> enat" where
   "chromatic_number G \<equiv> INF c\<in> (vertex_colorings G). enat (card c)"
 
@@ -214,7 +214,7 @@ proof
     using card_Ex_subset by auto
   ultimately
   have "us \<in> independent_sets Gr"  by (auto intro: independent_sets_mono)
-  then show ?R using `k = card us` by auto
+  then show ?R using \<open>k = card us\<close> by auto
 qed (auto intro: SUP_upper simp: \<alpha>_def)
 
 lemma zero_less_\<alpha>:
@@ -249,10 +249,10 @@ proof -
     by (rule SUP_subset_mono) simp
 qed
 
-text {*
+text \<open>
   A lower bound for the chromatic number of a graph can be given in terms of
   the independence number
-*}
+\<close>
 lemma chromatic_lb:
   assumes wf_G: "uwellformed G"
     and fin_G: "finite (uverts G)"

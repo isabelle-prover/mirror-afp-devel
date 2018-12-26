@@ -115,9 +115,9 @@ begin
   using assms proof (cases rule: S_transition.cases)
     case (Act \<alpha>' P'')
     let ?Act = "Act :: 'act \<Rightarrow> ('act,'pred) S_action"
-    from `\<langle>\<alpha>\<^sub>S,P'\<rangle> = \<langle>Act \<alpha>',P''\<rangle>` obtain \<alpha> where "\<alpha>\<^sub>S = Act \<alpha>"
+    from \<open>\<langle>\<alpha>\<^sub>S,P'\<rangle> = \<langle>Act \<alpha>',P''\<rangle>\<close> obtain \<alpha> where "\<alpha>\<^sub>S = Act \<alpha>"
       by (meson bn_S_action.elims residual_empty_bn_eq_iff)
-    with `\<langle>\<alpha>\<^sub>S,P'\<rangle> = \<langle>Act \<alpha>',P''\<rangle>` obtain p where "supp (?Act \<alpha>, P') - bn (?Act \<alpha>) = supp (?Act \<alpha>', P'') - bn (?Act \<alpha>')"
+    with \<open>\<langle>\<alpha>\<^sub>S,P'\<rangle> = \<langle>Act \<alpha>',P''\<rangle>\<close> obtain p where "supp (?Act \<alpha>, P') - bn (?Act \<alpha>) = supp (?Act \<alpha>', P'') - bn (?Act \<alpha>')"
       and "(supp (?Act \<alpha>, P') - bn (?Act \<alpha>)) \<sharp>* p" and "p \<bullet> (?Act \<alpha>, P') = (?Act \<alpha>', P'')" and "p \<bullet> bn (?Act \<alpha>) = bn (?Act \<alpha>')"
       by (auto simp add: residual_eq_iff_perm)
     then have "supp (\<alpha>, P') - bn \<alpha> = supp (\<alpha>', P'') - bn \<alpha>'" and "(supp (\<alpha>, P') - bn \<alpha>) \<sharp>* p"
@@ -125,14 +125,14 @@ begin
       by (simp_all add: supp_Pair)
     then have "\<langle>\<alpha>,P'\<rangle> = \<langle>\<alpha>',P''\<rangle>"
       by (metis residual_eq_iff_perm)
-    with `\<alpha>\<^sub>S = Act \<alpha>` and `P \<rightarrow> \<langle>\<alpha>',P''\<rangle>` show R
-      using `\<And>\<alpha>. \<alpha>\<^sub>S = Act \<alpha> \<Longrightarrow> P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<Longrightarrow> R` by metis
+    with \<open>\<alpha>\<^sub>S = Act \<alpha>\<close> and \<open>P \<rightarrow> \<langle>\<alpha>',P''\<rangle>\<close> show R
+      using \<open>\<And>\<alpha>. \<alpha>\<^sub>S = Act \<alpha> \<Longrightarrow> P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<Longrightarrow> R\<close> by metis
   next
     case (Pred \<phi>)
-    from `\<langle>\<alpha>\<^sub>S,P'\<rangle> = \<langle>Pred \<phi>,P\<rangle>` have "\<alpha>\<^sub>S = Pred \<phi>" and "P' = P"
+    from \<open>\<langle>\<alpha>\<^sub>S,P'\<rangle> = \<langle>Pred \<phi>,P\<rangle>\<close> have "\<alpha>\<^sub>S = Pred \<phi>" and "P' = P"
       by (metis bn_S_action.simps(2) residual_empty_bn_eq_iff)+
-    with `P \<turnstile> \<phi>` show R
-      using `\<And>\<phi>. \<alpha>\<^sub>S = Pred \<phi> \<Longrightarrow> P' = P \<Longrightarrow> P \<turnstile> \<phi> \<Longrightarrow> R` by metis
+    with \<open>P \<turnstile> \<phi>\<close> show R
+      using \<open>\<And>\<phi>. \<alpha>\<^sub>S = Pred \<phi> \<Longrightarrow> P' = P \<Longrightarrow> P \<turnstile> \<phi> \<Longrightarrow> R\<close> by metis
   qed
 
   lemma S_transition_Act_iff: "P \<rightarrow>\<^sub>S \<langle>Act \<alpha>,P'\<rangle> \<longleftrightarrow> P \<rightarrow> \<langle>\<alpha>,P'\<rangle>"
@@ -173,22 +173,22 @@ begin
         obtain Q' where "Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle>" and "P' \<sim>\<cdot> Q'"
           using trans\<^sub>S proof (cases rule: S_transition_cases)
             case (Act \<alpha>)
-            from `\<alpha>\<^sub>S = Act \<alpha>` and fresh\<^sub>S have "bn \<alpha> \<sharp>* Q"
+            from \<open>\<alpha>\<^sub>S = Act \<alpha>\<close> and fresh\<^sub>S have "bn \<alpha> \<sharp>* Q"
               by simp
-            with bisim and `P \<rightarrow> \<langle>\<alpha>,P'\<rangle>` obtain Q' where transQ: "Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and bisim': "P' \<sim>\<cdot> Q'"
+            with bisim and \<open>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>\<close> obtain Q' where transQ: "Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>" and bisim': "P' \<sim>\<cdot> Q'"
               by (metis bisimilar_simulation_step)
-            from `\<alpha>\<^sub>S = Act \<alpha>` and transQ have "Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle>"
+            from \<open>\<alpha>\<^sub>S = Act \<alpha>\<close> and transQ have "Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle>"
               by (simp add: S_transition.Act)
             with bisim' show "thesis"
-              using `\<And>Q'. Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle> \<Longrightarrow> P' \<sim>\<cdot> Q' \<Longrightarrow> thesis` by blast
+              using \<open>\<And>Q'. Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle> \<Longrightarrow> P' \<sim>\<cdot> Q' \<Longrightarrow> thesis\<close> by blast
           next
             case (Pred \<phi>)
-            from bisim and `P \<turnstile> \<phi>` have "Q \<turnstile> \<phi>"
+            from bisim and \<open>P \<turnstile> \<phi>\<close> have "Q \<turnstile> \<phi>"
               by (metis is_bisimulation_def bisimilar_is_bisimulation)
-            with `\<alpha>\<^sub>S = Pred \<phi>` have "Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q\<rangle>"
+            with \<open>\<alpha>\<^sub>S = Pred \<phi>\<close> have "Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q\<rangle>"
               by (simp add: S_transition.Pred)
-            with bisim and `P' = P` show "thesis"
-              using `\<And>Q'. Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle> \<Longrightarrow> P' \<sim>\<cdot> Q' \<Longrightarrow> thesis` by blast
+            with bisim and \<open>P' = P\<close> show "thesis"
+              using \<open>\<And>Q'. Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle> \<Longrightarrow> P' \<sim>\<cdot> Q' \<Longrightarrow> thesis\<close> by blast
           qed
         then show "\<exists>Q'. Q \<rightarrow>\<^sub>S \<langle>\<alpha>\<^sub>S,Q'\<rangle> \<and> P' \<sim>\<cdot> Q'"
           by auto
@@ -279,11 +279,11 @@ begin
           then show ?thesis
           proof
             assume "S = Q \<and> T = R"
-            with `P \<Rightarrow> Q` and `P \<approx>\<cdot> R` and valid show ?thesis
+            with \<open>P \<Rightarrow> Q\<close> and \<open>P \<approx>\<cdot> R\<close> and valid show ?thesis
               by (metis is_weak_bisimulation_def tau_transition_trans weakly_bisimilar_is_weak_bisimulation weakly_bisimilar_tau_simulation_step)
           next
             assume "T = Q \<and> S = R"
-            with `Q \<Rightarrow> R` and valid show ?thesis
+            with \<open>Q \<Rightarrow> R\<close> and valid show ?thesis
               by (meson reflpE weakly_bisimilar_reflp)
           qed
         qed
@@ -304,11 +304,11 @@ begin
           then show ?thesis
           proof
             assume "S = Q \<and> T = R"
-            with `P \<Rightarrow> Q` and `P \<approx>\<cdot> R` and fresh and trans show ?thesis
+            with \<open>P \<Rightarrow> Q\<close> and \<open>P \<approx>\<cdot> R\<close> and fresh and trans show ?thesis
               using observable_transition_stepI tau_refl weak_transition_stepI weak_transition_weakI weakly_bisimilar_weak_simulation_step by blast
           next
             assume "T = Q \<and> S = R"
-            with `Q \<Rightarrow> R` and trans show ?thesis
+            with \<open>Q \<Rightarrow> R\<close> and trans show ?thesis
               by (metis observable_transition_stepI reflpE tau_refl weak_transition_stepI weak_transition_weakI weakly_bisimilar_reflp)
           qed
         qed
@@ -367,26 +367,26 @@ begin
         obtain Q' where "Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q'" and "P' \<approx>\<cdot> Q'"
           using trans\<^sub>S proof (cases rule: S_transition_cases)
             case (Act \<alpha>)
-            from `\<alpha>\<^sub>S = Act \<alpha>` and fresh\<^sub>S have "bn \<alpha> \<sharp>* Q"
+            from \<open>\<alpha>\<^sub>S = Act \<alpha>\<close> and fresh\<^sub>S have "bn \<alpha> \<sharp>* Q"
               by simp
-            with bisim and `P \<rightarrow> \<langle>\<alpha>,P'\<rangle>` obtain Q' where transQ: "Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'" and bisim': "P' \<approx>\<cdot> Q'"
+            with bisim and \<open>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>\<close> obtain Q' where transQ: "Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'" and bisim': "P' \<approx>\<cdot> Q'"
               by (metis is_weak_bisimulation_def weakly_bisimilar_is_weak_bisimulation)
-            from `\<alpha>\<^sub>S = Act \<alpha>` and transQ have "Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q'"
+            from \<open>\<alpha>\<^sub>S = Act \<alpha>\<close> and transQ have "Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q'"
               by (metis S_transform_weak_transition_iff)
             with bisim' show "thesis"
-              using `\<And>Q'. Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q' \<Longrightarrow> P' \<approx>\<cdot> Q' \<Longrightarrow> thesis` by blast
+              using \<open>\<And>Q'. Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q' \<Longrightarrow> P' \<approx>\<cdot> Q' \<Longrightarrow> thesis\<close> by blast
           next
             case (Pred \<phi>)
-            from bisim and `P \<turnstile> \<phi>` obtain Q' where "Q \<Rightarrow> Q'" and "P \<approx>\<cdot> Q'" and "Q' \<turnstile> \<phi>"
+            from bisim and \<open>P \<turnstile> \<phi>\<close> obtain Q' where "Q \<Rightarrow> Q'" and "P \<approx>\<cdot> Q'" and "Q' \<turnstile> \<phi>"
               by (metis is_weak_bisimulation_def weakly_bisimilar_is_weak_bisimulation)
-            from `Q \<Rightarrow> Q'` have "Q \<Rightarrow>\<^sub>S Q'"
+            from \<open>Q \<Rightarrow> Q'\<close> have "Q \<Rightarrow>\<^sub>S Q'"
               by (metis S_transform_tau_transition_iff)
-            moreover from `Q' \<turnstile> \<phi>` have "Q' \<rightarrow>\<^sub>S \<langle>Pred \<phi>,Q'\<rangle>"
+            moreover from \<open>Q' \<turnstile> \<phi>\<close> have "Q' \<rightarrow>\<^sub>S \<langle>Pred \<phi>,Q'\<rangle>"
               by (simp add: S_transition.Pred)
             ultimately have "Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q'"
-              using `\<alpha>\<^sub>S = Pred \<phi>` by (metis S_transform.observable_transitionI S_transform.tau_refl S_transform.weak_transition_stepI)
-            with `P' = P` and `P \<approx>\<cdot> Q'` show "thesis"
-              using `\<And>Q'. Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q' \<Longrightarrow> P' \<approx>\<cdot> Q' \<Longrightarrow> thesis` by blast
+              using \<open>\<alpha>\<^sub>S = Pred \<phi>\<close> by (metis S_transform.observable_transitionI S_transform.tau_refl S_transform.weak_transition_stepI)
+            with \<open>P' = P\<close> and \<open>P \<approx>\<cdot> Q'\<close> show "thesis"
+              using \<open>\<And>Q'. Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q' \<Longrightarrow> P' \<approx>\<cdot> Q' \<Longrightarrow> thesis\<close> by blast
           qed
         then show "\<exists>Q'. Q \<Rightarrow>\<langle>\<alpha>\<^sub>S\<rangle>\<^sub>S Q' \<and> P' \<approx>\<cdot> Q'"
           by auto
@@ -492,7 +492,7 @@ using assms proof (induction t1 t2 rule: alpha_Tree_induct')
     by (simp add: bset.rel_eq)
 next
   case (alpha_tAct \<alpha>1 t1 \<alpha>2 t2)
-  from `tAct \<alpha>1 t1 =\<^sub>\<alpha> tAct \<alpha>2 t2`
+  from \<open>tAct \<alpha>1 t1 =\<^sub>\<alpha> tAct \<alpha>2 t2\<close>
     obtain p where *: "(bn \<alpha>1, t1) \<approx>set alpha_Tree (supp_rel alpha_Tree) p (bn \<alpha>2, t2)"
       and **: "(bn \<alpha>1, \<alpha>1) \<approx>set (=) supp p (bn \<alpha>2, \<alpha>2)"
     by auto

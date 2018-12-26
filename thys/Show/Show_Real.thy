@@ -29,9 +29,9 @@ lemma showsp_real_append [show_law_simps]:
   "showsp_real p r (x @ y) = showsp_real p r x @ y"
   by (intro show_lawD show_law_intros)
 
-local_setup {*
+local_setup \<open>
   Show_Generator.register_foreign_showsp @{typ real} @{term "showsp_real"} @{thm show_law_real}
-*}
+\<close>
 
 derive "show" real
 end

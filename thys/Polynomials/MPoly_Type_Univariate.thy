@@ -55,15 +55,15 @@ proof -
     show "Poly_Mapping.lookup (Abs_poly_mapping f) m = Poly_Mapping.lookup (mapping_of p) m"
     proof (cases "Poly_Mapping.keys m \<subseteq> {v}")
       assume "Poly_Mapping.keys m \<subseteq> {v}"
-      then show ?thesis unfolding "Poly_Mapping.lookup_Abs_poly_mapping"[OF `finite {m. f m \<noteq> 0}`] unfolding f_def
+      then show ?thesis unfolding "Poly_Mapping.lookup_Abs_poly_mapping"[OF \<open>finite {m. f m \<noteq> 0}\<close>] unfolding f_def
         unfolding coeff_mpoly_to_poly coeff_def using when_simps(1) apply simp
         using keys_single lookup_not_eq_zero_eq_in_keys lookup_single_eq
         lookup_single_not_eq poly_mapping_eqI subset_singletonD
         by (metis (no_types, lifting) aux lookup_eq_zero_in_keys_contradict)
     next
       assume "\<not>Poly_Mapping.keys m \<subseteq> {v}"
-      then show ?thesis unfolding "Poly_Mapping.lookup_Abs_poly_mapping"[OF `finite {m. f m \<noteq> 0}`] unfolding f_def
-        using `vars p \<subseteq> {v}` unfolding vars_def by (metis (no_types, lifting) UN_I lookup_not_eq_zero_eq_in_keys subsetCE subsetI when_def)
+      then show ?thesis unfolding "Poly_Mapping.lookup_Abs_poly_mapping"[OF \<open>finite {m. f m \<noteq> 0}\<close>] unfolding f_def
+        using \<open>vars p \<subseteq> {v}\<close> unfolding vars_def by (metis (no_types, lifting) UN_I lookup_not_eq_zero_eq_in_keys subsetCE subsetI when_def)
     qed
   qed
   then show ?thesis
@@ -123,7 +123,7 @@ lemma univariate_mpoly_roots_finite:
 fixes p::"'a::idom mpoly"
 assumes "vars p \<subseteq> {v}" "p \<noteq> 0"
 shows "finite {x. insertion (\<lambda>v. x) p = 0}"
-using poly_roots_finite[of "mpoly_to_poly v p", unfolded poly_eq_insertion[OF `vars p \<subseteq> {v}`]]
+using poly_roots_finite[of "mpoly_to_poly v p", unfolded poly_eq_insertion[OF \<open>vars p \<subseteq> {v}\<close>]]
 using assms(1) assms(2) mpoly_to_poly_inverse poly_to_mpoly0 by fastforce
 
 end

@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-section {* Ccpo structure for terminated lazy lists *}
+section \<open>Ccpo structure for terminated lazy lists\<close>
 
 theory TLList_CCPO imports TLList begin
 
@@ -61,8 +61,8 @@ proof(rule antisym)
     proof
       assume "x \<in> A"
       then obtain y where "x \<le> y" "y \<in> B" using AB by blast
-      note `x \<le> y`
-      also from chain' `y \<in> B` have "y \<le> Sup B" by(rule ccpo_Sup_upper)
+      note \<open>x \<le> y\<close>
+      also from chain' \<open>y \<in> B\<close> have "y \<le> Sup B" by(rule ccpo_Sup_upper)
       finally show ?thesis .
     qed(rule ccpo_Sup_upper[OF chain'])
   qed
@@ -70,7 +70,7 @@ proof(rule antisym)
     using chain chain' by(blast intro: ccpo_Sup_least ccpo_Sup_upper)
 qed
 
-subsection {* The ccpo structure *}
+subsection \<open>The ccpo structure\<close>
 
 context includes tllist.lifting fixes b :: 'b begin
 
@@ -139,12 +139,12 @@ proof(cases "tfinite xs")
   show ?thesis
   proof(cases "llist_of_tllist xs = llist_of_tllist (tSup A)")
     case True
-    with `tfinite xs` have "lfinite (lSup (llist_of_tllist ` A))"
+    with \<open>tfinite xs\<close> have "lfinite (lSup (llist_of_tllist ` A))"
       by(simp add: tSup_def image_image)
     hence "terminal (tSup A) = flat_lub b {terminal xs|xs. xs \<in> A \<and> tfinite xs}" (is "_ = flat_lub _ ?A")
       by(simp add: tSup_def terminal_tllist_of_llist image_image)(auto intro: rev_image_eqI intro!: arg_cong[where f="flat_lub b"])
     moreover have "flat_ord b (terminal xs) (flat_lub b ?A)"
-      by(rule ccpo.ccpo_Sup_upper[OF Partial_Function.ccpo[OF flat_interpretation]])(blast intro: chain_tllist_terminal[OF chain] A `tfinite xs`)+
+      by(rule ccpo.ccpo_Sup_upper[OF Partial_Function.ccpo[OF flat_interpretation]])(blast intro: chain_tllist_terminal[OF chain] A \<open>tfinite xs\<close>)+
     ultimately show ?thesis using True by(simp add: tllist_ord.rep_eq)
   next
     case False
@@ -195,7 +195,7 @@ proof -
         assume "xs' \<in> A"
         with False have "\<not> lprefix (llist_of_tllist xs) (llist_of_tllist xs')"
           by-(erule contrapos_nn, auto 4 4 intro: lprefix_trans chain_lprefix_lSup chain_tllist_llist_of_tllist chain)
-        with lub[OF `xs' \<in> A`] have "terminal xs' = b"
+        with lub[OF \<open>xs' \<in> A\<close>] have "terminal xs' = b"
           by(auto simp add: tllist_ord.rep_eq split: if_split_asm) }
       with chain_tllist_terminal[OF chain] have "flat_ord b (flat_lub b ?A) b"
         by -(rule ccpo.ccpo_Sup_least[OF Partial_Function.ccpo[OF flat_interpretation]], auto simp add: flat_ord_def)
@@ -276,8 +276,8 @@ proof (transfer, goal_cases)
   also have "insert b (snd ` (Y \<inter> {(xs, _). lfinite xs})) = insert b (snd ` (apfst ltl ` (Y \<inter> {(xs, b). \<not> lnull xs}) \<inter> {(xs, _). lfinite xs}))"
     apply(auto intro: rev_image_eqI)
     apply(erule contrapos_np)
-    apply(frule chainD[OF chain `(xs, b') \<in> Y`])
-    using `\<not> lnull xs` xsb
+    apply(frule chainD[OF chain \<open>(xs, b') \<in> Y\<close>])
+    using \<open>\<not> lnull xs\<close> xsb
     by(fastforce split: if_split_asm simp add: lprefix_lnull intro!: rev_image_eqI)
   also have "flat_lub b \<dots> = flat_lub b (snd ` (apfst ltl ` (Y \<inter> {(xs, b). \<not> lnull xs}) \<inter> {(xs, _). lfinite xs}))"
     by(auto simp add: flat_lub_def)
@@ -310,7 +310,7 @@ by(cases xs ys rule: tllist.exhaust[case_product tllist.exhaust])(simp_all)
 lemma not_is_TNil_conv: "\<not> is_TNil xs \<longleftrightarrow> (\<exists>x xs'. xs = TCons x xs')"
 by(cases xs) simp_all
 
-subsection {* Continuity of predefined constants *}
+subsection \<open>Continuity of predefined constants\<close>
 
 lemma mono_tllist_ord_case:
   fixes bot
@@ -468,13 +468,13 @@ lemma tllist_case_mono [partial_function_mono, cont_intro]:
   shows "monotone orda ordb (\<lambda>f. case_tllist (tnil f) (tcons f) xs)"
 by(rule monotoneI)(auto split: tllist.split dest: monotoneD[OF tnil] monotoneD[OF tcons])
 
-subsection {* Definition of recursive functions *}
+subsection \<open>Definition of recursive functions\<close>
 
 locale tllist_pf = fixes b :: 'b
 begin
 
-declaration {* Partial_Function.init "tllist" @{term "tllist.fixp_fun b"}
-  @{term "tllist.mono_body b"} @{thm tllist.fixp_rule_uc[where b=b]} @{thm tllist.fixp_induct_uc[where b=b]} NONE *}
+declaration \<open>Partial_Function.init "tllist" @{term "tllist.fixp_fun b"}
+  @{term "tllist.mono_body b"} @{thm tllist.fixp_rule_uc[where b=b]} @{thm tllist.fixp_induct_uc[where b=b]} NONE\<close>
 
 abbreviation mono_tllist where "mono_tllist \<equiv> monotone (fun_ord (tllist_ord b)) (tllist_ord b)"
 

@@ -3,7 +3,7 @@
 
 theory Equal imports Main begin
 
-section {* Locales to abstract over HOL equality *}
+section \<open>Locales to abstract over HOL equality\<close>
 
 locale equal_base = fixes equal :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
 

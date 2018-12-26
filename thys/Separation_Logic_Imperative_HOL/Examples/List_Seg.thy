@@ -1,36 +1,36 @@
-section {* Singly Linked List Segments *}
+section \<open>Singly Linked List Segments\<close>
 theory List_Seg
 imports "../Sep_Main"
 begin
 
-subsection {* Nodes *}
-text {*
+subsection \<open>Nodes\<close>
+text \<open>
   We define a node of a list to contain a data value and a next pointer.
   As Imperative HOL does not support null-pointers, we make the next-pointer
-  an optional value, @{text "None"} representing a null pointer.
+  an optional value, \<open>None\<close> representing a null pointer.
 
   Unfortunately, Imperative HOL requires some boilerplate code to define 
   a datatype.
-*}
-setup {* Sign.add_const_constraint 
-  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a::type ref"}) *}
+\<close>
+setup \<open>Sign.add_const_constraint 
+  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a::type ref"})\<close>
 
 datatype 'a node = Node "'a" "'a node ref option"
 
-setup {* Sign.add_const_constraint 
-  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a::heap ref"}) *}
+setup \<open>Sign.add_const_constraint 
+  (@{const_name Ref}, SOME @{typ "nat \<Rightarrow> 'a::heap ref"})\<close>
 
-setup {* Sign.add_const_constraint (@{const_name Node}, 
-  SOME @{typ "'a::heap \<Rightarrow> 'a node ref option \<Rightarrow> 'a node"}) *}
+setup \<open>Sign.add_const_constraint (@{const_name Node}, 
+  SOME @{typ "'a::heap \<Rightarrow> 'a node ref option \<Rightarrow> 'a node"})\<close>
 
-text {* Selector Functions *}
+text \<open>Selector Functions\<close>
 primrec val :: "'a::heap node \<Rightarrow> 'a" where
   [sep_dflt_simps]: "val (Node x _) = x"
 
 primrec "next" :: "'a::heap node \<Rightarrow> 'a node ref option" where
   [sep_dflt_simps]: "next (Node _ r) = r"
 
-text {* Encoding to natural numbers, as required by Imperative/HOL*}
+text \<open>Encoding to natural numbers, as required by Imperative/HOL\<close>
 fun
   node_encode :: "'a::heap node \<Rightarrow> nat"
 where
@@ -42,13 +42,13 @@ instance node :: (heap) heap
   apply (case_tac x, simp_all, case_tac y, simp_all)
   ..
 
-subsection {* List Segment Assertion *}
-text {*
-  Intuitively, @{text "lseg l p s"} describes a list starting at @{text "p"} and
-  ending with a pointer @{text "s"}. The content of the list are @{text "l"}.
-  Note that the pointer @{text "s"} may also occur earlier in the list, in which
+subsection \<open>List Segment Assertion\<close>
+text \<open>
+  Intuitively, \<open>lseg l p s\<close> describes a list starting at \<open>p\<close> and
+  ending with a pointer \<open>s\<close>. The content of the list are \<open>l\<close>.
+  Note that the pointer \<open>s\<close> may also occur earlier in the list, in which
   case it is handled as a usual next-pointer.
-*}
+\<close>
 fun lseg 
   :: "'a::heap list \<Rightarrow> 'a node ref option \<Rightarrow> 'a node ref option \<Rightarrow> assn"
   where
@@ -72,9 +72,9 @@ lemma lseg_if_splitf2[simp, sep_dflt_simps]:
   done
 
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
-subsubsection {* Concatenation *}
+subsubsection \<open>Concatenation\<close>
 lemma lseg_prepend: 
   "p\<mapsto>\<^sub>rNode x q * lseg l q s \<Longrightarrow>\<^sub>A lseg (x#l) (Some p) s"
   by sep_auto
@@ -109,7 +109,7 @@ next
     done
 qed
 
-subsubsection {* Splitting *}
+subsubsection \<open>Splitting\<close>
 lemma lseg_split: 
   "lseg (l1@l2) p r \<Longrightarrow>\<^sub>A \<exists>\<^sub>Aq. lseg l1 p q * lseg l2 q r"
 proof (induct l1 arbitrary: p)
@@ -136,7 +136,7 @@ next
   finally show ?case .
 qed
 
-subsubsection {* Precision*}
+subsubsection \<open>Precision\<close>
 lemma lseg_prec1: 
   "\<forall>l l'. (h\<Turnstile>
       (lseg l p (Some q) * q \<mapsto>\<^sub>r x * F1) 

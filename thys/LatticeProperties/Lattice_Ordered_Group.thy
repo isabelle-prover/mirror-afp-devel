@@ -1,4 +1,4 @@
-section{* Lattice Orderd Groups *}
+section\<open>Lattice Orderd Groups\<close>
 
 (*
     Author: Viorel Preoteasa
@@ -8,11 +8,11 @@ theory Lattice_Ordered_Group
 imports Modular_Distrib_Lattice
 begin
 
-text{*
+text\<open>
 This theory introduces lattice ordered groups \cite{birkhoff:1942} 
 and proves some results about them. The most important result is 
 that a lattice ordered group is also a distributive lattice.
-*}
+\<close>
 
 class lgroup = group_add + lattice +
 assumes add_order_preserving: "a \<le> b \<Longrightarrow> u + a + v \<le> u + b + v"

@@ -5,19 +5,19 @@ begin
 (* DEF : 2 *)
 (* LEM : 0 *)
 
-section {* Labels *}
+section \<open>Labels\<close>
 
-text {* In the following, we model programs by control flow graphs where edges (rather than vertices) are labelled 
+text \<open>In the following, we model programs by control flow graphs where edges (rather than vertices) are labelled 
 with either assignments or with the condition associated with a branch of a conditional statement.
 We put a label on every edge : statements that do not modify the program state (like \verb?jump?, 
-\verb?break?, etc) are labelled by a @{term Skip}. *}
+\verb?break?, etc) are labelled by a @{term Skip}.\<close>
 
 
 datatype ('v,'d) label = Skip | Assume "('v,'d) bexp" | Assign 'v "('v,'d) aexp"
 
 
-text {* We say that a label is \emph{finite} if the set of variables of its sub-expression is 
-finite (@{term Skip} labels are thus considered finite). *}
+text \<open>We say that a label is \emph{finite} if the set of variables of its sub-expression is 
+finite (@{term Skip} labels are thus considered finite).\<close>
 
 
 definition finite_label ::

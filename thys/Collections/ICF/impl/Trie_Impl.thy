@@ -2,13 +2,13 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-section {* \isaheader{Implementation of a trie with explicit invariants} *}
+section \<open>\isaheader{Implementation of a trie with explicit invariants}\<close>
 theory Trie_Impl imports
   "../../Lib/Assoc_List"
   Trie.Trie
 begin
 
-subsection {* Interuptible iterator *}
+subsection \<open>Interuptible iterator\<close>
 
 fun iteratei_postfixed :: "'key list \<Rightarrow> ('key, 'val) trie \<Rightarrow> 
     ('key list \<times> 'val, '\<sigma>) set_iterator"

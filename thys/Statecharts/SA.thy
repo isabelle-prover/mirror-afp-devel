@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Sequential Automata *}
+section \<open>Sequential Automata\<close>
 theory SA
 imports Expr
 begin

@@ -3,16 +3,16 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Kleene Relation Algebras *}
+section \<open>Kleene Relation Algebras\<close>
 
-text {*
+text \<open>
 This theory combines Kleene algebras with Stone relation algebras.
 Relation algebras with transitive closure have been studied by \cite{Ng1984}.
 The weakening to Stone relation algebras allows us to talk about reachability in weighted graphs, for example.
 
 Many results in this theory are used in the correctness proof of Prim's minimum spanning tree algorithm.
 In particular, they are concerned with the exchange property, preservation of parts of the invariant and with establishing parts of the postcondition.
-*}
+\<close>
 
 theory Kleene_Relation_Algebras
 
@@ -20,9 +20,9 @@ imports Stone_Relation_Algebras.Relation_Algebras Kleene_Algebras
 
 begin
 
-text {*
+text \<open>
 We first note that bounded distributive lattices can be expanded to Kleene algebras by reusing some of the operations.
-*}
+\<close>
 
 sublocale bounded_distrib_lattice < comp_inf: bounded_kleene_algebra where star = "\<lambda>x . top" and one = top and times = inf
   apply unfold_locales
@@ -41,10 +41,10 @@ sublocale bounded_distrib_lattice < comp_inf: bounded_kleene_algebra where star 
   apply simp
   by (simp add: inf_assoc)
 
-text {*
+text \<open>
 We add the Kleene star operation to each of bounded distributive allegories, pseudocomplemented distributive allegories and Stone relation algebras.
 We start with single-object bounded distributive allegories.
-*}
+\<close>
 
 class bounded_distrib_kleene_allegory = bounded_distrib_allegory + kleene_algebra
 begin
@@ -66,9 +66,9 @@ proof -
     using star_left_induct by fastforce
 qed
 
-text {*
+text \<open>
 It follows that star and converse commute.
-*}
+\<close>
 
 lemma conv_star_commute:
   "x\<^sup>\<star>\<^sup>T = x\<^sup>T\<^sup>\<star>"
@@ -84,9 +84,9 @@ lemma conv_plus_commute:
   "x\<^sup>+\<^sup>T = x\<^sup>T\<^sup>+"
   by (simp add: conv_dist_comp conv_star_commute star_plus)
 
-text {*
+text \<open>
 The following results are variants of a separation lemma of Kleene algebras.
-*}
+\<close>
 
 lemma cancel_separate_2:
   assumes "x * y \<le> 1"
@@ -168,9 +168,9 @@ proof -
     using assms(5) le_bot by simp
 qed
 
-text {*
+text \<open>
 We show several results about the interaction of vectors and the Kleene star.
-*}
+\<close>
 
 lemma vector_star_1:
   assumes "vector x"
@@ -194,10 +194,10 @@ lemma vector_vector_star:
   "vector v \<Longrightarrow> (v * v\<^sup>T)\<^sup>\<star> = 1 \<squnion> v * v\<^sup>T"
   by (simp add: transitive_star vv_transitive)
 
-text {*
+text \<open>
 The following equivalence relation characterises the component trees of a forest.
 This is a special case of undirected reachability in a directed graph.
-*}
+\<close>
 
 abbreviation "forest_components f \<equiv> f\<^sup>T\<^sup>\<star> * f\<^sup>\<star>"
 
@@ -224,9 +224,9 @@ lemma forest_components_star:
   "injective x \<Longrightarrow> (forest_components x)\<^sup>\<star> = forest_components x"
   using forest_components_equivalence forest_components_idempotent star.circ_transitive_equal by simp
 
-text {*
+text \<open>
 The following lemma shows that the nodes reachable in the graph can be reached by only using edges between reachable nodes.
-*}
+\<close>
 
 lemma reachable_restrict:
   assumes "vector r"
@@ -345,16 +345,16 @@ qed
 
 end
 
-text {*
+text \<open>
 We next add the Kleene star to single-object pseudocomplemented distributive allegories.
-*}
+\<close>
 
 class pd_kleene_allegory = pd_allegory + bounded_distrib_kleene_allegory
 begin
 
-text {*
+text \<open>
 The following definitions and results concern acyclic graphs and forests.
-*}
+\<close>
 
 abbreviation acyclic :: "'a \<Rightarrow> bool" where "acyclic x \<equiv> x\<^sup>+ \<le> -1"
 
@@ -420,9 +420,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The following definition captures the components of undirected weighted graphs.
-*}
+\<close>
 
 abbreviation "components g \<equiv> (--g)\<^sup>\<star>"
 
@@ -457,9 +457,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The following lemma shows that the predecessors of visited nodes in the minimum spanning tree extending the current tree have all been visited.
-*}
+\<close>
 
 lemma predecessors_reachable:
   assumes "vector r"
@@ -503,20 +503,20 @@ proof -
     .
 qed
 
-subsection {* Prim's Algorithm *}
+subsection \<open>Prim's Algorithm\<close>
 
-text {*
+text \<open>
 The following results are used for proving the correctness of Prim's minimum spanning tree algorithm.
-*}
+\<close>
 
-subsubsection {* Preservation of Invariant *}
+subsubsection \<open>Preservation of Invariant\<close>
 
-text {*
+text \<open>
 We first treat the preservation of the invariant.
-The following lemma shows that the while-loop preserves that @{text v} represents the nodes of the constructed tree.
-The remaining lemmas in this section show that @{text t} is a spanning tree.
+The following lemma shows that the while-loop preserves that \<open>v\<close> represents the nodes of the constructed tree.
+The remaining lemmas in this section show that \<open>t\<close> is a spanning tree.
 The exchange property is treated in the following two sections.
-*}
+\<close>
 
 lemma reachable_inv:
   assumes "vector v"
@@ -573,9 +573,9 @@ proof -
     using 3 by (simp add: inf.eq_iff)
 qed
 
-text {*
+text \<open>
 The next result is used to show that the while-loop preserves acyclicity of the constructed tree.
-*}
+\<close>
 
 lemma acyclic_inv:
   assumes "acyclic t"
@@ -628,9 +628,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The following lemma shows that the extended tree is in the component reachable from the root.
-*}
+\<close>
 
 lemma mst_subgraph_inv_2:
   assumes "regular (v * v\<^sup>T)"
@@ -849,23 +849,23 @@ proof -
     .
 qed
 
-subsubsection {* Exchange gives Spanning Trees *}
+subsubsection \<open>Exchange gives Spanning Trees\<close>
 
-text {*
+text \<open>
 The following abbreviations are used in the spanning tree application using Prim's algorithm to construct the new tree for the exchange property.
 It is obtained by replacing an edge with one that has minimal weight and reversing the path connecting these edges.
 Here, w represents a weighted graph, v represents a set of nodes and e represents an edge.
-*}
+\<close>
 
 abbreviation prim_E :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where "prim_E w v e \<equiv> w \<sqinter> --v * -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
 abbreviation prim_P :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where "prim_P w v e \<equiv> w \<sqinter> -v * -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
 abbreviation prim_EP :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where "prim_EP w v e \<equiv> w \<sqinter> -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
 abbreviation prim_W :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where "prim_W w v e \<equiv> (w \<sqinter> -(prim_EP w v e)) \<squnion> (prim_P w v e)\<^sup>T \<squnion> e"
 
-text {*
+text \<open>
 The lemmas in this section are used to show that the relation after exchange represents a spanning tree.
 The results in the next section are used to show that it is a minimum spanning tree.
-*}
+\<close>
 
 lemma exchange_injective_3:
   assumes "e \<le> v * -v\<^sup>T"
@@ -917,9 +917,9 @@ proof -
     using le_bot by simp
 qed
 
-text {*
+text \<open>
 The graph after exchanging is injective.
-*}
+\<close>
 
 lemma exchange_injective:
   assumes "arc e"
@@ -1045,9 +1045,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The graph after exchanging is acyclic.
-*}
+\<close>
 
 lemma exchange_acyclic:
   assumes "vector v"
@@ -1290,9 +1290,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The following lemma shows that an edge across the cut between visited nodes and unvisited nodes does not leave the component of visited nodes.
-*}
+\<close>
 
 lemma mst_subgraph_inv:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
@@ -1320,9 +1320,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The following lemmas show that the tree after exchanging contains the currently constructed and tree and its extension by the chosen edge.
-*}
+\<close>
 
 lemma mst_extends_old_tree:
   assumes "t \<le> w"
@@ -1350,11 +1350,11 @@ lemma mst_extends_new_tree:
 
 end
 
-text {*
+text \<open>
 We finally add the Kleene star to Stone relation algebras.
 Kleene star and the relational operations are reasonably independent.
 The only additional axiom we need in the generalisation to Stone-Kleene relation algebras is that star distributes over double complement.
-*}
+\<close>
 
 class stone_kleene_relation_algebra = stone_relation_algebra + pd_kleene_allegory +
   assumes pp_dist_star: "--(x\<^sup>\<star>) = (--x)\<^sup>\<star>"
@@ -1368,9 +1368,9 @@ lemma components_idempotent:
   "components (components x) = components x"
   using pp_dist_star star_involutive by auto
 
-text {*
+text \<open>
 The following lemma shows that the nodes reachable in the tree after exchange contain the nodes reachable in the tree before exchange.
-*}
+\<close>
 
 lemma mst_reachable_inv:
   assumes "regular (prim_EP w v e)"
@@ -1497,16 +1497,16 @@ proof -
     by (simp add: star_right_induct)
 qed
 
-text {*
+text \<open>
 Some of the following lemmas already hold in pseudocomplemented distributive Kleene allegories.
-*}
+\<close>
 
-subsubsection {* Exchange gives Minimum Spanning Trees *}
+subsubsection \<open>Exchange gives Minimum Spanning Trees\<close>
 
-text {*
+text \<open>
 The lemmas in this section are used to show that the after exchange we obtain a minimum spanning tree.
 The following lemmas show various interactions between the three constituents of the tree after exchange.
-*}
+\<close>
 
 lemma epm_1:
   "vector v \<Longrightarrow> prim_E w v e \<squnion> prim_P w v e = prim_EP w v e"
@@ -1708,9 +1708,9 @@ proof -
     by (simp add: le_iff_inf)
 qed
 
-text {*
+text \<open>
 The following lemmas show that the relation characterising the edge across the cut is an arc.
-*}
+\<close>
 
 lemma arc_edge_1:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
@@ -2026,12 +2026,12 @@ next
     by (metis mult_assoc conv_dist_comp conv_top)
 qed
 
-subsubsection {* Invariant implies Postcondition *}
+subsubsection \<open>Invariant implies Postcondition\<close>
 
-text {*
+text \<open>
 The lemmas in this section are used to show that the invariant implies the postcondition at the end of the algorithm.
 The following lemma shows that the nodes reachable in the graph are the same as those reachable in the constructed tree.
-*}
+\<close>
 
 lemma span_post:
   assumes "regular v"
@@ -2083,9 +2083,9 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
 The following lemma shows that the minimum spanning tree extending a tree is the same as the tree at the end of the algorithm.
-*}
+\<close>
 
 lemma mst_post:
   assumes "vector r"
@@ -2186,18 +2186,18 @@ proof -
     by (simp add: assms(5) antisym)
 qed
 
-subsection {* Kruskal's Algorithm *}
+subsection \<open>Kruskal's Algorithm\<close>
 
-text {*
+text \<open>
 The following results are used for proving the correctness of Kruskal's minimum spanning tree algorithm.
-*}
+\<close>
 
-subsubsection {* Preservation of Invariant *}
+subsubsection \<open>Preservation of Invariant\<close>
 
-text {*
+text \<open>
 We first treat the preservation of the invariant.
-The following lemmas show conditions necessary for preserving that @{text f} is a forest.
-*}
+The following lemmas show conditions necessary for preserving that \<open>f\<close> is a forest.
+\<close>
 
 lemma kruskal_injective_inv_2:
   assumes "arc e"
@@ -2389,11 +2389,11 @@ proof -
     using le_bot p_antitone_iff pseudo_complement by auto
 qed
 
-subsubsection {* Exchange gives Spanning Trees *}
+subsubsection \<open>Exchange gives Spanning Trees\<close>
 
-text {*
+text \<open>
 The lemmas in this section are used to show that the relation after exchange represents a spanning tree.
-*}
+\<close>
 
 lemma inf_star_import:
   assumes "x \<le> z"
@@ -2705,12 +2705,12 @@ proof -
     by (metis star.circ_top star_absorb)
 qed
 
-subsubsection {* Exchange gives Minimum Spanning Trees *}
+subsubsection \<open>Exchange gives Minimum Spanning Trees\<close>
 
-text {*
+text \<open>
 The lemmas in this section are used to show that the after exchange we obtain a minimum spanning tree.
 The following lemmas show that the relation characterising the edge across the cut is an arc.
-*}
+\<close>
 
 lemma kruskal_edge_arc:
   assumes "equivalence F"
@@ -3133,19 +3133,19 @@ qed
 
 end
 
-subsection {* Related Structures *}
+subsection \<open>Related Structures\<close>
 
-text {*
+text \<open>
 Stone algebras can be expanded to Stone-Kleene relation algebras by reusing some operations.
-*}
+\<close>
 
 sublocale stone_algebra < comp_inf: stone_kleene_relation_algebra where star = "\<lambda>x . top" and one = top and times = inf and conv = id
   apply unfold_locales
   by simp
 
-text {*
+text \<open>
 Every bounded linear order can be expanded to a Stone algebra, which can be expanded to a Stone relation algebra, which can be expanded to a Stone-Kleene relation algebra.
-*}
+\<close>
 
 class linorder_stone_kleene_relation_algebra_expansion = linorder_stone_relation_algebra_expansion + star +
   assumes star_def [simp]: "x\<^sup>\<star> = top"
@@ -3163,9 +3163,9 @@ subclass stone_kleene_relation_algebra
 
 end
 
-text {*
+text \<open>
 A Kleene relation algebra is based on a relation algebra.
-*}
+\<close>
 
 class kleene_relation_algebra = relation_algebra + stone_kleene_relation_algebra
 

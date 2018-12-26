@@ -9,11 +9,11 @@ theory InitialTerminal
 imports EpiMonoIso
 begin
 
-  text{*
+  text\<open>
     This theory defines the notions of initial and terminal object in a category
     and establishes some properties of these notions, including that when they exist
     they are unique up to isomorphism.
-  *}
+\<close>
 
   context category
   begin

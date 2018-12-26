@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-section {* Example: Koenig's lemma *}
+section \<open>Example: Koenig's lemma\<close>
 
 theory Koenigslemma imports 
   "../Coinductive_List"
@@ -77,11 +77,11 @@ proof -
       by(simp add: lappend_assoc)
     hence "LCons n ?xs' \<in> paths graph" by(rule paths_lappendD1)
     moreover have "x \<in> lset ?xs'" "lset ?xs' \<subseteq> lset xs" "n \<notin> lset ?xs'"
-      using xs False `lfinite xs'` n_neq_x by auto
+      using xs False \<open>lfinite xs'\<close> n_neq_x by auto
     ultimately show ?thesis by blast
   next
     case True
-    from `lfinite xs'` obtain XS' where xs': "xs' = llist_of XS'"
+    from \<open>lfinite xs'\<close> obtain XS' where xs': "xs' = llist_of XS'"
       unfolding lfinite_eq_range_llist_of by blast
     with True have "n \<in> set XS'" by simp
     from split_list_last[OF this]
@@ -96,7 +96,7 @@ proof -
       by(rule paths_lappendD2)
     hence "LCons n ?xs' \<in> paths graph" by(rule paths_lappendD1)
     moreover have "x \<in> lset ?xs'" "lset ?xs' \<subseteq> lset xs" "n \<notin> lset ?xs'"
-      using xs xs' XS' `lfinite xs'` n_neq_x `n \<notin> set zs` by auto
+      using xs xs' XS' \<open>lfinite xs'\<close> n_neq_x \<open>n \<notin> set zs\<close> by auto
     ultimately show ?thesis by blast
   qed
 qed
@@ -110,9 +110,9 @@ proof(rule subsetI)
   then obtain xs where path: "LCons n xs \<in> paths graph"
     and "x \<in> lset xs" "lset xs \<subseteq> ns" by cases
 
-  from `x \<in> lset xs` obtain n' xs' where xs: "xs = LCons n' xs'" by(cases xs) auto
+  from \<open>x \<in> lset xs\<close> obtain n' xs' where xs: "xs = LCons n' xs'" by(cases xs) auto
   with path have "graph n n'" by cases simp_all
-  moreover from `lset xs \<subseteq> ns` xs have "n' \<in> ns" by simp
+  moreover from \<open>lset xs \<subseteq> ns\<close> xs have "n' \<in> ns" by simp
   ultimately have "n' \<in> {n'. graph n n'} \<inter> ns" by simp
   thus "x \<in> ?rhs"
   proof(rule UN_I)
@@ -121,14 +121,14 @@ proof(rule subsetI)
       case True thus ?thesis by simp
     next
       case False
-      with xs `x \<in> lset xs` have "x \<in> lset xs'" by simp
+      with xs \<open>x \<in> lset xs\<close> have "x \<in> lset xs'" by simp
       with path xs have path': "LCons n' xs' \<in> paths graph" by cases simp_all
-      from `lset xs \<subseteq> ns` xs have "lset xs' \<subseteq> ns" by simp
+      from \<open>lset xs \<subseteq> ns\<close> xs have "lset xs' \<subseteq> ns" by simp
       
-      from path_avoid_node[OF path' `x \<in> lset xs'`] False
+      from path_avoid_node[OF path' \<open>x \<in> lset xs'\<close>] False
       obtain xs'' where path'': "LCons n' xs'' \<in> paths graph"
         and "lset xs'' \<subseteq> lset xs'" "x \<in> lset xs''" "n' \<notin> lset xs''" by blast
-      with False `lset xs \<subseteq> ns` xs show ?thesis by(auto intro: reachable_via.intros)
+      with False \<open>lset xs \<subseteq> ns\<close> xs show ?thesis by(auto intro: reachable_via.intros)
     qed
   qed
 qed
@@ -188,15 +188,15 @@ proof(intro bexI conjI)
       case (step x' xs)
       let ?n' = "Eps (?P (n, ns))" 
         and ?ns' = "insert n ns"
-      from eq_LConsD[OF `LCons x' xs = f (n, ns)`[symmetric]]
+      from eq_LConsD[OF \<open>LCons x' xs = f (n, ns)\<close>[symmetric]]
       have [simp]: "x' = n" and xs: "xs = f (?n', ?ns')" by auto
-      from `infinite (reachable_via graph (- insert n ns) n)`
+      from \<open>infinite (reachable_via graph (- insert n ns) n)\<close>
       have "\<exists>n'. ?P (n, ns) n'" by(rule ex_P_I)
       hence P: "?P (n, ns) ?n'" by(rule someI_ex)
       moreover have "insert ?n' ?ns' = insert n (insert ?n' ns)" by auto
       ultimately have "?n' \<notin> ?ns'" "finite ?ns'" 
         and "infinite (reachable_via graph (- insert ?n' ?ns') ?n')"
-        using `finite ns` by auto
+        using \<open>finite ns\<close> by auto
       with xs have "x \<notin> ?ns'" by(rule step)
       thus ?case by simp
     qed }
@@ -223,7 +223,7 @@ proof(intro bexI conjI)
       by(blast dest: connectedD)
     hence "LCons n (llist_of (xs @ [n'])) \<in> paths graph"
       and "n' \<in> lset (llist_of (xs @ [n']))" by simp_all
-    from path_avoid_node[OF this `n \<noteq> n'`] show "n' \<in> reachable_via graph (- {n}) n"
+    from path_avoid_node[OF this \<open>n \<noteq> n'\<close>] show "n' \<in> reachable_via graph (- {n}) n"
       by(auto intro: reachable_via.intros)
   qed
   hence "infinite (reachable_via graph (- {n}) n)"
@@ -235,7 +235,7 @@ proof(intro bexI conjI)
     case (paths xs)
     then obtain n ns where xs_def: "xs = f (n, ns)"
       and "finite ns" and "infinite (reachable_via graph (- insert n ns) n)" by blast
-    from `infinite (reachable_via graph (- insert n ns) n)`
+    from \<open>infinite (reachable_via graph (- insert n ns) n)\<close>
     have "\<exists>n'. ?P (n, ns) n'" by(rule ex_P_I)
     hence P: "?P (n, ns) (Eps (?P (n, ns)))" by(rule someI_ex)
     let ?n' = "Eps (?P (n, ns))"
@@ -248,7 +248,7 @@ proof(intro bexI conjI)
     moreover {
       have "LCons ?n' (f (?n'', ?ns'')) = f (?n', ?ns')"
         by(rule llist.expand) simp_all
-      moreover have "finite ?ns'" using `finite ns` by simp
+      moreover have "finite ?ns'" using \<open>finite ns\<close> by simp
       moreover have "insert ?n' ?ns' = insert n (insert ?n' ns)" by auto
       hence "infinite (reachable_via graph (- insert ?n' ?ns') ?n')" using P by simp
       ultimately have "?X (LCons ?n' (f (?n'', ?ns'')))" by blast }
@@ -256,7 +256,7 @@ proof(intro bexI conjI)
     thus ?case by simp
   qed
 
-  from `infinite (reachable_via graph (- {n}) n)`
+  from \<open>infinite (reachable_via graph (- {n}) n)\<close>
   have "infinite (reachable_via graph (- insert n ns) n) \<and> finite ns"
     by(simp add: ns_def)
   thus "ldistinct (f (n, ns))"
@@ -264,17 +264,17 @@ proof(intro bexI conjI)
     case (ldistinct n ns)
     then obtain "finite ns"
       and "infinite (reachable_via graph (- insert n ns) n)" by simp
-    from `infinite (reachable_via graph (- insert n ns) n)`
+    from \<open>infinite (reachable_via graph (- insert n ns) n)\<close>
     have "\<exists>n'. ?P (n, ns) n'" by(rule ex_P_I)
     hence P: "?P (n, ns) (Eps (?P (n, ns)))" by(rule someI_ex)
     let ?n' = "Eps (?P (n, ns))"
     let ?ns' = "insert n ns"
     have eq: "insert ?n' ?ns' = insert n (insert ?n' ns)" by auto
     hence "n \<notin> lset (f (?n', ?ns'))" 
-      using P `finite ns` by(auto dest: lset)
-    moreover from `finite ns` P eq
+      using P \<open>finite ns\<close> by(auto dest: lset)
+    moreover from \<open>finite ns\<close> P eq
     have "infinite (reachable_via graph (- insert ?n' ?ns') ?n')" by simp
-    ultimately show ?case using `finite ns` by auto
+    ultimately show ?case using \<open>finite ns\<close> by auto
   qed
 qed
 

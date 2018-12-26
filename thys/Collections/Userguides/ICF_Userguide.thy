@@ -10,11 +10,11 @@ imports
 begin
 (*>*)
 
-text_raw {*\isasection{Isabelle Collections Framework Userguide}\label{thy:Userguide}*}
+text_raw \<open>\isasection{Isabelle Collections Framework Userguide}\label{thy:Userguide}\<close>
 
 
 section "Introduction"
-text {*
+text \<open>
   This is the Userguide for the (old) Isabelle Collection Framework.
   It does not cover the Generic Collection Framework, nor the 
   Automatic Refinement Framework.
@@ -35,10 +35,10 @@ text {*
   The red-black trees are imported from the standard isabelle library. The binomial and skew binomial heaps are
   imported from the {\em Binomial-Heaps} entry of the archive of formal proofs. The finger trees are imported from
   the {\em Finger-Trees} entry of the archive of formal proofs.
-*}
+\<close>
 
 subsection "Getting Started"
-text {*
+text \<open>
   To get started with the Isabelle Collections Framework (assuming that you are already familiar with Isabelle/HOL and Isar),
   you should first read the introduction (this section), that provides many basic examples. More examples are in the examples/ subdirectory of the collection
   framework.
@@ -46,35 +46,35 @@ text {*
   Section~\ref{sec:userguide.ext} provides information on extending the framework along with detailed examples, and 
   Section~\ref{sec:userguide.design} contains a discussion on the design of this framework.
   There is also a paper \cite{LammichLochbihler2010ITP} on the design of the Isabelle Collections Framework available.
-*}
+\<close>
 
 subsection "Introductory Example"
-text {*
+text \<open>
   We introduce the Isabelle Collections Framework by a simple example.
 
   Given a set of elements represented by a red-black tree, and a list, 
   we want to filter out all elements that are not contained in the set. 
   This can be done by Isabelle/HOL's @{const filter}-function\footnote{Note that Isabelle/HOL uses the list comprehension syntax @{term [source] "[x\<leftarrow>l. P x]"}
   as syntactic sugar for filtering a list.}:
-*}
+\<close>
 
 definition rbt_restrict_list :: "'a::linorder rs \<Rightarrow> 'a list \<Rightarrow> 'a list"
 where "rbt_restrict_list s l == [ x\<leftarrow>l. rs.memb x s ]"
 
-text {*
+text \<open>
   The type @{typ "'a rs"} is the type of sets backed by red-black trees.
   Note that the element type of sets backed by red-black trees must be
-  of sort @{text linorder}.
+  of sort \<open>linorder\<close>.
   The function @{const rs.memb} tests membership on such sets.
-*}  
+\<close>  
 
-text {* Next, we show correctness of our function: *}
+text \<open>Next, we show correctness of our function:\<close>
 lemma rbt_restrict_list_correct: 
   assumes [simp]: "rs.invar s"
   shows "rbt_restrict_list s l = [x\<leftarrow>l. x\<in>rs.\<alpha> s]"
   by (simp add: rbt_restrict_list_def rs.memb_correct)
 
-text {*
+text \<open>
   The lemma @{thm [source] rs.memb_correct}: @{thm [display] rs.memb_correct[no_vars]} 
 
   states correctness of the @{const rs.memb}-function. 
@@ -87,19 +87,19 @@ text {*
 
   Many of the correctness lemmas for standard RBT-set-operations are summarized by the lemma @{thm [source] rs.correct}:
     @{thm [display] rs.correct[no_vars]}
-*}
+\<close>
 
-text {*
+text \<open>
   All implementations provided by this library are compatible with the Isabelle/HOL code-generator.
   Now follow some examples of using the code-generator.
   Note that the code generator can only generate code for plain constants 
   without arguments, while the operations like @{const rs.memb} have arguments,
   that are only hidden by an abbreviation.
-*}
+\<close>
 
-text {*
+text \<open>
   There are conversion functions from lists to sets and, vice-versa, from sets to lists:
-*}
+\<close>
 
 definition "conv_tests \<equiv> (
   rs.from_list [1::int .. 10],
@@ -108,9 +108,9 @@ definition "conv_tests \<equiv> (
   rs.to_rev_list (rs.from_list [1::int,5,6,7,3,4,9,8,2,7,6])
 )"
 
-ML_val {* @{code conv_tests} *}
+ML_val \<open>@{code conv_tests}\<close>
 
-text {*
+text \<open>
   Note that sets make no guarantee about ordering, hence the only thing we can 
   prove about conversion from sets to lists is:
     @{thm [source] rs.to_list_correct}: @{thm [display] rs.to_list_correct[no_vars]}
@@ -119,18 +119,18 @@ text {*
   and we have:
     @{thm [source] rs.to_sorted_list_correct}: @{thm [display] rs.to_sorted_list_correct[no_vars]} and
     @{thm [source] rs.to_rev_list_correct}: @{thm [display] rs.to_rev_list_correct[no_vars]} 
-*}
+\<close>
 
 definition "restrict_list_test \<equiv> rbt_restrict_list (rs.from_list [1::nat,2,3,4,5]) [1::nat,9,2,3,4,5,6,5,4,3,6,7,8,9]"
 
-ML_val {* @{code restrict_list_test} *}
+ML_val \<open>@{code restrict_list_test}\<close>
 
 definition "big_test n = (rs.from_list [(1::int)..n])"
 
-ML_val {* @{code big_test} (@{code int_of_integer} 9000) *}
+ML_val \<open>@{code big_test} (@{code int_of_integer} 9000)\<close>
 
 subsection "Theories"
-text {*
+text \<open>
   To make available the whole collections framework to your formalization, 
   import the theory @{theory Collections.Collections} which includes everything. Here is a
   small selection:
@@ -146,10 +146,10 @@ text {*
     \item[@{theory Collections.DatRef}] Data refinement for the while combinator
   \end{description}
 
-*}
+\<close>
 
 subsection "Iterators"
-text {* An important concept when using collections are iterators. An iterator is a kind of generalized fold-functional.
+text \<open>An important concept when using collections are iterators. An iterator is a kind of generalized fold-functional.
   Like the fold-functional, it applies a function to all elements of a set and modifies a state. There are
   no guarantees about the iteration order. But, unlike the fold functional, you can prove useful properties of iterations
   even if the function is not left-commutative. Proofs about iterations are done in invariant style, establishing an
@@ -174,20 +174,20 @@ text {* An important concept when using collections are iterators. An iterator i
   that shows the proposition from the invariant for any intermediate state of the 
   iteration where the continuation condition 
   does not hold (and thus the iteration is interrupted).
-*}
+\<close>
 
-text {*
+text \<open>
   As an example of reasoning about results of iterators, we implement a function
   that converts a hashset to a list that contains precisely the elements of the set.
-*}
+\<close>
 
 definition "hs_to_list' s == hs.iteratei s (\<lambda>_. True) (#) []"
 
-text {*
+text \<open>
   The correctness proof works by establishing the invariant that the list contains
   all elements that have already been iterated over.
   Again @{term "hs.invar s"} denotes the invariant for hashsets which defaults to @{term "True"}.
-*}
+\<close>
 lemma hs_to_list'_correct: 
   assumes INV: "hs.invar s"
   shows "set (hs_to_list' s) = hs.\<alpha> s"
@@ -195,36 +195,36 @@ lemma hs_to_list'_correct:
   apply (rule_tac 
     I="\<lambda>it \<sigma>. set \<sigma> = hs.\<alpha> s - it"
     in hs.iterate_rule_P[OF INV])
-  txt {* The resulting proof obligations are easily discharged using auto: *}
+  txt \<open>The resulting proof obligations are easily discharged using auto:\<close>
   apply auto
   done
 
-text {*
+text \<open>
   As an example for an interruptible iterator, 
   we define a bounded existential-quantification over the list elements.
   As soon as the first element is found that fulfills the predicate,
   the iteration is interrupted.
   The state of the iteration is simply a boolean, indicating the (current) result of the quantification:
-*}
+\<close>
 
 definition "hs_bex s P == hs.iteratei s (\<lambda>\<sigma>. \<not> \<sigma>) (\<lambda>x \<sigma>. P x) False"
 
 lemma hs_bex_correct: 
   "hs.invar s \<Longrightarrow> hs_bex s P \<longleftrightarrow> (\<exists>x\<in>hs.\<alpha> s. P x)"
   apply (unfold hs_bex_def)
-  txt {* The invariant states that the current result matches the result of the quantification
-    over the elements already iterated over: *}
+  txt \<open>The invariant states that the current result matches the result of the quantification
+    over the elements already iterated over:\<close>
   apply (rule_tac 
     I="\<lambda>it \<sigma>. \<sigma> \<longleftrightarrow> (\<exists>x\<in>hs.\<alpha> s - it. P x)" 
     in hs.iteratei_rule_P)
-  txt {* The resulting proof obligations are easily discharged by auto: *}
+  txt \<open>The resulting proof obligations are easily discharged by auto:\<close>
   apply auto
   done
 
 
 section "Structure of the Framework"
-text_raw {*\label{sec:userguide.structure}*}
-text {*
+text_raw \<open>\label{sec:userguide.structure}\<close>
+text \<open>
   The concepts of the framework are roughly based on the object-oriented concepts of interfaces, implementations and generic algorithms.
 
   The concepts used in the framework are the following:
@@ -232,7 +232,7 @@ text {*
     \item[Interfaces] An interface describes some concept by providing an abstraction mapping $\alpha$ to a related Isabelle/HOL-concept.
       The definition is generic in the datatype used to implement the concept (i.e. the concrete data structure). An interface is specified by means 
       of a locale that fixes the abstraction mapping and an invariant.
-      For example, the set-interface contains an abstraction mapping to sets, and is specified by the locale @{text SetSpec.set}.
+      For example, the set-interface contains an abstraction mapping to sets, and is specified by the locale \<open>SetSpec.set\<close>.
       An interface roughly matches the concept of a (collection) interface in Java, e.g. {\em java.util.Set}.
   
     \item[Functions] A function specifies some functionality involving interfaces. A function is specified by means of a locale.
@@ -293,37 +293,37 @@ text {*
 
   \end{description}
 
-*}
+\<close>
 
 
-  subsection "Instantiation of Generic Algorithms" text_raw {*\label{sec:inst_gen_algo}*}
+  subsection "Instantiation of Generic Algorithms" text_raw \<open>\label{sec:inst_gen_algo}\<close>
   
-  text {* A generic algorithm is instantiated by interpreting its locale with 
+  text \<open>A generic algorithm is instantiated by interpreting its locale with 
     the wanted implementations. For example, to obtain a cartesian product
-    between two red-black trees, yielding a list, we can do the following: *}
+    between two red-black trees, yielding a list, we can do the following:\<close>
   setup Locale_Code.open_block
   interpretation rrl: cart_loc rs_ops rs_ops ls_ops by unfold_locales
   setup Locale_Code.close_block
-  setup {* ICF_Tools.revert_abbrevs "rrl" *}
+  setup \<open>ICF_Tools.revert_abbrevs "rrl"\<close>
 
-  text {* It is then available under the expected name: *}
+  text \<open>It is then available under the expected name:\<close>
   term "rrl.cart"
 
-  text {* Note the three lines of boilerplate code, that work around some 
-    technical problems of Isabelle/HOL: The @{text Locale_Code.open_block} and
-    @{text Locale_Code.close_block} commands set up code generation for any 
+  text \<open>Note the three lines of boilerplate code, that work around some 
+    technical problems of Isabelle/HOL: The \<open>Locale_Code.open_block\<close> and
+    \<open>Locale_Code.close_block\<close> commands set up code generation for any 
     locale that is interpreted in between them. They also have to be specified
     if an existing locale that already has interpretations is extended by
     new definitions.
 
-    The @{text "ICF_Tools.revert_abbrevs \"rrl\""} reverts all 
+    The \<open>ICF_Tools.revert_abbrevs "rrl"\<close> reverts all 
     abbreviations introduced by the locale, such that the displayed 
     information becomes nicer.
-    *}
+\<close>
 
 
   subsection "Naming Conventions"
-  text {*
+  text \<open>
     The Isabelle Collections Framework follows these general naming conventions.
     Each implementation has a two-letter (or three-letter) and a one-letter (or two-letter) abbreviation, that are used as prefixes for the related constants, lemmas and instantiations.
 
@@ -349,33 +349,33 @@ text {*
       \item[ts,t] Trie Set
     \end{description}
 
-    Each function @{text name} of an interface @{text interface} is declared in a locale @{text interface_name}. This locale provides a fact @{text name_correct}. For example, there is the locale @{const set_ins} providing
+    Each function \<open>name\<close> of an interface \<open>interface\<close> is declared in a locale \<open>interface_name\<close>. This locale provides a fact \<open>name_correct\<close>. For example, there is the locale @{const set_ins} providing
     the fact @{thm [source] set_ins.ins_correct}.
     An implementation instantiates the locales of all implemented functions, using its two-letter abbreviation as instantiation prefix. For example, the HashSet-implementation instantiates the locale @{const set_ins} 
-    with the prefix {\em hs}, yielding the lemma @{thm [source] hs.ins_correct}. Moreover, an implementation with two-letter abbreviation {\em aa} provides a lemma @{text aa.correct} 
+    with the prefix {\em hs}, yielding the lemma @{thm [source] hs.ins_correct}. Moreover, an implementation with two-letter abbreviation {\em aa} provides a lemma \<open>aa.correct\<close> 
     that summarizes the correctness facts for the basic 
     operations. It should only contain those facts that are safe to be used with the simplifier. E.g., the correctness facts for basic operations on hash sets are available via the lemma @{thm [source] hs.correct}.
 
-  *}
+\<close>
 
 section "Extending the Framework"
-text_raw {*\label{sec:userguide.ext}*}
-text {*
+text_raw \<open>\label{sec:userguide.ext}\<close>
+text \<open>
   The best way to add new features, i.e., interfaces, functions, 
   generic algorithms, or implementations to the collection framework is to use 
   one of the existing items as example. 
-*}
+\<close>
 
 
 section "Design Issues"
-text_raw {*\label{sec:userguide.design}*}
-  text {*
+text_raw \<open>\label{sec:userguide.design}\<close>
+  text \<open>
     In this section, we motivate some of the design decisions of the Isabelle Collections Framework and report our experience with alternatives.
     Many of the design decisions are justified by restrictions of Isabelle/HOL and the code generator, so that there may be better
     options if those restrictions should vanish from future releases of Isabelle/HOL.
-    *}
+\<close>
 
-  text {*
+  text \<open>
     The main design goals of this development are:
     \begin{enumerate}
       \item\label{dg_unified} Make available various implementations of collections under a unified interface.
@@ -385,10 +385,10 @@ text_raw {*\label{sec:userguide.design}*}
       \item\label{dg_exec} Support generation of executable code.
       \item\label{dg_control} Let the user precisely control what data structures are used in the implementation.
     \end{enumerate}
-    *}
+\<close>
 
-  subsection {* Data Refinement *}
-  text {*
+  subsection \<open>Data Refinement\<close>
+  text \<open>
     In order to allow simple reasoning over collections, we use a data refinement approach. Each collection
     interface has an abstraction function that maps it on a related Isabelle/HOL concept (abstract level).
     The specification of functions are also relative to the abstraction.
@@ -405,10 +405,10 @@ text_raw {*\label{sec:userguide.design}*}
     For a more detailed discussion of the data refinement issue, we refer to
     the monadic refinement framework, that is available in the AFP 
     (@{url "http://isa-afp.org/entries/Refine_Monadic.shtml"})
-    *}
+\<close>
 
-  subsection {* Operation Records *}
-  text {*
+  subsection \<open>Operation Records\<close>
+  text \<open>
     In order to allow convenient access to the most frequently used functions 
     of an interface,
     we have grouped them together in a record, and defined a locale that only
@@ -421,10 +421,10 @@ text_raw {*\label{sec:userguide.design}*}
     type of a set, or key/value type of a map. 
     For iterators, where this problem was most annoying, we have installed a
     workaround that allows polymorphic iterators even inside locales.
-    *}
+\<close>
 
-  subsection {* Locales for Generic Algorithms *}
-  text {*
+  subsection \<open>Locales for Generic Algorithms\<close>
+  text \<open>
     A generic algorithm is defined within a locale, that includes the required 
     functions (or operation locales). If many instances of the same interface
     are required, prefixes are used to distinguish between them. This makes
@@ -437,16 +437,16 @@ text_raw {*\label{sec:userguide.design}*}
         the locale context. In order to get the correct types, one has to add 
         explicit type constraints.
       \item The code generator has problems with generating code from 
-        definitions inside a locale. Currently, the @{text Locale_Code}-package
+        definitions inside a locale. Currently, the \<open>Locale_Code\<close>-package
         provides a rather convenient workaround for that issue: It requires the 
         user to enclose interpretations and definitions of new constants inside
         already interpreted locales within two special commands, that set up
         the code generator appropriately.
     \end{itemize}
-    *}
+\<close>
 
-  subsection {* Explicit Invariants vs Typedef *}
-  text {*
+  subsection \<open>Explicit Invariants vs Typedef\<close>
+  text \<open>
     The interfaces of this framework use explicit invariants.
     This provides a more general specification which allows some operations to
     be implemented more efficiently, cf. @{const "lsi.ins_dj"} 
@@ -458,7 +458,7 @@ text_raw {*\label{sec:userguide.design}*}
     automatically by the simplifier and classical reasoner.
     However, it still shows up in some premises and conclusions due to
     uniformity reasons.
-    *}
+\<close>
 
 (*<*)
 end

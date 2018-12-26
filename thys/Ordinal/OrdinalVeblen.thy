@@ -4,13 +4,13 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Veblen Hierarchies *}
+section \<open>Veblen Hierarchies\<close>
 
 theory OrdinalVeblen
 imports OrdinalOmega
 begin
 
-subsection {* Closed, unbounded sets *}
+subsection \<open>Closed, unbounded sets\<close>
 
 locale normal_set =
 fixes A :: "ordinal set"
@@ -77,7 +77,7 @@ lemma normal_set_INTER:
 done
 
 
-subsection {* Ordering functions *}
+subsection \<open>Ordering functions\<close>
 
 text "There is a one-to-one correspondence between closed,
 unbounded sets of ordinals and normal functions on ordinals."
@@ -173,7 +173,7 @@ lemma ordering_INTER_0:
 done
 
 
-subsection {* Critical ordinals *}
+subsection \<open>Critical ordinals\<close>
 
 definition
   critical_set :: "ordinal set \<Rightarrow> ordinal \<Rightarrow> ordinal set" where
@@ -249,7 +249,7 @@ lemma critical_set_oSuc:
 done
 
 
-subsection {* Veblen hierarchy over a normal function *}
+subsection \<open>Veblen hierarchy over a normal function\<close>
 
 definition
   oVeblen :: "(ordinal \<Rightarrow> ordinal) \<Rightarrow> ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal" where
@@ -381,7 +381,7 @@ lemma (in normal) critical_set_fixed:
  apply (rule le_oLimit)
 done
 
-subsection {* Veblen hierarchy over $\lambda x.\ 1 + x$ *}
+subsection \<open>Veblen hierarchy over $\lambda x.\ 1 + x$\<close>
 
 lemma oDeriv_id: "oDeriv id = id"
  apply (rule ext, rule_tac a=x in oLimit_induct)

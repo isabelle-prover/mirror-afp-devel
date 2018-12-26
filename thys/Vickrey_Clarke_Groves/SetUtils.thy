@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* Additional material that we would have expected in Set.thy *}
+section \<open>Additional material that we would have expected in Set.thy\<close>
 
 theory SetUtils
 imports
@@ -22,26 +22,26 @@ imports
 
 begin
 
-subsection {* Equality *}
+subsection \<open>Equality\<close>
 
-text {* An inference (introduction) rule that combines @{thm equalityI} and @{thm subsetI} to a single step *}
+text \<open>An inference (introduction) rule that combines @{thm equalityI} and @{thm subsetI} to a single step\<close>
 lemma equalitySubsetI: "(\<And>x . x \<in> A \<Longrightarrow> x \<in> B) \<Longrightarrow> (\<And>x . x \<in> B \<Longrightarrow> x \<in> A) \<Longrightarrow> A = B" 
       by blast
 
-subsection {* Trivial sets *}
+subsection \<open>Trivial sets\<close>
 
-text {* A trivial set (i.e. singleton or empty), as in Mizar *}
+text \<open>A trivial set (i.e. singleton or empty), as in Mizar\<close>
 definition trivial where "trivial x = (x \<subseteq> {the_elem x})"
 
-text {* The empty set is trivial. *}
+text \<open>The empty set is trivial.\<close>
 lemma trivial_empty: "trivial {}" 
       unfolding trivial_def by (rule empty_subsetI)
 
-text {* A singleton set is trivial. *}
+text \<open>A singleton set is trivial.\<close>
 lemma trivial_singleton: "trivial {x}" 
       unfolding trivial_def by simp
 
-text {* If a trivial set has a singleton subset, the latter is unique. *}
+text \<open>If a trivial set has a singleton subset, the latter is unique.\<close>
 lemma singleton_sub_trivial_uniq:
       fixes   x X
       assumes "{x} \<subseteq> X" and "trivial X"
@@ -50,7 +50,7 @@ lemma singleton_sub_trivial_uniq:
    by (metis assms(1) assms(2) insert_not_empty insert_subset subset_empty subset_insert trivial_def trivial_imp_no_distinct) *)
       using assms unfolding trivial_def by fast
 
-text {* Any subset of a trivial set is trivial. *}
+text \<open>Any subset of a trivial set is trivial.\<close>
 
 lemma trivial_subset: fixes X Y assumes "trivial Y" assumes "X \<subseteq> Y" 
                       shows "trivial X"
@@ -59,7 +59,7 @@ lemma trivial_subset: fixes X Y assumes "trivial Y" assumes "X \<subseteq> Y"
         using assms unfolding trivial_def 
         by (metis (full_types) subset_empty subset_insertI2 subset_singletonD)
 
-text {* There are no two different elements in a trivial set. *}
+text \<open>There are no two different elements in a trivial set.\<close>
 
 lemma trivial_imp_no_distinct:
   assumes triv: "trivial X" and x: "x \<in> X" and y: "y \<in> X"
@@ -67,20 +67,20 @@ lemma trivial_imp_no_distinct:
 (* CL: The following takes 17 ms in Isabelle2013-1-RC1: *)
   using assms by (metis empty_subsetI insert_subset singleton_sub_trivial_uniq) 
 
-subsection {* The image of a set under a function *}
+subsection \<open>The image of a set under a function\<close>
 
-text {* an equivalent notation for the image of a set, using set comprehension *}
+text \<open>an equivalent notation for the image of a set, using set comprehension\<close>
 lemma image_Collect_mem: "{ f x | x . x \<in> S } = f ` S" 
       by auto
 
-subsection {* Big Union *}
+subsection \<open>Big Union\<close>
 
-text {* An element is in the union of a family of sets if it is in one of the family's member sets. *}
+text \<open>An element is in the union of a family of sets if it is in one of the family's member sets.\<close>
 
 lemma Union_member: "(\<exists> S \<in> F . x \<in> S) \<longleftrightarrow> x \<in> \<Union> F" 
       by blast
 
-subsection {* Miscellaneous *}
+subsection \<open>Miscellaneous\<close>
 
 lemma trivial_subset_non_empty: assumes "trivial t" "t \<inter> X \<noteq> {}" 
             shows   "t \<subseteq> X" 

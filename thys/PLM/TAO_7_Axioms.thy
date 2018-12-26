@@ -4,15 +4,15 @@ imports TAO_6_Identifiable
 begin
 (*>*)
 
-section{* The Axioms of PLM *}
-text{* \label{TAO_Axioms} *}
+section\<open>The Axioms of PLM\<close>
+text\<open>\label{TAO_Axioms}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   The axioms of PLM can now be derived from the Semantics
   and the model structure.
 \end{remark}
-*}
+\<close>
 
 (* TODO: why is this needed again here? The syntax should already
          have been disabled in TAO_Semantics. *)
@@ -26,27 +26,27 @@ begin
   interpretation Semantics .
   named_theorems axiom
 
-text{*
+text\<open>
 \begin{remark}
-  The special syntax @{text "[[_]]"} is introduced for stating the axioms.
-  Modally-fragile axioms are stated with the syntax for actual validity @{text "[_]"}.
+  The special syntax \<open>[[_]]\<close> is introduced for stating the axioms.
+  Modally-fragile axioms are stated with the syntax for actual validity \<open>[_]\<close>.
 \end{remark}
-*}
+\<close>
 
   definition axiom :: "\<o>\<Rightarrow>bool" ("[[_]]") where "axiom \<equiv> \<lambda> \<phi> . \<forall> v . [\<phi> in v]"
 
   method axiom_meta_solver = ((((unfold axiom_def)?, rule allI) | (unfold actual_validity_def)?), meta_solver,
                               (simp | (auto; fail))?)
 
-subsection{* Closures *}
-text{* \label{TAO_Axioms_Closures} *}
+subsection\<open>Closures\<close>
+text\<open>\label{TAO_Axioms_Closures}\<close>
 
-  text{*
+  text\<open>
 \begin{remark}
   Rules resembling the concepts of closures in PLM are derived. Theorem attributes are introduced
   to aid in the instantiation of the axioms.
 \end{remark}
-*}
+\<close>
 
   lemma axiom_instance[axiom]: "[[\<phi>]] \<Longrightarrow> [\<phi> in v]"
     unfolding axiom_def by simp
@@ -61,33 +61,33 @@ text{* \label{TAO_Axioms_Closures} *}
   lemma necessitation_averse_closures_universal[axiom]: "(\<And>x.[\<phi> x]) \<Longrightarrow> [\<^bold>\<forall> x. \<phi> x]"
     by axiom_meta_solver
 
-  attribute_setup axiom_instance = {*
+  attribute_setup axiom_instance = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm axiom_instance}))
-  *}
+\<close>
 
-  attribute_setup necessitation_averse_axiom_instance = {*
+  attribute_setup necessitation_averse_axiom_instance = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm necessitation_averse_axiom_instance}))
-  *}
+\<close>
 
-  attribute_setup axiom_necessitation = {*
+  attribute_setup axiom_necessitation = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm closures_necessitation}))
-  *}
+\<close>
 
-  attribute_setup axiom_actualization = {*
+  attribute_setup axiom_actualization = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm closures_actualization}))
-  *}
+\<close>
 
-  attribute_setup axiom_universal = {*
+  attribute_setup axiom_universal = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm closures_universal}))
-  *}
+\<close>
 
-subsection{* Axioms for Negations and Conditionals *}
-text{* \label{TAO_Axioms_NegationsAndConditionals} *}
+subsection\<open>Axioms for Negations and Conditionals\<close>
+text\<open>\label{TAO_Axioms_NegationsAndConditionals}\<close>
 
   lemma pl_1[axiom]:
     "[[\<phi> \<^bold>\<rightarrow> (\<psi> \<^bold>\<rightarrow> \<phi>)]]"
@@ -99,15 +99,15 @@ text{* \label{TAO_Axioms_NegationsAndConditionals} *}
     "[[(\<^bold>\<not>\<phi> \<^bold>\<rightarrow> \<^bold>\<not>\<psi>) \<^bold>\<rightarrow> ((\<^bold>\<not>\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<rightarrow> \<phi>)]]"
     by axiom_meta_solver
 
-subsection{* Axioms of Identity *}
-text{* \label{TAO_Axioms_Identity} *}
+subsection\<open>Axioms of Identity\<close>
+text\<open>\label{TAO_Axioms_Identity}\<close>
 
   lemma l_identity[axiom]:
     "[[\<alpha> \<^bold>= \<beta> \<^bold>\<rightarrow> (\<phi> \<alpha> \<^bold>\<rightarrow> \<phi> \<beta>)]]"
     using l_identity apply - by axiom_meta_solver
 
-subsection{* Axioms of Quantification *}
-text{* \label{TAO_Axioms_Quantification} *}
+subsection\<open>Axioms of Quantification\<close>
+text\<open>\label{TAO_Axioms_Quantification}\<close>
 
   lemma cqt_1[axiom]:
     "[[(\<^bold>\<forall> \<alpha>. \<phi> \<alpha>) \<^bold>\<rightarrow> \<phi> \<alpha>]]"
@@ -169,8 +169,8 @@ text{* \label{TAO_Axioms_Quantification} *}
         using d\<^sub>\<kappa>_proper by auto
     qed
 
-subsection{* Axioms of Actuality *}
-text{* \label{TAO_Axioms_Actuality} *}
+subsection\<open>Axioms of Actuality\<close>
+text\<open>\label{TAO_Axioms_Actuality}\<close>
 
   lemma logic_actual[axiom]: "[(\<^bold>\<A>\<phi>) \<^bold>\<equiv> \<phi>]"
     by axiom_meta_solver
@@ -191,8 +191,8 @@ text{* \label{TAO_Axioms_Actuality} *}
     "[[\<^bold>\<A>\<phi> \<^bold>\<equiv> \<^bold>\<A>\<^bold>\<A>\<phi>]]"
     by axiom_meta_solver
 
-subsection{* Axioms of Necessity *}
-text{* \label{TAO_Axioms_Necessity} *}
+subsection\<open>Axioms of Necessity\<close>
+text\<open>\label{TAO_Axioms_Necessity}\<close>
 
   lemma qml_1[axiom]:
     "[[\<^bold>\<box>(\<phi> \<^bold>\<rightarrow> \<psi>) \<^bold>\<rightarrow> (\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi>)]]"
@@ -212,8 +212,8 @@ text{* \label{TAO_Axioms_Necessity} *}
                  split: \<nu>.split \<upsilon>.split)
      by (metis \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> \<upsilon>.distinct(1) \<upsilon>.inject(1))
 
-subsection{* Axioms of Necessity and Actuality *}
-text{* \label{TAO_Axioms_NecessityAndActuality} *}
+subsection\<open>Axioms of Necessity and Actuality\<close>
+text\<open>\label{TAO_Axioms_NecessityAndActuality}\<close>
 
   lemma qml_act_1[axiom]:
     "[[\<^bold>\<A>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<A>\<phi>]]"
@@ -222,8 +222,8 @@ text{* \label{TAO_Axioms_NecessityAndActuality} *}
     "[[\<^bold>\<box>\<phi> \<^bold>\<equiv> \<^bold>\<A>(\<^bold>\<box>\<phi>)]]"
     by axiom_meta_solver
 
-subsection{* Axioms of Descriptions *}
-text{* \label{TAO_Axioms_Descriptions} *}
+subsection\<open>Axioms of Descriptions\<close>
+text\<open>\label{TAO_Axioms_Descriptions}\<close>
 
   lemma descriptions[axiom]:
     "[[x\<^sup>P \<^bold>= (\<^bold>\<iota>x. \<phi> x) \<^bold>\<equiv> (\<^bold>\<forall>z.(\<^bold>\<A>(\<phi> z) \<^bold>\<equiv> z \<^bold>= x))]]"
@@ -279,8 +279,8 @@ text{* \label{TAO_Axioms_Descriptions} *}
         using Eq\<kappa>S unfolding identity_\<kappa>_def by (metis d\<^sub>\<kappa>_proper)
     qed
 
-subsection{* Axioms for Complex Relation Terms *}
-text{* \label{TAO_Axioms_ComplexRelationTerms} *}
+subsection\<open>Axioms for Complex Relation Terms\<close>
+text\<open>\label{TAO_Axioms_ComplexRelationTerms}\<close>
 
   lemma lambda_predicates_1[axiom]:
     "(\<^bold>\<lambda> x . \<phi> x) = (\<^bold>\<lambda> y . \<phi> y)" ..
@@ -364,8 +364,8 @@ text{* \label{TAO_Axioms_ComplexRelationTerms} *}
     unfolding axiom_def identity_\<Pi>\<^sub>3_def apply - apply (rule allI; rule Eq\<^sub>3I)
     using TheEqI[OF assms[THEN ActualE, THEN EquivE]] by auto
 
-subsection{* Axioms of Encoding *}
-text{* \label{TAO_Axioms_Encoding} *}
+subsection\<open>Axioms of Encoding\<close>
+text\<open>\label{TAO_Axioms_Encoding}\<close>
 
   lemma encoding[axiom]:
     "[[\<lbrace>x,F\<rbrace> \<^bold>\<rightarrow> \<^bold>\<box>\<lbrace>x,F\<rbrace>]]"

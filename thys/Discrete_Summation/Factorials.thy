@@ -1,7 +1,7 @@
 
 (* Authors: Amine Chaieb & Florian Haftmann, TU Muenchen with contributions by Lukas Bulwahn *)
 
-section {* Falling factorials *}
+section \<open>Falling factorials\<close>
 
 theory Factorials
   imports Complex_Main "HOL-Library.Stirling"
@@ -243,7 +243,7 @@ proof -
   finally show ?thesis .
 qed
 
-text {* Conversion of natural potences into falling factorials and back *}
+text \<open>Conversion of natural potences into falling factorials and back\<close>
 
 lemma monomial_ffact:
   "a ^ n = (\<Sum>k = 0..n. of_nat (Stirling n k) * ffact k a)"

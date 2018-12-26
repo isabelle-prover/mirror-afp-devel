@@ -2,13 +2,13 @@
     Copyright   2004 TU Muenchen
 *)
 
-section {* Compiling exception handling *}
+section \<open>Compiling exception handling\<close>
 
 theory Exceptions
 imports Main
 begin
 
-subsection{*The source language*}
+subsection\<open>The source language\<close>
 
 datatype expr = Val int | Add expr expr | Throw | Catch expr expr
 
@@ -22,7 +22,7 @@ where
 | "eval Throw = None"
 | "eval (Catch x h) = (case eval x of None \<Rightarrow> eval h | Some i \<Rightarrow> Some i)"
 
-subsection{*The target language*}
+subsection\<open>The target language\<close>
 
 datatype instr =
   Push int | ADD | THROW | Mark nat | Unmark | Label nat | Jump nat
@@ -73,7 +73,7 @@ termination by (relation
 abbreviation "exec \<equiv> exec2 True"
 abbreviation "unwind \<equiv> exec2 False"
 
-subsection{*The compiler*}
+subsection\<open>The compiler\<close>
 
 primrec compile :: "nat \<Rightarrow> expr \<Rightarrow> code * nat"
 where
@@ -100,9 +100,9 @@ definition
   "conv cs s io = (case io of None \<Rightarrow> unwind cs s
                   | Some i \<Rightarrow> exec cs (VAL i # s))"
 
-subsection{* The proofs*}
+subsection\<open>The proofs\<close>
 
-text{* Lemma numbers are the same as in the paper. *}
+text\<open>Lemma numbers are the same as in the paper.\<close>
 
 declare
   conv_def[simp] option.splits[split] Let_def[simp]
@@ -142,15 +142,15 @@ proof(induct e)
   case Val thus ?case by simp
 next
   case (Add x y)
-  from `l \<le> snd (compile l x)`
-   and `snd (compile l x) \<le> snd (compile (snd (compile l x)) y)`
+  from \<open>l \<le> snd (compile l x)\<close>
+   and \<open>snd (compile l x) \<le> snd (compile (snd (compile l x)) y)\<close>
   show ?case by(simp_all add:split_def)
 next
   case Throw thus ?case by simp
 next
   case (Catch x h)
-  from `l+2 \<le> snd (compile (l+2) x)`
-   and `snd (compile (l+2) x) \<le> snd (compile (snd (compile (l+2) x)) h)`
+  from \<open>l+2 \<le> snd (compile (l+2) x)\<close>
+   and \<open>snd (compile (l+2) x) \<le> snd (compile (snd (compile (l+2) x)) h)\<close>
   show ?case by(simp_all add:split_def)
 qed
 
@@ -161,9 +161,9 @@ corollary [simp]: "isFresh l s \<Longrightarrow> isFresh (snd(compile l e)) s"
 using 5 6 by blast
 
 
-text{* Contrary to what the paper says, the proof of lemma 4 does not
+text\<open>Contrary to what the paper says, the proof of lemma 4 does not
 just need lemma 3 but also the above corollary of 5 and 6. Hence the
-strange order of the lemmas in our proof. *}
+strange order of the lemmas in our proof.\<close>
 
 lemma 4 [simp]: "\<And>l cs. isFresh l s \<Longrightarrow> unwind (cmp l e @ cs) s = unwind cs s"
 by (induct e) (auto simp add:split_def)
@@ -172,13 +172,13 @@ by (induct e) (auto simp add:split_def)
 lemma 7 [simp]: "l < m \<Longrightarrow> jump l (cmp m e @ cs) = jump l cs"
 by (induct e arbitrary: m cs) (simp_all add:split_def)
 
-text{* The compiler correctness theorem: *}
+text\<open>The compiler correctness theorem:\<close>
 
 theorem comp_corr:
   "\<And>l s cs. isFresh l s \<Longrightarrow> exec (cmp l e @ cs) s = conv cs s (eval e)"
 by(induct e)(auto simp add:split_def)
 
-text{* The specialized and more readable version (omitted in the paper): *}
+text\<open>The specialized and more readable version (omitted in the paper):\<close>
 
 corollary "exec (cmp l e) [] = (case eval e of None \<Rightarrow> [] | Some n \<Rightarrow> [VAL n])"
 by (simp add: comp_corr[where cs = "[]", simplified])

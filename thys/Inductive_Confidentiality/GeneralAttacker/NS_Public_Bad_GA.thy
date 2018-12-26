@@ -1,4 +1,4 @@
-section{*The Needham-Schroeder Public-Key Protocol against the General Attacker*}
+section\<open>The Needham-Schroeder Public-Key Protocol against the General Attacker\<close>
 
 theory NS_Public_Bad_GA imports PublicGA begin
 
@@ -34,6 +34,6 @@ apply (erule ns_public.induct)
 apply (simp_all)
 done
 
-text{*Confidentiality treatment in separate theory file*}
+text\<open>Confidentiality treatment in separate theory file\<close>
 
 end

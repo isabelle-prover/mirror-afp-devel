@@ -1,4 +1,4 @@
-section {* \isaheader{Set Interface} *}
+section \<open>\isaheader{Set Interface}\<close>
 theory Intf_Set
 imports Refine_Monadic.Refine_Monadic
 begin
@@ -157,7 +157,7 @@ definition "finite_set_rel R \<equiv> Range R \<subseteq> Collect (finite)"
 
 lemma finite_set_rel_trigger: "finite_set_rel R \<Longrightarrow> finite_set_rel R" .
 
-declaration {* Tagged_Solver.add_triggers 
-  "Relators.relator_props_solver" @{thms finite_set_rel_trigger} *}
+declaration \<open>Tagged_Solver.add_triggers 
+  "Relators.relator_props_solver" @{thms finite_set_rel_trigger}\<close>
 
 end

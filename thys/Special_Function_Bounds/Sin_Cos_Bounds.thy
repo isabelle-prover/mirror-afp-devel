@@ -1,13 +1,13 @@
-chapter {* Sine and Cosine Upper and Lower Bounds *}
+chapter \<open>Sine and Cosine Upper and Lower Bounds\<close>
 
 theory Sin_Cos_Bounds
 imports Bounds_Lemmas
 
 begin
 
-section{*Simple base cases*}
+section\<open>Simple base cases\<close>
 
-text{*Upper bound for @{term"x\<ge>0"}*}
+text\<open>Upper bound for @{term"x\<ge>0"}\<close>
 lemma sin_le_arg:
   fixes x :: real
     shows "0 \<le> x \<Longrightarrow> sin x \<le> x"
@@ -41,7 +41,7 @@ lemma sin_Taylor_1_lower_bound:
   apply (rule refl | simp add: cos_Taylor_1_lower_bound)+
   done
 
-section{*Taylor series approximants*}
+section\<open>Taylor series approximants\<close>
 
 definition sinpoly :: "[nat,real] \<Rightarrow> real"
   where "sinpoly n = (\<lambda>x. \<Sum>k<n. sin_coeff k * x ^ k)"
@@ -123,7 +123,7 @@ next
 qed
 
 
-section{*Inductive proof of sine inequalities*}
+section\<open>Inductive proof of sine inequalities\<close>
 
 lemma sinpoly_lb_imp_cospoly_ub:
   assumes x0: "0 \<le> x" and k0: "k>0" and "\<And>x. 0 \<le> x \<Longrightarrow> sinpoly (k - 1) x \<le> sin x"
@@ -182,7 +182,7 @@ proof -
 qed
 
 
-section{*Collecting the results*}
+section\<open>Collecting the results\<close>
 
 corollary sinpoly_upper_nonpos:
      "x \<le> 0 \<Longrightarrow> sin x \<le> sinpoly (4 * Suc n) x"

@@ -6,7 +6,7 @@ definition [simp]: "REL_INTF R I \<equiv> True"
 lemma REL_INTFI: "REL_INTF R I" by simp
 
 
-ML {*
+ML \<open>
   (* Keeping track of relator - interface bindings *)
   signature AUTOREF_RELATOR_INTERFACE = sig
     val mk_intfAPP: term -> term -> term
@@ -107,10 +107,10 @@ ML {*
   
     val setup = relator_intf.setup
   end
-*}
+\<close>
 setup Autoref_Relator_Interface.setup
 
-attribute_setup autoref_rules = {*
+attribute_setup autoref_rules = \<open>
   Scan.lift (Args.mode "overloaded")
   >> (fn overl => Thm.declaration_attribute (fn thm => fn context => let
     val context = Autoref_Rules.add_thm thm context
@@ -121,6 +121,6 @@ attribute_setup autoref_rules = {*
     | SOME (c,I) => Autoref_Id_Ops.decl_derived_typing overl c I context
   end
   ))
-*}
+\<close>
 
 end

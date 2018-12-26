@@ -4,15 +4,15 @@ imports
   "HOL-Number_Theory.Residues"
 begin
 
-section {* Lehmer's Theorem *}
-text_raw {* \label{sec:lehmer} *}
+section \<open>Lehmer's Theorem\<close>
+text_raw \<open>\label{sec:lehmer}\<close>
 
-text {*
+text \<open>
   In this section we prove Lehmer's Theorem~\cite{lehmer1927fermat_converse} and its converse.
   These two theorems characterize a necessary and complete criterion for primality. This criterion
   is the basis of the Lucas-Lehmer primality test and the primality certificates of
   Pratt~\cite{pratt1975certificate}.
-*}
+\<close>
 
 lemma mod_1_coprime_nat:
   "coprime a b" if "0 < n" "[a ^ n = 1] (mod b)" for a b :: nat
@@ -23,10 +23,10 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
   This is a weak variant of Lehmer's theorem: All numbers less then @{term "p - 1 :: nat"}
   must be considered.
-*}
+\<close>
 
 lemma lehmers_weak_theorem:
   assumes "2 \<le> p"
@@ -34,14 +34,14 @@ lemma lehmers_weak_theorem:
   assumes cong1: "[a ^ (p - 1) = 1] (mod p)"
   shows "prime p"
 proof (rule totient_imp_prime)
-  from `2 \<le> p` cong1 have "coprime a p"
+  from \<open>2 \<le> p\<close> cong1 have "coprime a p"
     by (intro mod_1_coprime_nat[of "p - 1"]) auto
   then have "[a ^ totient p = 1] (mod p)"
     by (intro euler_theorem) auto
   then have "totient p \<ge> p - 1 \<or> totient p = 0"
     using min_cong1[of "totient p"] by fastforce
   moreover have "totient p > 0"
-    using `2 \<le> p` by simp
+    using \<open>2 \<le> p\<close> by simp
   moreover from \<open>p \<ge> 2\<close> have "totient p < p" by (intro totient_less) auto
   ultimately show "totient p = p - 1" by presburger
 qed (insert \<open>p \<ge> 2\<close>, auto)
@@ -59,7 +59,7 @@ lemma cong_gcd_eq_1_nat:
   assumes "0 < m" and cong_props: "[a ^ m = 1] (mod b)" "[a ^ n = 1] (mod b)"
   shows "[a ^ gcd m n = 1] (mod b)"
 proof -
-  obtain c d where gcd: "m * c = n * d + gcd m n" using bezout_nat[of m n] `0 < m`
+  obtain c d where gcd: "m * c = n * d + gcd m n" using bezout_nat[of m n] \<open>0 < m\<close>
     by auto
   have cong_m: "[a ^ (m * c) = 1] (mod b)" and cong_n: "[a ^ (n * d) = 1] (mod b)"
     using cong_props by (simp_all only: cong_pow_1_nat power_mult)
@@ -81,7 +81,7 @@ theorem lehmers_theorem:
   assumes cong1: "[a ^ (p - 1) = 1] (mod p)"
   shows "prime p"
 proof cases
-  assume "[a = 1] (mod p)" with `2 \<le>p` pf_notcong1 show ?thesis
+  assume "[a = 1] (mod p)" with \<open>2 \<le>p\<close> pf_notcong1 show ?thesis
     by (metis cong_pow_1_nat less_diff_conv linorder_neqE_nat linorder_not_less
       one_add_one prime_factors_elem two_is_prime_nat)
 next
@@ -91,13 +91,13 @@ next
     proof
       assume "[a ^ x = 1] (mod p)"
       then have gcd_cong_1: "[a ^ gcd x (p - 1) = 1] (mod p)"
-        by (rule cong_gcd_eq_1_nat[OF `0 < x` _ cong1])
+        by (rule cong_gcd_eq_1_nat[OF \<open>0 < x\<close> _ cong1])
 
       have "gcd x (p - 1) = p - 1"
       proof (rule ccontr)
         assume "\<not>?thesis"
         then have gcd_p1: "gcd x (p - 1) dvd (p - 1)" "gcd x (p - 1) < p - 1"
-          using gcd_le2_nat[of "p - 1" x] `2 \<le> p` by (simp, linarith)
+          using gcd_le2_nat[of "p - 1" x] \<open>2 \<le> p\<close> by (simp, linarith)
 
         define c where "c = (p - 1) div (gcd x (p - 1))"
         then have p_1_eq: "p - 1 = gcd x (p - 1) * c" unfolding c_def using gcd_p1
@@ -108,25 +108,25 @@ next
           using prime_factors_elem by auto
         then have "q dvd c" by auto
 
-        have "q \<in> prime_factors (p - 1)" using q_pf `1 < c` `2 \<le> p`
+        have "q \<in> prime_factors (p - 1)" using q_pf \<open>1 < c\<close> \<open>2 \<le> p\<close>
           by (subst p_1_eq) (simp add: prime_factors_product)
         moreover
         have "[a ^ ((p - 1) div q) = 1] (mod p)"
-          by (subst p_1_eq,subst dvd_div_mult_self[OF `q dvd c`,symmetric])
+          by (subst p_1_eq,subst dvd_div_mult_self[OF \<open>q dvd c\<close>,symmetric])
              (simp del: One_nat_def add: power_mult gcd_cong_1 cong_pow_1_nat)
         ultimately
         show False using pf_notcong1 by metis
       qed
-      then show False using `x < p - 1`
-        by (metis `0 < x` gcd_le1_nat gr_implies_not0 linorder_not_less)
+      then show False using \<open>x < p - 1\<close>
+        by (metis \<open>0 < x\<close> gcd_le1_nat gr_implies_not0 linorder_not_less)
     qed
   }
-  with lehmers_weak_theorem[OF `2 \<le> p` _ cong1] show ?thesis by metis
+  with lehmers_weak_theorem[OF \<open>2 \<le> p\<close> _ cong1] show ?thesis by metis
 qed
 
-text {*
+text \<open>
   The converse of Lehmer's theorem is also true.
-*}
+\<close>
 
 lemma converse_lehmer_weak:
  assumes prime_p: "prime p"
@@ -149,12 +149,12 @@ lemma converse_lehmer_weak:
           by (simp add: i power_add mod_mult_eq)
         have "a ^ (q*x) mod p = (a ^ x mod p) ^ q mod p"
           by (simp add: power_mod mult.commute power_mult[symmetric])
-        then have y_r:"y = a ^ r mod p" using `p\<ge>2` x
+        then have y_r:"y = a ^ r mod p" using \<open>p\<ge>2\<close> x
           by (simp add: cong_def y_q_r)
         have "y \<in> {a ^ i mod p | i. 0 < i \<and> i \<le> x}"
         proof (cases)
           assume "r = 0"
-          then have "y = a^x mod p" using `p\<ge>2` x
+          then have "y = a^x mod p" using \<open>p\<ge>2\<close> x
             by (simp add: cong_def y_r)
           thus ?thesis using x by blast
         next
@@ -171,7 +171,7 @@ lemma converse_lehmer_weak:
     also have "\<dots> = (\<lambda> i. a^i mod p) ` {1..x}" by auto
     also have "card \<dots> \<le> p - 2"
       using Finite_Set.card_image_le[of "{1..x}" "\<lambda> i. a^i mod p"] x by auto
-    finally have False using `2 \<le> p` by arith
+    finally have False using \<open>2 \<le> p\<close> by arith
    }
    hence "\<forall> x . 0 < x \<longrightarrow> x \<le> p - 2 \<longrightarrow> [a^x \<noteq> 1] (mod p)" by auto
  } note a_is_gen = this
@@ -181,8 +181,8 @@ lemma converse_lehmer_weak:
     proof (rule ccontr)
       assume "\<not> \<not> p dvd a"
       hence "p dvd a" by auto
-      have "p \<le> a" using dvd_nat_bounds[OF _ `p dvd a`] a by simp
-      thus False using `a>1` a by force
+      have "p \<le> a" using dvd_nat_bounds[OF _ \<open>p dvd a\<close>] a by simp
+      thus False using \<open>a>1\<close> a by force
     qed
     hence "coprime a p"
       using prime_imp_coprime_nat [OF prime_p] by (simp add: ac_simps)
@@ -207,12 +207,12 @@ theorem converse_lehmer:
                     \<and> a > 0 \<and> a < p"
     using converse_lehmer_weak[OF prime_p] by blast
   { fix q assume q:"q \<in> prime_factors (p - 1)"
-    hence "0 < q \<and> q \<le> p - 1" using `p\<ge>2`
+    hence "0 < q \<and> q \<le> p - 1" using \<open>p\<ge>2\<close>
       by (auto simp add: dvd_nat_bounds prime_factors_gt_0_nat)
     hence "(p - 1) div q \<ge> 1" using div_le_mono[of "q" "p - 1" q] div_self[of q] by simp
     have "q \<ge> 2" using q by (auto intro: prime_ge_2_nat)
-    hence "(p - 1) div q < p - 1" using `p \<ge> 2` by simp
-    hence "[a^((p - 1) div q) \<noteq> 1] (mod p)" using a `(p - 1) div q \<ge> 1`
+    hence "(p - 1) div q < p - 1" using \<open>p \<ge> 2\<close> by simp
+    hence "[a^((p - 1) div q) \<noteq> 1] (mod p)" using a \<open>(p - 1) div q \<ge> 1\<close>
       by (auto simp add: Suc_diff_Suc less_eq_Suc_le)
   }
   thus ?thesis using a by auto

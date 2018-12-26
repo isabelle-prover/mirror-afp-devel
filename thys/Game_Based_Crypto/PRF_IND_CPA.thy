@@ -10,9 +10,9 @@ theory PRF_IND_CPA imports
   IND_CPA
 begin
 
-text {*
+text \<open>
   Formalises the construction from \cite{PetcherMorrisett2015POST}.
-*}
+\<close>
 
 declare [[simproc del: let_simp]]
 

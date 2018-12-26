@@ -690,7 +690,7 @@ qed
 
 end
 
-text \<open>We can implement @{text alt} via @{text altc} only if we know that there are sufficiently
+text \<open>We can implement \<open>alt\<close> via \<open>altc\<close> only if we know that there are sufficiently
   many elements in the choice type @{typ 'c}. For the associativity law, we need at least
   three elements.\<close>
 
@@ -3077,12 +3077,12 @@ end
 text \<open>
   We cannot define a generic lifting operation for state like in Haskell.
   If we separate the monad type variable from the element type variable, then
-  @{text lift} should have type @{text "'a 'm => (('a \<times> 's) 'm) stateT"}, but this means
+  \<open>lift\<close> should have type \<open>'a 'm => (('a \<times> 's) 'm) stateT\<close>, but this means
   that the type of results must change, which does not work for monomorphic monads.
 
-  Instead, we must lift all operations individually. @{text "lift_definition"} does not work
+  Instead, we must lift all operations individually. \<open>lift_definition\<close> does not work
   because the monad transformer type is typically larger than the base type, but
-  @{text "lift_definition"} only works if the lifted type is no bigger.
+  \<open>lift_definition\<close> only works if the lifted type is no bigger.
 \<close>
 
 subsubsection \<open>Failure\<close>
@@ -3108,7 +3108,7 @@ qed
 
 notepad begin
   text \<open>
-    @{text catch} cannot be lifted through the state monad according to @{term monad_catch_state}
+    \<open>catch\<close> cannot be lifted through the state monad according to @{term monad_catch_state}
    because there is now way to communicate the state updates to the handler.
   \<close>
   fix catch :: "'m catch"

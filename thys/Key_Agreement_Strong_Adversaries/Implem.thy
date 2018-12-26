@@ -29,7 +29,7 @@ subsection \<open>First step: basic implementation locale\<close>
 (**************************************************************************************************)
 
 text \<open>This locale has no assumptions, it only fixes an implementation function and 
-defines some useful abbreviations (impl*, impl*Set) and @{text "valid"}.
+defines some useful abbreviations (impl*, impl*Set) and \<open>valid\<close>.
 \<close>
 
 locale basic_implem =
@@ -93,14 +93,14 @@ subsection \<open>Second step: basic and analyze assumptions\<close>
 
 text \<open>This locale contains most of the assumptions on implem, i.e.:
 \begin{itemize}
-\item @{text "impl_inj"}: injectivity
-\item @{text "parts_impl_inj"}: injectivity through parts
-\item @{text "Enc_parts_valid_impl"}: if Enc X Y appears in parts of an implem, then it is 
+\item \<open>impl_inj\<close>: injectivity
+\item \<open>parts_impl_inj\<close>: injectivity through parts
+\item \<open>Enc_parts_valid_impl\<close>: if Enc X Y appears in parts of an implem, then it is 
   in parts of the payload, or the key is either long term or payload
-\item @{text "impl_composed"}: the implementations are composed (not nonces, agents, tags etc.)
-\item @{text "analz_Un_implXXXSet"}: move the impl*Set out of the analz (only keep the payloads)
-\item @{text "impl_Impl"}: implementations contain implementation material
-\item @{text "LtK_parts_impl"}: no exposed long term keys in the implementations 
+\item \<open>impl_composed\<close>: the implementations are composed (not nonces, agents, tags etc.)
+\item \<open>analz_Un_implXXXSet\<close>: move the impl*Set out of the analz (only keep the payloads)
+\item \<open>impl_Impl\<close>: implementations contain implementation material
+\item \<open>LtK_parts_impl\<close>: no exposed long term keys in the implementations 
   (i.e., they are only used as keys, or under hashes)
 \end{itemize}
 \<close>
@@ -208,7 +208,7 @@ done
 end
 
 
-subsection \<open>Third step: @{text "valid_implem"}\<close>
+subsection \<open>Third step: \<open>valid_implem\<close>\<close>
 (**************************************************************************************************)
 
 text \<open>This extends @{locale "semivalid_implem"} with four new assumptions, which under certain 

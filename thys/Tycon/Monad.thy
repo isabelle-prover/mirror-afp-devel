@@ -1,29 +1,28 @@
-section {* Monad Class *}
+section \<open>Monad Class\<close>
 
 theory Monad
 imports Functor
 begin
 
-subsection {* Class definition *}
+subsection \<open>Class definition\<close>
 
-text {* In Haskell, class \emph{Monad} is defined as follows: *}
+text \<open>In Haskell, class \emph{Monad} is defined as follows:\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 class Monad m where
   return :: a -> m a
   (>>=) :: m a -> (a -> m b) -> m b
 \end{verbatim}
-*}
+\<close>
 
-text {* We formalize class @{text monad} in a manner similar to the
-@{text functor} class: We fix monomorphic versions of the class
-constants, replacing type variables with @{text udom}, and assume
-monomorphic versions of the class axioms. *}
+text \<open>We formalize class \<open>monad\<close> in a manner similar to the
+\<open>functor\<close> class: We fix monomorphic versions of the class
+constants, replacing type variables with \<open>udom\<close>, and assume
+monomorphic versions of the class axioms.\<close>
 
-text {* Because the monad laws imply the composition rule for @{text
-fmap}, we declare @{text prefunctor} as the superclass, and separately
-prove a subclass relationship with @{text functor}. *}
+text \<open>Because the monad laws imply the composition rule for \<open>fmap\<close>, we declare \<open>prefunctor\<close> as the superclass, and separately
+prove a subclass relationship with \<open>functor\<close>.\<close>
 
 class monad = prefunctor +
   fixes returnU :: "udom \<rightarrow> udom\<cdot>'a::tycon"
@@ -42,9 +41,9 @@ proof
     by (simp add: fmapU_eq_bindU bindU_bindU bindU_returnU)
 qed
 
-text {* As with @{text fmap}, we define the polymorphic @{text return}
-and @{text bind} by coercion from the monomorphic @{text returnU} and
-@{text bindU}. *}
+text \<open>As with \<open>fmap\<close>, we define the polymorphic \<open>return\<close>
+and \<open>bind\<close> by coercion from the monomorphic \<open>returnU\<close> and
+\<open>bindU\<close>.\<close>
 
 definition return :: "'a \<rightarrow> 'a\<cdot>'m::monad"
   where "return = coerce\<cdot>(returnU :: udom \<rightarrow> udom\<cdot>'m)"
@@ -55,11 +54,9 @@ definition bind :: "'a\<cdot>'m::monad \<rightarrow> ('a \<rightarrow> 'b\<cdot>
 abbreviation bind_syn :: "'a\<cdot>'m::monad \<Rightarrow> ('a \<rightarrow> 'b\<cdot>'m) \<Rightarrow> 'b\<cdot>'m" (infixl "\<bind>" 55)
   where "m \<bind> f \<equiv> bind\<cdot>m\<cdot>f"
 
-subsection {* Naturality of bind and return *}
+subsection \<open>Naturality of bind and return\<close>
 
-text {* The three class axioms imply naturality properties of @{text
-returnU} and @{text bindU}, i.e., that both commute with @{text
-fmapU}. *}
+text \<open>The three class axioms imply naturality properties of \<open>returnU\<close> and \<open>bindU\<close>, i.e., that both commute with \<open>fmapU\<close>.\<close>
 
 lemma fmapU_returnU [coerce_simp]:
   "fmapU\<cdot>f\<cdot>(returnU\<cdot>x) = returnU\<cdot>(f\<cdot>x)"
@@ -73,7 +70,7 @@ lemma bindU_fmapU:
   "bindU\<cdot>(fmapU\<cdot>f\<cdot>xs)\<cdot>k = bindU\<cdot>xs\<cdot>(\<Lambda> x. k\<cdot>(f\<cdot>x))"
 by (simp add: fmapU_eq_bindU bindU_returnU bindU_bindU)
 
-subsection {* Polymorphic versions of class assumptions *}
+subsection \<open>Polymorphic versions of class assumptions\<close>
 
 lemma monad_fmap:
   fixes xs :: "'a\<cdot>'m::monad" and f :: "'a \<rightarrow> 'b"
@@ -91,10 +88,10 @@ lemma bind_bind:
 unfolding bind_def
 by (simp add: coerce_simp bindU_bindU)
 
-subsection {* Derived rules *}
+subsection \<open>Derived rules\<close>
 
-text {* The following properties can be derived using only the
-abstract monad laws. *}
+text \<open>The following properties can be derived using only the
+abstract monad laws.\<close>
 
 lemma monad_right_unit [simp]: "(m \<bind> return) = m"
  apply (subgoal_tac "fmap\<cdot>ID\<cdot>m = m")
@@ -112,8 +109,8 @@ by (simp add: monad_fmap bind_bind)
 lemma bind_fmap: "bind\<cdot>(fmap\<cdot>f\<cdot>xs)\<cdot>k = bind\<cdot>xs\<cdot>(\<Lambda> x. k\<cdot>(f\<cdot>x))"
 by (simp add: monad_fmap bind_bind)
 
-text {* Bind is strict in its first argument, if its second argument
-is a strict function. *}
+text \<open>Bind is strict in its first argument, if its second argument
+is a strict function.\<close>
 
 lemma bind_strict:
   assumes "k\<cdot>\<bottom> = \<bottom>" shows "\<bottom> \<bind> k = \<bottom>"
@@ -130,7 +127,7 @@ lemma congruent_bind:
  apply (drule_tac x="return\<cdot>x" in spec, simp)
 done
 
-subsection {* Laws for join *}
+subsection \<open>Laws for join\<close>
 
 definition join :: "('a\<cdot>'m)\<cdot>'m \<rightarrow> 'a\<cdot>'m::monad"
   where "join \<equiv> \<Lambda> m. m \<bind> (\<Lambda> x. x)"
@@ -150,7 +147,7 @@ by (simp add: join_def monad_fmap bind_bind)
 lemma bind_def2: "m \<bind> k = join\<cdot>(fmap\<cdot>k\<cdot>m)"
 by (simp add: join_def monad_fmap eta_cfun bind_bind)
 
-subsection {* Equivalence of monad laws and fmap/join laws *}
+subsection \<open>Equivalence of monad laws and fmap/join laws\<close>
 
 lemma "(return\<cdot>x \<bind> f) = (f\<cdot>x)"
 by (simp only: bind_def2 fmap_return join_return)
@@ -166,10 +163,10 @@ lemma "((m \<bind> f) \<bind> g) = (m \<bind> (\<Lambda> x. f\<cdot>x \<bind> g)
  apply (simp add: join_fmap_join join_fmap_fmap)
 done
 
-subsection {* Simplification of coercions *}
+subsection \<open>Simplification of coercions\<close>
 
-text {* We configure rewrite rules that push coercions inwards, and
-reduce them to coercions on simpler types. *}
+text \<open>We configure rewrite rules that push coercions inwards, and
+reduce them to coercions on simpler types.\<close>
 
 lemma coerce_return [coerce_simp]:
   "COERCE('a\<cdot>'m,'b\<cdot>'m::monad)\<cdot>(return\<cdot>x) = return\<cdot>(COERCE('a,'b)\<cdot>x)"

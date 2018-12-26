@@ -1,12 +1,12 @@
-section {* Stream Iterators *}
+section \<open>Stream Iterators\<close>
 
 theory Stream
 imports LazyList
 begin
 
-subsection {* Type definitions for streams *}
+subsection \<open>Type definitions for streams\<close>
 
-text {* Note that everything is strict in the state type. *}
+text \<open>Note that everything is strict in the state type.\<close>
 
 domain ('a,'s) Step = Done | Skip 's | Yield (lazy 'a) 's
 
@@ -15,7 +15,7 @@ type_synonym ('a, 's) Stepper = "'s \<rightarrow> ('a, 's) Step"
 domain ('a,'s) Stream = Stream (lazy "('a, 's) Stepper") 's
 
 
-subsection {* Converting from streams to lists *}
+subsection \<open>Converting from streams to lists\<close>
 
 fixrec
   unfold :: "('a, 's) Stepper -> ('s -> 'a LList)"
@@ -92,7 +92,7 @@ lemma unstream_strict [simp]: "unstream\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
 
 
-subsection {* Converting from lists to streams *}
+subsection \<open>Converting from lists to streams\<close>
 
 fixrec
   streamStep :: "('a LList)\<^sub>\<bottom> \<rightarrow> ('a, ('a LList)\<^sub>\<bottom>) Step"
@@ -119,7 +119,7 @@ by (induct xs, simp_all add: unfold)
 declare stream.simps [simp del]
 
 
-subsection {* Bisimilarity relation on streams *}
+subsection \<open>Bisimilarity relation on streams\<close>
 
 definition
   bisimilar :: "('a, 's) Stream \<Rightarrow> ('a, 't) Stream \<Rightarrow> bool" (infix "\<approx>" 50)

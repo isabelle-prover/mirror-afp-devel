@@ -2,9 +2,9 @@ theory SymExec
 imports Conf Labels
 begin
 
-subsection {* Symbolic Execution *}
+subsection \<open>Symbolic Execution\<close>
 
-text {* We model symbolic execution by an inductive predicate @{term "se"} which takes two 
+text \<open>We model symbolic execution by an inductive predicate @{term "se"} which takes two 
 configurations @{term "c\<^sub>1"} and @{term "c\<^sub>2"} and a label @{term "l"} and evaluates to \emph{true} if 
 and only if @{term "c\<^sub>2"} is a \emph{possible result} of the symbolic execution of @{term "l"} from 
 @{term "c\<^sub>1"}. We say that @{term "c\<^sub>2"} is a possible result because, when @{term "l"} is of the 
@@ -14,26 +14,26 @@ We could have model @{term "se"} (and @{term "se_star"}) by a function producing
 configuration, instead of using inductive predicates. However this would require to provide the two 
 said assumptions in each lemma involving @{term se}, which is not necessary using a predicate. Modeling 
 symbolic execution in this way has the advantage that it simplifies the following proofs while not 
-requiring additional lemmas. *}
+requiring additional lemmas.\<close>
 
-subsubsection {* Definitions of $\mathit{se}$ and $\mathit{se\_star}$ *}
+subsubsection \<open>Definitions of $\mathit{se}$ and $\mathit{se\_star}$\<close>
 
-text {* Symbolic execution of @{term "Skip"} does not change the configuration from which it is 
-performed. *} 
+text \<open>Symbolic execution of @{term "Skip"} does not change the configuration from which it is 
+performed.\<close> 
 
-text {* When the label 
+text \<open>When the label 
 is of the form @{term "Assume e"}, the adaptation of @{term "e"} to the store is added to the 
-@{term "pred"} component. *} 
+@{term "pred"} component.\<close> 
 
-text {* In the case of an assignment, the @{term "store"} component is updated 
+text \<open>In the case of an assignment, the @{term "store"} component is updated 
 such that it now maps a fresh symbolic variable to the assigned program variable. A constraint 
 relating this program variable with its new symbolic value is added to the @{term "pred"} 
-component. *}
+component.\<close>
 
-text {* The second assumption in the third case requires that there exists at least one fresh 
+text \<open>The second assumption in the third case requires that there exists at least one fresh 
 symbolic variable for @{term "c"}. In the following, a number of theorems are needed
 to show that such variables exist for the configurations on which symbolic execution is performed.  
-*}
+\<close>
 
 
 inductive se ::
@@ -48,7 +48,7 @@ where
    se c (Assign v e) \<lparr> store = (store c)(v := snd sv), 
                        pred  = pred c \<union> {(\<lambda> \<sigma>. \<sigma> sv = (adapt_aexp e (store c)) \<sigma>)} \<rparr>"
 
-text {* In the same spirit, we extend symbolic execution to sequence of labels. *}
+text \<open>In the same spirit, we extend symbolic execution to sequence of labels.\<close>
 
 
 inductive se_star :: "('v,'d) conf \<Rightarrow> ('v,'d) label list \<Rightarrow> ('v,'d) conf \<Rightarrow> bool" where
@@ -57,10 +57,10 @@ inductive se_star :: "('v,'d) conf \<Rightarrow> ('v,'d) label list \<Rightarrow
 
 
 
-subsubsection {* Basic properties of $\mathit{se}$ *}
+subsubsection \<open>Basic properties of $\mathit{se}$\<close>
 
-text {* If symbolic execution yields a satisfiable configuration, then it has been performed from 
-a satisfiable configuration. *}
+text \<open>If symbolic execution yields a satisfiable configuration, then it has been performed from 
+a satisfiable configuration.\<close>
 
 
 lemma se_sat_imp_sat :
@@ -70,8 +70,8 @@ lemma se_sat_imp_sat :
 using assms by cases (auto simp add : sat_def conjunct_def)
 
 
-text {* If symbolic execution is performed from an unsatisfiable configuration, then it will yield 
-an unsatisfiable configuration. *}
+text \<open>If symbolic execution is performed from an unsatisfiable configuration, then it will yield 
+an unsatisfiable configuration.\<close>
 
 
 lemma unsat_imp_se_unsat :
@@ -81,8 +81,8 @@ lemma unsat_imp_se_unsat :
 using assms by cases (simp add : sat_def conjunct_def)+
 
 
-text {* Given two configurations @{term "c"} and @{term "c'"} and a label @{term "l"} such that 
-@{term "se c l c'"}, the three following lemmas express @{term "c'"} as a function of @{term "c"}. *}
+text \<open>Given two configurations @{term "c"} and @{term "c'"} and a label @{term "l"} such that 
+@{term "se c l c'"}, the three following lemmas express @{term "c'"} as a function of @{term "c"}.\<close>
 
 
 lemma [simp] :
@@ -104,10 +104,10 @@ lemma se_Assign_eq :
 by (simp only : se.simps, blast)
 
 
-text {* Given two configurations @{term "c"} and @{term "c'"} and a label @{term "l"} such that 
+text \<open>Given two configurations @{term "c"} and @{term "c'"} and a label @{term "l"} such that 
 @{term "se c l c'"}, the two following lemmas express the path predicate of @{term "c'"} as 
 a function of the path predicate of @{term "c"} when @{term "l"} models a guard or an 
-assignment. *}
+assignment.\<close>
 
 
 lemma path_pred_of_se_Assume :
@@ -126,10 +126,10 @@ using assms se_Assign_eq[of c v e c']
 by (fastforce simp add : conjunct_def)
 
 
-text {* Let @{term "c"} and @{term "c'"} be two configurations  such that @{term "c'"} is obtained 
+text \<open>Let @{term "c"} and @{term "c'"} be two configurations  such that @{term "c'"} is obtained 
 from @{term "c"} by symbolic execution of a label of the form @{term "Assume e"}. The states of 
 @{term "c'"} are the states of @{term "c"} that satisfy @{term "e"}. This theorem will help prove 
-that symbolic execution is monotonic wrt.\ subsumption. *}
+that symbolic execution is monotonic wrt.\ subsumption.\<close>
 
 
 theorem states_of_se_assume :
@@ -139,13 +139,13 @@ using assms se_Assume_eq[of c e c']
 by (auto simp add : adapt_bexp_is_subst states_def conjunct_def)
 
 
-text {* Let @{term "c"} and @{term "c'"} be two configurations  such that @{term "c'"} is obtained 
+text \<open>Let @{term "c"} and @{term "c'"} be two configurations  such that @{term "c'"} is obtained 
 from @{term "c"} by symbolic execution of a label of the form @{term "Assign v e"}. We want to 
 express the set of states of @{term "c'"} as a function of the set of states of @{term "c"}. Since 
-the proof requires a number of details, we split into two sub lemmas. *}
+the proof requires a number of details, we split into two sub lemmas.\<close>
 
-text {* First, we show that if @{term "\<sigma>'"} is a state of @{term "c'"}, then it has been obtain from 
-an adequate update of a state @{term "\<sigma>"} of @{term "c"}. *}
+text \<open>First, we show that if @{term "\<sigma>'"} is a state of @{term "c'"}, then it has been obtain from 
+an adequate update of a state @{term "\<sigma>"} of @{term "c"}.\<close>
 
 
 lemma states_of_se_assign1 :
@@ -219,8 +219,8 @@ proof -
 qed
 
 
-text {* Then, we show that if there exists a state @{term "\<sigma>"} of @{term "c"} from which 
-@{term "\<sigma>'"} is obtained by an adequate update, then @{term "\<sigma>'"} is a state of @{term "c'"}. *}
+text \<open>Then, we show that if there exists a state @{term "\<sigma>"} of @{term "c"} from which 
+@{term "\<sigma>'"} is obtained by an adequate update, then @{term "\<sigma>'"} is a state of @{term "c'"}.\<close>
 
 
 lemma states_of_se_assign2 :
@@ -248,7 +248,7 @@ proof -
   define \<sigma>\<^sub>s\<^sub>y\<^sub>m' where "\<sigma>\<^sub>s\<^sub>y\<^sub>m' = \<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := e \<sigma>)"
   
   have "consistent \<sigma>' \<sigma>\<^sub>s\<^sub>y\<^sub>m' (store c')"
-  using `\<sigma>' = \<sigma> (v := e \<sigma>)` 1 4 5 
+  using \<open>\<sigma>' = \<sigma> (v := e \<sigma>)\<close> 1 4 5 
   by (auto simp add : symvar_def consistent_def \<sigma>\<^sub>s\<^sub>y\<^sub>m'_def)
   
   moreover
@@ -277,8 +277,8 @@ proof -
   show ?thesis unfolding states_def by blast
 qed
 
-text {* The following theorem expressing the set of states of @{term c'} as a function of the set 
-of states of @{term c} trivially follows the two preceding lemmas. *}
+text \<open>The following theorem expressing the set of states of @{term c'} as a function of the set 
+of states of @{term c} trivially follows the two preceding lemmas.\<close>
 
 theorem states_of_se_assign :
   assumes "se c (Assign v e) c'"
@@ -286,10 +286,10 @@ theorem states_of_se_assign :
 using assms states_of_se_assign1 states_of_se_assign2 by fast
 
 
-subsubsection {* Monotonicity of $\mathit{se}$ *}
+subsubsection \<open>Monotonicity of $\mathit{se}$\<close>
 
-text {* We are now ready to prove that symbolic execution is monotonic with respect to subsumption. 
-*}
+text \<open>We are now ready to prove that symbolic execution is monotonic with respect to subsumption. 
+\<close>
 
 
 theorem se_mono_for_sub :
@@ -304,8 +304,8 @@ by ((cases l),
     (simp add : states_of_se_assign subsums_def, blast))
 
 
-text {* A stronger version of the previous theorem: symbolic execution is monotonic with respect to 
-states equality. *}
+text \<open>A stronger version of the previous theorem: symbolic execution is monotonic with respect to 
+states equality.\<close>
 
 
 theorem se_mono_for_states_eq :
@@ -319,9 +319,9 @@ using assms(1)
 by (simp add : subsums_def)
 
 
-text {* The previous theorem confirms the fact that the way the fresh symbolic variable is chosen 
+text \<open>The previous theorem confirms the fact that the way the fresh symbolic variable is chosen 
 in the case of symbolic execution of an assignment does not matter as long as the new symbolic 
-variable is indeed fresh, which is more precisely expressed by the following lemma. *}
+variable is indeed fresh, which is more precisely expressed by the following lemma.\<close>
 
 
 lemma se_succs_states :
@@ -331,9 +331,9 @@ lemma se_succs_states :
 using assms se_mono_for_states_eq by fast
 
 
-subsubsection {* Basic properties of $\mathit{se\_star}$ *}
+subsubsection \<open>Basic properties of $\mathit{se\_star}$\<close>
 
-text {* Some simplification lemmas for @{term "se_star"}. *}
+text \<open>Some simplification lemmas for @{term "se_star"}.\<close>
 
 
 lemma [simp] :
@@ -361,8 +361,8 @@ lemma se_star_append_one :
 unfolding se_star_append se_star_one by (rule refl)
 
 
-text {* Symbolic execution of a sequence of labels from an unsatisfiable configuration yields 
-an unsatisfiable configuration. *}
+text \<open>Symbolic execution of a sequence of labels from an unsatisfiable configuration yields 
+an unsatisfiable configuration.\<close>
 
 
 lemma unsat_imp_se_star_unsat :
@@ -374,8 +374,8 @@ by (induct ls arbitrary : c)
    (simp, force simp add : se_star_Cons unsat_imp_se_unsat)
 
 
-text {* If symbolic execution yields a satisfiable configuration, then it has been performed from 
-a satisfiable configuration. *}
+text \<open>If symbolic execution yields a satisfiable configuration, then it has been performed from 
+a satisfiable configuration.\<close>
 
 
 lemma se_star_sat_imp_sat :
@@ -388,9 +388,9 @@ by (induct ls arbitrary : c)
 
 
 
-subsubsection {* Monotonicity of $\mathit{se\_star}$ *}
+subsubsection \<open>Monotonicity of $\mathit{se\_star}$\<close>
 
-text {* Monotonicity of @{term "se"} extends to @{term "se_star"}. *}
+text \<open>Monotonicity of @{term "se"} extends to @{term "se_star"}.\<close>
 
 
 theorem se_star_mono_for_sub :
@@ -421,13 +421,13 @@ lemma se_star_succs_states :
 using assms se_star_mono_for_states_eq by fast
 
 
-subsubsection {* Existence of successors *}
+subsubsection \<open>Existence of successors\<close>
 
-text {* Here, we are interested in proving that, under certain assumptions, there will always exist 
+text \<open>Here, we are interested in proving that, under certain assumptions, there will always exist 
 fresh symbolic variables for configurations on which symbolic execution is performed. Thus symbolic 
 execution cannot ``block'' when an assignment is met. For symbolic execution not to block in this 
 case, the configuration from which it is performed must be such that there exist fresh symbolic 
-variables for each program variable. Such configurations are said to be \emph{updatable}. *} 
+variables for each program variable. Such configurations are said to be \emph{updatable}.\<close> 
 
 
 definition updatable :: 
@@ -436,8 +436,8 @@ where
   "updatable c \<equiv> \<forall> v. \<exists> sv. fst sv = v \<and> fresh_symvar sv c"
 
 
-text {* The following lemma shows that being updatable is a sufficient condition for a configuration 
-in order for @{term "se"} not to block. *}
+text \<open>The following lemma shows that being updatable is a sufficient condition for a configuration 
+in order for @{term "se"} not to block.\<close>
 
 
 lemma updatable_imp_ex_se_suc :
@@ -447,18 +447,18 @@ using assms
 by (cases l, simp_all add :  se_Assume_eq se_Assign_eq updatable_def)
 
 
-text {* A sufficient condition for a configuration to be updatable is that its path predicate has 
+text \<open>A sufficient condition for a configuration to be updatable is that its path predicate has 
 a finite number of variables. The @{term "store"} component has no influence here, since its set of 
 symbolic variables is always a strict subset of the set of symbolic variables (i.e.\ there always 
 exist fresh symbolic variables for a store). To establish this proof, we need the following 
-intermediate lemma. *}
+intermediate lemma.\<close>
 
-text {* We want to prove that if the set of symbolic variables of the path predicate of a 
+text \<open>We want to prove that if the set of symbolic variables of the path predicate of a 
 configuration is finite, then we can find a fresh symbolic variable for it. However, we express this 
 with a more general lemma. We show that given a finite set of symbolic variables @{term "SV"} and a
 program variable @{term "v"} such that there exist symbolic variables in @{term "SV"} that are 
 indexed versions of @{term "v"}, then there exists a symbolic variable for @{term "v"} whose index 
-is greater or equal than the index of any other symbolic variable for @{term "v"} in @{term SV}. *}
+is greater or equal than the index of any other symbolic variable for @{term "v"} in @{term SV}.\<close>
 
 
 lemma finite_symvars_imp_ex_greatest_symvar :
@@ -493,11 +493,11 @@ proof -
 qed
 
 
-text {* Thus, a configuration whose path predicate has a finite set of variables is updatable. For
-example, for any program variable @{term "v"}, the symbolic variable  @{text "(v,i+1)"} is fresh for 
+text \<open>Thus, a configuration whose path predicate has a finite set of variables is updatable. For
+example, for any program variable @{term "v"}, the symbolic variable  \<open>(v,i+1)\<close> is fresh for 
 this configuration, where @{term "i"} is the greater index associated to @{term "v"} among the 
 symbolic variables of this configuration. In practice, this is how we choose the fresh symbolic 
-variable. *}
+variable.\<close>
 
 
 lemma finite_pred_imp_se_updatable :
@@ -534,11 +534,11 @@ proof (intro allI)
 qed
 
 
-text {* The path predicate of a configuration whose @{term "pred"} component is finite and whose 
+text \<open>The path predicate of a configuration whose @{term "pred"} component is finite and whose 
 elements all have finite sets of variables has a finite set of variables. Thus, this configuration 
 is updatable, and it has a successor by symbolic execution of any label. The following lemma 
 starts from these two assumptions and use the previous ones in order to directly get to the 
-conclusion (this will ease some of the following proofs). *}
+conclusion (this will ease some of the following proofs).\<close>
 
 
 lemma finite_imp_ex_se_succ :
@@ -549,7 +549,7 @@ using finite_pred_imp_se_updatable[OF finite_conj[OF assms(1,2)]]
 by (rule updatable_imp_ex_se_suc)
 
 
-text {* For symbolic execution not to block \emph{along a sequence of labels}, it is not sufficient 
+text \<open>For symbolic execution not to block \emph{along a sequence of labels}, it is not sufficient 
 for the first configuration to be updatable. It must also be such that (all) its successors are 
 updatable. A sufficient condition for this is that the set of variables of its path predicate is 
 finite and that the sub-expression of the label that is executed also has a finite set of variables. 
@@ -563,7 +563,7 @@ elements of the @{term "pred"} component, provided that the sub expression of th
 executed has a finite set of variables, 
   \item one stating that symbolic execution preserves the finiteness of the @{term "pred"} 
 component.
-\end{itemize} *}
+\end{itemize}\<close>
 
 
 lemma se_preserves_finiteness1 :
@@ -616,10 +616,10 @@ by (cases l)
    (auto simp add :  se_Assume_eq se_Assign_eq)
 
 
-text {* We are now ready to prove that a sufficient condition for symbolic execution not to block 
+text \<open>We are now ready to prove that a sufficient condition for symbolic execution not to block 
 along a sequence of labels is that the @{term "pred"} component of the ``initial 
 configuration'' is finite, as well as the set of variables of its elements,  and that the 
-sub-expression of the label that is executed also has a finite set of variables. *}
+sub-expression of the label that is executed also has a finite set of variables.\<close>
 
 
 lemma finite_imp_ex_se_star_succ :
@@ -645,23 +645,23 @@ next
   ultimately
   obtain c2 where "se_star c1 ls c2" using 2 by blast
 
-  thus ?case using `se c l c1` using se_star_Cons by blast
+  thus ?case using \<open>se c l c1\<close> using se_star_Cons by blast
 qed
 
 
 
-subsection {* Feasibility of a sequence of labels *}
+subsection \<open>Feasibility of a sequence of labels\<close>
 
-text {* A sequence of labels @{term "ls"} is said to be feasible from a configuration @{term "c"} 
+text \<open>A sequence of labels @{term "ls"} is said to be feasible from a configuration @{term "c"} 
 if there exists a satisfiable configuration @{term "c'"} obtained by symbolic execution of 
-@{term "ls"} from @{term "c"}. *}
+@{term "ls"} from @{term "c"}.\<close>
 
 
 definition feasible :: "('v,'d) conf \<Rightarrow> ('v,'d) label list \<Rightarrow> bool" where
   "feasible c ls \<equiv> (\<exists> c'. se_star c ls c' \<and> sat c')"
 
 
-text {* A simplification lemma for the case where @{term "ls"} is not empty. *}
+text \<open>A simplification lemma for the case where @{term "ls"} is not empty.\<close>
 
 
 lemma feasible_Cons :
@@ -675,7 +675,7 @@ next
 qed
 
 
-text {* The following theorem is very important for the rest of this formalization. It states that, 
+text \<open>The following theorem is very important for the rest of this formalization. It states that, 
 given two 
 configurations @{term "c1"} and @{term "c2"} such that @{term "c1"} subsums @{term "c2"}, then 
 any feasible sequence of labels from @{term "c2"} is also feasible from @{term "c1"}. This is a crucial 
@@ -683,7 +683,7 @@ point in order to prove that our approach preserves the set of feasible paths of
 This proof requires a number of assumptions about the finiteness of the sequence of labels, of 
 the path predicates of the two configurations and of their states of variables. 
 Those assumptions are needed in order to show that there exist successors of 
-both configurations by symbolic execution of the sequence of labels. *}
+both configurations by symbolic execution of the sequence of labels.\<close>
 
 
 lemma subsums_imp_feasible :
@@ -714,8 +714,8 @@ next
 
   moreover
   hence "sat c1'" 
-  using  se_mono_for_sub[OF _ `se c2 l c2'` Cons(7)]
-         sat_sub_by_sat[OF `sat c2'`]
+  using  se_mono_for_sub[OF _ \<open>se c2 l c2'\<close> Cons(7)]
+         sat_sub_by_sat[OF \<open>sat c2'\<close>]
   by fast
 
   moreover
@@ -726,26 +726,26 @@ next
     and  "finite_labels ls" using Cons(2) by simp_all
 
     have "finite (pred c1')" 
-    by (rule se_preserves_finiteness2[OF `se c1 l c1'` Cons(3)])
+    by (rule se_preserves_finiteness2[OF \<open>se c1 l c1'\<close> Cons(3)])
      
     moreover
     have "finite (pred c2')" 
-    by (rule se_preserves_finiteness2[OF `se c2 l c2'` Cons(4)])
+    by (rule se_preserves_finiteness2[OF \<open>se c2 l c2'\<close> Cons(4)])
 
     moreover
     have "\<forall>e\<in>pred c1'. finite (Bexp.vars e)" 
-    by (rule se_preserves_finiteness1[OF `finite_label l` `se c1 l c1'` Cons(5)])
+    by (rule se_preserves_finiteness1[OF \<open>finite_label l\<close> \<open>se c1 l c1'\<close> Cons(5)])
 
     moreover
     have "\<forall>e\<in>pred c2'. finite (Bexp.vars e)"
-    by (rule se_preserves_finiteness1[OF `finite_label l` `se c2 l c2'` Cons(6)])
+    by (rule se_preserves_finiteness1[OF \<open>finite_label l\<close> \<open>se c2 l c2'\<close> Cons(6)])
     
     moreover
     have "c2' \<sqsubseteq> c1'" 
-    by (rule se_mono_for_sub[OF `se c1 l c1'` `se c2 l c2'` Cons(7)])
+    by (rule se_mono_for_sub[OF \<open>se c1 l c1'\<close> \<open>se c2 l c2'\<close> Cons(7)])
     
     ultimately
-    show ?thesis using Cons(1) `feasible c2' ls` `finite_labels ls` by fast
+    show ?thesis using Cons(1) \<open>feasible c2' ls\<close> \<open>finite_labels ls\<close> by fast
   qed
 
   ultimately
@@ -754,15 +754,15 @@ qed
 
 
 
-subsection {* Concrete execution *}
+subsection \<open>Concrete execution\<close>
 
-text {* We illustrate our notion of symbolic execution by relating it with @{term ce}, an inductive 
+text \<open>We illustrate our notion of symbolic execution by relating it with @{term ce}, an inductive 
 predicate describing concrete execution. Unlike symbolic execution, concrete execution describes 
 program behavior given program states, i.e.\ concrete valuations for program variables. The 
 goal of this section is to show that our notion of symbolic execution is correct, that is: given two 
 configurations such that one results from the symbolic execution of a sequence of labels from the 
 other, then the resulting configuration represents the set of states that are reachable by 
-concrete execution from the states of the original configuration. *}
+concrete execution from the states of the original configuration.\<close>
 
 inductive ce ::
   "('v,'d) state \<Rightarrow> ('v,'d) label \<Rightarrow> ('v,'d) state \<Rightarrow> bool"
@@ -823,12 +823,12 @@ next
 
     then obtain \<sigma>'' where "\<sigma>'' \<in> states c''"
                     and   "ce_star \<sigma>'' ls \<sigma>'"
-    using Cons(1) `se_star c'' ls c'` by blast
+    using Cons(1) \<open>se_star c'' ls c'\<close> by blast
 
     moreover
     then obtain \<sigma> where "\<sigma> \<in> states c"
                   and   "ce \<sigma> l \<sigma>''"
-    using `se c l c''`  se_as_ce by blast
+    using \<open>se c l c''\<close>  se_as_ce by blast
 
     ultimately
     show ?case by (simp add: ce_star_Cons) blast
@@ -846,7 +846,7 @@ next
 
     ultimately
     show ?case
-    using Cons(1) `se_star c'' ls c'` `se c l c''` by (auto simp add : se_as_ce)
+    using Cons(1) \<open>se_star c'' ls c'\<close> \<open>se c l c''\<close> by (auto simp add : se_as_ce)
   qed
 qed
 

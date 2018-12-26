@@ -2,7 +2,7 @@
    Dedicated to Sandra H. for a wonderful relaxing summer
 *)
 
-section {* Euler's Partition Theorem *}
+section \<open>Euler's Partition Theorem\<close>
 
 theory Euler_Partition
 imports
@@ -10,9 +10,9 @@ imports
   Card_Number_Partitions.Number_Partition
 begin
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-subsubsection {* Additions to Divides Theory *}
+subsubsection \<open>Additions to Divides Theory\<close>
 
 lemma power_div_nat:
   assumes "c \<le> b"
@@ -20,7 +20,7 @@ lemma power_div_nat:
   shows  "(a :: nat) ^ b div a ^ c = a ^ (b - c)"
 by (metis assms nonzero_mult_div_cancel_right le_add_diff_inverse2 less_not_refl2 power_add power_not_zero)
 
-subsubsection {* Additions to Groups-Big Theory *}
+subsubsection \<open>Additions to Groups-Big Theory\<close>
 
 lemma sum_div:
   assumes "finite A"
@@ -37,13 +37,13 @@ lemma sum_mod:
   shows "(\<Sum>a\<in>A. f a) mod b = 0"
 using assms by induct (auto simp add: mod_add_eq [symmetric])
 
-subsubsection {* Additions to Set-Interval Theory *}
+subsubsection \<open>Additions to Set-Interval Theory\<close>
 
 lemma geometric_sum_2nat:
   "(\<Sum>i<n. (2::nat) ^ i) = (2 ^ n - 1)"
 by (induct n) auto
 
-subsubsection {* Additions to Nat Theory or Power Theory *}
+subsubsection \<open>Additions to Nat Theory or Power Theory\<close>
 
 lemma n_leq_2_pow_n:
   "n \<le> 2 ^ n"
@@ -60,7 +60,7 @@ proof (induct n)
   qed
 qed (simp)
 
-subsubsection {* Additions to Finite-Set Theory *}
+subsubsection \<open>Additions to Finite-Set Theory\<close>
 
 lemma finite_exponents:
   "finite {i. 2 ^ i \<le> (n::nat)}"
@@ -70,7 +70,7 @@ proof -
   from this show ?thesis by (simp add: finite_subset)
 qed
 
-subsection {* Binary Encoding of Natural Numbers *}
+subsection \<open>Binary Encoding of Natural Numbers\<close>
 
 definition bitset :: "nat \<Rightarrow> nat set"
 where
@@ -192,7 +192,7 @@ lemma bitset_sum:
   shows "bitset (\<Sum>i\<in>B. 2 ^ i) = B"
 using assms unfolding bitset_def by (simp add: binarysum_div odd_iff)
 
-subsection {* Decomposition of a Number into a Power of Two and an Odd Number *}
+subsection \<open>Decomposition of a Number into a Power of Two and an Odd Number\<close>
 
 function (sequential) index :: "nat \<Rightarrow> nat"
 where
@@ -253,7 +253,7 @@ lemma index_oddpart:
 using index_oddpart_unique[where i=i and m=m and m'="oddpart (2 ^ i * m)" and i'="index (2 ^ i * m)"]
   assms odd_oddpart index_oddpart_decomposition by force+
 
-subsection {* Partitions With Only Distinct and Only Odd Parts *}
+subsection \<open>Partitions With Only Distinct and Only Odd Parts\<close>
 
 definition odd_of_distinct :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> nat"
 where
@@ -491,7 +491,7 @@ proof
   ultimately show "odd_of_distinct p partitions n \<and> (\<forall>i. odd_of_distinct p i \<noteq> 0 \<longrightarrow> odd i)" by simp
 qed
 
-subsection {* Euler's Partition Theorem *}
+subsection \<open>Euler's Partition Theorem\<close>
 
 theorem Euler_partition_theorem:
   "card {p. p partitions n \<and> (\<forall>i. p i \<le> 1)} = card {p. p partitions n \<and> (\<forall>i. p i \<noteq> 0 \<longrightarrow> odd i)}"

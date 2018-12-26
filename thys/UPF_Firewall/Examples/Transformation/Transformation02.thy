@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Transforamtion Example 2 *}
+subsection \<open>Transforamtion Example 2\<close>
 theory 
   Transformation02
   imports 

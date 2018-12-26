@@ -47,7 +47,7 @@ lemma eval_akra_bazzi_sum:
 (* end workaround *)
 
 
-ML {*
+ML \<open>
 signature AKRA_BAZZI_APPROXIMATION =
 sig
   val akra_bazzi_approximate_tac : int -> Proof.context -> int -> tactic
@@ -78,12 +78,12 @@ fun akra_bazzi_approximate_tac prec ctxt =
   end
    
 end;
-*}
+\<close>
 
-method_setup akra_bazzi_approximate = {*
+method_setup akra_bazzi_approximate = \<open>
   Scan.lift Parse.nat >> 
     (fn prec => fn ctxt => 
       SIMPLE_METHOD' (Akra_Bazzi_Approximation.akra_bazzi_approximate_tac prec ctxt))
-*} "approximate transcendental Akra-Bazzi parameters"
+\<close> "approximate transcendental Akra-Bazzi parameters"
 
 end

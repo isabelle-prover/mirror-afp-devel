@@ -15,7 +15,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* Sets of injections, partitions, allocations expressed as suitable subsets of the corresponding universes *}
+section \<open>Sets of injections, partitions, allocations expressed as suitable subsets of the corresponding universes\<close>
 
 theory Universes
 
@@ -26,7 +26,7 @@ StrictCombinatorialAuction
 
 begin
 
-subsection {* Preliminary lemmas *}
+subsection \<open>Preliminary lemmas\<close>
 
 lemma lm001: 
   assumes "Y \<in> set (all_partitions_alg X)" 
@@ -45,7 +45,7 @@ lemma lm002:
 
 
 
-subsection {* Definitions of various subsets of @{term UNIV}. *}
+subsection \<open>Definitions of various subsets of @{term UNIV}.\<close>
 
 (* For with R = {({1,2},2), ({2,3},3)} is a choice relation, choosing one element of the set. *)
 abbreviation "isChoice R == \<forall>x. R``{x} \<subseteq> x"
@@ -66,7 +66,7 @@ abbreviation "totalRels X Y == {R. Domain R = X & Range R \<subseteq> Y}"
 
 
 
-subsection {* Results about the sets defined in the previous section *}
+subsection \<open>Results about the sets defined in the previous section\<close>
 
 lemma lm003: 
   assumes "\<forall> x1 \<in> X. (x1 \<noteq> {} & (\<forall> x2 \<in> X-{x1}. x1 \<inter> x2  =  {}))" 
@@ -529,7 +529,7 @@ proof -
     ultimately have "?U (?r ?a1) \<inter> ?Y = {}" using unionIntersectionEmpty
 proof -
   have "\<forall>v0. v0 \<in> Range (a - (X \<union> {i}) \<times> Range a) \<longrightarrow> (\<forall>v1. v1 \<in> a `` (X \<union> {i}) \<longrightarrow> v0 \<inter> v1 = {})" 
-    by (metis (no_types) `\<forall>x\<in>Range (a - (X \<union> {i}) \<times> Range a). \<forall>y\<in>a \`\` (X \<union> {i}). x \<inter> y = {}`) 
+    by (metis (no_types) \<open>\<forall>x\<in>Range (a - (X \<union> {i}) \<times> Range a). \<forall>y\<in>a `` (X \<union> {i}). x \<inter> y = {}\<close>) 
   thus "\<Union>Range (a - (X \<union> {i}) \<times> Range a) \<inter> \<Union>(a `` (X \<union> {i})) = {}" by blast
 qed 
   then have 
@@ -885,7 +885,7 @@ corollary allocationsUniverseOutside:
   using assms Outside_def by (metis (lifting, mono_tags) reducedAllocation)
 
 
-subsection {* Bridging theorem for injections *}
+subsection \<open>Bridging theorem for injections\<close>
 
 lemma lm062: 
   "totalRels {} Y = {{}}" 
@@ -1150,7 +1150,7 @@ lemma lm095:
          (\<Union> f \<in> set F.{f +* {(x,y)} | y . y \<in> Y - (Range f)})" 
   using assms lm094 lm092 by auto
 
-subsection {* Computable injections *}
+subsection \<open>Computable injections\<close>
 
 fun injectionsAlg 
     where 
@@ -1170,7 +1170,7 @@ corollary lm097:
            (\<Union> f \<in> injections (set xs) (set Y). {f \<union> {(x,y)} | y . y \<in> (set Y) - (Range f)})" 
   using assms lm096 by auto
 
-text{* We sometimes use parallel @{term abbreviation} and @{term definition} for the same object to save typing `unfolding xxx' each time. There is also different behaviour in the code extraction. *}
+text\<open>We sometimes use parallel @{term abbreviation} and @{term definition} for the same object to save typing `unfolding xxx' each time. There is also different behaviour in the code extraction.\<close>
 
 lemma lm098:  
   "injections {} Y  =  {{}}" 

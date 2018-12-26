@@ -6,7 +6,7 @@ the physical size and braking distance of all other cars.
 *)
 
 section\<open> Sensors for Cars\<close>
-text{* 
+text\<open>
 This section presents the abstract definition of a function
 determining the sensor capabilities of cars. Such a function
 takes a car \(e\), a traffic snapshot \(ts\) and another
@@ -21,7 +21,7 @@ However, this does not define the lanes \(c\) occupies, but
 only a continuous interval. The lanes occupied by \(c\) 
 are given by the reservation and claim functions of 
 the traffic snapshot \(ts\).
-*}
+\<close>
   
 theory Sensors
   imports "Traffic" "Views"

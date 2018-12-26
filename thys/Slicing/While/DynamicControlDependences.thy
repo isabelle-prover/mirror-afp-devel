@@ -1,4 +1,4 @@
-section {* Interpretations of the various dynamic control dependences *}
+section \<open>Interpretations of the various dynamic control dependences\<close>
 
 theory DynamicControlDependences imports AdditionalLemmas "../Dynamic/DynPDG" begin
 

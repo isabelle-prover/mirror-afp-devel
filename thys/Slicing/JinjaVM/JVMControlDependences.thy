@@ -1,4 +1,4 @@
-section {* Instantiating the control dependences *}
+section \<open>Instantiating the control dependences\<close>
 
 theory JVMControlDependences imports
   JVMPostdomination
@@ -7,7 +7,7 @@ theory JVMControlDependences imports
   "../StaticIntra/CDepInstantiations"
 begin
 
-subsection {* Dynamic dependences *}
+subsection \<open>Dynamic dependences\<close>
 
 interpretation JVMDynStandardControlDependence:
   DynStandardControlDependencePDG "sourcenode" "targetnode" "kind" 
@@ -19,7 +19,7 @@ interpretation JVMDynWeakControlDependence:
   "valid_edge\<^bsub>CFG\<^esub> prog" "(_Entry_)" "Def (fst\<^bsub>CFG\<^esub> prog)" "Use (fst\<^bsub>CFG\<^esub> prog)" 
   "state_val" "(_Exit_)" ..
 
-subsection {* Static dependences *}
+subsection \<open>Static dependences\<close>
 
 interpretation JVMStandardControlDependence:
   StandardControlDependencePDG "sourcenode" "targetnode" "kind" 

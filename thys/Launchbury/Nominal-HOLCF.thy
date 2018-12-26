@@ -3,7 +3,7 @@ imports
   "Nominal-Utils" "HOLCF-Utils"
 begin
 
-subsubsection {* Type class of continuous permutations and variations thereof *}
+subsubsection \<open>Type class of continuous permutations and variations thereof\<close>
 
 class cont_pt = 
   cpo + 
@@ -89,7 +89,7 @@ lemma chain_eqvt[eqvt]:
   apply (subst (asm) perm_cont_simp[symmetric, where \<pi> = \<pi>])
   by (metis permute_fun_app_eq permute_pure)
 
-subsubsection {* Instance for @{type cfun} *}
+subsubsection \<open>Instance for @{type cfun}\<close>
 
 instantiation "cfun" :: (cont_pt, cont_pt) pt
 begin
@@ -137,7 +137,7 @@ instance "cfun" :: ("{pure,cont_pt}", "{pure,cont_pt}") pure
 instance "cfun" :: (cont_pt, pcpo_pt) pcpo_pt
   by standard
 
-subsubsection {* Instance for @{type fun} *}
+subsubsection \<open>Instance for @{type fun}\<close>
 
 lemma permute_fun_eq: "permute p = (\<lambda> f. (permute p) \<circ> f \<circ> (permute (-p)))"
   by (rule, rule, metis comp_apply eqvt_lambda unpermute_def)
@@ -159,7 +159,7 @@ apply (rule parallel_fix_ind[OF adm_subst2])
 apply (auto simp add: permute_self)
 done
 
-subsubsection {* Instance for @{type u} *}
+subsubsection \<open>Instance for @{type u}\<close>
 
 (* Everything very pure. Does this work?
 instantiation u :: (cpo) pt
@@ -220,7 +220,7 @@ lemma fup_eqvt[eqvt]: "\<pi> \<bullet> fup = fup"
   apply (simp add: permute_self)
   done
 
-subsubsection {* Instance for @{type lift} *}
+subsubsection \<open>Instance for @{type lift}\<close>
 
 instantiation lift :: (pt) pt
 begin
@@ -256,7 +256,7 @@ lemma Def_eqvt[eqvt]: "\<pi> \<bullet> (Def x) = Def (\<pi> \<bullet> x)"
 lemma case_lift_eqvt[eqvt]: "\<pi> \<bullet> case_lift d f x = case_lift (\<pi> \<bullet> d) (\<pi> \<bullet> f) (\<pi> \<bullet> x)"
   by (cases x) (auto simp add: permute_self)
 
-subsubsection {* Instance for @{type prod} *}
+subsubsection \<open>Instance for @{type prod}\<close>
 
 instance prod :: (cont_pt, cont_pt) cont_pt
 proof

@@ -1,4 +1,4 @@
-section {* \isaheader{Array Based Hash-Maps} *}
+section \<open>\isaheader{Array Based Hash-Maps}\<close>
 theory Impl_Array_Hash_Map imports 
   Automatic_Refinement.Automatic_Refinement
   "../../Iterator/Array_Iterator"
@@ -12,7 +12,7 @@ theory Impl_Array_Hash_Map imports
 begin
 
 
-subsection {* Type definition and primitive operations *}
+subsection \<open>Type definition and primitive operations\<close>
 
 definition load_factor :: nat \<comment> \<open>in percent\<close>
   where "load_factor = 75"
@@ -20,7 +20,7 @@ definition load_factor :: nat \<comment> \<open>in percent\<close>
 datatype ('key, 'val) hashmap =
   HashMap "('key,'val) list_map array" "nat"
 
-subsection {* Operations *}
+subsection \<open>Operations\<close>
 
 definition new_hashmap_with :: "nat \<Rightarrow> ('k, 'v) hashmap"
 where "\<And>size. new_hashmap_with size = 
@@ -156,7 +156,7 @@ lemma bucket_okI:
 by(simp add: bucket_ok_def)
 
 
-subsection {* Parametricity *}
+subsection \<open>Parametricity\<close>
 
 lemma param_HashMap[param]: "(HashMap, HashMap) \<in> 
     \<langle>\<langle>\<langle>Rk,Rv\<rangle>prod_rel\<rangle>list_rel\<rangle>array_rel \<rightarrow> nat_rel \<rightarrow> \<langle>Rk,Rv\<rangle>ahm_map_rel" 
@@ -173,7 +173,7 @@ lemma rec_hashmap_is_case[simp]: "rec_hashmap = case_hashmap"
 
 
 
-subsection {* @{term ahm_invar} *}
+subsection \<open>@{term ahm_invar}\<close>
 
 lemma ahm_invar_auxD:
   assumes "ahm_invar_aux bhc n a"
@@ -219,29 +219,29 @@ proof -
     proof(intro allI ballI impI)
       fix i j
       assume "i < length [x\<leftarrow>xs . x \<noteq> []]" "j < length [x\<leftarrow>xs . x \<noteq> []]" "i \<noteq> j"
-      from filter_nth_ex_nth[OF `i < length [x\<leftarrow>xs . x \<noteq> []]`]
+      from filter_nth_ex_nth[OF \<open>i < length [x\<leftarrow>xs . x \<noteq> []]\<close>]
       obtain i' where "i' \<ge> i" "i' < length xs" and ith: "[x\<leftarrow>xs . x \<noteq> []] ! i = xs ! i'" 
         and eqi: "[x\<leftarrow>take i' xs . x \<noteq> []] = take i [x\<leftarrow>xs . x \<noteq> []]" by blast
-      from filter_nth_ex_nth[OF `j < length [x\<leftarrow>xs . x \<noteq> []]`]
+      from filter_nth_ex_nth[OF \<open>j < length [x\<leftarrow>xs . x \<noteq> []]\<close>]
       obtain j' where "j' \<ge> j" "j' < length xs" and jth: "[x\<leftarrow>xs . x \<noteq> []] ! j = xs ! j'"
         and eqj: "[x\<leftarrow>take j' xs . x \<noteq> []] = take j [x\<leftarrow>xs . x \<noteq> []]" by blast
       show "[x\<leftarrow>xs . x \<noteq> []] ! i \<noteq> [x\<leftarrow>xs . x \<noteq> []] ! j"
       proof
         assume "[x\<leftarrow>xs . x \<noteq> []] ! i = [x\<leftarrow>xs . x \<noteq> []] ! j"
         hence eq: "xs ! i' = xs ! j'" using ith jth by simp
-        from `i < length [x\<leftarrow>xs . x \<noteq> []]`
+        from \<open>i < length [x\<leftarrow>xs . x \<noteq> []]\<close>
         have "[x\<leftarrow>xs . x \<noteq> []] ! i \<in> set [x\<leftarrow>xs . x \<noteq> []]" by(rule nth_mem)
         with ith have "xs ! i' \<noteq> []" by simp
         then obtain kv where "kv \<in> set (xs ! i')" by(fastforce simp add: neq_Nil_conv)
-        with no_junk[OF `i' < length xs`] have "bhc (length xs) (fst kv) = i'"
+        with no_junk[OF \<open>i' < length xs\<close>] have "bhc (length xs) (fst kv) = i'"
           by(simp add: bucket_ok_def)
-        moreover from eq `kv \<in> set (xs ! i')` have "kv \<in> set (xs ! j')" by simp
-        with no_junk[OF `j' < length xs`] have "bhc (length xs) (fst kv) = j'"
+        moreover from eq \<open>kv \<in> set (xs ! i')\<close> have "kv \<in> set (xs ! j')" by simp
+        with no_junk[OF \<open>j' < length xs\<close>] have "bhc (length xs) (fst kv) = j'"
           by(simp add: bucket_ok_def)
         ultimately have [simp]: "i' = j'" by simp
-        from `i < length [x\<leftarrow>xs . x \<noteq> []]` have "i = length (take i [x\<leftarrow>xs . x \<noteq> []])" by simp
+        from \<open>i < length [x\<leftarrow>xs . x \<noteq> []]\<close> have "i = length (take i [x\<leftarrow>xs . x \<noteq> []])" by simp
         also from eqi eqj have "take i [x\<leftarrow>xs . x \<noteq> []] = take j [x\<leftarrow>xs . x \<noteq> []]" by simp
-        finally show False using `i \<noteq> j` `j < length [x\<leftarrow>xs . x \<noteq> []]` by simp
+        finally show False using \<open>i \<noteq> j\<close> \<open>j < length [x\<leftarrow>xs . x \<noteq> []]\<close> by simp
       qed
     qed
     moreover have "inj_on (map fst) {x \<in> set xs. x \<noteq> []}"
@@ -249,16 +249,16 @@ proof -
       fix x y
       assume "x \<in> {x \<in> set xs. x \<noteq> []}" "y \<in> {x \<in> set xs. x \<noteq> []}" "map fst x = map fst y"
       hence "x \<in> set xs" "y \<in> set xs" "x \<noteq> []" "y \<noteq> []" by auto
-      from `x \<in> set xs` obtain i where "xs ! i = x" "i < length xs" unfolding set_conv_nth by fastforce
-      from `y \<in> set xs` obtain j where "xs ! j = y" "j < length xs" unfolding set_conv_nth by fastforce
-      from `x \<noteq> []` obtain k v x' where "x = (k, v) # x'" by(cases x) auto
-      with no_junk[OF `i < length xs`] `xs ! i = x`
+      from \<open>x \<in> set xs\<close> obtain i where "xs ! i = x" "i < length xs" unfolding set_conv_nth by fastforce
+      from \<open>y \<in> set xs\<close> obtain j where "xs ! j = y" "j < length xs" unfolding set_conv_nth by fastforce
+      from \<open>x \<noteq> []\<close> obtain k v x' where "x = (k, v) # x'" by(cases x) auto
+      with no_junk[OF \<open>i < length xs\<close>] \<open>xs ! i = x\<close>
       have "bhc (length xs) k = i" by(auto simp add: bucket_ok_def)
-      moreover from `map fst x = map fst y` `x = (k, v) # x'` obtain v' where "(k, v') \<in> set y" by fastforce
-      with no_junk[OF `j < length xs`] `xs ! j = y`
+      moreover from \<open>map fst x = map fst y\<close> \<open>x = (k, v) # x'\<close> obtain v' where "(k, v') \<in> set y" by fastforce
+      with no_junk[OF \<open>j < length xs\<close>] \<open>xs ! j = y\<close>
       have "bhc (length xs) k = j" by(auto simp add: bucket_ok_def)
       ultimately have "i = j" by simp
-      with `xs ! i = x` `xs ! j = y` show "x = y" by simp
+      with \<open>xs ! i = x\<close> \<open>xs ! j = y\<close> show "x = y" by simp
     qed
     ultimately show "distinct [ys\<leftarrow>map (map fst) xs . ys \<noteq> []]"
       by(simp add: filter_map o_def distinct_map)
@@ -279,20 +279,20 @@ proof -
       fix k
       assume "k \<in> fst ` set ys' \<inter> fst ` set zs'"
       then obtain v v' where "(k, v) \<in> set ys'" "(k, v') \<in> set zs'" by(auto)
-      from `ys' \<in> set xs` obtain i where "xs ! i = ys'" "i < length xs" unfolding set_conv_nth by fastforce
-      with `(k, v) \<in> set ys'` have "bhc (length xs) k = i" by(auto dest: no_junk bucket_okD)
+      from \<open>ys' \<in> set xs\<close> obtain i where "xs ! i = ys'" "i < length xs" unfolding set_conv_nth by fastforce
+      with \<open>(k, v) \<in> set ys'\<close> have "bhc (length xs) k = i" by(auto dest: no_junk bucket_okD)
       moreover
-      from `zs' \<in> set xs` obtain j where "xs ! j = zs'" "j < length xs" unfolding set_conv_nth by fastforce
-      with `(k, v') \<in> set zs'` have "bhc (length xs) k = j" by(auto dest: no_junk bucket_okD)
+      from \<open>zs' \<in> set xs\<close> obtain j where "xs ! j = zs'" "j < length xs" unfolding set_conv_nth by fastforce
+      with \<open>(k, v') \<in> set zs'\<close> have "bhc (length xs) k = j" by(auto dest: no_junk bucket_okD)
       ultimately have "i = j" by simp
-      with `xs ! i = ys'` `xs ! j = zs'` have "ys' = zs'" by simp
-      with `ys \<noteq> zs` show False by simp
+      with \<open>xs ! i = ys'\<close> \<open>xs ! j = zs'\<close> have "ys' = zs'" by simp
+      with \<open>ys \<noteq> zs\<close> show False by simp
     qed
     thus "set ys \<inter> set zs = {}" by simp
   qed
 qed
 
-subsection {* @{term "ahm_\<alpha>"} *}
+subsection \<open>@{term "ahm_\<alpha>"}\<close>
 
 (* TODO: Move this *)
 lemma list_map_lookup_is_map_of:
@@ -317,7 +317,7 @@ proof -
     by(force simp add: dom_map_of_conv_image_fst dest: map_of_SomeD)
   moreover have "finite \<dots>"
   proof(rule finite_UN_I)
-    from `ahm_invar_aux bhc n a` have "array_length a > 1" by(simp add: ahm_invar_aux_def)
+    from \<open>ahm_invar_aux bhc n a\<close> have "array_length a > 1" by(simp add: ahm_invar_aux_def)
     hence "range (bhc (array_length a) :: 'a \<Rightarrow> nat) \<subseteq> {0..<array_length a}"
       using assms by force
     thus "finite (range (bhc (array_length a) :: 'a \<Rightarrow> nat))"
@@ -358,9 +358,9 @@ proof
     hence "(k, v) \<in> set (concat xs)" by(rule map_of_SomeD)
     then obtain ys where "ys \<in> set xs" "(k, v) \<in> set ys"
       unfolding set_concat by blast
-    from `ys \<in> set xs` obtain i j where "i < length xs" "xs ! i = ys"
+    from \<open>ys \<in> set xs\<close> obtain i j where "i < length xs" "xs ! i = ys"
       unfolding set_conv_nth by auto
-    with inv `(k, v) \<in> set ys`
+    with inv \<open>(k, v) \<in> set ys\<close>
     show ?thesis unfolding Some
       unfolding ahm_\<alpha>_aux_def2
       by(force dest: bucket_okD simp add: ahm_invar_aux_def list_map_invar_def)
@@ -393,7 +393,7 @@ lemma finite_dom_ahm_\<alpha>:
       simp: ahm_\<alpha>_def2)
 
 
-subsection {* @{term ahm_empty} *}
+subsection \<open>@{term ahm_empty}\<close>
 
 lemma ahm_invar_aux_new_array:
   assumes "n > 1"
@@ -454,7 +454,7 @@ proof-
 qed
 
 
-subsection {* @{term "ahm_lookup"} *}
+subsection \<open>@{term "ahm_lookup"}\<close>
 
 lemma param_ahm_lookup[param]:
   assumes bhc: "is_bounded_hashcode Rk eq bhc"
@@ -515,7 +515,7 @@ proof (intro fun_relI)
 qed
 
 
-subsection {* @{term "ahm_iteratei"} *}
+subsection \<open>@{term "ahm_iteratei"}\<close>
 
 abbreviation "ahm_to_list \<equiv> it_to_list ahm_iteratei"
 
@@ -663,7 +663,7 @@ proof(cases a)
 qed
 
 
-subsection {* @{term "ahm_rehash"} *}
+subsection \<open>@{term "ahm_rehash"}\<close>
 
 lemma array_length_ahm_rehash_aux':
   "array_length (ahm_rehash_aux' bhc n kv a) = array_length a"
@@ -741,7 +741,7 @@ proof -
   proof(intro iterator_rule)
     from ahm_invar_aux_card_dom_ahm_\<alpha>_auxD[OF bhc inv] 
         have "card (dom (ahm_\<alpha>_aux bhc a)) = n" .
-    moreover from ahm_invar_aux_new_array[OF `1 < sz`]
+    moreover from ahm_invar_aux_new_array[OF \<open>1 < sz\<close>]
         have "ahm_invar_aux bhc 0 (new_array ([]::('k\<times>'v) list) sz)" .
     moreover {
       fix k
@@ -766,14 +766,14 @@ proof -
       by (auto split: if_split_asm simp: I_def)
     from it_sub finite_dom_ahm_\<alpha>_aux[OF bhc inv] 
         have "finite it" by(rule finite_subset)
-    moreover with `k \<in> it` have "card it > 0" by (auto simp add: card_gt_0_iff)
+    moreover with \<open>k \<in> it\<close> have "card it > 0" by (auto simp add: card_gt_0_iff)
     moreover from finite_dom_ahm_\<alpha>_aux[OF bhc inv] it_sub
         have "card it \<le> card (dom (ahm_\<alpha>_aux bhc a))" by (rule card_mono)
     moreover have "\<dots> = n" using inv
         by(simp add: ahm_invar_aux_card_dom_ahm_\<alpha>_auxD[OF bhc])
     ultimately have "n - card (it - {k}) = (n - card it) + 1" 
-        using `k \<in> it` by auto
-    moreover from `k \<in> it` have "ahm_\<alpha>_aux bhc a' k = None" by (rule a'_None)
+        using \<open>k \<in> it\<close> by auto
+    moreover from \<open>k \<in> it\<close> have "ahm_\<alpha>_aux bhc a' k = None" by (rule a'_None)
     hence "k \<notin> fst ` set (array_get a' (bhc (array_length a') k))"
         by (simp add: ahm_\<alpha>_aux_def2 map_of_eq_None_iff)
     ultimately have "ahm_invar_aux bhc (n - card (it - {k})) 
@@ -784,7 +784,7 @@ proof -
     moreover {
       fix k'
       assume "k' \<in> it - {k}"
-      with is_bounded_hashcodeD(3)[OF bhc `1 < sz`, of k'] a'_None[of k']
+      with is_bounded_hashcodeD(3)[OF bhc \<open>1 < sz\<close>, of k'] a'_None[of k']
       have "ahm_\<alpha>_aux bhc (ahm_rehash_aux' bhc sz (k, v) a') k' = None"
           unfolding ahm_\<alpha>_aux_def2
           by (cases "bhc sz k = bhc sz k'") (simp_all add: 
@@ -792,13 +792,13 @@ proof -
     } moreover {
       fix k'
       assume "k' \<notin> it - {k}"
-      with is_bounded_hashcodeD(3)[OF bhc `1 < sz`, of k]
-           is_bounded_hashcodeD(3)[OF bhc `1 < sz`, of k'] 
-           a'_eq_a[of k'] `k \<in> it`
+      with is_bounded_hashcodeD(3)[OF bhc \<open>1 < sz\<close>, of k]
+           is_bounded_hashcodeD(3)[OF bhc \<open>1 < sz\<close>, of k'] 
+           a'_eq_a[of k'] \<open>k \<in> it\<close>
       have "ahm_\<alpha>_aux bhc (ahm_rehash_aux' bhc sz (k, v) a') k' = 
                 ahm_\<alpha>_aux bhc a k'"
           unfolding ahm_rehash_aux'_def Let_def 
-          using `ahm_\<alpha>_aux bhc a k = Some v`
+          using \<open>ahm_\<alpha>_aux bhc a k = Some v\<close>
           unfolding ahm_\<alpha>_aux_def2
         by(cases "bhc sz k = bhc sz k'") (case_tac [!] "k' = k", 
             simp_all add: array_get_array_set_other)
@@ -819,13 +819,13 @@ lemma ahm_rehash_correct:
 proof-
   obtain a n where [simp]: "hm = HashMap a n" by (cases hm)
   from inv have "ahm_invar_aux bhc n a" by simp
-  from ahm_rehash_aux_correct[OF bhc this `sz > 1`]
+  from ahm_rehash_aux_correct[OF bhc this \<open>sz > 1\<close>]
       show "ahm_invar bhc (ahm_rehash bhc hm sz)" and
            "ahm_\<alpha> bhc (ahm_rehash bhc hm sz) = ahm_\<alpha> bhc hm"
       by (simp_all add: ahm_\<alpha>_def2)
 qed
 
-subsection {* @{term ahm_update} *}
+subsection \<open>@{term ahm_update}\<close>
 
 lemma param_hm_grow[param]:
   "(hm_grow, hm_grow) \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel \<rightarrow> nat_rel"
@@ -1086,14 +1086,14 @@ proof (intro fun_relI, clarsimp)
                   then obtain v' where "(k',v') \<in> set ?list"
                        by (cases x, simp)
                   with bucket_okD[OF bucket_ok] and 
-                      `h = bhc (array_length a) k`
+                      \<open>h = bhc (array_length a) k\<close>
                       show ?thesis by simp
              qed simp
           qed
       qed
-    from `h < array_length a` inv have "list_map_invar (array_get a h)"
+    from \<open>h < array_length a\<close> inv have "list_map_invar (array_get a h)"
         by(auto dest: ahm_invar_auxD)
-    with `h < array_length a`
+    with \<open>h < array_length a\<close>
     show "list_map_invar (array_get ?a' h)"
         by (cases "h = ?h", simp_all add: 
             list_updated array_get_array_set_other)
@@ -1195,7 +1195,7 @@ proof (intro fun_relI)
             \<langle>Rk,Rv\<rangle>ahm_rel bhc" unfolding ahm_rel_def by simp
 qed
 
-subsection {* @{term "ahm_delete"} *}
+subsection \<open>@{term "ahm_delete"}\<close>
 
 lemma param_ahm_delete[param]:
   (*assumes eq: "(eq,(=)) \<in> Rk \<rightarrow> Rk \<rightarrow> bool_rel"*)
@@ -1231,7 +1231,7 @@ proof-
       using A K bhc bhc_range by parametricity
   note cmp = option_compare[OF param_list_map_lookup[param_fo, OF eq K this]]
 
-  show ?thesis unfolding `m = HashMap a n` `m' = HashMap a' n'`
+  show ?thesis unfolding \<open>m = HashMap a n\<close> \<open>m' = HashMap a' n'\<close>
       by (simp only: ahm_delete.simps Let_def,
              insert eq isbhc bhc K A N bhc_range cmp, parametricity)
 qed
@@ -1299,13 +1299,13 @@ proof (intro fun_relI, clarsimp)
                   then obtain v' where "(k',v') \<in> set ?list"
                        by (cases x, simp)
                   with bucket_okD[OF inv'(1)] and 
-                      `h = bhc (array_length a) k`
+                      \<open>h = bhc (array_length a) k\<close>
                       show ?thesis by blast
              qed simp
         qed
       qed
     
-    from inv'(3) `h < array_length a`
+    from inv'(3) \<open>h < array_length a\<close>
     show "list_map_invar (array_get ?a' h)"
         by (cases "h = ?h", simp_all add: 
             list_updated array_get_array_set_other)
@@ -1364,7 +1364,7 @@ apply (intro conjI impI)
       unfolding ahm_map_rel'_def br_def by simp
 
   thus "(ahm_delete (=) bhc k hm, m |` (-{k})) \<in> ahm_map_rel' bhc"
-      by (simp only: `hm = HashMap a n` ahm_delete.simps Let_def 
+      by (simp only: \<open>hm = HashMap a n\<close> ahm_delete.simps Let_def 
                  op_map_delete_def, force)
 qed
 
@@ -1395,7 +1395,7 @@ proof (intro fun_relI)
 qed
 
 
-subsection {* Various simple operations *}
+subsection \<open>Various simple operations\<close>
 
 lemma param_ahm_isEmpty[param]: 
     "(ahm_isEmpty, ahm_isEmpty) \<in> \<langle>Rk,Rv\<rangle>ahm_map_rel \<rightarrow> bool_rel"
@@ -1550,7 +1550,7 @@ lemma rbt_map_rel_finite[relator_props]:
   apply assumption
   done
 
-subsection {* Proper iterator proofs *}
+subsection \<open>Proper iterator proofs\<close>
 
 lemma pi_ahm[icf_proper_iteratorI]: 
   "proper_it (ahm_iteratei m) (ahm_iteratei m)"

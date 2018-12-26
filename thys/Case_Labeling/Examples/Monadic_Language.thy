@@ -9,13 +9,13 @@ begin
 
 ML_file "../util.ML"
 
-ML {*
+ML \<open>
   fun vcg_tac nt_rules nt_comb ctxt =
     let
       val rules = Named_Theorems.get ctxt nt_rules
       val comb = Named_Theorems.get ctxt nt_comb
     in REPEAT_ALL_NEW_FWD ( resolve_tac ctxt rules ORELSE' (resolve_tac ctxt comb THEN' resolve_tac ctxt rules)) end
-*}
+\<close>
 
 
 text \<open>This language is inspired by the languages used in AutoCorres @{cite greenaway_bridging_2012}\<close>
@@ -28,9 +28,9 @@ consts valid :: "bool \<Rightarrow> 'a option \<Rightarrow> ('a \<Rightarrow> bo
 named_theorems vcg
 named_theorems vcg_comb
 
-method_setup vcg = {*
+method_setup vcg = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (FIRSTGOAL (vcg_tac @{named_theorems "vcg"} @{named_theorems "vcg_comb"} ctxt)))
-*}
+\<close>
 
 
 axiomatization where
@@ -49,9 +49,9 @@ named_theorems vcg_l
 named_theorems vcg_l_comb
 named_theorems vcg_elim
 
-method_setup vcg_l = {*
+method_setup vcg_l = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (FIRSTGOAL (vcg_tac @{named_theorems "vcg_l"} @{named_theorems "vcg_l_comb"} ctxt)))
-*}
+\<close>
 
 method vcg_l' = (vcg_l; (elim vcg_elim)?)
 

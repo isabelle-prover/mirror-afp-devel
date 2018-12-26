@@ -1,10 +1,10 @@
-chapter{*Gödel's Second Incompleteness Theorem*}
+chapter\<open>Gödel's Second Incompleteness Theorem\<close>
 
 theory Goedel_II
 imports Goedel_I Quote 
 begin
 
-text{*The connection between @{term Quote} and @{term HR} (for interest only). *}
+text\<open>The connection between @{term Quote} and @{term HR} (for interest only).\<close>
 
 lemma Quote_q_Eats [intro]:
   "Quote y y' \<Longrightarrow> Quote z z' \<Longrightarrow> Quote (y \<triangleleft> z) (q_Eats y' z')"
@@ -46,8 +46,8 @@ lemma PfP_quot_contra: "ground_fm \<alpha> \<Longrightarrow> {} \<turnstile> PfP
   by (auto simp: qp0.quote_all_Contra_PfP_ssubst ground_fm_aux_def)
 
 
-text{*Gödel's second incompleteness theorem:
-      If consistent, our theory cannot prove its own consistency.*}
+text\<open>Gödel's second incompleteness theorem:
+      If consistent, our theory cannot prove its own consistency.\<close>
 theorem Goedel_II:
   assumes "\<not> {} \<turnstile> Fls"
     shows "\<not> {} \<turnstile> Neg (PfP \<lceil>Fls\<rceil>)"

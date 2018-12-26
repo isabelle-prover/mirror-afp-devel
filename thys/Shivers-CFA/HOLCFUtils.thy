@@ -1,13 +1,13 @@
-section {* HOLCF Utility lemmas *}
+section \<open>HOLCF Utility lemmas\<close>
 theory HOLCFUtils
 imports HOLCF
 begin
 
-text {*
-We use @{theory HOLCF} to define the denotational semantics. By default, HOLCF does not turn the regular @{text set} type into a partial order, so this is done here. Some of the lemmas here are contributed by Brian Huffman.
+text \<open>
+We use @{theory HOLCF} to define the denotational semantics. By default, HOLCF does not turn the regular \<open>set\<close> type into a partial order, so this is done here. Some of the lemmas here are contributed by Brian Huffman.
 
-We start by making the type @{text bool} a pointed chain-complete partial order.
-*}
+We start by making the type \<open>bool\<close> a pointed chain-complete partial order.
+\<close>
 
 instantiation bool :: po
 begin
@@ -38,9 +38,9 @@ lemma lub_bool: "lub S = (True \<in> S)"
 lemma bottom_eq_False[simp]: "\<bottom> = False"
 by (rule below_antisym [OF minimal], simp add: below_bool_def)
 
-text {*
+text \<open>
 To convert between the squared syntax used by @{theory HOLCF} and the regular, round syntax for sets, we state some of the equivalencies.
-*}
+\<close>
 
 instantiation set :: (type) po
 begin
@@ -70,9 +70,9 @@ instance set :: (type) pcpo
 lemma bot_bool_is_emptyset[simp]: "\<bottom> = {}"
   using emptyset_is_bot by (rule bottomI [symmetric])
 
-text {*
-To actually use these instance in @{text fixrec} definitions or fixed-point inductions, we need continuity requrements for various boolean and set operations.
-*}
+text \<open>
+To actually use these instance in \<open>fixrec\<close> definitions or fixed-point inductions, we need continuity requrements for various boolean and set operations.
+\<close>
 
 lemma cont2cont_disj [simp, cont2cont]:
   assumes f: "cont (\<lambda>x. f x)" and g: "cont (\<lambda>x. g x)"
@@ -137,8 +137,8 @@ case (Limit Y)
     then obtain i and j where yi: "y\<in> f (Y i)" and xj: "x\<in> g (Y j) y" by (auto simp add:lub_is_union)
     obtain k where "i\<le>k" and "j\<le>k" by (erule_tac x = "max i j" in meta_allE)auto
     from yi and xj have "y \<in> f (Y k)" and "x\<in> g (Y k) y"
-      using monofunE[OF assms(1)[THEN cont2mono], OF chain_mono[OF Limit(1) `i\<le>k`]]
-        and monofunE[OF assms(2)[THEN cont2mono], OF chain_mono[OF Limit(1) `j\<le>k`]]
+      using monofunE[OF assms(1)[THEN cont2mono], OF chain_mono[OF Limit(1) \<open>i\<le>k\<close>]]
+        and monofunE[OF assms(2)[THEN cont2mono], OF chain_mono[OF Limit(1) \<open>j\<le>k\<close>]]
       by (auto simp add:sqsubset_is_subset)
     hence "x\<in> (\<Union>y\<in> f (Y k). g (Y k) y)" by auto
     thus "x\<in> (\<Squnion> k. \<Union>y\<in>f (Y k). g (Y k) y)" by (auto simp add:lub_is_union)
@@ -160,7 +160,7 @@ using assms
 by (cases l) auto
 
 
-text {* As with the continuity lemmas, we need admissibility lemmas. *}
+text \<open>As with the continuity lemmas, we need admissibility lemmas.\<close>
 
 lemma adm_not_mem:
   assumes "cont (\<lambda>x. f x)"
@@ -203,9 +203,9 @@ using assms
 unfolding single_valued_def
 by (intro adm_lemmas adm_not_mem cont2cont adm_subst[of f])
 
-text {*
+text \<open>
 To match Shivers' syntax we introduce the power-syntax for iterated function application.
-*}
+\<close>
 
 abbreviation niceiterate ("(_\<^bsup>_\<^esup>)" [1000] 1000)
   where "niceiterate f i \<equiv> iterate i\<cdot>f"

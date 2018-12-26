@@ -5,16 +5,16 @@
 
 theory Termi imports Lang begin
 
-subsection{*Termination*}
+subsection\<open>Termination\<close>
 
-text{*Although partial correctness appeals because of its simplicity,
+text\<open>Although partial correctness appeals because of its simplicity,
 in many cases one would like the additional assurance that the command
 is guaranteed to termiate if started in a state that satisfies the
 precondition. Even to express this we need to define when a command is
 guaranteed to terminate. We can do this without modifying our existing
 semantics by merely adding a second inductively defined judgement
-@{text"c\<down>s"} that expresses guaranteed termination of @{term c}
-started in state @{term s}: *}
+\<open>c\<down>s\<close> that expresses guaranteed termination of @{term c}
+started in state @{term s}:\<close>
 
 inductive
   termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50)

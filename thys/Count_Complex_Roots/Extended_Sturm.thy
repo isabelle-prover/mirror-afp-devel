@@ -1027,16 +1027,16 @@ proof (induct "degree p" arbitrary:p rule:nat_less_induct)
   moreover have ?case when "p\<noteq>0" and no_empty:"{x.  a< x\<and> x< b \<and> poly p x=0 } \<noteq> {}"
   proof -
     define roots where "roots\<equiv>{x.  a< x\<and> x< b \<and> poly p x=0 }"
-    have "finite roots" unfolding roots_def using poly_roots_finite[OF `p\<noteq>0`] by auto
+    have "finite roots" unfolding roots_def using poly_roots_finite[OF \<open>p\<noteq>0\<close>] by auto
     define max_r where "max_r\<equiv>Max roots"
     hence "poly p max_r=0" and "a<max_r" and "max_r<b" 
-      using Max_in[OF `finite roots`] no_empty  unfolding roots_def by auto
+      using Max_in[OF \<open>finite roots\<close>] no_empty  unfolding roots_def by auto
     define max_rp where "max_rp\<equiv>[:-max_r,1:]^order max_r p"
     then obtain p' where p'_def:"p=p'*max_rp" and "\<not> [:-max_r,1:] dvd p'"  
       by (metis \<open>p\<noteq>0\<close> mult.commute order_decomp)
     hence "p'\<noteq>0" and "max_rp\<noteq>0" and max_r_nz:"poly p' max_r\<noteq>0"(*and "poly p' a\<noteq>0" and "poly p' b\<noteq>0" *)
       (*and  "poly max_rp a\<noteq>0" and "poly max_rp b\<noteq>0"*) 
-      using `p\<noteq>0` by (auto simp add: dvd_iff_poly_eq_0)
+      using \<open>p\<noteq>0\<close> by (auto simp add: dvd_iff_poly_eq_0)
         
     define max_r_sign where "max_r_sign\<equiv>if odd(order max_r p) then -1 else 1::int"
     define roots' where "roots'\<equiv>{x.  a< x\<and> x< b \<and> poly p' x=0}"
@@ -1072,13 +1072,13 @@ proof (induct "degree p" arbitrary:p rule:nat_less_induct)
             hence "poly max_rp x\<noteq>0" using poly_power_n_eq unfolding max_rp_def by auto
             hence "order x max_rp=0"  by (metis order_root)
             moreover have "jump_poly 1 max_rp x=0" 
-              using `poly max_rp x\<noteq>0` by (metis jump_poly_not_root)
+              using \<open>poly max_rp x\<noteq>0\<close> by (metis jump_poly_not_root)
             moreover have "x\<in>roots"
-              using `x \<in> roots'` unfolding roots_def roots'_def p'_def by auto
+              using \<open>x \<in> roots'\<close> unfolding roots_def roots'_def p'_def by auto
             hence "x<max_r" 
-              using Max_ge[OF `finite roots`,of x] `x\<noteq>max_r` by (fold max_r_def,auto)
+              using Max_ge[OF \<open>finite roots\<close>,of x] \<open>x\<noteq>max_r\<close> by (fold max_r_def,auto)
             hence "sign (poly max_rp x) = max_r_sign" 
-              using `poly max_rp x \<noteq> 0` unfolding max_r_sign_def max_rp_def sign_def
+              using \<open>poly max_rp x \<noteq> 0\<close> unfolding max_r_sign_def max_rp_def sign_def
               by (subst poly_power,simp add:linorder_class.not_less zero_less_power_eq)
             ultimately show "jump_poly 1 p x = max_r_sign * jump_poly 1 p' x" 
               using jump_poly_1_mult[of p' x max_rp]  unfolding p'_def 
@@ -1349,7 +1349,7 @@ next
   proof -
     define r where "r\<equiv>- (p mod q)"
     obtain ps where ps:"smods p q=p#q#ps" "smods q r=q#ps" and "xs=q#ps"
-      unfolding r_def using `q\<noteq>0` `p\<noteq>0` `x # xs = smods p q` 
+      unfolding r_def using \<open>q\<noteq>0\<close> \<open>p\<noteq>0\<close> \<open>x # xs = smods p q\<close> 
       by (metis list.inject smods.simps)
     from Cons.prems \<open>q \<noteq> 0\<close> have "coprime q r" 
       by (simp add: r_def ac_simps)
@@ -1466,7 +1466,7 @@ proof (cases "p=0")
 next
   case False
   define ps where "ps\<equiv>smods p q"
-  have "p\<in>set ps" using ps_def `p\<noteq>0` by auto
+  have "p\<in>set ps" using ps_def \<open>p\<noteq>0\<close> by auto
   obtain lb where lb:"\<forall>p\<in>set ps. \<forall>x. poly p x=0 \<longrightarrow> x>lb"
       and lb_sgn:"\<forall>x\<le>lb. \<forall>p\<in>set ps. sgn (poly p x) = sgn_neg_inf p"
       and "lb<0"

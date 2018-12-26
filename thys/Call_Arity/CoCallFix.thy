@@ -178,7 +178,7 @@ lemma cccFix_cong[fundef_cong]:
    done
 
 
-subsubsection {* The non-recursive case *}
+subsubsection \<open>The non-recursive case\<close>
 
 definition ABind_nonrec :: "var \<Rightarrow> exp \<Rightarrow> AEnv \<times> CoCalls \<rightarrow> Arity\<^sub>\<bottom>"
 where
@@ -266,7 +266,7 @@ lemma cccFix_nonrec_eqvt[eqvt]: "\<pi> \<bullet> (CoCallArityAnalysis.cccFix_non
   unfolding CoCallArityAnalysis.cccFix_nonrec_eq
   by perm_simp rule
 
-subsubsection {* Combining the cases *}
+subsubsection \<open>Combining the cases\<close>
 
 context CoCallArityAnalysis
 begin

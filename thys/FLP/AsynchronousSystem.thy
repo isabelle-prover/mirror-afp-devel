@@ -1,16 +1,16 @@
-section {* AsynchronousSystem *}
+section \<open>AsynchronousSystem\<close>
 
-text {*
+text \<open>
   \file{AsynchronousSystem} defines a message datatype and a transition system locale to
   model asynchronous distributed computation. It establishes a diamond property for a
   special reachability relation within such transition systems.
-*}
+\<close>
 
 theory AsynchronousSystem
 imports Multiset
 begin
 
-text{*
+text\<open>
   The formalization is type-parameterized over
   \begin{description}
     \item[\var{'p} process identifiers.] Corresponds to the set $P$ in Völzer.
@@ -21,25 +21,25 @@ text{*
       communication part of $M$ from Völzer. The whole of $M$ is captured by
       \isb{messageValue}.
   \end{description}
-*}
+\<close>
 
-subsection{* Messages *}
+subsection\<open>Messages\<close>
 
-text {*
+text \<open>
   A \isb{message} is either an initial input message telling a process
   which value it should introduce to the consensus negotiation, a message
   to the environment communicating the consensus outcome, or a message
   passed from one process to some other.
-*}
+\<close>
 
 datatype ('p, 'v) message =
   InMsg 'p bool  ("<_, inM _>")
 | OutMsg bool    ("<\<bottom>, outM _>")
 | Msg 'p 'v      ("<_, _>")
 
-text {*
+text \<open>
   A message value is the content of a message, which a process may receive. 
-*}
+\<close>
 
 datatype 'v messageValue = 
   Bool bool
@@ -69,34 +69,34 @@ shows
   "\<not> isReceiverOf p msg"
 using assms by (cases msg, auto)
 
-subsection{* Configurations *}
+subsection\<open>Configurations\<close>
 
-text {*
+text \<open>
   Here we formalize a configuration as detailed in section 2 of Völzer's paper.
 
   Note that Völzer imposes the finiteness of the message multiset by
   definition while we do not do so. In \isb{FiniteMessages}
   We prove the finiteness to follow from the assumption that only
   finitely many messages can be sent at once.
-*}
+\<close>
 
 record ('p, 'v, 's) configuration =
   states :: "'p \<Rightarrow> 's"
   msgs :: "(('p, 'v) message) multiset"
 
-text {*
+text \<open>
   C.f. Völzer: \textquote{A step is identified with a message $(p, m)$. A step $(p, m)$ is enabled
   in a configuration c if $\var{msgs}_c$ contains the message $(p, m)$.}
-*}
+\<close>
 
 definition enabled ::
   "('p, 'v, 's) configuration \<Rightarrow> ('p, 'v) message \<Rightarrow> bool"
 where 
   "enabled cfg msg \<equiv> (msg \<in># msgs cfg)"
 
-subsection {* The system locale *}
+subsection \<open>The system locale\<close>
 
-text {*
+text \<open>
   The locale describing a system is derived by slight refactoring from the
   following passage of Völzer:
   \begin{displayquote}
@@ -105,7 +105,7 @@ text {*
     a process state $s$ a follower state and a finite set of messages (the
     messages to be sent by $p$ in a step).
   \end{displayquote}
-*}
+\<close>
 
 locale asynchronousSystem =
 fixes 
@@ -117,9 +117,9 @@ begin
 abbreviation Proc :: "'p set"
 where "Proc \<equiv> (UNIV :: 'p set)"
 
-subsection {* The step relation *}
+subsection \<open>The step relation\<close>
 
-text {*
+text \<open>
   The step relation is defined analogously to Völzer:
   \begin{displayquote}
     {[}If enabled, a step may{]} occur, resulting in a follower
@@ -129,7 +129,7 @@ text {*
     associated with $p$. We denote this by $c \xrightarrow{p,m} c^\prime$.
   \end{displayquote}
   There are no steps consuming output messages.
-*}
+\<close>
 
 primrec steps :: 
   "('p, 'v, 's) configuration
@@ -153,11 +153,11 @@ where
 | StepOutMsg: "cfg1 \<turnstile> <\<bottom>,outM v> \<mapsto> cfg2 = 
     False"
 
-text {*
+text \<open>
   The system is distributed and asynchronous in the sense that the processing
   of messages only affects the process the message is directed to while the
   rest stays unchanged.
-*}
+\<close>
 lemma NoReceivingNoChange:
 fixes
   cfg1 cfg2 :: "('p,'v,'s) configuration" and
@@ -278,10 +278,10 @@ shows
   "msgs cfg1 m' \<le> msgs cfg2 m'"
 using assms by (cases m, auto)
 
-text {*
+text \<open>
   Völzer: \textquote{Note that steps are enabled persistently, i.e., an
   enabled step remains enabled as long as it does not occur.}
-*}
+\<close>
 lemma OnlyOccurenceDisables:
 fixes
   cfg1 :: "('p,'v,'s) configuration" and
@@ -312,7 +312,7 @@ next
     by (auto simp add: enabled_def, metis less_nat_zero_code)
 qed
 
-subsection {* Reachability *}
+subsection \<open>Reachability\<close>
 
 inductive reachable :: 
   "  ('p, 'v, 's) configuration 
@@ -398,12 +398,12 @@ proof(induct rule: reachable.induct, simp)
   qed
 qed
 
-subsection {* Reachability with special process activity *}
+subsection \<open>Reachability with special process activity\<close>
 
-text {*
+text \<open>
   We say that \isb{qReachable cfg1 Q cfg2} iff cfg2 is reachable from cfg1
   only by activity of processes from Q.
-*}
+\<close>
 inductive qReachable ::
   "('p,'v,'s) configuration 
   \<Rightarrow> 'p set 
@@ -415,10 +415,10 @@ where
             \<exists> p \<in> Q . isReceiverOf p msg \<rbrakk> 
           \<Longrightarrow> qReachable cfg1 Q cfg3"
 
-text {*
+text \<open>
   We say that \isb{withoutQReachable cfg1 Q cfg2} iff cfg2 is reachable from cfg1
   with no activity of processes from Q.
-*}
+\<close>
 abbreviation withoutQReachable ::
    "('p,'v,'s) configuration 
   \<Rightarrow> 'p set 
@@ -428,10 +428,10 @@ where
   "withoutQReachable cfg1 Q cfg2 \<equiv> 
     qReachable cfg1 ((UNIV :: 'p set ) - Q) cfg2"
 
-text{*
+text\<open>
   Obviously q-reachability (and thus also without-q-reachability) implies 
   reachability.
-*}
+\<close>
 lemma QReachImplReach:
 fixes
   cfg1 cfg2::  "('p, 'v, 's ) configuration" and
@@ -571,7 +571,7 @@ shows
 using assms enabled_def NoMessageLoss 
   by (metis le_0_eq neq0_conv)
 
-subsection{* Initial reachability *}
+subsection\<open>Initial reachability\<close>
 
 definition initial :: 
   "('p, 'v, 's) configuration \<Rightarrow> bool"
@@ -595,7 +595,7 @@ shows "initReachable c"
   using assms reachable.init
   unfolding initReachable_def by blast
 
-subsection {* Diamond property of reachability *}
+subsection \<open>Diamond property of reachability\<close>
 
 lemma DiamondOne:
 fixes
@@ -851,7 +851,7 @@ next
   thus "\<exists>cfg'. (cfg1 \<turnstile> msg \<mapsto> cfg') \<and> qReachable cfg2 Q cfg'" by blast 
 qed
 
-text {* Proposition 1 of Völzer. *}
+text \<open>Proposition 1 of Völzer.\<close>
 lemma Diamond:
 fixes
   cfg cfg1 cfg2 :: "('p,'v,'s) configuration" and
@@ -899,7 +899,7 @@ proof -
   qed
 qed
 
-subsection {* Invariant finite message count*}
+subsection \<open>Invariant finite message count\<close>
 
 lemma FiniteMessages:
 fixes 

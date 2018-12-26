@@ -9,10 +9,10 @@ theory EpiMonoIso
 imports Category
 begin
 
-  text{*
+  text\<open>
     This theory defines and develops properties of epimorphisms, monomorphisms,
     isomorphisms, sections, and retractions.
-  *}
+\<close>
 
   context category
   begin
@@ -399,9 +399,9 @@ begin
       thus "isomorphic f h" using isomorphic_def by auto
     qed
 
-    text {*
+    text \<open>
       A section or retraction of an isomorphism is in fact an inverse.
-    *}
+\<close>
 
     lemma section_retraction_of_iso:
     assumes "iso f"
@@ -417,11 +417,11 @@ begin
         by metis
     qed
 
-    text {*
+    text \<open>
       A situation that occurs frequently is that we have a commuting triangle,
       but we need the triangle obtained by inverting one side that is an isomorphism.
       The following fact streamlines this derivation.
-    *}
+\<close>
 
     lemma invert_side_of_triangle:
     assumes "arr h" and "f \<cdot> g = h"
@@ -434,10 +434,10 @@ begin
         by (metis assms seqE inv_is_inverse comp_arr_dom comp_arr_inv dom_inv comp_assoc)
     qed
 
-    text {*
+    text \<open>
       A similar situation is where we have a commuting square and we want to
       invert two opposite sides.
-    *}
+\<close>
 
     lemma invert_opposite_sides_of_square:
     assumes "seq f g" and "f \<cdot> g = h \<cdot> k"

@@ -4,11 +4,11 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* Objects and the Heap *}
+section \<open>Objects and the Heap\<close>
 
 theory Objects imports TypeRel Value begin
 
-subsection{* Objects *}
+subsection\<open>Objects\<close>
 
 type_synonym
   fields = "vname \<times> cname \<rightharpoonup> val"  \<comment> \<open>field name, defining class, value\<close>
@@ -31,7 +31,7 @@ where
 lemma [simp]: "obj_ty (C,fs) = Class C"
 (*<*)by (simp add: obj_ty_def)(*>*)
 
-subsection{* Heap *}
+subsection\<open>Heap\<close>
 
 type_synonym heap  = "addr \<rightharpoonup> obj"
 
@@ -78,8 +78,8 @@ lemma [simp]: "(typeof\<^bsub>h\<^esub> v = Some(Class C)) = (\<exists>a fs. v =
 lemma [simp]: "h a = Some(C,fs) \<Longrightarrow> typeof\<^bsub>(h(a\<mapsto>(C,fs')))\<^esub> v = typeof\<^bsub>h\<^esub> v"
  (*<*)by(induct v) (auto simp:fun_upd_apply)(*>*)
 
-text{* For literal values the first parameter of @{term typeof} can be
-set to @{term Map.empty} because they do not contain addresses: *}
+text\<open>For literal values the first parameter of @{term typeof} can be
+set to @{term Map.empty} because they do not contain addresses:\<close>
 
 abbreviation
   typeof :: "val \<Rightarrow> ty option" where
@@ -94,7 +94,7 @@ lemma typeof_lit_is_type:
  (*<*)by (induct v) (auto simp:is_type_def)(*>*)
 
 
-subsection {* Heap extension @{text"\<unlhd>"} *}
+subsection \<open>Heap extension \<open>\<unlhd>\<close>\<close>
 
 lemma hextI: "\<forall>a C fs. h a = Some(C,fs) \<longrightarrow> (\<exists>fs'. h' a = Some(C,fs')) \<Longrightarrow> h \<unlhd> h'"
 (*<*)
@@ -149,7 +149,7 @@ apply(fastforce simp:hext_def)
 done
 (*>*)
 
-text {* Code generator setup for @{term "new_Addr"} *}
+text \<open>Code generator setup for @{term "new_Addr"}\<close>
 
 definition gen_new_Addr :: "heap \<Rightarrow> addr \<Rightarrow> addr option"
 where "gen_new_Addr h n \<equiv> if \<exists>a. a \<ge> n \<and> h a = None then Some(LEAST a. a \<ge> n \<and> h a = None) else None"

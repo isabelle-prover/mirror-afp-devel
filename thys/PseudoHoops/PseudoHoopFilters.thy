@@ -1,5 +1,5 @@
 
-section{* Filters and Congruences *}
+section\<open>Filters and Congruences\<close>
 
 theory PseudoHoopFilters
 imports PseudoHoops

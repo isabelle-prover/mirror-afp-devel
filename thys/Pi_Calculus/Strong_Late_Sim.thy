@@ -109,20 +109,20 @@ proof(auto simp add: simulation_def)
   obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> a" and "y \<sharp> C" and "y \<sharp> Q'" and "y \<noteq> x"
     by(generate_fresh "name") auto
 
-  from Trans `y \<sharp> Q'` have "Q \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> [(x, y)] \<bullet> Q'" by(simp add: alphaBoundResidual)
+  from Trans \<open>y \<sharp> Q'\<close> have "Q \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> [(x, y)] \<bullet> Q'" by(simp add: alphaBoundResidual)
   hence "\<exists>P'. P \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> P' \<and> derivative P' ([(x, y)] \<bullet> Q') a y Rel" 
-    using `y \<sharp> P` `y \<sharp> Q` `y \<sharp> a` `y \<sharp> C`
+    using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<sharp> a\<close> \<open>y \<sharp> C\<close>
     by(rule Bound)
   then obtain P' where PTrans: "P \<longmapsto> a\<guillemotleft>y\<guillemotright> \<prec> P'" and PDer: "derivative P' ([(x, y)] \<bullet> Q') a y Rel"
     by blast
   
-  from PTrans `x \<sharp> P` `y \<noteq> x` have "x \<sharp> P'" by(force intro: freshBoundDerivative)
+  from PTrans \<open>x \<sharp> P\<close> \<open>y \<noteq> x\<close> have "x \<sharp> P'" by(force intro: freshBoundDerivative)
   with PTrans have "P \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> [(x, y)] \<bullet> P'" by(simp add: alphaBoundResidual name_swap)
   moreover have "derivative ([(x, y)] \<bullet> P') Q' a x Rel"
   proof -
     from PDer Eqvt have "derivative ([(x, y)] \<bullet> P') ([(x, y)] \<bullet> [(x, y)] \<bullet> Q') a ([(x, y)] \<bullet> y) Rel"
       by(rule derivativeEqvtI2)
-    with `y \<noteq> x` show ?thesis by(simp add: name_calc)
+    with \<open>y \<noteq> x\<close> show ?thesis by(simp add: name_calc)
   qed
   ultimately show "\<exists>P'. P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P' \<and> derivative P' Q' a x Rel" by blast
 qed
@@ -159,13 +159,13 @@ proof(induct rule: simCasesCont[where C="(C, x, Q)"])
   hence yFreshC: "y \<sharp> C" and yineqx: "y \<noteq> x" and "y \<sharp> Q"
     by(simp add: fresh_prod)+
   have "<\<nu>x>Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> Q'" by fact
-  thus ?case using yineqx `y \<sharp> Q`
+  thus ?case using yineqx \<open>y \<sharp> Q\<close>
   proof(induct rule: resCasesB)
     case(cOpen a' Q')
     have "Q \<longmapsto>a'[x] \<prec> Q'" and "a' \<noteq> x" by fact+
     then obtain P' where PTrans: "P \<longmapsto>a'<\<nu>x> \<prec> P'" and P'RelQ': "(P', Q') \<in> Rel" by(force dest: BoundO)
     
-    from PTrans `y \<sharp> P` yineqx have "y \<sharp> P'" by(force dest: freshBoundDerivative)
+    from PTrans \<open>y \<sharp> P\<close> yineqx have "y \<sharp> P'" by(force dest: freshBoundDerivative)
     with PTrans have "P \<longmapsto>a'<\<nu>y> \<prec> ([(x, y)] \<bullet> P')" by(simp add: alphaBoundResidual)
     moreover from P'RelQ' Eqvt have "([(x, y)] \<bullet> P', [(x, y)] \<bullet> Q') \<in> Rel" by(auto simp add: eqvt_def)
     ultimately show ?case by(force simp add: derivative_def name_swap) 
@@ -308,10 +308,10 @@ proof(induct rule: simCasesCont[where C=Q])
   case(Bound a x R')
   have RTrans: "R \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> R'" by fact
 
-  from `x \<sharp> Q` QSimR RTrans obtain Q' where QTrans: "Q \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> Q'"
+  from \<open>x \<sharp> Q\<close> QSimR RTrans obtain Q' where QTrans: "Q \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> Q'"
                                         and QDer: "derivative Q' R' a x Rel'" 
     by(blast dest: simE)
-  with QTrans `x \<sharp> P` PSimQ obtain P' where PTrans: "P \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> P'"
+  with QTrans \<open>x \<sharp> P\<close> PSimQ obtain P' where PTrans: "P \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> P'"
                                         and PDer: "derivative P' Q' a x Rel"
     by(blast dest: simE)
   moreover from PDer QDer Trans have "derivative P' R' a x Rel''"

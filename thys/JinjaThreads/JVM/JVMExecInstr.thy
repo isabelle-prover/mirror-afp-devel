@@ -2,7 +2,7 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* JVM Instruction Semantics *}
+section \<open>JVM Instruction Semantics\<close>
 
 theory JVMExecInstr
 imports

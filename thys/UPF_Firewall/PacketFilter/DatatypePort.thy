@@ -35,17 +35,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Datatype Addresses with Ports *}
+subsection \<open>Datatype Addresses with Ports\<close>
 theory 
   DatatypePort
   imports 
     NetworkCore
 begin
 
-text{* 
+text\<open>
   A theory describing a network consisting of three subnetworks, including port numbers modelled 
   as Integers. Hosts within a network are not distinguished.
-*}
+\<close>
 
 datatype DatatypeAddress = dmz_adr | intranet_adr | internet_adr
 

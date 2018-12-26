@@ -6,16 +6,16 @@ imports
 begin
 (*>*)
 
-section{* The Deductive System PLM *}
-text{* \label{TAO_PLM} *}
+section\<open>The Deductive System PLM\<close>
+text\<open>\label{TAO_PLM}\<close>
 
 declare meta_defs[no_atp] meta_aux[no_atp]
 
 locale PLM = Axioms
 begin
 
-subsection{* Automatic Solver *}
-text{* \label{TAO_PLM_Solver} *}
+subsection\<open>Automatic Solver\<close>
+text\<open>\label{TAO_PLM_Solver}\<close>
 
   named_theorems PLM
   named_theorems PLM_intro
@@ -28,22 +28,22 @@ text{* \label{TAO_PLM_Solver} *}
         | fact PLM | rule PLM_intro | subst PLM_subst | subst (asm) PLM_subst
         | fastforce | safe | drule PLM_dest | erule PLM_elim); (PLM_solver)?)
 
-subsection{* Modus Ponens *}
-text{* \label{TAO_PLM_ModusPonens} *}
+subsection\<open>Modus Ponens\<close>
+text\<open>\label{TAO_PLM_ModusPonens}\<close>
 
   lemma modus_ponens[PLM]:
     "\<lbrakk>[\<phi> in v]; [\<phi> \<^bold>\<rightarrow> \<psi> in v]\<rbrakk> \<Longrightarrow> [\<psi> in v]"
     by (simp add: Semantics.T5)
 
-subsection{* Axioms *}
-text{* \label{TAO_PLM_Axioms} *}
+subsection\<open>Axioms\<close>
+text\<open>\label{TAO_PLM_Axioms}\<close>
 
   interpretation Axioms .
   declare axiom[PLM]
   declare conn_defs[PLM]
 
-subsection{* (Modally Strict) Proofs and Derivations *}
-text{* \label{TAO_PLM_ProofsAndDerivations} *}
+subsection\<open>(Modally Strict) Proofs and Derivations\<close>
+text\<open>\label{TAO_PLM_ProofsAndDerivations}\<close>
 
   lemma vdash_properties_6[no_atp]:
     "\<lbrakk>[\<phi> in v]; [\<phi> \<^bold>\<rightarrow> \<psi> in v]\<rbrakk> \<Longrightarrow> [\<psi> in v]"
@@ -55,13 +55,13 @@ text{* \label{TAO_PLM_ProofsAndDerivations} *}
     "[\<phi> \<^bold>\<rightarrow> \<psi> in v] \<Longrightarrow> ([\<phi> in v] \<Longrightarrow> [\<psi> in v])"
     using vdash_properties_6 .
 
-  attribute_setup deduction = {*
+  attribute_setup deduction = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm vdash_properties_10}))
-  *}
+\<close>
 
-subsection{* GEN and RN *}
-text{* \label{TAO_PLM_GEN_RN} *}
+subsection\<open>GEN and RN\<close>
+text\<open>\label{TAO_PLM_GEN_RN}\<close>
 
   lemma rule_gen[PLM]:
     "\<lbrakk>\<And>\<alpha> . [\<phi> \<alpha> in v]\<rbrakk> \<Longrightarrow> [\<^bold>\<forall>\<alpha> . \<phi> \<alpha> in v]"
@@ -75,8 +75,8 @@ text{* \label{TAO_PLM_GEN_RN} *}
     "(\<And> v . [\<phi> in v]) \<Longrightarrow> [\<^bold>\<box>\<phi> in v]"
     using qml_3[axiom_necessitation, axiom_instance] RN_2 by blast
 
-subsection{* Negations and Conditionals *}
-text{* \label{TAO_PLM_NegationsAndConditionals} *}
+subsection\<open>Negations and Conditionals\<close>
+text\<open>\label{TAO_PLM_NegationsAndConditionals}\<close>
 
   lemma if_p_then_p[PLM]:
     "[\<phi> \<^bold>\<rightarrow> \<phi> in v]"
@@ -172,14 +172,14 @@ text{* \label{TAO_PLM_NegationsAndConditionals} *}
     "\<lbrakk>[\<^bold>\<not>\<phi> in v]; [\<^bold>\<not>\<psi> \<^bold>\<rightarrow> \<phi> in v]\<rbrakk> \<Longrightarrow> ([\<^bold>\<not>\<phi> in v] \<Longrightarrow> [\<psi> in v])"
     using raa_cor_2 vdash_properties_10 by blast
 
-text{*
+text\<open>
 \begin{remark}
   In contrast to PLM the classical introduction and elimination rules are proven
   before the tautologies. The statements proven so far are sufficient
   for the proofs and using the derived rules the tautologies can be derived
   automatically.
 \end{remark}
-*}
+\<close>
 
   lemma intro_elim_1[PLM]:
     "\<lbrakk>[\<phi> in v]; [\<psi> in v]\<rbrakk> \<Longrightarrow> [\<phi> \<^bold>& \<psi> in v]"
@@ -461,39 +461,39 @@ text{*
     "[((\<phi> \<^bold>& \<psi>) \<^bold>\<equiv> (\<chi> \<^bold>& \<psi>)) \<^bold>\<equiv> (\<psi> \<^bold>\<rightarrow> (\<phi> \<^bold>\<equiv> \<chi>)) in v]"
     by PLM_solver
 
-  attribute_setup equiv_lr = {*
+  attribute_setup equiv_lr = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm "\<^bold>\<equiv>E"(1)}))
-  *}
+\<close>
 
-  attribute_setup equiv_rl = {*
+  attribute_setup equiv_rl = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm "\<^bold>\<equiv>E"(2)}))
-  *}
+\<close>
 
-  attribute_setup equiv_sym = {*
+  attribute_setup equiv_sym = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm oth_class_taut_3_g[equiv_lr]}))
-  *}
+\<close>
 
-  attribute_setup conj1 = {*
+  attribute_setup conj1 = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm "\<^bold>&E"(1)}))
-  *}
+\<close>
 
-  attribute_setup conj2 = {*
+  attribute_setup conj2 = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm "\<^bold>&E"(2)}))
-  *}
+\<close>
 
-  attribute_setup conj_sym = {*
+  attribute_setup conj_sym = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm oth_class_taut_3_b[equiv_lr]}))
-  *}
+\<close>
 
   
-subsection{* Identity *}
-text{* \label{TAO_PLM_Identity} *}
+subsection\<open>Identity\<close>
+text\<open>\label{TAO_PLM_Identity}\<close>
 
   lemma id_eq_prop_prop_1[PLM]:
     "[(F::\<Pi>\<^sub>1) \<^bold>= F in v]"
@@ -632,11 +632,11 @@ text{* \label{TAO_PLM_Identity} *}
     by (metis l_identity[axiom_instance] ded_thm_cor_4 CP "\<^bold>&E")
 end
 
-text{*
+text\<open>
 \begin{remark}
   To unify the statements of the properties of equality a type class is introduced.
 \end{remark}
-*}
+\<close>
 
 class id_eq = quantifiable_and_identifiable +
   assumes id_eq_1: "[(x :: 'a) \<^bold>= x in v]"
@@ -743,10 +743,10 @@ begin
     "[((x::'a::id_eq) \<^bold>= y) \<^bold>& (y \<^bold>= z) \<^bold>\<rightarrow> (x \<^bold>= z) in v]"
     using id_eq_3 .
 
-  attribute_setup eq_sym = {*
+  attribute_setup eq_sym = \<open>
     Scan.succeed (Thm.rule_attribute [] 
       (fn _ => fn thm => thm RS @{thm id_eq_2[deduction]}))
-  *}
+\<close>
 
 
   lemma all_self_eq_1[PLM]:
@@ -840,8 +840,8 @@ begin
         using qml_2[axiom_instance, deduction] by auto
     qed
 
-subsection{* Quantification *}
-text{* \label{TAO_PLM_Quantification} *}
+subsection\<open>Quantification\<close>
+text\<open>\label{TAO_PLM_Quantification}\<close>
 
   lemma rule_ui[PLM,PLM_elim,PLM_dest]:
     "[\<^bold>\<forall>\<alpha> . \<phi> \<alpha> in v] \<Longrightarrow> [\<phi> \<beta> in v]"
@@ -979,8 +979,8 @@ text{* \label{TAO_PLM_Quantification} *}
     qed
 
 
-subsection{* Actuality and Descriptions *}
-text{* \label{TAO_PLM_ActualityAndDescriptions} *}
+subsection\<open>Actuality and Descriptions\<close>
+text\<open>\label{TAO_PLM_ActualityAndDescriptions}\<close>
 
   lemma nec_imp_act[PLM]: "[\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<A>\<phi> in v]"
     apply (rule CP)
@@ -1676,8 +1676,8 @@ text{* \label{TAO_PLM_ActualityAndDescriptions} *}
     using nec_exist_unique[deduction, deduction]
           unique_box_desc_1[deduction] by blast
 
-subsection{* Necessity *}
-text{* \label{TAO_PLM_Necessity} *}
+subsection\<open>Necessity\<close>
+text\<open>\label{TAO_PLM_Necessity}\<close>
 
   lemma RM_1[PLM]:
     "(\<And>v.[\<phi> \<^bold>\<rightarrow> \<psi> in v]) \<Longrightarrow> [\<^bold>\<box>\<phi> \<^bold>\<rightarrow> \<^bold>\<box>\<psi> in v]"
@@ -2646,8 +2646,8 @@ begin
      apply simp
     using encoding[axiom_instance] nec_imp_act ded_thm_cor_3 by blast
 
-subsection{* The Theory of Relations *} 
-text{* \label{TAO_PLM_Relations} *}
+subsection\<open>The Theory of Relations\<close> 
+text\<open>\label{TAO_PLM_Relations}\<close>
 
   lemma beta_equiv_eq_1_1[PLM]:
     assumes "IsProperInX \<phi>"
@@ -4214,8 +4214,8 @@ begin
           eta_conversion_lemma_0[eq_sym] "\<^bold>\<equiv>I" CP
     by metis
 
-subsection{* The Theory of Objects *}
-text{* \label{TAO_PLM_Objects} *}
+subsection\<open>The Theory of Objects\<close>
+text\<open>\label{TAO_PLM_Objects}\<close>
 
   lemma partition_1[PLM]:
     "[\<^bold>\<forall> x . \<lparr>O!,x\<^sup>P\<rparr> \<^bold>\<or> \<lparr>A!,x\<^sup>P\<rparr> in v]"
@@ -5176,8 +5176,8 @@ text{* \label{TAO_PLM_Objects} *}
       thus ?thesis using "\<^bold>\<exists>I" by fast
     qed
 
-subsection{* Propositional Properties *}
-text{* \label{TAO_PLM_PropositionalProperties} *}
+subsection\<open>Propositional Properties\<close>
+text\<open>\label{TAO_PLM_PropositionalProperties}\<close>
 
   lemma prop_prop2_1:
     "[\<^bold>\<forall> p . \<^bold>\<exists> F . F \<^bold>= (\<^bold>\<lambda> x . p) in v]"

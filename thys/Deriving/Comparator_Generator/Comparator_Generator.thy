@@ -180,15 +180,15 @@ lemma eq_sym_trans_imp_comparator:
 proof
   fix x y z
   show "invert_order (acomp x y) = acomp y x"
-    using sym_compD [OF `sym_comp acomp`] .
+    using sym_compD [OF \<open>sym_comp acomp\<close>] .
   {
     assume "acomp x y = Eq"
-    with eq_compD [OF `eq_comp acomp`]
+    with eq_compD [OF \<open>eq_comp acomp\<close>]
     show "x = y" by blast
   }
   {
     assume "acomp x y = Lt" and "acomp y z = Lt"
-    with trans_orderD [OF trans_compD [OF `trans_comp acomp`], of x y z]
+    with trans_orderD [OF trans_compD [OF \<open>trans_comp acomp\<close>], of x y z]
     show "acomp x z = Lt" by auto
   }
 qed

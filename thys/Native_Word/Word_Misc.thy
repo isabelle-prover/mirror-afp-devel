@@ -2,19 +2,19 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* More about words *}
+chapter \<open>More about words\<close>
 
 theory Word_Misc imports
   "HOL-Word.Word"
   More_Bits_Int
 begin
 
-text {*
-  The separate code target @{text SML_word} collects setups for the
+text \<open>
+  The separate code target \<open>SML_word\<close> collects setups for the
   code generator that PolyML does not provide.
-*}
+\<close>
 
-setup {* Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I)]) *}
+setup \<open>Code_Target.add_derived_target ("SML_word", [(Code_ML.target_SML, I)])\<close>
 
 code_identifier code_module Word_Misc \<rightharpoonup>
   (SML) Word and (Haskell) Word and (OCaml) Word and (Scala) Word
@@ -110,9 +110,9 @@ by(auto simp add: word_set_bits_def test_bit_bl word_bl.Abs_inverse word_size)
 lemma word_of_int_conv_set_bits: "word_of_int i = (BITS n. i !! n)"
 by(rule word_eqI)(simp add: word_test_bit_set_bits)
 
-text {*
+text \<open>
   Division on @{typ "'a word"} is unsigned, but Scala and OCaml only have signed division and modulus.
-*}
+\<close>
 definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "sdiv" 70)
 where [code]:
   "x sdiv y =
@@ -254,7 +254,7 @@ by (metis of_nat_inverse of_nat_numeral uno_simps(2) word_of_nat zdiv_int of_nat
     using n m unfolding q
     by (simp_all add: word_sub_wi word_mult_def uint_nat unat_of_nat of_nat_mult [symmetric] word_of_nat[symmetric] of_nat_diff word_le_nat_alt del: of_nat_mult)
       (metis diff_diff_left less_imp_diff_less of_nat_diff of_nat_inverse word_of_nat)
-  thus ?thesis using n m div_half_nat[OF `m \<noteq> 0`, of n] unfolding q
+  thus ?thesis using n m div_half_nat[OF \<open>m \<noteq> 0\<close>, of n] unfolding q
     by(simp add: word_le_nat_alt word_div_def word_mod_def uint_nat unat_of_nat zmod_int[symmetric] zdiv_int[symmetric] word_of_nat[symmetric])(simp add: Let_def split del: if_split split: if_split_asm)
 qed
 
@@ -266,10 +266,10 @@ apply(rule word_unat.Abs_inject)
 apply(simp add: unats_def Suc_0_lt_2p_len_of)
 done
 
-text {*
+text \<open>
   This algorithm implements unsigned division in terms of signed division.
   Taken from Hacker's Delight.
-*}
+\<close>
 
 lemma divmod_via_sdivmod:
   fixes x y :: "'a :: len word"
@@ -347,10 +347,10 @@ proof -
     hence "i' - shift < least \<longleftrightarrow> False" unfolding assms
       by(cases "len_of TYPE('a)")(simp_all add: not_less Bit_def)
     moreover
-    have "overflow \<le> i' - shift \<longleftrightarrow> False" using `i' < shift` unfolding assms
+    have "overflow \<le> i' - shift \<longleftrightarrow> False" using \<open>i' < shift\<close> unfolding assms
       by(cases "len_of TYPE('a)")(auto simp add: not_le Bit_def elim: less_le_trans)
     moreover
-    have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using `i' < shift`
+    have "word_of_int (i' - shift) = (word_of_int i :: 'a word)" using \<open>i' < shift\<close>
       by(auto intro!: word_eqI simp add: i'_def shift_def mask_def bin_nth_ops bin_nth_minus_p2 bin_sign_and)
     ultimately show ?thesis using True by(simp add: Let_def i'_def)
   next
@@ -363,7 +363,7 @@ proof -
     also
     have "least \<le> 0" unfolding least_def overflow_def by simp
     have "0 \<le> i'" by(simp add: i'_def mask_def bin_mask_ge0)
-    hence "least \<le> i'" using `least \<le> 0` by simp
+    hence "least \<le> i'" using \<open>least \<le> 0\<close> by simp
     moreover
     have "word_of_int i' = (word_of_int i :: 'a word)"
       by(rule word_eqI)(auto simp add: i'_def bin_nth_ops mask_def)
@@ -392,7 +392,7 @@ proof -
   finally show ?thesis .
 qed
 
-section {* Quickcheck conversion functions *}
+section \<open>Quickcheck conversion functions\<close>
 
 notation scomp (infixl "\<circ>\<rightarrow>" 60)
 

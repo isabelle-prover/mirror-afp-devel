@@ -3,37 +3,37 @@
     Author:     David Trachtenherz
 *)
 
-section {* Processing of message streams *}
+section \<open>Processing of message streams\<close>
 
 theory AF_Stream_Exec
 imports AF_Stream "List-Infinite.ListInf_Prefix" "List-Infinite.SetIntervalStep"
 begin
 
-subsection {* Executing components with state transition functions *}
+subsection \<open>Executing components with state transition functions\<close>
 
-subsubsection {* Basic definitions *}
+subsubsection \<open>Basic definitions\<close>
 
-text {*
+text \<open>
   Function type for functions converting
-  an input value to an input port message for a component *}
+  an input value to an input port message for a component\<close>
 type_synonym ('a, 'in) Port_Input_Value = "'a \<Rightarrow> 'in message_af"
 
-text {*
+text \<open>
   Function type for functions extracting
   the output value of a single output port from
-  a component value *}
+  a component value\<close>
 type_synonym ('comp, 'out) Port_Output_Value = "'comp \<Rightarrow> 'out message_af"
 
-text {*
+text \<open>
   Function type for functions extracting
   the local state of a component from
-  a component value *}
+  a component value\<close>
 type_synonym ('comp, 'state) Comp_Local_State = "'comp \<Rightarrow> 'state"
 
-text {*
+text \<open>
   Function type for transition functions
   computing the component's value after processing
-  an input for a single time unit *}
+  an input for a single time unit\<close>
 type_synonym ('comp, 'input) Comp_Trans_Fun = "'input \<Rightarrow> 'comp \<Rightarrow> 'comp"
 
 
@@ -70,7 +70,7 @@ definition i_Exec_Comp_Stream_Init ::
   where "i_Exec_Comp_Stream_Init \<equiv> \<lambda>trans_fun input c n. f_Exec_Comp trans_fun (input \<Down> n) c"
 
 
-subsubsection {* Basic results *}
+subsubsection \<open>Basic results\<close>
 
 lemma f_Exec_one: "f_Exec_Comp trans_fun [m] c = trans_fun m c"
 by simp
@@ -495,12 +495,12 @@ theorem i_Exec_Stream_causal: "
 by (simp add: i_Exec_Stream_take)
 
 
-text {* Results for @{text f_Exec_Comp_Stream_Init} *}
+text \<open>Results for \<open>f_Exec_Comp_Stream_Init\<close>\<close>
 
-text {*
-  @{text f_Exec_Comp_Stream_Init} computes the execution stream of a component
+text \<open>
+  \<open>f_Exec_Comp_Stream_Init\<close> computes the execution stream of a component
   with the initial value of the component
-  at the beginning of the result stream. *}
+  at the beginning of the result stream.\<close>
 
 lemma f_Exec_Stream_Init_length[rule_format, simp]:"
   \<forall>c. length (f_Exec_Comp_Stream_Init trans_fun xs c) = Suc (length xs)"
@@ -660,12 +660,12 @@ theorem f_Exec_N_eq_f_Exec_Stream_Init_nth:"
 by (simp add: f_Exec_Stream_Init_eq_f_Exec_Stream_Cons f_Exec_N_eq_f_Exec_Stream_nth)
 
 
-text {* Basic results for previous element functions *}
+text \<open>Basic results for previous element functions\<close>
 
-text {*
-  The functions @{text list_Previous} and @{text ilist_Previous}
+text \<open>
+  The functions \<open>list_Previous\<close> and \<open>ilist_Previous\<close>
   return the previous element of the list relatively to the specified position @{term n}
-  or the initial element if @{term n} is 0, *}
+  or the initial element if @{term n} is 0,\<close>
 
 definition list_Previous :: "'value list \<Rightarrow> 'value \<Rightarrow> nat \<Rightarrow> 'value"
   where "list_Previous xs init n \<equiv>
@@ -743,9 +743,9 @@ lemma f_Exec_Stream_nth_0: "
   0 < length xs \<Longrightarrow> (f_Exec_Comp_Stream trans_fun xs c) ! 0= trans_fun (xs ! 0) c"
 by (case_tac xs, simp+)
 
-text {*
+text \<open>
   The calculation of the n-th result stream element
-  from the previous result stream element and the current input stream element. *}
+  from the previous result stream element and the current input stream element.\<close>
 lemma f_Exec_Stream_nth_gr0_calc: "
   \<lbrakk> n < length xs; 0 < n \<rbrakk> \<Longrightarrow>
   f_Exec_Comp_Stream trans_fun xs c ! n =
@@ -772,12 +772,12 @@ lemma i_Exec_Stream_nth_gr0_calc: "
   trans_fun (input n) ((i_Exec_Comp_Stream trans_fun input c) (n - 1))"
 by (simp add: i_Exec_Stream_nth i_take_Suc_conv_app_nth f_Exec_append)
 
-text {*
+text \<open>
   The component state (and thus its output) at time point @{term "n"}
   is computed from the previous state
   (the state at time @{term "n-1"} for @{term "n > 0"}
   or the initial state for @{term "n = 0"})
-  and the input at time @{term "n"}. *}
+  and the input at time @{term "n"}.\<close>
 lemma i_Exec_Stream_nth_calc_Previous: "
   i_Exec_Comp_Stream trans_fun input c n =
   trans_fun (input n) ((i_Exec_Comp_Stream trans_fun input c)\<^bsup>\<leftarrow> c\<^esup> n)"
@@ -801,15 +801,15 @@ lemma f_Exec_Stream_Init_nth_gr0_calc: "
   trans_fun (xs ! (n - 1)) (f_Exec_Comp_Stream_Init trans_fun xs c ! (n - 1))"
 by (clarsimp simp: gr0_conv_Suc f_Exec_Stream_Init_nth_Suc_calc)
 
-text {*
+text \<open>
   At the beginning,
   the component state (and thus its output)
   for the execution stream with initial state
   is represented by the initial state,
   contrary to the @{term "i_Exec_Comp_Stream"}
-  that does not contain the initial state. *}
+  that does not contain the initial state.\<close>
 
-text {*
+text \<open>
   The component state (and thus its output) at time point @{term "n + 1"}
   for the execution stream with initial state
   is computed from the previous state
@@ -818,7 +818,7 @@ text {*
   (input at time @{term "n"}),
   contrary to the @{term "i_Exec_Comp_Stream"},
   where each state at time @{term "n"}
-  represents the resulting state after processing the input at time @{term "n"}. *}
+  represents the resulting state after processing the input at time @{term "n"}.\<close>
 
 lemma i_Exec_Stream_Init_nth_Suc_calc: "
   i_Exec_Comp_Stream_Init trans_fun input c (Suc n) =
@@ -837,8 +837,8 @@ lemma i_Exec_Stream_Init_nth_gr0_calc: "
 by (clarsimp simp: gr0_conv_Suc i_Exec_Stream_Init_nth_Suc_calc)
 
 
-text {* Correlation between Pre/Post-Conditions for
-  @{text f_Exec_Comp_Stream} and @{text f_Exec_Comp_Stream_Init} *}
+text \<open>Correlation between Pre/Post-Conditions for
+  \<open>f_Exec_Comp_Stream\<close> and \<open>f_Exec_Comp_Stream_Init\<close>\<close>
 
 lemma f_Exec_Stream_Pre_Post1: "
   \<lbrakk> n < length xs;
@@ -847,7 +847,7 @@ lemma f_Exec_Stream_Pre_Post1: "
   (P1 x_n \<and> P2 c_n \<longrightarrow> Q (trans_fun x_n c_n))"
 by (simp add: f_Exec_Stream_nth_calc_Previous)
 
-text {* Direct relation between input and result after transition *}
+text \<open>Direct relation between input and result after transition\<close>
 lemma f_Exec_Stream_Pre_Post2: "
   \<lbrakk> n < length xs;
     c_n = (f_Exec_Comp_Stream trans_fun xs c)\<^bsup>\<leftarrow>' c\<^esup> n; x_n = xs ! n \<rbrakk> \<Longrightarrow>
@@ -869,7 +869,7 @@ lemma f_Exec_Stream_Init_Pre_Post1: "
   (P1 x_n \<and> P2 c_n \<longrightarrow> Q (trans_fun x_n c_n))"
 by (simp add: f_Exec_Stream_Init_nth_Suc_calc)
 
-text {* Direct relation between input and state before transition *}
+text \<open>Direct relation between input and state before transition\<close>
 lemma f_Exec_Stream_Init_Pre_Post2: "
   \<lbrakk> n < length xs;
     c_n = f_Exec_Comp_Stream_Init trans_fun xs c ! n; x_n = xs ! n \<rbrakk> \<Longrightarrow>
@@ -885,7 +885,7 @@ lemma i_Exec_Stream_Pre_Post1: "
   (P1 x_n \<and> P2 c_n \<longrightarrow> Q (trans_fun x_n c_n))"
 by (simp add: i_Exec_Stream_nth_calc_Previous)
 
-text {* Direct relation between input and result after transition *}
+text \<open>Direct relation between input and result after transition\<close>
 lemma i_Exec_Stream_Pre_Post2: "
   \<lbrakk> c_n = (i_Exec_Comp_Stream trans_fun input c)\<^bsup>\<leftarrow> c\<^esup> n; x_n = input n \<rbrakk> \<Longrightarrow>
   (P c_n \<longrightarrow> Q (input n) (i_Exec_Comp_Stream trans_fun input c n)) =
@@ -904,7 +904,7 @@ lemma i_Exec_Stream_Init_Pre_Post1: "
   (P1 x_n \<and> P2 c_n \<longrightarrow> Q (trans_fun x_n c_n))"
 by (simp add: i_Exec_Stream_Init_nth_Suc_calc)
 
-text {* Direct relation between input and state before transition *}
+text \<open>Direct relation between input and state before transition\<close>
 lemma i_Exec_Stream_Init_Pre_Post2: "
   \<lbrakk> c_n = i_Exec_Comp_Stream_Init trans_fun input c n; x_n = input n \<rbrakk> \<Longrightarrow>
   (P (input n) (i_Exec_Comp_Stream_Init trans_fun input c n) \<longrightarrow>
@@ -913,7 +913,7 @@ lemma i_Exec_Stream_Init_Pre_Post2: "
 by (simp add: i_Exec_Stream_Init_nth_Suc_calc)
 
 
-text {* Basic results for stream prefices *}
+text \<open>Basic results for stream prefices\<close>
 
 lemma f_Exec_Stream_prefix: "
   prefix xs ys \<Longrightarrow>
@@ -957,10 +957,10 @@ theorem f_Exec_Stream_Init_prefix_strictly_causal[rule_format]:"
   f_Exec_Comp_Stream_Init trans_fun ys c \<down> Suc n"
 by (rule f_Exec_Stream_Init_strictly_causal, rule inf_prefix_take_correct)
 
-text {*
+text \<open>
   A predicate indicating
   whether a component is deterministically dependent
-  on the local state extracted by the the given local state function.  *}
+  on the local state extracted by the the given local state function.\<close>
 definition Deterministic_Trans_Fun ::
     "('comp, 'input) Comp_Trans_Fun \<Rightarrow> ('comp, 'state) Comp_Local_State \<Rightarrow> bool"
   where "Deterministic_Trans_Fun trans_fun localState \<equiv>
@@ -994,12 +994,12 @@ apply simp+
 done
 
 
-subsubsection {* Connected streams *}
+subsubsection \<open>Connected streams\<close>
 
-text {*
+text \<open>
   A predicate indicating for two message streams,
   that the ports, they correspond to, are connected.
-  The predicate implies strict causality. *}
+  The predicate implies strict causality.\<close>
 
 definition f_Streams_Connected :: "'a fstream_af \<Rightarrow> 'a fstream_af \<Rightarrow> bool"
   where "f_Streams_Connected outS inS \<equiv> inS = \<NoMsg> # outS"
@@ -1112,9 +1112,9 @@ lemma i_Exec_Stream_Connected_strictly_causal: "
 by (simp add: i_Streams_Connected_def i_take_Suc_Cons i_Exec_Stream_take)
 
 
-text {*
+text \<open>
   A predicate for the semantics with initial state in result stream
-  indicating for two message streams that the ports, they correspond to, are connected. *}
+  indicating for two message streams that the ports, they correspond to, are connected.\<close>
 definition f_Streams_Connected_Init :: "'a fstream_af \<Rightarrow> 'a fstream_af \<Rightarrow> bool"
   where "f_Streams_Connected_Init outS inS \<equiv> inS = outS"
 
@@ -1174,13 +1174,13 @@ lemma i_Exec_Stream_Connected_Init_strictly_causal: "
 by (simp add: i_Streams_Connected_Init_def i_Exec_Stream_Init_eq_i_Exec_Stream_Cons i_Exec_Stream_take)
 
 
-subsubsection {* Additional auxiliary results *}
+subsubsection \<open>Additional auxiliary results\<close>
 
-text {* The following lemma shows that,
+text \<open>The following lemma shows that,
   if the system state is different at some time points
   with respect to a certain predicate @{term P},
   then there exists a defined time point between these two,
-  where the state change has taken place *}
+  where the state change has taken place\<close>
 
 lemma f_State_Change_exists_set: "
   \<lbrakk> n1 \<le> n2; n1 \<in> I; n2 \<in> I;
@@ -1237,18 +1237,18 @@ lemma i_State_Change_Init_exists: "
 by (rule nat_Suc_predicate_change_exists)
 
 
-subsection {* Components with accelerated execution *}
+subsection \<open>Components with accelerated execution\<close>
 
-text {*
+text \<open>
   This section deals with variable execution speed components.
   A component accelerated by a (clocking) factor @{term k}
   processes streams expanded by factor @{term k}
-  and its output streams are compressed by factor @{term k}. *}
+  and its output streams are compressed by factor @{term k}.\<close>
 
 
-subsubsection {* Equivalence relation for executions *}
+subsubsection \<open>Equivalence relation for executions\<close>
 
-text {*
+text \<open>
   A predicate indicating for
   two components together with transition functions
   and a given equivalence predicate for their local states,
@@ -1256,7 +1256,7 @@ text {*
   after expanding input streams and shrinking output streams
   by a constant factor,
   given that their local states are equivalent
-  with respect to the specified equivalence relations. *}
+  with respect to the specified equivalence relations.\<close>
 
 definition
   Equiv_Exec :: "
@@ -1285,7 +1285,7 @@ where
         (localState1 (f_Exec_Comp trans_fun1 (input_fun1 m # \<NoMsg>\<^bsup>k1 - Suc 0\<^esup>) c1))
         (localState2 (f_Exec_Comp trans_fun2 (input_fun2 m # \<NoMsg>\<^bsup>k2 - Suc 0\<^esup>) c2)))"
 
-text {*
+text \<open>
   Predicate indicating for
   two components together with transition functions
   and a given equivalence predicate for their local states,
@@ -1297,7 +1297,7 @@ text {*
   have processed an arbitrary input.
   The restricting version @{term "Equiv_Exec_stable_set"}
   guarantees stability only for inputs from a given restriction set,
-  the not-restricting version guarantees stability for all inputs. *}
+  the not-restricting version guarantees stability for all inputs.\<close>
 definition
   Equiv_Exec_stable_set :: "
     'input set \<Rightarrow>
@@ -1429,7 +1429,7 @@ lemma Equiv_Exec_stableI: "
 by (simp add: Equiv_Exec_stable_def)
 
 
-text {* Reflexitity, symmetry and transitivity results for @{term "Equiv_Exec"} *}
+text \<open>Reflexitity, symmetry and transitivity results for @{term "Equiv_Exec"}\<close>
 
 lemma Equiv_Exec_refl: "
   \<lbrakk> \<And>c. equiv_states (localState c) (localState c) \<rbrakk> \<Longrightarrow>
@@ -1517,13 +1517,13 @@ lemma Equiv_Exec_trans_ex: "
 by (blast intro: Equiv_Exec_trans)
 
 
-text {* A predicate indicating for
+text \<open>A predicate indicating for
   a given local state extraction function and
   a given transition function,
   that components, whose states are equal with regard to the
   local state extraction function,
   are transformed into equal componenents,
-  when the transition function is applied with the same input. *}
+  when the transition function is applied with the same input.\<close>
 definition Exec_Equal_State ::
     "('comp, 'state) Comp_Local_State \<Rightarrow> ('comp, 'input message_af) Comp_Trans_Fun \<Rightarrow> bool"
   where "Exec_Equal_State localState trans_fun \<equiv>
@@ -1581,7 +1581,7 @@ apply simp+
 done
 
 
-subsubsection {* Idle states *}
+subsubsection \<open>Idle states\<close>
 
 definition State_Idle ::
   "('comp, 'state) Comp_Local_State \<Rightarrow> ('comp \<Rightarrow> 'output message_af) \<Rightarrow>
@@ -1786,9 +1786,9 @@ apply simp
 done
 
 
-subsubsection {* Basic definitions for accelerated execution *}
+subsubsection \<open>Basic definitions for accelerated execution\<close>
 
-text {* Stream processing with accelerated components *}
+text \<open>Stream processing with accelerated components\<close>
 
 definition f_Exec_Comp_Stream_Acc_Output ::
   "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
@@ -1876,7 +1876,7 @@ lemmas f_Exec_Stream_Acc_length =
   f_Exec_Stream_Acc_Output_length
 
 
-subsubsection {* Basic results for accelerated execution *}
+subsubsection \<open>Basic results for accelerated execution\<close>
 
 lemma f_Exec_Stream_Acc_Output_Nil[simp]: "
   f_Exec_Comp_Stream_Acc_Output k output_fun trans_fun [] c = []"
@@ -2171,7 +2171,7 @@ apply (simp add: i_Exec_Stream_Acc_Output_take)
 done
 
 
-text {* Complete execution cycles/steps of accelrated execution *}
+text \<open>Complete execution cycles/steps of accelrated execution\<close>
 
 definition Acc_Trans_Fun_Step ::
   "nat \<Rightarrow> \<comment> \<open>Acceleration factor\<close>
@@ -2318,7 +2318,7 @@ apply (simp add: i_Exec_Stream_Acc_Output_take i_Exec_Stream_take f_Exec_Stream_
 done
 
 
-subsubsection {* Basic results for accelerated execution with initial state in the resulting stream *}
+subsubsection \<open>Basic results for accelerated execution with initial state in the resulting stream\<close>
 
 lemma f_Exec_Stream_Acc_Output_Init_length: "
   0 < k \<Longrightarrow>
@@ -2449,16 +2449,16 @@ lemma i_Exec_Stream_Acc_Output_Init_eq_output_channel: "
 by (simp add: i_Streams_Connected_def i_Exec_Stream_Acc_Output_Init_eq_i_Exec_Stream_Acc_Output_Cons_output)
 
 
-subsubsection {* Rules for proving execution equivalence *}
+subsubsection \<open>Rules for proving execution equivalence\<close>
 
-text {*
+text \<open>
   A required precondition is that the @{term equiv_states} relation,
   which indicates whether the local states of @{term c1} and @{term c2}
   are equivalent with respect to observable behaviour,
   is preserved also after executing an input stream,
   because the @{term equiv_states} relation
   should deliver valid results not only at the time point @{term 0}
-  but at every time point. *}
+  but at every time point.\<close>
 
 lemma f_Equiv_Exec_Stream_expand_shrink_equiv_state_set[rule_format]: "
   \<And>c1 c2 i. \<lbrakk>
@@ -2803,7 +2803,7 @@ apply (simp add: Equiv_Exec_stable_set_UNIV)+
 done
 
 
-subsubsection {* Idle states and accelerated execution *}
+subsubsection \<open>Idle states and accelerated execution\<close>
 
 lemma f_Exec_Stream_Acc_LocalState__State_Idle_nth[rule_format]: "
   \<And>c i.
@@ -2981,12 +2981,12 @@ apply simp
 done
 
 
-text {*
+text \<open>
   When a certain number @{term l} of steps suffices to reach
   an idle state from any other idle state,
   than for any acceleration factor @{term "k \<ge> l"}
   the accelerated processing of every input message
-  will be finished in an idle state. *}
+  will be finished in an idle state.\<close>
 lemma f_Exec_Stream_Acc_LocalState__State_Idle_all[rule_format]: "
   \<And>c xs. \<lbrakk> 0 < l; l \<le> k;
     State_Idle localState output_fun trans_fun (localState c);
@@ -3089,7 +3089,7 @@ apply simp+
 done
 
 
-text {* Converting inputs *}
+text \<open>Converting inputs\<close>
 
 lemma f_Exec_input_map: "\<And>c.
   f_Exec_Comp trans_fun (map f xs) c = f_Exec_Comp (trans_fun \<circ> f) xs c"

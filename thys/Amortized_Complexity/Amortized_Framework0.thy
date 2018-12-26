@@ -163,7 +163,7 @@ next
         thus ?thesis using 2 by(simp add: algebra_simps)
       next
         assume "\<not> n<l"
-        hence [simp]: "n=l" using 2 `l\<noteq>0` by simp
+        hence [simp]: "n=l" using 2 \<open>l\<noteq>0\<close> by simp
         have 1: "(b/a) * ceiling(c * l) \<le> real l + 1"
         proof-
           have "(b/a) * ceiling(c * l) = ceiling(c * l)/(a*(c - 1))"
@@ -177,12 +177,12 @@ next
         have 2: "real l + 1 \<le> ceiling(c * real l)"
         proof-
           have "real l + 1 = of_int(int(l)) + 1" by simp
-          also have "... \<le> ceiling(c * real l)" using `l \<noteq> 0`
+          also have "... \<le> ceiling(c * real l)" using \<open>l \<noteq> 0\<close>
             by(simp only: int_less_real_le[symmetric] less_ceiling_iff)
               (simp add: mult_less_cancel_right1)
           finally show ?thesis .
         qed
-        from `l\<noteq>0` 1 2 show ?thesis by simp (simp add: not_le zero_less_mult_iff)
+        from \<open>l\<noteq>0\<close> 1 2 show ?thesis by simp (simp add: not_le zero_less_mult_iff)
       qed
     qed
   qed
@@ -208,7 +208,7 @@ next
         assume "\<not> n<l"
         hence [simp]: "n=l" using 5 by simp
         have "t\<^sub>i\<^sub>n\<^sub>s s + pins (ins s) - pins s = l + a + 1 + (- b*ceiling(c*l)) + b*l"
-          using `l\<noteq>0`
+          using \<open>l\<noteq>0\<close>
           by(simp add: algebra_simps less_trans[of "-1::real" 0])
         also have "- b * ceiling(c*l) \<le> - b * (c*l)" by (simp add: ceiling_correct)
         also have "l + a + 1 + - b*(c*l) + b*l = a + 1 + l*(1 - b*(c - 1))"
@@ -256,7 +256,7 @@ qed
 
 subsection "Queue"
 
-text{* See, for example, the book by Okasaki~\cite{Okasaki}. *}
+text\<open>See, for example, the book by Okasaki~\cite{Okasaki}.\<close>
 
 datatype 'a op\<^sub>q = Enq 'a | Deq
 

@@ -1,9 +1,9 @@
-section {* Infrastructure for Multi-Phase Methods *}
+section \<open>Infrastructure for Multi-Phase Methods\<close>
 theory Autoref_Phases
 imports "../Lib/Refine_Lib"
 begin
 
-ML {*
+ML \<open>
 
   signature AUTOREF_PHASES = sig
     type phase = {
@@ -221,6 +221,6 @@ ML {*
     end
   end
 
-*}
+\<close>
 
 end

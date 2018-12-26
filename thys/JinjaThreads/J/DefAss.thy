@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Definite assignment *}
+section \<open>Definite assignment\<close>
 
 theory DefAss
 imports 

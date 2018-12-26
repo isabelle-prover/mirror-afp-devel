@@ -150,8 +150,8 @@ lemmas [code] =
 
 section\<open>Finalizing the Parser\<close>
 
-text\<open>It should be feasible to invent a meta-command (e.g., @{text "datatype'"})
-to automatically generate the previous recursors in @{text Parse}.
+text\<open>It should be feasible to invent a meta-command (e.g., \<open>datatype'\<close>)
+to automatically generate the previous recursors in \<open>Parse\<close>.
 
 Otherwise as an extra check, one can also overload polymorphic cartouches in @{theory Isabelle_Meta_Model.Init}
 to really check that all the given constructor exists at the time of editing

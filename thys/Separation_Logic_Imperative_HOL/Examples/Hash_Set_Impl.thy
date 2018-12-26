@@ -3,7 +3,7 @@ theory Hash_Set_Impl
 imports Imp_Set_Spec Hash_Map_Impl
 begin
 
-subsection {* Auxiliary Definitions *}
+subsection \<open>Auxiliary Definitions\<close>
 definition map_of_set:: "'a set \<Rightarrow> 'a\<rightharpoonup>unit" 
   where "map_of_set S x \<equiv> if x\<in>S then Some () else None"
 
@@ -37,7 +37,7 @@ lemma map_of_set_eq[simp]:
   apply (metis option.simps(3))
   done
 
-subsection {* Main Definitions *}
+subsection \<open>Main Definitions\<close>
 type_synonym 'a hashset = "('a,unit) hashtable"
 definition "is_hashset s ht \<equiv> is_hashmap (map_of_set s) ht"
 

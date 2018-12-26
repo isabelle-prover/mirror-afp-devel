@@ -7,9 +7,9 @@ begin
 text \<open>
 Contents:
 \<^item> We give two formulations of Pappus's property for a configuration of nine points
- [@{text "is_pappus1"}] [@{text "is_pappus2"}].
-\<^item> We prove the equivalence of these two formulations [@{text "pappus_equiv"}].
-\<^item> We state Pappus property for a plane [@{text "is_pappus"}]. 
+ [\<open>is_pappus1\<close>] [\<open>is_pappus2\<close>].
+\<^item> We prove the equivalence of these two formulations [\<open>pappus_equiv\<close>].
+\<^item> We state Pappus property for a plane [\<open>is_pappus\<close>]. 
 \<close>
 
 section \<open>Pappus's Property\<close>

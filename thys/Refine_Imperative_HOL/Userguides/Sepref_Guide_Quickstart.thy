@@ -153,7 +153,7 @@ begin
     the concrete and abstract function. The parameter is related by 
     @{term "array_assn nat_assn"}. Here, @{term "array_assn A"} relates arrays 
     with lists, such that the elements are related @{term A} --- in our case by 
-    @{text nat_assn}, which relates natural numbers to themselves. 
+    \<open>nat_assn\<close>, which relates natural numbers to themselves. 
     We also say that we @{emph \<open>implement\<close>} lists of nats by arrays of nats.
     The result is also implemented by natural numbers. 
 

@@ -2,16 +2,16 @@
     Author:     Andreas Lochbihler
 *)
 
-chapter {* Examples *}
+chapter \<open>Examples\<close>
 
-section {* Apprentice challenge *}
+section \<open>Apprentice challenge\<close>
 
 theory ApprenticeChallenge 
 imports
   "../Execute/Code_Generation"
 begin
 
-text {* This theory implements the apprentice challenge by Porter and Moore \cite{MoorePorter2002TOPLAS}. *}
+text \<open>This theory implements the apprentice challenge by Porter and Moore \cite{MoorePorter2002TOPLAS}.\<close>
 
 definition ThreadC :: "addr J_mb cdecl"
 where 
@@ -87,7 +87,7 @@ lemmas [code_unfold] =
 
 definition main :: "String.literal" where "main = STR ''main''"
 
-ML_val {*
+ML_val \<open>
   val _ = tracing "started";
   val program = @{code ApprenticeChallenge_annotated};
   val _ = tracing "prg";
@@ -109,6 +109,6 @@ ML_val {*
     @{code main}
     [ @{code Null}];
   val _ = tracing "JVM_rr";
-*}
+\<close>
 
 end

@@ -2,7 +2,7 @@
     Author:      Max Haslbeck
     Reference:   http://www4.in.tum.de/lehre/vorlesungen/theo/SS10/vorlesung.shtml p.96ff
 *)
-section {* Equivalence of Regular Expression with Variables  *}
+section \<open>Equivalence of Regular Expression with Variables\<close>
 
 theory RExp_Var
 imports "Regular-Sets.Equivalence_Checking"
@@ -376,7 +376,7 @@ proof -
 qed
 
 
-subsection {* Examples *}
+subsection \<open>Examples\<close>
 
 lemma "lang (Plus (Atom (x::nat)) (Atom x))  = lang (Atom x)"
 proof -

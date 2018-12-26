@@ -46,12 +46,12 @@ proof-
   with **
   have "([], transform 0 e, []) \<Rightarrow>\<^sub>G\<^sup>* (?\<Gamma>, ?v, map Dummy (rev r))" by simp
 
-  have "isVal ?v" using `isVal v` by simp
+  have "isVal ?v" using \<open>isVal v\<close> by simp
 
   have "fv (transform 0 e) = ({} :: var set)" using closed
     by (auto dest: set_mp[OF fv_transform])
 
-  note sestoftUnGC'[OF `([], transform 0 e, []) \<Rightarrow>\<^sub>G\<^sup>* (?\<Gamma>, ?v, map Dummy (rev r))` `isVal ?v` `fv (transform 0 e) = {}`]
+  note sestoftUnGC'[OF \<open>([], transform 0 e, []) \<Rightarrow>\<^sub>G\<^sup>* (?\<Gamma>, ?v, map Dummy (rev r))\<close> \<open>isVal ?v\<close> \<open>fv (transform 0 e) = {}\<close>]
   then obtain \<Gamma>'
     where "([], transform 0 e, []) \<Rightarrow>\<^sup>* (\<Gamma>', ?v, [])"
     and "?\<Gamma> = restrictA (- set r) \<Gamma>'"
@@ -62,14 +62,14 @@ proof-
     by (rule arg_cong[where f = card]) auto
   also have "\<dots> = card (domA ?\<Gamma>) + card (set r \<inter> domA \<Gamma>)"
     by (rule card_Un_disjoint) auto
-  also note `?\<Gamma> = restrictA (- set r) \<Gamma>'`
+  also note \<open>?\<Gamma> = restrictA (- set r) \<Gamma>'\<close>
   also have "set r \<inter> domA \<Gamma> = set r \<inter> domA \<Gamma>'"
-    using `set r \<subseteq> domA \<Gamma>`  `set r \<subseteq> domA \<Gamma>'` by auto
+    using \<open>set r \<subseteq> domA \<Gamma>\<close>  \<open>set r \<subseteq> domA \<Gamma>'\<close> by auto
   also have "card (domA (restrictA (- set r) \<Gamma>')) + card (set r \<inter> domA \<Gamma>') = card (domA \<Gamma>')"
     by (subst card_Un_disjoint[symmetric]) (auto intro: arg_cong[where f = card])
   finally
   have "card (domA \<Gamma>') \<le> card (domA \<Gamma>)" by simp
-  with `([], transform 0 e, []) \<Rightarrow>\<^sup>* (\<Gamma>', ?v, [])`  `isVal ?v`
+  with \<open>([], transform 0 e, []) \<Rightarrow>\<^sup>* (\<Gamma>', ?v, [])\<close>  \<open>isVal ?v\<close>
   show thesis using that by blast
 qed
 
@@ -93,7 +93,7 @@ proof-
   hence [simp]: "\<not> nonrec [(x,e)]"
     by (simp add: nonrec_def)
  
-  from `isVal e`
+  from \<open>isVal e\<close>
   have [simp]: "thunks [(x, e)] = {}"
     by (simp add: thunks_Cons)
 

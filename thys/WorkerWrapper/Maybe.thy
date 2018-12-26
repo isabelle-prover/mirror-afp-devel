@@ -10,10 +10,10 @@ imports HOLCF
 begin
 (*>*)
 
-section{* The @{text "'a Maybe"} Monad *}
+section\<open>The \<open>'a Maybe\<close> Monad\<close>
 
-text{* This section defines the monadic machinery for the @{text "'a
-Maybe"} type. @{term "return"} is @{term "Just"}. *}
+text\<open>This section defines the monadic machinery for the \<open>'a
+Maybe\<close> type. @{term "return"} is @{term "Just"}.\<close>
 
 domain 'a Maybe = Nothing | Just (lazy "'a")
 
@@ -40,7 +40,7 @@ abbreviation
 
 lemma mbind_strict1[simp]: "\<bottom> >>=\<^sub>M g = \<bottom>" by (simp add: mbind_def)
 
-text{* The standard monad laws. *}
+text\<open>The standard monad laws.\<close>
 
 lemma leftID[simp]: "Just\<cdot>a >>=\<^sub>M f = f\<cdot>a" by (simp add: mbind_def)
 lemma rightID[simp]: "m >>=\<^sub>M Just = m" by (cases m, simp_all add: mbind_def)
@@ -48,7 +48,7 @@ lemma rightID[simp]: "m >>=\<^sub>M Just = m" by (cases m, simp_all add: mbind_d
 lemma assoc[simp]: "(m >>=\<^sub>M f) >>=\<^sub>M g = m >>=\<^sub>M (\<Lambda> x. f\<cdot>x >>=\<^sub>M g)"
   by (cases m, simp_all add: mbind_def)
 
-text{* Reduction for the Maybe monad. *}
+text\<open>Reduction for the Maybe monad.\<close>
 
 lemma nothing_bind[simp]: "Nothing >>=\<^sub>M f = Nothing" by (simp add: mbind_def)
 lemma just_bind[simp]: "Just\<cdot>x >>=\<^sub>M f = f\<cdot>x" by (simp add: mbind_def)

@@ -9,7 +9,7 @@
 
 
 *)
-section {* \isaheader{Map Implementation by Red-Black-Trees} *}
+section \<open>\isaheader{Map Implementation by Red-Black-Trees}\<close>
 theory RBTMapImpl
 imports 
   "../spec/MapSpec"
@@ -17,7 +17,7 @@ imports
   "HOL-Library.RBT"
   "../gen_algo/MapGA"
 begin
-text_raw {*\label{thy:RBTMapImpl}*}
+text_raw \<open>\label{thy:RBTMapImpl}\<close>
 
 hide_const (open) RBT.map RBT.fold RBT.foldi RBT.empty RBT.insert
 
@@ -80,7 +80,7 @@ interpretation rm: StdMap_no_invar rm_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "rm"*}
+setup \<open>ICF_Tools.revert_abbrevs "rm"\<close>
 
 lemma pi_rm[proper_it]: 
   "proper_it' RBT_add.rm_iterateoi RBT_add.rm_iterateoi"
@@ -98,7 +98,7 @@ interpretation pi_rm_rev: proper_it_loc RBT_add.rm_reverse_iterateoi
   RBT_add.rm_reverse_iterateoi
   apply unfold_locales by (rule pi_rm_rev)
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 definition "test_codegen \<equiv> (rm.add ,
   rm.add_dj ,
   rm.ball ,

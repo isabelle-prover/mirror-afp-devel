@@ -21,7 +21,7 @@ theory Norms
     Missing_Lemmas
 begin
 
-subsection {* L-@{text "\<infinity>"} Norms *}
+subsection \<open>L-\<open>\<infinity>\<close> Norms\<close>
 
 consts linf_norm :: "'a \<Rightarrow> 'b" ("\<parallel>(_)\<parallel>\<^sub>\<infinity>")
 
@@ -82,18 +82,18 @@ lemma linf_norm_poly_greater_0 [simp]:
   shows "\<parallel>f\<parallel>\<^sub>\<infinity> > 0 \<longleftrightarrow> f \<noteq> 0"
   by (induct f, auto simp: max_def)
 
-subsection {* Square Norms *}
+subsection \<open>Square Norms\<close>
 
 consts sq_norm :: "'a \<Rightarrow> 'b" ("\<parallel>(_)\<parallel>\<^sup>2")
 
 abbreviation "sq_norm_conjugate x \<equiv> x * conjugate x"
 adhoc_overloading sq_norm sq_norm_conjugate
 
-subsubsection {* Square norms for vectors *}
+subsubsection \<open>Square norms for vectors\<close>
 
-text {* We prefer sum\_list over sum because it is not essentially dependent on commutativity,
+text \<open>We prefer sum\_list over sum because it is not essentially dependent on commutativity,
   and easier for proving.
-*}
+\<close>
 definition "sq_norm_vec v \<equiv> \<Sum>x \<leftarrow> list_of_vec v. \<parallel>x\<parallel>\<^sup>2"
 adhoc_overloading sq_norm sq_norm_vec
 
@@ -117,7 +117,7 @@ lemmas sq_norm_vec_eq_0 [simp] = conjugate_square_eq_0_vec[folded sq_norm_vec_as
 
 lemmas sq_norm_vec_greater_0 [simp] = conjugate_square_greater_0_vec[folded sq_norm_vec_as_cscalar_prod]
 
-subsubsection {* Square norm for polynomials *}
+subsubsection \<open>Square norm for polynomials\<close>
 
 definition sq_norm_poly where "sq_norm_poly p \<equiv> \<Sum>a\<leftarrow>coeffs p. \<parallel>a\<parallel>\<^sup>2"
 
@@ -174,9 +174,9 @@ lemma sq_norm_poly_of_vec [simp]:
   apply (unfold sum_mset_sum_list)
   by (auto intro: sum_list_map_dropWhile0)
 
-subsection {* Relating Norms *}
+subsection \<open>Relating Norms\<close>
 
-text {* A class where ordering around 0 is linear. *}
+text \<open>A class where ordering around 0 is linear.\<close>
 abbreviation (in ordered_semiring) is_real where "is_real a \<equiv> a < 0 \<or> a = 0 \<or> 0 < a"
 
 class semiring_real_line = ordered_semiring_strict + ordered_semiring_0 +
@@ -463,10 +463,10 @@ instance complex :: semiring_1_real_line
   apply intro_classes
   by (auto simp: complex_eq_iff mult_le_cancel_left mult_le_cancel_right mult_neg_neg)
 
-text {*
+text \<open>
   Due to the assumption @{thm abs_ge_self} from Groups.thy,
   @{type complex} cannot be @{class ring_1_abs_real_line}!
-*}
+\<close>
 instance complex :: ordered_ab_group_add_abs oops
 
 lemma sq_norm_as_sq_abs [simp]: "(sq_norm :: 'a :: conjugatable_ring_1_abs_real_line \<Rightarrow> 'a) = power2 \<circ> abs"

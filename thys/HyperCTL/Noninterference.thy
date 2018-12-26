@@ -1,4 +1,4 @@
-section {* Noninterference \`{a} la Goguen and Meseguer *}
+section \<open>Noninterference \`{a} la Goguen and Meseguer\<close>
 
 (*<*)
 theory Noninterference
@@ -6,9 +6,9 @@ imports Shallow
 begin
 (*>*)
 
-subsection{* Goguen-Meseguer noninterference *}
+subsection\<open>Goguen-Meseguer noninterference\<close>
 
-text{* Definition *}
+text\<open>Definition\<close>
 
 locale GM_sec_model =
   fixes st0 :: 'St
@@ -18,7 +18,7 @@ locale GM_sec_model =
   and GL :: "'U set"
 begin
 
-text{* Extension of ``do'' to sequences of pairs (user, command): *}
+text\<open>Extension of ``do'' to sequences of pairs (user, command):\<close>
 
 fun doo :: "'St \<Rightarrow> ('U \<times> 'C) list \<Rightarrow> 'St" where
  "doo st [] = st"
@@ -44,12 +44,12 @@ definition nonint :: bool where
 end (* context GM_sec_model *)
 (*>*)
 
-text{* end-of-context GM-sec-model *}
+text\<open>end-of-context GM-sec-model\<close>
 
 
-subsection{* Specialized Kripke structures  *}
+subsection\<open>Specialized Kripke structures\<close>
 
-text{* As a preparation for representing noninterference in HyperCTL*,
+text\<open>As a preparation for representing noninterference in HyperCTL*,
 we define a specialized notion of Kripke structure.  It is enriched
 with the following date: 
 two binary state predicates f and g, intuitively capturing high-input
@@ -64,7 +64,7 @@ between finite paths (specific to Goguen-Meseguer noninterference) and
 infinite paths (specific to the HyperCTL* semantics).
 The desired Kripke structure produced from a Goguen-Meseguer model 
 will actually be such a specialized structure.
-*}
+\<close>
 
 locale Shallow_Idle = Shallow S "s0" \<delta> AP
   for S :: "'state set" and s0 :: 'state and \<delta> :: "'state \<Rightarrow> 'state set"
@@ -181,23 +181,23 @@ qed
 end (* context Shallow-Idle *)
 (*>*)
 
-text{* end-of-context Shallow-Idle *}
+text\<open>end-of-context Shallow-Idle\<close>
 
 
-subsection{* Faithful representation as a HyperCTL* property *}
+subsection\<open>Faithful representation as a HyperCTL* property\<close>
 
-text{* Starting with a Goguen-Meseguer model, we will produce a specialized
+text\<open>Starting with a Goguen-Meseguer model, we will produce a specialized
 Kripke structure and a shallow HyperCTL* formula.
 Then we we will prove that the structure satisfies the formula iff the
-Goguen-Meseguer model satisfies noninterference.    *}
+Goguen-Meseguer model satisfies noninterference.\<close>
 
-text{*
+text\<open>
 The Kripke structure has two kinds of states: ``idle'' states storing Goguen-Meseguer states,
 and normal states storing Goguen-Meseguer states, users and commands: the former 
 will be used for synchronization and the latter for Goguen-Meseguer steps.
 The Kripke labels store user-command actions and user-output observations.
 
-*}
+\<close>
 
 datatype ('St,'U,'C) state =
   isIdle: Idle (getGMState: 'St) | isState: State (getGMState: 'St) (getGMUser: 'U) (getGMCom: 'C)
@@ -216,7 +216,7 @@ primrec L :: "('St,'U,'C) state \<Rightarrow> ('U,'C,'Out) aprop set" where
  "L (Idle st) = {Obs u' (out st u') | u'. True}"
 |"L (State st u c) = {Last u c} \<union> {Obs u' (out st u') | u'. True}"
 
-text{* Get the Goguen-Meseguer state: *}
+text\<open>Get the Goguen-Meseguer state:\<close>
 
 primrec getGMState where
  "getGMState (Idle st) = st"
@@ -273,30 +273,30 @@ lemma apropsOf_L_stateOf[simp]:
 "wfp AP' \<pi> \<Longrightarrow> apropsOf \<pi> = L (stateOf \<pi>)"
 unfolding wfp by (metis Int_UNIV_right snth.simps(1))
 
-text{* The equality of two states w.r.t.\ a given ``last'' user-command pair: *}
+text\<open>The equality of two states w.r.t.\ a given ``last'' user-command pair:\<close>
 
 definition eqOnUC ::
 "nat \<Rightarrow> nat \<Rightarrow> 'U \<Rightarrow> 'C \<Rightarrow> (('St,'U,'C) state,('U,'C,'Out) aprop) sfmla"
 where
 "eqOnUC i i' u c \<equiv> eq (atom (Last u c) i) (atom (Last u c) i')"
 
-text{* The equality of two states w.r.t.\ all their ``last'' user-command pairs with
-the user not in GH: *}
+text\<open>The equality of two states w.r.t.\ all their ``last'' user-command pairs with
+the user not in GH:\<close>
 
 definition eqButGH ::
 "nat \<Rightarrow> nat \<Rightarrow> (('St,'U,'C) state,('U,'C,'Out) aprop) sfmla"
 where
 "eqButGH i i' \<equiv> scon {eqOnUC i i' u c | u c. (u,c) \<in> (UNIV - GH) \<times> UNIV}"
 
-text{* The equality of two states w.r.t.\ a given ``observed'' user-observation pair: *}
+text\<open>The equality of two states w.r.t.\ a given ``observed'' user-observation pair:\<close>
 
 definition eqOnUOut ::
 "nat \<Rightarrow> nat \<Rightarrow> 'U \<Rightarrow> 'Out \<Rightarrow> (('St,'U,'C) state,('U,'C,'Out) aprop) sfmla"
 where
 "eqOnUOut i i' u ou \<equiv> eq (atom (Obs u ou) i) (atom (Obs u ou) i')"
 
-text{* The equality of two states w.r.t.\ all their ``observed'' user-observation pairs with
-the user in GL: *}
+text\<open>The equality of two states w.r.t.\ all their ``observed'' user-observation pairs with
+the user in GL:\<close>
 
 definition eqOnGL ::
 "nat \<Rightarrow> nat \<Rightarrow> (('St,'U,'C) state,('U,'C,'Out) aprop) sfmla"
@@ -323,8 +323,8 @@ shows
  )"
 using assms unfolding eqOnUOut_def atom_def[abs_def] eq_equals by simp
 
-text{* The (shallow) noninterference formula -- it will be proved equivalent to nonint,
-the original statement of noninterference. *}
+text\<open>The (shallow) noninterference formula -- it will be proved equivalent to nonint,
+the original statement of noninterference.\<close>
 
 definition nonintSfmla :: "(('St,'U,'C) state,('U,'C,'Out) aprop) sfmla" where
 "nonintSfmla \<equiv>
@@ -334,8 +334,8 @@ definition nonintSfmla :: "(('St,'U,'C) state,('U,'C,'Out) aprop) sfmla" where
         (\<pi>l @ [\<pi>,\<pi>'])
        )"
 
-text{* First, we show that nonintSfmla is equivalent to nonintSI, a variant of noninterference
-that speaks about Synchronized Infinite paths.  *}
+text\<open>First, we show that nonintSfmla is equivalent to nonintSI, a variant of noninterference
+that speaks about Synchronized Infinite paths.\<close>
 
 definition nonintSI :: bool where
 "nonintSI \<equiv>
@@ -358,11 +358,11 @@ proof-
   show ?thesis unfolding nonintSfmla_def nonintSI_def \<phi>_def \<psi>_def .
 qed
 
-text{* In turn, nonintSI will be shown equivalent to nonintS, a variant speaking about
+text\<open>In turn, nonintSI will be shown equivalent to nonintS, a variant speaking about
 Synchronized finite paths. To this end, we introduce a notion of well-formed finite path (wffp) -- besides
 finiteness, another difference from the previously defined infinite paths is that, thanks to
 the fact that here AP coincides with AP', paths are mere sequences of states as opposed
-to pairs (state,set of atomic predicates).   *}
+to pairs (state,set of atomic predicates).\<close>
 
 inductive wffp :: "('St,'U,'C) state list \<Rightarrow> bool"
 where
@@ -509,7 +509,7 @@ next
    hence sl': "sl = (Idle st) # map Idle (replicate n' st)" using sl by auto
    have ?case proof(cases s)
      case (Idle st1)
-     have st1: "st1 = st" using `hd sl \<in> \<delta> s` unfolding sl' Idle by auto
+     have st1: "st1 = st" using \<open>hd sl \<in> \<delta> s\<close> unfolding sl' Idle by auto
      show ?thesis apply (intro exI[of _ "Suc n"] exI[of _ st]) using n unfolding sl Idle st1 by auto
    next
      case (State st1 u1 c1)
@@ -530,7 +530,7 @@ next
      next
        case (Suc n')
        hence sl': "sl = (Idle st) # map Idle (replicate n' st) @ [State st1 u1 c1] @ sl1" using sl by auto
-       have st2: "st2 = st" using `hd sl \<in> \<delta> s` unfolding sl' Idle by auto
+       have st2: "st2 = st" using \<open>hd sl \<in> \<delta> s\<close> unfolding sl' Idle by auto
        have "s # sl = map Idle (replicate (Suc n) st) @ [State st1 u1 c1] @ sl1"
        unfolding sl Idle st2 by auto
        thus ?thesis by blast
@@ -701,10 +701,10 @@ next
 qed
 
 
-text{* Finally, we show that nonintS is equivalent to standard
-noninterference (predicate nonint). *}
+text\<open>Finally, we show that nonintS is equivalent to standard
+noninterference (predicate nonint).\<close>
 
-text{* purgeIdle removes the idle steps from a finite path: *}
+text\<open>purgeIdle removes the idle steps from a finite path:\<close>
 
 definition purgeIdle :: "('St, 'U, 'C) state list \<Rightarrow> ('St, 'U, 'C) state list"
 where "purgeIdle \<equiv> filter isState"
@@ -769,7 +769,7 @@ next
   show ?thesis using psl hsl unfolding State by simp
 next
   case (Idle_State n st u c sl1)
-  show ?thesis using psl `n > 0` ist hsl unfolding Idle_State purgeIdle_append
+  show ?thesis using psl \<open>n > 0\<close> ist hsl unfolding Idle_State purgeIdle_append
   by (cases s) auto
 qed
 
@@ -778,10 +778,10 @@ assumes "wffp sl" and "purgeIdle sl \<noteq> []"
 shows "wffp (purgeIdle sl)"
 using assms proof(induction sl rule: length_induct)
   case (1 sl) note IH = 1
-  from `wffp sl` show ?case proof(cases sl rule: wffp_cases2)
+  from \<open>wffp sl\<close> show ?case proof(cases sl rule: wffp_cases2)
     case (Idle n st)
     have "purgeIdle sl = []" unfolding Idle by auto
-    thus ?thesis using `purgeIdle sl \<noteq> []` by auto
+    thus ?thesis using \<open>purgeIdle sl \<noteq> []\<close> by auto
   next
     case (State n st st1 u c sl1)
     hence 1: "purgeIdle sl = State st1 u c # purgeIdle sl1"
@@ -821,7 +821,7 @@ next
     hence n: "n > 0" using slNE by auto
     hence hsl: "hd sl = Idle st" and lsl: "last sl = Idle st" unfolding sl by auto
     have s: "isState s" using True Cons by (cases s) auto
-    have 1: "getGMState s = st" using `hd sl \<in> \<delta> s` unfolding hsl by(cases s) auto
+    have 1: "getGMState s = st" using \<open>hd sl \<in> \<delta> s\<close> unfolding hsl by(cases s) auto
     show ?thesis using slNE n 1 hsl lsl s unfolding sl purgeIdle_replicate_Idle by (cases s) auto
   next
     case False
@@ -835,10 +835,10 @@ shows "doo (getGMState (hd sl)) (map getGMUserCom (tl sl)) = getGMState (last sl
 using assms proof(induction sl rule: wffp_induct2)
   case (Cons s sl)
   then obtain st u c where s: "s = State st u c" by(cases s ) auto
-  have sl: "sl \<noteq> []" and sl1: "sl = hd sl # tl sl" using wffp_NE[OF `wffp sl`] by auto
+  have sl: "sl \<noteq> []" and sl1: "sl = hd sl # tl sl" using wffp_NE[OF \<open>wffp sl\<close>] by auto
   with Cons obtain st1 u1 c1 where hsl: "hd sl = State st1 u1 c1"
   by (metis isState_purgeIdle isState_def purgeIdle_Cons_iff)
-  have 1: "getGMState (hd sl) = do st u1 c1" using `hd sl \<in> \<delta> s` unfolding hsl s by simp
+  have 1: "getGMState (hd sl) = do st u1 c1" using \<open>hd sl \<in> \<delta> s\<close> unfolding hsl s by simp
   have "doo st (map getGMUserCom sl) = doo (do st u1 c1) (map getGMUserCom (tl sl))"
   by (subst sl1) (simp add: 1 hsl)
   thus ?case using sl Cons unfolding 1 s by auto
@@ -885,9 +885,9 @@ using assms proof(induction sl arbitrary: ucl ss' rule: wffp_induct2)
   case (Singl s ucl)
   thus ?case apply (intro exI[of _ "[ss']"]) by (cases ss') auto
 next
-  case (Cons ss sl ucl ss') note wsl = `wffp sl`
+  case (Cons ss sl ucl ss') note wsl = \<open>wffp sl\<close>
   hence slNE: "sl \<noteq> []" by (metis wffp_NE)
-  obtain s sl1 where sl: "sl = s # sl1" using wffp_NE[OF `wffp sl`] by (cases sl) auto
+  obtain s sl1 where sl: "sl = s # sl1" using wffp_NE[OF \<open>wffp sl\<close>] by (cases sl) auto
   then obtain st u c where s: "s = State st u c" using Cons by (cases s) auto
   define ucl1 where "ucl1 = tl ucl"
   have ucl: "ucl = (u,c) # ucl1" and hsl: "hd sl = s" using Cons(5) unfolding s ucl1_def sl by auto
@@ -949,10 +949,10 @@ proof-
       thus ?thesis using True by auto
     next
       case False hence sl: "sl = hd sl # tl sl" by (cases sl) auto
-      hence sl': "sl' = hd sl' # tl sl'" using `length sl = length sl'` by (cases sl') auto
+      hence sl': "sl' = hd sl' # tl sl'" using \<open>length sl = length sl'\<close> by (cases sl') auto
       hence wsl[simp]: "wffp sl" and wsl'[simp]: "wffp sl'" using sl Cons
       by (metis Cons.prems append_singl_rev list.distinct sl' wffp_imp_appendR)+
-      have f: "f (hd sl) (hd sl')" using `list_all2 f (s # sl) (s' # sl')` sl sl'
+      have f: "f (hd sl) (hd sl')" using \<open>list_all2 f (s # sl) (s' # sl')\<close> sl sl'
       by (metis list_all2_Cons)
       show ?thesis proof(cases "hd sl")
         case (Idle st) note hsl = Idle
@@ -1037,7 +1037,7 @@ by (metis nonintSI_nonintS nonintS_iff_nonint nonintSfmla_nonintSI)
 end (* context GM_sec_model *)
 (*>*)
 
-text{* end-of-context GM-sec-model *}
+text\<open>end-of-context GM-sec-model\<close>
 
 
 (*<*)

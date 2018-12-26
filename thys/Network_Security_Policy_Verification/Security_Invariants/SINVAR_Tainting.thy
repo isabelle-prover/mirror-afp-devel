@@ -2,14 +2,14 @@ theory SINVAR_Tainting
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant Tainting for IFS  *}
+subsection \<open>SecurityInvariant Tainting for IFS\<close>
 
 context
 begin
 
   qualified type_synonym taints = "string set"
 
-  text{*Warning: an infinite set has cardinality 0*}
+  text\<open>Warning: an infinite set has cardinality 0\<close>
   lemma "card (UNIV::taints) = 0" by (simp add: infinite_UNIV_listI) 
   
   qualified definition default_node_properties :: "taints"
@@ -17,8 +17,8 @@ begin
   
   
   (*The definition we want to present*)
-  text{*For all nodes @{term n} in the graph, for all nodes @{term r} which are reachable from @{term n},
-        node @{term n} needs the appropriate tainting fields which are set by @{term r}*}
+  text\<open>For all nodes @{term n} in the graph, for all nodes @{term r} which are reachable from @{term n},
+        node @{term n} needs the appropriate tainting fields which are set by @{term r}\<close>
   definition sinvar_tainting :: "'v graph \<Rightarrow> ('v \<Rightarrow> taints) \<Rightarrow> bool" where
     "sinvar_tainting G nP \<equiv> \<forall> n \<in> (nodes G). \<forall>r \<in> (succ_tran G n). nP n \<subseteq> nP r"
   
@@ -41,7 +41,7 @@ begin
         from g1 g2 show "\<forall>n\<in>nodes G. \<forall>r\<in>succ_tran G n. nP n \<subseteq> nP r" by metis
     qed
   
-  text{*Alternative definition of the @{const sinvar_tainting}*}
+  text\<open>Alternative definition of the @{const sinvar_tainting}\<close>
   
   qualified definition sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> taints) \<Rightarrow> bool" where
     "sinvar G nP \<equiv> \<forall> (v1,v2) \<in> edges G. nP v1 \<subseteq> nP v2"
@@ -67,7 +67,7 @@ begin
     qed
   
   
-  text{*Information Flow Security*}
+  text\<open>Information Flow Security\<close>
   qualified definition receiver_violation :: "bool" where "receiver_violation \<equiv> True"
   
   
@@ -122,7 +122,7 @@ begin
   
   
   
-  subsubsection {*ENF*}
+  subsubsection \<open>ENF\<close>
     private lemma Taints_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (\<subseteq>)"
       unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def sinvar_def
       by simp

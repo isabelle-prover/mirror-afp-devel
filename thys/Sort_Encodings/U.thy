@@ -1,12 +1,12 @@
-section{* Untyped (Unsorted) First-Order Logic *}
+section\<open>Untyped (Unsorted) First-Order Logic\<close>
 theory U
 imports TermsAndClauses
 begin
 
-text{* Even though untyped FOL is a particular case of many-typed FOL, we find 
-it convenient to represent it separately.  *}
+text\<open>Even though untyped FOL is a particular case of many-typed FOL, we find 
+it convenient to represent it separately.\<close>
 
-subsection {* Signatures *}
+subsection \<open>Signatures\<close>
 
 locale Signature =
 fixes
@@ -59,7 +59,7 @@ using 2 unfolding wtSB_def using 1 by auto
 end (* context Signature *)
 
 
-subsection {* Structures *}
+subsection \<open>Structures\<close>
 
 (* Environment *)
 type_synonym 'univ env = "var \<Rightarrow> 'univ"
@@ -130,7 +130,7 @@ end
 
 context Signature begin
 
-text{* Well-typed (i.e., well-formed) atoms, literals, caluses and problems: *}
+text\<open>Well-typed (i.e., well-formed) atoms, literals, caluses and problems:\<close>
 
 fun wtA where
 "wtA (Eq T1 T2) \<longleftrightarrow> wt T1 \<and> wt T2"
@@ -174,7 +174,7 @@ definition "SAT \<Phi> \<equiv> \<forall> \<xi>. wtE \<xi> \<longrightarrow> sat
 end (* context Struct *)
 
 
-subsection{* Problems *}
+subsection\<open>Problems\<close>
 
 locale Problem = Signature wtFsym wtPsym arOf parOf
 for wtFsym and wtPsym
@@ -185,7 +185,7 @@ fixes \<Phi> :: "('fsym, 'psym) prob"
 assumes wt_\<Phi>: "wtPB \<Phi>"
 
 
-subsection{* Models of a problem *}
+subsection\<open>Models of a problem\<close>
 
 locale Model =
   Problem wtFsym wtPsym arOf parOf \<Phi> +

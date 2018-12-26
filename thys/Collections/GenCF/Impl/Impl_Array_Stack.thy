@@ -1,4 +1,4 @@
-section {* Stack by Array *}
+section \<open>Stack by Array\<close>
 theory Impl_Array_Stack
 imports   
   Automatic_Refinement.Automatic_Refinement

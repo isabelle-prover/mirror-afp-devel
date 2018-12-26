@@ -3,7 +3,7 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-section {* Setup for Isabelle's quotient package for terminated lazy lists *}
+section \<open>Setup for Isabelle's quotient package for terminated lazy lists\<close>
 
 theory Quotient_TLList imports
   TLList
@@ -12,7 +12,7 @@ theory Quotient_TLList imports
   "HOL-Library.Quotient_Set"
 begin
 
-subsection {* Rules for the Quotient package *}
+subsection \<open>Rules for the Quotient package\<close>
 
 lemma tmap_id_id [id_simps]:
   "tmap id id = id"
@@ -117,7 +117,7 @@ proof(intro iffI conjI)
     apply(metis tllist_all2_tfinite1_terminalD Quotient3_rel [OF q2])
     done
 
-  from `?lhs` show "tllist_all2 R1 R2 s s"
+  from \<open>?lhs\<close> show "tllist_all2 R1 R2 s s"
     apply -
     apply(rule tllist_all2_reflI)
     apply(clarsimp simp add: in_tset_conv_tnth)
@@ -125,7 +125,7 @@ proof(intro iffI conjI)
     apply(metis tllist_all2_tfinite2_terminalD Quotient3_rel [OF q2])
     done
 
-  from `?lhs` show "tmap Abs1 Abs2 r = tmap Abs1 Abs2 s"
+  from \<open>?lhs\<close> show "tmap Abs1 Abs2 r = tmap Abs1 Abs2 s"
     unfolding tmap_eq_tmap_conv_tllist_all2
     by(rule tllist_all2_mono)(metis Quotient3_rel[OF q1] Quotient3_rel[OF q2])+
 next

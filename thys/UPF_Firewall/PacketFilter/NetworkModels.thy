@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-section{* Network Models *}
+section\<open>Network Models\<close>
 theory            
   NetworkModels
   imports
@@ -50,7 +50,7 @@ theory
     IPv4_TCPUDP
 begin
 
-text{* 
+text\<open>
   One can think of many different possible address representations. In this distribution, we include 
   seven different variants:
   \begin{itemize} 
@@ -74,6 +74,6 @@ text{*
   The theories of each pf the networks are relatively small. It suffices to provide the required 
   types, a couple of lemmas, and - if required - a definition for the source and destination ports 
   of a packet.
-*}
+\<close>
 
 end

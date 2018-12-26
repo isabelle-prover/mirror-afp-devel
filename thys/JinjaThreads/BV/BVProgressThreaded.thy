@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Progress result for both of the multithreaded JVMs *}
+section \<open>Progress result for both of the multithreaded JVMs\<close>
 
 theory BVProgressThreaded
 imports
@@ -49,13 +49,13 @@ lemma invoke_new_thread:
   and "P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'"
   shows "\<Phi> \<turnstile> a: (None, h, [([], Addr (thread_id2addr a) # replicate mxl0' undefined_value, D', run, 0)]) \<surd>"
 proof -
-  from `\<Phi> \<turnstile> t: (None, h, (stk, loc, C, M, pc) # frs) \<surd>`
+  from \<open>\<Phi> \<turnstile> t: (None, h, (stk, loc, C, M, pc) # frs) \<surd>\<close>
   have "hconf h" and "preallocated h" by(simp_all add: correct_state_def)
   moreover
-  from `P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'`
+  from \<open>P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'\<close>
   have "P \<turnstile> D' sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'"
     by(rule sees_method_idemp)
-  with `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`
+  with \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close>
   have "wt_start P D' [] mxl0' (\<Phi> D' run)" and "ins' \<noteq> []"
     by(auto dest: wt_jvm_prog_impl_wt_start)
   then obtain LT' where LT': "\<Phi> D' run ! 0 = Some ([], LT')"
@@ -65,20 +65,20 @@ proof -
   proof -
     let ?LT = "OK (Class D') # (replicate mxl0' Err)"
     have "P,h \<turnstile> replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] replicate mxl0' Err" by simp
-    also from `P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'`
+    also from \<open>P \<turnstile> D sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'\<close>
     have "P \<turnstile> D \<preceq>\<^sup>* D'" by(rule sees_method_decl_above)
-    with `typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>`
+    with \<open>typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>\<close>
     have "P,h \<turnstile> Addr (thread_id2addr a) :\<le> Class D'"
       by(simp add: conf_def)
     ultimately have "P,h \<turnstile> Addr (thread_id2addr a) # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] ?LT" by(simp)
-    also from `wt_start P D' [] mxl0' (\<Phi> D' run)` LT'
+    also from \<open>wt_start P D' [] mxl0' (\<Phi> D' run)\<close> LT'
     have "P \<turnstile> \<dots> [\<le>\<^sub>\<top>] LT'" by(simp add: wt_start_def)
     finally have "P,h \<turnstile> Addr (thread_id2addr a) # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] LT'" .
-    with `ins' \<noteq> []` show ?thesis by(simp add: conf_f_def)
+    with \<open>ins' \<noteq> []\<close> show ?thesis by(simp add: conf_f_def)
   qed
-  moreover from `typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>` `P \<turnstile> D \<preceq>\<^sup>* Thread`
+  moreover from \<open>typeof_addr h (thread_id2addr a) = \<lfloor>Class_type D\<rfloor>\<close> \<open>P \<turnstile> D \<preceq>\<^sup>* Thread\<close>
   have "P,h \<turnstile> a \<surd>t" by(rule tconfI)
-  ultimately show ?thesis using `P \<turnstile> D' sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'`
+  ultimately show ?thesis using \<open>P \<turnstile> D' sees run:[]\<rightarrow>Void=\<lfloor>(mxs', mxl0', ins',xt')\<rfloor> in D'\<close>
     by(fastforce simp add: correct_state_def)
 qed
 
@@ -104,15 +104,15 @@ lemma exec_new_threadE:
   and "D'\<bullet>M'(Us') :: U"
   and "P \<turnstile> Us [\<le>] Us'"
 proof -
-  from `P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'` obtain h f Frs xcp
+  from \<open>P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>'\<close> obtain h f Frs xcp
     where check: "check P \<sigma>"
     and exec: "(ta, \<sigma>') \<in> exec P t \<sigma>"
     and [simp]: "\<sigma> = (xcp, h, f # Frs)"
     by(rule jvmd_NormalE)
   obtain stk loc C M pc where [simp]: "f = (stk, loc, C, M, pc)"
     by(cases f, blast)
-  from `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` exec have [simp]: "xcp = None" by(cases xcp) auto
-  from `\<Phi> \<turnstile> t: \<sigma> \<surd>`
+  from \<open>\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []\<close> exec have [simp]: "xcp = None" by(cases xcp) auto
+  from \<open>\<Phi> \<turnstile> t: \<sigma> \<surd>\<close>
   obtain Ts T mxs mxl0 ins xt ST LT 
     where "hconf h" "preallocated h"
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl0, ins, xt)\<rfloor> in C"
@@ -120,24 +120,24 @@ proof -
     and "conf_f P h (ST, LT) ins (stk, loc, C, M, pc)"
     and "conf_fs P h \<Phi> M (length Ts) T Frs"
     by(fastforce simp add: correct_state_def)
-  from check `\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>` sees
+  from check \<open>\<Phi> C M ! pc = \<lfloor>(ST, LT)\<rfloor>\<close> sees
   have checkins: "check_instr (ins ! pc) P h stk loc C M pc Frs"
     by(clarsimp simp add: check_def)
-  from sees `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` exec obtain M' n where [simp]: "ins ! pc = Invoke M' n"
+  from sees \<open>\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []\<close> exec obtain M' n where [simp]: "ins ! pc = Invoke M' n"
     by(cases "ins ! pc", auto split: if_split_asm simp add: split_beta ta_upd_simps)
-  from `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P` obtain wfmd where wfp: "wf_prog wfmd P" by(auto dest: wt_jvm_progD)
+  from \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close> obtain wfmd where wfp: "wf_prog wfmd P" by(auto dest: wt_jvm_progD)
   
   from checkins have "n < length stk" "is_Ref (stk ! n)" by auto
-  moreover from exec sees `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` have "stk ! n \<noteq> Null" by auto
-  with `is_Ref (stk ! n)` obtain a where "stk ! n = Addr a"
+  moreover from exec sees \<open>\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []\<close> have "stk ! n \<noteq> Null" by auto
+  with \<open>is_Ref (stk ! n)\<close> obtain a where "stk ! n = Addr a"
     by(auto simp add: is_Ref_def elim: is_AddrE)
   moreover with checkins obtain Ta where Ta: "typeof_addr h a = \<lfloor>Ta\<rfloor>" by(fastforce)
-  moreover with checkins exec sees `n < length stk` `\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []` `stk ! n = Addr a`
+  moreover with checkins exec sees \<open>n < length stk\<close> \<open>\<lbrace>ta\<rbrace>\<^bsub>t\<^esub> \<noteq> []\<close> \<open>stk ! n = Addr a\<close>
   obtain Us Us' U D' where "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some Us"
     and "P \<turnstile> class_type_of Ta sees M':Us'\<rightarrow>U = Native in D'" and "D'\<bullet>M'(Us') :: U"
     and "P \<turnstile> Us [\<le>] Us'"
     by(auto simp add: confs_conv_map min_def split_beta has_method_def external_WT'_iff split: if_split_asm)
-  moreover with `typeof_addr h a = \<lfloor>Ta\<rfloor>` `n < length stk` exec sees `stk ! n = Addr a`
+  moreover with \<open>typeof_addr h a = \<lfloor>Ta\<rfloor>\<close> \<open>n < length stk\<close> exec sees \<open>stk ! n = Addr a\<close>
   obtain ta' va h' where "ta = extTA2JVM P ta'" "\<sigma>' = extRet2JVM n h' stk loc C M pc Frs va"
     "(ta', va, h') \<in> red_external_aggr P t a M' (rev (take n stk)) h"
     by(fastforce simp add: min_def)
@@ -188,21 +188,21 @@ proof -
   have h't'': "typeof_addr h' a' = \<lfloor>Class_type D\<rfloor>" "P \<turnstile> D \<preceq>\<^sup>* Thread" and [simp]: "M'' = run" by auto
   from red_external_new_thread_exists_thread_object[OF red nt'(1)] 
   have tconf': "P,h' \<turnstile> t'' \<surd>t" by(auto intro: tconfI)
-  from sub_Thread_sees_run[OF wfp `P \<turnstile> D \<preceq>\<^sup>* Thread`] obtain mxs' mxl0' ins' xt' D'
+  from sub_Thread_sees_run[OF wfp \<open>P \<turnstile> D \<preceq>\<^sup>* Thread\<close>] obtain mxs' mxl0' ins' xt' D'
     where seesrun: "P \<turnstile> D sees run: []\<rightarrow>Void = \<lfloor>(mxs', mxl0', ins', xt')\<rfloor> in D'" by auto
   with nt' ta nt have "xcp = None" "frs = [([],Addr a' # replicate mxl0' undefined_value,D',run,0)]"
     by(auto simp add: extNTA2JVM_def split_beta)
   moreover
   have "\<Phi> \<turnstile> t'': (None, h', [([], Addr a' # replicate mxl0' undefined_value, D', run, 0)]) \<surd>"
   proof -
-    from red wtext' `hconf h` have "hconf h'" 
+    from red wtext' \<open>hconf h\<close> have "hconf h'" 
       by(rule external_call_hconf)
     moreover from red have "h \<unlhd> h'" by(rule red_external_hext)
     with preh have "preallocated h'" by(rule preallocated_hext)
     moreover from seesrun
     have seesrun': "P \<turnstile> D' sees run: []\<rightarrow>Void = \<lfloor>(mxs', mxl0', ins', xt')\<rfloor> in D'"
       by(rule sees_method_idemp)
-    moreover with `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`
+    moreover with \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close>
     obtain "wt_start P D' [] mxl0' (\<Phi> D' run)" "ins' \<noteq> []"
       by (auto dest: wt_jvm_prog_impl_wt_start)    
     then obtain LT' where "\<Phi> D' run ! 0 = Some ([], LT')"
@@ -214,10 +214,10 @@ proof -
       from seesrun have "P \<turnstile> D \<preceq>\<^sup>* D'" by(rule sees_method_decl_above)
       hence "P,h' \<turnstile> Addr a' # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] ?LT"
         using h't'' by(simp add: conf_def)
-      also from `wt_start P D' [] mxl0' (\<Phi> D' run)` `\<Phi> D' run ! 0 = Some ([], LT')`
+      also from \<open>wt_start P D' [] mxl0' (\<Phi> D' run)\<close> \<open>\<Phi> D' run ! 0 = Some ([], LT')\<close>
       have "P \<turnstile> ?LT [\<le>\<^sub>\<top>] LT'" by(simp add: wt_start_def)
       finally have "P,h' \<turnstile> Addr a' # replicate mxl0' undefined_value [:\<le>\<^sub>\<top>] LT'" .
-      with `ins' \<noteq> []` show ?thesis by(simp add: conf_f_def)
+      with \<open>ins' \<noteq> []\<close> show ?thesis by(simp add: conf_f_def)
     qed
     ultimately show ?thesis using tconf' by(fastforce simp add: correct_state_def)
   qed
@@ -234,12 +234,12 @@ proof(cases xcp)
   case None
   from cs have "P,h \<turnstile> t \<surd>t" by(simp add: correct_state_def)
   with red have "hext h h'" by (auto intro: exec_1_d_hext simp add: tconf_def)
-  from `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P` cs red have "\<Phi> \<turnstile> t: (xcp', h', frs') \<surd>"
+  from \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close> cs red have "\<Phi> \<turnstile> t: (xcp', h', frs') \<surd>"
     by(auto elim!: jvmd_NormalE intro: BV_correct_1 simp add: exec_1_iff)
   from cs'' have "P,h \<turnstile> t'' \<surd>t" by(simp add: correct_state_def)
-  with `h \<unlhd> h'` have tconf': "P,h' \<turnstile> t'' \<surd>t" by-(rule tconf_hext_mono)
+  with \<open>h \<unlhd> h'\<close> have tconf': "P,h' \<turnstile> t'' \<surd>t" by-(rule tconf_hext_mono)
 
-  from `\<Phi> \<turnstile> t: (xcp', h', frs') \<surd>`
+  from \<open>\<Phi> \<turnstile> t: (xcp', h', frs') \<surd>\<close>
   have hconf': "hconf h'" "preallocated h'" by(simp_all add: correct_state_def)
 
   show ?thesis
@@ -250,7 +250,7 @@ proof(cases xcp)
     obtain stk'' loc'' C0'' M0'' pc''
       where "f'' = (stk'', loc'', C0'', M0'', pc'')"
       by(cases f'', blast)
-    with `frs'' = f'' # Frs''` cs''
+    with \<open>frs'' = f'' # Frs''\<close> cs''
     obtain Ts'' T'' mxs'' mxl\<^sub>0'' ins'' xt'' ST'' LT'' 
       where "hconf h"
       and sees'': "P \<turnstile> C0'' sees M0'': Ts''\<rightarrow>T'' = \<lfloor>(mxs'', mxl\<^sub>0'', ins'', xt'')\<rfloor> in C0''"
@@ -259,7 +259,7 @@ proof(cases xcp)
       and "conf_fs P h \<Phi> M0'' (length Ts'') T'' Frs''"
       by(fastforce simp add: correct_state_def)
     
-    show ?thesis using Cons `\<Phi> \<turnstile> t'': (xcp'', h, frs'') \<surd>` `hext h h'` hconf' tconf'
+    show ?thesis using Cons \<open>\<Phi> \<turnstile> t'': (xcp'', h, frs'') \<surd>\<close> \<open>hext h h'\<close> hconf' tconf'
       apply(cases xcp'')
       apply(auto simp add: correct_state_def)
       apply(blast dest: hext_objD intro: conf_fs_hext conf_f_hext)+
@@ -267,9 +267,9 @@ proof(cases xcp)
   qed
 next
   case (Some a)
-  with `P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs')`
+  with \<open>P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', h', frs')\<close>
   have "h = h'" by(auto elim!: jvmd_NormalE)
-  with `\<Phi> \<turnstile> t'': (xcp'', h, frs'') \<surd>` show ?thesis by simp
+  with \<open>\<Phi> \<turnstile> t'': (xcp'', h, frs'') \<surd>\<close> show ?thesis by simp
 qed
 
 lemma lifting_wf_correct_state_d:
@@ -284,14 +284,14 @@ proof(unfold_locales)
   assume "mexec P t (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x m"
   with wf show "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x' m'"
-    by(cases x)(cases x', simp add: welltyped_commute[symmetric, OF `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`], rule BV_correct_d_1)
+    by(cases x)(cases x', simp add: welltyped_commute[symmetric, OF \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close>], rule BV_correct_d_1)
 next
   fix t x m ta x' m' t'' x''
   assume "mexec P t (x, m) ta (x', m')"
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x m"
     and "NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
   with wf show "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t'': (xcp, h, frs) \<surd>) x'' m'"
-    apply(cases x, cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`])
+    apply(cases x, cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close>])
     by(rule correct_state_new_thread)
 next
   fix t x m ta x' m' t'' x''
@@ -299,7 +299,7 @@ next
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t: (xcp, h, frs) \<surd>) x m"
     and "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t'': (xcp, h, frs) \<surd>) x'' m"
   with wf show "(\<lambda>(xcp, frs) h. \<Phi> \<turnstile> t'': (xcp, h, frs) \<surd>) x'' m'"
-    by(cases x)(cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`], rule correct_state_heap_change)
+    by(cases x)(cases x', cases x'', clarify, unfold welltyped_commute[symmetric, OF \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close>], rule correct_state_heap_change)
 qed
 
 lemmas preserves_correct_state = FWLiftingSem.lifting_wf.RedT_preserves[OF lifting_wf_correct_state]
@@ -392,7 +392,7 @@ proof -
   obtain xcp' h' frs' where [simp]: "\<sigma>' = (xcp', h', frs')" by(cases \<sigma>', auto)
   obtain stk loc C M pc where [simp]: "f = (stk, loc, C, M, pc)" by(cases f, blast)
   from exec nt have [simp]: "xcp = None" by(cases xcp, auto)
-  from `\<Phi> \<turnstile> t': \<sigma> \<surd>` obtain Ts T mxs mxl0 ins xt ST LT 
+  from \<open>\<Phi> \<turnstile> t': \<sigma> \<surd>\<close> obtain Ts T mxs mxl0 ins xt ST LT 
     where "hconf h"
     and "P,h \<turnstile> t' \<surd>t"
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(mxs, mxl0, ins, xt)\<rfloor> in C"
@@ -502,7 +502,7 @@ next
   from wfs have "correct_state_ts \<Phi> ts h" by(auto dest: execd_mthr.wset_Suspend_okD1 simp add: correct_jvm_state_def)
   from wf obtain wfmd where wfp: "wf_prog wfmd P" by(auto dest: wt_jvm_progD)
     
-  from `ts t = \<lfloor>(x, no_wait_locks)\<rfloor>` `mexecd P t (x, h) ta (x', m')`
+  from \<open>ts t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> \<open>mexecd P t (x, h) ta (x', m')\<close>
   obtain xcp frs xcp' frs'
     where "P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', m', frs')"
     and [simp]: "x = (xcp, frs)" "x' = (xcp', frs')"
@@ -512,7 +512,7 @@ next
     and [simp]: "frs = f # Frs"
     and exec: "(ta, xcp', m', frs') \<in> exec P t (xcp, h, f # Frs)"
     by(auto elim: jvmd_NormalE)
-  with `ts t = \<lfloor>(x, no_wait_locks)\<rfloor>` `correct_state_ts \<Phi> ts h`
+  with \<open>ts t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> \<open>correct_state_ts \<Phi> ts h\<close>
   have correct: "\<Phi> \<turnstile> t: (xcp, h, f # Frs) \<surd>" by(auto dest: ts_okD)
   obtain stk loc C M pc where f [simp]: "f = (stk, loc, C, M, pc)" by (cases f)
   from correct obtain Ts T mxs mxl0 ins xt ST LT
@@ -532,7 +532,7 @@ next
   proof(cases "final_thread.actions_ok' (ls, (ts, h), ws, is) t ta")
     case True
     have "final_thread.actions_subset ta ta" ..
-    with True `P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', m', frs')`
+    with True \<open>P,t \<turnstile> Normal (xcp, h, frs) -ta-jvmd\<rightarrow> Normal (xcp', m', frs')\<close>
     show ?thesis by auto
   next
     case False
@@ -543,7 +543,7 @@ next
       case None thus ?thesis ..
     next
       case (Some w)
-      from execd_mthr.wset_Suspend_okD2[OF wfs this] `ts t = \<lfloor>(x, no_wait_locks)\<rfloor>`
+      from execd_mthr.wset_Suspend_okD2[OF wfs this] \<open>ts t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
       obtain xcp0 frs0 h0 ta0 w' s1 tta1
         where red0: "mexecd P t ((xcp0, frs0), h0) ta0 ((xcp, frs), shr s1)"
         and Suspend: "Suspend w' \<in> set \<lbrace>ta0\<rbrace>\<^bsub>w\<^esub>"
@@ -660,18 +660,18 @@ next
   from wfs have correct: "correct_state_ts \<Phi> (thr s) (shr s)"
     by(auto dest: execd_mthr.wset_Suspend_okD1 simp add: correct_jvm_state_def)
   obtain xcp frs where x: "x = (xcp, frs)" by (cases x, auto)
-  with `\<not> JVM_final x` obtain f Frs where "frs = f # Frs"
+  with \<open>\<not> JVM_final x\<close> obtain f Frs where "frs = f # Frs"
     by(fastforce simp add: neq_Nil_conv)
   with tst correct x have "\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>" by(auto dest: ts_okD)
-  with `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P`
+  with \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close>
   have "exec_d P t (xcp, shr s, f # Frs) \<noteq> TypeError" by(auto dest: no_type_error)
   then obtain \<Sigma> where "exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>" by(auto)
   hence "exec P t (xcp, shr s, f # Frs) = \<Sigma>"
     by(auto simp add: exec_d_def check_def split: if_split_asm)
-  with progress[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`]
+  with progress[OF wf \<open>\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>\<close>]
   obtain ta \<sigma> where "(ta, \<sigma>) \<in> \<Sigma>" unfolding exec_1_iff by blast
-  with `x = (xcp, frs)` `frs = f # Frs` `\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>`
-    `wf_jvm_prog\<^bsub>\<Phi>\<^esub> P` `exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>`
+  with \<open>x = (xcp, frs)\<close> \<open>frs = f # Frs\<close> \<open>\<Phi> \<turnstile> t: (xcp, shr s, f # Frs) \<surd>\<close>
+    \<open>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P\<close> \<open>exec_d P t (xcp, shr s, f # Frs) = Normal \<Sigma>\<close>
   show "\<exists>ta x' m'. mexecd P t (x, shr s) ta (x', m')"
     by(cases ta, cases \<sigma>)(fastforce simp add: split_paired_Ex intro: exec_1_d_NormalI)
 qed(fastforce dest: defensive_imp_aggressive_1 mexec_instr_Wakeup_no_Join exec_ta_satisfiable)+
@@ -690,11 +690,11 @@ proof(rule iffI)
   proof(cases rule: exec_mthr.redT_elims[consumes 1, case_names normal acquire])
     case (normal x x' m')
     obtain xcp frs where x [simp]: "x = (xcp, frs)" by(cases x, auto)
-    from `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` cs
+    from \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> cs
     have "\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>" by(auto dest: ts_okD)
-    from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexec P t (x, shr s) ta (x', m')`
+    from mexec_eq_mexecd[OF wf \<open>\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>\<close>] \<open>mexec P t (x, shr s) ta (x', m')\<close>
     have *: "mexecd P t (x, shr s) ta (x', m')" by simp
-    with lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
+    with lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF this \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>] \<open>thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close>
     have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
     with * show ?thesis using normal 
       by(cases s')(erule execd_mthr.redT_normal, auto)
@@ -710,11 +710,11 @@ next
   proof(cases rule: execd_mthr.redT_elims[consumes 1, case_names normal acquire])
     case (normal x x' m')
     obtain xcp frs where x [simp]: "x = (xcp, frs)" by(cases x, auto)
-    from `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>` cs
+    from \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close> cs
     have "\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>" by(auto dest: ts_okD)
-    from mexec_eq_mexecd[OF wf `\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>`] `mexecd P t (x, shr s) ta (x', m')`
+    from mexec_eq_mexecd[OF wf \<open>\<Phi> \<turnstile> t: (xcp, shr s, frs) \<surd>\<close>] \<open>mexecd P t (x, shr s) ta (x', m')\<close>
     have "mexec P t (x, shr s) ta (x', m')" by simp
-    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF `mexecd P t (x, shr s) ta (x', m')` `thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>`] `thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>`
+    moreover from lifting_wf.redT_updTs_preserves[OF lifting_wf_correct_state_d[OF wf] cs, OF \<open>mexecd P t (x, shr s) ta (x', m')\<close> \<open>thr s t = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>] \<open>thread_oks (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close>
     have "correct_state_ts \<Phi> (redT_updTs (thr s) \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>(t \<mapsto> (x', redT_updLns (locks s) t no_wait_locks \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>))) m'" by simp
     ultimately show ?thesis using normal
       by(cases s')(erule exec_mthr.redT_normal, auto)
@@ -738,10 +738,10 @@ proof
   next
     case (step s ttas s' t ta s'')
     hence "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'" by blast
-    moreover from `correct_state_ts \<Phi> (thr s) (shr s)` `P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'`
+    moreover from \<open>correct_state_ts \<Phi> (thr s) (shr s)\<close> \<open>P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'\<close>
     have "correct_state_ts \<Phi> (thr s') (shr s')"
       by(auto dest: preserves_correct_state[OF wf])
-    with `P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s''` have "P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s''"
+    with \<open>P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s''\<close> have "P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s''"
       by(unfold mexecT_eq_mexecdT[OF wf])
     ultimately show ?case
       by(blast intro: execd_mthr.RedTI rtrancl3p_step elim: execd_mthr.RedTE)
@@ -754,10 +754,10 @@ next
   next
     case (step s ttas s' t ta s'')
     hence "P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvm\<^esub>* s'" by blast
-    moreover from `correct_state_ts \<Phi> (thr s) (shr s)` `P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'`
+    moreover from \<open>correct_state_ts \<Phi> (thr s) (shr s)\<close> \<open>P \<turnstile> s -\<triangleright>ttas\<rightarrow>\<^bsub>jvmd\<^esub>* s'\<close>
     have "correct_state_ts \<Phi> (thr s') (shr s')"
       by(auto dest: preserves_correct_state_d[OF wf])
-    with `P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s''` have "P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s''"
+    with \<open>P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s''\<close> have "P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s''"
       by(unfold mexecT_eq_mexecdT[OF wf])
     ultimately show ?case
       by(blast intro: exec_mthr.RedTI rtrancl3p_step elim: exec_mthr.RedTE)
@@ -883,13 +883,13 @@ proof -
   with ts't show cst: "\<Phi> \<turnstile> t: (xcp, shr s', frs) \<surd>"
     by(auto dest: ts_okD execd_mthr.wset_Suspend_okD1 simp add: correct_jvm_state_def)
   assume nfin: "frs \<noteq> [] \<or> ln \<noteq> no_wait_locks"
-  from nfin `thr s' t = \<lfloor>((xcp, frs), ln)\<rfloor>` have "exec_mthr.not_final_thread s' t"
+  from nfin \<open>thr s' t = \<lfloor>((xcp, frs), ln)\<rfloor>\<close> have "exec_mthr.not_final_thread s' t"
     by(auto simp: exec_mthr.not_final_thread_iff)
-  from `\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'')`
+  from \<open>\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s'')\<close>
   show "t \<in> execd_mthr.deadlocked P s'"
   proof(rule contrapos_np)
     assume "t \<notin> execd_mthr.deadlocked P s'"
-    with `exec_mthr.not_final_thread s' t` have "\<not> execd_mthr.deadlocked' P s'"
+    with \<open>exec_mthr.not_final_thread s' t\<close> have "\<not> execd_mthr.deadlocked' P s'"
       by(auto simp add: execd_mthr.deadlocked'_def)
     hence "\<not> execd_mthr.deadlock P s'" unfolding execd_mthr.deadlock_eq_deadlocked' .
     thus "\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvmd\<^esub> s''" by(rule redT_progress[OF wfs'])
@@ -917,13 +917,13 @@ proof -
     by(auto dest: ts_okD exec_mthr.wset_Suspend_okD1 simp add: correct_jvm_state_def)
 
   assume nfin: "frs \<noteq> [] \<or> ln \<noteq> no_wait_locks"
-  from nfin `thr s' t = \<lfloor>((xcp, frs), ln)\<rfloor>` have "exec_mthr.not_final_thread s' t"
+  from nfin \<open>thr s' t = \<lfloor>((xcp, frs), ln)\<rfloor>\<close> have "exec_mthr.not_final_thread s' t"
     by(auto simp: exec_mthr.not_final_thread_iff)
-  from `\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s'')`
+  from \<open>\<not> (\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s'')\<close>
   show "t \<in> exec_mthr.deadlocked P s'"
   proof(rule contrapos_np)
     assume "t \<notin> exec_mthr.deadlocked P s'"
-    with `exec_mthr.not_final_thread s' t` have "\<not> exec_mthr.deadlocked' P s'"
+    with \<open>exec_mthr.not_final_thread s' t\<close> have "\<not> exec_mthr.deadlocked' P s'"
       by(auto simp add: exec_mthr.deadlocked'_def)
     hence "\<not> exec_mthr.deadlock P s'" unfolding exec_mthr.deadlock_eq_deadlocked' .
     thus "\<exists>t ta s''. P \<turnstile> s' -t\<triangleright>ta\<rightarrow>\<^bsub>jvm\<^esub> s''" by(rule redT_progress[OF wfs'])
@@ -983,7 +983,7 @@ using correct_jvm_state_initial[OF assms] by(clarsimp simp add: correct_jvm_stat
   
 end
 
-subsection {* Determinism *}
+subsection \<open>Determinism\<close>
 
 context JVM_heap_conf begin
 

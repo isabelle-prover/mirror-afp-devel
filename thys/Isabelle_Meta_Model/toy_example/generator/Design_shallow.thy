@@ -124,11 +124,11 @@ PrePost \<sigma>\<^sub>1 \<sigma>\<^sub>1'
 
 subsection\<open>Designing Class Models (III): Interaction with (Pure) Term\<close>
 
-text{*
+text\<open>
 Here in @{keyword "shallow"} mode, the following expression is directly rejected: \\
 \verb|Context Person :: content ()| \\
 \verb|  Post "><"|
-*}
+\<close>
 
 Context[shallow] Person :: content () 
   Post : "a + b = c"

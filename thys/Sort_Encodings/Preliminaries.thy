@@ -1,13 +1,13 @@
-section{* Preliminaries *}
+section\<open>Preliminaries\<close>
 theory Preliminaries
 imports "HOL-Cardinals.Cardinals"
         "HOL-Library.Countable_Set_Type"
 begin
 
 
-subsection {* Miscelanea *}
+subsection \<open>Miscelanea\<close>
 
-text{* A fixed countable universe for interpreting countable models:  *}
+text\<open>A fixed countable universe for interpreting countable models:\<close>
 
 datatype univ = UU nat
 
@@ -20,7 +20,7 @@ unfolding countable_card_of_nat apply(rule surj_imp_ordLeq[of _ UU])
 by (metis subset_UNIV surj_def univ.exhaust)
 
 
-text{* Picking an element from a nonempty set (Hilbert choice for sets): *}
+text\<open>Picking an element from a nonempty set (Hilbert choice for sets):\<close>
 
 definition "pick X \<equiv> SOME x. x \<in> X"
 
@@ -43,7 +43,7 @@ hide_const int
 
 abbreviation "any \<equiv> undefined"
 
-text{* Non-emptyness of predicates: *}
+text\<open>Non-emptyness of predicates:\<close>
 
 abbreviation (input) "NE \<phi> \<equiv> \<exists> a. \<phi> a"
 
@@ -55,7 +55,7 @@ lemma length_Suc_0:
 by (metis (lifting) length_0_conv length_Suc_conv)
 
 
-subsection{* List combinators *}
+subsection\<open>List combinators\<close>
 
 lemmas list_all2_length = list_all2_conv_all_nth
 lemmas list_eq_iff = list_eq_iff_nth_eq
@@ -141,7 +141,7 @@ lemma list_ex_list[simp]:
 "finite A \<Longrightarrow> list_ex \<phi> (list A) = (\<exists>a\<in>A. \<phi> a)"
 unfolding list_ex_iff by simp
 
-text{* list update: *}
+text\<open>list update:\<close>
 
 fun lupd where
 "lupd Nil Nil F = F"
@@ -315,9 +315,9 @@ shows "list_all2 phi \<le> list_all2 chi"
 using assms by (metis (full_types) list_all2_mono set_incl_pred2)
 
 
-subsection{* Variables *}
+subsection\<open>Variables\<close>
 
-text{* The type of variables: *}
+text\<open>The type of variables:\<close>
 
 datatype var = Variable nat
 

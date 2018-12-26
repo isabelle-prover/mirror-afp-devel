@@ -4,15 +4,15 @@
     Maintainer:  Benjamin Porter <Benjamin.Porter at gmail.com>
 *)
 
-chapter {* Cauchy's Mean Theorem *}
+chapter \<open>Cauchy's Mean Theorem\<close>
 
 theory CauchysMeanTheorem
 imports Complex_Main
 begin
 
-section {* Abstract *}
+section \<open>Abstract\<close>
 
-text {* The following document presents a proof of Cauchy's Mean
+text \<open>The following document presents a proof of Cauchy's Mean
 theorem formalised in the Isabelle/Isar theorem proving system.
 
 {\em Theorem}: For any collection of positive real numbers the
@@ -46,34 +46,34 @@ $\leq$ mean E. QED.
 
 
 [1] Dorrie, H. "100 Great Problems of Elementary Mathematics." 1965, Dover.
-*}
+\<close>
 
 
-section {* Formal proof *}
+section \<open>Formal proof\<close>
 
 (* ============================================================================= *)
 (* ============================================================================= *)
 (* ============================================================================= *)
 
-subsection {* Collection sum and product *}
+subsection \<open>Collection sum and product\<close>
 
-text {* The finite collections of numbers will be modelled as
-lists. We then define sum and product operations over these lists. *}
+text \<open>The finite collections of numbers will be modelled as
+lists. We then define sum and product operations over these lists.\<close>
 
-subsubsection {* Sum and product definitions *}
+subsubsection \<open>Sum and product definitions\<close>
 
 notation (input) sum_list ("\<Sum>:_" [999] 998)
 
 notation (input) prod_list ("\<Prod>:_" [999] 998)
 
-subsubsection {* Properties of sum and product *}
+subsubsection \<open>Properties of sum and product\<close>
 
-text {* We now present some useful properties of sum and product over
-collections. *}
+text \<open>We now present some useful properties of sum and product over
+collections.\<close>
 
-text {* These lemmas just state that if all the elements in a
+text \<open>These lemmas just state that if all the elements in a
 collection $C$ are less (greater than) than some value $m$, then the
-sum will less than (greater than) $m*length(C)$. *}
+sum will less than (greater than) $m*length(C)$.\<close>
 
 lemma sum_list_mono_lt [rule_format]:
   fixes xs::"real list"
@@ -111,7 +111,7 @@ lemma sum_list_mono_gt [rule_format]:
   fixes xs::"real list"
   shows "xs \<noteq> [] \<and> (\<forall>x\<in>set xs. x > m)
          \<longrightarrow> ((\<Sum>:xs) > (m*(real (length xs))))"
-txt {* proof omitted *}
+txt \<open>proof omitted\<close>
 (*<*)
 proof (induct xs)
   case Nil show ?case by simp
@@ -141,15 +141,15 @@ next
 (*>*)
 qed
 
-text {* If $a$ is in $C$ then the sum of the collection $D$ where $D$
-is $C$ with $a$ removed is the sum of $C$ minus $a$. *}
+text \<open>If $a$ is in $C$ then the sum of the collection $D$ where $D$
+is $C$ with $a$ removed is the sum of $C$ minus $a$.\<close>
 
 lemma sum_list_rmv1:
   "a \<in> set xs \<Longrightarrow> \<Sum>:(remove1 a xs) = \<Sum>:xs - (a :: 'a :: ab_group_add)"
 by (induct xs) auto
 
-text {* A handy addition and division distribution law over collection
-sums. *}
+text \<open>A handy addition and division distribution law over collection
+sums.\<close>
 
 lemma list_sum_distrib_aux:
   shows "(\<Sum>:xs/(n :: 'a :: archimedean_field) + \<Sum>:xs) = (1 + (1/n)) * \<Sum>:xs"
@@ -227,9 +227,9 @@ next
   qed
 qed
 
-text {* The final lemma of this section states that if all elements
+text \<open>The final lemma of this section states that if all elements
 are positive and non-zero then the product of these elements is also
-positive and non-zero. *}
+positive and non-zero.\<close>
 
 lemma el_gt0_imp_prod_gt0 [rule_format]:
   fixes xs::"'a :: archimedean_field list"
@@ -248,10 +248,10 @@ qed
 (* ============================================================================= *)
 (* ============================================================================= *)
 
-subsection {* Auxiliary lemma *}
+subsection \<open>Auxiliary lemma\<close>
 
-text {* This section presents a proof of the auxiliary lemma required
-for this theorem. *}
+text \<open>This section presents a proof of the auxiliary lemma required
+for this theorem.\<close>
 
 lemma prod_exp:
   fixes x::real
@@ -276,10 +276,10 @@ next
   thus ?thesis by simp
 qed
 
-text {* The required lemma (phrased slightly differently than in the
+text \<open>The required lemma (phrased slightly differently than in the
 informal proof.) Here we show that for any two pairs of numbers with
 equal sums the pair with the least difference has the greater
-product. *}
+product.\<close>
 
 lemma le_diff_imp_gt_prod [rule_format]:
   fixes x::real and y::real and z::real and w::real
@@ -296,29 +296,29 @@ qed
 (* ============================================================================= *)
 (* ============================================================================= *)
 
-subsection {* Mean and GMean *}
+subsection \<open>Mean and GMean\<close>
 
-text {* Now we introduce definitions and properties of arithmetic and
-geometric means over collections of real numbers. *}
+text \<open>Now we introduce definitions and properties of arithmetic and
+geometric means over collections of real numbers.\<close>
 
-subsubsection {* Definitions *}
+subsubsection \<open>Definitions\<close>
 
-text {* {\em Arithmetic mean} *}
+text \<open>{\em Arithmetic mean}\<close>
 
 definition
   mean :: "(real list)\<Rightarrow>real" where
   "mean s = (\<Sum>:s / real (length s))"
 
-text {* {\em Geometric mean} *}
+text \<open>{\em Geometric mean}\<close>
 
 definition
   gmean :: "(real list)\<Rightarrow>real" where
   "gmean s = root (length s) (\<Prod>:s)"
 
 
-subsubsection {* Properties *}
+subsubsection \<open>Properties\<close>
 
-text {* Here we present some trival properties of {\em mean} and {\em gmean}. *}
+text \<open>Here we present some trival properties of {\em mean} and {\em gmean}.\<close>
 
 lemma list_sum_mean:
   fixes xs::"real list"
@@ -354,7 +354,7 @@ lemma list_gmean_gt_iff:
   unfolding gmean_def
   using le ne2 pe by simp
 
-text {* This slightly more complicated lemma shows that for every non-empty collection with mean $M$, adding another element $a$ where $a=M$ results in a new list with the same mean $M$. *}
+text \<open>This slightly more complicated lemma shows that for every non-empty collection with mean $M$, adding another element $a$ where $a=M$ results in a new list with the same mean $M$.\<close>
 
 lemma list_mean_cons [rule_format]:
   fixes xs::"real list"
@@ -386,7 +386,7 @@ proof
   finally show "mean ((mean xs)#xs) = mean xs" by (simp add: mean)
 qed
 
-text {* For a non-empty collection with positive mean, if we add a positive number to the collection then the mean remains positive. *}
+text \<open>For a non-empty collection with positive mean, if we add a positive number to the collection then the mean remains positive.\<close>
 
 lemma mean_gt_0 [rule_format]:
   "xs\<noteq>[] \<and> 0 < x \<and> 0 < (mean xs) \<longrightarrow> 0 < (mean (x#xs))"
@@ -414,13 +414,13 @@ qed
 (* ============================================================================= *)
 (* ============================================================================= *)
 
-subsection {* @{text "list_neq"}, @{text "list_eq"} *}
+subsection \<open>\<open>list_neq\<close>, \<open>list_eq\<close>\<close>
 
-text {* This section presents a useful formalisation of the act of removing all the elements from a collection that are equal (not equal) to a particular value. We use this to extract all the non-mean elements from a collection as is required by the proof. *}
+text \<open>This section presents a useful formalisation of the act of removing all the elements from a collection that are equal (not equal) to a particular value. We use this to extract all the non-mean elements from a collection as is required by the proof.\<close>
 
-subsubsection {* Definitions *}
+subsubsection \<open>Definitions\<close>
 
-text {* @{text "list_neq"} and @{text "list_eq"} just extract elements from a collection that are not equal (or equal) to some value. *}
+text \<open>\<open>list_neq\<close> and \<open>list_eq\<close> just extract elements from a collection that are not equal (or equal) to some value.\<close>
 
 abbreviation
   list_neq :: "('a list) \<Rightarrow> 'a \<Rightarrow> ('a list)" where
@@ -430,10 +430,9 @@ abbreviation
   list_eq :: "('a list) \<Rightarrow> 'a \<Rightarrow> ('a list)" where
   "list_eq xs el == filter (\<lambda>x. x=el) xs"
 
-subsubsection {* Properties *}
+subsubsection \<open>Properties\<close>
 
-text {* This lemma just proves a required fact about @{text
-  "list_neq"}, {\em remove1} and {\em length}. *}
+text \<open>This lemma just proves a required fact about \<open>list_neq\<close>, {\em remove1} and {\em length}.\<close>
 
 lemma list_neq_remove1 [rule_format]:
   shows "a\<noteq>m \<and> a : set xs
@@ -443,7 +442,7 @@ proof (induct xs)
   case Nil show ?case by simp
 next
   case (Cons x xs)
-  note `?P xs`
+  note \<open>?P xs\<close>
   {
     assume a: "?A (x#xs)"
     hence
@@ -499,7 +498,7 @@ next
   thus "?P (x#xs)" by simp
 qed
 
-text {* We now prove some facts about @{text "list_eq"}, @{text "list_neq"}, length, sum and product. *}
+text \<open>We now prove some facts about \<open>list_eq\<close>, \<open>list_neq\<close>, length, sum and product.\<close>
 
 lemma list_eq_sum [simp]:
   fixes xs::"real list"
@@ -546,9 +545,9 @@ done
 (* ============================================================================= *)
 (* ============================================================================= *)
 
-subsection {* Element selection *}
+subsection \<open>Element selection\<close>
 
-text {* We now show that given after extracting all the elements not equal to the mean there exists one that is greater then (or less than) the mean. *}
+text \<open>We now show that given after extracting all the elements not equal to the mean there exists one that is greater then (or less than) the mean.\<close>
 
 lemma pick_one_gt:
   fixes xs::"real list" and m::real
@@ -625,16 +624,16 @@ qed
 (* =================================================================== *)
 (* =================================================================== *)
 
-subsection {* Abstract properties *}
+subsection \<open>Abstract properties\<close>
 
-text {* In order to maintain some comprehension of the following proofs we now introduce some properties of collections. *}
+text \<open>In order to maintain some comprehension of the following proofs we now introduce some properties of collections.\<close>
 
-subsubsection {* Definitions *}
-
-
+subsubsection \<open>Definitions\<close>
 
 
-text {* {\em het}: The heterogeneity of a collection is the number of elements not equal to its mean. A heterogeneity of zero implies the all the elements in the collection are the same (i.e. homogeneous). *}
+
+
+text \<open>{\em het}: The heterogeneity of a collection is the number of elements not equal to its mean. A heterogeneity of zero implies the all the elements in the collection are the same (i.e. homogeneous).\<close>
 
 definition
   het :: "real list \<Rightarrow> nat" where
@@ -654,15 +653,15 @@ proof (rule ccontr)
 qed
 
 
-text {* @{text "\<gamma>-eq"}: Two lists are $\gamma$-equivalent if and only
+text \<open>\<open>\<gamma>-eq\<close>: Two lists are $\gamma$-equivalent if and only
 if they both have the same number of elements and the same arithmetic
-means. *}
+means.\<close>
 
 definition
   \<gamma>_eq :: "((real list)*(real list)) \<Rightarrow> bool" where
   "\<gamma>_eq a \<longleftrightarrow> mean (fst a) = mean (snd a) \<and> length (fst a) = length (snd a)"
 
-text {* @{text "\<gamma>_eq"} is transitive and symmetric. *}
+text \<open>\<open>\<gamma>_eq\<close> is transitive and symmetric.\<close>
 
 lemma \<gamma>_eq_sym: "\<gamma>_eq (a,b) = \<gamma>_eq (b,a)"
   unfolding \<gamma>_eq_def by auto
@@ -672,7 +671,7 @@ lemma \<gamma>_eq_trans:
   unfolding \<gamma>_eq_def by simp
 
 
-text {* {\em pos}: A list is positive if all its elements are greater than 0. *}
+text \<open>{\em pos}: A list is positive if all its elements are greater than 0.\<close>
 
 definition
   pos :: "real list \<Rightarrow> bool" where
@@ -739,14 +738,14 @@ proof (simp add: if_split, rule impI)
   qed
 qed
 
-subsubsection {* Properties *}
+subsubsection \<open>Properties\<close>
 
-text {* Here we prove some non-trivial properties of the abstract properties. *}
+text \<open>Here we prove some non-trivial properties of the abstract properties.\<close>
 
-text {* Two lemmas regarding {\em pos}. The first states the removing
+text \<open>Two lemmas regarding {\em pos}. The first states the removing
 an element from a positive collection (of more than 1 element) results
 in a positive collection. The second asserts that the mean of a
-positive collection is positive. *}
+positive collection is positive.\<close>
 
 lemma pos_imp_rmv_pos:
   assumes "(remove1 a xs)\<noteq>[]" "pos xs" shows "pos (remove1 a xs)"
@@ -805,8 +804,8 @@ next
   qed
 qed
 
-text {* We now show that homogeneity of a non-empty collection $x$
-implies that its product is equal to @{text "(mean x)^(length x)"}. *}
+text \<open>We now show that homogeneity of a non-empty collection $x$
+implies that its product is equal to \<open>(mean x)^(length x)\<close>.\<close>
 
 lemma prod_list_het0:
   shows "x\<noteq>[] \<and> het x = 0 \<Longrightarrow> \<Prod>:x = (mean x) ^ (length x)"
@@ -831,8 +830,8 @@ proof -
   thus ?thesis by simp
 qed
 
-text {* Furthermore we present an important result - that a
-homogeneous collection has equal geometric and arithmetic means. *}
+text \<open>Furthermore we present an important result - that a
+homogeneous collection has equal geometric and arithmetic means.\<close>
 
 lemma het_base:
   shows "pos x \<and> het x = 0 \<Longrightarrow> gmean x = mean x"
@@ -858,13 +857,13 @@ qed
 (* =================================================================== *)
 
 
-subsection {* Existence of a new collection *}
+subsection \<open>Existence of a new collection\<close>
 
-text {* We now present the largest and most important proof in this
+text \<open>We now present the largest and most important proof in this
 document. Given any positive and non-homogeneous collection of real
 numbers there exists a new collection that is $\gamma$-equivalent,
 positive, has a strictly lower heterogeneity and a greater geometric
-mean. *}
+mean.\<close>
 
 lemma new_list_gt_gmean:
   fixes xs :: "real list" and m :: real
@@ -884,7 +883,7 @@ proof -
   from neq het_gt_0 het_gt_0_imp_noteq_ne m have
     neqne: "noteq \<noteq> []" by simp
 
-  txt {* Pick two elements from xs, one greater than m, one less than m. *}
+  txt \<open>Pick two elements from xs, one greater than m, one less than m.\<close>
   from assms pick_one_gt neqne obtain \<alpha> where
     \<alpha>_def: "\<alpha> : set noteq \<and> \<alpha> > m" unfolding neq m by auto
   from assms pick_one_lt neqne obtain \<beta> where
@@ -1059,10 +1058,10 @@ proof -
 qed
 
 
-text {* Furthermore we show that for all non-homogeneous positive
+text \<open>Furthermore we show that for all non-homogeneous positive
 collections there exists another collection that is
 $\gamma$-equivalent, positive, has a greater geometric mean {\em and}
-is homogeneous. *}
+is homogeneous.\<close>
 
 lemma existence_of_het0 [rule_format]:
   shows "\<forall>x. p = het x \<and> p > 0 \<and> pos x \<longrightarrow>
@@ -1118,28 +1117,28 @@ proof (induct p rule: nat_less_induct)
 qed
 
 
-subsection {* Cauchy's Mean Theorem *}
+subsection \<open>Cauchy's Mean Theorem\<close>
 
-text {* We now present the final proof of the theorem. For any
+text \<open>We now present the final proof of the theorem. For any
 positive collection we show that its geometric mean is less than or
-equal to its arithmetic mean. *}
+equal to its arithmetic mean.\<close>
 
 theorem CauchysMeanTheorem:
   fixes z::"real list"
   assumes "pos z"
   shows "gmean z \<le> mean z"
 proof -
-  from `pos z` have zne: "z\<noteq>[]" by (rule pos_imp_ne)
+  from \<open>pos z\<close> have zne: "z\<noteq>[]" by (rule pos_imp_ne)
   show "gmean z \<le> mean z"
   proof cases
     assume "het z = 0"
-    with `pos z` zne het_base have "gmean z = mean z" by simp
+    with \<open>pos z\<close> zne het_base have "gmean z = mean z" by simp
     thus ?thesis by simp
   next
     assume "het z \<noteq> 0"
     hence "het z > 0" by simp
     moreover obtain k where "k = het z" by simp
-    moreover with calculation `pos z` existence_of_het0 have
+    moreover with calculation \<open>pos z\<close> existence_of_het0 have
       "\<exists>y. gmean y > gmean z \<and> \<gamma>_eq (z,y) \<and> het y = 0 \<and> pos y" by auto
     then obtain \<alpha> where
       "gmean \<alpha> > gmean z \<and> \<gamma>_eq (z,\<alpha>) \<and> het \<alpha> = 0 \<and> pos \<alpha>" ..
@@ -1152,16 +1151,16 @@ proof -
   qed
 qed
 
-text {* In the equality version we prove that the geometric mean
+text \<open>In the equality version we prove that the geometric mean
   is identical to the arithmetic mean iff the collection is 
-  homogeneous. *}
+  homogeneous.\<close>
 theorem CauchysMeanTheorem_Eq:
   fixes z::"real list"
   assumes "pos z"
   shows "gmean z = mean z \<longleftrightarrow> het z = 0"
 proof 
   assume "het z = 0"
-  with het_base[of z] `pos z` show "gmean z = mean z" by auto
+  with het_base[of z] \<open>pos z\<close> show "gmean z = mean z" by auto
 next
   assume eq: "gmean z = mean z"
   show "het z = 0"
@@ -1169,7 +1168,7 @@ next
     assume "het z \<noteq> 0"
     hence "het z > 0" by auto
     moreover obtain k where "k = het z" by simp
-    moreover with calculation `pos z` existence_of_het0 have
+    moreover with calculation \<open>pos z\<close> existence_of_het0 have
       "\<exists>y. gmean y > gmean z \<and> \<gamma>_eq (z,y) \<and> het y = 0 \<and> pos y" by auto
     then obtain \<alpha> where
       "gmean \<alpha> > gmean z \<and> \<gamma>_eq (z,\<alpha>) \<and> het \<alpha> = 0 \<and> pos \<alpha>" ..
@@ -1187,9 +1186,9 @@ corollary CauchysMeanTheorem_Less:
   assumes "pos z" and "het z > 0"
   shows "gmean z < mean z"
   using 
-    CauchysMeanTheorem[OF `pos z`] 
-    CauchysMeanTheorem_Eq[OF `pos z`]
-    `het z > 0`
+    CauchysMeanTheorem[OF \<open>pos z\<close>] 
+    CauchysMeanTheorem_Eq[OF \<open>pos z\<close>]
+    \<open>het z > 0\<close>
     by auto
 
 end

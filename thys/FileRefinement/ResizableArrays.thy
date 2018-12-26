@@ -1,7 +1,7 @@
 section "Resizable arrays"
 theory ResizableArrays imports Main begin
 
-text {* These arrays resize themselves, padding with fillValue. *}
+text \<open>These arrays resize themselves, padding with fillValue.\<close>
 
 type_synonym 'a rArray = "nat * (nat => 'a)"
 

@@ -9,11 +9,11 @@ imports
   MaximalNormalSubgroups
 begin
 
-section {* Normal series and Composition series *}
+section \<open>Normal series and Composition series\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-text {* A subgroup which is unique in cardinality is normal: *}
+text \<open>A subgroup which is unique in cardinality is normal:\<close>
 
 lemma (in group) unique_sizes_subgrp_normal:
   assumes fin:"finite (carrier G)"
@@ -37,8 +37,8 @@ proof -
   with Q_def show ?thesis by simp
 qed
 
-text {* A group whose order is the product of two distinct
-primes $p$ and $q$ where $p < q$ has a unique subgroup of size $q$: *}
+text \<open>A group whose order is the product of two distinct
+primes $p$ and $q$ where $p < q$ has a unique subgroup of size $q$:\<close>
 
 lemma (in group) pq_order_unique_subgrp:
   assumes finite:"finite (carrier G)"
@@ -67,7 +67,7 @@ proof -
   qed
 qed
 
-text {* ... And this unique subgroup is normal. *}
+text \<open>... And this unique subgroup is normal.\<close>
 
 corollary (in group) pq_order_subgrp_normal:
   assumes finite:"finite (carrier G)"
@@ -76,18 +76,18 @@ corollary (in group) pq_order_subgrp_normal:
   shows "(THE Q. Q \<in> subgroups_of_size q) \<lhd> G"
 using assms by (metis pq_order_unique_subgrp unique_sizes_subgrp_normal)
 
-text {* The trivial subgroup is normal in every group. *}
+text \<open>The trivial subgroup is normal in every group.\<close>
 
 lemma (in group) trivial_subgroup_is_normal:
   shows "{\<one>} \<lhd> G"
 unfolding normal_def normal_axioms_def r_coset_def l_coset_def by (auto intro: normalI subgroupI simp: is_group)
 
-subsection {* Normal Series *}
+subsection \<open>Normal Series\<close>
 
-text {* We define a normal series as a locale which fixes one group
+text \<open>We define a normal series as a locale which fixes one group
 @{term G} and a list @{term \<GG>} of subsets of @{term G}'s carrier. This list
 must begin with the trivial subgroup, end with the carrier of the group itself
-and each of the list items must be a normal subgroup of its successor. *}
+and each of the list items must be a normal subgroup of its successor.\<close>
 
 locale normal_series = group +
   fixes \<GG>
@@ -98,16 +98,16 @@ locale normal_series = group +
 
 lemma (in normal_series) is_normal_series: "normal_series G \<GG>" by (rule normal_series_axioms)
 
-text {* For every group there is a "trivial" normal series consisting
-only of the group itself and its trivial subgroup. *}
+text \<open>For every group there is a "trivial" normal series consisting
+only of the group itself and its trivial subgroup.\<close>
 
 lemma (in group) trivial_normal_series:
   shows "normal_series G [{\<one>}, carrier G]"
 unfolding normal_series_def normal_series_axioms_def
 using is_group trivial_subgroup_is_normal by auto
 
-text {* We can also show that the normal series presented above is the only such with
-a length of two: *}
+text \<open>We can also show that the normal series presented above is the only such with
+a length of two:\<close>
 
 lemma (in normal_series) length_two_unique:
   assumes "length \<GG> = 2"
@@ -131,9 +131,9 @@ next
   qed
 qed
 
-text {* We can construct new normal series by expanding existing ones: If we
+text \<open>We can construct new normal series by expanding existing ones: If we
 append the carrier of a group @{term G} to a normal series for a normal subgroup
-@{term "H \<lhd> G"} we receive a normal series for @{term G}. *}
+@{term "H \<lhd> G"} we receive a normal series for @{term G}.\<close>
 
 lemma (in group) normal_series_extend:
   assumes normal:"normal_series (G\<lparr>carrier := H\<rparr>) \<HH>"
@@ -172,7 +172,7 @@ proof -
   qed
 qed
 
-text {* All entries of a normal series for $G$ are subgroups of $G$. *}
+text \<open>All entries of a normal series for $G$ are subgroups of $G$.\<close>
 
 lemma (in normal_series) normal_series_subgroups:
   shows "i < length \<GG> \<Longrightarrow> subgroup (\<GG> ! i) G"
@@ -196,7 +196,7 @@ proof -
   ultimately show "i < length \<GG> \<Longrightarrow> subgroup (\<GG> ! i) G" by force
 qed
 
-text {* The second to last entry of a normal series is a normal subgroup of G. *}
+text \<open>The second to last entry of a normal series is a normal subgroup of G.\<close>
 
 lemma (in normal_series) normal_series_snd_to_last:
   shows "\<GG> ! (length \<GG> - 2) \<lhd> G"
@@ -212,11 +212,11 @@ next
   have "1 + (1 + (length \<GG> - (1 + 1))) = length \<GG>"
     using True le_add_diff_inverse by presburger
   then have "\<GG> ! (length \<GG> - 2) \<lhd> G\<lparr>carrier :=  \<GG> ! (length \<GG> - 1)\<rparr>"
-    by (metis `\<GG> ! (length \<GG> - 2) \<lhd> G \<lparr>carrier := \<GG> ! (length \<GG> - 2 + 1)\<rparr>` add.commute add_diff_cancel_left' one_add_one)
+    by (metis \<open>\<GG> ! (length \<GG> - 2) \<lhd> G \<lparr>carrier := \<GG> ! (length \<GG> - 2 + 1)\<rparr>\<close> add.commute add_diff_cancel_left' one_add_one)
   with notempty last show ?thesis using last_conv_nth by force
 qed
 
-text {* Just like the expansion of normal series, every prefix of a normal series is again a normal series. *}
+text \<open>Just like the expansion of normal series, every prefix of a normal series is again a normal series.\<close>
 
 lemma (in normal_series) normal_series_prefix_closed:
   assumes "i \<le> length \<GG>" and "0 < i"
@@ -229,8 +229,8 @@ apply (auto simp: hd del:equalityI)
 using assms(1) normal apply simp
 done
 
-text {* If a group's order is the product of two distinct primes @{term p} and @{term q}, where
-@{term "p < q"}, we can construct a normal series using the only subgroup of size  @{term q}. *}
+text \<open>If a group's order is the product of two distinct primes @{term p} and @{term q}, where
+@{term "p < q"}, we can construct a normal series using the only subgroup of size  @{term q}.\<close>
 
 lemma (in group) pq_order_normal_series:
   assumes finite:"finite (carrier G)"
@@ -245,12 +245,12 @@ proof -
   with HG show ?thesis unfolding H_def by (metis append_Cons append_Nil normal_series_extend)
 qed
 
-text {* The following defines the list of all quotient groups of the normal series: *}
+text \<open>The following defines the list of all quotient groups of the normal series:\<close>
 
 definition (in normal_series) quotients
   where "quotients = map (\<lambda>i. G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i) [0..<((length \<GG>) - 1)]"
 
-text {* The list of quotient groups has one less entry than the series itself: *}
+text \<open>The list of quotient groups has one less entry than the series itself:\<close>
 
 lemma (in normal_series) quotients_length:
   shows "length quotients + 1 = length \<GG>"
@@ -277,8 +277,8 @@ proof -
   finally show ?thesis .
 qed
 
-text {* The next lemma transports the constituting properties of a normal series
-along an isomorphism of groups. *}
+text \<open>The next lemma transports the constituting properties of a normal series
+along an isomorphism of groups.\<close>
 
 lemma (in normal_series) normal_series_iso:
   assumes H:"group H"
@@ -316,9 +316,9 @@ next
   qed
 qed
 
-subsection {* Composition Series *}
+subsection \<open>Composition Series\<close>
 
-text {* A composition series is a normal series where all consecutive factor groups are simple: *}
+text \<open>A composition series is a normal series where all consecutive factor groups are simple:\<close>
 
 locale composition_series = normal_series +
   assumes simplefact:"\<And>i. i + 1 <  length \<GG> \<Longrightarrow> simple_group (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
@@ -327,7 +327,7 @@ lemma (in composition_series) is_composition_series:
   shows "composition_series G \<GG>"
 by (rule composition_series_axioms)
 
-text {* A composition series for a group $G$ has length one if and only if $G$ is the trivial group. *}
+text \<open>A composition series for a group $G$ has length one if and only if $G$ is the trivial group.\<close>
 
 lemma (in composition_series) composition_series_length_one:
   shows "(length \<GG> = 1) = (\<GG> = [{\<one>}])"
@@ -361,8 +361,8 @@ next
   with last show "carrier G = {\<one>}" by auto
 qed
 
-text {* The inner elements of a composition series may not consist of the trivial subgroup or the
-group itself. *}
+text \<open>The inner elements of a composition series may not consist of the trivial subgroup or the
+group itself.\<close>
 
 lemma (in composition_series) inner_elements_not_triv:
   assumes "i + 1 < length \<GG>"
@@ -378,7 +378,7 @@ proof
   thus "False" using i simple unfolding simple_group_def simple_group_axioms_def by auto
 qed
 
-text {* A composition series of a simple group always is its trivial one. *}
+text \<open>A composition series of a simple group always is its trivial one.\<close>
 
 lemma (in composition_series) composition_series_simple_group:
   shows "(simple_group G) = (\<GG> = [{\<one>}, carrier G])"
@@ -404,7 +404,7 @@ next
     hence gt2:"length \<GG> > 2" by simp
     hence ksmall:"k + 1 < length \<GG>" unfolding k_def by auto
     from gt2 have carrier:"\<GG> ! (k + 1) = carrier G" using notempty last last_conv_nth k_def
-      by (metis Nat.add_diff_assoc Nat.diff_cancel `\<not> length \<GG> \<le> 2` add.commute nat_le_linear one_add_one)
+      by (metis Nat.add_diff_assoc Nat.diff_cancel \<open>\<not> length \<GG> \<le> 2\<close> add.commute nat_le_linear one_add_one)
     from normal ksmall have "\<GG> ! k \<lhd> G\<lparr> carrier := \<GG> ! (k + 1)\<rparr>" by simp
     from simplefact ksmall have simplek:"simple_group (G\<lparr>carrier := \<GG> ! (k + 1)\<rparr> Mod \<GG> ! k)" by simp
     from simplefact ksmall have simplek':"simple_group (G\<lparr>carrier := \<GG> ! ((k - 1) + 1)\<rparr> Mod \<GG> ! (k - 1))" by auto
@@ -424,7 +424,7 @@ next
   thus "\<GG> = [{\<one>}, carrier G]" by (rule length_two_unique)
 qed
 
-text {* Two consecutive elements in a composition series are distinct. *}
+text \<open>Two consecutive elements in a composition series are distinct.\<close>
 
 lemma (in composition_series) entries_distinct:
   assumes finite:"finite (carrier G)"
@@ -443,7 +443,7 @@ proof
   thus False by (metis i simplefact)
 qed
 
-text {* The normal series for groups of order @{term "p * q"} is even a composition series: *}
+text \<open>The normal series for groups of order @{term "p * q"} is even a composition series:\<close>
 
 lemma (in group) pq_order_composition_series:
   assumes finite:"finite (carrier G)"
@@ -470,7 +470,7 @@ proof -
       by (metis Hgroup.card_rcosets_triv HsubG finite monoid.cases_scheme monoid.select_convs(2) partial_object.select_convs(1) partial_object.update_convs(1) subgroup_finite)
     have "normal {\<one>} (G\<lparr>carrier := H\<rparr>)" by (metis Hgroup.is_group Hgroup.normal_inv_iff HsubG group.trivial_subgroup_is_normal is_group singleton_iff subgroup.one_closed subgroup.subgroup_of_subgroup)
     hence "group (G\<lparr>carrier := H\<rparr> Mod {\<one>})" by (metis normal.factorgroup_is_group)
-    with orderH primeq have "simple_group (G\<lparr>carrier := H\<rparr> Mod {\<one>})" by (metis `order (G\<lparr>carrier := H\<rparr> Mod {\<one>}) = q` group.prime_order_simple)
+    with orderH primeq have "simple_group (G\<lparr>carrier := H\<rparr> Mod {\<one>})" by (metis \<open>order (G\<lparr>carrier := H\<rparr> Mod {\<one>}) = q\<close> group.prime_order_simple)
     with i show ?thesis by simp
   next
     assume i:"i = 1"
@@ -479,14 +479,14 @@ proof -
     from primeq have "q \<noteq> 0" by (metis not_prime_0)
     from HsubG finite orderG have "card (rcosets H) * card H = q * p" unfolding subgroups_of_size_def using lagrange by simp
     with Hsize have "card (rcosets H) * q = q * p" unfolding subgroups_of_size_def by simp
-    with `q \<noteq> 0` have "card (rcosets H) = p" by auto
+    with \<open>q \<noteq> 0\<close> have "card (rcosets H) = p" by auto
     hence "order (G Mod H) = p" unfolding order_def FactGroup_def by auto
     with groupGH primep have "simple_group (G Mod H)" by (metis group.prime_order_simple)
     with i show ?thesis by auto
   qed
 qed
 
-text {* Prefixes of composition series are also composition series. *}
+text \<open>Prefixes of composition series are also composition series.\<close>
 
 lemma (in composition_series) composition_series_prefix_closed:
   assumes "i \<le> length \<GG>" and "0 < i"
@@ -500,7 +500,7 @@ next
   with simplefact show "simple_group (G\<lparr>carrier := \<GG> ! Suc j\<rparr> Mod \<GG> ! j)" by (metis Suc_eq_plus1)
 qed
 
-text {* The second element in a composition series is simple group. *}
+text \<open>The second element in a composition series is simple group.\<close>
 
 lemma (in composition_series) composition_series_snd_simple:
   assumes "2 \<le> length \<GG>"
@@ -512,8 +512,8 @@ proof -
   thus ?thesis by (metis compTake.composition_series_simple_group)
 qed
 
-text {* As a stronger way to state the previous lemma: An entry of a composition series is 
-  simple if and only if it is the second one. *}
+text \<open>As a stronger way to state the previous lemma: An entry of a composition series is 
+  simple if and only if it is the second one.\<close>
 
 lemma (in composition_series) composition_snd_simple_iff:
   assumes "i < length \<GG>"
@@ -536,8 +536,8 @@ next
   with i show "simple_group (G\<lparr>carrier := \<GG> ! i\<rparr>)" by (metis composition_series_snd_simple)
 qed
 
-text {* The second to last entry of a normal series is not only a normal subgroup but
-  actually even a \emph{maximal} normal subgroup. *}
+text \<open>The second to last entry of a normal series is not only a normal subgroup but
+  actually even a \emph{maximal} normal subgroup.\<close>
 
 lemma (in composition_series) snd_to_last_max_normal:
   assumes finite:"finite (carrier G)"
@@ -598,7 +598,7 @@ next
   }
 qed
 
-text {* For the next lemma we need a few facts about removing adjacent duplicates. *}
+text \<open>For the next lemma we need a few facts about removing adjacent duplicates.\<close>
 
 lemma remdups_adj_obtain_adjacency:
   assumes "i + 1 < length (remdups_adj xs)" "length xs > 0"
@@ -614,7 +614,7 @@ next
     by auto
   then obtain y xs' where xs: "xs = y # xs'"
     by (cases xs) blast
-  from `xs \<noteq> []` have lenxs:"length xs > 0" by simp
+  from \<open>xs \<noteq> []\<close> have lenxs:"length xs > 0" by simp
   from xs have rem:"remdups_adj (x # xs) = (if x = y then remdups_adj (y # xs') else x # remdups_adj (y # xs'))" using remdups_adj.simps(3) by auto
   show thesis
   proof (cases "x = y")
@@ -688,8 +688,8 @@ proof (induction xs arbitrary: i rule: remdups_adj.induct)
   thus ?case by (cases i, cases "x = y") (simp, auto simp: hd_conv_nth[symmetric])
 qed simp_all
 
-text {* Intersecting each entry of a composition series with a normal subgroup of $G$ and removing
-  all adjacent duplicates yields another composition series. *}
+text \<open>Intersecting each entry of a composition series with a normal subgroup of $G$ and removing
+  all adjacent duplicates yields another composition series.\<close>
 
 lemma (in composition_series) intersect_normal:
   assumes finite:"finite (carrier G)"
@@ -838,7 +838,7 @@ proof auto
     hence "Suc i < length \<HH>" using i by auto
     hence "(\<HH> @ [carrier G]) ! Suc i = \<HH> ! Suc i" using nth_append by metis
     moreover from i have "(\<HH> @ [carrier G]) ! i = \<HH> ! i" using nth_append by metis
-    ultimately show ?thesis using `Suc i < length \<HH>` comp\<HH>.simplefact by auto
+    ultimately show ?thesis using \<open>Suc i < length \<HH>\<close> comp\<HH>.simplefact by auto
   qed
 qed
 

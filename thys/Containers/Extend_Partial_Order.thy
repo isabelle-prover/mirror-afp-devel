@@ -5,7 +5,7 @@ theory Extend_Partial_Order
 imports Main
 begin
 
-section {* Every partial order can be extended to a total order *}
+section \<open>Every partial order can be extended to a total order\<close>
 
 lemma ChainsD: "\<lbrakk> x \<in> C; C \<in> Chains r; y \<in> C \<rbrakk> \<Longrightarrow> (x, y) \<in> r \<or> (y, x) \<in> r"
 by(simp add: Chains_def)
@@ -81,43 +81,43 @@ proof(atomize_elim)
     thus ?case
     proof
       assume "(x, y) \<in> s"
-      with `refl_on B s` have "x \<in> B" "y \<in> B"
+      with \<open>refl_on B s\<close> have "x \<in> B" "y \<in> B"
         by(blast dest: refl_onD1 refl_onD2)+
       with B_subset_A have "x \<in> A" "y \<in> A" by blast+
       hence "(x, x) \<in> r" "(y, y) \<in> r"
-        using `refl_on A r` by(blast intro: refl_onD)+
-      with `(x, y) \<in> s` show ?thesis by blast
+        using \<open>refl_on A r\<close> by(blast intro: refl_onD)+
+      with \<open>(x, y) \<in> s\<close> show ?thesis by blast
     qed(simp)
   next
     case (step y z)
-    from `(y, z) \<in> r \<union> s` show ?case
+    from \<open>(y, z) \<in> r \<union> s\<close> show ?case
     proof
       assume "(y, z) \<in> s"
-      with `refl_on B s` have "y \<in> B" "z \<in> B"
+      with \<open>refl_on B s\<close> have "y \<in> B" "z \<in> B"
         by(blast dest: refl_onD2 refl_onD1)+
       from step.IH show ?thesis
       proof
         assume "(x, y) \<in> r"
-        moreover from `z \<in> B` B_subset_A `refl_on A r` 
+        moreover from \<open>z \<in> B\<close> B_subset_A \<open>refl_on A r\<close> 
         have "(z, z) \<in> r" by(blast dest: refl_onD)
-        ultimately show ?thesis using `(y, z) \<in> s` by blast
+        ultimately show ?thesis using \<open>(y, z) \<in> s\<close> by blast
       next
         assume "\<exists>u v. (x, u) \<in> r \<and> (u, v) \<in> s \<and> (v, y) \<in> r"
         then obtain u v where "(x, u) \<in> r" "(u, v) \<in> s" "(v, y) \<in> r" by blast
-        from `refl_on B s` `(u, v) \<in> s` have "v \<in> B" by(rule refl_onD2)
-        with `total_on B s` `refl_on B s` order_consistent_sym[OF consist]
-        have "(v, y) \<in> s" using `y \<in> B` `(v, y) \<in> r`
+        from \<open>refl_on B s\<close> \<open>(u, v) \<in> s\<close> have "v \<in> B" by(rule refl_onD2)
+        with \<open>total_on B s\<close> \<open>refl_on B s\<close> order_consistent_sym[OF consist]
+        have "(v, y) \<in> s" using \<open>y \<in> B\<close> \<open>(v, y) \<in> r\<close>
           by(rule total_on_refl_on_consistent_into)
-        with `trans s` have "(v, z) \<in> s" using `(y, z) \<in> s` by(rule transD)
-        with `trans s` `(u, v) \<in> s` have "(u, z) \<in> s" by(rule transD)
-        moreover from `z \<in> B` B_subset_A have "z \<in> A" ..
-        with `refl_on A r` have "(z, z) \<in> r" by(rule refl_onD)
-        ultimately show ?thesis using `(x, u) \<in> r` by blast
+        with \<open>trans s\<close> have "(v, z) \<in> s" using \<open>(y, z) \<in> s\<close> by(rule transD)
+        with \<open>trans s\<close> \<open>(u, v) \<in> s\<close> have "(u, z) \<in> s" by(rule transD)
+        moreover from \<open>z \<in> B\<close> B_subset_A have "z \<in> A" ..
+        with \<open>refl_on A r\<close> have "(z, z) \<in> r" by(rule refl_onD)
+        ultimately show ?thesis using \<open>(x, u) \<in> r\<close> by blast
       qed
     next
       assume "(y, z) \<in> r"
       with step.IH show ?thesis
-        by(blast intro: transD[OF `trans r`])
+        by(blast intro: transD[OF \<open>trans r\<close>])
     qed
   qed
 qed
@@ -136,57 +136,57 @@ proof(rule antisymI)
   from s have "total_on B s" "refl_on B s" "trans s" "antisym s"
     by(simp_all add: partial_order_on_def preorder_on_def linear_order_on_def)
 
-  from r s consist B_subset_A `(x, y) \<in> ?rs`
+  from r s consist B_subset_A \<open>(x, y) \<in> ?rs\<close>
   show "x = y"
   proof(cases rule: porder_linorder_tranclpE)
     case base
-    from r s consist B_subset_A `(y, x) \<in> ?rs`
+    from r s consist B_subset_A \<open>(y, x) \<in> ?rs\<close>
     show ?thesis
     proof(cases rule: porder_linorder_tranclpE)
       case base
-      with `antisym r` `(x, y) \<in> r` show ?thesis by(rule antisymD)
+      with \<open>antisym r\<close> \<open>(x, y) \<in> r\<close> show ?thesis by(rule antisymD)
     next
       case (step u v)
-      from `(v, x) \<in> r` `(x, y) \<in> r` `(y, u) \<in> r` have "(v, u) \<in> r"
-        by(blast intro: transD[OF `trans r`])
-      with consist have "v = u" using `(u, v) \<in> s` 
+      from \<open>(v, x) \<in> r\<close> \<open>(x, y) \<in> r\<close> \<open>(y, u) \<in> r\<close> have "(v, u) \<in> r"
+        by(blast intro: transD[OF \<open>trans r\<close>])
+      with consist have "v = u" using \<open>(u, v) \<in> s\<close> 
         by(simp add: order_consistent_def) 
-      with `(y, u) \<in> r` `(v, x) \<in> r` have "(y, x) \<in> r"
-        by(blast intro: transD[OF `trans r`])
-      with `antisym r` `(x, y) \<in> r` show ?thesis by(rule antisymD)
+      with \<open>(y, u) \<in> r\<close> \<open>(v, x) \<in> r\<close> have "(y, x) \<in> r"
+        by(blast intro: transD[OF \<open>trans r\<close>])
+      with \<open>antisym r\<close> \<open>(x, y) \<in> r\<close> show ?thesis by(rule antisymD)
     qed
   next
     case (step u v)
-    from r s consist B_subset_A `(y, x) \<in> ?rs`
+    from r s consist B_subset_A \<open>(y, x) \<in> ?rs\<close>
     show ?thesis
     proof(cases rule: porder_linorder_tranclpE)
       case base
-      from `(v, y) \<in> r` `(y, x) \<in> r` `(x, u) \<in> r` have "(v, u) \<in> r"
-        by(blast intro: transD[OF `trans r`])
-      with consist `(u, v) \<in> s`
+      from \<open>(v, y) \<in> r\<close> \<open>(y, x) \<in> r\<close> \<open>(x, u) \<in> r\<close> have "(v, u) \<in> r"
+        by(blast intro: transD[OF \<open>trans r\<close>])
+      with consist \<open>(u, v) \<in> s\<close>
       have "u = v" by(auto simp add: order_consistent_def)
-      with `(v, y) \<in> r` `(x, u) \<in> r` have "(x, y) \<in> r"
-        by(blast intro: transD[OF `trans r`])
-      with `antisym r` show ?thesis using `(y, x) \<in> r` by(rule antisymD)
+      with \<open>(v, y) \<in> r\<close> \<open>(x, u) \<in> r\<close> have "(x, y) \<in> r"
+        by(blast intro: transD[OF \<open>trans r\<close>])
+      with \<open>antisym r\<close> show ?thesis using \<open>(y, x) \<in> r\<close> by(rule antisymD)
     next
       case (step u' v')
-      note r_into_s = total_on_refl_on_consistent_into[OF `total_on B s` `refl_on B s` order_consistent_sym[OF consist]]
-      from `refl_on B s` `(u, v) \<in> s` `(u', v') \<in> s`
+      note r_into_s = total_on_refl_on_consistent_into[OF \<open>total_on B s\<close> \<open>refl_on B s\<close> order_consistent_sym[OF consist]]
+      from \<open>refl_on B s\<close> \<open>(u, v) \<in> s\<close> \<open>(u', v') \<in> s\<close>
       have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B" by(blast dest: refl_onD1 refl_onD2)+
-      from `trans r` `(v', x) \<in> r` `(x, u) \<in> r` have "(v', u) \<in> r" by(rule transD)
-      with `v' \<in> B` `u \<in> B` have "(v', u) \<in> s" by(rule r_into_s)
-      also note `(u, v) \<in> s` also (transD[OF `trans s`])
-      from `trans r` `(v, y) \<in> r` `(y, u') \<in> r` have "(v, u') \<in> r" by(rule transD)
-      with `v \<in> B` `u' \<in> B` have "(v, u') \<in> s" by(rule r_into_s)
-      finally (transD[OF `trans s`])
-      have "v' = u'" using `(u', v') \<in> s` by(rule antisymD[OF `antisym s`])
-      moreover with `(v, u') \<in> s` `(v', u) \<in> s` have "(v, u) \<in> s"
-        by(blast intro: transD[OF `trans s`])
-      with `antisym s` `(u, v) \<in> s` have "u = v" by(rule antisymD)
+      from \<open>trans r\<close> \<open>(v', x) \<in> r\<close> \<open>(x, u) \<in> r\<close> have "(v', u) \<in> r" by(rule transD)
+      with \<open>v' \<in> B\<close> \<open>u \<in> B\<close> have "(v', u) \<in> s" by(rule r_into_s)
+      also note \<open>(u, v) \<in> s\<close> also (transD[OF \<open>trans s\<close>])
+      from \<open>trans r\<close> \<open>(v, y) \<in> r\<close> \<open>(y, u') \<in> r\<close> have "(v, u') \<in> r" by(rule transD)
+      with \<open>v \<in> B\<close> \<open>u' \<in> B\<close> have "(v, u') \<in> s" by(rule r_into_s)
+      finally (transD[OF \<open>trans s\<close>])
+      have "v' = u'" using \<open>(u', v') \<in> s\<close> by(rule antisymD[OF \<open>antisym s\<close>])
+      moreover with \<open>(v, u') \<in> s\<close> \<open>(v', u) \<in> s\<close> have "(v, u) \<in> s"
+        by(blast intro: transD[OF \<open>trans s\<close>])
+      with \<open>antisym s\<close> \<open>(u, v) \<in> s\<close> have "u = v" by(rule antisymD)
       ultimately have "(x, y) \<in> r" "(y, x) \<in> r"
-        using `(x, u) \<in> r` `(v, y) \<in> r` `(y, u') \<in> r` `(v', x) \<in> r`
-        by(blast intro: transD[OF `trans r`])+
-      with `antisym r` show ?thesis by(rule antisymD)
+        using \<open>(x, u) \<in> r\<close> \<open>(v, y) \<in> r\<close> \<open>(y, u') \<in> r\<close> \<open>(v', x) \<in> r\<close>
+        by(blast intro: transD[OF \<open>trans r\<close>])+
+      with \<open>antisym r\<close> show ?thesis by(rule antisymD)
     qed
   qed
 qed
@@ -235,7 +235,7 @@ proof(atomize_elim)
       then obtain s where "s \<in> c" by blast
       hence s: "partial_order_on A s"
         and r_in_s: "r \<subseteq> s"
-        using `c \<subseteq> S` unfolding S_def by blast+
+        using \<open>c \<subseteq> S\<close> unfolding S_def by blast+
 
       have "partial_order_on A (\<Union>c)"
         unfolding partial_order_on_def preorder_on_def
@@ -245,16 +245,16 @@ proof(atomize_elim)
           fix x
           assume "x \<in> \<Union>c"
           then obtain X where "X \<in> c" and "x \<in> X" by blast
-          from `X \<in> c` `c \<subseteq> S` have "X \<in> S" ..
+          from \<open>X \<in> c\<close> \<open>c \<subseteq> S\<close> have "X \<in> S" ..
           hence "partial_order_on A X" unfolding S_def by simp
-          with `x \<in> X` show "x \<in> A \<times> A"
+          with \<open>x \<in> X\<close> show "x \<in> A \<times> A"
             by(cases x)(auto simp add: partial_order_on_def preorder_on_def dest: refl_onD1 refl_onD2)
         next
           fix x
           assume "x \<in> A"
           with s have "(x, x) \<in> s" unfolding partial_order_on_def preorder_on_def
             by(blast dest: refl_onD)
-          with `s \<in> c` show "(x, x) \<in> \<Union>c" by(rule UnionI)
+          with \<open>s \<in> c\<close> show "(x, x) \<in> \<Union>c" by(rule UnionI)
         qed
 
         show "antisym (\<Union>c)"
@@ -262,11 +262,11 @@ proof(atomize_elim)
           fix x y
           assume "(x, y) \<in> \<Union>c" "(y, x) \<in> \<Union>c"
           then obtain X Y where "X \<in> c" "Y \<in> c" "(x, y) \<in> X" "(y, x) \<in> Y" by blast
-          from `X \<in> c` `Y \<in> c` `c \<subseteq> S` have "antisym X" "antisym Y"
+          from \<open>X \<in> c\<close> \<open>Y \<in> c\<close> \<open>c \<subseteq> S\<close> have "antisym X" "antisym Y"
             unfolding S_def by(auto simp add: partial_order_on_def)
-          moreover from `c \<in> chains S` `X \<in> c` `Y \<in> c` 
+          moreover from \<open>c \<in> chains S\<close> \<open>X \<in> c\<close> \<open>Y \<in> c\<close> 
           have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainsD)
-          ultimately show "x = y" using `(x, y) \<in> X` `(y, x) \<in> Y` 
+          ultimately show "x = y" using \<open>(x, y) \<in> X\<close> \<open>(y, x) \<in> Y\<close> 
             by(auto dest: antisymD)
         qed
 
@@ -275,36 +275,36 @@ proof(atomize_elim)
           fix x y z
           assume "(x, y) \<in> \<Union>c" "(y, z) \<in> \<Union>c"
           then obtain X Y where "X \<in> c" "Y \<in> c" "(x, y) \<in> X" "(y, z) \<in> Y" by blast
-          from `X \<in> c` `Y \<in> c` `c \<subseteq> S` have "trans X" "trans Y"
+          from \<open>X \<in> c\<close> \<open>Y \<in> c\<close> \<open>c \<subseteq> S\<close> have "trans X" "trans Y"
             unfolding S_def by(auto simp add: partial_order_on_def preorder_on_def)
-          from `c \<in> chains S` `X \<in> c` `Y \<in> c` 
+          from \<open>c \<in> chains S\<close> \<open>X \<in> c\<close> \<open>Y \<in> c\<close> 
           have "X \<subseteq> Y \<or> Y \<subseteq> X" by(rule chainsD)
           thus "(x, z) \<in> \<Union>c"
           proof
             assume "X \<subseteq> Y"
-            with `trans Y` `(x, y) \<in> X` `(y, z) \<in> Y`
+            with \<open>trans Y\<close> \<open>(x, y) \<in> X\<close> \<open>(y, z) \<in> Y\<close>
             have "(x, z) \<in> Y" by(blast dest: transD)
-            with `Y \<in> c` show ?thesis by(rule UnionI)
+            with \<open>Y \<in> c\<close> show ?thesis by(rule UnionI)
           next
             assume "Y \<subseteq> X"
-            with `trans X` `(x, y) \<in> X` `(y, z) \<in> Y`
+            with \<open>trans X\<close> \<open>(x, y) \<in> X\<close> \<open>(y, z) \<in> Y\<close>
             have "(x, z) \<in> X" by(blast dest: transD)
-            with `X \<in> c` show ?thesis by(rule UnionI)
+            with \<open>X \<in> c\<close> show ?thesis by(rule UnionI)
           qed
         qed
       qed
       moreover
-      have "r \<subseteq> \<Union>c" using r_in_s `s \<in> c` by blast
+      have "r \<subseteq> \<Union>c" using r_in_s \<open>s \<in> c\<close> by blast
       ultimately have "\<Union>c \<in> S" unfolding S_def by simp
       thus ?thesis by blast
     qed
   qed
   then obtain s where "s \<in> S" and y_max: "\<And>t. \<lbrakk> t \<in> S; s \<subseteq> t \<rbrakk> \<Longrightarrow> s = t" by blast
 
-  have "partial_order_on A s" using `s \<in> S`
+  have "partial_order_on A s" using \<open>s \<in> S\<close>
     unfolding S_def by simp
   moreover
-  have r_in_s: "r \<subseteq> s" using `s \<in> S` unfolding S_def by blast
+  have r_in_s: "r \<subseteq> s" using \<open>s \<in> S\<close> unfolding S_def by blast
 
   have "total_on A s"
     unfolding total_on_def
@@ -318,12 +318,12 @@ proof(atomize_elim)
 
       define s' where "s' = {(a, b). a = x \<and> (b = y \<or> b = x) \<or> a = y \<and> b = y}"
       let ?s' = "(s \<union> s')^+"
-      note `partial_order_on A s`
+      note \<open>partial_order_on A s\<close>
       moreover have "linear_order_on {x, y} s'" unfolding s'_def
         by(auto simp add: linear_order_on_def partial_order_on_def preorder_on_def total_on_def intro: refl_onI transI antisymI)
       moreover have "order_consistent s s'"
         unfolding s'_def using xy unfolding order_consistent_def by blast
-      moreover have "{x, y} \<subseteq> A" using `x \<in> A` `y \<in> A` by blast
+      moreover have "{x, y} \<subseteq> A" using \<open>x \<in> A\<close> \<open>y \<in> A\<close> by blast
       ultimately have "partial_order_on A ?s'"
         by(rule porder_on_linorder_on_tranclp_porder_onI)
       moreover have "r \<subseteq> ?s'" using r_in_s by auto
@@ -331,7 +331,7 @@ proof(atomize_elim)
       moreover have "s \<subseteq> ?s'" by auto
       ultimately have "s = ?s'" by(rule y_max)
       moreover have "(x, y) \<in> ?s'" by(auto simp add: s'_def)
-      ultimately show False using `(x, y) \<notin> s` by simp
+      ultimately show False using \<open>(x, y) \<notin> s\<close> by simp
     qed
   qed
   ultimately have "linear_order_on A s" by(simp add: linear_order_on_def)
@@ -339,8 +339,8 @@ proof(atomize_elim)
   proof(intro strip)
     fix a a'
     assume "(a, a') \<in> r" "(a', a) \<in> s"
-    from `(a, a') \<in> r` have "(a, a') \<in> s" using r_in_s by blast
-    with `partial_order_on A s` `(a', a) \<in> s`
+    from \<open>(a, a') \<in> r\<close> have "(a, a') \<in> s" using r_in_s by blast
+    with \<open>partial_order_on A s\<close> \<open>(a', a) \<in> s\<close>
     show "a = a'" unfolding partial_order_on_def by(blast dest: antisymD)
   qed
   ultimately show "\<exists>s. linear_order_on A s \<and> order_consistent r s" by blast

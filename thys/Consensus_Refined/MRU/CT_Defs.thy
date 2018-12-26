@@ -1,12 +1,12 @@
-section {* Chandra-Toueg $\diamond S$ Algorithm *}
+section \<open>Chandra-Toueg $\diamond S$ Algorithm\<close>
 
 theory CT_Defs
 imports Heard_Of.HOModel "../Consensus_Types" "../Consensus_Misc" Three_Steps
 begin
 
-text {*
+text \<open>
   The following record models the local state of a process.
-*}
+\<close>
 
 record 'val pstate =
   x :: 'val                \<comment> \<open>current value held by process\<close>
@@ -14,21 +14,21 @@ record 'val pstate =
   commt :: "'val"   \<comment> \<open>for coordinators: the value processes are asked to commit to\<close>
   decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
-text {* The algorithm relies on a coordinator for each phase of the algorithm.
+text \<open>The algorithm relies on a coordinator for each phase of the algorithm.
   A phase lasts three rounds. The HO model formalization already provides the 
   infrastructure for this, but unfortunately the coordinator is not passed to
   the @{term sendMsg} function. Using the infrastructure would thus require 
   additional invariants and proofs; for simplicity, we use a global 
-  constant instead. *}
+  constant instead.\<close>
 
 consts coord :: "nat \<Rightarrow> process"
 specification (coord)
   coord_phase[rule_format]: "\<forall>r r'. three_phase r = three_phase r' \<longrightarrow> coord r = coord r'"
   by(auto)
 
-text {*
+text \<open>
   Possible messages sent during the execution of the algorithm.
-*}
+\<close>
 
 datatype 'val msg =
   ValStamp "'val" "nat"
@@ -36,27 +36,27 @@ datatype 'val msg =
 | Vote "'val"
 | Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
-text {*
+text \<open>
   Characteristic predicates on messages.
-*}
+\<close>
 
 definition isValStamp where "isValStamp m \<equiv> \<exists>v ts. m = ValStamp v ts"
 
 definition isVote where "isVote m \<equiv> \<exists>v. m = Vote v"
 
-text {*
+text \<open>
   Selector functions to retrieve components of messages. These functions
   have a meaningful result only when the message is of an appropriate kind.
-*}
+\<close>
 
 fun val where
   "val (ValStamp v ts) = v"
 | "val (Vote v) = v"
 
-text {*
-  The @{text x} and @{text commt} fields of the initial state is unconstrained, all other
+text \<open>
+  The \<open>x\<close> and \<open>commt\<close> fields of the initial state is unconstrained, all other
   fields are initialized appropriately.
-*}
+\<close>
 
 definition CT_initState where
   "CT_initState p st crd \<equiv>
@@ -136,10 +136,10 @@ definition next2 where
    else st' = st
  "
 
-text {*
+text \<open>
   The overall send function and next-state relation are simply obtained as
   the composition of the individual relations defined above.
-*}
+\<close>
 
 definition CT_sendMsg :: "nat \<Rightarrow> process \<Rightarrow> process \<Rightarrow> 'val pstate \<Rightarrow> 'val msg" where
   "CT_sendMsg (r::nat) \<equiv>
@@ -156,12 +156,12 @@ definition
    else if three_step r = 1 then next1 r
    else next2 r"
 
-subsection {* The \emph{CT} Heard-Of machine *}
+subsection \<open>The \emph{CT} Heard-Of machine\<close>
 
-text {*
+text \<open>
   We now define the coordinated HO machine for the \emph{CT} algorithm
   by assembling the algorithm definition and its communication-predicate.
-*}
+\<close>
 
 definition CT_Alg where
   "CT_Alg \<equiv>
@@ -169,9 +169,9 @@ definition CT_Alg where
       sendMsg = CT_sendMsg,
       CnextState = CT_nextState \<rparr>"
 
-text {* The CT algorithm relies on \emph{waiting}: in each round, the
+text \<open>The CT algorithm relies on \emph{waiting}: in each round, the
   coordinator waits until it hears from $\frac{N}{2}$ processes. This
-  it reflected in the following per-round predicate. *}
+  it reflected in the following per-round predicate.\<close>
 
 definition
   CT_commPerRd :: "nat \<Rightarrow> process HO \<Rightarrow> process coord \<Rightarrow> bool" 

@@ -35,17 +35,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection{* Integer Addresses with Ports *}
+subsection\<open>Integer Addresses with Ports\<close>
 theory 
   IntegerPort
   imports 
     NetworkCore
 begin
 
-text{* 
+text\<open>
   A theory describing addresses which are modelled as a pair of Integers - the first being the 
   host address, the second the port number.
-*}
+\<close>
 
 type_synonym 
   address = int

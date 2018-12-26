@@ -1,4 +1,4 @@
-section {*\isaheader{Specification of Annotated Lists}*}
+section \<open>\isaheader{Specification of Annotated Lists}\<close>
 theory AnnotatedListSpec
 imports ICF_Spec_Base
 begin
@@ -11,12 +11,12 @@ begin
 *)
 
 subsection "Introduction"
-text {*
+text \<open>
   We define lists with annotated elements. The annotations form a monoid.
 
   We provide standard list operations and the split-operation, that
   splits the list according to its annotations.
-*}
+\<close>
 locale al =
   \<comment> \<open>Annotated lists are abstracted to lists of pairs of elements and annotations.\<close>
   fixes \<alpha> :: "'s \<Rightarrow> ('e \<times> 'a::monoid_add) list"

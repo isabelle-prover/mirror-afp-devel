@@ -1,11 +1,11 @@
-section {* Rely Quotient Operator \label{S:rely-quotient} *}
+section \<open>Rely Quotient Operator \label{S:rely-quotient}\<close>
 
-text {*
+text \<open>
   The rely quotient operator is used to generalise a Jones-style rely condition
   to a process \cite{jon83a}.
   It is defined in terms of the parallel operator and a process $i$
   representing interference from the environment.
-*}
+\<close>
 
 theory Rely_Quotient
 imports
@@ -13,15 +13,15 @@ imports
   Conjunctive_Iteration
 begin
 
-subsection {* Basic rely quotient *}
+subsection \<open>Basic rely quotient\<close>
 
-text {*
+text \<open>
   The rely quotient of a process $c$ and an interference process $i$
   is the most general process $d$ such that $c$ is refined by $d \parallel i$.
   The following locale introduces the definition of the 
   rely quotient $c \quotient i$ as a non-deterministic choice over 
   all processes $d$ such that $c$ is refined by $d \parallel i$. 
-*}
+\<close>
 
 locale rely_quotient = par_distrib + conjunction_parallel
 begin
@@ -31,9 +31,9 @@ definition
 where
   "c // i \<equiv> \<Sqinter>{ d. (c \<sqsubseteq> d \<parallel> i)}"
 
-text {*
+text \<open>
   Any process $c$ is implemented by itself if the interference is skip.
-*}
+\<close>
 lemma quotient_identity: "c // skip = c"
 proof -
   have "c // skip = \<Sqinter>{ d. (c \<sqsubseteq> d \<parallel> skip) }" by (metis rely_quotient_def)
@@ -41,13 +41,13 @@ proof -
   thus ?thesis by (metis Inf_greatest Inf_lower2 dual_order.antisym dual_order.refl mem_Collect_eq) 
 qed
 
-text {*
+text \<open>
   Provided the interference process $i$ is non-aborting (i.e. it refines chaos), 
   any process $c$ is refined by its rely quotient with $i$ in parallel with $i$.
   If interference $i$ was allowed to be aborting then, 
   because $(c \quotient \bot) \parallel \bot$ equals $\bot$,
   it does not refine $c$ in general. 
-*}
+\<close>
 theorem rely_quotient: 
   assumes nonabort_i: "chaos \<sqsubseteq> i"
   shows "c \<sqsubseteq> (c // i) \<parallel> i"
@@ -76,12 +76,12 @@ proof -
   finally show ?thesis .
 qed
 
-text {*
+text \<open>
   The following theorem represents the Galois connection between 
   the parallel operator (upper adjoint) and the rely quotient operator
   (lower adjoint). This basic relationship is used to prove the majority
   of the theorems about rely quotient.
-*}
+\<close>
 
 theorem rely_refinement: 
   assumes nonabort_i: "chaos \<sqsubseteq> i"
@@ -97,9 +97,9 @@ next
   thus "c // i \<sqsubseteq> d" by (metis rely_quotient_def) 
 qed
 
-text {*
+text \<open>
   Refining the ``numerator'' in a quotient, refines the quotient.
-*}
+\<close>
 
 lemma rely_mono:
   assumes c_refsto_d: "c \<sqsubseteq> d"
@@ -112,12 +112,12 @@ proof -
   show ?thesis using rely_quotient_def b by simp
 qed
 
-text {*
+text \<open>
   Refining the ``denominator'' in a quotient, gives a reverse refinement 
   for the quotients. This corresponds to weaken rely condition law of
   Jones \cite{jon83a}, 
   i.e. assuming less about the environment.
-*}
+\<close>
 
 lemma weaken_rely: 
   assumes i_refsto_j: "i \<sqsubseteq> j"
@@ -137,10 +137,10 @@ lemma par_nonabort:
   shows "chaos \<sqsubseteq> i \<parallel> j"
   by (meson chaos_par_chaos nonabort_i nonabort_j order_trans par_mono) 
 
-text {*
+text \<open>
   Nesting rely quotients of $j$ and $i$ means the same as a single quotient
   which is the parallel composition of $i$ and $j$.
-*}
+\<close>
 
 lemma nested_rely: 
   assumes j_nonabort: "chaos \<sqsubseteq> j"
@@ -168,16 +168,16 @@ qed
 end
 
 
-subsection {* Distributed rely quotient *}
+subsection \<open>Distributed rely quotient\<close>
 
 locale rely_distrib = rely_quotient + conjunction_sequential
 begin
 
-text {*
+text \<open>
   The following is a fundamental law for introducing a parallel composition
   of process to refine a conjunction of specifications. 
   It represents an abstract view of the parallel introduction law of Jones \cite{jon83a}.
-*}
+\<close>
 
 lemma introduce_parallel: 
   assumes nonabort_i: "chaos \<sqsubseteq>  i"
@@ -193,10 +193,10 @@ proof -
   show ?thesis using interchange by (simp add: local.conj_commute) 
 qed
 
-text {*
+text \<open>
   Rely quotients satisfy a range of distribution properties with respect
   to the other operators.
-*}
+\<close>
 
 lemma distribute_rely_conjunction: 
   assumes nonabort_i: "chaos \<sqsubseteq>  i"

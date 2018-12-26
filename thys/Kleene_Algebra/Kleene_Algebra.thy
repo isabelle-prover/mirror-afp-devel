@@ -4,15 +4,15 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Kleene Algebras *}
+section \<open>Kleene Algebras\<close>
 
 theory Kleene_Algebra
 imports Conway
 begin
 
-subsection {* Left Near Kleene Algebras *}
+subsection \<open>Left Near Kleene Algebras\<close>
 
-text {* Extending the hierarchy developed in @{theory Kleene_Algebra.Dioid} we now
+text \<open>Extending the hierarchy developed in @{theory Kleene_Algebra.Dioid} we now
 add an operation of Kleene star, finite iteration, or reflexive
 transitive closure to variants of Dioids. Since a multiplicative unit
 is needed for defining the star we only consider variants with~$1$;
@@ -34,7 +34,7 @@ Sledgehammer and Metis, we display step-wise proofs as they would
 appear in a text book. First, this file may then be useful as a
 reference manual on Kleene algebra. Second, it is better protected
 against changes in the underlying theories and supports easy
-translation of proofs into other settings.  *}
+translation of proofs into other settings.\<close>
 
 class left_near_kleene_algebra = near_dioid_one + star_op +
   assumes star_unfoldl: "1 + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -42,14 +42,14 @@ class left_near_kleene_algebra = near_dioid_one + star_op +
 
 begin
 
-text {* First we prove two immediate consequences of the unfold
-axiom. The first one states that starred elements are reflexive. *}
+text \<open>First we prove two immediate consequences of the unfold
+axiom. The first one states that starred elements are reflexive.\<close>
 
 lemma star_ref [simp]: "1 \<le> x\<^sup>\<star>"
   using star_unfoldl by auto
  
-text {* Reflexivity of starred elements implies, by definition of the
-order, that~$1$ is an additive unit for starred elements. *}
+text \<open>Reflexivity of starred elements implies, by definition of the
+order, that~$1$ is an additive unit for starred elements.\<close>
 
 lemma star_plus_one [simp]: "1 + x\<^sup>\<star> = x\<^sup>\<star>"
   using less_eq_def star_ref by blast
@@ -65,7 +65,7 @@ lemma "x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
 (*nitpick [expect=genuine]*)
   oops
 
-text {* Next we show that starred elements are transitive. *}
+text \<open>Next we show that starred elements are transitive.\<close>
 
 lemma star_trans_eq [simp]: "x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
 proof (rule antisym) \<comment> \<open>this splits an equation into two inequalities\<close>
@@ -80,7 +80,7 @@ qed
 lemma star_trans: "x\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
   by simp
   
-text {* We now derive variants of the star induction axiom. *}
+text \<open>We now derive variants of the star induction axiom.\<close>
 
 lemma star_inductl_var: "x \<cdot> y \<le> y \<Longrightarrow> x\<^sup>\<star> \<cdot> y \<le> y"
 proof -
@@ -137,7 +137,7 @@ lemma star_inductl_star: "x \<cdot> y\<^sup>\<star> \<le> y\<^sup>\<star> \<Long
 lemma star_inductl_eq:  "z + x \<cdot> y = y \<Longrightarrow> x\<^sup>\<star> \<cdot> z \<le> y"
   by (simp add: star_inductl)
 
-text {* We now prove two facts related to~$1$. *}
+text \<open>We now prove two facts related to~$1$.\<close>
 
 lemma star_subid: "x \<le> 1 \<Longrightarrow> x\<^sup>\<star> = 1"
 proof -
@@ -153,8 +153,8 @@ qed
 lemma star_one [simp]: "1\<^sup>\<star> = 1"
   by (simp add: star_subid)
 
-text {* We now prove a subdistributivity property for the star (which
-is equivalent to isotonicity of star). *}
+text \<open>We now prove a subdistributivity property for the star (which
+is equivalent to isotonicity of star).\<close>
 
 lemma star_subdist:  "x\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
 proof -
@@ -172,7 +172,7 @@ lemma star_subdist_var:  "x\<^sup>\<star> + y\<^sup>\<star> \<le> (x + y)\<^sup>
 lemma star_iso [intro]: "x \<le> y \<Longrightarrow> x\<^sup>\<star> \<le> y\<^sup>\<star>"
   by (metis less_eq_def star_subdist)
 
-text {* We now prove some more simple properties. *}
+text \<open>We now prove some more simple properties.\<close>
 
 lemma star_invol [simp]: "(x\<^sup>\<star>)\<^sup>\<star> = x\<^sup>\<star>"
 proof (rule antisym)
@@ -218,9 +218,9 @@ lemma "x \<cdot> z \<le> z \<cdot> y \<Longrightarrow> x\<^sup>\<star> \<cdot> z
 (*nitpick [expect=genuine]*)
   oops
 
-text {* The following facts express inductive conditions that are used
+text \<open>The following facts express inductive conditions that are used
 to show that @{term "(x + y)\<^sup>\<star>"} is the greatest term that can be built
-from~@{term x} and~@{term y}.  *}
+from~@{term x} and~@{term y}.\<close>
 
 lemma prod_star_closure: "x \<le> z\<^sup>\<star> \<Longrightarrow> y \<le> z\<^sup>\<star> \<Longrightarrow> x \<cdot> y \<le> z\<^sup>\<star>"
 proof -
@@ -248,13 +248,13 @@ lemma "x\<^sup>\<star> = x \<longleftrightarrow> x = 1 + x \<cdot> x"
 end (* left_near_kleene_algebra *)
 
 
-subsection {* Left Pre-Kleene Algebras *}
+subsection \<open>Left Pre-Kleene Algebras\<close>
 
 class left_pre_kleene_algebra = left_near_kleene_algebra + pre_dioid_one
 
 begin
 
-text {* We first prove that the star operation is extensive. *}
+text \<open>We first prove that the star operation is extensive.\<close>
 
 lemma star_ext [simp]: "x \<le> x\<^sup>\<star>"
 proof -
@@ -264,7 +264,7 @@ proof -
     by (metis order_trans star_1l)
 qed
 
-text {* We now prove a right star unfold law. *}
+text \<open>We now prove a right star unfold law.\<close>
 
 lemma star_1r [simp]: "x\<^sup>\<star> \<cdot> x \<le> x\<^sup>\<star>"
 proof -
@@ -281,8 +281,8 @@ lemma "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
 (*nitpick [expect=genuine]*)
   oops
 
-text {* Next we prove a simulation law for the star.  It is
-instrumental in proving further properties. *}
+text \<open>Next we prove a simulation law for the star.  It is
+instrumental in proving further properties.\<close>
 
 lemma star_sim1: "x \<cdot> z \<le> z \<cdot> y \<Longrightarrow> x\<^sup>\<star> \<cdot> z \<le> z \<cdot> y\<^sup>\<star>"
 proof -
@@ -299,10 +299,10 @@ proof -
     by (simp add: star_inductl mult_assoc)
 qed
 
-text {* The next lemma is used in omega algebras to prove, for
+text \<open>The next lemma is used in omega algebras to prove, for
 instance, Bachmair and Dershowitz's separation of termination
 theorem~\cite{bachmair86commutation}. The property at the left-hand
-side of the equivalence is known as \emph{quasicommutation}. *}
+side of the equivalence is known as \emph{quasicommutation}.\<close>
 
 lemma quasicomm_var: "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star> \<longleftrightarrow> y\<^sup>\<star> \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
 proof
@@ -325,7 +325,7 @@ lemma "(x \<cdot> y)\<^sup>\<star> \<cdot> x = x \<cdot> (y \<cdot> x)\<^sup>\<s
 lemma star_slide_var1: "x\<^sup>\<star> \<cdot> x \<le> x \<cdot> x\<^sup>\<star>" 
   by (simp add: star_sim1)
 
-text {* We now show that the (left) star unfold axiom can be strengthened to an equality. *}
+text \<open>We now show that the (left) star unfold axiom can be strengthened to an equality.\<close>
 
 lemma star_unfoldl_eq [simp]: "1 + x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
 proof (rule antisym)
@@ -341,8 +341,8 @@ lemma "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
 (*nitpick [expect=genuine]*)
   oops
 
-text {* Next we relate the star and the reflexive transitive closure
-operation. *}
+text \<open>Next we relate the star and the reflexive transitive closure
+operation.\<close>
 
 lemma star_rtc1_eq [simp]: "1 + x + x\<^sup>\<star> \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
   by (simp add: join.sup.absorb2)
@@ -380,7 +380,7 @@ lemma "1 + x + y \<cdot> y \<le> y \<longleftrightarrow> x\<^sup>\<star> \<le> y
 (*nitpick [expect=genuine]*)
   oops
 
-text {* The next lemmas are again related to closure conditions *}
+text \<open>The next lemmas are again related to closure conditions\<close>
 
 lemma star_subdist_var_1: "x \<le> (x + y)\<^sup>\<star>"
   by (meson join.sup.boundedE star_ext)
@@ -391,8 +391,8 @@ lemma star_subdist_var_2: "x \<cdot> y \<le> (x + y)\<^sup>\<star>"
 lemma star_subdist_var_3: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<le> (x + y)\<^sup>\<star>"
   by (simp add: prod_star_closure star_iso)
 
-text {* We now prove variants of sum-elimination laws under a star.
-These are also known a denesting laws or as sum-star laws. *}
+text \<open>We now prove variants of sum-elimination laws under a star.
+These are also known a denesting laws or as sum-star laws.\<close>
 
 lemma star_denest [simp]: "(x + y)\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
 proof (rule antisym)
@@ -473,10 +473,10 @@ lemma star_denest_var_8 [simp]: "x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<cdot>
 lemma star_denest_var_9 [simp]: "(x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star> \<cdot> x\<^sup>\<star> \<cdot> y\<^sup>\<star> = (x\<^sup>\<star> \<cdot> y\<^sup>\<star>)\<^sup>\<star>"
   using star_denest_var_7 by simp
 
-text {* The following statements are well known from term
+text \<open>The following statements are well known from term
 rewriting. They are all variants of the Church-Rosser theorem in
 Kleene algebra~\cite{struth06churchrosser}. But first we prove a law
-relating two confluence properties. *}
+relating two confluence properties.\<close>
 
 lemma confluence_var [iff]: "y \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<longleftrightarrow> y\<^sup>\<star> \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
 proof
@@ -528,15 +528,15 @@ lemma "y \<cdot> x \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<Longrightarro
 lemma "y \<cdot> x \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star> \<Longrightarrow> (x + y)\<^sup>\<star> \<le> x\<^sup>\<star> \<cdot> y\<^sup>\<star>"
   (* nitpick [expect=genuine] *) oops
 
-text {*
+text \<open>
 More variations could easily be proved. The last counterexample shows
 that Newman's lemma needs a wellfoundedness assumption. This is well
 known.
-*}
+\<close>
 
 
-text {* The next lemmas relate the reflexive transitive closure and
-the transitive closure. *}
+text \<open>The next lemmas relate the reflexive transitive closure and
+the transitive closure.\<close>
 
 lemma sup_id_star1: "1 \<le> x \<Longrightarrow> x \<cdot> x\<^sup>\<star> = x\<^sup>\<star>"
 proof -
@@ -565,18 +565,18 @@ lemma "x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
 end (* left_pre_kleene_algebra *)
 
 
-subsection {* Left Kleene Algebras *}
+subsection \<open>Left Kleene Algebras\<close>
 
 class left_kleene_algebra = left_pre_kleene_algebra + dioid_one
 
 begin
 
-text {* In left Kleene algebras the non-fact @{prop "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"}
+text \<open>In left Kleene algebras the non-fact @{prop "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"}
 is a good challenge for counterexample generators. A model of left
 Kleene algebras in which the right star induction law does not hold
-has been given by Kozen~\cite{kozen90kleene}. *}
+has been given by Kozen~\cite{kozen90kleene}.\<close>
 
-text {* We now show that the right unfold law becomes an equality. *}
+text \<open>We now show that the right unfold law becomes an equality.\<close>
 
 lemma star_unfoldr_eq [simp]: "1 + x\<^sup>\<star> \<cdot> x = x\<^sup>\<star>"
 proof (rule antisym)
@@ -590,8 +590,8 @@ proof (rule antisym)
     by (simp add: star_inductl_one)
 qed
 
-text {* The following more complex unfold law has been used as an
-axiom, called prodstar, by Conway~\cite{conway71regular}. *}
+text \<open>The following more complex unfold law has been used as an
+axiom, called prodstar, by Conway~\cite{conway71regular}.\<close>
 
 lemma star_prod_unfold [simp]: "1 + x \<cdot> (y \<cdot> x)\<^sup>\<star> \<cdot> y = (x \<cdot> y)\<^sup>\<star>"
 proof (rule antisym)
@@ -605,8 +605,8 @@ proof (rule antisym)
     by simp
 qed
 
-text {* The slide laws, which have previously been inequalities, now
-become equations. *}
+text \<open>The slide laws, which have previously been inequalities, now
+become equations.\<close>
 
 lemma star_slide [ac_simps]: "(x \<cdot> y)\<^sup>\<star> \<cdot> x = x \<cdot> (y \<cdot> x)\<^sup>\<star>"
 proof -
@@ -624,7 +624,7 @@ lemma star_slide_var [ac_simps]: "x\<^sup>\<star> \<cdot> x = x \<cdot> x\<^sup>
 lemma star_sum_unfold_var [simp]: "1 + x\<^sup>\<star> \<cdot> (x + y)\<^sup>\<star> \<cdot> y\<^sup>\<star> = (x + y)\<^sup>\<star>"
   by (metis star_denest star_denest_var_3 star_denest_var_4 star_plus_one star_slide)
 
-text {* The following law shows how starred sums can be unfolded. *}
+text \<open>The following law shows how starred sums can be unfolded.\<close>
 
 lemma star_sum_unfold [simp]: "x\<^sup>\<star> + x\<^sup>\<star> \<cdot> y \<cdot> (x + y)\<^sup>\<star> = (x + y)\<^sup>\<star>"
 proof -
@@ -638,7 +638,7 @@ proof -
     by (simp add: distrib_left mult_assoc)
 qed
 
-text {* The following property appears in process algebra. *}
+text \<open>The following property appears in process algebra.\<close>
 
 lemma troeger: "(x + y)\<^sup>\<star> \<cdot> z = x\<^sup>\<star> \<cdot> (y \<cdot> (x + y)\<^sup>\<star> \<cdot> z + z)"
 proof -
@@ -648,10 +648,10 @@ proof -
     by (simp add: add_commute distrib_left mult_assoc)
 qed
 
-text {* The following properties are related to a property from
+text \<open>The following properties are related to a property from
 propositional dynamic logic which has been attributed to Albert
 Meyer~\cite{harelkozentiuryn00dynamic}. Here we prove it as a theorem
-of Kleene algebra. *}
+of Kleene algebra.\<close>
 
 lemma star_square: "(x \<cdot> x)\<^sup>\<star> \<le> x\<^sup>\<star>"
 proof -
@@ -679,8 +679,8 @@ proof (rule antisym)
     by (simp add: prod_star_closure star_square)
 qed
 
-text {* The following lemma says that transitive elements are equal to
-their transitive closure. *}
+text \<open>The following lemma says that transitive elements are equal to
+their transitive closure.\<close>
 
 lemma tc: "x \<cdot> x \<le> x \<Longrightarrow> x\<^sup>\<star> \<cdot> x = x"
 proof -
@@ -697,8 +697,8 @@ lemma tc_eq: "x \<cdot> x = x \<Longrightarrow> x\<^sup>\<star> \<cdot> x = x"
   by (auto intro: tc)
 
 
-text {* The next fact has been used by Boffa~\cite{boffa90remarque} to
-axiomatise the equational theory of regular expressions. *}
+text \<open>The next fact has been used by Boffa~\cite{boffa90remarque} to
+axiomatise the equational theory of regular expressions.\<close>
 
 lemma boffa_var: "x \<cdot> x \<le> x \<Longrightarrow> x\<^sup>\<star> = 1 + x"
 proof -
@@ -730,13 +730,13 @@ oops
 end (* left_kleene_algebra *)
 
 
-subsection {* Left Kleene Algebras with Zero *}
+subsection \<open>Left Kleene Algebras with Zero\<close>
 
-text {*
+text \<open>
 There are applications where only a left zero is assumed, for instance
 in the context of total correctness and for demonic refinement
 algebras~\cite{vonwright04refinement}.
-*}
+\<close>
 
 class left_kleene_algebra_zerol = left_kleene_algebra + dioid_one_zerol
 begin
@@ -747,9 +747,9 @@ sublocale conway: near_conway_base_zerol star
 lemma star_zero [simp]: "0\<^sup>\<star> = 1"
   by (rule local.conway.zero_dagger)
 
-text {*
+text \<open>
 In principle,~$1$ could therefore be defined from~$0$ in this setting.
-*}
+\<close>
 
 end (* left_kleene_algebra_zerol *)
 
@@ -757,17 +757,17 @@ end (* left_kleene_algebra_zerol *)
 class left_kleene_algebra_zero = left_kleene_algebra_zerol + dioid_one_zero
 
 
-subsection {* Pre-Kleene Algebras *}
+subsection \<open>Pre-Kleene Algebras\<close>
 
-text {* Pre-Kleene algebras are essentially probabilistic Kleene
+text \<open>Pre-Kleene algebras are essentially probabilistic Kleene
 algebras~\cite{mciverweber05pka}.  They have a weaker right star
 unfold axiom. We are still looking for theorems that could be proved
-in this setting.  *}
+in this setting.\<close>
 
 class pre_kleene_algebra = left_pre_kleene_algebra +
   assumes weak_star_unfoldr: "z + y \<cdot> (x + 1) \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
 
-subsection {* Kleene Algebras *}
+subsection \<open>Kleene Algebras\<close>
 
 class kleene_algebra_zerol = left_kleene_algebra_zerol + 
   assumes star_inductr: "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
@@ -858,11 +858,11 @@ lemma "(\<forall>x y. y \<le> x \<cdot> y \<longrightarrow> y = 0) \<Longrightar
 
 end
 
-text {* Finally, here come the Kleene algebras \`a~la
+text \<open>Finally, here come the Kleene algebras \`a~la
 Kozen~\cite{kozen94complete}. We only prove quasi-identities in this
 section. Since left Kleene algebras are complete with respect to the
 equational theory of regular expressions and regular languages, all
-identities hold already without the right star induction axiom. *}
+identities hold already without the right star induction axiom.\<close>
 
 class kleene_algebra = left_kleene_algebra_zero +
   assumes star_inductr': "z + y \<cdot> x \<le> y \<Longrightarrow> z \<cdot> x\<^sup>\<star> \<le> y"
@@ -873,11 +873,11 @@ subclass kleene_algebra_zerol
 
 sublocale conway_zerol: conway star ..
 
-text {*
+text \<open>
 The next lemma shows that opposites of Kleene algebras (i.e., Kleene
 algebras with the order of multiplication swapped) are again Kleene
 algebras.
-*}
+\<close>
 
 lemma dual_kleene_algebra:
   "class.kleene_algebra (+) (\<odot>) 1 0 (\<le>) (<) star"
@@ -913,9 +913,9 @@ qed
 
 end (* kleene_algebra *)
 
-text {* We finish with some properties on (multiplicatively)
+text \<open>We finish with some properties on (multiplicatively)
 commutative Kleene algebras. A chapter in Conway's
-book~\cite{conway71regular} is devoted to this topic. *}
+book~\cite{conway71regular} is devoted to this topic.\<close>
 
 class commutative_kleene_algebra = kleene_algebra +
   assumes mult_comm [ac_simps]: "x \<cdot> y = y \<cdot> x"

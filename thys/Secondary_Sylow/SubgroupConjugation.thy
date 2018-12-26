@@ -7,17 +7,17 @@ theory SubgroupConjugation
 imports GroupAction
 begin
 
-section {* Conjugation of Subgroups and Cosets *}
+section \<open>Conjugation of Subgroups and Cosets\<close>
 
-text {* This theory examines properties of the conjugation of subgroups
-of a fixed group as a group action *}
+text \<open>This theory examines properties of the conjugation of subgroups
+of a fixed group as a group action\<close>
 
-subsection {* Definitions and Preliminaries *}
+subsection \<open>Definitions and Preliminaries\<close>
 
-text {* We define the set of all subgroups of @{term G} which have a certain
+text \<open>We define the set of all subgroups of @{term G} which have a certain
 cardinality. @{term G} will act on those sets. Afterwards some theorems which
 are already available for right cosets are dualized into statements about
-left cosets.*}
+left cosets.\<close>
 
 lemma (in subgroup) subgroup_of_subset:
   assumes G:"group G"
@@ -94,11 +94,11 @@ proof -
   thus "card (g <# M) = card M" by (metis bij_betw_same_card)
 qed
 
-subsection {* Conjugation is a group action *}
+subsection \<open>Conjugation is a group action\<close>
 
-text {* We will now prove that conjugation acts on the subgroups
+text \<open>We will now prove that conjugation acts on the subgroups
 of a certain group. A large part of this proof consists of showing that
-the conjugation of a subgroup with a group element is, again, a subgroup. *}
+the conjugation of a subgroup with a group element is, again, a subgroup.\<close>
 
 lemma conjugation_subgroup:
   assumes HG:"subgroup H G"
@@ -241,14 +241,14 @@ proof(auto)
   then obtain p where "p \<in> P" and p:"x = g \<otimes> (p \<otimes> h)" unfolding l_coset_def r_coset_def by auto
   with P have "p \<in> carrier G" by auto
   with g h p have "x = (g \<otimes> p) \<otimes> h" by (metis m_assoc)
-  with `p \<in> P` show "x \<in> (g <# P) #> h" unfolding l_coset_def r_coset_def by auto
+  with \<open>p \<in> P\<close> show "x \<in> (g <# P) #> h" unfolding l_coset_def r_coset_def by auto
 next
   fix x
   assume "x \<in> (g <# P) #> h"
   then obtain p where "p \<in> P" and p:"x = (g \<otimes> p) \<otimes> h" unfolding l_coset_def r_coset_def by auto
   with P have "p \<in> carrier G" by auto
   with g h p have "x = g \<otimes> (p \<otimes> h)" by (metis m_assoc)
-  with `p \<in> P` show "x \<in> g <# (P #> h)" unfolding l_coset_def r_coset_def by auto
+  with \<open>p \<in> P\<close> show "x \<in> g <# (P #> h)" unfolding l_coset_def r_coset_def by auto
 qed
 
 theorem acts_on_subsets:
@@ -298,7 +298,7 @@ next
     unfolding conjx_def conjy_def conjugation_action_def by simp
 qed
 
-subsection {* Properties of the Conjugation Action *}
+subsection \<open>Properties of the Conjugation Action\<close>
 
 lemma stabilizer_contains_P:
   assumes fin:"finite (carrier G)"
@@ -312,7 +312,7 @@ proof
   with PG have "inv x \<in> P" by (metis subgroup.m_inv_closed) 
   from x P have xG:"x \<in> carrier G" unfolding subgroups_of_size_def subgroup_def by auto
   with P have "conjugation_action p x P = x <# (P #> inv x)" unfolding conjugation_action_def by simp
-  also from `inv x \<in> P` PG have "... = x <# P" by (metis coset_join2 subgroup.mem_carrier)
+  also from \<open>inv x \<in> P\<close> PG have "... = x <# P" by (metis coset_join2 subgroup.mem_carrier)
   also from PG x have "... = P" by (rule lcoset_join2)
   finally have "conjugation_action p x P = P".
   with xG show "x \<in> group_action.stabilizer G (conjugation_action p) P" unfolding conj.stabilizer_def by simp

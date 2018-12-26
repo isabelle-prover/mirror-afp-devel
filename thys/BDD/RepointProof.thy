@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* Proof of Procedure Repoint *}
+section \<open>Proof of Procedure Repoint\<close>
 theory RepointProof imports ProcedureSpecs begin
 
 hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip

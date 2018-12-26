@@ -5,10 +5,10 @@ theory Containers_Auxiliary imports
   "HOL-Library.Monad_Syntax"
 begin
 
-chapter {* An executable linear order on sets *}
-text_raw {* \label{chapter:linear:order:set} *}
+chapter \<open>An executable linear order on sets\<close>
+text_raw \<open>\label{chapter:linear:order:set}\<close>
 
-section {* Auxiliary definitions *}
+section \<open>Auxiliary definitions\<close>
 
 lemma insert_bind_set: "insert a A \<bind> f = f a \<union> (A \<bind> f)"
 by(auto simp add: Set.bind_def)
@@ -100,7 +100,7 @@ by(simp add: ID_def)
 lemma ID_None: "ID None = None" 
 by(simp add: ID_def)
 
-text {* lexicographic order on pairs *}
+text \<open>lexicographic order on pairs\<close>
 
 context
   fixes leq_a :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<sqsubseteq>\<^sub>a" 50) 

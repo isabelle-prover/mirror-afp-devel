@@ -5,7 +5,7 @@ begin
 context semantic_domain
 begin
 
-subsubsection {* The semantics ignores fresh variables *}
+subsubsection \<open>The semantics ignores fresh variables\<close>
 
 lemma ESem_considers_fv': "\<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> = \<lbrakk> e \<rbrakk>\<^bsub>\<rho> f|` (fv e)\<^esub>"
 proof (induct e arbitrary: \<rho> rule:exp_induct)
@@ -53,7 +53,7 @@ qed auto
 sublocale has_ignore_fresh_ESem ESem
   by standard (rule fv_supp_exp, rule ESem_considers_fv')
 
-subsubsection {* Nicer equations for ESem, without freshness requirements *}
+subsubsection \<open>Nicer equations for ESem, without freshness requirements\<close>
 
 lemma ESem_Lam[simp]: "\<lbrakk> Lam [x]. e \<rbrakk>\<^bsub>\<rho>\<^esub> = tick \<cdot> (Fn \<cdot> (\<Lambda> v. \<lbrakk> e \<rbrakk>\<^bsub>\<rho>(x := v)\<^esub>))"
 proof-
@@ -89,7 +89,7 @@ qed
 declare ESem.simps(4)[simp del]
 
 
-subsubsection {* Denotation of Substitution *}
+subsubsection \<open>Denotation of Substitution\<close>
 
 lemma ESem_subst_same: "\<rho> x = \<rho> y \<Longrightarrow>  \<lbrakk> e \<rbrakk>\<^bsub>\<rho>\<^esub> = \<lbrakk> e[x::= y] \<rbrakk>\<^bsub>\<rho>\<^esub>"
   and 
@@ -102,20 +102,20 @@ case App
   show ?case by auto
 next
 case (Let as exp x y \<rho>)
-  from `atom \` domA as \<sharp>* x` `atom \` domA as  \<sharp>* y` 
+  from \<open>atom ` domA as \<sharp>* x\<close> \<open>atom ` domA as  \<sharp>* y\<close> 
   have "x \<notin> domA as" "y \<notin> domA as"
     by (metis fresh_star_at_base imageI)+
   hence [simp]:"domA (as[x::h=y]) = domA as" 
     by (metis bn_subst)
 
-  from `\<rho> x = \<rho> y`
+  from \<open>\<rho> x = \<rho> y\<close>
   have "(\<lbrace>as\<rbrace>\<rho>) x = (\<lbrace>as\<rbrace>\<rho>) y"
-    using `x \<notin> domA as` `y \<notin> domA as`
+    using \<open>x \<notin> domA as\<close> \<open>y \<notin> domA as\<close>
     by (simp add: lookup_HSem_other)
   hence "\<lbrakk>exp\<rbrakk>\<^bsub>\<lbrace>as\<rbrace>\<rho>\<^esub> = \<lbrakk>exp[x::=y]\<rbrakk>\<^bsub>\<lbrace>as\<rbrace>\<rho>\<^esub>"
     by (rule Let)
   moreover
-  from `\<rho> x = \<rho> y`
+  from \<open>\<rho> x = \<rho> y\<close>
   have "\<lbrace>as\<rbrace>\<rho> = \<lbrace>as[x::h=y]\<rbrace>\<rho>" and "(\<lbrace>as\<rbrace>\<rho>) x = (\<lbrace>as[x::h=y]\<rbrace>\<rho>) y"
     apply (induction rule: parallel_HSem_ind)
     apply (intro adm_lemmas cont2cont cont2cont_fun)
@@ -123,14 +123,14 @@ case (Let as exp x y \<rho>)
     apply simp
     apply simp
     apply (erule arg_cong[OF Let(3)])
-    using `x \<notin> domA as` `y \<notin> domA as`
+    using \<open>x \<notin> domA as\<close> \<open>y \<notin> domA as\<close>
     apply simp
     done
   ultimately
   show ?case using Let(1,2,3) by (simp add: fresh_star_Pair)
 next
 case (Lam var exp x y \<rho>)
-  from `\<rho> x = \<rho> y`
+  from \<open>\<rho> x = \<rho> y\<close>
   have "\<And>v. (\<rho>(var := v)) x = (\<rho>(var := v)) y"
     using Lam(1,2) by (simp add: fresh_at_base)
   hence "\<And> v. \<lbrakk>exp\<rbrakk>\<^bsub>\<rho>(var := v)\<^esub> = \<lbrakk>exp[x::=y]\<rbrakk>\<^bsub>\<rho>(var := v)\<^esub>"

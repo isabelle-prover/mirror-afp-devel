@@ -1,36 +1,36 @@
-section {* Union-Find Data-Structure *}
+section \<open>Union-Find Data-Structure\<close>
 theory Union_Find
 imports 
   "../Sep_Main" 
   Collections.Partial_Equivalence_Relation
   "HOL-Library.Code_Target_Numeral"
 begin
-text {*
+text \<open>
   We implement a simple union-find data-structure based on an array.
   It uses path compression and a size-based union heuristics.
-*}
+\<close>
 
-subsection {* Abstract Union-Find on Lists *}
-text {*
+subsection \<open>Abstract Union-Find on Lists\<close>
+text \<open>
   We first formulate union-find structures on lists, and later implement 
   them using Imperative/HOL. This is a separation of proof concerns
   between proving the algorithmic idea correct and generating the verification
   conditions.
-*}
+\<close>
 
-subsubsection {* Representatives *}
-text {*
+subsubsection \<open>Representatives\<close>
+text \<open>
   We define a function that searches for the representative of an element.
   This function is only partially defined, as it does not terminate on all
   lists. We use the domain of this function to characterize valid union-find 
   lists. 
-*}
+\<close>
 function (domintros) rep_of 
   where "rep_of l i = (if l!i = i then i else rep_of l (l!i))"
   by pat_completeness auto
 
-text {* A valid union-find structure only contains valid indexes, and
-  the @{text "rep_of"} function terminates for all indexes. *}
+text \<open>A valid union-find structure only contains valid indexes, and
+  the \<open>rep_of\<close> function terminates for all indexes.\<close>
 definition 
   "ufa_invar l \<equiv> \<forall>i<length l. rep_of_dom (l,i) \<and> l!i<length l"
 
@@ -39,7 +39,7 @@ lemma ufa_invarD:
   "\<lbrakk>ufa_invar l; i<length l\<rbrakk> \<Longrightarrow> l!i<length l" 
   unfolding ufa_invar_def by auto
 
-text {* We derive the following equations for the @{text "rep-of"} function. *}
+text \<open>We derive the following equations for the \<open>rep-of\<close> function.\<close>
 lemma rep_of_refl: "l!i=i \<Longrightarrow> rep_of l i = i"
   apply (subst rep_of.psimps)
   apply (rule rep_of.domintros)
@@ -58,8 +58,8 @@ lemma rep_of_iff: "\<lbrakk>ufa_invar l; i<length l\<rbrakk>
   \<Longrightarrow> rep_of l i = (if l!i=i then i else rep_of l (l!i))"
   by (simp add: rep_of_simps)
 
-text {* We derive a custom induction rule, that is more suited to
-  our purposes. *}
+text \<open>We derive a custom induction rule, that is more suited to
+  our purposes.\<close>
 lemma rep_of_induct[case_names base step, consumes 2]:
   assumes I: "ufa_invar l" 
   assumes L: "i<length l"
@@ -75,7 +75,7 @@ proof -
   thus ?thesis using I L by simp
 qed
 
-text {* In the following, we define various properties of @{text "rep_of"}. *}
+text \<open>In the following, we define various properties of \<open>rep_of\<close>.\<close>
 lemma rep_of_min: 
   "\<lbrakk> ufa_invar l; i<length l \<rbrakk> \<Longrightarrow> l!(rep_of l i) = rep_of l i"
 proof -
@@ -107,7 +107,7 @@ lemma rep_of_idx:
   "\<lbrakk>ufa_invar l; i<length l\<rbrakk> \<Longrightarrow> rep_of l (l!i) = rep_of l i"
   by (metis rep_of_step)
 
-subsubsection {* Abstraction to Partial Equivalence Relation *}
+subsubsection \<open>Abstraction to Partial Equivalence Relation\<close>
 definition ufa_\<alpha> :: "nat list \<Rightarrow> (nat\<times>nat) set" 
   where "ufa_\<alpha> l 
     \<equiv> {(x,y). x<length l \<and> y<length l \<and> rep_of l x = rep_of l y}"
@@ -138,7 +138,7 @@ lemma ufa_\<alpha>_len_eq:
   shows "length l = length l'"
   by (metis assms le_antisym less_not_refl linorder_le_less_linear ufa_\<alpha>_refl)
 
-subsubsection {* Operations *}
+subsubsection \<open>Operations\<close>
 lemma ufa_init_invar: "ufa_invar [0..<n]"
   unfolding ufa_invar_def
   by (auto intro: rep_of.domintros)
@@ -184,7 +184,7 @@ proof (intro allI impI, simp only: length_list_update)
   next
     case (step i)
 
-    from step.prems `ufa_invar l` `i<length l` `l!i\<noteq>i` 
+    from step.prems \<open>ufa_invar l\<close> \<open>i<length l\<close> \<open>l!i\<noteq>i\<close> 
     have [simp]: "ufa_union l x y ! i = l!i"
       apply (auto simp: rep_of_min rep_of_bound nth_list_update)
       done
@@ -210,8 +210,8 @@ lemma ufa_union_aux:
   using I IL
 proof (induct rule: rep_of_induct)
   case (base i)
-  have [simp]: "rep_of l i = i" using `l!i=i` by (simp add: rep_of_refl)
-  note [simp] = `ufa_invar l` `i<length l`
+  have [simp]: "rep_of l i = i" using \<open>l!i=i\<close> by (simp add: rep_of_refl)
+  note [simp] = \<open>ufa_invar l\<close> \<open>i<length l\<close>
   show ?case proof (cases)
     assume A[simp]: "rep_of l x = i"
     have [simp]: "l[i := rep_of l y] ! i = rep_of l y" 
@@ -234,18 +234,18 @@ proof (induct rule: rep_of_induct)
   next
     assume A: "rep_of l x \<noteq> i"
     hence "ufa_union l x y ! i = l!i" by (auto)
-    also note `l!i=i`
+    also note \<open>l!i=i\<close>
     finally have "rep_of (ufa_union l x y) i = i" by (simp add: rep_of_refl)
     thus ?thesis using A by auto
   qed
 next    
   case (step i)
 
-  note [simp] = I L `i<length l`
+  note [simp] = I L \<open>i<length l\<close>
 
-  have "rep_of l x \<noteq> i" by (metis I L(1) rep_of_min `l!i\<noteq>i`)
+  have "rep_of l x \<noteq> i" by (metis I L(1) rep_of_min \<open>l!i\<noteq>i\<close>)
   hence [simp]: "ufa_union l x y ! i = l!i"
-    by (auto simp add: nth_list_update rep_of_bound `l!i\<noteq>i`) []
+    by (auto simp add: nth_list_update rep_of_bound \<open>l!i\<noteq>i\<close>) []
 
   have "rep_of (ufa_union l x y) i = rep_of (ufa_union l x y) (l!i)" 
     by (auto simp add: rep_of_iff[OF ufa_union_invar[OF I L]])
@@ -323,14 +323,14 @@ lemma ufa_compress_correct:
   shows "ufa_\<alpha> (l[x := rep_of l x]) = ufa_\<alpha> l"
   by (auto simp: ufa_\<alpha>_def ufa_compress_aux[OF I])
 
-subsection {* Implementation with Imperative/HOL *}
-text {* In this section, we implement the union-find data-structure with
+subsection \<open>Implementation with Imperative/HOL\<close>
+text \<open>In this section, we implement the union-find data-structure with
   two arrays, one holding the next-pointers, and another one holding the size
   information. Note that we do not prove that the array for the 
   size information contains any reasonable values, as the correctness of the
   algorithm is not affected by this. We leave it future work to also estimate
   the complexity of the algorithm.
-*}
+\<close>
 
 type_synonym uf = "nat array \<times> nat array"
 
@@ -368,7 +368,7 @@ lemma uf_rep_of_rule[sep_heap_rules]: "\<lbrakk>ufa_invar l; i<length l\<rbrakk>
   apply (sep_auto simp: rep_of_step)
   done
 
-text {* We chose a non tail-recursive version here, as it is easier to prove. *}
+text \<open>We chose a non tail-recursive version here, as it is easier to prove.\<close>
 partial_function (heap) uf_compress :: "nat \<Rightarrow> nat \<Rightarrow> nat array \<Rightarrow> unit Heap" 
   where [code]: 
   "uf_compress i ci p = (
@@ -391,7 +391,7 @@ proof (induction rule: rep_of_induct)
     done
 next
   case (step i)
-  note SS = `ufa_invar l` `i<length l` `l!i\<noteq>i` `ci = rep_of l i`
+  note SS = \<open>ufa_invar l\<close> \<open>i<length l\<close> \<open>l!i\<noteq>i\<close> \<open>ci = rep_of l i\<close>
 
   from step.IH 
   have IH': 

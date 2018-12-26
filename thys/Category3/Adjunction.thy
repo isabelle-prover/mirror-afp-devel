@@ -9,7 +9,7 @@ theory Adjunction
 imports Yoneda
 begin
 
-  text{*
+  text\<open>
     This theory defines the notions of adjoint functor and adjunction in various
     ways and establishes their equivalence.
     The notions ``left adjoint functor'' and ``right adjoint functor'' are defined
@@ -21,21 +21,21 @@ begin
     ``Unit-counit adjunctions'' define adjunctions in terms of functors equipped
     with unit and counit natural transformations that satisfy the usual
     ``triangle identities.''
-    The @{text adjunction} locale is defined as the grand unification of all the
+    The \<open>adjunction\<close> locale is defined as the grand unification of all the
     definitions, and includes formulas that connect the data from each of them.
     It is shown that each of the definitions induces an interpretation of the
-    @{text adjunction} locale, so that all the definitions are essentially equivalent.
+    \<open>adjunction\<close> locale, so that all the definitions are essentially equivalent.
     Finally, it is shown that right adjoint functors are unique up to natural
     isomorphism.
 
     The reference \cite{Wikipedia-Adjoint-Functors} was useful in constructing this theory.
-  *}
+\<close>
 
   section "Left Adjoint Functor"
 
-  text{*
+  text\<open>
     ``@{term e} is an arrow from @{term "F x"} to @{term y}.''
-  *}
+\<close>
 
   locale arrow_from_functor =
     C: category C +
@@ -53,18 +53,18 @@ begin
     notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
     notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
 
-    text{*
+    text\<open>
       ``@{term g} is a @{term[source=true] D}-coextension of @{term f} along @{term e}.''
-    *}
+\<close>
 
     definition is_coext :: "'d \<Rightarrow> 'c \<Rightarrow> 'd \<Rightarrow> bool"
     where "is_coext x' f g \<equiv> \<guillemotleft>g : x' \<rightarrow>\<^sub>D x\<guillemotright> \<and> f = e \<cdot>\<^sub>C F g"
 
   end
 
-  text{*
+  text\<open>
     ``@{term e} is a terminal arrow from @{term "F x"} to @{term y}.''
-  *}
+\<close>
 
   locale terminal_arrow_from_functor =
     arrow_from_functor D C F x y e
@@ -95,14 +95,14 @@ begin
 
   end
 
-  text{*
-    A left adjoint functor is a functor @{text "F: D \<rightarrow> C"}
+  text\<open>
+    A left adjoint functor is a functor \<open>F: D \<rightarrow> C\<close>
     that enjoys the following universal coextension property: for each object
     @{term y} of @{term C} there exists an object @{term x} of @{term D} and an
-    arrow @{text "e \<in> C.hom (F x) y"} such that for any arrow
-    @{text "f \<in> C.hom (F x') y"} there exists a unique @{text "g \<in> D.hom x' x"}
+    arrow \<open>e \<in> C.hom (F x) y\<close> such that for any arrow
+    \<open>f \<in> C.hom (F x') y\<close> there exists a unique \<open>g \<in> D.hom x' x\<close>
     such that @{term "f = C e (F g)"}.
-  *}
+\<close>
 
   locale left_adjoint_functor =
     C: category C +
@@ -121,9 +121,9 @@ begin
 
   section "Right Adjoint Functor"
 
-  text{*
+  text\<open>
     ``@{term e} is an arrow from @{term x} to @{term "G y"}.''
-  *}
+\<close>
 
   locale arrow_to_functor =
     C: category C +
@@ -141,18 +141,18 @@ begin
     notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
     notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
 
-    text{*
+    text\<open>
       ``@{term f} is a @{term[source=true] C}-extension of @{term g} along @{term e}.''
-    *}
+\<close>
 
     definition is_ext :: "'c \<Rightarrow> 'd \<Rightarrow> 'c \<Rightarrow> bool"
     where "is_ext y' g f \<equiv> \<guillemotleft>f : y \<rightarrow>\<^sub>C y'\<guillemotright> \<and> g = G f \<cdot>\<^sub>D e"
 
   end
 
-  text{*
+  text\<open>
     ``@{term e} is an initial arrow from @{term x} to @{term "G y"}.''
-  *}
+\<close>
 
   locale initial_arrow_to_functor =
     arrow_to_functor C D G x y e
@@ -183,14 +183,14 @@ begin
 
   end
 
-  text{*
-    A right adjoint functor is a functor @{text "G: C \<rightarrow> D"}
+  text\<open>
+    A right adjoint functor is a functor \<open>G: C \<rightarrow> D\<close>
     that enjoys the following universal extension property:
     for each object @{term x} of @{term D} there exists an object @{term y} of @{term C}
-    and an arrow @{text "e \<in> D.hom x (G y)"} such that for any arrow
-    @{text "g \<in> D.hom x (G y')"} there exists a unique @{text "f \<in> C.hom y y'"}
+    and an arrow \<open>e \<in> D.hom x (G y)\<close> such that for any arrow
+    \<open>g \<in> D.hom x (G y')\<close> there exists a unique \<open>f \<in> C.hom y y'\<close>
     such that @{term "h = D e (G f)"}.
-  *}
+\<close>
 
   locale right_adjoint_functor =
     C: category C +
@@ -211,15 +211,15 @@ begin
 
   subsection "Meta-Adjunction"
 
-  text{*
-    A ``meta-adjunction'' consists of a functor @{text "F: D \<rightarrow> C"},
-    a functor @{text "G: C \<rightarrow> D"}, and for each object @{term x}
+  text\<open>
+    A ``meta-adjunction'' consists of a functor \<open>F: D \<rightarrow> C\<close>,
+    a functor \<open>G: C \<rightarrow> D\<close>, and for each object @{term x}
     of @{term C} and @{term y} of @{term D} a bijection between
-    @{text "C.hom (F y) x"} to @{text "D.hom y (G x)"} which is natural in @{term x}
+    \<open>C.hom (F y) x\<close> to \<open>D.hom y (G x)\<close> which is natural in @{term x}
     and @{term y}.  The naturality is easy to express at the meta-level without having
     to resort to the formal baggage of ``set category,'' ``hom-functor,''
     and ``natural isomorphism,'' hence the name.
-  *}
+\<close>
 
   locale meta_adjunction =
     C: category C +
@@ -243,10 +243,10 @@ begin
     notation C.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
     notation D.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
 
-    text{*
+    text\<open>
       The naturality of @{term \<psi>} is a consequence of the naturality of @{term \<phi>}
       and the other assumptions.
-    *}
+\<close>
 
     lemma \<psi>_naturality:
     assumes f: "\<guillemotleft>f : x \<rightarrow>\<^sub>C x'\<guillemotright>" and g: "\<guillemotleft>g : y' \<rightarrow>\<^sub>D y\<guillemotright>" and h: "\<guillemotleft>h : y \<rightarrow>\<^sub>D G x\<guillemotright>"
@@ -272,10 +272,10 @@ begin
 
   subsection "Hom-Adjunction"
 
-  text{*
+  text\<open>
     The bijection between hom-sets that defines an adjunction can be represented
     formally as a natural isomorphism of hom-functors.  However, stating the definition
-    this way is more complex than was the case for @{text "meta_adjunction"}.
+    this way is more complex than was the case for \<open>meta_adjunction\<close>.
     One reason is that we need to have a ``set category'' that is suitable as
     a target category for the hom-functors, and since the arrows of the categories
     @{term C} and @{term D} will in general have distinct types, we need a set category
@@ -294,7 +294,7 @@ begin
     In my opinion, though, it would be better if the locale system would make entities
     that occur in multiple locales accessible by \emph{all} possible qualified names,
     so that the most perspicuous name could be used in any particular context.
-  *}
+\<close>
 
   locale hom_adjunction =
     C: category C +
@@ -343,11 +343,11 @@ begin
 
   subsection "Unit/Counit Adjunction"
 
-  text{*
+  text\<open>
     Expressed in unit/counit terms, an adjunction consists of functors
-    @{text "F: D \<rightarrow> C"} and @{text "G: C \<rightarrow> D"}, equipped with natural transformations
-    @{text "\<eta>: 1 \<rightarrow> GF"} and @{text "\<epsilon>: FG \<rightarrow> 1"} satisfying certain ``triangle identities''.
-   *}
+    \<open>F: D \<rightarrow> C\<close> and \<open>G: C \<rightarrow> D\<close>, equipped with natural transformations
+    \<open>\<eta>: 1 \<rightarrow> GF\<close> and \<open>\<epsilon>: FG \<rightarrow> 1\<close> satisfying certain ``triangle identities''.
+\<close>
 
   locale unit_counit_adjunction =
     C: category C +
@@ -549,9 +549,9 @@ begin
 
   subsection "Adjunction"
 
-  text{*
+  text\<open>
     The grand unification of everything to do with an adjunction.
-  *}
+\<close>
 
   locale adjunction =
     C: category C +
@@ -775,9 +775,9 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       From the defined @{term \<eta>} and @{term \<epsilon>} we can recover the original @{term \<phi>} and @{term \<psi>}.
-     *}
+\<close>
 
     lemma \<phi>_in_terms_of_\<eta>:
     assumes "D.ide y" and "\<guillemotleft>f : F y \<rightarrow>\<^sub>C x\<guillemotright>"
@@ -930,9 +930,9 @@ begin
     theorem induces_meta_adjunction:
     shows "meta_adjunction C D F G \<phi> \<psi>" ..
 
-    text{*
+    text\<open>
       From the defined @{term \<phi>} and @{term \<psi>} we can recover the original @{term \<eta>} and @{term \<epsilon>}.
-    *}
+\<close>
 
     lemma \<eta>_in_terms_of_\<phi>:
     assumes "D.ide y"
@@ -948,10 +948,10 @@ begin
 
   section "Left and Right Adjoint Functors Induce Meta-Adjunctions"
 
-  text{*
+  text\<open>
     A left adjoint functor induces a meta-adjunction, modulo the choice of a
     right adjoint and counit.
-  *}
+\<close>
 
   context left_adjoint_functor
   begin
@@ -970,11 +970,11 @@ begin
             someI_ex [of "\<lambda>e. terminal_arrow_from_functor D C F (Go a) a e"]
       by simp
 
-    text{*
+    text\<open>
       The right adjoint @{term G} to @{term F} takes each arrow @{term f} of
       @{term[source=true] C} to the unique @{term[source=true] D}-coextension of
       @{term "C f (\<epsilon>o (C.dom f))"} along @{term "\<epsilon>o (C.cod f)"}.
-    *}
+\<close>
 
     definition G :: "'c \<Rightarrow> 'd"
     where "G f = (if C.arr f then
@@ -1215,10 +1215,10 @@ begin
 
   end
 
-  text{*
+  text\<open>
     A right adjoint functor induces a meta-adjunction, modulo the choice of a
     left adjoint and unit.
-  *}
+\<close>
 
   context right_adjoint_functor
   begin
@@ -1237,11 +1237,11 @@ begin
             someI_ex [of "\<lambda>u. initial_arrow_to_functor C D G y (Fo y) u"]
       by simp
 
-    text{*
+    text\<open>
       The left adjoint @{term F} to @{term g} takes each arrow @{term g} of
       @{term[source=true] D} to the unique @{term[source=true] C}-extension of
       @{term "D (\<eta>o (D.cod g)) g"} along @{term "\<eta>o (D.dom g)"}.
-    *}
+\<close>
 
     definition F :: "'d \<Rightarrow> 'c"
     where "F g = (if D.arr g then
@@ -1473,13 +1473,13 @@ begin
 
   section "Meta-Adjunctions Induce Hom-Adjunctions"
 
-  text{*
+  text\<open>
     To obtain a hom-adjunction from a meta-adjunction, we need to exhibit hom-functors
     from @{term C} and @{term D} to a common set category @{term S}, so it is necessary
     to apply an actual concrete construction of such a category.
-    We use the category @{text SetCat} whose element type is the disjoint sum
+    We use the category \<open>SetCat\<close> whose element type is the disjoint sum
     @{typ "('c+'d)"} of the arrow types of @{term C} and @{term D}.
-  *}
+\<close>
 
   context meta_adjunction
   begin
@@ -1914,9 +1914,9 @@ begin
                           (inC o \<psi> (snd yx) o HomD.\<psi> (fst yx, G (snd yx)))"
       using assms \<Phi>o_def \<Phi>_inv S.inverse_unique by simp
 
-    text{*
+    text\<open>
       The original @{term \<phi>} and @{term \<psi>} can be recovered from @{term \<Phi>} and @{term \<Psi>}.
-    *}
+\<close>
 
     interpretation \<Phi>: set_valued_transformation DopxC.comp SetCat.comp
                                                 Hom_FopxC.map Hom_DopxG.map \<Phi>.map ..
@@ -2134,11 +2134,11 @@ begin
         by force
     qed
 
-    text{*
+    text\<open>
       The length of the next proof stems from having to use properties of composition
       of arrows in @{term[source=true] S} to infer properties of the composition of the
       corresponding functions.
-    *}
+\<close>
 
     interpretation \<phi>\<psi>: meta_adjunction C D F G \<phi> \<psi>
     proof
@@ -2554,12 +2554,12 @@ begin
 
   section "Putting it All Together"
 
-  text{*
+  text\<open>
     Combining the above results, an interpretation of any one of the locales:
-    @{text left_adjoint_functor}, @{text right_adjoint_functor}, @{text meta_adjunction},
-    @{text hom_adjunction}, and @{text unit_counit_adjunction} extends to an interpretation
-    of @{text adjunction}.
-  *}
+    \<open>left_adjoint_functor\<close>, \<open>right_adjoint_functor\<close>, \<open>meta_adjunction\<close>,
+    \<open>hom_adjunction\<close>, and \<open>unit_counit_adjunction\<close> extends to an interpretation
+    of \<open>adjunction\<close>.
+\<close>
 
   context meta_adjunction
   begin
@@ -2612,12 +2612,12 @@ begin
 
   end
 
-  text{*
+  text\<open>
     The following fails, claiming ``roundup bound exceeded'':\\
   @{theory_text
   "sublocale unit_counit_adjunction \<subseteq> adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
      using induces_adjunction by auto"}
-  *}
+\<close>
    
   context hom_adjunction
   begin
@@ -2666,12 +2666,12 @@ begin
 
   end
 
-  text{*
+  text\<open>
     The following fails for unknown reasons:\\
   @{theory_text
   "sublocale hom_adjunction \<subseteq> adjunction C D S \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
     using induces_adjunction by auto"}
-  *}
+\<close>
 
   context left_adjoint_functor
   begin
@@ -2718,12 +2718,12 @@ begin
 
   end
 
-  text{*
+  text\<open>
     The following fails, claiming ``roundup bound exceeded'':\\
   @{theory_text
   "sublocale right_adjoint_functor \<subseteq> adjunction C D SetCat.comp \<phi>C \<phi>D F G \<phi> \<psi> \<eta> \<epsilon> \<Phi> \<Psi>
     using induces_adjunction by auto"}
-  *}
+\<close>
 
   definition adjoint_functors
   where "adjoint_functors C D F G = (\<exists>\<phi> \<psi>. meta_adjunction C D F G \<phi> \<psi>)"
@@ -2881,25 +2881,25 @@ begin
 
   section "Right Adjoints are Unique up to Natural Isomorphism"
 
-  text{*
+  text\<open>
     As an example of the use of the of the foregoing development, we show that two right adjoints
     to the same functor are naturally isomorphic.
-  *}
+\<close>
 
   theorem two_right_adjoints_naturally_isomorphic:
   assumes "adjoint_functors C D F G" and "adjoint_functors C D F G'"
   shows "naturally_isomorphic C D G G'"
   proof -
-    text{*
-      For any object @{term x} of @{term C}, we have that @{text "\<epsilon> x \<in> C.hom (F (G x)) x"}
-      is a terminal arrow from @{term F} to @{term x}, and similarly for @{text "\<epsilon>' x"}.
-      We may therefore obtain the unique coextension @{text "\<tau> x \<in> D.hom (G x) (G' x)"}
-      of @{text "\<epsilon> x"} along @{text "\<epsilon>' x"}.
-      An explicit formula for @{text "\<tau> x"} is @{text "D (G' (\<epsilon> x)) (\<eta>' (G x))"}.
-      Similarly, we obtain @{text "\<tau>' x = D (G (\<epsilon>' x)) (\<eta> (G' x)) \<in> D.hom (G' x) (G x)"}.
+    text\<open>
+      For any object @{term x} of @{term C}, we have that \<open>\<epsilon> x \<in> C.hom (F (G x)) x\<close>
+      is a terminal arrow from @{term F} to @{term x}, and similarly for \<open>\<epsilon>' x\<close>.
+      We may therefore obtain the unique coextension \<open>\<tau> x \<in> D.hom (G x) (G' x)\<close>
+      of \<open>\<epsilon> x\<close> along \<open>\<epsilon>' x\<close>.
+      An explicit formula for \<open>\<tau> x\<close> is \<open>D (G' (\<epsilon> x)) (\<eta>' (G x))\<close>.
+      Similarly, we obtain \<open>\<tau>' x = D (G (\<epsilon>' x)) (\<eta> (G' x)) \<in> D.hom (G' x) (G x)\<close>.
       We show these are the components of inverse natural transformations between
       @{term G} and @{term G'}.
-    *}
+\<close>
     obtain \<phi> \<psi> where \<phi>\<psi>: "meta_adjunction C D F G \<phi> \<psi>"
       using assms adjoint_functors_def by blast
     obtain \<phi>' \<psi>' where \<phi>'\<psi>': "meta_adjunction C D F G' \<phi>' \<psi>'"
@@ -2949,11 +2949,11 @@ begin
       proof
         show "Adj.D.inverse_arrows (\<tau>.map a) (\<phi> (G' a) (Adj'.\<epsilon> a))"
         proof
-          text{*
+          text\<open>
             The proof that the two composites are identities is a modest diagram chase.
-            This is a good example of the inference rules for the @{text category},
-            @{text functor}, and @{text natural_transformation} locales in action.
-            Isabelle is able to use the single hypothesis that @{text a} is an identity to
+            This is a good example of the inference rules for the \<open>category\<close>,
+            \<open>functor\<close>, and \<open>natural_transformation\<close> locales in action.
+            Isabelle is able to use the single hypothesis that \<open>a\<close> is an identity to
             implicitly fill in all the details that the various quantities are in fact arrows
             and that the indicated composites are all well-defined, as well as to apply
             associativity of composition.  In most cases, this is done by auto or simp without
@@ -2968,7 +2968,7 @@ $$\xymatrix{
            && {G'FG'a} \ar[uu]_{G'(\epsilon a')}                                       \\
            &&&&
 }$$
-          *}
+\<close>
           show "Adj.D.ide (\<tau>.map a \<cdot>\<^sub>D \<phi> (G' a) (Adj'.\<epsilon> a))"
           proof -
             have "\<tau>.map a \<cdot>\<^sub>D \<phi> (G' a) (Adj'.\<epsilon> a) = G' a"

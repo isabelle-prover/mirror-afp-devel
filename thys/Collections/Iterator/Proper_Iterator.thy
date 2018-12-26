@@ -1,10 +1,10 @@
-section {* Proper Iterators *}
+section \<open>Proper Iterators\<close>
 theory Proper_Iterator
 imports 
   SetIteratorOperations 
   Automatic_Refinement.Refine_Lib
 begin
-  text {*
+  text \<open>
     Proper iterators provide a way to obtain polymorphic iterators even
     inside locale contexts.
 
@@ -15,14 +15,14 @@ begin
     In order to ensure efficiency, it is shown that folding over the generated
     list is equivalent to directly iterating over the set, and this equivalence
     is set up as a code preprocessing rule.
-    *}
+\<close>
 
-  subsection {* Proper Iterators *}
+  subsection \<open>Proper Iterators\<close>
 
-  text {* A proper iterator can be expressed as a fold over a list, where
+  text \<open>A proper iterator can be expressed as a fold over a list, where
     the list does only depend on the set. In particular, it does not depend
     on the type of the state. We express this by the following definition, 
-    using two iterators with different types: *}
+    using two iterators with different types:\<close>
 
   definition proper_it 
     :: "('x,'\<sigma>1) set_iterator \<Rightarrow> ('x,'\<sigma>2) set_iterator \<Rightarrow> bool"
@@ -66,8 +66,8 @@ begin
 
 
 
-  subsubsection {* Properness Preservation *}
-  ML {*
+  subsubsection \<open>Properness Preservation\<close>
+  ML \<open>
     structure Icf_Proper_Iterator = struct
 
       structure icf_proper_iteratorI = Named_Thms
@@ -95,18 +95,18 @@ begin
         
   
     end
-    *}
-  setup {* Icf_Proper_Iterator.setup *}
+\<close>
+  setup \<open>Icf_Proper_Iterator.setup\<close>
 
   lemma proper_iterator_trigger: 
     "proper_it it it' \<Longrightarrow> proper_it it it'"
     "proper_it' itf itf' \<Longrightarrow> proper_it' itf itf'" .
 
-  declaration {*
+  declaration \<open>
     Tagged_Solver.declare_solver @{thms proper_iterator_trigger} 
       @{binding proper_iterator} "Proper iterator solver"
       (fn ctxt => REPEAT_ALL_NEW (resolve_tac ctxt (Icf_Proper_Iterator.get ctxt)))
-    *}
+\<close>
 
   lemma pi_foldli[icf_proper_iteratorI]: 
     "proper_it (foldli l :: ('a,'\<sigma>) set_iterator) (foldli l)"
@@ -129,7 +129,7 @@ begin
     apply (tagged_solver)
     done
 
-  text {* Iterator combinators preserve properness *}
+  text \<open>Iterator combinators preserve properness\<close>
   lemma pi_emp[icf_proper_iteratorI]: 
     "proper_it set_iterator_emp set_iterator_emp"
     unfolding proper_it_def set_iterator_emp_def[abs_def]
@@ -223,11 +223,11 @@ begin
   qed
 
 
-subsubsection {* Optimizing Folds *}
-  text {*
+subsubsection \<open>Optimizing Folds\<close>
+  text \<open>
     Using an iterator to create a list. The optimizations will
-    match the pattern @{text "foldli (it_to_list it s)"}
-    *}
+    match the pattern \<open>foldli (it_to_list it s)\<close>
+\<close>
   definition "it_to_list it s \<equiv> (it s) (\<lambda>_. True) (\<lambda>x l. l@[x]) []"
 
   lemma map_it_to_list_genord_correct:

@@ -34,7 +34,7 @@ proof -
     by fast
 qed
 
-text \<open>Step one for lemma @{text "rcos_module"}\<close>
+text \<open>Step one for lemma \<open>rcos_module\<close>\<close>
 lemma (in subgroup) lcos_module_imp:
   assumes "group G"
   assumes xcarr: "x \<in> carrier G"
@@ -125,7 +125,7 @@ proof -
     done
 qed
 
-text\<open>The next two lemmas support the proof of @{text card_cosets_equal}.\<close>
+text\<open>The next two lemmas support the proof of \<open>card_cosets_equal\<close>.\<close>
 lemma (in group) inj_on_f':
     "\<lbrakk>H \<subseteq> carrier G;  a \<in> carrier G\<rbrakk> \<Longrightarrow> inj_on (\<lambda>y. y \<otimes> inv a) (a <# H)"
 apply (rule inj_onI)

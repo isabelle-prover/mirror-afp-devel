@@ -2,9 +2,9 @@ theory Example_A
   imports "../Classifying_Markov_Chain_States"
 begin
 
-section {* Example A *} text_raw {* \label{ex:A} *}
+section \<open>Example A\<close> text_raw \<open>\label{ex:A}\<close>
 
-text {*
+text \<open>
 
 We formalize the following Markov chain:
 
@@ -50,11 +50,11 @@ We formalize the following Markov chain:
 
 First we define the state space as its own type:
 
-*}
+\<close>
 
 datatype state = A | B | C1 | C2 | C3
 
-text {* Now the state space is @{text "UNIV :: state set"} *}
+text \<open>Now the state space is \<open>UNIV :: state set\<close>\<close>
 
 lemma UNIV_state: "UNIV = {A, B, C1, C2, C3}"
   using state.nchotomy by auto
@@ -62,8 +62,8 @@ lemma UNIV_state: "UNIV = {A, B, C1, C2, C3}"
 instance state :: finite
   by standard (simp add: UNIV_state)
 
-text {* The transition function @{text tau} is easily defined using the case statement, this allows
-us to give a sparse specification as all @{text 0} cases are collected at the end. *}
+text \<open>The transition function \<open>tau\<close> is easily defined using the case statement, this allows
+us to give a sparse specification as all \<open>0\<close> cases are collected at the end.\<close>
 
 definition tau :: "state \<Rightarrow> state \<Rightarrow> real" where
   "tau s t = (case (s, t) of
@@ -77,12 +77,12 @@ definition tau :: "state \<Rightarrow> state \<Rightarrow> real" where
 lift_definition K :: "state \<Rightarrow> state pmf" is tau
   by (auto simp: tau_def nn_integral_count_space_finite UNIV_state split: state.split simp del: ennreal_plus)
 
-text {* We use the @{text finite_pmf}-locale which introduces the point measure @{text tau.M}, and
-  provides us with the necessary simplifier setup. *}
+text \<open>We use the \<open>finite_pmf\<close>-locale which introduces the point measure \<open>tau.M\<close>, and
+  provides us with the necessary simplifier setup.\<close>
 
 interpretation A: MC_syntax K .
 
-subsection {* The essential classs @{term "{C1, C2, C3}"} *}
+subsection \<open>The essential classs @{term "{C1, C2, C3}"}\<close>
 
 context
 begin
@@ -110,9 +110,9 @@ proof safe
   finally show "A.period {C1, C2, C3} = 1" .
 qed
 
-subsection {* The stationary distribution @{text n} *}
+subsection \<open>The stationary distribution \<open>n\<close>\<close>
 
-text {* Similar to @{text tau} we introduce @{text n} using the @{text finite_pmf}-locale. *}
+text \<open>Similar to \<open>tau\<close> we introduce \<open>n\<close> using the \<open>finite_pmf\<close>-locale.\<close>
 
 lift_definition n :: "state pmf" is "\<lambda>C1 \<Rightarrow> 0.3 | C2 \<Rightarrow> 0.3 | C3 \<Rightarrow> 0.4 | _ \<Rightarrow> 0"
   by (auto simp: UNIV_state nn_integral_count_space_finite split: state.split)

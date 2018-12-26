@@ -1,4 +1,4 @@
-section {* Finite Prefixes of Infinite Sequences *}
+section \<open>Finite Prefixes of Infinite Sequences\<close>
 
 theory Word_Prefixes
 imports

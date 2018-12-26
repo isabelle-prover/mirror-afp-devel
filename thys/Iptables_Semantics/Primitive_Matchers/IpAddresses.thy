@@ -81,7 +81,7 @@ subsection\<open>IPv4 Addresses in IPTables Notation (how we parse it)\<close>
     by(simp split: uncurry_splits)
   
 
-  text\<open>IP address ranges to @{text "(start, end)"} notation\<close>
+  text\<open>IP address ranges to \<open>(start, end)\<close> notation\<close>
   fun ipt_iprange_to_interval :: "'i::len ipt_iprange \<Rightarrow> ('i word \<times> 'i word)" where
     "ipt_iprange_to_interval (IpAddr addr) = (addr, addr)" |
     "ipt_iprange_to_interval (IpAddrNetmask pre len) = ipcidr_to_interval (pre, len)" |

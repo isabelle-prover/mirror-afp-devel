@@ -114,15 +114,15 @@ text \<open>Introduces the proof method.\<close>
 ML_file "casify.ML"
 
 
-ML {*
+ML \<open>
   val casify_defs = Casify.Options { simp_all_cases=true, split_right_only=true, protect_subgoals=false }
-*}
+\<close>
 
-method_setup prepare_labels = {*
+method_setup prepare_labels = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (ALLGOALS (Casify.prepare_labels_tac ctxt)))
-*} "VCG labelling: prepare labels"
+\<close> "VCG labelling: prepare labels"
 
-method_setup casify = {* Casify.casify_method_setup casify_defs *}
+method_setup casify = \<open>Casify.casify_method_setup casify_defs\<close>
   "VCG labelling: Turn the labels into cases"
 
 end

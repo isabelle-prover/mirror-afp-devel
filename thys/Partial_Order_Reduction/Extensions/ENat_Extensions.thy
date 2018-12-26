@@ -1,4 +1,4 @@
-section {* Extended Natural Numbers *}
+section \<open>Extended Natural Numbers\<close>
 
 theory ENat_Extensions
 imports

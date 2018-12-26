@@ -2,16 +2,16 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* Discrete Conditional Expectation *}
+section \<open>Discrete Conditional Expectation\<close>
 
 theory Disc_Cond_Expect imports "HOL-Probability.Probability" Generated_Subalgebra
 
 begin
 
-subsection {* Preliminary measurability results *}
+subsection \<open>Preliminary measurability results\<close>
 
-text {* These are some useful results, in particular when working with functions that have a countable
-codomain. *}
+text \<open>These are some useful results, in particular when working with functions that have a countable
+codomain.\<close>
 
 definition disc_fct  where
   "disc_fct f \<equiv> countable (range f)"
@@ -233,11 +233,11 @@ proof -
 qed
 
 
-subsection {* Definition of explicit conditional expectation *}
+subsection \<open>Definition of explicit conditional expectation\<close>
 
-text {* This section is devoted to an explicit computation of a conditional expectation for random variables
+text \<open>This section is devoted to an explicit computation of a conditional expectation for random variables
 that have a countable codomain. More precisely, the computed random variable is almost everywhere equal to a conditional
-expectation of the random variable under consideration. *}
+expectation of the random variable under consideration.\<close>
 
 definition  img_dce where
   "img_dce M Y X = (\<lambda> y. if measure M ((Y -` {y}) \<inter> space M) = 0 then 0 else
@@ -398,7 +398,7 @@ proof -
   also have "... = (\<Union> b\<in> ?C. Y-`{b}\<inter> space M)" by blast
   finally have "D = (\<Union> b\<in> ?C. Y-`{b}\<inter> space M)".
   have "\<forall>b\<in> ?C. Y-`{b} \<inter> space M \<in> sets M" using assms unfolding point_measurable_def by auto
-  hence "(\<Union> b\<in> ?C. Y-`{b}\<inter> space M) \<in> sets M" using `countable ?C` by blast
+  hence "(\<Union> b\<in> ?C. Y-`{b}\<inter> space M) \<in> sets M" using \<open>countable ?C\<close> by blast
   thus ?thesis
     using \<open>D = (\<Union>b\<in>?C. Y -` {b} \<inter> space M)\<close> by blast
 qed
@@ -444,7 +444,7 @@ proof -
   have "space M = space (fct_gen_subalgebra M N Y)"
     by (simp add: fct_gen_subalgebra_space)
   hence "\<forall>b\<in> ?C. Y-`{b} \<inter> space M \<in> sets (fct_gen_subalgebra M N Y)" using assms unfolding point_measurable_def by auto
-  hence "(\<Union> b\<in> ?C. Y-`{b}\<inter> space M) \<in> sets (fct_gen_subalgebra M N Y)" using `countable ?C` by blast
+  hence "(\<Union> b\<in> ?C. Y-`{b}\<inter> space M) \<in> sets (fct_gen_subalgebra M N Y)" using \<open>countable ?C\<close> by blast
   thus ?thesis
     using \<open>D = (\<Union>b\<in>?C. Y -` {b} \<inter> space M)\<close> by blast
 qed
@@ -709,7 +709,7 @@ proof -
   hence "\<forall>y\<in> space M. expl_cond_expect M Y X w * ?ind y = norm (expl_cond_expect M Y X w * ?ind y)" by auto
   hence inf: "integral\<^sup>N M (\<lambda>y. expl_cond_expect M Y X w * ?ind y) < \<infinity>"
     using integrable_iff_bounded[of M "(\<lambda>y. expl_cond_expect M Y X w * ?ind y)"]
-      `0 \<le> expl_cond_expect M Y X w`  real_norm_def nn_integral_cong
+      \<open>0 \<le> expl_cond_expect M Y X w\<close>  real_norm_def nn_integral_cong
     by (metis (no_types, lifting) \<open>integrable M (\<lambda>y. expl_cond_expect M Y X w * indicator (Y -` {Y w} \<inter> space M) y)\<close>)
   have "integral\<^sup>N M (\<lambda>y. expl_cond_expect M Y X y * ?ind y) =
     integral\<^sup>N M (\<lambda>y. expl_cond_expect M Y X w * ?ind y)" using assms
@@ -856,7 +856,7 @@ proof
   have "countable ?imA" using assms disc_fct_def by blast
   have "Y -`A = Y -`?imA" by auto
   define prY where "prY = countable_preimages ?imA Y"
-  have un: "Y -`?imA = (\<Union> i. prY i)" using `countable ?imA`
+  have un: "Y -`?imA = (\<Union> i. prY i)" using \<open>countable ?imA\<close>
     by (metis count_pre_union_img prY_def)
    have "(Y -`?imA) \<inter> (space M) = (\<Union> i. prY i) \<inter> (space M)" using \<open>Y -`A = Y -`?imA\<close> un  by simp
    also have "... = (\<Union> i. (prY i) \<inter> (space M))" by blast
@@ -914,14 +914,14 @@ proof
 
    have "\<forall> i j. i \<noteq> j \<longrightarrow> ((prY i) \<inter> (space M)) \<inter> ((prY j) \<inter> (space M)) = {}"
      by (simp add: \<open>countable (A \<inter> range Y)\<close> \<open>prY \<equiv> countable_preimages (A \<inter> range Y) Y\<close> count_pre_disj inf_commute inf_sup_aci(3))
-   hence sumind: "\<forall>x. (\<lambda>i. indpre i x) sums ?indA x" using `countable ?imA` eq2 unfolding prY_def indpre_def
+   hence sumind: "\<forall>x. (\<lambda>i. indpre i x) sums ?indA x" using \<open>countable ?imA\<close> eq2 unfolding prY_def indpre_def
      by (metis indicator_sums)
-   hence sumxlim: "\<forall>x. (\<lambda>i. (X x) * indpre i x::real) sums ((X x) * indicator ((Y -`?imA) \<inter> (space M)) x)" using `countable ?imA` unfolding prY_def
+   hence sumxlim: "\<forall>x. (\<lambda>i. (X x) * indpre i x::real) sums ((X x) * indicator ((Y -`?imA) \<inter> (space M)) x)" using \<open>countable ?imA\<close> unfolding prY_def
      using sums_mult by blast
    hence sum: "\<forall>x. (\<Sum> i.((X x) * indpre i x)::real) = (X x) * indicator ((Y -`?imA) \<inter> (space M)) x"  by (metis sums_unique)
    hence b: "\<forall> w. 0 \<le> (\<Sum> i.((X w) * indpre i w))" using suminf_nonneg
      by (metis \<open>\<forall>x. (\<lambda>i. X x * indpre i x) sums (X x * indicator (Y -` (A \<inter> range Y) \<inter> space M) x)\<close> posprod summable_def)
-   have sumcondlim: "\<forall>x. (\<lambda>i. (expl_cond_expect M Y X x) * indpre i x::real) sums ((expl_cond_expect M Y X x) * ?indA x)" using `countable ?imA` unfolding prY_def
+   have sumcondlim: "\<forall>x. (\<lambda>i. (expl_cond_expect M Y X x) * indpre i x::real) sums ((expl_cond_expect M Y X x) * ?indA x)" using \<open>countable ?imA\<close> unfolding prY_def
      using sums_mult sumind by blast
 
    have "integrable M (\<lambda>w. (X w) * ?indA w)"
@@ -1177,7 +1177,7 @@ proof -
     assume "w\<in> space M"
     hence "(expl_cond_expect M Y ?Xp) w - (expl_cond_expect M Y ?Xn) w = (expl_cond_expect M Y (\<lambda>x. ?Xp x - ?Xn x)) w"
       using ints by (simp add: expl_cond_exp_diff)
-    also have "... = expl_cond_expect M Y X w" using expl_cond_exp_cong `\<forall>w. X w = ?Xp w - ?Xn w` by auto
+    also have "... = expl_cond_expect M Y X w" using expl_cond_exp_cong \<open>\<forall>w. X w = ?Xp w - ?Xn w\<close> by auto
     finally show "(expl_cond_expect M Y ?Xp) w - (expl_cond_expect M Y ?Xn) w = expl_cond_expect M Y X w" .
   qed
   thus ?thesis using integr

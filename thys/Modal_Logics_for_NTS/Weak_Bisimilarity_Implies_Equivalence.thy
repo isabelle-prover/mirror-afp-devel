@@ -17,10 +17,10 @@ begin
   proof -
     have "finite (supp Q)"
       by (fact finite_supp)
-    with `P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x` obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<Rightarrow>\<langle>\<alpha>'\<rangle> P'" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* Q"
+    with \<open>P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>x\<close> obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<Rightarrow>\<langle>\<alpha>'\<rangle> P'" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* Q"
       by (metis valid_weak_action_modality_strong)
 
-    from `P \<approx>\<cdot> Q` and fresh and trans obtain Q' where trans': "Q \<Rightarrow>\<langle>\<alpha>'\<rangle> Q'" and bisim': "P' \<approx>\<cdot> Q'"
+    from \<open>P \<approx>\<cdot> Q\<close> and fresh and trans obtain Q' where trans': "Q \<Rightarrow>\<langle>\<alpha>'\<rangle> Q'" and bisim': "P' \<approx>\<cdot> Q'"
       by (metis weakly_bisimilar_weak_simulation_step)
 
     from eq obtain p where px: "x' = p \<bullet> x"
@@ -31,7 +31,7 @@ begin
     moreover from bisim' have "(-p \<bullet> P') \<approx>\<cdot> (-p \<bullet> Q')"
       by (metis weakly_bisimilar_eqvt)
     ultimately have "-p \<bullet> Q' \<Turnstile> x"
-      using `\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
+      using \<open>\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x\<close> by metis
     with px have "Q' \<Turnstile> x'"
       by (metis permute_minus_cancel(1) valid_eqvt)
 
@@ -48,12 +48,12 @@ begin
   proof -
     let ?c = "Conj (binsert (Pred \<phi>) (bsingleton x))"
 
-    from `P \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>?c` obtain P' where trans: "P \<Rightarrow> P'" and valid: "P' \<Turnstile> ?c"
+    from \<open>P \<Turnstile> \<langle>\<langle>\<tau>\<rangle>\<rangle>?c\<close> obtain P' where trans: "P \<Rightarrow> P'" and valid: "P' \<Turnstile> ?c"
       using valid_weak_action_modality by auto
 
     have "bn \<tau>  \<sharp>* Q"
       by (simp add: fresh_star_def)
-    with `P \<approx>\<cdot> Q` and trans obtain Q' where trans': "Q \<Rightarrow> Q'" and bisim': "P' \<approx>\<cdot> Q'"
+    with \<open>P \<approx>\<cdot> Q\<close> and trans obtain Q' where trans': "Q \<Rightarrow> Q'" and bisim': "P' \<approx>\<cdot> Q'"
       by (metis weakly_bisimilar_weak_simulation_step weak_transition_tau_iff)
 
     from valid have *: "P' \<turnstile> \<phi>" and **: "P' \<Turnstile> x"
@@ -63,7 +63,7 @@ begin
       by (metis is_weak_bisimulation_def weakly_bisimilar_is_weak_bisimulation)
 
     from bisim'' and ** have "Q'' \<Turnstile> x"
-      using `\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
+      using \<open>\<And>P Q. P \<approx>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x\<close> by metis
     with *** have "Q'' \<Turnstile> ?c"
       by (simp add: binsert.rep_eq)
 

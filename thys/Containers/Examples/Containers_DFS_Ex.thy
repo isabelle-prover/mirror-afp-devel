@@ -8,7 +8,7 @@ theory Containers_DFS_Ex imports
   "HOL-Library.Transitive_Closure_Table"
 begin
 
-subsection {* Auxiliary stuff *}
+subsection \<open>Auxiliary stuff\<close>
 
 definition restrict :: "('a \<times> 'a) set \<Rightarrow> 'a set \<Rightarrow> ('a \<times> 'a) set" (infixl "\<upharpoonleft>" 60)
 where "R \<upharpoonleft> A = {(a, b) \<in> R. b \<in> A}"
@@ -29,7 +29,7 @@ lemma rtrancl_restrict_reachable:
 using x
 proof(induction rule: converse_rtrancl_induct)
   case (step x x')
-  from `(x, x') \<in> R` z `(x', y) \<in> R\<^sup>*`
+  from \<open>(x, x') \<in> R\<close> z \<open>(x', y) \<in> R\<^sup>*\<close>
   have "(x, x') \<in> R \<upharpoonleft> - R\<^sup>* `` {z}" by(auto intro: rtrancl_trans converse_rtrancl_into_rtrancl)
   thus ?case using step.IH by(rule converse_rtrancl_into_rtrancl)
 qed simp
@@ -57,7 +57,7 @@ lemma Image_insert [simp]:
   shows "R `` insert x A = R `` {x} \<union> (R `` A)"
 by(auto)
 
-subsection {* Declarative definition *}
+subsection \<open>Declarative definition\<close>
 
 datatype 'a dfs_result = is_Reachable: Reachable | Visited "'a set"
 
@@ -66,11 +66,11 @@ context fixes E :: "('a \<times> 'a) set" begin
 definition reachable :: "'a => 'a => bool"
 where "reachable src tgt \<longleftrightarrow> (src, tgt) \<in> E\<^sup>*"
 
-text {*
+text \<open>
   We avoid the non-determinism of visited nodes in depth-first search by only returning
   the set of visited nodes when the search fails, because in that case it contains all reachable
   nodes and therefore is deterministic again.
-*}
+\<close>
 
 definition dfs :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> 'a dfs_result"
 where 
@@ -139,24 +139,24 @@ next
     also from True obtain xs where "rtrancl_path ?g src xs tgt" "distinct (src # xs)"
       by(auto simp add: rtrancl_def rtranclp_eq_rtrancl_path elim: rtrancl_path_distinct)
     hence "Finite_Set.fold loop (Visited (insert src visited)) (E `` {src} - insert src visited) = Reachable"
-      using `src \<noteq> tgt` fin
+      using \<open>src \<noteq> tgt\<close> fin
     proof(induction src xs z\<equiv>tgt)
       case (step x y xs)
       let ?succs = "E `` {x} - visited - {y,x}"
     
       have "Finite_Set.fold loop (Visited (insert x visited)) (insert y ?succs) =
             Finite_Set.fold loop (loop y (Visited (insert x visited))) ?succs"
-        by(rule f.fold_insert2)(simp_all add: `finite (E \`\` {x})`)
+        by(rule f.fold_insert2)(simp_all add: \<open>finite (E `` {x})\<close>)
       also
-      from `distinct (x # y # xs)` have "x \<notin> set (y # xs)" by simp
-      with `rtrancl_path ?g y xs tgt`
+      from \<open>distinct (x # y # xs)\<close> have "x \<notin> set (y # xs)" by simp
+      with \<open>rtrancl_path ?g y xs tgt\<close>
       have "(y, tgt) \<in> (E \<upharpoonleft> - insert x visited)\<^sup>*"
         by induction(auto intro: converse_rtrancl_into_rtrancl)
       with \<open>(x, y) \<in> E \<upharpoonleft> - visited\<close> have "loop y (Visited (insert x visited)) = Reachable" 
-        using `x \<notin> set (y # xs)` by(auto simp add: dfs_def)
-      also from `(x, y) \<in> E \<upharpoonleft> - visited`
+        using \<open>x \<notin> set (y # xs)\<close> by(auto simp add: dfs_def)
+      also from \<open>(x, y) \<in> E \<upharpoonleft> - visited\<close>
       have "insert y ?succs = E `` {x} - insert x visited"
-        using `distinct (x # y # xs)` by auto
+        using \<open>distinct (x # y # xs)\<close> by auto
       finally show ?case by simp
     qed simp
     finally show ?thesis using True by(simp add: dfs_def Let_def)
@@ -170,8 +170,8 @@ next
       using False
     proof(induct A\<equiv>"E `` {src} - visited" arbitrary: visited rule: finite_psubset_induct)
       case psubset
-      note fin = `finite (E \`\` {src})`
-      note src_tgt = `(src, tgt) \<notin> (E \<upharpoonleft> - visited)\<^sup>*`
+      note fin = \<open>finite (E `` {src})\<close>
+      note src_tgt = \<open>(src, tgt) \<notin> (E \<upharpoonleft> - visited)\<^sup>*\<close>
       show ?case
       proof (cases "E `` {src} - insert src visited = {}")
         case True
@@ -213,7 +213,7 @@ next
         also have "A \<union> ?visited' = insert src ?visited'" unfolding A_def by auto
         also { 
           have "E `` {src} - ?visited' \<subset> E `` {src} - visited" using y by fastforce
-          moreover have "(src, tgt) \<notin> (E \<upharpoonleft> - ?visited')\<^sup>*" using `(src, tgt) \<notin> (E \<upharpoonleft> - visited)\<^sup>*`
+          moreover have "(src, tgt) \<notin> (E \<upharpoonleft> - ?visited')\<^sup>*" using \<open>(src, tgt) \<notin> (E \<upharpoonleft> - visited)\<^sup>*\<close>
             by(auto intro: rtrancl_mono[THEN subsetD, rotated])
           ultimately
           have "Finite_Set.fold loop (Visited (insert src ?visited')) (E `` {src} - insert src ?visited') =
@@ -261,12 +261,12 @@ by(simp add: dfs_def reachable_def)
 
 end
 
-subsection {* Refinement to executable code *}
+subsection \<open>Refinement to executable code\<close>
 
 typedef 'a graph = "UNIV :: ('a \<times> 'a) set set" morphisms edges Graph ..
 setup_lifting type_definition_graph
 
-text {* Implement graphs with successor function *}
+text \<open>Implement graphs with successor function\<close>
 
 definition graph_of_succs :: "('a \<Rightarrow> 'a set) \<Rightarrow> ('a \<times> 'a) set"
 where "graph_of_succs succs = {(v, w). w \<in> succs v}"
@@ -275,7 +275,7 @@ declare graph_of_succs_def[containers_post, symmetric, containers_pre]
 lift_definition Succ :: "('a \<Rightarrow> 'a set) \<Rightarrow> 'a graph" is "graph_of_succs" .
 code_datatype Succ
 
-text {* Identify operations on graph *}
+text \<open>Identify operations on graph\<close>
 
 definition successors :: "('a \<times> 'a) set \<Rightarrow> 'a \<Rightarrow> 'a set" where "successors E x = E `` {x}"
 declare successors_def[containers_post, symmetric, containers_pre]
@@ -283,7 +283,7 @@ declare successors_def[containers_post, symmetric, containers_pre]
 lift_definition succs :: "'a graph \<Rightarrow> 'a \<Rightarrow> 'a set" is successors .
 lemma succs_code [code]: "succs (Succ s) = s" by transfer(simp add: successors_def fun_eq_iff graph_of_succs_def)
 
-text {* Transfer algorithms to abstract graph type *}
+text \<open>Transfer algorithms to abstract graph type\<close>
 
 lift_definition reachable_impl :: "'a graph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" is reachable .
 lift_definition dfs_impl :: "'a graph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a set \<Rightarrow> 'a dfs_result" is dfs .
@@ -291,15 +291,15 @@ lift_definition dfs_body_impl :: "'a graph \<Rightarrow> 'a \<Rightarrow> ('a, '
 
 lemmas [containers_identify, code] = reachable_dfs dfs_code dfs_body.rep_eq
 
-subsection {* Tests *}
+subsection \<open>Tests\<close>
 
 definition test_graph :: "nat graph"
 where "test_graph = Succ ((\<lambda>_. {})(0 := {1,3}, 1 := {2,4}, 2 := {1}, 3 := {1, 5}, 4 := {5}))"
 
 definition test_dfs where "test_dfs = map (reachable_impl test_graph 0) [0..<7]"
 
-ML_val {*
+ML_val \<open>
   val [true, true, true, true, true, true, false] = @{code test_dfs};
-*}
+\<close>
 
 end

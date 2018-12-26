@@ -7,7 +7,7 @@ theory Generat imports
   Misc_CryptHOL
 begin
 
-subsection {* Single-step generative *}
+subsection \<open>Single-step generative\<close>
 
 datatype (generat_pures: 'a, generat_outs: 'b, generat_conts: 'c) generat 
   = Pure (result: 'a)
@@ -16,7 +16,7 @@ datatype (generat_pures: 'a, generat_outs: 'b, generat_conts: 'c) generat
 datatype_compat generat
 
 lemma IO_code_cong: "out = out' \<Longrightarrow> IO out c = IO out' c" by simp
-setup {* Code_Simp.map_ss (Simplifier.add_cong @{thm IO_code_cong}) *}
+setup \<open>Code_Simp.map_ss (Simplifier.add_cong @{thm IO_code_cong})\<close>
 
 lemma is_Pure_map_generat [simp]: "is_Pure (map_generat f g h x) = is_Pure x"
 by(cases x) simp_all

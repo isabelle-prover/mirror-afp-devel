@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/Value.thy by David von Oheimb and Tobias Nipkow
 *)
 
-section {* Jinja Values *}
+section \<open>Jinja Values\<close>
 
 theory Value
 imports

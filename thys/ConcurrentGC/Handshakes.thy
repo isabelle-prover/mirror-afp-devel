@@ -15,17 +15,17 @@ imports
 begin
 
 (*>*)
-subsection{* Handshake phases *}
+subsection\<open>Handshake phases\<close>
 
-text{*
+text\<open>
 
 The mutators can be at most one step behind the garbage collector (and
 system). If any mutator is behind then the GC is stalled on a pending
 handshake. Unfortunately this is a complicated by needing to consider
-the handshake type due to @{text "get_work"}. This relation is very
+the handshake type due to \<open>get_work\<close>. This relation is very
 precise.
 
-*}
+\<close>
 
 definition hp_step_rel :: "(bool \<times> handshake_type \<times> handshake_phase \<times> handshake_phase) set" where
   "hp_step_rel \<equiv>
@@ -71,88 +71,88 @@ lemma (in sys) handshake_phase_inv[intro]:
 by (vcg_jackhammer simp: handshake_phase_inv_def)
 
 (*>*)
-text{*
+text\<open>
 
 Connect @{const "sys_ghost_handshake_phase"} with locations in the GC.
 
-*}
+\<close>
 
 definition "hp_Idle_locs \<equiv>
   (prefixed ''idle_noop'' - { ''idle_noop_mfence'', ''idle_noop_init_type'' })
 \<union> { ''idle_read_fM'', ''idle_invert_fM'', ''idle_write_fM'', ''idle_flip_noop_mfence'', ''idle_flip_noop_init_type'' }"
-local_setup {* Cimp.locset @{thm "hp_Idle_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hp_Idle_locs_def"}\<close>
 
 definition "hp_IdleInit_locs \<equiv>
     (prefixed ''idle_flip_noop'' - { ''idle_flip_noop_mfence'', ''idle_flip_noop_init_type'' })
   \<union> { ''idle_phase_init'', ''init_noop_mfence'', ''init_noop_init_type'' }"
-local_setup {* Cimp.locset @{thm "hp_IdleInit_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hp_IdleInit_locs_def"}\<close>
 
 definition "hp_InitMark_locs \<equiv>
   (prefixed ''init_noop'' - { ''init_noop_mfence'', ''init_noop_init_type'' })
 \<union> { ''init_phase_mark'', ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'', ''mark_noop_init_type'' }"
-local_setup {* Cimp.locset @{thm "hp_InitMark_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hp_InitMark_locs_def"}\<close>
 
 definition "hp_IdleMarkSweep_locs \<equiv>
      { ''idle_noop_mfence'', ''idle_noop_init_type'', ''mark_end'' }
   \<union>  sweep_locs
   \<union> (mark_loop_locs - { ''mark_loop_get_roots_init_type'' })"
-local_setup {* Cimp.locset @{thm "hp_IdleMarkSweep_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hp_IdleMarkSweep_locs_def"}\<close>
 
 definition "hp_Mark_locs \<equiv>
     (prefixed ''mark_noop'' - { ''mark_noop_mfence'', ''mark_noop_init_type'' })
   \<union> { ''mark_loop_get_roots_init_type'' }"
-local_setup {* Cimp.locset @{thm "hp_Mark_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hp_Mark_locs_def"}\<close>
 
 abbreviation
   "hs_noop_prefixes \<equiv> {''idle_noop'', ''idle_flip_noop'', ''init_noop'', ''mark_noop'' }"
 
 definition "hs_noop_locs \<equiv>
   \<Union>l \<in> hs_noop_prefixes. prefixed l - (suffixed ''_noop_mfence'' \<union> suffixed ''_noop_init_type'')"
-local_setup {* Cimp.locset @{thm "hs_noop_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_noop_locs_def"}\<close>
 
 definition "hs_get_roots_locs \<equiv>
   prefixed ''mark_loop_get_roots'' - {''mark_loop_get_roots_init_type''}"
-local_setup {* Cimp.locset @{thm "hs_get_roots_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_get_roots_locs_def"}\<close>
 
 definition "hs_get_work_locs \<equiv>
   prefixed ''mark_loop_get_work'' - {''mark_loop_get_work_init_type''}"
-local_setup {* Cimp.locset @{thm "hs_get_work_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_get_work_locs_def"}\<close>
 
 abbreviation "hs_prefixes \<equiv>
   hs_noop_prefixes \<union> { ''mark_loop_get_roots'', ''mark_loop_get_work'' }"
 
 definition "hs_init_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_init_loop'')"
-local_setup {* Cimp.locset @{thm "hs_init_loop_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_init_loop_locs_def"}\<close>
 
 definition "hs_done_loop_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done_loop'')"
-local_setup {* Cimp.locset @{thm "hs_done_loop_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_done_loop_locs_def"}\<close>
 
 definition "hs_done_locs \<equiv> \<Union>l \<in> hs_prefixes. prefixed (l @ ''_done'')"
-local_setup {* Cimp.locset @{thm "hs_done_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_done_locs_def"}\<close>
 
 definition "hs_none_pending_locs \<equiv> - (hs_init_loop_locs \<union> hs_done_locs)"
-local_setup {* Cimp.locset @{thm "hs_none_pending_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_none_pending_locs_def"}\<close>
 
 definition "hs_in_sync_locs \<equiv>
   (- ( (\<Union>l \<in> hs_prefixes. prefixed (l @ ''_init'')) \<union> hs_done_locs ))
   \<union> (\<Union>l \<in> hs_prefixes. {l @ ''_init_type''})"
-local_setup {* Cimp.locset @{thm "hs_in_sync_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_in_sync_locs_def"}\<close>
 
 definition "hs_out_of_sync_locs \<equiv>
   \<Union>l \<in> hs_prefixes. {l @ ''_init_muts''}"
-local_setup {* Cimp.locset @{thm "hs_out_of_sync_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_out_of_sync_locs_def"}\<close>
 
 definition "hs_mut_in_muts_locs \<equiv>
   \<Union>l \<in> hs_prefixes. {l @ ''_init_loop_set_pending'', l @ ''_init_loop_done''}"
-local_setup {* Cimp.locset @{thm "hs_mut_in_muts_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_mut_in_muts_locs_def"}\<close>
 
 definition "hs_init_loop_done_locs \<equiv>
   \<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''}"
-local_setup {* Cimp.locset @{thm "hs_init_loop_done_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_init_loop_done_locs_def"}\<close>
 
 definition "hs_init_loop_not_done_locs \<equiv>
   hs_init_loop_locs - (\<Union>l \<in> hs_prefixes. {l @ ''_init_loop_done''})"
-local_setup {* Cimp.locset @{thm "hs_init_loop_not_done_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "hs_init_loop_not_done_locs_def"}\<close>
 
 definition (in gc) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "handshake_invL \<equiv>
@@ -221,17 +221,17 @@ lemma (in gc) handshake_phase_inv[intro]:
 by (vcg_jackhammer_ff simp: handshake_phase_inv_def hp_step_rel_def)
 
 (*>*)
-text{*
+text\<open>
 
 Local handshake phase invariant for the mutators.
 
-*}
+\<close>
 
 definition "mut_no_pending_mutates_locs \<equiv>
     (prefixed ''hs_noop'' - { ''hs_noop'', ''hs_noop_mfence'' })
   \<union> (prefixed ''hs_get_roots'' - { ''hs_get_roots'', ''hs_get_roots_mfence'' })
   \<union> (prefixed ''hs_get_work'' - { ''hs_get_work'', ''hs_get_work_mfence'' })"
-local_setup {* Cimp.locset @{thm "mut_no_pending_mutates_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_no_pending_mutates_locs_def"}\<close>
 
 definition (in mut_m) handshake_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "handshake_invL \<equiv>
@@ -285,7 +285,7 @@ apply (auto simp: hp_step_rel_def)
 done
 
 (*>*)
-text{*
+text\<open>
 
 Relate @{const "sys_ghost_handshake_phase"}, @{const "gc_phase"},
 @{const "sys_phase"} and writes to the phase in the GC's TSO buffer.
@@ -296,7 +296,7 @@ contain any writes to the phase.
 The second relation exhibits the data race on the phase variable: we
 need to precisely track the possible states of the GC's TSO buffer.
 
-*}
+\<close>
 
 definition handshake_phase_rel :: "handshake_phase \<Rightarrow> bool \<Rightarrow> gc_phase \<Rightarrow> bool" where
   "handshake_phase_rel hp in_sync ph \<equiv>
@@ -332,19 +332,19 @@ lemma phases_rel_Id[iff]:
 by (auto simp: phase_rel_def filter_empty_conv filter_eq_Cons_iff)
 
 (*>*)
-text{*
+text\<open>
 
 Tie the garbage collector's control location to the value of @{const
 "gc_phase"}.
 
-*}
+\<close>
 
 definition no_pending_phase_locs :: "location set" where
   "no_pending_phase_locs \<equiv>
        (idle_locs - { ''idle_noop_mfence'' })
      \<union> (init_locs - { ''init_noop_mfence'' })
      \<union> (mark_locs - { ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'' })"
-local_setup {* Cimp.locset @{thm "no_pending_phase_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "no_pending_phase_locs_def"}\<close>
 
 definition (in gc) phase_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "phase_invL \<equiv>
@@ -405,14 +405,14 @@ done
 
 (* **************************************** *)
 
-text{*
+text\<open>
 
 Validity of @{const "sys_fM"} wrt @{const "gc_fM"} and the handshake
 phase. Effectively we use @{const "gc_fM"} as ghost state. We also
 include the TSO lock to rule out the GC having any pending marks
 during the @{const "hp_Idle"} handshake phase.
 
-*}
+\<close>
 
 definition fM_rel :: "(bool \<times> handshake_phase \<times> gc_mark \<times> gc_mark \<times> ('field, 'ref) mem_write_action list \<times> bool) set" where
   "fM_rel =
@@ -437,28 +437,28 @@ definition fA_rel_inv :: "('field, 'mut, 'ref) lsts_pred" where
 
 definition fM_eq_locs :: "location set" where
   "fM_eq_locs \<equiv> (- { ''idle_write_fM'', ''idle_flip_noop_mfence'' })"
-local_setup (in -) {* Cimp.locset @{thm "fM_eq_locs_def"} *}
+local_setup (in -) \<open>Cimp.locset @{thm "fM_eq_locs_def"}\<close>
 
 definition fM_tso_empty_locs :: "location set" where
   "fM_tso_empty_locs \<equiv> (- { ''idle_flip_noop_mfence'' })"
-local_setup (in -) {* Cimp.locset @{thm "fM_tso_empty_locs_def"} *}
+local_setup (in -) \<open>Cimp.locset @{thm "fM_tso_empty_locs_def"}\<close>
 
 definition fA_tso_empty_locs :: "location set" where
   "fA_tso_empty_locs \<equiv> (- { ''mark_noop_mfence'' })"
-local_setup (in -) {* Cimp.locset @{thm "fA_tso_empty_locs_def"} *}
+local_setup (in -) \<open>Cimp.locset @{thm "fA_tso_empty_locs_def"}\<close>
 
 definition fA_eq_locs :: "location set" where
   "fA_eq_locs \<equiv> { ''idle_read_fM'', ''idle_invert_fM'' }
               \<union> prefixed ''idle_noop''
               \<union> (mark_locs - { ''mark_read_fM'', ''mark_write_fA'', ''mark_noop_mfence'' })
               \<union> sweep_locs"
-local_setup {* Cimp.locset @{thm "fA_eq_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "fA_eq_locs_def"}\<close>
 
 definition fA_neq_locs :: "location set" where
   "fA_neq_locs \<equiv> { ''idle_phase_init'', ''idle_write_fM'', ''mark_read_fM'', ''mark_write_fA'' }
                \<union> prefixed ''idle_flip_noop''
                \<union> init_locs"
-local_setup {* Cimp.locset @{thm "fA_neq_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "fA_neq_locs_def"}\<close>
 
 definition (in gc) fM_fA_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "fM_fA_invL \<equiv>

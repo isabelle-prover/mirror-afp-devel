@@ -1,4 +1,4 @@
-section {* Functions *}
+section \<open>Functions\<close>
 
 theory Functions
 imports "../Extensions/Set_Extensions"

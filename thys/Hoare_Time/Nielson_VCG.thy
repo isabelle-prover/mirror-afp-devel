@@ -4,8 +4,8 @@ theory Nielson_VCG imports Nielson_Hoare begin
 
 subsection "Verification Condition Generator"
 
-text{* Annotated commands: commands where loops are annotated with
-  invariants. *}
+text\<open>Annotated commands: commands where loops are annotated with
+  invariants.\<close>
 
 datatype acom =
   Askip                  ("SKIP") |
@@ -18,7 +18,7 @@ datatype acom =
   
 notation com.SKIP ("SKIP")
 
-text{* Strip annotations: *}
+text\<open>Strip annotations:\<close>
 
 fun strip :: "acom \<Rightarrow> com" where
   "strip SKIP = SKIP" |
@@ -88,7 +88,7 @@ fun varacom :: "acom \<Rightarrow> lvname set" where
 | "varacom ({(I,(S,(E)))} WHILE b DO C) = support I \<union> varacom C"
 | "varacom _ = {}"
     
-text{* Weakest precondition from annotated commands: *}
+text\<open>Weakest precondition from annotated commands:\<close>
 
 fun preT :: "acom \<Rightarrow> tbd \<Rightarrow> tbd" where
   "preT SKIP e = e" |
@@ -177,7 +177,7 @@ lemma TzQ: "preTz C e n s = e (postQz C s n)"
 
 
 
-subsubsection {* Weakest precondition from annotated commands: *}
+subsubsection \<open>Weakest precondition from annotated commands:\<close>
 
 fun pre :: "acom \<Rightarrow> assn2 \<Rightarrow> assn2" where
   "pre SKIP Q  = Q" |
@@ -321,7 +321,7 @@ proof (goal_cases)
     by (metis fun_upd_triv)
 qed 
 
-text{* Verification condition: *}
+text\<open>Verification condition:\<close>
 fun vc :: "acom \<Rightarrow> assn2  \<Rightarrow> bool" where
   "vc SKIP Q = True" |
   "vc (x ::= a) Q = True" |
@@ -355,7 +355,7 @@ lemma vc_mono: "(\<forall>l s. P l s \<longrightarrow> P' l s) \<Longrightarrow>
   subgoal using pre_mono by metis
   done
 
-subsubsection {* Soundness: *}
+subsubsection \<open>Soundness:\<close>
  
 abbreviation "preSet U C l s == (Ball U (%u. case u of (x,e) \<Rightarrow> l x = preT C e s))"
 abbreviation "postSet U l s == (Ball U (%u. case u of (x,e) \<Rightarrow> l x = e s))"
@@ -837,7 +837,7 @@ next
   
   \<comment> \<open>Let us first see, what we got from the induction hypothesis:\<close>
   obtain I S E  where [simp]: "A = (I,(S,(E)))" using prod_cases3 by blast
-  with `vc (Awhile A b C) Q` have "vc (Awhile (I,S,E) b C) Q" by blast
+  with \<open>vc (Awhile A b C) Q\<close> have "vc (Awhile (I,S,E) b C) Q" by blast
   then  have vc: "vc C I"  and  pre2: "\<And>l s. I l s \<Longrightarrow> \<not> bval b s \<Longrightarrow>  Q l s \<and> 1 \<le> E s \<and> S s = s"
     and IQ2: "\<And>l s. I l s \<Longrightarrow> bval b s \<Longrightarrow>
                          pre C I l s
@@ -1026,7 +1026,7 @@ corollary vc_sound'':
    apply(auto)
   apply(rule vc_sound') by auto
 
-subsubsection {* Completeness: *}
+subsubsection \<open>Completeness:\<close>
 
 lemma vc_complete:
   "\<turnstile>\<^sub>1 {P} c { e \<Down> Q} \<Longrightarrow>   \<exists>C. strip C = c \<and> vc C Q 

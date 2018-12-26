@@ -7,7 +7,7 @@ begin
   reference it by its short/long name like a constant or a theorem!
 *)
 
-ML {*
+ML \<open>
   signature TAGGED_SOLVER = sig
     type solver = thm list * string * string * (Proof.context -> tactic')
     
@@ -214,9 +214,9 @@ ML {*
       Pretty.big_list "Solvers:" (map pretty_solver solvers)
     end
   end
-  *}
+\<close>
 
-method_setup tagged_solver = {* let
+method_setup tagged_solver = \<open>let
   open Refine_Util
   val flags = 
         parse_bool_config "keep" Tagged_Solver.cfg_keep
@@ -229,7 +229,7 @@ in
     SIMPLE_METHOD' (Tagged_Solver.solve_tac ctxt)
   )
 end
-*} "Select tactic to solve goal by pattern"
+\<close> "Select tactic to solve goal by pattern"
 
 
 term True

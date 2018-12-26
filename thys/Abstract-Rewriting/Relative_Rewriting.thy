@@ -1688,7 +1688,7 @@ proof (rule ccontr)
   with SN_on_trancl[OF SN] show False by auto
 qed
 
-text {* from Geser's thesis [p.32, Corollary-1], generalized for @{term SN_on}. *}
+text \<open>from Geser's thesis [p.32, Corollary-1], generalized for @{term SN_on}.\<close>
 lemma SN_on_relto_Un:
   assumes closure: "relto (R \<union> R') S `` X \<subseteq> X"
   shows "SN_on (relto (R \<union> R') S) X \<longleftrightarrow> SN_on (relto R (R' \<union> S)) X \<and> SN_on (relto R' S) X"

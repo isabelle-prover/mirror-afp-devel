@@ -3,16 +3,16 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* The function which is universal for primitive recursive functions of one variable *}
+section \<open>The function which is universal for primitive recursive functions of one variable\<close>
 
 theory PRecUnGr
 imports PRecFun2 PRecList
 begin
 
-text {*
+text \<open>
   We introduce a particular function which is universal for primitive
   recursive functions of one variable.
-*}
+\<close>
 
 definition
   g_comp :: "nat \<Rightarrow> nat \<Rightarrow> nat" where

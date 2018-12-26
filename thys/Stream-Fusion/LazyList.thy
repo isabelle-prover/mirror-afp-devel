@@ -1,4 +1,4 @@
-section {* Lazy Lists *}
+section \<open>Lazy Lists\<close>
 
 theory LazyList
 imports HOLCF "HOLCF-Library.Int_Discrete"

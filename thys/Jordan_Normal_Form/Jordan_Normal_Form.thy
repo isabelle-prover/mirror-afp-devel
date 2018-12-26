@@ -843,7 +843,7 @@ proof -
       have "a \<in> set as" by auto 
       from le_1[rule_format, OF this]
       show "norm a \<le> 1" .
-      note `a \<in> set as`
+      note \<open>a \<in> set as\<close>
     } note mem = this
     {
       assume "norm a = 1" 

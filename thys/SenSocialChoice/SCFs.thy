@@ -14,12 +14,12 @@ begin
 
 (* **************************************** *)
 
-subsection{* Choice Sets, Choice Functions *}
+subsection\<open>Choice Sets, Choice Functions\<close>
 
-text{* A \emph{choice set} is the subset of @{term "A"} where every element
+text\<open>A \emph{choice set} is the subset of @{term "A"} where every element
 of that subset is (weakly) preferred to every other element of @{term "A"}
 with respect to a given RPR. A \emph{choice function} yields a non-empty
-choice set whenever @{term "A"} is non-empty. *}
+choice set whenever @{term "A"} is non-empty.\<close>
 
 definition choiceSet :: "'a set \<Rightarrow> 'a RPR \<Rightarrow> 'a set" where
   "choiceSet A r \<equiv> { x \<in> A . \<forall>y \<in> A. x \<^bsub>r\<^esub>\<preceq> y }"
@@ -35,8 +35,8 @@ lemma choiceFnI[intro]:
   "(\<And>A'. \<lbrakk> A' \<subseteq> A; A' \<noteq> {} \<rbrakk> \<Longrightarrow> choiceSet A' r \<noteq> {}) \<Longrightarrow> choiceFn A r"
   unfolding choiceFn_def by simp
 
-text{* If a complete and reflexive relation is also \emph{quasi-transitive}
-it will yield a choice function. *}
+text\<open>If a complete and reflexive relation is also \emph{quasi-transitive}
+it will yield a choice function.\<close>
 
 definition quasi_trans :: "'a RPR \<Rightarrow> bool" where
   "quasi_trans r \<equiv> \<forall>x y z. x \<^bsub>r\<^esub>\<prec> y \<and> y \<^bsub>r\<^esub>\<prec> z \<longrightarrow> x \<^bsub>r\<^esub>\<prec> z"
@@ -105,18 +105,18 @@ lemma rpr_choiceFn: "\<lbrakk> finite A; rpr A r \<rbrakk> \<Longrightarrow> cho
 
 (* **************************************** *)
 
-subsection{* Social Choice Functions (SCFs) *}
+subsection\<open>Social Choice Functions (SCFs)\<close>
 
-text {* A \emph{social choice function} (SCF), also called a
+text \<open>A \emph{social choice function} (SCF), also called a
 \emph{collective choice rule} by Sen \cite[p28]{Sen:70a}, is a function that
 somehow aggregates society's opinions, expressed as a profile, into a
-preference relation. *}
+preference relation.\<close>
 
 type_synonym ('a, 'i) SCF = "('a, 'i) Profile \<Rightarrow> 'a RPR"
 
-text {* The least we require of an SCF is that it be \emph{complete} and
+text \<open>The least we require of an SCF is that it be \emph{complete} and
 some function of the profile. The latter condition is usually implied by
-other conditions, such as @{term "iia"}. *}
+other conditions, such as @{term "iia"}.\<close>
 
 definition
   SCF :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> ('a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> bool) \<Rightarrow> bool"
@@ -133,13 +133,13 @@ lemma SCF_completeD[dest]: "\<lbrakk> SCF scf A Is Pcond; Pcond A Is P \<rbrakk>
 
 (* **************************************** *)
 
-subsection{* Social Welfare Functions (SWFs) *}
+subsection\<open>Social Welfare Functions (SWFs)\<close>
 
-text {* A \emph{Social Welfare Function} (SWF) is an SCF that expresses the
+text \<open>A \emph{Social Welfare Function} (SWF) is an SCF that expresses the
 society's opinion as a single RPR.
 
 In some situations it might make sense to restrict the allowable
-profiles. *}
+profiles.\<close>
 
 definition
   SWF :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> ('a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> bool) \<Rightarrow> bool"
@@ -151,17 +151,17 @@ lemma SWF_rpr[dest]: "\<lbrakk> SWF swf A Is Pcond; Pcond A Is P \<rbrakk> \<Lon
 
 (* **************************************** *)
 
-subsection{* General Properties of an SCF *}
+subsection\<open>General Properties of an SCF\<close>
 
-text{* An SCF has a \emph{universal domain} if it works for all profiles. *}
+text\<open>An SCF has a \emph{universal domain} if it works for all profiles.\<close>
 
 definition universal_domain :: "'a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> bool" where
   "universal_domain A Is P \<equiv> profile A Is P"
 
 declare universal_domain_def[simp]
 
-text{* An SCF is \emph{weakly Pareto-optimal} if, whenever everyone strictly
-prefers @{term "x"} to @{term "y"}, the SCF does too. *}
+text\<open>An SCF is \emph{weakly Pareto-optimal} if, whenever everyone strictly
+prefers @{term "x"} to @{term "y"}, the SCF does too.\<close>
 
 definition
   weak_pareto :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> ('a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> bool) \<Rightarrow> bool"
@@ -179,7 +179,7 @@ lemma weak_paretoD:
      (\<And>i. i \<in> Is \<Longrightarrow> x \<^bsub>(P i)\<^esub>\<prec> y) \<rbrakk> \<Longrightarrow> x \<^bsub>(scf P)\<^esub>\<prec> y"
   unfolding weak_pareto_def by simp
 
-text{*
+text\<open>
 
 An SCF satisfies \emph{independence of irrelevant alternatives} if, for two
 preference profiles @{term "P"} and @{term "P'"} where for all individuals
@@ -188,7 +188,7 @@ preference profiles @{term "P"} and @{term "P'"} where for all individuals
 alternatives @{term "x"} and @{term "y"} have the same order in @{term "scf
 P"} and @{term "scf P'"}.
 
-*}
+\<close>
 
 definition iia :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "iia scf S Is \<equiv>
@@ -217,15 +217,15 @@ lemma iiaE:
 
 (* **************************************** *)
 
-subsection{* Decisiveness and Semi-decisiveness *}
+subsection\<open>Decisiveness and Semi-decisiveness\<close>
 
-text{* This notion is the key to Arrow's Theorem, and hinges on the use of
-strict preference \cite[p42]{Sen:70a}. *}
+text\<open>This notion is the key to Arrow's Theorem, and hinges on the use of
+strict preference \cite[p42]{Sen:70a}.\<close>
 
-text{* A coalition @{term "C"} of agents is \emph{semi-decisive} for @{term
+text\<open>A coalition @{term "C"} of agents is \emph{semi-decisive} for @{term
 "x"} over @{term "y"} if, whenever the coalition prefers @{term "x"} to
 @{term "y"} and all other agents prefer the converse, the coalition
-prevails. *}
+prevails.\<close>
 
 definition semidecisive :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> 'i set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "semidecisive scf A Is C x y \<equiv>
@@ -244,9 +244,9 @@ lemma semidecisive_coalitionD[dest]: "semidecisive scf A Is C x y \<Longrightarr
 lemma sd_refl: "\<lbrakk> C \<subseteq> Is; C \<noteq> {} \<rbrakk> \<Longrightarrow> semidecisive scf A Is C x x"
   unfolding semidecisive_def strict_pref_def by blast
 
-text{* A coalition @{term "C"} is \emph{decisive} for @{term "x"} over
+text\<open>A coalition @{term "C"} is \emph{decisive} for @{term "x"} over
 @{term "y"} if, whenever the coalition prefers @{term "x"} to @{term "y"},
-the coalition prevails. *}
+the coalition prevails.\<close>
 
 definition decisive :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> 'i set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "decisive scf A Is C x y \<equiv>
@@ -263,14 +263,14 @@ lemma d_imp_sd: "decisive scf A Is C x y \<Longrightarrow> semidecisive scf A Is
 lemma decisive_coalitionD[dest]: "decisive scf A Is C x y \<Longrightarrow> C \<subseteq> Is"
   unfolding decisive_def by simp
 
-text {* Anyone is trivially decisive for @{term "x"} against @{term "x"}. *}
+text \<open>Anyone is trivially decisive for @{term "x"} against @{term "x"}.\<close>
 
 lemma d_refl: "\<lbrakk> C \<subseteq> Is; C \<noteq> {} \<rbrakk> \<Longrightarrow> decisive scf A Is C x x"
   unfolding decisive_def strict_pref_def by simp
 
-text{* Agent @{term "j"} is a \emph{dictator} if her preferences always
+text\<open>Agent @{term "j"} is a \emph{dictator} if her preferences always
 prevail. This is the same as saying that she is decisive for all @{term "x"}
-and @{term "y"}. *}
+and @{term "y"}.\<close>
 
 definition dictator :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> 'i \<Rightarrow> bool" where
   "dictator scf A Is j \<equiv> j \<in> Is \<and> (\<forall>x \<in> A. \<forall>y \<in> A. decisive scf A Is {j} x y)"

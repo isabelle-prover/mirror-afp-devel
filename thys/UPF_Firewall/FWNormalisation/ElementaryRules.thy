@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Elementary Firewall Policy Transformation Rules *} 
+subsection \<open>Elementary Firewall Policy Transformation Rules\<close> 
 theory 
   ElementaryRules
   imports 
@@ -43,10 +43,10 @@ theory
 begin
   
   
-text{* 
+text\<open>
   This theory contains those elementary transformation rules which are presented in the ICST 
   2010 paper~\cite{brucker.ea:firewall:2010}. They are not used elsewhere.
-*}
+\<close>
   
 lemma elem1:
   "C (AllowPortFromTo x y p \<oplus> DenyAllFromTo x y) = C (DenyAllFromTo x y)"

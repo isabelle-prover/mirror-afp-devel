@@ -12,9 +12,9 @@ imports SCFs
 begin
 (*>*)
 
-section{* May's Theorem *}
+section\<open>May's Theorem\<close>
 
-text {* May's Theorem \cite{May:1952} provides a characterisation of
+text \<open>May's Theorem \cite{May:1952} provides a characterisation of
 majority voting in terms of four conditions that appear quite natural for
 \emph{a priori} unbiased social choice scenarios. It can be seen as a
 refinement of some earlier work by Arrow \cite[Chapter V.1]{Arrow:1963}.
@@ -23,15 +23,15 @@ The following is a mechanisation of Sen's generalisation
 \cite[Chapter~5*]{Sen:70a}; originally Arrow and May consider only two
 alternatives, whereas Sen's model maps profiles of full RPRs to a possibly
 intransitive relation that does at least generate a choice set that
-satisfies May's conditions. *}
+satisfies May's conditions.\<close>
 
-subsection{* May's Conditions *}
+subsection\<open>May's Conditions\<close>
 
-text {* The condition of \emph{anonymity} asserts that the individuals'
+text \<open>The condition of \emph{anonymity} asserts that the individuals'
 identities are not considered by the choice rule. Rather than talk about
 permutations we just assert the result of the SCF is the same when the
 profile is composed with an arbitrary bijection on the set of
-individuals. *}
+individuals.\<close>
 
 definition anonymous :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "anonymous scf A Is \<equiv>
@@ -49,9 +49,9 @@ lemma anonymousD:
   \<Longrightarrow> (x \<^bsub>(scf P)\<^esub>\<preceq> y) = (x \<^bsub>(scf (P \<circ> f))\<^esub>\<preceq> y)"
   unfolding anonymous_def by simp
 
-text {* Similarly, an SCF is \emph{neutral} if it is insensitive to the
+text \<open>Similarly, an SCF is \emph{neutral} if it is insensitive to the
 identity of the alternatives. This is Sen's characterisation
-\cite[p72]{Sen:70a}. *}
+\cite[p72]{Sen:70a}.\<close>
 
 definition neutral :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "neutral scf A Is \<equiv>
@@ -76,14 +76,14 @@ lemma neutralD:
   \<Longrightarrow> (x \<^bsub>(scf P)\<^esub>\<preceq> y \<longleftrightarrow> z \<^bsub>(scf P')\<^esub>\<preceq> w) \<and> (y \<^bsub>(scf P)\<^esub>\<preceq> x \<longleftrightarrow> w \<^bsub>(scf P')\<^esub>\<preceq> z)"
   unfolding neutral_def by simp
 
-text {* Neutrality implies independence of irrelevant alternatives. *}
+text \<open>Neutrality implies independence of irrelevant alternatives.\<close>
 
 lemma neutral_iia: "neutral scf A Is \<Longrightarrow> iia scf A Is"
   unfolding neutral_def by (rule, auto)
 
-text {* \emph{Positive responsiveness} is a bit like non-manipulability: if
+text \<open>\emph{Positive responsiveness} is a bit like non-manipulability: if
 one individual improves their opinion of $x$, then the result should shift
-in favour of $x$. *}
+in favour of $x$.\<close>
 
 definition positively_responsive :: "('a, 'i) SCF \<Rightarrow> 'a set \<Rightarrow> 'i set \<Rightarrow> bool" where
   "positively_responsive scf A Is \<equiv>
@@ -120,18 +120,18 @@ lemma positively_responsiveD:
   apply (erule allE[where x=y])
   by auto
 
-subsection{* The Method of Majority Decision satisfies May's conditions *}
+subsection\<open>The Method of Majority Decision satisfies May's conditions\<close>
 
-text {* The \emph{method of majority decision} (MMD) says that if the number
+text \<open>The \emph{method of majority decision} (MMD) says that if the number
 of individuals who strictly prefer $x$ to $y$ is larger than or equal to
 those who strictly prefer the converse, then $x\ R\ y$. Note that this
-definition only makes sense for a finite population. *}
+definition only makes sense for a finite population.\<close>
 
 definition MMD :: "'i set \<Rightarrow> ('a, 'i) SCF" where
   "MMD Is P \<equiv> { (x, y) . card { i \<in> Is. x \<^bsub>(P i)\<^esub>\<prec> y } \<ge> card { i \<in> Is. y \<^bsub>(P i)\<^esub>\<prec> x } }"
 
-text {* The first part of May's Theorem establishes that the conditions are
-consistent, by showing that they are satisfied by MMD. *}
+text \<open>The first part of May's Theorem establishes that the conditions are
+consistent, by showing that they are satisfied by MMD.\<close>
 
 lemma MMD_l2r:
   fixes A :: "'a set"
@@ -236,12 +236,12 @@ next
   qed
 qed
 
-subsection{* Everything satisfying May's conditions is the Method of Majority Decision *}
+subsection\<open>Everything satisfying May's conditions is the Method of Majority Decision\<close>
 
-text{* Now show that MMD is the only SCF that satisfies these conditions. *}
+text\<open>Now show that MMD is the only SCF that satisfies these conditions.\<close>
 
-text {* Firstly develop some theory about exchanging alternatives $x$ and
-$y$ in profile $P$. *}
+text \<open>Firstly develop some theory about exchanging alternatives $x$ and
+$y$ in profile $P$.\<close>
 
 definition swapAlts :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where
   "swapAlts a b u \<equiv> if u = a then b else if u = b then a else u"
@@ -290,11 +290,11 @@ lemma profile_bij_profile:
   using bij_betw_onto[OF bijf] profileP
   by - (rule, auto dest: profile_non_empty)
 
-text{* The locale keeps the conditions in scope for the next few
+text\<open>The locale keeps the conditions in scope for the next few
 lemmas. Note how weak the constraints on the sets of alternatives and
 individuals are; clearly there needs to be at least two alternatives and two
 individuals for conflict to occur, but it is pleasant that the proof
-uniformly handles the degenerate cases. *}
+uniformly handles the degenerate cases.\<close>
 
 locale May =
   fixes A :: "'a set"
@@ -309,10 +309,10 @@ locale May =
       and positively_responsive: "positively_responsive scf A Is"
 begin
 
-text{* Anonymity implies that, for any pair of alternatives, the social
+text\<open>Anonymity implies that, for any pair of alternatives, the social
 choice rule can only depend on the number of individuals who express any
 given preference between them. Note we also need @{term "iia"}, implied by
-neutrality, to restrict attention to alternatives $x$ and $y$. *}
+neutrality, to restrict attention to alternatives $x$ and $y$.\<close>
 
 lemma anonymous_card:
   assumes profileP: "profile A Is P"
@@ -376,9 +376,9 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-text {* Using the previous result and neutrality, it must be the case that
+text \<open>Using the previous result and neutrality, it must be the case that
 if the tallies are tied for alternatives $x$ and $y$ then the social choice
-function is indifferent between those two alternatives. *}
+function is indifferent between those two alternatives.\<close>
 
 lemma anonymous_neutral_indifference:
   assumes profileP: "profile A Is P"
@@ -402,9 +402,9 @@ proof -
   from xyA SCF_completeD[OF SCF] profileP symPP' idPP' show "x \<^bsub>(scf P)\<^esub>\<approx> y" by (simp, blast)
 qed
 
-text{* Finally, if the tallies are not equal then the social choice function
+text\<open>Finally, if the tallies are not equal then the social choice function
 must lean towards the one with the higher count due to positive
-responsiveness. *}
+responsiveness.\<close>
 
 lemma positively_responsive_prefer_witness:
   assumes profileP: "profile A Is P"
@@ -534,7 +534,7 @@ qed
 
 end
 
-text{* May's original paper \cite{May:1952} goes on to show that the
+text\<open>May's original paper \cite{May:1952} goes on to show that the
 conditions are independent by exhibiting choice rules that differ from
 @{term "MMD"} and satisfy the conditions remaining after any particular one
 is removed. I leave this to future work.
@@ -547,11 +547,11 @@ the other.
 There are many later papers that characterise MMD with different sets of
 conditions.
 
-*}
+\<close>
 
-subsection{* The Plurality Rule *}
+subsection\<open>The Plurality Rule\<close>
 
-text{* Goodin and List \cite{GoodinList:2006} show that May's original
+text\<open>Goodin and List \cite{GoodinList:2006} show that May's original
 result can be generalised to characterise plurality voting. The following
 shows that this result is a short step from Sen's much earlier
 generalisation.
@@ -559,7 +559,7 @@ generalisation.
 \emph{Plurality voting} is a choice function that returns the alternative
 that receives the most votes, or the set of such alternatives in the case of
 a tie. Profiles are restricted to those where each individual casts a vote
-in favour of a single alternative. *}
+in favour of a single alternative.\<close>
 
 type_synonym ('a, 'i) SVProfile = "'i \<Rightarrow> 'a"
 
@@ -570,9 +570,9 @@ definition plurality_rule :: "'a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i)
   "plurality_rule A Is F
      \<equiv> { x \<in> A . \<forall>y \<in> A. card { i \<in> Is . F i = x } \<ge> card { i \<in> Is . F i = y } }"
 
-text{* By translating single-vote profiles into RPRs in the obvious way, the
+text\<open>By translating single-vote profiles into RPRs in the obvious way, the
 choice function arising from @{term "MMD"} coincides with traditional
-plurality voting. *}
+plurality voting.\<close>
 
 definition MMD_plurality_rule :: "'a set \<Rightarrow> 'i set \<Rightarrow> ('a, 'i) Profile \<Rightarrow> 'a set" where
   "MMD_plurality_rule A Is P \<equiv> choiceSet A (MMD Is P)"
@@ -600,13 +600,13 @@ proof -
     by auto
 qed
 
-text{* Thus it is clear that Sen's generalisation of May's result applies to
+text\<open>Thus it is clear that Sen's generalisation of May's result applies to
 this case as well.
 
 Their paper goes on to show how strengthening the anonymity condition gives
 rise to a characterisation of approval voting that strictly generalises
 May's original theorem. As this requires some rearrangement of the proof I
-leave it to future work. *}
+leave it to future work.\<close>
 
 (*<*)
 end

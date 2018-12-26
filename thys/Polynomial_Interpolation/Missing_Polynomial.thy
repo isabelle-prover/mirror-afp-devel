@@ -179,14 +179,14 @@ lemma poly_eqI2:
   shows "p = q"
   apply(rule poly_eqI) by (metis assms le_degree)
 
-text {* A nice extension rule for polynomials. *}
+text \<open>A nice extension rule for polynomials.\<close>
 lemma poly_ext[intro]:
   fixes p q :: "'a :: {ring_char_0, idom} poly"
   assumes "\<And>x. poly p x = poly q x" shows "p = q"
   unfolding poly_eq_poly_eq_iff[symmetric]
   using assms by (rule ext)
 
-text {* Copied from non-negative variants. *}
+text \<open>Copied from non-negative variants.\<close>
 lemma coeff_linear_power_neg[simp]:
   fixes a :: "'a::comm_ring_1"
   shows "coeff ([:a, -1:] ^ n) n = (-1)^n"
@@ -382,7 +382,7 @@ lemma monic_factor:
   shows "monic q"
 proof -
   from assms have nz: "p \<noteq> 0" "q \<noteq> 0" by auto
-  from assms[unfolded degree_mult_eq[OF nz] coeff_mult_degree_sum `monic p`]
+  from assms[unfolded degree_mult_eq[OF nz] coeff_mult_degree_sum \<open>monic p\<close>]
   show ?thesis by simp
 qed
 
@@ -440,19 +440,19 @@ next
     then obtain a where a: "poly p a = 0" ..
     then have "[:-a, 1:] dvd p" by (simp only: poly_eq_0_iff_dvd)
     then obtain k where k: "p = [:-a, 1:] * k" ..
-    with `p \<noteq> 0` have "k \<noteq> 0" by auto
+    with \<open>p \<noteq> 0\<close> have "k \<noteq> 0" by auto
     with k have "degree p = Suc (degree k)"
       by (simp add: degree_mult_eq del: mult_pCons_left)
-    with `Suc n = degree p` have "n = degree k" by simp
-    from Suc.hyps(1)[OF this `k \<noteq> 0`]
+    with \<open>Suc n = degree p\<close> have "n = degree k" by simp
+    from Suc.hyps(1)[OF this \<open>k \<noteq> 0\<close>]
     have le: "card {x. poly k x = 0} \<le> degree k" .
     have "card {x. poly p x = 0} = card {x. poly ([:-a, 1:] * k) x = 0}" unfolding k ..
     also have "{x. poly ([:-a, 1:] * k) x = 0} = insert a {x. poly k x = 0}"
       by auto
     also have "card \<dots> \<le> Suc (card {x. poly k x = 0})" 
-      unfolding card_insert_if[OF poly_roots_finite[OF `k \<noteq> 0`]] by simp
+      unfolding card_insert_if[OF poly_roots_finite[OF \<open>k \<noteq> 0\<close>]] by simp
     also have "\<dots> \<le> Suc (degree k)" using le by auto
-    finally show ?thesis using `degree p = Suc (degree k)` by simp
+    finally show ?thesis using \<open>degree p = Suc (degree k)\<close> by simp
   qed simp
 qed
 
@@ -881,14 +881,14 @@ proof -
     apply (metis assms(2) degree_mult_eq_0 gr_implies_not_zero irreducible\<^sub>dD(2) less_add_same_cancel2)
     using assms by auto
   hence deg: "degree p \<ge> degree q" by auto
-  from `p dvd q` obtain k where q: "q = k * p" unfolding dvd_def by (auto simp: ac_simps)
+  from \<open>p dvd q\<close> obtain k where q: "q = k * p" unfolding dvd_def by (auto simp: ac_simps)
   with nz have "k \<noteq> 0" by auto
-  from deg[unfolded q degree_mult_eq[OF `k \<noteq> 0` `p \<noteq> 0` ]] have "degree k = 0" 
+  from deg[unfolded q degree_mult_eq[OF \<open>k \<noteq> 0\<close> \<open>p \<noteq> 0\<close> ]] have "degree k = 0" 
     unfolding q by auto 
   then obtain c where k: "k = [: c :]" by (metis degree_0_id)
-  with `k \<noteq> 0` have "c \<noteq> 0" by auto
+  with \<open>k \<noteq> 0\<close> have "c \<noteq> 0" by auto
   have "q = smult c p" unfolding q k by simp
-  with `c \<noteq> 0` show ?thesis by auto
+  with \<open>c \<noteq> 0\<close> show ?thesis by auto
 qed
 
 subsection \<open>Map over Polynomial Coefficients\<close>
@@ -1356,7 +1356,7 @@ proof (induct "degree p" arbitrary: p rule: less_induct)
     have deg: "degree ?r < degree p" using c deg by auto
     let ?Q = "{q. irreducible q \<and> monic (q :: 'a poly)}"
     have mon: "monic ?q" unfolding c_def using q0 by auto
-    from monic_factor[OF `monic p`[unfolded p] this] have "monic ?r" .
+    from monic_factor[OF \<open>monic p\<close>[unfolded p] this] have "monic ?r" .
     from less(1)[OF deg this] obtain f as
       where as: "finite as" "?r = (\<Prod> a \<in>as. a ^ Suc (f a))"
         "as \<subseteq> ?Q" by blast

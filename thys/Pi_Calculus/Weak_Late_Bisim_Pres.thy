@@ -56,7 +56,7 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim P Q)
-    thus ?case using `eqvt ?X`
+    thus ?case using \<open>eqvt ?X\<close>
       by(force intro: inputPres)
   next
     case(cSym P Q)
@@ -139,7 +139,7 @@ proof -
       ultimately have "[a\<frown>b]P \<leadsto>\<^sup>^<(?X \<union> weakBisim)> [a\<frown>b]Q"
         by(rule matchPres)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     thus ?case by(auto simp add: pi.inject dest: symmetric)
@@ -168,15 +168,15 @@ proof -
       moreover {
         fix P Q a b
         assume "P \<approx> Q" and "(a::name) \<noteq> b"
-        note `P \<approx> Q`
-        moreover from `a \<noteq> b` have "[a\<noteq>b]P \<approx> P" by(rule mismatchId)
+        note \<open>P \<approx> Q\<close>
+        moreover from \<open>a \<noteq> b\<close> have "[a\<noteq>b]P \<approx> P" by(rule mismatchId)
         ultimately have "[a\<noteq>b]P \<approx> Q" by(blast intro: transitive)
       }
       moreover have "weakBisim \<subseteq> ?X \<union> weakBisim" by blast
       ultimately have "[a\<noteq>b]P \<leadsto>\<^sup>^<(?X \<union> weakBisim)> [a\<noteq>b]Q"
         by(rule mismatchPres)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     thus ?case by(auto simp add: pi.inject dest: symmetric)
@@ -207,8 +207,8 @@ proof -
       moreover have "\<And>P Q a. (P, Q) \<in> ?ParSet \<union> weakBisim \<Longrightarrow> (<\<nu>a>P, <\<nu>a>Q) \<in> ?ParSet \<union> weakBisim"
         by(blast intro: resChain.step[THEN sym] resPres)
       moreover {
-        from `P \<approx> Q` have "P \<leadsto>\<^sup>^<weakBisim> Q" by(rule unfoldE)
-        moreover note `P \<approx> Q`
+        from \<open>P \<approx> Q\<close> have "P \<leadsto>\<^sup>^<weakBisim> Q" by(rule unfoldE)
+        moreover note \<open>P \<approx> Q\<close>
         moreover {
           fix P Q R
           assume "P \<approx> Q"
@@ -223,14 +223,14 @@ proof -
             apply(auto intro: resPres)
             by(rule_tac x="a#lst" in exI) auto
         }
-        ultimately have "(P \<parallel> R) \<leadsto>\<^sup>^<(?ParSet \<union> weakBisim)> (Q \<parallel> R)" using eqvt `eqvt(?ParSet \<union> weakBisim)`
+        ultimately have "(P \<parallel> R) \<leadsto>\<^sup>^<(?ParSet \<union> weakBisim)> (Q \<parallel> R)" using eqvt \<open>eqvt(?ParSet \<union> weakBisim)\<close>
           by(rule Weak_Late_Sim_Pres.parPres)
       }
 
       ultimately have "resChain lst (P \<parallel> R) \<leadsto>\<^sup>^<(?ParSet \<union> weakBisim)> resChain lst (Q \<parallel> R)"
         by(rule resChainI)
     }
-    with `(PR, QR) \<in> ?ParSet` show ?case by blast
+    with \<open>(PR, QR) \<in> ?ParSet\<close> show ?case by blast
   next
     case(cSym PR QR)
     thus ?case by(auto dest: symmetric)
@@ -300,7 +300,7 @@ proof -
   ultimately show ?thesis
   proof(coinduct rule: weakBisimTransitiveCoinduct)
     case(cSim P Q)
-    from `(P, Q) \<in> ?X`
+    from \<open>(P, Q) \<in> ?X\<close>
     show "P \<leadsto>\<^sup>^<?Y> Q"
     proof(induct)
       case(BRBang P Q)
@@ -318,7 +318,7 @@ proof -
       have RSimT: "R \<leadsto>\<^sup>^<?Y> T" by fact
       moreover from PBiSimQ  have "P \<leadsto>\<^sup>^<weakBisim> Q" by(blast dest: unfoldE)
       moreover from RBangRelT have "(R, T) \<in> ?Y" by(blast intro: Strong_Late_Bisim.reflexive)
-      ultimately show "P \<parallel> R \<leadsto>\<^sup>^<?Y> Q \<parallel> T" using ParCompose ResCong eqvt eqvtY `P \<approx> Q`
+      ultimately show "P \<parallel> R \<leadsto>\<^sup>^<?Y> Q \<parallel> T" using ParCompose ResCong eqvt eqvtY \<open>P \<approx> Q\<close>
         by(rule_tac Weak_Late_Sim_Pres.parCompose)
     next
       case(BRRes P Q x)

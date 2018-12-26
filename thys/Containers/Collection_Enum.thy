@@ -7,9 +7,9 @@ theory Collection_Enum imports
   Containers_Generator
 begin
 
-section {* A type class for optional enumerations *}
+section \<open>A type class for optional enumerations\<close>
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
 class cenum =
   fixes cEnum :: "('a list \<times> (('a \<Rightarrow> bool) \<Rightarrow> bool) \<times> (('a \<Rightarrow> bool) \<Rightarrow> bool)) option"
@@ -40,7 +40,7 @@ end
 
 syntax "_CENUM" :: "type => logic"  ("(1CENUM/(1'(_')))")
 
-parse_translation {*
+parse_translation \<open>
 let
   fun cenum_tr [ty] =
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "cEnum"} $
@@ -56,9 +56,9 @@ let
                (Syntax.const @{type_syntax bool}))))))
     | cenum_tr ts = raise TERM ("cenum_tr", ts);
 in [(@{syntax_const "_CENUM"}, K cenum_tr)] end
-*}
+\<close>
 
-typed_print_translation {*
+typed_print_translation \<open>
 let
   fun cenum_tr' ctxt
     (Type (@{type_name option}, [Type (@{type_name prod}, [Type (@{type_name list}, [T]), _])])) ts =
@@ -66,11 +66,11 @@ let
   | cenum_tr' _ _ _ = raise Match;
 in [(@{const_syntax cEnum}, cenum_tr')]
 end
-*}
+\<close>
 
-subsection {* Generator for the @{class cenum}-class *}
+subsection \<open>Generator for the @{class cenum}-class\<close>
 
-text {*
+text \<open>
 This generator registers itself at the derive-manager for the class @{class cenum}.
 To be more precise, one can currently only choose to not support enumeration 
 by passing "no" as parameter.  
@@ -78,16 +78,16 @@ by passing "no" as parameter.
 \begin{itemize}
 \item \texttt{instantiation type :: (type,\ldots,type) (no) cenum}
 \end{itemize}
-*}
+\<close>
 
-text {*
+text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
-*}
+\<close>
 
 ML_file "cenum_generator.ML"
 
 
-subsection {* Instantiations *}
+subsection \<open>Instantiations\<close>
 
 context fixes cenum_all :: "('a \<Rightarrow> bool) \<Rightarrow> bool" begin
 fun all_n_lists :: "('a list \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> bool"
@@ -167,7 +167,7 @@ instance proof
       fix f :: "'a \<Rightarrow> 'b"
       have f: "f = the \<circ> map_of (zip (enum_a) (map f enum_a))"
         by (auto simp add: map_of_zip_map fun_eq_iff intro: in_cenum[OF a])
-      from `enum_all P` have "P (the \<circ> map_of (zip enum_a (map f enum_a)))"
+      from \<open>enum_all P\<close> have "P (the \<circ> map_of (zip enum_a (map f enum_a)))"
         apply(simp add: enum_all ID_cEnum[OF b] all_n_lists_iff set_n_lists)
         apply(erule allE, erule mp)
         apply(auto simp add: in_cenum[OF b])

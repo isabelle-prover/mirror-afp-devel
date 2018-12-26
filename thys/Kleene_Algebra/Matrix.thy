@@ -4,18 +4,18 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Matrices *}
+section \<open>Matrices\<close>
 
 theory Matrix
 imports "HOL-Word.Word" Dioid
 begin
 
-text {* In this section we formalise a perhaps more natural version of
+text \<open>In this section we formalise a perhaps more natural version of
 matrices of fixed dimension ($m \times n$-matrices). It is well known
 that such matrices over a Kleene algebra form a Kleene
-algebra~\cite{conway71regular}. *}
+algebra~\cite{conway71regular}.\<close>
 
-subsection {* Type Definition *}
+subsection \<open>Type Definition\<close>
 
 typedef (overloaded) 'a atMost = "{..<len_of TYPE('a::len)}"
 by auto
@@ -32,12 +32,12 @@ done
 lemma finite_UNIV_atMost [simp]: "finite (UNIV::('a::len) atMost set)"
   by (simp add: UNIV_atMost)
 
-text {* Our matrix type is similar to \mbox{@{text "'a^'n^'m"}} from
+text \<open>Our matrix type is similar to \mbox{\<open>'a^'n^'m\<close>} from
 {\em HOL/Multivariate\_Analysis/Finite\_Cartesian\_Product.thy}, but
 (i)~we explicitly define a type constructor for matrices and square
 matrices, and (ii)~in the definition of operations, e.g., matrix
 multiplication, we impose weaker sort requirements on the element
-type. *}
+type.\<close>
 
 context notes [[typedef_overloaded]]
 begin
@@ -55,7 +55,7 @@ fun matrix_of_sqmatrix where
   "matrix_of_sqmatrix (SqMatrix A) = Matrix A"
 
 
-subsection {* 0 and 1 *}
+subsection \<open>0 and 1\<close>
 
 instantiation matrix :: (zero,type,type) zero
 begin
@@ -69,8 +69,8 @@ begin
   instance ..
 end
 
-text {* Tricky sort issues: compare @{term one_matrix} with @{term
-one_sqmatrix} \dots *}
+text \<open>Tricky sort issues: compare @{term one_matrix} with @{term
+one_sqmatrix} \dots\<close>
 
 instantiation matrix :: ("{zero,one}",len,len) one
 begin
@@ -87,7 +87,7 @@ begin
 end
 
 
-subsection {* Matrix Addition *}
+subsection \<open>Matrix Addition\<close>
 
 fun matrix_plus where
   "matrix_plus (Matrix A) (Matrix B) = Matrix (\<lambda>i j. A i j + B i j)"
@@ -154,7 +154,7 @@ lemma sqmatrix_add_left_commute [simp]:
   by (metis sqmatrix_add_commute sqmatrix_add_assoc)
 
 
-subsection {* Order (via Addition) *}
+subsection \<open>Order (via Addition)\<close>
 
 instantiation matrix :: (plus,type,type) plus_ord
 begin
@@ -191,7 +191,7 @@ begin
 end
 
 
-subsection {* Matrix Multiplication *}
+subsection \<open>Matrix Multiplication\<close>
 
 fun matrix_times :: "('a::{comm_monoid_add,times},'m,'k) matrix \<Rightarrow> ('a,'k,'n) matrix \<Rightarrow> ('a,'m,'n) matrix" where
   "matrix_times (Matrix A) (Matrix B) = Matrix (\<lambda>i j. sum (\<lambda>k. A i k * B k j) (UNIV::'k atMost set))"
@@ -294,11 +294,11 @@ lemma sqmatrix_mult_distrib_right:
   by (cases A, cases B, cases C, simp add: distrib_right sum.distrib)
 
 
-subsection {* Square-Matrix Model of Dioids *}
+subsection \<open>Square-Matrix Model of Dioids\<close>
 
-text {* The following subclass proofs are necessary to connect parts
+text \<open>The following subclass proofs are necessary to connect parts
 of our algebraic hierarchy to the hierarchy found in the Isabelle/HOL
-library. *}
+library.\<close>
 
 subclass (in ab_near_semiring_one_zerol) comm_monoid_add
 proof
@@ -348,9 +348,9 @@ begin
   qed
 end
 
-subsection {* Kleene Star for Matrices *}
+subsection \<open>Kleene Star for Matrices\<close>
 
-text {* We currently do not implement the Kleene star of matrices,
-since this is complicated. *}
+text \<open>We currently do not implement the Kleene star of matrices,
+since this is complicated.\<close>
 
 end

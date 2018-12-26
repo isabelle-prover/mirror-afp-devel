@@ -1,4 +1,4 @@
-section {* Concrete setting *}
+section \<open>Concrete setting\<close>
 
 theory Concrete
 imports Syntactic_Criteria
@@ -145,7 +145,7 @@ lemma "SC_discr (h ::= Ct 0)"
   by (simp add: Example_PL.SC_discr.simps)
 
 
-subsection {* The secure programs from the paper's Example 3 *}
+subsection \<open>The secure programs from the paper's Example 3\<close>
 
 definition [simp]: "d0 =
   h' ::= Ct 0 ;;

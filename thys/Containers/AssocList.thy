@@ -5,19 +5,19 @@ theory AssocList imports
   "HOL-Library.DAList" 
 begin
 
-section {* Additional operations for associative lists *}
+section \<open>Additional operations for associative lists\<close>
 
-subsection {* Operations on the raw type *}
+subsection \<open>Operations on the raw type\<close>
 
 primrec update_with_aux :: "'val \<Rightarrow> 'key \<Rightarrow> ('val \<Rightarrow> 'val) \<Rightarrow> ('key \<times> 'val) list \<Rightarrow> ('key \<times> 'val) list"
 where
   "update_with_aux v k f [] = [(k, f v)]"
 | "update_with_aux v k f (p # ps) = (if (fst p = k) then (k, f (snd p)) # ps else p # update_with_aux v k f ps)"
 
-text {*
+text \<open>
   Do not use @{term "AList.delete"} because this traverses all the list even if it has found the key.
   We do not have to keep going because we use the invariant that keys are distinct.
-*}
+\<close>
 fun delete_aux :: "'key \<Rightarrow> ('key \<times> 'val) list \<Rightarrow> ('key \<times> 'val) list"
 where
   "delete_aux k [] = []"
@@ -87,7 +87,7 @@ by(simp add: map_of_delete_aux')
 lemma delete_aux_eq_Nil_conv: "delete_aux k ts = [] \<longleftrightarrow> ts = [] \<or> (\<exists>v. ts = [(k, v)])"
 by(cases ts)(auto split: if_split_asm)
 
-subsection {* Operations on the abstract type @{typ "('a, 'b) alist"} *}
+subsection \<open>Operations on the abstract type @{typ "('a, 'b) alist"}\<close>
 
 lift_definition update_with :: "'v \<Rightarrow> 'k \<Rightarrow> ('v \<Rightarrow> 'v) \<Rightarrow> ('k, 'v) alist \<Rightarrow> ('k, 'v) alist"
   is "update_with_aux" by simp

@@ -1,4 +1,4 @@
-section {* \isaheader{List Based Maps} *}
+section \<open>\isaheader{List Based Maps}\<close>
 theory Impl_List_Map
 imports
   "../../Iterator/Iterator"
@@ -30,7 +30,7 @@ next
     thus ?case ..
 qed
 
-text {* All finite maps can be represented *}
+text \<open>All finite maps can be represented\<close>
 lemma list_map_rel_range:
   "Range (\<langle>Rk,Rv\<rangle>list_map_rel) = 
        {m. finite (dom m) \<and> dom m \<subseteq> Range Rk \<and> ran m \<subseteq> Range Rv}" 
@@ -88,7 +88,7 @@ qed
   (* TODO: Move to Misc *)
 
 
-subsection {* Implementation *}
+subsection \<open>Implementation\<close>
 
 primrec list_map_lookup :: 
     "('k \<Rightarrow> 'k \<Rightarrow> bool) \<Rightarrow> 'k \<Rightarrow> ('k,'v) list_map \<Rightarrow> 'v option" where
@@ -135,7 +135,7 @@ definition list_map_to_list :: "('k,'v) list_map \<Rightarrow> ('k\<times>'v) li
     where "list_map_to_list = id"
 
 
-subsection {* Parametricity *}
+subsection \<open>Parametricity\<close>
 
 lemma list_map_autoref_empty[autoref_rules]:
   "([], op_map_empty)\<in>\<langle>Rk,Rv\<rangle>list_map_rel"

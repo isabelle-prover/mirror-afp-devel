@@ -1,17 +1,17 @@
-subsection {* Formulation of a subject-subject communication policy and an information flow 
-policy, and showing both can be derived from subject-object configuration data *}
+subsection \<open>Formulation of a subject-subject communication policy and an information flow 
+policy, and showing both can be derived from subject-object configuration data\<close>
 
 theory Step_policies
   imports Step_configuration
 begin
 
-subsubsection {* Specification\label{sect:policy_specification} *}
+subsubsection \<open>Specification\label{sect:policy_specification}\<close>
 
-text {* In order to use CISK, we need an information flow policy @{term ifp}
+text \<open>In order to use CISK, we need an information flow policy @{term ifp}
   relation. 
   We also express a static subject-subject @{term sp_spec_subj_obj} and subject-object @{term sp_spec_subj_subj} access control policy
   for the implementation of the model. The following locale summarizes
-  all properties we need. *}
+  all properties we need.\<close>
 
 locale policy_axioms =
   fixes sp_spec_subj_obj :: "'a \<Rightarrow> obj_id_t \<Rightarrow> mode_t \<Rightarrow> bool"
@@ -37,10 +37,10 @@ locale policy_axioms =
                  \<longrightarrow> ifp a c"
 begin (* empty *) end
 
-subsubsection {* Derivation *}
+subsubsection \<open>Derivation\<close>
 
-text {* The configuration data only consists of a subject-object policy. 
-We derive the subject-subject policy and the information flow policy from the configuration data and prove that properties we specified in Section~\ref{sect:policy_specification} are satisfied. *}
+text \<open>The configuration data only consists of a subject-object policy. 
+We derive the subject-subject policy and the information flow policy from the configuration data and prove that properties we specified in Section~\ref{sect:policy_specification} are satisfied.\<close>
 
 locale abstract_policy_derivation =
   fixes configuration_subj_obj :: "'a \<Rightarrow> obj_id_t \<Rightarrow> mode_t \<Rightarrow> bool"
@@ -60,7 +60,7 @@ begin
             \<and> sp_spec_subj_obj b (PAGE y) READ)
    \<or> (a = b)"
 
-text {* Show that the policies specified in Section~\ref{sect:policy_specification} can be derived from the configuration and their definitions. *}
+text \<open>Show that the policies specified in Section~\ref{sect:policy_specification} can be derived from the configuration and their definitions.\<close>
 
   lemma correct:
     shows "policy_axioms sp_spec_subj_obj sp_spec_subj_subj ifp"

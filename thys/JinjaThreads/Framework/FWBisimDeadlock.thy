@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Preservation of deadlock across bisimulations *}
+section \<open>Preservation of deadlock across bisimulations\<close>
 
 theory FWBisimDeadlock
 imports
@@ -18,8 +18,8 @@ lemma actions_ok1_ex_actions_ok2:
   obtains s2 where "r2.actions_ok s2 t ta2"
 proof -
   let ?s2 = "(locks s1, (\<lambda>t. map_option (\<lambda>(x1, ln). (SOME x2. if final1 x1 then final2 x2 else \<not> final2 x2, ln)) (thr s1 t), undefined), wset s1, interrupts s1)"
-  from `ta1 \<sim>m ta2` have "\<lbrace>ta1\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" by(simp add: ta_bisim_def)
-  with `r1.actions_ok s1 t ta1` have cao1: "r1.cond_action_oks s1 t \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" by auto
+  from \<open>ta1 \<sim>m ta2\<close> have "\<lbrace>ta1\<rbrace>\<^bsub>c\<^esub> = \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" by(simp add: ta_bisim_def)
+  with \<open>r1.actions_ok s1 t ta1\<close> have cao1: "r1.cond_action_oks s1 t \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" by auto
   have "r2.cond_action_oks ?s2 t \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub>" unfolding r2.cond_action_oks_conv_set
   proof
     fix ct
@@ -61,16 +61,16 @@ proof -
   from mbisim have "finite (dom (thr s1))" by(simp add: mbisim_def)
   hence "finite {t. no_\<tau>moves1 s1 t}" unfolding no_\<tau>moves1_def
     by-(rule finite_subset, auto)
-  thus ?thesis using `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)`
+  thus ?thesis using \<open>s1 \<approx>m (ls2, (ts2, m2), ws2, is2)\<close>
   proof(induct A\<equiv>"{t. no_\<tau>moves1 s1 t}" arbitrary: s1 ts2 rule: finite_induct)
     case empty
-    from `{} = {t. no_\<tau>moves1 s1 t}`[symmetric] have "no_\<tau>moves1 s1 = (\<lambda>t. False)"
+    from \<open>{} = {t. no_\<tau>moves1 s1 t}\<close>[symmetric] have "no_\<tau>moves1 s1 = (\<lambda>t. False)"
       by(auto intro: ext)
-    thus ?case using `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)` by auto
+    thus ?case using \<open>s1 \<approx>m (ls2, (ts2, m2), ws2, is2)\<close> by auto
   next
     case (insert t A)
-    note mbisim = `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)`
-    from `insert t A = {t. no_\<tau>moves1 s1 t}`
+    note mbisim = \<open>s1 \<approx>m (ls2, (ts2, m2), ws2, is2)\<close>
+    from \<open>insert t A = {t. no_\<tau>moves1 s1 t}\<close>
     have "no_\<tau>moves1 s1 t" by auto
     then obtain x1 where ts1t: "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and ws1t: "wset s1 t = None"
@@ -83,7 +83,7 @@ proof -
 
     let ?s1 = "(locks s1, ((thr s1)(t := None), shr s1), wset s1, interrupts s1)"
     let ?s2 = "(ls2, (ts2(t := None), m2), ws2, is2)"
-    from `insert t A = {t. no_\<tau>moves1 s1 t}` `t \<notin> A`
+    from \<open>insert t A = {t. no_\<tau>moves1 s1 t}\<close> \<open>t \<notin> A\<close>
     have A: "A = {t. no_\<tau>moves1 ?s1 t}" by(auto simp add: no_\<tau>moves1_def)
     have "?s1 \<approx>m ?s2"
     proof(rule mbisimI)
@@ -102,7 +102,7 @@ proof -
       fix t' x1 ln
       assume "thr ?s1 t' = \<lfloor>(x1, ln)\<rfloor>"
       hence "thr s1 t' = \<lfloor>(x1, ln)\<rfloor>" "t' \<noteq> t" by(auto split: if_split_asm)
-      with mbisim_thrD1[OF mbisim `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>`] mbisim
+      with mbisim_thrD1[OF mbisim \<open>thr s1 t' = \<lfloor>(x1, ln)\<rfloor>\<close>] mbisim
       show "\<exists>x2. thr ?s2 t' = \<lfloor>(x2, ln)\<rfloor> \<and> t' \<turnstile> (x1, shr ?s1) \<approx> (x2, shr ?s2) \<and> (wset ?s2 t' = None \<or> x1 \<approx>w x2)"
         by(auto simp add: mbisim_def)
     qed
@@ -112,35 +112,35 @@ proof -
       and "?s1 \<approx>m (ls2, (ts2', m2), ws2, is2)" by auto
     let ?s2' = "(ls2, (ts2'(t \<mapsto> (x2, no_wait_locks)), m2), ws2, is2)"
     from ts2t have "ts2(t \<mapsto> (x2, no_wait_locks)) = ts2" by(auto intro: ext)
-    with r2.\<tau>mRedT_add_thread_inv[OF `r2.mthr.silent_moves ?s2 (ls2, (ts2', m2), ws2, is2)`, of t "(x2, no_wait_locks)"]
+    with r2.\<tau>mRedT_add_thread_inv[OF \<open>r2.mthr.silent_moves ?s2 (ls2, (ts2', m2), ws2, is2)\<close>, of t "(x2, no_wait_locks)"]
     have "r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) ?s2'" by simp
-    from no_\<tau>move1_\<tau>s_to_no_\<tau>move2[OF `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)` \<tau>1]
+    from no_\<tau>move1_\<tau>s_to_no_\<tau>move2[OF \<open>t \<turnstile> (x1, shr s1) \<approx> (x2, m2)\<close> \<tau>1]
     obtain x2' m2' where "r2.silent_moves t (x2, m2) (x2', m2')" 
       and "\<And>x2'' m2''. \<not> r2.silent_move t (x2', m2') (x2'', m2'')" 
       and "t \<turnstile> (x1, shr s1) \<approx> (x2', m2')" by auto
     let ?s2'' = "(ls2, (ts2'(t \<mapsto> (x2', no_wait_locks)), m2'), ws2, is2)"
-    from red2_rtrancl_\<tau>_heapD[OF `r2.silent_moves t (x2, m2) (x2', m2')` `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)`]
+    from red2_rtrancl_\<tau>_heapD[OF \<open>r2.silent_moves t (x2, m2) (x2', m2')\<close> \<open>t \<turnstile> (x1, shr s1) \<approx> (x2, m2)\<close>]
     have "m2' = m2" by simp
-    with `r2.silent_moves t (x2, m2) (x2', m2')` have "r2.silent_moves t (x2, shr ?s2') (x2', m2)" by simp
+    with \<open>r2.silent_moves t (x2, m2) (x2', m2')\<close> have "r2.silent_moves t (x2, shr ?s2') (x2', m2)" by simp
     hence "r2.mthr.silent_moves ?s2' (redT_upd_\<epsilon> ?s2' t x2' m2)"
-      by(rule red2_rtrancl_\<tau>_into_RedT_\<tau>)(auto simp add: `ws2 t = None` intro: `t \<turnstile> (x1, shr s1) \<approx> (x2, m2)`)
-    also have "redT_upd_\<epsilon> ?s2' t x2' m2 = ?s2''" using `m2' = m2`
+      by(rule red2_rtrancl_\<tau>_into_RedT_\<tau>)(auto simp add: \<open>ws2 t = None\<close> intro: \<open>t \<turnstile> (x1, shr s1) \<approx> (x2, m2)\<close>)
+    also have "redT_upd_\<epsilon> ?s2' t x2' m2 = ?s2''" using \<open>m2' = m2\<close>
       by(auto simp add: fun_eq_iff redT_updLns_def finfun_Diag_const2 o_def)
     finally (back_subst) have "r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) ?s2''" 
-      using `r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) ?s2'` by-(rule rtranclp_trans)
+      using \<open>r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) ?s2'\<close> by-(rule rtranclp_trans)
     moreover {
       fix t'
       assume no_\<tau>1: "no_\<tau>moves1 s1 t'"
       have "no_\<tau>moves2 ?s2'' t'"
       proof(cases "t' = t")
         case True thus ?thesis
-          using `ws2 t = None` `\<And>x2'' m2''. \<not> r2.silent_move t (x2', m2') (x2'', m2'')` by(simp add: no_\<tau>moves2_def)
+          using \<open>ws2 t = None\<close> \<open>\<And>x2'' m2''. \<not> r2.silent_move t (x2', m2') (x2'', m2'')\<close> by(simp add: no_\<tau>moves2_def)
       next
         case False
         with no_\<tau>1 have "no_\<tau>moves1 ?s1 t'" by(simp add: no_\<tau>moves1_def)
         hence "no_\<tau>moves2 (ls2, (ts2', m2), ws2, is2) t'"
-          by(rule `no_\<tau>moves1 ?s1 t' \<Longrightarrow> no_\<tau>moves2 (ls2, (ts2', m2), ws2, is2) t'`)
-        with False `m2' = m2` show ?thesis by(simp add: no_\<tau>moves2_def)
+          by(rule \<open>no_\<tau>moves1 ?s1 t' \<Longrightarrow> no_\<tau>moves2 (ls2, (ts2', m2), ws2, is2) t'\<close>)
+        with False \<open>m2' = m2\<close> show ?thesis by(simp add: no_\<tau>moves2_def)
       qed }
     moreover have "s1 \<approx>m ?s2''"
     proof(rule mbisimI)
@@ -153,7 +153,7 @@ proof -
       fix t'
       assume "thr s1 t' = None"
       hence "thr ?s1 t' = None" "t' \<noteq> t" using ts1t by auto
-      with mbisim_thrNone_eq[OF `?s1 \<approx>m (ls2, (ts2', m2), ws2, is2)`, of t']
+      with mbisim_thrNone_eq[OF \<open>?s1 \<approx>m (ls2, (ts2', m2), ws2, is2)\<close>, of t']
       show "thr ?s2'' t' = None" by simp
     next
       fix t' x1' ln'
@@ -161,15 +161,15 @@ proof -
       show "\<exists>x2. thr ?s2'' t' = \<lfloor>(x2, ln')\<rfloor> \<and> t' \<turnstile> (x1', shr s1) \<approx> (x2, shr ?s2'') \<and> (wset ?s2'' t' = None \<or> x1' \<approx>w x2)"
       proof(cases "t = t'")
         case True
-        with `thr s1 t' = \<lfloor>(x1', ln')\<rfloor>` ts1t `t \<turnstile> (x1, shr s1) \<approx> (x2', m2')` `m2' = m2` `ws2 t = None`
+        with \<open>thr s1 t' = \<lfloor>(x1', ln')\<rfloor>\<close> ts1t \<open>t \<turnstile> (x1, shr s1) \<approx> (x2', m2')\<close> \<open>m2' = m2\<close> \<open>ws2 t = None\<close>
         show ?thesis by auto
       next
         case False
-        with mbisim_thrD1[OF `?s1 \<approx>m (ls2, (ts2', m2), ws2, is2)`, of t' x1' ln'] `thr s1 t' = \<lfloor>(x1', ln')\<rfloor>` `m2' = m2` mbisim
+        with mbisim_thrD1[OF \<open>?s1 \<approx>m (ls2, (ts2', m2), ws2, is2)\<close>, of t' x1' ln'] \<open>thr s1 t' = \<lfloor>(x1', ln')\<rfloor>\<close> \<open>m2' = m2\<close> mbisim
         show ?thesis by(auto simp add: mbisim_def)
       qed
     qed
-    ultimately show ?case unfolding `m2' = m2` by blast
+    ultimately show ?case unfolding \<open>m2' = m2\<close> by blast
   qed
 qed
 
@@ -197,30 +197,30 @@ proof -
   show "r2.not_final_thread s2 t"
   proof(cases "wset s1 t = None \<and> ln = no_wait_locks")
     case False
-    with `r1.not_final_thread s1 t` `thr s1 t = \<lfloor>(x1, ln)\<rfloor>` `thr s2 t = \<lfloor>(x2, ln)\<rfloor>` mbisim 
+    with \<open>r1.not_final_thread s1 t\<close> \<open>thr s1 t = \<lfloor>(x1, ln)\<rfloor>\<close> \<open>thr s2 t = \<lfloor>(x2, ln)\<rfloor>\<close> mbisim 
     show ?thesis by cases(auto simp add: mbisim_def r2.not_final_thread_iff)
   next
     case True
-    with `r1.not_final_thread s1 t` `thr s1 t = \<lfloor>(x1, ln)\<rfloor>` have "\<not> final1 x1" by(cases) auto
+    with \<open>r1.not_final_thread s1 t\<close> \<open>thr s1 t = \<lfloor>(x1, ln)\<rfloor>\<close> have "\<not> final1 x1" by(cases) auto
     have "\<not> final2 x2"
     proof
       assume "final2 x2"
-      with final2_simulation[OF `t \<turnstile> (x1, shr s1) \<approx> (x2, shr s2)`]
+      with final2_simulation[OF \<open>t \<turnstile> (x1, shr s1) \<approx> (x2, shr s2)\<close>]
       obtain x1' m1' where "r1.silent_moves t (x1, shr s1) (x1', m1')" "t \<turnstile> (x1', m1') \<approx> (x2, shr s2)" "final1 x1'" by auto
-      from `r1.silent_moves t (x1, shr s1) (x1', m1')` have "x1' = x1"
+      from \<open>r1.silent_moves t (x1, shr s1) (x1', m1')\<close> have "x1' = x1"
       proof(cases rule: converse_rtranclpE2[consumes 1, case_names refl step])
         case (step x1'' m1'')
-        from `r1.silent_move t (x1, shr s1) (x1'', m1'')`
+        from \<open>r1.silent_move t (x1, shr s1) (x1'', m1'')\<close>
         have "t \<turnstile> (x1, shr s1) -1-\<epsilon>\<rightarrow> (x1'', m1'')" by(auto dest: r1.silent_tl)
         hence "r1.redT s1 (t, \<epsilon>) (redT_upd_\<epsilon> s1 t x1'' m1'')"
-          using `thr s1 t = \<lfloor>(x1, ln)\<rfloor>` True
+          using \<open>thr s1 t = \<lfloor>(x1, ln)\<rfloor>\<close> True
           by -(erule r1.redT_normal, auto simp add: redT_updLns_def finfun_Diag_const2 o_def redT_updWs_def)
         hence False using dead by(auto intro: r1.deadlock_no_red r1.red_no_deadlock)
         thus ?thesis ..
       qed simp
-      with `\<not> final1 x1` `final1 x1'` show False by simp
+      with \<open>\<not> final1 x1\<close> \<open>final1 x1'\<close> show False by simp
     qed
-    thus ?thesis using `thr s2 t = \<lfloor>(x2, ln)\<rfloor>` by(auto simp add: r2.not_final_thread_iff)
+    thus ?thesis using \<open>thr s2 t = \<lfloor>(x2, ln)\<rfloor>\<close> by(auto simp add: r2.not_final_thread_iff)
   qed
 qed
 
@@ -233,7 +233,7 @@ proof -
   obtain ls2 ts2 m2 ws2 is2 where red1: "r2.mthr.silent_moves s2 (ls2, (ts2, m2), ws2, is2)"
     and "s1 \<approx>m (ls2, (ts2, m2), ws2, is2)" and "m2 = shr s2" 
     and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2, is2) t" by fastforce
-  from no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2[OF `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)`]
+  from no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2[OF \<open>s1 \<approx>m (ls2, (ts2, m2), ws2, is2)\<close>]
   obtain ts2' where red2: "r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) (ls2, (ts2', m2), ws2, is2)"
     and no_\<tau>: "\<And>t x1 x2 x2' m2'. \<lbrakk> wset s1 t = None; thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>; ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>;
                            \<And>x' m'. r1.silent_move t (x1, shr s1) (x', m') \<Longrightarrow> False \<rbrakk>
@@ -254,11 +254,11 @@ proof -
       hence csmw: "\<And>LT. r1.can_sync t x1 (shr s1) LT \<Longrightarrow>
                    \<exists>lt\<in>LT. r1.must_wait s1 t lt (r1.deadlocked s1 \<union> r1.final_threads s1)"
         by blast
-      from `thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>` mbisim obtain x2
+      from \<open>thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>\<close> mbisim obtain x2
         where "ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>" and bisim: "t \<turnstile> (x1, shr s1) \<approx> (x2, m2)"
         by(auto dest: mbisim_thrD1)
-      note `ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>` moreover
-      { from `r1.must_sync t x1 (shr s1)` obtain ta1 x1' m1'
+      note \<open>ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>\<close> moreover
+      { from \<open>r1.must_sync t x1 (shr s1)\<close> obtain ta1 x1' m1'
           where r1: "t \<turnstile> (x1, shr s1) -1-ta1\<rightarrow> (x1', m1')"
           and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastforce elim: r1.must_syncE)
         have "\<not> \<tau>move1 (x1, shr s1) ta1 (x1', m1')" (is "\<not> ?\<tau>")
@@ -293,7 +293,7 @@ proof -
         then obtain ta2 x2' m2' where r2: "t \<turnstile> (x2, m2) -2-ta2\<rightarrow> (x2', m2')"
           and LT: "LT = collect_locks \<lbrace>ta2\<rbrace>\<^bsub>l\<^esub> <+> collect_cond_actions \<lbrace>ta2\<rbrace>\<^bsub>c\<^esub> <+> collect_interrupts \<lbrace>ta2\<rbrace>\<^bsub>i\<^esub>"
           by(auto elim: r2.can_syncE)
-        from `wset s1 t = None` `thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>` `ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>`
+        from \<open>wset s1 t = None\<close> \<open>thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>\<close> \<open>ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>\<close>
         have "\<not> r2.silent_move t (x2, m2) (x2', m2')"
         proof(rule no_\<tau>)
           fix x1' m1'
@@ -313,7 +313,7 @@ proof -
         from \<tau>r1 obtain [simp]: "x1' = x1" "m1' = shr s1"
         proof(cases rule: converse_rtranclpE2[consumes 1, case_names refl step])
           case (step X M)
-          from `r1.silent_move t (x1, shr s1) (X, M)`
+          from \<open>r1.silent_move t (x1, shr s1) (X, M)\<close>
           have "t \<turnstile> (x1, shr s1) -1-\<epsilon>\<rightarrow> (X, M)" by(auto dest: r1.silent_tl)
           hence "r1.can_sync t x1 (shr s1) {}"
             by(auto intro: r1.can_syncI simp add: collect_locks_def collect_interrupts_def)
@@ -332,38 +332,38 @@ proof -
           case lock thus ?thesis by(auto simp add: mbisim_eqs dest!: fin')
         next
           case (join t')
-          from `r1.not_final_thread s1 t'` obtain x1 ln
+          from \<open>r1.not_final_thread s1 t'\<close> obtain x1 ln
             where "thr s1 t' = \<lfloor>(x1, ln)\<rfloor>" by cases auto
           with mbisim obtain x2 where "ts2' t' = \<lfloor>(x2, ln)\<rfloor>" "t' \<turnstile> (x1, shr s1) \<approx> (x2, m2)" by(auto dest: mbisim_thrD1)
           show ?thesis
           proof(cases "wset s1 t' = None \<and> ln = no_wait_locks")
             case False
-            with `r1.not_final_thread s1 t'` `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>` `ts2' t' = \<lfloor>(x2, ln)\<rfloor>` `lt = Inr (Inl t')` join
+            with \<open>r1.not_final_thread s1 t'\<close> \<open>thr s1 t' = \<lfloor>(x1, ln)\<rfloor>\<close> \<open>ts2' t' = \<lfloor>(x2, ln)\<rfloor>\<close> \<open>lt = Inr (Inl t')\<close> join
             show ?thesis by(auto simp add: mbisim_eqs r2.not_final_thread_iff r1.final_thread_def)
           next
             case True
-            with `r1.not_final_thread s1 t'` `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>` have "\<not> final1 x1" by(cases) auto
-            with join `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>` have "t' \<in> r1.deadlocked s1" by(auto simp add: r1.final_thread_def)
+            with \<open>r1.not_final_thread s1 t'\<close> \<open>thr s1 t' = \<lfloor>(x1, ln)\<rfloor>\<close> have "\<not> final1 x1" by(cases) auto
+            with join \<open>thr s1 t' = \<lfloor>(x1, ln)\<rfloor>\<close> have "t' \<in> r1.deadlocked s1" by(auto simp add: r1.final_thread_def)
             have "\<not> final2 x2"
             proof
               assume "final2 x2"
-              with final2_simulation[OF `t' \<turnstile> (x1, shr s1) \<approx> (x2, m2)`]
+              with final2_simulation[OF \<open>t' \<turnstile> (x1, shr s1) \<approx> (x2, m2)\<close>]
               obtain x1' m1' where "r1.silent_moves t' (x1, shr s1) (x1', m1')"
                 and "t' \<turnstile> (x1', m1') \<approx> (x2, m2)" "final1 x1'" by auto
-              from `r1.silent_moves t' (x1, shr s1) (x1', m1')` have "x1' = x1"
+              from \<open>r1.silent_moves t' (x1, shr s1) (x1', m1')\<close> have "x1' = x1"
               proof(cases rule: converse_rtranclpE2[consumes 1, case_names refl step])
                 case (step x1'' m1'')
-                from `r1.silent_move t' (x1, shr s1) (x1'', m1'')`
+                from \<open>r1.silent_move t' (x1, shr s1) (x1'', m1'')\<close>
                 have "t' \<turnstile> (x1, shr s1) -1-\<epsilon>\<rightarrow> (x1'', m1'')" by(auto dest: r1.silent_tl)
                 hence "r1.redT s1 (t', \<epsilon>) (redT_upd_\<epsilon> s1 t' x1'' m1'')"
-                  using `thr s1 t' = \<lfloor>(x1, ln)\<rfloor>` True
+                  using \<open>thr s1 t' = \<lfloor>(x1, ln)\<rfloor>\<close> True
                   by -(erule r1.redT_normal, auto simp add: redT_updLns_def redT_updWs_def finfun_Diag_const2 o_def)
-                hence False using `t' \<in> r1.deadlocked s1` by(rule r1.red_no_deadlock)
+                hence False using \<open>t' \<in> r1.deadlocked s1\<close> by(rule r1.red_no_deadlock)
                 thus ?thesis ..
               qed simp
-              with `\<not> final1 x1` `final1 x1'` show False by simp
+              with \<open>\<not> final1 x1\<close> \<open>final1 x1'\<close> show False by simp
             qed
-            thus ?thesis using `ts2' t' = \<lfloor>(x2, ln)\<rfloor>` join
+            thus ?thesis using \<open>ts2' t' = \<lfloor>(x2, ln)\<rfloor>\<close> join
               by(auto simp add: r2.not_final_thread_iff r1.final_thread_def)
           qed
         next
@@ -375,7 +375,7 @@ proof -
             then obtain x2 ln where "thr ?s2 t'' = \<lfloor>(x2, ln)\<rfloor>"
               and fin: "\<not> final2 x2 \<or> ln \<noteq> no_wait_locks \<or> wset ?s2 t'' \<noteq> None"
               by(auto simp add: r2.not_final_thread_iff)
-            from `thr ?s2 t'' = \<lfloor>(x2, ln)\<rfloor>` mbisim
+            from \<open>thr ?s2 t'' = \<lfloor>(x2, ln)\<rfloor>\<close> mbisim
             obtain x1 where ts1t'': "thr s1 t'' = \<lfloor>(x1, ln)\<rfloor>" 
               and bisim'': "t'' \<turnstile> (x1, shr s1) \<approx> (x2, shr ?s2)"
               by(auto dest: mbisim_thrD2)
@@ -396,24 +396,24 @@ proof -
                 next
                   case (step x2'' m2'')
                   from True have "wset s1 t'' = None" "thr s1 t'' = \<lfloor>(x1, no_wait_locks)\<rfloor>" "ts2' t'' = \<lfloor>(x2, no_wait_locks)\<rfloor>"
-                    using ts1t'' `thr ?s2 t'' = \<lfloor>(x2, ln)\<rfloor>` mbisim by(simp_all add: mbisim_def)
+                    using ts1t'' \<open>thr ?s2 t'' = \<lfloor>(x2, ln)\<rfloor>\<close> mbisim by(simp_all add: mbisim_def)
                   hence no_\<tau>2: "\<not> r2.silent_move t'' (x2, m2) (x2'', m2'')"
                   proof(rule no_\<tau>)
                     fix x1' m1'
                     assume "r1.silent_move t'' (x1, shr s1) (x1', m1')"
-                    with `final1 x1` show False by(auto dest: r1.final_no_red)
+                    with \<open>final1 x1\<close> show False by(auto dest: r1.final_no_red)
                   qed
-                  with `r2.silent_move t'' (x2, shr ?s2) (x2'', m2'')` have False by simp
+                  with \<open>r2.silent_move t'' (x2, shr ?s2) (x2'', m2'')\<close> have False by simp
                   thus ?thesis ..
                 qed
-                with `final2 x2'` show "final2 x2" by simp
+                with \<open>final2 x2'\<close> show "final2 x2" by simp
               qed
               with ts1t'' show ?thesis ..
             next
               case False
               with ts1t'' mbisim show ?thesis by(auto simp add: r1.not_final_thread_iff mbisim_def)
             qed
-            with `r1.all_final_except s1 (r1.deadlocked s1 \<union> r1.final_threads s1)`
+            with \<open>r1.all_final_except s1 (r1.deadlocked s1 \<union> r1.final_threads s1)\<close>
             have "t'' \<in> r1.deadlocked s1 \<union> r1.final_threads s1" by(rule r1.all_final_exceptD)
             thus "t'' \<in> r1.deadlocked s1 \<union> r2.deadlocked ?s2 \<union> r2.final_threads ?s2"
               by(auto dest: fin' simp add: mbisim_eqs)
@@ -421,13 +421,13 @@ proof -
           thus ?thesis using interrupt mbisim by(auto simp add: mbisim_def)
         qed
         hence "\<exists>lt\<in>LT. r2.must_wait ?s2 t lt (r1.deadlocked s1 \<union> r2.deadlocked ?s2 \<union> r2.final_threads ?s2)"
-          using `lt \<in> LT` by blast }
-      moreover from mbisim `wset s1 t = None` have "wset ?s2 t = None" by(simp add: mbisim_def)
+          using \<open>lt \<in> LT\<close> by blast }
+      moreover from mbisim \<open>wset s1 t = None\<close> have "wset ?s2 t = None" by(simp add: mbisim_def)
       ultimately have ?Lock by simp
       thus ?thesis ..
     next
       case (wait x1 ln)
-      from mbisim `thr s1 t = \<lfloor>(x1, ln)\<rfloor>`
+      from mbisim \<open>thr s1 t = \<lfloor>(x1, ln)\<rfloor>\<close>
       obtain x2 where "ts2' t = \<lfloor>(x2, ln)\<rfloor>" by(auto dest: mbisim_thrD1)
       moreover
       have "r2.all_final_except ?s2 (r1.deadlocked s1)"
@@ -436,30 +436,30 @@ proof -
         assume "r2.not_final_thread ?s2 t"
         then obtain x2 ln where "ts2' t = \<lfloor>(x2, ln)\<rfloor>" by(auto simp add: r2.not_final_thread_iff)
         with mbisim obtain x1 where "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" "t \<turnstile> (x1, shr s1) \<approx> (x2, m2)" by(auto dest: mbisim_thrD2)
-        hence "r1.not_final_thread s1 t" using `r2.not_final_thread ?s2 t` `ts2' t = \<lfloor>(x2, ln)\<rfloor>` mbisim fin'[of t]
+        hence "r1.not_final_thread s1 t" using \<open>r2.not_final_thread ?s2 t\<close> \<open>ts2' t = \<lfloor>(x2, ln)\<rfloor>\<close> mbisim fin'[of t]
           by(cases "wset s1 t")(auto simp add: r1.not_final_thread_iff r2.not_final_thread_iff mbisim_def r1.final_thread_def r2.final_thread_def)
-        with `r1.all_final_except s1 (r1.deadlocked s1)`
+        with \<open>r1.all_final_except s1 (r1.deadlocked s1)\<close>
         show "t \<in> r1.deadlocked s1" by(rule r1.all_final_exceptD)
       qed
       hence "r2.all_final_except ?s2 (r1.deadlocked s1 \<union> r2.deadlocked ?s2)"
         by(rule r2.all_final_except_mono') blast
       moreover
-      from `waiting (wset s1 t)` mbisim
+      from \<open>waiting (wset s1 t)\<close> mbisim
       have "waiting (wset ?s2 t)" by(simp add: mbisim_def)
       ultimately have ?Wait by simp
       thus ?thesis by blast
     next
       case (acquire x1 ln l t')
-      from mbisim `thr s1 t = \<lfloor>(x1, ln)\<rfloor>`
+      from mbisim \<open>thr s1 t = \<lfloor>(x1, ln)\<rfloor>\<close>
       obtain x2 where "ts2' t = \<lfloor>(x2, ln)\<rfloor>" by(auto dest: mbisim_thrD1)
       moreover
-      from `t' \<in> r1.deadlocked s1 \<or> r1.final_thread s1 t'`
+      from \<open>t' \<in> r1.deadlocked s1 \<or> r1.final_thread s1 t'\<close>
       have "(t' \<in> r1.deadlocked s1 \<or> t' \<in> r2.deadlocked ?s2) \<or> r2.final_thread ?s2 t'" by(blast dest: fin')
       moreover
-      from mbisim `has_lock (locks s1 $ l) t'`
+      from mbisim \<open>has_lock (locks s1 $ l) t'\<close>
       have "has_lock (locks ?s2 $ l) t'" by(simp add: mbisim_def)
       ultimately have ?Acquire
-        using `0 < ln $ l` `t \<noteq> t'` `\<not> waiting (wset s1 t)` mbisim
+        using \<open>0 < ln $ l\<close> \<open>t \<noteq> t'\<close> \<open>\<not> waiting (wset s1 t)\<close> mbisim
         by(auto simp add: mbisim_def)
       thus ?thesis by blast
     qed
@@ -484,7 +484,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
   obtain ls2 ts2 m2 ws2 is2 where red1: "r2.mthr.silent_moves s2 (ls2, (ts2, m2), ws2, is2)"
     and "s1 \<approx>m (ls2, (ts2, m2), ws2, is2)" and "m2 = shr s2" 
     and fin: "\<And>t. r1.final_thread s1 t \<Longrightarrow> r2.final_thread (ls2, (ts2, m2), ws2, is2) t" by fastforce
-  from no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2[OF `s1 \<approx>m (ls2, (ts2, m2), ws2, is2)`]
+  from no_\<tau>Move1_\<tau>s_to_no_\<tau>Move2[OF \<open>s1 \<approx>m (ls2, (ts2, m2), ws2, is2)\<close>]
   obtain ts2' where red2: "r2.mthr.silent_moves (ls2, (ts2, m2), ws2, is2) (ls2, (ts2', m2), ws2, is2)"
     and no_\<tau>: "\<And>t x1 x2 x2' m2'. \<lbrakk> wset s1 t = None; thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>; ts2' t = \<lfloor>(x2, no_wait_locks)\<rfloor>;
                            \<And>x' m'. r1.silent_move t (x1, shr s1) (x', m') \<Longrightarrow> False \<rbrakk>
@@ -498,23 +498,23 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
   have "r2.deadlock ?s2"
   proof(rule r2.deadlockI, goal_cases)
     case (1 t x2)
-    note ts2t = `thr ?s2 t = \<lfloor>(x2, no_wait_locks)\<rfloor>`
+    note ts2t = \<open>thr ?s2 t = \<lfloor>(x2, no_wait_locks)\<rfloor>\<close>
     with mbisim obtain x1 where ts1t: "thr s1 t = \<lfloor>(x1, no_wait_locks)\<rfloor>"
       and bisim: "t \<turnstile> (x1, shr s1) \<approx> (x2, m2)" by(auto dest: mbisim_thrD2)
-    from `wset ?s2 t = None` mbisim have ws1t: "wset s1 t = None" by(simp add: mbisim_def)
+    from \<open>wset ?s2 t = None\<close> mbisim have ws1t: "wset s1 t = None" by(simp add: mbisim_def)
     have "\<not> final1 x1"
     proof
       assume "final1 x1"
       with ts1t ws1t have "r1.final_thread s1 t" by(simp add: r1.final_thread_def)
       hence "r2.final_thread ?s2 t" by(rule fin')
-      with `\<not> final2 x2` ts2t `wset ?s2 t = None` show False by(simp add: r2.final_thread_def)
+      with \<open>\<not> final2 x2\<close> ts2t \<open>wset ?s2 t = None\<close> show False by(simp add: r2.final_thread_def)
     qed
-    from r1.deadlockD1[OF dead ts1t this `wset s1 t = None`]
+    from r1.deadlockD1[OF dead ts1t this \<open>wset s1 t = None\<close>]
     have ms: "r1.must_sync t x1 (shr s1)"
       and csmw: "\<And>LT. r1.can_sync t x1 (shr s1) LT \<Longrightarrow> \<exists>lt\<in>LT. r1.must_wait s1 t lt (dom (thr s1))"
       by blast+
     {
-      from `r1.must_sync t x1 (shr s1)` obtain ta1 x1' m1'
+      from \<open>r1.must_sync t x1 (shr s1)\<close> obtain ta1 x1' m1'
         where r1: "t \<turnstile> (x1, shr s1) -1-ta1\<rightarrow> (x1', m1')"
         and s1': "\<exists>s1'. r1.actions_ok s1' t ta1" by(fastforce elim: r1.must_syncE)
       have "\<not> \<tau>move1 (x1, shr s1) ta1 (x1', m1')" (is "\<not> ?\<tau>")
@@ -568,7 +568,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
       from \<tau>r1 obtain [simp]: "x1' = x1" "m1' = shr s1"
       proof(cases rule: converse_rtranclpE2[consumes 1, case_names refl step])
         case (step X M)
-        from `r1.silent_move t (x1, shr s1) (X, M)`
+        from \<open>r1.silent_move t (x1, shr s1) (X, M)\<close>
         have "t \<turnstile> (x1, shr s1) -1-\<epsilon>\<rightarrow> (X, M)" by(auto dest: r1.silent_tl)
         hence "r1.can_sync t x1 (shr s1) {}"
           by(auto intro: r1.can_syncI simp add: collect_locks_def collect_interrupts_def)
@@ -580,13 +580,13 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
       with r1 have "r1.can_sync t x1 (shr s1) LT" by(auto intro: r1.can_syncI)
       from csmw[OF this] obtain lt 
         where lt: "lt \<in> LT" "r1.must_wait s1 t lt (dom (thr s1))" by blast
-      from `r1.must_wait s1 t lt (dom (thr s1))` have "r2.must_wait ?s2 t lt (dom (thr ?s2))"
+      from \<open>r1.must_wait s1 t lt (dom (thr s1))\<close> have "r2.must_wait ?s2 t lt (dom (thr ?s2))"
       proof(cases rule: r1.must_wait_elims)
         case (lock l)
         with mbisim_dom_eq[OF mbisim] show ?thesis by(auto simp add: mbisim_eqs)
       next
         case (join t')
-        from dead deadlock_mbisim_not_final_thread_pres[OF _ `r1.not_final_thread s1 t'` fin' mbisim]
+        from dead deadlock_mbisim_not_final_thread_pres[OF _ \<open>r1.not_final_thread s1 t'\<close> fin' mbisim]
         have "r2.not_final_thread ?s2 t'" by auto
         thus ?thesis using join mbisim_dom_eq[OF mbisim] by auto
       next
@@ -599,10 +599,10 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
   next
     case (2 t x2 ln l)
     note dead moreover
-    from mbisim `thr ?s2 t = \<lfloor>(x2, ln)\<rfloor>`
+    from mbisim \<open>thr ?s2 t = \<lfloor>(x2, ln)\<rfloor>\<close>
     obtain x1 where "thr s1 t = \<lfloor>(x1, ln)\<rfloor>" by(auto dest: mbisim_thrD2)
-    moreover note `0 < ln $ l`
-    moreover from `\<not> waiting (wset ?s2 t)` mbisim
+    moreover note \<open>0 < ln $ l\<close>
+    moreover from \<open>\<not> waiting (wset ?s2 t)\<close> mbisim
     have "\<not> waiting (wset s1 t)" by(simp add: mbisim_def)
     ultimately obtain l' t' where "0 < ln $ l'" "t \<noteq> t'" "thr s1 t' \<noteq> None" "has_lock (locks s1 $ l') t'"
       by(rule r1.deadlockD2)
@@ -698,9 +698,9 @@ proof -
   from deadlocked1_imp_\<tau>s_deadlocked2[OF mbisim dead]
   obtain s2' where "r2.mthr.silent_moves s2 s2'"
     and "t \<in> r2.deadlocked s2'" by blast
-  from `r2.mthr.silent_moves s2 s2'` have "s2' = s2"
+  from \<open>r2.mthr.silent_moves s2 s2'\<close> have "s2' = s2"
     by(rule converse_rtranclpE)(auto elim: r2.m\<tau>move.cases)
-  with `t \<in> r2.deadlocked s2'` show ?thesis by simp
+  with \<open>t \<in> r2.deadlocked s2'\<close> show ?thesis by simp
 qed
 
 lemma mbisim_deadlocked_preserve2:

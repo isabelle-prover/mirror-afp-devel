@@ -4,9 +4,9 @@ theory Cooper
 imports PresArith
 begin
 
-subsection{*Cooper*}
+subsection\<open>Cooper\<close>
 
-text{* This section formalizes Cooper's algorithm~\cite{Cooper72}. *}
+text\<open>This section formalizes Cooper's algorithm~\cite{Cooper72}.\<close>
 
 lemma set_atoms0_iff:
  "qfree \<phi> \<Longrightarrow> a \<in> set(Z.atoms\<^sub>0 \<phi>) \<longleftrightarrow> a \<in> atoms \<phi> \<and> hd_coeff a \<noteq> 0"
@@ -22,13 +22,13 @@ assumes "qfree \<phi>"
 shows "(\<exists>x. Z.I (hd_coeffs1 \<phi>) (x#xs)) = (\<exists>x. Z.I \<phi> (x#xs))" (is "?L = ?R")
 proof -
   let ?l = "zlcms(map hd_coeff (Z.atoms\<^sub>0 \<phi>))"
-  have "?l>0" by(simp add: zlcms_pos set_atoms0_iff[OF `qfree \<phi>`])
+  have "?l>0" by(simp add: zlcms_pos set_atoms0_iff[OF \<open>qfree \<phi>\<close>])
   have "?L = (\<exists>x. ?l dvd x+0 \<and> Z.I (map\<^sub>f\<^sub>m (hd_coeff1 ?l) \<phi>) (x#xs))"
     by(simp add:hd_coeffs1_def)
   also have "\<dots> = (\<exists>x. Z.I (map\<^sub>f\<^sub>m (hd_coeff1 ?l) \<phi>) (?l*x#xs))"
     by(rule unity_coeff_ex[THEN meta_eq_to_obj_eq,symmetric])
   also have "\<dots> = ?R"
-    by(simp add: I_hd_coeff1_mult[OF `?l>0` `qfree \<phi>`] dvd_zlcms)
+    by(simp add: I_hd_coeff1_mult[OF \<open>?l>0\<close> \<open>qfree \<phi>\<close>] dvd_zlcms)
   finally show ?thesis .
 qed
 
@@ -100,7 +100,7 @@ proof(induct \<phi> rule:min_inf.induct)
         have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
           by(simp add: algebra_simps)
-        also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
+        also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using \<open>da dvd d\<close>
           by (metis dvd_diff zdvd_zdiffD dvd_mult mult.commute)
         also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
           by(simp add: algebra_simps)
@@ -128,7 +128,7 @@ next
         have "da dvd i + (j * x - j * (k * d) + \<langle>js,xs\<rangle>) \<longleftrightarrow>
               da dvd (i + j*x + \<langle>js,xs\<rangle>) - (j*k)*d"
           by(simp add: algebra_simps)
-        also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using `da dvd d`
+        also have "\<dots> \<longleftrightarrow> da dvd i + j*x + \<langle>js,xs\<rangle>" using \<open>da dvd d\<close>
           by (metis dvd_diff zdvd_zdiffD dvd_mult mult.commute)
         also have "\<dots> \<longleftrightarrow> da dvd i + (j * x + \<langle>js,xs\<rangle>)"
           by(simp add: algebra_simps)
@@ -180,7 +180,7 @@ proof(induct \<phi>)
         proof -
           assume ?L
           hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d"
-            by (metis `m dvd d` dvd_diff)
+            by (metis \<open>m dvd d\<close> dvd_diff)
           thus ?thesis by(simp add:algebra_simps)
         qed
         thus ?thesis using Atom Dvd Cons by(auto split:if_split_asm)
@@ -204,7 +204,7 @@ proof(induct \<phi>)
         proof -
           assume ?L
           hence "m dvd i + (x + \<langle>ks,xs\<rangle>) - d" by(simp add:algebra_simps)
-          thus ?thesis by (metis `m dvd d` zdvd_zdiffD)
+          thus ?thesis by (metis \<open>m dvd d\<close> zdvd_zdiffD)
         qed
         thus ?thesis using Atom NDvd Cons by(auto split:if_split_asm)
       qed
@@ -283,11 +283,11 @@ shows "Z.I (qe_cooper\<^sub>1 \<phi>) xs = (\<exists>x. Z.I \<phi> (x#xs))"
 proof -
   let ?as = "Z.atoms\<^sub>0 \<phi>"
   let ?d = "zlcms(map divisor ?as)"
-  have "?d > 0" using norm atoms_subset[of \<phi>] `nqfree \<phi>`
+  have "?d > 0" using norm atoms_subset[of \<phi>] \<open>nqfree \<phi>\<close>
     by(fastforce intro:zlcms_pos)
   have alld: "\<forall>a\<in>set(Z.atoms\<^sub>0 \<phi>). divisor a dvd ?d" by(simp add:dvd_zlcms)
-  from cp_thm[OF `nqfree \<phi>` hd alld `?d>0`]
-  show ?thesis using `nqfree \<phi>`
+  from cp_thm[OF \<open>nqfree \<phi>\<close> hd alld \<open>?d>0\<close>]
+  show ?thesis using \<open>nqfree \<phi>\<close>
     by (simp add:qe_cooper\<^sub>1_def I_subst[symmetric] split_def algebra_simps) blast
 qed
 

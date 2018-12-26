@@ -2,7 +2,7 @@ theory "Env-HOLCF"
   imports Env "HOLCF-Utils"
 begin
 
-subsubsection {* Continuity and pcpo-valued functions *}
+subsubsection \<open>Continuity and pcpo-valued functions\<close>
 
 lemma  override_on_belowI:
   assumes "\<And> a. a \<in> S \<Longrightarrow> y a \<sqsubseteq> z a"

@@ -32,16 +32,16 @@ lemma butlastE:
 by (induct xs rule: rev_induct) auto
 
 (*>*)
-section{* Unbounded buffer example *}
+section\<open>Unbounded buffer example\<close>
 
-text{*
+text\<open>
 
 \label{sec:unbounded_place_buffer}
 
 This is more literally Kai's example from his notes titled
 \emph{Proving an Asynchronous Message Passing Program Correct}, 2011.
 
-*}
+\<close>
 
 datatype ex_chname = \<xi>12 | \<xi>23
 type_synonym ex_val = nat
@@ -56,12 +56,12 @@ type_synonym ex_state = "(unit, ex_loc, ex_proc, ex_ch, ex_ls) global_state"
 type_synonym ex_system = "(unit, ex_loc, ex_proc, ex_ch, ex_ls) system"
 type_synonym ex_history = "(ex_ch \<times> unit) list"
 
-text{*
+text\<open>
 
 FIXME a bit fake: the local state for the producer process contains
 all values produced.
 
-*}
+\<close>
 
 primrec ex_pgms :: "ex_proc \<Rightarrow> ex_pgm" where
   "ex_pgms p1 = LOOP DO \<lbrace>c1\<rbrace> LocalOp (\<lambda>xs. { xs @ [x] |x. True }) ;; \<lbrace>s12\<rbrace> \<xi>12\<triangleleft>last OD"
@@ -106,12 +106,12 @@ definition I_pred :: ex_pred where
 
 lemmas I_defs = I_pred_def Ip1_0_def Ip1_1_def Ip1_2_def Ip2_0_def Ip2_1_def Ip3_0_def
 
-text{*
+text\<open>
 
 The local state of @{const "p3"} is some prefix of the local state of
 @{const "p1"}.
 
-*}
+\<close>
 
 definition Etern_pred :: ex_pred where
   "Etern_pred \<equiv> \<lambda>s. s\<down> p3 \<le> s\<down> p1"
@@ -150,7 +150,7 @@ apply (clarsimp simp: I_defs atS_def split: lcond_splits)
 done
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma "s \<in> reachable_states ex_system \<Longrightarrow> I_pred (mkP s)"
 (*<*)

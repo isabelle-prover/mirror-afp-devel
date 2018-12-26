@@ -3,25 +3,25 @@
     Author:     David Trachtenherz
 *)
 
-section {* Convenience results for set quantifiers *}
+section \<open>Convenience results for set quantifiers\<close>
 
 theory Util_Set
 imports Main
 begin
 
-subsection {* Some auxiliary results for HOL rules *}
+subsection \<open>Some auxiliary results for HOL rules\<close>
 
 lemma conj_disj_absorb: "(P \<and> Q \<or> Q) = Q" by blast
 lemma disj_eq_distribL: "((a \<or> b) = (a \<or> c)) = (a \<or> (b = c))" by blast
 lemma disj_eq_distribR: "((a \<or> c) = (b \<or> c)) = ((a = b) \<or> c)" by blast
 
 
-subsubsection {* Some auxiliary results for  @{text Let} *}
+subsubsection \<open>Some auxiliary results for  \<open>Let\<close>\<close>
 
 lemma Let_swap: "f (let x=a in g x) = (let x=a in f (g x))" by simp
 
 
-subsubsection {* Some auxiliary @{text "if"}-rules *}
+subsubsection \<open>Some auxiliary \<open>if\<close>-rules\<close>
 
 lemma if_P': "\<lbrakk> P; x = z \<rbrakk> \<Longrightarrow> (if P then x else y) = z" by simp
 lemma if_not_P': "\<lbrakk> \<not> P; y = z \<rbrakk> \<Longrightarrow> (if P then x else y) = z" by simp
@@ -30,15 +30,15 @@ lemma if_P_both: "\<lbrakk> Q x; Q y \<rbrakk> \<Longrightarrow> Q (if P then x 
 lemma if_P_both_in_set: "\<lbrakk> x \<in> s; y \<in> s \<rbrakk> \<Longrightarrow> (if P then x else y) \<in> s" by simp
 
 
-subsubsection {* Some auxiliary rules for function composition *}
+subsubsection \<open>Some auxiliary rules for function composition\<close>
 
 lemma comp2_conv: "f1 \<circ> f2 = (\<lambda>x. f1 (f2 x))" by (simp add: comp_def)
 lemma comp3_conv: "f1 \<circ> f2 \<circ> f3 = (\<lambda>x. f1 (f2 (f3 x)))" by (simp add: comp_def)
 
 
-subsection {* Some auxiliary lemmata for quantifiers *}
+subsection \<open>Some auxiliary lemmata for quantifiers\<close>
 
-subsubsection {* Auxiliary results for universal and existential quantifiers *}
+subsubsection \<open>Auxiliary results for universal and existential quantifiers\<close>
 
 lemma ball_cong2: "
   \<lbrakk> I \<subseteq> A; \<forall>x\<in>A. f x = g x \<rbrakk> \<Longrightarrow> (\<forall>x\<in>I. P (f x)) = (\<forall>x\<in>I. P (g x))" by fastforce
@@ -68,7 +68,7 @@ lemma ex_imp_eqI: "
 by blast
 
 
-subsubsection {* Auxiliary results for @{text empty} sets *}
+subsubsection \<open>Auxiliary results for \<open>empty\<close> sets\<close>
 
 lemma empty_imp_not_in: "x \<notin> {}" by blast
 lemma ex_imp_not_empty: "\<exists>x. x \<in> A \<Longrightarrow> A \<noteq> {}" by blast
@@ -77,7 +77,7 @@ lemma not_empty_imp_ex: "A \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A" 
 lemma not_ex_in_conv: "(\<not> (\<exists>x. x \<in> A)) = (A = {})" by blast
 
 
-subsubsection {* Some auxiliary results for subset and membership relation *}
+subsubsection \<open>Some auxiliary results for subset and membership relation\<close>
 
 lemma bex_subset_imp_bex: "\<lbrakk> \<exists>x\<in>A. P x; A \<subseteq> B \<rbrakk> \<Longrightarrow> \<exists>x\<in>B. P x" by blast
 lemma bex_imp_ex: "\<exists>x\<in>A. P x \<Longrightarrow> \<exists>x. P x" by blast

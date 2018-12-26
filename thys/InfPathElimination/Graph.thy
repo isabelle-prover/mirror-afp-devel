@@ -4,27 +4,27 @@ begin
 
 
 
-section{* Rooted Graphs *}
+section\<open>Rooted Graphs\<close>
 
-text {* In this section, we model rooted graphs and their sub\hyp{}paths and paths. We give a number 
+text \<open>In this section, we model rooted graphs and their sub\hyp{}paths and paths. We give a number 
 of lemmas that will help proofs in the following theories, but that are very specific to our 
-approach. *}
+approach.\<close>
 
-text {* First, we will need the following simple lemma, which is not graph related, but that will 
-prove useful when we will want to exhibit the last element of a non-empty sequence. *}
+text \<open>First, we will need the following simple lemma, which is not graph related, but that will 
+prove useful when we will want to exhibit the last element of a non-empty sequence.\<close>
 
 lemma neq_Nil_conv2 :
   "xs \<noteq> [] = (\<exists> x xs'. xs = xs' @ [x])"
 by (induct xs rule : rev_induct, auto)
 
-subsection {* Basic Definitions and Properties *}
+subsection \<open>Basic Definitions and Properties\<close>
 
-subsubsection {* Edges *}
+subsubsection \<open>Edges\<close>
 
-text {* We model edges by a record @{text "'v edge"} which is parameterized by the type @{text "'v"} 
+text \<open>We model edges by a record \<open>'v edge\<close> which is parameterized by the type \<open>'v\<close> 
 of vertices. This allows us to represent the red part
 of red-black graphs as well as the black part (i.e. LTS) using extensible records (more on this later). Edges have two 
-components, @{term "src"} and @{term "tgt"}, which respectively give their source and target. *}
+components, @{term "src"} and @{term "tgt"}, which respectively give their source and target.\<close>
 
 
 record 'v edge = 
@@ -32,28 +32,28 @@ record 'v edge =
   tgt   :: "'v"
 
 
-subsubsection {* Rooted graphs *}
+subsubsection \<open>Rooted graphs\<close>
 
-text {* We model rooted graphs by the record @{text "'v rgraph"}. It consists of two components: its 
-root and its set of edges. *}
+text \<open>We model rooted graphs by the record \<open>'v rgraph\<close>. It consists of two components: its 
+root and its set of edges.\<close>
 
 
 record 'v rgraph =
   root  :: "'v"
   edges :: "'v edge set"
 
-subsubsection {* Vertices *}
+subsubsection \<open>Vertices\<close>
 
-text {* The set of vertices of a rooted graph is made of its root and the endpoints of its 
+text \<open>The set of vertices of a rooted graph is made of its root and the endpoints of its 
 edges. Isabelle/HOL provides \emph{extensible records}, i.e.\ it is possible to define records using 
 existing records by adding components. The following definition suppose that @{term "g"} is of type 
-@{text "('v,'x) rgraph_scheme"}, i.e.\ an object that has at least all the components of a 
-@{text "'v rgraph"}. The second type parameter @{text "'x"} stands for the hypothetical type 
-parameters that such an object could have in addition of the type of vertices @{text "'v"}. 
-Using @{text "('v,'x) rgraph_scheme"} instead of @{text "'v rgraph"} allows to reuse the following 
+\<open>('v,'x) rgraph_scheme\<close>, i.e.\ an object that has at least all the components of a 
+\<open>'v rgraph\<close>. The second type parameter \<open>'x\<close> stands for the hypothetical type 
+parameters that such an object could have in addition of the type of vertices \<open>'v\<close>. 
+Using \<open>('v,'x) rgraph_scheme\<close> instead of \<open>'v rgraph\<close> allows to reuse the following 
 definition(s) for all type of objects that have at least the components of a rooted graph. For 
 example, we will reuse the following definition to characterize the set of locations of a LTS (see 
-\verb?LTS.thy?). *}
+\verb?LTS.thy?).\<close>
 
 
 definition vertices :: 
@@ -61,12 +61,12 @@ definition vertices ::
 where
   "vertices g = {root g} \<union> src `edges g \<union> tgt ` edges g"
 
-subsubsection {* Basic properties of rooted graphs *}
+subsubsection \<open>Basic properties of rooted graphs\<close>
 
-text {* In the following, we will be only interested in loop free rooted graphs
+text \<open>In the following, we will be only interested in loop free rooted graphs
 and in what we call 
 \emph{well formed rooted graphs}. A well formed rooted graph is rooted graph that has an empty set 
-of edges or, if this is not the case, has at least one edge whose source is its root. *}
+of edges or, if this is not the case, has at least one edge whose source is its root.\<close>
 
 
 abbreviation loop_free :: 
@@ -81,14 +81,14 @@ where
 "wf_rgraph g \<equiv> root g \<in> src ` edges g = (edges g \<noteq> {})"
 
 
-text {* Even if we are only interested in this kind of rooted graphs, we will not assume the graphs 
-are loop free or well formed when this is not needed. *}
+text \<open>Even if we are only interested in this kind of rooted graphs, we will not assume the graphs 
+are loop free or well formed when this is not needed.\<close>
 
 
 
-subsubsection {* Out-going edges *}
+subsubsection \<open>Out-going edges\<close>
 
-text {* This abbreviation will prove handy in the following. *}
+text \<open>This abbreviation will prove handy in the following.\<close>
 
 
 abbreviation out_edges ::
@@ -99,18 +99,18 @@ where
 
 
 
-subsection {* Consistent Edge Sequences, Sub-paths and Paths *}
+subsection \<open>Consistent Edge Sequences, Sub-paths and Paths\<close>
 
-subsubsection {* Consistency of a sequence of edges *}
+subsubsection \<open>Consistency of a sequence of edges\<close>
 
-text {* A sequence of edges @{term "es"} is consistent from
+text \<open>A sequence of edges @{term "es"} is consistent from
 vertex @{term "v1"} to another vertex @{term "v2"} if @{term "v1 = v2"} if it is empty, or, if it is 
 not empty:
 \begin{itemize}
   \item @{term "v1"} is the source of its first element, and
   \item @{term "v2"} is the target of its last element, and
   \item the target of each of its elements is the source of its follower.
-\end{itemize} *}
+\end{itemize}\<close>
 
 
 fun ces :: 
@@ -120,10 +120,10 @@ where
 | "ces v1 (e#es) v2 = (src e = v1 \<and> ces (tgt e) es v2)"
 
 
-subsubsection {* Sub-paths and paths *}
+subsubsection \<open>Sub-paths and paths\<close>
 
-text {* Let @{term "g"} be a rooted graph, @{term "es"} a sequence of edges and @{term "v1"} and 
-@{text"v2"} two vertices. @{term "es"} is a sub-path in @{term "g"} from @{term "v1"} to 
+text \<open>Let @{term "g"} be a rooted graph, @{term "es"} a sequence of edges and @{term "v1"} and 
+\<open>v2\<close> two vertices. @{term "es"} is a sub-path in @{term "g"} from @{term "v1"} to 
 @{term "v2"} if:
 \begin{itemize}
   \item it is consistent from @{term "v1"} to @{term "v2"},
@@ -133,7 +133,7 @@ text {* Let @{term "g"} be a rooted graph, @{term "es"} a sequence of edges and 
 
 The second constraint is needed in the case of the empty sequence: without it,
 the empty sequence would be a sub-path of @{term "g"} even when @{term "v1"} is not one of 
-its vertices. *}
+its vertices.\<close>
 
 
 definition subpath :: 
@@ -142,8 +142,8 @@ where
   "subpath g v1 es v2 \<equiv> ces v1 es v2 \<and> v1 \<in> vertices g \<and> set es \<subseteq> edges g"
 
 
-text {* Let @{term "es"} be a sub-path of @{term "g"} leading from @{term "v1"} to @{term "v2"}. 
-@{term "v1"} and @{term "v2"} are both vertices of @{term "g"}. *}
+text \<open>Let @{term "es"} be a sub-path of @{term "g"} leading from @{term "v1"} to @{term "v2"}. 
+@{term "v1"} and @{term "v2"} are both vertices of @{term "g"}.\<close>
 
 
 lemma fst_of_sp_is_vert :
@@ -158,10 +158,10 @@ lemma lst_of_sp_is_vert :
 using assms by (induction es arbitrary : v1, auto simp add: subpath_def vertices_def)
 
 
-text {* The empty sequence of edges is a sub-path from @{term "v1"} to @{term "v2"} if and only if 
-they are equal and belong to the graph. *}
+text \<open>The empty sequence of edges is a sub-path from @{term "v1"} to @{term "v2"} if and only if 
+they are equal and belong to the graph.\<close>
 
-text {* The empty sequence is a sub-path from the root of any rooted graph. *}
+text \<open>The empty sequence is a sub-path from the root of any rooted graph.\<close>
 
 
 lemma
@@ -169,9 +169,9 @@ lemma
 by (auto simp add : vertices_def subpath_def)
 
 
-text {* In the following, we will not always be interested in the final vertex of a sub-path. We 
+text \<open>In the following, we will not always be interested in the final vertex of a sub-path. We 
 will use the abbreviation @{term "subpath_from"} whenever this final vertex has no importance, and 
-@{term subpath} otherwise.  *}
+@{term subpath} otherwise.\<close>
 
 
 abbreviation subpath_from  ::
@@ -185,7 +185,7 @@ where
   "subpaths_from g v \<equiv> {es. subpath_from g v es}"
 
 
-text {* A path is a sub-path starting at the root of the graph. *}
+text \<open>A path is a sub-path starting at the root of the graph.\<close>
 
 
 abbreviation path :: 
@@ -200,7 +200,7 @@ where
   "paths g \<equiv> {es. \<exists> v. path g es v}"
 
 
-text {* The empty sequence is a path of any rooted graph. *}
+text \<open>The empty sequence is a path of any rooted graph.\<close>
 
 
 lemma
@@ -208,7 +208,7 @@ lemma
 by (auto simp add : subpath_def vertices_def)
 
 
-text {* Some useful simplification lemmas for @{term "subpath"}. *}
+text \<open>Some useful simplification lemmas for @{term "subpath"}.\<close>
 
 
 lemma sp_one :
@@ -233,7 +233,7 @@ by (induct es1 arbitrary : v1)
     (auto simp add : fst_of_sp_is_vert sp_Cons))
 
 
-text {* A sub-path leads to a unique vertex. *}
+text \<open>A sub-path leads to a unique vertex.\<close>
 
 
 lemma sp_same_src_imp_same_tgt :
@@ -245,15 +245,15 @@ by (induct es arbitrary : v)
    (auto simp add :  sp_Cons subpath_def vertices_def)
 
 
-text {* In the following, we are interested in the evolution of the set of sub-paths of our symbolic 
+text \<open>In the following, we are interested in the evolution of the set of sub-paths of our symbolic 
 execution graph after symbolic execution of a transition from the LTS representation of the program 
 under analysis. Symbolic execution of a transition results in adding to the graph a new edge whose 
 source is already a vertex of this graph, but not its target. The following lemma describes 
-sub-paths ending in the target of such an edge. *}
+sub-paths ending in the target of such an edge.\<close>
 
-text {* Let @{term "e"} be an edge whose target has not out-going edges. A sub-path @{term "es"} 
+text \<open>Let @{term "e"} be an edge whose target has not out-going edges. A sub-path @{term "es"} 
 containing @{term "e"} ends by @{term "e"} and this occurrence of @{term "e"} is unique along 
-@{term "es"}. *}
+@{term "es"}.\<close>
 
 
 lemma sp_through_de_decomp :
@@ -282,10 +282,10 @@ next
 qed
  
 
-subsection {* Adding Edges *}
+subsection \<open>Adding Edges\<close>
 
-text {* This definition and the following lemma are here mainly to ease the definitions and proofs 
-in the next theories. *}
+text \<open>This definition and the following lemma are here mainly to ease the definitions and proofs 
+in the next theories.\<close>
 
 
 abbreviation add_edge :: 
@@ -294,10 +294,10 @@ where
   "add_edge g e \<equiv> rgraph.edges_update (\<lambda> edges. edges \<union> {e}) g"
 
 
-text {* Let @{term "es"} be a sub-path from a vertex other than the target of @{term "e"} in the 
+text \<open>Let @{term "es"} be a sub-path from a vertex other than the target of @{term "e"} in the 
 graph obtained from @{term "g"} by the addition of edge @{term "e"}. Moreover, assume that the 
 target of @{term "e"} is not a vertex of @{term "g"}. Then @{term "e"} is an element of 
-@{term "es"}. *}
+@{term "es"}.\<close>
 
 
 lemma sp_ends_in_tgt_imp_mem :
@@ -314,9 +314,9 @@ proof -
 qed
 
 
-subsection {* Trees *}
+subsection \<open>Trees\<close>
 
-text {* We define trees as rooted-graphs in which there exists a unique path leading to each vertex. *}
+text \<open>We define trees as rooted-graphs in which there exists a unique path leading to each vertex.\<close>
 
 
 definition is_tree :: 
@@ -325,7 +325,7 @@ where
   "is_tree g \<equiv> \<forall> l \<in> Graph.vertices g. \<exists>! p. Graph.path g p l"
 
 
-text {* The empty graph is thus a tree. *}
+text \<open>The empty graph is thus a tree.\<close>
 
 
 lemma empty_graph_is_tree :

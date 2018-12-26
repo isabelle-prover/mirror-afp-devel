@@ -11,15 +11,15 @@ begin
     unfolding proper_it_def by auto
 
 
-  text {* The following constant converts an iterator over list-state
-    to an iterator over arbitrary state *}
+  text \<open>The following constant converts an iterator over list-state
+    to an iterator over arbitrary state\<close>
   definition it_to_it :: "('x,'x list) set_iterator \<Rightarrow> ('x,'\<sigma>) set_iterator"
     where [code del]: "it_to_it it 
     \<equiv> (foldli (it (\<lambda>_. True) (\<lambda>x l. l@[x]) []))"
 
   lemma pi_it_to_it[icf_proper_iteratorI]: "proper_it (it_to_it I) (it_to_it I)"
     unfolding it_to_it_def by (rule pi_foldli)
-  text {* In case of a proper iterator, it is equivalent to direct iteration *}
+  text \<open>In case of a proper iterator, it is equivalent to direct iteration\<close>
   lemma it_to_it_fold: "proper_it it (it'::('x,'\<sigma>) set_iterator) 
     \<Longrightarrow> it_to_it it = it'"
     unfolding it_to_it_def
@@ -43,8 +43,8 @@ begin
     shows "it_to_it (\<lambda>c f. it s c (f \<circ> f')) = (\<lambda>c f. it' s c (f o f'))"
     using P[THEN proper_it'D] by (rule it_to_it_map_fold)
 
-  text {* This locale wraps up the setup of a proper iterator for use
-    with @{text "it_to_it"}. *}
+  text \<open>This locale wraps up the setup of a proper iterator for use
+    with \<open>it_to_it\<close>.\<close>
   locale proper_it_loc =
     fixes it :: "'s \<Rightarrow> ('x,'x list) set_iterator"
     and it' :: "'s \<Rightarrow> ('x,'\<sigma>) set_iterator"
@@ -56,8 +56,8 @@ begin
     lemmas it_to_it_code_unfold[code_unfold] = it_to_it_fold[OF proper]
   end
 
-  subsubsection {* Correctness *}
-  text {* The polymorphic iterator is a valid iterator again. *}
+  subsubsection \<open>Correctness\<close>
+  text \<open>The polymorphic iterator is a valid iterator again.\<close>
   lemma it_to_it_genord_correct: 
     assumes "set_iterator_genord (it::('x,'x list) set_iterator) S R" 
     shows "set_iterator_genord ((it_to_it it)::('x,'\<sigma>) set_iterator) S R"

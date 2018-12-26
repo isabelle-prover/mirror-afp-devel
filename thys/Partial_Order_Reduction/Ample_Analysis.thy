@@ -1,4 +1,4 @@
-section {* Static Analysis for Partial Order Reduction *}
+section \<open>Static Analysis for Partial Order Reduction\<close>
 
 theory Ample_Analysis
 imports

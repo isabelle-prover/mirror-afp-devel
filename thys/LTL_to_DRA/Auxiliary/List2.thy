@@ -119,7 +119,7 @@ proof (induction ys arbitrary: zs rule: rev_induct)
       using split_list_first by metis
     moreover
     hence "remdups_fwd_acc (Acc \<union> set ys) vs' = []"
-      using `remdups_fwd_acc (Acc \<union> set ys) vs = y # zs` `y \<notin> Acc \<union> set ys`
+      using \<open>remdups_fwd_acc (Acc \<union> set ys) vs = y # zs\<close> \<open>y \<notin> Acc \<union> set ys\<close>
       by (force intro: list_empty_prefix)
     ultimately
     have "xs = (us @ vs' @ [y]) @ vs''"
@@ -144,7 +144,7 @@ proof -
     by (blast dest: split_list_first)
   moreover
   hence "set vs' \<subseteq> Acc \<union> set ys"
-    using `remdups_fwd_acc (Acc \<union> set ys) vs = x # zs` `x \<notin> Acc \<union> set ys` 
+    using \<open>remdups_fwd_acc (Acc \<union> set ys) vs = x # zs\<close> \<open>x \<notin> Acc \<union> set ys\<close> 
     unfolding remdups_fwd_acc_empty by (fastforce intro: list_empty_prefix)
   moreover
   hence "remdups_fwd_acc (Acc \<union> set ys) vs' = []"
@@ -155,7 +155,7 @@ proof -
     and "remdups_fwd_acc (Acc \<union> set ys \<union> {x}) vs'' = zs"
     by (fastforce dest: sup.absorb1)+ 
   thus ?thesis
-    using `x \<notin> Acc \<union> set ys` by blast
+    using \<open>x \<notin> Acc \<union> set ys\<close> by blast
 qed
 
 lemma remdups_fwd_split_exactE:
@@ -183,14 +183,14 @@ proof -
     using assms by (blast dest: split_list_first)
   moreover
   hence "sorted (map f (y # zs))" 
-    using `sorted (map f xs)` by (simp add: sorted_append)
+    using \<open>sorted (map f xs)\<close> by (simp add: sorted_append)
   hence "\<forall>x\<in>set (map f (y # zs)). f y \<le> x"
     by force
   hence "\<forall>x\<in>set (y # zs). f y \<le> f x"
     by auto
   have "x \<in> set ys"
     apply (rule ccontr)
-    using `f x < f y` `x \<in> set xs` `\<forall>x\<in>set (y # zs). f y \<le> f x` unfolding `xs = ys @ y # zs` set_append by auto
+    using \<open>f x < f y\<close> \<open>x \<in> set xs\<close> \<open>\<forall>x\<in>set (y # zs). f y \<le> f x\<close> unfolding \<open>xs = ys @ y # zs\<close> set_append by auto
   then obtain ys' zs' where "ys = ys' @ x # zs'"
     using assms by (blast dest: split_list_first)
   ultimately
@@ -227,7 +227,7 @@ proof -
   have "{xs. set xs = A \<and> distinct xs} \<subseteq> {xs. set xs = A \<and> length xs = n}"
     using assms(1) distinct_card by fastforce
   thus ?thesis
-    by (metis (no_types, lifting) finite_lists_length_eqE[OF `finite A`, of n] finite_subset)
+    by (metis (no_types, lifting) finite_lists_length_eqE[OF \<open>finite A\<close>, of n] finite_subset)
 qed
 
 lemma set_list: 

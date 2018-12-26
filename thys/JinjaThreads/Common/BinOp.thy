@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Binary Operators *}
+section \<open>Binary Operators\<close>
 
 theory BinOp
 imports
@@ -28,7 +28,7 @@ datatype bop =  \<comment> \<open>names of binary operations\<close>
   | ShiftRightZeros
   | ShiftRightSigned
 
-subsection{* The semantics of binary operators *}
+subsection\<open>The semantics of binary operators\<close>
 
 type_synonym 'addr binop_ret = "'addr val + 'addr" \<comment> \<open>a value or the address of an exception\<close>
 
@@ -100,9 +100,9 @@ where
   "binop_ShiftRightSigned (Intg i1) (Intg i2) = Some (Inl (Intg (i1 >>> unat (i2 AND 0x1f))))"
 | "binop_ShiftRightSigned v1 v2 = None"
 
-text {*
+text \<open>
   Division on @{typ "'a word"} is unsigned, but JLS specifies signed division.
-*}
+\<close>
 definition word_sdiv :: "'a :: len word \<Rightarrow> 'a word \<Rightarrow> 'a word" (infixl "sdiv" 70)
 where [code]:
   "x sdiv y =
@@ -294,7 +294,7 @@ by(cases "(v1, v2)" rule: binop_Div.cases) auto
 
 end
 
-subsection {* Typing for binary operators *}
+subsection \<open>Typing for binary operators\<close>
 
 inductive WT_binop :: "'m prog \<Rightarrow> ty \<Rightarrow> bop \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" ("_ \<turnstile> _\<guillemotleft>_\<guillemotright>_ :: _" [51,0,0,0,51] 50)
 where
@@ -557,7 +557,7 @@ lemma WTrt_binop_is_type:
   "\<lbrakk> P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T; is_type P T1; is_type P T2 \<rbrakk> \<Longrightarrow> is_type P T"
 by(cases bop) auto
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 lemmas [code] =
   heap_base.binop_Div.simps

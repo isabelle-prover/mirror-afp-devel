@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* BDD Abstractions *}
+section \<open>BDD Abstractions\<close>
 
 theory BinDag
 imports Simpl.Simpl_Heap
@@ -252,10 +252,10 @@ lemma Dag_upd_same_l [simp]: "Dag p (l(p:=p)) r t = (p=Null \<and> t=Tip)"
   apply (fast dest: Dag_upd_same_l_lemma)
   done
 
-text {* @{thm[source] Dag_upd_same_l} prevents 
+text \<open>@{thm[source] Dag_upd_same_l} prevents 
 @{term "p\<noteq>Null \<Longrightarrow> Dag p (l(p:=p)) r t = X"} from looping, because of 
 @{thm[source] Dag_Ref} and @{thm[source] fun_upd_apply}.
- *}
+\<close>
 
 lemma Dag_upd_same_r_lemma: "\<And>p. p\<noteq>Null \<Longrightarrow> \<not> Dag p l (r(p:=p)) t"
   apply (induct t)

@@ -431,12 +431,12 @@ proof -
         assume "p dvd smult (of_nat (f i)) (pderiv a)"
         hence "p dvd (pderiv a)" unfolding fi using dvd_smult_cancel of_nat_eq_0_iff by blast
         from this[unfolded ap] have "p dvd pderiv p" using c
-          by (metis `p dvd pderiv a` ap' dvd_trans dvd_triv_right mult.left_neutral pderiv_smult smult_dvd_cancel)
+          by (metis \<open>p dvd pderiv a\<close> ap' dvd_trans dvd_triv_right mult.left_neutral pderiv_smult smult_dvd_cancel)
         with not_dvd_pderiv p0 show False by auto
       qed
       thus "k dvd 1" by simp
     qed
-  qed (insert `?single \<noteq> 0`, auto)
+  qed (insert \<open>?single \<noteq> 0\<close>, auto)
 qed
 
 lemma pderiv_exp_gcd: 
@@ -1069,12 +1069,12 @@ proof -
     proof (cases "\<exists>a j. (a, j) \<in> set bs \<and> poly a x = 0")
       case True
       then obtain a j where "(a, j) \<in> set bs" "poly a x = 0" by auto
-      with mem[OF this] `?l`
+      with mem[OF this] \<open>?l\<close>
       have ?r2 by auto
       thus ?thesis ..
     next
       case False
-      with no_mem[of x] `?l` have ?r1 by auto
+      with no_mem[of x] \<open>?l\<close> have ?r1 by auto
       thus ?thesis ..
     qed
   qed

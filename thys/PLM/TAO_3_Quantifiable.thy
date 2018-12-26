@@ -4,10 +4,10 @@ imports TAO_2_Semantics
 begin
 (*>*)
 
-section{* General Quantification *}
-text{* \label{TAO_Quantifiable} *}
+section\<open>General Quantification\<close>
+text\<open>\label{TAO_Quantifiable}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   In order to define general quantifiers that can act
   on individuals as well as relations a type class
@@ -15,10 +15,10 @@ text{*
   This type class is then instantiated for individuals and
   relations.
 \end{remark}
-*}
+\<close>
 
-subsection{* Type Class *}
-text{* \label{TAO_Quantifiable_Class} *}
+subsection\<open>Type Class\<close>
+text\<open>\label{TAO_Quantifiable_Class}\<close>
 
 class quantifiable = fixes forall :: "('a\<Rightarrow>\<o>)\<Rightarrow>\<o>" (binder "\<^bold>\<forall>" [8] 9)
   assumes quantifiable_T8: "(w \<Turnstile> (\<^bold>\<forall> x . \<psi> x)) = (\<forall> x . (w \<Turnstile> (\<psi> x)))"
@@ -28,8 +28,8 @@ end
 lemma (in Semantics) T8: shows "(w \<Turnstile> \<^bold>\<forall> x . \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
   using quantifiable_T8 .
 
-subsection{* Instantiations *}
-text{* \label{TAO_Quantifiable_Instantiations} *}
+subsection\<open>Instantiations\<close>
+text\<open>\label{TAO_Quantifiable_Instantiations}\<close>
 
 instantiation \<nu> :: quantifiable
 begin

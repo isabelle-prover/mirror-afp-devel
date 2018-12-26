@@ -1,4 +1,4 @@
-section {* List Prefixes *}
+section \<open>List Prefixes\<close>
 
 theory List_Prefixes
 imports "HOL-Library.Prefix_Order"

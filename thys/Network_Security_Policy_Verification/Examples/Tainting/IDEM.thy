@@ -3,12 +3,12 @@ theory IDEM
 imports "../../TopoS_Impl"
 begin
 
-ML{*
+ML\<open>
 case !Graphviz.open_viewer of
     OpenImmediately => Graphviz.open_viewer := AskTimeouted 3.0
   | AskTimeouted _ => ()
   | DoNothing => ()
-*}
+\<close>
 
 definition policy :: "string list_graph" where
   "policy \<equiv> \<lparr> nodesL = [''Logger'',
@@ -112,18 +112,18 @@ end
 definition "invariants \<equiv> [Tainting_m] @ system_EMS_m @ system_P4S_m @system_P4Sstorage_m"
 
 lemma "all_security_requirements_fulfilled invariants policy" by eval
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "invariants"} @{term "policy"};
-*}
+\<close>
 
 
 value[code] "implc_get_offending_flows invariants (policy\<lparr> edgesL := edgesL policy\<rparr>)"
 (*ML{*
 visualize_graph @{context} @{term "invariants"} @{term "(policy\<lparr> edgesL := edgesL policy\<rparr>)"};
 *}*)
-ML{*
+ML\<open>
 visualize_graph_header @{context} @{term "invariants"} @{term "policy"} @{term tainiting_host_attributes};
-*}
+\<close>
 
 
 definition make_policy :: "('a SecurityInvariant) list \<Rightarrow> 'a list \<Rightarrow> 'a list_graph" where
@@ -132,12 +132,12 @@ definition make_policy :: "('a SecurityInvariant) list \<Rightarrow> 'a list \<R
 
 value[code] "make_policy invariants (nodesL policy)"
 
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL policy"}
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
      @{term "[(e1, e2) \<leftarrow>  List.product  (nodesL policy) (nodesL policy).
      (e1,e2) \<notin> set (edgesL (make_policy invariants (nodesL policy))) \<and> (e2 = ''Adversary'') \<and> (e1 \<noteq> ''Adversary'')]"})] "";
-*}
+\<close>
 
 
 end

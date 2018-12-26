@@ -1,4 +1,4 @@
-section {* The Same Vote Model *}
+section \<open>The Same Vote Model\<close>
                                                                                             
 theory Same_Vote
 imports Voting
@@ -6,17 +6,17 @@ begin
 
 context quorum_process begin
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 
-text {* The system state remains the same as in the Voting model, but the
-  voting event is changed. *}
+text \<open>The system state remains the same as in the Voting model, but the
+  voting event is changed.\<close>
 
 definition safe :: "v_state \<Rightarrow> round \<Rightarrow> val \<Rightarrow> bool" where
   safe_def': "safe s r v \<equiv> 
     \<forall>r' < r. \<forall>Q \<in> Quorum. \<forall>w. (votes s r') ` Q = {Some w} \<longrightarrow> v = w"
 
-text {* This definition of @{term safe} is easier to reason about in Isabelle. *}
+text \<open>This definition of @{term safe} is easier to reason about in Isabelle.\<close>
 lemma safe_def:
   "safe s r v =
     (\<forall>r' < r. \<forall>Q w. quorum_for Q w (votes s r')  \<longrightarrow> v = w)"
@@ -44,7 +44,7 @@ definition sv_TS :: "v_state TS" where
 
 lemmas sv_TS_defs = sv_TS_def v_init_def sv_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 lemma safe_imp_no_defection:
@@ -66,7 +66,7 @@ lemma Same_Vote_Refines:
     sv_round_refines relhoare_refl)
 
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
 definition SV_inv3 where
@@ -78,7 +78,7 @@ lemmas SV_inv3I = SV_inv3_def [THEN setc_def_to_intro, rule_format]
 lemmas SV_inv3E [elim] = SV_inv3_def [THEN setc_def_to_elim, rule_format]
 lemmas SV_inv3D = SV_inv3_def [THEN setc_def_to_dest, rule_format]
  
-subsubsection {* Proof of invariants *}
+subsubsection \<open>Proof of invariants\<close>
 (******************************************************************************)
 
 lemma SV_inv3_v_round: 
@@ -98,7 +98,7 @@ lemma SV_inv3_inductive:
 lemma SV_inv3_invariant: "reach sv_TS \<subseteq> SV_inv3"
   by (auto intro!: inv_rule_basic SV_inv3_inductive del: subsetI)
 
-text {*
+text \<open>
 
 This is a different characterization of @{term safe}, due to Lampson~\cite{lampson_abcds_2001}:
   @{term "safe' s r v = (\<forall>r'< r. (\<exists>Q \<in> Quorum. \<forall>a \<in> Q. \<forall>w. votes s r' a = Some w \<longrightarrow> w = v))"}
@@ -107,9 +107,9 @@ It is, however, strictly stronger than our characterization, since we do not at 
 the "completeness" of our quorum system (for any set S, either S or the complement of S is a
 quorum), and the following is thus not provable: @{term "s \<in> SV_inv3 \<Longrightarrow> safe' s = safe s"}.
 
-*}
+\<close>
 
-subsubsection {* Transfer of abstract invariants *}
+subsubsection \<open>Transfer of abstract invariants\<close>
 (******************************************************************************)
 
 lemma SV_inv1_inductive:
@@ -134,10 +134,10 @@ lemma SV_inv2_invariant:
   "reach sv_TS \<subseteq> Vinv2"
   by(rule abs_INV_transfer[OF Same_Vote_Refines Vinv2_invariant, simplified])
 
-subsubsection {* Additional invariants *}
+subsubsection \<open>Additional invariants\<close>
 (******************************************************************************)
 
-text {* With Same Voting, the voted values are safe in the next round. *}
+text \<open>With Same Voting, the voted values are safe in the next round.\<close>
 
 definition SV_inv4 :: "v_state set" where
   "SV_inv4 = {s. \<forall>v a r. votes s r a = Some v \<longrightarrow> safe s (Suc r) v }"

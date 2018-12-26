@@ -6,7 +6,7 @@
 
 theory DiskPaxos imports DiskPaxos_Invariant begin
 
-subsection {* Inner Module *}
+subsection \<open>Inner Module\<close>
 
 record
 Istate =

@@ -4,14 +4,14 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection{* Verification Examples *}
+subsubsection\<open>Verification Examples\<close>
 
 theory VC_KAD_wf_Examples
   imports VC_KAD_wf
 begin
 
-text {* The example should be taken with a grain of salt. More work is needed to make 
-the while rule cooperate with simplification. *}
+text \<open>The example should be taken with a grain of salt. More work is needed to make 
+the while rule cooperate with simplification.\<close>
 
 lemma euclid:
   "rel_nabla (
@@ -32,7 +32,7 @@ lemma euclid:
   apply (subst rel_fdivka.fbox_arden_whilei[symmetric], simp_all)
   using gcd_red_nat gr0I by force
 
-text {* The termination assumption is now explicit in the verification proof. Here it is left 
-untouched. Means beyond these components are required for discharging it. *}
+text \<open>The termination assumption is now explicit in the verification proof. Here it is left 
+untouched. Means beyond these components are required for discharging it.\<close>
 
 end

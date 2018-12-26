@@ -1,4 +1,4 @@
-chapter {*Predicates for Terms, Formulas and Substitution*}
+chapter \<open>Predicates for Terms, Formulas and Substitution\<close>
 
 theory Coding_Predicates
 imports Coding Sigma
@@ -6,11 +6,11 @@ begin
 
 declare succ_iff [simp del]
 
-text {*This material comes from Section 3, greatly modified for de Bruijn syntax.*}
+text \<open>This material comes from Section 3, greatly modified for de Bruijn syntax.\<close>
 
-section {*Predicates for atomic terms*}
+section \<open>Predicates for atomic terms\<close>
 
-subsection {*Free Variables*}
+subsection \<open>Free Variables\<close>
 
 definition is_Var :: "hf \<Rightarrow> bool" where "is_Var x \<equiv> Ord x \<and> 0 \<^bold>\<in> x"
 
@@ -58,7 +58,7 @@ lemma is_Var_iff: "is_Var v \<longleftrightarrow> v = succ (ord_of (nat_of_name 
 lemma decode_Var_inject [simp]: "is_Var v \<Longrightarrow> is_Var v' \<Longrightarrow> decode_Var v = decode_Var v' \<longleftrightarrow> v=v'"
   by (metis is_Var_iff)
 
-subsection {*De Bruijn Indexes*}
+subsection \<open>De Bruijn Indexes\<close>
 
 definition is_Ind :: "hf \<Rightarrow> bool"
   where "is_Ind x \<equiv> (\<exists>m. Ord m \<and> x = \<langle>htuple 6, m\<rangle>)"
@@ -106,7 +106,7 @@ definition decode_Ind :: "hf \<Rightarrow> nat"
 lemma is_Ind_pair_iff [simp]: "is_Ind \<langle>x, y\<rangle> \<longleftrightarrow> x = htuple 6 \<and> Ord y"
   by (auto simp: is_Ind_def)
 
-subsection {*Various syntactic lemmas*}
+subsection \<open>Various syntactic lemmas\<close>
 
 lemma eval_Var_q: "\<lbrakk>\<lceil>Var i\<rceil>\<rbrakk> e = q_Var i"
   by (simp add: quot_tm_def q_Var_def)
@@ -115,7 +115,7 @@ lemma is_Var_eval_Var [simp]: "is_Var \<lbrakk>\<lceil>Var i\<rceil>\<rbrakk>e"
   by (metis decode_Var_q_Var is_Var_imp_decode_Var is_Var_q_Var)
 
 
-section {*The predicate @{text SeqCTermP}, for Terms and Constants*}
+section \<open>The predicate \<open>SeqCTermP\<close>, for Terms and Constants\<close>
 
 (*SeqCTerm(s,k,t) \<equiv> LstSeq(s,k,t) \<and> (\<forall>l\<in>k)[s l=0 \<or> Var(s l)\<or>(\<exists>m,n\<in>l)[s l = \<langle>Eats, s m, s n\<rangle>]]*)
 definition SeqCTerm :: "bool \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
@@ -214,9 +214,9 @@ proof -
 qed
 
 
-section {*The predicates @{text TermP} and @{text ConstP}*}
+section \<open>The predicates \<open>TermP\<close> and \<open>ConstP\<close>\<close>
 
-subsection {*Definition*}
+subsection \<open>Definition\<close>
 
 definition CTerm :: "bool \<Rightarrow> hf \<Rightarrow> bool"
   where "CTerm vf t \<equiv> (\<exists>s k. SeqCTerm vf s k t)"
@@ -260,7 +260,7 @@ abbreviation Const :: "hf \<Rightarrow> bool"
 abbreviation ConstP :: "tm \<Rightarrow> fm"
   where "ConstP \<equiv> CTermP False"
 
-subsection {*Correctness: It Corresponds to Quotations of Real Terms*}
+subsection \<open>Correctness: It Corresponds to Quotations of Real Terms\<close>
 
 lemma wf_Term_quot_dbtm [simp]: "wf_dbtm u \<Longrightarrow> Term \<lbrakk>quot_dbtm u\<rbrakk>e"
 by (induct rule: wf_dbtm.induct)
@@ -305,7 +305,7 @@ proof -
     by (auto simp: q_defs) (metis Eats Term_imp_wf_dbtm quot_dbtm_inject_lemma)
 qed
 
-subsection {*Correctness properties for constants*}
+subsection \<open>Correctness properties for constants\<close>
 
 lemma Const_imp_Term: "Const x \<Longrightarrow> Term x"
   by (metis SeqConst_imp_SeqTerm CTerm_def)
@@ -325,7 +325,7 @@ proof -
 qed
 
 
-section {*Abstraction over terms*}
+section \<open>Abstraction over terms\<close>
 
 definition SeqStTerm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
 where "SeqStTerm v u x x' s k \<equiv>
@@ -335,7 +335,7 @@ where "SeqStTerm v u x x' s k \<equiv>
 definition AbstTerm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
 where "AbstTerm v i x x' \<equiv> Ord i \<and> (\<exists>s k. SeqStTerm v (q_Ind i) x x' s k)"
 
-subsection {*Defining the syntax: quantified body*}
+subsection \<open>Defining the syntax: quantified body\<close>
 
 nominal_function SeqStTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,v,i,sl,sl',m,n,sm,sm',sn,sn');
@@ -421,7 +421,7 @@ lemma SeqStTermP_cong:
 
 declare SeqStTermP.simps [simp del]
 
-subsection {*Defining the syntax: main predicate*}
+subsection \<open>Defining the syntax: main predicate\<close>
 
 nominal_function AbstTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (v,i,t,u,k); atom k \<sharp> (v,i,t,u)\<rbrakk> \<Longrightarrow>
@@ -457,7 +457,7 @@ qed
 
 declare AbstTermP.simps [simp del]
 
-subsection {*Correctness: It Coincides with Abstraction over real terms*}
+subsection \<open>Correctness: It Coincides with Abstraction over real terms\<close>
 
 lemma not_is_Var_is_Ind: "is_Var v \<Longrightarrow> \<not> is_Ind v"
   by (auto simp: is_Var_def is_Ind_def)
@@ -503,12 +503,12 @@ lemma AbstTerm_abst_dbtm:
      (auto simp: AbstTerm_def SeqStTerm_def q_defs intro: BuildSeq2_exI BuildSeq2_combine)
 
 
-section {*Substitution over terms*}
+section \<open>Substitution over terms\<close>
 
 definition SubstTerm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "SubstTerm v u x x' \<equiv> Term u \<and> (\<exists>s k. SeqStTerm v u x x' s k)"
 
-subsection {*Defining the syntax*}
+subsection \<open>Defining the syntax\<close>
 
 nominal_function SubstTermP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom s \<sharp> (v,i,t,u,k); atom k \<sharp> (v,i,t,u)\<rbrakk> \<Longrightarrow>
@@ -603,9 +603,9 @@ lemma SubstTerm_subst_dbtm:
      (auto simp: assms SubstTerm_def SeqStTerm_def q_defs intro: BuildSeq2_exI BuildSeq2_combine)
 
 
-section {*Abstraction over formulas*}
+section \<open>Abstraction over formulas\<close>
 
-subsection {*The predicate @{text AbstAtomicP}*}
+subsection \<open>The predicate \<open>AbstAtomicP\<close>\<close>
 
 definition AbstAtomic :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "AbstAtomic v i y y' \<equiv> 
@@ -653,7 +653,7 @@ qed
 
 declare AbstAtomicP.simps [simp del]
 
-subsection {*The predicate @{text AbsMakeForm}*}
+subsection \<open>The predicate \<open>AbsMakeForm\<close>\<close>
 
 definition AbstMakeForm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
 where "AbstMakeForm k y y' i u u' j w w' \<equiv>
@@ -750,7 +750,7 @@ qed
 
 declare SeqAbstFormP.simps [simp del]
 
-subsection {*Defining the syntax: the main AbstForm predicate*}
+subsection \<open>Defining the syntax: the main AbstForm predicate\<close>
 
 definition AbstForm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "AbstForm v i x x' \<equiv> is_Var v \<and> Ord i \<and> (\<exists>s k. SeqAbstForm v i x x' s k)"
@@ -790,7 +790,7 @@ qed
 declare AbstFormP.simps [simp del]
 
 
-subsection {*Correctness: It Coincides with Abstraction over real Formulas*}
+subsection \<open>Correctness: It Coincides with Abstraction over real Formulas\<close>
 
 lemma AbstForm_imp_Ord: "AbstForm v u x x' \<Longrightarrow> Ord v"
   by (metis AbstForm_def is_Var_def)
@@ -838,9 +838,9 @@ apply (force simp add: AbstForm_def SeqAbstForm_def AbstMakeForm_def AbstAtomic_
              intro: BuildSeq3_exI BuildSeq3_combine)+
 done
 
-section {*Substitution over formulas*}
+section \<open>Substitution over formulas\<close>
 
-subsection {*The predicate @{text SubstAtomicP}*}
+subsection \<open>The predicate \<open>SubstAtomicP\<close>\<close>
 
 definition SubstAtomic :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "SubstAtomic v tm y y' \<equiv> 
@@ -894,7 +894,7 @@ lemma SubstAtomicP_cong:
   by (rule P4_cong) auto
 
 
-subsection {*The predicate @{text SubstMakeForm}*}
+subsection \<open>The predicate \<open>SubstMakeForm\<close>\<close>
 
 definition SubstMakeForm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "SubstMakeForm y y' u u' w w' \<equiv>
@@ -986,7 +986,7 @@ lemma SeqSubstFormP_cong:
 
 declare SeqSubstFormP.simps [simp del]
 
-subsection {*Defining the syntax: the main SubstForm predicate*}
+subsection \<open>Defining the syntax: the main SubstForm predicate\<close>
 
 definition SubstForm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
 where "SubstForm v u x x' \<equiv> is_Var v \<and> Term u \<and> (\<exists>s k. SeqSubstForm v u x x' s k)"
@@ -1034,7 +1034,7 @@ lemma ground_SubstFormP [simp]: "ground_fm (SubstFormP v y x x') \<longleftright
 
 declare SubstFormP.simps [simp del]
 
-subsection {*Correctness of substitution over formulas*}
+subsection \<open>Correctness of substitution over formulas\<close>
 
 lemma SubstForm_imp_subst_dbfm_lemma:
   assumes "SubstForm v \<lbrakk>quot_dbtm u\<rbrakk>e x x'"
@@ -1099,7 +1099,7 @@ corollary SubstForm_subst_dbfm_eq:
   by (metis SubstForm_subst_dbfm Term_imp_is_tm quot_dbtm_inject_lemma quot_tm_def wf_dbtm_iff_is_tm)
 
 
-section {*The predicate @{text AtomicP}*}
+section \<open>The predicate \<open>AtomicP\<close>\<close>
 
 definition Atomic :: "hf \<Rightarrow> bool"
   where "Atomic y \<equiv>\<exists>t u. Term t \<and> Term u \<and> (y = q_Eq t u \<or> y = q_Mem t u)"
@@ -1126,7 +1126,7 @@ proof -
 qed
 
 
-section {*The predicate @{text MakeForm} *}
+section \<open>The predicate \<open>MakeForm\<close>\<close>
 
 definition MakeForm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "MakeForm y u w \<equiv>
@@ -1160,7 +1160,7 @@ qed
 declare MakeFormP.simps [simp del]
 
 
-section {*The predicate @{text SeqFormP} *}
+section \<open>The predicate \<open>SeqFormP\<close>\<close>
 
 (*SeqForm(s,k,t) \<equiv> LstSeq(s,k,t) \<and> (\<forall>n\<in>k)[Atomic (s n) \<or> (\<exists>m,l\<in>n)[MakeForm (s m) (s l) (s n)]]*)
 definition SeqForm :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
@@ -1214,9 +1214,9 @@ proof -
     by (auto simp: SeqFormP.simps [of l _ _ _ sl m n sm sn])
 qed
 
-section {*The predicate @{text FormP}*}
+section \<open>The predicate \<open>FormP\<close>\<close>
 
-subsection {*Definition*}
+subsection \<open>Definition\<close>
 
 definition Form :: "hf \<Rightarrow> bool"
   where "Form y \<equiv> (\<exists>s k. SeqForm s k y)"
@@ -1248,7 +1248,7 @@ proof -
     by (auto simp: FormP.simps [of k s])
 qed
 
-subsection {*Correctness: It Corresponds to Quotations of Real Formulas*}
+subsection \<open>Correctness: It Corresponds to Quotations of Real Formulas\<close>
 
 lemma AbstForm_trans_fm:
   "AbstForm (q_Var i) 0 \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<lbrakk>quot_dbfm (trans_fm [i] A)\<rbrakk>e"
@@ -1369,7 +1369,7 @@ lemma SubstForm_quot_unique: "SubstForm (q_Var i) \<lbrakk>\<lceil>t\<rceil>\<rb
 lemma SubstForm_quot: "SubstForm \<lbrakk>\<lceil>Var i\<rceil>\<rbrakk>e \<lbrakk>\<lceil>t\<rceil>\<rbrakk>e \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<lbrakk>\<lceil>A(i::=t)\<rceil>\<rbrakk>e"
   by (metis SubstForm_quot_unique eval_Var_q)
 
-subsection {*The predicate @{text VarNonOccFormP} (Derived from @{text SubstFormP})*}
+subsection \<open>The predicate \<open>VarNonOccFormP\<close> (Derived from \<open>SubstFormP\<close>)\<close>
 
 definition VarNonOccForm :: "hf \<Rightarrow> hf \<Rightarrow> bool"
 where "VarNonOccForm v x \<equiv> Form x \<and> SubstForm v 0 x x" 
@@ -1391,7 +1391,7 @@ proof -
     by (auto simp add: VarNonOccForm_def)
 qed
 
-subsection {*Correctness for Real Terms and Formulas*}
+subsection \<open>Correctness for Real Terms and Formulas\<close>
 
 lemma VarNonOccForm_imp_dbfm_fresh:
   assumes "VarNonOccForm v x" 

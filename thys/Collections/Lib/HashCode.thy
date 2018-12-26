@@ -2,22 +2,22 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
                  Philipp Meyer <meyerphi@in.tum.de>
 *)
-section {* \isaheader {The hashable Typeclass} *}
+section \<open>\isaheader {The hashable Typeclass}\<close>
 theory HashCode
 imports 
   Native_Word.Uint32 
 begin
 
-text_raw {*\label{thy:HashCode}*}
+text_raw \<open>\label{thy:HashCode}\<close>
 
-text {*
+text \<open>
   In this theory a typeclass of hashable types is established.
-  For hashable types, there is a function @{text hashcode}, that
+  For hashable types, there is a function \<open>hashcode\<close>, that
   maps any entity of this type to an unsigned 32 bit word value.
 
   This theory defines the hashable typeclass and provides instantiations
   for a couple of standard types.
-*}
+\<close>
 
 type_synonym
   hashcode = "uint32"

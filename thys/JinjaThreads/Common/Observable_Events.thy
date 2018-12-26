@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Observable events in JinjaThreads *}
+section \<open>Observable events in JinjaThreads\<close>
 
 theory Observable_Events
 imports 
@@ -30,7 +30,7 @@ type_synonym
     "('addr,'thread_id,'x,'heap,'addr,('addr, 'thread_id) obs_event) thread_action"
 
 (* pretty printing for Jinja_thread_action type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [ a1, t1, x, h, a2
@@ -39,7 +39,7 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "thread_action"}, K tr')]
   end
-*}
+\<close>
 typ "('addr, 'thread_id, 'x, 'heap) Jinja_thread_action"
 
 lemma range_ty_of_htype: "range ty_of_htype \<subseteq> range Class \<union> range Array"

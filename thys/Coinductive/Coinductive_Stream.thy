@@ -1,7 +1,7 @@
 (*  Title:      Coinductive/Coinductive_Stream.thy
     Author:     Peter Gammie and Andreas Lochbihler
 *)
-section {* Infinite lists as a codatatype *}
+section \<open>Infinite lists as a codatatype\<close>
 
 theory Coinductive_Stream
 imports
@@ -16,15 +16,15 @@ by(simp add: eq_onp_def)
 primcorec unfold_stream :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b stream" where
   "unfold_stream g1 g2 a = g1 a ## unfold_stream g1 g2 (g2 a)"
 
-text {*
+text \<open>
   The following setup should be done by the BNF package.
-*}
+\<close>
 
-text {* congruence rule *}
+text \<open>congruence rule\<close>
 
 declare stream.map_cong [cong]
 
-text {* lemmas about generated constants *}
+text \<open>lemmas about generated constants\<close>
 
 lemma eq_SConsD: "xs = SCons y ys \<Longrightarrow> shd xs = y \<and> stl xs = ys"
 by auto
@@ -65,11 +65,11 @@ declare stream.set_sel(1)[simp]
 lemma sset_stl: "sset (stl xs) \<subseteq> sset xs"
 by(cases xs) auto
 
-text {* induction rules *}
+text \<open>induction rules\<close>
 
 lemmas stream_set_induct = sset_induct
 
-subsection {* Lemmas about operations from @{theory "HOL-Library.Stream"} *}
+subsection \<open>Lemmas about operations from @{theory "HOL-Library.Stream"}\<close>
 
 lemma szip_iterates:
   "szip (siterate f a) (siterate g b) = siterate (map_prod f g) (a, b)"
@@ -101,7 +101,7 @@ lemma szip_shift:
 by(induct xs arbitrary: us)(auto simp add: Suc_length_conv)
 
 
-subsection {* Link @{typ "'a stream"} to @{typ "'a llist"} *}
+subsection \<open>Link @{typ "'a stream"} to @{typ "'a llist"}\<close>
 
 definition llist_of_stream :: "'a stream \<Rightarrow> 'a llist"
 where "llist_of_stream = unfold_llist (\<lambda>_. False) shd stl"
@@ -320,7 +320,7 @@ lemma szip_transfer [transfer_rule]:
   "(pcr_stream (=) ===> pcr_stream (=) ===> pcr_stream (=)) lzip szip"
 by(simp add: stream.pcr_cr_eq cr_stream_def rel_fun_def)
 
-subsection {* Link @{typ "'a stream"} with @{typ "nat \<Rightarrow> 'a"} *}
+subsection \<open>Link @{typ "'a stream"} with @{typ "nat \<Rightarrow> 'a"}\<close>
 
 lift_definition of_seq :: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a stream" is "inf_llist" by simp
 
@@ -354,7 +354,7 @@ lemma smap_of_seq [simp]: "smap f (of_seq g) = of_seq (f \<circ> g)"
 by transfer simp
 end
 
-subsection{* Function iteration @{const siterate}  and @{term sconst} *}
+subsection\<open>Function iteration @{const siterate}  and @{term sconst}\<close>
 
 lemmas siterate [nitpick_simp] = siterate.code
 
@@ -526,7 +526,7 @@ lemma sfirst_eq_enat_iff: "sfirst P \<omega> = enat n \<longleftrightarrow> ev_a
   by (induction n arbitrary: \<omega>)
      (simp_all add: eSuc_enat[symmetric] sfirst.simps enat_0)
 
-subsection {* @{text stakeWhile} *}
+subsection \<open>\<open>stakeWhile\<close>\<close>
 
 definition stakeWhile :: "('a \<Rightarrow> bool) \<Rightarrow> 'a stream \<Rightarrow> 'a llist"
 where "stakeWhile P xs = ltakeWhile P (llist_of_stream xs)"

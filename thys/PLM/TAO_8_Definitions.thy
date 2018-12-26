@@ -4,10 +4,10 @@ imports TAO_7_Axioms
 begin
 (*>*)
 
-section{* Definitions *}
-text{* \label{TAO_Definitions} *}
+section\<open>Definitions\<close>
+text\<open>\label{TAO_Definitions}\<close>
 
-subsection{* Property Negations *}
+subsection\<open>Property Negations\<close>
 
 consts propnot :: "'a\<Rightarrow>'a" ("_\<^sup>-" [90] 90)
 overloading propnot\<^sub>0 \<equiv> "propnot :: \<Pi>\<^sub>0\<Rightarrow>\<Pi>\<^sub>0"
@@ -29,7 +29,7 @@ named_theorems propnot_defs
 declare propnot\<^sub>0_def[propnot_defs] propnot\<^sub>1_def[propnot_defs]
         propnot\<^sub>2_def[propnot_defs] propnot\<^sub>3_def[propnot_defs]
 
-subsection{* Noncontingent and Contingent Relations *}
+subsection\<open>Noncontingent and Contingent Relations\<close>
 
 consts Necessary :: "'a\<Rightarrow>\<o>"
 overloading Necessary\<^sub>0 \<equiv> "Necessary :: \<Pi>\<^sub>0\<Rightarrow>\<o>"
@@ -84,7 +84,7 @@ definition ContingentlyFalse :: "\<o>\<Rightarrow>\<o>" where
 definition WeaklyContingent where
   "WeaklyContingent \<equiv> \<lambda> F . Contingent F \<^bold>& (\<^bold>\<forall> x. \<^bold>\<diamond>\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>F,x\<^sup>P\<rparr>)"
 
-subsection{* Null and Universal Objects *}
+subsection\<open>Null and Universal Objects\<close>
 
 definition Null :: "\<kappa>\<Rightarrow>\<o>" where
   "Null \<equiv> \<lambda> x . \<lparr>A!,x\<rparr> \<^bold>& \<^bold>\<not>(\<^bold>\<exists> F . \<lbrace>x, F\<rbrace>)"
@@ -96,17 +96,17 @@ definition NullObject :: "\<kappa>" ("\<^bold>a\<^sub>\<emptyset>") where
 definition UniversalObject :: "\<kappa>" ("\<^bold>a\<^sub>V") where
   "UniversalObject \<equiv> (\<^bold>\<iota>x . Universal (x\<^sup>P))"
 
-subsection{* Propositional Properties *}
+subsection\<open>Propositional Properties\<close>
 
 definition Propositional where
   "Propositional F \<equiv> \<^bold>\<exists>  p . F \<^bold>= (\<^bold>\<lambda> x . p)"
 
-subsection{* Indiscriminate Properties *}
+subsection\<open>Indiscriminate Properties\<close>
 
 definition Indiscriminate :: "\<Pi>\<^sub>1\<Rightarrow>\<o>" where
   "Indiscriminate \<equiv> \<lambda> F . \<^bold>\<box>((\<^bold>\<exists> x . \<lparr>F,x\<^sup>P\<rparr>) \<^bold>\<rightarrow> (\<^bold>\<forall> x . \<lparr>F,x\<^sup>P\<rparr>))"
 
-subsection{* Miscellaneous *}
+subsection\<open>Miscellaneous\<close>
 
 definition not_identical\<^sub>E :: "\<kappa>\<Rightarrow>\<kappa>\<Rightarrow>\<o>" (infixl "\<^bold>\<noteq>\<^sub>E" 63)
   where "not_identical\<^sub>E \<equiv> \<lambda> x y . \<lparr>(\<^bold>\<lambda>\<^sup>2 (\<lambda> x y . x\<^sup>P \<^bold>=\<^sub>E y\<^sup>P))\<^sup>-, x, y\<rparr>"

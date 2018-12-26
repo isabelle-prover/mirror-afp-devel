@@ -4,13 +4,13 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection {* Refinement Examples *}
+subsubsection \<open>Refinement Examples\<close>
 
 theory VC_RKAT_Examples 
   imports VC_RKAT
 begin
 
-text {* Currently  there is only one example, and no tactic for automating refinement proofs is provided. *}
+text \<open>Currently  there is only one example, and no tactic for automating refinement proofs is provided.\<close>
 
 lemma var_swap_ref1: 
   "rel_R \<lceil>\<lambda>s. s ''x'' = a \<and> s ''y'' = b\<rceil> \<lceil>\<lambda>s. s ''x'' = b \<and> s ''y'' = a\<rceil>

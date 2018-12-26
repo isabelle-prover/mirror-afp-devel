@@ -4,13 +4,13 @@ imports Heard_Of.HOModel Refinement
 begin
 (*>*)
 
-subsection {* Transition system semantics for HO models *}
+subsection \<open>Transition system semantics for HO models\<close>
 
-text {* The HO development already defines two trace semantics for algorithms in this model, the
+text \<open>The HO development already defines two trace semantics for algorithms in this model, the
 coarse- and fine-grained ones. However, both of these are defined on infinite traces. Since the
 semantics of our transition systems are defined on finite traces, we also provide such a semantics
 for the HO model. Since we only use refinement for safety properties, the result also extend to
-infinite traces (although we do not prove this in Isabelle). *}
+infinite traces (although we do not prove this in Isabelle).\<close>
 
 definition CHO_trans where
 "CHO_trans A HOs SHOs coord = 

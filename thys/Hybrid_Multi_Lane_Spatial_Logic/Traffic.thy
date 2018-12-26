@@ -13,7 +13,7 @@ Definitions for transitions between traffic snapshots.
 *)
 
 section\<open>Traffic Snapshots\<close> 
-text{* 
+text\<open>
 Traffic snapshots define the spatial and dynamical arrangement of cars
 on the whole of the motorway at a single point in time. A traffic snapshot
 consists of several functions assigning spatial properties and dynamical
@@ -26,7 +26,7 @@ behaviour to each car. The functions are named as follows.
 \item physical\_size: the real sizes of cars
 \item braking\_distance: braking distance each car needs in emergency
 \end{itemize}
-*}
+\<close>
 
 theory Traffic
 imports NatInt RealInt Cars
@@ -35,9 +35,9 @@ begin
 type_synonym lanes = nat_int
 type_synonym extension = real_int
 
-text {* Definition of the type of traffic snapshots. 
+text \<open>Definition of the type of traffic snapshots. 
 The constraints on the different functions are the \emph{sanity conditions}
-of traffic snapshots.  *}
+of traffic snapshots.\<close>
 
 typedef traffic = 
   "{ts :: (cars\<Rightarrow>real)*(cars\<Rightarrow>lanes)*(cars\<Rightarrow>lanes)*(cars\<Rightarrow>real\<Rightarrow>real)*(cars\<Rightarrow>real)*(cars\<Rightarrow>real).
@@ -105,8 +105,8 @@ begin
 
 notation nat_int.consec ("consec")
 
-text{* For brevity, we define names for the different functions
-within a traffic snapshot. *}
+text\<open>For brevity, we define names for the different functions
+within a traffic snapshot.\<close>
 
 definition pos::"traffic \<Rightarrow> (cars \<Rightarrow> real)"
 where "pos ts \<equiv> fst (Rep_traffic ts)"
@@ -127,11 +127,11 @@ definition braking_distance::"traffic \<Rightarrow> (cars \<Rightarrow> real)"
 where "braking_distance ts \<equiv> snd (snd (snd (snd (snd (Rep_traffic ts)))))"
 
 
-text {* 
+text \<open>
 It is helpful to be able to refer to the sanity conditions of a traffic 
 snapshot via lemmas, hence we prove that the sanity conditions hold
 for each traffic snapshot.
-*}
+\<close>
 
 lemma disjoint: "(res ts c) \<sqinter> (clm ts c) = \<emptyset>"
 using Rep_traffic res_def clm_def   by auto 
@@ -172,10 +172,10 @@ lemma psGeZero:"\<forall>c. (physical_size ts c > 0)"
 lemma sdGeZero:"\<forall>c. (braking_distance ts c > 0)"
   using Rep_traffic braking_distance_def by auto 
 
-text {* 
+text \<open>
 While not a sanity condition directly, the following lemma helps to establish
 general properties of HMLSL later on. It is a consequence of clmNextRes. 
-*}
+\<close>
 
 lemma clm_consec_res: 
 "(clm ts) c \<noteq> \<emptyset> \<longrightarrow> consec (clm ts c) (res ts c) \<or> consec (res ts c) (clm ts c)" 
@@ -241,7 +241,7 @@ proof
   qed
 qed
 
-text {* We define several possible transitions between traffic snapshots. 
+text \<open>We define several possible transitions between traffic snapshots. 
 Cars may create or withdraw claims and reservations, as long as the sanity conditions 
 of the traffic snapshots are fullfilled. 
 
@@ -256,7 +256,7 @@ current reservation consists of two lanes.
 
 All of these transitions concern the spatial properties of a single car at a time, i.e., 
 for several cars to change their properties, several transitions have to be taken.
-*}
+\<close>
   
 definition create_claim ::
   "traffic\<Rightarrow>cars\<Rightarrow>nat\<Rightarrow>traffic\<Rightarrow>bool" ("_ \<^bold>\<midarrow>c'( _, _ ') \<^bold>\<rightarrow> _" 27)
@@ -300,7 +300,7 @@ where "  (ts \<^bold>\<midarrow>wdr(c,n)\<^bold>\<rightarrow> ts')  == (pos ts')
                                 \<and> n \<^bold>\<in> (res ts c)
                                 \<and> |res ts c| = 2"
 
-text {* 
+text \<open>
 The following two transitions concern the dynamical behaviour of the cars. 
 Similar to the spatial properties, a car may change its dynamics, by setting
 it to a new function \(f\) from real to real. Observe that this function is indeed 
@@ -316,7 +316,7 @@ this transition requires that the dynamics of each car is at least \(0\), for ea
 point between \(0\) and \(x\). Hence, this condition denotes that all cars drive
 into the same direction. If the current dynamics of a car violated this constraint,
 it would have to reset its dynamics, until time may pass again.
-*}
+\<close>
 
 definition change_dyn::
   "traffic\<Rightarrow>cars\<Rightarrow>(real\<Rightarrow>real)\<Rightarrow>traffic\<Rightarrow> bool" (" _ \<^bold>\<midarrow> dyn'(_,_') \<^bold>\<rightarrow> _" 27)
@@ -337,12 +337,12 @@ where "(ts \<^bold>\<midarrow> x \<^bold>\<rightarrow> ts') == (\<forall>c. (pos
                               \<and> (physical_size ts') = (physical_size ts)
                               \<and> (braking_distance ts') = (braking_distance ts)"
 
-text{* 
+text\<open>
 We bundle the dynamical transitions into \emph{evolutions}, since
 we will only reason about combinations of the dynamical behaviour. 
 This fits to the level of abstraction by hiding the dynamics completely
 inside of the model.
-*}
+\<close>
 
 inductive evolve::"traffic \<Rightarrow> traffic \<Rightarrow> bool" ("_ \<^bold>\<leadsto> _")
 where refl : "ts \<^bold>\<leadsto> ts" |
@@ -361,11 +361,11 @@ next
   then show ?case by (metis evolve.change)
 qed
 
-text {* 
+text \<open>
 For general transition sequences, we introduce \emph{abstract transitions}. 
 A traffic snapshot \(ts^\prime\) is reachable from \(ts\) via an abstract transition,
 if there is an arbitrary sequence of transitions from \(ts\) to \(ts^\prime\).
-*}
+\<close>
  
 inductive abstract::"traffic \<Rightarrow> traffic \<Rightarrow> bool"  ("_ \<^bold>\<Rightarrow> _") for ts
 where refl: "(ts \<^bold>\<Rightarrow> ts)" |
@@ -403,12 +403,12 @@ next
 qed
 
 
-text {* 
+text \<open>
 Most properties of the transitions are straightforward. However, to show
 that the transition to create a reservation is always possible,
 we need to explicitly construct the resulting traffic snapshot. Due
 to the size of such a snapshot, the proof is lengthy.
-*}
+\<close>
   
     
 lemma create_res_subseteq1:"(ts \<^bold>\<midarrow>r(c)\<^bold>\<rightarrow> ts') \<longrightarrow> res ts c \<sqsubseteq> res ts' c "

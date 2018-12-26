@@ -35,17 +35,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection{* Normalisation Proofs (Generic) *}
+subsection\<open>Normalisation Proofs (Generic)\<close>
   theory
     NormalisationGenericProofs
     imports 
       FWNormalisationCore
 begin
   
-text {* 
+text \<open>
   This theory contains the generic proofs of the normalisation procedure, i.e. those which 
   are independent from the concrete semantical interpretation function.  
-*}
+\<close>
     
 lemma domNMT: "dom X \<noteq> {} \<Longrightarrow> X \<noteq> \<emptyset>"
   by auto
@@ -1631,7 +1631,7 @@ next
     case DenyAll thus ?thesis using assms DenyAll DenyAllFromTo by simp
   next
     case (DenyAllFromTo e f) thus ?thesis using assms  DenyAllFromTo  
-      by (metis DenyAllFromTo `a = DenyAllFromTo c d`  bothNet.simps(2) smalleraux2)
+      by (metis DenyAllFromTo \<open>a = DenyAllFromTo c d\<close>  bothNet.simps(2) smalleraux2)
   next
     case (AllowPortFromTo e f g) thus ?thesis 
       using assms DenyAllFromTo AllowPortFromTo by simp (metis eq_imp_le pos_noteq)
@@ -1647,7 +1647,7 @@ next
       using assms by simp (metis AllowPortFromTo DenyAllFromTo bothNet.simps(3) smalleraux2a)
   next
     case (AllowPortFromTo e f g) thus ?thesis 
-      using assms by(simp)(metis AllowPortFromTo `a = AllowPortFromTo c d p` 
+      using assms by(simp)(metis AllowPortFromTo \<open>a = AllowPortFromTo c d p\<close> 
           bothNet.simps(3) smalleraux2c)
   next
     case (Conc e f) thus ?thesis using assms by simp
@@ -1747,11 +1747,11 @@ next
     case DenyAll thus ?thesis by simp 
   next
     case (DenyAllFromTo e f) thus ?thesis using  DenyAllFromTo
-      by (auto simp: eq_imp_le  `a = DenyAllFromTo c d`)
+      by (auto simp: eq_imp_le  \<open>a = DenyAllFromTo c d\<close>)
   next
-    case (AllowPortFromTo e f p) thus ?thesis using `a = DenyAllFromTo c d` by simp 
+    case (AllowPortFromTo e f p) thus ?thesis using \<open>a = DenyAllFromTo c d\<close> by simp 
   next
-    case (Conc e f) thus ?thesis using Conc `a = DenyAllFromTo c d` by simp
+    case (Conc e f) thus ?thesis using Conc \<open>a = DenyAllFromTo c d\<close> by simp
   qed
 next
   case (AllowPortFromTo c d p) thus ?thesis
@@ -1760,7 +1760,7 @@ next
   next
     case (DenyAllFromTo e f) thus ?thesis using AllowPortFromTo by simp 
   next
-    case (AllowPortFromTo e f p2) thus ?thesis using `a = AllowPortFromTo c d p` by simp 
+    case (AllowPortFromTo e f p2) thus ?thesis using \<open>a = AllowPortFromTo c d p\<close> by simp 
   next
     case (Conc e f) thus ?thesis using AllowPortFromTo by simp
   qed
@@ -1913,14 +1913,14 @@ proof -
     fix aa::"('a, 'b) Combinators" 
     assume 6: "aa \<in> set p" 
     show "first_bothNet a \<noteq> first_bothNet aa"
-      apply(insert 1 2 3 4 5 6 `a = DenyAll`, simp_all)
+      apply(insert 1 2 3 4 5 6 \<open>a = DenyAll\<close>, simp_all)
       using fMTaux noDA by blast
   next
     case (DenyAllFromTo x21 x22)
     fix aa::"('a, 'b) Combinators"
     assume 6: "first_bothNet a \<noteq> firstList p" and 7 :"aa \<in> set p"                
     show "first_bothNet a \<noteq> first_bothNet aa"
-      apply(insert 1 2 3 4 5 6 7 `a = DenyAllFromTo x21 x22`)
+      apply(insert 1 2 3 4 5 6 7 \<open>a = DenyAllFromTo x21 x22\<close>)
       apply(case_tac aa, simp_all)
         apply (meson NCSaux1)
        apply (meson NCSaux2)
@@ -1930,7 +1930,7 @@ proof -
     fix aa::"('a, 'b) Combinators" 
     assume 6: "first_bothNet a \<noteq> firstList p" and 7 :"aa \<in> set p"                
     show "first_bothNet a \<noteq> first_bothNet aa"
-      apply(insert 1 2 3 4 6 7 `a = AllowPortFromTo x31 x32 x33`)
+      apply(insert 1 2 3 4 6 7 \<open>a = AllowPortFromTo x31 x32 x33\<close>)
       apply(case_tac aa, simp_all)
         apply (meson NCSaux3)
        apply (meson NCSaux4)
@@ -1939,7 +1939,7 @@ proof -
     case (Conc x41 x42) 
     fix aa::"('a, 'b) Combinators"
     show "first_bothNet a \<noteq> first_bothNet aa"
-      by(insert 3 4   `a = x41 \<oplus> x42`,simp)
+      by(insert 3 4   \<open>a = x41 \<oplus> x42\<close>,simp)
   qed
 qed
   
@@ -2271,7 +2271,7 @@ next
                       (\<forall>aa\<in>set p. first_bothNet a \<noteq> first_bothNet aa) \<and> NetsCollected p \<longrightarrow>
                       noDenyAll1 (a # p) \<longrightarrow> allNetsDistinct (a # p) \<longrightarrow> 
                       (\<forall>s. s \<in> set p \<longrightarrow> disjSD_2 a s) \<and> separated p"
-      apply(insert Cons.hyps `a = DenyAll`)
+      apply(insert Cons.hyps \<open>a = DenyAll\<close>)
       apply (intro impI,drule mp, erule OTNConc,drule mp)
        apply (case_tac p, simp_all) 
       apply (case_tac a, simp_all)
@@ -2283,7 +2283,7 @@ next
                       (\<forall>aa\<in>set p. first_bothNet a \<noteq> first_bothNet aa) \<and> NetsCollected p \<longrightarrow>
                       noDenyAll1 (a # p) \<longrightarrow> allNetsDistinct (a # p) \<longrightarrow> (\<forall>s. s \<in> set p \<longrightarrow> 
                       disjSD_2 a s) \<and> separated p" 
-      apply(insert Cons.hyps `a \<noteq> DenyAll`)
+      apply(insert Cons.hyps \<open>a \<noteq> DenyAll\<close>)
       by (metis NetsCollected.simps(1) NetsCollected2.simps(1) separated.simps(1) separatedNC)
   qed
 qed

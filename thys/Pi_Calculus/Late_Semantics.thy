@@ -136,9 +136,9 @@ lemma Input:
 proof -
   obtain y::name where "y \<noteq> a" and "y \<sharp> P"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from `y \<sharp> P` have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" and "a<x> \<prec> P = a<y> \<prec> ([(x, y)] \<bullet> P)"
+  from \<open>y \<sharp> P\<close> have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" and "a<x> \<prec> P = a<y> \<prec> ([(x, y)] \<bullet> P)"
     by(auto simp add: alphaBoundResidual alphaInput)
-  with `y \<noteq> a` show ?thesis by(force intro: Input)
+  with \<open>y \<noteq> a\<close> show ?thesis by(force intro: Input)
 qed
 
 declare perm_fresh_fresh[simp] name_swap[simp] fresh_prod[simp]
@@ -157,11 +157,11 @@ lemma Par1B:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> P'" and "y \<sharp> Q" and "y \<sharp> a"
     by(generate_fresh "name", auto)
-  from `P \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> P'` `y \<sharp> P'` have "P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> P')"
+  from \<open>P \<longmapsto> a\<guillemotleft>x\<guillemotright> \<prec> P'\<close> \<open>y \<sharp> P'\<close> have "P \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> P')"
     by(simp add: alphaBoundResidual)
-  hence "P \<parallel> Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> P') \<parallel> Q" using `y \<sharp> P` `y \<sharp> Q` `y \<sharp> a`
+  hence "P \<parallel> Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> P') \<parallel> Q" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<sharp> a\<close>
     by(rule Par1B)
-  with `x \<sharp> Q` `y \<sharp> P'` `y \<sharp> Q` show ?thesis
+  with \<open>x \<sharp> Q\<close> \<open>y \<sharp> P'\<close> \<open>y \<sharp> Q\<close> show ?thesis
     by(subst alphaBoundResidual[where x'=y]) auto
 qed
 
@@ -179,14 +179,14 @@ lemma Par2B:
 proof -
   obtain y::name where "y \<sharp> Q" and "y \<sharp> Q'" and "y \<sharp> P" and "y \<sharp> a"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from QTrans `y \<sharp> Q'` have "Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> Q')"
+  from QTrans \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> ([(x, y)] \<bullet> Q')"
     by(simp add:alphaBoundResidual)
-  hence "P \<parallel> Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P \<parallel> ([(x, y)] \<bullet> Q')" using `y \<sharp> P` `y \<sharp> Q` `y \<sharp> a`
+  hence "P \<parallel> Q \<longmapsto>a\<guillemotleft>y\<guillemotright> \<prec> P \<parallel> ([(x, y)] \<bullet> Q')" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<sharp> a\<close>
     by(rule Par2B)
   moreover have "a\<guillemotleft>y\<guillemotright> \<prec> P \<parallel> ([(x, y)] \<bullet> Q') = a\<guillemotleft>x\<guillemotright> \<prec> P \<parallel> Q'"
   proof -
-    from `y \<sharp> Q'` `x \<sharp> P` have "x \<sharp> P \<parallel> ([(x, y)] \<bullet> Q')" by(auto simp add: calc_atm fresh_left)
-    with `x \<sharp> P` `y \<sharp> P` show ?thesis by(simp only: alphaBoundResidual, auto simp add: name_swap name_fresh_fresh)
+    from \<open>y \<sharp> Q'\<close> \<open>x \<sharp> P\<close> have "x \<sharp> P \<parallel> ([(x, y)] \<bullet> Q')" by(auto simp add: calc_atm fresh_left)
+    with \<open>x \<sharp> P\<close> \<open>y \<sharp> P\<close> show ?thesis by(simp only: alphaBoundResidual, auto simp add: name_swap name_fresh_fresh)
   qed
   ultimately show ?thesis by simp
 qed
@@ -207,12 +207,12 @@ lemma Comm1:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> P'" and "y \<sharp> Q" and "y \<noteq> a" and "y \<noteq> b" and "y \<sharp> Q'"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from PTrans `y \<sharp> P'` have "P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')"
+  from PTrans \<open>y \<sharp> P'\<close> have "P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')"
     by(simp add: alphaBoundResidual)
   hence "P \<parallel> Q \<longmapsto>\<tau> \<prec> ([(x, y)] \<bullet> P')[y::=b] \<parallel> Q'" 
-    using QTrans `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a` `y \<noteq> b` `y \<sharp> Q'` 
+    using QTrans \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close> \<open>y \<noteq> b\<close> \<open>y \<sharp> Q'\<close> 
     by(rule Comm1)
-  with `y \<sharp> P'` show ?thesis by(simp add: renaming name_swap)
+  with \<open>y \<sharp> P'\<close> show ?thesis by(simp add: renaming name_swap)
 qed
 
 lemma Comm2:
@@ -231,12 +231,12 @@ lemma Comm2:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> P'" and "y \<sharp> Q" and "y \<noteq> a" and "y \<noteq> b" and "y \<sharp> Q'"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from QTrans `y \<sharp> Q'` have "Q \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> Q')"
+  from QTrans \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> Q')"
     by(simp add: alphaBoundResidual)
   with PTrans have "P \<parallel> Q \<longmapsto>\<tau> \<prec> P' \<parallel> (([(x, y)] \<bullet> Q')[y::=b])"
-  using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a` `y \<noteq> b` `y \<sharp> P'`
+  using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close> \<open>y \<noteq> b\<close> \<open>y \<sharp> P'\<close>
     by(rule Comm2)
-  with `y \<sharp> Q'` show ?thesis by(simp add: renaming name_swap)
+  with \<open>y \<sharp> Q'\<close> show ?thesis by(simp add: renaming name_swap)
 qed
 
 lemma Close1:
@@ -259,28 +259,28 @@ proof -
   obtain y'::name where "y' \<sharp> P" and "y' \<sharp> Q'" and "y' \<sharp> Q"
                     and "y' \<sharp> P'" and "y' \<noteq> x'" and "y' \<noteq> y" and "y' \<noteq> a"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from PTrans `x' \<sharp> P'` have "P \<longmapsto>a<x'> \<prec> ([(x, x')] \<bullet> P')"
+  from PTrans \<open>x' \<sharp> P'\<close> have "P \<longmapsto>a<x'> \<prec> ([(x, x')] \<bullet> P')"
     by(simp add: alphaBoundResidual)
-  moreover from QTrans `y' \<sharp> Q'` have "Q \<longmapsto>a<\<nu>y'> \<prec> ([(y, y')] \<bullet> Q')"
+  moreover from QTrans \<open>y' \<sharp> Q'\<close> have "Q \<longmapsto>a<\<nu>y'> \<prec> ([(y, y')] \<bullet> Q')"
     by(simp add: alphaBoundResidual)
   ultimately have "P \<parallel> Q \<longmapsto>\<tau> \<prec> <\<nu>y'>(([(x, x')] \<bullet> P')[x'::=y'] \<parallel> ([(y, y')] \<bullet> Q'))"
-    using `y' \<sharp> P` `y' \<sharp> Q` `x' \<sharp> P` `x' \<sharp> Q` `y' \<noteq> x'` `y' \<noteq> a` `x' \<noteq> a`
-          `y' \<sharp> P'` `y' \<sharp> Q'` `x' \<sharp> P'` `x' \<sharp> Q'`
+    using \<open>y' \<sharp> P\<close> \<open>y' \<sharp> Q\<close> \<open>x' \<sharp> P\<close> \<open>x' \<sharp> Q\<close> \<open>y' \<noteq> x'\<close> \<open>y' \<noteq> a\<close> \<open>x' \<noteq> a\<close>
+          \<open>y' \<sharp> P'\<close> \<open>y' \<sharp> Q'\<close> \<open>x' \<sharp> P'\<close> \<open>x' \<sharp> Q'\<close>
     apply(rule_tac Close1)
     by assumption (auto simp add: fresh_left calc_atm)
   moreover have "<\<nu>y'>(([(x, x')] \<bullet> P')[x'::=y'] \<parallel> ([(y, y')] \<bullet> Q')) = <\<nu>y>(P'[x::=y] \<parallel> Q')"
   proof -
-    from `x' \<sharp> P'` have "([(x, x')] \<bullet> P')[x'::=y'] = P'[x::=y']" by(simp add: renaming name_swap)
+    from \<open>x' \<sharp> P'\<close> have "([(x, x')] \<bullet> P')[x'::=y'] = P'[x::=y']" by(simp add: renaming name_swap)
     moreover have "y \<sharp> (P'[x::=y'] \<parallel> ([(y, y')] \<bullet> Q'))"
     proof(case_tac "y = x")
       assume "y = x"
-      with `y' \<sharp> Q'` `y' \<noteq> y` show ?thesis by(auto simp add: fresh_fact2 fresh_left calc_atm)
+      with \<open>y' \<sharp> Q'\<close> \<open>y' \<noteq> y\<close> show ?thesis by(auto simp add: fresh_fact2 fresh_left calc_atm)
     next
       assume "y \<noteq> x"
-      with `y \<sharp> P` PTrans have "y \<sharp> P'" by(force dest: freshBoundDerivative)
-      with `y' \<sharp> Q'` `y' \<noteq> y` show ?thesis by(auto simp add: fresh_left calc_atm fresh_fact1)
+      with \<open>y \<sharp> P\<close> PTrans have "y \<sharp> P'" by(force dest: freshBoundDerivative)
+      with \<open>y' \<sharp> Q'\<close> \<open>y' \<noteq> y\<close> show ?thesis by(auto simp add: fresh_left calc_atm fresh_fact1)
     qed
-    ultimately show ?thesis using `y' \<sharp> P'` apply(simp only: alphaRes)
+    ultimately show ?thesis using \<open>y' \<sharp> P'\<close> apply(simp only: alphaRes)
       by(auto simp add: name_swap eqvt_subs calc_atm renaming)
   qed
   ultimately show ?thesis by simp
@@ -306,27 +306,27 @@ proof -
   obtain y'::name where "y' \<sharp> P" and "y' \<sharp> P'" and "y' \<sharp> Q"
                     and "y' \<sharp> Q'" and "y' \<noteq> x'" and "y' \<noteq> y" and "y' \<noteq> a"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from PTrans `y' \<sharp> P'` have "P \<longmapsto>a<\<nu>y'> \<prec> ([(y, y')] \<bullet> P')"
+  from PTrans \<open>y' \<sharp> P'\<close> have "P \<longmapsto>a<\<nu>y'> \<prec> ([(y, y')] \<bullet> P')"
     by(simp add: alphaBoundResidual)
-  moreover from QTrans `x' \<sharp> Q'` have "Q \<longmapsto>a<x'> \<prec> ([(x, x')] \<bullet> Q')"
+  moreover from QTrans \<open>x' \<sharp> Q'\<close> have "Q \<longmapsto>a<x'> \<prec> ([(x, x')] \<bullet> Q')"
     by(simp add: alphaBoundResidual)
   ultimately have "P \<parallel> Q \<longmapsto>\<tau> \<prec> <\<nu>y'>(([(y, y')] \<bullet> P') \<parallel> (([(x, x')] \<bullet> Q')[x'::=y']))"
-    using `y' \<sharp> P` `y' \<sharp> Q` `x' \<sharp> P` `x' \<sharp> Q` `y' \<noteq> x'` `x' \<noteq> a` `y' \<noteq> a`
-          `x' \<sharp> P'` `x' \<sharp> Q'` `y' \<sharp> P'` `y' \<sharp> Q'`
+    using \<open>y' \<sharp> P\<close> \<open>y' \<sharp> Q\<close> \<open>x' \<sharp> P\<close> \<open>x' \<sharp> Q\<close> \<open>y' \<noteq> x'\<close> \<open>x' \<noteq> a\<close> \<open>y' \<noteq> a\<close>
+          \<open>x' \<sharp> P'\<close> \<open>x' \<sharp> Q'\<close> \<open>y' \<sharp> P'\<close> \<open>y' \<sharp> Q'\<close>
     by(rule_tac Close2) (assumption | auto simp add: fresh_left calc_atm)+
   moreover have "<\<nu>y'>(([(y, y')] \<bullet> P') \<parallel> (([(x, x')] \<bullet> Q')[x'::=y'])) = <\<nu>y>(P' \<parallel> (Q'[x::=y]))"
   proof -
-    from `x' \<sharp> Q'` have "([(x, x')] \<bullet> Q')[x'::=y'] = Q'[x::=y']" by(simp add: renaming name_swap)
+    from \<open>x' \<sharp> Q'\<close> have "([(x, x')] \<bullet> Q')[x'::=y'] = Q'[x::=y']" by(simp add: renaming name_swap)
     moreover have "y \<sharp> (([(y, y')] \<bullet> P') \<parallel> (Q'[x::=y']))"
     proof(case_tac "y = x")
       assume "y = x"
-      with `y' \<sharp> P'` `y' \<noteq> y` show ?thesis by(auto simp add: fresh_fact2 fresh_left calc_atm)
+      with \<open>y' \<sharp> P'\<close> \<open>y' \<noteq> y\<close> show ?thesis by(auto simp add: fresh_fact2 fresh_left calc_atm)
     next
       assume "y \<noteq> x"
-      with `y \<sharp> Q` QTrans have "y \<sharp> Q'" by(force dest: freshBoundDerivative)
-      with `y' \<sharp> P'` `y' \<noteq> y` show ?thesis by(auto simp add: fresh_left calc_atm fresh_fact1)
+      with \<open>y \<sharp> Q\<close> QTrans have "y \<sharp> Q'" by(force dest: freshBoundDerivative)
+      with \<open>y' \<sharp> P'\<close> \<open>y' \<noteq> y\<close> show ?thesis by(auto simp add: fresh_left calc_atm fresh_fact1)
     qed
-    ultimately show ?thesis using `y' \<sharp> Q'` apply(simp only: alphaRes)
+    ultimately show ?thesis using \<open>y' \<sharp> Q'\<close> apply(simp only: alphaRes)
       by(auto simp add: name_swap eqvt_subs calc_atm renaming)
   qed
   ultimately show ?thesis by simp
@@ -347,12 +347,12 @@ lemma ResB:
 proof -
   obtain z where "z \<sharp> P" and "z \<sharp> a" and "z \<noteq> y" and "z \<sharp> P'"
     by(generate_fresh "name", auto simp add: fresh_prod)
-  from PTrans `z \<sharp> P'`  have "P \<longmapsto>a\<guillemotleft>z\<guillemotright> \<prec> ([(x, z)] \<bullet> P')" by(simp add: alphaBoundResidual)
-  with `z \<sharp> P` `z \<sharp> a` `z \<noteq> y` `y \<sharp> a` have "<\<nu>y>P \<longmapsto>a\<guillemotleft>z\<guillemotright> \<prec> <\<nu>y>([(x, z)] \<bullet> P')" by(rule_tac ResB) auto
+  from PTrans \<open>z \<sharp> P'\<close>  have "P \<longmapsto>a\<guillemotleft>z\<guillemotright> \<prec> ([(x, z)] \<bullet> P')" by(simp add: alphaBoundResidual)
+  with \<open>z \<sharp> P\<close> \<open>z \<sharp> a\<close> \<open>z \<noteq> y\<close> \<open>y \<sharp> a\<close> have "<\<nu>y>P \<longmapsto>a\<guillemotleft>z\<guillemotright> \<prec> <\<nu>y>([(x, z)] \<bullet> P')" by(rule_tac ResB) auto
   moreover have "a\<guillemotleft>z\<guillemotright> \<prec> <\<nu>y>([(x, z)] \<bullet> P') = a\<guillemotleft>x\<guillemotright> \<prec> <\<nu>y>P'"
   proof -
-    from `z \<sharp> P'` `y \<noteq> x` have "x \<sharp> <\<nu>y>([(x, z)] \<bullet> P')" by(auto simp add: abs_fresh fresh_left calc_atm)
-    with `y \<noteq> x` `z \<noteq> y` show ?thesis by(simp add: alphaBoundResidual name_swap calc_atm)
+    from \<open>z \<sharp> P'\<close> \<open>y \<noteq> x\<close> have "x \<sharp> <\<nu>y>([(x, z)] \<bullet> P')" by(auto simp add: abs_fresh fresh_left calc_atm)
+    with \<open>y \<noteq> x\<close> \<open>z \<noteq> y\<close> show ?thesis by(simp add: alphaBoundResidual name_swap calc_atm)
   qed
   ultimately show ?thesis by simp
 qed
@@ -409,7 +409,7 @@ lemma inputInduct[consumes 2, case_names Input Match Mismatch Sum1 Sum2 Par1 Par
                                      F C (!P) a x P'"
   shows "F C P a x P'"
 proof -
-  from a `x \<sharp> P` show ?thesis
+  from a \<open>x \<sharp> P\<close> show ?thesis
   proof(nominal_induct x2 == "a<x> \<prec> P'" avoiding: C a x P' rule: transitions.strong_induct)
     case(Tau P)
     thus ?case by(simp add: residualInject)
@@ -455,25 +455,25 @@ proof -
       from Eq xineqx' have "(P' \<parallel> Q) = [(x, x')] \<bullet> P''"
         by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P' \<parallel> Q)) = P''" by simp
-      with `x' \<sharp> Q``x \<sharp> Q` show ?thesis by(simp add: name_fresh_fresh)
+      with \<open>x' \<sharp> Q\<close>\<open>x \<sharp> Q\<close> show ?thesis by(simp add: name_fresh_fresh)
     qed
     
     have "x \<sharp> P''" by fact
-    with P''eq `x \<noteq> x'` have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc)
+    with P''eq \<open>x \<noteq> x'\<close> have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc)
     
     have PTrans: "P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P'" by fact
-    with `x' \<sharp> P'` aeqa' have "P \<longmapsto>a'<x'> \<prec> ([(x, x')] \<bullet> P')"
+    with \<open>x' \<sharp> P'\<close> aeqa' have "P \<longmapsto>a'<x'> \<prec> ([(x, x')] \<bullet> P')"
       by(simp add: alphaBoundResidual)
     moreover have "\<And>C. F C P a' x' ([(x, x')] \<bullet> P')"
     proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
-      moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> ([(x, x')] \<bullet> P')"
+      moreover with aeqa' xineqx' \<open>x' \<sharp> P'\<close> have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> ([(x, x')] \<bullet> P')"
         by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
-      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` by blast 
+      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using \<open>x' \<sharp> P\<close> by blast 
     qed
-    moreover from PTrans `x' \<sharp> P` have "x' \<sharp> a" by(auto dest: freshBoundDerivative)
-    ultimately have "F C (P \<parallel> Q) a' x' (([(x, x')] \<bullet> P') \<parallel> Q)" using `x' \<sharp> Q`aeqa' `x' \<sharp> P`
+    moreover from PTrans \<open>x' \<sharp> P\<close> have "x' \<sharp> a" by(auto dest: freshBoundDerivative)
+    ultimately have "F C (P \<parallel> Q) a' x' (([(x, x')] \<bullet> P') \<parallel> Q)" using \<open>x' \<sharp> Q\<close>aeqa' \<open>x' \<sharp> P\<close>
       by(rule_tac cPar1B) auto
     with P''eq show ?case by simp
   next
@@ -492,25 +492,25 @@ proof -
       from Eq xineqx' have "(P \<parallel> Q') = [(x, x')] \<bullet> Q''"
         by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P \<parallel> Q')) = Q''" by simp
-      with `x' \<sharp> P` `x \<sharp> P` show ?thesis by(simp add: name_fresh_fresh)
+      with \<open>x' \<sharp> P\<close> \<open>x \<sharp> P\<close> show ?thesis by(simp add: name_fresh_fresh)
     qed
     
     have "x \<sharp> Q''" by fact
-    with Q''eq `x \<noteq> x'` have "x' \<sharp> Q'" by(simp add: name_fresh_left name_calc)
+    with Q''eq \<open>x \<noteq> x'\<close> have "x' \<sharp> Q'" by(simp add: name_fresh_left name_calc)
     
     have QTrans: "Q \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> Q'" by fact
-    with `x' \<sharp> Q'` aeqa' have "Q \<longmapsto>a'<x'> \<prec> ([(x, x')] \<bullet> Q')"
+    with \<open>x' \<sharp> Q'\<close> aeqa' have "Q \<longmapsto>a'<x'> \<prec> ([(x, x')] \<bullet> Q')"
       by(simp add: alphaBoundResidual)
     moreover have "\<And>C. F C Q a' x' ([(x, x')] \<bullet> Q')"
     proof -
       fix C
       have "\<And>C a' x' Q''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<x'> \<prec> Q''; x' \<sharp> Q\<rbrakk> \<Longrightarrow> F C Q a' x' Q''" by fact
-      moreover with aeqa' xineqx' `x' \<sharp> Q'` have "a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<x'> \<prec> ([(x, x')] \<bullet> Q')"
+      moreover with aeqa' xineqx' \<open>x' \<sharp> Q'\<close> have "a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<x'> \<prec> ([(x, x')] \<bullet> Q')"
         by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
-      ultimately show "F C Q a' x' ([(x, x')] \<bullet> Q')" using `x' \<sharp> Q`aeqa' by blast 
+      ultimately show "F C Q a' x' ([(x, x')] \<bullet> Q')" using \<open>x' \<sharp> Q\<close>aeqa' by blast 
     qed
-    moreover from QTrans `x' \<sharp> Q` have "x' \<sharp> a" by(force dest: freshBoundDerivative)
-    ultimately have "F C (P \<parallel> Q) a' x' (P \<parallel> ([(x, x')] \<bullet> Q'))" using `x' \<sharp> P` aeqa' `x' \<sharp> Q`
+    moreover from QTrans \<open>x' \<sharp> Q\<close> have "x' \<sharp> a" by(force dest: freshBoundDerivative)
+    ultimately have "F C (P \<parallel> Q) a' x' (P \<parallel> ([(x, x')] \<bullet> Q'))" using \<open>x' \<sharp> P\<close> aeqa' \<open>x' \<sharp> Q\<close>
       by(rule_tac cPar2B) auto
     with Q''eq show ?case by simp
   next
@@ -543,22 +543,22 @@ proof -
       from Eq xineqx' have "<\<nu>y>P' = [(x, x')] \<bullet> P''"
         by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (<\<nu>y>P')) = P''" by simp
-      with yineqx' `y \<noteq> x` show ?thesis by(simp add: name_fresh_fresh)
+      with yineqx' \<open>y \<noteq> x\<close> show ?thesis by(simp add: name_fresh_fresh)
     qed
     
     have "x \<sharp> P''" by fact
-    with P''eq `y \<noteq> x` `x \<noteq> x'` have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc name_fresh_abs)
+    with P''eq \<open>y \<noteq> x\<close> \<open>x \<noteq> x'\<close> have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc name_fresh_abs)
     
     have "P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P'" by fact
-    with `x' \<sharp> P'` aeqa' have "P \<longmapsto>a'<x'> \<prec> ([(x, x')] \<bullet> P')"
+    with \<open>x' \<sharp> P'\<close> aeqa' have "P \<longmapsto>a'<x'> \<prec> ([(x, x')] \<bullet> P')"
       by(simp add: alphaBoundResidual)
     moreover have "\<And>C. F C P a' x' ([(x, x')] \<bullet> P')"
     proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
-      moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> ([(x, x')] \<bullet> P')"
+      moreover with aeqa' xineqx' \<open>x' \<sharp> P'\<close> have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<x'> \<prec> ([(x, x')] \<bullet> P')"
         by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
-      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` aeqa' by blast 
+      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using \<open>x' \<sharp> P\<close> aeqa' by blast 
     qed
     ultimately have "F C (<\<nu>y>P) a' x' (<\<nu>y>([(x, x')] \<bullet> P'))" using yineqx' yineqa yFreshC aeqa'
       by(force intro: cResB)
@@ -597,7 +597,7 @@ lemma boundOutputInduct[consumes 2, case_names Match Mismatch Open Sum1 Sum2 Par
                                      F C (!P) a x P'"
   shows "F C P a x P'"
 proof -
-  from a `x \<sharp> P` show ?thesis
+  from a \<open>x \<sharp> P\<close> show ?thesis
   proof(nominal_induct x2 == "a<\<nu>x> \<prec> P'" avoiding: C a x P' rule: transitions.strong_induct)
     case(Tau P)
     thus ?case by(simp add: residualInject)
@@ -632,12 +632,12 @@ proof -
     have aineqb: "a \<noteq> b" by fact
     
     have PTrans: "P \<longmapsto>a[b] \<prec> P'" by fact
-    with `x \<sharp> P` have xineqa: "x \<noteq> a" by(force dest: freshFreeDerivative)
+    with \<open>x \<sharp> P\<close> have xineqa: "x \<noteq> a" by(force dest: freshFreeDerivative)
     from PTrans have "([(b, x)] \<bullet> P) \<longmapsto>[(b, x)] \<bullet> (a[b] \<prec> P')" by(rule transitions.eqvt)
     with P'eqP'' xineqa aineqb have Trans: "([(b, x)] \<bullet> P) \<longmapsto>a[x] \<prec> P''"
       by(auto simp add: name_calc)
     hence "F C (<\<nu>x>([(b, x)] \<bullet> P)) a x P''" using xineqa by(blast intro: cOpen)
-    with `x \<sharp> P` aeqa' show ?case by(simp add: alphaRes)
+    with \<open>x \<sharp> P\<close> aeqa' show ?case by(simp add: alphaRes)
   next
     case(Par1B P a x P' Q C a' x' P'')
     have "x \<sharp> x'" by fact hence xineqx': "x \<noteq> x'" by simp
@@ -651,24 +651,24 @@ proof -
       from Eq xineqx' have "(P' \<parallel> Q) = [(x, x')] \<bullet> P''"
         by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P' \<parallel> Q)) = P''" by simp
-      with `x' \<sharp> Q``x \<sharp> Q` show ?thesis by(simp add: name_fresh_fresh)
+      with \<open>x' \<sharp> Q\<close>\<open>x \<sharp> Q\<close> show ?thesis by(simp add: name_fresh_fresh)
     qed
     
     have "x \<sharp> P''" by fact
-    with P''eq `x \<noteq> x'` have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc)
+    with P''eq \<open>x \<noteq> x'\<close> have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc)
 
     have "P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P'" by fact
-    with `x' \<sharp> P'` aeqa' have "P \<longmapsto>a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
+    with \<open>x' \<sharp> P'\<close> aeqa' have "P \<longmapsto>a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
       by(simp add: alphaBoundResidual)
     moreover have "\<And>C. F C P a' x' ([(x, x')] \<bullet> P')"
     proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
-      moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
+      moreover with aeqa' xineqx' \<open>x' \<sharp> P'\<close> have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
         by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
-      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` aeqa' by blast 
+      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using \<open>x' \<sharp> P\<close> aeqa' by blast 
     qed
-    ultimately have "F C (P \<parallel> Q) a' x' (([(x, x')] \<bullet> P') \<parallel> Q)" using `x' \<sharp> Q`aeqa'
+    ultimately have "F C (P \<parallel> Q) a' x' (([(x, x')] \<bullet> P') \<parallel> Q)" using \<open>x' \<sharp> Q\<close>aeqa'
       by(blast intro: cPar1B)
     with P''eq show ?case by simp
   next
@@ -687,24 +687,24 @@ proof -
       from Eq xineqx' have "(P \<parallel> Q') = [(x, x')] \<bullet> Q''"
         by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (P \<parallel> Q')) = Q''" by simp
-      with `x' \<sharp> P` `x \<sharp> P` show ?thesis by(simp add: name_fresh_fresh)
+      with \<open>x' \<sharp> P\<close> \<open>x \<sharp> P\<close> show ?thesis by(simp add: name_fresh_fresh)
     qed
     
     have "x \<sharp> Q''" by fact
-    with Q''eq `x \<noteq> x'` have "x' \<sharp> Q'" by(simp add: name_fresh_left name_calc)
+    with Q''eq \<open>x \<noteq> x'\<close> have "x' \<sharp> Q'" by(simp add: name_fresh_left name_calc)
 
     have "Q \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> Q'" by fact
-    with `x' \<sharp> Q'` aeqa' have "Q \<longmapsto>a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> Q')"
+    with \<open>x' \<sharp> Q'\<close> aeqa' have "Q \<longmapsto>a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> Q')"
       by(simp add: alphaBoundResidual)
     moreover have "\<And>C. F C Q a' x' ([(x, x')] \<bullet> Q')"
     proof -
       fix C
       have "\<And>C a' x' Q''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<\<nu>x'> \<prec> Q''; x' \<sharp> Q\<rbrakk> \<Longrightarrow> F C Q a' x' Q''" by fact
-      moreover with aeqa' xineqx' `x' \<sharp> Q'` have "a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> Q')"
+      moreover with aeqa' xineqx' \<open>x' \<sharp> Q'\<close> have "a\<guillemotleft>x\<guillemotright> \<prec> Q' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> Q')"
         by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
-      ultimately show "F C Q a' x' ([(x, x')] \<bullet> Q')" using `x' \<sharp> Q`aeqa' by blast 
+      ultimately show "F C Q a' x' ([(x, x')] \<bullet> Q')" using \<open>x' \<sharp> Q\<close>aeqa' by blast 
     qed
-    ultimately have "F C (P \<parallel> Q) a' x' (P \<parallel> ([(x, x')] \<bullet> Q'))" using `x' \<sharp> P`
+    ultimately have "F C (P \<parallel> Q) a' x' (P \<parallel> ([(x, x')] \<bullet> Q'))" using \<open>x' \<sharp> P\<close>
       by(blast intro: cPar2B)
     with Q''eq show ?case by simp
   next
@@ -737,24 +737,24 @@ proof -
       from Eq xineqx' have "<\<nu>y>P' = [(x, x')] \<bullet> P''"
         by(simp add: residualInject name_abs_eq)
       hence "([(x, x')] \<bullet> (<\<nu>y>P')) = P''" by simp
-      with yineqx' `y \<noteq> x` show ?thesis by(simp add: name_fresh_fresh)
+      with yineqx' \<open>y \<noteq> x\<close> show ?thesis by(simp add: name_fresh_fresh)
     qed
 
     have "x \<sharp> P''" by fact
-    with P''eq `y \<noteq> x` `x \<noteq> x'` have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc name_fresh_abs)
+    with P''eq \<open>y \<noteq> x\<close> \<open>x \<noteq> x'\<close> have "x' \<sharp> P'" by(simp add: name_fresh_left name_calc name_fresh_abs)
 
     have "P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> P'" by fact
-    with `x' \<sharp> P'` aeqa' have "P \<longmapsto>a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
+    with \<open>x' \<sharp> P'\<close> aeqa' have "P \<longmapsto>a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
       by(simp add: alphaBoundResidual)
     moreover have "\<And>C. F C P a' x' ([(x, x')] \<bullet> P')"
     proof -
       fix C
       have "\<And>C a' x' P''. \<lbrakk>a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> P''; x' \<sharp> P\<rbrakk> \<Longrightarrow> F C P a' x' P''" by fact
-      moreover with aeqa' xineqx' `x' \<sharp> P'` have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
+      moreover with aeqa' xineqx' \<open>x' \<sharp> P'\<close> have "a\<guillemotleft>x\<guillemotright> \<prec> P' = a'<\<nu>x'> \<prec> ([(x, x')] \<bullet> P')"
         by(simp add: residualInject name_abs_eq name_fresh_left name_calc)
-      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using `x' \<sharp> P` aeqa' by blast 
+      ultimately show "F C P a' x' ([(x, x')] \<bullet> P')" using \<open>x' \<sharp> P\<close> aeqa' by blast 
     qed
-    ultimately have "F C (<\<nu>y>P) a' x' (<\<nu>y>([(x, x')] \<bullet> P'))" using yineqx' `y \<sharp> a` yFreshC aeqa'
+    ultimately have "F C (<\<nu>y>P) a' x' (<\<nu>y>([(x, x')] \<bullet> P'))" using yineqx' \<open>y \<sharp> a\<close> yFreshC aeqa'
       by(force intro: cResB)
     with P''eq show ?case by simp
   next
@@ -898,7 +898,7 @@ lemma inputCases[consumes 4, case_names cInput]:
   shows "Prop b y yP'"
 proof -
   note assms
-  moreover from Input `y \<noteq> a` `y \<noteq> x` `y \<sharp> P` have "y \<sharp> b"
+  moreover from Input \<open>y \<noteq> a\<close> \<open>y \<noteq> x\<close> \<open>y \<sharp> P\<close> have "y \<sharp> b"
     by(force dest: freshBoundDerivative simp add: abs_fresh)
   moreover obtain z::name where "z \<noteq> y" and "z \<noteq> x" and "z \<sharp> P" and "z \<noteq> a" and "z \<sharp> b" and "z \<sharp> yP'" 
     by(generate_fresh "name", auto simp add: fresh_prod)
@@ -1212,7 +1212,7 @@ lemma parCasesB[consumes 3, case_names cPar1 cPar2]:
   shows "Prop PQ'"
 proof -
   note assms
-  moreover from `P \<parallel> Q \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> PQ'` `x \<sharp> P` `x \<sharp> Q` have "x \<sharp> a"
+  moreover from \<open>P \<parallel> Q \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> PQ'\<close> \<open>x \<sharp> P\<close> \<open>x \<sharp> Q\<close> have "x \<sharp> a"
     by(force dest: freshBoundDerivative)
   moreover obtain y::name where "y \<noteq> x" and "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> a" and "y \<sharp> PQ'" 
     by(generate_fresh "name", auto simp add: fresh_prod)
@@ -1269,7 +1269,7 @@ lemma resCasesF[consumes 1, case_names cRes]:
   shows "F xP'"
 proof -
   note assms
-  moreover from `<\<nu>x>P \<longmapsto>\<alpha> \<prec> xP'` have "x \<sharp> \<alpha>" and "x \<sharp> xP'"
+  moreover from \<open><\<nu>x>P \<longmapsto>\<alpha> \<prec> xP'\<close> have "x \<sharp> \<alpha>" and "x \<sharp> xP'"
     by(force dest: freshFreeDerivative simp add: abs_fresh)+
   moreover obtain y::name where "y \<noteq> x" and "y \<sharp> P" and "y \<sharp> \<alpha>" and "y \<sharp> xP'" 
     by(generate_fresh "name", auto simp add: fresh_prod)
@@ -1298,9 +1298,9 @@ lemma resCasesB[consumes 3, case_names cOpen cRes]:
   shows "F a yP'"
 proof -
   note assms
-  moreover from `<\<nu>y>P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> yP'` `x \<noteq> y` have "y \<sharp> a" and "y \<sharp> yP'"
+  moreover from \<open><\<nu>y>P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> yP'\<close> \<open>x \<noteq> y\<close> have "y \<sharp> a" and "y \<sharp> yP'"
     by(force dest: freshBoundDerivative simp add: abs_fresh)+
-  moreover from  `<\<nu>y>P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> yP'` `x \<sharp> P` have "x \<sharp> a"
+  moreover from  \<open><\<nu>y>P \<longmapsto>a\<guillemotleft>x\<guillemotright> \<prec> yP'\<close> \<open>x \<sharp> P\<close> have "x \<sharp> a"
     by(force dest: freshBoundDerivative simp add: abs_fresh)+
   moreover obtain z::name where "z \<noteq> y" and "z \<noteq> x" and "z \<sharp> P" and "z \<sharp> a" and "z \<sharp> yP'" 
     by(generate_fresh "name", auto simp add: fresh_prod)

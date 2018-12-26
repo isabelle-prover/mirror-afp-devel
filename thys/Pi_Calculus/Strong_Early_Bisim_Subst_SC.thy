@@ -106,7 +106,7 @@ lemma scopeExtPar:
 
   shows "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>e P \<parallel> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>l P \<parallel> <\<nu>x>Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar)
+  from \<open>x \<sharp> P\<close> have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>l P \<parallel> <\<nu>x>Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar)
   thus ?thesis by(rule lateEarlyCong)
 qed
 
@@ -119,7 +119,7 @@ lemma scopeExtPar':
 
   shows "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>e (<\<nu>x>P) \<parallel> Q"
 proof -
-  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>l (<\<nu>x>P) \<parallel> Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar')
+  from \<open>x \<sharp> Q\<close> have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sup>s\<^sub>l (<\<nu>x>P) \<parallel> Q" by(rule Strong_Late_Bisim_Subst_SC.scopeExtPar')
   thus ?thesis by(rule lateEarlyCong)
 qed
 

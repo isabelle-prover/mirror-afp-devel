@@ -1,4 +1,4 @@
-section {* Monad-Zero-Plus Class *}
+section \<open>Monad-Zero-Plus Class\<close>
 
 theory Monad_Zero_Plus
 imports Monad_Zero Monad_Plus

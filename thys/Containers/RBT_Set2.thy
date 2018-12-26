@@ -6,7 +6,7 @@ imports
   RBT_Mapping2
 begin
 
-section {* Sets implemented by red-black trees *}
+section \<open>Sets implemented by red-black trees\<close>
 
 lemma map_of_map_Pair_const:
   "map_of (map (\<lambda>x. (x, v)) xs) = (\<lambda>x. if x \<in> set xs then Some v else None)"
@@ -129,7 +129,7 @@ done
 
 end
 
-subsection {* Type and operations *}
+subsection \<open>Type and operations\<close>
 
 type_synonym 'a set_rbt = "('a, unit) mapping_rbt"
 
@@ -139,7 +139,7 @@ translations
 abbreviation (input) Set_RBT :: "('a :: ccompare, unit) RBT_Impl.rbt \<Rightarrow> 'a set_rbt"
 where "Set_RBT \<equiv> Mapping_RBT"
 
-subsection {* Primitive operations *}
+subsection \<open>Primitive operations\<close>
 
 lift_definition member :: "'a :: ccompare set_rbt \<Rightarrow> 'a \<Rightarrow> bool" is
   "\<lambda>t x. x \<in> dom (rbt_comp_lookup ccomp t)" .
@@ -198,7 +198,7 @@ where "Id_on \<equiv> RBT_Mapping2.diag"
 abbreviation init :: "'a :: ccompare set_rbt \<Rightarrow> ('a, unit, 'a) rbt_generator_state"
 where "init \<equiv> RBT_Mapping2.init"
 
-subsection {* Properties *}
+subsection \<open>Properties\<close>
 
 lemma member_empty [simp]:
   "member empty = (\<lambda>_. False)"

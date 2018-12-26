@@ -1,11 +1,11 @@
-section {* Introduction *}
+section \<open>Introduction\<close>
 (*<*) 
 theory Lam_ml
 imports "HOL-Nominal.Nominal" "HOL-Library.LaTeXsugar"
 begin (*>*)
-text_raw {* \label{chap:formal} *}
+text_raw \<open>\label{chap:formal}\<close>
 
-text {* This article contains a formalization of the strong normalization
+text \<open>This article contains a formalization of the strong normalization
 theorem for the $\lambda_{ml}$-calculus. The formalization is based on a proof
 by Lindley and Stark \cite{TT-lifting}. An informal description of the
 formalization can be found in \cite{Doczkal:09}.
@@ -20,10 +20,10 @@ substitution. Section~\ref{sec:reduction} contains the formalization of the
 reduction relation. Section~\ref{sec:stacks} defines stacks which are used to
 define the reducibility relation in Section~\ref{sec:reducibility-formal}. The
 following sections contain proofs about the reducibility relation, ending with
-the normalization theorem in Section~\ref{sec:FTLR}. *}
+the normalization theorem in Section~\ref{sec:FTLR}.\<close>
 
-section {* The Calculus *}
-text_raw {* \label{sec:calc} *}
+section \<open>The Calculus\<close>
+text_raw \<open>\label{sec:calc}\<close>
 
 atom_decl name
 
@@ -51,18 +51,18 @@ proof -
     by(auto simp add: alpha perm_swap name_swap_bij fresh_bij)
 qed
 
-text {* Even though our types do not involve binders, we still need to formalize
+text \<open>Even though our types do not involve binders, we still need to formalize
 them as nominal datatypes to obtain a permutation action. This is required to
-establish equivariance of the typing relation. *}
+establish equivariance of the typing relation.\<close>
 
 nominal_datatype ty =
     TBase
   | TFun "ty" "ty" (infix "\<rightarrow>" 200)
   | T "ty" 
 
-text{* Since we cannot use typed variables, we have to formalize typing
+text\<open>Since we cannot use typed variables, we have to formalize typing
 contexts. Typing contexts are formalized as lists. A context is \textit{valid}
-if no name occurs twice. *}
+if no name occurs twice.\<close>
 
 inductive 
   valid :: "(name\<times>ty) list \<Rightarrow> bool"
@@ -96,11 +96,11 @@ equivariance typing
 nominal_inductive typing 
   by(simp_all add: abs_fresh fresh_ty)
 
-text {* Except for the explicit requirement that contexts be valid in the
+text \<open>Except for the explicit requirement that contexts be valid in the
 variable case and the freshness requirements in \isa{t3} and \isa{t5}, this
 typing
 relation is a direct translation of the original typing relation in
-\cite{TT-lifting} to Curry-style typing. *}
+\cite{TT-lifting} to Curry-style typing.\<close>
 
 fun
   lookup :: "(name\<times>trm) list \<Rightarrow> name \<Rightarrow> trm"   
@@ -184,9 +184,9 @@ lemma id_subs:
   shows "t[x::=Var x] = t"
 by(nominal_induct t avoiding: x rule:trm.strong_induct) auto
 
-text {* In addition to the facts on simple substitution we also need some facts
+text \<open>In addition to the facts on simple substitution we also need some facts
 on parallel substitution. In particular we want to be able to extend a parallel
-substitution with a simple one. *}
+substitution with a simple one.\<close>
 
 lemma lookup_fresh:
   fixes z::"name"
@@ -219,10 +219,10 @@ by(nominal_induct t avoiding: \<theta> x s rule: trm.strong_induct)
     (auto simp add: fresh_list_cons fresh_atm forget 
       lookup_fresh lookup_fresh' fresh_prod psubst_fresh_fact)
 
-section {* The Reduction Relation *}
-text_raw {* \label{sec:reduction} *}
+section \<open>The Reduction Relation\<close>
+text_raw \<open>\label{sec:reduction}\<close>
 
-text {* With substitution in place, we can now define the reduction relation on
+text \<open>With substitution in place, we can now define the reduction relation on
 $\lambda_{ml}$-terms. To derive strong induction and case rules, all the rules
 must be vc-compatible (cf. \cite{nominal-techniques}). This requires some
 additional freshness conditions. Note that in this particular case the
@@ -235,7 +235,7 @@ relations.
 This requires quite some effort and is something that is certainly undesirable
 in nominal reasoning. Unfortunately, handling the reduction rule \isa{r10} which
 rearranges the binding structure, appeared to be impossible without going
-through this. *}
+through this.\<close>
 
 
 inductive std_reduction :: "trm \<Rightarrow> trm \<Rightarrow> bool" ("_ \<leadsto> _" [80,80] 80)
@@ -277,11 +277,11 @@ nominal_inductive reduction
   by(auto simp add: abs_fresh fresh_fact' fresh_prod fresh_atm)
 
 
-text {* In order to show adequacy, the extra freshness conditions in the rules
+text \<open>In order to show adequacy, the extra freshness conditions in the rules
 \isa{r3}, \isa{r6}, \isa{r7}, \isa{r8}, \isa{r9}, and \isa{r10} need to be
-discharged. *}
+discharged.\<close>
 
-text_raw {* \label{pg:alpha-begin} *}
+text_raw \<open>\label{pg:alpha-begin}\<close>
 
 lemma r3'[intro!]: "App (\<Lambda> x . t) s \<mapsto> t[x::=s]"
 proof -
@@ -358,13 +358,13 @@ proof -
 qed
 declare r9[rule del]
 
-text {* While discharging these freshness conditions is easy for rules involving
+text \<open>While discharging these freshness conditions is easy for rules involving
 only one binder it unfortunately becomes quite tedious for the assoc rule
 \isa{r10}. This is due to the complex binding structure of this rule which
 includes \textit{four} binding occurrences of two different names. Furthermore,
 the binding structure changes from the left to the right: On the left hand
 side, $x$ is only bound in $t$, whereas on the right hand side the scope of $x$
-extends over the whole term @{term "(t to y in u)"}.  *}
+extends over the whole term @{term "(t to y in u)"}.\<close>
 
 lemma r10'[intro!]: 
   assumes xf: "x \<sharp> y"   "x \<sharp> u"
@@ -382,13 +382,13 @@ proof -
   from x y have yaux: "y' \<sharp> [(x, x')] \<bullet> t"
     by(simp add: fresh_left perm_fresh_fresh fresh_atm)
    have "(s to x in t) to y in u = (s to x in t) to y' in ([(y,y')] \<bullet> u)"
-    using `y' \<sharp> u` by (simp add: alpha'')
+    using \<open>y' \<sharp> u\<close> by (simp add: alpha'')
   also have "\<dots> = (s to x' in ([(x,x')] \<bullet> t)) to y' in ([(y,y')] \<bullet> u)"
-    using `x' \<sharp> t` by (simp add: alpha'')
+    using \<open>x' \<sharp> t\<close> by (simp add: alpha'')
   also have "\<dots> \<mapsto> s to x' in (([(x,x')] \<bullet> t) to y' in ([(y,y')] \<bullet> u))"
     using x y yaux by (auto simp add: fresh_prod) 
   also have " \<dots> = s to x' in (([(x,x')] \<bullet> t) to y in u)"
-    using `y' \<sharp> u` by (simp add: abs_fun_eq1 alpha'')
+    using \<open>y' \<sharp> u\<close> by (simp add: abs_fun_eq1 alpha'')
   also have "\<dots> = s to x in (t to y in u)"
   proof (subst trm.inject)
     from xf x have swap: "[(x,x')] \<bullet> y = y"   "[(x,x')] \<bullet> u = u " 
@@ -400,17 +400,17 @@ proof -
 qed
 declare r10[rule del]
 
-text_raw {* \label{pg:alpha-end} *}
+text_raw \<open>\label{pg:alpha-end}\<close>
 
-text {* Since now all the introduction rules of the vc-compatible reduction
+text \<open>Since now all the introduction rules of the vc-compatible reduction
 relation exactly match their standard counterparts, both directions of the
-adequacy proof are trivial inductions. *}
+adequacy proof are trivial inductions.\<close>
 
 theorem adequacy: "s \<mapsto> t = s \<leadsto> t"
 by (auto elim:reduction.induct std_reduction.induct)
 
-text {* Next we show that the reduction relation preserves freshness and is in
-turn preserved under substitution. *}
+text \<open>Next we show that the reduction relation preserves freshness and is in
+turn preserved under substitution.\<close>
 
 lemma reduction_fresh: 
   fixes x::"name"
@@ -431,10 +431,10 @@ by(nominal_induct t t' avoiding: x v rule: reduction.strong_induct)
 (*section {* Strong Normalization *}
 text_raw {* \label{sec:SN-formal} *} *)
 
-text {* Following \cite{SN.thy}, we use an inductive variant of strong
+text \<open>Following \cite{SN.thy}, we use an inductive variant of strong
 normalization, as it allows for inductive proofs on terms being strongly
 normalizing, without establishing that
-the reduction relation is finitely branching. *}   
+the reduction relation is finitely branching.\<close>   
 
 
 inductive 
@@ -507,15 +507,15 @@ unfolding NORMAL_def by (auto elim: reduction.cases)
 lemma normal_implies_sn : "NORMAL s \<Longrightarrow> SN s"
 unfolding NORMAL_def by(auto intro: SN_intro)
 
-section {* Stacks *}
-text_raw {* \label{sec:stacks} *}
+section \<open>Stacks\<close>
+text_raw \<open>\label{sec:stacks}\<close>
 
-text{* As explained in \cite{TT-lifting}, the monadic type structure of
+text\<open>As explained in \cite{TT-lifting}, the monadic type structure of
 the $\lambda_{ml}$-calculus does not lend itself to an easy definition of a
 logical relation along the type structure of the calculus. Therefore, we need to
 introduce stacks as an auxiliary notion to handle the monadic type constructor
 $T$. Stacks can be thought of as lists of term abstractions @{term "[x].t"}. The
-notation for stacks is chosen with this resemblance in mind.  *}
+notation for stacks is chosen with this resemblance in mind.\<close>
 
 nominal_datatype stack = Id | St "\<guillemotleft>name\<guillemotright>trm" "stack" ("[_]_\<ggreater>_")
 
@@ -532,12 +532,12 @@ where
 by(finite_guess+,auto simp add: fresh_nat,fresh_guess)
 
 
-text{* Together with the stack datatype, we introduce the notion of dismantling
+text\<open>Together with the stack datatype, we introduce the notion of dismantling
 a term onto a stack. Unfortunately, the dismantling operation has no easy
 primitive recursive formulation. The Nominal package, however, only provides a
 recursion combinator for primitive recursion. This means that for dismantling
 one has to prove pattern completeness, right uniqueness, and termination
-explicitly. *}
+explicitly.\<close>
 
 function
   dismantle :: "trm \<Rightarrow> stack \<Rightarrow> trm" ("_ \<star> _" [160,160] 160)
@@ -569,9 +569,9 @@ qed (simp_all add: stack.inject) \<comment> \<open>all other cases are trivial\<
 termination dismantle
 by(relation "measure (\<lambda>(t,K). |K| )")(auto)
 
-text{* Like all our constructions, dismantling is equivariant. Also, freshness
+text\<open>Like all our constructions, dismantling is equivariant. Also, freshness
 can be pushed over dismantling, and the freshness requirement in the second
-defining equation is not needed *}
+defining equation is not needed\<close>
 
 lemma dismantle_eqvt[eqvt]:
   fixes pi :: "(name \<times> name) list"
@@ -599,9 +599,9 @@ proof -
 qed
 
 
-text {* We also need a notion of reduction on stacks. This reduction relation
+text \<open>We also need a notion of reduction on stacks. This reduction relation
 allows us to define strong normalization not only for terms but also for stacks
-and is needed to prove the properties of the logical relation later on. *}
+and is needed to prove the properties of the logical relation later on.\<close>
 
 definition stack_reduction :: "stack \<Rightarrow> stack \<Rightarrow> bool" (" _ \<mapsto> _ ")
 where
@@ -628,8 +628,8 @@ using r
 by (nominal_induct k avoiding: m m' rule:stack.strong_induct) auto
 
 
-text {* Next we define a substitution operation for stacks. The main purpose of
-this is to distribute substitution over dismantling. *}
+text \<open>Next we define a substitution operation for stacks. The main purpose of
+this is to distribute substitution over dismantling.\<close>
 
 nominal_primrec
   ssubst :: "name \<Rightarrow> trm \<Rightarrow> stack \<Rightarrow> stack" 
@@ -658,13 +658,13 @@ lemma subst_dismantle[simp]: "(t \<star> k)[x ::= v] = (t[x::=v]) \<star> ssubst
 by(nominal_induct k avoiding: t x v  rule: stack.strong_induct)
   (auto simp add: ssubst_fresh fresh_prod fresh_fact)
 
-section {* Reducibility for Terms and Stacks *}
-text_raw {* \label{sec:reducibility-formal} *}
+section \<open>Reducibility for Terms and Stacks\<close>
+text_raw \<open>\label{sec:reducibility-formal}\<close>
 
-text {* Following \cite{SN.thy}, we formalize the logical relation as a function
+text \<open>Following \cite{SN.thy}, we formalize the logical relation as a function
 @{term "RED"} of type @{typ "ty \<Rightarrow> trm set"} for the term part and accordingly
 @{term SRED} of type @{typ "ty \<Rightarrow> stack set"} for the stack part of the logical
-relation. *}
+relation.\<close>
 
 lemma ty_exhaust: "ty = TBase \<or> (\<exists> \<sigma> \<tau> . ty = \<sigma> \<rightarrow> \<tau>) \<or> (\<exists> \<sigma> . ty = T \<sigma>)"
 by(induct ty rule:ty.induct) (auto)
@@ -679,11 +679,11 @@ where
 by(auto simp add: ty.inject, case_tac x rule: sum.exhaust,insert ty_exhaust)
   (blast)+
 
-text {* This is the second non-primitive function in the formalization. Since
+text \<open>This is the second non-primitive function in the formalization. Since
 types do not involve binders, pattern completeness and right uniqueness are
 mostly trivial. The termination argument is not as simple as for the dismantling
 function, because the definiton of @{term "SRED \<tau>"} involves a recursive call to
-@{term "RED \<tau>"} without reducing the size of @{term "\<tau>"}. *}
+@{term "RED \<tau>"} without reducing the size of @{term "\<tau>"}.\<close>
 
 nominal_primrec
   tsize :: "ty \<Rightarrow> nat"
@@ -693,20 +693,20 @@ where
   | "tsize (T \<tau>) = 1 + tsize \<tau>"
 by (rule TrueI)+
 
-text {* In the termination argument below, @{term "Inl \<tau>"} corresponds to the
+text \<open>In the termination argument below, @{term "Inl \<tau>"} corresponds to the
 call @{term "RED \<tau>"}, whereas @{term "Inr \<tau>"}  corresponds to @{term "SRED \<tau>"}
-*}
+\<close>
 
 termination RED
 by(relation "measure 
     (\<lambda> x . case x of Inl \<tau> \<Rightarrow> 2 * tsize \<tau> 
                       | Inr \<tau> \<Rightarrow> 2 * tsize \<tau> + 1)") (auto)
 
-section {* Properties of the Reducibility Relation *}
+section \<open>Properties of the Reducibility Relation\<close>
 
-text {* After defining the logical relations we need to prove that the relation
+text \<open>After defining the logical relations we need to prove that the relation
 implies strong normalization, is preserved under reduction, and satisfies the
-head expansion property. *}
+head expansion property.\<close>
 
 definition NEUT :: "trm \<Rightarrow> bool"
 where
@@ -796,22 +796,22 @@ proof -
   then show "SN t" by blast
 qed
 
-text {* The lemma above is a simplified version of the one used in
+text \<open>The lemma above is a simplified version of the one used in
 \cite{SN.thy}. Since we have generalized our notion of reduction from terms to
 stacks, we can also generalize the notion of strong normalization. The new
 induction principle will be used to prove the @{term "T"} case of the
-properties of the reducibility relation. *}
+properties of the reducibility relation.\<close>
 
 inductive 
   SSN :: "stack \<Rightarrow> bool"
 where
   SSN_intro: "(\<And> k' . k \<mapsto> k' \<Longrightarrow> SSN k') \<Longrightarrow> SSN k"
 
-text {* Furthermore, the approach for deriving strong normalization of
+text \<open>Furthermore, the approach for deriving strong normalization of
 subterms from above can be generalized to terms of the form @{term "t \<star> k"}. In
 contrast to the case of applications, @{term "t \<star> k"} does \textit{not} uniquely
 determine @{term t} and @{term k}. Thus, the extraction is a proper relation in
-this case. *}
+this case.\<close>
 
 inductive
   SND_DIS :: "trm \<Rightarrow> stack \<Rightarrow> bool" ("_ \<rhd> _")
@@ -827,7 +827,7 @@ proof -
   thus "SSN k" by blast
 qed
 
-text {* To prove CR1-3, the authors of
+text \<open>To prove CR1-3, the authors of
 \cite{TT-lifting} use a case distinction on the reducts of @{term "t \<star> k"},
 where $t$ is a neutral term and therefore no interaction occurs between $t$ and
 $k$.
@@ -850,14 +850,14 @@ t{\isacharprime}\ {\isasymstar}\ {\isacharquery}k{\isasymrbrakk}\
 k{\isacharprime}{\isasymrbrakk}\ {\isasymLongrightarrow}\ {\isacharquery}P}\\
     }{
     \isa{{\isacharquery}P}}$$%
-\end{isamarkuptext}% *}
+\end{isamarkuptext}%\<close>
 
-text {* We strive for a proof of this rule by structural induction on $k$. The
+text \<open>We strive for a proof of this rule by structural induction on $k$. The
 general idea of the case where @{term "k = [y]n\<ggreater>l"} is to move the first stack
 frame into the term $t$ and then apply the induction hypothesis as a case
 rule. Unfortunately, this term is no longer neutral, so, for the induction to go
 through, we need to generalize the claim to also include the possible
-interactions of non-neutral terms and stacks. *}
+interactions of non-neutral terms and stacks.\<close>
 
 
 lemma dismantle_cases:
@@ -871,15 +871,15 @@ lemma dismantle_cases:
   shows "P"
 using assms
 proof (nominal_induct k avoiding: t r rule:stack.strong_induct)
-  case (St y n L) note  yfresh = `y \<sharp> t` `y \<sharp> r` `y \<sharp> L` 
+  case (St y n L) note  yfresh = \<open>y \<sharp> t\<close> \<open>y \<sharp> r\<close> \<open>y \<sharp> L\<close> 
   note IH = St(4) 
     and T = St(6) and K = St(7) and B = St(8) and A = St(9) 
   thus "P" proof (cases rule:IH[where b="t to y in n" and ba="r"])
     case (2 r') have red: "t to y in n \<mapsto> r'" and r: " r = r' \<star> L" by fact+
-txt {* If @{term "m to y in n"} makes a step we reason by case distinction      
+txt \<open>If @{term "m to y in n"} makes a step we reason by case distinction      
 on the successors of @{term "m to y in n"}. We want to use the strong inversion
 principle for the reduction relation. For this we need that $y$ is fresh for
-@{term "t to y in n"} and $r'$. *}
+@{term "t to y in n"} and $r'$.\<close>
     from yfresh r have y: "y \<sharp>  t to y in n"   "y \<sharp> r'" 
       by (auto simp add: abs_fresh)
     obtain z where z: "z \<noteq> y"   "z \<sharp> r'"   "z \<sharp> t to y in n" 
@@ -895,8 +895,8 @@ principle for the reduction relation. For this we need that $y$ is fresh for
     next
       case (r7 _ _ n') with y have n: "n \<mapsto> n'" and r': "r' = t to y in n'"
         by (auto simp add: alpha)
-      txt {* Since @{term "k = [y]n\<ggreater>L"}, the reduction @{thm n} occurs within
-        the stack $k$. Hence, we need to establish this stack reduction. *}
+      txt \<open>Since @{term "k = [y]n\<ggreater>L"}, the reduction @{thm n} occurs within
+        the stack $k$. Hence, we need to establish this stack reduction.\<close>
       have "[y]n\<ggreater>L \<mapsto> [y]n'\<ggreater>L" unfolding stack_reduction_def
       proof 
         fix u have "u to y in n \<mapsto> u to y in n'" using n .. 
@@ -930,9 +930,9 @@ reduction as well.\<close>
       thus "P" using A[of z y n] r by auto
     qed (insert y, auto)  \<comment> \<open>No other reductions are possible.\<close>
   next 
-    txt {* Next we have to solve the case where a reduction occurs deep within
+    txt \<open>Next we have to solve the case where a reduction occurs deep within
 $L$. We get a reduction of the stack $k$ by moving the first stack frame
-``[y]n'' back to the right hand side of the dismantling operator. *}
+``[y]n'' back to the right hand side of the dismantling operator.\<close>
     case (3 L')
     hence L: "L \<mapsto> L'" and  r: "r = (t to y in n) \<star> L'" by auto
     { fix s from L have  "(s to y in n) \<star> L \<mapsto> (s to y in n) \<star> L'" 
@@ -965,8 +965,8 @@ $L$. We get a reduction of the stack $k$ by moving the first stack frame
   qed (insert St, auto )
 qed auto
 
-text {* Now that we have established the general claim, we can restrict $t$ to
-neutral terms only and drop the cases dealing with possible interactions. *}
+text \<open>Now that we have established the general claim, we can restrict $t$ to
+neutral terms only and drop the cases dealing with possible interactions.\<close>
 
 lemma dismantle_cases'[consumes 2, case_names T K]:
   fixes m :: trm
@@ -987,11 +987,11 @@ using assms by cases (auto)
 lemma SN_Ret: "SN u \<Longrightarrow> SN [u]"
 by(induct rule:SN.induct) (metis SN.intros red_Ret)
 
-text {* All the properties of reducibility are shown simultaneously by induction
+text \<open>All the properties of reducibility are shown simultaneously by induction
 on the type. Lindley and Stark \cite{TT-lifting} only spell out the cases
 dealing with the monadic type constructor $T$. We do the same by reusing the
 proofs from \cite{SN.thy} for the other cases. To shorten the presentation,
-these proofs are omitted *}
+these proofs are omitted\<close>
     
 lemma RED_props: 
   shows "CR1 \<tau>" and "CR2 \<tau>" and "CR3 \<tau>"
@@ -1066,7 +1066,7 @@ next
       } hence "t' \<in> RED (T \<sigma>)"  by (simp del: SRED.simps)
     } thus "CR2 (T \<sigma>)"unfolding CR2_def by blast
   next
-    case 3 from `CR3 \<sigma>` have ih_CR4_\<sigma> : "CR4 \<sigma>" ..
+    case 3 from \<open>CR3 \<sigma>\<close> have ih_CR4_\<sigma> : "CR4 \<sigma>" ..
     { fix t assume t'_red: "\<And> t' . t \<mapsto> t' \<Longrightarrow> t' \<in> RED (T \<sigma>)" 
       and neut_t: "NEUT t"
       { fix k assume k_red: "k \<in> SRED \<sigma>" 
@@ -1102,24 +1102,24 @@ next
   }
 qed
 
-text {* The last case above shows that, once all the reasoning principles have
+text \<open>The last case above shows that, once all the reasoning principles have
 been established, some proofs have a formalization which is amazingly close to
 the informal version. For a direct comparison, the informal proof is presented
-in Figure~\ref{fig:cr3}. *}
+in Figure~\ref{fig:cr3}.\<close>
 
-text_raw {* \input{figureCR3}  *}
+text_raw \<open>\input{figureCR3}\<close>
 
-text {* Now that we have established the properties of the reducibility
+text \<open>Now that we have established the properties of the reducibility
 relation, we need to show that reducibility is preserved by the various term
-constructors. The only nontrivial cases are abstraction and sequencing. *}
+constructors. The only nontrivial cases are abstraction and sequencing.\<close>
 
-section {* Abstraction Preserves Reducibility *}    
+section \<open>Abstraction Preserves Reducibility\<close>    
 
-text {* Once again we could reuse the proofs from \cite{SN.thy}. The proof uses
+text \<open>Once again we could reuse the proofs from \cite{SN.thy}. The proof uses
 the \isa{double-SN} rule and the lemma \isa{red-Lam} below. Unfortunately, this
 time the proofs are not fully identical to the proofs in \cite{SN.thy} because
 we consider $\beta\eta$-reduction rather than $\beta$-reduction only. However,
-the differences are only minor. *}
+the differences are only minor.\<close>
     
 lemma%invisible double_SN_aux:
   assumes a: "SN a"
@@ -1287,9 +1287,9 @@ qed
 qed
 
 
-section {* Sequencing Preserves Reducibility *}
+section \<open>Sequencing Preserves Reducibility\<close>
 
-text {* This section corresponds to the main part of the paper being formalized
+text \<open>This section corresponds to the main part of the paper being formalized
 and as such deserves special attention. In the lambda case one has to formalize
 doing induction on $\max(s) + max(t)$ for two strongly normalizing terms $s$ and
 $t$ (cf. \cite[Section 6.3]{proofs+types}). Above, this was done through a
@@ -1298,12 +1298,12 @@ rule. The central Lemma 7 of Lindley and Stark's paper uses an even more
 complicated induction scheme. They assume terms $p$ and $n$ as well as a stack
 $K$ such that @{term "SN(p)"} and @{term "SN(n[x::=p] \<star> K)"}. The induction is
 then done on $|K| + max(n \star K) + max(p)$. See Figure~\ref{fig:lemma7} in
-for details. *}
+for details.\<close>
 
-text_raw {* \input{figureLemma7} *}
+text_raw \<open>\input{figureLemma7}\<close>
 
 
-text {* Since we have settled for a different characterization of strong
+text \<open>Since we have settled for a different characterization of strong
 normalization, we have to derive an induction principle similar in spirit to the
 \isa{double-SN} rule. 
 
@@ -1315,7 +1315,7 @@ was about 90 lines of Isar code.} Doing induction on the sum above, this is
 necessary to handle the case of a reduction occurring in $K$. We differ
 from \cite{TT-lifting} and establish an induction principle which to some extent
 resembles the lexicographic order on $$(\SN,\mapsto) \times (\SN,\mapsto) \times
-(\N,>)\,.$$ *}
+(\N,>)\,.$$\<close>
 
 lemma triple_induct[consumes 2]: 
   assumes a: "SN (p)"
@@ -1356,10 +1356,10 @@ proof -
 qed
 
 
-text {* Here we strengthen the case rule for terms of the form @{term "t \<star> k \<mapsto>
+text \<open>Here we strengthen the case rule for terms of the form @{term "t \<star> k \<mapsto>
 r"}. The freshness requirements on $x$,$y$, and $z$
 correspond to those for the rule \isa{reduction.strong-cases}, the strong
-inversion principle for the reduction relation. *}
+inversion principle for the reduction relation.\<close>
 
 
 lemma dismantle_strong_cases:
@@ -1379,11 +1379,11 @@ proof (cases rule:dismantle_cases[of t k r P])
     "t = [s]"
     "k = [y']n\<ggreater>L"
     "r = n[y'::=s] \<star> L" by fact+
-  txt {* The equations we get look almost like those we need to instantiate the
+  txt \<open>The equations we get look almost like those we need to instantiate the
 hypothesis \isa{B}. The only difference is that \isa{B} only applies to $y$, and
 since we want $y$ to become an instantiation variable of the strengthened rule,
 we only know that $y$ satisfies \isa{f} and nothing else. But the condition
-\isa{f} is just strong enough to rename $y'$ to $y$ and apply \isa{B}. *}
+\isa{f} is just strong enough to rename $y'$ to $y$ and apply \isa{B}.\<close>
   with f have "y = y' \<or> y \<sharp> n" 
     by (auto simp add: fresh_prod abs_fresh)
   hence "n[y'::=s] = ([(y,y')] \<bullet> n)[y::=s]" 
@@ -1400,10 +1400,10 @@ next
     "t = u to x' in v"
     "k = [z']n\<ggreater>L"
     "r = (u to x' in v to z' in n) \<star> L" by fact+ 
-  txt {* We want to do the same trick as above but at this point we have to take
+  txt \<open>We want to do the same trick as above but at this point we have to take
 care of the possibility that $x$ might coincide with $x'$ or $z'$. Similarly,
 $z$
-might coincide with $z'$. *}
+might coincide with $z'$.\<close>
   with f have x: "x = x' \<or> x \<sharp> v to z' in n" 
     and z: "z = z' \<or> z \<sharp> n"
     by (auto simp add: fresh_prod abs_fresh)
@@ -1418,9 +1418,9 @@ might coincide with $z'$. *}
     by (auto simp add:name_swap_bij alpha')
   moreover from z ch have "k = [z]([(z,z')] \<bullet> n)\<ggreater>L"
     by (auto simp add:name_swap_bij stack.inject alpha')
-  txt {* The first two $\alpha$-renamings are simple, but here we have to handle
+  txt \<open>The first two $\alpha$-renamings are simple, but here we have to handle
 the nested binding structure of the assoc rule. Since $x$ scopes over the whole
-term @{term "(v to z' in n)" }, we have to push the swapping over $z'$ *}
+term @{term "(v to z' in n)" }, we have to push the swapping over $z'$\<close>
   moreover { from x have 
     "u to x' in (v to z' in n) = u to x in ([(x,x')] \<bullet> (v to z' in n))"
       by (auto simp add:name_swap_bij alpha' simp del: trm.perm)
@@ -1437,10 +1437,10 @@ term @{term "(v to z' in n)" }, we have to push the swapping over $z'$ *}
 qed (insert r T K, auto)
 
 
-text {* The lemma in Figure~\ref{fig:lemma7} assumes @{term "SN(n[x::=p] \<star> K)"}
+text \<open>The lemma in Figure~\ref{fig:lemma7} assumes @{term "SN(n[x::=p] \<star> K)"}
 but the actual induction in done on @{term "SN(n \<star> K)"}. The stronger
 assumption @{term "SN (n[x::=p] \<star> K)"} is needed to handle the $\beta$ and
-$\eta$ cases.*}
+$\eta$ cases.\<close>
 
 lemma sn_forget:
   assumes a: "SN(t[x::=v])"
@@ -1474,14 +1474,14 @@ abbreviation
 redrtrans :: "trm \<Rightarrow> trm \<Rightarrow> bool" (" _ \<mapsto>\<^sup>* _ " )
 where "redrtrans \<equiv> reduction^**" 
 
-text {* To be able to handle the case where $p$ makes a step, we need to
+text \<open>To be able to handle the case where $p$ makes a step, we need to
 establish @{term "p \<mapsto> p' \<Longrightarrow> (m[x::=p]) \<mapsto>\<^sup>* (m[x::=p'])"} as well as the
 fact that strong normalization is preserved for an arbitrary number of reduction
 steps. The first claim involves a number of simple transitivity lemmas. Here we
 can benefit from having removed the freshness conditions from the reduction
 relation as this allows all the cases to be proven automatically. Similarly, in
 the \isa{red-subst} lemma, only those cases where substitution is pushed to two
-subterms needs to be proven explicitly.*}
+subterms needs to be proven explicitly.\<close>
 
 lemma red_trans:
   shows r1_trans: " s \<mapsto>\<^sup>* s' \<Longrightarrow> App s t \<mapsto>\<^sup>* App s' t"
@@ -1513,12 +1513,12 @@ qed (auto intro:red_trans)
 lemma SN_trans : "\<lbrakk>  p \<mapsto>\<^sup>* p' ; SN p \<rbrakk> \<Longrightarrow> SN p' "
 by (induct rule: rtranclp_induct) (auto intro: SN_preserved)
 
-subsection {* Central lemma *}
-text_raw {* \label{sec:central} *}
+subsection \<open>Central lemma\<close>
+text_raw \<open>\label{sec:central}\<close>
 
-text {* Now we have everything in place we need to tackle the central ``Lemma
+text \<open>Now we have everything in place we need to tackle the central ``Lemma
 7'' of \cite{TT-lifting} (cf. Figure~\ref{fig:lemma7}). The proof is quite long,
-but for the most part, the reasoning is that of \cite{TT-lifting}.  *}
+but for the most part, the reasoning is that of \cite{TT-lifting}.\<close>
 
 lemma to_RED_aux: 
   assumes p: "SN p"
@@ -1545,11 +1545,11 @@ $k$.\<close>
       have q: "q = m \<star> k" and sn: "SN (m[x::=p] \<star> k)" by fact+
       have xp: "x \<sharp> p" and xk: "x \<sharp> k" by fact+
 
-txt {* Once again we want to reason via case distinction on the successors of a
+txt \<open>Once again we want to reason via case distinction on the successors of a
 term including a dismantling operator. Since this time we also need to handle
 the cases where interactions occur, we want to use the strengthened case
 rule. We already require $x$ to be suitably fresh. To instantiate the rule, we
-need another fresh name. *}
+need another fresh name.\<close>
 
       { fix r assume red: "([p] to x in m) \<star> k \<mapsto> r"
         from xp xk have x1 : "x \<sharp> ([p] to x in m) \<star> k "  
@@ -1561,9 +1561,9 @@ need another fresh name. *}
         proof (cases rule:dismantle_strong_cases
             [of   "[p] to x in m"   k r x x z ])
           case (5 r') have r: "r = r' \<star> k" and r': "[p] to x in m \<mapsto> r'" by fact+
-          txt {* To handle the case of a reduction occurring somewhere in @{term
+          txt \<open>To handle the case of a reduction occurring somewhere in @{term
 "[p] to x in m" }, we need to contract the freshness conditions to this subterm.
-This allows the use of the strong inversion rule for the reduction relation.*}
+This allows the use of the strong inversion rule for the reduction relation.\<close>
           from x1 x2 r 
           have xl:"(x \<sharp> [p] to x in m)" and xr:"x \<sharp> r'" by auto
           from z have zl: "z \<sharp> ([p] to x in m)"   "x \<noteq> z" 
@@ -1573,8 +1573,8 @@ This allows the use of the strong inversion rule for the reduction relation.*}
           from r' show "SN r" proof (cases rule:reduction.strong_cases
               [where x="x" and xa="x" and xb="x" and xc="x" and xd="x" 
                 and xe="x" and xf="x"and xg="x" and y="z"])
-txt {* The case where @{term "p \<mapsto> p'"} is interesting, because it requires
-reasioning about the reflexive transitive closure of the reduction relation. *}
+txt \<open>The case where @{term "p \<mapsto> p'"} is interesting, because it requires
+reasioning about the reflexive transitive closure of the reduction relation.\<close>
             case (r6 s s' t)  hence ch: "[p] \<mapsto> s'"   "r' = s' to x in m" 
               using xl xr by (auto)
             from this obtain p' where s: "s' = [p']" and  p : "p \<mapsto> p'" 
@@ -1593,9 +1593,9 @@ reasioning about the reflexive transitive closure of the reduction relation. *}
             case(r7 s t m') hence "r' = [p] to x in m'" and "m \<mapsto> m'" 
               using xl xr by (auto simp add: alpha)
             hence rr: "r' = [p] to x in m'" by simp
-            from q `m \<mapsto> m'` have  "q \<mapsto> m' \<star> k" by(simp add: dismantle_red)
+            from q \<open>m \<mapsto> m'\<close> have  "q \<mapsto> m' \<star> k" by(simp add: dismantle_red)
             moreover have "m' \<star> k = m' \<star> k" .. \<comment> \<open>a triviality\<close>
-            moreover { from `m \<mapsto> m'` have "(m[x::=p]) \<star> k \<mapsto> (m'[x::=p]) \<star> k"
+            moreover { from \<open>m \<mapsto> m'\<close> have "(m[x::=p]) \<star> k \<mapsto> (m'[x::=p]) \<star> k"
                 by (simp add: dismantle_red reduction_subst)
               with sn have "SN(m'[x::=p] \<star> k)" .. }
             ultimately show "SN r" using xp xk unfolding r rr by (rule ih_q)
@@ -1629,9 +1629,9 @@ m"}.\<close>
             by (rule stack_reduction_fresh)
           ultimately show "SN r" unfolding r by (rule ih_q)
         next
-txt {* The case of an assoc interaction between @{term "[p] to x in m" } and
+txt \<open>The case of an assoc interaction between @{term "[p] to x in m" } and
 @{term "k"} is easily handled by the induction hypothesis, since @{term
-"(m[x::=p]) \<star> k"} remains fixed under assoc. *}
+"(m[x::=p]) \<star> k"} remains fixed under assoc.\<close>
           case (8 s t u L)
           hence k: "k = [z]u\<ggreater>L"
             and r: "r = ([p] to x in (m to z in u)) \<star> L" 
@@ -1650,12 +1650,12 @@ txt {* The case of an assoc interaction between @{term "[p] to x in m" } and
       } thus "SN (([p] to x in m) \<star> k)" ..
     qed } 
   moreover have "SN ((n[x::=p]) \<star> k)" by fact
-  moreover hence "SN (n \<star> k)" using `x \<sharp> k` by (rule sn_forget') 
+  moreover hence "SN (n \<star> k)" using \<open>x \<sharp> k\<close> by (rule sn_forget') 
   ultimately show ?thesis by blast
 qed
 
-text {* Having established the claim above, we use it show that
-\textsf{to}-bindings preserve reducibility. *}
+text \<open>Having established the claim above, we use it show that
+\textsf{to}-bindings preserve reducibility.\<close>
 
 lemma to_RED:
   assumes s: "s \<in> RED (T \<sigma>)"
@@ -1683,12 +1683,12 @@ proof -
 qed
 
 
-section {* Fundamental Theorem *}
-text_raw {* \label{sec:FTLR} *}
+section \<open>Fundamental Theorem\<close>
+text_raw \<open>\label{sec:FTLR}\<close>
 
-text {* The remainder of this section follows \cite{SN.thy} very closely.  We
+text \<open>The remainder of this section follows \cite{SN.thy} very closely.  We
 first establish that all well typed terms are reducible if we substitute
-reducible terms for the free variables. *}
+reducible terms for the free variables.\<close>
 
 abbreviation 
  mapsto :: "(name\<times>trm) list \<Rightarrow> name \<Rightarrow> trm \<Rightarrow> bool" ("_ maps _ to _" [55,55,55] 55)
@@ -1732,8 +1732,8 @@ next
   thus "\<theta><s to x in t> \<in> RED (T \<tau>)" using fresh by simp
 qed auto \<comment> \<open>all other cases are trivial\<close>
 
-text {* The final result then follows using the identity substitution, which is
-$\Gamma$-closing since all variables are reducible at any type. *}
+text \<open>The final result then follows using the identity substitution, which is
+$\Gamma$-closing since all variables are reducible at any type.\<close>
 
 fun
   "id" :: "(name\<times>ty) list \<Rightarrow> (name\<times>trm) list"
@@ -1769,7 +1769,7 @@ proof -
   } thus ?thesis by blast
 qed
 
-subsection {* Strong normalization theorem *}
+subsection \<open>Strong normalization theorem\<close>
 
 lemma typing_implies_RED:  
   assumes a: "\<Gamma> \<turnstile> t : \<tau>"
@@ -1792,10 +1792,10 @@ proof -
   ultimately show "SN(t)" by (simp add: CR1_def)
 qed
 
-text {* This finishes our formalization effort. This article is generated
+text \<open>This finishes our formalization effort. This article is generated
 from the Isabelle theory file, which consists of roughly 1500 lines of proof
 code. The reader is invited to replay some of the more technical proofs using
-the theory file provided. *}
+the theory file provided.\<close>
 
 (*<*)end(*>*)
 

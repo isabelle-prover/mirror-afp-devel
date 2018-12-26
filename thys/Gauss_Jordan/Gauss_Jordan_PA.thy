@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Obtaining explicitly the invertible matrix which transforms a matrix to its reduced row echelon form*}
+section\<open>Obtaining explicitly the invertible matrix which transforms a matrix to its reduced row echelon form\<close>
 
 theory Gauss_Jordan_PA
 imports
@@ -13,10 +13,10 @@ imports
  Linear_Maps (*Really, this file is not necessary, but it contains interesting properties about linear maps.*)
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
-text{*The following algorithm is similar to @{term "Gauss_Jordan"},
-but in this case we will also return the P matrix which makes @{term "Gauss_Jordan A = P ** A"}. If A is invertible, this matrix P will be the inverse of it.*}
+text\<open>The following algorithm is similar to @{term "Gauss_Jordan"},
+but in this case we will also return the P matrix which makes @{term "Gauss_Jordan A = P ** A"}. If A is invertible, this matrix P will be the inverse of it.\<close>
 
 definition Gauss_Jordan_in_ij_PA :: "(('a::{semiring_1, inverse, one, uminus}^'rows::{finite, ord}^'rows::{finite, ord}) \<times> ('a^'cols^'rows::{finite, ord})) => 'rows=>'cols
   =>(('a^'rows::{finite, ord}^'rows::{finite, ord}) \<times> ('a^'cols^'rows::{finite, ord}))"
@@ -42,12 +42,12 @@ where "Gauss_Jordan_column_k_PA A' k =
 definition "Gauss_Jordan_upt_k_PA A k = (let foldl=(foldl Gauss_Jordan_column_k_PA (mat 1,0, A) [0..<Suc k]) in (fst foldl, snd (snd foldl)))"
 definition "Gauss_Jordan_PA A = Gauss_Jordan_upt_k_PA A (ncols A - 1)"
 
-subsection{*Proofs*}
+subsection\<open>Proofs\<close>
 
-subsubsection{*Properties about @{term "Gauss_Jordan_in_ij_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_in_ij_PA"}\<close>
 
-text{*The following lemmas are very important in order to improve the efficience of the code*}
-text{*We define the following function to obtain an efficient code for @{term "Gauss_Jordan_in_ij_PA A i j"}.*}
+text\<open>The following lemmas are very important in order to improve the efficience of the code\<close>
+text\<open>We define the following function to obtain an efficient code for @{term "Gauss_Jordan_in_ij_PA A i j"}.\<close>
 
 definition "Gauss_Jordan_wrapper i j A B = vec_lambda(%s. if s=i then A $ s else (row_add A s i (-(B$s$j))) $ s)"
 
@@ -68,7 +68,7 @@ lemma Gauss_Jordan_in_ij_PA_def'[code]:
 unfolding Gauss_Jordan_in_ij_PA_def Gauss_Jordan_in_ij_def Let_def Gauss_Jordan_wrapper_def by auto
 
 
-text{*The second component is equal to @{term "Gauss_Jordan_in_ij"}*}
+text\<open>The second component is equal to @{term "Gauss_Jordan_in_ij"}\<close>
 lemma snd_Gauss_Jordan_in_ij_PA_eq[code_unfold]: "snd (Gauss_Jordan_in_ij_PA (P,A) i j) = Gauss_Jordan_in_ij A i j"
   unfolding Gauss_Jordan_in_ij_PA_def Let_def snd_conv ..
 
@@ -121,7 +121,7 @@ finally show "((\<chi> s. if s = i then mult_row (interchange_rows (mat 1) i (LE
 qed
 
 
-subsubsection{*Properties about @{term "Gauss_Jordan_column_k_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_column_k_PA"}\<close>
 lemma fst_Gauss_Jordan_column_k: 
 assumes "i\<le>nrows A"
 shows "fst (Gauss_Jordan_column_k (i, A) k) \<le> nrows A"
@@ -142,7 +142,7 @@ lemma fst_snd_Gauss_Jordan_column_k_PA_eq:
 shows "fst (snd (Gauss_Jordan_column_k_PA (P,i,A) k)) = fst (Gauss_Jordan_column_k (i,A) k)"
 unfolding Gauss_Jordan_column_k_PA_def Gauss_Jordan_column_k_def unfolding Let_def snd_conv fst_conv by auto
 
-subsubsection{*Properties about @{term "Gauss_Jordan_upt_k_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_upt_k_PA"}\<close>
 
 lemma fst_Gauss_Jordan_upt_k_PA:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
@@ -175,7 +175,7 @@ shows "snd (Gauss_Jordan_upt_k_PA A k) = (Gauss_Jordan_upt_k A k)"
 unfolding Gauss_Jordan_upt_k_PA_def Gauss_Jordan_upt_k_def Let_def
 using snd_foldl_Gauss_Jordan_column_k_eq[of A "Suc k"] by simp
 
-subsubsection{*Properties about @{term "Gauss_Jordan_PA"}*}
+subsubsection\<open>Properties about @{term "Gauss_Jordan_PA"}\<close>
 
 lemma fst_Gauss_Jordan_PA:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
@@ -186,9 +186,9 @@ lemma Gauss_Jordan_PA_eq:
 shows "snd (Gauss_Jordan_PA A)= (Gauss_Jordan A)"
 by (metis Gauss_Jordan_PA_def Gauss_Jordan_def snd_Gauss_Jordan_upt_k_PA)
 
-subsubsection{*Proving that the transformation has been carried out by means of elementary operations*}
-text{*This function is very similar to @{term "row_add_iterate"} one. It allows us to prove that @{term "fst (Gauss_Jordan_PA A)"} is an invertible matrix.
-Concretly, it has been defined to demonstrate that @{term "fst (Gauss_Jordan_PA A)"} has been obtained by means of elementary operations applied to the identity matrix*}
+subsubsection\<open>Proving that the transformation has been carried out by means of elementary operations\<close>
+text\<open>This function is very similar to @{term "row_add_iterate"} one. It allows us to prove that @{term "fst (Gauss_Jordan_PA A)"} is an invertible matrix.
+Concretly, it has been defined to demonstrate that @{term "fst (Gauss_Jordan_PA A)"} has been obtained by means of elementary operations applied to the identity matrix\<close>
 
 fun row_add_iterate_PA :: "(('a::{semiring_1, uminus}^'m::{mod_type} ^'m::{mod_type}) \<times> ('a^'n^'m::{mod_type}))=> nat => 'm => 'n => 
     (('a^'m::{mod_type} ^'m::{mod_type}) \<times> ('a^'n^'m::{mod_type}))"

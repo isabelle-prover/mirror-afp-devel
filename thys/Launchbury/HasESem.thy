@@ -2,9 +2,9 @@ theory HasESem
 imports "Nominal-HOLCF" "Env-HOLCF"
 begin
 
-text {*
+text \<open>
 A local to work abstract in the expression type and semantics.
-*}
+\<close>
 
 locale has_ESem =
   fixes ESem :: "'exp::pt \<Rightarrow> ('var::at_base \<Rightarrow> 'value) \<rightarrow> 'value::{pure,pcpo}" 

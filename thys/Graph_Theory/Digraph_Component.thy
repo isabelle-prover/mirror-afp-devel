@@ -9,7 +9,7 @@ imports
   Pair_Digraph
 begin
 
-section {* Components of (Symmetric) Digraphs *}
+section \<open>Components of (Symmetric) Digraphs\<close>
 
 definition compatible :: "('a,'b) pre_digraph \<Rightarrow> ('a,'b) pre_digraph \<Rightarrow> bool" where
   "compatible G H \<equiv> tail G = tail H \<and> head G = head H"
@@ -28,10 +28,10 @@ definition strongly_connected :: "('a,'b) pre_digraph \<Rightarrow> bool" where
   "strongly_connected G \<equiv> verts G \<noteq> {} \<and> (\<forall>u \<in> verts G. \<forall>v \<in> verts G. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> v)"
 
 
-text {*
+text \<open>
   The following function computes underlying symmetric graph of a digraph
   and removes parallel arcs.
-*}
+\<close>
 
 definition mk_symmetric :: "('a,'b) pre_digraph \<Rightarrow> 'a pair_pre_digraph" where
   "mk_symmetric G \<equiv> \<lparr> pverts = verts G, parcs = \<Union>e\<in>arcs G. {(tail G e, head G e), (head G e, tail G e)}\<rparr>"
@@ -73,7 +73,7 @@ definition (in pre_digraph) Union :: "('a,'b) pre_digraph set \<Rightarrow> ('a,
 
 
 
-subsection {* Compatible Graphs *}
+subsection \<open>Compatible Graphs\<close>
 
 lemma compatible_tail:
   assumes "compatible G H" shows "tail G = tail H"
@@ -107,7 +107,7 @@ lemma compatibleI_with_proj[intro]:
 
 
 
-subsection {* Basic lemmas *}
+subsection \<open>Basic lemmas\<close>
 
 lemma (in sym_digraph) graph_symmetric:
   shows "(u,v) \<in> arcs_ends G \<Longrightarrow> (v,u) \<in> arcs_ends G"
@@ -227,7 +227,7 @@ lemma (in wf_digraph) induced_subgraph_refl: "induced_subgraph G G"
 
 
 
-subsection {* The underlying symmetric graph of a digraph *}
+subsection \<open>The underlying symmetric graph of a digraph\<close>
 
 lemma (in wf_digraph) wellformed_mk_symmetric[intro]: "pair_wf_digraph (mk_symmetric G)"
   by unfold_locales (auto simp: parcs_mk_symmetric)
@@ -285,16 +285,16 @@ lemma symmetric_mk_symmetric:
 
 
 
-subsection {* Subgraphs and Induced Subgraphs *}
+subsection \<open>Subgraphs and Induced Subgraphs\<close>
 
 lemma subgraph_trans:
   assumes "subgraph G H" "subgraph H I" shows "subgraph G I"
   using assms by (auto simp: subgraph_def compatible_def)
 
-text {*
+text \<open>
   The @{term digraph} and @{term fin_digraph} properties are preserved under
   the (inverse) subgraph relation
-*}
+\<close>
 lemma (in fin_digraph) fin_digraph_subgraph:
   assumes "subgraph H G" shows "fin_digraph H"
 proof (intro_locales)
@@ -346,9 +346,9 @@ proof -
 qed
 
 
-text {*
+text \<open>
   Arc walks and paths are preserved under the subgraph relation.
-*}
+\<close>
 lemma (in wf_digraph) subgraph_awalk_imp_awalk:
   assumes walk: "pre_digraph.awalk H u p v"
   assumes sub: "subgraph H G"
@@ -410,7 +410,7 @@ lemma (in wf_digraph) subgraph_del_arc: "subgraph (del_arc a) G"
 
 
 
-subsection {* Induced subgraphs *}
+subsection \<open>Induced subgraphs\<close>
 
 lemma wf_digraphI_induced:
   assumes "induced_subgraph H G"
@@ -435,16 +435,16 @@ proof -
     from arcs show "finite (arcs H)" using finite_arcs by (rule finite_subset)
   next
     fix e assume "e \<in> arcs H"
-    with arcs `compatible G H` show "tail H e \<noteq> head H e"
+    with arcs \<open>compatible G H\<close> show "tail H e \<noteq> head H e"
       by (auto dest: no_loops simp: compatible_tail[symmetric] compatible_head[symmetric])
   next
     fix e1 e2 assume "e1 \<in> arcs H" "e2 \<in> arcs H" and ate: "arc_to_ends H e1 = arc_to_ends H e2"
-    with arcs `compatible G H` show "e1 = e2" using ate
+    with arcs \<open>compatible G H\<close> show "e1 = e2" using ate
       by (auto intro: no_multi_arcs simp: compatible_tail[symmetric] compatible_head[symmetric] arc_to_ends_def)
   qed
 qed
 
-text {* Computes the subgraph of @{term G} induced by @{term vs} *}
+text \<open>Computes the subgraph of @{term G} induced by @{term vs}\<close>
 definition induce_subgraph :: "('a,'b) pre_digraph \<Rightarrow> 'a set \<Rightarrow> ('a,'b) pre_digraph" (infix "\<restriction>" 67) where
   "G \<restriction> vs = \<lparr> verts = vs, arcs = {e \<in> arcs G. tail G e \<in> vs \<and> head G e \<in> vs},
     tail = tail G, head = head G \<rparr>"
@@ -491,10 +491,10 @@ proof (unfold symmetric_conv, safe)
     using assms by (auto simp add: symmetric_conv)
   moreover
   then have "e2 \<in> arcs H"
-    using assms and `e1 \<in> arcs H` by auto
+    using assms and \<open>e1 \<in> arcs H\<close> by auto
   ultimately
   show "\<exists>e2\<in>arcs H. tail H e1 = head H e2 \<and> head H e1 = tail H e2"
-    using assms `e1 \<in> arcs H` `compatible G H`
+    using assms \<open>e1 \<in> arcs H\<close> \<open>compatible G H\<close>
     by (auto simp: compatible_head compatible_tail)
 qed
 
@@ -518,7 +518,7 @@ next
   case (step u w)
   interpret iG: wf_digraph "G \<restriction> {w. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> w}"
     by (rule wellformed_induce_subgraph)
-  from `u \<rightarrow> w` have "u \<rightarrow>\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> wa}\<^esub> w"
+  from \<open>u \<rightarrow> w\<close> have "u \<rightarrow>\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> wa}\<^esub> w"
     by (auto simp: arcs_ends_conv reachable_def intro: wellformed rtrancl_on_into_rtrancl_on)
   then have "u \<rightarrow>\<^sup>*\<^bsub>G \<restriction> {wa. u \<rightarrow>\<^sup>*\<^bsub>G\<^esub> wa}\<^esub> w"
     by (rule iG.reachable_adjI)
@@ -638,7 +638,7 @@ qed
 
 
 
-subsection {* Unions of Graphs *}
+subsection \<open>Unions of Graphs\<close>
 
 lemma
   verts_union[simp]: "verts (union G H) = verts G \<union> verts H" and
@@ -756,7 +756,7 @@ lemma (in pre_digraph) subgraphI_max_subgraph: "max_subgraph P x \<Longrightarro
   by (simp add: max_subgraph_def)
 
 
-subsection {* Connected and Strongly Connected Graphs*}
+subsection \<open>Connected and Strongly Connected Graphs\<close>
 
 context wf_digraph begin
 
@@ -798,7 +798,7 @@ context wf_digraph begin
     have "subgraph H (G \<restriction> verts H)"
       using subg by (intro subgraphI) (auto simp: compatible_def)
     then show ?thesis
-      using induced_induce[OF `verts H \<subseteq> verts G`]
+      using induced_induce[OF \<open>verts H \<subseteq> verts G\<close>]
         and sc GrH.strongly_connected_spanning_imp_strongly_connected
       unfolding spanning_def by auto
   qed
@@ -887,7 +887,7 @@ context wf_digraph begin
           using \<open>S \<subseteq> T\<close> \<open>T \<noteq> S\<close> by auto
         then have "G \<restriction> S \<notin> sccs" unfolding sccs_def by blast
         then have "S \<notin> verts ` sccs"
-          by (metis (erased, hide_lams) `S \<subseteq> T` `T \<noteq> S` `induced_subgraph (G \<restriction> T) G` `strongly_connected (G \<restriction> T)`
+          by (metis (erased, hide_lams) \<open>S \<subseteq> T\<close> \<open>T \<noteq> S\<close> \<open>induced_subgraph (G \<restriction> T) G\<close> \<open>strongly_connected (G \<restriction> T)\<close>
             dual_order.order_iff_strict image_iff in_sccsE induce_subgraph_verts)
         then have False using assms by metis
       }
@@ -1048,9 +1048,9 @@ lemma (in wf_digraph) symmetric_connected_imp_strongly_connected:
   assumes "symmetric G" "connected G"
   shows "strongly_connected G"
 proof
-  from `connected G` show "verts G \<noteq> {}" unfolding connected_def strongly_connected_def by auto
+  from \<open>connected G\<close> show "verts G \<noteq> {}" unfolding connected_def strongly_connected_def by auto
 next
-  from `connected G`
+  from \<open>connected G\<close>
   have sc_mks: "strongly_connected (mk_symmetric G)"
     unfolding connected_def by simp
 
@@ -1071,10 +1071,10 @@ next
   fix u v
   assume "u \<in> verts (mk_symmetric G)" and "v \<in> verts (mk_symmetric G)"
   then have "u \<in> pverts (mk_symmetric H)" and "v \<in> pverts (mk_symmetric H)"
-    using `spanning H G` by (auto simp: mk_symmetric_def)
-  with `connected H`
+    using \<open>spanning H G\<close> by (auto simp: mk_symmetric_def)
+  with \<open>connected H\<close>
   have "u \<rightarrow>\<^sup>*\<^bsub>with_proj (mk_symmetric H)\<^esub> v" "subgraph (mk_symmetric H) (mk_symmetric G)"
-    using `spanning H G` unfolding connected_def
+    using \<open>spanning H G\<close> unfolding connected_def
     by (auto simp: spanning_def dest: subgraph_mk_symmetric)
   then show "u \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> v" by (rule pre_digraph.reachable_mono)
 qed
@@ -1098,7 +1098,7 @@ proof -
   have sym_c: "symmetric (G \<restriction> {v. u \<rightarrow>\<^sup>* v})"
     using sym_arcs isub_c by (rule induced_graph_imp_symmetric)
 
-  note `induced_subgraph ?c G`
+  note \<open>induced_subgraph ?c G\<close>
   moreover
   have "strongly_connected ?c"
   proof (rule strongly_connectedI)
@@ -1123,15 +1123,15 @@ proof -
     then obtain v where "v \<in> verts d" and "v \<notin> verts ?c"
       by auto
 
-    have "u \<in> verts ?c" using `u \<in> verts G` by auto
-    then have "u \<in> verts d" using `verts ?c \<subset> verts d` by auto 
+    have "u \<in> verts ?c" using \<open>u \<in> verts G\<close> by auto
+    then have "u \<in> verts d" using \<open>verts ?c \<subset> verts d\<close> by auto 
     then have "u \<rightarrow>\<^sup>*\<^bsub>d\<^esub> v"
-      using `strongly_connected d` `u \<in> verts d` `v \<in> verts d` by auto
+      using \<open>strongly_connected d\<close> \<open>u \<in> verts d\<close> \<open>v \<in> verts d\<close> by auto
     then have "u \<rightarrow>\<^sup>* v"
-      using `induced_subgraph d G`
+      using \<open>induced_subgraph d G\<close>
       by (auto intro: pre_digraph.reachable_mono)
     then have "v \<in> verts ?c" by (auto simp: reachable_awalk)
-    then show False using `v \<notin> verts ?c` by auto
+    then show False using \<open>v \<notin> verts ?c\<close> by auto
   qed
   ultimately show ?thesis unfolding sccs_def by auto
 qed
@@ -1195,10 +1195,10 @@ next
   have subg: "subgraph G ?x" "subgraph H ?x"
     by (rule subgraphs_of_union[OF _ _ ], fact+)+
   have reach_uw: "u \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> w"
-    using `u \<in> verts ?x` subg w_in_both sc
+    using \<open>u \<in> verts ?x\<close> subg w_in_both sc
     by (auto intro: pre_digraph.reachable_mono)
   also have reach_wv: "w \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> v"
-    using `v \<in> verts ?x` subg w_in_both sc
+    using \<open>v \<in> verts ?x\<close> subg w_in_both sc
     by (auto intro: pre_digraph.reachable_mono)
   finally (x.reachable_trans) show "u \<rightarrow>\<^sup>*\<^bsub>?x\<^esub> v" .
 qed
@@ -1241,7 +1241,7 @@ context wf_digraph begin
     then have psub: "verts c \<subset> verts ?x"
       by (auto simp: union_def)
     then show False using induce_subgraph_conn
-      by (metis `c \<in> sccs` in_sccsE induce_subgraph_verts)
+      by (metis \<open>c \<in> sccs\<close> in_sccsE induce_subgraph_verts)
   qed
 
   lemma in_sccs_verts_conv:
@@ -1328,7 +1328,7 @@ qed (auto simp: sccs_def)
 
 
 
-subsection {* Components *}
+subsection \<open>Components\<close>
 
 lemma (in sym_digraph) exists_scc:
   assumes "verts G \<noteq> {}" shows "\<exists>c. c \<in> sccs"
@@ -1358,19 +1358,19 @@ proof -
         then obtain c where "c \<in> sccs" and "{a,b} \<subseteq> verts c"
           by auto
         then have "e \<in> {e \<in> arcs G. tail G e \<in> verts c
-          \<and> head G e \<in> verts c}" using `e \<in> arcs G` by auto
-        then have "e \<in> arcs c" using `c \<in> sccs` by blast
-        then show ?thesis using `c \<in> sccs` by auto
+          \<and> head G e \<in> verts c}" using \<open>e \<in> arcs G\<close> by auto
+        then have "e \<in> arcs c" using \<open>c \<in> sccs\<close> by blast
+        then show ?thesis using \<open>c \<in> sccs\<close> by auto
       next
         assume l_assm: "\<not>(\<exists>x\<in>sccs. {a,b} \<subseteq> verts x)"
 
-        have "a \<rightarrow>\<^sup>* b" using `e \<in> arcs G` 
+        have "a \<rightarrow>\<^sup>* b" using \<open>e \<in> arcs G\<close> 
           by (metis a_def b_def reachable_adjI in_arcs_imp_in_arcs_ends)
         then have "{a,b} \<subseteq> verts (G \<restriction> {v. a \<rightarrow>\<^sup>* v})" "a \<in> verts G"
           by (auto elim: reachable_in_vertsE)
         moreover
         have "(G \<restriction> {v. a \<rightarrow>\<^sup>* v}) \<in> sccs"
-          using `a \<in> verts G` by (auto intro: induce_reachable_is_in_sccs)
+          using \<open>a \<in> verts G\<close> by (auto intro: induce_reachable_is_in_sccs)
         ultimately
         have False using l_assm by blast
         then show ?thesis by simp
@@ -1399,7 +1399,7 @@ proof (rule ccontr)
   then have "verts c \<inter> verts (Union S) = {}"
     by (auto simp: Union_def)
   with assms have "verts c \<inter> verts G = {}" by auto
-  moreover from `c \<in> sccs` obtain u where "u \<in> verts c \<inter> verts G"
+  moreover from \<open>c \<in> sccs\<close> obtain u where "u \<in> verts c \<inter> verts G"
     by (auto simp: sccs_def strongly_connected_def)
   ultimately show False by blast
 qed

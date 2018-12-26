@@ -139,8 +139,8 @@ proof
       \<Longrightarrow> \<exists>\<tau>' \<in> Tr\<^bsub>ES\<^esub>. \<tau>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [] \<and> \<tau>' \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>) = \<tau> \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)"
     proof (induct n arbitrary: \<tau>)
       case 0 
-      note \<tau>_in_Tr = `\<tau> \<in> Tr\<^bsub>ES\<^esub>`
-        and `0 = length (\<tau> \<upharpoonleft> C\<^bsub>\<V>\<^esub>)`
+      note \<tau>_in_Tr = \<open>\<tau> \<in> Tr\<^bsub>ES\<^esub>\<close>
+        and \<open>0 = length (\<tau> \<upharpoonleft> C\<^bsub>\<V>\<^esub>)\<close>
       hence "\<tau> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []" 
         by simp
       with \<tau>_in_Tr show ?case 
@@ -242,8 +242,8 @@ proof -
                           \<Longrightarrow> \<exists>\<tau>' \<in> Tr\<^bsub>ES\<^esub>. \<tau>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [] \<and> \<tau>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<tau> \<upharpoonleft> V\<^bsub>\<V>\<^esub>"
     proof (induct n arbitrary: \<tau>)
       case 0 
-      note \<tau>_in_Tr = `\<tau> \<in> Tr\<^bsub>ES\<^esub>`
-        and `0 = length (\<tau> \<upharpoonleft> C\<^bsub>\<V>\<^esub>)`
+      note \<tau>_in_Tr = \<open>\<tau> \<in> Tr\<^bsub>ES\<^esub>\<close>
+        and \<open>0 = length (\<tau> \<upharpoonleft> C\<^bsub>\<V>\<^esub>)\<close>
       hence "\<tau> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []" 
         by simp
       with \<tau>_in_Tr show ?case 
@@ -319,18 +319,18 @@ proof -
   assume "SR \<V> Tr\<^bsub>ES\<^esub>"
      and "\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>"
    {
-     from `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` VIsViewOnE 
+     from \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> VIsViewOnE 
      have V'IsViewOnE: "isViewOn \<V>' E\<^bsub>ES\<^esub> " 
        unfolding isViewOn_def V_valid_def VC_disjoint_def NC_disjoint_def VN_disjoint_def by auto
     fix \<tau>
     assume "\<tau> \<in> Tr\<^bsub>ES\<^esub>"
-    with `SR \<V> Tr\<^bsub>ES\<^esub>` have "\<tau> \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>) \<in> Tr\<^bsub>ES\<^esub>"
+    with \<open>SR \<V> Tr\<^bsub>ES\<^esub>\<close> have "\<tau> \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>) \<in> Tr\<^bsub>ES\<^esub>"
       unfolding SR_def by auto
     
     let ?\<tau>'="\<tau> \<upharpoonleft>V\<^bsub>\<V>'\<^esub>"
     
-    from `\<tau> \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>) \<in> Tr\<^bsub>ES\<^esub>` have "?\<tau>' \<in> Tr\<^bsub>ES\<^esub>" 
-      using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` by simp
+    from \<open>\<tau> \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>) \<in> Tr\<^bsub>ES\<^esub>\<close> have "?\<tau>' \<in> Tr\<^bsub>ES\<^esub>" 
+      using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> by simp
     moreover   
     from V'IsViewOnE have "?\<tau>'\<upharpoonleft>C\<^bsub>\<V>'\<^esub>=[]"
       using disjoint_projection  
@@ -342,8 +342,8 @@ proof -
     have "\<exists>\<tau>'\<in>Tr\<^bsub>ES\<^esub>. \<tau>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = [] \<and> \<tau>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<tau> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>"
       by auto
    }
-  with `SR \<V> Tr\<^bsub>ES\<^esub>` show ?thesis 
-    unfolding R_def using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` by auto 
+  with \<open>SR \<V> Tr\<^bsub>ES\<^esub>\<close> show ?thesis 
+    unfolding R_def using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> by auto 
 qed   
 
 lemma R_implies_SR_for_modified_view : 
@@ -354,30 +354,30 @@ proof -
   {
     fix \<tau>
     assume "\<tau> \<in> Tr\<^bsub>ES\<^esub>"
-    from `R \<V>' Tr\<^bsub>ES\<^esub>` `\<tau> \<in> Tr\<^bsub>ES\<^esub>`  obtain \<tau>' where "\<tau>' \<in> Tr\<^bsub>ES\<^esub>"
+    from \<open>R \<V>' Tr\<^bsub>ES\<^esub>\<close> \<open>\<tau> \<in> Tr\<^bsub>ES\<^esub>\<close>  obtain \<tau>' where "\<tau>' \<in> Tr\<^bsub>ES\<^esub>"
                                         and "\<tau>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []" 
                                         and "\<tau>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<tau> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>"
                                         unfolding R_def by auto
-    from VIsViewOnE `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`  have "isViewOn  \<V>' E\<^bsub>ES\<^esub>" 
+    from VIsViewOnE \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>  have "isViewOn  \<V>' E\<^bsub>ES\<^esub>" 
       unfolding isViewOn_def V_valid_def  VN_disjoint_def VC_disjoint_def NC_disjoint_def                                   
       by auto
 
-    from `\<tau>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<tau> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>`  `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` 
+    from \<open>\<tau>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<tau> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>\<close>  \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> 
     have "\<tau>' \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>) = \<tau> \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>)" 
       by simp
     
-    from `\<tau>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []` have "\<tau>' =\<tau>' \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>)"
-      using validES `\<tau>' \<in> Tr\<^bsub>ES\<^esub>` `isViewOn \<V>' E\<^bsub>ES\<^esub>` 
+    from \<open>\<tau>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []\<close> have "\<tau>' =\<tau>' \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>)"
+      using validES \<open>\<tau>' \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>isViewOn \<V>' E\<^bsub>ES\<^esub>\<close> 
       unfolding projection_def ES_valid_def isViewOn_def traces_contain_events_def
       by (metis UnE filter_True filter_empty_conv)
     hence  "\<tau>' =\<tau> \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>)" 
-      using `\<tau>' \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>) = \<tau> \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>)`
+      using \<open>\<tau>' \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>) = \<tau> \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>)\<close>
       by simp                 
-    with `\<tau>' \<in> Tr\<^bsub>ES\<^esub>` have "\<tau> \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>) \<in> Tr\<^bsub>ES\<^esub>" 
+    with \<open>\<tau>' \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<tau> \<upharpoonleft> (V\<^bsub>\<V>'\<^esub> \<union> N\<^bsub>\<V>'\<^esub>) \<in> Tr\<^bsub>ES\<^esub>" 
       by auto
   } 
   thus ?thesis 
-    unfolding SR_def using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+    unfolding SR_def using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     by simp
 qed
 
@@ -393,21 +393,21 @@ proof -
        and "\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []"
     
-    from `c \<in> C\<^bsub>\<V>'\<^esub>`  `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+    from \<open>c \<in> C\<^bsub>\<V>'\<^esub>\<close>  \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     have "c \<in> C\<^bsub>\<V>\<^esub>" 
       by auto     
-    from `\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []` `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` 
+    from \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []\<close> \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> 
     have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []" 
       by auto
 
-    from `c \<in> C\<^bsub>\<V>\<^esub>` `\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` 
-    have "\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>" using `SD \<V> Tr\<^bsub>ES\<^esub>`
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close> \<open>\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> 
+    have "\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>" using \<open>SD \<V> Tr\<^bsub>ES\<^esub>\<close>
       unfolding SD_def by auto
     hence  "\<exists>\<alpha>'. \<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and>  \<alpha>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>  \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = [] " 
-      using `\<alpha> \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []` by blast
+      using \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []\<close> by blast
    }
-  with `SD \<V> Tr\<^bsub>ES\<^esub>` show ?thesis 
-    unfolding BSD_def using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` by auto 
+  with \<open>SD \<V> Tr\<^bsub>ES\<^esub>\<close> show ?thesis 
+    unfolding BSD_def using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> by auto 
 qed   
 
 lemma BSD_implies_SD_for_modified_view : 
@@ -648,22 +648,22 @@ proof -
        and "\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []"
     
-    from `c \<in> C\<^bsub>\<V>'\<^esub>`  `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+    from \<open>c \<in> C\<^bsub>\<V>'\<^esub>\<close>  \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     have "c \<in> C\<^bsub>\<V>\<^esub>"
       by auto     
-    from `\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []` `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` 
+    from \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []\<close> \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> 
     have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
       by auto
 
-    from `c \<in> C\<^bsub>\<V>\<^esub>` `\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` 
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close> \<open>\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> 
     have "\<beta> @ [c] @  \<alpha> \<in> Tr\<^bsub>ES\<^esub>" 
-      using `SI \<V> Tr\<^bsub>ES\<^esub>`  unfolding SI_def by auto
+      using \<open>SI \<V> Tr\<^bsub>ES\<^esub>\<close>  unfolding SI_def by auto
     hence  "\<exists>\<alpha>'. \<beta> @ [c] @  \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and>  \<alpha>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>  \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = [] " 
-      using `\<alpha> \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []` 
+      using \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []\<close> 
       by blast
    }
-  with `SI \<V> Tr\<^bsub>ES\<^esub>` show ?thesis 
-    unfolding BSI_def using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` by auto 
+  with \<open>SI \<V> Tr\<^bsub>ES\<^esub>\<close> show ?thesis 
+    unfolding BSI_def using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> by auto 
 qed 
 
 lemma BSI_implies_SI_for_modified_view : 
@@ -738,24 +738,24 @@ proof -
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []"
        and "Adm \<V>' \<rho>' Tr\<^bsub>ES\<^esub> \<beta> c"
     
-    from `c \<in> C\<^bsub>\<V>'\<^esub>`  `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+    from \<open>c \<in> C\<^bsub>\<V>'\<^esub>\<close>  \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     have "c \<in> C\<^bsub>\<V>\<^esub>"
       by auto     
-    from `\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []` `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` 
+    from \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []\<close> \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> 
     have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
       by auto
-    from  `Adm \<V>' \<rho>' Tr\<^bsub>ES\<^esub> \<beta> c` `\<rho> \<V> = \<rho>' \<V>'` 
+    from  \<open>Adm \<V>' \<rho>' Tr\<^bsub>ES\<^esub> \<beta> c\<close> \<open>\<rho> \<V> = \<rho>' \<V>'\<close> 
     have "Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c"
       by (simp add: Adm_def)
 
-    from `c \<in> C\<^bsub>\<V>\<^esub>` `\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c`
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close> \<open>\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c\<close>
     have "\<beta> @ [c] @  \<alpha> \<in> Tr\<^bsub>ES\<^esub>" 
-      using `SIA \<rho> \<V> Tr\<^bsub>ES\<^esub>`  unfolding SIA_def by auto
+      using \<open>SIA \<rho> \<V> Tr\<^bsub>ES\<^esub>\<close>  unfolding SIA_def by auto
     hence  "\<exists>\<alpha>'. \<beta> @ [c] @  \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and>  \<alpha>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>  \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = [] " 
-      using `\<alpha> \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []` by blast
+      using \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []\<close> by blast
    }
-  with `SIA \<rho> \<V> Tr\<^bsub>ES\<^esub>` show ?thesis 
-    unfolding BSIA_def using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+  with \<open>SIA \<rho> \<V> Tr\<^bsub>ES\<^esub>\<close> show ?thesis 
+    unfolding BSIA_def using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     by auto 
 qed 
 
@@ -772,34 +772,34 @@ proof -
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
        and "Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c"
     
-    from `c \<in> C\<^bsub>\<V>\<^esub>`  `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close>  \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     have "c \<in> C\<^bsub>\<V>'\<^esub>"
       by auto     
-    from `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` 
+    from \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> 
     have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []"
       by auto
-    from  `Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c` `\<rho> \<V> = \<rho>' \<V>'` 
+    from  \<open>Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c\<close> \<open>\<rho> \<V> = \<rho>' \<V>'\<close> 
     have "Adm \<V>' \<rho>' Tr\<^bsub>ES\<^esub> \<beta> c"
       by (simp add: Adm_def)
 
-    from `c \<in> C\<^bsub>\<V>'\<^esub>` `\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []` `Adm \<V>' \<rho>' Tr\<^bsub>ES\<^esub> \<beta> c`
+    from \<open>c \<in> C\<^bsub>\<V>'\<^esub>\<close> \<open>\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>'\<^esub> = []\<close> \<open>Adm \<V>' \<rho>' Tr\<^bsub>ES\<^esub> \<beta> c\<close>
     obtain \<alpha>' where "\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
                 and " \<alpha>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>"
                 and " \<alpha>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []"
-      using `BSIA \<rho>' \<V>' Tr\<^bsub>ES\<^esub>`  unfolding BSIA_def by blast
+      using \<open>BSIA \<rho>' \<V>' Tr\<^bsub>ES\<^esub>\<close>  unfolding BSIA_def by blast
 
     (*Show that \<alpha>'=\<alpha>*)    
-    from `\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` validES
+    from \<open>\<beta>  @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> validES
     have alpha_consists_of_events: "set \<alpha> \<subseteq> E\<^bsub>ES\<^esub>" 
       by (auto simp add: ES_valid_def traces_contain_events_def)
 
-    from `\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` validES
+    from \<open>\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> validES
     have alpha'_consists_of_events: "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" 
       by (auto simp add: ES_valid_def traces_contain_events_def)  
 
-    from `\<alpha>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>` `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N = {} , C = C\<^bsub>\<V>\<^esub> \<rparr>` 
+    from \<open>\<alpha>' \<upharpoonleft> V\<^bsub>\<V>'\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>'\<^esub>\<close> \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N = {} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> 
     have "\<alpha>'\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)=\<alpha>\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)" by auto
-    with `\<alpha>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []`  `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N = {} , C = C\<^bsub>\<V>\<^esub> \<rparr>`
+    with \<open>\<alpha>' \<upharpoonleft> C\<^bsub>\<V>'\<^esub> = []\<close>  \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N = {} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close>
     have "\<alpha>'\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>)=\<alpha>\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>)" 
       by (simp add: projection_on_union)
     with VIsViewOnE alpha_consists_of_events alpha'_consists_of_events
@@ -807,10 +807,10 @@ proof -
       by (simp add: list_subset_iff_projection_neutral)
 
     hence  "\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub> "
-      using `\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` by blast
+      using \<open>\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> by blast
    }
-  with `BSIA \<rho>' \<V>' Tr\<^bsub>ES\<^esub>` show ?thesis 
-    unfolding SIA_def using `\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>` by auto   
+  with \<open>BSIA \<rho>' \<V>' Tr\<^bsub>ES\<^esub>\<close> show ?thesis 
+    unfolding SIA_def using \<open>\<V>' = \<lparr> V = V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub> , N ={} , C = C\<^bsub>\<V>\<^esub> \<rparr>\<close> by auto   
 qed    
 end
 
@@ -826,7 +826,7 @@ proof -
     unfolding Adm_def by auto
   thus "Adm \<V>\<^sub>1 \<rho>\<^sub>1 Tr \<alpha> e"
     unfolding Adm_def 
-    using `\<rho>\<^sub>1 \<V>\<^sub>1 \<subseteq> \<rho>\<^sub>2 \<V>\<^sub>2` non_empty_projection_on_subset 
+    using \<open>\<rho>\<^sub>1 \<V>\<^sub>1 \<subseteq> \<rho>\<^sub>2 \<V>\<^sub>2\<close> non_empty_projection_on_subset 
     by blast
 qed
 
@@ -916,9 +916,9 @@ proof -
     assume "\<tau> \<in> Tr\<^bsub>ES\<^esub>"
     hence "\<tau>=\<tau>\<upharpoonleft>E\<^bsub>ES\<^esub>" using  validES 
       unfolding  ES_valid_def traces_contain_events_def projection_def by auto
-    with `C\<^bsub>\<V>\<^esub>={}` have "\<tau>=\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>\<union>N\<^bsub>\<V>\<^esub>)"
+    with \<open>C\<^bsub>\<V>\<^esub>={}\<close> have "\<tau>=\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>\<union>N\<^bsub>\<V>\<^esub>)"
       using VIsViewOnE unfolding isViewOn_def by auto    
-    with `\<tau> \<in> Tr\<^bsub>ES\<^esub>` have "\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>\<union>N\<^bsub>\<V>\<^esub>) \<in> Tr\<^bsub>ES\<^esub>"
+    with \<open>\<tau> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>\<union>N\<^bsub>\<V>\<^esub>) \<in> Tr\<^bsub>ES\<^esub>"
       by auto
   }
   thus ?thesis
@@ -934,9 +934,9 @@ proof -
     assume "\<tau> \<in> Tr\<^bsub>ES\<^esub>"
     hence "\<tau>=\<tau>\<upharpoonleft>E\<^bsub>ES\<^esub>" using  validES 
       unfolding  ES_valid_def traces_contain_events_def projection_def by auto
-    with `C\<^bsub>\<V>\<^esub>={}` have "\<tau>=\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>\<union>N\<^bsub>\<V>\<^esub>)"
+    with \<open>C\<^bsub>\<V>\<^esub>={}\<close> have "\<tau>=\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>\<union>N\<^bsub>\<V>\<^esub>)"
       using VIsViewOnE unfolding isViewOn_def by auto    
-    with `\<tau> \<in> Tr\<^bsub>ES\<^esub>` `C\<^bsub>\<V>\<^esub>={}` have "\<exists>\<tau>' \<in> Tr\<^bsub>ES\<^esub>. \<tau>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[] \<and> \<tau>' \<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<tau>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
+    with \<open>\<tau> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>C\<^bsub>\<V>\<^esub>={}\<close> have "\<exists>\<tau>' \<in> Tr\<^bsub>ES\<^esub>. \<tau>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[] \<and> \<tau>' \<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<tau>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
       unfolding projection_def by auto
   }
   thus ?thesis
@@ -967,10 +967,10 @@ proof -
     fix \<tau>
     assume "\<tau> \<in> Tr\<^bsub>ES\<^esub>"
     let ?\<tau>'="[]"
-    from `\<tau> \<in> Tr\<^bsub>ES\<^esub>`have "?\<tau>' \<in> Tr\<^bsub>ES\<^esub>" 
+    from \<open>\<tau> \<in> Tr\<^bsub>ES\<^esub>\<close>have "?\<tau>' \<in> Tr\<^bsub>ES\<^esub>" 
       using validES 
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
-    with `V\<^bsub>\<V>\<^esub>={}`
+    with \<open>V\<^bsub>\<V>\<^esub>={}\<close>
     have "\<exists>\<tau>' \<in> Tr\<^bsub>ES\<^esub>. \<tau>'\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[] \<and> \<tau>'\<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<tau>\<upharpoonleft>V\<^bsub>\<V>\<^esub>"  
       by (metis projection_on_empty_trace projection_to_emptyset_is_empty_trace)
   }
@@ -987,12 +987,12 @@ proof -
     assume "\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
       and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>= []"  
 
-    from `\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> \<in> Tr\<^bsub>ES\<^esub>"
+    from \<open>\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> \<in> Tr\<^bsub>ES\<^esub>"
       using validES 
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
  
     let ?\<alpha>'="[]"
-    from `\<beta> \<in> Tr\<^bsub>ES\<^esub>` `V\<^bsub>\<V>\<^esub>={}` 
+    from \<open>\<beta> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>V\<^bsub>\<V>\<^esub>={}\<close> 
     have "\<beta>@ ?\<alpha>'\<in>Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
       by (simp add: projection_on_empty_trace projection_to_emptyset_is_empty_trace)
     hence
@@ -1012,12 +1012,12 @@ proof -
     assume "\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
       and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>= []"  
     
-    from `\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> \<in> Tr\<^bsub>ES\<^esub>"
+    from \<open>\<beta> @ [c] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> \<in> Tr\<^bsub>ES\<^esub>"
       using validES 
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
     
     let ?\<beta>'=\<beta> and  ?\<alpha>'="[]"
-    from `\<beta> \<in> Tr\<^bsub>ES\<^esub>` `V\<^bsub>\<V>\<^esub>={}` 
+    from \<open>\<beta> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>V\<^bsub>\<V>\<^esub>={}\<close> 
     have "?\<beta>'@ ?\<alpha>'\<in>Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = [] \<and> ?\<beta>'\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>) = \<beta>\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>)"
       by (simp add: projection_on_empty_trace projection_to_emptyset_is_empty_trace)
     hence
@@ -1059,27 +1059,27 @@ proof -
        and "v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>"
        and "\<beta> @ [c,v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
-    from `c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>` have "c \<in> C\<^bsub>\<V>\<^esub>"
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>\<close> have "c \<in> C\<^bsub>\<V>\<^esub>"
       by auto
-    from `v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>` have "v \<in> V\<^bsub>\<V>\<^esub>"
+    from \<open>v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>\<close> have "v \<in> V\<^bsub>\<V>\<^esub>"
       by auto
     
     let ?\<alpha>="[v] @ \<alpha>"
-    from `v \<in> V\<^bsub>\<V>\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` have "?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
+    from \<open>v \<in> V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> have "?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       using VIsViewOnE 
       unfolding isViewOn_def V_valid_def VC_disjoint_def projection_def by auto
-    from `\<beta> @ [c,v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> @ [c] @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>"
+    from \<open>\<beta> @ [c,v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> @ [c] @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>"
       by auto
     
-    from `BSD \<V> Tr\<^bsub>ES\<^esub>` 
+    from \<open>BSD \<V> Tr\<^bsub>ES\<^esub>\<close> 
     obtain \<alpha>' 
       where "\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
         and "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>"
         and "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
-      using `c \<in> C\<^bsub>\<V>\<^esub>`  `\<beta> @ [c] @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>` `?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` 
+      using \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close>  \<open>\<beta> @ [c] @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> 
       unfolding BSD_def by auto 
 
-    from`v \<in> V\<^bsub>\<V>\<^esub>` `\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>` have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = [v] @ \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
+    from\<open>v \<in> V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>\<close> have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = [v] @ \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
       by (simp add: projection_def)
     then obtain \<delta> \<alpha>''
       where "\<alpha>'=\<delta> @ [v] @ \<alpha>''"
@@ -1087,23 +1087,23 @@ proof -
         and "\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>"
        using projection_split_first_with_suffix by fastforce 
 
-    from `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
+    from \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       by (metis append_is_Nil_conv projection_concatenation_commute) 
-    from `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
+    from \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
       by (metis append_is_Nil_conv projection_concatenation_commute) 
     
-    from `\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` have "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" using validES 
+    from \<open>\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> have "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" using validES 
       unfolding ES_valid_def traces_contain_events_def by auto
-    with  `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "set \<delta> \<subseteq> E\<^bsub>ES\<^esub>"
+    with  \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "set \<delta> \<subseteq> E\<^bsub>ES\<^esub>"
       by auto
-    with  `\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]` `\<delta>\<upharpoonleft>V\<^bsub>\<V>\<^esub> = []` `N\<^bsub>\<V>\<^esub> \<subseteq> \<Delta>\<^bsub>\<Gamma>\<^esub>`
+    with  \<open>\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]\<close> \<open>\<delta>\<upharpoonleft>V\<^bsub>\<V>\<^esub> = []\<close> \<open>N\<^bsub>\<V>\<^esub> \<subseteq> \<Delta>\<^bsub>\<Gamma>\<^esub>\<close>
     have "(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)" 
       using VIsViewOnE projection_empty_implies_absence_of_events  
       unfolding isViewOn_def projection_def by blast
     
     let ?\<beta>=\<beta> and ?\<delta>'=\<delta> and ?\<alpha>'=\<alpha>''
-    from `(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)` `\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` 
-            `\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>` `\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]`
+    from \<open>(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)\<close> \<open>\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> 
+            \<open>\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]\<close>
     have "(set ?\<delta>')\<subseteq>(N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ?\<beta> @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       by auto
     hence "\<exists>\<alpha>''' \<delta>''. (set \<delta>'') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> (\<beta> @ \<delta>'' @ [v] @ \<alpha>''') \<in> Tr\<^bsub>ES\<^esub> 
@@ -1166,7 +1166,7 @@ proof -
        and "\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
        and "Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c"
-    from `Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c` 
+    from \<open>Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c\<close> 
     obtain \<gamma> 
       where "\<gamma> @ [c] \<in> Tr\<^bsub>ES\<^esub>"
         and "\<gamma>\<upharpoonleft>(\<rho> \<V>) = \<beta>\<upharpoonleft>(\<rho> \<V>)"
@@ -1175,21 +1175,21 @@ proof -
       using validES 
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto 
     moreover
-    from `\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> \<in> Tr\<^bsub>ES\<^esub>"
+    from \<open>\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> \<in> Tr\<^bsub>ES\<^esub>"
       using validES
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
     ultimately
     have "\<beta>\<upharpoonleft>E\<^bsub>ES\<^esub>=\<gamma>\<upharpoonleft>E\<^bsub>ES\<^esub>" 
-      using validES VIsViewOnE `V\<^bsub>\<V>\<^esub>={}` `\<gamma>\<upharpoonleft>(\<rho> \<V>) = \<beta>\<upharpoonleft>(\<rho> \<V>)` `\<rho> \<V> \<supseteq> (C\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)` 
+      using validES VIsViewOnE \<open>V\<^bsub>\<V>\<^esub>={}\<close> \<open>\<gamma>\<upharpoonleft>(\<rho> \<V>) = \<beta>\<upharpoonleft>(\<rho> \<V>)\<close> \<open>\<rho> \<V> \<supseteq> (C\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)\<close> 
         non_empty_projection_on_subset
       unfolding ES_valid_def isViewOn_def traces_contain_events_def 
       by (metis  empty_subsetI sup_absorb2 sup_commute)
-    hence "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>" using validES `\<gamma> @ [c] \<in> Tr\<^bsub>ES\<^esub>` `\<beta> \<in> Tr\<^bsub>ES\<^esub>` `\<gamma> \<in> Tr\<^bsub>ES\<^esub>`
+    hence "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>" using validES \<open>\<gamma> @ [c] \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<beta> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<gamma> \<in> Tr\<^bsub>ES\<^esub>\<close>
       unfolding ES_valid_def traces_contain_events_def 
       by (metis  list_subset_iff_projection_neutral subsetI)
     
     let ?\<alpha>'="[]"
-    from `\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>` `V\<^bsub>\<V>\<^esub> = {}` 
+    from \<open>\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>V\<^bsub>\<V>\<^esub> = {}\<close> 
     have "\<beta> @ [c] @ ?\<alpha>' \<in>Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []" 
       by (simp add: projection_on_empty_trace projection_to_emptyset_is_empty_trace)
     hence "\<exists> \<alpha>'. \<beta> @ [c] @ \<alpha>' \<in>Tr\<^bsub>ES\<^esub> \<and> \<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> \<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []" 
@@ -1210,7 +1210,7 @@ proof -
        and "\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
        and "Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c"
-    from `Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c`
+    from \<open>Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c\<close>
     obtain \<gamma> 
       where "\<gamma> @ [c] \<in> Tr\<^bsub>ES\<^esub>"
         and "\<gamma>\<upharpoonleft>(\<rho> \<V>) = \<beta>\<upharpoonleft>(\<rho> \<V>)"
@@ -1219,20 +1219,20 @@ proof -
       using validES 
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto 
     moreover
-    from `\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> \<in> Tr\<^bsub>ES\<^esub>" using validES
+    from \<open>\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> \<in> Tr\<^bsub>ES\<^esub>" using validES
       unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
     ultimately
     have "\<beta>\<upharpoonleft>E\<^bsub>ES\<^esub>=\<gamma>\<upharpoonleft>E\<^bsub>ES\<^esub>" 
-      using validES VIsViewOnE `V\<^bsub>\<V>\<^esub>={}` `\<gamma>\<upharpoonleft>(\<rho> \<V>) = \<beta>\<upharpoonleft>(\<rho> \<V>)` `\<rho> \<V> \<supseteq> (C\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)` 
+      using validES VIsViewOnE \<open>V\<^bsub>\<V>\<^esub>={}\<close> \<open>\<gamma>\<upharpoonleft>(\<rho> \<V>) = \<beta>\<upharpoonleft>(\<rho> \<V>)\<close> \<open>\<rho> \<V> \<supseteq> (C\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)\<close> 
         non_empty_projection_on_subset
       unfolding ES_valid_def isViewOn_def traces_contain_events_def 
       by (metis  empty_subsetI sup_absorb2 sup_commute)
-    hence "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>" using validES `\<gamma> @ [c] \<in> Tr\<^bsub>ES\<^esub>` `\<beta> \<in> Tr\<^bsub>ES\<^esub>` `\<gamma> \<in> Tr\<^bsub>ES\<^esub>`
+    hence "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>" using validES \<open>\<gamma> @ [c] \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<beta> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<gamma> \<in> Tr\<^bsub>ES\<^esub>\<close>
       unfolding ES_valid_def traces_contain_events_def 
       by (metis  list_subset_iff_projection_neutral subsetI)
     
     let ?\<beta>'=\<beta> and ?\<alpha>'="[]"
-    from `\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>` `V\<^bsub>\<V>\<^esub> = {}` 
+    from \<open>\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>V\<^bsub>\<V>\<^esub> = {}\<close> 
     have "?\<beta>' @ [c] @ ?\<alpha>' \<in>Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = [] 
               \<and> ?\<beta>'\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>) = \<beta>\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>)" 
       by (simp add: projection_on_empty_trace projection_to_emptyset_is_empty_trace)
@@ -1255,17 +1255,17 @@ proof -
    assume "\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
       and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       and "c \<in> C\<^bsub>\<V>\<^esub>"
-   from `\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> \<in> Tr\<^bsub>ES\<^esub>" 
+   from \<open>\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> \<in> Tr\<^bsub>ES\<^esub>" 
     using validES
     unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
-   with `total ES C\<^bsub>\<V>\<^esub>` have "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>" 
-    using `c \<in> C\<^bsub>\<V>\<^esub>`  unfolding total_def by auto
+   with \<open>total ES C\<^bsub>\<V>\<^esub>\<close> have "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>" 
+    using \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close>  unfolding total_def by auto
    moreover
-   from `V\<^bsub>\<V>\<^esub> = {}` have "\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>=[]"
+   from \<open>V\<^bsub>\<V>\<^esub> = {}\<close> have "\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>=[]"
      unfolding projection_def by auto
    ultimately 
    have "\<exists>\<alpha>'. \<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> \<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> \<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
-    using `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []`  by (metis append_Nil2 projection_idempotent)     
+    using \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close>  by (metis append_Nil2 projection_idempotent)     
   }
   thus ?thesis
     unfolding BSI_def by auto
@@ -1281,18 +1281,18 @@ proof -
    assume "c \<in> C\<^bsub>\<V>\<^esub>"
       and "\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
       and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
-   from `\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> \<in> Tr\<^bsub>ES\<^esub>" 
+   from \<open>\<beta> @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> \<in> Tr\<^bsub>ES\<^esub>" 
      using validES
      unfolding ES_valid_def traces_prefixclosed_def prefixclosed_def prefix_def by auto
-   with `total ES C\<^bsub>\<V>\<^esub>` have "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>"
-     using `c \<in> C\<^bsub>\<V>\<^esub>`  unfolding total_def by auto
+   with \<open>total ES C\<^bsub>\<V>\<^esub>\<close> have "\<beta> @ [c] \<in> Tr\<^bsub>ES\<^esub>"
+     using \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close>  unfolding total_def by auto
    moreover
-   from `V\<^bsub>\<V>\<^esub> = {}` have "\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>=[]"
+   from \<open>V\<^bsub>\<V>\<^esub> = {}\<close> have "\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>=[]"
      unfolding projection_def by auto
    ultimately 
    have "\<exists>\<beta>' \<alpha>'. 
           \<beta>' @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> \<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> \<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[] \<and> \<beta>'\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>) = \<beta>\<upharpoonleft>(V\<^bsub>\<V>\<^esub> \<union> C\<^bsub>\<V>\<^esub>)" 
-    using `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []` by (metis append_Nil2 projection_idempotent)     
+    using \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close> by (metis append_Nil2 projection_idempotent)     
   }
   thus ?thesis
     unfolding I_def by blast
@@ -1338,27 +1338,27 @@ proof -
        and "v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>"
        and "\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
-    from `c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>` have "c \<in> C\<^bsub>\<V>\<^esub>"
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>\<close> have "c \<in> C\<^bsub>\<V>\<^esub>"
       by auto
-    from `v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>` have "v \<in> V\<^bsub>\<V>\<^esub>"
+    from \<open>v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>\<close> have "v \<in> V\<^bsub>\<V>\<^esub>"
       by auto
     
     let ?\<alpha>="[v] @ \<alpha>"
-    from `v \<in> V\<^bsub>\<V>\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` have "?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
+    from \<open>v \<in> V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> have "?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       using VIsViewOnE 
       unfolding isViewOn_def V_valid_def VC_disjoint_def projection_def by auto
-    from `\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> @  ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>"
+    from \<open>\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> @  ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>"
       by auto
     
-    from `BSI \<V> Tr\<^bsub>ES\<^esub>` 
+    from \<open>BSI \<V> Tr\<^bsub>ES\<^esub>\<close> 
     obtain \<alpha>' 
       where "\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
         and "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>"
         and "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
-      using `c \<in> C\<^bsub>\<V>\<^esub>`  `\<beta> @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>` `?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` 
+      using \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close>  \<open>\<beta> @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> 
       unfolding BSI_def by blast 
 
-    from`v \<in> V\<^bsub>\<V>\<^esub>` `\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>` have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = [v] @ \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
+    from\<open>v \<in> V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>\<close> have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = [v] @ \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
       by (simp add: projection_def)
     then 
     obtain \<delta> \<alpha>''
@@ -1367,24 +1367,24 @@ proof -
         and "\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>"
        using projection_split_first_with_suffix by fastforce 
 
-    from `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
+    from \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       by (metis append_is_Nil_conv projection_concatenation_commute) 
-    from `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
+    from \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
       by (metis append_is_Nil_conv projection_concatenation_commute) 
     
-    from `\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` have "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" 
+    from \<open>\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> have "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" 
       using validES 
       unfolding ES_valid_def traces_contain_events_def by auto
-    with  `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "set \<delta> \<subseteq> E\<^bsub>ES\<^esub>" 
+    with  \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "set \<delta> \<subseteq> E\<^bsub>ES\<^esub>" 
       by auto
-    with  `\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]` `\<delta>\<upharpoonleft>V\<^bsub>\<V>\<^esub> = []` `N\<^bsub>\<V>\<^esub> \<subseteq> \<Delta>\<^bsub>\<Gamma>\<^esub>`
+    with  \<open>\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]\<close> \<open>\<delta>\<upharpoonleft>V\<^bsub>\<V>\<^esub> = []\<close> \<open>N\<^bsub>\<V>\<^esub> \<subseteq> \<Delta>\<^bsub>\<Gamma>\<^esub>\<close>
     have "(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)"
       using VIsViewOnE projection_empty_implies_absence_of_events  
       unfolding isViewOn_def projection_def by blast
     
     let ?\<beta>=\<beta> and ?\<delta>'=\<delta> and ?\<alpha>'=\<alpha>''
-    from `(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)` `\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` 
-            `\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>` `\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]`
+    from \<open>(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)\<close> \<open>\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> 
+            \<open>\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]\<close>
     have "(set ?\<delta>')\<subseteq>(N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ?\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       by auto
     hence "\<exists>\<alpha>''' \<delta>''. (set \<delta>'') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> (\<beta> @ [c] @ \<delta>'' @ [v] @ \<alpha>''') \<in> Tr\<^bsub>ES\<^esub> 
@@ -1407,27 +1407,27 @@ proof -
        and "\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
        and "Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c"
-    from `c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>` have "c \<in> C\<^bsub>\<V>\<^esub>" 
+    from \<open>c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>\<close> have "c \<in> C\<^bsub>\<V>\<^esub>" 
       by auto
-    from `v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>` have "v \<in> V\<^bsub>\<V>\<^esub>" 
+    from \<open>v \<in> V\<^bsub>\<V>\<^esub> \<inter> \<nabla>\<^bsub>\<Gamma>\<^esub>\<close> have "v \<in> V\<^bsub>\<V>\<^esub>" 
       by auto
     
     let ?\<alpha>="[v] @ \<alpha>"
-    from `v \<in> V\<^bsub>\<V>\<^esub>` `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` have "?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
+    from \<open>v \<in> V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> have "?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       using VIsViewOnE 
       unfolding isViewOn_def V_valid_def VC_disjoint_def projection_def by auto
-    from `\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` have "\<beta> @  ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>" 
+    from \<open>\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> have "\<beta> @  ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>" 
       by auto
     
-    from `BSIA \<rho> \<V> Tr\<^bsub>ES\<^esub>` 
+    from \<open>BSIA \<rho> \<V> Tr\<^bsub>ES\<^esub>\<close> 
     obtain \<alpha>' 
       where "\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
         and "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>"
         and "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []"
-      using `c \<in> C\<^bsub>\<V>\<^esub>`  `\<beta> @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>` `?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c` 
+      using \<open>c \<in> C\<^bsub>\<V>\<^esub>\<close>  \<open>\<beta> @ ?\<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>?\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>Adm \<V> \<rho> Tr\<^bsub>ES\<^esub> \<beta> c\<close> 
       unfolding BSIA_def by blast 
 
-    from`v \<in> V\<^bsub>\<V>\<^esub>` `\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>` have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = [v] @ \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
+    from\<open>v \<in> V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = ([v] @ \<alpha>)\<upharpoonleft>V\<^bsub>\<V>\<^esub>\<close> have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub> = [v] @ \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>" 
       by (simp add: projection_def)
     then 
     obtain \<delta> \<alpha>''
@@ -1436,23 +1436,23 @@ proof -
         and "\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>"
        using projection_split_first_with_suffix by fastforce 
 
-    from `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
+    from \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       by (metis append_is_Nil_conv projection_concatenation_commute) 
-    from `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
+    from \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub> = []\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]" 
       by (metis append_is_Nil_conv projection_concatenation_commute) 
     
-    from `\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` have "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" 
+    from \<open>\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> have "set \<alpha>' \<subseteq> E\<^bsub>ES\<^esub>" 
       using validES 
       unfolding ES_valid_def traces_contain_events_def by auto
-    with  `\<alpha>'=\<delta> @ [v] @ \<alpha>''` have "set \<delta> \<subseteq> E\<^bsub>ES\<^esub>" 
+    with  \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> have "set \<delta> \<subseteq> E\<^bsub>ES\<^esub>" 
       by auto
-    with  `\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]` `\<delta>\<upharpoonleft>V\<^bsub>\<V>\<^esub> = []` `N\<^bsub>\<V>\<^esub> \<subseteq> \<Delta>\<^bsub>\<Gamma>\<^esub>`
+    with  \<open>\<delta>\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]\<close> \<open>\<delta>\<upharpoonleft>V\<^bsub>\<V>\<^esub> = []\<close> \<open>N\<^bsub>\<V>\<^esub> \<subseteq> \<Delta>\<^bsub>\<Gamma>\<^esub>\<close>
     have "(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)" using VIsViewOnE projection_empty_implies_absence_of_events  
       unfolding isViewOn_def projection_def by blast
     
     let ?\<beta>=\<beta> and ?\<delta>'=\<delta> and ?\<alpha>'=\<alpha>''
-    from `(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)` `\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` `\<alpha>'=\<delta> @ [v] @ \<alpha>''` 
-            `\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>` `\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]`
+    from \<open>(set \<delta>) \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>)\<close> \<open>\<beta> @ [c] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>\<alpha>'=\<delta> @ [v] @ \<alpha>''\<close> 
+            \<open>\<alpha>''\<upharpoonleft>V\<^bsub>\<V>\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub>\<close> \<open>\<alpha>''\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]\<close>
     have "(set ?\<delta>')\<subseteq>(N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ?\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> ?\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^esub>=\<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^esub>=[]"
       by auto
     hence "\<exists>\<alpha>''' \<delta>''. (set \<delta>'') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> (\<beta> @ [c] @ \<delta>'' @ [v] @ \<alpha>''') \<in> Tr\<^bsub>ES\<^esub> 
@@ -1506,14 +1506,14 @@ proof-
                     and "\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>"
                     and "\<alpha>' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]"
           by auto
-        from V2_subset_V1  `\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>`  have  "\<alpha>'\<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha> \<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
+        from V2_subset_V1  \<open>\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>\<close>  have  "\<alpha>'\<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha> \<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
           using non_empty_projection_on_subset by blast
         moreover
-        from `\<alpha>' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]`  C2_subset_C1 have "\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []" 
+        from \<open>\<alpha>' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]\<close>  C2_subset_C1 have "\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []" 
           using projection_on_subset by auto
         ultimately
         show ?case 
-          using `\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` by auto
+          using \<open>\<beta> @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> by auto
       next
       case (Suc n)
         from "Suc.prems"(3) projection_split_last[OF "Suc.prems"(3)]  
@@ -1522,24 +1522,24 @@ proof-
                          and "\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []" 
                          and "n = length((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2)\<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)"
           by auto
-        from  "Suc.prems"(2) `\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2` have "\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []"
+        from  "Suc.prems"(2) \<open>\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2\<close> have "\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []"
           by (simp add: projection_concatenation_commute)
-        from  "Suc.prems"(1) `\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2` 
+        from  "Suc.prems"(1) \<open>\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2\<close> 
         obtain \<beta>' where "\<beta>'=\<beta> @ [c] @ \<gamma>\<^sub>1"
                     and "\<beta>' @ [c\<^sub>1] @ \<gamma>\<^sub>2 \<in> Tr\<^bsub>ES\<^esub>"
           by auto
-        from `\<beta>' @ [c\<^sub>1] @ \<gamma>\<^sub>2 \<in> Tr\<^bsub>ES\<^esub>`  `\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` `c\<^sub>1 \<in> C\<^bsub>\<V>\<^sub>1\<^esub>` 
+        from \<open>\<beta>' @ [c\<^sub>1] @ \<gamma>\<^sub>2 \<in> Tr\<^bsub>ES\<^esub>\<close>  \<open>\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> \<open>c\<^sub>1 \<in> C\<^bsub>\<V>\<^sub>1\<^esub>\<close> 
         obtain \<gamma>\<^sub>2' where " \<beta>' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>"
                     and "\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>"
                     and "\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]"
           using BSD_\<V>\<^sub>1  unfolding BSD_def by auto
-        from `\<beta>'=\<beta> @ [c] @ \<gamma>\<^sub>1` `\<beta>' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>`  have "\<beta> @ [c] @ \<gamma>\<^sub>1 @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>"
+        from \<open>\<beta>'=\<beta> @ [c] @ \<gamma>\<^sub>1\<close> \<open>\<beta>' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>\<close>  have "\<beta> @ [c] @ \<gamma>\<^sub>1 @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>"
           by auto 
         moreover
-        from  `\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub>=[]`  `\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]` C2_subset_C1 have "(\<gamma>\<^sub>1 @ \<gamma>\<^sub>2') \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> =[]" 
+        from  \<open>\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub>=[]\<close>  \<open>\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]\<close> C2_subset_C1 have "(\<gamma>\<^sub>1 @ \<gamma>\<^sub>2') \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> =[]" 
           by (metis append_Nil projection_concatenation_commute projection_on_subset)
         moreover
-        from `n = length((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2)\<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)` `\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` `\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]` 
+        from \<open>n = length((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2)\<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> \<open>\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> \<open>\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]\<close> 
         have "n = length((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2')\<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)"
           by (simp add: projection_concatenation_commute)
         ultimately 
@@ -1548,17 +1548,17 @@ proof-
         
         from  \<V>\<^sub>1IsViewOnE \<V>\<^sub>2IsViewOnE V2_subset_V1 C2_subset_C1  c\<^sub>1_in_C\<^sub>1 have "c\<^sub>1 \<notin> V\<^bsub>\<V>\<^sub>2\<^esub>"  
           unfolding isViewOn_def V_valid_def  VC_disjoint_def by auto
-        with `\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2` have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" 
+        with \<open>\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2\<close> have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" 
           unfolding projection_def by auto
         hence "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>1 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> @ \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> " 
           using projection_concatenation_commute by auto
-        with V2_subset_V1 `\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>`
+        with V2_subset_V1 \<open>\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>\<close>
         have "\<gamma>\<^sub>1 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> @ \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>1\<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> @ \<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" 
           using non_empty_projection_on_subset by metis
-        with `\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>1 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> @ \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>` have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>"
+        with \<open>\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>1 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> @ \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>\<close> have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>"
           by (simp add: projection_concatenation_commute)
        
-       from witness  `\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>` 
+       from witness  \<open>\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>\<close> 
        show ?case 
          by auto
      qed          
@@ -1596,18 +1596,18 @@ proof-
                       and "\<alpha>' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]"
                       and "\<beta>' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)" 
           by auto
-        from V2_subset_V1  `\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>`  have  "\<alpha>'\<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha> \<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
+        from V2_subset_V1  \<open>\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>\<close>  have  "\<alpha>'\<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha> \<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
           using non_empty_projection_on_subset by blast
         moreover
-        from `\<alpha>' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]`  C2_subset_C1 have "\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []"
+        from \<open>\<alpha>' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]\<close>  C2_subset_C1 have "\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []"
           using projection_on_subset by auto
         moreover
-        from `\<beta>' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)`  V\<^sub>2_union_C\<^sub>2_subset_V\<^sub>1_union_C\<^sub>1 
+        from \<open>\<beta>' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close>  V\<^sub>2_union_C\<^sub>2_subset_V\<^sub>1_union_C\<^sub>1 
         have "\<beta>' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>)"
           using non_empty_projection_on_subset by blast
         ultimately
         show ?case 
-          using `\<beta>' @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` by auto
+          using \<open>\<beta>' @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> by auto
       next
       case (Suc n)
         from "Suc.prems"(3) projection_split_last[OF "Suc.prems"(3)]  
@@ -1616,13 +1616,13 @@ proof-
                          and "\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []" 
                          and "n = length((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2)\<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)" 
           by auto
-        from  "Suc.prems"(2) `\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2` have "\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []" 
+        from  "Suc.prems"(2) \<open>\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2\<close> have "\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []" 
           by (simp add: projection_concatenation_commute)
-        from  "Suc.prems"(1) `\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2` 
+        from  "Suc.prems"(1) \<open>\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2\<close> 
         obtain \<beta>' where "\<beta>'=\<beta> @ [c] @ \<gamma>\<^sub>1"
                     and "\<beta>' @ [c\<^sub>1] @ \<gamma>\<^sub>2 \<in> Tr\<^bsub>ES\<^esub>"
           by auto
-        from `\<beta>' @ [c\<^sub>1] @ \<gamma>\<^sub>2 \<in> Tr\<^bsub>ES\<^esub>`  `\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` `c\<^sub>1 \<in> C\<^bsub>\<V>\<^sub>1\<^esub>` 
+        from \<open>\<beta>' @ [c\<^sub>1] @ \<gamma>\<^sub>2 \<in> Tr\<^bsub>ES\<^esub>\<close>  \<open>\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> \<open>c\<^sub>1 \<in> C\<^bsub>\<V>\<^sub>1\<^esub>\<close> 
         obtain \<gamma>\<^sub>2'  \<beta>'' where " \<beta>'' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>"
                          and "\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>"
                          and "\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]"
@@ -1632,7 +1632,7 @@ proof-
         from  c_in_C\<^sub>1 have "c \<in> V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>"
           by auto  
         moreover
-        from  `\<beta>'' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta>' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)` `\<beta>'=\<beta> @ [c] @ \<gamma>\<^sub>1`  
+        from  \<open>\<beta>'' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta>' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> \<open>\<beta>'=\<beta> @ [c] @ \<gamma>\<^sub>1\<close>  
         have "\<beta>'' \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = (\<beta> @ [c] @ \<gamma>\<^sub>1) \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)"
           by auto 
         ultimately   
@@ -1646,57 +1646,57 @@ proof-
                          and  "\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)" 
           using projection_split_arbitrary_element  by auto 
         
-        from `\<beta>'' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>` this(1)
+        from \<open>\<beta>'' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>\<close> this(1)
         have "\<beta>''' @ [c] @ \<gamma>\<^sub>1' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>"
           by simp    
 
-        from `\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]` have "\<gamma>\<^sub>2' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub>=[]"
+        from \<open>\<gamma>\<^sub>2' \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> =[]\<close> have "\<gamma>\<^sub>2' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub>=[]"
           using C2_subset_C1 projection_on_subset by auto
         moreover
-        from `\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []` `\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)` 
+        from \<open>\<gamma>\<^sub>1 \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []\<close> \<open>\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> 
         have "\<gamma>\<^sub>1'\<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = []" using C2_subset_C1 V2_subset_V1 
           by (metis non_empty_projection_on_subset projection_subset_eq_from_superset_eq sup_commute)               
         ultimately
         have "(\<gamma>\<^sub>1' @ \<gamma>\<^sub>2')\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []" 
           by (simp add: projection_concatenation_commute)
           
-        from `\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)` have "\<gamma>\<^sub>1'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>1\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>" 
+        from \<open>\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> have "\<gamma>\<^sub>1'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>1\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>" 
           using projection_subset_eq_from_superset_eq sup_commute by metis
         hence "length(\<gamma>\<^sub>1'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>) = length(\<gamma>\<^sub>1\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>)" by simp
         moreover
-        from `\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` `\<gamma>\<^sub>2'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>=[]` have "length(\<gamma>\<^sub>2'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>) = length(\<gamma>\<^sub>2\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>)"
+        from \<open>\<gamma>\<^sub>2 \<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> \<open>\<gamma>\<^sub>2'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>=[]\<close> have "length(\<gamma>\<^sub>2'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>) = length(\<gamma>\<^sub>2\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>)"
           by simp
         ultimately
         have "n=length((\<gamma>\<^sub>1' @ \<gamma>\<^sub>2')\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>)" 
-          by (simp add: `n = length ((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)` projection_concatenation_commute)
+          by (simp add: \<open>n = length ((\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> projection_concatenation_commute)
 
           
       
-        from `\<beta>''' @ [c] @ \<gamma>\<^sub>1' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>` `(\<gamma>\<^sub>1' @ \<gamma>\<^sub>2')\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []` `n=length((\<gamma>\<^sub>1' @ \<gamma>\<^sub>2')\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>)` 
+        from \<open>\<beta>''' @ [c] @ \<gamma>\<^sub>1' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>(\<gamma>\<^sub>1' @ \<gamma>\<^sub>2')\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []\<close> \<open>n=length((\<gamma>\<^sub>1' @ \<gamma>\<^sub>2')\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> 
         have witness: 
         " \<exists>\<alpha>' \<beta>'. \<beta>' @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> \<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = ( \<gamma>\<^sub>1' @ \<gamma>\<^sub>2')  \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> 
                     \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^sub>2\<^esub> = [] \<and> \<beta>' \<upharpoonleft> (V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>) = \<beta>''' \<upharpoonleft> (V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>)" 
-          using Suc.hyps[OF `\<beta>''' @ [c] @ \<gamma>\<^sub>1' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>`] by simp
+          using Suc.hyps[OF \<open>\<beta>''' @ [c] @ \<gamma>\<^sub>1' @ \<gamma>\<^sub>2' \<in> Tr\<^bsub>ES\<^esub>\<close>] by simp
         
-        from V\<^sub>2_union_C\<^sub>2_subset_V\<^sub>1_union_C\<^sub>1  `\<beta>'''  \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)` 
+        from V\<^sub>2_union_C\<^sub>2_subset_V\<^sub>1_union_C\<^sub>1  \<open>\<beta>'''  \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> 
         have "\<beta>'''  \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>)"
           using non_empty_projection_on_subset by blast
           
         from  \<V>\<^sub>1IsViewOnE \<V>\<^sub>2IsViewOnE V2_subset_V1 C2_subset_C1  c\<^sub>1_in_C\<^sub>1 have "c\<^sub>1 \<notin> V\<^bsub>\<V>\<^sub>2\<^esub>"  
           unfolding isViewOn_def V_valid_def  VC_disjoint_def by auto
-        with `\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2` have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>"
+        with \<open>\<alpha> = \<gamma>\<^sub>1 @ [c\<^sub>1] @ \<gamma>\<^sub>2\<close> have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>"
           unfolding projection_def by auto
         moreover
-        from V2_subset_V1 `\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>` have "\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>"
+        from V2_subset_V1 \<open>\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>1\<^esub>\<close> have "\<gamma>\<^sub>2' \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>2 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>"
            using V2_subset_V1 by (metis projection_subset_eq_from_superset_eq subset_Un_eq)
         moreover
-        from `\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)` have "\<gamma>\<^sub>1' \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>1 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" 
+        from \<open>\<gamma>\<^sub>1'\<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>) = \<gamma>\<^sub>1 \<upharpoonleft>(V\<^bsub>\<V>\<^sub>1\<^esub> \<union> C\<^bsub>\<V>\<^sub>1\<^esub>)\<close> have "\<gamma>\<^sub>1' \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = \<gamma>\<^sub>1 \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" 
           using V2_subset_V1 by (metis projection_subset_eq_from_superset_eq subset_Un_eq)
         ultimately  
-        have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1' @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" using `\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>`
+        have "\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1' @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>" using \<open>\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1 @ \<gamma>\<^sub>2) \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>\<close>
           by (simp add: projection_concatenation_commute)
 
-        from `\<beta>'''  \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>)` `\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1' @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>`
+        from \<open>\<beta>'''  \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>) = \<beta> \<upharpoonleft>(V\<^bsub>\<V>\<^sub>2\<^esub> \<union> C\<^bsub>\<V>\<^sub>2\<^esub>)\<close> \<open>\<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub> = (\<gamma>\<^sub>1' @ \<gamma>\<^sub>2') \<upharpoonleft> V\<^bsub>\<V>\<^sub>2\<^esub>\<close>
         show ?case
           using witness by simp
      qed          
@@ -1725,34 +1725,34 @@ proof -
        and "\<beta> @ [c,v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
     
-    from `c \<in> C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub>` `C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>` have "c \<in>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
+    from \<open>c \<in> C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub>\<close> \<open>C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> have "c \<in>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
       by auto
     moreover
-    from `v \<in> V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub>` `V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>` have "v \<in>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
+    from \<open>v \<in> V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub>\<close> \<open>V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> have "v \<in>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
       by auto
     moreover
-    from C2_equals_C1 `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []` have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
+    from C2_equals_C1 \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []\<close> have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
       by auto
     ultimately
     obtain \<alpha>' \<delta>' where "(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)"
                   and "\<beta> @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
                   and "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>"
                   and "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
-      using `\<beta> @ [c,v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `FCD \<Gamma>\<^sub>1 \<V>\<^sub>1 Tr\<^bsub>ES\<^esub>` unfolding FCD_def by blast  
+      using \<open>\<beta> @ [c,v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>FCD \<Gamma>\<^sub>1 \<V>\<^sub>1 Tr\<^bsub>ES\<^esub>\<close> unfolding FCD_def by blast  
     
-    from `(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)` `N\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<supseteq>  N\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>` 
+    from \<open>(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)\<close> \<open>N\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<supseteq>  N\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> 
     have "(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>2\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub>)"
       by auto
     moreover
-    from `\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>` V2_subset_V1 have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
+    from \<open>\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>\<close> V2_subset_V1 have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
     using non_empty_projection_on_subset by blast
     moreover
-    from C2_equals_C1 `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` have "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
+    from C2_equals_C1 \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> have "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
       by auto
     ultimately
     have "\<exists> \<delta>' \<alpha>'. (set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>2\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub>) 
                          \<and> \<beta> @ \<delta>'@ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> \<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> \<and> \<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
-      using `\<beta> @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` by auto                
+      using \<open>\<beta> @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> by auto                
   }
   thus ?thesis
     unfolding FCD_def by blast
@@ -1960,33 +1960,33 @@ proof -
        and "\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>"
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
     
-    from `c \<in> C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub>` `C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>` have "c \<in>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
+    from \<open>c \<in> C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub>\<close> \<open>C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> have "c \<in>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
       by auto
     moreover
-    from `v \<in> V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub>` `V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>` have "v \<in>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
+    from \<open>v \<in> V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub>\<close> \<open>V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> have "v \<in>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
       by auto
     moreover
-    from C2_equals_C1 `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []` have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
+    from C2_equals_C1 \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []\<close> have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
       by auto
     ultimately 
     obtain \<alpha>' \<delta>' where "(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)"
                   and "\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
                   and "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>"
                   and "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
-      using `\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `FCI \<Gamma>\<^sub>1 \<V>\<^sub>1 Tr\<^bsub>ES\<^esub>` unfolding FCI_def by blast  
+      using \<open>\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>FCI \<Gamma>\<^sub>1 \<V>\<^sub>1 Tr\<^bsub>ES\<^esub>\<close> unfolding FCI_def by blast  
     
-    from `(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)` `N\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<supseteq>  N\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>` 
+    from \<open>(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)\<close> \<open>N\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<supseteq>  N\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> 
     have "(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>2\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub>)"
       by auto
     moreover
-    from `\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>` V2_subset_V1 have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
+    from \<open>\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>\<close> V2_subset_V1 have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
       using non_empty_projection_on_subset by blast
     moreover
-    from `C\<^bsub>\<V>\<^sub>2\<^esub> = C\<^bsub>\<V>\<^sub>1\<^esub>` `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` have "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
+    from \<open>C\<^bsub>\<V>\<^sub>2\<^esub> = C\<^bsub>\<V>\<^sub>1\<^esub>\<close> \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> have "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
       by auto
     ultimately have "\<exists> \<delta>' \<alpha>'. (set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>2\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub>) 
                          \<and> \<beta> @ [c] @  \<delta>'@ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> \<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> \<and> \<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
-               using `\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` by auto                
+               using \<open>\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> by auto                
   }
   thus ?thesis
     unfolding FCI_def by blast
@@ -2012,37 +2012,37 @@ proof -
        and "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
        and "Adm \<V>\<^sub>2 \<rho>\<^sub>2 Tr\<^bsub>ES\<^esub> \<beta> c"
     
-    from `c \<in> C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub>` `C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>` have "c \<in>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
+    from \<open>c \<in> C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub>\<close> \<open>C\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> have "c \<in>  C\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Upsilon>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
       by auto
     moreover
-    from `v \<in> V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub>` `V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>` have "v \<in>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
+    from \<open>v \<in> V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub>\<close> \<open>V\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<subseteq>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> have "v \<in>  V\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<nabla>\<^bsub>\<Gamma>\<^sub>1\<^esub>"
       by auto
     moreover
-    from C2_equals_C1 `\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []` have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
+    from C2_equals_C1 \<open>\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []\<close> have "\<alpha>\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
       by auto
     moreover
-    from `Adm \<V>\<^sub>2 \<rho>\<^sub>2 Tr\<^bsub>ES\<^esub> \<beta> c` `\<rho>\<^sub>2(\<V>\<^sub>2) \<supseteq> \<rho>\<^sub>1(\<V>\<^sub>1)` have "Adm \<V>\<^sub>1 \<rho>\<^sub>1 Tr\<^bsub>ES\<^esub> \<beta> c" 
+    from \<open>Adm \<V>\<^sub>2 \<rho>\<^sub>2 Tr\<^bsub>ES\<^esub> \<beta> c\<close> \<open>\<rho>\<^sub>2(\<V>\<^sub>2) \<supseteq> \<rho>\<^sub>1(\<V>\<^sub>1)\<close> have "Adm \<V>\<^sub>1 \<rho>\<^sub>1 Tr\<^bsub>ES\<^esub> \<beta> c" 
        by (simp add: Adm_implies_Adm_for_modified_rho)
     ultimately
     obtain \<alpha>' \<delta>' where "(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)"
                   and "\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>"
                   and "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>"
                   and "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []"
-      using `\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>` `FCIA \<rho>\<^sub>1 \<Gamma>\<^sub>1 \<V>\<^sub>1 Tr\<^bsub>ES\<^esub>` unfolding FCIA_def by blast  
+      using \<open>\<beta> @ [v] @ \<alpha> \<in> Tr\<^bsub>ES\<^esub>\<close> \<open>FCIA \<rho>\<^sub>1 \<Gamma>\<^sub>1 \<V>\<^sub>1 Tr\<^bsub>ES\<^esub>\<close> unfolding FCIA_def by blast  
     
-    from `(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)` `N\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<supseteq>  N\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>` 
+    from \<open>(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>1\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>)\<close> \<open>N\<^bsub>\<V>\<^sub>2\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub> \<supseteq>  N\<^bsub>\<V>\<^sub>1\<^esub>\<inter>\<Delta>\<^bsub>\<Gamma>\<^sub>1\<^esub>\<close> 
     have "(set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>2\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub>)"
       by auto
     moreover
-    from `\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>` V2_subset_V1 have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
+    from \<open>\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>1\<^esub>\<close> V2_subset_V1 have "\<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub>" 
       using non_empty_projection_on_subset by blast
     moreover
-    from `C\<^bsub>\<V>\<^sub>2\<^esub> = C\<^bsub>\<V>\<^sub>1\<^esub>` `\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []` have "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
+    from \<open>C\<^bsub>\<V>\<^sub>2\<^esub> = C\<^bsub>\<V>\<^sub>1\<^esub>\<close> \<open>\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>1\<^esub> = []\<close> have "\<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
       by auto
     ultimately
     have "\<exists> \<delta>' \<alpha>'. (set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^sub>2\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^sub>2\<^esub>) 
                          \<and> \<beta> @ [c] @  \<delta>'@ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub> \<and> \<alpha>'\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> = \<alpha>\<upharpoonleft>V\<^bsub>\<V>\<^sub>2\<^esub> \<and> \<alpha>'\<upharpoonleft>C\<^bsub>\<V>\<^sub>2\<^esub> = []"
-      using `\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>` by auto                
+      using \<open>\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>' \<in> Tr\<^bsub>ES\<^esub>\<close> by auto                
   }
   thus ?thesis
     unfolding FCIA_def by blast

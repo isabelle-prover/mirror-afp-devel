@@ -55,7 +55,7 @@ fun P_of_state :: "'a state \<Rightarrow> 'a clause set" where
   "P_of_state (N, P, Q) = P"
 
 text \<open>
-@{text O} denotes relation composition in Isabelle, so the formalization uses @{text Q} instead.
+\<open>O\<close> denotes relation composition in Isabelle, so the formalization uses \<open>Q\<close> instead.
 \<close>
 
 fun Q_of_state :: "'a state \<Rightarrow> 'a clause set" where

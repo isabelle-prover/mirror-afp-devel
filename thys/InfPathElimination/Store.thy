@@ -2,36 +2,36 @@ theory Store
 imports Aexp Bexp
 begin
 
-section{* Stores *}
+section\<open>Stores\<close>
 
-text {* In this section, we introduce the type of stores, which we use to link program variables 
+text \<open>In this section, we introduce the type of stores, which we use to link program variables 
 with their symbolic counterpart during symbolic execution. We define the notion of consistency 
 of a pair of program and symbolic states w.r.t.\ a store. This notion will prove helpful when 
 defining various concepts and proving facts related to subsumption (see \verb?Conf.thy?). Finally, we 
 model substitutions that will be performed during symbolic execution (see \verb?SymExec.thy?) by two 
-operations: @{term adapt_aexp} and @{term adapt_bexp}. *}
+operations: @{term adapt_aexp} and @{term adapt_bexp}.\<close>
 
-subsection {* Basic definitions *}
+subsection \<open>Basic definitions\<close>
 
-subsubsection {* The @{term "store"} type-synonym *}
+subsubsection \<open>The @{term "store"} type-synonym\<close>
 
-text {* Symbolic execution performs over configurations (see \verb?Conf.thy?), which are pairs made 
+text \<open>Symbolic execution performs over configurations (see \verb?Conf.thy?), which are pairs made 
 of:
 \begin{itemize} 
 \item a \emph{store} mapping program variables to symbolic variables,
 \item a set of boolean expressions which records constraints over symbolic variables and whose 
 conjunction is the actual path predicate of the configuration.
 \end{itemize}
-We define stores as total functions from program variables to indexes. *}
+We define stores as total functions from program variables to indexes.\<close>
 
 
 type_synonym 'a store = "'a \<Rightarrow> nat"
 
 
-subsubsection {* Symbolic variables of a store *}
+subsubsection \<open>Symbolic variables of a store\<close>
 
-text {* The symbolic variable associated to a program variable @{term "v"} by a store 
-@{term "s"} is the couple @{term "(v,s v)"}. *}
+text \<open>The symbolic variable associated to a program variable @{term "v"} by a store 
+@{term "s"} is the couple @{term "(v,s v)"}.\<close>
 
 
 definition symvar :: 
@@ -40,8 +40,8 @@ where
   "symvar v s \<equiv> (v,s v)"
 
 
-text {* The function associating symbolic variables to program variables obtained from 
-@{term "s"} is injective. *}
+text \<open>The function associating symbolic variables to program variables obtained from 
+@{term "s"} is injective.\<close>
 
 
 lemma 
@@ -49,7 +49,7 @@ lemma
 by (auto simp add : inj_on_def symvar_def)
 
 
-text {* The sets of symbolic variables of a store is the image set of the function @{term "symvar"}. *}
+text \<open>The sets of symbolic variables of a store is the image set of the function @{term "symvar"}.\<close>
 
 
 definition symvars :: 
@@ -58,10 +58,10 @@ where
  "symvars s = (\<lambda> v. symvar v s) ` (UNIV::'a set)"
 
 
-subsubsection {* Fresh symbolic variables *}
+subsubsection \<open>Fresh symbolic variables\<close>
 
-text {* A symbolic variable is said to be fresh for a store if it is not a member of its set of 
-symbolic variables. *}
+text \<open>A symbolic variable is said to be fresh for a store if it is not a member of its set of 
+symbolic variables.\<close>
 
 
 definition fresh_symvar :: 
@@ -70,12 +70,12 @@ where
  "fresh_symvar sv s = (sv \<notin> symvars s)"
 
 
-subsection {* Consistency *}
+subsection \<open>Consistency\<close>
 
-text {* We say that a program state @{term "\<sigma>"} and a symbolic state @{term "\<sigma>\<^sub>s\<^sub>y\<^sub>m"} are 
+text \<open>We say that a program state @{term "\<sigma>"} and a symbolic state @{term "\<sigma>\<^sub>s\<^sub>y\<^sub>m"} are 
 \emph{consistent} with respect to a store @{term "s"} if, for each variable @{term "v"}, the 
 value associated by @{term "\<sigma>"} to @{term "v"} is equal to the value associated by @{term "\<sigma>\<^sub>s\<^sub>y\<^sub>m"} 
-to the symbolic variable associated to @{term "v"} by @{term "s"}. *}
+to the symbolic variable associated to @{term "v"} by @{term "s"}.\<close>
 
 
 definition consistent ::
@@ -84,7 +84,7 @@ where
   "consistent \<sigma> \<sigma>\<^sub>s\<^sub>y\<^sub>m s \<equiv> (\<forall> v. \<sigma>\<^sub>s\<^sub>y\<^sub>m (symvar v s) = \<sigma> v)"
 
 
-text {* There always exists a couple of consistent states for a given store. *}
+text \<open>There always exists a couple of consistent states for a given store.\<close>
 
 
 lemma
@@ -92,9 +92,9 @@ lemma
 by (auto simp add : consistent_def)
 
 
-text {* Moreover, given a store and a program (resp. symbolic) state, one can always build a symbolic 
+text \<open>Moreover, given a store and a program (resp. symbolic) state, one can always build a symbolic 
 (resp. program) state such that the two states are coherent wrt.\ the store. The four following 
-lemmas show how to build the second state given the first one. *}
+lemmas show how to build the second state given the first one.\<close>
 
 
 lemma consistent_eq1 :
@@ -118,13 +118,13 @@ using consistent_eq2 by fast
 
 
 
-subsection {* Adaptation of an arithmetic expression to a store *}
+subsection \<open>Adaptation of an arithmetic expression to a store\<close>
 
-text {* Suppose that @{term "e"} is a term representing an arithmetic expression over program 
+text \<open>Suppose that @{term "e"} is a term representing an arithmetic expression over program 
 variables and let @{term "s"} be a store. We call \emph{adaptation of @{term "e"} to @{term "s"}} 
 the term obtained by substituting occurrences of program variables in @{term "e"} by their 
 symbolic counterpart given by @{term "s"}. Since we model arithmetic expressions by total 
-functions and not terms, we define the adaptation of such expressions as follows. *}
+functions and not terms, we define the adaptation of such expressions as follows.\<close>
 
 
 definition adapt_aexp :: 
@@ -133,11 +133,11 @@ where
   "adapt_aexp e s = (\<lambda> \<sigma>\<^sub>s\<^sub>y\<^sub>m. e (\<lambda> v. \<sigma>\<^sub>s\<^sub>y\<^sub>m (symvar v s)))"
 
 
-text {* Given an arithmetic expression @{term "e"}, a program state @{term "\<sigma>"} and a symbolic 
+text \<open>Given an arithmetic expression @{term "e"}, a program state @{term "\<sigma>"} and a symbolic 
 state @{term "\<sigma>\<^sub>s\<^sub>y\<^sub>m"} coherent with a store @{term "s"}, the value associated to @{term "\<sigma>\<^sub>s\<^sub>y\<^sub>m"} by 
 the adaptation of @{term "e"} to @{term "s"} is the same than the value associated by @{term "e"} to 
 @{term "\<sigma>"}. This confirms the fact that @{term "adapt_aexp"} models the act of substituting 
-occurrences of program variables by their symbolic counterparts in a term over program variables. *}
+occurrences of program variables by their symbolic counterparts in a term over program variables.\<close>
 
 
 lemma adapt_aexp_is_subst :
@@ -147,14 +147,14 @@ using assms by (simp add : consistent_eq2 adapt_aexp_def)
 
 
 
-text {* As said earlier, we will later need to prove that symbolic execution preserves finiteness 
+text \<open>As said earlier, we will later need to prove that symbolic execution preserves finiteness 
 of the set of symbolic variables in use, which requires that the adaptation of an arithmetic 
 expression to a store preserves finiteness of the set of variables of expressions. We proceed as 
-follows. *}
+follows.\<close>
 
-text {* First, we show that if @{term "v"} is a variable of an expression @{term "e"}, 
+text \<open>First, we show that if @{term "v"} is a variable of an expression @{term "e"}, 
 then the symbolic variable associated to @{term "v"} by a store is a variable of the adaptation of 
-@{term "e"} to this store. *}
+@{term "e"} to this store.\<close>
 
 
 lemma var_imp_symvar_var :
@@ -178,10 +178,10 @@ proof -
 qed
 
 
-text {* On the other hand, if @{term "sv"} is a symbolic variable in the adaptation of an expression 
+text \<open>On the other hand, if @{term "sv"} is a symbolic variable in the adaptation of an expression 
 to a store, then the program variable it represents is a variable of this expression. This requires 
 to prove that the set of variables of the adaptation of an expression to a store is a subset of the 
-symbolic variables of this store.*}
+symbolic variables of this store.\<close>
 
 
 lemma symvars_of_adapt_aexp :
@@ -204,7 +204,7 @@ proof (intro allI impI)
     by (simp add : adapt_aexp_def)
     
     thus False 
-    using `?e' (\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := val)) \<noteq> ?e' \<sigma>\<^sub>s\<^sub>y\<^sub>m` 
+    using \<open>?e' (\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := val)) \<noteq> ?e' \<sigma>\<^sub>s\<^sub>y\<^sub>m\<close> 
     by (elim notE)
   qed
 
@@ -232,11 +232,11 @@ proof -
 
   moreover
   have "(\<lambda> v. (\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := val)) (symvar v s)) = (\<lambda> v. \<sigma>\<^sub>s\<^sub>y\<^sub>m (symvar v s)) (v := val)"
-  using `sv = (v, s v)` by (auto simp add : symvar_def)
+  using \<open>sv = (v, s v)\<close> by (auto simp add : symvar_def)
   
   ultimately
   show ?thesis
-  using `sv = (v, s v)` 
+  using \<open>sv = (v, s v)\<close> 
         consistentI2[of \<sigma>\<^sub>s\<^sub>y\<^sub>m s] 
         consistentI2[of "\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := val)" s]
   unfolding Aexp.vars_def 
@@ -245,9 +245,9 @@ qed
 
 
 
-text {* Thus, we have that the set of variables of the adaptation of an expression to a store is 
+text \<open>Thus, we have that the set of variables of the adaptation of an expression to a store is 
 the set of symbolic variables associated by this store to the variables of this 
-expression. *}
+expression.\<close>
 
 
 lemma adapt_aexp_vars :
@@ -268,8 +268,8 @@ next
 qed 
 
 
-text {* The fact that the adaptation of an arithmetic expression to a store preserves finiteness 
-of the set of variables trivially follows the previous lemma. *}
+text \<open>The fact that the adaptation of an arithmetic expression to a store preserves finiteness 
+of the set of variables trivially follows the previous lemma.\<close>
 
 
 lemma finite_vars_imp_finite_adapt_a :
@@ -277,9 +277,9 @@ lemma finite_vars_imp_finite_adapt_a :
   shows   "finite (Aexp.vars (adapt_aexp e s))"
 unfolding adapt_aexp_vars using assms by auto
 
-subsection {* Adaptation of a boolean expression to a store *}
+subsection \<open>Adaptation of a boolean expression to a store\<close>
 
-text {* We proceed analogously for the adaptation of boolean expressions to a store. *}
+text \<open>We proceed analogously for the adaptation of boolean expressions to a store.\<close>
 
 
 definition adapt_bexp :: 
@@ -354,11 +354,11 @@ proof -
 
   moreover
   have "(\<lambda> v. (\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := val)) (symvar v s)) = (\<lambda> v. \<sigma>\<^sub>s\<^sub>y\<^sub>m (symvar v s)) (v := val)"
-  using `sv = (v, s v)` by (auto simp add : symvar_def)
+  using \<open>sv = (v, s v)\<close> by (auto simp add : symvar_def)
   
   ultimately
   show ?thesis
-  using `sv = (v, s v)` 
+  using \<open>sv = (v, s v)\<close> 
         consistentI2[of \<sigma>\<^sub>s\<^sub>y\<^sub>m s] 
         consistentI2[of "\<sigma>\<^sub>s\<^sub>y\<^sub>m (sv := val)" s]
   unfolding vars_def by (simp add : adapt_bexp_is_subst) blast

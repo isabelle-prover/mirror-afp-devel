@@ -90,14 +90,14 @@ fun afilter :: "aexp \<Rightarrow> 'av \<Rightarrow> 'av st option \<Rightarrow>
  (let (a1,a2) = filter_plus' a (aval'' e1 S) (aval'' e2 S)
   in afilter e1 a1 (afilter e2 a2 S))"
 
-text{* The test for @{const bot} in the @{const V}-case is important: @{const
+text\<open>The test for @{const bot} in the @{const V}-case is important: @{const
 bot} indicates that a variable has no possible values, i.e.\ that the current
 program point is unreachable. But then the abstract state should collapse to
 @{const None}. Put differently, we maintain the invariant that in an abstract
 state of the form @{term"Some s"}, all variables are mapped to non-@{const
 bot} values. Otherwise the (pointwise) join of two abstract states, one of
 which contains @{const bot} values, may produce too large a result, thus
-making the analysis less precise. *}
+making the analysis less precise.\<close>
 
 
 fun bfilter :: "bexp \<Rightarrow> bool \<Rightarrow> 'av st option \<Rightarrow> 'av st option" where
@@ -115,7 +115,7 @@ proof(induction e arbitrary: a S)
   case N thus ?case by simp (metis test_num')
 next
   case (V x)
-  obtain S' where "S = Some S'" and "s : \<gamma>\<^sub>f S'" using `s : \<gamma>\<^sub>o S`
+  obtain S' where "S = Some S'" and "s : \<gamma>\<^sub>f S'" using \<open>s : \<gamma>\<^sub>o S\<close>
     by(auto simp: in_gamma_option_iff)
   moreover hence "s x : \<gamma> (lookup S' x)" by(simp add: \<gamma>_st_def)
   moreover have "s x : \<gamma> a" using V by simp
@@ -192,10 +192,10 @@ next
       "P \<subseteq> \<gamma>\<^sub>o Pa" "cs1 \<le> \<gamma>\<^sub>c ca1" "cs2 \<le> \<gamma>\<^sub>c ca2"
     by (fastforce simp: If_le map_acom_If)
   moreover have "post cs1 \<subseteq> \<gamma>\<^sub>o(post ca1 \<squnion> post ca2)"
-    by (metis (no_types) `cs1 \<le> \<gamma>\<^sub>c ca1` join_ge1 le_post mono_gamma_o order_trans post_map_acom)
+    by (metis (no_types) \<open>cs1 \<le> \<gamma>\<^sub>c ca1\<close> join_ge1 le_post mono_gamma_o order_trans post_map_acom)
   moreover have "post cs2 \<subseteq> \<gamma>\<^sub>o(post ca1 \<squnion> post ca2)"
-    by (metis (no_types) `cs2 \<le> \<gamma>\<^sub>c ca2` join_ge2 le_post mono_gamma_o order_trans post_map_acom)
-  ultimately show ?case using `S \<subseteq> \<gamma>\<^sub>o S'`
+    by (metis (no_types) \<open>cs2 \<le> \<gamma>\<^sub>c ca2\<close> join_ge2 le_post mono_gamma_o order_trans post_map_acom)
+  ultimately show ?case using \<open>S \<subseteq> \<gamma>\<^sub>o S'\<close>
     by (simp add: If.IH subset_iff bfilter_sound)
 next
   case (While I b cs1 P)
@@ -204,7 +204,7 @@ next
     "I \<subseteq> \<gamma>\<^sub>o Ia" "P \<subseteq> \<gamma>\<^sub>o Pa" "cs1 \<le> \<gamma>\<^sub>c ca1"
     by (fastforce simp: map_acom_While While_le)
   moreover have "S \<union> post cs1 \<subseteq> \<gamma>\<^sub>o (S' \<squnion> post ca1)"
-    using `S \<subseteq> \<gamma>\<^sub>o S'` le_post[OF `cs1 \<le> \<gamma>\<^sub>c ca1`, simplified]
+    using \<open>S \<subseteq> \<gamma>\<^sub>o S'\<close> le_post[OF \<open>cs1 \<le> \<gamma>\<^sub>c ca1\<close>, simplified]
     by (metis (no_types) join_ge1 join_ge2 le_sup_iff mono_gamma_o order_trans)
   ultimately show ?case by (simp add: While.IH subset_iff bfilter_sound)
 qed
@@ -230,8 +230,8 @@ qed
 
 subsection "Commands over a set of variables"
 
-text{* Key invariant: the domains of all abstract states are subsets of the
-set of variables of the program. *}
+text\<open>Key invariant: the domains of all abstract states are subsets of the
+set of variables of the program.\<close>
 
 definition "domo S = (case S of None \<Rightarrow> {} | Some S' \<Rightarrow> set(dom S'))"
 

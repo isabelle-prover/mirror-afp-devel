@@ -2,22 +2,22 @@
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory VS_OBJ imports VDM_OBJ PBIJ begin
 
-subsection{*Non-interference*}
-text{*\label{sec:ObjNI}*}
-subsubsection{*Indistinguishability relations*}
+subsection\<open>Non-interference\<close>
+text\<open>\label{sec:ObjNI}\<close>
+subsubsection\<open>Indistinguishability relations\<close>
 
-text{*We have the usual two security types.*}
+text\<open>We have the usual two security types.\<close>
 
 datatype TP = low | high
 
-text{*Global contexts assigns security types to program
-variables and field names.*}
+text\<open>Global contexts assigns security types to program
+variables and field names.\<close>
 
 consts CONTEXT :: "Var \<Rightarrow> TP"
 consts GAMMA :: "Field \<Rightarrow> TP"
 
-text{*Indistinguishability of values depends on a partial bijection
-$\beta$.*}
+text\<open>Indistinguishability of values depends on a partial bijection
+$\beta$.\<close>
 
 inductive_set twiddleVal::"(PBij \<times> Val \<times> Val) set"
 where
@@ -27,7 +27,7 @@ twiddleVal_Null: "(\<beta>, RVal Nullref, RVal Nullref) : twiddleVal"
                  (\<beta>, RVal (Loc l1), RVal (Loc l2)) : twiddleVal"
 | twiddleVal_IVal: "i1 = i2 \<Longrightarrow> (\<beta>, IVal i1, IVal i2) : twiddleVal"
 
-text{*For stores, indistinguishability is as follows.*}
+text\<open>For stores, indistinguishability is as follows.\<close>
 
 definition twiddleStore::"PBij \<Rightarrow> Store \<Rightarrow> Store \<Rightarrow> bool"
 where "twiddleStore \<beta> s1 s2 =
@@ -36,8 +36,8 @@ where "twiddleStore \<beta> s1 s2 =
 abbreviation twiddleStore_syntax  ("_  \<approx>\<^sub>_ _" [100,100] 50)
   where "s \<approx>\<^sub>\<beta> t == twiddleStore \<beta> s t"
 
-text{*On objects, we require the values in low fields to be related,
-and the sets of defined low fields to be equal.*}
+text\<open>On objects, we require the values in low fields to be related,
+and the sets of defined low fields to be equal.\<close>
 
 definition LowDom::"((Field \<times> Val) list) \<Rightarrow> Field set"
 where "LowDom F = {f . \<exists> v . lookup F f = Some v \<and> GAMMA f = low}"
@@ -50,9 +50,9 @@ where "twiddleObj \<beta> o1 o2 = ((fst o1 = fst o2) \<and>
                                      GAMMA f = low \<longrightarrow>
                                      (\<beta>, v, w) : twiddleVal))"
 
-text{*On heaps, we require locations related by $\beta$ to contain
+text\<open>On heaps, we require locations related by $\beta$ to contain
 indistinguishable objects. Domain and codomain of the bijection
-should be subsets of the domains of the heaps, of course.*}
+should be subsets of the domains of the heaps, of course.\<close>
 
 definition twiddleHeap::"PBij \<Rightarrow> Heap \<Rightarrow> Heap \<Rightarrow> bool"
 where "twiddleHeap \<beta> h1 h2 = (\<beta>:Pbij \<and>
@@ -63,8 +63,8 @@ where "twiddleHeap \<beta> h1 h2 = (\<beta>:Pbij \<and>
                                         lookup h2 ll = Some w \<longrightarrow>
                                         twiddleObj \<beta> v w))"
 
-text{*We also define a predicate which expresses when a state does not
-contain dangling pointers.*}
+text\<open>We also define a predicate which expresses when a state does not
+contain dangling pointers.\<close>
 
 (*The notion used in our paper:
 definition noDPs::"State \<Rightarrow> bool"
@@ -80,16 +80,16 @@ where "noLowDPs S = (case S of (s,h) \<Rightarrow>
     (\<forall> ll c F f l . lookup h ll = Some(c,F) \<longrightarrow> GAMMA f = low \<longrightarrow>
                     lookup F f = Some(RVal(Loc l)) \<longrightarrow> l:Dom h)))"
 
-text{*The motivation for introducing this notion stems from the
+text\<open>The motivation for introducing this notion stems from the
 intended interpretation of the proof rule for skip, where the initial
 and final states should be low equivalent. However, in the presence of
 dangling pointers, indistinguishability does not hold as such a
-dangling pointer is not in the expected bijection @{text mkId}. In
+dangling pointer is not in the expected bijection \<open>mkId\<close>. In
 contrast, for the notion of indistinguishability we use (see the
 following definition), reflexivity indeed holds, as proven in lemma
-@{text twiddle_mkId} below. As a small improvement in comparison to
+\<open>twiddle_mkId\<close> below. As a small improvement in comparison to
 our paper, we now allow dangling pointers in high variables and high
-fields since these are harmless.*}
+fields since these are harmless.\<close>
 
 definition twiddle::"PBij \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
 where "twiddle \<beta> s t = (noLowDPs s \<and> noLowDPs t \<and> 
@@ -98,8 +98,8 @@ where "twiddle \<beta> s t = (noLowDPs s \<and> noLowDPs t \<and>
 abbreviation twiddle_syntax  ("_ \<equiv>\<^sub>_ _" [100,100] 50)
   where "s \<equiv>\<^sub>\<beta> t == twiddle \<beta> s t"
 
-text{*The following properties are easily proven by unfolding the
-definitions.*}
+text\<open>The following properties are easily proven by unfolding the
+definitions.\<close>
 
 lemma twiddleHeap_isPbij:"twiddleHeap \<beta> h hh \<Longrightarrow> \<beta>:Pbij"
 (*<*)
@@ -278,27 +278,27 @@ apply rule
 done(*>*)
 
 
-text{*We call expressions (semantically) low if the following
+text\<open>We call expressions (semantically) low if the following
 predicate is satisfied. In particular, this means that if $e$
 evaluates in $s$ (respecitvely, $t$) to some location $l$, then $l
-\in Pbij\_dom(\beta)$ ($l \in Pbij\_cod(\beta)$) holds.*}
+\in Pbij\_dom(\beta)$ ($l \in Pbij\_cod(\beta)$) holds.\<close>
 
 definition Expr_low::"Expr \<Rightarrow> bool"
 where "Expr_low e = (\<forall> s t \<beta>. s \<approx>\<^sub>\<beta> t \<longrightarrow> (\<beta>, evalE e s, evalE e t):twiddleVal)"
 
-text{*A similar notion is defined for boolean expressions, but the
+text\<open>A similar notion is defined for boolean expressions, but the
 fact that these evaluate to (meta-logical) boolean values allows us to
-replace indistinguishability by equality.*}
+replace indistinguishability by equality.\<close>
 
 definition BExpr_low::"BExpr \<Rightarrow> bool"
 where "BExpr_low b = (\<forall> s t \<beta> . s \<approx>\<^sub>\<beta> t \<longrightarrow> evalB b s = evalB b t)"
 
-subsubsection{*Definition and characterisation of security*}
+subsubsection\<open>Definition and characterisation of security\<close>
 
-text{*Now, the notion of security, as defined in the paper. Banerjee
+text\<open>Now, the notion of security, as defined in the paper. Banerjee
 and Naumann's paper~\cite{DBLP:journals/jfp/BanerjeeN05} and the
 Mobius Deliverable 2.3~\cite{MobiusDeliverable2.3} contain similar
-notions.*}
+notions.\<close>
 
 definition secure::"OBJ \<Rightarrow> bool"
 where "secure c = (\<forall> s ss t tt \<beta> . 
@@ -433,21 +433,21 @@ apply assumption
 done
 (*>*)
 
-text{*The type of invariants $\Phi$ includes a component that holds a
-partial bijection.*}
+text\<open>The type of invariants $\Phi$ includes a component that holds a
+partial bijection.\<close>
 
 type_synonym TT = "(State \<times> State \<times> PBij) \<Rightarrow> bool"
 
-text{*The operator constructing an assertion from an invariant.*}
+text\<open>The operator constructing an assertion from an invariant.\<close>
 
 definition Sec :: "TT \<Rightarrow> Assn"
 where "Sec \<Phi> s t =
    ((\<forall> r \<beta>. s \<equiv>\<^sub>\<beta> r \<longrightarrow> \<Phi>(t,r,\<beta>)) \<and>
     (\<forall> r \<beta> . \<Phi> (r,s,\<beta>) \<longrightarrow> (\<exists> \<gamma> . r \<equiv>\<^sub>\<gamma> t \<and> Pbij_extends \<gamma> \<beta>)))"
 
-text{*The lemmas proving that the operator ensures security, and that
+text\<open>The lemmas proving that the operator ensures security, and that
 secure programs satisfy an assertion formed by the operator, are
-proven in a similar way as in Section \ref{sec:BaseLineNI}.*}
+proven in a similar way as in Section \ref{sec:BaseLineNI}.\<close>
 
 lemma Prop1A:"\<Turnstile> c : Sec \<Phi> \<Longrightarrow> secure c"
 (*<*)
@@ -500,9 +500,9 @@ apply (erule Prop1A)
 done
 (*>*)
 
-subsection{*Derivation of proof rules*}
-text{*\label{sec:ObjDerivedRules}*}
-subsubsection{*Low proof rules*}
+subsection\<open>Derivation of proof rules\<close>
+text\<open>\label{sec:ObjDerivedRules}\<close>
+subsubsection\<open>Low proof rules\<close>
 (*<*)
 lemma SkipSem: "\<Turnstile> Skip : Sec (\<lambda> (s, t, \<beta>) . s \<equiv>\<^sub>\<beta> t)"
 apply (simp only: VDM_valid_def Sec_def Sem_def)
@@ -950,7 +950,7 @@ apply (rule, rule, rule)
 done
 (*>*)
 
-text{*Again, we define a fixed point operator over invariants.*}
+text\<open>Again, we define a fixed point operator over invariants.\<close>
 
 definition FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
 where "FIX \<phi> = (\<lambda> (s,t,\<beta>). 
@@ -989,8 +989,8 @@ apply simp
 done
 (*>*)
 
-text{*For monotone transformers, the construction indeed
-yields a fixed point.*}
+text\<open>For monotone transformers, the construction indeed
+yields a fixed point.\<close>
 
 lemma Fix_lemma:"Monotone \<phi> \<Longrightarrow> \<phi> (FIX \<phi>) = FIX \<phi>"
 (*<*)
@@ -1000,7 +1000,7 @@ apply clarsimp apply (erule Fix1) apply assumption
 done
 (*>*)
 
-text{*The operator used in the while rule is defined by*}
+text\<open>The operator used in the while rule is defined by\<close>
 
 definition PhiWhileOp::"BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
 where "PhiWhileOp b \<Phi> = (\<lambda> \<Psi> . (\<lambda> (s, t, \<beta>).
@@ -1008,7 +1008,7 @@ where "PhiWhileOp b \<Phi> = (\<lambda> \<Psi> . (\<lambda> (s, t, \<beta>).
       (\<exists> r. \<Phi> (r, t, \<beta>) \<and> (\<forall> w \<gamma>. r \<equiv>\<^sub>\<gamma> w \<longrightarrow> \<Psi>(s, w, \<gamma>)))) \<and>
   (\<not> evalB b (fst t) \<longrightarrow> s\<equiv>\<^sub>\<beta> t)))"
 
-text{*and is monotone:*}
+text\<open>and is monotone:\<close>
 
 lemma PhiWhileOp_Monotone: "Monotone (PhiWhileOp b \<Phi>)"
 (*<*)
@@ -1017,12 +1017,12 @@ apply (simp add: PhiWhileOp_def Monotone_def) apply clarsimp
 done
 (*>*)
 
-text{*Hence, we can define its fixed point:*}
+text\<open>Hence, we can define its fixed point:\<close>
 
 definition PhiWhile::"BExpr \<Rightarrow> TT \<Rightarrow> TT"
 where "PhiWhile b \<Phi> = FIX (PhiWhileOp b \<Phi>)"
 
-text{*The while rule may now be given as follows:*}
+text\<open>The while rule may now be given as follows:\<close>
 
 lemma WHILE:  
   "\<lbrakk> BExpr_low b; G \<rhd> c : (Sec \<Phi>)\<rbrakk> 
@@ -1096,7 +1096,7 @@ apply clarsimp apply (simp add: Sec_def)
 done
 (*>*)
 
-text{*Operator $\mathit{PhiWhile}$ is itself monotone in $\Phi$:*}
+text\<open>Operator $\mathit{PhiWhile}$ is itself monotone in $\Phi$:\<close>
 
 lemma PhiWhileMonotone: "Monotone (\<lambda> \<Phi> . PhiWhile b \<Phi>)"
 (*<*)
@@ -1112,8 +1112,8 @@ apply (rule_tac x=ab in exI, rule_tac x=bb in exI, simp)
 done
 (*>*)
 
-text{*We now give an alternative formulation using an inductive
-relation equivalent to FIX. First, the definition of the variant.*}
+text\<open>We now give an alternative formulation using an inductive
+relation equivalent to FIX. First, the definition of the variant.\<close>
 
 inductive_set var::"(BExpr \<times> TT \<times> PBij \<times> State \<times> State) set"
 where
@@ -1123,8 +1123,8 @@ varFalse: "\<lbrakk>\<not> evalB b (fst t); s \<equiv>\<^sub>\<beta> t\<rbrakk> 
   "\<lbrakk> evalB b (fst t); \<Phi>(r,t,\<beta>); \<forall> w \<gamma>. r \<equiv>\<^sub>\<gamma> w \<longrightarrow> (b,\<Phi>,\<gamma>,s,w): var\<rbrakk>
   \<Longrightarrow> (b,\<Phi>,\<beta>,s,t):var"
 
-text{*The equivalence of the invariant with the fixed point
-construction.*}
+text\<open>The equivalence of the invariant with the fixed point
+construction.\<close>
 (*<*)
 lemma varFIX: "(b,\<Phi>,\<beta>,s,t):var \<Longrightarrow> PhiWhile b \<Phi> (s,t,\<beta>)"
 apply (erule var.induct)
@@ -1191,8 +1191,8 @@ apply rule apply (rule FIXvarFIX')
 done
 (*>*)
 
-text{*Using this equivalence we can derive the while rule given in our
-paper from @{text WHILE}.*}
+text\<open>Using this equivalence we can derive the while rule given in our
+paper from \<open>WHILE\<close>.\<close>
 
 lemma WHILE_IND:
   "\<lbrakk> BExpr_low b; G \<rhd> c : (Sec \<Phi>)\<rbrakk>
@@ -1205,7 +1205,7 @@ apply (simp add: FIXvarFIX')
 done
 (*>*)
 
-text{*We can also show the following property.*}
+text\<open>We can also show the following property.\<close>
 
 (*<*)
 lemma varMonotoneAux[rule_format]:
@@ -1235,8 +1235,8 @@ apply (rule PhiWhileMonotone)
 done  
 (*>*)
 
-text{*The call rule is formulated for an arbitrary fixed point of
-a monotone transformer.*}
+text\<open>The call rule is formulated for an arbitrary fixed point of
+a monotone transformer.\<close>
 
 lemma CALL: 
   "\<lbrakk>({Sec (FIX \<phi>)} \<union> X) \<rhd> body : Sec (\<phi> (FIX \<phi>)); Monotone \<phi>\<rbrakk>
@@ -1248,7 +1248,7 @@ apply (erule Fix_lemma)
 done
 (*>*)
 
-subsubsection{*High proof rules*}
+subsubsection\<open>High proof rules\<close>
 
 definition HighSec::Assn
 where "HighSec = (\<lambda> s t . noLowDPs s \<longrightarrow> s \<equiv>\<^sub>(mkId (snd s)) t)"
@@ -1359,8 +1359,8 @@ apply (erule twiddle_mkId)
 done
 (*>*)
 
-text{*We define a predicate expressing when locations obtained by
-evaluating an expression are non-dangling.*}
+text\<open>We define a predicate expressing when locations obtained by
+evaluating an expression are non-dangling.\<close>
 
 definition Expr_good::"Expr \<Rightarrow> State \<Rightarrow> bool"
 where "Expr_good e s =
@@ -1676,7 +1676,7 @@ lemma CallHigh:
 by (erule VDMCall)
 (*>*)
 
-text{*We combine all rules to an inductive derivation system.*}
+text\<open>We combine all rules to an inductive derivation system.\<close>
 
 inductive_set Deriv::"(Assn set \<times> OBJ \<times> Assn) set"
 where
@@ -1763,8 +1763,8 @@ D_CAST:
 | D_CALL_H:
  "({HighSec} \<union> G, body, HighSec):Deriv \<Longrightarrow> (G, Call, HighSec):Deriv"
 
-text{*By construction, all derivations represent legal derivations in
-the program logic. Here's an explicit lemma to this effect.*}
+text\<open>By construction, all derivations represent legal derivations in
+the program logic. Here's an explicit lemma to this effect.\<close>
 
 lemma Deriv_derivable: "(G,c,A):Deriv \<Longrightarrow> G \<rhd> c: A"
 (*<*)
@@ -1791,14 +1791,14 @@ apply (erule CallHigh)
 done
 (*>*)
 
-subsection{*Type system*}
-text{*\label{sec:ObjTypeSystem}*}
+subsection\<open>Type system\<close>
+text\<open>\label{sec:ObjTypeSystem}\<close>
 
-text{*We now give a type system in the style of Volpano et al.~and
+text\<open>We now give a type system in the style of Volpano et al.~and
 then prove its embedding into the system of derived rules. First, type
 systems for expressions and boolean expressions. These are similar to
 the ones in Section \ref{sec:BaseLineNI} but require some side
-conditions regarding the (semantically modelled) operators.*}
+conditions regarding the (semantically modelled) operators.\<close>
 
 definition opEGood::"(Val \<Rightarrow> Val \<Rightarrow> Val) \<Rightarrow> bool"
 where "opEGood f = (\<forall> \<beta> v v' w w' . (\<beta>, v, v') \<in> twiddleVal\<longrightarrow>
@@ -1829,10 +1829,9 @@ VS_BexprOp:
 |
 VS_BexprHigh: "(e,high) : VS_Bexpr"
 
-text{*Next, the core of the type system, the rules for commands. The
-second side conditions of rules @{text VS_comAssH} and @{text
-VS_comPutH} could be strengthened to $\forall\; s .\;
-\mathit{Epxr\_good}\; e\; s$.*}
+text\<open>Next, the core of the type system, the rules for commands. The
+second side conditions of rules \<open>VS_comAssH\<close> and \<open>VS_comPutH\<close> could be strengthened to $\forall\; s .\;
+\mathit{Epxr\_good}\; e\; s$.\<close>
 
 inductive_set VS_com:: "(TP \<times> OBJ) set"
 where
@@ -1878,15 +1877,15 @@ VS_comGetL:
 
 | VS_comSub: "(high,c) : VS_com \<Longrightarrow> (low,c):VS_com"
 
-text{*In order to prove the type system sound, we first define the
-interpretation of expression typings\ldots *}
+text\<open>In order to prove the type system sound, we first define the
+interpretation of expression typings\ldots\<close>
 
 primrec SemExpr::"Expr \<Rightarrow> TP \<Rightarrow> bool"
 where
 "SemExpr e low = Expr_low e" |
 "SemExpr e high = True"
 
-text{*\ldots and show the soundness of the typing rules.*}
+text\<open>\ldots and show the soundness of the typing rules.\<close>
 
 lemma ExprSound: "(e,tp):VS_expr \<Longrightarrow> SemExpr e tp"
 (*<*)
@@ -1907,7 +1906,7 @@ apply clarsimp
 done
 (*>*)
 
-text{*Likewise for the boolean expressions.*}
+text\<open>Likewise for the boolean expressions.\<close>
 
 primrec SemBExpr::"BExpr \<Rightarrow> TP \<Rightarrow> bool"
 where
@@ -1926,9 +1925,9 @@ apply (case_tac t, simp_all add: BExpr_low_def Expr_low_def) apply clarsimp
 done
 (*>*)
 
-text{*Using these auxiliary lemmas we can prove the embedding of the
+text\<open>Using these auxiliary lemmas we can prove the embedding of the
 type system for commands into the system of derived proof rules, by
-induction on the typing rules.*}
+induction on the typing rules.\<close>
 
 theorem VS_com_Deriv[rule_format]:
 "(t,c):VS_com \<Longrightarrow> (t=high \<longrightarrow> (G, c, HighSec):Deriv) \<and>
@@ -1969,9 +1968,9 @@ apply simp apply (rule, erule D_CAST)
 done
 (*>*)
 
-text{*Combining this result with the derivability of the derived proof
+text\<open>Combining this result with the derivability of the derived proof
 system and the soundness theorem of the program logic yields non-interference
-of programs that are low typeable.*}
+of programs that are low typeable.\<close>
 
 theorem VS_SOUND: "(low,c):VS_com \<Longrightarrow> secure c"
 (*<*)
@@ -1983,5 +1982,5 @@ apply (erule Prop1A)
 done
 (*>*)
 
-text{*End of theory @{text VS_OBJ}*}
+text\<open>End of theory \<open>VS_OBJ\<close>\<close>
 end

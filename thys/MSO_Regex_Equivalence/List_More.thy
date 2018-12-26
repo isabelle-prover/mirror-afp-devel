@@ -4,7 +4,7 @@ theory List_More
 imports Main "List-Index.List_Index" "HOL-Library.Multiset"
 begin
 
-subsection {* Library Functions *}
+subsection \<open>Library Functions\<close>
 
 abbreviation "bool_product_lists n \<equiv> product_lists (replicate n [True, False])"
 
@@ -14,7 +14,7 @@ proof (induct n arbitrary: bs)
   case (Suc n) thus ?case by (cases bs) auto
 qed simp
 
-text {* More on sort and remdups *}
+text \<open>More on sort and remdups\<close>
 
 lemma insort_min[simp]: "\<forall>y \<in> set xs. x < y \<Longrightarrow> insort x xs = x # xs"
   by (induct xs) auto

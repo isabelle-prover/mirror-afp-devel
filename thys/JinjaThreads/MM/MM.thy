@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-chapter {* Memory Models *}
+chapter \<open>Memory Models\<close>
 
 theory MM
 imports
@@ -38,7 +38,7 @@ lemma new_Addr_SomeI:
   "finite (dom h) \<Longrightarrow> \<exists>a. new_Addr h = Some a"
 by(simp add: new_Addr_def) (metis finite_map_freshness infinite_UNIV_nat)
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 definition gen_new_Addr :: "(addr \<rightharpoonup> 'b) \<Rightarrow> addr \<Rightarrow> addr option"
 where "gen_new_Addr h n \<equiv> if \<exists>a. a \<ge> n \<and> h a = None then Some(LEAST a. a \<ge> n \<and> h a = None) else None"

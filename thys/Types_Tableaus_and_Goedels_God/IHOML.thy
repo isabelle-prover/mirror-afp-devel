@@ -50,8 +50,8 @@ subsection \<open>Type Declarations\<close>
   
 text\<open>  Since IHOML and Isabelle/HOL are both typed languages, we introduce a type-mapping between them.
 We follow as closely as possible the syntax given by Fitting (see p. 86). According to this syntax,
-if @{text "\<tau>"} is an extensional type, @{text "\<up>\<tau>"} is the corresponding intensional type. For instance,
-a set of (red) objects has the extensional type @{text "\<langle>\<zero>\<rangle>"}, whereas the concept `red' has intensional type @{text "\<up>\<langle>\<zero>\<rangle>"}.
+if \<open>\<tau>\<close> is an extensional type, \<open>\<up>\<tau>\<close> is the corresponding intensional type. For instance,
+a set of (red) objects has the extensional type \<open>\<langle>\<zero>\<rangle>\<close>, whereas the concept `red' has intensional type \<open>\<up>\<langle>\<zero>\<rangle>\<close>.
 In what follows, terms having extensional (intensional) types will be called extensional (intensional) terms. \<close>
 
   typedecl i                    \<comment> \<open>type for possible worlds\<close>
@@ -147,47 +147,47 @@ subsubsection \<open>Modal Operators\<close>
     where "\<^bold>\<diamond>\<phi> \<equiv> \<lambda>w.\<exists>v. (w r v)\<and>(\<phi> v)"
 
 subsubsection \<open>\emph{Extension-of} Operator\<close>
-text\<open> According to Fitting's semantics (@{cite "Fitting"}, pp. 92-4) @{text "\<down>"} is an unary operator applying only to 
- intensional terms. A term of the form @{text "\<down>\<alpha>"} designates the extension of the intensional object designated by 
- @{text "\<alpha>"}, at some \emph{given} world. For instance, suppose we take possible worlds as persons,
+text\<open> According to Fitting's semantics (@{cite "Fitting"}, pp. 92-4) \<open>\<down>\<close> is an unary operator applying only to 
+ intensional terms. A term of the form \<open>\<down>\<alpha>\<close> designates the extension of the intensional object designated by 
+ \<open>\<alpha>\<close>, at some \emph{given} world. For instance, suppose we take possible worlds as persons,
  we can therefore think of the concept `red' as a function that maps each person to the set of objects that person
- classifies as red (its extension). We can further state, the intensional term \emph{r} of type @{text "\<up>\<langle>\<zero>\<rangle>"} designates the concept `red'.
+ classifies as red (its extension). We can further state, the intensional term \emph{r} of type \<open>\<up>\<langle>\<zero>\<rangle>\<close> designates the concept `red'.
  As can be seen, intensional terms in IHOML designate functions on possible worlds and they always do it \emph{rigidly}. 
  We will sometimes refer to an intensional object explicitly as `rigid', implying that its (rigidly) designated function has
  the same extension in all possible worlds. \<close>
 
-text\<open>  Terms of the form @{text "\<down>\<alpha>"} are called \emph{relativized} (extensional) terms; they are always derived
-from intensional terms and their type is \emph{extensional} (in the color example @{text "\<down>r"} would be of type @{text "\<langle>\<zero>\<rangle>"}).
+text\<open>  Terms of the form \<open>\<down>\<alpha>\<close> are called \emph{relativized} (extensional) terms; they are always derived
+from intensional terms and their type is \emph{extensional} (in the color example \<open>\<down>r\<close> would be of type \<open>\<langle>\<zero>\<rangle>\<close>).
 Relativized terms may vary their denotation from world to world of a model, because the extension of an intensional term can change
 from world to world, i.e. they are non-rigid. \<close>
 text\<open> To recap: an intensional term denotes the same function in all worlds (i.e. it's rigid), whereas a relativized term
 denotes a (possibly) different extension (an object or a set) at every world (i.e. it's non-rigid). To find out
 the denotation of a relativized term, a world must be given. Relativized terms are the \emph{only} non-rigid terms.
 \bigbreak \<close>
-text\<open>  For our Isabelle/HOL embedding, we had to follow a slightly different approach; we model @{text "\<down>"}
-as a predicate applying to formulas of the form @{text "\<Phi>(\<down>\<alpha>\<^sub>1,\<dots>\<alpha>\<^sub>n)"} (for our treatment
+text\<open>  For our Isabelle/HOL embedding, we had to follow a slightly different approach; we model \<open>\<down>\<close>
+as a predicate applying to formulas of the form \<open>\<Phi>(\<down>\<alpha>\<^sub>1,\<dots>\<alpha>\<^sub>n)\<close> (for our treatment
 we only need to consider cases involving one or two arguments, the first one being a relativized term).
-For instance, the formula @{text "Q(\<down>a\<^sub>1)\<^sup>w"} (evaluated at world \emph{w}) is modelled as @{text "\<downharpoonleft>(Q,a\<^sub>1)\<^sup>w"}
-(or @{text "(Q \<downharpoonleft> a\<^sub>1)\<^sup>w"} using infix notation), which gets further translated into @{text "Q(a\<^sub>1(w))\<^sup>w"}.
+For instance, the formula \<open>Q(\<down>a\<^sub>1)\<^sup>w\<close> (evaluated at world \emph{w}) is modelled as \<open>\<downharpoonleft>(Q,a\<^sub>1)\<^sup>w\<close>
+(or \<open>(Q \<downharpoonleft> a\<^sub>1)\<^sup>w\<close> using infix notation), which gets further translated into \<open>Q(a\<^sub>1(w))\<^sup>w\<close>.
 
-Depending on the particular types involved, we have to define @{text "\<down>"} differently to ensure type correctness
+Depending on the particular types involved, we have to define \<open>\<down>\<close> differently to ensure type correctness
 (see \emph{a-d} below). Nevertheless, the essence of the \emph{Extension-of} operator remains the same:
-a term @{text "\<alpha>"} preceded by @{text "\<down>"} behaves as a non-rigid term, whose denotation at a given possible world corresponds
-to the extension of the original intensional term @{text "\<alpha>"} at that world. \<close>
+a term \<open>\<alpha>\<close> preceded by \<open>\<down>\<close> behaves as a non-rigid term, whose denotation at a given possible world corresponds
+to the extension of the original intensional term \<open>\<alpha>\<close> at that world. \<close>
 
-text\<open>  (\emph{a}) Predicate @{text \<phi>} takes as argument a relativized term derived from an (intensional) individual of type @{text "\<up>\<zero>"}: \<close>
+text\<open>  (\emph{a}) Predicate \<open>\<phi>\<close> takes as argument a relativized term derived from an (intensional) individual of type \<open>\<up>\<zero>\<close>: \<close>
 abbreviation extIndivArg::"\<up>\<langle>\<zero>\<rangle>\<Rightarrow>\<up>\<zero>\<Rightarrow>io" (infix "\<downharpoonleft>" 60)                           
   where "\<phi> \<downharpoonleft>c \<equiv> \<lambda>w. \<phi> (c w) w"
-text\<open>  (\emph{b}) A variant of (\emph{a}) for terms derived from predicates (types of form @{text "\<up>\<langle>t\<rangle>"}): \<close>
+text\<open>  (\emph{b}) A variant of (\emph{a}) for terms derived from predicates (types of form \<open>\<up>\<langle>t\<rangle>\<close>): \<close>
 abbreviation extPredArg::"(('t\<Rightarrow>bool)\<Rightarrow>io)\<Rightarrow>('t\<Rightarrow>io)\<Rightarrow>io" (infix "\<down>" 60)
   where "\<phi> \<down>P \<equiv> \<lambda>w. \<phi> (\<lambda>x. P x w) w"
 text\<open>  (\emph{c}) A variant of (\emph{b}) with a second argument (the first one being relativized): \<close>
 abbreviation extPredArg1::"(('t\<Rightarrow>bool)\<Rightarrow>'b\<Rightarrow>io)\<Rightarrow>('t\<Rightarrow>io)\<Rightarrow>'b\<Rightarrow>io" (infix "\<down>\<^sub>1" 60)
   where "\<phi> \<down>\<^sub>1P \<equiv> \<lambda>z. \<lambda>w. \<phi> (\<lambda>x. P x w) z w"
     
-text\<open> In what follows, the `@{text "\<lparr>_\<rparr>"}' parentheses are an operator used to convert extensional objects into `rigid' intensional ones: \<close>  
+text\<open> In what follows, the `\<open>\<lparr>_\<rparr>\<close>' parentheses are an operator used to convert extensional objects into `rigid' intensional ones: \<close>  
 abbreviation trivialConversion::"bool\<Rightarrow>io" ("\<lparr>_\<rparr>") where "\<lparr>\<phi>\<rparr> \<equiv> (\<lambda>w. \<phi>)"  
-text\<open>  (\emph{d}) A variant of (\emph{b}) where @{text \<phi>} takes `rigid' intensional terms as argument: \<close>
+text\<open>  (\emph{d}) A variant of (\emph{b}) where \<open>\<phi>\<close> takes `rigid' intensional terms as argument: \<close>
 abbreviation mextPredArg::"(('t\<Rightarrow>io)\<Rightarrow>io)\<Rightarrow>('t\<Rightarrow>io)\<Rightarrow>io" (infix "\<^bold>\<down>" 60)
   where "\<phi> \<^bold>\<down>P \<equiv> \<lambda>w. \<phi> (\<lambda>x. \<lparr>P x w\<rparr>) w" (* where "\<phi> \<^bold>\<down>P \<equiv> \<lambda>w. \<phi> (\<lambda>x u. P x w) w"*)
     

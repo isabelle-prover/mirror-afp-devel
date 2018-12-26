@@ -6,10 +6,10 @@ the physical size and braking distance of all other cars.
 *)
 
 section\<open>HMLSL for Perfect Sensors\<close>
-text {* 
+text \<open>
 Within this section, we instantiate HMLSL for cars with 
 perfect sensors.
-*}
+\<close>
 
 
 theory HMLSL_Perfect
@@ -33,11 +33,11 @@ notation hmlsl.re ("re'(_')")
 notation hmlsl.cl("cl'(_')")
 notation hmlsl.len ("len")
 
-text {*
+text \<open>
  The spatial atoms are independent of the perspective of the view. 
 Hence we can prove several lemmas on the relation between the hybrid modality
 and the spatial atoms.
- *}
+\<close>
   
 lemma at_res1:"\<Turnstile>(re(c)) \<^bold>\<rightarrow> (\<^bold>\<forall>d. \<^bold>@d re(c))" 
   by (metis (no_types, lifting) perfect_sensors.switch_length_stable 
@@ -84,7 +84,7 @@ proof (rule allI|rule impI)+
     by (metis (no_types, lifting) all_own_ext_eq_len_eq)
 qed
 
-text{*
+text\<open>
 With the definition of sensors, we can also express how the spatial situation
 changes after the different transitions. In particular, we can prove 
 lemmas corresponding to the activity and stability rules of the
@@ -93,7 +93,7 @@ proof system for MLSL \cite{Linker2015a}.
 Observe that we were not able to prove these rules for basic HMLSL, since 
 its generic sensor function allows for instantiations where the perceived length changes
 during spatial transitions.
-*}
+\<close>
   
 lemma backwards_res_act:
   "(ts \<^bold>\<midarrow>r(c) \<^bold>\<rightarrow> ts') \<and> (ts',v \<Turnstile> re(c)) \<longrightarrow> (ts,v \<Turnstile> re(c) \<^bold>\<or> cl(c))" 
@@ -163,10 +163,10 @@ lemma backwards_wdr_res_stab:
   by (metis inf.absorb1 order_trans perfect_sensors.withdraw_reservation_length_stable
       restriction.restrict_def' restriction.restrict_res traffic.withdraw_res_subseteq)
 
-text{*
+text\<open>
 We now proceed to prove the \emph{reservation lemma}, which was 
 crucial in the manual safety proof \cite {Hilscher2011}. 
-*}
+\<close>
 lemma reservation1: "\<Turnstile>(re(c) \<^bold>\<or> cl(c)) \<^bold>\<rightarrow> \<^bold>\<box>r(c) re(c)"
 proof (rule allI| rule impI)+ 
   fix ts v ts'

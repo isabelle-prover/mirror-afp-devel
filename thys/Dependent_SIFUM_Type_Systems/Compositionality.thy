@@ -4,7 +4,7 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 (Based on the SIFUM-Type-Systems AFP entry, whose authors
  are: Sylvia Grewe, Heiko Mantel, Daniel Schoepe)
 *)
-section {* Compositionality Proof for SIFUM-Security Property *}
+section \<open>Compositionality Proof for SIFUM-Security Property\<close>
 
 theory Compositionality
 imports Security
@@ -216,7 +216,7 @@ proof -
   proof -
     { assume "x \<notin> (?mdss ! j) AsmNoReadOrWrite"
       then have mems_eq: "?mems\<^sub>1j x = ?mems\<^sub>2j x"
-        using `dma mem\<^sub>1 x = Low` low_eq subst_eq
+        using \<open>dma mem\<^sub>1 x = Low\<close> low_eq subst_eq
         makes_compatible_dma_eq[OF compat jprop[THEN conjunct1] dom\<sigma>]
         low_mds_eq_def 
         by (metis (poly_guards_query))
@@ -321,7 +321,7 @@ proof -
     using dom_subset apply(auto simp: subst_def \<sigma>\<^sub>X_def split: option.splits simp: change_respecting_doesnt_modify'[OF step noread])
     done
 
-  moreover from noread `dom \<sigma>\<^sub>X = X` have "(cms, mem [\<mapsto> \<sigma>\<^sub>X]) \<leadsto> (cms', mem' [\<mapsto> \<sigma>\<^sub>X])" by metis
+  moreover from noread \<open>dom \<sigma>\<^sub>X = X\<close> have "(cms, mem [\<mapsto> \<sigma>\<^sub>X]) \<leadsto> (cms', mem' [\<mapsto> \<sigma>\<^sub>X])" by metis
   ultimately show ?thesis by simp
 qed
  
@@ -388,7 +388,7 @@ proof -
     using subset apply(rule finite_subset)
     by simp
   show "\<And> \<sigma>. dom \<sigma> = X \<Longrightarrow> \<langle>c, mds, mem[\<mapsto> \<sigma>]\<rangle> \<leadsto> \<langle>c', mds', mem'[\<mapsto> \<sigma>]\<rangle>"
-    using `finite X` subset 
+    using \<open>finite X\<close> subset 
   proof(induct "X" rule: finite_subset_induct[where A="{x} \<union> \<C>_vars x"])
     case empty
     thus "\<langle>c, mds, subst \<sigma> mem\<rangle> \<leadsto> \<langle>c', mds', subst \<sigma> mem'\<rangle>"
@@ -406,10 +406,10 @@ proof -
         apply(rule ext, rename_tac y)
         apply(simp, safe)
          apply(simp add: subst_def \<sigma>a)
-        using `a \<notin> X` insert apply(auto simp: subst_def split: option.splits simp: restrict_map_def)
+        using \<open>a \<notin> X\<close> insert apply(auto simp: subst_def split: option.splits simp: restrict_map_def)
         done
       have "\<langle>c, mds, (subst ?\<sigma>\<^sub>X mem)(a := v)\<rangle> \<leadsto> \<langle>c', mds', (subst ?\<sigma>\<^sub>X mem')(a := v)\<rangle>"
-        using noread `a \<in> {x} \<union> \<C>_vars x` IH\<^sub>X
+        using noread \<open>a \<in> {x} \<union> \<C>_vars x\<close> IH\<^sub>X
         unfolding doesnt_read_or_modify_def doesnt_read_or_modify_vars_def by metis
       thus ?thesis by(simp add: r)
     qed
@@ -462,7 +462,7 @@ proof -
         by(rule subst_restrict_twice)
       from insert have "doesnt_read_or_modify c x" by auto
       moreover from IH have eval\<^sub>X: "\<langle>c, mds, mem [\<mapsto> ?\<sigma>\<^sub>X]\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> ?\<sigma>\<^sub>X]\<rangle>"
-        using `dom ?\<sigma>\<^sub>X = vars_and_\<C> X`
+        using \<open>dom ?\<sigma>\<^sub>X = vars_and_\<C> X\<close>
         unfolding change_respecting.simps
         by auto
       ultimately have "\<langle>c, mds, mem [\<mapsto> ?\<sigma>\<^sub>X] [\<mapsto> ?\<sigma>\<^sub>x]\<rangle> \<leadsto> \<langle>c', mds', mem' [\<mapsto> ?\<sigma>\<^sub>X] [\<mapsto> ?\<sigma>\<^sub>x]\<rangle>"
@@ -478,8 +478,8 @@ lemma update_nth_eq:
   "\<lbrakk> xs = ys; n < length xs \<rbrakk> \<Longrightarrow> xs = ys [n := xs ! n]"
   by (metis list_update_id)
 
-text {* This property is obvious,
-  so an unreadable apply-style proof is acceptable here: *}
+text \<open>This property is obvious,
+  so an unreadable apply-style proof is acceptable here:\<close>
 lemma mm_equiv_step:
   assumes bisim: "(cms\<^sub>1, mem\<^sub>1) \<approx> (cms\<^sub>2, mem\<^sub>2)"
   assumes modes_eq: "snd cms\<^sub>1 = snd cms\<^sub>2"
@@ -715,12 +715,12 @@ proof -
         by (auto simp: subst_def)
 
       moreover have "mem\<^sub>h [\<mapsto> ?\<sigma>_mem\<^sub>2] x = mem\<^sub>2 x"
-        by (auto simp: subst_def `x \<in> ?X k` eq_mem\<^sub>2)
+        by (auto simp: subst_def \<open>x \<in> ?X k\<close> eq_mem\<^sub>2)
 
       ultimately have "?mems\<^sub>2k [\<mapsto> h] [\<mapsto> ?\<sigma>_mem\<^sub>2] x = mem\<^sub>h [\<mapsto> ?\<sigma>_mem\<^sub>2] x"
         by auto
       thus "mem\<^sub>2 x = mem\<^sub>2' x"
-        by (metis `mem\<^sub>2 = ?mems\<^sub>2k [\<mapsto> ?\<sigma>_mem\<^sub>2]` dom\<sigma>_mem\<^sub>2 domh mem\<^sub>2'_def subst_overrides)
+        by (metis \<open>mem\<^sub>2 = ?mems\<^sub>2k [\<mapsto> ?\<sigma>_mem\<^sub>2]\<close> dom\<sigma>_mem\<^sub>2 domh mem\<^sub>2'_def subst_overrides)
     next
       fix x
       assume "x \<in> ?X k"
@@ -895,25 +895,25 @@ proof -
       let ?mems\<^sub>1'i = "fst (mems' ! i)"
       let ?mems\<^sub>2'i = "snd (mems' ! i)"
       assume "i < length cms\<^sub>1'"
-      have "i < length cms\<^sub>1" by (metis len_unchanged `i < length cms\<^sub>1'`)
+      have "i < length cms\<^sub>1" by (metis len_unchanged \<open>i < length cms\<^sub>1'\<close>)
       assume "x \<in> ?X' i"
       assume "x \<in> \<C>"
       have "x \<notin> ?X i"
-        using compat `i < length cms\<^sub>1'` len_unchanged new_length
-        by (metis `x \<in> \<C>` compat_different)
-      from `x \<in> \<C>` have  "mem\<^sub>1' x = mem\<^sub>2' x" by(rule \<C>_eq)
-      from `x \<in> \<C>` have "dma mem\<^sub>1' x = Low" by(simp add: \<C>_Low)
+        using compat \<open>i < length cms\<^sub>1'\<close> len_unchanged new_length
+        by (metis \<open>x \<in> \<C>\<close> compat_different)
+      from \<open>x \<in> \<C>\<close> have  "mem\<^sub>1' x = mem\<^sub>2' x" by(rule \<C>_eq)
+      from \<open>x \<in> \<C>\<close> have "dma mem\<^sub>1' x = Low" by(simp add: \<C>_Low)
       show "False"
       proof(cases "i = k")
         assume eq[simp]: "i = k"
         show ?thesis
-        using `x \<notin> ?X i` `x \<in> ?X' i`
+        using \<open>x \<notin> ?X i\<close> \<open>x \<in> ?X' i\<close>
         by(force simp: differing_vars_lists_def differing_vars_def)
       next
         assume neq: "i \<noteq> k"
         thus ?thesis
-        using `x \<in> ?X' i` `x \<notin> ?X i` `x \<in> \<C>` \<C>_Low `mem\<^sub>1' x = mem\<^sub>2' x`
-        by(force elim: mems'_i_cases[of "i" "x" "\<lambda>x. False", OF _ `i < length cms\<^sub>1`]
+        using \<open>x \<in> ?X' i\<close> \<open>x \<notin> ?X i\<close> \<open>x \<in> \<C>\<close> \<C>_Low \<open>mem\<^sub>1' x = mem\<^sub>2' x\<close>
+        by(force elim: mems'_i_cases[of "i" "x" "\<lambda>x. False", OF _ \<open>i < length cms\<^sub>1\<close>]
                  simp: differing_vars_lists_def differing_vars_def)
       qed
     qed
@@ -947,19 +947,19 @@ proof -
         have dom\<sigma>': "dom \<sigma>' = ?X k"
           using \<sigma>'_def [abs_def]
           apply (clarsimp, safe)
-          by( metis domI domIff, metis `i = k` domD dom\<sigma> )
+          by( metis domI domIff, metis \<open>i = k\<close> domD dom\<sigma> )
         have diff_vars_impl [simp]: "\<And>x. x \<in> ?X' k \<Longrightarrow> x \<in> ?X k"
         proof (rule ccontr)
           fix x
           assume "x \<notin> ?X k"
           hence "mem\<^sub>1 x = ?mems\<^sub>1k x \<and> mem\<^sub>2 x = ?mems\<^sub>2k x"
             by (metis differing_vars_neg)
-          from `x \<notin> ?X k` have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
+          from \<open>x \<notin> ?X k\<close> have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
             by auto
           moreover
           assume "x \<in> ?X' k"
           hence "mem\<^sub>1' x \<noteq> ?mems\<^sub>1'i x \<or> mem\<^sub>2' x \<noteq> ?mems\<^sub>2'i x"
-            by (metis `i = k` differing_vars_elim)
+            by (metis \<open>i = k\<close> differing_vars_elim)
           ultimately show False
             by auto
         qed
@@ -975,17 +975,17 @@ proof -
             assume x_in_X'k: "x \<in> ?X' k"
 
             then obtain v where "\<sigma> x = Some v"
-              by (metis dom\<sigma> domD `i = k`)
+              by (metis dom\<sigma> domD \<open>i = k\<close>)
             hence "?mems\<^sub>1'i [\<mapsto> \<sigma>] x = v"
-              using `x \<in> ?X' k` dom\<sigma>
+              using \<open>x \<in> ?X' k\<close> dom\<sigma>
               by (auto simp: subst_def)
             moreover
-            from dom\<sigma>' and `x \<in> ?X' k` have "x \<in> dom \<sigma>'" by simp
+            from dom\<sigma>' and \<open>x \<in> ?X' k\<close> have "x \<in> dom \<sigma>'" by simp
              
             hence "mem\<^sub>1' [\<mapsto> \<sigma>'] x = v"
               using dom\<sigma>' 
               unfolding subst_def
-              by (metis \<sigma>'_def `\<sigma> x = Some v` diff_vars_impl option.simps(5) x_in_X'k)
+              by (metis \<sigma>'_def \<open>\<sigma> x = Some v\<close> diff_vars_impl option.simps(5) x_in_X'k)
 
             ultimately show "?mems\<^sub>1'i [\<mapsto> \<sigma>] x = mem\<^sub>1' [\<mapsto> \<sigma>'] x" ..
           next
@@ -993,30 +993,30 @@ proof -
 
             hence "?mems\<^sub>1'i [\<mapsto> \<sigma>] x = ?mems\<^sub>1'i x"
               using dom\<sigma>
-              by (metis `i = k` subst_not_in_dom)
+              by (metis \<open>i = k\<close> subst_not_in_dom)
             show ?thesis
             proof(case_tac "x \<in> ?X k")
               assume "x \<in> ?X k"
-              from `x \<notin> ?X' k` have "mem\<^sub>1' x = ?mems\<^sub>1'i x"
-                by(metis differing_vars_neg `i = k`)
+              from \<open>x \<notin> ?X' k\<close> have "mem\<^sub>1' x = ?mems\<^sub>1'i x"
+                by(metis differing_vars_neg \<open>i = k\<close>)
               then have "\<sigma>' x = Some (?mems\<^sub>1'i x)"
                 unfolding \<sigma>'_def
                 using dom\<sigma>' domh
-                by(simp add: `x \<in> ?X k` `x \<notin> ?X' k`)
+                by(simp add: \<open>x \<in> ?X k\<close> \<open>x \<notin> ?X' k\<close>)
               hence "mem\<^sub>1' [\<mapsto> \<sigma>'] x = ?mems\<^sub>1'i x"
                 unfolding subst_def
                 by (metis option.simps(5))
               thus ?thesis
-                by (metis `?mems\<^sub>1'i [\<mapsto>\<sigma>] x = ?mems\<^sub>1'i x`)
+                by (metis \<open>?mems\<^sub>1'i [\<mapsto>\<sigma>] x = ?mems\<^sub>1'i x\<close>)
             next
               assume "x \<notin> ?X k"
               then have "mem\<^sub>1' [\<mapsto> \<sigma>'] x = mem\<^sub>1' x"
                 by (metis dom\<sigma>' subst_not_in_dom)
               moreover
               have "?mems\<^sub>1'i x = mem\<^sub>1' x"
-                by (metis `i = k` `x \<notin> ?X' k` differing_vars_neg)
+                by (metis \<open>i = k\<close> \<open>x \<notin> ?X' k\<close> differing_vars_neg)
               ultimately show ?thesis
-                by (metis `?mems\<^sub>1'i [\<mapsto>\<sigma>] x = ?mems\<^sub>1'i x`)
+                by (metis \<open>?mems\<^sub>1'i [\<mapsto>\<sigma>] x = ?mems\<^sub>1'i x\<close>)
             qed
           qed
         qed
@@ -1031,20 +1031,20 @@ proof -
 
             then obtain v where "\<sigma> x = Some v"
               using dom\<sigma>
-              by (metis domD `i = k`)
+              by (metis domD \<open>i = k\<close>)
             hence "?mems\<^sub>2'i [\<mapsto> \<sigma>] x = v"
-              using `x \<in> ?X' k` dom\<sigma>
+              using \<open>x \<in> ?X' k\<close> dom\<sigma>
               unfolding subst_def
               by (metis option.simps(5))
             moreover
-            from `x \<in> ?X' k` have "x \<in> ?X k"
+            from \<open>x \<in> ?X' k\<close> have "x \<in> ?X k"
               by auto
             hence "x \<in> dom (\<sigma>')"
-              by (metis dom\<sigma>'  `x \<in> ?X' k`)
+              by (metis dom\<sigma>'  \<open>x \<in> ?X' k\<close>)
             hence "mem\<^sub>2' [\<mapsto> \<sigma>'] x = v"
               using dom\<sigma>' c 
               unfolding subst_def
-              by (metis \<sigma>'_def `\<sigma> x = Some v` diff_vars_impl option.simps(5) `x \<in> ?X' k`)
+              by (metis \<sigma>'_def \<open>\<sigma> x = Some v\<close> diff_vars_impl option.simps(5) \<open>x \<in> ?X' k\<close>)
 
             ultimately show ?thesis
               by (metis dom\<sigma>' dom_restrict_total mem\<^sub>2'_def subst_overrides)
@@ -1053,7 +1053,7 @@ proof -
 
             hence "?mems\<^sub>2'i [\<mapsto> \<sigma>] x = ?mems\<^sub>2'i x"
               using dom\<sigma>
-              by (metis `i = k` subst_not_in_dom) 
+              by (metis \<open>i = k\<close> subst_not_in_dom) 
             show ?thesis
             
             proof(case_tac "x \<in> ?X k")
@@ -1061,15 +1061,15 @@ proof -
               (* This case can't happen so derive a contradiction *)
               hence "mem\<^sub>1 x = mem\<^sub>1' x \<and> mem\<^sub>2 x = mem\<^sub>2' x" by (metis x_unchanged)
 
-              moreover from `x \<notin> ?X' k` `i = k` have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
+              moreover from \<open>x \<notin> ?X' k\<close> \<open>i = k\<close> have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
                 by(metis differing_vars_neg)
                
-              moreover from `x \<in> ?X k` have "fst (mems ! i) x \<noteq> mem\<^sub>1 x \<or> snd (mems ! i) x \<noteq> mem\<^sub>2 x"
-                by(metis differing_vars_elim `i = k`)
+              moreover from \<open>x \<in> ?X k\<close> have "fst (mems ! i) x \<noteq> mem\<^sub>1 x \<or> snd (mems ! i) x \<noteq> mem\<^sub>2 x"
+                by(metis differing_vars_elim \<open>i = k\<close>)
 
-              moreover from `x \<in> ?X k` have "fst (mems' ! i) x = fst (mems ! i) x \<and>
+              moreover from \<open>x \<in> ?X k\<close> have "fst (mems' ! i) x = fst (mems ! i) x \<and>
                                              snd (mems' ! i) x = snd (mems ! i) x"
-                by(metis mems'_k_2 `i = k`)
+                by(metis mems'_k_2 \<open>i = k\<close>)
                 
               ultimately have "False" by auto
 
@@ -1081,20 +1081,20 @@ proof -
                 by (metis subst_not_in_dom)
               moreover
               have "?mems\<^sub>2'i x = mem\<^sub>2' x"
-                by (metis `i = k`  mems'_k_1 `x \<notin> ?X k`)
+                by (metis \<open>i = k\<close>  mems'_k_1 \<open>x \<notin> ?X k\<close>)
 
               hence "?mems\<^sub>2'i x = mem\<^sub>h x"
                 unfolding mem\<^sub>2'_def
-                by (metis dom\<sigma>_mem\<^sub>2 subst_not_in_dom `x \<notin> ?X k`)
+                by (metis dom\<sigma>_mem\<^sub>2 subst_not_in_dom \<open>x \<notin> ?X k\<close>)
               ultimately show ?thesis
-                by (metis `?mems\<^sub>2'i [\<mapsto>\<sigma>] x = ?mems\<^sub>2'i x`)
+                by (metis \<open>?mems\<^sub>2'i [\<mapsto>\<sigma>] x = ?mems\<^sub>2'i x\<close>)
             qed
           qed
         qed
 
         ultimately show
           "(cms\<^sub>1' ! i, (fst (mems' ! i)) [\<mapsto> \<sigma>]) \<approx> (cms\<^sub>2' ! i, (snd (mems' ! i)) [\<mapsto> \<sigma>])"
-          using dom\<sigma> dom\<sigma>' g b `i = k`
+          using dom\<sigma> dom\<sigma>' g b \<open>i = k\<close>
           by (metis c\<^sub>2'_def cms\<^sub>2'_def equal_size nth_list_update_eq)
 
       next
@@ -1127,7 +1127,7 @@ proof -
                and clas_eq: "dma mem\<^sub>1' x = dma mem\<^sub>1 x"
             hence mems'_simp: "?mems\<^sub>1'i x = ?mems\<^sub>1i x \<and> ?mems\<^sub>2'i x = ?mems\<^sub>2i x"
               using mems'_i_4
-              by (metis `i \<noteq> k` b i_le length_list_update)
+              by (metis \<open>i \<noteq> k\<close> b i_le length_list_update)
             have
               "?mems\<^sub>1'i [\<mapsto> \<sigma>] x = ?mems\<^sub>1i [\<mapsto> \<sigma>'] x \<and> ?mems\<^sub>2'i [\<mapsto> \<sigma>] x = ?mems\<^sub>2i [\<mapsto> \<sigma>'] x"
             proof (cases "x \<in> ?X' i")
@@ -1138,7 +1138,7 @@ proof -
                 using eq_mem mems'_simp
                 by (metis differing_vars_neg)
               hence "\<sigma>' x = \<sigma> x"
-                by (metis \<sigma>'_def `x \<in> ?X' i`)
+                by (metis \<sigma>'_def \<open>x \<in> ?X' i\<close>)
               thus ?thesis
                 by (clarsimp simp: subst_def mems'_simp split: option.splits)
             next
@@ -1149,7 +1149,7 @@ proof -
                 using eq_mem mems'_simp
                 by (auto simp: differing_vars_neg_intro)
               thus ?thesis
-                by (metis `dom \<sigma>' = ?X i` `x \<notin> ?X' i` dom\<sigma> mems'_simp subst_not_in_dom)
+                by (metis \<open>dom \<sigma>' = ?X i\<close> \<open>x \<notin> ?X' i\<close> dom\<sigma> mems'_simp subst_not_in_dom)
             qed
           }
           thus "?thesis x" by blast
@@ -1168,7 +1168,7 @@ proof -
                and notin: "x \<notin> ?X' i"
             hence mems'_simp [simp]: "?mems\<^sub>1'i x = mem\<^sub>1 x \<and> ?mems\<^sub>2'i x = mem\<^sub>1 x"
               using mems'_i_3
-              by (metis `i \<noteq> k` b i_le length_list_update)
+              by (metis \<open>i \<noteq> k\<close> b i_le length_list_update)
             have
               "?mems\<^sub>1'i [\<mapsto> \<sigma>] x = ?mems\<^sub>1i [\<mapsto> \<sigma>'] x \<and> ?mems\<^sub>2'i [\<mapsto> \<sigma>] x = ?mems\<^sub>2i [\<mapsto> \<sigma>'] x"
             proof (cases "x \<in> ?X' i")
@@ -1182,7 +1182,7 @@ proof -
                 using clas compat i_le len_unchanged
                 by (force)
               ultimately show ?thesis
-                using dom\<sigma> `dom \<sigma>' = ?X i` `x \<notin> ?X' i` apply(simp add: subst_not_in_dom)
+                using dom\<sigma> \<open>dom \<sigma>' = ?X i\<close> \<open>x \<notin> ?X' i\<close> apply(simp add: subst_not_in_dom)
                 apply(simp add: mem_eq)
                 apply(force simp: differing_vars_def differing_vars_lists_def)
                 done
@@ -1220,7 +1220,7 @@ proof -
                  x \<in> snd (cms\<^sub>1 ! k) GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify (fst (cms\<^sub>1 ! k)) x \<and>
                  x \<in> snd (cms\<^sub>2 ! k) GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify (fst (cms\<^sub>1 ! k)) x"
             using loc_modes
-            unfolding locally_sound_mode_use_def `snd (cms\<^sub>1 ! k) = snd (cms\<^sub>2 ! k)`
+            unfolding locally_sound_mode_use_def \<open>snd (cms\<^sub>1 ! k) = snd (cms\<^sub>2 ! k)\<close>
             by (metis loc_reach.refl surjective_pairing)
 
           hence "x \<notin> snd (cms\<^sub>1 ! k) GuarNoWrite \<and> x \<notin> snd (cms\<^sub>1 ! k) GuarNoReadOrWrite"
@@ -1232,7 +1232,7 @@ proof -
 
           ultimately show "(?thesis x)"
             unfolding compatible_modes_def var_asm_not_written_def
-            using `i \<noteq> k` i_le
+            using \<open>i \<noteq> k\<close> i_le
             by (metis (no_types) b length_list_update length_map nth_map)
         qed
 
@@ -1273,16 +1273,16 @@ proof -
                    ?mems\<^sub>2'i [\<mapsto> \<sigma>] x \<noteq> ?mems\<^sub>2i [\<mapsto> \<sigma>'] x;
                    x \<notin> ?X' i \<rbrakk> \<Longrightarrow>
                  mem\<^sub>1' x = mem\<^sub>2' x"
-          by (metis `i \<noteq> k` b compat_different_vars i_le length_list_update mems'_i_2 o)
+          by (metis \<open>i \<noteq> k\<close> b compat_different_vars i_le length_list_update mems'_i_2 o)
         have "i < length cms\<^sub>1"
           by (metis cms\<^sub>2'_def equal_size i_le length_list_update new_length)
-        with compat and `dom \<sigma>' = ?X i` have
+        with compat and \<open>dom \<sigma>' = ?X i\<close> have
           bisim: "(cms\<^sub>1 ! i, ?mems\<^sub>1i [\<mapsto> \<sigma>']) \<approx> (cms\<^sub>2 ! i, ?mems\<^sub>2i [\<mapsto> \<sigma>'])"
           by auto
 
         define \<sigma>'\<^sub>k where "\<sigma>'\<^sub>k x = (if x \<in> ?X k then Some (undefined::'Val) else None)" for x
         have "dom \<sigma>'\<^sub>k = ?X k" unfolding \<sigma>'\<^sub>k_def by (simp add: dom_def)
-        with compat and `dom \<sigma>'\<^sub>k = ?X k` and b have
+        with compat and \<open>dom \<sigma>'\<^sub>k = ?X k\<close> and b have
           bisim\<^sub>k: "(cms\<^sub>1 ! k, ?mems\<^sub>1k [\<mapsto> \<sigma>'\<^sub>k]) \<approx> (cms\<^sub>2 ! k, ?mems\<^sub>2k [\<mapsto> \<sigma>'\<^sub>k])"
           by auto
 
@@ -1292,7 +1292,7 @@ proof -
                    ?mems\<^sub>2'i [\<mapsto> \<sigma>] x \<noteq> ?mems\<^sub>2i [\<mapsto> \<sigma>'] x;
                    x \<notin> ?X' i \<rbrakk> \<Longrightarrow>
                  mem\<^sub>1' x = mem\<^sub>2' x"
-        by (metis (erased, hide_lams) `i \<noteq> k` compat_different_vars i_le len_unchanged mems'_i_2 o_downgrade)
+        by (metis (erased, hide_lams) \<open>i \<noteq> k\<close> compat_different_vars i_le len_unchanged mems'_i_2 o_downgrade)
 
         have q: "\<And> x. \<lbrakk> dma mem\<^sub>1' x = Low;
                    ?mems\<^sub>1'i [\<mapsto> \<sigma>] x \<noteq> ?mems\<^sub>1i [\<mapsto> \<sigma>'] x \<or>
@@ -1353,7 +1353,7 @@ proof -
           apply(case_tac "x \<in> ?X i")
            using compat compat i_le len_unchanged apply fastforce
           apply(subst subst_not_in_dom)
-           apply(simp add: `dom \<sigma>' = ?X i`)
+           apply(simp add: \<open>dom \<sigma>' = ?X i\<close>)
           apply(simp add: differing_vars_lists_def differing_vars_def)
           done
 
@@ -1377,10 +1377,10 @@ proof -
             show ?thesis
             proof (cases "dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x")
               assume "dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = High"
-              from `dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = High` have A_simp [simp]:
+              from \<open>dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = High\<close> have A_simp [simp]:
                 "A x = Some (?mems\<^sub>1'i [\<mapsto> \<sigma>] x, ?mems\<^sub>2'i [\<mapsto> \<sigma>] x)"
                 unfolding A_def
-                by (metis `x \<in> ?\<Delta>`)
+                by (metis \<open>x \<in> ?\<Delta>\<close>)
               from A_simp have ?Eq\<^sub>1 ?Eq\<^sub>2
                 unfolding A_def apply_adaptation_def
                 by auto
@@ -1397,14 +1397,14 @@ proof -
                   unfolding subst_def
                   by auto
                 moreover
-                from `x \<in> ?X' i` and `dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = Low` have A_simp [simp]:
+                from \<open>x \<in> ?X' i\<close> and \<open>dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = Low\<close> have A_simp [simp]:
                   "A x = (case \<sigma> x of
                             Some v \<Rightarrow> Some (v, v)
                           | None \<Rightarrow> None)"
                   unfolding A_def
-                  by (metis Sec.simps(1) `x \<in> ?\<Delta>`)
+                  by (metis Sec.simps(1) \<open>x \<in> ?\<Delta>\<close>)
                 ultimately show ?thesis
-                  using domA `x \<in> ?\<Delta>` `\<sigma> x = Some v`
+                  using domA \<open>x \<in> ?\<Delta>\<close> \<open>\<sigma> x = Some v\<close>
                   by (auto simp: apply_adaptation_def)
 
               next
@@ -1412,20 +1412,20 @@ proof -
 
                 hence A_simp [simp]: "A x = Some (mem\<^sub>1' x, mem\<^sub>1' x)"
                   unfolding A_def
-                  using `x \<in> ?\<Delta>` `x \<notin> ?X' i` `dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = Low`
+                  using \<open>x \<in> ?\<Delta>\<close> \<open>x \<notin> ?X' i\<close> \<open>dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = Low\<close>
                   by auto
 
                 from q have "mem\<^sub>1' x = mem\<^sub>2' x"
-                  by (metis `dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = Low` diff `x \<notin> ?X' i` dma_eq dma_eq'')
+                  by (metis \<open>dma (?mems\<^sub>1'i [\<mapsto> \<sigma>]) x = Low\<close> diff \<open>x \<notin> ?X' i\<close> dma_eq dma_eq'')
 
-                from `x \<notin> ?X' i` have
+                from \<open>x \<notin> ?X' i\<close> have
                   "?mems\<^sub>1'i [\<mapsto> \<sigma>] x = ?mems\<^sub>1'i x \<and> ?mems\<^sub>2'i [\<mapsto> \<sigma>] x = ?mems\<^sub>2'i x"
                   by (metis dom\<sigma> subst_not_in_dom)
                 moreover
-                from `x \<notin> ?X' i` have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
+                from \<open>x \<notin> ?X' i\<close> have "?mems\<^sub>1'i x = mem\<^sub>1' x \<and> ?mems\<^sub>2'i x = mem\<^sub>2' x"
                   by (metis differing_vars_neg)
                 ultimately show ?thesis
-                  using `mem\<^sub>1' x = mem\<^sub>2' x`
+                  using \<open>mem\<^sub>1' x = mem\<^sub>2' x\<close>
                   by (auto simp: apply_adaptation_def)
               qed
             qed
@@ -1434,11 +1434,11 @@ proof -
             assume "x \<notin> ?\<Delta>"
             hence "A x = None"
               by (metis domA domIff)
-            from `A x = None` have "x \<notin> dom A"
+            from \<open>A x = None\<close> have "x \<notin> dom A"
               by (metis domIff)
-            from `x \<notin> ?\<Delta>` have "?mems\<^sub>1i [\<mapsto> \<sigma>'] [\<parallel>\<^sub>1 A] x = ?mems\<^sub>1'i [\<mapsto> \<sigma>] x \<and>
+            from \<open>x \<notin> ?\<Delta>\<close> have "?mems\<^sub>1i [\<mapsto> \<sigma>'] [\<parallel>\<^sub>1 A] x = ?mems\<^sub>1'i [\<mapsto> \<sigma>] x \<and>
                                  ?mems\<^sub>2i [\<mapsto> \<sigma>'] [\<parallel>\<^sub>2 A] x = ?mems\<^sub>2'i [\<mapsto> \<sigma>] x"
-              using `A x = None`
+              using \<open>A x = None\<close>
               unfolding differing_vars_def apply_adaptation_def
               by auto
 
@@ -1452,7 +1452,7 @@ proof -
           by auto
 
         have "cms\<^sub>1' ! i = cms\<^sub>1 ! i"
-          by (metis `i \<noteq> k` b nth_list_update_neq)
+          by (metis \<open>i \<noteq> k\<close> b nth_list_update_neq)
 
         have A_correct': "globally_consistent A (snd (cms\<^sub>1 ! i)) (?mems\<^sub>1i [\<mapsto> \<sigma>']) (?mems\<^sub>2i [\<mapsto> \<sigma>'])"
           (* FIXME: clean up *)
@@ -1495,7 +1495,7 @@ proof -
               done
 
             have "snd (cms\<^sub>2 ! i) = snd (cms\<^sub>1 ! i)"
-              by (metis `i < length cms\<^sub>1` equal_size modes_eq nth_map)
+              by (metis \<open>i < length cms\<^sub>1\<close> equal_size modes_eq nth_map)
 
             hence low_mds_eq: "(subst \<sigma>' (fst (mems ! i))) =\<^bsub>snd (cms\<^sub>1 ! i)\<^esub>\<^sup>l (subst \<sigma>' (snd (mems ! i)))"
               apply -
@@ -1522,9 +1522,9 @@ proof -
             apply(simp add: dom\<sigma>)
             apply(clarsimp simp: differing_vars_lists_def differing_vars_def)
             apply(case_tac "i = k")
-             apply(simp add: `i \<noteq> k`)
+             apply(simp add: \<open>i \<noteq> k\<close>)
             apply(erule mems'_i_cases)
-                apply(rule `i < length cms\<^sub>1'`[simplified len_unchanged])
+                apply(rule \<open>i < length cms\<^sub>1'\<close>[simplified len_unchanged])
                apply force
               apply fastforce
              apply clarsimp
@@ -1539,13 +1539,13 @@ proof -
 
             apply(subst (asm) makes_compatible_dma_eq)
                apply(rule compat)
-              apply(rule `i < length cms\<^sub>1`)
-             apply(rule `dom \<sigma>' = differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i`)
+              apply(rule \<open>i < length cms\<^sub>1\<close>)
+             apply(rule \<open>dom \<sigma>' = differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i\<close>)
             apply simp
             apply(subgoal_tac "x \<notin> dom \<sigma>'")
              apply(simp add: subst_not_in_dom)
              apply force
-            apply(simp add: `dom \<sigma>' = differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i`)+
+            apply(simp add: \<open>dom \<sigma>' = differing_vars_lists mem\<^sub>1 mem\<^sub>2 mems i\<close>)+
             done
           from reclas eq
           show " (\<forall>x. dma ((subst \<sigma>' (fst (mems ! i))) [\<parallel>\<^sub>1 A]) x \<noteq> dma (subst \<sigma>' (fst (mems ! i))) x \<longrightarrow>
@@ -1556,7 +1556,7 @@ proof -
         qed
 
         have "snd (cms\<^sub>1 ! i) = snd (cms\<^sub>2 ! i)"
-          by (metis `i < length cms\<^sub>1` equal_size modes_eq nth_map)
+          by (metis \<open>i < length cms\<^sub>1\<close> equal_size modes_eq nth_map)
 
         with bisim have "(cms\<^sub>1 ! i, ?mems\<^sub>1i [\<mapsto> \<sigma>'] [\<parallel>\<^sub>1 A]) \<approx> (cms\<^sub>2 ! i, ?mems\<^sub>2i [\<mapsto> \<sigma>'] [\<parallel>\<^sub>2 A])"
           using A_correct'
@@ -1565,7 +1565,7 @@ proof -
           by (metis surjective_pairing globally_consistent_adapt_bisim)
 
         thus ?thesis using adapt_eq
-          by (metis `i \<noteq> k` b cms\<^sub>2'_def nth_list_update_neq)
+          by (metis \<open>i \<noteq> k\<close> b cms\<^sub>2'_def nth_list_update_neq)
       qed
     next
       fix i x
@@ -1617,22 +1617,22 @@ proof -
             have "x \<in> ?X' i \<Longrightarrow> mem\<^sub>1' x \<noteq> mem\<^sub>2' x \<and> dma mem\<^sub>1' x = Low"
             proof -
               assume "x \<in> ?X' i"
-              from case3 and `x \<in> ?X' i` have "x \<in> ?X i"
+              from case3 and \<open>x \<in> ?X' i\<close> have "x \<in> ?X i"
                 by (metis differing_vars_neg differing_vars_elim)
               with case3 have "mem\<^sub>1' x \<noteq> mem\<^sub>2' x \<and> dma mem\<^sub>1 x = Low"
                 by (metis b compat compat_different i_le length_list_update)
               with mem_eq have clases: "dma mem\<^sub>1 x = Low \<and> dma mem\<^sub>1' x = High" by auto
               have "fst (mems' ! i) x = mem\<^sub>1' x \<and> snd (mems' ! i) x = mem\<^sub>2' x"
                 apply(rule mems'_i_5)
-                     apply(rule `i \<noteq> k`)
+                     apply(rule \<open>i \<noteq> k\<close>)
                     using i_le len_unchanged apply(simp)
                    apply(simp add: case3)+
                  apply(simp add: clases)+
                 done
               hence "x \<notin> ?X' i" by (metis differing_vars_neg_intro)
-              with `x \<in> ?X' i` show ?thesis by blast
+              with \<open>x \<in> ?X' i\<close> show ?thesis by blast
             qed
-            with `mem\<^sub>1' x = mem\<^sub>2' x \<or> dma mem\<^sub>1' x = High` show "x \<notin> ?X' i"
+            with \<open>mem\<^sub>1' x = mem\<^sub>2' x \<or> dma mem\<^sub>1' x = High\<close> show "x \<notin> ?X' i"
               by auto
           next
             assume case4: "mem\<^sub>1 x = mem\<^sub>1' x" "mem\<^sub>2 x = mem\<^sub>2' x"
@@ -1672,7 +1672,7 @@ proof -
             have "x \<notin> ?X' k"
               apply (rule mems'_k_cases)
                apply (metis differing_vars_neg_intro)
-              by (metis i_prop `i = k`)
+              by (metis i_prop \<open>i = k\<close>)
             thus ?thesis
               by (metis b)
           next
@@ -1685,7 +1685,7 @@ proof -
                     apply assumption
                    apply(simp add: i_prop)
                   apply(simp add: assms)+
-               using `x \<notin> ?X i` differing_vars_neg
+               using \<open>x \<notin> ?X i\<close> differing_vars_neg
                using \<open>\<not> (mem\<^sub>1 x \<noteq> mem\<^sub>1' x \<or> mem\<^sub>2 x \<noteq> mem\<^sub>2' x \<or> dma mem\<^sub>1' x \<noteq> dma mem\<^sub>1 x)\<close> differing_vars_elim apply auto[1]
               by(metis differing_vars_neg_intro)
             with i_prop show ?thesis
@@ -1701,9 +1701,9 @@ proof -
   ultimately show ?thesis using that by blast
 qed
 
-text {* The Isar proof language provides a readable
+text \<open>The Isar proof language provides a readable
 way of specifying assumptions while also giving them names for subsequent
-usage. *}
+usage.\<close>
 lemma compat_low_eq:
   assumes compat: "makes_compatible (cms\<^sub>1, mem\<^sub>1) (cms\<^sub>2, mem\<^sub>2) mems"
   assumes modes_eq: "map snd cms\<^sub>1 = map snd cms\<^sub>2"
@@ -1730,7 +1730,7 @@ proof -
     obtain \<sigma> :: "'Var \<rightharpoonup> 'Val" where dom\<sigma>: "dom \<sigma> = ?X j"
       by (metis dom_restrict_total)
 
-    from compat x_low makes_compatible_dma_eq j_prop `dom \<sigma> = ?X j`
+    from compat x_low makes_compatible_dma_eq j_prop \<open>dom \<sigma> = ?X j\<close>
     have x_low: "dma (?mems\<^sub>1j [\<mapsto> \<sigma>]) x = Low"
       by metis
 
@@ -1746,7 +1746,7 @@ proof -
       using modes_eq j_prop
       by (metis mm_equiv_low_eq prod.collapse)
     hence "?mems\<^sub>1j x = ?mems\<^sub>2j x"
-      using x_low x_readable j_prop `dom \<sigma> = ?X j`
+      using x_low x_readable j_prop \<open>dom \<sigma> = ?X j\<close>
       unfolding low_mds_eq_def
       by (metis subst_not_in_dom)
 
@@ -1766,7 +1766,7 @@ proof (clarify)
   assume "\<langle>c'', mds'', mem''\<rangle> \<in> loc_reach \<langle>c', mds', mem'\<rangle>"
   thus "\<langle>c'', mds'', mem''\<rangle> \<in> loc_reach \<langle>c, mds, mem\<rangle>"
     apply induct
-      apply (metis `\<langle>c', mds', mem'\<rangle> \<in> loc_reach \<langle>c, mds, mem\<rangle>` surjective_pairing)
+      apply (metis \<open>\<langle>c', mds', mem'\<rangle> \<in> loc_reach \<langle>c, mds, mem\<rangle>\<close> surjective_pairing)
      apply (metis loc_reach.step)
     by (metis loc_reach.mem_diff)
 qed
@@ -1880,7 +1880,7 @@ proof -
         by (metis globally_sound_modes_compatible)
       hence "\<And> x. var_asm_not_written (snd (cms ! i)) x \<Longrightarrow> x \<in> snd (cms ! k) GuarNoWrite \<or> x \<in> snd (cms ! k) GuarNoReadOrWrite"
         unfolding compatible_modes_def
-        by (metis (no_types) `i \<noteq> k` `length cms = length cms'` ev i_le length_map nth_map var_asm_not_written_def)
+        by (metis (no_types) \<open>i \<noteq> k\<close> \<open>length cms = length cms'\<close> ev i_le length_map nth_map var_asm_not_written_def)
       hence "\<And> x. var_asm_not_written (snd (cms ! i)) x \<longrightarrow> doesnt_modify (fst (cms ! k)) x"
         using ev loc_sound
         unfolding locally_sound_mode_use_def
@@ -1891,9 +1891,9 @@ proof -
          apply -
          by(case_tac "cms ! i", simp)
       thus ?thesis
-        using loc_sound i_le `length cms = length cms'`
+        using loc_sound i_le \<open>length cms = length cms'\<close>
         unfolding locally_sound_mode_use_def
-        by (metis `cms' ! i = cms ! i`)
+        by (metis \<open>cms' ! i = cms ! i\<close>)
     qed
   qed
   ultimately show ?thesis
@@ -2021,7 +2021,7 @@ proof -
       by auto
 
     moreover
-    have "\<And>x. \<sigma> x = None" using `dom \<sigma> = {}`
+    have "\<And>x. \<sigma> x = None" using \<open>dom \<sigma> = {}\<close>
       by (metis domIff empty_iff)
     hence [simp]: "\<And> mem. mem [\<mapsto> \<sigma>] = mem"
       by(simp add: subst_def)

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Inverse of a matrix using the Gauss Jordan algorithm over nested IArrays*}
+section\<open>Inverse of a matrix using the Gauss Jordan algorithm over nested IArrays\<close>
 
 theory Inverse_IArrays
 imports 
@@ -12,13 +12,13 @@ imports
   Gauss_Jordan_PA_IArrays
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
 definition "invertible_iarray A = (rank_iarray A = nrows_iarray A)"
 definition "inverse_matrix_iarray A = (if invertible_iarray A then Some(fst(Gauss_Jordan_iarrays_PA A)) else None)"
 definition "matrix_to_iarray_option A = (if A \<noteq> None then Some (matrix_to_iarray (the A)) else None)"
 
-subsection{*Some lemmas and code generation*}
+subsection\<open>Some lemmas and code generation\<close>
 lemma matrix_inv_Gauss_Jordan_iarrays_PA:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
 assumes inv_A: "invertible A"

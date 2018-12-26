@@ -10,9 +10,9 @@ section "Automated Reasoning"
 theory Automation imports StructuredReasoning
 begin
 
-text {* This theory serves as a container for automated reasoning
+text \<open>This theory serves as a container for automated reasoning
   tactics for pGCL, implemented in ML.  At present, there is a basic
-  verification condition generator (VCG). *}
+  verification condition generator (VCG).\<close>
 
 named_theorems wd
   "theorems to automatically establish well-definedness"
@@ -26,7 +26,7 @@ named_theorems pwlp
 ML_file "pVCG.ML"
 
 method_setup pvcg =
-  {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (pVCG.pVCG_tac ctxt)) *}
+  \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD' (pVCG.pVCG_tac ctxt))\<close>
   "Probabilistic weakest preexpectation tactic"
 
 declare wd_intros[wd]

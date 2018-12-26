@@ -1,6 +1,6 @@
 (* Author: Rene Thiemann, License: LGPL *)
 
-section {*Examples*}
+section \<open>Examples\<close>
 theory Partial_Function_MR_Examples
 imports 
   Partial_Function_MR
@@ -8,11 +8,11 @@ imports
   HOL.Rat
 begin
 
-subsection {* Collatz function *}
-text {*In the following, we define the Collatz function, 
+subsection \<open>Collatz function\<close>
+text \<open>In the following, we define the Collatz function, 
 which is artificially encoded via mutually recursive functions.
 As second argument we store the intermediate values.
-It is currently unknown whether this function is terminating for all inputs or not.*}
+It is currently unknown whether this function is terminating for all inputs or not.\<close>
 
 partial_function_mr (tailrec) collatz and even_case and odd_case where
   "collatz (x :: int) xs = 
@@ -28,13 +28,13 @@ lemma "length (collatz 327 []) = 144" by eval
 text \<open>The equations are accessible via .simps, but are not put in the standard simpset.\<close>
 lemma "collatz 5 [] = [5,16,8,4,2,1]" by (simp add: collatz.simps even_case.simps)
 
-subsection {* Evaluating expressions *}
-text {* Note that we also provide a least fixpoint operator.
+subsection \<open>Evaluating expressions\<close>
+text \<open>Note that we also provide a least fixpoint operator.
   Hence, the evaluation function will clearly be partial.
   The example also illustrates the usage
-  of polymorphism and of different return types. *}
+  of polymorphism and of different return types.\<close>
 
-text {* In the following datatype, \isa{Mu b f a} encodes the least $n$ such that $b(f^n(a))$. *}
+text \<open>In the following datatype, \isa{Mu b f a} encodes the least $n$ such that $b(f^n(a))$.\<close>
 datatype 'a bexp = 
   BConst bool
 | Less "'a aexp" "'a aexp"

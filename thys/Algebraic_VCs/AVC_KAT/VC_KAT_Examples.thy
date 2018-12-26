@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection {* Verification Examples *}
+subsubsection \<open>Verification Examples\<close>
 
 theory VC_KAT_Examples
   imports VC_KAT

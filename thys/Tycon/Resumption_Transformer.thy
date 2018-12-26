@@ -1,23 +1,23 @@
-section {* Resumption monad transformer *}
+section \<open>Resumption monad transformer\<close>
 
 theory Resumption_Transformer
 imports Monad_Plus
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
-text {* The standard Haskell libraries do not include a resumption
+text \<open>The standard Haskell libraries do not include a resumption
 monad transformer type; below is the Haskell definition for the one we
-will use here. *}
+will use here.\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 data ResT m a = Done a | More (m (ResT m a))
 \end{verbatim}
-*}
+\<close>
 
-text {* The above datatype definition can be translated directly into
-HOLCF using @{text tycondef}. \medskip *}
+text \<open>The above datatype definition can be translated directly into
+HOLCF using \<open>tycondef\<close>. \medskip\<close>
 
 tycondef 'a\<cdot>('f::"functor") resT =
   Done (lazy "'a") | More (lazy "('a\<cdot>'f resT)\<cdot>'f")
@@ -51,7 +51,7 @@ proof (induct r rule: resT.take_induct [OF adm])
     done
 qed
 
-subsection {* Class instance proofs *}
+subsection \<open>Class instance proofs\<close>
 
 lemma fmapU_resT_simps [simp]:
   "fmapU\<cdot>f\<cdot>(\<bottom>::udom\<cdot>'f::functor resT) = \<bottom>"
@@ -101,7 +101,7 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_resT_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>'f::functor resT) = \<bottom>"
@@ -127,15 +127,14 @@ lemma join_resT_simps [simp]:
   "join\<cdot>(More\<cdot>m) = More\<cdot>(fmap\<cdot>join\<cdot>m)"
 unfolding join_def by simp_all
 
-subsection {* Nondeterministic interleaving *}
+subsection \<open>Nondeterministic interleaving\<close>
 
-text {* In this section we present a more general formalization of the
+text \<open>In this section we present a more general formalization of the
 nondeterministic interleaving operation presented in Chapter 7 of the
-author's PhD thesis \cite{holcf11}. If both arguments are @{text
-"Done"}, then @{text "zipRT"} combines the results with the function
-@{text "f"} and terminates. While either argument is @{text "More"},
-@{text "zipRT"} nondeterministically chooses one such argument, runs
-it for one step, and then calls itself recursively. *}
+author's PhD thesis \cite{holcf11}. If both arguments are \<open>Done\<close>, then \<open>zipRT\<close> combines the results with the function
+\<open>f\<close> and terminates. While either argument is \<open>More\<close>,
+\<open>zipRT\<close> nondeterministically chooses one such argument, runs
+it for one step, and then calls itself recursively.\<close>
 
 fixrec zipRT ::
   "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> 'a\<cdot>('m::functor_plus) resT \<rightarrow> 'b\<cdot>'m resT \<rightarrow> 'c\<cdot>'m resT"
@@ -161,7 +160,7 @@ by (fixrec_simp, cases r, simp_all)
 abbreviation apR (infixl "\<diamondop>" 70)
   where "a \<diamondop> b \<equiv> zipRT\<cdot>ID\<cdot>a\<cdot>b"
 
-text {* Proofs that @{text zipRT} satisfies the applicative functor laws: *}
+text \<open>Proofs that \<open>zipRT\<close> satisfies the applicative functor laws:\<close>
 
 lemma zipRT_homomorphism: "Done\<cdot>f \<diamondop> Done\<cdot>x = Done\<cdot>(f\<cdot>x)"
   by simp
@@ -172,7 +171,7 @@ lemma zipRT_identity: "Done\<cdot>ID \<diamondop> r = r"
 lemma zipRT_interchange: "r \<diamondop> Done\<cdot>x = Done\<cdot>(\<Lambda> f. f\<cdot>x) \<diamondop> r"
   by (induct r rule: resT_induct, simp_all add: fmap_fmap)
 
-text {* The associativity rule is the hard one! *}
+text \<open>The associativity rule is the hard one!\<close>
 
 lemma zipRT_associativity: "Done\<cdot>cfcomp \<diamondop> r1 \<diamondop> r2 \<diamondop> r3 = r1 \<diamondop> (r2 \<diamondop> r3)"
 proof (induct r1 arbitrary: r2 r3 rule: resT_induct)

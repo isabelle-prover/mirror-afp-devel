@@ -3,13 +3,13 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-section{*  Trail datatype definition and its properties *}
+section\<open>Trail datatype definition and its properties\<close>
 
 theory Trail
 imports MoreList
 begin
 
-text{*   Trail is a list in which some elements can be marked. *}
+text\<open>Trail is a list in which some elements can be marked.\<close>
 type_synonym 'a Trail = "('a*bool) list"
 
 abbreviation
@@ -21,9 +21,9 @@ abbreviation
   where "marked  x == snd x"
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Trail elements *}
+subsection\<open>Trail elements\<close>
 
-text{* Elements of the trail with marks removed *}
+text\<open>Elements of the trail with marks removed\<close>
 primrec
 elements              :: "'a Trail \<Rightarrow> 'a list"
 where
@@ -104,12 +104,12 @@ lemma uniqElementsTrailImpliesUniqElementsPrefix:
   shows
   "uniq (elements p)"
 proof-
-  from `isPrefix p M`
+  from \<open>isPrefix p M\<close>
   obtain s 
     where "M = p @ s"
     unfolding isPrefix_def
     by auto
-  with `uniq (elements M)`
+  with \<open>uniq (elements M)\<close>
   show ?thesis
     using uniqAppend[of "elements p" "elements s"]
     by simp
@@ -133,7 +133,7 @@ proof (induct M)
     assume "(e, d) = m"
     hence "(e, \<not> d) \<noteq> m"
       by auto
-    from `(e, d) = m` `uniq (elements (m # M'))`
+    from \<open>(e, d) = m\<close> \<open>uniq (elements (m # M'))\<close>
     have "\<not> (e, d) \<in> set M'"
       by (auto simp add: uniqAppendIff)
     with Cons
@@ -145,7 +145,7 @@ proof (induct M)
     assume "(e, \<not> d) = m"
     hence "(e, d) \<noteq> m"
       by auto
-    from `(e, \<not> d) = m` `uniq (elements (m # M'))`
+    from \<open>(e, \<not> d) = m\<close> \<open>uniq (elements (m # M'))\<close>
     have "\<not> (e, \<not> d) \<in> set M'"
       by (auto simp add: uniqAppendIff)
     with Cons
@@ -155,13 +155,13 @@ proof (induct M)
   moreover
   {
     assume "(e, d) \<noteq> m" "(e, \<not> d) \<noteq> m"
-    from `(e, d) \<noteq> m` `(e, d) \<in> set (m # M')` have 
+    from \<open>(e, d) \<noteq> m\<close> \<open>(e, d) \<in> set (m # M')\<close> have 
       "(e, d) \<in> set M'"
       by simp
-    with `uniq (elements (m # M'))` Cons(1)
+    with \<open>uniq (elements (m # M'))\<close> Cons(1)
     have "\<not> (e, \<not> d) \<in> set M'"
       by simp
-    with `(e, \<not> d) \<noteq> m`
+    with \<open>(e, \<not> d) \<noteq> m\<close>
     have ?case
       by simp
   }
@@ -176,7 +176,7 @@ proof (induct M)
 qed simp
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Marked trail elements *}
+subsection\<open>Marked trail elements\<close>
 
 primrec
 markedElements        :: "'a Trail \<Rightarrow> 'a list"
@@ -208,10 +208,10 @@ lemma markedAndMemberImpliesIsMarkedElement:
 proof-
   have "m = (element m, marked m)"
     by auto
-  with `marked m` 
+  with \<open>marked m\<close> 
   have "m = (element m, True)"
     by simp
-  with `m \<in> set M` have
+  with \<open>m \<in> set M\<close> have
     "(element m, True) \<in> set M"
     by simp
   thus ?thesis
@@ -223,10 +223,10 @@ lemma markedElementsPrefixAreMarkedElementsTrail:
   assumes "isPrefix p M" "m \<in> set (markedElements p)"
   shows "m \<in> set (markedElements M)"
 proof-
-  from `m \<in> set (markedElements p)` 
+  from \<open>m \<in> set (markedElements p)\<close> 
   have "(m, True) \<in> set p"
     by (simp add: markedElementIsMarkedTrue)
-  with `isPrefix p M`
+  with \<open>isPrefix p M\<close>
   have "(m, True) \<in> set M"
     using prefixIsSubset[of "p" "M"]
     by auto
@@ -243,23 +243,23 @@ lemma markedElementsTrailMemPrefixAreMarkedElementsPrefix:
   shows
   "m \<in> set (markedElements p)"
 proof-
-  from `m \<in> set (markedElements M)` have "(m, True) \<in> set M"
+  from \<open>m \<in> set (markedElements M)\<close> have "(m, True) \<in> set M"
     by (simp add: markedElementIsMarkedTrue)
-  with `uniq (elements M)` `m \<in> set (elements p)`
+  with \<open>uniq (elements M)\<close> \<open>m \<in> set (elements p)\<close>
   have "(m, True) \<in> set p"
   proof-
     {
       assume "(m, False) \<in> set p"
-      with `isPrefix p M`
+      with \<open>isPrefix p M\<close>
       have "(m, False) \<in> set M"
         using prefixIsSubset[of "p" "M"]
         by auto
-      with `(m, True) \<in> set M` `uniq (elements M)`
+      with \<open>(m, True) \<in> set M\<close> \<open>uniq (elements M)\<close>
       have False
         using uniqImpliesExclusiveTrueOrFalse[of "m" "True" "M"]
         by simp
     }
-    with `m \<in> set (elements p)`
+    with \<open>m \<in> set (elements p)\<close>
     show ?thesis
       using eitherMarkedOrNotMarked[of "m" "p"]
       by auto
@@ -270,9 +270,9 @@ proof-
 qed
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Prefix before/upto a trail element *}
+subsection\<open>Prefix before/upto a trail element\<close>
 
-text{* Elements of the trail before the first occurrence of a given element - not incuding it *}
+text\<open>Elements of the trail before the first occurrence of a given element - not incuding it\<close>
 primrec
 prefixBeforeElement  :: "'a \<Rightarrow> 'a Trail \<Rightarrow> 'a Trail"
 where
@@ -290,7 +290,7 @@ by (induct t) auto
 lemma "prefixBeforeElement e t = take (firstPos e (elements t)) t"
 by (induct t) auto
 
-text{* Elements of the trail before the first occurrence of a given element - incuding it *}
+text\<open>Elements of the trail before the first occurrence of a given element - incuding it\<close>
 primrec
 prefixToElement  :: "'a \<Rightarrow> 'a Trail \<Rightarrow> 'a Trail"
 where
@@ -353,7 +353,7 @@ proof (induct p arbitrary: M)
   show ?case
   proof (cases "(element a) = e")
     case True
-    from True `(a # p') @ s = M` have "prefixToElement e M = [a]"
+    from True \<open>(a # p') @ s = M\<close> have "prefixToElement e M = [a]"
       by auto
     moreover
     from True have "prefixToElement e (a # p') = [a]"
@@ -363,17 +363,17 @@ proof (induct p arbitrary: M)
       by simp
   next
     case False
-    from False `(a # p') @ s = M` have "prefixToElement e M = a # prefixToElement e (p' @ s)"
+    from False \<open>(a # p') @ s = M\<close> have "prefixToElement e M = a # prefixToElement e (p' @ s)"
       by auto
     moreover
     from False have "prefixToElement e (a # p') = a # prefixToElement e p'"
       by simp
     moreover
-    from False `e \<in> set (elements (a # p'))` have "e \<in> set (elements p')"
+    from False \<open>e \<in> set (elements (a # p'))\<close> have "e \<in> set (elements p')"
       by simp
     have "? s . (p' @ s = p' @ s)"
       by simp
-    from `e \<in> set (elements p')`  `? s. (p' @ s = p' @ s)` 
+    from \<open>e \<in> set (elements p')\<close>  \<open>? s. (p' @ s = p' @ s)\<close> 
       have "prefixToElement e (p' @ s) = prefixToElement e p'"
       using Cons(1) [of "p' @ s"]
       by simp
@@ -383,9 +383,9 @@ proof (induct p arbitrary: M)
 qed simp
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Marked elements upto a given trail element *}
+subsection\<open>Marked elements upto a given trail element\<close>
 
-text{* Marked elements of the trail upto the given element (which is also included if it is marked) *}
+text\<open>Marked elements of the trail upto the given element (which is also included if it is marked)\<close>
 definition
 markedElementsTo :: "'a \<Rightarrow> 'a Trail \<Rightarrow> 'a list"
 where
@@ -448,7 +448,7 @@ by (simp add: prefixToElementToPrefixElement)
 
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Last marked element in a trail *}
+subsection\<open>Last marked element in a trail\<close>
 
 definition
 lastMarked :: "'a Trail \<Rightarrow> 'a"
@@ -510,9 +510,9 @@ by (induct M) auto
 
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Level of a trail element *}
+subsection\<open>Level of a trail element\<close>
 
-text{* Level of an element is the number of marked elements that precede it *}
+text\<open>Level of an element is the number of marked elements that precede it\<close>
 
 definition
 elementLevel :: "'a \<Rightarrow> 'a Trail \<Rightarrow> nat"
@@ -525,9 +525,9 @@ lemma elementLevelMarkedGeq1:
   shows
   "elementLevel e M >= 1"
 proof-
-  from `e \<in> set (markedElements M)` have "(e, True) \<in> set M"
+  from \<open>e \<in> set (markedElements M)\<close> have "(e, True) \<in> set M"
     by (simp add: markedElementIsMarkedTrue)
-  with `uniq (elements M)`  have "e \<in> set (markedElementsTo e M)"
+  with \<open>uniq (elements M)\<close>  have "e \<in> set (markedElementsTo e M)"
     using markedElementIsMemberOfItsMarkedElementsTo[of "M" "(e, True)"]
     by simp
   hence "markedElementsTo e M \<noteq> []"
@@ -568,7 +568,7 @@ proof (induct M)
       assume "a \<noteq> b"
       hence "\<not> precedes a b (b # (elements M'))"
         by (rule noElementsPrecedesFirstElement)
-      with `b = element m` `precedes a b (elements (m # M'))`
+      with \<open>b = element m\<close> \<open>precedes a b (elements (m # M'))\<close>
       have False
         by simp
     }
@@ -581,15 +581,15 @@ proof (induct M)
   { 
     assume "a \<noteq> element m" "b \<noteq> element m"
     moreover
-    from `precedes a b (elements (m # M'))`
+    from \<open>precedes a b (elements (m # M'))\<close>
     have "a \<in> set (elements (m # M'))" "b \<in> set (elements (m # M'))"
       unfolding precedes_def
       by (auto split: if_split_asm)
-    from `a \<noteq> element m` `a \<in> set (elements (m # M'))`
+    from \<open>a \<noteq> element m\<close> \<open>a \<in> set (elements (m # M'))\<close>
     have "a \<in> set (elements M')"
       by simp
     moreover
-    from `b \<noteq> element m` `b \<in> set (elements (m # M'))`
+    from \<open>b \<noteq> element m\<close> \<open>b \<in> set (elements (m # M'))\<close>
     have "b \<in> set (elements M')"
       by simp
     ultimately
@@ -598,7 +598,7 @@ proof (induct M)
       unfolding precedes_def
       by auto
     hence ?case
-      using `a \<noteq> element m` `b \<noteq> element m`
+      using \<open>a \<noteq> element m\<close> \<open>b \<noteq> element m\<close>
       unfolding elementLevel_def
       unfolding markedElementsTo_def
       by auto
@@ -628,18 +628,18 @@ proof (induct M)
   {
     assume "e = element m"
     moreover
-    with `e \<noteq> d` have "d \<noteq> element m"
+    with \<open>e \<noteq> d\<close> have "d \<noteq> element m"
       by simp
     moreover
-    from `uniq (elements (m # M'))` `d \<in> set (markedElements (m # M'))`
+    from \<open>uniq (elements (m # M'))\<close> \<open>d \<in> set (markedElements (m # M'))\<close>
     have "1 \<le> elementLevel d (m # M')"
       using elementLevelMarkedGeq1[of "m # M'" "d"]
       by auto
     moreover
-    from `d \<noteq> element m` `d \<in> set (markedElements (m # M'))`
+    from \<open>d \<noteq> element m\<close> \<open>d \<in> set (markedElements (m # M'))\<close>
     have "d \<in> set (markedElements M')"
       by (simp split: if_split_asm)
-    from `uniq (elements (m # M'))` `d \<in> set (markedElements M')`
+    from \<open>uniq (elements (m # M'))\<close> \<open>d \<in> set (markedElements M')\<close>
     have "1 \<le> elementLevel d M'"
       using elementLevelMarkedGeq1[of "M'" "d"]
       by auto
@@ -652,10 +652,10 @@ proof (induct M)
   moreover
   {
     assume "d = element m"
-    from `e \<noteq> d` have "\<not> precedes e d (d # (elements M'))"
+    from \<open>e \<noteq> d\<close> have "\<not> precedes e d (d # (elements M'))"
       using noElementsPrecedesFirstElement[of "e" "d" "elements M'"]
       by simp
-    with `d = element m` `precedes e d (elements (m # M'))`
+    with \<open>d = element m\<close> \<open>precedes e d (elements (m # M'))\<close>
     have False
       by simp
     hence ?case
@@ -665,28 +665,28 @@ proof (induct M)
   {
     assume "e \<noteq> element m" "d \<noteq> element m"    
     moreover
-    from `precedes e d (elements (m # M'))`
+    from \<open>precedes e d (elements (m # M'))\<close>
     have "e \<in> set (elements (m # M'))" "d \<in> set (elements (m # M'))"
       unfolding precedes_def
       by (auto split: if_split_asm)
-    from `e \<noteq> element m` `e \<in> set (elements (m # M'))`
+    from \<open>e \<noteq> element m\<close> \<open>e \<in> set (elements (m # M'))\<close>
     have "e \<in> set (elements M')"
       by simp
     moreover
-    from `d \<noteq> element m` `d \<in> set (elements (m # M'))`
+    from \<open>d \<noteq> element m\<close> \<open>d \<in> set (elements (m # M'))\<close>
     have "d \<in> set (elements M')"
       by simp
     moreover
-    from `d \<noteq> element m` `d \<in> set (markedElements (m # M'))`
+    from \<open>d \<noteq> element m\<close> \<open>d \<in> set (markedElements (m # M'))\<close>
     have "d \<in> set (markedElements M')"
       by (simp split: if_split_asm)
     ultimately
     have "elementLevel e M' < elementLevel d M'"
-      using `uniq (elements (m # M'))` Cons
+      using \<open>uniq (elements (m # M'))\<close> Cons
       unfolding precedes_def
       by auto
     hence ?case
-      using `e \<noteq> element m` `d \<noteq> element m`
+      using \<open>e \<noteq> element m\<close> \<open>d \<noteq> element m\<close>
       unfolding elementLevel_def
       unfolding markedElementsTo_def
       by auto
@@ -704,16 +704,16 @@ lemma differentMarkedElementsHaveDifferentLevels:
   "a \<noteq> b" 
   shows "elementLevel a M \<noteq> elementLevel b M"
 proof-
-  from `a \<in> set (markedElements M)`
+  from \<open>a \<in> set (markedElements M)\<close>
   have "a \<in> set (elements M)"
     by (simp add: markedElementsAreElements)
   moreover
-  from `b \<in> set (markedElements M)`
+  from \<open>b \<in> set (markedElements M)\<close>
   have "b \<in> set (elements M)"
     by (simp add: markedElementsAreElements)
   ultimately
   have "precedes a b (elements M) \<or> precedes b a (elements M)"
-    using `a \<noteq> b`
+    using \<open>a \<noteq> b\<close>
     using precedesTotalOrder[of "a" "elements M" "b"]
     by simp
   moreover
@@ -739,9 +739,9 @@ qed
 
 
 (* ------------------------------------------------------------------------- *)
-subsection{* Current trail level *}
+subsection\<open>Current trail level\<close>
 
-text{* Current level is the number of marked elements in the trail *}
+text\<open>Current level is the number of marked elements in the trail\<close>
 
 definition
 currentLevel :: "'a Trail \<Rightarrow> nat"
@@ -793,9 +793,9 @@ unfolding markedElementsTo_def
 by (auto simp add: prefixToElementAppend)
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Prefix to a given trail level *}
+subsection\<open>Prefix to a given trail level\<close>
 
-text{* Prefix is made or elements of the trail up to a given element level *}
+text\<open>Prefix is made or elements of the trail up to a given element level\<close>
 
 
 primrec
@@ -856,7 +856,7 @@ proof (induct M arbitrary: i)
   }
   ultimately
   show ?case
-    using `i <= l`
+    using \<open>i <= l\<close>
     by auto
 next
   case Nil
@@ -902,7 +902,7 @@ proof (induct M arbitrary: i)
   }
   ultimately
   show ?case
-    using `i <= l`
+    using \<open>i <= l\<close>
     by auto
 next
   case Nil
@@ -937,7 +937,7 @@ proof (induct M arbitrary: i k)
   {
     assume "i \<ge> l" "marked m"
     hence ?case
-      using `k \<ge> i`
+      using \<open>k \<ge> i\<close>
       by simp
   }
   moreover
@@ -991,7 +991,7 @@ proof (induct a arbitrary: i)
   {
     assume "\<not> marked a"
     hence ?case
-      using Cons(1)[of "i"] `i \<le> l` `l - i < currentLevel (a # a')`
+      using Cons(1)[of "i"] \<open>i \<le> l\<close> \<open>l - i < currentLevel (a # a')\<close>
       unfolding currentLevel_def
       by simp
   }
@@ -1005,13 +1005,13 @@ proof (induct a arbitrary: i)
   {
     assume "marked a" "l > i"
     hence ?case
-      using Cons(1)[of "i + 1"] `i \<le> l` `l - i < currentLevel (a # a')`
+      using Cons(1)[of "i + 1"] \<open>i \<le> l\<close> \<open>l - i < currentLevel (a # a')\<close>
       unfolding currentLevel_def
       by simp
   }
   ultimately
   show ?case
-    using `i \<le> l`
+    using \<open>i \<le> l\<close>
     by auto
 next
   case Nil
@@ -1039,7 +1039,7 @@ proof (induct a arbitrary: i)
   {
     assume "marked a" "l = i"
     hence ?case
-      using `(currentLevel (a # a')) + i \<le> l`
+      using \<open>(currentLevel (a # a')) + i \<le> l\<close>
       unfolding currentLevel_def
       by simp
   }
@@ -1047,7 +1047,7 @@ proof (induct a arbitrary: i)
   {
     assume "marked a" "l > i"
     hence "prefixToLevel_aux (a' @ b) l (i + 1) = a' @ prefixToLevel_aux b l (i + 1 + currentLevel a')"
-      using Cons(1) [of "i + 1"] `(currentLevel (a # a')) + i \<le> l`
+      using Cons(1) [of "i + 1"] \<open>(currentLevel (a # a')) + i \<le> l\<close>
       unfolding currentLevel_def
       by simp
     moreover
@@ -1055,13 +1055,13 @@ proof (induct a arbitrary: i)
       by simp
     ultimately
     have ?case
-      using `marked a` `l > i`
+      using \<open>marked a\<close> \<open>l > i\<close>
       unfolding currentLevel_def
       by simp
   }
   ultimately
   show ?case
-    using `l \<ge> i`
+    using \<open>l \<ge> i\<close>
     by auto
 next
   case Nil
@@ -1106,15 +1106,15 @@ proof-
   proof-
     {
       assume "s = []"
-      with `(prefixToLevel level t) @ s = t` 
+      with \<open>(prefixToLevel level t) @ s = t\<close> 
       have "prefixToLevel level t = t"
         by simp
       hence "currentLevel (prefixToLevel level t) \<le> level"
         using currentLevelPrefixToLevel[of "level" "t"]
         by simp
-      with `prefixToLevel level t = t` have "currentLevel t \<le> level"
+      with \<open>prefixToLevel level t = t\<close> have "currentLevel t \<le> level"
         by simp
-      with `level < currentLevel t` have False
+      with \<open>level < currentLevel t\<close> have False
         by simp
     }
     thus ?thesis
@@ -1127,22 +1127,22 @@ proof-
       assume "\<not> marked (hd s)"
       have "currentLevel (prefixToLevel level t) \<le> level"
         by (simp add:currentLevelPrefixToLevel)
-      from `s \<noteq> []` have "s = [hd s] @ (tl s)"
+      from \<open>s \<noteq> []\<close> have "s = [hd s] @ (tl s)"
         by simp
-      with `(prefixToLevel level t) @ s = t` have
+      with \<open>(prefixToLevel level t) @ s = t\<close> have
         "t = (prefixToLevel level t) @ [hd s] @ (tl s)"
         by simp
       hence "(prefixToLevel level t) = (prefixToLevel level ((prefixToLevel level t) @ [hd s] @ (tl s)))"
         by simp
       also
-      with `currentLevel (prefixToLevel level t) \<le> level` 
+      with \<open>currentLevel (prefixToLevel level t) \<le> level\<close> 
       have "\<dots> = ((prefixToLevel level t) @ (prefixToLevel_aux ([hd s] @ (tl s)) level (currentLevel (prefixToLevel level t))))"
         by (auto simp add: prefixToLevelAppend)
       also
       have "\<dots> = 
         ((prefixToLevel level t) @ (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t)))"
       proof-
-        from `currentLevel (prefixToLevel level t) <= level` `\<not> marked (hd s)`
+        from \<open>currentLevel (prefixToLevel level t) <= level\<close> \<open>\<not> marked (hd s)\<close>
         have "prefixToLevel_aux ([hd s] @ (tl s)) level (currentLevel (prefixToLevel level t)) = 
           (hd s) # prefixToLevel_aux (tl s) level (currentLevel (prefixToLevel level t))"
           by simp
@@ -1184,7 +1184,7 @@ proof -
     where "(prefixToLevel level M) @ s = M"
     unfolding isPrefix_def
     by auto
-  with `e  \<in> set (elements (prefixToLevel level M))` 
+  with \<open>e  \<in> set (elements (prefixToLevel level M))\<close> 
   have "elementLevel e (prefixToLevel level M) = elementLevel e M"
     using elementLevelAppend [of "e" "prefixToLevel level M" "s"]
     by simp
@@ -1207,21 +1207,21 @@ proof (induct M arbitrary: i)
   proof (cases "e = element m")
     case True
     thus ?thesis
-      using `elementLevel e (m # M') + i \<le> level`
+      using \<open>elementLevel e (m # M') + i \<le> level\<close>
       unfolding prefixToLevel_def
       unfolding elementLevel_def
       unfolding markedElementsTo_def
       by (simp split: if_split_asm)
   next
     case False
-    with `e \<in> set (elements (m # M'))`
+    with \<open>e \<in> set (elements (m # M'))\<close>
     have "e \<in> set (elements M')"
       by simp
 
     show ?thesis
     proof (cases "marked m")
       case True
-      with Cons `e \<noteq> element m`
+      with Cons \<open>e \<noteq> element m\<close>
       have "(elementLevel e M') + i + 1 \<le> level"
         unfolding elementLevel_def
         unfolding markedElementsTo_def
@@ -1232,22 +1232,22 @@ proof (induct M arbitrary: i)
       ultimately
       have "i + 1 \<le> level"
         by simp
-      with `e \<in> set (elements M')` `(elementLevel e M') + i + 1 \<le> level` Cons(1)[of "i+1"]
+      with \<open>e \<in> set (elements M')\<close> \<open>(elementLevel e M') + i + 1 \<le> level\<close> Cons(1)[of "i+1"]
       have "e \<in> set (elements (prefixToLevel_aux M' level (i + 1)))"
         by simp
-      with `e \<noteq> element m` `i + 1 \<le> level` True 
+      with \<open>e \<noteq> element m\<close> \<open>i + 1 \<le> level\<close> True 
       show ?thesis
         by simp
     next
       case False
-      with `e \<noteq> element m` `elementLevel e (m # M') + i \<le> level` have "elementLevel e M' + i \<le> level"
+      with \<open>e \<noteq> element m\<close> \<open>elementLevel e (m # M') + i \<le> level\<close> have "elementLevel e M' + i \<le> level"
         unfolding elementLevel_def
         unfolding markedElementsTo_def
         by (simp split: if_split_asm)
-      with `e \<in> set (elements M')` have "e \<in> set (elements (prefixToLevel_aux M' level i))"
+      with \<open>e \<in> set (elements M')\<close> have "e \<in> set (elements (prefixToLevel_aux M' level i))"
         using Cons
         by (auto split: if_split_asm)
-      with `e \<noteq> element m` False show ?thesis
+      with \<open>e \<noteq> element m\<close> False show ?thesis
         by simp
     qed
   qed
@@ -1274,7 +1274,7 @@ proof-
     assume "\<not> ?thesis"
     hence "level \<ge> elementLevel e M"
       by (simp add: prefixToLevelElementsElementLevel)
-    with `level < elementLevel e M`
+    with \<open>level < elementLevel e M\<close>
     have False
       by simp
   }
@@ -1323,7 +1323,7 @@ next
 qed
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Number of literals of every trail level *}
+subsection\<open>Number of literals of every trail level\<close>
 
 primrec
 levelsCounter_aux :: "'a Trail \<Rightarrow> nat list \<Rightarrow> nat list"
@@ -1372,7 +1372,7 @@ next
     have "m <= n"
     proof (cases "marked a")
       case True
-      with `levelsCounter_aux (a # list) (m # l1) = n # l2` 
+      with \<open>levelsCounter_aux (a # list) (m # l1) = n # l2\<close> 
       have "levelsCounter_aux list (m # l1 @ [Suc 0]) = n # l2"
         by simp
       with Cons
@@ -1383,7 +1383,7 @@ next
       show ?thesis 
       proof (cases "l1 = []")
         case True
-        with `\<not> marked a` `levelsCounter_aux (a # list) (m # l1) = n # l2` 
+        with \<open>\<not> marked a\<close> \<open>levelsCounter_aux (a # list) (m # l1) = n # l2\<close> 
         have "levelsCounter_aux list [Suc m] = n # l2"
           by simp
         with Cons
@@ -1393,7 +1393,7 @@ next
           by simp
       next
         case False
-        with `\<not> marked a` `levelsCounter_aux (a # list) (m # l1) = n # l2` 
+        with \<open>\<not> marked a\<close> \<open>levelsCounter_aux (a # list) (m # l1) = n # l2\<close> 
         have "levelsCounter_aux list (m # butlast l1 @ [Suc (last l1)]) = n # l2"
           by simp
         with Cons
@@ -1414,14 +1414,14 @@ proof-
   obtain s :: "'a Trail" where "p @ s = a"
     unfolding isPrefix_def
     by auto
-  from `p @ s = a` have "levelsCounter a = levelsCounter (p @ s)"
+  from \<open>p @ s = a\<close> have "levelsCounter a = levelsCounter (p @ s)"
     by simp
   show ?thesis
   proof (cases "s = []")
     case True
     have "(levelsCounter a) = (butlast (levelsCounter p)) @ [last (levelsCounter p)] \<and> 
       (last (levelsCounter p)) <= hd [last (levelsCounter p)]"
-      using `p @ s = a` `s = []`
+      using \<open>p @ s = a\<close> \<open>s = []\<close>
       unfolding levelsCounter_def
       using levelsCounter_auxNotEmpty[of "p"]
       by auto
@@ -1432,7 +1432,7 @@ proof-
     show ?thesis
     proof (cases "marked (hd s)")
       case True
-      from `p @ s = a` have "levelsCounter a = levelsCounter (p @ s)"
+      from \<open>p @ s = a\<close> have "levelsCounter a = levelsCounter (p @ s)"
         by simp
       also
       have "\<dots> = levelsCounter_aux s (levelsCounter_aux p [0])"
@@ -1441,11 +1441,11 @@ proof-
       also
       have "\<dots> = levelsCounter_aux (tl s) ((levelsCounter_aux p [0]) @ [1])"
       proof-
-        from `s \<noteq> []` have "s = hd s # tl s"
+        from \<open>s \<noteq> []\<close> have "s = hd s # tl s"
           by simp
         then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
           by simp
-        with `marked (hd s)` show ?thesis
+        with \<open>marked (hd s)\<close> show ?thesis
           by simp
       qed
       also
@@ -1464,7 +1464,7 @@ proof-
         by auto
     next
       case False
-      from `p @ s = a` have "levelsCounter a = levelsCounter (p @ s)"
+      from \<open>p @ s = a\<close> have "levelsCounter a = levelsCounter (p @ s)"
         by simp
       also
       have "\<dots> = levelsCounter_aux s (levelsCounter_aux p [0])"
@@ -1473,11 +1473,11 @@ proof-
       also
       have "\<dots> = levelsCounter_aux (tl s) ((butlast (levelsCounter_aux p [0])) @ [Suc (last (levelsCounter_aux p [0]))])"
       proof-
-        from `s \<noteq> []` have "s = hd s # tl s"
+        from \<open>s \<noteq> []\<close> have "s = hd s # tl s"
           by simp
         then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
           by simp
-        with `~marked (hd s)` show ?thesis
+        with \<open>~marked (hd s)\<close> show ?thesis
           by simp
       qed
       also
@@ -1499,7 +1499,7 @@ proof-
         hence "h \<ge> Suc (last (levelsCounter_aux p [0]))"
           using levelsCounter_auxIncreasesFirst[of "tl s"]
           by auto
-        with `(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t` 
+        with \<open>(levelsCounter_aux (tl s) [Suc (last (levelsCounter_aux p [0]))]) = h # t\<close> 
         show ?thesis
           by simp
       qed
@@ -1523,7 +1523,7 @@ proof-
   obtain s :: "'a Trail" where "p @ s = a" "s \<noteq> []" "marked (hd s)"
     using isProperPrefixPrefixToLevel[of "level" "a"]
     by auto
-  from `p @ s = a` have "levelsCounter a = levelsCounter (p @ s)"
+  from \<open>p @ s = a\<close> have "levelsCounter a = levelsCounter (p @ s)"
     by simp
   also
   have "\<dots> = levelsCounter_aux s (levelsCounter_aux p [0])"
@@ -1532,11 +1532,11 @@ proof-
   also
   have "\<dots> = levelsCounter_aux (tl s) ((levelsCounter_aux p [0]) @ [1])"
   proof-
-    from `s \<noteq> []` have "s = hd s # tl s"
+    from \<open>s \<noteq> []\<close> have "s = hd s # tl s"
       by simp
     then have "levelsCounter_aux s (levelsCounter_aux p [0]) = levelsCounter_aux (hd s # tl s) (levelsCounter_aux p [0])"
       by simp
-    with `marked (hd s)` show ?thesis
+    with \<open>marked (hd s)\<close> show ?thesis
       by simp
   qed
   also
@@ -1556,7 +1556,7 @@ qed
 
 
 (*--------------------------------------------------------------------------------*)
-subsection{* Prefix before last marked element *}
+subsection\<open>Prefix before last marked element\<close>
 
 primrec
 prefixBeforeLastMarked  :: "'a Trail \<Rightarrow> 'a Trail"

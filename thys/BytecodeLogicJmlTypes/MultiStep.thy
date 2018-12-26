@@ -7,21 +7,19 @@
 theory MultiStep imports Language begin
 (*>*)
 
-section{*Auxiliary operational judgements*}
+section\<open>Auxiliary operational judgements\<close>
 
-text{*Beside the basic operational judgements @{text Step} and @{text
-Exec}, the interpretation of judgements refers to two multi-step
-relations which we now define.*}
+text\<open>Beside the basic operational judgements \<open>Step\<close> and \<open>Exec\<close>, the interpretation of judgements refers to two multi-step
+relations which we now define.\<close>
 
-subsection{*Multistep execution*} 
+subsection\<open>Multistep execution\<close> 
 
-text{*The first additional operational judgement is the reflexive and
-transitive closure of @{text Step}. It relates states $s$ and $t$ if
+text\<open>The first additional operational judgement is the reflexive and
+transitive closure of \<open>Step\<close>. It relates states $s$ and $t$ if
 the latter can be reached from the former by a chain if single steps,
 all in the same frame. Note that $t$ does not need to be a terminal
-state. As was the case in the definition of @{text Step}, we first
-define a relation with an explicit derivation height index (@{text
-MStep}). *}
+state. As was the case in the definition of \<open>Step\<close>, we first
+define a relation with an explicit derivation height index (\<open>MStep\<close>).\<close>
 
 inductive_set 
 MStep::"(Mbody \<times> Label \<times> State \<times> nat \<times> Label \<times> State) set" 
@@ -31,8 +29,8 @@ MS_zero: "\<lbrakk>k=0; t=s; ll=l\<rbrakk> \<Longrightarrow> (M,l,s,k,ll,t):MSte
 MS_step: "\<lbrakk>(M,l,s,n,l1,r):Step; (M,l1,r,k,l2,t):MStep; m=Suc k+n\<rbrakk>
          \<Longrightarrow> (M,l,s,m,l2,t) : MStep"
 
-text{*The following properties of @{text MStep} are useful to
-notice.*}
+text\<open>The following properties of \<open>MStep\<close> are useful to
+notice.\<close>
 
 (*<*)
 lemma ZeroHeightMultiElimAux[rule_format]:
@@ -121,7 +119,7 @@ lemma MStep_Compose:
 by (drule MStep_Compose_Aux, fastforce)
 (*>*)
 
-text{*Here are two simple lemmas relating the operational judgements.*}
+text\<open>Here are two simple lemmas relating the operational judgements.\<close>
 
 (*<*)
 lemma MStep_Exec1_Aux[rule_format]:
@@ -169,7 +167,7 @@ lemma MStep_Exec2:
 by (erule MStep_Exec2_Aux, fast)
 (*>*)
 
-text{*Finally, the definition of the non-height-indexed relation.*}
+text\<open>Finally, the definition of the non-height-indexed relation.\<close>
 
 definition MS::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> bool"
 where "MS M l s ll t = (\<exists> k . (M,l,s,k,ll,t):MStep)"

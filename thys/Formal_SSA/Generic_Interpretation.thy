@@ -2,7 +2,7 @@
     Author:     Sebastian Ullrich, Denis Lohner
 *)
 
-subsection {* Generic Code Extraction Based on typedefs *}
+subsection \<open>Generic Code Extraction Based on typedefs\<close>
 
 theory Generic_Interpretation
 imports

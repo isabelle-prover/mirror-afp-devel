@@ -7,10 +7,10 @@ imports
   IICF_MS_Array_List
 begin
 
-  text \<open>We implement distinct lists of natural numbers in the range @{text "{0..<N}"}
-    by a length counter and two arrays of size @{text N}. 
+  text \<open>We implement distinct lists of natural numbers in the range \<open>{0..<N}\<close>
+    by a length counter and two arrays of size \<open>N\<close>. 
     The first array stores the list, and the second array stores the positions of
-    the elements in the list, or @{text N} if the element is not in the list.
+    the elements in the list, or \<open>N\<close> if the element is not in the list.
 
     This allows for an efficient index query.
 

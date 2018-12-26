@@ -65,7 +65,7 @@ proof -
   have "x \<in> space lborel" by simp
   have 0:"(\<lambda>(f, y). f(n := y)) \<circ> (\<lambda>xa. (xa, x)) = (\<lambda>f. f(n := x))" unfolding comp_def  using case_prod_conv by fast
   show ?thesis unfolding lborel_f_def
-    using measurable_comp[OF measurable_Pair2'[of x lborel "Pi\<^sub>M {..<n} (\<lambda>b. lborel)", OF `x \<in> space lborel`]
+    using measurable_comp[OF measurable_Pair2'[of x lborel "Pi\<^sub>M {..<n} (\<lambda>b. lborel)", OF \<open>x \<in> space lborel\<close>]
     measurable_add_dim[of n "{..<n}" "\<lambda>b. lborel"], unfolded 0] lessThan_Suc by auto
 qed
 

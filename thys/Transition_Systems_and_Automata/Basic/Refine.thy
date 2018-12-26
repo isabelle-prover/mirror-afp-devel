@@ -1,4 +1,4 @@
-section {* Relations and Refinement *}
+section \<open>Relations and Refinement\<close>
 
 theory Refine
 imports
@@ -20,7 +20,7 @@ begin
       lifting/transfer rules to set-based relation format
     - examples can be found throughout this theory (look for the to_set attribute)
   *)
-  subsection {* Predicate to Set Conversion Setup *}
+  subsection \<open>Predicate to Set Conversion Setup\<close>
 
   (* TODO Peter: it would be nice if there were corresponding constants for all the relation predicates
     in Transfer.thy (left_total, left_unique, right_total, right_unique, bi_total, bi_unique *)
@@ -29,7 +29,7 @@ begin
   lemma bi_unique_pred_set_conv[pred_set_conv]: "bi_unique (\<lambda> x y. (x, y) \<in> R) \<longleftrightarrow> bijective R"
     unfolding bi_unique_def bijective_def by blast
 
-  text {* useful for unfolding equality constants in theorems about predicates *}
+  text \<open>useful for unfolding equality constants in theorems about predicates\<close>
   lemma pred_Id: "HOL.eq = (\<lambda> x y. (x, y) \<in> Id)" by simp
   lemma pred_bool_Id: "HOL.eq = (\<lambda> x y. (x, y) \<in> (Id :: bool rel))" by simp
   lemma pred_nat_Id: "HOL.eq = (\<lambda> x y. (x, y) \<in> (Id :: nat rel))" by simp
@@ -59,7 +59,7 @@ begin
   thm image_transfer image_transfer[to_set]
   thm fun_upd_transfer fun_upd_transfer[to_set]
 
-  subsection {* Relation Composition *}
+  subsection \<open>Relation Composition\<close>
 
   lemma relcomp_trans_1[trans]:
     assumes "(f, g) \<in> A\<^sub>1"
@@ -117,7 +117,7 @@ begin
     finally show ?thesis by this
   qed
 
-  subsection {* Relation Basics *}
+  subsection \<open>Relation Basics\<close>
 
   (* TODO Peter: these were copied from Sepref_HOL_Bindings, they should probably be part of
     $AFP/Automatic_Refinement *)
@@ -145,7 +145,7 @@ begin
   lemma prod_rel_Id_on[simp]: "Id_on A \<times>\<^sub>r Id_on B = Id_on (A \<times> B)" by auto
   lemma set_rel_Id_on[simp]: "\<langle>Id_on S\<rangle> set_rel = Id_on (Pow S)" unfolding set_rel_def by auto
 
-  subsection {* Parametricity *}
+  subsection \<open>Parametricity\<close>
 
   lemmas basic_param[param] =
     option.rel_transfer[unfolded pred_bool_Id, to_set]
@@ -171,7 +171,7 @@ begin
     shows "(the_elem S, the_elem T) \<in> A"
     using assms unfolding set_rel_def is_singleton_def by auto
 
-  subsection {* Lists *}
+  subsection \<open>Lists\<close>
 
   lemma list_all2_list_rel_conv[pred_set_conv]:
     "list_all2 (\<lambda> x y. (x, y) \<in> R) = (\<lambda> x y. (x, y) \<in> \<langle>R\<rangle> list_rel)"
@@ -199,7 +199,7 @@ begin
   lemma set_id_param[param]: "(set, id) \<in> \<langle>A\<rangle> list_set_rel \<rightarrow> \<langle>A\<rangle> set_rel"
     unfolding list_set_rel_def relcomp_unfold in_br_conv by auto parametricity
 
-  subsection {* Streams *}
+  subsection \<open>Streams\<close>
 
   definition stream_rel :: "('a \<times> 'b) set \<Rightarrow> ('a stream \<times> 'b stream) set" where
     [to_relAPP]: "stream_rel R \<equiv> {(x, y). stream_all2 (\<lambda> x y. (x, y) \<in> R) x y}"
@@ -320,7 +320,7 @@ begin
     show "alw P u" if "alw Q v" using that 2 by (coinduction arbitrary: u v) (auto, blast)
   qed
 
-  subsection {* Functional Relations *}
+  subsection \<open>Functional Relations\<close>
 
   lemma br_set_rel: "\<langle>br f P\<rangle> set_rel = br (image f) (\<lambda> A. Ball A P)"
     using br_set_rel_alt by (auto simp: build_rel_def)

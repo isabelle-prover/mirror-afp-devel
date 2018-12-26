@@ -89,7 +89,7 @@ This approach is known as \emph{actualist quantification}
 and is implemented in our semantic embedding by defining a world-dependent meta-logical `existence' predicate
 (called "actualizedAt" below), which is the one used as a guard in the definition of the quantifiers.
 Note that the type \emph{e} characterizes the domain of all beings (existing and non-existing), and
-the type \emph{wo} (which is an abbreviation for @{text "w\<Rightarrow>bool"}) characterizes sets of worlds.
+the type \emph{wo} (which is an abbreviation for \<open>w\<Rightarrow>bool\<close>) characterizes sets of worlds.
 The term "isActualized" thus relates beings to worlds.}\<close>
   
 consts isActualized::"e\<Rightarrow>wo" (infix "actualizedAt"(*<*)70(*>*))

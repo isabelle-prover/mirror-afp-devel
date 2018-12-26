@@ -42,7 +42,7 @@ lemma mismatchId:
 
   shows "[a\<noteq>b]P \<simeq> P"
 proof -
-  from `a \<noteq> b` have "[a\<noteq>b]P \<sim> P" by(rule Strong_Late_Bisim_SC.mismatchId)
+  from \<open>a \<noteq> b\<close> have "[a\<noteq>b]P \<sim> P" by(rule Strong_Late_Bisim_SC.mismatchId)
   thus ?thesis by(rule strongBisimWeakEq)
 qed
 
@@ -118,7 +118,7 @@ lemma scopeExtPar:
 
   shows "<\<nu>x>(P \<parallel> Q) \<simeq> P \<parallel> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim> P \<parallel> <\<nu>x>Q" by(rule Strong_Late_Bisim_SC.scopeExtPar)
+  from \<open>x \<sharp> P\<close> have "<\<nu>x>(P \<parallel> Q) \<sim> P \<parallel> <\<nu>x>Q" by(rule Strong_Late_Bisim_SC.scopeExtPar)
   thus ?thesis by(rule strongBisimWeakEq)
 qed
 
@@ -131,7 +131,7 @@ lemma scopeExtPar':
 
   shows "<\<nu>x>(P \<parallel> Q) \<simeq> (<\<nu>x>P) \<parallel> Q"
 proof -
-  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim> (<\<nu>x>P) \<parallel> Q" by(rule Strong_Late_Bisim_SC.scopeExtPar')
+  from \<open>x \<sharp> Q\<close> have "<\<nu>x>(P \<parallel> Q) \<sim> (<\<nu>x>P) \<parallel> Q" by(rule Strong_Late_Bisim_SC.scopeExtPar')
   thus ?thesis by(rule strongBisimWeakEq)
 qed
 
@@ -154,7 +154,7 @@ lemma scopeFresh:
 
   shows "<\<nu>a>P \<simeq> P"
 proof -
-  from `a \<sharp> P` have "<\<nu>a>P \<sim> P" by(rule Strong_Late_Bisim_SC.scopeFresh)
+  from \<open>a \<sharp> P\<close> have "<\<nu>a>P \<sim> P" by(rule Strong_Late_Bisim_SC.scopeFresh)
   thus ?thesis by(rule strongBisimWeakEq)
 qed
 
@@ -167,7 +167,7 @@ lemma scopeExtSum:
 
   shows "<\<nu>x>(P \<oplus> Q) \<simeq> P \<oplus> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<oplus> Q) \<sim> P \<oplus> <\<nu>x>Q" by(rule Strong_Late_Bisim_SC.scopeExtSum)
+  from \<open>x \<sharp> P\<close> have "<\<nu>x>(P \<oplus> Q) \<sim> P \<oplus> <\<nu>x>Q" by(rule Strong_Late_Bisim_SC.scopeExtSum)
   thus ?thesis by(rule strongBisimWeakEq)
 qed
 

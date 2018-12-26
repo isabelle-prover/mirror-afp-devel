@@ -1,10 +1,10 @@
-section {* Instantiation by a separation kernel with concrete actions \label{sect:instantiation} *}
+section \<open>Instantiation by a separation kernel with concrete actions \label{sect:instantiation}\<close>
 
 theory Step_configuration
   imports Main
 begin
 
-text {*
+text \<open>
 {\em In the previous section, no concrete actions for the step function were given.
 The foremost point we want to make by this instantiation is to show 
 that we can instantiate the CISK model of the previous section with 
@@ -44,19 +44,19 @@ The instantiation provides infrastructure for such an
 invariant on the relation of a dynamic policy to 
 a static policy, and shows how the invariant is 
 maintained, without modeling any API for an open/close operation.}
-*}
+\<close>
 
-subsection {* Model of a separation kernel configuration *}
+subsection \<open>Model of a separation kernel configuration\<close>
 
-subsubsection {* Type definitions *}
+subsubsection \<open>Type definitions\<close>
 
-text {* The separation kernel partitions are considered to be the ``subjects" of the 
+text \<open>The separation kernel partitions are considered to be the ``subjects" of the 
     information flow policy @{term ifp}. A file provider is a partition that, via 
     a file API (read/write), provides files to other partitions.
     The configuration statically defines which partitions can act as a file provider 
     and also the access rights (right/write) of other partitions to the files 
     provided by the file provider. 
-    Some separation kernels include a management for address spaces (tasks), that may be hierachically structured. Such a task hierarchy is not part of this model. *}
+    Some separation kernels include a management for address spaces (tasks), that may be hierachically structured. Such a task hierarchy is not part of this model.\<close>
 
 typedecl partition_id_t
 typedecl thread_id_t
@@ -73,19 +73,19 @@ datatype mode_t =
  | WRITE \<comment> \<open>The subject has right to write to the memory page, from the files served by a file provider.\<close>
  | PROVIDE \<comment> \<open>The subject has right serve as the file provider. This mode is not used for memory pages or ports.\<close>
 
-subsubsection {* Configuration *}
+subsubsection \<open>Configuration\<close>
 
-text {* The information flow policy is implicitly specified by the configuration. The configuration does not contain
+text \<open>The information flow policy is implicitly specified by the configuration. The configuration does not contain
   the communication rights between partitions (subjects). However, the rights can be 
   derived from the configuration. For example, if two partitions @{term p} and @{term p'} can
-  access a file @{term f}, then @{term p} and @{term p'} can communicate. See below.  *}
+  access a file @{term f}, then @{term p} and @{term p'} can communicate. See below.\<close>
 
 consts
   configured_subj_obj :: "partition_id_t \<Rightarrow> obj_id_t \<Rightarrow> mode_t \<Rightarrow> bool"
 
-text {* Each user thread belongs to a partition. The relation is fixed
+text \<open>Each user thread belongs to a partition. The relation is fixed
   at system startup. The configuration specifies how many threads a partition can create,
-  but this limit is not part of the model. *}
+  but this limit is not part of the model.\<close>
 
 consts
   partition :: "thread_id_t \<Rightarrow> partition_id_t"

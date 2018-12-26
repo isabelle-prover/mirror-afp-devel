@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Setup for converter Java2Jinja *}
+section \<open>Setup for converter Java2Jinja\<close>
 
 theory Java2Jinja 
 imports
@@ -18,7 +18,7 @@ where "j_Program = Program"
 
 export_code wf_J_prog' j_Program in SML file "JWellForm.ML" 
 
-text {* Functions for extracting calls to the native print method *}
+text \<open>Functions for extracting calls to the native print method\<close>
 
 definition purge where
   "\<And>run.
@@ -28,7 +28,7 @@ definition purge where
     (\<lambda>obs. case obs of ExternalCall _ M (Cons (Intg i) Nil) _ \<Rightarrow> M = print | _ \<Rightarrow> False) 
     (lconcat (lmap (llist_of \<circ> snd) (llist_of_tllist run))))"
 
-text {* Various other functions *}
+text \<open>Various other functions\<close>
 
 instantiation heapobj :: toString begin
 primrec toString_heapobj :: "heapobj \<Rightarrow> String.literal" where

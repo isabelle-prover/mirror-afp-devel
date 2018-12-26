@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* The intermediate language J1 *}
+section \<open>The intermediate language J1\<close>
 
 theory J1State imports
   "../J/State"
@@ -34,7 +34,7 @@ type_synonym
   "('addr,'thread_id,('addr expr1 \<times> 'addr locals1) \<times> ('addr expr1 \<times> 'addr locals1) list,'heap,'addr) state"
 
 (* pretty printing for J1_thread_action type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [a1, t
@@ -52,11 +52,11 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
-*}
+\<close>
 typ "('addr,'thread_id,'heap) J1_thread_action"
 
 (* pretty printing for J1_state type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [a1, t
@@ -74,7 +74,7 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "state"}, K tr')]
   end
-*}
+\<close>
 typ "('addr, 'thread_id, 'heap) J1_state"
 
 fun blocks1 :: "nat \<Rightarrow> ty list \<Rightarrow> (nat,'b,'addr) exp \<Rightarrow> (nat,'b,'addr) exp"
@@ -146,9 +146,9 @@ where
 | "\<B>s [] i = True"
 | "\<B>s (e#es) i = (\<B> e i \<and> \<B>s es i)"
 
-text {*
+text \<open>
   Variables for monitor addresses do not occur freely in synchonization blocks
-*}
+\<close>
 
 primrec syncvars :: "('a, 'a, 'addr) exp \<Rightarrow> bool"
   and syncvarss :: "('a, 'a, 'addr) exp list \<Rightarrow> bool"

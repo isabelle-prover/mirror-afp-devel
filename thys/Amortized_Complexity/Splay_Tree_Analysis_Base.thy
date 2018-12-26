@@ -73,44 +73,44 @@ proof(induction a t rule: splay.induct)
   then obtain lll u llr where [simp]: "splay a ll = Node lll u llr"
     by (metis tree.exhaust)
   have "b < c" "bst ll" using "6.prems" by auto
-  from "6.IH"[OF `ll \<noteq> Leaf` `bst ll`]
+  from "6.IH"[OF \<open>ll \<noteq> Leaf\<close> \<open>bst ll\<close>]
   obtain e where "e \<in> set_tree ll" "splay e ll = splay a ll" "t_splay e ll = t_splay a ll"
     by blast
   moreover hence "e<b" using "6.prems"(2) by auto
-  ultimately show ?case using `a<c` `a<b` `b<c` `bst ll` by force
+  ultimately show ?case using \<open>a<c\<close> \<open>a<b\<close> \<open>b<c\<close> \<open>bst ll\<close> by force
 next
   case (8 b a c lr)
   hence "splay a lr \<noteq> Leaf" by simp
   then obtain lrl u lrr where [simp]: "splay a lr = Node lrl u lrr"
     by (metis tree.exhaust)
   have "b < c" "bst lr" using "8.prems" by auto
-  from "8.IH"[OF `lr \<noteq> Leaf` `bst lr`]
+  from "8.IH"[OF \<open>lr \<noteq> Leaf\<close> \<open>bst lr\<close>]
   obtain e where "e \<in> set_tree lr" "splay e lr = splay a lr" "t_splay e lr = t_splay a lr"
     by blast
   moreover hence "b<e & e<c" using "8.prems"(2) by simp
-  ultimately show ?case using `a<c` `b<a` `b<c` `bst lr` by force
+  ultimately show ?case using \<open>a<c\<close> \<open>b<a\<close> \<open>b<c\<close> \<open>bst lr\<close> by force
 next
   case (11 c a b rl)
   hence "splay a rl \<noteq> Leaf" by simp
   then obtain rll u rlr where [simp]: "splay a rl = Node rll u rlr"
     by (metis tree.exhaust)
   have "c < b" "bst rl" using "11.prems" by auto
-  from "11.IH"[OF `rl \<noteq> Leaf` `bst rl`]
+  from "11.IH"[OF \<open>rl \<noteq> Leaf\<close> \<open>bst rl\<close>]
   obtain e where "e \<in> set_tree rl" "splay e rl = splay a rl" "t_splay e rl = t_splay a rl"
     by blast
   moreover hence "c<e & e<b" using "11.prems" by simp
-  ultimately show ?case using `c<a` `a<b` `c<b` `bst rl` by force
+  ultimately show ?case using \<open>c<a\<close> \<open>a<b\<close> \<open>c<b\<close> \<open>bst rl\<close> by force
 next
   case (14 c a b rr)
   hence "splay a rr \<noteq> Leaf" by simp
   then obtain rrl u rrr where [simp]: "splay a rr = Node rrl u rrr"
     by (metis tree.exhaust)
   have "c < b" "bst rr" using "14.prems" by auto
-  from "14.IH"[OF `rr \<noteq> Leaf` `bst rr`]
+  from "14.IH"[OF \<open>rr \<noteq> Leaf\<close> \<open>bst rr\<close>]
   obtain e where "e \<in> set_tree rr" "splay e rr = splay a rr" "t_splay e rr = t_splay a rr"
     by blast
   moreover hence "b<e" using "14.prems"(2) by simp
-  ultimately show ?case using `c<a` `b<a` `c<b` `bst rr` by force
+  ultimately show ?case using \<open>c<a\<close> \<open>b<a\<close> \<open>c<b\<close> \<open>bst rr\<close> by force
 qed (auto simp: le_less)
 
 

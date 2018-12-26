@@ -1,4 +1,4 @@
-chapter {* Log Upper and Lower Bounds *}
+chapter \<open>Log Upper and Lower Bounds\<close>
 
 theory Log_CF_Bounds
 imports Bounds_Lemmas
@@ -18,7 +18,7 @@ corollary ln_lower_1: "0<x \<Longrightarrow> ln_lower_1 x \<le> ln x"
 theorem ln_lower_1_eq: "0<x \<Longrightarrow> ln_lower_1 x = (x - 1)/x"
   by (auto simp: ln_lower_1_def divide_simps)
 
-section {*Upper Bound 3*}
+section \<open>Upper Bound 3\<close>
 
 definition ln_upper_3 :: "real \<Rightarrow> real"
   where "ln_upper_3 \<equiv> \<lambda>x. (x + 5)*(x - 1) / (2*(2*x + 1))"
@@ -33,7 +33,7 @@ apply (intro derivative_eq_intros | simp)+
 apply (simp add: divide_simps add_nonneg_eq_0_iff, algebra)
 done
 
-text{*Strict inequalities also possible*}
+text\<open>Strict inequalities also possible\<close>
 lemma ln_upper_3_pos:
   assumes "1 \<le> x" shows "ln(x) \<le> ln_upper_3 x"
 apply (rule gen_upper_bound_increasing [OF assms d_delta_ln_upper_3])
@@ -62,7 +62,7 @@ theorem ln_lower_3_eq: "0<x \<Longrightarrow> ln_lower_3 x = (1/2)*(1 + 5*x)*(x 
   by (simp add: divide_simps) algebra
 
 
-section {*Upper Bound 5*}
+section \<open>Upper Bound 5\<close>
 
 definition ln_upper_5 :: "real \<Rightarrow> real"
   where "ln_upper_5 x \<equiv> (x^2 + 19*x + 10)*(x - 1) / (3*(3*x^2 + 6*x + 1))"
@@ -107,7 +107,7 @@ theorem ln_lower_5_eq: "0<x \<Longrightarrow>
      algebra
 
 
-section {*Upper Bound 7*}
+section \<open>Upper Bound 7\<close>
 
 definition ln_upper_7 :: "real \<Rightarrow> real"
   where "ln_upper_7 x \<equiv> (3*x^3 + 131*x^2 + 239*x + 47)*(x - 1) / (12*(4*x^3 + 18*x^2 + 12*x + 1))"
@@ -153,7 +153,7 @@ theorem ln_lower_7_eq: "0 < x \<Longrightarrow>
      algebra
 
 
-section {*Upper Bound 9*}
+section \<open>Upper Bound 9\<close>
 
 definition ln_upper_9 :: "real \<Rightarrow> real"
   where "ln_upper_9 x \<equiv> (6*x^4 + 481*x^3 + 1881*x^2 + 1281*x + 131)*(x - 1) /
@@ -202,9 +202,9 @@ theorem ln_lower_9_eq: "0 < x \<Longrightarrow>
      algebra
 
 
-section {*Upper Bound 11*}
+section \<open>Upper Bound 11\<close>
 
-text{*Extended bounds start here*}
+text\<open>Extended bounds start here\<close>
 
 definition ln_upper_11 :: "real \<Rightarrow> real"
   where "ln_upper_11 x \<equiv>
@@ -253,7 +253,7 @@ theorem ln_lower_11_eq: "0<x \<Longrightarrow>
      algebra
 
 
-section {*Upper Bound 13*}
+section \<open>Upper Bound 13\<close>
 
 definition ln_upper_13 :: "real \<Rightarrow> real"
   where "ln_upper_13 x \<equiv> (353 + 8389*x + 20149*x^4 + 50774*x^3 + 38524*x^2 + 1921*x^5 + 10*x^6) * (x - 1)
@@ -302,7 +302,7 @@ theorem ln_lower_13_eq: "0<x \<Longrightarrow>
      algebra
 
 
-section {*Upper Bound 15*}
+section \<open>Upper Bound 15\<close>
 
 definition ln_upper_15 :: "real \<Rightarrow> real"
   where "ln_upper_15 x \<equiv>

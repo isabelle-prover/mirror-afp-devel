@@ -1,7 +1,7 @@
 (* Author: Joshua Schneider, ETH Zurich
    Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* An abstract applicative functor *}
+section \<open>An abstract applicative functor\<close>
 
 theory Abstract_AF imports
   Applicative

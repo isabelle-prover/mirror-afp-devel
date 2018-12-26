@@ -108,9 +108,9 @@ value "implc_get_offending_flows I8Requirements I8SSHgraph"
 
 value "implc_offending_flows PrintingSink I8SSHgraph"
 
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "I8Requirements"} @{term "I8SSHgraph"};
-*}
+\<close>
 
 lemma "all_security_requirements_fulfilled I8Requirements I8SSHgraph" by eval
 
@@ -119,14 +119,14 @@ lemma "set (filter_IFS_no_violations I8SSHgraph I8Requirements) = set (edgesL I8
 
 value "filter_compliant_stateful_ACS I8SSHgraph I8Requirements"
 
-text{*noBiFlows is the list of flows where not already a bidirectional flows is allowed.
-      That is, the list of flows we might wish to be stateful to enhance connectivity. *}
+text\<open>noBiFlows is the list of flows where not already a bidirectional flows is allowed.
+      That is, the list of flows we might wish to be stateful to enhance connectivity.\<close>
 definition "noBiFlows = [e \<leftarrow> edgesL I8SSHgraph. case e of (s,r) \<Rightarrow> \<not> ((s,r) \<in> set (edgesL I8SSHgraph) \<and> (r,s) \<in> set (edgesL I8SSHgraph)) ]"
 lemma "set noBiFlows = set (filter_compliant_stateful_ACS I8SSHgraph I8Requirements)" by eval
 
 value "generate_valid_stateful_policy_IFSACS I8SSHgraph I8Requirements"
 
-text{*even the order of the list is preserved!!*}
+text\<open>even the order of the list is preserved!!\<close>
 lemma "flows_stateL (generate_valid_stateful_policy_IFSACS I8SSHgraph I8Requirements) = noBiFlows" by eval
 
 

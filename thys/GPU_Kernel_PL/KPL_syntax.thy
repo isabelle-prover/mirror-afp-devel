@@ -1,29 +1,29 @@
-section {* Syntax of KPL *}
+section \<open>Syntax of KPL\<close>
 
 theory KPL_syntax imports 
   Misc
 begin
 
-text{* Locations of local variables *}
+text\<open>Locations of local variables\<close>
 typedecl V 
 
-text {* C strings *}
+text \<open>C strings\<close>
 typedecl name
 
-text {* Procedure names *}
+text \<open>Procedure names\<close>
 typedecl proc_name
 
-text {* Local-id, group-id *}
+text \<open>Local-id, group-id\<close>
 type_synonym lid = nat
 type_synonym gid = nat
 
-text {* Fully-qualified thread-id *}
+text \<open>Fully-qualified thread-id\<close>
 type_synonym tid = "gid \<times> lid"
 
-text {* Let @{term "(G,T)"} range over threadsets *}
+text \<open>Let @{term "(G,T)"} range over threadsets\<close>
 type_synonym threadset = "gid set \<times> (gid \<rightharpoonup> lid set)"
 
-text {* Returns the set of tids in a threadset *}
+text \<open>Returns the set of tids in a threadset\<close>
 fun tids :: "threadset \<Rightarrow> tid set"
 where
   "tids (G,T) = {(i,j) | i j. i \<in> G \<and> j \<in> the (T i)}"
@@ -34,7 +34,7 @@ datatype loc =
   Name name
 | Var V
 
-text {* Local expressions *}
+text \<open>Local expressions\<close>
 datatype local_expr =
   Loc loc
 | Gid
@@ -43,13 +43,13 @@ datatype local_expr =
 | eConj local_expr local_expr  (infixl "\<and>*" 50)
 | eNot local_expr              ("\<not>*")
 
-text {* Basic statements *}
+text \<open>Basic statements\<close>
 datatype basic_stmt =
   Assign loc local_expr
 | Read loc local_expr
 | Write local_expr local_expr
 
-text {* Statements *}
+text \<open>Statements\<close>
 datatype stmt =
   Basic basic_stmt
 | Seq stmt stmt (infixl ";;" 50)
@@ -63,13 +63,13 @@ datatype stmt =
 | Continue
 | Return
 
-text {* Procedures comprise a procedure name, parameter name, and a body statement *}
+text \<open>Procedures comprise a procedure name, parameter name, and a body statement\<close>
 record proc = 
   proc_name :: proc_name
   param :: name
   body :: stmt
 
-text {* Kernels *}
+text \<open>Kernels\<close>
 record kernel = 
   groups :: nat
   threads :: nat

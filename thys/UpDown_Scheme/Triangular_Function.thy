@@ -144,7 +144,7 @@ proof -
   have [arith]: "0 < (2^d::int)"
     by simp
 
-  from `?right \<or> ?left` `l \<le> l'` have empty_support: "?sup l i \<inter> ?sup l' i' = {}"
+  from \<open>?right \<or> ?left\<close> \<open>l \<le> l'\<close> have empty_support: "?sup l i \<inter> ?sup l' i' = {}"
     by (auto simp add: min_def max_def divide_simps l' power_add * of_int_mult[symmetric]
                 simp del: of_int_diff of_int_add of_int_mult of_int_power)
        (simp_all add: field_simps)
@@ -193,7 +193,7 @@ proof (subst l2_\<phi>I_DERIV)
   define \<Phi>_n where "\<Phi>_n x = x^3 / 3 * ?l' * ?l + x * ?i * ?in' - x^2 / 2 * (?in' * ?l + ?i * ?l')" for x
   define \<Phi>_p where "\<Phi>_p x = x^2 / 2 * (?ip' * ?l + ?i * ?l') - x^3 / 3 * ?l' * ?l - x * ?i * ?ip'" for x
 
-  have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] `l < l'` by auto
+  have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] \<open>l < l'\<close> by auto
 
   { fix x assume x: "x \<in> {?in' / ?l' .. ?ip' / ?l'}"
     have "?i * 2^(l' - l) \<le> ?in'"
@@ -221,7 +221,7 @@ proof (subst l2_\<phi>I_DERIV)
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (simp add: field_simps)
     show "DERIV \<Phi>_p x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_p_def
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square algebra_simps) }
-qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3] power_diff[of "2::real", OF _ `l < l'`[THEN less_imp_le]] )
+qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3] power_diff[of "2::real", OF _ \<open>l < l'\<close>[THEN less_imp_le]] )
 
 lemma l2_when_right_child:
   assumes "l < l'"
@@ -240,7 +240,7 @@ proof (subst l2_\<phi>I_DERIV)
   define \<Phi>_n where "\<Phi>_n x = x^2 / 2 * (?in' * ?l + ?i * ?l') - x^3 / 3 * ?l' * ?l - x * ?i * ?in'" for x
   define \<Phi>_p where "\<Phi>_p x = x^3 / 3 * ?l' * ?l + x * ?i * ?ip' - x^2 / 2 * (?ip' * ?l + ?i * ?l')" for x
 
-  have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] `l < l'` by auto
+  have level_diff: "2^(l' - l) = 2^l' / (2^l :: real)" using power_diff[of "2::real" l l'] \<open>l < l'\<close> by auto
 
   { fix x assume x: "x \<in> {?in' / ?l' .. ?ip' / ?l'}"
     have "real_of_int i * 2^(l' - l) \<le> ?in'"
@@ -269,7 +269,7 @@ proof (subst l2_\<phi>I_DERIV)
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (auto simp: field_simps)
     show "DERIV \<Phi>_p x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_p_def
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square algebra_simps) }
-qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3] power_diff[of "2::real", OF _ `l < l'`[THEN less_imp_le]] )
+qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3] power_diff[of "2::real", OF _ \<open>l < l'\<close>[THEN less_imp_le]] )
 
 lemma level_shift: "lc > l \<Longrightarrow> (x :: real) / 2 ^ (lc - Suc l) = x * 2 / 2 ^ (lc - l)"
   by (auto simp add: power_diff)
@@ -279,9 +279,9 @@ lemma l2_child: assumes "d < length b"
   shows "l2_\<phi> (p ! d) (b ! d) = (1 - real_of_int (sgn dir) * (real_of_int (ix p d) / 2^(lv p d - lv b d) - real_of_int (ix b d))) /
                                  2^(lv p d + 1)"
 proof -
-  have "lv ?child d \<le> lv p d" using `d < length b` and p_grid
+  have "lv ?child d \<le> lv p d" using \<open>d < length b\<close> and p_grid
     using grid_single_level by auto
-  hence "lv b d < lv p d" using `d < length b` and p_grid
+  hence "lv b d < lv p d" using \<open>d < length b\<close> and p_grid
     using child_lv by auto
 
   let ?i_c = "ix ?child d" and ?l_c = "lv ?child d"
@@ -292,15 +292,15 @@ proof -
   also have "\<dots> = 2^(Suc ?l_p - ?l_c)"
   proof -
     have "Suc (?l_p - ?l_c) = Suc ?l_p - ?l_c"
-      using `lv ?child d \<le> lv p d` by auto
+      using \<open>lv ?child d \<le> lv p d\<close> by auto
     thus ?thesis by auto
   qed
   also have "\<dots> = 2^(?l_p - ?l_b)"
-    using `d < length b` and `lv b d < lv p d`
+    using \<open>d < length b\<close> and \<open>lv b d < lv p d\<close>
     by (auto simp add: child_def lv_def)
   finally have level: "2^(?l_p - ?l_b) = (2::int) * 2^(?l_p - ?l_c)" ..
 
-  from `d < length b` and p_grid
+  from \<open>d < length b\<close> and p_grid
   have range_left: "?i_p > (?i_c - 1) * 2^(?l_p - ?l_c)" and
        range_right: "?i_p < (?i_c + 1) * 2^(?l_p - ?l_c)"
     using grid_estimate by auto
@@ -308,26 +308,26 @@ proof -
   show ?thesis
   proof (cases dir)
     case left
-    with child_ix_left[OF `d < length b`]
+    with child_ix_left[OF \<open>d < length b\<close>]
     have "(?i_b - 1) * 2^(?l_p - ?l_b) = (?i_c - 1) * 2^(?l_p - ?l_c)" and
       "?i_b * 2^(?l_p - ?l_b) = (?i_c + 1) * 2^(?l_p - ?l_c)" using level by auto
     hence "?i_p > (?i_b - 1) * 2^(?l_p - ?l_b)" and
       "?i_p < ?i_b * 2^(?l_p - ?l_b)"
       using range_left and range_right by auto
-    with `?l_b < ?l_p`
+    with \<open>?l_b < ?l_p\<close>
     have "l2_\<phi> (?l_p, ?i_p) (?l_b, ?i_b) =
           (1 + real_of_int ?i_p / 2^(?l_p - ?l_b) - real_of_int ?i_b) / 2^(?l_p + 1)"
       by (rule l2_when_left_child)
     thus ?thesis using left by (auto simp add: ix_def lv_def)
   next
     case right
-    hence "?i_c = 2 * ?i_b + 1" using child_ix_right and `d < length b` by auto
+    hence "?i_c = 2 * ?i_b + 1" using child_ix_right and \<open>d < length b\<close> by auto
     hence "?i_b * 2^(?l_p - ?l_b) = (?i_c - 1) * 2^(?l_p - ?l_c)" and
       "(?i_b + 1) * 2^(?l_p - ?l_b) = (?i_c + 1) * 2^(?l_p - ?l_c)" using level by auto
     hence "?i_p > ?i_b * 2^(?l_p - ?l_b)" and
       "?i_p < (?i_b + 1) * 2^(?l_p - ?l_b)"
       using range_left and range_right by auto
-    with `?l_b < ?l_p`
+    with \<open>?l_b < ?l_p\<close>
     have "l2_\<phi> (?l_p, ?i_p) (?l_b, ?i_b) =
           (1 - real_of_int ?i_p / 2^(?l_p - ?l_b) + real_of_int ?i_b) / 2^(?l_p + 1)"
       by (rule l2_when_right_child)
@@ -350,13 +350,13 @@ proof -
   proof (rule ccontr)
     assume "\<not> ?thesis"
     hence "ix p' d \<le> (ix p d + 1) * 2^(lv p' d - lv p d)" and "ix p' d \<ge> (ix p d - 1) * 2^(lv p' d - lv p d)" by auto
-    with `p' \<in> grid b {d}` and `p \<in> grid b {d}` and `lv p' d \<ge> lv p d` and `d < length b`
+    with \<open>p' \<in> grid b {d}\<close> and \<open>p \<in> grid b {d}\<close> and \<open>lv p' d \<ge> lv p d\<close> and \<open>d < length b\<close>
     have "p' \<in> grid p {d}" using grid_part[where p=p and b=b and d=d and p'=p'] by auto
-    with `p' \<notin> grid p {d}` show False by auto
+    with \<open>p' \<notin> grid p {d}\<close> show False by auto
   qed
 
   have "l2_\<phi> (p' ! d) (p ! d) = l2_\<phi> (lv p' d, ix p' d) (lv p d, ix p d)" by (auto simp add: ix_def lv_def)
-  also have "\<dots> = 0" using range and `lv p' d \<ge> lv p d` and l2_when_disjoint by auto
+  also have "\<dots> = 0" using range and \<open>lv p' d \<ge> lv p d\<close> and l2_when_disjoint by auto
   finally show ?thesis .
 qed
 
@@ -367,18 +367,18 @@ lemma l2_down2:
   assumes pd_is_child: "pd = child p dir d" (is "pd = ?pd")
   shows "l2_\<phi> (pc ! d) (pd ! d) / 2 = l2_\<phi> (pc ! d) (p ! d)"
 proof -
-  have "d < length p" using pd_is_child `d < length pd` by auto
+  have "d < length p" using pd_is_child \<open>d < length pd\<close> by auto
 
   moreover
   have "pc \<in> grid ?pd {d}" using pd_is_child and grid_child and pc_in_grid by auto
-  hence "lv p d < lv pc d" using grid_child_level and `d < length pd` and pd_is_child by auto
+  hence "lv p d < lv pc d" using grid_child_level and \<open>d < length pd\<close> and pd_is_child by auto
 
   moreover
   have "real_of_int (sgn dir) * real_of_int (sgn dir) = 1" by (cases dir, auto)
 
   ultimately show ?thesis
-    unfolding l2_child[OF `d < length pd` pc_in_grid]
-              l2_child[OF `d < length p` `pc \<in> grid ?pd {d}`]
+    unfolding l2_child[OF \<open>d < length pd\<close> pc_in_grid]
+              l2_child[OF \<open>d < length p\<close> \<open>pc \<in> grid ?pd {d}\<close>]
     using child_lv and child_ix and pd_is_child and level_shift
     by (auto simp add: algebra_simps diff_divide_distrib add_divide_distrib)
 qed
@@ -392,27 +392,27 @@ proof -
   have "length p = length ?c_p" by auto
   also have "\<dots> = length ?c_ps" using ps_intro by auto
   finally have "length p = length ps" using ps_intro by auto
-  hence "d < length p_p" using p_child and `d < length p` by auto
+  hence "d < length p_p" using p_child and \<open>d < length p\<close> by auto
 
   moreover
   from ps_intro have "ps = p[d := (lv p d, ix p d - sgn dir)]" by (rule child_neighbour)
   hence "lv ps d = lv p d" and "real_of_int (ix ps d) = real_of_int (ix p d) - real_of_int (sgn dir)"
-    using lv_def and ix_def and `length p = length ps` and `d < length p` by auto
+    using lv_def and ix_def and \<open>length p = length ps\<close> and \<open>d < length p\<close> by auto
 
   moreover
   have "d < length ps" and *: "p' \<in> grid (child ps dir d) {d}"
-    using p'_grid ps_intro `length p = length ps` `d < length p` by auto
+    using p'_grid ps_intro \<open>length p = length ps\<close> \<open>d < length p\<close> by auto
 
   have "p' \<in> grid p {d}" using p'_grid and grid_child by auto
   hence p_p_grid: "p' \<in> grid (child p_p dir d) {d}" using p_child by auto
-  hence "lv p' d > lv p_p d" using grid_child_level and `d < length p_p` by auto
+  hence "lv p' d > lv p_p d" using grid_child_level and \<open>d < length p_p\<close> by auto
 
   moreover
   have "real_of_int (sgn dir) * real_of_int (sgn dir) = 1" by (cases dir, auto)
 
   ultimately show ?thesis
-    unfolding l2_child[OF `d < length p` p'_grid] l2_child[OF `d < length ps` *]
-              l2_child[OF `d < length p_p` p_p_grid]
+    unfolding l2_child[OF \<open>d < length p\<close> p'_grid] l2_child[OF \<open>d < length ps\<close> *]
+              l2_child[OF \<open>d < length p_p\<close> p_p_grid]
     using child_lv and child_ix and p_child level_shift
     by (auto simp add: add_divide_distrib algebra_simps diff_divide_distrib)
 qed

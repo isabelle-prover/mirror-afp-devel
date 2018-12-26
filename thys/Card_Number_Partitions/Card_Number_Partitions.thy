@@ -1,12 +1,12 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Cardinality of Number Partitions *}
+section \<open>Cardinality of Number Partitions\<close>
 
 theory Card_Number_Partitions
 imports Number_Partition
 begin
 
-subsection {* The Partition Function *}
+subsection \<open>The Partition Function\<close>
 
 fun Partition :: "nat \<Rightarrow> nat \<Rightarrow> nat"
 where
@@ -57,7 +57,7 @@ proof (induct m rule: nat_less_induct)
   qed
 qed
 
-subsection {* Cardinality of Number Partitions *}
+subsection \<open>Cardinality of Number Partitions\<close>
 
 lemma set_rewrite1:
   "{p. p partitions Suc m \<and> sum p {..Suc m} = Suc k \<and> p 1 \<noteq> 0}
@@ -203,7 +203,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Cardinality of Number Partitions as Multisets of Natural Numbers *}
+subsection \<open>Cardinality of Number Partitions as Multisets of Natural Numbers\<close>
 
 lemma bij_betw_multiset_number_partition_with_size:
   "bij_betw count {N. number_partition n N \<and> size N = k} {p. p partitions n \<and> sum p {..n} = k}"
@@ -254,7 +254,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Cardinality of Number Partitions with only 1-parts *}
+subsection \<open>Cardinality of Number Partitions with only 1-parts\<close>
 
 lemma number_partition1_eq_replicate_mset:
   "{N. (\<forall>n. n\<in># N \<longrightarrow> n = 1) \<and> number_partition n N} = {replicate_mset n 1}"

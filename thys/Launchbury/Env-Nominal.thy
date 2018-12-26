@@ -2,7 +2,7 @@ theory "Env-Nominal"
   imports Env "Nominal-Utils" "Nominal-HOLCF"
 begin
 
-subsubsection {* Equivariance lemmas  *}
+subsubsection \<open>Equivariance lemmas\<close>
 
 lemma edom_perm:
   fixes f :: "'a::pt \<Rightarrow> 'b::{pcpo_pt}"
@@ -32,7 +32,7 @@ lemma esing_eqvt[eqvt]: "\<pi> \<bullet> (esing x) = esing (\<pi> \<bullet> x)"
   apply (simp add: Abs_cfun_eqvt)
   done
 
-subsubsection {* Permutation and restriction *}
+subsubsection \<open>Permutation and restriction\<close>
 
 lemma env_restr_perm:
   fixes \<rho> :: "'a::at_base \<Rightarrow> 'b::{pcpo_pt,pure}"
@@ -73,7 +73,7 @@ lemma env_restr_flip':
 
 
 
-subsubsection {* Pure codomains *}
+subsubsection \<open>Pure codomains\<close>
 (*
 lemma edom_fv_pure:
   fixes f :: "('a::at_base \<Rightarrow> 'b::{pcpo,pure})"
@@ -111,13 +111,13 @@ next
     by (metis fresh_def pure_fresh)
   also
 
-  from `insert x S = edom f`  and `x \<notin> S`
+  from \<open>insert x S = edom f\<close>  and \<open>x \<notin> S\<close>
   have "S = edom (env_delete x f)" by auto
   hence "fv (env_delete x f) \<subseteq> edom (env_delete x f)" by (rule insert)
   also
   have "fv (f x) = {}" by (rule fv_pure)
   also
-  from `insert x S = edom f` have "x \<in> edom f" by auto
+  from \<open>insert x S = edom f\<close> have "x \<in> edom f" by auto
   hence "edom (env_delete x f) \<union> fv x \<union> {} \<subseteq> edom f" by auto
   finally
   show ?case by this (intro Un_mono subset_refl)

@@ -5,21 +5,21 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Applications of Modal Kleene Algebras *}
+section \<open>Applications of Modal Kleene Algebras\<close>
 
 theory Modal_Kleene_Algebra_Applications
 imports Antidomain_Semiring
 begin
 
-text {* This file collects some applications of the theories developed so far. These are described
- in~\cite{guttmannstruthweber11algmeth}. *}
+text \<open>This file collects some applications of the theories developed so far. These are described
+ in~\cite{guttmannstruthweber11algmeth}.\<close>
 
 context antidomain_kleene_algebra
 begin
 
-subsection {* A Reachability Result *}
+subsection \<open>A Reachability Result\<close>
 
-text {* This example is taken from~\cite{desharnaismoellerstruth06kad}. *}
+text \<open>This example is taken from~\cite{desharnaismoellerstruth06kad}.\<close>
 
 lemma opti_iterate_var [simp]: "|(ad y \<cdot> x)\<^sup>\<star>\<rangle> y = |x\<^sup>\<star>\<rangle> y"
 proof (rule antisym)
@@ -48,9 +48,9 @@ qed
 lemma opti_iterate_var_2 [simp]: "d y + |ad y \<cdot> x\<rangle> |x\<^sup>\<star>\<rangle> y = |x\<^sup>\<star>\<rangle> y"
   by (metis local.dka.fdia_star_unfold_var opti_iterate_var)
 
-subsection {* Derivation of Segerberg's Formula *}
+subsection \<open>Derivation of Segerberg's Formula\<close>
 
-text {* This example is taken from~\cite{DesharnaisMoellerStruthLMCS}. *}
+text \<open>This example is taken from~\cite{DesharnaisMoellerStruthLMCS}.\<close>
 
 definition Alpha :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("A")
   where "A x y = d (x \<cdot> y) \<cdot> ad y"
@@ -97,14 +97,14 @@ proof -
     by (metis f1 local.ads_d_def local.ans4 local.fbox_simp local.fdia_fbox_de_morgan_2)
 qed
 
-subsection {* Wellfoundedness and Loeb's Formula *}
+subsection \<open>Wellfoundedness and Loeb's Formula\<close>
 
-text {* This example is taken from~\cite{DesharnaisStruthSCP}. *}
+text \<open>This example is taken from~\cite{DesharnaisStruthSCP}.\<close>
 
 definition Omega :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("\<Omega>")
   where "\<Omega> x y = d y \<cdot> ad (x \<cdot> y)"
 
-text {* If $y$ is a set, then $\Omega(x,y)$ describes those elements in $y$ from which no further $x$ transitions are possible. *}
+text \<open>If $y$ is a set, then $\Omega(x,y)$ describes those elements in $y$ from which no further $x$ transitions are possible.\<close>
 
 lemma omega_fdia: "\<Omega> x y = d y \<cdot> ad ( |x\<rangle> y )"
   using Omega_def local.a_d_closed local.ads_d_def local.apd_d_def local.dka.fd_def by auto
@@ -260,10 +260,10 @@ qed
 
 end
 
-subsection {* Divergence Kleene Algebras and Separation of Termination *}
+subsection \<open>Divergence Kleene Algebras and Separation of Termination\<close>
 
-text {* The notion of divergence has been added to modal Kleene algebras in~\cite{DesharnaisMoellerStruthLMCS}.
-More facts about divergence could be added in the future. Some could be adapted from omega algebras. *}
+text \<open>The notion of divergence has been added to modal Kleene algebras in~\cite{DesharnaisMoellerStruthLMCS}.
+More facts about divergence could be added in the future. Some could be adapted from omega algebras.\<close>
 
 class nabla_op =
   fixes nabla :: "'a \<Rightarrow> 'a" ("\<nabla>_" [999] 1000)
@@ -384,7 +384,7 @@ next
     by (metis nabla_sum_unfold)
 qed
 
-text {* The next lemma is a separation of termination theorem by Bachmair and Dershowitz~\cite{bachmair86commutation}. *}
+text \<open>The next lemma is a separation of termination theorem by Bachmair and Dershowitz~\cite{bachmair86commutation}.\<close>
 
 lemma bachmair_dershowitz: "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star> \<Longrightarrow> \<nabla> x + \<nabla> y = 0 \<longleftrightarrow> \<nabla> (x + y) = 0"
 proof -
@@ -397,8 +397,8 @@ proof -
     using add_commute local.join.le_bot nabla_subdist by fastforce
 qed
 
-text {* The next lemma is a more complex separation of termination theorem by Doornbos,
-Backhouse and van der Woude~\cite{doornbos97calculational}. *}
+text \<open>The next lemma is a more complex separation of termination theorem by Doornbos,
+Backhouse and van der Woude~\cite{doornbos97calculational}.\<close>
 
 lemma separation_of_termination:
 assumes "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star> + y"
@@ -443,7 +443,7 @@ next
     by (metis local.join.le_bot local.join.sup.order_iff local.join.sup_commute nabla_subdist)
 qed
 
-text {* The final examples can be found in~\cite{guttmannstruthweber11algmeth}. *}
+text \<open>The final examples can be found in~\cite{guttmannstruthweber11algmeth}.\<close>
 
 definition T :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("_ \<leadsto> _ \<leadsto> _" [61,61,61] 60)
   where "p\<leadsto>x\<leadsto>q \<equiv> ad p + |x] d q"

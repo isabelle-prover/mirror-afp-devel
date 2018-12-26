@@ -334,7 +334,7 @@ proof -
     proof(cases "P = P''")
       assume "P = P''"
       moreover have "[a\<noteq>c]P \<Longrightarrow>\<^sub>\<tau> [a\<noteq>c]P" by simp
-      moreover from P''Trans `a \<noteq> c` have "[a\<noteq>c]P'' \<longmapsto> \<alpha> \<prec> P'''" by(rule transitions.Mismatch)
+      moreover from P''Trans \<open>a \<noteq> c\<close> have "[a\<noteq>c]P'' \<longmapsto> \<alpha> \<prec> P'''" by(rule transitions.Mismatch)
       ultimately show ?thesis using P'''Trans by(blast intro: transitionI)
     next
       assume "P \<noteq> P''"

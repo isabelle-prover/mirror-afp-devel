@@ -7,13 +7,13 @@
   to PDF values are provided.
 *)
 
-section {* Source Language Values *}
+section \<open>Source Language Values\<close>
 
 theory PDF_Values
 imports Density_Predicates
 begin
 
-subsection {* Values and stock measures *}
+subsection \<open>Values and stock measures\<close>
 
 datatype pdf_type =  UNIT | BOOL | INTEG | REAL | PRODUCT pdf_type pdf_type
 
@@ -324,7 +324,7 @@ next
 qed simp_all
 
 
-subsection {* Measures on states *}
+subsection \<open>Measures on states\<close>
 
 definition state_measure :: "vname set \<Rightarrow> (vname \<Rightarrow> pdf_type) \<Rightarrow> state measure" where
   "state_measure V \<Gamma> \<equiv> \<Pi>\<^sub>M y\<in>V. \<Gamma> y"
@@ -359,7 +359,7 @@ lemma sigma_finite_state_measure[intro]:
   by (auto intro!: product_sigma_finite.sigma_finite simp: product_sigma_finite_def)
 
 
-subsection {* Equalities of measure embeddings *}
+subsection \<open>Equalities of measure embeddings\<close>
 
 lemma embed_measure_RealPairVal:
    "stock_measure (PRODUCT REAL REAL) = embed_measure lborel RealPairVal"
@@ -383,7 +383,7 @@ proof-
     using count_space_IntVal_prod by (auto simp: embed_measure_prod embed_measure_count_space)
 qed
 
-subsection {* Monadic operations on values *}
+subsection \<open>Monadic operations on values\<close>
 
 definition "return_val x = return (stock_measure (val_type x)) x"
 
@@ -474,7 +474,7 @@ proof-
 qed
 
 
-subsection {* Lifting of functions *}
+subsection \<open>Lifting of functions\<close>
 
 definition lift_RealVal where
   "lift_RealVal f \<equiv> \<lambda> RealVal v \<Rightarrow> RealVal (f v) | _ \<Rightarrow> RealVal (f 0)"

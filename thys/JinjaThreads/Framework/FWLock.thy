@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* All about a managing a single lock *}
+section \<open>All about a managing a single lock\<close>
 
 theory FWLock
 imports

@@ -1,6 +1,6 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Cardinality of Set Partitions *}
+section \<open>Cardinality of Set Partitions\<close>
 
 theory Card_Partitions
 imports
@@ -250,7 +250,7 @@ proof -
   also have "\<dots> = (\<Sum>j\<le>k. card {P. partition_on A P \<and> card P = j})"
     by (subst card_UN_disjoint) (auto simp add: \<open>finite A\<close> finitely_many_partition_on)
   also have "(\<Sum>j\<le>k. card {P. partition_on A P \<and> card P = j}) = (\<Sum>j\<le>k. Stirling (card A) j)"
-    using `finite A` by (simp add: card_partition_on)
+    using \<open>finite A\<close> by (simp add: card_partition_on)
   finally show ?thesis .
 qed
 

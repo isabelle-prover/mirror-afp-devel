@@ -6,13 +6,13 @@ section "Constraint Systems"
 theory ConstraintSystems
 imports Main AcquisitionHistory Normalization
 begin
-text_raw {*\label{thy:ConstraintSystems}*}
+text_raw \<open>\label{thy:ConstraintSystems}\<close>
 
-text {*
+text \<open>
   In this section we develop a constraint-system-based characterization of our analysis. 
-*}
+\<close>
 
-text {*
+text \<open>
   Constraint systems are widely used in static program analysis. There least solution describes the desired analysis information. In its generic form, a constraint system $R$ is a set of inequations over
   a complete lattice $(L,\sqsubseteq)$ and a set of variables $V$. An inequation has the form $ R[v] \sqsupseteq {\sf rhs}$, where $R[v]\in V$ and ${\sf rhs}$ is a monotonic function over the variables. 
   Note that for program analysis, there is usually one variable per control point. The variables are then named $R[v]$, where $v$ is a control point.
@@ -29,25 +29,25 @@ text {*
   For some parameter $k$ and a flowgraph with nodes $N$ and edges $E$, this generates a constraint system over the variables $\{ S^k[v] \mid v\in N \}$. One constraint is generated for each call edge. While we use
   a powerset lattice here, we can in general use any complete lattice. However, all the constraint systems needed for our conflict analysis are defined over powerset lattices $(\mathcal P('a), \subseteq)$ for some type $'a$. 
   This admits a convenient formalization in Isabelle/HOL using inductively defined sets. We inductively define a relation between variables\footnote{Variables are identified by control nodes here} and the elements of their values 
-  in the least solution, i.e. the set $\{ (v,x) \mid x\in R[v] \}$. For example, the constraint generator pattern from above would become the following introduction rule in the inductive definition of the set @{text "S_cs fg k"}:
+  in the least solution, i.e. the set $\{ (v,x) \mid x\in R[v] \}$. For example, the constraint generator pattern from above would become the following introduction rule in the inductive definition of the set \<open>S_cs fg k\<close>:
     @{text [display] "\<lbrakk>(u,Call q,v)\<in>edges fg; (u,M,P)\<in>S_cs fg k; 
               (return fg q,Ms,Ps)\<in>S_cs fg k; P'\<subseteq>#P+Ps; size P' \<le> k \<rbrakk> 
              \<Longrightarrow> (v,mon fg q \<union> M \<union> Ms,P')\<in>S_cs fg k"}
   The main advantage of this approach is that one gets a concise formalization by using Isabelle's standard machinery, the main disadvantage is that this approach only works for powerset lattices ordered by $\subseteq$.
-*}
+\<close>
 
 subsection "Same-level paths"
 
-subsubsection {* Definition *}
-text {*
+subsubsection \<open>Definition\<close>
+text \<open>
   We define a constraint system that collects abstract information about same-level paths. In particular, we collect the set of used monitors and all multi-subsets of spawned threads 
   that are not bigger than @{term k} elements, where @{term k} is a parameter that can be freely chosen. 
-*}
+\<close>
 
 
-text {* 
-  An element @{text "(u,M,P)\<in>S_cs fg k"} means that there is a same-level path from the entry node of the procedure of @{term u} to @{term u}, that uses the monitors @{term M} and spawns at least the threads in @{term P}.
- *}
+text \<open>
+  An element \<open>(u,M,P)\<in>S_cs fg k\<close> means that there is a same-level path from the entry node of the procedure of @{term u} to @{term u}, that uses the monitors @{term M} and spawns at least the threads in @{term P}.
+\<close>
 inductive_set
   S_cs :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme \<Rightarrow> nat \<Rightarrow> 
              ('n \<times> 'm set \<times> 'p multiset) set"
@@ -61,7 +61,7 @@ inductive_set
   | S_spawn: "\<lbrakk>(u,Spawn q,v)\<in>edges fg; (u,M,P)\<in>S_cs fg k; 
                P'\<subseteq>#{#q#}+P; size P' \<le> k\<rbrakk>
              \<Longrightarrow> (v,M,P')\<in>S_cs fg k" 
-text {*
+text \<open>
   The intuition underlying this constraint system is the following: The @{thm [source] S_init}-constraint describes that the procedures entry node can be reached with the empty path, that has no monitors and spawns no procedures. 
   The @{thm [source] S_base}-constraint describes that executing a base edge does not use monitors or spawn threads, so each path reaching the start node of the base edge also induces a path reaching the end node of the base edge
   with the same set of monitors and the same set of spawned threads. 
@@ -71,17 +71,17 @@ text {*
   The @{thm [source] S_spawn}-constraint models the effect of a spawn edge. A path to the start node of the spawn edge induces a path to the end node that uses the same set of monitors and spawns the threads of the initial path
   plus the one spawned by the spawn edge. We again have to choose which of these threads are recorded.
 
-*}
+\<close>
 
-subsubsection {* Soundness and Precision *}
+subsubsection \<open>Soundness and Precision\<close>
 
-text {* 
-  Soundness of the constraint system @{text "S_cs"} means, that every same-level path has a corresponding entry in the constraint system.
+text \<open>
+  Soundness of the constraint system \<open>S_cs\<close> means, that every same-level path has a corresponding entry in the constraint system.
 
   As usual the soundness proof works by induction over the length of execution paths. The base case (empty path) trivially follows from the @{thm [source] S_init} constraint. In the inductive case,
   we consider the edge that induces the last step of the path; for a return step, this is the corresponding call edge (cf. Lemma @{thm [source] flowgraph.trss_find_call'}). With the induction hypothesis, we get
   the soundness for the (shorter) prefix of the path, and depending on the last step we can choose a constraint that implies soundness for the whole path.  
-*}
+\<close>
 
 lemma (in flowgraph) S_sound: "!!p v c' P. 
   \<lbrakk>(([entry fg p],{#}),w,([v],c'))\<in>trcl (trss fg); 
@@ -124,13 +124,13 @@ next
   qed
 qed
     
-text {*
+text \<open>
   Precision means that all entries appearing in the smallest solution of the constraint system are justified by some path in the operational characterization.
   For proving precision, one usually shows that a family of sets derived as an abstraction from the operational characterization solves all constraints.
 
   In our formalization of constraint systems as inductive sets this amounts to constructing for each constraint a justifying path for the entries described on the conclusion side of the implication -- under the assumption
   that corresponding paths exists for the entries mentioned in the antecedent.
-*}
+\<close>
 
 lemma (in flowgraph) S_precise: "(v,M,P)\<in>S_cs fg k 
   \<Longrightarrow> \<exists>p c' w. 
@@ -191,9 +191,9 @@ theorem (in flowgraph) S_sound_precise:
   using S_sound S_precise by blast
 
 
-text {* Next, we present specialized soundness and precision lemmas, that reason over a macrostep (@{term "ntrp fg"}) rather than a same-level path (@{term "trcl (trss fg)"}). They are tailored for the
+text \<open>Next, we present specialized soundness and precision lemmas, that reason over a macrostep (@{term "ntrp fg"}) rather than a same-level path (@{term "trcl (trss fg)"}). They are tailored for the
   use in the soundness and precision proofs of the other constraint systems.
- *}
+\<close>
 lemma (in flowgraph) S_sound_ntrp: 
   assumes A: "(([u],{#}),eel,(sh,ch))\<in>ntrp fg" and 
   CASE: "!!p u' v w. \<lbrakk>
@@ -251,16 +251,16 @@ qed
 
 subsection "Single reaching path"
   
-text {* 
+text \<open>
   In this section we define a constraint system that collects abstract information of paths reaching a control node at @{term U}. 
   The path starts with a single initial thread. The collected information are the monitors used by the steps of the initial thread, 
   the monitors used by steps of other threads and the acquisition history of the path. To distinguish the steps of the initial thread 
   from steps of other threads, we use the loc/env-semantics (cf. Section~\ref{sec:ThreadTracking:exp_local}).
-*}
+\<close>
 
 subsubsection "Constraint system"
 
-text {* 
+text \<open>
   An element @{term "(u,Ml,Me,h)\<in>RU_cs fg U"} corresponds to a path from @{term "{#[u]#}"} to some configuration at @{term U}, 
   that uses monitors from @{term Ml} in the steps of the initial thread, monitors from @{term Me} in the steps of other threads and
   has acquisition history @{term h}. 
@@ -268,7 +268,7 @@ text {*
   Here, the correspondence between paths and entries included into the inductively defined set is not perfect but strong enough for our purposes:
   While each constraint system entry corresponds to a path, not each path corresponds to a constraint system entry. But for each path reaching a configuration at @{term U}, we find
   an entry with less or equal monitors and an acquisition history less or equal to the acquisition history of the path. 
-*}
+\<close>
 inductive_set
   RU_cs :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme \<Rightarrow> 'n set \<Rightarrow> 
               ('n \<times> 'm set \<times> 'm set \<times> ('m \<Rightarrow> 'm set)) set"
@@ -285,7 +285,7 @@ inductive_set
     \<Longrightarrow> (u,mon fg p \<union> M, Ml \<union> Me, ah_update h (mon fg p,M) (Ml\<union>Me))
         \<in> RU_cs fg U"
 
-text {*
+text \<open>
   The constraint system works by tracking only a single thread. Initially, there is just one thread, and from this thread we reach a configuration at @{term U}. After a macrostep, we have the
   transformed initial thread and some spawned threads. The key idea is, that the actual node @{term U} is reached by just one of these threads. The steps of the other threads are useless
   for reaching @{term U}. Because of the nice properties of normalized paths, we can simply prune those steps from the path.
@@ -294,26 +294,26 @@ text {*
   The @{thm [source] RU_call}-constraint describes the case that @{term U} is reached from the initial thread, and the 
   @{thm [source] RU_spawn}-constraint describes the case that @{term U} is reached from one of the spawned threads. In the two latter cases, we 
   have to check whether prepending the macrostep to the reaching path is allowed or not due to monitor restrictions. In the call case, the procedure 
-  of the initial node must not own monitors that are used in the environment steps of the appended reaching path (@{text "mon_n fg u \<inter> Me = {}"}). 
+  of the initial node must not own monitors that are used in the environment steps of the appended reaching path (\<open>mon_n fg u \<inter> Me = {}\<close>). 
   As we only test disjointness with the set of monitors used by the environment, reentrant monitors can be handled. 
   In the spawn case, we have to check disjointness with both, the monitors of local and environment steps of the
-  reaching path from the spawned thread, because from the perspective of the initial thread, all these steps are environment steps (@{text "(mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me)={}"}). 
+  reaching path from the spawned thread, because from the perspective of the initial thread, all these steps are environment steps (\<open>(mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me)={}\<close>). 
   Note that in the call case, we do not need to explicitly check that the monitors used by the environment are disjoint from the monitors acquired by the called procedure because this already follows from the existence
   of a reaching path, as the starting point of this path already holds all these monitors. 
 
   However, in the spawn case, we have to check for both the monitors of the start node and of the called procedure to be compatible with
   the already known reaching path from the entry node of the spawned thread.
-*}
+\<close>
 
 
 subsubsection "Soundness and precision"
 
-text {* The following lemma intuitively states:
+text \<open>The following lemma intuitively states:
   {\em If we can reach a configuration that is at @{term U} from some start configuration, then there is a single thread in the start configuration that 
   can reach a configuration at @{term U} with a subword of the original path}. 
 
   The proof follows from Lemma @{thm [source] flowgraph.ntr_reverse_split} rather directly.
-*}
+\<close>
 lemma (in flowgraph) ntr_reverse_split_atU: 
   assumes V: "valid fg c" and 
           A: "atU U c'" and 
@@ -328,21 +328,21 @@ proof -
   with RSPLIT(4) show ?thesis by blast
 qed
 
-text {*
+text \<open>
   The next lemma shows the soundness of the RU constraint system.
 
   The proof works by induction over the length of the reaching path. For the empty path, the proposition follows by the @{thm [source] RU_init}-constraint. 
   For a non-empty path, we consider the first step.
   It has transformed the initial thread and may have spawned some other threads. From the resulting configuration, @{term U} is reached. 
   Due to @{thm [source] "flowgraph.ntr_split"} we get two interleavable paths from the rest of the original path, one from the transformed initial thread and one from the spawned threads. 
-  We then distinguish two cases: if the first path reaches @{text U}, the proposition follows by the induction hypothesis and the @{thm [source] RU_call} constraint. 
+  We then distinguish two cases: if the first path reaches \<open>U\<close>, the proposition follows by the induction hypothesis and the @{thm [source] RU_call} constraint. 
   
   Otherwise, we use @{thm [source] "flowgraph.ntr_reverse_split_atU"} to identify the thread that actually reaches @{term U} among all the spawned threads. Then we 
   apply the induction hypothesis to the path of that thread and prepend the first step using the @{thm [source] RU_spawn}-constraint.
   
   The main complexity of the proof script below results from fiddling with the monitors and converting between the multiset-and loc/env-semantics. 
   Also the arguments to show that the acquisition histories are sound approximations require some space.
-*}
+\<close>
 lemma (in flowgraph) RU_sound: 
   "!!u s' c'. \<lbrakk>(([u],{#}),w,(s',c'))\<in>trcl (ntrp fg); atU U (add_mset s' c')\<rbrakk> 
   \<Longrightarrow> \<exists>Ml Me h. 
@@ -468,13 +468,13 @@ next
 qed
 
 
-text {*
+text \<open>
   Now we prove a statement about the precision of the least solution. As in the precision proof of the @{term "S_cs"} constraint system, we construct a path for the entry on the conclusion side of each constraint, assuming
   that there already exists paths for the entries mentioned in the antecedent.
 
   We show that each entry in the least solution corresponds exactly to some executable path, and is not just an under-approximation of a path; while for the soundness direction, we could only show that every executable path is 
   under-approximated. The reason for this is that in effect, the constraint system prunes the steps of threads that are not needed to reach the control point. However, each pruned path is executable. 
-*}
+\<close>
 lemma (in flowgraph) RU_precise: "(u,Ml,Me,h)\<in>RU_cs fg U 
   \<Longrightarrow> \<exists>w s' c'. 
     (([u],{#}),w,(s',c'))\<in>trcl (ntrp fg) \<and> 
@@ -556,15 +556,15 @@ qed
 
 
 subsection "Simultaneously reaching path"
-text {*
+text \<open>
   In this section, we define a constraint system that collects abstract information for paths starting at a single control node and reaching two program points simultaneously, one from a set @{term U} and one from a set @{term V}.
-*}
+\<close>
 
 subsubsection "Constraint system"
-text {* 
+text \<open>
   An element @{term "(u,Ml,Me)\<in>RUV_cs fg U V"} means, that there is a path from @{term "{#[u]#}"} to some configuration that is simultaneously at @{term U} and at @{term V}. 
   That path uses monitors from @{term Ml} in the first thread and monitors from @{term Me} in the other threads.
-*}
+\<close>
 inductive_set
   RUV_cs :: "('n,'p,'ba,'m,'more) flowgraph_rec_scheme \<Rightarrow> 
              'n set \<Rightarrow> 'n set \<Rightarrow> ('n \<times> 'm set \<times> 'm set) set"
@@ -596,7 +596,7 @@ where
          (mon_n fg u \<union> mon fg p) \<inter> (Ml\<union>Me\<union>Ml'\<union>Me') = {}; h [*] h' \<rbrakk> 
       \<Longrightarrow> (u, mon fg p \<union> M, Ml\<union>Me\<union>Ml'\<union>Me')\<in>RUV_cs fg U V"
 
-text {*
+text \<open>
   The idea underlying this constraint system is similar to the @{term RU_cs}-constraint system for reaching a single node set. 
   Initially, we just track one thread. After a macrostep, we have a configuration consisting of the transformed initial thread and the spawned threads.
   From this configuration, we reach two nodes simultaneously, one in @{term U} and one in @{term V}. Each of these nodes is reached by just a single thread. The constraint system
@@ -614,9 +614,9 @@ text {*
   information that we collected in the @{term RU_cs}-constraint system.
 
   Note that we do not need an initializing constraint for the empty path, as a single configuration cannot simultaneously be at two control nodes.
-*}
+\<close>
 
-subsubsection {* Soundness and precision *}
+subsubsection \<open>Soundness and precision\<close>
 
 lemma (in flowgraph) RUV_sound: "!!u s' c'. 
   \<lbrakk> (([u],{#}),w,(s',c'))\<in>trcl (ntrp fg); atUV U V ({#s'#}+c') \<rbrakk> 

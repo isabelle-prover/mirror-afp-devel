@@ -4,7 +4,7 @@
     Copyright   TUM 2003
 *)
 
-section {* Combining Stages 1 and 2 *}
+section \<open>Combining Stages 1 and 2\<close>
 
 theory Compiler
 imports Correctness1 Correctness2

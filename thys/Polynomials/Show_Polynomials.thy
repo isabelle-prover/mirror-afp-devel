@@ -5,7 +5,7 @@
     License:     LGPL
 *)
 
-section {* Displaying Polynomials *}
+section \<open>Displaying Polynomials\<close>
 
 theory Show_Polynomials
 imports 

@@ -35,14 +35,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Policy Combinators with Ports *}
+subsection \<open>Policy Combinators with Ports\<close>
 theory 
   PortCombinators
   imports 
     PolicyCombinators
 begin
 
-text{* 
+text\<open>
   This theory defines policy combinators for those network models which 
   have ports. They are provided in addition to the the ones defined in the 
   PolicyCombinators theory. 
@@ -52,7 +52,7 @@ text{*
     \item $src\_port :: ('\alpha,'\beta) packet \Rightarrow ('\gamma::port)$
     \item $dest\_port :: ('\alpha,'\beta) packet \Rightarrow ('\gamma::port)$
   \end{itemize}
-*} 
+\<close> 
 
 definition
   allow_all_from_port :: "'\<alpha>::adr net \<Rightarrow> ('\<gamma>::port) \<Rightarrow> (('\<alpha>,'\<beta>) packet \<mapsto> unit)" where
@@ -160,9 +160,9 @@ definition
     "allow_all_from_port_tos src_net s_port dest_net   
        = {pa. dest_port pa \<in>  s_port} \<triangleleft> allow_all_from_to src_net dest_net"
 
-text{* 
+text\<open>
   As before, we put all the rules into one lemma called PortCombinators to ease  writing later.  
-*} 
+\<close> 
 
 lemmas PortCombinatorsCore = 
   allow_all_from_port_def deny_all_from_port_def allow_all_to_port_def

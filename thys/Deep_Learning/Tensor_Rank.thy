@@ -54,7 +54,7 @@ next
   case (higher_order A B)
   then obtain Bs b where "(\<And>B'. B' \<in> set Bs \<Longrightarrow> order B' = 1)" "b \<cdot> prod_list Bs = B" by metis
   then have "(\<And>B. B \<in> set (A # Bs) \<Longrightarrow> order B = 1)" using higher_order by auto
-  have "A \<otimes> B = b \<cdot> (A \<otimes> prod_list Bs)" using smult_prod_extract2  `b \<cdot> prod_list Bs = B` by metis
+  have "A \<otimes> B = b \<cdot> (A \<otimes> prod_list Bs)" using smult_prod_extract2  \<open>b \<cdot> prod_list Bs = B\<close> by metis
   then show ?case by (metis \<open>\<And>Ba. Ba \<in> set (A # Bs) \<Longrightarrow> order Ba = 1\<close> higher_order.prems prod_list.Cons)
 qed
 

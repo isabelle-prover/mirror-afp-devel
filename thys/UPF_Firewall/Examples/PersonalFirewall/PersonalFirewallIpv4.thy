@@ -35,24 +35,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Personal Firewall IPv4 *}
+subsection \<open>Personal Firewall IPv4\<close>
 theory 
   PersonalFirewallIpv4
   imports 
     "../../UPF-Firewall"
 begin
   
-text{*
+text\<open>
   The most basic firewall scenario; there is a personal PC on one side and the Internet on the 
   other. There are two policies: the first one allows all traffic from the PC to the Internet and 
   denies all coming into the PC. The second policy only allows specific ports from the PC. This 
   scenario comes in three variants: the first one specifies the allowed protocols directly, the 
   second together with their respective port numbers, the third one only with the port numbers.
-*}
+\<close>
   
-text{*
+text\<open>
   Definitions of the subnets 
-*}
+\<close>
   
 definition 
   PC :: "(ipv4 net)" where
@@ -66,9 +66,9 @@ definition
   not_in_same_net :: "(ipv4,DummyContent) packet \<Rightarrow> bool" where
   "not_in_same_net x = ((src x \<sqsubset> PC \<longrightarrow> dest x \<sqsubset> Internet) \<and> (src x \<sqsubset> Internet \<longrightarrow> dest x \<sqsubset> PC))" 
   
-text {*
+text \<open>
   Definitions of the policies 
-*}
+\<close>
 definition
   strictPolicy :: "(ipv4,DummyContent) FWPolicy" where
   "strictPolicy = deny_all ++ allow_all_from_to PC Internet"

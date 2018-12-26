@@ -5,8 +5,8 @@ imports
   "HOL-Library.Tree_Multiset"
 begin
 
-text{* Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent
-priority queues by splay trees, not by heaps! *}
+text\<open>Splay heaps were invented by Okasaki~\cite{Okasaki}. They represent
+priority queues by splay trees, not by heaps!\<close>
 
 fun get_min :: "('a::linorder) tree \<Rightarrow> 'a" where
 "get_min(Node l m r) = (if l = Leaf then m else get_min l)"
@@ -64,17 +64,17 @@ next
     assume "a \<le> p"
     show ?thesis
     proof (cases r)
-      case Leaf thus ?thesis using `a \<le> p` "2.prems" by auto
+      case Leaf thus ?thesis using \<open>a \<le> p\<close> "2.prems" by auto
     next
       case (Node rl b rr)
       show ?thesis
       proof cases
         assume "b \<le> p"
-        thus ?thesis using Node `a \<le> p` "2.prems" "2.IH"(1)[OF _ Node]
+        thus ?thesis using Node \<open>a \<le> p\<close> "2.prems" "2.IH"(1)[OF _ Node]
           by (auto simp: ac_simps split: prod.splits)
       next
         assume "\<not> b \<le> p"
-        thus ?thesis using Node `a \<le> p` "2.prems" "2.IH"(2)[OF _ Node]
+        thus ?thesis using Node \<open>a \<le> p\<close> "2.prems" "2.IH"(2)[OF _ Node]
           by (auto simp: ac_simps split: prod.splits)
       qed
     qed
@@ -82,17 +82,17 @@ next
     assume "\<not> a \<le> p"
     show ?thesis
     proof (cases l)
-      case Leaf thus ?thesis using `\<not> a \<le> p` "2.prems" by auto
+      case Leaf thus ?thesis using \<open>\<not> a \<le> p\<close> "2.prems" by auto
     next
       case (Node ll b lr)
       show ?thesis
       proof cases
         assume "b \<le> p"
-        thus ?thesis using Node `\<not> a \<le> p` "2.prems" "2.IH"(3)[OF _ Node]
+        thus ?thesis using Node \<open>\<not> a \<le> p\<close> "2.prems" "2.IH"(3)[OF _ Node]
           by (auto simp: ac_simps split: prod.splits)
       next
         assume "\<not> b \<le> p"
-        thus ?thesis using Node `\<not> a \<le> p` "2.prems" "2.IH"(4)[OF _ Node]
+        thus ?thesis using Node \<open>\<not> a \<le> p\<close> "2.prems" "2.IH"(4)[OF _ Node]
           by (auto simp: ac_simps split: prod.splits)
       qed
     qed
@@ -114,19 +114,19 @@ next
     assume "a \<le> p"
     show ?thesis
     proof (cases r)
-      case Leaf thus ?thesis using `a \<le> p` "2.prems" by fastforce
+      case Leaf thus ?thesis using \<open>a \<le> p\<close> "2.prems" by fastforce
     next
       case (Node rl b rr)
       show ?thesis
       proof cases
         assume "b \<le> p"
         thus ?thesis
-          using Node `a \<le> p` "2.prems" "2.IH"(1)[OF _ Node] set_partition[of rr]
+          using Node \<open>a \<le> p\<close> "2.prems" "2.IH"(1)[OF _ Node] set_partition[of rr]
           by (fastforce split: prod.splits)
       next
         assume "\<not> b \<le> p"
         thus ?thesis
-          using Node `a \<le> p` "2.prems" "2.IH"(2)[OF _ Node] set_partition[of rl]
+          using Node \<open>a \<le> p\<close> "2.prems" "2.IH"(2)[OF _ Node] set_partition[of rl]
           by (fastforce split: prod.splits)
       qed
     qed
@@ -134,19 +134,19 @@ next
     assume "\<not> a \<le> p"
     show ?thesis
     proof (cases l)
-      case Leaf thus ?thesis using `\<not> a \<le> p` "2.prems" by fastforce
+      case Leaf thus ?thesis using \<open>\<not> a \<le> p\<close> "2.prems" by fastforce
     next
       case (Node ll b lr)
       show ?thesis
       proof cases
         assume "b \<le> p"
         thus ?thesis
-          using Node `\<not> a \<le> p` "2.prems" "2.IH"(3)[OF _ Node] set_partition[of lr]
+          using Node \<open>\<not> a \<le> p\<close> "2.prems" "2.IH"(3)[OF _ Node] set_partition[of lr]
           by (fastforce split: prod.splits)
       next
         assume "\<not> b \<le> p"
         thus ?thesis
-          using Node `\<not> a \<le> p` "2.prems" "2.IH"(4)[OF _ Node] set_partition[of ll]
+          using Node \<open>\<not> a \<le> p\<close> "2.prems" "2.IH"(4)[OF _ Node] set_partition[of ll]
           by (fastforce split: prod.splits)
       qed
     qed

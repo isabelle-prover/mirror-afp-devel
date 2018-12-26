@@ -2,12 +2,12 @@ theory DivergenceReflection
   imports SourceTargetRelation
 begin
 
-section {* Divergence Reflection *}
+section \<open>Divergence Reflection\<close>
 
-text {* Divergence reflection forbids for encodings that introduce loops of internal actions. Thus
+text \<open>Divergence reflection forbids for encodings that introduce loops of internal actions. Thus
         they determine the practicability of encodings in particular with respect to
         implementations. An encoding reflects divergence if each loop in a target term result from
-        the translation of a divergent source term. *}
+        the translation of a divergent source term.\<close>
 
 abbreviation (in encoding) enc_preserves_divergence :: "bool" where
   "enc_preserves_divergence \<equiv> enc_preserves_pred (\<lambda>P. P \<longmapsto>ST\<omega>)"
@@ -33,9 +33,9 @@ abbreviation rel_reflects_divergence
   where
   "rel_reflects_divergence Rel Cal \<equiv> rel_reflects_pred Rel (\<lambda>P. P \<longmapsto>(Cal)\<omega>)"
 
-text {* Apart from divergence reflection we consider divergence respection. An encoding respects
+text \<open>Apart from divergence reflection we consider divergence respection. An encoding respects
         divergence if each divergent source term is translated into a divergent target term and
-        each divergent target term result from the translation of a divergent source term. *}
+        each divergent target term result from the translation of a divergent source term.\<close>
 
 abbreviation (in encoding) enc_respects_divergence :: "bool" where
   "enc_respects_divergence \<equiv> enc_respects_pred (\<lambda>P. P \<longmapsto>ST\<omega>)"
@@ -49,11 +49,11 @@ abbreviation rel_respects_divergence
   where
   "rel_respects_divergence Rel Cal \<equiv> rel_respects_pred Rel (\<lambda>P. P \<longmapsto>(Cal)\<omega>)"
 
-text {* An encoding preserves divergence iff
+text \<open>An encoding preserves divergence iff
         (1) there exists a relation that relates source terms and their literal translations and
             preserves divergence, or
         (2) there exists a relation that relates literal translations and their source terms and
-            reflects divergence.*}
+            reflects divergence.\<close>
 
 lemma (in encoding) divergence_preservation_iff_source_target_rel_preserves_divergence:
   shows "enc_preserves_divergence
@@ -71,11 +71,11 @@ lemma (in encoding) divergence_preservation_iff_source_target_rel_reflects_diver
             divergentST_STCal_divergent
     by simp
 
-text {* An encoding reflects divergence iff
+text \<open>An encoding reflects divergence iff
         (1) there exists a relation that relates source terms and their literal translations and
             reflects divergence, or
         (2) there exists a relation that relates literal translations and their source terms and
-            preserves divergence.*}
+            preserves divergence.\<close>
 
 lemma (in encoding) divergence_reflection_iff_source_target_rel_reflects_divergence:
   shows "enc_reflects_divergence
@@ -93,8 +93,8 @@ lemma (in encoding) divergence_reflection_iff_source_target_rel_preserves_diverg
             divergentST_STCal_divergent
     by simp
 
-text {* An encoding respects divergence iff there exists a relation that relates source terms and
-        their literal translations in both directions and respects divergence.*}
+text \<open>An encoding respects divergence iff there exists a relation that relates source terms and
+        their literal translations in both directions and respects divergence.\<close>
 
 lemma (in encoding) divergence_respection_iff_source_target_rel_respects_divergence:
   shows "enc_respects_divergence = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)

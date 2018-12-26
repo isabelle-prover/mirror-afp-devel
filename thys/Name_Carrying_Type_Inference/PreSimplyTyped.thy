@@ -138,17 +138,17 @@ using assms proof(induction rule: ptrm_alpha_equiv.induct)
         case 1
           have "[a \<leftrightarrow> b] {$} ptrm_fvs B - {a} = [b \<leftrightarrow> a] {$} ptrm_fvs B - {a}" using prm_unit_commutes by metis
           moreover have "... = ((ptrm_fvs B - {b}) \<union> {a}) - {a}"
-            using prm_set_unit_action `b \<in> ptrm_fvs B` `a \<notin> ptrm_fvs B` by metis
-          moreover have "... = ptrm_fvs B - {b}" using `a \<notin> ptrm_fvs B` `a \<noteq> b`
+            using prm_set_unit_action \<open>b \<in> ptrm_fvs B\<close> \<open>a \<notin> ptrm_fvs B\<close> by metis
+          moreover have "... = ptrm_fvs B - {b}" using \<open>a \<notin> ptrm_fvs B\<close> \<open>a \<noteq> b\<close>
             using Diff_insert0 Diff_insert2 Un_insert_right insert_Diff1 insert_is_Un singletonI
               sup_bot.right_neutral by blast (* why?! *)
           ultimately show ?thesis by metis
         next
         case 2
           hence "[a \<leftrightarrow> b] {$} ptrm_fvs B - {a} = ptrm_fvs B - {a}"
-            using prm_set_unit_inaction `a \<notin> ptrm_fvs B` by metis
-          moreover have "... = ptrm_fvs B" using `a \<notin> ptrm_fvs B` by simp
-          moreover have "... = ptrm_fvs B - {b}" using `b \<notin> ptrm_fvs B` by simp
+            using prm_set_unit_inaction \<open>a \<notin> ptrm_fvs B\<close> by metis
+          moreover have "... = ptrm_fvs B" using \<open>a \<notin> ptrm_fvs B\<close> by simp
+          moreover have "... = ptrm_fvs B - {b}" using \<open>b \<notin> ptrm_fvs B\<close> by simp
           ultimately show ?thesis by metis
         next
       qed
@@ -175,8 +175,8 @@ using assms proof(induction rule: ptrm_alpha_equiv.induct)
     thus ?case using ptrm_alpha_equiv.fn1 by simp
   next
   case (fn2 a b A B T)
-    have "\<pi> $ a \<noteq> \<pi> $ b" using `a \<noteq> b` using prm_apply_unequal by metis
-    moreover have "\<pi> $ a \<notin> ptrm_fvs (\<pi> \<bullet> B)" using `a \<notin> ptrm_fvs B`
+    have "\<pi> $ a \<noteq> \<pi> $ b" using \<open>a \<noteq> b\<close> using prm_apply_unequal by metis
+    moreover have "\<pi> $ a \<notin> ptrm_fvs (\<pi> \<bullet> B)" using \<open>a \<notin> ptrm_fvs B\<close>
       using imageE prm_apply_unequal prm_set_def ptrm_prm_fvs by (metis (no_types, lifting))
     moreover have "\<pi> \<bullet> A \<approx> [\<pi> $ a \<leftrightarrow> \<pi> $ b] \<bullet> \<pi> \<bullet> B"
       using fn2.IH prm_compose_push ptrm_prm_apply_compose by metis
@@ -217,10 +217,10 @@ lemma ptrm_alpha_equiv_fvs_transfer:
   assumes "A \<approx> [a \<leftrightarrow> b] \<bullet> B" and "a \<notin> ptrm_fvs B"
   shows "b \<notin> ptrm_fvs A"
 proof -
-  from `A \<approx> [a \<leftrightarrow> b] \<bullet> B` have "[a \<leftrightarrow> b] \<bullet> A \<approx> B" using ptrm_swp_transfer by metis
+  from \<open>A \<approx> [a \<leftrightarrow> b] \<bullet> B\<close> have "[a \<leftrightarrow> b] \<bullet> A \<approx> B" using ptrm_swp_transfer by metis
   hence "ptrm_fvs B = [a \<leftrightarrow> b] {$} ptrm_fvs A"
     using ptrm_alpha_equiv_fvs ptrm_prm_fvs by metis
-  hence "a \<notin> [a \<leftrightarrow> b] {$} ptrm_fvs A" using `a \<notin> ptrm_fvs B` by metis
+  hence "a \<notin> [a \<leftrightarrow> b] {$} ptrm_fvs A" using \<open>a \<notin> ptrm_fvs B\<close> by metis
   hence "b \<notin> [a \<leftrightarrow> b] {$} ([a \<leftrightarrow> b] {$} ptrm_fvs A)"
     using prm_set_notmembership prm_unit_action by metis
   thus ?thesis using prm_set_apply_compose prm_unit_involution prm_set_id by metis
@@ -261,7 +261,7 @@ using assms proof(induction M arbitrary: \<pi> \<sigma>)
           assume "a \<in> ds \<pi> \<sigma>"
           hence "a \<notin> ptrm_fvs (PFn x T A)" using PFn.prems by metis
           hence "a = x \<or> a \<notin> ptrm_fvs A" by auto
-          thus "a \<notin> ptrm_fvs A" using `a \<in> ds \<pi> \<sigma>` `x \<notin> ds \<pi> \<sigma>` by auto
+          thus "a \<notin> ptrm_fvs A" using \<open>a \<in> ds \<pi> \<sigma>\<close> \<open>x \<notin> ds \<pi> \<sigma>\<close> by auto
         qed
         thus ?thesis using PFn.IH * ptrm_alpha_equiv.fn1 ptrm_apply_prm.simps(3) by fastforce
       next
@@ -270,7 +270,7 @@ using assms proof(induction M arbitrary: \<pi> \<sigma>)
         moreover have "\<pi> $ x \<notin> ptrm_fvs (\<sigma> \<bullet> A)"
         proof -
           have "y \<in> (ptrm_fvs A) \<Longrightarrow> \<pi> $ x \<noteq> \<sigma> $ y" for y
-            using PFn `\<pi> $ x \<noteq> \<sigma> $ x` prm_apply_unequal prm_disagreement_ext ptrm_fvs.simps(4)
+            using PFn \<open>\<pi> $ x \<noteq> \<sigma> $ x\<close> prm_apply_unequal prm_disagreement_ext ptrm_fvs.simps(4)
             by (metis Diff_iff empty_iff insert_iff)
           hence "\<pi> $ x \<notin> \<sigma> {$} ptrm_fvs A" unfolding prm_set_def by auto
           thus ?thesis using ptrm_prm_fvs by metis
@@ -280,13 +280,13 @@ using assms proof(induction M arbitrary: \<pi> \<sigma>)
           have "\<And>a. a \<in> ds \<pi> ([\<pi> $ x \<leftrightarrow> \<sigma> $ x] \<diamondop> \<sigma>) \<Longrightarrow> a \<notin> ptrm_fvs A" proof -
             fix a
             assume *: "a \<in> ds \<pi> ([\<pi> $ x \<leftrightarrow> \<sigma> $ x] \<diamondop> \<sigma>)"
-            hence "a \<noteq> x" using `\<pi> $ x \<noteq> \<sigma> $ x`
+            hence "a \<noteq> x" using \<open>\<pi> $ x \<noteq> \<sigma> $ x\<close>
               using prm_apply_composition prm_disagreement_ext prm_unit_action prm_unit_commutes
               by metis
             hence "a \<in> ds \<pi> \<sigma>"
               using * prm_apply_composition prm_apply_unequal prm_disagreement_ext prm_unit_inaction
               by metis
-            thus "a \<notin> ptrm_fvs A" using `a \<noteq> x` PFn.prems by auto
+            thus "a \<notin> ptrm_fvs A" using \<open>a \<noteq> x\<close> PFn.prems by auto
           qed
           thus ?thesis using PFn by (simp add: ptrm_prm_apply_compose)
         qed
@@ -341,14 +341,14 @@ lemma ptrm_alpha_equiv_symmetric:
   shows "Y \<approx> X"
 using assms proof(induction rule: ptrm_alpha_equiv.induct, auto simp add: ptrm_alpha_equiv.intros)
   case (fn2 a b A B T)
-    have "b \<noteq> a" using `a \<noteq> b` by auto
-    have "B \<approx> [b \<leftrightarrow> a] \<bullet> A" using `[a \<leftrightarrow> b] \<bullet> B \<approx> A`
+    have "b \<noteq> a" using \<open>a \<noteq> b\<close> by auto
+    have "B \<approx> [b \<leftrightarrow> a] \<bullet> A" using \<open>[a \<leftrightarrow> b] \<bullet> B \<approx> A\<close>
       using ptrm_swp_transfer prm_unit_commutes by metis
 
-    have "b \<notin> ptrm_fvs A" using `a \<notin> ptrm_fvs B` `A \<approx> [a \<leftrightarrow> b] \<bullet> B` `a \<noteq> b`
+    have "b \<notin> ptrm_fvs A" using \<open>a \<notin> ptrm_fvs B\<close> \<open>A \<approx> [a \<leftrightarrow> b] \<bullet> B\<close> \<open>a \<noteq> b\<close>
       using ptrm_alpha_equiv_fvs_transfer by metis
 
-    show ?case using `b \<noteq> a` `B \<approx> [b \<leftrightarrow> a] \<bullet> A` `b \<notin> ptrm_fvs A`
+    show ?case using \<open>b \<noteq> a\<close> \<open>B \<approx> [b \<leftrightarrow> a] \<bullet> A\<close> \<open>b \<notin> ptrm_fvs A\<close>
       using ptrm_alpha_equiv.fn2 by metis
   next
 qed
@@ -366,26 +366,26 @@ using assms proof(induction "size X" arbitrary: X Y Z rule: less_induct)
   assume "X \<approx> Y" and "Y \<approx> Z"
   show "X \<approx> Z" proof(cases X)
     case (PUnit)
-      hence "Y = PUnit" using `X \<approx> Y` unitE by metis
-      hence "Z = PUnit" using `Y \<approx> Z` unitE by metis
-      thus ?thesis using ptrm_alpha_equiv.unit `X = PUnit` by metis
+      hence "Y = PUnit" using \<open>X \<approx> Y\<close> unitE by metis
+      hence "Z = PUnit" using \<open>Y \<approx> Z\<close> unitE by metis
+      thus ?thesis using ptrm_alpha_equiv.unit \<open>X = PUnit\<close> by metis
     next
     case (PVar x)
-      hence "PVar x \<approx> Y" using `X \<approx> Y` by auto
+      hence "PVar x \<approx> Y" using \<open>X \<approx> Y\<close> by auto
       hence "Y = PVar x" using varE by metis
-      hence "PVar x \<approx> Z" using `Y \<approx> Z` by auto
+      hence "PVar x \<approx> Z" using \<open>Y \<approx> Z\<close> by auto
       hence "Z = PVar x" using varE by metis
-      thus ?thesis using ptrm_alpha_equiv.var `X = PVar x` by metis
+      thus ?thesis using ptrm_alpha_equiv.var \<open>X = PVar x\<close> by metis
     next
     case (PApp A B)
       obtain C D where "Y = PApp C D" and "A \<approx> C" and "B \<approx> D"
-        using appE `X = PApp A B` `X \<approx> Y` by metis
-      hence "PApp C D \<approx> Z" using `Y \<approx> Z` by simp
+        using appE \<open>X = PApp A B\<close> \<open>X \<approx> Y\<close> by metis
+      hence "PApp C D \<approx> Z" using \<open>Y \<approx> Z\<close> by simp
       from this obtain E F where "Z = PApp E F" and "C \<approx> E" and "D \<approx> F" using appE by metis
 
-      have "size A < size X" and "size B < size X" using `X = PApp A B` by auto
-      hence "A \<approx> E" and "B \<approx> F" using IH `A \<approx> C` `C \<approx> E` `B \<approx> D` `D \<approx> F` by auto
-      thus ?thesis using `X = PApp A B` `Z = PApp E F` ptrm_alpha_equiv.app by metis
+      have "size A < size X" and "size B < size X" using \<open>X = PApp A B\<close> by auto
+      hence "A \<approx> E" and "B \<approx> F" using IH \<open>A \<approx> C\<close> \<open>C \<approx> E\<close> \<open>B \<approx> D\<close> \<open>D \<approx> F\<close> by auto
+      thus ?thesis using \<open>X = PApp A B\<close> \<open>Z = PApp E F\<close> ptrm_alpha_equiv.app by metis
     next
     case (PFn x T A)
       from this have X: "X = PFn x T A".
@@ -393,10 +393,10 @@ using assms proof(induction "size X" arbitrary: X Y Z rule: less_induct)
 
       obtain y B where "Y = PFn y T B"
         and Y_cases: "(x = y \<and> A \<approx> B) \<or> (x \<noteq> y \<and> A \<approx> [x \<leftrightarrow> y] \<bullet> B \<and> x \<notin> ptrm_fvs B)"
-        using fnE `X \<approx> Y` `X = PFn x T A` by metis
+        using fnE \<open>X \<approx> Y\<close> \<open>X = PFn x T A\<close> by metis
       obtain z C where Z: "Z = PFn z T C"
         and Z_cases: "(y = z \<and> B \<approx> C) \<or> (y \<noteq> z \<and> B \<approx> [y \<leftrightarrow> z] \<bullet> C \<and> y \<notin> ptrm_fvs C)"
-        using fnE `Y \<approx> Z` `Y = PFn y T B` by metis
+        using fnE \<open>Y \<approx> Z\<close> \<open>Y = PFn y T B\<close> by metis
 
       consider
         "x = y" "A \<approx> B" and "y = z" "B \<approx> C"
@@ -408,115 +408,115 @@ using assms proof(induction "size X" arbitrary: X Y Z rule: less_induct)
 
       thus ?thesis proof(cases)
         case 1
-          have "A \<approx> C" using `A \<approx> B` `B \<approx> C` IH * by metis
-          have "x = z" using `x = y` `y = z` by metis
-          show ?thesis using `A \<approx> C` `x = z` X Z
+          have "A \<approx> C" using \<open>A \<approx> B\<close> \<open>B \<approx> C\<close> IH * by metis
+          have "x = z" using \<open>x = y\<close> \<open>y = z\<close> by metis
+          show ?thesis using \<open>A \<approx> C\<close> \<open>x = z\<close> X Z
             using ptrm_alpha_equiv.fn1 by metis
         next
         case 2
-          have "x \<noteq> z" using `x = y` `y \<noteq> z` by metis
-          have "A \<approx> [x \<leftrightarrow> z] \<bullet> C" using `A \<approx> B` `B \<approx> [y \<leftrightarrow> z] \<bullet> C` `x = y` IH * by metis
-          have "x \<notin> ptrm_fvs C" using `x = y` `y \<notin> ptrm_fvs C` by metis
-          thus ?thesis using `x \<noteq> z` `A \<approx> [x \<leftrightarrow> z] \<bullet> C` `x \<notin> ptrm_fvs C` X Z
+          have "x \<noteq> z" using \<open>x = y\<close> \<open>y \<noteq> z\<close> by metis
+          have "A \<approx> [x \<leftrightarrow> z] \<bullet> C" using \<open>A \<approx> B\<close> \<open>B \<approx> [y \<leftrightarrow> z] \<bullet> C\<close> \<open>x = y\<close> IH * by metis
+          have "x \<notin> ptrm_fvs C" using \<open>x = y\<close> \<open>y \<notin> ptrm_fvs C\<close> by metis
+          thus ?thesis using \<open>x \<noteq> z\<close> \<open>A \<approx> [x \<leftrightarrow> z] \<bullet> C\<close> \<open>x \<notin> ptrm_fvs C\<close> X Z
             using ptrm_alpha_equiv.fn2 by metis
         next
         case 3
-          have "x \<noteq> z" using `x \<noteq> y` `y = z` by metis
-          have "[x \<leftrightarrow> y] \<bullet> B \<approx> [x \<leftrightarrow> y] \<bullet> C" using `B \<approx> C` ptrm_alpha_equiv_prm by metis
+          have "x \<noteq> z" using \<open>x \<noteq> y\<close> \<open>y = z\<close> by metis
+          have "[x \<leftrightarrow> y] \<bullet> B \<approx> [x \<leftrightarrow> y] \<bullet> C" using \<open>B \<approx> C\<close> ptrm_alpha_equiv_prm by metis
           have "A \<approx> [x \<leftrightarrow> z] \<bullet> C"
-            using `A \<approx> [x \<leftrightarrow> y] \<bullet> B` `[x \<leftrightarrow> y] \<bullet> B \<approx> [x \<leftrightarrow> y] \<bullet> C` `y = z` IH *
+            using \<open>A \<approx> [x \<leftrightarrow> y] \<bullet> B\<close> \<open>[x \<leftrightarrow> y] \<bullet> B \<approx> [x \<leftrightarrow> y] \<bullet> C\<close> \<open>y = z\<close> IH *
             by metis
-          have "x \<notin> ptrm_fvs C" using `B \<approx> C` `x \<notin> ptrm_fvs B` ptrm_alpha_equiv_fvs by metis
-          thus ?thesis using `x \<noteq> z` `A \<approx> [x \<leftrightarrow> z] \<bullet> C` `x \<notin> ptrm_fvs C` X Z
+          have "x \<notin> ptrm_fvs C" using \<open>B \<approx> C\<close> \<open>x \<notin> ptrm_fvs B\<close> ptrm_alpha_equiv_fvs by metis
+          thus ?thesis using \<open>x \<noteq> z\<close> \<open>A \<approx> [x \<leftrightarrow> z] \<bullet> C\<close> \<open>x \<notin> ptrm_fvs C\<close> X Z
             using ptrm_alpha_equiv.fn2 by metis
         next
         case 4
           have "[x \<leftrightarrow> y] \<bullet> B \<approx> [x \<leftrightarrow> y] \<bullet> [y \<leftrightarrow> z] \<bullet> C"
-            using `B \<approx> [y \<leftrightarrow> z] \<bullet> C` ptrm_alpha_equiv_prm by metis
+            using \<open>B \<approx> [y \<leftrightarrow> z] \<bullet> C\<close> ptrm_alpha_equiv_prm by metis
           hence "A \<approx> [x \<leftrightarrow> y] \<bullet> [y \<leftrightarrow> z] \<bullet> C"
-            using `A \<approx> [x \<leftrightarrow> y] \<bullet> B` IH * by metis
+            using \<open>A \<approx> [x \<leftrightarrow> y] \<bullet> B\<close> IH * by metis
           hence "A \<approx> ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C" using ptrm_prm_apply_compose by metis
-          hence "A \<approx> ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> x]) \<bullet> C" using `x = z` by metis
+          hence "A \<approx> ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> x]) \<bullet> C" using \<open>x = z\<close> by metis
           hence "A \<approx> ([x \<leftrightarrow> y] \<diamondop> [x \<leftrightarrow> y]) \<bullet> C" using prm_unit_commutes by metis
-          hence "A \<approx> \<epsilon> \<bullet> C" using `x = z` prm_unit_involution by metis
+          hence "A \<approx> \<epsilon> \<bullet> C" using \<open>x = z\<close> prm_unit_involution by metis
           hence "A \<approx> C" using ptrm_prm_apply_id by metis
 
-          thus ?thesis using `x = z` `A \<approx> C` X Z
+          thus ?thesis using \<open>x = z\<close> \<open>A \<approx> C\<close> X Z
             using ptrm_alpha_equiv.fn1 by metis
         next
         case 5
           have "x \<notin> ptrm_fvs C" proof -
             have "ptrm_fvs B = ptrm_fvs ([y \<leftrightarrow> z] \<bullet> C)"
-              using ptrm_alpha_equiv_fvs `B \<approx> [y \<leftrightarrow> z] \<bullet> C` by metis
-            hence "x \<notin> ptrm_fvs ([y \<leftrightarrow> z] \<bullet> C)" using `x \<notin> ptrm_fvs B` by auto
+              using ptrm_alpha_equiv_fvs \<open>B \<approx> [y \<leftrightarrow> z] \<bullet> C\<close> by metis
+            hence "x \<notin> ptrm_fvs ([y \<leftrightarrow> z] \<bullet> C)" using \<open>x \<notin> ptrm_fvs B\<close> by auto
             hence "x \<notin> [y \<leftrightarrow> z] {$} ptrm_fvs C" using ptrm_prm_fvs by metis
             consider "z \<in> ptrm_fvs C" | "z \<notin> ptrm_fvs C" by auto
             thus ?thesis proof(cases)
               case 1
                 hence "[y \<leftrightarrow> z] {$} ptrm_fvs C = ptrm_fvs C - {z} \<union> {y}"
                   using prm_set_unit_action prm_unit_commutes
-                  and `z \<in> ptrm_fvs C` `y \<notin> ptrm_fvs C` by metis
-                hence "x \<notin> ptrm_fvs C - {z} \<union> {y}" using `x \<notin> [y \<leftrightarrow> z] {$} ptrm_fvs C` by auto
-                hence "x \<notin> ptrm_fvs C - {z}" using `x \<noteq> y` by auto
-                thus ?thesis using `x \<noteq> z` by auto
+                  and \<open>z \<in> ptrm_fvs C\<close> \<open>y \<notin> ptrm_fvs C\<close> by metis
+                hence "x \<notin> ptrm_fvs C - {z} \<union> {y}" using \<open>x \<notin> [y \<leftrightarrow> z] {$} ptrm_fvs C\<close> by auto
+                hence "x \<notin> ptrm_fvs C - {z}" using \<open>x \<noteq> y\<close> by auto
+                thus ?thesis using \<open>x \<noteq> z\<close> by auto
               next
               case 2
-                hence "[y \<leftrightarrow> z] {$} ptrm_fvs C = ptrm_fvs C" using prm_set_unit_inaction `y \<notin> ptrm_fvs C` by metis
-                thus ?thesis using `x \<notin> [y \<leftrightarrow> z] {$} ptrm_fvs C` by auto
+                hence "[y \<leftrightarrow> z] {$} ptrm_fvs C = ptrm_fvs C" using prm_set_unit_inaction \<open>y \<notin> ptrm_fvs C\<close> by metis
+                thus ?thesis using \<open>x \<notin> [y \<leftrightarrow> z] {$} ptrm_fvs C\<close> by auto
               next
             qed
           qed
 
           have "A \<approx> [x \<leftrightarrow> z] \<bullet> C" proof -
             have "A \<approx> ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C"
-              using IH * `A \<approx> [x \<leftrightarrow> y] \<bullet> B` `B \<approx> [y \<leftrightarrow> z] \<bullet> C`
+              using IH * \<open>A \<approx> [x \<leftrightarrow> y] \<bullet> B\<close> \<open>B \<approx> [y \<leftrightarrow> z] \<bullet> C\<close>
               and ptrm_alpha_equiv_prm ptrm_prm_apply_compose by metis
 
             have "([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C \<approx> [x \<leftrightarrow> z] \<bullet> C" proof -
               have "ds ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) [x \<leftrightarrow> z] = {x, y}"
-                using `x \<noteq> y` `y \<noteq> z` `x \<noteq> z` prm_disagreement_composition by metis
+                using \<open>x \<noteq> y\<close> \<open>y \<noteq> z\<close> \<open>x \<noteq> z\<close> prm_disagreement_composition by metis
 
               hence "\<And>a. a \<in> ds ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) [x \<leftrightarrow> z] \<Longrightarrow> a \<notin> ptrm_fvs C"
-                using `x \<notin> ptrm_fvs C` `y \<notin> ptrm_fvs C`
+                using \<open>x \<notin> ptrm_fvs C\<close> \<open>y \<notin> ptrm_fvs C\<close>
                 using Diff_iff Diff_insert_absorb insert_iff by auto
               thus ?thesis using ptrm_prm_agreement_equiv by metis
             qed
 
             thus ?thesis using IH *
-              using `A \<approx> ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C` `([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C \<approx> [x \<leftrightarrow> z] \<bullet> C`
+              using \<open>A \<approx> ([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C\<close> \<open>([x \<leftrightarrow> y] \<diamondop> [y \<leftrightarrow> z]) \<bullet> C \<approx> [x \<leftrightarrow> z] \<bullet> C\<close>
               by metis
           qed
 
-          show ?thesis using `x \<noteq> z` `A \<approx> [x \<leftrightarrow> z] \<bullet> C` `x \<notin> ptrm_fvs C` X Z
+          show ?thesis using \<open>x \<noteq> z\<close> \<open>A \<approx> [x \<leftrightarrow> z] \<bullet> C\<close> \<open>x \<notin> ptrm_fvs C\<close> X Z
             using ptrm_alpha_equiv.fn2 by metis
         next
       qed
     next
     case (PPair A B)
       obtain C D where "Y = PPair C D" and "A \<approx> C" and "B \<approx> D"
-        using pairE `X = PPair A B` `X \<approx> Y` by metis
-      hence "PPair C D \<approx> Z" using `Y \<approx> Z` by simp
+        using pairE \<open>X = PPair A B\<close> \<open>X \<approx> Y\<close> by metis
+      hence "PPair C D \<approx> Z" using \<open>Y \<approx> Z\<close> by simp
       from this obtain E F where "Z = PPair E F" and "C \<approx> E" and "D \<approx> F" using pairE by metis
 
-      have "size A < size X" and "size B < size X" using `X = PPair A B` by auto
-      hence "A \<approx> E" and "B \<approx> F" using IH `A \<approx> C` `C \<approx> E` `B \<approx> D` `D \<approx> F` by auto
-      thus ?thesis using `X = PPair A B` `Z = PPair E F` ptrm_alpha_equiv.pair by metis
+      have "size A < size X" and "size B < size X" using \<open>X = PPair A B\<close> by auto
+      hence "A \<approx> E" and "B \<approx> F" using IH \<open>A \<approx> C\<close> \<open>C \<approx> E\<close> \<open>B \<approx> D\<close> \<open>D \<approx> F\<close> by auto
+      thus ?thesis using \<open>X = PPair A B\<close> \<open>Z = PPair E F\<close> ptrm_alpha_equiv.pair by metis
     next
     case (PFst P)
-      obtain Q where "Y = PFst Q" "P \<approx> Q" using fstE `X = PFst P` `X \<approx> Y` by metis
-      obtain R where "Z = PFst R" "Q \<approx> R" using fstE `Y = PFst Q` `Y \<approx> Z` by metis
+      obtain Q where "Y = PFst Q" "P \<approx> Q" using fstE \<open>X = PFst P\<close> \<open>X \<approx> Y\<close> by metis
+      obtain R where "Z = PFst R" "Q \<approx> R" using fstE \<open>Y = PFst Q\<close> \<open>Y \<approx> Z\<close> by metis
 
-      have "size P < size X" using `X = PFst P` by auto
-      hence "P \<approx> R" using IH `P \<approx> Q` `Q \<approx> R` by metis
-      thus ?thesis using `X = PFst P` `Z = PFst R` ptrm_alpha_equiv.fst by metis
+      have "size P < size X" using \<open>X = PFst P\<close> by auto
+      hence "P \<approx> R" using IH \<open>P \<approx> Q\<close> \<open>Q \<approx> R\<close> by metis
+      thus ?thesis using \<open>X = PFst P\<close> \<open>Z = PFst R\<close> ptrm_alpha_equiv.fst by metis
     next
     case (PSnd P)
-      obtain Q where "Y = PSnd Q" "P \<approx> Q" using sndE `X = PSnd P` `X \<approx> Y` by metis
-      obtain R where "Z = PSnd R" "Q \<approx> R" using sndE `Y = PSnd Q` `Y \<approx> Z` by metis
+      obtain Q where "Y = PSnd Q" "P \<approx> Q" using sndE \<open>X = PSnd P\<close> \<open>X \<approx> Y\<close> by metis
+      obtain R where "Z = PSnd R" "Q \<approx> R" using sndE \<open>Y = PSnd Q\<close> \<open>Y \<approx> Z\<close> by metis
 
-      have "size P < size X" using `X = PSnd P` by auto
-      hence "P \<approx> R" using IH `P \<approx> Q` `Q \<approx> R` by metis
-      thus ?thesis using `X = PSnd P` `Z = PSnd R` ptrm_alpha_equiv.snd by metis
+      have "size P < size X" using \<open>X = PSnd P\<close> by auto
+      hence "P \<approx> R" using IH \<open>P \<approx> Q\<close> \<open>Q \<approx> R\<close> by metis
+      thus ?thesis using \<open>X = PSnd P\<close> \<open>Z = PSnd R\<close> ptrm_alpha_equiv.snd by metis
     next
   qed
 qed
@@ -563,11 +563,11 @@ using assms proof(induction X arbitrary: T S \<Gamma>)
     consider "x = a" | "x = b" | "x \<noteq> a \<and> x \<noteq> b" by auto
     thus ?case proof(cases)
       assume "x = a"
-      thus ?thesis using `a \<noteq> b` by (simp add: prm_unit_action)
+      thus ?thesis using \<open>a \<noteq> b\<close> by (simp add: prm_unit_action)
       next
 
       assume "x = b"
-      thus ?thesis using `a \<noteq> b`
+      thus ?thesis using \<open>a \<noteq> b\<close>
         using prm_unit_action prm_unit_commutes fun_upd_same fun_upd_twist
         by (metis ptrm_apply_prm.simps(2) ptrm_infer_type.simps(2))
       next
@@ -598,11 +598,11 @@ using assms proof(induction X arbitrary: T S \<Gamma>)
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>, b \<mapsto> S)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using * by metis
         moreover have "... = (case ptrm_infer_type (\<Gamma>(b \<mapsto> S, a \<mapsto> T, a \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
-          using `a \<noteq> b` fun_upd_twist fun_upd_upd by metis
+          using \<open>a \<noteq> b\<close> fun_upd_twist fun_upd_upd by metis
         moreover have "... = ptrm_infer_type (\<Gamma>(b \<mapsto> S, a \<mapsto> T)) (PFn x \<tau> A)"
-          using `x = a` by simp
+          using \<open>x = a\<close> by simp
         moreover have "... = ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S)) (PFn x \<tau> A)"
-          using `a \<noteq> b` fun_upd_twist by metis
+          using \<open>a \<noteq> b\<close> fun_upd_twist by metis
         ultimately show ?thesis by metis
       next
       case 2
@@ -613,15 +613,15 @@ using assms proof(induction X arbitrary: T S \<Gamma>)
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)(a \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           by simp
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>, b \<mapsto> T)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
-          using fun_upd_upd fun_upd_twist `a \<noteq> b` by metis
+          using fun_upd_upd fun_upd_twist \<open>a \<noteq> b\<close> by metis
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using * by metis
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S)(b \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
-          using `a \<noteq> b` fun_upd_upd by metis
+          using \<open>a \<noteq> b\<close> fun_upd_upd by metis
         moreover have "... = ptrm_infer_type (\<Gamma>(b \<mapsto> S, a \<mapsto> T)) (PFn x \<tau> A)"
-          using `x = b` by simp
+          using \<open>x = b\<close> by simp
         moreover have "... = ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S)) (PFn x \<tau> A)"
-          using `a \<noteq> b` fun_upd_twist by metis
+          using \<open>a \<noteq> b\<close> fun_upd_twist by metis
         ultimately show ?thesis by metis
       next
       case 3
@@ -633,11 +633,11 @@ using assms proof(induction X arbitrary: T S \<Gamma>)
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> S, b \<mapsto> T)(x \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           by simp
         moreover have "... = (case ptrm_infer_type (\<Gamma>(x \<mapsto> \<tau>, a \<mapsto> S, b \<mapsto> T)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
-          using `x \<noteq> a` `x \<noteq> b` fun_upd_twist by metis
+          using \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> fun_upd_twist by metis
         moreover have "... = (case ptrm_infer_type (\<Gamma>(x \<mapsto> \<tau>, a \<mapsto> T, b \<mapsto> S)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
           using * by metis
         moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S, x \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma> \<Rightarrow> Some (TArr \<tau> \<sigma>))"
-          using `x \<noteq> a` `x \<noteq> b` fun_upd_twist by metis
+          using \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> fun_upd_twist by metis
         moreover have "... = ptrm_infer_type (\<Gamma>(a \<mapsto> T, b \<mapsto> S)) (PFn x \<tau> A)" by simp
         ultimately show ?thesis by metis
       next
@@ -672,16 +672,16 @@ using assms proof(induction X arbitrary: \<tau> \<Gamma>)
       next
 
       case 2
-        hence *: "[a \<leftrightarrow> b] \<bullet> PVar x = PVar x" using `x \<noteq> b` prm_unit_inaction by simp
+        hence *: "[a \<leftrightarrow> b] \<bullet> PVar x = PVar x" using \<open>x \<noteq> b\<close> prm_unit_inaction by simp
         consider "\<exists>\<sigma>. \<Gamma> x = Some \<sigma>" | "\<Gamma> x = None" by auto
         thus ?thesis proof(cases)
           assume "\<exists>\<sigma>. \<Gamma> x = Some \<sigma>"
           from this obtain \<sigma> where "\<Gamma> x = Some \<sigma>" by auto
-          thus ?thesis using * `x \<noteq> a` `x \<noteq> b` by auto
+          thus ?thesis using * \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> by auto
           next
   
           assume "\<Gamma> x = None"
-          thus ?thesis using * `x \<noteq> a` `x \<noteq> b` by auto
+          thus ?thesis using * \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> by auto
         qed
       next
     qed
@@ -716,15 +716,15 @@ using assms proof(induction X arbitrary: \<tau> \<Gamma>)
             hence
               "ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> PFn x \<sigma> A)
              = ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>)) (PFn x \<sigma> ([a \<leftrightarrow> b] \<bullet> A))"
-              using `b \<noteq> x` by (simp add: prm_unit_inaction)
+              using \<open>b \<noteq> x\<close> by (simp add: prm_unit_inaction)
             moreover have "... = (case ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>, x \<mapsto> \<sigma>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma>' \<Rightarrow> Some (TArr \<sigma> \<sigma>'))"
               by simp
             moreover have "... = (case ptrm_infer_type (\<Gamma>(x \<mapsto> \<sigma>, b \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> A) of None \<Rightarrow> None | Some \<sigma>' \<Rightarrow> Some (TArr \<sigma> \<sigma>'))"
-              using `b \<noteq> x` fun_upd_twist by metis
+              using \<open>b \<noteq> x\<close> fun_upd_twist by metis
             moreover have "... = (case ptrm_infer_type (\<Gamma>(x \<mapsto> \<sigma>, a \<mapsto> \<tau>)) A of None \<Rightarrow> None | Some \<sigma>' \<Rightarrow> Some (TArr \<sigma> \<sigma>'))"
               using * by metis
             moreover have "... = (case ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>, x \<mapsto> \<sigma>)) A of None \<Rightarrow> None | Some \<sigma>' \<Rightarrow> Some (TArr \<sigma> \<sigma>'))"
-              using `a \<noteq> x` fun_upd_twist by metis
+              using \<open>a \<noteq> x\<close> fun_upd_twist by metis
             moreover have "... = ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>)) (PFn x \<sigma> A)"
               by simp
             ultimately show ?thesis by metis
@@ -737,9 +737,9 @@ using assms proof(induction X arbitrary: \<tau> \<Gamma>)
         have "
           ptrm_infer_type (\<Gamma>(a \<mapsto> \<tau>)(b \<mapsto> \<sigma>)) A =
           ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>)(a \<mapsto> \<sigma>)) ([a \<leftrightarrow> b] \<bullet> A)
-        " using ptrm_infer_type_swp_types using `a \<noteq> b` fun_upd_twist by metis
+        " using ptrm_infer_type_swp_types using \<open>a \<noteq> b\<close> fun_upd_twist by metis
         thus ?thesis
-          using `b = x` prm_unit_action prm_unit_commutes
+          using \<open>b = x\<close> prm_unit_action prm_unit_commutes
           using ptrm_infer_type.simps(4) ptrm_apply_prm.simps(4) by metis
       next
     qed

@@ -1,34 +1,34 @@
 (*File: VDM.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory VDM imports IMP begin
-section{*Program logic*}
+section\<open>Program logic\<close>
 
-text{*\label{sec:VDM} The program logic is a partial correctness logic
+text\<open>\label{sec:VDM} The program logic is a partial correctness logic
 in (precondition-less) VDM style. This means that assertions are
 binary predicates over states and relate the initial and final
-states of a terminating execution.*}
+states of a terminating execution.\<close>
 
-subsection {*Assertions and their semantic validity*}
+subsection \<open>Assertions and their semantic validity\<close>
 
-text{*Assertions are binary predicates over states, i.e.~are of type*}
+text\<open>Assertions are binary predicates over states, i.e.~are of type\<close>
 
 type_synonym "VDMAssn" = "State \<Rightarrow> State \<Rightarrow> bool"
 
-text{*Command $c$ satisfies assertion $A$ if all (terminating)
-operational behaviours are covered by the assertion.*}
+text\<open>Command $c$ satisfies assertion $A$ if all (terminating)
+operational behaviours are covered by the assertion.\<close>
 
 definition VDM_valid :: "IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
                        (" \<Turnstile> _ : _ " [100,100] 100)
 where "\<Turnstile> c : A = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> A s t)"
 
-text{*A variation of this property for the height-indexed operational
-semantics,\ldots*}
+text\<open>A variation of this property for the height-indexed operational
+semantics,\ldots\<close>
 
 definition VDM_validn :: "nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
                         (" \<Turnstile>\<^sub>_ _ : _ " [100,100,100] 100)
 where "\<Turnstile>\<^sub>n c : A = (\<forall> m . m \<le> n --> (\<forall> s t . (s,c \<rightarrow>\<^sub>m t) --> A s t))"
 
-text{*\ldots plus the obvious relationships.*}
+text\<open>\ldots plus the obvious relationships.\<close>
 lemma VDM_valid_validn: "\<Turnstile> c:A \<Longrightarrow> \<Turnstile>\<^sub>n c:A"
 (*<*)
 by (simp add: VDM_valid_def VDM_validn_def Sem_def, fastforce)
@@ -46,21 +46,21 @@ apply (erule_tac x="ma" in allE, simp)
 done
 (*>*)
 
-text{*Proof contexts are simply sets of assertions -- each entry
+text\<open>Proof contexts are simply sets of assertions -- each entry
 represents an assumption for the unnamed procedure. In particular, a
 context is valid if each entry is satisfied by the method call
-instruction.*}
+instruction.\<close>
 
 definition Ctxt_valid :: "VDMAssn set \<Rightarrow> bool" (" \<Turnstile> _ " [100] 100)
 where "\<Turnstile> G = (\<forall> A . A \<in> G \<longrightarrow> (\<Turnstile> Call : A))"
 
-text{*Again, a relativised sibling \ldots*}
+text\<open>Again, a relativised sibling \ldots\<close>
 
 definition Ctxt_validn :: "nat \<Rightarrow> (VDMAssn set) \<Rightarrow> bool"
                          (" \<Turnstile>\<^sub>_ _  " [100,100] 100)
 where "\<Turnstile>\<^sub>n G = (\<forall> m . m \<le> n \<longrightarrow> (\<forall> A. A \<in> G \<longrightarrow> ( \<Turnstile>\<^sub>m Call : A)))"
 
-text{*satisfies the obvious properties.*}
+text\<open>satisfies the obvious properties.\<close>
 
 lemma Ctxt_valid_validn: "\<Turnstile> G \<Longrightarrow> \<Turnstile>\<^sub>n G"
 (*<*)
@@ -81,14 +81,14 @@ lemma Ctxt_lowerm: "\<lbrakk> \<Turnstile>\<^sub>n G; m < n \<rbrakk> \<Longrigh
 by (simp add: Ctxt_validn_def)
 (*>*)
 
-text{*A judgement is valid if the validity of the context implies that
-of the commmand-assertion pair.*}
+text\<open>A judgement is valid if the validity of the context implies that
+of the commmand-assertion pair.\<close>
 
 definition valid :: "(VDMAssn set) \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
                     ("_ \<Turnstile> _ : _ " [100,100,100] 100)
 where "G \<Turnstile> c : A = (\<Turnstile> G \<longrightarrow> \<Turnstile> c : A)"
 
-text{*And, again, a relatived notion of judgement validity.*}
+text\<open>And, again, a relatived notion of judgement validity.\<close>
 
 definition validn :: 
  "(VDMAssn set) \<Rightarrow> nat \<Rightarrow> IMP \<Rightarrow> VDMAssn \<Rightarrow> bool"
@@ -112,7 +112,7 @@ apply (erule VDM_lowerm) apply assumption
 done
 (*>*)
 
-subsection{*Proof system*}
+subsection\<open>Proof system\<close>
 
 inductive_set
   VDM_proof :: "(VDMAssn set \<times> IMP \<times> VDMAssn) set"
@@ -171,7 +171,7 @@ abbreviation
                 ("_ \<rhd> _ : _" [100,100,100] 100)
 where "G \<rhd> c : A == (G,c,A) \<in> VDM_proof"
 
-text{*The while-rule is in fact inter-derivable with the following rule.*}
+text\<open>The while-rule is in fact inter-derivable with the following rule.\<close>
 
 lemma Hoare_While: 
    "G \<rhd> c : (\<lambda> s s' . \<forall> r . evalB b s \<longrightarrow> I s r \<longrightarrow> I s' r) \<Longrightarrow>
@@ -183,7 +183,7 @@ apply simp
 apply (rule VDMWhile) apply assumption apply simp apply simp
 done
 
-text{*Here's the proof in the opposite direction.*}
+text\<open>Here's the proof in the opposite direction.\<close>
 
 lemma VDMWhile_derivable:
   "\<lbrakk> G \<rhd> c : B; \<forall> s . (\<not> evalB b s) \<longrightarrow> A s s;
@@ -195,7 +195,7 @@ apply (erule VDMConseq) apply clarsimp
 apply fast
 done
 
-subsection{*Soundness*}
+subsection\<open>Soundness\<close>
 (*<*)
 lemma MAX:"Suc (max k m) \<le> n \<Longrightarrow> k \<le> n \<and> m \<le> n"
 by (simp add: max_def, case_tac "k \<le> m", simp+)
@@ -225,8 +225,8 @@ apply clarsimp apply (simp add: validn_def VDM_validn_def, clarsimp)
 done
 (*>*)
 
-text{*An auxiliary lemma stating the soundness of the while rule. Its
-proof is by induction on $n$.*}
+text\<open>An auxiliary lemma stating the soundness of the while rule. Its
+proof is by induction on $n$.\<close>
 
 lemma SoundWhile[rule_format]:
   "(\<forall>m. G \<Turnstile>\<^sub>m c : B) \<longrightarrow> (\<forall>s. (\<not> evalB b s) \<longrightarrow> A s s) \<longrightarrow>
@@ -239,8 +239,8 @@ apply (rule SoundWhileAux)
 done 
 (*>*)
 
-text{*Similarly, an auxiliary lemma for procedure invocations. Again,
-the proof proceeds by induction on $n$.*}
+text\<open>Similarly, an auxiliary lemma for procedure invocations. Again,
+the proof proceeds by induction on $n$.\<close>
 
 lemma SoundCall[rule_format]:
 "\<lbrakk>\<forall>n. \<Turnstile>\<^sub>n ({A} \<union> G) \<longrightarrow> \<Turnstile>\<^sub>n body : A\<rbrakk> \<Longrightarrow> \<Turnstile>\<^sub>n G \<longrightarrow> \<Turnstile>\<^sub>n Call : A"
@@ -256,8 +256,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*The heart of the soundness proof is the following lemma which is
-proven by induction on the judgement $G \rhd c :A$.*}
+text\<open>The heart of the soundness proof is the following lemma which is
+proven by induction on the judgement $G \rhd c :A$.\<close>
 
 lemma VDM_Sound_n: "G \<rhd> c: A \<Longrightarrow> (\<forall> n . G \<Turnstile>\<^sub>n c:A)"
 (*<*)
@@ -287,16 +287,15 @@ apply (simp add: validn_def VDM_validn_def)
 done
 (*>*)
 
-text{*Combining this result with lemma @{text
-validn_valid}, we obtain soundness in contexts,\ldots*}
+text\<open>Combining this result with lemma \<open>validn_valid\<close>, we obtain soundness in contexts,\ldots\<close>
 
 theorem VDM_Sound: "G \<rhd> c: A \<Longrightarrow> G \<Turnstile> c:A"
 (*<*)
 by (drule VDM_Sound_n, erule validn_valid) 
 (*>*)
 
-text{*\ldots and consequently soundness w.r.t.~empty
-contexts.*}
+text\<open>\ldots and consequently soundness w.r.t.~empty
+contexts.\<close>
 
 lemma VDM_Sound_emptyCtxt:"{} \<rhd> c : A \<Longrightarrow> \<Turnstile> c : A"
 (*<*)
@@ -306,9 +305,9 @@ apply (simp add: Ctxt_valid_def)
 done
 (*>*)
 
-subsection{*Admissible rules*}
+subsection\<open>Admissible rules\<close>
 
-text{*A weakening rule and some cut rules are easily derived.*}
+text\<open>A weakening rule and some cut rules are easily derived.\<close>
 
 lemma WEAK[rule_format]: 
   "G \<rhd> c : A \<Longrightarrow> (\<forall> H . G \<subseteq> H \<longrightarrow> H \<rhd> c :A)"
@@ -382,13 +381,13 @@ apply (simp, assumption)
 done
 (*>*)
 
-text{*We call context $G$ verified if all entries are justified by
-derivations for the procedure body.*}
+text\<open>We call context $G$ verified if all entries are justified by
+derivations for the procedure body.\<close>
 
 definition verified::"VDMAssn set \<Rightarrow> bool"
 where "verified G = (\<forall> A . A:G \<longrightarrow> G \<rhd> body : A)"
 
-text{*The property is preserved by sub-contexts*}
+text\<open>The property is preserved by sub-contexts\<close>
 
 lemma verified_preserved: "\<lbrakk>verified G; A:G\<rbrakk> \<Longrightarrow> verified (G - {A})"
 (*<*)
@@ -438,8 +437,8 @@ apply (rule VDMCall) apply simp apply (erule WEAK) apply fast
 done
 (*>*)
 
-text{*The @{text Mutrec} rule allows us to eliminate verified (finite)
-contexts. Its proof proceeds by induction on $n$. *}
+text\<open>The \<open>Mutrec\<close> rule allows us to eliminate verified (finite)
+contexts. Its proof proceeds by induction on $n$.\<close>
 
 theorem Mutrec:
 "\<lbrakk> finite G; card G = n; verified G; A : G \<rbrakk> \<Longrightarrow> {} \<rhd> Call:A"
@@ -447,8 +446,8 @@ theorem Mutrec:
 by (rule MutrecAux, fast)
 (*>*)
 
-text{*In particular, @{text Mutrec} may be used to show that verified
-finite contexts are valid.*}
+text\<open>In particular, \<open>Mutrec\<close> may be used to show that verified
+finite contexts are valid.\<close>
 
 lemma Ctxt_verified_valid: "\<lbrakk>verified G; finite G\<rbrakk> \<Longrightarrow> \<Turnstile> G"
 (*<*)
@@ -463,25 +462,25 @@ apply (rule Mutrec, assumption)  apply assumption+ apply simp
 done
 (*>*)
 
-subsection{*Completeness*}
+subsection\<open>Completeness\<close>
 
-text{*Strongest specifications, given precisely by the operational
-behaviour.*}
+text\<open>Strongest specifications, given precisely by the operational
+behaviour.\<close>
 
 definition SSpec::"IMP \<Rightarrow> VDMAssn"
 where "SSpec c s t = s,c \<Down> t"
 
-text{*Strongest specifications are valid \ldots*}
+text\<open>Strongest specifications are valid \ldots\<close>
 lemma SSpec_valid: "\<Turnstile> c : (SSpec c)"
 (*<*)by (simp add: VDM_valid_def SSpec_def)(*>*)
 
-text{*and imply any other valid assertion for the same program (hence
-their name).*}
+text\<open>and imply any other valid assertion for the same program (hence
+their name).\<close>
 
 lemma SSpec_strong: "\<Turnstile> c :A \<Longrightarrow> \<forall> s t . SSpec c s t \<longrightarrow> A s t"
 (*<*)by (simp add: VDM_valid_def SSpec_def)(*>*)
 
-text{*By induction on $c$ we show the following.*}
+text\<open>By induction on $c$ we show the following.\<close>
 
 lemma SSpec_derivable:"G \<rhd> Call : SSpec Call \<Longrightarrow> G \<rhd> c : SSpec c"
 (*<*)
@@ -514,14 +513,14 @@ apply assumption
 done
 (*>*)
 
-text{*The (singleton) strong context contains the strongest
-specification of the procedure.*}
+text\<open>The (singleton) strong context contains the strongest
+specification of the procedure.\<close>
 
 definition StrongG :: "VDMAssn set"
 where "StrongG = {SSpec Call}"
 
-text{*By construction, the strongest specification of the procedure's
-body can be verified with respect to this context.*}
+text\<open>By construction, the strongest specification of the procedure's
+body can be verified with respect to this context.\<close>
 
 lemma StrongG_Body: "StrongG \<rhd> body : SSpec Call"
 (*<*)
@@ -532,7 +531,7 @@ apply (rule SSpec_derivable) apply (rule VDMAx) apply (simp add: StrongG_def)
 done
 (*>*)
 
-text{*Thus, the strong context is verified.*}
+text\<open>Thus, the strong context is verified.\<close>
 
 lemma StrongG_verified: "verified StrongG"
 (*<*)
@@ -545,9 +544,9 @@ apply (rule StrongG_Body)
 done
 (*>*)
 
-text{*Using this result and the rules @{text Cut} and @{text Mutrec}, we
+text\<open>Using this result and the rules \<open>Cut\<close> and \<open>Mutrec\<close>, we
 show that arbitrary commands satisfy their strongest specification
-with respect to the empty context.*}
+with respect to the empty context.\<close>
 
 lemma SSpec_derivable_empty:"{} \<rhd> c : SSpec c"
 (*<*)
@@ -561,7 +560,7 @@ apply (rule Mutrec) apply (subgoal_tac "finite StrongG", assumption)
 done
 (*>*)
 
-text{*From this, we easily obtain (relative) completeness.*}
+text\<open>From this, we easily obtain (relative) completeness.\<close>
 
 theorem VDM_Complete: "\<Turnstile> c : A \<Longrightarrow> {} \<rhd> c : A"
 (*<*)
@@ -571,7 +570,7 @@ apply (erule SSpec_strong)
 done
 (*>*)
 
-text{*Finally, it is easy to show that valid contexts are verified.*}
+text\<open>Finally, it is easy to show that valid contexts are verified.\<close>
 
 lemma Ctxt_valid_verified: "\<Turnstile> G \<Longrightarrow> verified G"
 (*<*)
@@ -584,5 +583,5 @@ apply (erule_tac x=s in allE, erule_tac x=t in allE, erule mp)
 apply (rule, erule SemCall)
 done
 (*>*)
-text{*End of theory VDM*}
+text\<open>End of theory VDM\<close>
 end

@@ -38,11 +38,11 @@ proof -
     and "(\<forall>w\<in>ball z r. poly p w = h w * (w - z) ^ n)" 
     and "h z\<noteq>0"
     by auto
-  then have "order z p = n" using `p\<noteq>0`
+  then have "order z p = n" using \<open>p\<noteq>0\<close>
   proof (induct n arbitrary:p h)
     case 0
-    then have "poly p z=h z" using `r>0` by auto 
-    then have "poly p z\<noteq>0" using `h z\<noteq>0` by auto
+    then have "poly p z=h z" using \<open>r>0\<close> by auto 
+    then have "poly p z\<noteq>0" using \<open>h z\<noteq>0\<close> by auto
     then show ?case using order_root by blast
   next
     case (Suc n)
@@ -53,12 +53,12 @@ proof -
     moreover have "(poly p has_field_derivative (h' w)*(w-z)^n ) (at w)" when "w\<in>ball z r" for w
     proof (subst DERIV_cong_ev[of w w "poly p" "\<lambda>w.  h w * (w - z) ^ Suc n" ],simp_all)
       show "\<forall>\<^sub>F x in nhds w. poly p x = h x * ((x - z) * (x - z) ^ n)"
-        unfolding eventually_nhds using Suc(3) `w\<in>ball z r`
+        unfolding eventually_nhds using Suc(3) \<open>w\<in>ball z r\<close>
         apply (intro exI[where x="ball z r"])
         by auto
       next
         have "(h has_field_derivative deriv h w) (at w)" 
-          using `h holomorphic_on ball z r` `w\<in>ball z r` holomorphic_on_imp_differentiable_at 
+          using \<open>h holomorphic_on ball z r\<close> \<open>w\<in>ball z r\<close> holomorphic_on_imp_differentiable_at 
           by (simp add: holomorphic_derivI)
         then have "((\<lambda>w. h w * ((w - z) ^ sn)) 
                       has_field_derivative h' w * (w - z) ^ (sn - 1)) (at w)"
@@ -72,21 +72,21 @@ proof -
     ultimately have "\<forall>w\<in>ball z r. poly (pderiv p) w = h' w * (w - z) ^ n"
       using DERIV_unique by blast  
     moreover have "h' holomorphic_on ball z r"
-      unfolding h'_def using `h holomorphic_on ball z r`
+      unfolding h'_def using \<open>h holomorphic_on ball z r\<close>
       by (auto intro!: holomorphic_intros)
-    moreover have "h' z\<noteq>0" unfolding h'_def sn_def using `h z \<noteq> 0` of_nat_neq_0 by auto
+    moreover have "h' z\<noteq>0" unfolding h'_def sn_def using \<open>h z \<noteq> 0\<close> of_nat_neq_0 by auto
     moreover have "pderiv p \<noteq> 0"  
     proof 
       assume "pderiv p = 0"
-      obtain c where "p=[:c:]" using `pderiv p = 0` using pderiv_iszero by blast
+      obtain c where "p=[:c:]" using \<open>pderiv p = 0\<close> using pderiv_iszero by blast
       then have "c=0"
-        using Suc(3)[rule_format,of z] `r>0` by auto
-      then show False using `p\<noteq>0` using `p=[:c:]` by auto
+        using Suc(3)[rule_format,of z] \<open>r>0\<close> by auto
+      then show False using \<open>p\<noteq>0\<close> using \<open>p=[:c:]\<close> by auto
     qed
     ultimately have "order z (pderiv p) = n" by (auto elim: Suc.hyps)
     moreover have "order z p \<noteq> 0"
-      using Suc(3)[rule_format,of z] `r>0` order_root `p\<noteq>0` by auto
-    ultimately show ?case using order_pderiv[OF `pderiv p \<noteq> 0`] by auto
+      using Suc(3)[rule_format,of z] \<open>r>0\<close> order_root \<open>p\<noteq>0\<close> by auto
+    ultimately show ?case using order_pderiv[OF \<open>pderiv p \<noteq> 0\<close>] by auto
   qed
   then show ?thesis unfolding n_def .
 qed  
@@ -337,7 +337,7 @@ lemma map_poly_degree_leq[simp]:
   unfolding map_poly_def degree_eq_length_coeffs
   by (metis coeffs_Poly diff_le_mono length_map length_strip_while_le)  
     
-subsection {*roots / zeros of a univariate function*}
+subsection \<open>roots / zeros of a univariate function\<close>
 
 definition roots_within::"('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a set \<Rightarrow> 'a set" where
   "roots_within f s = {x\<in>s. f x = 0}"

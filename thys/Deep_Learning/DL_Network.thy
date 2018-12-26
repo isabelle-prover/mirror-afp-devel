@@ -80,7 +80,7 @@ next
   then obtain r0 r1 where "r01 = (r0,r1)" by (meson surj_pair)
   have 2:"insert_weights s m (\<lambda>i. w1 (i + r0 * r1)) = insert_weights s m (\<lambda>i. w2 (i + r0 * r1))" using Conv
     using \<open>r01 = (r0, r1)\<close> add.commute add_less_cancel_right count_weights.simps(2) by fastforce
-  then show ?case unfolding `r01 = (r0,r1)` insert_weights.simps
+  then show ?case unfolding \<open>r01 = (r0,r1)\<close> insert_weights.simps
     by (metis Conv.prems \<open>r01 = (r0, r1)\<close> count_weights.simps(2) extract_matrix_cong trans_less_add1)
 next
   case (Pool m1 m2)
@@ -211,8 +211,8 @@ proof (rule tensor_lookup_eqI)
   proof -
     fix T assume "T\<in>set ?Ts'"
     then obtain k where "T = ?Ts' ! k" and "k < length ?Ts'" "k < dim_vec Ts" using in_set_conv_nth by force
-    show "dims T = ds" unfolding `T = ?Ts' ! k`   nth_map[OF \<open>k < length ?Ts'\<close>[unfolded length_map]]
-      using assms(1) `k < dim_vec Ts`
+    show "dims T = ds" unfolding \<open>T = ?Ts' ! k\<close>   nth_map[OF \<open>k < length ?Ts'\<close>[unfolded length_map]]
+      using assms(1) \<open>k < dim_vec Ts\<close>
       by (simp add: \<open>k < length (map (\<lambda>j. A $$ (i, j) \<cdot> Ts $ j) [0..<dim_vec Ts])\<close> vec_setI)
   qed
   then show dims_eq:"dims (mat_tensorlist_mult A Ts ds $ i) = dims (Tensor_Plus.listsum ds (map (\<lambda>j. A $$ (i, j) \<cdot> Ts $ j) [0..<dim_vec Ts]))"
@@ -223,19 +223,19 @@ proof (rule tensor_lookup_eqI)
   then have "is \<lhd> ds" using dims_eq dims_Ts' listsum_dims by (metis (no_types, lifting))
 
   have summand_eq: "\<And>j. j \<in> {0 ..< dim_vec Ts} \<Longrightarrow> row A i $ j * (map_vec (\<lambda>T. Tensor.lookup T is) Ts) $ j = lookup (A $$ (i, j) \<cdot> Ts $ j) is"
-    using index_vec `i<dim_row A` row_def `dim_vec Ts = dim_col A`
+    using index_vec \<open>i<dim_row A\<close> row_def \<open>dim_vec Ts = dim_col A\<close>
      \<open>is \<lhd> ds\<close> assms(1) lookup_smult atLeastLessThan_iff index_map_vec(1) vec_setI by metis
 
   have "lookup (mat_tensorlist_mult A Ts ds $ i) is = (A *\<^sub>v (map_vec (\<lambda>T. Tensor.lookup T is) Ts)) $ i"
-    unfolding mat_tensorlist_mult_def using lookup_tensor_from_lookup[OF `is \<lhd> ds`] using `i<dim_row A` by auto
+    unfolding mat_tensorlist_mult_def using lookup_tensor_from_lookup[OF \<open>is \<lhd> ds\<close>] using \<open>i<dim_row A\<close> by auto
   also have "... = row A i \<bullet> map_vec (\<lambda>T. Tensor.lookup T is) Ts"
-    using `i<dim_row A` by simp
+    using \<open>i<dim_row A\<close> by simp
   also have "... = (\<Sum> j \<in> {0 ..< dim_vec Ts}. row A i $ j * (map_vec (\<lambda>T. Tensor.lookup T is) Ts) $ j)"
-    unfolding scalar_prod_def nth_rows[OF `i<dim_row A`] by simp
+    unfolding scalar_prod_def nth_rows[OF \<open>i<dim_row A\<close>] by simp
   also have "... = (\<Sum>j\<in>{0..<dim_vec Ts}. lookup (A $$ (i, j) \<cdot> Ts $ j) is)" using summand_eq by force
   also have "... = (\<Sum>A\<leftarrow>?Ts'. lookup A is)" unfolding map_map
     Groups_List.sum_set_upt_conv_sum_list_nat[symmetric]  atLeastLessThan_upt[symmetric] by auto
-  also have "... = lookup (listsum ds ?Ts') is" using lookup_listsum[OF `is \<lhd> ds`] dims_Ts' by fastforce
+  also have "... = lookup (listsum ds ?Ts') is" using lookup_listsum[OF \<open>is \<lhd> ds\<close>] dims_Ts' by fastforce
   finally show "lookup (mat_tensorlist_mult A Ts ds $ i) is = lookup (listsum ds ?Ts') is" by metis
 qed
 
@@ -250,7 +250,7 @@ using assms proof (induction m arbitrary:j "is")
   then have 1:"tensors_from_net (Input M) $ j = unit_vec M j" by simp
   obtain i where "is = [i]" "i<M" using Input Suc_length_conv input_sizes.simps(1) length_0_conv list.size(3) valid_index_length by auto
   then have 2:"Tensor.lookup (tensors_from_net (Input M) $ j) is = (if i=j then 1 else 0)" using lookup_unit_vec 1 by metis
-  have "evaluate_net (Input M) (map (\<lambda>(n, i). unit\<^sub>v n i) (zip (input_sizes (Input M)) is)) = unit\<^sub>v M i" using `is = [i]` by auto
+  have "evaluate_net (Input M) (map (\<lambda>(n, i). unit\<^sub>v n i) (zip (input_sizes (Input M)) is)) = unit\<^sub>v M i" using \<open>is = [i]\<close> by auto
   then show ?case using 2 \<open>j < M\<close> base_input_def by (simp add: \<open>i < M\<close>)
 next
   case (Conv A m j "is")
@@ -309,7 +309,7 @@ next
       "Tensor.lookup (tensors_from_net m2 $ j) is2
       = evaluate_net m2 (map (\<lambda>(x, y). unit\<^sub>v x y) (zip (input_sizes m2) is2)) $ j"
     using Pool convnet.distinct(3) convnet.distinct(5) convnet.inject(3) remove_weights.simps(3)
-    valid_net.simps  `is1 \<lhd> input_sizes m1` `is2 \<lhd> input_sizes m2` output_size.simps(3)
+    valid_net.simps  \<open>is1 \<lhd> input_sizes m1\<close> \<open>is2 \<lhd> input_sizes m2\<close> output_size.simps(3)
     by (metis base_input_def)+
 
   text \<open>In the Pool layer tensor entries get multiplied:\<close>
@@ -519,7 +519,7 @@ proof -
     then have "x \<lhd> ds1 @ ds2" by auto
     then obtain x1 x2 where "x = x1 @ x2" "x1 \<lhd> ds1" "x2 \<lhd> ds2" by (metis valid_index_split)
     then have "(x1, x2) \<in> ({is1. is1 \<lhd> ds1} \<times> {is2. is2 \<lhd> ds2})" by auto
-    then show "x \<in> ?A" using imageI `x = x1 @ x2` by blast
+    then show "x \<in> ?A" using imageI \<open>x = x1 @ x2\<close> by blast
   qed
   have 2:"inj_on (\<lambda>(is1, is2). is1 @ is2) ({is1. is1 \<lhd> ds1} \<times> {is2. is2 \<lhd> ds2})"
     by (simp add: inj_on_def valid_index_length)
@@ -559,7 +559,7 @@ using assms proof (induction m arbitrary:j "is" inputs)
   also have "(\<Sum>is | is \<lhd> input_sizes (Input M). (if is=[j] then (\<Prod>k<length inputs. inputs ! k $ (is ! k)) else 0))
    = (\<Prod>k<length inputs. inputs ! k $ ([j] ! k))" unfolding sum.delta[OF finite_valid_index]
     using Input.prems(3) valid_index.Cons valid_index.Nil by auto
-  also have "... = inputs ! 0 $ j" using `length inputs = 1` by (simp add: prod_lessThan_Suc)
+  also have "... = inputs ! 0 $ j" using \<open>length inputs = 1\<close> by (simp add: prod_lessThan_Suc)
   also have "... = evaluate_net (Input M) inputs $ j" unfolding evaluate_net.simps
     by (metis \<open>length inputs = 1\<close> hd_conv_nth list.size(3) zero_neq_one)
   finally show ?case by auto
@@ -574,8 +574,8 @@ next
     then have "is \<lhd> input_sizes m" by simp
     have 0:"lookup (tensors_from_net (Conv A m) $ j) is =
           (\<Sum>i = 0..<dim_vec (tensors_from_net m). row A j $ i * lookup (tensors_from_net m $ i) is)"
-      unfolding tensors_from_net.simps mat_tensorlist_mult_def index_vec[OF `j < dim_row A`]
-      lookup_tensor_from_lookup[OF `is \<lhd> input_sizes m`] index_mult_mat_vec[OF `j < dim_row A`] scalar_prod_def
+      unfolding tensors_from_net.simps mat_tensorlist_mult_def index_vec[OF \<open>j < dim_row A\<close>]
+      lookup_tensor_from_lookup[OF \<open>is \<lhd> input_sizes m\<close>] index_mult_mat_vec[OF \<open>j < dim_row A\<close>] scalar_prod_def
       using index_map_vec by auto
     show "(\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net (Conv A m) $ j) is
       = (\<Sum>i = 0..<dim_vec (tensors_from_net m). row A j $ i * ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is))"
@@ -585,7 +585,7 @@ next
   have "map dim_vec inputs = input_sizes m" by (simp add: Conv.prems(2))
   have "output_size' m = dim_vec (tensors_from_net m)" by (simp add: \<open>valid_net' m\<close> output_size_correct_tensors)
   have 1:"\<And>i. i<dim_vec (tensors_from_net m) \<Longrightarrow> (\<Sum>is | is \<lhd> input_sizes (Conv A m). ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is)) = evaluate_net m inputs $ i" unfolding input_sizes.simps
-    using Conv.IH `valid_net' m` `map dim_vec inputs = input_sizes m` `output_size' m = dim_vec (tensors_from_net m)` by simp
+    using Conv.IH \<open>valid_net' m\<close> \<open>map dim_vec inputs = input_sizes m\<close> \<open>output_size' m = dim_vec (tensors_from_net m)\<close> by simp
 
   have "(\<Sum>is | is \<lhd> input_sizes (Conv A m). (\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net (Conv A m) $ j) is)
     = (\<Sum>i = 0..<dim_vec (tensors_from_net m). (\<Sum>is | is \<lhd> input_sizes (Conv A m).  row A j $ i *  ((\<Prod>k<length inputs. inputs ! k $ (is ! k)) * lookup (tensors_from_net m $ i) is)))"
@@ -622,14 +622,14 @@ next
     have "length is2 = length inputs2"
       using \<open>is2 \<lhd> input_sizes m2\<close> \<open>map dim_vec inputs2 = input_sizes m2\<close> valid_index_length by fastforce
     have 1:"(\<Prod>k<length inputs1. (inputs1 @ inputs2) ! k $ ((is1 @ is2) ! k))  = (\<Prod>k<length inputs1. inputs1 ! k $ (is1 ! k))"
-      using `length is1 = length inputs1` `length is2 = length inputs2`
+      using \<open>length is1 = length inputs1\<close> \<open>length is2 = length inputs2\<close>
       nth_append by (metis (no_types, lifting) lessThan_iff prod.cong)
     have 2:"(\<Prod>x<length inputs2. (inputs1 @ inputs2) ! (x + length inputs1) $ ((is1 @ is2) ! (x + length inputs1))) =
       (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k))"
-      using `length is1 = length inputs1` `length is2 = length inputs2`
+      using \<open>length is1 = length inputs1\<close> \<open>length is2 = length inputs2\<close>
       by (metis (no_types, lifting) add.commute nth_append_length_plus)
     have "(\<Prod>k<length inputs. inputs ! k $ ((is1 @ is2) ! k)) = (\<Prod>k<length inputs1. inputs1 ! k $ (is1 ! k)) * (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k))"
-      unfolding `inputs = inputs1 @ inputs2` length_append prod_lessThan_split using 1 2 by metis
+      unfolding \<open>inputs = inputs1 @ inputs2\<close> length_append prod_lessThan_split using 1 2 by metis
   }
   note 1 = this
   {
@@ -637,8 +637,8 @@ next
     then have "is1 \<lhd> dims (tensors_from_net m1 $ j)" "is2 \<lhd> dims (tensors_from_net m2 $ j)"
       using \<open>j < dim_vec (tensors_from_net m1)\<close>  \<open>j < dim_vec (tensors_from_net m2)\<close> dims_tensors_from_net vec_setI by force+
     have "lookup (tensors_from_net (Pool m1 m2) $ j) (is1 @ is2) = lookup (tensors_from_net m1 $ j) is1 * lookup (tensors_from_net m2 $ j) is2"
-      unfolding "tensors_from_net.simps" index_component_mult[OF `j < dim_vec (tensors_from_net m1)` `j < dim_vec (tensors_from_net m2)`]
-      lookup_tensor_prod[OF `is1 \<lhd> dims (tensors_from_net m1 $ j)` `is2 \<lhd> dims (tensors_from_net m2 $ j)`] by metis
+      unfolding "tensors_from_net.simps" index_component_mult[OF \<open>j < dim_vec (tensors_from_net m1)\<close> \<open>j < dim_vec (tensors_from_net m2)\<close>]
+      lookup_tensor_prod[OF \<open>is1 \<lhd> dims (tensors_from_net m1 $ j)\<close> \<open>is2 \<lhd> dims (tensors_from_net m2 $ j)\<close>] by metis
   }
   note 2 = this
 
@@ -656,7 +656,7 @@ next
                    (\<Sum>is2 | is2 \<lhd> input_sizes m2. (\<Prod>k<length inputs2. inputs2 ! k $ (is2 ! k)) * lookup (tensors_from_net m2 $ j) is2)"
     unfolding sum_product by (rule sum.cong, metis, rule sum.cong, metis, simp)
   also have "... = evaluate_net (Pool m1 m2) inputs $ j" unfolding "evaluate_net.simps" index_component_mult[OF j_le_eval]
-    using Pool.IH(1)[OF `valid_net' m1` _ `j < output_size' m1`] Pool.IH(2)[OF `valid_net' m2` _ `j < output_size' m2`]
+    using Pool.IH(1)[OF \<open>valid_net' m1\<close> _ \<open>j < output_size' m1\<close>] Pool.IH(2)[OF \<open>valid_net' m2\<close> _ \<open>j < output_size' m2\<close>]
     using \<open>map dim_vec inputs1 = input_sizes m1\<close> \<open>map dim_vec inputs2 = input_sizes m2\<close> inputs1_def inputs2_def by auto
   finally show ?case by metis
 qed
@@ -669,15 +669,15 @@ proof -
   have "map dim_vec (map 0\<^sub>v (input_sizes m2)) = input_sizes m2"
        "map dim_vec (map 0\<^sub>v (input_sizes m1)) = input_sizes m1" by (auto intro: nth_equalityI)
   then have "output_size' m1 = output_size' m2" using
-    output_size_correct[OF `valid_net' m1` `map dim_vec (map 0\<^sub>v (input_sizes m1)) = input_sizes m1`]
-    output_size_correct[OF `valid_net' m2` `map dim_vec (map 0\<^sub>v (input_sizes m2)) = input_sizes m2`]
+    output_size_correct[OF \<open>valid_net' m1\<close> \<open>map dim_vec (map 0\<^sub>v (input_sizes m1)) = input_sizes m1\<close>]
+    output_size_correct[OF \<open>valid_net' m2\<close> \<open>map dim_vec (map 0\<^sub>v (input_sizes m2)) = input_sizes m2\<close>]
     assms(3) assms(4)
     by (metis (no_types))
   have "\<And>is. base_input m1 is = base_input m2 is"
-    unfolding base_input_def `input_sizes m1 = input_sizes m2` by metis
+    unfolding base_input_def \<open>input_sizes m1 = input_sizes m2\<close> by metis
   show ?thesis by (rule eq_vecI, rule tensor_lookup_eqI; metis
-    lookup_tensors_from_net[OF `valid_net' m1`, unfolded `\<And>is. base_input m1 is = base_input m2 is` \<open>output_size' m1 = output_size' m2\<close>]
-    lookup_tensors_from_net[OF `valid_net' m2`] assms(3) base_input_length
+    lookup_tensors_from_net[OF \<open>valid_net' m1\<close>, unfolded \<open>\<And>is. base_input m1 is = base_input m2 is\<close> \<open>output_size' m1 = output_size' m2\<close>]
+    lookup_tensors_from_net[OF \<open>valid_net' m2\<close>] assms(3) base_input_length
     assms(1) assms(2) dims_tensors_from_net output_size_correct_tensors vec_setI
     \<open>output_size' m1 = output_size' m2\<close> assms(4))
 qed

@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/Exceptions.thy by Gerwin Klein and Martin Strecker
 *)
 
-section {* Exceptions *}
+section \<open>Exceptions\<close>
 
 theory Exceptions
 imports
@@ -149,7 +149,7 @@ by(simp_all add: Thread_def NullPointer_def ClassCast_def OutOfMemory_def ArrayI
 
 lemmas Thread_neq_sys_xcpts = Thread_neq_sys_xcpts_aux Thread_neq_sys_xcpts_aux[symmetric]
 
-subsection {* Well-formedness for system classes and exceptions *}
+subsection \<open>Well-formedness for system classes and exceptions\<close>
 
 lemma
   assumes "wf_syscls P"

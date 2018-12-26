@@ -5,7 +5,7 @@ The length of cars visible to the owner of a given view.
 *)
 
 section\<open>Visible Length of Cars with Perfect Sensors\<close>
-text{* 
+text\<open>
 Given a sensor function, we can define the length
 of a car \(c\) as perceived by the owner of a view \(v\). This
 length is restricted by the size of the extension of the view \(v\),
@@ -16,7 +16,7 @@ The lemmas connect the end-points of the perceived length
 with the end-points of the current view. Furthermore, they
 show how the chopping and subview relations affect
 the perceived length of a car.  
-*}
+\<close>
 
 theory Length
   imports  Sensors

@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* Instructions of the JVM *}
+section \<open>Instructions of the JVM\<close>
 
 theory JVMInstructions
 imports

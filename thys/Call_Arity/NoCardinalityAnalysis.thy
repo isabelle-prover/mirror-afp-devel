@@ -81,7 +81,7 @@ next
   thus ?case by (auto intro: env_restr_mono2 )
 next
   case (5 ae x as a \<Gamma> e S)
-  from `ae x = \<bottom>`
+  from \<open>ae x = \<bottom>\<close>
   have "ABinds (delete x \<Gamma>)\<cdot>ae = ABinds \<Gamma>\<cdot>ae" by (rule ABinds_delete_bot)
   thus ?case by simp
 next

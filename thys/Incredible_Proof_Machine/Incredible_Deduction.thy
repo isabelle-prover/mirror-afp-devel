@@ -118,13 +118,13 @@ begin
     have "ps \<in> snd ` set pth" by (auto simp add: scope.simps)
     then obtain pth1 pth2 e  where "pth = pth1@[e]@pth2" and "snd e = ps" and "ps \<notin> snd ` set pth1" by (rule snd_set_split)
     
-    from `path _ _ _` and `pth = pth1@[e]@pth2`
+    from \<open>path _ _ _\<close> and \<open>pth = pth1@[e]@pth2\<close>
     have "path v (edge_end e) (pth1@[e])" and "path (edge_end e) v' pth2" by (metis path_split)+
     show thesis
     proof(rule that)
-      show "pth = (pth1@[e])@pth2" using `pth= _` by simp
-      show "path v (fst ps) (pth1@[e])" using `path v (edge_end e) (pth1@[e])`  `snd e = ps` by (simp add: edge_end_tup)
-      show "path (fst ps) v' pth2" using `path (edge_end e) v' pth2`  `snd e = ps` by (simp add: edge_end_tup)
+      show "pth = (pth1@[e])@pth2" using \<open>pth= _\<close> by simp
+      show "path v (fst ps) (pth1@[e])" using \<open>path v (edge_end e) (pth1@[e])\<close>  \<open>snd e = ps\<close> by (simp add: edge_end_tup)
+      show "path (fst ps) v' pth2" using \<open>path (edge_end e) v' pth2\<close>  \<open>snd e = ps\<close> by (simp add: edge_end_tup)
       show "ps \<notin> snd ` set pth1" by fact
       show "snd e = ps" by fact
     qed
@@ -165,12 +165,12 @@ begin
     obtain pth t where "terminal_vertex t" and "path v t pth" and least: "\<forall> pth'. path v t pth' \<longrightarrow> length pth \<le> length pth'"
       by atomize_elim (auto simp del: terminal_vertex.simps elim: ex_has_least_nat)
         
-    from scope_split[OF `v \<in> scope (v,p)` `path v t pth` `terminal_vertex t`]
+    from scope_split[OF \<open>v \<in> scope (v,p)\<close> \<open>path v t pth\<close> \<open>terminal_vertex t\<close>]
     obtain pth1 e pth2 where "pth = (pth1 @ [e]) @ pth2" "path v t pth2" by (metis fst_conv)
 
     from this(2) least
     have "length pth \<le> length pth2" by auto
-    with `pth = _`
+    with \<open>pth = _\<close>
     show False by auto
   qed
 
@@ -186,20 +186,20 @@ begin
     hence "v |\<in>| vertices" using scope.simps by auto
     then obtain pth t where "path v t pth" and "terminal_vertex t" using pruned by blast
   
-    from `path v t pth` and `terminal_vertex t` and `v \<in> scope ps1 \<inter> scope ps2`
+    from \<open>path v t pth\<close> and \<open>terminal_vertex t\<close> and \<open>v \<in> scope ps1 \<inter> scope ps2\<close>
     obtain pth1a e1 pth1b  where "pth = (pth1a@[e1])@pth1b" and "path v (fst ps1) (pth1a@[e1])" and "snd e1 = ps1" and "ps1 \<notin> snd ` set pth1a"
       by (auto elim: scope_split)
   
-    from `path v t pth` and `terminal_vertex t` and `v \<in> scope ps1 \<inter> scope ps2`
+    from \<open>path v t pth\<close> and \<open>terminal_vertex t\<close> and \<open>v \<in> scope ps1 \<inter> scope ps2\<close>
     obtain pth2a e2 pth2b  where "pth = (pth2a@[e2])@pth2b" and "path v (fst ps2) (pth2a@[e2])" and "snd e2 = ps2" and "ps2 \<notin> snd ` set pth2a"
       by (auto elim: scope_split)
    
-    from `pth = (pth1a@[e1])@pth1b` `pth = (pth2a@[e2])@pth2b`
+    from \<open>pth = (pth1a@[e1])@pth1b\<close> \<open>pth = (pth2a@[e2])@pth2b\<close>
     have "set pth1a \<subseteq> set pth2a \<or> set pth2a \<subseteq> set pth1a" by (auto simp add: append_eq_append_conv2)
     hence "scope ps1 \<subseteq> scope ps2 \<or> scope ps2 \<subseteq> scope ps1"
     proof
-      assume "set pth1a \<subseteq> set pth2a" with `ps2 \<notin> _`
-      have "ps2 \<notin> snd ` set (pth1a@[e1])" using `ps1 \<noteq> ps2` `snd e1 = ps1` by auto
+      assume "set pth1a \<subseteq> set pth2a" with \<open>ps2 \<notin> _\<close>
+      have "ps2 \<notin> snd ` set (pth1a@[e1])" using \<open>ps1 \<noteq> ps2\<close> \<open>snd e1 = ps1\<close> by auto
   
       have "scope ps1 \<subseteq> scope ps2"
       proof
@@ -210,22 +210,22 @@ begin
         proof(rule scope.intros)
           fix pth' t'
           assume "path v' t' pth'" and "terminal_vertex t'"
-          with `v' \<in> scope ps1`
+          with \<open>v' \<in> scope ps1\<close>
           obtain pth3a e3 pth3b where "pth' = (pth3a@[e3])@pth3b" and "path (fst ps1) t' pth3b"
             by (auto elim: scope_split)
   
-          have "path v t' ((pth1a@[e1]) @ pth3b)" using `path v (fst ps1) (pth1a@[e1])` and `path (fst ps1) t' pth3b`
+          have "path v t' ((pth1a@[e1]) @ pth3b)" using \<open>path v (fst ps1) (pth1a@[e1])\<close> and \<open>path (fst ps1) t' pth3b\<close>
             by (rule path_appendI)
-          with `terminal_vertex t'` `v \<in> _`
+          with \<open>terminal_vertex t'\<close> \<open>v \<in> _\<close>
           have "ps2 \<in> snd ` set ((pth1a@[e1]) @ pth3b)" by (meson IntD2 scope.cases)
-          hence "ps2 \<in> snd ` set pth3b" using `ps2 \<notin> snd \` set (pth1a@[e1])` by auto
-          thus "ps2 \<in> snd ` set pth'" using `pth'=_` by auto
+          hence "ps2 \<in> snd ` set pth3b" using \<open>ps2 \<notin> snd ` set (pth1a@[e1])\<close> by auto
+          thus "ps2 \<in> snd ` set pth'" using \<open>pth'=_\<close> by auto
         qed
       qed
       thus ?thesis by simp
     next
-      assume "set pth2a \<subseteq> set pth1a" with `ps1 \<notin> _`
-      have "ps1 \<notin> snd ` set (pth2a@[e2])" using `ps1 \<noteq> ps2` `snd e2 = ps2` by auto
+      assume "set pth2a \<subseteq> set pth1a" with \<open>ps1 \<notin> _\<close>
+      have "ps1 \<notin> snd ` set (pth2a@[e2])" using \<open>ps1 \<noteq> ps2\<close> \<open>snd e2 = ps2\<close> by auto
   
       have "scope ps2 \<subseteq> scope ps1"
       proof
@@ -236,16 +236,16 @@ begin
         proof(rule scope.intros)
           fix pth' t'
           assume "path v' t' pth'" and "terminal_vertex t'"
-          with `v' \<in> scope ps2`
+          with \<open>v' \<in> scope ps2\<close>
           obtain pth3a e3 pth3b where "pth' = (pth3a@[e3])@pth3b" and "path (fst ps2) t' pth3b" 
             by (auto elim: scope_split)
   
-          have "path v t' ((pth2a@[e2]) @ pth3b)" using `path v (fst ps2) (pth2a@[e2])` and `path (fst ps2) t' pth3b`
+          have "path v t' ((pth2a@[e2]) @ pth3b)" using \<open>path v (fst ps2) (pth2a@[e2])\<close> and \<open>path (fst ps2) t' pth3b\<close>
             by (rule path_appendI)
-          with `terminal_vertex t'` `v \<in> _`
+          with \<open>terminal_vertex t'\<close> \<open>v \<in> _\<close>
           have "ps1 \<in> snd ` set ((pth2a@[e2]) @ pth3b)" by (meson IntD1 scope.cases)
-          hence "ps1 \<in> snd ` set pth3b" using `ps1 \<notin> snd \` set (pth2a@[e2])` by auto
-          thus "ps1 \<in> snd ` set pth'" using `pth'=_` by auto
+          hence "ps1 \<in> snd ` set pth3b" using \<open>ps1 \<notin> snd ` set (pth2a@[e2])\<close> by auto
+          thus "ps1 \<in> snd ` set pth'" using \<open>pth'=_\<close> by auto
         qed
       qed
       thus ?thesis by simp
@@ -337,14 +337,14 @@ next
       apply (solves \<open>rule exI[where x = "[]"]; simp\<close>)
       apply (metis Cons_eq_appendI image_eqI prod.sel(1))
       done
-    with terminal_path_is_path[OF `terminal_path v\<^sub>2 v' pth`]
+    with terminal_path_is_path[OF \<open>terminal_path v\<^sub>2 v' pth\<close>]
     have "path v\<^sub>2 v\<^sub>1 pth1" by (simp add:  path_split2 edge_begin_tup)
-    with `((v\<^sub>1, p\<^sub>1), (v\<^sub>2, p\<^sub>2)) \<in> _`
+    with \<open>((v\<^sub>1, p\<^sub>1), (v\<^sub>2, p\<^sub>2)) \<in> _\<close>
     have "path v\<^sub>1 v\<^sub>1 (((v\<^sub>1, p\<^sub>1), (v\<^sub>2, p\<^sub>2)) # pth1)" by (simp add: path_cons_simp)
     moreover
-    from terminal_path_is_hyps_free[OF `terminal_path v\<^sub>2 v' pth`]
-         `hyps (nodeOf v\<^sub>1) p\<^sub>1 = None`
-         `pth = pth1@[e']@pth2`
+    from terminal_path_is_hyps_free[OF \<open>terminal_path v\<^sub>2 v' pth\<close>]
+         \<open>hyps (nodeOf v\<^sub>1) p\<^sub>1 = None\<close>
+         \<open>pth = pth1@[e']@pth2\<close>
     have "hyps_free(((v\<^sub>1, p\<^sub>1), (v\<^sub>2, p\<^sub>2)) # pth1)"
       by (auto simp add: hyps_free_def)
     ultimately
@@ -391,21 +391,21 @@ lemma hyps_free_path_not_in_scope:
 proof
   assume "v' \<in> scope (v,p)"
 
-  from `(v',p') \<in> snd \` set pth`
+  from \<open>(v',p') \<in> snd ` set pth\<close>
   obtain pth1 pth2 e  where "pth = pth1@[e]@pth2" and "snd e = (v',p')" by (rule snd_set_split)
-  from terminal_path_is_path[OF assms(1), unfolded `pth = _ `] `snd e = _`
+  from terminal_path_is_path[OF assms(1), unfolded \<open>pth = _ \<close>] \<open>snd e = _\<close>
   have "path v v' (pth1@[e])" and "path v' t pth2" unfolding path_split by (auto simp add: edge_end_tup)
   
-  from `v' \<in> scope (v,p)` terminal_path_end_is_terminal[OF assms(1)] `path v' t pth2`
+  from \<open>v' \<in> scope (v,p)\<close> terminal_path_end_is_terminal[OF assms(1)] \<open>path v' t pth2\<close>
   have "(v,p) \<in> snd ` set pth2" by (rule scope_find)
   then obtain pth2a e' pth2b  where "pth2 = pth2a@[e']@pth2b" and "snd e' = (v,p)"  by (rule snd_set_split)
-  from `path v' t pth2`[unfolded `pth2 = _ `] `snd e' = _`
+  from \<open>path v' t pth2\<close>[unfolded \<open>pth2 = _ \<close>] \<open>snd e' = _\<close>
   have "path v' v (pth2a@[e'])" and "path v t pth2b" unfolding path_split by (auto simp add: edge_end_tup)
   
-  from `path v v' (pth1@[e])` `path v' v (pth2a@[e'])`
+  from \<open>path v v' (pth1@[e])\<close> \<open>path v' v (pth2a@[e'])\<close>
   have "path v v ((pth1@[e])@(pth2a@[e']))" by (rule path_appendI)
   moreover
-  from terminal_path_is_hyps_free[OF assms(1)] `pth = _` `pth2 = _`
+  from terminal_path_is_hyps_free[OF assms(1)] \<open>pth = _\<close> \<open>pth2 = _\<close>
   have "hyps_free ((pth1@[e])@(pth2a@[e']))" by (auto simp add: hyps_free_def)
   ultimately
   have "((pth1@[e])@(pth2a@[e'])) = []" by (rule hyps_free_acyclic)

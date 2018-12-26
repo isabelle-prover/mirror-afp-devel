@@ -1,15 +1,15 @@
-chapter {* A Control Flow Graph for Jinja Byte Code *}
+chapter \<open>A Control Flow Graph for Jinja Byte Code\<close>
 
-section {* Formalizing the CFG *}
+section \<open>Formalizing the CFG\<close>
 
 theory JVMCFG imports "../StaticInter/BasicDefs" Jinja.BVExample begin
 
 declare lesub_list_impl_same_size [simp del]
 declare listE_length [simp del]
 
-subsection {* Type definitions *}
+subsection \<open>Type definitions\<close>
 
-subsubsection {* Wellformed Programs *}
+subsubsection \<open>Wellformed Programs\<close>
 
 definition "wf_jvmprog = {(P, Phi). wf_jvm_prog\<^bsub>Phi\<^esub> P}"
 
@@ -35,7 +35,7 @@ lemma wf_jvmprog_is_wf: "wf_jvm_prog (PROG P)"
   using wf_jvmprog_is_wf_typ unfolding wf_jvm_prog_def
   by blast
 
-subsubsection {* Interprocedural CFG *}
+subsubsection \<open>Interprocedural CFG\<close>
 
 type_synonym jvm_method = "wf_jvmprog \<times> cname \<times> mname"
 datatype var = Heap | Local "nat" | Stack "nat" | Exception
@@ -107,7 +107,7 @@ proof -
     assume "is_class P C"
     then obtain D fs ms where "class P C = \<lfloor>(D, fs, ms)\<rfloor>"
       by auto
-    with `C \<notin> set (map fst P)` show False
+    with \<open>C \<notin> set (map fst P)\<close> show False
       by (auto dest: map_of_SomeD intro!: image_eqI simp: class_def)
   qed
   thus ?thesis
@@ -120,7 +120,7 @@ lemma ClassMain_unique_in_P:
 proof -
   from ex_new_class_name [of "PROG P"] obtain D where "\<not> is_class (PROG P) D"
     by blast
-  with `is_class (PROG P) C` show ?thesis
+  with \<open>is_class (PROG P) C\<close> show ?thesis
     unfolding ClassMain_def
     by -(rule someI2, fastforce+)
 qed
@@ -162,7 +162,7 @@ proof -
   from ex_unique_method_name [of P] obtain M'
     where "\<And>C D fs ms. class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor> \<Longrightarrow> (\<forall>m \<in> set ms. M' \<noteq> fst m)"
     by blast
-  with `PROG P \<turnstile> D sees M:Ts\<rightarrow>T = mb in C`
+  with \<open>PROG P \<turnstile> D sees M:Ts\<rightarrow>T = mb in C\<close>
   show ?thesis
     unfolding MethodMain_def
     by -(rule someI2_ex, fastforce, fastforce dest!: visible_method_exists elim: map_of_fstE)
@@ -499,7 +499,7 @@ next
   show ?case
   proof (cases "C = ClassMain P")
     case True
-    with `(P, C0, Main) \<turnstile> (C, M, pc, nt) -ek\<rightarrow> (C', M', pc', nt')` `C' \<noteq> ClassMain P`
+    with \<open>(P, C0, Main) \<turnstile> (C, M, pc, nt) -ek\<rightarrow> (C', M', pc', nt')\<close> \<open>C' \<noteq> ClassMain P\<close>
     show ?thesis
     proof cases
       case Main_Call
@@ -523,7 +523,7 @@ lemma "\<lbrakk> (P, C0, Main) \<turnstile> (C', M', pc', nt') -ek\<rightarrow> 
   \<lfloor>pc''\<rfloor> \<Rightarrow> (TYPING P) C M ! pc'' \<noteq> None \<and> pc'' < length (instrs_of (PROG P) C M)"
 proof (induct rule: JVMCFG_reachable_inducts)
   case (CFG_Load C P C0 Main M pc n ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -531,7 +531,7 @@ proof (induct rule: JVMCFG_reachable_inducts)
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_Store C P C0 Main M pc n ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -539,7 +539,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_Push C P C0 Main M pc v ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -547,7 +547,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_Pop C P C0 Main M pc ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -555,7 +555,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_IAdd C P C0 Main M pc ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -563,7 +563,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_Goto C P C0 Main M pc i)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -571,7 +571,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_CmpEq C P C0 Main M pc ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -579,7 +579,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_IfFalse_False C P C0 Main M pc i ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -587,7 +587,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_IfFalse_True C P C0 Main M pc i ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -595,7 +595,7 @@ next
     using [[simproc del: list_to_set_comprehension]] by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next
   case (CFG_New_Update C P C0 Main M pc Cl ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -605,26 +605,26 @@ next
   case (CFG_New_Exceptional_handle C P C0 Main M pc pc' Cl ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = New Cl`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = New Cl\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> New Cl,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = New Cl` obtain d'
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = New Cl\<close> obtain d'
     where "match_ex_table (PROG P) OutOfMemory pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) OutOfMemory pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = New Cl`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = New Cl\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Getfield_Update C P C0 Main M pc F Cl ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -634,26 +634,26 @@ next
   case (CFG_Getfield_Exceptional_handle C P C0 Main M pc pc' F Cl ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Getfield F Cl`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Getfield F Cl\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> Getfield F Cl,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = Getfield F Cl` obtain d'
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = Getfield F Cl\<close> obtain d'
     where "match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) NullPointer pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = Getfield F Cl`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = Getfield F Cl\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Putfield_Update C P C0 Main M pc F Cl ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -663,26 +663,26 @@ next
   case (CFG_Putfield_Exceptional_handle C P C0 Main M pc pc' F Cl ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Putfield F Cl`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Putfield F Cl\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> Putfield F Cl,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = Putfield F Cl` obtain d'
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = Putfield F Cl\<close> obtain d'
     where "match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) NullPointer pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = Putfield F Cl`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = Putfield F Cl\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Checkcast_Check_Normal C P C0 Main M pc Cl ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -692,89 +692,89 @@ next
   case (CFG_Checkcast_Exceptional_handle C P C0 Main M pc pc' Cl ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Checkcast Cl`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Checkcast Cl\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> Checkcast Cl,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = Checkcast Cl` obtain d'
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = Checkcast Cl\<close> obtain d'
     where "match_ex_table (PROG P) ClassCast pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) ClassCast pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = Checkcast Cl`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = Checkcast Cl\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Throw_handle C P C0 Main M pc pc' ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Throw`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Throw\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> Throw,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = Throw` obtain d' Exc
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = Throw\<close> obtain d' Exc
     where "match_ex_table (PROG P) Exc pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) Exc pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = Throw`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = Throw\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Invoke_NP_handle C P C0 Main M pc pc' M' n ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Invoke M' n`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> Invoke M' n,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = Invoke M' n` obtain d'
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close> obtain d'
     where "match_ex_table (PROG P) NullPointer pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) NullPointer pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = Invoke M' n`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Invoke_Return_Exceptional_handle C P C0 Main M pc pc' M' n ek)
   hence "TYPING P C M ! pc \<noteq> None" and "pc < length (instrs_of (PROG P) C M)"
     by simp_all
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)` `C \<noteq> ClassMain P`
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 where
     "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, instrs_of (PROG P) C M, ex_table_of (PROG P) C M) in C"
     by (fastforce dest: method_of_reachable_node_exists)
-  with `pc < length (instrs_of (PROG P) C M)` `instrs_of (PROG P) C M ! pc = Invoke M' n`
+  with \<open>pc < length (instrs_of (PROG P) C M)\<close> \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close>
   have "PROG P,T,mxs,length (instrs_of (PROG P) C M),ex_table_of (PROG P) C M
     \<turnstile> Invoke M' n,pc :: TYPING P C M"
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
-  moreover from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)` `C \<noteq> ClassMain P`
-    `instrs_of (PROG P) C M ! pc = Invoke M' n` obtain d' Exc
+  moreover from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Exceptional \<lfloor>pc'\<rfloor> Return)\<close> \<open>C \<noteq> ClassMain P\<close>
+    \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close> obtain d' Exc
     where "match_ex_table (PROG P) Exc pc (ex_table_of (PROG P) C M) = \<lfloor>(pc', d')\<rfloor>"
     by cases (fastforce elim: JVMCFG.cases)
   hence "\<exists>(f, t, D, h, d)\<in>set (ex_table_of (PROG P) C M).
     matches_ex_entry (PROG P) Exc pc (f, t, D, h, d) \<and> h = pc' \<and> d = d'"
     by -(drule match_ex_table_SomeD)
-  ultimately show ?case using `instrs_of (PROG P) C M ! pc = Invoke M' n`
+  ultimately show ?case using \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close>
     by (fastforce simp: relevant_entries_def is_relevant_entry_def matches_ex_entry_def)
 next
   case (CFG_Invoke_Return_Check_Normal C P C0 Main M pc M' n ST LT ek)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Return)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Return)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -782,7 +782,7 @@ next
     by (fastforce dest!: wt_jvm_prog_impl_wt_instr [OF wf_jvmprog_is_wf_typ])
 next 
   case (Method_LTrue P C0 Main C M)
-  from `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)` `C \<noteq> ClassMain P`
+  from \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, None, Enter)\<close> \<open>C \<noteq> ClassMain P\<close>
   obtain Ts T mxs mxl\<^sub>0 "is" xt where "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     and "instrs_of (PROG P) C M = is"
     by -(drule method_of_reachable_node_exists, auto)
@@ -799,7 +799,7 @@ lemma reachable_node_impl_wt_instr:
   and "C \<noteq> ClassMain P"
   shows "\<exists>T mxs mpc xt. PROG P,T,mxs,mpc,xt \<turnstile> (instrs_of (PROG P) C M ! pc),pc :: TYPING P C M"
 proof -
-  from `C \<noteq> ClassMain P` `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, nt)`
+  from \<open>C \<noteq> ClassMain P\<close> \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, nt)\<close>
     method_of_reachable_node_exists [of P C0 Main C M "\<lfloor>pc\<rfloor>" nt]
     instr_of_reachable_node_typable [of P C0 Main C M "\<lfloor>pc\<rfloor>" nt]
   obtain Ts T mxs mxl\<^sub>0 "is" xt

@@ -11,7 +11,7 @@ imports Euclid_Tarski
   "HOL-Library.Quadratic_Discriminant"
 begin
 
-subsection {* Characterizing a specific conic in the projective plane *}
+subsection \<open>Characterizing a specific conic in the projective plane\<close>
 
 definition M :: "real^3^3" where
   "M \<equiv> vector [
@@ -42,13 +42,13 @@ lemma polar_abs:
   assumes "v \<noteq> 0"
   shows "polar (proj2_abs v) = proj2_line_abs (M *v v)"
 proof -
-  from `v \<noteq> 0` and proj2_rep_abs2
+  from \<open>v \<noteq> 0\<close> and proj2_rep_abs2
   obtain k where "k \<noteq> 0" and "proj2_rep (proj2_abs v) = k *\<^sub>R v" by auto
-  from `proj2_rep (proj2_abs v) = k *\<^sub>R v`
+  from \<open>proj2_rep (proj2_abs v) = k *\<^sub>R v\<close>
   have "polar (proj2_abs v) = proj2_line_abs (k *\<^sub>R (M *v v))"
     unfolding polar_def
     by (simp add: matrix_scaleR_vector_ac scaleR_matrix_vector_assoc)
-  with `k \<noteq> 0` and proj2_line_abs_mult
+  with \<open>k \<noteq> 0\<close> and proj2_line_abs_mult
   show "polar (proj2_abs v) = proj2_line_abs (M *v v)" by simp
 qed
 
@@ -56,14 +56,14 @@ lemma pole_abs:
   assumes "v \<noteq> 0"
   shows "pole (proj2_line_abs v) = proj2_abs (M *v v)"
 proof -
-  from `v \<noteq> 0` and proj2_line_rep_abs
+  from \<open>v \<noteq> 0\<close> and proj2_line_rep_abs
   obtain k where "k \<noteq> 0" and "proj2_line_rep (proj2_line_abs v) = k *\<^sub>R v"
     by auto
-  from `proj2_line_rep (proj2_line_abs v) = k *\<^sub>R v`
+  from \<open>proj2_line_rep (proj2_line_abs v) = k *\<^sub>R v\<close>
   have "pole (proj2_line_abs v) = proj2_abs (k *\<^sub>R (M *v v))"
     unfolding pole_def
     by (simp add: matrix_scaleR_vector_ac scaleR_matrix_vector_assoc)
-  with `k \<noteq> 0` and proj2_abs_mult
+  with \<open>k \<noteq> 0\<close> and proj2_abs_mult
   show "pole (proj2_line_abs v) = proj2_abs (M *v v)" by simp
 qed
 
@@ -108,7 +108,7 @@ lemma polar_inj:
   assumes "polar p = polar q"
   shows "p = q"
 proof -
-  from `polar p = polar q` have "pole (polar p) = pole (polar q)" by simp
+  from \<open>polar p = polar q\<close> have "pole (polar p) = pole (polar q)" by simp
   thus "p = q" by (simp add: pole_polar)
 qed
 
@@ -119,10 +119,10 @@ lemma conic_sgn_abs:
   assumes "v \<noteq> 0"
   shows "conic_sgn (proj2_abs v) = sgn (v \<bullet> (M *v v))"
 proof -
-  from `v \<noteq> 0` and proj2_rep_abs2
+  from \<open>v \<noteq> 0\<close> and proj2_rep_abs2
   obtain j where "j \<noteq> 0" and "proj2_rep (proj2_abs v) = j *\<^sub>R v" by auto
 
-  from `proj2_rep (proj2_abs v) = j *\<^sub>R v`
+  from \<open>proj2_rep (proj2_abs v) = j *\<^sub>R v\<close>
   have "conic_sgn (proj2_abs v) = sgn (j\<^sup>2 * (v \<bullet> (M *v v)))"
     unfolding conic_sgn_def
     by (simp add:
@@ -132,7 +132,7 @@ proof -
       power2_eq_square
       algebra_simps)
   also have "\<dots> = sgn (j\<^sup>2) * sgn (v \<bullet> (M *v v))" by (rule sgn_mult)
-  also from `j \<noteq> 0` have "\<dots> = sgn (v \<bullet> (M *v v))"
+  also from \<open>j \<noteq> 0\<close> have "\<dots> = sgn (v \<bullet> (M *v v))"
     by (simp add: power2_eq_square sgn_mult)
   finally show "conic_sgn (proj2_abs v) = sgn (v \<bullet> (M *v v))" .
 qed
@@ -156,7 +156,7 @@ lemma K2_abs:
 proof -
   have "proj2_abs v \<in> K2 \<longleftrightarrow> conic_sgn (proj2_abs v) < 0"
     by (simp add: K2_def)
-  with `v \<noteq> 0` and conic_sgn_abs
+  with \<open>v \<noteq> 0\<close> and conic_sgn_abs
   show "proj2_abs v \<in> K2 \<longleftrightarrow> v \<bullet> (M *v v) < 0" by simp
 qed
 
@@ -170,8 +170,8 @@ proof -
   from K2_centre_non_zero and proj2_rep_abs2
   obtain k where "k \<noteq> 0" and "proj2_rep K2_centre = k *\<^sub>R vector [0,0,1]"
     by (unfold K2_centre_def) auto
-  from `k \<noteq> 0` have "0 < k\<^sup>2" by simp
-  with `proj2_rep K2_centre = k *\<^sub>R vector [0,0,1]`
+  from \<open>k \<noteq> 0\<close> have "0 < k\<^sup>2" by simp
+  with \<open>proj2_rep K2_centre = k *\<^sub>R vector [0,0,1]\<close>
   show "K2_centre \<in> K2"
     unfolding K2_def
       and conic_sgn_def
@@ -191,7 +191,7 @@ lemma K2_imp_M_neg:
 lemma M_neg_imp_z_squared_big:
   assumes "v \<bullet> (M *v v) < 0"
   shows "(v$3)\<^sup>2 > (v$1)\<^sup>2 + (v$2)\<^sup>2"
-  using `v \<bullet> (M *v v) < 0`
+  using \<open>v \<bullet> (M *v v) < 0\<close>
   unfolding matrix_vector_mult_def and M_def and vector_def
   by (simp add: inner_vec_def sum_3 power2_eq_square)
 
@@ -200,7 +200,7 @@ lemma M_neg_imp_z_non_zero:
   shows "v$3 \<noteq> 0"
 proof -
   have "(v$1)\<^sup>2 + (v$2)\<^sup>2 \<ge> 0" by simp
-  with M_neg_imp_z_squared_big [of v] and `v \<bullet> (M *v v) < 0`
+  with M_neg_imp_z_squared_big [of v] and \<open>v \<bullet> (M *v v) < 0\<close>
   have "(v$3)\<^sup>2 > 0" by arith
   thus "v$3 \<noteq> 0" by simp
 qed
@@ -209,9 +209,9 @@ lemma M_neg_imp_K2:
   assumes "v \<bullet> (M *v v) < 0"
   shows "proj2_abs v \<in> K2"
 proof -
-  from `v \<bullet> (M *v v) < 0` have "v$3 \<noteq> 0" by (rule M_neg_imp_z_non_zero)
+  from \<open>v \<bullet> (M *v v) < 0\<close> have "v$3 \<noteq> 0" by (rule M_neg_imp_z_non_zero)
   hence "v \<noteq> 0" by auto
-  with `v \<bullet> (M *v v) < 0` and K2_abs show "proj2_abs v \<in> K2" by simp
+  with \<open>v \<bullet> (M *v v) < 0\<close> and K2_abs show "proj2_abs v \<in> K2" by simp
 qed
 
 lemma M_reverse: "a \<bullet> (M *v b) = b \<bullet> (M *v a)"
@@ -225,7 +225,7 @@ proof -
   have "proj2_abs v \<in> S \<longleftrightarrow> conic_sgn (proj2_abs v) = 0"
     unfolding S_def
     by simp
-  also from `v \<noteq> 0` and conic_sgn_abs
+  also from \<open>v \<noteq> 0\<close> and conic_sgn_abs
   have "\<dots> \<longleftrightarrow> sgn (v \<bullet> (M *v v)) = 0" by simp
   finally show "proj2_abs v \<in> S \<longleftrightarrow> v \<bullet> (M *v v) = 0" by (simp add: sgn_0_0)
 qed
@@ -253,7 +253,7 @@ lemma incident_polar_swap:
   assumes "proj2_incident p (polar q)"
   shows "proj2_incident q (polar p)"
 proof -
-  from `proj2_incident p (polar q)`
+  from \<open>proj2_incident p (polar q)\<close>
   have "proj2_rep p \<bullet> (M *v proj2_rep q) = 0" by (unfold incident_polar)
   hence "proj2_rep q \<bullet> (M *v proj2_rep p) = 0" by (simp add: M_reverse)
   thus "proj2_incident q (polar p)" by (unfold incident_polar)
@@ -263,7 +263,7 @@ lemma incident_pole_polar:
   assumes "proj2_incident p l"
   shows "proj2_incident (pole l) (polar p)"
 proof -
-  from `proj2_incident p l`
+  from \<open>proj2_incident p l\<close>
   have "proj2_incident p (polar (pole l))" by (subst polar_pole)
   thus "proj2_incident (pole l) (polar p)" by (rule incident_polar_swap)
 qed
@@ -278,7 +278,7 @@ proof -
   from K2_centre_non_zero and proj2_line_rep_abs
   obtain k where "proj2_line_rep z_zero = k *\<^sub>R vector [0,0,1]"
     by (unfold z_zero_def) auto
-  with `(proj2_rep p)$3 = 0`
+  with \<open>(proj2_rep p)$3 = 0\<close>
   show "proj2_incident p z_zero"
     unfolding proj2_incident_def and inner_vec_def and vector_def
     by (simp add: sum_3)
@@ -292,7 +292,7 @@ proof -
   have "(vector [0,0,1] :: real^3) \<noteq> 0"
     unfolding vector_def
     by (simp add: vec_eq_iff)
-  with `proj2_incident p z_zero`
+  with \<open>proj2_incident p z_zero\<close>
   have "?v \<bullet> vector [0,0,1] = 0"
     unfolding z_zero_def
     by (simp add: proj2_incident_right_abs)
@@ -309,11 +309,11 @@ proof -
     by simp
 
   have "?v \<noteq> 0" by (rule proj2_rep_non_zero)
-  with `?v$3 = 0` have "?v$1 \<noteq> 0 \<or> ?v$2 \<noteq> 0" by (simp add: vec_eq_iff forall_3)
+  with \<open>?v$3 = 0\<close> have "?v$1 \<noteq> 0 \<or> ?v$2 \<noteq> 0" by (simp add: vec_eq_iff forall_3)
   hence "(?v$1)\<^sup>2 > 0 \<or> (?v$2)\<^sup>2 > 0" by simp
   with add_sign_intros [of "(?v$1)\<^sup>2" "(?v$2)\<^sup>2"]
   have "(?v$1)\<^sup>2 + (?v$2)\<^sup>2 > 0" by auto
-  with `?v \<bullet> (M *v ?v) = (?v$1)\<^sup>2 + (?v$2)\<^sup>2`
+  with \<open>?v \<bullet> (M *v ?v) = (?v$1)\<^sup>2 + (?v$2)\<^sup>2\<close>
   have "?v \<bullet> (M *v ?v) > 0" by simp
   thus "conic_sgn p = 1"
     unfolding conic_sgn_def
@@ -324,7 +324,7 @@ lemma conic_sgn_not_1_z_non_zero:
   assumes "conic_sgn p \<noteq> 1"
   shows "z_non_zero p"
 proof -
-  from `conic_sgn p \<noteq> 1`
+  from \<open>conic_sgn p \<noteq> 1\<close>
   have "\<not> proj2_incident p z_zero" by (auto simp add: z_zero_conic_sgn_1)
   thus "z_non_zero p" by (auto simp add: z_zero)
 qed
@@ -333,7 +333,7 @@ lemma z_zero_not_in_S:
   assumes "proj2_incident p z_zero"
   shows "p \<notin> S"
 proof -
-  from `proj2_incident p z_zero` have "conic_sgn p = 1"
+  from \<open>proj2_incident p z_zero\<close> have "conic_sgn p = 1"
     by (rule z_zero_conic_sgn_1)
   thus "p \<notin> S"
     unfolding S_def
@@ -345,8 +345,8 @@ proof -
   let ?p = "proj2_intersection l z_zero"
   have "proj2_incident ?p l" and "proj2_incident ?p z_zero"
     by (rule proj2_intersection_incident)+
-  from `proj2_incident ?p z_zero` have "?p \<notin> S" by (rule z_zero_not_in_S)
-  with `proj2_incident ?p l`
+  from \<open>proj2_incident ?p z_zero\<close> have "?p \<notin> S" by (rule z_zero_not_in_S)
+  with \<open>proj2_incident ?p l\<close>
   show "\<exists> p. p \<notin> S \<and> proj2_incident p l" by auto
 qed
 
@@ -355,13 +355,13 @@ lemma apply_cltn2_abs_abs_in_S:
   shows "apply_cltn2 (proj2_abs v) (cltn2_abs J) \<in> S
   \<longleftrightarrow> v \<bullet> (J ** M ** transpose J *v v) = 0"
 proof -
-  from `v \<noteq> 0` and `invertible J`
+  from \<open>v \<noteq> 0\<close> and \<open>invertible J\<close>
   have "v v* J \<noteq> 0" by (rule non_zero_mult_invertible_non_zero)
 
-  from `v \<noteq> 0` and `invertible J`
+  from \<open>v \<noteq> 0\<close> and \<open>invertible J\<close>
   have "apply_cltn2 (proj2_abs v) (cltn2_abs J) = proj2_abs (v v* J)"
     by (rule apply_cltn2_abs)
-  also from `v v* J \<noteq> 0`
+  also from \<open>v v* J \<noteq> 0\<close>
   have "\<dots> \<in> S \<longleftrightarrow> (v v* J) \<bullet> (M *v (v v* J)) = 0" by (rule S_abs)
   finally show "apply_cltn2 (proj2_abs v) (cltn2_abs J) \<in> S
     \<longleftrightarrow> v \<bullet> (J ** M ** transpose J *v v) = 0"
@@ -374,7 +374,7 @@ lemma apply_cltn2_right_abs_in_S:
   \<longleftrightarrow> (proj2_rep p) \<bullet> (J ** M ** transpose J *v (proj2_rep p)) = 0"
 proof -
   have "proj2_rep p \<noteq> 0" by (rule proj2_rep_non_zero)
-  with `invertible J`
+  with \<open>invertible J\<close>
   have "apply_cltn2 (proj2_abs (proj2_rep p)) (cltn2_abs J) \<in> S
     \<longleftrightarrow> proj2_rep p \<bullet> (J ** M ** transpose J *v proj2_rep p) = 0"
     by (simp add: apply_cltn2_abs_abs_in_S)
@@ -389,7 +389,7 @@ lemma apply_cltn2_abs_in_S:
   \<longleftrightarrow> v \<bullet> (cltn2_rep C ** M ** transpose (cltn2_rep C) *v v) = 0"
 proof -
   have "invertible (cltn2_rep C)" by (rule cltn2_rep_invertible)
-  with `v \<noteq> 0`
+  with \<open>v \<noteq> 0\<close>
   have "apply_cltn2 (proj2_abs v) (cltn2_abs (cltn2_rep C)) \<in> S
     \<longleftrightarrow> v \<bullet> (cltn2_rep C ** M ** transpose (cltn2_rep C) *v v) = 0"
     by (rule apply_cltn2_abs_abs_in_S)
@@ -430,7 +430,7 @@ proof -
     by (simp add: sum_3 power2_eq_square)
 qed
 
-subsection {* Some specific points and lines of the projective plane *}
+subsection \<open>Some specific points and lines of the projective plane\<close>
 
 definition "east = proj2_abs (vector [1,0,1])"
 definition "west = proj2_abs (vector [-1,0,1])"
@@ -671,17 +671,17 @@ proof -
   let ?ra = "proj2_rep a"
   let ?ca1 = "cart2_append1 a"
   let ?x = "?ca1$1"
-  from compass_non_zero and `proj2_incident a equator`
+  from compass_non_zero and \<open>proj2_incident a equator\<close>
   have "?ra \<bullet> vector [0,1,0] = 0"
     by (unfold equator_def) (simp add: proj2_incident_right_abs)
   hence "?ra$2 = 0" by (unfold inner_vec_def vector_def) (simp add: sum_3)
   hence "?ca1$2 = 0" by (unfold cart2_append1_def) simp
   moreover
-  from `z_non_zero a` have "?ca1$3 = 1" by (rule cart2_append1_z)
+  from \<open>z_non_zero a\<close> have "?ca1$3 = 1" by (rule cart2_append1_z)
   ultimately
   have "?ca1 = vector [?x,0,1]"
     by (unfold vector_def) (simp add: vec_eq_iff forall_3)
-  with `z_non_zero a`
+  with \<open>z_non_zero a\<close>
   have "proj2_abs (vector [?x,0,1]) = a" by (simp add: proj2_abs_cart2_append1)
   thus "\<exists> x. a = proj2_abs (vector [x,0,1])" by (simp add: exI [of _ ?x])
 qed
@@ -693,22 +693,22 @@ proof -
   let ?ra = "proj2_rep a"
   let ?ca1 = "cart2_append1 a"
   let ?y = "?ca1$2"
-  from compass_non_zero and `proj2_incident a meridian`
+  from compass_non_zero and \<open>proj2_incident a meridian\<close>
   have "?ra \<bullet> vector [1,0,0] = 0"
     by (unfold meridian_def) (simp add: proj2_incident_right_abs)
   hence "?ra$1 = 0" by (unfold inner_vec_def vector_def) (simp add: sum_3)
   hence "?ca1$1 = 0" by (unfold cart2_append1_def) simp
   moreover
-  from `z_non_zero a` have "?ca1$3 = 1" by (rule cart2_append1_z)
+  from \<open>z_non_zero a\<close> have "?ca1$3 = 1" by (rule cart2_append1_z)
   ultimately
   have "?ca1 = vector [0,?y,1]"
     by (unfold vector_def) (simp add: vec_eq_iff forall_3)
-  with `z_non_zero a`
+  with \<open>z_non_zero a\<close>
   have "proj2_abs (vector [0,?y,1]) = a" by (simp add: proj2_abs_cart2_append1)
   thus "\<exists> y. a = proj2_abs (vector [0,y,1])" by (simp add: exI [of _ ?y])
 qed
 
-subsection {* Definition of the Klein--Beltrami model of the hyperbolic plane *}
+subsection \<open>Definition of the Klein--Beltrami model of the hyperbolic plane\<close>
 abbreviation "hyp2 == K2"
 
 typedef hyp2 = K2
@@ -731,7 +731,7 @@ proof -
     and abs_square_less_1 [of "norm v"]
   have "norm v < 1 \<longleftrightarrow> (norm v)\<^sup>2 < 1" by auto
   hence "norm v < 1 \<longleftrightarrow> ?v' \<bullet> (M *v ?v') < 0" by (simp add: norm_M)
-  with `?v' \<noteq> 0` have "norm v < 1 \<longleftrightarrow> proj2_abs ?v' \<in> K2" by (subst K2_abs)
+  with \<open>?v' \<noteq> 0\<close> have "norm v < 1 \<longleftrightarrow> proj2_abs ?v' \<in> K2" by (subst K2_abs)
   thus "norm v < 1 \<longleftrightarrow> proj2_pt v \<in> hyp2" by (unfold proj2_pt_def)
 qed
 
@@ -744,7 +744,7 @@ proof -
   from real_sqrt_unique [of "norm v" 1]
   have "norm v = 1 \<longleftrightarrow> (norm v)\<^sup>2 = 1" by auto
   hence "norm v = 1 \<longleftrightarrow> ?v' \<bullet> (M *v ?v') = 0" by (simp add: norm_M)
-  with `?v' \<noteq> 0` have "norm v = 1 \<longleftrightarrow> proj2_abs ?v' \<in> S" by (subst S_abs)
+  with \<open>?v' \<noteq> 0\<close> have "norm v = 1 \<longleftrightarrow> proj2_abs ?v' \<in> S" by (subst S_abs)
   thus "norm v = 1 \<longleftrightarrow> proj2_pt v \<in> S" by (unfold proj2_pt_def)
 qed
 
@@ -762,7 +762,7 @@ proof -
   have "proj2_abs ?v = ?p'" by (rule proj2_abs_rep)
 
   have "?p' \<in> hyp2" by (rule Rep_hyp2)
-  with `?v \<noteq> 0` and `proj2_abs ?v = ?p'`
+  with \<open>?v \<noteq> 0\<close> and \<open>proj2_abs ?v = ?p'\<close>
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_imp_M_neg)
   hence "?v$3 \<noteq> 0" by (rule M_neg_imp_z_non_zero)
   hence "proj2_pt (cart2_pt ?p') = ?p'" by (rule proj2_cart2)
@@ -773,7 +773,7 @@ lemma hyp2_rep_abs:
   assumes "norm v < 1"
   shows "hyp2_rep (hyp2_abs v) = v"
 proof -
-  from `norm v < 1`
+  from \<open>norm v < 1\<close>
   have "proj2_pt v \<in> hyp2" by (simp add: norm_lt_1_iff_in_hyp2)
   hence "Rep_hyp2 (Abs_hyp2 (proj2_pt v)) = proj2_pt v"
     by (simp add: Abs_hyp2_inverse)
@@ -796,7 +796,7 @@ lemma hyp2_S_z_non_zero:
   assumes "p \<in> hyp2 \<union> S"
   shows "z_non_zero p"
 proof -
-  from `p \<in> hyp2 \<union> S`
+  from \<open>p \<in> hyp2 \<union> S\<close>
   have "conic_sgn p \<le> 0" by (unfold K2_def S_def) auto
   hence "conic_sgn p \<noteq> 1" by simp
   thus "z_non_zero p" by (rule conic_sgn_not_1_z_non_zero)
@@ -812,14 +812,14 @@ lemma hyp2_S_cart2_inj:
   assumes "p \<in> hyp2 \<union> S" and "q \<in> hyp2 \<union> S" and "cart2_pt p = cart2_pt q"
   shows "p = q"
 proof -
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close>
   have "z_non_zero p" and "z_non_zero q" by (simp_all add: hyp2_S_z_non_zero)
   hence "proj2_pt (cart2_pt p) = p" and "proj2_pt (cart2_pt q) = q"
     by (simp_all add: proj2_cart2)
 
-  from `cart2_pt p = cart2_pt q`
+  from \<open>cart2_pt p = cart2_pt q\<close>
   have "proj2_pt (cart2_pt p) = proj2_pt (cart2_pt q)" by simp
-  with `proj2_pt (cart2_pt p) = p` [symmetric] and `proj2_pt (cart2_pt q) = q`
+  with \<open>proj2_pt (cart2_pt p) = p\<close> [symmetric] and \<open>proj2_pt (cart2_pt q) = q\<close>
   show "p = q" by simp
 qed
 
@@ -827,20 +827,20 @@ lemma on_equator_in_hyp2_rep:
   assumes "a \<in> hyp2" and "proj2_incident a equator"
   shows "\<exists> x. \<bar>x\<bar> < 1 \<and> a = proj2_abs (vector [x,0,1])"
 proof -
-  from `a \<in> hyp2` have "z_non_zero a" by (simp add: hyp2_S_z_non_zero)
-  with `proj2_incident a equator` and on_equator_rep
+  from \<open>a \<in> hyp2\<close> have "z_non_zero a" by (simp add: hyp2_S_z_non_zero)
+  with \<open>proj2_incident a equator\<close> and on_equator_rep
   obtain x where "a = proj2_abs (vector [x,0,1])" (is "a = proj2_abs ?v")
     by auto
 
   have "?v \<noteq> 0" by (simp add: vec_eq_iff forall_3 vector_3)
-  with `a \<in> hyp2` and `a = proj2_abs ?v`
+  with \<open>a \<in> hyp2\<close> and \<open>a = proj2_abs ?v\<close>
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_abs)
   hence "x\<^sup>2 < 1"
     unfolding M_def matrix_vector_mult_def inner_vec_def
     by (simp add: sum_3 vector_3 power2_eq_square)
   with real_sqrt_abs [of x] and real_sqrt_less_iff [of "x\<^sup>2" 1]
   have "\<bar>x\<bar> < 1" by simp
-  with `a = proj2_abs ?v`
+  with \<open>a = proj2_abs ?v\<close>
   show "\<exists> x. \<bar>x\<bar> < 1 \<and> a = proj2_abs (vector [x,0,1])"
     by (simp add: exI [of _ x])
 qed
@@ -849,20 +849,20 @@ lemma on_meridian_in_hyp2_rep:
   assumes "a \<in> hyp2" and "proj2_incident a meridian"
   shows "\<exists> y. \<bar>y\<bar> < 1 \<and> a = proj2_abs (vector [0,y,1])"
 proof -
-  from `a \<in> hyp2` have "z_non_zero a" by (simp add: hyp2_S_z_non_zero)
-  with `proj2_incident a meridian` and on_meridian_rep
+  from \<open>a \<in> hyp2\<close> have "z_non_zero a" by (simp add: hyp2_S_z_non_zero)
+  with \<open>proj2_incident a meridian\<close> and on_meridian_rep
   obtain y where "a = proj2_abs (vector [0,y,1])" (is "a = proj2_abs ?v")
     by auto
 
   have "?v \<noteq> 0" by (simp add: vec_eq_iff forall_3 vector_3)
-  with `a \<in> hyp2` and `a = proj2_abs ?v`
+  with \<open>a \<in> hyp2\<close> and \<open>a = proj2_abs ?v\<close>
   have "?v \<bullet> (M *v ?v) < 0" by (simp add: K2_abs)
   hence "y\<^sup>2 < 1"
     unfolding M_def matrix_vector_mult_def inner_vec_def
     by (simp add: sum_3 vector_3 power2_eq_square)
   with real_sqrt_abs [of y] and real_sqrt_less_iff [of "y\<^sup>2" 1]
   have "\<bar>y\<bar> < 1" by simp
-  with `a = proj2_abs ?v`
+  with \<open>a = proj2_abs ?v\<close>
   show "\<exists> y. \<bar>y\<bar> < 1 \<and> a = proj2_abs (vector [0,y,1])"
     by (simp add: exI [of _ y])
 qed
@@ -882,9 +882,9 @@ lemma J_M_J_transpose_K2_isometry:
   and "repJ ** M ** transpose repJ = k *\<^sub>R M" (is "?N = _")
   shows "is_K2_isometry (cltn2_abs repJ)" (is "is_K2_isometry ?J")
 proof -
-  from `?N = k *\<^sub>R M`
+  from \<open>?N = k *\<^sub>R M\<close>
   have "?N ** ((1/k) *\<^sub>R M) = mat 1"
-    by (simp add: matrix_scalar_ac `k \<noteq> 0` M_self_inverse)
+    by (simp add: matrix_scalar_ac \<open>k \<noteq> 0\<close> M_self_inverse)
   with right_invertible_iff_invertible [of repJ]
   have "invertible repJ"
     by (simp add: matrix_mul_assoc
@@ -896,18 +896,18 @@ proof -
     have "proj2_rep t \<bullet> ((k *\<^sub>R M) *v proj2_rep t)
       = k * (proj2_rep t \<bullet> (M *v proj2_rep t))"
       by (simp add: scaleR_matrix_vector_assoc [symmetric]  dot_scaleR_mult)
-    with `?N = k *\<^sub>R M`
+    with \<open>?N = k *\<^sub>R M\<close>
     have "proj2_rep t \<bullet> (?N *v proj2_rep t)
       = k * (proj2_rep t \<bullet> (M *v proj2_rep t))"
       by simp
     hence "proj2_rep t \<bullet> (?N *v proj2_rep t) = 0
       \<longleftrightarrow> k * (proj2_rep t \<bullet> (M *v proj2_rep t)) = 0"
       by simp
-    with `k \<noteq> 0`
+    with \<open>k \<noteq> 0\<close>
     have "proj2_rep t \<bullet> (?N *v proj2_rep t) = 0
       \<longleftrightarrow> proj2_rep t \<bullet> (M *v proj2_rep t) = 0"
       by simp
-    with `invertible repJ`
+    with \<open>invertible repJ\<close>
     have "apply_cltn2 t ?J \<in> S \<longleftrightarrow> proj2_rep t \<bullet> (M *v proj2_rep t) = 0"
       by (simp add: apply_cltn2_right_abs_in_S)
     thus "apply_cltn2 t ?J \<in> S \<longleftrightarrow> t \<in> S" by (unfold S_alt_def)
@@ -932,7 +932,7 @@ lemma meridian_reflect_K2_isometry:
 lemma cltn2_compose_is_K2_isometry:
   assumes "is_K2_isometry H" and "is_K2_isometry J"
   shows "is_K2_isometry (cltn2_compose H J)"
-  using `is_K2_isometry H` and `is_K2_isometry J`
+  using \<open>is_K2_isometry H\<close> and \<open>is_K2_isometry J\<close>
   unfolding is_K2_isometry_def
   by (simp add: cltn2.act_act [simplified, symmetric])
 
@@ -941,7 +941,7 @@ lemma cltn2_inverse_is_K2_isometry:
   shows "is_K2_isometry (cltn2_inverse J)"
 proof -
   { fix p
-    from `is_K2_isometry J`
+    from \<open>is_K2_isometry J\<close>
     have "apply_cltn2 p (cltn2_inverse J) \<in> S
       \<longleftrightarrow> apply_cltn2 (apply_cltn2 p (cltn2_inverse J)) J \<in> S"
       unfolding is_K2_isometry_def
@@ -971,7 +971,7 @@ lemma K2_isometry_inverse_inv [simp]:
   shows "inv\<^bsub>(|carrier = Collect is_K2_isometry, mult = cltn2_compose, one = cltn2_id|)\<^esub> J
   = cltn2_inverse J"
   using cltn2_left_inverse
-    and `is_K2_isometry J`
+    and \<open>is_K2_isometry J\<close>
     and cltn2_inverse_is_K2_isometry
     and K2_isometry.inv_equality
   by simp
@@ -986,7 +986,7 @@ definition real_hyp2_B :: "[hyp2, hyp2, hyp2] \<Rightarrow> bool"
   "B\<^sub>K p q r \<equiv> B\<^sub>\<real> (hyp2_rep p) (hyp2_rep q) (hyp2_rep r)"
 
 
-subsection {* $K$-isometries map the interior of the conic to itself *}
+subsection \<open>$K$-isometries map the interior of the conic to itself\<close>
 
 lemma collinear_quadratic:
   assumes "t = i *\<^sub>R a + r"
@@ -994,7 +994,7 @@ lemma collinear_quadratic:
   (a \<bullet> (M *v a)) * i\<^sup>2 + 2 * (a \<bullet> (M *v r)) * i + r \<bullet> (M *v r)"
 proof -
   from M_reverse have "i * (a \<bullet> (M *v r)) = i * (r \<bullet> (M *v a))" by simp
-  with `t = i *\<^sub>R a + r`
+  with \<open>t = i *\<^sub>R a + r\<close>
   show "t \<bullet> (M *v t) =
     (a \<bullet> (M *v a)) * i\<^sup>2 + 2 * (a \<bullet> (M *v r)) * i + r \<bullet> (M *v r)"
     by (simp add:
@@ -1015,7 +1015,7 @@ lemma S_quadratic':
   \<longleftrightarrow> p \<bullet> (M *v p) * k\<^sup>2 + p \<bullet> (M *v q) * 2 * k + q \<bullet> (M *v q) = 0"
 proof -
   let ?r = "k *\<^sub>R p + q"
-  from `p \<noteq> 0` and `q \<noteq> 0` and `proj2_abs p \<noteq> proj2_abs q`
+  from \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close> and \<open>proj2_abs p \<noteq> proj2_abs q\<close>
     and dependent_proj2_abs [of p q k 1]
   have "?r \<noteq> 0" by auto
   hence "proj2_abs ?r \<in> S \<longleftrightarrow> ?r \<bullet> (M *v ?r) = 0" by (rule S_abs)
@@ -1038,8 +1038,8 @@ proof -
   let ?w = "k *\<^sub>R ?u + ?v"
   have "?u \<noteq> 0" and "?v \<noteq> 0" by (rule proj2_rep_non_zero)+
 
-  from `p \<noteq> q` have "proj2_abs ?u \<noteq> proj2_abs ?v" by (simp add: proj2_abs_rep)
-  with `?u \<noteq> 0` and `?v \<noteq> 0` and `r = proj2_abs ?w`
+  from \<open>p \<noteq> q\<close> have "proj2_abs ?u \<noteq> proj2_abs ?v" by (simp add: proj2_abs_rep)
+  with \<open>?u \<noteq> 0\<close> and \<open>?v \<noteq> 0\<close> and \<open>r = proj2_abs ?w\<close>
   show "r \<in> S
     \<longleftrightarrow> ?u \<bullet> (M *v ?u) * k\<^sup>2 + ?u \<bullet> (M *v ?v) * 2 * k + ?v \<bullet> (M *v ?v) = 0"
     by (simp add: S_quadratic')
@@ -1052,7 +1052,7 @@ lemma quarter_discrim_invariant:
   assumes "t = i *\<^sub>R a + r"
   shows "quarter_discrim a t = quarter_discrim a r"
 proof -
-  from `t = i *\<^sub>R a + r`
+  from \<open>t = i *\<^sub>R a + r\<close>
   have "a \<bullet> (M *v t) = i * (a \<bullet> (M *v a)) + a \<bullet> (M *v r)"
     by (simp add:
       matrix_vector_right_distrib
@@ -1064,7 +1064,7 @@ proof -
     2 * (a \<bullet> (M *v a)) * (a \<bullet> (M *v r)) * i +
     (a \<bullet> (M *v r))\<^sup>2"
     by (simp add: power2_eq_square algebra_simps)
-  moreover from collinear_quadratic and `t = i *\<^sub>R a + r`
+  moreover from collinear_quadratic and \<open>t = i *\<^sub>R a + r\<close>
   have "a \<bullet> (M *v a) * (t \<bullet> (M *v t)) =
     (a \<bullet> (M *v a))\<^sup>2 * i\<^sup>2 +
     2 * (a \<bullet> (M *v a)) * (a \<bullet> (M *v r)) * i +
@@ -1082,7 +1082,7 @@ proof -
   let ?i = "-q$3/p$3"
   let ?t = "?i *\<^sub>R p + q"
 
-  from `p \<noteq> 0` and `?pp \<in> K2`
+  from \<open>p \<noteq> 0\<close> and \<open>?pp \<in> K2\<close>
   have "p \<bullet> (M *v p) < 0" by (subst K2_abs [symmetric])
   hence "p$3 \<noteq> 0" by (rule M_neg_imp_z_non_zero)
   hence "?t$3 = 0" by simp
@@ -1090,15 +1090,15 @@ proof -
     unfolding matrix_vector_mult_def and M_def and vector_def
     by (simp add: inner_vec_def sum_3 power2_eq_square)
 
-  from `p$3 \<noteq> 0` have "p \<noteq> 0" by auto
-  with `q \<noteq> 0` and `?pp \<noteq> ?pq` and dependent_proj2_abs [of p q ?i 1]
+  from \<open>p$3 \<noteq> 0\<close> have "p \<noteq> 0" by auto
+  with \<open>q \<noteq> 0\<close> and \<open>?pp \<noteq> ?pq\<close> and dependent_proj2_abs [of p q ?i 1]
   have "?t \<noteq> 0" by auto
-  with `?t$3 = 0` have "?t$1 \<noteq> 0 \<or> ?t$2 \<noteq> 0" by (simp add: vec_eq_iff forall_3)
+  with \<open>?t$3 = 0\<close> have "?t$1 \<noteq> 0 \<or> ?t$2 \<noteq> 0" by (simp add: vec_eq_iff forall_3)
   hence "(?t$1)\<^sup>2 > 0 \<or> (?t$2)\<^sup>2 > 0" by simp
   moreover have "(?t$2)\<^sup>2 \<ge> 0" and "(?t$1)\<^sup>2 \<ge> 0" by simp_all
   ultimately have "(?t$1)\<^sup>2 + (?t$2)\<^sup>2 > 0" by arith
-  with `?t \<bullet> (M *v ?t) = (?t$1)\<^sup>2 + (?t$2)\<^sup>2` have "?t \<bullet> (M *v ?t) > 0" by simp
-  with mult_neg_pos [of "p \<bullet> (M *v p)"] and `p \<bullet> (M *v p) < 0`
+  with \<open>?t \<bullet> (M *v ?t) = (?t$1)\<^sup>2 + (?t$2)\<^sup>2\<close> have "?t \<bullet> (M *v ?t) > 0" by simp
+  with mult_neg_pos [of "p \<bullet> (M *v p)"] and \<open>p \<bullet> (M *v p) < 0\<close>
   have "p \<bullet> (M *v p) * (?t \<bullet> (M *v ?t)) < 0" by simp
   moreover have "(p \<bullet> (M *v ?t))\<^sup>2 \<ge> 0" by simp
   ultimately
@@ -1115,7 +1115,7 @@ proof cases
   thus "quarter_discrim a b = 0" by (unfold quarter_discrim_def, simp)
 next
   assume "b \<noteq> 0"
-  with `proj2_abs a = proj2_abs b` and proj2_abs_abs_mult
+  with \<open>proj2_abs a = proj2_abs b\<close> and proj2_abs_abs_mult
   obtain k where "a = k *\<^sub>R b" by auto
   thus "quarter_discrim a b = 0"
     unfolding quarter_discrim_def
@@ -1156,11 +1156,11 @@ lemma S_intersection_coeffs_distinct:
   and "proj2_abs p \<in> K2"
   shows "S_intersection_coeff1 p q \<noteq> S_intersection_coeff2 p q"
 proof -
-  from `p \<noteq> 0` and `?pp \<in> K2`
+  from \<open>p \<noteq> 0\<close> and \<open>?pp \<in> K2\<close>
   have "p \<bullet> (M *v p) < 0" by (subst K2_abs [symmetric])
 
   from assms have "quarter_discrim p q > 0" by (rule quarter_discrim_positive)
-  with `p \<bullet> (M *v p) < 0`
+  with \<open>p \<bullet> (M *v p) < 0\<close>
   show "S_intersection_coeff1 p q \<noteq> S_intersection_coeff2 p q"
     by (unfold S_intersection_coeffs_defs, simp)
 qed
@@ -1170,10 +1170,10 @@ lemma S_intersections_distinct:
   and "proj2_abs p \<in> K2"
   shows "S_intersection1 p q \<noteq> S_intersection2 p q"
 proof-
-  from `p \<noteq> 0` and `q \<noteq> 0` and `?pp \<noteq> ?pq` and `?pp \<in> K2`
+  from \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close> and \<open>?pp \<noteq> ?pq\<close> and \<open>?pp \<in> K2\<close>
   have "S_intersection_coeff1 p q \<noteq> S_intersection_coeff2 p q"
     by (rule S_intersection_coeffs_distinct)
-  with `p \<noteq> 0` and `q \<noteq> 0` and `?pp \<noteq> ?pq` and proj2_Col_coeff_unique'
+  with \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close> and \<open>?pp \<noteq> ?pq\<close> and proj2_Col_coeff_unique'
   show "S_intersection1 p q \<noteq> S_intersection2 p q"
     by (unfold S_intersections_defs, auto)
 qed
@@ -1189,7 +1189,7 @@ proof -
   let ?b = "2 * (p \<bullet> (M *v q))"
   let ?c = "q \<bullet> (M *v q)"
 
-  from `p \<noteq> 0` and `?pp \<in> K2` have "?a < 0" by (subst K2_abs [symmetric])
+  from \<open>p \<noteq> 0\<close> and \<open>?pp \<in> K2\<close> have "?a < 0" by (subst K2_abs [symmetric])
 
   have qd: "discrim ?a ?b ?c = 4 * quarter_discrim p q"
     unfolding discrim_def quarter_discrim_def
@@ -1207,14 +1207,14 @@ proof -
   with qd
   have "discrim (p \<bullet> (M *v p)) (2 * (p \<bullet> (M *v q))) (q \<bullet> (M *v q)) > 0"
     by simp
-  with `?j = (-?b + sqrt (discrim ?a ?b ?c)) / (2 * ?a)`
-    and `?k = (-?b - sqrt (discrim ?a ?b ?c)) / (2 * ?a)`
-    and `?a < 0` and discriminant_nonneg [of ?a ?b ?c ?j]
+  with \<open>?j = (-?b + sqrt (discrim ?a ?b ?c)) / (2 * ?a)\<close>
+    and \<open>?k = (-?b - sqrt (discrim ?a ?b ?c)) / (2 * ?a)\<close>
+    and \<open>?a < 0\<close> and discriminant_nonneg [of ?a ?b ?c ?j]
     and discriminant_nonneg [of ?a ?b ?c ?k]
   have "p \<bullet> (M *v p) * ?j\<^sup>2 + 2 * (p \<bullet> (M *v q)) * ?j + q \<bullet> (M *v q) = 0"
     and "p \<bullet> (M *v p) * ?k\<^sup>2 + 2 * (p \<bullet> (M *v q)) * ?k + q \<bullet> (M *v q) = 0"
     by (unfold S_intersection_coeffs_defs, auto)
-  with `p \<noteq> 0` and `q \<noteq> 0` and `?pp \<noteq> ?pq` and S_quadratic'
+  with \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close> and \<open>?pp \<noteq> ?pq\<close> and S_quadratic'
   show "S_intersection1 p q \<in> S" and "S_intersection2 p q \<in> S"
     by (unfold S_intersections_defs, simp_all)
 qed
@@ -1231,11 +1231,11 @@ proof -
       by (simp_all add: proj2_Col_coincide) }
   moreover
   { assume "?pp \<noteq> ?pq"
-    with `p \<noteq> 0` and `q \<noteq> 0` and dependent_proj2_abs [of p q _ 1]
+    with \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close> and dependent_proj2_abs [of p q _ 1]
     have "S_intersection1_rep p q \<noteq> 0" (is "?r \<noteq> 0")
       and "S_intersection2_rep p q \<noteq> 0" (is "?s \<noteq> 0")
       by (unfold S_intersection1_rep_def S_intersection2_rep_def, auto)
-    with `p \<noteq> 0` and `q \<noteq> 0`
+    with \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close>
       and proj2_Col_abs [of p q ?r "S_intersection_coeff1 p q" 1 "-1"]
       and proj2_Col_abs [of p q ?s "S_intersection_coeff2 p q" 1 "-1"]
     have "proj2_Col ?pp ?pq ?pr" and "proj2_Col ?pp ?pq ?ps"
@@ -1249,10 +1249,10 @@ lemma S_intersections_incident:
   shows "proj2_incident (S_intersection1 p q) l" (is "proj2_incident ?pr l")
   and "proj2_incident (S_intersection2 p q) l" (is "proj2_incident ?ps l")
 proof -
-  from `p \<noteq> 0` and `q \<noteq> 0`
+  from \<open>p \<noteq> 0\<close> and \<open>q \<noteq> 0\<close>
   have "proj2_Col ?pp ?pq ?pr" and "proj2_Col ?pp ?pq ?ps"
     by (rule S_intersections_Col)+
-  with `?pp \<noteq> ?pq` and `proj2_incident ?pp l` and `proj2_incident ?pq l`
+  with \<open>?pp \<noteq> ?pq\<close> and \<open>proj2_incident ?pp l\<close> and \<open>proj2_incident ?pq l\<close>
     and proj2_incident_iff_Col
   show "proj2_incident ?pr l" and "proj2_incident ?ps l" by fast+
 qed
@@ -1265,27 +1265,27 @@ proof -
   let ?r' = "proj2_rep r"
   from proj2_rep_non_zero have "?a' \<noteq> 0" and "?r' \<noteq> 0" by simp_all
 
-  from `?a' \<noteq> 0` and K2_imp_M_neg and proj2_abs_rep and `a \<in> K2`
+  from \<open>?a' \<noteq> 0\<close> and K2_imp_M_neg and proj2_abs_rep and \<open>a \<in> K2\<close>
   have "?a' \<bullet> (M *v ?a') < 0" by simp
 
-  from `a \<noteq> r` have "proj2_abs ?a' \<noteq> proj2_abs ?r'" by (simp add: proj2_abs_rep)
+  from \<open>a \<noteq> r\<close> have "proj2_abs ?a' \<noteq> proj2_abs ?r'" by (simp add: proj2_abs_rep)
 
-  from `a \<in> K2` have "proj2_abs ?a' \<in> K2" by (simp add: proj2_abs_rep)
-  with `?a' \<noteq> 0` and `?r' \<noteq> 0` and `proj2_abs ?a' \<noteq> proj2_abs ?r'`
+  from \<open>a \<in> K2\<close> have "proj2_abs ?a' \<in> K2" by (simp add: proj2_abs_rep)
+  with \<open>?a' \<noteq> 0\<close> and \<open>?r' \<noteq> 0\<close> and \<open>proj2_abs ?a' \<noteq> proj2_abs ?r'\<close>
   have "S_intersection1 ?a' ?r' \<noteq> S_intersection2 ?a' ?r'" (is "?s \<noteq> ?u")
     by (rule S_intersections_distinct)
 
-  from `?a' \<noteq> 0` and `?r' \<noteq> 0` and `proj2_abs ?a' \<noteq> proj2_abs ?r'`
-    and `proj2_abs ?a' \<in> K2`
+  from \<open>?a' \<noteq> 0\<close> and \<open>?r' \<noteq> 0\<close> and \<open>proj2_abs ?a' \<noteq> proj2_abs ?r'\<close>
+    and \<open>proj2_abs ?a' \<in> K2\<close>
   have "?s \<in> S" and "?u \<in> S" by (rule S_intersections_in_S)+
 
-  from `?a' \<noteq> 0` and `?r' \<noteq> 0`
+  from \<open>?a' \<noteq> 0\<close> and \<open>?r' \<noteq> 0\<close>
   have "proj2_Col (proj2_abs ?a') (proj2_abs ?r') ?s"
     and "proj2_Col (proj2_abs ?a') (proj2_abs ?r') ?u"
     by (rule S_intersections_Col)+
   hence "proj2_Col a r ?s" and "proj2_Col a r ?u"
     by (simp_all add: proj2_abs_rep)
-  with `?s \<noteq> ?u` and `?s \<in> S` and `?u \<in> S`
+  with \<open>?s \<noteq> ?u\<close> and \<open>?s \<in> S\<close> and \<open>?u \<in> S\<close>
   show "\<exists> s u. s \<noteq> u \<and> s \<in> S \<and> u \<in> S \<and> proj2_Col a r s \<and> proj2_Col a r u"
     by auto
 qed
@@ -1294,28 +1294,28 @@ lemma point_in_S_polar_is_tangent:
   assumes "p \<in> S" and "q \<in> S" and "proj2_incident q (polar p)"
   shows "q = p"
 proof -
-  from `p \<in> S` have "proj2_incident p (polar p)"
+  from \<open>p \<in> S\<close> have "proj2_incident p (polar p)"
     by (subst incident_own_polar_in_S)
 
   from line_incident_point_not_in_S
   obtain r where "r \<notin> S" and "proj2_incident r (polar p)" by auto
   let ?u = "proj2_rep r"
   let ?v = "proj2_rep p"
-  from `r \<notin> S` and `p \<in> S` and `q \<in> S` have "r \<noteq> p" and "q \<noteq> r" by auto
-  with `proj2_incident p (polar p)`
-    and `proj2_incident q (polar p)`
-    and `proj2_incident r (polar p)`
+  from \<open>r \<notin> S\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close> have "r \<noteq> p" and "q \<noteq> r" by auto
+  with \<open>proj2_incident p (polar p)\<close>
+    and \<open>proj2_incident q (polar p)\<close>
+    and \<open>proj2_incident r (polar p)\<close>
     and proj2_incident_iff [of r p "polar p" q]
   obtain k where "q = proj2_abs (k *\<^sub>R ?u + ?v)" by auto
-  with `r \<noteq> p` and `q \<in> S` and S_quadratic
+  with \<open>r \<noteq> p\<close> and \<open>q \<in> S\<close> and S_quadratic
   have "?u \<bullet> (M *v ?u) * k\<^sup>2 + ?u \<bullet> (M *v ?v) * 2 * k + ?v \<bullet> (M *v ?v) = 0"
     by simp
-  moreover from `p \<in> S` have "?v \<bullet> (M *v ?v) = 0" by (unfold S_alt_def)
-  moreover from `proj2_incident r (polar p)`
+  moreover from \<open>p \<in> S\<close> have "?v \<bullet> (M *v ?v) = 0" by (unfold S_alt_def)
+  moreover from \<open>proj2_incident r (polar p)\<close>
   have "?u \<bullet> (M *v ?v) = 0" by (unfold incident_polar)
-  moreover from `r \<notin> S` have "?u \<bullet> (M *v ?u) \<noteq> 0" by (unfold S_alt_def)
+  moreover from \<open>r \<notin> S\<close> have "?u \<bullet> (M *v ?u) \<noteq> 0" by (unfold S_alt_def)
   ultimately have "k = 0" by simp
-  with `q = proj2_abs (k *\<^sub>R ?u + ?v)`
+  with \<open>q = proj2_abs (k *\<^sub>R ?u + ?v)\<close>
   show "q = p" by (simp add: proj2_abs_rep)
 qed
 
@@ -1325,14 +1325,14 @@ lemma line_through_K2_intersect_S_twice:
 proof -
   from proj2_another_point_on_line
   obtain s where "s \<noteq> p" and "proj2_incident s l" by auto
-  from `p \<in> K2` and `s \<noteq> p` and K2_line_intersect_twice [of p s]
+  from \<open>p \<in> K2\<close> and \<open>s \<noteq> p\<close> and K2_line_intersect_twice [of p s]
   obtain q and r where "q \<noteq> r" and "q \<in> S" and "r \<in> S"
     and "proj2_Col p s q" and "proj2_Col p s r"
     by auto
-  with `s \<noteq> p` and `proj2_incident p l` and `proj2_incident s l`
+  with \<open>s \<noteq> p\<close> and \<open>proj2_incident p l\<close> and \<open>proj2_incident s l\<close>
     and proj2_incident_iff_Col [of p s]
   have "proj2_incident q l" and "proj2_incident r l" by fast+
-  with `q \<noteq> r` and `q \<in> S` and `r \<in> S`
+  with \<open>q \<noteq> r\<close> and \<open>q \<in> S\<close> and \<open>r \<in> S\<close>
   show "\<exists> q r. q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l"
     by auto
 qed
@@ -1341,7 +1341,7 @@ lemma line_through_K2_intersect_S_again:
   assumes "p \<in> K2" and "proj2_incident p l"
   shows "\<exists> r. r \<noteq> q \<and> r \<in> S \<and> proj2_incident r l"
 proof -
-  from `p \<in> K2` and `proj2_incident p l`
+  from \<open>p \<in> K2\<close> and \<open>proj2_incident p l\<close>
     and line_through_K2_intersect_S_twice [of p l]
   obtain s and t where "s \<noteq> t" and "s \<in> S" and "t \<in> S"
     and "proj2_incident s l" and "proj2_incident t l"
@@ -1349,12 +1349,12 @@ proof -
   show "\<exists> r. r \<noteq> q \<and> r \<in> S \<and> proj2_incident r l"
   proof cases
     assume "t = q"
-    with `s \<noteq> t` and `s \<in> S` and `proj2_incident s l`
+    with \<open>s \<noteq> t\<close> and \<open>s \<in> S\<close> and \<open>proj2_incident s l\<close>
     have "s \<noteq> q \<and> s \<in> S \<and> proj2_incident s l" by simp
     thus "\<exists> r. r \<noteq> q \<and> r \<in> S \<and> proj2_incident r l" ..
   next
     assume "t \<noteq> q"
-    with `t \<in> S` and `proj2_incident t l`
+    with \<open>t \<in> S\<close> and \<open>proj2_incident t l\<close>
     have "t \<noteq> q \<and> t \<in> S \<and> proj2_incident t l" by simp
     thus "\<exists> r. r \<noteq> q \<and> r \<in> S \<and> proj2_incident r l" ..
   qed
@@ -1384,7 +1384,7 @@ proof -
   let ?a = "?v \<bullet> (M *v ?v)"
   let ?b = "2 * (?v \<bullet> (M *v ?w))"
   let ?c = "?w \<bullet> (M *v ?w)"
-  from `s \<notin> S` have "?a \<noteq> 0"
+  from \<open>s \<notin> S\<close> have "?a \<noteq> 0"
     unfolding S_def and conic_sgn_def
     by auto
   let ?j = "(-?b + sqrt (discrim ?a ?b ?c)) / (2 * ?a)"
@@ -1395,15 +1395,15 @@ proof -
   proof
     fix r
     assume "r \<in> S"
-    with `s \<notin> S` have "r \<noteq> s" by auto
+    with \<open>s \<notin> S\<close> have "r \<noteq> s" by auto
     { assume "proj2_incident r l"
-      with `t \<noteq> s` and `r \<noteq> s` and `proj2_incident s l` and `proj2_incident t l`
+      with \<open>t \<noteq> s\<close> and \<open>r \<noteq> s\<close> and \<open>proj2_incident s l\<close> and \<open>proj2_incident t l\<close>
         and proj2_incident_iff [of s t l r]
       obtain i where "r = proj2_abs (i *\<^sub>R ?v + ?w)" by auto
-      with `r \<in> S` and `t \<noteq> s` and S_quadratic
+      with \<open>r \<in> S\<close> and \<open>t \<noteq> s\<close> and S_quadratic
       have "?a * i\<^sup>2 + ?b * i + ?c = 0" by simp
-      with `?a \<noteq> 0` and discriminant_iff have "i = ?j \<or> i = ?k" by simp
-      with `r = proj2_abs (i *\<^sub>R ?v + ?w)` have "r = ?p \<or> r = ?q" by auto }
+      with \<open>?a \<noteq> 0\<close> and discriminant_iff have "i = ?j \<or> i = ?k" by simp
+      with \<open>r = proj2_abs (i *\<^sub>R ?v + ?w)\<close> have "r = ?p \<or> r = ?q" by auto }
     thus "proj2_incident r l \<longrightarrow> r = ?p \<or> r = ?q" ..
   qed
   thus "\<exists> p q. \<forall> r\<in>S. proj2_incident r l \<longrightarrow> r = p \<or> r = q" by auto
@@ -1413,11 +1413,11 @@ lemma card_line_intersect_S:
   assumes "T \<subseteq> S" and "proj2_set_Col T"
   shows "card T \<le> 2"
 proof -
-  from `proj2_set_Col T`
+  from \<open>proj2_set_Col T\<close>
   obtain l where "\<forall> p\<in>T. proj2_incident p l" unfolding proj2_set_Col_def ..
   from line_intersect_S_at_most_twice [of l]
   obtain b and c where "\<forall> a\<in>S. proj2_incident a l \<longrightarrow> a = b \<or> a = c" by auto
-  with `\<forall> p\<in>T. proj2_incident p l` and `T \<subseteq> S`
+  with \<open>\<forall> p\<in>T. proj2_incident p l\<close> and \<open>T \<subseteq> S\<close>
   have "T \<subseteq> {b,c}" by auto
   hence "card T \<le> card {b,c}" by (simp add: card_mono)
   also from card_suc_ge_insert [of b "{c}"] have "\<dots> \<le> 2" by simp
@@ -1429,22 +1429,22 @@ lemma line_S_two_intersections_only:
   and "proj2_incident p l" and "proj2_incident q l" and "proj2_incident r l"
   shows "r = p \<or> r = q"
 proof -
-  from `p \<noteq> q` have "card {p,q} = 2" by simp
+  from \<open>p \<noteq> q\<close> have "card {p,q} = 2" by simp
 
-  from `p \<in> S` and `q \<in> S` and `r \<in> S` have "{r,p,q} \<subseteq> S" by simp_all
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>r \<in> S\<close> have "{r,p,q} \<subseteq> S" by simp_all
 
-  from `proj2_incident p l` and `proj2_incident q l` and `proj2_incident r l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and \<open>proj2_incident r l\<close>
   have "proj2_set_Col {r,p,q}"
     by (unfold proj2_set_Col_def) (simp add: exI [of _ l])
-  with `{r,p,q} \<subseteq> S` have "card {r,p,q} \<le> 2" by (rule card_line_intersect_S)
+  with \<open>{r,p,q} \<subseteq> S\<close> have "card {r,p,q} \<le> 2" by (rule card_line_intersect_S)
 
   show "r = p \<or> r = q"
   proof (rule ccontr)
     assume "\<not> (r = p \<or> r = q)"
     hence "r \<notin> {p,q}" by simp
-    with `card {p,q} = 2` and card_insert_disjoint [of "{p,q}" r]
+    with \<open>card {p,q} = 2\<close> and card_insert_disjoint [of "{p,q}" r]
     have "card {r,p,q} = 3" by simp
-    with `card {r,p,q} \<le> 2` show False by simp
+    with \<open>card {r,p,q} \<le> 2\<close> show False by simp
   qed
 qed
 
@@ -1453,7 +1453,7 @@ lemma line_through_K2_intersect_S_exactly_twice:
   shows "\<exists> q r. q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l
   \<and> (\<forall> s\<in>S. proj2_incident s l \<longrightarrow> s = q \<or> s = r)"
 proof -
-  from `p \<in> K2` and `proj2_incident p l`
+  from \<open>p \<in> K2\<close> and \<open>proj2_incident p l\<close>
     and line_through_K2_intersect_S_twice [of p l]
   obtain q and r where "q \<noteq> r" and "q \<in> S" and "r \<in> S"
     and "proj2_incident q l" and "proj2_incident r l"
@@ -1469,11 +1469,11 @@ lemma tangent_not_through_K2:
   shows "\<not> proj2_incident q (polar p)"
 proof
   assume "proj2_incident q (polar p)"
-  with `q \<in> K2` and line_through_K2_intersect_S_again [of q "polar p" p]
+  with \<open>q \<in> K2\<close> and line_through_K2_intersect_S_again [of q "polar p" p]
   obtain r where "r \<noteq> p" and "r \<in> S" and "proj2_incident r (polar p)" by auto
-  from `p \<in> S` and `r \<in> S` and `proj2_incident r (polar p)`
+  from \<open>p \<in> S\<close> and \<open>r \<in> S\<close> and \<open>proj2_incident r (polar p)\<close>
   have "r = p" by (rule point_in_S_polar_is_tangent)
-  with `r \<noteq> p` show False ..
+  with \<open>r \<noteq> p\<close> show False ..
 qed
 
 lemma outside_exists_line_not_intersect_S:
@@ -1483,23 +1483,23 @@ proof -
   let ?r = "proj2_intersection (polar p) z_zero"
   have "proj2_incident ?r (polar p)" and "proj2_incident ?r z_zero"
     by (rule proj2_intersection_incident)+
-  from `proj2_incident ?r z_zero`
+  from \<open>proj2_incident ?r z_zero\<close>
   have "conic_sgn ?r = 1" by (rule z_zero_conic_sgn_1)
-  with `conic_sgn p = 1`
+  with \<open>conic_sgn p = 1\<close>
   have "proj2_rep p \<bullet> (M *v proj2_rep p) > 0"
     and "proj2_rep ?r \<bullet> (M *v proj2_rep ?r) > 0"
     by (unfold conic_sgn_def) (simp_all add: sgn_1_pos)
 
-  from `proj2_incident ?r (polar p)`
+  from \<open>proj2_incident ?r (polar p)\<close>
   have "proj2_incident p (polar ?r)" by (rule incident_polar_swap)
   hence "proj2_rep p \<bullet> (M *v proj2_rep ?r) = 0" by (simp add: incident_polar)
 
   have "p \<noteq> ?r"
   proof
     assume "p = ?r"
-    with `proj2_incident ?r (polar p)` have "proj2_incident p (polar p)" by simp
+    with \<open>proj2_incident ?r (polar p)\<close> have "proj2_incident p (polar p)" by simp
     hence "proj2_rep p \<bullet> (M *v proj2_rep p) = 0" by (simp add: incident_polar)
-    with `proj2_rep p \<bullet> (M *v proj2_rep p) > 0` show False by simp
+    with \<open>proj2_rep p \<bullet> (M *v proj2_rep p) > 0\<close> show False by simp
   qed
 
   let ?l = "proj2_line_through p ?r"
@@ -1512,35 +1512,35 @@ proof -
     show "proj2_incident q ?l \<longrightarrow> q \<notin> S"
     proof
       assume "proj2_incident q ?l"
-      with `p \<noteq> ?r` and `proj2_incident p ?l` and `proj2_incident ?r ?l`
+      with \<open>p \<noteq> ?r\<close> and \<open>proj2_incident p ?l\<close> and \<open>proj2_incident ?r ?l\<close>
       have "q = p \<or> (\<exists> k. q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r))"
         by (simp add: proj2_incident_iff [of p ?r ?l q])
 
       show "q \<notin> S"
       proof cases
         assume "q = p"
-        with `conic_sgn p = 1` show "q \<notin> S" by (unfold S_def) simp
+        with \<open>conic_sgn p = 1\<close> show "q \<notin> S" by (unfold S_def) simp
       next
         assume "q \<noteq> p"
-        with `q = p \<or> (\<exists> k. q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r))`
+        with \<open>q = p \<or> (\<exists> k. q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r))\<close>
         obtain k where "q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r)"
           by auto
-        from `proj2_rep p \<bullet> (M *v proj2_rep p) > 0`
+        from \<open>proj2_rep p \<bullet> (M *v proj2_rep p) > 0\<close>
         have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2 \<ge> 0"
           by simp
-        with `proj2_rep p \<bullet> (M *v proj2_rep ?r) = 0`
-          and `proj2_rep ?r \<bullet> (M *v proj2_rep ?r) > 0`
+        with \<open>proj2_rep p \<bullet> (M *v proj2_rep ?r) = 0\<close>
+          and \<open>proj2_rep ?r \<bullet> (M *v proj2_rep ?r) > 0\<close>
         have "proj2_rep p \<bullet> (M *v proj2_rep p) * k\<^sup>2
           + proj2_rep p \<bullet> (M *v proj2_rep ?r) * 2 * k
           + proj2_rep ?r \<bullet> (M *v proj2_rep ?r)
           > 0"
           by simp
-        with `p \<noteq> ?r` and `q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r)`
+        with \<open>p \<noteq> ?r\<close> and \<open>q = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep ?r)\<close>
         show "q \<notin> S" by (simp add: S_quadratic)
       qed
     qed
   qed
-  with `proj2_incident p ?l`
+  with \<open>proj2_incident p ?l\<close>
   show "\<exists> l. proj2_incident p l \<and> (\<forall> q. proj2_incident q l \<longrightarrow> q \<notin> S)"
     by (simp add: exI [of _ ?l])
 qed
@@ -1568,18 +1568,18 @@ proof (rule ccontr)
       then obtain q and r where "q \<noteq> r" and "q \<in> S" and "r \<in> S"
         and "proj2_incident q ?l" and "proj2_incident r ?l"
         by auto
-      from `p \<in> S` and `q \<in> S` and `proj2_incident q ?l`
-        and `r \<in> S` and `proj2_incident r ?l`
+      from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>proj2_incident q ?l\<close>
+        and \<open>r \<in> S\<close> and \<open>proj2_incident r ?l\<close>
       have "q = p" and "r = p" by (simp add: point_in_S_polar_is_tangent)+
-      with `q \<noteq> r` show False by simp
+      with \<open>q \<noteq> r\<close> show False by simp
     qed
-    with `proj2_incident p ?l`
+    with \<open>proj2_incident p ?l\<close>
     show "\<not> (\<forall> l. proj2_incident p l \<longrightarrow> (\<exists> q r.
       q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l))"
       by auto
   next
     assume "conic_sgn p \<noteq> 0"
-    with `conic_sgn p \<ge> 0` have "conic_sgn p > 0" by simp
+    with \<open>conic_sgn p \<ge> 0\<close> have "conic_sgn p > 0" by simp
     hence "sgn (conic_sgn p) = 1" by simp
     hence "conic_sgn p = 1" by (simp add: sgn_conic_sgn)
     with outside_exists_line_not_intersect_S
@@ -1591,17 +1591,17 @@ proof (rule ccontr)
       assume "\<exists> q r.
         q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l"
       then obtain q where "q \<in> S" and "proj2_incident q l" by auto
-      from `proj2_incident q l` and `\<forall> q. proj2_incident q l \<longrightarrow> q \<notin> S`
+      from \<open>proj2_incident q l\<close> and \<open>\<forall> q. proj2_incident q l \<longrightarrow> q \<notin> S\<close>
       have "q \<notin> S" by simp
-      with `q \<in> S` show False by simp
+      with \<open>q \<in> S\<close> show False by simp
     qed
-    with `proj2_incident p l`
+    with \<open>proj2_incident p l\<close>
     show "\<not> (\<forall> l. proj2_incident p l \<longrightarrow> (\<exists> q r.
       q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l))"
       by auto
   qed
-  with `\<forall> l. proj2_incident p l \<longrightarrow> (\<exists> q r.
-    q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l)`
+  with \<open>\<forall> l. proj2_incident p l \<longrightarrow> (\<exists> q r.
+    q \<noteq> r \<and> q \<in> S \<and> r \<in> S \<and> proj2_incident q l \<and> proj2_incident r l)\<close>
   show False by simp
 qed
 
@@ -1612,9 +1612,9 @@ proof -
   from assms and line_through_K2_intersect_S
   obtain p where "p \<in> S" and "proj2_incident p l" by auto
 
-  from `proj2_incident p l`
+  from \<open>proj2_incident p l\<close>
   have "proj2_incident (pole l) (polar p)" by (rule incident_pole_polar)
-  with `p \<in> S`
+  with \<open>p \<in> S\<close>
   show "pole l \<notin> hyp2"
     by (auto simp add: tangent_not_through_K2)
 qed
@@ -1637,22 +1637,22 @@ proof -
       hence "proj2_incident p ?l"
         by (simp add: apply_cltn2_incident [of p l' ?J']
           cltn2.inv_inv [simplified])
-      with `p \<in> K2` and line_through_K2_intersect_S_twice [of p ?l]
+      with \<open>p \<in> K2\<close> and line_through_K2_intersect_S_twice [of p ?l]
       obtain q and r where "q \<noteq> r" and "q \<in> S" and "r \<in> S"
         and "proj2_incident q ?l" and "proj2_incident r ?l"
         by auto
       let ?q' = "apply_cltn2 q J"
       let ?r' = "apply_cltn2 r J"
-      from `q \<noteq> r` and apply_cltn2_injective [of q J r] have "?q' \<noteq> ?r'" by auto
+      from \<open>q \<noteq> r\<close> and apply_cltn2_injective [of q J r] have "?q' \<noteq> ?r'" by auto
 
-      from `q \<in> S` and `r \<in> S` and `is_K2_isometry J`
+      from \<open>q \<in> S\<close> and \<open>r \<in> S\<close> and \<open>is_K2_isometry J\<close>
       have "?q' \<in> S" and "?r' \<in> S" by (unfold is_K2_isometry_def) simp_all
 
-      from `proj2_incident q ?l` and `proj2_incident r ?l`
+      from \<open>proj2_incident q ?l\<close> and \<open>proj2_incident r ?l\<close>
       have "proj2_incident ?q' l'" and "proj2_incident ?r' l'"
         by (simp_all add: apply_cltn2_incident [of _ l' ?J']
           cltn2.inv_inv [simplified])
-      with `?q' \<noteq> ?r'` and `?q' \<in> S` and `?r' \<in> S`
+      with \<open>?q' \<noteq> ?r'\<close> and \<open>?q' \<in> S\<close> and \<open>?r' \<in> S\<close>
       show "\<exists> q' r'.
         q' \<noteq> r' \<and> q' \<in> S \<and> r' \<in> S \<and> proj2_incident q' l' \<and> proj2_incident r' l'"
         by auto
@@ -1666,13 +1666,13 @@ lemma is_K2_isometry_hyp2_S:
   shows "apply_cltn2 p J \<in> hyp2 \<union> S"
 proof cases
   assume "p \<in> hyp2"
-  with `is_K2_isometry J`
+  with \<open>is_K2_isometry J\<close>
   have "apply_cltn2 p J \<in> hyp2" by (rule statement60_one_way)
   thus "apply_cltn2 p J \<in> hyp2 \<union> S" ..
 next
   assume "p \<notin> hyp2"
-  with `p \<in> hyp2 \<union> S` have "p \<in> S" by simp
-  with `is_K2_isometry J`
+  with \<open>p \<in> hyp2 \<union> S\<close> have "p \<in> S" by simp
+  with \<open>is_K2_isometry J\<close>
   have "apply_cltn2 p J \<in> S" by (unfold is_K2_isometry_def) simp
   thus "apply_cltn2 p J \<in> hyp2 \<union> S" ..
 qed
@@ -1681,7 +1681,7 @@ lemma is_K2_isometry_z_non_zero:
   assumes "p \<in> hyp2 \<union> S" and "is_K2_isometry J"
   shows "z_non_zero (apply_cltn2 p J)"
 proof -
-  from `p \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   have "apply_cltn2 p J \<in> hyp2 \<union> S" by (rule is_K2_isometry_hyp2_S)
   thus "z_non_zero (apply_cltn2 p J)" by (rule hyp2_S_z_non_zero)
 qed
@@ -1695,48 +1695,48 @@ proof -
     = (1 / (proj2_rep p)$3) *\<^sub>R (proj2_rep p v* cltn2_rep J)"
     by (unfold cart2_append1_def) (simp add: scaleR_vector_matrix_assoc)
 
-  from `p \<in> hyp2 \<union> S` have "(proj2_rep p)$3 \<noteq> 0" by (rule hyp2_S_z_non_zero)
+  from \<open>p \<in> hyp2 \<union> S\<close> have "(proj2_rep p)$3 \<noteq> 0" by (rule hyp2_S_z_non_zero)
 
   from apply_cltn2_imp_mult [of p J]
   obtain j where "j \<noteq> 0"
     and "proj2_rep p v* cltn2_rep J = j *\<^sub>R proj2_rep (apply_cltn2 p J)"
     by auto
 
-  from `p \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   have "z_non_zero (apply_cltn2 p J)" by (rule is_K2_isometry_z_non_zero)
   hence "proj2_rep (apply_cltn2 p J)
     = (proj2_rep (apply_cltn2 p J))$3 *\<^sub>R cart2_append1 (apply_cltn2 p J)"
     by (rule proj2_rep_cart2_append1)
 
   let ?k = "1 / (proj2_rep p)$3 * j * (proj2_rep (apply_cltn2 p J))$3"
-  from `(proj2_rep p)$3 \<noteq> 0` and `j \<noteq> 0`
-    and `(proj2_rep (apply_cltn2 p J))$3 \<noteq> 0`
+  from \<open>(proj2_rep p)$3 \<noteq> 0\<close> and \<open>j \<noteq> 0\<close>
+    and \<open>(proj2_rep (apply_cltn2 p J))$3 \<noteq> 0\<close>
   have "?k \<noteq> 0" by simp
 
-  from `cart2_append1 p v* cltn2_rep J
-    = (1 / (proj2_rep p)$3) *\<^sub>R (proj2_rep p v* cltn2_rep J)`
-    and `proj2_rep p v* cltn2_rep J = j *\<^sub>R proj2_rep (apply_cltn2 p J)`
+  from \<open>cart2_append1 p v* cltn2_rep J
+    = (1 / (proj2_rep p)$3) *\<^sub>R (proj2_rep p v* cltn2_rep J)\<close>
+    and \<open>proj2_rep p v* cltn2_rep J = j *\<^sub>R proj2_rep (apply_cltn2 p J)\<close>
   have "cart2_append1 p v* cltn2_rep J
     = (1 / (proj2_rep p)$ 3 * j) *\<^sub>R proj2_rep (apply_cltn2 p J)"
     by simp
 
-  from `proj2_rep (apply_cltn2 p J)
-    = (proj2_rep (apply_cltn2 p J))$3 *\<^sub>R cart2_append1 (apply_cltn2 p J)`
+  from \<open>proj2_rep (apply_cltn2 p J)
+    = (proj2_rep (apply_cltn2 p J))$3 *\<^sub>R cart2_append1 (apply_cltn2 p J)\<close>
   have "(1 / (proj2_rep p)$3 * j) *\<^sub>R proj2_rep (apply_cltn2 p J)
     = (1 / (proj2_rep p)$3 * j) *\<^sub>R ((proj2_rep (apply_cltn2 p J))$3
     *\<^sub>R cart2_append1 (apply_cltn2 p J))"
     by simp
-  with `cart2_append1 p v* cltn2_rep J
-    = (1 / (proj2_rep p)$ 3 * j) *\<^sub>R proj2_rep (apply_cltn2 p J)`
+  with \<open>cart2_append1 p v* cltn2_rep J
+    = (1 / (proj2_rep p)$ 3 * j) *\<^sub>R proj2_rep (apply_cltn2 p J)\<close>
   have "cart2_append1 p v* cltn2_rep J = ?k *\<^sub>R cart2_append1 (apply_cltn2 p J)"
     by simp
-  with `?k \<noteq> 0`
+  with \<open>?k \<noteq> 0\<close>
   show "\<exists> k. k \<noteq> 0
     \<and> cart2_append1 p v* cltn2_rep J = k *\<^sub>R cart2_append1 (apply_cltn2 p J)"
     by (simp add: exI [of _ ?k])
 qed
 
-subsection {* The $K$-isometries form a group action *}
+subsection \<open>The $K$-isometries form a group action\<close>
 
 lemma hyp2_cltn2_id [simp]: "hyp2_cltn2 p cltn2_id = p"
   by (unfold hyp2_cltn2_def) (simp add: Rep_hyp2_inverse)
@@ -1745,7 +1745,7 @@ lemma apply_cltn2_Rep_hyp2:
   assumes "is_K2_isometry J"
   shows "apply_cltn2 (Rep_hyp2 p) J \<in> hyp2"
 proof -
-  from `is_K2_isometry J` and Rep_hyp2 [of p]
+  from \<open>is_K2_isometry J\<close> and Rep_hyp2 [of p]
   show "apply_cltn2 (Rep_hyp2 p) J \<in> K2" by (rule statement60_one_way)
 qed
 
@@ -1753,7 +1753,7 @@ lemma Rep_hyp2_cltn2:
   assumes "is_K2_isometry J"
   shows "Rep_hyp2 (hyp2_cltn2 p J) = apply_cltn2 (Rep_hyp2 p) J"
 proof -
-  from `is_K2_isometry J`
+  from \<open>is_K2_isometry J\<close>
   have "apply_cltn2 (Rep_hyp2 p) J \<in> hyp2" by (rule apply_cltn2_Rep_hyp2)
   thus "Rep_hyp2 (hyp2_cltn2 p J) = apply_cltn2 (Rep_hyp2 p) J"
     by (unfold hyp2_cltn2_def) (rule Abs_hyp2_inverse)
@@ -1763,7 +1763,7 @@ lemma hyp2_cltn2_compose:
   assumes "is_K2_isometry H"
   shows "hyp2_cltn2 (hyp2_cltn2 p H) J = hyp2_cltn2 p (cltn2_compose H J)"
 proof -
-  from `is_K2_isometry H`
+  from \<open>is_K2_isometry H\<close>
   have "apply_cltn2 (Rep_hyp2 p) H \<in> hyp2" by (rule apply_cltn2_Rep_hyp2)
   thus "hyp2_cltn2 (hyp2_cltn2 p H) J = hyp2_cltn2 p (cltn2_compose H J)"
     by (unfold hyp2_cltn2_def) (simp add: Abs_hyp2_inverse apply_cltn2_compose)
@@ -1784,7 +1784,7 @@ proof
     by (simp add: hyp2_cltn2_compose)
 qed
 
-subsection {* The Klein--Beltrami model satisfies Tarski's first three axioms *}
+subsection \<open>The Klein--Beltrami model satisfies Tarski's first three axioms\<close>
 
 lemma three_in_S_tangent_intersection_no_3_Col:
   assumes "p \<in> S" and "q \<in> S" and "r \<in> S"
@@ -1794,10 +1794,10 @@ lemma three_in_S_tangent_intersection_no_3_Col:
 proof -
   let ?T = "{?s,r,p,q}"
 
-  from `p \<noteq> q` have "card {p,q} = 2" by simp
-  with `r \<notin> {p,q}` have "card {r,p,q} = 3" by simp
+  from \<open>p \<noteq> q\<close> have "card {p,q} = 2" by simp
+  with \<open>r \<notin> {p,q}\<close> have "card {r,p,q} = 3" by simp
 
-  from `p \<in> S` and `q \<in> S` and `r \<in> S` have "{r,p,q} \<subseteq> S" by simp
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>r \<in> S\<close> have "{r,p,q} \<subseteq> S" by simp
 
   have "proj2_incident ?s (polar p)" and "proj2_incident ?s (polar q)"
     by (rule proj2_intersection_incident)+
@@ -1805,14 +1805,14 @@ proof -
   have "?s \<notin> S"
   proof
     assume "?s \<in> S"
-    with `p \<in> S` and `proj2_incident ?s (polar p)`
-      and `q \<in> S` and `proj2_incident ?s (polar q)`
+    with \<open>p \<in> S\<close> and \<open>proj2_incident ?s (polar p)\<close>
+      and \<open>q \<in> S\<close> and \<open>proj2_incident ?s (polar q)\<close>
     have "?s = p" and "?s = q" by (simp_all add: point_in_S_polar_is_tangent)
     hence "p = q" by simp
-    with `p \<noteq> q` show False ..
+    with \<open>p \<noteq> q\<close> show False ..
   qed
-  with `{r,p,q} \<subseteq> S` have "?s \<notin> {r,p,q}" by auto
-  with `card {r,p,q} = 3` have "card {?s,r,p,q} = 4" by simp
+  with \<open>{r,p,q} \<subseteq> S\<close> have "?s \<notin> {r,p,q}" by auto
+  with \<open>card {r,p,q} = 3\<close> have "card {?s,r,p,q} = 4" by simp
 
   have "\<forall> t\<in>?T. \<not> proj2_set_Col (?T - {t})"
   proof standard+
@@ -1822,7 +1822,7 @@ proof -
     then obtain l where "\<forall> a \<in> (?T - {t}). proj2_incident a l"
       unfolding proj2_set_Col_def ..
 
-    from `proj2_set_Col (?T - {t})`
+    from \<open>proj2_set_Col (?T - {t})\<close>
     have "proj2_set_Col (S \<inter> (?T - {t}))"
       by (simp add: proj2_subset_Col [of "(S \<inter> (?T - {t}))" "?T - {t}"])
     hence "card (S \<inter> (?T - {t})) \<le> 2" by (simp add: card_line_intersect_S)
@@ -1830,37 +1830,37 @@ proof -
     show False
     proof cases
       assume "t = ?s"
-      with `?s \<notin> {r,p,q}` have "?T - {t} = {r,p,q}" by simp
-      with `{r,p,q} \<subseteq> S` have "S \<inter> (?T - {t}) = {r,p,q}" by simp
-      with `card {r,p,q} = 3` and `card (S \<inter> (?T - {t})) \<le> 2` show False by simp
+      with \<open>?s \<notin> {r,p,q}\<close> have "?T - {t} = {r,p,q}" by simp
+      with \<open>{r,p,q} \<subseteq> S\<close> have "S \<inter> (?T - {t}) = {r,p,q}" by simp
+      with \<open>card {r,p,q} = 3\<close> and \<open>card (S \<inter> (?T - {t})) \<le> 2\<close> show False by simp
     next
       assume "t \<noteq> ?s"
       hence "?s \<in> ?T - {t}" by simp
-      with `\<forall> a \<in> (?T - {t}). proj2_incident a l` have "proj2_incident ?s l" ..
+      with \<open>\<forall> a \<in> (?T - {t}). proj2_incident a l\<close> have "proj2_incident ?s l" ..
 
-      from `p \<noteq> q` have "{p,q} \<inter> ?T - {t} \<noteq> {}" by auto
+      from \<open>p \<noteq> q\<close> have "{p,q} \<inter> ?T - {t} \<noteq> {}" by auto
       then obtain d where "d \<in> {p,q}" and "d \<in> ?T - {t}" by auto
-      from `d \<in> ?T - {t}` and `\<forall> a \<in> (?T - {t}). proj2_incident a l`
+      from \<open>d \<in> ?T - {t}\<close> and \<open>\<forall> a \<in> (?T - {t}). proj2_incident a l\<close>
       have "proj2_incident d l" by simp
 
-      from `d \<in> {p,q}`
-        and `proj2_incident ?s (polar p)`
-        and `proj2_incident ?s (polar q)`
+      from \<open>d \<in> {p,q}\<close>
+        and \<open>proj2_incident ?s (polar p)\<close>
+        and \<open>proj2_incident ?s (polar q)\<close>
       have "proj2_incident ?s (polar d)" by auto
 
-      from `d \<in> {p,q}` and `{r,p,q} \<subseteq> S` have "d \<in> S" by auto
+      from \<open>d \<in> {p,q}\<close> and \<open>{r,p,q} \<subseteq> S\<close> have "d \<in> S" by auto
       hence "proj2_incident d (polar d)" by (unfold incident_own_polar_in_S)
 
-      from `d \<in> S` and `?s \<notin> S` have "d \<noteq> ?s" by auto
-      with `proj2_incident ?s l`
-        and `proj2_incident d l`
-        and `proj2_incident ?s (polar d)`
-        and `proj2_incident d (polar d)`
+      from \<open>d \<in> S\<close> and \<open>?s \<notin> S\<close> have "d \<noteq> ?s" by auto
+      with \<open>proj2_incident ?s l\<close>
+        and \<open>proj2_incident d l\<close>
+        and \<open>proj2_incident ?s (polar d)\<close>
+        and \<open>proj2_incident d (polar d)\<close>
         and proj2_incident_unique
       have "l = polar d" by auto
-      with `d \<in> S` and point_in_S_polar_is_tangent
+      with \<open>d \<in> S\<close> and point_in_S_polar_is_tangent
       have "\<forall> a\<in>S. proj2_incident a l \<longrightarrow> a = d" by simp
-      with `\<forall> a \<in> (?T - {t}). proj2_incident a l`
+      with \<open>\<forall> a \<in> (?T - {t}). proj2_incident a l\<close>
       have "S \<inter> (?T - {t}) \<subseteq> {d}" by auto
       with card_mono [of "{d}"] have "card (S \<inter> (?T - {t})) \<le> 1" by simp
       hence "card ((S \<inter> ?T) - {t}) \<le> 1" by (simp add: Int_Diff)
@@ -1869,15 +1869,15 @@ proof -
       with card_suc_ge_insert [of t "(S \<inter> ?T) - {t}"]
         and card_mono [of "insert t ((S \<inter> ?T) - {t})" "S \<inter> ?T"]
       have "card (S \<inter> ?T) \<le> card ((S \<inter> ?T) - {t}) + 1" by simp
-      with `card ((S \<inter> ?T) - {t}) \<le> 1` have "card (S \<inter> ?T) \<le> 2" by simp
+      with \<open>card ((S \<inter> ?T) - {t}) \<le> 1\<close> have "card (S \<inter> ?T) \<le> 2" by simp
 
-      from `{r,p,q} \<subseteq> S` have "{r,p,q} \<subseteq> S \<inter> ?T" by simp
-      with `card {r,p,q} = 3` and card_mono [of "S \<inter> ?T" "{r,p,q}"]
+      from \<open>{r,p,q} \<subseteq> S\<close> have "{r,p,q} \<subseteq> S \<inter> ?T" by simp
+      with \<open>card {r,p,q} = 3\<close> and card_mono [of "S \<inter> ?T" "{r,p,q}"]
       have "card (S \<inter> ?T) \<ge> 3" by simp
-      with `card (S \<inter> ?T) \<le> 2` show False by simp
+      with \<open>card (S \<inter> ?T) \<le> 2\<close> show False by simp
     qed
   qed
-  with `card ?T = 4` show "proj2_no_3_Col ?T" unfolding proj2_no_3_Col_def ..
+  with \<open>card ?T = 4\<close> show "proj2_no_3_Col ?T" unfolding proj2_no_3_Col_def ..
 qed
 
 lemma statement65_special_case:
@@ -1894,7 +1894,7 @@ proof -
   have "range (($) (?t$1)) = {?s, r, p, q}"
     unfolding image_def
     by (auto simp add: UNIV_4 vector_4)
-  with `p \<in> S` and `q \<in> S` and `r \<in> S` and `p \<noteq> q` and `r \<notin> {p,q}`
+  with \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>r \<in> S\<close> and \<open>p \<noteq> q\<close> and \<open>r \<notin> {p,q}\<close>
   have "proj2_no_3_Col (range (($) (?t$1)))"
     by (simp add: three_in_S_tangent_intersection_no_3_Col)
   moreover have "range (($) (?t$2)) = {far_north, north, east, west}"
@@ -1934,7 +1934,7 @@ proof -
      unfolding symmatrix_def and transpose_def
      by (simp_all add: vec_eq_iff)
 
-   from compass_non_zero and `apply_cltn2 east J = p` and `p \<in> S`
+   from compass_non_zero and \<open>apply_cltn2 east J = p\<close> and \<open>p \<in> S\<close>
      and apply_cltn2_abs_in_S [of "vector [1,0,1]" J]
    have "(vector [1,0,1] :: real^3) \<bullet> (?N *v vector [1,0,1]) = 0"
      unfolding east_def
@@ -1942,9 +1942,9 @@ proof -
    hence "?N$1$1 + ?N$1$3 + ?N$3$1 + ?N$3$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
      by (simp add: sum_3 vector_3)
-   with `?N$3$1 = ?N$1$3` have "?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0" by simp
+   with \<open>?N$3$1 = ?N$1$3\<close> have "?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0" by simp
 
-   from compass_non_zero and `apply_cltn2 west J = q` and `q \<in> S`
+   from compass_non_zero and \<open>apply_cltn2 west J = q\<close> and \<open>q \<in> S\<close>
      and apply_cltn2_abs_in_S [of "vector [-1,0,1]" J]
    have "(vector [-1,0,1] :: real^3) \<bullet> (?N *v vector [-1,0,1]) = 0"
      unfolding west_def
@@ -1952,14 +1952,14 @@ proof -
    hence "?N$1$1 - ?N$1$3 - ?N$3$1 + ?N$3$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
      by (simp add: sum_3 vector_3)
-   with `?N$3$1 = ?N$1$3` have "?N$1$1 - 2 * (?N$1$3) + ?N$3$3 = 0" by simp
-   with `?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0`
+   with \<open>?N$3$1 = ?N$1$3\<close> have "?N$1$1 - 2 * (?N$1$3) + ?N$3$3 = 0" by simp
+   with \<open>?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0\<close>
    have "?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = ?N$1$1 - 2 * (?N$1$3) + ?N$3$3"
      by simp
    hence "?N$1$3 = 0" by simp
-   with `?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0` have "?N$3$3 = - (?N$1$1)" by simp
+   with \<open>?N$1$1 + 2 * (?N$1$3) + ?N$3$3 = 0\<close> have "?N$3$3 = - (?N$1$1)" by simp
 
-   from compass_non_zero and `apply_cltn2 north J = r` and `r \<in> S`
+   from compass_non_zero and \<open>apply_cltn2 north J = r\<close> and \<open>r \<in> S\<close>
      and apply_cltn2_abs_in_S [of "vector [0,1,1]" J]
    have "(vector [0,1,1] :: real^3) \<bullet> (?N *v vector [0,1,1]) = 0"
      unfolding north_def
@@ -1967,7 +1967,7 @@ proof -
    hence "?N$2$2 + ?N$2$3 + ?N$3$2 + ?N$3$3 = 0"
      unfolding inner_vec_def and matrix_vector_mult_def
      by (simp add: sum_3 vector_3)
-   with `?N$3$2 = ?N$2$3` have "?N$2$2 + 2 * (?N$2$3) + ?N$3$3 = 0" by simp
+   with \<open>?N$3$2 = ?N$2$3\<close> have "?N$2$2 + 2 * (?N$2$3) + ?N$3$3 = 0" by simp
 
    have "proj2_incident ?s (polar p)" and "proj2_incident ?s (polar q)"
      by (rule proj2_intersection_incident)+
@@ -1977,24 +1977,24 @@ proof -
      and "vector [-1,0,1] v* cltn2_rep J \<noteq> 0"
      and "vector [0,1,0] v* cltn2_rep J \<noteq> 0"
      by (simp_all add: non_zero_mult_rep_non_zero)
-   from `vector [1,0,1] v* cltn2_rep J \<noteq> 0`
-     and `vector [-1,0,1] v* cltn2_rep J \<noteq> 0`
-     and `p = proj2_abs (vector [1,0,1] v* cltn2_rep J)`
-     and `q = proj2_abs (vector [-1,0,1] v* cltn2_rep J)`
+   from \<open>vector [1,0,1] v* cltn2_rep J \<noteq> 0\<close>
+     and \<open>vector [-1,0,1] v* cltn2_rep J \<noteq> 0\<close>
+     and \<open>p = proj2_abs (vector [1,0,1] v* cltn2_rep J)\<close>
+     and \<open>q = proj2_abs (vector [-1,0,1] v* cltn2_rep J)\<close>
    have "polar p = proj2_line_abs (M *v (vector [1,0,1] v* cltn2_rep J))"
      and "polar q = proj2_line_abs (M *v (vector [-1,0,1] v* cltn2_rep J))"
      by (simp_all add: polar_abs)
 
-   from `vector [1,0,1] v* cltn2_rep J \<noteq> 0`
-     and `vector [-1,0,1] v* cltn2_rep J \<noteq> 0`
+   from \<open>vector [1,0,1] v* cltn2_rep J \<noteq> 0\<close>
+     and \<open>vector [-1,0,1] v* cltn2_rep J \<noteq> 0\<close>
      and M_invertible
    have "M *v (vector [1,0,1] v* cltn2_rep J) \<noteq> 0"
      and "M *v (vector [-1,0,1] v* cltn2_rep J) \<noteq> 0"
      by (simp_all add: invertible_times_non_zero)
-   with `vector [0,1,0] v* cltn2_rep J \<noteq> 0`
-     and `polar p = proj2_line_abs (M *v (vector [1,0,1] v* cltn2_rep J))`
-     and `polar q = proj2_line_abs (M *v (vector [-1,0,1] v* cltn2_rep J))`
-     and `?s = proj2_abs (vector [0,1,0] v* cltn2_rep J)`
+   with \<open>vector [0,1,0] v* cltn2_rep J \<noteq> 0\<close>
+     and \<open>polar p = proj2_line_abs (M *v (vector [1,0,1] v* cltn2_rep J))\<close>
+     and \<open>polar q = proj2_line_abs (M *v (vector [-1,0,1] v* cltn2_rep J))\<close>
+     and \<open>?s = proj2_abs (vector [0,1,0] v* cltn2_rep J)\<close>
    have "proj2_incident ?s (polar p)
      \<longleftrightarrow> (vector [0,1,0] v* cltn2_rep J)
      \<bullet> (M *v (vector [1,0,1] v* cltn2_rep J)) = 0"
@@ -2002,7 +2002,7 @@ proof -
      \<longleftrightarrow> (vector [0,1,0] v* cltn2_rep J)
      \<bullet> (M *v (vector [-1,0,1] v* cltn2_rep J)) = 0"
      by (simp_all add: proj2_incident_abs)
-   with `proj2_incident ?s (polar p)` and `proj2_incident ?s (polar q)`
+   with \<open>proj2_incident ?s (polar p)\<close> and \<open>proj2_incident ?s (polar q)\<close>
    have "(vector [0,1,0] v* cltn2_rep J)
      \<bullet> (M *v (vector [1,0,1] v* cltn2_rep J)) = 0"
      and "(vector [0,1,0] v* cltn2_rep J)
@@ -2016,12 +2016,12 @@ proof -
      by (simp_all add: sum_3 vector_3)
    hence "?N$2$1 + ?N$2$3 = -(?N$2$1) + ?N$2$3" by simp
    hence "?N$2$1 = 0" by simp
-   with `?N$2$1 + ?N$2$3 = 0` have "?N$2$3 = 0" by simp
-   with `?N$2$2 + 2 * (?N$2$3) + ?N$3$3 = 0` and `?N$3$3 = -(?N$1$1)`
+   with \<open>?N$2$1 + ?N$2$3 = 0\<close> have "?N$2$3 = 0" by simp
+   with \<open>?N$2$2 + 2 * (?N$2$3) + ?N$3$3 = 0\<close> and \<open>?N$3$3 = -(?N$1$1)\<close>
    have "?N$2$2 = ?N$1$1" by simp
-   with `?N$1$3 = 0` and `?N$2$1 = ?N$1$2` and `?N$1$3 = 0`
-     and `?N$2$1 = 0` and `?N$2$2 = ?N$1$1` and `?N$2$3 = 0`
-     and `?N$3$1 = ?N$1$3` and `?N$3$2 = ?N$2$3` and `?N$3$3 = -(?N$1$1)`
+   with \<open>?N$1$3 = 0\<close> and \<open>?N$2$1 = ?N$1$2\<close> and \<open>?N$1$3 = 0\<close>
+     and \<open>?N$2$1 = 0\<close> and \<open>?N$2$2 = ?N$1$1\<close> and \<open>?N$2$3 = 0\<close>
+     and \<open>?N$3$1 = ?N$1$3\<close> and \<open>?N$3$2 = ?N$2$3\<close> and \<open>?N$3$3 = -(?N$1$1)\<close>
    have "?N = (?N$1$1) *\<^sub>R M"
      unfolding M_def
      by (simp add: vec_eq_iff vector_3 forall_3)
@@ -2030,15 +2030,15 @@ proof -
    with M_invertible
    have "invertible ?N" by (simp add: invertible_mult transpose_invertible)
    hence "?N \<noteq> 0" by (auto simp add: zero_not_invertible)
-   with `?N = (?N$1$1) *\<^sub>R M` have "?N$1$1 \<noteq> 0" by auto
-   with `?N = (?N$1$1) *\<^sub>R M`
+   with \<open>?N = (?N$1$1) *\<^sub>R M\<close> have "?N$1$1 \<noteq> 0" by auto
+   with \<open>?N = (?N$1$1) *\<^sub>R M\<close>
    have "is_K2_isometry (cltn2_abs (cltn2_rep J))"
      by (simp add: J_M_J_transpose_K2_isometry)
    hence "is_K2_isometry J" by (simp add: cltn2_abs_rep)
-   with `apply_cltn2 east J = p`
-     and `apply_cltn2 west J = q`
-     and `apply_cltn2 north J = r`
-     and `apply_cltn2 far_north J = ?s`
+   with \<open>apply_cltn2 east J = p\<close>
+     and \<open>apply_cltn2 west J = q\<close>
+     and \<open>apply_cltn2 north J = r\<close>
+     and \<open>apply_cltn2 far_north J = ?s\<close>
    show "\<exists> J. is_K2_isometry J
      \<and> apply_cltn2 east J = p
      \<and> apply_cltn2 west J = q
@@ -2052,10 +2052,10 @@ lemma statement66_existence:
   shows "\<exists> J. is_K2_isometry J \<and> apply_cltn2 a1 J = a2 \<and> apply_cltn2 p1 J = p2"
 proof -
   let ?a = "vector [a1,a2] :: proj2^2"
-  from `a1 \<in> K2` and `a2 \<in> K2` have "\<forall> i. ?a$i \<in> K2" by (simp add: forall_2)
+  from \<open>a1 \<in> K2\<close> and \<open>a2 \<in> K2\<close> have "\<forall> i. ?a$i \<in> K2" by (simp add: forall_2)
 
   let ?p = "vector [p1,p2] :: proj2^2"
-  from `p1 \<in> S` and `p2 \<in> S` have "\<forall> i. ?p$i \<in> S" by (simp add: forall_2)
+  from \<open>p1 \<in> S\<close> and \<open>p2 \<in> S\<close> have "\<forall> i. ?p$i \<in> S" by (simp add: forall_2)
 
   let ?l = "\<chi> i. proj2_line_through (?a$i) (?p$i)"
   have "\<forall> i. proj2_incident (?a$i) (?l$i)"
@@ -2072,11 +2072,11 @@ proof -
   have "\<forall> i. ?q$i \<noteq> ?p$i \<and> ?q$i \<in> S \<and> proj2_incident (?q$i) (?l$i)"
   proof
     fix i
-    from `\<forall> i. ?a$i \<in> K2` have "?a$i \<in> K2" ..
+    from \<open>\<forall> i. ?a$i \<in> K2\<close> have "?a$i \<in> K2" ..
 
-    from `\<forall> i. proj2_incident (?a$i) (?l$i)`
+    from \<open>\<forall> i. proj2_incident (?a$i) (?l$i)\<close>
     have "proj2_incident (?a$i) (?l$i)" ..
-    with `?a$i \<in> K2`
+    with \<open>?a$i \<in> K2\<close>
     have "\<exists> qi. qi \<noteq> ?p$i \<and> qi \<in> S \<and> proj2_incident qi (?l$i)"
       by (rule line_through_K2_intersect_S_again)
     with someI_ex [of "\<lambda> qi. qi \<noteq> ?p$i \<and> qi \<in> S \<and> proj2_incident qi (?l$i)"]
@@ -2102,11 +2102,11 @@ proof -
   have "\<forall> i. ?s$i \<noteq> ?r$i \<and> ?s$i \<in> S \<and> proj2_incident (?s$i) (?m$i)"
   proof
     fix i
-    from `\<forall> i. ?a$i \<in> K2` have "?a$i \<in> K2" ..
+    from \<open>\<forall> i. ?a$i \<in> K2\<close> have "?a$i \<in> K2" ..
 
-    from `\<forall> i. proj2_incident (?a$i) (?m$i)`
+    from \<open>\<forall> i. proj2_incident (?a$i) (?m$i)\<close>
     have "proj2_incident (?a$i) (?m$i)" ..
-    with `?a$i \<in> K2`
+    with \<open>?a$i \<in> K2\<close>
     have "\<exists> si. si \<noteq> ?r$i \<and> si \<in> S \<and> proj2_incident si (?m$i)"
       by (rule line_through_K2_intersect_S_again)
     with someI_ex [of "\<lambda> si. si \<noteq> ?r$i \<and> si \<in> S \<and> proj2_incident si (?m$i)"]
@@ -2123,13 +2123,13 @@ proof -
     assume "proj2_incident u (?m$i)"
     assume "u = ?p$i \<or> u = ?q$i"
 
-    from `\<forall> i. ?p$i \<in> S` have "?p$i \<in> S" ..
+    from \<open>\<forall> i. ?p$i \<in> S\<close> have "?p$i \<in> S" ..
 
-    from `\<forall> i. ?q$i \<noteq> ?p$i \<and> ?q$i \<in> S \<and> proj2_incident (?q$i) (?l$i)`
+    from \<open>\<forall> i. ?q$i \<noteq> ?p$i \<and> ?q$i \<in> S \<and> proj2_incident (?q$i) (?l$i)\<close>
     have "?q$i \<noteq> ?p$i" and "?q$i \<in> S"
       by simp_all
 
-    from `?p$i \<in> S` and `?q$i \<in> S` and `u = ?p$i \<or> u = ?q$i`
+    from \<open>?p$i \<in> S\<close> and \<open>?q$i \<in> S\<close> and \<open>u = ?p$i \<or> u = ?q$i\<close>
     have "u \<in> S" by auto
     hence "proj2_incident u (polar u)"
       by (simp add: incident_own_polar_in_S)
@@ -2137,39 +2137,39 @@ proof -
     have "proj2_incident (?r$i) (polar (?p$i))"
       and "proj2_incident (?r$i) (polar (?q$i))"
       by (simp_all add: proj2_intersection_incident)
-    with `u = ?p$i \<or> u = ?q$i`
+    with \<open>u = ?p$i \<or> u = ?q$i\<close>
     have "proj2_incident (?r$i) (polar u)" by auto
 
-    from `\<forall> i. proj2_incident (?r$i) (?m$i)`
+    from \<open>\<forall> i. proj2_incident (?r$i) (?m$i)\<close>
     have "proj2_incident (?r$i) (?m$i)" ..
 
-    from `\<forall> i. proj2_incident (?a$i) (?m$i)`
+    from \<open>\<forall> i. proj2_incident (?a$i) (?m$i)\<close>
     have "proj2_incident (?a$i) (?m$i)" ..
 
-    from `\<forall> i. ?a$i \<in> K2` have "?a$i \<in> K2" ..
+    from \<open>\<forall> i. ?a$i \<in> K2\<close> have "?a$i \<in> K2" ..
 
     have "u \<noteq> ?r$i"
     proof
       assume "u = ?r$i"
-      with `proj2_incident (?r$i) (polar (?p$i))`
-        and `proj2_incident (?r$i) (polar (?q$i))`
+      with \<open>proj2_incident (?r$i) (polar (?p$i))\<close>
+        and \<open>proj2_incident (?r$i) (polar (?q$i))\<close>
       have "proj2_incident u (polar (?p$i))"
         and "proj2_incident u (polar (?q$i))"
         by simp_all
-      with `u \<in> S` and `?p$i \<in> S` and `?q$i \<in> S`
+      with \<open>u \<in> S\<close> and \<open>?p$i \<in> S\<close> and \<open>?q$i \<in> S\<close>
       have "u = ?p$i" and "u = ?q$i"
         by (simp_all add: point_in_S_polar_is_tangent)
-      with `?q$i \<noteq> ?p$i` show False by simp
+      with \<open>?q$i \<noteq> ?p$i\<close> show False by simp
     qed
-    with `proj2_incident (u) (polar u)`
-      and `proj2_incident (?r$i) (polar u)`
-      and `proj2_incident u (?m$i)`
-      and `proj2_incident (?r$i) (?m$i)`
+    with \<open>proj2_incident (u) (polar u)\<close>
+      and \<open>proj2_incident (?r$i) (polar u)\<close>
+      and \<open>proj2_incident u (?m$i)\<close>
+      and \<open>proj2_incident (?r$i) (?m$i)\<close>
       and proj2_incident_unique
     have "?m$i = polar u" by auto
-    with `proj2_incident (?a$i) (?m$i)`
+    with \<open>proj2_incident (?a$i) (?m$i)\<close>
     have "proj2_incident (?a$i) (polar u)" by simp
-    with `u \<in> S` and `?a$i \<in> K2` and tangent_not_through_K2
+    with \<open>u \<in> S\<close> and \<open>?a$i \<in> K2\<close> and tangent_not_through_K2
     show False by simp
   qed
 
@@ -2185,18 +2185,18 @@ proof -
     \<and> apply_cltn2 far_north (?H$i) = ?r$i"
   proof
     fix i :: 2
-    from `\<forall> i. ?p$i \<in> S` have "?p$i \<in> S" ..
+    from \<open>\<forall> i. ?p$i \<in> S\<close> have "?p$i \<in> S" ..
 
-    from `\<forall> i. ?q$i \<noteq> ?p$i \<and> ?q$i \<in> S \<and> proj2_incident (?q$i) (?l$i)`
+    from \<open>\<forall> i. ?q$i \<noteq> ?p$i \<and> ?q$i \<in> S \<and> proj2_incident (?q$i) (?l$i)\<close>
     have "?q$i \<noteq> ?p$i" and "?q$i \<in> S"
       by simp_all
 
-    from `\<forall> i. ?s$i \<noteq> ?r$i \<and> ?s$i \<in> S \<and> proj2_incident (?s$i) (?m$i)`
+    from \<open>\<forall> i. ?s$i \<noteq> ?r$i \<and> ?s$i \<in> S \<and> proj2_incident (?s$i) (?m$i)\<close>
     have "?s$i \<in> S" and "proj2_incident (?s$i) (?m$i)" by simp_all
-    from `proj2_incident (?s$i) (?m$i)`
-      and `\<forall> i. \<forall> u.  proj2_incident u (?m$i) \<longrightarrow> \<not> (u = ?p$i \<or> u = ?q$i)`
+    from \<open>proj2_incident (?s$i) (?m$i)\<close>
+      and \<open>\<forall> i. \<forall> u.  proj2_incident u (?m$i) \<longrightarrow> \<not> (u = ?p$i \<or> u = ?q$i)\<close>
     have "?s$i \<notin> {?q$i, ?p$i}" by fast
-    with `?q$i \<in> S` and `?p$i \<in> S` and `?s$i \<in> S` and `?q$i \<noteq> ?p$i`
+    with \<open>?q$i \<in> S\<close> and \<open>?p$i \<in> S\<close> and \<open>?s$i \<in> S\<close> and \<open>?q$i \<noteq> ?p$i\<close>
     have "\<exists> Hi. is_K2_isometry Hi
       \<and> apply_cltn2 east Hi = ?q$i
       \<and> apply_cltn2 west Hi = ?p$i
@@ -2228,70 +2228,70 @@ proof -
     by fast+
 
   let ?J = "cltn2_compose (cltn2_inverse (?H$1)) (?H$2)"
-  from `is_K2_isometry (?H$1)` and `is_K2_isometry (?H$2)`
+  from \<open>is_K2_isometry (?H$1)\<close> and \<open>is_K2_isometry (?H$2)\<close>
   have "is_K2_isometry ?J"
     by (simp only: cltn2_inverse_is_K2_isometry cltn2_compose_is_K2_isometry)
 
-  from `apply_cltn2 west (?H$1) = ?p$1`
+  from \<open>apply_cltn2 west (?H$1) = ?p$1\<close>
   have "apply_cltn2 p1 (cltn2_inverse (?H$1)) = west"
     by (simp add: cltn2.act_inv_iff [simplified])
-  with `apply_cltn2 west (?H$2) = ?p$2`
+  with \<open>apply_cltn2 west (?H$2) = ?p$2\<close>
   have "apply_cltn2 p1 ?J = p2"
     by (simp add: cltn2.act_act [simplified, symmetric])
 
-  from `apply_cltn2 east (?H$1) = ?q$1`
+  from \<open>apply_cltn2 east (?H$1) = ?q$1\<close>
   have "apply_cltn2 (?q$1) (cltn2_inverse (?H$1)) = east"
     by (simp add: cltn2.act_inv_iff [simplified])
-  with `apply_cltn2 east (?H$2) = ?q$2`
+  with \<open>apply_cltn2 east (?H$2) = ?q$2\<close>
   have "apply_cltn2 (?q$1) ?J = ?q$2"
     by (simp add: cltn2.act_act [simplified, symmetric])
-  with `?q$1 \<noteq> ?p$1` and `apply_cltn2 p1 ?J = p2`
-    and `proj2_incident (?p$1) (?l$1)`
-    and `proj2_incident (?q$1) (?l$1)`
-    and `proj2_incident (?p$2) (?l$2)`
-    and `proj2_incident (?q$2) (?l$2)`
+  with \<open>?q$1 \<noteq> ?p$1\<close> and \<open>apply_cltn2 p1 ?J = p2\<close>
+    and \<open>proj2_incident (?p$1) (?l$1)\<close>
+    and \<open>proj2_incident (?q$1) (?l$1)\<close>
+    and \<open>proj2_incident (?p$2) (?l$2)\<close>
+    and \<open>proj2_incident (?q$2) (?l$2)\<close>
   have "apply_cltn2_line (?l$1) ?J = (?l$2)"
     by (simp add: apply_cltn2_line_unique)
-  moreover from `proj2_incident (?a$1) (?l$1)`
+  moreover from \<open>proj2_incident (?a$1) (?l$1)\<close>
   have "proj2_incident (apply_cltn2 (?a$1) ?J) (apply_cltn2_line (?l$1) ?J)"
     by simp
   ultimately have "proj2_incident (apply_cltn2 (?a$1) ?J) (?l$2)" by simp
 
-  from `apply_cltn2 north (?H$1) = ?s$1`
+  from \<open>apply_cltn2 north (?H$1) = ?s$1\<close>
   have "apply_cltn2 (?s$1) (cltn2_inverse (?H$1)) = north"
     by (simp add: cltn2.act_inv_iff [simplified])
-  with `apply_cltn2 north (?H$2) = ?s$2`
+  with \<open>apply_cltn2 north (?H$2) = ?s$2\<close>
   have "apply_cltn2 (?s$1) ?J = ?s$2"
     by (simp add: cltn2.act_act [simplified, symmetric])
 
-  from `apply_cltn2 far_north (?H$1) = ?r$1`
+  from \<open>apply_cltn2 far_north (?H$1) = ?r$1\<close>
   have "apply_cltn2 (?r$1) (cltn2_inverse (?H$1)) = far_north"
     by (simp add: cltn2.act_inv_iff [simplified])
-  with `apply_cltn2 far_north (?H$2) = ?r$2`
+  with \<open>apply_cltn2 far_north (?H$2) = ?r$2\<close>
   have "apply_cltn2 (?r$1) ?J = ?r$2"
     by (simp add: cltn2.act_act [simplified, symmetric])
-  with `?s$1 \<noteq> ?r$1` and `apply_cltn2 (?s$1) ?J = (?s$2)`
-    and `proj2_incident (?r$1) (?m$1)`
-    and `proj2_incident (?s$1) (?m$1)`
-    and `proj2_incident (?r$2) (?m$2)`
-    and `proj2_incident (?s$2) (?m$2)`
+  with \<open>?s$1 \<noteq> ?r$1\<close> and \<open>apply_cltn2 (?s$1) ?J = (?s$2)\<close>
+    and \<open>proj2_incident (?r$1) (?m$1)\<close>
+    and \<open>proj2_incident (?s$1) (?m$1)\<close>
+    and \<open>proj2_incident (?r$2) (?m$2)\<close>
+    and \<open>proj2_incident (?s$2) (?m$2)\<close>
   have "apply_cltn2_line (?m$1) ?J = (?m$2)"
     by (simp add: apply_cltn2_line_unique)
-  moreover from `proj2_incident (?a$1) (?m$1)`
+  moreover from \<open>proj2_incident (?a$1) (?m$1)\<close>
   have "proj2_incident (apply_cltn2 (?a$1) ?J) (apply_cltn2_line (?m$1) ?J)"
     by simp
   ultimately have "proj2_incident (apply_cltn2 (?a$1) ?J) (?m$2)" by simp
 
-  from `\<forall> i. \<forall> u. proj2_incident u (?m$i) \<longrightarrow> \<not> (u = ?p$i \<or> u = ?q$i)`
+  from \<open>\<forall> i. \<forall> u. proj2_incident u (?m$i) \<longrightarrow> \<not> (u = ?p$i \<or> u = ?q$i)\<close>
   have "\<not> proj2_incident (?p$2) (?m$2)" by fast
-  with `proj2_incident (?p$2) (?l$2)` have "?m$2 \<noteq> ?l$2" by auto
-  with `proj2_incident (?a$2) (?l$2)`
-    and `proj2_incident (?a$2) (?m$2)`
-    and `proj2_incident (apply_cltn2 (?a$1) ?J) (?l$2)`
-    and `proj2_incident (apply_cltn2 (?a$1) ?J) (?m$2)`
+  with \<open>proj2_incident (?p$2) (?l$2)\<close> have "?m$2 \<noteq> ?l$2" by auto
+  with \<open>proj2_incident (?a$2) (?l$2)\<close>
+    and \<open>proj2_incident (?a$2) (?m$2)\<close>
+    and \<open>proj2_incident (apply_cltn2 (?a$1) ?J) (?l$2)\<close>
+    and \<open>proj2_incident (apply_cltn2 (?a$1) ?J) (?m$2)\<close>
     and proj2_incident_unique
   have "apply_cltn2 a1 ?J = a2" by auto
-  with `is_K2_isometry ?J` and `apply_cltn2 p1 ?J = p2`
+  with \<open>is_K2_isometry ?J\<close> and \<open>apply_cltn2 p1 ?J = p2\<close>
   show "\<exists> J. is_K2_isometry J \<and> apply_cltn2 a1 J = a2 \<and> apply_cltn2 p1 J = p2"
     by auto
 qed
@@ -2300,66 +2300,66 @@ lemma K2_isometry_swap:
   assumes "a \<in> hyp2" and "b \<in> hyp2"
   shows "\<exists> J. is_K2_isometry J \<and> apply_cltn2 a J = b \<and> apply_cltn2 b J = a"
 proof -
-  from `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "a \<in> K2" and "b \<in> K2" by simp_all
 
   let ?l = "proj2_line_through a b"
   have "proj2_incident a ?l" and "proj2_incident b ?l"
     by (rule proj2_line_through_incident)+
-  from `a \<in> K2` and `proj2_incident a ?l`
+  from \<open>a \<in> K2\<close> and \<open>proj2_incident a ?l\<close>
     and line_through_K2_intersect_S_exactly_twice [of a ?l]
   obtain p and q where "p \<noteq> q"
     and "p \<in> S" and "q \<in> S"
     and "proj2_incident p ?l" and "proj2_incident q ?l"
     and "\<forall> r\<in>S. proj2_incident r ?l \<longrightarrow> r = p \<or> r = q"
     by auto
-  from `a \<in> K2` and `b \<in> K2` and `p \<in> S` and `q \<in> S`
+  from \<open>a \<in> K2\<close> and \<open>b \<in> K2\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
     and statement66_existence [of a b p q]
   obtain J where "is_K2_isometry J" and "apply_cltn2 a J = b"
     and "apply_cltn2 p J = q"
     by auto
-  from `apply_cltn2 a J = b` and `apply_cltn2 p J = q`
-    and `proj2_incident b ?l` and `proj2_incident q ?l`
+  from \<open>apply_cltn2 a J = b\<close> and \<open>apply_cltn2 p J = q\<close>
+    and \<open>proj2_incident b ?l\<close> and \<open>proj2_incident q ?l\<close>
   have "proj2_incident (apply_cltn2 a J) ?l"
     and "proj2_incident (apply_cltn2 p J) ?l"
     by simp_all
 
-  from `a \<in> K2` and `p \<in> S` have "a \<noteq> p"
+  from \<open>a \<in> K2\<close> and \<open>p \<in> S\<close> have "a \<noteq> p"
     unfolding S_def and K2_def
     by auto
-  with `proj2_incident a ?l`
-    and `proj2_incident p ?l`
-    and `proj2_incident (apply_cltn2 a J) ?l`
-    and `proj2_incident (apply_cltn2 p J) ?l`
+  with \<open>proj2_incident a ?l\<close>
+    and \<open>proj2_incident p ?l\<close>
+    and \<open>proj2_incident (apply_cltn2 a J) ?l\<close>
+    and \<open>proj2_incident (apply_cltn2 p J) ?l\<close>
   have "apply_cltn2_line ?l J = ?l" by (simp add: apply_cltn2_line_unique)
-  with `proj2_incident q ?l` and apply_cltn2_preserve_incident [of q J ?l]
+  with \<open>proj2_incident q ?l\<close> and apply_cltn2_preserve_incident [of q J ?l]
   have "proj2_incident (apply_cltn2 q J) ?l" by simp
 
-  from `q \<in> S` and `is_K2_isometry J`
+  from \<open>q \<in> S\<close> and \<open>is_K2_isometry J\<close>
   have "apply_cltn2 q J \<in> S" by (unfold is_K2_isometry_def) simp
-  with `proj2_incident (apply_cltn2 q J) ?l`
-    and `\<forall> r\<in>S. proj2_incident r ?l \<longrightarrow> r = p \<or> r = q`
+  with \<open>proj2_incident (apply_cltn2 q J) ?l\<close>
+    and \<open>\<forall> r\<in>S. proj2_incident r ?l \<longrightarrow> r = p \<or> r = q\<close>
   have "apply_cltn2 q J = p \<or> apply_cltn2 q J = q" by simp
 
   have "apply_cltn2 q J \<noteq> q"
   proof
     assume "apply_cltn2 q J = q"
-    with `apply_cltn2 p J = q`
+    with \<open>apply_cltn2 p J = q\<close>
     have "apply_cltn2 p J = apply_cltn2 q J" by simp
     hence "p = q" by (rule apply_cltn2_injective [of p J q])
-    with `p \<noteq> q` show False ..
+    with \<open>p \<noteq> q\<close> show False ..
   qed
-  with `apply_cltn2 q J = p \<or> apply_cltn2 q J = q`
+  with \<open>apply_cltn2 q J = p \<or> apply_cltn2 q J = q\<close>
   have "apply_cltn2 q J = p" by simp
-  with `p \<noteq> q`
-    and `apply_cltn2 p J = q`
-    and `proj2_incident p ?l`
-    and `proj2_incident q ?l`
-    and `proj2_incident a ?l`
+  with \<open>p \<noteq> q\<close>
+    and \<open>apply_cltn2 p J = q\<close>
+    and \<open>proj2_incident p ?l\<close>
+    and \<open>proj2_incident q ?l\<close>
+    and \<open>proj2_incident a ?l\<close>
     and statement55
   have "apply_cltn2 (apply_cltn2 a J) J = a" by simp
-  with `apply_cltn2 a J = b` have "apply_cltn2 b J = a" by simp
-  with `is_K2_isometry J` and `apply_cltn2 a J = b`
+  with \<open>apply_cltn2 a J = b\<close> have "apply_cltn2 b J = a" by simp
+  with \<open>is_K2_isometry J\<close> and \<open>apply_cltn2 a J = b\<close>
   show "\<exists> J. is_K2_isometry J \<and> apply_cltn2 a J = b \<and> apply_cltn2 b J = a"
     by (simp add: exI [of _ J])
 qed
@@ -2374,10 +2374,10 @@ proof standard+
     and "apply_cltn2 ?b' J = ?a'"
     by auto
 
-  from `apply_cltn2 ?a' J = ?b'` and `apply_cltn2 ?b' J = ?a'`
+  from \<open>apply_cltn2 ?a' J = ?b'\<close> and \<open>apply_cltn2 ?b' J = ?a'\<close>
   have "hyp2_cltn2 a J = b" and "hyp2_cltn2 b J = a"
     unfolding hyp2_cltn2_def by (simp_all add: Rep_hyp2_inverse)
-  with `is_K2_isometry J`
+  with \<open>is_K2_isometry J\<close>
   show "a b \<congruent>\<^sub>K b a"
     by (unfold real_hyp2_C_def) (simp add: exI [of _ J])
 qed
@@ -2391,21 +2391,21 @@ proof standard+
    and "hyp2_cltn2 a H = r" and "hyp2_cltn2 b H = s"
     by (unfold real_hyp2_C_def) auto
   let ?J = "cltn2_compose (cltn2_inverse G) H"
-  from `is_K2_isometry G` have "is_K2_isometry (cltn2_inverse G)"
+  from \<open>is_K2_isometry G\<close> have "is_K2_isometry (cltn2_inverse G)"
     by (rule cltn2_inverse_is_K2_isometry)
-  with `is_K2_isometry H`
+  with \<open>is_K2_isometry H\<close>
   have "is_K2_isometry ?J" by (simp only: cltn2_compose_is_K2_isometry)
 
-  from `is_K2_isometry G` and `hyp2_cltn2 a G = p` and `hyp2_cltn2 b G = q`
+  from \<open>is_K2_isometry G\<close> and \<open>hyp2_cltn2 a G = p\<close> and \<open>hyp2_cltn2 b G = q\<close>
     and K2_isometry.act_inv_iff
   have "hyp2_cltn2 p (cltn2_inverse G) = a"
     and "hyp2_cltn2 q (cltn2_inverse G) = b"
     by simp_all
-  with `hyp2_cltn2 a H = r` and `hyp2_cltn2 b H = s`
-    and `is_K2_isometry (cltn2_inverse G)` and `is_K2_isometry H`
+  with \<open>hyp2_cltn2 a H = r\<close> and \<open>hyp2_cltn2 b H = s\<close>
+    and \<open>is_K2_isometry (cltn2_inverse G)\<close> and \<open>is_K2_isometry H\<close>
     and K2_isometry.act_act [symmetric]
   have "hyp2_cltn2 p ?J = r" and "hyp2_cltn2 q ?J = s" by simp_all
-  with `is_K2_isometry ?J`
+  with \<open>is_K2_isometry ?J\<close>
   show "p q \<congruent>\<^sub>K r s"
     by (unfold real_hyp2_C_def) (simp add: exI [of _ ?J])
 qed
@@ -2417,14 +2417,14 @@ proof standard+
   then obtain J where "is_K2_isometry J"
     and "hyp2_cltn2 a J = c" and "hyp2_cltn2 b J = c"
     by (unfold real_hyp2_C_def) auto
-  from `hyp2_cltn2 a J = c` and `hyp2_cltn2 b J = c`
+  from \<open>hyp2_cltn2 a J = c\<close> and \<open>hyp2_cltn2 b J = c\<close>
   have "hyp2_cltn2 a J = hyp2_cltn2 b J" by simp
 
-  from `is_K2_isometry J`
+  from \<open>is_K2_isometry J\<close>
   have "apply_cltn2 (Rep_hyp2 a) J \<in> hyp2"
     and "apply_cltn2 (Rep_hyp2 b) J \<in> hyp2"
     by (rule apply_cltn2_Rep_hyp2)+
-  with `hyp2_cltn2 a J = hyp2_cltn2 b J`
+  with \<open>hyp2_cltn2 a J = hyp2_cltn2 b J\<close>
   have "apply_cltn2 (Rep_hyp2 a) J = apply_cltn2 (Rep_hyp2 b) J"
     by (unfold hyp2_cltn2_def) (simp add: Abs_hyp2_inject)
   hence "Rep_hyp2 a = Rep_hyp2 b" by (rule apply_cltn2_injective)
@@ -2435,7 +2435,7 @@ interpretation hyp2: tarski_first3 real_hyp2_C
   using hyp2_axiom1 and hyp2_axiom2 and hyp2_axiom3
   by unfold_locales
 
-subsection {* Some lemmas about betweenness *}
+subsection \<open>Some lemmas about betweenness\<close>
 
 lemma S_at_edge:
   assumes "p \<in> S" and "q \<in> hyp2 \<union> S" and "r \<in> hyp2 \<union> S" and "proj2_Col p q r"
@@ -2443,20 +2443,20 @@ lemma S_at_edge:
   \<or> B\<^sub>\<real> (cart2_pt p) (cart2_pt r) (cart2_pt q)"
   (is "B\<^sub>\<real> ?cp ?cq ?cr \<or> _")
 proof -
-  from `p \<in> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
+  from \<open>p \<in> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
   have "z_non_zero p" and "z_non_zero q" and "z_non_zero r"
     by (simp_all add: hyp2_S_z_non_zero)
-  with `proj2_Col p q r`
+  with \<open>proj2_Col p q r\<close>
   have "real_euclid.Col ?cp ?cq ?cr" by (simp add: proj2_Col_iff_euclid_cart2)
 
-  with `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
+  with \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
   have "proj2_pt ?cp = p" and "proj2_pt ?cq = q" and "proj2_pt ?cr = r"
     by (simp_all add: proj2_cart2)
-  from `proj2_pt ?cp = p` and `p \<in> S`
+  from \<open>proj2_pt ?cp = p\<close> and \<open>p \<in> S\<close>
   have "norm ?cp = 1" by (simp add: norm_eq_1_iff_in_S)
 
-  from `proj2_pt ?cq = q` and `proj2_pt ?cr = r`
-    and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
+  from \<open>proj2_pt ?cq = q\<close> and \<open>proj2_pt ?cr = r\<close>
+    and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
   have "norm ?cq \<le> 1" and "norm ?cr \<le> 1"
     by (simp_all add: norm_le_1_iff_in_hyp2_S)
 
@@ -2466,58 +2466,58 @@ proof -
     then obtain k where "k \<ge> 0" and "k \<le> 1"
       and "?cp - ?cr = k *\<^sub>R (?cq - ?cr)"
       by (unfold real_euclid_B_def) auto
-    from `?cp - ?cr = k *\<^sub>R (?cq - ?cr)`
+    from \<open>?cp - ?cr = k *\<^sub>R (?cq - ?cr)\<close>
     have "?cp = k *\<^sub>R ?cq + (1 - k) *\<^sub>R ?cr" by (simp add: algebra_simps)
-    with `norm ?cp = 1` have "norm (k *\<^sub>R ?cq + (1 - k) *\<^sub>R ?cr) = 1" by simp
+    with \<open>norm ?cp = 1\<close> have "norm (k *\<^sub>R ?cq + (1 - k) *\<^sub>R ?cr) = 1" by simp
     with norm_triangle_ineq [of "k *\<^sub>R ?cq" "(1 - k) *\<^sub>R ?cr"]
     have "norm (k *\<^sub>R ?cq) + norm ((1 - k) *\<^sub>R ?cr) \<ge> 1" by simp
 
-    from `k \<ge> 0` and `k \<le> 1`
+    from \<open>k \<ge> 0\<close> and \<open>k \<le> 1\<close>
     have "norm (k *\<^sub>R ?cq) + norm ((1 - k) *\<^sub>R ?cr)
       = k * norm ?cq + (1 - k) * norm ?cr"
       by simp
-    with `norm (k *\<^sub>R ?cq) + norm ((1 - k) *\<^sub>R ?cr) \<ge> 1`
+    with \<open>norm (k *\<^sub>R ?cq) + norm ((1 - k) *\<^sub>R ?cr) \<ge> 1\<close>
     have "k * norm ?cq + (1 - k) * norm ?cr \<ge> 1" by simp
 
-    from `norm ?cq \<le> 1` and `k \<ge> 0` and mult_mono [of k k "norm ?cq" 1]
+    from \<open>norm ?cq \<le> 1\<close> and \<open>k \<ge> 0\<close> and mult_mono [of k k "norm ?cq" 1]
     have "k * norm ?cq \<le> k" by simp
 
-    from `norm ?cr \<le> 1` and `k \<le> 1`
+    from \<open>norm ?cr \<le> 1\<close> and \<open>k \<le> 1\<close>
       and mult_mono [of "1 - k" "1 - k" "norm ?cr" 1]
     have "(1 - k) * norm ?cr \<le> 1 - k" by simp
-    with `k * norm ?cq \<le> k`
+    with \<open>k * norm ?cq \<le> k\<close>
     have "k * norm ?cq + (1 - k) * norm ?cr \<le> 1" by simp
-    with `k * norm ?cq + (1 - k) * norm ?cr \<ge> 1`
+    with \<open>k * norm ?cq + (1 - k) * norm ?cr \<ge> 1\<close>
     have "k * norm ?cq + (1 - k) * norm ?cr = 1" by simp
-    with `k * norm ?cq \<le> k` have "(1 - k) * norm ?cr \<ge> 1 - k" by simp
-    with `(1 - k) * norm ?cr \<le> 1 - k` have "(1 - k) * norm ?cr = 1 - k" by simp
-    with `k * norm ?cq + (1 - k) * norm ?cr = 1` have "k * norm ?cq = k" by simp
+    with \<open>k * norm ?cq \<le> k\<close> have "(1 - k) * norm ?cr \<ge> 1 - k" by simp
+    with \<open>(1 - k) * norm ?cr \<le> 1 - k\<close> have "(1 - k) * norm ?cr = 1 - k" by simp
+    with \<open>k * norm ?cq + (1 - k) * norm ?cr = 1\<close> have "k * norm ?cq = k" by simp
 
     have "?cp = ?cq \<or> ?cq = ?cr \<or> ?cr = ?cp"
     proof cases
       assume "k = 0 \<or> k = 1"
-      with `?cp = k *\<^sub>R ?cq + (1 - k) *\<^sub>R ?cr`
+      with \<open>?cp = k *\<^sub>R ?cq + (1 - k) *\<^sub>R ?cr\<close>
       show "?cp = ?cq \<or> ?cq = ?cr \<or> ?cr = ?cp" by auto
     next
       assume "\<not> (k = 0 \<or> k = 1)"
       hence "k \<noteq> 0" and "k \<noteq> 1" by simp_all
-      with `k * norm ?cq = k` and `(1 - k) * norm ?cr = 1 - k`
+      with \<open>k * norm ?cq = k\<close> and \<open>(1 - k) * norm ?cr = 1 - k\<close>
       have "norm ?cq = 1" and "norm ?cr = 1" by simp_all
-      with `proj2_pt ?cq = q` and `proj2_pt ?cr = r`
+      with \<open>proj2_pt ?cq = q\<close> and \<open>proj2_pt ?cr = r\<close>
       have "q \<in> S" and "r \<in> S" by (simp_all add: norm_eq_1_iff_in_S)
-      with `p \<in> S` have "{p,q,r} \<subseteq> S" by simp
+      with \<open>p \<in> S\<close> have "{p,q,r} \<subseteq> S" by simp
 
-      from `proj2_Col p q r`
+      from \<open>proj2_Col p q r\<close>
       have "proj2_set_Col {p,q,r}" by (simp add: proj2_Col_iff_set_Col)
-      with `{p,q,r} \<subseteq> S` have "card {p,q,r} \<le> 2" by (rule card_line_intersect_S)
+      with \<open>{p,q,r} \<subseteq> S\<close> have "card {p,q,r} \<le> 2" by (rule card_line_intersect_S)
 
       have "p = q \<or> q = r \<or> r = p"
       proof (rule ccontr)
         assume "\<not> (p = q \<or> q = r \<or> r = p)"
         hence "p \<noteq> q" and "q \<noteq> r" and "r \<noteq> p" by simp_all
-        from `q \<noteq> r` have "card {q,r} = 2" by simp
-        with `p \<noteq> q` and `r \<noteq> p` have "card {p,q,r} = 3" by simp
-        with `card {p,q,r} \<le> 2` show False by simp
+        from \<open>q \<noteq> r\<close> have "card {q,r} = 2" by simp
+        with \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> have "card {p,q,r} = 3" by simp
+        with \<open>card {p,q,r} \<le> 2\<close> show False by simp
       qed
       thus "?cp = ?cq \<or> ?cq = ?cr \<or> ?cr = ?cp" by auto
     qed
@@ -2525,7 +2525,7 @@ proof -
       by (auto simp add: real_euclid.th3_1 real_euclid.th3_2)
   next
     assume "\<not> B\<^sub>\<real> ?cr ?cp ?cq"
-    with `real_euclid.Col ?cp ?cq ?cr`
+    with \<open>real_euclid.Col ?cp ?cq ?cr\<close>
     show "B\<^sub>\<real> ?cp ?cq ?cr \<or> B\<^sub>\<real> ?cp ?cr ?cq"
       unfolding real_euclid.Col_def
       by (auto simp add: real_euclid.th3_1 real_euclid.th3_2)
@@ -2541,22 +2541,22 @@ proof (rule ccontr)
   hence "\<not> B\<^sub>\<real> ?cq ?cr ?cp"
     by (auto simp add: real_euclid.th3_2 [of ?cq ?cr ?cp])
 
-  from `p \<in> S` and `q \<in> S` and `r \<in> hyp2 \<union> S` and `proj2_Col p q r`
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>r \<in> hyp2 \<union> S\<close> and \<open>proj2_Col p q r\<close>
   have "B\<^sub>\<real> ?cp ?cq ?cr \<or> B\<^sub>\<real> ?cp ?cr ?cq" by (simp add: S_at_edge)
-  with `\<not> B\<^sub>\<real> ?cp ?cr ?cq` have "B\<^sub>\<real> ?cp ?cq ?cr" by simp
+  with \<open>\<not> B\<^sub>\<real> ?cp ?cr ?cq\<close> have "B\<^sub>\<real> ?cp ?cq ?cr" by simp
 
-  from `proj2_Col p q r` and proj2_Col_permute have "proj2_Col q p r" by fast
-  with `q \<in> S` and `p \<in> S` and `r \<in> hyp2 \<union> S`
+  from \<open>proj2_Col p q r\<close> and proj2_Col_permute have "proj2_Col q p r" by fast
+  with \<open>q \<in> S\<close> and \<open>p \<in> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
   have "B\<^sub>\<real> ?cq ?cp ?cr \<or> B\<^sub>\<real> ?cq ?cr ?cp" by (simp add: S_at_edge)
-  with `\<not> B\<^sub>\<real> ?cq ?cr ?cp` have "B\<^sub>\<real> ?cq ?cp ?cr" by simp
-  with `B\<^sub>\<real> ?cp ?cq ?cr` have "?cp = ?cq" by (rule real_euclid.th3_4)
+  with \<open>\<not> B\<^sub>\<real> ?cq ?cr ?cp\<close> have "B\<^sub>\<real> ?cq ?cp ?cr" by simp
+  with \<open>B\<^sub>\<real> ?cp ?cq ?cr\<close> have "?cp = ?cq" by (rule real_euclid.th3_4)
   hence "proj2_pt ?cp = proj2_pt ?cq" by simp
 
-  from `p \<in> S` and `q \<in> S`
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
   have "z_non_zero p" and "z_non_zero q" by (simp_all add: hyp2_S_z_non_zero)
   hence "proj2_pt ?cp = p" and "proj2_pt ?cq = q" by (simp_all add: proj2_cart2)
-  with `proj2_pt ?cp = proj2_pt ?cq` have "p = q" by simp
-  with `p \<noteq> q` show False ..
+  with \<open>proj2_pt ?cp = proj2_pt ?cq\<close> have "p = q" by simp
+  with \<open>p \<noteq> q\<close> show False ..
 qed
 
 lemma hyp2_incident_in_middle:
@@ -2564,9 +2564,9 @@ lemma hyp2_incident_in_middle:
   and "proj2_incident p l" and "proj2_incident q l" and "proj2_incident a l"
   shows "B\<^sub>\<real> (cart2_pt p) (cart2_pt a) (cart2_pt q)"
 proof -
-  from `proj2_incident p l` and `proj2_incident q l` and `proj2_incident a l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and \<open>proj2_incident a l\<close>
   have "proj2_Col p q a" by (rule proj2_incident_Col)
-  from `p \<in> S` and `q \<in> S` and `a \<in> hyp2 \<union> S` and this and `p \<noteq> q`
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>a \<in> hyp2 \<union> S\<close> and this and \<open>p \<noteq> q\<close>
   show "B\<^sub>\<real> (cart2_pt p) (cart2_pt a) (cart2_pt q)"
     by (rule hyp2_in_middle)
 qed
@@ -2579,15 +2579,15 @@ proof cases
   assume "q \<in> S"
 
   have "B\<^sub>\<real> ?cp ?cq ?cq" by (rule real_euclid.th3_1)
-  with `q \<in> S` show "\<exists> r\<in>S. B\<^sub>\<real> ?cp ?cq (cart2_pt r)" by auto
+  with \<open>q \<in> S\<close> show "\<exists> r\<in>S. B\<^sub>\<real> ?cp ?cq (cart2_pt r)" by auto
 next
   assume "q \<notin> S"
-  with `q \<in> hyp2 \<union> S` have "q \<in> K2" by simp
+  with \<open>q \<in> hyp2 \<union> S\<close> have "q \<in> K2" by simp
 
   let ?l = "proj2_line_through p q"
   have "proj2_incident p ?l" and "proj2_incident q ?l"
     by (rule proj2_line_through_incident)+
-  from `q \<in> K2` and `proj2_incident q ?l`
+  from \<open>q \<in> K2\<close> and \<open>proj2_incident q ?l\<close>
     and line_through_K2_intersect_S_twice [of q ?l]
   obtain s and t where "s \<noteq> t" and "s \<in> S" and "t \<in> S"
     and "proj2_incident s ?l" and "proj2_incident t ?l"
@@ -2595,21 +2595,21 @@ next
   let ?cs = "cart2_pt s"
   let ?ct = "cart2_pt t"
 
-  from `proj2_incident s ?l`
-    and `proj2_incident t ?l`
-    and `proj2_incident p ?l`
-    and `proj2_incident q ?l`
+  from \<open>proj2_incident s ?l\<close>
+    and \<open>proj2_incident t ?l\<close>
+    and \<open>proj2_incident p ?l\<close>
+    and \<open>proj2_incident q ?l\<close>
   have "proj2_Col s p q" and "proj2_Col t p q" and "proj2_Col s t q"
     by (simp_all add: proj2_incident_Col)
-  from `proj2_Col s p q` and `proj2_Col t p q`
-    and `s \<in> S` and `t \<in> S` and `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S`
+  from \<open>proj2_Col s p q\<close> and \<open>proj2_Col t p q\<close>
+    and \<open>s \<in> S\<close> and \<open>t \<in> S\<close> and \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close>
   have "B\<^sub>\<real> ?cs ?cp ?cq \<or> B\<^sub>\<real> ?cs ?cq ?cp" and "B\<^sub>\<real> ?ct ?cp ?cq \<or> B\<^sub>\<real> ?ct ?cq ?cp"
     by (simp_all add: S_at_edge)
   with real_euclid.th3_2
   have "B\<^sub>\<real> ?cq ?cp ?cs \<or> B\<^sub>\<real> ?cp ?cq ?cs" and "B\<^sub>\<real> ?cq ?cp ?ct \<or> B\<^sub>\<real> ?cp ?cq ?ct"
     by fast+
 
-  from `s \<in> S` and `t \<in> S` and `q \<in> hyp2 \<union> S` and `proj2_Col s t q` and `s \<noteq> t`
+  from \<open>s \<in> S\<close> and \<open>t \<in> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>proj2_Col s t q\<close> and \<open>s \<noteq> t\<close>
   have "B\<^sub>\<real> ?cs ?cq ?ct" by (rule hyp2_in_middle)
   hence "B\<^sub>\<real> ?ct ?cq ?cs" by (rule real_euclid.th3_2)
 
@@ -2617,21 +2617,21 @@ next
   proof (rule ccontr)
     assume "\<not> (B\<^sub>\<real> ?cp ?cq ?cs \<or> B\<^sub>\<real> ?cp ?cq ?ct)"
     hence "\<not> B\<^sub>\<real> ?cp ?cq ?cs" and "\<not> B\<^sub>\<real> ?cp ?cq ?ct" by simp_all
-    with `B\<^sub>\<real> ?cq ?cp ?cs \<or> B\<^sub>\<real> ?cp ?cq ?cs`
-      and `B\<^sub>\<real> ?cq ?cp ?ct \<or> B\<^sub>\<real> ?cp ?cq ?ct`
+    with \<open>B\<^sub>\<real> ?cq ?cp ?cs \<or> B\<^sub>\<real> ?cp ?cq ?cs\<close>
+      and \<open>B\<^sub>\<real> ?cq ?cp ?ct \<or> B\<^sub>\<real> ?cp ?cq ?ct\<close>
     have "B\<^sub>\<real> ?cq ?cp ?cs" and "B\<^sub>\<real> ?cq ?cp ?ct" by simp_all
-    from `\<not> B\<^sub>\<real> ?cp ?cq ?cs` and `B\<^sub>\<real> ?cq ?cp ?cs` have "?cp \<noteq> ?cq" by auto
-    with `B\<^sub>\<real> ?cq ?cp ?cs` and `B\<^sub>\<real> ?cq ?cp ?ct`
+    from \<open>\<not> B\<^sub>\<real> ?cp ?cq ?cs\<close> and \<open>B\<^sub>\<real> ?cq ?cp ?cs\<close> have "?cp \<noteq> ?cq" by auto
+    with \<open>B\<^sub>\<real> ?cq ?cp ?cs\<close> and \<open>B\<^sub>\<real> ?cq ?cp ?ct\<close>
     have "B\<^sub>\<real> ?cq ?cs ?ct \<or> B\<^sub>\<real> ?cq ?ct ?cs"
       by (simp add: real_euclid_th5_1 [of ?cq ?cp ?cs ?ct])
-    with `B\<^sub>\<real> ?cs ?cq ?ct` and `B\<^sub>\<real> ?ct ?cq ?cs`
+    with \<open>B\<^sub>\<real> ?cs ?cq ?ct\<close> and \<open>B\<^sub>\<real> ?ct ?cq ?cs\<close>
     have "?cq = ?cs \<or> ?cq = ?ct" by (auto simp add: real_euclid.th3_4)
-    with `q \<in> hyp2 \<union> S` and `s \<in> S` and `t \<in> S`
+    with \<open>q \<in> hyp2 \<union> S\<close> and \<open>s \<in> S\<close> and \<open>t \<in> S\<close>
     have "q = s \<or> q = t" by (auto simp add: hyp2_S_cart2_inj)
-    with `s \<in> S` and `t \<in> S` have "q \<in> S" by auto
-    with `q \<notin> S` show False ..
+    with \<open>s \<in> S\<close> and \<open>t \<in> S\<close> have "q \<in> S" by auto
+    with \<open>q \<notin> S\<close> show False ..
   qed
-  with `s \<in> S` and `t \<in> S` show "\<exists> r\<in>S. B\<^sub>\<real> ?cp ?cq (cart2_pt r)" by auto
+  with \<open>s \<in> S\<close> and \<open>t \<in> S\<close> show "\<exists> r\<in>S. B\<^sub>\<real> ?cp ?cq (cart2_pt r)" by auto
 qed
 
 definition endpoint_in_S :: "proj2 \<Rightarrow> proj2 \<Rightarrow> proj2" where
@@ -2644,7 +2644,7 @@ lemma endpoint_in_S:
   and "B\<^sub>\<real> (cart2_pt a) (cart2_pt b) (cart2_pt (endpoint_in_S a b))"
   (is "B\<^sub>\<real> ?ca ?cb ?cp")
 proof -
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and extend_to_S
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and extend_to_S
   have "\<exists> p. p \<in> S \<and> B\<^sub>\<real> ?ca ?cb (cart2_pt p)" by auto
   hence "?p \<in> S \<and> B\<^sub>\<real> ?ca ?cb ?cp"
     by (unfold endpoint_in_S_def) (rule someI_ex)
@@ -2659,15 +2659,15 @@ proof
   let ?cb = "cart2_pt b"
   let ?cp = "cart2_pt ?p"
   let ?cq = "cart2_pt ?q"
-  from `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "B\<^sub>\<real> ?ca ?cb ?cp" and "B\<^sub>\<real> ?cb ?ca ?cq"
     by (simp_all add: endpoint_in_S)
 
   assume "?p = ?q"
-  with `B\<^sub>\<real> ?cb ?ca ?cq` have "B\<^sub>\<real> ?cb ?ca ?cp" by simp
-  with `B\<^sub>\<real> ?ca ?cb ?cp` have "?ca = ?cb" by (rule real_euclid.th3_4)
-  with `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` have "a = b" by (rule hyp2_S_cart2_inj)
-  with `a \<noteq> b` show False ..
+  with \<open>B\<^sub>\<real> ?cb ?ca ?cq\<close> have "B\<^sub>\<real> ?cb ?ca ?cp" by simp
+  with \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> have "?ca = ?cb" by (rule real_euclid.th3_4)
+  with \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> have "a = b" by (rule hyp2_S_cart2_inj)
+  with \<open>a \<noteq> b\<close> show False ..
 qed
 
 lemma endpoint_in_S_incident:
@@ -2675,19 +2675,19 @@ lemma endpoint_in_S_incident:
   and "proj2_incident a l" and "proj2_incident b l"
   shows "proj2_incident (endpoint_in_S a b) l" (is "proj2_incident ?p l")
 proof -
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "?p \<in> S" and "B\<^sub>\<real> (cart2_pt a) (cart2_pt b) (cart2_pt ?p)"
     (is "B\<^sub>\<real> ?ca ?cb ?cp")
     by (rule endpoint_in_S)+
 
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `?p \<in> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>?p \<in> S\<close>
   have "z_non_zero a" and "z_non_zero b" and "z_non_zero ?p"
     by (simp_all add: hyp2_S_z_non_zero)
 
-  from `B\<^sub>\<real> ?ca ?cb ?cp`
+  from \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close>
   have "real_euclid.Col ?ca ?cb ?cp" unfolding real_euclid.Col_def ..
-  with `z_non_zero a` and `z_non_zero b` and `z_non_zero ?p` and `a \<noteq> b`
-    and `proj2_incident a l` and `proj2_incident b l`
+  with \<open>z_non_zero a\<close> and \<open>z_non_zero b\<close> and \<open>z_non_zero ?p\<close> and \<open>a \<noteq> b\<close>
+    and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close>
   show "proj2_incident ?p l" by (rule euclid_Col_cart2_incident)
 qed
 
@@ -2697,17 +2697,17 @@ lemma endpoints_in_S_incident_unique:
   shows "p = endpoint_in_S a b \<or> p = endpoint_in_S b a"
   (is "p = ?q \<or> p = ?r")
 proof -
-  from `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "?q \<noteq> ?r" by (rule endpoint_in_S_swap)
 
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "?q \<in> S" and "?r \<in> S" by (simp_all add: endpoint_in_S)
 
-  from `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
-    and `proj2_incident a l` and `proj2_incident b l`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
+    and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close>
   have "proj2_incident ?q l" and "proj2_incident ?r l"
     by (simp_all add: endpoint_in_S_incident)
-  with `?q \<noteq> ?r` and `?q \<in> S` and `?r \<in> S` and `p \<in> S` and `proj2_incident p l`
+  with \<open>?q \<noteq> ?r\<close> and \<open>?q \<in> S\<close> and \<open>?r \<in> S\<close> and \<open>p \<in> S\<close> and \<open>proj2_incident p l\<close>
   show "p = ?q \<or> p = ?r" by (simp add: line_S_two_intersections_only)
 qed
 
@@ -2716,24 +2716,24 @@ lemma endpoint_in_S_unique:
   and "B\<^sub>\<real> (cart2_pt a) (cart2_pt b) (cart2_pt p)" (is "B\<^sub>\<real> ?ca ?cb ?cp")
   shows "p = endpoint_in_S a b" (is "p = ?q")
 proof (rule ccontr)
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `p \<in> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>p \<in> S\<close>
   have "z_non_zero a" and "z_non_zero b" and "z_non_zero p"
     by (simp_all add: hyp2_S_z_non_zero)
-  with `B\<^sub>\<real> ?ca ?cb ?cp` and euclid_B_cart2_common_line [of a b p]
+  with \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> and euclid_B_cart2_common_line [of a b p]
   obtain l where
     "proj2_incident a l" and "proj2_incident b l" and "proj2_incident p l"
     by auto
-  with `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `p \<in> S`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>p \<in> S\<close>
   have "p = ?q \<or> p = endpoint_in_S b a" (is "p = ?q \<or> p = ?r")
     by (rule endpoints_in_S_incident_unique)
 
   assume "p \<noteq> ?q"
-  with `p = ?q \<or> p = ?r` have "p = ?r" by simp
-  with `b \<in> hyp2 \<union> S` and `a \<in> hyp2 \<union> S`
+  with \<open>p = ?q \<or> p = ?r\<close> have "p = ?r" by simp
+  with \<open>b \<in> hyp2 \<union> S\<close> and \<open>a \<in> hyp2 \<union> S\<close>
   have "B\<^sub>\<real> ?cb ?ca ?cp" by (simp add: endpoint_in_S)
-  with `B\<^sub>\<real> ?ca ?cb ?cp` have "?ca = ?cb" by (rule real_euclid.th3_4)
-  with `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` have "a = b" by (rule hyp2_S_cart2_inj)
-  with `a \<noteq> b` show False ..
+  with \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> have "?ca = ?cb" by (rule real_euclid.th3_4)
+  with \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> have "a = b" by (rule hyp2_S_cart2_inj)
+  with \<open>a \<noteq> b\<close> show False ..
 qed
 
 lemma between_hyp2_S:
@@ -2744,29 +2744,29 @@ proof -
   let ?cp = "cart2_pt p"
   let ?cr = "cart2_pt r"
   let ?q = "proj2_pt ?cq"
-  from `p \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
   have "z_non_zero p" and "z_non_zero r" by (simp_all add: hyp2_S_z_non_zero)
   hence "proj2_pt ?cp = p" and "proj2_pt ?cr = r" by (simp_all add: proj2_cart2)
-  with `p \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
+  with \<open>p \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
   have "norm ?cp \<le> 1" and "norm ?cr \<le> 1"
     by (simp_all add: norm_le_1_iff_in_hyp2_S)
 
-  from `k \<ge> 0` and `k \<le> 1`
+  from \<open>k \<ge> 0\<close> and \<open>k \<le> 1\<close>
     and norm_triangle_ineq [of "k *\<^sub>R ?cr" "(1 - k) *\<^sub>R ?cp"]
   have "norm ?cq \<le> k * norm ?cr + (1 - k) * norm ?cp" by simp
 
-  from `k \<ge> 0` and `norm ?cr \<le> 1` and mult_mono [of k k "norm ?cr" 1]
+  from \<open>k \<ge> 0\<close> and \<open>norm ?cr \<le> 1\<close> and mult_mono [of k k "norm ?cr" 1]
   have "k * norm ?cr \<le> k" by simp
 
-  from `k \<le> 1` and `norm ?cp \<le> 1`
+  from \<open>k \<le> 1\<close> and \<open>norm ?cp \<le> 1\<close>
     and mult_mono [of "1 - k" "1 - k" "norm ?cp" 1]
   have "(1 - k) * norm ?cp \<le> 1 - k" by simp
-  with `norm ?cq \<le> k * norm ?cr + (1 - k) * norm ?cp` and `k * norm ?cr \<le> k`
+  with \<open>norm ?cq \<le> k * norm ?cr + (1 - k) * norm ?cp\<close> and \<open>k * norm ?cr \<le> k\<close>
   have "norm ?cq \<le> 1" by simp
   thus "?q \<in> hyp2 \<union> S" by (simp add: norm_le_1_iff_in_hyp2_S)
 qed
 
-subsection {* The Klein--Beltrami model satisfies axiom 4 *}
+subsection \<open>The Klein--Beltrami model satisfies axiom 4\<close>
 
 definition expansion_factor :: "proj2 \<Rightarrow> cltn2 \<Rightarrow> real" where
   "expansion_factor p J \<equiv> (cart2_append1 p v* cltn2_rep J)$3"
@@ -2777,20 +2777,20 @@ lemma expansion_factor:
   and "cart2_append1 p v* cltn2_rep J
   = expansion_factor p J *\<^sub>R cart2_append1 (apply_cltn2 p J)"
 proof -
-  from `p \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   have "z_non_zero (apply_cltn2 p J)" by (rule is_K2_isometry_z_non_zero)
 
-  from `p \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   and cart2_append1_apply_cltn2
   obtain k where "k \<noteq> 0"
     and "cart2_append1 p v* cltn2_rep J = k *\<^sub>R cart2_append1 (apply_cltn2 p J)"
     by auto
-  from `cart2_append1 p v* cltn2_rep J = k *\<^sub>R cart2_append1 (apply_cltn2 p J)`
-    and `z_non_zero (apply_cltn2 p J)`
+  from \<open>cart2_append1 p v* cltn2_rep J = k *\<^sub>R cart2_append1 (apply_cltn2 p J)\<close>
+    and \<open>z_non_zero (apply_cltn2 p J)\<close>
   have "expansion_factor p J = k"
     by (unfold expansion_factor_def) (simp add: cart2_append1_z)
-  with `k \<noteq> 0`
-    and `cart2_append1 p v* cltn2_rep J = k *\<^sub>R cart2_append1 (apply_cltn2 p J)`
+  with \<open>k \<noteq> 0\<close>
+    and \<open>cart2_append1 p v* cltn2_rep J = k *\<^sub>R cart2_append1 (apply_cltn2 p J)\<close>
   show "expansion_factor p J \<noteq> 0"
     and "cart2_append1 p v* cltn2_rep J
     = expansion_factor p J *\<^sub>R cart2_append1 (apply_cltn2 p J)"
@@ -2813,20 +2813,20 @@ proof -
   let ?cq1 = "cart2_append1 q"
   let ?cr1 = "cart2_append1 r"
   let ?repJ = "cltn2_rep J"
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
   have "z_non_zero p" and "z_non_zero q" and "z_non_zero r"
     by (simp_all add: hyp2_S_z_non_zero)
 
-  from `?cr = k *\<^sub>R ?cp + (1 - k) *\<^sub>R ?cq`
+  from \<open>?cr = k *\<^sub>R ?cp + (1 - k) *\<^sub>R ?cq\<close>
   have "vector2_append1 ?cr
     = k *\<^sub>R vector2_append1 ?cp + (1 - k) *\<^sub>R vector2_append1 ?cq"
     by (unfold vector2_append1_def vector_def) (simp add: vec_eq_iff)
-  with `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
+  with \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
   have "?cr1 = k *\<^sub>R ?cp1 + (1 - k) *\<^sub>R ?cq1" by (simp add: cart2_append1)
   hence "?cr1 v* ?repJ = k *\<^sub>R (?cp1 v* ?repJ) + (1 - k) *\<^sub>R (?cq1 v* ?repJ)"
     by (simp add: vector_matrix_left_distrib scaleR_vector_matrix_assoc [symmetric])
-  with `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
-    and `is_K2_isometry J`
+  with \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close>
   show "?er *\<^sub>R cart2_append1 (apply_cltn2 r J)
     = (k * ?ep) *\<^sub>R cart2_append1 (apply_cltn2 p J)
     + ((1 - k) * ?eq) *\<^sub>R cart2_append1 (apply_cltn2 q J)"
@@ -2841,16 +2841,16 @@ lemma expansion_factor_linear:
   = k * expansion_factor p J + (1 - k) * expansion_factor q J"
   (is "?er = k * ?ep + (1 - k) * ?eq")
 proof -
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
-    and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close>
   have "z_non_zero (apply_cltn2 p J)"
     and "z_non_zero (apply_cltn2 q J)"
     and "z_non_zero (apply_cltn2 r J)"
     by (simp_all add: is_K2_isometry_z_non_zero)
 
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
-    and `is_K2_isometry J`
-    and `cart2_pt r = k *\<^sub>R cart2_pt p + (1 - k) *\<^sub>R cart2_pt q`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close>
+    and \<open>cart2_pt r = k *\<^sub>R cart2_pt p + (1 - k) *\<^sub>R cart2_pt q\<close>
   have "?er *\<^sub>R cart2_append1 (apply_cltn2 r J)
     = (k * ?ep) *\<^sub>R cart2_append1 (apply_cltn2 p J)
     + ((1 - k) * ?eq) *\<^sub>R cart2_append1 (apply_cltn2 q J)"
@@ -2859,9 +2859,9 @@ proof -
     = ((k * ?ep) *\<^sub>R cart2_append1 (apply_cltn2 p J)
     + ((1 - k) * ?eq) *\<^sub>R cart2_append1 (apply_cltn2 q J))$3"
     by simp
-  with `z_non_zero (apply_cltn2 p J)`
-    and `z_non_zero (apply_cltn2 q J)`
-    and `z_non_zero (apply_cltn2 r J)`
+  with \<open>z_non_zero (apply_cltn2 p J)\<close>
+    and \<open>z_non_zero (apply_cltn2 q J)\<close>
+    and \<open>z_non_zero (apply_cltn2 r J)\<close>
   show "?er = k * ?ep + (1 - k) * ?eq" by (simp add: cart2_append1_z)
 qed
 
@@ -2872,25 +2872,25 @@ lemma expansion_factor_sgn_invariant:
 proof (rule ccontr)
   assume "sgn ?ep \<noteq> sgn ?eq"
 
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   have "?ep \<noteq> 0" and "?eq \<noteq> 0" by (simp_all add: expansion_factor)
   hence "sgn ?ep \<in> {-1,1}" and "sgn ?eq \<in> {-1,1}"
     by (simp_all add: sgn_real_def)
-  with `sgn ?ep \<noteq> sgn ?eq` have "sgn ?ep = - sgn ?eq" by auto
+  with \<open>sgn ?ep \<noteq> sgn ?eq\<close> have "sgn ?ep = - sgn ?eq" by auto
   hence "sgn ?ep = sgn (-?eq)" by (subst sgn_minus)
   with sgn_plus [of ?ep "-?eq"]
   have "sgn (?ep - ?eq) = sgn ?ep" by (simp add: algebra_simps)
-  with `sgn ?ep \<in> {-1,1}` have "?ep - ?eq \<noteq> 0" by (auto simp add: sgn_real_def)
+  with \<open>sgn ?ep \<in> {-1,1}\<close> have "?ep - ?eq \<noteq> 0" by (auto simp add: sgn_real_def)
 
   let ?k = "-?eq / (?ep - ?eq)"
-  from `sgn (?ep - ?eq) = sgn ?ep` and `sgn ?ep = sgn (-?eq)`
+  from \<open>sgn (?ep - ?eq) = sgn ?ep\<close> and \<open>sgn ?ep = sgn (-?eq)\<close>
   have "sgn (?ep - ?eq) = sgn (-?eq)" by simp
-  with `?ep - ?eq \<noteq> 0` and sgn_div [of "?ep - ?eq" "-?eq"]
+  with \<open>?ep - ?eq \<noteq> 0\<close> and sgn_div [of "?ep - ?eq" "-?eq"]
   have "?k > 0" by simp
 
-  from `?ep - ?eq \<noteq> 0`
+  from \<open>?ep - ?eq \<noteq> 0\<close>
   have "1 - ?k = ?ep / (?ep - ?eq)" by (simp add: field_simps)
-  with `sgn (?ep - ?eq) = sgn ?ep` and `?ep - ?eq \<noteq> 0`
+  with \<open>sgn (?ep - ?eq) = sgn ?ep\<close> and \<open>?ep - ?eq \<noteq> 0\<close>
   have "1 - ?k > 0" by (simp add: sgn_div)
   hence "?k < 1" by simp
 
@@ -2901,15 +2901,15 @@ proof (rule ccontr)
   let ?er = "expansion_factor ?r J"
   have "cart2_pt ?r = ?cr" by (rule cart2_proj2)
 
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `?k > 0` and `?k < 1`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>?k > 0\<close> and \<open>?k < 1\<close>
     and between_hyp2_S [of q p ?k]
   have "?r \<in> hyp2 \<union> S" by simp
-  with `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `is_K2_isometry J`
-    and `cart2_pt ?r = ?cr`
+  with \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
+    and \<open>cart2_pt ?r = ?cr\<close>
     and expansion_factor_linear [of p q ?r J ?k]
   have "?er = ?k * ?ep + (1 - ?k) * ?eq" by simp
-  with `?ep - ?eq \<noteq> 0` have "?er = 0" by (simp add: field_simps)
-  with `?r \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  with \<open>?ep - ?eq \<noteq> 0\<close> have "?er = 0" by (simp add: field_simps)
+  with \<open>?r \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   show False by (simp add: expansion_factor)
 qed
 
@@ -2927,28 +2927,28 @@ proof -
   let ?ep = "expansion_factor p J"
   let ?eq = "expansion_factor q J"
   let ?er = "expansion_factor r J"
-  from `q \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>q \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
   have "?eq \<noteq> 0" by (rule expansion_factor)
 
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
-    and `is_K2_isometry J` and expansion_factor_sgn_invariant
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close> and expansion_factor_sgn_invariant
   have "sgn ?ep = sgn ?eq" and "sgn ?er = sgn ?eq" by fast+
-  with `?eq \<noteq> 0`
+  with \<open>?eq \<noteq> 0\<close>
   have "?ep / ?eq > 0" and "?er / ?eq > 0" by (simp_all add: sgn_div)
 
-  from `B\<^sub>\<real> ?cp ?cq ?cr`
+  from \<open>B\<^sub>\<real> ?cp ?cq ?cr\<close>
   obtain k where "k \<ge> 0" and "k \<le> 1" and "?cq = k *\<^sub>R ?cr + (1 - k) *\<^sub>R ?cp"
     by (unfold real_euclid_B_def) (auto simp add: algebra_simps)
 
   let ?c = "k * ?er / ?eq"
-  from `k \<ge> 0` and `?er / ?eq > 0` and mult_nonneg_nonneg [of k "?er / ?eq"]
+  from \<open>k \<ge> 0\<close> and \<open>?er / ?eq > 0\<close> and mult_nonneg_nonneg [of k "?er / ?eq"]
   have "?c \<ge> 0" by simp
 
-  from `r \<in> hyp2 \<union> S` and `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S`
-    and `is_K2_isometry J` and `?cq = k *\<^sub>R ?cr + (1 - k) *\<^sub>R ?cp`
+  from \<open>r \<in> hyp2 \<union> S\<close> and \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close> and \<open>?cq = k *\<^sub>R ?cr + (1 - k) *\<^sub>R ?cp\<close>
   have "?eq = k * ?er + (1 - k) * ?ep" by (rule expansion_factor_linear)
-  with `?eq \<noteq> 0` have "1 - ?c = (1 - k) * ?ep / ?eq" by (simp add: field_simps)
-  with `k \<le> 1` and `?ep / ?eq > 0`
+  with \<open>?eq \<noteq> 0\<close> have "1 - ?c = (1 - k) * ?ep / ?eq" by (simp add: field_simps)
+  with \<open>k \<le> 1\<close> and \<open>?ep / ?eq > 0\<close>
     and mult_nonneg_nonneg [of "1 - k" "?ep / ?eq"]
   have "?c \<le> 1" by simp
 
@@ -2961,28 +2961,28 @@ proof -
   let ?cpJ1 = "cart2_append1 ?pJ"
   let ?cqJ1 = "cart2_append1 ?qJ"
   let ?crJ1 = "cart2_append1 ?rJ"
-  from `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
-    and `is_K2_isometry J`
+  from \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close> and \<open>r \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close>
   have "z_non_zero ?pJ" and "z_non_zero ?qJ" and "z_non_zero ?rJ"
     by (simp_all add: is_K2_isometry_z_non_zero)
 
-  from `r \<in> hyp2 \<union> S` and `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S`
-    and `is_K2_isometry J` and `?cq = k *\<^sub>R ?cr + (1 - k) *\<^sub>R ?cp`
+  from \<open>r \<in> hyp2 \<union> S\<close> and \<open>p \<in> hyp2 \<union> S\<close> and \<open>q \<in> hyp2 \<union> S\<close>
+    and \<open>is_K2_isometry J\<close> and \<open>?cq = k *\<^sub>R ?cr + (1 - k) *\<^sub>R ?cp\<close>
   have "?eq *\<^sub>R ?cqJ1 = (k * ?er) *\<^sub>R ?crJ1 + ((1 - k) * ?ep) *\<^sub>R ?cpJ1"
     by (rule expansion_factor_linear_apply_cltn2)
   hence "(1 / ?eq) *\<^sub>R (?eq *\<^sub>R ?cqJ1)
     = (1 / ?eq) *\<^sub>R ((k * ?er) *\<^sub>R ?crJ1 + ((1 - k) * ?ep) *\<^sub>R ?cpJ1)" by simp
-  with `1 - ?c = (1 - k) * ?ep / ?eq` and `?eq \<noteq> 0`
+  with \<open>1 - ?c = (1 - k) * ?ep / ?eq\<close> and \<open>?eq \<noteq> 0\<close>
   have "?cqJ1 = ?c *\<^sub>R ?crJ1 + (1 - ?c) *\<^sub>R ?cpJ1"
     by (simp add: scaleR_right_distrib)
-  with `z_non_zero ?pJ` and `z_non_zero ?qJ` and `z_non_zero ?rJ`
+  with \<open>z_non_zero ?pJ\<close> and \<open>z_non_zero ?qJ\<close> and \<open>z_non_zero ?rJ\<close>
   have "vector2_append1 ?cqJ
     = ?c *\<^sub>R vector2_append1 ?crJ + (1 - ?c) *\<^sub>R vector2_append1 ?cpJ"
     by (simp add: cart2_append1)
   hence "?cqJ = ?c *\<^sub>R ?crJ + (1 - ?c) *\<^sub>R ?cpJ"
     unfolding vector2_append1_def and vector_def
     by (simp add: vec_eq_iff forall_2 forall_3)
-  with `?c \<ge> 0` and `?c \<le> 1`
+  with \<open>?c \<ge> 0\<close> and \<open>?c \<le> 1\<close>
   show "B\<^sub>\<real> ?cpJ ?cqJ ?crJ"
     by (unfold real_euclid_B_def) (simp add: algebra_simps exI [of _ ?c])
 qed
@@ -3002,17 +3002,17 @@ proof (rule allI)+
   let ?cc = "cart2_pt ?pc"
   let ?pp = "\<some> p. p \<in> S \<and> B\<^sub>\<real> ?cb ?cc (cart2_pt p)"
   let ?cp = "cart2_pt ?pp"
-  from `?pb \<in> hyp2` and `?pc \<in> hyp2` and extend_to_S [of ?pb ?pc]
+  from \<open>?pb \<in> hyp2\<close> and \<open>?pc \<in> hyp2\<close> and extend_to_S [of ?pb ?pc]
     and someI_ex [of "\<lambda> p. p \<in> S \<and> B\<^sub>\<real> ?cb ?cc (cart2_pt p)"]
   have "?pp \<in> S" and "B\<^sub>\<real> ?cb ?cc ?cp" by auto
 
   let ?pr = "\<some> r. r \<in> S \<and> B\<^sub>\<real> ?cq ?ca (cart2_pt r)"
   let ?cr = "cart2_pt ?pr"
-  from `?pq \<in> hyp2` and `?pa \<in> hyp2` and extend_to_S [of ?pq ?pa]
+  from \<open>?pq \<in> hyp2\<close> and \<open>?pa \<in> hyp2\<close> and extend_to_S [of ?pq ?pa]
     and someI_ex [of "\<lambda> r. r \<in> S \<and> B\<^sub>\<real> ?cq ?ca (cart2_pt r)"]
   have "?pr \<in> S" and "B\<^sub>\<real> ?cq ?ca ?cr" by auto
 
-  from `?pb \<in> hyp2` and `?pa \<in> hyp2` and `?pp \<in> S` and `?pr \<in> S`
+  from \<open>?pb \<in> hyp2\<close> and \<open>?pa \<in> hyp2\<close> and \<open>?pp \<in> S\<close> and \<open>?pr \<in> S\<close>
     and statement66_existence [of ?pb ?pa ?pp ?pr]
   obtain J where "is_K2_isometry J"
     and "apply_cltn2 ?pb J = ?pa" and "apply_cltn2 ?pp J = ?pr"
@@ -3020,36 +3020,36 @@ proof (rule allI)+
   let ?px = "apply_cltn2 ?pc J"
   let ?cx = "cart2_pt ?px"
   let ?x = "Abs_hyp2 ?px"
-  from `is_K2_isometry J` and `?pc \<in> hyp2`
+  from \<open>is_K2_isometry J\<close> and \<open>?pc \<in> hyp2\<close>
   have "?px \<in> hyp2" by (rule statement60_one_way)
   hence "Rep_hyp2 ?x = ?px" by (rule Abs_hyp2_inverse)
 
-  from `?pb \<in> hyp2` and `?pc \<in> hyp2` and `?pp \<in> S` and `is_K2_isometry J`
-    and `B\<^sub>\<real> ?cb ?cc ?cp` and statement_63
+  from \<open>?pb \<in> hyp2\<close> and \<open>?pc \<in> hyp2\<close> and \<open>?pp \<in> S\<close> and \<open>is_K2_isometry J\<close>
+    and \<open>B\<^sub>\<real> ?cb ?cc ?cp\<close> and statement_63
   have "B\<^sub>\<real> (cart2_pt (apply_cltn2 ?pb J)) ?cx (cart2_pt (apply_cltn2 ?pp J))"
     by simp
-  with `apply_cltn2 ?pb J = ?pa` and `apply_cltn2 ?pp J = ?pr`
+  with \<open>apply_cltn2 ?pb J = ?pa\<close> and \<open>apply_cltn2 ?pp J = ?pr\<close>
   have "B\<^sub>\<real> ?ca ?cx ?cr" by simp
-  with `B\<^sub>\<real> ?cq ?ca ?cr` have "B\<^sub>\<real> ?cq ?ca ?cx" by (rule real_euclid.th3_5_1)
-  with `Rep_hyp2 ?x = ?px`
+  with \<open>B\<^sub>\<real> ?cq ?ca ?cr\<close> have "B\<^sub>\<real> ?cq ?ca ?cx" by (rule real_euclid.th3_5_1)
+  with \<open>Rep_hyp2 ?x = ?px\<close>
   have "B\<^sub>K q a ?x"
     unfolding real_hyp2_B_def and hyp2_rep_def
     by simp
 
   have "Abs_hyp2 ?pa = a" by (rule Rep_hyp2_inverse)
-  with `apply_cltn2 ?pb J = ?pa`
+  with \<open>apply_cltn2 ?pb J = ?pa\<close>
   have "hyp2_cltn2 b J = a" by (unfold hyp2_cltn2_def) simp
 
   have "hyp2_cltn2 c J = ?x" unfolding hyp2_cltn2_def ..
-  with `is_K2_isometry J` and `hyp2_cltn2 b J = a`
+  with \<open>is_K2_isometry J\<close> and \<open>hyp2_cltn2 b J = a\<close>
   have "b c \<congruent>\<^sub>K a ?x"
     by (unfold real_hyp2_C_def) (simp add: exI [of _ J])
   hence "a ?x \<congruent>\<^sub>K b c" by (rule hyp2.th2_2)
-  with `B\<^sub>K q a ?x`
+  with \<open>B\<^sub>K q a ?x\<close>
   show "\<exists> x. B\<^sub>K q a x \<and> a x \<congruent>\<^sub>K b c" by (simp add: exI [of _ ?x])
 qed
 
-subsection {* More betweenness theorems *}
+subsection \<open>More betweenness theorems\<close>
 
 lemma hyp2_S_points_fix_line:
   assumes "a \<in> hyp2" and "p \<in> S" and "is_K2_isometry J"
@@ -3059,44 +3059,44 @@ lemma hyp2_S_points_fix_line:
   shows "apply_cltn2 b J = b" (is "?bJ = b")
 proof -
   let ?lJ = "apply_cltn2_line l J"
-  from `proj2_incident a l` and `proj2_incident p l`
+  from \<open>proj2_incident a l\<close> and \<open>proj2_incident p l\<close>
   have "proj2_incident ?aJ ?lJ" and "proj2_incident ?pJ ?lJ" by simp_all
-  with `?aJ = a` and `?pJ = p`
+  with \<open>?aJ = a\<close> and \<open>?pJ = p\<close>
   have "proj2_incident a ?lJ" and "proj2_incident p ?lJ" by simp_all
 
-  from `a \<in> hyp2` `proj2_incident a l` and line_through_K2_intersect_S_again [of a l]
+  from \<open>a \<in> hyp2\<close> \<open>proj2_incident a l\<close> and line_through_K2_intersect_S_again [of a l]
   obtain q where "q \<noteq> p" and "q \<in> S" and "proj2_incident q l" by auto
   let ?qJ = "apply_cltn2 q J"
 
-  from `a \<in> hyp2` and `p \<in> S` and `q \<in> S`
+  from \<open>a \<in> hyp2\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
   have "a \<noteq> p" and "a \<noteq> q" by (simp_all add: hyp2_S_not_equal)
 
-  from `a \<noteq> p` and `proj2_incident a l` and `proj2_incident p l`
-    and `proj2_incident a ?lJ` and `proj2_incident p ?lJ`
+  from \<open>a \<noteq> p\<close> and \<open>proj2_incident a l\<close> and \<open>proj2_incident p l\<close>
+    and \<open>proj2_incident a ?lJ\<close> and \<open>proj2_incident p ?lJ\<close>
     and proj2_incident_unique
   have "?lJ = l" by auto
 
-  from `proj2_incident q l` have "proj2_incident ?qJ ?lJ" by simp
-  with `?lJ = l` have "proj2_incident ?qJ l" by simp
+  from \<open>proj2_incident q l\<close> have "proj2_incident ?qJ ?lJ" by simp
+  with \<open>?lJ = l\<close> have "proj2_incident ?qJ l" by simp
 
-  from `q \<in> S` and `is_K2_isometry J`
+  from \<open>q \<in> S\<close> and \<open>is_K2_isometry J\<close>
   have "?qJ \<in> S" by (unfold is_K2_isometry_def) simp
-  with `q \<noteq> p` and `p \<in> S` and `q \<in> S` and `proj2_incident p l`
-    and `proj2_incident q l` and `proj2_incident ?qJ l`
+  with \<open>q \<noteq> p\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>proj2_incident p l\<close>
+    and \<open>proj2_incident q l\<close> and \<open>proj2_incident ?qJ l\<close>
     and line_S_two_intersections_only
   have "?qJ = p \<or> ?qJ = q" by simp
 
   have "?qJ = q"
   proof (rule ccontr)
     assume "?qJ \<noteq> q"
-    with `?qJ = p \<or> ?qJ = q` have "?qJ = p" by simp
-    with `?pJ = p` have "?qJ = ?pJ" by simp
+    with \<open>?qJ = p \<or> ?qJ = q\<close> have "?qJ = p" by simp
+    with \<open>?pJ = p\<close> have "?qJ = ?pJ" by simp
     with apply_cltn2_injective have "q = p" by fast
-    with `q \<noteq> p` show False ..
+    with \<open>q \<noteq> p\<close> show False ..
   qed
-  with `q \<noteq> p` and `a \<noteq> p` and `a \<noteq> q` and `proj2_incident p l`
-    and `proj2_incident q l` and `proj2_incident a l`
-    and `?pJ = p` and `?aJ = a` and `proj2_incident b l`
+  with \<open>q \<noteq> p\<close> and \<open>a \<noteq> p\<close> and \<open>a \<noteq> q\<close> and \<open>proj2_incident p l\<close>
+    and \<open>proj2_incident q l\<close> and \<open>proj2_incident a l\<close>
+    and \<open>?pJ = p\<close> and \<open>?aJ = a\<close> and \<open>proj2_incident b l\<close>
     and cltn2_three_point_line [of p q a l J b]
   show "?bJ = b" by simp
 qed
@@ -3109,28 +3109,28 @@ lemma K2_isometry_endpoint_in_S:
 proof -
   let ?p = "endpoint_in_S a b"
 
-  from `a \<noteq> b` and apply_cltn2_injective have "?aJ \<noteq> ?bJ" by fast
+  from \<open>a \<noteq> b\<close> and apply_cltn2_injective have "?aJ \<noteq> ?bJ" by fast
 
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `is_K2_isometry J`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>is_K2_isometry J\<close>
     and is_K2_isometry_hyp2_S
   have "?aJ \<in> hyp2 \<union> S" and "?bJ \<in> hyp2 \<union> S" by simp_all
 
   let ?ca = "cart2_pt a"
   let ?cb = "cart2_pt b"
   let ?cp = "cart2_pt ?p"
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "?p \<in> S" and "B\<^sub>\<real> ?ca ?cb ?cp" by (rule endpoint_in_S)+
 
-  from `?p \<in> S` and `is_K2_isometry J`
+  from \<open>?p \<in> S\<close> and \<open>is_K2_isometry J\<close>
   have "?pJ \<in> S" by (unfold is_K2_isometry_def) simp
 
   let ?caJ = "cart2_pt ?aJ"
   let ?cbJ = "cart2_pt ?bJ"
   let ?cpJ = "cart2_pt ?pJ"
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `?p \<in> S` and `is_K2_isometry J`
-    and `B\<^sub>\<real> ?ca ?cb ?cp` and statement_63
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>?p \<in> S\<close> and \<open>is_K2_isometry J\<close>
+    and \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> and statement_63
   have "B\<^sub>\<real> ?caJ ?cbJ ?cpJ" by simp
-  with `?aJ \<noteq> ?bJ` and `?aJ \<in> hyp2 \<union> S` and `?bJ \<in> hyp2 \<union> S` and `?pJ \<in> S`
+  with \<open>?aJ \<noteq> ?bJ\<close> and \<open>?aJ \<in> hyp2 \<union> S\<close> and \<open>?bJ \<in> hyp2 \<union> S\<close> and \<open>?pJ \<in> S\<close>
   show "?pJ = endpoint_in_S ?aJ ?bJ" by (rule endpoint_in_S_unique)
 qed
 
@@ -3140,16 +3140,16 @@ lemma between_endpoint_in_S:
   and "B\<^sub>\<real> (cart2_pt a) (cart2_pt b) (cart2_pt c)" (is "B\<^sub>\<real> ?ca ?cb ?cc")
   shows "endpoint_in_S a b = endpoint_in_S b c" (is "?p = ?q")
 proof -
-  from `b \<noteq> c` and `b \<in> hyp2 \<union> S` and `c \<in> hyp2 \<union> S` and hyp2_S_cart2_inj
+  from \<open>b \<noteq> c\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>c \<in> hyp2 \<union> S\<close> and hyp2_S_cart2_inj
   have "?cb \<noteq> ?cc" by auto
 
   let ?cq = "cart2_pt ?q"
-  from `b \<in> hyp2 \<union> S` and `c \<in> hyp2 \<union> S`
+  from \<open>b \<in> hyp2 \<union> S\<close> and \<open>c \<in> hyp2 \<union> S\<close>
   have "?q \<in> S" and "B\<^sub>\<real> ?cb ?cc ?cq" by (rule endpoint_in_S)+
 
-  from `?cb \<noteq> ?cc` and `B\<^sub>\<real> ?ca ?cb ?cc` and `B\<^sub>\<real> ?cb ?cc ?cq`
+  from \<open>?cb \<noteq> ?cc\<close> and \<open>B\<^sub>\<real> ?ca ?cb ?cc\<close> and \<open>B\<^sub>\<real> ?cb ?cc ?cq\<close>
   have "B\<^sub>\<real> ?ca ?cb ?cq" by (rule real_euclid.th3_7_2)
-  with `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `?q \<in> S`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>?q \<in> S\<close>
   have "?q = ?p" by (rule endpoint_in_S_unique)
   thus "?p = ?q" ..
 qed
@@ -3159,7 +3159,7 @@ lemma hyp2_extend_segment_unique:
   shows "c = d"
 proof cases
   assume "b = c"
-  with `b c \<congruent>\<^sub>K b d` show "c = d" by (simp add: hyp2.A3_reversed)
+  with \<open>b c \<congruent>\<^sub>K b d\<close> show "c = d" by (simp add: hyp2.A3_reversed)
 next
   assume "b \<noteq> c"
 
@@ -3167,11 +3167,11 @@ next
   proof (rule ccontr)
     assume "\<not> b \<noteq> d"
     hence "b = d" by simp
-    with `b c \<congruent>\<^sub>K b d` have "b c \<congruent>\<^sub>K b b" by simp
+    with \<open>b c \<congruent>\<^sub>K b d\<close> have "b c \<congruent>\<^sub>K b b" by simp
     hence "b = c" by (rule hyp2.A3')
-    with `b \<noteq> c` show False ..
+    with \<open>b \<noteq> c\<close> show False ..
   qed
-  with `a \<noteq> b` and `b \<noteq> c`
+  with \<open>a \<noteq> b\<close> and \<open>b \<noteq> c\<close>
   have "Rep_hyp2 a \<noteq> Rep_hyp2 b" (is "?pa \<noteq> ?pb")
     and "Rep_hyp2 b \<noteq> Rep_hyp2 c" (is "?pb \<noteq> ?pc")
     and "Rep_hyp2 b \<noteq> Rep_hyp2 d" (is "?pb \<noteq> ?pd")
@@ -3186,51 +3186,51 @@ next
   let ?cc = "cart2_pt ?pc"
   let ?cd = "cart2_pt ?pd"
   let ?cp = "cart2_pt ?pp"
-  from `?pb \<in> hyp2` and `?pc \<in> hyp2`
+  from \<open>?pb \<in> hyp2\<close> and \<open>?pc \<in> hyp2\<close>
   have "?pp \<in> S" and "B\<^sub>\<real> ?cb ?cc ?cp" by (simp_all add: endpoint_in_S)
 
-  from `b c \<congruent>\<^sub>K b d`
+  from \<open>b c \<congruent>\<^sub>K b d\<close>
   obtain J where "is_K2_isometry J"
     and "hyp2_cltn2 b J = b" and "hyp2_cltn2 c J = d"
     by (unfold real_hyp2_C_def) auto
 
-  from `hyp2_cltn2 b J = b` and `hyp2_cltn2 c J = d`
+  from \<open>hyp2_cltn2 b J = b\<close> and \<open>hyp2_cltn2 c J = d\<close>
   have "Rep_hyp2 (hyp2_cltn2 b J) = ?pb"
     and "Rep_hyp2 (hyp2_cltn2 c J) = ?pd"
     by simp_all
-  with `is_K2_isometry J`
+  with \<open>is_K2_isometry J\<close>
   have "apply_cltn2 ?pb J = ?pb" and "apply_cltn2 ?pc J = ?pd"
     by (simp_all add: Rep_hyp2_cltn2)
 
-  from `B\<^sub>K a b c` and `B\<^sub>K a b d`
+  from \<open>B\<^sub>K a b c\<close> and \<open>B\<^sub>K a b d\<close>
   have "B\<^sub>\<real> ?ca ?cb ?cc" and "B\<^sub>\<real> ?ca ?cb ?cd"
     unfolding real_hyp2_B_def and hyp2_rep_def .
 
-  from `?pb \<noteq> ?pc` and `?pb \<in> hyp2` and `?pc \<in> hyp2` and `is_K2_isometry J`
+  from \<open>?pb \<noteq> ?pc\<close> and \<open>?pb \<in> hyp2\<close> and \<open>?pc \<in> hyp2\<close> and \<open>is_K2_isometry J\<close>
   have "apply_cltn2 ?pp J
     = endpoint_in_S (apply_cltn2 ?pb J) (apply_cltn2 ?pc J)"
     by (simp add: K2_isometry_endpoint_in_S)
-  also from `apply_cltn2 ?pb J = ?pb` and `apply_cltn2 ?pc J = ?pd`
+  also from \<open>apply_cltn2 ?pb J = ?pb\<close> and \<open>apply_cltn2 ?pc J = ?pd\<close>
   have "\<dots> = endpoint_in_S ?pb ?pd" by simp
-  also from `?pa \<noteq> ?pb` and `?pb \<noteq> ?pd`
-    and `?pa \<in> hyp2` and `?pb \<in> hyp2` and `?pd \<in> hyp2` and `B\<^sub>\<real> ?ca ?cb ?cd`
+  also from \<open>?pa \<noteq> ?pb\<close> and \<open>?pb \<noteq> ?pd\<close>
+    and \<open>?pa \<in> hyp2\<close> and \<open>?pb \<in> hyp2\<close> and \<open>?pd \<in> hyp2\<close> and \<open>B\<^sub>\<real> ?ca ?cb ?cd\<close>
   have "\<dots> = endpoint_in_S ?pa ?pb" by (simp add: between_endpoint_in_S)
-  also from `?pa \<noteq> ?pb` and `?pb \<noteq> ?pc`
-    and `?pa \<in> hyp2` and `?pb \<in> hyp2` and `?pc \<in> hyp2` and `B\<^sub>\<real> ?ca ?cb ?cc`
+  also from \<open>?pa \<noteq> ?pb\<close> and \<open>?pb \<noteq> ?pc\<close>
+    and \<open>?pa \<in> hyp2\<close> and \<open>?pb \<in> hyp2\<close> and \<open>?pc \<in> hyp2\<close> and \<open>B\<^sub>\<real> ?ca ?cb ?cc\<close>
   have "\<dots> = endpoint_in_S ?pb ?pc" by (simp add: between_endpoint_in_S)
   finally have "apply_cltn2 ?pp J = ?pp" .
 
-  from `?pb \<in> hyp2` and `?pc \<in> hyp2` and `?pp \<in> S`
+  from \<open>?pb \<in> hyp2\<close> and \<open>?pc \<in> hyp2\<close> and \<open>?pp \<in> S\<close>
   have "z_non_zero ?pb" and "z_non_zero ?pc" and "z_non_zero ?pp"
     by (simp_all add: hyp2_S_z_non_zero)
-  with `B\<^sub>\<real> ?cb ?cc ?cp` and euclid_B_cart2_common_line [of ?pb ?pc ?pp]
+  with \<open>B\<^sub>\<real> ?cb ?cc ?cp\<close> and euclid_B_cart2_common_line [of ?pb ?pc ?pp]
   obtain l where "proj2_incident ?pb l" and "proj2_incident ?pp l"
     and "proj2_incident ?pc l"
     by auto
-  with `?pb \<in> hyp2` and `?pp \<in> S` and `is_K2_isometry J`
-    and `apply_cltn2 ?pb J = ?pb` and `apply_cltn2 ?pp J = ?pp`
+  with \<open>?pb \<in> hyp2\<close> and \<open>?pp \<in> S\<close> and \<open>is_K2_isometry J\<close>
+    and \<open>apply_cltn2 ?pb J = ?pb\<close> and \<open>apply_cltn2 ?pp J = ?pp\<close>
   have "apply_cltn2 ?pc J = ?pc" by (rule hyp2_S_points_fix_line)
-  with `apply_cltn2 ?pc J = ?pd` have "?pc = ?pd" by simp
+  with \<open>apply_cltn2 ?pc J = ?pd\<close> have "?pc = ?pd" by simp
   thus "c = d" by (subst Rep_hyp2_inject [symmetric])
 qed
 
@@ -3239,23 +3239,23 @@ lemma line_S_match_intersections:
   and "proj2_set_Col {p,q,r,s}"
   shows "(p = r \<and> q = s) \<or> (q = r \<and> p = s)"
 proof -
-  from `proj2_set_Col {p,q,r,s}`
+  from \<open>proj2_set_Col {p,q,r,s}\<close>
   obtain l where "proj2_incident p l" and "proj2_incident q l"
     and "proj2_incident r l" and "proj2_incident s l"
     by (unfold proj2_set_Col_def) auto
-  with `r \<noteq> s` and `p \<in> S` and `q \<in> S` and `r \<in> S` and `s \<in> S`
+  with \<open>r \<noteq> s\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>r \<in> S\<close> and \<open>s \<in> S\<close>
   have "p = r \<or> p = s" and "q = r \<or> q = s"
     by (simp_all add: line_S_two_intersections_only)
 
   show "(p = r \<and> q = s) \<or> (q = r \<and> p = s)"
   proof cases
     assume "p = r"
-    with `p \<noteq> q` and `q = r \<or> q = s`
+    with \<open>p \<noteq> q\<close> and \<open>q = r \<or> q = s\<close>
     show "(p = r \<and> q = s) \<or> (q = r \<and> p = s)" by simp
   next
     assume "p \<noteq> r"
-    with `p = r \<or> p = s` have "p = s" by simp
-    with `p \<noteq> q` and `q = r \<or> q = s`
+    with \<open>p = r \<or> p = s\<close> have "p = s" by simp
+    with \<open>p \<noteq> q\<close> and \<open>q = r \<or> q = s\<close>
     show "(p = r \<and> q = s) \<or> (q = r \<and> p = s)" by simp
   qed
 qed
@@ -3271,25 +3271,25 @@ lemma are_endpoints_in_S':
   \<or> (q = endpoint_in_S a b \<and> p = endpoint_in_S b a)"
   (is "(p = ?r \<and> q = ?s) \<or> (q = ?r \<and> p = ?s)")
 proof -
-  from `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "?r \<noteq> ?s" by (simp add: endpoint_in_S_swap)
 
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "?r \<in> S" and "?s \<in> S" by (simp_all add: endpoint_in_S)
 
-  from `proj2_set_Col {p,q,a,b}`
+  from \<open>proj2_set_Col {p,q,a,b}\<close>
   obtain l where "proj2_incident p l" and "proj2_incident q l"
     and "proj2_incident a l" and "proj2_incident b l"
     by (unfold proj2_set_Col_def) auto
 
-  from `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S` and `proj2_incident a l`
-    and `proj2_incident b l`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close> and \<open>proj2_incident a l\<close>
+    and \<open>proj2_incident b l\<close>
   have "proj2_incident ?r l" and "proj2_incident ?s l"
     by (simp_all add: endpoint_in_S_incident)
-  with `proj2_incident p l` and `proj2_incident q l`
+  with \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
   have "proj2_set_Col {p,q,?r,?s}"
     by (unfold proj2_set_Col_def) (simp add: exI [of _ l])
-  with `p \<noteq> q` and `?r \<noteq> ?s` and `p \<in> S` and `q \<in> S` and `?r \<in> S` and `?s \<in> S`
+  with \<open>p \<noteq> q\<close> and \<open>?r \<noteq> ?s\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>?r \<in> S\<close> and \<open>?s \<in> S\<close>
   show "(p = ?r \<and> q = ?s) \<or> (q = ?r \<and> p = ?s)"
     by (rule line_S_match_intersections)
 qed
@@ -3310,24 +3310,24 @@ lemma S_intersections_endpoints_in_S:
       \<and> S_intersection1 a b = endpoint_in_S ?pb ?pa)"
   (is "(?pp = ?pr \<and> ?pq = ?ps) \<or> (?pq = ?pr \<and> ?pp = ?ps)")
 proof -
-  from `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb` and `?pa \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close> and \<open>?pa \<in> hyp2\<close>
   have "?pp \<noteq> ?pq" by (simp add: S_intersections_distinct)
 
-  from `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb` and `proj2_abs a \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close> and \<open>proj2_abs a \<in> hyp2\<close>
   have "?pp \<in> S" and "?pq \<in> S"
     by (simp_all add: S_intersections_in_S)
 
   let ?l = "proj2_line_through ?pa ?pb"
   have "proj2_incident ?pa ?l" and "proj2_incident ?pb ?l"
     by (rule proj2_line_through_incident)+
-  with `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb`
+  with \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close>
   have "proj2_incident ?pp ?l" and "proj2_incident ?pq ?l"
     by (rule S_intersections_incident)+
-  with `proj2_incident ?pa ?l` and `proj2_incident ?pb ?l`
+  with \<open>proj2_incident ?pa ?l\<close> and \<open>proj2_incident ?pb ?l\<close>
   have "proj2_set_Col {?pp,?pq,?pa,?pb}"
     by (unfold proj2_set_Col_def) (simp add: exI [of _ ?l])
-  with `?pp \<noteq> ?pq` and `?pa \<noteq> ?pb` and `?pp \<in> S` and `?pq \<in> S` and `?pa \<in> hyp2`
-    and `?pb \<in> hyp2 \<union> S`
+  with \<open>?pp \<noteq> ?pq\<close> and \<open>?pa \<noteq> ?pb\<close> and \<open>?pp \<in> S\<close> and \<open>?pq \<in> S\<close> and \<open>?pa \<in> hyp2\<close>
+    and \<open>?pb \<in> hyp2 \<union> S\<close>
   show "(?pp = ?pr \<and> ?pq = ?ps) \<or> (?pq = ?pr \<and> ?pp = ?ps)"
     by (simp add: are_endpoints_in_S')
 qed
@@ -3339,14 +3339,14 @@ lemma between_endpoints_in_S:
   (is "B\<^sub>\<real> ?cp ?ca ?cq")
 proof -
   let ?cb = "cart2_pt b"
-  from `b \<in> hyp2 \<union> S` and `a \<in> hyp2 \<union> S` and `a \<noteq> b`
+  from \<open>b \<in> hyp2 \<union> S\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>a \<noteq> b\<close>
   have "?cb \<noteq> ?ca" by (auto simp add: hyp2_S_cart2_inj)
 
-  from `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  from \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "B\<^sub>\<real> ?ca ?cb ?cp" and "B\<^sub>\<real> ?cb ?ca ?cq" by (simp_all add: endpoint_in_S)
 
-  from `B\<^sub>\<real> ?ca ?cb ?cp` have "B\<^sub>\<real> ?cp ?cb ?ca" by (rule real_euclid.th3_2)
-  with `?cb \<noteq> ?ca` and `B\<^sub>\<real> ?cb ?ca ?cq`
+  from \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> have "B\<^sub>\<real> ?cp ?cb ?ca" by (rule real_euclid.th3_2)
+  with \<open>?cb \<noteq> ?ca\<close> and \<open>B\<^sub>\<real> ?cb ?ca ?cq\<close>
   show "B\<^sub>\<real> ?cp ?ca ?cq" by (simp add: real_euclid.th3_7_1)
 qed
 
@@ -3356,7 +3356,7 @@ lemma S_hyp2_S_cart2_append1:
   shows "\<exists> k. k > 0 \<and> k < 1
   \<and> cart2_append1 a = k *\<^sub>R cart2_append1 q + (1 - k) *\<^sub>R cart2_append1 p"
 proof -
-  from `p \<in> S` and `q \<in> S` and `a \<in> hyp2`
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>a \<in> hyp2\<close>
   have "z_non_zero p" and "z_non_zero q" and "z_non_zero a"
     by (simp_all add: hyp2_S_z_non_zero)
 
@@ -3364,11 +3364,11 @@ proof -
   have "B\<^sub>\<real> (cart2_pt p) (cart2_pt a) (cart2_pt q)" (is "B\<^sub>\<real> ?cp ?ca ?cq")
     by (simp add: hyp2_incident_in_middle)
 
-  from `p \<in> S` and `q \<in> S` and `a \<in> hyp2`
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>a \<in> hyp2\<close>
   have "a \<noteq> p" and "a \<noteq> q" by (simp_all add: hyp2_S_not_equal)
 
-  with `z_non_zero p` and `z_non_zero a` and `z_non_zero q`
-    and `B\<^sub>\<real> ?cp ?ca ?cq`
+  with \<open>z_non_zero p\<close> and \<open>z_non_zero a\<close> and \<open>z_non_zero q\<close>
+    and \<open>B\<^sub>\<real> ?cp ?ca ?cq\<close>
   show "\<exists> k. k > 0 \<and> k < 1
     \<and> cart2_append1 a = k *\<^sub>R cart2_append1 q + (1 - k) *\<^sub>R cart2_append1 p"
     by (rule cart2_append1_between_strict)
@@ -3379,7 +3379,7 @@ lemma are_endpoints_in_S_swap_34:
   shows "are_endpoints_in_S p q b a"
 proof -
   have "{p,q,b,a} = {p,q,a,b}" by auto
-  with `are_endpoints_in_S p q a b`
+  with \<open>are_endpoints_in_S p q a b\<close>
   show "are_endpoints_in_S p q b a" by (unfold are_endpoints_in_S_def) simp
 qed
 
@@ -3391,10 +3391,10 @@ proof -
   let ?l = "proj2_line_through a b"
   have "proj2_incident a ?l" and "proj2_incident b ?l"
     by (rule proj2_line_through_incident)+
-  with `a \<noteq> b` and `a \<in> hyp2 \<union> S` and `b \<in> hyp2 \<union> S`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2 \<union> S\<close> and \<open>b \<in> hyp2 \<union> S\<close>
   have "proj2_incident ?p ?l" and "proj2_incident ?q ?l"
     by (simp_all add: endpoint_in_S_incident)
-  with `proj2_incident a ?l` and `proj2_incident b ?l`
+  with \<open>proj2_incident a ?l\<close> and \<open>proj2_incident b ?l\<close>
   show "proj2_set_Col {?p,?q,a,b}"
     by (unfold proj2_set_Col_def) (simp add: exI [of _ ?l])
 qed
@@ -3404,15 +3404,15 @@ lemma endpoints_in_S_are_endpoints_in_S:
   shows "are_endpoints_in_S (endpoint_in_S a b) (endpoint_in_S b a) a b"
   (is "are_endpoints_in_S ?p ?q a b")
 proof -
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "?p \<noteq> ?q" by (simp add: endpoint_in_S_swap)
 
-  from `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "?p \<in> S" and "?q \<in> S" by (simp_all add: endpoint_in_S)
 
   from assms
   have "proj2_set_Col {?p,?q,a,b}" by (simp add: proj2_set_Col_endpoints_in_S)
-  with `?p \<noteq> ?q` and `?p \<in> S` and `?q \<in> S` and `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>?p \<noteq> ?q\<close> and \<open>?p \<in> S\<close> and \<open>?q \<in> S\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   show "are_endpoints_in_S ?p ?q a b" by (unfold are_endpoints_in_S_def) simp
 qed
 
@@ -3420,22 +3420,22 @@ lemma endpoint_in_S_S_hyp2_distinct:
   assumes "p \<in> S" and "a \<in> hyp2 \<union> S" and "p \<noteq> a"
   shows "endpoint_in_S p a \<noteq> p"
 proof
-  from `p \<noteq> a` and `p \<in> S` and `a \<in> hyp2 \<union> S`
+  from \<open>p \<noteq> a\<close> and \<open>p \<in> S\<close> and \<open>a \<in> hyp2 \<union> S\<close>
   have "B\<^sub>\<real> (cart2_pt p) (cart2_pt a) (cart2_pt (endpoint_in_S p a))"
     by (simp add: endpoint_in_S)
 
   assume "endpoint_in_S p a = p"
-  with `B\<^sub>\<real> (cart2_pt p) (cart2_pt a) (cart2_pt (endpoint_in_S p a))`
+  with \<open>B\<^sub>\<real> (cart2_pt p) (cart2_pt a) (cart2_pt (endpoint_in_S p a))\<close>
   have "cart2_pt p = cart2_pt a" by (simp add: real_euclid.A6')
-  with `p \<in> S` and `a \<in> hyp2 \<union> S` have "p = a" by (simp add: hyp2_S_cart2_inj)
-  with `p \<noteq> a` show False ..
+  with \<open>p \<in> S\<close> and \<open>a \<in> hyp2 \<union> S\<close> have "p = a" by (simp add: hyp2_S_cart2_inj)
+  with \<open>p \<noteq> a\<close> show False ..
 qed
 
 lemma endpoint_in_S_S_strict_hyp2_distinct:
   assumes "p \<in> S" and "a \<in> hyp2"
   shows "endpoint_in_S p a \<noteq> p"
 proof -
-  from `a \<in> hyp2` and `p \<in> S`
+  from \<open>a \<in> hyp2\<close> and \<open>p \<in> S\<close>
   have "p \<noteq> a" by (rule hyp2_S_not_equal [symmetric])
   with assms
   show "endpoint_in_S p a \<noteq> p" by (simp add: endpoint_in_S_S_hyp2_distinct)
@@ -3447,19 +3447,19 @@ lemma end_and_opposite_are_endpoints_in_S:
   shows "are_endpoints_in_S p (endpoint_in_S p b) a b"
   (is "are_endpoints_in_S p ?q a b")
 proof -
-  from `p \<in> S` and `b \<in> hyp2`
+  from \<open>p \<in> S\<close> and \<open>b \<in> hyp2\<close>
   have "p \<noteq> ?q" by (rule endpoint_in_S_S_strict_hyp2_distinct [symmetric])
 
-  from `p \<in> S` and `b \<in> hyp2` have "?q \<in> S" by (simp add: endpoint_in_S)
+  from \<open>p \<in> S\<close> and \<open>b \<in> hyp2\<close> have "?q \<in> S" by (simp add: endpoint_in_S)
 
-  from `b \<in> hyp2` and `p \<in> S`
+  from \<open>b \<in> hyp2\<close> and \<open>p \<in> S\<close>
   have "p \<noteq> b" by (rule hyp2_S_not_equal [symmetric])
-  with `p \<in> S` and `b \<in> hyp2` and `proj2_incident p l` and `proj2_incident b l`
+  with \<open>p \<in> S\<close> and \<open>b \<in> hyp2\<close> and \<open>proj2_incident p l\<close> and \<open>proj2_incident b l\<close>
   have "proj2_incident ?q l" by (simp add: endpoint_in_S_incident)
-  with `proj2_incident p l` and `proj2_incident a l` and `proj2_incident b l`
+  with \<open>proj2_incident p l\<close> and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close>
   have "proj2_set_Col {p,?q,a,b}"
     by (unfold proj2_set_Col_def) (simp add: exI [of _ l])
-  with `p \<noteq> ?q` and `p \<in> S` and `?q \<in> S` and `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>p \<noteq> ?q\<close> and \<open>p \<in> S\<close> and \<open>?q \<in> S\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   show "are_endpoints_in_S p ?q a b" by (unfold are_endpoints_in_S_def) simp
 qed
 
@@ -3468,14 +3468,14 @@ lemma real_hyp2_B_hyp2_cltn2:
   shows "B\<^sub>K (hyp2_cltn2 a J) (hyp2_cltn2 b J) (hyp2_cltn2 c J)"
   (is "B\<^sub>K ?aJ ?bJ ?cJ")
 proof -
-  from `B\<^sub>K a b c`
+  from \<open>B\<^sub>K a b c\<close>
   have "B\<^sub>\<real> (hyp2_rep a) (hyp2_rep b) (hyp2_rep c)" by (unfold real_hyp2_B_def)
-  with `is_K2_isometry J`
+  with \<open>is_K2_isometry J\<close>
   have "B\<^sub>\<real> (cart2_pt (apply_cltn2 (Rep_hyp2 a) J))
     (cart2_pt (apply_cltn2 (Rep_hyp2 b) J))
     (cart2_pt (apply_cltn2 (Rep_hyp2 c) J))"
     by (unfold hyp2_rep_def) (simp add: Rep_hyp2 statement_63)
-  moreover from `is_K2_isometry J`
+  moreover from \<open>is_K2_isometry J\<close>
   have "apply_cltn2 (Rep_hyp2 a) J \<in> hyp2"
     and "apply_cltn2 (Rep_hyp2 b) J \<in> hyp2"
     and "apply_cltn2 (Rep_hyp2 c) J \<in> hyp2"
@@ -3490,7 +3490,7 @@ lemma real_hyp2_C_hyp2_cltn2:
   shows "a b \<congruent>\<^sub>K (hyp2_cltn2 a J) (hyp2_cltn2 b J)" (is "a b \<congruent>\<^sub>K ?aJ ?bJ")
   using assms by (unfold real_hyp2_C_def) (simp add: exI [of _ J])
 
-subsection {* Perpendicularity *}
+subsection \<open>Perpendicularity\<close>
 
 definition M_perp :: "proj2_line \<Rightarrow> proj2_line \<Rightarrow> bool" where
   "M_perp l m \<equiv> proj2_incident (pole l) m"
@@ -3499,7 +3499,7 @@ lemma M_perp_sym:
   assumes "M_perp l m"
   shows "M_perp m l"
 proof -
-  from `M_perp l m` have "proj2_incident (pole l) m" by (unfold M_perp_def)
+  from \<open>M_perp l m\<close> have "proj2_incident (pole l) m" by (unfold M_perp_def)
   hence "proj2_incident (pole m) (polar (pole l))" by (rule incident_pole_polar)
   hence "proj2_incident (pole m) l" by (simp add: polar_pole)
   thus "M_perp m l" by (unfold M_perp_def)
@@ -3511,7 +3511,7 @@ lemma M_perp_to_compass:
   shows "\<exists> J. is_K2_isometry J
   \<and> apply_cltn2_line equator J = l \<and> apply_cltn2_line meridian J = m"
 proof -
-  from `a \<in> K2` and `proj2_incident a l`
+  from \<open>a \<in> K2\<close> and \<open>proj2_incident a l\<close>
     and line_through_K2_intersect_S_twice [of a l]
   obtain p and q where "p \<noteq> q" and "p \<in> S" and "q \<in> S"
     and "proj2_incident p l" and "proj2_incident q l"
@@ -3521,81 +3521,81 @@ proof -
   proof cases
     assume "proj2_incident p m"
 
-    from `b \<in> K2` and `proj2_incident b m`
+    from \<open>b \<in> K2\<close> and \<open>proj2_incident b m\<close>
       and line_through_K2_intersect_S_again [of b m]
     obtain r where "r \<in> S" and "r \<noteq> p" and "proj2_incident r m" by auto
 
     have "r \<notin> {p,q}"
     proof
       assume "r \<in> {p,q}"
-      with `r \<noteq> p` have "r = q" by simp
-      with `proj2_incident r m` have "proj2_incident q m" by simp
-      with `proj2_incident p l` and `proj2_incident q l`
-        and `proj2_incident p m` and `proj2_incident q m` and `p \<noteq> q`
+      with \<open>r \<noteq> p\<close> have "r = q" by simp
+      with \<open>proj2_incident r m\<close> have "proj2_incident q m" by simp
+      with \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
+        and \<open>proj2_incident p m\<close> and \<open>proj2_incident q m\<close> and \<open>p \<noteq> q\<close>
         and proj2_incident_unique [of p l q m]
       have "l = m" by simp
-      with `M_perp l m` have "M_perp l l" by simp
+      with \<open>M_perp l m\<close> have "M_perp l l" by simp
       hence "proj2_incident (pole l) l" (is "proj2_incident ?s l")
         by (unfold M_perp_def)
       hence "proj2_incident ?s (polar ?s)" by (subst polar_pole)
       hence "?s \<in> S" by (simp add: incident_own_polar_in_S)
-      with `p \<in> S` and `q \<in> S` and `proj2_incident p l` and `proj2_incident q l`
+      with \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
         and point_in_S_polar_is_tangent [of ?s]
       have "p = ?s" and "q = ?s" by (auto simp add: polar_pole)
-      with `p \<noteq> q` show False by simp
+      with \<open>p \<noteq> q\<close> show False by simp
     qed
-    with `r \<in> S` and `proj2_incident r m`
+    with \<open>r \<in> S\<close> and \<open>proj2_incident r m\<close>
     show "\<exists> r. r \<in> S \<and> r \<notin> {p,q} \<and> proj2_incident r m"
       by (simp add: exI [of _ r])
   next
     assume "\<not> proj2_incident p m"
 
-    from `b \<in> K2` and `proj2_incident b m`
+    from \<open>b \<in> K2\<close> and \<open>proj2_incident b m\<close>
       and line_through_K2_intersect_S_again [of b m]
     obtain r where "r \<in> S" and "r \<noteq> q" and "proj2_incident r m" by auto
 
-    from `\<not> proj2_incident p m` and `proj2_incident r m` have "r \<noteq> p" by auto
-    with `r \<in> S` and `r \<noteq> q` and `proj2_incident r m`
+    from \<open>\<not> proj2_incident p m\<close> and \<open>proj2_incident r m\<close> have "r \<noteq> p" by auto
+    with \<open>r \<in> S\<close> and \<open>r \<noteq> q\<close> and \<open>proj2_incident r m\<close>
     show "\<exists> r. r \<in> S \<and> r \<notin> {p,q} \<and> proj2_incident r m"
       by (simp add: exI [of _ r])
   qed
   then obtain r where "r \<in> S" and "r \<notin> {p,q}" and "proj2_incident r m" by auto
 
-  from `p \<in> S` and `q \<in> S` and `r \<in> S` and `p \<noteq> q` and `r \<notin> {p,q}`
+  from \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>r \<in> S\<close> and \<open>p \<noteq> q\<close> and \<open>r \<notin> {p,q}\<close>
     and statement65_special_case [of p q r]
   obtain J where "is_K2_isometry J" and "apply_cltn2 east J = p"
     and "apply_cltn2 west J = q" and "apply_cltn2 north J = r"
     and "apply_cltn2 far_north J = proj2_intersection (polar p) (polar q)"
     by auto
 
-  from `apply_cltn2 east J = p` and `apply_cltn2 west J = q`
-    and `proj2_incident p l` and `proj2_incident q l`
+  from \<open>apply_cltn2 east J = p\<close> and \<open>apply_cltn2 west J = q\<close>
+    and \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
   have "proj2_incident (apply_cltn2 east J) l"
     and "proj2_incident (apply_cltn2 west J) l"
     by simp_all
   with east_west_distinct and east_west_on_equator
   have "apply_cltn2_line equator J = l" by (rule apply_cltn2_line_unique)
 
-  from `apply_cltn2 north J = r` and `proj2_incident r m`
+  from \<open>apply_cltn2 north J = r\<close> and \<open>proj2_incident r m\<close>
   have "proj2_incident (apply_cltn2 north J) m" by simp
 
-  from `p \<noteq> q` and polar_inj have "polar p \<noteq> polar q" by fast
+  from \<open>p \<noteq> q\<close> and polar_inj have "polar p \<noteq> polar q" by fast
 
-  from `proj2_incident p l` and `proj2_incident q l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
   have "proj2_incident (pole l) (polar p)"
     and "proj2_incident (pole l) (polar q)"
     by (simp_all add: incident_pole_polar)
-  with `polar p \<noteq> polar q`
+  with \<open>polar p \<noteq> polar q\<close>
   have "pole l = proj2_intersection (polar p) (polar q)"
     by (rule proj2_intersection_unique)
-  with `apply_cltn2 far_north J = proj2_intersection (polar p) (polar q)`
+  with \<open>apply_cltn2 far_north J = proj2_intersection (polar p) (polar q)\<close>
   have "apply_cltn2 far_north J = pole l" by simp
-  with `M_perp l m`
+  with \<open>M_perp l m\<close>
   have "proj2_incident (apply_cltn2 far_north J) m" by (unfold M_perp_def) simp
   with north_far_north_distinct and north_south_far_north_on_meridian
-    and `proj2_incident (apply_cltn2 north J) m`
+    and \<open>proj2_incident (apply_cltn2 north J) m\<close>
   have "apply_cltn2_line meridian J = m" by (simp add: apply_cltn2_line_unique)
-  with `is_K2_isometry J` and `apply_cltn2_line equator J = l`
+  with \<open>is_K2_isometry J\<close> and \<open>apply_cltn2_line equator J = l\<close>
   show "\<exists> J. is_K2_isometry J
     \<and> apply_cltn2_line equator J = l \<and> apply_cltn2_line meridian J = m"
     by (simp add: exI [of _ J])
@@ -3623,31 +3623,31 @@ lemma M_perp_hyp2:
   and "proj2_incident b m" and "proj2_incident c l" and "proj2_incident c m"
   shows "c \<in> hyp2"
 proof -
-  from `M_perp l m` and `a \<in> hyp2` and `proj2_incident a l` and `b \<in> hyp2`
-    and `proj2_incident b m` and M_perp_to_compass [of l m a b]
+  from \<open>M_perp l m\<close> and \<open>a \<in> hyp2\<close> and \<open>proj2_incident a l\<close> and \<open>b \<in> hyp2\<close>
+    and \<open>proj2_incident b m\<close> and M_perp_to_compass [of l m a b]
   obtain J where "is_K2_isometry J" and "apply_cltn2_line equator J = l"
     and "apply_cltn2_line meridian J = m"
     by auto
 
-  from `is_K2_isometry J` and K2_centre_in_K2
+  from \<open>is_K2_isometry J\<close> and K2_centre_in_K2
   have "apply_cltn2 K2_centre J \<in> hyp2"
     by (rule statement60_one_way)
 
-  from `proj2_incident c l` and `apply_cltn2_line equator J = l`
-    and `proj2_incident c m` and `apply_cltn2_line meridian J = m`
+  from \<open>proj2_incident c l\<close> and \<open>apply_cltn2_line equator J = l\<close>
+    and \<open>proj2_incident c m\<close> and \<open>apply_cltn2_line meridian J = m\<close>
   have "proj2_incident c (apply_cltn2_line equator J)"
     and "proj2_incident c (apply_cltn2_line meridian J)"
     by simp_all
   with equator_meridian_distinct and K2_centre_on_equator_meridian
   have "apply_cltn2 K2_centre J = c" by (rule apply_cltn2_unique)
-  with `apply_cltn2 K2_centre J \<in> hyp2` show "c \<in> hyp2" by simp
+  with \<open>apply_cltn2 K2_centre J \<in> hyp2\<close> show "c \<in> hyp2" by simp
 qed
 
 lemma perp_foot_hyp2:
   assumes "a \<in> hyp2" and "proj2_incident a l" and "b \<in> hyp2"
   shows "perp_foot b l \<in> hyp2"
-  using drop_perp_perp [of l b] and `a \<in> hyp2` and `proj2_incident a l`
-    and `b \<in> hyp2` and drop_perp_incident [of b l]
+  using drop_perp_perp [of l b] and \<open>a \<in> hyp2\<close> and \<open>proj2_incident a l\<close>
+    and \<open>b \<in> hyp2\<close> and drop_perp_incident [of b l]
     and perp_foot_incident [of b l]
   by (rule M_perp_hyp2)
 
@@ -3661,15 +3661,15 @@ lemma perp_up_degenerate_in_S_incident:
   shows "perp_up a l \<in> S" (is "?p \<in> S")
   and "proj2_incident (perp_up a l) (drop_perp a l)"
 proof -
-  from `proj2_incident a l`
+  from \<open>proj2_incident a l\<close>
   have "?p = (\<some> p. p \<in> S \<and> proj2_incident p (drop_perp a l))"
     by (unfold perp_up_def) simp
 
-  from `a \<in> hyp2` and drop_perp_incident [of a l]
+  from \<open>a \<in> hyp2\<close> and drop_perp_incident [of a l]
   have "\<exists> p. p \<in> S \<and> proj2_incident p (drop_perp a l)"
     by (rule line_through_K2_intersect_S)
   hence "?p \<in> S \<and> proj2_incident ?p (drop_perp a l)"
-    unfolding `?p = (\<some> p. p \<in> S \<and> proj2_incident p (drop_perp a l))`
+    unfolding \<open>?p = (\<some> p. p \<in> S \<and> proj2_incident p (drop_perp a l))\<close>
     by (rule someI_ex)
   thus "?p \<in> S" and "proj2_incident ?p (drop_perp a l)" by simp_all
 qed
@@ -3680,16 +3680,16 @@ lemma perp_up_non_degenerate_in_S_at_end:
   shows "perp_up a l \<in> S"
   and "B\<^sub>\<real> (cart2_pt (perp_foot a l)) (cart2_pt a) (cart2_pt (perp_up a l))"
 proof -
-  from `\<not> proj2_incident a l`
+  from \<open>\<not> proj2_incident a l\<close>
   have "perp_up a l = endpoint_in_S (perp_foot a l) a"
     by (unfold perp_up_def) simp
 
-  from `b \<in> hyp2` and `proj2_incident b l` and `a \<in> hyp2`
+  from \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close> and \<open>a \<in> hyp2\<close>
   have "perp_foot a l \<in> hyp2" by (rule perp_foot_hyp2)
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   show "perp_up a l \<in> S"
     and "B\<^sub>\<real> (cart2_pt (perp_foot a l)) (cart2_pt a) (cart2_pt (perp_up a l))"
-    unfolding `perp_up a l = endpoint_in_S (perp_foot a l) a`
+    unfolding \<open>perp_up a l = endpoint_in_S (perp_foot a l) a\<close>
     by (simp_all add: endpoint_in_S)
 qed
 
@@ -3698,7 +3698,7 @@ lemma perp_up_in_S:
   shows "perp_up a l \<in> S"
 proof cases
   assume "proj2_incident a l"
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   show "perp_up a l \<in> S" by (rule perp_up_degenerate_in_S_incident)
 next
   assume "\<not> proj2_incident a l"
@@ -3712,29 +3712,29 @@ lemma perp_up_incident:
   (is "proj2_incident ?p ?m")
 proof cases
   assume "proj2_incident a l"
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   show "proj2_incident ?p ?m" by (rule perp_up_degenerate_in_S_incident)
 next
   assume "\<not> proj2_incident a l"
   hence "?p = endpoint_in_S (perp_foot a l) a" (is "?p = endpoint_in_S ?c a")
     by (unfold perp_up_def) simp
 
-  from perp_foot_incident [of a l] and `\<not> proj2_incident a l`
+  from perp_foot_incident [of a l] and \<open>\<not> proj2_incident a l\<close>
   have "?c \<noteq> a" by auto
 
-  from `b \<in> hyp2` and `proj2_incident b l` and `a \<in> hyp2`
+  from \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close> and \<open>a \<in> hyp2\<close>
   have "?c \<in> hyp2" by (rule perp_foot_hyp2)
-  with `?c \<noteq> a` and `a \<in> hyp2` and drop_perp_incident [of a l]
+  with \<open>?c \<noteq> a\<close> and \<open>a \<in> hyp2\<close> and drop_perp_incident [of a l]
     and perp_foot_incident [of a l]
   show "proj2_incident ?p ?m"
-    by (unfold `?p = endpoint_in_S ?c a`) (simp add: endpoint_in_S_incident)
+    by (unfold \<open>?p = endpoint_in_S ?c a\<close>) (simp add: endpoint_in_S_incident)
 qed
 
 lemma drop_perp_same_line_pole_in_S:
   assumes "drop_perp p l = l"
   shows "pole l \<in> S"
 proof -
-  from `drop_perp p l = l`
+  from \<open>drop_perp p l = l\<close>
   have "l = proj2_line_through p (pole l)" by (unfold drop_perp_def) simp
   with proj2_line_through_incident [of "pole l" p]
   have "proj2_incident (pole l) l" by simp
@@ -3748,10 +3748,10 @@ lemma hyp2_drop_perp_not_same_line:
 proof
   assume "drop_perp a l = l"
   hence "pole l \<in> S" by (rule drop_perp_same_line_pole_in_S)
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   have "\<not> proj2_incident a (polar (pole l))"
     by (simp add: tangent_not_through_K2)
-  with `drop_perp a l = l`
+  with \<open>drop_perp a l = l\<close>
   have "\<not> proj2_incident a (drop_perp a l)" by (simp add: polar_pole)
   with drop_perp_incident [of a l] show False by simp
 qed
@@ -3760,9 +3760,9 @@ lemma hyp2_incident_perp_foot_same_point:
   assumes "a \<in> hyp2" and "proj2_incident a l"
   shows "perp_foot a l = a"
 proof -
-  from `a \<in> hyp2`
+  from \<open>a \<in> hyp2\<close>
   have "drop_perp a l \<noteq> l" by (rule hyp2_drop_perp_not_same_line)
-  with perp_foot_incident [of a l] and `proj2_incident a l`
+  with perp_foot_incident [of a l] and \<open>proj2_incident a l\<close>
     and drop_perp_incident [of a l] and proj2_incident_unique
   show "perp_foot a l = a" by fast
 qed
@@ -3772,7 +3772,7 @@ lemma perp_up_at_end:
   shows "B\<^sub>\<real> (cart2_pt (perp_foot a l)) (cart2_pt a) (cart2_pt (perp_up a l))"
 proof cases
   assume "proj2_incident a l"
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   have "perp_foot a l = a" by (rule hyp2_incident_perp_foot_same_point)
   thus "B\<^sub>\<real> (cart2_pt (perp_foot a l)) (cart2_pt a) (cart2_pt (perp_up a l))"
     by (simp add: real_euclid.th3_1 real_euclid.th3_2)
@@ -3791,7 +3791,7 @@ lemma perp_down_in_S:
   shows "perp_down a l \<in> S"
 proof -
   from assms have "perp_up a l \<in> S" by (rule perp_up_in_S)
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   show "perp_down a l \<in> S" by (unfold perp_down_def) (simp add: endpoint_in_S)
 qed
 
@@ -3800,11 +3800,11 @@ lemma perp_down_incident:
   shows "proj2_incident (perp_down a l) (drop_perp a l)"
 proof -
   from assms have "perp_up a l \<in> S" by (rule perp_up_in_S)
-  with `a \<in> hyp2` have "perp_up a l \<noteq> a" by (rule hyp2_S_not_equal [symmetric])
+  with \<open>a \<in> hyp2\<close> have "perp_up a l \<noteq> a" by (rule hyp2_S_not_equal [symmetric])
 
   from assms
   have "proj2_incident (perp_up a l) (drop_perp a l)" by (rule perp_up_incident)
-  with `perp_up a l \<noteq> a` and `perp_up a l \<in> S` and `a \<in> hyp2`
+  with \<open>perp_up a l \<noteq> a\<close> and \<open>perp_up a l \<in> S\<close> and \<open>a \<in> hyp2\<close>
     and drop_perp_incident [of a l]
   show "proj2_incident (perp_down a l) (drop_perp a l)"
     by (unfold perp_down_def) (simp add: endpoint_in_S_incident)
@@ -3815,7 +3815,7 @@ lemma perp_up_down_distinct:
   shows "perp_up a l \<noteq> perp_down a l"
 proof -
   from assms have "perp_up a l \<in> S" by (rule perp_up_in_S)
-  with `a \<in> hyp2`
+  with \<open>a \<in> hyp2\<close>
   show "perp_up a l \<noteq> perp_down a l"
     unfolding perp_down_def
     by (simp add: endpoint_in_S_S_strict_hyp2_distinct [symmetric])
@@ -3825,14 +3825,14 @@ lemma perp_up_down_foot_are_endpoints_in_S:
   assumes "a \<in> hyp2" and "b \<in> hyp2" and "proj2_incident b l"
   shows "are_endpoints_in_S (perp_up a l) (perp_down a l) (perp_foot a l) a"
 proof -
-  from `b \<in> hyp2` and `proj2_incident b l` and `a \<in> hyp2`
+  from \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close> and \<open>a \<in> hyp2\<close>
   have "perp_foot a l \<in> hyp2" by (rule perp_foot_hyp2)
 
   from assms have "perp_up a l \<in> S" by (rule perp_up_in_S)
 
   from assms
   have "proj2_incident (perp_up a l) (drop_perp a l)" by (rule perp_up_incident)
-  with `perp_foot a l \<in> hyp2` and `a \<in> hyp2` and `perp_up a l \<in> S`
+  with \<open>perp_foot a l \<in> hyp2\<close> and \<open>a \<in> hyp2\<close> and \<open>perp_up a l \<in> S\<close>
     and perp_foot_incident(2) [of a l] and drop_perp_incident [of a l]
   show "are_endpoints_in_S (perp_up a l) (perp_down a l) (perp_foot a l) a"
     by (unfold perp_down_def) (rule end_and_opposite_are_endpoints_in_S)
@@ -3847,31 +3847,31 @@ lemma perp_foot_opposite_endpoint_in_S:
 proof -
   let ?q = "endpoint_in_S ?p ?d"
 
-  from `a \<in> hyp2` and `b \<in> hyp2` have "?p \<in> S" by (simp add: endpoint_in_S)
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> have "?p \<in> S" by (simp add: endpoint_in_S)
 
   let ?l = "proj2_line_through a b"
   have "proj2_incident a ?l" and "proj2_incident b ?l"
     by (rule proj2_line_through_incident)+
-  with `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "proj2_incident ?p ?l"
     by (simp_all add: endpoint_in_S_incident)
 
-  from `a \<in> hyp2` and `proj2_incident a ?l` and `c \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>proj2_incident a ?l\<close> and \<open>c \<in> hyp2\<close>
   have "?d \<in> hyp2" by (rule perp_foot_hyp2)
-  with `?p \<in> S` have "?q \<noteq> ?p" by (rule endpoint_in_S_S_strict_hyp2_distinct)
+  with \<open>?p \<in> S\<close> have "?q \<noteq> ?p" by (rule endpoint_in_S_S_strict_hyp2_distinct)
 
-  from `?p \<in> S` and `?d \<in> hyp2` have "?q \<in> S" by (simp add: endpoint_in_S)
+  from \<open>?p \<in> S\<close> and \<open>?d \<in> hyp2\<close> have "?q \<in> S" by (simp add: endpoint_in_S)
 
-  from `?d \<in> hyp2` and `?p \<in> S`
+  from \<open>?d \<in> hyp2\<close> and \<open>?p \<in> S\<close>
   have "?p \<noteq> ?d" by (rule hyp2_S_not_equal [symmetric])
-  with `?p \<in> S` and `?d \<in> hyp2` and `proj2_incident ?p ?l`
+  with \<open>?p \<in> S\<close> and \<open>?d \<in> hyp2\<close> and \<open>proj2_incident ?p ?l\<close>
     and perp_foot_incident(1) [of c ?l]
   have "proj2_incident ?q ?l" by (simp add: endpoint_in_S_incident)
-  with `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2` and `?q \<in> S`
-    and `proj2_incident a ?l` and `proj2_incident b ?l`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>?q \<in> S\<close>
+    and \<open>proj2_incident a ?l\<close> and \<open>proj2_incident b ?l\<close>
   have "?q = ?p \<or> ?q = endpoint_in_S b a"
     by (simp add: endpoints_in_S_incident_unique)
-  with `?q \<noteq> ?p` show "?q = endpoint_in_S b a" by simp
+  with \<open>?q \<noteq> ?p\<close> show "?q = endpoint_in_S b a" by simp
 qed
 
 lemma endpoints_in_S_perp_foot_are_endpoints_in_S:
@@ -3885,23 +3885,23 @@ proof -
       and "q = endpoint_in_S b a"
       and "d = perp_foot c l"
 
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "p \<noteq> q" by (unfold p_def q_def) (simp add: endpoint_in_S_swap)
 
-  from `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "p \<in> S" and "q \<in> S" by (unfold p_def q_def) (simp_all add: endpoint_in_S)
 
-  from `a \<in> hyp2` and `proj2_incident a l` and `c \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>proj2_incident a l\<close> and \<open>c \<in> hyp2\<close>
   have "d \<in> hyp2" by (unfold d_def) (rule perp_foot_hyp2)
 
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2` and `proj2_incident a l`
-    and `proj2_incident b l`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>proj2_incident a l\<close>
+    and \<open>proj2_incident b l\<close>
   have "proj2_incident p l" and "proj2_incident q l"
     by (unfold p_def q_def) (simp_all add: endpoint_in_S_incident)
-  with `proj2_incident a l` and perp_foot_incident(1) [of c l]
+  with \<open>proj2_incident a l\<close> and perp_foot_incident(1) [of c l]
   have "proj2_set_Col {p,q,a,d}"
     by (unfold d_def proj2_set_Col_def) (simp add: exI [of _ l])
-  with `p \<noteq> q` and `p \<in> S` and `q \<in> S` and `a \<in> hyp2` and `d \<in> hyp2`
+  with \<open>p \<noteq> q\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>a \<in> hyp2\<close> and \<open>d \<in> hyp2\<close>
   show "are_endpoints_in_S p q a d" by (unfold are_endpoints_in_S_def) simp
 qed
 
@@ -3917,27 +3917,27 @@ lemma perp_foot_up_right_angle:
 proof -
   define c where "c = perp_foot a l"
   define q where "q = perp_up a l"
-  from `a \<in> hyp2` and `b \<in> hyp2` and `proj2_incident b l`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close>
   have "q \<in> S" by (unfold q_def) (rule perp_up_in_S)
 
-  from `b \<in> hyp2` and `proj2_incident b l` and `a \<in> hyp2`
+  from \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close> and \<open>a \<in> hyp2\<close>
   have "c \<in> hyp2" by (unfold c_def) (rule perp_foot_hyp2)
-  with `p \<in> S` and `q \<in> S` have "c \<noteq> p" and "c \<noteq> q"
+  with \<open>p \<in> S\<close> and \<open>q \<in> S\<close> have "c \<noteq> p" and "c \<noteq> q"
     by (simp_all add: hyp2_S_not_equal)
 
-  from `c \<noteq> p` [symmetric] and `proj2_incident p l`
+  from \<open>c \<noteq> p\<close> [symmetric] and \<open>proj2_incident p l\<close>
     and perp_foot_incident(1) [of a l]
   have "l = proj2_line_through p c"
     by (unfold c_def) (rule proj2_line_through_unique)
 
   define m where "m = drop_perp a l"
-  from `a \<in> hyp2` and `b \<in> hyp2` and `proj2_incident b l`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close>
   have "proj2_incident q m" by (unfold q_def m_def) (rule perp_up_incident)
-  with `c \<noteq> q` and perp_foot_incident(2) [of a l]
+  with \<open>c \<noteq> q\<close> and perp_foot_incident(2) [of a l]
   have "m = proj2_line_through c q"
     by (unfold c_def m_def) (rule proj2_line_through_unique)
-  with `p \<in> S` and `q \<in> S` and `c \<in> hyp2` and drop_perp_perp [of l a]
-    and `l = proj2_line_through p c`
+  with \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>c \<in> hyp2\<close> and drop_perp_perp [of l a]
+    and \<open>l = proj2_line_through p c\<close>
   show "right_angle p (perp_foot a l) (perp_up a l)"
     by (unfold right_angle_def q_def c_def m_def) simp
 qed
@@ -3948,11 +3948,11 @@ lemma M_perp_unique:
   and "M_perp l n"
   shows "m = n"
 proof -
-  from `a \<in> hyp2` and `proj2_incident a l`
+  from \<open>a \<in> hyp2\<close> and \<open>proj2_incident a l\<close>
   have "pole l \<notin> hyp2" by (rule line_through_hyp2_pole_not_in_hyp2)
-  with `b \<in> hyp2` have "b \<noteq> pole l" by auto
-  with `proj2_incident b m` and `M_perp l m` and `proj2_incident b n`
-    and `M_perp l n` and proj2_incident_unique
+  with \<open>b \<in> hyp2\<close> have "b \<noteq> pole l" by auto
+  with \<open>proj2_incident b m\<close> and \<open>M_perp l m\<close> and \<open>proj2_incident b n\<close>
+    and \<open>M_perp l n\<close> and proj2_incident_unique
   show "m = n" by (unfold M_perp_def) auto
 qed
 
@@ -3961,13 +3961,13 @@ lemma perp_foot_eq_implies_drop_perp_eq:
   and "perp_foot b l = perp_foot c l"
   shows "drop_perp b l = drop_perp c l"
 proof -
-  from `a \<in> hyp2` and `proj2_incident a l` and `b \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>proj2_incident a l\<close> and \<open>b \<in> hyp2\<close>
   have "perp_foot b l \<in> hyp2" by (rule perp_foot_hyp2)
 
-  from `perp_foot b l = perp_foot c l`
+  from \<open>perp_foot b l = perp_foot c l\<close>
   have "proj2_incident (perp_foot b l) (drop_perp c l)"
     by (simp add: perp_foot_incident)
-  with `a \<in> hyp2` and `perp_foot b l \<in> hyp2` and `proj2_incident a l`
+  with \<open>a \<in> hyp2\<close> and \<open>perp_foot b l \<in> hyp2\<close> and \<open>proj2_incident a l\<close>
     and perp_foot_incident(2) [of b l] and drop_perp_perp [of l]
   show "drop_perp b l = drop_perp c l" by (simp add: M_perp_unique)
 qed
@@ -3977,7 +3977,7 @@ lemma right_angle_to_compass:
   shows "\<exists> J. is_K2_isometry J \<and> apply_cltn2 p J = east
   \<and> apply_cltn2 a J = K2_centre \<and> apply_cltn2 q J = north"
 proof -
-  from `right_angle p a q`
+  from \<open>right_angle p a q\<close>
   have "p \<in> S" and "q \<in> S" and "a \<in> hyp2"
     and "M_perp (proj2_line_through p a) (proj2_line_through a q)"
     (is "M_perp ?l ?m")
@@ -3987,38 +3987,38 @@ proof -
     and "proj2_incident q ?m" and "proj2_incident a ?m"
     by (rule proj2_line_through_incident)+
 
-  from `M_perp ?l ?m` and `a \<in> hyp2` and `proj2_incident a ?l`
-    and `proj2_incident a ?m` and M_perp_to_compass [of ?l ?m a a]
+  from \<open>M_perp ?l ?m\<close> and \<open>a \<in> hyp2\<close> and \<open>proj2_incident a ?l\<close>
+    and \<open>proj2_incident a ?m\<close> and M_perp_to_compass [of ?l ?m a a]
   obtain J''i where "is_K2_isometry J''i"
     and "apply_cltn2_line equator J''i = ?l"
     and "apply_cltn2_line meridian J''i = ?m"
     by auto
   let ?J'' = "cltn2_inverse J''i"
 
-  from `apply_cltn2_line equator J''i = ?l`
-    and `apply_cltn2_line meridian J''i = ?m`
-    and `proj2_incident p ?l` and `proj2_incident a ?l`
-    and `proj2_incident q ?m` and `proj2_incident a ?m`
+  from \<open>apply_cltn2_line equator J''i = ?l\<close>
+    and \<open>apply_cltn2_line meridian J''i = ?m\<close>
+    and \<open>proj2_incident p ?l\<close> and \<open>proj2_incident a ?l\<close>
+    and \<open>proj2_incident q ?m\<close> and \<open>proj2_incident a ?m\<close>
   have "proj2_incident (apply_cltn2 p ?J'') equator"
     and "proj2_incident (apply_cltn2 a ?J'') equator"
     and "proj2_incident (apply_cltn2 q ?J'') meridian"
     and "proj2_incident (apply_cltn2 a ?J'') meridian"
     by (simp_all add: apply_cltn2_incident [symmetric])
 
-  from `proj2_incident (apply_cltn2 a ?J'') equator`
-    and `proj2_incident (apply_cltn2 a ?J'') meridian`
+  from \<open>proj2_incident (apply_cltn2 a ?J'') equator\<close>
+    and \<open>proj2_incident (apply_cltn2 a ?J'') meridian\<close>
   have "apply_cltn2 a ?J'' = K2_centre"
     by (rule on_equator_meridian_is_K2_centre)
 
-  from `is_K2_isometry J''i`
+  from \<open>is_K2_isometry J''i\<close>
   have "is_K2_isometry ?J''" by (rule cltn2_inverse_is_K2_isometry)
-  with `p \<in> S` and `q \<in> S`
+  with \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
   have "apply_cltn2 p ?J'' \<in> S" and "apply_cltn2 q ?J'' \<in> S"
     by (unfold is_K2_isometry_def) simp_all
   with east_west_distinct and north_south_distinct and compass_in_S
     and east_west_on_equator and north_south_far_north_on_meridian
-    and `proj2_incident (apply_cltn2 p ?J'') equator`
-    and `proj2_incident (apply_cltn2 q ?J'') meridian`
+    and \<open>proj2_incident (apply_cltn2 p ?J'') equator\<close>
+    and \<open>proj2_incident (apply_cltn2 q ?J'') meridian\<close>
   have "apply_cltn2 p ?J'' = east \<or> apply_cltn2 p ?J'' = west"
     and "apply_cltn2 q ?J'' = north \<or> apply_cltn2 q ?J'' = south"
     by (simp_all add: line_S_two_intersections_only)
@@ -4028,23 +4028,23 @@ proof -
     \<and> (apply_cltn2 q J' = north \<or> apply_cltn2 q J' = south)"
   proof cases
     assume "apply_cltn2 p ?J'' = east"
-    with `is_K2_isometry ?J''` and `apply_cltn2 a ?J'' = K2_centre`
-      and `apply_cltn2 q ?J'' = north \<or> apply_cltn2 q ?J'' = south`
+    with \<open>is_K2_isometry ?J''\<close> and \<open>apply_cltn2 a ?J'' = K2_centre\<close>
+      and \<open>apply_cltn2 q ?J'' = north \<or> apply_cltn2 q ?J'' = south\<close>
     show "\<exists> J'. is_K2_isometry J' \<and> apply_cltn2 p J' = east
       \<and> apply_cltn2 a J' = K2_centre
       \<and> (apply_cltn2 q J' = north \<or> apply_cltn2 q J' = south)"
       by (simp add: exI [of _ ?J''])
   next
     assume "apply_cltn2 p ?J'' \<noteq> east"
-    with `apply_cltn2 p ?J'' = east \<or> apply_cltn2 p ?J'' = west`
+    with \<open>apply_cltn2 p ?J'' = east \<or> apply_cltn2 p ?J'' = west\<close>
     have "apply_cltn2 p ?J'' = west" by simp
 
     let ?J' = "cltn2_compose ?J'' meridian_reflect"
-    from `is_K2_isometry ?J''` and meridian_reflect_K2_isometry
+    from \<open>is_K2_isometry ?J''\<close> and meridian_reflect_K2_isometry
     have "is_K2_isometry ?J'" by (rule cltn2_compose_is_K2_isometry)
     moreover
-    from `apply_cltn2 p ?J'' = west` and `apply_cltn2 a ?J'' = K2_centre`
-      and `apply_cltn2 q ?J'' = north \<or> apply_cltn2 q ?J'' = south`
+    from \<open>apply_cltn2 p ?J'' = west\<close> and \<open>apply_cltn2 a ?J'' = K2_centre\<close>
+      and \<open>apply_cltn2 q ?J'' = north \<or> apply_cltn2 q ?J'' = south\<close>
       and compass_reflect_compass
     have "apply_cltn2 p ?J' = east" and "apply_cltn2 a ?J' = K2_centre"
       and "apply_cltn2 q ?J' = north \<or> apply_cltn2 q ?J' = south"
@@ -4064,22 +4064,22 @@ proof -
     \<and> apply_cltn2 a J = K2_centre \<and> apply_cltn2 q J = north"
   proof cases
     assume "apply_cltn2 q J' = north"
-    with `is_K2_isometry J'` and `apply_cltn2 p J' = east`
-      and `apply_cltn2 a J' = K2_centre`
+    with \<open>is_K2_isometry J'\<close> and \<open>apply_cltn2 p J' = east\<close>
+      and \<open>apply_cltn2 a J' = K2_centre\<close>
     show "\<exists> J. is_K2_isometry J \<and> apply_cltn2 p J = east
       \<and> apply_cltn2 a J = K2_centre \<and> apply_cltn2 q J = north"
       by (simp add: exI [of _ J'])
   next
     assume "apply_cltn2 q J' \<noteq> north"
-    with `apply_cltn2 q J' = north \<or> apply_cltn2 q J' = south`
+    with \<open>apply_cltn2 q J' = north \<or> apply_cltn2 q J' = south\<close>
     have "apply_cltn2 q J' = south" by simp
 
     let ?J = "cltn2_compose J' equator_reflect"
-    from `is_K2_isometry J'` and equator_reflect_K2_isometry
+    from \<open>is_K2_isometry J'\<close> and equator_reflect_K2_isometry
     have "is_K2_isometry ?J" by (rule cltn2_compose_is_K2_isometry)
     moreover
-    from `apply_cltn2 p J' = east` and `apply_cltn2 a J' = K2_centre`
-      and `apply_cltn2 q J' = south` and compass_reflect_compass
+    from \<open>apply_cltn2 p J' = east\<close> and \<open>apply_cltn2 a J' = K2_centre\<close>
+      and \<open>apply_cltn2 q J' = south\<close> and compass_reflect_compass
     have "apply_cltn2 p ?J = east" and "apply_cltn2 a ?J = K2_centre"
       and "apply_cltn2 q ?J = north"
       by (auto simp add: cltn2.act_act [simplified, symmetric])
@@ -4095,39 +4095,39 @@ lemma right_angle_to_right_angle:
   shows "\<exists> J. is_K2_isometry J
   \<and> apply_cltn2 p J = r \<and> apply_cltn2 a J = b \<and> apply_cltn2 q J = s"
 proof -
-  from `right_angle p a q` and right_angle_to_compass [of p a q]
+  from \<open>right_angle p a q\<close> and right_angle_to_compass [of p a q]
   obtain H where "is_K2_isometry H" and "apply_cltn2 p H = east"
     and "apply_cltn2 a H = K2_centre" and "apply_cltn2 q H = north"
     by auto
 
-  from `right_angle r b s` and right_angle_to_compass [of r b s]
+  from \<open>right_angle r b s\<close> and right_angle_to_compass [of r b s]
   obtain K where "is_K2_isometry K" and "apply_cltn2 r K = east"
     and "apply_cltn2 b K = K2_centre" and "apply_cltn2 s K = north"
     by auto
 
   let ?Ki = "cltn2_inverse K"
   let ?J = "cltn2_compose H ?Ki"
-  from `is_K2_isometry H` and `is_K2_isometry K`
+  from \<open>is_K2_isometry H\<close> and \<open>is_K2_isometry K\<close>
   have "is_K2_isometry ?J"
     by (simp add: cltn2_inverse_is_K2_isometry cltn2_compose_is_K2_isometry)
 
-  from `apply_cltn2 r K = east` and `apply_cltn2 b K = K2_centre`
-    and `apply_cltn2 s K = north`
+  from \<open>apply_cltn2 r K = east\<close> and \<open>apply_cltn2 b K = K2_centre\<close>
+    and \<open>apply_cltn2 s K = north\<close>
   have "apply_cltn2 east ?Ki = r" and "apply_cltn2 K2_centre ?Ki = b"
     and "apply_cltn2 north ?Ki = s"
     by (simp_all add: cltn2.act_inv_iff [simplified])
-  with `apply_cltn2 p H = east` and `apply_cltn2 a H = K2_centre`
-    and `apply_cltn2 q H = north`
+  with \<open>apply_cltn2 p H = east\<close> and \<open>apply_cltn2 a H = K2_centre\<close>
+    and \<open>apply_cltn2 q H = north\<close>
   have "apply_cltn2 p ?J = r" and "apply_cltn2 a ?J = b"
     and "apply_cltn2 q ?J = s"
     by (simp_all add: cltn2.act_act [simplified,symmetric])
-  with `is_K2_isometry ?J`
+  with \<open>is_K2_isometry ?J\<close>
   show "\<exists> J. is_K2_isometry J
     \<and> apply_cltn2 p J = r \<and> apply_cltn2 a J = b \<and> apply_cltn2 q J = s"
     by (simp add: exI [of _ ?J])
 qed
 
-subsection {* Functions of distance *}
+subsection \<open>Functions of distance\<close>
 
 definition exp_2dist :: "proj2 \<Rightarrow> proj2 \<Rightarrow> real" where
   "exp_2dist a b
@@ -4153,17 +4153,17 @@ proof cases
   assume "?pa = ?pb"
   hence "?e2d = 1" by (unfold exp_2dist_def, simp)
 
-  from `?pa = ?pb`
+  from \<open>?pa = ?pb\<close>
   have "quarter_discrim a b = 0" by (rule quarter_discrim_self_zero)
   hence "?sqd = 0" by simp
 
-  from `proj2_abs a = proj2_abs b` and `b \<noteq> 0` and proj2_abs_abs_mult
+  from \<open>proj2_abs a = proj2_abs b\<close> and \<open>b \<noteq> 0\<close> and proj2_abs_abs_mult
   obtain k where "a = k *\<^sub>R b" by auto
 
-  from `b \<noteq> 0` and `proj2_abs b \<in> hyp2`
+  from \<open>b \<noteq> 0\<close> and \<open>proj2_abs b \<in> hyp2\<close>
   have "b \<bullet> (M *v b) < 0" by (subst K2_abs [symmetric])
-  with `a \<noteq> 0` and `a = k *\<^sub>R b` have "?aMb \<noteq> 0" by simp
-  with `?e2d = 1` and `?sqd = 0`
+  with \<open>a \<noteq> 0\<close> and \<open>a = k *\<^sub>R b\<close> have "?aMb \<noteq> 0" by simp
+  with \<open>?e2d = 1\<close> and \<open>?sqd = 0\<close>
   show "?e2d = (?aMb + ?sqd) / (?aMb - ?sqd)
     \<or> ?e2d = (?aMb - ?sqd) / (?aMb + ?sqd)"
     by simp
@@ -4172,58 +4172,58 @@ next
   let ?l = "proj2_line_through ?pa ?pb"
   have "proj2_incident ?pa ?l" and "proj2_incident ?pb ?l"
     by (rule proj2_line_through_incident)+
-  with `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb`
+  with \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close>
   have "proj2_incident (S_intersection1 a b) ?l" (is "proj2_incident ?Si1 ?l")
     and "proj2_incident (S_intersection2 a b) ?l" (is "proj2_incident ?Si2 ?l")
     by (rule S_intersections_incident)+
-  with `proj2_incident ?pa ?l` and `proj2_incident ?pb ?l`
+  with \<open>proj2_incident ?pa ?l\<close> and \<open>proj2_incident ?pb ?l\<close>
   have "proj2_set_Col {?pa,?pb,?Si1,?Si2}" by (unfold proj2_set_Col_def, auto)
 
   have "{?pa,?pb,?Si2,?Si1} = {?pa,?pb,?Si1,?Si2}" by auto
 
-  from `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb` and `?pa \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close> and \<open>?pa \<in> hyp2\<close>
   have "?Si1 \<in> S" and "?Si2 \<in> S"
     by (simp_all add: S_intersections_in_S)
-  with `?pa \<in> hyp2` and `?pb \<in> hyp2`
+  with \<open>?pa \<in> hyp2\<close> and \<open>?pb \<in> hyp2\<close>
   have "?Si1 \<noteq> ?pa" and "?Si2 \<noteq> ?pa" and "?Si1 \<noteq> ?pb" and "?Si2 \<noteq> ?pb"
     by (simp_all add: hyp2_S_not_equal [symmetric])
-  with `proj2_set_Col {?pa,?pb,?Si1,?Si2}` and `?pa \<noteq> ?pb`
+  with \<open>proj2_set_Col {?pa,?pb,?Si1,?Si2}\<close> and \<open>?pa \<noteq> ?pb\<close>
   have "cross_ratio_correct ?pa ?pb ?Si1 ?Si2"
     and "cross_ratio_correct ?pa ?pb ?Si2 ?Si1"
     unfolding cross_ratio_correct_def
-    by (simp_all add: `{?pa,?pb,?Si2,?Si1} = {?pa,?pb,?Si1,?Si2}`)
+    by (simp_all add: \<open>{?pa,?pb,?Si2,?Si1} = {?pa,?pb,?Si1,?Si2}\<close>)
 
-  from `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb` and `?pa \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close> and \<open>?pa \<in> hyp2\<close>
   have "?Si1 \<noteq> ?Si2" by (simp add: S_intersections_distinct)
-  with `cross_ratio_correct ?pa ?pb ?Si1 ?Si2`
-    and `cross_ratio_correct ?pa ?pb ?Si2 ?Si1`
+  with \<open>cross_ratio_correct ?pa ?pb ?Si1 ?Si2\<close>
+    and \<open>cross_ratio_correct ?pa ?pb ?Si2 ?Si1\<close>
   have "cross_ratio ?Si1 ?Si2 ?pa ?pb = cross_ratio ?pa ?pb ?Si1 ?Si2"
     and "cross_ratio ?Si2 ?Si1 ?pa ?pb = cross_ratio ?pa ?pb ?Si2 ?Si1"
     by (simp_all add: cross_ratio_swap_13_24)
 
-  from `a \<noteq> 0` and `proj2_abs a \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>proj2_abs a \<in> hyp2\<close>
   have "a \<bullet> (M *v a) < 0" by (subst K2_abs [symmetric])
-  with `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb` and cross_ratio_abs [of a b 1 1]
+  with \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close> and cross_ratio_abs [of a b 1 1]
   have "cross_ratio ?pa ?pb ?Si1 ?Si2 = (-?aMb - ?sqd) / (-?aMb + ?sqd)"
     by (unfold S_intersections_defs S_intersection_coeffs_defs, simp)
   with times_divide_times_eq [of "-1" "-1" "-?aMb - ?sqd" "-?aMb + ?sqd"]
   have "cross_ratio ?pa ?pb ?Si1 ?Si2 = (?aMb + ?sqd) / (?aMb - ?sqd)" by (simp add: ac_simps)
-  with `cross_ratio ?Si1 ?Si2 ?pa ?pb = cross_ratio ?pa ?pb ?Si1 ?Si2`
+  with \<open>cross_ratio ?Si1 ?Si2 ?pa ?pb = cross_ratio ?pa ?pb ?Si1 ?Si2\<close>
   have "cross_ratio ?Si1 ?Si2 ?pa ?pb = (?aMb + ?sqd) / (?aMb - ?sqd)" by simp
 
-  from `cross_ratio ?pa ?pb ?Si1 ?Si2 = (?aMb + ?sqd) / (?aMb - ?sqd)`
+  from \<open>cross_ratio ?pa ?pb ?Si1 ?Si2 = (?aMb + ?sqd) / (?aMb - ?sqd)\<close>
     and cross_ratio_swap_34 [of ?pa ?pb ?Si2 ?Si1]
   have "cross_ratio ?pa ?pb ?Si2 ?Si1 = (?aMb - ?sqd) / (?aMb + ?sqd)" by simp
-  with `cross_ratio ?Si2 ?Si1 ?pa ?pb = cross_ratio ?pa ?pb ?Si2 ?Si1`
+  with \<open>cross_ratio ?Si2 ?Si1 ?pa ?pb = cross_ratio ?pa ?pb ?Si2 ?Si1\<close>
   have "cross_ratio ?Si2 ?Si1 ?pa ?pb = (?aMb - ?sqd) / (?aMb + ?sqd)" by simp
 
-  from `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<noteq> ?pb` and `?pa \<in> hyp2` and `?pb \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<noteq> ?pb\<close> and \<open>?pa \<in> hyp2\<close> and \<open>?pb \<in> hyp2\<close>
   have "(?Si1 = endpoint_in_S ?pa ?pb \<and> ?Si2 = endpoint_in_S ?pb ?pa)
     \<or> (?Si2 = endpoint_in_S ?pa ?pb \<and> ?Si1 = endpoint_in_S ?pb ?pa)"
     by (simp add: S_intersections_endpoints_in_S)
-  with `cross_ratio ?Si1 ?Si2 ?pa ?pb = (?aMb + ?sqd) / (?aMb - ?sqd)`
-    and `cross_ratio ?Si2 ?Si1 ?pa ?pb = (?aMb - ?sqd) / (?aMb + ?sqd)`
-    and `?pa \<noteq> ?pb`
+  with \<open>cross_ratio ?Si1 ?Si2 ?pa ?pb = (?aMb + ?sqd) / (?aMb - ?sqd)\<close>
+    and \<open>cross_ratio ?Si2 ?Si1 ?pa ?pb = (?aMb - ?sqd) / (?aMb + ?sqd)\<close>
+    and \<open>?pa \<noteq> ?pb\<close>
   show "?e2d = (?aMb + ?sqd) / (?aMb - ?sqd)
     \<or> ?e2d = (?aMb - ?sqd) / (?aMb + ?sqd)"
     by (unfold exp_2dist_def, auto)
@@ -4255,7 +4255,7 @@ proof -
     thus "?qd \<ge> 0" by (simp add: quarter_discrim_self_zero)
   next
     assume "?pa \<noteq> ?pb"
-    with `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<in> hyp2`
+    with \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<in> hyp2\<close>
     have "?qd > 0" by (simp add: quarter_discrim_positive)
     thus "?qd \<ge> 0" by simp
   qed
@@ -4268,7 +4268,7 @@ proof -
   have "(?aMb + ?sqd) / (?aMb - ?sqd)
     = (?aMb + ?sqd)\<^sup>2 / ((?aMb + ?sqd) * (?aMb - ?sqd))"
     by (simp add: power2_eq_square)
-  with `(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb`
+  with \<open>(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb\<close>
   have "(?aMb + ?sqd) / (?aMb - ?sqd) = (?aMb + ?sqd)\<^sup>2 / (?aMa * ?bMb)" by simp
   hence "sqrt ((?aMb + ?sqd) / (?aMb - ?sqd))
     = \<bar>?aMb + ?sqd\<bar> / sqrt (?aMa * ?bMb)"
@@ -4279,42 +4279,42 @@ proof -
   have "(?aMb - ?sqd) / (?aMb + ?sqd)
     = (?aMb - ?sqd)\<^sup>2 / ((?aMb + ?sqd) * (?aMb - ?sqd))"
     by (simp add: power2_eq_square)
-  with `(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb`
+  with \<open>(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb\<close>
   have "(?aMb - ?sqd) / (?aMb + ?sqd) = (?aMb - ?sqd)\<^sup>2 / (?aMa * ?bMb)" by simp
   hence "sqrt ((?aMb - ?sqd) / (?aMb + ?sqd))
     = \<bar>?aMb - ?sqd\<bar> / sqrt (?aMa * ?bMb)"
     by (simp add: real_sqrt_divide)
 
-  from `a \<noteq> 0` and `b \<noteq> 0` and `?pa \<in> hyp2` and `?pb \<in> hyp2`
+  from \<open>a \<noteq> 0\<close> and \<open>b \<noteq> 0\<close> and \<open>?pa \<in> hyp2\<close> and \<open>?pb \<in> hyp2\<close>
   have "?aMa < 0" and "?bMb < 0"
     by (simp_all add: K2_imp_M_neg)
-  with `(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb`
+  with \<open>(?aMb + ?sqd) * (?aMb - ?sqd) = ?aMa * ?bMb\<close>
   have "(?aMb + ?sqd) * (?aMb - ?sqd) > 0" by (simp add: mult_neg_neg)
   hence "?aMb + ?sqd \<noteq> 0" and "?aMb - ?sqd \<noteq> 0" by auto
   hence "sgn (?aMb + ?sqd) \<in> {-1,1}" and "sgn (?aMb - ?sqd) \<in> {-1,1}"
     by (simp_all add: sgn_real_def)
 
-  from `(?aMb + ?sqd) * (?aMb - ?sqd) > 0`
+  from \<open>(?aMb + ?sqd) * (?aMb - ?sqd) > 0\<close>
   have "sgn ((?aMb + ?sqd) * (?aMb - ?sqd)) = 1" by simp
   hence "sgn (?aMb + ?sqd) * sgn (?aMb - ?sqd) = 1" by (simp add: sgn_mult)
-  with `sgn (?aMb + ?sqd) \<in> {-1,1}` and `sgn (?aMb - ?sqd) \<in> {-1,1}`
+  with \<open>sgn (?aMb + ?sqd) \<in> {-1,1}\<close> and \<open>sgn (?aMb - ?sqd) \<in> {-1,1}\<close>
   have "sgn (?aMb + ?sqd) = sgn (?aMb - ?sqd)" by auto
   with abs_plus [of "?aMb + ?sqd" "?aMb - ?sqd"]
   have "\<bar>?aMb + ?sqd\<bar> + \<bar>?aMb - ?sqd\<bar> = 2 * \<bar>?aMb\<bar>" by simp
-  with `sqrt ((?aMb + ?sqd) / (?aMb - ?sqd))
-    = \<bar>?aMb + ?sqd\<bar> / sqrt (?aMa * ?bMb)`
-    and `sqrt ((?aMb - ?sqd) / (?aMb + ?sqd))
-    = \<bar>?aMb - ?sqd\<bar> / sqrt (?aMa * ?bMb)`
+  with \<open>sqrt ((?aMb + ?sqd) / (?aMb - ?sqd))
+    = \<bar>?aMb + ?sqd\<bar> / sqrt (?aMa * ?bMb)\<close>
+    and \<open>sqrt ((?aMb - ?sqd) / (?aMb + ?sqd))
+    = \<bar>?aMb - ?sqd\<bar> / sqrt (?aMa * ?bMb)\<close>
     and add_divide_distrib [of
     "\<bar>?aMb + ?sqd\<bar>" "\<bar>?aMb - ?sqd\<bar>" "sqrt (?aMa * ?bMb)"]
   have "sqrt ((?aMb + ?sqd) / (?aMb - ?sqd))
     + sqrt ((?aMb - ?sqd) / (?aMb + ?sqd))
     = 2 * \<bar>?aMb\<bar> / sqrt (?aMa * ?bMb)"
     by simp
-  with `cosh_dist ?pa ?pb
+  with \<open>cosh_dist ?pa ?pb
     = (sqrt ((?aMb + ?sqd) / (?aMb - ?sqd))
     + sqrt ((?aMb - ?sqd) / (?aMb + ?sqd)))
-    / 2`
+    / 2\<close>
   show "cosh_dist ?pa ?pb = \<bar>?aMb\<bar> / sqrt (?aMa * ?bMb)" by simp
 qed
 
@@ -4334,15 +4334,15 @@ proof -
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
     by (simp_all add: sum_3 power2_eq_square)
-  with `\<bar>x\<bar> < 1` and `\<bar>y\<bar> < 1`
+  with \<open>\<bar>x\<bar> < 1\<close> and \<open>\<bar>y\<bar> < 1\<close>
   have "?aMa < 0" and "?bMb < 0" by (simp_all add: abs_square_less_1)
   hence "?pa \<in> hyp2" and "?pb \<in> hyp2"
     by (simp_all add: M_neg_imp_K2)
-  with `?a \<noteq> 0` and `?b \<noteq> 0`
+  with \<open>?a \<noteq> 0\<close> and \<open>?b \<noteq> 0\<close>
   have "cosh_dist ?pa ?pb = \<bar>?a \<bullet> (M *v ?b)\<bar> / sqrt (?aMa * ?bMb)"
     (is "cosh_dist ?pa ?pb = \<bar>?aMb\<bar> / sqrt (?aMa * ?bMb)")
     by (rule cosh_dist_formula)
-  also from `?aMa = x\<^sup>2 - 1` and `?bMb = y\<^sup>2 - 1`
+  also from \<open>?aMa = x\<^sup>2 - 1\<close> and \<open>?bMb = y\<^sup>2 - 1\<close>
   have "\<dots> = \<bar>?aMb\<bar> / sqrt ((x\<^sup>2 - 1) * (y\<^sup>2 - 1))" by simp
   finally have "cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))"
     unfolding vector_def and M_def and inner_vec_def
@@ -4353,8 +4353,8 @@ proof -
   let ?oMa = "?o \<bullet> (M *v ?a)"
   let ?oMb = "?o \<bullet> (M *v ?b)"
   let ?oMo = "?o \<bullet> (M *v ?o)"
-  from K2_centre_non_zero and `?a \<noteq> 0` and `?b \<noteq> 0`
-    and K2_centre_in_K2 and `?pa \<in> hyp2` and `?pb \<in> hyp2`
+  from K2_centre_non_zero and \<open>?a \<noteq> 0\<close> and \<open>?b \<noteq> 0\<close>
+    and K2_centre_in_K2 and \<open>?pa \<in> hyp2\<close> and \<open>?pb \<in> hyp2\<close>
     and cosh_dist_formula [of ?o]
   have "cosh_dist ?po ?pa = \<bar>?oMa\<bar> / sqrt (?oMo * ?aMa)"
     and "cosh_dist ?po ?pb = \<bar>?oMb\<bar> / sqrt (?oMo * ?bMb)"
@@ -4364,7 +4364,7 @@ proof -
     unfolding vector_def and M_def and inner_vec_def
       and matrix_vector_mult_def
     by (simp_all add: sum_3 power2_eq_square)
-  with `cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))`
+  with \<open>cosh_dist ?pa ?pb = 1 / sqrt ((1 - x\<^sup>2) * (1 - y\<^sup>2))\<close>
   show "cosh_dist ?pa ?pb = cosh_dist ?po ?pa * cosh_dist ?po ?pb"
     by (simp add: real_sqrt_mult)
 qed
@@ -4379,20 +4379,20 @@ proof -
   let ?l = "proj2_line_through a b"
   have "proj2_incident a ?l" and "proj2_incident b ?l"
     by (rule proj2_line_through_incident)+
-  with `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "proj2_incident ?p ?l" and "proj2_incident ?q ?l"
     by (simp_all add: endpoint_in_S_incident)
-  with `proj2_incident a ?l` and `proj2_incident b ?l`
+  with \<open>proj2_incident a ?l\<close> and \<open>proj2_incident b ?l\<close>
   have "proj2_set_Col {?p,?q,a,b}"
     by (unfold proj2_set_Col_def) (simp add: exI [of _ ?l])
 
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "?p \<noteq> ?q" by (simp add: endpoint_in_S_swap)
 
-  from `a \<in> hyp2` and `b \<in> hyp2` have "?p \<in> S" by (simp add: endpoint_in_S)
-  with `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> have "?p \<in> S" by (simp add: endpoint_in_S)
+  with \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "a \<noteq> ?p" and "b \<noteq> ?p" by (simp_all add: hyp2_S_not_equal)
-  with `proj2_set_Col {?p,?q,a,b}` and `?p \<noteq> ?q`
+  with \<open>proj2_set_Col {?p,?q,a,b}\<close> and \<open>?p \<noteq> ?q\<close>
   show "cross_ratio ?pJ ?qJ ?aJ ?bJ = cross_ratio ?p ?q a b"
     by (rule cross_ratio_cltn2)
 qed
@@ -4414,15 +4414,15 @@ next
     and ?bJ = "apply_cltn2 b J"
     and ?pJ = "apply_cltn2 ?p J"
     and ?qJ = "apply_cltn2 ?q J"
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2` and `is_K2_isometry J`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>is_K2_isometry J\<close>
   have "endpoint_in_S ?aJ ?bJ = ?pJ" and "endpoint_in_S ?bJ ?aJ = ?qJ"
     by (simp_all add: K2_isometry_endpoint_in_S)
 
-  from assms and `a \<noteq> b`
+  from assms and \<open>a \<noteq> b\<close>
   have "cross_ratio ?pJ ?qJ ?aJ ?bJ = cross_ratio ?p ?q a b"
     by (rule K2_isometry_cross_ratio_endpoints_in_S)
-  with `endpoint_in_S ?aJ ?bJ = ?pJ` and `endpoint_in_S ?bJ ?aJ = ?qJ`
-    and `a \<noteq> b` and `?aJ \<noteq> ?bJ`
+  with \<open>endpoint_in_S ?aJ ?bJ = ?pJ\<close> and \<open>endpoint_in_S ?bJ ?aJ = ?qJ\<close>
+    and \<open>a \<noteq> b\<close> and \<open>?aJ \<noteq> ?bJ\<close>
   show "exp_2dist ?aJ ?bJ = exp_2dist a b" by (unfold exp_2dist_def) simp
 qed
 
@@ -4438,8 +4438,8 @@ lemma cosh_dist_perp:
   and "proj2_incident b m" and "proj2_incident c m"
   shows "cosh_dist a c = cosh_dist b a * cosh_dist b c"
 proof -
-  from `M_perp l m` and `b \<in> hyp2` and `proj2_incident b l`
-    and `proj2_incident b m` and M_perp_to_compass [of l m b b]
+  from \<open>M_perp l m\<close> and \<open>b \<in> hyp2\<close> and \<open>proj2_incident b l\<close>
+    and \<open>proj2_incident b m\<close> and M_perp_to_compass [of l m b b]
   obtain J where "is_K2_isometry J" and "apply_cltn2_line equator J = l"
     and "apply_cltn2_line meridian J = m"
     by auto
@@ -4448,33 +4448,33 @@ proof -
   let ?aJi = "apply_cltn2 a ?Ji"
   let ?bJi = "apply_cltn2 b ?Ji"
   let ?cJi = "apply_cltn2 c ?Ji"
-  from `apply_cltn2_line equator J = l` and `apply_cltn2_line meridian J = m`
-    and `proj2_incident a l` and `proj2_incident b l`
-    and `proj2_incident b m` and `proj2_incident c m`
+  from \<open>apply_cltn2_line equator J = l\<close> and \<open>apply_cltn2_line meridian J = m\<close>
+    and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close>
+    and \<open>proj2_incident b m\<close> and \<open>proj2_incident c m\<close>
   have "proj2_incident ?aJi equator" and "proj2_incident ?bJi equator"
     and "proj2_incident ?bJi meridian" and "proj2_incident ?cJi meridian"
     by (auto simp add: apply_cltn2_incident)
 
-  from `is_K2_isometry J`
+  from \<open>is_K2_isometry J\<close>
   have "is_K2_isometry ?Ji" by (rule cltn2_inverse_is_K2_isometry)
-  with `a \<in> hyp2` and `c \<in> hyp2`
+  with \<open>a \<in> hyp2\<close> and \<open>c \<in> hyp2\<close>
   have "?aJi \<in> hyp2" and "?cJi \<in> hyp2"
     by (simp_all add: statement60_one_way)
 
-  from `?aJi \<in> hyp2` and `proj2_incident ?aJi equator`
+  from \<open>?aJi \<in> hyp2\<close> and \<open>proj2_incident ?aJi equator\<close>
     and on_equator_in_hyp2_rep
   obtain x where "\<bar>x\<bar> < 1" and "?aJi = proj2_abs (vector [x,0,1])" by auto
   moreover
-  from `?cJi \<in> hyp2` and `proj2_incident ?cJi meridian`
+  from \<open>?cJi \<in> hyp2\<close> and \<open>proj2_incident ?cJi meridian\<close>
     and on_meridian_in_hyp2_rep
   obtain y where "\<bar>y\<bar> < 1" and "?cJi = proj2_abs (vector [0,y,1])" by auto
   moreover
-  from `proj2_incident ?bJi equator` and `proj2_incident ?bJi meridian`
+  from \<open>proj2_incident ?bJi equator\<close> and \<open>proj2_incident ?bJi meridian\<close>
   have "?bJi = K2_centre" by (rule on_equator_meridian_is_K2_centre)
   ultimately
   have "cosh_dist ?aJi ?cJi = cosh_dist ?bJi ?aJi * cosh_dist ?bJi ?cJi"
     by (simp add: cosh_dist_perp_special_case)
-  with `a \<in> hyp2` and `b \<in> hyp2` and `c \<in> hyp2` and `is_K2_isometry ?Ji`
+  with \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>c \<in> hyp2\<close> and \<open>is_K2_isometry ?Ji\<close>
   show "cosh_dist a c = cosh_dist b a * cosh_dist b c"
     by (simp add: K2_isometry_cosh_dist)
 qed
@@ -4484,12 +4484,12 @@ lemma are_endpoints_in_S_ordered_cross_ratio:
   and "B\<^sub>\<real> (cart2_pt a) (cart2_pt b) (cart2_pt p)" (is "B\<^sub>\<real> ?ca ?cb ?cp")
   shows "cross_ratio p q a b \<ge> 1"
 proof -
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "p \<noteq> q" and "p \<in> S" and "q \<in> S" and "a \<in> hyp2" and "b \<in> hyp2"
     and "proj2_set_Col {p,q,a,b}"
      by (unfold are_endpoints_in_S_def) simp_all
 
-   from `a \<in> hyp2` and `b \<in> hyp2` and `p \<in> S` and `q \<in> S`
+   from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
    have "z_non_zero a" and "z_non_zero b" and "z_non_zero p" and "z_non_zero q"
      by (simp_all add: hyp2_S_z_non_zero)
   hence "proj2_abs (cart2_append1 p) = p" (is "proj2_abs ?cp1 = p")
@@ -4498,55 +4498,55 @@ proof -
     and "proj2_abs (cart2_append1 b) = b" (is "proj2_abs ?cb1 = b")
     by (simp_all add: proj2_abs_cart2_append1)
 
-   from `b \<in> hyp2` and `p \<in> S` have "b \<noteq> p" by (rule hyp2_S_not_equal)
-   with `z_non_zero a` and `z_non_zero b` and `z_non_zero p`
-     and `B\<^sub>\<real> ?ca ?cb ?cp` and cart2_append1_between_right_strict [of a b p]
+   from \<open>b \<in> hyp2\<close> and \<open>p \<in> S\<close> have "b \<noteq> p" by (rule hyp2_S_not_equal)
+   with \<open>z_non_zero a\<close> and \<open>z_non_zero b\<close> and \<open>z_non_zero p\<close>
+     and \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> and cart2_append1_between_right_strict [of a b p]
    obtain j where "j \<ge> 0" and "j < 1" and "?cb1 = j *\<^sub>R ?cp1 + (1-j) *\<^sub>R ?ca1"
      by auto
 
-   from `proj2_set_Col {p,q,a,b}`
+   from \<open>proj2_set_Col {p,q,a,b}\<close>
    obtain l where "proj2_incident q l" and "proj2_incident p l"
      and "proj2_incident a l"
      by (unfold proj2_set_Col_def) auto
-   with `p \<noteq> q` and `q \<in> S` and `p \<in> S` and `a \<in> hyp2`
+   with \<open>p \<noteq> q\<close> and \<open>q \<in> S\<close> and \<open>p \<in> S\<close> and \<open>a \<in> hyp2\<close>
      and S_hyp2_S_cart2_append1 [of q p a l]
    obtain k where "k > 0" and "k < 1" and "?ca1 = k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1"
      by auto
 
-   from `z_non_zero p` and `z_non_zero q`
+   from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close>
    have "?cp1 \<noteq> 0" and "?cq1 \<noteq> 0" by (simp_all add: cart2_append1_non_zero)
 
-   from `p \<noteq> q` and `proj2_abs ?cp1 = p` and `proj2_abs ?cq1 = q`
+   from \<open>p \<noteq> q\<close> and \<open>proj2_abs ?cp1 = p\<close> and \<open>proj2_abs ?cq1 = q\<close>
    have "proj2_abs ?cp1 \<noteq> proj2_abs ?cq1" by simp
 
-   from `k < 1` have "1-k \<noteq> 0" by simp
-   with `j < 1` have "(1-j)*(1-k) \<noteq> 0" by simp
+   from \<open>k < 1\<close> have "1-k \<noteq> 0" by simp
+   with \<open>j < 1\<close> have "(1-j)*(1-k) \<noteq> 0" by simp
 
-   from `j < 1` and `k > 0` have "(1-j)*k > 0" by simp
+   from \<open>j < 1\<close> and \<open>k > 0\<close> have "(1-j)*k > 0" by simp
 
-   from `?cb1 = j *\<^sub>R ?cp1 + (1-j) *\<^sub>R ?ca1`
+   from \<open>?cb1 = j *\<^sub>R ?cp1 + (1-j) *\<^sub>R ?ca1\<close>
    have "?cb1 = (j+(1-j)*k) *\<^sub>R ?cp1 + ((1-j)*(1-k)) *\<^sub>R ?cq1"
-     by (unfold `?ca1 = k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1`) (simp add: algebra_simps)
-   with `?ca1 = k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1`
+     by (unfold \<open>?ca1 = k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1\<close>) (simp add: algebra_simps)
+   with \<open>?ca1 = k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1\<close>
    have "proj2_abs ?ca1 = proj2_abs (k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1)"
      and "proj2_abs ?cb1
      = proj2_abs ((j+(1-j)*k) *\<^sub>R ?cp1 + ((1-j)*(1-k)) *\<^sub>R ?cq1)"
      by simp_all
-   with `proj2_abs ?ca1 = a` and `proj2_abs ?cb1 = b`
+   with \<open>proj2_abs ?ca1 = a\<close> and \<open>proj2_abs ?cb1 = b\<close>
    have "a = proj2_abs (k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1)"
      and "b = proj2_abs ((j+(1-j)*k) *\<^sub>R ?cp1 + ((1-j)*(1-k)) *\<^sub>R ?cq1)"
      by simp_all
-   with `proj2_abs ?cp1 = p` and `proj2_abs ?cq1 = q`
+   with \<open>proj2_abs ?cp1 = p\<close> and \<open>proj2_abs ?cq1 = q\<close>
    have "cross_ratio p q a b
      = cross_ratio (proj2_abs ?cp1) (proj2_abs ?cq1)
      (proj2_abs (k *\<^sub>R ?cp1 + (1-k) *\<^sub>R ?cq1))
      (proj2_abs ((j+(1-j)*k) *\<^sub>R ?cp1 + ((1-j)*(1-k)) *\<^sub>R ?cq1))"
      by simp
-   also from `?cp1 \<noteq> 0` and `?cq1 \<noteq> 0` and `proj2_abs ?cp1 \<noteq> proj2_abs ?cq1`
-     and `1-k \<noteq> 0` and `(1-j)*(1-k) \<noteq> 0`
+   also from \<open>?cp1 \<noteq> 0\<close> and \<open>?cq1 \<noteq> 0\<close> and \<open>proj2_abs ?cp1 \<noteq> proj2_abs ?cq1\<close>
+     and \<open>1-k \<noteq> 0\<close> and \<open>(1-j)*(1-k) \<noteq> 0\<close>
    have "\<dots> = (1-k)*(j+(1-j)*k) / (k*((1-j)*(1-k)))" by (rule cross_ratio_abs)
-   also from `1-k \<noteq> 0` have "\<dots> = (j+(1-j)*k) / ((1-j)*k)" by simp
-   also from `j \<ge> 0` and `(1-j)*k > 0` have "\<dots> \<ge> 1" by simp
+   also from \<open>1-k \<noteq> 0\<close> have "\<dots> = (j+(1-j)*k) / ((1-j)*k)" by simp
+   also from \<open>j \<ge> 0\<close> and \<open>(1-j)*k > 0\<close> have "\<dots> \<ge> 1" by simp
    finally show "cross_ratio p q a b \<ge> 1" .
 qed
 
@@ -4563,22 +4563,22 @@ proof cases
 next
   assume "\<not> B\<^sub>\<real> (cart2_pt p) (cart2_pt b) (cart2_pt a)" (is "\<not> B\<^sub>\<real> ?cp ?cb ?ca")
 
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "are_endpoints_in_S p q b a" by (rule are_endpoints_in_S_swap_34)
 
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "p \<in> S" and "a \<in> hyp2" and "b \<in> hyp2" and "proj2_set_Col {p,q,a,b}"
     by (unfold are_endpoints_in_S_def) simp_all
 
-  from `proj2_set_Col {p,q,a,b}`
+  from \<open>proj2_set_Col {p,q,a,b}\<close>
   have "proj2_set_Col {p,a,b}"
     by (simp add: proj2_subset_Col [of "{p,a,b}" "{p,q,a,b}"])
   hence "proj2_Col p a b" by (subst proj2_Col_iff_set_Col)
-  with `p \<in> S` and `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>p \<in> S\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "B\<^sub>\<real> ?cp ?ca ?cb \<or> B\<^sub>\<real> ?cp ?cb ?ca" by (simp add: S_at_edge)
-  with `\<not> B\<^sub>\<real> ?cp ?cb ?ca` have "B\<^sub>\<real> ?cp ?ca ?cb" by simp
+  with \<open>\<not> B\<^sub>\<real> ?cp ?cb ?ca\<close> have "B\<^sub>\<real> ?cp ?ca ?cb" by simp
   hence "B\<^sub>\<real> ?cb ?ca ?cp" by (rule real_euclid.th3_2)
-  with `are_endpoints_in_S p q b a`
+  with \<open>are_endpoints_in_S p q b a\<close>
   have "cross_ratio p q b a \<ge> 1"
     by (rule are_endpoints_in_S_ordered_cross_ratio)
   thus "cross_ratio p q a b > 0" by (subst cross_ratio_swap_34) simp
@@ -4589,12 +4589,12 @@ lemma cosh_dist_general:
   shows "cosh_dist a b
   = (sqrt (cross_ratio p q a b) + 1 / sqrt (cross_ratio p q a b)) / 2"
 proof -
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "p \<noteq> q" and "p \<in> S" and "q \<in> S" and "a \<in> hyp2" and "b \<in> hyp2"
     and "proj2_set_Col {p,q,a,b}"
     by (unfold are_endpoints_in_S_def) simp_all
 
-  from `a \<in> hyp2` and `b \<in> hyp2` and `p \<in> S` and `q \<in> S`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
   have "a \<noteq> p" and "a \<noteq> q" and "b \<noteq> p" and "b \<noteq> q"
     by (simp_all add: hyp2_S_not_equal)
 
@@ -4604,14 +4604,14 @@ proof -
     assume "a = b"
     hence "cosh_dist a b = 1" by (unfold cosh_dist_def exp_2dist_def) simp
 
-    from `proj2_set_Col {p,q,a,b}`
-    have "proj2_Col p q a" by (unfold `a = b`) (simp add: proj2_Col_iff_set_Col)
-    with `p \<noteq> q` and `a \<noteq> p` and `a \<noteq> q`
-    have "cross_ratio p q a b = 1" by (simp add: `a = b` cross_ratio_equal_1)
+    from \<open>proj2_set_Col {p,q,a,b}\<close>
+    have "proj2_Col p q a" by (unfold \<open>a = b\<close>) (simp add: proj2_Col_iff_set_Col)
+    with \<open>p \<noteq> q\<close> and \<open>a \<noteq> p\<close> and \<open>a \<noteq> q\<close>
+    have "cross_ratio p q a b = 1" by (simp add: \<open>a = b\<close> cross_ratio_equal_1)
     hence "(sqrt (cross_ratio p q a b) + 1 / sqrt (cross_ratio p q a b)) / 2
       = 1"
       by simp
-    with `cosh_dist a b = 1`
+    with \<open>cosh_dist a b = 1\<close>
     show "cosh_dist a b
       = (sqrt (cross_ratio p q a b) + 1 / sqrt (cross_ratio p q a b)) / 2"
       by simp
@@ -4620,36 +4620,36 @@ proof -
 
     let ?r = "endpoint_in_S a b"
     let ?s = "endpoint_in_S b a"
-    from `a \<noteq> b`
+    from \<open>a \<noteq> b\<close>
     have "exp_2dist a b = cross_ratio ?r ?s a b" by (unfold exp_2dist_def) simp
 
-    from `a \<noteq> b` and `are_endpoints_in_S p q a b`
+    from \<open>a \<noteq> b\<close> and \<open>are_endpoints_in_S p q a b\<close>
     have "(p = ?r \<and> q = ?s) \<or> (q = ?r \<and> p = ?s)" by (rule are_endpoints_in_S)
 
     show "cosh_dist a b
       = (sqrt (cross_ratio p q a b) + 1 / sqrt (cross_ratio p q a b)) / 2"
     proof cases
       assume "p = ?r \<and> q = ?s"
-      with `exp_2dist a b = cross_ratio ?r ?s a b`
+      with \<open>exp_2dist a b = cross_ratio ?r ?s a b\<close>
       have "exp_2dist a b = cross_ratio p q a b" by simp
       thus "cosh_dist a b
         = (sqrt (cross_ratio p q a b) + 1 / sqrt (cross_ratio p q a b)) / 2"
         by (unfold cosh_dist_def) (simp add: real_sqrt_divide)
     next
       assume "\<not> (p = ?r \<and> q = ?s)"
-      with `(p = ?r \<and> q = ?s) \<or> (q = ?r \<and> p = ?s)`
+      with \<open>(p = ?r \<and> q = ?s) \<or> (q = ?r \<and> p = ?s)\<close>
       have "q = ?r" and "p = ?s" by simp_all
-      with `exp_2dist a b = cross_ratio ?r ?s a b`
+      with \<open>exp_2dist a b = cross_ratio ?r ?s a b\<close>
       have "exp_2dist a b = cross_ratio q p a b" by simp
 
       have "{q,p,a,b} = {p,q,a,b}" by auto
-      with `proj2_set_Col {p,q,a,b}` and `p \<noteq> q` and `a \<noteq> p` and `b \<noteq> p`
-        and `a \<noteq> q` and `b \<noteq> q`
+      with \<open>proj2_set_Col {p,q,a,b}\<close> and \<open>p \<noteq> q\<close> and \<open>a \<noteq> p\<close> and \<open>b \<noteq> p\<close>
+        and \<open>a \<noteq> q\<close> and \<open>b \<noteq> q\<close>
       have "cross_ratio_correct p q a b" and "cross_ratio_correct q p a b"
         by (unfold cross_ratio_correct_def) simp_all
       hence "cross_ratio q p a b = 1 / (cross_ratio p q a b)"
         by (rule cross_ratio_swap_12)
-      with `exp_2dist a b = cross_ratio q p a b`
+      with \<open>exp_2dist a b = cross_ratio q p a b\<close>
       have "exp_2dist a b = 1 / (cross_ratio p q a b)" by simp
       thus "cosh_dist a b
         = (sqrt (cross_ratio p q a b) + 1 / sqrt (cross_ratio p q a b)) / 2"
@@ -4669,11 +4669,11 @@ next
 
   let ?p = "endpoint_in_S a b"
   let ?q = "endpoint_in_S b a"
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "are_endpoints_in_S ?p ?q a b"
     by (rule endpoints_in_S_are_endpoints_in_S)
   hence "cross_ratio ?p ?q a b > 0" by (rule cross_ratio_S_S_hyp2_hyp2_positive)
-  with `a \<noteq> b` show "exp_2dist a b > 0" by (unfold exp_2dist_def) simp
+  with \<open>a \<noteq> b\<close> show "exp_2dist a b > 0" by (unfold exp_2dist_def) simp
 qed
 
 lemma cosh_dist_at_least_1:
@@ -4700,12 +4700,12 @@ lemma cosh_dist_perp_divide:
   and "proj2_incident c m"
   shows "cosh_dist b c = cosh_dist a c / cosh_dist b a"
 proof -
-  from `b \<in> hyp2` and `a \<in> hyp2`
+  from \<open>b \<in> hyp2\<close> and \<open>a \<in> hyp2\<close>
   have "cosh_dist b a > 0" by (rule cosh_dist_positive)
 
   from assms
   have "cosh_dist a c = cosh_dist b a * cosh_dist b c" by (rule cosh_dist_perp)
-  with `cosh_dist b a > 0`
+  with \<open>cosh_dist b a > 0\<close>
   show "cosh_dist b c = cosh_dist a c / cosh_dist b a" by simp
 qed
 
@@ -4717,34 +4717,34 @@ lemma real_hyp2_C_cross_ratio_endpoints_in_S:
   (endpoint_in_S (Rep_hyp2 d) (Rep_hyp2 c)) (Rep_hyp2 c) (Rep_hyp2 d)"
   (is "cross_ratio ?p ?q ?a' ?b' = cross_ratio ?r ?s ?c' ?d'")
 proof -
-  from `a \<noteq> b` and `a b \<congruent>\<^sub>K c d` have "c \<noteq> d" by (auto simp add: hyp2.A3')
-  with `a \<noteq> b` have "?a' \<noteq> ?b'" and "?c' \<noteq> ?d'" by (unfold Rep_hyp2_inject)
+  from \<open>a \<noteq> b\<close> and \<open>a b \<congruent>\<^sub>K c d\<close> have "c \<noteq> d" by (auto simp add: hyp2.A3')
+  with \<open>a \<noteq> b\<close> have "?a' \<noteq> ?b'" and "?c' \<noteq> ?d'" by (unfold Rep_hyp2_inject)
 
-  from `a b \<congruent>\<^sub>K c d`
+  from \<open>a b \<congruent>\<^sub>K c d\<close>
   obtain J where "is_K2_isometry J" and "hyp2_cltn2 a J = c"
     and "hyp2_cltn2 b J = d"
     by (unfold real_hyp2_C_def) auto
   hence "apply_cltn2 ?a' J = ?c'" and "apply_cltn2 ?b' J = ?d'"
     by (simp_all add: Rep_hyp2_cltn2 [symmetric])
-  with `?a' \<noteq> ?b'` and `is_K2_isometry J`
+  with \<open>?a' \<noteq> ?b'\<close> and \<open>is_K2_isometry J\<close>
   have "apply_cltn2 ?p J = ?r" and "apply_cltn2 ?q J = ?s"
     by (simp_all add: Rep_hyp2 K2_isometry_endpoint_in_S)
 
-  from `?a' \<noteq> ?b'`
+  from \<open>?a' \<noteq> ?b'\<close>
   have "proj2_set_Col {?p,?q,?a',?b'}"
     by (simp add: Rep_hyp2 proj2_set_Col_endpoints_in_S)
 
-  from `?a' \<noteq> ?b'` have "?p \<noteq> ?q" by (simp add: Rep_hyp2 endpoint_in_S_swap)
+  from \<open>?a' \<noteq> ?b'\<close> have "?p \<noteq> ?q" by (simp add: Rep_hyp2 endpoint_in_S_swap)
 
   have "?p \<in> S" by (simp add: Rep_hyp2 endpoint_in_S)
   hence "?a' \<noteq> ?p" and "?b' \<noteq> ?p" by (simp_all add: Rep_hyp2 hyp2_S_not_equal)
-  with `proj2_set_Col {?p,?q,?a',?b'}` and `?p \<noteq> ?q`
+  with \<open>proj2_set_Col {?p,?q,?a',?b'}\<close> and \<open>?p \<noteq> ?q\<close>
   have "cross_ratio ?p ?q ?a' ?b'
     = cross_ratio (apply_cltn2 ?p J) (apply_cltn2 ?q J)
     (apply_cltn2 ?a' J) (apply_cltn2 ?b' J)"
     by (rule cross_ratio_cltn2 [symmetric])
-  with `apply_cltn2 ?p J = ?r` and `apply_cltn2 ?q J = ?s`
-    and `apply_cltn2 ?a' J = ?c'` and `apply_cltn2 ?b' J = ?d'`
+  with \<open>apply_cltn2 ?p J = ?r\<close> and \<open>apply_cltn2 ?q J = ?s\<close>
+    and \<open>apply_cltn2 ?a' J = ?c'\<close> and \<open>apply_cltn2 ?b' J = ?d'\<close>
   show "cross_ratio ?p ?q ?a' ?b' = cross_ratio ?r ?s ?c' ?d'" by simp
 qed
 
@@ -4754,17 +4754,17 @@ lemma real_hyp2_C_exp_2dist:
   = exp_2dist (Rep_hyp2 c) (Rep_hyp2 d)"
   (is "exp_2dist ?a' ?b' = exp_2dist ?c' ?d'")
 proof -
-  from `a b \<congruent>\<^sub>K c d`
+  from \<open>a b \<congruent>\<^sub>K c d\<close>
   obtain J where "is_K2_isometry J" and "hyp2_cltn2 a J = c"
     and "hyp2_cltn2 b J = d"
     by (unfold real_hyp2_C_def) auto
   hence "apply_cltn2 ?a' J = ?c'" and "apply_cltn2 ?b' J = ?d'"
     by (simp_all add: Rep_hyp2_cltn2 [symmetric])
 
-  from Rep_hyp2 [of a] and Rep_hyp2 [of b] and `is_K2_isometry J`
+  from Rep_hyp2 [of a] and Rep_hyp2 [of b] and \<open>is_K2_isometry J\<close>
   have "exp_2dist (apply_cltn2 ?a' J) (apply_cltn2 ?b' J) = exp_2dist ?a' ?b'"
     by (rule K2_isometry_exp_2dist)
-  with `apply_cltn2 ?a' J = ?c'` and `apply_cltn2 ?b' J = ?d'`
+  with \<open>apply_cltn2 ?a' J = ?c'\<close> and \<open>apply_cltn2 ?b' J = ?d'\<close>
   show "exp_2dist ?a' ?b' = exp_2dist ?c' ?d'" by simp
 qed
 
@@ -4782,7 +4782,7 @@ lemma cross_ratio_in_terms_of_cosh_dist:
   = 2 * (cosh_dist a b)\<^sup>2 + 2 * cosh_dist a b * sqrt ((cosh_dist a b)\<^sup>2 - 1) - 1"
   (is "?pqab = 2 * ?ab\<^sup>2 + 2 * ?ab * sqrt (?ab\<^sup>2 - 1) - 1")
 proof -
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "?ab = (sqrt ?pqab + 1 / sqrt ?pqab) / 2" by (rule cosh_dist_general)
   hence "sqrt ?pqab - 2 * ?ab + 1 / sqrt ?pqab = 0" by simp
   hence "sqrt ?pqab * (sqrt ?pqab - 2 * ?ab + 1 / sqrt ?pqab) = 0" by simp
@@ -4790,7 +4790,7 @@ proof -
   have "?pqab \<ge> 1" by (rule are_endpoints_in_S_ordered_cross_ratio)
   ultimately have "?pqab - 2 * ?ab * (sqrt ?pqab) + 1 = 0"
     by (simp add: algebra_simps real_sqrt_mult [symmetric])
-  with `?pqab \<ge> 1` and discriminant_iff [of 1 "sqrt ?pqab" "- 2 * ?ab" 1]
+  with \<open>?pqab \<ge> 1\<close> and discriminant_iff [of 1 "sqrt ?pqab" "- 2 * ?ab" 1]
   have "sqrt ?pqab = (2 * ?ab + sqrt (4 * ?ab\<^sup>2 - 4)) / 2
     \<or> sqrt ?pqab = (2 * ?ab - sqrt (4 * ?ab\<^sup>2 - 4)) / 2"
     unfolding discrim_def
@@ -4805,7 +4805,7 @@ proof -
     \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)"
     by (simp only: nonzero_mult_div_cancel_left [of 2])
 
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "a \<in> hyp2" and "b \<in> hyp2" by (unfold are_endpoints_in_S_def) simp_all
   hence "?ab \<ge> 1" by (rule cosh_dist_at_least_1)
   hence "?ab\<^sup>2 \<ge> 1" by simp
@@ -4819,34 +4819,34 @@ proof -
   proof (rule ccontr)
     assume "\<not> (?ab - sqrt (?ab\<^sup>2 - 1) \<le> 1)"
     hence "1 < ?ab - sqrt (?ab\<^sup>2 - 1)" by simp
-    also from `sqrt (?ab\<^sup>2 - 1) \<ge> 0`
+    also from \<open>sqrt (?ab\<^sup>2 - 1) \<ge> 0\<close>
     have "\<dots> \<le> ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
     finally have "1 < ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
-    with `1 < ?ab - sqrt (?ab\<^sup>2 - 1)`
+    with \<open>1 < ?ab - sqrt (?ab\<^sup>2 - 1)\<close>
       and mult_strict_mono' [of
       1 "?ab + sqrt (?ab\<^sup>2 - 1)" 1 "?ab - sqrt (?ab\<^sup>2 - 1)"]
     have "1 < (?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1))" by simp
-    with `(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1`
+    with \<open>(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1\<close>
     show False by simp
   qed
 
   have "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)"
   proof (rule ccontr)
     assume "sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<^sup>2 - 1)"
-    with `sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)
-      \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)`
+    with \<open>sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)
+      \<or> sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)\<close>
     have "sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)" by simp
-    with `?ab - sqrt (?ab\<^sup>2 - 1) \<le> 1` have "sqrt ?pqab \<le> 1" by simp
-    with `?pqab \<ge> 1` have "sqrt ?pqab = 1" by simp
-    with `sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)`
-      and `(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1`
+    with \<open>?ab - sqrt (?ab\<^sup>2 - 1) \<le> 1\<close> have "sqrt ?pqab \<le> 1" by simp
+    with \<open>?pqab \<ge> 1\<close> have "sqrt ?pqab = 1" by simp
+    with \<open>sqrt ?pqab = ?ab - sqrt (?ab\<^sup>2 - 1)\<close>
+      and \<open>(?ab + sqrt (?ab\<^sup>2 - 1)) * (?ab - sqrt (?ab\<^sup>2 - 1)) = 1\<close>
     have "?ab + sqrt (?ab\<^sup>2 - 1) = 1" by simp
-    with `sqrt ?pqab = 1` have "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
-    with `sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<^sup>2 - 1)` show False ..
+    with \<open>sqrt ?pqab = 1\<close> have "sqrt ?pqab = ?ab + sqrt (?ab\<^sup>2 - 1)" by simp
+    with \<open>sqrt ?pqab \<noteq> ?ab + sqrt (?ab\<^sup>2 - 1)\<close> show False ..
   qed
-  moreover from `?pqab \<ge> 1` have "?pqab = (sqrt ?pqab)\<^sup>2" by simp
+  moreover from \<open>?pqab \<ge> 1\<close> have "?pqab = (sqrt ?pqab)\<^sup>2" by simp
   ultimately have "?pqab = (?ab + sqrt (?ab\<^sup>2 - 1))\<^sup>2" by simp
-  with `sqrt (?ab\<^sup>2 - 1) * sqrt (?ab\<^sup>2 - 1) = ?ab\<^sup>2 - 1`
+  with \<open>sqrt (?ab\<^sup>2 - 1) * sqrt (?ab\<^sup>2 - 1) = ?ab\<^sup>2 - 1\<close>
   show "?pqab = 2 * ?ab\<^sup>2 + 2 * ?ab * sqrt (?ab\<^sup>2 - 1) - 1"
     by (simp add: power2_eq_square algebra_simps)
 qed
@@ -4855,14 +4855,14 @@ lemma are_endpoints_in_S_cross_ratio_correct:
   assumes "are_endpoints_in_S p q a b"
   shows "cross_ratio_correct p q a b"
 proof -
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "p \<noteq> q" and "p \<in> S" and "q \<in> S" and "a \<in> hyp2" and "b \<in> hyp2"
     and "proj2_set_Col {p,q,a,b}"
     by (unfold are_endpoints_in_S_def) simp_all
 
-  from `a \<in> hyp2` and `b \<in> hyp2` and `p \<in> S` and `q \<in> S`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
   have "a \<noteq> p" and "b \<noteq> p" and "a \<noteq> q" by (simp_all add: hyp2_S_not_equal)
-  with `proj2_set_Col {p,q,a,b}` and `p \<noteq> q`
+  with \<open>proj2_set_Col {p,q,a,b}\<close> and \<open>p \<noteq> q\<close>
   show "cross_ratio_correct p q a b" by (unfold cross_ratio_correct_def) simp
 qed
 
@@ -4900,10 +4900,10 @@ lemma cosh_dist_unique:
 proof -
   let ?q = "endpoint_in_S p a"
 
-  from `a \<in> hyp2` and `b \<in> hyp2` and `c \<in> hyp2` and `p \<in> S`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>c \<in> hyp2\<close> and \<open>p \<in> S\<close>
   have "z_non_zero a" and "z_non_zero b" and "z_non_zero c" and "z_non_zero p"
     by (simp_all add: hyp2_S_z_non_zero)
-  with `B\<^sub>\<real> ?ca ?cb ?cp` and `B\<^sub>\<real> ?ca ?cc ?cp`
+  with \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> and \<open>B\<^sub>\<real> ?ca ?cc ?cp\<close>
   have "\<exists> l. proj2_incident a l \<and> proj2_incident b l \<and> proj2_incident p l"
     and "\<exists> m. proj2_incident a m \<and> proj2_incident c m \<and> proj2_incident p m"
     by (simp_all add: euclid_B_cart2_common_line)
@@ -4912,13 +4912,13 @@ proof -
     and "proj2_incident a m" and "proj2_incident c m" and "proj2_incident p m"
     by auto
 
-  from `a \<in> hyp2` and `p \<in> S` have "a \<noteq> p" by (rule hyp2_S_not_equal)
-  with `proj2_incident a l` and `proj2_incident p l`
-    and `proj2_incident a m` and `proj2_incident p m` and proj2_incident_unique
+  from \<open>a \<in> hyp2\<close> and \<open>p \<in> S\<close> have "a \<noteq> p" by (rule hyp2_S_not_equal)
+  with \<open>proj2_incident a l\<close> and \<open>proj2_incident p l\<close>
+    and \<open>proj2_incident a m\<close> and \<open>proj2_incident p m\<close> and proj2_incident_unique
   have "l = m" by fast
-  with `proj2_incident c m` have "proj2_incident c l" by simp
-  with `a \<in> hyp2` and `b \<in> hyp2` and `c \<in> hyp2` and `p \<in> S`
-    and `proj2_incident a l` and `proj2_incident b l` and `proj2_incident p l`
+  with \<open>proj2_incident c m\<close> have "proj2_incident c l" by simp
+  with \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>c \<in> hyp2\<close> and \<open>p \<in> S\<close>
+    and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close> and \<open>proj2_incident p l\<close>
   have "are_endpoints_in_S p ?q b a" and "are_endpoints_in_S p ?q c a"
     by (simp_all add: end_and_opposite_are_endpoints_in_S)
   with are_endpoints_in_S_swap_34
@@ -4926,12 +4926,12 @@ proof -
   hence "cross_ratio_correct p ?q a b" and "cross_ratio_correct p ?q a c"
     by (simp_all add: are_endpoints_in_S_cross_ratio_correct)
   moreover
-  from `are_endpoints_in_S p ?q a b` and `are_endpoints_in_S p ?q a c`
-    and `B\<^sub>\<real> ?ca ?cb ?cp` and `B\<^sub>\<real> ?ca ?cc ?cp`
+  from \<open>are_endpoints_in_S p ?q a b\<close> and \<open>are_endpoints_in_S p ?q a c\<close>
+    and \<open>B\<^sub>\<real> ?ca ?cb ?cp\<close> and \<open>B\<^sub>\<real> ?ca ?cc ?cp\<close>
   have "cross_ratio p ?q a b = 2 * ?ab\<^sup>2 + 2 * ?ab * sqrt (?ab\<^sup>2 - 1) - 1"
     and "cross_ratio p ?q a c = 2 * ?ac\<^sup>2 + 2 * ?ac * sqrt (?ac\<^sup>2 - 1) - 1"
     by (simp_all add: cross_ratio_in_terms_of_cosh_dist)
-  with `?ab = ?ac` have "cross_ratio p ?q a b = cross_ratio p ?q a c" by simp
+  with \<open>?ab = ?ac\<close> have "cross_ratio p ?q a b = cross_ratio p ?q a c" by simp
   ultimately show "b = c" by (rule cross_ratio_unique)
 qed
 
@@ -4944,10 +4944,10 @@ proof -
     and "apply_cltn2 b J = a"
     by auto
 
-  from `b \<in> hyp2` and `a \<in> hyp2` and `is_K2_isometry J`
+  from \<open>b \<in> hyp2\<close> and \<open>a \<in> hyp2\<close> and \<open>is_K2_isometry J\<close>
   have "cosh_dist (apply_cltn2 b J) (apply_cltn2 a J) = cosh_dist b a"
     by (rule K2_isometry_cosh_dist)
-  with `apply_cltn2 a J = b` and `apply_cltn2 b J = a`
+  with \<open>apply_cltn2 a J = b\<close> and \<open>apply_cltn2 b J = a\<close>
   show "cosh_dist a b = cosh_dist b a" by simp
 qed
 
@@ -4956,19 +4956,19 @@ lemma exp_2dist_1_equal:
   shows "a = b"
 proof (rule ccontr)
   assume "a \<noteq> b"
-  with `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "cross_ratio_correct (endpoint_in_S a b) (endpoint_in_S b a) a b"
     (is "cross_ratio_correct ?p ?q a b")
     by (simp add: endpoints_in_S_cross_ratio_correct)
   moreover
-  from `a \<noteq> b`
+  from \<open>a \<noteq> b\<close>
   have "exp_2dist a b = cross_ratio ?p ?q a b" by (unfold exp_2dist_def) simp
-  with `exp_2dist a b = 1` have "cross_ratio ?p ?q a b = 1" by simp
+  with \<open>exp_2dist a b = 1\<close> have "cross_ratio ?p ?q a b = 1" by simp
   ultimately have "a = b" by (rule cross_ratio_1_equal)
-  with `a \<noteq> b` show False ..
+  with \<open>a \<noteq> b\<close> show False ..
 qed
 
-subsubsection {* A formula for a cross ratio involving a perpendicular foot *}
+subsubsection \<open>A formula for a cross ratio involving a perpendicular foot\<close>
 
 lemma described_perp_foot_cross_ratio_formula:
   assumes "a \<noteq> b" and "c \<in> hyp2" and "are_endpoints_in_S p q a b"
@@ -4985,60 +4985,60 @@ proof -
   let ?dc = "cosh_dist d c"
   let ?pqdb = "cross_ratio p q d b"
 
-  from `are_endpoints_in_S p q a b`
+  from \<open>are_endpoints_in_S p q a b\<close>
   have "p \<noteq> q" and "p \<in> S" and "q \<in> S" and "a \<in> hyp2" and "b \<in> hyp2"
     and "proj2_set_Col {p,q,a,b}"
     by (unfold are_endpoints_in_S_def) simp_all
 
-  from `proj2_set_Col {p,q,a,b}`
+  from \<open>proj2_set_Col {p,q,a,b}\<close>
   obtain l' where "proj2_incident p l'" and "proj2_incident q l'"
     and "proj2_incident a l'" and "proj2_incident b l'"
     by (unfold proj2_set_Col_def) auto
 
-  from `p \<noteq> q` and `proj2_incident p l'` and `proj2_incident q l'`
-    and `proj2_incident p l` and `proj2_incident q l` and proj2_incident_unique
+  from \<open>p \<noteq> q\<close> and \<open>proj2_incident p l'\<close> and \<open>proj2_incident q l'\<close>
+    and \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and proj2_incident_unique
   have "l' = l" by fast
-  with `proj2_incident a l'` and `proj2_incident b l'`
+  with \<open>proj2_incident a l'\<close> and \<open>proj2_incident b l'\<close>
   have "proj2_incident a l" and "proj2_incident b l" by simp_all
 
-  from `M_perp l m` and `a \<in> hyp2` and `proj2_incident a l` and `c \<in> hyp2`
-    and `proj2_incident c m` and `proj2_incident d l` and `proj2_incident d m`
+  from \<open>M_perp l m\<close> and \<open>a \<in> hyp2\<close> and \<open>proj2_incident a l\<close> and \<open>c \<in> hyp2\<close>
+    and \<open>proj2_incident c m\<close> and \<open>proj2_incident d l\<close> and \<open>proj2_incident d m\<close>
   have "d \<in> hyp2" by (rule M_perp_hyp2)
-  with `a \<in> hyp2` and `b \<in> hyp2` and `c \<in> hyp2`
+  with \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>c \<in> hyp2\<close>
   have "?bc > 0" and "?da > 0" and "?ac > 0"
     by (simp_all add: cosh_dist_positive)
 
-  from `proj2_incident p l` and `proj2_incident q l` and `proj2_incident d l`
-    and `proj2_incident a l` and `proj2_incident b l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and \<open>proj2_incident d l\<close>
+    and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close>
   have "proj2_set_Col {p,q,d,a}" and "proj2_set_Col {p,q,d,b}"
     and "proj2_set_Col {p,q,a,b}"
     by (unfold proj2_set_Col_def) (simp_all add: exI [of _ l])
-  with `p \<noteq> q` and `p \<in> S` and `q \<in> S` and `d \<in> hyp2` and `a \<in> hyp2`
-    and `b \<in> hyp2`
+  with \<open>p \<noteq> q\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close> and \<open>d \<in> hyp2\<close> and \<open>a \<in> hyp2\<close>
+    and \<open>b \<in> hyp2\<close>
   have "are_endpoints_in_S p q d a" and "are_endpoints_in_S p q d b"
     and "are_endpoints_in_S p q a b"
     by (unfold are_endpoints_in_S_def) simp_all
   hence "?pqda > 0" and "?pqdb > 0" and "?pqab > 0"
     by (simp_all add: cross_ratio_S_S_hyp2_hyp2_positive)
 
-  from `proj2_incident p l` and `proj2_incident q l` and `proj2_incident a l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and \<open>proj2_incident a l\<close>
   have "proj2_Col p q a" by (rule proj2_incident_Col)
 
-  from `a \<in> hyp2` and `b \<in> hyp2` and `p \<in> S` and `q \<in> S`
+  from \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>p \<in> S\<close> and \<open>q \<in> S\<close>
   have "a \<noteq> p" and "a \<noteq> q" and "b \<noteq> p" by (simp_all add: hyp2_S_not_equal)
 
-  from `proj2_Col p q a` and `p \<noteq> q` and `a \<noteq> p` and `a \<noteq> q`
+  from \<open>proj2_Col p q a\<close> and \<open>p \<noteq> q\<close> and \<open>a \<noteq> p\<close> and \<open>a \<noteq> q\<close>
   have "?pqdb = ?pqda * ?pqab" by (rule cross_ratio_product [symmetric])
 
-  from `M_perp l m` and `a \<in> hyp2` and `b \<in> hyp2` and `c \<in> hyp2` and `d \<in> hyp2`
-    and `proj2_incident a l` and `proj2_incident b l` and `proj2_incident d l`
-    and `proj2_incident d m` and `proj2_incident c m`
+  from \<open>M_perp l m\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close> and \<open>c \<in> hyp2\<close> and \<open>d \<in> hyp2\<close>
+    and \<open>proj2_incident a l\<close> and \<open>proj2_incident b l\<close> and \<open>proj2_incident d l\<close>
+    and \<open>proj2_incident d m\<close> and \<open>proj2_incident c m\<close>
     and cosh_dist_perp_divide [of l m _ d c]
   have "?dc = ?ac / ?da" and "?dc = ?bc / ?db" by fast+
   hence "?ac / ?da = ?bc / ?db" by simp
-  with `?bc > 0` and `?da > 0`
+  with \<open>?bc > 0\<close> and \<open>?da > 0\<close>
   have "?ac / ?bc = ?da / ?db" by (simp add: field_simps)
-  also from `are_endpoints_in_S p q d a` and `are_endpoints_in_S p q d b`
+  also from \<open>are_endpoints_in_S p q d a\<close> and \<open>are_endpoints_in_S p q d b\<close>
   have "\<dots>
     = 2 * (sqrt ?pqda + 1 / (sqrt ?pqda))
     / (2 * (sqrt ?pqdb + 1 / (sqrt ?pqdb)))"
@@ -5050,40 +5050,40 @@ proof -
     = sqrt ?pqdb * (sqrt ?pqda + 1 / (sqrt ?pqda))
     / (sqrt ?pqdb * (sqrt ?pqdb + 1 / (sqrt ?pqdb)))"
     by simp
-  also from `?pqdb > 0`
+  also from \<open>?pqdb > 0\<close>
   have "\<dots> = (sqrt (?pqdb * ?pqda) + sqrt (?pqdb / ?pqda)) / (?pqdb + 1)"
     by (simp add: real_sqrt_mult [symmetric] real_sqrt_divide algebra_simps)
-  also from `?pqdb = ?pqda * ?pqab` and `?pqda > 0` and real_sqrt_pow2
+  also from \<open>?pqdb = ?pqda * ?pqab\<close> and \<open>?pqda > 0\<close> and real_sqrt_pow2
   have "\<dots> = (?pqda * sqrt ?pqab + sqrt ?pqab) / (?pqda * ?pqab + 1)"
     by (simp add: real_sqrt_mult power2_eq_square)
   finally
   have "?ac / ?bc = (?pqda * sqrt ?pqab + sqrt ?pqab) / (?pqda * ?pqab + 1)" .
 
-  from `?pqda > 0` and `?pqab > 0`
+  from \<open>?pqda > 0\<close> and \<open>?pqab > 0\<close>
   have "?pqda * ?pqab + 1 > 0" by (simp add: add_pos_pos)
-  with `?bc > 0`
-    and `?ac / ?bc = (?pqda * sqrt ?pqab + sqrt ?pqab) / (?pqda * ?pqab + 1)`
+  with \<open>?bc > 0\<close>
+    and \<open>?ac / ?bc = (?pqda * sqrt ?pqab + sqrt ?pqab) / (?pqda * ?pqab + 1)\<close>
   have "?ac * (?pqda * ?pqab + 1) = ?bc * (?pqda * sqrt ?pqab + sqrt ?pqab)"
     by (simp add: field_simps)
   hence "?pqda * (?ac * ?pqab - ?bc * sqrt ?pqab) = ?bc * sqrt ?pqab - ?ac"
     by (simp add: algebra_simps)
 
-  from `proj2_set_Col {p,q,a,b}` and `p \<noteq> q` and `a \<noteq> p` and `a \<noteq> q`
-    and `b \<noteq> p`
+  from \<open>proj2_set_Col {p,q,a,b}\<close> and \<open>p \<noteq> q\<close> and \<open>a \<noteq> p\<close> and \<open>a \<noteq> q\<close>
+    and \<open>b \<noteq> p\<close>
   have "cross_ratio_correct p q a b" by (unfold cross_ratio_correct_def) simp
 
   have "?ac * ?pqab - ?bc * sqrt ?pqab \<noteq> 0"
   proof
     assume "?ac * ?pqab - ?bc * sqrt ?pqab = 0"
-    with `?pqda * (?ac * ?pqab - ?bc * sqrt ?pqab) = ?bc * sqrt ?pqab - ?ac`
+    with \<open>?pqda * (?ac * ?pqab - ?bc * sqrt ?pqab) = ?bc * sqrt ?pqab - ?ac\<close>
     have "?bc * sqrt ?pqab - ?ac = 0" by simp
-    with `?ac * ?pqab - ?bc * sqrt ?pqab = 0` and `?ac > 0`
+    with \<open>?ac * ?pqab - ?bc * sqrt ?pqab = 0\<close> and \<open>?ac > 0\<close>
     have "?pqab = 1" by simp
-    with `cross_ratio_correct p q a b`
+    with \<open>cross_ratio_correct p q a b\<close>
     have "a = b" by (rule cross_ratio_1_equal)
-    with `a \<noteq> b` show False ..
+    with \<open>a \<noteq> b\<close> show False ..
   qed
-  with `?pqda * (?ac * ?pqab - ?bc * sqrt ?pqab) = ?bc * sqrt ?pqab - ?ac`
+  with \<open>?pqda * (?ac * ?pqab - ?bc * sqrt ?pqab) = ?bc * sqrt ?pqab - ?ac\<close>
   show "?pqda = (?bc * sqrt ?pqab - ?ac) / (?ac * ?pqab - ?bc * sqrt ?pqab)"
     by (simp add: field_simps)
 qed
@@ -5097,14 +5097,14 @@ lemma perp_foot_cross_ratio_formula:
   (is "cross_ratio ?p ?q ?d a
     = (?bc * sqrt ?pqab - ?ac) / (?ac * ?pqab - ?bc * sqrt ?pqab)")
 proof -
-  from `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  from \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "are_endpoints_in_S ?p ?q a b"
     by (rule endpoints_in_S_are_endpoints_in_S)
 
   let ?l = "proj2_line_through a b"
   have "proj2_incident a ?l" and "proj2_incident b ?l"
     by (rule proj2_line_through_incident)+
-  with `a \<noteq> b` and `a \<in> hyp2` and `b \<in> hyp2`
+  with \<open>a \<noteq> b\<close> and \<open>a \<in> hyp2\<close> and \<open>b \<in> hyp2\<close>
   have "proj2_incident ?p ?l" and "proj2_incident ?q ?l"
     by (simp_all add: endpoint_in_S_incident)
 
@@ -5115,20 +5115,20 @@ proof -
     by (rule perp_foot_incident)+
 
   have "proj2_incident c ?m" by (rule drop_perp_incident)
-  with `a \<noteq> b` and `c \<in> hyp2` and `are_endpoints_in_S ?p ?q a b`
-    and `proj2_incident ?p ?l` and `proj2_incident ?q ?l` and `M_perp ?l ?m`
-    and `proj2_incident ?d ?l` and `proj2_incident ?d ?m`
+  with \<open>a \<noteq> b\<close> and \<open>c \<in> hyp2\<close> and \<open>are_endpoints_in_S ?p ?q a b\<close>
+    and \<open>proj2_incident ?p ?l\<close> and \<open>proj2_incident ?q ?l\<close> and \<open>M_perp ?l ?m\<close>
+    and \<open>proj2_incident ?d ?l\<close> and \<open>proj2_incident ?d ?m\<close>
   have "cross_ratio ?p ?q ?d a
     = (?bc * sqrt (cross_ratio ?p ?q a b) - ?ac)
     / (?ac * (cross_ratio ?p ?q a b) - ?bc * sqrt (cross_ratio ?p ?q a b))"
     by (rule described_perp_foot_cross_ratio_formula)
-  with `a \<noteq> b`
+  with \<open>a \<noteq> b\<close>
   show "cross_ratio ?p ?q ?d a
     = (?bc * sqrt ?pqab - ?ac) / (?ac * ?pqab - ?bc * sqrt ?pqab)"
     by (unfold exp_2dist_def) simp
 qed
 
-subsection {* The Klein--Beltrami model satisfies axiom 5 *}
+subsection \<open>The Klein--Beltrami model satisfies axiom 5\<close>
 
 lemma statement69:
   assumes "a b \<congruent>\<^sub>K a' b'" and "b c \<congruent>\<^sub>K b' c'" and "a c \<congruent>\<^sub>K a' c'"
@@ -5136,14 +5136,14 @@ lemma statement69:
   \<and> hyp2_cltn2 a J = a' \<and> hyp2_cltn2 b J = b' \<and> hyp2_cltn2 c J = c'"
 proof cases
   assume "a = b"
-  with `a b \<congruent>\<^sub>K a' b'` have "a' = b'" by (simp add: hyp2.A3_reversed)
-  with `a = b` and `b c \<congruent>\<^sub>K b' c'`
+  with \<open>a b \<congruent>\<^sub>K a' b'\<close> have "a' = b'" by (simp add: hyp2.A3_reversed)
+  with \<open>a = b\<close> and \<open>b c \<congruent>\<^sub>K b' c'\<close>
   show "\<exists> J. is_K2_isometry J
     \<and> hyp2_cltn2 a J = a' \<and> hyp2_cltn2 b J = b' \<and> hyp2_cltn2 c J = c'"
     by (unfold real_hyp2_C_def) simp
 next
   assume "a \<noteq> b"
-  with `a b \<congruent>\<^sub>K a' b'`
+  with \<open>a b \<congruent>\<^sub>K a' b'\<close>
   have "a' \<noteq> b'" by (auto simp add: hyp2.A3')
 
   let ?pa = "Rep_hyp2 a"
@@ -5171,7 +5171,7 @@ next
     unfolding pp_def and pp'_def and pq_def and pq'_def
     by (simp_all add: Rep_hyp2 endpoint_in_S)
 
-  from `a \<noteq> b` and `a' \<noteq> b'`
+  from \<open>a \<noteq> b\<close> and \<open>a' \<noteq> b'\<close>
   have "?pa \<noteq> ?pb" and "?pa' \<noteq> ?pb'" by (unfold Rep_hyp2_inject)
   moreover
   have "proj2_incident ?pa l" and "proj2_incident ?pb l"
@@ -5182,9 +5182,9 @@ next
     unfolding pp_def and pp'_def and pq_def and pq'_def
     by (simp_all add: Rep_hyp2 endpoint_in_S_incident)
 
-  from `pp \<in> S` and `pp' \<in> S` and `proj2_incident pp l`
-    and `proj2_incident pp' l'` and `proj2_incident ?pa l`
-    and `proj2_incident ?pa' l'`
+  from \<open>pp \<in> S\<close> and \<open>pp' \<in> S\<close> and \<open>proj2_incident pp l\<close>
+    and \<open>proj2_incident pp' l'\<close> and \<open>proj2_incident ?pa l\<close>
+    and \<open>proj2_incident ?pa' l'\<close>
   have "right_angle pp pd ps" and "right_angle pp' pd' ps'"
     unfolding pd_def and ps_def and pd'_def and ps'_def
     by (simp_all add: Rep_hyp2
@@ -5209,58 +5209,58 @@ next
     and "proj2_incident pd m" and "proj2_incident pd' m'"
     by (unfold pd_def pd'_def m_def m'_def) (rule perp_foot_incident)+
 
-  from `proj2_incident pp l` and `proj2_incident pq l`
-    and `proj2_incident pd l` and `proj2_incident ?pa l`
-    and `proj2_incident ?pb l`
+  from \<open>proj2_incident pp l\<close> and \<open>proj2_incident pq l\<close>
+    and \<open>proj2_incident pd l\<close> and \<open>proj2_incident ?pa l\<close>
+    and \<open>proj2_incident ?pb l\<close>
   have "proj2_set_Col {pp,pq,pd,?pa}" and "proj2_set_Col {pp,pq,?pa,?pb}"
     by (unfold pd_def proj2_set_Col_def) (simp_all add: exI [of _ l])
 
-  from `?pa \<noteq> ?pb` and `?pa' \<noteq> ?pb'`
+  from \<open>?pa \<noteq> ?pb\<close> and \<open>?pa' \<noteq> ?pb'\<close>
   have "pp \<noteq> pq" and "pp' \<noteq> pq'"
     unfolding pp_def and pq_def and pp'_def and pq'_def
     by (simp_all add: Rep_hyp2 endpoint_in_S_swap)
 
-  from `proj2_incident ?pa l` and `proj2_incident ?pa' l'`
+  from \<open>proj2_incident ?pa l\<close> and \<open>proj2_incident ?pa' l'\<close>
   have "pd \<in> hyp2" and "pd' \<in> hyp2"
     unfolding pd_def and pd'_def
     by (simp_all add: Rep_hyp2 perp_foot_hyp2 [of ?pa l ?pc]
       perp_foot_hyp2 [of ?pa' l' ?pc'])
 
-  from `proj2_incident ?pa l` and `proj2_incident ?pa' l'`
+  from \<open>proj2_incident ?pa l\<close> and \<open>proj2_incident ?pa' l'\<close>
   have "ps \<in> S" and "ps' \<in> S"
     unfolding ps_def and ps'_def
     by (simp_all add: Rep_hyp2 perp_up_in_S [of ?pc ?pa l]
       perp_up_in_S [of ?pc' ?pa' l'])
 
-  from `pd \<in> hyp2` and `pp \<in> S` and `ps \<in> S`
+  from \<open>pd \<in> hyp2\<close> and \<open>pp \<in> S\<close> and \<open>ps \<in> S\<close>
   have "pd \<noteq> pp" and "?pa \<noteq> pp" and "?pb \<noteq> pp" and "pd \<noteq> ps"
     by (simp_all add: Rep_hyp2 hyp2_S_not_equal)
 
-  from `is_K2_isometry J` and `pq \<in> S`
+  from \<open>is_K2_isometry J\<close> and \<open>pq \<in> S\<close>
   have "?pqJ \<in> S" by (unfold is_K2_isometry_def) simp
 
-  from `pd \<noteq> pp` and `proj2_incident pd l` and `proj2_incident pp l`
-    and `proj2_incident pd' l'` and `proj2_incident pp' l'`
+  from \<open>pd \<noteq> pp\<close> and \<open>proj2_incident pd l\<close> and \<open>proj2_incident pp l\<close>
+    and \<open>proj2_incident pd' l'\<close> and \<open>proj2_incident pp' l'\<close>
   have "?lJ = l'"
-    unfolding `?pdJ = pd'` [symmetric] and `?ppJ = pp'` [symmetric]
+    unfolding \<open>?pdJ = pd'\<close> [symmetric] and \<open>?ppJ = pp'\<close> [symmetric]
     by (rule apply_cltn2_line_unique)
-  from `proj2_incident pq l` and `proj2_incident ?pa l`
-    and `proj2_incident ?pb l`
+  from \<open>proj2_incident pq l\<close> and \<open>proj2_incident ?pa l\<close>
+    and \<open>proj2_incident ?pb l\<close>
   have "proj2_incident ?pqJ l'" and "proj2_incident ?paJ l'"
     and "proj2_incident ?pbJ l'"
-    by (unfold `?lJ = l'` [symmetric]) simp_all
+    by (unfold \<open>?lJ = l'\<close> [symmetric]) simp_all
 
-  from `?pa' \<noteq> ?pb'` and `?pqJ \<in> S` and `proj2_incident ?pa' l'`
-    and `proj2_incident ?pb' l'` and `proj2_incident ?pqJ l'`
+  from \<open>?pa' \<noteq> ?pb'\<close> and \<open>?pqJ \<in> S\<close> and \<open>proj2_incident ?pa' l'\<close>
+    and \<open>proj2_incident ?pb' l'\<close> and \<open>proj2_incident ?pqJ l'\<close>
   have "?pqJ = pp' \<or> ?pqJ = pq'"
     unfolding pp'_def and pq'_def
     by (simp add: Rep_hyp2 endpoints_in_S_incident_unique)
   moreover
-  from `pp \<noteq> pq` and apply_cltn2_injective
-  have "pp' \<noteq> ?pqJ" by (unfold `?ppJ = pp'` [symmetric]) fast
+  from \<open>pp \<noteq> pq\<close> and apply_cltn2_injective
+  have "pp' \<noteq> ?pqJ" by (unfold \<open>?ppJ = pp'\<close> [symmetric]) fast
   ultimately have "?pqJ = pq'" by simp
 
-  from `?pa' \<noteq> ?pb'`
+  from \<open>?pa' \<noteq> ?pb'\<close>
   have "cross_ratio pp' pq' pd' ?pa'
     = (cosh_dist ?pb' ?pc' * sqrt (exp_2dist ?pa' ?pb') - cosh_dist ?pa' ?pc')
       / (cosh_dist ?pa' ?pc' * exp_2dist ?pa' ?pb'
@@ -5272,32 +5272,32 @@ next
     / (cosh_dist ?pa ?pc * exp_2dist ?pa ?pb
       - cosh_dist ?pb ?pc * sqrt (exp_2dist ?pa ?pb))"
     by (simp add: real_hyp2_C_exp_2dist real_hyp2_C_cosh_dist)
-  also from `?pa \<noteq> ?pb`
+  also from \<open>?pa \<noteq> ?pb\<close>
   have "\<dots> = cross_ratio pp pq pd ?pa"
     unfolding pp_def and pq_def and pd_def and l_def
     by (simp add: Rep_hyp2 perp_foot_cross_ratio_formula)
-  also from `proj2_set_Col {pp,pq,pd,?pa}` and `pp \<noteq> pq` and `pd \<noteq> pp`
-    and `?pa \<noteq> pp`
+  also from \<open>proj2_set_Col {pp,pq,pd,?pa}\<close> and \<open>pp \<noteq> pq\<close> and \<open>pd \<noteq> pp\<close>
+    and \<open>?pa \<noteq> pp\<close>
   have "\<dots> = cross_ratio ?ppJ ?pqJ ?pdJ ?paJ" by (simp add: cross_ratio_cltn2)
-  also from `?ppJ = pp'` and `?pqJ = pq'` and `?pdJ = pd'`
+  also from \<open>?ppJ = pp'\<close> and \<open>?pqJ = pq'\<close> and \<open>?pdJ = pd'\<close>
   have "\<dots> = cross_ratio pp' pq' pd' ?paJ" by simp
   finally
   have "cross_ratio pp' pq' pd' ?paJ = cross_ratio pp' pq' pd' ?pa'" by simp
 
-  from `is_K2_isometry J`
+  from \<open>is_K2_isometry J\<close>
   have "?paJ \<in> hyp2" and "?pbJ \<in> hyp2" and "?pcJ \<in> hyp2"
     by (rule apply_cltn2_Rep_hyp2)+
 
-  from `proj2_incident pp' l'` and `proj2_incident pq' l'`
-    and `proj2_incident pd' l'` and `proj2_incident ?paJ l'`
-    and `proj2_incident ?pa' l'` and `proj2_incident ?pbJ l'`
-    and `proj2_incident ?pb' l'`
+  from \<open>proj2_incident pp' l'\<close> and \<open>proj2_incident pq' l'\<close>
+    and \<open>proj2_incident pd' l'\<close> and \<open>proj2_incident ?paJ l'\<close>
+    and \<open>proj2_incident ?pa' l'\<close> and \<open>proj2_incident ?pbJ l'\<close>
+    and \<open>proj2_incident ?pb' l'\<close>
   have "proj2_set_Col {pp',pq',pd',?paJ}" and "proj2_set_Col {pp',pq',pd',?pa'}"
     and "proj2_set_Col {pp',pq',?pa',?pbJ}"
     and "proj2_set_Col {pp',pq',?pa',?pb'}"
     by (unfold proj2_set_Col_def) (simp_all add: exI [of _ l'])
-  with `pp' \<noteq> pq'` and `pp' \<in> S` and `pq' \<in> S` and `pd' \<in> hyp2`
-    and `?paJ \<in> hyp2` and `?pbJ \<in> hyp2`
+  with \<open>pp' \<noteq> pq'\<close> and \<open>pp' \<in> S\<close> and \<open>pq' \<in> S\<close> and \<open>pd' \<in> hyp2\<close>
+    and \<open>?paJ \<in> hyp2\<close> and \<open>?pbJ \<in> hyp2\<close>
   have "are_endpoints_in_S pp' pq' pd' ?paJ"
     and "are_endpoints_in_S pp' pq' pd' ?pa'"
     and "are_endpoints_in_S pp' pq' ?pa' ?pbJ"
@@ -5309,22 +5309,22 @@ next
     and "cross_ratio_correct pp' pq' ?pa' ?pb'"
     by (simp_all add: are_endpoints_in_S_cross_ratio_correct)
 
-  from `cross_ratio_correct pp' pq' pd' ?paJ`
-    and `cross_ratio_correct pp' pq' pd' ?pa'`
-    and `cross_ratio pp' pq' pd' ?paJ = cross_ratio pp' pq' pd' ?pa'`
+  from \<open>cross_ratio_correct pp' pq' pd' ?paJ\<close>
+    and \<open>cross_ratio_correct pp' pq' pd' ?pa'\<close>
+    and \<open>cross_ratio pp' pq' pd' ?paJ = cross_ratio pp' pq' pd' ?pa'\<close>
   have "?paJ = ?pa'" by (simp add: cross_ratio_unique)
-  with `?ppJ = pp'` and `?pqJ = pq'`
+  with \<open>?ppJ = pp'\<close> and \<open>?pqJ = pq'\<close>
   have "cross_ratio pp' pq' ?pa' ?pbJ = cross_ratio ?ppJ ?pqJ ?paJ ?pbJ" by simp
-  also from `proj2_set_Col {pp,pq,?pa,?pb}` and `pp \<noteq> pq` and `?pa \<noteq> pp`
-    and `?pb \<noteq> pp`
+  also from \<open>proj2_set_Col {pp,pq,?pa,?pb}\<close> and \<open>pp \<noteq> pq\<close> and \<open>?pa \<noteq> pp\<close>
+    and \<open>?pb \<noteq> pp\<close>
   have "\<dots> = cross_ratio pp pq ?pa ?pb" by (rule cross_ratio_cltn2)
-  also from `a \<noteq> b` and `a b \<congruent>\<^sub>K a' b'`
+  also from \<open>a \<noteq> b\<close> and \<open>a b \<congruent>\<^sub>K a' b'\<close>
   have "\<dots> = cross_ratio pp' pq' ?pa' ?pb'"
     unfolding pp_def pq_def pp'_def pq'_def
     by (rule real_hyp2_C_cross_ratio_endpoints_in_S)
   finally have "cross_ratio pp' pq' ?pa' ?pbJ = cross_ratio pp' pq' ?pa' ?pb'" .
-  with `cross_ratio_correct pp' pq' ?pa' ?pbJ`
-    and `cross_ratio_correct pp' pq' ?pa' ?pb'`
+  with \<open>cross_ratio_correct pp' pq' ?pa' ?pbJ\<close>
+    and \<open>cross_ratio_correct pp' pq' ?pa' ?pb'\<close>
   have "?pbJ = ?pb'" by (rule cross_ratio_unique)
 
   let ?cc = "cart2_pt ?pc"
@@ -5337,21 +5337,21 @@ next
     and ?cdJ = "cart2_pt ?pdJ"
     and ?csJ = "cart2_pt ?psJ"
 
-  from `proj2_incident ?pa l` and `proj2_incident ?pa' l'`
+  from \<open>proj2_incident ?pa l\<close> and \<open>proj2_incident ?pa' l'\<close>
   have "B\<^sub>\<real> ?cd ?cc ?cs" and "B\<^sub>\<real> ?cd' ?cc' ?cs'"
     unfolding pd_def and ps_def and pd'_def and ps'_def
     by (simp_all add: Rep_hyp2 perp_up_at_end [of ?pc ?pa l]
       perp_up_at_end [of ?pc' ?pa' l'])
 
-  from `pd \<in> hyp2` and `ps \<in> S` and `is_K2_isometry J`
-    and `B\<^sub>\<real> ?cd ?cc ?cs`
+  from \<open>pd \<in> hyp2\<close> and \<open>ps \<in> S\<close> and \<open>is_K2_isometry J\<close>
+    and \<open>B\<^sub>\<real> ?cd ?cc ?cs\<close>
   have "B\<^sub>\<real> ?cdJ ?ccJ ?csJ" by (simp add: Rep_hyp2 statement_63)
-  hence "B\<^sub>\<real> ?cd' ?ccJ ?cs'" by (unfold `?pdJ = pd'` `?psJ = ps'`)
+  hence "B\<^sub>\<real> ?cd' ?ccJ ?cs'" by (unfold \<open>?pdJ = pd'\<close> \<open>?psJ = ps'\<close>)
 
-  from `?paJ = ?pa'` have "cosh_dist ?pa' ?pcJ = cosh_dist ?paJ ?pcJ" by simp
-  also from `is_K2_isometry J`
+  from \<open>?paJ = ?pa'\<close> have "cosh_dist ?pa' ?pcJ = cosh_dist ?paJ ?pcJ" by simp
+  also from \<open>is_K2_isometry J\<close>
   have "\<dots> = cosh_dist ?pa ?pc" by (simp add: Rep_hyp2 K2_isometry_cosh_dist)
-  also from `a c \<congruent>\<^sub>K a' c'`
+  also from \<open>a c \<congruent>\<^sub>K a' c'\<close>
   have "\<dots> = cosh_dist ?pa' ?pc'" by (rule real_hyp2_C_cosh_dist)
   finally have "cosh_dist ?pa' ?pcJ = cosh_dist ?pa' ?pc'" .
 
@@ -5360,33 +5360,33 @@ next
   have "proj2_incident ?pc m" and "proj2_incident ?pc' m'"
     by (unfold m_def m'_def) (rule drop_perp_incident)+
 
-  from `proj2_incident ?pa l` and `proj2_incident ?pa' l'`
+  from \<open>proj2_incident ?pa l\<close> and \<open>proj2_incident ?pa' l'\<close>
   have "proj2_incident ps m" and "proj2_incident ps' m'"
     unfolding ps_def and m_def and ps'_def and m'_def
     by (simp_all add: Rep_hyp2 perp_up_incident [of ?pc ?pa l]
       perp_up_incident [of ?pc' ?pa' l'])
-  with `pd \<noteq> ps` and `proj2_incident pd m` and `proj2_incident pd' m'`
+  with \<open>pd \<noteq> ps\<close> and \<open>proj2_incident pd m\<close> and \<open>proj2_incident pd' m'\<close>
   have "?mJ = m'"
-    unfolding `?pdJ = pd'` [symmetric] and `?psJ = ps'` [symmetric]
+    unfolding \<open>?pdJ = pd'\<close> [symmetric] and \<open>?psJ = ps'\<close> [symmetric]
     by (simp add: apply_cltn2_line_unique)
-  from `proj2_incident ?pc m`
-  have "proj2_incident ?pcJ m'" by (unfold `?mJ = m'` [symmetric]) simp
-  with `M_perp l' m'` and Rep_hyp2 [of a'] and `pd' \<in> hyp2` and `?pcJ \<in> hyp2`
-    and Rep_hyp2 [of c'] and `proj2_incident ?pa' l'`
-    and `proj2_incident pd' l'` and `proj2_incident pd' m'`
-    and `proj2_incident ?pc' m'`
+  from \<open>proj2_incident ?pc m\<close>
+  have "proj2_incident ?pcJ m'" by (unfold \<open>?mJ = m'\<close> [symmetric]) simp
+  with \<open>M_perp l' m'\<close> and Rep_hyp2 [of a'] and \<open>pd' \<in> hyp2\<close> and \<open>?pcJ \<in> hyp2\<close>
+    and Rep_hyp2 [of c'] and \<open>proj2_incident ?pa' l'\<close>
+    and \<open>proj2_incident pd' l'\<close> and \<open>proj2_incident pd' m'\<close>
+    and \<open>proj2_incident ?pc' m'\<close>
   have "cosh_dist pd' ?pcJ = cosh_dist ?pa' ?pcJ / cosh_dist pd' ?pa'"
     and "cosh_dist pd' ?pc' = cosh_dist ?pa' ?pc' / cosh_dist pd' ?pa'"
     by (simp_all add: cosh_dist_perp_divide)
-  with `cosh_dist ?pa' ?pcJ = cosh_dist ?pa' ?pc'`
+  with \<open>cosh_dist ?pa' ?pcJ = cosh_dist ?pa' ?pc'\<close>
   have "cosh_dist pd' ?pcJ = cosh_dist pd' ?pc'" by simp
-  with `pd' \<in> hyp2` and `?pcJ \<in> hyp2`  and `?pc' \<in> hyp2` and `ps' \<in> S`
-    and `B\<^sub>\<real> ?cd' ?ccJ ?cs'` and `B\<^sub>\<real> ?cd' ?cc' ?cs'`
+  with \<open>pd' \<in> hyp2\<close> and \<open>?pcJ \<in> hyp2\<close>  and \<open>?pc' \<in> hyp2\<close> and \<open>ps' \<in> S\<close>
+    and \<open>B\<^sub>\<real> ?cd' ?ccJ ?cs'\<close> and \<open>B\<^sub>\<real> ?cd' ?cc' ?cs'\<close>
   have "?pcJ = ?pc'" by (rule cosh_dist_unique)
-  with `?paJ = ?pa'` and `?pbJ = ?pb'`
+  with \<open>?paJ = ?pa'\<close> and \<open>?pbJ = ?pb'\<close>
   have "hyp2_cltn2 a J = a'" and "hyp2_cltn2 b J = b'" and "hyp2_cltn2 c J = c'"
     by (unfold hyp2_cltn2_def) (simp_all add: Rep_hyp2_inverse)
-  with `is_K2_isometry J`
+  with \<open>is_K2_isometry J\<close>
   show "\<exists> J. is_K2_isometry J
     \<and> hyp2_cltn2 a J = a' \<and> hyp2_cltn2 b J = b' \<and> hyp2_cltn2 c J = c'"
     by (simp add: exI [of _ J])
@@ -5405,7 +5405,7 @@ proof standard+
     and "b c \<congruent>\<^sub>K b' c'" and "a d \<congruent>\<^sub>K a' d'" and "b d \<congruent>\<^sub>K b' d'"
     by simp_all
 
-  from `a b \<congruent>\<^sub>K a' b'` and `b d \<congruent>\<^sub>K b' d'` and `a d \<congruent>\<^sub>K a' d'` and statement69 [of a b a' b' d d']
+  from \<open>a b \<congruent>\<^sub>K a' b'\<close> and \<open>b d \<congruent>\<^sub>K b' d'\<close> and \<open>a d \<congruent>\<^sub>K a' d'\<close> and statement69 [of a b a' b' d d']
   obtain J where "is_K2_isometry J" and "hyp2_cltn2 a J = a'"
     and "hyp2_cltn2 b J = b'" and "hyp2_cltn2 d J = d'"
     by auto
@@ -5415,22 +5415,22 @@ proof standard+
     and ?cJ = "hyp2_cltn2 c J"
     and ?dJ = "hyp2_cltn2 d J"
 
-  from `a \<noteq> b` and `a b \<congruent>\<^sub>K a' b'`
+  from \<open>a \<noteq> b\<close> and \<open>a b \<congruent>\<^sub>K a' b'\<close>
   have "a' \<noteq> b'" by (auto simp add: hyp2.A3')
 
-  from `is_K2_isometry J` and `B\<^sub>K a b c`
+  from \<open>is_K2_isometry J\<close> and \<open>B\<^sub>K a b c\<close>
   have "B\<^sub>K ?aJ ?bJ ?cJ" by (rule real_hyp2_B_hyp2_cltn2)
-  hence "B\<^sub>K a' b' ?cJ" by (unfold `?aJ = a'` `?bJ = b'`)
+  hence "B\<^sub>K a' b' ?cJ" by (unfold \<open>?aJ = a'\<close> \<open>?bJ = b'\<close>)
 
-  from `is_K2_isometry J`
+  from \<open>is_K2_isometry J\<close>
   have "b c \<congruent>\<^sub>K ?bJ ?cJ" by (rule real_hyp2_C_hyp2_cltn2)
-  hence "b c \<congruent>\<^sub>K b' ?cJ" by (unfold `?bJ = b'`)
-  from this and `b c \<congruent>\<^sub>K b' c'` have "b' ?cJ \<congruent>\<^sub>K b' c'" by (rule hyp2.A2')
-  with `a' \<noteq> b'` and `B\<^sub>K a' b' ?cJ` and `B\<^sub>K a' b' c'`
+  hence "b c \<congruent>\<^sub>K b' ?cJ" by (unfold \<open>?bJ = b'\<close>)
+  from this and \<open>b c \<congruent>\<^sub>K b' c'\<close> have "b' ?cJ \<congruent>\<^sub>K b' c'" by (rule hyp2.A2')
+  with \<open>a' \<noteq> b'\<close> and \<open>B\<^sub>K a' b' ?cJ\<close> and \<open>B\<^sub>K a' b' c'\<close>
   have "?cJ = c'" by (rule hyp2_extend_segment_unique)
-  from `is_K2_isometry J`
+  from \<open>is_K2_isometry J\<close>
   show "c d \<congruent>\<^sub>K c' d'"
-    unfolding `?cJ = c'` [symmetric] and `?dJ = d'` [symmetric]
+    unfolding \<open>?cJ = c'\<close> [symmetric] and \<open>?dJ = d'\<close> [symmetric]
     by (rule real_hyp2_C_hyp2_cltn2)
 qed
 
@@ -5438,7 +5438,7 @@ interpretation hyp2: tarski_first5 real_hyp2_C real_hyp2_B
   using hyp2_axiom4 and hyp2_axiom5
   by unfold_locales
 
-subsection {* The Klein--Beltrami model satisfies axioms 6, 7, and 11 *}
+subsection \<open>The Klein--Beltrami model satisfies axioms 6, 7, and 11\<close>
 
 theorem hyp2_axiom6: "\<forall> a b. B\<^sub>K a b a \<longrightarrow> a = b"
 proof standard+
@@ -5460,32 +5460,32 @@ proof -
   let ?w = "hyp2_rep q"
   have "norm ?u < 1" and "norm ?w < 1" by (rule norm_hyp2_rep_lt_1)+
 
-  from `B\<^sub>\<real> ?u v ?w`
+  from \<open>B\<^sub>\<real> ?u v ?w\<close>
   obtain l where "l \<ge> 0" and "l \<le> 1" and "v - ?u = l *\<^sub>R (?w - ?u)"
     by (unfold real_euclid_B_def) auto
-  from `v - ?u = l *\<^sub>R (?w - ?u)`
+  from \<open>v - ?u = l *\<^sub>R (?w - ?u)\<close>
   have "v = l *\<^sub>R ?w + (1 - l) *\<^sub>R ?u" by (simp add: algebra_simps)
   hence "norm v \<le> norm (l *\<^sub>R ?w) + norm ((1 - l) *\<^sub>R ?u)"
     by (simp only: norm_triangle_ineq [of "l *\<^sub>R ?w" "(1 - l) *\<^sub>R ?u"])
-  with `l \<ge> 0` and `l \<le> 1`
+  with \<open>l \<ge> 0\<close> and \<open>l \<le> 1\<close>
   have "norm v \<le> l *\<^sub>R norm ?w + (1 - l) *\<^sub>R norm ?u" by simp
 
   have "norm v < 1"
   proof cases
     assume "l = 0"
-    with `v = l *\<^sub>R ?w + (1 - l) *\<^sub>R ?u`
+    with \<open>v = l *\<^sub>R ?w + (1 - l) *\<^sub>R ?u\<close>
     have "v = ?u" by simp
-    with `norm ?u < 1` show "norm v < 1" by simp
+    with \<open>norm ?u < 1\<close> show "norm v < 1" by simp
   next
     assume "l \<noteq> 0"
-    with `norm ?w < 1` and `l \<ge> 0` have "l *\<^sub>R norm ?w < l" by simp
+    with \<open>norm ?w < 1\<close> and \<open>l \<ge> 0\<close> have "l *\<^sub>R norm ?w < l" by simp
 
-    with `norm ?u < 1` and `l \<le> 1`
+    with \<open>norm ?u < 1\<close> and \<open>l \<le> 1\<close>
       and mult_mono [of "1 - l" "1 - l" "norm ?u" 1]
     have "(1 - l) *\<^sub>R norm ?u \<le> 1 - l" by simp
-    with `l *\<^sub>R norm ?w < l`
+    with \<open>l *\<^sub>R norm ?w < l\<close>
     have "l *\<^sub>R norm ?w + (1 - l) *\<^sub>R norm ?u < 1" by simp
-    with `norm v \<le> l *\<^sub>R norm ?w + (1 - l) *\<^sub>R norm ?u`
+    with \<open>norm v \<le> l *\<^sub>R norm ?w + (1 - l) *\<^sub>R norm ?u\<close>
     show "norm v < 1" by simp
   qed
   thus "hyp2_rep (hyp2_abs v) = v" by (rule hyp2_rep_abs)
@@ -5545,15 +5545,15 @@ proof (rule allI)+
         and ?cw = "hyp2_rep w"
         and ?cz = "hyp2_rep z"
 
-      from `\<forall> x y. x \<in> X \<and> y \<in> Y \<longrightarrow> B\<^sub>K a x y`
+      from \<open>\<forall> x y. x \<in> X \<and> y \<in> Y \<longrightarrow> B\<^sub>K a x y\<close>
       have "\<forall> cx cy. cx \<in> ?cX \<and> cy \<in> ?cY \<longrightarrow> B\<^sub>\<real> ?ca cx cy"
         by (unfold real_hyp2_B_def) auto
       with real_euclid.A11' [of ?cX ?cY ?ca]
       obtain cb where "\<forall> cx cy. cx \<in> ?cX \<and> cy \<in> ?cY \<longrightarrow> B\<^sub>\<real> cx cb cy" by auto
-      with `w \<in> X` and `z \<in> Y` have "B\<^sub>\<real> ?cw cb ?cz" by simp
+      with \<open>w \<in> X\<close> and \<open>z \<in> Y\<close> have "B\<^sub>\<real> ?cw cb ?cz" by simp
       hence "hyp2_rep (hyp2_abs cb) = cb" (is "hyp2_rep ?b = cb")
         by (rule between_inverse)
-      with `\<forall> cx cy. cx \<in> ?cX \<and> cy \<in> ?cY \<longrightarrow> B\<^sub>\<real> cx cb cy`
+      with \<open>\<forall> cx cy. cx \<in> ?cX \<and> cy \<in> ?cY \<longrightarrow> B\<^sub>\<real> cx cb cy\<close>
       have "\<forall> x y. x \<in> X \<and> y \<in> Y \<longrightarrow> B\<^sub>K x ?b y"
         by (unfold real_hyp2_B_def) simp
       thus "\<exists> b. \<forall> x y. x \<in> X \<and> y \<in> Y \<longrightarrow> B\<^sub>K x b y" by (rule exI)
@@ -5565,7 +5565,7 @@ interpretation tarski_absolute_space real_hyp2_C real_hyp2_B
   using hyp2_axiom6 and hyp2_axiom7 and hyp2_axiom11
   by unfold_locales
 
-subsection {* The Klein--Beltrami model satisfies the dimension-specific axioms *}
+subsection \<open>The Klein--Beltrami model satisfies the dimension-specific axioms\<close>
 
 lemma hyp2_rep_abs_examples:
   shows "hyp2_rep (hyp2_abs 0) = 0" (is "hyp2_rep ?a = ?ca")
@@ -5625,14 +5625,14 @@ proof (rule allI)+
         and "pt = endpoint_in_S ?pq ?pp"
         and "stpq = exp_2dist ?pp ?pq"
 
-    from `p \<noteq> q` have "?pp \<noteq> ?pq" by (simp add: Rep_hyp2_inject)
+    from \<open>p \<noteq> q\<close> have "?pp \<noteq> ?pq" by (simp add: Rep_hyp2_inject)
 
     from Rep_hyp2
     have "stpq > 0" by (unfold stpq_def) (simp add: exp_2dist_positive)
     hence "sqrt stpq * sqrt stpq = stpq"
       by (simp add: real_sqrt_mult [symmetric])
 
-    from Rep_hyp2 and `?pp \<noteq> ?pq`
+    from Rep_hyp2 and \<open>?pp \<noteq> ?pq\<close>
     have "stpq \<noteq> 1" by (unfold stpq_def) (auto simp add: exp_2dist_1_equal)
 
     have "z_non_zero ?pa" and "z_non_zero ?pb" and "z_non_zero ?pc"
@@ -5649,28 +5649,28 @@ proof (rule allI)+
         where "pe = perp_foot pd l"
           and "x = cosh_dist ?pp pd"
 
-      from `pd \<in> {?pa,?pb,?pc}` and `a p \<congruent>\<^sub>K a q` and `b p \<congruent>\<^sub>K b q`
-        and `c p \<congruent>\<^sub>K c q`
+      from \<open>pd \<in> {?pa,?pb,?pc}\<close> and \<open>a p \<congruent>\<^sub>K a q\<close> and \<open>b p \<congruent>\<^sub>K b q\<close>
+        and \<open>c p \<congruent>\<^sub>K c q\<close>
       have "cosh_dist pd ?pp = cosh_dist pd ?pq"
         by (auto simp add: real_hyp2_C_cosh_dist)
-      with `pd \<in> hyp2` and Rep_hyp2
+      with \<open>pd \<in> hyp2\<close> and Rep_hyp2
       have "x = cosh_dist ?pq pd" by (unfold x_def) (simp add: cosh_dist_swap)
 
-      from Rep_hyp2 [of p] and `pd \<in> hyp2` and cosh_dist_positive [of ?pp pd]
+      from Rep_hyp2 [of p] and \<open>pd \<in> hyp2\<close> and cosh_dist_positive [of ?pp pd]
       have "x \<noteq> 0" by (unfold x_def) simp
 
-      from Rep_hyp2 and `pd \<in> hyp2` and `?pp \<noteq> ?pq`
+      from Rep_hyp2 and \<open>pd \<in> hyp2\<close> and \<open>?pp \<noteq> ?pq\<close>
       have "cross_ratio ps pt pe ?pp
         = (cosh_dist ?pq pd * sqrt stpq - cosh_dist ?pp pd)
         / (cosh_dist ?pp pd *  stpq - cosh_dist ?pq pd * sqrt stpq)"
         unfolding ps_def and pt_def and pe_def and l_def and stpq_def
         by (simp add: perp_foot_cross_ratio_formula)
-      also from x_def and `x = cosh_dist ?pq pd`
+      also from x_def and \<open>x = cosh_dist ?pq pd\<close>
       have "\<dots> = (x * sqrt stpq - x) / (x * stpq - x * sqrt stpq)" by simp
-      also from `sqrt stpq * sqrt stpq = stpq`
+      also from \<open>sqrt stpq * sqrt stpq = stpq\<close>
       have "\<dots> = (x * sqrt stpq - x) / ((x * sqrt stpq - x) * sqrt stpq)"
         by (simp add: algebra_simps)
-      also from `x \<noteq> 0` and `stpq \<noteq> 1` have "\<dots> = 1 / sqrt stpq" by simp
+      also from \<open>x \<noteq> 0\<close> and \<open>stpq \<noteq> 1\<close> have "\<dots> = 1 / sqrt stpq" by simp
       finally show "cross_ratio ps pt pe ?pp = 1 / sqrt stpq" .
     qed
     hence "cross_ratio ps pt (perp_foot ?pa l) ?pp = 1 / sqrt stpq" by simp
@@ -5680,27 +5680,27 @@ proof (rule allI)+
       fix pd
       assume "pd \<in> {?pa,?pb,?pc}"
       with Rep_hyp2 have "pd \<in> hyp2" by auto
-      with Rep_hyp2 and `?pp \<noteq> ?pq` and proj2_line_through_incident
+      with Rep_hyp2 and \<open>?pp \<noteq> ?pq\<close> and proj2_line_through_incident
       have "cross_ratio_correct ps pt ?pp (perp_foot pd l)"
         and "cross_ratio_correct ps pt ?pp (perp_foot ?pa l)"
         unfolding ps_def and pt_def and l_def
         by (simp_all add: endpoints_in_S_perp_foot_cross_ratio_correct)
 
-      from `pd \<in> {?pa,?pb,?pc}`
-        and `\<forall> pd \<in> {?pa,?pb,?pc}.
-        cross_ratio ps pt (perp_foot pd l) ?pp = 1 / (sqrt stpq)`
+      from \<open>pd \<in> {?pa,?pb,?pc}\<close>
+        and \<open>\<forall> pd \<in> {?pa,?pb,?pc}.
+        cross_ratio ps pt (perp_foot pd l) ?pp = 1 / (sqrt stpq)\<close>
       have "cross_ratio ps pt (perp_foot pd l) ?pp = 1 / sqrt stpq" by auto
-      with `cross_ratio ps pt (perp_foot ?pa l) ?pp = 1 / sqrt stpq`
+      with \<open>cross_ratio ps pt (perp_foot ?pa l) ?pp = 1 / sqrt stpq\<close>
       have "cross_ratio ps pt (perp_foot pd l) ?pp
         = cross_ratio ps pt (perp_foot ?pa l) ?pp"
         by simp
       hence "cross_ratio ps pt ?pp (perp_foot pd l)
         = cross_ratio ps pt ?pp (perp_foot ?pa l)"
         by (simp add: cross_ratio_swap_34 [of ps pt _ ?pp])
-      with `cross_ratio_correct ps pt ?pp (perp_foot pd l)`
-        and `cross_ratio_correct ps pt ?pp (perp_foot ?pa l)`
+      with \<open>cross_ratio_correct ps pt ?pp (perp_foot pd l)\<close>
+        and \<open>cross_ratio_correct ps pt ?pp (perp_foot ?pa l)\<close>
       have "perp_foot pd l = perp_foot ?pa l" by (rule cross_ratio_unique)
-      with Rep_hyp2 [of p] and `pd \<in> hyp2`
+      with Rep_hyp2 [of p] and \<open>pd \<in> hyp2\<close>
         and proj2_line_through_incident [of ?pp ?pq]
         and perp_foot_eq_implies_drop_perp_eq [of ?pp pd l ?pa]
       have "drop_perp pd l = m" by (unfold m_def l_def) simp
@@ -5709,7 +5709,7 @@ proof (rule allI)+
     hence "proj2_set_Col {?pa,?pb,?pc}"
       by (unfold proj2_set_Col_def) (simp add: exI [of _ m])
     hence "proj2_Col ?pa ?pb ?pc" by (simp add: proj2_Col_iff_set_Col)
-    with `z_non_zero ?pa` and `z_non_zero ?pb` and `z_non_zero ?pc`
+    with \<open>z_non_zero ?pa\<close> and \<open>z_non_zero ?pb\<close> and \<open>z_non_zero ?pc\<close>
     have "real_euclid.Col (hyp2_rep a) (hyp2_rep b) (hyp2_rep c)"
       by (unfold hyp2_rep_def) (simp add: proj2_Col_iff_euclid_cart2)
     thus "B\<^sub>K a b c \<or> B\<^sub>K b c a \<or> B\<^sub>K c a b"
@@ -5721,7 +5721,7 @@ interpretation hyp2: tarski_absolute real_hyp2_C real_hyp2_B
   using hyp2_axiom8 and hyp2_axiom9
   by unfold_locales
 
-subsection {* The Klein--Beltrami model violates the Euclidean axiom *}
+subsection \<open>The Klein--Beltrami model violates the Euclidean axiom\<close>
 
 theorem hyp2_axiom10_false:
   shows "\<not> (\<forall> a b c d t. B\<^sub>K a d t \<and> B\<^sub>K b d c \<and> a \<noteq> d
@@ -5755,33 +5755,33 @@ proof
     hence "?ca = ?cd" by (simp add: hyp2_rep_abs_examples)
     thus False by (simp add: vec_eq_iff forall_2)
   qed
-  with `B\<^sub>K ?a ?d ?t` and `B\<^sub>K ?b ?d ?c`
-    and `\<forall> a b c d t. B\<^sub>K a d t \<and> B\<^sub>K b d c \<and> a \<noteq> d
-    \<longrightarrow> (\<exists> x y. B\<^sub>K a b x \<and> B\<^sub>K a c y \<and> B\<^sub>K x t y)`
+  with \<open>B\<^sub>K ?a ?d ?t\<close> and \<open>B\<^sub>K ?b ?d ?c\<close>
+    and \<open>\<forall> a b c d t. B\<^sub>K a d t \<and> B\<^sub>K b d c \<and> a \<noteq> d
+    \<longrightarrow> (\<exists> x y. B\<^sub>K a b x \<and> B\<^sub>K a c y \<and> B\<^sub>K x t y)\<close>
   obtain x and y where "B\<^sub>K ?a ?b x" and "B\<^sub>K ?a ?c y" and "B\<^sub>K x ?t y"
     by blast
 
   let ?cx = "hyp2_rep x"
     and ?cy = "hyp2_rep y"
-  from `B\<^sub>K ?a ?b x` and `B\<^sub>K ?a ?c y` and `B\<^sub>K x ?t y`
+  from \<open>B\<^sub>K ?a ?b x\<close> and \<open>B\<^sub>K ?a ?c y\<close> and \<open>B\<^sub>K x ?t y\<close>
   have "B\<^sub>\<real> ?ca ?cb ?cx" and "B\<^sub>\<real> ?ca ?cc ?cy" and "B\<^sub>\<real> ?cx ?ct ?cy"
     by (unfold real_hyp2_B_def) (simp_all add: hyp2_rep_abs_examples)
 
-  from `B\<^sub>\<real> ?ca ?cb ?cx` and `B\<^sub>\<real> ?ca ?cc ?cy` and `B\<^sub>\<real> ?cx ?ct ?cy`
+  from \<open>B\<^sub>\<real> ?ca ?cb ?cx\<close> and \<open>B\<^sub>\<real> ?ca ?cc ?cy\<close> and \<open>B\<^sub>\<real> ?cx ?ct ?cy\<close>
   obtain j and k and l where "?cb - ?ca = j *\<^sub>R (?cx - ?ca)"
     and "?cc - ?ca = k *\<^sub>R (?cy - ?ca)"
     and "l \<ge> 0" and "l \<le> 1" and "?ct - ?cx = l *\<^sub>R (?cy - ?cx)"
     by (unfold real_euclid_B_def) fast
 
-  from `?cb - ?ca = j *\<^sub>R (?cx - ?ca)` and `?cc - ?ca = k *\<^sub>R (?cy - ?ca)`
+  from \<open>?cb - ?ca = j *\<^sub>R (?cx - ?ca)\<close> and \<open>?cc - ?ca = k *\<^sub>R (?cy - ?ca)\<close>
   have "j \<noteq> 0" and "k \<noteq> 0" by (auto simp add: vec_eq_iff forall_2)
-  with `?cb - ?ca = j *\<^sub>R (?cx - ?ca)` and `?cc - ?ca = k *\<^sub>R (?cy - ?ca)`
+  with \<open>?cb - ?ca = j *\<^sub>R (?cx - ?ca)\<close> and \<open>?cc - ?ca = k *\<^sub>R (?cy - ?ca)\<close>
   have "?cx = (1/j) *\<^sub>R ?cb" and "?cy = (1/k) *\<^sub>R ?cc" by simp_all
   hence "?cx$2 = 0" and "?cy$1 = 0" by simp_all
 
-  from `?ct - ?cx = l *\<^sub>R (?cy - ?cx)`
+  from \<open>?ct - ?cx = l *\<^sub>R (?cy - ?cx)\<close>
   have "?ct = (1 - l) *\<^sub>R ?cx + l *\<^sub>R ?cy" by (simp add: algebra_simps)
-  with `?cx$2 = 0` and `?cy$1 = 0`
+  with \<open>?cx$2 = 0\<close> and \<open>?cy$1 = 0\<close>
   have "?ct$1 = (1 - l) * (?cx$1)" and "?ct$2 = l * (?cy$2)" by simp_all
   hence "l * (?cy$2) = 1/2" and "(1 - l) * (?cx$1) = 1/2" by simp_all
 
@@ -5789,26 +5789,26 @@ proof
   also have "\<dots> \<le> norm ?cx" by (rule component_le_norm_cart)
   also have "\<dots> < 1" by (rule norm_hyp2_rep_lt_1)
   finally have "?cx$1 < 1" .
-  with `l \<le> 1` and mult_less_cancel_left [of "1 - l" "?cx$1" 1]
+  with \<open>l \<le> 1\<close> and mult_less_cancel_left [of "1 - l" "?cx$1" 1]
   have "(1 - l) * ?cx$1 \<le> 1 - l" by auto
-  with `(1 - l) * (?cx$1) = 1/2` have "l \<le> 1/2" by simp
+  with \<open>(1 - l) * (?cx$1) = 1/2\<close> have "l \<le> 1/2" by simp
 
   have "?cy$2 \<le> \<bar>?cy$2\<bar>" by simp
   also have "\<dots> \<le> norm ?cy" by (rule component_le_norm_cart)
   also have "\<dots> < 1" by (rule norm_hyp2_rep_lt_1)
   finally have "?cy$2 < 1" .
-  with `l \<ge> 0` and mult_less_cancel_left [of l "?cy$2" 1]
+  with \<open>l \<ge> 0\<close> and mult_less_cancel_left [of l "?cy$2" 1]
   have "l * ?cy$2 \<le> l" by auto
-  with `l * (?cy$2) = 1/2` have "l \<ge> 1/2" by simp
-  with `l \<le> 1/2` have "l = 1/2" by simp
-  with `l * (?cy$2) = 1/2` have "?cy$2 = 1" by simp
-  with `?cy$2 < 1` show False by simp
+  with \<open>l * (?cy$2) = 1/2\<close> have "l \<ge> 1/2" by simp
+  with \<open>l \<le> 1/2\<close> have "l = 1/2" by simp
+  with \<open>l * (?cy$2) = 1/2\<close> have "?cy$2 = 1" by simp
+  with \<open>?cy$2 < 1\<close> show False by simp
 qed
 
 theorem hyp2_not_tarski: "\<not> (tarski real_hyp2_C real_hyp2_B)"
   using hyp2_axiom10_false
   by (unfold tarski_def tarski_space_def tarski_space_axioms_def) simp
 
-text {* Therefore axiom 10 is independent.*}
+text \<open>Therefore axiom 10 is independent.\<close>
 
 end

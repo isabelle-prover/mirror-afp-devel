@@ -2,7 +2,7 @@
     Author:     Sebastian Ullrich
 *)
 
-section {* Proof of Semantic Equivalence *}
+section \<open>Proof of Semantic Equivalence\<close>
 
 theory SSA_Semantics imports Construct_SSA begin
 
@@ -109,7 +109,7 @@ begin
         } 
         ultimately show ?thesis using snoc.prems(4) ns'(1) by (cases ns' rule: rev_cases, auto dest: old.path2_last)
       qed
-      from `v \<in> allVars g` show ?thesis
+      from \<open>v \<in> allVars g\<close> show ?thesis
       proof (cases rule: defNode_cases)
         case simpleDef
         thus ?thesis using snoc.prems(1) by - (erule bs.cases, auto simp: step_def ssaStep_def oldDefs_def)

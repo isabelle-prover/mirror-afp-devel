@@ -2,18 +2,18 @@ theory Infra imports Main
 begin
 
 (******************************************************************************)
-subsection {* Prover configuration *}
+subsection \<open>Prover configuration\<close>
 (******************************************************************************)
 
 declare if_split_asm [split]
 
 
 (******************************************************************************)
-subsection {* Forward reasoning ("attributes") *}
+subsection \<open>Forward reasoning ("attributes")\<close>
 (******************************************************************************)
 
-text {* The following lemmas are used to produce intro/elim rules from
-set definitions and relation definitions. *}
+text \<open>The following lemmas are used to produce intro/elim rules from
+set definitions and relation definitions.\<close>
 
 lemmas set_def_to_intro = eqset_imp_iff [THEN iffD2]
 lemmas set_def_to_dest = eqset_imp_iff [THEN iffD1]
@@ -33,17 +33,17 @@ lemmas rel_def_to_elim = rel_def_to_dest [elim_format]
 
 
 (******************************************************************************)
-subsection {* General results *}
+subsection \<open>General results\<close>
 (******************************************************************************)
 
-subsubsection {* Maps *}
+subsubsection \<open>Maps\<close>
 (******************************************************************************)
 
-text {* We usually remove @{term"domIff"} from the simpset and clasets due
+text \<open>We usually remove @{term"domIff"} from the simpset and clasets due
 to annoying behavior. Sometimes the lemmas below are more well-behaved than 
 @{term "domIff"}. Usually to be used as "dest: dom\_lemmas". However, adding 
 them as permanent dest rules slows down proofs too much, so we refrain from 
-doing this. *}
+doing this.\<close>
 
 lemma map_definedness: 
   "f x = Some y \<Longrightarrow> x \<in> dom f"
@@ -56,7 +56,7 @@ by (auto simp add: domIff)
 lemmas dom_lemmas = map_definedness map_definedness_contra
 
 
-subsubsection {* Set *}
+subsubsection \<open>Set\<close>
 (******************************************************************************)
 
 declare image_comp[symmetric, simp]
@@ -69,7 +69,7 @@ lemma vimage_image_subset: "A \<subseteq> f-`(f`A)"
 by (auto simp add: image_def vimage_def)
 
 
-subsubsection {* Relations *}
+subsubsection \<open>Relations\<close>
 (******************************************************************************)
 
 lemma Image_compose [simp]:
@@ -77,7 +77,7 @@ lemma Image_compose [simp]:
 by (auto)
 
 
-subsubsection {* Lists *}
+subsubsection \<open>Lists\<close>
 (******************************************************************************)
 
 lemma map_id: "map id = id"      (* already in simpset *)
@@ -94,10 +94,10 @@ by (induct l arbitrary: n xs, auto)
    (case_tac n, auto)
 
 
-subsubsection {* Finite sets *}
+subsubsection \<open>Finite sets\<close>
 (******************************************************************************)
 
-text {* Cardinality. *}
+text \<open>Cardinality.\<close>
 
 declare arg_cong [where f=card, intro] 
 

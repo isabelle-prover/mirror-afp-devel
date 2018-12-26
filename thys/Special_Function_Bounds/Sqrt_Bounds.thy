@@ -1,4 +1,4 @@
-chapter {* Square Root Upper and Lower Bounds *}
+chapter \<open>Square Root Upper and Lower Bounds\<close>
 
 theory Sqrt_Bounds
 imports Bounds_Lemmas
@@ -6,9 +6,9 @@ imports Bounds_Lemmas
 
 begin
 
-text{*Covers all bounds used in sqrt-upper.ax, sqrt-lower.ax and sqrt-extended.ax.*}
+text\<open>Covers all bounds used in sqrt-upper.ax, sqrt-lower.ax and sqrt-extended.ax.\<close>
 
-section{*Upper bounds*}
+section\<open>Upper bounds\<close>
 
 primrec sqrtu :: "[real,nat] \<Rightarrow> real" where
   "sqrtu x 0 = (x+1)/2"
@@ -118,7 +118,7 @@ apply (simp add: divide_simps)
 apply algebra
 done
 
-section{*Lower bounds*}
+section\<open>Lower bounds\<close>
 
 lemma sqrt_lower_bound_id:
   assumes "0 \<le> x" "x \<le> 1"

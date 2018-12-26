@@ -513,7 +513,7 @@ named_theorems oghoare_simps
 lemmas guards.simps[oghoare_simps add]
        ann_guards.simps[oghoare_simps add]
 
-ML {*
+ML \<open>
 
 fun rt ctxt t i =
   resolve_tac ctxt [t] i
@@ -717,9 +717,9 @@ and dest_inter_right_Tac (ctxt' as (ctxt,args)) i st =
                  rt ctxt (@{thm allI}) i, rt ctxt (@{thm impI}) i,
                  dest_inter_right_Tac ctxt' i],
            K all_tac i])) i st
-*}
+\<close>
 
-ML {* 
+ML \<open>
 
 fun oghoare_tac ctxt =
    SUBGOAL (fn (_, i) =>
@@ -746,22 +746,22 @@ fun oghoare_interfree_tac ctxt i =
 fun oghoare_interfree_aux_tac ctxt i =
   TRY (oghoare_simp ctxt i) THEN
   Cache_Tactics.cacheify_tactic 3 interfree_aux_Tac ctxt i
-*}
+\<close>
 
-method_setup oghoare = {*
-  Scan.succeed (SIMPLE_METHOD' o oghoare_tac') *}
+method_setup oghoare = \<open>
+  Scan.succeed (SIMPLE_METHOD' o oghoare_tac')\<close>
   "verification condition generator for the oghoare logic"
 
-method_setup oghoare_parallel = {*
-  Scan.succeed (SIMPLE_METHOD' o oghoare_parallel_tac) *}
+method_setup oghoare_parallel = \<open>
+  Scan.succeed (SIMPLE_METHOD' o oghoare_parallel_tac)\<close>
   "verification condition generator for the oghoare logic"
 
-method_setup oghoare_interfree = {*
-  Scan.succeed (SIMPLE_METHOD' o oghoare_interfree_tac) *}
+method_setup oghoare_interfree = \<open>
+  Scan.succeed (SIMPLE_METHOD' o oghoare_interfree_tac)\<close>
   "verification condition generator for the oghoare logic"
 
-method_setup oghoare_interfree_aux = {*
-  Scan.succeed (SIMPLE_METHOD' o oghoare_interfree_aux_tac) *}
+method_setup oghoare_interfree_aux = \<open>
+  Scan.succeed (SIMPLE_METHOD' o oghoare_interfree_aux_tac)\<close>
   "verification condition generator for the oghoare logic"
 
 end

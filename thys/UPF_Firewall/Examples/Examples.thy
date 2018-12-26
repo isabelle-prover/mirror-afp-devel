@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-chapter {* Examples *}
+chapter \<open>Examples\<close>
 theory  
   Examples
   imports 

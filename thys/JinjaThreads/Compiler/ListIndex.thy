@@ -2,18 +2,18 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Indexing variables in variable lists *}
+section \<open>Indexing variables in variable lists\<close>
 
 theory ListIndex imports Main begin
 
-text{* In order to support local variables and arbitrarily nested
+text\<open>In order to support local variables and arbitrarily nested
 blocks, the local variables are arranged as an indexed list. The
 outermost local variable (``this'') is the first element in the list,
 the most recently created local variable the last element. When
 descending into a block structure, a corresponding list @{term Vs} of
 variable names is maintained. To find the index of some variable
 @{term V}, we have to find the index of the \emph{last} occurrence of
-@{term V} in @{term Vs}. This is what @{term index} does: *}
+@{term V} in @{term Vs}. This is what @{term index} does:\<close>
 
 primrec index :: "'a list \<Rightarrow> 'a \<Rightarrow> nat"
 where
@@ -24,7 +24,7 @@ where
 definition hidden :: "'a list \<Rightarrow> nat \<Rightarrow> bool"
 where "hidden xs i  \<equiv>  i < size xs \<and> xs!i \<in> set(drop (i+1) xs)"
 
-subsection {* @{term index} *}
+subsection \<open>@{term index}\<close>
 
 lemma [simp]: "index (xs @ [x]) x = size xs"
 (*<*)by(induct xs) simp_all(*>*)
@@ -91,7 +91,7 @@ done
 (*>*)
 
 
-subsection {* @{term hidden} *}
+subsection \<open>@{term hidden}\<close>
 
 lemma hidden_index: "x \<in> set xs \<Longrightarrow> hidden (xs @ [x]) (index xs x)"
 (*<*)
@@ -188,33 +188,33 @@ lemma map_upds_Some_eq_nth_index:
   assumes "[Vs [\<mapsto>] vs] V = Some v" "length Vs \<le> length vs"
   shows "vs ! index Vs V = v"
 proof -
-  from `[Vs [\<mapsto>] vs] V = Some v` have "V \<in> set Vs"
+  from \<open>[Vs [\<mapsto>] vs] V = Some v\<close> have "V \<in> set Vs"
     by -(rule classical, auto)
-  with `[Vs [\<mapsto>] vs] V = Some v` `length Vs \<le> length vs` show ?thesis
+  with \<open>[Vs [\<mapsto>] vs] V = Some v\<close> \<open>length Vs \<le> length vs\<close> show ?thesis
   proof(induct Vs arbitrary: vs)
     case Nil thus ?case by simp
   next
     case (Cons x xs ys)
-    note IH = `\<And>vs. \<lbrakk> [xs [\<mapsto>] vs] V = Some v; length xs \<le> length vs; V \<in> set xs \<rbrakk> \<Longrightarrow> vs ! index xs V = v`
-    from `[x # xs [\<mapsto>] ys] V = Some v` obtain y Ys where "ys = y # Ys" by(cases ys, auto)
-    with `length (x # xs) \<le> length ys` have "length xs \<le> length Ys" by simp
+    note IH = \<open>\<And>vs. \<lbrakk> [xs [\<mapsto>] vs] V = Some v; length xs \<le> length vs; V \<in> set xs \<rbrakk> \<Longrightarrow> vs ! index xs V = v\<close>
+    from \<open>[x # xs [\<mapsto>] ys] V = Some v\<close> obtain y Ys where "ys = y # Ys" by(cases ys, auto)
+    with \<open>length (x # xs) \<le> length ys\<close> have "length xs \<le> length Ys" by simp
     show ?case
     proof(cases "V \<in> set xs")
       case True
-      with `[x # xs [\<mapsto>] ys] V = Some v` `length xs \<le> length Ys` `ys = y # Ys`
+      with \<open>[x # xs [\<mapsto>] ys] V = Some v\<close> \<open>length xs \<le> length Ys\<close> \<open>ys = y # Ys\<close>
       have "[xs [\<mapsto>] Ys] V = Some v"
         apply(auto simp add: map_upds_def map_of_eq_None_iff set_zip image_Collect split: if_split_asm)
         apply(clarsimp simp add: in_set_conv_decomp)
         apply(hypsubst_thin)
         apply(erule_tac x="length ys" in allE)
         by(simp)
-      with IH[OF this `length xs \<le> length Ys` True] `ys = y # Ys` True
+      with IH[OF this \<open>length xs \<le> length Ys\<close> True] \<open>ys = y # Ys\<close> True
       show ?thesis by(simp)
     next
-      case False with `V \<in> set (x # xs)` have "x = V" by auto
-      with False `[x # xs [\<mapsto>] ys] V = Some v` `ys = y # Ys` have "y = v"
+      case False with \<open>V \<in> set (x # xs)\<close> have "x = V" by auto
+      with False \<open>[x # xs [\<mapsto>] ys] V = Some v\<close> \<open>ys = y # Ys\<close> have "y = v"
         by(auto)
-      with False `x = V` `ys = y # Ys` 
+      with False \<open>x = V\<close> \<open>ys = y # Ys\<close> 
       show ?thesis by(simp)
     qed
   qed

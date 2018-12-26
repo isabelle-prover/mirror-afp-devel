@@ -5,7 +5,7 @@
   The unique decomposition of a natural number into a squarefree part and a square.
 *)
 
-section {* Squarefree decomposition of natural numbers *}
+section \<open>Squarefree decomposition of natural numbers\<close>
 theory Squarefree_Nat
 imports
   Main

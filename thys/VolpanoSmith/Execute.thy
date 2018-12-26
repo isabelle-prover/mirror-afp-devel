@@ -4,7 +4,7 @@ theory Execute
 imports secTypes
 begin
 
-section {* Executing the small step semantics *}
+section \<open>Executing the small step semantics\<close>
 
 code_pred (modes: i => o => bool as exec_red, i => i * o => bool, i => o * i => bool, i => i => bool) red .
 thm red.equation
@@ -85,7 +85,7 @@ qed
 
 thm secComTyping.equation
 
-subsection {* An example taken from Volpano, Smith, Irvine *}
+subsection \<open>An example taken from Volpano, Smith, Irvine\<close>
 
 definition "com = if (Var ''x'' \<guillemotleft>Eq\<guillemotright> Val (Intg 1)) (''y'' :=  Val (Intg 1)) else (''y'' := Val (Intg 0))"
 definition "Env = map_of [(''x'', High), (''y'', High)]"

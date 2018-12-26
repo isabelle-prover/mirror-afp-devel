@@ -1,21 +1,21 @@
-section {* Automation *}
+section \<open>Automation\<close>
 theory Automation
 imports Hoare_Triple (*"../Lib/Refine_Util"*)
 begin
 
-text {*
+text \<open>
   In this theory, we provide a set of tactics and a simplifier setup for easy
   reasoning with our separation logic.
-*}
+\<close>
 
-subsection {* Normalization of Assertions *}
-text {*
+subsection \<open>Normalization of Assertions\<close>
+text \<open>
   In this section, we provide a set of lemmas and a simplifier
   setup to bring assertions to a normal form. We provide a simproc that
   detects pure parts of assertions and duplicate pointers. Moreover,
   we provide ac-rules for assertions. See Section~\ref{sec:auto:overview}
   for a short overview of the available proof methods.
-*}
+\<close>
 
 lemmas assn_aci =   
   inf_aci[where 'a=assn] 
@@ -34,7 +34,7 @@ lemmas star_aci =
   assn_one_left mult_1_right[where 'a=assn]
   merge_true_star merge_true_star_ctx
 
-text {* Move existential quantifiers to the front of assertions *}
+text \<open>Move existential quantifiers to the front of assertions\<close>
 lemma ex_assn_move_out[simp]:
   "\<And>Q R. (\<exists>\<^sub>Ax. Q x) * R = (\<exists>\<^sub>Ax. (Q x * R))"
   "\<And>Q R. R * (\<exists>\<^sub>Ax. Q x) = (\<exists>\<^sub>Ax. (R * Q x))"
@@ -61,7 +61,7 @@ lemma ex_assn_move_out[simp]:
   apply (simp add: ex_distrib_or)
   done
 
-text {* Extract pure assertions from and-clauses *}
+text \<open>Extract pure assertions from and-clauses\<close>
 lemma and_extract_pure_left_iff[simp]: "\<up>b \<and>\<^sub>A Q = (emp\<and>\<^sub>AQ)*\<up>b"
   by (cases b) auto
 
@@ -109,9 +109,9 @@ lemmas norm_assertion_simps =
   sngr_same_false snga_same_false
 
 
-subsubsection {* Simplifier Setup Fine-Tuning *}
-text {* Imperative HOL likes to simplify pointer inequations to this strange
-  operator. We do some additional simplifier setup here *}
+subsubsection \<open>Simplifier Setup Fine-Tuning\<close>
+text \<open>Imperative HOL likes to simplify pointer inequations to this strange
+  operator. We do some additional simplifier setup here\<close>
 lemma not_same_noteqr[simp]: "\<not> a=!=a"
   by (metis Ref.unequal)
 declare Ref.noteq_irrefl[dest!]
@@ -120,38 +120,38 @@ lemma not_same_noteqa[simp]: "\<not> a=!!=a"
   by (metis Array.unequal)
 declare Array.noteq_irrefl[dest!]
 
-text {* However, it is safest to disable this rewriting, as there is
-  a working standard simplifier setup for @{text "(\<noteq>)"}
-  *}
+text \<open>However, it is safest to disable this rewriting, as there is
+  a working standard simplifier setup for \<open>(\<noteq>)\<close>
+\<close>
 declare Ref.unequal[simp del]
 declare Array.unequal[simp del]
 
 
-subsection {* Normalization of Entailments *}
+subsection \<open>Normalization of Entailments\<close>
 
-text {* Used by existential quantifier extraction tactic *}
+text \<open>Used by existential quantifier extraction tactic\<close>
 lemma enorm_exI': (* Incomplete, as chosen x may depend on heap! *)
   "(\<And>x. Z x \<longrightarrow> (P \<Longrightarrow>\<^sub>A Q x)) \<Longrightarrow> (\<exists>x. Z x) \<longrightarrow> (P \<Longrightarrow>\<^sub>A (\<exists>\<^sub>Ax. Q x))"
   by (metis ent_ex_postI)
   
-text {* Example of how to build an extraction lemma. *}
+text \<open>Example of how to build an extraction lemma.\<close>
 thm enorm_exI'[OF enorm_exI'[OF imp_refl]]
 
 lemmas ent_triv = ent_true ent_false
 
-text {* Dummy rule to detect Hoare triple goal *}
+text \<open>Dummy rule to detect Hoare triple goal\<close>
 lemma is_hoare_triple: "<P> c <Q> \<Longrightarrow> <P> c <Q>" .
-text {* Dummy rule to detect entailment goal *}
+text \<open>Dummy rule to detect entailment goal\<close>
 lemma is_entails: "P\<Longrightarrow>\<^sub>AQ \<Longrightarrow> P \<Longrightarrow>\<^sub>AQ" .
 
-subsection {* Frame Matcher *}
-text {* Given star-lists P,Q and a frame F, this method tries to match 
+subsection \<open>Frame Matcher\<close>
+text \<open>Given star-lists P,Q and a frame F, this method tries to match 
   all elements of Q with corresponding elements of P. The result is a 
-  partial match, that contains matching pairs and the unmatched content.*}
+  partial match, that contains matching pairs and the unmatched content.\<close>
 
-text {* The frame-matcher internally uses syntactic lists separated by
-  star, and delimited by the special symbol @{text "SLN"}, which is defined
-  to be @{text "emp"}. *}
+text \<open>The frame-matcher internally uses syntactic lists separated by
+  star, and delimited by the special symbol \<open>SLN\<close>, which is defined
+  to be \<open>emp\<close>.\<close>
 definition [simp]: "SLN \<equiv> emp"
 lemma SLN_left: "SLN * P = P" by simp
 lemma SLN_right: "P * SLN = P" by simp
@@ -159,9 +159,9 @@ lemma SLN_right: "P * SLN = P" by simp
 lemmas SLN_normalize = SLN_right mult.left_assoc[where 'a=assn]
 lemmas SLN_strip = SLN_right SLN_left mult.left_assoc[where 'a=assn]
 
-text {* A query to the frame matcher. Contains the assertions
+text \<open>A query to the frame matcher. Contains the assertions
   P and Q that shall be matched, as well as a frame F, that is not 
-  touched. *}
+  touched.\<close>
 
 definition [simp]: "FI_QUERY P Q F \<equiv> P \<Longrightarrow>\<^sub>A Q*F"
 
@@ -169,35 +169,35 @@ abbreviation "fi_m_fst M \<equiv> foldr (*) (map fst M) emp"
 abbreviation "fi_m_snd M \<equiv> foldr (*) (map snd M) emp"
 abbreviation "fi_m_match M \<equiv> (\<forall>(p,q)\<in>set M. p \<Longrightarrow>\<^sub>A q)"
 
-text {* A result of the frame matcher. Contains a list of matching pairs,
+text \<open>A result of the frame matcher. Contains a list of matching pairs,
   as well as the unmatched parts of P and Q, and the frame F.
-*}
+\<close>
 definition [simp]: "FI_RESULT M UP UQ F \<equiv> 
   fi_m_match M \<longrightarrow> (fi_m_fst M * UP \<Longrightarrow>\<^sub>A fi_m_snd M * UQ * F)"
 
-text {* Internal structure used by the frame matcher: 
+text \<open>Internal structure used by the frame matcher: 
   m contains the matched pairs; p,q the assertions that still needs to be 
   matched; up,uq the assertions that could not be matched; and f the frame.
   p and q are SLN-delimited syntactic lists. 
-*}
+\<close>
 
 definition [simp]: "FI m p q up uq f \<equiv> 
   fi_m_match m \<longrightarrow> (fi_m_fst m * p * up \<Longrightarrow>\<^sub>A fi_m_snd m * q * uq * f)"
 
-text {* Initialize processing of query *}
+text \<open>Initialize processing of query\<close>
 lemma FI_init: 
   assumes "FI [] (SLN*P) (SLN*Q) SLN SLN F"
   shows "FI_QUERY P Q F"
   using assms by simp
 
-text {* Construct result from internal representation *}
+text \<open>Construct result from internal representation\<close>
 lemma FI_finalize:
   assumes "FI_RESULT m (p*up) (q*uq) f"
   shows "FI m p q up uq f"
   using assms by (simp add: assn_aci)
 
-text {* Auxiliary lemma to show that all matching pairs together form
-  an entailment. This is required for most applications. *}
+text \<open>Auxiliary lemma to show that all matching pairs together form
+  an entailment. This is required for most applications.\<close>
 lemma fi_match_entails:
   assumes "fi_m_match m"
   shows "fi_m_fst m \<Longrightarrow>\<^sub>A fi_m_snd m"
@@ -205,12 +205,12 @@ lemma fi_match_entails:
   apply (simp_all split: prod.split_asm add: ent_star_mono)
   done
 
-text {* Internally, the frame matcher tries to match the first assertion
+text \<open>Internally, the frame matcher tries to match the first assertion
   of q with the first assertion of p. If no match is found, the first
   assertion of p is discarded. If no match for any assertion in p can be
-  found, the first assertion of q is discarded. *}
+  found, the first assertion of q is discarded.\<close>
 
-text {* Match *}
+text \<open>Match\<close>
 lemma FI_match:
   assumes "p \<Longrightarrow>\<^sub>A q"
   assumes "FI ((p,q)#m) (ps*up) (qs*uq) SLN SLN f"
@@ -218,21 +218,21 @@ lemma FI_match:
   using assms unfolding FI_def
   by (simp add: assn_aci)
 
-text {* No match *}
+text \<open>No match\<close>
 lemma FI_p_nomatch:
   assumes "FI m ps (qs*q) (p*up) uq f"
   shows "FI m (ps*p) (qs*q) up uq f"
   using assms unfolding FI_def
   by (simp add: assn_aci)
   
-text {* Head of q could not be matched *}
+text \<open>Head of q could not be matched\<close>
 lemma FI_q_nomatch:
   assumes "FI m (SLN*up) qs SLN (q*uq) f"
   shows "FI m SLN (qs*q) up uq f"
   using assms unfolding FI_def
   by (simp add: assn_aci) 
 
-subsection {* Frame Inference *}
+subsection \<open>Frame Inference\<close>
 lemma frame_inference_init:
   assumes "FI_QUERY P Q F"
   shows "P \<Longrightarrow>\<^sub>A Q * F"
@@ -247,7 +247,7 @@ lemma frame_inference_finalize:
   apply assumption
   done
 
-subsection {* Entailment Solver *}
+subsection \<open>Entailment Solver\<close>
 lemma entails_solve_init:
   "FI_QUERY P Q true \<Longrightarrow> P \<Longrightarrow>\<^sub>A Q * true"
   "FI_QUERY P Q emp \<Longrightarrow> P \<Longrightarrow>\<^sub>A Q"
@@ -261,7 +261,7 @@ lemma entails_solve_finalize:
 lemmas solve_ent_preprocess_simps = 
   ent_pure_post_iff ent_pure_post_iff_sng ent_pure_pre_iff ent_pure_pre_iff_sng
   
-subsection {* Verification Condition Generator *}
+subsection \<open>Verification Condition Generator\<close>
 
 lemmas normalize_rules = norm_pre_ex_rule norm_pre_pure_rule
 
@@ -270,11 +270,11 @@ lemmas normalize_rules = norm_pre_ex_rule norm_pre_pure_rule
   This only works, if the postcondition is not schematic! However, for 
   forward reasoning, one usually assumes a schematic postcondition!
   *)
-text {* May be useful in simple, manual proofs, where the postcondition
-  is no schematic variable. *}
+text \<open>May be useful in simple, manual proofs, where the postcondition
+  is no schematic variable.\<close>
 lemmas return_cons_rule = cons_pre_rule[OF _ return_wp_rule]
 
-text {* Useful frame-rule variant for manual proof: *}
+text \<open>Useful frame-rule variant for manual proof:\<close>
 lemma frame_rule_left:
   "<P> c <Q> \<Longrightarrow> <R * P> c <\<lambda>x. R * Q x>"
   using frame_rule by (simp add: assn_aci)
@@ -306,14 +306,14 @@ lemma fi_rule:
   done
 
 
-subsection {* ML-setup *}
+subsection \<open>ML-setup\<close>
 
 named_theorems sep_dflt_simps "Seplogic: Default simplification rules for automated solvers"
 named_theorems sep_eintros "Seplogic: Intro rules for entailment solver"
 named_theorems sep_heap_rules "Seplogic: VCG heap rules"
 named_theorems sep_decon_rules "Seplogic: VCG deconstruct rules"
 
-ML {*
+ML \<open>
 infix 1 THEN_IGNORE_NEWGOALS
 
 structure Seplogic_Auto =
@@ -702,27 +702,27 @@ struct
     clasimp_modifiers @ vcg_modifiers @ eintros_modifiers;
 
 end;
-*}
+\<close>
 
 simproc_setup assn_simproc 
   ("h\<Turnstile>P" | "P\<Longrightarrow>\<^sub>AQ" | "P\<Longrightarrow>\<^sub>tQ" | "<P> c <R>" | "(P::assn) = Q") 
-  = {*K Seplogic_Auto.assn_simproc_fun*}
+  = \<open>K Seplogic_Auto.assn_simproc_fun\<close>
 
-method_setup assn_simp ={* Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
+method_setup assn_simp =\<open>Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
   CHANGED o Seplogic_Auto.dflt_tac ctxt
-))) *} "Seplogic: Simplification of assertions"
+)))\<close> "Seplogic: Simplification of assertions"
 
-method_setup frame_inference = {* Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
+method_setup frame_inference = \<open>Scan.succeed (fn ctxt => (SIMPLE_METHOD' (
   CHANGED o Seplogic_Auto.frame_inference_tac ctxt
-))) *} "Seplogic: Frame inference"
+)))\<close> "Seplogic: Frame inference"
 
-method_setup solve_entails = {* 
+method_setup solve_entails = \<open>
   Method.sections Seplogic_Auto.solve_entails_modifiers >>
   (fn _ => fn ctxt => SIMPLE_METHOD' (
   CHANGED o Seplogic_Auto.solve_entails_tac ctxt
-)) *} "Seplogic: Entailment Solver"
+))\<close> "Seplogic: Entailment Solver"
 
-method_setup heap_rule = {* 
+method_setup heap_rule = \<open>
   Attrib.thms >>
   (fn thms => fn ctxt => SIMPLE_METHOD' ( 
     let
@@ -731,10 +731,10 @@ method_setup heap_rule = {*
     in
       CHANGED o Seplogic_Auto.heap_rule_tac ctxt thms
     end
-)) *} "Seplogic: Apply rule with frame inference"
+))\<close> "Seplogic: Apply rule with frame inference"
 
 
-method_setup vcg = {* 
+method_setup vcg = \<open>
   Scan.lift (Args.mode "ss") --
   Method.sections Seplogic_Auto.vcg_modifiers >>
   (fn (ss,_) => fn ctxt => SIMPLE_METHOD' (
@@ -742,16 +742,16 @@ method_setup vcg = {*
     if ss then Seplogic_Auto.vcg_step_tac ctxt 
     else Seplogic_Auto.vcg_tac ctxt
   )
-)) *} "Seplogic: Verification Condition Generator"
+))\<close> "Seplogic: Verification Condition Generator"
 
 method_setup sep_auto = 
-  {* Scan.lift (Args.mode "nopre" -- Args.mode "nopost" -- Args.mode "plain") 
+  \<open>Scan.lift (Args.mode "nopre" -- Args.mode "nopost" -- Args.mode "plain") 
       --| Method.sections Seplogic_Auto.sep_auto_modifiers >>
   (fn ((nopre,nopost),plain) => fn ctxt => SIMPLE_METHOD' (
     CHANGED o Seplogic_Auto.sep_autosolve_tac 
       ((not nopre) andalso (not plain)) 
       ((not nopost) andalso (not plain)) ctxt
-  )) *} "Seplogic: Automatic solver"
+  ))\<close> "Seplogic: Automatic solver"
 
 lemmas [sep_dflt_simps] = split
 
@@ -760,11 +760,11 @@ declare heap_rules[sep_heap_rules]
 
 lemmas [sep_eintros] = impI conjI exI
 
-subsection {* Semi-Automatic Reasoning *}
-text {* In this section, we provide some lemmas for semi-automatic reasoning *}
+subsection \<open>Semi-Automatic Reasoning\<close>
+text \<open>In this section, we provide some lemmas for semi-automatic reasoning\<close>
 
-text {* Forward reasoning with frame. Use @{text "frame_inference"}-method 
-  to discharge second assumption. *}
+text \<open>Forward reasoning with frame. Use \<open>frame_inference\<close>-method 
+  to discharge second assumption.\<close>
 lemma ent_frame_fwd:
   assumes R: "P \<Longrightarrow>\<^sub>A R"
   assumes F: "Ps \<Longrightarrow>\<^sub>A P*F"
@@ -782,7 +782,7 @@ lemma mod_frame_fwd:
   by (metis ent_star_mono entails_def)
 
 
-text {* Apply precision rule with frame inference. *}
+text \<open>Apply precision rule with frame inference.\<close>
 lemma prec_frame:
   assumes PREC: "precise P"
   assumes M1: "h\<Turnstile>(R1 \<and>\<^sub>A R2)"
@@ -802,8 +802,8 @@ lemma prec_frame_expl:
   by (metis entailsD mod_and_dist)
 
 
-text {* Variant that is useful within induction proofs, where induction
-  goes over @{text "x"} or @{text "y"} *}
+text \<open>Variant that is useful within induction proofs, where induction
+  goes over \<open>x\<close> or \<open>y\<close>\<close>
 lemma prec_frame':
   assumes PREC: "(h\<Turnstile>(P x * F1) \<and>\<^sub>A (P y * F2)) \<longrightarrow> x=y"
   assumes M1: "h\<Turnstile>(R1 \<and>\<^sub>A R2)"
@@ -822,7 +822,7 @@ lemma ent_wand_frameI:
   using assms
   by (metis ent_frame_fwd ent_wandI mult.commute)
 
-subsubsection {* Manual Frame Inference *}
+subsubsection \<open>Manual Frame Inference\<close>
 
 lemma ent_true_drop: 
   "P\<Longrightarrow>\<^sub>AQ*true \<Longrightarrow> P*R\<Longrightarrow>\<^sub>AQ*true"
@@ -855,7 +855,7 @@ lemma entt_fr_drop: "F\<Longrightarrow>\<^sub>tF' \<Longrightarrow> F*A \<Longri
   using ent_true_drop(1) enttD enttI by blast 
     
     
-method_setup fr_rot = {* 
+method_setup fr_rot = \<open>
   let
     fun rot_tac ctxt = 
       resolve_tac ctxt @{thms fr_rot} THEN'
@@ -868,9 +868,9 @@ method_setup fr_rot = {*
         fn i => REPEAT_DETERM_N n (rot_tac ctxt i)))
 
   end
-*}
+\<close>
 
-method_setup fr_rot_rhs = {* 
+method_setup fr_rot_rhs = \<open>
   let
     fun rot_tac ctxt = 
       resolve_tac ctxt @{thms fr_rot_rhs} THEN'
@@ -883,12 +883,12 @@ method_setup fr_rot_rhs = {*
         fn i => REPEAT_DETERM_N n (rot_tac ctxt i)))
 
   end
-*}
+\<close>
 
 
 
 (*<*)
-subsection {* Test Cases *}
+subsection \<open>Test Cases\<close>
 
 lemma "\<And>x. A x * true * Q x \<Longrightarrow>\<^sub>A true * A x * Q x"
   apply simp
@@ -926,36 +926,36 @@ lemma "(h\<Turnstile>((A*B*\<up>b*true*\<up>c*true) \<and>\<^sub>A (\<up>(p=q)*P
 
 lemma assumes "FI_RESULT [(B, B), (A, A)] C D F" 
   shows "FI_QUERY (A*B*C) (D*B*A) F"
-  apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
+  apply (tactic \<open>Seplogic_Auto.match_frame_tac 
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1\<close>)
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(B,B), (A,A)] C emp F"
   shows "FI_QUERY (A*B*C) (B*A) F"
-  apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
+  apply (tactic \<open>Seplogic_Auto.match_frame_tac 
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1\<close>)
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(B, B), (A, A)] emp emp F"
   shows "FI_QUERY (A*B) (B*A) F"
-  apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
+  apply (tactic \<open>Seplogic_Auto.match_frame_tac 
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1\<close>)
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(A, A)] emp emp F"
   shows "FI_QUERY (A) (A) F"
-  apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
+  apply (tactic \<open>Seplogic_Auto.match_frame_tac 
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1\<close>)
   by (rule assms)
 
 lemma 
   assumes "FI_RESULT [(A, A)] (B * C * D) emp F"
   shows "FI_QUERY (B*C*D*A) (A) F"
-  apply (tactic {* Seplogic_Auto.match_frame_tac 
-    (resolve_tac @{context} @{thms ent_refl}) @{context} 1 *})
+  apply (tactic \<open>Seplogic_Auto.match_frame_tac 
+    (resolve_tac @{context} @{thms ent_refl}) @{context} 1\<close>)
   by (rule assms)
 
 
@@ -984,16 +984,16 @@ lemma "<P * x\<mapsto>\<^sub>a[1,2,3]>
 
 (*>*)
 
-subsection {* Quick Overview of Proof Methods *} 
-  text_raw {*\label{sec:auto:overview}*}
-text {*
+subsection \<open>Quick Overview of Proof Methods\<close> 
+  text_raw \<open>\label{sec:auto:overview}\<close>
+text \<open>
   In this section, we give a quick overview of the available proof methods 
   and options. The most versatile proof method that we provide is
-  @{text "sep_auto"}. It tries to solve the first subgoal, invoking appropriate
+  \<open>sep_auto\<close>. It tries to solve the first subgoal, invoking appropriate
   proof methods as required. If it cannot solve the subgoal completely, it
   stops at the intermediate state that it could not handle any more. 
 
-  @{text "sep_auto"} can be configured by 
+  \<open>sep_auto\<close> can be configured by 
   section-arguments for the simplifier, the classical reasoner, and all
   section-arguments for the verification condition generator and 
   entailment solver. Moreover, it takes an optional mode argument (mode), where
@@ -1009,57 +1009,57 @@ text {*
   \end{description}
 
   \paragraph{Entailment Solver.} The entailment solver processes goals of the
-  form @{text "P \<Longrightarrow>\<^sub>A Q"}. It is invoked by the method @{text "solve_entails"}.
+  form \<open>P \<Longrightarrow>\<^sub>A Q\<close>. It is invoked by the method \<open>solve_entails\<close>.
   It first tries to pull out pure parts of
-  @{text "P"} and @{text "Q"}. This may introduce quantifiers, conjunction,
+  \<open>P\<close> and \<open>Q\<close>. This may introduce quantifiers, conjunction,
   and implication into the goal, that are eliminated by resolving with rules
-  declared as @{text "sep_eintros"} (method argument: eintros[add/del]:).
-  Moreover, it simplifies with rules declared as @{text "sep_dflt_simps"} 
-  (section argument: @{text "dflt_simps[add/del]:"}).
+  declared as \<open>sep_eintros\<close> (method argument: eintros[add/del]:).
+  Moreover, it simplifies with rules declared as \<open>sep_dflt_simps\<close> 
+  (section argument: \<open>dflt_simps[add/del]:\<close>).
 
-  Now, @{text "P"} and @{text "Q"} should have the form @{text "X\<^sub>1*\<dots>*X\<^sub>n"}.
-  Then, the frame-matcher is used to match all items of @{text "P"} with items
-  of @{text "Q"}, and thus solve the implication. Matching is currently done 
+  Now, \<open>P\<close> and \<open>Q\<close> should have the form \<open>X\<^sub>1*\<dots>*X\<^sub>n\<close>.
+  Then, the frame-matcher is used to match all items of \<open>P\<close> with items
+  of \<open>Q\<close>, and thus solve the implication. Matching is currently done 
   syntactically, but can instantiate schematic variables.
 
   Note that, by default, existential introduction is declared as 
-  @{text "sep_eintros"}-rule. This introduces schematic variables, that can
+  \<open>sep_eintros\<close>-rule. This introduces schematic variables, that can
   later be matched against. However, in some cases, the matching may instantiate
   the schematic variables in an undesired way. In this case, the argument 
-  @{text "eintros del: exI"} should be passed to the entailment solver, and
+  \<open>eintros del: exI\<close> should be passed to the entailment solver, and
   the existential quantifier should be instantiated manually.
 
   \paragraph{Frame Inference}
-  The method @{text "frame_inference"} tries to solve a goal of the 
-  form @{text "P\<Longrightarrow>Q*?F"}, by matching @{text "Q"} against the parts of 
-  @{text "P"}, and instantiating @{text "?F"} accordingly. 
+  The method \<open>frame_inference\<close> tries to solve a goal of the 
+  form \<open>P\<Longrightarrow>Q*?F\<close>, by matching \<open>Q\<close> against the parts of 
+  \<open>P\<close>, and instantiating \<open>?F\<close> accordingly. 
   Matching is done syntactically, possibly 
-  instantiating schematic variables. @{text "P"} and @{text "Q"} should be 
-  assertions separated by @{text "*"}. Note that frame inference does no 
+  instantiating schematic variables. \<open>P\<close> and \<open>Q\<close> should be 
+  assertions separated by \<open>*\<close>. Note that frame inference does no 
   simplification or other kinds of normalization.
 
-  The method @{text "heap_rule"} applies the specified heap rules, using
+  The method \<open>heap_rule\<close> applies the specified heap rules, using
   frame inference if necessary. If no rules are specified, the default 
   heap rules are used.
 
   \paragraph{Verification Condition Generator}
   The verification condition generator processes goals of the form 
-  @{text "<P>c<Q>"}. It is invoked by the method @{text "vcg"}.
+  \<open><P>c<Q>\<close>. It is invoked by the method \<open>vcg\<close>.
   First, it tries to pull out pure parts and simplifies with
   the default simplification rules. Then, it tries to resolve the goal with
-  deconstruct rules (attribute: @{text "sep_decon_rules"}, 
-  section argument: @{text "decon[add/del]:"}), and if this does not succeed, 
+  deconstruct rules (attribute: \<open>sep_decon_rules\<close>, 
+  section argument: \<open>decon[add/del]:\<close>), and if this does not succeed, 
   it tries
-  to resolve the goal with heap rules (attribute: @{text "sep_heap_rules"}, 
-  section argument: @{text "heap[add/del]:"}), using the frame rule and 
+  to resolve the goal with heap rules (attribute: \<open>sep_heap_rules\<close>, 
+  section argument: \<open>heap[add/del]:\<close>), using the frame rule and 
   frame inference.
   If resolving is not possible, it also tries to apply the consequence rule to
   make the postcondition a schematic variable.
-*}
+\<close>
 
 
 (*<*)
-subsection {* Hiding of internal stuff *}
+subsection \<open>Hiding of internal stuff\<close>
 hide_const (open) FI SLN
 (*>*)
 

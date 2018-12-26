@@ -3,7 +3,7 @@ imports SINVAR_Subnets "../TopoS_Interface_impl"
 begin
 
 
-subsubsection {* SecurityInvariant Subnets List Implementation *}
+subsubsection \<open>SecurityInvariant Subnets List Implementation\<close>
 
 code_identifier code_module SINVAR_Subnets_impl => (Scala) SINVAR_Subnets
 
@@ -50,7 +50,7 @@ interpretation Subnets_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* Subnets packing *}
+subsubsection \<open>Subnets packing\<close>
   definition SINVAR_LIB_Subnets :: "('v::vertex, SINVAR_Subnets.subnets) TopoS_packed" where
     "SINVAR_LIB_Subnets \<equiv> 
     \<lparr> nm_name = ''Subnets'', 
@@ -71,7 +71,7 @@ subsubsection {* Subnets packing *}
 
 
 
-text {* Examples*}
+text \<open>Examples\<close>
   
   definition example_net_sub :: "nat list_graph" where
   "example_net_sub \<equiv> \<lparr> nodesL = [1::nat,2,3,4, 8,9, 11,12, 42], 

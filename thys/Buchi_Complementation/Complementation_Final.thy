@@ -1,4 +1,4 @@
-section {* Complementation to Explicit Büchi Automaton *}
+section \<open>Complementation to Explicit Büchi Automaton\<close>
 
 theory Complementation_Final
 imports

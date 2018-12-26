@@ -94,7 +94,7 @@ proof(cases "x = y")
   thus ?thesis by simp
 next
   assume "x \<noteq> y"
-  with `y \<sharp> F` show ?thesis
+  with \<open>y \<sharp> F\<close> show ?thesis
     by(perm_simp add: frame.inject alpha calc_atm fresh_left)
 qed
 
@@ -120,16 +120,16 @@ proof -
   with assms show ?thesis
   proof(induct n arbitrary: xvec yvec \<Psi> \<Psi>')
     case(0 xvec yvec \<Psi> \<Psi>')
-    from `0 = length xvec` have "xvec = []" by auto
-    moreover with `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>` have "yvec = []"
+    from \<open>0 = length xvec\<close> have "xvec = []" by auto
+    moreover with \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close> have "yvec = []"
       by(case_tac yvec) auto
     ultimately show ?case by simp
   next
     case(Suc n xvec yvec \<Psi> \<Psi>')
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    from `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>` `xvec = x # xvec'`
+    from \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close> \<open>xvec = x # xvec'\<close>
     obtain y yvec' where "\<langle>(x#xvec'), \<Psi>\<rangle> = \<langle>(y#yvec'), \<Psi>'\<rangle>"
       and "yvec = y#yvec'"
       by(case_tac yvec) auto
@@ -142,9 +142,9 @@ proof -
       assume "x = y"
       with EQ have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>"
         by(simp add: alpha frame.inject)
-      with IH `length xvec' = n` have "length xvec' = length yvec'"
+      with IH \<open>length xvec' = n\<close> have "length xvec' = length yvec'"
         by blast
-      with `xvec = x#xvec'` `yvec=y#yvec'`
+      with \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close>
       show ?case by simp
     next
       assume "x \<noteq> y"
@@ -152,11 +152,11 @@ proof -
         by(simp add: alpha frame.inject)
       hence "\<langle>xvec', \<Psi>\<rangle> = \<langle>([(x, y)] \<bullet> yvec'), ([(x, y)] \<bullet> \<Psi>')\<rangle>"
         by(simp add: eqvts)
-      with IH `length xvec' = n` have "length xvec' = length ([(x, y)] \<bullet> yvec')"
+      with IH \<open>length xvec' = n\<close> have "length xvec' = length ([(x, y)] \<bullet> yvec')"
         by blast
       hence "length xvec' = length yvec'"
         by simp
-      with `xvec = x#xvec'` `yvec=y#yvec'`
+      with \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close>
       show ?case by simp
     qed
   qed
@@ -205,17 +205,17 @@ proof -
   with assms show ?thesis
   proof(induct n arbitrary: xvec yvec \<Psi> \<Psi>')
     case(0 xvec yvec \<Psi> \<Psi>')
-    from `0 = length xvec` have "xvec = []" by auto
-    moreover with `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>` have "yvec = []"
+    from \<open>0 = length xvec\<close> have "xvec = []" by auto
+    moreover with \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close> have "yvec = []"
       by(case_tac yvec) auto
-    ultimately show ?case  using `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>`
+    ultimately show ?case  using \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close>
       by(simp add: frame.inject) 
   next
     case(Suc n xvec yvec \<Psi> \<Psi>')
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    from `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>` `xvec = x # xvec'`
+    from \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close> \<open>xvec = x # xvec'\<close>
     obtain y yvec' where "\<langle>(x#xvec'), \<Psi>\<rangle> = \<langle>(y#yvec'), \<Psi>'\<rangle>"
       and "yvec = y#yvec'"
       by(case_tac yvec) auto
@@ -228,7 +228,7 @@ proof -
       assume "x = y"
       with EQ have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>"
         by(simp add: alpha frame.inject)
-      with IH `length xvec' = n` `supp \<Psi> = {}` show ?case
+      with IH \<open>length xvec' = n\<close> \<open>supp \<Psi> = {}\<close> show ?case
         by simp
     next
       assume "x \<noteq> y"
@@ -236,13 +236,13 @@ proof -
         by(simp add: alpha frame.inject)
       hence "\<langle>xvec', \<Psi>\<rangle> = \<langle>([(x, y)] \<bullet> yvec'), ([(x, y)] \<bullet> \<Psi>')\<rangle>"
         by(simp add: eqvts)
-      with IH `length xvec' = n` `supp \<Psi> = {}` have "\<Psi> = [(x, y)] \<bullet> \<Psi>'"
+      with IH \<open>length xvec' = n\<close> \<open>supp \<Psi> = {}\<close> have "\<Psi> = [(x, y)] \<bullet> \<Psi>'"
         by(simp add: eqvts)
-      moreover with `supp \<Psi> = {}` have "supp([(x, y)] \<bullet> \<Psi>') = ({}::name set)"
+      moreover with \<open>supp \<Psi> = {}\<close> have "supp([(x, y)] \<bullet> \<Psi>') = ({}::name set)"
         by simp
       hence "x \<sharp> ([(x, y)] \<bullet> \<Psi>')" and "y \<sharp> ([(x, y)] \<bullet> \<Psi>')"
         by(simp add: fresh_def)+
-      with `x \<noteq> y` have "x \<sharp> \<Psi>'" and "y \<sharp> \<Psi>'"
+      with \<open>x \<noteq> y\<close> have "x \<sharp> \<Psi>'" and "y \<sharp> \<Psi>'"
         by(simp add: fresh_left calc_atm)+
       ultimately show ?case by simp
     qed
@@ -266,30 +266,30 @@ proof -
   proof(induct n arbitrary: xvec yvec \<Psi> \<Psi>')
     case(0 xvec yvec \<Psi> \<Psi>')
     have Eq: "\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>" by fact
-    from `0 = length xvec` have "xvec = []" by auto
+    from \<open>0 = length xvec\<close> have "xvec = []" by auto
     moreover with Eq have "yvec = []"
       by(case_tac yvec) auto
     ultimately show ?case using Eq
       by(simp add: frame.inject)
   next
     case(Suc n xvec yvec \<Psi> \<Psi>')
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    from `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>` `xvec = x # xvec'`
+    from \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close> \<open>xvec = x # xvec'\<close>
     obtain y yvec' where "\<langle>(x#xvec'), \<Psi>\<rangle> = \<langle>(y#yvec'), \<Psi>'\<rangle>"
       and "yvec = y#yvec'"
       by(case_tac yvec) auto
     hence EQ: "\<lparr>\<nu>x\<rparr>\<lparr>\<nu>*xvec'\<rparr>(FAssert \<Psi>) = \<lparr>\<nu>y\<rparr>\<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
       by simp
-    from `xvec = x#xvec'` `yvec=y#yvec'` `xvec \<sharp>* yvec`
+    from \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close> \<open>xvec \<sharp>* yvec\<close>
     have "x \<noteq> y" and "xvec' \<sharp>* yvec'" and "x \<sharp> yvec'" and "y \<sharp> xvec'"
       by auto
     have IH: "\<And>xvec yvec \<Psi> \<Psi>'. \<lbrakk>\<langle>xvec, (\<Psi>::'a)\<rangle> = \<langle>yvec, (\<Psi>'::'a)\<rangle>; xvec \<sharp>* yvec; n = length xvec\<rbrakk> \<Longrightarrow>
                                  \<exists>p. (set p) \<subseteq> (set xvec) \<times> (set yvec) \<and> distinctPerm p \<and>  \<Psi>' = p \<bullet> \<Psi>"
       by fact
 
-    from EQ `x \<noteq> y` have EQ': "\<langle>xvec', \<Psi>\<rangle> = ([(x, y)] \<bullet> \<langle>yvec', \<Psi>'\<rangle>)" 
+    from EQ \<open>x \<noteq> y\<close> have EQ': "\<langle>xvec', \<Psi>\<rangle> = ([(x, y)] \<bullet> \<langle>yvec', \<Psi>'\<rangle>)" 
                      and xFresh\<Psi>': "x \<sharp> \<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
       by(simp add: frame.inject alpha)+
 
@@ -300,11 +300,11 @@ proof -
         by(rule frameEqFresh)
       with xFresh\<Psi>' EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', \<Psi>'\<rangle>" 
         by(simp)
-      with `xvec' \<sharp>* yvec'` `length xvec' = n` IH
+      with \<open>xvec' \<sharp>* yvec'\<close> \<open>length xvec' = n\<close> IH
       obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p"  and "\<Psi>' = p \<bullet> \<Psi>"
         by blast
       from S have "(set p) \<subseteq> set(x#xvec') \<times> set(y#yvec')" by auto
-      with `xvec = x#xvec'` `yvec=y#yvec'` `distinctPerm p` `\<Psi>' = p \<bullet> \<Psi>`
+      with \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close> \<open>distinctPerm p\<close> \<open>\<Psi>' = p \<bullet> \<Psi>\<close>
       show ?case by blast
     next
       assume "\<not>(x \<sharp> \<lparr>\<nu>*xvec'\<rparr>(FAssert \<Psi>))"
@@ -314,28 +314,28 @@ proof -
         by(rule frameEqSupp)
       hence "y \<sharp> yvec'"
         by(induct yvec') (auto simp add: frame.supp abs_supp)      
-      with `x \<sharp> yvec'` EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', ([(x, y)] \<bullet> \<Psi>')\<rangle>"
+      with \<open>x \<sharp> yvec'\<close> EQ' have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', ([(x, y)] \<bullet> \<Psi>')\<rangle>"
         by(simp add: eqvts)
-      with  `xvec' \<sharp>* yvec'` `length xvec' = n` IH
+      with  \<open>xvec' \<sharp>* yvec'\<close> \<open>length xvec' = n\<close> IH
       obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p" and "([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>"
         by blast
 
       from xSupp\<Psi> have "x \<sharp> xvec'"
         by(induct xvec') (auto simp add: frame.supp abs_supp)      
-      with `x \<sharp> yvec'` `y \<sharp> xvec'` `y \<sharp> yvec'` S have "x \<sharp> p" and "y \<sharp> p"
+      with \<open>x \<sharp> yvec'\<close> \<open>y \<sharp> xvec'\<close> \<open>y \<sharp> yvec'\<close> S have "x \<sharp> p" and "y \<sharp> p"
         apply(induct p)
         by(auto simp add: name_list_supp) (auto simp add: fresh_def) 
       from S have "(set ((x, y)#p)) \<subseteq> (set(x#xvec')) \<times> (set(y#yvec'))"
         by force
-      moreover from `x \<noteq> y` `x \<sharp> p` `y \<sharp> p` S `distinctPerm p`
+      moreover from \<open>x \<noteq> y\<close> \<open>x \<sharp> p\<close> \<open>y \<sharp> p\<close> S \<open>distinctPerm p\<close>
       have "distinctPerm((x,y)#p)" by simp
-      moreover from `x \<sharp> p` `y \<sharp> p` `x \<sharp> xvec'` `y \<sharp> xvec'` have "y#(p \<bullet> xvec') = ((x, y)#p) \<bullet> (x#xvec')" 
+      moreover from \<open>x \<sharp> p\<close> \<open>y \<sharp> p\<close> \<open>x \<sharp> xvec'\<close> \<open>y \<sharp> xvec'\<close> have "y#(p \<bullet> xvec') = ((x, y)#p) \<bullet> (x#xvec')" 
         by(simp add: eqvts calc_atm freshChainSimps)
-      moreover from `([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>`
+      moreover from \<open>([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>\<close>
       have "([(x, y)] \<bullet> [(x, y)] \<bullet> \<Psi>') = [(x, y)] \<bullet> p \<bullet> \<Psi>"
         by(simp add: pt_bij)
       hence "\<Psi>' = ((x, y)#p) \<bullet> \<Psi>" by simp
-      ultimately show ?case using `xvec=x#xvec'` `yvec=y#yvec'`
+      ultimately show ?case using \<open>xvec=x#xvec'\<close> \<open>yvec=y#yvec'\<close>
         by blast
     qed
   qed
@@ -461,48 +461,48 @@ proof -
   proof(induct n arbitrary: xvec yvec \<Psi> \<Psi>')
     case(0 xvec yvec \<Psi> \<Psi>')
     have Eq: "\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>" by fact
-    from `0 = length xvec` have "xvec = []" by auto
+    from \<open>0 = length xvec\<close> have "xvec = []" by auto
     moreover with Eq have "yvec = []"
       by(case_tac yvec) auto
     ultimately show ?case using Eq
       by(simp add: frame.inject)
   next
     case(Suc n xvec yvec \<Psi> \<Psi>')
-    from `Suc n = length xvec`
+    from \<open>Suc n = length xvec\<close>
     obtain x xvec' where "xvec = x#xvec'" and "length xvec' = n"
       by(case_tac xvec) auto
-    from `\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>` `xvec = x # xvec'`
+    from \<open>\<langle>xvec, \<Psi>\<rangle> = \<langle>yvec, \<Psi>'\<rangle>\<close> \<open>xvec = x # xvec'\<close>
     obtain y yvec' where "\<langle>(x#xvec'), \<Psi>\<rangle> = \<langle>(y#yvec'), \<Psi>'\<rangle>"
       and "yvec = y#yvec'"
       by(case_tac yvec) auto
     hence EQ: "\<lparr>\<nu>x\<rparr>\<lparr>\<nu>*xvec'\<rparr>(FAssert \<Psi>) = \<lparr>\<nu>y\<rparr>\<lparr>\<nu>*yvec'\<rparr>(FAssert \<Psi>')"
       by simp
-    from `xvec = x#xvec'` `yvec=y#yvec'` `xvec \<sharp>* yvec`
+    from \<open>xvec = x#xvec'\<close> \<open>yvec=y#yvec'\<close> \<open>xvec \<sharp>* yvec\<close>
     have "x \<noteq> y" and "xvec' \<sharp>* yvec'" and "x \<sharp> yvec'" and "y \<sharp> xvec'"
       by auto
-    from `distinct xvec` `distinct yvec` `xvec=x#xvec'` `yvec=y#yvec'` have "x \<sharp> xvec'" and "y \<sharp> yvec'" and "distinct xvec'" and "distinct yvec'"
+    from \<open>distinct xvec\<close> \<open>distinct yvec\<close> \<open>xvec=x#xvec'\<close> \<open>yvec=y#yvec'\<close> have "x \<sharp> xvec'" and "y \<sharp> yvec'" and "distinct xvec'" and "distinct yvec'"
       by simp+
     have IH: "\<And>xvec yvec \<Psi> \<Psi>'. \<lbrakk>\<langle>xvec, (\<Psi>::'a)\<rangle> = \<langle>yvec, (\<Psi>'::'a)\<rangle>; xvec \<sharp>* yvec; distinct xvec; distinct yvec; n = length xvec\<rbrakk> \<Longrightarrow> \<exists>p. (set p) \<subseteq> (set xvec) \<times> (set yvec) \<and> distinctPerm p \<and>  yvec = p \<bullet> xvec \<and> \<Psi>' = p \<bullet> \<Psi>"
       by fact
-    from EQ `x \<noteq> y`  `x \<sharp> yvec'` `y \<sharp> yvec'` have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', ([(x, y)] \<bullet> \<Psi>')\<rangle>"
+    from EQ \<open>x \<noteq> y\<close>  \<open>x \<sharp> yvec'\<close> \<open>y \<sharp> yvec'\<close> have "\<langle>xvec', \<Psi>\<rangle> = \<langle>yvec', ([(x, y)] \<bullet> \<Psi>')\<rangle>"
       by(simp add: frame.inject alpha eqvts)
-    with `xvec' \<sharp>* yvec'` `distinct xvec'` `distinct yvec'` `length xvec' = n` IH
+    with \<open>xvec' \<sharp>* yvec'\<close> \<open>distinct xvec'\<close> \<open>distinct yvec'\<close> \<open>length xvec' = n\<close> IH
     obtain p where S: "(set p) \<subseteq> (set xvec') \<times> (set yvec')" and "distinctPerm p" and "yvec' = p \<bullet> xvec'" and "[(x, y)] \<bullet> \<Psi>' = p \<bullet> \<Psi>"
       by metis
     from S have "set((x, y)#p) \<subseteq> set(x#xvec') \<times> set(y#yvec')" by auto
-    moreover from `x \<sharp> xvec'` `x \<sharp> yvec'` `y \<sharp> xvec'` `y \<sharp> yvec'` S have "x \<sharp> p" and "y \<sharp> p"
+    moreover from \<open>x \<sharp> xvec'\<close> \<open>x \<sharp> yvec'\<close> \<open>y \<sharp> xvec'\<close> \<open>y \<sharp> yvec'\<close> S have "x \<sharp> p" and "y \<sharp> p"
       apply(induct p)
       by(auto simp add: name_list_supp) (auto simp add: fresh_def) 
 
-    with S `distinctPerm p` `x \<noteq> y` have "distinctPerm((x, y)#p)" by auto
-    moreover from `yvec' = p \<bullet> xvec'` `x \<sharp> p` `y \<sharp> p` `x \<sharp> xvec'` `y \<sharp> xvec'` have "(y#yvec') = ((x, y)#p) \<bullet> (x#xvec')"
+    with S \<open>distinctPerm p\<close> \<open>x \<noteq> y\<close> have "distinctPerm((x, y)#p)" by auto
+    moreover from \<open>yvec' = p \<bullet> xvec'\<close> \<open>x \<sharp> p\<close> \<open>y \<sharp> p\<close> \<open>x \<sharp> xvec'\<close> \<open>y \<sharp> xvec'\<close> have "(y#yvec') = ((x, y)#p) \<bullet> (x#xvec')"
       by(simp add: freshChainSimps calc_atm)
-    moreover from `([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>`
+    moreover from \<open>([(x, y)] \<bullet> \<Psi>') = p \<bullet> \<Psi>\<close>
     have "([(x, y)] \<bullet> [(x, y)] \<bullet> \<Psi>') = [(x, y)] \<bullet> p \<bullet> \<Psi>"
       by(simp add: pt_bij)
     hence "\<Psi>' = ((x, y)#p) \<bullet> \<Psi>"
       by simp
-    ultimately show ?case using `xvec=x#xvec'` `yvec=y#yvec'`
+    ultimately show ?case using \<open>xvec=x#xvec'\<close> \<open>yvec=y#yvec'\<close>
       by blast
   qed
   ultimately show ?thesis by blast
@@ -545,7 +545,7 @@ proof -
   next
     case(Cons a A\<^sub>F)
     then obtain A\<^sub>F' where Eq: "\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>" and "distinct A\<^sub>F'" and "A\<^sub>F' \<sharp>* C" by force
-    from `(a#A\<^sub>F) \<sharp>* C` have "a \<sharp> C" and "A\<^sub>F \<sharp>* C" by simp+
+    from \<open>(a#A\<^sub>F) \<sharp>* C\<close> have "a \<sharp> C" and "A\<^sub>F \<sharp>* C" by simp+
     show ?case
     proof(case_tac "a \<sharp> \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>")
       assume "a \<sharp> \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>"
@@ -553,25 +553,25 @@ proof -
       have "\<langle>(a#A\<^sub>F), \<Psi>\<^sub>F\<rangle> = \<langle>(b#A\<^sub>F'), \<Psi>\<^sub>F\<rangle>"
       proof -
         from Eq have "\<langle>(a#A\<^sub>F), \<Psi>\<^sub>F\<rangle> = \<langle>(a#A\<^sub>F'), \<Psi>\<^sub>F\<rangle>" by(simp add: frame.inject)
-        moreover from `b \<sharp> \<Psi>\<^sub>F` have "\<dots> = \<lparr>\<nu>b\<rparr>([(a, b)] \<bullet> \<lparr>\<nu>*A\<^sub>F'\<rparr>(FAssert \<Psi>\<^sub>F))"
+        moreover from \<open>b \<sharp> \<Psi>\<^sub>F\<close> have "\<dots> = \<lparr>\<nu>b\<rparr>([(a, b)] \<bullet> \<lparr>\<nu>*A\<^sub>F'\<rparr>(FAssert \<Psi>\<^sub>F))"
           by(force intro: alphaFrameRes simp add: frameResChainFresh)
-        ultimately show ?thesis using `a \<sharp> \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>` `b \<sharp> \<Psi>\<^sub>F`
+        ultimately show ?thesis using \<open>a \<sharp> \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>\<close> \<open>b \<sharp> \<Psi>\<^sub>F\<close>
           by(simp add: frameResChainFresh)
       qed
-      moreover from `distinct A\<^sub>F'` `b \<sharp> A\<^sub>F'` have "distinct(b#A\<^sub>F')" by simp
-      moreover from `A\<^sub>F' \<sharp>* C` `b \<sharp> C` have "(b#A\<^sub>F') \<sharp>* C" by simp+
+      moreover from \<open>distinct A\<^sub>F'\<close> \<open>b \<sharp> A\<^sub>F'\<close> have "distinct(b#A\<^sub>F')" by simp
+      moreover from \<open>A\<^sub>F' \<sharp>* C\<close> \<open>b \<sharp> C\<close> have "(b#A\<^sub>F') \<sharp>* C" by simp+
       ultimately show ?case by blast
     next
       from Eq have "\<langle>(a#A\<^sub>F), \<Psi>\<^sub>F\<rangle> = \<langle>(a#A\<^sub>F'), \<Psi>\<^sub>F\<rangle>" by(simp add: frame.inject)
       moreover assume "\<not>(a \<sharp> \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>)"
       hence "a \<sharp> A\<^sub>F'" apply(simp add: fresh_def)
         by(induct A\<^sub>F') (auto simp add: supp_list_nil supp_list_cons supp_atm frame.supp abs_supp)
-      with `distinct A\<^sub>F'` have "distinct(a#A\<^sub>F')" by simp
-      moreover from `A\<^sub>F' \<sharp>* C` `a \<sharp> C` have "(a#A\<^sub>F') \<sharp>* C" by simp+
+      with \<open>distinct A\<^sub>F'\<close> have "distinct(a#A\<^sub>F')" by simp
+      moreover from \<open>A\<^sub>F' \<sharp>* C\<close> \<open>a \<sharp> C\<close> have "(a#A\<^sub>F') \<sharp>* C" by simp+
       ultimately show ?case by blast
     qed
   qed
-  ultimately show ?thesis using `A\<^sub>F \<sharp>* C`
+  ultimately show ?thesis using \<open>A\<^sub>F \<sharp>* C\<close>
     by blast
 qed
 
@@ -590,10 +590,10 @@ proof -
     ultimately show ?case by force
   next
     case(FRes a F)
-    from `\<And>C. \<exists>A\<^sub>F \<Psi>\<^sub>F. F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> A\<^sub>F \<sharp>* C`
+    from \<open>\<And>C. \<exists>A\<^sub>F \<Psi>\<^sub>F. F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> A\<^sub>F \<sharp>* C\<close>
     obtain A\<^sub>F \<Psi>\<^sub>F  where "F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" and "A\<^sub>F \<sharp>* C"
       by blast
-    with `a \<sharp> C` have "\<lparr>\<nu>a\<rparr>F = \<lparr>\<nu>*(a#A\<^sub>F)\<rparr>(FAssert \<Psi>\<^sub>F)" and "(a#A\<^sub>F) \<sharp>* C"
+    with \<open>a \<sharp> C\<close> have "\<lparr>\<nu>a\<rparr>F = \<lparr>\<nu>*(a#A\<^sub>F)\<rparr>(FAssert \<Psi>\<^sub>F)" and "(a#A\<^sub>F) \<sharp>* C"
       by simp+
     thus ?case by blast
   qed
@@ -735,7 +735,7 @@ lemma chanEqClosed:
 
   shows "(p \<bullet> \<Psi>) \<turnstile> (p \<bullet> M) \<leftrightarrow> (p \<bullet> N)"
 proof -
-  from `\<Psi> \<turnstile> M \<leftrightarrow> N` have "(p \<bullet> \<Psi>) \<turnstile> p \<bullet> (M \<leftrightarrow> N)"
+  from \<open>\<Psi> \<turnstile> M \<leftrightarrow> N\<close> have "(p \<bullet> \<Psi>) \<turnstile> p \<bullet> (M \<leftrightarrow> N)"
     by(rule statClosed)
   thus ?thesis by(simp add: eqvts)
 qed
@@ -784,7 +784,7 @@ proof(auto simp add: AssertionStatImp_def)
   fix \<phi>
   assume "(p \<bullet> \<Psi>) \<turnstile> \<phi>"
   hence "\<Psi> \<turnstile> rev p \<bullet> \<phi>" by(drule_tac p="rev p" in statClosed) auto
-  with `\<Psi> \<hookrightarrow> \<Psi>'` have "\<Psi>' \<turnstile> rev p \<bullet> \<phi>" by(simp add: AssertionStatImp_def)
+  with \<open>\<Psi> \<hookrightarrow> \<Psi>'\<close> have "\<Psi>' \<turnstile> rev p \<bullet> \<phi>" by(simp add: AssertionStatImp_def)
   thus "(p \<bullet> \<Psi>') \<turnstile> \<phi>" by(drule_tac p=p in statClosed) auto
 qed
 
@@ -893,9 +893,9 @@ lemma frameImpAlphaEnt:
 
   shows "\<Psi>\<^sub>F \<turnstile> \<phi>"
 proof -
-  from `\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F'\<rangle>`
+  from \<open>\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F'\<rangle>\<close>
   obtain n where "n = length A\<^sub>F" by blast
-  moreover from `\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F'\<rangle>`
+  moreover from \<open>\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F'\<rangle>\<close>
   have "length A\<^sub>F = length A\<^sub>F'"
     by(rule frameChainEqLength)
   ultimately show ?thesis using assms
@@ -904,15 +904,15 @@ proof -
     thus ?case by(auto simp add: frame.inject)
   next
     case(Suc n A\<^sub>F A\<^sub>F' \<Psi>\<^sub>F')
-    from `Suc n = length A\<^sub>F`
+    from \<open>Suc n = length A\<^sub>F\<close>
     obtain x xs where "A\<^sub>F = x#xs" and "n = length xs"
       by(case_tac A\<^sub>F) auto
-    from `\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F'\<rangle>` `A\<^sub>F = x # xs`
+    from \<open>\<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> = \<langle>A\<^sub>F', \<Psi>\<^sub>F'\<rangle>\<close> \<open>A\<^sub>F = x # xs\<close>
     obtain y ys where "\<langle>(x#xs), \<Psi>\<^sub>F\<rangle> = \<langle>(y#ys), \<Psi>\<^sub>F'\<rangle>" and "A\<^sub>F' = y#ys"
       by(case_tac A\<^sub>F') auto
     hence EQ: "\<lparr>\<nu>x\<rparr>\<lparr>\<nu>*xs\<rparr>(FAssert \<Psi>\<^sub>F) = \<lparr>\<nu>y\<rparr>\<lparr>\<nu>*ys\<rparr>(FAssert \<Psi>\<^sub>F')"
       by simp
-    from `A\<^sub>F = x # xs` `A\<^sub>F' = y # ys` `length A\<^sub>F = length A\<^sub>F'` `A\<^sub>F \<sharp>* \<phi>` `A\<^sub>F' \<sharp>* \<phi>`
+    from \<open>A\<^sub>F = x # xs\<close> \<open>A\<^sub>F' = y # ys\<close> \<open>length A\<^sub>F = length A\<^sub>F'\<close> \<open>A\<^sub>F \<sharp>* \<phi>\<close> \<open>A\<^sub>F' \<sharp>* \<phi>\<close>
     have "length xs = length ys" and "xs \<sharp>* \<phi>" and "ys \<sharp>* \<phi>" and "x \<sharp> \<phi>" and "y \<sharp> \<phi>" 
       by auto
     
@@ -922,23 +922,23 @@ proof -
     proof(case_tac "x = y")
       assume "x = y"
       with EQ have "\<langle>xs, \<Psi>\<^sub>F\<rangle> = \<langle>ys, \<Psi>\<^sub>F'\<rangle>" by(simp add: alpha frame.inject)
-      with IH `n = length xs` `length xs = length ys` `xs \<sharp>* \<phi>`  `ys \<sharp>* \<phi>` `\<Psi>\<^sub>F' \<turnstile> \<phi>`
+      with IH \<open>n = length xs\<close> \<open>length xs = length ys\<close> \<open>xs \<sharp>* \<phi>\<close>  \<open>ys \<sharp>* \<phi>\<close> \<open>\<Psi>\<^sub>F' \<turnstile> \<phi>\<close>
       show ?case by blast
     next
       assume "x \<noteq> y"
       with EQ have "\<langle>xs, \<Psi>\<^sub>F\<rangle> = [(x, y)] \<bullet> \<langle>ys, \<Psi>\<^sub>F'\<rangle>" by(simp add: alpha frame.inject)
       hence "\<langle>xs, \<Psi>\<^sub>F\<rangle> = \<langle>([(x, y)] \<bullet> ys), ([(x, y)] \<bullet> \<Psi>\<^sub>F')\<rangle>" by(simp add: eqvts)
-      moreover from `length xs = length ys` have "length xs = length([(x, y)] \<bullet> ys)"
+      moreover from \<open>length xs = length ys\<close> have "length xs = length([(x, y)] \<bullet> ys)"
         by auto
-      moreover from `ys \<sharp>* \<phi>` have "([(x, y)] \<bullet> ys) \<sharp>* ([(x, y)] \<bullet> \<phi>)"
+      moreover from \<open>ys \<sharp>* \<phi>\<close> have "([(x, y)] \<bullet> ys) \<sharp>* ([(x, y)] \<bullet> \<phi>)"
         by(simp add: fresh_star_bij)
-      with `x \<sharp> \<phi>` `y \<sharp> \<phi>` have "([(x, y)] \<bullet> ys) \<sharp>* \<phi>"
+      with \<open>x \<sharp> \<phi>\<close> \<open>y \<sharp> \<phi>\<close> have "([(x, y)] \<bullet> ys) \<sharp>* \<phi>"
         by simp
-      moreover with `\<Psi>\<^sub>F' \<turnstile> \<phi>` have "([(x, y)] \<bullet> \<Psi>\<^sub>F') \<turnstile> ([(x, y)] \<bullet> \<phi>)"
+      moreover with \<open>\<Psi>\<^sub>F' \<turnstile> \<phi>\<close> have "([(x, y)] \<bullet> \<Psi>\<^sub>F') \<turnstile> ([(x, y)] \<bullet> \<phi>)"
         by(simp add: statClosed)
-      with `x \<sharp> \<phi>` `y \<sharp> \<phi>` have "([(x, y)] \<bullet> \<Psi>\<^sub>F') \<turnstile> \<phi>"
+      with \<open>x \<sharp> \<phi>\<close> \<open>y \<sharp> \<phi>\<close> have "([(x, y)] \<bullet> \<Psi>\<^sub>F') \<turnstile> \<phi>"
         by simp
-      ultimately show ?case using IH `n = length xs` `xs \<sharp>* \<phi>`
+      ultimately show ?case using IH \<open>n = length xs\<close> \<open>xs \<sharp>* \<phi>\<close>
         by blast
     qed
   qed
@@ -1021,7 +1021,7 @@ proof(auto simp add: FrameStatImp_def)
   fix \<phi>
   assume "(p \<bullet> F) \<turnstile>\<^sub>F \<phi>"
   hence "F \<turnstile>\<^sub>F rev p \<bullet> \<phi>" by(drule_tac p="rev p" in frameImpClosed) auto
-  with `F \<hookrightarrow>\<^sub>F G` have "G \<turnstile>\<^sub>F rev p \<bullet> \<phi>" by(simp add: FrameStatImp_def)
+  with \<open>F \<hookrightarrow>\<^sub>F G\<close> have "G \<turnstile>\<^sub>F rev p \<bullet> \<phi>" by(simp add: FrameStatImp_def)
   thus "(p \<bullet> G) \<turnstile>\<^sub>F \<phi>" by(drule_tac p=p in frameImpClosed) auto
 qed
 
@@ -1429,15 +1429,15 @@ proof(auto simp add: FrameStatImp_def)
   fix \<phi>::'c
   obtain A\<^sub>F \<Psi>\<^sub>F where Feq: "F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" and "A\<^sub>F \<sharp>* (x, \<phi>)"
     by(rule freshFrame)
-  from `A\<^sub>F \<sharp>* (x, \<phi>)` have "x \<sharp> A\<^sub>F" and "A\<^sub>F \<sharp>* \<phi>" by simp+
+  from \<open>A\<^sub>F \<sharp>* (x, \<phi>)\<close> have "x \<sharp> A\<^sub>F" and "A\<^sub>F \<sharp>* \<phi>" by simp+
   obtain y where "y \<sharp> \<phi>" and "y \<sharp> F" and "x \<noteq> y"
     by(generate_fresh "name", auto)
   
   assume "\<lparr>\<nu>x\<rparr>F \<turnstile>\<^sub>F \<phi>"
-  with `y \<sharp> F` have "\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> F) \<turnstile>\<^sub>F \<phi>" by(simp add: alphaFrameRes)
-  with `x \<sharp> F` `y \<sharp> F` have "\<lparr>\<nu>y\<rparr>F \<turnstile>\<^sub>F \<phi>" by simp
+  with \<open>y \<sharp> F\<close> have "\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> F) \<turnstile>\<^sub>F \<phi>" by(simp add: alphaFrameRes)
+  with \<open>x \<sharp> F\<close> \<open>y \<sharp> F\<close> have "\<lparr>\<nu>y\<rparr>F \<turnstile>\<^sub>F \<phi>" by simp
   with Feq have "\<langle>(y#A\<^sub>F), \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>" by simp
-  with Feq `A\<^sub>F \<sharp>* \<phi>` `y \<sharp> \<phi>` show "F \<turnstile>\<^sub>F \<phi>"
+  with Feq \<open>A\<^sub>F \<sharp>* \<phi>\<close> \<open>y \<sharp> \<phi>\<close> show "F \<turnstile>\<^sub>F \<phi>"
     by(force intro: frameImpI dest: frameImpE simp del: frameResChain.simps)
 qed
 
@@ -1452,14 +1452,14 @@ proof(auto simp add: FrameStatImp_def)
   fix \<phi>::'c
   obtain A\<^sub>F \<Psi>\<^sub>F where Feq: "F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" and "A\<^sub>F \<sharp>* (x, \<phi>)"
     by(rule freshFrame)
-  from `A\<^sub>F \<sharp>* (x, \<phi>)` have "x \<sharp> A\<^sub>F" and "A\<^sub>F \<sharp>* \<phi>" by simp+
+  from \<open>A\<^sub>F \<sharp>* (x, \<phi>)\<close> have "x \<sharp> A\<^sub>F" and "A\<^sub>F \<sharp>* \<phi>" by simp+
   obtain y where "y \<sharp> \<phi>" and "y \<sharp> F" and "x \<noteq> y"
     by(generate_fresh "name", auto)
   
   assume "F \<turnstile>\<^sub>F \<phi>"
-  with Feq `A\<^sub>F \<sharp>* \<phi>` `y \<sharp> \<phi>` have "\<langle>(y#A\<^sub>F), \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>"
+  with Feq \<open>A\<^sub>F \<sharp>* \<phi>\<close> \<open>y \<sharp> \<phi>\<close> have "\<langle>(y#A\<^sub>F), \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>"
     by(force intro: frameImpI dest: frameImpE simp del: frameResChain.simps)
-  moreover with `y \<sharp> F` `x \<sharp> F` Feq show "\<lparr>\<nu>x\<rparr>F \<turnstile>\<^sub>F \<phi>"
+  moreover with \<open>y \<sharp> F\<close> \<open>x \<sharp> F\<close> Feq show "\<lparr>\<nu>x\<rparr>F \<turnstile>\<^sub>F \<phi>"
     by(subst alphaFrameRes) auto
 qed
 
@@ -1485,30 +1485,30 @@ proof(auto simp add: FrameStatImp_def)
   fix \<phi>::'c
   obtain A\<^sub>F \<Psi>\<^sub>F where Feq: "F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" and "A\<^sub>F \<sharp>* (x, \<phi>)"
     by(rule freshFrame)
-  from `A\<^sub>F \<sharp>* (x, \<phi>)` have "x \<sharp> A\<^sub>F" and "A\<^sub>F \<sharp>* \<phi>" by simp+
+  from \<open>A\<^sub>F \<sharp>* (x, \<phi>)\<close> have "x \<sharp> A\<^sub>F" and "A\<^sub>F \<sharp>* \<phi>" by simp+
   obtain y where "y \<sharp> A\<^sub>F" and "y \<sharp> F" and "y \<sharp> G"
              and "x \<noteq> y" and "y \<sharp> \<phi>"
     by(generate_fresh "name", auto)
   assume "\<lparr>\<nu>x\<rparr>F \<turnstile>\<^sub>F \<phi>"
-  with `y \<sharp> F` have "\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> F) \<turnstile>\<^sub>F \<phi>" by(simp add: alphaFrameRes)
-  with Feq `x \<sharp> A\<^sub>F` `y \<sharp> A\<^sub>F` have "\<langle>(y#A\<^sub>F), [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>" by(simp add: eqvts)
-  with `y \<sharp> \<phi>` `A\<^sub>F \<sharp>* \<phi>` have "\<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>"
+  with \<open>y \<sharp> F\<close> have "\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> F) \<turnstile>\<^sub>F \<phi>" by(simp add: alphaFrameRes)
+  with Feq \<open>x \<sharp> A\<^sub>F\<close> \<open>y \<sharp> A\<^sub>F\<close> have "\<langle>(y#A\<^sub>F), [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>" by(simp add: eqvts)
+  with \<open>y \<sharp> \<phi>\<close> \<open>A\<^sub>F \<sharp>* \<phi>\<close> have "\<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>"
     by(force intro: frameImpI dest: frameImpE simp del: frameResChain.simps)
   hence "([(x, y)] \<bullet> \<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>) \<turnstile>\<^sub>F ([(x, y)] \<bullet> \<phi>)"
     by(rule frameImpClosed)
-  with `x \<sharp> A\<^sub>F` `y \<sharp> A\<^sub>F` Feq have "F \<turnstile>\<^sub>F [(x, y)] \<bullet> \<phi>"
+  with \<open>x \<sharp> A\<^sub>F\<close> \<open>y \<sharp> A\<^sub>F\<close> Feq have "F \<turnstile>\<^sub>F [(x, y)] \<bullet> \<phi>"
     by(simp add: eqvts)
-  with `F \<hookrightarrow>\<^sub>F G` have "G \<turnstile>\<^sub>F [(x, y)] \<bullet> \<phi>" by(simp add: FrameStatImp_def)
+  with \<open>F \<hookrightarrow>\<^sub>F G\<close> have "G \<turnstile>\<^sub>F [(x, y)] \<bullet> \<phi>" by(simp add: FrameStatImp_def)
   
   obtain A\<^sub>G \<Psi>\<^sub>G where Geq: "G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle>" and "A\<^sub>G \<sharp>* (x, y, \<phi>)"
     by(rule freshFrame)
-  from `A\<^sub>G \<sharp>* (x, y, \<phi>)` have "x \<sharp> A\<^sub>G" and "y \<sharp> A\<^sub>G" and "A\<^sub>G \<sharp>* \<phi>" by simp+
-  from `G \<turnstile>\<^sub>F [(x, y)] \<bullet> \<phi>` have "([(x, y)] \<bullet> G) \<turnstile>\<^sub>F [(x, y)] \<bullet> [(x, y)] \<bullet> \<phi>"
+  from \<open>A\<^sub>G \<sharp>* (x, y, \<phi>)\<close> have "x \<sharp> A\<^sub>G" and "y \<sharp> A\<^sub>G" and "A\<^sub>G \<sharp>* \<phi>" by simp+
+  from \<open>G \<turnstile>\<^sub>F [(x, y)] \<bullet> \<phi>\<close> have "([(x, y)] \<bullet> G) \<turnstile>\<^sub>F [(x, y)] \<bullet> [(x, y)] \<bullet> \<phi>"
     by(rule frameImpClosed)
-  with Geq `x \<sharp> A\<^sub>G` `y \<sharp> A\<^sub>G` have "\<langle>A\<^sub>G, [(x, y)] \<bullet> \<Psi>\<^sub>G\<rangle> \<turnstile>\<^sub>F \<phi>" by(simp add: eqvts)
-  with `y \<sharp> \<phi>` `A\<^sub>G \<sharp>* \<phi>` have "\<langle>(y#A\<^sub>G), [(x, y)] \<bullet> \<Psi>\<^sub>G\<rangle> \<turnstile>\<^sub>F \<phi>"
+  with Geq \<open>x \<sharp> A\<^sub>G\<close> \<open>y \<sharp> A\<^sub>G\<close> have "\<langle>A\<^sub>G, [(x, y)] \<bullet> \<Psi>\<^sub>G\<rangle> \<turnstile>\<^sub>F \<phi>" by(simp add: eqvts)
+  with \<open>y \<sharp> \<phi>\<close> \<open>A\<^sub>G \<sharp>* \<phi>\<close> have "\<langle>(y#A\<^sub>G), [(x, y)] \<bullet> \<Psi>\<^sub>G\<rangle> \<turnstile>\<^sub>F \<phi>"
     by(force intro: frameImpI dest: frameImpE simp del: frameResChain.simps)
-  with `y \<sharp> G` `x \<sharp> A\<^sub>G` `y \<sharp> A\<^sub>G` Geq show "\<lparr>\<nu>x\<rparr>G \<turnstile>\<^sub>F \<phi>"
+  with \<open>y \<sharp> G\<close> \<open>x \<sharp> A\<^sub>G\<close> \<open>y \<sharp> A\<^sub>G\<close> Geq show "\<lparr>\<nu>x\<rparr>G \<turnstile>\<^sub>F \<phi>"
     by(subst alphaFrameRes) (fastforce simp add: eqvts)+
 qed
 
@@ -1546,31 +1546,31 @@ next
     obtain y'::name where "y' \<noteq> x" and "y' \<noteq> y" and "y' \<noteq> x'" and "y' \<sharp> F" and "y' \<sharp> \<phi>" and "y' \<sharp> A\<^sub>F"
       by(generate_fresh "name") auto
   
-    from `y' \<sharp> F` have "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>F) = \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> F))"
+    from \<open>y' \<sharp> F\<close> have "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>F) = \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> F))"
       by(simp add: alphaFrameRes)
-    moreover from `x' \<sharp> F` `x' \<noteq> y` `y' \<noteq> x'` have "\<dots> = \<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> (\<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> F)))"
+    moreover from \<open>x' \<sharp> F\<close> \<open>x' \<noteq> y\<close> \<open>y' \<noteq> x'\<close> have "\<dots> = \<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> (\<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> F)))"
       by(rule_tac alphaFrameRes) (simp add: abs_fresh fresh_left)
-    moreover with  `y' \<noteq> x'` `y' \<noteq> x` have "\<dots> = \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> F))"
+    moreover with  \<open>y' \<noteq> x'\<close> \<open>y' \<noteq> x\<close> have "\<dots> = \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> F))"
       by(simp add: eqvts calc_atm)
     ultimately have A: "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>F)= \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>*A\<^sub>F\<rparr>(FAssert([(x, x')] \<bullet> [(y, y')] \<bullet> \<Psi>\<^sub>F))))"
-      using  Feq `x \<sharp> A\<^sub>F` `x' \<sharp> A\<^sub>F` `y \<sharp> A\<^sub>F` `y' \<sharp> A\<^sub>F`
+      using  Feq \<open>x \<sharp> A\<^sub>F\<close> \<open>x' \<sharp> A\<^sub>F\<close> \<open>y \<sharp> A\<^sub>F\<close> \<open>y' \<sharp> A\<^sub>F\<close>
       by(simp add: eqvts)
 
-    from `x' \<sharp> F` have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>F) = \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> F))"
+    from \<open>x' \<sharp> F\<close> have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>F) = \<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> F))"
       by(simp add: alphaFrameRes)
-    moreover from `y' \<sharp> F` `y' \<noteq> x` `y' \<noteq> x'` have "\<dots> = \<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> (\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> F)))"
+    moreover from \<open>y' \<sharp> F\<close> \<open>y' \<noteq> x\<close> \<open>y' \<noteq> x'\<close> have "\<dots> = \<lparr>\<nu>y'\<rparr>([(y, y')] \<bullet> (\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> F)))"
       by(rule_tac alphaFrameRes) (simp add: abs_fresh fresh_left)
-    moreover with  `y' \<noteq> x'` `x' \<noteq> y` have "\<dots> = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(y, y')] \<bullet> [(x, x')] \<bullet> F))"
+    moreover with  \<open>y' \<noteq> x'\<close> \<open>x' \<noteq> y\<close> have "\<dots> = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(y, y')] \<bullet> [(x, x')] \<bullet> F))"
       by(simp add: eqvts calc_atm)
-    moreover with `x' \<noteq> x` `x' \<noteq> y` `y' \<noteq> x` `y' \<noteq> y` `y' \<noteq> x'` `x \<noteq> y`
+    moreover with \<open>x' \<noteq> x\<close> \<open>x' \<noteq> y\<close> \<open>y' \<noteq> x\<close> \<open>y' \<noteq> y\<close> \<open>y' \<noteq> x'\<close> \<open>x \<noteq> y\<close>
       have "\<dots> = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>([(x, x')] \<bullet> [(y, y')] \<bullet> F))"
       apply(simp add: eqvts)
       by(subst perm_compose) (simp add: calc_atm)
     ultimately have B: "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>F)= \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>*A\<^sub>F\<rparr>(FAssert([(x, x')] \<bullet> [(y, y')] \<bullet> \<Psi>\<^sub>F))))"
-      using  Feq `x \<sharp> A\<^sub>F` `x' \<sharp> A\<^sub>F` `y \<sharp> A\<^sub>F` `y' \<sharp> A\<^sub>F`
+      using  Feq \<open>x \<sharp> A\<^sub>F\<close> \<open>x' \<sharp> A\<^sub>F\<close> \<open>y \<sharp> A\<^sub>F\<close> \<open>y' \<sharp> A\<^sub>F\<close>
       by(simp add: eqvts)
 
-    from `x' \<sharp> \<phi>` `y' \<sharp> \<phi>` `A\<^sub>F \<sharp>* \<phi>`
+    from \<open>x' \<sharp> \<phi>\<close> \<open>y' \<sharp> \<phi>\<close> \<open>A\<^sub>F \<sharp>* \<phi>\<close>
     have "\<langle>(x'#y'#A\<^sub>F), [(x, x')] \<bullet> [(y, y')] \<bullet> \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi> = \<langle>(y'#x'#A\<^sub>F), [(x, x')] \<bullet> [(y, y')] \<bullet> \<Psi>\<^sub>F\<rangle> \<turnstile>\<^sub>F \<phi>"
       by(force dest: frameImpE intro: frameImpI simp del: frameResChain.simps)
     with A B have "(\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>F)) \<turnstile>\<^sub>F \<phi> = (\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>F)) \<turnstile>\<^sub>F \<phi>"
@@ -1721,14 +1721,14 @@ proof -
     thus ?case by auto
   next
     case(FRes x F \<Psi> A\<^sub>F \<Psi>')
-    from `insertAssertion (\<lparr>\<nu>x\<rparr>F) \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>` `x \<sharp> \<Psi>`
+    from \<open>insertAssertion (\<lparr>\<nu>x\<rparr>F) \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>\<close> \<open>x \<sharp> \<Psi>\<close>
     obtain y A\<^sub>F' where "A\<^sub>F = y#A\<^sub>F'" by(induct A\<^sub>F) auto
-    with `insertAssertion (\<lparr>\<nu>x\<rparr>F) \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>` `x \<sharp> \<Psi>` `x \<sharp> A\<^sub>F`
+    with \<open>insertAssertion (\<lparr>\<nu>x\<rparr>F) \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>\<close> \<open>x \<sharp> \<Psi>\<close> \<open>x \<sharp> A\<^sub>F\<close>
     have A: "insertAssertion F \<Psi> = \<langle>([(x, y)] \<bullet> A\<^sub>F'), [(x, y)] \<bullet> \<Psi>'\<rangle>"
       by(simp add: frame.inject alpha eqvts)
-    from `A\<^sub>F = y#A\<^sub>F'` `A\<^sub>F \<sharp>* \<Psi>` have "y \<sharp> \<Psi>" and "A\<^sub>F' \<sharp>* \<Psi>" by simp+
-    from `distinct A\<^sub>F` `A\<^sub>F = y#A\<^sub>F'` have "y \<sharp> A\<^sub>F'" and "distinct A\<^sub>F'" by auto
-    from `A\<^sub>F \<sharp>* (\<lparr>\<nu>x\<rparr>F)` `x \<sharp> A\<^sub>F` `A\<^sub>F = y#A\<^sub>F'` have "y \<sharp> F" and "A\<^sub>F' \<sharp>* F" and "x \<sharp> A\<^sub>F'"
+    from \<open>A\<^sub>F = y#A\<^sub>F'\<close> \<open>A\<^sub>F \<sharp>* \<Psi>\<close> have "y \<sharp> \<Psi>" and "A\<^sub>F' \<sharp>* \<Psi>" by simp+
+    from \<open>distinct A\<^sub>F\<close> \<open>A\<^sub>F = y#A\<^sub>F'\<close> have "y \<sharp> A\<^sub>F'" and "distinct A\<^sub>F'" by auto
+    from \<open>A\<^sub>F \<sharp>* (\<lparr>\<nu>x\<rparr>F)\<close> \<open>x \<sharp> A\<^sub>F\<close> \<open>A\<^sub>F = y#A\<^sub>F'\<close> have "y \<sharp> F" and "A\<^sub>F' \<sharp>* F" and "x \<sharp> A\<^sub>F'"
       apply -
       apply(auto simp add: abs_fresh)
       apply(hypsubst_thin)
@@ -1740,22 +1740,22 @@ proof -
       apply(simp add: abs_fresh)
       apply auto
       by(simp add: fresh_def name_list_supp)
-    with `x \<sharp> A\<^sub>F'` `y \<sharp> A\<^sub>F'` have "([(x, y)] \<bullet> A\<^sub>F') \<sharp>* F" by simp
-    from `A\<^sub>F' \<sharp>* \<Psi>` have "([(x, y)] \<bullet> A\<^sub>F') \<sharp>* ([(x, y)] \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-    with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "([(x, y)] \<bullet> A\<^sub>F') \<sharp>* \<Psi>" by simp
-    with `\<And>\<Psi> A\<^sub>F \<Psi>'. \<lbrakk>insertAssertion F \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>; A\<^sub>F \<sharp>* F; A\<^sub>F \<sharp>* \<Psi>; distinct A\<^sub>F\<rbrakk> \<Longrightarrow> \<exists>\<Psi>\<^sub>F. F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> \<Psi>' = \<Psi> \<otimes> \<Psi>\<^sub>F` A 
-         `([(x, y)] \<bullet> A\<^sub>F') \<sharp>* F` `distinct A\<^sub>F'` `x \<sharp> A\<^sub>F'` `y \<sharp> A\<^sub>F'`
+    with \<open>x \<sharp> A\<^sub>F'\<close> \<open>y \<sharp> A\<^sub>F'\<close> have "([(x, y)] \<bullet> A\<^sub>F') \<sharp>* F" by simp
+    from \<open>A\<^sub>F' \<sharp>* \<Psi>\<close> have "([(x, y)] \<bullet> A\<^sub>F') \<sharp>* ([(x, y)] \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+    with \<open>x \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>\<close> have "([(x, y)] \<bullet> A\<^sub>F') \<sharp>* \<Psi>" by simp
+    with \<open>\<And>\<Psi> A\<^sub>F \<Psi>'. \<lbrakk>insertAssertion F \<Psi> = \<langle>A\<^sub>F, \<Psi>'\<rangle>; A\<^sub>F \<sharp>* F; A\<^sub>F \<sharp>* \<Psi>; distinct A\<^sub>F\<rbrakk> \<Longrightarrow> \<exists>\<Psi>\<^sub>F. F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> \<Psi>' = \<Psi> \<otimes> \<Psi>\<^sub>F\<close> A 
+         \<open>([(x, y)] \<bullet> A\<^sub>F') \<sharp>* F\<close> \<open>distinct A\<^sub>F'\<close> \<open>x \<sharp> A\<^sub>F'\<close> \<open>y \<sharp> A\<^sub>F'\<close>
     obtain \<Psi>\<^sub>F where Feq: "F = \<langle>A\<^sub>F', \<Psi>\<^sub>F\<rangle>" and \<Psi>eq: "([(x, y)] \<bullet> \<Psi>') = \<Psi> \<otimes> \<Psi>\<^sub>F"
       by force
     
     from Feq have "\<lparr>\<nu>x\<rparr>F =  \<langle>(x#A\<^sub>F'), \<Psi>\<^sub>F\<rangle>" by(simp add: frame.inject)
     hence "([(x, y)] \<bullet> \<lparr>\<nu>x\<rparr>F) = [(x, y)] \<bullet> \<langle>(x#A\<^sub>F'), \<Psi>\<^sub>F\<rangle>" by simp
-    hence "\<lparr>\<nu>x\<rparr>F = \<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" using `y \<sharp> F` `A\<^sub>F = y#A\<^sub>F'` `x \<sharp> A\<^sub>F` `y \<sharp> A\<^sub>F'`
+    hence "\<lparr>\<nu>x\<rparr>F = \<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" using \<open>y \<sharp> F\<close> \<open>A\<^sub>F = y#A\<^sub>F'\<close> \<open>x \<sharp> A\<^sub>F\<close> \<open>y \<sharp> A\<^sub>F'\<close>
       by(simp add: eqvts calc_atm alphaFrameRes)
 
     moreover from \<Psi>eq have "[(x, y)] \<bullet> ([(x, y)] \<bullet> \<Psi>') = [(x, y)] \<bullet> (\<Psi> \<otimes> \<Psi>\<^sub>F)"
       by simp
-    with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi>' = \<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>\<^sub>F)" by(simp add: eqvts)
+    with \<open>x \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>\<close> have "\<Psi>' = \<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>\<^sub>F)" by(simp add: eqvts)
     ultimately show ?case
       by blast
   qed
@@ -1786,39 +1786,39 @@ proof -
       by(drule_tac insertAssertionE) auto
   next
     case(FRes x F G A\<^sub>F\<^sub>G \<Psi>\<^sub>F\<^sub>G)
-    from `mergeFrame (\<lparr>\<nu>x\<rparr>F) G = \<langle>A\<^sub>F\<^sub>G, \<Psi>\<^sub>F\<^sub>G\<rangle>` `x \<sharp> G`
+    from \<open>mergeFrame (\<lparr>\<nu>x\<rparr>F) G = \<langle>A\<^sub>F\<^sub>G, \<Psi>\<^sub>F\<^sub>G\<rangle>\<close> \<open>x \<sharp> G\<close>
     obtain y A\<^sub>F\<^sub>G' where "A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'" by(induct A\<^sub>F\<^sub>G) auto
-    with `A\<^sub>F\<^sub>G \<sharp>* (\<lparr>\<nu>x\<rparr>F)` `x \<sharp> A\<^sub>F\<^sub>G` have "A\<^sub>F\<^sub>G' \<sharp>* F" and "x \<sharp> A\<^sub>F\<^sub>G'"
+    with \<open>A\<^sub>F\<^sub>G \<sharp>* (\<lparr>\<nu>x\<rparr>F)\<close> \<open>x \<sharp> A\<^sub>F\<^sub>G\<close> have "A\<^sub>F\<^sub>G' \<sharp>* F" and "x \<sharp> A\<^sub>F\<^sub>G'"
       by(auto simp add: supp_list_cons fresh_star_def fresh_def name_list_supp abs_supp frame.supp)
-    from `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` `A\<^sub>F\<^sub>G \<sharp>* G` have "y \<sharp> G" and "A\<^sub>F\<^sub>G' \<sharp>* G" by simp+
-    from `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` `A\<^sub>F\<^sub>G \<sharp>* (\<lparr>\<nu>x\<rparr>F)` `x \<sharp> A\<^sub>F\<^sub>G` have "y \<sharp> F" and "A\<^sub>F\<^sub>G' \<sharp>* F"
+    from \<open>A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'\<close> \<open>A\<^sub>F\<^sub>G \<sharp>* G\<close> have "y \<sharp> G" and "A\<^sub>F\<^sub>G' \<sharp>* G" by simp+
+    from \<open>A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'\<close> \<open>A\<^sub>F\<^sub>G \<sharp>* (\<lparr>\<nu>x\<rparr>F)\<close> \<open>x \<sharp> A\<^sub>F\<^sub>G\<close> have "y \<sharp> F" and "A\<^sub>F\<^sub>G' \<sharp>* F"
       apply(auto simp add: abs_fresh frameResChainFreshSet)
       apply(hypsubst_thin)
       by(induct A\<^sub>F\<^sub>G') (auto simp add: abs_fresh)
-    from `distinct A\<^sub>F\<^sub>G` `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` have "y \<sharp> A\<^sub>F\<^sub>G'" and "distinct A\<^sub>F\<^sub>G'" by auto
+    from \<open>distinct A\<^sub>F\<^sub>G\<close> \<open>A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'\<close> have "y \<sharp> A\<^sub>F\<^sub>G'" and "distinct A\<^sub>F\<^sub>G'" by auto
     
-    with `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` `mergeFrame (\<lparr>\<nu>x\<rparr>F) G = \<langle>A\<^sub>F\<^sub>G, \<Psi>\<^sub>F\<^sub>G\<rangle>` `x \<sharp> G` `x \<sharp> A\<^sub>F\<^sub>G` `y \<sharp> A\<^sub>F\<^sub>G'`
+    with \<open>A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'\<close> \<open>mergeFrame (\<lparr>\<nu>x\<rparr>F) G = \<langle>A\<^sub>F\<^sub>G, \<Psi>\<^sub>F\<^sub>G\<rangle>\<close> \<open>x \<sharp> G\<close> \<open>x \<sharp> A\<^sub>F\<^sub>G\<close> \<open>y \<sharp> A\<^sub>F\<^sub>G'\<close>
     have "mergeFrame F G = \<langle>A\<^sub>F\<^sub>G', [(x, y)] \<bullet> \<Psi>\<^sub>F\<^sub>G\<rangle>"
       by(simp add: frame.inject alpha eqvts)
-    with `distinct A\<^sub>F\<^sub>G'` `A\<^sub>F\<^sub>G' \<sharp>* F` `A\<^sub>F\<^sub>G' \<sharp>* G`
-         `\<And>G A\<^sub>F\<^sub>G \<Psi>\<^sub>F\<^sub>G. \<lbrakk>mergeFrame F G = \<langle>A\<^sub>F\<^sub>G, \<Psi>\<^sub>F\<^sub>G\<rangle>; distinct A\<^sub>F\<^sub>G; A\<^sub>F\<^sub>G \<sharp>* F; A\<^sub>F\<^sub>G \<sharp>* G\<rbrakk> \<Longrightarrow> \<exists>A\<^sub>F \<Psi>\<^sub>F A\<^sub>G \<Psi>\<^sub>G. A\<^sub>F\<^sub>G = A\<^sub>F@A\<^sub>G \<and> \<Psi>\<^sub>F\<^sub>G = \<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G \<and> F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle> \<and> A\<^sub>F \<sharp>* \<Psi>\<^sub>G \<and> A\<^sub>G \<sharp>* \<Psi>\<^sub>F`
+    with \<open>distinct A\<^sub>F\<^sub>G'\<close> \<open>A\<^sub>F\<^sub>G' \<sharp>* F\<close> \<open>A\<^sub>F\<^sub>G' \<sharp>* G\<close>
+         \<open>\<And>G A\<^sub>F\<^sub>G \<Psi>\<^sub>F\<^sub>G. \<lbrakk>mergeFrame F G = \<langle>A\<^sub>F\<^sub>G, \<Psi>\<^sub>F\<^sub>G\<rangle>; distinct A\<^sub>F\<^sub>G; A\<^sub>F\<^sub>G \<sharp>* F; A\<^sub>F\<^sub>G \<sharp>* G\<rbrakk> \<Longrightarrow> \<exists>A\<^sub>F \<Psi>\<^sub>F A\<^sub>G \<Psi>\<^sub>G. A\<^sub>F\<^sub>G = A\<^sub>F@A\<^sub>G \<and> \<Psi>\<^sub>F\<^sub>G = \<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G \<and> F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle> \<and> G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle> \<and> A\<^sub>F \<sharp>* \<Psi>\<^sub>G \<and> A\<^sub>G \<sharp>* \<Psi>\<^sub>F\<close>
     obtain A\<^sub>F \<Psi>\<^sub>F A\<^sub>G \<Psi>\<^sub>G where "A\<^sub>F\<^sub>G' = A\<^sub>F@A\<^sub>G" and "([(x, y)] \<bullet> \<Psi>\<^sub>F\<^sub>G) = \<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G" and FrF: "F = \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" and FrG: "G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle>" and "A\<^sub>F \<sharp>* \<Psi>\<^sub>G" and "A\<^sub>G \<sharp>* \<Psi>\<^sub>F"
       by metis
 
-    from `A\<^sub>F\<^sub>G' = A\<^sub>F@A\<^sub>G` `A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'` have  "A\<^sub>F\<^sub>G = (y#A\<^sub>F)@A\<^sub>G" by simp
-    moreover from `A\<^sub>F\<^sub>G' = A\<^sub>F@A\<^sub>G` `y \<sharp> A\<^sub>F\<^sub>G'` `x \<sharp> A\<^sub>F\<^sub>G'` have "x \<sharp> A\<^sub>F" and "y \<sharp> A\<^sub>F" and "x \<sharp> A\<^sub>G" and "y \<sharp> A\<^sub>G" by simp+
-    with `y \<sharp> G` `x \<sharp> G` `x \<sharp> A\<^sub>F\<^sub>G` FrG have "y \<sharp> \<Psi>\<^sub>G" and "x \<sharp> \<Psi>\<^sub>G" 
+    from \<open>A\<^sub>F\<^sub>G' = A\<^sub>F@A\<^sub>G\<close> \<open>A\<^sub>F\<^sub>G = y#A\<^sub>F\<^sub>G'\<close> have  "A\<^sub>F\<^sub>G = (y#A\<^sub>F)@A\<^sub>G" by simp
+    moreover from \<open>A\<^sub>F\<^sub>G' = A\<^sub>F@A\<^sub>G\<close> \<open>y \<sharp> A\<^sub>F\<^sub>G'\<close> \<open>x \<sharp> A\<^sub>F\<^sub>G'\<close> have "x \<sharp> A\<^sub>F" and "y \<sharp> A\<^sub>F" and "x \<sharp> A\<^sub>G" and "y \<sharp> A\<^sub>G" by simp+
+    with \<open>y \<sharp> G\<close> \<open>x \<sharp> G\<close> \<open>x \<sharp> A\<^sub>F\<^sub>G\<close> FrG have "y \<sharp> \<Psi>\<^sub>G" and "x \<sharp> \<Psi>\<^sub>G" 
       by auto
-    from `([(x, y)] \<bullet> \<Psi>\<^sub>F\<^sub>G) = \<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G` have "([(x, y)] \<bullet> [(x, y)] \<bullet> \<Psi>\<^sub>F\<^sub>G) = [(x, y)] \<bullet> (\<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G)"
+    from \<open>([(x, y)] \<bullet> \<Psi>\<^sub>F\<^sub>G) = \<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G\<close> have "([(x, y)] \<bullet> [(x, y)] \<bullet> \<Psi>\<^sub>F\<^sub>G) = [(x, y)] \<bullet> (\<Psi>\<^sub>F \<otimes> \<Psi>\<^sub>G)"
       by simp
-    with `x \<sharp> \<Psi>\<^sub>G` `y \<sharp> \<Psi>\<^sub>G` have "\<Psi>\<^sub>F\<^sub>G = ([(x, y)] \<bullet> \<Psi>\<^sub>F) \<otimes> \<Psi>\<^sub>G" by(simp add: eqvts)
+    with \<open>x \<sharp> \<Psi>\<^sub>G\<close> \<open>y \<sharp> \<Psi>\<^sub>G\<close> have "\<Psi>\<^sub>F\<^sub>G = ([(x, y)] \<bullet> \<Psi>\<^sub>F) \<otimes> \<Psi>\<^sub>G" by(simp add: eqvts)
     moreover from FrF have "([(x, y)] \<bullet> F) = [(x, y)] \<bullet> \<langle>A\<^sub>F, \<Psi>\<^sub>F\<rangle>" by simp
-    with `x \<sharp> A\<^sub>F` `y \<sharp> A\<^sub>F` have "([(x, y)] \<bullet> F) = \<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" by(simp add: eqvts)
+    with \<open>x \<sharp> A\<^sub>F\<close> \<open>y \<sharp> A\<^sub>F\<close> have "([(x, y)] \<bullet> F) = \<langle>A\<^sub>F, [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" by(simp add: eqvts)
     hence "\<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> F) = \<langle>(y#A\<^sub>F), [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" by(simp add: frame.inject)
-    with `y \<sharp> F` have "\<lparr>\<nu>x\<rparr>F = \<langle>(y#A\<^sub>F), [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" by(simp add: alphaFrameRes)
-    moreover with `A\<^sub>G \<sharp>* \<Psi>\<^sub>F` have "([(x, y)] \<bullet> A\<^sub>G) \<sharp>* ([(x, y)] \<bullet> \<Psi>\<^sub>F)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-    with `x \<sharp> A\<^sub>G` `y \<sharp> A\<^sub>G` have "A\<^sub>G \<sharp>* ([(x, y)] \<bullet> \<Psi>\<^sub>F)" by simp
-    moreover from `A\<^sub>F \<sharp>* \<Psi>\<^sub>G` `y \<sharp> \<Psi>\<^sub>G` have "(y#A\<^sub>F) \<sharp>* \<Psi>\<^sub>G" by simp
+    with \<open>y \<sharp> F\<close> have "\<lparr>\<nu>x\<rparr>F = \<langle>(y#A\<^sub>F), [(x, y)] \<bullet> \<Psi>\<^sub>F\<rangle>" by(simp add: alphaFrameRes)
+    moreover with \<open>A\<^sub>G \<sharp>* \<Psi>\<^sub>F\<close> have "([(x, y)] \<bullet> A\<^sub>G) \<sharp>* ([(x, y)] \<bullet> \<Psi>\<^sub>F)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+    with \<open>x \<sharp> A\<^sub>G\<close> \<open>y \<sharp> A\<^sub>G\<close> have "A\<^sub>G \<sharp>* ([(x, y)] \<bullet> \<Psi>\<^sub>F)" by simp
+    moreover from \<open>A\<^sub>F \<sharp>* \<Psi>\<^sub>G\<close> \<open>y \<sharp> \<Psi>\<^sub>G\<close> have "(y#A\<^sub>F) \<sharp>* \<Psi>\<^sub>G" by simp
     ultimately show ?case using FrG 
       by blast
   qed
@@ -2069,7 +2069,7 @@ proof -
     by(rule freshFrame)
   moreover obtain A\<^sub>G \<Psi>\<^sub>G where "G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle>" and "A\<^sub>G \<sharp>* \<Psi>\<^sub>F" and "A\<^sub>G \<sharp>* A\<^sub>F"
     by(rule_tac C="(A\<^sub>F, \<Psi>\<^sub>F)" in freshFrame) auto
-  moreover from `A\<^sub>F \<sharp>* G` `G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle>` `A\<^sub>G \<sharp>* A\<^sub>F` have "A\<^sub>F \<sharp>* \<Psi>\<^sub>G"
+  moreover from \<open>A\<^sub>F \<sharp>* G\<close> \<open>G = \<langle>A\<^sub>G, \<Psi>\<^sub>G\<rangle>\<close> \<open>A\<^sub>G \<sharp>* A\<^sub>F\<close> have "A\<^sub>F \<sharp>* \<Psi>\<^sub>G"
     by auto
   ultimately show ?thesis
     by auto (metis FrameStatEqTrans frameChainAppend frameResChainComm frameIntCommutativity)
@@ -2086,7 +2086,7 @@ lemma frameScopeExt:
 proof -
   have "\<lparr>\<nu>x\<rparr>(F \<otimes>\<^sub>F G) \<simeq>\<^sub>F \<lparr>\<nu>x\<rparr>(G \<otimes>\<^sub>F F)"
     by(metis frameResPres frameCommutativity)
-  with `x \<sharp> F` have "\<lparr>\<nu>x\<rparr>(F \<otimes>\<^sub>F G) \<simeq>\<^sub>F (\<lparr>\<nu>x\<rparr>G) \<otimes>\<^sub>F F"
+  with \<open>x \<sharp> F\<close> have "\<lparr>\<nu>x\<rparr>(F \<otimes>\<^sub>F G) \<simeq>\<^sub>F (\<lparr>\<nu>x\<rparr>G) \<otimes>\<^sub>F F"
     by simp
   moreover have "(\<lparr>\<nu>x\<rparr>G) \<otimes>\<^sub>F F \<simeq>\<^sub>F F \<otimes>\<^sub>F (\<lparr>\<nu>x\<rparr>G)"
     by(rule frameCommutativity)
@@ -2130,34 +2130,34 @@ next
   thus ?case by simp
 next
   case(Par P Q A\<^sub>P\<^sub>Q \<Psi>\<^sub>P\<^sub>Q)
-  from `guarded(P \<parallel> Q)` have "guarded P" and "guarded Q" by simp+
+  from \<open>guarded(P \<parallel> Q)\<close> have "guarded P" and "guarded Q" by simp+
   obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" and "A\<^sub>P \<sharp>* Q" by(rule freshFrame)
   obtain A\<^sub>Q \<Psi>\<^sub>Q where FrQ: "extractFrame Q = \<langle>A\<^sub>Q, \<Psi>\<^sub>Q\<rangle>" and "A\<^sub>Q \<sharp>* A\<^sub>P" and "A\<^sub>Q \<sharp>* \<Psi>\<^sub>P" 
     by(rule_tac C="(A\<^sub>P, \<Psi>\<^sub>P)" in freshFrame) auto
   
-  from `\<And>A\<^sub>P \<Psi>\<^sub>P. \<lbrakk>guarded P; extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>\<rbrakk> \<Longrightarrow> \<Psi>\<^sub>P \<simeq> \<bottom> \<and> (supp \<Psi>\<^sub>P = ({}::name set))` `guarded P` FrP
+  from \<open>\<And>A\<^sub>P \<Psi>\<^sub>P. \<lbrakk>guarded P; extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>\<rbrakk> \<Longrightarrow> \<Psi>\<^sub>P \<simeq> \<bottom> \<and> (supp \<Psi>\<^sub>P = ({}::name set))\<close> \<open>guarded P\<close> FrP
   have "\<Psi>\<^sub>P \<simeq> \<bottom>" and "supp \<Psi>\<^sub>P = ({}::name set)" by simp+
-  from `\<And>A\<^sub>Q \<Psi>\<^sub>Q. \<lbrakk>guarded Q; extractFrame Q = \<langle>A\<^sub>Q, \<Psi>\<^sub>Q\<rangle>\<rbrakk> \<Longrightarrow> \<Psi>\<^sub>Q \<simeq> \<bottom> \<and> (supp \<Psi>\<^sub>Q = ({}::name set))` `guarded Q` FrQ
+  from \<open>\<And>A\<^sub>Q \<Psi>\<^sub>Q. \<lbrakk>guarded Q; extractFrame Q = \<langle>A\<^sub>Q, \<Psi>\<^sub>Q\<rangle>\<rbrakk> \<Longrightarrow> \<Psi>\<^sub>Q \<simeq> \<bottom> \<and> (supp \<Psi>\<^sub>Q = ({}::name set))\<close> \<open>guarded Q\<close> FrQ
   have "\<Psi>\<^sub>Q \<simeq> \<bottom>" and "supp \<Psi>\<^sub>Q = ({}::name set)" by simp+
   
-  from `A\<^sub>P \<sharp>* Q` FrQ `A\<^sub>Q \<sharp>* A\<^sub>P` have "A\<^sub>P \<sharp>* \<Psi>\<^sub>Q" by(drule_tac extractFrameFreshChain) auto
-  with `A\<^sub>Q \<sharp>* A\<^sub>P` `A\<^sub>Q \<sharp>* \<Psi>\<^sub>P` FrP FrQ `extractFrame(P \<parallel> Q) = \<langle>A\<^sub>P\<^sub>Q, \<Psi>\<^sub>P\<^sub>Q\<rangle>` have "\<langle>(A\<^sub>P@A\<^sub>Q), \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>Q\<rangle> = \<langle>A\<^sub>P\<^sub>Q, \<Psi>\<^sub>P\<^sub>Q\<rangle>"
+  from \<open>A\<^sub>P \<sharp>* Q\<close> FrQ \<open>A\<^sub>Q \<sharp>* A\<^sub>P\<close> have "A\<^sub>P \<sharp>* \<Psi>\<^sub>Q" by(drule_tac extractFrameFreshChain) auto
+  with \<open>A\<^sub>Q \<sharp>* A\<^sub>P\<close> \<open>A\<^sub>Q \<sharp>* \<Psi>\<^sub>P\<close> FrP FrQ \<open>extractFrame(P \<parallel> Q) = \<langle>A\<^sub>P\<^sub>Q, \<Psi>\<^sub>P\<^sub>Q\<rangle>\<close> have "\<langle>(A\<^sub>P@A\<^sub>Q), \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>Q\<rangle> = \<langle>A\<^sub>P\<^sub>Q, \<Psi>\<^sub>P\<^sub>Q\<rangle>"
     by auto
-  with `supp \<Psi>\<^sub>P = {}` `supp \<Psi>\<^sub>Q = {}` compSupp have "\<Psi>\<^sub>P\<^sub>Q = \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>Q"
+  with \<open>supp \<Psi>\<^sub>P = {}\<close> \<open>supp \<Psi>\<^sub>Q = {}\<close> compSupp have "\<Psi>\<^sub>P\<^sub>Q = \<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>Q"
     by blast
-  moreover from `\<Psi>\<^sub>P \<simeq> \<bottom>` `\<Psi>\<^sub>Q \<simeq> \<bottom>` have "\<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>Q \<simeq> \<bottom>"
+  moreover from \<open>\<Psi>\<^sub>P \<simeq> \<bottom>\<close> \<open>\<Psi>\<^sub>Q \<simeq> \<bottom>\<close> have "\<Psi>\<^sub>P \<otimes> \<Psi>\<^sub>Q \<simeq> \<bottom>"
     by(metis Composition Identity Associativity Commutativity AssertionStatEqTrans)
-  ultimately show ?case using `supp \<Psi>\<^sub>P = {}` `supp \<Psi>\<^sub>Q = {}` compSupp
+  ultimately show ?case using \<open>supp \<Psi>\<^sub>P = {}\<close> \<open>supp \<Psi>\<^sub>Q = {}\<close> compSupp
     by blast
 next
   case(Res x P A\<^sub>x\<^sub>P \<Psi>\<^sub>x\<^sub>P)
-  from `guarded(\<lparr>\<nu>x\<rparr>P)` have "guarded P" by simp
+  from \<open>guarded(\<lparr>\<nu>x\<rparr>P)\<close> have "guarded P" by simp
   moreover obtain A\<^sub>P \<Psi>\<^sub>P where FrP: "extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>" by(rule freshFrame)
-  moreover note `\<And>A\<^sub>P \<Psi>\<^sub>P. \<lbrakk>guarded P; extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>\<rbrakk> \<Longrightarrow> \<Psi>\<^sub>P \<simeq> \<bottom> \<and> (supp \<Psi>\<^sub>P = ({}::name set))`
+  moreover note \<open>\<And>A\<^sub>P \<Psi>\<^sub>P. \<lbrakk>guarded P; extractFrame P = \<langle>A\<^sub>P, \<Psi>\<^sub>P\<rangle>\<rbrakk> \<Longrightarrow> \<Psi>\<^sub>P \<simeq> \<bottom> \<and> (supp \<Psi>\<^sub>P = ({}::name set))\<close>
   ultimately have "\<Psi>\<^sub>P \<simeq> \<bottom>" and "supp \<Psi>\<^sub>P = ({}::name set)" by auto
-  from FrP `extractFrame(\<lparr>\<nu>x\<rparr>P) = \<langle>A\<^sub>x\<^sub>P, \<Psi>\<^sub>x\<^sub>P\<rangle>` have "\<langle>(x#A\<^sub>P), \<Psi>\<^sub>P\<rangle> = \<langle>A\<^sub>x\<^sub>P, \<Psi>\<^sub>x\<^sub>P\<rangle>" by simp
-  with `supp \<Psi>\<^sub>P = {}` have "\<Psi>\<^sub>P = \<Psi>\<^sub>x\<^sub>P" by(auto simp del: frameResChain.simps)
-  with `\<Psi>\<^sub>P \<simeq> \<bottom>` `supp \<Psi>\<^sub>P = {}` show ?case
+  from FrP \<open>extractFrame(\<lparr>\<nu>x\<rparr>P) = \<langle>A\<^sub>x\<^sub>P, \<Psi>\<^sub>x\<^sub>P\<rangle>\<close> have "\<langle>(x#A\<^sub>P), \<Psi>\<^sub>P\<rangle> = \<langle>A\<^sub>x\<^sub>P, \<Psi>\<^sub>x\<^sub>P\<rangle>" by simp
+  with \<open>supp \<Psi>\<^sub>P = {}\<close> have "\<Psi>\<^sub>P = \<Psi>\<^sub>x\<^sub>P" by(auto simp del: frameResChain.simps)
+  with \<open>\<Psi>\<^sub>P \<simeq> \<bottom>\<close> \<open>supp \<Psi>\<^sub>P = {}\<close> show ?case
     by simp
 next
   case(Assert \<Psi> A\<^sub>P \<Psi>\<^sub>P)

@@ -4,13 +4,13 @@
 
   Auxiliary lemmas that should be merged into HOL.
 *)
-section {* Auxiliary lemmas *}
+section \<open>Auxiliary lemmas\<close>
 
 theory Landau_Library
 imports Complex_Main 
 begin
 
-subsection {* Filters *}
+subsection \<open>Filters\<close>
 
 lemma eventually_at_top_compose:
   assumes "\<And>c. eventually (\<lambda>x. (f x:: 'a :: linorder) \<ge> c) F" "eventually P at_top"
@@ -73,7 +73,7 @@ lemma eventually_ln_not_equal: "eventually (\<lambda>x::real. ln x \<noteq> a) a
   by (subst eventually_ln_at_top) (rule eventually_not_equal)
 
 
-subsection {* Miscellaneous *}
+subsection \<open>Miscellaneous\<close>
 
 lemma ln_mono: "0 < x \<Longrightarrow> 0 < y \<Longrightarrow> x \<le> y \<Longrightarrow> ln (x::real) \<le> ln y"
   by (subst ln_le_cancel_iff) simp_all
@@ -96,7 +96,7 @@ proof
 qed
 
 
-subsection {* Real powers *}
+subsection \<open>Real powers\<close>
 
 lemma powr_realpow_eventually: 
   assumes "filterlim f at_top F"

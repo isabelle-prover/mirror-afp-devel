@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Computing determinants of matrices using the Gauss Jordan algorithm over nested IArrays*}
+section\<open>Computing determinants of matrices using the Gauss Jordan algorithm over nested IArrays\<close>
 
 theory Determinants_IArrays
 imports 
@@ -12,7 +12,7 @@ imports
     Gauss_Jordan_IArrays
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
 definition "Gauss_Jordan_in_ij_det_P_iarrays A i j = (let n = least_non_zero_position_of_vector_from_index (column_iarray j A) i 
   in (if i = n then 1 / A !! i !! j else - 1 / A !! n !! j, Gauss_Jordan_in_ij_iarrays A i j))"
@@ -24,9 +24,9 @@ definition "Gauss_Jordan_column_k_det_P_iarrays A' k = (let det_P = fst A'; i = 
 definition "Gauss_Jordan_upt_k_det_P_iarrays A k = (let foldl = foldl Gauss_Jordan_column_k_det_P_iarrays (1, 0, A) [0..<Suc k] in (fst foldl, snd (snd foldl)))"
 definition "Gauss_Jordan_det_P_iarrays A = Gauss_Jordan_upt_k_det_P_iarrays A (ncols_iarray A - 1)"
 
-subsection{*Proofs*}
+subsection\<open>Proofs\<close>
 
-text{*A more efficient equation for @{term "Gauss_Jordan_in_ij_det_P_iarrays A i j"}.*}
+text\<open>A more efficient equation for @{term "Gauss_Jordan_in_ij_det_P_iarrays A i j"}.\<close>
 
 lemma Gauss_Jordan_in_ij_det_P_iarrays_code[code]: "Gauss_Jordan_in_ij_det_P_iarrays A i j 
     = (let n = least_non_zero_position_of_vector_from_index (column_iarray j A) i;
@@ -129,8 +129,8 @@ shows "fst (snd (Gauss_Jordan_column_k_det_P (n, i, A) k)) \<le> nrows A"
 unfolding fst_snd_Gauss_Jordan_column_k_det_P_eq_fst_snd_Gauss_Jordan_column_k_PA[unfolded fst_snd_Gauss_Jordan_column_k_PA_eq]
 by (rule fst_Gauss_Jordan_column_k[OF i])
 
-text{*The proof of the following theorem is very similar to the ones of @{text "foldl_Gauss_Jordan_column_k_eq"}, 
-      @{text "rref_and_index_Gauss_Jordan_upt_k"} and @{text "foldl_Gauss_Jordan_column_k_det_P"}.*}
+text\<open>The proof of the following theorem is very similar to the ones of \<open>foldl_Gauss_Jordan_column_k_eq\<close>, 
+      \<open>rref_and_index_Gauss_Jordan_upt_k\<close> and \<open>foldl_Gauss_Jordan_column_k_det_P\<close>.\<close>
 
 lemma 
 assumes "k<ncols A"
@@ -212,7 +212,7 @@ unfolding Gauss_Jordan_det_P_def Gauss_Jordan_det_P_iarrays_def
 using matrix_to_iarray_snd_Gauss_Jordan_upt_k_det_P
 by (metis diff_less matrix_to_iarray_ncols ncols_not_0 neq0_conv zero_less_one)
 
-subsection{*Code equations*}
+subsection\<open>Code equations\<close>
 definition "det_iarrays A = (let A' = Gauss_Jordan_det_P_iarrays A in prod_list (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]) / fst A')"
 
 lemma matrix_to_iarray_det[code_unfold]:

@@ -203,7 +203,7 @@ by (rule inv_rule_incr, auto del: subsetI)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "m1x"}\<close>
+subsection \<open>Refinement of \<open>m1x\<close>\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>
@@ -319,7 +319,7 @@ by (rule refinement_soundness) (fast)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0n"} for initiator/server\<close>
+subsection \<open>Refinement of \<open>a0n\<close> for initiator/server\<close>
 (******************************************************************************)
 
 text \<open>For the initiator, we get an non-injective agreement with the server on 
@@ -506,7 +506,7 @@ by (rule refinement_soundness) (fast)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0n"} for responder/server\<close>
+subsection \<open>Refinement of \<open>a0n\<close> for responder/server\<close>
 (******************************************************************************)
 
 text \<open>For the responder, we get a non-injective agreement with the server on 

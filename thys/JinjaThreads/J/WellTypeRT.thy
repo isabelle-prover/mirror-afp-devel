@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Runtime Well-typedness *}
+section \<open>Runtime Well-typedness\<close>
 
 theory WellTypeRT
 imports 
@@ -154,7 +154,7 @@ lemmas [intro] =
   WTrtFAcc WTrtFAccNT WTrtFAss WTrtFAssNT WTrtCall WTrtCallNT
   WTrtAAcc WTrtAAccNT WTrtAAss WTrtAAssNT WTrtALength WTrtALengthNT 
 
-subsection{*Easy consequences*}
+subsection\<open>Easy consequences\<close>
 
 inductive_simps WTrts_iffs [iff]:
   "P,E,h \<turnstile> [] [:] Ts"
@@ -195,7 +195,7 @@ inductive_cases WTrt_elim_cases[elim!]:
   "P,E,h \<turnstile> sync(o') e : T"
   "P,E,h \<turnstile> insync(a) e : T"
 
-subsection{*Some interesting lemmas*}
+subsection\<open>Some interesting lemmas\<close>
 
 lemma WTrts_Val[simp]:
  "P,E,h \<turnstile> map Val vs [:] Ts \<longleftrightarrow> map (typeof\<^bsub>h\<^esub>) vs = map Some Ts"

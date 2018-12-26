@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Progress and type safety theorem for the multithreaded system *}
+section \<open>Progress and type safety theorem for the multithreaded system\<close>
 
 theory ProgressThreaded 
 imports 
@@ -29,9 +29,9 @@ proof -
   with tst show ?thesis by auto
 qed
 
-subsection {* Preservation lemmata *}
+subsection \<open>Preservation lemmata\<close>
 
-subsection {* Definite assignment *}
+subsection \<open>Definite assignment\<close>
 
 abbreviation
   def_ass_ts_ok :: "('addr,'thread_id,'addr expr \<times> 'addr locals) thread_info \<Rightarrow> 'heap \<Rightarrow> bool"
@@ -72,7 +72,7 @@ done
 
 end
 
-subsection {* typeability *}
+subsection \<open>typeability\<close>
 
 context J_heap_base begin
 
@@ -95,10 +95,10 @@ lemma fixes E :: env
   \<Longrightarrow> \<exists>E T. P,E,hp s' \<turnstile> e'' : T \<and> P,hp s' \<turnstile> x'' (:\<le>) E"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
-  from `NewThread t'' (e'', x'') (hp s') \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>` `ta' = extTA2J P ta`
+  from \<open>NewThread t'' (e'', x'') (hp s') \<in> set \<lbrace>ta'\<rbrace>\<^bsub>t\<^esub>\<close> \<open>ta' = extTA2J P ta\<close>
   obtain C' M' a' where nt: "NewThread t'' (C', M', a') (hp s') \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>"
     and "extNTA2J P (C', M', a') = (e'', x'')" by fastforce
-  from red_external_new_thread_sees[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` nt] `typeof_addr (hp s) a = \<lfloor>U\<rfloor>`
+  from red_external_new_thread_sees[OF wf \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close> nt] \<open>typeof_addr (hp s) a = \<lfloor>U\<rfloor>\<close>
   obtain T pns body D where h'a': "typeof_addr h' a' = \<lfloor>Class_type C'\<rfloor>"
     and sees: " P \<turnstile> C' sees M': []\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
   from sees_wf_mdecl[OF wf sees] obtain T where "P,[this \<mapsto> Class D] \<turnstile> body :: T"
@@ -106,8 +106,8 @@ proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   hence "WTrt P (hp s') [this \<mapsto> Class D] body T" by(rule WT_implies_WTrt)
   moreover from sees have "P \<turnstile> C' \<preceq>\<^sup>* D" by(rule sees_method_decl_above)
   with h'a' have "P,h' \<turnstile> [this \<mapsto> Addr a'] (:\<le>) [this \<mapsto> Class D]" by(auto simp add: lconf_def conf_def)
-  ultimately show ?case using h'a' sees `s' = (h', lcl s)`
-    `extNTA2J P (C', M', a') = (e'', x'')` by(fastforce intro: sees_method_decl_above)
+  ultimately show ?case using h'a' sees \<open>s' = (h', lcl s)\<close>
+    \<open>extNTA2J P (C', M', a') = (e'', x'')\<close> by(fastforce intro: sees_method_decl_above)
 qed(fastforce simp add: ta_upd_simps)+
 
 end
@@ -185,15 +185,15 @@ proof(unfold_locales)
   from sconf_type have sconf: "E \<turnstile> (m, l) \<surd>" and "type_ok P (E, T) e m" and tconf: "P,m \<turnstile> t \<surd>t"
     by(auto simp add: sconf_type_ok_def)
   then obtain T' where "P,E,m \<turnstile> e : T'" "P \<turnstile> T' \<le> T" by(auto simp add: type_ok_def)
-  from `E \<turnstile> (m, l) \<surd>` `P,E,m \<turnstile> e : T'` red tconf
+  from \<open>E \<turnstile> (m, l) \<surd>\<close> \<open>P,E,m \<turnstile> e : T'\<close> red tconf
   have "E \<turnstile> (m', l') \<surd>" by(auto elim: red_preserves_sconf)
   moreover
-  from red `P,E,m \<turnstile> e : T'` wf `E \<turnstile> (m, l) \<surd>` tconf
+  from red \<open>P,E,m \<turnstile> e : T'\<close> wf \<open>E \<turnstile> (m, l) \<surd>\<close> tconf
   obtain T'' where "P,E,m' \<turnstile> e' : T''" "P \<turnstile> T'' \<le> T'"
     by(auto dest: subject_reduction)
-  note `P,E,m' \<turnstile> e' : T''`
+  note \<open>P,E,m' \<turnstile> e' : T''\<close>
   moreover
-  from `P \<turnstile> T'' \<le> T'` `P \<turnstile> T' \<le> T`
+  from \<open>P \<turnstile> T'' \<le> T'\<close> \<open>P \<turnstile> T' \<le> T\<close>
   have "P \<turnstile> T'' \<le> T" by(rule widen_trans)
   moreover from mred tconf have "P,m' \<turnstile> t \<surd>t" by(rule red_tconf.preserves_red)  
   ultimately have "sconf_type_ok (E, T) t (e', l') m'"
@@ -214,13 +214,13 @@ next
   from sconf_type have sconf: "E \<turnstile> (m, l) \<surd>" and "type_ok P (E, T) e m" and tconf: "P,m \<turnstile> t \<surd>t"
     by(auto simp add: sconf_type_ok_def)
   then obtain T' where "P,E,m \<turnstile> e : T'" "P \<turnstile> T' \<le> T" by(auto simp add: type_ok_def)
-  from nt `P,E,m \<turnstile> e : T'` red have "\<exists>E T. P,E,m' \<turnstile> e'' : T \<and> P,m' \<turnstile> l'' (:\<le>) E"
+  from nt \<open>P,E,m \<turnstile> e : T'\<close> red have "\<exists>E T. P,E,m' \<turnstile> e'' : T \<and> P,m' \<turnstile> l'' (:\<le>) E"
     by(fastforce dest: red_type_newthread[OF wf])
   then obtain E'' T'' where "P,E'',m' \<turnstile> e'' : T''" "P,m' \<turnstile> l'' (:\<le>) E''" by blast
   moreover
-  from sconf red `P,E,m \<turnstile> e : T'` tconf have "E \<turnstile> (m', l') \<surd>"
+  from sconf red \<open>P,E,m \<turnstile> e : T'\<close> tconf have "E \<turnstile> (m', l') \<surd>"
     by(auto intro: red_preserves_sconf)
-  moreover from mred tconf `NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>` have "P,m' \<turnstile> t'' \<surd>t"
+  moreover from mred tconf \<open>NewThread t'' x'' m' \<in> set \<lbrace>ta\<rbrace>\<^bsub>t\<^esub>\<close> have "P,m' \<turnstile> t'' \<surd>t"
     by(rule red_tconf.preserves_NewThread)
   ultimately show "\<exists>i''. sconf_type_ok i'' t'' x'' m'"
     by(auto simp add: sconf_type_ok_def type_ok_def sconf_def)
@@ -242,9 +242,9 @@ next
   from sc have sconf: "E'' \<turnstile> (m, l'') \<surd>" and "type_ok P (E'', T'') e'' m" and "P,m \<turnstile> t'' \<surd>t"
     by(auto simp add: sconf_type_ok_def)
   then obtain T''' where "P,E'',m \<turnstile> e'' : T'''" "P \<turnstile> T''' \<le> T''" by(auto simp add: type_ok_def)
-  moreover from red `P,E'',m \<turnstile> e'' : T'''` have "P,E'',m' \<turnstile> e'' : T'''"
+  moreover from red \<open>P,E'',m \<turnstile> e'' : T'''\<close> have "P,E'',m' \<turnstile> e'' : T'''"
     by(rule red_preserve_welltype)
-  moreover from sconf red `P,E,m \<turnstile> e : T'` have "hconf m'"
+  moreover from sconf red \<open>P,E,m \<turnstile> e : T'\<close> have "hconf m'"
     unfolding sconf_def by(auto dest: red_preserves_hconf)
   moreover {
     from red have "hext m m'" by(auto dest: red_hext_incr)
@@ -252,7 +252,7 @@ next
       by(simp_all add: sconf_def)
     ultimately have "P,m' \<turnstile> l'' (:\<le>) E''" "preallocated m'"
       by(blast intro: lconf_hext preallocated_hext)+ }
-  moreover from mred `P,m \<turnstile> t \<surd>t` `P,m \<turnstile> t'' \<surd>t`
+  moreover from mred \<open>P,m \<turnstile> t \<surd>t\<close> \<open>P,m \<turnstile> t'' \<surd>t\<close>
   have "P,m' \<turnstile> t'' \<surd>t" by(rule red_tconf.preserves_other)
   ultimately have "sconf_type_ok (E'', T'') t'' (e'', l'') m'"
     by(auto simp add: sconf_type_ok_def sconf_def type_ok_def)
@@ -261,7 +261,7 @@ qed
 
 end
 
-subsection {* @{term "wf_red"} *}
+subsection \<open>@{term "wf_red"}\<close>
 
 context J_progress begin
 
@@ -293,15 +293,15 @@ lemma assumes wf: "wf_prog wf_md P"
          red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta' \<and> red_mthr.actions_subset ta' ta)"
 proof(induct rule: red_reds.inducts)
   case (SynchronizedRed2 e s ta e' s' a)
-  note IH = `\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
+  note IH = \<open>\<lbrakk>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta; sync_ok e; hconf (hp s); P,hp s \<turnstile> t \<surd>t;
             \<forall>l. expr_locks e l \<le> has_locks (ls $ l) t; ?wakeup e s\<rbrakk>
-            \<Longrightarrow> ?concl e s ta`
-  note `\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta`
-  moreover from `sync_ok (insync(a) e)` have "sync_ok e" by simp
-  moreover note `hconf (hp s)` `P,hp s \<turnstile> t \<surd>t`
-  moreover from `\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls $ l) t`
+            \<Longrightarrow> ?concl e s ta\<close>
+  note \<open>\<not> red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta\<close>
+  moreover from \<open>sync_ok (insync(a) e)\<close> have "sync_ok e" by simp
+  moreover note \<open>hconf (hp s)\<close> \<open>P,hp s \<turnstile> t \<surd>t\<close>
+  moreover from \<open>\<forall>l. expr_locks (insync(a) e) l \<le> has_locks (ls $ l) t\<close>
   have "\<forall>l. expr_locks e l \<le> has_locks (ls $ l) t" by(force split: if_split_asm)
-  moreover from `?wakeup (insync(a) e) s` have "?wakeup e s" by auto
+  moreover from \<open>?wakeup (insync(a) e) s\<close> have "?wakeup e s" by auto
   ultimately have "?concl e s ta" by(rule IH)
   thus ?case by(fastforce intro: red_reds.SynchronizedRed2)
 next
@@ -309,18 +309,18 @@ next
     by(auto simp add: is_val_iff contains_insync_conv contains_insyncs_conv red_mthr.actions_ok'_empty red_mthr.actions_ok'_ta_upd_obs dest: sees_method_fun)
 next
   case (RedCallExternal s a U M Ts T D vs ta va h' ta' e' s')
-  from `?wakeup (addr a\<bullet>M(map Val vs)) s`
+  from \<open>?wakeup (addr a\<bullet>M(map Val vs)) s\<close>
   have "wset (ls, (ts, m), ws, is) t = None \<or> (M = wait \<and> (\<exists>w. wset (ls, (ts, m), ws, is) t = \<lfloor>PostWS w\<rfloor>))" by auto
-  with wf  `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>` `P,hp s \<turnstile> t \<surd>t` `hconf (hp s)`
+  with wf  \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>\<close> \<open>P,hp s \<turnstile> t \<surd>t\<close> \<open>hconf (hp s)\<close>
   obtain ta'' va' h'' where red': "P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta''\<rightarrow>ext \<langle>va',h''\<rangle>"
     and aok: "red_mthr.actions_ok (ls, (ts, m), ws, is) t ta'' \<or>
               red_mthr.actions_ok' (ls, (ts, m), ws, is) t ta'' \<and> final_thread.actions_subset ta'' ta"
     by(rule red_external_wf_red)
-  from aok `ta' = extTA2J P ta`
+  from aok \<open>ta' = extTA2J P ta\<close>
   have "red_mthr.actions_ok (ls, (ts, m), ws, is) t (extTA2J P ta'') \<or>
         red_mthr.actions_ok' (ls, (ts, m), ws, is) t (extTA2J P ta'') \<and> red_mthr.actions_subset (extTA2J P ta'') ta'"
     by(auto simp add: red_mthr.actions_ok'_convert_extTA red_mthr.actions_ok_iff elim: final_thread.actions_subset.cases del: subsetI)
-  moreover from red' `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = Native in D`
+  moreover from red' \<open>typeof_addr (hp s) a = \<lfloor>U\<rfloor>\<close> \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = Native in D\<close>
   obtain s'' e'' where "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta''\<rightarrow> \<langle>e'',s''\<rangle>"
     by(fastforce intro: red_reds.RedCallExternal)
   ultimately show ?case by blast
@@ -330,13 +330,13 @@ next
   thus ?case ..
 next
   case (UnlockSynchronized a v s)
-  from `\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls $ l) t`
+  from \<open>\<forall>l. expr_locks (insync(a) Val v) l \<le> has_locks (ls $ l) t\<close>
   have "has_lock (ls $ a) t" by(force split: if_split_asm)
   with UnlockSynchronized have False by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
   thus ?case ..
 next
   case (SynchronizedThrow2 a ad s)
-  from `\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls $ l) t`
+  from \<open>\<forall>l. expr_locks (insync(a) Throw ad) l \<le> has_locks (ls $ l) t\<close>
   have "has_lock (ls $ a) t" by(force split: if_split_asm)
   with SynchronizedThrow2 have False
     by(auto simp add: lock_ok_las'_def finfun_upd_apply ta_upd_simps)
@@ -424,16 +424,16 @@ next
     and aoe: "sync_ok e" by(fastforce dest: ts_okD ts_invD)
   then obtain T' where "hconf m" "P,E,m \<turnstile> e : T'" "preallocated m"
     by(auto simp add: sconf_type_ok_def sconf_def type_ok_def)
-  from `sconf_type_ts_ok Es ts m` s have "thread_conf P (thr s) (shr s)"
+  from \<open>sconf_type_ts_ok Es ts m\<close> s have "thread_conf P (thr s) (shr s)"
     by(auto dest: ts_invD intro!: ts_okI simp add: sconf_type_ok_def)
-  with `thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>` have "P,shr s \<turnstile> t \<surd>t" by(auto dest: ts_okD)
+  with \<open>thr s t = \<lfloor>(ex, no_wait_locks)\<rfloor>\<close> have "P,shr s \<turnstile> t \<surd>t" by(auto dest: ts_okD)
 
   show "\<exists>ta' x' m'. mred P t (ex, shr s) ta' (x', m') \<and> 
         (red_mthr.actions_ok s t ta' \<or> red_mthr.actions_ok' s t ta' \<and> red_mthr.actions_subset ta' ta)"
   proof(cases "red_mthr.actions_ok' s t ta")
     case True
     have "red_mthr.actions_subset ta ta" ..
-    with True `mred P t (ex, shr s) ta (e'x', m')` show ?thesis by blast
+    with True \<open>mred P t (ex, shr s) ta (e'x', m')\<close> show ?thesis by blast
   next
     case False
     from lock_okD2[OF lockok, OF tst[unfolded ex]]
@@ -460,7 +460,7 @@ next
         by(auto simp add: not_waiting_iff)
       ultimately show ?thesis using call iec s by auto
     qed
-    from red_wf_red_aux[OF wf red False[unfolded s] aoe _ _ locks, OF _ _ this] `hconf m` `P,shr s \<turnstile> t \<surd>t` ex s
+    from red_wf_red_aux[OF wf red False[unfolded s] aoe _ _ locks, OF _ _ this] \<open>hconf m\<close> \<open>P,shr s \<turnstile> t \<surd>t\<close> ex s
     show ?thesis by fastforce
   qed
 next
@@ -537,7 +537,7 @@ proof(rule redT_progress_deadlock)
     by(auto simp add: red_mthr.deadlocked'_def)
 qed
 
-subsection {* Type safety proof *}
+subsection \<open>Type safety proof\<close>
 
 theorem TypeSafetyT:
   fixes C and M and ttas and Es
@@ -591,8 +591,8 @@ proof -
         by(auto simp add: neq_no_wait_locks_conv)
       from lock' es't have "has_locks (ls' $ l) t + ln' $ l = expr_locks e' l"
         by(auto dest: lock_okD2)
-      with `ln' $ l > 0` have "expr_locks e' l > 0" by simp
-      moreover from `final e'` have "expr_locks e' l = 0" by(rule final_locks)
+      with \<open>ln' $ l > 0\<close> have "expr_locks e' l > 0" by simp
+      moreover from \<open>final e'\<close> have "expr_locks e' l = 0" by(rule final_locks)
       ultimately show False by simp
     qed }
   note ln' = this
@@ -623,7 +623,7 @@ proof -
     with nored have "t \<in> red_mthr.deadlocked P s'"
       by -(erule contrapos_np, rule redT_progress_deadlocked[OF wf start_wf RedT])
     moreover 
-    from `sconf_type_ok (E, T) t (e', x') m'`
+    from \<open>sconf_type_ok (E, T) t (e', x') m'\<close>
     obtain T'' where "P,E,m' \<turnstile> e' : T''" "P \<turnstile> T'' \<le> T"
       by(auto simp add: sconf_type_ok_def type_ok_def)
     with ET have "\<exists>E T. Es' t = \<lfloor>(E, T)\<rfloor> \<and> (\<exists>T'. P,E,m' \<turnstile> e' : T' \<and> P \<turnstile> T' \<le> T)"

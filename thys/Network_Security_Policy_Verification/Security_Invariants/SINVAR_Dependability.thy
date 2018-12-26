@@ -2,7 +2,7 @@ theory SINVAR_Dependability
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant Dependability *}
+subsection \<open>SecurityInvariant Dependability\<close>
 
 
 type_synonym dependability_level = nat
@@ -10,7 +10,7 @@ type_synonym dependability_level = nat
 definition default_node_properties :: "dependability_level"
   where  "default_node_properties \<equiv> 0"
 
-text {* Less-equal other nodes depend on the output of a node than its dependability level. *}
+text \<open>Less-equal other nodes depend on the output of a node than its dependability level.\<close>
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (num_reachable G e1) \<le> (nP e1))"
 
@@ -18,7 +18,7 @@ definition receiver_violation :: "bool" where
   "receiver_violation \<equiv> False"
 
 
-text{* It does not matter whether we iterate over all edges or all nodes. We chose all edges because it is in line with the other models.  *}
+text\<open>It does not matter whether we iterate over all edges or all nodes. We chose all edges because it is in line with the other models.\<close>
   fun sinvar_nodes :: "'v graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
     "sinvar_nodes G nP = (\<forall> v \<in> nodes G. (num_reachable G v) \<le> (nP v))"
   
@@ -52,7 +52,7 @@ text{* It does not matter whether we iterate over all edges or all nodes. We cho
     using succ_tran_subseteq_nodes card_seteq nat_le_linear wf_graph.finiteV by metis
 
 
-  text{* nP is valid if all dependability level are greater equal the total number of nodes in the graph *}
+  text\<open>nP is valid if all dependability level are greater equal the total number of nodes in the graph\<close>
   lemma "\<lbrakk> wf_graph G; \<forall>v \<in> nodes G. nP v \<ge> card (nodes G) \<rbrakk> \<Longrightarrow> sinvar G nP"
     apply(subst sinvar_edges_nodes_iff[symmetric], simp)
     apply(simp add:)
@@ -60,17 +60,17 @@ text{* It does not matter whether we iterate over all edges or all nodes. We cho
 
 
 
-  text{* Generate a valid configuration to start from: *}
-   text{* Takes arbitrary configuration, returns a valid one *}
+  text\<open>Generate a valid configuration to start from:\<close>
+   text\<open>Takes arbitrary configuration, returns a valid one\<close>
    fun dependability_fix_nP :: "'v graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> ('v \<Rightarrow> dependability_level)" where
       "dependability_fix_nP G nP = (\<lambda>v. if num_reachable G v \<le> (nP v) then (nP v) else num_reachable G v)"
   
-   text{* @{const dependability_fix_nP} always gives you a valid solution *}
+   text\<open>@{const dependability_fix_nP} always gives you a valid solution\<close>
    lemma dependability_fix_nP_valid: "\<lbrakk> wf_graph G \<rbrakk> \<Longrightarrow> sinvar G (dependability_fix_nP G nP)"
       by(subst sinvar_edges_nodes_iff[symmetric], simp_all)
   
-   text{* furthermore, it gives you a minimal solution, i.e. if someone supplies a configuration with a value lower than
-          calculated by @{const dependability_fix_nP}, this is invalid! *}
+   text\<open>furthermore, it gives you a minimal solution, i.e. if someone supplies a configuration with a value lower than
+          calculated by @{const dependability_fix_nP}, this is invalid!\<close>
    lemma dependability_fix_nP_minimal_solution: "\<lbrakk> wf_graph G; \<exists> v \<in> nodes G. (nP v) < (dependability_fix_nP G (\<lambda>_. 0)) v \<rbrakk> \<Longrightarrow> \<not> sinvar G nP"
       apply(subst sinvar_edges_nodes_iff[symmetric], simp)
       apply(simp)

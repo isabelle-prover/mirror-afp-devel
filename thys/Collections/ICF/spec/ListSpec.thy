@@ -1,4 +1,4 @@
-section {* \isaheader{Specification of Sequences} *}
+section \<open>\isaheader{Specification of Sequences}\<close>
 theory ListSpec 
 imports ICF_Spec_Base
 begin
@@ -135,8 +135,8 @@ begin
   qed
 
 
-  text {* The following shortcut notations are not meant for generating efficient code,
-    but solely to simplify reasoning *}
+  text \<open>The following shortcut notations are not meant for generating efficient code,
+    but solely to simplify reasoning\<close>
   (* TODO: Is this actually used somewhere ? *)
   (*
   definition "head s == fst (removef s)"

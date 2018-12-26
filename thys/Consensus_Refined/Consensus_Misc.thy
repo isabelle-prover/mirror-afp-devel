@@ -4,7 +4,7 @@ imports Main
 begin
 (*>*)
 
-subsection {* Miscellaneous lemmas *}
+subsection \<open>Miscellaneous lemmas\<close>
 
 method_setup clarsimp_all =
   \<open>Method.sections clasimp_modifiers >>
@@ -32,7 +32,7 @@ lemma option_expand':
   by(rule option.expand, auto)
 
 (*********************************)
-subsection {* Argmax *}
+subsection \<open>Argmax\<close>
 definition Max_by :: "('a \<Rightarrow> 'b :: linorder) \<Rightarrow> 'a set \<Rightarrow> 'a" where
   "Max_by f S = (SOME x. x \<in> S \<and> f x = Max (f ` S))"
 
@@ -131,7 +131,7 @@ definition option_Max_by :: "('a \<Rightarrow> 'b :: linorder) \<Rightarrow> 'a 
 
 (*********************************)
 
-subsection {* Function and map graphs *}
+subsection \<open>Function and map graphs\<close>
 
 definition fun_graph where
   "fun_graph f = {(x, f x)|x. True}"
@@ -167,7 +167,7 @@ lemma ran_map_addD:
   "x \<in> ran (m ++ f) \<Longrightarrow> x \<in> ran m \<or> x \<in> ran f"
   by(auto simp add: ran_def)
 
-subsection {* Constant maps *}
+subsection \<open>Constant maps\<close>
 
 definition const_map :: "'v \<Rightarrow> 'k set \<Rightarrow> ('k, 'v)map" where
   "const_map v S \<equiv> (\<lambda>_. Some v) |` S"
@@ -200,7 +200,7 @@ lemma dom_const_map:
   by(auto simp add: const_map_def)
 
 (*******************************************************************)
-subsection {* Votes with maximum timestamps. *}
+subsection \<open>Votes with maximum timestamps.\<close>
 (*******************************************************************)
 
 definition vote_set :: "('round \<Rightarrow> ('process, 'val)map) \<Rightarrow> 'process set \<Rightarrow> ('round \<times> 'val)set" where

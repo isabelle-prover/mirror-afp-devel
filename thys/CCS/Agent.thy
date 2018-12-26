@@ -174,7 +174,7 @@ lemma resCases[consumes 1, case_names cRes]:
 
   shows "Prop P'"
 proof -
-  from `\<lparr>\<nu>x\<rparr>P \<longmapsto>\<alpha> \<prec> P'` have "x \<sharp> \<alpha>" and "x \<sharp> P'"
+  from \<open>\<lparr>\<nu>x\<rparr>P \<longmapsto>\<alpha> \<prec> P'\<close> have "x \<sharp> \<alpha>" and "x \<sharp> P'"
     by(auto intro: freshDerivative simp add: abs_fresh)+
   with assms show ?thesis
     by(cases rule: semantics.strong_cases[of _ _ _ _ x])
@@ -243,7 +243,7 @@ proof -
         by(ind_cases "bangPred P (!Pa)", auto intro: rBang aux2 simp add: ccs.inject)
     qed
   }
-  with `!P \<longmapsto>\<alpha> \<prec> P'` show ?thesis by(force intro: bangPred.aux1)
+  with \<open>!P \<longmapsto>\<alpha> \<prec> P'\<close> show ?thesis by(force intro: bangPred.aux1)
 qed
 
 inductive_set bangRel :: "(ccs \<times> ccs) set \<Rightarrow> (ccs \<times> ccs) set"

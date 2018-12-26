@@ -3,25 +3,25 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Unsigned words of default size *}
+chapter \<open>Unsigned words of default size\<close>
 
 theory Uint imports
   Word_Misc
   Bits_Integer
 begin
 
-text {*
+text \<open>
   This theory provides access to words in the target languages of the code generator
-  whose bit width is the default of the target language. To that end, the type @{text uint}
-  models words of width @{text dflt_size}, but @{text dflt_size} is known only to be positive.
+  whose bit width is the default of the target language. To that end, the type \<open>uint\<close>
+  models words of width \<open>dflt_size\<close>, but \<open>dflt_size\<close> is known only to be positive.
 
   Usage restrictions:
-  Default-size words (type @{text uint}) cannot be used for evaluation, because 
+  Default-size words (type \<open>uint\<close>) cannot be used for evaluation, because 
   the results depend on the particular choice of word size in the target language
-  and implementation. Symbolic evaluation has not yet been set up for @{text "uint"}.
-*}
+  and implementation. Symbolic evaluation has not yet been set up for \<open>uint\<close>.
+\<close>
 
-text {* The default size type *}
+text \<open>The default size type\<close>
 typedecl dflt_size
 
 instantiation dflt_size :: typerep begin
@@ -59,13 +59,13 @@ end
 
 declare prod.Quotient[transfer_rule]
 
-section {* Type definition and primitive operations *}
+section \<open>Type definition and primitive operations\<close>
 
 typedef uint = "UNIV :: dflt_size word set" .. 
 
 setup_lifting type_definition_uint
 
-text {* Use an abstract type for code generation to disable pattern matching on @{term Abs_uint}. *}
+text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint}.\<close>
 declare Rep_uint_inverse[code abstype]
 
 declare Quotient_uint[transfer_rule]
@@ -129,7 +129,7 @@ lemma of_bool_integer_transfer [transfer_rule]:
   "(rel_fun (=) pcr_integer) of_bool of_bool"
 by(auto simp add: integer.pcr_cr_eq cr_integer_def split: bit.split)
 
-text {* Use pretty numerals from integer for pretty printing *}
+text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin
 
@@ -162,10 +162,10 @@ by(simp add: zero_uint_def)
 lemma Abs_uint_1 [code_post]: "Abs_uint 1 = 1"
 by(simp add: one_uint_def)
 
-section {* Code setup *}
+section \<open>Code setup\<close>
 
 code_printing code_module Uint \<rightharpoonup> (SML)
-{*
+\<open>
 structure Uint : sig
   val set_bit : Word.word -> IntInf.int -> bool -> Word.word
   val shiftl : Word.word -> IntInf.int -> Word.word
@@ -192,11 +192,11 @@ fun shiftr_signed x n =
 fun test_bit x n =
   Word.andb (x, Word.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word.fromInt 0
 
-end; (* struct Uint *)*}
+end; (* struct Uint *)\<close>
 code_reserved SML Uint
 
 code_printing code_module Uint \<rightharpoonup> (Haskell)
-{*
+\<open>
 import qualified Prelude;
 import qualified Data.Word;
 import qualified Data.Int;
@@ -212,9 +212,9 @@ dflt_size = Prelude.toInteger (bitSize_aux (0::Word))
     bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int;
     bitSize_aux = Data.Bits.bitSize
   };
-*}
+\<close>
   and (Haskell_Quickcheck)
-{*
+\<open>
 import qualified Prelude;
 import qualified Data.Word;
 import qualified Data.Int;
@@ -230,16 +230,16 @@ dflt_size = bitSize_aux (0::Word)
     bitSize_aux :: (Data.Bits.Bits a, Prelude.Bounded a) => a -> Uint.Int;
     bitSize_aux = Data.Bits.bitSize
   };
-*}
+\<close>
 code_reserved Haskell Uint dflt_size
 
-text {*
+text \<open>
   OCaml and Scala provide only signed bit numbers, so we use these and 
   implement sign-sensitive operations like comparisons manually.
-*}
+\<close>
 
 code_printing code_module "Uint" \<rightharpoonup> (OCaml)
-{*module Uint : sig
+\<open>module Uint : sig
   type t = int
   val dflt_size : Big_int.big_int
   val less : t -> t -> bool
@@ -299,11 +299,11 @@ let int64_mask =
   if dflt_size_int < 64 then Int64.pred (Int64.shift_left Int64.one dflt_size_int) 
   else Int64.of_string "0xFFFFFFFFFFFFFFFF";;
 
-end;; (*struct Uint*)*}
+end;; (*struct Uint*)\<close>
 code_reserved OCaml Uint
 
 code_printing code_module Uint \<rightharpoonup> (Scala)
-{*object Uint {
+\<open>object Uint {
 def dflt_size : BigInt = BigInt(32)
 
 def less(x: Int, y: Int) : Boolean =
@@ -329,14 +329,14 @@ def shiftr_signed(x: Int, n: BigInt) : Int = x >> n.intValue
 def test_bit(x: Int, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
-} /* object Uint */*}
+} /* object Uint */\<close>
 code_reserved Scala Uint
 
 
-text {*
+text \<open>
   OCaml's conversion from Big\_int to int demands that the value fits into a signed integer.
   The following justifies the implementation.
-*}
+\<close>
 
 context includes integer.lifting begin
 definition wivs_mask :: int where "wivs_mask = 2^ dflt_size - 1"
@@ -385,7 +385,7 @@ lemma Uint_signed_code [code abstract]:
   by(simp add: Abs_uint_inverse)
 end
 
-text {* 
+text \<open>
   Avoid @{term Abs_uint} in generated code, use @{term Rep_uint'} instead. 
   The symbolic implementations for code\_simp use @{term Rep_uint}.
 
@@ -396,7 +396,7 @@ text {*
   If code generation raises Match, some equation probably contains @{term Rep_uint} 
   ([code abstract] equations for @{typ uint} may use @{term Rep_uint} because
   these instances will be folded away.)
-*}
+\<close>
 
 definition Rep_uint' where [simp]: "Rep_uint' = Rep_uint"
 
@@ -419,10 +419,10 @@ lemma term_of_uint_code [code]:
        (term_of_class.term_of (Rep_uint' x))"
   by(simp add: term_of_anything)
 
-text {* Important:
+text \<open>Important:
   We must prevent the reflection oracle (eval-tac) to 
   use our machine-dependent type.
- *}
+\<close>
 
 code_printing
   type_constructor uint \<rightharpoonup>
@@ -606,10 +606,10 @@ lemma uint_sdiv_code [code abstract]:
     else Rep_uint x sdiv Rep_uint y)"
 unfolding uint_sdiv_def by(simp add: Abs_uint_inverse)
 
-text {* 
+text \<open>
   Note that we only need a translation for signed division, but not for the remainder
   because @{thm uint_divmod_code} computes both with division only.
-*}
+\<close>
 
 code_printing
   constant uint_div \<rightharpoonup>
@@ -777,7 +777,7 @@ lemma msb_uint_code [code]: "msb x \<longleftrightarrow> uint_test_bit x wivs_in
 lemma uint_of_int_code [code]: "uint_of_int i = (BITS n. i !! n)"
 by transfer(simp add: word_of_int_conv_set_bits test_bit_int_def[abs_def])
 
-section {* Quickcheck setup *}
+section \<open>Quickcheck setup\<close>
 
 definition uint_of_natural :: "natural \<Rightarrow> uint"
 where "uint_of_natural x \<equiv> Uint (integer_of_natural x)"

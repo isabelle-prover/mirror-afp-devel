@@ -4,12 +4,12 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Semantics of Hierarchical Automata *}
+section \<open>Semantics of Hierarchical Automata\<close>
 theory HASem
 imports HA
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 definition
   RootExSem :: "[(('s,'e,'d)seqauto) set, 's \<rightharpoonup> ('s,'e,'d)seqauto set,
@@ -43,7 +43,7 @@ definition
                       IsConfSet (SAs HA) (CompFun HA) C \<and> 
                       Data.DataSpace (HAInitValue HA) = Data.DataSpace D"
 
-subsubsection {* @{text "Status"} *}
+subsubsection \<open>\<open>Status\<close>\<close>
 
 lemma Status_EmptySet:
  "(Abs_hierauto ((@ x . True),
@@ -233,7 +233,7 @@ where
      "\<lbrakk> ST \<in> ReachStati A;  TS \<in> HPT ST; U \<in> ResolveRacing TS \<rbrakk>
       \<Longrightarrow> StepStatus ST TS U \<in> ReachStati A"
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
 lemma Rep_status_tuple: 
  "Rep_status ST = (HA ST, Conf ST, Events ST, Value ST)"
@@ -250,7 +250,7 @@ apply (unfold status_def)
 apply simp
 done
 
-subsubsection {* @{text "IsConfSet"} *}
+subsubsection \<open>\<open>IsConfSet\<close>\<close>
 
 lemma IsConfSet_Status [simp]: 
  "IsConfSet (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)"
@@ -259,7 +259,7 @@ apply (unfold status_def Status_def)
 apply auto
 done
 
-subsubsection {* @{text "InitStatus"} *}
+subsubsection \<open>\<open>InitStatus\<close>\<close>
 
 lemma IsConfSet_InitConf [simp]:
   "IsConfSet (SAs A) (CompFun A) (InitConf A)"
@@ -320,7 +320,7 @@ apply (subst Abs_status_inverse)
 apply auto
 done
 
-subsubsection {* @{text "Events"} *}
+subsubsection \<open>\<open>Events\<close>\<close>
 
 lemma Events_HAEvents_Status: 
   "(Events ST) \<subseteq> HAEvents (HA ST)"
@@ -351,7 +351,7 @@ apply (unfold Label_def image_def)
 apply auto
 done
 
-subsubsection {* @{text "StepStatus"} *}
+subsubsection \<open>\<open>StepStatus\<close>\<close>
 
 lemma StepStatus_empty:
    "Abs_status (HA ST, Conf ST, {}, U !!! (Value ST)) = StepStatus ST {} U"
@@ -380,7 +380,7 @@ apply (subst Rep_status_tuple)
 apply auto
 done
 
-subsubsection {* Enabled Transitions @{text "ET"} *}
+subsubsection \<open>Enabled Transitions \<open>ET\<close>\<close>
 
 lemma HPT_ETI: 
     "TS \<in> HPT ST \<Longrightarrow> TS \<subseteq> ET ST"
@@ -390,7 +390,7 @@ lemma finite_ET [simp]:
  "finite (ET ST)"
 by (unfold ET_def Image_def EnabledTrans_def, auto)
 
-subsubsection {* Finite Transition Set *}
+subsubsection \<open>Finite Transition Set\<close>
 
 lemma finite_MaxNonConflict [simp]:
  "MaxNonConflict ST TS \<Longrightarrow> finite TS"
@@ -404,7 +404,7 @@ lemma finite_HPT [simp]:
   "TS \<in> HPT ST \<Longrightarrow> finite TS"
 by (unfold HPT_def, auto)
 
-subsubsection {* @{text "PUpdate"} *}
+subsubsection \<open>\<open>PUpdate\<close>\<close>
 
 lemma finite_Update:
  "finite TS \<Longrightarrow> finite ((\<lambda> F. (Rep_pupdate F) (Value ST)) ` (PUpdate (Label TS)))"
@@ -422,7 +422,7 @@ apply (rule finite_SequentialRacing)
 apply auto
 done
 
-subsubsection {* Higher Priority Transitions @{text "HPT"} *}
+subsubsection \<open>Higher Priority Transitions \<open>HPT\<close>\<close>
 
 lemma finite_HPT2 [simp]:
   "finite (HPT ST)"
@@ -446,7 +446,7 @@ apply auto
 apply auto
 done
 
-subsubsection {* Delta Transition Set *}
+subsubsection \<open>Delta Transition Set\<close>
 
 lemma ET_Delta: 
   "\<lbrakk> TS \<subseteq> ET ST; t \<in> TS; source t \<in> States A; A \<in> SAs (HA ST)\<rbrakk> \<Longrightarrow> t \<in> Delta A"
@@ -543,7 +543,7 @@ apply (frule_tac t=U and A=SA in ET_Delta_target)
 apply auto
 done
 
-subsubsection {* Target Transition Set *}
+subsubsection \<open>Target Transition Set\<close>
 
 lemma ET_Target_HAStates:
     "TS \<subseteq> ET ST \<Longrightarrow> Target TS \<subseteq> HAStates (HA ST)"
@@ -583,7 +583,7 @@ apply (unfold Target_def)
 apply (auto dest: OneTrans_HPT_SA2[rotated -1])
 done
 
-subsubsection {* Source Transition Set *}
+subsubsection \<open>Source Transition Set\<close>
 
 lemma ET_Source_Conf:
   "TS \<subseteq> ET ST \<Longrightarrow> (Source TS) \<subseteq> Conf ST"
@@ -700,7 +700,7 @@ apply fast
 apply (fast intro: ChiRel_ChiPlus_trans)
 done
 
-subsubsection {* @{text "StepActEvents"} *}
+subsubsection \<open>\<open>StepActEvents\<close>\<close>
 
 lemma StepActEvent_empty [simp]:
   "StepActEvent {} = {}"
@@ -713,7 +713,7 @@ apply (rule HPT_ETI [THEN TS_EventSet])
 apply assumption
 done
 
-subsubsection {* @{text "UniqueSucStates"} *}
+subsubsection \<open>\<open>UniqueSucStates\<close>\<close>
 
 lemma UniqueSucStates_Status [simp]:
   "UniqueSucStates (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)"
@@ -722,7 +722,7 @@ apply (unfold status_def Status_def IsConfSet_def)
 apply auto
 done
 
-subsubsection {* @{text "RootState"} *}
+subsubsection \<open>\<open>RootState\<close>\<close>
 
 lemma RootExSem_Status [simp]:
   "RootExSem (SAs (HA ST)) (CompFun (HA ST)) (Conf ST)"
@@ -829,7 +829,7 @@ apply (frule OneRootState_Source)
 apply fast+
 done
 
-subsubsection {* Configuration @{text "Conf"} *}
+subsubsection \<open>Configuration \<open>Conf\<close>\<close>
 
 lemma Conf_HAStates:
  "Conf ST \<subseteq> HAStates (HA ST)"
@@ -1097,7 +1097,7 @@ apply (frule_tac T=TSource and S=TTarget in OneState_Conf)
 apply fast+
 done
 
-subsubsection {* @{text "RootExSem"} *}
+subsubsection \<open>\<open>RootExSem\<close>\<close>
 
 lemma RootExSem_StepConf: 
    "\<lbrakk> TS \<in> HPT ST \<rbrakk> \<Longrightarrow> 
@@ -1148,7 +1148,7 @@ apply auto
 apply (frule trancl_Int_mem, fold ChiPlus_def, force)+
 done
 
-subsubsection {* @{text "StepConf"} *}
+subsubsection \<open>\<open>StepConf\<close>\<close>
 
 lemma Target_StepConf:
    "S \<in> Target TS \<Longrightarrow> S \<in> StepConf (HA ST) (Conf ST) TS"
@@ -1304,7 +1304,7 @@ apply (case_tac "States A \<inter> ChiStar (HA ST) `` (Source TS) = {}")
 apply (fast intro: SucState_Conf_StepConf SucState_Conf_Source_StepConf)+
 done
 
-subsubsection {* @{text "StepStatus"} *}
+subsubsection \<open>\<open>StepStatus\<close>\<close>
 
 lemma StepStatus_expand:
    "Abs_status (HA ST, StepConf (HA ST) (Conf ST) TS, 
@@ -1584,7 +1584,7 @@ apply (rule conjI, rule RootExSem_StepConf, assumption)
 apply (rule UniqueSucStates_StepConf, assumption) 
 done
 
-subsection {* Meta Theorem: Preservation for Statecharts *}
+subsection \<open>Meta Theorem: Preservation for Statecharts\<close>
 
 (* We prove, that the well-formedness of a Statecharts is preserved by the semantics
    (theorem "IsConfSet_StepConf") *)

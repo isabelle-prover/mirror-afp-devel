@@ -6,7 +6,7 @@ theory Complete_Lattice_ix
 imports Main
 begin
 
-text{* A complete lattice is an ordered type where every set of elements has
+text\<open>A complete lattice is an ordered type where every set of elements has
 a greatest lower (and thus also a leats upper) bound. Sets are the
 prototypical complete lattice where the greatest lower bound is
 intersection. Sometimes that set of all elements of a type is not a complete
@@ -17,7 +17,7 @@ commands. This theory introduces a slightly generalised version of complete
 lattices where elements have an ``index'' and only the set of elements with
 the same index form a complete lattice; the type as a whole is a disjoint
 union of complete lattices. Because sets are not types, this requires a
-special treatment. *}
+special treatment.\<close>
 
 locale Complete_Lattice_ix =
 fixes L :: "'i \<Rightarrow> 'a::order set"

@@ -4,14 +4,14 @@ http://code.google.com/p/flyspeck/source/browse/trunk/text_formalization/tame/ta
 by Thomas Hales. Modulo a few inessential rearrangements.
 *)
 
-section{* Tameness *}
+section\<open>Tameness\<close>
 
 theory Tame
 imports Graph ListSum
 begin
 
 
-subsection {* Constants \label{sec:TameConstants}*}
+subsection \<open>Constants \label{sec:TameConstants}\<close>
 
 definition squanderTarget :: "nat" where
  "squanderTarget \<equiv> 15410" 
@@ -47,50 +47,50 @@ definition squanderFace :: "nat \<Rightarrow> nat" (*<*)("\<d>")(*>*)where
      else if n = 6 then 7120
      else squanderTarget" 
 
-text_raw{* 
-\index{@{text "\<a>"}}
-\index{@{text "\<b>"}}
-\index{@{text "\<d>"}}
-*}
+text_raw\<open>
+\index{\<open>\<a>\<close>}
+\index{\<open>\<b>\<close>}
+\index{\<open>\<d>\<close>}
+\<close>
 
-subsection{* Separated sets of vertices \label{sec:TameSeparated}*}
+subsection\<open>Separated sets of vertices \label{sec:TameSeparated}\<close>
 
 
-text {* A set of vertices $V$ is {\em separated},
+text \<open>A set of vertices $V$ is {\em separated},
 \index{separated}
-\index{@{text "separated"}}
+\index{\<open>separated\<close>}
 iff the following conditions hold:
- *}
+\<close>
 
-text {*  2. No two vertices in V are adjacent: *}
+text \<open>2. No two vertices in V are adjacent:\<close>
 
 definition separated\<^sub>2 :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
  "separated\<^sub>2 g V \<equiv> \<forall>v \<in> V. \<forall>f \<in> set (facesAt g v). f\<bullet>v \<notin> V"
 
-text {*  3. No two vertices lie on a common quadrilateral: *}
+text \<open>3. No two vertices lie on a common quadrilateral:\<close>
 
 definition separated\<^sub>3 :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
  "separated\<^sub>3 g V \<equiv> 
      \<forall>v \<in> V. \<forall>f \<in> set (facesAt g v). |vertices f|\<le>4 \<longrightarrow> \<V> f \<inter> V = {v}"
 
-text {*  A set of vertices  is  called {\em separated},
-\index{separated} \index{@{text "separated"}}
-iff no two vertices are adjacent or lie on a common quadrilateral: *}
+text \<open>A set of vertices  is  called {\em separated},
+\index{separated} \index{\<open>separated\<close>}
+iff no two vertices are adjacent or lie on a common quadrilateral:\<close>
 
 definition separated :: "graph \<Rightarrow> vertex set \<Rightarrow> bool" where
  "separated g V \<equiv> separated\<^sub>2 g V \<and> separated\<^sub>3 g V"
 
-subsection{* Admissible weight assignments\label{sec:TameAdmissible} *}
+subsection\<open>Admissible weight assignments\label{sec:TameAdmissible}\<close>
 
-text {*  
-A weight assignment @{text "w :: face \<Rightarrow> nat"} 
+text \<open>
+A weight assignment \<open>w :: face \<Rightarrow> nat\<close> 
 assigns a natural number to every face.
 
-\index{@{text "admissible"}}
+\index{\<open>admissible\<close>}
 \index{admissible weight assignment}
 
 We formalize the admissibility requirements as follows:
- *}
+\<close>
 
 definition admissible\<^sub>1 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
  "admissible\<^sub>1 w g \<equiv> \<forall>f \<in> \<F> g. \<d> |vertices f| \<le> w f"
@@ -104,13 +104,13 @@ definition admissible\<^sub>3 :: "(face \<Rightarrow> nat) \<Rightarrow> graph \
   \<forall>v \<in> \<V> g. vertextype g v = (5,0,1) \<longrightarrow> (\<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f)) \<ge> \<a>"
 
 
-text {* Finally we define admissibility of weights functions. *}
+text \<open>Finally we define admissibility of weights functions.\<close>
 
 
 definition admissible :: "(face \<Rightarrow> nat) \<Rightarrow> graph \<Rightarrow> bool" where  
  "admissible w g \<equiv> admissible\<^sub>1 w g \<and> admissible\<^sub>2 w g \<and> admissible\<^sub>3 w g"
  
-subsection{* Tameness \label{sec:TameDef} *}
+subsection\<open>Tameness \label{sec:TameDef}\<close>
 
 definition tame9a :: "graph \<Rightarrow> bool" where
 "tame9a g \<equiv> \<forall>f \<in> \<F> g. 3 \<le> |vertices f| \<and> |vertices f| \<le> 6"
@@ -131,13 +131,13 @@ definition tame12o :: "graph \<Rightarrow> bool" where
 "tame12o g =
  (\<forall>v \<in> \<V> g. except g v \<noteq> 0 \<and> degree g v = 6 \<longrightarrow> vertextype g v = (5,0,1))"
  
-text {* 7. There exists an admissible weight assignment of total
-weight less than the target: *}
+text \<open>7. There exists an admissible weight assignment of total
+weight less than the target:\<close>
 
 definition tame13a :: "graph \<Rightarrow> bool" where
 "tame13a g = (\<exists>w. admissible w g \<and> (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f) < squanderTarget)"
 
-text {* Finally we define the notion of tameness. *}
+text \<open>Finally we define the notion of tameness.\<close>
 
 definition tame :: "graph \<Rightarrow> bool" where
 "tame g \<equiv> tame9a g \<and> tame10 g \<and> tame11a g \<and> tame11b g \<and> tame12o g \<and> tame13a g"

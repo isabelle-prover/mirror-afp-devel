@@ -1,4 +1,4 @@
-section {* CFG well-formedness *}
+section \<open>CFG well-formedness\<close>
 
 theory CFG_wf imports CFG begin
 
@@ -77,11 +77,11 @@ lemma CFG_equal_Use_equal_call:
   and "\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V"
   shows "a = a'"
 proof -
-  from `valid_edge a` `pred (kind a) s` `snd (hd s) = snd (hd s')`
-    `\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V` `length s = length s'`
+  from \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> \<open>snd (hd s) = snd (hd s')\<close>
+    \<open>\<forall>V \<in> Use (sourcenode a). state_val s V = state_val s' V\<close> \<open>length s = length s'\<close>
   have "pred (kind a) s'" by(rule CFG_edge_Uses_pred_equal)
-  with `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `valid_edge a'` `kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'`
-    `sourcenode a = sourcenode a'` `pred (kind a') s'`
+  with \<open>valid_edge a\<close> \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> \<open>valid_edge a'\<close> \<open>kind a' = Q':r'\<hookrightarrow>\<^bsub>p'\<^esub>fs'\<close>
+    \<open>sourcenode a = sourcenode a'\<close> \<open>pred (kind a') s'\<close>
   show ?thesis by -(rule CFG_call_determ)
 qed
 
@@ -95,24 +95,24 @@ lemma CFG_call_edge_param_in:
 proof -
   from assms have params:"(params fs (fst (hd s)))!i = (params fs (fst (hd s')))!i"
     by(rule CFG_call_edge_params)
-  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
+  from \<open>valid_edge a\<close> \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> \<open>(p,ins,outs) \<in> set procs\<close>
   have [simp]:"(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins"
     by(rule formal_in_THE)
-  from `pred (kind a) s` obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
-  from `pred (kind a) s'` obtain cf' cfs' where [simp]:"s' = cf'#cfs'"
+  from \<open>pred (kind a) s\<close> obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
+  from \<open>pred (kind a) s'\<close> obtain cf' cfs' where [simp]:"s' = cf'#cfs'"
     by(cases s') auto
-  from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
+  from \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close>
   have eqs:"fst (hd (transfer (kind a) s)) = (Map.empty(ins [:=] params fs (fst cf)))"
     "fst (hd (transfer (kind a) s')) = (Map.empty(ins [:=] params fs (fst cf')))"
     by simp_all
-  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
+  from \<open>valid_edge a\<close> \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> \<open>(p,ins,outs) \<in> set procs\<close>
   have "length fs = length ins" by(rule CFG_call_edge_length)
-  from `(p,ins,outs) \<in> set procs` have "distinct ins" by(rule distinct_formal_ins)
-  with `i < length ins` `length fs = length ins`
+  from \<open>(p,ins,outs) \<in> set procs\<close> have "distinct ins" by(rule distinct_formal_ins)
+  with \<open>i < length ins\<close> \<open>length fs = length ins\<close>
   have "(Map.empty(ins [:=] params fs (fst cf))) (ins!i) = (params fs (fst cf))!i"
     "(Map.empty(ins [:=] params fs (fst cf'))) (ins!i) = (params fs (fst cf'))!i"
     by(fastforce intro:fun_upds_nth)+
-  with eqs `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` params
+  with eqs \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> params
   show ?thesis by simp
 qed
 
@@ -122,13 +122,13 @@ lemma CFG_call_edge_no_param:
   and "(p,ins,outs) \<in> set procs" and "pred (kind a) s"
   shows "state_val (transfer (kind a) s) V = None"
 proof -
-  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
+  from \<open>valid_edge a\<close> \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> \<open>(p,ins,outs) \<in> set procs\<close>
   have [simp]:"(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins"
     by(rule formal_in_THE)
-  from `pred (kind a) s` obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
-  from `V \<notin> set ins` have "(Map.empty(ins [:=] params fs (fst cf))) V = None"
+  from \<open>pred (kind a) s\<close> obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
+  from \<open>V \<notin> set ins\<close> have "(Map.empty(ins [:=] params fs (fst cf))) V = None"
     by(auto dest:fun_upds_notin)
-  with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` show ?thesis by simp
+  with \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> show ?thesis by simp
 qed
 
 
@@ -140,32 +140,32 @@ lemma CFG_return_edge_param_out:
   shows "state_val (transfer (kind a) s) ((ParamDefs (targetnode a))!i) =
          state_val (transfer (kind a) s') ((ParamDefs (targetnode a))!i)"
 proof -
-  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
+  from \<open>valid_edge a\<close> \<open>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f\<close> \<open>(p,ins,outs) \<in> set procs\<close>
   have [simp]:"(THE outs. \<exists>ins. (p,ins,outs) \<in> set procs) = outs"
     by(rule formal_out_THE)
-  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs` `s = cf#cfx#cfs`
+  from \<open>valid_edge a\<close> \<open>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f\<close> \<open>(p,ins,outs) \<in> set procs\<close> \<open>s = cf#cfx#cfs\<close>
   have transfer:"fst (hd (transfer (kind a) s)) = 
     (fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf) outs)"
     by(fastforce intro:CFG_return_edge_fun)
-  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs` `s' = cf'#cfx'#cfs'`
+  from \<open>valid_edge a\<close> \<open>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f\<close> \<open>(p,ins,outs) \<in> set procs\<close> \<open>s' = cf'#cfx'#cfs'\<close>
   have transfer':"fst (hd (transfer (kind a) s')) = 
     (fst cfx')(ParamDefs (targetnode a) [:=] map (fst cf') outs)"
     by(fastforce intro:CFG_return_edge_fun)
-  from `state_val s (outs!i) = state_val s' (outs!i)` `i < length outs`
-    `s = cf#cfx#cfs` `s' = cf'#cfx'#cfs'`
+  from \<open>state_val s (outs!i) = state_val s' (outs!i)\<close> \<open>i < length outs\<close>
+    \<open>s = cf#cfx#cfs\<close> \<open>s' = cf'#cfx'#cfs'\<close>
   have "(fst cf) (outs!i) = (fst cf') (outs!i)" by simp
-  from `valid_edge a` have "distinct (ParamDefs (targetnode a))"
+  from \<open>valid_edge a\<close> have "distinct (ParamDefs (targetnode a))"
     by(fastforce intro:distinct_ParamDefs)
-  from `valid_edge a` `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` `(p,ins,outs) \<in> set procs`
+  from \<open>valid_edge a\<close> \<open>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f\<close> \<open>(p,ins,outs) \<in> set procs\<close>
   have "length(ParamDefs (targetnode a)) = length outs"
     by(fastforce intro:ParamDefs_return_target_length)
-  with `i < length outs` `distinct (ParamDefs (targetnode a))`
+  with \<open>i < length outs\<close> \<open>distinct (ParamDefs (targetnode a))\<close>
   have "(fst cfx)(ParamDefs (targetnode a) [:=] map (fst cf) outs)
     ((ParamDefs (targetnode a))!i) = (map (fst cf) outs)!i" 
     and "(fst cfx')(ParamDefs (targetnode a) [:=] map (fst cf') outs)
              ((ParamDefs (targetnode a))!i) = (map (fst cf') outs)!i"
     by(fastforce intro:fun_upds_nth)+
-  with transfer transfer' `(fst cf) (outs!i) = (fst cf') (outs!i)` `i < length outs`
+  with transfer transfer' \<open>(fst cf) (outs!i) = (fst cf') (outs!i)\<close> \<open>i < length outs\<close>
   show ?thesis by simp
 qed
 
@@ -175,32 +175,32 @@ lemma CFG_slp_no_Def_equal:
   and "V \<notin> set (ParamDefs (targetnode a'))" and "preds (kinds (a#as@[a'])) s"
   shows "state_val (transfers (kinds (a#as@[a'])) s) V = state_val s V"
 proof -
-  from `valid_edge a` `a' \<in> get_return_edges a` 
+  from \<open>valid_edge a\<close> \<open>a' \<in> get_return_edges a\<close> 
   obtain Q r p fs where "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
     by(fastforce dest!:only_call_get_return_edges)
-  with `valid_edge a` `a' \<in> get_return_edges a` obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
+  with \<open>valid_edge a\<close> \<open>a' \<in> get_return_edges a\<close> obtain Q' f' where "kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'"
     by(fastforce dest!:call_return_edges)
-  from `valid_edge a` `a' \<in> get_return_edges a` have "valid_edge a'"
+  from \<open>valid_edge a\<close> \<open>a' \<in> get_return_edges a\<close> have "valid_edge a'"
     by(rule get_return_edges_valid)
-  from `preds (kinds (a#as@[a'])) s` obtain cf cfs where [simp]:"s = cf#cfs"
+  from \<open>preds (kinds (a#as@[a'])) s\<close> obtain cf cfs where [simp]:"s = cf#cfs"
     by(cases s,auto simp:kinds_def)
-  from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain ins outs 
+  from \<open>valid_edge a\<close> \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> obtain ins outs 
     where "(p,ins,outs) \<in> set procs" by(fastforce dest!:callee_in_procs)
-  from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` obtain cfx where "transfer (kind a) s = cfx#cf#cfs"
+  from \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> obtain cfx where "transfer (kind a) s = cfx#cf#cfs"
     by simp
   moreover
-  from `n -as\<rightarrow>\<^bsub>sl\<^esub>* n'` obtain cfx' 
+  from \<open>n -as\<rightarrow>\<^bsub>sl\<^esub>* n'\<close> obtain cfx' 
     where "transfers (kinds as) (cfx#cf#cfs) = cfx'#cf#cfs"
     by(fastforce elim:slp_callstack_length_equal)
   moreover
-  from `kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'` `valid_edge a'` `(p,ins,outs) \<in> set procs`
+  from \<open>kind a' = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'\<close> \<open>valid_edge a'\<close> \<open>(p,ins,outs) \<in> set procs\<close>
   have "fst (hd (transfer (kind a') (cfx'#cf#cfs))) = 
     (fst cf)(ParamDefs (targetnode a') [:=] map (fst cfx') outs)"
     by(simp,simp only:formal_out_THE,fastforce intro:CFG_return_edge_fun)
   ultimately have "fst (hd (transfers (kinds (a#as@[a'])) s)) = 
     (fst cf)(ParamDefs (targetnode a') [:=] map (fst cfx') outs)"
     by(simp add:kinds_def transfers_split)
-  with `V \<notin> set (ParamDefs (targetnode a'))` show ?thesis
+  with \<open>V \<notin> set (ParamDefs (targetnode a'))\<close> show ?thesis
     by(simp add:fun_upds_notin)
 qed
 
@@ -218,31 +218,31 @@ lemma CFG_intra_path_no_Def_equal:
   and "preds (kinds as) s"
   shows "state_val (transfers (kinds as) s) V = state_val s V"
 proof -
-  from `n -as\<rightarrow>\<^sub>\<iota>* n'` have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind (kind a)"
+  from \<open>n -as\<rightarrow>\<^sub>\<iota>* n'\<close> have "n -as\<rightarrow>* n'" and "\<forall>a \<in> set as. intra_kind (kind a)"
     by(simp_all add:intra_path_def)
-  from this `\<forall>n \<in> set (sourcenodes as). V \<notin> Def n` `preds (kinds as) s`
+  from this \<open>\<forall>n \<in> set (sourcenodes as). V \<notin> Def n\<close> \<open>preds (kinds as) s\<close>
   have "state_val (transfers (kinds as) s) V = state_val s V"
   proof(induct arbitrary:s rule:path.induct)
     case (empty_path n)
     thus ?case by(simp add:sourcenodes_def kinds_def)
   next
     case (Cons_path n'' as n' a n)
-    note IH = `\<And>s. \<lbrakk>\<forall>a\<in>set as. intra_kind (kind a); 
+    note IH = \<open>\<And>s. \<lbrakk>\<forall>a\<in>set as. intra_kind (kind a); 
                     \<forall>n\<in>set (sourcenodes as). V \<notin> Def n; preds (kinds as) s\<rbrakk> 
-      \<Longrightarrow> state_val (transfers (kinds as) s) V = state_val s V`
-    from `preds (kinds (a#as)) s` have "pred (kind a) s"
+      \<Longrightarrow> state_val (transfers (kinds as) s) V = state_val s V\<close>
+    from \<open>preds (kinds (a#as)) s\<close> have "pred (kind a) s"
       and "preds (kinds as) (transfer (kind a) s)" by(simp_all add:kinds_def)
-    from `\<forall>n\<in>set (sourcenodes (a#as)). V \<notin> Def n`
+    from \<open>\<forall>n\<in>set (sourcenodes (a#as)). V \<notin> Def n\<close>
     have noDef:"V \<notin> Def (sourcenode a)" 
       and all:"\<forall>n\<in>set (sourcenodes as). V \<notin> Def n"
       by(auto simp:sourcenodes_def)
-    from `\<forall>a\<in>set (a#as). intra_kind (kind a)`
+    from \<open>\<forall>a\<in>set (a#as). intra_kind (kind a)\<close>
     have "intra_kind (kind a)" and all':"\<forall>a\<in>set as. intra_kind (kind a)"
       by auto
-    from `valid_edge a` noDef `intra_kind (kind a)` `pred (kind a) s`
+    from \<open>valid_edge a\<close> noDef \<open>intra_kind (kind a)\<close> \<open>pred (kind a) s\<close>
     have "state_val (transfer (kind a) s) V = state_val s V"
      by -(rule CFG_intra_edge_no_Def_equal)
-    with IH[OF all' all `preds (kinds as) (transfer (kind a) s)`] show ?case
+    with IH[OF all' all \<open>preds (kinds as) (transfer (kind a) s)\<close>] show ?case
       by(simp add:kinds_def)
   qed
   thus ?thesis by blast
@@ -258,104 +258,104 @@ proof(induct arbitrary:s s' cf cfsx rule:slpa_induct)
   case (slpa_empty cs) thus ?case by(simp add:kinds_def)
 next
   case (slpa_intra cs a as)
-  note IH = `\<And>s s' cf cfsx. \<lbrakk>s = cfsx@cf#cfs; s' = cfsx@cf#cfs';
+  note IH = \<open>\<And>s s' cf cfsx. \<lbrakk>s = cfsx@cf#cfs; s' = cfsx@cf#cfs';
     length cfs = length cfs'; \<forall>a \<in> set as. valid_edge a; length cs = length cfsx; 
-    preds (kinds as) s\<rbrakk> \<Longrightarrow> preds (kinds as) s'`
-  from `\<forall>a\<in>set (a#as). valid_edge a` have "valid_edge a"
+    preds (kinds as) s\<rbrakk> \<Longrightarrow> preds (kinds as) s'\<close>
+  from \<open>\<forall>a\<in>set (a#as). valid_edge a\<close> have "valid_edge a"
     and "\<forall>a \<in> set as. valid_edge a" by simp_all
-  from `preds (kinds (a#as)) s` have "pred (kind a) s"
+  from \<open>preds (kinds (a#as)) s\<close> have "pred (kind a) s"
     and "preds (kinds as) (transfer (kind a) s)" by(simp_all add:kinds_def)
   show ?case
   proof(cases cfsx)
     case Nil
-    with `length cs = length cfsx` have "length cs = length []" by simp
-    from Nil `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'` `intra_kind (kind a)` 
+    with \<open>length cs = length cfsx\<close> have "length cs = length []" by simp
+    from Nil \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close> \<open>intra_kind (kind a)\<close> 
     obtain cfx where "transfer (kind a) s = []@cfx#cfs"
       and "transfer (kind a) s' = []@cfx#cfs'"
       by(cases "kind a",auto simp:kinds_def intra_kind_def)
-    from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a`
-      `length cs = length []` `preds (kinds as) (transfer (kind a) s)`]
+    from IH[OF this \<open>length cfs = length cfs'\<close> \<open>\<forall>a \<in> set as. valid_edge a\<close>
+      \<open>length cs = length []\<close> \<open>preds (kinds as) (transfer (kind a) s)\<close>]
     have "preds (kinds as) (transfer (kind a) s')" .
     moreover
-    from Nil `valid_edge a` `pred (kind a) s` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
-      `length cfs = length cfs'`
+    from Nil \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
+      \<open>length cfs = length cfs'\<close>
     have "pred (kind a) s'" by(fastforce intro:CFG_edge_Uses_pred_equal)
     ultimately show ?thesis by(simp add:kinds_def)
   next
     case (Cons x xs)
-    with `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'` `intra_kind (kind a)`
+    with \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close> \<open>intra_kind (kind a)\<close>
     obtain cfx where "transfer (kind a) s = (cfx#xs)@cf#cfs"
       and "transfer (kind a) s' = (cfx#xs)@cf#cfs'"
       by(cases "kind a",auto simp:kinds_def intra_kind_def)
-    from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a` _ 
-      `preds (kinds as) (transfer (kind a) s)`] `length cs = length cfsx` Cons
+    from IH[OF this \<open>length cfs = length cfs'\<close> \<open>\<forall>a \<in> set as. valid_edge a\<close> _ 
+      \<open>preds (kinds as) (transfer (kind a) s)\<close>] \<open>length cs = length cfsx\<close> Cons
     have "preds (kinds as) (transfer (kind a) s')" by simp
     moreover
-    from Cons `valid_edge a` `pred (kind a) s` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
-      `length cfs = length cfs'` 
+    from Cons \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
+      \<open>length cfs = length cfs'\<close> 
     have "pred (kind a) s'" by(fastforce intro:CFG_edge_Uses_pred_equal)
     ultimately show ?thesis by(simp add:kinds_def)
   qed
 next
   case (slpa_Call cs a as Q r p fs)
-  note IH = `\<And>s s' cf cfsx. \<lbrakk>s = cfsx@cf#cfs; s' = cfsx@cf#cfs';
+  note IH = \<open>\<And>s s' cf cfsx. \<lbrakk>s = cfsx@cf#cfs; s' = cfsx@cf#cfs';
     length cfs = length cfs'; \<forall>a \<in> set as. valid_edge a; length (a#cs) = length cfsx;
-    preds (kinds as) s\<rbrakk> \<Longrightarrow> preds (kinds as) s'`
-  from `\<forall>a\<in>set (a#as). valid_edge a` have "valid_edge a"
+    preds (kinds as) s\<rbrakk> \<Longrightarrow> preds (kinds as) s'\<close>
+  from \<open>\<forall>a\<in>set (a#as). valid_edge a\<close> have "valid_edge a"
     and "\<forall>a \<in> set as. valid_edge a" by simp_all
-  from `preds (kinds (a#as)) s` have "pred (kind a) s"
+  from \<open>preds (kinds (a#as)) s\<close> have "pred (kind a) s"
     and "preds (kinds as) (transfer (kind a) s)" by(simp_all add:kinds_def)
-  from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'` obtain cfx
+  from \<open>kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close> obtain cfx
     where "transfer (kind a) s = (cfx#cfsx)@cf#cfs"
     and "transfer (kind a) s' = (cfx#cfsx)@cf#cfs'" by(cases cfsx) auto
-  from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a` _ 
-    `preds (kinds as) (transfer (kind a) s)`] `length cs = length cfsx`
+  from IH[OF this \<open>length cfs = length cfs'\<close> \<open>\<forall>a \<in> set as. valid_edge a\<close> _ 
+    \<open>preds (kinds as) (transfer (kind a) s)\<close>] \<open>length cs = length cfsx\<close>
   have "preds (kinds as) (transfer (kind a) s')" by simp
   moreover
-  from `valid_edge a` `pred (kind a) s` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
-    `length cfs = length cfs'` have "pred (kind a) s'" 
+  from \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
+    \<open>length cfs = length cfs'\<close> have "pred (kind a) s'" 
     by(cases cfsx)(auto intro:CFG_edge_Uses_pred_equal)
   ultimately show ?case by(simp add:kinds_def)
 next
   case (slpa_Return cs a as Q p f c' cs')
-  note IH = `\<And>s s' cf cfsx. \<lbrakk>s = cfsx@cf#cfs; s' = cfsx@cf#cfs';
+  note IH = \<open>\<And>s s' cf cfsx. \<lbrakk>s = cfsx@cf#cfs; s' = cfsx@cf#cfs';
     length cfs = length cfs'; \<forall>a \<in> set as. valid_edge a; length cs' = length cfsx; 
-    preds (kinds as) s\<rbrakk> \<Longrightarrow> preds (kinds as) s'`
-  from `\<forall>a\<in>set (a#as). valid_edge a` have "valid_edge a"
+    preds (kinds as) s\<rbrakk> \<Longrightarrow> preds (kinds as) s'\<close>
+  from \<open>\<forall>a\<in>set (a#as). valid_edge a\<close> have "valid_edge a"
     and "\<forall>a \<in> set as. valid_edge a" by simp_all
-  from `preds (kinds (a#as)) s` have "pred (kind a) s"
+  from \<open>preds (kinds (a#as)) s\<close> have "pred (kind a) s"
     and "preds (kinds as) (transfer (kind a) s)" by(simp_all add:kinds_def)
   show ?case
   proof(cases cs')
     case Nil
-    with `cs = c'#cs'` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
-      `length cs = length cfsx` 
+    with \<open>cs = c'#cs'\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
+      \<open>length cs = length cfsx\<close> 
     obtain cf' where "s = cf'#cf#cfs" and "s' = cf'#cf#cfs'" by(cases cfsx) auto
-    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf'' where "transfer (kind a) s = []@cf''#cfs"
+    with \<open>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f\<close> obtain cf'' where "transfer (kind a) s = []@cf''#cfs"
       and "transfer (kind a) s' = []@cf''#cfs'" by auto
-    from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a` _ 
-      `preds (kinds as) (transfer (kind a) s)`] Nil
+    from IH[OF this \<open>length cfs = length cfs'\<close> \<open>\<forall>a \<in> set as. valid_edge a\<close> _ 
+      \<open>preds (kinds as) (transfer (kind a) s)\<close>] Nil
     have "preds (kinds as) (transfer (kind a) s')" by simp
     moreover
-    from `valid_edge a` `pred (kind a) s` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
-      `length cfs = length cfs'`  have "pred (kind a) s'" 
+    from \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
+      \<open>length cfs = length cfs'\<close>  have "pred (kind a) s'" 
       by(cases cfsx)(auto intro:CFG_edge_Uses_pred_equal)
     ultimately show ?thesis by(simp add:kinds_def)
   next
     case (Cons cx csx)
-    with `cs = c'#cs'` `length cs = length cfsx` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
+    with \<open>cs = c'#cs'\<close> \<open>length cs = length cfsx\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
     obtain x x' xs where "s = (x#x'#xs)@cf#cfs" and "s' = (x#x'#xs)@cf#cfs'"
       and "length xs = length csx"
       by(cases cfsx,auto,case_tac list,fastforce+)
-    with `kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f` obtain cf' where "transfer (kind a) s = (cf'#xs)@cf#cfs"
+    with \<open>kind a = Q\<hookleftarrow>\<^bsub>p\<^esub>f\<close> obtain cf' where "transfer (kind a) s = (cf'#xs)@cf#cfs"
       and "transfer (kind a) s' = (cf'#xs)@cf#cfs'"
       by fastforce
-    from IH[OF this `length cfs = length cfs'` `\<forall>a \<in> set as. valid_edge a` _ 
-      `preds (kinds as) (transfer (kind a) s)`] Cons `length xs = length csx`
+    from IH[OF this \<open>length cfs = length cfs'\<close> \<open>\<forall>a \<in> set as. valid_edge a\<close> _ 
+      \<open>preds (kinds as) (transfer (kind a) s)\<close>] Cons \<open>length xs = length csx\<close>
     have "preds (kinds as) (transfer (kind a) s')" by simp
     moreover
-    from `valid_edge a` `pred (kind a) s` `s = cfsx@cf#cfs` `s' = cfsx@cf#cfs'`
-      `length cfs = length cfs'`  have "pred (kind a) s'" 
+    from \<open>valid_edge a\<close> \<open>pred (kind a) s\<close> \<open>s = cfsx@cf#cfs\<close> \<open>s' = cfsx@cf#cfs'\<close>
+      \<open>length cfs = length cfs'\<close>  have "pred (kind a) s'" 
       by(cases cfsx)(auto intro:CFG_edge_Uses_pred_equal)
     ultimately show ?thesis by(simp add:kinds_def)
   qed
@@ -367,11 +367,11 @@ lemma slp_preds:
   and "length cfs = length cfs'"
   shows "preds (kinds as) (cf#cfs')"
 proof -
-  from `n -as\<rightarrow>\<^bsub>sl\<^esub>* n'` have "n -as\<rightarrow>* n'" and "same_level_path_aux [] as"
+  from \<open>n -as\<rightarrow>\<^bsub>sl\<^esub>* n'\<close> have "n -as\<rightarrow>* n'" and "same_level_path_aux [] as"
     by(simp_all add:slp_def same_level_path_def)
-  from `n -as\<rightarrow>* n'` have "\<forall>a \<in> set as. valid_edge a" by(rule path_valid_edges)
-  with `same_level_path_aux [] as` `preds (kinds as) (cf#cfs)` 
-    `length cfs = length cfs'`
+  from \<open>n -as\<rightarrow>* n'\<close> have "\<forall>a \<in> set as. valid_edge a" by(rule path_valid_edges)
+  with \<open>same_level_path_aux [] as\<close> \<open>preds (kinds as) (cf#cfs)\<close> 
+    \<open>length cfs = length cfs'\<close>
   show ?thesis by(fastforce elim!:slpa_preds)
 qed
 end

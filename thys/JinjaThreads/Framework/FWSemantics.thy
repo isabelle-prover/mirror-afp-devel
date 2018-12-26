@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* The multithreaded semantics *}
+section \<open>The multithreaded semantics\<close>
 
 theory FWSemantics
 imports
@@ -305,11 +305,11 @@ proof(induct rule: RedT_induct)
   case refl thus ?case by simp
 next
   case (step S TTAS S' T TA S'')
-  note Red = `S -\<triangleright>TTAS\<rightarrow>* S'`
-  note IH = `\<lbrakk> NewThread t x m'' \<in> set (concat (map (thr_a \<circ> snd) TTAS)); wset_thread_ok (wset S) (thr S) \<rbrakk> \<Longrightarrow> thr S' t \<noteq> None`
-  note red = `S' -T\<triangleright>TA\<rightarrow> S''`
-  note ins = `NewThread t x m'' \<in> set (concat (map (thr_a \<circ> snd) (TTAS @ [(T, TA)])))`
-  note wto = `wset_thread_ok (wset S) (thr S)`
+  note Red = \<open>S -\<triangleright>TTAS\<rightarrow>* S'\<close>
+  note IH = \<open>\<lbrakk> NewThread t x m'' \<in> set (concat (map (thr_a \<circ> snd) TTAS)); wset_thread_ok (wset S) (thr S) \<rbrakk> \<Longrightarrow> thr S' t \<noteq> None\<close>
+  note red = \<open>S' -T\<triangleright>TA\<rightarrow> S''\<close>
+  note ins = \<open>NewThread t x m'' \<in> set (concat (map (thr_a \<circ> snd) (TTAS @ [(T, TA)])))\<close>
+  note wto = \<open>wset_thread_ok (wset S) (thr S)\<close>
   from Red wto have wto': "wset_thread_ok (wset S') (thr S')" by(auto dest: RedT_preserves_wset_thread_ok)  
   show ?case
   proof(cases "NewThread t x m'' \<in> set \<lbrace>TA\<rbrace>\<^bsub>t\<^esub>")

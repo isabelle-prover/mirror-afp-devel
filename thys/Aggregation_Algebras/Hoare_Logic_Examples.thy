@@ -3,7 +3,7 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Examples using Hoare Logic for Total Correctness *}
+section \<open>Examples using Hoare Logic for Total Correctness\<close>
 
 theory Hoare_Logic_Examples
 
@@ -11,11 +11,11 @@ imports Hoare_Logic
 
 begin
 
-text {*
+text \<open>
 This theory demonstrates a few simple partial- and total-correctness proofs.
 The first example is taken from HOL/Hoare/Examples.thy written by N. Galm.
 We have added the invariant $m \leq a$.
-*}
+\<close>
 
 lemma multiply_by_add: "VARS m s a b
   {a=A \<and> b=B}
@@ -26,10 +26,10 @@ lemma multiply_by_add: "VARS m s a b
   {s = A*B}"
   by vcg_simp
 
-text {*
+text \<open>
 Here is the total-correctness proof for the same program.
 It needs the additional invariant $m \leq a$.
-*}
+\<close>
 
 lemma multiply_by_add_tc: "VARS m s a b
   [a=A \<and> b=B]
@@ -42,9 +42,9 @@ lemma multiply_by_add_tc: "VARS m s a b
   apply vcg_tc_simp
   by auto
 
-text {*
+text \<open>
 Next, we prove partial correctness of a program that computes powers.
-*}
+\<close>
 
 lemma power: "VARS (x::nat) n p i
   { 0 \<le> n }
@@ -59,9 +59,9 @@ lemma power: "VARS (x::nat) n p i
   apply vcg_simp
   by auto
 
-text {*
+text \<open>
 Here is its total-correctness proof.
-*}
+\<close>
 
 lemma power_tc: "VARS (x::nat) n p i
   [ 0 \<le> n ]

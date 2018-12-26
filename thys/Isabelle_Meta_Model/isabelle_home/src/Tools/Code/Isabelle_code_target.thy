@@ -34,7 +34,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Part ... *}
+chapter\<open>Part ...\<close>
 
 theory  Isabelle_code_target
 imports Main
@@ -43,9 +43,9 @@ keywords "attach"
            :: thy_decl
 begin
 
-subsection{* beginning (lazy code printing) *}
+subsection\<open>beginning (lazy code printing)\<close>
 
-ML{*
+ML\<open>
 structure Isabelle_Code_Target =
 struct
 (*  Title:      Tools/Code/code_target.ML
@@ -148,9 +148,9 @@ fun parse_symbol_pragmas parse_const parse_tyco parse_class parse_classrel parse
     (parse_symbol_pragma parse_const parse_tyco parse_class parse_classrel parse_inst parse_module));
 
 end
-*}
+\<close>
 
-ML{*
+ML\<open>
 structure Code_printing = struct
 datatype code_printing = Code_printing of
      (string * (bstring * Code_Printer.raw_const_syntax option) list,
@@ -205,6 +205,6 @@ val () =
 
 end
 
-*}
+\<close>
 
 end

@@ -9,8 +9,8 @@ section \<open>\texorpdfstring{$L$}{L}-Transform\<close>
 
 subsection \<open>States\<close>
 
-text \<open>The intuition is that states of kind~@{text AC} can perform ordinary actions, and states of
-kind~@{text EF} can commit effects.\<close>
+text \<open>The intuition is that states of kind~\<open>AC\<close> can perform ordinary actions, and states of
+kind~\<open>EF\<close> can commit effects.\<close>
 
 datatype ('state,'effect) L_state =
     AC "'effect \<times> 'effect fs_set \<times> 'state"
@@ -199,12 +199,12 @@ begin
     assumes "finite (supp X)" and "AC (f,F,P) \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle>"
     shows "\<exists>\<alpha> P'. P \<rightarrow> \<langle>\<alpha>,P'\<rangle> \<and> \<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle> = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle> \<and> bn \<alpha> \<sharp>* X"
   using assms proof -
-    from `AC (f,F,P) \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle>` obtain \<alpha> P' where transition: "P \<rightarrow> \<langle>\<alpha>,P'\<rangle>" and alpha: "\<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle> = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle>" and fresh: "bn \<alpha> \<sharp>* (F,f)"
+    from \<open>AC (f,F,P) \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle>\<close> obtain \<alpha> P' where transition: "P \<rightarrow> \<langle>\<alpha>,P'\<rangle>" and alpha: "\<langle>\<alpha>\<^sub>L,P\<^sub>L'\<rangle> = \<langle>Act \<alpha>, EF (L (\<alpha>,F,f), P')\<rangle>" and fresh: "bn \<alpha> \<sharp>* (F,f)"
       by (metis L_transition.simps(1))
     let ?Act = "Act \<alpha> :: ('act,'effect) L_action" \<comment> \<open>the type annotation prevents a type that is too polymorphic and doesn't fix~@{typ 'effect}\<close>
     have "finite (bn \<alpha>)"
       by (fact bn_finite)
-    moreover note `finite (supp X)`
+    moreover note \<open>finite (supp X)\<close>
     moreover have "finite (supp (\<langle>?Act, EF (L (\<alpha>,F,f), P')\<rangle>, \<langle>\<alpha>,P'\<rangle>, F, f))"
       by (metis finite_Diff finite_UnI finite_supp supp_Pair supp_abs_residual_pair)
     moreover from fresh have "bn \<alpha> \<sharp>* (\<langle>?Act, EF (L (\<alpha>,F,f), P')\<rangle>, \<langle>\<alpha>,P'\<rangle>, F, f)"
@@ -303,7 +303,7 @@ using assms proof (induction t1 t2 rule: alpha_Tree_induct')
     by (simp add: bset.rel_eq)
 next
   case (alpha_tAct f1 \<alpha>1 t1 f2 \<alpha>2 t2)
-  from `alpha_Tree (FL_Formula.Tree.tAct f1 \<alpha>1 t1) (FL_Formula.Tree.tAct f2 \<alpha>2 t2)`
+  from \<open>alpha_Tree (FL_Formula.Tree.tAct f1 \<alpha>1 t1) (FL_Formula.Tree.tAct f2 \<alpha>2 t2)\<close>
     obtain p where *: "(bn \<alpha>1, t1) \<approx>set alpha_Tree (supp_rel alpha_Tree) p (bn \<alpha>2, t2)"
       and **: "(bn \<alpha>1, \<alpha>1) \<approx>set (=) supp p (bn \<alpha>2, \<alpha>2)" and "f1 = f2"
     by auto
@@ -323,7 +323,7 @@ next
     by (metis (mono_tags, lifting) L_Transform.supp_Act alpha_set permute_L_action.simps(1))
   ultimately have "Formula.Act\<^sub>\<alpha> (Act \<alpha>1) (L_transform_Tree t1) = Formula.Act\<^sub>\<alpha> (Act \<alpha>2) (L_transform_Tree t2)"
     by (auto simp add: Formula.Act\<^sub>\<alpha>_eq_iff)
-  with `f1 = f2` show ?case
+  with \<open>f1 = f2\<close> show ?case
     by simp
 qed simp_all
 
@@ -471,7 +471,7 @@ begin
       assume "FL_valid P (Pred f \<phi>)"
       then have "L_transform.valid (AC (f, F, \<langle>f\<rangle>P)) ?\<phi>"
         by (simp add: L_transform.valid_Act)
-      moreover from `f \<in>\<^sub>f\<^sub>s F` have "EF (F, P) \<rightarrow>\<^sub>L \<langle>Eff f, AC (f, F, \<langle>f\<rangle>P)\<rangle>"
+      moreover from \<open>f \<in>\<^sub>f\<^sub>s F\<close> have "EF (F, P) \<rightarrow>\<^sub>L \<langle>Eff f, AC (f, F, \<langle>f\<rangle>P)\<rangle>"
         by (metis L_transition.simps(2))
       ultimately show "L_transform.valid (EF (F, P)) (L_transform (Pred f \<phi>))"
         using L_transform.valid_Act by fastforce
@@ -493,7 +493,7 @@ begin
         by (metis FL_valid_Act_strong finite_supp)
       from eq obtain p where p_x: "p \<bullet> x = x'" and p_\<alpha>: "p \<bullet> \<alpha> = \<alpha>'" and supp_p: "supp p \<subseteq> bn \<alpha> \<union> bn \<alpha>'"
         by (metis bn_eqvt FL_Formula.Act_eq_iff_perm_renaming)
-      from `bn \<alpha> \<sharp>* (F, f)` and fresh have "supp (F, f) \<sharp>* p"
+      from \<open>bn \<alpha> \<sharp>* (F, f)\<close> and fresh have "supp (F, f) \<sharp>* p"
         using supp_p by (auto simp add: fresh_star_Pair fresh_star_def supp_Pair fresh_def)
       then have "p \<bullet> F = F" and "p \<bullet> f = f"
         using supp_perm_eq by fastforce+
@@ -505,11 +505,11 @@ begin
       then have "L_transform.valid (p \<bullet> EF (L (\<alpha>, F, f), -p \<bullet> P')) (p \<bullet> L_transform x)"
         by (fact L_transform.valid_eqvt)
       then have "L_transform.valid (EF (L (\<alpha>', F, f), P')) (L_transform x')"
-        using p_x and p_\<alpha> and `p \<bullet> F = F` and `p \<bullet> f = f` by simp
+        using p_x and p_\<alpha> and \<open>p \<bullet> F = F\<close> and \<open>p \<bullet> f = f\<close> by simp
 
       then have "L_transform.valid (AC (f, F, \<langle>f\<rangle>P)) (Formula.Act (Act \<alpha>') (L_transform x'))"
         using trans fresh L_transform.valid_Act by fastforce
-      with `f \<in>\<^sub>f\<^sub>s F` and eq show "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
+      with \<open>f \<in>\<^sub>f\<^sub>s F\<close> and eq show "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
         using L_transform.valid_Act by fastforce
     next
       assume *: "L_transform.valid (EF (F, P)) (L_transform (FL_Formula.Act f \<alpha> x))"
@@ -523,12 +523,12 @@ begin
       next
         show "finite (supp (F, FL_Formula.Act f \<alpha> x))" by (simp add: finite_supp)
       next
-        from `bn \<alpha> \<sharp>* (F, f)` show "bn \<alpha> \<sharp>* (F, FL_Formula.Act f \<alpha> x)"
+        from \<open>bn \<alpha> \<sharp>* (F, f)\<close> show "bn \<alpha> \<sharp>* (F, FL_Formula.Act f \<alpha> x)"
           by (simp add: fresh_star_Pair fresh_star_def fresh_def supp_Pair)
       qed metis
       from 2 have "supp F \<sharp>* p" and Act_fresh: "supp (FL_Formula.Act f \<alpha> x) \<sharp>* p"
         by (simp add: fresh_star_Pair fresh_star_def supp_Pair)+
-      from `supp F \<sharp>* p` have "p \<bullet> F = F"
+      from \<open>supp F \<sharp>* p\<close> have "p \<bullet> F = F"
         by (metis supp_perm_eq)
       from Act_fresh have "p \<bullet> f = f"
         using fresh_star_Un supp_perm_eq by fastforce
@@ -554,7 +554,7 @@ begin
 
       from valid' have "L_transform.valid (-p \<bullet> P'') (L_transform x)"
         by (metis (mono_tags) L_transform.valid_eqvt L_transform_eqvt permute_minus_cancel(2))
-      with P'' `p \<bullet> F = F` `p \<bullet> f = f` have "L_transform.valid (EF (L (\<alpha>, F, f), - p \<bullet> P')) (L_transform x)"
+      with P'' \<open>p \<bullet> F = F\<close> \<open>p \<bullet> f = f\<close> have "L_transform.valid (EF (L (\<alpha>, F, f), - p \<bullet> P')) (L_transform x)"
         by simp (metis pemute_minus_self permute_minus_cancel(1))
       then have "FL_valid P' (p \<bullet> x)"
         using Act.hyps(4) by (metis FL_valid_eqvt permute_minus_cancel(1))
@@ -609,7 +609,7 @@ begin
             moreover from \<alpha>\<^sub>LP\<^sub>L' have "\<alpha>\<^sub>L = Eff f" and "P\<^sub>L' = AC (f, F, \<langle>f\<rangle>P)"
               by (metis bn_L_action.simps(2) residual_empty_bn_eq_iff)+
             ultimately show "thesis"
-              using `\<And>Q\<^sub>L'. Q\<^sub>L \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,Q\<^sub>L'\<rangle> \<Longrightarrow> L_bisimilar P\<^sub>L' Q\<^sub>L' \<Longrightarrow> thesis` by blast
+              using \<open>\<And>Q\<^sub>L'. Q\<^sub>L \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,Q\<^sub>L'\<rangle> \<Longrightarrow> L_bisimilar P\<^sub>L' Q\<^sub>L' \<Longrightarrow> thesis\<close> by blast
           next
             fix P F Q f
             assume P\<^sub>L: "P\<^sub>L = AC (f, F, \<langle>f\<rangle>P)" and Q\<^sub>L: "Q\<^sub>L = AC (f, F, \<langle>f\<rangle>Q)" and bisim: "P \<sim>\<cdot>[F] Q" and effect: "f \<in>\<^sub>f\<^sub>s F"
@@ -648,7 +648,7 @@ begin
               by (metis L_bisimilar.intros(1))
 
             ultimately show thesis
-                using `\<And>Q\<^sub>L'. Q\<^sub>L \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,Q\<^sub>L'\<rangle> \<Longrightarrow> L_bisimilar P\<^sub>L' Q\<^sub>L' \<Longrightarrow> thesis` by blast
+                using \<open>\<And>Q\<^sub>L'. Q\<^sub>L \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,Q\<^sub>L'\<rangle> \<Longrightarrow> L_bisimilar P\<^sub>L' Q\<^sub>L' \<Longrightarrow> thesis\<close> by blast
           qed
         then show "\<exists>Q\<^sub>L'. Q\<^sub>L \<rightarrow>\<^sub>L \<langle>\<alpha>\<^sub>L,Q\<^sub>L'\<rangle> \<and> L_bisimilar P\<^sub>L' Q\<^sub>L'"
           by auto

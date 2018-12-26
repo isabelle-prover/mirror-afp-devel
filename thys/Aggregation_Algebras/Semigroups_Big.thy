@@ -16,10 +16,10 @@ theory Semigroups_Big
   imports Main
 begin
 
-text {*
-This theory is based on Isabelle/HOL's @{text Groups_Big.thy} written by T. Nipkow, L. C. Paulson, M. Wenzel and J. Avigad.
+text \<open>
+This theory is based on Isabelle/HOL's \<open>Groups_Big.thy\<close> written by T. Nipkow, L. C. Paulson, M. Wenzel and J. Avigad.
 We have generalised a selection of its results from Abelian monoids to Abelian semigroups with an element that is a unit on the image of the semigroup operation.
-*}
+\<close>
 
 subsection \<open>Generic Abelian semigroup operation over a set\<close>
 

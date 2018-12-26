@@ -229,7 +229,7 @@ lemma deriv_in_subterms [elim, dest]:
 subsection "Actions"
 
 text \<open>
-  There are two sorts of @{text \<tau>} actions in AWN: one at the level of individual processes
+  There are two sorts of \<open>\<tau>\<close> actions in AWN: one at the level of individual processes
   (within nodes), and one at the network level (outside nodes). We define a class so that
   we can ignore this distinction whenever it is not critical.
 \<close>

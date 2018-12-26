@@ -27,11 +27,11 @@ declare le_trans[trans]
 
 end
 
-text{* Note: no antisymmetry. Allows implementations where some abstract
+text\<open>Note: no antisymmetry. Allows implementations where some abstract
 element is implemented by two different values @{prop "x \<noteq> y"}
 such that @{prop"x \<sqsubseteq> y"} and @{prop"y \<sqsubseteq> x"}. Antisymmetry is not
-needed because we never compare elements for equality but only for @{text"\<sqsubseteq>"}.
-*}
+needed because we never compare elements for equality but only for \<open>\<sqsubseteq>\<close>.
+\<close>
 
 class SL_top = preord +
 fixes join :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>" 65)
@@ -200,7 +200,7 @@ and "f p \<sqsubseteq> p" and "x0 \<sqsubseteq> p" and "pfp f x0 = Some x" shows
 proof-
   { fix x assume "x \<sqsubseteq> p"
     hence  "f x \<sqsubseteq> f p" by(rule mono)
-    from this `f p \<sqsubseteq> p` have "f x \<sqsubseteq> p" by(rule le_trans)
+    from this \<open>f p \<sqsubseteq> p\<close> have "f x \<sqsubseteq> p" by(rule le_trans)
   }
   thus "x \<sqsubseteq> p" using assms(2-) while_option_rule[where P = "%x. x \<sqsubseteq> p"]
     unfolding pfp_def by blast
@@ -226,8 +226,8 @@ by(metis strip_bot_acom)
 lemma lpfpc_least:
 assumes mono: "\<And>x y. x \<sqsubseteq> y \<Longrightarrow> f x \<sqsubseteq> f y"
 and "strip p = c0" and "f p \<sqsubseteq> p" and lp: "lpfp\<^sub>c f c0 = Some c" shows "c \<sqsubseteq> p"
-using pfp_least[OF _ _ bot_acom[OF `strip p = c0`] lp[simplified lpfp\<^sub>c_def]]
-  mono `f p \<sqsubseteq> p`
+using pfp_least[OF _ _ bot_acom[OF \<open>strip p = c0\<close>] lp[simplified lpfp\<^sub>c_def]]
+  mono \<open>f p \<sqsubseteq> p\<close>
 by blast
 
 
@@ -240,7 +240,7 @@ fun \<gamma>_option :: "('a \<Rightarrow> 'b set) \<Rightarrow> 'a option \<Righ
 "\<gamma>_option \<gamma> None = {}" |
 "\<gamma>_option \<gamma> (Some a) = \<gamma> a"
 
-text{* The interface for abstract values: *}
+text\<open>The interface for abstract values:\<close>
 
 locale Val_abs =
 fixes \<gamma> :: "'av::SL_top \<Rightarrow> val set"
@@ -308,7 +308,7 @@ by(induction sa sa' rule: le_option.induct)(simp_all add: mono_gamma_f)
 lemma mono_gamma_c: "ca \<sqsubseteq> ca' \<Longrightarrow> \<gamma>\<^sub>c ca \<le> \<gamma>\<^sub>c ca'"
 by (induction ca ca' rule: le_acom.induct) (simp_all add:mono_gamma_o)
 
-text{* Soundness: *}
+text\<open>Soundness:\<close>
 
 lemma aval'_sound: "s : \<gamma>\<^sub>f S \<Longrightarrow> aval a s : \<gamma>(aval' a S)"
 by (induct a) (auto simp: gamma_num' gamma_plus' \<gamma>_fun_def)
@@ -335,10 +335,10 @@ next
       "P \<subseteq> \<gamma>\<^sub>o P'" "c1 \<le> \<gamma>\<^sub>c c1'" "c2 \<le> \<gamma>\<^sub>c c2'"
     by (fastforce simp: If_le map_acom_If)
   moreover have "post c1 \<subseteq> \<gamma>\<^sub>o(post c1' \<squnion> post c2')"
-    by (metis (no_types) `c1 \<le> \<gamma>\<^sub>c c1'` join_ge1 le_post mono_gamma_o order_trans post_map_acom)
+    by (metis (no_types) \<open>c1 \<le> \<gamma>\<^sub>c c1'\<close> join_ge1 le_post mono_gamma_o order_trans post_map_acom)
   moreover have "post c2 \<subseteq> \<gamma>\<^sub>o(post c1' \<squnion> post c2')"
-    by (metis (no_types) `c2 \<le> \<gamma>\<^sub>c c2'` join_ge2 le_post mono_gamma_o order_trans post_map_acom)
-  ultimately show ?case using `S \<subseteq> \<gamma>\<^sub>o S'` by (simp add: If.IH subset_iff)
+    by (metis (no_types) \<open>c2 \<le> \<gamma>\<^sub>c c2'\<close> join_ge2 le_post mono_gamma_o order_trans post_map_acom)
+  ultimately show ?case using \<open>S \<subseteq> \<gamma>\<^sub>o S'\<close> by (simp add: If.IH subset_iff)
 next
   case (While I b c1 P)
   then obtain c1' I' P' where
@@ -346,7 +346,7 @@ next
     "I \<subseteq> \<gamma>\<^sub>o I'" "P \<subseteq> \<gamma>\<^sub>o P'" "c1 \<le> \<gamma>\<^sub>c c1'"
     by (fastforce simp: map_acom_While While_le)
   moreover have "S \<union> post c1 \<subseteq> \<gamma>\<^sub>o (S' \<squnion> post c1')"
-    using `S \<subseteq> \<gamma>\<^sub>o S'` le_post[OF `c1 \<le> \<gamma>\<^sub>c c1'`, simplified]
+    using \<open>S \<subseteq> \<gamma>\<^sub>o S'\<close> le_post[OF \<open>c1 \<le> \<gamma>\<^sub>c c1'\<close>, simplified]
     by (metis (no_types) join_ge1 join_ge2 le_sup_iff mono_gamma_o order_trans)
   ultimately show ?case by (simp add: While.IH subset_iff)
 qed
@@ -395,7 +395,7 @@ done
 
 end
 
-text{* Problem: not executable because of the comparison of abstract states,
-i.e. functions, in the post-fixedpoint computation. *}
+text\<open>Problem: not executable because of the comparison of abstract states,
+i.e. functions, in the post-fixedpoint computation.\<close>
 
 end

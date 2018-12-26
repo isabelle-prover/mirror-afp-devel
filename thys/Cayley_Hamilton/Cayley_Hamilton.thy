@@ -82,7 +82,7 @@ lemma coeff_pow_X_eq[simp]: "coeff (X^i) i = 1"
 lemma (in monoid_mult) power_ac: "a * (a^n * x) = a^n * (a * x)"
   by (metis power_Suc2 power_Suc mult.assoc)
 
-text{* This theory contains auxiliary lemmas on polynomials. *}
+text\<open>This theory contains auxiliary lemmas on polynomials.\<close>
 
 lemma degree_prod_le: "degree (\<Prod>i\<in>S. f i) \<le> (\<Sum>i\<in>S. degree (f i))"
   by (induction S rule: infinite_finite_induct)
@@ -287,7 +287,7 @@ proof -
         by (rule order_trans)
            (auto simp: M if_distrib[where f="degree"] sum.If_cases Collect_neg_eq Compl_eq_Diff_UNIV p intro!: card_mono)
       also have "\<dots> < CARD('n) - 1"
-        using `card {i, j} \<le> CARD('n)` ij by auto
+        using \<open>card {i, j} \<le> CARD('n)\<close> ij by auto
       finally show "degree (?P x x p) < degree (?P x x (\<lambda>x. x))"
         using * by simp
     qed

@@ -1,4 +1,4 @@
-section {* Exploration of Nondeterministic Büchi Automata *}
+section \<open>Exploration of Nondeterministic Büchi Automata\<close>
 
 theory NBA_Nodes
 imports

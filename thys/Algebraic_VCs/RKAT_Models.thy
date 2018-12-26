@@ -4,14 +4,14 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection {* Models of Refinement KAT *}
+subsubsection \<open>Models of Refinement KAT\<close>
 
 theory RKAT_Models
   imports RKAT
    
 begin
 
-text {* So far only the relational model is developed. *}
+text \<open>So far only the relational model is developed.\<close>
 
 definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where 
   "rel_R P Q = \<Union>{X. rel_kat.H P X Q}"

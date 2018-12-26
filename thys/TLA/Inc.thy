@@ -5,16 +5,16 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* Lamport's Inc example  *}
+section \<open>Lamport's Inc example\<close>
 
 theory Inc
 imports State   
 begin
 
-text{*
+text\<open>
   This example illustrates use of the embedding by mechanising
   the running example of Lamports original TLA paper \cite{Lamport94}.
-*}
+\<close>
 
 datatype pcount = a | b | g
 
@@ -86,10 +86,10 @@ locale Secondprogram = Firstprogram +
 
 lemmas  (in Secondprogram) Sact2_defs = n1_def n2_def alpha1_def beta1_def gamma1_def alpha2_def beta2_def gamma2_def
 
-text {*
+text \<open>
   Proving invariants is the basis of every effort of system verification.
-  We show that @{text I} is an inductive invariant of specification @{text psi}.
-*}
+  We show that \<open>I\<close> is an inductive invariant of specification \<open>psi\<close>.
+\<close>
 lemma (in Secondprogram) psiI: "\<turnstile> psi \<longrightarrow> \<box>I"
 proof -
   have init: "\<turnstile> initPsi \<longrightarrow> I" by (auto simp: initPsi_def I_def)
@@ -105,10 +105,10 @@ proof -
   with goal show ?thesis unfolding psi_def by auto
 qed
 
-text {*
+text \<open>
   Using this invariant we now prove step simulation, i.e. the safety part of
   the refinement proof.
-*}
+\<close>
 
 theorem (in Secondprogram) step_simulation: "\<turnstile> psi \<longrightarrow> init \<and> \<box>[m1 \<or> m2]_(x,y)"
 proof -
@@ -122,11 +122,11 @@ proof -
   with psiI show ?thesis unfolding psi_def by force
 qed
 
-text {*
+text \<open>
   Liveness proofs require computing the enabledness conditions of actions.
   The first lemma below shows that all steps are visible, i.e. they change
   at least one variable.
-*}
+\<close>
 lemma  (in Secondprogram) n1_ch: "|~ \<langle>n1\<rangle>_vars = n1"
 proof -
   have "|~ n1 \<longrightarrow> \<langle>n1\<rangle>_vars" by (auto simp: Sact2_defs tla_defs vars_def)
@@ -175,9 +175,9 @@ next
   qed
 qed
 
-text {*
+text \<open>
   The analogous properties for the second process are obtained by copy and paste.
-*}
+\<close>
 lemma  (in Secondprogram) n2_ch: "|~ \<langle>n2\<rangle>_vars = n2"
 proof -
   have "|~ n2 \<longrightarrow> \<langle>n2\<rangle>_vars" by (auto simp: Sact2_defs tla_defs vars_def)
@@ -226,22 +226,22 @@ next
   qed
 qed
 
-text {*
-  We use rule @{text SF2} to prove that @{text psi} implements strong fairness
-  for the abstract action @{text m1}. Since strong fairness implies weak fairness,
-  it follows that @{text psi} refines the liveness condition of @{text phi}.
-*}
+text \<open>
+  We use rule \<open>SF2\<close> to prove that \<open>psi\<close> implements strong fairness
+  for the abstract action \<open>m1\<close>. Since strong fairness implies weak fairness,
+  it follows that \<open>psi\<close> refines the liveness condition of \<open>phi\<close>.
+\<close>
 
 lemma (in Secondprogram) psi_fair_m1: "\<turnstile> psi \<longrightarrow> SF(m1)_(x,y)"
 proof -
   have "\<turnstile> \<box>[n1 \<or> n2]_vars \<and> SF(n1)_vars \<and> \<box>(I \<and> SF(n2)_vars) \<longrightarrow> SF(m1)_(x,y)"
   proof (rule SF2)
-    txt {*
-      Rule @{text SF2} requires us to choose a helpful action (whose effect implies
-      @{text "\<langle>m1\<rangle>_(x,y)"}) and a persistent condition, which will eventually remain
+    txt \<open>
+      Rule \<open>SF2\<close> requires us to choose a helpful action (whose effect implies
+      \<open>\<langle>m1\<rangle>_(x,y)\<close>) and a persistent condition, which will eventually remain
       true if the helpful action is never executed. In our case, the helpful action
-      is @{text beta1} and the persistent condition is @{text "pc1 = b"}.
-    *}
+      is \<open>beta1\<close> and the persistent condition is \<open>pc1 = b\<close>.
+\<close>
     show "|~ \<langle>(n1 \<or> n2) \<and> beta1\<rangle>_vars \<longrightarrow> \<langle>m1\<rangle>_(x,y)"
       by (auto simp: beta1_def m1_def vars_def tla_defs)
   next
@@ -251,12 +251,12 @@ proof -
     show "\<turnstile> $pc1 = #b \<and> Enabled \<langle>m1\<rangle>_(x, y) \<longrightarrow> Enabled \<langle>n1\<rangle>_vars"
       unfolding enab_n1[int_rewrite] by auto
   next
-    txt {*
+    txt \<open>
       The difficult part of the proof is showing that the persistent condition
       will eventually always be true if the helpful action is never executed.
       We show that (1) whenever the condition becomes true it remains so and
       (2) eventually the condition must be true.
-    *}
+\<close>
     show "\<turnstile> \<box>[(n1 \<or> n2) \<and> \<not> beta1]_vars
             \<and> SF(n1)_vars \<and> \<box>(I \<and> SF(n2)_vars) \<and> \<box>\<diamond>Enabled \<langle>m1\<rangle>_(x, y)
             \<longrightarrow> \<diamond>\<box>($pc1 = #b)"
@@ -273,17 +273,17 @@ proof -
       have "\<turnstile> \<box>[(n1 \<or> n2) \<and> \<not> beta1]_vars \<and> SF(n1)_vars \<and> \<box>(I \<and> SF(n2)_vars)
               \<longrightarrow> \<diamond>($pc1 = #b)"
       proof -
-        txt {*
-          The plan of the proof is to show that from any state where @{text "pc1 = g"}
-          one eventually reaches @{text "pc1 = a"}, from where one eventually reaches
-          @{text "pc1 = b"}. The result follows by combining leadsto properties.
-        *}
+        txt \<open>
+          The plan of the proof is to show that from any state where \<open>pc1 = g\<close>
+          one eventually reaches \<open>pc1 = a\<close>, from where one eventually reaches
+          \<open>pc1 = b\<close>. The result follows by combining leadsto properties.
+\<close>
         let ?F = "LIFT (\<box>[(n1 \<or> n2) \<and> \<not> beta1]_vars \<and> SF(n1)_vars \<and> \<box>(I \<and> SF(n2)_vars))"
-        txt {*
-          Showing that @{text "pc1 = g"} leads to @{text "pc1 = a"} is a simple
-          application of rule @{text SF1} because the first process completely
+        txt \<open>
+          Showing that \<open>pc1 = g\<close> leads to \<open>pc1 = a\<close> is a simple
+          application of rule \<open>SF1\<close> because the first process completely
           controls this transition.
-        *}
+\<close>
         have ga: "\<turnstile> ?F \<longrightarrow> ($pc1 = #g \<leadsto> $pc1 = #a)"
         proof (rule SF1)
           show "|~ $pc1 = #g \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circle>($pc1 = #g) \<or> \<circle>($pc1 = #a)"
@@ -305,12 +305,12 @@ proof -
                   \<longrightarrow> \<diamond>Enabled \<langle>n1\<rangle>_vars"
             by auto
         qed
-        txt {*
-          The proof that @{text "pc1 = a"} leads to @{text "pc1 = b"} follows
-          the same basic schema. However, showing that @{text n1} is eventually
+        txt \<open>
+          The proof that \<open>pc1 = a\<close> leads to \<open>pc1 = b\<close> follows
+          the same basic schema. However, showing that \<open>n1\<close> is eventually
           enabled requires reasoning about the second process, which must liberate
           the critical section.
-        *}
+\<close>
         have ab: "\<turnstile> ?F \<longrightarrow> ($pc1 = #a \<leadsto> $pc1 = #b)"
         proof (rule SF1)
           show "|~ $pc1 = #a \<and> [(n1 \<or> n2) \<and> \<not> beta1]_vars \<longrightarrow> \<circle>($pc1 = #a) \<or> \<circle>($pc1 = #b)"
@@ -322,11 +322,11 @@ proof -
           show "|~ $pc1 = #a \<and> Unchanged vars \<longrightarrow> \<circle>($pc1 = #a)"
             by (auto simp: vars_def tla_defs)
         next
-          txt {* We establish a suitable leadsto-chain. *}
+          txt \<open>We establish a suitable leadsto-chain.\<close>
           let ?G = "LIFT \<box>[(n1 \<or> n2) \<and> \<not> beta1]_vars \<and> SF(n2)_vars \<and> \<box>($pc1 = #a \<and> I)"
           have "\<turnstile> ?G \<longrightarrow> \<diamond>($pc2 = #a \<and> $pc1 = #a \<and> I)"
           proof -
-            txt {* Rule @{text SF1} takes us from @{text "pc2 = b"} to @{text "pc2 = g"}. *}
+            txt \<open>Rule \<open>SF1\<close> takes us from \<open>pc2 = b\<close> to \<open>pc2 = g\<close>.\<close>
             have bg2: "\<turnstile> ?G \<longrightarrow> ($pc2 = #b \<leadsto> $pc2 = #g)"
             proof (rule SF1)
               show "|~ $pc2 = #b \<and> [(n1 \<or> n2) \<and> \<not>beta1]_vars \<longrightarrow> \<circle>($pc2 = #b) \<or> \<circle>($pc2 = #g)"
@@ -348,7 +348,7 @@ proof -
                       \<longrightarrow> \<diamond>Enabled \<langle>n2\<rangle>_vars"
                 by auto
             qed
-            txt {* Similarly, @{text "pc2 = b"} leads to @{text "pc2 = g"}. *}
+            txt \<open>Similarly, \<open>pc2 = b\<close> leads to \<open>pc2 = g\<close>.\<close>
             have ga2: "\<turnstile> ?G \<longrightarrow> ($pc2 = #g \<leadsto> $pc2 = #a)"
             proof (rule SF1)
               show "|~ $pc2 = #g \<and> [(n1 \<or> n2) \<and> \<not>beta1]_vars \<longrightarrow> \<circle>($pc2 = #g) \<or> \<circle>($pc2 = #a)"
@@ -416,22 +416,22 @@ proof -
   with psiI show ?thesis unfolding psi_def Live2_def STL5[int_rewrite] by force
 qed
 
-text {*
-  In the same way we prove that @{text psi} implements strong fairness
-  for the abstract action @{text m1}. The proof is obtained by copy and paste
+text \<open>
+  In the same way we prove that \<open>psi\<close> implements strong fairness
+  for the abstract action \<open>m1\<close>. The proof is obtained by copy and paste
   from the previous one.
-*}
+\<close>
 
 lemma (in Secondprogram) psi_fair_m2: "\<turnstile> psi \<longrightarrow> SF(m2)_(x,y)"
 proof -
   have "\<turnstile> \<box>[n1 \<or> n2]_vars \<and> SF(n2)_vars \<and> \<box>(I \<and> SF(n1)_vars) \<longrightarrow> SF(m2)_(x,y)"
   proof (rule SF2)
-    txt {*
-      Rule @{text SF2} requires us to choose a helpful action (whose effect implies
-      @{text "\<langle>m2\<rangle>_(x,y)"}) and a persistent condition, which will eventually remain
+    txt \<open>
+      Rule \<open>SF2\<close> requires us to choose a helpful action (whose effect implies
+      \<open>\<langle>m2\<rangle>_(x,y)\<close>) and a persistent condition, which will eventually remain
       true if the helpful action is never executed. In our case, the helpful action
-      is @{text beta2} and the persistent condition is @{text "pc2 = b"}.
-    *}
+      is \<open>beta2\<close> and the persistent condition is \<open>pc2 = b\<close>.
+\<close>
     show "|~ \<langle>(n1 \<or> n2) \<and> beta2\<rangle>_vars \<longrightarrow> \<langle>m2\<rangle>_(x,y)"
       by (auto simp: beta2_def m2_def vars_def tla_defs)
   next
@@ -441,12 +441,12 @@ proof -
     show "\<turnstile> $pc2 = #b \<and> Enabled \<langle>m2\<rangle>_(x, y) \<longrightarrow> Enabled \<langle>n2\<rangle>_vars"
       unfolding enab_n2[int_rewrite] by auto
   next
-    txt {*
+    txt \<open>
       The difficult part of the proof is showing that the persistent condition
       will eventually always be true if the helpful action is never executed.
       We show that (1) whenever the condition becomes true it remains so and
       (2) eventually the condition must be true.
-    *}
+\<close>
     show "\<turnstile> \<box>[(n1 \<or> n2) \<and> \<not> beta2]_vars
             \<and> SF(n2)_vars \<and> \<box>(I \<and> SF(n1)_vars) \<and> \<box>\<diamond>Enabled \<langle>m2\<rangle>_(x, y)
             \<longrightarrow> \<diamond>\<box>($pc2 = #b)"
@@ -463,17 +463,17 @@ proof -
       have "\<turnstile> \<box>[(n1 \<or> n2) \<and> \<not> beta2]_vars \<and> SF(n2)_vars \<and> \<box>(I \<and> SF(n1)_vars)
               \<longrightarrow> \<diamond>($pc2 = #b)"
       proof -
-        txt {*
-          The plan of the proof is to show that from any state where @{text "pc2 = g"}
-          one eventually reaches @{text "pc2 = a"}, from where one eventually reaches
-          @{text "pc2 = b"}. The result follows by combining leadsto properties.
-        *}
+        txt \<open>
+          The plan of the proof is to show that from any state where \<open>pc2 = g\<close>
+          one eventually reaches \<open>pc2 = a\<close>, from where one eventually reaches
+          \<open>pc2 = b\<close>. The result follows by combining leadsto properties.
+\<close>
         let ?F = "LIFT (\<box>[(n1 \<or> n2) \<and> \<not> beta2]_vars \<and> SF(n2)_vars \<and> \<box>(I \<and> SF(n1)_vars))"
-        txt {*
-          Showing that @{text "pc2 = g"} leads to @{text "pc2 = a"} is a simple
-          application of rule @{text SF1} because the second process completely
+        txt \<open>
+          Showing that \<open>pc2 = g\<close> leads to \<open>pc2 = a\<close> is a simple
+          application of rule \<open>SF1\<close> because the second process completely
           controls this transition.
-        *}
+\<close>
         have ga: "\<turnstile> ?F \<longrightarrow> ($pc2 = #g \<leadsto> $pc2 = #a)"
         proof (rule SF1)
           show "|~ $pc2 = #g \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circle>($pc2 = #g) \<or> \<circle>($pc2 = #a)"
@@ -495,12 +495,12 @@ proof -
                   \<longrightarrow> \<diamond>Enabled \<langle>n2\<rangle>_vars"
             by auto
         qed
-        txt {*
-          The proof that @{text "pc2 = a"} leads to @{text "pc2 = b"} follows
-          the same basic schema. However, showing that @{text n2} is eventually
+        txt \<open>
+          The proof that \<open>pc2 = a\<close> leads to \<open>pc2 = b\<close> follows
+          the same basic schema. However, showing that \<open>n2\<close> is eventually
           enabled requires reasoning about the second process, which must liberate
           the critical section.
-        *}
+\<close>
         have ab: "\<turnstile> ?F \<longrightarrow> ($pc2 = #a \<leadsto> $pc2 = #b)"
         proof (rule SF1)
           show "|~ $pc2 = #a \<and> [(n1 \<or> n2) \<and> \<not> beta2]_vars \<longrightarrow> \<circle>($pc2 = #a) \<or> \<circle>($pc2 = #b)"
@@ -512,11 +512,11 @@ proof -
           show "|~ $pc2 = #a \<and> Unchanged vars \<longrightarrow> \<circle>($pc2 = #a)"
             by (auto simp: vars_def tla_defs)
         next
-          txt {* We establish a suitable leadsto-chain. *}
+          txt \<open>We establish a suitable leadsto-chain.\<close>
           let ?G = "LIFT \<box>[(n1 \<or> n2) \<and> \<not> beta2]_vars \<and> SF(n1)_vars \<and> \<box>($pc2 = #a \<and> I)"
           have "\<turnstile> ?G \<longrightarrow> \<diamond>($pc1 = #a \<and> $pc2 = #a \<and> I)"
           proof -
-            txt {* Rule @{text SF1} takes us from @{text "pc1 = b"} to @{text "pc1 = g"}. *}
+            txt \<open>Rule \<open>SF1\<close> takes us from \<open>pc1 = b\<close> to \<open>pc1 = g\<close>.\<close>
             have bg1: "\<turnstile> ?G \<longrightarrow> ($pc1 = #b \<leadsto> $pc1 = #g)"
             proof (rule SF1)
               show "|~ $pc1 = #b \<and> [(n1 \<or> n2) \<and> \<not>beta2]_vars \<longrightarrow> \<circle>($pc1 = #b) \<or> \<circle>($pc1 = #g)"
@@ -538,7 +538,7 @@ proof -
                       \<longrightarrow> \<diamond>Enabled \<langle>n1\<rangle>_vars"
                 by auto
             qed
-            txt {* Similarly, @{text "pc1 = b"} leads to @{text "pc1 = g"}. *}
+            txt \<open>Similarly, \<open>pc1 = b\<close> leads to \<open>pc1 = g\<close>.\<close>
             have ga1: "\<turnstile> ?G \<longrightarrow> ($pc1 = #g \<leadsto> $pc1 = #a)"
             proof (rule SF1)
               show "|~ $pc1 = #g \<and> [(n1 \<or> n2) \<and> \<not>beta2]_vars \<longrightarrow> \<circle>($pc1 = #g) \<or> \<circle>($pc1 = #a)"
@@ -606,10 +606,10 @@ proof -
   with psiI show ?thesis unfolding psi_def Live2_def STL5[int_rewrite] by force
 qed
 
-text {* 
-  We can now prove the main theorem, which states that @{text psi}
-  implements @{text phi}.
-*}
+text \<open>
+  We can now prove the main theorem, which states that \<open>psi\<close>
+  implements \<open>phi\<close>.
+\<close>
 
 theorem (in Secondprogram) impl: "\<turnstile> psi \<longrightarrow> phi"
   unfolding phi_def Live_def

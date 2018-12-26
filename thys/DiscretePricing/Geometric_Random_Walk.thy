@@ -2,9 +2,9 @@ theory Geometric_Random_Walk imports Infinite_Coin_Toss_Space
 
 begin
 
-section {* Geometric random walk *}
-text {* A geometric random walk is a stochastic process that can, at each time, move upwards or downwards,
-depending on the outcome of a coin toss. *}
+section \<open>Geometric random walk\<close>
+text \<open>A geometric random walk is a stochastic process that can, at each time, move upwards or downwards,
+depending on the outcome of a coin toss.\<close>
 
 fun (in infinite_coin_toss_space) geom_rand_walk:: "real \<Rightarrow> real \<Rightarrow> real \<Rightarrow> (nat \<Rightarrow> bool stream \<Rightarrow> real)" where
   base: "(geom_rand_walk u d v) 0 = (\<lambda>w. v)"|

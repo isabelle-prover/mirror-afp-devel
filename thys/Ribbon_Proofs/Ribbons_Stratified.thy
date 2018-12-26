@@ -1,15 +1,15 @@
-section {* Syntax and proof rules for stratified diagrams *}
+section \<open>Syntax and proof rules for stratified diagrams\<close>
 
 theory Ribbons_Stratified imports 
   Ribbons_Interfaces
   Proofchain
 begin
 
-text {* We define the syntax of stratified diagrams. We give proof rules 
+text \<open>We define the syntax of stratified diagrams. We give proof rules 
   for stratified diagrams, and prove them sound with respect to the 
-  ordinary rules of separation logic. *}
+  ordinary rules of separation logic.\<close>
 
-subsection {* Syntax of stratified diagrams *}
+subsection \<open>Syntax of stratified diagrams\<close>
 
 datatype sdiagram = SDiagram "(cell \<times> interface) list" 
 and cell = 
@@ -23,7 +23,7 @@ datatype_compat sdiagram cell
 
 type_synonym row = "cell \<times> interface"
 
-text {* Extracting the command from a stratified diagram. *}
+text \<open>Extracting the command from a stratified diagram.\<close>
 fun
   com_sdia :: "sdiagram \<Rightarrow> command" and
   com_cell :: "cell \<Rightarrow> command"
@@ -35,7 +35,7 @@ where
 | "com_cell (Choose_sdia P D E Q) = Choose (com_sdia D) (com_sdia E)"
 | "com_cell (Loop_sdia P D Q) = Loop (com_sdia D)"
 
-text {* Extracting the program variables written by a stratified diagram. *}
+text \<open>Extracting the program variables written by a stratified diagram.\<close>
 fun
   wr_sdia :: "sdiagram \<Rightarrow> string set" and
   wr_cell :: "cell \<Rightarrow> string set" 
@@ -47,8 +47,8 @@ where
 | "wr_cell (Choose_sdia P D E Q) = wr_sdia D \<union> wr_sdia E"
 | "wr_cell (Loop_sdia P D Q) = wr_sdia D"
 
-text {* The program variables written by a stratified diagram correspond to
-  those written by the commands therein. *}
+text \<open>The program variables written by a stratified diagram correspond to
+  those written by the commands therein.\<close>
 lemma wr_sdia_is_wr_com:
   fixes \<rho>s :: "row list"
   and \<rho> :: row
@@ -63,7 +63,7 @@ apply (auto simp add: wr_com_skip wr_com_choose
   wr_com_loop wr_com_seq split_def o_def)
 done
 
-subsection {* Proof rules for stratified diagrams *}
+subsection \<open>Proof rules for stratified diagrams\<close>
 
 inductive 
   prov_sdia :: "[sdiagram, interface, interface] \<Rightarrow> bool" and
@@ -82,7 +82,7 @@ where
 | SMain: "\<lbrakk> chain_all (\<lambda>(P,\<rho>,Q). prov_row \<rho> P Q) \<Pi> ; 0 < chainlen \<Pi> \<rbrakk>
     \<Longrightarrow> prov_sdia (SDiagram (comlist \<Pi>)) (pre \<Pi>) (post \<Pi>)"
 
-subsection {* Soundness *}
+subsection \<open>Soundness\<close>
 
 lemma soundness_strat_helper:
   "(prov_sdia D P Q \<longrightarrow> prov_triple (asn P, com_sdia D, asn Q)) \<and>

@@ -167,7 +167,7 @@ lemma scopeExtSum:
 
   shows "<\<nu>x>(P \<oplus> Q) \<sim>\<^sub>e P \<oplus> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P`  have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sub>l P \<oplus> <\<nu>x>Q" by(rule Strong_Late_Bisim_SC.scopeExtSum)
+  from \<open>x \<sharp> P\<close>  have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sub>l P \<oplus> <\<nu>x>Q" by(rule Strong_Late_Bisim_SC.scopeExtSum)
   thus ?thesis by(rule lateEarlyBisim)
 qed
 

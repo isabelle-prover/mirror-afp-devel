@@ -48,10 +48,10 @@ begin
       hence "x \<noteq> 0" and "y \<noteq> 0" and "\<exists>k. x = scale k y"
         unfolding proportionality_def
         by simp+
-      from `\<exists>k. x = scale k y` obtain k where "x = scale k y" by auto
-      with `x \<noteq> 0` have "k \<noteq> 0" by simp
-      with `x = scale k y` have "y = scale (1/k) x" by simp
-      with `x \<noteq> 0` and `y \<noteq> 0` have "(y, x) \<in> local.proportionality"
+      from \<open>\<exists>k. x = scale k y\<close> obtain k where "x = scale k y" by auto
+      with \<open>x \<noteq> 0\<close> have "k \<noteq> 0" by simp
+      with \<open>x = scale k y\<close> have "y = scale (1/k) x" by simp
+      with \<open>x \<noteq> 0\<close> and \<open>y \<noteq> 0\<close> have "(y, x) \<in> local.proportionality"
         unfolding proportionality_def
         by auto
     }
@@ -67,10 +67,10 @@ begin
       hence "x \<noteq> 0" and "z \<noteq> 0" and "\<exists>j. x = scale j y" and "\<exists>k. y = scale k z"
         unfolding proportionality_def
         by simp+
-      from `\<exists>j. x = scale j y` and `\<exists>k. y = scale k z`
+      from \<open>\<exists>j. x = scale j y\<close> and \<open>\<exists>k. y = scale k z\<close>
       obtain j and k where "x = scale j y" and "y = scale k z" by auto+
       hence "x = scale (j * k) z" by simp
-      with `x \<noteq> 0` and `z \<noteq> 0` have "(x, z) \<in> local.proportionality"
+      with \<open>x \<noteq> 0\<close> and \<open>z \<noteq> 0\<close> have "(x, z) \<in> local.proportionality"
         unfolding proportionality_def
         by auto
     }
@@ -106,7 +106,7 @@ proof -
   have "equiv (real_vector.non_zero_vectors \<inter> ?invs) invertible_proportionality"
     unfolding invertible_proportionality_def
     by auto
-  with `real_vector.non_zero_vectors \<inter> ?invs = ?invs`
+  with \<open>real_vector.non_zero_vectors \<inter> ?invs = ?invs\<close>
   show "equiv ?invs invertible_proportionality"
     by simp
 qed
@@ -162,7 +162,7 @@ lemma proj2_rep_abs:
   assumes "v \<in> real_vector.non_zero_vectors"
   shows "(v, proj2_rep (proj2_abs v)) \<in> real_vector.proportionality"
 proof -
-  from `v \<in> real_vector.non_zero_vectors`
+  from \<open>v \<in> real_vector.non_zero_vectors\<close>
   have "real_vector.proportionality `` {v} \<in> (real_vector.non_zero_vectors :: (real^3) set)//real_vector.proportionality"
     unfolding quotient_def
     by auto 
@@ -199,7 +199,7 @@ proof cases
   thus "proj2_abs (c *\<^sub>R v) = proj2_abs v" by simp
 next
   assume "v \<noteq> 0"
-  with `c \<noteq> 0`
+  with \<open>c \<noteq> 0\<close>
   have "(c *\<^sub>R v, v) \<in> real_vector.proportionality"
     and "c *\<^sub>R v \<in> real_vector.non_zero_vectors"
     and "v \<in> real_vector.non_zero_vectors"
@@ -233,22 +233,22 @@ lemma proj2_rep_abs2:
   assumes "v \<noteq> 0"
   shows "\<exists> k. k \<noteq> 0 \<and> proj2_rep (proj2_abs v) = k *\<^sub>R v"
 proof -
-  from proj2_rep_abs [of v] and `v \<noteq> 0`
+  from proj2_rep_abs [of v] and \<open>v \<noteq> 0\<close>
   have "(v, proj2_rep (proj2_abs v)) \<in> real_vector.proportionality"
     unfolding real_vector.non_zero_vectors_def
     by simp
   then obtain c where "v = c *\<^sub>R proj2_rep (proj2_abs v)"
     unfolding real_vector.proportionality_def
     by auto
-  with `v \<noteq> 0` have "c \<noteq> 0" by auto
+  with \<open>v \<noteq> 0\<close> have "c \<noteq> 0" by auto
   hence "1/c \<noteq> 0" by simp
 
-  from `v = c *\<^sub>R proj2_rep (proj2_abs v)`
+  from \<open>v = c *\<^sub>R proj2_rep (proj2_abs v)\<close>
   have "(1/c) *\<^sub>R v = (1/c) *\<^sub>R c *\<^sub>R proj2_rep (proj2_abs v)"
     by simp
-  with `c \<noteq> 0` have "proj2_rep (proj2_abs v) = (1/c) *\<^sub>R v" by simp
+  with \<open>c \<noteq> 0\<close> have "proj2_rep (proj2_abs v) = (1/c) *\<^sub>R v" by simp
 
-  with `1/c \<noteq> 0` show "\<exists> k. k \<noteq> 0 \<and> proj2_rep (proj2_abs v) = k *\<^sub>R v"
+  with \<open>1/c \<noteq> 0\<close> show "\<exists> k. k \<noteq> 0 \<and> proj2_rep (proj2_abs v) = k *\<^sub>R v"
     by blast
 qed
 
@@ -261,14 +261,14 @@ proof cases
   thus "\<exists> c. v = c *\<^sub>R w" ..
 next
   assume "v \<noteq> 0"
-  from `proj2_abs v = proj2_abs w`
+  from \<open>proj2_abs v = proj2_abs w\<close>
   have "proj2_rep (proj2_abs v) = proj2_rep (proj2_abs w)" by simp
-  with proj2_rep_abs2 and `w \<noteq> 0`
+  with proj2_rep_abs2 and \<open>w \<noteq> 0\<close>
   obtain k where "proj2_rep (proj2_abs v) = k *\<^sub>R w" by auto
-  with proj2_rep_abs2 [of v] and `v \<noteq> 0`
+  with proj2_rep_abs2 [of v] and \<open>v \<noteq> 0\<close>
   obtain j where "j \<noteq> 0" and "j *\<^sub>R v = k *\<^sub>R w" by auto
   hence "(1/j) *\<^sub>R j *\<^sub>R v = (1/j) *\<^sub>R k *\<^sub>R w" by simp
-  with `j \<noteq> 0` have "v = (k/j) *\<^sub>R w" by simp
+  with \<open>j \<noteq> 0\<close> have "v = (k/j) *\<^sub>R w" by simp
   thus "\<exists> c. v = c *\<^sub>R w" ..
 qed
 
@@ -279,17 +279,17 @@ proof -
   have "i \<noteq> 0"
   proof
     assume "i = 0"
-    with `i \<noteq> 0 \<or> j \<noteq> 0` have "j \<noteq> 0" by simp
-    with `i *\<^sub>R p + j *\<^sub>R q = 0` and `q \<noteq> 0` have "i *\<^sub>R p \<noteq> 0" by auto
-    with `i = 0` show False by simp
+    with \<open>i \<noteq> 0 \<or> j \<noteq> 0\<close> have "j \<noteq> 0" by simp
+    with \<open>i *\<^sub>R p + j *\<^sub>R q = 0\<close> and \<open>q \<noteq> 0\<close> have "i *\<^sub>R p \<noteq> 0" by auto
+    with \<open>i = 0\<close> show False by simp
   qed
-  with `p \<noteq> 0` and `i *\<^sub>R p + j *\<^sub>R q = 0` have "j \<noteq> 0" by auto
+  with \<open>p \<noteq> 0\<close> and \<open>i *\<^sub>R p + j *\<^sub>R q = 0\<close> have "j \<noteq> 0" by auto
 
-  from `i \<noteq> 0`
+  from \<open>i \<noteq> 0\<close>
   have "proj2_abs p = proj2_abs (i *\<^sub>R p)" by (rule proj2_abs_mult [symmetric])
-  also from `i *\<^sub>R p + j *\<^sub>R q = 0` and proj2_abs_mult [of "-1" "j *\<^sub>R q"]
+  also from \<open>i *\<^sub>R p + j *\<^sub>R q = 0\<close> and proj2_abs_mult [of "-1" "j *\<^sub>R q"]
   have "\<dots> = proj2_abs (j *\<^sub>R q)" by (simp add: algebra_simps [symmetric])
-  also from `j \<noteq> 0` have "\<dots> = proj2_abs q" by (rule proj2_abs_mult)
+  also from \<open>j \<noteq> 0\<close> have "\<dots> = proj2_abs q" by (rule proj2_abs_mult)
   finally show "proj2_abs p = proj2_abs q" .
 qed
 
@@ -300,7 +300,7 @@ lemma proj2_rep_dependent:
   shows "v = w"
 proof -
   have "?p \<noteq> 0" and "?q \<noteq> 0" by (rule proj2_rep_non_zero)+
-  with `i \<noteq> 0 \<or> j \<noteq> 0` and `i *\<^sub>R ?p + j *\<^sub>R ?q = 0`
+  with \<open>i \<noteq> 0 \<or> j \<noteq> 0\<close> and \<open>i *\<^sub>R ?p + j *\<^sub>R ?q = 0\<close>
   have "proj2_abs ?p = proj2_abs ?q" by (simp add: dependent_proj2_abs)
   thus "v = w" by (simp add: proj2_abs_rep)
 qed
@@ -313,14 +313,14 @@ proof
   let ?q' = "proj2_rep q"
   let ?S = "{?p', ?q'}"
   assume "dependent ?S"
-  from proj2_rep_inj and `p \<noteq> q` have "?p' \<noteq> ?q'"
+  from proj2_rep_inj and \<open>p \<noteq> q\<close> have "?p' \<noteq> ?q'"
     unfolding inj_on_def
     by auto
-  with dependent_explicit_2 [of ?p' ?q'] and `dependent ?S`
+  with dependent_explicit_2 [of ?p' ?q'] and \<open>dependent ?S\<close>
   obtain i and j where "i *\<^sub>R ?p' + j *\<^sub>R ?q' = 0" and "i \<noteq> 0 \<or> j \<noteq> 0"
     by (simp add: scalar_equiv) auto
   with proj2_rep_dependent have "p = q" by simp
-  with `p \<noteq> q` show False ..
+  with \<open>p \<noteq> q\<close> show False ..
 qed
 
 subsection "Lines of the real projective plane"
@@ -336,20 +336,20 @@ lemma proj2_Col_abs:
   shows "proj2_Col (proj2_abs p) (proj2_abs q) (proj2_abs r)"
   (is "proj2_Col ?pp ?pq ?pr")
 proof -
-  from `p \<noteq> 0` and proj2_rep_abs2
+  from \<open>p \<noteq> 0\<close> and proj2_rep_abs2
   obtain i' where "i' \<noteq> 0" and "proj2_rep ?pp = i' *\<^sub>R p" (is "?rp = _") by auto
-  from `q \<noteq> 0` and proj2_rep_abs2
+  from \<open>q \<noteq> 0\<close> and proj2_rep_abs2
   obtain j' where "j' \<noteq> 0" and "proj2_rep ?pq = j' *\<^sub>R q" (is "?rq = _") by auto
-  from `r \<noteq> 0` and proj2_rep_abs2
+  from \<open>r \<noteq> 0\<close> and proj2_rep_abs2
   obtain k' where "k' \<noteq> 0" and "proj2_rep ?pr = k' *\<^sub>R r" (is "?rr = _") by auto
-  with `i *\<^sub>R p + j *\<^sub>R q + k *\<^sub>R r = 0`
-    and `i' \<noteq> 0` and `proj2_rep ?pp = i' *\<^sub>R p`
-    and `j' \<noteq> 0` and `proj2_rep ?pq = j' *\<^sub>R q`
+  with \<open>i *\<^sub>R p + j *\<^sub>R q + k *\<^sub>R r = 0\<close>
+    and \<open>i' \<noteq> 0\<close> and \<open>proj2_rep ?pp = i' *\<^sub>R p\<close>
+    and \<open>j' \<noteq> 0\<close> and \<open>proj2_rep ?pq = j' *\<^sub>R q\<close>
   have "(i/i') *\<^sub>R ?rp + (j/j') *\<^sub>R ?rq + (k/k') *\<^sub>R ?rr = 0" by simp
 
-  from `i' \<noteq> 0` and `j' \<noteq> 0` and `k' \<noteq> 0` and `i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0`
+  from \<open>i' \<noteq> 0\<close> and \<open>j' \<noteq> 0\<close> and \<open>k' \<noteq> 0\<close> and \<open>i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0\<close>
   have "i/i' \<noteq> 0 \<or> j/j' \<noteq> 0 \<or> k/k' \<noteq> 0" by simp
-  with `(i/i') *\<^sub>R ?rp + (j/j') *\<^sub>R ?rq + (k/k') *\<^sub>R ?rr = 0`
+  with \<open>(i/i') *\<^sub>R ?rp + (j/j') *\<^sub>R ?rq + (k/k') *\<^sub>R ?rr = 0\<close>
   show "proj2_Col ?pp ?pq ?pr" by (unfold proj2_Col_def, best)
 qed
 
@@ -361,18 +361,18 @@ proof -
   let ?a' = "proj2_rep a"
   let ?b' = "proj2_rep b"
   let ?c' = "proj2_rep c"
-  from `proj2_Col a b c`
+  from \<open>proj2_Col a b c\<close>
   obtain i and j and k where
     "i *\<^sub>R ?a' + j *\<^sub>R ?b' + k *\<^sub>R ?c' = 0"
     and "i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0"
     unfolding proj2_Col_def
     by auto
 
-  from `i *\<^sub>R ?a' + j *\<^sub>R ?b' + k *\<^sub>R ?c' = 0`
+  from \<open>i *\<^sub>R ?a' + j *\<^sub>R ?b' + k *\<^sub>R ?c' = 0\<close>
   have "i *\<^sub>R ?a' + k *\<^sub>R ?c' + j *\<^sub>R ?b' = 0"
     and "j *\<^sub>R ?b' + i *\<^sub>R ?a' + k *\<^sub>R ?c' = 0"
     by (simp_all add: ac_simps)
-  moreover from `i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0`
+  moreover from \<open>i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0\<close>
   have "i \<noteq> 0 \<or> k \<noteq> 0 \<or> j \<noteq> 0" and "j \<noteq> 0 \<or> i \<noteq> 0 \<or> k \<noteq> 0" by auto
   ultimately show "proj2_Col a c b" and "proj2_Col b a c"
     unfolding proj2_Col_def
@@ -408,10 +408,10 @@ proof
     show "t = a \<or> (\<exists> i. t = proj2_abs (i *\<^sub>R ?a' + ?r'))"
     proof cases
       assume "j = 0"
-      with `h \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0` have "h \<noteq> 0 \<or> k \<noteq> 0" by simp
+      with \<open>h \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0\<close> have "h \<noteq> 0 \<or> k \<noteq> 0" by simp
       with proj2_rep_dependent
-        and `h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0`
-        and `j = 0`
+        and \<open>h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0\<close>
+        and \<open>j = 0\<close>
       have "t = a" by auto
       thus "t = a \<or> (\<exists> i. t = proj2_abs (i *\<^sub>R ?a' + ?r'))" ..
     next
@@ -420,18 +420,18 @@ proof
       proof (rule ccontr)
         assume "\<not> k \<noteq> 0"
         with proj2_rep_dependent
-          and `h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0`
-          and `j \<noteq> 0`
+          and \<open>h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0\<close>
+          and \<open>j \<noteq> 0\<close>
         have "a = r" by simp
-        with `a \<noteq> r` show False ..
+        with \<open>a \<noteq> r\<close> show False ..
       qed
       
-      from `h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0`
+      from \<open>h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0\<close>
       have "h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' - k *\<^sub>R ?t' = -k *\<^sub>R ?t'" by simp
       hence "h *\<^sub>R ?a' + j *\<^sub>R ?r' = -k *\<^sub>R ?t'" by simp
-      with proj2_abs_mult_rep [of "-k"] and `k \<noteq> 0`
+      with proj2_abs_mult_rep [of "-k"] and \<open>k \<noteq> 0\<close>
       have "proj2_abs (h *\<^sub>R ?a' + j *\<^sub>R ?r') = t" by simp
-      with proj2_abs_mult [of "1/j" "h *\<^sub>R ?a' + j *\<^sub>R ?r'"] and `j \<noteq> 0`
+      with proj2_abs_mult [of "1/j" "h *\<^sub>R ?a' + j *\<^sub>R ?r'"] and \<open>j \<noteq> 0\<close>
       have "proj2_abs ((h/j) *\<^sub>R ?a' + ?r') = t"
         by (simp add: scaleR_right_distrib)
       hence "\<exists> i. t = proj2_abs (i *\<^sub>R ?a' + ?r')" by auto
@@ -447,11 +447,11 @@ proof
       show "proj2_Col a r t" by blast
     next
       assume "t \<noteq> a"
-      with `t = a \<or> (\<exists> i. t = proj2_abs (i *\<^sub>R ?a' + ?r'))`
+      with \<open>t = a \<or> (\<exists> i. t = proj2_abs (i *\<^sub>R ?a' + ?r'))\<close>
       obtain i where "t = proj2_abs (i *\<^sub>R ?a' + ?r')" by auto
-      from proj2_rep_dependent [of i a 1 r] and `a \<noteq> r`
+      from proj2_rep_dependent [of i a 1 r] and \<open>a \<noteq> r\<close>
       have "i *\<^sub>R ?a' + ?r' \<noteq> 0" by auto
-      with proj2_rep_abs2 and `t = proj2_abs (i *\<^sub>R ?a' + ?r')`
+      with proj2_rep_abs2 and \<open>t = proj2_abs (i *\<^sub>R ?a' + ?r')\<close>
       obtain j where "?t' = j *\<^sub>R (i *\<^sub>R ?a' + ?r')" by auto
       hence "?t' - ?t' = (j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t'"
         by (simp add: scaleR_right_distrib)
@@ -459,7 +459,7 @@ proof
       have "\<exists> h j k. h *\<^sub>R ?a' + j *\<^sub>R ?r' + k *\<^sub>R ?t' = 0
         \<and> (h \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0)"
       proof standard+
-        from `(j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t' = 0`
+        from \<open>(j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t' = 0\<close>
         show "(j * i) *\<^sub>R ?a' + j *\<^sub>R ?r' + (-1) *\<^sub>R ?t' = 0" .
         show "j * i \<noteq> 0 \<or> j \<noteq> 0 \<or> (-1::real) \<noteq> 0" by simp
       qed
@@ -476,7 +476,7 @@ lemma proj2_Col_coeff:
   assumes "proj2_Col a r t" and "a \<noteq> r" and "t \<noteq> a"
   shows "t = proj2_abs ((proj2_Col_coeff a r t) *\<^sub>R proj2_rep a + proj2_rep r)"
 proof -
-  from `a \<noteq> r` and `proj2_Col a r t` and `t \<noteq> a` and proj2_Col_iff
+  from \<open>a \<noteq> r\<close> and \<open>proj2_Col a r t\<close> and \<open>t \<noteq> a\<close> and proj2_Col_iff
   have "\<exists> i. t = proj2_abs (i *\<^sub>R proj2_rep a + proj2_rep r)" by simp
   thus "t = proj2_abs ((proj2_Col_coeff a r t) *\<^sub>R proj2_rep a + proj2_rep r)"
     by (unfold proj2_Col_coeff_def) (rule someI_ex)
@@ -487,7 +487,7 @@ lemma proj2_Col_coeff_unique':
   and "proj2_abs (i *\<^sub>R a + r) = proj2_abs (j *\<^sub>R a + r)"
   shows "i = j"
 proof -
-  from `a \<noteq> 0` and `r \<noteq> 0` and `proj2_abs a \<noteq> proj2_abs r`
+  from \<open>a \<noteq> 0\<close> and \<open>r \<noteq> 0\<close> and \<open>proj2_abs a \<noteq> proj2_abs r\<close>
     and dependent_proj2_abs [of a r _ 1]
   have "i *\<^sub>R a + r \<noteq> 0" and "j *\<^sub>R a + r \<noteq> 0" by auto
   with proj2_rep_abs2 [of "i *\<^sub>R a + r"]
@@ -496,17 +496,17 @@ proof -
     and "proj2_rep (proj2_abs (i *\<^sub>R a + r)) = k *\<^sub>R (i *\<^sub>R a + r)"
     and "proj2_rep (proj2_abs (j *\<^sub>R a + r)) = l *\<^sub>R (j *\<^sub>R a + r)"
     by auto
-  with `proj2_abs (i *\<^sub>R a + r) = proj2_abs (j *\<^sub>R a + r)`
+  with \<open>proj2_abs (i *\<^sub>R a + r) = proj2_abs (j *\<^sub>R a + r)\<close>
   have "(k * i) *\<^sub>R a + k *\<^sub>R r = (l * j) *\<^sub>R a + l *\<^sub>R r"
     by (simp add: scaleR_right_distrib)
   hence "(k * i - l * j) *\<^sub>R a + (k - l) *\<^sub>R r = 0"
     by (simp add: algebra_simps vec_eq_iff)
-  with `a \<noteq> 0` and `r \<noteq> 0` and `proj2_abs a \<noteq> proj2_abs r`
+  with \<open>a \<noteq> 0\<close> and \<open>r \<noteq> 0\<close> and \<open>proj2_abs a \<noteq> proj2_abs r\<close>
     and dependent_proj2_abs [of a r "k * i - l * j" "k - l"]
   have "k * i - l * j = 0" and "k - l = 0" by auto
-  from `k - l = 0` have "k = l" by simp
-  with `k * i - l * j = 0` have "k * i = k * j" by simp
-  with `k \<noteq> 0` show "i = j" by simp
+  from \<open>k - l = 0\<close> have "k = l" by simp
+  with \<open>k * i - l * j = 0\<close> have "k * i = k * j" by simp
+  with \<open>k \<noteq> 0\<close> show "i = j" by simp
 qed
 
 lemma proj2_Col_coeff_unique:
@@ -519,9 +519,9 @@ proof -
   let ?r' = "proj2_rep r"
   have "?a' \<noteq> 0" and "?r' \<noteq> 0" by (rule proj2_rep_non_zero)+
 
-  from `a \<noteq> r` have "proj2_abs ?a' \<noteq> proj2_abs ?r'" by (simp add: proj2_abs_rep)
-  with `?a' \<noteq> 0` and `?r' \<noteq> 0`
-    and `proj2_abs (i *\<^sub>R ?a' + ?r') = proj2_abs (j *\<^sub>R ?a' + ?r')`
+  from \<open>a \<noteq> r\<close> have "proj2_abs ?a' \<noteq> proj2_abs ?r'" by (simp add: proj2_abs_rep)
+  with \<open>?a' \<noteq> 0\<close> and \<open>?r' \<noteq> 0\<close>
+    and \<open>proj2_abs (i *\<^sub>R ?a' + ?r') = proj2_abs (j *\<^sub>R ?a' + ?r')\<close>
     and proj2_Col_coeff_unique'
   show "i = j" by simp
 qed
@@ -564,7 +564,7 @@ lemma proj2_line_rep_abs:
   assumes "v \<noteq> 0"
   shows "\<exists> k. k \<noteq> 0 \<and> proj2_line_rep (proj2_line_abs v) = k *\<^sub>R v"
   unfolding proj2_line_rep_def and proj2_line_abs_def
-  using proj2_rep_abs2 and `v \<noteq> 0`
+  using proj2_rep_abs2 and \<open>v \<noteq> 0\<close>
   by simp
 
 lemma proj2_line_abs_rep [simp]: "proj2_line_abs (proj2_line_rep l) = l"
@@ -588,7 +588,7 @@ lemma proj2_line_abs_mult:
   assumes "k \<noteq> 0"
   shows "proj2_line_abs (k *\<^sub>R v) = proj2_line_abs v"
   unfolding proj2_line_abs_def
-  using `k \<noteq> 0`
+  using \<open>k \<noteq> 0\<close>
   by (subst proj2_abs_mult) simp_all
 
 lemma proj2_line_abs_abs_mult:
@@ -612,14 +612,14 @@ proof -
   obtain l' where "l' \<noteq> 0" and "span ?B \<subseteq> {x. l' \<bullet> x = 0}" by auto
   let ?l = "proj2_line_abs l'"
   let ?l'' = "proj2_line_rep ?l"
-  from proj2_line_rep_abs and `l' \<noteq> 0`
+  from proj2_line_rep_abs and \<open>l' \<noteq> 0\<close>
   obtain k where "?l'' = k *\<^sub>R l'" by auto
 
   have "?p' \<in> ?B" and "?q' \<in> ?B" by simp_all
-  with span_superset [of ?B] and `span ?B \<subseteq> {x. l' \<bullet> x = 0}`
+  with span_superset [of ?B] and \<open>span ?B \<subseteq> {x. l' \<bullet> x = 0}\<close>
   have "l' \<bullet> ?p' = 0" and "l' \<bullet> ?q' = 0" by auto
   hence "?p' \<bullet> l' = 0" and "?q' \<bullet> l' = 0" by (simp_all add: inner_commute)
-  with dot_scaleR_mult(2) [of _ k l'] and `?l'' = k *\<^sub>R l'`
+  with dot_scaleR_mult(2) [of _ k l'] and \<open>?l'' = k *\<^sub>R l'\<close>
   have "proj2_incident p ?l \<and> proj2_incident q ?l"
     unfolding proj2_incident_def
     by simp
@@ -650,34 +650,34 @@ proof -
   let ?B = "insert ?m' ?A"
   from proj2_line_through_incident
   have "proj2_incident p ?m" and "proj2_incident q ?m" by simp_all
-  with `proj2_incident p l` and `proj2_incident q l`
+  with \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
   have ortho: "\<And>w. w\<in>?A \<Longrightarrow> orthogonal ?m' w" "\<And>w. w\<in>?A \<Longrightarrow> orthogonal ?l' w"
     unfolding proj2_incident_def and orthogonal_def
     by (metis empty_iff inner_commute insert_iff)+
-  from proj2_rep_independent and `p \<noteq> q` have "independent ?A" by simp
+  from proj2_rep_independent and \<open>p \<noteq> q\<close> have "independent ?A" by simp
   from proj2_line_rep_non_zero have "?m' \<noteq> 0" by simp
-  with orthogonal_independent `independent ?A` ortho
+  with orthogonal_independent \<open>independent ?A\<close> ortho
   have "independent ?B" by auto
 
-  from proj2_rep_inj and `p \<noteq> q` have "?p' \<noteq> ?q'"
+  from proj2_rep_inj and \<open>p \<noteq> q\<close> have "?p' \<noteq> ?q'"
     unfolding inj_on_def
     by auto
   hence "card ?A = 2" by simp
   moreover have "?m' \<notin> ?A"
     using ortho(1) orthogonal_self proj2_line_rep_non_zero by auto
   ultimately have "card ?B = 3" by simp
-  with independent_is_basis [of ?B] and `independent ?B`
+  with independent_is_basis [of ?B] and \<open>independent ?B\<close>
   have "is_basis ?B" by simp
   with basis_expand obtain c where "?l' = (\<Sum> v\<in>?B. c v *\<^sub>R v)" by auto
   let ?l'' = "?l' - c ?m' *\<^sub>R ?m'"
-  from `?l' = (\<Sum> v\<in>?B. c v *\<^sub>R v)` and `?m' \<notin> ?A`
+  from \<open>?l' = (\<Sum> v\<in>?B. c v *\<^sub>R v)\<close> and \<open>?m' \<notin> ?A\<close>
   have "?l'' = (\<Sum> v\<in>?A. c v *\<^sub>R v)" by simp
   with orthogonal_sum [of ?A] ortho
   have "orthogonal ?l' ?l''" and "orthogonal ?m' ?l''"
     by (simp_all add: scalar_equiv)
-  from `orthogonal ?m' ?l''`
+  from \<open>orthogonal ?m' ?l''\<close>
   have "orthogonal (c ?m' *\<^sub>R ?m') ?l''" by (simp add: orthogonal_clauses)
-  with `orthogonal ?l' ?l''`
+  with \<open>orthogonal ?l' ?l''\<close>
   have "orthogonal ?l'' ?l''" by (simp add: orthogonal_clauses)
   with orthogonal_self_eq_0 [of ?l''] have "?l'' = 0" by simp
   with proj2_line_rep_dependent [of 1 l "- c ?m'" ?m] show "l = ?m" by simp
@@ -694,10 +694,10 @@ proof cases
   thus "p = q \<or> l = m" ..
 next
   assume "p \<noteq> q"
-  with `proj2_incident p l` and `proj2_incident q l`
+  with \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
     and proj2_line_through_unique
   have "l = proj2_line_through p q" by simp
-  moreover from `p \<noteq> q` and `proj2_incident p m` and `proj2_incident q m`
+  moreover from \<open>p \<noteq> q\<close> and \<open>proj2_incident p m\<close> and \<open>proj2_incident q m\<close>
   have "m = proj2_line_through p q" by (rule proj2_line_through_unique)
   ultimately show "p = q \<or> l = m" by simp
 qed
@@ -738,12 +738,12 @@ lemma proj2_intersection_unique:
   assumes "l \<noteq> m" and "proj2_incident p l" and "proj2_incident p m"
   shows "p = proj2_intersection l m"
 proof -
-  from `l \<noteq> m` have "L2P l \<noteq> L2P m" by auto
-  from `proj2_incident p l` and `proj2_incident p m`
+  from \<open>l \<noteq> m\<close> have "L2P l \<noteq> L2P m" by auto
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident p m\<close>
     and proj2_incident_switch
   have "proj2_incident (L2P l) (P2L p)" and "proj2_incident (L2P m) (P2L p)"
     by simp_all
-  with `L2P l \<noteq> L2P m` and proj2_line_through_unique
+  with \<open>L2P l \<noteq> L2P m\<close> and proj2_line_through_unique
   have "P2L p = proj2_line_through (L2P l) (L2P m)" by simp
   thus "p = proj2_intersection l m"
     unfolding proj2_intersection_def
@@ -763,8 +763,8 @@ proof -
   let ?q = "proj2_intersection l ?m"
   from proj2_intersection_incident
   have "proj2_incident ?q l" and "proj2_incident ?q ?m" by simp_all
-  from `proj2_incident ?q ?m` and proj2_not_self_incident have "?q \<noteq> p" by auto
-  with `proj2_incident ?q l` show "\<exists> q. q \<noteq> p \<and> proj2_incident q l" by auto
+  from \<open>proj2_incident ?q ?m\<close> and proj2_not_self_incident have "?q \<noteq> p" by auto
+  with \<open>proj2_incident ?q l\<close> show "\<exists> q. q \<noteq> p \<and> proj2_incident q l" by auto
 qed
 
 lemma proj2_another_line_through_point:
@@ -781,14 +781,14 @@ lemma proj2_incident_abs:
   assumes "v \<noteq> 0" and "w \<noteq> 0"
   shows "proj2_incident (proj2_abs v) (proj2_line_abs w) \<longleftrightarrow> v \<bullet> w = 0"
 proof -
-  from `v \<noteq> 0` and proj2_rep_abs2
+  from \<open>v \<noteq> 0\<close> and proj2_rep_abs2
   obtain j where "j \<noteq> 0" and "proj2_rep (proj2_abs v) = j *\<^sub>R v" by auto
 
-  from `w \<noteq> 0` and proj2_line_rep_abs
+  from \<open>w \<noteq> 0\<close> and proj2_line_rep_abs
   obtain k where "k \<noteq> 0"
     and "proj2_line_rep (proj2_line_abs w) = k *\<^sub>R w"
     by auto
-  with `j \<noteq> 0` and `proj2_rep (proj2_abs v) = j *\<^sub>R v`
+  with \<open>j \<noteq> 0\<close> and \<open>proj2_rep (proj2_abs v) = j *\<^sub>R v\<close>
   show "proj2_incident (proj2_abs v) (proj2_line_abs w) \<longleftrightarrow> v \<bullet> w = 0"
     unfolding proj2_incident_def
     by (simp add: dot_scaleR_mult)
@@ -799,7 +799,7 @@ lemma proj2_incident_left_abs:
   shows "proj2_incident (proj2_abs v) l \<longleftrightarrow> v \<bullet> (proj2_line_rep l) = 0"
 proof -
   have "proj2_line_rep l \<noteq> 0" by (rule proj2_line_rep_non_zero)
-  with `v \<noteq> 0` and proj2_incident_abs [of v "proj2_line_rep l"]
+  with \<open>v \<noteq> 0\<close> and proj2_incident_abs [of v "proj2_line_rep l"]
   show "proj2_incident (proj2_abs v) l \<longleftrightarrow> v \<bullet> (proj2_line_rep l) = 0" by simp
 qed
 
@@ -808,7 +808,7 @@ lemma proj2_incident_right_abs:
   shows "proj2_incident p (proj2_line_abs v) \<longleftrightarrow> (proj2_rep p) \<bullet> v = 0"
 proof -
   have "proj2_rep p \<noteq> 0" by (rule proj2_rep_non_zero)
-  with `v \<noteq> 0` and proj2_incident_abs [of "proj2_rep p" v]
+  with \<open>v \<noteq> 0\<close> and proj2_incident_abs [of "proj2_rep p" v]
   show "proj2_incident p (proj2_line_abs v) \<longleftrightarrow> (proj2_rep p) \<bullet> v = 0"
     by (simp add: proj2_abs_rep)
 qed
@@ -819,7 +819,7 @@ definition proj2_set_Col :: "proj2 set \<Rightarrow> bool" where
 lemma proj2_subset_Col:
   assumes "T \<subseteq> S" and "proj2_set_Col S"
   shows "proj2_set_Col T"
-  using `T \<subseteq> S` and `proj2_set_Col S`
+  using \<open>T \<subseteq> S\<close> and \<open>proj2_set_Col S\<close>
   by (unfold proj2_set_Col_def) auto
 
 definition proj2_no_3_Col :: "proj2 set \<Rightarrow> bool" where
@@ -839,12 +839,12 @@ proof -
       unfolding proj2_Col_def
       by auto
     let ?x = "vector [i,j,k] :: real^3"
-    from `i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0`
+    from \<open>i \<noteq> 0 \<or> j \<noteq> 0 \<or> k \<noteq> 0\<close>
     have "?x \<noteq> 0"
       unfolding vector_def
       by (simp add: vec_eq_iff forall_3)
     moreover {
-      from `i *\<^sub>R ?u + j *\<^sub>R ?v + k *\<^sub>R ?w = 0`
+      from \<open>i *\<^sub>R ?u + j *\<^sub>R ?v + k *\<^sub>R ?w = 0\<close>
       have "?x v* ?M = 0"
         unfolding vector_def and vector_matrix_mult_def
         by (simp add: sum_3 vec_eq_iff algebra_simps) }
@@ -855,9 +855,9 @@ proof -
     let ?i = "x$1"
     let ?j = "x$2"
     let ?k = "x$3"
-    from `x \<noteq> 0` have "?i \<noteq> 0 \<or> ?j \<noteq> 0 \<or> ?k \<noteq> 0" by (simp add: vec_eq_iff forall_3)
+    from \<open>x \<noteq> 0\<close> have "?i \<noteq> 0 \<or> ?j \<noteq> 0 \<or> ?k \<noteq> 0" by (simp add: vec_eq_iff forall_3)
     moreover {
-      from `x v* ?M = 0`
+      from \<open>x v* ?M = 0\<close>
       have "?i *\<^sub>R ?u + ?j *\<^sub>R ?v + ?k *\<^sub>R ?w = 0"
         unfolding vector_matrix_mult_def and sum_3 and vector_def
         by (simp add: vec_eq_iff algebra_simps) }
@@ -888,14 +888,14 @@ proof -
     assume "\<exists> y. y \<noteq> 0 \<and> ?M *v y = 0"
     then obtain y where "y \<noteq> 0" and "?M *v y = 0" by auto
     let ?l = "proj2_line_abs y"
-    from `?M *v y = 0`
+    from \<open>?M *v y = 0\<close>
     have "\<forall> s\<in>{p,q,r}. proj2_rep s \<bullet> y = 0"
       unfolding vector_def
         and matrix_vector_mult_def
         and inner_vec_def
         and sum_3
       by (simp add: vec_eq_iff forall_3)
-    with `y \<noteq> 0` and proj2_incident_right_abs
+    with \<open>y \<noteq> 0\<close> and proj2_incident_right_abs
     have "\<forall> s\<in>{p,q,r}. proj2_incident s ?l" by simp
     thus "\<exists> l. \<forall> s\<in>{p,q,r}. proj2_incident s l" ..
   next
@@ -904,7 +904,7 @@ proof -
     let ?y = "proj2_line_rep l"
     have "?y \<noteq> 0" by (rule proj2_line_rep_non_zero)
     moreover {
-      from `\<forall> s\<in>{p,q,r}. proj2_incident s l`
+      from \<open>\<forall> s\<in>{p,q,r}. proj2_incident s l\<close>
       have "?M *v ?y = 0"
         unfolding vector_def
           and matrix_vector_mult_def
@@ -927,7 +927,7 @@ lemma proj2_incident_Col:
   assumes "proj2_incident p l" and "proj2_incident q l" and "proj2_incident r l"
   shows "proj2_Col p q r"
 proof -
-  from `proj2_incident p l` and `proj2_incident q l` and `proj2_incident r l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and \<open>proj2_incident r l\<close>
   have "proj2_set_Col {p,q,r}" by (unfold proj2_set_Col_def) auto
   thus "proj2_Col p q r" by (subst proj2_Col_iff_set_Col)
 qed
@@ -937,7 +937,7 @@ lemma proj2_incident_iff_Col:
   shows "proj2_incident r l \<longleftrightarrow> proj2_Col p q r"
 proof
   assume "proj2_incident r l"
-  with `proj2_incident p l` and `proj2_incident q l`
+  with \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
   show "proj2_Col p q r" by (rule proj2_incident_Col)
 next
   assume "proj2_Col p q r"
@@ -946,11 +946,11 @@ next
     unfolding proj2_set_Col_def ..
   hence "proj2_incident p m" and "proj2_incident q m" and "proj2_incident r m"
     by simp_all
-  from `p \<noteq> q` and `proj2_incident p l` and `proj2_incident q l`
-    and `proj2_incident p m` and `proj2_incident q m`
+  from \<open>p \<noteq> q\<close> and \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
+    and \<open>proj2_incident p m\<close> and \<open>proj2_incident q m\<close>
     and proj2_incident_unique
   have "m = l" by auto
-  with `proj2_incident r m` show "proj2_incident r l" by simp
+  with \<open>proj2_incident r m\<close> show "proj2_incident r l" by simp
 qed
 
 lemma proj2_incident_iff:
@@ -958,9 +958,9 @@ lemma proj2_incident_iff:
   shows "proj2_incident r l
   \<longleftrightarrow> r = p \<or> (\<exists> k. r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q))"
 proof -
-  from `p \<noteq> q` and `proj2_incident p l` and `proj2_incident q l`
+  from \<open>p \<noteq> q\<close> and \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
   have "proj2_incident r l \<longleftrightarrow> proj2_Col p q r" by (rule proj2_incident_iff_Col)
-  with `p \<noteq> q` and proj2_Col_iff
+  with \<open>p \<noteq> q\<close> and proj2_Col_iff
   show "proj2_incident r l
     \<longleftrightarrow> r = p \<or> (\<exists> k. r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q))"
     by simp
@@ -970,13 +970,13 @@ lemma not_proj2_set_Col_iff_span:
   assumes "card S = 3"
   shows "\<not> proj2_set_Col S \<longleftrightarrow> span (proj2_rep ` S) = UNIV"
 proof -
-  from `card S = 3` and choose_3 [of S]
+  from \<open>card S = 3\<close> and choose_3 [of S]
   obtain p and q and r where "S = {p,q,r}" by auto
   let ?u = "proj2_rep p"
   let ?v = "proj2_rep q"
   let ?w = "proj2_rep r"
   let ?M = "vector [?u, ?v, ?w] :: real^3^3"
-  from `S = {p,q,r}` and not_invertible_iff_proj2_set_Col [of p q r]
+  from \<open>S = {p,q,r}\<close> and not_invertible_iff_proj2_set_Col [of p q r]
   have "\<not> proj2_set_Col S \<longleftrightarrow> invertible ?M" by auto
   also from left_invertible_iff_invertible
   have "\<dots> \<longleftrightarrow> (\<exists> N. N ** ?M = mat 1)" ..
@@ -1007,11 +1007,11 @@ proof -
         by blast }
     thus "{?u, ?v, ?w} \<subseteq> rows ?M" ..
   qed
-  with `S = {p,q,r}`
+  with \<open>S = {p,q,r}\<close>
   have "rows ?M = proj2_rep ` S"
     unfolding image_def
     by auto
-  with `\<not> proj2_set_Col S \<longleftrightarrow> span (rows ?M) = UNIV`
+  with \<open>\<not> proj2_set_Col S \<longleftrightarrow> span (rows ?M) = UNIV\<close>
   show "\<not> proj2_set_Col S \<longleftrightarrow> span (proj2_rep ` S) = UNIV" by simp
 qed
 
@@ -1019,15 +1019,15 @@ lemma proj2_no_3_Col_span:
   assumes "proj2_no_3_Col S" and "p \<in> S"
   shows "span (proj2_rep ` (S - {p})) = UNIV"
 proof -
-  from `proj2_no_3_Col S` have "card S = 4" unfolding proj2_no_3_Col_def ..
-  with `p \<in> S` and `card S = 4` and card_gt_0_diff_singleton [of S p]
+  from \<open>proj2_no_3_Col S\<close> have "card S = 4" unfolding proj2_no_3_Col_def ..
+  with \<open>p \<in> S\<close> and \<open>card S = 4\<close> and card_gt_0_diff_singleton [of S p]
   have "card (S - {p}) = 3" by simp
 
-  from `proj2_no_3_Col S` and `p \<in> S`
+  from \<open>proj2_no_3_Col S\<close> and \<open>p \<in> S\<close>
   have "\<not> proj2_set_Col (S - {p})"
     unfolding proj2_no_3_Col_def
     by simp
-  with `card (S - {p}) = 3` and not_proj2_set_Col_iff_span
+  with \<open>card (S - {p}) = 3\<close> and not_proj2_set_Col_iff_span
   show "span (proj2_rep ` (S - {p})) = UNIV" by simp
 qed
 
@@ -1035,12 +1035,12 @@ lemma fourth_proj2_no_3_Col:
   assumes "\<not> proj2_Col p q r"
   shows "\<exists> s. proj2_no_3_Col {s,r,p,q}"
 proof -
-  from `\<not> proj2_Col p q r` and proj2_Col_coincide have "p \<noteq> q" by auto
+  from \<open>\<not> proj2_Col p q r\<close> and proj2_Col_coincide have "p \<noteq> q" by auto
   hence "card {p,q} = 2" by simp
 
-  from `\<not> proj2_Col p q r` and proj2_Col_coincide and proj2_Col_permute
+  from \<open>\<not> proj2_Col p q r\<close> and proj2_Col_coincide and proj2_Col_permute
   have "r \<notin> {p,q}" by fast
-  with `card {p,q} = 2` have "card {r,p,q} = 3" by simp
+  with \<open>card {p,q} = 2\<close> have "card {r,p,q} = 3" by simp
 
   have "finite {r,p,q}" by simp
 
@@ -1062,7 +1062,7 @@ proof -
   qed
   then obtain j where "(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s" ..
   let ?c = "\<lambda> t. if t = ?s then 1 - j else 1"
-  from `p \<noteq> q` have "?c p \<noteq> 0 \<or> ?c q \<noteq> 0" by simp
+  from \<open>p \<noteq> q\<close> have "?c p \<noteq> 0 \<or> ?c q \<noteq> 0" by simp
 
   let ?d = "\<lambda> t. if t = ?s then j else -1"
 
@@ -1072,34 +1072,34 @@ proof -
   proof
     assume "?s \<in> {r,p,q}"
 
-    from `r \<notin> {p,q}` and `p \<noteq> q`
+    from \<open>r \<notin> {p,q}\<close> and \<open>p \<noteq> q\<close>
     have "?c r *\<^sub>R proj2_rep r + ?c p *\<^sub>R proj2_rep p + ?c q *\<^sub>R proj2_rep q
       = (\<Sum> t\<in>{r,p,q}. ?c t *\<^sub>R proj2_rep t)"
       by (simp add: sum.insert [of _ _ "\<lambda> t. ?c t *\<^sub>R proj2_rep t"])
-    also from `finite {r,p,q}` and `?s \<in> {r,p,q}`
+    also from \<open>finite {r,p,q}\<close> and \<open>?s \<in> {r,p,q}\<close>
     have "\<dots> = ?c ?s *\<^sub>R proj2_rep ?s + (\<Sum> t\<in>{r,p,q}-{?s}. ?c t *\<^sub>R proj2_rep t)"
       by (simp only:
         sum.remove [of "{r,p,q}" ?s "\<lambda> t. ?c t *\<^sub>R proj2_rep t"])
     also have "\<dots>
       = -j *\<^sub>R proj2_rep ?s + (proj2_rep ?s + (\<Sum> t\<in>{r,p,q}-{?s}. proj2_rep t))"
       by (simp add: algebra_simps)
-    also from `finite {r,p,q}` and `?s \<in> {r,p,q}`
+    also from \<open>finite {r,p,q}\<close> and \<open>?s \<in> {r,p,q}\<close>
     have "\<dots> = -j *\<^sub>R proj2_rep ?s + (\<Sum> t\<in>{r,p,q}. proj2_rep t)"
       by (simp only:
         sum.remove [of "{r,p,q}" ?s "\<lambda> t. proj2_rep t",symmetric])
-    also from `(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s`
+    also from \<open>(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s\<close>
     have "\<dots> = 0" by simp
     finally
     have "?c r *\<^sub>R proj2_rep r + ?c p *\<^sub>R proj2_rep p + ?c q *\<^sub>R proj2_rep q = 0"
       .
-    with `?c p \<noteq> 0 \<or> ?c q \<noteq> 0`
+    with \<open>?c p \<noteq> 0 \<or> ?c q \<noteq> 0\<close>
     have "proj2_Col p q r"
       by (unfold proj2_Col_def) (auto simp add: algebra_simps)
-    with `\<not> proj2_Col p q r` show False ..
+    with \<open>\<not> proj2_Col p q r\<close> show False ..
   qed
-  with `card {r,p,q} = 3` have "card ?S = 4" by simp
+  with \<open>card {r,p,q} = 3\<close> have "card ?S = 4" by simp
 
-  from `\<not> proj2_Col p q r` and proj2_Col_permute
+  from \<open>\<not> proj2_Col p q r\<close> and proj2_Col_permute
   have "\<not> proj2_Col r p q" by fast
   hence "\<not> proj2_set_Col {r,p,q}" by (subst proj2_Col_iff_set_Col [symmetric])
 
@@ -1107,36 +1107,36 @@ proof -
   proof
     fix u
     assume "u \<in> ?S"
-    with `card ?S = 4` have "card (?S - {u}) = 3" by simp
+    with \<open>card ?S = 4\<close> have "card (?S - {u}) = 3" by simp
     show "\<not> proj2_set_Col (?S - {u})"
     proof cases
       assume "u = ?s"
-      with `?s \<notin> {r,p,q}` have "?S - {u} = {r,p,q}" by simp
-      with `\<not> proj2_set_Col {r,p,q}` show "\<not> proj2_set_Col (?S - {u})" by simp
+      with \<open>?s \<notin> {r,p,q}\<close> have "?S - {u} = {r,p,q}" by simp
+      with \<open>\<not> proj2_set_Col {r,p,q}\<close> show "\<not> proj2_set_Col (?S - {u})" by simp
     next
       assume "u \<noteq> ?s"
       hence "insert ?s ({r,p,q} - {u}) = ?S - {u}" by auto
 
-      from `finite {r,p,q}` have "finite ({r,p,q} - {u})" by simp
+      from \<open>finite {r,p,q}\<close> have "finite ({r,p,q} - {u})" by simp
 
-      from `?s \<notin> {r,p,q}` have "?s \<notin> {r,p,q} - {u}" by simp
+      from \<open>?s \<notin> {r,p,q}\<close> have "?s \<notin> {r,p,q} - {u}" by simp
       hence "\<forall> t\<in>{r,p,q}-{u}. ?d t = -1" by auto
 
-      from `u \<noteq> ?s` and  `u \<in> ?S` have "u \<in> {r,p,q}" by simp
+      from \<open>u \<noteq> ?s\<close> and  \<open>u \<in> ?S\<close> have "u \<in> {r,p,q}" by simp
       hence "(\<Sum> t\<in>{r,p,q}. proj2_rep t)
         = proj2_rep u + (\<Sum> t\<in>{r,p,q}-{u}. proj2_rep t)"
         by (simp add: sum.remove)
-      with `(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s`
+      with \<open>(\<Sum> t\<in>{r,p,q}. proj2_rep t) = j *\<^sub>R proj2_rep ?s\<close>
       have "proj2_rep u
         = j *\<^sub>R proj2_rep ?s - (\<Sum> t\<in>{r,p,q}-{u}. proj2_rep t)"
         by simp
-      also from `\<forall> t\<in>{r,p,q}-{u}. ?d t = -1`
+      also from \<open>\<forall> t\<in>{r,p,q}-{u}. ?d t = -1\<close>
       have "\<dots> = j *\<^sub>R proj2_rep ?s + (\<Sum> t\<in>{r,p,q}-{u}. ?d t *\<^sub>R proj2_rep t)"
         by (simp add: sum_negf)
-      also from `finite ({r,p,q} - {u})`  and `?s \<notin> {r,p,q} - {u}`
+      also from \<open>finite ({r,p,q} - {u})\<close>  and \<open>?s \<notin> {r,p,q} - {u}\<close>
       have "\<dots> = (\<Sum> t\<in>insert ?s ({r,p,q}-{u}). ?d t *\<^sub>R proj2_rep t)"
         by (simp add: sum.insert)
-      also from `insert ?s ({r,p,q} - {u}) = ?S - {u}`
+      also from \<open>insert ?s ({r,p,q} - {u}) = ?S - {u}\<close>
       have "\<dots> = (\<Sum> t\<in>?S-{u}. ?d t *\<^sub>R proj2_rep t)" by simp
       finally have "proj2_rep u = (\<Sum> t\<in>?S-{u}. ?d t *\<^sub>R proj2_rep t)" .
       moreover
@@ -1152,12 +1152,12 @@ proof -
         show "proj2_rep t \<in> span (proj2_rep ` (?S - {u}))"
         proof cases
           assume "t = u"
-          from `proj2_rep u \<in> span (image proj2_rep (?S - {u}))`
+          from \<open>proj2_rep u \<in> span (image proj2_rep (?S - {u}))\<close>
           show "proj2_rep t \<in> span (proj2_rep ` (?S - {u}))"
-            by (subst `t = u`)
+            by (subst \<open>t = u\<close>)
         next
           assume "t \<noteq> u"
-          with `t \<in> {r,p,q}`
+          with \<open>t \<in> {r,p,q}\<close>
           have "proj2_rep t \<in> proj2_rep ` (?S - {u})" by simp
           with span_superset [of "proj2_rep ` (?S - {u})"]
           show "proj2_rep t \<in> span (proj2_rep ` (?S - {u}))" by fast
@@ -1171,16 +1171,16 @@ proof -
       hence "span (proj2_rep ` {r,p,q}) \<subseteq> span (proj2_rep ` (?S - {u}))"
         by (simp only: span_span)
       moreover
-      from `\<not> proj2_set_Col {r,p,q}`
-        and `card {r,p,q} = 3`
+      from \<open>\<not> proj2_set_Col {r,p,q}\<close>
+        and \<open>card {r,p,q} = 3\<close>
         and not_proj2_set_Col_iff_span
       have "span (proj2_rep ` {r,p,q}) = UNIV" by simp
       ultimately have "span (proj2_rep ` (?S - {u})) = UNIV" by auto
-      with `card (?S - {u}) = 3` and not_proj2_set_Col_iff_span
+      with \<open>card (?S - {u}) = 3\<close> and not_proj2_set_Col_iff_span
       show "\<not> proj2_set_Col (?S - {u})" by simp
     qed
   qed
-  with `card ?S = 4`
+  with \<open>card ?S = 4\<close>
   have "proj2_no_3_Col ?S" by (unfold proj2_no_3_Col_def) fast
   thus "\<exists> s. proj2_no_3_Col {s,r,p,q}" ..
 qed
@@ -1189,9 +1189,9 @@ lemma proj2_set_Col_expand:
   assumes "proj2_set_Col S" and "{p,q,r} \<subseteq> S" and "p \<noteq> q" and "r \<noteq> p"
   shows "\<exists> k. r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)"
 proof -
-  from `proj2_set_Col S`
+  from \<open>proj2_set_Col S\<close>
   obtain l where "\<forall> t\<in>S. proj2_incident t l" unfolding proj2_set_Col_def ..
-  with `{p,q,r} \<subseteq> S` and `p \<noteq> q` and `r \<noteq> p` and proj2_incident_iff [of p q l r]
+  with \<open>{p,q,r} \<subseteq> S\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and proj2_incident_iff [of p q l r]
   show "\<exists> k. r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)" by simp
 qed
 
@@ -1253,7 +1253,7 @@ lemma cltn2_rep_abs:
   assumes "invertible A"
   shows "(A, cltn2_rep (cltn2_abs A)) \<in> invertible_proportionality"
 proof -
-  from `invertible A`
+  from \<open>invertible A\<close>
   have "invertible_proportionality `` {A} \<in> (Collect invertible :: (real^3^3) set)//invertible_proportionality"
     unfolding quotient_def
     by auto 
@@ -1270,19 +1270,19 @@ lemma cltn2_rep_abs2:
   assumes "invertible A"
   shows "\<exists> k. k \<noteq> 0 \<and> cltn2_rep (cltn2_abs A) = k *\<^sub>R A"
 proof -
-  from `invertible A` and cltn2_rep_abs
+  from \<open>invertible A\<close> and cltn2_rep_abs
   have "(A, cltn2_rep (cltn2_abs A)) \<in> invertible_proportionality" by simp
   then obtain c where "A = c *\<^sub>R cltn2_rep (cltn2_abs A)"
     unfolding invertible_proportionality_def and real_vector.proportionality_def
     by auto
-  with `invertible A` and zero_not_invertible have "c \<noteq> 0" by auto
+  with \<open>invertible A\<close> and zero_not_invertible have "c \<noteq> 0" by auto
   hence "1/c \<noteq> 0" by simp
 
   let ?k = "1/c"
-  from `A = c *\<^sub>R cltn2_rep (cltn2_abs A)`
+  from \<open>A = c *\<^sub>R cltn2_rep (cltn2_abs A)\<close>
   have "?k *\<^sub>R A = ?k *\<^sub>R c *\<^sub>R cltn2_rep (cltn2_abs A)" by simp
-  with `c \<noteq> 0` have "cltn2_rep (cltn2_abs A) = ?k *\<^sub>R A" by simp
-  with `?k \<noteq> 0`
+  with \<open>c \<noteq> 0\<close> have "cltn2_rep (cltn2_abs A) = ?k *\<^sub>R A" by simp
+  with \<open>?k \<noteq> 0\<close>
   show "\<exists> k. k \<noteq> 0 \<and> cltn2_rep (cltn2_abs A) = k *\<^sub>R A" by blast
 qed
 
@@ -1307,9 +1307,9 @@ lemma cltn2_abs_mult:
   assumes "k \<noteq> 0" and "invertible A"
   shows "cltn2_abs (k *\<^sub>R A) = cltn2_abs A"
 proof -
-  from `k \<noteq> 0` and `invertible A` and scalar_invertible
+  from \<open>k \<noteq> 0\<close> and \<open>invertible A\<close> and scalar_invertible
   have "invertible (k *\<^sub>R A)" by auto
-  with `invertible A`
+  with \<open>invertible A\<close>
   have "(k *\<^sub>R A, A) \<in> invertible_proportionality"
     unfolding invertible_proportionality_def
       and real_vector.proportionality_def
@@ -1317,7 +1317,7 @@ proof -
   with eq_equiv_class_iff
   [of "Collect invertible" invertible_proportionality "k *\<^sub>R A" A]
     and invertible_proportionality_equiv
-    and `invertible A` and `invertible (k *\<^sub>R A)`
+    and \<open>invertible A\<close> and \<open>invertible (k *\<^sub>R A)\<close>
   have "invertible_proportionality `` {k *\<^sub>R A}
     = invertible_proportionality `` {A}"
     by simp
@@ -1336,18 +1336,18 @@ lemma apply_cltn2_abs:
   assumes "x \<noteq> 0" and "invertible A"
   shows "apply_cltn2 (proj2_abs x) (cltn2_abs A) = proj2_abs (x v* A)"
 proof -
-  from proj2_rep_abs2 and `x \<noteq> 0`
+  from proj2_rep_abs2 and \<open>x \<noteq> 0\<close>
   obtain k where "k \<noteq> 0" and "proj2_rep (proj2_abs x) = k *\<^sub>R x" by auto
 
-  from cltn2_rep_abs2 and `invertible A`
+  from cltn2_rep_abs2 and \<open>invertible A\<close>
   obtain c where "c \<noteq> 0" and "cltn2_rep (cltn2_abs A) = c *\<^sub>R A" by auto
 
-  from `k \<noteq> 0` and `c \<noteq> 0` have "k * c \<noteq> 0" by simp
+  from \<open>k \<noteq> 0\<close> and \<open>c \<noteq> 0\<close> have "k * c \<noteq> 0" by simp
 
-  from `proj2_rep (proj2_abs x) = k *\<^sub>R x` and `cltn2_rep (cltn2_abs A) = c *\<^sub>R A`
+  from \<open>proj2_rep (proj2_abs x) = k *\<^sub>R x\<close> and \<open>cltn2_rep (cltn2_abs A) = c *\<^sub>R A\<close>
   have "proj2_rep (proj2_abs x) v* cltn2_rep (cltn2_abs A) = (k*c) *\<^sub>R (x v* A)"
     by (simp add: scaleR_vector_matrix_assoc vector_scaleR_matrix_ac)
-  with `k * c \<noteq> 0` 
+  with \<open>k * c \<noteq> 0\<close> 
   show "apply_cltn2 (proj2_abs x) (cltn2_abs A) = proj2_abs (x v* A)"
     unfolding apply_cltn2_def
     by (simp add: proj2_abs_mult)
@@ -1358,7 +1358,7 @@ lemma apply_cltn2_left_abs:
   shows "apply_cltn2 (proj2_abs v) C = proj2_abs (v v* cltn2_rep C)"
 proof -
   have "cltn2_abs (cltn2_rep C) = C" by (rule cltn2_abs_rep)
-  with `v \<noteq> 0` and cltn2_rep_invertible and apply_cltn2_abs [of v "cltn2_rep C"]
+  with \<open>v \<noteq> 0\<close> and cltn2_rep_invertible and apply_cltn2_abs [of v "cltn2_rep C"]
   show "apply_cltn2 (proj2_abs v) C = proj2_abs (v v* cltn2_rep C)"
     by simp
 qed
@@ -1367,7 +1367,7 @@ lemma apply_cltn2_right_abs:
   assumes "invertible M"
   shows "apply_cltn2 p (cltn2_abs M) = proj2_abs (proj2_rep p v* M)"
 proof -
-  from proj2_rep_non_zero and `invertible M` and apply_cltn2_abs
+  from proj2_rep_non_zero and \<open>invertible M\<close> and apply_cltn2_abs
   have "apply_cltn2 (proj2_abs (proj2_rep p)) (cltn2_abs M)
     = proj2_abs (proj2_rep p v* M)"
     by simp
@@ -1378,7 +1378,7 @@ qed
 lemma non_zero_mult_rep_non_zero:
   assumes "v \<noteq> 0"
   shows "v v* cltn2_rep C \<noteq> 0"
-  using `v \<noteq> 0` and cltn2_rep_invertible and times_invertible_eq_zero
+  using \<open>v \<noteq> 0\<close> and cltn2_rep_invertible and times_invertible_eq_zero
   by auto
 
 lemma rep_mult_rep_non_zero: "proj2_rep p v* cltn2_rep A \<noteq> 0"
@@ -1403,22 +1403,22 @@ lemma cltn2_compose_abs:
   assumes "invertible M" and "invertible N"
   shows "cltn2_compose (cltn2_abs M) (cltn2_abs N) = cltn2_abs (M ** N)"
 proof -
-  from `invertible M` and `invertible N` and invertible_mult
+  from \<open>invertible M\<close> and \<open>invertible N\<close> and invertible_mult
   have "invertible (M ** N)" by auto
 
-  from `invertible M` and `invertible N` and cltn2_rep_abs2
+  from \<open>invertible M\<close> and \<open>invertible N\<close> and cltn2_rep_abs2
   obtain j and k where "j \<noteq> 0" and "k \<noteq> 0"
     and "cltn2_rep (cltn2_abs M) = j *\<^sub>R M"
     and "cltn2_rep (cltn2_abs N) = k *\<^sub>R N"
     by blast
 
-  from `j \<noteq> 0` and `k \<noteq> 0` have "j * k \<noteq> 0" by simp
+  from \<open>j \<noteq> 0\<close> and \<open>k \<noteq> 0\<close> have "j * k \<noteq> 0" by simp
 
-  from `cltn2_rep (cltn2_abs M) = j *\<^sub>R M` and `cltn2_rep (cltn2_abs N) = k *\<^sub>R N`
+  from \<open>cltn2_rep (cltn2_abs M) = j *\<^sub>R M\<close> and \<open>cltn2_rep (cltn2_abs N) = k *\<^sub>R N\<close>
   have "cltn2_rep (cltn2_abs M) ** cltn2_rep (cltn2_abs N)
     = (j * k) *\<^sub>R (M ** N)"
     by (simp add: matrix_scalar_ac scalar_matrix_assoc [symmetric])
-  with `j * k \<noteq> 0` and `invertible (M ** N)`
+  with \<open>j * k \<noteq> 0\<close> and \<open>invertible (M ** N)\<close>
   show "cltn2_compose (cltn2_abs M) (cltn2_abs N) = cltn2_abs (M ** N)"
     unfolding cltn2_compose_def
     by (simp add: cltn2_abs_mult)
@@ -1428,7 +1428,7 @@ lemma cltn2_compose_left_abs:
   assumes "invertible M"
   shows "cltn2_compose (cltn2_abs M) A = cltn2_abs (M ** cltn2_rep A)"
 proof -
-  from `invertible M` and cltn2_rep_invertible and cltn2_compose_abs
+  from \<open>invertible M\<close> and cltn2_rep_invertible and cltn2_compose_abs
   have "cltn2_compose (cltn2_abs M) (cltn2_abs (cltn2_rep A))
     = cltn2_abs (M ** cltn2_rep A)"
     by simp
@@ -1440,7 +1440,7 @@ lemma cltn2_compose_right_abs:
   assumes "invertible M"
   shows "cltn2_compose A (cltn2_abs M) = cltn2_abs (cltn2_rep A ** M)"
 proof -
-  from `invertible M` and cltn2_rep_invertible and cltn2_compose_abs
+  from \<open>invertible M\<close> and cltn2_rep_invertible and cltn2_compose_abs
   have "cltn2_compose (cltn2_abs (cltn2_rep A)) (cltn2_abs M)
     = cltn2_abs (cltn2_rep A ** M)"
     by simp
@@ -1452,14 +1452,14 @@ lemma cltn2_abs_rep_abs_mult:
   assumes "invertible M" and "invertible N"
   shows "cltn2_abs (cltn2_rep (cltn2_abs M) ** N) = cltn2_abs (M ** N)"
 proof -
-  from `invertible M` and `invertible N`
+  from \<open>invertible M\<close> and \<open>invertible N\<close>
   have "invertible (M ** N)" by (simp add: invertible_mult)
 
-  from `invertible M` and cltn2_rep_abs2
+  from \<open>invertible M\<close> and cltn2_rep_abs2
   obtain k where "k \<noteq> 0" and "cltn2_rep (cltn2_abs M) = k *\<^sub>R M" by auto
-  from `cltn2_rep (cltn2_abs M) = k *\<^sub>R M`
+  from \<open>cltn2_rep (cltn2_abs M) = k *\<^sub>R M\<close>
   have "cltn2_rep (cltn2_abs M) ** N = k *\<^sub>R M ** N" by simp
-  with `k \<noteq> 0` and `invertible (M ** N)` and cltn2_abs_mult
+  with \<open>k \<noteq> 0\<close> and \<open>invertible (M ** N)\<close> and cltn2_abs_mult
   show "cltn2_abs (cltn2_rep (cltn2_abs M) ** N) = cltn2_abs (M ** N)"
     by (simp add: scalar_matrix_assoc [symmetric])
 qed
@@ -1476,25 +1476,25 @@ proof -
   have "invertible (?A' ** ?B')" and "invertible (?B' ** ?C')"
     and "invertible (?A' ** ?B' ** ?C')"
     by auto
-  from `invertible (?A' ** ?B')` and `invertible ?C'` and cltn2_abs_rep_abs_mult
+  from \<open>invertible (?A' ** ?B')\<close> and \<open>invertible ?C'\<close> and cltn2_abs_rep_abs_mult
   have "cltn2_abs (cltn2_rep (cltn2_abs (?A' ** ?B')) ** ?C')
     = cltn2_abs (?A' ** ?B' ** ?C')"
     by simp
 
-  from `invertible (?B' ** ?C')` and cltn2_rep_abs2 [of "?B' ** ?C'"]
+  from \<open>invertible (?B' ** ?C')\<close> and cltn2_rep_abs2 [of "?B' ** ?C'"]
   obtain k where "k \<noteq> 0"
     and "cltn2_rep (cltn2_abs (?B' ** ?C')) = k *\<^sub>R (?B' ** ?C')"
     by auto
-  from `cltn2_rep (cltn2_abs (?B' ** ?C')) = k *\<^sub>R (?B' ** ?C')`
+  from \<open>cltn2_rep (cltn2_abs (?B' ** ?C')) = k *\<^sub>R (?B' ** ?C')\<close>
   have "?A' ** cltn2_rep (cltn2_abs (?B' ** ?C')) = k *\<^sub>R (?A' ** ?B' ** ?C')"
     by (simp add: matrix_scalar_ac matrix_mul_assoc scalar_matrix_assoc)
-  with `k \<noteq> 0` and `invertible (?A' ** ?B' ** ?C')`
+  with \<open>k \<noteq> 0\<close> and \<open>invertible (?A' ** ?B' ** ?C')\<close>
     and cltn2_abs_mult [of k "?A' ** ?B' ** ?C'"]
   have "cltn2_abs (?A' ** cltn2_rep (cltn2_abs (?B' ** ?C')))
     = cltn2_abs (?A' ** ?B' ** ?C')"
     by simp
-  with `cltn2_abs (cltn2_rep (cltn2_abs (?A' ** ?B')) ** ?C')
-    = cltn2_abs (?A' ** ?B' ** ?C')`
+  with \<open>cltn2_abs (cltn2_rep (cltn2_abs (?A' ** ?B')) ** ?C')
+    = cltn2_abs (?A' ** ?B' ** ?C')\<close>
   show
     "cltn2_compose (cltn2_compose A B) C = cltn2_compose A (cltn2_compose B C)"
     unfolding cltn2_compose_def
@@ -1518,11 +1518,11 @@ proof -
   let ?M' = "matrix_inv ?M"
   from cltn2_rep_invertible have "invertible ?M" by simp
   with matrix_inv_invertible have "invertible ?M'" by auto
-  with `invertible ?M` and cltn2_abs_rep_abs_mult
+  with \<open>invertible ?M\<close> and cltn2_abs_rep_abs_mult
   have "cltn2_compose (cltn2_inverse A) A = cltn2_abs (?M' ** ?M)"
     unfolding cltn2_compose_def and cltn2_inverse_def
     by simp
-  with `invertible ?M`
+  with \<open>invertible ?M\<close>
   show "cltn2_compose (cltn2_inverse A) A = cltn2_id"
     unfolding cltn2_id_def
     by (simp add: matrix_inv)
@@ -1577,8 +1577,8 @@ proof -
     = proj2_abs (proj2_rep p v* (cltn2_rep A ** cltn2_rep B))"
     unfolding cltn2_compose_def
     by simp
-  with `apply_cltn2 (apply_cltn2 p A) B
-    = proj2_abs (proj2_rep p v* (cltn2_rep A ** cltn2_rep B))`
+  with \<open>apply_cltn2 (apply_cltn2 p A) B
+    = proj2_abs (proj2_rep p v* (cltn2_rep A ** cltn2_rep B))\<close>
   show "apply_cltn2 (apply_cltn2 p A) B = apply_cltn2 p (cltn2_compose A B)"
     by simp
 qed
@@ -1608,15 +1608,15 @@ lemma cltn2_transpose_abs:
   assumes "invertible M"
   shows "cltn2_transpose (cltn2_abs M) = cltn2_abs (transpose M)"
 proof -
-  from `invertible M` and transpose_invertible have "invertible (transpose M)" by auto
+  from \<open>invertible M\<close> and transpose_invertible have "invertible (transpose M)" by auto
 
-  from `invertible M` and cltn2_rep_abs2
+  from \<open>invertible M\<close> and cltn2_rep_abs2
   obtain k where "k \<noteq> 0" and "cltn2_rep (cltn2_abs M) = k *\<^sub>R M" by auto
 
-  from `cltn2_rep (cltn2_abs M) = k *\<^sub>R M`
+  from \<open>cltn2_rep (cltn2_abs M) = k *\<^sub>R M\<close>
   have "transpose (cltn2_rep (cltn2_abs M)) = k *\<^sub>R transpose M"
     by (simp add: transpose_scalar)
-  with `k \<noteq> 0` and `invertible (transpose M)`
+  with \<open>k \<noteq> 0\<close> and \<open>invertible (transpose M)\<close>
   show "cltn2_transpose (cltn2_abs M) = cltn2_abs (transpose M)"
     unfolding cltn2_transpose_def
     by (simp add: cltn2_abs_mult)
@@ -1634,18 +1634,18 @@ proof -
     and "invertible (transpose (cltn2_rep B))"
     by auto
 
-  from `invertible (cltn2_rep A)` and `invertible (cltn2_rep B)`
+  from \<open>invertible (cltn2_rep A)\<close> and \<open>invertible (cltn2_rep B)\<close>
     and invertible_mult
   have "invertible (cltn2_rep A ** cltn2_rep B)" by auto
-  with `invertible (cltn2_rep A ** cltn2_rep B)` and cltn2_transpose_abs
+  with \<open>invertible (cltn2_rep A ** cltn2_rep B)\<close> and cltn2_transpose_abs
   have "cltn2_transpose (cltn2_compose A B)
     = cltn2_abs (transpose (cltn2_rep A ** cltn2_rep B))"
     unfolding cltn2_compose_def
     by simp
   also have "\<dots> = cltn2_abs (transpose (cltn2_rep B) ** transpose (cltn2_rep A))"
     by (simp add: matrix_transpose_mul)
-  also from `invertible (transpose (cltn2_rep B))`
-    and `invertible (transpose (cltn2_rep A))`
+  also from \<open>invertible (transpose (cltn2_rep B))\<close>
+    and \<open>invertible (transpose (cltn2_rep A))\<close>
     and cltn2_compose_abs
   have "\<dots> = cltn2_compose (cltn2_transpose B) (cltn2_transpose A)"
     unfolding cltn2_transpose_def
@@ -1763,9 +1763,9 @@ proof -
   have
     "\<dots> \<longleftrightarrow> (proj2_rep p v* cltn2_rep (cltn2_inverse A)) \<bullet> proj2_line_rep l = 0"
     by simp
-  also from `j \<noteq> 0`
-    and `proj2_rep (proj2_abs (proj2_rep p v* cltn2_rep (cltn2_inverse A)))
-    = j *\<^sub>R (proj2_rep p v* cltn2_rep (cltn2_inverse A))`
+  also from \<open>j \<noteq> 0\<close>
+    and \<open>proj2_rep (proj2_abs (proj2_rep p v* cltn2_rep (cltn2_inverse A)))
+    = j *\<^sub>R (proj2_rep p v* cltn2_rep (cltn2_inverse A))\<close>
   have "\<dots> \<longleftrightarrow> proj2_incident (apply_cltn2 p (cltn2_inverse A)) l"
     unfolding proj2_incident_def and apply_cltn2_def
     by (simp add: dot_scaleR_mult)
@@ -1781,7 +1781,7 @@ lemma apply_cltn2_preserve_set_Col:
   assumes "proj2_set_Col S"
   shows "proj2_set_Col {apply_cltn2 p C | p. p \<in> S}"
 proof -
-  from `proj2_set_Col S`
+  from \<open>proj2_set_Col S\<close>
   obtain l where "\<forall> p\<in>S. proj2_incident p l" unfolding proj2_set_Col_def ..
   hence "\<forall> q \<in> {apply_cltn2 p C | p. p \<in> S}.
     proj2_incident q (apply_cltn2_line l C)"
@@ -1794,7 +1794,7 @@ lemma apply_cltn2_injective:
   assumes "apply_cltn2 p C = apply_cltn2 q C"
   shows "p = q"
 proof -
-  from `apply_cltn2 p C = apply_cltn2 q C`
+  from \<open>apply_cltn2 p C = apply_cltn2 q C\<close>
   have "apply_cltn2 (apply_cltn2 p C) (cltn2_inverse C)
     = apply_cltn2 (apply_cltn2 q C) (cltn2_inverse C)"
     by simp
@@ -1805,7 +1805,7 @@ lemma apply_cltn2_line_injective:
   assumes "apply_cltn2_line l C = apply_cltn2_line m C"
   shows "l = m"
 proof -
-  from `apply_cltn2_line l C = apply_cltn2_line m C`
+  from \<open>apply_cltn2_line l C = apply_cltn2_line m C\<close>
   have "apply_cltn2_line (apply_cltn2_line l C) (cltn2_inverse C)
     = apply_cltn2_line (apply_cltn2_line m C) (cltn2_inverse C)"
     by simp
@@ -1818,18 +1818,18 @@ lemma apply_cltn2_line_unique:
   and "proj2_incident (apply_cltn2 q C) m"
   shows "apply_cltn2_line l C = m"
 proof -
-  from `proj2_incident p l`
+  from \<open>proj2_incident p l\<close>
   have "proj2_incident (apply_cltn2 p C) (apply_cltn2_line l C)" by simp
 
-  from `proj2_incident q l`
+  from \<open>proj2_incident q l\<close>
   have "proj2_incident (apply_cltn2 q C) (apply_cltn2_line l C)" by simp
 
-  from `p \<noteq> q` and apply_cltn2_injective [of p C q]
+  from \<open>p \<noteq> q\<close> and apply_cltn2_injective [of p C q]
   have "apply_cltn2 p C \<noteq> apply_cltn2 q C" by auto
-  with `proj2_incident (apply_cltn2 p C) (apply_cltn2_line l C)`
-    and `proj2_incident (apply_cltn2 q C) (apply_cltn2_line l C)`
-    and `proj2_incident (apply_cltn2 p C) m`
-    and `proj2_incident (apply_cltn2 q C) m`
+  with \<open>proj2_incident (apply_cltn2 p C) (apply_cltn2_line l C)\<close>
+    and \<open>proj2_incident (apply_cltn2 q C) (apply_cltn2_line l C)\<close>
+    and \<open>proj2_incident (apply_cltn2 p C) m\<close>
+    and \<open>proj2_incident (apply_cltn2 q C) m\<close>
     and proj2_incident_unique
   show "apply_cltn2_line l C = m" by fast
 qed
@@ -1840,25 +1840,25 @@ lemma apply_cltn2_unique:
   and "proj2_incident q (apply_cltn2_line m C)"
   shows "apply_cltn2 p C = q"
 proof -
-  from `proj2_incident p l`
+  from \<open>proj2_incident p l\<close>
   have "proj2_incident (apply_cltn2 p C) (apply_cltn2_line l C)" by simp
 
-  from `proj2_incident p m`
+  from \<open>proj2_incident p m\<close>
   have "proj2_incident (apply_cltn2 p C) (apply_cltn2_line m C)" by simp
 
-  from `l \<noteq> m` and apply_cltn2_line_injective [of l C m]
+  from \<open>l \<noteq> m\<close> and apply_cltn2_line_injective [of l C m]
   have "apply_cltn2_line l C \<noteq> apply_cltn2_line m C" by auto
-  with `proj2_incident (apply_cltn2 p C) (apply_cltn2_line l C)`
-    and `proj2_incident (apply_cltn2 p C) (apply_cltn2_line m C)`
-    and `proj2_incident q (apply_cltn2_line l C)`
-    and `proj2_incident q (apply_cltn2_line m C)`
+  with \<open>proj2_incident (apply_cltn2 p C) (apply_cltn2_line l C)\<close>
+    and \<open>proj2_incident (apply_cltn2 p C) (apply_cltn2_line m C)\<close>
+    and \<open>proj2_incident q (apply_cltn2_line l C)\<close>
+    and \<open>proj2_incident q (apply_cltn2_line m C)\<close>
     and proj2_incident_unique
   show "apply_cltn2 p C = q" by fast
 qed
 
-subsubsection {* Parts of some Statements from \cite{borsuk} *}
-text {* All theorems with names beginning with \emph{statement} are based
-  on corresponding theorems in \cite{borsuk}. *}
+subsubsection \<open>Parts of some Statements from \cite{borsuk}\<close>
+text \<open>All theorems with names beginning with \emph{statement} are based
+  on corresponding theorems in \cite{borsuk}.\<close>
 
 lemma statement52_existence:
   fixes a :: "proj2^3" and a3 :: "proj2"
@@ -1869,35 +1869,35 @@ proof -
   let ?v = "proj2_rep a3"
   let ?B = "proj2_rep ` range (($) a)"
 
-  from `proj2_no_3_Col (insert a3 (range (($) a)))`
+  from \<open>proj2_no_3_Col (insert a3 (range (($) a)))\<close>
   have "card (insert a3 (range (($) a))) = 4" unfolding proj2_no_3_Col_def ..
 
   from card_image_le [of UNIV "($) a"]
   have "card (range (($) a)) \<le> 3" by simp
   with card_insert_if [of "range (($) a)" a3]
-    and `card (insert a3 (range (($) a))) = 4`
+    and \<open>card (insert a3 (range (($) a))) = 4\<close>
   have "a3 \<notin> range (($) a)" by auto
   hence "(insert a3 (range (($) a))) - {a3} = range (($) a)" by simp
-  with `proj2_no_3_Col (insert a3 (range (($) a)))`
+  with \<open>proj2_no_3_Col (insert a3 (range (($) a)))\<close>
     and proj2_no_3_Col_span [of "insert a3 (range (($) a))" a3]
   have "span ?B = UNIV" by simp
 
   from card_suc_ge_insert [of a3 "range (($) a)"]
-    and `card (insert a3 (range (($) a))) = 4`
-    and `card (range (($) a)) \<le> 3`
+    and \<open>card (insert a3 (range (($) a))) = 4\<close>
+    and \<open>card (range (($) a)) \<le> 3\<close>
   have "card (range (($) a)) = 3" by simp
   with card_image [of proj2_rep "range (($) a)"]
     and proj2_rep_inj
     and subset_inj_on
   have "card ?B = 3" by auto
   hence "finite ?B" by simp
-  with `span ?B = UNIV` and span_finite [of ?B]
+  with \<open>span ?B = UNIV\<close> and span_finite [of ?B]
   obtain c where "(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v"
     by (auto simp add: scalar_equiv) (metis (no_types, lifting) UNIV_I rangeE)
   let ?C = "\<chi> i. c (proj2_rep (a$i)) *\<^sub>R (proj2_rep (a$i))"
   let ?A = "cltn2_abs ?C"
 
-  from proj2_rep_inj and `a3 \<notin> range (($) a)` have "?v \<notin> ?B"
+  from proj2_rep_inj and \<open>a3 \<notin> range (($) a)\<close> have "?v \<notin> ?B"
     unfolding inj_on_def
     by auto
 
@@ -1913,44 +1913,44 @@ proof -
     from image_set_diff [of proj2_rep] and proj2_rep_inj
     have "?Bi = ?B - {proj2_rep (a$i)}" by simp
     with sum_diff1 [of ?B "\<lambda> w. (c w) *\<^sub>R w"]
-      and `finite ?B`
-      and `proj2_rep (a$i) \<in> ?B`
+      and \<open>finite ?B\<close>
+      and \<open>proj2_rep (a$i) \<in> ?B\<close>
     have "(\<Sum> w \<in> ?Bi. (c w) *\<^sub>R w) =
       (\<Sum> w \<in> ?B. (c w) *\<^sub>R w) - c (proj2_rep (a$i)) *\<^sub>R proj2_rep (a$i)"
       by simp
 
-    from `a3 \<notin> range (($) a)` have "a3 \<noteq> a$i" by auto
+    from \<open>a3 \<notin> range (($) a)\<close> have "a3 \<noteq> a$i" by auto
     hence "insert a3 (range (($) a)) - {a$i} =
       insert a3 (range (($) a) - {a$i})" by auto
     hence "proj2_rep ` (insert a3 (range (($) a)) - {a$i}) = insert ?v ?Bi"
       by simp
-    moreover from `proj2_no_3_Col (insert a3 (range (($) a)))`
-      and `a$i \<in> insert a3 (range (($) a))`
+    moreover from \<open>proj2_no_3_Col (insert a3 (range (($) a)))\<close>
+      and \<open>a$i \<in> insert a3 (range (($) a))\<close>
     have "span (proj2_rep ` (insert a3 (range (($) a)) - {a$i})) = UNIV"
       by (rule proj2_no_3_Col_span)
     ultimately have "span (insert ?v ?Bi) = UNIV" by simp
 
-    from `?Bi = ?B - {proj2_rep (a$i)}`
-      and `proj2_rep (a$i) \<in> ?B`
-      and `card ?B = 3`
+    from \<open>?Bi = ?B - {proj2_rep (a$i)}\<close>
+      and \<open>proj2_rep (a$i) \<in> ?B\<close>
+      and \<open>card ?B = 3\<close>
     have "card ?Bi = 2" by (simp add: card_gt_0_diff_singleton)
     hence "finite ?Bi" by simp
-    with `card ?Bi = 2` and dim_le_card' [of ?Bi] have "dim ?Bi \<le> 2" by simp
+    with \<open>card ?Bi = 2\<close> and dim_le_card' [of ?Bi] have "dim ?Bi \<le> 2" by simp
     hence "dim (span ?Bi) \<le> 2" by (subst dim_span)
     then have "span ?Bi \<noteq> UNIV"
       by clarify (auto simp: dim_UNIV)
-    with `span (insert ?v ?Bi) = UNIV` and span_redundant
+    with \<open>span (insert ?v ?Bi) = UNIV\<close> and span_redundant
     have "?v \<notin> span ?Bi" by auto
 
     { assume "c (proj2_rep (a$i)) = 0"
-      with `(\<Sum> w \<in> ?Bi. (c w) *\<^sub>R w) =
-        (\<Sum> w \<in> ?B. (c w) *\<^sub>R w) - c (proj2_rep (a$i)) *\<^sub>R proj2_rep (a$i)`
-        and `(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v`
+      with \<open>(\<Sum> w \<in> ?Bi. (c w) *\<^sub>R w) =
+        (\<Sum> w \<in> ?B. (c w) *\<^sub>R w) - c (proj2_rep (a$i)) *\<^sub>R proj2_rep (a$i)\<close>
+        and \<open>(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v\<close>
       have "?v = (\<Sum> w \<in> ?Bi. (c w) *\<^sub>R w)"
         by simp
-      with span_finite [of ?Bi] and `finite ?Bi`
+      with span_finite [of ?Bi] and \<open>finite ?Bi\<close>
       have "?v \<in> span ?Bi" by (simp add: scalar_equiv)
-      with `?v \<notin> span ?Bi` have False .. }
+      with \<open>?v \<notin> span ?Bi\<close> have False .. }
     thus "c (proj2_rep (a$i)) \<noteq> 0" ..
   qed
   hence "\<forall> w\<in>?B. c w \<noteq> 0"
@@ -1966,24 +1966,24 @@ proof -
   have "\<forall> x. x \<in> span (rows ?C)"
   proof
     fix x :: "real^3"
-    from `finite ?B` and span_finite [of ?B] and `span ?B = UNIV`
+    from \<open>finite ?B\<close> and span_finite [of ?B] and \<open>span ?B = UNIV\<close>
     obtain ub where "(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) = x"
       by (auto simp add: scalar_equiv) (metis (no_types, lifting) UNIV_I rangeE)
     have "\<forall> w\<in>?B. (ub w) *\<^sub>R w \<in> span (rows ?C)"
     proof
       fix w
       assume "w \<in> ?B"
-      with span_superset [of "rows ?C"] and `rows ?C = image (\<lambda> w. (c w) *\<^sub>R w) ?B`
+      with span_superset [of "rows ?C"] and \<open>rows ?C = image (\<lambda> w. (c w) *\<^sub>R w) ?B\<close>
       have "(c w) *\<^sub>R w \<in> span (rows ?C)" by auto
       with span_mul [of "(c w) *\<^sub>R w" "rows ?C" "(ub w)/(c w)"]
       have "((ub w)/(c w)) *\<^sub>R ((c w) *\<^sub>R w) \<in> span (rows ?C)"
         by (simp add: scalar_equiv)
-      with `\<forall> w\<in>?B. c w \<noteq> 0` and `w \<in> ?B`
+      with \<open>\<forall> w\<in>?B. c w \<noteq> 0\<close> and \<open>w \<in> ?B\<close>
       show "(ub w) *\<^sub>R w \<in> span (rows ?C)" by auto
     qed
-    with span_sum [of ?B "\<lambda> w. (ub w) *\<^sub>R w"] and `finite ?B`
+    with span_sum [of ?B "\<lambda> w. (ub w) *\<^sub>R w"] and \<open>finite ?B\<close>
     have "(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) \<in> span (rows ?C)" by blast
-    with `(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) = x` show "x \<in> span (rows ?C)" by simp
+    with \<open>(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) = x\<close> show "x \<in> span (rows ?C)" by simp
   qed
   hence "span (rows ?C) = UNIV" by auto
   with matrix_left_invertible_span_rows [of ?C]
@@ -1994,11 +1994,11 @@ proof -
   have "(vector [1,1,1] :: real^3) \<noteq> 0"
     unfolding vector_def
     by (simp add: vec_eq_iff forall_3)
-  with apply_cltn2_abs and `invertible ?C`
+  with apply_cltn2_abs and \<open>invertible ?C\<close>
   have "apply_cltn2 (proj2_abs (vector [1,1,1])) ?A =
     proj2_abs (vector [1,1,1] v* ?C)"
     by simp
-  from inj_on_iff_eq_card [of UNIV "($) a"] and `card (range (($) a)) = 3`
+  from inj_on_iff_eq_card [of UNIV "($) a"] and \<open>card (range (($) a)) = 3\<close>
   have "inj (($) a)" by simp
   from exhaust_3 have "\<forall> i::3. (vector [1::real,1,1])$i = 1"
     unfolding vector_def
@@ -2009,17 +2009,17 @@ proof -
     by simp
   also from sum.reindex
   [of "($) a" UNIV "\<lambda> x. (c (proj2_rep x)) *\<^sub>R (proj2_rep x)"]
-    and `inj (($) a)`
+    and \<open>inj (($) a)\<close>
   have "\<dots> = (\<Sum> x\<in>(range (($) a)). (c (proj2_rep x)) *\<^sub>R (proj2_rep x))"
     by simp
   also from sum.reindex
   [of proj2_rep "range (($) a)" "\<lambda> w. (c w) *\<^sub>R w"]
     and proj2_rep_inj and subset_inj_on [of proj2_rep UNIV "range (($) a)"]
   have "\<dots> = (\<Sum> w\<in>?B. (c w) *\<^sub>R w)" by simp
-  also from `(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v` have "\<dots> = ?v" by simp
+  also from \<open>(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v\<close> have "\<dots> = ?v" by simp
   finally have "(vector [1,1,1]) v* ?C = ?v" .
-  with `apply_cltn2 (proj2_abs (vector [1,1,1])) ?A =
-    proj2_abs (vector [1,1,1] v* ?C)`
+  with \<open>apply_cltn2 (proj2_abs (vector [1,1,1])) ?A =
+    proj2_abs (vector [1,1,1] v* ?C)\<close>
   have "apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = proj2_abs ?v" by simp
   with proj2_abs_rep have "apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = a3"
     by simp
@@ -2027,7 +2027,7 @@ proof -
   proof
     fix j :: "3"
     have "((axis j 1)::real^3) \<noteq> 0" by (simp add: vec_eq_iff axis_def)
-    with apply_cltn2_abs and `invertible ?C`
+    with apply_cltn2_abs and \<open>invertible ?C\<close>
     have "apply_cltn2 (proj2_abs (axis j 1)) ?A = proj2_abs (axis j 1 v* ?C)"
       by simp
 
@@ -2039,12 +2039,12 @@ proof -
       and vector_matrix_row [of "axis j 1" ?C]
     have "(axis j 1) v* ?C = ?C$j" by (simp add: scalar_equiv)
     hence "(axis j 1) v* ?C = c (proj2_rep (a$j)) *\<^sub>R (proj2_rep (a$j))" by simp
-    with proj2_abs_mult_rep and `\<forall> i. c (proj2_rep (a$i)) \<noteq> 0`
-      and `apply_cltn2 (proj2_abs (axis j 1)) ?A = proj2_abs (axis j 1 v* ?C)`
+    with proj2_abs_mult_rep and \<open>\<forall> i. c (proj2_rep (a$i)) \<noteq> 0\<close>
+      and \<open>apply_cltn2 (proj2_abs (axis j 1)) ?A = proj2_abs (axis j 1 v* ?C)\<close>
     show "apply_cltn2 (proj2_abs (axis j 1)) ?A = a$j"
       by simp
   qed
-  with `apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = a3`
+  with \<open>apply_cltn2 (proj2_abs (vector [1,1,1])) ?A = a3\<close>
   show "\<exists> A. apply_cltn2 (proj2_abs (vector [1,1,1])) A = a3 \<and>
     (\<forall> j. apply_cltn2 (proj2_abs (axis j 1)) A = a$j)"
     by auto
@@ -2074,7 +2074,7 @@ proof -
         show "r \<in> insert (p$i$3) (range (($) (?q$i)))" by auto
       qed
     qed
-    moreover from `\<forall> i. proj2_no_3_Col (range (($) (p$i)))`
+    moreover from \<open>\<forall> i. proj2_no_3_Col (range (($) (p$i)))\<close>
     have "proj2_no_3_Col (range (($) (p$i)))" ..
     ultimately have "proj2_no_3_Col (insert (p$i$3) (range (($) (?q$i))))"
       by simp
@@ -2100,29 +2100,29 @@ proof -
     show "apply_cltn2 (p$0$j) ?C = p$1$j"
     proof cases
       assume "j = 3"
-      with `apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$0) = p$0$3`
+      with \<open>apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$0) = p$0$3\<close>
         and  cltn2.act_inv_iff
       have
         "apply_cltn2 (p$0$j) (cltn2_inverse (?D$0)) = proj2_abs (vector [1,1,1])"
         by simp
-      with `apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$1) = p$1$3`
-        and `j = 3`
+      with \<open>apply_cltn2 (proj2_abs (vector [1,1,1])) (?D$1) = p$1$3\<close>
+        and \<open>j = 3\<close>
         and cltn2.act_act [of "cltn2_inverse (?D$0)" "?D$1" "p$0$j"]
       show "apply_cltn2 (p$0$j) ?C = p$1$j" by simp
     next
       assume "j \<noteq> 3"
       with eq_3_or_of_3 obtain j' :: 3 where "j = of_int (Rep_bit1 j')"
         by metis
-      with `\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$0) = ?q$0$j'`
-        and `\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$1) = ?q$1$j'`
+      with \<open>\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$0) = ?q$0$j'\<close>
+        and \<open>\<forall> j'. apply_cltn2 (proj2_abs (axis j' 1)) (?D$1) = ?q$1$j'\<close>
       have "p$0$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$0)"
         and "p$1$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$1)"
         by simp_all
-      from `p$0$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$0)`
+      from \<open>p$0$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$0)\<close>
         and cltn2.act_inv_iff
       have "apply_cltn2 (p$0$j) (cltn2_inverse (?D$0)) = proj2_abs (axis j' 1)"
         by simp
-      with `p$1$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$1)`
+      with \<open>p$1$j = apply_cltn2 (proj2_abs (axis j' 1)) (?D$1)\<close>
         and cltn2.act_act [of "cltn2_inverse (?D$0)" "?D$1" "p$0$j"]
       show "apply_cltn2 (p$0$j) ?C = p$1$j" by simp
     qed
@@ -2139,11 +2139,11 @@ lemma apply_cltn2_linear:
 proof -
   have "?u = (j *\<^sub>R v + k *\<^sub>R w) v* cltn2_rep C"
     by (simp only: vector_matrix_left_distrib scaleR_vector_matrix_assoc)
-  with `j *\<^sub>R v + k *\<^sub>R w \<noteq> 0` and non_zero_mult_rep_non_zero
+  with \<open>j *\<^sub>R v + k *\<^sub>R w \<noteq> 0\<close> and non_zero_mult_rep_non_zero
   show "?u \<noteq> 0" by simp
 
-  from `?u = (j *\<^sub>R v + k *\<^sub>R w) v* cltn2_rep C`
-    and `j *\<^sub>R v + k *\<^sub>R w \<noteq> 0`
+  from \<open>?u = (j *\<^sub>R v + k *\<^sub>R w) v* cltn2_rep C\<close>
+    and \<open>j *\<^sub>R v + k *\<^sub>R w \<noteq> 0\<close>
     and apply_cltn2_left_abs
   show "apply_cltn2 (proj2_abs (j *\<^sub>R v + k *\<^sub>R w)) C = proj2_abs ?u"
     by simp
@@ -2155,17 +2155,17 @@ lemma apply_cltn2_imp_mult:
 proof -
   have "proj2_rep p v* cltn2_rep C \<noteq> 0" by (rule rep_mult_rep_non_zero)
 
-  from `apply_cltn2 p C = q`
+  from \<open>apply_cltn2 p C = q\<close>
   have "proj2_abs (proj2_rep p v* cltn2_rep C) = q" by (unfold apply_cltn2_def)
   hence "proj2_rep (proj2_abs (proj2_rep p v* cltn2_rep C)) = proj2_rep q"
     by simp
-  with `proj2_rep p v* cltn2_rep C \<noteq> 0` and proj2_rep_abs2 [of "proj2_rep p v* cltn2_rep C"]
+  with \<open>proj2_rep p v* cltn2_rep C \<noteq> 0\<close> and proj2_rep_abs2 [of "proj2_rep p v* cltn2_rep C"]
   have "\<exists> j. j \<noteq> 0 \<and> proj2_rep q = j *\<^sub>R (proj2_rep p v* cltn2_rep C)" by simp
   then obtain j where "j \<noteq> 0"
     and "proj2_rep q = j *\<^sub>R (proj2_rep p v* cltn2_rep C)" by auto
   hence "proj2_rep p v* cltn2_rep C = (1/j) *\<^sub>R proj2_rep q"
     by (simp add: field_simps)
-  with `j \<noteq> 0`
+  with \<open>j \<noteq> 0\<close>
   show "\<exists> k. k \<noteq> 0 \<and> proj2_rep p v* cltn2_rep C = k *\<^sub>R proj2_rep q"
     by (simp add: exI [of _ "1/j"])
 qed
@@ -2180,40 +2180,40 @@ lemma statement55:
   shows "apply_cltn2 (apply_cltn2 r C) C = r"
 proof cases
   assume "r = p"
-  with `apply_cltn2 p C = q` and `apply_cltn2 q C = p`
+  with \<open>apply_cltn2 p C = q\<close> and \<open>apply_cltn2 q C = p\<close>
   show "apply_cltn2 (apply_cltn2 r C) C = r" by simp
 next
   assume "r \<noteq> p"
 
-  from `apply_cltn2 p C = q` and apply_cltn2_imp_mult [of p C q]
+  from \<open>apply_cltn2 p C = q\<close> and apply_cltn2_imp_mult [of p C q]
   obtain i where "i \<noteq> 0" and "proj2_rep p v* cltn2_rep C = i *\<^sub>R proj2_rep q"
     by auto
 
-  from `apply_cltn2 q C = p` and apply_cltn2_imp_mult [of q C p]
+  from \<open>apply_cltn2 q C = p\<close> and apply_cltn2_imp_mult [of q C p]
   obtain j where "j \<noteq> 0" and "proj2_rep q v* cltn2_rep C = j *\<^sub>R proj2_rep p"
     by auto
 
-  from `p \<noteq> q`
-    and `proj2_incident p l`
-    and `proj2_incident q l`
-    and `proj2_incident r l`
+  from \<open>p \<noteq> q\<close>
+    and \<open>proj2_incident p l\<close>
+    and \<open>proj2_incident q l\<close>
+    and \<open>proj2_incident r l\<close>
     and proj2_incident_iff
   have "r = p \<or> (\<exists> k. r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q))"
     by fast
-  with `r \<noteq> p`
+  with \<open>r \<noteq> p\<close>
   obtain k where "r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)" by auto
 
-  from `p \<noteq> q` and proj2_rep_dependent [of k p 1 q]
+  from \<open>p \<noteq> q\<close> and proj2_rep_dependent [of k p 1 q]
   have "k *\<^sub>R proj2_rep p + proj2_rep q \<noteq> 0" by auto
-  with `r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)`
+  with \<open>r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)\<close>
     and apply_cltn2_linear [of k "proj2_rep p" 1 "proj2_rep q"]
   have "k *\<^sub>R (proj2_rep p v* cltn2_rep C) + proj2_rep q v* cltn2_rep C \<noteq> 0"
     and "apply_cltn2 r C
     = proj2_abs
     (k *\<^sub>R (proj2_rep p v* cltn2_rep C) + proj2_rep q v* cltn2_rep C)"
     by simp_all
-  with `proj2_rep p v* cltn2_rep C = i *\<^sub>R proj2_rep q`
-    and `proj2_rep q v* cltn2_rep C = j *\<^sub>R proj2_rep p`
+  with \<open>proj2_rep p v* cltn2_rep C = i *\<^sub>R proj2_rep q\<close>
+    and \<open>proj2_rep q v* cltn2_rep C = j *\<^sub>R proj2_rep p\<close>
   have "(k * i) *\<^sub>R proj2_rep q + j *\<^sub>R proj2_rep p \<noteq> 0"
     and "apply_cltn2 r C
     = proj2_abs ((k * i) *\<^sub>R proj2_rep q + j *\<^sub>R proj2_rep p)"
@@ -2224,16 +2224,16 @@ next
     ((k * i) *\<^sub>R (proj2_rep q v* cltn2_rep C)
     + j *\<^sub>R (proj2_rep p v* cltn2_rep C))"
     by simp
-  with `proj2_rep p v* cltn2_rep C = i *\<^sub>R proj2_rep q`
-    and `proj2_rep q v* cltn2_rep C = j *\<^sub>R proj2_rep p`
+  with \<open>proj2_rep p v* cltn2_rep C = i *\<^sub>R proj2_rep q\<close>
+    and \<open>proj2_rep q v* cltn2_rep C = j *\<^sub>R proj2_rep p\<close>
   have "apply_cltn2 (apply_cltn2 r C) C
     = proj2_abs ((k * i * j) *\<^sub>R proj2_rep p + (j * i) *\<^sub>R proj2_rep q)"
     by simp
   also have "\<dots> = proj2_abs ((i * j) *\<^sub>R (k *\<^sub>R proj2_rep p + proj2_rep q))"
     by (simp add: algebra_simps)
-  also from `i \<noteq> 0` and `j \<noteq> 0` and proj2_abs_mult
+  also from \<open>i \<noteq> 0\<close> and \<open>j \<noteq> 0\<close> and proj2_abs_mult
   have "\<dots> = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)" by simp
-  also from `r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)`
+  also from \<open>r = proj2_abs (k *\<^sub>R proj2_rep p + proj2_rep q)\<close>
   have "\<dots> = r" by simp
   finally show "apply_cltn2 (apply_cltn2 r C) C = r" .
 qed
@@ -2253,14 +2253,14 @@ lemma proj2_Col_coeff_abs:
   = i/j"
   (is "proj2_Col_coeff p q ?r = i/j")
 proof -
-  from `j \<noteq> 0`
+  from \<open>j \<noteq> 0\<close>
     and proj2_abs_mult [of "1/j" "i *\<^sub>R proj2_rep p + j *\<^sub>R proj2_rep q"]
   have "?r = proj2_abs ((i/j) *\<^sub>R proj2_rep p + proj2_rep q)"
     by (simp add: scaleR_right_distrib)
 
-  from `p \<noteq> q` and proj2_rep_dependent [of _ p 1 q]
+  from \<open>p \<noteq> q\<close> and proj2_rep_dependent [of _ p 1 q]
   have "(i/j) *\<^sub>R proj2_rep p + proj2_rep q \<noteq> 0" by auto
-  with `?r = proj2_abs ((i/j) *\<^sub>R proj2_rep p + proj2_rep q)`
+  with \<open>?r = proj2_abs ((i/j) *\<^sub>R proj2_rep p + proj2_rep q)\<close>
     and proj2_rep_abs2
   obtain k where "k \<noteq> 0"
     and "proj2_rep ?r = k *\<^sub>R ((i/j) *\<^sub>R proj2_rep p + proj2_rep q)"
@@ -2275,16 +2275,16 @@ proof -
   have "?r \<noteq> p"
   proof
     assume "?r = p"
-    with `(k*i/j) *\<^sub>R proj2_rep p + k *\<^sub>R proj2_rep q - proj2_rep ?r = 0`
+    with \<open>(k*i/j) *\<^sub>R proj2_rep p + k *\<^sub>R proj2_rep q - proj2_rep ?r = 0\<close>
     have "(k*i/j - 1) *\<^sub>R proj2_rep p + k *\<^sub>R proj2_rep q = 0"
       by (simp add: algebra_simps)
-    with `k \<noteq> 0` and proj2_rep_dependent have "p = q" by simp
-    with `p \<noteq> q` show False ..
+    with \<open>k \<noteq> 0\<close> and proj2_rep_dependent have "p = q" by simp
+    with \<open>p \<noteq> q\<close> show False ..
   qed
-  with `proj2_Col p q ?r` and `p \<noteq> q`
+  with \<open>proj2_Col p q ?r\<close> and \<open>p \<noteq> q\<close>
   have "?r = proj2_abs (proj2_Col_coeff p q ?r *\<^sub>R proj2_rep p + proj2_rep q)"
     by (rule proj2_Col_coeff)
-  with `p \<noteq> q` and `?r = proj2_abs ((i/j) *\<^sub>R proj2_rep p + proj2_rep q)`
+  with \<open>p \<noteq> q\<close> and \<open>?r = proj2_abs ((i/j) *\<^sub>R proj2_rep p + proj2_rep q)\<close>
     and proj2_Col_coeff_unique
   show "proj2_Col_coeff p q ?r = i/j" by simp
 qed
@@ -2294,10 +2294,10 @@ lemma proj2_set_Col_coeff:
   shows "r = proj2_abs (proj2_Col_coeff p q r *\<^sub>R proj2_rep p + proj2_rep q)"
   (is "r = proj2_abs (?i *\<^sub>R ?u + ?v)")
 proof -
-  from `{p,q,r} \<subseteq> S` and `proj2_set_Col S`
+  from \<open>{p,q,r} \<subseteq> S\<close> and \<open>proj2_set_Col S\<close>
   have "proj2_set_Col {p,q,r}" by (rule proj2_subset_Col)
   hence "proj2_Col p q r" by (subst proj2_Col_iff_set_Col)
-  with `p \<noteq> q` and `r \<noteq> p` and proj2_Col_coeff
+  with \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and proj2_Col_coeff
   show "r = proj2_abs (?i *\<^sub>R ?u + ?v)" by simp
 qed
 
@@ -2311,20 +2311,20 @@ lemma cross_ratio_abs:
   = j * k / (i * l)"
   (is "cross_ratio ?p ?q ?r ?s = _")
 proof -
-  from `u \<noteq> 0` and proj2_rep_abs2
+  from \<open>u \<noteq> 0\<close> and proj2_rep_abs2
   obtain g where "g \<noteq> 0" and "proj2_rep ?p = g *\<^sub>R u" by auto
 
-  from `v \<noteq> 0` and proj2_rep_abs2
+  from \<open>v \<noteq> 0\<close> and proj2_rep_abs2
   obtain h where "h \<noteq> 0" and "proj2_rep ?q = h *\<^sub>R v" by auto
-  with `g \<noteq> 0` and `proj2_rep ?p = g *\<^sub>R u`
+  with \<open>g \<noteq> 0\<close> and \<open>proj2_rep ?p = g *\<^sub>R u\<close>
   have "?r = proj2_abs ((i/g) *\<^sub>R proj2_rep ?p + (j/h) *\<^sub>R proj2_rep ?q)"
     and "?s = proj2_abs ((k/g) *\<^sub>R proj2_rep ?p + (l/h) *\<^sub>R proj2_rep ?q)"
     by (simp_all add: field_simps)
-  with `?p \<noteq> ?q` and `h \<noteq> 0` and `j \<noteq> 0` and `l \<noteq> 0` and proj2_Col_coeff_abs
+  with \<open>?p \<noteq> ?q\<close> and \<open>h \<noteq> 0\<close> and \<open>j \<noteq> 0\<close> and \<open>l \<noteq> 0\<close> and proj2_Col_coeff_abs
   have "proj2_Col_coeff ?p ?q ?r = h*i/(g*j)"
     and "proj2_Col_coeff ?p ?q ?s = h*k/(g*l)"
     by simp_all
-  with `g \<noteq> 0` and `h \<noteq> 0`
+  with \<open>g \<noteq> 0\<close> and \<open>h \<noteq> 0\<close>
   show "cross_ratio ?p ?q ?r ?s = j*k/(i*l)"
     by (unfold cross_ratio_def) (simp add: field_simps)
 qed
@@ -2342,7 +2342,7 @@ proof -
   have "?u \<noteq> 0" and "?v \<noteq> 0" by (rule proj2_rep_non_zero)+
 
   have "proj2_abs ?u = p" and "proj2_abs ?v = q" by (rule proj2_abs_rep)+
-  with `?u \<noteq> 0` and `?v \<noteq> 0` and `p \<noteq> q` and cross_ratio_abs [of ?u ?v 1 1 i j]
+  with \<open>?u \<noteq> 0\<close> and \<open>?v \<noteq> 0\<close> and \<open>p \<noteq> q\<close> and cross_ratio_abs [of ?u ?v 1 1 i j]
   show "cross_ratio p q ?r ?s = j/i" by simp
 qed
 
@@ -2352,19 +2352,19 @@ lemma cross_ratio_correct_cltn2:
   (apply_cltn2 r C) (apply_cltn2 s C)"
   (is "cross_ratio_correct ?pC ?qC ?rC ?sC")
 proof -
-  from `cross_ratio_correct p q r s`
+  from \<open>cross_ratio_correct p q r s\<close>
   have "proj2_set_Col {p,q,r,s}"
     and "p \<noteq> q" and "r \<noteq> p" and "s \<noteq> p" and "r \<noteq> q"
     by (unfold cross_ratio_correct_def) simp_all
 
   have "{apply_cltn2 t C | t. t \<in> {p,q,r,s}} = {?pC,?qC,?rC,?sC}" by auto
-  with `proj2_set_Col {p,q,r,s}`
+  with \<open>proj2_set_Col {p,q,r,s}\<close>
     and apply_cltn2_preserve_set_Col [of "{p,q,r,s}" C]
   have "proj2_set_Col {?pC,?qC,?rC,?sC}" by simp
 
-  from `p \<noteq> q` and `r \<noteq> p` and `s \<noteq> p` and `r \<noteq> q` and apply_cltn2_injective
+  from \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>s \<noteq> p\<close> and \<open>r \<noteq> q\<close> and apply_cltn2_injective
   have "?pC \<noteq> ?qC" and "?rC \<noteq> ?pC" and "?sC \<noteq> ?pC" and "?rC \<noteq> ?qC" by fast+
-  with `proj2_set_Col {?pC,?qC,?rC,?sC}`
+  with \<open>proj2_set_Col {?pC,?qC,?rC,?sC}\<close>
   show "cross_ratio_correct ?pC ?qC ?rC ?sC"
     by (unfold cross_ratio_correct_def) simp
 qed
@@ -2380,7 +2380,7 @@ proof -
   let ?v = "proj2_rep q"
   let ?i = "proj2_Col_coeff p q r"
   let ?j = "proj2_Col_coeff p q s"
-  from `proj2_set_Col {p,q,r,s}` and `p \<noteq> q` and `r \<noteq> p` and `s \<noteq> p`
+  from \<open>proj2_set_Col {p,q,r,s}\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>s \<noteq> p\<close>
     and proj2_set_Col_coeff
   have "r = proj2_abs (?i *\<^sub>R ?u + ?v)" and "s = proj2_abs (?j *\<^sub>R ?u + ?v)"
     by simp_all
@@ -2392,18 +2392,18 @@ proof -
   have "proj2_abs ?uC = ?pC" and "proj2_abs ?vC = ?qC"
     by (unfold apply_cltn2_def) simp_all
 
-  from `p \<noteq> q` and apply_cltn2_injective have "?pC \<noteq> ?qC" by fast
+  from \<open>p \<noteq> q\<close> and apply_cltn2_injective have "?pC \<noteq> ?qC" by fast
 
-  from `p \<noteq> q` and proj2_rep_dependent [of _ p 1 q]
+  from \<open>p \<noteq> q\<close> and proj2_rep_dependent [of _ p 1 q]
   have "?i *\<^sub>R ?u + ?v \<noteq> 0" and "?j *\<^sub>R ?u + ?v \<noteq> 0" by auto
-  with `r = proj2_abs (?i *\<^sub>R ?u + ?v)` and `s = proj2_abs (?j *\<^sub>R ?u + ?v)`
+  with \<open>r = proj2_abs (?i *\<^sub>R ?u + ?v)\<close> and \<open>s = proj2_abs (?j *\<^sub>R ?u + ?v)\<close>
     and apply_cltn2_linear [of ?i ?u 1 ?v]
     and apply_cltn2_linear [of ?j ?u 1 ?v]
   have "?rC = proj2_abs (?i *\<^sub>R ?uC + ?vC)"
     and "?sC = proj2_abs (?j *\<^sub>R ?uC + ?vC)"
     by simp_all
-  with `?uC \<noteq> 0` and `?vC \<noteq> 0` and `proj2_abs ?uC = ?pC`
-    and `proj2_abs ?vC = ?qC` and `?pC \<noteq> ?qC`
+  with \<open>?uC \<noteq> 0\<close> and \<open>?vC \<noteq> 0\<close> and \<open>proj2_abs ?uC = ?pC\<close>
+    and \<open>proj2_abs ?vC = ?qC\<close> and \<open>?pC \<noteq> ?qC\<close>
     and cross_ratio_abs [of ?uC ?vC 1 1 ?i ?j]
   have "cross_ratio ?pC ?qC ?rC ?sC = ?j/?i" by simp
   thus "cross_ratio ?pC ?qC ?rC ?sC = cross_ratio p q r s"
@@ -2415,7 +2415,7 @@ lemma cross_ratio_unique:
   and "cross_ratio p q r s = cross_ratio p q r t"
   shows "s = t"
 proof -
-  from `cross_ratio_correct p q r s` and `cross_ratio_correct p q r t`
+  from \<open>cross_ratio_correct p q r s\<close> and \<open>cross_ratio_correct p q r t\<close>
   have "proj2_set_Col {p,q,r,s}" and "proj2_set_Col {p,q,r,t}"
     and "p \<noteq> q" and "r \<noteq> p" and "r \<noteq> q" and "s \<noteq> p" and "t \<noteq> p"
     by (unfold cross_ratio_correct_def) simp_all
@@ -2425,18 +2425,18 @@ proof -
   let ?i = "proj2_Col_coeff p q r"
   let ?j = "proj2_Col_coeff p q s"
   let ?k = "proj2_Col_coeff p q t"
-  from `proj2_set_Col {p,q,r,s}` and `proj2_set_Col {p,q,r,t}`
-    and `p \<noteq> q` and `r \<noteq> p` and `s \<noteq> p` and `t \<noteq> p` and proj2_set_Col_coeff
+  from \<open>proj2_set_Col {p,q,r,s}\<close> and \<open>proj2_set_Col {p,q,r,t}\<close>
+    and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>s \<noteq> p\<close> and \<open>t \<noteq> p\<close> and proj2_set_Col_coeff
   have "r = proj2_abs (?i *\<^sub>R ?u + ?v)"
     and "s = proj2_abs (?j *\<^sub>R ?u + ?v)"
     and "t = proj2_abs (?k *\<^sub>R ?u + ?v)"
     by simp_all
 
-  from `r \<noteq> q` and `r = proj2_abs (?i *\<^sub>R ?u + ?v)`
+  from \<open>r \<noteq> q\<close> and \<open>r = proj2_abs (?i *\<^sub>R ?u + ?v)\<close>
   have "?i \<noteq> 0" by (auto simp add: proj2_abs_rep)
-  with `cross_ratio p q r s = cross_ratio p q r t`
+  with \<open>cross_ratio p q r s = cross_ratio p q r t\<close>
   have "?j = ?k" by (unfold cross_ratio_def) simp
-  with `s = proj2_abs (?j *\<^sub>R ?u + ?v)` and `t = proj2_abs (?k *\<^sub>R ?u + ?v)`
+  with \<open>s = proj2_abs (?j *\<^sub>R ?u + ?v)\<close> and \<open>t = proj2_abs (?k *\<^sub>R ?u + ?v)\<close>
   show "s = t" by simp
 qed
 
@@ -2448,7 +2448,7 @@ lemma cltn2_three_point_line:
   shows "apply_cltn2 s C = s" (is "?sC = s")
 proof cases
   assume "s = p"
-  with `apply_cltn2 p C = p` show "?sC = s" by simp
+  with \<open>apply_cltn2 p C = p\<close> show "?sC = s" by simp
 next
   assume "s \<noteq> p"
 
@@ -2456,22 +2456,22 @@ next
   let ?qC = "apply_cltn2 q C"
   let ?rC = "apply_cltn2 r C"
 
-  from `proj2_incident p l` and `proj2_incident q l` and `proj2_incident r l`
-    and `proj2_incident s l`
+  from \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close> and \<open>proj2_incident r l\<close>
+    and \<open>proj2_incident s l\<close>
   have "proj2_set_Col {p,q,r,s}" by (unfold proj2_set_Col_def) auto
-  with `p \<noteq> q` and `r \<noteq> p` and `s \<noteq> p` and `r \<noteq> q`
+  with \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>s \<noteq> p\<close> and \<open>r \<noteq> q\<close>
   have "cross_ratio_correct p q r s" by (unfold cross_ratio_correct_def) simp
   hence "cross_ratio_correct ?pC ?qC ?rC ?sC"
     by (rule cross_ratio_correct_cltn2)
-  with `?pC = p` and `?qC = q` and `?rC = r`
+  with \<open>?pC = p\<close> and \<open>?qC = q\<close> and \<open>?rC = r\<close>
   have "cross_ratio_correct p q r ?sC" by simp
 
-  from `proj2_set_Col {p,q,r,s}` and `p \<noteq> q` and `r \<noteq> p` and `s \<noteq> p`
+  from \<open>proj2_set_Col {p,q,r,s}\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>s \<noteq> p\<close>
   have "cross_ratio ?pC ?qC ?rC ?sC = cross_ratio p q r s"
     by (rule cross_ratio_cltn2)
-  with `?pC = p` and `?qC = q` and `?rC = r`
+  with \<open>?pC = p\<close> and \<open>?qC = q\<close> and \<open>?rC = r\<close>
   have "cross_ratio p q r ?sC = cross_ratio p q r s" by simp
-  with `cross_ratio_correct p q r ?sC` and `cross_ratio_correct p q r s`
+  with \<open>cross_ratio_correct p q r ?sC\<close> and \<open>cross_ratio_correct p q r s\<close>
   show "?sC = s" by (rule cross_ratio_unique)
 qed
 
@@ -2484,18 +2484,18 @@ lemma cross_ratio_equal_cltn2:
     = cross_ratio p q r s"
   shows "t = apply_cltn2 s C" (is "t = ?sC")
 proof -
-  from `cross_ratio_correct p q r s`
+  from \<open>cross_ratio_correct p q r s\<close>
   have "cross_ratio_correct ?pC ?qC ?rC ?sC" by (rule cross_ratio_correct_cltn2)
 
-  from `cross_ratio_correct p q r s`
+  from \<open>cross_ratio_correct p q r s\<close>
   have "proj2_set_Col {p,q,r,s}" and "p \<noteq> q" and "r \<noteq> p" and "s \<noteq> p"
     by (unfold cross_ratio_correct_def) simp_all
   hence "cross_ratio ?pC ?qC ?rC ?sC = cross_ratio p q r s"
     by (rule cross_ratio_cltn2)
-  with `cross_ratio ?pC ?qC ?rC t = cross_ratio p q r s`
+  with \<open>cross_ratio ?pC ?qC ?rC t = cross_ratio p q r s\<close>
   have "cross_ratio ?pC ?qC ?rC t = cross_ratio ?pC ?qC ?rC ?sC" by simp
-  with `cross_ratio_correct ?pC ?qC ?rC t`
-    and `cross_ratio_correct ?pC ?qC ?rC ?sC`
+  with \<open>cross_ratio_correct ?pC ?qC ?rC t\<close>
+    and \<open>cross_ratio_correct ?pC ?qC ?rC ?sC\<close>
   show "t = ?sC" by (rule cross_ratio_unique)
 qed
 
@@ -2505,18 +2505,18 @@ lemma proj2_Col_distinct_coeff_non_zero:
 proof
   assume "proj2_Col_coeff p q r = 0"
 
-  from `proj2_Col p q r` and `p \<noteq> q` and `r \<noteq> p`
+  from \<open>proj2_Col p q r\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close>
   have "r = proj2_abs ((proj2_Col_coeff p q r) *\<^sub>R proj2_rep p + proj2_rep q)"
     by (rule proj2_Col_coeff)
-  with `proj2_Col_coeff p q r = 0` have "r = q" by (simp add: proj2_abs_rep)
-  with `r \<noteq> q` show False ..
+  with \<open>proj2_Col_coeff p q r = 0\<close> have "r = q" by (simp add: proj2_abs_rep)
+  with \<open>r \<noteq> q\<close> show False ..
 qed
 
 lemma cross_ratio_product:
   assumes "proj2_Col p q s" and "p \<noteq> q" and "s \<noteq> p" and "s \<noteq> q"
   shows "cross_ratio p q r s * cross_ratio p q s t = cross_ratio p q r t"
 proof -
-  from `proj2_Col p q s` and `p \<noteq> q` and `s \<noteq> p` and `s \<noteq> q`
+  from \<open>proj2_Col p q s\<close> and \<open>p \<noteq> q\<close> and \<open>s \<noteq> p\<close> and \<open>s \<noteq> q\<close>
   have "proj2_Col_coeff p q s \<noteq> 0" by (rule proj2_Col_distinct_coeff_non_zero)
   thus "cross_ratio p q r s * cross_ratio p q s t = cross_ratio p q r t"
     by (unfold cross_ratio_def) simp
@@ -2526,7 +2526,7 @@ lemma cross_ratio_equal_1:
   assumes "proj2_Col p q r" and "p \<noteq> q" and "r \<noteq> p" and "r \<noteq> q"
   shows "cross_ratio p q r r = 1"
 proof -
-  from `proj2_Col p q r` and `p \<noteq> q` and `r \<noteq> p` and `r \<noteq> q`
+  from \<open>proj2_Col p q r\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>r \<noteq> q\<close>
   have "proj2_Col_coeff p q r \<noteq> 0" by (rule proj2_Col_distinct_coeff_non_zero)
   thus "cross_ratio p q r r = 1" by (unfold cross_ratio_def) simp
 qed
@@ -2535,23 +2535,23 @@ lemma cross_ratio_1_equal:
   assumes "cross_ratio_correct p q r s" and "cross_ratio p q r s = 1"
   shows "r = s"
 proof -
-  from `cross_ratio_correct p q r s`
+  from \<open>cross_ratio_correct p q r s\<close>
   have "proj2_set_Col {p,q,r,s}" and "p \<noteq> q" and "r \<noteq> p" and "r \<noteq> q"
     by (unfold cross_ratio_correct_def) simp_all
 
-  from `proj2_set_Col {p,q,r,s}`
+  from \<open>proj2_set_Col {p,q,r,s}\<close>
   have "proj2_set_Col {p,q,r}"
     by (simp add: proj2_subset_Col [of "{p,q,r}" "{p,q,r,s}"])
-  with `p \<noteq> q` and `r \<noteq> p` and `r \<noteq> q`
+  with \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>r \<noteq> q\<close>
   have "cross_ratio_correct p q r r" by (unfold cross_ratio_correct_def) simp
 
-  from `proj2_set_Col {p,q,r}`
+  from \<open>proj2_set_Col {p,q,r}\<close>
   have "proj2_Col p q r" by (subst proj2_Col_iff_set_Col)
-  with `p \<noteq> q` and `r \<noteq> p` and `r \<noteq> q`
+  with \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>r \<noteq> q\<close>
   have "cross_ratio p q r r = 1" by (simp add: cross_ratio_equal_1)
-  with `cross_ratio p q r s = 1`
+  with \<open>cross_ratio p q r s = 1\<close>
   have "cross_ratio p q r r = cross_ratio p q r s" by simp
-  with `cross_ratio_correct p q r r` and `cross_ratio_correct p q r s`
+  with \<open>cross_ratio_correct p q r r\<close> and \<open>cross_ratio_correct p q r s\<close>
   show "r = s" by (rule cross_ratio_unique)
 qed
 
@@ -2563,7 +2563,7 @@ lemma cross_ratio_swap_13_24:
   assumes "cross_ratio_correct p q r s" and "r \<noteq> s"
   shows "cross_ratio r s p q = cross_ratio p q r s"
 proof -
-  from `cross_ratio_correct p q r s`
+  from \<open>cross_ratio_correct p q r s\<close>
   have "proj2_set_Col {p,q,r,s}" and "p \<noteq> q" and "r \<noteq> p" and "s \<noteq> p" and "r \<noteq> q"
     by (unfold cross_ratio_correct_def, simp_all)
 
@@ -2572,32 +2572,32 @@ proof -
 
   have "p = proj2_abs ?u" and "q = proj2_abs ?v"
     by (simp_all add: proj2_abs_rep)
-  with `p \<noteq> q` have "proj2_abs ?u \<noteq> proj2_abs ?v" by simp
+  with \<open>p \<noteq> q\<close> have "proj2_abs ?u \<noteq> proj2_abs ?v" by simp
 
   let ?i = "proj2_Col_coeff p q r"
   let ?j = "proj2_Col_coeff p q s"
-  from `proj2_set_Col {p,q,r,s}` and `p \<noteq> q` and `r \<noteq> p` and `s \<noteq> p`
+  from \<open>proj2_set_Col {p,q,r,s}\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>s \<noteq> p\<close>
   have "r = proj2_abs (?i *\<^sub>R ?u + ?v)" (is "r = proj2_abs ?w")
     and "s = proj2_abs (?j *\<^sub>R ?u + ?v)" (is "s = proj2_abs ?x")
     by (simp_all add: proj2_set_Col_coeff)
-  with `r \<noteq> s` have "?i \<noteq> ?j" by auto
+  with \<open>r \<noteq> s\<close> have "?i \<noteq> ?j" by auto
 
-  from `?u \<noteq> 0` and `?v \<noteq> 0` and `proj2_abs ?u \<noteq> proj2_abs ?v`
+  from \<open>?u \<noteq> 0\<close> and \<open>?v \<noteq> 0\<close> and \<open>proj2_abs ?u \<noteq> proj2_abs ?v\<close>
     and dependent_proj2_abs [of ?u ?v _ 1]
   have "?w \<noteq> 0" and "?x \<noteq> 0" by auto
 
-  from `r = proj2_abs (?i *\<^sub>R ?u + ?v)` and `r \<noteq> q`
+  from \<open>r = proj2_abs (?i *\<^sub>R ?u + ?v)\<close> and \<open>r \<noteq> q\<close>
   have "?i \<noteq> 0" by (auto simp add: proj2_abs_rep)
 
   have "?w - ?x = (?i - ?j) *\<^sub>R ?u" by (simp add: algebra_simps)
-  with `?i \<noteq> ?j`
+  with \<open>?i \<noteq> ?j\<close>
   have "p = proj2_abs (?w - ?x)" by (simp add: proj2_abs_mult_rep)
 
   have "?j *\<^sub>R ?w - ?i *\<^sub>R ?x = (?j - ?i) *\<^sub>R ?v" by (simp add: algebra_simps)
-  with `?i \<noteq> ?j`
+  with \<open>?i \<noteq> ?j\<close>
   have "q = proj2_abs (?j *\<^sub>R ?w - ?i *\<^sub>R ?x)" by (simp add: proj2_abs_mult_rep)
-  with `?w \<noteq> 0` and `?x \<noteq> 0` and `r \<noteq> s` and `?i \<noteq> 0` and `r = proj2_abs ?w`
-    and `s = proj2_abs ?x` and `p = proj2_abs (?w - ?x)`
+  with \<open>?w \<noteq> 0\<close> and \<open>?x \<noteq> 0\<close> and \<open>r \<noteq> s\<close> and \<open>?i \<noteq> 0\<close> and \<open>r = proj2_abs ?w\<close>
+    and \<open>s = proj2_abs ?x\<close> and \<open>p = proj2_abs (?w - ?x)\<close>
     and cross_ratio_abs [of ?w ?x "-1" "-?i" 1 ?j]
   have "cross_ratio r s p q = ?j / ?i" by (simp add: algebra_simps)
   thus "cross_ratio r s p q = cross_ratio p q r s"
@@ -2610,24 +2610,24 @@ lemma cross_ratio_swap_12:
 proof cases
   assume "r = s"
 
-  from `cross_ratio_correct p q r s`
+  from \<open>cross_ratio_correct p q r s\<close>
   have "proj2_set_Col {p,q,r,s}" and "p \<noteq> q" and "r \<noteq> p" and "r \<noteq> q"
     by (unfold cross_ratio_correct_def) simp_all
 
-  from `proj2_set_Col {p,q,r,s}` and `r = s`
+  from \<open>proj2_set_Col {p,q,r,s}\<close> and \<open>r = s\<close>
   have "proj2_Col p q r" by (simp_all add: proj2_Col_iff_set_Col)
   hence "proj2_Col q p r" by (rule proj2_Col_permute)
-  with `proj2_Col p q r` and `p \<noteq> q` and `r \<noteq> p` and `r \<noteq> q` and `r = s`
+  with \<open>proj2_Col p q r\<close> and \<open>p \<noteq> q\<close> and \<open>r \<noteq> p\<close> and \<open>r \<noteq> q\<close> and \<open>r = s\<close>
   have "cross_ratio p q r s = 1" and "cross_ratio q p r s = 1"
     by (simp_all add: cross_ratio_equal_1)
   thus "cross_ratio q p r s = 1 / (cross_ratio p q r s)" by simp
 next
   assume "r \<noteq> s"
-  with `cross_ratio_correct q p r s`
+  with \<open>cross_ratio_correct q p r s\<close>
   have "cross_ratio q p r s = cross_ratio r s q p"
     by (simp add: cross_ratio_swap_13_24)
   also have "\<dots> = 1 / (cross_ratio r s p q)" by (rule cross_ratio_swap_34)
-  also from `cross_ratio_correct p q r s` and `r \<noteq> s`
+  also from \<open>cross_ratio_correct p q r s\<close> and \<open>r \<noteq> s\<close>
   have "\<dots> = 1 / (cross_ratio p q r s)" by (simp add: cross_ratio_swap_13_24)
   finally show "cross_ratio q p r s = 1 / (cross_ratio p q r s)" .
 qed
@@ -2666,28 +2666,28 @@ definition cart2_append1 :: "proj2 \<Rightarrow> real^3" where
 lemma cart2_append1_z:
   assumes "z_non_zero p"
   shows "(cart2_append1 p)$3 = 1"
-  using `z_non_zero p`
+  using \<open>z_non_zero p\<close>
   by (unfold cart2_append1_def) simp
 
 lemma cart2_append1_non_zero:
   assumes "z_non_zero p"
   shows "cart2_append1 p \<noteq> 0"
 proof -
-  from `z_non_zero p` have "(cart2_append1 p)$3 = 1" by (rule cart2_append1_z)
+  from \<open>z_non_zero p\<close> have "(cart2_append1 p)$3 = 1" by (rule cart2_append1_z)
   thus "cart2_append1 p \<noteq> 0" by (simp add: vec_eq_iff exI [of _ 3])
 qed
 
 lemma proj2_rep_cart2_append1:
   assumes "z_non_zero p"
   shows "proj2_rep p = ((proj2_rep p)$3) *\<^sub>R cart2_append1 p"
-  using `z_non_zero p`
+  using \<open>z_non_zero p\<close>
   by (unfold cart2_append1_def) simp
 
 lemma proj2_abs_cart2_append1:
   assumes "z_non_zero p"
   shows "proj2_abs (cart2_append1 p) = p"
 proof -
-  from `z_non_zero p`
+  from \<open>z_non_zero p\<close>
   have "proj2_abs (cart2_append1 p) = proj2_abs (proj2_rep p)"
     by (unfold cart2_append1_def) (simp add: proj2_abs_mult)
   thus "proj2_abs (cart2_append1 p) = p" by (simp add: proj2_abs_rep)
@@ -2697,21 +2697,21 @@ lemma cart2_append1_inj:
   assumes "z_non_zero p" and "cart2_append1 p = cart2_append1 q"
   shows "p = q"
 proof -
-  from `z_non_zero p` have "(cart2_append1 p)$3 = 1" by (rule cart2_append1_z)
-  with `cart2_append1 p = cart2_append1 q`
+  from \<open>z_non_zero p\<close> have "(cart2_append1 p)$3 = 1" by (rule cart2_append1_z)
+  with \<open>cart2_append1 p = cart2_append1 q\<close>
   have "(cart2_append1 q)$3 = 1" by simp
   hence "z_non_zero q" by (unfold cart2_append1_def) auto
 
-  from `cart2_append1 p = cart2_append1 q`
+  from \<open>cart2_append1 p = cart2_append1 q\<close>
   have "proj2_abs (cart2_append1 p) = proj2_abs (cart2_append1 q)" by simp
-  with `z_non_zero p` and `z_non_zero q`
+  with \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close>
   show "p = q" by (simp add: proj2_abs_cart2_append1)
 qed
 
 lemma cart2_append1:
   assumes "z_non_zero p"
   shows "vector2_append1 (cart2_pt p) = cart2_append1 p"
-  using `z_non_zero p`
+  using \<open>z_non_zero p\<close>
   unfolding vector2_append1_def
     and cart2_append1_def
     and cart2_pt_def
@@ -2735,11 +2735,11 @@ proof -
   from proj2_pt_scalar
   obtain c where "c \<noteq> 0" and "proj2_rep (proj2_pt v) = c *\<^sub>R (vector2_append1 v)"
     by auto
-  from `proj2_rep (proj2_pt v) = c *\<^sub>R (vector2_append1 v)`
+  from \<open>proj2_rep (proj2_pt v) = c *\<^sub>R (vector2_append1 v)\<close>
   have "(proj2_rep (proj2_pt v))$3 = c"
     unfolding vector2_append1_def and vector_def
     by simp
-  with `c \<noteq> 0` show "z_non_zero (proj2_pt v)" by simp
+  with \<open>c \<noteq> 0\<close> show "z_non_zero (proj2_pt v)" by simp
 qed
 
 lemma cart2_append1_proj2: "cart2_append1 (proj2_pt v) = vector2_append1 v"
@@ -2758,11 +2758,11 @@ lemma proj2_cart2:
   assumes "z_non_zero p"
   shows "proj2_pt (cart2_pt p) = p"
 proof -
-  from `z_non_zero p`
+  from \<open>z_non_zero p\<close>
   have "(proj2_rep p)$3 *\<^sub>R vector2_append1 (cart2_pt p) = proj2_rep p"
     unfolding vector2_append1_def and cart2_pt_def and vector_def
     by (simp add: vec_eq_iff forall_3)
-  with `z_non_zero p`
+  with \<open>z_non_zero p\<close>
     and proj2_abs_mult [of "(proj2_rep p)$3" "vector2_append1 (cart2_pt p)"]
   have "proj2_abs (vector2_append1 (cart2_pt p)) = proj2_abs (proj2_rep p)"
     by simp
@@ -2774,13 +2774,13 @@ lemma cart2_injective:
   assumes "z_non_zero p" and "z_non_zero q" and "cart2_pt p = cart2_pt q"
   shows "p = q"
 proof -
-  from `z_non_zero p` and `z_non_zero q`
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close>
   have "proj2_pt (cart2_pt p) = p" and "proj2_pt (cart2_pt q) = q"
     by (simp_all add: proj2_cart2)
 
-  from `proj2_pt (cart2_pt p) = p` and `cart2_pt p = cart2_pt q`
+  from \<open>proj2_pt (cart2_pt p) = p\<close> and \<open>cart2_pt p = cart2_pt q\<close>
   have "proj2_pt (cart2_pt q) = p" by simp
-  with `proj2_pt (cart2_pt q) = q` show "p = q" by simp
+  with \<open>proj2_pt (cart2_pt q) = q\<close> show "p = q" by simp
 qed
 
 lemma proj2_Col_iff_euclid:
@@ -2812,13 +2812,13 @@ proof
     let ?i'' = "i * i'"
     let ?j'' = "j * j'"
     let ?k'' = "k * k'"
-    from `i\<noteq>0` and `j\<noteq>0` and `k\<noteq>0` and `i'\<noteq>0 \<or> j'\<noteq>0 \<or> k'\<noteq>0`
+    from \<open>i\<noteq>0\<close> and \<open>j\<noteq>0\<close> and \<open>k\<noteq>0\<close> and \<open>i'\<noteq>0 \<or> j'\<noteq>0 \<or> k'\<noteq>0\<close>
     have "?i''\<noteq>0 \<or> ?j''\<noteq>0 \<or> ?k''\<noteq>0" by simp
 
-    from `i' *\<^sub>R ?a'' + j' *\<^sub>R ?b'' + k' *\<^sub>R ?c'' = 0`
-      and `?a'' = i *\<^sub>R ?a'`
-      and `?b'' = j *\<^sub>R ?b'`
-      and `?c'' = k *\<^sub>R ?c'`
+    from \<open>i' *\<^sub>R ?a'' + j' *\<^sub>R ?b'' + k' *\<^sub>R ?c'' = 0\<close>
+      and \<open>?a'' = i *\<^sub>R ?a'\<close>
+      and \<open>?b'' = j *\<^sub>R ?b'\<close>
+      and \<open>?c'' = k *\<^sub>R ?c'\<close>
     have "?i'' *\<^sub>R ?a' + ?j'' *\<^sub>R ?b' + ?k'' *\<^sub>R ?c' = 0"
       by (simp add: ac_simps)
     hence "(?i'' *\<^sub>R ?a' + ?j'' *\<^sub>R ?b' + ?k'' *\<^sub>R ?c')$3 = 0"
@@ -2833,20 +2833,20 @@ proof
       (?i'' *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c)$2"
       unfolding vector2_append1_def and vector_def
       by simp+
-    with `?i'' *\<^sub>R ?a' + ?j'' *\<^sub>R ?b' + ?k'' *\<^sub>R ?c' = 0`
+    with \<open>?i'' *\<^sub>R ?a' + ?j'' *\<^sub>R ?b' + ?k'' *\<^sub>R ?c' = 0\<close>
     have "?i'' *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c = 0"
       by (simp add: vec_eq_iff forall_2)
 
     have "dep2 (b - a) (c - a)"
     proof cases
       assume "?k'' = 0"
-      with `?i'' + ?j'' + ?k'' = 0` have "?j'' = -?i''" by simp
-      with `?i''\<noteq>0 \<or> ?j''\<noteq>0 \<or> ?k''\<noteq>0` and `?k'' = 0` have "?i'' \<noteq> 0" by simp
+      with \<open>?i'' + ?j'' + ?k'' = 0\<close> have "?j'' = -?i''" by simp
+      with \<open>?i''\<noteq>0 \<or> ?j''\<noteq>0 \<or> ?k''\<noteq>0\<close> and \<open>?k'' = 0\<close> have "?i'' \<noteq> 0" by simp
       
-      from `?i'' *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c = 0`
-        and `?k'' = 0` and `?j'' = -?i''`
+      from \<open>?i'' *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c = 0\<close>
+        and \<open>?k'' = 0\<close> and \<open>?j'' = -?i''\<close>
       have "?i'' *\<^sub>R a + (-?i'' *\<^sub>R b) = 0" by simp
-      with `?i'' \<noteq> 0` have "a = b" by (simp add: algebra_simps)
+      with \<open>?i'' \<noteq> 0\<close> have "a = b" by (simp add: algebra_simps)
       hence "b - a = 0 *\<^sub>R (c - a)" by simp
       moreover have "c - a = 1 *\<^sub>R (c - a)" by simp
       ultimately have "\<exists> x t s. b - a = t *\<^sub>R x \<and> c - a = s *\<^sub>R x"
@@ -2854,8 +2854,8 @@ proof
       thus "dep2 (b - a) (c - a)" unfolding dep2_def .
     next
       assume "?k'' \<noteq> 0"
-      from `?i'' + ?j'' + ?k'' = 0` have "?i'' = -(?j'' + ?k'')" by simp
-      with `?i'' *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c = 0`
+      from \<open>?i'' + ?j'' + ?k'' = 0\<close> have "?i'' = -(?j'' + ?k'')" by simp
+      with \<open>?i'' *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c = 0\<close>
       have "-(?j'' + ?k'') *\<^sub>R a + ?j'' *\<^sub>R b + ?k'' *\<^sub>R c = 0" by simp
       hence "?k'' *\<^sub>R (c - a) = - ?j'' *\<^sub>R (b - a)"
         by (simp add: scaleR_left_distrib
@@ -2864,7 +2864,7 @@ proof
           algebra_simps)
       hence "(1/?k'') *\<^sub>R ?k'' *\<^sub>R (c - a) = (-?j'' / ?k'') *\<^sub>R (b - a)"
         by simp
-      with `?k'' \<noteq> 0` have "c - a = (-?j'' / ?k'') *\<^sub>R (b - a)" by simp
+      with \<open>?k'' \<noteq> 0\<close> have "c - a = (-?j'' / ?k'') *\<^sub>R (b - a)" by simp
       moreover have "b - a = 1 *\<^sub>R (b - a)" by simp
       ultimately have "\<exists> x t s. b - a = t *\<^sub>R x \<and> c - a = s *\<^sub>R x" by blast
       thus "dep2 (b - a) (c - a)" unfolding dep2_def .
@@ -2881,12 +2881,12 @@ proof
     show "proj2_Col ?p ?q ?r"
     proof cases
       assume "t = 0"
-      with `b - a = t *\<^sub>R x` have "a = b" by simp
+      with \<open>b - a = t *\<^sub>R x\<close> have "a = b" by simp
       with proj2_Col_coincide show "proj2_Col ?p ?q ?r" by simp
     next
       assume "t \<noteq> 0"
 
-      from `b - a = t *\<^sub>R x` and `c - a = s *\<^sub>R x`
+      from \<open>b - a = t *\<^sub>R x\<close> and \<open>c - a = s *\<^sub>R x\<close>
       have "s *\<^sub>R (b - a) = t *\<^sub>R (c - a)" by simp
       hence "(s - t) *\<^sub>R a + (-s) *\<^sub>R b + t *\<^sub>R c = 0"
         by (simp add: scaleR_right_diff_distrib
@@ -2901,12 +2901,12 @@ proof
         by simp
       ultimately have "(s - t) *\<^sub>R ?a' + (-s) *\<^sub>R ?b' + t *\<^sub>R ?c' = 0"
         by (simp add: vec_eq_iff forall_3)
-      with `?a' = (1/i) *\<^sub>R ?a''`
-        and `?b' = (1/j) *\<^sub>R ?b''`
-        and `?c' = (1/k) *\<^sub>R ?c''`
+      with \<open>?a' = (1/i) *\<^sub>R ?a''\<close>
+        and \<open>?b' = (1/j) *\<^sub>R ?b''\<close>
+        and \<open>?c' = (1/k) *\<^sub>R ?c''\<close>
       have "((s - t)/i) *\<^sub>R ?a'' + (-s/j) *\<^sub>R ?b'' + (t/k) *\<^sub>R ?c'' = 0"
         by simp
-      moreover from `t \<noteq> 0` and `k \<noteq> 0` have "t/k \<noteq> 0" by simp
+      moreover from \<open>t \<noteq> 0\<close> and \<open>k \<noteq> 0\<close> have "t/k \<noteq> 0" by simp
       ultimately show "proj2_Col ?p ?q ?r"
         unfolding proj2_Col_def
         by blast
@@ -2920,7 +2920,7 @@ lemma proj2_Col_iff_euclid_cart2:
   "proj2_Col p q r \<longleftrightarrow> real_euclid.Col (cart2_pt p) (cart2_pt q) (cart2_pt r)"
   (is "_ \<longleftrightarrow> real_euclid.Col ?a ?b ?c")
 proof -
-  from `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
   have "proj2_pt ?a = p" and "proj2_pt ?b = q" and "proj2_pt ?c = r"
     by (simp_all add: proj2_cart2)
   with proj2_Col_iff_euclid [of ?a ?b ?c]
@@ -2934,18 +2934,18 @@ lemma euclid_Col_cart2_incident:
   (is "real_euclid.Col ?cp ?cq ?cr")
   shows "proj2_incident r l"
 proof -
-  from `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
-    and `real_euclid.Col ?cp ?cq ?cr`
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
+    and \<open>real_euclid.Col ?cp ?cq ?cr\<close>
   have "proj2_Col p q r" by (subst proj2_Col_iff_euclid_cart2, simp_all)
   hence "proj2_set_Col {p,q,r}" by (simp add: proj2_Col_iff_set_Col)
   then obtain m where
     "proj2_incident p m" and "proj2_incident q m" and "proj2_incident r m"
     by (unfold proj2_set_Col_def, auto)
 
-  from `p \<noteq> q` and `proj2_incident p l` and `proj2_incident q l`
-    and `proj2_incident p m` and `proj2_incident q m` and proj2_incident_unique
+  from \<open>p \<noteq> q\<close> and \<open>proj2_incident p l\<close> and \<open>proj2_incident q l\<close>
+    and \<open>proj2_incident p m\<close> and \<open>proj2_incident q m\<close> and proj2_incident_unique
   have "l = m" by auto
-  with `proj2_incident r m` show "proj2_incident r l" by simp
+  with \<open>proj2_incident r m\<close> show "proj2_incident r l" by simp
 qed
 
 lemma euclid_B_cart2_common_line:
@@ -2954,8 +2954,8 @@ lemma euclid_B_cart2_common_line:
   (is "B\<^sub>\<real> ?cp ?cq ?cr")
   shows "\<exists> l. proj2_incident p l \<and> proj2_incident q l \<and> proj2_incident r l"
 proof -
-  from `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
-    and `B\<^sub>\<real> ?cp ?cq ?cr` and proj2_Col_iff_euclid_cart2
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
+    and \<open>B\<^sub>\<real> ?cp ?cq ?cr\<close> and proj2_Col_iff_euclid_cart2
   have "proj2_Col p q r" by (unfold real_euclid.Col_def) simp
   hence "proj2_set_Col {p,q,r}" by (simp add: proj2_Col_iff_set_Col)
   thus "\<exists> l. proj2_incident p l \<and> proj2_incident q l \<and> proj2_incident r l"
@@ -2974,7 +2974,7 @@ proof -
   let ?cp1 = "vector2_append1 ?cp"
   let ?cq1 = "vector2_append1 ?cq"
   let ?cr1 = "vector2_append1 ?cr"
-  from `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
   have "?cp1 = cart2_append1 p"
     and "?cq1 = cart2_append1 q"
     and "?cr1 = cart2_append1 r"
@@ -2986,9 +2986,9 @@ proof -
     \<longleftrightarrow> ?cq1 = k *\<^sub>R ?cr1 + (1 - k) *\<^sub>R ?cp1"
     unfolding vector2_append1_def and vector_def
     by (simp add: vec_eq_iff forall_2 forall_3)
-  with `?cp1 = cart2_append1 p`
-    and `?cq1 = cart2_append1 q`
-    and `?cr1 = cart2_append1 r`
+  with \<open>?cp1 = cart2_append1 p\<close>
+    and \<open>?cq1 = cart2_append1 q\<close>
+    and \<open>?cr1 = cart2_append1 r\<close>
   have "\<forall> k. ?cq - ?cp = k *\<^sub>R (?cr - ?cp)
     \<longleftrightarrow> cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
     by simp
@@ -3004,8 +3004,8 @@ lemma cart2_append1_between_right_strict:
   shows "\<exists> k\<ge>0. k < 1
   \<and> cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
 proof -
-  from `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
-    and `B\<^sub>\<real> (cart2_pt p) (cart2_pt q) (cart2_pt r)` and cart2_append1_between
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
+    and \<open>B\<^sub>\<real> (cart2_pt p) (cart2_pt q) (cart2_pt r)\<close> and cart2_append1_between
   obtain k where "k \<ge> 0" and "k \<le> 1"
     and "cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
     by auto
@@ -3013,14 +3013,14 @@ proof -
   have "k \<noteq> 1"
   proof
     assume "k = 1"
-    with `cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p`
+    with \<open>cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p\<close>
     have "cart2_append1 q = cart2_append1 r" by simp
-    with `z_non_zero q` have "q = r" by (rule cart2_append1_inj)
-    with `q \<noteq> r` show False ..
+    with \<open>z_non_zero q\<close> have "q = r" by (rule cart2_append1_inj)
+    with \<open>q \<noteq> r\<close> show False ..
   qed
-  with `k \<le> 1` have "k < 1" by simp
-  with `k \<ge> 0`
-    and `cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p`
+  with \<open>k \<le> 1\<close> have "k < 1" by simp
+  with \<open>k \<ge> 0\<close>
+    and \<open>cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p\<close>
   show "\<exists> k\<ge>0. k < 1
     \<and> cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
     by (simp add: exI [of _ k])
@@ -3032,8 +3032,8 @@ lemma cart2_append1_between_strict:
   shows "\<exists> k>0. k < 1
   \<and> cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
 proof -
-  from `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
-    and `B\<^sub>\<real> (cart2_pt p) (cart2_pt q) (cart2_pt r)` and `q \<noteq> r`
+  from \<open>z_non_zero p\<close> and \<open>z_non_zero q\<close> and \<open>z_non_zero r\<close>
+    and \<open>B\<^sub>\<real> (cart2_pt p) (cart2_pt q) (cart2_pt r)\<close> and \<open>q \<noteq> r\<close>
     and cart2_append1_between_right_strict [of p q r]
   obtain k where "k \<ge> 0" and "k < 1"
     and "cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
@@ -3042,14 +3042,14 @@ proof -
   have "k \<noteq> 0"
   proof
     assume "k = 0"
-    with `cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p`
+    with \<open>cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p\<close>
     have "cart2_append1 q = cart2_append1 p" by simp
-    with `z_non_zero q` have "q = p" by (rule cart2_append1_inj)
-    with `q \<noteq> p` show False ..
+    with \<open>z_non_zero q\<close> have "q = p" by (rule cart2_append1_inj)
+    with \<open>q \<noteq> p\<close> show False ..
   qed
-  with `k \<ge> 0` have "k > 0" by simp
-  with `k < 1`
-    and `cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p`
+  with \<open>k \<ge> 0\<close> have "k > 0" by simp
+  with \<open>k < 1\<close>
+    and \<open>cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p\<close>
   show "\<exists> k>0. k < 1
     \<and> cart2_append1 q = k *\<^sub>R cart2_append1 r + (1 - k) *\<^sub>R cart2_append1 p"
     by (simp add: exI [of _ k])

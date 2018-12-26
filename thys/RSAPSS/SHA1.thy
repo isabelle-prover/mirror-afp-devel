@@ -9,8 +9,8 @@ theory SHA1
 imports SHA1Padding
 begin
 
-text {* We define the secure hash algorithm SHA-1 and give a proof for the
-  length of the message digest *}
+text \<open>We define the secure hash algorithm SHA-1 and give a proof for the
+  length of the message digest\<close>
 
 definition fif where
   fif: "fif x y z = bvor (bvand x y) (bvand (bv_not x) z)"

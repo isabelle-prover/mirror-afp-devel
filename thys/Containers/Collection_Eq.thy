@@ -7,7 +7,7 @@ theory Collection_Eq imports
   Deriving.Equality_Instances
 begin
 
-section {* A type class for optional equality testing *}
+section \<open>A type class for optional equality testing\<close>
 
 class ceq =
   fixes ceq :: "('a \<Rightarrow> 'a \<Rightarrow> bool) option"
@@ -26,7 +26,7 @@ end
 
 syntax "_CEQ" :: "type => logic"  ("(1CEQ/(1'(_')))")
 
-parse_translation {*
+parse_translation \<open>
 let
   fun ceq_tr [ty] =
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "ceq"} $
@@ -35,9 +35,9 @@ let
            (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax bool}))))
     | ceq_tr ts = raise TERM ("ceq_tr", ts);
 in [(@{syntax_const "_CEQ"}, K ceq_tr)] end
-*}
+\<close>
 
-typed_print_translation {*
+typed_print_translation \<open>
 let
   fun ceq_tr' ctxt
     (Type (@{type_name option}, [Type (@{type_name fun}, [T, _])])) ts =
@@ -45,14 +45,14 @@ let
   | ceq_tr' _ _ _ = raise Match;
 in [(@{const_syntax ceq}, ceq_tr')]
 end
-*}
+\<close>
 
 definition is_ceq :: "'a :: ceq itself \<Rightarrow> bool"
 where "is_ceq _ \<longleftrightarrow> ID CEQ('a) \<noteq> None"
 
-subsection {* Generator for the @{class ceq}-class *}
+subsection \<open>Generator for the @{class ceq}-class\<close>
 
-text {*
+text \<open>
 This generator registers itself at the derive-manager for the class @{class ceq}.
 To be more precise, one can choose whether one wants to take @{term "(=)"} as function
 for @{term ceq} by passing "eq" as parameter, 
@@ -69,18 +69,18 @@ any parameters. The last possibility only works for datatypes.
 If the parameter "no" is not used, then the corresponding
 @{term is_ceq}-theorem is also automatically generated and attributed with 
 \texttt{[simp, code-post]}.
-*}
+\<close>
 
 
-text {*
+text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
-*}
+\<close>
 
 lemma equality_subst: "c1 = c2 \<Longrightarrow> equality c1 \<Longrightarrow> equality c2" by blast
 
 ML_file "ceq_generator.ML"
 
-subsection {* Type class instances for HOL types *}
+subsection \<open>Type class instances for HOL types\<close>
 
 derive (eq) ceq unit
 lemma [code]: "CEQ(unit) = Some (\<lambda>_ _. True)"
@@ -123,7 +123,7 @@ by(simp add: is_ceq_def ceq_set_def ID_None ID_Some split: option.split)
 lemma ID_ceq_set_not_None_iff [simp]: "ID CEQ('a set) \<noteq> None \<longleftrightarrow> ID CEQ('a :: ceq) \<noteq> None"
 by(simp add: ceq_set_def ID_def split: option.splits)
 
-text {* Instantiation for @{typ "'a Predicate.pred"} *}
+text \<open>Instantiation for @{typ "'a Predicate.pred"}\<close>
 
 context fixes eq :: "'a \<Rightarrow> 'a \<Rightarrow> bool" begin
 

@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Additional definitions and results for lists *}
+section \<open>Additional definitions and results for lists\<close>
 
 theory ListSlice
 imports "List-Infinite.ListInf"
 begin
 
-subsection {* Slicing lists into lists of lists *}
+subsection \<open>Slicing lists into lists of lists\<close>
 
 definition ilist_slice  :: "'a ilist \<Rightarrow> nat \<Rightarrow> 'a list ilist"
   where "ilist_slice f k \<equiv> \<lambda>x. map f [x * k..<Suc x * k]"
@@ -26,10 +26,10 @@ definition list_slice2 :: "'a list \<Rightarrow> nat \<Rightarrow> 'a list list"
   where "list_slice2 xs k \<equiv>
     list_slice xs k @ (if length xs mod k = 0 then [] else [xs \<up> (length xs div k * k)])"
 
-text {* 
-  No function @{text list_unslice} for finite lists is needed 
-  because the corresponding functionality is already provided by @{text concat}. 
-  Therefore, only a @{text ilist_unslice} function for infinite lists is defined. *}
+text \<open>
+  No function \<open>list_unslice\<close> for finite lists is needed 
+  because the corresponding functionality is already provided by \<open>concat\<close>. 
+  Therefore, only a \<open>ilist_unslice\<close> function for infinite lists is defined.\<close>
 
 definition ilist_unslice  :: "'a list ilist \<Rightarrow> 'a ilist"
   where "ilist_unslice f \<equiv> \<lambda>n. f (n div length (f 0)) ! (n mod length (f 0))"

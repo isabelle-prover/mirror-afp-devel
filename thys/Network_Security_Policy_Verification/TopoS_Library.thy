@@ -24,7 +24,7 @@ begin
 
 (*<*)
 
-section{*Summarizing the Security Invariant Library*}
+section\<open>Summarizing the Security Invariant Library\<close>
 
 (*none of those should be defined or a hide_const is missing at the end of a SINVAR_*.thy file*)
 term sinvar

@@ -9,9 +9,9 @@ imports
     Secondary_Sylow.SubgroupConjugation
 begin
 
-section {* The Second Isomorphism Theorem for Groups *}
+section \<open>The Second Isomorphism Theorem for Groups\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
 lemma (in group) triv_subgroup:
   shows "subgroup {\<one>} G"
@@ -39,8 +39,8 @@ proof -
   qed
 qed
 
-text {* As this is maybe the best place this fits in: Factorizing by the trivial subgroup
-is an isomorphism. *}
+text \<open>As this is maybe the best place this fits in: Factorizing by the trivial subgroup
+is an isomorphism.\<close>
 
 lemma (in group) trivial_factor_iso:
   shows "the_elem \<in> iso (G Mod {\<one>}) G"
@@ -51,7 +51,7 @@ proof -
   ultimately show ?thesis using group_hom.FactGroup_iso_set by force
 qed
 
-text {* And the dual theorem to the previous one: Factorizing by the group itself gives the trivial group *}
+text \<open>And the dual theorem to the previous one: Factorizing by the group itself gives the trivial group\<close>
 
 lemma (in group) self_factor_iso:
   shows "(\<lambda>X. the_elem ((\<lambda>x. \<one>) ` X)) \<in> iso (G Mod (carrier G)) (G\<lparr> carrier := {\<one>} \<rparr>)"
@@ -63,12 +63,12 @@ proof -
   ultimately show ?thesis using group_hom.FactGroup_iso_set by force
 qed
 
-text {* This theory provides a proof of the second isomorphism theorems for groups. 
-The theorems consist of several facts about normal subgroups. *}
+text \<open>This theory provides a proof of the second isomorphism theorems for groups. 
+The theorems consist of several facts about normal subgroups.\<close>
 
-text {* The first lemma states that whenever we have a subgroup @{term S} and
+text \<open>The first lemma states that whenever we have a subgroup @{term S} and
 a normal subgroup @{term H} of a group @{term G}, their intersection is normal
-in @{term G} *}
+in @{term G}\<close>
 
 locale second_isomorphism_grp = normal +
   fixes S::"'a set"
@@ -137,7 +137,7 @@ proof auto
   have "\<one> \<in> S" by (metis subgroup.one_closed subgrpS)
   fix x
   assume x:"x \<in> H"
-  with `\<one> \<in> S` have "x \<otimes> \<one> \<in> H <#> S" unfolding set_mult_def by force
+  with \<open>\<one> \<in> S\<close> have "x \<otimes> \<one> \<in> H <#> S" unfolding set_mult_def by force
   with x show  "x \<in> H <#> S" by (metis mem_carrier r_one)
 qed
 
@@ -198,7 +198,7 @@ next
   with s show "x \<in> (#>) H ` S" by simp
 qed
 
-text {* Finally we can prove the actual isomorphism theorem: *}
+text \<open>Finally we can prove the actual isomorphism theorem:\<close>
 
 theorem normal_intersection_quotient_isom:
   shows "(\<lambda>X. the_elem ((\<lambda>g. H #> g) ` X)) \<in> iso ((G\<lparr>carrier := S\<rparr>) Mod (H \<inter> S)) (((G\<lparr>carrier := H <#> S\<rparr>)) Mod H)"

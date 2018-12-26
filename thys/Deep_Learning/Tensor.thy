@@ -69,7 +69,7 @@ next
   case (Cons a "is" ds)
   then obtain d ds' where "ds = d # ds'" by (metis length_Suc_conv)
   then have "is \<lhd> ds'" using Cons by (metis length_Cons less_irrefl linorder_neqE_nat not_less_eq nth_Cons_Suc)
-  then show ?case using Cons.prems(2) `ds = d # ds'` valid_index.Cons by fastforce
+  then show ?case using Cons.prems(2) \<open>ds = d # ds'\<close> valid_index.Cons by fastforce
 qed
 
 lemma valid_index_append:
@@ -78,7 +78,7 @@ shows "is1 @ is2 \<lhd> ds1 @ ds2"
   apply (rule valid_indexI[of "is1 @ is2" "ds1 @ ds2"])
   unfolding nth_append
   using valid_index_lt[OF is2_valid] valid_index_lt[OF is1_valid] valid_index_length[OF is1_valid] valid_index_length[OF is2_valid] length_append
-  by (auto simp add: `length is1 = length ds1`)
+  by (auto simp add: \<open>length is1 = length ds1\<close>)
 
 lemma valid_index_list_all2_iff: "is \<lhd> ds \<longleftrightarrow> list_all2 (<) is ds"
 by (metis list_all2_conv_all_nth list_all2_nthD valid_indexI valid_index_length valid_index_lt)
@@ -133,14 +133,14 @@ next
   then have "a * prod_list ds = length v" by auto
   {
     fix i assume "i<a"
-    then have "prod_list ds * (i+1) \<le> length v" using `a * prod_list ds = length v` using discrete mult.commute mult_le_mono1 by metis
+    then have "prod_list ds * (i+1) \<le> length v" using \<open>a * prod_list ds = length v\<close> using discrete mult.commute mult_le_mono1 by metis
     have "\<And>is'. is' \<lhd> ds \<Longrightarrow> e (i # is') = lookup_base ds (fixed_length_sublist v (prod_list ds) i) is'"
-      using `i<a` by (metis Cons.prems(2) Tensor.lookup_base_Cons valid_index.simps)
+      using \<open>i<a\<close> by (metis Cons.prems(2) Tensor.lookup_base_Cons valid_index.simps)
     then have "tensor_vec_from_lookup ds (\<lambda>is'. e (i # is')) = fixed_length_sublist v (prod_list ds) i"
-      using Cons using `prod_list ds * (i + 1) \<le> length v` by (simp add: Cons.IH fixed_length_sublist_def)
+      using Cons using \<open>prod_list ds * (i + 1) \<le> length v\<close> by (simp add: Cons.IH fixed_length_sublist_def)
   }
   then show ?case unfolding tensor_vec_from_lookup_Cons lookup_base_Cons
-    using   concat_parts_eq[OF `a * prod_list ds = length v`]
+    using   concat_parts_eq[OF \<open>a * prod_list ds = length v\<close>]
      atLeastLessThan_iff map_eq_conv set_upt Cons by (metis (no_types, lifting))
 qed
 
@@ -196,15 +196,15 @@ next
   proof (cases "i=a")
     assume "i=a"
     then have "fixed_length_sublist (concat (map f [0..<Suc a])) d i = f a"
-      by (simp add: Suc.prems(1) `length (concat (map f [0..<a])) = a * d` fixed_length_sublist_def)
-    then show ?case using `i=a` by auto
+      by (simp add: Suc.prems(1) \<open>length (concat (map f [0..<a])) = a * d\<close> fixed_length_sublist_def)
+    then show ?case using \<open>i=a\<close> by auto
   next
     assume "i\<noteq>a"
     then have "fixed_length_sublist (concat (map f [0..<a])) d i = f i"
       "concat (map f [0..<Suc a]) = concat (map f [0..<a]) @ f a" using Suc by auto
-    show ?case unfolding `concat (map f [0..<Suc a]) = concat (map f [0..<a]) @ f a`
+    show ?case unfolding \<open>concat (map f [0..<Suc a]) = concat (map f [0..<a]) @ f a\<close>
       unfolding fixed_length_sublist_def drop_append
-      using  `length (concat (map f [0..<a])) = a * d`  `fixed_length_sublist (concat (map f [0..<a])) d i = f i`
+      using  \<open>length (concat (map f [0..<a])) = a * d\<close>  \<open>fixed_length_sublist (concat (map f [0..<a])) d i = f i\<close>
       using append_assoc append_eq_conv_conj append_take_drop_id assms(1) assms(2)  fixed_length_sublist_def
       by metis
   qed
@@ -223,7 +223,7 @@ using assms proof (induction arbitrary:e rule:valid_index.induct)
 next
   case (Cons "is" ds i d e)
   then show ?case unfolding tensor_vec_from_lookup_Cons lookup_base_Cons
-    by (simp add: length_tensor_vec_from_lookup concat_parts'[of d "\<lambda>i. tensor_vec_from_lookup ds (\<lambda>is. e (i # is))" "prod_list ds" i] `i < d`)
+    by (simp add: length_tensor_vec_from_lookup concat_parts'[of d "\<lambda>i. tensor_vec_from_lookup ds (\<lambda>is. e (i # is))" "prod_list ds" i] \<open>i < d\<close>)
 qed
 
 lemma lookup_tensor_from_lookup:

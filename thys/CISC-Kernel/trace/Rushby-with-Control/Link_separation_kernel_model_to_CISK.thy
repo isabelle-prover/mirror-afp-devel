@@ -1,12 +1,12 @@
-subsection {* Link implementation to CISK: the specific separation kernel is an interpretation of the generic model.\label{sect:link_to_CISK} *}
+subsection \<open>Link implementation to CISK: the specific separation kernel is an interpretation of the generic model.\label{sect:link_to_CISK}\<close>
 
 theory Link_separation_kernel_model_to_CISK
   imports Separation_kernel_model         
 begin
 
-text {* We show that the separation kernel instantiation satisfies the 
+text \<open>We show that the separation kernel instantiation satisfies the 
 specification of CISK.
-*}
+\<close>
 
 theorem CISK_proof_obligations_satisfied:
   shows
@@ -115,7 +115,7 @@ proof (unfold_locales)
     by auto
   show "\<forall>s u a. \<not> rifp (rcurrent s) u \<longrightarrow> rvpeq u s (rset_error_code s a)"
     unfolding rset_error_code_def
-    by (metis `\<forall>a u. rvpeq u a a`)
+    by (metis \<open>\<forall>a u. rvpeq u a a\<close>)
   show "\<forall>s a. rcurrent (rset_error_code s a) = rcurrent s"
     unfolding rset_error_code_def
     by auto
@@ -127,7 +127,7 @@ proof (unfold_locales)
     by auto
 qed
 
-text {* Now we can instantiate CISK with some initial state, interrupt function, etc. *}
+text \<open>Now we can instantiate CISK with some initial state, interrupt function, etc.\<close>
 
 interpretation Inst:
   Controllable_Interruptible_Separation_Kernel
@@ -148,7 +148,7 @@ interpretation Inst:
     rset_error_code \<comment> \<open>updates the state. Has no meaning in the current model.\<close>
 using CISK_proof_obligations_satisfied by auto
 
-text {* The main theorem: the instantiation implements the information flow policy @{term ifp}. *}
+text \<open>The main theorem: the instantiation implements the information flow policy @{term ifp}.\<close>
 theorem risecure:
   "Inst.isecure"
 using Inst.unwinding_implies_isecure_CISK

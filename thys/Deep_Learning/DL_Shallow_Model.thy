@@ -99,7 +99,7 @@ proof -
       using input_sizes_remove_weights remove_insert_weights by auto
     have 0:"tensors_from_net m $ y = Tensor_Plus.listsum (input_sizes (shallow_model' Z M N))
       (map (\<lambda>j. (extract_matrix w Y Z)  $$ (y, j) \<cdot> (tensors_from_net (insert_weights s (shallow_model' Z M N) (\<lambda>i. w (i + Y * Z)))) $ j) [0..<Z])"
-      unfolding `m = insert_weights s (shallow_model Y Z M N) w` shallow_model_def insert_weights.simps tensors_from_net.simps
+      unfolding \<open>m = insert_weights s (shallow_model Y Z M N) w\<close> shallow_model_def insert_weights.simps tensors_from_net.simps
       using nth_mat_tensorlist_mult dims_tensors_from_net assms(2) dim_extract output_size_correct_tensors[of "insert_weights s (shallow_model' Z M N) (\<lambda>i. w (i + Y * Z))", unfolded remove_insert_weights, OF valid_shallow_model']
       dimc_extract_matrix output_size_shallow_model' input_sizes by auto
 
@@ -116,8 +116,8 @@ proof -
         using smult_prod_extract1 cprank_max1_order0[OF 1, of "extract_matrix w Y Z $$ (y, j) \<cdot> 1"]
         by (metis dims_smult mult.left_neutral order_tensor_one)
       then show "cprank_max1 B" by (simp add: Bs_def \<open>B = Bs ! j\<close> \<open>j < Z\<close>)
-      show "dims B = input_sizes (shallow_model' Z M N)" unfolding `B = Bs ! j` Bs_def
-        nth_map[of j "[0..<Z]", unfolded length_upt Nat.diff_0, OF `j < Z`] dims_smult
+      show "dims B = input_sizes (shallow_model' Z M N)" unfolding \<open>B = Bs ! j\<close> Bs_def
+        nth_map[of j "[0..<Z]", unfolded length_upt Nat.diff_0, OF \<open>j < Z\<close>] dims_smult
         input_sizes[symmetric]
         by (rule dims_tensors_from_net; rule vec_setI[where i=j], simp add:\<open>j < Z\<close>, metis (no_types) \<open>j < Z\<close> output_size_correct_tensors output_size_shallow_model' remove_insert_weights valid_shallow_model')
     qed

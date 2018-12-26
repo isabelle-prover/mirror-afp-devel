@@ -1,10 +1,10 @@
-section {* Optimized MRU Vote Model *}
+section \<open>Optimized MRU Vote Model\<close>
 
 theory MRU_Vote_Opt
 imports MRU_Vote
 begin
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 
 record opt_mru_state = 
@@ -50,7 +50,7 @@ definition mru_opt_TS :: "opt_mru_state TS" where
 
 lemmas mru_opt_TS_defs = mru_opt_TS_def opt_mru_init_def mru_opt_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition lv_ref_rel :: "(v_state \<times> opt_mru_state)set" where
@@ -62,7 +62,7 @@ definition lv_ref_rel :: "(v_state \<times> opt_mru_state)set" where
     \<rparr>
   }"
 
-subsubsection {* The concrete guard implies the abstract guard *}
+subsubsection \<open>The concrete guard implies the abstract guard\<close>
 (******************************************************************************)
 
 
@@ -142,7 +142,7 @@ lemma opt_mru_guard_imp_mru_guard:
   shows "mru_guard s Q v" using c_guard
   by(simp add: opt_mru_vote_mru_of_set[OF invs] opt_mru_guard_def mru_guard_def Let_def)
 
-subsubsection {* The concrete action refines the abstract action *}
+subsubsection \<open>The concrete action refines the abstract action\<close>
 (******************************************************************************)
 
 
@@ -156,7 +156,7 @@ lemma act_ref:
       restrict_map_def
       split:option.split)
 
-subsubsection {* The complete refinement *} 
+subsubsection \<open>The complete refinement\<close> 
 (******************************************************************************)
 
 lemma opt_mru_guard_imp_Quorum:
@@ -192,7 +192,7 @@ next
     by blast
 qed(auto intro!: SV_inv1_inductive(1) SV_inv2_inductive(1) SV_inv3_inductive(1) SV_inv4_inductive(1))
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
 definition OMRU_inv1 :: "opt_mru_state set" where

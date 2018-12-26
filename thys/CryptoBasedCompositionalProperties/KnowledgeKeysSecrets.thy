@@ -2,13 +2,13 @@
    Title:  Theory AdvKnowledge.thy
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
-section {*Knowledge of Keys and Secrets *}
+section \<open>Knowledge of Keys and Secrets\<close>
 
 theory KnowledgeKeysSecrets
 imports CompLocalSecrets 
 begin
 
-text_raw {*
+text_raw \<open>
 ~\\
 An component $A$ knows a secret $m$ (or some secret expression $m$)  that does not belong to its local sectrets , if
 \begin{itemize}
@@ -30,7 +30,7 @@ An component $A$ knows a secret $m$ (or some secret expression $m$)  that does n
   $m$ is the result of the signature creation of the $m_1$ with the key $k$, and $A$ knows both $m_1$ and $k$.
   %($m = Sign(k, m_1)  \wedge \knows{A}{m_1} \wedge \knows{A}{k}$).
 \end{itemize}
-*}
+\<close>
 
 primrec
   know :: "specID \<Rightarrow> KS \<Rightarrow> bool"

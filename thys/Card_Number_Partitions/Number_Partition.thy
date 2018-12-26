@@ -1,12 +1,12 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Number Partitions *}
+section \<open>Number Partitions\<close>
 
 theory Number_Partition
 imports Additions_to_Main
 begin
 
-subsection {* Number Partitions as @{typ "nat => nat"} Functions *}
+subsection \<open>Number Partitions as @{typ "nat => nat"} Functions\<close>
 
 definition partitions :: "(nat \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> bool" (infix "partitions" 50)
 where
@@ -32,7 +32,7 @@ lemma partitions_one:
 unfolding partitions_def
 by (auto split: if_split_asm) (auto simp add: fun_eq_iff)
 
-subsection {* Bounds and Finiteness of Number Partitions *}
+subsection \<open>Bounds and Finiteness of Number Partitions\<close>
 
 lemma partitions_imp_finite_elements:
   assumes "p partitions n"
@@ -113,7 +113,7 @@ proof (clarify)
     have "(\<Sum>i\<le>n. p i * i) = p k * k + (\<Sum>i\<in>{..n}-{k}. p i * i)"
       using \<open>k \<le> n\<close> sum_atMost_remove_nat by blast
     also have "... = p i * i + p k * k + (\<Sum>i\<in>{..n}-{i, k}. p i * i)"
-      using `i \<le> n` `i \<noteq> k`
+      using \<open>i \<le> n\<close> \<open>i \<noteq> k\<close>
       by (auto simp add: sum.remove[where x="i"]) (metis Diff_insert)
     finally have eq: "(\<Sum>i\<le>n. p i * i) = p i * i + p k * k + (\<Sum>i\<in>{..n} - {i, k}. p i * i)" .
     show "p i = 0"
@@ -122,7 +122,7 @@ proof (clarify)
       have upper_bound: "p i * i + p k * k \<le> n"
         using eq n by auto
       have lower_bound: "p i * i + p k * k > n"
-        using `n - k < i` `0 < p k` `k \<le> n` `p i \<noteq> 0` mult_eq_if not_less by auto
+        using \<open>n - k < i\<close> \<open>0 < p k\<close> \<open>k \<le> n\<close> \<open>p i \<noteq> 0\<close> mult_eq_if not_less by auto
       from upper_bound lower_bound show False by simp
     qed
   next
@@ -132,7 +132,7 @@ proof (clarify)
   qed
 qed
 
-subsection {* Operations of Number Partitions *}
+subsection \<open>Operations of Number Partitions\<close>
 
 lemma partitions_remove1_bounds:
   assumes partitions: "p partitions n"
@@ -158,7 +158,7 @@ next
       assume "p k \<noteq> 1"
       with gr0 have "p k \<ge> 2" by auto
       from this have "p k * k \<ge> 2 * k" by simp
-      with `2 * k > n` have "p k * k > n" by linarith
+      with \<open>2 * k > n\<close> have "p k * k > n" by linarith
       from \<open>k \<le> n\<close> this have "(\<Sum>i\<le>n. p i * i) > n"
         by (simp add: sum_atMost_remove_nat[of k])
       from this n show "False" by auto
@@ -199,7 +199,7 @@ lemma partitions_insert1:
 proof (rule partitionsI)
   fix i
   assume "(p(k := p k + 1)) i \<noteq> 0"
-  from p this `k > 0` show "1 \<le> i \<and> i \<le> n + k"
+  from p this \<open>k > 0\<close> show "1 \<le> i \<and> i \<le> n + k"
     by (auto elim!: partitionsE)
 next
   have "(\<Sum>i\<le>n + k. (p(k := p k + 1)) i * i) = p k * k + (\<Sum>i\<in>{..n + k} - {k}. p i * i) + k"
@@ -222,7 +222,7 @@ proof -
   have "(\<Sum>i\<le>n - k. (p(k := p k - 1)) i) = (\<Sum>i\<le>n. (p(k := p k - 1)) i)"
     using partitions_remove1_bounds assms by (auto intro!: sum.mono_neutral_left)
   also have "(\<Sum>i\<le>n. (p(k := p k - 1)) i) = p k + (\<Sum>i\<in>{..n} - {k}. p i) - 1"
-    using `0 < p k` `k \<le> n` by (simp add: sum_atMost_remove_nat[of k])
+    using \<open>0 < p k\<close> \<open>k \<le> n\<close> by (simp add: sum_atMost_remove_nat[of k])
   also have "... = (\<Sum>i\<in>{..n}. p i) - 1"
     using \<open>k \<le> n\<close> by (simp add: sum_atMost_remove_nat[of k])
   finally show ?thesis .
@@ -251,7 +251,7 @@ proof -
   {
     fix i
     assume neq: "p (i + 1) \<noteq> 0"
-    from p this `p 1 = 0` have "1 \<le> i"
+    from p this \<open>p 1 = 0\<close> have "1 \<le> i"
       by (fastforce elim!: partitionsE simp add: le_Suc_eq)
     moreover have "i \<le> m - k"
     proof (rule ccontr)
@@ -267,20 +267,20 @@ proof -
       have ineq21: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j) \<ge> (\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j)"
         using \<open>p 0 = 0\<close> not_less by (fastforce intro!: sum_mono)
       have ineq22a: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j) = (\<Sum>j\<le>m. p j) - 1"
-        using `i + 1 \<le> m` neq by (simp add: sum.remove[where x="i + 1"])
+        using \<open>i + 1 \<le> m\<close> neq by (simp add: sum.remove[where x="i + 1"])
       have ineq22: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j) \<ge> k - 1"
         using sum neq ineq22a by auto
       have ineq2: "(\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j) \<ge> k - 1"
         using ineq21 ineq22 by auto
       have "(\<Sum>i\<le>m. p i * i) = p (i + 1) * (i + 1) + (\<Sum>i\<in>{..m} - {i + 1}. p i * i)"
-        using `i + 1 \<le> m` neq
+        using \<open>i + 1 \<le> m\<close> neq
         by (subst sum.remove[where x="i + 1"]) auto
       also have "... = (i + 1) + (\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j)"
-        using `i + 1 \<le> m` neq
+        using \<open>i + 1 \<le> m\<close> neq
         by (subst sum.remove[where x="i + 1" and g="\<lambda>j. (p(i + 1 := p (i + 1) - 1)) j * j"])
           (auto simp add: mult_eq_if)
       finally have "(\<Sum>i\<le>m. p i * i) = i + 1 + (\<Sum>j\<le>m. (p(i + 1 := p (i + 1) - 1)) j * j)" .
-      moreover have "... > m" using ineq1 ineq2 `k \<le> m` `p (i + 1) \<noteq> 0` by linarith
+      moreover have "... > m" using ineq1 ineq2 \<open>k \<le> m\<close> \<open>p (i + 1) \<noteq> 0\<close> by linarith
       ultimately have "(\<Sum>i\<le>m. p i * i) > m" by simp
       from s this show False by simp
     qed
@@ -333,7 +333,7 @@ next
     using eq_0 by (auto intro: sum.mono_neutral_right)
   also have "... = (\<Sum>i\<le>m - k. p i * i) + (\<Sum>i\<le>m - k. p i)" by (simp add: sum.distrib)
   also have "... = m - k + k" using s k by simp
-  also have "... = m" using `k \<le> m` by simp
+  also have "... = m" using \<open>k \<le> m\<close> by simp
   finally show "(\<Sum>i\<le>m. p (i - 1) * i) = m" .
 qed
 

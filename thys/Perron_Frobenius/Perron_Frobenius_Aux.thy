@@ -374,7 +374,7 @@ lemma norm1_0[simp]: "norm1 0 = 0" unfolding norm1_def by auto
 lemma norm1_nonzero: assumes "v \<noteq> 0"
   shows "norm1 v > 0"
 proof -
-  from `v \<noteq> 0` obtain i where vi: "v $ i \<noteq> 0" unfolding vec_eq_iff
+  from \<open>v \<noteq> 0\<close> obtain i where vi: "v $ i \<noteq> 0" unfolding vec_eq_iff
     using Finite_Cartesian_Product.vec_eq_iff zero_index by force
   have "sum (\<lambda> i. norm (v $ i)) (UNIV - {i}) \<ge> 0"
     by (rule sum_nonneg, auto)

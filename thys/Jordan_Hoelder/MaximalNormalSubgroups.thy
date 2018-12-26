@@ -9,16 +9,16 @@ imports
   SimpleGroups
 begin
 
-section {* Facts about maximal normal subgroups *}
+section \<open>Facts about maximal normal subgroups\<close>
 
-text {* A maximal normal subgroup of $G$ is a normal subgroup which is not contained in other any proper
-  normal subgroup of $G$. *}
+text \<open>A maximal normal subgroup of $G$ is a normal subgroup which is not contained in other any proper
+  normal subgroup of $G$.\<close>
 
 locale max_normal_subgroup = normal +
   assumes proper:"H \<noteq> carrier G"
   assumes max_normal:"\<And>J. J \<lhd> G \<Longrightarrow> J \<noteq> H \<Longrightarrow> J \<noteq> carrier G \<Longrightarrow> \<not> (H \<subseteq> J)"
 
-text {* Another characterization of maximal normal subgroups: The factor group is simple. *}
+text \<open>Another characterization of maximal normal subgroups: The factor group is simple.\<close>
 
 theorem (in normal) max_normal_simple_quotient:
   assumes finite:"finite (carrier G)"

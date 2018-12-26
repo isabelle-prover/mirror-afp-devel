@@ -3,19 +3,19 @@ theory PromelaAST
 imports Main
 begin
 
-text {* 
+text \<open>
   The abstract syntax tree is generated from the handwritten SML parser. 
   This theory only mirrors the data structures from the SML level to make them available in 
   Isabelle.
-*}
+\<close>
 
 context
 begin
 
 (* Force everything in this context to start with AST. *)
-local_setup {*
+local_setup \<open>
   Local_Theory.map_background_naming (Name_Space.mandatory_path "AST")
-*} 
+\<close> 
 
 datatype binOp = 
                  BinOpAdd

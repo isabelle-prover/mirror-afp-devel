@@ -4,13 +4,13 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Continuity *}
+section \<open>Continuity\<close>
 
 theory OrdinalCont
 imports OrdinalInduct
 begin
 
-subsection {* Continuous functions *}
+subsection \<open>Continuous functions\<close>
 
 locale continuous =
   fixes F :: "ordinal \<Rightarrow> ordinal"
@@ -83,7 +83,7 @@ shows "continuous F"
 done
 
 
-subsection {* Normal functions *}
+subsection \<open>Normal functions\<close>
 
 locale normal = continuous +
   assumes strict: "strict_mono F"

@@ -1,9 +1,9 @@
-section {* Antiquotation to Build Terms *}
+section \<open>Antiquotation to Build Terms\<close>
 theory Mk_Term_Antiquot
 imports Refine_Util_Bootstrap1
 begin
 
-ML {*
+ML \<open>
 (*
   Antiquotation to generate a term from a template.
 
@@ -175,14 +175,14 @@ local
 in
   val mk_term_antiquot = read >> process
 end
-*}
+\<close>
 
-setup {* ML_Antiquotation.inline @{binding mk_term} mk_term_antiquot *}
+setup \<open>ML_Antiquotation.inline @{binding mk_term} mk_term_antiquot\<close>
 
 
 subsection "Examples"
 
-ML_val {*
+ML_val \<open>
   (* The mk_term antiquotation can replace the omnipresent mk_xxx functions, and 
     easily works with complex patterns *)
   fun mk_2elem_list a b = @{mk_term "[?a,?b]"}
@@ -207,6 +207,6 @@ ML_val {*
     @{mk_term "\<lambda>x::?'v_T. ?x"}
   end
   *)
-*}
+\<close>
 
 end

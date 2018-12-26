@@ -17,7 +17,7 @@ interpretation coeff_lift_hom: inj_comm_semiring_hom coeff_lift
 interpretation coeff_lift_hom: inj_comm_ring_hom coeff_lift..
 interpretation coeff_lift_hom: inj_idom_hom coeff_lift..
 
-text {* The following rule is incompatible with existing simp rules. *}
+text \<open>The following rule is incompatible with existing simp rules.\<close>
 declare coeff_lift_hom.hom_mult[simp del]
 declare coeff_lift_hom.hom_add[simp del]
 declare coeff_lift_hom.hom_uminus[simp del]

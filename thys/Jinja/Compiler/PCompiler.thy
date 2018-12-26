@@ -4,7 +4,7 @@
     Copyright   TUM 2003
 *)
 
-section {* Program Compilation *}
+section \<open>Program Compilation\<close>
 
 theory PCompiler
 imports "../Common/WellForm"
@@ -22,9 +22,9 @@ definition compP :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a prog \<Rightarrow> '
 where
   "compP f  \<equiv>  map (compC f)"
 
-text{* Compilation preserves the program structure.  Therfore lookup
+text\<open>Compilation preserves the program structure.  Therfore lookup
 functions either commute with compilation (like method lookup) or are
-preserved by it (like the subclass relation). *}
+preserved by it (like the subclass relation).\<close>
 
 lemma map_of_map4:
   "map_of (map (\<lambda>(x,a,b,c).(x,a,b,f c)) ts) =
@@ -207,7 +207,7 @@ lemma [simp]: "field (compP f P) F D = field P F D"
 (*<*)by(simp add:field_def)(*>*)
 
 
-subsection{*Invariance of @{term wf_prog} under compilation *}
+subsection\<open>Invariance of @{term wf_prog} under compilation\<close>
 
 lemma [iff]: "distinct_fst (compP f P) = distinct_fst P"
 (*<*)

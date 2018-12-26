@@ -3,11 +3,11 @@ imports TermsAndClauses Sig
 begin  
 
 
-subsection{* Well-typed (well-formed) terms, clauses, literals and problems *}
+subsection\<open>Well-typed (well-formed) terms, clauses, literals and problems\<close>
 
 context Signature begin
 
-text{* The type of a term *}
+text\<open>The type of a term\<close>
 fun tpOf where
 "tpOf (Var x) = tpOfV x"
 |
@@ -97,22 +97,22 @@ unfolding getTvars_def by auto
 end (* context Signature *)
 
 
-subsection {* Structures *}
+subsection \<open>Structures\<close>
 
-text{* We split a structre into a ``type structure'' that interprets the types 
-and the rest of the structure that interprets the function and relation symbols. *}
+text\<open>We split a structre into a ``type structure'' that interprets the types 
+and the rest of the structure that interprets the function and relation symbols.\<close>
 
-text{* Type structures: *}
+text\<open>Type structures:\<close>
 
 locale Tstruct =
 fixes intT :: "'tp \<Rightarrow> 'univ \<Rightarrow> bool"
 assumes NE_intT: "NE (intT \<sigma>)"
 
-text{* Environment: *}
+text\<open>Environment:\<close>
 
 type_synonym ('tp,'univ) env = "'tp \<Rightarrow> var \<Rightarrow> 'univ"
 
-text{* Structures: *}
+text\<open>Structures:\<close>
 
 locale Struct = Signature wtFsym wtPsym arOf resOf parOf +
                 Tstruct intT
@@ -131,7 +131,7 @@ and
 dummy: "intP = intP"
 begin
 
-text{* Well-typed environment: *}
+text\<open>Well-typed environment:\<close>
 
 definition "wtE \<xi> \<equiv> \<forall> x. intT (tpOfV x) (\<xi> x)"
 
@@ -144,7 +144,7 @@ definition "pickT \<sigma> \<equiv> SOME a. intT \<sigma> a"
 lemma pickT[simp]: "intT \<sigma> (pickT \<sigma>)"
 unfolding pickT_def apply(rule someI_ex) using NE_intT by auto
 
-text{* Picking a well-typed environment: *}
+text\<open>Picking a well-typed environment:\<close>
 
 definition
 "pickE (xl::var list) al \<equiv>
@@ -245,7 +245,7 @@ definition "SAT \<Phi> \<equiv> \<forall> \<xi>. wtE \<xi> \<longrightarrow> sat
 lemma SAT_UN[simp]: "SAT (\<Union> i \<in> I. \<Phi> i) \<longleftrightarrow> (\<forall> i \<in> I. SAT (\<Phi> i))"
 unfolding SAT_def by auto
 
-text{* Soundness of typing w.r.t. interpretation: *}
+text\<open>Soundness of typing w.r.t. interpretation:\<close>
 
 lemma wt_int:
 assumes wtE: "wtE \<xi>" and wt: "wt T"
@@ -471,10 +471,10 @@ unfolding Struct_def Struct_axioms_def Tstruct_def by auto
 end (* context Signature *)
 
 
-subsection{* Problems *}
+subsection\<open>Problems\<close>
 
-text{* A problem is a potentially infinitary formula in clausal form, i.e., 
-a potentially infinite conjunction of clauses.  *}
+text\<open>A problem is a potentially infinitary formula in clausal form, i.e., 
+a potentially infinite conjunction of clauses.\<close>
 
 locale Problem = Signature wtFsym wtPsym arOf resOf parOf
 for wtFsym wtPsym
@@ -486,9 +486,9 @@ fixes \<Phi> :: "('fsym, 'psym) prob"
 assumes wt_\<Phi>: "wtPB \<Phi>"
 
 
-subsection{* Models of a problem *}
+subsection\<open>Models of a problem\<close>
 
-text{* Model of a problem: *}
+text\<open>Model of a problem:\<close>
 
 locale Model = Problem + Struct +
 assumes SAT: "SAT \<Phi>"

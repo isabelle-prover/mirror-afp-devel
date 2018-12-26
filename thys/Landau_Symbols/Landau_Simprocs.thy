@@ -4,22 +4,22 @@
 
   Simplification procedures for Landau symbols, with a particular focus on functions into the reals.
 *)
-section {* Simplification procedures *}
+section \<open>Simplification procedures\<close>
 
 theory Landau_Simprocs
 imports Landau_Real_Products
 begin
 
-subsection {* Simplification under Landau symbols *}
+subsection \<open>Simplification under Landau symbols\<close>
 
-text {* 
+text \<open>
   The following can be seen as simpset for terms under Landau symbols. 
   When given a rule @{term "f \<in> \<Theta>(g)"}, the simproc will attempt to rewrite any occurrence of 
   @{term "f"} under a Landau symbol to @{term "g"}.
-*}
+\<close>
 
 named_theorems landau_simp "BigTheta rules for simplification of Landau symbols"
-setup {*
+setup \<open>
   let
     val eq_thms = @{thms landau_theta.cong_bigtheta}
     fun eq_rule thm = get_first (try (fn eq_thm => eq_thm OF [thm])) eq_thms
@@ -30,7 +30,7 @@ setup {*
           Named_Theorems.get (Context.proof_of context) @{named_theorems landau_simp}
           |> map_filter eq_rule)
   end
-*}
+\<close>
 
 
 lemma bigtheta_const [landau_simp]:
@@ -52,7 +52,7 @@ lemma bigtheta_const_ln_pow' [landau_simp]:
 
 
 
-subsection {* Simproc setup *}
+subsection \<open>Simproc setup\<close>
 
 
 lemma landau_gt_1_cong: 
@@ -109,7 +109,7 @@ text \<open>
 \<close>
 simproc_setup landau_cancel_factor (
     "f \<in> o[F](g)" | "f \<in> O[F](g)" | "f \<in> \<omega>[F](g)" | "f \<in> \<Omega>[F](g)" | "f \<in> \<Theta>[F](g)"
-  ) = {* K Landau.cancel_factor_simproc *}
+  ) = \<open>K Landau.cancel_factor_simproc\<close>
 
 text \<open>
   The next simproc attempts to cancel dominated summands from Landau symbols; e.\,g.\ $O(x + \ln x)$
@@ -119,7 +119,7 @@ text \<open>
 simproc_setup simplify_landau_sum (
     "o[F](\<lambda>x. f x)" | "O[F](\<lambda>x. f x)" | "\<omega>[F](\<lambda>x. f x)" | "\<Omega>[F](\<lambda>x. f x)" | "\<Theta>[F](\<lambda>x. f x)" |
     "f \<in> o[F](g)" | "f \<in> O[F](g)" | "f \<in> \<omega>[F](g)" | "f \<in> \<Omega>[F](g)" | "f \<in> \<Theta>[F](g)"
-  ) = {* K (Landau.lift_landau_simproc Landau.simplify_landau_sum_simproc) *}
+  ) = \<open>K (Landau.lift_landau_simproc Landau.simplify_landau_sum_simproc)\<close>
 
 
 text \<open>
@@ -131,7 +131,7 @@ text \<open>
 simproc_setup simplify_landau_product (
     "o[F](\<lambda>x. f x)" | "O[F](\<lambda>x. f x)" | "\<omega>[F](\<lambda>x. f x)" | "\<Omega>[F](\<lambda>x. f x)" | "\<Theta>[F](\<lambda>x. f x)" |
     "f \<in> o[F](g)" | "f \<in> O[F](g)" | "f \<in> \<omega>[F](g)" | "f \<in> \<Omega>[F](g)" | "f \<in> \<Theta>[F](g)"
-  ) = {* K (Landau.lift_landau_simproc Landau.simplify_landau_product_simproc) *}
+  ) = \<open>K (Landau.lift_landau_simproc Landau.simplify_landau_product_simproc)\<close>
 
 text \<open>
   Lastly, the next very specialised simproc can solve goals of the form 
@@ -146,10 +146,10 @@ simproc_setup landau_real_prod (
     "(f :: real \<Rightarrow> real) \<in> o(g)" | "(f :: real \<Rightarrow> real) \<in> O(g)" |
     "(f :: real \<Rightarrow> real) \<in> \<omega>(g)" | "(f :: real \<Rightarrow> real) \<in> \<Omega>(g)" |
     "(f :: real \<Rightarrow> real) \<in> \<Theta>(g)"
-  ) = {* K Landau.simplify_landau_real_prod_prop_simproc *}
+  ) = \<open>K Landau.simplify_landau_real_prod_prop_simproc\<close>
 
 
-subsection {* Tests *}
+subsection \<open>Tests\<close>
 
 lemma asymp_equiv_plus_const_left: "(\<lambda>n. c + real n) \<sim>[at_top] (\<lambda>n. real n)"
   by (subst asymp_equiv_add_left) (auto intro!: asymp_equiv_intros eventually_gt_at_top)
@@ -158,7 +158,7 @@ lemma asymp_equiv_plus_const_right: "(\<lambda>n. real n + c) \<sim>[at_top] (\<
   using asymp_equiv_plus_const_left[of c] by (simp add: add.commute)
 
 
-subsubsection {* Product simplification tests *}
+subsubsection \<open>Product simplification tests\<close>
 
 lemma "(\<lambda>x::real. f x * x) \<in> O(\<lambda>x. g x / (h x / x)) \<longleftrightarrow> f \<in> O(\<lambda>x. g x / h x)"
   by simp
@@ -167,7 +167,7 @@ lemma "(\<lambda>x::real. x) \<in> \<omega>(\<lambda>x. g x / (h x / x)) \<longl
   by simp
 
 
-subsubsection {* Real product decision procure tests *}
+subsubsection \<open>Real product decision procure tests\<close>
 
 lemma "(\<lambda>x. x powr 1) \<in> O(\<lambda>x. x powr 2 :: real)"
   by simp
@@ -187,11 +187,11 @@ lemma "o(\<lambda>x::real. x * ln (3*x)) = o(\<lambda>x. ln x * x)"
   by (simp add: mult.commute)
 lemma "(\<lambda>x::real. x) \<in> o(\<lambda>x. x * ln (3*x))" by simp
 
-ML_val {*
+ML_val \<open>
   Landau.simplify_landau_real_prod_prop_conv @{context} 
   @{cterm "(\<lambda>x::real. 5 * ln (ln x) ^ 2 / (2*x) powr 1.5 * inverse 2) \<in> 
            \<omega>(\<lambda>x. 3 * ln x * ln x / x * ln (ln (ln (ln x))))"}
-*}
+\<close>
 
 lemma "(\<lambda>x. 3 * ln x * ln x / x * ln (ln (ln (ln x)))) \<in> 
          \<omega>(\<lambda>x::real. 5 * ln (ln x) ^ 2 / (2*x) powr 1.5 * inverse 2)"
@@ -199,7 +199,7 @@ lemma "(\<lambda>x. 3 * ln x * ln x / x * ln (ln (ln (ln x)))) \<in>
 
 
 
-subsubsection {* Sum cancelling tests *}
+subsubsection \<open>Sum cancelling tests\<close>
 
 lemma "\<Theta>(\<lambda>x::real. 2 * x powr 3 + x * x^2/ln x) = \<Theta>(\<lambda>x::real. x powr 3)"
   by simp

@@ -1,24 +1,24 @@
-section {* Coercion Operator *}
+section \<open>Coercion Operator\<close>
 
 theory Coerce
 imports HOLCF
 begin
 
-subsection {* Coerce *}
+subsection \<open>Coerce\<close>
 
-text {* The @{text domain} type class, which is the default type class
-in HOLCF, fixes two overloaded functions: @{text "emb::'a \<rightarrow> udom"} and
-@{text "prj::udom \<rightarrow> 'a"}. By composing the @{text prj} and @{text emb}
+text \<open>The \<open>domain\<close> type class, which is the default type class
+in HOLCF, fixes two overloaded functions: \<open>emb::'a \<rightarrow> udom\<close> and
+\<open>prj::udom \<rightarrow> 'a\<close>. By composing the \<open>prj\<close> and \<open>emb\<close>
 functions together, we can coerce values between any two types in
-class @{text domain}. \medskip *}
+class \<open>domain\<close>. \medskip\<close>
 
 definition coerce :: "'a \<rightarrow> 'b"
   where "coerce \<equiv> prj oo emb"
 
-text {* When working with proofs involving @{text emb}, @{text prj},
-and @{text coerce}, it is often difficult to tell at which types those
+text \<open>When working with proofs involving \<open>emb\<close>, \<open>prj\<close>,
+and \<open>coerce\<close>, it is often difficult to tell at which types those
 constants are being used. To alleviate this problem, we define special
-input and output syntax to indicate the types. \medskip *}
+input and output syntax to indicate the types. \medskip\<close>
 
 syntax
   "_emb" :: "type \<Rightarrow> logic" ("(1EMB/(1'(_')))")
@@ -30,7 +30,7 @@ translations
   "PRJ('a)" \<rightharpoonup> "CONST prj :: udom \<rightarrow> 'a"
   "COERCE('a,'b)" \<rightharpoonup> "CONST coerce :: 'a \<rightarrow> 'b"
 
-typed_print_translation {*
+typed_print_translation \<open>
 let
   fun emb_tr' (ctxt : Proof.context) (Type(_, [T, _])) [] =
     Syntax.const @{syntax_const "_emb"} $ Syntax_Phases.term_of_typ ctxt T
@@ -44,7 +44,7 @@ in
    (@{const_syntax prj}, prj_tr'),
    (@{const_syntax coerce}, coerce_tr')]
 end
-*}
+\<close>
 
 lemma beta_coerce: "coerce\<cdot>x = prj\<cdot>(emb\<cdot>x)"
 by (simp add: coerce_def)
@@ -55,8 +55,8 @@ by (simp add: coerce_def)
 lemma coerce_strict [simp]: "coerce\<cdot>\<bottom> = \<bottom>"
 by (simp add: coerce_def)
 
-text {* Certain type instances of @{text coerce} may reduce to the
-identity function, @{text emb}, or @{text prj}. \medskip *}
+text \<open>Certain type instances of \<open>coerce\<close> may reduce to the
+identity function, \<open>emb\<close>, or \<open>prj\<close>. \medskip\<close>
 
 lemma coerce_eq_ID [simp]: "COERCE('a, 'a) = ID"
 by (rule cfun_eqI, simp add: beta_coerce)
@@ -84,7 +84,7 @@ lemma coerce_idem [simp]:
    \<Longrightarrow> COERCE('b,'c)\<cdot>(COERCE('a,'b)\<cdot>x) = COERCE('a,'c)\<cdot>x"
 by (simp add: beta_coerce emb_prj_emb)
 
-subsection {* More lemmas about emb and prj *}
+subsection \<open>More lemmas about emb and prj\<close>
 
 lemma prj_cast_DEFL [simp]: "PRJ('a)\<cdot>(cast\<cdot>DEFL('a)\<cdot>x) = PRJ('a)\<cdot>x"
 by (simp add: cast_DEFL)
@@ -92,7 +92,7 @@ by (simp add: cast_DEFL)
 lemma cast_DEFL_emb [simp]: "cast\<cdot>DEFL('a)\<cdot>(EMB('a)\<cdot>x) = EMB('a)\<cdot>x"
 by (simp add: cast_DEFL)
 
-text {* @{term "DEFL(udom)"} *}
+text \<open>@{term "DEFL(udom)"}\<close>
 
 lemma below_DEFL_udom [simp]: "A \<sqsubseteq> DEFL(udom)"
 apply (rule cast_below_imp_below)
@@ -100,14 +100,14 @@ apply (rule cast.belowI)
 apply (simp add: cast_DEFL)
 done
 
-subsection {* Coercing various datatypes *}
+subsection \<open>Coercing various datatypes\<close>
 
-text {* Coercing from the strict product type @{typ "'a \<otimes> 'b"} to
+text \<open>Coercing from the strict product type @{typ "'a \<otimes> 'b"} to
 another strict product type @{typ "'c \<otimes> 'd"} is equivalent to mapping
-the @{text coerce} function separately over each component using
-@{text "sprod_map :: ('a \<rightarrow> 'c) \<rightarrow> ('b \<rightarrow> 'd) \<rightarrow> 'a \<otimes> 'b \<rightarrow> 'c \<otimes> 'd"}. Each
+the \<open>coerce\<close> function separately over each component using
+\<open>sprod_map :: ('a \<rightarrow> 'c) \<rightarrow> ('b \<rightarrow> 'd) \<rightarrow> 'a \<otimes> 'b \<rightarrow> 'c \<otimes> 'd\<close>. Each
 of the several type constructors defined in HOLCF satisfies a similar
-property, with respect to its own map combinator. \medskip *}
+property, with respect to its own map combinator. \medskip\<close>
 
 lemma coerce_u: "coerce = u_map\<cdot>coerce"
 apply (rule cfun_eqI, simp add: coerce_def)
@@ -151,21 +151,21 @@ apply (subst ep_pair.e_inverse [OF ep_pair_prod])
 apply (simp add: prod_map_map cfcomp1)
 done
 
-subsection {* Simplifying coercions *}
+subsection \<open>Simplifying coercions\<close>
 
-text {* When simplifying applications of the @{text coerce} function,
-rewrite rules are always oriented to replace @{text coerce} at complex
-types with other applications of @{text coerce} at simpler types. *}
+text \<open>When simplifying applications of the \<open>coerce\<close> function,
+rewrite rules are always oriented to replace \<open>coerce\<close> at complex
+types with other applications of \<open>coerce\<close> at simpler types.\<close>
 
-text {* The safest rewrite rules for @{text coerce} are given the
-@{text "[simp]"} attribute. For other rules that do not belong in the
-global simpset, we use dynamic theorem list called @{text coerce_simp},
-which will collect additional rules for simplifying coercions. \medskip *}
+text \<open>The safest rewrite rules for \<open>coerce\<close> are given the
+\<open>[simp]\<close> attribute. For other rules that do not belong in the
+global simpset, we use dynamic theorem list called \<open>coerce_simp\<close>,
+which will collect additional rules for simplifying coercions. \medskip\<close>
 
 named_theorems coerce_simp "rule for simplifying coercions"
 
-text {* The @{text coerce} function commutes with data constructors
-for various HOLCF datatypes. \medskip *}
+text \<open>The \<open>coerce\<close> function commutes with data constructors
+for various HOLCF datatypes. \medskip\<close>
 
 lemma coerce_up [simp]: "coerce\<cdot>(up\<cdot>x) = up\<cdot>(coerce\<cdot>x)"
 by (simp add: coerce_u)

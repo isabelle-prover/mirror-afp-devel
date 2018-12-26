@@ -5,7 +5,7 @@ imports Heard_Of.Reduction
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 type_synonym uv_TS_state = "(nat \<times> (process \<Rightarrow> (val pstate)))"
 
 axiomatization where val_linorder: 
@@ -64,7 +64,7 @@ next
   by(force simp add: CSHO_trans_alt_def UV_sendMsg_def UV_nextState_def UV_trans_step_def)
 qed
 
-subsubsection {* Invariants *}
+subsubsection \<open>Invariants\<close>
 (******************************************************************************)
 
 definition UV_inv1
@@ -89,7 +89,7 @@ lemma UV_inv1_invariant:
   "reach (UV_TS HOs SHOs crds) \<subseteq> UV_inv1"
   by(intro inv_rule_basic UV_inv1_inductive)
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition ref_rel :: "(tso_state \<times> uv_TS_state)set" where
@@ -101,7 +101,7 @@ definition ref_rel :: "(tso_state \<times> uv_TS_state)set" where
   }"
 
 (******************************************************************************)
-text {* Agreement for UV only holds if the communication predicates hold *}
+text \<open>Agreement for UV only holds if the communication predicates hold\<close>
 context
   fixes
     HOs :: "nat \<Rightarrow> process \<Rightarrow> process set"
@@ -431,10 +431,10 @@ end (* HO predicate context *)
 
 end (* mono_quorum context *)
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
-text {* As the model of the algorithm is taken verbatim from the HO Model AFP, we
-  do not repeat the termination proof here and refer to that AFP entry. *}
+text \<open>As the model of the algorithm is taken verbatim from the HO Model AFP, we
+  do not repeat the termination proof here and refer to that AFP entry.\<close>
 
 end (* theory *)

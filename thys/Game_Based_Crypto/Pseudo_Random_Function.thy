@@ -5,7 +5,7 @@ theory Pseudo_Random_Function imports
   CryptHOL.Computational_Model
 begin
 
-subsection {* Pseudo-random function *}
+subsection \<open>Pseudo-random function\<close>
 
 locale random_function =
   fixes p :: "'a spmf"
@@ -44,7 +44,7 @@ by(rule finite.interaction_bounded_by'_exec_gpv_count[OF assms(1-2)])
 
 end
 
-subsection {* Pseudo-random function *}
+subsection \<open>Pseudo-random function\<close>
 
 locale "prf" =
   fixes key_gen :: "'key spmf"

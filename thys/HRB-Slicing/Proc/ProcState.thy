@@ -1,4 +1,4 @@
-section {* The state *}
+section \<open>The state\<close>
 
 theory ProcState imports Com begin
 

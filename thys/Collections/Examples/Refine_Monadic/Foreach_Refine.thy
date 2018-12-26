@@ -1,16 +1,16 @@
-section {* \isaheader{Example for Foreach-Loops} *}
+section \<open>\isaheader{Example for Foreach-Loops}\<close>
 theory Foreach_Refine
 imports 
   Collections.Refine_Dflt_Only_ICF 
 begin
 
-text {*
+text \<open>
   This example presents the usage of the foreach loop.
   We define a simple foreach loop that looks for the largest element with
   a given property. Ordered loops are used to be sure to find the largest one.
-*}
+\<close>
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
 definition find_max_invar where
   "find_max_invar P S it \<sigma> = 
@@ -22,10 +22,10 @@ definition find_max :: "('a::{linorder} \<Rightarrow> bool) \<Rightarrow> 'a set
    FOREACHoci ((\<ge>)) (find_max_invar P S) S
      (\<lambda>\<sigma>. \<sigma> = None) (\<lambda>x _. RETURN (if P x then Some x else None)) None"
 
-subsection {* Correctness *}
-text {* As simple correctness property, we show:
-  If the algorithm returns the maximal element satisfying @{text "P"}.
-*}
+subsection \<open>Correctness\<close>
+text \<open>As simple correctness property, we show:
+  If the algorithm returns the maximal element satisfying \<open>P\<close>.
+\<close>
 lemma find_max_correct:
   fixes S:: "'a::{linorder} set"
   assumes "finite S"
@@ -46,14 +46,14 @@ next
          "\<forall>y\<in>it - {x}. y \<le> x"
          "\<forall>y\<in>S - it. x \<le> y"
 
-  from `find_max_invar P S it \<sigma>` `\<sigma> = None` 
+  from \<open>find_max_invar P S it \<sigma>\<close> \<open>\<sigma> = None\<close> 
   have not_P_others: "\<forall>x\<in>S - it. \<not> P x"
     by (simp add: find_max_invar_def)
 
-  from `x \<in> it` `it \<subseteq> S` have "x \<in> S" by blast
+  from \<open>x \<in> it\<close> \<open>it \<subseteq> S\<close> have "x \<in> S" by blast
 
   show "RETURN (if P x then Some x else None) \<le> SPEC (find_max_invar P S (it - {x}))"
-    using not_P_others `x \<in> S`
+    using not_P_others \<open>x \<in> S\<close>
     by (auto simp add: find_max_invar_def)
 next
   fix \<sigma>
@@ -69,15 +69,15 @@ next
          "\<sigma> \<noteq> None"
          "\<forall>x\<in>it. \<forall>y\<in>S - it. x \<le> y"
 
-  from `\<sigma> \<noteq> None` obtain y where \<sigma>_eq[simp]: "\<sigma> = Some y" by auto
-  from `find_max_invar P S it \<sigma>` 
+  from \<open>\<sigma> \<noteq> None\<close> obtain y where \<sigma>_eq[simp]: "\<sigma> = Some y" by auto
+  from \<open>find_max_invar P S it \<sigma>\<close> 
     have y_props[simp]: "P y" "y \<in> S" "y \<notin> it" and not_P: "\<forall>x\<in>S - it - {y}. \<not> P x"
     by (simp_all add: find_max_invar_def)
  
   { fix x
     assume "x \<in> S" "P x"
     with not_P have "x \<in> it \<or> x = y" by auto
-    with `\<forall>x\<in>it. \<forall>y\<in>S - it. x \<le> y` y_props have "x \<le> y" by auto
+    with \<open>\<forall>x\<in>it. \<forall>y\<in>S - it. x \<le> y\<close> y_props have "x \<le> y" by auto
   } note less_eq_y = this
 
   show "case \<sigma> of None \<Rightarrow> \<forall>x\<in>S. \<not> P x
@@ -85,11 +85,11 @@ next
    by (simp add: find_max_invar_def Ball_def less_eq_y)
 qed
 
-subsection {* Data Refinement and Determinization *}
-text {*
+subsection \<open>Data Refinement and Determinization\<close>
+text \<open>
   Next, we use automatic data refinement and transfer to generate an
   executable algorithm using a red-black-tree. 
-*}
+\<close>
 schematic_goal find_max_impl_refine_aux:
   assumes invar_S: "rs.invar S"
   shows "RETURN (?f) \<le> (find_max P (rs.\<alpha> S))"
@@ -105,7 +105,7 @@ lemma find_max_impl_refine:
   shows "RETURN (find_max_impl P S) \<le> (find_max P (rs.\<alpha> S))"
   using assms by (rule find_max_impl.refine)
 
-subsubsection {* Executable Code *}
+subsubsection \<open>Executable Code\<close>
 
 lemma find_max_impl_correct :
 assumes invar_S: "rs.invar S"
@@ -118,7 +118,7 @@ proof -
   finally show ?thesis by simp
 qed
 
-text {* Finally, we can generate code *}
+text \<open>Finally, we can generate code\<close>
 export_code find_max_impl in SML
 export_code find_max_impl in OCaml
 export_code find_max_impl in Haskell

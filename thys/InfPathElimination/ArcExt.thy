@@ -2,21 +2,21 @@ theory ArcExt
 imports SubRel
 begin
 
-section {* Extending rooted graphs with edges *}
+section \<open>Extending rooted graphs with edges\<close>
 
-text {* In this section, we formalize the operation of adding to a rooted graph an edge whose source 
+text \<open>In this section, we formalize the operation of adding to a rooted graph an edge whose source 
 is already a vertex of the given graph but not its target. We call this operation an extension of the given graph by adding 
 an edge. This corresponds to an abstraction of 
 the act of adding an edge to the red part of a red\hyp{}black graph as a result of symbolic execution 
 of the corresponding transition in the LTS under analysis, where all details about symbolic 
 execution would have been abstracted.  We then state and prove a number of facts 
 describing the evolution of the set of paths of the given graph, first without considering 
-subsumption links then in the case of rooted graph equipped with a subsumption relation. *}
+subsumption links then in the case of rooted graph equipped with a subsumption relation.\<close>
 
-subsection {* Definition and Basic properties *}
+subsection \<open>Definition and Basic properties\<close>
 
-text {* Extending a rooted graph with an edge consists in adding to its set of edges an edge whose 
-source is a vertex of this graph but whose target is not. *}
+text \<open>Extending a rooted graph with an edge consists in adding to its set of edges an edge whose 
+source is a vertex of this graph but whose target is not.\<close>
 
 abbreviation extends :: 
   "('v,'x) rgraph_scheme \<Rightarrow> 'v edge \<Rightarrow> ('v,'x) rgraph_scheme \<Rightarrow> bool" 
@@ -27,22 +27,22 @@ where
 
 
 
-text {* After such an extension, the set of out-edges of the target of the new edge is empty. *}
+text \<open>After such an extension, the set of out-edges of the target of the new edge is empty.\<close>
 
 lemma extends_tgt_out_edges :
   assumes "extends g e g'"
   shows   "out_edges g' (tgt e) = {}" 
 using assms unfolding vertices_def image_def by force
 
-text {* Consider a graph equipped with a sub-relation. This relation is also a sub-relation of any 
-extension of this graph. *}
+text \<open>Consider a graph equipped with a sub-relation. This relation is also a sub-relation of any 
+extension of this graph.\<close>
 
 lemma (in sub_rel_of)
   assumes "extends g e g'"
   shows   "sub_rel_of g' subs"
 using assms sub_rel_of by (auto simp add : sub_rel_of_def vertices_def)
 
-text {* Extending a graph with an edge preserves the existing sub-paths. *}
+text \<open>Extending a graph with an edge preserves the existing sub-paths.\<close>
 
 lemma sp_in_extends :
   assumes "extends g e g'"
@@ -55,10 +55,10 @@ using assms by (auto simp add : Graph.subpath_def vertices_def)
 
 
 
-subsection {* Extending trees *}
+subsection \<open>Extending trees\<close>
 
-text {* We show that extending a rooted graph that is already a tree yields a new tree. Since 
-the empty rooted graph is a tree, all graphs produced using only the extension by edge are trees. *}
+text \<open>We show that extending a rooted graph that is already a tree yields a new tree. Since 
+the empty rooted graph is a tree, all graphs produced using only the extension by edge are trees.\<close>
 
 lemma extends_is_tree :
   assumes "is_tree g"
@@ -86,7 +86,7 @@ proof (intro allI impI)
   
     hence "Graph.path g' es v" 
     using assms(2) sp_in_extends[OF assms(2)]
-    by (subst `root g' = root g`)
+    by (subst \<open>root g' = root g\<close>)
     
     moreover
     have "\<forall> es'. Graph.path g' es' v \<longrightarrow> es' =  es"
@@ -102,22 +102,22 @@ proof (intro allI impI)
         then obtain es'' 
         where "es' = es'' @ [e]"
         and   "e \<notin> set es''" 
-        using `Graph.path g' es' v`
+        using \<open>Graph.path g' es' v\<close>
               Graph.sp_through_de_decomp[OF extends_tgt_out_edges[OF assms(2)]]
         by blast
   
         hence "v = tgt e"
-        using `Graph.path g' es' v` 
+        using \<open>Graph.path g' es' v\<close> 
         by (simp add : Graph.sp_append_one)
   
         thus ?thesis 
         using assms(2) 
-              Graph.lst_of_sp_is_vert[OF `Graph.path g es v`] 
+              Graph.lst_of_sp_is_vert[OF \<open>Graph.path g es v\<close>] 
         by simp
       next
         case 2 thus ?thesis 
         using assms 
-              `\<forall> es'. Graph.path g es' v \<longrightarrow> es' = es` `Graph.path g' es' v`
+              \<open>\<forall> es'. Graph.path g es' v \<longrightarrow> es' = es\<close> \<open>Graph.path g' es' v\<close>
         by (auto simp add : Graph.subpath_def vertices_def)
       qed
     qed
@@ -135,7 +135,7 @@ proof (intro allI impI)
   
     hence "Graph.path g' es (src e)" 
     using sp_in_extends[OF assms(2)] 
-    by (subst `root g' = root g`)
+    by (subst \<open>root g' = root g\<close>)
   
     hence "Graph.path g' (es @ [e]) (tgt e)" 
     using assms(2) by (auto simp add : Graph.sp_append_one)
@@ -168,18 +168,18 @@ proof (intro allI impI)
       by blast
   
       hence "Graph.path g' es'' (src e)" 
-      using `Graph.path g' es'  (tgt e)` 
+      using \<open>Graph.path g' es'  (tgt e)\<close> 
       by (auto simp add : Graph.sp_append_one)
   
       hence "Graph.path g es'' (src e)"
-      using assms(2) `e \<notin> set es''` 
+      using assms(2) \<open>e \<notin> set es''\<close> 
       by (auto simp add : Graph.subpath_def vertices_def)
   
       hence "es'' = es" 
-      using `\<forall> as'. Graph.path g as' (src e) \<longrightarrow> as' = es` 
+      using \<open>\<forall> as'. Graph.path g as' (src e) \<longrightarrow> as' = es\<close> 
       by simp
   
-      thus "es' = es @ [e]" using `es' = es'' @ [e]` by simp
+      thus "es' = es @ [e]" using \<open>es' = es'' @ [e]\<close> by simp
     qed
     
     ultimately
@@ -189,9 +189,9 @@ qed
 
 
 
-subsection {* Properties of sub-paths in an extension *}
+subsection \<open>Properties of sub-paths in an extension\<close>
 
-text {* Extending a graph by an edge preserves the existing sub-paths. *}
+text \<open>Extending a graph by an edge preserves the existing sub-paths.\<close>
 
 lemma sp_in_extends_w_subs :
   assumes "extends g a g'"
@@ -200,8 +200,8 @@ lemma sp_in_extends_w_subs :
 using assms by (auto simp add : subpath_def sub_rel_of_def vertices_def)
 
 
-text {* In an extension, the target of the new edge has no out-edges. Thus sub-paths of the 
-extension starting and ending in old vertices are sub-paths of the graph prior to its extension. *}
+text \<open>In an extension, the target of the new edge has no out-edges. Thus sub-paths of the 
+extension starting and ending in old vertices are sub-paths of the graph prior to its extension.\<close>
 
 lemma (in sub_rel_of) sp_from_old_verts_imp_sp_in_old :
   assumes "extends g e g'"
@@ -223,7 +223,7 @@ proof -
     
       ultimately
       have "\<exists> es'. es = es' @ [e] \<and> e \<notin> set es'" 
-      using  assms(4) `e \<in> set es`
+      using  assms(4) \<open>e \<in> set es\<close>
       by (intro sp_through_de_decomp)
     
       then obtain es' where "es = es' @ [e]" "e \<notin> set es'" by blast
@@ -231,7 +231,7 @@ proof -
       hence "tgt e = v2 \<or> (tgt e,v2) \<in> subs\<^sup>+"
       using assms(4) by (simp add : sp_append_one)
   
-      thus ?thesis using `tgt e \<notin> subsumees subs` tranclD[of "tgt e" v2 subs] by force
+      thus ?thesis using \<open>tgt e \<notin> subsumees subs\<close> tranclD[of "tgt e" v2 subs] by force
     qed
 
     thus False using assms(1,3) by simp
@@ -244,7 +244,7 @@ qed
 
 
 
-text {* For the same reason, sub-paths starting at the target of the new edge are empty. *}
+text \<open>For the same reason, sub-paths starting at the target of the new edge are empty.\<close>
 
 lemma (in sub_rel_of) sp_from_tgt_in_extends_is_Nil :
   assumes "extends g e g'"
@@ -256,10 +256,10 @@ using sub_rel_of assms
 by fast
 
 
-text {* Moreover, a sub-path @{term es} starting in another vertex than the target of the new edge 
+text \<open>Moreover, a sub-path @{term es} starting in another vertex than the target of the new edge 
 @{term e} but ending in this target has @{term e} as last element. This occurrence of @{term e} is 
 unique among @{term es}. The prefix of @{term es} preceding @{term e} is a sub-path leading at the 
-source of @{term e} in the original graph. *}
+source of @{term e} in the original graph.\<close>
 
 lemma (in sub_rel_of) sp_to_new_edge_tgt_imp :
   assumes "extends g e g'"
@@ -283,11 +283,11 @@ proof -
 
     moreover
     have "SubRel.subpath g' v es' (src e) subs" 
-    using assms(2) `es = es' @ [e]` by (simp add : sp_append_one)
+    using assms(2) \<open>es = es' @ [e]\<close> by (simp add : sp_append_one)
 
     ultimately 
     show ?thesis 
-    using assms(1) sub_rel_of `e \<notin> set es'`
+    using assms(1) sub_rel_of \<open>e \<notin> set es'\<close>
     unfolding subpath_def by (auto simp add : sub_rel_of_def)
   qed
 

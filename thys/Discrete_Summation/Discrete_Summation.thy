@@ -1,12 +1,12 @@
 (* Author: Florian Haftmann, TU Muenchen *)
 
-section {* Some basic facts about discrete summation *}
+section \<open>Some basic facts about discrete summation\<close>
 
 theory Discrete_Summation
 imports Main
 begin
 
-subsection {* Auxiliary *}
+subsection \<open>Auxiliary\<close>
 
 lemma add_sum_orient:
   "sum f {k..<j} + sum f {l..<k} = sum f {l..<k} + sum f {k..<j}"
@@ -19,7 +19,7 @@ lemma add_sum_int:
   by (simp_all add: sum.union_inter [symmetric] ivl_disj_un)
 
 
-subsection {* The shift operator *}
+subsection \<open>The shift operator\<close>
 
 definition \<Delta> :: "('b::ring_1 \<Rightarrow> 'a::ab_group_add) \<Rightarrow> int \<Rightarrow> 'a"
 where
@@ -67,7 +67,7 @@ lemma \<Delta>_factor:
   by (simp add: \<Delta>_def algebra_simps)
 
 
-subsection {* The formal sum operator *}
+subsection \<open>The formal sum operator\<close>
 
 definition \<Sigma> :: "('b::ring_1 \<Rightarrow> 'a::ab_group_add) \<Rightarrow> int \<Rightarrow> int \<Rightarrow> 'a"
 where
@@ -120,7 +120,7 @@ proof -
 qed
 
 
-subsection {* Fundamental lemmas: The relation between @{term \<Delta>} and @{term \<Sigma>} *}
+subsection \<open>Fundamental lemmas: The relation between @{term \<Delta>} and @{term \<Sigma>}\<close>
 
 lemma \<Delta>_\<Sigma>:
   "\<Delta> (\<Sigma> f j) = f"

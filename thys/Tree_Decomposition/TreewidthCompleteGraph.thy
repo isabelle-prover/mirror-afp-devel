@@ -1,11 +1,11 @@
-section {* Treewidth of Complete Graphs *}
+section \<open>Treewidth of Complete Graphs\<close>
 
 theory TreewidthCompleteGraph
 imports TreeDecomposition begin
 
-text {* As an application of the separator theorem @{text bags_separate}, or more precisely its
-  corollary @{text bag_no_drop}, we show that a complete graph of size @{term "n :: nat"}
-  (a clique) has treewidth @{term "(n::nat)-1"}. *}
+text \<open>As an application of the separator theorem \<open>bags_separate\<close>, or more precisely its
+  corollary \<open>bag_no_drop\<close>, we show that a complete graph of size @{term "n :: nat"}
+  (a clique) has treewidth @{term "(n::nat)-1"}.\<close>
 theorem (in Graph) treewidth_complete_graph:
   assumes "\<And>v w. \<lbrakk> v \<in> V; w \<in> V; v \<noteq> w \<rbrakk> \<Longrightarrow> v\<rightarrow>w"
   shows "treewidth = card V - 1"
@@ -19,18 +19,18 @@ proof-
 
     assume "\<not>?thesis"
     hence "width \<noteq> card V - 1" by (simp add: T(2))
-    text {* Let @{term s} be a bag of maximal size. *}
+    text \<open>Let @{term s} be a bag of maximal size.\<close>
     moreover obtain s where s: "s \<in> V\<^bsub>T\<^esub>" "card (bag s) = max_bag_card"
       using max_bag_card_in_bag_cards \<open>V \<noteq> {}\<close> by fastforce
-    text {* The treewidth cannot be larger than @{term "card V - 1"}, so due to our assumption
-      @{term "width \<noteq> card V - 1" } it must be smaller, hence @{term "card (bag s) < card V"}. *}
+    text \<open>The treewidth cannot be larger than @{term "card V - 1"}, so due to our assumption
+      @{term "width \<noteq> card V - 1" } it must be smaller, hence @{term "card (bag s) < card V"}.\<close>
     ultimately have "card (bag s) < card V" unfolding width_def
       using \<open>V \<noteq> {}\<close> empty_tree_empty_V le_eq_less_or_eq max_bag_card_upper_bound_V by presburger
     then obtain v where v: "v \<in> V" "v \<notin> bag s" by (meson bag_finite card_mono not_less s(1) subsetI)
 
-    text {* There exists a bag containing @{term v}.  We consider the path from @{term s} to
+    text \<open>There exists a bag containing @{term v}.  We consider the path from @{term s} to
       @{term t} and find that somewhere along this path there exists a bag containing
-      @{term "insert v (bag s)"}, which is a contradiction because such a bag would be too big. *}
+      @{term "insert v (bag s)"}, which is a contradiction because such a bag would be too big.\<close>
     obtain t where t: "t \<in> V\<^bsub>T\<^esub>" "v \<in> bag t" using bags_exist v(1) by blast
     with s have "\<exists>t \<in> V\<^bsub>T\<^esub>. insert v (bag s) \<subseteq> bag t" proof (induct "s \<leadsto>\<^bsub>T\<^esub> t" arbitrary: s)
       case Nil thus ?case using T.unique_connecting_path_properties(2) by fastforce
@@ -50,8 +50,8 @@ proof-
         moreover have st_path: "T.path (s \<leadsto>\<^bsub>T\<^esub> t)"
           by (simp add: Cons.prems(1) T.unique_connecting_path_properties(1) t(1))
         ultimately have "s' \<in> V\<^bsub>T\<^esub>" by (metis T.edges_are_in_V(2) T.path_first_edge)
-        text {* Bags can never drop vertices because every vertex has a neighbor in @{term G} which
-          has not yet been visited. *}
+        text \<open>Bags can never drop vertices because every vertex has a neighbor in @{term G} which
+          has not yet been visited.\<close>
         have s_in_s': "bag s \<subseteq> bag s'" proof
           fix w assume "w \<in> bag s"
           moreover have "s \<rightarrow>\<^bsub>T\<^esub> s'" using s' st_path by (metis T.walk_first_edge)
@@ -61,7 +61,7 @@ proof-
           ultimately show "w \<in> bag s'"
             using bag_no_drop Cons.prems(1,4) \<open>v \<notin> bag s\<close> assms bags_in_V v(1) by blast
         qed
-        text {* Bags can never gain vertices because we started with a bag of maximal size. *}
+        text \<open>Bags can never gain vertices because we started with a bag of maximal size.\<close>
         moreover have "card (bag s') \<le> card (bag s)" proof-
           have "card (bag s') \<le> max_bag_card" unfolding max_bag_card_def
             using Max_ge \<open>s' \<in> V\<^bsub>T\<^esub>\<close> bag_cards_finite by blast

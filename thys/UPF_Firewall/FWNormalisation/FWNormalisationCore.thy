@@ -35,14 +35,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Policy Normalisation: Core Definitions *}
+subsection \<open>Policy Normalisation: Core Definitions\<close>
 theory
   FWNormalisationCore
 imports
   "../PacketFilter/PacketFilter"
 begin
 
-text{* 
+text\<open>
   This theory contains all the definitions used for policy normalisation as described 
   in~\cite{brucker.ea:icst:2010,brucker.ea:formal-fw-testing:2014}.
 
@@ -71,17 +71,17 @@ text{*
   normalization procedure does not aim to minimize the number of rules. While it does remove 
   unnecessary ones, it also adds new ones, enabling a policy to be split into several independent
   parts.
-*}
+\<close>
 
-text{* 
+text\<open>
   Policy transformations are functions that map policies to policies.  We decided to represent
   policy transformations as \emph{syntactic rules}; this choice paves the way for expressing the 
   entire normalisation process inside HOL by functions manipulating abstract policy syntax. 
-*}
+\<close>
 
 
-subsubsection{* Basics *}
-text{* We define a very simple policy language: *}
+subsubsection\<open>Basics\<close>
+text\<open>We define a very simple policy language:\<close>
 
 datatype ('\<alpha>,'\<beta>) Combinators = 
   DenyAll
@@ -89,18 +89,18 @@ datatype ('\<alpha>,'\<beta>) Combinators =
   | AllowPortFromTo '\<alpha> '\<alpha> '\<beta> 
   | Conc "(('\<alpha>,'\<beta>) Combinators)" "(('\<alpha>,'\<beta>) Combinators)" (infixr "\<oplus>" 80)
 
-text{* 
+text\<open>
   And define the semantic interpretation of it. For technical reasons, we fix here the type to 
   policies over IntegerPort addresses. However, we could easily provide definitions for other
   address types as well, using a generic constants for the type definition and a primitive 
   recursive definition for each desired address model.  
-*}
+\<close>
 
-subsubsection{* Auxiliary definitions and functions. *}
-text{*
+subsubsection\<open>Auxiliary definitions and functions.\<close>
+text\<open>
   This section defines several functions which are useful later for the combinators, invariants, 
   and proofs. 
-*}
+\<close>
   
 fun srcNet where 
  "srcNet (DenyAllFromTo x y) = x"
@@ -153,10 +153,10 @@ fun bothNet where
 |"bothNet (AllowPortFromTo a b p) = {a,b}"
 |"bothNet (v \<oplus> va) = undefined "
 
-text{* 
+text\<open>
   $Nets\_List$ provides from a list of rules a list where the entries are the appearing sets of 
   source and destination network of each rule. 
-*}
+\<close>
 
 definition Nets_List 
   where 
@@ -209,21 +209,21 @@ fun firstList where
  "firstList (x#xs) = (first_bothNet x)"
 |"firstList [] = {}"
 
-subsubsection{* Invariants *}
+subsubsection\<open>Invariants\<close>
 
-text{* If there is a DenyAll, it is at the first position *}
+text\<open>If there is a DenyAll, it is at the first position\<close>
 fun wellformed_policy1:: "(('\<alpha>, '\<beta>) Combinators) list \<Rightarrow> bool" where 
   "wellformed_policy1 [] = True"
 | "wellformed_policy1 (x#xs) = (DenyAll \<notin> (set xs))" 
 
-text{* There is a DenyAll at the first position *}
+text\<open>There is a DenyAll at the first position\<close>
 fun wellformed_policy1_strong:: "(('\<alpha>, '\<beta>) Combinators) list \<Rightarrow> bool"
 where 
   "wellformed_policy1_strong [] = False"
 | "wellformed_policy1_strong (x#xs) = (x=DenyAll \<and> (DenyAll \<notin> (set xs)))" 
 
 
-text{* All two networks are either disjoint or equal. *}
+text\<open>All two networks are either disjoint or equal.\<close>
 definition netsDistinct where "netsDistinct a b = (\<not> (\<exists> x. x \<sqsubset> a \<and> x \<sqsubset> b))"
 
 definition twoNetsDistinct where
@@ -237,7 +237,7 @@ definition disjSD_2 where
  "disjSD_2 x y = (\<forall> a b c d. ((a,b)\<in>sdnets x \<and>  (c,d) \<in>sdnets y \<longrightarrow>
       (twoNetsDistinct a b c d \<and> twoNetsDistinct a b d c)))"
 
-text{* The policy is given as a list of single rules. *}
+text\<open>The policy is given as a list of single rules.\<close>
 fun singleCombinators where 
 "singleCombinators [] = True"
 |"singleCombinators ((x\<oplus>y)#xs) = False"
@@ -246,7 +246,7 @@ fun singleCombinators where
 definition onlyTwoNets where
  "onlyTwoNets x = ((\<exists> a b. (sdnets x = {(a,b)})) \<or> (\<exists> a b. sdnets x = {(a,b),(b,a)}))" 
 
-text{* Each entry of the list contains rules between two networks only. *}
+text\<open>Each entry of the list contains rules between two networks only.\<close>
 fun OnlyTwoNets where 
  "OnlyTwoNets (DenyAll#xs) = OnlyTwoNets xs"
 |"OnlyTwoNets (x#xs) = (onlyTwoNets x \<and> OnlyTwoNets xs)"
@@ -274,12 +274,12 @@ fun NetsCollected2 where
                            NetsCollected2 xs))"
 |"NetsCollected2 [] = True"
 
-subsubsection{* Transformations *}
+subsubsection\<open>Transformations\<close>
 
-text {*
+text \<open>
   The following two functions transform a policy into a list of single rules and vice-versa (by 
   staying on the combinator level).
-*}
+\<close>
 
 fun policy2list::"('\<alpha>, '\<beta>) Combinators \<Rightarrow>
                  (('\<alpha>, '\<beta>) Combinators) list" where
@@ -292,7 +292,7 @@ fun list2FWpolicy::"(('\<alpha>, '\<beta>) Combinators) list \<Rightarrow>
 |"list2FWpolicy (x#[]) = x"
 |"list2FWpolicy (x#y) = x \<oplus> (list2FWpolicy y)"
 
-text{* Remove all the rules appearing before a DenyAll. There are two alternative versions. *}
+text\<open>Remove all the rules appearing before a DenyAll. There are two alternative versions.\<close>
 
 fun removeShadowRules1 where
   "removeShadowRules1 (x#xs) = (if (DenyAll \<in> set xs) 
@@ -311,9 +311,9 @@ definition removeShadowRules1_alternative where
    "removeShadowRules1_alternative p =
                          rev (removeShadowRules1_alternative_rev (rev p))"
 
-text{* 
+text\<open>
   Remove all the rules which allow a port, but are shadowed by a deny between these subnets.
- *}
+\<close>
 
 fun removeShadowRules2::  "(('\<alpha>, '\<beta>) Combinators) list \<Rightarrow>
                           (('\<alpha>, '\<beta>) Combinators) list"
@@ -325,10 +325,10 @@ where
 | "removeShadowRules2 (x#y) = x#(removeShadowRules2 y)"
 | "removeShadowRules2 [] = []"
 
-text{* 
+text\<open>
   Sorting a policies:  We first need to define an ordering on rules.  This ordering depends 
    on the $Nets\_List$ of a policy.  
-*}
+\<close>
 
 fun smaller :: "('\<alpha>, '\<beta>) Combinators \<Rightarrow> 
                 ('\<alpha>, '\<beta>) Combinators \<Rightarrow> 
@@ -343,7 +343,7 @@ where
                     else
                         (position (bothNet x) l <= position (bothNet y) l)))"
 
-text{* We provide two different sorting algorithms: Quick Sort (qsort) and Insertion Sort (sort) *}
+text\<open>We provide two different sorting algorithms: Quick Sort (qsort) and Insertion Sort (sort)\<close>
 
 fun qsort where
   "qsort [] l     = []"
@@ -377,10 +377,10 @@ fun separate where
                    else (x#(separate(y#z))))"
 |"separate x = x"                
 
-text {*
+text \<open>
   Insert the DenyAllFromTo rules, such that traffic between two networks can be tested 
   individually.
-*}
+\<close>
 
 fun  insertDenies where
  "insertDenies (x#xs) = (case x of DenyAll \<Rightarrow> (DenyAll#(insertDenies xs))
@@ -389,11 +389,11 @@ fun  insertDenies where
                                 (insertDenies xs))"
 | "insertDenies [] = []"
 
-text{* 
+text\<open>
   Remove duplicate rules. This is especially necessary as insertDenies might have inserted 
   duplicate rules. The second function is supposed to work on a list of policies. Only
   rules which are duplicated within the same policy are removed.  
-*}
+\<close>
 
 
 fun removeDuplicates where
@@ -405,7 +405,7 @@ fun removeAllDuplicates where
  "removeAllDuplicates (x#xs) = ((removeDuplicates (x))#(removeAllDuplicates xs))"
 |"removeAllDuplicates x = x"
 
-text {* Insert a DenyAll at the beginning of a policy. *}
+text \<open>Insert a DenyAll at the beginning of a policy.\<close>
 fun insertDeny where 
  "insertDeny (DenyAll#xs) = DenyAll#xs"
 |"insertDeny xs = DenyAll#xs"
@@ -423,12 +423,12 @@ fun list2policyR::"(('\<alpha>, '\<beta>) Combinators) list \<Rightarrow>
 |"list2policyR [] = undefined "
 
 
-text{* 
+text\<open>
   We provide the definitions for two address representations. 
-*}
+\<close>
 
 
-subsubsection{* IntPort *}
+subsubsection\<open>IntPort\<close>
 
 fun C :: "(adr\<^sub>i\<^sub>p net, port) Combinators \<Rightarrow> (adr\<^sub>i\<^sub>p,DummyContent) packet \<mapsto> unit"
 where
@@ -455,20 +455,20 @@ lemma check: "rev (policy2list (rotatePolicy p)) = policy2list p"
   by (simp_all) 
 
 
-text{* 
+text\<open>
   All rules appearing at the left of a DenyAllFromTo, have disjunct domains from it 
   (except DenyAll). 
-*}
+\<close>
 fun (sequential) wellformed_policy2 where
   "wellformed_policy2 [] = True"
 | "wellformed_policy2 (DenyAll#xs) = wellformed_policy2 xs"
 | "wellformed_policy2 (x#xs) = ((\<forall> c a b. c = DenyAllFromTo a b \<and> c \<in> set xs \<longrightarrow>
                  Map.dom (C x) \<inter> Map.dom (C c) = {}) \<and> wellformed_policy2 xs)"
 
-text{* 
+text\<open>
   An allow rule is disjunct with all rules appearing at the right of it. This invariant is not 
   necessary as it is a consequence from others, but facilitates some proofs. 
-*}
+\<close>
 
 fun (sequential) wellformed_policy3::"((adr\<^sub>i\<^sub>p net,port) Combinators) list \<Rightarrow> bool" where
   "wellformed_policy3 [] = True"
@@ -515,16 +515,16 @@ definition
     (qsort (removeShadowRules2 (remdups ((rm_MT_rules C) (insertDeny
     (removeShadowRules1 (policy2list p)))))) ((l)))))"
 
-text{* 
+text\<open>
   Of course, normalize is equal to normalize', the latter looks nicer though. 
-*}
+\<close>
 lemma "normalize = normalize'"
   by (rule ext, simp add: normalize_def normalize'_def sort'_def)
 
 declare C.simps [simp del]
 
 
-subsubsection{* TCP\_UDP\_IntegerPort *}
+subsubsection\<open>TCP\_UDP\_IntegerPort\<close>
 
 fun Cp :: "(adr\<^sub>i\<^sub>p\<^sub>p net, protocol \<times> port) Combinators \<Rightarrow> 
           (adr\<^sub>i\<^sub>p\<^sub>p,DummyContent) packet \<mapsto> unit"
@@ -543,20 +543,20 @@ where
 |"Dp (AllowPortFromTo x y p) = Cp (AllowPortFromTo x y p)"
 |"Dp  (x \<oplus> y) =  Cp (y \<oplus> x)"
 
-text{* 
+text\<open>
   All rules appearing at the left of a DenyAllFromTo, have disjunct domains from it 
   (except DenyAll). 
-*}
+\<close>
 fun (sequential) wellformed_policy2Pr where
   "wellformed_policy2Pr [] = True"
 | "wellformed_policy2Pr (DenyAll#xs) = wellformed_policy2Pr xs"
 | "wellformed_policy2Pr (x#xs) = ((\<forall> c a b. c = DenyAllFromTo a b \<and> c \<in> set xs \<longrightarrow>
                  Map.dom (Cp x) \<inter> Map.dom (Cp c) = {}) \<and> wellformed_policy2Pr xs)"
 
-text{* 
+text\<open>
   An allow rule is disjunct with all rules appearing at the right of it. This invariant is not
   necessary as it is a consequence from others, but facilitates some proofs. 
-*}
+\<close>
 
 fun (sequential) wellformed_policy3Pr::"((adr\<^sub>i\<^sub>p\<^sub>p net, protocol \<times> port) Combinators) list \<Rightarrow> bool" where
   "wellformed_policy3Pr [] = True"
@@ -605,17 +605,17 @@ definition
     (qsort (removeShadowRules2 (remdups ((rm_MT_rules Cp) (insertDeny
     (removeShadowRules1 (policy2list p)))))) ((l)))))"
 
-text{* 
+text\<open>
   Of course, normalize is equal to normalize', the latter looks nicer though. 
-*}
+\<close>
 lemma "normalizePr = normalizePr'"
   by (rule ext, simp add: normalizePr_def normalizePr'_def sort'_def)
 
 
-text{* 
+text\<open>
   The following definition helps in creating the test specification for the individual parts 
   of a normalized policy. 
-*}
+\<close>
 definition makeFUTPr where 
    "makeFUTPr FUT p x n = 
      (packet_Nets x (fst (normBothNets (bothNets p)!n))  

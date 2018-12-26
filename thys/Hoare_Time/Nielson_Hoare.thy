@@ -10,7 +10,7 @@ type_synonym lvname = string
 type_synonym assn2 = "(lvname \<Rightarrow> nat) \<Rightarrow> state \<Rightarrow> bool"
 type_synonym tbd = "state \<Rightarrow> nat" (* time bound *)
 
-subsection {* The support of an assn2 *}
+subsection \<open>The support of an assn2\<close>
 
 definition support :: "assn2 \<Rightarrow> string set" where
 "support P = {x. \<exists>l1 l2 s. (\<forall>y. y \<noteq> x \<longrightarrow> l1 y = l2 y) \<and> P l1 s \<noteq> P l2 s}"
@@ -84,7 +84,7 @@ conseq: "\<lbrakk> \<exists>k>0. \<forall>l s. P' l s \<longrightarrow> ( e s \<
            \<turnstile>\<^sub>1 {P'}c{e' \<Down> Q'}"  
   
   
-text{* Derived Rules: *}
+text\<open>Derived Rules:\<close>
 
 lemma conseq_old: "\<lbrakk>\<exists>k>0. \<forall>l s. P' l s \<longrightarrow> (P l s \<and> ( e' s \<le>  k * (e s))); \<turnstile>\<^sub>1 {P}c{ e' \<Down>  Q}; \<forall>l s. Q l s \<longrightarrow> Q' l s  \<rbrakk> \<Longrightarrow>
            \<turnstile>\<^sub>1 {P'}c{e \<Down> Q'}"
@@ -117,7 +117,7 @@ by (simp )
  
 subsection "Soundness"
   
-text{* The soundness theorem: *}
+text\<open>The soundness theorem:\<close>
 
 theorem hoare1_sound: "\<turnstile>\<^sub>1 {P}c{e \<Down> Q}  \<Longrightarrow>  \<Turnstile>\<^sub>1 {P}c{e \<Down> Q}"
 apply(unfold hoare1_valid_def)

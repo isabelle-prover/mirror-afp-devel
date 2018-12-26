@@ -179,7 +179,7 @@ next
     with \<open>effect (for [i ..< j] f) h h' u\<close> obtain h'' r
       where *: "effect (f i) h h'' r" and **: "effect (for [Suc i ..< j] f) h'' h' u"
       by (auto elim: effect_elims)
-    from Suc(6) [OF _ _ \<open>I i h\<close> *] and `i < j`
+    from Suc(6) [OF _ _ \<open>I i h\<close> *] and \<open>i < j\<close>
       have "I (Suc i) h''" by auto
     show ?thesis
       by (rule Suc(1) [OF \<open>k = j - Suc i\<close> \<open>Suc i \<le> j\<close> ** \<open>I (Suc i) h''\<close> Suc(6)]) auto

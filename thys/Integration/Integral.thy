@@ -2,22 +2,22 @@
 
     Stefan Richter 2002 *)
 
-section {* The three-step approach \label{sec:stepwise-approach} *}
+section \<open>The three-step approach \label{sec:stepwise-approach}\<close>
 
 theory Integral
 imports RealRandVar
 begin
   (*simple function integral set*)
-text {*Having learnt from my failures, we take the safe and clean way
+text \<open>Having learnt from my failures, we take the safe and clean way
   of Heinz Bauer \cite{Bauer}. It proceeds as outlined in the
   introduction. In three steps, we fix the integral for elementary
   (``step-'')functions, for limits of these, and finally for
   differences between such limits. 
-*}
+\<close>
 
-subsection {* Simple functions \label{sec:simple-fun} *}
+subsection \<open>Simple functions \label{sec:simple-fun}\<close>
 
-text {*
+text \<open>
   A simple function is a finite sum of characteristic functions, each
   multiplied with a nonnegative constant. These functions must be
   parametrized by measurable sets. Note that to check this condition,
@@ -37,7 +37,7 @@ text {*
   function integral set} for any function and measurable sets/measure
   pair by means of an inductive set definition containing but one
   introduction rule.
-  *}
+\<close>
 
 inductive_set
   sfis:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real set"
@@ -49,7 +49,7 @@ inductive_set
   \<Longrightarrow> (\<Sum>i\<in>S. x i * measure M (A i)) \<in> sfis f M"
   (*S may not be polymorphic*)
 
-text{*As you can see we require two extra conditions, and they amount
+text\<open>As you can see we require two extra conditions, and they amount
   to the sets being a partition of the universe. We say that a
   function is in normal form if it is represented this way. Normal
   forms are only needed to show additivity and monotonicity of simple
@@ -57,7 +57,7 @@ text{*As you can see we require two extra conditions, and they amount
   get rid of the normality condition. 
 
   More precisely, normal forms
-  play a central role in the @{text sfis_present} lemma. For two
+  play a central role in the \<open>sfis_present\<close> lemma. For two
   simple functions with different underlying partitions it states
   the existence of a common finer-grained partition that can be used
   to represent the functions uniformly. The proof is remarkably
@@ -74,7 +74,7 @@ text{*As you can see we require two extra conditions, and they amount
   rationals mentioned in \ref{sec:realrandvar}.
   It might have been still easier if index sets were
   polymorphic in our integral definition, permitting pairs to be
-  formed when necessary, but the logic doesn't allow for this.*}
+  formed when necessary, but the logic doesn't allow for this.\<close>
   
 
 
@@ -254,7 +254,7 @@ proof cases
       and Bun: "(\<Union>i\<in>S. B i) = UNIV" 
       and x: "nonnegative x" and y: "nonnegative y"
       by simp_all
-txt{*\nopagebreak*}
+txt\<open>\nopagebreak\<close>
     define C where "C = (\<lambda>(i,j). A i \<inter> B j) \<circ> prod_decode"
     define z1 where "z1 k = x (fst (prod_decode k))" for k
     define z2 where "z2 k = y (snd (prod_decode k))" for k
@@ -447,7 +447,7 @@ txt{*\nopagebreak*}
         by simp
       
       note f g a b Kun K
-    }  txt{*\nopagebreak*}
+    }  txt\<open>\nopagebreak\<close>
     hence f: "f = (\<lambda>t. (\<Sum>k\<in>K. z1 k * \<chi> (C k) t))" 
       and g: "g = (\<lambda>t. (\<Sum>k\<in>K. z2 k * \<chi> (C k) t))" 
       and a: "a = (\<Sum>k\<in>K. z1 k * measure M (C k))" 
@@ -491,8 +491,8 @@ txt{*\nopagebreak*}
   qed
 qed
 
-text{*Additivity and monotonicity are now almost obvious, the latter
-  trivially implying uniqueness.*} 
+text\<open>Additivity and monotonicity are now almost obvious, the latter
+  trivially implying uniqueness.\<close> 
 
 lemma assumes ms: "measure_space M" and a: "a \<in> sfis f M" and b: "b \<in> sfis g M"
   shows sfis_add: "a+b \<in> sfis (\<lambda>w. f w + g w) M" 
@@ -551,7 +551,7 @@ qed
 lemma assumes ms: "measure_space M" and a: "a \<in> sfis f M" 
   and b: "b \<in> sfis g M" and fg: "f\<le>g"
   shows sfis_mono: "a \<le> b" 
-proof - txt{*\nopagebreak*}
+proof - txt\<open>\nopagebreak\<close>
   from ms a b have 
     "\<exists> z1 z2 C K. f = (\<lambda>t. \<Sum>i\<in>(K::nat set). z1 i * \<chi> (C i) t) \<and> 
     g = (\<lambda>t. \<Sum>i\<in>K. z2 i * \<chi> (C i) t) \<and> a = (\<Sum>i\<in>K. z1 i * measure M (C i))
@@ -631,11 +631,11 @@ proof -
   thus ?thesis by simp
 qed
 
-text {*The integral of characteristic functions, as well as the effect of
+text \<open>The integral of characteristic functions, as well as the effect of
   multiplication with a constant, follows directly from the
     definition. Together with a generalization of the addition theorem
     to sums, a less restrictive introduction rule emerges, making
-    normal forms obsolete. It is only valid in measure spaces though.*}
+    normal forms obsolete. It is only valid in measure spaces though.\<close>
 
 lemma sfis_char:
   assumes ms: "measure_space M" and mA: "A \<in> measurable_sets M" 
@@ -744,9 +744,9 @@ proof -
     by (simp add: sfis_sum)
 qed
 
-text{*That is nearly all there is to know about simple function
+text\<open>That is nearly all there is to know about simple function
   integral sets. It will be useful anyway to have the next two facts
-  available.*}
+  available.\<close>
 
 lemma sfis_nn:
   assumes f: "a \<in> sfis f M"
@@ -815,19 +815,18 @@ proof (cases)
     by simp
 qed(*>*)(*>*)(*nonnegative function integral set*)(*>*)
 
-subsection {* Nonnegative Functions *}
+subsection \<open>Nonnegative Functions\<close>
 
-text {*
-  \label{nnfis}There is one more important fact about @{text sfis}, easily the
+text \<open>
+  \label{nnfis}There is one more important fact about \<open>sfis\<close>, easily the
   hardest one to see. It is about the relationship with monotone
-  convergence and paves the way for a sensible definition of @{text
-  nnfis}, the nonnegative function integral sets, enabling
+  convergence and paves the way for a sensible definition of \<open>nnfis\<close>, the nonnegative function integral sets, enabling
   monotonicity and thus uniqueness. A reasonably concise formal proof could
   fortunately be achieved in spite of the nontrivial ideas involved
   --- compared for instance to the intuitive but hard-to-formalize
-  @{text sfis_present}. A small lemma is needed to ensure that the
+  \<open>sfis_present\<close>. A small lemma is needed to ensure that the
   inequation, which depends on an arbitrary $z$ strictly between
-  $0$ and $1$, carries over to $z=1$, thereby eliminating $z$ in the end.  *}
+  $0$ and $1$, carries over to $z=1$, thereby eliminating $z$ in the end.\<close>
 
 lemma real_le_mult_sustain:
   assumes zr: "\<And>z. \<lbrakk>0<z; z<1\<rbrakk> \<Longrightarrow> z * r \<le> y"
@@ -1043,13 +1042,13 @@ proof cases
   thus ?thesis by (rule real_le_mult_sustain)
 qed
 
-text {*Now we are ready for the second step. The integral of a
+text \<open>Now we are ready for the second step. The integral of a
   monotone limit of functions is the limit of their
   integrals. Note that this last limit has to exist in the
   first place, since we decided not to use infinite values. Backed
   by the last theorem and the preexisting knowledge about limits, the
   usual basic properties are
-  straightforward. *}
+  straightforward.\<close>
 
 inductive_set
   nnfis:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> real set"
@@ -1142,10 +1141,9 @@ proof -
 qed(*>*)
 
 
-text{* There is much more to prove about nonnegative integration. Next
+text\<open>There is much more to prove about nonnegative integration. Next
   up is a classic theorem by Beppo Levi, the monotone convergence
-  theorem. In essence, it says that the introduction rule for @{text
-  nnfis} holds not only for sequences of simple functions, but for any
+  theorem. In essence, it says that the introduction rule for \<open>nnfis\<close> holds not only for sequences of simple functions, but for any
   sequence of nonnegative integrable functions. It should be mentioned that this theorem cannot be
   formulated for the Riemann integral. We prove it by
   exhibiting a sequence of simple functions that converges to the same
@@ -1155,7 +1153,7 @@ text{* There is much more to prove about nonnegative integration. Next
   The construction and properties of the sequence are slightly intricate. By definition, for any $f_n$ in the original sequence,
   there is a sequence $(u_{m n})_{m\in\mathbb{N}}$ of simple functions converging to it.   
   The $n$th element of the new sequence is the upper closure of the
-  $n$th elements of the first $n$ sequences. *}
+  $n$th elements of the first $n$ sequences.\<close>
 
 definition (*The upper closure?*)
   upclose:: "('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real)" where
@@ -1457,8 +1455,8 @@ proof -
     by simp
 qed
 
-text{*Establishing that only nonnegative functions may arise this way
-  is a triviality. *}
+text\<open>Establishing that only nonnegative functions may arise this way
+  is a triviality.\<close>
 
 lemma nnfis_nn: assumes "a \<in> nnfis f M"
   shows "nonnegative f" (*<*)using assms
@@ -1475,13 +1473,13 @@ proof cases
   } thus ?thesis by (simp add: nonnegative_def)
 qed(*>*)(*>*)
 
-subsection {* Integrable Functions *}
+subsection \<open>Integrable Functions\<close>
 
-text{*    
+text\<open>
   Before we take the final step of defining integrability and the
   integral operator, we should first clarify what kind of functions we
   are able to integrate up to now. It is easy to see that all nonnegative integrable
-  functions are random variables. *} 
+  functions are random variables.\<close> 
 
 lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f:(*>*) "a \<in> nnfis f M"
   shows nnfis_rv: "f \<in> rv M" (*<*)using f
@@ -1500,7 +1498,7 @@ proof (cases)
     by (rule mon_conv_rv)
 qed(*>*)
 
-text{*The converse does not hold of course, since there are measurable
+text\<open>The converse does not hold of course, since there are measurable
   functions whose integral is infinite. Regardless, it is possible to
   approximate any measurable function using simple
   step-functions. This means that all nonnegative random variables are quasi
@@ -1508,7 +1506,7 @@ text{*The converse does not hold of course, since there are measurable
   insight that a nonnegative function is integrable if and only if it is
   measurable and the integrals of the simple functions that
   approximate it converge monotonically. Technically, the proof is rather
-  complex, involving many properties of real numbers.*}(*<*)
+  complex, involving many properties of real numbers.\<close>(*<*)
 
 
 
@@ -1847,8 +1845,8 @@ lemma assumes (*<*)ms:(*>*) "measure_space M" and (*<*)f(*>*): "f \<in> rv M" an
 qed(*>*)
 
 
-text{*The following dominated convergence theorem is an easy
-  corollary. It can be effectively applied to show integrability.*}
+text\<open>The following dominated convergence theorem is an easy
+  corollary. It can be effectively applied to show integrability.\<close>
 
 corollary assumes ms: "measure_space M" and f: "f \<in> rv M" 
   and b: "b \<in> nnfis g M" and fg: "f\<le>g" and nn: "nonnegative f"  
@@ -1888,8 +1886,8 @@ proof (cases)
     by fast
 qed
 
-text{* Speaking all the time about integrability, it is time to define
-  it at last. *}
+text\<open>Speaking all the time about integrability, it is time to define
+  it at last.\<close>
 
 definition
   integrable:: "('a \<Rightarrow> real) \<Rightarrow> ('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool" where
@@ -1903,7 +1901,7 @@ definition
   "integrable f M \<Longrightarrow> \<integral> f \<partial>M = (THE i. i \<in> nnfis (pp f) M) -
   (THE j. j \<in> nnfis (np f) M)" 
 
-text{* So the final step is done, the integral defined. The theorems
+text\<open>So the final step is done, the integral defined. The theorems
   we are already used to prove from the
   earlier stages are still missing. Only now there are always two properties to be
   shown: integrability and the value of the integral. Isabelle makes
@@ -1911,7 +1909,7 @@ text{* So the final step is done, the integral defined. The theorems
   user may derive the statement he desires. Two useful lemmata follow. They
   help lifting nonnegative function integral sets to integrals
   proper. Notice how the dominated convergence theorem from above is
-  employed in the latter.*}
+  employed in the latter.\<close>
 
 lemma nnfis_integral:
   assumes nn: "a \<in> nnfis f M" and ms: "measure_space M"
@@ -2007,9 +2005,9 @@ proof -
     by (simp add: integral_def)
 qed
 
-text{*Armed with these, the standard integral behavior should not be
+text\<open>Armed with these, the standard integral behavior should not be
   hard to derive. Mind that integrability always implies a
-  measure space, just like random variables did in \ref{sec:realrandvar}.*}
+  measure space, just like random variables did in \ref{sec:realrandvar}.\<close>
 
 theorem assumes (*<*)int:(*>*) "integrable f M"
   shows integrable_rv: "f \<in> rv M"
@@ -2216,9 +2214,9 @@ theorem assumes aeq: "M-a.e. (\<lambda>w. f w = g w)"
   oops
  *)
    
-text{*To try out our definitions in an application, only one more
+text\<open>To try out our definitions in an application, only one more
   theorem is missing. The famous Markov--Chebyshev inequation is not
-  difficult to arrive at using the basic integral properties. *}
+  difficult to arrive at using the basic integral properties.\<close>
 
 theorem assumes int: "integrable f M" and a: "0<a" and intp: "integrable (\<lambda>x. \<bar>f x\<bar> ^ n) M"
   shows markov_ineq: "law M f {a..} \<le>  \<integral> (\<lambda>x. \<bar>f x\<bar> ^ n) \<partial>M / (a^n)"

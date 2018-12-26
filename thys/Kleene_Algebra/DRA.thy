@@ -4,16 +4,16 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Demonic Refinement Algebras *}
+section \<open>Demonic Refinement Algebras\<close>
 
 theory DRA
   imports Kleene_Algebra 
 begin
 
-text {*
+text \<open>
   A demonic refinement algebra *DRA)~\cite{vonwright04refinement} is a Kleene algebra without right annihilation plus 
   an operation for possibly infinite iteration.
-*}
+\<close>
 class dra = kleene_algebra_zerol +
   fixes strong_iteration :: "'a \<Rightarrow> 'a" ("_\<^sup>\<infinity>" [101] 100)
   assumes iteration_unfoldl [simp] : "1 + x \<cdot> x\<^sup>\<infinity> = x\<^sup>\<infinity>"
@@ -21,11 +21,11 @@ class dra = kleene_algebra_zerol +
   and isolation [simp]: "x\<^sup>\<star> + x\<^sup>\<infinity> \<cdot> 0 = x\<^sup>\<infinity>"
 begin
 
-text {* $\top$ is an abort statement, defined as an infinite skip. It is the maximal element of any DRA. *}
+text \<open>$\top$ is an abort statement, defined as an infinite skip. It is the maximal element of any DRA.\<close>
 
 abbreviation top_elem :: "'a" ("\<top>") where "\<top> \<equiv> 1\<^sup>\<infinity>"
 
-text {* Simple/basic lemmas about the iteration operator *}
+text \<open>Simple/basic lemmas about the iteration operator\<close>
 
 lemma iteration_refl: "1 \<le> x\<^sup>\<infinity>"
   using local.iteration_unfoldl local.order_prop by blast
@@ -149,7 +149,7 @@ lemma sup_id_top: "1 \<le> y \<Longrightarrow> y \<cdot> \<top> = \<top>"
 lemma iteration_top [simp]: "x\<^sup>\<infinity> \<cdot> \<top> = \<top>"
   by (simp add: iteration_refl sup_id_top)
 
-text {* Next, we prove some simulation laws for data refinement. *}
+text \<open>Next, we prove some simulation laws for data refinement.\<close>
 
 lemma iteration_sim: "z \<cdot> y \<le> x \<cdot> z \<Longrightarrow> z \<cdot> y\<^sup>\<infinity> \<le> x\<^sup>\<infinity> \<cdot> z"
 proof -
@@ -162,13 +162,13 @@ proof -
     by (simp add: local.coinduction mult_assoc)
 qed
 
-text {* Nitpick gives a counterexample to the dual simulation law. *}
+text \<open>Nitpick gives a counterexample to the dual simulation law.\<close>
 
 lemma "y \<cdot> z \<le> z \<cdot> x \<Longrightarrow> y\<^sup>\<infinity> \<cdot> z \<le> z \<cdot> x\<^sup>\<infinity>"
 (*nitpick [expect=genuine]*)
 oops
   
-text {* Next, we prove some sliding laws. *}
+text \<open>Next, we prove some sliding laws.\<close>
 
 lemma iteration_slide_var: "x \<cdot> (y \<cdot> x)\<^sup>\<infinity> \<le> (x \<cdot> y)\<^sup>\<infinity> \<cdot> x"
   by (simp add: iteration_sim mult_assoc)
@@ -191,7 +191,7 @@ lemma iteration_slide: "x \<cdot> (y \<cdot> x)\<^sup>\<infinity> = (x \<cdot> y
 lemma star_iteration_slide [simp]: " y\<^sup>\<star> \<cdot> (x\<^sup>\<star> \<cdot> y)\<^sup>\<infinity> = (x\<^sup>\<star> \<cdot> y)\<^sup>\<infinity>"
   by (metis iteration_star2 local.conway.dagger_unfoldl_distr local.join.sup.orderE local.mult_isor local.star_invol local.star_subdist local.star_trans_eq)
 
-text {* The following laws are called denesting laws. *}
+text \<open>The following laws are called denesting laws.\<close>
 
 lemma iteration_sub_denest: "(x + y)\<^sup>\<infinity> \<le> x\<^sup>\<infinity> \<cdot> (y \<cdot> x\<^sup>\<infinity>)\<^sup>\<infinity>"
 proof -
@@ -249,7 +249,7 @@ proof (rule antisym)
     by (simp add: local.coinduction) 
 qed
 
-text {* Now we prove separation laws for reasoning about distributed systems in the context of action systems. *}
+text \<open>Now we prove separation laws for reasoning about distributed systems in the context of action systems.\<close>
 
 lemma iteration_sep: "y \<cdot> x \<le> x \<cdot> y \<Longrightarrow> (x + y)\<^sup>\<infinity> = x\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>"
 proof -
@@ -302,7 +302,7 @@ proof -
     by (metis assms(3) distrib_left mult.assoc add_iso)
   also have "... \<le> (x + y\<^sup>\<star> \<cdot> z) \<cdot> y\<^sup>\<star> + y \<cdot> y\<^sup>\<star> \<cdot> z" 
     by (metis star_ref join.sup.mono eq_refl mult_1_left mult_isor)
-  also have "... \<le> (x + y\<^sup>\<star> \<cdot> z) \<cdot> y\<^sup>\<star> + y\<^sup>\<star> \<cdot> z  \<cdot> y\<^sup>\<star>" using `y \<cdot> y\<^sup>\<star> \<cdot> z \<le> y\<^sup>\<star> \<cdot> z \<cdot> y\<^sup>\<star>`
+  also have "... \<le> (x + y\<^sup>\<star> \<cdot> z) \<cdot> y\<^sup>\<star> + y\<^sup>\<star> \<cdot> z  \<cdot> y\<^sup>\<star>" using \<open>y \<cdot> y\<^sup>\<star> \<cdot> z \<le> y\<^sup>\<star> \<cdot> z \<cdot> y\<^sup>\<star>\<close>
     by (metis add.commute add_iso)
   finally have "y \<cdot> (x + y\<^sup>\<star> \<cdot> z) \<le> (x + y\<^sup>\<star> \<cdot> z) \<cdot> y\<^sup>\<star>"
     by (metis add.commute add_idem' add.left_commute distrib_right)
@@ -310,7 +310,7 @@ proof -
     by (metis star_ref join.sup.mono eq_refl mult_1_left mult_isor iteration_iso)  
   moreover have "... = (x + y\<^sup>\<star> \<cdot> z)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>"
     by (metis add_commute calculation(1) iteration_sep2 local.add_left_comm)
-  moreover have "... = x\<^sup>\<infinity> \<cdot> (y\<^sup>\<star> \<cdot> z)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>" using `y\<^sup>\<star> \<cdot> z \<cdot> x \<le> x \<cdot> y\<^sup>\<star> \<cdot> z`
+  moreover have "... = x\<^sup>\<infinity> \<cdot> (y\<^sup>\<star> \<cdot> z)\<^sup>\<infinity> \<cdot> y\<^sup>\<infinity>" using \<open>y\<^sup>\<star> \<cdot> z \<cdot> x \<le> x \<cdot> y\<^sup>\<star> \<cdot> z\<close>
     by (metis iteration_sep mult.assoc)
   ultimately have "(x + y + z)\<^sup>\<infinity> \<le> x\<^sup>\<infinity> \<cdot> (y + z)\<^sup>\<infinity>"
     by (metis add.commute mult.assoc iteration_denest3)
@@ -318,9 +318,9 @@ proof -
     by (metis add.commute add.left_commute less_eq_def iteration_subdenest)
 qed
 
-text {* Finally, we prove some blocking laws. *}
+text \<open>Finally, we prove some blocking laws.\<close>
 
-text {* Nitpick refutes the next lemma. *}
+text \<open>Nitpick refutes the next lemma.\<close>
 
 lemma "x \<cdot> y = 0 \<Longrightarrow> x\<^sup>\<infinity> \<cdot> y = y"
 (*nitpick*)
@@ -329,13 +329,13 @@ oops
 lemma iteration_idep: "x \<cdot> y = 0 \<Longrightarrow> x \<cdot> y\<^sup>\<infinity> = x"
   by (metis add_zeror annil iteration_unfoldl_distl)
 
-text {* Nitpick refutes the next lemma. *}
+text \<open>Nitpick refutes the next lemma.\<close>
 
 lemma "y \<cdot> w \<le> x \<cdot> y + z \<Longrightarrow> y \<cdot> w\<^sup>\<infinity> \<le> x\<^sup>\<infinity> \<cdot> z"
 (*nitpick [expect=genuine]*)
 oops
 
-text {* At the end of this file, we consider a data refinement example from von Wright~\cite{Wright02}. *}
+text \<open>At the end of this file, we consider a data refinement example from von Wright~\cite{Wright02}.\<close>
 
 lemma data_refinement:
   assumes "s' \<le> s \<cdot> z" and "z \<cdot> e' \<le> e" and "z \<cdot> a' \<le> a \<cdot> z" and "z \<cdot> b \<le> z" and "b\<^sup>\<infinity> = b\<^sup>\<star>"
@@ -345,15 +345,15 @@ proof -
     by (metis assms(4) star_inductr_var)
   have "(z \<cdot> a') \<cdot> b\<^sup>\<star> \<le> (a \<cdot> z) \<cdot> b\<^sup>\<star>"
     by (metis assms(3) mult.assoc mult_isor)
-  hence "z \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<le>  a\<^sup>\<infinity> \<cdot> z" using `z \<cdot> b\<^sup>\<star> \<le> z`
+  hence "z \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<le>  a\<^sup>\<infinity> \<cdot> z" using \<open>z \<cdot> b\<^sup>\<star> \<le> z\<close>
     by (metis mult.assoc mult_isol order_trans iteration_sim mult.assoc)
   have "s' \<cdot> (a' + b)\<^sup>\<infinity> \<cdot> e' \<le> s' \<cdot> b\<^sup>\<star> \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<cdot> e'"
     by (metis add.commute assms(5) eq_refl iteration_denest mult.assoc)
   also have "... \<le> s \<cdot> z \<cdot> b\<^sup>\<star> \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<cdot> e'"
     by (metis assms(1) mult_isor)
-  also have "... \<le> s \<cdot> z \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<cdot> e'" using `z \<cdot> b\<^sup>\<star> \<le> z`
+  also have "... \<le> s \<cdot> z \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<cdot> e'" using \<open>z \<cdot> b\<^sup>\<star> \<le> z\<close>
     by (metis mult.assoc mult_isol mult_isor)
-  also have "... \<le> s \<cdot> a\<^sup>\<infinity> \<cdot> z \<cdot> e'" using `z \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<le>  a\<^sup>\<infinity> \<cdot> z`
+  also have "... \<le> s \<cdot> a\<^sup>\<infinity> \<cdot> z \<cdot> e'" using \<open>z \<cdot> (a' \<cdot> b\<^sup>\<star>)\<^sup>\<infinity> \<le>  a\<^sup>\<infinity> \<cdot> z\<close>
     by (metis mult.assoc mult_isol mult_isor)
   finally show ?thesis
     by (metis assms(2) mult.assoc mult_isol mult.assoc mult_isol order_trans)

@@ -1,10 +1,10 @@
-section {* The Optimized Observing Quorums Model *}
+section \<open>The Optimized Observing Quorums Model\<close>
 
 theory Observing_Quorums_Opt
 imports Observing_Quorums
 begin
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 
 record opt_obsv_state = 
@@ -45,7 +45,7 @@ definition olv_TS :: "opt_obsv_state TS" where
 
 lemmas olv_TS_defs = olv_TS_def olv_init_def olv_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition olv_ref_rel where
@@ -114,7 +114,7 @@ proof(clarsimp simp add: PO_rhoare_defs)
       apply(elim le_neq_implies_less)
       apply(auto simp add: quorum_for_def vote_set_def)
       done
-    thus False using ainv(2)[THEN OV_inv3D] w'_obs all_obs `w' \<noteq> w`
+    thus False using ainv(2)[THEN OV_inv3D] w'_obs all_obs \<open>w' \<noteq> w\<close>
       by(fastforce simp add: vote_set_def obs_safe_def)
   qed
 
@@ -123,7 +123,7 @@ proof(clarsimp simp add: PO_rhoare_defs)
     "(map_option snd \<circ> process_mru (obsv_state.obs sa)) ++ const_map v Ob =
       map_option snd \<circ> process_mru ((obsv_state.obs sa)(v_state.next_round sa := const_map v Ob))"
   proof-
-    from `sa \<in> OV_inv2`[THEN OV_inv2D] 
+    from \<open>sa \<in> OV_inv2\<close>[THEN OV_inv2D] 
     have empty: "\<forall>r'\<ge>v_state.next_round sa. obsv_state.obs sa r' = Map.empty"
       by simp
     show ?thesis

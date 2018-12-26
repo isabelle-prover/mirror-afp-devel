@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-section{* Isomorphisms Between Plane Graphs *}
+section\<open>Isomorphisms Between Plane Graphs\<close>
 
 theory PlaneGraphIso
 imports Main Quasi_Order
@@ -14,13 +14,13 @@ by (auto simp: image_iff)
 declare not_None_eq [iff] not_Some_eq [iff]
 
 
-text{* The symbols @{text "\<cong>"} and @{text "\<simeq>"} are overloaded.  They
+text\<open>The symbols \<open>\<cong>\<close> and \<open>\<simeq>\<close> are overloaded.  They
 denote congruence and isomorphism on arbitrary types. On lists
-(representing faces of graphs), @{text "\<cong>"} means congruence modulo
-rotation; @{text "\<simeq>"} is currently unused. On graphs, @{text "\<simeq>"}
-means isomorphism and is a weaker version of @{text "\<cong>"} (proper
-isomorphism): @{text "\<simeq>"} also allows to reverse the orientation of
-all faces. *}
+(representing faces of graphs), \<open>\<cong>\<close> means congruence modulo
+rotation; \<open>\<simeq>\<close> is currently unused. On graphs, \<open>\<simeq>\<close>
+means isomorphism and is a weaker version of \<open>\<cong>\<close> (proper
+isomorphism): \<open>\<simeq>\<close> also allows to reverse the orientation of
+all faces.\<close>
 
 consts
  pr_isomorphic  :: "'a \<Rightarrow> 'a \<Rightarrow> bool" (infix "\<cong>" 60)
@@ -36,16 +36,16 @@ definition Iso :: "('a list * 'a list) set" ("{\<cong>}") where
 lemma [iff]: "((x,y) \<in> {\<cong>}) = x \<cong> y"
 by(simp add:Iso_def)
 
-text{* A plane graph is a set or list (for executability) of faces
-(hence @{text Fgraph} and @{text fgraph}) and a face is a list of
-nodes: *}
+text\<open>A plane graph is a set or list (for executability) of faces
+(hence \<open>Fgraph\<close> and \<open>fgraph\<close>) and a face is a list of
+nodes:\<close>
 
 type_synonym 'a Fgraph = "'a list set"
 type_synonym 'a fgraph = "'a list list"
 
-subsection{* Equivalence of faces *}
+subsection\<open>Equivalence of faces\<close>
 
-text{* Two faces are equivalent modulo rotation: *}
+text\<open>Two faces are equivalent modulo rotation:\<close>
 
 overloading "congs" \<equiv> "pr_isomorphic :: 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 begin
@@ -145,7 +145,7 @@ lemma singleton_list_cong_eq_iff[simp]:
 by(simp add: eq_equiv_class_iff2[OF equiv_EqF])
 
 
-subsection{* Homomorphism and isomorphism *}
+subsection\<open>Homomorphism and isomorphism\<close>
 
 definition is_pr_Hom :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool" where
 "is_pr_Hom \<phi> Fs\<^sub>1 Fs\<^sub>2 \<equiv> (map \<phi> ` Fs\<^sub>1)//{\<cong>} = Fs\<^sub>2 //{\<cong>}"
@@ -156,7 +156,7 @@ definition is_pr_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightar
 definition is_pr_iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
 "is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<equiv> is_pr_Iso \<phi> (set Fs\<^sub>1) (set Fs\<^sub>2)"
 
-text{* Homomorphisms preserve the set of nodes. *}
+text\<open>Homomorphisms preserve the set of nodes.\<close>
 
 lemma UN_subset_iff: "((\<Union>i\<in>I. f i) \<subseteq> B) = (\<forall>i\<in>I. f i \<subseteq> B)"
 by blast
@@ -199,7 +199,7 @@ proof
   qed
 qed
 
-text{* Therefore isomorphisms preserve cardinality of node set. *}
+text\<open>Therefore isomorphisms preserve cardinality of node set.\<close>
 
 lemma pr_Iso_same_no_nodes:
   "\<lbrakk> is_pr_Iso \<phi> Fs\<^sub>1 Fs\<^sub>2; finite Fs\<^sub>1 \<rbrakk>
@@ -210,7 +210,7 @@ lemma pr_iso_same_no_nodes:
   "is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<Longrightarrow> card(\<Union>F\<in>set Fs\<^sub>1. set F) = card(\<Union>F\<in>set Fs\<^sub>2. set F)"
 by(simp add: is_pr_iso_def pr_Iso_same_no_nodes)
 
-text{* Isomorphisms preserve the number of faces. *}
+text\<open>Isomorphisms preserve the number of faces.\<close>
 
 lemma pr_iso_same_no_faces:
   assumes dist1: "distinct Fs\<^sub>1" and dist2: "distinct Fs\<^sub>2"
@@ -307,7 +307,7 @@ apply blast
 done
 
 
-text{* A kind of recursion rule, a first step towards executability: *}
+text\<open>A kind of recursion rule, a first step towards executability:\<close>
 
 lemma is_pr_Iso_rec:
  "\<lbrakk> inj_on (\<lambda>xs. {xs}//{\<cong>}) Fs\<^sub>1; inj_on (\<lambda>xs. {xs}//{\<cong>}) Fs\<^sub>2; F\<^sub>1 \<in> Fs\<^sub>1 \<rbrakk> \<Longrightarrow>
@@ -386,7 +386,7 @@ apply(simp_all)
 done
 
 
-subsection{* Isomorphism tests *}
+subsection\<open>Isomorphism tests\<close>
 
 lemma map_upd_submap:
   "x \<notin> dom m \<Longrightarrow> (m(x \<mapsto> y) \<subseteq>\<^sub>m m') = (m' x = Some y \<and> m \<subseteq>\<^sub>m m')"
@@ -556,9 +556,9 @@ apply(subst pr_iso_test0_correct)
 apply (simp add:is_pr_iso_def is_pr_Iso_def)
 done
 
-text{* Now we bound the number of rotations needed. We have to exclude
+text\<open>Now we bound the number of rotations needed. We have to exclude
 the empty face @{term"[]"} to be able to restrict the search to
-@{prop"n < length xs"} (which would otherwise be vacuous). *}
+@{prop"n < length xs"} (which would otherwise be vacuous).\<close>
 
 primrec pr_iso_test1 :: "('a \<rightharpoonup> 'b) \<Rightarrow> 'a fgraph \<Rightarrow> 'b fgraph \<Rightarrow> bool" where
   "pr_iso_test1 m [] Fs\<^sub>2 = (Fs\<^sub>2 = [])"
@@ -585,7 +585,7 @@ apply(rule_tac x = "n mod length F\<^sub>2" in exI)
 apply(simp add:rotate_conv_mod[symmetric])
 done
 
-text{* Thus correctness carries over to @{text pr_iso_test1}: *}
+text\<open>Thus correctness carries over to \<open>pr_iso_test1\<close>:\<close>
 
 corollary pr_iso_test1_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
@@ -594,10 +594,10 @@ corollary pr_iso_test1_corr:
        pr_iso_test1 Map.empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 by(simp add: test0_conv_test1 pr_iso_test0_corr)
 
-subsubsection{* Implementing maps by lists *}
+subsubsection\<open>Implementing maps by lists\<close>
 
-text{* The representation are lists of pairs with no repetition in the
-first or second component. *}
+text\<open>The representation are lists of pairs with no repetition in the
+first or second component.\<close>
 
 definition oneone :: "('a * 'b)list \<Rightarrow> bool" where
 "oneone xys  \<equiv>  distinct(map fst xys) \<and> distinct(map snd xys)"
@@ -660,7 +660,7 @@ apply(induct Fs\<^sub>1)
 apply(simp add:Let_def lem inj_on_map_of_zip del: mod_less cong: conj_cong)
 done
 
-text{* A simple implementation *}
+text\<open>A simple implementation\<close>
 
 definition compat :: "('a,'b)tester" where
  "compat I I' ==
@@ -775,7 +775,7 @@ corollary pr_iso_test2_corr:
 by(simp add: pr_iso_test2_conv_1[OF compat_corr merge0_correct merge0_inv]
              pr_iso_test1_corr)
 
-text{* Implementing merge as a recursive function: *}
+text\<open>Implementing merge as a recursive function:\<close>
 
 primrec merge :: "('a,'b)merger" where
   "merge [] I = I"
@@ -821,7 +821,7 @@ corollary pr_iso_test_correct:
 apply(simp add:pr_iso_test_def pr_iso_test_rec_corr)
 done
 
-subsubsection{* `Improper' Isomorphisms *}
+subsubsection\<open>`Improper' Isomorphisms\<close>
 
 definition is_Iso :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a Fgraph \<Rightarrow> 'b Fgraph \<Rightarrow> bool" where
 "is_Iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<equiv> is_pr_Iso \<phi> Fs\<^sub>1 Fs\<^sub>2 \<or> is_pr_Iso \<phi> Fs\<^sub>1 (rev ` Fs\<^sub>2)"
@@ -894,7 +894,7 @@ apply(simp add: is_iso_def is_Iso_def is_pr_Iso_def is_pr_Hom_def id_def)
 done
 
 
-subsection{* Elementhood and containment modulo *}
+subsection\<open>Elementhood and containment modulo\<close>
 
 interpretation qle_gr: quasi_order "(\<simeq>)"
 proof qed (auto intro:iso_fgraph_trans)

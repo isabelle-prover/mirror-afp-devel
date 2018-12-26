@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Code Cayley Hamilton*}
+section\<open>Code Cayley Hamilton\<close>
 
 theory Code_Cayley_Hamilton
   imports 
@@ -13,7 +13,7 @@ theory Code_Cayley_Hamilton
   Gauss_Jordan.Code_Matrix
 begin
 
-subsection{*Code equations for the definitions presented in the Cayley-Hamilton development*}
+subsection\<open>Code equations for the definitions presented in the Cayley-Hamilton development\<close>
 
 definition "scalar_matrix_mult_row c A i = (\<chi> j. c * (A $ i $ j))"
 

@@ -15,7 +15,7 @@ imports
 begin
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 context gc_system
 begin
@@ -68,7 +68,7 @@ apply (auto simp: valid_refs_def)
 apply ((erule rtranclp.cases, auto simp: ran_def split: if_splits obj_at_splits)[1])+
 done
 (*>*)
-text{**}
+text\<open>\<close>
 
 end (* context gc_system *)
 (*<*)

@@ -15,9 +15,9 @@ imports
 begin
 
 (*>*)
-section{* CIMP syntax and semantics *}
+section\<open>CIMP syntax and semantics\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-syntax-semantics}
 
@@ -42,11 +42,11 @@ the states reachable by interleaving the enabled steps of the
 individual processes, subject to message passing rendezvous. We leave
 a trace or branching semantics to future work.
 
-*}
+\<close>
 
-subsection{* Syntax *}
+subsection\<open>Syntax\<close>
 
-text{*
+text\<open>
 
 Programs are represented using an explicit (deep embedding) of their
 syntax, as the semantics needs to track the progress of multiple
@@ -58,16 +58,16 @@ will be.
 
 Processes maintain \emph{local states} of type @{typ "'state"}. These
 can be updated with arbitrary relations of @{typ "'state \<Rightarrow> 'state
-set"} with @{text "LocalOp"}, and conditions of type @{typ "'s \<Rightarrow>
+set"} with \<open>LocalOp\<close>, and conditions of type @{typ "'s \<Rightarrow>
 bool"} are similarly shallowly embedded. This arrangement allows the
 end-user to select their own level of atomicity.
 
 The sequential composition operator and control constructs are
-standard. We add the infinite looping construct @{text "Loop"} so we
+standard. We add the infinite looping construct \<open>Loop\<close> so we
 can construct single-state reactive systems; this has implications for
 fairness assertions.
 
-*}
+\<close>
 
 type_synonym 's bexp = "'s \<Rightarrow> bool"
 
@@ -85,10 +85,10 @@ datatype ('answer, 'location, 'question, 'state) com
   | Choose   "('answer, 'location, 'question, 'state) com"
               "('answer, 'location, 'question, 'state) com"                           (infixl "\<squnion>" 68)
 
-text{*
+text\<open>
 
 We provide a one-armed conditional as it is the common form and avoids
-the need to discover a label for an internal @{text "SKIP"} and/or
+the need to discover a label for an internal \<open>SKIP\<close> and/or
 trickier proofs about the VCG.
 
 In contrast to classical process algebras, we have local state and
@@ -96,8 +96,8 @@ distinct send and receive actions. These provide an interface to
 Isabelle/HOL's datatypes that avoids the need for binding (ala the
 $\pi$-calculus of \citet{Milner:1989}) or large non-deterministic sums
 (ala CCS \citep[\S2.8]{Milner:1980}). Intuitively the sender asks a
-@{typ "'question"} with a @{text "Request"} command, which upon
-rendezvous with a receiver's @{text "Response"} command receives an
+@{typ "'question"} with a \<open>Request\<close> command, which upon
+rendezvous with a receiver's \<open>Response\<close> command receives an
 @{typ "'answer"}. The @{typ "'question"} is a deterministic function
 of the sender's local state, whereas a receiver can respond
 non-deterministically. Note that CIMP does not provide a notion of
@@ -108,13 +108,13 @@ We also provide a binary external choice operator. Internal choice can
 be recovered in combination with local operations (see
 \citet[\S2.3]{Milner:1980}).
 
-We abbreviate some common commands: @{text "SKIP"} is a local
+We abbreviate some common commands: \<open>SKIP\<close> is a local
 operation that does nothing, and the floor brackets simplify
-deterministic @{text "LocalOp"}s. We also adopt some syntax magic from
+deterministic \<open>LocalOp\<close>s. We also adopt some syntax magic from
 Makarius's Hoare and Multiquote theories in the Isabelle/HOL
 distribution.
 
-*}
+\<close>
 
 abbreviation SKIP_syn ("\<lbrace>_\<rbrace>/ SKIP" 70) where
   "\<lbrace>l\<rbrace> SKIP \<equiv> \<lbrace>l\<rbrace> LocalOp (\<lambda>s. {s})"
@@ -137,7 +137,7 @@ translations
   "\<lbrace>l\<rbrace> \<acute>x := e" => "CONST DetLocalOp l \<guillemotleft>\<acute>(_update_name x (\<lambda>_. e))\<guillemotright>"
   "\<lbrace>l\<rbrace> \<acute>x :\<in> es" => "CONST NonDetAssign l (_update_name x) \<guillemotleft>es\<guillemotright>"
 
-parse_translation {*
+parse_translation \<open>
   let
     fun antiquote_tr i (Const (@{syntax_const "_antiquote"}, _) $
           (t as Const (@{syntax_const "_antiquote"}, _) $ _)) = skip_antiquote_tr i t
@@ -153,35 +153,35 @@ parse_translation {*
     fun quote_tr [t] = Abs ("s", dummyT, antiquote_tr 0 (Term.incr_boundvars 1 t))
       | quote_tr ts = raise TERM ("quote_tr", ts);
   in [(@{syntax_const "_quote"}, K quote_tr)] end
-*}
+\<close>
 
 
-subsection{* Process semantics *}
+subsection\<open>Process semantics\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-semantics}
 
 Here we define the semantics of a single process's program. We begin
 by defining the type of externally-visible behaviour:
 
-*}
+\<close>
 
 datatype ('answer, 'question) seq_label
   = sl_Internal ("\<tau>")
   | sl_Send 'question 'answer ("\<guillemotleft>_, _\<guillemotright>")
   | sl_Receive 'question 'answer ("\<guillemotright>_, _\<guillemotleft>")
 
-text{*
+text\<open>
 
 We define a \emph{labelled transition system} (an LTS) using an
 execution-stack style of semantics that avoids special treatment of
-the @{text "SKIP"}s introduced by a traditional small step semantics
+the \<open>SKIP\<close>s introduced by a traditional small step semantics
 (such as \citet[Chapter~14]{Winskel:1993}) when a basic command is
 executed. This was suggested by Thomas Sewell; \citet{PittsAM:opespe}
 gave a semantics to an ML-like language using this approach.
 
-*}
+\<close>
 
 type_synonym ('answer, 'location, 'question, 'state) local_state
   = "('answer, 'location, 'question, 'state) com list \<times> 'state"
@@ -212,12 +212,12 @@ where
 | Choose1: "(c1 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> (cs', s') \<Longrightarrow> (c1 \<squnion> c2 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> (cs', s')"
 | Choose2: "(c2 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> (cs', s') \<Longrightarrow> (c1 \<squnion> c2 # cs, s) \<rightarrow>\<^bsub>\<alpha>\<^esub> (cs', s')"
 
-text{*
+text\<open>
 
 The following projections operate on local states. These are internal
 to CIMP and should not appear to the end-user.
 
-*}
+\<close>
 
 abbreviation cPGM :: "('answer, 'location, 'question, 'state) local_state \<Rightarrow> ('answer, 'location, 'question, 'state) com list" where
   "cPGM \<equiv> fst"
@@ -257,22 +257,22 @@ lemma small_step_stuck[iff]:
 by (auto elim: small_step.cases)
 
 (*>*)
-text{*
+text\<open>
 
 \label{sec:cimp-decompose}
 
 To reason about system transitions we need to identify which basic
 statement gets executed next. To that end we factor out the recursive
 cases of the @{term "small_step"} semantics into \emph{contexts},
-which identify the @{text "basic_com"} commands with immediate
+which identify the \<open>basic_com\<close> commands with immediate
 externally-visible behaviour. Note that non-determinism means that
-more than one @{text "basic_com"} can be enabled at a time.
+more than one \<open>basic_com\<close> can be enabled at a time.
 
 The representation of evaluation contexts follows
 \citet{DBLP:journals/jar/Berghofer12}. This style of operational
 semantics was originated by \citet{DBLP:journals/tcs/FelleisenH92}.
 
-*}
+\<close>
 
 type_synonym ('answer, 'location, 'question, 'state) ctxt
   = "('answer, 'location, 'question, 'state) com \<Rightarrow> ('answer, 'location, 'question, 'state) com"
@@ -301,12 +301,12 @@ where
 declare basic_com.intros[intro!] basic_com.cases[elim]
 
 (*>*)
-text{*
+text\<open>
 
 We can decompose a small step into a context and a @{term
 "basic_com"}.
 
-*}
+\<close>
 
 fun
   decompose_com :: "('answer, 'location, 'question, 'state) com
@@ -376,17 +376,17 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 While we only use this result left-to-right (to decompose a small step
 into a basic one), this equivalence shows that we lose no information
 in doing so.
 
-*}
+\<close>
 
-subsection{* System steps *}
+subsection\<open>System steps\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-system-steps}
 
@@ -395,7 +395,7 @@ hope to allow processes to have distinct types of local state, but
 there remains no good solution yet in a simply-typed setting; see
 \citet{DBLP:journals/entcs/SchirmerW09}.
 
-*}
+\<close>
 
 type_synonym ('answer, 'location, 'proc, 'question, 'state) global_state
   = "'proc \<Rightarrow> ('answer, 'location, 'question, 'state) local_state"
@@ -403,7 +403,7 @@ type_synonym ('answer, 'location, 'proc, 'question, 'state) global_state
 type_synonym ('proc, 'state) local_states
   = "'proc \<Rightarrow> 'state"
 
-text{*
+text\<open>
 
 An execution step of the overall system is either any enabled internal
 @{term "\<tau>"} step of any process, or a communication rendezvous between
@@ -415,7 +415,7 @@ labels @{term "\<alpha>"} and @{term "\<beta>"} (semantically) match.
 We also track global communication history here to support assertional
 reasoning (see \S\ref{sec:cimp-assertions}).
 
-*}
+\<close>
 
 type_synonym ('answer, 'question) event = "'question \<times> 'answer"
 type_synonym ('answer, 'question) history = "('answer, 'question) event list"
@@ -446,21 +446,21 @@ where
 (*<*)
 
 (*>*)
-text{*
+text\<open>
 
 In classical process algebras matching communication actions yield
-@{text "\<tau>"} steps, which aids nested parallel composition and the
+\<open>\<tau>\<close> steps, which aids nested parallel composition and the
 restriction operation \citep[\S2.2]{Milner:1980}. As CIMP does not
 provide either we do not need to hide communication labels. In CCS/CSP
 it is not clear how one reasons about the communication history, and
 it seems that assertional reasoning about these languages is not
 well developed.
 
-*}
+\<close>
 
-subsection{* Assertions *}
+subsection\<open>Assertions\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-assertions}
 
@@ -484,11 +484,11 @@ control locations and local states
 only. \citeauthor{DBLP:journals/acta/Lamport80} avoids these issues by
 only providing an axiomatic semantics for his language.
 
-*}
+\<close>
 
-subsubsection{* Control predicates *}
+subsubsection\<open>Control predicates\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-control-predicates}
 
@@ -498,15 +498,15 @@ also develop a theory of locations. I think Lamport attributes control
 predicates to Owicki in her PhD thesis (under Gries). I did not find a
 treatment of procedures. \citet{MannaPnueli:1991} observe that a set
 notation for spreading assertions over sets of locations reduces
-clutter significantly.}, we define the @{text "at"} predicate, which
+clutter significantly.}, we define the \<open>at\<close> predicate, which
 holds of a process when control resides at that location. Due to
-non-determinism processes can be @{text "at"} a set of locations; it
+non-determinism processes can be \<open>at\<close> a set of locations; it
 is more like ``a statement with this location is enabled'', which
 incidentally handles non-unique locations. Lamport's language is
 deterministic, so he doesn't have this problem. This also allows him
 to develop a stronger theory about his control predicates.
 
-*}
+\<close>
 
 primrec
   atC :: "('answer, 'location, 'question, 'state) com \<Rightarrow> 'location \<Rightarrow> bool"
@@ -538,12 +538,12 @@ lemma at_decomposeLS:
 by (auto simp: decomposeLS_def at_decompose split: list.splits)
 
 (*>*)
-text{*
+text\<open>
 
 We define predicates over communication histories and a projection of
 global states. These are uncurried to ease composition.
 
-*}
+\<close>
 
 type_synonym ('location, 'proc, 'state) pred_local_state
   = "'proc \<Rightarrow> (('location \<Rightarrow> bool) \<times> 'state)"
@@ -564,17 +564,17 @@ lemma hist_mkP[iff]:
 by (simp add: mkP_def)
 
 (*>*)
-text{*
+text\<open>
 
 We provide the following definitions to the end-user.
 
-@{text "AT"} maps process names to a predicate that is true of
+\<open>AT\<close> maps process names to a predicate that is true of
 locations where control for that process resides. The abbreviation
-@{text "at"} shuffles its parameters; the former is
+\<open>at\<close> shuffles its parameters; the former is
 simplifier-friendly and eta-reduced, while the latter is convenient
 for writing assertions.
 
-*}
+\<close>
 
 definition AT :: "('answer, 'location, 'proc, 'question, 'state) pred_state \<Rightarrow> 'proc \<Rightarrow> 'location \<Rightarrow> bool" where
   "AT \<equiv> \<lambda>s p l. fst (local_states s p) l"
@@ -582,38 +582,38 @@ definition AT :: "('answer, 'location, 'proc, 'question, 'state) pred_state \<Ri
 abbreviation at :: "'proc \<Rightarrow> 'location \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) pred" where
   "at p l s \<equiv> AT s p l"
 
-text{*
+text\<open>
 
 Often we wish to talk about control residing at one of a set of
-locations. This stands in for, and generalises, the @{text "in"}
+locations. This stands in for, and generalises, the \<open>in\<close>
 predicate of \citet{DBLP:journals/acta/Lamport80}.
 
-*}
+\<close>
 
 definition atS :: "'proc \<Rightarrow> 'location set \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) pred" where
   "atS \<equiv> \<lambda>p ls s. \<exists>l\<in>ls. at p l s"
 
-text{*
+text\<open>
 
 A process is terminated if it not at any control location.
 
-*}
+\<close>
 
 abbreviation terminated :: "'proc \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) pred" where
   "terminated p s \<equiv> \<forall>l. \<not>at p l s"
 
-text{*
+text\<open>
 
-The @{text "LST"} operator (written as a postfix @{text "\<down>"}) projects
-the local states of the processes from a @{text "pred_state"}, i.e. it
+The \<open>LST\<close> operator (written as a postfix \<open>\<down>\<close>) projects
+the local states of the processes from a \<open>pred_state\<close>, i.e. it
 discards control location information.
 
-Conversely the @{text "LSTP"} operator lifts predicates over local
-states into predicates over @{text "pred_state"}.
+Conversely the \<open>LSTP\<close> operator lifts predicates over local
+states into predicates over \<open>pred_state\<close>.
 \citet[\S3.6]{DBLP:journals/acta/LevinG81} call such predicates
 \emph{universal assertions}.
 
-*}
+\<close>
 
 type_synonym ('proc, 'state) state_pred
   = "('proc, 'state) local_states \<Rightarrow> bool"
@@ -626,22 +626,22 @@ abbreviation (input) LSTP :: "('proc, 'state) state_pred
                             \<Rightarrow> ('answer, 'location, 'proc, 'question, 'state) pred" where
   "LSTP P \<equiv> \<lambda>s. P (LST s)"
 
-text{*
+text\<open>
 
 By default we ask the simplifier to rewrite @{const "atS"} using
 ambient @{const "AT"} information.
 
-*}
+\<close>
 
 lemma atS_state_cong[cong]:
   "\<lbrakk> AT s p = AT s' p \<rbrakk> \<Longrightarrow> atS p ls s \<longleftrightarrow> atS p ls s'"
 by (auto simp: atS_def)
 
-text{*
+text\<open>
 
 We provide an incomplete set of basic rules for label sets.
 
-*}
+\<close>
 
 lemma atS_simps:
   "\<not>atS p {} s"
@@ -658,9 +658,9 @@ lemma atS_un:
   "atS p (l \<union> l') s \<longleftrightarrow> atS p l s \<or> atS p l' s"
 by (auto simp: atS_def)
 
-subsubsection{* Invariants *}
+subsubsection\<open>Invariants\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-invariants}
 
@@ -669,7 +669,7 @@ constraint on their initial local states. From these we can construct
 the set of initial global states and all those reachable by system
 steps (\S\ref{sec:cimp-system-steps}).
 
-*}
+\<close>
 
 type_synonym ('answer, 'location, 'proc, 'question, 'state) programs
   = "'proc \<Rightarrow> ('answer, 'location, 'question, 'state) com"
@@ -691,12 +691,12 @@ definition
 where
   "reachable_states sys \<equiv> system_step\<^sup>* `` (initial_states sys \<times> {[]})"
 
-text{*
+text\<open>
 
 The following is a slightly more convenient induction rule for the set
 of reachable states.
 
-*}
+\<close>
 
 lemma reachable_states_system_step_induct[consumes 1,
                                           case_names init LocalStep CommunicationStep]:
@@ -728,24 +728,24 @@ lemma initial_states_mkP[iff]:
 by (simp add: initial_states_def mkP_def split_def AT_def)
 
 (*>*)
-subsubsection{* Relating reachable states to the initial programs *}
+subsubsection\<open>Relating reachable states to the initial programs\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-decompose-small-step}
 
 To usefully reason about the control locations presumably embedded in
 the single global invariant, we need to link the programs we have in
-reachable state @{text "s"} to the programs in the initial states. The
-@{text "fragments"} function decomposes the program into statements
+reachable state \<open>s\<close> to the programs in the initial states. The
+\<open>fragments\<close> function decomposes the program into statements
 that can be directly executed (\S\ref{sec:cimp-decompose}). We also
 compute the locations we could be at after executing that statement as
 a function of the process's local state.
 
-We could support Lamport's @{text "after"} control predicate with more
+We could support Lamport's \<open>after\<close> control predicate with more
 syntactic analysis of this kind.
 
-*}
+\<close>
 
 fun
   extract_cond :: "('answer, 'location, 'question, 'state) com \<Rightarrow> 'state bexp"
@@ -826,14 +826,14 @@ using assms by (induct rule: small_step.induct) (case_tac [!] cs, auto)
 lemmas small_step_fragmentsLS_mem = set_mp[OF small_step_fragmentsLS]
 
 (*>*)
-text{*
+text\<open>
 
-Eliding the bodies of @{text "IF"} and @{text "WHILE"} statements
+Eliding the bodies of \<open>IF\<close> and \<open>WHILE\<close> statements
 yields smaller (but equivalent) proof obligations.
 
 We show that taking system steps preserves fragments.
 
-*}
+\<close>
 
 lemma reachable_states_fragmentsLS:
   assumes "(s, h) \<in> reachable_states sys"
@@ -844,11 +844,11 @@ by (induct rule: reachable_states_system_step_induct)
    (auto simp: initial_states_def dest: small_step_fragmentsLS_mem)
 (*>*)
 
-text{*
+text\<open>
 
 Decomposing a compound command preserves fragments too.
 
-*}
+\<close>
 
 fun
   extract_inner_locations :: "('answer, 'location, 'question, 'state) com
@@ -892,13 +892,13 @@ lemma small_step_extract_inner_locations:
   shows "extract_inner_locations c cs c ls = atLS ls'"
 using assms by (fastforce split: lcond_splits)
 
-text{*
+text\<open>
 
 The headline lemma allows us to constrain the initial and final states
 of a given small step in terms of the original programs, provided the
 initial state is reachable.
 
-*}
+\<close>
 
 theorem decompose_small_step:
   assumes "s p \<rightarrow>\<^bsub>\<alpha>\<^esub> ps'"
@@ -922,14 +922,14 @@ apply auto
 done
 
 (*>*)
-text{*
+text\<open>
 
 Reasoning with @{thm [source] "reachable_states_system_step_induct"}
 and @{thm [source] "decompose_small_step"} is quite tedious. We
 provide a very simple VCG that generates friendlier local proof
 obligations.
 
-*}
+\<close>
 (*<*)
 
 end

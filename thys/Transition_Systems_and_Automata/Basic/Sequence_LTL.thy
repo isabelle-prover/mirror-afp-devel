@@ -1,4 +1,4 @@
-section {* Linear Temporal Logic on Streams *}
+section \<open>Linear Temporal Logic on Streams\<close>
 
 theory Sequence_LTL
 imports
@@ -6,9 +6,9 @@ imports
   "HOL-Library.Linear_Temporal_Logic_on_Streams"
 begin
 
-  subsection {* Basics *}
+  subsection \<open>Basics\<close>
 
-  text {* Avoid destroying the constant @{term holds} prematurely. *}
+  text \<open>Avoid destroying the constant @{term holds} prematurely.\<close>
   lemmas [simp del] = holds.simps holds_eq1 holds_eq2 not_holds_eq
 
   lemma holds_smap[iff]: "holds P (smap f w) \<longleftrightarrow> holds (P \<circ> f) w" unfolding holds.simps by simp
@@ -46,7 +46,7 @@ begin
     then show ?thesis using assms(2) by (coinduct) (metis alw_sdrop not_ev_iff sdrop_stl sdrop_wait)
   qed
 
-  subsection {* Infinite Occurrence *}
+  subsection \<open>Infinite Occurrence\<close>
 
   abbreviation "infs P w \<equiv> alw (ev (holds P)) w"
   abbreviation "fins P w \<equiv> \<not> infs P w"

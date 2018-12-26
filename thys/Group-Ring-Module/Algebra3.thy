@@ -2088,7 +2088,7 @@ done
  
 section "Zassenhaus"
 
-text{* we show @{text "H \<rightarrow> H N/N"} is gsurjective *}
+text\<open>we show \<open>H \<rightarrow> H N/N\<close> is gsurjective\<close>
 
 lemma (in Group) homom4Tr1:"\<lbrakk>G \<triangleright> N; G \<guillemotright> H\<rbrakk> \<Longrightarrow>  Group ((Gp G (H \<diamondop>\<^bsub>G\<^esub> N)) / N)" 
 apply (frule Gp_smult_sg_nsg[of "H" "N"], assumption+)
@@ -4091,7 +4091,7 @@ done
 
 section "Jordan Hoelder theorem"
 
-subsection {* @{text "Rfn_tools"}. Tools to treat refinement of a cmpser, rtos. *}
+subsection \<open>\<open>Rfn_tools\<close>. Tools to treat refinement of a cmpser, rtos.\<close>
 
 lemma rfn_tool1:"\<lbrakk> 0 < (r::nat); (k::nat) = i * r + j; j < r \<rbrakk> 
                                                   \<Longrightarrow> (k div r) = i"  
@@ -4394,8 +4394,8 @@ lemma (in Group) rfn_tool16:"\<lbrakk>0 < r; 0 < s; i \<le> (s * r - Suc 0);
 apply (rule ZassenhausTr4_1 [of "f (i div s)" "f (Suc (i div s))" "g (s - Suc 0)"], assumption+)
 done
 
-text{* Show existence of the trivial refinement. This is not necessary
-to prove JHS *}
+text\<open>Show existence of the trivial refinement. This is not necessary
+to prove JHS\<close>
 
 lemma rfn_tool30:"\<lbrakk>0 < r; 0 < s; l div s * s + s < s * r\<rbrakk> 
                 \<Longrightarrow> Suc (l div s) < r"

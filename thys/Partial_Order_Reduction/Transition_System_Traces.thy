@@ -1,4 +1,4 @@
-section {* Transition Systems and Trace Theory *}
+section \<open>Transition Systems and Trace Theory\<close>
 
 theory Transition_System_Traces
 imports

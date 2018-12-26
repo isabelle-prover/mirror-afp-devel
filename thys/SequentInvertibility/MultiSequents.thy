@@ -8,7 +8,7 @@ imports "HOL-Library.Multiset"
 begin
 (*>*)
 
-text{*
+text\<open>
 \section{Introduction}
 In this paper, we give an overview of some results about invertibility in sequent calculi.  The framework is outlined in \S\ref{isadefs}.  The results are mainly concerned with multisuccedent calculi that have a single principal formula.  We will use, as our running example throughout, the calculus \textbf{G3cp}.  In \S\ref{isasingle}, we look at the formalisation of single-succedent calculi; in \S\ref{isafirstorder}, the formalisation in \textit{Nominal Isabelle} for first-order calculi is shown; in \S\ref{isamodal} the results for modal logic are examined.  We return to multisuccedent calculi in \S\ref{isaSRC} to look at manipulating rule sets.
 
@@ -17,15 +17,15 @@ In this paper, we give an overview of some results about invertibility in sequen
 
 \subsection{Formulae and Sequents \label{isaformulae}}
 A \textit{formula} is either a propositional variable, the constant $\bot$, or a connective applied to a list of formulae.  We thus have a type variable indexing formulae, where the type variable will be a set of connectives.  In the usual way, we index propositional variables by use of natural numbers.  So, formulae are given by the datatype:
-*}
+\<close>
 
 datatype 'a form = At "nat"
                         | Compound "'a" "'a form list"
                         | ff
 
-text{*
+text\<open>
 \noindent For \textbf{G3cp}, we define the datatype $Gp$, and give the following abbreviations:
-*}
+\<close>
 
 
 (* --------------------------------------------
@@ -105,20 +105,20 @@ where
 (* The formulation of various rule sets *)
 (*>*)
 
-text{*
+text\<open>
 \noindent A \textit{sequent} is a pair of multisets of formulae.  Sequents are indexed by the connectives used to index the formulae.  To add a single formula to a multiset of formulae, we use the symbol $\oplus$, whereas to join two multisets, we use the symbol $+$.
 
 \subsection{Rules and Rule Sets \label{isarules}}
 A \textit{rule} is a list of sequents (called the premisses) paired with a sequent (called the conclusion).  The two \textit{rule sets} used for multisuccedent calculi are the axioms, and the \SC rules (i.e. rules having one principal formula).  Both are defined as inductive sets.  There are two clauses for axioms, corresponding to $L\bot$ and normal axioms:
 
-*}
+\<close>
 inductive_set "Ax" where
    id(*<*)[intro](*>*): "([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) \<in> Ax"
 |  Lbot(*<*)[intro](*>*): "([], \<LM> ff \<RM> \<Rightarrow>* \<Empt>) \<in> Ax"
 
-text{*
+text\<open>
 \noindent The set of \SC rules, on the other hand, must not have empty premisses, and must have a single, compound formula in its conclusion.  The function \texttt{mset} takes a sequent, and returns the multiset obtained by adding the antecedent and the succedent together:
-*}
+\<close>
 
 (* upRules is the set of all rules which have a single conclusion.  This is akin to each rule having a 
    single principal formula.  We don't want rules to have no premisses, hence the restriction
@@ -126,9 +126,9 @@ text{*
 inductive_set "upRules" where
    I(*<*)[intro](*>*): "\<lbrakk> mset c \<equiv> \<LM> Compound R Fs \<RM> ; ps \<noteq> [] \<rbrakk> \<Longrightarrow> (ps,c) \<in> upRules"
 
-text{*
+text\<open>
 \noindent For \textbf{G3cp}, we have the following six rules, which we then show are a subset of the set of \SC rules:
-*}
+\<close>
 
 (* --------------------------------------------
    --------------------------------------------
@@ -163,11 +163,11 @@ qed
    --------------------------------------------
    -------------------------------------------- *)
 
-text{*
+text\<open>
 \noindent We have thus given the \textit{active} parts of the \textbf{G3cp} calculus.  We now need to extend these active parts with \textit{passive} parts.
 
 Given a sequent $C$, we extend it with another sequent $S$ by adding the two antecedents and the two succedents.  To extend an active part $(Ps,C)$ with a sequent $S$, we extend every $P \in Ps$ and $C$ with $S$:
-*}
+\<close>
 
 (* Extend a sequent, and then a rule by adding seq to all premisses and the conclusion *)
 overloading
@@ -183,17 +183,17 @@ definition extendRule
 
 end
 
-text{*
+text\<open>
 \noindent Given a rule set $\mathcal{R}$, the \textit{extension} of $\mathcal{R}$, called $\mathcal{R}^{\star}$, is then defined as another inductive set:
-*}
+\<close>
 
 inductive_set extRules :: "'a rule set \<Rightarrow> 'a rule set"  ("_*")
   for R :: "'a rule set" 
   where I(*<*)[intro](*>*): "r \<in> R \<Longrightarrow> extendRule seq r \<in> R*"
 
-text{*
+text\<open>
 \noindent The rules of \textbf{G3cp} all have unique conclusions.  This is easily formalised:
-*}
+\<close>
 
 
 (* The unique conclusion property.  A set of rules has unique conclusion property if for any pair of rules,
@@ -231,19 +231,19 @@ inductive leftPrincipal :: "'a rule \<Rightarrow> 'a form \<Rightarrow> bool"
 
 (*>*)
 
-text{*
+text\<open>
 \subsection{Principal Rules and Derivations \label{isaderv}}
 A formula $A$ is \textit{left principal} for an active part $R$ iff the conclusion of $R$ is of the form $A \Rightarrow \emptyset$.  The definition of \textit{right principal} is then obvious.  We have an inductive predicate to check these things:
-*}
+\<close>
 
 inductive rightPrincipal :: "'a rule \<Rightarrow> 'a form \<Rightarrow> bool"
   where
   up(*<*)[intro](*>*): "C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<Longrightarrow> 
                         rightPrincipal (Ps,C) (Compound F Fs)"
 
-text{*
+text\<open>
 \noindent As an example, we show that if $A\wedge B$ is principal for an active part in \textbf{G3cp}, then $\emptyset \Rightarrow A$ is a premiss of that active part:
-*}
+\<close>
 
 (* --------------------------------------------
    --------------------------------------------
@@ -277,9 +277,9 @@ qed
    The two formation rules say that the supplied premisses are derivable, and the second says
    that if all the premisses of some rule are derivable, then so is the conclusion.  *)
 
-text{*
+text\<open>
 \noindent A sequent is \textit{derivable} at height $0$ if it is the conclusion of a rule with no premisses.  If a rule has $m$ premisses, and the maximum height of the derivation of any of the premisses is $n$, then the conclusion will be derivable at height $n+1$.  We encode this as pairs of sequents and natural numbers.  A sequent $S$ is derivable at a height $n$ in a rule system $\mathcal{R}$ iff $(S,n)$ belongs to the inductive set \texttt{derivable} $\mathcal{R}$:
-*}
+\<close>
 
 inductive_set derivable :: "'a rule set \<Rightarrow> 'a deriv set"
   for R :: "'a rule set"
@@ -288,9 +288,9 @@ inductive_set derivable :: "'a rule set \<Rightarrow> 'a deriv set"
 |  step(*<*)[intro](*>*):  "\<lbrakk> r \<in> R ; (fst r)\<noteq>[] ; \<forall> p \<in> set (fst r). \<exists> n \<le> m. (p,n) \<in> derivable R \<rbrakk> 
                        \<Longrightarrow> (snd r,m + 1) \<in> derivable R"
 
-text{*
+text\<open>
 \noindent In some instances, we do not care about the height of a derivation, rather that the root is derivable.  For this, we have the additional definition of \texttt{derivable'}, which is a set of sequents:
-*}
+\<close>
 
 (* When we don't care about height! *)
 inductive_set derivable' :: "'a rule set \<Rightarrow> 'a sequent set"
@@ -300,9 +300,9 @@ inductive_set derivable' :: "'a rule set \<Rightarrow> 'a sequent set"
 |   step(*<*)[intro](*>*):  "\<lbrakk> r \<in> R ; (fst r) \<noteq> [] ; \<forall> p \<in> set (fst r). p \<in> derivable' R \<rbrakk>
                        \<Longrightarrow> (snd r) \<in> derivable' R"
 
-text{*
+text\<open>
 \noindent It is desirable to switch between the two notions.  Shifting from derivable at a height to derivable is simple: we delete the information about height.  The converse is more complicated and involves an induction on the length of the premiss list:
-*}
+\<close>
 
 lemma deriv_to_deriv(*<*)[simp](*>*):
 assumes "(C,n) \<in> derivable R"
@@ -329,7 +329,7 @@ next
     case (Cons a as)
     then have "\<exists> m. \<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
     then obtain m where "\<forall> p \<in> set as. \<exists> n\<le>m. (p,n) \<in> derivable R" by auto
-    moreover from `\<forall> p \<in> set (a # as). \<exists> n. (p,n) \<in> derivable R` have
+    moreover from \<open>\<forall> p \<in> set (a # as). \<exists> n. (p,n) \<in> derivable R\<close> have
       "\<exists> n. (a,n) \<in> derivable R" by auto
     then obtain m' where "(a,m') \<in> derivable R" by blast
     ultimately have "\<forall> p \<in> set (a # as). \<exists> n\<le>(max m m'). (p,n) \<in> derivable R" 
@@ -341,9 +341,9 @@ next
     then show ?case by blast
   qed
   then obtain m where "\<forall> p \<in> set ps. \<exists> n\<le>m. (p,n) \<in> derivable R" by blast
-  with `r = (ps,c)` and `r \<in> R` have "(c,m+1) \<in> derivable R" using `ps \<noteq> []` and
+  with \<open>r = (ps,c)\<close> and \<open>r \<in> R\<close> have "(c,m+1) \<in> derivable R" using \<open>ps \<noteq> []\<close> and
     derivable.step[where r="(ps,c)" and R=R and m=m] by auto
-  then show ?case using `r = (ps,c)` by auto
+  then show ?case using \<open>r = (ps,c)\<close> by auto
 qed
 (*<*)
 (* definition of invertible rule and invertible set of rules.  It's a bit nasty, but all it really says is
@@ -381,7 +381,7 @@ proof-
   then have "\<Gamma>' \<ominus> A \<oplus> A = \<Gamma>'" by (auto simp add:multiset_eq_iff)
   then have "\<exists> \<Gamma>''. \<Gamma>' = \<Gamma>'' \<oplus> A" apply (rule_tac x="\<Gamma>' \<ominus> A" in exI) by auto
   then obtain \<Gamma>'' where eq1:"\<Gamma>' = \<Gamma>'' \<oplus> A" by blast
-  from `\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B` eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
+  from \<open>\<Gamma> \<oplus> A = \<Gamma>' \<oplus> B\<close> eq1 have "\<Gamma> \<oplus> A = \<Gamma>'' \<oplus> A \<oplus> B" by auto
   then have "\<Gamma> = \<Gamma>'' \<oplus> B" by auto
   thus ?thesis using eq1 by blast
 qed
@@ -494,11 +494,11 @@ proof-
        proof (cases)
           case (I R Rs)
           obtain G H where "C = (G \<Rightarrow>* H)" by (cases C) (auto)
-          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and `mset C \<equiv> \<LM>Compound R Rs\<RM>` by auto
+          then have "G + H = \<LM>Compound R Rs\<RM>" using mset.simps and \<open>mset C \<equiv> \<LM>Compound R Rs\<RM>\<close> by auto
           then have "size (G+H) = 1" by auto 
           then have "size G + size H = 1" by auto
-          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and `C = (G \<Rightarrow>* H)` by auto
-          moreover have "snd r = C" using `r = (Ps,C)` by simp
+          then have "seq_size C = 1" using seq_size.simps[where ant=G and suc=H] and \<open>C = (G \<Rightarrow>* H)\<close> by auto
+          moreover have "snd r = C" using \<open>r = (Ps,C)\<close> by simp
           ultimately show "seq_size (snd r) = 1" by simp
        qed
 qed
@@ -512,7 +512,7 @@ proof (cases)
   then obtain \<Gamma> \<Delta> where "C = (\<Gamma> \<Rightarrow>* \<Delta>)" using characteriseSeq[where C=C] by auto
   then have "(Ps,\<Gamma> \<Rightarrow>* \<Delta>) \<in> upRules" using assms by simp
   then show "\<exists> F Fs. C = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> C = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-    using `mset C \<equiv> \<LM>Compound F Fs\<RM>` and `C = (\<Gamma> \<Rightarrow>* \<Delta>)`
+    using \<open>mset C \<equiv> \<LM>Compound F Fs\<RM>\<close> and \<open>C = (\<Gamma> \<Rightarrow>* \<Delta>)\<close>
       and mset.simps[where ant=\<Gamma> and suc=\<Delta>] and union_is_single[where M=\<Gamma> and N=\<Delta> and a="Compound F Fs"]
     by auto
 qed
@@ -527,8 +527,8 @@ assumes "r = (ps,c)"
     and "p \<in> set ps"
 shows "extend S p \<in> set Ps"
 proof-
-from `p \<in> set ps` have "extend S p \<in> set (map (extend S) ps)" by auto
-moreover from `(Ps,C) = extendRule S r` and `r = (ps,c)` have "map (extend S) ps = Ps" by (simp add:extendRule_def) 
+from \<open>p \<in> set ps\<close> have "extend S p \<in> set (map (extend S) ps)" by auto
+moreover from \<open>(Ps,C) = extendRule S r\<close> and \<open>r = (ps,c)\<close> have "map (extend S) ps = Ps" by (simp add:extendRule_def) 
 ultimately show ?thesis by auto
 qed
 
@@ -602,9 +602,9 @@ proof-
   from assms have "r \<in> Ax \<and> (\<exists> S. snd (extendRule S r) = (\<Gamma> \<Rightarrow>* \<Delta>))"
        by (rule lastRule.cases) auto
   then obtain S where "r \<in> Ax" and "snd (extendRule S r) = (\<Gamma> \<Rightarrow>* \<Delta>)" by auto
-  from `r \<in> Ax` have "fst r = []" apply (cases r) by (rule Ax.cases) auto
+  from \<open>r \<in> Ax\<close> have "fst r = []" apply (cases r) by (rule Ax.cases) auto
   then have "fst (extendRule S r) = []" by (auto simp add:extendRule_def)
-  with `snd (extendRule S r) = (\<Gamma> \<Rightarrow>* \<Delta>)` and `r \<in> Ax` show ?thesis apply auto
+  with \<open>snd (extendRule S r) = (\<Gamma> \<Rightarrow>* \<Delta>)\<close> and \<open>r \<in> Ax\<close> show ?thesis apply auto
        apply (rule_tac x=S in exI) 
        apply (subgoal_tac "extendRule S r = (fst (extendRule S r),snd (extendRule S r))") apply simp
        by (rule obv)
@@ -625,18 +625,18 @@ assumes "R' \<subseteq> upRules"
     and "(Ps,C) \<in> R*"
 shows "\<exists> S r. extendRule S r = (Ps,C) \<and> (r \<in> R' \<or> r \<in> Ax)"
 proof-
-from `(Ps,C) \<in> R*` have "\<exists> S r. extendRule S r = (Ps,C) \<and> r \<in> R" by (cases) auto
+from \<open>(Ps,C) \<in> R*\<close> have "\<exists> S r. extendRule S r = (Ps,C) \<and> r \<in> R" by (cases) auto
 then obtain S r where "(Ps,C) = extendRule S r" and "r \<in> R" apply auto 
                 by (drule_tac x=S in meta_spec,drule_tac x=a in meta_spec, drule_tac x=b in meta_spec) auto
-moreover from `r \<in> R` and `R = Ax \<union> R'` have "r \<in> Ax \<or> r \<in> R'" by blast
+moreover from \<open>r \<in> R\<close> and \<open>R = Ax \<union> R'\<close> have "r \<in> Ax \<or> r \<in> R'" by blast
 ultimately show ?thesis by (rule_tac x=S in exI,rule_tac x=r in exI) (auto)
 qed
 (*>*)
 
-text{*
+text\<open>
 \section{Formalising the Results \label{isaproofs}}
 A variety of ``helper'' lemmata are used in the proofs, but they are not shown.  The proof tactics themselves are hidden in the following proof, except where they are interesting.  Indeed, only the interesting parts of the proof are shown at all.  The main result of this section is that a rule is invertible if the premisses appear as premisses of \textit{every} rule with the same principal formula.  The proof is interspersed with comments.
-*}
+\<close>
 
 lemma rightInvertible:
 fixes \<Gamma> \<Delta> :: "'a form multiset"
@@ -646,10 +646,10 @@ assumes rules: "R' \<subseteq> upRules \<and> R = Ax \<union> R'"
             (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')"
 shows "\<exists> m\<le>n. (\<Gamma> +\<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*"
 using assms
-txt{*
+txt\<open>
 \noindent The height of derivations is decided by the length of the longest branch.  Thus, we need to use
 strong induction: i.e. $\forall m\leq n.\ \textrm{If } P(m) \textrm{ then } P(n+1)$.
-*}
+\<close>
 proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
  case (1 n \<Gamma> \<Delta>)
  then have IH:"\<forall>m<n. \<forall>\<Gamma> \<Delta>. ( \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs, m) \<in> derivable R* \<longrightarrow>
@@ -676,7 +676,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
             using characteriseAx[where r=r] by auto
           moreover \<comment> \<open>Case split on the kind of axiom used\<close>
           {assume "r = ([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>)"
- (*<*)         with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)`
+ (*<*)         with \<open>extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close>
                 have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)"
                 using extendRule_def[where R="([],\<LM>At i\<RM>\<Rightarrow>*\<LM>At i\<RM>)" and forms=S] by auto (*>*)
           then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" (*<*)using extendID[where S=S and i=i and \<Gamma>=\<Gamma> and \<Delta>="\<Delta> \<oplus> Compound F Fs"](*>*) by auto
@@ -686,7 +686,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
           }
           moreover
           {assume "r = ([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
- (*<*)          with `extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)`
+ (*<*)          with \<open>extendRule S r = ([],\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close>
                 have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)"
                 using extendRule_def[where R="([],\<LM>ff\<RM>\<Rightarrow>*\<Empt>)" and forms=S] by auto (*>*)
           then have "ff \<in># \<Gamma>" (*<*)using extendFalsum[where S=S and \<Gamma>=\<Gamma> and \<Delta>="\<Delta> \<oplus> Compound F Fs"](*>*)  by auto
@@ -702,21 +702,21 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
        then have "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)"
             proof-
             obtain x y where "r = (x,y)" by (cases r)
-            with `r \<in> upRules` have "(x,y) \<in> upRules" by simp
+            with \<open>r \<in> upRules\<close> have "(x,y) \<in> upRules" by simp
             then obtain Ps where "(Ps :: 'a sequent list) \<noteq> []" and "x=Ps" by (cases) (auto)
-            with `r = (x,y)` have "r = (Ps, y)" by simp
-            then show "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)" using `Ps \<noteq> []` by blast
+            with \<open>r = (x,y)\<close> have "r = (Ps, y)" by simp
+            then show "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)" using \<open>Ps \<noteq> []\<close> by blast
             qed (*>*)
       then obtain Ps C where "Ps \<noteq> []" and "r = (Ps,C)" by auto
-       moreover (*<*) from `extendRule S r = ([], \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` have "\<exists> S. r = ([],S)"
+       moreover (*<*) from \<open>extendRule S r = ([], \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close> have "\<exists> S. r = ([],S)"
             using extendRule_def[where forms=S and R=r] by (cases r) (auto)
        then(*>*) obtain S where "r = ([],S)" by blast   \<comment> \<open>Contradiction\<close>
        ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" using rules by simp
        }
-       ultimately show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" (*<*)using `n=0` (*>*) by blast
+       ultimately show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" (*<*)using \<open>n=0\<close> (*>*) by blast
 (*<*)next (*>*)
-txt{* \noindent In the case where $n = n' + 1$ for some $n'$, we know the premisses are empty,
-and every premiss is derivable at a height lower than $n'$: *}
+txt\<open>\noindent In the case where $n = n' + 1$ for some $n'$, we know the premisses are empty,
+and every premiss is derivable at a height lower than $n'$:\<close>
   case (Suc n')
   then have "(\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs,n'+1) \<in> derivable R*" using a' by simp
   then obtain Ps where "(Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs) \<in> R*" and 
@@ -731,67 +731,67 @@ and every premiss is derivable at a height lower than $n'$: *}
      {assume "r \<in> Ax"   \<comment> \<open>Gives a contradiction\<close>
       then have "fst r = []" apply (cases r) by (rule Ax.cases) auto
       moreover obtain x y where "r = (x,y)" by (cases r)
-      then have "x \<noteq> []" using `Ps \<noteq> []`
-                    and `extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` (*<*)
+      then have "x \<noteq> []" using \<open>Ps \<noteq> []\<close>
+                    and \<open>extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close> (*<*)
                           and extendRule_def[where forms=S and R=r]
                             and extend_def[where forms=S and seq="snd r"] (*>*)by auto
       ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" (*<*)
-              using `r=(x,y)`(*>*)  by auto
+              using \<open>r=(x,y)\<close>(*>*)  by auto
      }
   moreover
      {assume "r \<in> R'"
       obtain ps c where "r = (ps,c)" by (cases r) auto
-  (*<*)       then have "r \<in> upRules" using rules and `r \<in> R'` by auto (*>*)
+  (*<*)       then have "r \<in> upRules" using rules and \<open>r \<in> R'\<close> by auto (*>*)
       have "(rightPrincipal r (Compound F Fs)) \<or> 
                 \<not>(rightPrincipal r (Compound F Fs))" 
       by blast  \<comment> \<open>The formula is principal, or not\<close>
     (*<*)  moreover (*>*)
-txt{* \noindent If the formula is principal, then $\Gamma' \Rightarrow \Delta'$ is amongst the premisses of $r$: *}
+txt\<open>\noindent If the formula is principal, then $\Gamma' \Rightarrow \Delta'$ is amongst the premisses of $r$:\<close>
   {assume "rightPrincipal r (Compound F Fs)"
-   then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using b' (*<*)and `r = (ps,c)` and `r \<in> R'` and rules(*>*)
+   then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using b' (*<*)and \<open>r = (ps,c)\<close> and \<open>r \<in> R'\<close> and rules(*>*)
         by auto
    then have "extend S (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set Ps" 
-        using `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)`
-      (*<*)  and `r = (ps,c)`(*>*) by (simp(*<*) add:extendContain(*>*))
-   moreover (*<*)from `rightPrincipal r (Compound F Fs)` have "c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)" 
-        using `r = (ps,c)` by (cases) auto
-   with `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)`(*>*) have "S = (\<Gamma> \<Rightarrow>* \<Delta>)" (*<*)
-        using `r = (ps,c)` apply (auto simp add:extendRule_def extend_def)(*>*) by (cases S) auto
+        using \<open>extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close>
+      (*<*)  and \<open>r = (ps,c)\<close>(*>*) by (simp(*<*) add:extendContain(*>*))
+   moreover (*<*)from \<open>rightPrincipal r (Compound F Fs)\<close> have "c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)" 
+        using \<open>r = (ps,c)\<close> by (cases) auto
+   with \<open>extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close>(*>*) have "S = (\<Gamma> \<Rightarrow>* \<Delta>)" (*<*)
+        using \<open>r = (ps,c)\<close> apply (auto simp add:extendRule_def extend_def)(*>*) by (cases S) auto
    ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> set Ps" by (simp add:extend_def)
    then have "\<exists> m\<le>n'. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*"
-       using `\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable R*` by auto
-   then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" (*<*)using `n = Suc n'`(*>*) by (auto(*<*),rule_tac x=m in exI) (simp(*>*))
+       using \<open>\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable R*\<close> by auto
+   then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" (*<*)using \<open>n = Suc n'\<close>(*>*) by (auto(*<*),rule_tac x=m in exI) (simp(*>*))
   }
 (*<*) moreover (*>*)
-txt{* \noindent If the formula is not principal, then it must appear in the premisses.  The first two lines give a characterisation of the extension and conclusion, respectively.  Then, we apply the induction hypothesis
-at the lower height of the premisses: *}
+txt\<open>\noindent If the formula is not principal, then it must appear in the premisses.  The first two lines give a characterisation of the extension and conclusion, respectively.  Then, we apply the induction hypothesis
+at the lower height of the premisses:\<close>
   {assume "\<not> rightPrincipal r (Compound F Fs)"
    obtain \<Phi> \<Psi> where "S = (\<Phi> \<Rightarrow>* \<Psi>)" by (cases S) (auto)   
    then obtain G H where "c = (G \<Rightarrow>* H)" by (cases c) (auto)  
    then have "\<LM> Compound F Fs \<RM> \<noteq> H"   \<comment> \<open>Proof omitted\<close>
  (*<*)                 proof-
-                  from `r = (ps,c)` and `r \<in> upRules`
+                  from \<open>r = (ps,c)\<close> and \<open>r \<in> upRules\<close>
                      obtain T Ts where  "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
                      using upRuleCharacterise[where Ps=ps and C=c] by auto
                   moreover
                      {assume "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>)"
-                      then have "rightPrincipal r (Compound T Ts)" using `r = (ps,c)` by auto
-                      with `\<not> rightPrincipal r (Compound F Fs)` have "Compound T Ts \<noteq> Compound F Fs" by auto
-                      then have "\<LM>Compound F Fs\<RM> \<noteq> H" using `c = (G \<Rightarrow>* H)` and `c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>)` by auto
+                      then have "rightPrincipal r (Compound T Ts)" using \<open>r = (ps,c)\<close> by auto
+                      with \<open>\<not> rightPrincipal r (Compound F Fs)\<close> have "Compound T Ts \<noteq> Compound F Fs" by auto
+                      then have "\<LM>Compound F Fs\<RM> \<noteq> H" using \<open>c = (G \<Rightarrow>* H)\<close> and \<open>c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>)\<close> by auto
                      }
                   moreover
                      {assume "c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
-                      then have "\<LM>Compound F Fs\<RM> \<noteq> H" using `c = (G \<Rightarrow>* H)` by auto
+                      then have "\<LM>Compound F Fs\<RM> \<noteq> H" using \<open>c = (G \<Rightarrow>* H)\<close> by auto
                      }
                   ultimately show "\<LM>Compound F Fs\<RM> \<noteq> H" by blast
                   qed 
              moreover have "succ S + succ (snd r) = (\<Delta> \<oplus> Compound F Fs)" 
-                         using `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)`
+                         using \<open>extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close>
                          and extendRule_def[where forms=S and R=r]
                          and extend_def[where forms=S and seq="snd r"] by auto
    then (*>*) have "\<Psi> + H = \<Delta> \<oplus> Compound F Fs" 
-        using `S = (\<Phi> \<Rightarrow>* \<Psi>)` and `r = (ps,c)` and `c = (G \<Rightarrow>* H)` by auto
-   moreover from `r = (ps,c)` and `c = (G \<Rightarrow>* H)` (*<*)and `r \<in> upRules` (*>*)
+        using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> and \<open>r = (ps,c)\<close> and \<open>c = (G \<Rightarrow>* H)\<close> by auto
+   moreover from \<open>r = (ps,c)\<close> and \<open>c = (G \<Rightarrow>* H)\<close> (*<*)and \<open>r \<in> upRules\<close> (*>*)
    
    have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)"(*<*)
             using succ_upRule[where Ps=ps and \<Phi>=G and \<Psi>=H](*>*) by auto
@@ -800,29 +800,29 @@ at the lower height of the premisses: *}
                  have "H = \<Empt> \<or> (\<exists> A. H = \<LM>A\<RM>)" by fact
                  moreover
                     {assume "H = \<Empt>"
-                     then have "\<Psi> = \<Delta> \<oplus> Compound F Fs" using `\<Psi> + H = \<Delta> \<oplus> Compound F Fs` by auto
+                     then have "\<Psi> = \<Delta> \<oplus> Compound F Fs" using \<open>\<Psi> + H = \<Delta> \<oplus> Compound F Fs\<close> by auto
                      then have "Compound F Fs \<in># \<Psi>" by auto
                     }
                  moreover
                     {assume "\<exists> A. H = \<LM>A\<RM>"
                      then obtain A where "H = \<LM>A\<RM>" by auto
-                     then have "\<Psi> \<oplus> A = \<Delta> \<oplus> Compound F Fs" using `\<Psi> + H = \<Delta> \<oplus> Compound F Fs` by auto
+                     then have "\<Psi> \<oplus> A = \<Delta> \<oplus> Compound F Fs" using \<open>\<Psi> + H = \<Delta> \<oplus> Compound F Fs\<close> by auto
                      then have "set_mset (\<Psi> \<oplus> A) = set_mset (\<Delta> \<oplus> Compound F Fs)" by auto
                      then have "set_mset \<Psi> \<union> {A} = set_mset \<Delta> \<union> {Compound F Fs}" by auto
-                     moreover from `H = \<LM>A\<RM>` and `\<LM>Compound F Fs\<RM> \<noteq> H` have "Compound F Fs \<noteq> A" by auto
+                     moreover from \<open>H = \<LM>A\<RM>\<close> and \<open>\<LM>Compound F Fs\<RM> \<noteq> H\<close> have "Compound F Fs \<noteq> A" by auto
                      ultimately have "Compound F Fs \<in> set_mset \<Psi>" by auto
                      then have "Compound F Fs \<in># \<Psi>" by auto
                     }
                  ultimately show "Compound F Fs \<in># \<Psi>" by blast
                  qed (*>*)
   then have "\<exists> \<Psi>1. \<Psi> = \<Psi>1 \<oplus> Compound F Fs" by (*<*)(rule_tac x="\<Psi> \<ominus> Compound F Fs" in exI)(*>*) (auto(*<*) simp add:multiset_eq_iff(*>*))
-  then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)"(*<*) using `S = (\<Phi> \<Rightarrow>* \<Psi>)`(*>*) by auto
+  then obtain \<Psi>1 where "S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)"(*<*) using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close>(*>*) by auto
  (*<*)           have "Ps = map (extend S) ps" 
-                 using `extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` 
-                 and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
+                 using \<open>extendRule S r = (Ps,\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close> 
+                 and extendRule_def[where forms=S and R=r] and \<open>r = (ps,c)\<close> by auto
             then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
   then (*>*) have "\<forall> p \<in> set Ps. (Compound F Fs \<in># succ p)"  \<comment> \<open>Appears in every premiss\<close>
-                 (*<*)     using `Compound F Fs \<in># \<Psi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) (*>*)
+                 (*<*)     using \<open>Compound F Fs \<in># \<Psi>\<close> and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> apply (auto simp add:Ball_def) (*>*)
          by (*<*)(drule_tac x=x in spec)(*>*) (auto(*<*) simp add:extend_def(*>*))
   (*<*)          then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)" using characteriseSeq
                       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
@@ -834,28 +834,28 @@ at the lower height of the premisses: *}
                  by (auto simp add:Ball_def) (*>*)
  then have (*<*)a2:(*>*) "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' m. m\<le>n' \<and> 
                                    (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>',m) \<in> derivable R* \<and>
-                                   p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)" using (*<*)`n = Suc n'` and b' and (*>*)IH(*<*)
+                                   p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)" using (*<*)\<open>n = Suc n'\<close> and b' and (*>*)IH(*<*)
                  apply (auto simp add:Ball_def) apply (drule_tac x=x in spec) apply simp
                  apply (elim exE conjE) apply (drule_tac x=n in spec) apply simp
                  apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                  apply (simp) apply (elim exE)(*>*) by(*<*) (rule_tac x=m' in exI)(*>*) (arith) 
-txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, with a different extension: *}           
+txt\<open>\noindent  To this set of new premisses, we apply a new instance of $r$, with a different extension:\<close>           
   obtain Ps' where eq: "Ps' = map (extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>')) ps" by auto
-  (*<*)          have "length Ps = length Ps'" using `Ps' = map (extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>')) ps`
-                                            and `Ps = map (extend S) ps` by auto
-            then have "Ps' \<noteq> []" using `Ps \<noteq> []` by auto
-            from `r \<in> R'` have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r \<in> R*" using rules by auto
+  (*<*)          have "length Ps = length Ps'" using \<open>Ps' = map (extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>')) ps\<close>
+                                            and \<open>Ps = map (extend S) ps\<close> by auto
+            then have "Ps' \<noteq> []" using \<open>Ps \<noteq> []\<close> by auto
+            from \<open>r \<in> R'\<close> have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r \<in> R*" using rules by auto
             moreover have "extendRule (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
-                 using `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)` and `extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)` 
-                 and `r = (ps,c)` and eq
+                 using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)\<close> and \<open>extendRule S r = (Ps, \<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)\<close> 
+                 and \<open>r = (ps,c)\<close> and eq
                  by (auto simp add:extendRule_def extend_def)
   ultimately(*>*) have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*" by simp
-  (*<*)          have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
+  (*<*)          have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using \<open>Ps = map (extend S) ps\<close> by (simp add:Ball_def)           
             have c2:"\<forall> p \<in> set ps. extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') p \<in> set Ps'" using eq
                  by (simp add:Ball_def)
             then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
                  by (auto simp add: extend_def) 
-            have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps`
+            have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using \<open>Ps = map (extend S) ps\<close>
                  by (auto simp add:Ball_def Bex_def)
             then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 
                  by (auto simp add:Ball_def Bex_def)
@@ -869,7 +869,7 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
                  {fix \<Phi>' \<Psi>'
                  assume "(\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs) \<in> set Ps"  
                  then have "\<exists> p \<in> set ps. extend (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs) p = (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs)"
-                      using `Ps = map (extend S) ps` and `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)` and a1 and d1
+                      using \<open>Ps = map (extend S) ps\<close> and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)\<close> and a1 and d1
                            apply (simp only:Ball_def Bex_def) apply (drule_tac x=" \<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs" in spec)
                            by (drule_tac x="\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs" in spec) (auto)
                  then obtain p where t:"p \<in> set ps \<and> (\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs) = extend (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs) p"
@@ -885,7 +885,7 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
                  then have "\<Psi>' + \<Delta>' = (\<Psi>1 + \<Delta>') + B" by (auto simp add:union_ac)
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (A \<Rightarrow>* B)" 
                       using extend_def[where forms="\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>'" and seq="A \<Rightarrow>* B"] by auto
-                 moreover have "extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (A \<Rightarrow>* B) \<in> set Ps'" using `p = (A \<Rightarrow>* B)` and t and c2 by auto
+                 moreover have "extend (\<Phi> + \<Gamma>' \<Rightarrow>* \<Psi>1 + \<Delta>') (A \<Rightarrow>* B) \<in> set Ps'" using \<open>p = (A \<Rightarrow>* B)\<close> and t and c2 by auto
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') \<in> set Ps'" by simp
                  }
                  thus ?thesis by blast
@@ -914,8 +914,8 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
                  then have "\<Psi>' \<oplus> Compound F Fs = (\<Psi>1 \<oplus> Compound F Fs) + B" by (auto simp add:union_ac)
                  ultimately have "(\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs) = extend (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs) (A \<Rightarrow>* B)" 
                       using extend_def[where forms="\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs" and seq="A\<Rightarrow>*B"] by auto
-                 moreover have "extend (\<Phi>  \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs) (A \<Rightarrow>* B) \<in> set Ps" using `p = (A \<Rightarrow>* B)` and t and c1
-                      and `S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)` by auto
+                 moreover have "extend (\<Phi>  \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs) (A \<Rightarrow>* B) \<in> set Ps" using \<open>p = (A \<Rightarrow>* B)\<close> and t and c1
+                      and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>1 \<oplus> Compound F Fs)\<close> by auto
                  ultimately have "(\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs) \<in> set Ps" by simp
                  }
                  thus ?thesis by blast
@@ -929,14 +929,14 @@ txt{* \noindent  To this set of new premisses, we apply a new instance of $r$, w
                  by (drule_tac x="\<Phi>' \<Rightarrow>* \<Psi>' \<oplus> Compound F Fs" in spec) (simp) (*>*)
   then have "\<forall> p \<in> set Ps'. \<exists> n\<le>n'. (p,n) \<in> derivable R*" by auto
   then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" 
-    using (*<*)`n = Suc n'` and `Ps' \<noteq> []`
-    and(*>*) `(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*` (*<*)
+    using (*<*)\<open>n = Suc n'\<close> and \<open>Ps' \<noteq> []\<close>
+    and(*>*) \<open>(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*\<close> (*<*)
        and derivable.step[where r="(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')" and R="R*"](*>*)
  by (auto(*<*) simp add:Ball_def Bex_def(*>*))
   (*<*)          }
          ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" by blast         
         }(*>*)
- txt{* \noindent All of the cases are now complete. *}
+ txt\<open>\noindent All of the cases are now complete.\<close>
  ultimately show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" by blast
  (*<*)  qed (*>*)
 qed
@@ -945,9 +945,9 @@ qed
                G3cp EXAMPLE
    --------------------------------------------
    -------------------------------------------- *)
-text{*
+text\<open>
 As an example, we show the left premiss of $R\wedge$ in \textbf{G3cp} is derivable at a height not greater than that of the conclusion.  The two results used in the proof (\texttt{principal-means-premiss} and \texttt{rightInvertible}) are those we have previously shown:
-*}
+\<close>
 
 lemma conRInvert:
 assumes "(\<Gamma> \<Rightarrow>* \<Delta> \<oplus> (A \<and>* B),n) \<in> derivable (g3cp \<union> Ax)*"
@@ -964,9 +964,9 @@ qed
    --------------------------------------------
    -------------------------------------------- *)
 
-text{*
+text\<open>
 \noindent  We can obviously show the equivalent proof for left rules, too:
-*}
+\<close>
 
 lemma leftInvertible:
 fixes \<Gamma> \<Delta> :: "'a form multiset"
@@ -998,7 +998,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
             using characteriseAx[where r=r] by auto
           moreover
           {assume "r = ([], \<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>)"
-           with `extendRule S r = ([],\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)`
+           with \<open>extendRule S r = ([],\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close>
                 have "extend S (\<LM> At i \<RM> \<Rightarrow>* \<LM> At i \<RM>) = (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)"
                 using extendRule_def[where R="([],\<LM>At i\<RM>\<Rightarrow>*\<LM>At i\<RM>)" and forms=S] by auto
            then have "At i \<in># \<Gamma> \<and> At i \<in># \<Delta>" using extendID[where S=S and i=i and \<Gamma>="\<Gamma> \<oplus> Compound F Fs" and \<Delta>=\<Delta>] by auto
@@ -1008,7 +1008,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
           }
           moreover
           {assume "r = ([],\<LM>ff\<RM> \<Rightarrow>* \<Empt>)"
-           with `extendRule S r = ([],\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)`
+           with \<open>extendRule S r = ([],\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close>
                 have "extend S (\<LM> ff \<RM> \<Rightarrow>* \<Empt>) = (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)"
                 using extendRule_def[where R="([],\<LM>ff\<RM>\<Rightarrow>*\<Empt>)" and forms=S] by auto
            then have "ff \<in># \<Gamma>" using extendFalsum[where S=S and \<Gamma>="\<Gamma>\<oplus>Compound F Fs" and \<Delta>=\<Delta>] by auto
@@ -1024,18 +1024,18 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
        then have "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)"
             proof-
             obtain x y where "r = (x,y)" by (cases r)
-            with `r \<in> upRules` have "(x,y) \<in> upRules" by simp
+            with \<open>r \<in> upRules\<close> have "(x,y) \<in> upRules" by simp
             then obtain Ps where "(Ps :: 'a sequent list) \<noteq> []" and "x=Ps" by (cases) (auto)
-            with `r = (x,y)` have "r = (Ps, y)" by simp
-            then show "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)" using `Ps \<noteq> []` by blast
+            with \<open>r = (x,y)\<close> have "r = (Ps, y)" by simp
+            then show "\<exists> Ps C. Ps \<noteq> [] \<and> r = (Ps,C)" using \<open>Ps \<noteq> []\<close> by blast
             qed
        then obtain Ps C where "Ps \<noteq> []" and "r = (Ps,C)" by auto
-       moreover from `extendRule S r = ([], \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)` have "\<exists> S. r = ([],S)"
+       moreover from \<open>extendRule S r = ([], \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close> have "\<exists> S. r = ([],S)"
             using extendRule_def[where forms=S and R=r] by (cases r) (auto)
        then obtain S where "r = ([],S)" by blast
        ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',0) \<in> derivable R*" by simp
        }
-       ultimately show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" using `n=0` by blast
+       ultimately show "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" using \<open>n=0\<close> by blast
  next
      case (Suc n')
      then have "(\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>,n'+1) \<in> derivable R*" using a' by simp
@@ -1050,31 +1050,31 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
         {assume "r \<in> Ax"
          then have "fst r = []" apply (cases r) by (rule Ax.cases) auto
          moreover obtain x y where "r = (x,y)" by (cases r)
-         then have "x \<noteq> []" using `Ps \<noteq> []` and `extendRule S r = (Ps, \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)`
+         then have "x \<noteq> []" using \<open>Ps \<noteq> []\<close> and \<open>extendRule S r = (Ps, \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close>
                             and extendRule_def[where forms=S and R=r]
                             and extend_def[where forms=S and seq="snd r"] by auto
          ultimately have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*"
-              using `r=(x,y)` by auto
+              using \<open>r=(x,y)\<close> by auto
         }
      moreover
         {assume "r \<in> R'"
          obtain ps c where "r = (ps,c)" by (cases r) auto
-         then have "r \<in> upRules" using rules and `r \<in> R'` by auto
+         then have "r \<in> upRules" using rules and \<open>r \<in> R'\<close> by auto
          have "(leftPrincipal r (Compound F Fs)) \<or> \<not>(leftPrincipal r (Compound F Fs))" by blast
          moreover
             {assume "leftPrincipal r (Compound F Fs)"
-             then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using b' and `r = (ps,c)` and `r \<in> R'` and rules
+             then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set ps" using b' and \<open>r = (ps,c)\<close> and \<open>r \<in> R'\<close> and rules
                   by auto
-             then have "extend S (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set Ps" using `extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)`
-                  and `r = (ps,c)` by (simp add:extendContain)
-             moreover from `leftPrincipal r (Compound F Fs)` have "c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)"
-                  using  `r = (ps,c)` by (cases) auto
-             with `extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)` have "S = (\<Gamma> \<Rightarrow>* \<Delta>)"
-                  using `r = (ps,c)` apply (auto simp add:extendRule_def extend_def) by (cases S) auto
+             then have "extend S (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set Ps" using \<open>extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close>
+                  and \<open>r = (ps,c)\<close> by (simp add:extendContain)
+             moreover from \<open>leftPrincipal r (Compound F Fs)\<close> have "c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)"
+                  using  \<open>r = (ps,c)\<close> by (cases) auto
+             with \<open>extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close> have "S = (\<Gamma> \<Rightarrow>* \<Delta>)"
+                  using \<open>r = (ps,c)\<close> apply (auto simp add:extendRule_def extend_def) by (cases S) auto
              ultimately have "(\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> set Ps" by (simp add:extend_def)
              then have "\<exists> m\<le>n'. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*"
-                  using `\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable R*` by auto
-             then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" using `n = Suc n'`
+                  using \<open>\<forall> p \<in> set Ps. \<exists> n\<le>n'. (p,n) \<in> derivable R*\<close> by auto
+             then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" using \<open>n = Suc n'\<close>
                   by (auto,rule_tac x=m in exI) (simp)
             }
          moreover
@@ -1083,43 +1083,43 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
              then obtain G H where "c = (G \<Rightarrow>* H)" by (cases c) (auto)
              then have "\<LM> Compound F Fs \<RM> \<noteq> G" 
                   proof-
-                  from `r = (ps,c)` and `r \<in> upRules`
+                  from \<open>r = (ps,c)\<close> and \<open>r \<in> upRules\<close>
                      obtain T Ts where  "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>) \<or> c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
                      using upRuleCharacterise[where Ps=ps and C=c] by auto
                   moreover
                      {assume "c = (\<Empt> \<Rightarrow>* \<LM>Compound T Ts\<RM>)"
-                      then have "\<LM>Compound F Fs\<RM> \<noteq> G" using `c = (G \<Rightarrow>* H)` by auto   
+                      then have "\<LM>Compound F Fs\<RM> \<noteq> G" using \<open>c = (G \<Rightarrow>* H)\<close> by auto   
                      }
                   moreover
                      {assume "c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)"
-                      then have "leftPrincipal r (Compound T Ts)" using `r = (ps,c)` by auto
-                      with `\<not> leftPrincipal r (Compound F Fs)` have "Compound T Ts \<noteq> Compound F Fs" by auto
-                      then have "\<LM>Compound F Fs\<RM> \<noteq> G" using `c = (G \<Rightarrow>* H)` and `c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)` by auto
+                      then have "leftPrincipal r (Compound T Ts)" using \<open>r = (ps,c)\<close> by auto
+                      with \<open>\<not> leftPrincipal r (Compound F Fs)\<close> have "Compound T Ts \<noteq> Compound F Fs" by auto
+                      then have "\<LM>Compound F Fs\<RM> \<noteq> G" using \<open>c = (G \<Rightarrow>* H)\<close> and \<open>c = (\<LM>Compound T Ts\<RM> \<Rightarrow>* \<Empt>)\<close> by auto
                      }
                   ultimately show "\<LM>Compound F Fs\<RM> \<noteq> G" by blast
                   qed
              moreover have "antec S + antec (snd r) = (\<Gamma> \<oplus> Compound F Fs)" 
-                         using `extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)`
+                         using \<open>extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close>
                          and extendRule_def[where forms=S and R=r]
                          and extend_def[where forms=S and seq="snd r"] by auto
-             then have "\<Phi> + G = \<Gamma> \<oplus> Compound F Fs" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` and `r = (ps,c)` and `c = (G \<Rightarrow>* H)` by auto
-             moreover from `r = (ps,c)` and `c = (G\<Rightarrow>* H)` and `r \<in> upRules` have "G = \<Empt> \<or> (\<exists> A. G = \<LM>A\<RM>)"
+             then have "\<Phi> + G = \<Gamma> \<oplus> Compound F Fs" using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> and \<open>r = (ps,c)\<close> and \<open>c = (G \<Rightarrow>* H)\<close> by auto
+             moreover from \<open>r = (ps,c)\<close> and \<open>c = (G\<Rightarrow>* H)\<close> and \<open>r \<in> upRules\<close> have "G = \<Empt> \<or> (\<exists> A. G = \<LM>A\<RM>)"
                       using antec_upRule[where Ps=ps and \<Phi>=G and \<Psi>=H] by auto
              ultimately have "Compound F Fs \<in># \<Phi>"
                  proof-
                  have "G = \<Empt> \<or> (\<exists> A. G = \<LM>A\<RM>)" by fact
                  moreover
                     {assume "G = \<Empt>"
-                     then have "\<Phi> = \<Gamma> \<oplus> Compound F Fs" using `\<Phi> + G = \<Gamma> \<oplus> Compound F Fs` by auto
+                     then have "\<Phi> = \<Gamma> \<oplus> Compound F Fs" using \<open>\<Phi> + G = \<Gamma> \<oplus> Compound F Fs\<close> by auto
                      then have "Compound F Fs \<in># \<Phi>" by auto
                     }
                  moreover
                     {assume "\<exists> A. G = \<LM>A\<RM>"
                      then obtain A where "G = \<LM>A\<RM>" by auto
-                     then have "\<Phi> \<oplus> A = \<Gamma> \<oplus> Compound F Fs" using `\<Phi> + G = \<Gamma> \<oplus> Compound F Fs` by auto
+                     then have "\<Phi> \<oplus> A = \<Gamma> \<oplus> Compound F Fs" using \<open>\<Phi> + G = \<Gamma> \<oplus> Compound F Fs\<close> by auto
                      then have "set_mset (\<Phi> \<oplus> A) = set_mset (\<Gamma> \<oplus> Compound F Fs)" by auto
                      then have "set_mset \<Phi> \<union> {A} = set_mset \<Gamma> \<union> {Compound F Fs}" by auto
-                     moreover from `G = \<LM>A\<RM>` and `\<LM>Compound F Fs\<RM> \<noteq> G` have "Compound F Fs \<noteq> A" by auto
+                     moreover from \<open>G = \<LM>A\<RM>\<close> and \<open>\<LM>Compound F Fs\<RM> \<noteq> G\<close> have "Compound F Fs \<noteq> A" by auto
                      ultimately have "Compound F Fs \<in> set_mset \<Phi>" by auto
                      then have "Compound F Fs \<in># \<Phi>" by auto
                     }
@@ -1127,13 +1127,13 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  qed
             then have "\<exists> \<Phi>1. \<Phi> = \<Phi>1 \<oplus> Compound F Fs" 
                  by (rule_tac x="\<Phi> \<ominus> Compound F Fs" in exI) (auto simp add:multiset_eq_iff)
-            then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)" using `S = (\<Phi> \<Rightarrow>* \<Psi>)` by auto
+            then obtain \<Phi>1 where "S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)" using \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> by auto
             have "Ps = map (extend S) ps" 
-                 using `extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)` 
-                 and extendRule_def[where forms=S and R=r] and `r = (ps,c)` by auto
+                 using \<open>extendRule S r = (Ps,\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close> 
+                 and extendRule_def[where forms=S and R=r] and \<open>r = (ps,c)\<close> by auto
             then have "\<forall> p \<in> set Ps. (\<exists> p'. p = extend S p')" using ex_map_conv[where ys=Ps and f="extend S"] by auto
             then have "\<forall> p \<in> set Ps. (Compound F Fs \<in># antec p)" 
-                      using `Compound F Fs \<in># \<Phi>` and `S = (\<Phi> \<Rightarrow>* \<Psi>)` apply (auto simp add:Ball_def) 
+                      using \<open>Compound F Fs \<in># \<Phi>\<close> and \<open>S = (\<Phi> \<Rightarrow>* \<Psi>)\<close> apply (auto simp add:Ball_def) 
                       by (drule_tac x=x in spec) (auto simp add:extend_def)
             then have a1:"\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>')" using characteriseSeq
                       apply (auto simp add:Ball_def) apply (drule_tac x=x in spec,simp) 
@@ -1145,27 +1145,27 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  by (auto simp add:Ball_def)
             then have a2: "\<forall> p \<in> set Ps. \<exists> \<Phi>' \<Psi>' m. m\<le>n' \<and> (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>',m) \<in> derivable R*
                                                    \<and> p = (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>')"
-                 using `n = Suc n'` and b' and IH
+                 using \<open>n = Suc n'\<close> and b' and IH
                  apply (auto simp add:Ball_def) apply (drule_tac x=x in spec) apply simp
                  apply (elim exE conjE) apply (drule_tac x=n in spec) apply simp
                  apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)
                  apply (simp) apply (elim exE) by (rule_tac x=m' in exI) (arith)
             obtain Ps' where eq: "Ps' = map (extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')) ps" by auto
-            have "length Ps = length Ps'" using `Ps' = map (extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')) ps`
-                                            and `Ps = map (extend S) ps` by auto
-            then have "Ps' \<noteq> []" using `Ps \<noteq> []` by auto
-            from `r \<in> R'` have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r \<in> R*" using rules by auto
+            have "length Ps = length Ps'" using \<open>Ps' = map (extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>')) ps\<close>
+                                            and \<open>Ps = map (extend S) ps\<close> by auto
+            then have "Ps' \<noteq> []" using \<open>Ps \<noteq> []\<close> by auto
+            from \<open>r \<in> R'\<close> have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r \<in> R*" using rules by auto
             moreover have "extendRule (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') r = (Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')"
-                 using `S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)` and `extendRule S r = (Ps, \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)` 
-                 and `r = (ps,c)` and eq
+                 using \<open>S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)\<close> and \<open>extendRule S r = (Ps, \<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)\<close> 
+                 and \<open>r = (ps,c)\<close> and eq
                  by (auto simp add:extendRule_def extend_def)
             ultimately have "(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*" by simp
-            have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using `Ps = map (extend S) ps` by (simp add:Ball_def)           
+            have c1:"\<forall> p \<in> set ps. extend S p \<in> set Ps" using \<open>Ps = map (extend S) ps\<close> by (simp add:Ball_def)           
             have c2:"\<forall> p \<in> set ps. extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') p \<in> set Ps'" using eq
                  by (simp add:Ball_def)
             then have eq2:"\<forall> p \<in> set Ps'. \<exists> \<Phi>' \<Psi>'. p = (\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>')" using eq
                  by (auto simp add: extend_def)
-            have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using `Ps = map (extend S) ps`
+            have d1:"\<forall> p \<in> set Ps. \<exists> p' \<in> set ps. p = extend S p'" using \<open>Ps = map (extend S) ps\<close>
                  by (auto simp add:Ball_def Bex_def)
             then have "\<forall> p \<in> set Ps. \<exists> p'. p' \<in> set Ps'" using c2 
                  by (auto simp add:Ball_def Bex_def)
@@ -1178,7 +1178,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  {fix \<Phi>' \<Psi>'
                  assume "(\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>') \<in> set Ps"  
                  then have "\<exists> p \<in> set ps. extend (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>) p = (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>')"
-                      using `Ps = map (extend S) ps` and `S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)` and a1 and d1
+                      using \<open>Ps = map (extend S) ps\<close> and \<open>S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)\<close> and a1 and d1
                            apply (simp only:Ball_def Bex_def) apply (drule_tac x="\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>'" in spec)
                            by (drule_tac x="\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>'" in spec) (auto)
                  then obtain p where t:"p \<in> set ps \<and> (\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>') = extend (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>) p"
@@ -1194,7 +1194,7 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  from suc have "\<Psi>' + \<Delta>' = (\<Psi> + \<Delta>') + B" by (auto simp add:union_ac)
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') = extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (A \<Rightarrow>* B)" 
                       using extend_def[where forms="\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>'" and seq="A \<Rightarrow>* B"] by auto
-                 moreover have "extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (A \<Rightarrow>* B) \<in> set Ps'" using `p = (A \<Rightarrow>* B)` and t and c2 by auto
+                 moreover have "extend (\<Phi>1 + \<Gamma>' \<Rightarrow>* \<Psi> + \<Delta>') (A \<Rightarrow>* B) \<in> set Ps'" using \<open>p = (A \<Rightarrow>* B)\<close> and t and c2 by auto
                  ultimately have "(\<Phi>' + \<Gamma>' \<Rightarrow>* \<Psi>' + \<Delta>') \<in> set Ps'" by simp
                  }
                  thus ?thesis by blast
@@ -1223,8 +1223,8 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  then have "\<Psi>' = \<Psi> + B" by simp
                  ultimately have "(\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>') = extend (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>) (A \<Rightarrow>* B)" 
                       using extend_def[where forms="\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>" and seq="A\<Rightarrow>*B"] by auto
-                 moreover have "extend (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>) (A \<Rightarrow>* B) \<in> set Ps" using `p = (A \<Rightarrow>* B)` and t and c1
-                      and `S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)` by auto
+                 moreover have "extend (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>) (A \<Rightarrow>* B) \<in> set Ps" using \<open>p = (A \<Rightarrow>* B)\<close> and t and c1
+                      and \<open>S = (\<Phi>1 \<oplus> Compound F Fs \<Rightarrow>* \<Psi>)\<close> by auto
                  ultimately have "(\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>') \<in> set Ps" by simp
                  }
                  thus ?thesis by blast
@@ -1237,8 +1237,8 @@ proof (induct n arbitrary:\<Gamma> \<Delta> rule:nat_less_induct)
                  apply (elim exE) apply (drule_tac x=\<Phi>' in spec,drule_tac x=\<Psi>' in spec)  
                  by (drule_tac x="\<Phi>' \<oplus> Compound F Fs \<Rightarrow>* \<Psi>'" in spec) (simp)
             then have all:"\<forall> p \<in> set Ps'. \<exists> n\<le>n'. (p,n) \<in> derivable R*" by auto
-            then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" using `n = Suc n'`
-                 and `(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*` and `Ps' \<noteq> []`
+            then have "\<exists> m\<le>n. (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>',m) \<in> derivable R*" using \<open>n = Suc n'\<close>
+                 and \<open>(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>') \<in> R*\<close> and \<open>Ps' \<noteq> []\<close>
                  and derivable.step[where r="(Ps',\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')" and R="R*"]
                  by (auto simp add:Ball_def Bex_def)
             }
@@ -1266,7 +1266,7 @@ proof-
   have "r' \<in> Ax \<or> r' \<in> R'" by fact
   moreover
   {assume "r' \<in> Ax"
-    then have "Ps = []" using characteriseAx[where r=r'] and `(Ps,C) = extendRule S r'` 
+    then have "Ps = []" using characteriseAx[where r=r'] and \<open>(Ps,C) = extendRule S r'\<close> 
       and extendRule_def[where forms=S and R=r'] by auto
     then have "\<forall> p \<in> set Ps. \<exists> m\<le>n. (p,m) \<in> derivable R*" by (auto simp add:Ball_def)
   }
@@ -1274,58 +1274,58 @@ proof-
   {assume "r' \<in> R'"
     {fix P
       assume "P \<in> set Ps"
-      from `r' \<in> R'` have "r' \<in> upRules" using rules by auto
+      from \<open>r' \<in> R'\<close> have "r' \<in> upRules" using rules by auto
       then obtain ps c where "r' = (ps,c)" by (cases r') (auto)
-      then have "\<exists> p \<in> set ps. P = extend S p" using `P \<in> set Ps` and `(Ps,C) = extendRule S r'`
+      then have "\<exists> p \<in> set ps. P = extend S p" using \<open>P \<in> set Ps\<close> and \<open>(Ps,C) = extendRule S r'\<close>
         by (auto simp add:extendRule_def extend_def)
       then obtain p where "p \<in> set ps" and "P = extend S p" by auto
       then obtain \<Gamma>' \<Delta>' where "p = (\<Gamma>' \<Rightarrow>* \<Delta>')" using characteriseSeq[where C=p] by auto
-      then have P: "P = (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')" using gam1 and `P = extend S p` by (auto simp add:extend_def)    
-      then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')" using `p \<in> set ps` and `r' = (ps,c)` and `p = (\<Gamma>' \<Rightarrow>* \<Delta>')` by auto
-      from `r'=(ps,c)` have "\<exists> F Fs. c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
-        using `r' \<in> upRules` and upRuleCharacterise[where Ps=ps and C=c] by auto
+      then have P: "P = (\<Gamma> + \<Gamma>' \<Rightarrow>* \<Delta> + \<Delta>')" using gam1 and \<open>P = extend S p\<close> by (auto simp add:extend_def)    
+      then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')" using \<open>p \<in> set ps\<close> and \<open>r' = (ps,c)\<close> and \<open>p = (\<Gamma>' \<Rightarrow>* \<Delta>')\<close> by auto
+      from \<open>r'=(ps,c)\<close> have "\<exists> F Fs. c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" 
+        using \<open>r' \<in> upRules\<close> and upRuleCharacterise[where Ps=ps and C=c] by auto
       then obtain F Fs where "c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>) \<or> c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" by auto
       moreover
       {assume "c = (\<Empt> \<Rightarrow>* \<LM> Compound F Fs \<RM>)"          
-        with `c= (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)` and `(Ps,C) = extendRule S r'` and `r' = (ps,c)` and gam1
+        with \<open>c= (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)\<close> and \<open>(Ps,C) = extendRule S r'\<close> and \<open>r' = (ps,c)\<close> and gam1
         have gam2:"C = (\<Gamma> \<Rightarrow>* \<Delta> \<oplus> Compound F Fs)"
           using extendRule_def[where forms=S and R=r'] and extend_def[where forms=S and seq=c]
           by simp
-        with `c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)` have "rightPrincipal r' (Compound F Fs)"  
-          using `r' = (ps,c)` by auto
-        then have a1:"\<forall> r \<in> R'. rightPrincipal r (Compound F Fs) \<longrightarrow> r = r'" using `uniqueConclusion R'`
+        with \<open>c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)\<close> have "rightPrincipal r' (Compound F Fs)"  
+          using \<open>r' = (ps,c)\<close> by auto
+        then have a1:"\<forall> r \<in> R'. rightPrincipal r (Compound F Fs) \<longrightarrow> r = r'" using \<open>uniqueConclusion R'\<close>
         proof-
           {fix r
-            assume "r \<in> R'" then have "r \<in> upRules" using `R' \<subseteq> upRules \<and> R = Ax \<union> R'` by auto
+            assume "r \<in> R'" then have "r \<in> upRules" using \<open>R' \<subseteq> upRules \<and> R = Ax \<union> R'\<close> by auto
             assume "rightPrincipal r (Compound F Fs)"
             obtain ps' c' where "r = (ps',c')" by (cases r) auto
-            with `rightPrincipal r (Compound F Fs)` have "c' = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)"
+            with \<open>rightPrincipal r (Compound F Fs)\<close> have "c' = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)"
               by (cases) auto
-            then have "c' = c" using `c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)` by simp
-            then have "r = r'" using `uniqueConclusion R'` and `r \<in> R'` and `r' \<in> R'`
-              and `r'=(ps,c)` and `r = (ps',c')`
+            then have "c' = c" using \<open>c = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)\<close> by simp
+            then have "r = r'" using \<open>uniqueConclusion R'\<close> and \<open>r \<in> R'\<close> and \<open>r' \<in> R'\<close>
+              and \<open>r'=(ps,c)\<close> and \<open>r = (ps',c')\<close>
               by (simp add:uniqueConclusion_def Ball_def)
           }
           thus ?thesis by (auto simp add:Ball_def)
         qed
-        with `p \<in> set ps` and `r' = (ps,c)` and `(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')`
+        with \<open>p \<in> set ps\<close> and \<open>r' = (ps,c)\<close> and \<open>(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')\<close>
         have b1:"\<forall> r \<in> R'. rightPrincipal r (Compound F Fs) \<longrightarrow> (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r)" by blast
         have "\<forall> r \<in> R. rightPrincipal r (Compound F Fs) \<longrightarrow> (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r)"
         proof-               
           {fix t
             assume "t \<in> R" and "rightPrincipal t (Compound F Fs)"
             then obtain pss d where "t = (pss,d)" by (cases t) auto
-            with `rightPrincipal t (Compound F Fs)` have rP:"d = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)" by (cases) auto
-            from `t \<in> R` have split:"t \<in> Ax \<or> t \<in> R'" using rules by auto
+            with \<open>rightPrincipal t (Compound F Fs)\<close> have rP:"d = (\<Empt> \<Rightarrow>* \<LM>Compound F Fs\<RM>)" by (cases) auto
+            from \<open>t \<in> R\<close> have split:"t \<in> Ax \<or> t \<in> R'" using rules by auto
             moreover
             {assume "t \<in> Ax"
               then obtain i where "d = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>) \<or> d = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" 
-                using characteriseAx[where r=t] and `t = (pss,d)` by auto
+                using characteriseAx[where r=t] and \<open>t = (pss,d)\<close> by auto
               then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" using rP by auto
             }
             moreover
             {assume "t \<in> R'"
-              with `rightPrincipal t (Compound F Fs)` have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" using b1 and `t \<in> R'` by auto
+              with \<open>rightPrincipal t (Compound F Fs)\<close> have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" using b1 and \<open>t \<in> R'\<close> by auto
             }
             ultimately have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" by blast
           }
@@ -1337,44 +1337,44 @@ proof-
       }
       moreover
       {assume "c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)"          
-        with `c= (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)` and `(Ps,C) = extendRule S r'` and `r' = (ps,c)` and gam1
+        with \<open>c= (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)\<close> and \<open>(Ps,C) = extendRule S r'\<close> and \<open>r' = (ps,c)\<close> and gam1
         have gam3:"C = (\<Gamma> \<oplus> Compound F Fs \<Rightarrow>* \<Delta>)"
           using extendRule_def[where forms=S and R=r'] and extend_def[where forms=S and seq=c]
           by simp
-        with `c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)` have "leftPrincipal r' (Compound F Fs)" 
-          using `r' = (ps,c)` and `r' \<in> R'` by auto
-        then have a1:"\<forall> r \<in> R'. leftPrincipal r (Compound F Fs) \<longrightarrow> r = r'" using `uniqueConclusion R'`
+        with \<open>c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)\<close> have "leftPrincipal r' (Compound F Fs)" 
+          using \<open>r' = (ps,c)\<close> and \<open>r' \<in> R'\<close> by auto
+        then have a1:"\<forall> r \<in> R'. leftPrincipal r (Compound F Fs) \<longrightarrow> r = r'" using \<open>uniqueConclusion R'\<close>
         proof-
           {fix r
-            assume "r \<in> R'" then have "r \<in> upRules" using `R' \<subseteq> upRules \<and> R = Ax \<union> R'` by auto
+            assume "r \<in> R'" then have "r \<in> upRules" using \<open>R' \<subseteq> upRules \<and> R = Ax \<union> R'\<close> by auto
             assume "leftPrincipal r (Compound F Fs)"
             obtain ps' c' where "r = (ps',c')" by (cases r) auto
-            with `leftPrincipal r (Compound F Fs)` have "c' = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" by (cases) auto
-            then have "c' = c" using `c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)` by simp
-            then have "r = r'" using `uniqueConclusion R'` and `r \<in> R'` and `r' \<in> R'`
-              and `r'=(ps,c)` and `r = (ps',c')`
+            with \<open>leftPrincipal r (Compound F Fs)\<close> have "c' = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)" by (cases) auto
+            then have "c' = c" using \<open>c = (\<LM>Compound F Fs\<RM> \<Rightarrow>* \<Empt>)\<close> by simp
+            then have "r = r'" using \<open>uniqueConclusion R'\<close> and \<open>r \<in> R'\<close> and \<open>r' \<in> R'\<close>
+              and \<open>r'=(ps,c)\<close> and \<open>r = (ps',c')\<close>
               by (simp add:uniqueConclusion_def Ball_def)
           }
           thus ?thesis by (auto simp add:Ball_def)
         qed
-        with `p \<in> set ps` and `r' = (ps,c)` and `(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')`
+        with \<open>p \<in> set ps\<close> and \<open>r' = (ps,c)\<close> and \<open>(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r')\<close>
         have b1:"\<forall> r \<in> R'. leftPrincipal r (Compound F Fs) \<longrightarrow> (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r)" by blast
         have "\<forall> r \<in> R. leftPrincipal r (Compound F Fs) \<longrightarrow> (\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst r)"
         proof-               
           {fix t
             assume "t \<in> R" and "leftPrincipal t (Compound F Fs)"
             then obtain pss d where "t = (pss,d)" by (cases t) auto
-            with `leftPrincipal t (Compound F Fs)` have rP:"antec d = \<LM>Compound F Fs\<RM>" by (cases) auto
-            from `t \<in> R` have split:"t \<in> Ax \<or> t \<in> R'" using rules by (cases) auto
+            with \<open>leftPrincipal t (Compound F Fs)\<close> have rP:"antec d = \<LM>Compound F Fs\<RM>" by (cases) auto
+            from \<open>t \<in> R\<close> have split:"t \<in> Ax \<or> t \<in> R'" using rules by (cases) auto
             moreover
             {assume "t \<in> Ax"
               then obtain i where "d = (\<LM>At i\<RM> \<Rightarrow>* \<LM>At i\<RM>) \<or> d = (\<LM>ff\<RM> \<Rightarrow>* \<Empt>)" 
-                using characteriseAx[where r=t] and `t = (pss,d)` by auto
+                using characteriseAx[where r=t] and \<open>t = (pss,d)\<close> by auto
               then have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" using rP by auto
             }
             moreover
             {assume "t \<in> R'"
-              with `leftPrincipal t (Compound F Fs)` have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" using b1 and `t \<in> R'` by auto
+              with \<open>leftPrincipal t (Compound F Fs)\<close> have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" using b1 and \<open>t \<in> R'\<close> by auto
             }
             ultimately have "(\<Gamma>' \<Rightarrow>* \<Delta>') \<in> set (fst t)" by blast
           }
@@ -1393,8 +1393,8 @@ qed
 
 (*>*)
 
-text{*
-A rule is invertible iff every premiss is derivable at a height lower than that of the conclusion.  A set of rules is invertible iff every rule is invertible.  These definitions are easily formalised: *}
+text\<open>
+A rule is invertible iff every premiss is derivable at a height lower than that of the conclusion.  A set of rules is invertible iff every rule is invertible.  These definitions are easily formalised:\<close>
 
 overloading
   invertible \<equiv> invertible
@@ -1411,9 +1411,9 @@ definition invertible_set
 
 end
 
-text{*
+text\<open>
 \noindent A set of multisuccedent \SC rules is invertible if each rule has a different conclusion.  \textbf{G3cp} has the unique conclusion property (as shown in \S\ref{isarules}).  Thus, \textbf{G3cp} is an invertible set of rules:
-*}
+\<close>
 
 lemma unique_to_invertible:
 assumes (*<*)a:(*>*) "R' \<subseteq> upRules \<and> R = Ax \<union> R'"
@@ -1445,10 +1445,10 @@ using g3cp_uc and g3cp_upRules
    and unique_to_invertible[where R'="g3cp" and R="Ax \<union> g3cp"] 
 by auto
 
-text{*
+text\<open>
 \subsection{Conclusions}
 For \SC multisuccedent calculi, the theoretical results have been formalised.  Moreover, the running example demonstrates that it is straightforward to implement such calculi and reason about them.  Indeed, it will be this class of calculi for which we will prove more results in \S\ref{isaSRC}.
-*}
+\<close>
 (*<*)
 end
 (*>*)

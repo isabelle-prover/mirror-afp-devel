@@ -13,8 +13,8 @@ imports
 
 begin
 
-section {* JE property*}
-text {* The 13 time interval relations are jointly exhaustive. For any two intervals $x$ and $y$, we can find a basic relation $r$ such that $(x,y) \in r$. *}
+section \<open>JE property\<close>
+text \<open>The 13 time interval relations are jointly exhaustive. For any two intervals $x$ and $y$, we can find a basic relation $r$ such that $(x,y) \in r$.\<close>
  
 lemma (in arelations) jointly_exhaustive:
 assumes  "\<I> p" "\<I> q"

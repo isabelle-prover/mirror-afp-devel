@@ -2,7 +2,7 @@ theory TopoS_Stateful_Policy_impl
 imports TopoS_Composition_Theory_impl TopoS_Stateful_Policy_Algorithm
 begin
 
-section{*Stateful Policy -- List Implementaion*}
+section\<open>Stateful Policy -- List Implementaion\<close>
 
 record 'v stateful_list_policy =
     hostsL :: "'v list"
@@ -43,7 +43,7 @@ lemma wf_list_graph_stateful_list_policy_to_list_graph:
   
 
 
-subsection{*Algorithms*}
+subsection\<open>Algorithms\<close>
 
    fun filter_IFS_no_violations_accu :: "'v list_graph \<Rightarrow> 'v SecurityInvariant list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list" where
       "filter_IFS_no_violations_accu G M accu [] = accu" |
@@ -83,8 +83,8 @@ subsection{*Algorithms*}
 
         from Cons.prems(2) have validLG: "wf_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = e # accu\<rparr>)"
           apply(rule wf_list_graph_stateful_list_policy_to_list_graph)
-           apply(fact `distinct (e # accu)`)
-          apply(fact `set (e # accu) \<subseteq> set (edgesL G)`)
+           apply(fact \<open>distinct (e # accu)\<close>)
+          apply(fact \<open>set (e # accu) \<subseteq> set (edgesL G)\<close>)
           done
 
 
@@ -112,7 +112,7 @@ subsection{*Algorithms*}
 
           show ?case
             apply(simp only: g1 g2)
-            using Cons.IH[OF Cons.prems(1) Cons.prems(2) `set Es \<subseteq> set (edgesL G)` `set (e # accu) \<subseteq> set (edgesL G)` `distinct (Es @ (e # accu))`] by simp
+            using Cons.IH[OF Cons.prems(1) Cons.prems(2) \<open>set Es \<subseteq> set (edgesL G)\<close> \<open>set (e # accu) \<subseteq> set (edgesL G)\<close> \<open>distinct (Es @ (e # accu))\<close>] by simp
         next
           assume cFalse: "\<not> ?caseDistinction"
 
@@ -124,7 +124,7 @@ subsection{*Algorithms*}
 
           show ?case
             apply(simp only: g1 g2)
-            using Cons.IH[OF Cons.prems(1) Cons.prems(2) `set Es \<subseteq> set (edgesL G)` `set accu \<subseteq> set (edgesL G)` `distinct (Es @ accu)`] by simp
+            using Cons.IH[OF Cons.prems(1) Cons.prems(2) \<open>set Es \<subseteq> set (edgesL G)\<close> \<open>set accu \<subseteq> set (edgesL G)\<close> \<open>distinct (Es @ accu)\<close>] by simp
           qed
        qed
 
@@ -185,8 +185,8 @@ subsection{*Algorithms*}
         from Cons.prems(5) have "distinct (Es @ (e # accu))" by simp
         from Cons.prems(2) have validLG: "wf_list_graph (stateful_list_policy_to_list_graph \<lparr>hostsL = nodesL G, flows_fixL = edgesL G, flows_stateL = e # accu\<rparr>)"
           apply(rule wf_list_graph_stateful_list_policy_to_list_graph)
-           apply(fact `distinct (e # accu)`)
-          apply(fact `set (e # accu) \<subseteq> set (edgesL G)`)
+           apply(fact \<open>distinct (e # accu)\<close>)
+          apply(fact \<open>set (e # accu) \<subseteq> set (edgesL G)\<close>)
           done
 
         have "set (backlinks (e # accu)) = backflows (insert e (set accu))"
@@ -198,7 +198,7 @@ subsection{*Algorithms*}
           apply(simp add: backlinks_simp)
           apply(simp add: implc_get_offending_flows_simp_rule[OF validLG])
           apply(simp add: stateful_list_policy_to_list_graph_complies)
-          by(simp add: `set (backlinks (e # accu)) = backflows (insert e (set accu))`)
+          by(simp add: \<open>set (backlinks (e # accu)) = backflows (insert e (set accu))\<close>)
           
 
         show ?case
@@ -213,7 +213,7 @@ subsection{*Algorithms*}
 
           show ?case
             apply(simp only: g1 g2)
-            using Cons.IH[OF Cons.prems(1) Cons.prems(2) `set Es \<subseteq> set (edgesL G)` `set (e # accu) \<subseteq> set (edgesL G)` `distinct (Es @ (e # accu))`] by simp
+            using Cons.IH[OF Cons.prems(1) Cons.prems(2) \<open>set Es \<subseteq> set (edgesL G)\<close> \<open>set (e # accu) \<subseteq> set (edgesL G)\<close> \<open>distinct (Es @ (e # accu))\<close>] by simp
         next
           assume cFalse: "\<not> (?caseDistinction)"
 
@@ -225,7 +225,7 @@ subsection{*Algorithms*}
 
           show ?case
             apply(simp only: g1 g2)
-            using Cons.IH[OF Cons.prems(1) Cons.prems(2) `set Es \<subseteq> set (edgesL G)` `set accu \<subseteq> set (edgesL G)` `distinct (Es @ accu)`] by simp
+            using Cons.IH[OF Cons.prems(1) Cons.prems(2) \<open>set Es \<subseteq> set (edgesL G)\<close> \<open>set accu \<subseteq> set (edgesL G)\<close> \<open>distinct (Es @ accu)\<close>] by simp
           qed
        qed
 

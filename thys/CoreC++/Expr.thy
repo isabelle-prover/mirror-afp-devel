@@ -4,11 +4,11 @@
     Based on the Jinja theory J/Expr.thy by Tobias Nipkow 
 *)
 
-section {* Expressions *}
+section \<open>Expressions\<close>
 
 theory Expr imports Value begin
 
-subsection {* The expressions *}
+subsection \<open>The expressions\<close>
 
 
 datatype bop = Eq | Add     \<comment> \<open>names of binary operations\<close>
@@ -46,7 +46,7 @@ abbreviation (input)
   "e\<bullet>(C::)M(es) == Call e (Some C) M es"
 
 
-text{* The semantics of binary operators: *}
+text\<open>The semantics of binary operators:\<close>
 
 fun binop :: "bop \<times> val \<times> val \<Rightarrow> val option" where
   "binop(Eq,v\<^sub>1,v\<^sub>2) = Some(Bool (v\<^sub>1 = v\<^sub>2))"
@@ -66,7 +66,7 @@ lemma binop_not_ref[simp]:
 by(cases bop)auto
 
 
-subsection{*Free Variables*} 
+subsection\<open>Free Variables\<close> 
 
 primrec
   fv  :: "expr      \<Rightarrow> vname set"

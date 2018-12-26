@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* Jinja types *}
+section \<open>Jinja types\<close>
 
 theory Type imports Auxiliary begin
 

@@ -4,13 +4,13 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-section {* Variants of Regular Algebra *}
+section \<open>Variants of Regular Algebra\<close>
 
 theory Regular_Algebra_Variants
   imports Regular_Algebras Pratts_Counterexamples
 begin
 
-text {* Replacing Kozen's induction axioms by Boffa's leads to incompleteness. *}
+text \<open>Replacing Kozen's induction axioms by Boffa's leads to incompleteness.\<close>
 
 lemma (in star_dioid) 
   assumes "\<And>x. 1 + x \<cdot> x\<^sup>\<star> =  x\<^sup>\<star>"

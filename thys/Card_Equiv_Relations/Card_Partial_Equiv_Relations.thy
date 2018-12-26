@@ -1,13 +1,13 @@
 (*  Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Cardinality of Partial Equivalence Relations *}
+section \<open>Cardinality of Partial Equivalence Relations\<close>
 
 theory Card_Partial_Equiv_Relations
 imports
   Card_Equiv_Relations
 begin
 
-subsection {* Definition of Partial Equivalence Relation *}
+subsection \<open>Definition of Partial Equivalence Relation\<close>
 
 definition partial_equiv :: "'a set \<Rightarrow> ('a \<times> 'a) set \<Rightarrow> bool"
 where
@@ -69,7 +69,7 @@ next
   qed
 qed
 
-subsection {* Construction of all Partial Equivalence Relations for a Given Set *}
+subsection \<open>Construction of all Partial Equivalence Relations for a Given Set\<close>
 
 definition all_partial_equivs_on :: "'a set \<Rightarrow> (('a \<times> 'a) set) set"
 where
@@ -109,7 +109,7 @@ next
   qed
 qed
 
-subsection {* Injectivity of the Set Construction *}
+subsection \<open>Injectivity of the Set Construction\<close>
 
 lemma equiv_inject:
   assumes "equiv A R" "equiv B R"
@@ -133,7 +133,7 @@ proof -
   from this assms(1) show "k = k'" by simp
 qed
 
-subsection {* Cardinality Theorem of Partial Equivalence Relations *}
+subsection \<open>Cardinality Theorem of Partial Equivalence Relations\<close>
 
 theorem card_partial_equiv:
   assumes "finite A"

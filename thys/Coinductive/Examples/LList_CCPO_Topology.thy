@@ -3,7 +3,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-section {* A CCPO topology on lazy lists with examples *}
+section \<open>A CCPO topology on lazy lists with examples\<close>
 
 theory LList_CCPO_Topology imports
   CCPO_Topology
@@ -27,7 +27,7 @@ instance
 
 end
 
-subsection {* Continuity and closedness of predefined constants *}
+subsection \<open>Continuity and closedness of predefined constants\<close>
 
 lemma tendsto_mcont_llist: "mcont lSup lprefix lSup lprefix f \<Longrightarrow> f \<midarrow>l\<rightarrow> f l"
   by (auto simp add: Sup_llist_def[abs_def] intro!: tendsto_mcont)
@@ -99,7 +99,7 @@ next
   proof (rule ccontr)
     let ?C = "{ys. lprefix ys x \<and> ys \<noteq> x}"
     assume inf: "\<not> lfinite x"
-    note lSup_strict_prefixes[OF this] `open {x}`
+    note lSup_strict_prefixes[OF this] \<open>open {x}\<close>
     moreover have "chain ?C"
       using lprefixes_chain[of x] by (auto dest: chain_compr)
     moreover have "?C \<noteq> {}"
@@ -128,7 +128,7 @@ proof (rule closure_unique[symmetric])
     moreover have "lSup ?F = xs"
       by (rule lSup_finite_prefixes)
     ultimately show "xs \<in> T"
-      using `closed T` by (auto simp: closed_ccpo Sup_llist_def)
+      using \<open>closed T\<close> by (auto simp: closed_ccpo Sup_llist_def)
   qed
 qed (auto simp: closed_Q)
 
@@ -218,7 +218,7 @@ proof safe
   ultimately have "\<exists>xs. xs \<in> ?F \<and> (\<forall>ys\<ge>xs. ys \<in> ?F \<longrightarrow> P ys)"
     using open_ccpoD[of A ?F] by auto
   then show "\<exists>xs\<le>l. lfinite xs \<and> (\<forall>ys\<ge>xs. ys \<le> l \<longrightarrow> P ys)"
-    by (metis (lifting) `l \<in> A` `\<forall>l\<in>A. P l` le_llist_conv_lprefix mem_Collect_eq not_lfinite_lprefix_conv_eq)
+    by (metis (lifting) \<open>l \<in> A\<close> \<open>\<forall>l\<in>A. P l\<close> le_llist_conv_lprefix mem_Collect_eq not_lfinite_lprefix_conv_eq)
 next
   fix xs assume "xs \<le> l" "lfinite xs" "\<forall>ys\<ge>xs. ys \<le> l \<longrightarrow> P ys"
   then show "\<exists>S. open S \<and> l \<in> S \<and> Ball S P"
@@ -314,7 +314,7 @@ lemma isCont_lset[THEN isCont_o2[rotated]]: "isCont lset xs"
 
 
 
-subsection {* Define @{term lfilter} as continuous extension *}
+subsection \<open>Define @{term lfilter} as continuous extension\<close>
 
 definition "lfilter' P l = Lim (at' l) (\<lambda>xs. llist_of (filter P (list_of xs)))"
 
@@ -365,7 +365,7 @@ proof(rule tendsto_closed[where x=xs, OF closed_Collect_eq_isCont])
 qed(simp_all add: isCont_def tendsto_mcont_llist mcont_lfilter)
 
 
-subsection {* Define @{term lconcat} as continuous extension*}
+subsection \<open>Define @{term lconcat} as continuous extension\<close>
 
 definition "lconcat' xs = Lim (at' xs) (\<lambda>xs. foldr lappend (list_of xs) LNil)"
 
@@ -409,12 +409,12 @@ proof(rule tendsto_unique_eventually[OF at'_bot])
     fix xss'
     assume "lfinite xss'" "xss' \<le> xss"
     hence "\<forall>xs\<in>lset xss'. lfinite xs" using fin by (auto dest!: lprefix_lsetD)
-    with `lfinite xss'` show "lset (lconcat' xss') = (\<Union>xs\<in>lset xss'. lset xs)"
+    with \<open>lfinite xss'\<close> show "lset (lconcat' xss') = (\<Union>xs\<in>lset xss'. lset xs)"
       by (induct xss') auto
   qed
 qed (rule tendsto_intros tendsto_lconcat' tendsto_id_at')+
 
-subsection {* Define @{term ldropWhile} as continuous extension *}
+subsection \<open>Define @{term ldropWhile} as continuous extension\<close>
 
 definition "ldropWhile' P xs = Lim (at' xs) (\<lambda>xs. llist_of (dropWhile P (list_of xs)))"
 
@@ -453,11 +453,11 @@ lemma lhd_lfilter': "lhd (lfilter' P xs) = lhd (ldropWhile' (Not \<circ> P) xs)"
 proof cases
   assume "\<exists>x\<in>lset xs. P x"
   then obtain x where "x \<in> lset xs" and "P x" by blast
-  from `x \<in> lset xs` show ?thesis by induct (simp_all add: `P x`)
+  from \<open>x \<in> lset xs\<close> show ?thesis by induct (simp_all add: \<open>P x\<close>)
 qed simp
 
 
-subsection {* Define @{text ldrop} as continuous extension *}
+subsection \<open>Define \<open>ldrop\<close> as continuous extension\<close>
 
 primrec edrop where
   "edrop n [] = []"
@@ -504,7 +504,7 @@ lemma sorted_up: "sorted (up a xs)"
   by (induction xs arbitrary: a) (auto dest: set_upD intro: less_imp_le)
 
 
-subsection {* Define more functions on lazy lists as continuous extensions *}
+subsection \<open>Define more functions on lazy lists as continuous extensions\<close>
 
 definition "lup a xs = Lim (at' xs) (\<lambda>xs. llist_of (up a (list_of xs)))"
 
@@ -688,9 +688,9 @@ proof (rule order_tendstoI)
   { fix zs assume "ys \<le> zs" "llist_of zs \<le> xs"
     then obtain ys' where zs: "zs = ys @ ys'"
       by (auto simp: prefix_def less_eq_list_def)
-    with `llist_of zs \<le> xs` have nonneg: "0 \<le> sum_list ys'"
+    with \<open>llist_of zs \<le> xs\<close> have nonneg: "0 \<le> sum_list ys'"
       using xs by (auto simp: lprefix_conv_lappend sum_list_sum_nth intro: sum_nonneg)
-    note `a < sum_list ys`
+    note \<open>a < sum_list ys\<close>
     also have "sum_list ys \<le> sum_list zs"
       using zs add_mono[OF order_refl nonneg] by auto
     finally have "a < sum_list zs" . }

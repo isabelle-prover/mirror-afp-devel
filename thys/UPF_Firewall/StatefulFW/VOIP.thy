@@ -35,12 +35,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* A simple voice-over-ip model *}
+subsection \<open>A simple voice-over-ip model\<close>
 theory VOIP
   imports  StatefulCore
 begin
 
-text{*
+text\<open>
 
   After the FTP-Protocol which was rather simple we show the strength
   of the model with a more current and especially much more
@@ -69,14 +69,14 @@ text{*
           \begin{itemize}
             \item Admission Request (ARQ)
             \item Admission Reject (ARJ)
-            \item Admission Confirm (ACF) @{text "'a"}
+            \item Admission Confirm (ACF) \<open>'a\<close>
           \end{itemize}
     \item Call Signaling (Q.931, port 1720) The caller and the callee 
           agree on the dynamic ports over which the call will take 
           place.  
           \begin{itemize}
-            \item Setup @{text "port"}
-            \item Connect @{text "port"}
+            \item Setup \<open>port\<close>
+            \item Connect \<open>port\<close>
           \end{itemize}
     \item Stream (dynamic ports). The call itself. In reality, several 
           connections are used here.
@@ -96,14 +96,14 @@ text{*
   we are not interested in the messages from the callee to its
   gatekeeper. Incoming calls are not modelled either, they would
   require a different set of state transitions.  
-*}
+\<close>
 
 
-text{* 
+text\<open>
   The content of a packet now consists of one of the seven messages or
   a default one. It is parameterized with the type of the address that
   the gatekeeper returns.
-*}
+\<close>
 
 
 datatype 'a voip_msg =  ARQ
@@ -114,11 +114,11 @@ datatype 'a voip_msg =  ARQ
                      | Stream 
                      | Fin 
                      | other
-text{* 
+text\<open>
   As before, we need operators which check if a packet contains a
   specific content and ID, respectively if such a packet has appeared
   in the trace. 
-*}
+\<close>
 
 
 definition
@@ -139,10 +139,10 @@ definition
   "is_setup i port p = (id p = i \<and> content p = Setup port)"
 
 
-text{* 
-  We need also an operator @{text ports_open} to get access to the two
+text\<open>
+  We need also an operator \<open>ports_open\<close> to get access to the two
   dynamic ports.
-*}
+\<close>
 definition 
   ports_open :: "id \<Rightarrow> port \<times> port \<Rightarrow> (adr\<^sub>i\<^sub>p, 'a voip_msg) history \<Rightarrow> bool" where
   "ports_open i p L = ((not_before (is_fin i) (is_setup i (fst p)) L) \<and> 
@@ -151,10 +151,10 @@ definition
 
 
 
-text{* 
+text\<open>
   As we do not know which entity closes the connection, we define an
   operator which checks if the closer is the caller.
-*}
+\<close>
 fun 
   src_is_initiator :: "id \<Rightarrow> adr\<^sub>i\<^sub>p \<Rightarrow> (adr\<^sub>i\<^sub>p,'b voip_msg) history \<Rightarrow> bool" where
  "src_is_initiator i a [] = False"
@@ -165,11 +165,11 @@ fun
 
 
 
-text{*
+text\<open>
   The first state transition is for those messages which do not change
   the policy. In this scenario, this only happens for the Stream
   messages. 
-*}
+\<close>
 
 definition subnet_of_adr where
  "subnet_of_adr x = {{(a,b). a = x}}"
@@ -259,16 +259,16 @@ definition VOIP_TRPolicy where
  "VOIP_TRPolicy = policy2MON ( 
    ((VOIP_STA,VOIP_STD) \<Otimes>\<^sub>\<nabla> applyPolicy) o (\<lambda> (x,(y,z)). ((x,z),(x,(y,z)))))"
 
-text{* 
+text\<open>
   For a full protocol run, six states are needed. 
-*}
+\<close>
 datatype voip_states = S0 | S1 | S2 | S3 | S4 | S5
 
-text{*   
-  The constant @{text "is_voip"} checks if a trace corresponds to a
+text\<open>
+  The constant \<open>is_voip\<close> checks if a trace corresponds to a
   legal VoIP protocol, given the IP-addresses of the three entities,
   the ID, and the two dynamic ports. 
-*}
+\<close>
 
 fun is_voip :: "voip_states \<Rightarrow> address \<Rightarrow> address \<Rightarrow> address \<Rightarrow> id \<Rightarrow> port \<Rightarrow>
                 port \<Rightarrow>  (adr\<^sub>i\<^sub>p, address voip_msg) history \<Rightarrow> bool"
@@ -297,11 +297,11 @@ where
     is_voip S1 s d g i p1 p2 InL)))))) x)"
  
 
-text{* 
-  Finally, @{text "NB_voip"} returns the set of protocol traces which
+text\<open>
+  Finally, \<open>NB_voip\<close> returns the set of protocol traces which
   correspond to a correct protocol run given the three addresses, the
   ID, and the two dynamic ports.
-*}
+\<close>
 definition 
   NB_voip :: "address \<Rightarrow> address \<Rightarrow> address \<Rightarrow> id  \<Rightarrow> port \<Rightarrow> port \<Rightarrow>
               (adr\<^sub>i\<^sub>p, address voip_msg) history set" where

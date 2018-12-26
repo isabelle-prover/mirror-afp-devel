@@ -1,4 +1,4 @@
-section {* Abstract Theory of Ample Set Partial Order Reduction *}
+section \<open>Abstract Theory of Ample Set Partial Order Reduction\<close>
 
 theory Ample_Abstract
 imports

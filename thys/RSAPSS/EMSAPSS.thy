@@ -9,9 +9,9 @@ theory EMSAPSS
 imports SHA1 Wordarith
 begin
 
-text {* We define the encoding and decoding operations for the probabilistic
+text \<open>We define the encoding and decoding operations for the probabilistic
  signature scheme. Finally we show, that encoded messages always can be 
- verified *}
+ verified\<close>
 
 definition show_rightmost_bits:: "bv \<Rightarrow> nat \<Rightarrow> bv" (* extract n rightmost bits of a bit string*)
   where "show_rightmost_bits bvec n = rev (take n (rev bvec))"

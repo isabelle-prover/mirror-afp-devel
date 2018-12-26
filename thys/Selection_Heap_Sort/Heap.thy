@@ -1,26 +1,26 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-section {* Verification of Heap Sort *}
+section \<open>Verification of Heap Sort\<close>
 
 theory Heap
 imports RemoveMax
 begin
 
-subsection {* Defining tree and properties of heap *}
+subsection \<open>Defining tree and properties of heap\<close>
 
 datatype 'a Tree = "E" | "T" 'a "'a Tree" "'a Tree"
 
-text{*With {\em E} is represented empty tree and with {\em T\ \ \ 'a\ \ \ 'a
+text\<open>With {\em E} is represented empty tree and with {\em T\ \ \ 'a\ \ \ 'a
   Tree\ \ \ 'a Tree} is represented a node whose root element is of
 type {\em 'a} and its left and right branch is also a tree of
-type {\em 'a}. *}
+type {\em 'a}.\<close>
 
 primrec size :: "'a Tree \<Rightarrow> nat" where
   "size E = 0"
 | "size (T v l r) = 1 + size l + size r"
 
-text{* Definition of the function that makes a multiset from the given tree: *}
+text\<open>Definition of the function that makes a multiset from the given tree:\<close>
 
 primrec multiset where
   "multiset E = {#}"
@@ -29,8 +29,8 @@ primrec multiset where
 primrec val where
  "val (T v _ _) = v"
 
-text{* Definition of the function that has the value {\em True} if the tree is
-heap, otherwise it is {\em False}: *}
+text\<open>Definition of the function that has the value {\em True} if the tree is
+heap, otherwise it is {\em False}:\<close>
 
 fun is_heap :: "'a::linorder Tree \<Rightarrow> bool" where
   "is_heap E = True"
@@ -52,15 +52,15 @@ proof (rule Max_eqI[symmetric])
   fix y
   assume "y \<in> set_mset (multiset t)"
   thus "y \<le> val t"
-    using heap_top_geq [of y t] `is_heap t`
+    using heap_top_geq [of y t] \<open>is_heap t\<close>
     by simp
 next
   show "val t \<in> set_mset (multiset t)"
-    using `t \<noteq> E`
+    using \<open>t \<noteq> E\<close>
     by (cases t) auto
 qed simp
 
-text{* The next step is to define function {\em remove\_max}, but the
+text\<open>The next step is to define function {\em remove\_max}, but the
 question is weather implementation of {\em remove\_max} depends on
 implementation of the functions {\em is\_heap} and {\em multiset}. The
 answer is negative. This suggests that another step of refinement
@@ -68,7 +68,7 @@ could be added before definition of function {\em
   remove\_max}. Additionally, there are other reasons why this should
 be done, for example, function {\em remove\_max} could be implemented
 in functional or in imperative manner.
-*}
+\<close>
 
 locale Heap =  Collection empty is_empty of_list  multiset for 
   empty :: "'b" and 
@@ -89,7 +89,7 @@ locale Heap =  Collection empty is_empty of_list  multiset for
   assumes remove_max_val: 
   "\<lbrakk> \<not> is_empty t; (m, t') = remove_max t\<rbrakk> \<Longrightarrow> m = val (as_tree t)"
 
-text{* It is very easy to prove that locale {\em Heap} is sublocale of locale {\em RemoveMax} *}
+text\<open>It is very easy to prove that locale {\em Heap} is sublocale of locale {\em RemoveMax}\<close>
 
 sublocale Heap < 
   RemoveMax empty is_empty of_list multiset remove_max "\<lambda> t. is_heap (as_tree t)"

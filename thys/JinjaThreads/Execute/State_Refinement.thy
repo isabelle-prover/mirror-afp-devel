@@ -2,9 +2,9 @@
     Author:     Andreas Lochbihler
 *)
 
-chapter {* Schedulers *}
+chapter \<open>Schedulers\<close>
 
-section {* Refinement for multithreaded states *}
+section \<open>Refinement for multithreaded states\<close>
 
 theory State_Refinement
 imports

@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* FTP and VoIP Protocol *}
+subsection \<open>FTP and VoIP Protocol\<close>
 theory  
   FTPVOIP
   imports 
@@ -56,13 +56,13 @@ datatype  ftpvoip =  ARQ
                      | other
 
 
-text{* 
+text\<open>
   We now also make use of the ID field of a packet. It is used as session ID and we make the 
   assumption that they are all unique among different protocol runs.
 
   At first, we need some predicates which check if a packet is a specific FTP message and has 
   the correct session ID. 
-*}
+\<close>
  
 definition
   FTPVOIP_is_init :: "id \<Rightarrow> (adr\<^sub>i\<^sub>p,  ftpvoip ) packet \<Rightarrow> bool" where 
@@ -140,19 +140,19 @@ definition
   "FTPVOIP_is_setup i port p = (id p = i \<and> content p = Setup port)"
 
 
-text{* 
-  We need also an operator @{text ports_open} to get access to the two
+text\<open>
+  We need also an operator \<open>ports_open\<close> to get access to the two
   dynamic ports.
-*}
+\<close>
 definition 
    FTPVOIP_ports_open :: "id \<Rightarrow> port \<times> port \<Rightarrow> (adr\<^sub>i\<^sub>p,  ftpvoip) history \<Rightarrow> bool" where
   "FTPVOIP_ports_open i p L = ((not_before (FTPVOIP_is_fin i) (FTPVOIP_is_setup i (fst p)) L) \<and> 
                              not_before (FTPVOIP_is_fin i) (FTPVOIP_is_connect i (snd p)) L)"
 
-text{* 
+text\<open>
   As we do not know which entity closes the connection, we define an
   operator which checks if the closer is the caller.
-*}
+\<close>
 fun 
   FTPVOIP_src_is_initiator :: "id \<Rightarrow> adr\<^sub>i\<^sub>p \<Rightarrow> (adr\<^sub>i\<^sub>p,ftpvoip) history \<Rightarrow> bool" where
  "FTPVOIP_src_is_initiator i a [] = False"
@@ -243,11 +243,11 @@ subnet_of_int_def id_def FTPVOIP_port_open_def
 datatype ftp_states2 = FS0 | FS1 | FS2 | FS3
 datatype voip_states2 = V0 | V1 | V2 | V3 | V4 | V5
 
-text{*   
-  The constant @{text "is_voip"} checks if a trace corresponds to a
+text\<open>
+  The constant \<open>is_voip\<close> checks if a trace corresponds to a
   legal VoIP protocol, given the IP-addresses of the three entities,
   the ID, and the two dynamic ports. 
-*}
+\<close>
 
 fun FTPVOIP_is_voip :: "voip_states2 \<Rightarrow> address \<Rightarrow> address \<Rightarrow> address \<Rightarrow> id \<Rightarrow> port \<Rightarrow>
                 port \<Rightarrow>  (adr\<^sub>i\<^sub>p, ftpvoip) history \<Rightarrow> bool"
@@ -276,11 +276,11 @@ where
     FTPVOIP_is_voip V1 s d g i p1 p2 InL)))))) x)"
  
 
-text{* 
-  Finally, @{text "NB_voip"} returns the set of protocol traces which
+text\<open>
+  Finally, \<open>NB_voip\<close> returns the set of protocol traces which
   correspond to a correct protocol run given the three addresses, the
   ID, and the two dynamic ports.
-*}
+\<close>
 definition 
   FTPVOIP_NB_voip :: "address \<Rightarrow> address \<Rightarrow> address \<Rightarrow> id  \<Rightarrow> port \<Rightarrow> port \<Rightarrow>
               (adr\<^sub>i\<^sub>p, ftpvoip) history set" where

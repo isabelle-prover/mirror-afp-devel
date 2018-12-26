@@ -43,7 +43,7 @@ where
 
 value "cnf test = {}"
 
-text {* Sanity check for correctness *}
+text \<open>Sanity check for correctness\<close>
 
 type_synonym env = "nat \<Rightarrow> bool"
 

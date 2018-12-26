@@ -210,7 +210,7 @@ next
   have "atom v \<sharp> \<Gamma>" and  "atom ` domA (delete v \<Delta>) \<sharp>* \<Gamma>"
     by (auto simp add: fresh_star_def)
   from 2(1)[OF this(2)]
-  show ?case by (simp del: fun_meet_simp add: Afix_lookup_fresh[OF `atom v \<sharp> \<Gamma>`])
+  show ?case by (simp del: fun_meet_simp add: Afix_lookup_fresh[OF \<open>atom v \<sharp> \<Gamma>\<close>])
 qed
 
 lemma Afix_append_fresh:

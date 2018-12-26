@@ -40,14 +40,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section{* Parallel Composition*}
+section\<open>Parallel Composition\<close>
 theory  
   ParallelComposition
   imports 
     ElementaryPolicies
 begin
 
-text{* 
+text\<open>
   The following combinators are based on the idea that two policies are executed in parallel. 
   Since both input and the output can differ, we chose to pair them. 
   
@@ -60,13 +60,13 @@ text{*
   In any case, although we have strictly speaking a pairing of decisions and not a nesting of 
   them, we will apply the same notational conventions as for the latter, i.e. as for 
   flattening.
-*}
+\<close>
 
-subsection{* Parallel Combinators: Foundations *}
-text {* 
+subsection\<open>Parallel Combinators: Foundations\<close>
+text \<open>
   There are four possible semantics how the decision can be combined, thus there are four 
   parallel composition operators. For each of them, we prove several properties. 
-*}
+\<close>
 
 definition prod_orA ::"['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)"  (infixr "\<Otimes>\<^sub>\<or>\<^sub>A" 55)
   where "p1 \<Otimes>\<^sub>\<or>\<^sub>A p2 =
@@ -132,9 +132,9 @@ lemma prod_orD_quasi_commute: "p2 \<Otimes>\<^sub>\<or>\<^sub>D p1 = (((\<lambda
   apply (simp split: option.splits decision.splits)
   done
 
-text{* 
+text\<open>
   The following two combinators are by definition non-commutative, but still strict. 
-*}
+\<close>
   
 definition prod_1 :: "['\<alpha>\<mapsto>'\<beta>, '\<gamma> \<mapsto>'\<delta>] \<Rightarrow> ('\<alpha>\<times>'\<gamma> \<mapsto> '\<beta>\<times>'\<delta>)" (infixr "\<Otimes>\<^sub>1" 55)
   where "p1 \<Otimes>\<^sub>1 p2 \<equiv>
@@ -212,11 +212,11 @@ lemma mt_prod_2_id[simp]:"\<emptyset> \<Otimes>\<^sub>2\<^sub>I p = \<emptyset>"
   apply (simp add: prod_2_id_def prod_2_def)
   done
     
-subsection{* Combinators for Transition Policies *}
-text {* 
+subsection\<open>Combinators for Transition Policies\<close>
+text \<open>
   For constructing transition policies, two additional combinators are required: one combines 
   state transitions by pairing the states, the other works equivalently on general maps. 
-*}
+\<close>
   
 definition parallel_map :: "('\<alpha> \<rightharpoonup> '\<beta>) \<Rightarrow> ('\<delta> \<rightharpoonup> '\<gamma>) \<Rightarrow> 
                             ('\<alpha> \<times> '\<delta>  \<rightharpoonup> '\<beta> \<times> '\<gamma>)" (infixr "\<Otimes>\<^sub>M" 60) 
@@ -231,11 +231,11 @@ where
    "p1 \<Otimes>\<^sub>S p2 = (p1 \<Otimes>\<^sub>M p2) o (\<lambda> (a,b,c). ((a,b),a,c))"
 
 
-subsection{* Range Splitting *}
-text{* 
+subsection\<open>Range Splitting\<close>
+text\<open>
   The following combinator is a special case of both a parallel composition operator and a 
   range splitting operator. Its primary use case is when combining a policy with state transitions. 
-*}
+\<close>
 
 definition comp_ran_split :: "[('\<alpha> \<rightharpoonup> '\<gamma>) \<times> ('\<alpha> \<rightharpoonup>'\<gamma>), 'd \<mapsto> '\<beta>] \<Rightarrow> ('d \<times> '\<alpha>) \<mapsto> ('\<beta> \<times> '\<gamma>)"
                           (infixr "\<Otimes>\<^sub>\<nabla>" 100)
@@ -244,7 +244,7 @@ where "P \<Otimes>\<^sub>\<nabla> p \<equiv> \<lambda>x. case p (fst x) of
                         | \<lfloor>deny y\<rfloor> \<Rightarrow>  (case ((snd P) (snd x)) of \<bottom> \<Rightarrow> \<bottom> | \<lfloor>z\<rfloor> \<Rightarrow> \<lfloor>deny (y,z)\<rfloor>)
                         | \<bottom> \<Rightarrow> \<bottom>"
 
-text{* An alternative characterisation of the operator is as follows: *}
+text\<open>An alternative characterisation of the operator is as follows:\<close>
 lemma comp_ran_split_charn:
   "(f, g)  \<Otimes>\<^sub>\<nabla> p = (
 (((p  \<triangleright> Allow)\<Otimes>\<^sub>\<or>\<^sub>A (A\<^sub>p f)) \<Oplus> 
@@ -257,7 +257,7 @@ lemma comp_ran_split_charn:
   apply (auto)
   done
 
-subsection {* Distributivity of the parallel combinators *}
+subsection \<open>Distributivity of the parallel combinators\<close>
   
 lemma distr_or1_a: "(F = F1 \<Oplus> F2) \<Longrightarrow>  (((N  \<Otimes>\<^sub>1 F) o f) = 
                (((N \<Otimes>\<^sub>1 F1) o f)  \<Oplus> ((N   \<Otimes>\<^sub>1 F2)  o f))) "

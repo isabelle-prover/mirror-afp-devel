@@ -1,4 +1,4 @@
-section {* Deterministic Co-Generalized Co-Büchi Automata *}
+section \<open>Deterministic Co-Generalized Co-Büchi Automata\<close>
 
 theory DGCA
 imports

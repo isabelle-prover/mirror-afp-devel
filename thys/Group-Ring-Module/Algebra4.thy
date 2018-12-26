@@ -3896,8 +3896,8 @@ lemma (in Ring) sum_of_prideals:"\<lbrakk>\<forall>l \<le> n. f l \<in> carrier 
 apply (simp add:sum_of_prideals0)
 done
 
-text {* later, we show @{text "sum_pr_ideals"} is the least ideal containing
-        @{text "{f 0, f 1,\<dots>, f n}"} *}
+text \<open>later, we show \<open>sum_pr_ideals\<close> is the least ideal containing
+        \<open>{f 0, f 1,\<dots>, f n}\<close>\<close>
 
 lemma (in Ring) sum_of_prideals1:"\<forall>f. (\<forall>l \<le> n. f l \<in> carrier R) \<longrightarrow>
                                     f ` {i. i \<le> n} \<subseteq> (sum_pr_ideals R f n)"
@@ -4292,9 +4292,9 @@ apply (simp add:aGroup.ag_carrier_carrier)+
 apply (simp add:aGroup.agop_gop)
 done
 
-text{* Following lemma is not necessary to define a quotient ring. But
+text\<open>Following lemma is not necessary to define a quotient ring. But
 it makes clear that the binary operation2 of the quotient ring is well
-defined. *}
+defined.\<close>
 
 lemma (in Ring) quotient_ring_tr1:"\<lbrakk>ideal R I; a1 \<in> carrier R; a2 \<in> carrier R;
                 b1 \<in> carrier R; b2 \<in> carrier R;
@@ -5324,8 +5324,8 @@ apply (subgoal_tac "(sum_pr_ideals R f n) \<in> S")
  apply (simp add: sum_of_prideals)
 done
 
-text{* This proves that @{text "(sum_pr_ideals R f n)"} is the smallest ideal containing
- @{text "f ` (Nset n)"} *}
+text\<open>This proves that \<open>(sum_pr_ideals R f n)\<close> is the smallest ideal containing
+ \<open>f ` (Nset n)\<close>\<close>
 
 primrec ideal_n_prod::"[('a, 'm) Ring_scheme, nat,  nat \<Rightarrow> 'a set] \<Rightarrow> 'a set"
 where
@@ -5485,7 +5485,7 @@ lemma (in Ring) ideal_prod_el2:"\<lbrakk>ideal R I; ideal R J; a \<in> (I \<diam
 by (frule ideal_prod_la2 [of "I" "J"], assumption+,
        rule subsetD, assumption+)
 
-text{* @{text "i\<Pi>\<^bsub>R,n\<^esub> J"} is the product of ideals *}
+text\<open>\<open>i\<Pi>\<^bsub>R,n\<^esub> J\<close> is the product of ideals\<close>
 lemma (in Ring) ele_n_prodTr0:"\<lbrakk>\<forall>k \<le> (Suc n). ideal R (J k);
              a \<in> i\<Pi>\<^bsub>R,(Suc n)\<^esub> J \<rbrakk> \<Longrightarrow> a \<in> (i\<Pi>\<^bsub>R,n\<^esub> J) \<and> a \<in> (J (Suc n))"
 apply (simp add:Nset_Suc[of n])

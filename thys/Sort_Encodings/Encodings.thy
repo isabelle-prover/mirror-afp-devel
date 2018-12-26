@@ -1,89 +1,89 @@
-section{* End Results in Locale-Free Form *}
+section\<open>End Results in Locale-Free Form\<close>
 theory Encodings
 imports G T E
 begin
 
-text{* This section contains the outcome of our type-encoding results,
+text\<open>This section contains the outcome of our type-encoding results,
 presented in a locale-free fashion. It is not very useful
 from an Isabelle development point of view, where the locale theorems are fine.
 
 Rather, this is aimed as a quasi-self-contained formal documentation of
-the overall results for the non-Isabelle-experts. *}
+the overall results for the non-Isabelle-experts.\<close>
 
 
-subsection {* Soundness *}
+subsection \<open>Soundness\<close>
 
-text{* In the soundness theorems below, we employ the following Isabelle types:
+text\<open>In the soundness theorems below, we employ the following Isabelle types:
 \\- type variables (parameters):
-\\--- @{text "'tp"}, of types
-\\--- @{text "'fsym"}, of function symbols
-\\--- @{text "'psym"}, of predicate symbols
+\\--- \<open>'tp\<close>, of types
+\\--- \<open>'fsym\<close>, of function symbols
+\\--- \<open>'psym\<close>, of predicate symbols
 %
-\\- a fixed countable universe @{text "univ"} for the carrier of the models
+\\- a fixed countable universe \<open>univ\<close> for the carrier of the models
 %
 \\
 and various operators on these types:
 
 (1) the constitutive parts of FOL signatures:
 \\---- the boolean predicates
-@{text "wtFsym"} and @{text "wtPsym"}, indicating the ``well-typed'' function and predicate
+\<open>wtFsym\<close> and \<open>wtPsym\<close>, indicating the ``well-typed'' function and predicate
 symbols; these are just means to select only subsets of these symbols
 for consideration in the signature
 \\---- the operators arOf and resOf, giving the arity and the result type
 of function symbols
 \\---- the operator parOf, giving the arity of predicate symbols
 
-(2) the problem, @{text "\<Phi>"}, which is a set of clauses over the considered signature
+(2) the problem, \<open>\<Phi>\<close>, which is a set of clauses over the considered signature
 
 (3) a partition of the types in:
-\\--- @{text "tpD"}, the types that should be decorated in any case
-\\--- @{text "tpFD"}, the types that should be decorated in a featherweight fashion
-\\--- for guards only, a further refinement of @{text "tpD"}, indicating, as @{text "tpCD"},
+\\--- \<open>tpD\<close>, the types that should be decorated in any case
+\\--- \<open>tpFD\<close>, the types that should be decorated in a featherweight fashion
+\\--- for guards only, a further refinement of \<open>tpD\<close>, indicating, as \<open>tpCD\<close>,
 the types that should be classically (i.e., traditionally) decorated
 (these partitionings are meant to provide a uniform treatment of the
 three styles of encodings:
 traditional, lightweight and featherweight)
 
 (4) the constitutive parts of a structure over the considered signature:
-\\---- @{text "intT"}, the interpretation of each type as a unary predicate (essentially, a set)
+\\---- \<open>intT\<close>, the interpretation of each type as a unary predicate (essentially, a set)
 over an arbitrary type 'univ
-\\---- @{text "intF"} and @{text "intP"}, the interpretations of the function and predicate symbols
-as actual functions and predicates over @{text "univ"}.
+\\---- \<open>intF\<close> and \<open>intP\<close>, the interpretations of the function and predicate symbols
+as actual functions and predicates over \<open>univ\<close>.
 
 
-*}
+\<close>
 
 
-text{* \ \\ \bf Soundness of the tag encodings: \ \\ *}
+text\<open>\ \\ \bf Soundness of the tag encodings: \ \\\<close>
 
-text{* The assumptions of the tag soundness theorems are the following:
+text\<open>The assumptions of the tag soundness theorems are the following:
 
-(a)  @{text "ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD"},
+(a)  \<open>ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD\<close>,
 stating that:
-\\--- @{text "(wtFsym, wtPsym, arOf, resOf, parOf)"} form a countable signature
-\\--- @{text "\<Phi>"} is a well-typed problem over this signature
-\\--- @{text "infTp"} is an indication of the types that the problem guarantees as infinite
+\\--- \<open>(wtFsym, wtPsym, arOf, resOf, parOf)\<close> form a countable signature
+\\--- \<open>\<Phi>\<close> is a well-typed problem over this signature
+\\--- \<open>infTp\<close> is an indication of the types that the problem guarantees as infinite
 in all models
-\\--- @{text "tpD"} and @{text "tpFD"} are disjoint and all types that are not
- marked as @{text "tpD"} or @{text "tpFD"}
-are deemed safe by the monotonicity calculus from @{text "Mcalc"}
+\\--- \<open>tpD\<close> and \<open>tpFD\<close> are disjoint and all types that are not
+ marked as \<open>tpD\<close> or \<open>tpFD\<close>
+are deemed safe by the monotonicity calculus from \<open>Mcalc\<close>
 
-(b) @{text "CM.Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP"}
-says that @{text "(intT, intF, intP)"} is a model for @{text "\<Phi>"} (hence @{text "\<Phi>"} is satisfiable)
+(b) \<open>CM.Model wtFsym wtPsym arOf resOf parOf \<Phi> intT intF intP\<close>
+says that \<open>(intT, intF, intP)\<close> is a model for \<open>\<Phi>\<close> (hence \<open>\<Phi>\<close> is satisfiable)
 
 The conclusion says that we obtain a model of the untyped version of the problem
-(after suitable tags and axioms have been added): *}
+(after suitable tags and axioms have been added):\<close>
 
 
-text{* Because of the assumptions on tpD and tpFD, we have the following particular cases
+text\<open>Because of the assumptions on tpD and tpFD, we have the following particular cases
 of our parameterized tag encoding:
-\\-- if @{text "tpD"} is taked to be everywhere true (hence @{text "tpFD"} becomes everywhere false), we
+\\-- if \<open>tpD\<close> is taked to be everywhere true (hence \<open>tpFD\<close> becomes everywhere false), we
 obtain the traditional tag encoding
-\\-- if @{text "tpD"} is taken to be true precisely when the monotonicity calculus fails,
+\\-- if \<open>tpD\<close> is taken to be true precisely when the monotonicity calculus fails,
 we obtain the lightweight tag encoding
-\\-- if @{text "tpFD"} is taken to be true precisely when the monotonicity calculus fails,
+\\-- if \<open>tpFD\<close> is taken to be true precisely when the monotonicity calculus fails,
 we obtain the featherweight tag encoding
-*}
+\<close>
 
 theorem tags_soundness:
 fixes wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
@@ -136,27 +136,27 @@ unfolding M_MonotModel_def MonotModel_def apply safe
 done
 
 
-text{* \ \\ \bf Soundness of the guard encodings: \ \\ *}
+text\<open>\ \\ \bf Soundness of the guard encodings: \ \\\<close>
 
-text{* Here the assumptions and conclusion have a similar shapes as those
+text\<open>Here the assumptions and conclusion have a similar shapes as those
 for the tag encodings. The difference is in the first assumption,
-@{text "ProblemIkTpartG wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD tpCD"},
-which consists of @{text "ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD"} together
-with the following assumptions about @{text "tpCD"}:
-\\-- @{text "tpCD"} is included in @{text "tpD"}
-\\-- if a result type of an operation symbol is in @{text "tpD"}, then so are all the types in its arity
-*}
+\<open>ProblemIkTpartG wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD tpCD\<close>,
+which consists of \<open>ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp tpD tpFD\<close> together
+with the following assumptions about \<open>tpCD\<close>:
+\\-- \<open>tpCD\<close> is included in \<open>tpD\<close>
+\\-- if a result type of an operation symbol is in \<open>tpD\<close>, then so are all the types in its arity
+\<close>
 
-text{* We have the following particular cases of our parameterized guard encoding:
-\\-- if @{text "tpD"} and @{text "tpCD"} are taked to be everywhere true
-(hence @{text "tpFD"} becomes everywhere false),
+text\<open>We have the following particular cases of our parameterized guard encoding:
+\\-- if \<open>tpD\<close> and \<open>tpCD\<close> are taked to be everywhere true
+(hence \<open>tpFD\<close> becomes everywhere false),
 we obtain the traditional guard encoding
-\\-- if @{text "tpCD"} is taken to be false and @{text "tpD"} is taken to be true precisely when the
+\\-- if \<open>tpCD\<close> is taken to be false and \<open>tpD\<close> is taken to be true precisely when the
 monotonicity calculus fails,
 we obtain the lightweight tag encoding
-\\-- if @{text "tpFD"} is taken to be true precisely when the monotonicity calculus fails,
+\\-- if \<open>tpFD\<close> is taken to be true precisely when the monotonicity calculus fails,
 we obtain the featherweight tag encoding
-*}
+\<close>
 
 theorem guards_soundness:
 fixes wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
@@ -210,17 +210,17 @@ unfolding M_MonotModel_def MonotModel_def apply safe
 done
 
 
-subsection {* Completeness *}
+subsection \<open>Completeness\<close>
 
-text{* The setting is similar to the one for completeness, except for the following point:
+text\<open>The setting is similar to the one for completeness, except for the following point:
 
 (3) The constitutive parts of a structure over the untyped signature
 resulted from the addition of the tags or guards followed by
-the deletion of the types: @{text "(D, eintF, eintP)"}
-*}
+the deletion of the types: \<open>(D, eintF, eintP)\<close>
+\<close>
 
 
-text{* \ \\ \bf Completeness of the tag encodings \ \\ *}
+text\<open>\ \\ \bf Completeness of the tag encodings \ \\\<close>
 
 
 theorem tags_completeness:
@@ -271,7 +271,7 @@ proof-
   done
 qed
 
-text{* \ \\ \bf Completeness of the guard encodings \ \\ *}
+text\<open>\ \\ \bf Completeness of the guard encodings \ \\\<close>
 
 theorem guards_completeness:
 fixes wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"

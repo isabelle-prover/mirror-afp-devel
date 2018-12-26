@@ -1,4 +1,4 @@
-section{* Examples of Pseudo-Hoops *}
+section\<open>Examples of Pseudo-Hoops\<close>
 
 theory Examples
 imports SpecialPseudoHoops LatticeProperties.Lattice_Ordered_Group

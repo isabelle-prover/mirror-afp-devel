@@ -1,12 +1,12 @@
-section {* The exact call cache is a map *}
+section \<open>The exact call cache is a map\<close>
 
 theory ExCFSV
 imports ExCF
 begin
 
-subsection {* Preparations *}
+subsection \<open>Preparations\<close>
 
-text {*
+text \<open>
 Before we state the main result of this section, we need to define
 \begin{itemize}
 \item the set of binding environments occurring in a semantic value (which exists only if it is a closure),
@@ -14,7 +14,7 @@ Before we state the main result of this section, we need to define
 \item the set of contour counters occurring in a semantic value and
 \item the set of contour counters occurring in a variable environment.
 \end{itemize}
-*}
+\<close>
 
 fun benv_in_d :: "d \<Rightarrow> benv set"
   where "benv_in_d (DC (l,\<beta>)) = {\<beta>}"
@@ -30,9 +30,9 @@ fun contours_in_d :: "d \<Rightarrow> contour set"
 definition contours_in_ve :: "venv \<Rightarrow> contour set"
   where "contours_in_ve ve = \<Union>{contours_in_d d | d . d \<in> ran ve}"
 
-text {*
+text \<open>
 The following 6 lemmas allow us to calculate the above definition, when applied to constructs used in our semantics function, e.g. map updates, empty maps etc.
-*}
+\<close>
 
 lemma benv_in_ve_upds:
   assumes eq_length: "length vs = length ds"
@@ -46,7 +46,7 @@ proof
   moreover have "ran (ve(map (\<lambda>v. (v, b'')) vs [\<mapsto>] ds)) \<subseteq> ran ve \<union> set ds" using eq_length by(auto intro!:ran_upds) 
   ultimately
   have "d \<in> ran ve \<or> d \<in> set ds" by auto
-  thus "Q \<beta>" using assms(2,3) `\<beta>\<in>benv_in_d d` unfolding benv_in_ve_def by auto
+  thus "Q \<beta>" using assms(2,3) \<open>\<beta>\<in>benv_in_d d\<close> unfolding benv_in_ve_def by auto
 qed
 
 lemma benv_in_eval:
@@ -63,7 +63,7 @@ proof(cases v)
       case None with Some R show ?thesis by simp next
       case (Some d)
         hence "d \<in> ran ve" unfolding ran_def by blast
-        thus ?thesis using Some `\<beta> (fst var) = Some cnt` R assms(1)
+        thus ?thesis using Some \<open>\<beta> (fst var) = Some cnt\<close> R assms(1)
           unfolding benv_in_ve_def by auto
     qed
   qed next
@@ -121,28 +121,28 @@ proof(cases f)
       case None with Some R show ?thesis by simp next
       case (Some d)
         hence "d \<in> ran ve" unfolding ran_def by blast
-        thus ?thesis using Some `\<beta> (fst var) = Some cnt` R `\<forall>b'\<in>contours_in_ve ve. Q b'`
+        thus ?thesis using Some \<open>\<beta> (fst var) = Some cnt\<close> R \<open>\<forall>b'\<in>contours_in_ve ve. Q b'\<close>
           unfolding contours_in_ve_def
           by auto
     qed
   qed next
-  case (L l) thus ?thesis using `\<forall>b'\<in> ran \<beta>. Q b'` by simp next
+  case (L l) thus ?thesis using \<open>\<forall>b'\<in> ran \<beta>. Q b'\<close> by simp next
   case C thus ?thesis by simp next
   case P thus ?thesis by simp
 qed
 
-subsection {* The proof *}
+subsection \<open>The proof\<close>
 
-text {*
-The set returned by @{text \<F>} and @{text \<C>} is actually a partial map from callsite/binding environment pairs to called values. The corresponding predicate in Isabelle is @{text single_valued}.
+text \<open>
+The set returned by \<open>\<F>\<close> and \<open>\<C>\<close> is actually a partial map from callsite/binding environment pairs to called values. The corresponding predicate in Isabelle is \<open>single_valued\<close>.
 
-We would like to show an auxiliary result about the contour counter passed to @{text \<F>} and @{text \<C>} (such that it is an unused counter when passed to @{text \<F>} and others) first. Unfortunately, this is not possible with induction proofs over fixed points: While proving the inductive case, one does not show results for the function in question, but for an information-theoretical approximation. Thus, any previously shown results are not available.
+We would like to show an auxiliary result about the contour counter passed to \<open>\<F>\<close> and \<open>\<C>\<close> (such that it is an unused counter when passed to \<open>\<F>\<close> and others) first. Unfortunately, this is not possible with induction proofs over fixed points: While proving the inductive case, one does not show results for the function in question, but for an information-theoretical approximation. Thus, any previously shown results are not available.
 We therefore intertwine the two inductions in one large proof.
 
 This is a proof by fixpoint induction, so we have are obliged to show that the predicate is admissible and that it holds for the base case, i.e. the empty set. For the proof of admissibiliy, @{theory HOLCF} provides a number of introduction lemmas that, together with some additions in @{theory "Shivers-CFA.HOLCFUtils"} and the continuity lemmas, mechanically proove admissibiliy. The base case is trivial.
 
-The remaining case is the preservation of the properties when applying the recursive equations to a function known to have have the desired property. Here, we break the proof into the various cases that occur in the definitions of @{text \<F>} and @{text \<C>} and use the induction hypothesises.
-*}
+The remaining case is the preservation of the properties when applying the recursive equations to a function known to have have the desired property. Here, we break the proof into the various cases that occur in the definitions of \<open>\<F>\<close> and \<open>\<C>\<close> and use the induction hypothesises.
+\<close>
 
 lemma cc_single_valued':
       "\<lbrakk> \<forall>b' \<in> contours_in_ve ve. b' < b
@@ -172,7 +172,7 @@ next
 next
   case (Next evalF evalC)
 
-  txt {* Nicer names for the hypothesises: *}
+  txt \<open>Nicer names for the hypothesises:\<close>
   note hyps_F_sv = Next.hyps(1)[THEN conjunct1]
   note hyps_F_b = Next.hyps(1)[THEN conjunct2, THEN bspec]
   note hyps_C_sv = Next.hyps(2)[THEN conjunct1]
@@ -181,7 +181,7 @@ next
   case (1 d ds ve b)
   thus ?case
   proof (cases "(d,ds,ve,b)" rule:fstate_case, auto simp del:Un_insert_left Un_insert_right)
-  txt {* Case Closure *}
+  txt \<open>Case Closure\<close>
     fix lab' and vs :: "var list" and c and \<beta>' :: benv
     assume prem_d: "\<forall>b'\<in>ran \<beta>'. b' < b"
     assume eq_length: "length vs = length ds"
@@ -204,7 +204,7 @@ next
     thus "\<exists>b'. b' \<in> ran \<beta> \<and> b \<le> b'"
       by (auto dest: hyps_C_b[OF new b_dom_beta b_dom_ve])
   next
-  txt {* Case Plus *}
+  txt \<open>Case Plus\<close>
     fix cp and i1 and i2 and cnt
     assume "\<forall>b'\<in>contours_in_d cnt. b' < b"
     hence b_dom_d: "\<forall>b'\<in>contours_in_d cnt. b' < nb b cp" by auto
@@ -225,7 +225,7 @@ next
     thus "\<exists>b'. b' \<in> ran \<beta> \<and> b \<le> b'"
       by (auto dest: hyps_F_b[OF b_dom_ve b_dom_d b_dom_ds])
   next
-  txt {* Case If (true branch) *}
+  txt \<open>Case If (true branch)\<close>
     fix cp1 cp2 i cntt cntf
     assume "\<forall>b'\<in>contours_in_d cntt. b' < b"
     hence b_dom_d: "\<forall>b'\<in>contours_in_d cntt. b' < nb b cp1" by auto
@@ -246,7 +246,7 @@ next
     thus "\<exists>b'. b' \<in> ran \<beta> \<and> b \<le> b'"
       by (auto dest: hyps_F_b[OF b_dom_ve b_dom_d b_dom_ds])
   next
-  txt {* Case If (false branch). Variable names swapped for easier code reuse. *}
+  txt \<open>Case If (false branch). Variable names swapped for easier code reuse.\<close>
     fix cp2 cp1 i cntf cntt
     assume "\<forall>b'\<in>contours_in_d cntt. b' < b"
     hence b_dom_d: "\<forall>b'\<in>contours_in_d cntt. b' < nb b cp1" by auto
@@ -271,7 +271,7 @@ next
   case (2 ve b c \<beta>')
   thus ?case
   proof (cases c, auto simp add:HOL.Let_def simp del:Un_insert_left Un_insert_right evalV.simps)
-  txt {* Case App *}
+  txt \<open>Case App\<close>
     fix lab' f vs
 
     have prem2': "\<forall>b'\<in>ran \<beta>'. b' < nb b lab'" using "2.prems"(2) by auto
@@ -301,7 +301,7 @@ next
     thus "\<exists>b'. b' \<in> ran \<beta> \<and> b \<le> b'"
       by (auto dest: hyps_F_b[OF b_dom_ve b_dom_d b_dom_ds])
   next
-  txt {* Case Let *}
+  txt \<open>Case Let\<close>
     fix lab' ls c'
     have prem2': "\<forall>b'\<in>ran (\<beta>'(lab' \<mapsto> nb b lab')). b' \<le> nb b lab'"
     proof

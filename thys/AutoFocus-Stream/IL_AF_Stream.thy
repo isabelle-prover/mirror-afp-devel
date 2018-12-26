@@ -3,16 +3,16 @@
     Author:     David Trachtenherz
 *)
 
-section {* \textsc{AutoFocus} message streams and temporal logic on intervals *}
+section \<open>\textsc{AutoFocus} message streams and temporal logic on intervals\<close>
 
 theory IL_AF_Stream
 imports Main "Nat-Interval-Logic.IL_TemporalOperators" AF_Stream
 begin
 
 
-subsection {* Stream views -- joining streams and intervals *}
+subsection \<open>Stream views -- joining streams and intervals\<close>
 
-subsubsection {* Basic definitions *}
+subsubsection \<open>Basic definitions\<close>
 
 primrec f_join_aux :: "'a list \<Rightarrow> nat \<Rightarrow> iT \<Rightarrow> 'a list"
 where
@@ -20,13 +20,13 @@ where
 | "f_join_aux (x # xs) n I =
     (if n \<in> I then [x] else []) @ f_join_aux xs (Suc n) I"
 
-text {*
-  The functions @{text "f_join"} and @{text "i_join"}
+text \<open>
+  The functions \<open>f_join\<close> and \<open>i_join\<close>
   deliver views of finite and infinite streams through intervals
   (more exactly: arbitrary natural sets).
   A stream view contains only the elements of the original stream
   at positions, which are contained in the interval.
-  For instance, @{text "f_join [0,10,20,30,40] {1,4} = [10,40]"} *}
+  For instance, \<open>f_join [0,10,20,30,40] {1,4} = [10,40]\<close>\<close>
 
 definition f_join :: "'a list \<Rightarrow> iT \<Rightarrow> 'a list"      (infixl "\<Join>\<^sub>f" 100)
   where "xs \<Join>\<^sub>f I \<equiv> f_join_aux xs 0 I"
@@ -38,32 +38,32 @@ notation
   f_join  (infixl "\<Join>\<^sub>" 100) and
   i_join  (infixl "\<Join>\<^sub>" 100)
 
-text {*
-  The function @{text i_f_join} can be used for the case,
+text \<open>
+  The function \<open>i_f_join\<close> can be used for the case,
   when an infinite stream is joined with a finite interval.
-  The function @{text i_join} would then deliver
-  an infinite stream, whose elements after position @{text "card I"}
-  are equal to initial stream's element at position @{text "Max I"}.
-  The function @{text i_f_join} in contrast
+  The function \<open>i_join\<close> would then deliver
+  an infinite stream, whose elements after position \<open>card I\<close>
+  are equal to initial stream's element at position \<open>Max I\<close>.
+  The function \<open>i_f_join\<close> in contrast
   cuts the resulting stream at this position
-  and returns a finite stream. *}
+  and returns a finite stream.\<close>
 
 definition i_f_join :: "'a ilist \<Rightarrow> iT \<Rightarrow> 'a list"    (infixl "\<Join>\<^bsub>i-f\<^esub>" 100)
   where "f \<Join>\<^bsub>i-f\<^esub> I \<equiv> f \<Down> Suc (Max I) \<Join>\<^sub>f I"
 notation
   i_f_join  (infixl "\<Join>\<^sub>" 100)
 
-text {*
-  The function @{text i_f_join} should be used
+text \<open>
+  The function \<open>i_f_join\<close> should be used
   only for finite sets in order to deliver well-defined results.
-  The function @{text i_join} should be used for infinite sets,
-  because joining an infinite stream @{text s} and a finite set @{text I}
-  using @{text i_join} would deliver an infinite stream,
+  The function \<open>i_join\<close> should be used for infinite sets,
+  because joining an infinite stream \<open>s\<close> and a finite set \<open>I\<close>
+  using \<open>i_join\<close> would deliver an infinite stream,
   ending with an infinite sequence of elements equal to
-  @{text "s (Max I)"}. *}
+  \<open>s (Max I)\<close>.\<close>
 
 
-subsubsection {* Basic results *}
+subsubsection \<open>Basic results\<close>
 
 lemma f_join_aux_length: "
   \<And>n. length (f_join_aux xs n I) = card (I \<inter> {n..<n + length xs})"
@@ -119,7 +119,7 @@ done
 
 
 
-text {* Joining finite streams and intervals *}
+text \<open>Joining finite streams and intervals\<close>
 
 (*<*)
 (*
@@ -332,9 +332,9 @@ apply (case_tac "I = {}")
 apply (case_tac "I \<down>< length xs = {}")
  apply (simp add: cut_less_empty)
 apply (rule same_append_eq[THEN iffD1, of "xs \<Join>\<^sub>f I \<down> n"])
-txt {* First, a simplification step without @{text "take_f_join_eq1"} required for correct transformation, in order to eliminate @{text "(xs \<Join>\<^sub>f I) \<down> n"} in the equation. *}
+txt \<open>First, a simplification step without \<open>take_f_join_eq1\<close> required for correct transformation, in order to eliminate \<open>(xs \<Join>\<^sub>f I) \<down> n\<close> in the equation.\<close>
 apply simp
-txt {* Now, @{text "take_f_join_eq1"} can be applied *}
+txt \<open>Now, \<open>take_f_join_eq1\<close> can be applied\<close>
 apply (simp add: take_f_join_eq1)
 apply (case_tac "I \<down>< (I \<rightarrow> n) = {}")
  apply (simp add: f_join_empty)
@@ -439,7 +439,7 @@ corollary f_join_take_Suc_Max_eq: "
 by (rule take_Suc_Max_eq_imp_f_join_eq, simp+)
 
 
-text {* Joining infinite streams and infinite intervals *}
+text \<open>Joining infinite streams and infinite intervals\<close>
 
 lemma i_join_nth: "(f \<Join>\<^sub>i I) n = f (I \<rightarrow> n)"
 by (simp add: i_join_def)
@@ -582,7 +582,7 @@ apply (simp add: inext_nth_card_Max)
 done
 
 
-text {* Joining infinite streams and finite intervals *}
+text \<open>Joining infinite streams and finite intervals\<close>
 
 lemma i_f_join_length: "finite I \<Longrightarrow> length (f \<Join>\<^bsub>i-f\<^esub> I) = card I"
 apply (simp add: i_f_join_def f_join_length)
@@ -761,7 +761,7 @@ apply (simp add: cut_le_mem_iff inext_nth_closed)+
 done
 
 
-subsubsection {* Results for intervals from @{text IL_Interval} *}
+subsubsection \<open>Results for intervals from \<open>IL_Interval\<close>\<close>
 
 lemma f_join_iFROM: "xs \<Join>\<^sub>f [n\<dots>] = xs \<up> n"
 apply (clarsimp simp: list_eq_iff f_join_length iFROM_cut_less iIN_card Suc_diff_Suc)
@@ -1049,7 +1049,7 @@ apply (simp add: iIN_0_iTILL_conv i_join_UNIV)
 done
 
 
-subsection {* Streams and temporal operators *}
+subsection \<open>Streams and temporal operators\<close>
 
 lemma i_shrink_eq_NoMsg_iAll_conv: "
   0 < k \<Longrightarrow> ((s \<div>\<^sub>i k) t = \<NoMsg>) = (\<box> t1 [t * k\<dots>,k - Suc 0]. s t1 = \<NoMsg>)"
@@ -1134,7 +1134,7 @@ apply (fastforce simp: iT_Mult_mem_iff mult.commute[of k] i_expand_nth_mod_eq_0)
 done
 
 
-text {* Streams and temporal operators cycle start/finish events *}
+text \<open>Streams and temporal operators cycle start/finish events\<close>
 
 lemma i_shrink_eq_NoMsg_iAll_start_event_conv: "
   \<lbrakk> 0 < k; \<And>t. event t = (t mod k = 0); t0 = t * k \<rbrakk> \<Longrightarrow>

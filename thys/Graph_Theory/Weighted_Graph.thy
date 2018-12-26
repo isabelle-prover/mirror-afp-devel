@@ -9,7 +9,7 @@ imports
   Complex_Main
 begin
 
-section {* Weighted Graphs *}
+section \<open>Weighted Graphs\<close>
 
 type_synonym 'b weight_fun = "'b \<Rightarrow> real"
 

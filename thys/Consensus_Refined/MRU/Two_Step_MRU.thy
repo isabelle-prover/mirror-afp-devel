@@ -1,15 +1,15 @@
-section {* Two-step Optimized MRU Model *}
+section \<open>Two-step Optimized MRU Model\<close>
 theory Two_Step_MRU
 imports "../MRU_Vote_Opt" "../Two_Steps"
 begin
 
-text {* To make the coming proofs of concrete algorithms easier, in this model we split 
-  the @{term opt_mru_round} into two steps  *}
+text \<open>To make the coming proofs of concrete algorithms easier, in this model we split 
+  the @{term opt_mru_round} into two steps\<close>
 
 context mono_quorum
 begin                    
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 
 definition opt_mru_step0 :: "round \<Rightarrow> process set \<Rightarrow> process set \<Rightarrow> val \<Rightarrow>  (opt_mru_state \<times> opt_mru_state) set" where
@@ -51,7 +51,7 @@ definition ts_lv_TS :: "opt_mru_state TS" where
 
 lemmas ts_lv_TS_defs = ts_lv_TS_def opt_mru_init_def ts_lv_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition basic_rel where
@@ -184,7 +184,7 @@ next
     done
 qed(auto intro!: OMRU_inv1_inductive)
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
 definition TS_OMRU_inv1 where

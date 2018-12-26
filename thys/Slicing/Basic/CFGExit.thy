@@ -1,6 +1,6 @@
 theory CFGExit imports CFG begin
 
-subsection {* Adds an exit node to the abstract CFG *}
+subsection \<open>Adds an exit node to the abstract CFG\<close>
 
 locale CFGExit = CFG sourcenode targetnode kind valid_edge Entry
   for sourcenode :: "'edge \<Rightarrow> 'node" and targetnode :: "'edge \<Rightarrow> 'node"
@@ -75,14 +75,14 @@ done
 
 lemma path_Exit_source [dest]:
   assumes "(_Exit_) -as\<rightarrow>* n'" shows "n' = (_Exit_)" and "as = []"
-  using `(_Exit_) -as\<rightarrow>* n'`
+  using \<open>(_Exit_) -as\<rightarrow>* n'\<close>
 proof(induct n\<equiv>"(_Exit_)" as n' rule:path.induct)
   case (Cons_path n'' as n' a)
-  from `sourcenode a = (_Exit_)` `valid_edge a` have False 
+  from \<open>sourcenode a = (_Exit_)\<close> \<open>valid_edge a\<close> have False 
     by -(rule Exit_source,simp_all)
-  { case 1 with `False` show ?case ..
+  { case 1 with \<open>False\<close> show ?case ..
   next
-    case 2 with `False` show ?case ..
+    case 2 with \<open>False\<close> show ?case ..
   }
 qed simp_all
 

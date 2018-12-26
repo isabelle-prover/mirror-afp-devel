@@ -41,15 +41,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section {* Basic Monad Theory for Sequential Computations *}
+section \<open>Basic Monad Theory for Sequential Computations\<close>
 theory 
   Monads 
   imports 
     Main
 begin 
 
-subsection{* General Framework for Monad-based Sequence-Test *}
-text{* 
+subsection\<open>General Framework for Monad-based Sequence-Test\<close>
+text\<open>
   As such, Higher-order Logic as a purely functional specification formalism has no built-in 
   mechanism for state and state-transitions. Forms of testing involving state require therefore 
   explicit mechanisms for their treatment inside the logic; a well-known technique to model
@@ -67,9 +67,9 @@ text{*
     \item non-deterministic i/o automata, and
     \item labelled transition systems (LTS)
   \end{enumerate}
-*}
+\<close>
 
-subsubsection{* State Exception Monads *}
+subsubsection\<open>State Exception Monads\<close>
 type_synonym ('o, '\<sigma>) MON\<^sub>S\<^sub>E = "'\<sigma> \<rightharpoonup> ('o \<times> '\<sigma>)"        
       
 definition bind_SE :: "('o,'\<sigma>)MON\<^sub>S\<^sub>E \<Rightarrow> ('o \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E) \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>E" 
@@ -103,9 +103,9 @@ definition if_SE :: "['\<sigma> \<Rightarrow> bool, ('\<alpha>, '\<sigma>)MON\<^
 where     "if_SE c E F = (\<lambda>\<sigma>. if c \<sigma> then E \<sigma> else F \<sigma>)" 
 notation   if_SE   ("if\<^sub>S\<^sub>E")
 
-text{* 
+text\<open>
   The standard monad theorems about unit and associativity: 
-*}
+\<close>
 
 lemma bind_left_unit : "(x \<leftarrow> return a; k) = k"
   apply (simp add: unit_SE_def bind_SE_def)
@@ -131,7 +131,7 @@ lemma bind_assoc: "(y \<leftarrow> (x \<leftarrow> m; k); h) = (x \<leftarrow> m
     done
   done
 
-text{*  
+text\<open>
   In order to express test-sequences also on the object-level and to make our theory amenable to 
   formal reasoning over test-sequences, we represent them as lists of input and generalize the 
   bind-operator of the state-exception monad accordingly. The approach is straightforward, but 
@@ -147,9 +147,9 @@ text{*
   of side-conditions have to be expressed inside \HOL. From the user perspective, this will not 
   make much difference, since junk-data resulting from too weak typing can be ruled out by adopted
   front-ends. 
-*}
+\<close>
 
-text{*  
+text\<open>
   In order to express test-sequences also on the object-level and to make our theory amenable to 
   formal reasoning over test-sequences, we represent them as lists of input and generalize the 
   bind-operator of the state-exception monad accordingly. Thus, the notion of test-sequence
@@ -168,15 +168,15 @@ text{*
   same operation will occur; this form of side-conditions have to be expressed
   inside \HOL. From the user perspective, this will not make much difference,
   since junk-data resulting from too weak typing can be ruled out by adopted
-  front-ends. *}
+  front-ends.\<close>
 
 
-text{* Note that the subsequent notion of a test-sequence allows the io stepping 
+text\<open>Note that the subsequent notion of a test-sequence allows the io stepping 
 function (and the special case of a program under test) to stop execution 
 \emph{within} the sequence; such premature terminations are characterized by an 
 output list which is shorter than the input list. Note that our primary
 notion of multiple execution ignores failure and reports failure
-steps only by missing results ... *}
+steps only by missing results ...\<close>
 
 
 fun    mbind :: "'\<iota> list  \<Rightarrow>  ('\<iota> \<Rightarrow> ('o,'\<sigma>) MON\<^sub>S\<^sub>E) \<Rightarrow> ('o list,'\<sigma>) MON\<^sub>S\<^sub>E"  
@@ -188,9 +188,9 @@ fun    mbind :: "'\<iota> list  \<Rightarrow>  ('\<iota> \<Rightarrow> ('o,'\<si
                                           None    \<Rightarrow> Some([out],\<sigma>') 
                                         | Some(outs,\<sigma>'') \<Rightarrow> Some(out#outs,\<sigma>'')))"
 
-text{* As mentioned, this definition is fail-safe; in case of an exception, 
+text\<open>As mentioned, this definition is fail-safe; in case of an exception, 
 the current state is maintained, no result is reported. 
-An alternative is the fail-strict variant @{text "mbind'"} defined below. *}
+An alternative is the fail-strict variant \<open>mbind'\<close> defined below.\<close>
 
 lemma mbind_unit [simp]: "mbind [] f = (return [])"
   by(rule ext, simp add: unit_SE_def)
@@ -214,7 +214,7 @@ lemma mbind_nofailure [simp]: "mbind S f \<sigma> \<noteq> None"
     done
   done
 
-text{* The fail-strict version of @{text mbind'} looks as follows: *}
+text\<open>The fail-strict version of \<open>mbind'\<close> looks as follows:\<close>
 fun    mbind' :: "'\<iota> list  \<Rightarrow>  ('\<iota> \<Rightarrow> ('o,'\<sigma>) MON\<^sub>S\<^sub>E) \<Rightarrow> ('o list,'\<sigma>) MON\<^sub>S\<^sub>E"
 where "mbind' [] iostep \<sigma> = Some([], \<sigma>)" |
       "mbind' (a#H) iostep \<sigma> = 
@@ -224,21 +224,21 @@ where "mbind' [] iostep \<sigma> = Some([], \<sigma>)" |
                                           None    \<Rightarrow> None   \<comment> \<open>fail-strict\<close>
                                         | Some(outs,\<sigma>'') \<Rightarrow> Some(out#outs,\<sigma>'')))"
 
-text{* 
+text\<open>
   mbind' as failure strict operator can be seen as a foldr on bind---if the types would  
   match \ldots 
-*}
+\<close>
 
 definition try_SE :: "('o,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> ('o option,'\<sigma>) MON\<^sub>S\<^sub>E" 
 where     "try_SE ioprog = (\<lambda>\<sigma>. case ioprog \<sigma> of
                                       None \<Rightarrow> Some(None, \<sigma>)
                                     | Some(outs, \<sigma>') \<Rightarrow> Some(Some outs, \<sigma>'))" 
-text{* In contrast @{term mbind} as a failure safe operator can roughly be seen 
+text\<open>In contrast @{term mbind} as a failure safe operator can roughly be seen 
        as a @{term foldr} on bind - try:
-       @{text "m1 ; try m2 ; try m3; ..."}. Note, that the rough equivalence only holds for
+       \<open>m1 ; try m2 ; try m3; ...\<close>. Note, that the rough equivalence only holds for
        certain predicates in the sequence - length equivalence modulo None,
        for example. However, if a conditional is added, the equivalence
-       can be made precise: *}
+       can be made precise:\<close>
 
 
 lemma mbind_try: 
@@ -261,8 +261,8 @@ lemma mbind_try:
     done 
   done
 
-text{* On this basis, a symbolic evaluation scheme can be established
-  that reduces @{term mbind}-code to @{term try_SE}-code and If-cascades. *}
+text\<open>On this basis, a symbolic evaluation scheme can be established
+  that reduces @{term mbind}-code to @{term try_SE}-code and If-cascades.\<close>
 
 
 definition alt_SE    :: "[('o, '\<sigma>)MON\<^sub>S\<^sub>E, ('o, '\<sigma>)MON\<^sub>S\<^sub>E] \<Rightarrow> ('o, '\<sigma>)MON\<^sub>S\<^sub>E"   (infixl "\<sqinter>\<^sub>S\<^sub>E" 10)
@@ -279,13 +279,13 @@ lemma malt_SE_mt [simp]: "\<Sqinter>\<^sub>S\<^sub>E [] = fail\<^sub>S\<^sub>E"
 lemma malt_SE_cons [simp]: "\<Sqinter>\<^sub>S\<^sub>E (a # S) = (a \<sqinter>\<^sub>S\<^sub>E (\<Sqinter>\<^sub>S\<^sub>E S))"
   by(simp add: malt_SE_def)
 
-subsubsection{* State-Backtrack Monads *}
-text{*This subsection is still rudimentary and as such an interesting
+subsubsection\<open>State-Backtrack Monads\<close>
+text\<open>This subsection is still rudimentary and as such an interesting
   formal analogue to the previous monad definitions. It is doubtful that it is
   interesting for testing and as a computational structure at all. 
   Clearly more relevant is ``sequence'' instead of ``set,'' which would
   rephrase Isabelle's internal tactic concept. 
-*}
+\<close>
 
 
 type_synonym ('o, '\<sigma>) MON\<^sub>S\<^sub>B = "'\<sigma> \<Rightarrow> ('o \<times> '\<sigma>) set"
@@ -318,13 +318,13 @@ lemma bind_assoc_SB: "(y := (x := m; k); h) = (x := m; (y := k; h))"
   apply (simp add: unit_SB_def bind_SB_def split_def)
 done
 
-subsubsection{* State Backtrack Exception Monad *}
-text{* 
+subsubsection\<open>State Backtrack Exception Monad\<close>
+text\<open>
   The following combination of the previous two Monad-Constructions allows for the semantic 
   foundation of a simple generic assertion language in the style of Schirmer's Simpl-Language or 
   Rustan Leino's Boogie-PL language. The key is to use the exceptional element None for violations 
   of the assert-statement. 
-*}
+\<close>
 type_synonym  ('o, '\<sigma>) MON\<^sub>S\<^sub>B\<^sub>E = "'\<sigma> \<Rightarrow> (('o \<times> '\<sigma>) set) option"
       
 definition bind_SBE :: "('o,'\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E \<Rightarrow> ('o \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E) \<Rightarrow> ('o','\<sigma>)MON\<^sub>S\<^sub>B\<^sub>E" 
@@ -412,20 +412,20 @@ qed
   
   
 
-subsection{* Valid Test Sequences in the State Exception Monad *}
-text{* 
+subsection\<open>Valid Test Sequences in the State Exception Monad\<close>
+text\<open>
   This is still an unstructured merge of executable monad concepts and specification oriented 
   high-level properties initiating test procedures. 
-*}
+\<close>
 
 definition valid_SE :: "'\<sigma> \<Rightarrow> (bool,'\<sigma>) MON\<^sub>S\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>" 15)
 where "(\<sigma> \<Turnstile> m) = (m \<sigma> \<noteq> None \<and> fst(the (m \<sigma>)))"
-text{* 
+text\<open>
   This notation consideres failures as valid---a definition inspired by I/O conformance. 
   Note that it is not possible to define this concept once and for all in a Hindley-Milner 
   type-system. For the moment, we present it only for the state-exception monad, although for 
   the same definition, this notion is applicable to other monads as well.  
-*}
+\<close>
 
 lemma syntax_test : 
   "\<sigma> \<Turnstile> (os \<leftarrow> (mbind \<iota>s ioprog); return(length \<iota>s = length os))"
@@ -435,7 +435,7 @@ oops
 lemma valid_true[simp]: "(\<sigma> \<Turnstile> (s \<leftarrow> return x ; return (P s))) = P x"
   by(simp add: valid_SE_def unit_SE_def bind_SE_def)
 
-text{* Recall mbind\_unit for the base case. *}
+text\<open>Recall mbind\_unit for the base case.\<close>
 
 lemma valid_failure: "ioprog a \<sigma> = None \<Longrightarrow> 
                                    (\<sigma> \<Turnstile> (s \<leftarrow> mbind (a#S) ioprog ; M s)) = 
@@ -549,12 +549,12 @@ lemma assume_D : "(\<sigma> \<Turnstile> (x \<leftarrow> assume\<^sub>S\<^sub>E 
   apply (simp)
   done
 
-text{* 
+text\<open>
   These two rule prove that the SE Monad in connection with the notion of valid sequence is 
   actually sufficient for a representation of a Boogie-like language. The SBE monad with explicit
   sets of states---to be shown below---is strictly speaking not necessary (and will therefore
   be discontinued in the development). 
-*}
+\<close>
   
 lemma if_SE_D1 : "P \<sigma> \<Longrightarrow> (\<sigma> \<Turnstile> if\<^sub>S\<^sub>E P B\<^sub>1 B\<^sub>2) = (\<sigma> \<Turnstile> B\<^sub>1)"
   by(auto simp: if_SE_def valid_SE_def)
@@ -576,17 +576,17 @@ lemma [code]: "(\<sigma> \<Turnstile> m) = (case (m \<sigma>) of None  \<Rightar
   apply (auto)
   done
     
-subsection{* Valid Test Sequences in the State Exception Backtrack Monad *}
-text{* 
+subsection\<open>Valid Test Sequences in the State Exception Backtrack Monad\<close>
+text\<open>
   This is still an unstructured merge of executable monad concepts and specification oriented 
   high-level properties initiating test procedures. 
-*}
+\<close>
   
 definition valid_SBE :: "'\<sigma> \<Rightarrow> ('a,'\<sigma>) MON\<^sub>S\<^sub>B\<^sub>E \<Rightarrow> bool" (infix "\<Turnstile>\<^sub>S\<^sub>B\<^sub>E" 15)
   where "\<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E m \<equiv> (m \<sigma> \<noteq> None)"
-text{* 
+text\<open>
   This notation considers all non-failures as valid. 
-*}
+\<close>
   
 lemma assume_assert: "(\<sigma> \<Turnstile>\<^sub>S\<^sub>B\<^sub>E ( _ :\<equiv> assume\<^sub>S\<^sub>B\<^sub>E P ; assert\<^sub>S\<^sub>B\<^sub>E Q)) = (P \<sigma> \<longrightarrow> Q \<sigma>)" 
   by(simp add: valid_SBE_def assume_SBE_def assert_SBE_def bind_SBE_def)

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JMM type safety for bytecode *}
+section \<open>JMM type safety for bytecode\<close>
 
 theory JMM_JVM_Typesafe
 imports

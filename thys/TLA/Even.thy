@@ -5,18 +5,18 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* A simple illustrative example  *}
+section \<open>A simple illustrative example\<close>
 
 theory Even
 imports State 
 begin
 
-text{*
+text\<open>
   A trivial example illustrating invariant proofs in the logic, and how
-  Isabelle/HOL can help with specification. It proves that @{text x} is
-  always even in a program where @{text x} is initialized as 0 and
+  Isabelle/HOL can help with specification. It proves that \<open>x\<close> is
+  always even in a program where \<open>x\<close> is initialized as 0 and
   always incremented by 2.
-*}
+\<close>
 
 inductive_set
   Even :: "nat set"

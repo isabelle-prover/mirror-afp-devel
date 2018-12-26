@@ -4,15 +4,15 @@ Author: Hitoshi Furusawa, Georg Struth
 Maintainer: <g.struth at sheffield.ac.uk>
 *)
 
-section {* Multirelations*}
+section \<open>Multirelations\<close>
 
 theory Multirelations
 imports C_Algebras
 begin
 
-subsection {* Basic Definitions *}
+subsection \<open>Basic Definitions\<close>
 
-text {* We define a type synonym for multirelations. *}
+text \<open>We define a type synonym for multirelations.\<close>
 
 type_synonym 'a mrel = "('a * ('a set)) set"
 
@@ -21,9 +21,9 @@ no_notation s_id ("1\<^sub>\<sigma>")
 no_notation c_prod (infixl "\<parallel>" 80)
 no_notation c_id ("1\<^sub>\<pi>")
 
-text {* Now we start with formalising the multirelational model. First
+text \<open>Now we start with formalising the multirelational model. First
   we define  sequential composition and paraellel composition of multirelations, their units and 
-the universal multirelation as in Section 2 of the article. *}
+the universal multirelation as in Section 2 of the article.\<close>
 
 definition s_prod :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel" (infixl "\<cdot>" 70) where
   "R \<cdot> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S) \<and> A = \<Union>{f b |b. b \<in> B}))}"
@@ -42,9 +42,9 @@ definition U :: "'a mrel" where
 
 abbreviation "NC \<equiv> U - 1\<^sub>\<pi>"
 
-text {* We write NC where $\overline{1_\pi}$ is written in~\cite{FurusawaS15a}. *}
+text \<open>We write NC where $\overline{1_\pi}$ is written in~\cite{FurusawaS15a}.\<close>
 
-text {* Next we prove some basic set-theoretic properties. *}
+text \<open>Next we prove some basic set-theoretic properties.\<close>
 
 lemma s_prod_im: "R \<cdot> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<exists>f. (\<forall>b \<in> B. (b,f b) \<in> S) \<and> A = \<Union>((\<lambda>x. f x) ` B)))}"
   by (auto simp: s_prod_def)
@@ -61,10 +61,10 @@ lemma p_prod_iff: "(a,A) \<in> R \<parallel> S \<longleftrightarrow> (\<exists>B
 named_theorems mr_simp
 declare s_prod_im [mr_simp] p_prod_def [mr_simp] s_id_def [mr_simp] p_id_def [mr_simp] U_def [mr_simp]
 
-subsection{* Multirelations and Proto-Dioids *}
+subsection\<open>Multirelations and Proto-Dioids\<close>
 
-text {* We can now show that multirelations form proto-trioids. 
-This is Proposition 5.1, and it subsumes Proposition 4.1, *}
+text \<open>We can now show that multirelations form proto-trioids. 
+This is Proposition 5.1, and it subsumes Proposition 4.1,\<close>
 
 interpretation mrel_proto_trioid: proto_trioid "1\<^sub>\<sigma>" "(\<cdot>)" "1\<^sub>\<pi>" "(\<parallel>)" "(\<union>)" "(\<subseteq>)" "(\<subset>)" "{}"
 proof 
@@ -104,9 +104,9 @@ proof
     by (simp add: mr_simp)
 qed
 
-subsection {* Simple Properties *}
+subsection \<open>Simple Properties\<close>
 
-text{* This covers all the identities in the display before Lemma 2.1  except the two following ones. *}
+text\<open>This covers all the identities in the display before Lemma 2.1  except the two following ones.\<close>
 
 lemma s_prod_assoc1: "(R \<cdot> S ) \<cdot> T \<subseteq> R \<cdot> (S \<cdot> T)"
   by (clarsimp simp: mr_simp, metis)
@@ -114,7 +114,7 @@ lemma s_prod_assoc1: "(R \<cdot> S ) \<cdot> T \<subseteq> R \<cdot> (S \<cdot> 
 lemma seq_conc_subdistr: "(R \<parallel> S) \<cdot> T \<subseteq> (R \<cdot> T) \<parallel> (S \<cdot> T)"
   by (clarsimp simp: mr_simp UnI1 UnI2, blast)
 
-text {* Next we provide some counterexamples. These do not feature in~\cite{FurusawaS15a}. *}
+text \<open>Next we provide some counterexamples. These do not feature in~\cite{FurusawaS15a}.\<close>
 
 lemma  "R \<cdot> {} = {}"
   nitpick 
@@ -134,8 +134,8 @@ lemma "(R \<parallel> R) \<cdot> T = (R \<cdot> T) \<parallel> (R \<cdot> T)"
   quickcheck 
   oops
 
-text {* Next we prove the distributivity and associativity laws for sequential subidentities 
-mentioned before Lemma 2.1 *}   
+text \<open>Next we prove the distributivity and associativity laws for sequential subidentities 
+mentioned before Lemma 2.1\<close>   
 
 lemma subid_aux2: 
 assumes "R \<subseteq> 1\<^sub>\<sigma>"and "(a,A) \<in> R"
@@ -254,7 +254,7 @@ assumes "R \<subseteq> 1\<^sub>\<sigma>"
 shows "R \<cdot> (S \<union> T) = R \<cdot> S \<union> R \<cdot> T" 
   apply (clarsimp simp: mr_simp) using assms subid_aux2 by fastforce 
 
-text {* Next we verify Lemma 2.1. *}
+text \<open>Next we verify Lemma 2.1.\<close>
 
 lemma subid_par_idem: 
 assumes "R \<subseteq> 1\<^sub>\<sigma>"
@@ -272,9 +272,9 @@ lemma U_par_idem: "U \<parallel> U = U"
 lemma nc_par_idem: "NC \<parallel> NC = NC"
   by (auto simp: mr_simp)
 
-text {* Next we prove the properties of Lemma 2.2 and 3.2. First we prepare to show that multirelations form c-lattices. *}
+text \<open>Next we prove the properties of Lemma 2.2 and 3.2. First we prepare to show that multirelations form c-lattices.\<close>
 
-text {* We define the domain operation on multirelations and verify the explicit definition from Section 3. *}
+text \<open>We define the domain operation on multirelations and verify the explicit definition from Section 3.\<close>
 
 definition d :: "'a mrel \<Rightarrow> 'a mrel" where
   "d R \<equiv> {(a,{a}) |a. \<exists>B. (a,B) \<in> R}"
@@ -288,7 +288,7 @@ lemma d_def_expl: "d R = (R \<cdot> 1\<^sub>\<pi>) \<parallel> 1\<^sub>\<sigma>"
 interpretation mrel_pbdl_monoid: pbdl_monoid "1\<^sub>\<sigma>" "(\<cdot>)" "1\<^sub>\<pi>" "(\<parallel>)" "(\<union>)" "(\<subseteq>)" "(\<subset>)" "{}" "U" "(\<inter>)"
   by (unfold_locales, auto simp: mrd_simp)
 
-text {* Here come the properties of Lemma 2.2. *}
+text \<open>Here come the properties of Lemma 2.2.\<close>
 
 lemma c1: "(R \<cdot> 1\<^sub>\<pi>) \<parallel> R = R"
   apply (rule set_eqI) 
@@ -374,7 +374,7 @@ lemma cl5: "(R \<cdot> S) \<cdot> (T \<cdot> {}) = R \<cdot> (S \<cdot> (T \<cdo
   qed
 qed
 
-text {* We continue verifying other c-lattice axioms *}
+text \<open>We continue verifying other c-lattice axioms\<close>
 
 lemma cl8_var: "d R \<cdot> S = (R \<cdot> 1\<^sub>\<pi>) \<parallel> S"
   apply (rule set_eqI)
@@ -391,9 +391,9 @@ lemma cl10_var: "d (R - 1\<^sub>\<pi>) = 1\<^sub>\<sigma> \<inter> ((R - 1\<^sub
   apply (clarsimp simp: d_def p_id_def s_id_def U_def s_prod_im)
   by (metis UN_constant insert_not_empty)
 
-subsection {* Multirelations and C-Lattices *}
+subsection \<open>Multirelations and C-Lattices\<close>
 
-text {* Next we show that multirelations form c-lattices (Proposition 7.3) and prove further facts in this setting. *}
+text \<open>Next we show that multirelations form c-lattices (Proposition 7.3) and prove further facts in this setting.\<close>
 
 interpretation mrel_c_lattice: c_lattice "1\<^sub>\<sigma>" "(\<cdot>)" "1\<^sub>\<pi>" "(\<parallel>)" "(\<union>)" "(\<subseteq>)" "(\<subset>)" "{}" "U" "(\<inter>)" "NC"
 proof
@@ -441,7 +441,7 @@ proof
   qed
 qed
 
-text {* The following facts from Lemma 2.2 remain to be shown. *}
+text \<open>The following facts from Lemma 2.2 remain to be shown.\<close>
 
 lemma p_id_assoc1: "(1\<^sub>\<pi> \<cdot> R) \<cdot> S = 1\<^sub>\<pi> \<cdot> (R \<cdot> S)"
   by (clarsimp simp: mr_simp)
@@ -475,12 +475,12 @@ and "S \<subseteq> 1\<^sub>\<sigma>"
 shows "(R \<inter> S) \<cdot> T = (R \<cdot> T) \<inter> (S \<cdot> T)"
   using assms by (clarsimp simp: set_eqI mr_simp subid_aux2, force)
 
-text {* Next we verify the remaining fact from Lemma 2.2; in fact it follows from the corresponding theorem of c-lattices. *}
+text \<open>Next we verify the remaining fact from Lemma 2.2; in fact it follows from the corresponding theorem of c-lattices.\<close>
 
 lemma c6: "R \<cdot> 1\<^sub>\<pi> \<subseteq> 1\<^sub>\<pi>"
  by (clarsimp simp: mr_simp)
 
-text {* Next we verify Lemma 3.1. *}
+text \<open>Next we verify Lemma 3.1.\<close>
 
 lemma p_id_st: "R \<cdot> 1\<^sub>\<pi> = {(a,{}) |a.  \<exists>B. (a,B) \<in> R}"
   by (auto simp: mr_simp)
@@ -500,7 +500,7 @@ lemma U_seq_st: "(a,A) \<in> R \<cdot> U \<longleftrightarrow> (A = {} \<and> (a
 lemma U_par_st: "(a,A) \<in> R \<parallel> U \<longleftrightarrow> (\<exists>B. B \<subseteq> A \<and> (a,B) \<in> R)"
   by (auto simp: mr_simp)
 
-text {* Next we verify the relationships after Lemma 3.1. *}
+text \<open>Next we verify the relationships after Lemma 3.1.\<close>
 
 lemma s_subid_iff1: "R \<subseteq> 1\<^sub>\<sigma> \<longleftrightarrow> R \<inter> 1\<^sub>\<sigma> = R"
   by blast
@@ -545,19 +545,19 @@ lemma ucl_iff: "(\<forall>a A B. (a,A) \<in> R \<and> A \<subseteq> B \<longrigh
 lemma nt_iff: "R \<subseteq> NC \<longleftrightarrow> R \<inter> NC = R"
   by blast
 
-text{* Next we provide a counterexample for the final paragraph of Section 3. *}
+text\<open>Next we provide a counterexample for the final paragraph of Section 3.\<close>
 
 lemma "1\<^sub>\<sigma> \<inter> R \<cdot> U = R"
   nitpick
   oops
 
-text{* Next we present a counterexample for vectors mentioned before Lemma 9.3. *}
+text\<open>Next we present a counterexample for vectors mentioned before Lemma 9.3.\<close>
 
 lemma "d (d R \<cdot> U) \<cdot> (d S \<cdot> U) \<cdot> U = (d R \<cdot> U) \<cdot> (d S \<cdot> U)"
   nitpick
   oops
 
-text{* Next we prove Tarski' rule (Lemma 9.3). *}
+text\<open>Next we prove Tarski' rule (Lemma 9.3).\<close>
 
 lemma tarski_aux: 
 assumes "R - 1\<^sub>\<pi> \<noteq> {}"
@@ -581,7 +581,7 @@ assumes "R - 1\<^sub>\<pi> \<noteq> {}"
 shows "NC \<cdot> ((R - 1\<^sub>\<pi>) \<cdot> NC) = NC"
   by standard (simp add: U_def p_id_def s_prod_im, force, metis assms tarski_aux subrelI)
 
-text {* Next we verify the assumptions of Proposition 9.8. *}
+text \<open>Next we verify the assumptions of Proposition 9.8.\<close>
 
 lemma d_assoc1: "d R \<cdot> (S \<cdot> T) = (d R \<cdot> S) \<cdot> T"
   by (metis d_def_expl mrel_c_lattice.d_def mrel_c_lattice.d_sub_id_ax test_assoc2)
@@ -589,7 +589,7 @@ lemma d_assoc1: "d R \<cdot> (S \<cdot> T) = (d R \<cdot> S) \<cdot> T"
 lemma d_meet_distr_var: "(d R \<inter> d S) \<cdot> T = (d R \<cdot> T) \<inter> (d S \<cdot> T)"
   by (auto simp: mrd_simp)
 
-text {* Lemma 10.5. *}
+text \<open>Lemma 10.5.\<close>
 
 lemma "((R \<inter> 1\<^sub>\<sigma>) \<cdot> (S \<inter> 1\<^sub>\<sigma>)) \<cdot> 1\<^sub>\<pi> = ((R \<inter> 1\<^sub>\<sigma>) \<cdot> 1\<^sub>\<pi>) \<cdot> ((S \<inter> 1\<^sub>\<sigma>) \<cdot> 1\<^sub>\<pi>)" 
   nitpick
@@ -638,9 +638,9 @@ lemma "((((R - 1\<^sub>\<pi>) \<cdot> 1\<^sub>\<pi>) \<parallel> NC) \<cdot> (((
   nitpick
   oops
 
-subsection {* Terminal and Nonterminal Elements *}
+subsection \<open>Terminal and Nonterminal Elements\<close>
 
-text {* Lemma 11.4 *}
+text \<open>Lemma 11.4\<close>
 
 lemma "(R \<cdot> S) \<cdot> {} = (R \<cdot> {}) \<cdot> (S \<cdot> {})"
   nitpick
@@ -655,7 +655,7 @@ lemma "(R \<parallel> S) - 1\<^sub>\<pi> = (R - 1\<^sub>\<pi>) \<parallel> (S - 
   nitpick
   oops
 
-text {* Lemma 11.8. *}
+text \<open>Lemma 11.8.\<close>
 
 lemma "((R \<cdot> 1\<^sub>\<pi>) \<cdot> (S - 1\<^sub>\<pi>)) - 1\<^sub>\<pi> = (R \<cdot> 1\<^sub>\<pi>) \<cdot> (S - 1\<^sub>\<pi>)"
   nitpick 
@@ -669,7 +669,7 @@ lemma "((R \<cdot> 1\<^sub>\<pi>) \<parallel> (S - 1\<^sub>\<pi>)) \<cdot> 1\<^s
   nitpick
   oops
 
-text {* Lemma 11.10. *}
+text \<open>Lemma 11.10.\<close>
 
 lemma "R \<cdot> {} \<subseteq> S \<cdot> {} \<Longrightarrow> (R \<cdot> T) \<cdot> {} \<subseteq> (S \<cdot> T) \<cdot> {}"
   nitpick
@@ -684,7 +684,7 @@ lemma "R - 1\<^sub>\<pi> \<subseteq> S - 1\<^sub>\<pi> \<Longrightarrow> (T \<cd
   nitpick
   oops
 
-text {* Corollary 11.12 *}
+text \<open>Corollary 11.12\<close>
 
 lemma "R \<cdot> {} = S \<cdot> {} \<Longrightarrow> (R \<cdot> T) \<cdot> {} = (S \<cdot> T) \<cdot> {}"
   nitpick
@@ -699,12 +699,12 @@ lemma "R - 1\<^sub>\<pi> = S - 1\<^sub>\<pi> \<Longrightarrow> (T \<cdot> R) - 1
   nitpick
   oops
 
-subsection {* Multirelations, Proto-Quantales and Iteration *}
+subsection \<open>Multirelations, Proto-Quantales and Iteration\<close>
 
 interpretation mrel_proto_quantale: proto_quantale "1\<^sub>\<sigma>" "(\<cdot>)" Inter Union "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" "U"
   by (unfold_locales, auto simp: mr_simp)
 
-text {* We reprove Corollary 13.2. because Isabelle does not pick it up from the quantale level. *}
+text \<open>We reprove Corollary 13.2. because Isabelle does not pick it up from the quantale level.\<close>
 
 lemma iso_prop: "mono (\<lambda>X. S \<union> R \<cdot> X)"
   by (rule monoI, (clarsimp simp: mr_simp), blast)
@@ -712,9 +712,9 @@ lemma iso_prop: "mono (\<lambda>X. S \<union> R \<cdot> X)"
 lemma gfp_lfp_prop: "gfp (\<lambda>X. R \<cdot> X) \<union> lfp (\<lambda>X. S \<union> R \<cdot> X) \<subseteq> gfp (\<lambda>X. S \<union> R \<cdot> X)"
   by (simp add: lfp_le_gfp gfp_mono iso_prop)
 
-subsection {* Further Counterexamples *}
+subsection \<open>Further Counterexamples\<close>
 
-text {* Lemma 14,1. and 14.2 *} 
+text \<open>Lemma 14,1. and 14.2\<close> 
 
 lemma  "R \<parallel> R \<subseteq> R" 
    nitpick
@@ -773,21 +773,21 @@ lemma "\<lbrakk>R \<noteq> {}; S \<noteq> {}; \<forall>a. (a,{}) \<notin> R \<un
   quickcheck
   oops
 
-subsection {* Relationship with Up-Closed Multirelations *}
+subsection \<open>Relationship with Up-Closed Multirelations\<close>
 
-text {* We now define Parikh's sequential composition. *}
+text \<open>We now define Parikh's sequential composition.\<close>
 
 definition s_prod_pa :: "'a mrel \<Rightarrow> 'a mrel \<Rightarrow> 'a mrel" (infixl "\<otimes>" 70) where
   "R \<otimes> S = {(a,A). (\<exists>B. (a,B) \<in> R \<and> (\<forall>b \<in> B. (b,A) \<in> S))}"
 
-text {* We show that Parikh's definition doesn't preserve up-closure. *}
+text \<open>We show that Parikh's definition doesn't preserve up-closure.\<close>
 
 lemma up_closed_prop: "((R \<parallel> U) \<cdot> (S \<parallel> U)) \<parallel> U = (R \<parallel> U) \<cdot> (S \<parallel> U)"
   apply (auto simp: p_prod_def s_prod_pa_def U_def)
   nitpick
   oops
 
-text {* Lemma 15.1. *}
+text \<open>Lemma 15.1.\<close>
 
 lemma onelem: "(R \<cdot> S) \<parallel> U \<subseteq> R \<otimes> (S \<parallel> U)"
   by (auto simp: s_prod_im p_prod_def U_def s_prod_pa_def)
@@ -819,9 +819,9 @@ lemma pe_pa_sim_var: "((R \<parallel> U) \<cdot> (S \<parallel> U)) \<parallel> 
 lemma pa_assoc1: "((R \<parallel> U) \<otimes> (S \<parallel> U)) \<otimes> (T \<parallel> U) \<subseteq> (R \<parallel> U) \<otimes> ((S \<parallel> U) \<otimes> (T \<parallel> U))"
   by (clarsimp simp: p_prod_def s_prod_pa_def U_def, metis)
 
-text {* The converse direction of associativity remains to be proved. *}
+text \<open>The converse direction of associativity remains to be proved.\<close>
 
-text {* Corollary 15.3. *}
+text \<open>Corollary 15.3.\<close>
 
 lemma up_closed_par_is_meet: "(R \<parallel> U) \<parallel> (S \<parallel> U) = (R \<parallel> U) \<inter> (S \<parallel> U)"
   by (auto simp: mr_simp)

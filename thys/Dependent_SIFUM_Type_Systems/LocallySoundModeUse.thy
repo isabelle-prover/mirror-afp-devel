@@ -4,13 +4,13 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 (Based on the SIFUM-Type-Systems AFP entry, whose authors
  are: Sylvia Grewe, Heiko Mantel, Daniel Schoepe)
 *)
-section {* Type System for Ensuring Locally Sound Use of Modes *}
+section \<open>Type System for Ensuring Locally Sound Use of Modes\<close>
 
 theory LocallySoundModeUse
 imports Security Language
 begin
 
-subsection {* Typing Rules *}
+subsection \<open>Typing Rules\<close>
 
 locale sifum_modes = 
   sifum_lang_no_dma ev\<^sub>A ev\<^sub>B aexp_vars bexp_vars + sifum_security dma \<C>_vars \<C> eval\<^sub>w undefined
@@ -65,7 +65,7 @@ where
   sub: "\<lbrakk> \<turnstile> mds\<^sub>2 { c } mds\<^sub>2' ; mds\<^sub>1 \<le> mds\<^sub>2 ; mds\<^sub>2' \<le> mds\<^sub>1' \<rbrakk> \<Longrightarrow>
   \<turnstile> mds\<^sub>1 { c } mds\<^sub>1'"
 
-subsection {* Soundness of the Type System *}
+subsection \<open>Soundness of the Type System\<close>
 
 (* Special case for evaluation with an empty context *)
 lemma cxt_eval:
@@ -577,7 +577,7 @@ next
         assume "x \<in> mds\<^sub>2 GuarNoReadOrWrite"
         hence nin: "x \<in> mds GuarNoReadOrWrite"
           using if_ unfolding le_fun_def by auto
-        with `bexp_vars e \<inter> mds GuarNoReadOrWrite = {}` have "x \<notin> bexp_vars e"
+        with \<open>bexp_vars e \<inter> mds GuarNoReadOrWrite = {}\<close> have "x \<notin> bexp_vars e"
           by (metis IntD2 disjoint_iff_not_equal)
         moreover from if_(6) nin have "\<C>_vars x \<inter> bexp_vars e = {}"
           by blast
@@ -616,7 +616,7 @@ next
         apply simp_all
        apply (erule disjE)
         apply simp
-        apply (metis `mds\<^sub>2 \<oplus> annos \<le> mds \<oplus> annos` while.hyps(1) while_eval_elim)
+        apply (metis \<open>mds\<^sub>2 \<oplus> annos \<le> mds \<oplus> annos\<close> while.hyps(1) while_eval_elim)
        apply (erule disjE)
         apply (metis while_eval_elim')
        apply (erule disjE)
@@ -641,9 +641,9 @@ next
   next
     fix mem
     from while have a: "bexp_vars e \<inter> (mds\<^sub>2 \<oplus> annos) GuarNoReadOrWrite = {}"
-      by (metis (lifting, no_types) Int_empty_right Int_left_commute `mds\<^sub>2 \<oplus> annos \<le> mds \<oplus> annos` inf_fun_def le_iff_inf)
+      by (metis (lifting, no_types) Int_empty_right Int_left_commute \<open>mds\<^sub>2 \<oplus> annos \<le> mds \<oplus> annos\<close> inf_fun_def le_iff_inf)
     from while have b: "\<forall>v.  \<C>_vars v \<inter> bexp_vars e \<noteq> {} \<longrightarrow> v \<notin> (mds\<^sub>2 \<oplus> annos) GuarNoReadOrWrite"
-      by (meson `mds\<^sub>2 \<oplus> annos \<le> mds \<oplus> annos` le_fun_def subsetCE)    
+      by (meson \<open>mds\<^sub>2 \<oplus> annos \<le> mds \<oplus> annos\<close> le_fun_def subsetCE)    
     show "locally_sound_mode_use \<langle>While e c \<otimes> annos, mds\<^sub>2, mem\<rangle>"
       unfolding locally_sound_mode_use_def
       apply (rule allI)+
@@ -673,8 +673,8 @@ next
         have "x \<in> mds' GuarNoReadOrWrite \<longrightarrow> doesnt_read_or_modify ?c' x"
           apply clarify
           apply (rule if_doesnt_read')
-           apply (metis IntI `mds' \<le> mdsa` empty_iff le_fun_def set_rev_mp while.hyps(1) while.hyps(4))
-          by (metis IntI `mds' \<le> mdsa` empty_iff le_fun_def set_rev_mp while.hyps(1) while.hyps(5))
+           apply (metis IntI \<open>mds' \<le> mdsa\<close> empty_iff le_fun_def set_rev_mp while.hyps(1) while.hyps(4))
+          by (metis IntI \<open>mds' \<le> mdsa\<close> empty_iff le_fun_def set_rev_mp while.hyps(1) while.hyps(5))
         moreover
         have "x \<in> mds' GuarNoWrite \<longrightarrow> doesnt_modify ?c' x"
           by (metis annotate.simps(1) if_doesnt_modify)
@@ -703,9 +703,9 @@ next
           apply (clarsimp, safe)
            apply (rule seq_doesnt_read)
            apply (insert while(3))
-           apply (metis `mds\<^sub>3 \<le> mdsa` locally_sound_mode_use_def while.hyps(1))
+           apply (metis \<open>mds\<^sub>3 \<le> mdsa\<close> locally_sound_mode_use_def while.hyps(1))
           apply (rule seq_doesnt_modify)
-          by (metis `mds\<^sub>3 \<le> mdsa` locally_sound_mode_use_def while.hyps(1))
+          by (metis \<open>mds\<^sub>3 \<le> mdsa\<close> locally_sound_mode_use_def while.hyps(1))
       next
         fix x
         assume "c' = While e c \<and> mds' \<le> mdsa"

@@ -46,30 +46,30 @@ lemma parPresAux:
   shows "P \<parallel> R \<leadsto>[Rel''] Q \<parallel> T"
 proof(induct rule: simI)
   case(Sim a QT)
-  from `Q \<parallel> T \<longmapsto>a \<prec> QT`
+  from \<open>Q \<parallel> T \<longmapsto>a \<prec> QT\<close>
   show ?case
   proof(induct rule: parCases)
     case(cPar1 Q')
-    from `P \<leadsto>[Rel] Q` `Q \<longmapsto>a \<prec> Q'` obtain P' where "P \<longmapsto>a \<prec> P'" and "(P', Q') \<in> Rel" 
+    from \<open>P \<leadsto>[Rel] Q\<close> \<open>Q \<longmapsto>a \<prec> Q'\<close> obtain P' where "P \<longmapsto>a \<prec> P'" and "(P', Q') \<in> Rel" 
       by(rule simE)
-    from `P \<longmapsto>a \<prec> P'` have "P \<parallel> R \<longmapsto>a \<prec> P' \<parallel> R" by(rule Par1)
-    moreover from `(P', Q') \<in> Rel` `(R, T) \<in> Rel'` have "(P' \<parallel> R, Q' \<parallel> T) \<in> Rel''" by(rule C1)
+    from \<open>P \<longmapsto>a \<prec> P'\<close> have "P \<parallel> R \<longmapsto>a \<prec> P' \<parallel> R" by(rule Par1)
+    moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R, T) \<in> Rel'\<close> have "(P' \<parallel> R, Q' \<parallel> T) \<in> Rel''" by(rule C1)
     ultimately show ?case by blast
   next
     case(cPar2 T')
-    from `R \<leadsto>[Rel'] T` `T \<longmapsto>a \<prec> T'` obtain R' where "R \<longmapsto>a \<prec> R'" and "(R', T') \<in> Rel'" 
+    from \<open>R \<leadsto>[Rel'] T\<close> \<open>T \<longmapsto>a \<prec> T'\<close> obtain R' where "R \<longmapsto>a \<prec> R'" and "(R', T') \<in> Rel'" 
       by(rule simE)
-    from `R \<longmapsto>a \<prec> R'` have "P \<parallel> R \<longmapsto>a \<prec> P \<parallel> R'" by(rule Par2)
-    moreover from `(P, Q) \<in> Rel` `(R', T') \<in> Rel'` have "(P \<parallel> R', Q \<parallel> T') \<in> Rel''" by(rule C1)
+    from \<open>R \<longmapsto>a \<prec> R'\<close> have "P \<parallel> R \<longmapsto>a \<prec> P \<parallel> R'" by(rule Par2)
+    moreover from \<open>(P, Q) \<in> Rel\<close> \<open>(R', T') \<in> Rel'\<close> have "(P \<parallel> R', Q \<parallel> T') \<in> Rel''" by(rule C1)
     ultimately show ?case by blast
   next
     case(cComm Q' T' a)
-    from `P \<leadsto>[Rel] Q` `Q \<longmapsto>a \<prec> Q'` obtain P' where "P \<longmapsto>a \<prec> P'" and "(P', Q') \<in> Rel" 
+    from \<open>P \<leadsto>[Rel] Q\<close> \<open>Q \<longmapsto>a \<prec> Q'\<close> obtain P' where "P \<longmapsto>a \<prec> P'" and "(P', Q') \<in> Rel" 
       by(rule simE)
-    from `R \<leadsto>[Rel'] T` `T \<longmapsto>(coAction a) \<prec> T'` obtain R' where "R \<longmapsto>(coAction a) \<prec> R'" and "(R', T') \<in> Rel'" 
+    from \<open>R \<leadsto>[Rel'] T\<close> \<open>T \<longmapsto>(coAction a) \<prec> T'\<close> obtain R' where "R \<longmapsto>(coAction a) \<prec> R'" and "(R', T') \<in> Rel'" 
       by(rule simE)
-    from `P \<longmapsto>a \<prec> P'` `R \<longmapsto>(coAction a) \<prec> R'` `a \<noteq> \<tau>` have "P \<parallel> R \<longmapsto>\<tau> \<prec> P' \<parallel> R'" by(rule Comm)
-    moreover from `(P', Q') \<in> Rel` `(R', T') \<in> Rel'` have "(P' \<parallel> R', Q' \<parallel> T') \<in> Rel''" by(rule C1)
+    from \<open>P \<longmapsto>a \<prec> P'\<close> \<open>R \<longmapsto>(coAction a) \<prec> R'\<close> \<open>a \<noteq> \<tau>\<close> have "P \<parallel> R \<longmapsto>\<tau> \<prec> P' \<parallel> R'" by(rule Comm)
+    moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R', T') \<in> Rel'\<close> have "(P' \<parallel> R', Q' \<parallel> T') \<in> Rel''" by(rule C1)
     ultimately show ?case by blast
   qed
 qed
@@ -117,63 +117,63 @@ proof(induct rule: simI)
     hence "\<exists>P'. Pa \<longmapsto>\<alpha> \<prec> P' \<and> (P', Q') \<in> bangRel Rel"
     proof(nominal_induct arbitrary: Pa rule: bangInduct)
       case(cPar1 \<alpha> Q')
-      from `(Pa, Q \<parallel> !Q) \<in> bangRel Rel` 
+      from \<open>(Pa, Q \<parallel> !Q) \<in> bangRel Rel\<close> 
       show ?case
       proof(induct rule: BRParCases)
         case(BRPar P R)
-        from `(P, Q) \<in> Rel` have "P \<leadsto>[Rel] Q" by(rule C1)
-        with `Q \<longmapsto>\<alpha> \<prec> Q'` obtain P' where "P \<longmapsto>\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
+        from \<open>(P, Q) \<in> Rel\<close> have "P \<leadsto>[Rel] Q" by(rule C1)
+        with \<open>Q \<longmapsto>\<alpha> \<prec> Q'\<close> obtain P' where "P \<longmapsto>\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
           by(blast dest: simE)
-        from `P \<longmapsto>\<alpha> \<prec> P'` have "P \<parallel> R \<longmapsto>\<alpha> \<prec> P' \<parallel> R" by(rule Par1)
-        moreover from `(P', Q') \<in> Rel` `(R, !Q) \<in> bangRel Rel` have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> bangRel Rel"
+        from \<open>P \<longmapsto>\<alpha> \<prec> P'\<close> have "P \<parallel> R \<longmapsto>\<alpha> \<prec> P' \<parallel> R" by(rule Par1)
+        moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R, !Q) \<in> bangRel Rel\<close> have "(P' \<parallel> R, Q' \<parallel> !Q) \<in> bangRel Rel"
           by(rule bangRel.BRPar)
         ultimately show ?case by blast
       qed
     next
       case(cPar2 \<alpha> Q')
-      from `(Pa, Q \<parallel> !Q) \<in> bangRel Rel`
+      from \<open>(Pa, Q \<parallel> !Q) \<in> bangRel Rel\<close>
       show ?case
       proof(induct rule: BRParCases)
         case(BRPar P R)
-        from `(R, !Q) \<in> bangRel Rel` obtain R' where "R \<longmapsto>\<alpha> \<prec> R'" and "(R', Q') \<in> bangRel Rel" using cPar2
+        from \<open>(R, !Q) \<in> bangRel Rel\<close> obtain R' where "R \<longmapsto>\<alpha> \<prec> R'" and "(R', Q') \<in> bangRel Rel" using cPar2
           by blast
-        from `R \<longmapsto>\<alpha> \<prec> R'` have "P \<parallel> R \<longmapsto>\<alpha> \<prec> P \<parallel> R'" by(rule Par2)
-        moreover from `(P, Q) \<in> Rel` `(R', Q') \<in> bangRel Rel` have "(P \<parallel> R', Q \<parallel> Q') \<in> bangRel Rel" by(rule bangRel.BRPar)
+        from \<open>R \<longmapsto>\<alpha> \<prec> R'\<close> have "P \<parallel> R \<longmapsto>\<alpha> \<prec> P \<parallel> R'" by(rule Par2)
+        moreover from \<open>(P, Q) \<in> Rel\<close> \<open>(R', Q') \<in> bangRel Rel\<close> have "(P \<parallel> R', Q \<parallel> Q') \<in> bangRel Rel" by(rule bangRel.BRPar)
         ultimately show ?case by blast
       qed
     next
       case(cComm a Q' Q'' Pa)
-      from `(Pa, Q \<parallel> !Q) \<in> bangRel Rel`
+      from \<open>(Pa, Q \<parallel> !Q) \<in> bangRel Rel\<close>
       show ?case
       proof(induct rule: BRParCases)
         case(BRPar P R)
-        from `(P, Q) \<in> Rel` have "P \<leadsto>[Rel] Q" by(rule C1)
-        with `Q \<longmapsto>a \<prec> Q'` obtain P' where "P \<longmapsto>a \<prec> P'" and "(P', Q') \<in> Rel"
+        from \<open>(P, Q) \<in> Rel\<close> have "P \<leadsto>[Rel] Q" by(rule C1)
+        with \<open>Q \<longmapsto>a \<prec> Q'\<close> obtain P' where "P \<longmapsto>a \<prec> P'" and "(P', Q') \<in> Rel"
           by(blast dest: simE)
-        from `(R, !Q) \<in> bangRel Rel` obtain R' where "R \<longmapsto>(coAction a) \<prec> R'" and "(R', Q'') \<in> bangRel Rel" using cComm
+        from \<open>(R, !Q) \<in> bangRel Rel\<close> obtain R' where "R \<longmapsto>(coAction a) \<prec> R'" and "(R', Q'') \<in> bangRel Rel" using cComm
           by blast
-        from `P \<longmapsto>a \<prec> P'` `R \<longmapsto>(coAction a) \<prec> R'` `a \<noteq> \<tau>` have "P \<parallel> R \<longmapsto>\<tau> \<prec> P' \<parallel> R'" by(rule Comm)
-        moreover from `(P', Q') \<in> Rel` `(R', Q'') \<in> bangRel Rel` have "(P' \<parallel> R', Q' \<parallel> Q'') \<in> bangRel Rel" by(rule bangRel.BRPar)
+        from \<open>P \<longmapsto>a \<prec> P'\<close> \<open>R \<longmapsto>(coAction a) \<prec> R'\<close> \<open>a \<noteq> \<tau>\<close> have "P \<parallel> R \<longmapsto>\<tau> \<prec> P' \<parallel> R'" by(rule Comm)
+        moreover from \<open>(P', Q') \<in> Rel\<close> \<open>(R', Q'') \<in> bangRel Rel\<close> have "(P' \<parallel> R', Q' \<parallel> Q'') \<in> bangRel Rel" by(rule bangRel.BRPar)
         ultimately show ?case by blast
       qed
     next
       case(cBang \<alpha> Q' Pa)
-      from `(Pa, !Q) \<in> bangRel Rel`
+      from \<open>(Pa, !Q) \<in> bangRel Rel\<close>
       show ?case
       proof(induct rule: BRBangCases)
         case(BRBang P)
-        from `(P, Q) \<in> Rel` have "(!P, !Q) \<in> bangRel Rel" by(rule bangRel.BRBang)
-        with `(P, Q) \<in> Rel` have "(P \<parallel> !P, Q \<parallel> !Q) \<in> bangRel Rel" by(rule bangRel.BRPar)
+        from \<open>(P, Q) \<in> Rel\<close> have "(!P, !Q) \<in> bangRel Rel" by(rule bangRel.BRBang)
+        with \<open>(P, Q) \<in> Rel\<close> have "(P \<parallel> !P, Q \<parallel> !Q) \<in> bangRel Rel" by(rule bangRel.BRPar)
         then obtain P' where "P \<parallel> !P \<longmapsto>\<alpha> \<prec> P'" and "(P', Q') \<in> bangRel Rel" using cBang
           by blast
-        from `P \<parallel> !P \<longmapsto>\<alpha> \<prec> P'` have "!P \<longmapsto>\<alpha> \<prec> P'" by(rule Bang)
-        thus ?case using `(P', Q') \<in> bangRel Rel` by blast
+        from \<open>P \<parallel> !P \<longmapsto>\<alpha> \<prec> P'\<close> have "!P \<longmapsto>\<alpha> \<prec> P'" by(rule Bang)
+        thus ?case using \<open>(P', Q') \<in> bangRel Rel\<close> by blast
       qed
     qed
   }
 
-  moreover from `(P, Q) \<in> Rel` have "(!P, !Q) \<in> bangRel Rel" by(rule BRBang) 
-  ultimately show ?case using `!Q \<longmapsto> \<alpha> \<prec> Q'` by blast
+  moreover from \<open>(P, Q) \<in> Rel\<close> have "(!P, !Q) \<in> bangRel Rel" by(rule BRBang) 
+  ultimately show ?case using \<open>!Q \<longmapsto> \<alpha> \<prec> Q'\<close> by blast
 qed
 
 end

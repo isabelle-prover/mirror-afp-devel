@@ -18,7 +18,7 @@ begin
 
 section "Completion"
 
-text{* In this section we formalize "completion" of the ground field K *}
+text\<open>In this section we formalize "completion" of the ground field K\<close>
 
 definition
   limit :: "[_, 'b \<Rightarrow> ant, nat \<Rightarrow> 'b, 'b]
@@ -203,7 +203,7 @@ apply (rule iffI)
  apply (simp add:amult_pos_mono_r)
 done
 
-text{* uniqueness of the limit is derived from @{text "vp_pow_inter_zero"} *}
+text\<open>uniqueness of the limit is derived from \<open>vp_pow_inter_zero\<close>\<close>
 lemma (in Corps) limit_unique:"\<lbrakk>b \<in> carrier K; \<forall>j. f j \<in> carrier K; 
       valuation K v;  c \<in> carrier K; lim\<^bsub>K v\<^esub> f b; lim\<^bsub>K v\<^esub> f c\<rbrakk> \<Longrightarrow>  b = c" 
 apply (rule contrapos_pp, simp+, simp add:limit_def,
@@ -1500,8 +1500,8 @@ apply (frule ind_hom_rhom[of "Vr K v" "(Vr K' v' /\<^sub>r vp K' v')"
 apply (simp add:res_v_completion_ker) apply blast
 done
 
-text{* expansion of x in a complete field K, with normal valuation v. Here
-we suppose t is an element of K satisfying the equation @{text "v t = 1"}.*}
+text\<open>expansion of x in a complete field K, with normal valuation v. Here
+we suppose t is an element of K satisfying the equation \<open>v t = 1\<close>.\<close>
 
 definition
   Kxa :: "[_, 'b \<Rightarrow> ant, 'b] \<Rightarrow> 'b set" where

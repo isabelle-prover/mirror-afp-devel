@@ -581,7 +581,7 @@ proof (induct entf)
     have "?rest ! (index ?rest q) = q" apply(rule nth_index) by(simp add: iH)
     with indj have whichcase: "q = ?rest ! Suc ?i" by auto
 
-    with `distinct ?rest` have whichcase2: "~ q = ?rest ! ?i" 
+    with \<open>distinct ?rest\<close> have whichcase2: "~ q = ?rest ! ?i" 
           by (metis Suc_lessD arg index_nth_id n_not_Suc_n)
 
     from aaa have "index (swaps [index xs q - Suc e..<index xs q] xs) q

@@ -1,19 +1,19 @@
 (*  Title:      Containers/Compatibility_Containers_Regular_Sets.thy
     Author:     Andreas Lochbihler, ETH Zurich *)
 
-section {* Compatibility with Regular-Sets *}
+section \<open>Compatibility with Regular-Sets\<close>
 
 theory Compatibility_Containers_Regular_Sets imports
   Containers
   "Regular-Sets.Regexp_Method"
 begin
 
-text {*
-  Adaptation theory to make @{text regexp} work when @{theory Containers.Containers} are loaded.
+text \<open>
+  Adaptation theory to make \<open>regexp\<close> work when @{theory Containers.Containers} are loaded.
 
-  Warning: Each invocation of @{text regexp} takes longer than without @{theory Containers.Containers}
-  because the code generator takes longer to generate the evaluation code for @{text regexp}.
-*}
+  Warning: Each invocation of \<open>regexp\<close> takes longer than without @{theory Containers.Containers}
+  because the code generator takes longer to generate the evaluation code for \<open>regexp\<close>.
+\<close>
 
 datatype_compat rexp
 derive ceq rexp

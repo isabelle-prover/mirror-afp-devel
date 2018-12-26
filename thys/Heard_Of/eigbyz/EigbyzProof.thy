@@ -2,9 +2,9 @@ theory EigbyzProof
 imports EigbyzDefs "../Majorities" "../Reduction"
 begin
 
-subsection {* Preliminary Lemmas *}
+subsection \<open>Preliminary Lemmas\<close>
 
-text {* Some technical lemmas about labels and trees. *}
+text \<open>Some technical lemmas about labels and trees.\<close>
 
 lemma not_leaf_length:
   assumes l: "\<not>(is_leaf l)"
@@ -28,7 +28,7 @@ lemma root_node_length [simp]: "length_lbl root_node = 0"
 lemma root_node_not_leaf: "\<not>(is_leaf root_node)"
   by (simp add: is_leaf_def)
 
-text {* Removing the last element of a non-root label gives a label. *}
+text \<open>Removing the last element of a non-root label gives a label.\<close>
 
 lemma butlast_rep_in_label:
   assumes l:"l \<noteq> root_node"
@@ -44,9 +44,9 @@ proof -
     by (auto simp: Label_def elim: distinct_butlast)
 qed
 
-text {*
+text \<open>
   The label of a child is well-formed.
-*}
+\<close>
 
 lemma Rep_Label_append:
   assumes l: "\<not>(is_leaf l)"
@@ -67,9 +67,9 @@ next
   show ?lhs by (simp add: Label_def)
 qed
 
-text {*
+text \<open>
   The label of a child is the label of the parent, extended by a process.
-*}
+\<close>
 lemma label_children:
   assumes c: "c \<in> children l"
   shows "\<exists>p. p \<notin> set_lbl l \<and> Rep_Label c = Rep_Label l @ [p]"
@@ -82,16 +82,16 @@ proof -
     by (auto simp: Abs_Label_inverse)
 qed
 
-text {*
+text \<open>
   The label of any child node is one longer than the label of its parent.
-*}
+\<close>
 
 lemma children_length:
   assumes "l \<in> children h"
   shows "length_lbl l = Suc (length_lbl h)"
   using label_children[OF assms] by (auto simp: length_lbl_def)
 
-text {* The root node is never a child. *}
+text \<open>The root node is never a child.\<close>
 
 lemma children_not_root:
   assumes "root_node \<in> children l"
@@ -99,10 +99,10 @@ lemma children_not_root:
   using label_children[OF assms] Abs_Label_inverse[OF nil_is_Label]
   by (auto simp: root_node_def)
 
-text {*
+text \<open>
   The label of a child with the last element removed is the label of
   the parent.
-*}
+\<close>
 
 lemma children_butlast_lbl:
   assumes "c \<in> children l"
@@ -110,9 +110,9 @@ lemma children_butlast_lbl:
   using label_children[OF assms]
   by (auto simp: butlast_lbl_def Rep_Label_inverse)
 
-text {*
+text \<open>
   The root node is not a child, and it is the only such node.
-*}
+\<close>
 
 lemma root_iff_no_child: "(l = root_node) = (\<forall>l'. l \<notin> children l')"
 proof
@@ -147,11 +147,11 @@ next
   qed
 qed
 
-text {* 
-  If some label @{text l} is not a leaf, then the set of processes that
+text \<open>
+  If some label \<open>l\<close> is not a leaf, then the set of processes that
   appear at the end of the labels of its children is the set of all 
-  processes that do not appear in @{text l}.
-*}
+  processes that do not appear in \<open>l\<close>.
+\<close>
 
 lemma children_last_set:
   assumes l: "\<not>(is_leaf l)"
@@ -172,10 +172,10 @@ next
   qed
 qed
 
-text {*
+text \<open>
   The function returning the last element of a label is injective on the
   set of children of some given label.
-*}
+\<close>
 
 lemma last_lbl_inj_on_children:"inj_on last_lbl (children l)"
 proof (auto simp: inj_on_def)
@@ -191,10 +191,10 @@ proof (auto simp: inj_on_def)
   thus "c = c'" by (simp add: Rep_Label_inject)
 qed
 
-text {*
-  The number of children of any non-leaf label @{text l} is the
-  number of processes that do not appear in @{text l}.
-*}
+text \<open>
+  The number of children of any non-leaf label \<open>l\<close> is the
+  number of processes that do not appear in \<open>l\<close>.
+\<close>
 
 lemma card_children:
   assumes "\<not>(is_leaf l)"
@@ -216,12 +216,12 @@ proof -
   show ?thesis by auto
 qed
 
-text {*
-  Suppose a non-root label @{text l'} of length @{text "r+1"} ending in @{text q}, 
-  and suppose that @{text q} is well heard by process @{text p} in round
-  @{text r}. Then the value with which @{text p} decorates @{text l} is the one
-  that @{text q} associates to the parent of @{text l}.
-*}
+text \<open>
+  Suppose a non-root label \<open>l'\<close> of length \<open>r+1\<close> ending in \<open>q\<close>, 
+  and suppose that \<open>q\<close> is well heard by process \<open>p\<close> in round
+  \<open>r\<close>. Then the value with which \<open>p\<close> decorates \<open>l\<close> is the one
+  that \<open>q\<close> associates to the parent of \<open>l\<close>.
+\<close>
 
 lemma sho_correct_vals:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -246,10 +246,10 @@ proof -
     by (auto simp: extend_vals_def children_length children_butlast_lbl)
 qed
 
-text {*
-  A process fixes the value @{text "vals l"} of a label at state
-  @{text "length_lbl l"}, and then never modifies the value.
-*}
+text \<open>
+  A process fixes the value \<open>vals l\<close> of a label at state
+  \<open>length_lbl l\<close>, and then never modifies the value.
+\<close>
 (* currently nowhere used *)
 lemma keep_vals:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -270,13 +270,13 @@ next
 qed
 
 
-subsection {* Lynch's Lemmas and Theorems *}
+subsection \<open>Lynch's Lemmas and Theorems\<close>
 
-text {*
-  If some process is safely heard by all processes at round @{text r},
+text \<open>
+  If some process is safely heard by all processes at round \<open>r\<close>,
   then all processes agree on the value associated to labels of length 
-  @{text "r+1"} ending in that process.
-*}
+  \<open>r+1\<close> ending in that process.
+\<close>
 
 lemma lynch_6_15:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -285,14 +285,14 @@ lemma lynch_6_15:
   shows "vals (rho (length_lbl l') p) l' = vals (rho (length_lbl l') q) l'"
   using assms unfolding SKr_def by (auto simp: sho_correct_vals)
 
-text {* 
-  Suppose that @{text l} is a non-root label whose last element was well
-  heard by all processes at round @{text r}, and that @{text l'} is a
-  child of @{text l} corresponding to process @{text q} that is also
-  well heard by all processes at round @{text "r+1"}. Then the values
-  associated with @{text l} and @{text l'} by any process @{text p}
+text \<open>
+  Suppose that \<open>l\<close> is a non-root label whose last element was well
+  heard by all processes at round \<open>r\<close>, and that \<open>l'\<close> is a
+  child of \<open>l\<close> corresponding to process \<open>q\<close> that is also
+  well heard by all processes at round \<open>r+1\<close>. Then the values
+  associated with \<open>l\<close> and \<open>l'\<close> by any process \<open>p\<close>
   are identical.
-*}
+\<close>
 
 lemma lynch_6_16_a:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -303,10 +303,10 @@ lemma lynch_6_16_a:
     shows "vals (rho (length_lbl l') p) l' = vals (rho (length_lbl l) p) l"
   using assms by (auto simp: SKr_def sho_correct_vals)
 
-text {*
-  For any non-leaf label @{text l}, more than half of its children end with a 
-  process that is well heard by everyone at round @{text "length_lbl l"}.
-*}
+text \<open>
+  For any non-leaf label \<open>l\<close>, more than half of its children end with a 
+  process that is well heard by everyone at round \<open>length_lbl l\<close>.
+\<close>
 
 lemma lynch_6_16_c:
   assumes commR: "EIG_commPerRd (HOs (length_lbl l)) (SHOs (length_lbl l))"
@@ -355,12 +355,12 @@ proof -
   ultimately show ?thesis by simp
 qed
 
-text {*
-  If @{text l} is a non-leaf label such that all of its children corresponding
-  to well-heard processes at round @{text "length_lbl l"} have a uniform
-  @{text newvals} decoration at round @{text "f+1"}, then @{text l}
+text \<open>
+  If \<open>l\<close> is a non-leaf label such that all of its children corresponding
+  to well-heard processes at round \<open>length_lbl l\<close> have a uniform
+  \<open>newvals\<close> decoration at round \<open>f+1\<close>, then \<open>l\<close>
   itself is decorated with that same value.
-*}
+\<close>
 lemma newvals_skr_uniform:
   assumes run: "SHORun EIG_M rho HOs SHOs"
       and commR: "EIG_commPerRd (HOs (length_lbl l)) (SHOs (length_lbl l))"
@@ -391,11 +391,11 @@ proof -
   with wupd show ?thesis by simp
 qed
 
-text {* 
-  A node whose label @{text l} ends with a process which is well heard
-  at round @{text "length_lbl l"} will have its @{text newvals} field set
-  (at round @{text "f+1"}) to the ``fixed-up'' value given by @{text vals}.
-*}
+text \<open>
+  A node whose label \<open>l\<close> ends with a process which is well heard
+  at round \<open>length_lbl l\<close> will have its \<open>newvals\<close> field set
+  (at round \<open>f+1\<close>) to the ``fixed-up'' value given by \<open>vals\<close>.
+\<close>
 
 lemma lynch_6_16_d:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -446,23 +446,23 @@ next
   with run commR notlf show "?P l" by (auto intro: newvals_skr_uniform)
 qed
 
-text {* 
+text \<open>
   Following Lynch~\cite{lynch:distributed}, we introduce some more useful
   concepts for reasoning about the data structure.
-*}
+\<close>
 
-text {*
+text \<open>
   A label is \emph{common} if all processes agree on the final value it is
   decorated with.
-*}
+\<close>
 
 definition common where
   "common rho l \<equiv> 
    \<forall>p q. newvals (rho (Suc f) p) l = newvals (rho (Suc f) q) l"
 
-text {*
+text \<open>
   The subtrees of a given label are all its possible extensions.
-*}
+\<close>
 
 definition subtrees where
   "subtrees h \<equiv> { l . \<exists>t. Rep_Label l = (Rep_Label h) @ t }"
@@ -554,26 +554,26 @@ proof -
   thus ?thesis by (simp add: Rep_Label_inject)
 qed
 
-text {*
-  A set @{text C} of labels is a \emph{subcovering} w.r.t. label @{text l}
-  if for all leaf subtrees @{text s} of @{text l} there
-  exists some label @{text "h \<in> C"} such that @{text s} is a subtree of
-  @{text h} and @{text h} is a subtree of @{text l}.
-*}
+text \<open>
+  A set \<open>C\<close> of labels is a \emph{subcovering} w.r.t. label \<open>l\<close>
+  if for all leaf subtrees \<open>s\<close> of \<open>l\<close> there
+  exists some label \<open>h \<in> C\<close> such that \<open>s\<close> is a subtree of
+  \<open>h\<close> and \<open>h\<close> is a subtree of \<open>l\<close>.
+\<close>
 definition subcovering where
  "subcovering C l \<equiv> 
   \<forall>s \<in> subtrees l. is_leaf s \<longrightarrow> (\<exists>h \<in> C. h \<in> subtrees l \<and> s \<in> subtrees h)"
 
-text {*
+text \<open>
   A \emph{covering} is a subcovering w.r.t. the root node.
-*}
+\<close>
 abbreviation covering where
   "covering C \<equiv> subcovering C root_node"
 
-text {*
+text \<open>
   The set of labels whose last element is well heard by all processes
   throughout the execution forms a covering, and all these labels are common.
-*}
+\<close>
 
 lemma lynch_6_18_a:
   assumes "SHORun EIG_M rho HOs SHOs"
@@ -619,11 +619,11 @@ proof (clarsimp simp: subcovering_def)
     by blast
 qed
 
-text {* 
-  If @{text C} covers the subtree rooted at label @{text l} and if
-  @{text "l \<notin> C"} then @{text C} also covers subtrees rooted at
-  @{text l}'s children.
-*}
+text \<open>
+  If \<open>C\<close> covers the subtree rooted at label \<open>l\<close> and if
+  \<open>l \<notin> C\<close> then \<open>C\<close> also covers subtrees rooted at
+  \<open>l\<close>'s children.
+\<close>
 
 lemma lynch_6_19_a:
   assumes cov: "subcovering C l"
@@ -639,7 +639,7 @@ proof (clarsimp simp: subcovering_def)
     by (auto simp: subcovering_def)
   with l obtain e' where e': "e' \<in> children l" "h \<in> subtrees e'"
     by (auto elim: subtrees_cases)
-  from `s \<in> subtrees h` `h \<in> subtrees e'` have "s \<in> subtrees e'"
+  from \<open>s \<in> subtrees h\<close> \<open>h \<in> subtrees e'\<close> have "s \<in> subtrees e'"
     by (rule subtrees_trans)
   with s have "e \<in> subtrees e' \<or> e' \<in> subtrees e"
     by (rule subtrees_tree)
@@ -648,10 +648,10 @@ proof (clarsimp simp: subcovering_def)
   with e' h show "\<exists>h\<in>C. h \<in> subtrees e \<and> s \<in> subtrees h" by blast
 qed
 
-text {*
-  If there is a subcovering @{text C} for a label @{text l} such that all labels
-  in @{text C} are common, then @{text l} itself is common as well.
-*}
+text \<open>
+  If there is a subcovering \<open>C\<close> for a label \<open>l\<close> such that all labels
+  in \<open>C\<close> are common, then \<open>l\<close> itself is common as well.
+\<close>
 
 lemma lynch_6_19_b:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -720,7 +720,7 @@ next
   qed
 qed
 
-text {* The root of the tree is a common node. *}
+text \<open>The root of the tree is a common node.\<close>
 
 lemma lynch_6_20:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -734,9 +734,9 @@ proof (rule lynch_6_19_b, clarify)
   thus "common rho l" by (auto simp: SK_def elim: lynch_6_18_a[OF run commR])
 qed
   
-text {*
-  A decision is taken only at state @{text "f+1"} and then stays stable.
-*}
+text \<open>
+  A decision is taken only at state \<open>f+1\<close> and then stays stable.
+\<close>
 lemma decide:
   assumes run: "SHORun EIG_M rho HOs SHOs"
   shows "decide (rho r p) = 
@@ -764,11 +764,11 @@ next
 qed
 
 
-subsection {* Proof of Agreement, Validity, and Termination *}
+subsection \<open>Proof of Agreement, Validity, and Termination\<close>
 
-text {* 
-  The Agreement property is an immediate consequence of lemma @{text lynch_6_20}.
-*}
+text \<open>
+  The Agreement property is an immediate consequence of lemma \<open>lynch_6_20\<close>.
+\<close>
 
 theorem Agreement:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -781,16 +781,16 @@ theorem Agreement:
   by (auto simp: decide[OF run] common_def)
 
 
-text {* 
+text \<open>
   We now show the Validity property: if all processes initially
-  propose the same value @{text v}, then no other value may be decided.
+  propose the same value \<open>v\<close>, then no other value may be decided.
 
-  By lemma @{text sho_correct_vals}, value @{text v} must propagate to
-  all children of the root that are well heard at round @{text 0}, and
-  lemma @{text lynch_6_16_d} implies that @{text v} is the value assigned
-  to all these children by @{text newvals}. Finally, lemma
-  @{text newvals_skr_uniform} lets us conclude.
-*}
+  By lemma \<open>sho_correct_vals\<close>, value \<open>v\<close> must propagate to
+  all children of the root that are well heard at round \<open>0\<close>, and
+  lemma \<open>lynch_6_16_d\<close> implies that \<open>v\<close> is the value assigned
+  to all these children by \<open>newvals\<close>. Finally, lemma
+  \<open>newvals_skr_uniform\<close> lets us conclude.
+\<close>
 
 theorem Validity:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -836,7 +836,7 @@ proof -
   with dp show ?thesis by (simp add: decide[OF run])
 qed
 
-text {* Termination is trivial for \eigbyz{}. *}
+text \<open>Termination is trivial for \eigbyz{}.\<close>
 
 theorem Termination:
   assumes "SHORun EIG_M rho HOs SHOs"
@@ -844,13 +844,13 @@ theorem Termination:
   using assms by (auto simp: decide)
 
 
-subsection {* \eigbyz{} Solves Weak Consensus *}
+subsection \<open>\eigbyz{} Solves Weak Consensus\<close>
 
-text {*
+text \<open>
   Summing up, all (coarse-grained) runs of \eigbyz{} for
   HO and SHO collections that satisfy the communication predicate 
   satisfy the Weak Consensus property.
-*}
+\<close>
 
 theorem eig_weak_consensus:
   assumes run: "SHORun EIG_M rho HOs SHOs"
@@ -863,10 +863,10 @@ theorem eig_weak_consensus:
         Termination[OF run]
   by auto
 
-text {*
+text \<open>
   By the reduction theorem, the correctness of the algorithm carries over
   to the fine-grained model of runs.
-*}
+\<close>
 
 theorem eig_weak_consensus_fg:
   assumes run: "fg_run EIG_M rho HOs SHOs (\<lambda>r q. undefined)"

@@ -41,7 +41,7 @@ proof -
   hence "\<forall>fy \<in> set (map f a). fy \<le> f z"
     unfolding sorted_append by simp
   thus ?thesis
-    using `y \<in> set a` set_map by simp
+    using \<open>y \<in> set a\<close> set_map by simp
 qed
 
 lemma finite_to_finite_ordered:
@@ -56,7 +56,7 @@ proof -
     using sort_list[of f xs] set_sort by metis
   moreover
   have "finite_ordered f (foldl (\<lambda>S x. insert x S) {} ys)"
-    using `\<And>a b y z. ys = a @ [z] @ b \<Longrightarrow> y \<in> set a \<Longrightarrow> f y \<le> f z`
+    using \<open>\<And>a b y z. ys = a @ [z] @ b \<Longrightarrow> y \<in> set a \<Longrightarrow> f y \<le> f z\<close>
   proof (induction ys rule: rev_induct)
     case (snoc y ys)
       hence "finite_ordered f (foldl (\<lambda>S x. insert x S) {} ys)"
@@ -90,12 +90,12 @@ lemma finite_induct_ordered [case_names empty insert, induct set: finite]:
   assumes "P {}" 
   assumes "\<And>x S. finite S \<Longrightarrow> (\<And>y. y \<in> S \<Longrightarrow> f y \<le> f x) \<Longrightarrow> P S \<Longrightarrow> P (insert x S)"
   shows "P S"
-  using `finite S` unfolding finite_finite_ordered_eq[of _ f] 
+  using \<open>finite S\<close> unfolding finite_finite_ordered_eq[of _ f] 
 proof (induction rule: finite_ordered.induct) 
   case (insert_ordered A a)
     thus ?case
       using assms unfolding finite_finite_ordered_eq[of _ f] by simp
-qed (blast intro: `P {}`)
+qed (blast intro: \<open>P {}\<close>)
 
 subsection \<open>Cofinite Filters\<close>
 
@@ -151,11 +151,11 @@ proof -
     then obtain j where "i = Suc j" and "j < i"
       using lessE by blast
     hence "\<And>j'. j' > j \<Longrightarrow> P j'"
-      using `\<And>j. j \<ge> i \<Longrightarrow> P j` by force
+      using \<open>\<And>j. j \<ge> i \<Longrightarrow> P j\<close> by force
     hence "\<not> P j"
-      using not_less_Least[OF `j < i`[unfolded i_def]] by (metis leI le_antisym)
+      using not_less_Least[OF \<open>j < i\<close>[unfolded i_def]] by (metis leI le_antisym)
     thus "\<not> P (i - 1)"
-      unfolding `i = Suc j` by simp
+      unfolding \<open>i = Suc j\<close> by simp
   }
 qed
 

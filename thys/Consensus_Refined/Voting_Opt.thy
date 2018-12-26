@@ -1,10 +1,10 @@
-section {* The Optimized Voting Model *}
+section \<open>The Optimized Voting Model\<close>
 
 theory Voting_Opt
 imports Voting
 begin
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (*****************************************************************************)
 
 record opt_v_state = 
@@ -59,7 +59,7 @@ definition flv_TS :: "opt_v_state TS" where
 
 lemmas flv_TS_defs = flv_TS_def flv_init_def flv_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition flv_ref_rel :: "(v_state \<times> opt_v_state)set" where
@@ -71,7 +71,7 @@ definition flv_ref_rel :: "(v_state \<times> opt_v_state)set" where
     \<rparr>
   }"
 
-subsubsection {* Guard strengthening *}
+subsubsection \<open>Guard strengthening\<close>
 (******************************************************************************)
 
 lemma process_mru_Max:
@@ -139,7 +139,7 @@ proof(unfold no_defection_def, safe)
       "r' \<le> r_max"
       using q_r'
       by(auto simp add: not_less[symmetric])
-    thus "last_vote sc q = Some v" using ainv(2) Q `q \<in> Q`
+    thus "last_vote sc q = Some v" using ainv(2) Q \<open>q \<in> Q\<close>
       apply(case_tac "r_max = r'")
        apply(clarsimp simp add: w Vinv2_def no_defection_def q_r' dest: le_neq_implies_less)
       apply(fastforce simp add: w Vinv2_def no_defection_def q_r' dest!: le_neq_implies_less)
@@ -149,7 +149,7 @@ proof(unfold no_defection_def, safe)
     by(fastforce simp add: opt_no_defection_def)
 qed
 
-subsubsection {* Action refinement *}
+subsubsection \<open>Action refinement\<close>
 (******************************************************************************)
 
 lemma act_ref:
@@ -160,7 +160,7 @@ lemma act_ref:
     = ((map_option snd o (process_mru (votes s))) ++ v_f)"
     by(auto simp add: process_mru_map_add[OF inv] map_add_def split: option.split)
 
-subsubsection {* The complete refinement proof *}
+subsubsection \<open>The complete refinement proof\<close>
 (******************************************************************************)
 
 lemma flv_round_refines:

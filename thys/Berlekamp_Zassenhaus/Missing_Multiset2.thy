@@ -3,7 +3,7 @@ theory Missing_Multiset2
     Containers.Containers_Auxiliary (* only for a lemma *)
 begin
 
-subsubsection {* Missing muiltiset *}
+subsubsection \<open>Missing muiltiset\<close>
 
 lemma id_imp_bij:
   assumes id: "\<And>x. f (f x) = x" shows "bij f"

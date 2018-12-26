@@ -1,4 +1,4 @@
-section {* While-Loops *}
+section \<open>While-Loops\<close>
 theory Refine_While
 imports 
   Refine_Basic Refine_Leof "Generic/RefineG_While"
@@ -25,7 +25,7 @@ interpretation while?: generic_WHILE_rules bind RETURN SPEC
 lemmas [refine_vcg] = WHILEI_rule
 lemmas [refine_vcg] = WHILEIT_rule
 
-subsection {* Data Refinement Rules *}
+subsection \<open>Data Refinement Rules\<close>
 
 lemma ref_WHILEI_invarI:
   assumes "I s \<Longrightarrow> M \<le> \<Down>R (WHILEI I b f s)"
@@ -63,9 +63,9 @@ lemma WHILEI_le_rule:
   done
 
 
-text {* WHILE-refinement rule with invisible concrete steps.
+text \<open>WHILE-refinement rule with invisible concrete steps.
   Intuitively, a concrete step may either refine an abstract step, or
-  must not change the corresponding abstract state. *}
+  must not change the corresponding abstract state.\<close>
 lemma WHILEI_invisible_refine_genR:
   assumes R0: "I' s' \<Longrightarrow> (s,s')\<in>R'"
   assumes RI: "\<And>s s'. \<lbrakk> (s,s')\<in>R'; I' s' \<rbrakk> \<Longrightarrow> I s"
@@ -155,9 +155,9 @@ lemma WHILE_refine_genR':
   apply (rule assms TrueI, (assumption+)?)+
   done
 
-text {* WHILE-refinement rule with invisible concrete steps.
+text \<open>WHILE-refinement rule with invisible concrete steps.
   Intuitively, a concrete step may either refine an abstract step, or
-  must not change the corresponding abstract state. *}
+  must not change the corresponding abstract state.\<close>
 lemma WHILEI_invisible_refine:
   assumes R0: "I' s' \<Longrightarrow> (s,s')\<in>R"
   assumes RI: "\<And>s s'. \<lbrakk> (s,s')\<in>R; I' s' \<rbrakk> \<Longrightarrow> I s"
@@ -229,8 +229,8 @@ lemma AIF_leI: "\<lbrakk>\<Phi>; \<Phi> \<Longrightarrow> S\<le>S'\<rbrakk> \<Lo
 lemma ref_AIFI: "\<lbrakk>\<Phi> \<Longrightarrow> S\<le>\<Down>R S'\<rbrakk> \<Longrightarrow> S \<le> \<Down>R (if \<Phi> then S' else FAIL)"
   by (cases \<Phi>) auto
 
-text {* Refinement with generalized refinement relation. Required to exploit
-  the fact that the condition does not hold at the end of the loop. *}
+text \<open>Refinement with generalized refinement relation. Required to exploit
+  the fact that the condition does not hold at the end of the loop.\<close>
 lemma WHILEIT_refine_genR:
   assumes R0: "I' x' \<Longrightarrow> (x,x')\<in>R'"
   assumes IREF: "\<And>x x'. \<lbrakk> (x,x')\<in>R'; I' x' \<rbrakk> \<Longrightarrow> I x"
@@ -351,7 +351,7 @@ lemma WHILEIT_refine_new_invar:
   by (auto intro: add_invar_refineI)
 
 
-subsection {* Autoref Setup *}
+subsection \<open>Autoref Setup\<close>
 
 (*lemma id_WHILE[autoref_id_self]: "ID_LIST 
   (l (WHILET,3) (WHILEIT I,3) (WHILE,3) (WHILEI I,3))"
@@ -667,8 +667,8 @@ lemma msii_induct:
   apply simp_all
   done
 
-subsubsection {* Reachable without fail *}
-text {* Reachable states in a while loop, ignoring failing states *}
+subsubsection \<open>Reachable without fail\<close>
+text \<open>Reachable states in a while loop, ignoring failing states\<close>
 
   (* (R)eachable states (w)ith(o)ut (f)ail. All non-fail states reachable
     in a while-loop. *)
@@ -741,7 +741,7 @@ text {* Reachable states in a while loop, ignoring failing states *}
     qed auto
   qed
 
-subsubsection {* Filtering out states that satisfy the loop condition *}
+subsubsection \<open>Filtering out states that satisfy the loop condition\<close>
   (* A shortcut definition for filtering out all results that satisfy
     the loop condition. Intuitively, filtering out these results from the 
     best invariant gives the results of the while loop. *)
@@ -774,7 +774,7 @@ subsubsection {* Filtering out states that satisfy the loop condition *}
   lemma filter_nb_RES[simp]: "filter_nb cond (RES X) = RES {x\<in>X. \<not>cond x}"
     by (simp add: pw_eq_iff refine_pw_simps)
 
-subsubsection {* Bounded while-loop *}
+subsubsection \<open>Bounded while-loop\<close>
 
   (* A while rule that establishes an inductive invariant,
     and then filters out the results satisfying the condition. *)
@@ -912,7 +912,7 @@ subsubsection {* Bounded while-loop *}
     apply (auto simp: WHILE_bounded_aux1)
     done
 
-  subsubsection {* Relation to rwof *}
+  subsubsection \<open>Relation to rwof\<close>
 
   lemma rwof_in_bounded_WHILE:
     assumes "rwof m0 cond step s" 
@@ -989,12 +989,12 @@ subsubsection {* Bounded while-loop *}
     show ?case  
       apply (cases "cond xh")
         apply (rule rwof.step[where Y=X'])
-          apply (rule Suc.IH[OF BWN `xh\<in>Xh`])
+          apply (rule Suc.IH[OF BWN \<open>xh\<in>Xh\<close>])
           apply assumption
           apply (simp_all add: C) [2]
         
         apply (rule Suc.IH[OF BWN])
-        apply (simp add: NC `xh\<in>Xh`)
+        apply (simp add: NC \<open>xh\<in>Xh\<close>)
       done
   qed
       
@@ -1074,7 +1074,7 @@ subsubsection {* Bounded while-loop *}
     using rwof_in_bounded_WHILE[of m0 cond step x]
     by (auto simp add: pw_le_iff intro: not_nofail_inres)
 
-subsubsection {* WHILE-loops in the nofail-case *}
+subsubsection \<open>WHILE-loops in the nofail-case\<close>
   lemma nofail_WHILE_eq_rwof: 
     assumes NF: "nofail (m0 \<bind> WHILE cond step)"
     shows "m0 \<bind> WHILE cond step = SPEC (\<lambda>s. rwof m0 cond step s \<and> \<not>cond s)"
@@ -1189,7 +1189,7 @@ subsubsection {* WHILE-loops in the nofail-case *}
         apply (simp add: rwof_leof_step)
     done
 
-subsubsection {* Adding Invariants *}
+subsubsection \<open>Adding Invariants\<close>
   lemma WHILE_eq_I_rwof: "m \<bind> WHILE c f = m \<bind> WHILEI (rwof m c f) c f"
   proof (rule antisym)
     have "m \<bind> WHILEI (rwof m c f) c f
@@ -1241,7 +1241,7 @@ subsubsection {* Adding Invariants *}
   qed
 
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 lemma rwof_refine:
   assumes RW: "rwof m c f s"
   assumes NF: "nofail (m' \<bind> WHILE c' f')"
@@ -1259,8 +1259,8 @@ lemma rwof_refine:
   done
 
 subsubsection \<open>Total Correct Loops\<close>
-text {* In this theory, we show that every non-failing total-correct 
-  while loop gives rise to a compatible well-founded relation *}
+text \<open>In this theory, we show that every non-failing total-correct 
+  while loop gives rise to a compatible well-founded relation\<close>
 
 
 definition rwof_rel 
@@ -1353,9 +1353,9 @@ proof (rule ccontr)
 qed
 
 
-subsection {* Convenience *}
+subsection \<open>Convenience\<close>
 
-subsubsection {* Iterate over range of list *}
+subsubsection \<open>Iterate over range of list\<close>
 lemma range_set_WHILE:
   assumes CEQ: "\<And>i s. c (i,s) \<longleftrightarrow> i<u"
   assumes F0: "F {} s0 = s0"

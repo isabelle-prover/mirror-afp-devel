@@ -35,16 +35,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Ports *}
+subsection \<open>Ports\<close>
 theory Ports
   imports 
     Main
 begin
 
-text{*
+text\<open>
   This theory can be used if we want to specify the port numbers by names denoting their default 
-  Integer values. If you want to use them, please add @{text Ports} to the simplifier.
-*}
+  Integer values. If you want to use them, please add \<open>Ports\<close> to the simplifier.
+\<close>
 
 definition http::int where "http = 80"
 
@@ -70,7 +70,7 @@ lemma ftp1: "x \<noteq> 21 \<Longrightarrow> x \<noteq> ftp"
 lemma ftp2: "x \<noteq> 21 \<Longrightarrow> ftp \<noteq> x"
   by (simp add: ftp_def)
 
-text{* And so on for all desired port numbers. *}
+text\<open>And so on for all desired port numbers.\<close>
 
 lemmas Ports = http1 http2 ftp1 ftp2 smtp1 smtp2
 

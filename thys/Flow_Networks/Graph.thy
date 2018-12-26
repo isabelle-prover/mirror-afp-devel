@@ -332,12 +332,12 @@ proof -
   have "w1 \<noteq> []"
     proof (rule ccontr)
       assume "\<not> w1 \<noteq> []"
-      then have "u = u1" using `isPath u w1 u1` by (metis isPath.simps(1))
+      then have "u = u1" using \<open>isPath u w1 u1\<close> by (metis isPath.simps(1))
       thus "False" using assms(3) by blast
     qed
   then obtain e w1' where obt2:"w1 = w1' @ [e]" by (metis append_butlast_last_id)
   then obtain u2 where "e = (u2, u1)" 
-    using `isPath u w1 u1` isPath_tail by (metis prod.collapse)
+    using \<open>isPath u w1 u1\<close> isPath_tail by (metis prod.collapse)
   then have "p = w1' @ (u2, u1) # (u1, v1) # w2" using obt1 obt2 by auto 
   thus ?thesis by auto
 qed
@@ -354,12 +354,12 @@ proof -
   have "w2 \<noteq> []"
     proof (rule ccontr)
       assume "\<not> w2 \<noteq> []"
-      then have "v = v1" using `isPath v1 w2 v` by (metis isPath.simps(1))
+      then have "v = v1" using \<open>isPath v1 w2 v\<close> by (metis isPath.simps(1))
       thus "False" using assms(3) by blast
     qed
   then obtain e w2' where obt2:"w2 =  e # w2'" by (metis neq_Nil_conv)
   then obtain v2 where "e = (v1, v2)" 
-    using `isPath v1 w2 v` isPath_head by (metis prod.collapse)
+    using \<open>isPath v1 w2 v\<close> isPath_head by (metis prod.collapse)
   then have "p = w1 @ (u1, v1) # (v1, v2) # w2'" using obt1 obt2 by auto
   thus ?thesis by auto
 qed
@@ -782,8 +782,8 @@ lemma min_distI_eq:
   "\<lbrakk> dist v d v'; \<And>d'. dist v d' v' \<Longrightarrow> d \<le> d' \<rbrakk> \<Longrightarrow> min_dist v v' = d"
   by (force intro: min_distI2 simp: connected_by_dist)
 
-text {* Two nodes are connected by a path of length @{text "0"}, 
-  iff they are equal. *}
+text \<open>Two nodes are connected by a path of length \<open>0\<close>, 
+  iff they are equal.\<close>
 lemma dist_z_iff[simp]: "dist v 0 v' \<longleftrightarrow> v'=v"
   by (auto simp: dist_def)
 
@@ -802,9 +802,9 @@ lemma dist_cases[case_names dist_z dist_suc, consumes 1, cases pred]:
   done
 
 
-text {* The same holds for @{text "min_dist"}, i.e., 
-  the shortest path between two nodes has length @{text "0"}, 
-  iff these nodes are equal. *}
+text \<open>The same holds for \<open>min_dist\<close>, i.e., 
+  the shortest path between two nodes has length \<open>0\<close>, 
+  iff these nodes are equal.\<close>
 lemma min_dist_z[simp]: "min_dist v v = 0"
   by (rule min_distI2) auto
 
@@ -816,9 +816,9 @@ lemma min_dist_is_dist: "connected v v' \<Longrightarrow> dist v (min_dist v v')
 lemma min_dist_minD: "dist v d v' \<Longrightarrow> min_dist v v' \<le> d"
   by (auto intro: min_distI2)
 
-text {* We also provide introduction and destruction rules for the
-  pattern @{text "min_dist v v' = Suc d"}.
-  *}
+text \<open>We also provide introduction and destruction rules for the
+  pattern \<open>min_dist v v' = Suc d\<close>.
+\<close>
 
 lemma min_dist_succ: 
   "\<lbrakk> connected v v'; (v',v'') \<in> E \<rbrakk> \<Longrightarrow> min_dist v v'' \<le> Suc (min_dist v v') "
@@ -840,11 +840,11 @@ proof -
   with c show ?thesis by simp
 qed
 
-text {*
-  If there is a node with a shortest path of length @{text "d"}, 
-  then, for any @{text "d'<d"}, there is also a node with a shortest path
-  of length @{text "d'"}.
-  *}
+text \<open>
+  If there is a node with a shortest path of length \<open>d\<close>, 
+  then, for any \<open>d'<d\<close>, there is also a node with a shortest path
+  of length \<open>d'\<close>.
+\<close>
 lemma min_dist_less:
   assumes "connected src v" "min_dist src v = d" and "d' < d"
   shows "\<exists>v'. connected src v' \<and> min_dist src v' = d'"
@@ -854,9 +854,9 @@ proof (induct d arbitrary: v)
     by (cases "d' = d") auto
 qed auto
 
-text {*
-  Lemma @{text "min_dist_less"} can be weakened to @{text "d'\<le>d"}.
-  *}
+text \<open>
+  Lemma \<open>min_dist_less\<close> can be weakened to \<open>d'\<le>d\<close>.
+\<close>
 
 corollary min_dist_le:
   assumes c: "connected src v" and d': "d' \<le> min_dist src v"

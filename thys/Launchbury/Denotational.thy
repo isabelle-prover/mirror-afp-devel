@@ -2,9 +2,9 @@ theory Denotational
   imports "Abstract-Denotational-Props" "Value-Nominal"
 begin
 
-text {*
+text \<open>
 This is the actual denotational semantics as found in \cite{launchbury}.
-*}
+\<close>
 
 interpretation semantic_domain Fn Fn_project B B_project "(\<Lambda> x. x)".
 
@@ -33,11 +33,11 @@ lemma ESem_simps:
   by simp_all
 (*<*)
 
-text {*
+text \<open>
 Excluded from the document, as these are unused in the current development.
-*}
+\<close>
 
-subsubsection {* Replacing subexpressions by variables *}
+subsubsection \<open>Replacing subexpressions by variables\<close>
 
 lemma HSem_subst_var_app:
   assumes fresh: "atom n \<sharp> x"

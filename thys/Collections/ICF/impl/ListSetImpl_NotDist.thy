@@ -2,14 +2,14 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* \isaheader{Set Implementation by non-distinct Lists} *}
+section \<open>\isaheader{Set Implementation by non-distinct Lists}\<close>
 theory ListSetImpl_NotDist
 imports 
   "../spec/SetSpec"
   "../gen_algo/SetGA"
   (*"../common/ListAdd"*)
 begin
-text_raw {*\label{thy:ListSetImpl_NotDist}*}
+text_raw \<open>\label{thy:ListSetImpl_NotDist}\<close>
 
 (*@impl Set
   @type 'a lsnd
@@ -161,7 +161,7 @@ interpretation lsnd: StdSet_no_invar lsnd_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "lsnd"*}
+setup \<open>ICF_Tools.revert_abbrevs "lsnd"\<close>
 
 lemma pi_lsnd[proper_it]: 
   "proper_it' lsnd_iteratei lsnd_iteratei"

@@ -26,7 +26,7 @@ proof-
   hence [simp]: "\<not> nonrec [(x,e)]"
     by (simp add: nonrec_def)
  
-  from `isVal e`
+  from \<open>isVal e\<close>
   have [simp]: "thunks [(x, e)] = {}"
     by (simp add: thunks_Cons)
 

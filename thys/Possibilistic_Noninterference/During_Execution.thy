@@ -1,10 +1,10 @@
-section {* During-execution security *} 
+section \<open>During-execution security\<close> 
 
 theory During_Execution 
 imports Bisim Language_Semantics begin
 
 
-subsection {* Basic setting *}
+subsection \<open>Basic setting\<close>
 
 locale PL_Indis = PL tval aval 
   for 
@@ -45,7 +45,7 @@ lemma indis_sym: "s \<approx> s' \<Longrightarrow> s' \<approx> s"
 using sym_indis unfolding sym_def by blast
 
 
-subsection{* Compatibility and discreetness *} 
+subsection\<open>Compatibility and discreetness\<close> 
 
 definition compatTst where 
 "compatTst tst \<equiv> 
@@ -72,7 +72,7 @@ shows "compatAtm atm"
 using assms unfolding compatAtm_def
 by (metis presAtm_def indis_sym indis_trans)
 
-text{* Coinduction for discreetness: *}
+text\<open>Coinduction for discreetness:\<close>
 
 lemma discr_coind:
 assumes *: "phi c" and 
@@ -88,7 +88,7 @@ assumes *: "phi c" and
 shows "discr c"
 using * apply - apply(erule discr_coind) using ** *** by blast+
 
-text{* Discreetness versus transition: *}
+text\<open>Discreetness versus transition:\<close>
 
 lemma discr_transC:
 assumes *: "discr c" and **: "(c,s) \<rightarrow>c (c',s')"
@@ -141,7 +141,7 @@ proof-
 qed 
 
 
-subsection{* Terminating-interctive discreetness *}
+subsection\<open>Terminating-interctive discreetness\<close>
 
 coinductive discr0 where 
 intro: 
@@ -149,7 +149,7 @@ intro:
   \<And> s s'. \<lbrakk>mustT c s; (c,s) \<rightarrow>t s'\<rbrakk> \<Longrightarrow> s \<approx> s'\<rbrakk> 
   \<Longrightarrow> discr0 c" 
 
-text{* Coinduction for 0-discreetness: *}
+text\<open>Coinduction for 0-discreetness:\<close>
 
 lemma discr0_coind[consumes 1, case_names Cont Term, induct pred: discr0]:
 assumes *: "phi c" and 
@@ -167,7 +167,7 @@ assumes *: "phi c" and
 shows "discr0 c"
 using * apply - apply(erule discr0_coind) using ** *** by blast+
 
-text{* 0-Discreetness versus transition: *}
+text\<open>0-Discreetness versus transition:\<close>
 
 lemma discr0_transC:
 assumes *: "discr0 c" and **: "mustT c s" "(c,s) \<rightarrow>c (c',s')"
@@ -225,7 +225,7 @@ lemma discr_discr0[simp]: "discr c \<Longrightarrow> discr0 c"
   by (induct rule: discr0_coind)
      (metis discr_transC discr_transC_indis discr_transT)+
 
-subsection{* Self-isomorphism *}  
+subsection\<open>Self-isomorphism\<close>  
 
 coinductive siso where 
 intro: 
@@ -234,7 +234,7 @@ intro:
   \<And> s t s'. \<lbrakk>s \<approx> t; (c,s) \<rightarrow>t s'\<rbrakk> \<Longrightarrow> \<exists> t'. s' \<approx> t' \<and> (c,t) \<rightarrow>t t'\<rbrakk> 
   \<Longrightarrow> siso c"
 
-text{* Coinduction for self-isomorphism: *}
+text\<open>Coinduction for self-isomorphism:\<close>
 
 lemma siso_coind:
 assumes *: "phi c" and 
@@ -252,7 +252,7 @@ assumes *: "phi c" and
 shows "siso c"
 using * apply - apply(erule siso_coind) using ** *** **** by blast+
 
-text{* Self-Isomorphism versus transition: *}
+text\<open>Self-Isomorphism versus transition:\<close>
 
 lemma siso_transC:
 assumes *: "siso c" and **: "(c,s) \<rightarrow>c (c',s')"
@@ -279,7 +279,7 @@ shows "\<exists> t'. s' \<approx> t' \<and> (c,t) \<rightarrow>t t'"
 using * apply - apply(erule siso.cases) using ** *** by blast
 
 
-subsection{* MustT-interactive self-isomorphism *}  
+subsection\<open>MustT-interactive self-isomorphism\<close>  
 
 coinductive siso0 where 
 intro: 
@@ -292,7 +292,7 @@ intro:
     \<exists> t'. s' \<approx> t' \<and> (c,t) \<rightarrow>t t'\<rbrakk> 
   \<Longrightarrow> siso0 c"
 
-text{* Coinduction for self-isomorphism: *}
+text\<open>Coinduction for self-isomorphism:\<close>
 
 lemma siso0_coind[consumes 1, case_names Indef Cont Term, induct pred: discr0]:
 assumes *: "phi c" and 
@@ -318,7 +318,7 @@ assumes *: "phi c" and
 shows "siso0 c"
 using * apply - apply(erule siso0_coind) using ** *** **** by blast+
 
-text{* Self-Isomorphism versus transition: *}
+text\<open>Self-Isomorphism versus transition:\<close>
 
 lemma siso0_transC:
 assumes *: "siso0 c" and **: "mustT c s" "(c,s) \<rightarrow>c (c',s')"
@@ -350,9 +350,9 @@ shows "\<exists> t'. s' \<approx> t' \<and> (c,t) \<rightarrow>t t'"
 using * apply - apply(erule siso0.cases) using ** *** by blast
 
 
-subsection{* Notions of bisimilarity *} 
+subsection\<open>Notions of bisimilarity\<close> 
 
-text{* Matchers: *}
+text\<open>Matchers:\<close>
 
 (* Notations and conventions:
 \\- ``<u>_<v>" means: ``match u by v", where u, v can be: 
@@ -567,7 +567,7 @@ lemma matchT_M_def2:
    (\<exists> s'. (c,s) \<rightarrow>*t s' \<and> s' \<approx> t'))"    
 unfolding matchT_M_def using indis_sym by blast
 
-text{* Retracts: *}
+text\<open>Retracts:\<close>
 
 (* Strong retract: *)
 definition Sretr where 
@@ -617,7 +617,7 @@ ZOretr_def ZOretrT_def
 Wretr_def WretrT_def 
 RetrT_def
 
-text{* The associated bisimilarity relations: *}
+text\<open>The associated bisimilarity relations:\<close>
 
 definition Sbis where "Sbis \<equiv> bis Sretr"
 definition ZObis where "ZObis \<equiv> bis ZOretr"
@@ -1009,7 +1009,7 @@ shows "theta \<subseteq> BisT"
 using assms mono_Retr bis_raw_coind2 
 unfolding BisT_def by blast
 
-text{* Inclusions between bisimilarities: *}
+text\<open>Inclusions between bisimilarities:\<close>
 
 lemma match_imp[simp]:
 "\<And> theta c1 c2. matchC_C theta c1 c2 \<Longrightarrow> matchC_ZOC theta c1 c2"
@@ -1034,7 +1034,7 @@ lemma match_imp[simp]:
 "\<And> theta c1 c2. matchC_MC theta c1 c2 \<Longrightarrow> matchC_TMC theta c1 c2"
 (*  *)
 "\<And> theta c1 c2. matchT_MT c1 c2 \<Longrightarrow> matchT_TMT c1 c2"
-unfolding match_defs apply(tactic {* mauto_no_simp_tac @{context} *})
+unfolding match_defs apply(tactic \<open>mauto_no_simp_tac @{context}\<close>)
 apply fastforce apply fastforce
 apply (metis MtransC_Refl transC_MtransC)
 by force+
@@ -1082,7 +1082,7 @@ lemma bis_imp[simp]:
 "\<And> c1 c2. c1 \<approx>wT c2 \<Longrightarrow> c1 \<approx>T c2"
 using bis_incl set_rev_mp by auto
 
-text{* Self-isomorphism implies strong bisimilarity: *}
+text\<open>Self-isomorphism implies strong bisimilarity:\<close>
 
 lemma siso_Sbis[simp]:
 assumes "siso c"
@@ -1111,7 +1111,7 @@ proof-
   thus ?thesis using assms by blast
 qed
 
-text{* 0-Self-isomorphism implies weak T 0-bisimilarity: *}
+text\<open>0-Self-isomorphism implies weak T 0-bisimilarity:\<close>
 
 lemma siso0_Sbis[simp]:
 assumes "siso0 c"

@@ -1,10 +1,10 @@
-section {* Writer monad *}
+section \<open>Writer monad\<close>
 
 theory Writer_Monad
 imports Monad
 begin
 
-subsection {* Monoid class *}
+subsection \<open>Monoid class\<close>
 
 class monoid = "domain" +
   fixes mempty :: "'a"
@@ -14,30 +14,30 @@ class monoid = "domain" +
   assumes mappend_assoc:
     "\<And>xs ys zs. mappend\<cdot>(mappend\<cdot>xs\<cdot>ys)\<cdot>zs = mappend\<cdot>xs\<cdot>(mappend\<cdot>ys\<cdot>zs)"
 
-subsection {* Writer monad type *}
+subsection \<open>Writer monad type\<close>
 
-text {* Below is the standard Haskell definition of a writer monad
+text \<open>Below is the standard Haskell definition of a writer monad
 type; it is an isomorphic copy of the lazy pair type \texttt{(a, w)}.
-*}
+\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 newtype Writer w a = Writer { runWriter :: (a, w) }
 \end{verbatim}
-*}
+\<close>
 
-text {* Since HOLCF does not have a pre-defined lazy pair type, we
+text \<open>Since HOLCF does not have a pre-defined lazy pair type, we
 will base this formalization on an equivalent, more direct definition:
-*}
+\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{verbatim}
 data Writer w a = Writer w a
 \end{verbatim}
-*}
+\<close>
 
-text {* We can directly translate the above Haskell type definition
-using @{text tycondef}. \medskip *}
+text \<open>We can directly translate the above Haskell type definition
+using \<open>tycondef\<close>. \medskip\<close>
 
 tycondef 'a\<cdot>'w writer = Writer (lazy "'w") (lazy "'a")
 
@@ -58,7 +58,7 @@ apply simp
 apply (simp add: Writer_def)
 done
 
-subsection {* Class instance proofs *}
+subsection \<open>Class instance proofs\<close>
 
 instance writer :: ("domain") "functor"
 proof
@@ -103,7 +103,7 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_writer_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>'w writer) = \<bottom>"
@@ -130,7 +130,7 @@ lemma join_writer_simps [simp]:
   "join\<cdot>(Writer\<cdot>w\<cdot>(Writer\<cdot>w'\<cdot>x)) = Writer\<cdot>(mappend\<cdot>w\<cdot>w')\<cdot>x"
 unfolding join_def by simp_all
 
-subsection {* Extra operations *}
+subsection \<open>Extra operations\<close>
 
 definition tell :: "'w \<rightarrow> unit\<cdot>('w::monoid writer)"
   where "tell = (\<Lambda> w. Writer\<cdot>w\<cdot>())"

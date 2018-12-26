@@ -481,7 +481,7 @@ subsubsection \<open>inv1\<close>
 text \<open>If an initiator commit signal exists for @{term "Ra$ni"}, @{term "Nr"},
   $(@{term "g"}^@{term "ny"})^@{term "Ra$nx"}$, then @{term "Ra"} is
   @{term "Init"}, has passed step 3, and has the nonce @{term "Nr"}, and
-  @{text "(g^ny)^(Ra$nx)"} as the key in its frame. 
+  \<open>(g^ny)^(Ra$nx)\<close> as the key in its frame. 
 \<close>
 definition
   skl1_inv1 :: "skl1_state set"

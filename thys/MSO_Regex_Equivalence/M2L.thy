@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* M2L *}
+section \<open>M2L\<close>
 
 (*<*)
 theory M2L
@@ -8,7 +8,7 @@ imports Formula
 begin
 (*>*)
 
-subsection {* Encodings *}
+subsection \<open>Encodings\<close>
 
 context formula
 begin
@@ -162,26 +162,26 @@ next
       "(\<forall>i \<in> FO. case I ! i of Inl _ \<Rightarrow> True | Inr _ \<Rightarrow> False)"
       "(\<forall>i \<in> SO. case I ! i of Inl _ \<Rightarrow> False | Inr _ \<Rightarrow> True)"
     then obtain p where p: "I ! r = Inl p" by (cases "I ! r") auto
-    moreover from `r \<in> FO` assms(1) *(1) have "r < length I" by auto
+    moreover from \<open>r \<in> FO\<close> assms(1) *(1) have "r < length I" by auto
     ultimately have "Inl p \<in> set I" by (auto simp add: in_set_conv_nth)
     with *(2) have "p < length w" by auto
     with *(2) obtain a where a: "w ! p = a" "a \<in> set \<Sigma>" by auto
-    from `r < length I` p *(1) `a \<in> set \<Sigma>`
+    from \<open>r < length I\<close> p *(1) \<open>a \<in> set \<Sigma>\<close>
       have "[enc_atom I p a] \<in> lang n (Atom (Arbitrary_Except r True))"
       by (intro enc_atom_lang_Arbitrary_Except_True) auto
     moreover
-    from `r < length I` p *(1) `a \<in> set \<Sigma>` *(2)  `p < length w`
+    from \<open>r < length I\<close> p *(1) \<open>a \<in> set \<Sigma>\<close> *(2)  \<open>p < length w\<close>
       have "take p (enc (w, I)) \<in> star (lang n (Atom (Arbitrary_Except r False)))"
       by (auto simp: in_set_conv_nth simp del: lang.simps
         intro!: Ball_starI enc_atom_lang_Arbitrary_Except_False) auto
     moreover
-    from `r < length I` p *(1) `a \<in> set \<Sigma>` *(2)  `p < length w`
+    from \<open>r < length I\<close> p *(1) \<open>a \<in> set \<Sigma>\<close> *(2)  \<open>p < length w\<close>
       have "drop (Suc p) (enc (w, I)) \<in> star (lang n (Atom (Arbitrary_Except r False)))"
       by (auto simp: in_set_conv_nth simp del: lang.simps
         intro!: Ball_starI enc_atom_lang_Arbitrary_Except_False) auto
     ultimately have "take p (enc (w, I)) @ [enc_atom I p a] @ drop (p + 1) (enc (w, I)) \<in>
-      lang n (valid_ENC n r)" using `0 < n` unfolding valid_ENC_def by (auto simp del: append.simps)
-    with `p < length w` a have "enc (w, I) \<in> lang n (valid_ENC n r)"
+      lang n (valid_ENC n r)" using \<open>0 < n\<close> unfolding valid_ENC_def by (auto simp del: append.simps)
+    with \<open>p < length w\<close> a have "enc (w, I) \<in> lang n (valid_ENC n r)"
       using id_take_nth_drop[of p "enc (w, I)"] by auto
   }
   hence "?R \<subseteq> ?L" using lang_flatten_INTERSECT[OF finite nonempty wf_rexp] by (auto simp add: ENC_def)
@@ -192,16 +192,16 @@ next
     moreover
     { fix r assume "r \<in> FO"
       with assms have "r < n" by auto
-      from `r \<in> FO` r obtain u v w where uvw: "x = u @ v @ w"
+      from \<open>r \<in> FO\<close> r obtain u v w where uvw: "x = u @ v @ w"
         "u \<in> star (lang n (Atom (Arbitrary_Except r False)))"
         "v \<in> lang n (Atom (Arbitrary_Except r True))"
-        "w \<in> star (lang n (Atom (Arbitrary_Except r False)))" using `0 < n` unfolding valid_ENC_def
+        "w \<in> star (lang n (Atom (Arbitrary_Except r False)))" using \<open>0 < n\<close> unfolding valid_ENC_def
         by (fastforce simp del: lang.simps(4))
       hence "length u < length x" "\<And>i. i < length x \<longrightarrow> snd (x ! i) ! r \<longleftrightarrow> i = length u"
          by (auto simp: nth_append nth_Cons' split: if_split_asm simp del: lang.simps
-            dest!: Arbitrary_ExceptD[OF _ `r < n`]
-            dest: star_Arbitrary_ExceptD[OF _ `r < n`, of u]
-            elim!: iffD1[OF star_Arbitrary_ExceptD[OF _ `r < n`, of w False]]) auto
+            dest!: Arbitrary_ExceptD[OF _ \<open>r < n\<close>]
+            dest: star_Arbitrary_ExceptD[OF _ \<open>r < n\<close>, of u]
+            elim!: iffD1[OF star_Arbitrary_ExceptD[OF _ \<open>r < n\<close>, of w False]]) auto
       hence "\<exists>!p. p < length x \<and> snd (x ! p) ! r" by auto
     } note * = this
     have x_wf_word: "wf_word n x" using wf_lang_wf_word[OF wf_rexp_valid_ENC] False r assms(1)
@@ -229,7 +229,7 @@ proof -
   show ?thesis unfolding lang_ENC[OF *] by simp
 qed
 
-subsection {* Welldefinedness of enc wrt. Models *}
+subsection \<open>Welldefinedness of enc wrt. Models\<close>
 
 lemma enc_alt_def:
  "enc (w, x # I) = map_index (\<lambda>n (a, bs). (a, (case x of Inl p \<Rightarrow> n = p | Inr P \<Rightarrow> n \<in> P) # bs)) (enc (w, I))"
@@ -380,11 +380,11 @@ next
     moreover
     with FExists.prems have "satisfies (w', Inl p # I') \<phi>"
     proof (intro iffD1[OF FExists.IH[of "Inl p # I" "Inl p # I'"]])
-      from FExists.prems(2,3) `p < length w` show "wf_interp_for_formula (w, Inl p # I) \<phi>"
-        by (blast dest: wf_interp_for_formula_FExists[of I, OF _ `w \<noteq> []`])
+      from FExists.prems(2,3) \<open>p < length w\<close> show "wf_interp_for_formula (w, Inl p # I) \<phi>"
+        by (blast dest: wf_interp_for_formula_FExists[of I, OF _ \<open>w \<noteq> []\<close>])
     next
-      from FExists.prems(2,4) `p < length w` show "wf_interp_for_formula (w', Inl p # I') \<phi>"
-        unfolding length by (blast dest: wf_interp_for_formula_FExists[of I', OF _ `w' \<noteq> []`])
+      from FExists.prems(2,4) \<open>p < length w\<close> show "wf_interp_for_formula (w', Inl p # I') \<phi>"
+        unfolding length by (blast dest: wf_interp_for_formula_FExists[of I', OF _ \<open>w' \<noteq> []\<close>])
     qed (auto elim: enc_extend_interp simp del: enc.simps)
     ultimately show "satisfies (w', I') (FExists \<phi>)" using length by (auto intro!: exI[of _ p])
   next
@@ -394,11 +394,11 @@ next
     moreover
     with FExists.prems have "satisfies (w, Inl p # I) \<phi>"
     proof (intro iffD2[OF FExists.IH[of "Inl p # I" "Inl p # I'"]])
-      from FExists.prems(2,3) `p < length w'` show "wf_interp_for_formula (w, Inl p # I) \<phi>"
-        unfolding length[symmetric] by (blast dest: wf_interp_for_formula_FExists[of I, OF _ `w \<noteq> []`])
+      from FExists.prems(2,3) \<open>p < length w'\<close> show "wf_interp_for_formula (w, Inl p # I) \<phi>"
+        unfolding length[symmetric] by (blast dest: wf_interp_for_formula_FExists[of I, OF _ \<open>w \<noteq> []\<close>])
     next
-      from FExists.prems(2,4) `p < length w'` show "wf_interp_for_formula (w', Inl p # I') \<phi>"
-        unfolding length by (blast dest: wf_interp_for_formula_FExists[of I', OF _ `w' \<noteq> []`])
+      from FExists.prems(2,4) \<open>p < length w'\<close> show "wf_interp_for_formula (w', Inl p # I') \<phi>"
+        unfolding length by (blast dest: wf_interp_for_formula_FExists[of I', OF _ \<open>w' \<noteq> []\<close>])
     qed (auto elim: enc_extend_interp simp del: enc.simps)
     ultimately show "satisfies (w, I) (FExists \<phi>)" using length by (auto intro!: exI[of _ p])
   qed
@@ -415,10 +415,10 @@ next
     with FEXISTS.prems have "satisfies (w', Inr P # I') \<phi>"
     proof (intro iffD1[OF FEXISTS.IH[of "Inr P # I" "Inr P # I'"]])
       from FEXISTS.prems(2,3) P(1) show "wf_interp_for_formula (w, Inr P # I) \<phi>"
-        by (blast dest: wf_interp_for_formula_FEXISTS[of I, OF _ `w \<noteq> []`])
+        by (blast dest: wf_interp_for_formula_FEXISTS[of I, OF _ \<open>w \<noteq> []\<close>])
     next
       from FEXISTS.prems(2,4) P(1) show "wf_interp_for_formula (w', Inr P # I') \<phi>"
-        unfolding length by (blast dest: wf_interp_for_formula_FEXISTS[of I', OF _ `w' \<noteq> []`])
+        unfolding length by (blast dest: wf_interp_for_formula_FEXISTS[of I', OF _ \<open>w' \<noteq> []\<close>])
     qed (auto elim: enc_extend_interp simp del: enc.simps)
     ultimately show "satisfies (w', I') (FEXISTS \<phi>)" using length by (auto intro!: exI[of _ P])
   next
@@ -428,10 +428,10 @@ next
     with FEXISTS.prems have "satisfies (w, Inr P # I) \<phi>"
     proof (intro iffD2[OF FEXISTS.IH[of "Inr P # I" "Inr P # I'"]])
       from FEXISTS.prems(2,3) P(1) show "wf_interp_for_formula (w, Inr P # I) \<phi>"
-        unfolding length[symmetric] by (blast dest: wf_interp_for_formula_FEXISTS[of I, OF _ `w \<noteq> []`])
+        unfolding length[symmetric] by (blast dest: wf_interp_for_formula_FEXISTS[of I, OF _ \<open>w \<noteq> []\<close>])
     next
       from FEXISTS.prems(2,4) P(1) show "wf_interp_for_formula (w', Inr P # I') \<phi>"
-        unfolding length by (blast dest: wf_interp_for_formula_FEXISTS[of I', OF _ `w' \<noteq> []`])
+        unfolding length by (blast dest: wf_interp_for_formula_FEXISTS[of I', OF _ \<open>w' \<noteq> []\<close>])
     qed (auto elim: enc_extend_interp simp del: enc.simps)
     ultimately show "satisfies (w, I) (FEXISTS \<phi>)" using length by (auto intro!: exI[of _ P])
   qed
@@ -466,7 +466,7 @@ lemma lang\<^sub>M\<^sub>2\<^sub>L_FAnd:
     (is "_ \<subseteq> ?L1 \<inter> ?L2 \<inter> ?ENC")
   using assms unfolding lang\<^sub>M\<^sub>2\<^sub>L_def by (fastforce)
 
-subsection {* From M2L to Regular expressions *}
+subsection \<open>From M2L to Regular expressions\<close>
 
 fun rexp_of :: "nat \<Rightarrow> 'a formula \<Rightarrow> ('a atom) rexp" where
   "rexp_of n (FQ a m) = Inter (TIMES [Full, Atom (AQ m a), Full]) (ENC n {m})"
@@ -636,7 +636,7 @@ next
         moreover
         from m wI have ex1: "\<exists>!p. p < length x \<and> snd (x ! p) ! m'" unfolding wI(1) by (intro enc_unique) auto
         ultimately have "p' = ?u'" using u' by auto
-      } note * = this `p = length u1`
+      } note * = this \<open>p = length u1\<close>
       with * m wI have "satisfies (dec_word x, dec_interp n {m, m'} x) (FLess m m')"
         unfolding dec_word_enc[of w I, folded wI(1)]
         by (auto simp del: enc.simps dest: dec_interp_not_Inr split: sum.splits)
@@ -942,7 +942,7 @@ proof (intro equalityI subsetI)
     using lang_ENC_formula[OF wf] by blast
   with x have "w \<noteq> []" by (cases w) auto
   from wI(2) obtain p where "p < length w" "wf_interp_for_formula (w, Inl p # I) \<phi>"
-    using wf_interp_for_formula_FExists[OF wf[folded wI(3)] `w \<noteq> []`] by auto
+    using wf_interp_for_formula_FExists[OF wf[folded wI(3)] \<open>w \<noteq> []\<close>] by auto
   with wI(3) have "x \<in> map \<pi> ` (lang (Suc n) (ENC (Suc n) (FOV \<phi>)) - {[]})"
     unfolding wI(1) lang_ENC_formula[OF wf1] project_enc[symmetric, of w I "Inl p"]
     by (intro imageI CollectI exI[of _ w] exI[of _ "Inl p # I"]) auto
@@ -952,11 +952,11 @@ next
   hence wf1: "wf_formula (Suc n) \<phi>" and "0 \<in> FOV \<phi>" and x: "x \<in> map \<pi> ` (lang (Suc n) (ENC (Suc n) (FOV \<phi>)) - {[]})" by auto
   from x obtain w I where wI: "x = map \<pi> (enc (w, I))" "wf_interp_for_formula (w, I) \<phi>" "length I = Suc n"
     using lang_ENC_formula[OF wf1] by auto
-  with `0 \<in> FOV \<phi>` obtain p I' where I: "I = Inl p # I'" by (cases I) (fastforce split: sum.splits)+
+  with \<open>0 \<in> FOV \<phi>\<close> obtain p I' where I: "I = Inl p # I'" by (cases I) (fastforce split: sum.splits)+
   with wI have wtlI: "x = enc (w, I')" "length I' = n" unfolding \<pi>_def by auto
   with x have "w \<noteq> []" by (cases w) auto
   have "wf_interp_for_formula (w, I') (FExists \<phi>)"
-    using wf_interp_for_formula_FExists[OF wf[folded wtlI(2)] `w \<noteq> []`]
+    using wf_interp_for_formula_FExists[OF wf[folded wtlI(2)] \<open>w \<noteq> []\<close>]
           wf_interp_for_formula_any_Inl[OF wI(2)[unfolded I]] ..
   with wtlI show "x \<in> lang n (ENC n (FOV (FExists \<phi>))) - {[]}" unfolding lang_ENC_formula[OF wf] by blast
 qed
@@ -970,7 +970,7 @@ proof (intro equalityI subsetI)
     using lang_ENC_formula[OF wf] by blast
   with x have "w \<noteq> []" by (cases w) auto
   from wI(2) obtain P where "\<forall>p \<in> P. p < length w" "wf_interp_for_formula (w, Inr P # I) \<phi>"
-    using wf_interp_for_formula_FEXISTS[OF wf[folded wI(3)] `w \<noteq> []`] by auto
+    using wf_interp_for_formula_FEXISTS[OF wf[folded wI(3)] \<open>w \<noteq> []\<close>] by auto
   with wI(3) have "x \<in> map \<pi> ` (lang (Suc n) (ENC (Suc n) (FOV \<phi>)) - {[]})"
     unfolding wI(1) lang_ENC_formula[OF wf1] project_enc[symmetric, of w I "Inr P"]
     by (intro imageI CollectI exI[of _ w] exI[of _ "Inr P # I"]) auto
@@ -980,11 +980,11 @@ next
   hence wf1: "wf_formula (Suc n) \<phi>" and "0 \<in> SOV \<phi>" and x: "x \<in> map \<pi> ` (lang (Suc n) (ENC (Suc n) (FOV \<phi>)) - {[]})" by auto
   from x obtain w I where wI: "x = map \<pi> (enc (w, I))" "wf_interp_for_formula (w, I) \<phi>" "length I = Suc n"
     using lang_ENC_formula[OF wf1] by auto
-  with `0 \<in> SOV \<phi>` obtain P I' where I: "I = Inr P # I'" by (cases I) (fastforce split: sum.splits)+
+  with \<open>0 \<in> SOV \<phi>\<close> obtain P I' where I: "I = Inr P # I'" by (cases I) (fastforce split: sum.splits)+
   with wI have wtlI: "x = enc (w, I')" "length I' = n" unfolding \<pi>_def by auto
   with x have "w \<noteq> []" by (cases w) auto
   have "wf_interp_for_formula (w, I') (FEXISTS \<phi>)"
-    using wf_interp_for_formula_FEXISTS[OF wf[folded wtlI(2)] `w \<noteq> []`]
+    using wf_interp_for_formula_FEXISTS[OF wf[folded wtlI(2)] \<open>w \<noteq> []\<close>]
           wf_interp_for_formula_any_Inr[OF wI(2)[unfolded I]] ..
   with wtlI show "x \<in> lang n (ENC n (FOV (FEXISTS \<phi>))) - {[]}" unfolding lang_ENC_formula[OF wf] by blast
 qed
@@ -1055,9 +1055,9 @@ proof -
     proof (hypsubst, intro exI[of _ w] exI[of _ Is] conjI ballI project_enc)
       fix i assume "i \<in> ?fY"
       then show "case Is ! i of Inl x \<Rightarrow> False | Inr x \<Rightarrow> True"
-        using *[unfolded `I = p # Is`] assms(1)
+        using *[unfolded \<open>I = p # Is\<close>] assms(1)
         by (cases "i = 0") (fastforce simp: nth_Cons' image_iff split: sum.splits if_splits)+ 
-    qed (insert *[unfolded `I = p # Is`] assms(1), auto simp: nth_Cons' split: sum.splits if_splits)
+    qed (insert *[unfolded \<open>I = p # Is\<close>] assms(1), auto simp: nth_Cons' split: sum.splits if_splits)
   next
     fix x w I
     assume *: "w \<noteq> []" "x \<in> Z" "map \<pi> x = enc (w, I)"

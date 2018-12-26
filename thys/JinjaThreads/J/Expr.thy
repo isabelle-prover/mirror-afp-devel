@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Expressions *}
+section \<open>Expressions\<close>
 
 theory Expr
 imports
@@ -74,7 +74,7 @@ where "sync(e1) e2 \<equiv> sync\<^bsub>()\<^esub> (e1) e2"
 abbreviation insync_unit_syntax :: "'addr \<Rightarrow> ('a,unit,'addr) exp \<Rightarrow> ('a,unit,'addr) exp" ("insync'(_') _" [99,90] 90)
 where "insync(a) e2 \<equiv> insync\<^bsub>()\<^esub> (a) e2"
 
-text {* Java syntax for binary operators *}
+text \<open>Java syntax for binary operators\<close>
 
 abbreviation BinOp_Eq :: "('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp \<Rightarrow> ('a, 'b, 'c) exp"
   ("_ \<guillemotleft>==\<guillemotright> _" [80,81] 80)
@@ -158,7 +158,7 @@ by(rule inj_onI)(simp)
 lemma expr_ineqs [simp]: "Val v ;; e \<noteq> e" "if (e1) e else e2 \<noteq> e" "if (e1) e2 else e \<noteq> e"
 by(induct e) auto
 
-subsection{*Free Variables*}
+subsection\<open>Free Variables\<close>
 
 primrec fv  :: "('a,'b,'addr) exp      \<Rightarrow> 'a set"
   and fvs :: "('a,'b,'addr) exp list \<Rightarrow> 'a set"
@@ -196,7 +196,7 @@ by(induct es) auto
 lemma [simp]: "fvs(map Val vs) = {}"
 by (induct vs) auto
 
-subsection{*Locks and addresses*}
+subsection\<open>Locks and addresses\<close>
 
 primrec expr_locks :: "('a,'b,'addr) exp \<Rightarrow> 'addr \<Rightarrow> nat"
   and expr_lockss :: "('a,'b,'addr) exp list \<Rightarrow> 'addr \<Rightarrow> nat"
@@ -278,7 +278,7 @@ by(induct e and es rule: expr_locks.induct expr_lockss.induct)(auto)
 lemma contains_insyncs_map_Val [simp]: "\<not> contains_insyncs (map Val vs)"
 by(induct vs) auto
 
-subsection {* Value expressions *}
+subsection \<open>Value expressions\<close>
 
 inductive is_val :: "('a,'b,'addr) exp \<Rightarrow> bool" where
   "is_val (Val v)"
@@ -338,7 +338,7 @@ next
     by(induct es)(auto simp add: is_Throws_simps Cons_eq_map_conv Cons_eq_append_conv)
 qed
 
-subsection {* @{text "blocks"} *}
+subsection \<open>\<open>blocks\<close>\<close>
 
 fun blocks :: "'a list \<Rightarrow> ty list \<Rightarrow> 'addr val list \<Rightarrow> ('a,'b,'addr) exp \<Rightarrow> ('a,'b,'addr) exp"
 where
@@ -354,7 +354,7 @@ lemma expr_locks_blocks:
   \<Longrightarrow> expr_locks (blocks pns Ts vs e) = expr_locks e"
 by(induct pns Ts vs e rule: blocks.induct)(auto)
 
-subsection {* Final expressions *}
+subsection \<open>Final expressions\<close>
 
 inductive final :: "('a,'b,'addr) exp \<Rightarrow> bool" where
   "final (Val v)"
@@ -406,7 +406,7 @@ qed
 
 code_pred final .
 
-subsection {* converting results from external calls *}
+subsection \<open>converting results from external calls\<close>
 
 primrec extRet2J :: "('a, 'b, 'addr) exp \<Rightarrow> 'addr extCallRet \<Rightarrow> ('a, 'b, 'addr) exp"
 where
@@ -417,7 +417,7 @@ where
 lemma fv_extRet2J [simp]: "fv (extRet2J e va) \<subseteq> fv e"
 by(cases va) simp_all
 
-subsection {* expressions at a call *}
+subsection \<open>expressions at a call\<close>
 
 primrec call :: "('a,'b,'addr) exp \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) option"
   and calls :: "('a,'b,'addr) exp list \<Rightarrow> ('addr \<times> mname \<times> 'addr val list) option"

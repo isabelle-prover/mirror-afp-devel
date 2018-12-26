@@ -5,14 +5,14 @@
     Based on the Jinja theory J/TypeSafe.thy by Tobias Nipkow 
 *)
 
-section {* Type Safety Proof *}
+section \<open>Type Safety Proof\<close>
 
 theory TypeSafe
 imports HeapExtension CWellForm
 begin
 
 
-subsection{*Basic preservation lemmas*}
+subsection\<open>Basic preservation lemmas\<close>
 
 lemma assumes wf:"wwf_prog P" and casts:"P \<turnstile> T casts v to v'"
   and typeof:"P \<turnstile> typeof\<^bsub>h\<^esub> v = Some T'" and leq:"P \<turnstile> T' \<le> T"
@@ -215,8 +215,8 @@ qed auto
 
 
 
-text{* Preservation of definite assignment more complex and requires a
-few lemmas first. *}
+text\<open>Preservation of definite assignment more complex and requires a
+few lemmas first.\<close>
 
 lemma [iff]: "\<And>A. \<lbrakk> length Vs = length Ts; length vs = length Ts\<rbrakk> \<Longrightarrow>
  \<D> (blocks (Vs,Ts,vs,e)) A = \<D> e (A \<squnion> \<lfloor>set Vs\<rfloor>)"
@@ -242,7 +242,7 @@ lemma red_lA_incr: "P,E \<turnstile> \<langle>e,(h,l)\<rangle> \<rightarrow> \<l
 
 
 
-text{* Now preservation of definite assignment. *}
+text\<open>Now preservation of definite assignment.\<close>
 
 lemma assumes wf: "wf_C_prog P"
 shows red_preserves_defass:
@@ -289,7 +289,7 @@ qed (auto simp:hyperset_defs)
 
 
 
-text{* Combining conformance of heap and local variables: *}
+text\<open>Combining conformance of heap and local variables:\<close>
 
 definition sconf :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> bool"  ("_,_ \<turnstile> _ \<surd>"   [51,51,51]50) where
   "P,E \<turnstile> s \<surd>  \<equiv>  let (h,l) = s in P \<turnstile> h \<surd> \<and> P,h \<turnstile> l (:\<le>)\<^sub>w E \<and> P \<turnstile> E \<surd>"
@@ -1297,10 +1297,10 @@ corollary subjects_reduction:
 by(cases s, cases s', fastforce dest:subjects_reduction2)
 
 
-subsection {* Lifting to @{text"\<rightarrow>*"} *}
+subsection \<open>Lifting to \<open>\<rightarrow>*\<close>\<close>
 
-text{* Now all these preservation lemmas are first lifted to the transitive
-closure \dots *}
+text\<open>Now all these preservation lemmas are first lifted to the transitive
+closure \dots\<close>
 
 lemma step_preserves_sconf:
 assumes wf: "wf_C_prog P" and step: "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
@@ -1409,7 +1409,7 @@ next
 qed
 
 
-text{* predicate to show the same lemma for lists *}
+text\<open>predicate to show the same lemma for lists\<close>
 
 fun
   conformable :: "ty list \<Rightarrow> ty list \<Rightarrow> bool"
@@ -1492,9 +1492,9 @@ next
 qed
   
 
-subsection {* Lifting to @{text"\<Rightarrow>"} *}
+subsection \<open>Lifting to \<open>\<Rightarrow>\<close>\<close>
 
-text{* \dots and now to the big step semantics, just for fun. *}
+text\<open>\dots and now to the big step semantics, just for fun.\<close>
 
 lemma eval_preserves_sconf:
   "\<lbrakk> wf_C_prog P; P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>; P,E \<turnstile> e::T; P,E \<turnstile> s \<surd> \<rbrakk> \<Longrightarrow> P,E \<turnstile> s' \<surd>"
@@ -1528,9 +1528,9 @@ using wf
            dest!:steps_preserves_types[OF wf])
 
 
-subsection {*The final polish*}
+subsection \<open>The final polish\<close>
 
-text{* The above preservation lemmas are now combined and packed nicely. *}
+text\<open>The above preservation lemmas are now combined and packed nicely.\<close>
 
 definition wf_config :: "prog \<Rightarrow> env \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> ty \<Rightarrow> bool" ("_,_,_ \<turnstile> _ : _ \<surd>"   [51,0,0,0,0]50) where
   "P,E,s \<turnstile> e:T \<surd>  \<equiv>  P,E \<turnstile> s \<surd> \<and> P,E,hp s \<turnstile> e : T"

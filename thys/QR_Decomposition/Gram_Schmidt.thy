@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*The Gram-Schmidt algorithm*}
+section\<open>The Gram-Schmidt algorithm\<close>
 
 theory Gram_Schmidt
 imports
@@ -12,11 +12,11 @@ imports
  Projections
 begin
 
-subsection{*Gram-Schmidt algorithm*}
+subsection\<open>Gram-Schmidt algorithm\<close>
 
-text{*
-The algorithm is used to orthogonalise a set of vectors. The Gram-Schmidt process takes a set of vectors @{text "S"}
-and generates another orthogonal set that spans the same subspace as @{text "S"}.
+text\<open>
+The algorithm is used to orthogonalise a set of vectors. The Gram-Schmidt process takes a set of vectors \<open>S\<close>
+and generates another orthogonal set that spans the same subspace as \<open>S\<close>.
 
 We present three ways to compute the Gram-Schmidt algorithm.
 
@@ -36,9 +36,9 @@ We present three ways to compute the Gram-Schmidt algorithm.
 \end{enumerate}
 
 Every function can be executed with arbitrary precision (using rational numbers).
-*}
+\<close>
 
-subsubsection{*First way*}
+subsubsection\<open>First way\<close>
 
 definition Gram_Schmidt_step :: "('a::{real_inner}^'b) => ('a^'b) list => ('a^'b) list"
   where "Gram_Schmidt_step a ys = ys @ [(a - proj_onto a (set ys))]"
@@ -195,9 +195,9 @@ corollary orthogonal_basis_exists':
   by (metis span_vec_eq)
 
 
-subsubsection{*Second way*}
+subsubsection\<open>Second way\<close>
 
-text{*This definition applies the Gram Schmidt process starting from the first element of the list.*}
+text\<open>This definition applies the Gram Schmidt process starting from the first element of the list.\<close>
 
 definition "Gram_Schmidt2 xs = Gram_Schmidt (rev xs)"
 
@@ -223,10 +223,10 @@ lemma orthogonal_basis_exists2:
   by (metis Gram_Schmidt.orthogonal_basis_exists Gram_Schmidt2_def distinct_rev set_rev
       B basis_orthogonal2 d)
 
-subsubsection{*Third way*}
+subsubsection\<open>Third way\<close>
 
-text{*The following definitions applies the Gram Schmidt process in the columns of a given matrix.
-  It is previous step to the computation of the QR decomposition.*}
+text\<open>The following definitions applies the Gram Schmidt process in the columns of a given matrix.
+  It is previous step to the computation of the QR decomposition.\<close>
 
 definition Gram_Schmidt_column_k :: "'a::{real_inner}^'cols::{mod_type}^'rows \<Rightarrow> nat 
   \<Rightarrow> 'a^'cols::{mod_type}^'rows" 
@@ -238,7 +238,7 @@ definition Gram_Schmidt_column_k :: "'a::{real_inner}^'cols::{mod_type}^'rows \<
 definition "Gram_Schmidt_upt_k A k = foldl Gram_Schmidt_column_k A [0..<(Suc k)]"
 definition "Gram_Schmidt_matrix A = Gram_Schmidt_upt_k A (ncols A - 1)"
 
-text{*Some definitions and lemmas in order to get execution.*}
+text\<open>Some definitions and lemmas in order to get execution.\<close>
 
 definition "Gram_Schmidt_column_k_row A k a = 
   vec_lambda(\<lambda>b. (if b = from_nat k then 
@@ -259,7 +259,7 @@ lemma Gram_Schmidt_column_k_code[code abstract]:
   unfolding proj_onto_def proj_def[abs_def]
   by fastforce
 
-text{*Proofs*}
+text\<open>Proofs\<close>
 
 lemma Gram_Schmidt_upt_k_suc: 
   "Gram_Schmidt_upt_k A (Suc k) = (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k))"
@@ -650,8 +650,8 @@ proof -
 qed
 
 
-text{*From here on, we present some lemmas that will be useful for the formalisation of the QR
-  decomposition.*} 
+text\<open>From here on, we present some lemmas that will be useful for the formalisation of the QR
+  decomposition.\<close> 
 
 lemma column_gr_k_Gram_Schmidt_upt:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}"
@@ -892,9 +892,9 @@ proof -
 qed
 
 
-subsubsection{*Examples of execution*}
+subsubsection\<open>Examples of execution\<close>
 
-text{*Code lemma*}
+text\<open>Code lemma\<close>
 lemmas Gram_Schmidt_step_def[unfolded proj_onto_def proj_def[abs_def],code]
 
 value "let a = map (list_to_vec::real list=> real^4) [[4,-2,-1,2], 

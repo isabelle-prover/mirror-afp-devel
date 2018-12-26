@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow  *)
 
-section {* Comparing Enumeration and Archive *}
+section \<open>Comparing Enumeration and Archive\<close>
 
 theory ArchCompAux
 imports TameEnum Trie.Tries Maps Arch Worklist

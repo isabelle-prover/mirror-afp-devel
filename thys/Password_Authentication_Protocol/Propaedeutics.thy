@@ -13,7 +13,7 @@ begin
 
 declare [[goals_limit = 20]]
 
-text {*
+text \<open>
 \null
 
 \emph{This paper is an achievement of the whole OS Development and Certification team of the Arjo
@@ -22,12 +22,12 @@ colleagues, the discussions we had, the ideas they shared with me. Particularly,
 the use of Chip Authentication Mapping makes the secrecy of the PACE authentication key unnecessary
 is not mine. I am very grateful to all the team members for these essential contributions, and even
 more for these unforgettable years of work together.}
-*}
+\<close>
 
 
 subsection "Introduction"
 
-text {*
+text \<open>
 Password-based authentication in an insecure environment -- such as password-based authentication
 between a user and a smart card, which is the subject of this paper -- requires that the password be
 exchanged on a secure channel, so as to prevent it from falling into the hands of an eavesdropper.
@@ -269,23 +269,23 @@ the following security properties.
 \begin{itemize}
 
 \item
-Secrecy theorem @{text pr_key_secrecy}: if a user other than the spy sends her password to some
+Secrecy theorem \<open>pr_key_secrecy\<close>: if a user other than the spy sends her password to some
 smart card (not necessarily her own one), then the spy cannot disclose the session key used to
 encrypt the password. This property ensures that the protocol is successful in establishing
 trustworthy secure messaging channels between users and smart cards.
 
 \item
-Secrecy theorem @{text pr_passwd_secrecy}: the spy cannot disclose the passwords of other users.
+Secrecy theorem \<open>pr_passwd_secrecy\<close>: the spy cannot disclose the passwords of other users.
 This property ensures that the protocol is successful in preserving the secrecy of users' passwords.
 
 \item
-Authenticity theorem @{text pr_user_authenticity}: if a smart card receives the password of a user
+Authenticity theorem \<open>pr_user_authenticity\<close>: if a smart card receives the password of a user
 (not necessarily the cardholder), then the message must have been originally sent by that user. This
 property ensures that the protocol enables users to authenticate themselves to their smart cards,
 viz. provides an \emph{external authentication} service (cf. \cite{R5}).
 
 \item
-Authenticity theorem @{text pr_card_authenticity}: if a user sends her password to a smart card and
+Authenticity theorem \<open>pr_card_authenticity\<close>: if a user sends her password to a smart card and
 receives a success code as response, then the card is her own one and the response must have been
 originally sent by that card. This property ensures that the protocol enables smart cards to
 authenticate themselves to their cardholders, viz. provides an \emph{internal authentication}
@@ -303,10 +303,10 @@ The main technical difficulties arising from this formal development are the fol
 \item
 Data such as private keys for Diffie-Hellman key agreement and session keys do not necessarily occur
 as components of exchanged messages, viz. they may be computed by some agent without being ever sent
-to any other agent. In this case, whichever protocol trace @{text evs} is given, any such key
-@{text x} will not be contained in either set @{text "analz (spies evs)"} or @{text "used evs"}, so
-that statements such as @{text "x \<in> analz (spies evs)"} or @{text "x \<in> used evs"} will be vacuously
-false. Thus, some way must be found to formalize a state of affairs where @{text x} is known by the
+to any other agent. In this case, whichever protocol trace \<open>evs\<close> is given, any such key
+\<open>x\<close> will not be contained in either set \<open>analz (spies evs)\<close> or \<open>used evs\<close>, so
+that statements such as \<open>x \<in> analz (spies evs)\<close> or \<open>x \<in> used evs\<close> will be vacuously
+false. Thus, some way must be found to formalize a state of affairs where \<open>x\<close> is known by the
 spy or has already been used in some protocol run.
 
 \item
@@ -322,8 +322,8 @@ field comprised of the integers from 0 to $n$ - 1 (cf. \cite{R4}, \cite{R6}). He
 defined in these algebraic structures, as well as the generation of public keys from known private
 keys, correspond to additional ways in which the spy can generate fake messages starting from known
 ones. A possible option to reflect this in the formal model would be to extend the inductive
-definition of set @{text "synth H"} with rules enabling to obtain new Diffie-Hellman private and
-public keys from those contained in set @{text H}, but the result would be an overly complex
+definition of set \<open>synth H\<close> with rules enabling to obtain new Diffie-Hellman private and
+public keys from those contained in set \<open>H\<close>, but the result would be an overly complex
 definition. Thus, an alternative formalization ought to be found.
 
 \end{itemize}
@@ -335,13 +335,13 @@ in \cite{R1}, as follows.
 
 \item
 The protocol is no longer defined as a set of event lists, but rather as a set of 4-tuples
-@{term "(evs, S, A, U)"} where @{text evs} is an event list, @{text S} is the current protocol
+@{term "(evs, S, A, U)"} where \<open>evs\<close> is an event list, \<open>S\<close> is the current protocol
 \emph{state} -- viz. a function that maps each agent to the private keys for Diffie-Hellman key
-agreement generated or accepted in each protocol run --, @{text A} is the set of the Diffie-Hellman
-private keys and session keys currently known by the spy, and @{text U} is the set of the
+agreement generated or accepted in each protocol run --, \<open>A\<close> is the set of the Diffie-Hellman
+private keys and session keys currently known by the spy, and \<open>U\<close> is the set of the
 Diffie-Hellman private keys and session keys which have already been used in some protocol run.
 \\In this way, the first two difficulties are solved. Particularly, the full set of the messages
-currently known by the spy can be formalized as the set @{text "analz (A \<union> spies evs)"}.
+currently known by the spy can be formalized as the set \<open>analz (A \<union> spies evs)\<close>.
 
 \item
 The inductive definition of the protocol does not contain a single \emph{fake} rule any longer, but
@@ -351,7 +351,7 @@ associated to steps C2 and R5 are given the names \emph{FC2} and \emph{FR5}, res
 \\In this way, the third difficulty is solved, too. In fact, for each protocol step, the related
 \emph{fake} rule extends the spy's capabilities to generate fake messages with the operations on
 known Diffie-Hellman private and public keys relevant for that step, which makes an augmentation of
-set @{text "synth H"} with such operations unnecessary.
+set \<open>synth H\<close> with such operations unnecessary.
 
 \end{itemize}
 
@@ -364,12 +364,12 @@ Paulson's Inductive Method is described in \cite{R1}, and further information is
 in the Isabelle distribution.
 
 Additional information on the involved cryptography can be found in \cite{R4} and \cite{R6}.
-*}
+\<close>
 
 
 subsection "Propaedeutic definitions"
 
-text {*
+text \<open>
 First of all, the data types of encryption/signature keys, Diffie-Hellman private keys, and
 Diffie-Hellman public keys are defined. Following \cite{R7}, encryption/signature keys are
 identified with natural numbers, whereas Diffie-Hellman private keys and public keys are represented
@@ -377,7 +377,7 @@ as rational and integer numbers in order to model the algebraic structures that 
 and a group, respectively; cf. above).
 
 \null
-*}
+\<close>
 
 type_synonym key = nat
 
@@ -385,28 +385,28 @@ type_synonym pri_agrk = rat
 
 type_synonym pub_agrk = int
 
-text {*
+text \<open>
 \null
 
 Agents are comprised of an infinite quantity of users and smart cards, plus the Certification
-Authority (CA) signing public key $PK_{IC}$. For each @{text n}, @{text "User n"} is the cardholder
-of smart card @{text "Card n"}.
+Authority (CA) signing public key $PK_{IC}$. For each \<open>n\<close>, \<open>User n\<close> is the cardholder
+of smart card \<open>Card n\<close>.
 
 \null
-*}
+\<close>
 
 datatype agent = CA | Card nat | User nat
 
-text {*
+text \<open>
 \null
 
 In addition to the kinds of messages considered in \cite{R1}, the data type of messages comprises
 also users' passwords, Diffie-Hellman private and public keys, and Chip Authentication Data.
-Particularly, for each @{text n}, @{text "Passwd n"} is the password of @{term "User n"}, accepted
+Particularly, for each \<open>n\<close>, \<open>Passwd n\<close> is the password of @{term "User n"}, accepted
 as being the correct one by @{term "Card n"}.
 
 \null
-*}
+\<close>
 
 datatype msg =
   Agent     agent |
@@ -428,10 +428,10 @@ translations
   "\<lbrace>x, y, z\<rbrace>" \<rightleftharpoons> "\<lbrace>x, \<lbrace>y, z\<rbrace>\<rbrace>"
   "\<lbrace>x, y\<rbrace>" \<rightleftharpoons> "CONST MPair x y"
 
-text {*
+text \<open>
 \null
 
-As regards data type @{text event}, constructor @{text Says} is extended with three additional
+As regards data type \<open>event\<close>, constructor \<open>Says\<close> is extended with three additional
 parameters of type @{typ nat}, respectively identifying the communication channel, the protocol run,
 and the protocol step (ranging from 1 to 5) in which the message is exchanged. Communication
 channels are associated to smart cards, so that if a user receives an encrypted nonce $s$ on channel
@@ -439,42 +439,42 @@ $n$, she will answer by sending her ephemeral public key $PK_{Map,PCD}$ for gene
 smart card @{term "Card n"}.
 
 \null
-*}
+\<close>
 
 datatype event = Says nat nat nat agent agent msg
 
-text {*
+text \<open>
 \null
 
-The record data type @{text session} is used to store the Diffie-Hellman private keys that each
+The record data type \<open>session\<close> is used to store the Diffie-Hellman private keys that each
 agent has generated or accepted in each protocol run. In more detail:
 
 \begin{itemize}
 
 \item
-Field @{text NonceS} is deputed to contain the nonce $s$, if any, having been generated internally
+Field \<open>NonceS\<close> is deputed to contain the nonce $s$, if any, having been generated internally
 (in the case of a smart card) or accepted from the external world (in the case of a user).
 
 \item
-Field @{text IntMapK} is deputed to contain the ephemeral private key for generator mapping, if any,
+Field \<open>IntMapK\<close> is deputed to contain the ephemeral private key for generator mapping, if any,
 having been generated internally.
 
 \item
-Field @{text ExtMapK} is deputed to contain the ephemeral private key for generator mapping, if any,
+Field \<open>ExtMapK\<close> is deputed to contain the ephemeral private key for generator mapping, if any,
 having been implicitly accepted from the external world in the form of the corresponding public key.
 
 \item
-Field @{text IntAgrK} is deputed to contain the ephemeral private key for key agreement, if any,
+Field \<open>IntAgrK\<close> is deputed to contain the ephemeral private key for key agreement, if any,
 having been generated internally.
 
 \item
-Field @{text ExtAgrK} is deputed to contain the ephemeral private key for key agreement, if any,
+Field \<open>ExtAgrK\<close> is deputed to contain the ephemeral private key for key agreement, if any,
 having been implicitly accepted from the external world in the form of the corresponding public key.
 
 \end{itemize}
 
 \null
-*}
+\<close>
 
 record session =
   NonceS   :: "pri_agrk option"
@@ -483,99 +483,99 @@ record session =
   IntAgrK :: "pri_agrk option"
   ExtAgrK :: "pri_agrk option"
 
-text {*
+text \<open>
 \null
 
 Then, the data type of protocol states is defined as the type of the functions that map any 3-tuple
-@{term "(X, n, run)"}, where @{text X} is an agent, @{text n} identifies a communication channel,
-and @{text run} identifies a protocol run taking place on that communication channel, to a record of
+@{term "(X, n, run)"}, where \<open>X\<close> is an agent, \<open>n\<close> identifies a communication channel,
+and \<open>run\<close> identifies a protocol run taking place on that communication channel, to a record of
 type @{typ session}.
 
 \null
-*}
+\<close>
 
 type_synonym state = "agent \<times> nat \<times> nat \<Rightarrow> session"
 
-text {*
+text \<open>
 \null
 
-Set @{text bad} collects the numerical identifiers of the PACE authentication keys known by the spy,
-viz. for each @{text n}, @{term "n \<in> bad"} just in case the spy knows the PACE authentication key
+Set \<open>bad\<close> collects the numerical identifiers of the PACE authentication keys known by the spy,
+viz. for each \<open>n\<close>, @{term "n \<in> bad"} just in case the spy knows the PACE authentication key
 shared by agents @{term "User n"} and @{term "Card n"}.
 
 \null
-*}
+\<close>
 
 consts bad :: "nat set"
 
-text {*
+text \<open>
 \null
 
-Function @{text invK} maps each encryption/signature key to the corresponding inverse key, matching
+Function \<open>invK\<close> maps each encryption/signature key to the corresponding inverse key, matching
 the original key just in case it is symmetric.
 
 \null
-*}
+\<close>
 
 consts invK :: "key \<Rightarrow> key"
 
-text {*
+text \<open>
 \null
 
-Function @{text agrK} maps each Diffie-Hellman private key $x$ to the corresponding public key
+Function \<open>agrK\<close> maps each Diffie-Hellman private key $x$ to the corresponding public key
 $[x]G$, where $G$ is the static cryptographic group generator being used.
 
 \null
-*}
+\<close>
 
 consts agrK :: "pri_agrk \<Rightarrow> pub_agrk"
 
-text {*
+text \<open>
 \null
 
-Function @{text sesK} maps each Diffie-Hellman private key $x$ to the session key resulting from
+Function \<open>sesK\<close> maps each Diffie-Hellman private key $x$ to the session key resulting from
 shared secret $[x]G$, where $G$ is the static cryptographic group generator being used.
 
 \null
-*}
+\<close>
 
 consts sesK :: "pri_agrk \<Rightarrow> key"
 
-text {*
+text \<open>
 \null
 
-Function @{text symK} maps each natural number @{text n} to the PACE authentication key shared by
+Function \<open>symK\<close> maps each natural number \<open>n\<close> to the PACE authentication key shared by
 agents @{term "User n"} and @{term "Card n"}.
 
 \null
-*}
+\<close>
 
 consts symK :: "nat \<Rightarrow> key"
 
-text {*
+text \<open>
 \null
 
-Function @{text priAK} maps each natural number @{text n} to the static Diffie-Hellman private key
+Function \<open>priAK\<close> maps each natural number \<open>n\<close> to the static Diffie-Hellman private key
 $SK_{IC}$ assigned to smart card @{term "Card n"} for Chip Authentication.
 
 \null
-*}
+\<close>
 
 consts priAK :: "nat \<Rightarrow> pri_agrk"
 
-text {*
+text \<open>
 \null
 
-Function @{text priSK} maps each agent to her own private key for digital signature generation, even
+Function \<open>priSK\<close> maps each agent to her own private key for digital signature generation, even
 if the only such key being actually significant for the model is the Certification Authority's one,
 i.e. @{term "priSK CA"}.
 
 \null
-*}
+\<close>
 
 consts priSK :: "agent \<Rightarrow> key"
 
-text {*
+text \<open>
 \null
 
 The spy is modeled as a user, specifically the one identified by number 0, i.e. @{term "User 0"}.
@@ -583,21 +583,21 @@ In this way, in addition to the peculiar privilege of being able to generate fak
 is endowed with the capability of performing any operation that a generic user can do.
 
 \null
-*}
+\<close>
 
 abbreviation Spy :: agent where
 "Spy \<equiv> User 0"
 
-text {*
+text \<open>
 \null
 
-Functions @{text pubAK} and @{text pubSK} are abbreviations useful to make the formal development
-more readable. The former function maps each Diffie-Hellman private key @{text x} to the message
+Functions \<open>pubAK\<close> and \<open>pubSK\<close> are abbreviations useful to make the formal development
+more readable. The former function maps each Diffie-Hellman private key \<open>x\<close> to the message
 comprised of the corresponding public key @{term "agrK x"}, whereas the latter maps each agent to
 the corresponding public key for digital signature verification.
 
 \null
-*}
+\<close>
 
 abbreviation pubAK :: "pri_agrk \<Rightarrow> msg" where
 "pubAK a \<equiv> Pub_AgrK (agrK a)"
@@ -605,23 +605,23 @@ abbreviation pubAK :: "pri_agrk \<Rightarrow> msg" where
 abbreviation pubSK :: "agent \<Rightarrow> key" where
 "pubSK X \<equiv> invK (priSK X)"
 
-text {*
+text \<open>
 \null
 
-Function @{text start_S} represents the initial protocol state, i.e. the one in which no ephemeral
+Function \<open>start_S\<close> represents the initial protocol state, i.e. the one in which no ephemeral
 Diffie-Hellman private key has been generated or accepted by any agent yet.
 
 \null
-*}
+\<close>
 
 abbreviation start_S :: state where
 "start_S \<equiv> \<lambda>x. \<lparr>NonceS = None, IntMapK = None, ExtMapK = None,
   IntAgrK = None, ExtAgrK = None\<rparr>"
 
-text {*
+text \<open>
 \null
 
-Set @{text start_A} is comprised of the messages initially known by the spy, namely:
+Set \<open>start_A\<close> is comprised of the messages initially known by the spy, namely:
 
 \begin{itemize}
 
@@ -640,15 +640,15 @@ the static Diffie-Hellman public keys assigned to smart cards for Chip Authentic
 \end{itemize}
 
 \null
-*}
+\<close>
 
 abbreviation start_A :: "msg set" where
 "start_A \<equiv> insert (Passwd 0) (Key ` symK ` bad \<union> Key ` range pubSK \<union> pubAK ` range priAK)"
 
-text {*
+text \<open>
 \null
 
-Set @{text start_U} is comprised of the messages which have already been used before the execution
+Set \<open>start_U\<close> is comprised of the messages which have already been used before the execution
 of the protocol starts, namely:
 
 \begin{itemize}
@@ -668,30 +668,30 @@ the static Diffie-Hellman private and public keys assigned to smart cards for Ch
 \end{itemize}
 
 \null
-*}
+\<close>
 
 abbreviation start_U :: "msg set" where
 "start_U \<equiv> range Passwd \<union> Key ` range symK \<union> Key ` range priSK \<union> Key ` range pubSK \<union>
   Pri_AgrK ` range priAK \<union> pubAK ` range priAK"
 
-text {*
+text \<open>
 \null
 
-As in \cite{R1}, function @{text spies} models the set of the messages that the spy can see in a
-protocol trace. However, it is no longer necessary to identify @{text "spies []"} with the initial
+As in \cite{R1}, function \<open>spies\<close> models the set of the messages that the spy can see in a
+protocol trace. However, it is no longer necessary to identify \<open>spies []\<close> with the initial
 knowledge of the spy, since her current knowledge in correspondence with protocol state
-@{term "(evs, S, A, U)"} is represented as set @{text "analz (A \<union> spies evs)"}, where
-@{term "start_A \<subseteq> A"}. Therefore, this formal development defines @{text "spies []"} as the empty
+@{term "(evs, S, A, U)"} is represented as set \<open>analz (A \<union> spies evs)\<close>, where
+@{term "start_A \<subseteq> A"}. Therefore, this formal development defines \<open>spies []\<close> as the empty
 set.
 
 \null
-*}
+\<close>
 
 fun spies :: "event list \<Rightarrow> msg set" where
 "spies [] = {}" |
 "spies (Says i j k A B X # evs) = insert X (spies evs)"
 
-text {*
+text \<open>
 \null
 
 Here below is the specification of the axioms about the constants defined previously which are used
@@ -701,7 +701,7 @@ ensure the consistency of the formal development. In more detail:
 \begin{enumerate}
 
 \item
-Axiom @{text agrK_inj} states that function @{term agrK} is injective, and formalizes the fact that
+Axiom \<open>agrK_inj\<close> states that function @{term agrK} is injective, and formalizes the fact that
 distinct Diffie-Hellman private keys generate distinct public keys.
 \\Since the former keys are represented as rational numbers and the latter as integer numbers (cf.
 above), a model of function @{term agrK} satisfying the axiom is built by means of the injective
@@ -709,7 +709,7 @@ function @{term "inv nat_to_rat_surj"} provided by the Isabelle distribution, wh
 numbers to natural numbers.
 
 \item
-Axiom @{text sesK_inj} states that function @{term sesK} is injective, and formalizes the fact that
+Axiom \<open>sesK_inj\<close> states that function @{term sesK} is injective, and formalizes the fact that
 the key derivation function specified in \cite{R4} for deriving session keys from shared secrets
 makes use of robust hash functions, so that collisions are negligible.
 \\Since Diffie-Hellman private keys are represented as rational numbers and encryption/signature
@@ -717,30 +717,30 @@ keys as natural numbers (cf. above), a model of function @{term sesK} satisfying
 by means of the injective function @{term "inv nat_to_rat_surj"}, too.
 
 \item
-Axiom @{text priSK_pubSK} formalizes the fact that every private key for signature generation is
+Axiom \<open>priSK_pubSK\<close> formalizes the fact that every private key for signature generation is
 distinct from whichever public key for signature verification. For example, in the case of the RSA
 algorithm, small fixed values are typically used as public exponents to make signature verification
 more efficient, whereas the corresponding private exponents are of the same order of magnitude as
 the modulus.
 
 \item
-Axiom @{text priSK_symK} formalizes the fact that private keys for signature generation are
+Axiom \<open>priSK_symK\<close> formalizes the fact that private keys for signature generation are
 distinct from PACE authentication keys, which is obviously true since the former keys are asymmetric
 whereas the latter are symmetric.
 
 \item
-Axiom @{text pubSK_symK} formalizes the fact that public keys for signature verification are
+Axiom \<open>pubSK_symK\<close> formalizes the fact that public keys for signature verification are
 distinct from PACE authentication keys, which is obviously true since the former keys are asymmetric
 whereas the latter are symmetric.
 
 \item
-Axiom @{text invK_sesK} formalizes the fact that session keys are symmetric.
+Axiom \<open>invK_sesK\<close> formalizes the fact that session keys are symmetric.
 
 \item
-Axiom @{text invK_symK} formalizes the fact that PACE authentication keys are symmetric.
+Axiom \<open>invK_symK\<close> formalizes the fact that PACE authentication keys are symmetric.
 
 \item
-Axiom @{text symK_bad} states that set @{term bad} is closed with respect to the identity of PACE
+Axiom \<open>symK_bad\<close> states that set @{term bad} is closed with respect to the identity of PACE
 authentication keys, viz. if a compromised user has the same PACE authentication key as another
 user, then the latter user is compromised as well.
 
@@ -751,7 +751,7 @@ assigned to distinct users. As a result, the formal development does not depend 
 of this condition.
 
 \null
-*}
+\<close>
 
 specification (bad invK agrK sesK symK priSK)
 agrK_inj:     "inj agrK"
@@ -779,31 +779,31 @@ proof (simp add: inj_on_def, (rule allI)+, rule impI)
    by (rule injD)
 qed
 
-text {*
+text \<open>
 \null
 
-Here below are the inductive definitions of sets @{text parts}, @{text analz}, and @{text synth}.
+Here below are the inductive definitions of sets \<open>parts\<close>, \<open>analz\<close>, and \<open>synth\<close>.
 With respect to the definitions given in the protocol library included in the Isabelle distribution,
-those of @{text parts} and @{text analz} are extended with rules extracting Diffie-Hellman private
-keys from Chip Authentication Data, whereas the definition of @{text synth} contains a further rule
+those of \<open>parts\<close> and \<open>analz\<close> are extended with rules extracting Diffie-Hellman private
+keys from Chip Authentication Data, whereas the definition of \<open>synth\<close> contains a further rule
 that models the inverse operation, i.e. the construction of Chip Authentication Data starting from
-private keys. Particularly, the additional @{text analz} rules formalize the fact that, for any two
+private keys. Particularly, the additional \<open>analz\<close> rules formalize the fact that, for any two
 private keys $x$ and $y$, if $x \times y$ \emph{mod n} and $x$ are known, where $n$ is the group
 order, then $y$ can be obtained by computing $x \times y \times x^{-1}$ \emph{mod n}, and similarly,
 $x$ can be obtained if $y$ is known.
 
-An additional set, named @{text items}, is also defined inductively in what follows. This set is a
-hybrid of @{text parts} and @{text analz}, as it shares with @{text parts} the rule applying to
-cryptograms and with @{text analz} the rules applying to Chip Authentication Data. Since the former
-rule is less strict than the corresponding one in the definition of @{text analz}, it turns out that
-@{term "analz H \<subseteq> items H"} for any message set @{text H}. As a result, for any message @{text X},
+An additional set, named \<open>items\<close>, is also defined inductively in what follows. This set is a
+hybrid of \<open>parts\<close> and \<open>analz\<close>, as it shares with \<open>parts\<close> the rule applying to
+cryptograms and with \<open>analz\<close> the rules applying to Chip Authentication Data. Since the former
+rule is less strict than the corresponding one in the definition of \<open>analz\<close>, it turns out that
+@{term "analz H \<subseteq> items H"} for any message set \<open>H\<close>. As a result, for any message \<open>X\<close>,
 @{term "X \<notin> items (A \<union> spies evs)"} implies @{term "X \<notin> analz (A \<union> spies evs)"}. Therefore, set
-@{text items} is useful to prove the secrecy of the Diffie-Hellman private keys utilized to compute
+\<open>items\<close> is useful to prove the secrecy of the Diffie-Hellman private keys utilized to compute
 Chip Authentication Data without bothering with case distinctions concerning the secrecy of
-encryption keys, as would happen if set @{text analz} were directly employed instead.
+encryption keys, as would happen if set \<open>analz\<close> were directly employed instead.
 
 \null
-*}
+\<close>
 
 inductive_set parts :: "msg set \<Rightarrow> msg set" for H :: "msg set" where
 Inj:      "X \<in> H \<Longrightarrow> X \<in> parts H" |
@@ -841,14 +841,14 @@ Auth:     "\<lbrakk>Pri_AgrK x \<in> H; Pri_AgrK y \<in> H\<rbrakk> \<Longrighta
 
 subsection "Propaedeutic lemmas"
 
-text {*
+text \<open>
 This section contains the lemmas about sets @{term parts}, @{term items}, @{term analz}, and
 @{term synth} required for protocol verification. Since their proofs mainly consist of initial rule
 inductions followed by sequences of rule applications and simplifications, \emph{apply}-style is
 used.
 
 \null
-*}
+\<close>
 
 lemma set_spies [rule_format]:
  "Says i j k A B X \<in> set evs \<longrightarrow> X \<in> spies evs"

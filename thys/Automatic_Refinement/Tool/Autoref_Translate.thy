@@ -2,8 +2,8 @@ theory Autoref_Translate
 imports Autoref_Fix_Rel
 begin
 
-subsection {* Definitions *}
-subsubsection {* APP and ABS Rules *}
+subsection \<open>Definitions\<close>
+subsubsection \<open>APP and ABS Rules\<close>
 lemma autoref_ABS: 
   "\<lbrakk> \<And>x x'. (x,x')\<in>Ra \<Longrightarrow> (c x, a x')\<in>Rr \<rbrakk> \<Longrightarrow> (c, \<lambda>'x. a x)\<in>Ra\<rightarrow>Rr"
   by auto
@@ -21,8 +21,8 @@ lemma autoref_beta:
 
 lemmas dflt_trans_rules = autoref_beta autoref_ABS autoref_APP
 
-subsubsection {* Side Conditions *}
-text {*
+subsubsection \<open>Side Conditions\<close>
+text \<open>
   Rules can have prefer and defer side-conditions. Prefer conditions must
   be solvable in order for the rule to apply, and defer conditions must
   hold after the rule has been applied and the recursive translations have been
@@ -30,20 +30,20 @@ text {*
   expression, while defer conditions restrict the translated expression.
 
   In order to solve the actual side conditions, we use the 
-  @{text "Tagged_Solver"}-infrastructure. The solvers are applied after 
-  the @{text "PREFER"}/@{text "DEFER"} tag has been removed.
-*}
+  \<open>Tagged_Solver\<close>-infrastructure. The solvers are applied after 
+  the \<open>PREFER\<close>/\<open>DEFER\<close> tag has been removed.
+\<close>
 
-text {*
+text \<open>
   Tag to remove internal stuff from term.
   Before a prefer/defer side condition is evaluated, all terms inside these 
   tags are purged from autoref-specific annotations, i.e., operator-annotations,
   relator annotations, and tagged applications.
-*}
+\<close>
 definition [simp, autoref_tag_defs]: "REMOVE_INTERNAL x \<equiv> x" 
 
-text {* Useful abbreviation to require some property that is not related
-  to teh refinement framework *}
+text \<open>Useful abbreviation to require some property that is not related
+  to teh refinement framework\<close>
 abbreviation "PREFER nt \<Phi> \<equiv> PREFER_tag (nt (REMOVE_INTERNAL \<Phi>))"
 abbreviation "DEFER nt \<Phi> \<equiv> DEFER_tag (nt (REMOVE_INTERNAL \<Phi>))"
 
@@ -56,7 +56,7 @@ lemma autoref_REMOVE_INTERNAL_EQ:
   shows "(c',a)\<in>R"
   using assms by simp
 
-ML {*
+ML \<open>
   signature AUTOREF_TACTICALS = sig
     val is_prefer_cond: int -> thm -> bool
     val is_defer_cond: int -> thm -> bool
@@ -293,35 +293,35 @@ ML {*
       #> autoref_post_simps.setup 
 
   end
-*}
+\<close>
 
 setup Autoref_Translate.setup
 
 
-subsubsection {* Standard side-tactics *}
+subsubsection \<open>Standard side-tactics\<close>
 
-text {* Preconditions *}
+text \<open>Preconditions\<close>
 definition [simp, autoref_tag_defs]: "PRECOND_tag P == P"
 lemma PRECOND_tagI: "P ==> PRECOND_tag P" by simp
 abbreviation "SIDE_PRECOND P == PREFER PRECOND_tag P"
 
-declaration {*
+declaration \<open>
   Tagged_Solver.declare_solver @{thms PRECOND_tagI} @{binding PRECOND} 
     "Refinement: Solve preconditions" 
     ( fn ctxt => SOLVED' (
         SELECT_GOAL (auto_tac ctxt)
       )
     )
-*}
+\<close>
 
-text {* Optional preconditions *}
+text \<open>Optional preconditions\<close>
 definition [simp, autoref_tag_defs]: "PRECOND_OPT_tag P == P"
 lemma PRECOND_OPT_tagI: "P ==> PRECOND_OPT_tag P" by simp
 abbreviation "SIDE_PRECOND_OPT P == PREFER PRECOND_OPT_tag P"
-declaration {*
+declaration \<open>
   Tagged_Solver.declare_solver @{thms PRECOND_OPT_tagI} @{binding PRECOND_OPT} 
     "Refinement: Solve optional preconditions" 
     ( fn ctxt => SOLVED' (asm_full_simp_tac ctxt))
-*}
+\<close>
 
 end

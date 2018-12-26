@@ -111,7 +111,7 @@ next
     proof(goal_cases)
        case (1 a b)
        from 1(2-4) have "b \<noteq> 0" by force
-       from 1(2,4) have "x \<le> b - 1" by (metis `b \<noteq> 0` dual_order.antisym le_step_down_nat unat_minus_one word_le_nat_alt) 
+       from 1(2,4) have "x \<le> b - 1" by (metis \<open>b \<noteq> 0\<close> dual_order.antisym le_step_down_nat unat_minus_one word_le_nat_alt) 
        from 1(1) this show ?case by simp
     qed
 qed

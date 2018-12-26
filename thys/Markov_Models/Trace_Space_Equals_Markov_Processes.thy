@@ -1,16 +1,16 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-subsection {* Trace Space equal to Markov Chains *}
+subsection \<open>Trace Space equal to Markov Chains\<close>
 
 theory Trace_Space_Equals_Markov_Processes
   imports Discrete_Time_Markov_Chain
 begin
 
-text {*
+text \<open>
   We can construct for each time-homogeneous discrete-time Markov chain a corresponding
   probability space using @{theory Markov_Models.Discrete_Time_Markov_Chain}. The constructed probability space
   has the same probabilities.
-*}
+\<close>
 
 locale Time_Homogeneous_Discrete_Markov_Process = M?: prob_space +
   fixes S :: "'s set" and X :: "nat \<Rightarrow> 'a \<Rightarrow> 's"
@@ -44,7 +44,7 @@ qed
 lemma I_in_S:
   assumes "pmf I s \<noteq> 0" shows "s \<in> S"
 proof -
-  from `pmf I s \<noteq> 0` have "0 \<noteq> \<P>(x in M. X 0 x = s)"
+  from \<open>pmf I s \<noteq> 0\<close> have "0 \<noteq> \<P>(x in M. X 0 x = s)"
     by transfer (auto simp: measure_distr vimage_def Int_def conj_commute)
   also have "\<P>(x in M. X 0 x = s) = \<P>(x in M. X 0 x = s \<and> s \<in> S)"
     using S(2)[of 0] by (intro M.finite_measure_eq_AE) auto
@@ -114,7 +114,7 @@ proof (rule stream_space_eq_sstart)
   { fix s assume "s \<in> S"
     from K.AE_T_enabled[of s] have "AE \<omega> in K.T s. \<omega> \<in> streams S"
     proof eventually_elim
-      fix \<omega> assume "K.enabled s \<omega>" from this `s\<in>S` show "\<omega> \<in> streams S"
+      fix \<omega> assume "K.enabled s \<omega>" from this \<open>s\<in>S\<close> show "\<omega> \<in> streams S"
       proof (coinduction arbitrary: s \<omega>)
         case streams
         then have 1: "pmf (K s) (shd \<omega>) \<noteq> 0"
@@ -136,7 +136,7 @@ proof (rule stream_space_eq_sstart)
           assume "\<not> (\<exists>n. 0 < \<P>(\<omega> in M. X n \<omega> = s))"
           then have "pmf (K s) (shd \<omega>) = indicator {shd \<omega>} s"
             by (intro pmf_K2) (auto simp: not_less measure_le_0_iff)
-          with 1 `s\<in>S` show ?thesis
+          with 1 \<open>s\<in>S\<close> show ?thesis
             by (auto split: split_indicator_asm)
         qed
         with streams show ?case
@@ -332,7 +332,7 @@ proof -
           apply (rule Suc)
           done
         moreover have "(SIGMA x:UNIV. K x)\<^sup>* `` K x \<subseteq> (SIGMA x:UNIV. K x)\<^sup>* `` I"
-          using `x \<in> I` by (auto intro: converse_rtrancl_into_rtrancl)
+          using \<open>x \<in> I\<close> by (auto intro: converse_rtrancl_into_rtrancl)
         ultimately have "AE y in T x. y !! n \<in> (SIGMA x:UNIV. K x)\<^sup>* `` I"
           by (auto simp: subset_eq) }
       then show ?case

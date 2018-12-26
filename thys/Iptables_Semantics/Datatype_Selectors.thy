@@ -3,16 +3,16 @@ imports Main
 begin
 
 text\<open>
-  Running Example: @{text "datatype_new iptrule_match = is_Src: Src (src_range: ipt_iprange)"}
+  Running Example: \<open>datatype_new iptrule_match = is_Src: Src (src_range: ipt_iprange)\<close>
 
-  A discriminator @{text disc} tells whether a value is of a certain constructor.
-    Example: @{text "is_Src"}
+  A discriminator \<open>disc\<close> tells whether a value is of a certain constructor.
+    Example: \<open>is_Src\<close>
 
-  A selector @{text sel} select the inner value.
-    Example: @{text "src_range"}
+  A selector \<open>sel\<close> select the inner value.
+    Example: \<open>src_range\<close>
 
-  A constructor @{text C} constructs a value
-    Example: @{text "Src"}
+  A constructor \<open>C\<close> constructs a value
+    Example: \<open>Src\<close>
 
 
   The are well-formed if the belong together.

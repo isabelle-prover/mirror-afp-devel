@@ -15,7 +15,7 @@ lemma integral_map_pmf[simp]:
  using integral_distr[of g "(measure_pmf M)" "(count_space UNIV)" f] by auto
 
 
-subsection "function @{text E}"
+subsection "function \<open>E\<close>"
 
 definition E :: "real pmf \<Rightarrow> real"  where
   "E M = (\<integral>x. x \<partial> measure_pmf M)"
@@ -99,7 +99,7 @@ lemma E_bernoulli: "0\<le>p \<Longrightarrow> p\<le>1 \<Longrightarrow>
 unfolding E_def by (auto)
 
 
-subsection "function @{text bv}"
+subsection "function \<open>bv\<close>"
 
   fun bv:: "nat \<Rightarrow> bool list pmf" where
   "bv 0 = return_pmf []"
@@ -205,7 +205,7 @@ lemma map_tl_list_pmf: "map_pmf tl (bv (Suc n)) = bv n"
   by (simp add: map_pmf_def bind_assoc_pmf bind_return_pmf bind_return_pmf' )
 
 
-subsection "function @{text flip}"
+subsection "function \<open>flip\<close>"
 
 fun flip :: "nat \<Rightarrow> bool list \<Rightarrow> bool list" where
   "flip _ [] = []"

@@ -8,14 +8,14 @@
   Auxiliary lemmas
 *)
 
-section {* {\tt FJAux}: Auxiliary Lemmas *}
+section \<open>{\tt FJAux}: Auxiliary Lemmas\<close>
 
 theory FJAux imports FJDefs
 begin 
 
-subsection{* Non-FJ Lemmas *}
+subsection\<open>Non-FJ Lemmas\<close>
 
-subsubsection{* Lists *}
+subsubsection\<open>Lists\<close>
 lemma mem_ith: 
   assumes "ei \<in> set es" 
   shows "\<exists> el er. es = el@ei#er"
@@ -41,7 +41,7 @@ next
   case (Cons h t) thus ?case by(cases "i", auto)
 qed   
 
-subsubsection{* Maps *}
+subsubsection\<open>Maps\<close>
 
 lemma map_shuffle: 
   assumes "length xs = length ys"
@@ -106,9 +106,9 @@ next
   qed
 qed
 
-subsection{* FJ Lemmas *} 
+subsection\<open>FJ Lemmas\<close> 
 
-subsubsection{* Substitution *}
+subsubsection\<open>Substitution\<close>
 
 lemma subst_list1_eq_map_substs : 
   "\<forall>\<sigma>. subst_list1 \<sigma> l = map (substs \<sigma>) l"
@@ -118,7 +118,7 @@ lemma subst_list2_eq_map_substs :
   "\<forall>\<sigma>. subst_list2 \<sigma> l = map (substs \<sigma>) l"
    by (induct l, simp_all)
 
-subsubsection{* Lookup *}
+subsubsection\<open>Lookup\<close>
 
 lemma lookup_functional:
   assumes "lookup l f = o1"
@@ -223,9 +223,9 @@ next
   case (Cons h t) thus ?case by(cases "f h", auto elim:method_typings.cases simp add:lookup.simps)
 qed
 
-subsubsection{* Functional *}
+subsubsection\<open>Functional\<close>
 
-text {* These lemmas prove that several relations are actually functions *}
+text \<open>These lemmas prove that several relations are actually functions\<close>
 
 lemma mtype_functional:
   assumes "mtype(CT,m,C) = Cs \<rightarrow> C0"
@@ -260,10 +260,10 @@ next
     and "DgCf' = Dg' @ Cf" 
     using f_class_inv c_not_obj by (auto elim:fields.cases)
   hence "Dg' = Dg" using f_class by auto
-  thus ?case using `DgCf = Dg @ Cf` and `DgCf' = Dg' @ Cf` by force
+  thus ?case using \<open>DgCf = Dg @ Cf\<close> and \<open>DgCf' = Dg' @ Cf\<close> by force
 qed
 
-subsubsection{* Subtyping and Typing *}
+subsubsection\<open>Subtyping and Typing\<close>
 
 lemma typings_lengths: assumes "CT;\<Gamma> \<turnstile>+ es:Cs" shows "length es = length Cs" 
   using assms by(induct "es" "Cs") (auto elim:typings.cases)
@@ -445,7 +445,7 @@ next
   thus ?case using s_super by (auto simp add: not_subtypes_aux)
 qed
 
-subsubsection{* Sub-Expressions *}
+subsubsection\<open>Sub-Expressions\<close>
 
 lemma isubexpr_typing: 
   assumes "e1 \<in> isubexprs(e0)"

@@ -58,7 +58,7 @@ shows "\<exists> s t. irreducible s \<and> p = s * t \<and> (s dvd q \<or> s dvd
 proof -
   from irreducible\<^sub>d_factor[OF assms(2)] obtain s t
   where irred: "irreducible s" and p: "p = s * t" by auto
-  from `p dvd q * r` p have s: "s dvd q * r" unfolding dvd_def by auto
+  from \<open>p dvd q * r\<close> p have s: "s dvd q * r" unfolding dvd_def by auto
   from s p irred show ?thesis by auto
 qed
 

@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler, ETH Zurich
 *)
 
-section {* The Hamming stream defined as a least fixpoint *}
+section \<open>The Hamming stream defined as a least fixpoint\<close>
 
 theory Hamming_Stream imports
   "../Coinductive_List"
@@ -86,7 +86,7 @@ lemma fixes F
   shows lmerge_conv_fixp: "lmerge \<equiv> curry (ccpo.fixp (fun_lub lSup) (fun_ord lprefix) F)" (is "?lhs \<equiv> ?rhs")
   and lmerge_mono: "mono_llist (\<lambda>lmerge. F lmerge xs)" (is "?mono xs")
 proof(intro eq_reflection ext)
-  show mono: "\<And>xs. ?mono xs" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "\<And>xs. ?mono xs" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix xs ys
   show "lmerge xs ys = ?rhs xs ys"
   proof(coinduction arbitrary: xs ys)
@@ -155,10 +155,10 @@ proof(induction arbitrary: ys rule: lset_induct)
 next
   case (step x' xs)
   then obtain y where "y \<in> lset ys" "x \<le> y" by blast
-  moreover from `lsorted (LCons x' xs)` `x \<in> lset xs` `x \<noteq> x'`
+  moreover from \<open>lsorted (LCons x' xs)\<close> \<open>x \<in> lset xs\<close> \<open>x \<noteq> x'\<close>
   have "x' < x" "lsorted xs" by(auto simp add: lsorted_LCons)
-  ultimately show ?case using `\<not> lfinite ys` 
-    by induct(auto 4 3 simp add: lmerge_simps `x \<noteq> x'` not_less intro: step.IH dest: in_lset_lmergeD)
+  ultimately show ?case using \<open>\<not> lfinite ys\<close> 
+    by induct(auto 4 3 simp add: lmerge_simps \<open>x \<noteq> x'\<close> not_less intro: step.IH dest: in_lset_lmergeD)
 qed
 
 lemma in_lset_lmergeI2:
@@ -171,10 +171,10 @@ proof(induction arbitrary: xs rule: lset_induct)
 next
   case (step x' ys)
   then obtain y where "y \<in> lset xs" "x \<le> y" by blast
-  moreover from `lsorted (LCons x' ys)` `x \<in> lset ys` `x \<noteq> x'`
+  moreover from \<open>lsorted (LCons x' ys)\<close> \<open>x \<in> lset ys\<close> \<open>x \<noteq> x'\<close>
   have "x' < x" "lsorted ys" by(auto simp add: lsorted_LCons)
-  ultimately show ?case using `\<not> lfinite xs` 
-    by induct(auto 4 3 simp add: lmerge_simps `x \<noteq> x'` not_less intro: step.IH dest: in_lset_lmergeD)
+  ultimately show ?case using \<open>\<not> lfinite xs\<close> 
+    by induct(auto 4 3 simp add: lmerge_simps \<open>x \<noteq> x'\<close> not_less intro: step.IH dest: in_lset_lmergeD)
 qed
 
 lemma lsorted_lmerge: "\<lbrakk> lsorted xs; lsorted ys \<rbrakk> \<Longrightarrow> lsorted (lmerge xs ys)"
@@ -292,21 +292,21 @@ proof(induction n rule: less_induct)
   show ?case
   proof(cases "n > 1")
     case False
-    moreover from `smooth n` have "n \<noteq> 0" by(rule contrapos_pn) simp
+    moreover from \<open>smooth n\<close> have "n \<noteq> 0" by(rule contrapos_pn) simp
     ultimately have "n = 1" by(simp)
     thus ?thesis by(subst hamming_unfold) simp
   next
     case True
     hence "\<exists>p. prime p \<and> p dvd n" by(metis less_numeral_extra(4) prime_factor_nat)
-    with `smooth n` obtain p where "prime p" "p dvd n" "p \<le> 5" by(auto simp add: smooth_def)
-    from `p dvd n` obtain n' where n: "n = p * n'" by(auto simp add: dvd_def)
-    with `smooth n` `prime p` have "smooth n'" by(simp add: smooth_def)
-    with `prime p` n have "n' < n" by(simp add: smooth_gt0 prime_gt_Suc_0_nat)
-    hence n': "n' \<in> lset hamming" using `smooth n'` by(rule less.IH)
+    with \<open>smooth n\<close> obtain p where "prime p" "p dvd n" "p \<le> 5" by(auto simp add: smooth_def)
+    from \<open>p dvd n\<close> obtain n' where n: "n = p * n'" by(auto simp add: dvd_def)
+    with \<open>smooth n\<close> \<open>prime p\<close> have "smooth n'" by(simp add: smooth_def)
+    with \<open>prime p\<close> n have "n' < n" by(simp add: smooth_gt0 prime_gt_Suc_0_nat)
+    hence n': "n' \<in> lset hamming" using \<open>smooth n'\<close> by(rule less.IH)
 
     from \<open>p \<le> 5\<close> have "p = 0 \<or> p = 1 \<or> p = 2 \<or> p = 3 \<or> p = 4 \<or> p = 5"
       by presburger
-    with `prime p` have "p = 2 \<or> p = 3 \<or> p = 5" by auto
+    with \<open>prime p\<close> have "p = 2 \<or> p = 3 \<or> p = 5" by auto
     thus ?thesis
     proof(elim disjE)
       assume "p = 2"
@@ -314,16 +314,16 @@ proof(induction n rule: less_induct)
         by(subst hamming_unfold)(simp_all add: in_lset_lmergeI1 not_less lsorted_lmap bexI[where x="n'"] bexI[where x="3*n'"])
     next
       assume "p = 3"
-      moreover with n `smooth n'` have "2 * n' < n" by(simp add: smooth_gt0)
-      hence "2 * n' \<in> lset hamming" by(rule less.IH)(simp add: `smooth n'`)
+      moreover with n \<open>smooth n'\<close> have "2 * n' < n" by(simp add: smooth_gt0)
+      hence "2 * n' \<in> lset hamming" by(rule less.IH)(simp add: \<open>smooth n'\<close>)
       ultimately show ?thesis using n n'
         by(subst hamming_unfold)(auto 4 4 simp add: not_less lsorted_lmap lsorted_lmerge intro: in_lset_lmergeI1 in_lset_lmergeI2 bexI[where x="4*n'"] bexI[where x="5*n'"])
     next
       assume "p = 5"
-      moreover with n `smooth n'` have "2 * (2 * n') < n" by(simp add: smooth_gt0)
-      hence "2 * (2 * n') \<in> lset hamming" by(rule less.IH)(simp only: smooth_times smooth2 `smooth n'` simp_thms)
-      moreover from `p = 5` n `smooth n'` have "3 * n' < n" by(simp add: smooth_gt0)
-      hence "3 * n' \<in> lset hamming" by(rule less.IH)(simp add: `smooth n'`)
+      moreover with n \<open>smooth n'\<close> have "2 * (2 * n') < n" by(simp add: smooth_gt0)
+      hence "2 * (2 * n') \<in> lset hamming" by(rule less.IH)(simp only: smooth_times smooth2 \<open>smooth n'\<close> simp_thms)
+      moreover from \<open>p = 5\<close> n \<open>smooth n'\<close> have "3 * n' < n" by(simp add: smooth_gt0)
+      hence "3 * n' \<in> lset hamming" by(rule less.IH)(simp add: \<open>smooth n'\<close>)
       ultimately show ?thesis using n n'
         by(subst hamming_unfold)(auto 4 4 simp add: lsorted_lmap lsorted_lmerge intro: in_lset_lmergeI2 bexI[where x="9*n'"] bexI[where x="8 * n'"])
     qed

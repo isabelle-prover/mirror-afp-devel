@@ -6,7 +6,7 @@ theory Native_Word_Test_GHC imports
   Native_Word_Test
 begin
 
-section {* Test with GHC *}
+section \<open>Test with GHC\<close>
 
 declare [[code_test_ghc = "-XTypeSynonymInstances"]]
 
@@ -20,7 +20,7 @@ test_code
   test_casts_uint test_casts_uint' test_casts_uint''
 in GHC
 
-subsection {* Test quickcheck narrowing *}
+subsection \<open>Test quickcheck narrowing\<close>
 
 lemma "(x :: uint64) AND y = x OR y"
 quickcheck[narrowing, expect=counterexample]

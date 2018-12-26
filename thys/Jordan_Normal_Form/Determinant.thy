@@ -143,7 +143,7 @@ proof -
       by blast+
     from permutes_natset_ge[OF pU] pid obtain i where i: "p i < i" and "i < n" 
       by fastforce
-    from upper_triangularD[OF ut i] `i < n` m
+    from upper_triangularD[OF ut i] \<open>i < n\<close> m
     have ex:"\<exists>i \<in> ?U. A $$ (i,p i) = 0" by auto
     have "(\<Prod> i = 0 ..< n. A $$ (i, p i)) = 0" 
       by (rule prod_zero[OF fU ex])
@@ -172,7 +172,7 @@ lemma det_zero[simp]: assumes "n > 0" shows "det (0\<^sub>m n n) = 0"
 proof -
   have "det (0\<^sub>m n n) = prod_list (diag_mat (0\<^sub>m n n))"
     by (rule det_upper_triangular[of _ n], auto)
-  also have "\<dots> = 0" using `n > 0` by (cases n, auto)
+  also have "\<dots> = 0" using \<open>n > 0\<close> by (cases n, auto)
   finally show ?thesis .
 qed
 
@@ -489,7 +489,7 @@ proof -
     have thif2: "\<And>a b c d e. (if a then b else if c then d else e) =
        (if c then (if a then b else d) else (if a then b else e))"
       by simp
-    from `z \<notin> T` have nz: "\<And>i. i \<in> T \<Longrightarrow> i = z \<longleftrightarrow> False"
+    from \<open>z \<notin> T\<close> have nz: "\<And>i. i \<in> T \<Longrightarrow> i = z \<longleftrightarrow> False"
       by auto
     from insert have c: "\<And> i. i < n \<Longrightarrow> c i \<in> carrier_vec n" by auto
     have fin: "finite {f. (\<forall>i\<in>T. f i \<in> S) \<and> (\<forall>i. i \<notin> T \<longrightarrow> f i = i)}"
@@ -517,7 +517,7 @@ proof -
           else if i = z then a i j
           else c i))) (S \<times> ?F T))" .                
     show ?case unfolding tha
-      by (rule sum.reindex_bij_witness[where i="?k" and j="?h"], insert `z \<notin> T`
+      by (rule sum.reindex_bij_witness[where i="?k" and j="?h"], insert \<open>z \<notin> T\<close>
       azS c fS insert(5-6) z fin, 
       auto intro!: arg_cong[of _ _ det])
   qed

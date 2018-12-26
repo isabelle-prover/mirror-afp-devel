@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Generating Show-Functions for Data Types *}
+section \<open>Generating Show-Functions for Data Types\<close>
 
 theory Old_Show_Generator
 imports
@@ -24,56 +24,56 @@ imports
   Old_Show
 begin
 
-subsection {* Introduction *}
+subsection \<open>Introduction\<close>
 
-text {*
+text \<open>
   The show-generator registers itself at the derive-manager for the class @{class show}. To be more
   precise, it automatically generates the functions @{const shows_prec} and @{const shows_list} for
-  some data type @{text dtyp} and proves the following instantiation.
+  some data type \<open>dtyp\<close> and proves the following instantiation.
   \begin{itemize}
-  \item @{text "instantiation dtyp :: (show, ..., show) show"}
+  \item \<open>instantiation dtyp :: (show, ..., show) show\<close>
   \end{itemize}
   All the non-recursive types that are used in the data type must have a similar instantiation. For
   recursive type-dependencies this is automatically generated.
 
-  For example, for the data type @{text "datatype tree = Leaf nat | Node (tree list)"} we require
-  that @{text nat} is already in @{class show}, whereas for type @{typ "'a list"} nothing is
+  For example, for the data type \<open>datatype tree = Leaf nat | Node (tree list)\<close> we require
+  that \<open>nat\<close> is already in @{class show}, whereas for type @{typ "'a list"} nothing is
   required, since it is used recursively.
 
-  However, if we define @{text "datatype tree = Leaf (nat list) | Node tree tree"} then also
+  However, if we define \<open>datatype tree = Leaf (nat list) | Node tree tree\<close> then also
   @{typ "'a list"} must provide a @{class show} instance.
-*}
+\<close>
 
-subsection {* Implementation Notes *}
+subsection \<open>Implementation Notes\<close>
 
-text {*
+text \<open>
   The generator uses the recursors from the data type package to define the show function.
   Constructors are displayed by their short names and arguments are separated by blanks and
   surrounded by parenthesis.
 
   The associativity is proven using the induction theorem from the data type package.
-*}
+\<close>
 
-subsection {* Features and Limitations *}
+subsection \<open>Features and Limitations\<close>
 
-text {*
+text \<open>
   The show-generator has been developed mainly for data types without explicit mutual recursion. For
-  mutual recursive data types -- like @{text "datatype a = C b and b = D a a"} -- only for the first
-  mentioned data type -- here @{text a} -- instantiations of the @{class show} are derived.
+  mutual recursive data types -- like \<open>datatype a = C b and b = D a a\<close> -- only for the first
+  mentioned data type -- here \<open>a\<close> -- instantiations of the @{class show} are derived.
 
-  Indirect recursion like in @{text "datatype tree = Leaf nat | Node (tree list)"} should work
+  Indirect recursion like in \<open>datatype tree = Leaf nat | Node (tree list)\<close> should work
   without problems.
-*}
+\<close>
 
-subsection {* Installing the Generator *}
+subsection \<open>Installing the Generator\<close>
 
 definition shows_sep_paren :: "shows \<Rightarrow> shows"
 where
   "shows_sep_paren s = ('' ('' +#+ s +@+ shows '')'')"
 
-text {*
+text \<open>
   The four crucial properties which are used to ensure associativity.
-*}
+\<close>
 lemma append_assoc_trans:
   assumes "\<And>r s. b r @ s = b (r @ s)"
   shows "((@) a +@+ b) r @ s = ((@) a +@+ b) (r @ s)"

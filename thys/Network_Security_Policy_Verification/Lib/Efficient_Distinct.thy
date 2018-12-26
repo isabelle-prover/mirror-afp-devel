@@ -7,7 +7,7 @@ imports
   TopoS_Util
 begin
 
-text {*efficient distinct code*}
+text \<open>efficient distinct code\<close>
 
   lemma list_length_iff_distinct: 
   "\<lbrakk>set xs = set ys; distinct ys\<rbrakk> \<Longrightarrow> distinct xs \<longleftrightarrow> length xs = length ys"
@@ -19,10 +19,10 @@ text {*efficient distinct code*}
   lemma [code]: "distinct xs = (length (mergesort_remdups xs) = length xs)"
   by (fact distinct_by_mergesort[symmetric])
 
-  text{*providing tail recursive versions of certain functions*}
+  text\<open>providing tail recursive versions of certain functions\<close>
   (*otherwise scala code generated with this code always produces a StackOverflowException for large inputs*)
 
-text{* @{const List.map} *}
+text\<open>@{const List.map}\<close>
 
   fun map_tailrec ::  "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'b list" where
   "map_tailrec f [] accs = accs" | 
@@ -37,7 +37,7 @@ text{* @{const List.map} *}
   lemma [code]: "List.map f l = efficient_map f l"
   by (simp add: efficient_map_def map_tailrec_is_listmap)
 
-text{* @{const merge} *}
+text\<open>@{const merge}\<close>
 
  (*inefficient version*)
  fun merge_tailrec_inefficient :: "('a::linorder) list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where

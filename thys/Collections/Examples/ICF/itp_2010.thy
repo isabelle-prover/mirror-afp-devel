@@ -1,24 +1,24 @@
-section {* \isaheader{Examples from ITP-2010 slides (adopted to ICF v2)} *}
+section \<open>\isaheader{Examples from ITP-2010 slides (adopted to ICF v2)}\<close>
 theory itp_2010
 imports 
   Collections.Collections 
   Collections.Code_Target_ICF
 begin
 
-text {*
+text \<open>
   Illustrates the various possibilities how to use the ICF in your own 
   algorithms by simple examples. The examples all use the data refinement
   scheme, and either define a generic algorithm or fix the operations.
-*}
+\<close>
 
 
 subsection "List to Set"
-text {*
+text \<open>
   In this simple example we do conversion from a list to a set.
   We define an abstract algorithm.
   This is then refined by a generic algorithm using a locale and by a generic 
   algorithm fixing its operations as parameters.
-*}
+\<close>
   subsubsection "Straightforward version"
   \<comment> \<open>Abstract algorithm\<close>
   fun set_a where
@@ -53,7 +53,7 @@ text {*
 export_code hs_seti in SML
 
   \<comment> \<open>Code generation\<close>
-  ML {* @{code hs_seti} *} 
+  ML \<open>@{code hs_seti}\<close> 
   (*value "hs_seti [1,2,3::nat] hs_empty"*)
 
   subsubsection "Tail-Recursive version"
@@ -84,7 +84,7 @@ export_code hs_seti in SML
   lemmas hs_set_i2_impl = hs.set_i2_impl[folded hs_seti2_def]
 
   \<comment> \<open>Code generation\<close>
-  ML {* @{code hs_seti2} *} 
+  ML \<open>@{code hs_seti2}\<close> 
   (*value "hs_seti [1,2,3::nat] hs_empty"*)
 
 subsubsection "With explicit operation parameters"
@@ -103,12 +103,12 @@ subsubsection "With explicit operation parameters"
   lemmas hs_set_i'_impl = hs.set_i'_impl[folded hs_seti'_def]
 
   \<comment> \<open>Code generation\<close>
-  ML {* @{code hs_seti'} *} 
+  ML \<open>@{code hs_seti'}\<close> 
   (*value "hs_seti' [1,2,3::nat] hs_empty"*)
 
 
 subsection "Filter Average"
-text {*
+text \<open>
   In this more complex example, we develop a function that filters from a set all
   numbers that are above the average of the set.
  
@@ -132,7 +132,7 @@ text {*
   of the theory. This approach is more powerful, as operations are now 
   polymorphic also in the element type. However, it only allows as single 
   instantiation at a time, which is no option for generic algorithms.
-*}
+\<close>
 
   abbreviation "average S == \<Sum>S div card S"
 
@@ -192,12 +192,12 @@ subsubsection "Generic Algorithm"
 
   
   text "Code generation"
-  ML_val {* 
+  ML_val \<open>
     if @{code hs_flt_avg_test} (map @{code nat_of_integer} [1,2,3,4,6,7])
     <> @{code rs_flt_avg_test} (map @{code nat_of_integer} [1,2,3,4,6,7])
     then error "Oops"
     else ()
-    *} 
+\<close> 
   
 
 subsubsection "Using abbreviations"

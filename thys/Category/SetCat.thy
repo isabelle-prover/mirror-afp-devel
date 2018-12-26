@@ -3,13 +3,13 @@
     License: LGPL
 *)
 
-section {* {{\sf Set}} is a Category *}
+section \<open>{{\sf Set}} is a Category\<close>
 
 theory SetCat
 imports Cat
 begin
 
-subsection{* Definitions *}
+subsection\<open>Definitions\<close>
 
 record 'c set_arrow =
   set_dom :: "'c set"
@@ -48,7 +48,7 @@ definition
   \<rparr>"
 
 
-subsection {* Simple Rules and Lemmas *}
+subsection \<open>Simple Rules and Lemmas\<close>
 
 lemma set_objectI [intro]: "A \<subseteq> U \<Longrightarrow> A \<in> ob (set_cat U)"
   by (simp add: set_cat_def)
@@ -94,7 +94,7 @@ proof-
 qed
 
 
-text {* In this context, @{text "f \<in> hom A B"} is quite a strong claim. *}
+text \<open>In this context, \<open>f \<in> hom A B\<close> is quite a strong claim.\<close>
 
 lemma set_homE [intro]:
   assumes f: "f \<in> hom (set_cat U) A B"
@@ -121,12 +121,12 @@ proof-
 qed
 
 
-subsection {* Set is a Category *}
+subsection \<open>Set is a Category\<close>
 lemma set_id_left:
   assumes f: "f \<in> ar (set_cat U)"
   shows "set_id U (set_cod f) \<odot> f = f"
 proof-
-  from `f \<in> ar (set_cat U)` have "set_cod f \<subseteq> U" ..
+  from \<open>f \<in> ar (set_cat U)\<close> have "set_cod f \<subseteq> U" ..
   hence 1: "set_id U (set_cod f) \<odot> f = 
     \<lparr>
     set_dom=set_dom f, 
@@ -166,7 +166,7 @@ lemma set_id_right:
   assumes f: "f \<in> ar (set_cat U)"
   shows "f \<odot> (set_id U (set_dom f)) = f"
 proof-
-  from `f \<in> ar (set_cat U)` have "set_dom f \<subseteq> U" ..
+  from \<open>f \<in> ar (set_cat U)\<close> have "set_dom f \<subseteq> U" ..
   hence 1: "f \<odot> (set_id U (set_dom f)) = 
     \<lparr>
     set_dom=set_dom f, 
@@ -201,7 +201,7 @@ lemma set_id_hom:
   assumes "A \<in> ob (set_cat U)"
   shows "id (set_cat U) A \<in> hom (set_cat U) A A"
 proof-
-  from `A \<in> ob (set_cat U)` have 1: "A \<subseteq> U" ..
+  from \<open>A \<in> ob (set_cat U)\<close> have 1: "A \<subseteq> U" ..
   hence "id (set_cat U) A = \<lparr>set_dom=A, set_func=\<lambda>x\<in>A. x, set_cod=A\<rparr>"
     by (simp add: set_cat_def set_id_def)
   also have "\<dots> \<in> hom (set_cat U) A A"
@@ -252,8 +252,8 @@ proof (rule funcsetI)
   qed
 qed
 
-text {* We reason explicitly about the function component of the
-composite arrow, leaving the rest to the simplifier. *}
+text \<open>We reason explicitly about the function component of the
+composite arrow, leaving the rest to the simplifier.\<close>
 
 lemma set_comp_associative:
   fixes f and g and h

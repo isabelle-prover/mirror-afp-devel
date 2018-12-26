@@ -4,26 +4,26 @@
     License:     LGPL
 *)
 
-section {* Java-Type *}
+section \<open>Java-Type\<close>
  
 theory JavaType imports "../Isa_Counter/TypeIds"
 begin
 
-text {* This theory formalizes the types that appear in a Java program. Note that
+text \<open>This theory formalizes the types that appear in a Java program. Note that
 the types defined by the classes and interfaces are formalized via their identifiers.
 This way, this theory is program-independent.
-*}
+\<close>
 
-text {* We only want to formalize one-dimensional arrays. Therefore, we 
+text \<open>We only want to formalize one-dimensional arrays. Therefore, we 
 describe the types that can be used as element types of arrays. This excludes
 the \texttt{null} type and array types themselves. This way, we get a finite 
 number
 of types in our type hierarchy, and the subtype relations can be given
 explicitly (see Sec. \ref{direct_subtype_relations}). 
 If desired, this can be extended in the future by using Javatype as argument
-type of the @{text ArrT} type constructor. This will yield infinitely many
+type of the \<open>ArrT\<close> type constructor. This will yield infinitely many
 types.
-*}
+\<close>
 
 datatype Arraytype = BoolAT | IntgAT | ShortAT | ByteAT
                   | CClassAT CTypeId | AClassAT ATypeId
@@ -33,8 +33,8 @@ datatype Javatype = BoolT | IntgT | ShortT | ByteT | NullT | ArrT Arraytype
                   | CClassT CTypeId | AClassT ATypeId
                   | InterfaceT ITypeId
 
-text {* We need a function that widens @{typ Arraytype} to @{typ Javatype}.
-*}
+text \<open>We need a function that widens @{typ Arraytype} to @{typ Javatype}.
+\<close>
 
 definition
   at2jt :: "Arraytype \<Rightarrow> Javatype"
@@ -48,9 +48,9 @@ where
        | AClassAT ATypeId     \<Rightarrow> AClassT ATypeId
        | InterfaceAT ITypeId  \<Rightarrow> InterfaceT ITypeId)"
   
-text {* We define two predicates that separate the primitive types and the 
+text \<open>We define two predicates that separate the primitive types and the 
 class types.
-*}
+\<close>
                              
 primrec isprimitive:: "Javatype \<Rightarrow> bool"
 where

@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Matrix Kleene Algebras *}
+section \<open>Matrix Kleene Algebras\<close>
 
-text {*
+text \<open>
 This theory gives a matrix model of Stone-Kleene relation algebras.
 The main result is that matrices over Kleene algebras form Kleene algebras.
 The automata-based construction is due to Conway \cite{Conway1971}.
@@ -19,7 +19,7 @@ Second, some submatrices used in the construction are not square, which requires
 Because these instruments are not available in Isabelle/HOL, we use square matrices with a constant size given by the argument of the Kleene star operation.
 Smaller, possibly rectangular submatrices are identified by two lists of indices: one for the rows to include and one for the columns to include.
 Lists are used to make recursive calls deterministic; otherwise sets would be sufficient.
-*}
+\<close>
 
 theory Matrix_Kleene_Algebras
 
@@ -27,24 +27,24 @@ imports Stone_Relation_Algebras.Matrix_Relation_Algebras Kleene_Relation_Algebra
 
 begin
 
-subsection {* Matrix Restrictions *}
+subsection \<open>Matrix Restrictions\<close>
 
-text {*
+text \<open>
 In this section we develop a calculus of matrix restrictions.
-The restriction of a matrix to specific row and column indices is implemented by the following function, which keeps the size of the matrix and sets all unused entries to @{text bot}.
-*}
+The restriction of a matrix to specific row and column indices is implemented by the following function, which keeps the size of the matrix and sets all unused entries to \<open>bot\<close>.
+\<close>
 
 definition restrict_matrix :: "'a list \<Rightarrow> ('a,'b::bot) square \<Rightarrow> 'a list \<Rightarrow> ('a,'b) square" ("_ \<langle>_\<rangle> _" [90,41,90] 91)
   where "restrict_matrix as f bs = (\<lambda>(i,j) . if List.member as i \<and> List.member bs j then f (i,j) else bot)"
 
-text {*
+text \<open>
 The following function captures Conway's automata-based construction of the Kleene star of a matrix.
-An index @{text k} is chosen and @{text s} contains all other indices.
-The matrix is split into four submatrices @{text a}, @{text b}, @{text c}, @{text d} including/not including row/column @{text k}.
+An index \<open>k\<close> is chosen and \<open>s\<close> contains all other indices.
+The matrix is split into four submatrices \<open>a\<close>, \<open>b\<close>, \<open>c\<close>, \<open>d\<close> including/not including row/column \<open>k\<close>.
 Four matrices are computed containing the entries given by Conway's construction.
 These four matrices are added to obtain the result.
-All matrices involved in the function have the same size, but matrix restriction is used to set irrelevant entries to @{text bot}.
-*}
+All matrices involved in the function have the same size, but matrix restriction is used to set irrelevant entries to \<open>bot\<close>.
+\<close>
 
 primrec star_matrix' :: "'a list \<Rightarrow> ('a,'b::{star,times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square" where
 "star_matrix' Nil g = mbot" |
@@ -63,16 +63,16 @@ primrec star_matrix' :: "'a list \<Rightarrow> ('a,'b::{star,times,bounded_semil
   es \<oplus> as \<odot> b \<odot> fs \<oplus> ds \<odot> c \<odot> es \<oplus> fs
 )"
 
-text {*
-The Kleene star of the whole matrix is obtained by taking as indices all elements of the underlying type @{text 'a}.
-This is conveniently supplied by the @{text enum} class.
-*}
+text \<open>
+The Kleene star of the whole matrix is obtained by taking as indices all elements of the underlying type \<open>'a\<close>.
+This is conveniently supplied by the \<open>enum\<close> class.
+\<close>
 
 fun star_matrix :: "('a::enum,'b::{star,times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square" ("_\<^sup>\<odot>" [100] 100) where "star_matrix f = star_matrix' (enum_class.enum::'a list) f"
 
-text {*
+text \<open>
 The following lemmas deconstruct matrices with non-empty restrictions.
-*}
+\<close>
 
 lemma restrict_empty_left:
   "[]\<langle>f\<rangle>ls = mbot"
@@ -97,10 +97,10 @@ lemma restrict_nonempty:
   shows "(k#ks)\<langle>f\<rangle>(l#ls) = [k]\<langle>f\<rangle>[l] \<oplus> [k]\<langle>f\<rangle>ls \<oplus> ks\<langle>f\<rangle>[l] \<oplus> ks\<langle>f\<rangle>ls"
   by (unfold restrict_matrix_def List.member_def sup_matrix_def) auto
 
-text {*
+text \<open>
 The following predicate captures that two index sets are disjoint.
 This has consequences for composition and the unit matrix.
-*}
+\<close>
 
 abbreviation "disjoint ks ls \<equiv> \<not>(\<exists>x . List.member ks x \<and> List.member ls x)"
 
@@ -142,10 +142,10 @@ proof (rule ext, rule prod_cases)
     .
 qed
 
-text {*
+text \<open>
 The following predicate captures that an index set is a subset of another index set.
 This has consequences for repeated restrictions.
-*}
+\<close>
 
 abbreviation "is_sublist ks ls \<equiv> \<forall>x . List.member ks x \<longrightarrow> List.member ls x"
 
@@ -181,9 +181,9 @@ proof (rule ext, rule prod_cases)
   qed
 qed
 
-text {*
+text \<open>
 The following lemmas give the sizes of the results of some matrix operations.
-*}
+\<close>
 
 lemma restrict_sup:
   fixes f g :: "('a,'b::bounded_semilattice_sup_bot) square"
@@ -289,9 +289,9 @@ proof (rule ext, rule prod_cases)
     .
 qed
 
-text {*
+text \<open>
 The following lemmas consider restrictions to singleton index sets.
-*}
+\<close>
 
 lemma restrict_singleton:
   "([k]\<langle>f\<rangle>[l]) (i,j) = (if i = k \<and> j = l then f (i,j) else bot)"
@@ -323,9 +323,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 The Kleene star unfold law holds for matrices with a single entry on the diagonal.
-*}
+\<close>
 
 lemma restrict_star_unfold:
   "[l]\<langle>(mone::('a::finite,'b::kleene_algebra) square)\<rangle>[l] \<oplus> [l]\<langle>f\<rangle>[l] \<odot> [l]\<langle>star o f\<rangle>[l] = [l]\<langle>star o f\<rangle>[l]"
@@ -358,10 +358,10 @@ lemma restrict_all:
   "enum_class.enum\<langle>f\<rangle>enum_class.enum = f"
   by (simp add: restrict_matrix_def List.member_def enum_UNIV)
 
-text {*
+text \<open>
 The following shows the various components of a matrix product.
 It is essentially a recursive implementation of the product.
-*}
+\<close>
 
 lemma restrict_nonempty_product:
   fixes f g :: "('a::finite,'b::idempotent_semiring) square"
@@ -382,9 +382,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 Equality of matrices is componentwise.
-*}
+\<close>
 
 lemma restrict_nonempty_eq:
   "(k#ks)\<langle>f\<rangle>(l#ls) = (k#ks)\<langle>g\<rangle>(l#ls) \<longleftrightarrow> [k]\<langle>f\<rangle>[l] = [k]\<langle>g\<rangle>[l] \<and> [k]\<langle>f\<rangle>ls = [k]\<langle>g\<rangle>ls \<and> ks\<langle>f\<rangle>[l] = ks\<langle>g\<rangle>[l] \<and> ks\<langle>f\<rangle>ls = ks\<langle>g\<rangle>ls"
@@ -426,18 +426,18 @@ next
   qed
 qed
 
-text {*
+text \<open>
 Inequality of matrices is componentwise.
-*}
+\<close>
 
 lemma restrict_nonempty_less_eq:
   fixes f g :: "('a,'b::idempotent_semiring) square"
   shows "(k#ks)\<langle>f\<rangle>(l#ls) \<preceq> (k#ks)\<langle>g\<rangle>(l#ls) \<longleftrightarrow> [k]\<langle>f\<rangle>[l] \<preceq> [k]\<langle>g\<rangle>[l] \<and> [k]\<langle>f\<rangle>ls \<preceq> [k]\<langle>g\<rangle>ls \<and> ks\<langle>f\<rangle>[l] \<preceq> ks\<langle>g\<rangle>[l] \<and> ks\<langle>f\<rangle>ls \<preceq> ks\<langle>g\<rangle>ls"
   by (unfold matrix_semilattice_sup.sup.order_iff) (metis (no_types, lifting) restrict_nonempty_eq restrict_sup)
 
-text {*
+text \<open>
 The following lemmas treat repeated restrictions to disjoint index sets.
-*}
+\<close>
 
 lemma restrict_disjoint_left:
   assumes "disjoint ks ms"
@@ -461,9 +461,9 @@ proof (rule ext, rule prod_cases)
     using assms by (simp add: bot_matrix_def)
 qed
 
-text {*
+text \<open>
 The following lemma expresses the equality of a matrix and a product of two matrices componentwise.
-*}
+\<close>
 
 lemma restrict_nonempty_product_eq:
   fixes f g h :: "('a::finite,'b::idempotent_semiring) square"
@@ -536,9 +536,9 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
 The following lemma gives a componentwise characterisation of the inequality of a matrix and a product of two matrices.
-*}
+\<close>
 
 lemma restrict_nonempty_product_less_eq:
   fixes f g h :: "('a::finite,'b::idempotent_semiring) square"
@@ -565,10 +565,10 @@ proof -
     by simp
 qed
 
-text {*
+text \<open>
 The Kleene star induction laws hold for matrices with a single entry on the diagonal.
-The matrix @{text g} can actually contain a whole row/colum at the appropriate index.
-*}
+The matrix \<open>g\<close> can actually contain a whole row/colum at the appropriate index.
+\<close>
 
 lemma restrict_star_left_induct:
   fixes f g :: "('a::finite,'b::kleene_algebra) square"
@@ -662,13 +662,13 @@ lemma pp_star_commute:
   shows "\<ominus>\<ominus>(star o f) = star o \<ominus>\<ominus>f"
   by (simp add: uminus_matrix_def o_def pp_dist_star)
 
-subsection {* Matrices form a Kleene Algebra *}
+subsection \<open>Matrices form a Kleene Algebra\<close>
 
-text {*
+text \<open>
 Matrices over Kleene algebras form a Kleene algebra using Conway's construction.
 It remains to prove one unfold and two induction axioms of the Kleene star.
 Each proof is by induction over the size of the matrix represented by an index list.
-*}
+\<close>
 
 interpretation matrix_kleene_algebra: kleene_algebra_var where sup = sup_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::enum,'b::kleene_algebra) square" and one = one_matrix and times = times_matrix and star = star_matrix
 proof
@@ -1234,12 +1234,12 @@ next
     by (metis restrict_all enum_distinct)
 qed
 
-subsection {* Matrices form a Stone-Kleene Relation Algebra *}
+subsection \<open>Matrices form a Stone-Kleene Relation Algebra\<close>
 
-text {*
+text \<open>
 Matrices over Stone-Kleene relation algebras form a Stone-Kleene relation algebra.
 It remains to prove the axiom about the interaction of Kleene star and double complement.
-*}
+\<close>
 
 interpretation matrix_stone_kleene_relation_algebra: stone_kleene_relation_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix::('a::enum,'b::stone_kleene_relation_algebra) square" and top = top_matrix and uminus = uminus_matrix and one = one_matrix and times = times_matrix and conv = conv_matrix and star = star_matrix
 proof

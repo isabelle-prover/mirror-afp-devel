@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Continuous-time Markov chains *}
+section \<open>Continuous-time Markov chains\<close>
 
 theory Continuous_Time_Markov_Chain
   imports Discrete_Time_Markov_Process Discrete_Time_Markov_Chain
@@ -263,7 +263,7 @@ proof -
   proof (intro INF_cong prod.cong refl)
     show "R i * (\<integral>\<^sup>+ x. indicator {0..} ((1 + R i) * x) * ennreal (exp (- ((1 + R i) * x))) \<partial>lborel) =
       ennreal (R i / (1 + R i))" for i
-      using nn_intergal_power_times_exp_Ici[of 0] `0 < R i`
+      using nn_intergal_power_times_exp_Ici[of 0] \<open>0 < R i\<close>
       by (subst nn_integral_stretch[where c="1 + R i"])
          (auto simp: mult.assoc[symmetric] ennreal_mult''[symmetric] less_imp_le mult.commute)
   qed

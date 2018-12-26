@@ -41,9 +41,9 @@ lemma sublens_trans [trans]:
   using comp_vwb_lens apply blast
 done
 
-text \<open>Sublens has a least element -- @{text "0\<^sub>L"} -- and a greatest element -- @{text "1\<^sub>L"}. 
+text \<open>Sublens has a least element -- \<open>0\<^sub>L\<close> -- and a greatest element -- \<open>1\<^sub>L\<close>. 
   Intuitively, this shows that sublens orders how large a portion of the source type a particular
-  lens views, with @{text "0\<^sub>L"} observing the least, and @{text "1\<^sub>L"} observing the most.\<close>
+  lens views, with \<open>0\<^sub>L\<close> observing the least, and \<open>1\<^sub>L\<close> observing the most.\<close>
   
 lemma sublens_least: "wb_lens X \<Longrightarrow> 0\<^sub>L \<subseteq>\<^sub>L X"
   using sublens_def unit_vwb_lens by fastforce
@@ -229,7 +229,7 @@ text \<open>If we compose a lens $X$ with lens $Y$ then naturally the resulting 
 lemma lens_comp_lb [simp]: "vwb_lens X \<Longrightarrow> X ;\<^sub>L Y \<subseteq>\<^sub>L Y"
   by (auto simp add: sublens_def)
 
-text \<open>We can now also show that @{text "0\<^sub>L"} is the unit of lens plus\<close>
+text \<open>We can now also show that \<open>0\<^sub>L\<close> is the unit of lens plus\<close>
     
 lemma lens_unit_plus_sublens_1: "X \<subseteq>\<^sub>L 0\<^sub>L +\<^sub>L X"
   by (metis lens_comp_lb snd_lens_plus snd_vwb_lens zero_lens_indep unit_wb_lens)
@@ -393,7 +393,7 @@ lemma lens_id_unique:
   apply (metis select_convs(1) select_convs(2) weak_lens.put_get)
 done
 
-text \<open>Consequently, if composition of two lenses $X$ and $Y$ yields @{text "1\<^sub>L"}, then both
+text \<open>Consequently, if composition of two lenses $X$ and $Y$ yields \<open>1\<^sub>L\<close>, then both
   of the composed lenses must be bijective.\<close>
   
 lemma bij_lens_via_comp_id_left:

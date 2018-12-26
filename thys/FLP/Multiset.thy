@@ -1,16 +1,16 @@
-section {* Multiset *}
+section \<open>Multiset\<close>
 
-text {*
+text \<open>
   \file{Multiset} contains a minimal multiset structure.
-*}
+\<close>
 
 theory Multiset
 imports Main
 begin
 
-subsection {* A minimal multiset theory *}
+subsection \<open>A minimal multiset theory\<close>
 
-text {*
+text \<open>
   Völzer, p. 84, does specify that messages in transit are modelled using
   multisets.
   
@@ -18,12 +18,12 @@ text {*
   These multisets allow to add new values to them, to check for elements existing
   in a certain multiset, filter elements according to boolean predicates, remove
   elements and to create a new multiset from a single element.
-*}
+\<close>
 
-text {*
+text \<open>
   A multiset for a type is a mapping from the elements of the type to natural
   numbers. So, we record how often a message has to be processed in the future.
-*}
+\<close>
 
 type_synonym 'a multiset = "'a \<Rightarrow> nat"
 
@@ -32,20 +32,20 @@ abbreviation mElem ::
 where 
   "mElem a ms \<equiv> 0 < ms a"
 
-text {*
+text \<open>
   Hence the union of two multisets is the addition of the number of the
   elements and therefore the associative and the commutative laws holds for
   the union.
-*}
+\<close>
 
 abbreviation mUnion ::
   "'a multiset \<Rightarrow> 'a multiset \<Rightarrow> 'a multiset" ("_ \<union># _" 70)
 where
   "mUnion msA msB v \<equiv> msA v + msB v"
 
-text {*
+text \<open>
   Correspondingly the subtraction is defined and the commutative law holds.
-*}
+\<close>
 abbreviation mRm ::
   "'a multiset \<Rightarrow> 'a \<Rightarrow> 'a multiset" ("_ -# _" 65)
 where
@@ -56,10 +56,10 @@ abbreviation mSingleton ::
 where
   "mSingleton a v \<equiv> if a = v then 1 else 0"
 
-text {*
+text \<open>
   The lemma \isb{AXc} adds just the fact we need for our proofs about
   the commutativity of the union of multisets while elements are removed.
-*}
+\<close>
 lemma AXc:
 assumes 
   "c1 \<noteq> c2" and 

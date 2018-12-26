@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer  *)
 
-section {* Correctness of Lower Bound for Final Graphs *}
+section \<open>Correctness of Lower Bound for Final Graphs\<close>
 
 theory LowerBound
 imports PlaneProps ScoreProps
@@ -50,12 +50,12 @@ proof -
      = ExcessNotAt g None + faceSquanderLowerBound g"
     by (simp add: squanderLowerBound_def)
 
-  txt {* We expand the definition of @{text "faceSquanderLowerBound"}. *}
+  txt \<open>We expand the definition of \<open>faceSquanderLowerBound\<close>.\<close>
 
   also have "faceSquanderLowerBound g = (\<Sum>\<^bsub>f \<in> faces g\<^esub> \<d> |vertices f| )" (*<*)
     by (simp add: faceSquanderLowerBound_def final) (*>*)
 
-  txt {* We expand the definition of @{text "ExcessNotAt"}. *}
+  txt \<open>We expand the definition of \<open>ExcessNotAt\<close>.\<close>
   also from ExcessNotAt_eq[OF pl[THEN inv_mgp] final] obtain V
     where eq: "ExcessNotAt g None = (\<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v)"
     and pS:  "separated g (set V)"
@@ -63,9 +63,9 @@ proof -
     and V_distinct: "distinct V" (*<*)
     by (blast) note eq
 
-  txt {* We partition V in two disjoint subsets $V1, V2$,
+  txt \<open>We partition V in two disjoint subsets $V1, V2$,
   where $V2$ contains all exceptional vertices, $V1$ all
-  not exceptional vertices. *}
+  not exceptional vertices.\<close>
 
   also
   define V1 where "V1 = [v \<leftarrow> V. except g v = 0]"
@@ -87,10 +87,10 @@ proof -
     = (\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v) + (\<Sum>\<^bsub>v \<in> V2\<^esub> ExcessAt g v)" (*<*)
      by (simp only: V1_def V2_def ListSum_compl) (*>*)
 
-  txt {*  We partition @{text "V2"} in two disjoint subsets,
+  txt \<open>We partition \<open>V2\<close> in two disjoint subsets,
   $V4$ contains all exceptional vertices of degree $\neq 5$
   $V3$ contains all exceptional vertices of degree $5$.
-  *}
+\<close>
 
   also
   define V4 where "V4 = [v \<leftarrow> V2. vertextype g v \<noteq> (5,0,1)]"
@@ -99,7 +99,7 @@ proof -
 (*<*)
   with pS V2_def have V3: "separated g (set V3)"
     by (rule_tac separated_subset) auto
-  have "distinct V3" by(simp add:V3_def V2_def `distinct V`)
+  have "distinct V3" by(simp add:V3_def V2_def \<open>distinct V\<close>)
 (*
   with V3_def V2_def obtain V3: "separated g (set V3)"
     by (simp add: vertextype_def separated_def preSeparated_def separated\<^sub>1_def
@@ -113,9 +113,9 @@ proof -
     = (\<Sum>\<^bsub>v \<in> V3\<^esub> ExcessAt g v) + (\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v)" (*<*)
     by (simp add: V4_def V3_def ListSum_compl) (*>*) (* *)
 
-  txt {*  We partition  @{text "faces g"} in two disjoint subsets:
+  txt \<open>We partition  \<open>faces g\<close> in two disjoint subsets:
   $F1$ contains all faces that contain a vertex of $V1$,
-  $F2$ the remaining faces. *}
+  $F2$ the remaining faces.\<close>
 
   also
   define F1 where "F1 = [f \<leftarrow> faces g . \<exists> v \<in> set V1. f \<in> set (facesAt g v)]"
@@ -125,7 +125,7 @@ proof -
       = (\<Sum>\<^bsub>f \<in> F1\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub> f \<in> F2\<^esub> \<d> |vertices f| )" (*<*)
     by (simp only: ListSum_compl F1_def F2_def) (*>*) (* *)
 
-  txt {*  We split up @{text "F2"} in two disjoint subsets: *}
+  txt \<open>We split up \<open>F2\<close> in two disjoint subsets:\<close>
 
   also
   define F3 where "F3 = [f\<leftarrow>F2. \<exists>v \<in> set V3. f \<in> set (facesAt g v)]"
@@ -164,8 +164,8 @@ proof -
    = (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) + (\<Sum>\<^bsub>f\<in>F4\<^esub> \<d> |vertices f| )" (*<*)
     by (simp only: F3_def F4_def ListSum_compl) (*>*) (* *)
 
-  text_raw {* \newpage *}
-  txt {* ($E_1$) From the definition of @{text "ExcessAt"} we have *}
+  text_raw \<open>\newpage\<close>
+  txt \<open>($E_1$) From the definition of \<open>ExcessAt\<close> we have\<close>
 
   also have "(\<Sum>\<^bsub>v \<in> V1\<^esub> ExcessAt g v) + (\<Sum>\<^bsub> f \<in> F1\<^esub> \<d> |vertices f| )
       = (\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v))"
@@ -194,8 +194,8 @@ proof -
     finally show ?thesis .
   qed
 
-  txt {* ($E_2$)  For all exceptional vertices of degree $5$
-  @{text "excess"} returns @{text "a (tri g v)"}. *}
+  txt \<open>($E_2$)  For all exceptional vertices of degree $5$
+  \<open>excess\<close> returns \<open>a (tri g v)\<close>.\<close>
 
   also (trans1)
     from pl final V_subset have
@@ -205,8 +205,8 @@ proof -
      by(blast intro: finalVertexI)
 (*     apply force by(blast intro: finalVertexI)*) (*>*) (* *)
 
-  txt {* ($E_3$) For all exceptional vertices of degree $\neq 5$
-  @{text "ExcessAt"} returns 0. *}
+  txt \<open>($E_3$) For all exceptional vertices of degree $\neq 5$
+  \<open>ExcessAt\<close> returns 0.\<close>
 
   also from pl final tame have "(\<Sum>\<^bsub>v \<in> V4\<^esub> ExcessAt g v) = (\<Sum>\<^bsub>v \<in> V4\<^esub> 0)" (*<*)
     by (rule_tac ListSum_eq)
@@ -214,7 +214,7 @@ proof -
 
   also have "\<dots> = 0" (*<*) by simp   (*>*) (* *)
 
-  txt {* ($A_1$) We use property @{text "admissible\<^sub>2"}. *}
+  txt \<open>($A_1$) We use property \<open>admissible\<^sub>2\<close>.\<close>
 
   also(trans6) have
   "(\<Sum>\<^bsub>v \<in> V1\<^esub> \<b> (tri g v) (quad g v)) \<le> (\<Sum>\<^bsub>v \<in> V1\<^esub> \<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
@@ -223,7 +223,7 @@ proof -
     fix v assume "v \<in> set V1"
     with V1_def V_subset have "v \<in> set (vertices g)" (*<*)  by auto (*>*) (* *)
     with admissible show "\<b> (tri g v) (quad g v) \<le> (\<Sum>\<^bsub>f \<in> facesAt g v\<^esub> w f)"
-      using `v \<in> set V1` by (auto simp add:admissible_def admissible\<^sub>2_def V1_def)
+      using \<open>v \<in> set V1\<close> by (auto simp add:admissible_def admissible\<^sub>2_def V1_def)
   qed
 
   also(trans2) from pSV1 V1_distinct V_subset have "\<dots> = (\<Sum>\<^bsub>f \<in> F1\<^esub> w f)"
@@ -238,7 +238,7 @@ proof -
     apply auto
     done
 
-  txt {* ($A_2$) We use property @{text "admissible\<^sub>4"}. *}
+  txt \<open>($A_2$) We use property \<open>admissible\<^sub>4\<close>.\<close>
 
   also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F3 \<^esub>w f)" (*<*)
   proof-
@@ -252,21 +252,21 @@ proof -
       by(rule listsum_cong[OF _ HOL.refl])
         (simp add:T_def F3 Int_def)
     also have "\<dots> = (\<Sum>\<^bsub>v \<in> V3\<^esub> \<Sum>\<^bsub>f \<in> filter triangle (facesAt g v)\<^esub> \<d> |vertices f| )"
-      by(rule ListSum_V_F_eq_ListSum_F[symmetric, OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
+      by(rule ListSum_V_F_eq_ListSum_F[symmetric, OF \<open>inv g\<close> V3 \<open>distinct V3\<close> \<open>set V3 \<subseteq> \<V> g\<close>])
         (simp add:Ball_def)
     also have "\<dots> = 0" by (simp add: squanderFace_def)
     finally have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>F3\<^esub> \<d> |vertices f| ) =
       (\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) + (\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| )" by simp
     also have "(\<Sum>\<^bsub>f\<in>E\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f\<in>E\<^esub> w f )"
-      using `admissible w g`
+      using \<open>admissible w g\<close>
       by(rule_tac ListSum_le)
         (simp add: admissible_def admissible\<^sub>1_def E_def F3_def F2_def)
     also have "(\<Sum>\<^bsub>v\<in>V3\<^esub> \<a>) \<le> (\<Sum>\<^bsub>v\<in>V3\<^esub> \<Sum>\<^bsub>f\<in>filter triangle (facesAt g v)\<^esub> w(f))"
-      using `admissible w g`
+      using \<open>admissible w g\<close>
       by(rule_tac ListSum_le)
         (simp add: admissible_def admissible\<^sub>3_def V3_def V2_def V_subset_simp)
     also have "\<dots> = (\<Sum>\<^bsub>f \<in> [f\<leftarrow>faces g . \<exists>v \<in> set V3. f \<in> set (facesAt g v) \<inter> Collect triangle]\<^esub> w f)"
-      by(rule ListSum_V_F_eq_ListSum_F[OF `inv g` V3 `distinct V3` `set V3 \<subseteq> \<V> g`])
+      by(rule ListSum_V_F_eq_ListSum_F[OF \<open>inv g\<close> V3 \<open>distinct V3\<close> \<open>set V3 \<subseteq> \<V> g\<close>])
         (simp add:Ball_def)
     also have "\<dots> = (\<Sum>\<^bsub>f\<in>T\<^esub> w f)"
       by(simp add: T_def F3 Int_def)
@@ -275,8 +275,8 @@ proof -
     finally show ?thesis by simp
   qed
 
-  text_raw {* \newpage *}
-  txt {* ($A_3$) We use property @{text "admissible\<^sub>1"}. *}
+  text_raw \<open>\newpage\<close>
+  txt \<open>($A_3$) We use property \<open>admissible\<^sub>1\<close>.\<close>
 
   also(trans3) have "(\<Sum>\<^bsub> f \<in> F4\<^esub> \<d> |vertices f| ) \<le> (\<Sum>\<^bsub>f \<in> F4\<^esub> w f)"
   proof (rule ListSum_le)
@@ -285,12 +285,12 @@ proof -
     with admissible\<^sub>1 f show "\<d> |vertices f| \<le> w f" by (simp)
   qed
 
-  txt {*  We reunite $F3$ and $F4$.  *}
+  txt \<open>We reunite $F3$ and $F4$.\<close>
 
   also(trans4) have "(\<Sum>\<^bsub> f \<in> F3\<^esub> w f) + (\<Sum>\<^bsub> f \<in> F4\<^esub> w f) = (\<Sum>\<^bsub> f \<in> F2\<^esub> w f)" (*<*)
     by (simp only: F3_def F4_def ListSum_compl) (*>*) (* *)
 
-  txt {*  We reunite $F1$ and $F2$.  *}
+  txt \<open>We reunite $F1$ and $F2$.\<close>
 
   also(trans5) have "(\<Sum>\<^bsub> f \<in> F1\<^esub> w f) + (\<Sum>\<^bsub> f \<in> F2\<^esub> w f) = (\<Sum>\<^bsub>f \<in> faces g\<^esub> w f)" (*<*)
     by (simp only: F1_def F2_def ListSum_compl) (*>*) (* *)

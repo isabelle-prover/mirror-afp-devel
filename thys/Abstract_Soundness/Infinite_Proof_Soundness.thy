@@ -259,9 +259,9 @@ proof-
       let ?S = "snd (shd stepSs)"  let ?S' = "snd (shd (stl stepSs))"
       let ?M = "shd Ms"  let ?M' = "shd (stl Ms)"  let ?b = "shd bs"
       have 1: "(?M, ?b, ?M') \<in> \<delta> ?s ?r ?s'"
-        using `follow bs Ms (smap fst stepSs)` by (cases rule: follow.cases) auto
+        using \<open>follow bs Ms (smap fst stepSs)\<close> by (cases rule: follow.cases) auto
       have 2: "descent (?s,?S) ?r (?s',?S')"
-        using `alw P stepSs` unfolding P_def by (cases rule: alw.cases) auto
+        using \<open>alw P stepSs\<close> unfolding P_def by (cases rule: alw.cases) auto
       have "(\<sigma>(?M',?S'), \<sigma>(?M,?S)) \<in> Ord" using descentE[OF 2 1] by simp
       thus ?case by simp
     next
@@ -281,12 +281,12 @@ proof-
       let ?S = "snd (shd stepSs)"  let ?S' = "snd (shd (stl stepSs))"
       let ?M = "shd Ms"  let ?M' = "shd (stl Ms)"  let ?b = "shd bs"
       have 1: "(?M, ?b, ?M') \<in> \<delta> ?s ?r ?s'"
-        using `follow bs Ms (smap fst stepSs)` by (cases rule: follow.cases) auto
+        using \<open>follow bs Ms (smap fst stepSs)\<close> by (cases rule: follow.cases) auto
       have 2: "descent (?s,?S) ?r (?s',?S')"
-        using `alw P stepSs` unfolding P_def by (cases rule: alw.cases) auto
+        using \<open>alw P stepSs\<close> unfolding P_def by (cases rule: alw.cases) auto
       have "(\<sigma>(?M',?S'), \<sigma>(?M,?S)) \<in> Ord" using descentE[OF 2 1] by simp
-      have "ev shd bs" using `infDecr bs` unfolding infDecr_def by auto
-      thus ?case using `epath ?steps` `follow bs Ms ?steps` `alw P stepSs`
+      have "ev shd bs" using \<open>infDecr bs\<close> unfolding infDecr_def by auto
+      thus ?case using \<open>epath ?steps\<close> \<open>follow bs Ms ?steps\<close> \<open>alw P stepSs\<close>
       proof (induction arbitrary: Ms stepSs)
         case (base bs Ms stepSs)
         let ?steps = "smap fst stepSs" let ?Ss = "smap snd stepSs"
@@ -296,10 +296,10 @@ proof-
         let ?S = "snd (shd stepSs)"  let ?S' = "snd (shd (stl stepSs))"
         let ?M = "shd Ms"  let ?M' = "shd (stl Ms)"  let ?b = "shd bs"
         have 1: "(?M, ?b, ?M') \<in> \<delta> ?s ?r ?s'"
-          using `follow bs Ms (smap fst stepSs)` by (cases rule: follow.cases) auto
+          using \<open>follow bs Ms (smap fst stepSs)\<close> by (cases rule: follow.cases) auto
         have 2: "descent (?s,?S) ?r (?s',?S')"
-          using `alw P stepSs` unfolding P_def by (cases rule: alw.cases) auto
-        have "\<sigma>(?M',?S') \<noteq> \<sigma>(?M,?S)" using descentE[OF 2 1] `shd bs` by simp
+          using \<open>alw P stepSs\<close> unfolding P_def by (cases rule: alw.cases) auto
+        have "\<sigma>(?M',?S') \<noteq> \<sigma>(?M,?S)" using descentE[OF 2 1] \<open>shd bs\<close> by simp
         thus ?case by auto
       next
         case (step bs Ms stepSs)
@@ -351,7 +351,7 @@ proof-
     case (base ls)
     hence "ev (?\<phi> (shd ls)) ls" by auto
     moreover have "\<And>js. ?\<phi> (shd ls) js \<Longrightarrow> ?\<phi> m js"
-      using `(shd ls, m) \<in> Ord` Ord unfolding well_order_on_defs by blast
+      using \<open>(shd ls, m) \<in> Ord\<close> Ord unfolding well_order_on_defs by blast
     ultimately show ?case using ev_mono[of "?\<phi> (shd ls)" _ "?\<phi> m"] by auto
   qed auto
 qed

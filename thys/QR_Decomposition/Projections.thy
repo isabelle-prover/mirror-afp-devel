@@ -4,20 +4,20 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Projections*}
+section\<open>Projections\<close>
 
 theory Projections
 imports 
   Miscellaneous_QR
 begin
 
-subsection{*Definitions of vector projection and projection of a vector onto a set.*}
+subsection\<open>Definitions of vector projection and projection of a vector onto a set.\<close>
 
 definition "proj v u = (v \<bullet> u / (u \<bullet> u)) *\<^sub>R u"
 
 definition "proj_onto a S = (sum (\<lambda>x. proj a x) S)"
 
-subsection{*Properties*}
+subsection\<open>Properties\<close>
 
 lemma proj_onto_sum_rw: 
   "sum (\<lambda>x. (x \<bullet> v / (x \<bullet> x)) *\<^sub>R x) A = sum (\<lambda>x. (v \<bullet> x / (x \<bullet> x)) *\<^sub>R x) A"
@@ -57,7 +57,7 @@ lemma pairwise_orthogonal_proj_set:
   shows "pairwise orthogonal (insert (a - proj_onto a C) C)"
   by (rule pairwise_orthogonal_insert[OF p], auto simp add: orthogonal_proj_set C p)
 
-subsection{*Orthogonal Complement*}
+subsection\<open>Orthogonal Complement\<close>
 
 definition "orthogonal_complement W = {x. \<forall>y \<in> W. orthogonal x y}"
 
@@ -126,10 +126,10 @@ next
 qed
 
 
-text{*See @{url "https://people.math.osu.edu/husen.1/teaching/571/least_squares.pdf"}*}
+text\<open>See @{url "https://people.math.osu.edu/husen.1/teaching/571/least_squares.pdf"}\<close>
 
-text{*Part 1 of the Theorem 1.7 in the previous website, but the proof has been carried out
-  in other way.*}
+text\<open>Part 1 of the Theorem 1.7 in the previous website, but the proof has been carried out
+  in other way.\<close>
 
 lemma v_minus_p_orthogonal_complement:
   fixes X::"'a::{euclidean_space} set"
@@ -149,7 +149,7 @@ proof
        (simp add: independent_bound_general[OF ind_X])
 qed
 
-text{*Part 2 of the Theorem 1.7 in the previous website.*}
+text\<open>Part 2 of the Theorem 1.7 in the previous website.\<close>
 
 lemma UNIV_orthogonal_complement_decomposition:
   fixes S::"'a::{euclidean_space} set"
@@ -173,7 +173,7 @@ proof (unfold set_plus_def, auto)
   ultimately show "\<exists>a\<in>S. \<exists>b\<in>orthogonal_complement S. v = a + b" by force
 qed
 
-subsection{*Normalization of vectors*}
+subsection\<open>Normalization of vectors\<close>
 
 definition normalize
   where "normalize x  = ((1/norm x) *\<^sub>R x)"

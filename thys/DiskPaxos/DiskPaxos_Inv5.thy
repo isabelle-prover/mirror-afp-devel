@@ -6,9 +6,9 @@
 
 theory DiskPaxos_Inv5 imports DiskPaxos_Inv3 DiskPaxos_Inv4 begin
 
-subsection {* Invariant 5 *}
+subsection \<open>Invariant 5\<close>
 
-text {*
+text \<open>
   This invariant asserts that, if a processor $p$ is in phase 2, 
   then either its $bal$ and $inp$ values satisfy $maxBalInp$, or
   else $p$ must eventually abort its current ballot. Processor $p$ 
@@ -16,7 +16,7 @@ text {*
   and majority set $D$ such that $p$ has not read $q$'s block on 
   any disk $D$, and all of those blocks have $mbal$ values greater
   than $bal(dblock s p)$.
-*}
+\<close>
 
 definition maxBalInp :: "state \<Rightarrow> nat \<Rightarrow> InputsOrNi \<Rightarrow> bool"
   where "maxBalInp s b v = (\<forall>bk\<in>allBlocks s. b \<le> bal bk \<longrightarrow> inp bk = v)"
@@ -34,16 +34,16 @@ definition HInv5_inner :: "state \<Rightarrow> Proc \<Rightarrow> bool"
 definition HInv5 :: "state \<Rightarrow> bool"
   where "HInv5 s = (\<forall>p. HInv5_inner s p)"
 
-subsubsection {* Proof of Invariant 5 *}
+subsubsection \<open>Proof of Invariant 5\<close>
 
 
-text {* The initial state implies Invariant 5. *}
+text \<open>The initial state implies Invariant 5.\<close>
 
 theorem HInit_HInv5: "HInit s \<Longrightarrow> HInv5 s"
   using Disk_isMajority
   by(auto simp add: HInit_def Init_def HInv5_def HInv5_inner_def)
 
-text {*
+text \<open>
   We will use the notation used in the proofs of invariant 4, and prove
 the lemma $action$-$HInv5$-$p$ and $action$-$HInv5$-$q$ for each action, for
 the cases $p=q$ and $p\not = q$ respectively.
@@ -52,7 +52,7 @@ the cases $p=q$ and $p\not = q$ respectively.
 same way that we defined -$blocksOf$ lemmas in the proofs of $HInv2$. Now we prove 
 that for each action the new $allBlocks$ are included in the old $allBlocks$ or, in
 some cases, included in the old $allBlocks$ union the new $dblock$. 
-*}
+\<close>
 
 lemma HStartBallot_HInv5_p:
   assumes act: "HStartBallot s s' p"
@@ -1148,10 +1148,10 @@ theorem HEndPhase0_HInv5:
   "\<lbrakk> HEndPhase0 s s' p; HInv5_inner s q; Inv1 s \<rbrakk> \<Longrightarrow> HInv5_inner s' q"
   by(blast dest: HEndPhase0_HInv5_q HEndPhase0_HInv5_p)
 
-text{*
+text\<open>
   $HInv1 \wedge HInv2 \wedge HInv3 \wedge HInv4 \wedge HInv5$ is an invariant of $HNext$.
 
-*}
+\<close>
 
 lemma I2e:
   assumes nxt: "HNext s s'"

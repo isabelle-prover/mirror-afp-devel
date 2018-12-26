@@ -9,9 +9,9 @@ begin
 
 no_notation Multiset.subset_mset  (infix "<#" 50) (*prevent a clash with the same syntax for l_coset*)
 
-section {* The Secondary Sylow Theorems *}
+section \<open>The Secondary Sylow Theorems\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
 lemma singletonI:
   assumes "\<And>x. x \<in> A \<Longrightarrow> x = y"
@@ -57,12 +57,12 @@ by (metis finite finite_subset subgroup subgroup.subset)
 
 end
 
-subsection {* Extending the Sylow Locale *}
+subsection \<open>Extending the Sylow Locale\<close>
 
-text {* This locale extends the originale @{term sylow} locale by adding
+text \<open>This locale extends the originale @{term sylow} locale by adding
 the constraint that the @{term p} must not divide the remainder @{term m},
 i.e. @{term "p ^ a"} is the maximal size of a @{term p}-subgroup of
-@{term G}. *}
+@{term G}.\<close>
 
 locale snd_sylow = sylow +
   assumes pNotDvdm:"\<not> (p dvd m)"
@@ -85,7 +85,7 @@ qed
 
 lemma is_snd_sylow: "snd_sylow G p a m" by (rule snd_sylow_axioms)
 
-subsection {* Every $p$-group is Contained in a conjugate of a $p$-Sylow-Group *}
+subsection \<open>Every $p$-group is Contained in a conjugate of a $p$-Sylow-Group\<close>
 
 lemma ex_conj_sylow_group:
   assumes H:"H \<in> subgroups_of_size (p ^ b)"
@@ -135,7 +135,7 @@ proof -
   with invg show thesis by (auto dest:that)
 qed
 
-subsection{*Every $p$-Group is Contained in a $p$-Sylow-Group*}
+subsection\<open>Every $p$-Group is Contained in a $p$-Sylow-Group\<close>
 
 theorem sylow_contained_in_sylow_group:
   assumes H:"H \<in> subgroups_of_size (p ^ b)"
@@ -150,7 +150,7 @@ proof -
   ultimately show thesis unfolding conjugation_action_def by (auto dest:that)
 qed
 
-subsection{*$p$-Sylow-Groups are conjugates of each other*}
+subsection\<open>$p$-Sylow-Groups are conjugates of each other\<close>
 
 theorem sylow_conjugate:
   assumes P:"P \<in> subgroups_of_size (p ^ a)"
@@ -182,9 +182,9 @@ proof -
   with g g' P Q show ?thesis by auto
 qed
 
-subsection{*Counting Sylow-Groups*}
+subsection\<open>Counting Sylow-Groups\<close>
 
-text {*The number of sylow groups is the orbit size of one of them: *}
+text \<open>The number of sylow groups is the orbit size of one of them:\<close>
 
 theorem num_eq_card_orbit:
   assumes P:"P \<in> subgroups_of_size (p ^ a)"
@@ -237,8 +237,8 @@ proof -
   then show ?thesis ..
 qed
 
-text {*We can restrict this locale to refer to a subgroup of order at
-least @{term "(p ^ a)"}: *}
+text \<open>We can restrict this locale to refer to a subgroup of order at
+least @{term "(p ^ a)"}:\<close>
 
 lemma (in snd_sylow) restrict_locale:
   assumes subgrp:"subgroup P G"

@@ -2,20 +2,20 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Deprecated: Data Refinement for the While-Combinator} *}
+section \<open>\isaheader{Deprecated: Data Refinement for the While-Combinator}\<close>
 theory DatRef
 imports 
   Main 
   "HOL-Library.While_Combinator"
 begin
-text_raw {*\label{thy:DatRef}*}
+text_raw \<open>\label{thy:DatRef}\<close>
 
-text {*
+text \<open>
   Note that this theory is deprecated. For new developments, the refinement 
   framework (Refine-Monadic entry of the AFP) should be used.
-*}
+\<close>
 
-text {*
+text \<open>
   In this theory, a data refinement framework for 
   non-deterministic while-loops is developed. The refinement is based on
   showing simulation w.r.t. an abstraction function.
@@ -24,7 +24,7 @@ text {*
   
   Note that this theory is deprecated. For new developments, the refinement 
   framework (Refine-Monadic entry of the AFP) should be used.
-  *}
+\<close>
 
 (* TODO-LIST and ideas
   - Model nondeterministic algorithms by their step relation, and show refinement stuff for this (more general) model (c.f. dpn-pre^* formalization)
@@ -33,11 +33,11 @@ text {*
 *)
 
 
-text {*
+text \<open>
   A nondeterministic while-algorithm is described by a set of states, a 
   continuation condition, a step relation, a set of possible initial 
   states and an invariant.
-  *}
+\<close>
 
   \<comment> \<open>Encapsulates a while-algorithm and its invariant\<close>
 record 'S while_algo =
@@ -50,11 +50,11 @@ record 'S while_algo =
   \<comment> \<open>Invariant\<close>
   wa_invar :: "'S set"
   
-text {*
+text \<open>
   A while-algorithm is called {\em well-defined} iff the invariant holds for 
   all reachable states and the accessible part of the step-relation is
   well-founded.
-*}
+\<close>
   \<comment> \<open>Conditions that must hold for a well-defined while-algorithm\<close>
 locale while_algo =
   fixes WA :: "'S while_algo"
@@ -68,7 +68,7 @@ locale while_algo =
   assumes step_wf: 
     "wf { (s',s). s\<in>wa_invar WA \<and> s\<in>wa_cond WA \<and> (s,s')\<in>wa_step WA }"
 
-text {*
+text \<open>
   Next, a refinement relation for while-algorithms is defined.
   Note that the involved while-algorithms are not required to
   be well-defined. Later, some lemmas to transfer well-definedness
@@ -78,7 +78,7 @@ text {*
   abstraction function. In essence, a refinement establishes a simulation
   of the concrete algorithm by the abstract algorithm w.r.t. the abstraction 
   function.
-*}
+\<close>
 
 locale wa_refine = 
   \<comment> \<open>Concrete algorithm\<close>
@@ -255,13 +255,13 @@ proof -
     done
 qed
 
-text {*
+text \<open>
   A special case of refinement occurs, if the concrete condition implements the
   abstract condition precisely. In this case, the concrete algorithm will run 
   as long as the abstract one that it is simulated by. This allows to 
   transfer properties of the result from the abstract algorithm to the 
   concrete one.
-*}
+\<close>
 
 \<comment> \<open>Precise refinement\<close>
 locale wa_precise_refine = wa_refine +
@@ -276,7 +276,7 @@ begin
     using A cond_abs invar_abs cond_precise by blast
 end
     
-text {* Refinement as well as precise refinement is reflexive and transitive *}
+text \<open>Refinement as well as precise refinement is reflexive and transitive\<close>
 
 lemma wa_ref_refl: "wa_refine WA WA id"
   by (unfold_locales) auto
@@ -319,7 +319,7 @@ proof -
     done
 qed
 
-text {*
+text \<open>
   A well-defined while-algorithm is {\em deterministic}, iff
   the step relation is a function and there is just one 
   initial state. Such an algorithm is suitable for direct implementation 
@@ -330,7 +330,7 @@ text {*
   while algorithms. This makes sense as the step-relation may then be modeled
   as a function, and the initial state may be modeled as a single state rather 
   than a (singleton) set of states.
-*}
+\<close>
 
 record 'S det_while_algo =
   \<comment> \<open>Termination condition\<close>

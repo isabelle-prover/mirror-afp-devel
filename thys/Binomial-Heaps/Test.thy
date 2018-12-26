@@ -1,10 +1,10 @@
 theory Test
 imports "HOL-Library.Code_Target_Numeral" BinomialHeap SkewBinomialHeap
 begin
-  text {*
+  text \<open>
     This theory is included into teh session, in order to
     catch problems with code generation.
-    *}
+\<close>
 
 
 definition
@@ -55,7 +55,7 @@ export_code
   in OCaml
   in SML
 
-ML_val {*
+ML_val \<open>
   (* ** Binomial Heaps ** *)
 
   val q1 = @{code bh_insert} "a" (@{code nat_of_integer} 1)
@@ -81,6 +81,6 @@ ML_val {*
 
   val q = @{code sh_deleteMin} q;
   @{code sh_findMin} q;
-*}
+\<close>
 
 end

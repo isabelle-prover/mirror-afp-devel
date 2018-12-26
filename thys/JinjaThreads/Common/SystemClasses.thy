@@ -4,24 +4,24 @@
     Based on the Jinja theory Common/SystemClasses.thy by Gerwin Klein
 *)
 
-section {* System Classes *}
+section \<open>System Classes\<close>
 
 theory SystemClasses
 imports
   Exceptions
 begin
 
-text {*
-  This theory provides definitions for the @{text Object} class,
+text \<open>
+  This theory provides definitions for the \<open>Object\<close> class,
   and the system exceptions.
 
   Inline SystemClasses definition because they are polymorphic values that violate ML's value restriction.
-*}
+\<close>
 
-text {*
+text \<open>
   Object has actually superclass, but we set it to the empty string for code generation.
   Any other class name (like @{term undefined}) would do as well except for code generation.
-*}
+\<close>
 definition ObjectC :: "'m cdecl"
 where [code_unfold]: 
   "ObjectC = 

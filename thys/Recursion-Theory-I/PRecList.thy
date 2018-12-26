@@ -3,16 +3,16 @@
     Maintainer:  Michael Nedzelsky <MichaelNedzelsky at yandex.ru>
 *)
 
-section {* Primitive recursive coding of lists of natural numbers *}
+section \<open>Primitive recursive coding of lists of natural numbers\<close>
 
 theory PRecList
 imports PRecFun
 begin
 
-text {*
-  We introduce a particular coding @{text "list_to_nat"} from lists of
+text \<open>
+  We introduce a particular coding \<open>list_to_nat\<close> from lists of
   natural numbers to natural numbers.
-*}
+\<close>
 
 definition
   c_len :: "nat \<Rightarrow> nat" where

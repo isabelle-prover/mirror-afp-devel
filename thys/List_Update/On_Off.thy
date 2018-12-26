@@ -130,7 +130,7 @@ proof (unfold compet_def, auto)
       using 1 mult_right_mono[OF assms(2) of_nat_0_le_iff[of "T_opt s0 rs"]]
       by arith
   qed
-  thus "\<exists>b\<ge>0. \<forall>rs.  wf s0 rs \<longrightarrow> ?compt s0 rs b c'" using `b\<ge>0` by(auto)
+  thus "\<exists>b\<ge>0. \<forall>rs.  wf s0 rs \<longrightarrow> ?compt s0 rs b c'" using \<open>b\<ge>0\<close> by(auto)
 qed
 
 lemma competE: fixes c :: real
@@ -150,7 +150,7 @@ proof -
     from mult_left_mono[OF of_nat_le_iff[THEN iffD2, OF this] assms(2)]
     have "T_on A s0 rs \<le> c * T_off aoff s0 rs + b" using 2 by arith
   }
-  thus ?thesis using `b\<ge>0` by(auto simp: compet_def)
+  thus ?thesis using \<open>b\<ge>0\<close> by(auto simp: compet_def)
 qed
 
 end

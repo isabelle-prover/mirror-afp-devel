@@ -2,7 +2,7 @@ theory Rose_Tree
 imports Main "HOL-Library.Sublist"
 begin
 
-text \<open>For theory @{text Incredible_Trees} we need rose trees; this theory contains
+text \<open>For theory \<open>Incredible_Trees\<close> we need rose trees; this theory contains
 the generally useful part of that development.\<close>
 
 subsubsection \<open>The rose tree data type\<close>

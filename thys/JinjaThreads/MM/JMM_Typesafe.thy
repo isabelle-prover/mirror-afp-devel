@@ -2,25 +2,25 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Type-safety proof for the Java memory model *}
+section \<open>Type-safety proof for the Java memory model\<close>
 
 theory JMM_Typesafe 
 imports
   JMM_Framework
 begin
 
-text {*
-  Create a dynamic list @{text "heap_independent"} of theorems for replacing 
+text \<open>
+  Create a dynamic list \<open>heap_independent\<close> of theorems for replacing 
   heap-dependent constants by heap-independent ones. 
-*}
-ML {*
+\<close>
+ML \<open>
 structure Heap_Independent_Rules = Named_Thms
 (
   val name = @{binding heap_independent}
   val description = "Simplification rules for heap-independent constants"
 )
-*}
-setup {* Heap_Independent_Rules.setup *}
+\<close>
+setup \<open>Heap_Independent_Rules.setup\<close>
 
 locale heap_base' = 
   h: heap_base 
@@ -97,9 +97,9 @@ by(simp add: vs_conf_def h.vs_conf_def[abs_def])
 lemmas vs_confI = h.vs_confI[unfolded heap_independent]
 lemmas vs_confD = h.vs_confD[unfolded heap_independent]
 
-text {*
+text \<open>
   use non-speculativity to express that only type-correct values are read
-*}
+\<close>
 
 primrec vs_type_all :: "'m prog \<Rightarrow> 'addr \<times> addr_loc \<Rightarrow> 'addr val set"
 where "vs_type_all P (ad, al) = {v. \<exists>T. P \<turnstile> ad@al : T \<and> P \<turnstile> v :\<le> T}"
@@ -371,8 +371,8 @@ proof -
 
     from len_EE'' have "enat w' < llength ?EE''" by simp
     from w'_len have "lnth ?EE'' w' = action_obs E' w'"
-      using lprefix_lnthD[OF prefix `enat w' < llength ?EE''`] by(simp add: action_obs_def)
-    hence "\<dots> \<in> lset ?EE''" using `enat w' < llength ?EE''` unfolding lset_conv_lnth by(auto intro!: exI)
+      using lprefix_lnthD[OF prefix \<open>enat w' < llength ?EE''\<close>] by(simp add: action_obs_def)
+    hence "\<dots> \<in> lset ?EE''" using \<open>enat w' < llength ?EE''\<close> unfolding lset_conv_lnth by(auto intro!: exI)
     also have "\<dots> \<subseteq> set (map snd (list_of (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) ?m_E''))) @ take (Suc n_w) \<lbrace>ta_w\<rbrace>\<^bsub>o\<^esub>)"
       by(auto 4 4 intro: rev_image_eqI rev_bexI simp add: split_beta lset_lconcat_lfinite dest: lset_lappend[THEN subsetD])
     also have "action_obs E' w' = action_obs E w"
@@ -412,8 +412,8 @@ lemma hb_read_value_typeable:
 using r read
 proof(induction a arbitrary: ad al v rule: less_induct)
   case (less a)
-  note r = `enat a < llength E`
-    and read = `action_obs E a = NormalAction (ReadMem ad al v)`
+  note r = \<open>enat a < llength E\<close>
+    and read = \<open>action_obs E a = NormalAction (ReadMem ad al v)\<close>
   show ?case
   proof(cases "P,E \<turnstile> ws a \<le>hb a")
     case False with r read show ?thesis by(rule races)
@@ -450,7 +450,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
         moreover
         with r have "enat i < llength E" by(metis enat_ord_code(2) order_less_trans) 
         moreover
-        with nth_i i `i < ws a`
+        with nth_i i \<open>i < ws a\<close>
         have "action_obs E i = NormalAction (ReadMem ad' al' v')"
           by(simp add: action_obs_def lnth_ltake ac_simps)
         ultimately have "\<exists>T. P \<turnstile> ad'@al' : T \<and> P \<turnstile> v' :\<le> T" by(rule less.IH)
@@ -511,7 +511,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
         and Runs'': "h.mthr.if.mthr.Runs \<sigma>''' ?E''"
         unfolding E''_m_w by cases
 
-      from "write" `a \<in> read_actions E` have "ws a \<noteq> a" by(auto dest: read_actions_not_write_actions)
+      from "write" \<open>a \<in> read_actions E\<close> have "ws a \<noteq> a" by(auto dest: read_actions_not_write_actions)
       with False have "ws a > a" by simp
       with ao have new: "is_new_action (action_obs E (ws a))"
         by(simp add: action_order_def split: if_split_asm)
@@ -521,7 +521,7 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       define a' where "a' = a - length ?start_obs"
       with False w_def
       have "enat a' < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))"
-        by(simp add: le_less_trans[OF _ `enat w < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))`])
+        by(simp add: le_less_trans[OF _ \<open>enat w < llength (lconcat (lmap (\<lambda>(t, ta). llist_of (map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)) E''))\<close>])
       with Runs obtain m_a n_a t_a ta_a 
         where E'_a: "lnth E' a' = (t_a, \<lbrace>ta_a\<rbrace>\<^bsub>o\<^esub> ! n_a)"
         and n_a: "n_a < length \<lbrace>ta_a\<rbrace>\<^bsub>o\<^esub>"
@@ -565,12 +565,12 @@ proof(induction a arbitrary: ad al v rule: less_induct)
         from i len_EE'' have "i < a'" by simp
         hence i': "?i < a" by(simp add: a'_def)
         moreover
-        hence "enat ?i < llength E" using `enat a < llength E` by(simp add: less_trans[where y="enat a"])
+        hence "enat ?i < llength E" using \<open>enat a < llength E\<close> by(simp add: less_trans[where y="enat a"])
         moreover have "enat i < llength E'" using i
           by -(rule less_le_trans[OF _ lprefix_llength_le[OF prefix], simplified], simp)          
         from lprefix_lnthD[OF prefix i] lnth_i
         have "lnth (lmap snd E') i = NormalAction (ReadMem ad' al' v')" by simp
-        hence "action_obs E ?i = NormalAction (ReadMem ad' al' v')" using `enat i < llength E'`
+        hence "action_obs E ?i = NormalAction (ReadMem ad' al' v')" using \<open>enat i < llength E'\<close>
           by(simp add: E' action_obs_def lnth_lappend E'')
         ultimately have "\<exists>T. P \<turnstile> ad'@al' : T \<and> P \<turnstile> v' :\<le> T" by(rule less.IH)
         hence "v' \<in> vs_type_all P (ad', al')" by(simp add: vs_type_all.simps)
@@ -593,9 +593,9 @@ proof(induction a arbitrary: ad al v rule: less_induct)
       from red_a have "\<exists>T. P \<turnstile> ad@al : T"
       proof(cases)
         case (redT_normal x x' h')
-        from wfx'' `thr \<sigma>'' t_a = \<lfloor>(x, no_wait_locks)\<rfloor>`
+        from wfx'' \<open>thr \<sigma>'' t_a = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
         have "init_fin_lift wfx t_a x (shr \<sigma>'')" by(rule ts_okD)
-        with `t_a \<turnstile> (x, shr \<sigma>'') -ta_a\<rightarrow>i (x', h')`
+        with \<open>t_a \<turnstile> (x, shr \<sigma>'') -ta_a\<rightarrow>i (x', h')\<close>
         show ?thesis using ta_a_read
           by(rule h.init_fin_red_read_typeable[unfolded heap_independent])
       next
@@ -671,7 +671,7 @@ proof -
           unfolding n_def by(simp add: is_commit_sequence_def)
         with n_def committed' have "?\<phi> n a' \<in> ?\<phi> n ` ?C n" by auto
         with inj_n C_n have committed: "a' \<in> ?C n"
-          using `a' \<in> actions (?E n)` by(auto dest: inj_onD)
+          using \<open>a' \<in> actions (?E n)\<close> by(auto dest: inj_onD)
         with justified read_a' have ws_committed: "ws (?\<phi> n a') \<in> ?\<phi> n ` ?C n"
           by(rule weakly_justified_write_seen_hb_read_committed)
 
@@ -707,12 +707,12 @@ proof -
         from justified committed' committed'' n_def read_a' read_a'' n
         have "?\<phi> n (?ws n (inv_into (actions (?E n)) (?\<phi> n) (?\<phi> n' a''))) = ws (?\<phi> n' a'')"
           by(simp add: write_seen_committed_def)
-        hence "?\<phi> n (?ws n a') = ws (?\<phi> n a')" using inj_n `a' \<in> actions (?E n)` by(simp add: a'')
+        hence "?\<phi> n (?ws n a') = ws (?\<phi> n a')" using inj_n \<open>a' \<in> actions (?E n)\<close> by(simp add: a'')
 
         from ws_committed obtain w where w: "ws (?\<phi> n a') = ?\<phi> n w" 
           and committed_w: "w \<in> ?C n" by blast
         from committed_w C_n have "w \<in> actions (?E n)" by blast
-        hence w_def: "w = ?ws n a'" using `?\<phi> n (?ws n a') = ws (?\<phi> n a')` inj_n ws_write
+        hence w_def: "w = ?ws n a'" using \<open>?\<phi> n (?ws n a') = ws (?\<phi> n a')\<close> inj_n ws_write
           unfolding w by(auto dest: inj_onD)
         have committed_ws: "?ws n a' \<in> ?C n" using committed_w by(simp add: w_def)
 
@@ -744,7 +744,7 @@ proof -
           also note a''' also note a''
           finally have \<phi>_n': "?\<phi> n' (?ws n' a'') = ws (?\<phi> n a')" .
           then have "ws (?\<phi> n a') = ?\<phi> n' (?ws n' a'')" ..
-          with `?\<phi> n (?ws n a') = ws (?\<phi> n a')`[symmetric]
+          with \<open>?\<phi> n (?ws n a') = ws (?\<phi> n a')\<close>[symmetric]
           have eq_ws: "?\<phi> n' (?ws n' a'') = ?\<phi> n (?ws n a')" by simp
 
           from wf_n'[THEN wf_exec_is_write_seenD, THEN is_write_seenD, OF read_a'' a''_obs]
@@ -766,7 +766,7 @@ proof -
           with adal have adal': "(ad', al') \<in> action_loc P (?E n') (?ws n' a'')" by(simp add: action_loc_aux_sim_action)
           
           from committed_ws'' have "?ws n' a'' \<in> actions (?E n')" using C_n' by blast
-          with ws_write `action_obs (?E n') (?ws n' a'') \<approx> action_obs (?E n) (?ws n a')` 
+          with ws_write \<open>action_obs (?E n') (?ws n' a'') \<approx> action_obs (?E n) (?ws n a')\<close> 
           have ws_write'': "?ws n' a'' \<in> write_actions (?E n')" 
             by(cases)(auto intro: write_actions.intros simp add: sim_action_is_write_action_eq)
           from wfa_n' committed_ws''
@@ -795,15 +795,15 @@ proof -
           then obtain w' where w': "ws (?\<phi> n a') = ?\<phi> n' w'" and committed_w': "w' \<in> ?C n'" by blast
           from wfa_n' committed_w' have "action_obs (?E n') w' \<approx> action_obs E (?\<phi> n' w')"
             by(blast dest: wf_action_translation_on_actionD)
-          from this[folded w', folded `?\<phi> n (?ws n a') = ws (?\<phi> n a')`] sim_ws[symmetric]
+          from this[folded w', folded \<open>?\<phi> n (?ws n a') = ws (?\<phi> n a')\<close>] sim_ws[symmetric]
           have sim_w': "action_obs (?E n') w' \<approx> action_obs (?E n) (?ws n a')" by(rule sim_action_trans)
           with ws_write committed_w' C_n' have write_w': "w' \<in> write_actions (?E n')"
             by(cases)(auto intro!: write_actions.intros simp add: sim_action_is_write_action_eq)
           hence "value_written P (?E n') w' (ad', al') = value_written P E (?\<phi> n' w') (ad', al')"
             using adal_E committed_w' justified
-            unfolding `?\<phi> n (?ws n a') = ws (?\<phi> n a')` w' is_weakly_justified_by.simps Let_def value_written_committed_def by blast
+            unfolding \<open>?\<phi> n (?ws n a') = ws (?\<phi> n a')\<close> w' is_weakly_justified_by.simps Let_def value_written_committed_def by blast
           also note w'[symmetric] 
-          also note `?\<phi> n (?ws n a') = ws (?\<phi> n a')`[symmetric]
+          also note \<open>?\<phi> n (?ws n a') = ws (?\<phi> n a')\<close>[symmetric]
           also have "value_written P E (?\<phi> n (?ws n a')) (ad', al') = value_written P (?E n) (?ws n a') (ad', al')"
             using justified committed_ws ws_write adal_E 
             unfolding is_weakly_justified_by.simps Let_def value_written_committed_def by(blast dest: sym)
@@ -827,7 +827,7 @@ proof -
           from i w_len have "i < w" by(simp add: min_def not_le split: if_split_asm)
           with w_len have "enat i < llength (?E n')" by(simp add: less_trans[where y="enat w"])
           moreover
-          from i_nth i `i < w` w_len
+          from i_nth i \<open>i < w\<close> w_len
           have "action_obs (?E n') i = NormalAction (ReadMem ad al v)"
             by(simp add: action_obs_def ac_simps less_trans[where y="enat w"] lnth_ltake)
           moreover from n'' have "0 < n'" by simp
@@ -917,7 +917,7 @@ proof -
 
   from read'' have "enat a'' < llength (?E (Suc n))" by(cases)(simp add: actions_def)
   thus "\<exists>T. P \<turnstile> ad@al : T \<and> P \<turnstile> v :\<le> T"
-    by(rule justifying)(simp_all add: a_obs'' `v = v''`)
+    by(rule justifying)(simp_all add: a_obs'' \<open>v = v''\<close>)
 qed
 
 corollary weakly_legal_read_value_typeable:

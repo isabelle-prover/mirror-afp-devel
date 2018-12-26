@@ -46,8 +46,8 @@ interaction of sets of implementation messages with @{term analz}; these propert
 proved as separate lemmas as the proofs are more complex. 
 \<close>
 
-text \<open>Auxiliary: simpler definitions of the @{text implSets} for the proofs, using the 
-@{text msgSet} definitions. 
+text \<open>Auxiliary: simpler definitions of the \<open>implSets\<close> for the proofs, using the 
+\<open>msgSet\<close> definitions. 
 \<close>
 
 abbreviation implInsecSet_aux :: "msg set \<Rightarrow> msg set"
@@ -102,7 +102,7 @@ the general case (the payloads stay in @{term  analz}) and the case where the ke
 \<close>
 
 
-subsubsection \<open>Pull @{term PairAgentSet} out of @{text analz}\<close>
+subsubsection \<open>Pull @{term PairAgentSet} out of \<open>analz\<close>\<close>
 (**************************************************************************************************)
 
 lemma analz_Un_PairAgentSet:

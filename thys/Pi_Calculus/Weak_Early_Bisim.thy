@@ -152,10 +152,10 @@ lemma strongBisimWeakBisim:
 
   shows "P \<approx> Q"
 proof -
-  from `P \<sim> Q` show ?thesis
+  from \<open>P \<sim> Q\<close> show ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cSim P Q)
-    from `P \<sim> Q` have "P \<leadsto>[bisim] Q" by(rule bisimE)
+    from \<open>P \<sim> Q\<close> have "P \<leadsto>[bisim] Q" by(rule bisimE)
     thus "P \<leadsto><bisim> Q" by(rule strongSimWeakSim)
   next
     case(cSym P Q)
@@ -198,11 +198,11 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim P R)
-    from `(P, R) \<in> ?X` obtain Q where "P \<approx> Q" and "Q \<approx> R" by auto
-    from `Q \<approx> R` have "Q \<leadsto><weakBisim> R" by(rule weakBisimE)
+    from \<open>(P, R) \<in> ?X\<close> obtain Q where "P \<approx> Q" and "Q \<approx> R" by auto
+    from \<open>Q \<approx> R\<close> have "Q \<leadsto><weakBisim> R" by(rule weakBisimE)
     moreover have "eqvt ?X" by auto
     moreover have "?X \<subseteq> ?X" by simp
-    ultimately show "P \<leadsto><(?X \<union> weakBisim)> R" using weakBisimE(1) `P \<approx> Q`
+    ultimately show "P \<leadsto><(?X \<union> weakBisim)> R" using weakBisimE(1) \<open>P \<approx> Q\<close>
       by(rule_tac Weak_Early_Sim.transitive) auto
   next
     case(cSym P R)
@@ -223,38 +223,38 @@ proof -
   from  Eqvt eqvt have "eqvt ?X" by blast
   from Strong_Early_Bisim.eqvt Eqvt eqvt have "eqvt ?Y" by blast
 
-  from `(P, Q) \<in> X` have "(P, Q) \<in> ?X" by(blast intro: Strong_Early_Bisim.reflexive reflexive)
+  from \<open>(P, Q) \<in> X\<close> have "(P, Q) \<in> ?X" by(blast intro: Strong_Early_Bisim.reflexive reflexive)
   thus ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cSim P Q)
     {
       fix P P' Q' Q
       assume "P \<approx> P'" and "(P', Q') \<in> X" and "Q' \<approx> Q"
-      from `Q' \<approx> Q` have "Q' \<leadsto><weakBisim> Q" by(rule weakBisimE)
-      moreover note `eqvt ?Y` `eqvt ?X`
+      from \<open>Q' \<approx> Q\<close> have "Q' \<leadsto><weakBisim> Q" by(rule weakBisimE)
+      moreover note \<open>eqvt ?Y\<close> \<open>eqvt ?X\<close>
       moreover have "?Y O weakBisim \<subseteq> ?X" by(blast dest: strongBisimWeakBisim transitive)
       moreover {
         fix P Q
         assume "(P, Q) \<in> ?Y"
         then obtain P' Q' where "P \<approx> P'" and "(P', Q') \<in> X" and "Q' \<sim> Q" by auto
-        from `(P', Q') \<in> X` have "P' \<leadsto><?Y> Q'" by(rule rSim)
-        moreover from `Q' \<sim> Q` have "Q' \<leadsto>[bisim] Q" by(rule bisimE)
-        moreover note `eqvt ?Y`
+        from \<open>(P', Q') \<in> X\<close> have "P' \<leadsto><?Y> Q'" by(rule rSim)
+        moreover from \<open>Q' \<sim> Q\<close> have "Q' \<leadsto>[bisim] Q" by(rule bisimE)
+        moreover note \<open>eqvt ?Y\<close>
         moreover have "?Y O bisim \<subseteq> ?Y" by(auto dest: Strong_Early_Bisim.transitive)
         ultimately have "P' \<leadsto><?Y> Q" by(rule strongAppend)
-        moreover note `P \<approx> P'`
+        moreover note \<open>P \<approx> P'\<close>
         moreover have "weakBisim O ?Y \<subseteq> ?Y" by(blast dest: transitive)
-        ultimately have "P \<leadsto><?Y> Q" using weakBisimE(1) eqvt `eqvt ?Y`
+        ultimately have "P \<leadsto><?Y> Q" using weakBisimE(1) eqvt \<open>eqvt ?Y\<close>
           by(rule_tac Weak_Early_Sim.transitive)
       }
-      moreover from `(P', Q') \<in> X` have "(P', Q') \<in> ?Y" by(blast intro: reflexive Strong_Early_Bisim.reflexive)
+      moreover from \<open>(P', Q') \<in> X\<close> have "(P', Q') \<in> ?Y" by(blast intro: reflexive Strong_Early_Bisim.reflexive)
       ultimately have "P' \<leadsto><?X> Q" by(rule Weak_Early_Sim.transitive)
-      moreover note `P \<approx> P'`
+      moreover note \<open>P \<approx> P'\<close>
       moreover have "weakBisim O ?X \<subseteq> ?X" by(blast dest: transitive)
-      ultimately have "P \<leadsto><?X> Q" using weakBisimE(1) eqvt `eqvt ?X`
+      ultimately have "P \<leadsto><?X> Q" using weakBisimE(1) eqvt \<open>eqvt ?X\<close>
         by(rule_tac Weak_Early_Sim.transitive)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     thus ?case 
@@ -291,7 +291,7 @@ lemma transitive_coinduct_weak[case_names cSim cSym, consumes 2]:
   shows "P \<approx> Q"
 proof -
   let ?X = "bisim O X O bisim"
-  from `(P, Q) \<in> X` have "(P, Q) \<in> ?X" by(blast intro: Strong_Early_Bisim.reflexive)
+  from \<open>(P, Q) \<in> X\<close> have "(P, Q) \<in> ?X" by(blast intro: Strong_Early_Bisim.reflexive)
   thus ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cSim P Q)
@@ -317,14 +317,14 @@ proof -
         ultimately show ?thesis using PBisimP' by(rule Weak_Early_Sim.transitive)
       qed
     }
-    thus ?case using `(P, Q) \<in> ?X` rSim by (blast dest: Strong_Early_Bisim.bisimE)
+    thus ?case using \<open>(P, Q) \<in> ?X\<close> rSim by (blast dest: Strong_Early_Bisim.bisimE)
   next
     case(cSym P Q)
     {
       fix P P' Q' Q
       assume "P \<sim> P'" and "(P', Q') \<in> X" and "Q' \<sim> Q"
-      from `(P', Q') \<in> X` have "(Q', P') \<in> ?X" by(rule rSym)
-      with `P \<sim> P'` `Q' \<sim> Q` have "(Q, P) \<in> ?X" 
+      from \<open>(P', Q') \<in> X\<close> have "(Q', P') \<in> ?X" by(rule rSym)
+      with \<open>P \<sim> P'\<close> \<open>Q' \<sim> Q\<close> have "(Q, P) \<in> ?X" 
         apply auto
         apply(drule_tac Strong_Early_Bisim.bisimE(2))
         apply(drule Strong_Early_Bisim.transitive[where Q=P'])
@@ -334,7 +334,7 @@ proof -
         apply assumption
         by auto
     }
-    thus ?case using `(P, Q) \<in> ?X` by auto
+    thus ?case using \<open>(P, Q) \<in> ?X\<close> by auto
   qed
 qed
 

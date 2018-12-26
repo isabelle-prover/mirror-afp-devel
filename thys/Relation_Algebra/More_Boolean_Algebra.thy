@@ -4,17 +4,17 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* (More) Boolean Algebra *}
+section \<open>(More) Boolean Algebra\<close>
 
 theory More_Boolean_Algebra
   imports Main
 begin
 
-subsection {* Laws of Boolean Algebra *}
+subsection \<open>Laws of Boolean Algebra\<close>
 
-text {* The following laws of Boolean algebra support relational proofs. We
+text \<open>The following laws of Boolean algebra support relational proofs. We
 might add laws for the binary minus since that would make certain theorems look
-more nicely. These are currently not so well supported. *}
+more nicely. These are currently not so well supported.\<close>
 
 context boolean_algebra
 begin
@@ -79,7 +79,7 @@ by (metis eq_refl inf_le1 sup_mono)
 lemma dist_alt: "\<lbrakk>x + z = y + z; x \<cdot> z = y \<cdot> z\<rbrakk> \<Longrightarrow> x = y"
 by (metis aux4 aux6 sup.commute)
 
-text {* Finally we prove the Galois connections for complementation. *}
+text \<open>Finally we prove the Galois connections for complementation.\<close>
 
 lemma galois_aux: "x \<cdot> y = 0 \<longleftrightarrow> x \<le> -y"
 by (metis aux6 compl_sup double_compl inf.commute le_iff_inf sup_bot_right sup_compl_top)
@@ -105,9 +105,9 @@ by (metis galois_1 inf_top_left top_unique)
 lemma galois_aux4: "-x + y = 1 \<longleftrightarrow> x \<le> y"
 by (metis double_compl galois_aux3)
 
-subsection {* Boolean Algebras with Operators *}
+subsection \<open>Boolean Algebras with Operators\<close>
 
-text {* We follow J\'onsson and Tarski to define pairs of conjugate functions
+text \<open>We follow J\'onsson and Tarski to define pairs of conjugate functions
 on Boolean algebras. We also consider material from Maddux's article. This
 gives rise to a Galois connection and the notion of Boolean algebras with
 operators.
@@ -122,16 +122,16 @@ Boolean algebras with operators and their variants can be applied in various
 ways. The prime example are relation algebras. The modular laws, for instance,
 can be derived by instantiation. Other applications are antidomain semirings
 where modal operators satisfy conjugations and Galois connections, and algebras
-of predicate transformers. *}
+of predicate transformers.\<close>
 
-text{* We define conjugation as a predicate which holds if a pair of functions
-are conjugates. *}
+text\<open>We define conjugation as a predicate which holds if a pair of functions
+are conjugates.\<close>
 
 definition is_conjugation :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool"
   where "is_conjugation f g \<equiv> (\<forall>x y . f x \<cdot> y = 0 \<longleftrightarrow> x \<cdot> g y = 0)"
 
-text {* We now prove the standard lemmas. First we show that conjugation is
-symmetric and that conjugates are uniqely defined. *}
+text \<open>We now prove the standard lemmas. First we show that conjugation is
+symmetric and that conjugates are uniqely defined.\<close>
 
 lemma is_conjugation_sym: "is_conjugation f g \<longleftrightarrow> is_conjugation g f"
 by (metis inf.commute is_conjugation_def)
@@ -139,8 +139,8 @@ by (metis inf.commute is_conjugation_def)
 lemma is_conjugation_unique: "\<lbrakk>is_conjugation f g; is_conjugation f h\<rbrakk> \<Longrightarrow> g = h"
 by (metis galois_aux inf.commute double_compl eq_iff ext is_conjugation_def)
 
-text {* Next we show that conjugates give rise to adjoints in a Galois
-connection. *}
+text \<open>Next we show that conjugates give rise to adjoints in a Galois
+connection.\<close>
 
 lemma conj_galois_1:
   assumes "is_conjugation f g"
@@ -152,9 +152,9 @@ lemma conj_galois_2:
   shows "g x \<le> y \<longleftrightarrow> x \<le> -f (-y)"
 by (metis assms is_conjugation_sym conj_galois_1)
 
-text {* Now we prove some of the standard properties of adjoints and
+text \<open>Now we prove some of the standard properties of adjoints and
 conjugates. In fact, conjugate functions even distribute over all existing
-suprema. We display the next proof in detail because it is elegant. *}
+suprema. We display the next proof in detail because it is elegant.\<close>
 
 lemma f_pre_additive:
   assumes "is_conjugation f g"
@@ -185,7 +185,7 @@ lemma g_additive:
   shows "g (sup x y) = sup (g x) (g y)"
 by (metis assms is_conjugation_sym f_additive)
 
-text {* Additivity of adjoints obviously implies their isotonicity. *}
+text \<open>Additivity of adjoints obviously implies their isotonicity.\<close>
 
 lemma f_iso:
   assumes "is_conjugation f g"
@@ -207,7 +207,7 @@ lemma g_subdist:
   shows "g (x \<cdot> y) \<le> g x"
 by (metis assms g_iso inf_le1)
 
-text {* Next we prove cancellation and strictness laws. *}
+text \<open>Next we prove cancellation and strictness laws.\<close>
 
 lemma cancellation_1:
   assumes "is_conjugation f g"
@@ -229,8 +229,8 @@ lemma g_strict:
   shows "g 0 = 0"
 by (metis assms is_conjugation_sym f_strict)
 
-text {* The following variants of modular laws have more concrete counterparts
-in relation algebra. *}
+text \<open>The following variants of modular laws have more concrete counterparts
+in relation algebra.\<close>
 
 lemma modular_1_aux:
   assumes "is_conjugation f g"

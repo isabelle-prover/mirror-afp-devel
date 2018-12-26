@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Martin Strecker, Andreas Lochbihler
 *)
 
-section {* Exception handling in the JVM *}
+section \<open>Exception handling in the JVM\<close>
 
 theory JVMExceptions
 imports

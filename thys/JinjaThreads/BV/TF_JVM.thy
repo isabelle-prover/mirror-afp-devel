@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* The Typing Framework for the JVM \label{sec:JVM} *}
+section \<open>The Typing Framework for the JVM \label{sec:JVM}\<close>
 
 theory TF_JVM
 imports
@@ -45,7 +45,7 @@ locale start_context = JVM_sl +
   "start \<equiv> OK first # replicate (size is - 1) (OK None)"
 
 
-subsection {* Connecting JVM and Framework *}
+subsection \<open>Connecting JVM and Framework\<close>
 
 lemma (in JVM_sl) step_def_exec: "step \<equiv> exec P mxs T\<^sub>r xt is" 
   by (simp add: exec_def)  

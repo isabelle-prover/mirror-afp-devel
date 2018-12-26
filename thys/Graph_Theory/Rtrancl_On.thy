@@ -7,13 +7,13 @@ theory Rtrancl_On
 imports Main
 begin
 
-section {* Reflexive-Transitive Closure on a Domain *}
+section \<open>Reflexive-Transitive Closure on a Domain\<close>
 
-text {*
+text \<open>
   In this section we introduce a variant of the reflexive-transitive closure
   of a relation which is useful to formalize the reachability relation on
   digraphs.
-*}
+\<close>
 
 inductive_set
   rtrancl_on :: "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a rel"
@@ -104,7 +104,7 @@ lemma rtrancl_consistent_rtrancl_on:
 proof (induction rule: converse_rtrancl_induct)
   case (step y z) then have "z \<in> F" by (rule_tac consistent) simp
   with step have "(z,b) \<in> rtrancl_on F r" by simp
-  with step.prems `(y,z) \<in> r` `z \<in> F` show ?case
+  with step.prems \<open>(y,z) \<in> r\<close> \<open>z \<in> F\<close> show ?case
     using converse_rtrancl_on_into_rtrancl_on
     by metis
 qed simp

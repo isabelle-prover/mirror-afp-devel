@@ -222,7 +222,7 @@ qed
 subsection \<open>Closure of Dolev-Yao, extract and fake\<close>
 (**************************************************************************************************)
 
-subsubsection \<open>@{text "dy_fake_msg"}: returns messages, closure of DY and extr is sufficient\<close>
+subsubsection \<open>\<open>dy_fake_msg\<close>: returns messages, closure of DY and extr is sufficient\<close>
 (**************************************************************************************************)
 
 text \<open>Close @{term extr} under Dolev-Yao closure using @{term synth} and @{term analz}. 
@@ -266,7 +266,7 @@ lemma dy_fake_msg_insert_chan:
 by (auto simp add: dy_fake_msg_def)
 
 
-subsubsection \<open>@{text "dy_fake_chan"}: returns channel messages\<close>
+subsubsection \<open>\<open>dy_fake_chan\<close>: returns channel messages\<close>
 (**************************************************************************************************)
 
 text \<open>The set of all channel messages that an attacker can fake is obtained using

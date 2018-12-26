@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Pre-Conway Algebra with Tests*}
+section \<open>Pre-Conway Algebra with Tests\<close>
 
 theory Conway_Tests
   imports Kleene_Algebra.Conway Test_Dioid

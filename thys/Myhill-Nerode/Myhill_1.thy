@@ -4,7 +4,7 @@ imports Folds
         "HOL-Library.While_Combinator" 
 begin
 
-section {* First direction of MN: @{text "finite partition \<Rightarrow> regular language"} *}
+section \<open>First direction of MN: \<open>finite partition \<Rightarrow> regular language\<close>\<close>
 
 notation 
   conc (infixr "\<cdot>" 100) and
@@ -14,7 +14,7 @@ lemma Pair_Collect [simp]:
   shows "(x, y) \<in> {(x, y). P x y} \<longleftrightarrow> P x y"
 by simp
 
-text {* Myhill-Nerode relation *}
+text \<open>Myhill-Nerode relation\<close>
 
 definition
   str_eq :: "'a lang \<Rightarrow> ('a list \<times> 'a list) set" ("\<approx>_" [100] 100)
@@ -47,9 +47,9 @@ lemma finals_in_partitions:
 unfolding finals_def quotient_def
 by auto
 
-subsection {* Equational systems *}
+subsection \<open>Equational systems\<close>
 
-text {* The two kinds of terms in the rhs of equations. *}
+text \<open>The two kinds of terms in the rhs of equations.\<close>
 
 datatype 'a trm = 
    Lam "'a rexp"            (* Lambda-marker *)
@@ -75,14 +75,14 @@ lemma lang_rhs_union_distrib:
 by simp
 
 
-text {* Transitions between equivalence classes *}
+text \<open>Transitions between equivalence classes\<close>
 
 definition 
   transition :: "'a lang \<Rightarrow> 'a \<Rightarrow> 'a lang \<Rightarrow> bool" ("_ \<Turnstile>_\<Rightarrow>_" [100,100,100] 100)
 where
   "Y \<Turnstile>c\<Rightarrow> X \<equiv> Y \<cdot> {[c]} \<subseteq> X"
 
-text {* Initial equational system *}
+text \<open>Initial equational system\<close>
 
 definition
   "Init_rhs CS X \<equiv>  
@@ -95,7 +95,7 @@ definition
   "Init CS \<equiv> {(X, Init_rhs CS X) | X.  X \<in> CS}"
 
 
-subsection {* Arden Operation on equations *}
+subsection \<open>Arden Operation on equations\<close>
 
 fun 
   Append_rexp :: "'a rexp \<Rightarrow> 'a trm \<Rightarrow> 'a trm"
@@ -112,7 +112,7 @@ definition
      Append_rexp_rhs (rhs - {Trn X r | r. Trn X r \<in> rhs}) (Star (\<Uplus> {r. Trn X r \<in> rhs}))"
 
 
-subsection {* Substitution Operation on equations *}
+subsection \<open>Substitution Operation on equations\<close>
 
 definition 
   "Subst rhs X xrhs \<equiv> 
@@ -128,7 +128,7 @@ definition
       Subst_all  (ES - {(X, xrhs)}) X (Arden X xrhs)"
 
 
-subsection {* While-combinator and invariants *}
+subsection \<open>While-combinator and invariants\<close>
 
 definition 
   "Iter X ES \<equiv> (let (Y, yrhs) = SOME (Y, yrhs). (Y, yrhs) \<in> ES \<and> X \<noteq> Y
@@ -236,7 +236,7 @@ unfolding Append_rexp_rhs_def
 by (auto simp add: conc_def lang_of_append_rexp)
 
 
-subsection {* Intial Equational Systems *}
+subsection \<open>Intial Equational Systems\<close>
 
 lemma defined_by_str:
   assumes "s \<in> X" "X \<in> UNIV // \<approx>A" 
@@ -331,7 +331,7 @@ proof (rule invariantI)
     by auto
 qed
 
-subsection {* Interations *}
+subsection \<open>Interations\<close>
 
 lemma Arden_preserves_soundness:
   assumes l_eq_r: "X = lang_rhs rhs"
@@ -648,7 +648,7 @@ proof -
 qed
 
 
-subsection {* The conclusion of the first direction *}
+subsection \<open>The conclusion of the first direction\<close>
 
 lemma Solve:
   fixes A::"('a::finite) lang"

@@ -4,7 +4,7 @@ begin
 
 section\<open>Normalized (DNF) matches\<close>
 
-text\<open>simplify a match expression. The output is a list of match exprissions, the semantics is @{text "\<or>"} of the list elements.\<close>
+text\<open>simplify a match expression. The output is a list of match exprissions, the semantics is \<open>\<or>\<close> of the list elements.\<close>
 fun normalize_match :: "'a match_expr \<Rightarrow> 'a match_expr list" where
   "normalize_match (MatchAny) = [MatchAny]" |
   "normalize_match (Match m) = [Match m]" |
@@ -232,7 +232,7 @@ section\<open>Normalizing rules instead of only match expressions\<close>
 lemma in_normalized_matches: "ls \<in> set (normalize_match m) \<and> matches \<gamma> ls a p \<Longrightarrow> matches \<gamma> m a p"
   by (meson match_list_matches matches_to_match_list_normalize)
 
- text\<open>applying a function (with a prerequisite @{text Q}) to all rules\<close>
+ text\<open>applying a function (with a prerequisite \<open>Q\<close>) to all rules\<close>
  lemma normalize_rules_property:
  assumes "\<forall> r \<in> set rs. P (get_match r)"
      and "\<forall>m. P m \<longrightarrow> (\<forall>m' \<in> set (f m). Q m')"
@@ -261,7 +261,7 @@ lemma in_normalized_matches: "ls \<in> set (normalize_match m) \<and> matches \<
     qed
  qed
 
- text\<open>If a function @{text f} preserves some property of the match expressions, then this property is preserved when applying @{const normalize_rules}\<close>
+ text\<open>If a function \<open>f\<close> preserves some property of the match expressions, then this property is preserved when applying @{const normalize_rules}\<close>
 
  lemma normalize_rules_preserves: assumes "\<forall> r \<in> set rs. P (get_match r)"
      and "\<forall>m. P m \<longrightarrow> (\<forall>m' \<in> set (f m). P m')"

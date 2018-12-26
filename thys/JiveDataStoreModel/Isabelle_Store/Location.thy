@@ -4,26 +4,26 @@
     License:     LGPL
 *)
 
-section {* Location *}
+section \<open>Location\<close>
 
 theory Location
 imports AttributesIndep "../Isabelle/Value"
 begin 
 
-text {* A storage location can be a field of an object, a static field,
+text \<open>A storage location can be a field of an object, a static field,
  the length of an array, or the contents of an array.  
-*}
+\<close>
 
 datatype Location = objLoc    CAttId ObjectId     \<comment> \<open>field in object\<close> 
                   | staticLoc AttId               \<comment> \<open>static field in concrete class\<close>
                   | arrLenLoc Arraytype ObjectId   \<comment> \<open>length of an array\<close>
                   | arrLoc    Arraytype ObjectId nat \<comment> \<open>contents of an array\<close>
 
-text {* We only directly support one-dimensional arrays. Multidimensional
+text \<open>We only directly support one-dimensional arrays. Multidimensional
 arrays can be simulated by arrays of references to arrays.
-*}
+\<close>
 
-text {* The function @{text "ltype"} yields the content type of a location. *}
+text \<open>The function \<open>ltype\<close> yields the content type of a location.\<close>
 definition ltype:: "Location \<Rightarrow> Javatype" where
 "ltype l = (case l of
               objLoc cf a  \<Rightarrow> rtype (att cf)
@@ -38,10 +38,10 @@ lemma ltype_simps [simp]:
 "ltype (arrLoc T a i) = at2jt T" 
   by (simp_all add: ltype_def)
 
-text {* Discriminator functions to test whether a location denotes an array length
+text \<open>Discriminator functions to test whether a location denotes an array length
 or whether it denotes a static object. Currently, the discriminator functions for
 object and array locations are not specified. They can be added if they are needed.
-*}
+\<close>
 
 definition isArrLenLoc:: "Location \<Rightarrow> bool" where
 "isArrLenLoc l = (case l of
@@ -70,15 +70,15 @@ lemma isStaticLoc_simps [simp]:
 "isStaticLoc (arrLoc T a i) = False"
   by (simp_all add: isStaticLoc_def)
 
-text {* The function @{text "ref"} yields the
+text \<open>The function \<open>ref\<close> yields the
 object or array containing the location that is passed
-as argument (see the function @{text "obj"} in 
+as argument (see the function \<open>obj\<close> in 
 \cite[p. 43 f.]{Poetzsch-Heffter97specification}).
 Note that for static locations
-the result is @{text "nullV"} since static locations 
+the result is \<open>nullV\<close> since static locations 
 are not associated to any object.
 \label{ref_def}
-*}
+\<close>
 definition ref:: "Location \<Rightarrow> Value" where
 "ref l = (case l of
             objLoc cf a  \<Rightarrow> objV (cls cf) a
@@ -93,39 +93,39 @@ lemma ref_simps [simp]:
 "ref (arrLoc T a i) = arrV T a"
   by (simp_all add: ref_def)
 
-text {* The function @{text "loc"} denotes the subscription of an object 
-reference with an attribute. *}
+text \<open>The function \<open>loc\<close> denotes the subscription of an object 
+reference with an attribute.\<close>
 primrec loc:: "Value \<Rightarrow> AttId \<Rightarrow> Location"  ("_.._" [80,80] 80)
 where "loc (objV c a) f = objLoc (catt c f) a"
-text {* Note that we only define subscription properly for object references.
+text \<open>Note that we only define subscription properly for object references.
 For all other values we do not provide any defining equation, so they will 
-internally be mapped to @{text "arbitrary"}.
-*}
+internally be mapped to \<open>arbitrary\<close>.
+\<close>
 
-text {* The length of an array can be selected with the function @{text "arr_len"}. *}
+text \<open>The length of an array can be selected with the function \<open>arr_len\<close>.\<close>
 primrec arr_len:: "Value \<Rightarrow> Location"
 where "arr_len (arrV T a) = arrLenLoc T a"
 
-text {* Arrays can be indexed by the function @{text "arr_loc"}. *}
+text \<open>Arrays can be indexed by the function \<open>arr_loc\<close>.\<close>
 primrec arr_loc:: "Value \<Rightarrow> nat \<Rightarrow> Location" ("_.[_]" [80,80] 80)
 where "arr_loc (arrV T a) i = arrLoc T a i" 
 
-text {* The functions @{term "loc"}, @{term "arr_len"} and @{term "arr_loc"}
+text \<open>The functions @{term "loc"}, @{term "arr_len"} and @{term "arr_loc"}
 define the interface between the basic store model (based on locations) and
 the programming language Java. Instance field access {\tt obj.x} is modelled as 
-@{term "obj..x"} or @{text "loc obj x"} (without the syntactic sugar), 
+@{term "obj..x"} or \<open>loc obj x\<close> (without the syntactic sugar), 
 array length {\tt a.length} with @{term "arr_len a"},
-array indexing {\tt a[i]} with @{term "a.[i]"} or @{text "arr_loc a i"}. 
+array indexing {\tt a[i]} with @{term "a.[i]"} or \<open>arr_loc a i\<close>. 
 The accessing of a static field 
-{\tt C.f} can be expressed by the location itself @{text "staticLoc C'f"}.
+{\tt C.f} can be expressed by the location itself \<open>staticLoc C'f\<close>.
 Of course one can build more infrastructure to make access to instance fields
 and static fields more uniform. We could for example define a 
-function @{text "static"} which indicates whether a field is static or not and
+function \<open>static\<close> which indicates whether a field is static or not and
 based on that create an @{term "objLoc"} location or a @{term "staticLoc"} location. But 
 this will only complicate the actual proofs and we can already easily 
 perform the distinction whether a field is static or not in the \jive-frontend and 
 therefore keep the verification simpler.
-*} 
+\<close> 
 
 lemma ref_loc [simp]: "\<lbrakk>isObjV r; typeof r \<le> dtype f\<rbrakk> \<Longrightarrow> ref (r..f) = r"
   apply (case_tac r)

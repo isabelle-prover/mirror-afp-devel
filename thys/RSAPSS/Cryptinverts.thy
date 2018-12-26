@@ -9,9 +9,9 @@ theory Cryptinverts
 imports  Crypt Productdivides  "HOL-Number_Theory.Residues" 
 begin
 
-text {* 
+text \<open>
   In this theory we show, that a RSA encrypted message can be decrypted
-*}
+\<close>
 
 primrec pred:: "nat \<Rightarrow> nat"
 where

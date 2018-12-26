@@ -1,38 +1,38 @@
-section {* Tagging of Terms *}
+section \<open>Tagging of Terms\<close>
 theory Autoref_Tagging
 imports "../Lib/Refine_Lib" 
 begin
-text {*
+text \<open>
   We provide a mechanism to tag terms, that supports relator annotations,
   and introduces tags to protect operations, function applications, and 
   abstractions from automatic beta and eta conversions.
-*}
+\<close>
 
 
-ML {*
+ML \<open>
   structure Autoref_Tag_Defs = Named_Thms (
     val name = @{binding autoref_tag_defs}
     val description = "Autoref: Definitions of internal tags"
   )
-*}
+\<close>
 setup Autoref_Tag_Defs.setup
 
 
-text {* General protection tag *}
+text \<open>General protection tag\<close>
 definition PROTECT where [simp, autoref_tag_defs]: "PROTECT x \<equiv> x"
 
-text {* General annotation tag *}
+text \<open>General annotation tag\<close>
 typedecl annot
 definition ANNOT :: "'a \<Rightarrow> annot \<Rightarrow> 'a" 
   where [simp, autoref_tag_defs]: "ANNOT x a \<equiv> x"
 
-text {* Operation-tag, Autoref does not look beyond this *}
+text \<open>Operation-tag, Autoref does not look beyond this\<close>
 definition OP where [simp, autoref_tag_defs]: "OP x \<equiv> x"
 
-text {* Protected function application *}
+text \<open>Protected function application\<close>
 definition APP (infixl "$" 900) where [simp, autoref_tag_defs]: "f$a \<equiv> f a"
 
-text {* Protected abstraction *}
+text \<open>Protected abstraction\<close>
 abbreviation ABS :: "('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'b" (binder "\<lambda>''" 10)
   where "ABS f \<equiv> PROTECT (\<lambda>x. PROTECT (f x))"
 
@@ -40,20 +40,20 @@ abbreviation ABS :: "('a\<Rightarrow>'b)\<Rightarrow>'a\<Rightarrow>'b" (binder 
 lemma ABS_beta: "(\<lambda>'x. f x)$x \<equiv> f x" by simp
 lemma ABS_eta: "\<lambda>'x. (f$x) \<equiv> f" by simp
 
-text {* This tag is used to highlight failures during operation 
-  identification *}
+text \<open>This tag is used to highlight failures during operation 
+  identification\<close>
 definition "ID_FAIL x \<equiv> x"
 notation (output) ID_FAIL ("FAIL *** _ ***")
 
 
-text {* Relator annotation *}
+text \<open>Relator annotation\<close>
 consts rel_annot :: "('c\<times>'a) set \<Rightarrow> annot"
 abbreviation rel_ANNOT :: "'a \<Rightarrow> ('c \<times> 'a) set \<Rightarrow> 'a" (infix ":::" 10)
   where "t:::R \<equiv> ANNOT t (rel_annot R)"
 
 lemma rel_ANNOT_eq: "t \<equiv> t:::R" by simp
 
-text {* Indirect annotation *}
+text \<open>Indirect annotation\<close>
 typedecl rel_name
 consts ind_annot :: "rel_name \<Rightarrow> annot"
 abbreviation ind_ANNOT :: "'a \<Rightarrow> rel_name \<Rightarrow> 'a" (infix "::#" 10)
@@ -63,7 +63,7 @@ abbreviation ind_ANNOT :: "'a \<Rightarrow> rel_name \<Rightarrow> 'a" (infix ":
 
 
 
-ML {*
+ML \<open>
   signature AUTOREF_TAGGING = sig
     val term_of_tagged: term -> term
     val is_valid_tagged: term -> bool
@@ -188,15 +188,15 @@ ML {*
     end
   end
 
-*}
+\<close>
 
-ML_val {*
+ML_val \<open>
   Autoref_Tagging.mk_ANNOT_conv @{cterm "bar::annot"} @{cterm "foo::'a::type"};
-*}
+\<close>
 
-ML_val {*
+ML_val \<open>
   Autoref_Tagging.mk_rel_ANNOT_conv @{context}
     @{cterm "bar::('c\<times>'a) set"} @{cterm "foo::'a::type"}
-*}
+\<close>
 
 end

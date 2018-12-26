@@ -29,7 +29,7 @@ end
 
 context begin
 
-text \<open>A typical task with local constants:: @{text "\<forall>x. Q x \<longrightarrow> Q x"}\<close>
+text \<open>A typical task with local constants:: \<open>\<forall>x. Q x \<longrightarrow> Q x\<close>\<close>
 
 text \<open>First the task is defined as an @{term Abstract_Task}.\<close>
 

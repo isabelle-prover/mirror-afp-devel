@@ -5,15 +5,15 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Continuity *}
+section \<open>Continuity\<close>
 
 theory Continuity imports Healthiness begin
 
-text {* We rely on one additional healthiness property, continuity, which is shown here seperately,
+text \<open>We rely on one additional healthiness property, continuity, which is shown here seperately,
 as its proof relies, in general, on healthiness.  It is only relevant when a program appears
-in an inductive context i.e.~inside a loop. *}
+in an inductive context i.e.~inside a loop.\<close>
 
-text {* A continuous transformer preserves limits (or the suprema of ascending chains). *}
+text \<open>A continuous transformer preserves limits (or the suprema of ascending chains).\<close>
 definition bd_cts :: "'s trans \<Rightarrow> bool"
 where "bd_cts t = (\<forall>M. (\<forall>i. (M i \<tturnstile> M (Suc i)) \<and> sound (M i)) \<longrightarrow>
                        (\<exists>b. \<forall>i. bounded_by b (M i)) \<longrightarrow>
@@ -29,7 +29,7 @@ lemma bd_ctsI:
          t (Sup_exp (range M)) = Sup_exp (range (t o M))) \<Longrightarrow> bd_cts t"
   unfolding bd_cts_def by(auto)
 
-text {* A generalised property for transformers of transformers. *}
+text \<open>A generalised property for transformers of transformers.\<close>
 definition bd_cts_tr :: "('s trans \<Rightarrow> 's trans) \<Rightarrow> bool"
 where "bd_cts_tr T = (\<forall>M. (\<forall>i. le_trans (M i) (M (Suc i)) \<and> feasible (M i)) \<longrightarrow>
                           equiv_trans (T (Sup_trans (M ` UNIV))) (Sup_trans ((T o M) ` UNIV)))"
@@ -44,7 +44,7 @@ lemma bd_cts_trI:
          equiv_trans (T (Sup_trans (M ` UNIV))) (Sup_trans ((T o M) ` UNIV))) \<Longrightarrow> bd_cts_tr T"
   by(simp add:bd_cts_tr_def)
 
-subsection {* Continuity of Primitives *}
+subsection \<open>Continuity of Primitives\<close>
 
 lemma cts_wp_Abort:
   "bd_cts (wp (Abort::'s prog))"
@@ -84,9 +84,9 @@ proof(rule bd_ctsI)
     by(simp add:wp_eval o_def Sup_exp_def)
 qed
 
-text {* The first nontrivial proof.  We transform the suprema into limits, and appeal to the
+text \<open>The first nontrivial proof.  We transform the suprema into limits, and appeal to the
 continuity of the underlying operation (here infimum).  This is typical of the remainder of the
-nonrecursive elements. *}
+nonrecursive elements.\<close>
 lemma cts_wp_DC:
   fixes a b::"'s prog"
   assumes ca: "bd_cts (wp a)"
@@ -458,9 +458,9 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
     by(auto)
 qed
 
-text {* Both set-based choice operators are only continuous for finite sets (probabilistic choice
+text \<open>Both set-based choice operators are only continuous for finite sets (probabilistic choice
 \emph{can} be extended infinitely, but we have not done so).  The proofs for both are inductive,
-and rely on the above results on binary operators. *}
+and rely on the above results on binary operators.\<close>
 
 lemma SetPC_Bind:
   "SetPC a p = Bind p (\<lambda>p. SetPC a (\<lambda>_. p))"
@@ -848,10 +848,10 @@ lemma cts_wp_Embed:
   "bd_cts t \<Longrightarrow> bd_cts (wp (Embed t))"
   by(simp add:wp_eval)
 
-subsection {* Continuity of a Single Loop Step *}
+subsection \<open>Continuity of a Single Loop Step\<close>
 
-text {* A single loop iteration is continuous, in the more general sense defined above for
-transformer transformers. *}
+text \<open>A single loop iteration is continuous, in the more general sense defined above for
+transformer transformers.\<close>
 lemma cts_wp_loopstep:
   fixes body::"'s prog"
   assumes hb: "healthy (wp body)"

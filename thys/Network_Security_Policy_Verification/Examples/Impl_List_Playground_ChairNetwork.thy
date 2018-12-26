@@ -3,9 +3,9 @@ imports "../TopoS_Impl"
 begin
 
 
-text{*An example of our chair network [simplified]*}
+text\<open>An example of our chair network [simplified]\<close>
 
-text{*Our access control view on the network*}
+text\<open>Our access control view on the network\<close>
   definition ChairNetwork_empty :: "string list_graph" where
     "ChairNetwork_empty \<equiv> \<lparr> nodesL = [''WebSrv'', ''FilesSrv'', ''PrinterBW'',
                                 ''PrinterColor'', ''Students'',
@@ -16,8 +16,8 @@ text{*Our access control view on the network*}
   lemma "wf_list_graph ChairNetwork_empty" by eval
 
 
-subsection{*Our security requirements*}
-  subsubsection{*We have a server with confidential data*}
+subsection\<open>Our security requirements\<close>
+  subsubsection\<open>We have a server with confidential data\<close>
     definition ConfidentialChairData::"(string SecurityInvariant)" where
       "ConfidentialChairData \<equiv> new_configured_list_SecurityInvariant SINVAR_BLPtrusted_impl.SINVAR_LIB_BLPtrusted \<lparr> 
           node_properties = [''FilesSrv'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
@@ -40,7 +40,7 @@ subsection{*Our security requirements*}
       "PrintingHierarchy \<equiv> new_configured_list_SecurityInvariant SINVAR_DomainHierarchyNG_impl.SINVAR_LIB_DomainHierarchyNG \<lparr> 
         node_properties = PrintingHierarchy_nodes
         \<rparr>"  *)
-  subsubsection{* The color printer is only accessibly by employees, The black.white printer by employees and students*}
+  subsubsection\<open>The color printer is only accessibly by employees, The black.white printer by employees and students\<close>
     definition "PrintingACL \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
           node_properties = [''PrinterColor'' \<mapsto> Master [''Employees'', ''EReachable''],
                              ''PrinterBW'' \<mapsto> Master [''Employees'', ''EReachable'', ''Students''],
@@ -49,7 +49,7 @@ subsection{*Our security requirements*}
                              ''Students'' \<mapsto> Care]
           \<rparr> ''printing ACL''"
 
-  subsubsection{* Printers are information sinks *}
+  subsubsection\<open>Printers are information sinks\<close>
     definition "PrintingSink \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Sink \<lparr> 
           node_properties = [''PrinterColor'' \<mapsto> Sink,
                              ''PrinterBW'' \<mapsto> Sink]
@@ -57,13 +57,13 @@ subsection{*Our security requirements*}
 
 
 
-  subsubsection{*Students may access each other but are not accessible from the outside*}
+  subsubsection\<open>Students may access each other but are not accessible from the outside\<close>
     definition "StudentSubnet \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
           node_properties = [''Students'' \<mapsto> Member, ''Employees'' \<mapsto> Member, ''EReachable'' \<mapsto> InboundGateway]
           \<rparr> ''student subnet''"
 
 
-  subsubsection{* The files server is only accessibly by employees*}
+  subsubsection\<open>The files server is only accessibly by employees\<close>
     definition "FilesSrvACL \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
           node_properties = [''FilesSrv'' \<mapsto> Master [''Employees'', ''EReachable''],
                              ''Employees'' \<mapsto> Care,
@@ -71,7 +71,7 @@ subsection{*Our security requirements*}
           \<rparr> ''file srv acl''"
 
 
-  subsubsection{*emplyees are reachable from the Internet*}
+  subsubsection\<open>emplyees are reachable from the Internet\<close>
     (*nothing to do here*)
 
 lemma "implc_sinvar ConfidentialChairData ChairNetwork_empty" by eval
@@ -94,9 +94,9 @@ lemma "all_security_requirements_fulfilled ChairSecurityRequirements ChairNetwor
 
 value "ChairNetwork"
 
-ML_val{*
+ML_val\<open>
 visualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
-*}
+\<close>
 
 
 

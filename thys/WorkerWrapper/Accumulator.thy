@@ -13,13 +13,13 @@ imports
 begin
 (*>*)
 
-section{* Naive reverse becomes accumulator-reverse. *}
+section\<open>Naive reverse becomes accumulator-reverse.\<close>
 
-text{* \label{sec:accum} *}
+text\<open>\label{sec:accum}\<close>
 
-subsection{* Hughes lists, naive reverse, worker-wrapper optimisation. *}
+subsection\<open>Hughes lists, naive reverse, worker-wrapper optimisation.\<close>
 
-text{* The ``Hughes'' list type. *}
+text\<open>The ``Hughes'' list type.\<close>
 
 type_synonym 'a H = "'a llist \<rightarrow> 'a llist"
 
@@ -34,10 +34,10 @@ definition
   H2list :: "'a H \<rightarrow> 'a llist" where
   "H2list \<equiv> \<Lambda> f . f\<cdot>lnil"
 
-text{* The paper only claims the homomorphism holds for finite lists,
+text\<open>The paper only claims the homomorphism holds for finite lists,
 but in fact it holds for all lazy lists in HOLCF. They are trying to
 dodge an explicit appeal to the equation @{thm "inst_cfun_pcpo"},
-which does not hold in Haskell. *}
+which does not hold in Haskell.\<close>
 
 lemma H_llist_hom_append: "list2H\<cdot>(xs :++ ys) = list2H\<cdot>xs oo list2H\<cdot>ys" (is "?lhs = ?rhs")
 proof(rule cfun_eqI)
@@ -55,15 +55,15 @@ lemma H_llist_hom_id: "list2H\<cdot>lnil = ID" by (simp add: list2H_def)
 lemma H2list_list2H_inv: "H2list oo list2H = ID"
   by (rule cfun_eqI, simp add: H2list_def list2H_def)
 
-text{* \citet[\S4.2]{GillHutton:2009} define the naive reverse
-function as follows. *}
+text\<open>\citet[\S4.2]{GillHutton:2009} define the naive reverse
+function as follows.\<close>
 
 fixrec lrev :: "'a llist \<rightarrow> 'a llist"
 where
   "lrev\<cdot>lnil = lnil"
 | "lrev\<cdot>(x :@ xs) = lrev\<cdot>xs :++ (x :@ lnil)"
 
-text{* Note ``body'' is the generator of @{term "lrev_def"}. *}
+text\<open>Note ``body'' is the generator of @{term "lrev_def"}.\<close>
 
 lemma lrev_strict[simp]: "lrev\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
@@ -76,14 +76,14 @@ where
 lemma lrev_body_strict[simp]: "lrev_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
 by fixrec_simp
 
-text{* This is trivial but syntactically a bit touchy. Would be nicer
+text\<open>This is trivial but syntactically a bit touchy. Would be nicer
 to define @{term "lrev_body"} as the generator of the fixpoint
-definition of @{term "lrev"} directly. *}
+definition of @{term "lrev"} directly.\<close>
 
 lemma lrev_lrev_body_eq: "lrev = fix\<cdot>lrev_body"
   by (rule cfun_eqI, subst lrev_def, subst lrev_body.unfold, simp)
 
-text{* Wrap / unwrap functions. *}
+text\<open>Wrap / unwrap functions.\<close>
 
 definition
   unwrapH :: "('a llist \<rightarrow> 'a llist) \<rightarrow> 'a llist \<rightarrow> 'a H" where
@@ -106,7 +106,7 @@ proof(rule cfun_eqI)+
   finally show "?lhs\<cdot>f\<cdot>xs = ?rhs\<cdot>f\<cdot>xs" .
 qed
 
-subsection{* Gill/Hutton-style worker/wrapper. *}
+subsection\<open>Gill/Hutton-style worker/wrapper.\<close>
 
 definition
   lrev_work :: "'a llist \<rightarrow> 'a H" where
@@ -120,9 +120,9 @@ lemma lrev_lrev_ww_eq: "lrev = lrev_wrap"
   using worker_wrapper_id[OF wrapH_unwrapH_id lrev_lrev_body_eq]
   by (simp add: lrev_wrap_def lrev_work_def)
 
-subsection{* Optimise worker/wrapper. *}
+subsection\<open>Optimise worker/wrapper.\<close>
 
-text{* Intermediate worker. *}
+text\<open>Intermediate worker.\<close>
 
 fixrec lrev_body1 :: "('a llist \<rightarrow> 'a H) \<rightarrow> 'a llist \<rightarrow> 'a H"
 where
@@ -145,7 +145,7 @@ lemma lrev_work1_lrev_work_eq: "lrev_work1 = lrev_work"
   by (unfold lrev_work_def lrev_work1_def,
       rule cfun_arg_cong[OF lrev_body_lrev_body1_eq])
 
-text{* Now use the homomorphism. *}
+text\<open>Now use the homomorphism.\<close>
 
 fixrec lrev_body2 :: "('a llist \<rightarrow> 'a H) \<rightarrow> 'a llist \<rightarrow> 'a H"
 where
@@ -172,7 +172,7 @@ lemma lrev_work2_lrev_work1_eq: "lrev_work2 = lrev_work1"
   by (unfold lrev_work2_def lrev_work1_def
      , rule cfun_arg_cong[OF lrev_body2_lrev_body1_eq])
 
-text {* Simplify. *}
+text \<open>Simplify.\<close>
 
 fixrec lrev_body3 :: "('a llist \<rightarrow> 'a H) \<rightarrow> 'a llist \<rightarrow> 'a H"
 where
@@ -202,8 +202,8 @@ proof -
   thus ?thesis using cfun_eq_iff[where f="list2H oo wrapH\<cdot>lrev_work2" and g="lrev_work2"] by auto
 qed
 
-text{* If we use this result directly, we only get a partially-correct
-program transformation, see \citet{Tullsen:PhDThesis} for details. *}
+text\<open>If we use this result directly, we only get a partially-correct
+program transformation, see \citet{Tullsen:PhDThesis} for details.\<close>
 
 lemma "lrev_work3 \<sqsubseteq> lrev_work2"
   unfolding lrev_work3_def
@@ -230,7 +230,7 @@ proof(rule fix_least)
   thus "lrev_body3\<cdot>lrev_work2 = lrev_work2" by (rule cfun_eqI)
 qed
 
-text{* We can't show the reverse inclusion in the same way as the
+text\<open>We can't show the reverse inclusion in the same way as the
 fusion law doesn't hold for the optimised definition. (Intuitively we
 haven't established that it is equal to the original @{term "lrev"}
 definition.) We could show termination of the optimised definition
@@ -239,7 +239,7 @@ induction (over the list argument) to show total equivalence.
 
 The following lemma shows that the fusion Gill/Hutton want to do is
 completely sound in this context, by appealing to the lazy list
-induction principle. *}
+induction principle.\<close>
 
 lemma lrev_work3_lrev_work2_eq: "lrev_work3 = lrev_work2" (is "?lhs = ?rhs")
 proof(rule cfun_eqI)
@@ -269,7 +269,7 @@ proof(rule cfun_eqI)
   qed simp_all
 qed
 
-text{* Use the combined worker/wrapper-fusion rule. Note we get a weaker lemma. *}
+text\<open>Use the combined worker/wrapper-fusion rule. Note we get a weaker lemma.\<close>
 
 lemma lrev3_2_syntactic: "lrev_body3 oo (unwrapH oo wrapH) = lrev_body2"
   apply (subst lrev_body2.unfold, subst lrev_body3.unfold)
@@ -289,7 +289,7 @@ proof -
   finally show ?thesis unfolding lrev_work3_def by simp
 qed
 
-text{* Final syntactic tidy-up. *}
+text\<open>Final syntactic tidy-up.\<close>
 
 fixrec lrev_body_final :: "('a llist \<rightarrow> 'a H) \<rightarrow> 'a llist \<rightarrow> 'a H"
 where

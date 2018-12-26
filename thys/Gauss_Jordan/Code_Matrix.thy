@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Code generation for vectors and matrices*}
+section\<open>Code generation for vectors and matrices\<close>
 
 theory Code_Matrix
 imports 
@@ -12,8 +12,8 @@ imports
   Code_Set
 begin
 
-text{*In this file the code generator is set up properly to allow the execution of matrices 
-      represented as funcions over finite types.*}
+text\<open>In this file the code generator is set up properly to allow the execution of matrices 
+      represented as funcions over finite types.\<close>
 
 lemmas vec.vec_nth_inverse[code abstype]
 

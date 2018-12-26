@@ -38,7 +38,7 @@ lemma to_vec_one: "to_vec 1 = mat 1"
 lemma to_vec_eq_iff: "to_vec M = to_vec N \<longleftrightarrow> M = N"
   by transfer (auto simp: vec_eq_iff)
 
-subsection{*Some preliminary lemmas and results*}
+subsection\<open>Some preliminary lemmas and results\<close>
 
 lemma invertible_iff_is_unit:
   fixes A::"'a::{comm_ring_1}^'n^'n"

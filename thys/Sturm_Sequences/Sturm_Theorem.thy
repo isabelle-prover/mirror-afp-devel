@@ -1,29 +1,29 @@
-section {* Proof of Sturm's Theorem *}
+section \<open>Proof of Sturm's Theorem\<close>
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Theorem
   imports "HOL-Computational_Algebra.Polynomial"
     "Lib/Sturm_Library" "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
-subsection {* Sign changes of polynomial sequences *}
+subsection \<open>Sign changes of polynomial sequences\<close>
 
-text {*
+text \<open>
   For a given sequence of polynomials, this function computes the number of sign changes
   of the sequence of polynomials evaluated at a given position $x$. A sign change is a
   change from a negative value to a positive one or vice versa; zeros in the sequence are
   ignored.
-*}
+\<close>
 
 definition sign_changes where
 "sign_changes ps (x::real) =
     length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map (\<lambda>p. sgn (poly p x)) ps))) - 1"
 
-text {*
+text \<open>
   The number of sign changes of a sequence distributes over a list in the sense that
   the number of sign changes of a sequence $p_1, \ldots, p_i, \ldots, p_n$ at $x$ is the same
   as the sum of the sign changes of the sequence $p_1, \ldots, p_i$ and $p_i, \ldots, p_n$
   as long as $p_i(x)\neq 0$.
-*}
+\<close>
 
 lemma sign_changes_distrib:
   "poly p x \<noteq> 0 \<Longrightarrow>
@@ -31,10 +31,10 @@ lemma sign_changes_distrib:
       sign_changes (ps\<^sub>1 @ [p]) x + sign_changes ([p] @ ps\<^sub>2) x"
   by (simp add: sign_changes_def sgn_zero_iff, subst remdups_adj_append, simp)
 
-text {*
+text \<open>
   The following two congruences state that the number of sign changes is the same
   if all the involved signs are the same.
-*}
+\<close>
 
 lemma sign_changes_cong:
   assumes "length ps = length ps'"
@@ -60,21 +60,21 @@ lemma sign_changes_cong':
   shows "sign_changes ps x = sign_changes ps y"
 using assms by (intro sign_changes_cong, simp_all)
 
-text {*
+text \<open>
   For a sequence of polynomials of length 3, if the first and the third
   polynomial have opposite and nonzero sign at some $x$, the number of
   sign changes is always 1, irrespective of the sign of the second
   polynomial.
-*}
+\<close>
 
 lemma sign_changes_sturm_triple:
   assumes "poly p x \<noteq> 0" and "sgn (poly r x) = - sgn (poly p x)"
   shows "sign_changes [p,q,r] x = 1"
 unfolding sign_changes_def by (insert assms, auto simp: sgn_real_def)
 
-text {*
+text \<open>
   Finally, we define two additional functions that count the sign changes ``at infinity''.
-*}
+\<close>
 
 definition sign_changes_inf where
 "sign_changes_inf ps =
@@ -86,9 +86,9 @@ definition sign_changes_neg_inf where
 
 
 
-subsection {* Definition of Sturm sequences locale *}
+subsection \<open>Definition of Sturm sequences locale\<close>
 
-text {*
+text \<open>
   We first define the notion of a ``Quasi-Sturm sequence'', which is a weakening of
   a Sturm sequence that captures the properties that are fulfilled by a nonempty
   suffix of a Sturm sequence:
@@ -98,7 +98,7 @@ text {*
     \item If the middle one of three adjacent polynomials has a root at $x$, the other
           two have opposite and nonzero signs at $x$.
   \end{itemize}
-*}
+\<close>
 
 locale quasi_sturm_seq =
   fixes ps :: "(real poly) list"
@@ -109,7 +109,7 @@ locale quasi_sturm_seq =
                      \<Longrightarrow> (poly (ps ! (i+2)) x) * (poly (ps ! i) x) < 0"
 
 
-text {*
+text \<open>
   Now we define a Sturm sequence $p_1,\ldots,p_n$ of a polynomial $p$ in the following way:
   \begin{itemize}
     \item The sequence contains at least two elements.
@@ -120,7 +120,7 @@ text {*
     \item If the middle one of three adjacent polynomials has a root at $x$, the other
           two have opposite and nonzero signs at $x$.
   \end{itemize}
-*}
+\<close>
 
 locale sturm_seq = quasi_sturm_seq +
   fixes p :: "real poly"
@@ -132,9 +132,9 @@ locale sturm_seq = quasi_sturm_seq +
   assumes p_squarefree: "\<And>x. \<not>(poly p x = 0 \<and> poly (ps!1) x = 0)"
 begin
 
-  text {*
+  text \<open>
     Any Sturm sequence is obviously a Quasi-Sturm sequence.
-  *}
+\<close>
   lemma quasi_sturm_seq: "quasi_sturm_seq ps" ..
 
 (*<*)
@@ -153,9 +153,9 @@ end
 lemma [simp]: "\<not>quasi_sturm_seq []" by (simp add: quasi_sturm_seq_def)
 (*>*)
 
-text {*
+text \<open>
   Any suffix of a Quasi-Sturm sequence is again a Quasi-Sturm sequence.
-*}
+\<close>
 
 lemma quasi_sturm_seq_Cons:
   assumes "quasi_sturm_seq (p#ps)" and "ps \<noteq> []"
@@ -165,7 +165,7 @@ proof (unfold_locales)
 next
   from assms(1) interpret quasi_sturm_seq "p#ps" .
   fix x y
-  from last_ps_sgn_const and `ps \<noteq> []`
+  from last_ps_sgn_const and \<open>ps \<noteq> []\<close>
       show "sgn (poly (last ps) x) = sgn (poly (last ps) y)" by simp_all
 next
   from assms(1) interpret quasi_sturm_seq "p#ps" .
@@ -177,7 +177,7 @@ qed
 
 
 
-subsection {* Auxiliary lemmas about roots and sign changes *}
+subsection \<open>Auxiliary lemmas about roots and sign changes\<close>
 
 lemma sturm_adjacent_root_aux:
   assumes "i < length (ps :: real poly list) - 1"
@@ -201,13 +201,13 @@ next
 qed
 
 
-text {*
+text \<open>
   This function splits the sign list of a Sturm sequence at a
   position @{term x} that is not a root of @{term p} into a
   list of sublists such that the number of sign changes within
   every sublist is constant in the neighbourhood of @{term x},
   thus proving that the total number is also constant.
-*}
+\<close>
 fun split_sign_changes where
 "split_sign_changes [p] (x :: real) = [[p]]" |
 "split_sign_changes [p,q] x = [[p,q]]" |
@@ -225,11 +225,11 @@ apply (simp, simp, rename_tac p q r ps x,
        case_tac "poly p x \<noteq> 0 \<and> poly q x = 0", auto)
 done
 
-text {*
+text \<open>
   A custom induction rule for @{term split_sign_changes} that
   uses the fact that all the intermediate parameters in calls
   of @{term split_sign_changes} are quasi-Sturm sequences.
-*}
+\<close>
 lemma (in quasi_sturm_seq) split_sign_changes_induct:
   "\<lbrakk>\<And>p x. P [p] x; \<And>p q x. quasi_sturm_seq [p,q] \<Longrightarrow> P [p,q] x;
     \<And>p q r ps x. quasi_sturm_seq (p#q#r#ps) \<Longrightarrow>
@@ -263,10 +263,10 @@ proof goal_cases
   qed simp_all
 qed
 
-text {*
+text \<open>
   The total number of sign changes in the split list is the same
   as the number of sign changes in the original list.
-*}
+\<close>
 lemma (in quasi_sturm_seq) split_sign_changes_correct:
   assumes "poly (hd ps) x\<^sub>0 \<noteq> 0"
   defines "sign_changes' \<equiv> \<lambda>ps x.
@@ -288,17 +288,17 @@ case (3 p q r ps x\<^sub>0)
         have "sign_changes (p#q#r#ps) x\<^sub>0 =
                   sign_changes ([p, q, r]) x\<^sub>0 + sign_changes (r # ps) x\<^sub>0" by simp
       also have "sign_changes (r#ps) x\<^sub>0 = sign_changes' (r#ps) x\<^sub>0"
-          using `poly q x\<^sub>0 = 0` `poly p x\<^sub>0 \<noteq> 0` 3(5)`poly r x\<^sub>0 \<noteq> 0`
+          using \<open>poly q x\<^sub>0 = 0\<close> \<open>poly p x\<^sub>0 \<noteq> 0\<close> 3(5)\<open>poly r x\<^sub>0 \<noteq> 0\<close>
           by (intro IH(1)[symmetric], simp_all)
       finally show ?thesis unfolding sign_changes'_def
-          using True `poly p x\<^sub>0 \<noteq> 0` by simp
+          using True \<open>poly p x\<^sub>0 \<noteq> 0\<close> by simp
   next
     case False
       from sign_changes_distrib[OF this, of "[p]" "r#ps"]
           have "sign_changes (p#q#r#ps) x\<^sub>0 =
                   sign_changes ([p,q]) x\<^sub>0 + sign_changes (q#r#ps) x\<^sub>0" by simp
       also have "sign_changes (q#r#ps) x\<^sub>0 = sign_changes' (q#r#ps) x\<^sub>0"
-          using `poly q x\<^sub>0 \<noteq> 0` `poly p x\<^sub>0 \<noteq> 0` 3(5)
+          using \<open>poly q x\<^sub>0 \<noteq> 0\<close> \<open>poly p x\<^sub>0 \<noteq> 0\<close> 3(5)
           by (intro IH(2)[symmetric], simp_all)
       finally show ?thesis unfolding sign_changes'_def
           using False by simp
@@ -306,10 +306,10 @@ case (3 p q r ps x\<^sub>0)
 qed (simp_all add: sign_changes_def sign_changes'_def)
 
 
-text {*
+text \<open>
   We now prove that if $p(x)\neq 0$, the number of sign changes of a Sturm sequence of $p$
   at $x$ is constant in a neighbourhood of $x$.
-*}
+\<close>
 
 lemma (in quasi_sturm_seq) split_sign_changes_correct_nbh:
   assumes "poly (hd ps) x\<^sub>0 \<noteq> 0"
@@ -342,10 +342,10 @@ next
             have "sign_changes (p#q#r#ps) x =
                       sign_changes ([p, q, r]) x + sign_changes (r # ps) x" by simp
           also have "sign_changes (r#ps) x = sign_changes' x\<^sub>0 (r#ps) x"
-              using `poly q x\<^sub>0 = 0` nbh `poly p x\<^sub>0 \<noteq> 0` 3(5)`poly r x\<^sub>0 \<noteq> 0`
+              using \<open>poly q x\<^sub>0 = 0\<close> nbh \<open>poly p x\<^sub>0 \<noteq> 0\<close> 3(5)\<open>poly r x\<^sub>0 \<noteq> 0\<close>
               by (intro IH(1)[symmetric], simp_all)
           finally show ?thesis unfolding sign_changes'_def
-              using True `poly p x\<^sub>0 \<noteq> 0`by simp
+              using True \<open>poly p x\<^sub>0 \<noteq> 0\<close>by simp
       next
         case False
           with nbh 3(5) have "poly q x \<noteq> 0" by (auto simp: sgn_zero_iff)
@@ -353,7 +353,7 @@ next
               have "sign_changes (p#q#r#ps) x =
                       sign_changes ([p,q]) x + sign_changes (q#r#ps) x" by simp
           also have "sign_changes (q#r#ps) x = sign_changes' x\<^sub>0 (q#r#ps) x"
-              using `poly q x\<^sub>0 \<noteq> 0` nbh `poly p x\<^sub>0 \<noteq> 0` 3(5)
+              using \<open>poly q x\<^sub>0 \<noteq> 0\<close> nbh \<open>poly p x\<^sub>0 \<noteq> 0\<close> 3(5)
               by (intro IH(2)[symmetric], simp_all)
           finally show ?thesis unfolding sign_changes'_def
               using False by simp
@@ -376,7 +376,7 @@ next
     hence [simp]: "ps' = [p,q]" by simp
     from 2 have "poly p x\<^sub>0 \<noteq> 0" by simp
     from 2(1) interpret quasi_sturm_seq "[p,q]" .
-    from poly_neighbourhood_same_sign[OF `poly p x\<^sub>0 \<noteq> 0`]
+    from poly_neighbourhood_same_sign[OF \<open>poly p x\<^sub>0 \<noteq> 0\<close>]
         have "eventually (\<lambda>x. sgn (poly p x) = sgn (poly p x\<^sub>0)) (at x\<^sub>0)" .
     moreover from last_ps_sgn_const
         have sgn_q: "\<And>x. sgn (poly q x) = sgn (poly q x\<^sub>0)" by simp
@@ -421,7 +421,7 @@ next
                              "\<And>a (b::real). \<lbrakk>a<0; b<0; a*b<0\<rbrakk> \<Longrightarrow> False"
                   by (drule mult_pos_pos, simp, simp,
                       drule mult_neg_neg, simp, simp)
-              from A and `poly p x\<^sub>0 \<noteq> 0` show "poly p x \<noteq> 0"
+              from A and \<open>poly p x\<^sub>0 \<noteq> 0\<close> show "poly p x \<noteq> 0"
                   by (force simp: sgn_zero_iff)
 
               with sgn_r p_not_0 r_not_0 A B
@@ -504,10 +504,10 @@ lemma (in sturm_seq) p_nonzero_imp_sign_changes_const:
   using hd_nonzero_imp_sign_changes_const by simp
 
 
-text {*
+text \<open>
   If $x$ is a root of $p$ and $p$ is not the zero polynomial, the
   number of sign changes of a Sturm chain of $p$ decreases by 1 at $x$.
-*}
+\<close>
 lemma (in sturm_seq) p_zero:
   assumes "poly p x\<^sub>0 = 0" "p \<noteq> 0"
   shows "eventually (\<lambda>x. sign_changes ps x =
@@ -522,7 +522,7 @@ proof-
       have A: "quasi_sturm_seq ps" ..
       with quasi_sturm_seq_Cons[of p "q#ps'"]
           interpret quasi_sturm_seq "q#ps'" by simp
-      from `poly q x\<^sub>0 \<noteq> 0` have "eventually (\<lambda>x. sign_changes (q#ps') x =
+      from \<open>poly q x\<^sub>0 \<noteq> 0\<close> have "eventually (\<lambda>x. sign_changes (q#ps') x =
                                      sign_changes (q#ps') x\<^sub>0) (at x\<^sub>0)"
       using hd_nonzero_imp_sign_changes_const[where x\<^sub>0=x\<^sub>0] by simp
   }
@@ -531,7 +531,7 @@ proof-
       have A: "eventually (\<lambda>x. x \<noteq> x\<^sub>0 \<and> poly p x \<noteq> 0 \<and>
                    sgn (poly (p*ps!1) x) = (if x > x\<^sub>0 then 1 else -1) \<and>
                    sign_changes (q#ps') x = sign_changes (q#ps') x\<^sub>0) (at x\<^sub>0)"
-           by (simp only: `ps!1 = q`, intro eventually_conj)
+           by (simp only: \<open>ps!1 = q\<close>, intro eventually_conj)
   show ?thesis
   proof (rule eventually_mono[OF A], clarify, goal_cases)
     case prems: (1 x)
@@ -543,10 +543,10 @@ proof-
         by (auto simp add: sgn_real_def elim: linorder_neqE_linordered_idom
                  dest: mult_neg_neg zero_less_mult_pos
                  zero_less_mult_pos' split: if_split_asm)
-     from sign_changes_distrib[OF `poly q x \<noteq> 0`, of "[p]" ps']
+     from sign_changes_distrib[OF \<open>poly q x \<noteq> 0\<close>, of "[p]" ps']
         have "sign_changes ps x = sign_changes [p,q] x + sign_changes (q#ps') x"
             by simp
-    also from q_sgn and `poly p x \<noteq> 0`
+    also from q_sgn and \<open>poly p x \<noteq> 0\<close>
         have "sign_changes [p,q] x = (if x<x\<^sub>0 then 1 else 0)"
         by (simp add: sign_changes_def sgn_zero_iff split: if_split_asm)
     also note prems(4)
@@ -556,14 +556,14 @@ proof-
   qed
 qed
 
-text {*
+text \<open>
   With these two results, we can now show that if $p$ is nonzero, the number
   of roots in an interval of the form $(a;b]$ is the difference of the sign changes
   of a Sturm sequence of $p$ at $a$ and $b$.\\
   First, however, we prove the following auxiliary lemma that shows that
   if a function $f: \RR\to\NN$ is locally constant at any $x\in(a;b]$, it is constant
   across the entire interval $(a;b]$:
-*}
+\<close>
 
 lemma count_roots_between_aux:
   assumes "a \<le> b"
@@ -573,19 +573,19 @@ proof (clarify)
   fix x assume "x > a" "x \<le> b"
   with assms have "\<forall>x'. x \<le> x' \<and> x' \<le> b \<longrightarrow>
                        eventually (\<lambda>\<xi>. f \<xi> = f x') (at x')" by auto
-  from fun_eq_in_ivl[OF `x \<le> b` this] show "f x = f b" .
+  from fun_eq_in_ivl[OF \<open>x \<le> b\<close> this] show "f x = f b" .
 qed
 
-text {*
+text \<open>
   Now we can prove the actual root-counting theorem:
-*}
+\<close>
 theorem (in sturm_seq) count_roots_between:
   assumes [simp]: "p \<noteq> 0" "a \<le> b"
   shows "sign_changes ps a - sign_changes ps b =
              card {x. x > a \<and> x \<le> b \<and> poly p x = 0}"
 proof-
   have "sign_changes ps a - int (sign_changes ps b) =
-             card {x. x > a \<and> x \<le> b \<and> poly p x = 0}" using `a \<le> b`
+             card {x. x > a \<and> x \<le> b \<and> poly p x = 0}" using \<open>a \<le> b\<close>
   proof (induction "card {x. x > a \<and> x \<le> b \<and> poly p x = 0}" arbitrary: a b
              rule: less_induct)
     case (less a b)
@@ -600,7 +600,7 @@ proof-
                  cases "poly p a = 0")
             case False
               with no_roots show "sign_changes ps a = sign_changes ps b"
-                  by (force intro: fun_eq_in_ivl `a \<le> b`
+                  by (force intro: fun_eq_in_ivl \<open>a \<le> b\<close>
                                    p_nonzero_imp_sign_changes_const)
           next
             case True
@@ -611,7 +611,7 @@ proof-
                   done
               have "eventually (\<lambda>x. x > a \<longrightarrow>
                         sign_changes ps x = sign_changes ps a) (at a)"
-                  apply (rule eventually_mono [OF p_zero[OF `poly p a = 0` `p \<noteq> 0`]])
+                  apply (rule eventually_mono [OF p_zero[OF \<open>poly p a = 0\<close> \<open>p \<noteq> 0\<close>]])
                   apply force
                   done
               then obtain \<delta> where \<delta>_props:
@@ -624,10 +624,10 @@ proof-
                 case False
                   define x where "x = min (a+\<delta>/2) b"
                   with False have "a < x" "x < a+\<delta>" "x \<le> b"
-                     using `\<delta> > 0` `a \<le> b` by simp_all
-                  from \<delta>_props `a < x` `x < a+\<delta>`
+                     using \<open>\<delta> > 0\<close> \<open>a \<le> b\<close> by simp_all
+                  from \<delta>_props \<open>a < x\<close> \<open>x < a+\<delta>\<close>
                       have "sign_changes ps a = sign_changes ps x" by simp
-                  also from A `a < x` `x \<le> b` have "... = sign_changes ps b"
+                  also from A \<open>a < x\<close> \<open>x \<le> b\<close> have "... = sign_changes ps b"
                       by blast
                   finally show ?thesis .
               qed simp
@@ -654,25 +654,25 @@ proof-
               using x\<^sub>2_props x\<^sub>2_le by force
           hence [simp]: "card {x. a < x \<and> x \<le> x\<^sub>2 \<and> poly p x = 0} = 1" by simp
 
-          from p_zero[OF `poly p x\<^sub>2 = 0` `p \<noteq> 0`,
+          from p_zero[OF \<open>poly p x\<^sub>2 = 0\<close> \<open>p \<noteq> 0\<close>,
               unfolded eventually_at dist_real_def] guess \<epsilon> ..
           hence \<epsilon>_props: "\<epsilon> > 0"
               "\<forall>x. x \<noteq> x\<^sub>2 \<and> \<bar>x - x\<^sub>2\<bar> < \<epsilon> \<longrightarrow>
                    sign_changes ps x = sign_changes ps x\<^sub>2 +
                        (if x < x\<^sub>2 then 1 else 0)" by auto
           define x\<^sub>1 where "x\<^sub>1 = max (x\<^sub>2 - \<epsilon> / 2) a"
-          have "\<bar>x\<^sub>1 - x\<^sub>2\<bar> < \<epsilon>" using `\<epsilon> > 0` x\<^sub>2_props by (simp add: x\<^sub>1_def)
+          have "\<bar>x\<^sub>1 - x\<^sub>2\<bar> < \<epsilon>" using \<open>\<epsilon> > 0\<close> x\<^sub>2_props by (simp add: x\<^sub>1_def)
           hence "sign_changes ps x\<^sub>1 =
               (if x\<^sub>1 < x\<^sub>2 then sign_changes ps x\<^sub>2 + 1 else sign_changes ps x\<^sub>2)"
               using \<epsilon>_props(2) by (cases "x\<^sub>1 = x\<^sub>2", auto)
           hence "sign_changes ps x\<^sub>1 - sign_changes ps x\<^sub>2 = 1"
-              unfolding x\<^sub>1_def using x\<^sub>2_props `\<epsilon> > 0` by simp
+              unfolding x\<^sub>1_def using x\<^sub>2_props \<open>\<epsilon> > 0\<close> by simp
 
           also have "x\<^sub>2 \<notin> {x. a < x \<and> x \<le> x\<^sub>1 \<and> poly p x = 0}"
-              unfolding x\<^sub>1_def using `\<epsilon> > 0` by force
+              unfolding x\<^sub>1_def using \<open>\<epsilon> > 0\<close> by force
           with left have "{x. a < x \<and> x \<le> x\<^sub>1 \<and> poly p x = 0} = {}" by force
           with less(1)[of a x\<^sub>1] have "sign_changes ps x\<^sub>1 = sign_changes ps a"
-              unfolding x\<^sub>1_def `\<epsilon> > 0` by (force simp: card_greater_0)
+              unfolding x\<^sub>1_def \<open>\<epsilon> > 0\<close> by (force simp: card_greater_0)
 
           finally have signs_left:
               "sign_changes ps a - int (sign_changes ps x\<^sub>2) = 1" by simp
@@ -695,10 +695,10 @@ proof-
   thus ?thesis by simp
 qed
 
-text {*
+text \<open>
   By applying this result to a sufficiently large upper bound, we can effectively count
   the number of roots ``between $a$ and infinity'', i.\,e. the roots greater than $a$:
-*}
+\<close>
 lemma (in sturm_seq) count_roots_above:
   assumes "p \<noteq> 0"
   shows "sign_changes ps a - sign_changes_inf ps =
@@ -710,7 +710,7 @@ proof-
   note lu_props = this
   let ?u = "max a u"
   {fix x assume "poly p x = 0" hence "x \<le> ?u"
-   using lu_props(3)[OF `p \<in> set ps`, of x] `p \<noteq> 0`
+   using lu_props(3)[OF \<open>p \<in> set ps\<close>, of x] \<open>p \<noteq> 0\<close>
        by (cases "u \<le> x", auto simp: sgn_zero_iff)
   } note [simp] = this
 
@@ -726,10 +726,10 @@ proof-
   finally show ?thesis .
 qed
 
-text {*
+text \<open>
   The same works analogously for the number of roots below $a$ and the
   total number of roots.
-*}
+\<close>
 
 lemma (in sturm_seq) count_roots_below:
   assumes "p \<noteq> 0"
@@ -742,7 +742,7 @@ proof-
   note lu_props = this
   let ?l = "min a l"
   {fix x assume "poly p x = 0" hence "x > ?l"
-   using lu_props(4)[OF `p \<in> set ps`, of x] `p \<noteq> 0`
+   using lu_props(4)[OF \<open>p \<in> set ps\<close>, of x] \<open>p \<noteq> 0\<close>
        by (cases "l < x", auto simp: sgn_zero_iff)
   } note [simp] = this
 
@@ -783,11 +783,11 @@ qed
 
 
 
-subsection {* Constructing Sturm sequences *}
+subsection \<open>Constructing Sturm sequences\<close>
 
-subsection {* The canonical Sturm sequence *}
+subsection \<open>The canonical Sturm sequence\<close>
 
-text {*
+text \<open>
   In this subsection, we will present the canonical Sturm sequence construction for
   a polynomial $p$ without multiple roots that is very similar to the Euclidean
   algorithm:
@@ -797,7 +797,7 @@ text {*
     -p_{i-2}\ \text{mod}\ p_{i-1} & \text{otherwise}
   \end{cases}$$
   We break off the sequence at the first constant polynomial.
-*}
+\<close>
 
 (*<*)
 lemma degree_mod_less': "degree q \<noteq> 0 \<Longrightarrow> degree (p mod q) < degree q"
@@ -817,7 +817,7 @@ declare sturm_aux.simps[simp del]
 
 definition sturm where "sturm p = sturm_aux p (pderiv p)"
 
-text {* Next, we show some simple facts about this construction: *}
+text \<open>Next, we show some simple facts about this construction:\<close>
 
 lemma sturm_0[simp]: "sturm 0 = [0,0]"
     by (unfold sturm_def, subst sturm_aux.simps, simp)
@@ -880,7 +880,7 @@ proof-
               by (subst (asm) sturm_aux.simps, simp)
           with 1(2) deg have ps': "ps' = sturm_aux q (-(p mod q))"
               by (subst (asm) sturm_aux.simps, simp)
-          from `length ps \<ge> 4` and `ps = p # ps'` 1(3) False
+          from \<open>length ps \<ge> 4\<close> and \<open>ps = p # ps'\<close> 1(3) False
               have "i - 1 < length ps' - 2" by simp
           from 1(1)[OF deg ps' this]
               show ?thesis by simp
@@ -899,12 +899,12 @@ proof-
   from this[OF sturm_def assms] show ?thesis .
 qed
 
-text {*
+text \<open>
   If the Sturm sequence construction is applied to polynomials $p$ and $q$,
   the greatest common divisor of $p$ and $q$ a divisor of every element in the
   sequence. This is obvious from the similarity to Euclid's algorithm for
   computing the GCD.
-*}
+\<close>
 
 lemma sturm_aux_gcd: "r \<in> set (sturm_aux p q) \<Longrightarrow> gcd p q dvd r"
 proof (induction p q rule: sturm_aux.induct)
@@ -923,7 +923,7 @@ proof (induction p q rule: sturm_aux.induct)
               by (simp add: gcd_mod_right ac_simps)
         next
           case True
-            with 1(2) and `r \<noteq> p` have "r = q"
+            with 1(2) and \<open>r \<noteq> p\<close> have "r = q"
                 by (subst (asm) sturm_aux.simps, simp)
             thus ?thesis by simp
         qed
@@ -933,10 +933,10 @@ qed
 lemma sturm_gcd: "r \<in> set (sturm p) \<Longrightarrow> gcd p (pderiv p) dvd r"
     unfolding sturm_def by (rule sturm_aux_gcd)
 
-text {*
+text \<open>
   If two adjacent polynomials in the result of the canonical Sturm chain construction
   both have a root at some $x$, this $x$ is a root of all polynomials in the sequence.
-*}
+\<close>
 
 lemma sturm_adjacent_root_propagate_left:
   assumes "i < length (sturm (p :: real poly)) - 1"
@@ -956,10 +956,10 @@ proof (intro sturm_adjacent_root_aux[OF assms(1,2,3)], goal_cases)
     thus ?case by (simp add: sgn_minus)
 qed
 
-text {*
+text \<open>
   Consequently, if this is the case in the canonical Sturm chain of $p$,
   $p$ must have multiple roots.
-*}
+\<close>
 lemma sturm_adjacent_root_not_squarefree:
   assumes "i < length (sturm (p :: real poly)) - 1"
           "poly (sturm p ! i) x = 0" "poly (sturm p ! (i + 1)) x = 0"
@@ -971,12 +971,12 @@ proof-
 qed
 
 
-text {*
+text \<open>
   Since the second element of the sequence is chosen to be the derivative of $p$,
   $p_1$ and $p_2$ fulfil the property demanded by the definition of a Sturm sequence
   that they locally have opposite sign left of a root $x$ of $p$ and the same sign
   to the right of $x$.
-*}
+\<close>
 
 lemma sturm_firsttwo_signs_aux:
   assumes "(p :: real poly) \<noteq> 0" "q \<noteq> 0"
@@ -987,7 +987,7 @@ lemma sturm_firsttwo_signs_aux:
 proof-
   have A: "eventually (\<lambda>x. poly p x \<noteq> 0 \<and> poly q x \<noteq> 0 \<and>
                sgn (poly q x) = sgn (poly (pderiv p) x)) (at x\<^sub>0)"
-      using `p \<noteq> 0`  `q \<noteq> 0`
+      using \<open>p \<noteq> 0\<close>  \<open>q \<noteq> 0\<close>
       by (intro poly_neighbourhood_same_sign q_pderiv
                 poly_neighbourhood_without_roots eventually_conj)
   then obtain \<epsilon> where \<epsilon>_props: "\<epsilon> > 0" "\<forall>x. x \<noteq> x\<^sub>0 \<and> \<bar>x - x\<^sub>0\<bar> < \<epsilon> \<longrightarrow>
@@ -998,41 +998,41 @@ proof-
 
   show ?thesis
   proof (simp only: eventually_at dist_real_def, rule exI[of _ \<epsilon>],
-         intro conjI, fact `\<epsilon> > 0`, clarify)
+         intro conjI, fact \<open>\<epsilon> > 0\<close>, clarify)
     fix x assume "x \<noteq> x\<^sub>0" "\<bar>x - x\<^sub>0\<bar> < \<epsilon>"
     with \<epsilon>_props have [simp]: "poly p x \<noteq> 0" "poly q x \<noteq> 0"
         "sgn (poly (pderiv p) x) = sgn (poly q x)" by auto
     show "sgn (poly (p*q) x) = (if x > x\<^sub>0 then 1 else -1)"
     proof (cases "x \<ge> x\<^sub>0")
       case True
-        with `x \<noteq> x\<^sub>0` have "x > x\<^sub>0" by simp
+        with \<open>x \<noteq> x\<^sub>0\<close> have "x > x\<^sub>0" by simp
         from poly_MVT[OF this, of p] guess \<xi> ..
         note \<xi>_props = this
-        with `\<bar>x - x\<^sub>0\<bar> < \<epsilon>` `poly p x\<^sub>0 = 0` `x > x\<^sub>0` \<epsilon>_props
+        with \<open>\<bar>x - x\<^sub>0\<bar> < \<epsilon>\<close> \<open>poly p x\<^sub>0 = 0\<close> \<open>x > x\<^sub>0\<close> \<epsilon>_props
             have "\<bar>\<xi> - x\<^sub>0\<bar> < \<epsilon>" "sgn (poly p x) = sgn (x - x\<^sub>0) * sgn (poly q \<xi>)"
             by (auto simp add: q_pderiv sgn_mult)
-        moreover from \<xi>_props \<epsilon>_props `\<bar>x - x\<^sub>0\<bar> < \<epsilon>`
+        moreover from \<xi>_props \<epsilon>_props \<open>\<bar>x - x\<^sub>0\<bar> < \<epsilon>\<close>
             have "\<forall>t. \<xi> \<le> t \<and> t \<le> x \<longrightarrow> poly q t \<noteq> 0" by auto
         hence "sgn (poly q \<xi>) = sgn (poly q x)" using \<xi>_props \<epsilon>_props
             by (intro no_roots_inbetween_imp_same_sign, simp_all)
-        ultimately show ?thesis using True `x \<noteq> x\<^sub>0` \<epsilon>_props \<xi>_props
+        ultimately show ?thesis using True \<open>x \<noteq> x\<^sub>0\<close> \<epsilon>_props \<xi>_props
             by (auto simp: sgn_mult sqr_pos)
     next
       case False
         hence "x < x\<^sub>0" by simp
         hence sgn: "sgn (x - x\<^sub>0) = -1" by simp
-        from poly_MVT[OF `x < x\<^sub>0`, of p] guess \<xi> ..
+        from poly_MVT[OF \<open>x < x\<^sub>0\<close>, of p] guess \<xi> ..
         note \<xi>_props = this
-        with `\<bar>x - x\<^sub>0\<bar> < \<epsilon>` `poly p x\<^sub>0 = 0` `x < x\<^sub>0` \<epsilon>_props
+        with \<open>\<bar>x - x\<^sub>0\<bar> < \<epsilon>\<close> \<open>poly p x\<^sub>0 = 0\<close> \<open>x < x\<^sub>0\<close> \<epsilon>_props
             have "\<bar>\<xi> - x\<^sub>0\<bar> < \<epsilon>" "poly p x = (x - x\<^sub>0) * poly (pderiv p) \<xi>"
                  "poly p \<xi> \<noteq> 0" by (auto simp: field_simps)
         hence "sgn (poly p x) = sgn (x - x\<^sub>0) * sgn (poly q \<xi>)"
             using \<epsilon>_props \<xi>_props by (auto simp: q_pderiv sgn_mult)
-        moreover from \<xi>_props \<epsilon>_props `\<bar>x - x\<^sub>0\<bar> < \<epsilon>`
+        moreover from \<xi>_props \<epsilon>_props \<open>\<bar>x - x\<^sub>0\<bar> < \<epsilon>\<close>
             have "\<forall>t. x \<le> t \<and> t \<le> \<xi> \<longrightarrow> poly q t \<noteq> 0" by auto
         hence "sgn (poly q \<xi>) = sgn (poly q x)" using \<xi>_props \<epsilon>_props
             by (rule_tac sym, intro no_roots_inbetween_imp_same_sign, simp_all)
-        ultimately show ?thesis using False `x \<noteq> x\<^sub>0`
+        ultimately show ?thesis using False \<open>x \<noteq> x\<^sub>0\<close>
             by (auto simp: sgn_mult sqr_pos)
     qed
   qed
@@ -1054,10 +1054,10 @@ proof-
 qed
 
 
-text {*
+text \<open>
   The construction also obviously fulfils the property about three
   adjacent polynomials in the sequence.
-*}
+\<close>
 
 lemma sturm_signs:
   assumes squarefree: "rsquarefree p"
@@ -1082,11 +1082,11 @@ proof-
 qed
 
 
-text {*
+text \<open>
   Finally, if $p$ contains no multiple roots, @{term "sturm p"}, i.e.
   the canonical Sturm sequence for $p$, is a Sturm sequence
   and can be used to determine the number of roots of $p$.
-*}
+\<close>
 lemma sturm_seq_sturm[simp]:
    assumes "rsquarefree p"
    shows "sturm_seq (sturm p) p"
@@ -1115,14 +1115,14 @@ next
 qed
 
 
-subsubsection {* Canonical squarefree Sturm sequence *}
+subsubsection \<open>Canonical squarefree Sturm sequence\<close>
 
-text {*
+text \<open>
   The previous construction does not work for polynomials with multiple roots,
   but we can simply ``divide away'' multiple roots by dividing $p$ by the
   GCD of $p$ and $p'$. The resulting polynomial has the same roots as $p$,
   but with multiplicity 1, allowing us to again use the canonical construction.
-*}
+\<close>
 definition sturm_squarefree where
   "sturm_squarefree p = sturm (p div (gcd p (pderiv p)))"
 
@@ -1144,7 +1144,7 @@ proof
     finally show False by (simp add: poly_eq_0_iff_dvd[symmetric])
   qed
 
-  from sturm_seq_sturm[OF `rsquarefree p'`]
+  from sturm_seq_sturm[OF \<open>rsquarefree p'\<close>]
       interpret sturm_seq: sturm_seq "sturm_squarefree p" p'
       by (simp add: sturm_squarefree_def)
 
@@ -1158,7 +1158,7 @@ proof
                "sturm_squarefree p ! Suc 0 = pderiv p'"
       by (simp_all add: sturm_squarefree_def)
 
-  from `rsquarefree p'`
+  from \<open>rsquarefree p'\<close>
       show "\<And>x. \<not> (poly p' x = 0 \<and> poly (sturm_squarefree p ! 1) x = 0)"
       by (simp add: rsquarefree_roots)
 
@@ -1173,21 +1173,21 @@ proof
 qed
 
 
-subsubsection {* Optimisation for multiple roots *}
+subsubsection \<open>Optimisation for multiple roots\<close>
 
-text {*
+text \<open>
   We can also define the following non-canonical Sturm sequence that
   is obtained by taking the canonical Sturm sequence of $p$
   (possibly with multiple roots) and then dividing the entire
   sequence by the GCD of $p$ and its derivative.
-*}
+\<close>
 definition sturm_squarefree' where
 "sturm_squarefree' p = (let d = gcd p (pderiv p)
                          in map (\<lambda>p'. p' div d) (sturm p))"
 
-text {*
+text \<open>
   This construction also has all the desired properties:
-*}
+\<close>
 
 lemma sturm_squarefree'_adjacent_root_propagate_left:
   assumes "p \<noteq> 0"
@@ -1202,7 +1202,7 @@ proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)], goal_cases)
     define s where "s = sturm p ! (Suc (Suc i))"
     define d where "d = gcd p (pderiv p)"
     define q' r' s' where "q' = q div d" and "r' = r div d" and "s' = s div d"
-    from `p \<noteq> 0` have "d \<noteq> 0" unfolding d_def by simp
+    from \<open>p \<noteq> 0\<close> have "d \<noteq> 0" unfolding d_def by simp
     from prems(1) have i_in_range: "i < length (sturm p) - 2"
         unfolding sturm_squarefree'_def Let_def by simp
     have [simp]: "d dvd q" "d dvd r" "d dvd s" unfolding q_def r_def s_def d_def
@@ -1211,16 +1211,16 @@ proof (intro sturm_adjacent_root_aux[OF assms(2,3,4)], goal_cases)
         unfolding q'_def r'_def s'_def by (simp_all)
     with prems(2) i_in_range have r'_0: "poly r' x = 0"
         unfolding r'_def r_def d_def sturm_squarefree'_def Let_def by simp
-    hence r_0: "poly r x = 0" by (simp add: `r = r' * d`)
+    hence r_0: "poly r x = 0" by (simp add: \<open>r = r' * d\<close>)
     from sturm_indices[OF i_in_range] have "q = q div r * r - s"
         unfolding q_def r_def s_def by (simp add: div_mult_mod_eq)
     hence "q' = (q div r * r - s) div d" by (simp add: q'_def)
     also have "... = (q div r * r) div d - s'"
       by (simp add: s'_def poly_div_diff_left)
     also have "... = q div r * r' - s'"
-        using dvd_div_mult[OF `d dvd r`, of "q div r"]
+        using dvd_div_mult[OF \<open>d dvd r\<close>, of "q div r"]
         by (simp add: algebra_simps r'_def)
-    also have "q div r = q' div r'" by (simp add: qrs_simps `d \<noteq> 0`)
+    also have "q div r = q' div r'" by (simp add: qrs_simps \<open>d \<noteq> 0\<close>)
     finally have "poly q' x = poly (q' div r' * r' - s') x" by simp
     also from r'_0 have "... = -poly s' x" by simp
     finally have "poly s' x = -poly q' x" by simp
@@ -1257,8 +1257,8 @@ lemma sturm_squarefree'_signs:
             (is "poly ?r x * poly ?p x < 0")
 proof-
   define d where "d = gcd p (pderiv p)"
-  with `p \<noteq> 0` have [simp]: "d \<noteq> 0" by simp
-  from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`]
+  with \<open>p \<noteq> 0\<close> have [simp]: "d \<noteq> 0" by simp
+  from poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>]
        coprime_imp_no_common_roots
       have rsquarefree: "rsquarefree (p div d)"
       by (auto simp: rsquarefree_roots d_def)
@@ -1283,7 +1283,7 @@ proof-
       by (metis poly_diff poly_mult)
   with q_0 have r_x: "poly ?r x = -poly ?p x" by simp
 
-  from sturm_squarefree'_adjacent_roots[OF `p \<noteq> 0`] i_in_range q_0
+  from sturm_squarefree'_adjacent_roots[OF \<open>p \<noteq> 0\<close>] i_in_range q_0
       have "poly ?p x \<noteq> 0" by force
   moreover have sqr_pos: "\<And>x::real. x \<noteq> 0 \<Longrightarrow> x * x > 0" apply (case_tac "x \<ge> 0")
       by (simp_all add: mult_neg_neg)
@@ -1291,10 +1291,10 @@ proof-
 qed
 
 
-text {*
+text \<open>
   This approach indeed also yields a valid squarefree Sturm sequence
   for the polynomial $p/\text{gcd}(p,p')$.
-*}
+\<close>
 lemma sturm_seq_sturm_squarefree':
   assumes "(p :: real poly) \<noteq> 0"
   defines "d \<equiv> gcd p (pderiv p)"
@@ -1312,26 +1312,26 @@ proof
         by (simp add: sturm_squarefree'_def last_map d_def dvd_div_mult_self)
     then have "last ?ps' dvd last (sturm p)" by simp
     with * dvd_imp_degree_le[OF this] have "degree (last ?ps') \<le> degree (last (sturm p))"
-        using `d \<noteq> 0` by (cases "last ?ps' = 0") auto
+        using \<open>d \<noteq> 0\<close> by (cases "last ?ps' = 0") auto
     hence "degree (last ?ps') = 0" by simp
     then obtain c where "last ?ps' = [:c:]"
         by (cases "last ?ps'", simp split: if_split_asm)
     thus "\<And>x y. sgn (poly (last ?ps') x) = sgn (poly (last ?ps') y)" by simp
   }
 
-  have squarefree: "rsquarefree ?p'" using `p \<noteq> 0`
+  have squarefree: "rsquarefree ?p'" using \<open>p \<noteq> 0\<close>
     by (subst rsquarefree_roots, unfold d_def,
         intro allI coprime_imp_no_common_roots poly_div_gcd_squarefree)
   have [simp]: "sturm_squarefree' p ! Suc 0 = pderiv p div d"
       unfolding sturm_squarefree'_def Let_def sturm_def d_def
           by (subst sturm_aux.simps, simp)
   have coprime: "coprime ?p' (pderiv p div d)"
-      unfolding d_def using div_gcd_coprime `p \<noteq> 0` by blast
+      unfolding d_def using div_gcd_coprime \<open>p \<noteq> 0\<close> by blast
   thus squarefree':
       "\<And>x. \<not> (poly (p div d) x = 0 \<and> poly (sturm_squarefree' p ! 1) x = 0)"
       using coprime_imp_no_common_roots by simp
 
-  from sturm_squarefree'_signs[OF `p \<noteq> 0`]
+  from sturm_squarefree'_signs[OF \<open>p \<noteq> 0\<close>]
       show "\<And>i x. \<lbrakk>i < length ?ps' - 2; poly (?ps' ! (i + 1)) x = 0\<rbrakk>
                 \<Longrightarrow> poly (?ps' ! (i + 2)) x * poly (?ps' ! i) x < 0" .
 
@@ -1344,14 +1344,14 @@ proof
 
   fix x\<^sub>0 :: real
   assume "poly ?p' x\<^sub>0 = 0"
-  hence "poly p x\<^sub>0 = 0" using poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`]
+  hence "poly p x\<^sub>0 = 0" using poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>]
       unfolding d_def by simp
-  hence "pderiv p \<noteq> 0" using `p \<noteq> 0` by (auto dest: pderiv_iszero)
-  with `p \<noteq> 0` `poly p x\<^sub>0 = 0`
+  hence "pderiv p \<noteq> 0" using \<open>p \<noteq> 0\<close> by (auto dest: pderiv_iszero)
+  with \<open>p \<noteq> 0\<close> \<open>poly p x\<^sub>0 = 0\<close>
       have A: "eventually (\<lambda>x. sgn (poly (p * pderiv p) x) =
                               (if x\<^sub>0 < x then 1 else -1)) (at x\<^sub>0)"
       by (intro sturm_firsttwo_signs_aux, simp_all)
-  note ev = eventually_conj[OF A poly_neighbourhood_without_roots[OF `d \<noteq> 0`]]
+  note ev = eventually_conj[OF A poly_neighbourhood_without_roots[OF \<open>d \<noteq> 0\<close>]]
 
   show "eventually (\<lambda>x. sgn (poly (p div d * sturm_squarefree' p ! 1) x) =
                         (if x\<^sub>0 < x then 1 else -1)) (at x\<^sub>0)"
@@ -1364,7 +1364,7 @@ proof
     case prems: (1 x)
       hence  [simp]: "poly d x * poly d x > 0"
            by (cases "poly d x > 0", auto simp: mult_neg_neg)
-      from poly_div_gcd_squarefree_aux(2)[OF `pderiv p \<noteq> 0`]
+      from poly_div_gcd_squarefree_aux(2)[OF \<open>pderiv p \<noteq> 0\<close>]
           have "poly (p div d) x = 0 \<longleftrightarrow> poly p x = 0" by (simp add: d_def)
       moreover have "d dvd p" "d dvd pderiv p" unfolding d_def by simp_all
       ultimately show ?case using prems
@@ -1374,7 +1374,7 @@ proof
 qed
 
 
-text {*
+text \<open>
   This construction is obviously more expensive to compute than the one that \emph{first}
   divides $p$ by $\text{gcd}(p,p')$ and \emph{then} applies the canonical construction.
   In this construction, we \emph{first} compute the canonical Sturm sequence of $p$ as if
@@ -1385,7 +1385,7 @@ text {*
   There\-fore we can use the ca\-no\-ni\-cal Sturm se\-quence even in the non-square\-free
   case as long as the borders of the interval we are interested in are not multiple roots
   of the polynomial.
-*}
+\<close>
 
 lemma sign_changes_mult_aux:
   assumes "d \<noteq> (0::real)"
@@ -1449,7 +1449,7 @@ proof-
         by (simp add: ps_def ps'_def sturm_squarefree'_def Let_def d_def)
     also from f' have "map (\<lambda>q. f (q div d)) ps =
                       map (\<lambda>x. ((*)(inverse s) \<circ> f) x) ps" by (simp add: o_def)
-    also note sign_changes_mult_aux[OF `inverse s \<noteq> 0`, of f ps]
+    also note sign_changes_mult_aux[OF \<open>inverse s \<noteq> 0\<close>, of f ps]
     finally have
         "length (remdups_adj [x\<leftarrow>map f ps' . x \<noteq> 0]) - 1 =
          length (remdups_adj [x\<leftarrow>map f ps . x \<noteq> 0]) - 1" by simp
@@ -1469,22 +1469,22 @@ proof-
   assume "p \<noteq> 0"
   hence "d \<noteq> 0" unfolding d_def by simp
   hence "s' \<noteq> 0" "s'' \<noteq> 0" unfolding s'_def s''_def by simp_all
-  from length_remdups_adj[of poly_inf s', OF signs(2) `s' \<noteq> 0`]
+  from length_remdups_adj[of poly_inf s', OF signs(2) \<open>s' \<noteq> 0\<close>]
       show "sign_changes_inf ps' = sign_changes_inf ps"
       unfolding sign_changes_inf_def .
-  from length_remdups_adj[of poly_neg_inf s'', OF signs(3) `s'' \<noteq> 0`]
+  from length_remdups_adj[of poly_neg_inf s'', OF signs(3) \<open>s'' \<noteq> 0\<close>]
       show "sign_changes_neg_inf ps' = sign_changes_neg_inf ps"
       unfolding sign_changes_neg_inf_def .
 qed
 
 
 
-subsection {* Root-counting functions *}
+subsection \<open>Root-counting functions\<close>
 
-text {*
+text \<open>
   With all these results, we can now define functions that count roots
   in bounded and unbounded intervals:
-*}
+\<close>
 
 definition count_roots_between where
 "count_roots_between p a b = (if a \<le> b \<and> p \<noteq> 0 then
@@ -1530,18 +1530,18 @@ next
   case True
   hence "p \<noteq> 0" "a \<le> b" by simp_all
   define p' where "p' = p div (gcd p (pderiv p))"
-  from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
+  from poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
-  from sturm_seq_sturm_squarefree[OF `p \<noteq> 0`]
+  from sturm_seq_sturm_squarefree[OF \<open>p \<noteq> 0\<close>]
       interpret sturm_seq "sturm_squarefree p" p'
       unfolding p'_def .
-  from poly_roots_finite[OF `p' \<noteq> 0`]
+  from poly_roots_finite[OF \<open>p' \<noteq> 0\<close>]
       have "finite {x. a < x \<and> x \<le> b \<and> poly p' x = 0}" by fast
   have "count_roots_between p a b = card {x. a < x \<and> x \<le> b \<and> poly p' x = 0}"
       unfolding count_roots_between_def Let_def
-      using True count_roots_between[OF `p' \<noteq> 0` `a \<le> b`] by simp
-  also from poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`]
+      using True count_roots_between[OF \<open>p' \<noteq> 0\<close> \<open>a \<le> b\<close>] by simp
+  also from poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>]
       have "{x. a < x \<and> x \<le> b \<and> poly p' x = 0} =
             {x. a < x \<and> x \<le> b \<and> poly p x = 0}" unfolding p'_def by blast
   finally show ?thesis .
@@ -1558,16 +1558,16 @@ proof (cases "p = 0")
 next
   case False
   define p' where "p' = p div (gcd p (pderiv p))"
-  from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
+  from poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
-  from sturm_seq_sturm_squarefree[OF `p \<noteq> 0`]
+  from sturm_seq_sturm_squarefree[OF \<open>p \<noteq> 0\<close>]
       interpret sturm_seq "sturm_squarefree p" p'
       unfolding p'_def .
-  from count_roots[OF `p' \<noteq> 0`]
+  from count_roots[OF \<open>p' \<noteq> 0\<close>]
       have "count_roots p = card {x. poly p' x = 0}"
-      unfolding count_roots_def Let_def by (simp add: `p \<noteq> 0`)
-  also from poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`]
+      unfolding count_roots_def Let_def by (simp add: \<open>p \<noteq> 0\<close>)
+  also from poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>]
       have "{x. poly p' x = 0} = {x. poly p x = 0}" unfolding p'_def by blast
   finally show ?thesis .
 qed
@@ -1584,16 +1584,16 @@ proof (cases "p = 0")
 next
   case False
   define p' where "p' = p div (gcd p (pderiv p))"
-  from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
+  from poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
-  from sturm_seq_sturm_squarefree[OF `p \<noteq> 0`]
+  from sturm_seq_sturm_squarefree[OF \<open>p \<noteq> 0\<close>]
       interpret sturm_seq "sturm_squarefree p" p'
       unfolding p'_def .
-  from count_roots_above[OF `p' \<noteq> 0`]
+  from count_roots_above[OF \<open>p' \<noteq> 0\<close>]
       have "count_roots_above p a = card {x. x > a \<and> poly p' x = 0}"
-      unfolding count_roots_above_def Let_def by (simp add: `p \<noteq> 0`)
-  also from poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`]
+      unfolding count_roots_above_def Let_def by (simp add: \<open>p \<noteq> 0\<close>)
+  also from poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>]
       have "{x. x > a \<and> poly p' x = 0} = {x. x > a \<and> poly p x = 0}"
       unfolding p'_def by blast
   finally show ?thesis .
@@ -1611,26 +1611,26 @@ proof (cases "p = 0")
 next
   case False
   define p' where "p' = p div (gcd p (pderiv p))"
-  from poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] have "p' \<noteq> 0"
+  from poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] have "p' \<noteq> 0"
       unfolding p'_def by clarsimp
 
-  from sturm_seq_sturm_squarefree[OF `p \<noteq> 0`]
+  from sturm_seq_sturm_squarefree[OF \<open>p \<noteq> 0\<close>]
       interpret sturm_seq "sturm_squarefree p" p'
       unfolding p'_def .
-  from count_roots_below[OF `p' \<noteq> 0`]
+  from count_roots_below[OF \<open>p' \<noteq> 0\<close>]
       have "count_roots_below p a = card {x. x \<le> a \<and> poly p' x = 0}"
-      unfolding count_roots_below_def Let_def by (simp add: `p \<noteq> 0`)
-  also from poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`]
+      unfolding count_roots_below_def Let_def by (simp add: \<open>p \<noteq> 0\<close>)
+  also from poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>]
       have "{x. x \<le> a \<and> poly p' x = 0} = {x. x \<le> a \<and> poly p x = 0}"
       unfolding p'_def by blast
   finally show ?thesis .
 qed
 
-text {*
+text \<open>
   The optimisation explained above can be used to prove more efficient code equations that
   use the more efficient construction in the case that the interval borders are not
   multiple roots:
-*}
+\<close>
 
 lemma count_roots_between[code]:
   "count_roots_between p a b =
@@ -1659,16 +1659,16 @@ next
       hence A: "poly p a \<noteq> 0 \<or> poly (pderiv p) a \<noteq> 0" and
             B: "poly p b \<noteq> 0 \<or> poly (pderiv p) b \<noteq> 0" by auto
       define d where "d = gcd p (pderiv p)"
-      from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
-          using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
-      from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
+      from \<open>p \<noteq> 0\<close> have [simp]: "p div d \<noteq> 0"
+          using poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] by (auto simp add: d_def)
+      from sturm_seq_sturm_squarefree'[OF \<open>p \<noteq> 0\<close>]
           interpret sturm_seq "sturm_squarefree' p" "p div d"
           unfolding sturm_squarefree'_def Let_def d_def .
       note count_roots_between_correct
       also have "{x. a < x \<and> x \<le> b \<and> poly p x = 0} =
                  {x. a < x \<and> x \<le> b \<and> poly (p div d) x = 0}"
-          unfolding d_def using poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`] by simp
-      also note count_roots_between[OF `p div d \<noteq> 0` `a \<le> b`, symmetric]
+          unfolding d_def using poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>] by simp
+      also note count_roots_between[OF \<open>p div d \<noteq> 0\<close> \<open>a \<le> b\<close>, symmetric]
       also note sturm_sturm_squarefree'_same_sign_changes(1)[OF A]
       also note sturm_sturm_squarefree'_same_sign_changes(1)[OF B]
       finally show ?thesis using True False by (simp add: Let_def)
@@ -1684,18 +1684,18 @@ lemma count_roots_code[code]:
 proof (cases "p = 0", simp add: count_roots_def)
   case False
     define d where "d = gcd p (pderiv p)"
-    from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
-        using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
-    from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
+    from \<open>p \<noteq> 0\<close> have [simp]: "p div d \<noteq> 0"
+        using poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] by (auto simp add: d_def)
+    from sturm_seq_sturm_squarefree'[OF \<open>p \<noteq> 0\<close>]
         interpret sturm_seq "sturm_squarefree' p" "p div d"
         unfolding sturm_squarefree'_def Let_def d_def .
 
     note count_roots_correct
     also have "{x. poly p x = 0} = {x. poly (p div d) x = 0}"
-        unfolding d_def using poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`] by simp
-    also note count_roots[OF `p div d \<noteq> 0`, symmetric]
-    also note sturm_sturm_squarefree'_same_sign_changes(2)[OF `p \<noteq> 0`]
-    also note sturm_sturm_squarefree'_same_sign_changes(3)[OF `p \<noteq> 0`]
+        unfolding d_def using poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>] by simp
+    also note count_roots[OF \<open>p div d \<noteq> 0\<close>, symmetric]
+    also note sturm_sturm_squarefree'_same_sign_changes(2)[OF \<open>p \<noteq> 0\<close>]
+    also note sturm_sturm_squarefree'_same_sign_changes(3)[OF \<open>p \<noteq> 0\<close>]
     finally show ?thesis using False unfolding Let_def by simp
 qed
 
@@ -1725,18 +1725,18 @@ next
     case True
       hence A: "poly p a \<noteq> 0 \<or> poly (pderiv p) a \<noteq> 0" by simp
       define d where "d = gcd p (pderiv p)"
-      from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
-          using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
-      from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
+      from \<open>p \<noteq> 0\<close> have [simp]: "p div d \<noteq> 0"
+          using poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] by (auto simp add: d_def)
+      from sturm_seq_sturm_squarefree'[OF \<open>p \<noteq> 0\<close>]
           interpret sturm_seq "sturm_squarefree' p" "p div d"
           unfolding sturm_squarefree'_def Let_def d_def .
       note count_roots_above_correct
       also have "{x. a < x \<and> poly p x = 0} =
                  {x. a < x \<and> poly (p div d) x = 0}"
-          unfolding d_def using poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`] by simp
-      also note count_roots_above[OF `p div d \<noteq> 0`, symmetric]
+          unfolding d_def using poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>] by simp
+      also note count_roots_above[OF \<open>p div d \<noteq> 0\<close>, symmetric]
       also note sturm_sturm_squarefree'_same_sign_changes(1)[OF A]
-      also note sturm_sturm_squarefree'_same_sign_changes(2)[OF `p \<noteq> 0`]
+      also note sturm_sturm_squarefree'_same_sign_changes(2)[OF \<open>p \<noteq> 0\<close>]
       finally show ?thesis using True False by (simp add: Let_def)
     qed
 qed
@@ -1766,18 +1766,18 @@ next
     case True
       hence A: "poly p a \<noteq> 0 \<or> poly (pderiv p) a \<noteq> 0" by simp
       define d where "d = gcd p (pderiv p)"
-      from `p \<noteq> 0` have [simp]: "p div d \<noteq> 0"
-          using poly_div_gcd_squarefree(1)[OF `p \<noteq> 0`] by (auto simp add: d_def)
-      from sturm_seq_sturm_squarefree'[OF `p \<noteq> 0`]
+      from \<open>p \<noteq> 0\<close> have [simp]: "p div d \<noteq> 0"
+          using poly_div_gcd_squarefree(1)[OF \<open>p \<noteq> 0\<close>] by (auto simp add: d_def)
+      from sturm_seq_sturm_squarefree'[OF \<open>p \<noteq> 0\<close>]
           interpret sturm_seq "sturm_squarefree' p" "p div d"
           unfolding sturm_squarefree'_def Let_def d_def .
       note count_roots_below_correct
       also have "{x. x \<le> a \<and> poly p x = 0} =
                  {x. x \<le> a \<and> poly (p div d) x = 0}"
-          unfolding d_def using poly_div_gcd_squarefree(2)[OF `p \<noteq> 0`] by simp
-      also note count_roots_below[OF `p div d \<noteq> 0`, symmetric]
+          unfolding d_def using poly_div_gcd_squarefree(2)[OF \<open>p \<noteq> 0\<close>] by simp
+      also note count_roots_below[OF \<open>p div d \<noteq> 0\<close>, symmetric]
       also note sturm_sturm_squarefree'_same_sign_changes(1)[OF A]
-      also note sturm_sturm_squarefree'_same_sign_changes(3)[OF `p \<noteq> 0`]
+      also note sturm_sturm_squarefree'_same_sign_changes(3)[OF \<open>p \<noteq> 0\<close>]
       finally show ?thesis using True False by (simp add: Let_def)
     qed
 qed

@@ -16,15 +16,15 @@ imports
 begin
 
 (*>*)
-section{* Invariants and Proofs *}
+section\<open>Invariants and Proofs\<close>
 
-text{*
+text\<open>
 
 \label{sec:gc-invs}
 
-*}
+\<close>
 
-subsection{* Constructors for sets of locations. *}
+subsection\<open>Constructors for sets of locations.\<close>
 
 abbreviation prefixed :: "location \<Rightarrow> location set" where
   "prefixed p \<equiv> { l . prefix p l }"
@@ -32,13 +32,13 @@ abbreviation prefixed :: "location \<Rightarrow> location set" where
 abbreviation suffixed :: "location \<Rightarrow> location set" where
   "suffixed p \<equiv> { l . suffix p l }"
 
-subsection{* Hoare triples *}
+subsection\<open>Hoare triples\<close>
 
-text{*
+text\<open>
 
 Specialise CIMP's pre/post validity to our system.
 
-*}
+\<close>
 
 definition
   valid_proc :: "('field, 'mut, 'ref) gc_pred \<Rightarrow> 'mut process_name \<Rightarrow> ('field, 'mut, 'ref) gc_pred \<Rightarrow> bool" ("\<lbrace>_\<rbrace> _ \<lbrace>_\<rbrace>")
@@ -75,26 +75,26 @@ using assms
 by (fastforce simp: valid_proc_def intro: vcg_all_lift)
 
 (*>*)
-text{*
+text\<open>
 
 As we elide formal proofs in this document, we also omit our
 specialised proof tactics. These support essentially traditional local
 correctness and non-interference proofs. Their most interesting aspect
 is the use of Isabelle's parallelism to greatly reduce system latency.
 
-*}
+\<close>
 (*<*)
 
-subsection{* Tactics *}
+subsection\<open>Tactics\<close>
 
-text{*
+text\<open>
 
 Collect command and location-sensitive invariant definitions into
 named sets of theorems.
 
-*}
+\<close>
 
-ML{*
+ML\<open>
 
 (* Lemma buckets *)
 
@@ -106,10 +106,10 @@ structure NIE = Named_Thms
   (val name = @{binding "nie"}
    val description = "Non-interference elimination rules")
 
-*}
-setup {* Inv.setup #> NIE.setup *}
+\<close>
+setup \<open>Inv.setup #> NIE.setup\<close>
 
-text{* Collect the component definitions. Inline everything. *}
+text\<open>Collect the component definitions. Inline everything.\<close>
 
 lemmas gc_defs =
   (* gc.com_def *) gc.handshake_done_def gc.handshake_init_def gc.handshake_noop_def gc.handshake_get_roots_def gc.handshake_get_work_def
@@ -143,7 +143,7 @@ lemma thin_locs:
 (*  "\<lbrakk> atS p ls' s \<longrightarrow> P; atS p ls s; \<not>atS p (ls' \<inter> ls) s \<or> P \<Longrightarrow> Q \<rbrakk> \<Longrightarrow> Q" *)
 by (auto simp: atS_def)
 
-text{*
+text\<open>
 
 The following is unfortunately overspecialised to the GC. One might
 hope for general tactics that work on all CIMP programs.
@@ -152,7 +152,7 @@ The system responds to all requests. The schematic variable is
 instantiated with the semantics of the responses. Thanks to Thomas
 Sewell for the hackery.
 
-*}
+\<close>
 
 schematic_goal system_responds_actionE:
   "\<lbrakk> (\<lbrace>l\<rbrace> Response action, afts) \<in> fragments (gc_pgms p) \<langle>False\<rangle>; v \<in> action x s;
@@ -226,7 +226,7 @@ declare mem_write_action.case_cong[cong]
 declare process_name.case_cong[cong]
 declare handshake_phase.case_cong[cong]
 
-ML {*
+ML \<open>
 
 (* Thanks BNF people. *)
 fun ss_only thms ctxt = clear_simpset (put_simpset HOL_basic_ss ctxt) addsimps thms;
@@ -313,7 +313,7 @@ val _ =
   Theory.setup (Method.setup @{binding vcg_nihe}
     (Method.sections clasimp_modifiers >> K (SIMPLE_METHOD' o vcg_nihe_tac))
     "cheap VCG non-interference tactic: apply non-interference Hoare and elimination rules, leaving remaining goals as Hoare triples")
-*}
+\<close>
 
 (*>*)
 (*<*)

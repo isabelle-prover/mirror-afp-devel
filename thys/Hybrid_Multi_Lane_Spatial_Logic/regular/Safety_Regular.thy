@@ -8,14 +8,14 @@ into account and correct safety theorem.
 *)
 
 section\<open>Safety for Cars with Regular Sensors\<close>
-text{* 
+text\<open>
 This section contains the definition of requirements for
 lane change and distance controllers for cars, with the assumption
 of regular sensors. Using these definitions, we show that safety
 is an invariant along all possible behaviour of cars. 
 However, we need to slightly amend our notion of safety, compared
 to the safety proof for perfect sensors.
-*}
+\<close>
 
 theory Safety_Regular
   imports HMLSL_Regular
@@ -35,13 +35,13 @@ notation hmlsl.re ("re'(_')")
 notation hmlsl.cl("cl'(_')")
 notation hmlsl.len ("len")
 
-text{*
+text\<open>
 First we show that the same "safety" theorem as for perfect senors can be 
 proven. However, we will subsequently show that this theorem does not
 ensure safety from the perspective of each car.
 
 The controller definitions for this "flawed" safety are the same as for perfect sensors.
-*}
+\<close>
   
 abbreviation safe::"cars\<Rightarrow>\<sigma>" 
   where "safe e \<equiv> \<^bold>\<forall> c. \<^bold>\<not>(c \<^bold>= e) \<^bold>\<rightarrow> \<^bold>\<not>\<^bold>\<langle>re(c) \<^bold>\<and> re(e) \<^bold>\<rangle>" 
@@ -57,11 +57,11 @@ abbreviation LC::"\<sigma>"
   where "LC \<equiv> \<^bold>G ( \<^bold>\<forall>d.( \<^bold>\<exists> c. pcc c d) \<^bold>\<rightarrow> \<^bold>\<box>r(d) \<^bold>\<bottom>)"
     
 
-text{*
+text\<open>
 The safety proof is exactly the same as for perfect sensors. Note
 in particular, that we fix a single car \(e\) for which we show
 safety.
-*}
+\<close>
     
 theorem safety_flawed:"\<Turnstile>( \<^bold>\<forall>e. safe e ) \<^bold>\<and> DC \<^bold>\<and> LC \<^bold>\<rightarrow> \<^bold>G (\<^bold>\<forall> e. safe e)"
 proof (rule allI|rule impI)+  
@@ -279,7 +279,7 @@ proof (rule allI|rule impI)+
   qed
 qed
 
-text{*
+text\<open>
 As stated above, the flawed safety theorem does not ensure safety for 
 the perspective of each car.
 In particular, we can construct a traffic snapshot and a view, such that
@@ -287,7 +287,7 @@ it satisfies our safety predicate for each car, but if we switch the
 perspective of the view to another car, the situation is unsafe. A
 visualisation of this situation can be found in the publication
 of this work at iFM 2017 \cite{Linker2017}.
-*}
+\<close>
 
 lemma safety_not_invariant_switch:
   "\<exists>ts v. (ts,v \<Turnstile> \<^bold>\<forall>e. safe(e) \<^bold>\<and> ( \<^bold>\<exists> c. \<^bold>@c  \<^bold>\<not>( \<^bold>\<forall>e. safe(e))))"
@@ -560,7 +560,7 @@ proof -
   thus ?thesis by blast
 qed
 
-text{*
+text\<open>
 Now we show how to amend the controller specifications to gain safety as an invariant
 even with regular sensors.
 
@@ -568,12 +568,12 @@ The distance controller can be strengthened, by requiring that we switch
 to the perspective of one of the cars involved first, before checking
 for the collision. Since all variables are universally quantified, 
 this ensures that no collision exists for the perspective of any car.
-*}
+\<close>
 abbreviation DC'::"\<sigma>"
   where "DC' \<equiv> \<^bold>G ( \<^bold>\<forall> c d. \<^bold>\<not>(c \<^bold>= d) \<^bold>\<rightarrow> 
                   (\<^bold>@d \<^bold>\<not>\<^bold>\<langle>re(c) \<^bold>\<and> re(d)\<^bold>\<rangle>) \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<tau> \<^bold>@d \<^bold>\<not>\<^bold>\<langle>re(c) \<^bold>\<and> re(d)\<^bold>\<rangle>)"
     
-text{*
+text\<open>
 The amendment to the lane change controller is slightly different. Instead
 of checking the potential collision only from the perspective of the
 car \(d\) trying to change lanes, we require that also no other car may
@@ -582,18 +582,18 @@ behaviour can only be enforced within \(d\), if the information from
 the other car is somehow passed to \(d\). Hence, we require the 
 cars to communicate in some way. However, we do not need to specifiy,
 \emph{how} this communication is implemented. 
-*}
+\<close>
 abbreviation LC'::"\<sigma>"
   where "LC' \<equiv> \<^bold>G ( \<^bold>\<forall>d. (\<^bold>\<exists> c.  (\<^bold>@c (pcc c d)) \<^bold>\<or> (\<^bold>@d (pcc c d))) \<^bold>\<rightarrow> \<^bold>\<box>r(d) \<^bold>\<bottom> ) "
     
 
-text{*
+text\<open>
 With these new controllers, we can prove a stronger theorem than before. Instead
 of proving safety from the perspective of a single car as previously, we now
 only consider a traffic situation to be safe, if it satisfies the safety
 predicate from the perspective of \emph{all} cars. Note that this immediately
 implies the safety invariance theorem proven for perfect sensors. 
-*}
+\<close>
 theorem safety:"\<Turnstile> (\<^bold>\<forall>e. \<^bold>@e ( safe e ) ) \<^bold>\<and> DC' \<^bold>\<and> LC' \<^bold>\<rightarrow>  \<^bold>G(\<^bold>\<forall> e.  \<^bold>@ e (safe e))"
 proof (rule allI; rule allI;rule impI; rule allI; rule impI; rule allI)
   fix ts v ts' e

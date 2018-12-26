@@ -41,7 +41,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section{* The Core of the Unified Policy Framework (UPF) *}
+section\<open>The Core of the Unified Policy Framework (UPF)\<close>
 theory
   UPFCore
   imports 
@@ -49,8 +49,8 @@ theory
 begin
 
 
-subsection{* Foundation *}
-text{* 
+subsection\<open>Foundation\<close>
+text\<open>
   The purpose of this theory is to formalize a somewhat non-standard view
   on the fundamental concept of a security policy which is worth outlining.
   This view has arisen from prior experience in the modelling of network
@@ -74,37 +74,37 @@ text{*
   In more detail, we model policies as partial functions based on input
   data $\alpha$ (arguments, system state, security context, ...) to output
   data $\beta$: 
-*}
+\<close>
 
 datatype '\<alpha> decision = allow '\<alpha> | deny '\<alpha>
 
 type_synonym ('\<alpha>,'\<beta>) policy = "'\<alpha>  \<rightharpoonup> '\<beta> decision" (infixr "|->" 0)
 
-text{*In the following, we introduce a number of shortcuts and alternative notations.
-The type of policies is represented as: *}
+text\<open>In the following, we introduce a number of shortcuts and alternative notations.
+The type of policies is represented as:\<close>
 
 translations (type)        "'\<alpha> |-> '\<beta>" <= (type) "'\<alpha>  \<rightharpoonup> '\<beta> decision"
 type_notation "policy" (infixr "\<mapsto>" 0) 
 
-text{* ... allowing the notation @{typ "'\<alpha> \<mapsto> '\<beta>"}  for the policy type and the
+text\<open>... allowing the notation @{typ "'\<alpha> \<mapsto> '\<beta>"}  for the policy type and the
 alternative notations for @{term None} and @{term Some} of the \HOL library 
-@{typ "'\<alpha> option"} type:*}
+@{typ "'\<alpha> option"} type:\<close>
 
 notation    "None" ("\<bottom>")
 notation    "Some" ("\<lfloor>_\<rfloor>" 80)
 
-text{* Thus, the range of a policy may consist of @{term "\<lfloor>accept x\<rfloor>"} data,
+text\<open>Thus, the range of a policy may consist of @{term "\<lfloor>accept x\<rfloor>"} data,
   of @{term "\<lfloor>deny x\<rfloor>"} data, as well as @{term "\<bottom>"} modeling the undefinedness
   of a policy, i.e. a policy is considered as a partial function. Partial 
   functions are used since we describe elementary policies by partial system 
   behaviour, which are glued together by operators such as function override and 
   functional composition. 
-*}
+\<close>
 
-text{* We define the two fundamental sets, the allow-set $Allow$ and the
+text\<open>We define the two fundamental sets, the allow-set $Allow$ and the
   deny-set $Deny$ (written $A$ and $D$ set for short), to characterize these
   two main sets of the range of a policy. 
-*}
+\<close>
 definition Allow :: "('\<alpha> decision) set"
 where     "Allow = range allow"
 
@@ -112,13 +112,13 @@ definition Deny :: "('\<alpha> decision) set"
 where     "Deny = range deny"
  
 
-subsection{* Policy Constructors *}
-text{* 
+subsection\<open>Policy Constructors\<close>
+text\<open>
   Most elementary policy constructors are based on the
   update operation @{thm [source] "Fun.fun_upd_def"} @{thm Fun.fun_upd_def}
   and the maplet-notation @{term "a(x \<mapsto> y)"} used for @{term "a(x:=\<lfloor>y\<rfloor>)"}.
 
-  Furthermore, we add notation adopted to our problem domain: *}
+  Furthermore, we add notation adopted to our problem domain:\<close>
 
 nonterminal policylets and policylet
 
@@ -137,14 +137,14 @@ translations
   "_MapUpd m (_policylet2 x y)"  \<rightleftharpoons> "m(x := CONST Some (CONST deny y))"
   "\<emptyset>"                            \<rightleftharpoons> "CONST Map.empty" 
 
-text{* Here are some lemmas essentially showing syntactic equivalences: *}
+text\<open>Here are some lemmas essentially showing syntactic equivalences:\<close>
 lemma test: "\<emptyset>(x\<mapsto>\<^sub>+a, y\<mapsto>\<^sub>-b) = \<emptyset>(x \<mapsto>\<^sub>+ a, y \<mapsto>\<^sub>- b)"   by simp
 
 lemma test2: "p(x\<mapsto>\<^sub>+a,x\<mapsto>\<^sub>-b) = p(x\<mapsto>\<^sub>-b)"   by simp
 
-text{* 
+text\<open>
   We inherit a fairly rich theory on policy updates from Map here. Some examples are: 
-*}
+\<close>
 
 lemma pol_upd_triv1: "t k =   \<lfloor>allow x\<rfloor> \<Longrightarrow> t(k\<mapsto>\<^sub>+x) = t"
   by (rule ext) simp
@@ -168,14 +168,14 @@ lemma pol_upd_neq1 [simp]: "m(a\<mapsto>\<^sub>+x) \<noteq> n(a\<mapsto>\<^sub>-
   by(auto dest: map_upd_eqD1)
 
 
-subsection{* Override Operators *}
-text{* 
+subsection\<open>Override Operators\<close>
+text\<open>
   Key operators for constructing policies are the override operators. There are four different 
   versions of them, with one of them being the override operator from the Map theory. As it is 
   common to compose policy rules in a ``left-to-right-first-fit''-manner, that one is taken as 
   default, defined by a syntax translation from the provided override operator from the Map 
   theory (which does it in reverse order).
-*}
+\<close>
 
 syntax
   "_policyoverride"  :: "['a \<mapsto> 'b, 'a \<mapsto> 'b] \<Rightarrow> 'a \<mapsto> 'b" (infixl "\<Oplus>" 100)
@@ -183,9 +183,9 @@ translations
   "p \<Oplus> q" \<rightleftharpoons> "q ++ p" 
 
 
-text{* 
+text\<open>
   Some elementary facts inherited from Map are:
-*}
+\<close>
 
 lemma override_empty: "p \<Oplus> \<emptyset> = p" 
   by simp
@@ -196,10 +196,10 @@ lemma empty_override: "\<emptyset> \<Oplus> p = p"
 lemma override_assoc: "p1 \<Oplus> (p2 \<Oplus> p3) = (p1 \<Oplus> p2) \<Oplus> p3" 
   by simp
 
-text{* 
+text\<open>
   The following two operators are variants of the standard override.  For override\_A, 
   an allow of wins over a deny. For override\_D, the situation is dual. 
-*}
+\<close>
 
 definition override_A :: "['\<alpha>\<mapsto>'\<beta>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<beta>" (infixl "++'_A" 100) 
 where  "m2 ++_A m1 = 
@@ -268,15 +268,15 @@ lemma override_D_assoc: "p1 \<Oplus>\<^sub>D (p2 \<Oplus>\<^sub>D p3) = (p1 \<Op
   apply (simp add: override_D_def split: decision.splits  option.splits)
 done
 
-subsection{* Coercion Operators *}
-text{* 
+subsection\<open>Coercion Operators\<close>
+text\<open>
   Often, especially when combining policies of different type, it is necessary to 
   adapt the input or output domain of a policy to a more refined context. 
-*}                        
+\<close>                        
 
-text{* 
+text\<open>
   An analogous for the range of a policy is defined as follows: 
-*}
+\<close>
 
 definition policy_range_comp :: "['\<beta>\<Rightarrow>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha> \<mapsto>'\<gamma>"   (infixl "o'_f" 55) 
 where
@@ -296,10 +296,10 @@ lemma policy_range_comp_strict : "f o\<^sub>f \<emptyset> = \<emptyset>"
   done
 
 
-text{* 
+text\<open>
   A generalized version is, where separate coercion functions are applied to the result 
   depending on the decision of the policy is as follows: 
-*}
+\<close>
 
 definition range_split :: "[('\<beta>\<Rightarrow>'\<gamma>)\<times>('\<beta>\<Rightarrow>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"
                           (infixr "\<nabla>" 100)
@@ -331,9 +331,9 @@ lemma range_split_charn:
     done
   done
 
-text{* 
+text\<open>
   The connection between these two becomes apparent if considering the following lemma:
-*}
+\<close>
 
 lemma range_split_vs_range_compose: "(f,f) \<nabla> p = f o\<^sub>f p"
   by(simp add: range_split_charn policy_range_comp_def)
@@ -364,14 +364,14 @@ lemma range_split_bi_compose [simp]: "(f1,f2) \<nabla> (g1,g2) \<nabla> p = (f1 
     done
   done
 
-text{* 
+text\<open>
   The next three operators are rather exotic and in most cases not used. 
-*}
+\<close>
 
-text {* 
+text \<open>
   The following is a variant of range\_split, where the change in the decision depends 
   on the input instead of the output. 
-*}
+\<close>
 
 definition dom_split2a :: "[('\<alpha> \<rightharpoonup> '\<gamma>) \<times> ('\<alpha> \<rightharpoonup>'\<gamma>),'\<alpha> \<mapsto> '\<beta>] \<Rightarrow> '\<alpha> \<mapsto> '\<gamma>"         (infixr "\<Delta>a" 100)
 where "P \<Delta>a p = (\<lambda>x. case p x of 
@@ -391,11 +391,11 @@ where "P \<nabla>2 p = (\<lambda>x. case p x of
                         | \<lfloor>deny y\<rfloor>  \<Rightarrow> \<lfloor>deny (y,(snd P) x)\<rfloor> 
                         | \<bottom>        \<Rightarrow> \<bottom>)"
 
-text{* 
+text\<open>
   The following operator is used for transition policies only: a transition policy is transformed 
   into a state-exception monad. Such a monad can for example be used for test case generation using 
   HOL-Testgen~\cite{brucker.ea:theorem-prover:2012}.
-*}
+\<close>
 
 definition policy2MON :: "('\<iota>\<times>'\<sigma> \<mapsto> 'o\<times>'\<sigma>) \<Rightarrow> ('\<iota> \<Rightarrow>('o decision,'\<sigma>) MON\<^sub>S\<^sub>E)"
 where "policy2MON p = (\<lambda> \<iota> \<sigma>. case p (\<iota>,\<sigma>) of

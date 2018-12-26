@@ -14,13 +14,13 @@ imports
 begin
 
 
-section {* Axioms *}
+section \<open>Axioms\<close>
 
-text{* We formalize Allen's definition of theory of time in term of intervals (Allen, 1983). 
+text\<open>We formalize Allen's definition of theory of time in term of intervals (Allen, 1983). 
 Two relations, namely meets and equality, are defined between intervals. Two interval meets if they  are adjacent 
-A set of 5 axioms ((M1) $\sim$ (M5)) are then defined based on relation meets.*}
+A set of 5 axioms ((M1) $\sim$ (M5)) are then defined based on relation meets.\<close>
 
-text{* We define a class interval whose assumptions are (i) properties of relations meets  and, (ii) axioms (M1) $\sim$ (M5). *}
+text\<open>We define a class interval whose assumptions are (i) properties of relations meets  and, (ii) axioms (M1) $\sim$ (M5).\<close>
 
 class interval =
  fixes

@@ -2,13 +2,13 @@ theory PLTL
   imports Main LTL.LTL Samplers StutterEquivalence
 begin
 
-section {* Stuttering Invariant PLTL Formulas *}
+section \<open>Stuttering Invariant PLTL Formulas\<close>
 
-text {*
+text \<open>
   We define the syntax and semantics of propositional linear-time
   temporal logic PLTL and show that its next-free fragment is
   invariant to finite stuttering.
-*}
+\<close>
 
 notation False_ltlp ("false")
   and Implies_ltlp ("implies")
@@ -17,7 +17,7 @@ notation False_ltlp ("false")
   and Next_ltlp ("next")
   and atoms_pltl ("atoms")
 
-subsection {* Finite Conjunctions and Disjunctions *}
+subsection \<open>Finite Conjunctions and Disjunctions\<close>
 
 (* It would be tempting to define these operators as follows:
 
@@ -70,12 +70,12 @@ proof -
   with fold_graph_AND[OF fin] show ?thesis by simp
 qed
 
-subsection {* Next-Free PLTL Formulas *}
+subsection \<open>Next-Free PLTL Formulas\<close>
 
-text {*
+text \<open>
   A PLTL formula is called \emph{next-free} if it does not contain any
   subformula.
-*}
+\<close>
 
 fun next_free :: "'a pltl \<Rightarrow> bool"
 where
@@ -135,21 +135,21 @@ proof -
 qed
 
 
-subsection {* Stuttering Invariance of PLTL Without ``Next'' *}
+subsection \<open>Stuttering Invariance of PLTL Without ``Next''\<close>
 
-text {*
+text \<open>
   A PLTL formula is \emph{stuttering invariant} if for any stuttering equivalent
-  state sequences @{text "\<sigma> \<approx> \<tau>"}, the formula holds of @{text "\<sigma>"} iff it
-  holds of @{text "\<tau>"}.
-*}
+  state sequences \<open>\<sigma> \<approx> \<tau>\<close>, the formula holds of \<open>\<sigma>\<close> iff it
+  holds of \<open>\<tau>\<close>.
+\<close>
 
 definition stutter_invariant where
   "stutter_invariant \<phi> = (\<forall>\<sigma> \<tau>. (\<sigma> \<approx> \<tau>) \<longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>))"
 
-text {*
+text \<open>
   Since stuttering equivalence is symmetric, it is enough to show an
   implication in the above definition instead of an equivalence.
-*}
+\<close>
 
 lemma stutter_invariantI [intro!]:
   assumes "\<And>\<sigma> \<tau>. \<lbrakk>\<sigma> \<approx> \<tau>; \<sigma> \<Turnstile>\<^sub>p \<phi>\<rbrakk> \<Longrightarrow> \<tau> \<Turnstile>\<^sub>p \<phi>"
@@ -175,10 +175,10 @@ lemma stutter_invariantD [dest]:
   shows "(\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>)"
   using assms by (auto simp: stutter_invariant_def)
 
-text {*
+text \<open>
   We first show that next-free PLTL formulas are indeed stuttering invariant.
   The proof proceeds by straightforward induction on the syntax of PLTL formulas.
-*}
+\<close>
 theorem next_free_stutter_invariant:
   "next_free \<phi> \<Longrightarrow> stutter_invariant (\<phi>::'a pltl)"
 proof (induct "\<phi>")
@@ -224,19 +224,19 @@ next
 qed
 
 
-subsection {* Atoms, Canonical State Sequences, and Characteristic Formulas *}
+subsection \<open>Atoms, Canonical State Sequences, and Characteristic Formulas\<close>
 
-text {*
+text \<open>
   We now address the converse implication: any stutter invariant PLTL
-  formula @{text "\<phi>"} can be equivalently expressed by a next-free formula.
+  formula \<open>\<phi>\<close> can be equivalently expressed by a next-free formula.
   The construction of that formula requires attention to the atomic
-  formulas that appear in @{text "\<phi>"}. We will also prove that the
+  formulas that appear in \<open>\<phi>\<close>. We will also prove that the
   next-free formula does not need any new atoms beyond those present
-  in @{text "\<phi>"}.
+  in \<open>\<phi>\<close>.
 
-  The following function collects the atoms (of type @{text "'a \<Rightarrow> bool"})
+  The following function collects the atoms (of type \<open>'a \<Rightarrow> bool\<close>)
   of a PLTL formula.
-*}
+\<close>
 
 
 lemma atoms_OR [simp]: 
@@ -265,12 +265,12 @@ proof -
   with fold_graph_AND[OF fin] show ?thesis by simp
 qed
 
-text {*
-  Given a set of atoms @{text A} as above, we say that two states
-  are @{text A}-similar if they agree on all atoms in @{text A}.
-  Two state sequences @{text "\<sigma>"} and @{text "\<tau>"} are @{text A}-similar
-  if corresponding states are @{text A}-equal.
-*}
+text \<open>
+  Given a set of atoms \<open>A\<close> as above, we say that two states
+  are \<open>A\<close>-similar if they agree on all atoms in \<open>A\<close>.
+  Two state sequences \<open>\<sigma>\<close> and \<open>\<tau>\<close> are \<open>A\<close>-similar
+  if corresponding states are \<open>A\<close>-equal.
+\<close>
 
 definition state_sim :: "['a, ('a \<Rightarrow> bool) set, 'a] \<Rightarrow> bool" 
   ("_ ~_~ _" [70,100,70] 50) where
@@ -280,11 +280,11 @@ definition seq_sim :: "[nat \<Rightarrow> 'a, ('a \<Rightarrow> bool) set, nat \
   ("_ \<simeq>_\<simeq> _" [70,100,70] 50)  where
   "\<sigma> \<simeq>A\<simeq> \<tau> = (\<forall>n. (\<sigma> n) ~A~ (\<tau> n))"
 
-text {*
+text \<open>
   These relations are (indexed) equivalence relations. Moreover
-  @{text "s ~A~ t"} implies @{text "s ~B~ t"} for @{text "B \<subseteq> A"},
-  and similar for @{text "\<sigma> \<simeq>A\<simeq> \<tau>"} and @{text "\<sigma> \<simeq>B\<simeq> \<tau>"}.
-*}
+  \<open>s ~A~ t\<close> implies \<open>s ~B~ t\<close> for \<open>B \<subseteq> A\<close>,
+  and similar for \<open>\<sigma> \<simeq>A\<simeq> \<tau>\<close> and \<open>\<sigma> \<simeq>B\<simeq> \<tau>\<close>.
+\<close>
 
 lemma state_sim_refl [simp]: "s ~A~ s"
   by (simp add: state_sim_def)
@@ -314,10 +314,10 @@ lemma seq_sim_mono:
   shows "\<sigma> \<simeq>B\<simeq> \<tau>"
   using assms unfolding seq_sim_def by (blast intro: state_sim_mono)
 
-text {*
+text \<open>
   State sequences that are similar w.r.t. the atoms of a PLTL formula
   evaluate that formula to the same value.  
-*}
+\<close>
 
 lemma pltl_seq_sim: "\<sigma> \<simeq>(atoms \<phi>)\<simeq> \<tau> \<Longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>)"
   (is "?sim \<sigma> \<phi> \<tau> \<Longrightarrow> ?P \<sigma> \<phi> \<tau>")
@@ -356,11 +356,11 @@ next
     by (meson semantics_pltl.simps(5))
 qed
 
-text {*
+text \<open>
   The following function picks an arbitrary representative among
-  @{text A}-similar states. Because the choice is functional,
-  any two @{text A}-similar states are mapped to the same state.
-*}
+  \<open>A\<close>-similar states. Because the choice is functional,
+  any two \<open>A\<close>-similar states are mapped to the same state.
+\<close>
 
 definition canonize where
   "canonize A s \<equiv> SOME t. t ~A~ s"
@@ -381,18 +381,18 @@ lemma canonize_idempotent:
   "canonize A (canonize A s) = canonize A s"
   by (rule canonize_canonical[OF canonize_state_sim])
 
-text {*
-  In a canonical state sequence, any two @{text A}-similar states
+text \<open>
+  In a canonical state sequence, any two \<open>A\<close>-similar states
   are in fact equal.
-*}
+\<close>
 
 definition canonical_sequence where
   "canonical_sequence A \<sigma> \<equiv> \<forall>m (n::nat). \<sigma> m ~A~ \<sigma> n \<longrightarrow> \<sigma> m = \<sigma> n"
 
-text {*
+text \<open>
   Every suffix of a canonical sequence is canonical, as is any
   (sampled) subsequence, in particular any stutter-sampling.
-*}
+\<close>
 
 lemma canonical_suffix:
   "canonical_sequence A \<sigma> \<Longrightarrow> canonical_sequence A (\<sigma>[k..])"
@@ -406,11 +406,11 @@ lemma canonical_reduced:
   "canonical_sequence A \<sigma> \<Longrightarrow> canonical_sequence A (\<natural>\<sigma>)"
   unfolding stutter_reduced_def by (rule canonical_sampled)
 
-text {*
-  For any sequence @{text "\<sigma>"} there exists a canonical
-  @{text A}-similar sequence @{text "\<tau>"}. Such a @{text "\<tau>"}
-  can be obtained by canonizing all states of @{text "\<sigma>"}.
-*}
+text \<open>
+  For any sequence \<open>\<sigma>\<close> there exists a canonical
+  \<open>A\<close>-similar sequence \<open>\<tau>\<close>. Such a \<open>\<tau>\<close>
+  can be obtained by canonizing all states of \<open>\<sigma>\<close>.
+\<close>
 
 lemma canonical_exists:
   obtains \<tau> where "\<tau> \<simeq>A\<simeq> \<sigma>" "canonical_sequence A \<tau>"
@@ -425,12 +425,12 @@ proof -
   show ?thesis using that by blast
 qed
 
-text {*
-  Given a state @{text s} and a set @{text A} of atoms, we define
-  the characteristic formula of @{text s} as the conjunction of
-  all atoms in @{text A} that hold of @{text s} and the negation of
-  the atoms in @{text A} that do not hold of @{text s}.
-*}
+text \<open>
+  Given a state \<open>s\<close> and a set \<open>A\<close> of atoms, we define
+  the characteristic formula of \<open>s\<close> as the conjunction of
+  all atoms in \<open>A\<close> that hold of \<open>s\<close> and the negation of
+  the atoms in \<open>A\<close> that do not hold of \<open>s\<close>.
+\<close>
 
 definition characteristic_formula where
   "characteristic_formula A s \<equiv>
@@ -459,15 +459,15 @@ next
 qed
 
 
-subsection {* Stuttering Invariant PLTL Formulas Don't Need Next *}
+subsection \<open>Stuttering Invariant PLTL Formulas Don't Need Next\<close>
 
-text {*
+text \<open>
   The following is the main lemma used in the proof of the
-  completeness theorem: for any PLTL formula @{text "\<phi>"} there
-  exists a next-free formula @{text "\<psi>"} such that the two
+  completeness theorem: for any PLTL formula \<open>\<phi>\<close> there
+  exists a next-free formula \<open>\<psi>\<close> such that the two
   formulas evaluate to the same value over stutter-free and
-  canonical sequences (w.r.t. some @{text "A \<supseteq> atoms \<phi>"}).
-*}
+  canonical sequences (w.r.t. some \<open>A \<supseteq> atoms \<phi>\<close>).
+\<close>
 
 lemma ex_next_free_stutter_free_canonical:
   assumes A: "atoms \<phi> \<subseteq> A" and fin: "finite A"
@@ -475,7 +475,7 @@ lemma ex_next_free_stutter_free_canonical:
              (\<forall>\<sigma>. stutter_free \<sigma> \<and> canonical_sequence A \<sigma> \<longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<sigma> \<Turnstile>\<^sub>p \<phi>))"
     (is "\<exists>\<psi>. ?P \<phi> \<psi>")
 using A proof (induct \<phi>)
-  txt {* The cases of @{text "false"} and atomic formulas are trivial. *}
+  txt \<open>The cases of \<open>false\<close> and atomic formulas are trivial.\<close>
   have "?P false false" by auto
   thus "\<exists>\<psi>. ?P false \<psi>" ..
 next
@@ -484,7 +484,7 @@ next
   hence "?P (atom p) (atom p)" by auto
   thus "\<exists>\<psi>. ?P (atom p) \<psi>" ..
 next
-  txt {* Implication is easy, using the induction hypothesis. *}
+  txt \<open>Implication is easy, using the induction hypothesis.\<close>
   fix \<phi> \<psi>
   assume "atoms \<phi> \<subseteq> A \<Longrightarrow> \<exists>\<phi>'. ?P \<phi> \<phi>'"
      and "atoms \<psi> \<subseteq> A \<Longrightarrow> \<exists>\<psi>'. ?P \<psi> \<psi>'"
@@ -493,7 +493,7 @@ next
   hence "?P (implies \<phi> \<psi>) (implies \<phi>' \<psi>')" by auto
   thus "\<exists>\<chi>. ?P (implies \<phi> \<psi>) \<chi>" ..
 next
-  txt {* The case of @{text "until"} follows similarly. *}
+  txt \<open>The case of \<open>until\<close> follows similarly.\<close>
   fix \<phi> \<psi>
   assume "atoms \<phi> \<subseteq> A \<Longrightarrow> \<exists>\<phi>'. ?P \<phi> \<phi>'"
      and "atoms \<psi> \<subseteq> A \<Longrightarrow> \<exists>\<psi>'. ?P \<psi> \<psi>'"
@@ -514,15 +514,15 @@ next
   with 1 2 have "?P (until \<phi> \<psi>) (until \<phi>' \<psi>')" by auto
   thus "\<exists>\<chi>. ?P (until \<phi> \<psi>) \<chi>" ..
 next
-  txt {* The interesting case is the one of the @{text "next"}-operator. *}
+  txt \<open>The interesting case is the one of the \<open>next\<close>-operator.\<close>
   fix \<phi>
   assume ih: "atoms \<phi> \<subseteq> A \<Longrightarrow> \<exists>\<psi>. ?P \<phi> \<psi>" and at: "atoms (next \<phi>) \<subseteq> A"
   then obtain \<psi> where psi: "?P \<phi> \<psi>" by auto
-  txt {* A valuation (over @{text A}) is a set @{text "val \<subseteq> A"} of atoms. We
+  txt \<open>A valuation (over \<open>A\<close>) is a set \<open>val \<subseteq> A\<close> of atoms. We
     define some auxiliary notions: the valuation corresponding to a state and
     the characteristic formula for a valuation. Finally, we define the formula
-    @{text "psi'"} that we will prove to be equivalent to @{text "next \<phi>"} over
-    the stutter-free and canonical sequence @{text "\<sigma>"}. *}
+    \<open>psi'\<close> that we will prove to be equivalent to \<open>next \<phi>\<close> over
+    the stutter-free and canonical sequence \<open>\<sigma>\<close>.\<close>
   define stval where "stval = (\<lambda>s. { p \<in> A . p s })"
   define chi where "chi = (\<lambda>val. ((AND {atom p | p . p \<in> val}) and\<^sub>p
                         (AND {not\<^sub>p (atom p) | p . p \<in> A - val})))"
@@ -576,9 +576,9 @@ next
     have "(\<sigma> \<Turnstile>\<^sub>p next \<phi>) = (\<sigma> \<Turnstile>\<^sub>p psi')"
     proof (cases "\<sigma> (Suc 0) = \<sigma> 0")
       case True
-      txt {* In the case of a stuttering transition at the beginning, we must have
-        infinite stuttering, and the first disjunct of @{text "psi'"} holds,
-        whereas the second does not. *}
+      txt \<open>In the case of a stuttering transition at the beginning, we must have
+        infinite stuttering, and the first disjunct of \<open>psi'\<close> holds,
+        whereas the second does not.\<close>
       {
         fix n
         have "\<sigma> n = \<sigma> 0"
@@ -613,10 +613,10 @@ next
           val: "val \<subseteq> A" "val' \<subseteq> A" "val' \<noteq> val" and
           now: "\<sigma> \<Turnstile>\<^sub>p chi val" and k: "\<sigma>[k..] \<Turnstile>\<^sub>p chi val'"
           by auto (blast+)?  (* FRAGILE: similar as above *)
-        from `val \<subseteq> A` now have "val = stval (\<sigma> 0)" by (rule chi2)
+        from \<open>val \<subseteq> A\<close> now have "val = stval (\<sigma> 0)" by (rule chi2)
         moreover
-        from `val' \<subseteq> A` k suffix have "val' = stval (\<sigma> 0)" by (simp add: chi2)
-        moreover note `val' \<noteq> val`
+        from \<open>val' \<subseteq> A\<close> k suffix have "val' = stval (\<sigma> 0)" by (simp add: chi2)
+        moreover note \<open>val' \<noteq> val\<close>
         ultimately show "False" by simp
       qed
 
@@ -624,8 +624,8 @@ next
 
     next
       case False
-      txt {* Otherwise, @{text "\<sigma> \<Turnstile>\<^sub>p next \<phi>"} is equivalent to @{text "\<sigma>"} satisfying
-        the second disjunct of @{text "psi'"}. We show both implications separately. *}
+      txt \<open>Otherwise, \<open>\<sigma> \<Turnstile>\<^sub>p next \<phi>\<close> is equivalent to \<open>\<sigma>\<close> satisfying
+        the second disjunct of \<open>psi'\<close>. We show both implications separately.\<close>
       let ?val = "stval (\<sigma> 0)"
       let ?val' = "stval (\<sigma> 1)"
       from False can have vals: "?val' \<noteq> ?val"
@@ -682,7 +682,7 @@ next
         proof
           assume "k=0"
           with val k have "val' = ?val" by (simp add: chi2)
-          with 1 `val' \<noteq> val` show "False" by simp
+          with 1 \<open>val' \<noteq> val\<close> show "False" by simp
         qed
 
         have 3: "k \<le> 1"
@@ -695,34 +695,34 @@ next
             using characteristic_state_sim[OF fin] by blast
           with can have "\<sigma> 0 = \<sigma> 1"
             by (simp add: canonical_sequence_def)
-          with `\<sigma> (Suc 0) \<noteq> \<sigma> 0` show "False" by simp
+          with \<open>\<sigma> (Suc 0) \<noteq> \<sigma> 0\<close> show "False" by simp
         qed
 
         from 2 3 have "k=1" by simp
         moreover
         from st can have "stutter_free (\<sigma>[1..])" "canonical_sequence A (\<sigma>[1..])"
           by (auto simp: stutter_free_suffix canonical_suffix)
-        ultimately show "\<sigma> \<Turnstile>\<^sub>p next \<phi>" using `\<sigma>[k..] \<Turnstile>\<^sub>p \<psi>` psi by auto
+        ultimately show "\<sigma> \<Turnstile>\<^sub>p next \<phi>" using \<open>\<sigma>[k..] \<Turnstile>\<^sub>p \<psi>\<close> psi by auto
       qed
     qed
   }
   with nf atoms show "\<exists>\<psi>'. ?P (next \<phi>) \<psi>'" by blast
 qed
 
-text {*
+text \<open>
   Comparing the definition of the next-free formula in the case of
-  formulas @{text "next \<phi>"} with the one that appears in~\cite{peled:ltl-x},
+  formulas \<open>next \<phi>\<close> with the one that appears in~\cite{peled:ltl-x},
   there is a subtle difference. Peled and Wilke define the second disjunct as
   a disjunction of formulas
 %
   \begin{center}\(
-    @{text "until (chi val) (and \<psi> (chi val'))"}
+    \<open>until (chi val) (and \<psi> (chi val'))\<close>
   \)\end{center}
 %
-  for subsets @{text "val, val' \<subseteq> A"} whereas we conjoin the formula
-  @{text "chi val"} to the ``until'' formula. This conjunct is indeed
+  for subsets \<open>val, val' \<subseteq> A\<close> whereas we conjoin the formula
+  \<open>chi val\<close> to the ``until'' formula. This conjunct is indeed
   necessary in order to rule out the case of the ``until'' formula
-  being true because of @{text "chi val'"} being true immediately.
+  being true because of \<open>chi val'\<close> being true immediately.
   The subtle error in the definition of the formula was acknowledged 
   by Peled and Wilke and apparently had not been noticed since the 
   publication of~\cite{peled:ltl-x} in 1996 (which has been cited more
@@ -732,8 +732,8 @@ text {*
   formal proofs.
 
   We now show that any stuttering invariant PLTL formula
-  can be expressed without the @{text "next"} operator.
-*}
+  can be expressed without the \<open>next\<close> operator.
+\<close>
 
 theorem stutter_invariant_next_free:
   assumes phi: "stutter_invariant \<phi>"
@@ -745,13 +745,13 @@ proof -
     psi: "next_free \<psi>" "atoms \<psi> \<subseteq> atoms \<phi>" and
     equiv: "\<forall>\<sigma>. stutter_free \<sigma> \<and> canonical_sequence (atoms \<phi>) \<sigma> \<longrightarrow> (\<sigma> \<Turnstile>\<^sub>p \<psi>) = (\<sigma> \<Turnstile>\<^sub>p \<phi>)"
     by (blast dest: ex_next_free_stutter_free_canonical)
-  from `next_free \<psi>` have sinv: "stutter_invariant \<psi>"
+  from \<open>next_free \<psi>\<close> have sinv: "stutter_invariant \<psi>"
     by (rule next_free_stutter_invariant)
   {
     fix \<sigma>
     obtain \<tau> where 1: "\<tau> \<simeq> atoms \<phi> \<simeq> \<sigma>" and 2: "canonical_sequence (atoms \<phi>) \<tau>"
       by (rule canonical_exists)
-    from 1 `atoms \<psi> \<subseteq> atoms \<phi>` have 3: "\<tau> \<simeq> atoms \<psi> \<simeq> \<sigma>"
+    from 1 \<open>atoms \<psi> \<subseteq> atoms \<phi>\<close> have 3: "\<tau> \<simeq> atoms \<psi> \<simeq> \<sigma>"
       by (rule seq_sim_mono)
 
     from 1 have "(\<sigma> \<Turnstile>\<^sub>p \<phi>) = (\<tau> \<Turnstile>\<^sub>p \<phi>)" by (simp add: pltl_seq_sim)
@@ -765,12 +765,12 @@ proof -
   with psi that show ?thesis by blast
 qed
 
-text {*
-  Combining theorems @{text "next_free_stutter_invariant"} and
-  @{text "stutter_invariant_next_free"}, it follows that a PLTL
+text \<open>
+  Combining theorems \<open>next_free_stutter_invariant\<close> and
+  \<open>stutter_invariant_next_free\<close>, it follows that a PLTL
   formula is stuttering invariant iff it is equivalent to a next-free
   formula.
-*}
+\<close>
 
 theorem pltl_stutter_invariant:
   "stutter_invariant \<phi> \<longleftrightarrow> 

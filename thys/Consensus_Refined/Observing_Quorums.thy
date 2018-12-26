@@ -1,17 +1,17 @@
-section {* The Observing Quorums Model *}
+section \<open>The Observing Quorums Model\<close>
 
 theory Observing_Quorums
 imports Same_Vote
 begin
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 
-text {* The state adds one field to the Voting model state: *}
+text \<open>The state adds one field to the Voting model state:\<close>
 record obsv_state = v_state +
   obs :: "round \<Rightarrow> (process, val) map"
 
-text {* For the observation mechanism to work, we need monotonicity of quorums. *}
+text \<open>For the observation mechanism to work, we need monotonicity of quorums.\<close>
 context mono_quorum begin
 
 definition obs_safe 
@@ -49,7 +49,7 @@ definition obsv_TS :: "obsv_state TS" where
 lemmas obsv_TS_defs = obsv_TS_def obsv_init_def obsv_trans_def
 
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 (******************************************************************************)
 
 definition OV_inv1 where
@@ -60,7 +60,7 @@ lemmas OV_inv1I = OV_inv1_def [THEN setc_def_to_intro, rule_format]
 lemmas OV_inv1E [elim] = OV_inv1_def [THEN setc_def_to_elim, rule_format]
 lemmas OV_inv1D = OV_inv1_def [THEN setc_def_to_dest, rule_format]
  
-subsubsection {* Proofs of invariants *}
+subsubsection \<open>Proofs of invariants\<close>
 (******************************************************************************)
   
 lemma OV_inv1_obsv_round: 
@@ -96,7 +96,7 @@ lemma quorum_for_const_map:
   "(quorum_for Q w (const_map v S)) = (Q \<in> Quorum \<and> Q \<subseteq> S \<and> w = v)"
   by(auto simp add: quorum_for_def const_map_is_Some dest: quorum_non_empty)
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition obsv_ref_rel where 
@@ -122,7 +122,7 @@ next
       obsv_round_refines relhoare_refl)
 qed(auto intro: OV_inv1_inductive del: subsetI)
 
-subsection {* Additional invariants *}
+subsection \<open>Additional invariants\<close>
 (******************************************************************************)
 
 definition OV_inv2 where
@@ -149,7 +149,7 @@ lemmas OV_inv4E [elim] = OV_inv4_def [THEN setc_def_to_elim, rule_format]
 lemmas OV_inv4D = OV_inv4_def [THEN setc_def_to_dest, rule_format]
 
 
-subsubsection {* Proofs of additional invariants *}
+subsubsection \<open>Proofs of additional invariants\<close>
 (******************************************************************************)
 
 lemma OV_inv2_inductive:
@@ -172,7 +172,7 @@ proof(clarsimp simp add: PO_hoare_defs intro!: OV_inv3I)
     "(s, s') \<in> obsv_round r S v D Ob"
     "s \<in> OV_inv2"
   hence "s' \<in> OV_inv2"
-    by(force simp add: obsv_TS_defs intro: OV_inv2_inductive(2)[THEN hoareD, OF `s \<in> OV_inv2`])
+    by(force simp add: obsv_TS_defs intro: OV_inv2_inductive(2)[THEN hoareD, OF \<open>s \<in> OV_inv2\<close>])
   hence "r_w \<le> next_round s'" using Assms
     by(auto simp add: OV_inv2_def intro!: leI)
   hence r_w_le: "r_w \<le> next_round s" using Assms

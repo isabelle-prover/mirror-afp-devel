@@ -9,7 +9,7 @@ begin
 
 subsection "auxliary lemmas"
 
-subsubsection "@{text E_bernoulli3}"
+subsubsection "\<open>E_bernoulli3\<close>"
 
 lemma E_bernoulli3: assumes "0<p"
     and "p<1"
@@ -367,7 +367,7 @@ finally
 qed
 
   
-subsubsection \<open>@{text "x^+.."}\<close>
+subsubsection \<open>\<open>x^+..\<close>\<close>
 
 lemma BIT_x: assumes "x\<noteq>y"
        "init \<in> {[x,y],[y,x]}" "qs \<in> lang (Plus (Atom x) One)"

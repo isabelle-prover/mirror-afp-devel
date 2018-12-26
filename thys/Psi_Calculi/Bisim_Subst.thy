@@ -63,26 +63,26 @@ proof(rule_tac closeSubstI)
              and S: "set p \<subseteq> set xvec \<times> set (p \<bullet> xvec)"
       by(rule_tac c="(\<sigma>, P, Q, \<Psi>, N)" in name_list_avoiding) auto
     
-  from `\<Psi> \<rhd> P \<sim>\<^sub>s Q` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<sim>\<^sub>s (p \<bullet> Q)"
+  from \<open>\<Psi> \<rhd> P \<sim>\<^sub>s Q\<close> have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<sim>\<^sub>s (p \<bullet> Q)"
     by(rule bisimSubstClosed)
-  with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S have "\<Psi> \<rhd> (p \<bullet> P) \<sim>\<^sub>s (p \<bullet> Q)"
+  with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S have "\<Psi> \<rhd> (p \<bullet> P) \<sim>\<^sub>s (p \<bullet> Q)"
     by simp
 
   {
     fix Tvec :: "'a list"
-    from `\<Psi> \<rhd> (p \<bullet> P) \<sim>\<^sub>s (p \<bullet> Q)` `wellFormedSubst \<sigma>` have "\<Psi> \<rhd> (p \<bullet> P)[<\<sigma>>] \<sim>\<^sub>s (p \<bullet> Q)[<\<sigma>>]"
+    from \<open>\<Psi> \<rhd> (p \<bullet> P) \<sim>\<^sub>s (p \<bullet> Q)\<close> \<open>wellFormedSubst \<sigma>\<close> have "\<Psi> \<rhd> (p \<bullet> P)[<\<sigma>>] \<sim>\<^sub>s (p \<bullet> Q)[<\<sigma>>]"
       by(rule closeSubstUnfold)
     moreover assume "length xvec = length Tvec" and "distinct xvec"
     ultimately have "\<Psi> \<rhd> ((p \<bullet> P)[<\<sigma>>])[(p \<bullet> xvec)::=Tvec] \<sim> ((p \<bullet> Q)[<\<sigma>>])[(p \<bullet> xvec)::=Tvec]" 
       by(drule_tac closeSubstE[where \<sigma>="[((p \<bullet> xvec), Tvec)]"]) auto
   }
 
-  with `(p \<bullet> xvec) \<sharp>* \<sigma>` `distinct xvec`
+  with \<open>(p \<bullet> xvec) \<sharp>* \<sigma>\<close> \<open>distinct xvec\<close>
   have "\<Psi> \<rhd> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P))[<\<sigma>>] \<sim> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q))[<\<sigma>>]"
     by(force intro: bisimInputPres)
-  moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) = M\<lparr>\<lambda>*xvec N\<rparr>.P" 
+  moreover from \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close> S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) = M\<lparr>\<lambda>*xvec N\<rparr>.P" 
     apply(simp add: psi.inject) by(rule inputChainAlpha[symmetric]) auto
-  moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* Q` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q) = M\<lparr>\<lambda>*xvec N\<rparr>.Q"
+  moreover from \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* Q\<close> S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q) = M\<lparr>\<lambda>*xvec N\<rparr>.Q"
     apply(simp add: psi.inject) by(rule inputChainAlpha[symmetric]) auto
   ultimately show "\<Psi> \<rhd> (M\<lparr>\<lambda>*xvec N\<rparr>.P)[<\<sigma>>] \<sim> (M\<lparr>\<lambda>*xvec N\<rparr>.Q)[<\<sigma>>]"
     by force
@@ -109,20 +109,20 @@ proof -
       assume "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)"
       then obtain \<phi>' P' where "(\<phi>', P') mem CsP" and "\<phi> = substCond.seqSubst \<phi>' \<sigma>" and PeqP': "P = (P'[<\<sigma>>])"
         by(induct CsP) force+
-      from `(\<phi>', P') mem CsP` obtain Q' where "(\<phi>', Q') mem CsQ" and "guarded Q'" and "\<Psi> \<rhd> P' \<sim>\<^sub>s Q'" by(blast dest: C1)
-      from `(\<phi>', Q') mem CsQ` `\<phi> = substCond.seqSubst \<phi>' \<sigma>` obtain Q where "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)" and "Q = Q'[<\<sigma>>]"
+      from \<open>(\<phi>', P') mem CsP\<close> obtain Q' where "(\<phi>', Q') mem CsQ" and "guarded Q'" and "\<Psi> \<rhd> P' \<sim>\<^sub>s Q'" by(blast dest: C1)
+      from \<open>(\<phi>', Q') mem CsQ\<close> \<open>\<phi> = substCond.seqSubst \<phi>' \<sigma>\<close> obtain Q where "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)" and "Q = Q'[<\<sigma>>]"
         by(induct CsQ) auto
-      with PeqP' `guarded Q'` `\<Psi> \<rhd> P' \<sim>\<^sub>s Q'` `wellFormedSubst \<sigma>` show "\<exists>Q. (\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>) \<and> guarded Q \<and> \<Psi> \<rhd> P \<sim> Q"
+      with PeqP' \<open>guarded Q'\<close> \<open>\<Psi> \<rhd> P' \<sim>\<^sub>s Q'\<close> \<open>wellFormedSubst \<sigma>\<close> show "\<exists>Q. (\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>) \<and> guarded Q \<and> \<Psi> \<rhd> P \<sim> Q"
         by(blast dest: closeSubstE guardedSeqSubst)
     next
       fix \<phi> Q
       assume "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)"
       then obtain \<phi>' Q' where "(\<phi>', Q') mem CsQ" and "\<phi> = substCond.seqSubst \<phi>' \<sigma>" and QeqQ': "Q = Q'[<\<sigma>>]"
         by(induct CsQ) force+
-      from `(\<phi>', Q') mem CsQ` obtain P' where "(\<phi>', P') mem CsP" and "guarded P'" and "\<Psi> \<rhd> P' \<sim>\<^sub>s Q'" by(blast dest: C2)
-      from `(\<phi>', P') mem CsP` `\<phi> = substCond.seqSubst \<phi>' \<sigma>` obtain P where "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)" and "P = P'[<\<sigma>>]"
+      from \<open>(\<phi>', Q') mem CsQ\<close> obtain P' where "(\<phi>', P') mem CsP" and "guarded P'" and "\<Psi> \<rhd> P' \<sim>\<^sub>s Q'" by(blast dest: C2)
+      from \<open>(\<phi>', P') mem CsP\<close> \<open>\<phi> = substCond.seqSubst \<phi>' \<sigma>\<close> obtain P where "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)" and "P = P'[<\<sigma>>]"
         by(induct CsP) auto
-      with QeqQ' `guarded P'` `\<Psi> \<rhd> P' \<sim>\<^sub>s Q'` `wellFormedSubst \<sigma>`  show "\<exists>P. (\<phi>, P) mem (caseListSeqSubst CsP \<sigma>) \<and> guarded P \<and> \<Psi> \<rhd> P \<sim> Q"
+      with QeqQ' \<open>guarded P'\<close> \<open>\<Psi> \<rhd> P' \<sim>\<^sub>s Q'\<close> \<open>wellFormedSubst \<sigma>\<close>  show "\<exists>P. (\<phi>, P) mem (caseListSeqSubst CsP \<sigma>) \<and> guarded P \<and> \<Psi> \<rhd> P \<sim> Q"
         by(blast dest: closeSubstE guardedSeqSubst)
     qed
   }
@@ -229,15 +229,15 @@ proof(rule_tac closeSubstI)
   obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> \<sigma>"
     by(generate_fresh "name") (auto simp add: fresh_prod)
 
-  from `\<Psi> \<rhd> P \<sim>\<^sub>s Q` have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<sim>\<^sub>s ([(x, y)] \<bullet> Q)"
+  from \<open>\<Psi> \<rhd> P \<sim>\<^sub>s Q\<close> have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<sim>\<^sub>s ([(x, y)] \<bullet> Q)"
     by(rule bisimSubstClosed)
-  with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> ([(x, y)] \<bullet> P) \<sim>\<^sub>s ([(x, y)] \<bullet> Q)"
+  with \<open>x \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>\<close> have "\<Psi> \<rhd> ([(x, y)] \<bullet> P) \<sim>\<^sub>s ([(x, y)] \<bullet> Q)"
     by simp
-  hence "\<Psi> \<rhd> ([(x, y)] \<bullet> P)[<\<sigma>>] \<sim> ([(x, y)] \<bullet> Q)[<\<sigma>>]" using `wellFormedSubst \<sigma>` 
+  hence "\<Psi> \<rhd> ([(x, y)] \<bullet> P)[<\<sigma>>] \<sim> ([(x, y)] \<bullet> Q)[<\<sigma>>]" using \<open>wellFormedSubst \<sigma>\<close> 
     by(rule closeSubstE)
-  hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[<\<sigma>>]) \<sim> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[<\<sigma>>])" using `y \<sharp> \<Psi>`
+  hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[<\<sigma>>]) \<sim> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[<\<sigma>>])" using \<open>y \<sharp> \<Psi>\<close>
     by(rule bisimResPres)
-  with `y \<sharp> P` `y \<sharp> Q` `y \<sharp> \<sigma>`
+  with \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<sharp> \<sigma>\<close>
   show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>P)[<\<sigma>>] \<sim> (\<lparr>\<nu>x\<rparr>Q)[<\<sigma>>]"
     by(simp add: alphaRes)
 qed
@@ -304,7 +304,7 @@ proof(rule closeSubstI)
   obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<sigma>"
     by(generate_fresh "name") (auto simp add: fresh_prod)
   have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>\<zero> \<sim> \<zero>" by(rule bisimResNil)
-  with `y \<sharp> \<sigma>` `wellFormedSubst \<sigma>`  show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>\<zero>)[<\<sigma>>] \<sim> \<zero>[<\<sigma>>]"
+  with \<open>y \<sharp> \<sigma>\<close> \<open>wellFormedSubst \<sigma>\<close>  show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>\<zero>)[<\<sigma>>] \<sim> \<zero>[<\<sigma>>]"
     by(subst alphaRes[of y]) auto
 qed
 
@@ -337,11 +337,11 @@ proof(rule closeSubstI)
   assume "wellFormedSubst \<sigma>"
   obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<sigma>" and "y \<sharp> P" and "y \<sharp> Q"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  moreover from `wellFormedSubst \<sigma>`  `y \<sharp> \<sigma>` `y \<sharp> P` have "y \<sharp> P[<\<sigma>>]"
+  moreover from \<open>wellFormedSubst \<sigma>\<close>  \<open>y \<sharp> \<sigma>\<close> \<open>y \<sharp> P\<close> have "y \<sharp> P[<\<sigma>>]"
     by(rule seqSubst2)
   hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>((P[<\<sigma>>]) \<parallel> (([(x, y)] \<bullet> Q)[<\<sigma>>])) \<sim> (P[<\<sigma>>]) \<parallel> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[<\<sigma>>])"
     by(rule bisimScopeExt)
-  with `x \<sharp> P` `y \<sharp> P` `y \<sharp> Q` `y \<sharp> \<sigma>` show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>(P \<parallel> Q))[<\<sigma>>] \<sim> (P \<parallel> \<lparr>\<nu>x\<rparr>Q)[<\<sigma>>]"
+  with \<open>x \<sharp> P\<close> \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<sharp> \<sigma>\<close> show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>(P \<parallel> Q))[<\<sigma>>] \<sim> (P \<parallel> \<lparr>\<nu>x\<rparr>Q)[<\<sigma>>]"
     apply(subst alphaRes[of y], simp)
     apply(subst alphaRes[of y Q], simp)
     by(simp add: eqvts)
@@ -388,13 +388,13 @@ proof(rule closeSubstI)
   }
   note C2 = this
 
-  from `y \<sharp> Cs` have "y \<sharp> map fst Cs" by(induct Cs) (auto simp add: fresh_list_cons fresh_list_nil)
-  from `y \<sharp> Cs` `y \<sharp> \<sigma>` `x \<sharp> map fst Cs` `wellFormedSubst \<sigma>`  have "y \<sharp> map fst (caseListSeqSubst ([(x, y)] \<bullet> Cs) \<sigma>)"
+  from \<open>y \<sharp> Cs\<close> have "y \<sharp> map fst Cs" by(induct Cs) (auto simp add: fresh_list_cons fresh_list_nil)
+  from \<open>y \<sharp> Cs\<close> \<open>y \<sharp> \<sigma>\<close> \<open>x \<sharp> map fst Cs\<close> \<open>wellFormedSubst \<sigma>\<close>  have "y \<sharp> map fst (caseListSeqSubst ([(x, y)] \<bullet> Cs) \<sigma>)"
     by(induct Cs) (auto intro: substCond.seqSubst2 simp add: fresh_list_cons fresh_list_nil fresh_prod)
   hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(Cases(caseListSeqSubst ([(x, y)] \<bullet> Cs) \<sigma>)) \<sim> Cases map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>y\<rparr>P)) (caseListSeqSubst ([(x, y)] \<bullet> Cs) \<sigma>)"
     by(rule bisimCasePushRes)
 
-  with `y \<sharp> Cs` `x \<sharp> map fst Cs` `y \<sharp> map fst Cs` `y \<sharp> \<sigma>` `wellFormedSubst \<sigma>` 
+  with \<open>y \<sharp> Cs\<close> \<open>x \<sharp> map fst Cs\<close> \<open>y \<sharp> map fst Cs\<close> \<open>y \<sharp> \<sigma>\<close> \<open>wellFormedSubst \<sigma>\<close> 
   show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>(Cases Cs))[<\<sigma>>] \<sim> (Cases map (\<lambda>(\<phi>, P). (\<phi>, \<lparr>\<nu>x\<rparr>P)) Cs)[<\<sigma>>]"
     apply(subst C2[of x Cs y])
     apply assumption+
@@ -421,11 +421,11 @@ proof(rule closeSubstI)
   assume "wellFormedSubst \<sigma>"
   obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> \<sigma>" and "y \<sharp> P" and "y \<sharp> M" and "y \<sharp> N"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `wellFormedSubst \<sigma>`  `y \<sharp> M` `y \<sharp> \<sigma>` have "y \<sharp> M[<\<sigma>>]" by auto
-  moreover from `wellFormedSubst \<sigma>`  `y \<sharp> N` `y \<sharp> \<sigma>` have "y \<sharp> N[<\<sigma>>]" by auto
+  from \<open>wellFormedSubst \<sigma>\<close>  \<open>y \<sharp> M\<close> \<open>y \<sharp> \<sigma>\<close> have "y \<sharp> M[<\<sigma>>]" by auto
+  moreover from \<open>wellFormedSubst \<sigma>\<close>  \<open>y \<sharp> N\<close> \<open>y \<sharp> \<sigma>\<close> have "y \<sharp> N[<\<sigma>>]" by auto
   ultimately have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>((M[<\<sigma>>])\<langle>(N[<\<sigma>>])\<rangle>.(([(x, y)] \<bullet> P)[<\<sigma>>])) \<sim> (M[<\<sigma>>])\<langle>(N[<\<sigma>>])\<rangle>.(\<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[<\<sigma>>]))"
     by(rule bisimOutputPushRes)
-  with `y \<sharp> M` `y \<sharp> N` `y \<sharp> P` `x \<sharp> M` `x \<sharp> N` `y \<sharp> \<sigma>` `wellFormedSubst \<sigma>` 
+  with \<open>y \<sharp> M\<close> \<open>y \<sharp> N\<close> \<open>y \<sharp> P\<close> \<open>x \<sharp> M\<close> \<open>x \<sharp> N\<close> \<open>y \<sharp> \<sigma>\<close> \<open>wellFormedSubst \<sigma>\<close> 
   show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>(M\<langle>N\<rangle>.P))[<\<sigma>>] \<sim> (M\<langle>N\<rangle>.\<lparr>\<nu>x\<rparr>P)[<\<sigma>>]"
     apply(subst alphaRes[of y], simp)
     apply(subst alphaRes[of y P], simp)
@@ -454,15 +454,15 @@ proof(rule closeSubstI)
                          and S: "set p \<subseteq> set xvec \<times> set(p \<bullet> xvec)"
    by(rule_tac c="(N, P, x, y, \<sigma>)" in name_list_avoiding) auto
     
-  from `wellFormedSubst \<sigma>` `y \<sharp> M` `y \<sharp> \<sigma> ` have "y \<sharp> M[<\<sigma>>]" by auto
-  moreover note `y \<sharp> (p \<bullet> xvec)`
-  moreover from `y \<sharp> N` have "(p \<bullet> y) \<sharp> (p \<bullet> N)" by(simp add: pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
-  with `y \<sharp> xvec` `y \<sharp> (p \<bullet> xvec)` S have "y \<sharp> p \<bullet> N" by simp
-  with `wellFormedSubst \<sigma>` have "y \<sharp> (p \<bullet> N)[<\<sigma>>]" using `y \<sharp> \<sigma>` by auto
+  from \<open>wellFormedSubst \<sigma>\<close> \<open>y \<sharp> M\<close> \<open>y \<sharp> \<sigma> \<close> have "y \<sharp> M[<\<sigma>>]" by auto
+  moreover note \<open>y \<sharp> (p \<bullet> xvec)\<close>
+  moreover from \<open>y \<sharp> N\<close> have "(p \<bullet> y) \<sharp> (p \<bullet> N)" by(simp add: pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
+  with \<open>y \<sharp> xvec\<close> \<open>y \<sharp> (p \<bullet> xvec)\<close> S have "y \<sharp> p \<bullet> N" by simp
+  with \<open>wellFormedSubst \<sigma>\<close> have "y \<sharp> (p \<bullet> N)[<\<sigma>>]" using \<open>y \<sharp> \<sigma>\<close> by auto
   ultimately have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>((M[<\<sigma>>])\<lparr>\<lambda>*(p \<bullet> xvec) ((p \<bullet> N)[<\<sigma>>])\<rparr>.(([(x, y)] \<bullet> (p \<bullet> P))[<\<sigma>>])) \<sim> (M[<\<sigma>>])\<lparr>\<lambda>*(p \<bullet> xvec) ((p \<bullet> N)[<\<sigma>>])\<rparr>.(\<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> p \<bullet> P)[<\<sigma>>]))"
     by(rule bisimInputPushRes)
-  with `y \<sharp> M` `y \<sharp> N` `y \<sharp> P` `x \<sharp> M` `x \<sharp> N` `y \<sharp> xvec` `x \<sharp> xvec` `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P` 
-       `x \<sharp> (p \<bullet> xvec)` `y \<sharp> (p \<bullet> xvec)` `y \<sharp> \<sigma>` `(p \<bullet> xvec) \<sharp>* \<sigma>` S `wellFormedSubst \<sigma>`
+  with \<open>y \<sharp> M\<close> \<open>y \<sharp> N\<close> \<open>y \<sharp> P\<close> \<open>x \<sharp> M\<close> \<open>x \<sharp> N\<close> \<open>y \<sharp> xvec\<close> \<open>x \<sharp> xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close> 
+       \<open>x \<sharp> (p \<bullet> xvec)\<close> \<open>y \<sharp> (p \<bullet> xvec)\<close> \<open>y \<sharp> \<sigma>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<sigma>\<close> S \<open>wellFormedSubst \<sigma>\<close>
   show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>(M\<lparr>\<lambda>*xvec N\<rparr>.P))[<\<sigma>>] \<sim> (M\<lparr>\<lambda>*xvec N\<rparr>.\<lparr>\<nu>x\<rparr>P)[<\<sigma>>]"
     apply(subst inputChainAlpha')
     apply assumption+
@@ -501,17 +501,17 @@ next
 
     have "\<Psi> \<rhd> \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>(([(x, x')] \<bullet> [(y, y')] \<bullet> P)[<\<sigma>>])) \<sim> \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>(([(x, x')] \<bullet> [(y, y')] \<bullet> P)[<\<sigma>>]))"
       by(rule bisimResComm)
-    moreover from `x' \<sharp> P` `y' \<sharp> P` `x \<noteq> y'` `x' \<noteq> y'` have "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P) = \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>(([(x, x')] \<bullet> [(y, y')] \<bullet> P)))"
+    moreover from \<open>x' \<sharp> P\<close> \<open>y' \<sharp> P\<close> \<open>x \<noteq> y'\<close> \<open>x' \<noteq> y'\<close> have "\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P) = \<lparr>\<nu>x'\<rparr>(\<lparr>\<nu>y'\<rparr>(([(x, x')] \<bullet> [(y, y')] \<bullet> P)))"
       apply(subst alphaRes[of y' P], simp)
       by(subst alphaRes[of x']) (auto simp add: abs_fresh fresh_left calc_atm eqvts)
-    moreover from `x' \<sharp> P` `y' \<sharp> P` `y \<noteq> x'` `x \<noteq> y'` `x' \<noteq> y'` `x \<noteq> x'` `x \<noteq> y` have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P) = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>(([(x, x')] \<bullet> [(y, y')] \<bullet> P)))"
+    moreover from \<open>x' \<sharp> P\<close> \<open>y' \<sharp> P\<close> \<open>y \<noteq> x'\<close> \<open>x \<noteq> y'\<close> \<open>x' \<noteq> y'\<close> \<open>x \<noteq> x'\<close> \<open>x \<noteq> y\<close> have "\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P) = \<lparr>\<nu>y'\<rparr>(\<lparr>\<nu>x'\<rparr>(([(x, x')] \<bullet> [(y, y')] \<bullet> P)))"
       apply(subst alphaRes[of x' P], simp)
       apply(subst alphaRes[of y'], simp add: abs_fresh fresh_left calc_atm) 
       apply(simp add: eqvts calc_atm)
       by(subst perm_compose) (simp add: calc_atm)
 
     ultimately show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>(\<lparr>\<nu>y\<rparr>P))[<\<sigma>>] \<sim> (\<lparr>\<nu>y\<rparr>(\<lparr>\<nu>x\<rparr>P))[<\<sigma>>]" 
-      using `wellFormedSubst \<sigma>`  `x' \<sharp> \<sigma>` `y' \<sharp> \<sigma>`
+      using \<open>wellFormedSubst \<sigma>\<close>  \<open>x' \<sharp> \<sigma>\<close> \<open>y' \<sharp> \<sigma>\<close>
       by simp
   qed
 qed

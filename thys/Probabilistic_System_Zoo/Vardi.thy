@@ -63,7 +63,7 @@ lemma "bisimilar_lts s1 s2 x y \<longleftrightarrow> bisimilar_var (var_of_lts_e
 unfolding bisimilar_def o_apply proof safe
   fix R assume "R x y" and
     bis: "\<forall>x y. R x y \<longrightarrow> rel_bset (rel_prod (=) R) (s1 x) (s2 y)"
-  from `R x y` show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> rel_var (=) R (?emb1 (s1 x)) (?emb2 (s2 y)))"
+  from \<open>R x y\<close> show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> rel_var (=) R (?emb1 (s1 x)) (?emb2 (s2 y)))"
   proof (intro exI[of _ R], safe)
     fix x y
     assume "R x y"
@@ -79,7 +79,7 @@ unfolding bisimilar_def o_apply proof safe
 next
   fix R assume "R x y" and
     bis: "\<forall>x y. R x y \<longrightarrow> rel_var (=) R (?emb1 (s1 x)) (?emb2 (s2 y))"
-  from `R x y` show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> rel_bset (rel_prod (=) R) (s1 x) (s2 y))"
+  from \<open>R x y\<close> show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> rel_bset (rel_prod (=) R) (s1 x) (s2 y))"
   proof (intro exI[of _ R], safe)
     fix x y
     assume "R x y"
@@ -101,7 +101,7 @@ lemma "bisimilar_gen s1 s2 x y \<longleftrightarrow> bisimilar_var (var_of_gen_e
 unfolding bisimilar_def o_apply proof safe
   fix R assume "R x y" and
     bis: "\<forall>x y. R x y \<longrightarrow> rel_option (rel_pmf (rel_prod (=) R)) (s1 x) (s2 y)"
-  from `R x y` show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> rel_var (=) R (?emb1 (s1 x)) (?emb2 (s2 y)))"
+  from \<open>R x y\<close> show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow> rel_var (=) R (?emb1 (s1 x)) (?emb2 (s2 y)))"
   proof (intro exI[of _ R], safe)
     fix x y
     assume "R x y"
@@ -123,7 +123,7 @@ unfolding bisimilar_def o_apply proof safe
 next
   fix R assume "R x y" and
     bis: "\<forall>x y. R x y \<longrightarrow> rel_var (=) R (?emb1 (s1 x)) (?emb2 (s2 y))"
-  from `R x y` show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow>
+  from \<open>R x y\<close> show "\<exists>R. R x y \<and> (\<forall>x y. R x y \<longrightarrow>
      rel_option (rel_pmf (rel_prod (=) R)) (s1 x) (s2 y))"
   proof (intro exI[of _ R], safe)
     fix x y

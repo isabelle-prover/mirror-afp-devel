@@ -163,7 +163,7 @@ proof -
     apply(auto simp add: eqvt_def)
     apply(rule_tac x="pa@p" in exI)
     by(auto simp add: pt2[OF pt_name_inst])
-  from `\<Psi> \<rhd> P \<approx> Q` have "(p \<bullet> \<Psi>, p \<bullet> P, p \<bullet> Q) \<in> ?X" by blast
+  from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "(p \<bullet> \<Psi>, p \<bullet> P, p \<bullet> Q) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cStatImp \<Psi> P Q)
@@ -174,10 +174,10 @@ proof -
       hence "\<Psi> \<rhd> P \<lessapprox><?X> Q"
         apply(rule_tac A=weakBisim in weakStatImpMonotonic, auto)
         by(rule_tac x="[]::name prm" in exI) auto
-      with `eqvt ?X` have "((p::name prm) \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<lessapprox><?X> (p \<bullet> Q)"
+      with \<open>eqvt ?X\<close> have "((p::name prm) \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<lessapprox><?X> (p \<bullet> Q)"
         by(rule weakStatImpClosed)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case by blast
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case by blast
   next
     case(cSim \<Psi> P Q)
     {
@@ -187,10 +187,10 @@ proof -
       hence "\<Psi> \<rhd> P \<leadsto><?X> Q"
         apply(rule_tac A=weakBisim in weakSimMonotonic, auto)
         by(rule_tac x="[]::name prm" in exI) auto
-      with `eqvt ?X` have "((p::name prm) \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<leadsto><?X> (p \<bullet> Q)"
+      with \<open>eqvt ?X\<close> have "((p::name prm) \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<leadsto><?X> (p \<bullet> Q)"
         by(rule_tac weakSimClosed)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: weakBisimE)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -203,7 +203,7 @@ proof -
         apply(rule_tac x="\<Psi> \<otimes> (rev p \<bullet> \<Psi>')" in exI)
         by(auto simp add: eqvts)
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case
       by(blast dest: weakBisimE)
   next
     case(cSym \<Psi> P Q)
@@ -228,42 +228,42 @@ lemma statEqWeakBisim:
   shows "\<Psi>' \<rhd> P \<approx> Q"
 proof -
   let ?X = "{(\<Psi>', P, Q) | \<Psi> P Q \<Psi>'. \<Psi> \<rhd> P \<approx> Q \<and> \<Psi> \<simeq> \<Psi>'}"
-  from `\<Psi> \<rhd> P \<approx> Q` `\<Psi> \<simeq> \<Psi>'` have "(\<Psi>', P, Q) \<in> ?X" by auto
+  from \<open>\<Psi> \<rhd> P \<approx> Q\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close> have "(\<Psi>', P, Q) \<in> ?X" by auto
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cStatImp \<Psi>' P Q)
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> P \<lessapprox><weakBisim> Q" by(rule weakBisimE)
-    moreover note `\<Psi> \<simeq> \<Psi>'`
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> P \<lessapprox><weakBisim> Q" by(rule weakBisimE)
+    moreover note \<open>\<Psi> \<simeq> \<Psi>'\<close>
     moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>\<Psi> \<rhd> P \<approx> Q; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> weakBisim"
       by auto
     ultimately show ?case by(rule weakStatImpStatEq)
   next
     case(cSim \<Psi>' P Q)
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(blast dest: weakBisimE)
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(blast dest: weakBisimE)
     moreover have "eqvt ?X"
       by(auto simp add: eqvt_def) (metis weakBisimClosed AssertionStatEqClosed)
     hence "eqvt(?X \<union> weakBisim)" by auto
-    moreover note `\<Psi> \<simeq> \<Psi>'`
+    moreover note \<open>\<Psi> \<simeq> \<Psi>'\<close>
     moreover have "\<And>\<Psi> P Q \<Psi>'. \<lbrakk>\<Psi> \<rhd> P \<approx> Q; \<Psi> \<simeq> \<Psi>'\<rbrakk> \<Longrightarrow> (\<Psi>', P, Q) \<in> ?X \<union> weakBisim"
       by auto
     ultimately show ?case by(rule weakSimStatEq)
   next
     case(cExt \<Psi>' P Q \<Psi>'')
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<otimes> \<Psi>'' \<rhd> P \<approx> Q" by(rule weakBisimE)
-    moreover from `\<Psi> \<simeq> \<Psi>'` have "\<Psi> \<otimes> \<Psi>'' \<simeq> \<Psi>' \<otimes> \<Psi>''" by(rule Composition)
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<otimes> \<Psi>'' \<rhd> P \<approx> Q" by(rule weakBisimE)
+    moreover from \<open>\<Psi> \<simeq> \<Psi>'\<close> have "\<Psi> \<otimes> \<Psi>'' \<simeq> \<Psi>' \<otimes> \<Psi>''" by(rule Composition)
     ultimately show ?case by blast
   next
     case(cSym \<Psi>' P Q)
-    from `(\<Psi>', P, Q) \<in> ?X` obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
+    from \<open>(\<Psi>', P, Q) \<in> ?X\<close> obtain \<Psi> where "\<Psi> \<rhd> P \<approx> Q" and "\<Psi> \<simeq> \<Psi>'"
       by auto
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> Q \<approx> P" by(rule weakBisimE)
-    thus ?case using `\<Psi> \<simeq> \<Psi>'` by auto
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> Q \<approx> P" by(rule weakBisimE)
+    thus ?case using \<open>\<Psi> \<simeq> \<Psi>'\<close> by auto
   qed
 qed
 
@@ -283,9 +283,9 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cStatImp \<Psi> P R)
-    from `(\<Psi>, P, R) \<in> ?X` obtain Q where "\<Psi> \<rhd> P \<approx> Q" and  "\<Psi> \<rhd> Q \<approx> R" by blast
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> P \<lessapprox><weakBisim> Q" by(rule weakBisimE)
-    moreover note `\<Psi> \<rhd> Q \<approx> R`
+    from \<open>(\<Psi>, P, R) \<in> ?X\<close> obtain Q where "\<Psi> \<rhd> P \<approx> Q" and  "\<Psi> \<rhd> Q \<approx> R" by blast
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> P \<lessapprox><weakBisim> Q" by(rule weakBisimE)
+    moreover note \<open>\<Psi> \<rhd> Q \<approx> R\<close>
     moreover have "?X \<subseteq> ?X \<union> weakBisim" by auto
     moreover note weakBisimE(1)
     moreover from weakBisimE(2) have "\<And>\<Psi> P Q P'. \<lbrakk>\<Psi> \<rhd> P \<approx> Q; \<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'\<rbrakk> \<Longrightarrow> \<exists>Q'. \<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<and> \<Psi> \<rhd> P' \<approx> Q'"
@@ -304,7 +304,7 @@ proof -
       ultimately have "\<Psi> \<rhd> P \<leadsto><(?X \<union> weakBisim)> R"
         by(rule_tac weakSimTransitive) auto
     }
-    with `(\<Psi>, P, R) \<in> ?X` show ?case
+    with \<open>(\<Psi>, P, R) \<in> ?X\<close> show ?case
       by(blast dest: weakBisimE)
   next
     case(cExt \<Psi> P R \<Psi>')
@@ -324,28 +324,28 @@ lemma strongBisimWeakBisim:
 
   shows "\<Psi> \<rhd> P \<approx> Q"
 proof -
-  from `\<Psi> \<rhd> P \<sim> Q`
+  from \<open>\<Psi> \<rhd> P \<sim> Q\<close>
   show ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cStatImp \<Psi> P Q)
-    from `\<Psi> \<rhd> P \<sim> Q` have "insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q) \<Psi>"
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have "insertAssertion(extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame Q) \<Psi>"
       by(metis bisimE FrameStatEq_def)
-    moreover from `\<Psi> \<rhd> P \<sim> Q` have "\<And>\<Psi>'. \<Psi> \<otimes> \<Psi>' \<rhd> P \<sim> Q" by(rule bisimE)
+    moreover from \<open>\<Psi> \<rhd> P \<sim> Q\<close> have "\<And>\<Psi>'. \<Psi> \<otimes> \<Psi>' \<rhd> P \<sim> Q" by(rule bisimE)
     ultimately show ?case by(rule statImpWeakStatImp)
   next
     case(cSim \<Psi> P Q)
-    note `\<Psi> \<rhd> P \<sim> Q`
+    note \<open>\<Psi> \<rhd> P \<sim> Q\<close>
     moreover have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> insertAssertion(extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame P) \<Psi>"
       by(drule_tac bisimE) (simp add: FrameStatEq_def)
     ultimately show ?case using bisimE(2) bisimE(3)
       by(rule strongSimWeakSim)
   next
     case(cExt \<Psi> P Q \<Psi>')
-    from `\<Psi> \<rhd> P \<sim> Q` show ?case
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> show ?case
       by(rule bisimE)
   next
     case(cSym \<Psi> P Q)
-    from `\<Psi> \<rhd> P \<sim> Q` show ?case
+    from \<open>\<Psi> \<rhd> P \<sim> Q\<close> show ?case
       by(rule bisimE)
   qed
 qed
@@ -374,20 +374,20 @@ lemma simTauChain:
   obtains P' where "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
 proof -
   assume A: "\<And>P'. \<lbrakk>\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'; (\<Psi>, P', Q') \<in> Rel\<rbrakk> \<Longrightarrow> thesis"
-  from `\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'` `(\<Psi>, P, Q) \<in> Rel` A show ?thesis
+  from \<open>\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'\<close> \<open>(\<Psi>, P, Q) \<in> Rel\<close> A show ?thesis
   proof(induct arbitrary: P thesis rule: tauChainInduct)
     case(TauBase Q P)
     moreover have "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P" by simp
     ultimately show ?case by blast
   next
     case(TauStep Q Q' Q'' P)
-    from `(\<Psi>, P, Q) \<in> Rel` obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
+    from \<open>(\<Psi>, P, Q) \<in> Rel\<close> obtain P' where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
       by(rule TauStep)
-    from `(\<Psi>, P', Q') \<in> Rel` have "\<Psi> \<rhd> P' \<leadsto>[Rel] Q'" by(rule Sim)
+    from \<open>(\<Psi>, P', Q') \<in> Rel\<close> have "\<Psi> \<rhd> P' \<leadsto>[Rel] Q'" by(rule Sim)
     then obtain P'' where P'Chain: "\<Psi> \<rhd> P' \<longmapsto>\<tau> \<prec> P''" and "(\<Psi>, P'', Q'') \<in> Rel"
-      using `\<Psi> \<rhd> Q' \<longmapsto>\<tau> \<prec> Q''` by(drule_tac simE) auto
+      using \<open>\<Psi> \<rhd> Q' \<longmapsto>\<tau> \<prec> Q''\<close> by(drule_tac simE) auto
     from PChain P'Chain have "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''" by(auto dest: tauActTauChain)
-    thus ?case using `(\<Psi>, P'', Q'') \<in> Rel` by(rule TauStep)
+    thus ?case using \<open>(\<Psi>, P'', Q'') \<in> Rel\<close> by(rule TauStep)
   qed
 qed
 
@@ -401,7 +401,7 @@ lemma quietBisimNil:
 proof -
   let ?X = "{(\<Psi>, \<zero>, P) | \<Psi> P. quiet P} \<union> {(\<Psi>, P, \<zero>) | \<Psi> P. quiet P}"
 
-  from `quiet P` have "(\<Psi>, P, \<zero>) \<in> ?X" by auto
+  from \<open>quiet P\<close> have "(\<Psi>, P, \<zero>) \<in> ?X" by auto
   thus ?thesis
   proof(coinduct rule: weakBisimWeakCoinduct)
     case(cStatImp \<Psi> P Q)
@@ -466,43 +466,43 @@ proof -
     case(cStatImp \<Psi> P Q)
     {
       fix \<Psi>'
-      from `(\<Psi> , P, Q) \<in> ?X` obtain P' Q' where "\<Psi> \<rhd> P \<sim> P'" and "(\<Psi>, P', Q') \<in> X" and "\<Psi> \<rhd> Q' \<sim> Q" by auto
-      from `(\<Psi>, P', Q') \<in> X` obtain Q'' Q''' where Q'Chain: "\<Psi> \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''"
+      from \<open>(\<Psi> , P, Q) \<in> ?X\<close> obtain P' Q' where "\<Psi> \<rhd> P \<sim> P'" and "(\<Psi>, P', Q') \<in> X" and "\<Psi> \<rhd> Q' \<sim> Q" by auto
+      from \<open>(\<Psi>, P', Q') \<in> X\<close> obtain Q'' Q''' where Q'Chain: "\<Psi> \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''"
                                                and PImpQ: "insertAssertion (extractFrame P') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'') \<Psi>"
                                                and Q''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'''" and "(\<Psi> \<otimes> \<Psi>', P', Q''') \<in> X"
         apply(drule_tac rStatImp) by(auto simp add: weakStatImp_def) blast
-      from `\<Psi> \<rhd> Q' \<sim> Q` have "\<Psi> \<rhd> Q \<sim> Q'" by(rule bisimE)
-      then obtain Q'''' where "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" and "\<Psi> \<rhd> Q'''' \<sim> Q''" using  `\<Psi> \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''` bisimE(2)
+      from \<open>\<Psi> \<rhd> Q' \<sim> Q\<close> have "\<Psi> \<rhd> Q \<sim> Q'" by(rule bisimE)
+      then obtain Q'''' where "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" and "\<Psi> \<rhd> Q'''' \<sim> Q''" using  \<open>\<Psi> \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''\<close> bisimE(2)
         by(rule simTauChain)
-      note `\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''`
+      note \<open>\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''\<close>
       moreover have "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'''') \<Psi>"
       proof -
-        from `\<Psi> \<rhd> P \<sim> P'` have "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame P') \<Psi>"
+        from \<open>\<Psi> \<rhd> P \<sim> P'\<close> have "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame P') \<Psi>"
           by(drule_tac bisimE) (simp add: FrameStatEq_def)
-        moreover from `\<Psi> \<rhd> Q'''' \<sim> Q''` have "insertAssertion (extractFrame Q'') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'''') \<Psi>"
+        moreover from \<open>\<Psi> \<rhd> Q'''' \<sim> Q''\<close> have "insertAssertion (extractFrame Q'') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'''') \<Psi>"
           by(drule_tac bisimE) (simp add: FrameStatEq_def)
         ultimately show ?thesis using PImpQ by(blast intro: FrameStatImpTrans)
       qed
-      moreover from `\<Psi> \<rhd> Q'''' \<sim> Q''` have "\<Psi> \<otimes> \<Psi>' \<rhd> Q'''' \<sim> Q''" by(metis bisimE)
+      moreover from \<open>\<Psi> \<rhd> Q'''' \<sim> Q''\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> Q'''' \<sim> Q''" by(metis bisimE)
       then obtain Q''''' where Q''''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q'''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'''''" and "\<Psi> \<otimes> \<Psi>' \<rhd> Q''''' \<sim> Q'''" using Q''Chain bisimE(2)
         by(rule simTauChain)
-      moreover from `\<Psi> \<rhd> P \<sim> P'` `(\<Psi> \<otimes> \<Psi>' , P', Q''') \<in> X` `\<Psi> \<otimes> \<Psi>' \<rhd> Q''''' \<sim> Q'''` have "(\<Psi> \<otimes> \<Psi>', P, Q''''') \<in> ?X" by(auto dest: bisimE)
+      moreover from \<open>\<Psi> \<rhd> P \<sim> P'\<close> \<open>(\<Psi> \<otimes> \<Psi>' , P', Q''') \<in> X\<close> \<open>\<Psi> \<otimes> \<Psi>' \<rhd> Q''''' \<sim> Q'''\<close> have "(\<Psi> \<otimes> \<Psi>', P, Q''''') \<in> ?X" by(auto dest: bisimE)
       ultimately have "\<exists>Q' Q''. \<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'' \<and> insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'') \<Psi> \<and> \<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<and> (\<Psi> \<otimes> \<Psi>', P, Q') \<in> ?X" by blast
     }
-    with `(\<Psi>, P, Q) \<in> ?X` show ?case by(simp add: weakStatImp_def) blast
+    with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?case by(simp add: weakStatImp_def) blast
   next
     case(cSim \<Psi> P Q)
-    from `(\<Psi>, P, Q) \<in> ?X` obtain P' Q' where "\<Psi> \<rhd> P \<sim> P'" and "(\<Psi>, P', Q') \<in> X" and "\<Psi> \<rhd> Q' \<sim> Q" by auto
-    from `(\<Psi>, P', Q') \<in> X` have "\<Psi> \<rhd> P' \<leadsto><?X> Q'" 
+    from \<open>(\<Psi>, P, Q) \<in> ?X\<close> obtain P' Q' where "\<Psi> \<rhd> P \<sim> P'" and "(\<Psi>, P', Q') \<in> X" and "\<Psi> \<rhd> Q' \<sim> Q" by auto
+    from \<open>(\<Psi>, P', Q') \<in> X\<close> have "\<Psi> \<rhd> P' \<leadsto><?X> Q'" 
       by(rule rSim)
-    moreover from `\<Psi> \<rhd> Q' \<sim> Q` have "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q" by(rule bisimE)
-    moreover from `eqvt X` have "eqvt ?X"
+    moreover from \<open>\<Psi> \<rhd> Q' \<sim> Q\<close> have "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q" by(rule bisimE)
+    moreover from \<open>eqvt X\<close> have "eqvt ?X"
       apply(auto simp add: eqvt_def)
       apply(drule_tac p=p in bisimClosed)
       apply(drule_tac p=p in bisimClosed)
       apply(rule_tac x="p \<bullet> P'" in exI, simp)
       by(rule_tac x="p \<bullet> Q'" in exI, auto)
-    moreover from `\<Psi> \<rhd> Q' \<sim> Q` have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
+    moreover from \<open>\<Psi> \<rhd> Q' \<sim> Q\<close> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
       by(drule_tac bisimE) (simp add: FrameStatEq_def)
     moreover have "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. (\<Psi>, P, Q) \<in> ?X \<and> \<Psi> \<rhd> Q \<sim> R} \<subseteq> ?X"
       by(blast intro: bisimTransitive)
@@ -519,7 +519,7 @@ proof -
       ultimately have "\<Psi> \<rhd> P \<leadsto><bisim> Q" using bisimE(2) bisimE(3)
         by(rule strongSimWeakSim)
     }
-    ultimately show ?case using `\<Psi> \<rhd> P \<sim> P'` `eqvt ?X`
+    ultimately show ?case using \<open>\<Psi> \<rhd> P \<sim> P'\<close> \<open>eqvt ?X\<close>
       by(rule_tac weakSimTransitive)
   next
     case(cExt \<Psi> P Q \<Psi>')
@@ -548,7 +548,7 @@ lemma weakTransitiveCoinduct[case_names cStatImp cSim cExt cSym, case_conclusion
   shows "\<Psi> \<rhd> P \<approx> Q"
 proof -
   from p have "(\<Psi>, P, Q) \<in> X \<union> weakBisim" by auto
-  moreover from `eqvt X` have "eqvt(X \<union> weakBisim)" by auto
+  moreover from \<open>eqvt X\<close> have "eqvt(X \<union> weakBisim)" by auto
   ultimately show ?thesis
   proof(coinduct rule: weakTransitiveWeakCoinduct)
     case(cStatImp \<Psi> P Q)
@@ -583,13 +583,13 @@ proof -
   let ?X = "{(\<Psi>, P, Q) | \<Psi> P Q. \<exists>P' Q'. \<Psi> \<rhd> P \<approx> P' \<and> (\<Psi>, P', Q') \<in> X \<and> \<Psi> \<rhd> Q' \<sim> Q}"
   let ?Y = "{(\<Psi>, P, Q) | \<Psi> P Q. \<exists>P' Q'. \<Psi> \<rhd> P \<approx> P' \<and> (\<Psi>, P', Q') \<in> X \<and> \<Psi> \<rhd> Q' \<approx> Q}"
 
-  from `eqvt X` have "eqvt ?X"
+  from \<open>eqvt X\<close> have "eqvt ?X"
     apply(auto simp add: eqvt_def)
     apply(drule_tac p=p in bisimClosed)
     apply(drule_tac p=p in weakBisimClosed)
     apply(rule_tac x="p \<bullet> P'" in exI, simp)
     by(rule_tac x="p \<bullet> Q'" in exI, auto)
-  from `eqvt X` have "eqvt ?Y"
+  from \<open>eqvt X\<close> have "eqvt ?Y"
     apply(auto simp add: eqvt_def)
     apply(drule_tac p=p in weakBisimClosed)
     apply(drule_tac p=p in weakBisimClosed)
@@ -601,15 +601,15 @@ proof -
     assume "(\<Psi>, P, Q) \<in> ?X"
     then obtain P' Q' where "\<Psi> \<rhd> P \<approx> P'" and "(\<Psi>, P', Q') \<in> X" and "\<Psi> \<rhd> Q' \<sim> Q"
       by auto
-    note `\<Psi> \<rhd> P \<approx> P'`
-    moreover from `(\<Psi>, P', Q') \<in> X` have "\<Psi> \<rhd> P' \<leadsto><?X> Q'" by(rule rSim)
-    moreover note `eqvt ?X`
+    note \<open>\<Psi> \<rhd> P \<approx> P'\<close>
+    moreover from \<open>(\<Psi>, P', Q') \<in> X\<close> have "\<Psi> \<rhd> P' \<leadsto><?X> Q'" by(rule rSim)
+    moreover note \<open>eqvt ?X\<close>
     moreover have "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. \<Psi> \<rhd> P \<approx> Q \<and> (\<Psi>, Q, R) \<in> ?X} \<subseteq> ?X"
       by(blast intro: weakBisimTransitive)
     ultimately have "\<Psi> \<rhd> P \<leadsto><?X> Q'" using weakBisimE(2) by(rule weakSimTransitive)
-    moreover from `\<Psi> \<rhd> Q' \<sim> Q` have "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q" by(rule bisimE)
-    moreover note `eqvt ?X`
-    moreover from `\<Psi> \<rhd> Q' \<sim> Q` have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
+    moreover from \<open>\<Psi> \<rhd> Q' \<sim> Q\<close> have "\<Psi> \<rhd> Q' \<leadsto>[bisim] Q" by(rule bisimE)
+    moreover note \<open>eqvt ?X\<close>
+    moreover from \<open>\<Psi> \<rhd> Q' \<sim> Q\<close> have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
       by(drule_tac bisimE) (simp add: FrameStatEq_def)
     moreover have "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. (\<Psi>, P, Q) \<in> ?X \<and> \<Psi> \<rhd> Q \<sim> R} \<subseteq> ?X"
       by(blast dest: bisimTransitive)
@@ -626,34 +626,34 @@ proof -
     {
       fix \<Psi>'
 
-      from `(\<Psi>, P, Q) \<in> ?Y` obtain R S where "\<Psi> \<rhd> P \<approx> R" and "(\<Psi>, R, S) \<in> X" and "\<Psi> \<rhd> S \<approx> Q" by auto
-      from `\<Psi> \<rhd> P \<approx> R` obtain R'' R' 
+      from \<open>(\<Psi>, P, Q) \<in> ?Y\<close> obtain R S where "\<Psi> \<rhd> P \<approx> R" and "(\<Psi>, R, S) \<in> X" and "\<Psi> \<rhd> S \<approx> Q" by auto
+      from \<open>\<Psi> \<rhd> P \<approx> R\<close> obtain R'' R' 
         where RChain: "\<Psi> \<rhd> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''" 
           and PImpR'': "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame R'') \<Psi>"
           and R''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> R'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R'" 
           and "\<Psi> \<otimes> \<Psi>' \<rhd> P \<approx> R'"
         apply(drule_tac weakBisimE) by(simp add: weakStatImp_def) blast
 
-      from `(\<Psi>, R, S) \<in> X` have "(\<Psi>, S, R) \<in> ?X" by(blast intro: weakBisimReflexive bisimReflexive rSym)
+      from \<open>(\<Psi>, R, S) \<in> X\<close> have "(\<Psi>, S, R) \<in> ?X" by(blast intro: weakBisimReflexive bisimReflexive rSym)
       with RChain obtain S'' where SChain: "\<Psi> \<rhd> S \<Longrightarrow>\<^sup>^\<^sub>\<tau> S''" and "(\<Psi>, S'', R'') \<in> ?X" using Goal
         by(rule weakSimTauChain)
 
-      from `(\<Psi>, S'', R'') \<in> ?X` obtain T U where "\<Psi> \<rhd> S'' \<approx> T" and "(\<Psi>, T, U) \<in> X" and "\<Psi> \<rhd> U \<sim> R''"
+      from \<open>(\<Psi>, S'', R'') \<in> ?X\<close> obtain T U where "\<Psi> \<rhd> S'' \<approx> T" and "(\<Psi>, T, U) \<in> X" and "\<Psi> \<rhd> U \<sim> R''"
         by auto
-      from `\<Psi> \<rhd> U \<sim> R''` have R''ImpU: "insertAssertion (extractFrame R'') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame U) \<Psi>"
+      from \<open>\<Psi> \<rhd> U \<sim> R''\<close> have R''ImpU: "insertAssertion (extractFrame R'') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame U) \<Psi>"
         by(drule_tac bisimE) (simp add: FrameStatEq_def)
       
-      from `(\<Psi>, T, U) \<in> X` weakStatImp_def
+      from \<open>(\<Psi>, T, U) \<in> X\<close> weakStatImp_def
       obtain T'' T' where TChain: "\<Psi> \<rhd> T \<Longrightarrow>\<^sup>^\<^sub>\<tau> T''"
                       and UImpT'': "insertAssertion (extractFrame U) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame T'') \<Psi>"
                       and T''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> T'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> T'" 
                       and "(\<Psi> \<otimes> \<Psi>', U, T') \<in> X"
         by(blast dest: rStatImp rSym)
 
-      from TChain `\<Psi> \<rhd> S'' \<approx> T` weakBisimE(2) obtain S''' where S''Chain: "\<Psi> \<rhd> S'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> S'''" and "\<Psi> \<rhd> S''' \<approx> T''"
+      from TChain \<open>\<Psi> \<rhd> S'' \<approx> T\<close> weakBisimE(2) obtain S''' where S''Chain: "\<Psi> \<rhd> S'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> S'''" and "\<Psi> \<rhd> S''' \<approx> T''"
         by(rule weakSimTauChain)
 
-      from `\<Psi> \<rhd> S''' \<approx> T''` weakStatImp_def
+      from \<open>\<Psi> \<rhd> S''' \<approx> T''\<close> weakStatImp_def
       obtain S''''' S'''' where S'''Chain: "\<Psi> \<rhd> S''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> S'''''"
                             and T''ImpS''''': "insertAssertion (extractFrame T'') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame S''''') \<Psi>"
                             and S'''''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> S''''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> S''''" 
@@ -661,10 +661,10 @@ proof -
         by(metis weakBisimE)
       
       from SChain S''Chain S'''Chain have "\<Psi> \<rhd> S \<Longrightarrow>\<^sup>^\<^sub>\<tau> S'''''" by auto
-      moreover from `\<Psi> \<rhd> S \<approx> Q` have "\<Psi> \<rhd> Q \<approx> S" by(rule weakBisimE)
+      moreover from \<open>\<Psi> \<rhd> S \<approx> Q\<close> have "\<Psi> \<rhd> Q \<approx> S" by(rule weakBisimE)
       ultimately obtain Q''' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'''" and "\<Psi> \<rhd> Q''' \<approx> S'''''" using weakBisimE(2)
         by(rule weakSimTauChain)
-      from `\<Psi> \<rhd> Q''' \<approx> S'''''` have "\<Psi> \<rhd> S''''' \<approx> Q'''" by(rule weakBisimE)
+      from \<open>\<Psi> \<rhd> Q''' \<approx> S'''''\<close> have "\<Psi> \<rhd> S''''' \<approx> Q'''" by(rule weakBisimE)
       then obtain Q'' Q' where Q'''Chain: "\<Psi> \<rhd> Q''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''"
                            and S'''''ImpQ'': "insertAssertion (extractFrame S''''') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'') \<Psi>"
                            and Q''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'" 
@@ -676,30 +676,30 @@ proof -
       have "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'') \<Psi>"
         by(blast dest: FrameStatImpTrans)
 
-      moreover from `\<Psi> \<rhd> U \<sim> R''` have "\<Psi> \<otimes> \<Psi>' \<rhd> U \<approx> R''" by(metis weakBisimE strongBisimWeakBisim)
+      moreover from \<open>\<Psi> \<rhd> U \<sim> R''\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> U \<approx> R''" by(metis weakBisimE strongBisimWeakBisim)
       with R''Chain obtain U' where UChain: "\<Psi> \<otimes> \<Psi>' \<rhd> U \<Longrightarrow>\<^sup>^\<^sub>\<tau> U'" and "\<Psi> \<otimes> \<Psi>' \<rhd> U' \<approx> R'" using weakBisimE(2)
         by(rule weakSimTauChain)
-      from `\<Psi> \<otimes> \<Psi>' \<rhd> U' \<approx> R'` have "\<Psi> \<otimes> \<Psi>' \<rhd> R' \<approx> U'" by(rule weakBisimE)
-      from `(\<Psi> \<otimes> \<Psi>', U, T') \<in> X` have "(\<Psi> \<otimes> \<Psi>', T', U) \<in> ?X" by(blast intro: rSym weakBisimReflexive bisimReflexive)
+      from \<open>\<Psi> \<otimes> \<Psi>' \<rhd> U' \<approx> R'\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> R' \<approx> U'" by(rule weakBisimE)
+      from \<open>(\<Psi> \<otimes> \<Psi>', U, T') \<in> X\<close> have "(\<Psi> \<otimes> \<Psi>', T', U) \<in> ?X" by(blast intro: rSym weakBisimReflexive bisimReflexive)
       with UChain obtain T''' where T'Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> T' \<Longrightarrow>\<^sup>^\<^sub>\<tau> T'''" and "(\<Psi> \<otimes> \<Psi>', T''', U') \<in> ?X" using Goal
         by(rule weakSimTauChain)
-      from `(\<Psi> \<otimes> \<Psi>', T''', U') \<in> ?X` have "(\<Psi> \<otimes> \<Psi>', U', T''') \<in> ?Y" 
+      from \<open>(\<Psi> \<otimes> \<Psi>', T''', U') \<in> ?X\<close> have "(\<Psi> \<otimes> \<Psi>', U', T''') \<in> ?Y" 
         by(blast dest: weakBisimE rSym strongBisimWeakBisim)
       from T''Chain T'Chain have "\<Psi> \<otimes> \<Psi>' \<rhd> T'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> T'''" by auto
       then obtain S'''''' where S''''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> S'''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> S''''''" and "\<Psi> \<otimes> \<Psi>' \<rhd> T''' \<approx> S''''''" 
-        using  `\<Psi> \<otimes> \<Psi>' \<rhd> T'' \<approx> S''''` weakBisimE(2)
+        using  \<open>\<Psi> \<otimes> \<Psi>' \<rhd> T'' \<approx> S''''\<close> weakBisimE(2)
         apply(drule_tac weakBisimE(4))
         by(rule weakSimTauChain) (auto dest: weakBisimE(4))
       from S'''''Chain S''''Chain have "\<Psi> \<otimes> \<Psi>' \<rhd> S''''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> S''''''" by auto
 
-      with `\<Psi> \<otimes> \<Psi>' \<rhd> S''''' \<approx> Q'`
+      with \<open>\<Psi> \<otimes> \<Psi>' \<rhd> S''''' \<approx> Q'\<close>
       obtain Q'''' where Q'Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" and "\<Psi> \<otimes> \<Psi>' \<rhd> S'''''' \<approx> Q''''" using weakBisimE(2)
         apply(drule_tac weakBisimE(4))
         by(rule weakSimTauChain) (auto dest: weakBisimE(4))
 
       from Q''Chain Q'Chain have "\<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''''" by auto
-      moreover from `\<Psi> \<otimes> \<Psi>' \<rhd> P \<approx> R'` `\<Psi> \<otimes> \<Psi>' \<rhd> R' \<approx> U'` `(\<Psi> \<otimes> \<Psi>', U', T''') \<in> ?Y` `\<Psi> \<otimes> \<Psi>' \<rhd> T''' \<approx> S''''''`
-                    `\<Psi> \<otimes> \<Psi>' \<rhd> S'''''' \<approx> Q''''`
+      moreover from \<open>\<Psi> \<otimes> \<Psi>' \<rhd> P \<approx> R'\<close> \<open>\<Psi> \<otimes> \<Psi>' \<rhd> R' \<approx> U'\<close> \<open>(\<Psi> \<otimes> \<Psi>', U', T''') \<in> ?Y\<close> \<open>\<Psi> \<otimes> \<Psi>' \<rhd> T''' \<approx> S''''''\<close>
+                    \<open>\<Psi> \<otimes> \<Psi>' \<rhd> S'''''' \<approx> Q''''\<close>
       have "(\<Psi> \<otimes> \<Psi>', P, Q'''') \<in> ?Y"
         by auto (blast dest: weakBisimTransitive)
       ultimately have "\<exists>Q'' Q'. \<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'' \<and> insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q'') \<Psi> \<and> \<Psi> \<otimes> \<Psi>' \<rhd> Q'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q' \<and> (\<Psi> \<otimes> \<Psi>', P, Q') \<in> ?Y"
@@ -711,15 +711,15 @@ proof -
     moreover {
       fix \<Psi> P P' Q' Q
       assume "\<Psi> \<rhd> P \<approx> P'" and "(\<Psi>, P', Q') \<in> X" and "\<Psi> \<rhd> Q' \<approx> Q"
-      from `(\<Psi>, P', Q') \<in> X` have "(\<Psi>, P', Q') \<in> ?X"
+      from \<open>(\<Psi>, P', Q') \<in> X\<close> have "(\<Psi>, P', Q') \<in> ?X"
         by(blast intro: weakBisimReflexive bisimReflexive)
-      moreover from `\<Psi> \<rhd> Q' \<approx> Q` have "\<Psi> \<rhd> Q' \<leadsto><weakBisim> Q" by(rule weakBisimE)
-      moreover note `eqvt ?Y`
+      moreover from \<open>\<Psi> \<rhd> Q' \<approx> Q\<close> have "\<Psi> \<rhd> Q' \<leadsto><weakBisim> Q" by(rule weakBisimE)
+      moreover note \<open>eqvt ?Y\<close>
       moreover have "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. (\<Psi>, P, Q) \<in> ?X \<and> \<Psi> \<rhd> Q \<approx> R} \<subseteq> ?Y"
         by(blast dest: weakBisimTransitive strongBisimWeakBisim)
       ultimately have "\<Psi> \<rhd> P' \<leadsto><?Y> Q" using Goal
         by(rule weakSimTransitive)
-      note `\<Psi> \<rhd> P \<approx> P'` this `eqvt ?Y`
+      note \<open>\<Psi> \<rhd> P \<approx> P'\<close> this \<open>eqvt ?Y\<close>
       moreover have "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. \<Psi> \<rhd> P \<approx> Q \<and> (\<Psi>, Q, R) \<in> ?Y} \<subseteq> ?Y"
         by(blast dest: weakBisimTransitive)
       ultimately have "\<Psi> \<rhd> P \<leadsto><?Y> Q" using weakBisimE(2)

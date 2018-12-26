@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Discrete-time Markov Processes *}
+section \<open>Discrete-time Markov Processes\<close>
 
 text \<open>In this file we construct discrete-time Markov processes, e.g. with arbitrary state spaces.\<close>
 

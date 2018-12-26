@@ -6,7 +6,7 @@ theory Native_Word_Test_PolyML imports
   Native_Word_Test
 begin
 
-section {* Test with PolyML *}
+section \<open>Test with PolyML\<close>
 
 test_code
   test_uint64 "test_uint64' = 0x12"

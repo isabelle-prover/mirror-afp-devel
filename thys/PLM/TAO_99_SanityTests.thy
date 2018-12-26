@@ -4,23 +4,23 @@ imports TAO_7_Axioms
 begin
 (*>*)
 
-section{* Sanity Tests *}
-text{* \label{TAO_SanityTests} *}
+section\<open>Sanity Tests\<close>
+text\<open>\label{TAO_SanityTests}\<close>
 
 locale SanityTests
 begin
   interpretation MetaSolver.
   interpretation Semantics.
 
-subsection{* Consistency *}
-text{* \label{TAO_SanityTests_Consistency} *}
+subsection\<open>Consistency\<close>
+text\<open>\label{TAO_SanityTests_Consistency}\<close>
 
   lemma "True"
     nitpick[expect=genuine, user_axioms, satisfy]
     by auto
 
-subsection{* Intensionality *}
-text{* \label{TAO_SanityTests_Intensionality} *}
+subsection\<open>Intensionality\<close>
+text\<open>\label{TAO_SanityTests_Intensionality}\<close>
 
   lemma "[(\<^bold>\<lambda>y. (q \<^bold>\<or> \<^bold>\<not>q)) \<^bold>= (\<^bold>\<lambda>y. (p \<^bold>\<or> \<^bold>\<not>p)) in v]"
     unfolding identity_\<Pi>\<^sub>1_def conn_defs
@@ -38,8 +38,8 @@ text{* \label{TAO_SanityTests_Intensionality} *}
             card \<upsilon> = 2, verbose, show_all]
     oops \<comment> \<open>Countermodel by Nitpick\<close>
 
-subsection{* Concreteness coindices with Object Domains *}
-text{* \label{TAO_SanityTests_Concreteness} *}
+subsection\<open>Concreteness coindices with Object Domains\<close>
+text\<open>\label{TAO_SanityTests_Concreteness}\<close>
 
   lemma OrdCheck:
     "[\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<rparr> in v] \<longleftrightarrow>
@@ -54,15 +54,15 @@ text{* \label{TAO_SanityTests_Concreteness} *}
     apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
     using no_\<alpha>\<omega> by blast
 
-subsection{* Justification for Meta-Logical Axioms *}
-text{* \label{TAO_SanityTests_MetaAxioms} *}
+subsection\<open>Justification for Meta-Logical Axioms\<close>
+text\<open>\label{TAO_SanityTests_MetaAxioms}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   OrdinaryObjectsPossiblyConcreteAxiom is equivalent to "all ordinary objects are
    possibly concrete".
 \end{remark}
-*}
+\<close>
   lemma OrdAxiomCheck:
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
       (\<forall> x. ([\<lparr>\<^bold>\<lambda> x . \<^bold>\<not>\<^bold>\<box>(\<^bold>\<not>\<lparr>E!, x\<^sup>P\<rparr>), x\<^sup>P\<rparr> in v]
@@ -71,12 +71,12 @@ text{*
     apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
     using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by fastforce
 
-text{*
+text\<open>
 \begin{remark}
   OrdinaryObjectsPossiblyConcreteAxiom is equivalent to "all abstract objects are
   necessarily not concrete".
 \end{remark}
-*}
+\<close>
 
   lemma AbsAxiomCheck:
     "OrdinaryObjectsPossiblyConcrete \<longleftrightarrow>
@@ -85,39 +85,39 @@ text{*
     apply (simp add: meta_defs meta_aux split: \<nu>.split \<upsilon>.split)
     using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> no_\<alpha>\<omega> by fastforce
   
-text{*
+text\<open>
 \begin{remark}
   PossiblyContingentObjectExistsAxiom is equivalent to the corresponding statement
   in the embedded logic.
 \end{remark}
-*}
+\<close>
 
   lemma PossiblyContingentObjectExistsCheck:
     "PossiblyContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>)) in v]"
      apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
      by (metis \<nu>.simps(5) \<nu>\<upsilon>_def \<upsilon>.simps(1) no_\<sigma>\<omega> \<upsilon>.exhaust)
 
-text{*
+text\<open>
 \begin{remark}
   PossiblyNoContingentObjectExistsAxiom is equivalent to the corresponding statement
   in the embedded logic.
 \end{remark}
-*}
+\<close>
 
   lemma PossiblyNoContingentObjectExistsCheck:
     "PossiblyNoContingentObjectExists \<longleftrightarrow> [\<^bold>\<not>(\<^bold>\<box>(\<^bold>\<not>(\<^bold>\<forall> x. \<lparr>E!,x\<^sup>P\<rparr> \<^bold>\<rightarrow> \<^bold>\<box>\<lparr>E!,x\<^sup>P\<rparr>))) in v]"
     apply (simp add: meta_defs forall_\<nu>_def meta_aux split: \<nu>.split \<upsilon>.split)
     using \<nu>\<upsilon>_\<omega>\<nu>_is_\<omega>\<upsilon> by blast
 
-subsection{* Relations in the Meta-Logic *}
-text{* \label{TAO_SanityTests_MetaRelations} *}
+subsection\<open>Relations in the Meta-Logic\<close>
+text\<open>\label{TAO_SanityTests_MetaRelations}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   Material equality in the embedded logic corresponds to
   equality in the actual state in the meta-logic.
 \end{remark}
-*}
+\<close>
 
   lemma mat_eq_is_eq_dj:
     "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v] \<longleftrightarrow>
@@ -167,12 +167,12 @@ text{*
       using T6 T8 by fast
   qed
 
-text{*
+text\<open>
 \begin{remark}
   Materially equivalent relations are equal in the embedded logic
   if and only if they also coincide in all other states.
 \end{remark}
-*}
+\<close>
 
   lemma mat_eq_is_eq_if_eq_forall_j:
     assumes "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v]"
@@ -200,20 +200,20 @@ text{*
         unfolding identity_\<Pi>\<^sub>1_def using Eq\<^sub>1I by auto
     qed
 
-text{*
+text\<open>
 \begin{remark}
   Under the assumption that all properties behave in all states like in the actual state
   the defined equality degenerates to material equality.
 \end{remark}
-*}
+\<close>
 
   lemma assumes "\<forall> F x s . (eval\<Pi>\<^sub>1 F) x s = (eval\<Pi>\<^sub>1 F) x dj"
     shows "[\<^bold>\<forall> x . \<^bold>\<box>(\<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lparr>G,x\<^sup>P\<rparr>) in v] \<longleftrightarrow> [F \<^bold>= G in v]"
     by (metis (no_types) MetaSolver.Eq\<^sub>1S assms identity_\<Pi>\<^sub>1_def
                          mat_eq_is_eq_dj mat_eq_is_eq_if_eq_forall_j)
 
-subsection{* Lambda Expressions *}
-text{* \label{TAO_SanityTests_MetaLambda} *}
+subsection\<open>Lambda Expressions\<close>
+text\<open>\label{TAO_SanityTests_MetaLambda}\<close>
 
   lemma lambda_interpret_1:
   assumes "[a \<^bold>= b in v]"

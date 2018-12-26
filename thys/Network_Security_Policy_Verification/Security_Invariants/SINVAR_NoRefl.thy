@@ -2,14 +2,14 @@ theory SINVAR_NoRefl
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant NoRefl *}
+subsection \<open>SecurityInvariant NoRefl\<close>
 
-text{*Hosts are not allowed to communicate with themselves.*}
+text\<open>Hosts are not allowed to communicate with themselves.\<close>
 
-text {* This can be used to effectively lift hosts to roles.
+text \<open>This can be used to effectively lift hosts to roles.
         Just list all roles that are allowed to communicate with themselves.
         Otherwise, communication between hosts of the same role (group) is prohibited. 
-        Useful in conjunction with the security gateway. *}
+        Useful in conjunction with the security gateway.\<close>
 
 datatype node_config = NoRefl | Refl
 
@@ -25,7 +25,7 @@ definition receiver_violation :: "bool" where "receiver_violation = False"
 
 
 
-subsubsection {*Preliminaries*}
+subsubsection \<open>Preliminaries\<close>
   lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
     apply(simp only: SecurityInvariant_withOffendingFlows.sinvar_mono_def)
     apply(clarify)
@@ -102,7 +102,7 @@ rewrites "SecurityInvariant_withOffendingFlows.set_offending_flows sinvar = NoRe
   apply(fact NoRefl_offending_set)
   done
 
-text{*It can also be interpreted as IFS*}
+text\<open>It can also be interpreted as IFS\<close>
 lemma NoRefl_SecurityInvariant_IFS: "SecurityInvariant_IFS sinvar default_node_properties"
   unfolding default_node_properties_def
   apply unfold_locales

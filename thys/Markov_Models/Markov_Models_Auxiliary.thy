@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Auxiliary Theory *}
+section \<open>Auxiliary Theory\<close>
 
 text \<open>Parts of it should be moved to the Isabelle repository\<close>
 
@@ -131,55 +131,55 @@ proof -
       by (auto dest: M1)
     with to_N[of s] obtain t where "(s, t) \<in> (SIGMA s:UNIV. K s)\<^sup>*" and "t \<in> N"
       by (auto simp: M_def)
-    from this(1) `s \<in> M` have "\<Delta> s \<le> 0"
+    from this(1) \<open>s \<in> M\<close> have "\<Delta> s \<le> 0"
     proof (induction rule: converse_rtrancl_induct)
       case (step s s')
       then have s: "s \<in> M" "s \<in> S" "s \<notin> N" and s': "s' \<in> S \<union> N" "s' \<in> K s"
-        using S `M \<inter> N = {}` by (auto dest: M1)
+        using S \<open>M \<inter> N = {}\<close> by (auto dest: M1)
       have "s' \<in> M"
       proof (rule ccontr)
         assume "s' \<notin> M"
-        with `s \<in> S` s' `s \<in> M`
+        with \<open>s \<in> S\<close> s' \<open>s \<in> M\<close>
         have "0 < pmf (K s) s'" "\<Delta> s' < \<Delta> s"
           by (auto intro: M2 M3 pmf_positive)
 
         have "\<Delta> s \<le> ((\<integral>t. l2 t \<partial>K s) + c s) - ((\<integral>t. l1 t \<partial>K s) + c s)"
-          unfolding \<Delta>_def using `s \<in> S` `s \<notin> N` by (intro diff_mono l1 l2) auto
+          unfolding \<Delta>_def using \<open>s \<in> S\<close> \<open>s \<notin> N\<close> by (intro diff_mono l1 l2) auto
         then have "\<Delta> s \<le> (\<integral>s'. \<Delta> s' \<partial>K s)"
-          using `s \<in> S` by (simp add: \<Delta>_def)
+          using \<open>s \<in> S\<close> by (simp add: \<Delta>_def)
         also have "\<dots> < (\<integral>s'. \<Delta> s \<partial>K s)"
-          using `s' \<in> K s` `\<Delta> s' < \<Delta> s` `s\<in>S` S `s\<in>M`
+          using \<open>s' \<in> K s\<close> \<open>\<Delta> s' < \<Delta> s\<close> \<open>s\<in>S\<close> S \<open>s\<in>M\<close>
           by (intro measure_pmf.integral_less_AE[where A="{s'}"])
              (auto simp: emeasure_measure_pmf_finite AE_measure_pmf_iff set_pmf_iff[symmetric]
                    intro!: M2)
         finally show False
           using measure_pmf.prob_space[of "K s"] by simp
       qed
-      with step.IH `t\<in>N` N have "\<Delta> s' \<le> 0" "s' \<in> M"
+      with step.IH \<open>t\<in>N\<close> N have "\<Delta> s' \<le> 0" "s' \<in> M"
         by auto
-      with `s\<in>S` show "\<Delta> s \<le> 0"
+      with \<open>s\<in>S\<close> show "\<Delta> s \<le> 0"
         by (force simp: M_def)
-    qed (insert N `t\<in>N`, auto) }
+    qed (insert N \<open>t\<in>N\<close>, auto) }
 
   show ?thesis
   proof cases
     assume "M \<inter> N = {}"
     have "Max (\<Delta>`(S\<union>N)) \<in> \<Delta>`(S\<union>N)"
-      using `s \<in> S` by (intro Max_in finitary) auto
+      using \<open>s \<in> S\<close> by (intro Max_in finitary) auto
     then obtain t where "t \<in> S \<union> N" "\<Delta> t = Max (\<Delta>`(S\<union>N))"
       unfolding image_iff by metis
     then have "t \<in> M"
       by (auto simp: M_def finitary intro!: Max_ge)
     have "\<Delta> s \<le> \<Delta> t"
-      using `t\<in>M` `s\<in>S` by (auto dest: M2)
+      using \<open>t\<in>M\<close> \<open>s\<in>S\<close> by (auto dest: M2)
     also have "\<Delta> t \<le> 0"
-      using `t\<in>M` `M \<inter> N = {}` by fact
+      using \<open>t\<in>M\<close> \<open>M \<inter> N = {}\<close> by fact
     finally show ?thesis
       by (simp add: \<Delta>_def)
   next
     assume "M \<inter> N \<noteq> {}"
     then obtain t where "t \<in> M" "t \<in> N" by auto
-    with N `s\<in>S` have "\<Delta> s \<le> 0"
+    with N \<open>s\<in>S\<close> have "\<Delta> s \<le> 0"
       by (intro order_trans[of "\<Delta> s" "\<Delta> t" 0]) (auto simp: M_def)
     then show ?thesis
       by (simp add: \<Delta>_def)
@@ -216,13 +216,13 @@ lemma inf_continuous_suntil_disj[order_continuous_intros]:
   unfolding inf_continuous_def
 proof (safe intro!: ext)
   fix M \<omega> i assume "(P suntil Q (\<Sqinter>i. M i)) \<omega>" "decseq M" then show "(P suntil Q (M i)) \<omega>"
-    unfolding inf_continuousD[OF Q `decseq M`] by induction (auto intro: suntil.intros)
+    unfolding inf_continuousD[OF Q \<open>decseq M\<close>] by induction (auto intro: suntil.intros)
 next
   fix M \<omega> assume *: "(\<Sqinter>i. P suntil Q (M i)) \<omega>" "decseq M"
   then have "(P suntil Q (M 0)) \<omega>"
     by auto
   from this * show "(P suntil Q (\<Sqinter>i. M i)) \<omega>"
-    unfolding inf_continuousD[OF Q `decseq M`]
+    unfolding inf_continuousD[OF Q \<open>decseq M\<close>]
   proof induction
     case (base \<omega>) with disj[of \<omega> "M _"] show ?case by (auto intro: suntil.intros elim: suntil.cases)
   next

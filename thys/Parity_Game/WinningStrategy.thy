@@ -1,4 +1,4 @@
-section {* Winning Strategies *}
+section \<open>Winning Strategies\<close>
 
 theory WinningStrategy
 imports
@@ -8,12 +8,12 @@ begin
 
 context ParityGame begin
 
-text {*
+text \<open>
   Here we define winning strategies.
 
   A strategy is winning for player @{term p} from @{term v0} if every maximal @{term \<sigma>}-path
   starting in @{term v0} is winning.
-*}
+\<close>
 definition winning_strategy :: "Player \<Rightarrow> 'a Strategy \<Rightarrow> 'a \<Rightarrow> bool" where
   "winning_strategy p \<sigma> v0 \<equiv> \<forall>P. vmc_path G P v0 p \<sigma> \<longrightarrow> winning_path p P"
 
@@ -33,7 +33,7 @@ proof-
   thus ?thesis using winning_path_drop_add P_valid n(1) by blast
 qed
 
-text {* There cannot exist winning strategies for both players for the same node. *}
+text \<open>There cannot exist winning strategies for both players for the same node.\<close>
 
 lemma winning_strategy_only_for_one_player:
   assumes \<sigma>: "strategy p \<sigma>" "winning_strategy p \<sigma> v"
@@ -50,7 +50,7 @@ proof-
   ultimately show False using P_valid paths_are_winning_for_one_player by blast
 qed
 
-subsection {* Deadends *}
+subsection \<open>Deadends\<close>
 
 lemma no_winning_strategy_on_deadends:
   assumes "v \<in> VV p" "deadend v" "strategy p \<sigma>"
@@ -58,8 +58,8 @@ lemma no_winning_strategy_on_deadends:
 proof-
   obtain P where "vmc_path G P v p \<sigma>" using strategy_conforming_path_exists_single assms by blast
   then interpret vmc_path G P v p \<sigma> .
-  have "P = LCons v LNil" using P_deadend_v0_LCons `deadend v` by blast
-  hence "\<not>winning_path p P" unfolding winning_path_def using `v \<in> VV p` by auto
+  have "P = LCons v LNil" using P_deadend_v0_LCons \<open>deadend v\<close> by blast
+  hence "\<not>winning_path p P" unfolding winning_path_def using \<open>v \<in> VV p\<close> by auto
   thus ?thesis using winning_strategy_def vmc_path_axioms by blast
 qed
 
@@ -69,12 +69,12 @@ lemma winning_strategy_on_deadends:
 proof
   fix P assume "vmc_path G P v p** \<sigma>"
   then interpret vmc_path G P v "p**" \<sigma> .
-  have "P = LCons v LNil" using P_deadend_v0_LCons `deadend v` by blast
+  have "P = LCons v LNil" using P_deadend_v0_LCons \<open>deadend v\<close> by blast
   thus "winning_path p** P" unfolding winning_path_def
-    using `v \<in> VV p` P_valid paths_are_winning_for_one_player by auto
+    using \<open>v \<in> VV p\<close> P_valid paths_are_winning_for_one_player by auto
 qed
 
-subsection {* Extension Theorems *}
+subsection \<open>Extension Theorems\<close>
 
 lemma strategy_extends_VVp:
   assumes v0: "v0 \<in> VV p" "\<not>deadend v0"
@@ -130,7 +130,7 @@ lemma strategy_extends_backwards_VVp:
 proof
   fix P assume "vmc_path G P v0 p \<sigma>"
   then interpret vmc_path G P v0 p \<sigma> .
-  have "\<not>deadend v0" using `v0\<rightarrow>w` by blast
+  have "\<not>deadend v0" using \<open>v0\<rightarrow>w\<close> by blast
   then interpret vmc_path_no_deadend G P v0 p \<sigma> by unfold_locales
   have "winning_path p (ltl P)"
     using \<sigma>(2)[unfolded winning_strategy_def] v0(1,2) v0_conforms vmc_path_ltl by presburger

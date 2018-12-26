@@ -1,4 +1,4 @@
-section {* Exploration of Deterministic Rabin Automata *}
+section \<open>Exploration of Deterministic Rabin Automata\<close>
 
 theory DRA_Nodes
 imports

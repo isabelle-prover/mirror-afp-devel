@@ -1,4 +1,4 @@
-section {* Convergence of the IMAP-CRDT *}
+section \<open>Convergence of the IMAP-CRDT\<close>
 
 text\<open>In this final section show that concurrent updates commute and thus Strong Eventual 
 Convergence is achieved.\<close>

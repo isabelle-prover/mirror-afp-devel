@@ -10,9 +10,9 @@ theory Tarski
 begin
 
 subsection "The axioms"
-text {* The axioms, and all theorems beginning with \emph{th}
+text \<open>The axioms, and all theorems beginning with \emph{th}
   followed by a number, are based on corresponding axioms and
-  theorems in \cite{schwabhauser}. *}
+  theorems in \cite{schwabhauser}.\<close>
 
 locale tarski_first3 =
   fixes C :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> bool"     ("_ _ \<congruent> _ _" [99,99,99,99] 50)
@@ -92,7 +92,7 @@ begin
     assume "a b \<congruent> c d"
     with th2_2 [of a b c d] have "c d \<congruent> a b" by simp
     assume "c d \<congruent> e f"
-    with A2' [of c d a b e f] and `c d \<congruent> a b` show ?thesis by simp
+    with A2' [of c d a b e f] and \<open>c d \<congruent> a b\<close> show ?thesis by simp
   qed
 
   theorem th2_4: "a b \<congruent> c d \<Longrightarrow> b a \<congruent> c d"
@@ -124,15 +124,15 @@ begin
     shows "a b \<congruent> c d"
   proof cases
     assume "a = p"
-    with unordered_pair_element_equality [of a b p q] and `{a, b} = {p, q}`
+    with unordered_pair_element_equality [of a b p q] and \<open>{a, b} = {p, q}\<close>
       have "b = q" by simp
-    with `p q \<congruent> c d` and `a = p` show ?thesis by simp
+    with \<open>p q \<congruent> c d\<close> and \<open>a = p\<close> show ?thesis by simp
   next
     assume "a \<noteq> p"
-    with `{a, b} = {p, q}` have "a = q" by auto
-    with unordered_pair_element_equality [of a b q p] and `{a, b} = {p, q}`
+    with \<open>{a, b} = {p, q}\<close> have "a = q" by auto
+    with unordered_pair_element_equality [of a b q p] and \<open>{a, b} = {p, q}\<close>
       have "b = p" by auto
-    with `p q \<congruent> c d` and `a = q` have "b a \<congruent> c d" by simp
+    with \<open>p q \<congruent> c d\<close> and \<open>a = q\<close> have "b a \<congruent> c d" by simp
     with th2_4 [of b a c d] show ?thesis by simp
   qed
 
@@ -140,8 +140,8 @@ begin
     assumes "{c, d} = {p, q}" and "a b \<congruent> p q"
     shows "a b \<congruent> c d"
   proof -
-    from th2_2 [of a b p q] and `a b \<congruent> p q` have "p q \<congruent> a b" by simp
-    with left_segment_congruence [of c d p q a b] and `{c, d} = {p, q}`
+    from th2_2 [of a b p q] and \<open>a b \<congruent> p q\<close> have "p q \<congruent> a b" by simp
+    with left_segment_congruence [of c d p q a b] and \<open>{c, d} = {p, q}\<close>
       have "c d \<congruent> a b" by simp
     with th2_2 [of c d a b] show ?thesis by simp
   qed
@@ -156,10 +156,10 @@ begin
       obtain w x y z where "{a, b} = {w, x}" and "{c, d} = {y, z}" and "w x \<congruent> y z"
         by blast
     from left_segment_congruence [of a b w x y z] and
-        `{a, b} = {w, x}` and
-        `w x \<congruent> y z`
+        \<open>{a, b} = {w, x}\<close> and
+        \<open>w x \<congruent> y z\<close>
       have "a b \<congruent> y z" by simp
-    with right_segment_congruence [of c d y z a b] and `{c, d} = {y, z}`
+    with right_segment_congruence [of c d y z a b] and \<open>{c, d} = {y, z}\<close>
       show "a b \<congruent> c d" by simp
   qed
 
@@ -172,12 +172,12 @@ begin
     { fix Z
       assume "Z \<in> SC_rel"
       with SC_rel_def obtain X Y where "Z = (X, Y)" and "SC X Y" by auto
-      from `SC X Y` and SC_def [of X Y]
+      from \<open>SC X Y\<close> and SC_def [of X Y]
         have "\<exists>w x. X = {w, x}" and "\<exists>y z. Y = {y, z}" by auto
       with is_segment_def [of X] and is_segment_def [of Y]
         have "is_segment X" and "is_segment Y" by auto
       with segments_def have "X \<in> segments" and "Y \<in> segments" by auto
-      with `Z = (X, Y)` have "Z \<in> segments \<times> segments" by simp }
+      with \<open>Z = (X, Y)\<close> have "Z \<in> segments \<times> segments" by simp }
     hence "SC_rel \<subseteq> segments \<times> segments" by auto
     moreover
     { fix X
@@ -194,11 +194,11 @@ begin
     assumes "SC X Y"
     shows "SC Y X"
   proof -
-    from SC_def [of X Y] and `SC X Y`
+    from SC_def [of X Y] and \<open>SC X Y\<close>
       obtain w x y z where "X = {w, x}" and "Y = {y, z}" and "w x \<congruent> y z"
         by auto
-    from th2_2 [of w x y z] and `w x \<congruent> y z` have "y z \<congruent> w x" by simp
-    with SC_def [of Y X] and `X = {w, x}` and `Y = {y, z}`
+    from th2_2 [of w x y z] and \<open>w x \<congruent> y z\<close> have "y z \<congruent> w x" by simp
+    with SC_def [of Y X] and \<open>X = {w, x}\<close> and \<open>Y = {y, z}\<close>
       show "SC Y X" by (simp add: C_SC_equiv)
   qed
 
@@ -225,15 +225,15 @@ begin
     assumes "SC X Y" and "SC Y Z"
     shows "SC X Z"
   proof -
-    from SC_def [of X Y] and `SC X Y`
+    from SC_def [of X Y] and \<open>SC X Y\<close>
       obtain w x y z where "X = {w, x}" and "Y = {y, z}" and "w x \<congruent> y z"
         by auto
-    from SC_def [of Y Z] and `SC Y Z`
+    from SC_def [of Y Z] and \<open>SC Y Z\<close>
       obtain p q r s where "Y = {p, q}" and "Z = {r, s}" and "p q \<congruent> r s" by auto
-    from `Y = {y, z}` and `Y = {p, q}` and `p q \<congruent> r s`
+    from \<open>Y = {y, z}\<close> and \<open>Y = {p, q}\<close> and \<open>p q \<congruent> r s\<close>
       have "y z \<congruent> r s" by (simp add: C_SC_equiv)
-    with th2_3 [of w x y z r s] and `w x \<congruent> y z` have "w x \<congruent> r s" by simp
-    with SC_def [of X Z] and `X = {w, x}` and `Z = {r, s}`
+    with th2_3 [of w x y z r s] and \<open>w x \<congruent> y z\<close> have "w x \<congruent> r s" by simp
+    with SC_def [of X Z] and \<open>X = {w, x}\<close> and \<open>Z = {r, s}\<close>
       show "SC X Z" by (simp add: C_SC_equiv)
   qed
 
@@ -251,7 +251,7 @@ begin
     assumes "a a \<congruent> b c"
     shows "b = c"
   proof -
-    from `a a \<congruent> b c` have "b c \<congruent> a a" by (rule th2_2)
+    from \<open>a a \<congruent> b c\<close> have "b c \<congruent> a a" by (rule th2_2)
     thus "b = c" by (rule A3')
   qed
   
@@ -271,7 +271,7 @@ begin
   proof -
     from A4' [of _ a b b] obtain x where "a x \<congruent> b b" by auto
     with A3' [of a x b] have "x = a" by simp
-    with `a x \<congruent> b b` show ?thesis by simp
+    with \<open>a x \<congruent> b b\<close> show ?thesis by simp
   qed
 
   definition OFS :: "['p,'p,'p,'p,'p,'p,'p,'p] \<Rightarrow> bool" where
@@ -293,8 +293,8 @@ begin
     shows "a c \<congruent> a' c'"
   proof cases
     assume "a = b"
-    with `a b \<congruent> a' b'` have "a' = b'" by (simp add: A3_reversed)
-    with `b c \<congruent> b' c'` and `a = b` show ?thesis by simp
+    with \<open>a b \<congruent> a' b'\<close> have "a' = b'" by (simp add: A3_reversed)
+    with \<open>b c \<congruent> b' c'\<close> and \<open>a = b\<close> show ?thesis by simp
   next
     assume "a \<noteq> b"
     moreover
@@ -316,23 +316,23 @@ begin
     and "B q a x'" and "a x' \<congruent> b c"
     shows "x = x'"
   proof -
-    from SC_sym' and SC_trans and C_SC_equiv and `a x' \<congruent> b c` and `a x \<congruent> b c`
+    from SC_sym' and SC_trans and C_SC_equiv and \<open>a x' \<congruent> b c\<close> and \<open>a x \<congruent> b c\<close>
       have "a x \<congruent> a x'" by blast
-    with th2_11 [of q a x q a x'] and `B q a x` and `B q a x'` and SC_refl
+    with th2_11 [of q a x q a x'] and \<open>B q a x\<close> and \<open>B q a x'\<close> and SC_refl
       have "q x \<congruent> q x'" by simp
     with OFS_def [of q a x x q a x x'] and
-        `B q a x` and
+        \<open>B q a x\<close> and
         SC_refl and
-        `a x \<congruent> a x'`
+        \<open>a x \<congruent> a x'\<close>
       have "OFS q a x x q a x x'" by simp
-    with A5' [of q a x x q a x x'] and `q \<noteq> a` have "x x \<congruent> x x'" by simp
+    with A5' [of q a x x q a x x'] and \<open>q \<noteq> a\<close> have "x x \<congruent> x x'" by simp
     thus "x = x'" by (rule A3_reversed)
   qed
 
   theorem th2_12:
     assumes "q \<noteq> a"
     shows "\<exists>!x. B q a x \<and> a x \<congruent> b c"
-    using `q \<noteq> a` and A4' and A4_unique
+    using \<open>q \<noteq> a\<close> and A4' and A4_unique
     by blast
 end
 
@@ -341,8 +341,8 @@ subsection "Simple theorems about betweenness"
 theorem (in tarski_first5) th3_1: "B a b b"
 proof -
   from A4 [rule_format, of a b b b] obtain x where "B a b x" and "b x \<congruent> b b" by auto
-  from A3 [rule_format, of b x b] and `b x \<congruent> b b` have "b = x" by simp
-  with `B a b x` show "B a b b" by simp
+  from A3 [rule_format, of b x b] and \<open>b x \<congruent> b b\<close> have "b = x" by simp
+  with \<open>B a b x\<close> show "B a b b" by simp
 qed
 
 context tarski_absolute_space
@@ -351,14 +351,14 @@ begin
     assumes "B a b a"
     shows "a = b"
   proof -
-    from A6 and `B a b a` show "a = b" by simp
+    from A6 and \<open>B a b a\<close> show "a = b" by simp
   qed
     
   lemma A7':
     assumes "B a p c" and "B b q c"
     shows "\<exists>x. B p x b \<and> B q x a"
   proof -
-    from A7 and `B a p c` and `B b q c` show ?thesis by blast
+    from A7 and \<open>B a p c\<close> and \<open>B b q c\<close> show ?thesis by blast
   qed
 
   lemma A11':
@@ -374,16 +374,16 @@ begin
     shows "B c b a"
   proof -
     from th3_1 have "B b c c" by simp
-    with A7' and `B a b c` obtain x where "B b x b" and "B c x a" by blast
-    from A6' and `B b x b` have "x = b" by auto
-    with `B c x a` show "B c b a" by simp
+    with A7' and \<open>B a b c\<close> obtain x where "B b x b" and "B c x a" by blast
+    from A6' and \<open>B b x b\<close> have "x = b" by auto
+    with \<open>B c x a\<close> show "B c b a" by simp
   qed
 
   theorem th3_4:
     assumes "B a b c" and "B b a c"
     shows "a = b"
   proof -
-    from `B a b c` and `B b a c` and A7' [of a b c b a]
+    from \<open>B a b c\<close> and \<open>B b a c\<close> and A7' [of a b c b a]
     obtain x where "B b x b" and "B a x a" by auto
     hence "b = x" and "a = x" by (simp_all add: A6')
     thus "a = b" by simp
@@ -393,10 +393,10 @@ begin
     assumes "B a b d" and "B b c d"
     shows "B a b c"
   proof -
-    from `B a b d` and `B b c d` and A7' [of a b d b c]
+    from \<open>B a b d\<close> and \<open>B b c d\<close> and A7' [of a b d b c]
     obtain x where "B b x b" and "B c x a" by auto
-    from `B b x b` have "b = x" by (rule A6')
-    with `B c x a` have "B c b a" by simp
+    from \<open>B b x b\<close> have "b = x" by (rule A6')
+    with \<open>B c x a\<close> have "B c b a" by simp
     thus "B a b c" by (rule th3_2)
   qed
 
@@ -404,7 +404,7 @@ begin
     assumes "B a b c" and "B a c d"
     shows "B b c d"
   proof -
-    from `B a c d` and `B a b c` and th3_2 have "B d c a" and "B c b a" by fast+
+    from \<open>B a c d\<close> and \<open>B a b c\<close> and th3_2 have "B d c a" and "B c b a" by fast+
     hence "B d c b" by (rule th3_5_1)
     thus "B b c d" by (rule th3_2)
   qed
@@ -414,19 +414,19 @@ begin
     shows "B a c d"
   proof -
     from A4' obtain x where "B a c x" and "c x \<congruent> c d" by fast
-    from `B a b c` and `B a c x` have "B b c x" by (rule th3_6_1)
+    from \<open>B a b c\<close> and \<open>B a c x\<close> have "B b c x" by (rule th3_6_1)
     have "c d \<congruent> c d" by (rule th2_1)
-    with `b \<noteq> c` and `B b c x` and `c x \<congruent> c d` and `B b c d`
+    with \<open>b \<noteq> c\<close> and \<open>B b c x\<close> and \<open>c x \<congruent> c d\<close> and \<open>B b c d\<close>
     have "x = d" by (rule A4_unique)
-    with `B a c x` show "B a c d" by simp
+    with \<open>B a c x\<close> show "B a c d" by simp
   qed
 
   theorem th3_7_2:
     assumes "b \<noteq> c" and "B a b c" and "B b c d"
     shows "B a b d"
   proof -
-    from `B b c d` and `B a b c` and th3_2 have "B d c b" and "B c b a" by fast+
-    with `b \<noteq> c` and th3_7_1 [of c b d a] have "B d b a" by simp
+    from \<open>B b c d\<close> and \<open>B a b c\<close> and th3_2 have "B d c b" and "B c b a" by fast+
+    with \<open>b \<noteq> c\<close> and th3_7_1 [of c b d a] have "B d b a" by simp
     thus "B a b d" by (rule th3_2)
   qed
 end

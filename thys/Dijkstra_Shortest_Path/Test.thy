@@ -1,11 +1,11 @@
-section {* Performance Test *}
+section \<open>Performance Test\<close>
 theory Test
   imports Dijkstra_Impl_Adet
 begin
-text {*
+text \<open>
   In this theory, we test our implementation of Dijkstra's algorithm for larger,
   randomly generated graphs.
-*}
+\<close>
 
 text "Simple linear congruence generator for (low-quality) random numbers:"
 definition "lcg_next s = ((81::nat)*s + 173) mod 268435456" 
@@ -24,10 +24,10 @@ definition ran_graph :: "nat \<Rightarrow> nat \<Rightarrow> (nat list\<times>(n
      ([],0,lcg_next seed)))"
 
 
-text {*
+text \<open>
   To experiment with the exported code, we fix the node type to natural numbers,
   and add a from-list conversion:
-*}
+\<close>
 type_synonym nat_res = "(nat,((nat,nat) path \<times> nat)) rm"
 type_synonym nat_list_res = "(nat \<times> (nat,nat) path \<times> nat) list"
 
@@ -43,7 +43,7 @@ definition
 
 value "nat_res_to_list (nat_dijkstra (hlg_from_list_nat (ran_graph 4 8912)) 0)"
 
-ML_val {*
+ML_val \<open>
 let
   (* Configuration of test: *)
   val vertices = @{code nat_of_integer} 1000; (* Number of vertices *)
@@ -92,6 +92,6 @@ in
     print_res (@{code nat_res_to_list} res)
   else ()
 end;
-*}
+\<close>
 
 end

@@ -13,9 +13,9 @@ imports
 begin
 
 (*>*)
-section{* Backtracking using lazy lists and continuations *}
+section\<open>Backtracking using lazy lists and continuations\<close>
 
-text{*
+text\<open>
 \label{sec:ww-backtracking}
 
 To illustrate the utility of worker/wrapper fusion to programming
@@ -28,7 +28,7 @@ As syntax is typically considered to be inductively generated, with
 each syntactic object taken to be finite and completely defined, we
 define the syntax for our language using a HOL datatype:
 
-*}
+\<close>
 
 datatype expr = const nat | add expr expr | disj expr expr | fail
 (*<*)
@@ -59,7 +59,7 @@ instance expr :: countable
   by (rule countable_classI[OF expr_encode_inj])
 
 (*>*)
-text{*
+text\<open>
 
 The language consists of constants, an addition function, a
 disjunctive choice between expressions, and failure. We give it a
@@ -69,7 +69,7 @@ that uses double-barrelled continuations.
 
 Our theory of lazy lists is entirely standard.
 
-*}
+\<close>
 
 default_sort predomain
 
@@ -77,9 +77,9 @@ domain 'a llist =
     lnil
   | lcons (lazy "'a") (lazy "'a llist")
 
-text{*
+text\<open>
 
-By relaxing the default sort of type variables to @{text "predomain"},
+By relaxing the default sort of type variables to \<open>predomain\<close>,
 our polymorphic definitions can be used at concrete types that do not
 contain @{term "\<bottom>"}. These include those constructed from HOL types
 using the discrete ordering type constructor @{typ "'a discr"}, and in
@@ -89,7 +89,7 @@ numbers.
 The following standard list functions underpin the monadic
 infrastructure:
 
-*}
+\<close>
 
 fixrec lappend :: "'a llist \<rightarrow> 'a llist \<rightarrow> 'a llist" where
   "lappend\<cdot>lnil\<cdot>ys = ys"
@@ -114,11 +114,11 @@ lemma lmap_strict[simp]: "lmap\<cdot>f\<cdot>\<bottom> = \<bottom>"
   by fixrec_simp
 
 (*>*)
-text{*
+text\<open>
 
-We define the lazy list monad @{text "S"} in the traditional fashion:
+We define the lazy list monad \<open>S\<close> in the traditional fashion:
 
-*}
+\<close>
 
 type_synonym S = "nat discr llist"
 
@@ -128,7 +128,7 @@ definition returnS :: "nat discr \<rightarrow> S" where
 definition bindS :: "S \<rightarrow> (nat discr \<rightarrow> S) \<rightarrow> S" where
   "bindS = (\<Lambda> x g. lconcat\<cdot>(lmap\<cdot>g\<cdot>x))"
 
-text{*
+text\<open>
 
 Unfortunately the lack of higher-order polymorphism in HOL prevents us
 from providing the general typing one would expect a monad to have in
@@ -136,7 +136,7 @@ Haskell.
 
 The evaluator uses the following extra constants:
 
-*}
+\<close>
 
 definition addS :: "S \<rightarrow> S \<rightarrow> S" where
   "addS \<equiv> (\<Lambda> x y. bindS\<cdot>x\<cdot>(\<Lambda> xv. bindS\<cdot>y\<cdot>(\<Lambda> yv. returnS\<cdot>(xv + yv))))"
@@ -147,7 +147,7 @@ definition disjS :: "S \<rightarrow> S \<rightarrow> S" where
 definition failS :: "S" where
   "failS \<equiv> lnil"
 
-text{*
+text\<open>
 
 We interpret our language using these combinators in the obvious
 way. The only complication is that, even though our evaluator is
@@ -155,7 +155,7 @@ primitive recursive, we must explicitly use the fixed point operator
 as the worker/wrapper technique requires us to talk about the body of
 the recursive definition.
 
-*}
+\<close>
 
 definition
   evalS_body :: "(expr discr \<rightarrow> nat discr llist)
@@ -170,7 +170,7 @@ where
 abbreviation evalS :: "expr discr \<rightarrow> nat discr llist" where
   "evalS \<equiv> fix\<cdot>evalS_body"
 
-text{*
+text\<open>
 
 We aim to transform this evaluator into one using double-barrelled
 continuations; one will serve as a "success" context, taking a natural
@@ -181,14 +181,14 @@ In general we could work with an arbitrary observation type ala
 \citet{DBLP:conf/icalp/Reynolds74}, but for convenience we use the
 clearly adequate concrete type @{typ "nat discr llist"}.
 
-*}
+\<close>
 
 type_synonym Obs = "nat discr llist"
 type_synonym Failure = "Obs"
 type_synonym Success = "nat discr \<rightarrow> Failure \<rightarrow> Obs"
 type_synonym K = "Success \<rightarrow> Failure \<rightarrow> Obs"
 
-text{*
+text\<open>
 
 To ease our development we adopt what
 \citet[\S5]{DBLP:conf/icfp/WandV04} call a "failure computation"
@@ -197,7 +197,7 @@ instead of a failure continuation, which would have the type @{typ
 
 The monad over the continuation type @{typ "K"} is as follows:
 
-*}
+\<close>
 
 definition returnK :: "nat discr \<rightarrow> K" where
   "returnK \<equiv> (\<Lambda> x. \<Lambda> s f. s\<cdot>x\<cdot>f)"
@@ -205,11 +205,11 @@ definition returnK :: "nat discr \<rightarrow> K" where
 definition bindK :: "K \<rightarrow> (nat discr \<rightarrow> K) \<rightarrow> K" where
   "bindK \<equiv> \<Lambda> x g. \<Lambda> s f. x\<cdot>(\<Lambda> xv f'. g\<cdot>xv\<cdot>s\<cdot>f')\<cdot>f"
 
-text{*
+text\<open>
 
 Our extra constants are defined as follows:
 
-*}
+\<close>
 
 definition addK :: "K \<rightarrow> K \<rightarrow> K" where
   "addK \<equiv> (\<Lambda> x y. bindK\<cdot>x\<cdot>(\<Lambda> xv. bindK\<cdot>y\<cdot>(\<Lambda> yv. returnK\<cdot>(xv + yv))))"
@@ -220,11 +220,11 @@ definition disjK :: "K \<rightarrow> K \<rightarrow> K" where
 definition failK :: "K" where
   "failK \<equiv> \<Lambda> s f. f"
 
-text{*
+text\<open>
 
 The continuation semantics is again straightforward:
 
-*}
+\<close>
 
 definition
   evalK_body :: "(expr discr \<rightarrow> K) \<rightarrow> (expr discr \<rightarrow> K)"
@@ -238,14 +238,14 @@ where
 abbreviation evalK :: "expr discr \<rightarrow> K" where
   "evalK \<equiv> fix\<cdot>evalK_body"
 
-text{*
+text\<open>
 
 We now set up a worker/wrapper relation between these two semantics.
 
 The kernel of @{term "unwrap"} is the following function that converts
 a lazy list into an equivalent continuation representation.
 
-*}
+\<close>
 
 fixrec SK :: "S \<rightarrow> K" where
   "SK\<cdot>lnil = failK"
@@ -264,12 +264,12 @@ lemma unwrap_strict[simp]: "unwrap\<cdot>\<bottom> = \<bottom>"
   unfolding unwrap_def by simp
 
 (*>*)
-text{*
+text\<open>
 
 Symmetrically @{term "wrap"} converts an evaluator using continuations
 into one generating lazy lists by passing it the right continuations.
 
-*}
+\<close>
 
 definition KS :: "K \<rightarrow> S" where
   "KS \<equiv> (\<Lambda> k. k\<cdot>lcons\<cdot>lnil)"
@@ -285,11 +285,11 @@ lemma wrap_strict[simp]: "wrap\<cdot>\<bottom> = \<bottom>"
   unfolding wrap_def by simp
 
 (*>*)
-text{*
+text\<open>
 
 The worker/wrapper condition follows directly from these definitions.
 
-*}
+\<close>
 
 lemma KS_SK_id:
   "KS\<cdot>(SK\<cdot>xs) = xs"
@@ -300,13 +300,13 @@ lemma wrap_unwrap_id:
   unfolding wrap_def unwrap_def
   by (simp add: KS_SK_id cfun_eq_iff)
 
-text{*
+text\<open>
 
 The worker/wrapper transformation is only non-trivial if @{term
 "wrap"} and @{term "unwrap"} do not witness an isomorphism. In this
 case we can show that we do not even have a Galois connection.
 
-*}
+\<close>
 
 lemma cfun_not_below:
   "f\<cdot>x \<notsqsubseteq> g\<cdot>x \<Longrightarrow> f \<notsqsubseteq> g"
@@ -324,11 +324,11 @@ proof -
   thus ?thesis by (simp add: cfun_not_below)
 qed
 
-text{*
+text\<open>
 
 We now apply \texttt{worker\_wrapper\_id}:
 
-*}
+\<close>
 
 definition eval_work :: "expr discr \<rightarrow> K" where
   "eval_work \<equiv> fix\<cdot>(unwrap oo evalS_body oo wrap)"
@@ -341,7 +341,7 @@ lemma "evalS = eval_ww"
   using worker_wrapper_id[OF wrap_unwrap_id]
   by simp
 
-text{*
+text\<open>
 
 We now show how the monadic operations correspond by showing that
 @{term "SK"} witnesses a \emph{monad morphism}
@@ -350,7 +350,7 @@ We now show how the monadic operations correspond by showing that
 to hold for our specific operations in addition to the common monadic
 scaffolding.
 
-*}
+\<close>
 
 lemma SK_returnS_returnK:
   "SK\<cdot>(returnS\<cdot>x) = returnK\<cdot>x"
@@ -381,12 +381,12 @@ lemma SK_failS_failK:
   "SK\<cdot>failS = failK"
   unfolding failS_def by simp
 
-text{*
+text\<open>
 
 These lemmas directly establish the precondition for our all-in-one
 worker/wrapper and fusion rule:
 
-*}
+\<close>
 
 lemma evalS_body_evalK_body:
   "unwrap oo evalS_body oo wrap = evalK_body oo unwrap oo wrap"
@@ -411,7 +411,7 @@ theorem evalS_evalK:
         evalS_body_evalK_body
   by simp
 
-text{*
+text\<open>
 
 This proof can be considered an instance of the approach of
 \citet{DBLP:journals/jfp/HuttonJG10}, which uses the worker/wrapper
@@ -425,7 +425,7 @@ full language of \citet{DBLP:journals/ngc/DanvyGR01} simply by proving
 extra equations. In contrast the higher-order language of
 \citet{DBLP:conf/icfp/WandV04} is beyond the reach of this approach.
 
-*}
+\<close>
 (*<*)
 
 end

@@ -227,7 +227,7 @@ and aval_ivl' = aval''
 ..
 
 
-text{* Monotonicity: *}
+text\<open>Monotonicity:\<close>
 
 global_interpretation Abs_Int1_mono
 where \<gamma> = \<gamma>_ivl and num' = num_ivl and plus' = plus_ivl
@@ -250,7 +250,7 @@ subsection "Tests"
 
 value "show_acom_opt (AI_ivl test1_ivl)"
 
-text{* Better than @{text AI_const}: *}
+text\<open>Better than \<open>AI_const\<close>:\<close>
 value "show_acom_opt (AI_ivl test3_const)"
 value "show_acom_opt (AI_ivl test4_const)"
 value "show_acom_opt (AI_ivl test6_const)"
@@ -260,7 +260,7 @@ value "show_acom (((step_ivl \<top>)^^0) (\<bottom>\<^sub>c test2_ivl))"
 value "show_acom (((step_ivl \<top>)^^1) (\<bottom>\<^sub>c test2_ivl))"
 value "show_acom (((step_ivl \<top>)^^2) (\<bottom>\<^sub>c test2_ivl))"
 
-text{* Fixed point reached in 2 steps. Not so if the start value of x is known: *}
+text\<open>Fixed point reached in 2 steps. Not so if the start value of x is known:\<close>
 
 value "show_acom_opt (AI_ivl test3_ivl)"
 value "show_acom (((step_ivl \<top>)^^0) (\<bottom>\<^sub>c test3_ivl))"
@@ -269,17 +269,17 @@ value "show_acom (((step_ivl \<top>)^^2) (\<bottom>\<^sub>c test3_ivl))"
 value "show_acom (((step_ivl \<top>)^^3) (\<bottom>\<^sub>c test3_ivl))"
 value "show_acom (((step_ivl \<top>)^^4) (\<bottom>\<^sub>c test3_ivl))"
 
-text{* Takes as many iterations as the actual execution. Would diverge if
+text\<open>Takes as many iterations as the actual execution. Would diverge if
 loop did not terminate. Worse still, as the following example shows: even if
 the actual execution terminates, the analysis may not. The value of y keeps
-decreasing as the analysis is iterated, no matter how long: *}
+decreasing as the analysis is iterated, no matter how long:\<close>
 
 value "show_acom (((step_ivl \<top>)^^50) (\<bottom>\<^sub>c test4_ivl))"
 
-text{* Relationships between variables are NOT captured: *}
+text\<open>Relationships between variables are NOT captured:\<close>
 value "show_acom_opt (AI_ivl test5_ivl)"
 
-text{* Again, the analysis would not terminate: *}
+text\<open>Again, the analysis would not terminate:\<close>
 value "show_acom (((step_ivl \<top>)^^50) (\<bottom>\<^sub>c test6_ivl))"
 
 end

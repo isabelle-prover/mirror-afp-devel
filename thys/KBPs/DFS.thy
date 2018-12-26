@@ -10,9 +10,9 @@ imports Main
 begin
 (*>*)
 
-subsection{* Generic DFS *}
+subsection\<open>Generic DFS\<close>
 
-text{*
+text\<open>
 
 \label{sec:dfs}
 
@@ -25,7 +25,7 @@ synthesis algorithm.
 
 The DFS itself is defined in the standard tail-recursive way:
 
-*}
+\<close>
 
 partial_function (tailrec) gen_dfs where
   "gen_dfs succs ins memb S wl = (case wl of
@@ -42,10 +42,10 @@ lemma gen_dfs_simps[code, simp]:
   by (simp_all add: gen_dfs.simps)
 (*>*)
 
-text_raw{*
+text_raw\<open>
 \begin{figure}
 \begin{isabellebody}%
-*}
+\<close>
 locale DFS =
   fixes succs :: "'a \<Rightarrow> 'a list"
   and isNode :: "'a \<Rightarrow> bool"
@@ -65,16 +65,16 @@ locale DFS =
   and ins_invariant: "\<And>x S. \<lbrakk> isNode x; invariant S; \<not> memb x S \<rbrakk>
                         \<Longrightarrow> invariant (ins x S)"
   and graph_finite: "finite (nodeAbs ` { x . isNode x})"
-text_raw{*
+text_raw\<open>
 \end{isabellebody}%
 \begin{isamarkuptext}%
-\caption{The @{text "DFS"} locale.}
+\caption{The \<open>DFS\<close> locale.}
 \label{fig:kbps-theory-dfs-locale}
 \end{isamarkuptext}%
 \end{figure}
-*}
+\<close>
 
-text{*
+text\<open>
 
 The proofs are carried out in the locale of
 Figure~\ref{fig:kbps-theory-dfs-locale}, which details our
@@ -100,7 +100,7 @@ though there might be an infinity of representations.
 We characterise the DFS traversal using the reflexive
 transitive closure operator:
 
-*}
+\<close>
 
 definition (in DFS) reachable :: "'a set \<Rightarrow> 'a set" where
   "reachable xs \<equiv> {(x, y). y \<in> set (succs x)}\<^sup>* `` xs"
@@ -359,13 +359,13 @@ proof -
 qed
 
 (*>*)
-text{*
+text\<open>
 
 We make use of two results about the traversal. Firstly, that some
 representation of each reachable node has been incorporated into the
 final construction:
 
-*}
+\<close>
 
 theorem (in DFS) reachable_imp_dfs:
   assumes y: "isNode y"
@@ -410,12 +410,12 @@ qed
 end (* context DFS *)
 (*>*)
 
-text{*
+text\<open>
 
 Secondly, that if an invariant holds on the initial object then it
 holds on the final one:
 
-*}
+\<close>
 
 theorem (in DFS) dfs_invariant:
   assumes "invariant S"
@@ -426,11 +426,11 @@ theorem (in DFS) dfs_invariant:
   by (induct S xs rule: dfs_induct) auto
 (*>*)
 
-text{*
+text\<open>
 
 \FloatBarrier
 
-*}
+\<close>
 
 (*<*)
 end

@@ -6,7 +6,7 @@ theory ArchComp
 imports ArchCompProps "HOL-Library.Code_Target_Numeral"
 begin
 
-subsection {* Proofs by evaluation using generated code *}
+subsection \<open>Proofs by evaluation using generated code\<close>
 
 lemma pre_iso_test3: "\<forall>g \<in> set Tri. pre_iso_test g"
 by eval

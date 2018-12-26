@@ -3,17 +3,17 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Transformation Theorem for while Loops *}
+section \<open>Transformation Theorem for while Loops\<close>
 
 theory FolkTheorem
   imports Conway_Tests KAT DRAT
 begin
 
-text {*
+text \<open>
   We prove Kozen's transformation theorem for while loops \cite{Kozen97} in a weak setting that unifies
   previous proofs in Kleene algebra with tests, demonic refinement algebras and a variant of probabilistic
   Kleene algebra.
-*}
+\<close>
 
 context test_pre_conway
 begin
@@ -143,23 +143,23 @@ theorem composition:
     by (metis assms(1) assms(2) assms(4) composition_helper local.test_comp_closed mult_assoc postcomputation)
 end
 
-text {*
+text \<open>
   Kleene algebras with tests form pre-Conway algebras, therefore the transformation theorem is valid for KAT as well.
-*}
+\<close>
 
 sublocale kat \<subseteq> pre_conway star ..
 
-text {*
+text \<open>
   Demonic refinement algebras form pre-Conway algebras, therefore the transformation theorem is valid for DRA as well.
-*}
+\<close>
 sublocale drat \<subseteq> pre_conway strong_iteration
   apply standard
   apply (simp add: local.iteration_denest local.iteration_slide)
   apply (metis local.iteration_prod_unfold)
   by (simp add: local.iteration_sim)
  
-text {*
+text \<open>
   We do not currently consider an expansion of probabilistic Kleene algebra.
-*}
+\<close>
 
 end

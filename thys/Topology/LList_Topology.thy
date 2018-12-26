@@ -4,15 +4,15 @@
     License:    LGPL
 *)
 
-section {* The topology of llists *}
+section \<open>The topology of llists\<close>
 
 theory LList_Topology
 imports Topology "Lazy-Lists-II.LList2"
 begin
 
-subsection{*The topology of all llists*}
+subsection\<open>The topology of all llists\<close>
 
-text{*
+text\<open>
   This theory introduces the topologies of all llists, of infinite
   llists, and of the non-empty llists. For all three cases it is
   proved that safety properties are closed sets and that liveness
@@ -20,7 +20,7 @@ text{*
   three different topologies the respective theorem of Alpern and
   Schneider \cite{alpern85:_defin_liven}, which states that every
   property can be represented as an intersection of a safety property
-  and a liveness property.*}
+  and a liveness property.\<close>
 
 definition
   ttop :: "'a set \<Rightarrow> 'a llist top" where
@@ -205,7 +205,7 @@ proof-
     by auto
 qed
 
-subsection{*The topology of infinite llists*}
+subsection\<open>The topology of infinite llists\<close>
 
 definition
   itop :: "'a set \<Rightarrow> 'a llist top" where
@@ -502,7 +502,7 @@ proof-
     by auto
 qed
 
-subsection{*The topology of non-empty llists*}
+subsection\<open>The topology of non-empty llists\<close>
 
 definition
   ptop :: "'a set \<Rightarrow> 'a llist top" where

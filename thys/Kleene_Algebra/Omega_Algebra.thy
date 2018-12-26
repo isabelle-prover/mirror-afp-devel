@@ -4,34 +4,34 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Omega Algebras *}
+section \<open>Omega Algebras\<close>
 
 theory Omega_Algebra
 imports Kleene_Algebra
 begin
 
-text {*
+text \<open>
 \emph{Omega algebras}~\cite{cohen00omega} extend Kleene algebras by an
 $\omega$-operation that axiomatizes infinite iteration (just like the
 Kleene star axiomatizes finite iteration).
-*}
+\<close>
 
 
-subsection {* Left Omega Algebras *}
+subsection \<open>Left Omega Algebras\<close>
 
-text {*
+text \<open>
 In this section we consider \emph{left omega algebras}, i.e., omega
 algebras based on left Kleene algebras. Surprisingly, we are still
 looking for statements mentioning~$\omega$ that are true in omega
 algebras, but do not already hold in left omega algebras.
-*}
+\<close>
 
 class left_omega_algebra = left_kleene_algebra_zero + omega_op +
   assumes omega_unfold: "x\<^sup>\<omega> \<le> x \<cdot> x\<^sup>\<omega>"
   and omega_coinduct: "y \<le> z + x \<cdot> y \<Longrightarrow> y \<le> x\<^sup>\<omega> + x\<^sup>\<star> \<cdot> z"
 begin
 
-text {* First we prove some variants of the coinduction axiom. *}
+text \<open>First we prove some variants of the coinduction axiom.\<close>
 
 lemma omega_coinduct_var1: "y \<le> 1 + x \<cdot> y \<Longrightarrow> y \<le> x\<^sup>\<omega> + x\<^sup>\<star>"
   using local.omega_coinduct by fastforce
@@ -60,7 +60,7 @@ lemma "y = x \<cdot> y \<Longrightarrow> y = x\<^sup>\<omega>"
   (* nitpick [expect=genuine] -- "2-element counterexample" *)
 oops
 
-text {* Next we strengthen the unfold law to an equation. *}
+text \<open>Next we strengthen the unfold law to an equation.\<close>
 
 lemma omega_unfold_eq [simp]: "x \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
 proof (rule antisym)
@@ -79,7 +79,7 @@ lemma "z + x \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega> + x\<^sup>\<star> \<cdo
   (* nitpick [expect=genuine] -- "4-element counterexample" *)
 oops
 
-text {* We now prove subdistributivity and isotonicity of omega. *}
+text \<open>We now prove subdistributivity and isotonicity of omega.\<close>
 
 lemma omega_subdist: "x\<^sup>\<omega> \<le> (x + y)\<^sup>\<omega>"
 proof -
@@ -98,7 +98,7 @@ lemma omega_subdist_var: "x\<^sup>\<omega> + y\<^sup>\<omega> \<le> (x + y)\<^su
 lemma zero_omega [simp]: "0\<^sup>\<omega> = 0"
   by (metis annil omega_unfold_eq)
 
-text {* The next lemma is another variant of omega unfold *}
+text \<open>The next lemma is another variant of omega unfold\<close>
 
 lemma star_omega_1 [simp]: "x\<^sup>\<star> \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
 proof (rule antisym)
@@ -110,8 +110,8 @@ proof (rule antisym)
     using local.star_inductl_var_eq2 by auto
 qed
 
-text {* The next lemma says that~@{term "1\<^sup>\<omega>"} is the maximal element
-of omega algebra. We therefore baptise it~$\top$. *}
+text \<open>The next lemma says that~@{term "1\<^sup>\<omega>"} is the maximal element
+of omega algebra. We therefore baptise it~$\top$.\<close>
 
 lemma max_element: "x \<le> 1\<^sup>\<omega>"
   by (simp add: omega_coinduct_eq_var2)
@@ -129,9 +129,9 @@ proof -
     by (simp add: local.order.antisym max_element top_def)
 qed
 
-text {* The following lemma is strange since it is counterintuitive
+text \<open>The following lemma is strange since it is counterintuitive
 that one should be able to append something after an infinite
-iteration. *}
+iteration.\<close>
 
 lemma omega_1: "x\<^sup>\<omega> \<cdot> y \<le> x\<^sup>\<omega>"
 proof -
@@ -158,7 +158,7 @@ lemma "x\<^sup>\<omega> = \<top> \<Longrightarrow> 1 \<le> x"
   (* nitpick [expect=genuine] -- "4-element counterexample" *)
 oops
 
-text {* Next we prove a simulation law for the omega operation *}
+text \<open>Next we prove a simulation law for the omega operation\<close>
 
 lemma omega_simulation: "z \<cdot> x \<le> y \<cdot> z \<Longrightarrow> z \<cdot> x\<^sup>\<omega> \<le> y\<^sup>\<omega>"
 proof -
@@ -183,7 +183,7 @@ lemma "y \<cdot> z  \<le> z \<cdot> x \<Longrightarrow> y\<^sup>\<omega> \<cdot>
   (* nitpick [expect=genuine] -- "4-element counterexample" *)
 oops
 
-text {* Next we prove transitivity of omega elements. *}
+text \<open>Next we prove transitivity of omega elements.\<close>
 
 lemma omega_omega: "(x\<^sup>\<omega>)\<^sup>\<omega> \<le> x\<^sup>\<omega>"
   by (metis omega_1 omega_unfold_eq)
@@ -196,9 +196,9 @@ lemma "(x\<^sup>\<omega>)\<^sup>\<omega> = x\<^sup>\<omega>"
 nitpick -- "no proof, no counterexample"
 *)
 
-text {* The next lemmas are axioms of Wagner's complete axiomatisation
+text \<open>The next lemmas are axioms of Wagner's complete axiomatisation
 for omega-regular languages~\cite{Wagner77omega}, but in a slightly
-different setting.  *}
+different setting.\<close>
 
 lemma wagner_1 [simp]: "(x \<cdot> x\<^sup>\<star>)\<^sup>\<omega> = x\<^sup>\<omega>"
 proof (rule antisym)
@@ -234,9 +234,9 @@ proof (rule antisym)
     by (metis mult.assoc mult_isol wagner_2_var)
 qed
 
-text {*
+text \<open>
 This identity is called~(A8) in Wagner's paper.
-*}
+\<close>
 
 lemma wagner_3:
 assumes "x \<cdot> (x + y)\<^sup>\<omega> + z = (x + y)\<^sup>\<omega>"
@@ -250,9 +250,9 @@ proof (rule antisym)
     by (simp add: omega_subdist)
 qed
 
-text {*
+text \<open>
 This identity is called~(R4) in Wagner's paper.
-*}
+\<close>
 
 lemma wagner_1_var [simp]: "(x\<^sup>\<star> \<cdot> x)\<^sup>\<omega> = x\<^sup>\<omega>"
   by (simp add: local.star_slide_var)
@@ -277,7 +277,7 @@ proof (rule antisym)
     by (simp add: omega_sup_id)
 qed
 
-text {* The next law shows how omegas below a sum can be unfolded. *}
+text \<open>The next law shows how omegas below a sum can be unfolded.\<close>
 
 lemma omega_sum_unfold: "x\<^sup>\<omega> + x\<^sup>\<star> \<cdot> y \<cdot> (x + y)\<^sup>\<omega> = (x + y)\<^sup>\<omega>"
 proof -
@@ -287,9 +287,9 @@ proof -
     by (metis mult.assoc wagner_3)
 qed
 
-text {*
+text \<open>
 The next two lemmas apply induction and coinduction to this law.
-*}
+\<close>
 
 lemma omega_sum_unfold_coind: "(x + y)\<^sup>\<omega> \<le> (x\<^sup>\<star> \<cdot> y)\<^sup>\<omega> + (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<omega>"
   by (simp add: omega_coinduct_eq omega_sum_unfold)
@@ -317,8 +317,8 @@ proof -
     by (metis calculation order_trans star_omega_1)
 qed
 
-text {* The next lemma is a variant of the denest law for the star at
-the level of omega. *}
+text \<open>The next lemma is a variant of the denest law for the star at
+the level of omega.\<close>
 
 lemma omega_denest [simp]: "(x + y)\<^sup>\<omega> = (x\<^sup>\<star> \<cdot> y)\<^sup>\<omega> + (x\<^sup>\<star> \<cdot> y)\<^sup>\<star> \<cdot> x\<^sup>\<omega>"
 proof (rule antisym)
@@ -332,10 +332,10 @@ proof (rule antisym)
     by (simp add: wagner_1_var_gen)
 qed
 
-text {* The next lemma yields a separation theorem for infinite
+text \<open>The next lemma yields a separation theorem for infinite
 iteration in the presence of a quasicommutation property. A
 nondeterministic loop over~@{term x} and~@{term y} can be refined into
-separate infinite loops over~@{term x} and~@{term y}.  *}
+separate infinite loops over~@{term x} and~@{term y}.\<close>
 
 lemma omega_sum_refine:
   assumes "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
@@ -357,19 +357,19 @@ proof (rule antisym)
     by (metis local.join.sup_idem star_omega_1)
 qed
 
-text {* The following theorem by Bachmair and
-Dershowitz~\cite{bachmair86commutation} is a corollary. *}
+text \<open>The following theorem by Bachmair and
+Dershowitz~\cite{bachmair86commutation} is a corollary.\<close>
 
 lemma bachmair_dershowitz:
   assumes "y \<cdot> x \<le> x \<cdot> (x + y)\<^sup>\<star>"
   shows "(x + y)\<^sup>\<omega> = 0 \<longleftrightarrow> x\<^sup>\<omega> + y\<^sup>\<omega> = 0"
   by (metis add_commute assms local.annir local.join.le_bot local.no_trivial_inverse omega_subdist omega_sum_refine)
 
-text {*
+text \<open>
 The next lemmas consider an abstract variant of the empty word
 property from language theory and match it with the absence of
 infinite iteration~\cite{struth12regeq}.
-*}
+\<close>
 
 definition (in dioid_one_zero) ewp
 where "ewp x \<equiv> \<not>(\<forall>y. y \<le> x \<cdot> y \<longrightarrow> y = 0)"
@@ -381,8 +381,8 @@ lemma "0 \<noteq> 1 \<Longrightarrow> 1 \<le> x \<longleftrightarrow> ewp x"
   (* nitpick [expect=genuine] -- "3-element counterexample" *)
 oops
 
-text {* The next facts relate the absence of the empty word property
-with the absence of infinite iteration. *}
+text \<open>The next facts relate the absence of the empty word property
+with the absence of infinite iteration.\<close>
 
 lemma ewp_neg_and_omega: "\<not> ewp x \<longleftrightarrow> x\<^sup>\<omega> = 0"
 proof
@@ -405,8 +405,8 @@ lemma ewp_alt1: "(\<forall>z. x\<^sup>\<omega> \<le> x\<^sup>\<star> \<cdot> z) 
 lemma ewp_alt: "x\<^sup>\<omega> = 0 \<longleftrightarrow> (\<forall>y z. y \<le> x \<cdot> y + z \<longrightarrow> y \<le> x\<^sup>\<star> \<cdot> z)"
   by (metis annir antisym ewp_alt1 join.bot_least)
 
-text {* So we have obtained a condition for Arden's lemma in omega
-algebra.  *}
+text \<open>So we have obtained a condition for Arden's lemma in omega
+algebra.\<close>
 
 lemma omega_super_id1: "0 \<noteq> 1 \<Longrightarrow> 1 \<le> x \<Longrightarrow> x\<^sup>\<omega> \<noteq> 0"
   using ewp_neg_and_omega ewp_super_id1 by blast
@@ -414,8 +414,8 @@ lemma omega_super_id1: "0 \<noteq> 1 \<Longrightarrow> 1 \<le> x \<Longrightarro
 lemma omega_super_id2: "0 \<noteq> 1 \<Longrightarrow> x\<^sup>\<omega> = 0 \<Longrightarrow> \<not>(1 \<le> x)"
   using omega_super_id1 by blast
 
-text {* The next lemmas are abstract versions of Arden's lemma from
-language theory.  *}
+text \<open>The next lemmas are abstract versions of Arden's lemma from
+language theory.\<close>
 
 lemma ardens_lemma_var:
   assumes "x\<^sup>\<omega> = 0" 
@@ -452,7 +452,7 @@ lemma arden_var3: "(\<forall>y z. z + x \<cdot> y = y \<longrightarrow> x\<^sup>
 
 end
 
-subsection {* Omega Algebras *}
+subsection \<open>Omega Algebras\<close>
 
 class omega_algebra = kleene_algebra + left_omega_algebra
 

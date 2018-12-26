@@ -46,18 +46,18 @@ lemma simTauChain:
   and     Sim: "\<And>R S. (R, S) \<in> Rel \<Longrightarrow> R \<leadsto>\<^sup>^<Rel> S"
 
   obtains P' where "P \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
-using `Q \<Longrightarrow>\<^sub>\<tau> Q'` `(P, Q) \<in> Rel`
+using \<open>Q \<Longrightarrow>\<^sub>\<tau> Q'\<close> \<open>(P, Q) \<in> Rel\<close>
 proof(induct arbitrary: thesis rule: tauChainInduct)
   case Base
-  from `(P, Q) \<in> Rel` show ?case
+  from \<open>(P, Q) \<in> Rel\<close> show ?case
     by(force intro: Base)
 next
   case(Step Q'' Q')
-  from `(P, Q) \<in> Rel` obtain P'' where "P \<Longrightarrow>\<^sub>\<tau> P''" and "(P'', Q'') \<in> Rel"
+  from \<open>(P, Q) \<in> Rel\<close> obtain P'' where "P \<Longrightarrow>\<^sub>\<tau> P''" and "(P'', Q'') \<in> Rel"
     by(blast intro: Step)
-  from `(P'', Q'') \<in> Rel` have "P'' \<leadsto>\<^sup>^<Rel> Q''" by(rule Sim)
-  then obtain P' where "P'' \<Longrightarrow>\<^sup>^\<tau> \<prec> P'" and "(P', Q') \<in> Rel" using `Q'' \<longmapsto>\<tau> \<prec> Q'` by(rule weakSimE)
-  with `P \<Longrightarrow>\<^sub>\<tau> P''` show thesis
+  from \<open>(P'', Q'') \<in> Rel\<close> have "P'' \<leadsto>\<^sup>^<Rel> Q''" by(rule Sim)
+  then obtain P' where "P'' \<Longrightarrow>\<^sup>^\<tau> \<prec> P'" and "(P', Q') \<in> Rel" using \<open>Q'' \<longmapsto>\<tau> \<prec> Q'\<close> by(rule weakSimE)
+  with \<open>P \<Longrightarrow>\<^sub>\<tau> P''\<close> show thesis
     by(force simp add: weakTrans_def weakCongTrans_def intro: Step)
 qed
 
@@ -75,28 +75,28 @@ lemma simE2:
   obtains P' where "P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'" and "(P', Q') \<in> Rel"
 proof -
   assume Goal: "\<And>P'. \<lbrakk>P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P'; (P', Q') \<in> Rel\<rbrakk> \<Longrightarrow> thesis"
-  moreover from `Q \<Longrightarrow>\<^sup>^\<alpha> \<prec> Q'` have "\<exists>P'. P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel"
+  moreover from \<open>Q \<Longrightarrow>\<^sup>^\<alpha> \<prec> Q'\<close> have "\<exists>P'. P \<Longrightarrow>\<^sup>^\<alpha> \<prec> P' \<and> (P', Q') \<in> Rel"
   proof(induct rule: weakTransCases)
     case Base
-    from `(P, Q) \<in> Rel` show ?case by force
+    from \<open>(P, Q) \<in> Rel\<close> show ?case by force
   next
     case Step
-    from `Q \<Longrightarrow>\<alpha> \<prec> Q'` obtain Q''' Q''
+    from \<open>Q \<Longrightarrow>\<alpha> \<prec> Q'\<close> obtain Q''' Q''
     where QChain: "Q \<Longrightarrow>\<^sub>\<tau> Q'''" and Q'''Trans: "Q''' \<longmapsto>\<alpha> \<prec> Q''" and Q''Chain: "Q'' \<Longrightarrow>\<^sub>\<tau> Q'"
       by(rule weakCongTransE)
-    from QChain `(P, Q) \<in> Rel` Sim obtain P''' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P'''" and "(P''', Q''') \<in> Rel"
+    from QChain \<open>(P, Q) \<in> Rel\<close> Sim obtain P''' where PChain: "P \<Longrightarrow>\<^sub>\<tau> P'''" and "(P''', Q''') \<in> Rel"
       by(rule simTauChain)
-    from `(P''', Q''') \<in> Rel` have "P''' \<leadsto>\<^sup>^<Rel> Q'''" by(rule Sim)
+    from \<open>(P''', Q''') \<in> Rel\<close> have "P''' \<leadsto>\<^sup>^<Rel> Q'''" by(rule Sim)
     then obtain P'' where P'''Trans: "P''' \<Longrightarrow>\<^sup>^\<alpha> \<prec> P''" and "(P'', Q'') \<in> Rel" using Q'''Trans by(rule weakSimE)
-    from Q''Chain `(P'', Q'') \<in> Rel` Sim obtain P' where P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
+    from Q''Chain \<open>(P'', Q'') \<in> Rel\<close> Sim obtain P' where P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'" and "(P', Q') \<in> Rel"
       by(rule simTauChain)
     from P'''Trans P''Chain Step show ?thesis
     proof(induct rule: weakTransCases)
       case Base
-      from PChain `P''' \<Longrightarrow>\<^sub>\<tau> P'` have "P \<Longrightarrow>\<^sup>^\<tau> \<prec> P'"
+      from PChain \<open>P''' \<Longrightarrow>\<^sub>\<tau> P'\<close> have "P \<Longrightarrow>\<^sup>^\<tau> \<prec> P'"
       proof(induct rule: tauChainInduct)
         case Base
-        from `P \<Longrightarrow>\<^sub>\<tau> P'` show ?case
+        from \<open>P \<Longrightarrow>\<^sub>\<tau> P'\<close> show ?case
         proof(induct rule: tauChainInduct)
           case Base
           show ?case by simp
@@ -108,10 +108,10 @@ proof -
         case(Step P''' P'')
         thus ?case by(fastforce simp add: weakTrans_def weakCongTrans_def)
       qed
-      with `(P', Q') \<in> Rel` show ?case by blast
+      with \<open>(P', Q') \<in> Rel\<close> show ?case by blast
     next
       case Step
-      thus ?case using `(P', Q') \<in> Rel` PChain
+      thus ?case using \<open>(P', Q') \<in> Rel\<close> PChain
         by(rule_tac x=P' in exI) (force simp add: weakTrans_def weakCongTrans_def)
     qed
   qed

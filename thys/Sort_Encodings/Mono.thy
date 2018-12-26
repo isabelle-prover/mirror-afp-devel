@@ -1,10 +1,10 @@
-section{* Monotonicity *}
+section\<open>Monotonicity\<close>
 theory Mono imports CM begin
 
 
-subsection{* Fullness and infiniteness *}
+subsection\<open>Fullness and infiniteness\<close>
 
-text{* In a structure, a full type is one that contains all elements of univ (the fixed countable universe): *}
+text\<open>In a structure, a full type is one that contains all elements of univ (the fixed countable universe):\<close>
 
 definition (in Tstruct) "full \<sigma> \<equiv> \<forall> d. intT \<sigma> d"
 
@@ -25,7 +25,7 @@ for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool
 and arOf :: "'fsym \<Rightarrow> 'tp list"
 and resOf and parOf and \<Phi> and intT and intF and intP
 
-text{* An infinite structure is one with all carriers infinite: *}
+text\<open>An infinite structure is one with all carriers infinite:\<close>
 
 locale InfStruct = I? : Struct +
 assumes inf: "infinite {a. intT \<sigma> a}"
@@ -47,7 +47,7 @@ abbreviation "FFullModel \<equiv> FullModel wtFsym wtPsym arOf resOf parOf \<Phi
 abbreviation "IInfModel \<equiv> InfModel wtFsym wtPsym arOf resOf parOf \<Phi>"
 end
 
-text{* Problem that deduces some infiniteness constraints: *}
+text\<open>Problem that deduces some infiniteness constraints:\<close>
 
 locale ProblemIk = Ik? : Problem wtFsym wtPsym arOf resOf parOf \<Phi>
 for wtFsym :: "'fsym \<Rightarrow> bool" and wtPsym :: "'psym \<Rightarrow> bool"
@@ -73,7 +73,7 @@ apply unfold_locales by simp
 end
 
 
-subsection{* Monotonicity *}
+subsection\<open>Monotonicity\<close>
 
 context Problem begin
 (* Monotonicity: *)
@@ -292,8 +292,8 @@ definition "intTF \<equiv> InfModel.intTF"
 definition "intFF \<equiv> InfModel.intFF arOf resOf intTI intFI"
 definition "intPF \<equiv> InfModel.intPF parOf intTI intPI"
 
-text{* Strengthening of the infiniteness condition for monotonicity,
-replacing infininetess by fullness: *}
+text\<open>Strengthening of the infiniteness condition for monotonicity,
+replacing infininetess by fullness:\<close>
 
 theorem FullModel_intTF_intFF_intPF:
 assumes "MModel intT intF intP"

@@ -11,7 +11,7 @@ theory Counterexamples
 imports SequentialComposition
 begin
 
-text {*
+text \<open>
 \null
 
 The security conservation theorem proven in this paper contains two nontrivial assumptions; namely,
@@ -28,18 +28,18 @@ Both counterexamples make use of reflexive security policies, which is the case 
 practical significance, and are based on trace set processes as defined in \cite{R3}. The security
 of the processes input to sequential composition, as well as the insecurity of the resulting
 process, are demonstrated by means of the Ipurge Unwinding Theorem proven in \cite{R3}.
-*}
+\<close>
 
 
 subsection "Preliminary definitions and lemmas"
 
-text {*
+text \<open>
 Both counterexamples will use the same type @{term event} as native type of ordinary events, as well
 as the same process @{term Q} as second input to sequential composition. Here below are the
 definitions of these constants, followed by few useful lemmas on process @{term Q}.
 
 \null
-*}
+\<close>
 
 datatype event = a | b
 
@@ -61,7 +61,7 @@ lemmas unwinding_snd = ts_ipurge_unwinding [OF trace_set_snd]
 
 subsection "Necessity of termination security"
 
-text {*
+text \<open>
 The reason why the conservation of noninterference security under sequential composition requires
 the security policy to satisfy predicate @{term secure_termination} is that the second input process
 cannot engage in its events unless the first process has terminated successfully. Thus, the ordinary
@@ -82,7 +82,7 @@ Here below are the definitions of constants @{term I\<^sub>1} and @{term P\<^sub
 on process @{term P\<^sub>1}.
 
 \null
-*}
+\<close>
 
 definition I\<^sub>1 :: "(event option \<times> event option) set" where
 "I\<^sub>1 \<equiv> {(Some a, None)}\<^sup>="
@@ -102,7 +102,7 @@ lemmas next_events_fst_1 = ts_process_next_events [OF trace_set_fst_1]
 
 lemmas unwinding_fst_1 = ts_ipurge_unwinding [OF trace_set_fst_1]
 
-text {*
+text \<open>
 \null
 
 Here below is the proof that policy @{term I\<^sub>1} does not satisfy predicate
@@ -110,7 +110,7 @@ Here below is the proof that policy @{term I\<^sub>1} does not satisfy predicate
 keep being satisfied. For the sake of simplicity, the identity function is used as event-domain map.
 
 \null
-*}
+\<close>
 
 lemma not_secure_termination_1:
  "\<not> secure_termination I\<^sub>1 id"
@@ -193,14 +193,14 @@ proof (simp add: Q_def unwinding_snd dfc_equals_dwfc_rel_ipurge [symmetric]
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 In what follows, the insecurity of process @{term "P\<^sub>1 ; Q"} is demonstrated by proving that event
 list @{term "[Some a, Some b]"} is a trace of the process, whereas @{term "[Some b]"} is not.
 
 \null
-*}
+\<close>
 
 lemma traces_comp_1:
  "traces (P\<^sub>1 ; Q) = Domain (seq_comp_failures P\<^sub>1 Q)"
@@ -271,7 +271,7 @@ next
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 Here below, the previous results are used to show that constants @{term I\<^sub>1}, @{term P\<^sub>1}, @{term Q},
@@ -279,7 +279,7 @@ and @{term id} indeed constitute a counterexample to the statement obtained by r
 security from the assumptions of the security conservation theorem.
 
 \null
-*}
+\<close>
 
 lemma counterexample_1:
  "\<not> (ref_union_closed P\<^sub>1 \<and>
@@ -307,7 +307,7 @@ qed
 
 subsection "Necessity of process sequentiality"
 
-text {*
+text \<open>
 The reason why the conservation of noninterference security under sequential composition requires
 the first input process to satisfy predicate @{term sequential}, instead of the more permissive
 predicate @{term weakly_sequential}, is that the possibility for the first process to engage in
@@ -331,7 +331,7 @@ Here below are the definitions of constants @{term I\<^sub>2} and @{term P\<^sub
 on process @{term P\<^sub>2}.
 
 \null
-*}
+\<close>
 
 definition I\<^sub>2 :: "(event option \<times> event option) set" where
 "I\<^sub>2 \<equiv> {(None, Some a)}\<^sup>="
@@ -351,7 +351,7 @@ lemmas next_events_fst_2 = ts_process_next_events [OF trace_set_fst_2]
 
 lemmas unwinding_fst_2 = ts_ipurge_unwinding [OF trace_set_fst_2]
 
-text {*
+text \<open>
 \null
 
 Here below is the proof that process @{term P\<^sub>2} does not satisfy predicate @{term sequential}, but
@@ -360,7 +360,7 @@ conservation theorem keep being satisfied. For the sake of simplicity, the ident
 as event-domain map.
 
 \null
-*}
+\<close>
 
 lemma secure_termination_2:
  "secure_termination I\<^sub>2 id"
@@ -455,7 +455,7 @@ proof (simp add: Q_def unwinding_snd dfc_equals_dwfc_rel_ipurge [symmetric]
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 In what follows, the insecurity of process @{term "P\<^sub>2 ; Q"} is demonstrated by proving that event
@@ -463,7 +463,7 @@ lists @{term "[Some b]"} and @{term "[Some a]"} are traces of the process, where
 @{term "[Some b, Some a]"} is not.
 
 \null
-*}
+\<close>
 
 lemma traces_comp_2:
  "traces (P\<^sub>2 ; Q) = Domain (seq_comp_failures P\<^sub>2 Q)"
@@ -547,7 +547,7 @@ next
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 Here below, the previous results are used to show that constants @{term I\<^sub>2}, @{term P\<^sub>2}, @{term Q},
@@ -555,7 +555,7 @@ and @{term id} indeed constitute a counterexample to the statement obtained by r
 sequentiality with weak sequentiality in the assumptions of the security conservation theorem.
 
 \null
-*}
+\<close>
 
 lemma counterexample_2:
  "\<not> (secure_termination I\<^sub>2 id \<and>

@@ -1,4 +1,4 @@
-section {* Complementation Implementation *}
+section \<open>Complementation Implementation\<close>
 
 theory Complementation_Implement
 imports
@@ -16,7 +16,7 @@ begin
 
   abbreviation "pred A a q \<equiv> {p. q \<in> succ A a p}"
 
-  subsection {* Phase 1 *}
+  subsection \<open>Phase 1\<close>
 
   definition cs_lr :: "'state items \<Rightarrow> 'state lr" where
     "cs_lr f \<equiv> map_option fst \<circ> f"
@@ -214,7 +214,7 @@ begin
     show "(\<lambda> f. cs_st f = {}, \<lambda> (f, P). P = {}) \<in> cs_rel \<rightarrow> bool_rel" by (auto simp: in_br_conv)
   qed
 
-  subsection {* Phase 2 *}
+  subsection \<open>Phase 2\<close>
 
   definition ranks_2 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
     "ranks_2 A a f \<equiv> {g.
@@ -324,7 +324,7 @@ begin
     unfolding complement_2_def complement_1_def complement_succ_2_def complement_succ_1_def
     unfolding ranks_2_refine cs_st_def image_def vimage_def ran_def by auto
 
-  subsection {* Phase 3 *}
+  subsection \<open>Phase 3\<close>
 
   definition bounds_3 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items" where
     "bounds_3 A a f \<equiv> \<lambda> q. let S = Some -` f ` pred A a q in
@@ -388,7 +388,7 @@ begin
     unfolding complement_succ_3_refine complement_initial_3_refine complement_accepting_3_refine
     by auto
 
-  subsection {* Phase 4 *}
+  subsection \<open>Phase 4\<close>
 
   definition items_4 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
     "items_4 A p \<equiv> \<lambda> (k, c). {(l, c \<and> even l) |l. k \<le> Suc l \<and> l \<le> k \<and> (accepting A p \<longrightarrow> even l)}"
@@ -638,7 +638,7 @@ begin
     finally show "language (complement_4 A) = streams (alphabet A) - language A" by simp
   qed
 
-  subsection {* Phase 5 *}
+  subsection \<open>Phase 5\<close>
 
   definition refresh_5 :: "'state items \<Rightarrow> 'state items nres" where
     "refresh_5 f \<equiv> if \<exists> (p, k, c) \<in> map_to_set f. c
@@ -744,7 +744,7 @@ begin
     unfolding complement_succ_5_def complement_succ_4_def get_5_refine comp_apply
     by (refine_vcg vcg1[OF refresh_5_refine] vcg1[OF bounds_5_refine] vcg0[OF expand_5_refine]) (auto)
 
-  subsection {* Phase 6 *}
+  subsection \<open>Phase 6\<close>
 
   definition expand_map_get_6 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
     "expand_map_get_6 A f \<equiv> FOREACH (map_to_set f) (\<lambda> (k, v) X. do {
@@ -771,7 +771,7 @@ begin
     unfolding complement_succ_6_def complement_succ_5_def
     by (refine_vcg vcg2[OF expand_map_get_6_refine]) (auto intro: refine_IdI)
 
-  subsection {* Phase 7 *}
+  subsection \<open>Phase 7\<close>
 
   interpretation autoref_syn by this
 

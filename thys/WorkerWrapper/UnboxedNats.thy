@@ -13,9 +13,9 @@ imports
 begin
 (*>*)
 
-section{* Unboxing types. *}
+section\<open>Unboxing types.\<close>
 
-text{* The original application of the worker/wrapper transformation
+text\<open>The original application of the worker/wrapper transformation
 was the unboxing of flat types by \citet{SPJ-JL:1991}. We can model
 the boxed and unboxed types as (respectively) pointed and unpointed
 domains in HOLCF. Concretely @{typ "UNat"} denotes the discrete domain
@@ -26,11 +26,11 @@ lifted function codomains separated; applications of @{term "unbox"}
 should be thought of in the same way as Haskell's @{term "newtype"}
 constructors, i.e. operationally equivalent to @{term "ID"}.
 
-The divergence monad is used to handle the unboxing, see below. *}
+The divergence monad is used to handle the unboxing, see below.\<close>
 
-subsection{* Factorial example. *}
+subsection\<open>Factorial example.\<close>
 
-text{* Standard definition of factorial. *}
+text\<open>Standard definition of factorial.\<close>
 
 fixrec fac :: "Nat \<rightarrow> Nat"
 where
@@ -51,20 +51,20 @@ lemma fac_body_strict[simp]: "fac_body\<cdot>r\<cdot>\<bottom> = \<bottom>"
 lemma fac_fac_body_eq: "fac = fix\<cdot>fac_body"
   unfolding fac_body_def by (rule cfun_eqI, subst fac_def, simp)
 
-text{* Wrap / unwrap functions. Note the explicit lifting of the
+text\<open>Wrap / unwrap functions. Note the explicit lifting of the
 co-domain. For some reason the published version of
 \citet{GillHutton:2009} does not discuss this point: if we're going to
 handle recursive functions, we need a bottom.
 
 @{term "unbox"} simply removes the tag, yielding a possibly-divergent
-unboxed value, the result of the function. *}
+unboxed value, the result of the function.\<close>
 
 definition
   unwrapB :: "(Nat \<rightarrow> Nat) \<rightarrow> UNat \<rightarrow> UNat\<^sub>\<bottom>" where
   "unwrapB \<equiv> \<Lambda> f. unbox oo f oo box"
 
-text{* Note that the monadic bind operator @{term "(>>=)"} here stands
-in for the \textsf{case} construct in the paper. *}
+text\<open>Note that the monadic bind operator @{term "(>>=)"} here stands
+in for the \textsf{case} construct in the paper.\<close>
 
 definition
   wrapB :: "(UNat \<rightarrow> UNat\<^sub>\<bottom>) \<rightarrow> Nat \<rightarrow> Nat" where
@@ -83,7 +83,7 @@ proof(rule cfun_eqI)
   finally show "?lhs\<cdot>x = ?rhs\<cdot>x" .
 qed
 
-text{* Apply worker/wrapper. *}
+text\<open>Apply worker/wrapper.\<close>
 
 definition
   fac_work :: "UNat \<rightarrow> UNat\<^sub>\<bottom>" where
@@ -103,8 +103,8 @@ proof -
     unfolding fac_work_def fac_wrap_def by (simp add: fac_fac_body_eq)
 qed
 
-text{* This is not entirely faithful to the paper, as they don't
-explicitly handle the lifting of the codomain. *}
+text\<open>This is not entirely faithful to the paper, as they don't
+explicitly handle the lifting of the codomain.\<close>
 
 definition
   fac_body' :: "(UNat \<rightarrow> UNat\<^sub>\<bottom>) \<rightarrow> UNat \<rightarrow> UNat\<^sub>\<bottom>" where
@@ -122,10 +122,10 @@ proof(rule cfun_eqI)+
     unfolding fac_body'_def fac_body_def unwrapB_def wrapB_def by simp
 qed
 
-text{* The @{term "up"} constructors here again mediate the
+text\<open>The @{term "up"} constructors here again mediate the
 isomorphism, operationally doing nothing. Note the switch to the
 machine-oriented \emph{if} construct: the test @{term "n = 0"} cannot
-diverge. *}
+diverge.\<close>
 
 definition
   fac_body_final :: "(UNat \<rightarrow> UNat\<^sub>\<bottom>) \<rightarrow> UNat \<rightarrow> UNat\<^sub>\<bottom>" where
@@ -162,9 +162,9 @@ qed
 
 (* **************************************** *)
 
-subsection{* Introducing an accumulator. *}
+subsection\<open>Introducing an accumulator.\<close>
 
-text{*
+text\<open>
 
 The final version of factorial uses unboxed naturals but is not
 tail-recursive. We can apply worker/wrapper once more to introduce an
@@ -177,7 +177,7 @@ homomorphism.
 Firstly we introduce an ``accumulator'' monoid and show the
 homomorphism.
 
-*}
+\<close>
 
 type_synonym UNatAcc = "UNat \<rightarrow> UNat\<^sub>\<bottom>"
 
@@ -216,7 +216,7 @@ lemma wrapA_unwrapA_id: "wrapA oo unwrapA = ID"
   apply (simp_all add: a2n_n2a)
   done
 
-text{* Some steps along the way. *}
+text\<open>Some steps along the way.\<close>
 
 definition
   fac_acc_body1 :: "(UNat \<rightarrow> UNatAcc) \<rightarrow> UNat \<rightarrow> UNatAcc" where
@@ -227,7 +227,7 @@ lemma fac_acc_body1_fac_body_final_eq: "fac_acc_body1 = unwrapA oo fac_body_fina
   unfolding fac_acc_body1_def fac_body_final_def wrapA_def unwrapA_def
   by (rule cfun_eqI)+ simp
 
-text{* Use the homomorphism. *}
+text\<open>Use the homomorphism.\<close>
 
 definition
   fac_acc_body2 :: "(UNat \<rightarrow> UNatAcc) \<rightarrow> UNat \<rightarrow> UNatAcc" where
@@ -238,7 +238,7 @@ lemma fac_acc_body2_body1_eq: "fac_acc_body2 = fac_acc_body1"
   unfolding fac_acc_body1_def fac_acc_body2_def
   by (rule cfun_eqI)+ (simp add: A_hom_mult)
 
-text{* Apply worker/wrapper. *}
+text\<open>Apply worker/wrapper.\<close>
 
 definition
   fac_acc_body3 :: "(UNat \<rightarrow> UNatAcc) \<rightarrow> UNat \<rightarrow> UNatAcc" where

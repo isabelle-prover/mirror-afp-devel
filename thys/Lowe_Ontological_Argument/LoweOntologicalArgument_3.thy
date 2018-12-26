@@ -70,7 +70,7 @@ theorem C10:  "\<lfloor>\<^bold>\<exists>\<^sup>Ax. Godlike x\<rfloor>"
 text\<open>\noindent{Next, we try assuming a stronger modal logic. We do this by postulating further axioms
 using the \emph{Sahlqvist correspondence} and asking Sledgehammer to find a proof.
 Sledgehammer is in fact able to find a proof for C10 which only relies on the modal axiom \emph{T}
-(@{text "\<box>\<phi> \<^bold>\<rightarrow> \<phi>"}).}\<close>    
+(\<open>\<box>\<phi> \<^bold>\<rightarrow> \<phi>\<close>).}\<close>    
 axiomatization where 
  T_axiom: "reflexive R" and \<comment> \<open>@{text "\<box>\<phi> \<rightarrow> \<phi>"}\<close>
  B_axiom: "symmetric R" and \<comment> \<open>@{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"}\<close>

@@ -9,16 +9,16 @@
 theory Reachability imports Language begin
 (*>*)
 
-subsection{*Reachability relation*} 
+subsection\<open>Reachability relation\<close> 
 
-text{*The second auxiliary operational judgement is required for the
+text\<open>The second auxiliary operational judgement is required for the
 interpretation of invariants and method invariants. Invariants are
 expected to be satisfied in all heap components of (future) states
 that occur either in the same frame as the current state or a subframe
 thereof. Likewise, method invariants are expected to be satisfied by
 all heap components of states observed during the execution of a
 method, including subframes. None of the previous three operational
-judgements allows us to express these interpretations, as @{text Step}
+judgements allows us to express these interpretations, as \<open>Step\<close>
 injects the execution of an invoked method as a single step. Thus,
 states occurring in subframes cannot be related to states occurring in
 the parent frame using these judgements. This motivates the
@@ -26,7 +26,7 @@ introduction of predicates relating states $s$ and $t$ whenever the
 latter can be reach from the former, i.e.~whenever $t$ occurs as a
 successor of $s$ in the same frame as $s$ or one of its
 subframes. Again, we first define a relation that includes an explicit
-derivation height index.*}
+derivation height index.\<close>
 
 inductive_set
   Reachable::"(Mbody \<times> Label \<times> State \<times> nat \<times> State) set" 
@@ -43,7 +43,7 @@ Reachable_invS:
      ((par,code,l0), l0, ([],R,h), n, t):Reachable; k=Suc n\<rbrakk>
   \<Longrightarrow> (M,l,s,k,t) : Reachable"
 
-text{*The following properties of are useful to notice.*}
+text\<open>The following properties of are useful to notice.\<close>
 (*<*)
 lemma ZeroHeightReachableElimAux[rule_format]:
   "(M, l, s, k, r) \<in> Reachable \<Longrightarrow> 0=k \<longrightarrow> r=s"
@@ -88,8 +88,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*Similar to the operational semantics, we define a variation of
-the reachability relation that hides the index.*}
+text\<open>Similar to the operational semantics, we define a variation of
+the reachability relation that hides the index.\<close>
 
 definition Reach::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
 where "Reach M l s t = (\<exists> k . (M,l,s,k,t):Reachable)"

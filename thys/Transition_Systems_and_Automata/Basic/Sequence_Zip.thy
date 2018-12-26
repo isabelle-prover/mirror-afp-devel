@@ -1,10 +1,10 @@
-section {* Zipping Sequences *}
+section \<open>Zipping Sequences\<close>
 
 theory Sequence_Zip
 imports "Sequence"
 begin
 
-  subsection {* Zipping Lists *}
+  subsection \<open>Zipping Lists\<close>
 
   notation zip (infixr "||" 51)
 
@@ -58,7 +58,7 @@ begin
     finally show ?thesis by this
   qed
 
-  subsection {* Zipping Streams *}
+  subsection \<open>Zipping Streams\<close>
 
   notation szip (infixr "|||" 51)
 

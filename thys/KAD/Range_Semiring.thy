@@ -5,15 +5,15 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Range and Antirange Semirings *}
+section \<open>Range and Antirange Semirings\<close>
 
 theory Range_Semiring
 imports Antidomain_Semiring
 begin
 
-subsection {* Range Semirings *}
+subsection \<open>Range Semirings\<close>
 
-text {* We set up the duality between domain and antidomain semirings on the one hand and range and antirange semirings on the other hand. *}
+text \<open>We set up the duality between domain and antidomain semirings on the one hand and range and antirange semirings on the other hand.\<close>
 
 class range_op =
   fixes range_op :: "'a \<Rightarrow> 'a" ("r")
@@ -54,7 +54,7 @@ proof -
     unfolding ddual.bd_def fd_def by auto
 qed
 
-subsection {* Antirange Semirings *}
+subsection \<open>Antirange Semirings\<close>
 
 class antirange_op =
   fixes antirange_op :: "'a \<Rightarrow> 'a" ("ar _" [999] 1000)
@@ -120,7 +120,7 @@ proof -
     unfolding addual.bbox_def fbox_def by auto
 qed
 
-subsection {* Antirange Kleene Algebras *}
+subsection \<open>Antirange Kleene Algebras\<close>
 
 class antirange_kleene_algebra = antirange_semiring + kleene_algebra
 
@@ -131,6 +131,6 @@ sublocale antirange_kleene_algebra \<subseteq> dual: antidomain_kleene_algebra a
 sublocale antidomain_kleene_algebra \<subseteq> dual: antirange_kleene_algebra "(+)" "\<lambda>x y. y \<cdot> x" 1 0 "(\<le>)" "(<)" "star" antidomain_op
   by (standard, simp_all add: star_inductr star_inductl)
 
-text {* Hence all range theorems have been derived by duality in a generic way. *}
+text \<open>Hence all range theorems have been derived by duality in a generic way.\<close>
 
 end

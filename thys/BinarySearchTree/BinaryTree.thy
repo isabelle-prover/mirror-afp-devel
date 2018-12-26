@@ -4,18 +4,18 @@
     License:     LGPL
 *)
 
-section {* Isar-style Reasoning for Binary Tree Operations *}
+section \<open>Isar-style Reasoning for Binary Tree Operations\<close>
 theory BinaryTree imports Main begin
 
-text {* We prove correctness of operations on 
+text \<open>We prove correctness of operations on 
  binary search tree implementing a set.
 
  This document is LGPL.
 
- Author: Viktor Kuncak, MIT CSAIL, November 2003 *}
+ Author: Viktor Kuncak, MIT CSAIL, November 2003\<close>
 
 (*============================================================*)
-section {* Tree Definition *}
+section \<open>Tree Definition\<close>
 (*============================================================*)
 
 datatype 'a Tree = Tip | T "'a Tree" 'a "'a Tree"
@@ -56,7 +56,7 @@ lemma sortLemmaR:
   "sortedTree h (T t1 x t2) ==> sortedTree h t2" by simp
 
 (*============================================================*)
-section {* Tree Lookup *}
+section \<open>Tree Lookup\<close>
 (*============================================================*)
 
 primrec
@@ -94,7 +94,7 @@ lemma cases3: "[| C1 ==> G; C2 ==> G; C3 ==> G;
                   C1 | C2 | C3 |] ==> G"
 by auto
 
-text {* @{term sorted_distinct_pred} holds for out trees: *}
+text \<open>@{term sorted_distinct_pred} holds for out trees:\<close>
 
 lemma sorted_distinct: "sorted_distinct_pred h a b t" (is "?P t")
 proof (induct t)
@@ -199,7 +199,7 @@ proof safe
   qed
 qed
 
-subsection {* Tree membership as a special case of lookup *}
+subsection \<open>Tree membership as a special case of lookup\<close>
 
 definition memb :: "'a hash => 'a => 'a Tree => bool" where
   "memb h x t == 
@@ -245,7 +245,7 @@ qed
 declare sorted_distinct_pred_def [simp del]
 
 (*============================================================*)
-section {* Insertion into a Tree *}
+section \<open>Insertion into a Tree\<close>
 (*============================================================*)
 
 primrec
@@ -259,15 +259,15 @@ where
                                (T t1 x (binsert h e t2))
                               else (T t1 e t2)))"
 
-text {* A technique for proving disjointness of sets. *}
+text \<open>A technique for proving disjointness of sets.\<close>
 lemma disjCond: "[| !! x. [| x:A; x:B |] ==> False |] ==> A Int B = {}"
 by fastforce
 
-text {* The following is a proof that insertion correctly implements
+text \<open>The following is a proof that insertion correctly implements
         the set interface.
-        Compared to @{text BinaryTree_TacticStyle}, the claim is more
+        Compared to \<open>BinaryTree_TacticStyle\<close>, the claim is more
         difficult, and this time we need to assume as a hypothesis
-        that the tree is sorted. *}
+        that the tree is sorted.\<close>
 
 lemma binsert_set: "sortedTree h t -->
                     setOf (binsert h e t) = (setOf t) - (eqs h e) Un {e}" 
@@ -381,22 +381,22 @@ proof (induct t)
   qed
 qed
 
-text {* Using the correctness of set implementation,
-        preserving sortedness is still simple. *}
+text \<open>Using the correctness of set implementation,
+        preserving sortedness is still simple.\<close>
 lemma binsert_sorted: "sortedTree h t --> sortedTree h (binsert h x t)"
 by (induct t) (auto simp add: binsert_set)
 
-text {* We summarize the specification of binsert as follows. *}
+text \<open>We summarize the specification of binsert as follows.\<close>
 corollary binsert_spec: "sortedTree h t -->
                      sortedTree h (binsert h x t) &
                      setOf (binsert h e t) = (setOf t) - (eqs h e) Un {e}"
 by (simp add: binsert_set binsert_sorted)
 
 (*============================================================*)
-section {* Removing an element from a tree *}
+section \<open>Removing an element from a tree\<close>
 (*============================================================*)
 
-text {* These proofs are influenced by those in @{text BinaryTree_Tactic} *}
+text \<open>These proofs are influenced by those in \<open>BinaryTree_Tactic\<close>\<close>
 
 primrec
   rm :: "'a hash => 'a Tree => 'a"
@@ -784,7 +784,7 @@ proof (induct t)
   qed  
 qed
 
-text {* We summarize the specification of remove as follows. *}
+text \<open>We summarize the specification of remove as follows.\<close>
 corollary remove_spec: "sortedTree h t --> 
      sortedTree h (remove h e t) &
      setOf (remove h e t) = setOf t - eqs h e"

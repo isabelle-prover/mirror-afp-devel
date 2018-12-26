@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of execution using symbolic computation and iarrays*}
+section\<open>Examples of execution using symbolic computation and iarrays\<close>
 
 theory Examples_QR_IArrays_Symbolic
 imports
@@ -12,7 +12,7 @@ imports
   QR_Decomposition_IArrays
 begin
 
-subsection{*Execution of the QR decomposition using symbolic computation and iarrays*}
+subsection\<open>Execution of the QR decomposition using symbolic computation and iarrays\<close>
 
 definition "show_vec_real_iarrays v = IArray.of_fun (\<lambda>i. show_real (v !! i)) (IArray.length v)"
 
@@ -20,8 +20,8 @@ lemma vec_to_iarray_show_vec_real[code_unfold]: "vec_to_iarray (show_vec_real v)
   = show_vec_real_iarrays (vec_to_iarray v)"
   unfolding show_vec_real_def show_vec_real_iarrays_def vec_to_iarray_def by auto
 
-text{*The following function is used to print elements of type vec as lists of characters; 
-  useful for printing vectors in the output panel.*}
+text\<open>The following function is used to print elements of type vec as lists of characters; 
+  useful for printing vectors in the output panel.\<close>
 
 definition "print_vec = IArray.list_of \<circ> show_vec_real_iarrays \<circ> vec_to_iarray"
 
@@ -33,8 +33,8 @@ lemma matrix_to_iarray_show_matrix_real[code_unfold]: "matrix_to_iarray (show_ma
   unfolding matrix_to_iarray_def 
   by (simp add: vec_to_iarray_show_vec_real)
 
-text{*The following functions are useful to print matrices as lists of lists of characters; 
-  useful for printing in the output panel.*}
+text\<open>The following functions are useful to print matrices as lists of lists of characters; 
+  useful for printing in the output panel.\<close>
 
 definition "print_vec_mat = IArray.list_of \<circ> show_vec_real_iarrays"
 
@@ -42,7 +42,7 @@ definition "print_mat_aux A = IArray.of_fun (\<lambda>i. print_vec_mat (A !! i))
 
 definition "print_mat = IArray.list_of \<circ> print_mat_aux \<circ> matrix_to_iarray"
 
-subsubsection{*Examples*}
+subsubsection\<open>Examples\<close>
 
 value "let A = list_of_list_to_matrix [[1,2,4],[9,4,5],[0,0,0]]::real^3^3 in 
   iarray_of_iarray_to_list_of_list (matrix_to_iarray (show_matrix_real (divide_by_norm A)))"
@@ -73,7 +73,7 @@ value "let A = list_of_list_to_matrix [[1,2,3],[9,4,5],[0,0,4],[1,2,3]]::real^3^
   in matrix_to_list_of_list (show_matrix_real ((snd (QR_decomposition A))))"
 
 
-text{*least squares solution*}
+text\<open>least squares solution\<close>
 
 definition "A \<equiv> list_of_list_to_matrix [[1,3/5,3],[9,4,5/3],[0,0,4],[1,2,3]]::real^3^4"
 definition "b \<equiv> list_to_vec [1,2,3,4]::real^4"
@@ -81,24 +81,24 @@ definition "b \<equiv> list_to_vec [1,2,3,4]::real^4"
 value "let Q = fst (QR_decomposition A); R = snd (QR_decomposition A)
   in print_vec ((the (inverse_matrix R) ** transpose Q *v b))"
 
-text{*A times least squares solution*}
+text\<open>A times least squares solution\<close>
 
 value "let Q = fst (QR_decomposition A); R = snd (QR_decomposition A)
   in print_vec (A *v (the (inverse_matrix R) ** transpose Q *v b))"
 
-text{*The matrix Q*}
+text\<open>The matrix Q\<close>
 
 value "print_mat (fst (QR_decomposition A))"
 
-text{*The matrix R*}
+text\<open>The matrix R\<close>
 
 value "print_mat (snd (QR_decomposition A))"
 
-text{*The inverse of matrix R*}
+text\<open>The inverse of matrix R\<close>
 
 value "let R = snd (QR_decomposition A) in print_mat (the (inverse_matrix R))"
 
-text{*The least squares solution is in the left null space of A*}
+text\<open>The least squares solution is in the left null space of A\<close>
 
 value "let Q = fst (QR_decomposition A); R = snd (QR_decomposition A);
            b2 = (A *v (the (inverse_matrix R) ** transpose Q *v b))
@@ -147,8 +147,8 @@ value "let A = IArray[IArray[1,2,4],IArray[9,4,5],IArray[0,0,4],IArray[3,5,4]]in
     ((fst (QR_decomposition_iarrays A)) **i (snd (QR_decomposition_iarrays A))))"
 
 
-text{*The following example is presented in Chapter 1 of the book
-@{text "Numerical Methods in Scientific Computing"} by Dahlquist and Bjorck*}
+text\<open>The following example is presented in Chapter 1 of the book
+\<open>Numerical Methods in Scientific Computing\<close> by Dahlquist and Bjorck\<close>
 
 value "let A = list_of_list_to_matrix 
   [[1,-0.6691],[1,-0.3907],[1,-0.1219],[1,0.3090],[1,0.5878]]::real^2^5; 

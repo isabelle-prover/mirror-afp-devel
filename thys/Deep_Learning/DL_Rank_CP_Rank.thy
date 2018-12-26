@@ -26,12 +26,12 @@ next
     by (metis append_is_Nil_conv dims_tensor_prod length_0_conv list.set_intros(1) prod_list.Cons valid_index.simps zero_neq_one)
   have "Tensor.order B = 1" using Cons by auto
   then have valid1:"[i] \<lhd> dims B"
-    using `is' \<lhd> dims (prod_list (B # Bs))`[unfolded prod_list.Cons dims_tensor_prod `is' = i # is`]
+    using \<open>is' \<lhd> dims (prod_list (B # Bs))\<close>[unfolded prod_list.Cons dims_tensor_prod \<open>is' = i # is\<close>]
     by (metis One_nat_def Suc_length_conv hd_append2 length_0_conv list.sel(1) list.simps(3) valid_index.Nil valid_index.simps)
   have valid2:"is \<lhd> dims (prod_list Bs)"
-    using `is' \<lhd> dims (prod_list (B # Bs))`[unfolded prod_list.Cons dims_tensor_prod `is' = i # is`] `Tensor.order B = 1`
+    using \<open>is' \<lhd> dims (prod_list (B # Bs))\<close>[unfolded prod_list.Cons dims_tensor_prod \<open>is' = i # is\<close>] \<open>Tensor.order B = 1\<close>
     by (metis One_nat_def Suc_length_conv append_eq_Cons_conv length_0_conv list.sel(3) list.simps(3) self_append_conv2 valid_indexE)
-  show ?case unfolding `is' = i # is` List.zip_Cons_Cons List.list.map(2) prod_list.Cons
+  show ?case unfolding \<open>is' = i # is\<close> List.zip_Cons_Cons List.list.map(2) prod_list.Cons
     lookup_tensor_prod[OF valid1 valid2, simplified] by (simp add: Cons.IH Cons.prems(1) valid2)
 qed
 
@@ -52,7 +52,7 @@ proof -
   proof -
     fix "is" assume "is \<lhd> dims A"
     then have "lookup A is = a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (zip is Bs)))"
-      using lookup_order1_prod[OF `\<And>B. B \<in> set Bs \<Longrightarrow> Tensor.order B = 1`] lookup_smult
+      using lookup_order1_prod[OF \<open>\<And>B. B \<in> set Bs \<Longrightarrow> Tensor.order B = 1\<close>] lookup_smult
       using \<open>a \<cdot> prod_list Bs = A\<close> dims_smult by fastforce
     also have "... = a * (prod_list (map (\<lambda>(i,B). lookup B [i]) (nths (zip is Bs) I))) *
                          (prod_list (map (\<lambda>(i,B). lookup B [i]) (nths (zip is Bs) (-I))))"
@@ -99,12 +99,12 @@ next
   assume "dims A = dims B"
   assume "cprank_max1 A"
   assume "mrank (matricize I B) \<le> j"
-  have "mrank (matricize I A) \<le> 1" using `cprank_max1 A` matricize_cprank_max1 by auto
+  have "mrank (matricize I A) \<le> 1" using \<open>cprank_max1 A\<close> matricize_cprank_max1 by auto
   have "mrank (matricize I (A + B)) \<le> mrank (matricize I A) + mrank (matricize I B)"
     using matricize_add vec_space.rank_subadditive dims_matricize
-    carrier_matI index_add_mat(2) `dims A = dims B` by metis
+    carrier_matI index_add_mat(2) \<open>dims A = dims B\<close> by metis
   then show "mrank (matricize I (A + B)) \<le> Suc j"
-    using \<open>mrank (matricize I A) \<le> 1\<close> `mrank (matricize I B) \<le> j` by linarith
+    using \<open>mrank (matricize I A) \<le> 1\<close> \<open>mrank (matricize I B) \<le> j\<close> by linarith
 qed
 
 lemma matrix_rank_le_cp_rank:

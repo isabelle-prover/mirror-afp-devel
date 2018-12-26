@@ -4,13 +4,13 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
-section {*Gateway: Verification*}
+section \<open>Gateway: Verification\<close>
 
 theory Gateway_proof_aux 
 imports Gateway BitBoolTS
 begin
 
-subsection {* Properties of the defined data types *}
+subsection \<open>Properties of the defined data types\<close>
 
 
 lemma aType_empty: 
@@ -89,7 +89,7 @@ using assms
 by (metis vcType_empty)
 
 
-subsection {* Properties of the Delay component *}
+subsection \<open>Properties of the Delay component\<close>
 
 lemma Delay_L1:
  assumes h1:"\<forall>t1 < t. i1 t1 = []"
@@ -163,7 +163,7 @@ using assms
 by (simp add: msg_def Delay_lengthOut1)
 
 
-subsection {* Properties of the Loss component *}
+subsection \<open>Properties of the Loss component\<close>
 
 lemma Loss_L1:
  assumes "\<forall>t2<t. i2 t2 = []"
@@ -263,7 +263,7 @@ using assms
 by (simp add: msg_def Loss_def Loss_lengthOut1)
 
 
-subsection {* Properties of the composition of Delay and Loss components *}
+subsection \<open>Properties of the composition of Delay and Loss components\<close>
 
 lemma Loss_Delay_length_y:
   assumes "\<forall>t. length (a t) \<le> Suc 0"
@@ -282,7 +282,7 @@ using assms
 by (simp add: msg_def Loss_Delay_length_y)
 
 
-subsection {* Auxiliary Lemmas*}
+subsection \<open>Auxiliary Lemmas\<close>
 
 lemma inf_last_ti2:
   assumes "inf_last_ti dt (Suc (Suc t)) \<noteq> []"
@@ -1289,7 +1289,7 @@ proof -
 qed
 
 
-subsection {* Properties of the ServiceCenter component *}
+subsection \<open>Properties of the ServiceCenter component\<close>
 
 lemma ServiceCenter_a_l:
   assumes "ServiceCenter i a"
@@ -1330,7 +1330,7 @@ using assms
 by (clarify, simp add: ServiceCenter_L1)
 
 
-subsection {* General properties of stream values *}
+subsection \<open>General properties of stream values\<close>
 
 lemma streamValue1: 
 assumes h1:"\<forall>j\<le> D + (z::nat). str (t + j) = x"

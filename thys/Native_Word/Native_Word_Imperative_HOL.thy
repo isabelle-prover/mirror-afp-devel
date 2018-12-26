@@ -14,6 +14,6 @@ text \<open>
   supported by all PolyML versions with the adaptations for Imperative\_HOL.
 \<close>
 
-setup {* Code_Target.add_derived_target ("SML_word_imp", [("SML_word", I), ("SML_imp", I)]) *}
+setup \<open>Code_Target.add_derived_target ("SML_word_imp", [("SML_word", I), ("SML_imp", I)])\<close>
 
 end

@@ -1,25 +1,23 @@
 (*  Gauss-Jordan elimination for matrices represented as functions
     Author: Tobias Nipkow
 *)
-section {* Gauss-Jordan elimination algorithm *}
+section \<open>Gauss-Jordan elimination algorithm\<close>
 theory Gauss_Jordan_Elim_Fun
 imports Main
 begin
 
-text{* Matrices are functions: *}
+text\<open>Matrices are functions:\<close>
 
 type_synonym 'a matrix = "nat \<Rightarrow> nat \<Rightarrow> 'a"
 
-text{* In order to restrict to finite matrices, a matrix is usually combined
+text\<open>In order to restrict to finite matrices, a matrix is usually combined
 with one or two natural numbers indicating the maximal row and column of the
 matrix.
 
-Gauss-Jordan elimination is parameterized with a natural number @{text
-n}. It indicates that the matrix @{text A} has @{text n} rows and columns.
-In fact, @{text A} is the augmented matrix with @{text "n+1"} columns. Column
-@{text n} is the ``right-hand side'', i.e.\ the constant vector @{text
-b}. The result is the unit matrix augmented with the solution in column
-@{text n}; see the correctness theorem below. *}
+Gauss-Jordan elimination is parameterized with a natural number \<open>n\<close>. It indicates that the matrix \<open>A\<close> has \<open>n\<close> rows and columns.
+In fact, \<open>A\<close> is the augmented matrix with \<open>n+1\<close> columns. Column
+\<open>n\<close> is the ``right-hand side'', i.e.\ the constant vector \<open>b\<close>. The result is the unit matrix augmented with the solution in column
+\<open>n\<close>; see the correctness theorem below.\<close>
 
 fun gauss_jordan :: "('a::field)matrix \<Rightarrow> nat \<Rightarrow> ('a)matrix option" where
 "gauss_jordan A 0 = Some(A)" |
@@ -31,7 +29,7 @@ fun gauss_jordan :: "('a::field)matrix \<Rightarrow> nat \<Rightarrow> ('a)matri
          A' = (\<lambda>i. if i=p then Ap' else (\<lambda>j. A i j - A i m * Ap' j))
      in gauss_jordan (Fun.swap p m A') m))"
 
-text{* Some auxiliary functions: *}
+text\<open>Some auxiliary functions:\<close>
 
 definition solution :: "('a::field)matrix \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
 "solution A n x = (\<forall>i<n. (\<Sum> j=0..<n. A i j * x j) = A i n)"
@@ -58,18 +56,18 @@ next
      show "(\<Sum>j = 0..<n. A i j * x j) = A i n"
      proof cases
        assume "i=p1"
-       with `?L` assms False show ?thesis
+       with \<open>?L\<close> assms False show ?thesis
          by(fastforce simp add: solution_def Fun.swap_def)
      next
        assume "i\<noteq>p1"
        show ?thesis
        proof cases
          assume "i=p2"
-         with `?L` assms False show ?thesis
+         with \<open>?L\<close> assms False show ?thesis
            by(fastforce simp add: solution_def Fun.swap_def)
        next
          assume "i\<noteq>p2"
-         with `i\<noteq>p1` `?L` `i<n` assms False show ?thesis
+         with \<open>i\<noteq>p1\<close> \<open>?L\<close> \<open>i<n\<close> assms False show ?thesis
            by(fastforce simp add: solution_def Fun.swap_def)
        qed
      qed
@@ -106,9 +104,9 @@ apply(case_tac "i=p")
 apply (auto simp add: field_simps sum_subtractf sum_distrib_left[symmetric] all_conj_distrib)
 done
 
-subsection{* Correctness *}
+subsection\<open>Correctness\<close>
 
-text{* The correctness proof: *}
+text\<open>The correctness proof:\<close>
 
 lemma gauss_jordan_lemma: "m\<le>n \<Longrightarrow> unit A m n \<Longrightarrow> gauss_jordan A m = Some B \<Longrightarrow>
   unit B 0 n \<and> solution A n (\<lambda>j. B j n)"
@@ -121,17 +119,17 @@ next
   case (Suc m)
   let "?Ap' p" = "(\<lambda>j. A p j / A p m)"
   let "?A' p" = "(\<lambda>i. if i=p then ?Ap' p else (\<lambda>j. A i j - A i m * ?Ap' p j))"
-  from `gauss_jordan A (Suc m) = Some B`
+  from \<open>gauss_jordan A (Suc m) = Some B\<close>
   obtain p ks where "dropWhile (\<lambda>i. A i m = 0) [0..<Suc m] = p#ks" and
     rec: "gauss_jordan (Fun.swap p m (?A' p)) m = Some B"
     by (auto split: list.splits)
   from this have p: "p\<le>m" "A p m \<noteq> 0"
     apply(simp_all add: dropWhile_eq_Cons_conv del:upt_Suc)
     by (metis set_upt atLeast0AtMost atLeastLessThanSuc_atLeastAtMost atMost_iff in_set_conv_decomp)
-  have "m\<le>n" "m<n" using `Suc m \<le> n` by arith+
+  have "m\<le>n" "m<n" using \<open>Suc m \<le> n\<close> by arith+
   have "unit (Fun.swap p m (?A' p)) m n" using Suc.prems(2) p
     unfolding unit_def Fun.swap_def Suc_le_eq by (auto simp: le_less)
-  from Suc.hyps[OF `m\<le>n` this rec] `m<n` p
+  from Suc.hyps[OF \<open>m\<le>n\<close> this rec] \<open>m<n\<close> p
   show ?case
     by(simp add: solution_swap solution_upd1 solution_upd_but1[where A = "A(p := ?Ap' p)"])
 qed
@@ -155,14 +153,14 @@ proof(rule ccontr)
     { fix i assume "i<m"
       with assms(1) have "A i n = (\<Sum>j = 0..<m. A i j * x j)"
         by (auto simp: solution2_def usolution_def)
-      with 1[OF `i<m`] 2
+      with 1[OF \<open>i<m\<close>] 2
       have "(\<Sum>j = 0..<m. A i j * y j) = A i n"
         by (auto intro!: sum.cong)
     }
     hence "solution2 A m n y" by(simp add: solution2_def)
   }
   hence "solution2 A m n (x(q:=0))" and "solution2 A m n (x(q:=1))" by auto
-  with assms(1) zero_neq_one `q < m`
+  with assms(1) zero_neq_one \<open>q < m\<close>
   show False
     by (simp add: usolution_def)
        (metis fun_upd_same zero_neq_one)
@@ -178,7 +176,7 @@ lemma lem2:
   shows "(\<Sum>x\<in>A. f x * (g x * a)) = a * (\<Sum>x\<in>A. f x * g x)"
   by (simp add: sum_distrib_left field_simps)
 
-subsection{* Complete *}
+subsection\<open>Complete\<close>
 
 lemma gauss_jordan_complete:
   "m \<le> n \<Longrightarrow> usolution A m n x \<Longrightarrow> \<exists>B. gauss_jordan A m = Some B"
@@ -186,8 +184,8 @@ proof(induction m arbitrary: A)
   case 0 show ?case by simp
 next
   case (Suc m A)
-  from `Suc m \<le> n` have "m\<le>n" and "m<Suc m" by arith+
-  from non_null_if_pivot[OF Suc.prems(2) `m<Suc m`]
+  from \<open>Suc m \<le> n\<close> have "m\<le>n" and "m<Suc m" by arith+
+  from non_null_if_pivot[OF Suc.prems(2) \<open>m<Suc m\<close>]
   obtain p' where "p'<Suc m" and "A p' m \<noteq> 0" by blast
   hence "dropWhile (\<lambda>i. A i m = 0) [0..<Suc m] \<noteq> []"
     by (simp add: atLeast0LessThan) (metis lessThan_iff linorder_neqE_nat not_less_eq)
@@ -229,34 +227,34 @@ next
         show ?thesis
         proof (cases "i = m")
           assume "i = m"
-          with p `i \<noteq> p` have "p < m" by simp
+          with p \<open>i \<noteq> p\<close> have "p < m" by simp
           with a[unfolded solution2_def, THEN spec, of p] p(2)
           have "A p m * (A m m * A p n + A p m * (\<Sum>j = 0..<m. y j * A m j)) = A p m * (A m n * A p m + A m m * (\<Sum>j = 0..<m. y j * A p j))"
             by (simp add: Fun.swap_def field_simps sum_subtractf lem1 lem2 sum_divide_distrib[symmetric]
                      split: if_splits)
-          with `A p m \<noteq> 0` show ?thesis unfolding `i = m`
+          with \<open>A p m \<noteq> 0\<close> show ?thesis unfolding \<open>i = m\<close>
             by simp (simp add: field_simps)
         next
           assume "i \<noteq> m"
-          then have "i < m" using `i < Suc m` by simp
+          then have "i < m" using \<open>i < Suc m\<close> by simp
           with a[unfolded solution2_def, THEN spec, of i] p(2)
           have "A p m * (A i m * A p n + A p m * (\<Sum>j = 0..<m. y j * A i j)) = A p m * (A i n * A p m + A i m * (\<Sum>j = 0..<m. y j * A p j))"
             by (simp add: Fun.swap_def split: if_splits)
               (simp add: field_simps sum_subtractf lem1 lem2 sum_divide_distrib [symmetric])
-          with `A p m \<noteq> 0` show ?thesis
+          with \<open>A p m \<noteq> 0\<close> show ?thesis
             by simp (simp add: field_simps)
         qed
       qed
     qed
-    with `usolution A (Suc m) n x`
+    with \<open>usolution A (Suc m) n x\<close>
     have "\<forall>j<Suc m. ?y j = x j" by (simp add: usolution_def)
     hence "\<forall>j<m. y j = x j"
       by simp (metis less_SucI nat_neq_iff)
   } ultimately have "usolution ?A m n x" by(simp add: usolution_def)
-  from Suc.IH[OF `m\<le>n` this] 1 show ?case by(simp)
+  from Suc.IH[OF \<open>m\<le>n\<close> this] 1 show ?case by(simp)
 qed
 
-text{* Future work: extend the proof to matrix inversion. *}
+text\<open>Future work: extend the proof to matrix inversion.\<close>
 
 hide_const (open) unit
 

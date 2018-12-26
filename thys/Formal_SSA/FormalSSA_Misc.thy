@@ -2,9 +2,9 @@
     Author:     Sebastian Ullrich, Denis Lohner
 *)
 
-section {* Prelude *}
+section \<open>Prelude\<close>
 
-subsection {* Miscellaneous Lemmata *}
+subsection \<open>Miscellaneous Lemmata\<close>
 
 theory FormalSSA_Misc
 imports Main "HOL-Library.Sublist"

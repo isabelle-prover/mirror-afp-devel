@@ -1,12 +1,12 @@
-section{* Tag-Based Encodings *}
+section\<open>Tag-Based Encodings\<close>
 theory T 
 imports T_G_Prelim
 begin
 
 
-subsection{* The tag translation *}
+subsection\<open>The tag translation\<close>
 
-text{* The extension of the function symbols with type tags and type witnesses: *}
+text\<open>The extension of the function symbols with type tags and type witnesses:\<close>
 
 datatype ('fsym,'tp) efsym = Oldf 'fsym | Tag 'tp | Wit 'tp
 
@@ -14,7 +14,7 @@ datatype ('fsym,'tp) efsym = Oldf 'fsym | Tag 'tp | Wit 'tp
 context ProblemIkTpart
 begin
 
-text{* ``TE'' stands for ``tag encoding'' *}
+text\<open>``TE'' stands for ``tag encoding''\<close>
 
 fun TE_wtFsym where
  "TE_wtFsym (Oldf f) \<longleftrightarrow> wtFsym f"
@@ -171,7 +171,7 @@ lemma tpOf_Wit: "TE.tpOf (Fn (Wit \<sigma>) Tl) = \<sigma>" by simp
 end (* context ProblemIkTpart *)
 
 
-subsection{* Soundness *}
+subsection\<open>Soundness\<close>
 
 context ModelIkTpart begin
 
@@ -250,7 +250,7 @@ and \<Phi> = tPB and intF = TE_intF
 apply standard using wtPB_tPB soundness by auto
 
 
-subsection{* Completeness *}
+subsection\<open>Completeness\<close>
 
 (* iimg B f transforms f into a function f' having the same B-range as f
 and such that it is the identity on its B-image, namely, \<forall> b \<in> B. f' (f' a) = f' a;
@@ -639,7 +639,7 @@ where intT = intT and intF = intF and intP = intP
 using T_completeness .
 
 
-subsection{* The result of the tag translation is an infiniteness-augmented problem *}
+subsection\<open>The result of the tag translation is an infiniteness-augmented problem\<close>
 
 (* Note that basic fact, merely stating that
 the translation is well-defined between infiniteness-augmented problems,
@@ -672,8 +672,8 @@ proof
 qed
 
 
-subsection{* The verification of the first monotonicity calculus criterion
-for the tagged problem  *}
+subsection\<open>The verification of the first monotonicity calculus criterion
+for the tagged problem\<close>
 
 context ProblemIkTpart begin
 

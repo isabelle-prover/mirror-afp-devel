@@ -120,9 +120,9 @@ proof (rule convexI)
   {
     fix i
     from * have "0 \<le> v $ i" "sr * v $ i \<le> (B *v v) $ i" unfolding S_def by auto
-    with `a \<ge> 0` have a: "a * (sr * v $ i) \<le> a * (B *v v) $ i" by (intro mult_left_mono)
+    with \<open>a \<ge> 0\<close> have a: "a * (sr * v $ i) \<le> a * (B *v v) $ i" by (intro mult_left_mono)
     from * have "0 \<le> w $ i" "sr * w $ i \<le> (B *v w) $ i" unfolding S_def by auto
-    with `b \<ge> 0` have b: "b * (sr * w $ i) \<le> b * (B *v w) $ i" by (intro mult_left_mono)
+    with \<open>b \<ge> 0\<close> have b: "b * (sr * w $ i) \<le> b * (B *v w) $ i" by (intro mult_left_mono)
     from a b have "a * (sr * v $ i) + b * (sr * w $ i) \<le> a * (B *v v) $ i + b * (B *v w) $ i" by auto
   } note le = this
   have switch[simp]: "\<And> x y. x * a * y = a * x * y"  "\<And> x y. x * b * y = b * x * y" by auto
@@ -181,7 +181,7 @@ proof -
       have id3: "\<And> i. sr * f v $ i = c * ((B *v (sr *\<^sub>R v)) $ i)"
         unfolding f_def c_def[symmetric] matrix_vect_scaleR by auto
       have 2: "sr * f v $ i \<le> (B *v f v) $ i" unfolding id1 id3
-        unfolding real_mult_le_cancel_iff2[OF `c > 0`]
+        unfolding real_mult_le_cancel_iff2[OF \<open>c > 0\<close>]
         by (rule mult_B_mono, insert ge(2), auto)
       note 1 2
     }
@@ -217,7 +217,7 @@ proof -
   from spectral_radius_max[OF this] have le: "norm (r ev) \<le> sr" .
   from v0 obtain i where "v $ i \<noteq> 0" unfolding vec_eq_iff by auto
   from v have "v $ i \<ge> 0" unfolding S_def by auto
-  with `v $ i \<noteq> 0` have "v $ i > 0" by auto
+  with \<open>v $ i \<noteq> 0\<close> have "v $ i > 0" by auto
   with ge[of i] have ge: "sr \<le> ev" by auto
   with le have sr: "r sr = ev" by auto
   from v have *: "real_non_neg_vec (rv v)" unfolding S_def real_non_neg_vec_def vec_elements_h_def by auto
@@ -245,12 +245,12 @@ next
     unfolding real_non_neg_vec_def vec_elements_h_def by auto
   from v0 obtain i where "v $ i \<noteq> 0" unfolding vec_eq_iff by auto
   from v have "v $ i \<ge> 0" unfolding S_def by auto
-  with `v $ i \<noteq> 0` have vi: "v $ i > 0" by auto
+  with \<open>v $ i \<noteq> 0\<close> have vi: "v $ i > 0" by auto
   from rv_mult[of v, unfolded A0] have "rv (B *v v) = 0" by simp
   hence "B *v v = 0" unfolding rv_0 .
   from ge[of i, unfolded this] vi have ge: "sr \<le> 0" by (simp add: mult_le_0_iff)
-  with `0 \<le> sr` have "sr = 0" by auto
-  show ?thesis unfolding `sr = 0` using rnn ev by auto
+  with \<open>0 \<le> sr\<close> have "sr = 0" by auto
+  show ?thesis unfolding \<open>sr = 0\<close> using rnn ev by auto
 qed
 end
 

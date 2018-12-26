@@ -1,15 +1,15 @@
-section {* Open Singly Linked Lists *}
+section \<open>Open Singly Linked Lists\<close>
 theory Open_List
 imports List_Seg Imp_List_Spec
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 type_synonym 'a os_list = "'a node ref option"
 
 abbreviation os_list :: "'a list \<Rightarrow> ('a::heap) os_list \<Rightarrow> assn" where
   "os_list l p \<equiv> lseg l p None"
 
-subsection {* Precision *}
+subsection \<open>Precision\<close>
 lemma os_prec: 
   "precise os_list"
   by rule (simp add: lseg_prec2)
@@ -20,8 +20,8 @@ lemma os_imp_list_impl: "imp_list os_list"
   done
 interpretation os: imp_list os_list by (rule os_imp_list_impl)
 
-subsection {* Operations *}
-subsubsection {* Allocate Empty List *}
+subsection \<open>Operations\<close>
+subsubsection \<open>Allocate Empty List\<close>
 
 definition os_empty :: "'a::heap os_list Heap" where
   "os_empty \<equiv> return None"
@@ -37,8 +37,8 @@ lemma os_empty_impl: "imp_list_empty os_list os_empty"
   done
 interpretation os: imp_list_empty os_list os_empty by (rule os_empty_impl)
   
-subsubsection {* Emptiness check *}
-text {* A linked list is empty, iff it is the null pointer. *}
+subsubsection \<open>Emptiness check\<close>
+text \<open>A linked list is empty, iff it is the null pointer.\<close>
 
 definition os_is_empty :: "'a::heap os_list \<Rightarrow> bool Heap" where
   "os_is_empty b \<equiv> return (b = None)"
@@ -56,11 +56,11 @@ lemma os_is_empty_impl: "imp_list_is_empty os_list os_is_empty"
 interpretation os: imp_list_is_empty os_list os_is_empty
   by (rule os_is_empty_impl)
 
-subsubsection {* Prepend *}
+subsubsection \<open>Prepend\<close>
 
-text {* To push an element to the front of a list we allocate a new node which
+text \<open>To push an element to the front of a list we allocate a new node which
   stores the element and the old list as successor. The new list is the new 
-  allocated reference. *}
+  allocated reference.\<close>
 
 definition os_prepend :: "'a \<Rightarrow> 'a::heap os_list \<Rightarrow> 'a os_list Heap" where
   "os_prepend a n = do { p \<leftarrow> ref (Node a n); return (Some p) }"
@@ -78,9 +78,9 @@ lemma os_prepend_impl: "imp_list_prepend os_list os_prepend"
 interpretation os: imp_list_prepend os_list os_prepend 
   by (rule os_prepend_impl)
 
-subsubsection{* Pop *}
-text {* To pop the first element out of the list we look up the value and the
-  reference of the node and return the pair of those. *}
+subsubsection\<open>Pop\<close>
+text \<open>To pop the first element out of the list we look up the value and the
+  reference of the node and return the pair of those.\<close>
 
 fun os_pop :: "'a::heap os_list \<Rightarrow> ('a \<times> 'a os_list) Heap" where
   "os_pop None   = raise STR ''Empty Os_list''" |
@@ -105,10 +105,10 @@ lemma os_pop_impl: "imp_list_pop os_list os_pop"
   done
 interpretation os: imp_list_pop os_list os_pop by (rule os_pop_impl)
 
-subsubsection {* Reverse *}
+subsubsection \<open>Reverse\<close>
 
-text {* The following reversal function is equivalent to the one from 
-  Imperative HOL. And gives a more difficult example. *}
+text \<open>The following reversal function is equivalent to the one from 
+  Imperative HOL. And gives a more difficult example.\<close>
 
 partial_function (heap) os_reverse_aux 
   :: "'a::heap os_list \<Rightarrow> 'a os_list \<Rightarrow> 'a os_list Heap" 
@@ -162,9 +162,9 @@ lemma os_reverse_impl: "imp_list_reverse os_list os_reverse"
 interpretation os: imp_list_reverse os_list os_reverse
   by (rule os_reverse_impl)
 
-subsubsection {* Remove *}
+subsubsection \<open>Remove\<close>
  
-text {* Remove all appearances of an element from a linked list. *}
+text \<open>Remove all appearances of an element from a linked list.\<close>
 
 partial_function (heap) os_rem 
   :: "'a::heap \<Rightarrow> 'a node ref option \<Rightarrow> 'a node ref option Heap" 
@@ -218,7 +218,7 @@ next
     by (sep_auto (nopre) heap add: Cons.hyps) (* Switching off preprocessor *)
 qed
 
-subsubsection {* Iterator *}
+subsubsection \<open>Iterator\<close>
 
 type_synonym 'a os_list_it = "'a os_list"
 definition "os_is_it l p l2 it 
@@ -261,7 +261,7 @@ interpretation os:
   imp_list_iterate os_list os_is_it os_it_init os_it_has_next os_it_next
   by (rule os_iterate_impl)
 
-subsubsection {* List-Sum *}
+subsubsection \<open>List-Sum\<close>
 
 partial_function (heap) os_sum' :: "int os_list_it \<Rightarrow> int \<Rightarrow> int Heap" 
   where [code]:

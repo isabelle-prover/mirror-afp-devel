@@ -55,19 +55,19 @@ definition APP' (infixl "$''" 900) where [simp, autoref_tag_defs]: "f$'a \<equiv
 text \<open>
   Sometimes, whole terms should be protected from being processed by our tool.
   For example, our tool should not look into numerals. For this reason,
-  the @{text "PR_CONST"} tag indicates terms that our tool shall handle as
+  the \<open>PR_CONST\<close> tag indicates terms that our tool shall handle as
   atomic constants, an never look into them.
 
-  The special form @{text "UNPROTECT"} can be used inside pattern rewrite rules.
+  The special form \<open>UNPROTECT\<close> can be used inside pattern rewrite rules.
   It has the effect to revert the protection from its argument, and then wrap
-  it into a @{text "PR_CONST"}.
+  it into a \<open>PR_CONST\<close>.
 \<close>
 definition [simp, autoref_tag_defs]: "PR_CONST x \<equiv> x" \<comment> \<open>Tag to protect constant\<close>
 definition [simp, autoref_tag_defs]: "UNPROTECT x \<equiv> x" \<comment> \<open>Gets 
   converted to @{term PR_CONST}, after unprotecting its content\<close>
 
 
-subsection {* Operation Identification *}
+subsection \<open>Operation Identification\<close>
 
 text \<open> Indicator predicate for conceptual typing of a constant \<close>
 definition intf_type :: "'a \<Rightarrow> 'b itself \<Rightarrow> bool" (infix "::\<^sub>i" 10) where
@@ -85,7 +85,7 @@ text \<open> Wrapper predicate for an conceptual type inference \<close>
 definition ID :: "'a \<Rightarrow> 'a \<Rightarrow> 'c itself \<Rightarrow> bool" 
   where [simp]: "ID t t' T \<equiv> t=t'"
 
-subsubsection {* Conceptual Typing Rules *}
+subsubsection \<open>Conceptual Typing Rules\<close>
 
 lemma ID_unfold_vars: "ID x y T \<Longrightarrow> x\<equiv>y" by simp
 lemma ID_PR_CONST_trigger: "ID (PR_CONST x) y T \<Longrightarrow> ID (PR_CONST x) y T" .
@@ -119,7 +119,7 @@ lemma unprotect_rl1: "ID (PR_CONST x) t T \<Longrightarrow> ID (UNPROTECT x) t T
   by simp
 
 subsection \<open> ML-Level code \<close>
-ML {*
+ML \<open>
 infix 0 THEN_ELSE_COMB'
 
 signature ID_OP_TACTICAL = sig
@@ -158,7 +158,7 @@ structure Id_Op_Tactical :ID_OP_TACTICAL = struct
   end
 
 end
-*}
+\<close>
 
 
 named_theorems_rev id_rules "Operation identification rules"
@@ -167,7 +167,7 @@ named_theorems_rev def_pat_rules "Definite operation pattern rules (not backtrac
 
 
 
-ML {*
+ML \<open>
 
   structure Id_Op = struct
 
@@ -323,7 +323,7 @@ ML {*
 
   end
 
-*}
+\<close>
 
 subsection \<open>Default Setup\<close>
 

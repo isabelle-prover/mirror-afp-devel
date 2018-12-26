@@ -9,16 +9,16 @@ imports
   "HOL-Library.Cardinality"
 begin
 
-section {* An executable linear order on sets *}
+section \<open>An executable linear order on sets\<close>
 
-subsection {* Definition of the linear order *}
+subsection \<open>Definition of the linear order\<close>
 
-subsubsection {* Extending finite and cofinite sets *}
+subsubsection \<open>Extending finite and cofinite sets\<close>
 
-text {*
+text \<open>
   Partition sets into finite and cofinite sets and distribute the rest arbitrarily such that
   complement switches between the two.
-*}
+\<close>
 
 consts infinite_complement_partition :: "'a set set"
 
@@ -87,7 +87,7 @@ by(auto intro: finite_subset finite_complement_partition)
 lemma Compl_eq_empty_iff: "- A = {} \<longleftrightarrow> A = UNIV"
 by auto
 
-subsubsection {* A lexicographic-style order on finite subsets *}
+subsubsection \<open>A lexicographic-style order on finite subsets\<close>
 
 context ord begin
 
@@ -203,7 +203,7 @@ proof -
       fix x
       assume x: "x \<in> (C - A) \<union> (A - C)"
       hence "bc \<le> x"
-        by(cases "x \<in> B")(auto dest: minAB minBA minBC minCB intro: order_trans[OF `bc \<le> ab`])
+        by(cases "x \<in> B")(auto dest: minAB minBA minBC minCB intro: order_trans[OF \<open>bc \<le> ab\<close>])
       moreover hence "bc \<noteq> x \<longrightarrow> \<not> x \<le> bc" using ab bc x
         by(cases "x \<in> B")(auto dest: antisym) 
       moreover note calculation }
@@ -256,8 +256,8 @@ next
     from sym.hyps[OF refl refl] sym.prems show ?case by blast
   next
     case (le A B)
-    note A = `finite A` and B = `finite B`
-      and A' = `\<not> A \<subseteq> B` and B' = `\<not> B \<subseteq> A`
+    note A = \<open>finite A\<close> and B = \<open>finite B\<close>
+      and A' = \<open>\<not> A \<subseteq> B\<close> and B' = \<open>\<not> B \<subseteq> A\<close>
     { fix z
       assume z: "z \<in> (A - B) \<union> (B - A)"
       hence "Min (B - A) \<le> z \<and> (z \<le> Min (B - A) \<longrightarrow> Min (B - A) = z)"
@@ -311,7 +311,7 @@ next
     assume "Min B < Min A"
     hence "\<forall>z\<in>A - B \<union> (B - A). Min B \<le> z \<and> (z \<le> Min B \<longrightarrow> Min B = z)"
       using A B A' B' by(auto 4 4 intro: Min_in Min_eqI dest: bspec bspec[where x="Min B"])
-    moreover have "Min B \<notin> A" using `Min B < Min A` by (metis A Min_le not_less)
+    moreover have "Min B \<notin> A" using \<open>Min B < Min A\<close> by (metis A Min_le not_less)
     ultimately show "A \<sqsubset>' B" using A B A' B' by(simp add: set_less_aux_def bexI[where x="Min B"])
   qed
   thus ?thesis using False by simp
@@ -359,7 +359,7 @@ qed
 
 end
 
-subsubsection {* Extending @{term set_less_eq_aux} to have @{term "{}"} as least element *}
+subsubsection \<open>Extending @{term set_less_eq_aux} to have @{term "{}"} as least element\<close>
 
 context ord begin
 
@@ -392,7 +392,7 @@ by(auto simp add: partial_order_on_def preorder_on_def intro!: refl_onI transI a
 
 end
 
-subsubsection {* Extend @{term set_less_eq_aux'} to a total order on @{term infinite_complement_partition} *}
+subsubsection \<open>Extend @{term set_less_eq_aux'} to a total order on @{term infinite_complement_partition}\<close>
 
 context ord begin
 
@@ -466,7 +466,7 @@ proof
   proof
     assume "B \<sqsubseteq>'' A"
     hence "B \<sqsubseteq>''' A" by(rule set_less_eq_aux'_into_set_less_eq_aux'')
-    with `A \<sqsubseteq>''' B` set_less_eq_aux''_linear_order have "A = B"
+    with \<open>A \<sqsubseteq>''' B\<close> set_less_eq_aux''_linear_order have "A = B"
       by(auto simp add: linear_order_on_def partial_order_on_def dest: antisymD)
     thus ?thesis using assms by(simp add: finite_complement_partition set_less_eq_aux'_def)
   qed
@@ -495,7 +495,7 @@ by(auto simp add: linear_order_on_def dest: total_onD)
 
 end
 
-subsubsection {* Extend @{term set_less_eq_aux''} to cofinite sets *}
+subsubsection \<open>Extend @{term set_less_eq_aux''} to cofinite sets\<close>
 
 context ord begin
 
@@ -594,7 +594,7 @@ by(simp add: set_less_def)
 
 end
 
-subsection {* Implementation based on sorted lists *}
+subsection \<open>Implementation based on sorted lists\<close>
 
 type_synonym 'a proper_interval = "'a option \<Rightarrow> 'a option \<Rightarrow> bool"
 
@@ -714,12 +714,12 @@ proof -
       case 2 thus ?case by(auto intro: subset_finite_imp_set_less_eq_aux)
     next
       case (3 ao x xs y ys)
-      note ao = `set (x # xs) \<union> set (y # ys) \<subseteq> above ao`
+      note ao = \<open>set (x # xs) \<union> set (y # ys) \<subseteq> above ao\<close>
       hence x_ao: "x \<in> above ao" and y_ao: "y \<in> above ao" by simp_all
-      note yys = `sorted (y # ys)` `distinct (y # ys)`
+      note yys = \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
       hence ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y' \<in> set ys. y < y'"
         by(auto simp add: less_le)
-      note xxs = `sorted (x # xs)` `distinct (x # xs)`
+      note xxs = \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close>
       hence xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x' \<in> set xs. x < x'"
         by(auto simp add: less_le)
       let ?lhs = "set (x # xs)" and ?rhs = "- set (y # ys) \<inter> above ao"
@@ -729,9 +729,9 @@ proof -
         show ?thesis
         proof(cases "proper_interval ao (Some x)")
           case True
-          hence "?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min `x < y`
+          hence "?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min \<open>x < y\<close>
             by(auto intro!: proper_interval_set_less_eqI)
-          with True show ?thesis using `x < y` by simp
+          with True show ?thesis using \<open>x < y\<close> by simp
         next
           case False
           have "set xs \<union> set (y # ys) \<subseteq> above (Some x)" using True x_Min y_Min by auto
@@ -742,7 +742,7 @@ proof -
           from True y_Min x_ao have "x \<in> - set (y # ys) \<inter> above ao" by auto
           hence "?rhs \<noteq> {}" by blast
           moreover have "Min ?lhs = x" using x_Min x_ao by(auto intro!: Min_eqI)
-          moreover have "Min ?rhs = x" using `x < y` y_Min x_ao False
+          moreover have "Min ?rhs = x" using \<open>x < y\<close> y_Min x_ao False
             by(auto intro!: Min_eqI simp add: proper_interval_Some2)
           moreover have "set xs = set xs - {x}"
             using ao x_Min by auto
@@ -759,25 +759,25 @@ proof -
           show ?thesis
           proof(cases "proper_interval ao (Some y)")
             case True
-            hence "?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min `\<not> x < y`
+            hence "?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min \<open>\<not> x < y\<close>
               by(auto intro!: proper_interval_set_less_eqI)
-            with True show ?thesis using `\<not> x < y` by simp
+            with True show ?thesis using \<open>\<not> x < y\<close> by simp
           next
             case False
             have "set (x # xs) \<union> set ys \<subseteq> above (Some y)"
-              using `y < x` x_Min y_Min by auto
-            with `\<not> x < y` `y < x` xxs ys
+              using \<open>y < x\<close> x_Min y_Min by auto
+            with \<open>\<not> x < y\<close> \<open>y < x\<close> xxs ys
             have IH: "set_less_eq_aux_Compl (Some y) (x # xs) ys = 
               (set (x # xs) \<sqsubseteq>' - set ys \<inter> above (Some y))"
               by(rule "3.IH")
             moreover have "- set ys \<inter> above (Some y) = ?rhs"
               using y_ao False by(auto intro: above_upclosed simp add: proper_interval_Some2)
-            ultimately show ?thesis using `\<not> x < y` True False by simp
+            ultimately show ?thesis using \<open>\<not> x < y\<close> True False by simp
           qed
         next
-          case False with `\<not> x < y` have "x = y" by auto
+          case False with \<open>\<not> x < y\<close> have "x = y" by auto
           { assume "proper_interval ao (Some y)"
-            hence "?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min `x = y`
+            hence "?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min \<open>x = y\<close>
               by(auto intro!: proper_interval_set_less_eqI) }
           moreover
           { assume "?lhs \<sqsubseteq>' ?rhs"
@@ -785,13 +785,13 @@ proof -
             proof
               assume eq: "?lhs = ?rhs"
               have "x \<in> ?lhs" using x_ao by simp
-              also note eq also note `x = y`
+              also note eq also note \<open>x = y\<close>
               finally show False by simp
             qed
-            ultimately obtain z where "z \<in> above ao" "z < y" using `x = y` y_ao
+            ultimately obtain z where "z \<in> above ao" "z < y" using \<open>x = y\<close> y_ao
               by(fastforce simp add: set_less_eq_aux_def set_less_aux_def not_le dest!: bspec[where x=y])
             hence "proper_interval ao (Some y)" by(auto simp add: proper_interval_Some2) }
-          ultimately show ?thesis using `x = y` `\<not> x < y` `\<not> y < x` by auto
+          ultimately show ?thesis using \<open>x = y\<close> \<open>\<not> x < y\<close> \<open>\<not> y < x\<close> by auto
         qed
       qed
     qed }
@@ -805,7 +805,7 @@ proof -
       case 1 thus ?case by(simp add: proper_interval_None2)
     next
       case (2 ao y ys)
-      from `sorted (y # ys)` `distinct (y # ys)`
+      from \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
       have ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y' \<in> set ys. y < y'"
         by(auto simp add: less_le)
       show ?case
@@ -816,10 +816,10 @@ proof -
         thus ?thesis using True by simp
       next
         case False
-        note ao = `set [] \<union> set (y # ys) \<subseteq> above ao` 
+        note ao = \<open>set [] \<union> set (y # ys) \<subseteq> above ao\<close> 
         hence y_ao: "y \<in> above ao" by simp
         from ao y_Min have "set [] \<union> set ys \<subseteq> above (Some y)" by auto
-        with `sorted []` `distinct []` ys
+        with \<open>sorted []\<close> \<open>distinct []\<close> ys
         have "Compl_set_less_eq_aux (Some y) [] ys \<longleftrightarrow> - set [] \<inter> above (Some y) \<sqsubseteq>' set ys"
           by(rule "2.IH")
         moreover have "above ao \<noteq> {}" using y_ao by auto
@@ -835,7 +835,7 @@ proof -
       qed
     next
       case (3 ao x xs)
-      from `sorted (x # xs)` `distinct (x # xs)`
+      from \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close>
       have xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x'\<in>set xs. x < x'"
         by(auto simp add: less_le)
       show ?case
@@ -846,10 +846,10 @@ proof -
         thus ?thesis using True by auto
       next
         case False
-        note ao = `set (x # xs) \<union> set [] \<subseteq> above ao`
+        note ao = \<open>set (x # xs) \<union> set [] \<subseteq> above ao\<close>
         hence x_ao: "x \<in> above ao" by simp
         from ao have "set xs \<union> set [] \<subseteq> above (Some x)" using x_Min by auto
-        with xs `sorted []` `distinct []` 
+        with xs \<open>sorted []\<close> \<open>distinct []\<close> 
         have "Compl_set_less_eq_aux (Some x) xs [] \<longleftrightarrow>
           - set xs \<inter> above (Some x) \<sqsubseteq>' set []"
           by(rule "3.IH")
@@ -859,12 +859,12 @@ proof -
       qed
     next
       case (4 ao x xs y ys)
-      note ao = `set (x # xs) \<union> set (y # ys) \<subseteq> above ao`
+      note ao = \<open>set (x # xs) \<union> set (y # ys) \<subseteq> above ao\<close>
       hence x_ao: "x \<in> above ao" and y_ao: "y \<in> above ao" by simp_all
-      note xxs = `sorted (x # xs)` `distinct (x # xs)`
+      note xxs = \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close>
       hence xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x'\<in>set xs. x < x'"
         by(auto simp add: less_le)
-      note yys = `sorted (y # ys)` `distinct (y # ys)`
+      note yys = \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
       hence ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y'\<in>set ys. y < y'"
         by(auto simp add: less_le)
       let ?lhs = "- set (x # xs) \<inter> above ao" and ?rhs = "set (y # ys)"
@@ -874,9 +874,9 @@ proof -
         show ?thesis
         proof(cases "proper_interval ao (Some x)")
           case True
-          hence "\<not> ?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min `x < y`
+          hence "\<not> ?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min \<open>x < y\<close>
             by -(erule proper_interval_not_set_less_eq_auxI, auto)
-          thus ?thesis using True `x < y` by simp
+          thus ?thesis using True \<open>x < y\<close> by simp
         next
           case False
           have "set xs \<union> set (y # ys) \<subseteq> above (Some x)" 
@@ -897,14 +897,14 @@ proof -
           show ?thesis
           proof(cases "proper_interval ao (Some y)")
             case True
-            hence "\<not> ?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min `y < x`
+            hence "\<not> ?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min \<open>y < x\<close>
               by -(erule proper_interval_not_set_less_eq_auxI, auto)
-            thus ?thesis using True `y < x` `\<not> x < y` by simp
+            thus ?thesis using True \<open>y < x\<close> \<open>\<not> x < y\<close> by simp
           next
             case False
             from ao True x_Min y_Min 
             have "set (x # xs) \<union> set ys \<subseteq> above (Some y)" by auto
-            with `\<not> x < y` True xxs ys
+            with \<open>\<not> x < y\<close> True xxs ys
             have "Compl_set_less_eq_aux (Some y) (x # xs) ys \<longleftrightarrow>
               - set (x # xs) \<inter> above (Some y) \<sqsubseteq>' set ys"
               by(rule "4.IH")
@@ -917,25 +917,25 @@ proof -
               using y_ao False by(auto intro: above_upclosed simp add: proper_interval_Some2)
             moreover have "set ys = set ys - {y}"
               using y_ao y_Min by(auto intro: above_upclosed)
-            ultimately show ?thesis using True False `\<not> x < y` y_ao
+            ultimately show ?thesis using True False \<open>\<not> x < y\<close> y_ao
               by(simp)(subst (2) set_less_eq_aux_rec, simp_all)
           qed
         next
           case False
-          with `\<not> x < y` have "x = y" by auto
+          with \<open>\<not> x < y\<close> have "x = y" by auto
           { assume "proper_interval ao (Some y)"
-            hence "\<not> ?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min `x = y`
+            hence "\<not> ?lhs \<sqsubseteq>' ?rhs" using x_Min y_Min \<open>x = y\<close>
               by -(erule proper_interval_not_set_less_eq_auxI, auto) }
           moreover
           { assume "\<not> ?lhs \<sqsubseteq>' ?rhs"
             also have "?rhs = set (y # ys) \<inter> above ao"
               using ao by auto
             finally obtain z where "z \<in> above ao" "z < y" 
-              using `x = y` x_ao x_Min[unfolded Ball_def]
+              using \<open>x = y\<close> x_ao x_Min[unfolded Ball_def]
               by(fastforce simp add: set_less_eq_aux_def set_less_aux_def simp add: less_le not_le dest!: bspec[where x=y])
             hence "proper_interval ao (Some y)" 
               by(auto simp add: proper_interval_Some2) }
-          ultimately show ?thesis using `x = y` by auto
+          ultimately show ?thesis using \<open>x = y\<close> by auto
         qed
       qed
     qed }
@@ -962,7 +962,7 @@ by(simp_all only: set_less_aux_conv_set_less_eq_aux set_less_aux_Compl_iff Compl
 
 end
 
-subsection {* Implementation of proper intervals for sets *}
+subsection \<open>Implementation of proper intervals for sets\<close>
 
 definition length_last :: "'a list \<Rightarrow> nat \<times> 'a"
 where "length_last xs = (length xs, last xs)"
@@ -1042,11 +1042,11 @@ proof(induction x xs rule: exhaustive_above.induct)
   case 1 thus ?case by(simp add: proper_interval_simps)
 next
   case (2 x y ys)
-  from `sorted (y # ys)` `distinct (y # ys)`
+  from \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
   have ys: "sorted ys" "distinct ys" and y: "\<forall>y'\<in>set ys. y < y'"
     by(auto simp add: less_le)
   hence "exhaustive_above y ys = (set ys = {z. y < z})" by(rule "2.IH")
-  moreover from `\<forall>y'\<in>set (y # ys). x < y'` have "x < y" by simp
+  moreover from \<open>\<forall>y'\<in>set (y # ys). x < y'\<close> have "x < y" by simp
   ultimately show ?case using y 
     by(fastforce simp add: proper_interval_simps)
 qed
@@ -1081,10 +1081,10 @@ proof -
       by(cases ys)(auto simp add: proper_interval_simps set_less_aux_singleton_iff intro: psubset_finite_imp_set_less_aux)
   next
     case (3 x xs y ys)
-    from `sorted (x # xs)` `distinct (x # xs)`
+    from \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close>
     have xs: "sorted xs" "distinct xs" and x: "\<forall>x'\<in>set xs. x < x'"
       by(auto simp add: less_le)
-    from `sorted (y # ys)` `distinct (y # ys)`
+    from \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
     have ys: "sorted ys" "distinct ys" and y: "\<forall>y'\<in>set ys. y < y'"
       by(auto simp add: less_le)
     have Minxxs: "Min (set (x # xs)) = x" and xnxs: "x \<notin> set xs"
@@ -1141,7 +1141,7 @@ proof -
           have "y < Min A" unfolding not_le[symmetric]
           proof
             assume "Min A \<le> y"
-            moreover have "Min A \<noteq> y" using `y \<notin> A` nempty by clarsimp
+            moreover have "Min A \<noteq> y" using \<open>y \<notin> A\<close> nempty by clarsimp
             ultimately have "Min A < Min {y}" by simp
             hence "{y} \<sqsubset>' A" by(rule set_less_aux_Min_antimono)(simp_all add: nempty)
             with A' show False by(rule set_less_aux_antisym)
@@ -1150,14 +1150,14 @@ proof -
           moreover
           from A obtain z where z: "z \<in> A" "z \<notin> set (x # xs)"
             by(auto simp add: set_less_aux_def)
-          with `x \<le> Min A` nempty have "x < z" by auto
+          with \<open>x \<le> Min A\<close> nempty have "x < z" by auto
           with z have "\<not> exhaustive_above x xs"
             by(auto simp add: exhaustive_above_iff[OF xs x]) }
         ultimately show ?thesis using True False by fastforce
       next
         case False
-        with `\<not> x < y` have "x = y" by auto
-        from `\<not> x < y` False
+        with \<open>\<not> x < y\<close> have "x = y" by auto
+        from \<open>\<not> x < y\<close> False
         have "proper_interval_set_aux xs ys = (\<exists>A. set xs \<sqsubset>' A \<and> A \<sqsubset>' set ys)" 
           using xs ys by(rule "3.IH")
         also have "\<dots> = (\<exists>A. set (x # xs) \<sqsubset>' A \<and> A \<sqsubset>' set (y # ys))"
@@ -1176,10 +1176,10 @@ proof -
           with nempty have "y \<notin> A" by auto
           moreover
           with MinA nempty have MinyA: "Min ?A = y" by -(rule Min_eqI, auto)
-          ultimately have A1: "set (x # xs) \<sqsubset>' ?A" using `x = y` A Minxxs xnxs
+          ultimately have A1: "set (x # xs) \<sqsubset>' ?A" using \<open>x = y\<close> A Minxxs xnxs
             by(subst set_less_aux_rec) simp_all
           moreover
-          have "?A \<sqsubset>' set (y # ys)" using `x = y` MinyA `y \<notin> A` A' Minyys ynys
+          have "?A \<sqsubset>' set (y # ys)" using \<open>x = y\<close> MinyA \<open>y \<notin> A\<close> A' Minyys ynys
             by(subst set_less_aux_rec) simp_all
           ultimately show ?rhs by blast
         next
@@ -1195,19 +1195,19 @@ proof -
             with A have False by(rule set_less_aux_antisym) }
           moreover
           { assume "Min A < x"
-            hence "Min A < Min (set (y # ys))" unfolding `x = y` Minyys .
+            hence "Min A < Min (set (y # ys))" unfolding \<open>x = y\<close> Minyys .
             hence "set (y # ys) \<sqsubset>' A" by(rule set_less_aux_Min_antimono)(simp_all add: nempty)
             with A' have False by(rule set_less_aux_antisym) }
           ultimately have MinA: "Min A = x" by(metis less_linear)
-          hence "x \<in> A" using nempty by(metis Min_in `finite A`)
+          hence "x \<in> A" using nempty by(metis Min_in \<open>finite A\<close>)
           
           from A nempty Minxxs xnxs have "set xs \<sqsubset>' ?A"
             by(subst (asm) set_less_aux_rec)(auto simp add: MinA)
-          moreover from A' `x = y` nempty Minyys MinA ynys have "?A \<sqsubset>' set ys"
+          moreover from A' \<open>x = y\<close> nempty Minyys MinA ynys have "?A \<sqsubset>' set ys"
             by(subst (asm) set_less_aux_rec) simp_all
           ultimately show ?lhs by blast
         qed
-        finally show ?thesis using `x = y` by simp
+        finally show ?thesis using \<open>x = y\<close> by simp
       qed
     qed
   qed
@@ -1229,7 +1229,7 @@ proof -
 
   { fix ao n
     assume "set xs \<subseteq> above ao" "set ys \<subseteq> above ao"
-    from xs `set xs \<subseteq> above ao` ys `set ys \<subseteq> above ao`
+    from xs \<open>set xs \<subseteq> above ao\<close> ys \<open>set ys \<subseteq> above ao\<close>
     have "proper_interval_set_Compl_aux ao (card (UNIV - above ao)) xs ys \<longleftrightarrow>
           (\<exists>A \<subseteq> above ao. set xs \<sqsubset>' A \<and> A \<sqsubset>' - set ys \<inter> above ao)"
     proof(induct ao n\<equiv>"card (UNIV - above ao)" xs ys rule: proper_interval_set_Compl_aux.induct)
@@ -1269,7 +1269,7 @@ proof -
       thus ?case by simp
     next
       case (2 ao y ys)
-      note ys = `sorted (y # ys)` `distinct (y # ys)` `set (y # ys) \<subseteq> above ao`
+      note ys = \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close> \<open>set (y # ys) \<subseteq> above ao\<close>
       have len_ys: "length ys = card (set ys)"
         using ys by(auto simp add: List.card_set intro: sym)
 
@@ -1310,7 +1310,7 @@ proof -
           ultimately show ?thesis by blast
         next
           case False
-          with `length ys + 2 \<le> m` ys len_ys
+          with \<open>length ys + 2 \<le> m\<close> ys len_ys
           have "card (UNIV - (UNIV - above ao) - set (y # ys)) > 1"
             by(subst card_Diff_subset)(auto simp add: card_Diff_subset m_def)
           from card_gt_1D[OF this]
@@ -1358,9 +1358,9 @@ proof -
             with eq_z have "z = z'" by fastforce
             from z' have "\<And>x. x \<in> set (y # ys) \<Longrightarrow> x < z'" using ys
               by(auto dest: sorted_last simp del: sorted.simps(2))
-            with eq_z `z = z'`
+            with eq_z \<open>z = z'\<close>
             have "\<And>x. x \<in> above ao \<Longrightarrow> x \<le> z'" by(fastforce)
-            with `A \<sqsubset>' {z}` nempty `z = z'` subset
+            with \<open>A \<sqsubset>' {z}\<close> nempty \<open>z = z'\<close> subset
             show False by(auto simp add: set_less_aux_def)
           qed }
         ultimately show ?lhs by simp
@@ -1368,7 +1368,7 @@ proof -
       thus ?case by(simp add: length_last_def m_def Let_def)
     next
       case (3 ao x xs)
-      note xs = `sorted (x # xs)` `distinct (x # xs)` `set (x # xs) \<subseteq> above ao`
+      note xs = \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close> \<open>set (x # xs) \<subseteq> above ao\<close>
       have len_xs: "length xs = card (set xs)"
         using xs by(auto simp add: List.card_set intro: sym)
       
@@ -1403,7 +1403,7 @@ proof -
           ultimately have "z < last (x # xs)" by simp
           hence "set (x # xs) \<sqsubset>' A" 
             using z xs by(auto simp add: A_def set_less_aux_def intro: rev_bexI[where x=z])
-          moreover have "last (x # xs) \<notin> A" using xs `z < last (x # xs)`
+          moreover have "last (x # xs) \<notin> A" using xs \<open>z < last (x # xs)\<close>
             by(auto simp add: A_def simp del: last.simps)
           hence "A \<subset> insert (last (x # xs)) A" by blast
           hence less': "A \<sqsubset>' insert (last (x # xs)) A"
@@ -1418,7 +1418,7 @@ proof -
           ultimately show ?thesis by blast
         next
           case False
-          with `length xs + 2 \<le> m` xs len_xs
+          with \<open>length xs + 2 \<le> m\<close> xs len_xs
           have "card (UNIV - (UNIV - above ao) - set (x # xs)) > 1"
             by(subst card_Diff_subset)(auto simp add: card_Diff_subset m_def)
           from card_gt_1D[OF this]
@@ -1466,12 +1466,12 @@ proof -
             with z have "z = z'" by fastforce
             from z' have y_less: "\<And>y. y \<in> set (x # xs) \<Longrightarrow> y < z'" using xs
               by(auto simp del: sorted.simps(2) dest: sorted_last)
-            with z `z = z'` have "\<And>y. y \<in> above ao \<Longrightarrow> y \<le> z'" by(fastforce)
+            with z \<open>z = z'\<close> have "\<And>y. y \<in> above ao \<Longrightarrow> y \<le> z'" by(fastforce)
             
             from lessA subset obtain y where y: "y \<in> A" "y \<in> above ao" "y \<notin> set (x # xs)"
               and min: "\<And>y'. \<lbrakk> y' \<in> set (x # xs); y' \<in> above ao; y' \<notin> A \<rbrakk> \<Longrightarrow> y \<le> y'"
               by(auto simp add: set_less_aux_def)
-            with z `z = z'` have "y = z'" by auto
+            with z \<open>z = z'\<close> have "y = z'" by auto
             have "set (x # xs) \<subseteq> A"
             proof
               fix y'
@@ -1480,13 +1480,13 @@ proof -
               proof(rule ccontr)
                 assume "y' \<notin> A"
                 from y' xs have "y' \<in> above ao" by auto
-                with y' have "y \<le> y'" using `y' \<notin> A` by(rule min)
+                with y' have "y \<le> y'" using \<open>y' \<notin> A\<close> by(rule min)
                 moreover from y' have "y' < z'" by(rule y_less)
-                ultimately show False using `y = z'` by simp
+                ultimately show False using \<open>y = z'\<close> by simp
               qed
             qed
             moreover from z xs have "above ao = insert z (set (x # xs))" by auto
-            ultimately have "A = above ao" using y `y = z'` `z = z'` subset by auto
+            ultimately have "A = above ao" using y \<open>y = z'\<close> \<open>z = z'\<close> subset by auto
             with Aless show False by simp
           qed }
         ultimately show ?lhs by simp
@@ -1494,10 +1494,10 @@ proof -
       thus ?case by(simp add: length_last_def m_def Let_def del: last.simps)
     next
       case (4 ao x xs y ys)
-      note xxs = `sorted (x # xs)` `distinct (x # xs)`
-        and yys = `sorted (y # ys)` `distinct (y # ys)`
-        and xxs_above = `set (x # xs) \<subseteq> above ao`
-        and yys_above = `set (y # ys) \<subseteq> above ao`
+      note xxs = \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close>
+        and yys = \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
+        and xxs_above = \<open>set (x # xs) \<subseteq> above ao\<close>
+        and yys_above = \<open>set (y # ys) \<subseteq> above ao\<close>
       from xxs have xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x'\<in>set xs. x < x'"
         by(auto simp add: less_le)
       from yys have ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y'\<in>set ys. y < y'"
@@ -1524,12 +1524,12 @@ proof -
           ultimately have "set (x # xs) \<sqsubset>' {z}"
             by(auto simp add: set_less_aux_def intro!: bexI[where x=z])
           moreover {
-            from z yys `x < y` have "z < y" "\<forall>y'\<in>set ys. z < y'"
+            from z yys \<open>x < y\<close> have "z < y" "\<forall>y'\<in>set ys. z < y'"
               by(auto)
             hence subset: "{z} \<subseteq> - set (y # ys) \<inter> above ao"
-              using ys `x < y` z by auto
-            moreover have "x \<in> \<dots>" using yys xxs `x < y` xxs_above by(auto)
-            ultimately have "{z} \<subset> \<dots>" using `z < x` by fastforce
+              using ys \<open>x < y\<close> z by auto
+            moreover have "x \<in> \<dots>" using yys xxs \<open>x < y\<close> xxs_above by(auto)
+            ultimately have "{z} \<subset> \<dots>" using \<open>z < x\<close> by fastforce
             hence "{z} \<sqsubset>' \<dots>"
               by(fastforce intro: psubset_finite_imp_set_less_aux) }
           moreover have "{z} \<subseteq> above ao" using z by simp
@@ -1544,8 +1544,8 @@ proof -
           ultimately have card_eq: "card (UNIV - above ao) + 1 = card (UNIV - above (Some x))"
             by(simp add: card_Diff_subset)
           from xxs_above x_Min have xs_above: "set xs \<subseteq> above (Some x)" by(auto)
-          from `x < y` y_Min have "set (y # ys) \<subseteq> above (Some x)" by(auto)
-          with `x < y` card_eq xs xs_above yys
+          from \<open>x < y\<close> y_Min have "set (y # ys) \<subseteq> above (Some x)" by(auto)
+          with \<open>x < y\<close> card_eq xs xs_above yys
           have "proper_interval_set_Compl_aux (Some x) (card (UNIV - above ao) + 1) xs (y # ys) \<longleftrightarrow>
                (\<exists>A \<subseteq> above (Some x). set xs \<sqsubset>' A \<and> A \<sqsubset>' - set (y # ys) \<inter> above (Some x))"
             by(subst card_eq)(rule 4)
@@ -1569,10 +1569,10 @@ proof -
               using less_A xxs_above x_Min by(subst set_less_aux_rec) simp_all
             
             have "x \<in> - insert y (set ys) \<inter> above ao"
-              using `x < y` xxs_above y_Min by auto
+              using \<open>x < y\<close> xxs_above y_Min by auto
             hence "- insert y (set ys) \<inter> above ao \<noteq> {}" by auto
             moreover have "Min (- insert y (set ys) \<inter> above ao) = x"
-              using yys y_Min xxs_above `x < y` False
+              using yys y_Min xxs_above \<open>x < y\<close> False
               by(auto intro!: Min_eqI simp add: proper_interval_Some2)
             moreover have "- set (y # ys) \<inter> above ao - {x} = - set (y # ys) \<inter> above (Some x)"
               using yys_above False xxs_above
@@ -1593,7 +1593,7 @@ proof -
             with False xxs_above subset have "x \<in> A"
               by(auto simp add: set_less_aux_def proper_interval_Some2)
             hence "\<dots> \<noteq> {}" by auto
-            moreover from `x \<in> A` False subset
+            moreover from \<open>x \<in> A\<close> False subset
             have Min_A: "Min A = x"
               by(auto intro!: Min_eqI simp add: proper_interval_Some2 not_less)
             moreover have "Min (set (x # xs)) = x"
@@ -1607,15 +1607,15 @@ proof -
               using xxs_above less_A by(subst (asm) set_less_aux_rec)(simp_all cong: conj_cong)
             
             have "x \<in> - insert y (set ys) \<inter> above ao"
-              using `x < y` xxs_above y_Min by auto
+              using \<open>x < y\<close> xxs_above y_Min by auto
             hence "- insert y (set ys) \<inter> above ao \<noteq> {}" by auto
             moreover have "Min (- set (y # ys) \<inter> above ao) = x"
-              using yys y_Min xxs_above `x < y` False
+              using yys y_Min xxs_above \<open>x < y\<close> False
               by(auto intro!: Min_eqI simp add: proper_interval_Some2)
             moreover have "- set (y # ys) \<inter> above (Some x) = - set (y # ys) \<inter> above ao - {x}"
               by(auto simp add: above_eq)
             ultimately have "?A \<sqsubset>' - set (y # ys) \<inter> above (Some x)"
-              using A_less `A \<noteq> {}` eq_A Min_A
+              using A_less \<open>A \<noteq> {}\<close> eq_A Min_A
               by(subst (asm) set_less_aux_rec) simp_all
             
             with less_A' eq_A show ?lhs' by blast
@@ -1636,7 +1636,7 @@ proof -
             case True
             then obtain z where z: "z \<in> above ao" "z < y"
               by(clarsimp simp add: proper_interval_Some2)
-            from xxs `y < x` have "\<forall>x'\<in>set (x # xs). y < x'" by(auto)
+            from xxs \<open>y < x\<close> have "\<forall>x'\<in>set (x # xs). y < x'" by(auto)
             hence less_A: "set (x # xs) \<sqsubset>' {y}" 
               by(auto simp add: set_less_aux_def intro!: bexI[where x=y])
 
@@ -1661,8 +1661,8 @@ proof -
             have eq_ys: "- set ys \<inter> above (Some y) = - set (y # ys) \<inter> above ao"
               by(auto simp add: above_eq)
 
-            from `y < x` x_Min have "set (x # xs) \<subseteq> above (Some y)" by(auto)
-            with `\<not> x < y` `y < x` card_eq xxs ys ys_above
+            from \<open>y < x\<close> x_Min have "set (x # xs) \<subseteq> above (Some y)" by(auto)
+            with \<open>\<not> x < y\<close> \<open>y < x\<close> card_eq xxs ys ys_above
             have "proper_interval_set_Compl_aux (Some y) (card (UNIV - above ao) + 1) (x # xs) ys \<longleftrightarrow>
               (\<exists>A \<subseteq> above (Some y). set (x # xs) \<sqsubset>' A \<and> A \<sqsubset>' - set ys \<inter> above (Some y))"
               by(subst card_eq)(rule 4)
@@ -1689,7 +1689,7 @@ proof -
               ultimately have "set (x # xs) \<sqsubset>' A"
                 and "A \<sqsubset>' - set ys \<inter> above (Some y)"
                 using eq_ys by simp_all
-              moreover from `y \<notin> A` subset above_eq have "A \<subseteq> above (Some y)" by auto
+              moreover from \<open>y \<notin> A\<close> subset above_eq have "A \<subseteq> above (Some y)" by auto
               ultimately show ?lhs' by blast
             qed
             finally show ?thesis using False by simp
@@ -1697,7 +1697,7 @@ proof -
           with False True show ?thesis by simp
         next
           case False
-          with `\<not> x < y` have "x = y" by simp
+          with \<open>\<not> x < y\<close> have "x = y" by simp
           have "proper_interval ao (Some x) \<and> 
                 (CARD('a) - (card (UNIV - above ao) + length ys) \<noteq> 2 \<or>
                  CARD('a) - (card (UNIV - above ao) + length xs) \<noteq> 2) \<longleftrightarrow>
@@ -1706,7 +1706,7 @@ proof -
           proof(cases "?below")
             case False
             hence "- set (y # ys) \<inter> above ao \<sqsubset>' set (x # xs)"
-              using `x = y` yys_above xxs_above y_Min
+              using \<open>x = y\<close> yys_above xxs_above y_Min
               by(auto simp add: not_less set_less_aux_def proper_interval_Some2 intro!: bexI[where x=y])
             with False show ?thesis by(auto dest: set_less_aux_trans)
           next
@@ -1728,7 +1728,7 @@ proof -
                   by(subst card_Diff_subset)(auto simp add: card_Diff_subset)
                 then obtain z' where eq_y: "- set (y # ys) \<inter> above ao = {z'}"
                   unfolding card_eq_1_iff by auto
-                moreover from z have "z \<notin> set (y # ys)" using `x = y` y_Min by auto
+                moreover from z have "z \<notin> set (y # ys)" using \<open>x = y\<close> y_Min by auto
                 ultimately have "z' = z" using z by fastforce
                 
                 from c_xs xxs_above len_xs x_Min have "card (UNIV - (UNIV - above ao) - set (x # xs)) = 1"
@@ -1742,7 +1742,7 @@ proof -
                   by(auto simp add: set_less_aux_def)
                 hence "q \<in> {z''}" unfolding eq_x[symmetric] by simp
                 hence "q = z''" by simp
-                with `q \<in> A` `z' = z` `z'' = z` z 
+                with \<open>q \<in> A\<close> \<open>z' = z\<close> \<open>z'' = z\<close> z 
                 have "- set (y # ys) \<inter> above ao \<subseteq> A"
                   unfolding eq_y by simp
                 hence "- set (y # ys) \<inter> above ao \<sqsubseteq>' A"
@@ -1755,9 +1755,9 @@ proof -
               proof
                 assume ?card_ys
                 let ?YS = "UNIV - (UNIV - above ao) - set (y # ys)"
-                from `?card_ys` yys_above len_ys y_Min have "card ?YS \<noteq> 1" 
+                from \<open>?card_ys\<close> yys_above len_ys y_Min have "card ?YS \<noteq> 1" 
                   by(subst card_Diff_subset)(auto simp add: card_Diff_subset)
-                moreover have "?YS \<noteq> {}" using True y_Min yys_above `x = y`
+                moreover have "?YS \<noteq> {}" using True y_Min yys_above \<open>x = y\<close>
                   by(fastforce simp add: proper_interval_Some2)
                 hence "card ?YS \<noteq> 0" by simp
                 ultimately have "card ?YS > 1" by(cases "card ?YS") simp_all
@@ -1770,7 +1770,7 @@ proof -
                   by(auto simp add: set_less_aux_def intro!: rev_bexI)
                 moreover
                 { have "?A \<subseteq> - set (y # ys) \<inter> above ao"
-                    using z `x = y` y_Min by(auto)
+                    using z \<open>x = y\<close> y_Min by(auto)
                   moreover have "x' \<notin> ?A \<or> y' \<notin> ?A" using neq by auto
                   with x' y' have "?A \<noteq> - set (y # ys) \<inter> above ao" by auto
                   ultimately have "?A \<subset> - set (y # ys) \<inter> above ao" by(rule psubsetI)
@@ -1779,7 +1779,7 @@ proof -
               next
                 assume ?card_xs
                 let ?XS = "UNIV - (UNIV - above ao) - set (x # xs)"
-                from `?card_xs` xxs_above len_xs x_Min have "card ?XS \<noteq> 1" 
+                from \<open>?card_xs\<close> xxs_above len_xs x_Min have "card ?XS \<noteq> 1" 
                   by(subst card_Diff_subset)(auto simp add: card_Diff_subset)
                 moreover have "?XS \<noteq> {}" using True x_Min xxs_above
                   by(fastforce simp add: proper_interval_Some2)
@@ -1801,11 +1801,11 @@ proof -
                 moreover {
                   have nempty: "above ao \<noteq> {}" using z by auto
                   have "A \<sqsubset>' {Min (above ao)}" 
-                    using z x' y' neq `x = y` x_Min xxs_above
+                    using z x' y' neq \<open>x = y\<close> x_Min xxs_above
                     by(auto 6 4 simp add: set_less_aux_def A_def nempty intro!: rev_bexI Min_eqI)
                   also have "Min (above ao) \<le> z" using z by(simp)
-                  hence "Min (above ao) < x" using `z < x` by(rule le_less_trans)
-                  with `x = y` y_Min have "Min (above ao) \<notin> set (y # ys)" by auto
+                  hence "Min (above ao) < x" using \<open>z < x\<close> by(rule le_less_trans)
+                  with \<open>x = y\<close> y_Min have "Min (above ao) \<notin> set (y # ys)" by auto
                   hence "{Min (above ao)} \<subseteq> - set (y # ys) \<inter> above ao"
                     by(auto simp add: nempty)
                   hence "{Min (above ao)} \<sqsubseteq>' \<dots>" by(auto intro: subset_finite_imp_set_less_eq_aux)
@@ -1817,7 +1817,7 @@ proof -
             qed
             thus ?thesis using True by simp
           qed            
-          thus ?thesis using `x = y` by simp
+          thus ?thesis using \<open>x = y\<close> by simp
         qed
       qed
     qed }
@@ -1841,7 +1841,7 @@ proof -
 
   { fix ao n
     assume "set xs \<subseteq> above ao" "set ys \<subseteq> above ao"
-    from xs `set xs \<subseteq> above ao` ys `set ys \<subseteq> above ao`
+    from xs \<open>set xs \<subseteq> above ao\<close> ys \<open>set ys \<subseteq> above ao\<close>
     have "proper_interval_Compl_set_aux ao xs ys \<longleftrightarrow>
           (\<exists>A. - set xs \<inter> above ao \<sqsubset>' A \<inter> above ao \<and> A \<inter> above ao \<sqsubset>' set ys \<inter> above ao)"
     proof(induction ao xs ys rule: proper_interval_Compl_set_aux.induct)
@@ -1857,14 +1857,14 @@ proof -
       case ("2_2" ao xs) thus ?case by simp
     next
       case (1 ao x xs y ys)
-      note xxs = `sorted (x # xs)` `distinct (x # xs)`
+      note xxs = \<open>sorted (x # xs)\<close> \<open>distinct (x # xs)\<close>
       hence xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x' \<in> set xs. x < x'"
         by(auto simp add: less_le)
-      note yys = `sorted (y # ys)` `distinct (y # ys)`
+      note yys = \<open>sorted (y # ys)\<close> \<open>distinct (y # ys)\<close>
       hence ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y'\<in>set ys. y < y'"
         by(auto simp add: less_le)
-      note xxs_above = `set (x # xs) \<subseteq> above ao`
-      note yys_above = `set (y # ys) \<subseteq> above ao`
+      note xxs_above = \<open>set (x # xs) \<subseteq> above ao\<close>
+      note yys_above = \<open>set (y # ys) \<subseteq> above ao\<close>
 
       show ?case
       proof(cases "x < y")
@@ -1878,9 +1878,9 @@ proof -
             by(auto simp add: proper_interval_Some2)
           hence nempty: "above ao \<noteq> {}" by auto
           with z have "Min (above ao) \<le> z" by auto
-          hence "Min (above ao) < x" using `z < x` by(rule le_less_trans)
+          hence "Min (above ao) < x" using \<open>z < x\<close> by(rule le_less_trans)
           hence "set (y # ys) \<inter> above ao \<sqsubset>' - set (x # xs) \<inter> above ao"
-            using y_Min x_Min z `x < y`
+            using y_Min x_Min z \<open>x < y\<close>
             by(fastforce simp add: set_less_aux_def nempty intro!: Min_eqI bexI[where x="Min (above ao)"])
           thus ?thesis using True by(auto dest: set_less_aux_trans set_less_aux_antisym)
         next
@@ -1888,14 +1888,14 @@ proof -
           hence above_eq: "above ao = insert x (above (Some x))"
             using xxs_above by(auto simp add: proper_interval_Some2 intro: above_upclosed)
           from x_Min have xs_above: "set xs \<subseteq> above (Some x)" by auto
-          from `x < y` y_Min have ys_above: "set (y # ys) \<subseteq> above (Some x)" by auto
+          from \<open>x < y\<close> y_Min have ys_above: "set (y # ys) \<subseteq> above (Some x)" by auto
 
           have eq_xs: "- set xs \<inter> above (Some x) = - set (x # xs) \<inter> above ao"
             using above_eq by auto
           have eq_ys: "set (y # ys) \<inter> above (Some x) = set (y # ys) \<inter> above ao"
-            using y_Min `x < y` xxs_above by(auto intro: above_upclosed)
+            using y_Min \<open>x < y\<close> xxs_above by(auto intro: above_upclosed)
           
-          from `x < y` xs xs_above yys ys_above
+          from \<open>x < y\<close> xs xs_above yys ys_above
           have "proper_interval_Compl_set_aux (Some x) xs (y # ys) \<longleftrightarrow>
                (\<exists>A. - set xs \<inter> above (Some x) \<sqsubset>' A \<inter> above (Some x) \<and>
                     A \<inter> above (Some x) \<sqsubset>' set (y # ys) \<inter> above (Some x))"
@@ -1919,7 +1919,7 @@ proof -
             proof
               assume "x \<in> A"
               hence "set (y # ys) \<inter> above ao \<sqsubset>' A \<inter> above ao"
-                using y_Min `x < y` by(auto simp add: above_eq set_less_aux_def intro!: bexI[where x=x])
+                using y_Min \<open>x < y\<close> by(auto simp add: above_eq set_less_aux_def intro!: bexI[where x=x])
               with A_less show False by(auto dest: set_less_aux_antisym)
             qed
             hence "A \<inter> above ao = A \<inter> above (Some x)" using above_eq by auto
@@ -1940,22 +1940,22 @@ proof -
               by(auto simp add: proper_interval_Some2)
             hence nempty: "above ao \<noteq> {}" by auto
             with z have "Min (above ao) \<le> z" by auto
-            hence "Min (above ao) < y" using `z < y` by(rule le_less_trans)
+            hence "Min (above ao) < y" using \<open>z < y\<close> by(rule le_less_trans)
             hence "set (y # ys) \<inter> above ao \<sqsubset>' - set (x # xs) \<inter> above ao"
-              using y_Min x_Min z `y < x`
+              using y_Min x_Min z \<open>y < x\<close>
               by(fastforce simp add: set_less_aux_def nempty intro!: Min_eqI bexI[where x="Min (above ao)"])
-            thus ?thesis using True `y < x` by(auto dest: set_less_aux_trans set_less_aux_antisym)
+            thus ?thesis using True \<open>y < x\<close> by(auto dest: set_less_aux_trans set_less_aux_antisym)
           next
             case False
             hence above_eq: "above ao = insert y (above (Some y))"
               using yys_above by(auto simp add: proper_interval_Some2 intro: above_upclosed)
             from y_Min have ys_above: "set ys \<subseteq> above (Some y)" by auto
-            from `y < x` x_Min have xs_above: "set (x # xs) \<subseteq> above (Some y)" by auto
+            from \<open>y < x\<close> x_Min have xs_above: "set (x # xs) \<subseteq> above (Some y)" by auto
 
-            have "y \<in> - set (x # xs) \<inter> above ao" using `y < x` x_Min yys_above by auto
+            have "y \<in> - set (x # xs) \<inter> above ao" using \<open>y < x\<close> x_Min yys_above by auto
             hence nempty: "- set (x # xs) \<inter> above ao \<noteq> {}" by auto
             have Min_x: "Min (- set (x # xs) \<inter> above ao) = y"
-              using above_eq `y < x` x_Min by(auto intro!: Min_eqI)
+              using above_eq \<open>y < x\<close> x_Min by(auto intro!: Min_eqI)
             have Min_y: "Min (set (y # ys) \<inter> above ao) = y"
               using y_Min above_eq by(auto intro!: Min_eqI)
             have eq_xs: "- set (x # xs) \<inter> above ao - {y} = - set (x # xs) \<inter> above (Some y)"
@@ -1963,7 +1963,7 @@ proof -
             have eq_ys: "set ys \<inter> above ao - {y} = set ys \<inter> above (Some y)"
               using y_Min above_eq by auto
 
-            from `\<not> x < y` `y < x` xxs xs_above ys ys_above
+            from \<open>\<not> x < y\<close> \<open>y < x\<close> xxs xs_above ys ys_above
             have "proper_interval_Compl_set_aux (Some y) (x # xs) ys \<longleftrightarrow>
                  (\<exists>A. - set (x # xs) \<inter> above (Some y) \<sqsubset>' A \<inter> above (Some y) \<and>
                       A \<inter> above (Some y) \<sqsubset>' set ys \<inter> above (Some y))"
@@ -1996,12 +1996,12 @@ proof -
               moreover have A_eq: "A \<inter> above ao - {y} = A \<inter> above (Some y)"
                 using above_eq by auto
               moreover have y_in_xxs: "y \<in> - set (x # xs) \<inter> above ao"
-                using `y < x` x_Min yys_above by auto
+                using \<open>y < x\<close> x_Min yys_above by auto
               moreover have "y \<in> A"
               proof(rule ccontr)
                 assume "y \<notin> A"
                 hence "A \<inter> above ao \<sqsubset>' - set (x # xs) \<inter> above ao"
-                  using `y < x` x_Min y_in_xxs
+                  using \<open>y < x\<close> x_Min y_in_xxs
                   by(auto simp add: set_less_aux_def above_eq intro: bexI[where x=y])
                 with less_A show False by(rule set_less_aux_antisym)
               qed
@@ -2015,11 +2015,11 @@ proof -
                 by(subst (asm) set_less_aux_rec) simp_all
               with less_A' show ?lhs' by blast
             qed
-            finally show ?thesis using `\<not> x < y` `y < x` False by simp
+            finally show ?thesis using \<open>\<not> x < y\<close> \<open>y < x\<close> False by simp
           qed
         next
           case False
-          with `\<not> x < y` have "x = y" by auto
+          with \<open>\<not> x < y\<close> have "x = y" by auto
           thus ?thesis (is "?lhs \<longleftrightarrow> ?rhs")
           proof(cases "proper_interval ao (Some x)")
             case True
@@ -2027,11 +2027,11 @@ proof -
               by(auto simp add: proper_interval_Some2)
             hence nempty: "above ao \<noteq> {}" by auto
             with z have "Min (above ao) \<le> z" by auto
-            hence "Min (above ao) < x" using `z < x` by(rule le_less_trans)
+            hence "Min (above ao) < x" using \<open>z < x\<close> by(rule le_less_trans)
             hence "set (y # ys) \<inter> above ao \<sqsubset>' - set (x # xs) \<inter> above ao"
-              using y_Min x_Min z `x = y`
+              using y_Min x_Min z \<open>x = y\<close>
               by(fastforce simp add: set_less_aux_def nempty intro!: Min_eqI bexI[where x="Min (above ao)"])
-            thus ?thesis using True `x = y` by(auto dest: set_less_aux_trans set_less_aux_antisym)
+            thus ?thesis using True \<open>x = y\<close> by(auto dest: set_less_aux_trans set_less_aux_antisym)
           next
             case False
             hence above_eq: "above ao = insert x (above (Some x))"
@@ -2043,7 +2043,7 @@ proof -
               show ?rhs
               proof(cases ys)
                 case Nil
-                with `?lhs'` obtain x' xs' where xs_eq: "xs = x' # xs'"
+                with \<open>?lhs'\<close> obtain x' xs' where xs_eq: "xs = x' # xs'"
                   by(auto simp add: neq_Nil_conv)
                 with xs have x'_Min: "\<forall>x'' \<in> set xs'. x' < x''"
                   by(auto simp add: less_le)
@@ -2057,13 +2057,13 @@ proof -
                 hence "- set (x # xs) \<inter> above ao \<sqsubset>' \<dots> "
                   by(fastforce intro: psubset_finite_imp_set_less_aux)
                 moreover have "\<dots> \<sqsubset>' set (y # ys) \<inter> above ao" 
-                  using Nil `x = y` by(auto simp add: set_less_aux_def above_eq)
+                  using Nil \<open>x = y\<close> by(auto simp add: set_less_aux_def above_eq)
                 ultimately show ?thesis by blast
               next
                 case (Cons y' ys')
                 let ?A = "{y}"
                 have "- set (x # xs) \<inter> above ao \<sqsubset>' ?A \<inter> above ao"
-                  using `x = y` x_Min by(auto simp add: set_less_aux_def above_eq)
+                  using \<open>x = y\<close> x_Min by(auto simp add: set_less_aux_def above_eq)
                 moreover have "\<dots> \<subset> set (y # ys) \<inter> above ao"
                   using yys_above yys Cons by auto
                 hence "?A \<inter> above ao \<sqsubset>' \<dots>" by(fastforce intro: psubset_finite_imp_set_less_aux)
@@ -2072,14 +2072,14 @@ proof -
             next
               assume Nil: "ys = []" "xs = []" and ?rhs
               then obtain A where less_A: "- {x} \<inter> above ao \<sqsubset>' A \<inter> above ao" 
-                and A_less: "A \<inter> above ao \<sqsubset>' {x}" using `x = y` above_eq by auto
+                and A_less: "A \<inter> above ao \<sqsubset>' {x}" using \<open>x = y\<close> above_eq by auto
               have "x \<notin> A" using A_less by(auto simp add: set_less_aux_def above_eq)
               hence "A \<inter> above ao \<subseteq> - {x} \<inter> above ao" by auto
               hence "A \<inter> above ao \<sqsubseteq>' \<dots>" by(auto intro: subset_finite_imp_set_less_eq_aux)
               with less_A have "\<dots> \<sqsubset>' \<dots>" by(rule set_less_trans_set_less_eq)
               thus False by simp
             qed
-            with `x = y` False show ?thesis by simp
+            with \<open>x = y\<close> False show ?thesis by simp
           qed
         qed
       qed
@@ -2089,7 +2089,7 @@ qed
 
 end
 
-subsection {* Proper intervals for HOL types *}
+subsection \<open>Proper intervals for HOL types\<close>
 
 instantiation unit :: proper_interval begin
 fun proper_interval_unit :: "unit proper_interval" where
@@ -2252,7 +2252,7 @@ proof
 qed simp
 end
 
-subsection {* List fusion for the order and proper intervals on @{typ "'a set"} *}
+subsection \<open>List fusion for the order and proper intervals on @{typ "'a set"}\<close>
 
 definition length_last_fusion :: "('a, 's) generator \<Rightarrow> 's \<Rightarrow> nat \<times> 'a"
 where "length_last_fusion g s = length_last (list.unfoldr g s)"
@@ -2465,7 +2465,7 @@ lemmas [symmetric, code_unfold] =
   proper_interval_set_Compl_aux_fusion_def proper_intrvl.proper_interval_set_Compl_aux_fusion_def
   proper_interval_Compl_set_aux_fusion_def proper_intrvl.proper_interval_Compl_set_aux_fusion_def
 
-subsection {* Drop notation *}
+subsection \<open>Drop notation\<close>
 
 context ord begin
 

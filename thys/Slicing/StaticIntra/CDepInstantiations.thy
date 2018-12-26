@@ -1,4 +1,4 @@
-section {* Instantiate framework with control dependences *}
+section \<open>Instantiate framework with control dependences\<close>
 
 theory CDepInstantiations imports 
   Slice 
@@ -6,7 +6,7 @@ theory CDepInstantiations imports
   WeakOrderDependence 
 begin
 
-subsection{* Standard control dependence *}
+subsection\<open>Standard control dependence\<close>
 
 context StandardControlDependencePDG begin
 
@@ -27,44 +27,44 @@ lemma obs_postdominate:
   assumes "n \<in> obs n' (PDG_BS S)" and "n \<noteq> (_Exit_)" shows "n postdominates n'"
 proof(rule ccontr)
   assume "\<not> n postdominates n'"
-  from `n \<in> obs n' (PDG_BS S)` have "valid_node n" by(fastforce dest:in_obs_valid)
-  with `n \<in> obs n' (PDG_BS S)` `n \<noteq> (_Exit_)` have "n postdominates n"
+  from \<open>n \<in> obs n' (PDG_BS S)\<close> have "valid_node n" by(fastforce dest:in_obs_valid)
+  with \<open>n \<in> obs n' (PDG_BS S)\<close> \<open>n \<noteq> (_Exit_)\<close> have "n postdominates n"
     by(fastforce intro:postdominate_refl)
-  from `n \<in> obs n' (PDG_BS S)` obtain as where "n' -as\<rightarrow>* n"
+  from \<open>n \<in> obs n' (PDG_BS S)\<close> obtain as where "n' -as\<rightarrow>* n"
     and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)"
     and "n \<in> (PDG_BS S)" by(erule obsE)
-  from `n postdominates n` `\<not> n postdominates n'` `n' -as\<rightarrow>* n`
+  from \<open>n postdominates n\<close> \<open>\<not> n postdominates n'\<close> \<open>n' -as\<rightarrow>* n\<close>
   obtain as' a as'' where [simp]:"as = as'@a#as''" and "valid_edge a"
     and "\<not> n postdominates (sourcenode a)" and "n postdominates (targetnode a)"
     by -(erule postdominate_path_branch)
-  from `\<not> n postdominates (sourcenode a)` `valid_edge a` `valid_node n`
+  from \<open>\<not> n postdominates (sourcenode a)\<close> \<open>valid_edge a\<close> \<open>valid_node n\<close>
   obtain asx  where "sourcenode a -asx\<rightarrow>* (_Exit_)"
     and "n \<notin> set(sourcenodes asx)" by(auto simp:postdominate_def)
-  from `sourcenode a -asx\<rightarrow>* (_Exit_)` `valid_edge a`
+  from \<open>sourcenode a -asx\<rightarrow>* (_Exit_)\<close> \<open>valid_edge a\<close>
   obtain ax asx' where [simp]:"asx = ax#asx'"
     apply - apply(erule path.cases)
     apply(drule_tac s="(_Exit_)" in sym)
     apply simp
     apply(drule Exit_source)
     by simp_all
-  with `sourcenode a -asx\<rightarrow>* (_Exit_)` have "sourcenode a -[]@ax#asx'\<rightarrow>* (_Exit_)" 
+  with \<open>sourcenode a -asx\<rightarrow>* (_Exit_)\<close> have "sourcenode a -[]@ax#asx'\<rightarrow>* (_Exit_)" 
     by simp
   hence "valid_edge ax" and [simp]:"sourcenode a = sourcenode ax"
     and "targetnode ax -asx'\<rightarrow>* (_Exit_)"
     by(fastforce dest:path_split)+
-  with `n \<notin> set(sourcenodes asx)` have "\<not> n postdominates targetnode ax"
+  with \<open>n \<notin> set(sourcenodes asx)\<close> have "\<not> n postdominates targetnode ax"
     by(fastforce simp:postdominate_def sourcenodes_def)
-  from `n \<in> obs n' (PDG_BS S)` `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)`
+  from \<open>n \<in> obs n' (PDG_BS S)\<close> \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)\<close>
   have "n \<notin> set (sourcenodes (a#as''))"
     by(fastforce elim:obs.cases simp:sourcenodes_def)
-  from `n' -as\<rightarrow>* n` have "sourcenode a -a#as''\<rightarrow>* n"
+  from \<open>n' -as\<rightarrow>* n\<close> have "sourcenode a -a#as''\<rightarrow>* n"
     by(fastforce dest:path_split_second)
-  with `n postdominates (targetnode a)` `\<not> n postdominates targetnode ax`
-    `valid_edge ax` `n \<notin> set (sourcenodes (a#as''))`
+  with \<open>n postdominates (targetnode a)\<close> \<open>\<not> n postdominates targetnode ax\<close>
+    \<open>valid_edge ax\<close> \<open>n \<notin> set (sourcenodes (a#as''))\<close>
   have "sourcenode a controls\<^sub>s n" by(fastforce simp:standard_control_dependence_def)
-  with `n \<in> obs n' (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
+  with \<open>n \<in> obs n' (PDG_BS S)\<close> have "sourcenode a \<in> (PDG_BS S)"
     by(fastforce intro:cd_closed PDG_cdep_edge elim:obs.cases)
-  with `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)` 
+  with \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)\<close> 
   show False by(simp add:sourcenodes_def)
 qed
 
@@ -76,15 +76,15 @@ proof(rule ccontr)
     nx \<noteq> nx'" by auto
   then obtain nx nx' where "nx \<in> obs n (PDG_BS S)" and "nx' \<in> obs n (PDG_BS S)"
     and "nx \<noteq> nx'" by auto
-  from `nx \<in> obs n (PDG_BS S)` obtain as where "n -as\<rightarrow>* nx" 
+  from \<open>nx \<in> obs n (PDG_BS S)\<close> obtain as where "n -as\<rightarrow>* nx" 
     and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)" and "nx \<in> (PDG_BS S)" 
     by(erule obsE)
-  from `n -as\<rightarrow>* nx` have "valid_node nx" by(fastforce dest:path_valid_node)
-  with `nx \<in> (PDG_BS S)` have "obs nx (PDG_BS S) = {nx}" by -(rule n_in_obs)
-  with `n -as\<rightarrow>* nx` `nx \<in> obs n (PDG_BS S)` `nx' \<in> obs n (PDG_BS S)` `nx \<noteq> nx'`
+  from \<open>n -as\<rightarrow>* nx\<close> have "valid_node nx" by(fastforce dest:path_valid_node)
+  with \<open>nx \<in> (PDG_BS S)\<close> have "obs nx (PDG_BS S) = {nx}" by -(rule n_in_obs)
+  with \<open>n -as\<rightarrow>* nx\<close> \<open>nx \<in> obs n (PDG_BS S)\<close> \<open>nx' \<in> obs n (PDG_BS S)\<close> \<open>nx \<noteq> nx'\<close>
   have "as \<noteq> []" by(fastforce elim:path.cases)
-  with `n -as\<rightarrow>* nx` `nx \<in> obs n (PDG_BS S)` `nx' \<in> obs n (PDG_BS S)` 
-    `nx \<noteq> nx'` `obs nx (PDG_BS S) = {nx}` `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)`
+  with \<open>n -as\<rightarrow>* nx\<close> \<open>nx \<in> obs n (PDG_BS S)\<close> \<open>nx' \<in> obs n (PDG_BS S)\<close> 
+    \<open>nx \<noteq> nx'\<close> \<open>obs nx (PDG_BS S) = {nx}\<close> \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)\<close>
   have "\<exists>a as' as''. n -as'\<rightarrow>* sourcenode a \<and> targetnode a -as''\<rightarrow>* nx \<and>
                      valid_edge a \<and> as = as'@a#as'' \<and> 
                      obs (targetnode a) (PDG_BS S) = {nx} \<and> 
@@ -92,26 +92,26 @@ proof(rule ccontr)
                        obs (sourcenode a) (PDG_BS S) = {}))"
   proof(induct arbitrary:nx' rule:path.induct)
     case (Cons_path n'' as n' a n)
-    note [simp] = `sourcenode a = n`[THEN sym] `targetnode a = n''`[THEN sym]
-    note more_than_one = `n' \<in> obs n (PDG_BS S)` `nx' \<in> obs n (PDG_BS S)` `n' \<noteq> nx'`
-    note IH = `\<And>nx'. \<lbrakk>n' \<in> obs n'' (PDG_BS S); nx' \<in> obs n'' (PDG_BS S); n' \<noteq> nx'; 
+    note [simp] = \<open>sourcenode a = n\<close>[THEN sym] \<open>targetnode a = n''\<close>[THEN sym]
+    note more_than_one = \<open>n' \<in> obs n (PDG_BS S)\<close> \<open>nx' \<in> obs n (PDG_BS S)\<close> \<open>n' \<noteq> nx'\<close>
+    note IH = \<open>\<And>nx'. \<lbrakk>n' \<in> obs n'' (PDG_BS S); nx' \<in> obs n'' (PDG_BS S); n' \<noteq> nx'; 
       obs n' (PDG_BS S) = {n'}; \<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S); as \<noteq> []\<rbrakk>
       \<Longrightarrow> \<exists>a as' as''. n'' -as'\<rightarrow>* sourcenode a \<and> targetnode a -as''\<rightarrow>* n' \<and>
       valid_edge a \<and> as = as'@a#as'' \<and> obs (targetnode a) (PDG_BS S) = {n'} \<and>
       (\<not> (\<exists>m. obs (sourcenode a) (PDG_BS S) = {m} \<or> 
-      obs (sourcenode a) (PDG_BS S) = {}))`
-    from `\<forall>n'\<in>set (sourcenodes (a#as)). n' \<notin> (PDG_BS S)`
+      obs (sourcenode a) (PDG_BS S) = {}))\<close>
+    from \<open>\<forall>n'\<in>set (sourcenodes (a#as)). n' \<notin> (PDG_BS S)\<close>
     have "\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)" and "sourcenode a \<notin> (PDG_BS S)"
       by(simp_all add:sourcenodes_def)
     show ?case
     proof(cases "as = []")
       case True
-      with `n'' -as\<rightarrow>* n'` have [simp]:"n' = n''" by(fastforce elim:path.cases)
+      with \<open>n'' -as\<rightarrow>* n'\<close> have [simp]:"n' = n''" by(fastforce elim:path.cases)
       from more_than_one
       have "\<not> (\<exists>m. obs (sourcenode a) (PDG_BS S) = {m} \<or> 
                obs (sourcenode a) (PDG_BS S) = {})"
         by auto
-      with `obs n' (PDG_BS S) = {n'}` True `valid_edge a` show ?thesis
+      with \<open>obs n' (PDG_BS S) = {n'}\<close> True \<open>valid_edge a\<close> show ?thesis
         apply(rule_tac x="a" in exI)
         apply(rule_tac x="[]" in exI)
         apply(rule_tac x="[]" in exI)
@@ -119,12 +119,12 @@ proof(rule ccontr)
     next
       case False
       hence "as \<noteq> []" .
-      from `n'' -as\<rightarrow>* n'` `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)` 
+      from \<open>n'' -as\<rightarrow>* n'\<close> \<open>\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)\<close> 
       have "obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)" by(rule path_obs_subset)
       show ?thesis
       proof(cases "obs n' (PDG_BS S) = obs n'' (PDG_BS S)")
         case True
-        with `n'' -as\<rightarrow>* n'` `valid_edge a` `obs n' (PDG_BS S) = {n'}` more_than_one
+        with \<open>n'' -as\<rightarrow>* n'\<close> \<open>valid_edge a\<close> \<open>obs n' (PDG_BS S) = {n'}\<close> more_than_one
         show ?thesis
           apply(rule_tac x="a" in exI)
           apply(rule_tac x="[]" in exI)
@@ -132,22 +132,22 @@ proof(rule ccontr)
           by(fastforce intro:empty_path)
       next
         case False
-        with `obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)`
+        with \<open>obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)\<close>
         have "obs n' (PDG_BS S) \<subset> obs n'' (PDG_BS S)" by simp
-        with `obs n' (PDG_BS S) = {n'}` obtain ni where "n' \<in> obs n'' (PDG_BS S)"
+        with \<open>obs n' (PDG_BS S) = {n'}\<close> obtain ni where "n' \<in> obs n'' (PDG_BS S)"
           and "ni \<in> obs n'' (PDG_BS S)" and "n' \<noteq> ni" by auto
-        from IH[OF this `obs n' (PDG_BS S) = {n'}` 
-          `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)` `as \<noteq> []`] obtain a' as' as''
+        from IH[OF this \<open>obs n' (PDG_BS S) = {n'}\<close> 
+          \<open>\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)\<close> \<open>as \<noteq> []\<close>] obtain a' as' as''
           where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
           and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
           and "obs (targetnode a') (PDG_BS S) = {n'}"
           and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (PDG_BS S) = {m} \<or> 
           obs (sourcenode a') (PDG_BS S) = {})"
           by blast
-        from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
+        from \<open>n'' -as'\<rightarrow>* sourcenode a'\<close> \<open>valid_edge a\<close>
         have "n -a#as'\<rightarrow>* sourcenode a'" by(fastforce intro:path.Cons_path)
-        with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (PDG_BS S) = {n'}`
-          more_than_one' `valid_edge a'` show ?thesis
+        with \<open>targetnode a' -as''\<rightarrow>* n'\<close> \<open>obs (targetnode a') (PDG_BS S) = {n'}\<close>
+          more_than_one' \<open>valid_edge a'\<close> show ?thesis
           apply(rule_tac x="a'" in exI)
           apply(rule_tac x="a#as'" in exI)
           apply(rule_tac x="as''" in exI)
@@ -164,76 +164,76 @@ proof(rule ccontr)
   proof(rule ccontr)
     assume "\<not> sourcenode a \<notin> PDG_BS S"
     hence "sourcenode a \<in> PDG_BS S" by simp
-    with `valid_edge a` have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
+    with \<open>valid_edge a\<close> have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
       by(fastforce intro!:n_in_obs)
     with more_than_one show False by simp
   qed
-  with `valid_edge a` 
+  with \<open>valid_edge a\<close> 
   have "obs (targetnode a) (PDG_BS S) \<subseteq> obs (sourcenode a) (PDG_BS S)"
     by(rule edge_obs_subset)
-  with `obs (targetnode a) (PDG_BS S) = {nx}` 
+  with \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close> 
   have "nx \<in> obs (sourcenode a) (PDG_BS S)" by simp
   with more_than_one obtain m  where "m \<in> obs (sourcenode a) (PDG_BS S)"
     and "nx \<noteq> m" by auto
-  from `m \<in> obs (sourcenode a) (PDG_BS S)` 
+  from \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> 
   have "valid_node m" by(fastforce dest:in_obs_valid)
-  from `obs (targetnode a) (PDG_BS S) = {nx}` have "valid_node nx" 
+  from \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close> have "valid_node nx" 
     by(fastforce dest:in_obs_valid)
   show False
   proof(cases "m postdominates (sourcenode a)")
     case True
-    with `nx \<in> obs (sourcenode a) (PDG_BS S)` `m \<in> obs (sourcenode a) (PDG_BS S)`
+    with \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close>
     have "m postdominates nx"
       by(fastforce intro:postdominate_path_targetnode elim:obs.cases)
-    with `nx \<noteq> m` have "\<not> nx postdominates m" by(fastforce dest:postdominate_antisym)
+    with \<open>nx \<noteq> m\<close> have "\<not> nx postdominates m" by(fastforce dest:postdominate_antisym)
     have "(_Exit_) -[]\<rightarrow>* (_Exit_)" by(fastforce intro:empty_path)
-    with `m postdominates nx` have "nx \<noteq> (_Exit_)"
+    with \<open>m postdominates nx\<close> have "nx \<noteq> (_Exit_)"
       by(fastforce simp:postdominate_def sourcenodes_def)
     have "\<not> nx postdominates (sourcenode a)"
     proof(rule ccontr)
       assume "\<not> \<not> nx postdominates sourcenode a"
       hence "nx postdominates sourcenode a" by simp
-      from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
+      from \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close>
       obtain asx' where "sourcenode a -asx'\<rightarrow>* m" and "nx \<notin> set(sourcenodes asx')"
         by(fastforce elim:obs.cases)
-      with `nx postdominates sourcenode a` have "nx postdominates m"
+      with \<open>nx postdominates sourcenode a\<close> have "nx postdominates m"
         by(rule postdominate_path_targetnode)
-      with `\<not> nx postdominates m` show False by simp
+      with \<open>\<not> nx postdominates m\<close> show False by simp
     qed
-    with `nx \<in> obs (sourcenode a) (PDG_BS S)` `valid_node nx` `nx \<noteq> (_Exit_)` 
+    with \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>valid_node nx\<close> \<open>nx \<noteq> (_Exit_)\<close> 
     show False by(fastforce dest:obs_postdominate)
   next
     case False
     show False
     proof(cases "m = Exit")
       case True
-      from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
+      from \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close>
       obtain xs where "sourcenode a -xs\<rightarrow>* m" and "nx \<notin> set(sourcenodes xs)"
         by(fastforce elim:obsE)
       obtain x' xs' where [simp]:"xs = x'#xs'"
       proof(cases xs)
         case Nil
-        with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastforce
-        with `m \<in> obs (sourcenode a) (PDG_BS S)` 
+        with \<open>sourcenode a -xs\<rightarrow>* m\<close> have [simp]:"sourcenode a = m" by fastforce
+        with \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> 
         have "m \<in> (PDG_BS S)" by(metis obsE)
-        with `valid_node m` have "obs m (PDG_BS S) = {m}"
+        with \<open>valid_node m\<close> have "obs m (PDG_BS S) = {m}"
           by(rule n_in_obs)
-        with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
+        with \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<noteq> m\<close> have False
           by fastforce
         thus ?thesis by simp
       qed blast
-      from `sourcenode a -xs\<rightarrow>* m` have "sourcenode a = sourcenode x'" 
+      from \<open>sourcenode a -xs\<rightarrow>* m\<close> have "sourcenode a = sourcenode x'" 
         and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>* m"
         by(auto elim:path_split_Cons)
-      from `targetnode x' -xs'\<rightarrow>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
-        `valid_node m` True
+      from \<open>targetnode x' -xs'\<rightarrow>* m\<close> \<open>nx \<notin> set(sourcenodes xs)\<close> \<open>valid_edge x'\<close> 
+        \<open>valid_node m\<close> True
       have "\<not> nx postdominates (targetnode x')" 
         by(fastforce simp:postdominate_def sourcenodes_def)
-      from `nx \<noteq> m` True have "nx \<noteq> (_Exit_)" by simp
-      with `obs (targetnode a) (PDG_BS S) = {nx}`
+      from \<open>nx \<noteq> m\<close> True have "nx \<noteq> (_Exit_)" by simp
+      with \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close>
       have "nx postdominates (targetnode a)"
         by(fastforce intro:obs_postdominate)
-      from `obs (targetnode a) (PDG_BS S) = {nx}`
+      from \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close>
       obtain ys where "targetnode a -ys\<rightarrow>* nx" 
         and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> (PDG_BS S)"
         and "nx \<in> (PDG_BS S)" by(fastforce elim:obsE)
@@ -241,32 +241,32 @@ proof(rule ccontr)
       have "sourcenode a \<noteq> nx"
       proof
         assume "sourcenode a = nx"
-        from `nx \<in> obs (sourcenode a) (PDG_BS S)`
+        from \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close>
         have "nx \<in> (PDG_BS S)" by -(erule obsE)
-        with `valid_node nx` have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
-        with `sourcenode a = nx` `m \<in> obs (sourcenode a) (PDG_BS S)` 
-          `nx \<noteq> m` show False by fastforce
+        with \<open>valid_node nx\<close> have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
+        with \<open>sourcenode a = nx\<close> \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> 
+          \<open>nx \<noteq> m\<close> show False by fastforce
       qed
-      with `nx \<notin> set(sourcenodes ys)` have "nx \<notin> set(sourcenodes (a#ys))"
+      with \<open>nx \<notin> set(sourcenodes ys)\<close> have "nx \<notin> set(sourcenodes (a#ys))"
         by(fastforce simp:sourcenodes_def)
-      from `valid_edge a` `targetnode a -ys\<rightarrow>* nx`
+      from \<open>valid_edge a\<close> \<open>targetnode a -ys\<rightarrow>* nx\<close>
       have "sourcenode a -a#ys\<rightarrow>* nx" by(fastforce intro:Cons_path)
-      from `sourcenode a -a#ys\<rightarrow>* nx` `nx \<notin> set(sourcenodes (a#ys))`
-        `nx postdominates (targetnode a)` `valid_edge x'`
-        `\<not> nx postdominates (targetnode x')` `sourcenode a = sourcenode x'`
+      from \<open>sourcenode a -a#ys\<rightarrow>* nx\<close> \<open>nx \<notin> set(sourcenodes (a#ys))\<close>
+        \<open>nx postdominates (targetnode a)\<close> \<open>valid_edge x'\<close>
+        \<open>\<not> nx postdominates (targetnode x')\<close> \<open>sourcenode a = sourcenode x'\<close>
       have "(sourcenode a) controls\<^sub>s nx"
         by(fastforce simp:standard_control_dependence_def)
-      with `nx \<in> (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
+      with \<open>nx \<in> (PDG_BS S)\<close> have "sourcenode a \<in> (PDG_BS S)"
         by(rule cd_closed)
-      with `valid_edge a` have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
+      with \<open>valid_edge a\<close> have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
         by(fastforce intro!:n_in_obs)
-      with `m \<in> obs (sourcenode a) (PDG_BS S)`
-        `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m`
+      with \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close>
+        \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<noteq> m\<close>
       show False by simp
     next
       case False
-      with `m \<in> obs (sourcenode a) (PDG_BS S)` `valid_node m`
-        `\<not> m postdominates sourcenode a` 
+      with \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>valid_node m\<close>
+        \<open>\<not> m postdominates sourcenode a\<close> 
       show False by(fastforce dest:obs_postdominate)
     qed
   qed
@@ -303,7 +303,7 @@ qed
 end
 
 
-subsection{* Weak control dependence *}
+subsection\<open>Weak control dependence\<close>
 
 context WeakControlDependencePDG begin
 
@@ -321,33 +321,33 @@ lemma obs_strong_postdominate:
   shows "n strongly-postdominates n'"
 proof(rule ccontr)
   assume "\<not> n strongly-postdominates n'"
-  from `n \<in> obs n' (PDG_BS S)` have "valid_node n" by(fastforce dest:in_obs_valid)
-  with `n \<in> obs n' (PDG_BS S)` `n \<noteq> (_Exit_)` have "n strongly-postdominates n"
+  from \<open>n \<in> obs n' (PDG_BS S)\<close> have "valid_node n" by(fastforce dest:in_obs_valid)
+  with \<open>n \<in> obs n' (PDG_BS S)\<close> \<open>n \<noteq> (_Exit_)\<close> have "n strongly-postdominates n"
     by(fastforce intro:strong_postdominate_refl)
-  from `n \<in> obs n' (PDG_BS S)` obtain as where "n' -as\<rightarrow>* n"
+  from \<open>n \<in> obs n' (PDG_BS S)\<close> obtain as where "n' -as\<rightarrow>* n"
     and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)"
     and "n \<in> (PDG_BS S)" by(erule obsE)
-  from `n strongly-postdominates n` `\<not> n strongly-postdominates n'` `n' -as\<rightarrow>* n`
+  from \<open>n strongly-postdominates n\<close> \<open>\<not> n strongly-postdominates n'\<close> \<open>n' -as\<rightarrow>* n\<close>
   obtain as' a as'' where [simp]:"as = as'@a#as''" and "valid_edge a"
     and "\<not> n strongly-postdominates (sourcenode a)" and 
     "n strongly-postdominates (targetnode a)"
     by -(erule strong_postdominate_path_branch)
-  from `n \<in> obs n' (PDG_BS S)` `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)` 
+  from \<open>n \<in> obs n' (PDG_BS S)\<close> \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)\<close> 
   have "n \<notin> set (sourcenodes (a#as''))"
     by(fastforce elim:obs.cases simp:sourcenodes_def)
-  from `n' -as\<rightarrow>* n` have "sourcenode a -a#as''\<rightarrow>* n"
+  from \<open>n' -as\<rightarrow>* n\<close> have "sourcenode a -a#as''\<rightarrow>* n"
     by(fastforce dest:path_split_second)
-  from `\<not> n strongly-postdominates (sourcenode a)` `valid_edge a` `valid_node n`
+  from \<open>\<not> n strongly-postdominates (sourcenode a)\<close> \<open>valid_edge a\<close> \<open>valid_node n\<close>
   obtain a' where "sourcenode a' = sourcenode a"
     and "valid_edge a'" and "\<not> n strongly-postdominates (targetnode a')"
     by(fastforce elim:not_strong_postdominate_predecessor_successor)
-  with `n strongly-postdominates (targetnode a)` `n \<notin> set (sourcenodes (a#as''))`
-    `sourcenode a -a#as''\<rightarrow>* n`
+  with \<open>n strongly-postdominates (targetnode a)\<close> \<open>n \<notin> set (sourcenodes (a#as''))\<close>
+    \<open>sourcenode a -a#as''\<rightarrow>* n\<close>
   have "sourcenode a weakly controls n"
     by(fastforce simp:weak_control_dependence_def)
-  with `n \<in> obs n' (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
+  with \<open>n \<in> obs n' (PDG_BS S)\<close> have "sourcenode a \<in> (PDG_BS S)"
     by(fastforce intro:cd_closed PDG_cdep_edge elim:obs.cases)
-  with `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)`
+  with \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)\<close>
   show False by(simp add:sourcenodes_def)
 qed
 
@@ -359,15 +359,15 @@ proof(rule ccontr)
     nx \<noteq> nx'" by auto
   then obtain nx nx' where "nx \<in> obs n (PDG_BS S)" and "nx' \<in> obs n (PDG_BS S)"
     and "nx \<noteq> nx'" by auto
-  from `nx \<in> obs n (PDG_BS S)` obtain as where "n -as\<rightarrow>* nx" 
+  from \<open>nx \<in> obs n (PDG_BS S)\<close> obtain as where "n -as\<rightarrow>* nx" 
     and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)" and "nx \<in> (PDG_BS S)" 
     by(erule obsE)
-  from `n -as\<rightarrow>* nx` have "valid_node nx" by(fastforce dest:path_valid_node)
-  with `nx \<in> (PDG_BS S)` have "obs nx (PDG_BS S) = {nx}" by -(rule n_in_obs)
-  with `n -as\<rightarrow>* nx` `nx \<in> obs n (PDG_BS S)` `nx' \<in> obs n (PDG_BS S)` `nx \<noteq> nx'`
+  from \<open>n -as\<rightarrow>* nx\<close> have "valid_node nx" by(fastforce dest:path_valid_node)
+  with \<open>nx \<in> (PDG_BS S)\<close> have "obs nx (PDG_BS S) = {nx}" by -(rule n_in_obs)
+  with \<open>n -as\<rightarrow>* nx\<close> \<open>nx \<in> obs n (PDG_BS S)\<close> \<open>nx' \<in> obs n (PDG_BS S)\<close> \<open>nx \<noteq> nx'\<close>
   have "as \<noteq> []" by(fastforce elim:path.cases)
-  with `n -as\<rightarrow>* nx` `nx \<in> obs n (PDG_BS S)` `nx' \<in> obs n (PDG_BS S)` 
-    `nx \<noteq> nx'` `obs nx (PDG_BS S) = {nx}` `\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)`
+  with \<open>n -as\<rightarrow>* nx\<close> \<open>nx \<in> obs n (PDG_BS S)\<close> \<open>nx' \<in> obs n (PDG_BS S)\<close> 
+    \<open>nx \<noteq> nx'\<close> \<open>obs nx (PDG_BS S) = {nx}\<close> \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> (PDG_BS S)\<close>
   have "\<exists>a as' as''. n -as'\<rightarrow>* sourcenode a \<and> targetnode a -as''\<rightarrow>* nx \<and>
                      valid_edge a \<and> as = as'@a#as'' \<and> 
                      obs (targetnode a) (PDG_BS S) = {nx} \<and> 
@@ -375,26 +375,26 @@ proof(rule ccontr)
                        obs (sourcenode a) (PDG_BS S) = {}))"
   proof(induct arbitrary:nx' rule:path.induct)
     case (Cons_path n'' as n' a n)
-    note [simp] = `sourcenode a = n`[THEN sym] `targetnode a = n''`[THEN sym]
-    note more_than_one = `n' \<in> obs n (PDG_BS S)` `nx' \<in> obs n (PDG_BS S)` `n' \<noteq> nx'`
-    note IH = `\<And>nx'. \<lbrakk>n' \<in> obs n'' (PDG_BS S); nx' \<in> obs n'' (PDG_BS S); n' \<noteq> nx'; 
+    note [simp] = \<open>sourcenode a = n\<close>[THEN sym] \<open>targetnode a = n''\<close>[THEN sym]
+    note more_than_one = \<open>n' \<in> obs n (PDG_BS S)\<close> \<open>nx' \<in> obs n (PDG_BS S)\<close> \<open>n' \<noteq> nx'\<close>
+    note IH = \<open>\<And>nx'. \<lbrakk>n' \<in> obs n'' (PDG_BS S); nx' \<in> obs n'' (PDG_BS S); n' \<noteq> nx'; 
       obs n' (PDG_BS S) = {n'}; \<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S); as \<noteq> []\<rbrakk>
       \<Longrightarrow> \<exists>a as' as''. n'' -as'\<rightarrow>* sourcenode a \<and> targetnode a -as''\<rightarrow>* n' \<and>
       valid_edge a \<and> as = as'@a#as'' \<and> obs (targetnode a) (PDG_BS S) = {n'} \<and>
       (\<not> (\<exists>m. obs (sourcenode a) (PDG_BS S) = {m} \<or> 
-      obs (sourcenode a) (PDG_BS S) = {}))`
-    from `\<forall>n'\<in>set (sourcenodes (a#as)). n' \<notin> (PDG_BS S)`
+      obs (sourcenode a) (PDG_BS S) = {}))\<close>
+    from \<open>\<forall>n'\<in>set (sourcenodes (a#as)). n' \<notin> (PDG_BS S)\<close>
     have "\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)" and "sourcenode a \<notin> (PDG_BS S)"
       by(simp_all add:sourcenodes_def)
     show ?case
     proof(cases "as = []")
       case True
-      with `n'' -as\<rightarrow>* n'` have [simp]:"n' = n''" by(fastforce elim:path.cases)
+      with \<open>n'' -as\<rightarrow>* n'\<close> have [simp]:"n' = n''" by(fastforce elim:path.cases)
       from more_than_one
       have "\<not> (\<exists>m. obs (sourcenode a) (PDG_BS S) = {m} \<or> 
                obs (sourcenode a) (PDG_BS S) = {})"
         by auto
-      with `obs n' (PDG_BS S) = {n'}` True `valid_edge a` show ?thesis
+      with \<open>obs n' (PDG_BS S) = {n'}\<close> True \<open>valid_edge a\<close> show ?thesis
         apply(rule_tac x="a" in exI)
         apply(rule_tac x="[]" in exI)
         apply(rule_tac x="[]" in exI)
@@ -402,12 +402,12 @@ proof(rule ccontr)
     next
       case False
       hence "as \<noteq> []" .
-      from `n'' -as\<rightarrow>* n'` `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)` 
+      from \<open>n'' -as\<rightarrow>* n'\<close> \<open>\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)\<close> 
       have "obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)" by(rule path_obs_subset)
       show ?thesis
       proof(cases "obs n' (PDG_BS S) = obs n'' (PDG_BS S)")
         case True
-        with `n'' -as\<rightarrow>* n'` `valid_edge a` `obs n' (PDG_BS S) = {n'}` more_than_one
+        with \<open>n'' -as\<rightarrow>* n'\<close> \<open>valid_edge a\<close> \<open>obs n' (PDG_BS S) = {n'}\<close> more_than_one
         show ?thesis
           apply(rule_tac x="a" in exI)
           apply(rule_tac x="[]" in exI)
@@ -415,22 +415,22 @@ proof(rule ccontr)
           by(fastforce intro:empty_path)
       next
         case False
-        with `obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)`
+        with \<open>obs n' (PDG_BS S) \<subseteq> obs n'' (PDG_BS S)\<close>
         have "obs n' (PDG_BS S) \<subset> obs n'' (PDG_BS S)" by simp
-        with `obs n' (PDG_BS S) = {n'}` obtain ni where "n' \<in> obs n'' (PDG_BS S)"
+        with \<open>obs n' (PDG_BS S) = {n'}\<close> obtain ni where "n' \<in> obs n'' (PDG_BS S)"
           and "ni \<in> obs n'' (PDG_BS S)" and "n' \<noteq> ni" by auto
-        from IH[OF this `obs n' (PDG_BS S) = {n'}` 
-          `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)` `as \<noteq> []`] obtain a' as' as''
+        from IH[OF this \<open>obs n' (PDG_BS S) = {n'}\<close> 
+          \<open>\<forall>n'\<in>set (sourcenodes as). n' \<notin> (PDG_BS S)\<close> \<open>as \<noteq> []\<close>] obtain a' as' as''
           where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
           and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
           and "obs (targetnode a') (PDG_BS S) = {n'}"
           and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (PDG_BS S) = {m} \<or> 
           obs (sourcenode a') (PDG_BS S) = {})"
           by blast
-        from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
+        from \<open>n'' -as'\<rightarrow>* sourcenode a'\<close> \<open>valid_edge a\<close>
         have "n -a#as'\<rightarrow>* sourcenode a'" by(fastforce intro:path.Cons_path)
-        with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (PDG_BS S) = {n'}`
-          more_than_one' `valid_edge a'` show ?thesis
+        with \<open>targetnode a' -as''\<rightarrow>* n'\<close> \<open>obs (targetnode a') (PDG_BS S) = {n'}\<close>
+          more_than_one' \<open>valid_edge a'\<close> show ?thesis
           apply(rule_tac x="a'" in exI)
           apply(rule_tac x="a#as'" in exI)
           apply(rule_tac x="as''" in exI)
@@ -447,77 +447,77 @@ proof(rule ccontr)
   proof(rule ccontr)
     assume "\<not> sourcenode a \<notin> PDG_BS S"
     hence "sourcenode a \<in> PDG_BS S" by simp
-    with `valid_edge a` have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
+    with \<open>valid_edge a\<close> have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
       by(fastforce intro!:n_in_obs)
     with more_than_one show False by simp
   qed
-  with `valid_edge a` 
+  with \<open>valid_edge a\<close> 
   have "obs (targetnode a) (PDG_BS S) \<subseteq> obs (sourcenode a) (PDG_BS S)"
     by(rule edge_obs_subset)
-  with `obs (targetnode a) (PDG_BS S) = {nx}` 
+  with \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close> 
   have "nx \<in> obs (sourcenode a) (PDG_BS S)" by simp
   with more_than_one obtain m  where "m \<in> obs (sourcenode a) (PDG_BS S)"
     and "nx \<noteq> m" by auto
-  from `m \<in> obs (sourcenode a) (PDG_BS S)` 
+  from \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> 
   have "valid_node m" by(fastforce dest:in_obs_valid)
-  from `obs (targetnode a) (PDG_BS S) = {nx}` have "valid_node nx" 
+  from \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close> have "valid_node nx" 
     by(fastforce dest:in_obs_valid)
   show False
   proof(cases "m strongly-postdominates (sourcenode a)")
     case True
-    with `nx \<in> obs (sourcenode a) (PDG_BS S)` `m \<in> obs (sourcenode a) (PDG_BS S)`
+    with \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close>
     have "m strongly-postdominates nx"
       by(fastforce intro:strong_postdominate_path_targetnode elim:obs.cases)
-    with `nx \<noteq> m` have "\<not> nx strongly-postdominates m" 
+    with \<open>nx \<noteq> m\<close> have "\<not> nx strongly-postdominates m" 
       by(fastforce dest:strong_postdominate_antisym)
     have "(_Exit_) -[]\<rightarrow>* (_Exit_)" by(fastforce intro:empty_path)
-    with `m strongly-postdominates nx` have "nx \<noteq> (_Exit_)"
+    with \<open>m strongly-postdominates nx\<close> have "nx \<noteq> (_Exit_)"
       by(fastforce simp:strong_postdominate_def sourcenodes_def postdominate_def)
     have "\<not> nx strongly-postdominates (sourcenode a)"
     proof(rule ccontr)
       assume "\<not> \<not> nx strongly-postdominates sourcenode a"
       hence "nx strongly-postdominates sourcenode a" by simp
-      from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
+      from \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close>
       obtain asx' where "sourcenode a -asx'\<rightarrow>* m" and "nx \<notin> set(sourcenodes asx')"
         by(fastforce elim:obs.cases)
-      with `nx strongly-postdominates sourcenode a` have "nx strongly-postdominates m"
+      with \<open>nx strongly-postdominates sourcenode a\<close> have "nx strongly-postdominates m"
         by(rule strong_postdominate_path_targetnode)
-      with `\<not> nx strongly-postdominates m` show False by simp
+      with \<open>\<not> nx strongly-postdominates m\<close> show False by simp
     qed
-    with `nx \<in> obs (sourcenode a) (PDG_BS S)` `valid_node nx` `nx \<noteq> (_Exit_)` 
+    with \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>valid_node nx\<close> \<open>nx \<noteq> (_Exit_)\<close> 
     show False by(fastforce dest:obs_strong_postdominate)
   next
     case False
     show False
     proof(cases "m = Exit")
       case True
-      from `m \<in> obs (sourcenode a) (PDG_BS S)` `nx \<in> obs (sourcenode a) (PDG_BS S)`
+      from \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close>
       obtain xs where "sourcenode a -xs\<rightarrow>* m" and "nx \<notin> set(sourcenodes xs)"
         by(fastforce elim:obsE)
       obtain x' xs' where [simp]:"xs = x'#xs'"
       proof(cases xs)
         case Nil
-        with `sourcenode a -xs\<rightarrow>* m` have [simp]:"sourcenode a = m" by fastforce
-        with `m \<in> obs (sourcenode a) (PDG_BS S)` 
+        with \<open>sourcenode a -xs\<rightarrow>* m\<close> have [simp]:"sourcenode a = m" by fastforce
+        with \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> 
         have "m \<in> (PDG_BS S)" by (metis obsE)
-        with `valid_node m` have "obs m (PDG_BS S) = {m}"
+        with \<open>valid_node m\<close> have "obs m (PDG_BS S) = {m}"
           by(rule n_in_obs)
-        with `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m` have False
+        with \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<noteq> m\<close> have False
           by fastforce
         thus ?thesis by simp
       qed blast
-      from `sourcenode a -xs\<rightarrow>* m` have "sourcenode a = sourcenode x'" 
+      from \<open>sourcenode a -xs\<rightarrow>* m\<close> have "sourcenode a = sourcenode x'" 
         and "valid_edge x'" and "targetnode x' -xs'\<rightarrow>* m"
         by(auto elim:path_split_Cons)
-      from `targetnode x' -xs'\<rightarrow>* m` `nx \<notin> set(sourcenodes xs)` `valid_edge x'` 
-        `valid_node m` True
+      from \<open>targetnode x' -xs'\<rightarrow>* m\<close> \<open>nx \<notin> set(sourcenodes xs)\<close> \<open>valid_edge x'\<close> 
+        \<open>valid_node m\<close> True
       have "\<not> nx strongly-postdominates (targetnode x')" 
         by(fastforce simp:strong_postdominate_def postdominate_def sourcenodes_def)
-      from `nx \<noteq> m` True have "nx \<noteq> (_Exit_)" by simp
-      with `obs (targetnode a) (PDG_BS S) = {nx}`
+      from \<open>nx \<noteq> m\<close> True have "nx \<noteq> (_Exit_)" by simp
+      with \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close>
       have "nx strongly-postdominates (targetnode a)"
         by(fastforce intro:obs_strong_postdominate)
-      from `obs (targetnode a) (PDG_BS S) = {nx}`
+      from \<open>obs (targetnode a) (PDG_BS S) = {nx}\<close>
       obtain ys where "targetnode a -ys\<rightarrow>* nx" 
         and "\<forall>nx' \<in> set(sourcenodes ys). nx' \<notin> (PDG_BS S)"
         and "nx \<in> (PDG_BS S)" by(fastforce elim:obsE)
@@ -525,32 +525,32 @@ proof(rule ccontr)
       have "sourcenode a \<noteq> nx"
       proof
         assume "sourcenode a = nx"
-        from `nx \<in> obs (sourcenode a) (PDG_BS S)`
+        from \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close>
         have "nx \<in> (PDG_BS S)" by -(erule obsE)
-        with `valid_node nx` have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
-        with `sourcenode a = nx` `m \<in> obs (sourcenode a) (PDG_BS S)` 
-          `nx \<noteq> m` show False by fastforce
+        with \<open>valid_node nx\<close> have "obs nx (PDG_BS S) = {nx}" by -(erule n_in_obs)
+        with \<open>sourcenode a = nx\<close> \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> 
+          \<open>nx \<noteq> m\<close> show False by fastforce
       qed
-      with `nx \<notin> set(sourcenodes ys)` have "nx \<notin> set(sourcenodes (a#ys))"
+      with \<open>nx \<notin> set(sourcenodes ys)\<close> have "nx \<notin> set(sourcenodes (a#ys))"
         by(fastforce simp:sourcenodes_def)
-      from `valid_edge a` `targetnode a -ys\<rightarrow>* nx`
+      from \<open>valid_edge a\<close> \<open>targetnode a -ys\<rightarrow>* nx\<close>
       have "sourcenode a -a#ys\<rightarrow>* nx" by(fastforce intro:Cons_path)
-      from `sourcenode a -a#ys\<rightarrow>* nx` `nx \<notin> set(sourcenodes (a#ys))`
-        `nx strongly-postdominates (targetnode a)` `valid_edge x'`
-        `\<not> nx strongly-postdominates (targetnode x')` `sourcenode a = sourcenode x'`
+      from \<open>sourcenode a -a#ys\<rightarrow>* nx\<close> \<open>nx \<notin> set(sourcenodes (a#ys))\<close>
+        \<open>nx strongly-postdominates (targetnode a)\<close> \<open>valid_edge x'\<close>
+        \<open>\<not> nx strongly-postdominates (targetnode x')\<close> \<open>sourcenode a = sourcenode x'\<close>
       have "(sourcenode a) weakly controls nx"
         by(fastforce simp:weak_control_dependence_def)
-      with `nx \<in> (PDG_BS S)` have "sourcenode a \<in> (PDG_BS S)"
+      with \<open>nx \<in> (PDG_BS S)\<close> have "sourcenode a \<in> (PDG_BS S)"
         by(rule cd_closed)
-      with `valid_edge a` have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
+      with \<open>valid_edge a\<close> have "obs (sourcenode a) (PDG_BS S) = {sourcenode a}"
         by(fastforce intro!:n_in_obs)
-      with `m \<in> obs (sourcenode a) (PDG_BS S)`
-        `nx \<in> obs (sourcenode a) (PDG_BS S)` `nx \<noteq> m`
+      with \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close>
+        \<open>nx \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>nx \<noteq> m\<close>
       show False by simp
     next
       case False
-      with `m \<in> obs (sourcenode a) (PDG_BS S)` `valid_node m`
-        `\<not> m strongly-postdominates sourcenode a` 
+      with \<open>m \<in> obs (sourcenode a) (PDG_BS S)\<close> \<open>valid_node m\<close>
+        \<open>\<not> m strongly-postdominates sourcenode a\<close> 
       show False by(fastforce dest:obs_strong_postdominate)
     qed
   qed
@@ -586,7 +586,7 @@ qed
 end
 
 
-subsection{* Weak order dependence *}
+subsection\<open>Weak order dependence\<close>
 
 context CFG_wf begin
 
@@ -601,15 +601,15 @@ proof(rule ccontr)
     nx \<noteq> nx'" by auto
   then obtain nx nx' where "nx \<in> obs n ?WOD_BS" and "nx' \<in> obs n ?WOD_BS"
     and "nx \<noteq> nx'" by auto
-  from `nx \<in> obs n ?WOD_BS` obtain as where "n -as\<rightarrow>* nx" 
+  from \<open>nx \<in> obs n ?WOD_BS\<close> obtain as where "n -as\<rightarrow>* nx" 
     and "\<forall>n' \<in> set(sourcenodes as). n' \<notin> ?WOD_BS" and "nx \<in> ?WOD_BS" 
     by(erule obsE)
-  from `n -as\<rightarrow>* nx` have "valid_node nx" by(fastforce dest:path_valid_node)
-  with `nx \<in> ?WOD_BS` have "obs nx ?WOD_BS = {nx}" by -(rule n_in_obs)
-  with `n -as\<rightarrow>* nx` `nx \<in> obs n ?WOD_BS` `nx' \<in> obs n ?WOD_BS` `nx \<noteq> nx'` 
+  from \<open>n -as\<rightarrow>* nx\<close> have "valid_node nx" by(fastforce dest:path_valid_node)
+  with \<open>nx \<in> ?WOD_BS\<close> have "obs nx ?WOD_BS = {nx}" by -(rule n_in_obs)
+  with \<open>n -as\<rightarrow>* nx\<close> \<open>nx \<in> obs n ?WOD_BS\<close> \<open>nx' \<in> obs n ?WOD_BS\<close> \<open>nx \<noteq> nx'\<close> 
   have "as \<noteq> []" by(fastforce elim:path.cases)
-  with `n -as\<rightarrow>* nx` `nx \<in> obs n ?WOD_BS` `nx' \<in> obs n ?WOD_BS` `nx \<noteq> nx'` 
-    `obs nx ?WOD_BS = {nx}` `\<forall>n' \<in> set(sourcenodes as). n' \<notin> ?WOD_BS`
+  with \<open>n -as\<rightarrow>* nx\<close> \<open>nx \<in> obs n ?WOD_BS\<close> \<open>nx' \<in> obs n ?WOD_BS\<close> \<open>nx \<noteq> nx'\<close> 
+    \<open>obs nx ?WOD_BS = {nx}\<close> \<open>\<forall>n' \<in> set(sourcenodes as). n' \<notin> ?WOD_BS\<close>
   have "\<exists>a as' as''. n -as'\<rightarrow>* sourcenode a \<and> targetnode a -as''\<rightarrow>* nx \<and>
                      valid_edge a \<and> as = as'@a#as'' \<and> 
                      obs (targetnode a) ?WOD_BS = {nx} \<and> 
@@ -617,26 +617,26 @@ proof(rule ccontr)
                        obs (sourcenode a) ?WOD_BS = {}))"
   proof(induct arbitrary:nx' rule:path.induct)
     case (Cons_path n'' as n' a n)
-    note [simp] = `sourcenode a = n`[THEN sym] `targetnode a = n''`[THEN sym]
-    note more_than_one = `n' \<in> obs n (?WOD_BS)` `nx' \<in> obs n (?WOD_BS)` `n' \<noteq> nx'`
-    note IH = `\<And>nx'. \<lbrakk>n' \<in> obs n'' (?WOD_BS); nx' \<in> obs n'' (?WOD_BS); n' \<noteq> nx'; 
+    note [simp] = \<open>sourcenode a = n\<close>[THEN sym] \<open>targetnode a = n''\<close>[THEN sym]
+    note more_than_one = \<open>n' \<in> obs n (?WOD_BS)\<close> \<open>nx' \<in> obs n (?WOD_BS)\<close> \<open>n' \<noteq> nx'\<close>
+    note IH = \<open>\<And>nx'. \<lbrakk>n' \<in> obs n'' (?WOD_BS); nx' \<in> obs n'' (?WOD_BS); n' \<noteq> nx'; 
       obs n' (?WOD_BS) = {n'}; \<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS); as \<noteq> []\<rbrakk>
       \<Longrightarrow> \<exists>a as' as''. n'' -as'\<rightarrow>* sourcenode a \<and> targetnode a -as''\<rightarrow>* n' \<and>
       valid_edge a \<and> as = as'@a#as'' \<and> obs (targetnode a) (?WOD_BS) = {n'} \<and>
       (\<not> (\<exists>m. obs (sourcenode a) (?WOD_BS) = {m} \<or> 
-      obs (sourcenode a) (?WOD_BS) = {}))`
-    from `\<forall>n'\<in>set (sourcenodes (a#as)). n' \<notin> (?WOD_BS)`
+      obs (sourcenode a) (?WOD_BS) = {}))\<close>
+    from \<open>\<forall>n'\<in>set (sourcenodes (a#as)). n' \<notin> (?WOD_BS)\<close>
     have "\<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS)" and "sourcenode a \<notin> (?WOD_BS)"
       by(simp_all add:sourcenodes_def)
     show ?case
     proof(cases "as = []")
       case True
-      with `n'' -as\<rightarrow>* n'` have [simp]:"n' = n''" by(fastforce elim:path.cases)
+      with \<open>n'' -as\<rightarrow>* n'\<close> have [simp]:"n' = n''" by(fastforce elim:path.cases)
       from more_than_one
       have "\<not> (\<exists>m. obs (sourcenode a) (?WOD_BS) = {m} \<or> 
                obs (sourcenode a) (?WOD_BS) = {})"
         by auto
-      with `obs n' (?WOD_BS) = {n'}` True `valid_edge a` show ?thesis
+      with \<open>obs n' (?WOD_BS) = {n'}\<close> True \<open>valid_edge a\<close> show ?thesis
         apply(rule_tac x="a" in exI)
         apply(rule_tac x="[]" in exI)
         apply(rule_tac x="[]" in exI)
@@ -644,12 +644,12 @@ proof(rule ccontr)
     next
       case False
       hence "as \<noteq> []" .
-      from `n'' -as\<rightarrow>* n'` `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS)` 
+      from \<open>n'' -as\<rightarrow>* n'\<close> \<open>\<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS)\<close> 
       have "obs n' (?WOD_BS) \<subseteq> obs n'' (?WOD_BS)" by(rule path_obs_subset)
       show ?thesis
       proof(cases "obs n' (?WOD_BS) = obs n'' (?WOD_BS)")
         case True
-        with `n'' -as\<rightarrow>* n'` `valid_edge a` `obs n' (?WOD_BS) = {n'}` more_than_one
+        with \<open>n'' -as\<rightarrow>* n'\<close> \<open>valid_edge a\<close> \<open>obs n' (?WOD_BS) = {n'}\<close> more_than_one
         show ?thesis
           apply(rule_tac x="a" in exI)
           apply(rule_tac x="[]" in exI)
@@ -657,22 +657,22 @@ proof(rule ccontr)
           by(fastforce intro:empty_path)
       next
         case False
-        with `obs n' (?WOD_BS) \<subseteq> obs n'' (?WOD_BS)`
+        with \<open>obs n' (?WOD_BS) \<subseteq> obs n'' (?WOD_BS)\<close>
         have "obs n' (?WOD_BS) \<subset> obs n'' (?WOD_BS)" by simp
-        with `obs n' (?WOD_BS) = {n'}` obtain ni where "n' \<in> obs n'' (?WOD_BS)"
+        with \<open>obs n' (?WOD_BS) = {n'}\<close> obtain ni where "n' \<in> obs n'' (?WOD_BS)"
           and "ni \<in> obs n'' (?WOD_BS)" and "n' \<noteq> ni" by auto
-        from IH[OF this `obs n' (?WOD_BS) = {n'}` 
-          `\<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS)` `as \<noteq> []`] obtain a' as' as''
+        from IH[OF this \<open>obs n' (?WOD_BS) = {n'}\<close> 
+          \<open>\<forall>n'\<in>set (sourcenodes as). n' \<notin> (?WOD_BS)\<close> \<open>as \<noteq> []\<close>] obtain a' as' as''
           where "n'' -as'\<rightarrow>* sourcenode a'" and "targetnode a' -as''\<rightarrow>* n'"
           and "valid_edge a'" and [simp]:"as = as'@a'#as''" 
           and "obs (targetnode a') (?WOD_BS) = {n'}"
           and more_than_one':"\<not> (\<exists>m. obs (sourcenode a') (?WOD_BS) = {m} \<or> 
           obs (sourcenode a') (?WOD_BS) = {})"
           by blast
-        from `n'' -as'\<rightarrow>* sourcenode a'` `valid_edge a`
+        from \<open>n'' -as'\<rightarrow>* sourcenode a'\<close> \<open>valid_edge a\<close>
         have "n -a#as'\<rightarrow>* sourcenode a'" by(fastforce intro:path.Cons_path)
-        with `targetnode a' -as''\<rightarrow>* n'` `obs (targetnode a') (?WOD_BS) = {n'}`
-          more_than_one' `valid_edge a'` show ?thesis
+        with \<open>targetnode a' -as''\<rightarrow>* n'\<close> \<open>obs (targetnode a') (?WOD_BS) = {n'}\<close>
+          more_than_one' \<open>valid_edge a'\<close> show ?thesis
           apply(rule_tac x="a'" in exI)
           apply(rule_tac x="a#as'" in exI)
           apply(rule_tac x="as''" in exI)
@@ -689,24 +689,24 @@ proof(rule ccontr)
   proof(rule ccontr)
     assume "\<not> sourcenode a \<notin> ?WOD_BS"
     hence "sourcenode a \<in> ?WOD_BS" by simp
-    with `valid_edge a` have "obs (sourcenode a) (?WOD_BS) = {sourcenode a}"
+    with \<open>valid_edge a\<close> have "obs (sourcenode a) (?WOD_BS) = {sourcenode a}"
       by(fastforce intro!:n_in_obs)
     with more_than_one show False by simp
   qed
-  with `valid_edge a` 
+  with \<open>valid_edge a\<close> 
   have "obs (targetnode a) (?WOD_BS) \<subseteq> obs (sourcenode a) (?WOD_BS)"
     by(rule edge_obs_subset)
-  with `obs (targetnode a) (?WOD_BS) = {nx}` 
+  with \<open>obs (targetnode a) (?WOD_BS) = {nx}\<close> 
   have "nx \<in> obs (sourcenode a) (?WOD_BS)" by simp
   with more_than_one obtain m  where "m \<in> obs (sourcenode a) (?WOD_BS)"
     and "nx \<noteq> m" by auto
-  with `nx \<in> obs (sourcenode a) (?WOD_BS)` obtain as2 
+  with \<open>nx \<in> obs (sourcenode a) (?WOD_BS)\<close> obtain as2 
     where "sourcenode a -as2\<rightarrow>* m" and "nx \<notin> set(sourcenodes as2)" 
     by(fastforce elim:obsE)
-  from `nx \<in> obs (sourcenode a) (?WOD_BS)` `m \<in> obs (sourcenode a) (?WOD_BS)` 
+  from \<open>nx \<in> obs (sourcenode a) (?WOD_BS)\<close> \<open>m \<in> obs (sourcenode a) (?WOD_BS)\<close> 
   obtain as1 where "sourcenode a -as1\<rightarrow>* nx" and "m \<notin> set(sourcenodes as1)"
     by(fastforce elim:obsE)
-  from `obs (targetnode a) (?WOD_BS) = {nx}` obtain asx 
+  from \<open>obs (targetnode a) (?WOD_BS) = {nx}\<close> obtain asx 
     where "targetnode a -asx\<rightarrow>* nx" by(fastforce elim:obsE)
   have "\<forall>asx'. targetnode a -asx'\<rightarrow>* m \<longrightarrow> nx \<in> set(sourcenodes asx')"
   proof(rule ccontr)
@@ -716,32 +716,32 @@ proof(rule ccontr)
     show False
     proof(cases "\<forall>nx \<in> set(sourcenodes asx'). nx \<notin> ?WOD_BS")
       case True
-      with `targetnode a -asx'\<rightarrow>* m` `m \<in> obs (sourcenode a) (?WOD_BS)` 
+      with \<open>targetnode a -asx'\<rightarrow>* m\<close> \<open>m \<in> obs (sourcenode a) (?WOD_BS)\<close> 
       have "m \<in> obs (targetnode a) ?WOD_BS" by(fastforce intro:obs_elem elim:obsE)
-      with `nx \<noteq> m` `obs (targetnode a) (?WOD_BS) = {nx}` show False by simp
+      with \<open>nx \<noteq> m\<close> \<open>obs (targetnode a) (?WOD_BS) = {nx}\<close> show False by simp
     next
       case False
       hence "\<exists>nx \<in> set(sourcenodes asx'). nx \<in> ?WOD_BS" by blast
       then obtain nx' ns ns' where "sourcenodes asx' = ns@nx'#ns'" and "nx' \<in> ?WOD_BS"
         and "\<forall>nx \<in> set ns. nx \<notin> ?WOD_BS" by(fastforce elim!:split_list_first_propE)
-      from `sourcenodes asx' = ns@nx'#ns'` obtain ax ai ai' 
+      from \<open>sourcenodes asx' = ns@nx'#ns'\<close> obtain ax ai ai' 
         where [simp]:"asx' = ai@ax#ai'" "ns = sourcenodes ai" "nx' = sourcenode ax"
         by(fastforce elim:map_append_append_maps simp:sourcenodes_def)
-      from `targetnode a -asx'\<rightarrow>* m` have "targetnode a -ai\<rightarrow>* sourcenode ax"
+      from \<open>targetnode a -asx'\<rightarrow>* m\<close> have "targetnode a -ai\<rightarrow>* sourcenode ax"
         by(fastforce dest:path_split)
-      with `nx' \<in> ?WOD_BS` `\<forall>nx \<in> set ns. nx \<notin> ?WOD_BS` 
+      with \<open>nx' \<in> ?WOD_BS\<close> \<open>\<forall>nx \<in> set ns. nx \<notin> ?WOD_BS\<close> 
       have "nx' \<in> obs (targetnode a) ?WOD_BS" by(fastforce intro:obs_elem)
-      with `obs (targetnode a) (?WOD_BS) = {nx}` have "nx' = nx" by simp
-      with `nx \<notin> set (sourcenodes asx')` show False by(simp add:sourcenodes_def)
+      with \<open>obs (targetnode a) (?WOD_BS) = {nx}\<close> have "nx' = nx" by simp
+      with \<open>nx \<notin> set (sourcenodes asx')\<close> show False by(simp add:sourcenodes_def)
     qed
   qed
-  with `nx \<noteq> m` `sourcenode a -as1\<rightarrow>* nx` `m \<notin> set(sourcenodes as1)` 
-    `sourcenode a -as2\<rightarrow>* m` `nx \<notin> set(sourcenodes as2)` `valid_edge a` 
-    `targetnode a -asx\<rightarrow>* nx`
+  with \<open>nx \<noteq> m\<close> \<open>sourcenode a -as1\<rightarrow>* nx\<close> \<open>m \<notin> set(sourcenodes as1)\<close> 
+    \<open>sourcenode a -as2\<rightarrow>* m\<close> \<open>nx \<notin> set(sourcenodes as2)\<close> \<open>valid_edge a\<close> 
+    \<open>targetnode a -asx\<rightarrow>* nx\<close>
   have "sourcenode a \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d nx,m" by(simp add:wod_def,blast)
-  with `nx \<in> obs (sourcenode a) (?WOD_BS)` `m \<in> obs (sourcenode a) (?WOD_BS)` 
+  with \<open>nx \<in> obs (sourcenode a) (?WOD_BS)\<close> \<open>m \<in> obs (sourcenode a) (?WOD_BS)\<close> 
   have "sourcenode a \<in> ?WOD_BS" by(fastforce elim:cd_closed elim:obsE)
-  with `sourcenode a \<notin> ?WOD_BS` show False by simp
+  with \<open>sourcenode a \<notin> ?WOD_BS\<close> show False by simp
 qed
 
 

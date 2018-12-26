@@ -4,7 +4,7 @@ begin
 
 code_identifier code_module SINVAR_SecGwExt_impl => (Scala) SINVAR_SecGwExt
 
-subsubsection {* SecurityInvariant PolEnforcePointExtended List Implementation *}
+subsubsection \<open>SecurityInvariant PolEnforcePointExtended List Implementation\<close>
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> SINVAR_SecGwExt.secgw_member) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). e1 \<noteq> e2 \<longrightarrow> SINVAR_SecGwExt.allowed_secgw_flow (nP e1) (nP e2))"
@@ -48,7 +48,7 @@ interpretation PolEnforcePoint_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* PolEnforcePoint packing *}
+subsubsection \<open>PolEnforcePoint packing\<close>
   definition SINVAR_LIB_PolEnforcePointExtended :: "('v::vertex, secgw_member) TopoS_packed" where
     "SINVAR_LIB_PolEnforcePointExtended \<equiv> 
     \<lparr> nm_name = ''PolEnforcePointExtended'', 
@@ -68,7 +68,7 @@ subsubsection {* PolEnforcePoint packing *}
     by(unfold_locales)
 
 
-text {* Examples*}
+text \<open>Examples\<close>
   definition example_net_secgw :: "nat list_graph" where
   "example_net_secgw \<equiv> \<lparr> nodesL = [1::nat,2, 3, 8,9, 11,12], 
     edgesL = [(3,8),(8,3),(2,8),(8,1),(1,9),(9,2),(2,9),(9,1), (1,3), (8,11),(8,12), (11,9), (11,3), (11,12)] \<rparr>"

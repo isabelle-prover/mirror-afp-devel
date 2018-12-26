@@ -1,17 +1,17 @@
-section {* Abstract Model-Checker *}
+section \<open>Abstract Model-Checker\<close>
 theory CAVA_Abstract
 imports 
   CAVA_Base.CAVA_Base
   CAVA_Automata.Automata
   LTL.LTL
 begin
-text {*
+text \<open>
   This theory defines the abstract version of the cava model checker, 
   as well as a generic implementation.
-  *}
+\<close>
 
-subsection {* Specification of an LTL Model-Checker *}
-text {*
+subsection \<open>Specification of an LTL Model-Checker\<close>
+text \<open>
   Abstractly, an LTL model-checker consists of three components:
   \begin{enumerate}
     \item A conversion of LTL-formula to Indexed Generalized Buchi Automata 
@@ -21,10 +21,10 @@ text {*
       function to project runs of the IGBG back to runs of the system.
     \item An emptiness check for IGBGs.
   \end{enumerate}
-*}
+\<close>
 
-text {* Given an LTL formula, the LTL to Buchi conversion
-  returns a Generalized Buchi Automaton that accepts the same language. *}
+text \<open>Given an LTL formula, the LTL to Buchi conversion
+  returns a Generalized Buchi Automaton that accepts the same language.\<close>
 definition ltl_to_gba_spec 
   :: "'prop ltlc \<Rightarrow> ('q, 'prop set, _) igba_rec_scheme nres"
   \<comment> \<open>Conversion of LTL formula to generalized buchi automaton\<close>  
@@ -59,11 +59,11 @@ definition find_ce_spec
     | Some (Some r) \<Rightarrow> igb_graph.is_acc_run G r
     )}"
 
-text {*
+text \<open>
   Using the specifications from above, we can specify the essence
   of the model-checking algorithm: Convert the LTL-formula to a GBA,
   make an intersection with the system and check the result for emptiness.
-*}
+\<close>
 
 definition abs_model_check 
   :: "'ba_state itself \<Rightarrow> 'ba_more itself 
@@ -87,13 +87,13 @@ definition abs_model_check
     | Some (Some r) \<Rightarrow> RETURN (Some (Some (map_state o r)))
   }"
 
-text {*
+text \<open>
   The main correctness theorem states that our abstract model checker
   really checks whether the system satisfies the formula, and a
   correct counterexample is returned (if any). 
   Note that, if the model does not satisfy the formula, 
   returning a counterexample is optional.
-*}
+\<close>
 theorem abs_model_check_correct:
   "abs_model_check T1 T2 T3 T4 sys \<phi> \<le> do {
     ASSERT (sa sys);
@@ -112,11 +112,11 @@ theorem abs_model_check_correct:
       conditional definitions! *)
   done
 
-subsection {* Generic Implementation *}
-text {*
+subsection \<open>Generic Implementation\<close>
+text \<open>
   In this section, we define a generic implementation of an LTL model checker,
   that is parameterized with implementations of its components.
-*}
+\<close>
 
 abbreviation "ltl_rel \<equiv> Id :: ('a ltlc \<times> _) set"
 

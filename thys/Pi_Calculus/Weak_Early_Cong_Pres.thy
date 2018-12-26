@@ -117,7 +117,7 @@ using assms
 proof(induct rule: weakCongISym2)
   case(cSim P Q)
   let ?X = "{(P, Q) | P Q. P \<simeq> Q}"
-  from `P \<simeq> Q`  have "(P, Q) \<in> ?X"  by auto
+  from \<open>P \<simeq> Q\<close>  have "(P, Q) \<in> ?X"  by auto
   moreover have "\<And>P Q. (P, Q) \<in> ?X \<Longrightarrow> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(auto simp add: weakCongruence_def)
   moreover from congruenceWeakBisim have "?X \<subseteq> weakBisim" by auto
   ultimately have "!P \<leadsto>\<guillemotleft>bangRel weakBisim\<guillemotright> !Q" using Weak_Early_Bisim.eqvt 

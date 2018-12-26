@@ -5,7 +5,7 @@ begin
 context ArityAnalysis
 begin
 
-subsubsection {* Lifting arity analysis to recursive groups *}
+subsubsection \<open>Lifting arity analysis to recursive groups\<close>
 
 definition ABind :: "var \<Rightarrow> exp \<Rightarrow> (AEnv \<rightarrow> AEnv)"
   where "ABind v e = (\<Lambda> ae. fup\<cdot>(Aexp e)\<cdot>(ae v))"
@@ -31,12 +31,12 @@ proof (induction  \<Gamma> arbitrary: \<Delta> rule: ABinds.induct)
   case 1 thus ?case by simp
 next
   case (2 v e \<Gamma> \<Delta>)
-  from `map_of ((v, e) # \<Gamma>) = map_of \<Delta>`
+  from \<open>map_of ((v, e) # \<Gamma>) = map_of \<Delta>\<close>
   have "(map_of ((v, e) # \<Gamma>))(v := None) = (map_of \<Delta>)(v := None)" by simp
   hence "map_of (delete v \<Gamma>) = map_of (delete v \<Delta>)" unfolding delete_set_none by simp
   hence "ABinds (delete v \<Gamma>) = ABinds (delete v \<Delta>)" by (rule 2)
   moreover
-  from `map_of ((v, e) # \<Gamma>) = map_of \<Delta>`
+  from \<open>map_of ((v, e) # \<Gamma>) = map_of \<Delta>\<close>
   have "map_of \<Delta> v = Some e" by (metis map_of_Cons_code(2))
   hence "ABinds \<Delta> = ABind v e \<squnion> ABinds (delete v \<Delta>)" by (rule Abinds_reorder1)
   ultimately
@@ -112,7 +112,7 @@ next
   from 2(1)[OF this(2)]
   have "ABinds (delete v \<Delta> @ \<Gamma>)\<cdot>ae = ABinds (delete v \<Delta>)\<cdot>ae \<squnion> ABinds \<Gamma>\<cdot>ae".
   moreover
-  have "delete v \<Gamma> = \<Gamma>" by (metis `v \<notin> domA \<Gamma>` delete_not_domA)
+  have "delete v \<Gamma> = \<Gamma>" by (metis \<open>v \<notin> domA \<Gamma>\<close> delete_not_domA)
   ultimately
   show " ABinds (((v, e) # \<Delta>) @ \<Gamma>)\<cdot>ae = ABinds ((v, e) # \<Delta>)\<cdot>ae \<squnion> ABinds \<Gamma>\<cdot>ae"
     by auto

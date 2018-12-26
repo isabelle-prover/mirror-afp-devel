@@ -41,7 +41,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section {* Putting Everything Together: UPF *}
+section \<open>Putting Everything Together: UPF\<close>
 theory 
   UPF
   imports 
@@ -50,10 +50,10 @@ theory
     Analysis
 begin
 
-text{*
+text\<open>
   This is the top-level theory for the Unified Policy Framework (UPF) and, thus, 
   builds the base theory for using UPF.  For the moment, we only define a set of 
   lemmas for all core UPF definitions that is useful for using UPF:
-*}
+\<close>
 lemmas UPFDefs = UPFCoreDefs ParallelDefs ElementaryPoliciesDefs
 end

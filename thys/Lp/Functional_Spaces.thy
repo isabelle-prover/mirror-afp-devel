@@ -8,13 +8,13 @@ begin
 
 
 
-section {*Functions as a real vector space*}
+section \<open>Functions as a real vector space\<close>
 
-text {*Many functional spaces are spaces of functions. To be able to use the following
+text \<open>Many functional spaces are spaces of functions. To be able to use the following
 framework, spaces of functions thus need to be endowed with a vector space
 structure, coming from pointwise addition and multiplication.
 
-Some instantiations for \verb+fun+ are already given in \verb+Lattices.thy+, we add several.*}
+Some instantiations for \verb+fun+ are already given in \verb+Lattices.thy+, we add several.\<close>
 
 instantiation "fun" :: (type, plus) plus
 begin
@@ -27,10 +27,10 @@ lemma plus_apply [simp, code]: "(f + g) x = f x + g x"
 instance ..
 end
 
-text {*\verb+minus_fun+ is already defined, in \verb+Lattices.thy+, but under the strange name
+text \<open>\verb+minus_fun+ is already defined, in \verb+Lattices.thy+, but under the strange name
 \verb+fun_Compl_def+. We restate the definition so that \verb+unfolding minus_fun_def+ works.
 Same thing for \verb+minus_fun_def+. A better solution would be to have a coherent naming scheme
-in \verb+Lattices.thy+.*}
+in \verb+Lattices.thy+.\<close>
 
 lemmas uminus_fun_def = fun_Compl_def
 lemmas minus_fun_def = fun_diff_def
@@ -141,9 +141,9 @@ unfolding zero_fun_def by simp
 
 
 
-section {*Quasinorms on function spaces*}
+section \<open>Quasinorms on function spaces\<close>
 
-text {*A central feature of modern analysis is the use of various functional
+text \<open>A central feature of modern analysis is the use of various functional
 spaces, and of results of functional analysis on them. Think for instance of
 $L^p$ spaces, of Sobolev or Besov spaces, or variations around them. Here are
 several relevant facts about this point of view:
@@ -182,9 +182,9 @@ mathematics of identifying the two of them, talking for instance about the $L^p$
 $L^p$ norm.
 
 All in all, this approach seems quite promising for ``real life analysis''.
-*}
+\<close>
 
-subsection {*Definition of quasinorms*}
+subsection \<open>Definition of quasinorms\<close>
 
 typedef (overloaded) ('a::real_vector) quasinorm = "{(C::real, N::('a \<Rightarrow> ennreal)). (C \<ge> 1)
       \<and> (\<forall> x c. N (c *\<^sub>R x) = ennreal \<bar>c\<bar> * N(x)) \<and> (\<forall> x y. N(x+y) \<le> C * N x + C * N y)}"
@@ -270,13 +270,13 @@ next
   also have "... = (\<Sum>i\<in>{..<Suc m}. (defect N)^(Suc i) * eNorm N (u i))"
     by auto
   finally show "eNorm N (\<Sum>i\<in>{..<n}. u i) \<le> (\<Sum>i<n. ennreal (defect N ^ Suc i) * eNorm N (u i))"
-    unfolding `n = Suc m` by auto
+    unfolding \<open>n = Suc m\<close> by auto
 qed
 
 
-text {*Quasinorms are often defined by taking a meaningful formula on a vector subspace,
+text \<open>Quasinorms are often defined by taking a meaningful formula on a vector subspace,
 and then extending by infinity elsewhere. Let us show that this results in a quasinorm on the
-whole space.*}
+whole space.\<close>
 
 definition quasinorm_on::"('a set) \<Rightarrow> real \<Rightarrow> (('a::real_vector) \<Rightarrow> ennreal) \<Rightarrow> bool"
   where "quasinorm_on F C N = (
@@ -303,18 +303,18 @@ proof -
   have "N(c *\<^sub>R x) = ennreal \<bar>c\<bar> * N x" if "x \<in> F" for c x
   proof (cases "c = 0")
     case True
-    then show ?thesis using `N 0 = 0` by auto
+    then show ?thesis using \<open>N 0 = 0\<close> by auto
   next
     case False
     have "N((1/c) *\<^sub>R (c *\<^sub>R x)) \<le> ennreal (abs (1/c)) * N (c *\<^sub>R x)"
-      apply (rule `\<And>c x. c \<noteq> 0 \<Longrightarrow> x \<in> F \<Longrightarrow> N(c *\<^sub>R x) \<le> ennreal \<bar>c\<bar> * N x`) using False assms that by auto
+      apply (rule \<open>\<And>c x. c \<noteq> 0 \<Longrightarrow> x \<in> F \<Longrightarrow> N(c *\<^sub>R x) \<le> ennreal \<bar>c\<bar> * N x\<close>) using False assms that by auto
     then have "N x \<le> ennreal (abs (1/c)) * N (c *\<^sub>R x)" using False by auto
     then have "ennreal \<bar>c\<bar> * N x \<le> ennreal \<bar>c\<bar> * ennreal (abs (1/c)) * N (c *\<^sub>R x)"
       by (simp add: mult.assoc mult_left_mono)
     also have "... = N (c *\<^sub>R x)" using ennreal_mult' abs_mult False
       by (metis abs_ge_zero abs_one comm_monoid_mult_class.mult_1 ennreal_1 eq_divide_eq_1 field_class.field_divide_inverse)
     finally show ?thesis
-      using `\<And>c x. c \<noteq> 0 \<Longrightarrow> x \<in> F \<Longrightarrow> N(c *\<^sub>R x) \<le> ennreal \<bar>c\<bar> * N x`[OF False `x \<in> F`] by auto
+      using \<open>\<And>c x. c \<noteq> 0 \<Longrightarrow> x \<in> F \<Longrightarrow> N(c *\<^sub>R x) \<le> ennreal \<bar>c\<bar> * N x\<close>[OF False \<open>x \<in> F\<close>] by auto
   qed
   then show ?thesis
     unfolding quasinorm_on_def using assms by (auto, metis real_vector.scale_zero_left)
@@ -343,9 +343,9 @@ proof -
 qed
 
 
-subsection {*The space and the zero space of a quasinorm*}
+subsection \<open>The space and the zero space of a quasinorm\<close>
 
-text {*The space of a quasinorm is the vector subspace where it is meaningful, i.e., finite.*}
+text \<open>The space of a quasinorm is the vector subspace where it is meaningful, i.e., finite.\<close>
 
 definition space\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> 'a set"
   where "space\<^sub>N N = {f. eNorm N f < \<infinity>}"
@@ -385,8 +385,8 @@ lemma spaceN_sum [simp]:
 using assms by (induction I rule: infinite_finite_induct, auto)
 
 
-text {*The zero space of a quasinorm is the vector subspace of vectors with zero norm. If one wants
-to get a true metric space, one should quotient the space by the zero space.*}
+text \<open>The zero space of a quasinorm is the vector subspace of vectors with zero norm. If one wants
+to get a true metric space, one should quotient the space by the zero space.\<close>
 
 definition zero_space\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> 'a set"
   where "zero_space\<^sub>N N = {f. eNorm N f = 0}"
@@ -419,9 +419,9 @@ lemma zero_spaceN_subset_spaceN:
   "zero_space\<^sub>N N \<subseteq> space\<^sub>N N"
 by (simp add: spaceN_iff zero_spaceN_iff subset_eq)
 
-text {*On the space, the norms are finite. Hence, it is much more convenient to work there with
+text \<open>On the space, the norms are finite. Hence, it is much more convenient to work there with
 a real valued version of the norm. We use Norm with a capital N to distinguish it from norms
-in a (type class) banach space.*}
+in a (type class) banach space.\<close>
 
 definition Norm::"'a quasinorm \<Rightarrow> ('a::real_vector) \<Rightarrow> real"
   where "Norm N x = enn2real (eNorm N x)"
@@ -477,7 +477,7 @@ next
   proof (rule ccontr)
     assume "\<not> (x + y \<notin> space\<^sub>N N)"
     then have "x + y \<in> space\<^sub>N N" by simp
-    have "y \<in> space\<^sub>N N" using spaceN_diff[OF `x + y \<in> space\<^sub>N N` assms] by auto
+    have "y \<in> space\<^sub>N N" using spaceN_diff[OF \<open>x + y \<in> space\<^sub>N N\<close> assms] by auto
     then show False using False by simp
   qed
   then have "Norm N (x+y) = 0" unfolding Norm_def using spaceN_iff top.not_eq_extremum by force
@@ -518,7 +518,7 @@ proof -
     apply (subst ennreal_le_iff[symmetric], rule sum_nonneg) using * ** by auto
 qed
 
-subsection {*An example: the ambient norm in a normed vector space*}
+subsection \<open>An example: the ambient norm in a normed vector space\<close>
 
 definition N_of_norm::"'a::real_normed_vector quasinorm"
   where "N_of_norm = quasinorm_of (1, \<lambda>f. norm f)"
@@ -545,12 +545,12 @@ lemma N_of_norm_zero_space [simp]:
 unfolding zero_space\<^sub>N_def apply auto unfolding N_of_norm(1) by auto
 
 
-subsection {*An example: the space of bounded continuous functions from a topological space to a normed
-real vector space*}
+subsection \<open>An example: the space of bounded continuous functions from a topological space to a normed
+real vector space\<close>
 
-text {*The Banach space of bounded continuous functions is defined in
+text \<open>The Banach space of bounded continuous functions is defined in
 \verb+Bounded_Continuous_Function.thy+, as a type \verb+bcontfun+. We import very quickly the
-results proved in this file to the current framework.*}
+results proved in this file to the current framework.\<close>
 
 definition bcontfun\<^sub>N::"('a::topological_space \<Rightarrow> 'b::real_normed_vector) quasinorm"
   where "bcontfun\<^sub>N = quasinorm_of (1, \<lambda>f. if f \<in> bcontfun then norm(Bcontfun f) else (\<infinity>::ennreal))"
@@ -609,7 +609,7 @@ proof-
   have "f \<in> bcontfun" using assms unfolding bcontfun\<^sub>N_space by simp
   then show "continuous_on UNIV f" unfolding bcontfun_def by auto
   show "\<And>x. norm(f x) \<le> Norm bcontfun\<^sub>N f"
-    using norm_bounded bcontfun\<^sub>N(2) `f \<in> bcontfun` by (metis Bcontfun_inverse)
+    using norm_bounded bcontfun\<^sub>N(2) \<open>f \<in> bcontfun\<close> by (metis Bcontfun_inverse)
 qed
 
 lemma bcontfun\<^sub>NI:
@@ -620,14 +620,14 @@ lemma bcontfun\<^sub>NI:
 proof -
   have "f \<in> bcontfun" using assms bcontfun_normI by blast
   then show "f \<in> space\<^sub>N bcontfun\<^sub>N" unfolding bcontfun\<^sub>N_space by simp
-  show "Norm bcontfun\<^sub>N f \<le> C" unfolding bcontfun\<^sub>N(2) using `f \<in> bcontfun` apply auto
+  show "Norm bcontfun\<^sub>N f \<le> C" unfolding bcontfun\<^sub>N(2) using \<open>f \<in> bcontfun\<close> apply auto
     using assms(2) by (metis apply_bcontfun_cases apply_bcontfun_inverse norm_bound)
 qed
 
 
-subsection {*Continuous inclusions between functional spaces*}
+subsection \<open>Continuous inclusions between functional spaces\<close>
 
-text {*Continuous inclusions between functional spaces are now defined*}
+text \<open>Continuous inclusions between functional spaces are now defined\<close>
 
 instantiation quasinorm:: (real_vector) preorder
 begin
@@ -646,17 +646,17 @@ instance proof -
     obtain C C' where *: "\<And>f. eNorm N2 f \<le> ennreal C * eNorm N1 f"
                          "\<And>f. eNorm N3 f \<le> ennreal C' * eNorm N2 f"
                          "C \<ge> 0" "C' \<ge> 0"
-      using `N1 \<le> N2` `N2 \<le> N3` unfolding less_eq_quasinorm_def by metis
+      using \<open>N1 \<le> N2\<close> \<open>N2 \<le> N3\<close> unfolding less_eq_quasinorm_def by metis
     {
       fix f
       have "eNorm N3 f \<le> ennreal C' * ennreal C * eNorm N1 f"
         by (metis *(1)[of f] *(2)[of f] mult.commute mult.left_commute mult_left_mono order_trans zero_le)
       also have "... = ennreal(C' * C) * eNorm N1 f"
-        using `C \<ge> 0` `C' \<ge> 0` ennreal_mult by auto
+        using \<open>C \<ge> 0\<close> \<open>C' \<ge> 0\<close> ennreal_mult by auto
       finally have "eNorm N3 f \<le> ennreal(C' * C) * eNorm N1 f" by simp
     }
     then show ?thesis
-      unfolding less_eq_quasinorm_def using `C \<ge> 0` `C' \<ge> 0` zero_le_mult_iff by auto
+      unfolding less_eq_quasinorm_def using \<open>C \<ge> 0\<close> \<open>C' \<ge> 0\<close> zero_le_mult_iff by auto
   qed
 
   show "OFCLASS('a quasinorm, preorder_class)"
@@ -693,7 +693,7 @@ proof -
   have "eNorm N2 f \<le> ennreal (max C 1) * eNorm N1 f" for f
   proof (cases "f \<in> space\<^sub>N N1")
     case True
-    then show ?thesis using assms[OF `f \<in> space\<^sub>N N1`]
+    then show ?thesis using assms[OF \<open>f \<in> space\<^sub>N N1\<close>]
       by (metis (no_types, hide_lams) dual_order.trans ennreal_leI max.cobounded2 max.commute
       mult.commute ordered_comm_semiring_class.comm_mult_left_mono zero_le)
   next
@@ -715,11 +715,11 @@ proof (rule quasinorm_subsetI)
   then have "f \<in> space\<^sub>N N2" using assms(1) by simp
   then have "eNorm N2 f = ennreal(Norm N2 f)" using eNorm_Norm by auto
   also have "... \<le> ennreal(C * Norm N1 f)"
-    using assms(2)[OF `f \<in> space\<^sub>N N1`] ennreal_leI by blast
+    using assms(2)[OF \<open>f \<in> space\<^sub>N N1\<close>] ennreal_leI by blast
   also have "... = ennreal C * ennreal(Norm N1 f)"
     using ennreal_mult'' by auto
   also have "... = ennreal C * eNorm N1 f"
-    using eNorm_Norm[OF `f \<in> space\<^sub>N N1`] by auto
+    using eNorm_Norm[OF \<open>f \<in> space\<^sub>N N1\<close>] by auto
   finally show "eNorm N2 f \<le> ennreal C * eNorm N1 f"
     by simp
 qed
@@ -737,12 +737,12 @@ lemma quasinorm_subset_Norm_eNorm:
   shows "eNorm N2 f \<le> ennreal C * eNorm N1 f"
 proof (cases "f \<in> space\<^sub>N N1")
   case True
-  then have "f \<in> space\<^sub>N N2" using quasinorm_subset_space[OF `N1 \<subseteq>\<^sub>N N2`] by auto
+  then have "f \<in> space\<^sub>N N2" using quasinorm_subset_space[OF \<open>N1 \<subseteq>\<^sub>N N2\<close>] by auto
   then show ?thesis
     using eNorm_Norm[OF True] eNorm_Norm assms(1)[OF True] by (metis Norm_nonneg ennreal_leI ennreal_mult'')
 next
   case False
-  then show ?thesis using `C > 0`
+  then show ?thesis using \<open>C > 0\<close>
     by (metis ennreal_eq_zero_iff ennreal_mult_eq_top_iff infinity_ennreal_def less_imp_le neq_top_trans not_le spaceN_iff)
 qed
 
@@ -752,10 +752,10 @@ lemma quasinorm_subset_zero_space:
 using assms unfolding zero_space\<^sub>N_def less_eq_quasinorm_def
 by (auto, metis le_zero_eq mult_zero_right)
 
-text {*We would like to define the equivalence relation associated to the above order, i.e., the
+text \<open>We would like to define the equivalence relation associated to the above order, i.e., the
 equivalence between norms. This is not equality, so we do not have a true order, but nevertheless
 this is handy, and not standard in a preorder in Isabelle. The file Library/Preorder.thy defines
-such an equivalence relation, but including it breaks some proofs so we go the naive way.*}
+such an equivalence relation, but including it breaks some proofs so we go the naive way.\<close>
 
 definition quasinorm_equivalent::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> bool" (infix "=\<^sub>N" 60)
   where "quasinorm_equivalent N1 N2 = ((N1 \<subseteq>\<^sub>N N2) \<and> (N2 \<subseteq>\<^sub>N N1))"
@@ -770,12 +770,12 @@ lemma quasinorm_equivalent_trans [trans]:
   shows "N1 =\<^sub>N N3"
 using assms order_trans unfolding quasinorm_equivalent_def by blast
 
-subsection {*The intersection and the sum of two functional spaces*}
+subsection \<open>The intersection and the sum of two functional spaces\<close>
 
-text {*In this paragraph, we define the intersection and the sum of two functional spaces.
+text \<open>In this paragraph, we define the intersection and the sum of two functional spaces.
 In terms of the order introduced above, this corresponds to the minimum and the maximum.
 More important, these are the first two examples of interpolation spaces between two
-functional spaces, and they are central as all the other ones are built using them.*}
+functional spaces, and they are central as all the other ones are built using them.\<close>
 
 definition quasinorm_intersection::"('a::real_vector) quasinorm \<Rightarrow> 'a quasinorm \<Rightarrow> 'a quasinorm" (infix "\<inter>\<^sub>N" 70)
   where "quasinorm_intersection N1 N2 = quasinorm_of (max (defect N1) (defect N2), \<lambda>f. eNorm N1 f + eNorm N2 f)"
@@ -1004,7 +1004,7 @@ proof -
     have "eNorm N f \<le> ennreal (defect N * max C1 C2) * (eNorm N1 (f1 n) + eNorm N2 (f2 n))" for n
     proof -
       have "eNorm N f \<le> ennreal(defect N) * eNorm N (f1 n) + ennreal(defect N) * eNorm N (f2 n)"
-        unfolding `f = f1 n + f2 n` using eNorm_triangular_ineq by auto
+        unfolding \<open>f = f1 n + f2 n\<close> using eNorm_triangular_ineq by auto
       also have "... \<le> ennreal(defect N) * (C1 * eNorm N1 (f1 n)) + ennreal(defect N) * (C2 * eNorm N2 (f2 n))"
         apply (rule add_mono) by (rule mult_mono, simp, simp add: *, simp, simp)+
       also have "... \<le> ennreal(defect N) * (max C1 C2 * eNorm N1 (f1 n)) + ennreal(defect N) * (max C1 C2 * eNorm N2 (f2 n))"
@@ -1028,7 +1028,7 @@ lemma quasinorm_sum_assoc:
 unfolding quasinorm_equivalent_def by (meson order_trans quasinorm_sum_maximum quasinorm_sum_subset)
 
 
-subsection {*Topology*}
+subsection \<open>Topology\<close>
 
 definition topology\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> 'a topology"
   where "topology\<^sub>N N = topology (\<lambda>U. \<forall>x\<in>U. \<exists>e>0. \<forall>y. eNorm N (y-x) < e \<longrightarrow> y \<in> U)"
@@ -1052,7 +1052,7 @@ lemma openin_topology\<^sub>N_D:
   shows "\<exists>e>0. \<forall>y. eNorm N (y-x) < e \<longrightarrow> y \<in> U"
   using assms unfolding openin_topology\<^sub>N by auto
 
-text {*One should then use this topology to define limits and so on. This is not something
+text \<open>One should then use this topology to define limits and so on. This is not something
 specific to quasinorms, but to all topologies defined in this way, not using type classes.
 However, there is no such body of material (yet?) in Isabelle-HOL, where topology is
 essentially done with type classes. So, we do not go any further for now.
@@ -1062,7 +1062,7 @@ We give a naive definition, which will be sufficient for the proof of completene
 of several spaces. Usually, the most convenient criterion to prove completeness of
 a normed vector space is in terms of converging series. This criterion
 is the only nontrivial thing we prove here. We will apply it to prove the
-completeness of $L^p$ spaces.*}
+completeness of $L^p$ spaces.\<close>
 
 definition cauchy_ine\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool"
   where "cauchy_ine\<^sub>N N u = (\<forall>e>0. \<exists>M. \<forall>n\<ge>M. \<forall>m\<ge>M. eNorm N (u n - u m) < e)"
@@ -1074,9 +1074,9 @@ definition tendsto_ine\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> (nat 
 definition complete\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> bool"
   where "complete\<^sub>N N = (\<forall>u. cauchy_ine\<^sub>N N u \<longrightarrow> (\<exists>x. tendsto_ine\<^sub>N N u x))"
 
-text {*The above definitions are in terms of eNorms, but usually the nice definitions
+text \<open>The above definitions are in terms of eNorms, but usually the nice definitions
 only make sense on the space of the norm, and are expressed in terms of Norms. We formulate
-the same definitions with norms, they will be more convenient for the proofs.*}
+the same definitions with norms, they will be more convenient for the proofs.\<close>
 
 definition cauchy_in\<^sub>N::"('a::real_vector) quasinorm \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool"
   where "cauchy_in\<^sub>N N u = (\<forall>e>0. \<exists>M. \<forall>n\<ge>M. \<forall>m\<ge>M. Norm N (u n - u m) < e)"
@@ -1103,14 +1103,14 @@ proof
   proof (rule cauchy_ine\<^sub>N_I)
     fix e::ennreal assume "e > 0"
     define e2 where "e2 = min e 1"
-    then obtain r where "e2 = ennreal r" "r > 0" unfolding e2_def using `e > 0`
+    then obtain r where "e2 = ennreal r" "r > 0" unfolding e2_def using \<open>e > 0\<close>
       by (metis ennreal_eq_1 ennreal_less_zero_iff le_ennreal_iff le_numeral_extra(1) min_def zero_less_one)
     then obtain M where *: "\<forall>n\<ge>M. \<forall>m\<ge>M. Norm N (u n - u m) < r"
-      using `cauchy_in\<^sub>N N u` `r > 0` unfolding cauchy_in\<^sub>N_def by auto
+      using \<open>cauchy_in\<^sub>N N u\<close> \<open>r > 0\<close> unfolding cauchy_in\<^sub>N_def by auto
     then have "\<forall>n\<ge>M. \<forall>m\<ge>M. eNorm N (u n - u m) < r"
       by (auto simp add: assms eNorm_Norm \<open>0 < r\<close> ennreal_lessI)
     then have "\<forall>n\<ge>M. \<forall>m\<ge>M. eNorm N (u n - u m) < e"
-      unfolding `e2 = ennreal r`[symmetric] e2_def by auto
+      unfolding \<open>e2 = ennreal r\<close>[symmetric] e2_def by auto
     then show "\<exists>M. \<forall>n\<ge>M. \<forall>m\<ge>M. eNorm N (u n - u m) < e"
       by auto
   qed
@@ -1120,7 +1120,7 @@ next
   proof (rule cauchy_in\<^sub>N_I)
     fix e::real assume "e > 0"
     then obtain M where *: "\<forall>n\<ge>M. \<forall>m\<ge>M. eNorm N (u n - u m) < e"
-      using `cauchy_ine\<^sub>N N u` `e > 0` ennreal_less_zero_iff unfolding cauchy_ine\<^sub>N_def by blast
+      using \<open>cauchy_ine\<^sub>N N u\<close> \<open>e > 0\<close> ennreal_less_zero_iff unfolding cauchy_ine\<^sub>N_def by blast
     then have "\<forall>n\<ge>M. \<forall>m\<ge>M. Norm N (u n - u m) < e"
       by (auto, metis Norm_def \<open>0 < e\<close> eNorm_Norm eNorm_Norm' enn2real_nonneg ennreal_less_iff)
     then show "\<exists>M. \<forall>n\<ge>M. \<forall>m\<ge>M. Norm N (u n - u m) < e"
@@ -1147,7 +1147,7 @@ proof -
   have "\<exists>x. tendsto_ine\<^sub>N N u x" if "cauchy_ine\<^sub>N N u" for u
   proof -
     obtain M::nat where *: "\<And>n m. n \<ge> M \<Longrightarrow> m \<ge> M \<Longrightarrow> eNorm N (u n - u m) < 1"
-      using `cauchy_ine\<^sub>N N u` ennreal_zero_less_one unfolding cauchy_ine\<^sub>N_def by presburger
+      using \<open>cauchy_ine\<^sub>N N u\<close> ennreal_zero_less_one unfolding cauchy_ine\<^sub>N_def by presburger
     define v where "v = (\<lambda>n. u (n+M) - u M)"
     have "eNorm N (v n) < 1" for n unfolding v_def using * by auto
     then have "v n \<in> space\<^sub>N N" for n using spaceN_iff[of _ N]
@@ -1156,16 +1156,16 @@ proof -
     proof (rule cauchy_ine\<^sub>N_I)
       fix e::ennreal assume "e > 0"
       then obtain P::nat where *: "\<And>n m. n \<ge> P \<Longrightarrow> m \<ge> P \<Longrightarrow> eNorm N (u n - u m) < e"
-        using `cauchy_ine\<^sub>N N u` unfolding cauchy_ine\<^sub>N_def by presburger
+        using \<open>cauchy_ine\<^sub>N N u\<close> unfolding cauchy_ine\<^sub>N_def by presburger
       have "eNorm N (v n - v m) < e" if "n \<ge> P" "m \<ge> P" for m n
         unfolding v_def by (auto, rule *, insert that, auto)
       then show "\<exists>M. \<forall>n\<ge>M. \<forall>m\<ge>M. eNorm N (v n - v m) < e" by auto
     qed
-    then have "cauchy_in\<^sub>N N v" using cauchy_ine_in[OF `\<And>n. v n \<in> space\<^sub>N N`] by auto
+    then have "cauchy_in\<^sub>N N v" using cauchy_ine_in[OF \<open>\<And>n. v n \<in> space\<^sub>N N\<close>] by auto
     then obtain y where "tendsto_in\<^sub>N N v y" "y \<in> space\<^sub>N N"
-      using assms `\<And>n. v n \<in> space\<^sub>N N` by auto
+      using assms \<open>\<And>n. v n \<in> space\<^sub>N N\<close> by auto
     then have *: "tendsto_ine\<^sub>N N v y"
-      using tendsto_ine_in `\<And>n. v n \<in> space\<^sub>N N` by auto
+      using tendsto_ine_in \<open>\<And>n. v n \<in> space\<^sub>N N\<close> by auto
     have "tendsto_ine\<^sub>N N u (y + u M)"
       unfolding tendsto_ine\<^sub>N_def apply (rule LIMSEQ_offset[of _ M])
       using * unfolding v_def tendsto_ine\<^sub>N_def by (auto simp add: algebra_simps)
@@ -1184,22 +1184,22 @@ proof -
   have "\<exists>M. \<forall>n\<ge>M. Norm N (u n - x) < e" if "e > 0" for e
   proof -
     define f where "f = e / (2 * defect N)"
-    have "f > 0" unfolding f_def using `e > 0` defect_ge_1[of N] by (auto simp add: divide_simps)
+    have "f > 0" unfolding f_def using \<open>e > 0\<close> defect_ge_1[of N] by (auto simp add: divide_simps)
     obtain M1 where M1: "\<And>m n. m \<ge> M1 \<Longrightarrow> n \<ge> M1 \<Longrightarrow> Norm N (u n - u m) < f"
-      using `cauchy_in\<^sub>N N u` unfolding cauchy_in\<^sub>N_def using `f > 0` by meson
+      using \<open>cauchy_in\<^sub>N N u\<close> unfolding cauchy_in\<^sub>N_def using \<open>f > 0\<close> by meson
     obtain M2 where M2: "\<And>n. n \<ge> M2 \<Longrightarrow> Norm N ((u o r) n - x) < f"
-      using `tendsto_in\<^sub>N N (u o r) x` `f > 0` unfolding tendsto_in\<^sub>N_def order_tendsto_iff eventually_sequentially by blast
+      using \<open>tendsto_in\<^sub>N N (u o r) x\<close> \<open>f > 0\<close> unfolding tendsto_in\<^sub>N_def order_tendsto_iff eventually_sequentially by blast
     define M where "M = max M1 M2"
     have "Norm N (u n - x) < e" if "n \<ge> M" for n
     proof -
       have "Norm N (u n - x) = Norm N ((u n - u (r M)) + (u (r M) - x))" by auto
       also have "... \<le> defect N * Norm N (u n - u (r M)) + defect N * Norm N (u (r M) - x)"
-        apply (rule Norm_triangular_ineq) using `\<And>n. u n \<in> space\<^sub>N N` by simp
+        apply (rule Norm_triangular_ineq) using \<open>\<And>n. u n \<in> space\<^sub>N N\<close> by simp
       also have "... < defect N * f + defect N * f"
         apply (auto intro!: add_strict_mono mult_mono simp only:)
-        using defect_ge_1[of N] `n \<ge> M` seq_suble[OF `strict_mono r`, of M] M1 M2 o_def unfolding M_def by auto
+        using defect_ge_1[of N] \<open>n \<ge> M\<close> seq_suble[OF \<open>strict_mono r\<close>, of M] M1 M2 o_def unfolding M_def by auto
       finally show ?thesis
-        unfolding f_def using `e > 0` defect_ge_1[of N] by (auto simp add: divide_simps)
+        unfolding f_def using \<open>e > 0\<close> defect_ge_1[of N] by (auto simp add: divide_simps)
     qed
     then show ?thesis by auto
   qed
@@ -1216,24 +1216,24 @@ proof (rule complete\<^sub>N_I)
   have *: "\<exists>y. (\<forall>m\<ge>y. \<forall>p\<ge>y. Norm N (v m - v p) < c (Suc n)) \<and> x < y" if "\<forall>m\<ge>x. \<forall>p\<ge>x. Norm N (v m - v p) < c n" for x n
   proof -
     obtain M where i: "\<forall>m\<ge>M. \<forall>p\<ge>M. Norm N (v m - v p) < c (Suc n)"
-      using `cauchy_in\<^sub>N N v` `c (Suc n) > 0` unfolding cauchy_in\<^sub>N_def by (meson zero_less_power)
+      using \<open>cauchy_in\<^sub>N N v\<close> \<open>c (Suc n) > 0\<close> unfolding cauchy_in\<^sub>N_def by (meson zero_less_power)
     then show ?thesis
       apply (intro exI[of _ "max M (x+1)"]) by auto
   qed
   have "\<exists>r. \<forall>n. (\<forall>m\<ge>r n. \<forall>p\<ge>r n. Norm N (v m - v p) < c n) \<and> r n < r (Suc n)"
-    apply (intro dependent_nat_choice) using `cauchy_in\<^sub>N N v` `\<And>n. c n > 0` * unfolding cauchy_in\<^sub>N_def by auto
+    apply (intro dependent_nat_choice) using \<open>cauchy_in\<^sub>N N v\<close> \<open>\<And>n. c n > 0\<close> * unfolding cauchy_in\<^sub>N_def by auto
   then obtain r where r: "strict_mono r" "\<And>n. \<forall>m\<ge>r n. \<forall>p\<ge>r n. Norm N (v m - v p) < c n"
     by (auto simp: strict_mono_Suc_iff)
   define u where "u = (\<lambda>n. v (r (Suc n)) - v (r n))"
   have "u n \<in> space\<^sub>N N" for n
-    unfolding u_def using `\<forall>n. v n \<in> space\<^sub>N N` by simp
+    unfolding u_def using \<open>\<forall>n. v n \<in> space\<^sub>N N\<close> by simp
   moreover have "Norm N (u n) \<le> c n" for n
     unfolding u_def using r by (simp add: less_imp_le strict_mono_def)
   ultimately obtain y where y: "y \<in> space\<^sub>N N" "tendsto_in\<^sub>N N (\<lambda>n. (\<Sum>i\<in>{0..<n}. u i)) y"
     using assms(2) by blast
   define x where "x = y + v (r 0)"
   have "x \<in> space\<^sub>N N"
-    unfolding x_def using `y \<in> space\<^sub>N N` `\<forall>n. v n \<in> space\<^sub>N N` by simp
+    unfolding x_def using \<open>y \<in> space\<^sub>N N\<close> \<open>\<forall>n. v n \<in> space\<^sub>N N\<close> by simp
   have "Norm N (v (r n) - x) = Norm N ((\<Sum>i\<in>{0..<n}. u i) - y)" for n
   proof -
     have "v (r n) = (\<Sum>i\<in>{0..<n}. u i) + v (r 0)" for n
@@ -1245,15 +1245,15 @@ proof (rule complete\<^sub>N_I)
   then have "tendsto_in\<^sub>N N (v o r) x"
     unfolding tendsto_in\<^sub>N_def comp_def by force
   then have "tendsto_in\<^sub>N N v x"
-    using `\<forall>n. v n \<in> space\<^sub>N N` 
-    by (intro cauchy_tendsto_in_subseq[OF _ `cauchy_in\<^sub>N N v` `strict_mono r`], auto)
+    using \<open>\<forall>n. v n \<in> space\<^sub>N N\<close> 
+    by (intro cauchy_tendsto_in_subseq[OF _ \<open>cauchy_in\<^sub>N N v\<close> \<open>strict_mono r\<close>], auto)
   then show "\<exists>x\<in>space\<^sub>N N. tendsto_in\<^sub>N N v x"
-    using `x \<in> space\<^sub>N N` by blast
+    using \<open>x \<in> space\<^sub>N N\<close> by blast
 qed
 
-text {*Next, we show when the two examples of norms we have introduced before, the ambient norm
+text \<open>Next, we show when the two examples of norms we have introduced before, the ambient norm
 in a Banach space, and the norm on bounded continuous functions, are complete. We just have to
-translate in our setting the already known completeness of these spaces.*}
+translate in our setting the already known completeness of these spaces.\<close>
 
 lemma complete_N_of_norm:
   "complete\<^sub>N (N_of_norm::'a::banach quasinorm)"
@@ -1267,11 +1267,11 @@ proof (rule complete\<^sub>N_I)
   ultimately show "\<exists>x\<in>space\<^sub>N N_of_norm. tendsto_in\<^sub>N N_of_norm u x" by auto
 qed
 
-text {*In the next statement, the assumption that \verb+'a+ is a metric space is not necessary,
+text \<open>In the next statement, the assumption that \verb+'a+ is a metric space is not necessary,
 a topological space would be enough, but a statement about uniform convergence is not available
 in this setting.
 TODO: fix it.
-*}
+\<close>
 
 lemma complete_bcontfunN:
   "complete\<^sub>N (bcontfun\<^sub>N::('a::metric_space \<Rightarrow> 'b::banach) quasinorm)"

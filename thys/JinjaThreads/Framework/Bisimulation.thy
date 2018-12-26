@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Various notions of bisimulation *}
+section \<open>Various notions of bisimulation\<close>
 
 theory Bisimulation
 imports
@@ -11,7 +11,7 @@ begin
 
 type_synonym ('a, 'b) bisim = "'a \<Rightarrow> 'b \<Rightarrow> bool"
 
-subsection {* Strong bisimulation *}
+subsection \<open>Strong bisimulation\<close>
 
 locale bisimulation_base = r1: trsys trsys1 + r2: trsys trsys2
   for trsys1 :: "('s1, 'tl1) trsys" ("_/ -1-_\<rightarrow>/ _" [50,0,50] 60)
@@ -68,13 +68,13 @@ proof(induct rule: rtrancl3p.induct)
   case rtrancl3p_refl thus ?case by(auto intro: rtrancl3p.rtrancl3p_refl)
 next
   case (rtrancl3p_step s1 tls1 s1' tl1 s1'')
-  from `s1 \<approx> s2 \<Longrightarrow> \<exists>s2' tls2. s2 -2-tls2\<rightarrow>* s2' \<and> s1' \<approx> s2' \<and> tls1 [\<sim>] tls2` `s1 \<approx> s2`
+  from \<open>s1 \<approx> s2 \<Longrightarrow> \<exists>s2' tls2. s2 -2-tls2\<rightarrow>* s2' \<and> s1' \<approx> s2' \<and> tls1 [\<sim>] tls2\<close> \<open>s1 \<approx> s2\<close>
   obtain s2' tls2 where "s2 -2-tls2\<rightarrow>* s2'" "s1' \<approx> s2'" "tls1 [\<sim>] tls2" by blast
-  moreover from `s1' -1-tl1\<rightarrow> s1''` `s1' \<approx> s2'`
+  moreover from \<open>s1' -1-tl1\<rightarrow> s1''\<close> \<open>s1' \<approx> s2'\<close>
   obtain s2'' tl2 where "s2' -2-tl2\<rightarrow> s2''" "s1'' \<approx> s2''" "tl1 \<sim> tl2" by(auto dest: simulation1)
   ultimately have "s2 -2-tls2 @ [tl2]\<rightarrow>* s2''" "tls1 @ [tl1] [\<sim>] tls2 @ [tl2]"
     by(auto intro: rtrancl3p.rtrancl3p_step list_all2_appendI)
-  with `s1'' \<approx> s2''` show ?case by(blast)
+  with \<open>s1'' \<approx> s2''\<close> show ?case by(blast)
 qed
 
 lemma simulation2_rtrancl:
@@ -123,7 +123,7 @@ proof -
   from red1' bisim have "s2 -2-tl1_to_tl2 s2 stls1\<rightarrow>*t \<infinity>"
   proof(coinduction arbitrary: s2 s1 stls1)
     case (inf_step_table s2 s1 stls1)
-    note red1' = `s1 -1-stls1\<rightarrow>*t \<infinity>` and bisim = `s1 \<approx> s2`
+    note red1' = \<open>s1 -1-stls1\<rightarrow>*t \<infinity>\<close> and bisim = \<open>s1 \<approx> s2\<close>
     from red1' show ?case
     proof(cases)
       case (inf_step_tableI s1' stls1' tl1)
@@ -156,14 +156,14 @@ proof -
                                    s1 -1-stls1\<rightarrow>*t \<infinity>; s1 \<approx> s2 \<rbrakk>
                  \<Longrightarrow> lnth (lmap (fst \<circ> snd) stls1) m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 s2 stls1)) m"
         by blast
-      from `s1 -1-stls1\<rightarrow>*t \<infinity>` show ?case
+      from \<open>s1 -1-stls1\<rightarrow>*t \<infinity>\<close> show ?case
       proof cases
         case (inf_step_tableI s1' stls1' tl1)
         hence  stls1: "stls1 = LCons (s1, tl1, s1') stls1'"
           and r: "s1 -1-tl1\<rightarrow> s1'" and reds: "s1' -1-stls1'\<rightarrow>*t \<infinity>" by simp_all
         let ?tl2s2' = "SOME (tl2, s2').  s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2"
         let ?tl2 = "fst ?tl2s2'" let ?s2' = "snd ?tl2s2'"
-        from simulation1[OF `s1 \<approx> s2` r] obtain s2' tl2
+        from simulation1[OF \<open>s1 \<approx> s2\<close> r] obtain s2' tl2
           where "s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2" by blast
         hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) (tl2, s2')" by simp
         hence "(\<lambda>(tl2, s2'). s2 -2-tl2\<rightarrow> s2' \<and> s1' \<approx> s2' \<and> tl1 \<sim> tl2) ?tl2s2'" by(rule someI)
@@ -176,7 +176,7 @@ proof -
           case (Suc m)
           hence "m < n" by simp
           moreover have "enat m < llength (lmap (fst \<circ> snd) stls1')"
-            using stls1 `enat n < llength (lmap (fst \<circ> snd) stls1)` Suc by(simp add: Suc_ile_eq)
+            using stls1 \<open>enat n < llength (lmap (fst \<circ> snd) stls1)\<close> Suc by(simp add: Suc_ile_eq)
           ultimately have "lnth (lmap (fst \<circ> snd) stls1') m \<sim> lnth (lmap (fst \<circ> snd) (tl1_to_tl2 ?s2' stls1')) m"
             using reds bisim' by(rule IH)
           with Suc stls1 show ?thesis by(simp del: o_apply)
@@ -242,7 +242,7 @@ by(auto dest: bisim_final dest!: simulation2_rtrancl)
 
 end
 
-subsection {* Delay bisimulation *}
+subsection \<open>Delay bisimulation\<close>
 
 locale delay_bisimulation_base =
   bisimulation_base +
@@ -372,12 +372,12 @@ proof induct
   case base thus ?case by(blast)
 next
   case (step s1' s1'')
-  from `s1 \<approx> s2 \<Longrightarrow> \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s1' \<approx> s2'` `s1 \<approx> s2`
+  from \<open>s1 \<approx> s2 \<Longrightarrow> \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s1' \<approx> s2'\<close> \<open>s1 \<approx> s2\<close>
   obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
-  from simulation_silent1[OF `s1' \<approx> s2'` `s1' -\<tau>1\<rightarrow> s1''`]
+  from simulation_silent1[OF \<open>s1' \<approx> s2'\<close> \<open>s1' -\<tau>1\<rightarrow> s1''\<close>]
   obtain s2'' where "s2' -\<tau>2\<rightarrow>* s2''" "s1'' \<approx> s2''" by blast
-  from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
-  with `s1'' \<approx> s2''` show ?case by blast
+  from \<open>s2 -\<tau>2\<rightarrow>* s2'\<close> \<open>s2' -\<tau>2\<rightarrow>* s2''\<close> have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
+  with \<open>s1'' \<approx> s2''\<close> show ?case by blast
 qed
 
 lemma simulation_silents2:
@@ -393,24 +393,24 @@ proof(induct arbitrary: s2 rule: trsys1.\<tau>rtrancl3p.induct)
   thus ?case by(auto intro: \<tau>trsys.\<tau>rtrancl3p.intros)
 next
   case (\<tau>rtrancl3p_step s1 s1' tls1 s1'' tl1)
-  from simulation1[OF `s1 \<approx> s2` `s1 -1-tl1\<rightarrow> s1'` `\<not> \<tau>move1 s1 tl1 s1'`]
+  from simulation1[OF \<open>s1 \<approx> s2\<close> \<open>s1 -1-tl1\<rightarrow> s1'\<close> \<open>\<not> \<tau>move1 s1 tl1 s1'\<close>]
   obtain s2' s2'' tl2 where \<tau>red: "s2 -\<tau>2\<rightarrow>* s2'"
     and red: "s2' -2-tl2\<rightarrow> s2''" and n\<tau>: "\<not> \<tau>move2 s2' tl2 s2''"
     and bisim': "s1' \<approx> s2''" and tlsim: "tl1 \<sim> tl2" by blast
-  from bisim' `s1' \<approx> s2'' \<Longrightarrow> \<exists>tls2 s2'. s2'' -\<tau>2-tls2\<rightarrow>* s2' \<and> s1'' \<approx> s2' \<and> tls1 [\<sim>] tls2`
+  from bisim' \<open>s1' \<approx> s2'' \<Longrightarrow> \<exists>tls2 s2'. s2'' -\<tau>2-tls2\<rightarrow>* s2' \<and> s1'' \<approx> s2' \<and> tls1 [\<sim>] tls2\<close>
   obtain tls2 s2''' where IH: "s2'' -\<tau>2-tls2\<rightarrow>* s2'''" "s1'' \<approx> s2'''" "tls1 [\<sim>] tls2" by blast
   from \<tau>red have "s2 -\<tau>2-[]\<rightarrow>* s2'" by(rule trsys2.silent_moves_into_\<tau>rtrancl3p)
   also from red n\<tau> IH(1) have "s2' -\<tau>2-tl2 # tls2\<rightarrow>* s2'''" by(rule \<tau>rtrancl3p.\<tau>rtrancl3p_step)
   finally show ?case using IH tlsim by fastforce
 next
   case (\<tau>rtrancl3p_\<tau>step s1 s1' tls1 s1'' tl1)
-  from `s1 -1-tl1\<rightarrow> s1'` `\<tau>move1 s1 tl1 s1'` have "s1 -\<tau>1\<rightarrow> s1'" .. 
-  from simulation_silent1[OF `s1 \<approx> s2` this]
+  from \<open>s1 -1-tl1\<rightarrow> s1'\<close> \<open>\<tau>move1 s1 tl1 s1'\<close> have "s1 -\<tau>1\<rightarrow> s1'" .. 
+  from simulation_silent1[OF \<open>s1 \<approx> s2\<close> this]
   obtain s2' where \<tau>red: "s2 -\<tau>2\<rightarrow>* s2'" and bisim': "s1' \<approx> s2'" by blast
   from \<tau>red have "s2 -\<tau>2-[]\<rightarrow>* s2'" by(rule trsys2.silent_moves_into_\<tau>rtrancl3p)
-  also from bisim' `s1' \<approx> s2' \<Longrightarrow> \<exists>tls2 s2''. s2' -\<tau>2-tls2\<rightarrow>* s2'' \<and> s1'' \<approx> s2'' \<and> tls1 [\<sim>] tls2`
+  also from bisim' \<open>s1' \<approx> s2' \<Longrightarrow> \<exists>tls2 s2''. s2' -\<tau>2-tls2\<rightarrow>* s2'' \<and> s1'' \<approx> s2'' \<and> tls1 [\<sim>] tls2\<close>
   obtain tls2 s2'' where IH: "s2' -\<tau>2-tls2\<rightarrow>* s2''" "s1'' \<approx> s2''" "tls1 [\<sim>] tls2" by blast
-  note `s2' -\<tau>2-tls2\<rightarrow>* s2''`
+  note \<open>s2' -\<tau>2-tls2\<rightarrow>* s2''\<close>
   finally show ?case using IH by auto
 qed
 
@@ -471,7 +471,7 @@ proof -
   from \<tau>inf1' bisim have "s2 -\<tau>2-tl1_to_tl2 s2 sstls1\<rightarrow>*t \<infinity>"
   proof(coinduction arbitrary: s2 s1 sstls1)
     case (\<tau>inf_step_table s2 s1 sstls1)
-    note \<tau>inf' = `s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>` and bisim = `s1 \<approx> s2`
+    note \<tau>inf' = \<open>s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>\<close> and bisim = \<open>s1 \<approx> s2\<close>
     from \<tau>inf' show ?case
     proof(cases)
       case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
@@ -481,19 +481,19 @@ proof -
       let ?P = "\<lambda>(s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
       let ?s2tl2s2' = "Eps ?P"
       let ?s2'' = "snd (snd ?s2tl2s2')"
-      from simulation_silents1[OF `s1 \<approx> s2` \<tau>s]
+      from simulation_silents1[OF \<open>s1 \<approx> s2\<close> \<tau>s]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
-      from simulation1[OF `s1' \<approx> s2'` r n\<tau>] obtain s2'' s2''' tl2
+      from simulation1[OF \<open>s1' \<approx> s2'\<close> r n\<tau>] obtain s2'' s2''' tl2
         where "s2' -\<tau>2\<rightarrow>* s2''" 
         and rest: "s2'' -2-tl2\<rightarrow> s2'''" "\<not> \<tau>move2 s2'' tl2 s2'''" "s1'' \<approx> s2'''" "tl1 \<sim> tl2" by blast
-      from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
+      from \<open>s2 -\<tau>2\<rightarrow>* s2'\<close> \<open>s2' -\<tau>2\<rightarrow>* s2''\<close> have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
       with rest have "?P (s2'', tl2, s2''')" by simp
       hence "?P ?s2tl2s2'" by(rule someI)
       then show ?thesis using reds1 sstls1 by fastforce
     next
       case \<tau>inf_step_table_Nil
       hence [simp]: "sstls1 = LNil" and "s1 -\<tau>1\<rightarrow> \<infinity>" by simp_all
-      from `s1 -\<tau>1\<rightarrow> \<infinity>` `s1 \<approx> s2` have "s2 -\<tau>2\<rightarrow> \<infinity>" by(simp add: \<tau>diverge_bisim_inv)
+      from \<open>s1 -\<tau>1\<rightarrow> \<infinity>\<close> \<open>s1 \<approx> s2\<close> have "s2 -\<tau>2\<rightarrow> \<infinity>" by(simp add: \<tau>diverge_bisim_inv)
       thus ?thesis using sstls2_def by simp
     qed
   qed
@@ -510,10 +510,10 @@ proof -
       using \<tau>inf1' bisim unfolding tls1
     proof(induct n arbitrary: s1 s2 sstls1 rule: less_induct)
       case (less n)
-      note IH = `\<And>m s1 s2 sstls1. \<lbrakk> m < n; enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1);
+      note IH = \<open>\<And>m s1 s2 sstls1. \<lbrakk> m < n; enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1);
                                    s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>; s1 \<approx> s2 \<rbrakk>
-                 \<Longrightarrow> lnth (lmap (fst \<circ> snd \<circ> snd) sstls1) m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) m`
-      from `s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>` show ?case
+                 \<Longrightarrow> lnth (lmap (fst \<circ> snd \<circ> snd) sstls1) m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 s2 sstls1)) m\<close>
+      from \<open>s1 -\<tau>1-sstls1\<rightarrow>*t \<infinity>\<close> show ?case
       proof cases
         case (\<tau>inf_step_table_Cons s1' s1'' sstls1' tl1)
         hence sstls1: "sstls1 = LCons (s1, s1', tl1, s1'') sstls1'"
@@ -521,31 +521,31 @@ proof -
           and n\<tau>: "\<not> \<tau>move1 s1' tl1 s1''" and reds: "s1'' -\<tau>1-sstls1'\<rightarrow>*t \<infinity>" by simp_all
         let ?P = "\<lambda>(s2', tl2, s2''). s2 -\<tau>2\<rightarrow>* s2' \<and> trsys2 s2' tl2 s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and>  s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
         let ?s2tl2s2' = "Eps ?P" let ?tl2 = "fst (snd ?s2tl2s2')" let ?s2'' = "snd (snd ?s2tl2s2')"
-        from simulation_silents1[OF `s1 \<approx> s2` \<tau>s] obtain s2'
+        from simulation_silents1[OF \<open>s1 \<approx> s2\<close> \<tau>s] obtain s2'
           where "s2 -\<tau>2\<rightarrow>* s2'" "s1' \<approx> s2'" by blast
-        from simulation1[OF `s1' \<approx> s2'` r n\<tau>] obtain s2'' s2''' tl2
+        from simulation1[OF \<open>s1' \<approx> s2'\<close> r n\<tau>] obtain s2'' s2''' tl2
           where "s2' -\<tau>2\<rightarrow>* s2''"
           and rest: "s2'' -2-tl2\<rightarrow> s2'''" "\<not> \<tau>move2 s2'' tl2 s2'''" "s1'' \<approx> s2'''" "tl1 \<sim> tl2" by blast
-        from `s2 -\<tau>2\<rightarrow>* s2'` `s2' -\<tau>2\<rightarrow>* s2''` have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
+        from \<open>s2 -\<tau>2\<rightarrow>* s2'\<close> \<open>s2' -\<tau>2\<rightarrow>* s2''\<close> have "s2 -\<tau>2\<rightarrow>* s2''" by(rule rtranclp_trans)
         with rest have "?P (s2'', tl2, s2''')" by auto
         hence "?P ?s2tl2s2'" by(rule someI)
         hence "s1'' \<approx> ?s2''" "tl1 \<sim> ?tl2" by(simp_all add: split_beta)
         show ?thesis
         proof(cases n)
           case 0
-          with sstls1 `tl1 \<sim> ?tl2` show ?thesis by simp
+          with sstls1 \<open>tl1 \<sim> ?tl2\<close> show ?thesis by simp
         next
           case (Suc m)
           hence "m < n" by simp
           moreover have "enat m < llength (lmap (fst \<circ> snd \<circ> snd) sstls1')"
-            using sstls1 `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` Suc by(simp add: Suc_ile_eq)
+            using sstls1 \<open>enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)\<close> Suc by(simp add: Suc_ile_eq)
           ultimately have "lnth (lmap (fst \<circ> snd \<circ> snd) sstls1') m \<sim> lnth (lmap (fst \<circ> snd \<circ> snd) (tl1_to_tl2 ?s2'' sstls1')) m"
-            using reds `s1'' \<approx> ?s2''` by(rule IH)
+            using reds \<open>s1'' \<approx> ?s2''\<close> by(rule IH)
           with Suc sstls1 show ?thesis by(simp del: o_apply)
         qed
       next
         case \<tau>inf_step_table_Nil
-        with `enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)` have False by simp
+        with \<open>enat n < llength (lmap (fst \<circ> snd \<circ> snd) sstls1)\<close> have False by simp
         thus ?thesis ..
       qed
     qed
@@ -569,14 +569,14 @@ proof -
     then obtain s1' where "s1 -\<tau>1\<rightarrow> s1'" by cases
     with no_\<tau>moves1[of s1'] show False by contradiction
   qed
-  with `s1 \<approx> s2` have "\<not> s2 -\<tau>2\<rightarrow> \<infinity>" by(simp add: \<tau>diverge_bisim_inv)
+  with \<open>s1 \<approx> s2\<close> have "\<not> s2 -\<tau>2\<rightarrow> \<infinity>" by(simp add: \<tau>diverge_bisim_inv)
   from trsys2.not_\<tau>diverge_to_no_\<tau>move[OF this]
   obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "\<And>s2''. \<not> s2' -\<tau>2\<rightarrow> s2''" by blast
-  moreover from simulation_silents2[OF `s1 \<approx> s2` `s2 -\<tau>2\<rightarrow>* s2'`]
+  moreover from simulation_silents2[OF \<open>s1 \<approx> s2\<close> \<open>s2 -\<tau>2\<rightarrow>* s2'\<close>]
   obtain s1' where "s1 -\<tau>1\<rightarrow>* s1'" and "s1' \<approx> s2'" by blast
-  from `s1 -\<tau>1\<rightarrow>* s1'` no_\<tau>moves1 have "s1' = s1"
+  from \<open>s1 -\<tau>1\<rightarrow>* s1'\<close> no_\<tau>moves1 have "s1' = s1"
     by(auto elim: converse_rtranclpE)
-  ultimately show ?thesis using `s1' \<approx> s2'` by blast
+  ultimately show ?thesis using \<open>s1' \<approx> s2'\<close> by blast
 qed
 
 lemma no_\<tau>move2_\<tau>s_to_no_\<tau>move1:
@@ -590,7 +590,7 @@ lemma no_move1_to_no_move2:
   shows "\<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl2 s2''. \<not> s2' -2-tl2\<rightarrow> s2'') \<and> s1 \<approx> s2'"
 proof -
   from no_moves1 have "\<And>s1'. \<not> s1 -\<tau>1\<rightarrow> s1'" by(auto)
-  from no_\<tau>move1_\<tau>s_to_no_\<tau>move2[OF `s1 \<approx> s2` this]
+  from no_\<tau>move1_\<tau>s_to_no_\<tau>move2[OF \<open>s1 \<approx> s2\<close> this]
   obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1 \<approx> s2'" 
     and no_\<tau>moves2: "\<And>s2''. \<not> s2' -\<tau>2\<rightarrow> s2''" by blast
   moreover
@@ -599,7 +599,7 @@ proof -
     fix tl2 s2''
     assume "s2' -2-tl2\<rightarrow> s2''"
     with no_\<tau>moves2[of s2''] have "\<not> \<tau>move2 s2' tl2 s2''" by(auto)
-    from simulation2[OF `s1 \<approx> s2'` `s2' -2-tl2\<rightarrow> s2''` this]
+    from simulation2[OF \<open>s1 \<approx> s2'\<close> \<open>s2' -2-tl2\<rightarrow> s2''\<close> this]
     obtain s1' s1'' tl1 where "s1 -\<tau>1\<rightarrow>* s1'" and "s1' -1-tl1\<rightarrow> s1''" by blast
     with no_moves1 show False by(fastforce elim: converse_rtranclpE)
   qed
@@ -646,20 +646,20 @@ proof(intro exI conjI)
   show "trsys2.\<tau>Runs_table s2 (tls1_to_tls2 s2 stlsss1)"
   proof(coinduction arbitrary: s2 s1 stlsss1)
     case (\<tau>Runs_table s2 s1 stlsss1)
-    note bisim = `s1 \<approx> s2`
-      and run1 = `trsys1.\<tau>Runs_table s1 stlsss1`
+    note bisim = \<open>s1 \<approx> s2\<close>
+      and run1 = \<open>trsys1.\<tau>Runs_table s1 stlsss1\<close>
     from run1 show ?case
     proof cases
       case (Terminate s1')
       let ?P = "\<lambda>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl2 s2''. \<not> s2' -2-tl2\<rightarrow> s2'') \<and> s1' \<approx> s2'"
-      from simulation_silents1[OF bisim `s1 -\<tau>1\<rightarrow>* s1'`]
+      from simulation_silents1[OF bisim \<open>s1 -\<tau>1\<rightarrow>* s1'\<close>]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1' \<approx> s2'" by blast
-      moreover from no_move1_to_no_move2[OF `s1' \<approx> s2'` `\<And>tl1 s1''. \<not> s1' -1-tl1\<rightarrow> s1''`]
+      moreover from no_move1_to_no_move2[OF \<open>s1' \<approx> s2'\<close> \<open>\<And>tl1 s1''. \<not> s1' -1-tl1\<rightarrow> s1''\<close>]
       obtain s2'' where "s2' -\<tau>2\<rightarrow>* s2''" and "s1' \<approx> s2''" 
         and "\<And>tl2 s2'''. \<not> s2'' -2-tl2\<rightarrow> s2'''" by blast
       ultimately have "?P s2''" by(blast intro: rtranclp_trans)
       hence "?P (Eps ?P)" by(rule someI)
-      hence ?Terminate using `stlsss1 = TNil \<lfloor>s1'\<rfloor>` by simp
+      hence ?Terminate using \<open>stlsss1 = TNil \<lfloor>s1'\<rfloor>\<close> by simp
       thus ?thesis ..
     next
       case Diverge
@@ -669,16 +669,16 @@ proof(intro exI conjI)
     next
       case (Proceed s1' s1'' stlsss1' tl1)
       let ?P = "\<lambda>(tl2, s2''). \<exists>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> s2' -2-tl2\<rightarrow> s2'' \<and> \<not> \<tau>move2 s2' tl2 s2'' \<and> s1'' \<approx> s2'' \<and> tl1 \<sim> tl2"
-      from simulation_silents1[OF bisim `s1 -\<tau>1\<rightarrow>* s1'`]
+      from simulation_silents1[OF bisim \<open>s1 -\<tau>1\<rightarrow>* s1'\<close>]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1' \<approx> s2'" by blast
-      moreover from simulation1[OF `s1' \<approx> s2'` `s1' -1-tl1\<rightarrow> s1''` `\<not> \<tau>move1 s1' tl1 s1''`]
+      moreover from simulation1[OF \<open>s1' \<approx> s2'\<close> \<open>s1' -1-tl1\<rightarrow> s1''\<close> \<open>\<not> \<tau>move1 s1' tl1 s1''\<close>]
       obtain s2'' s2''' tl2 where "s2' -\<tau>2\<rightarrow>* s2''"
         and "s2'' -2-tl2\<rightarrow> s2'''" and "\<not> \<tau>move2 s2'' tl2 s2'''"
         and "s1'' \<approx> s2'''" and "tl1 \<sim> tl2" by blast
       ultimately have "?P (tl2, s2''')" by(blast intro: rtranclp_trans)
       hence "?P (Eps ?P)" by(rule someI)
       hence ?Proceed 
-        using `stlsss1 = TCons (tl1, s1'') stlsss1'` `trsys1.\<tau>Runs_table s1'' stlsss1'`
+        using \<open>stlsss1 = TCons (tl1, s1'') stlsss1'\<close> \<open>trsys1.\<tau>Runs_table s1'' stlsss1'\<close>
         by auto blast
       thus ?thesis by simp
     qed
@@ -690,32 +690,32 @@ proof(intro exI conjI)
   show "tllist_all2 ?Tlsim ?Bisim stlsss1 (tls1_to_tls2 s2 stlsss1)"
   proof(coinduction arbitrary: s1 s2 stlsss1)
     case (tllist_all2 s1 s2 stlsss1)
-    note Runs = `trsys1.\<tau>Runs_table s1 stlsss1` and bisim = `s1 \<approx> s2`
+    note Runs = \<open>trsys1.\<tau>Runs_table s1 stlsss1\<close> and bisim = \<open>s1 \<approx> s2\<close>
     from Runs show ?case
     proof cases
       case (Terminate s1')
       let ?P = "\<lambda>s2'. s2 -\<tau>2\<rightarrow>* s2' \<and> (\<forall>tl2 s2''. \<not> s2' -2-tl2\<rightarrow> s2'') \<and> s1' \<approx> s2'"
-      from simulation_silents1[OF bisim `s1 -\<tau>1\<rightarrow>* s1'`]
+      from simulation_silents1[OF bisim \<open>s1 -\<tau>1\<rightarrow>* s1'\<close>]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1' \<approx> s2'" by blast
       moreover
-      from no_move1_to_no_move2[OF `s1' \<approx> s2'` `\<And>tl1 s1''. \<not> s1' -1-tl1\<rightarrow> s1''`]
+      from no_move1_to_no_move2[OF \<open>s1' \<approx> s2'\<close> \<open>\<And>tl1 s1''. \<not> s1' -1-tl1\<rightarrow> s1''\<close>]
       obtain s2'' where "s2' -\<tau>2\<rightarrow>* s2''" and "s1' \<approx> s2''"
         and "\<And>tl2 s2'''. \<not> s2'' -2-tl2\<rightarrow> s2'''" by blast
       ultimately have "?P s2''" by(blast intro: rtranclp_trans)
       hence "?P (Eps ?P)" by(rule someI)
-      thus ?thesis using `stlsss1 = TNil \<lfloor>s1'\<rfloor>` bisim by(simp)
+      thus ?thesis using \<open>stlsss1 = TNil \<lfloor>s1'\<rfloor>\<close> bisim by(simp)
     next
       case (Proceed s1' s1'' stlsss1' tl1)
-      from simulation_silents1[OF bisim `s1 -\<tau>1\<rightarrow>* s1'`]
+      from simulation_silents1[OF bisim \<open>s1 -\<tau>1\<rightarrow>* s1'\<close>]
       obtain s2' where "s2 -\<tau>2\<rightarrow>* s2'" and "s1' \<approx> s2'" by blast
-      moreover from simulation1[OF `s1' \<approx> s2'` `s1' -1-tl1\<rightarrow> s1''` `\<not> \<tau>move1 s1' tl1 s1''`]
+      moreover from simulation1[OF \<open>s1' \<approx> s2'\<close> \<open>s1' -1-tl1\<rightarrow> s1''\<close> \<open>\<not> \<tau>move1 s1' tl1 s1''\<close>]
       obtain s2'' s2''' tl2 where "s2' -\<tau>2\<rightarrow>* s2''"
         and "s2'' -2-tl2\<rightarrow> s2'''" and "\<not> \<tau>move2 s2'' tl2 s2'''"
         and "s1'' \<approx> s2'''" and "tl1 \<sim> tl2" by blast
       ultimately have "?P s2 stlsss1 (tl2, s2''')"
-        using `stlsss1 = TCons (tl1, s1'') stlsss1'` by(auto intro: rtranclp_trans)
+        using \<open>stlsss1 = TCons (tl1, s1'') stlsss1'\<close> by(auto intro: rtranclp_trans)
       hence "?P s2 stlsss1 (Eps (?P s2 stlsss1))" by(rule someI)
-      thus ?thesis using `stlsss1 = TCons (tl1, s1'') stlsss1'` `trsys1.\<tau>Runs_table s1'' stlsss1'` bisim
+      thus ?thesis using \<open>stlsss1 = TCons (tl1, s1'') stlsss1'\<close> \<open>trsys1.\<tau>Runs_table s1'' stlsss1'\<close> bisim
         by auto blast
     qed simp
   qed
@@ -911,12 +911,12 @@ next
   proof
     assume "s1' \<approx> s2 \<and> \<mu>1\<^sup>+\<^sup>+ s1' s1"
     hence "s1' \<approx> s2" "\<mu>1\<^sup>+\<^sup>+ s1' s1" by simp_all
-    with simulation_silent1[OF `s1' \<approx> s2` `s1' -\<tau>1\<rightarrow> s1''`]
+    with simulation_silent1[OF \<open>s1' \<approx> s2\<close> \<open>s1' -\<tau>1\<rightarrow> s1''\<close>]
     show ?thesis by(auto)
   next
     assume "\<exists>s2'. trsys2.silent_move\<^sup>+\<^sup>+ s2 s2' \<and> s1' \<approx> s2'"
     then obtain s2' where "s2 -\<tau>2\<rightarrow>+ s2'" "s1' \<approx> s2'" by blast
-    with simulation_silent1[OF `s1' \<approx> s2'` `s1' -\<tau>1\<rightarrow> s1''`]
+    with simulation_silent1[OF \<open>s1' \<approx> s2'\<close> \<open>s1' -\<tau>1\<rightarrow> s1''\<close>]
     show ?thesis by(auto intro: tranclp_trans)
   qed
 qed
@@ -938,7 +938,7 @@ proof -
     hence "s1 -\<tau>1\<rightarrow> \<infinity>" "s1 \<approx> s2" by simp_all
     then obtain s1' where "trsys1.silent_move s1 s1'" "s1' -\<tau>1\<rightarrow> \<infinity>"
       by(fastforce elim: trsys1.\<tau>diverge.cases)
-    from simulation_silent1[OF `s1 \<approx> s2` `trsys1.silent_move s1 s1'`] `s1' -\<tau>1\<rightarrow> \<infinity>`
+    from simulation_silent1[OF \<open>s1 \<approx> s2\<close> \<open>trsys1.silent_move s1 s1'\<close>] \<open>s1' -\<tau>1\<rightarrow> \<infinity>\<close>
     show ?case by auto
   qed
 qed
@@ -971,11 +971,11 @@ next
   thus "s1 -\<tau>1\<rightarrow> \<infinity> \<longleftrightarrow> s2 -\<tau>2\<rightarrow> \<infinity>" by(rule \<tau>diverge_bisim_inv)
 qed
 
-text {*
+text \<open>
   Counter example for
   @{prop "delay_bisimulation_diverge trsys1 trsys2 bisim tlsim \<tau>move1 \<tau>move2 \<Longrightarrow> \<exists>\<mu>1 \<mu>2. delay_bisimulation_measure trsys1 trsys2 bisim tlsim \<tau>move1 \<tau>move2 \<mu>1 \<mu>2"}
 
- (only @{text "\<tau>"}moves):
+ (only \<open>\<tau>\<close>moves):
 \begin{verbatim}
 --|
 | v
@@ -987,7 +987,7 @@ text {*
 | ^     ^ |
 --|     |--
 \end{verbatim}
-*}
+\<close>
 
 locale delay_bisimulation_measure_final =
   delay_bisimulation_measure + 
@@ -1136,7 +1136,7 @@ end
 sublocale bisimulation_final < delay_bisimulation_final_base
 by(rule delay_bisimulation_final_base)
 
-subsection {* Transitivity for bisimulations *}
+subsection \<open>Transitivity for bisimulations\<close>
 
 definition bisim_compose :: "('s1, 's2) bisim \<Rightarrow> ('s2, 's3) bisim \<Rightarrow> ('s1, 's3) bisim" (infixr "\<circ>\<^sub>B" 60)
 where "(bisim1 \<circ>\<^sub>B bisim2) s1 s3 \<equiv> \<exists>s2. bisim1 s1 s2 \<and> bisim2 s2 s3"
@@ -1261,35 +1261,35 @@ proof -
   proof
     fix s1 s3
     assume "(bisim12 \<circ>\<^sub>B bisim23) s1 s3" "final1 s1"
-    from `(bisim12 \<circ>\<^sub>B bisim23) s1 s3` obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
-    from wb12.final1_simulation[OF `bisim12 s1 s2` `final1 s1`]
+    from \<open>(bisim12 \<circ>\<^sub>B bisim23) s1 s3\<close> obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
+    from wb12.final1_simulation[OF \<open>bisim12 s1 s2\<close> \<open>final1 s1\<close>]
     obtain s2' where "trsys2.silent_moves s2 s2'" "bisim12 s1 s2'" "final2 s2'" by blast
-    from wb23.simulation_silents1[OF `bisim23 s2 s3` `trsys2.silent_moves s2 s2'`]
+    from wb23.simulation_silents1[OF \<open>bisim23 s2 s3\<close> \<open>trsys2.silent_moves s2 s2'\<close>]
     obtain s3' where "trsys3.silent_moves s3 s3'" "bisim23 s2' s3'" by blast
-    from wb23.final1_simulation[OF `bisim23 s2' s3'` `final2 s2'`]
+    from wb23.final1_simulation[OF \<open>bisim23 s2' s3'\<close> \<open>final2 s2'\<close>]
     obtain s3'' where "trsys3.silent_moves s3' s3''" "bisim23 s2' s3''" "final3 s3''" by blast
-    from `trsys3.silent_moves s3 s3'` `trsys3.silent_moves s3' s3''`
+    from \<open>trsys3.silent_moves s3 s3'\<close> \<open>trsys3.silent_moves s3' s3''\<close>
     have "trsys3.silent_moves s3 s3''" by(rule rtranclp_trans)
-    moreover from `bisim12 s1 s2'` `bisim23 s2' s3''`
+    moreover from \<open>bisim12 s1 s2'\<close> \<open>bisim23 s2' s3''\<close>
     have "(bisim12 \<circ>\<^sub>B bisim23) s1 s3''" ..
     ultimately show "\<exists>s3'. trsys3.silent_moves s3 s3' \<and> (bisim12 \<circ>\<^sub>B bisim23) s1 s3' \<and> final3 s3'"
-      using `final3 s3''` by iprover
+      using \<open>final3 s3''\<close> by iprover
   next
     fix s1 s3
     assume "(bisim12 \<circ>\<^sub>B bisim23) s1 s3" "final3 s3"
-    from `(bisim12 \<circ>\<^sub>B bisim23) s1 s3` obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
-    from wb23.final2_simulation[OF `bisim23 s2 s3` `final3 s3`]
+    from \<open>(bisim12 \<circ>\<^sub>B bisim23) s1 s3\<close> obtain s2 where "bisim12 s1 s2" and "bisim23 s2 s3" ..
+    from wb23.final2_simulation[OF \<open>bisim23 s2 s3\<close> \<open>final3 s3\<close>]
     obtain s2' where "trsys2.silent_moves s2 s2'" "bisim23 s2' s3" "final2 s2'" by blast
-    from wb12.simulation_silents2[OF `bisim12 s1 s2` `trsys2.silent_moves s2 s2'`]
+    from wb12.simulation_silents2[OF \<open>bisim12 s1 s2\<close> \<open>trsys2.silent_moves s2 s2'\<close>]
     obtain s1' where "trsys1.silent_moves s1 s1'" "bisim12 s1' s2'" by blast
-    from wb12.final2_simulation[OF `bisim12 s1' s2'` `final2 s2'`]
+    from wb12.final2_simulation[OF \<open>bisim12 s1' s2'\<close> \<open>final2 s2'\<close>]
     obtain s1'' where "trsys1.silent_moves s1' s1''" "bisim12 s1'' s2'" "final1 s1''" by blast
-    from `trsys1.silent_moves s1 s1'` `trsys1.silent_moves s1' s1''`
+    from \<open>trsys1.silent_moves s1 s1'\<close> \<open>trsys1.silent_moves s1' s1''\<close>
     have "trsys1.silent_moves s1 s1''" by(rule rtranclp_trans)
-    moreover from `bisim12 s1'' s2'` `bisim23 s2' s3`
+    moreover from \<open>bisim12 s1'' s2'\<close> \<open>bisim23 s2' s3\<close>
     have "(bisim12 \<circ>\<^sub>B bisim23) s1'' s3" ..
     ultimately show "\<exists>s1'. trsys1.silent_moves s1 s1' \<and> (bisim12 \<circ>\<^sub>B bisim23) s1' s3 \<and> final1 s1'"
-      using `final1 s1''` by iprover
+      using \<open>final1 s1''\<close> by iprover
   qed
 qed
 

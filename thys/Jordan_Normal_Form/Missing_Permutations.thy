@@ -47,7 +47,7 @@ lemma finprod_permute:
   and f: "f \<in> S \<rightarrow> carrier G"
   shows "finprod G f S = finprod G (f \<circ> p) S"
 proof -
-  from `p permutes S` have "inj p"
+  from \<open>p permutes S\<close> have "inj p"
     by (rule permutes_inj)
   then have "inj_on p S"
     by (auto intro: subset_inj_on)

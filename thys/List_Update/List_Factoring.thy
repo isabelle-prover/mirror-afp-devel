@@ -24,7 +24,7 @@ proof -
         unfolding before_in_def apply(auto) by (simp add: le_neq_implies_less)
   also have "\<dots> =  {y. index s y \<le> index s q \<and> y\<in> set s \<and> q \<in> set s}"
     apply(auto) by (metis index_conv_size_if_notin index_less_size_conv not_less)
-  also with `q \<in> set s` have "\<dots> = {y. index s y \<le> index s q \<and> y\<in> set s}" by auto
+  also with \<open>q \<in> set s\<close> have "\<dots> = {y. index s y \<le> index s q \<and> y\<in> set s}" by auto
   finally have "before q s \<union> {y. index s y = index s q \<and> q \<in> set s} \<union> after q s
       = {y. index s y \<le> index s q \<and> y\<in> set s} \<union> {y. index s y > index s q \<and> y \<in> set s}"
       unfolding before_in_def by simp
@@ -137,7 +137,7 @@ apply(induct qs as arbitrary: s  n rule: list_induct2)
 lemma steps'_append: "length qs = length as \<Longrightarrow> length qs = n \<Longrightarrow> steps' s (qs@[q]) (as@[a]) (Suc n) = step (steps' s qs as n) q a"
 apply(induct qs as arbitrary: s  n rule: list_induct2) by auto
 
-subsubsection "@{text ALG'_det}"
+subsubsection "\<open>ALG'_det\<close>"
 
 definition "ALG'_det Strat qs init i x = ALG x qs i (swaps (snd (Strat!i)) (steps' init qs Strat i),())"
 
@@ -175,7 +175,7 @@ definition "ALG' A qs init i x = E( map_pmf (ALG x qs i) (config'' A qs init i))
 lemma ALG'_refl: "qs!i = x \<Longrightarrow> ALG' A qs init i x = 0"
 unfolding ALG'_def by(simp add: split_def before_in_def)
  
-subsubsection "@{text ALGxy_det}"
+subsubsection "\<open>ALGxy_det\<close>"
 
 definition ALGxy_det where
   "ALGxy_det A qs init x y = (\<Sum>i\<in>{..<length qs}. (if (qs!i \<in> {y,x}) then ALG'_det A qs init i y + ALG'_det A qs init i x
@@ -1200,7 +1200,7 @@ proof(induct n)
       assume 3: "x \<in> set xs"
       assume 4: "y \<in> set xs"
       have "(x < y in xs) = (x < y in (mtf2 m q xs))"
-        by (metis "1" "2" "3" "4" `q \<notin> {x, y}` insertCI not_before_in set_mtf2 swapped_by_mtf2)
+        by (metis "1" "2" "3" "4" \<open>q \<notin> {x, y}\<close> insertCI not_before_in set_mtf2 swapped_by_mtf2)
     } note f=this
 
     (* taktik, erstmal das mtf weg bekommen,

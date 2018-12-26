@@ -11,26 +11,26 @@ theory SequentialComposition
 imports Propaedeutics
 begin
 
-text {*
+text \<open>
 \null
 
 This section formalizes the definitions of sequential processes and sequential composition given in
 \cite{R4}, and then proves that under the assumptions discussed above, noninterference security is
 conserved under sequential composition for any pair of processes sharing an alphabet that contains
 successful termination. Finally, this result is generalized to an arbitrary list of processes.
-*}
+\<close>
 
 
 subsection "Sequential processes"
 
-text {*
+text \<open>
 In \cite{R4}, a \emph{sequential process} is defined as a process whose alphabet contains successful
 termination. Since sequential composition applies to sequential processes, the first problem put by
 the formalization of this operation is that of finding a suitable way to represent such a process.
 
 A simple but effective strategy is to identify it with a process having alphabet @{typ "'a option"},
 where @{typ 'a} is the native type of its ordinary (i.e. distinct from termination) events. Then,
-ordinary events will be those matching pattern @{text "Some _"}, whereas successful termination will
+ordinary events will be those matching pattern \<open>Some _\<close>, whereas successful termination will
 be denoted by the special event @{term None}. This means that the \emph{sentences} of a sequential
 process, defined in \cite{R4} as the traces after which the process can terminate successfully, will
 be nothing but the event lists @{term xs} such that @{term "xs @ [None]"} is a trace (which implies
@@ -38,16 +38,16 @@ that @{term xs} is a trace as well).
 
 Once a suitable representation of successful termination has been found, the next step is to
 formalize the properties of sequential processes related to this event, expressing them in terms of
-the selected representation. The first of the resulting predicates, @{text weakly_sequential}, is
+the selected representation. The first of the resulting predicates, \<open>weakly_sequential\<close>, is
 the minimum required for allowing the identification of event @{term None} with successful
 termination, namely that @{term None} may occur in a trace as its last event only. The second
-predicate, @{text sequential}, following what Hoare does in \cite{R4}, extends the first predicate
+predicate, \<open>sequential\<close>, following what Hoare does in \cite{R4}, extends the first predicate
 with an additional requirement, namely that whenever the process can engage in event @{term None},
 it cannot engage in any other event. A simple counterexample shows that this requirement does not
 imply the first one: a process whose traces are @{term "{[], [None], [None, None]}"} satisfies the
 second requirement, but not the first one.
 
-Moreover, here below is the definition of a further predicate, @{text secure_termination}, which
+Moreover, here below is the definition of a further predicate, \<open>secure_termination\<close>, which
 applies to a security policy rather than to a process, and is satisfied just in case the policy does
 not allow event @{term None} to be affected by confidential events, viz. by ordinary events not
 allowed to affect some event in the alphabet. Interestingly, this property, which will prove to be
@@ -56,7 +56,7 @@ for a security type system to enforce termination-sensitive noninterference secu
 namely that program termination must not depend on confidential data (cf. \cite{R5}, section 9.2.6).
 
 \null
-*}
+\<close>
 
 definition sentences :: "'a option process \<Rightarrow> 'a option list set" where
 "sentences P \<equiv> {xs. xs @ [None] \<in> traces P}"
@@ -74,7 +74,7 @@ definition secure_termination :: "('d \<times> 'd) set \<Rightarrow> ('a option 
 "secure_termination I D \<equiv>
   \<forall>x. (D x, D None) \<in> I \<and> x \<noteq> None \<longrightarrow> (\<forall>u \<in> range D. (D x, u) \<in> I)"
 
-text {*
+text \<open>
 \null
 
 Here below is the proof of some useful lemmas involving the constants just defined. Particularly, it
@@ -85,7 +85,7 @@ conservation theorem is the reason why the theorem requires to assume that the f
 processes to be composed be refusals union closed (cf. below).
 
 \null
-*}
+\<close>
 
 lemma seq_implies_weakly_seq:
  "sequential P \<Longrightarrow> weakly_sequential P"
@@ -177,12 +177,12 @@ qed
 
 subsection "Sequential composition"
 
-text {*
+text \<open>
 In what follows, the definition of the failures resulting from the sequential composition of two
 processes @{term P}, @{term Q} given in \cite{R4} is formalized as the inductive definition of set
-@{text "seq_comp_failures P Q"}. Then, the sequential composition of @{term P} and @{term Q},
-denoted by means of notation @{text "P ; Q"} following \cite{R4}, is defined as the process having
-@{text "seq_comp_failures P Q"} as failures set and the empty set as divergences set.
+\<open>seq_comp_failures P Q\<close>. Then, the sequential composition of @{term P} and @{term Q},
+denoted by means of notation \<open>P ; Q\<close> following \cite{R4}, is defined as the process having
+\<open>seq_comp_failures P Q\<close> as failures set and the empty set as divergences set.
 
 For the sake of generality, this definition is based on the mere implicit assumption that the input
 processes be weakly sequential, rather than sequential. This slightly complicates things, since the
@@ -191,21 +191,21 @@ future.
 
 Therefore, the resulting refusals of a sentence @{term xs} of @{term P} will have the form
 @{term "insert None X \<inter> Y"}, where @{term X} is a refusal of @{term xs} in @{term P} and @{term Y}
-is an initial refusal of @{term Q} (cf. rule @{text SCF_R2}). In fact, after @{term xs}, process
-@{text "P ; Q"} must be able to refuse @{term None} if @{term Q} is, whereas it cannot refuse an
+is an initial refusal of @{term Q} (cf. rule \<open>SCF_R2\<close>). In fact, after @{term xs}, process
+\<open>P ; Q\<close> must be able to refuse @{term None} if @{term Q} is, whereas it cannot refuse an
 ordinary event unless both @{term P} and @{term Q}, in their respective states, can.
 
-Moreover, a trace @{term xs} of @{text "P ; Q"} may result from different combinations of a sentence
-of @{term P} with a trace of @{term Q}. Thus, in order that the refusals of @{text "P ; Q"} be
+Moreover, a trace @{term xs} of \<open>P ; Q\<close> may result from different combinations of a sentence
+of @{term P} with a trace of @{term Q}. Thus, in order that the refusals of \<open>P ; Q\<close> be
 closed under set union, the union of any two refusals of @{term xs} must still be a refusal (cf.
-rule @{text SCF_R4}). Indeed, this property will prove to be sufficient to ensure that for any two
+rule \<open>SCF_R4\<close>). Indeed, this property will prove to be sufficient to ensure that for any two
 processes whose refusals are closed under set union, their sequential composition still be such,
 which is what is expected for any process of practical significance (cf. \cite{R3}).
 
-According to the definition given in \cite{R4}, a divergence of @{text "P ; Q"} is either a
+According to the definition given in \cite{R4}, a divergence of \<open>P ; Q\<close> is either a
 divergence of @{term P}, or the concatenation of a sentence of @{term P} with a divergence of
 @{term Q}. Apparently, this definition does not match the formal one stated here below, which
-identifies the divergences set of @{text "P ; Q"} with the empty set. Nonetheless, as remarked
+identifies the divergences set of \<open>P ; Q\<close> with the empty set. Nonetheless, as remarked
 above, sequential composition does not make sense unless the input processes are weakly sequential,
 since this is the minimum required to confer the meaning of successful termination on the
 corresponding alphabet symbol. But a weakly sequential process cannot have any divergence, so that
@@ -216,7 +216,7 @@ were a divergence, then @{term "xs @ [None, None]"} would be a trace, which is i
 the process satisfies predicate @{term weakly_sequential}.
 
 \null
-*}
+\<close>
 
 inductive_set seq_comp_failures ::
  "'a option process \<Rightarrow> 'a option process \<Rightarrow> 'a option failure set"
@@ -239,7 +239,7 @@ definition seq_comp ::
 where
 "P ; Q \<equiv> Abs_process (seq_comp_failures P Q, {})"
 
-text {*
+text \<open>
 \null
 
 Here below is the proof that, for any two processes @{term P}, @{term Q} defined over the same
@@ -248,7 +248,7 @@ characteristic properties of the failures set of a process as defined in \cite{R
 @{term P} is weakly sequential, which is what happens in any meaningful case.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_prop_1:
  "([], {}) \<in> seq_comp_failures P Q"
@@ -642,7 +642,7 @@ next
    by (simp add: process_prop_6_def)
 qed
 
-text {*
+text \<open>
 \null
 
 Here below, the previous result is applied to derive useful expressions for the outputs of the
@@ -650,7 +650,7 @@ functions returning the elements of a process, as defined in \cite{R2} and \cite
 the sequential composition of a pair of processes.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_failures:
  "weakly_sequential P \<Longrightarrow>
@@ -685,11 +685,11 @@ by (simp add: next_events_def seq_comp_traces)
 
 subsection "Conservation of refusals union closure and sequentiality under sequential composition"
 
-text {*
+text \<open>
 Here below is the proof that, for any two processes @{term P}, @{term Q} and any failure
 @{term "(xs, X)"} of @{term "P ; Q"}, the refusal @{term X} is the union of a set of refusals where,
 for any such refusal @{term W}, @{term "(xs, W)"} is a failure of @{term "P ; Q"} by virtue of one
-of rules @{text SCF_R1}, @{text SCF_R2}, or @{text SCF_R3}.
+of rules \<open>SCF_R1\<close>, \<open>SCF_R2\<close>, or \<open>SCF_R3\<close>.
 
 The converse is also proven, under the assumption that the refusals of both @{term P} and @{term Q}
 be closed under union: namely, for any trace @{term xs} of @{term "P ; Q"} and any set of refusals
@@ -699,7 +699,7 @@ union of these refusals is still a refusal of @{term xs}.
 The proof of the latter lemma makes use of the axiom of choice.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_refusals_1:
  "(xs, X) \<in> seq_comp_failures P Q \<Longrightarrow> \<exists>R.
@@ -1068,7 +1068,7 @@ proof -
    by simp
 qed
 
-text {*
+text \<open>
 \null
 
 In what follows, the previous results are used to prove that refusals union closure, weak
@@ -1081,7 +1081,7 @@ sequential (cf. below), these further conservation lemmas will permit to general
 the sequential composition of an arbitrary list of processes.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_ref_union_closed:
   assumes
@@ -1556,17 +1556,17 @@ qed
 
 subsection "Conservation of noninterference security under sequential composition"
 
-text {*
+text \<open>
 Everything is now ready for proving the target security conservation theorem. The two closure
 properties that the definition of noninterference security requires process futures to satisfy, one
 for the addition of events into traces and the other for the deletion of events from traces (cf.
 \cite{R2}), will be faced separately; here below is the proof of the former property.
 Unsurprisingly, rule induction on set @{term seq_comp_failures} is applied, and the closure of the
 failures of a secure process under intransitive purge (proven in the previous section) is used to
-meet the proof obligations arising from rule @{text SCF_R3}.
+meet the proof obligations arising from rule \<open>SCF_R3\<close>.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_secure_aux_1_case_1:
   assumes
@@ -2209,19 +2209,19 @@ lemma seq_comp_secure_1:
 by (rule seq_comp_secure_aux_1 [OF A B C D E, where ws = "xs @ y # ys"],
  simp_all)
 
-text {*
+text \<open>
 \null
 
 This completes the proof that the former requirement for noninterference security is satisfied, so
 it is the turn of the latter one. Again, rule induction on set @{term seq_comp_failures} is applied,
 and the closure of the failures of a secure process under intransitive purge is used to meet the
-proof obligations arising from rule @{text SCF_R3}. In more detail, rule induction is applied to the
+proof obligations arising from rule \<open>SCF_R3\<close>. In more detail, rule induction is applied to the
 trace into which the event is inserted, and then a case distinction is performed on the trace from
 which the event is extracted, using the expression of its refusal as union of a set of refusals
 derived previously.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_secure_aux_2_case_1:
   assumes
@@ -3388,7 +3388,7 @@ lemma seq_comp_secure_2:
       \<in> seq_comp_failures P Q"
 by (rule seq_comp_secure_aux_2 [OF A B C D E, where ws = "xs @ zs"], simp_all)
 
-text {*
+text \<open>
 \null
 
 Finally, the target security conservation theorem can be enunciated and proven, which is done here
@@ -3412,7 +3412,7 @@ both @{term P} and @{term Q} are secure with respect to @{term I} and @{term D},
 then @{term "P ; Q"} is secure as well.
 
 \null
-*}
+\<close>
 
 theorem seq_comp_secure:
   assumes
@@ -3454,7 +3454,7 @@ qed
 
 subsection "Generalization of the security conservation theorem to lists of processes"
 
-text {*
+text \<open>
 The target security conservation theorem, in the basic version just proven, applies to the
 sequential composition of a pair of processes. However, given an arbitrary list of processes where
 each process satisfies its assumptions, the theorem could be orderly applied to the composition of
@@ -3493,7 +3493,7 @@ As a precondition, the above conservation lemmas for weak sequentiality, refusal
 sequentiality are generalized, too.
 
 \null
-*}
+\<close>
 
 lemma seq_comp_list_weakly_sequential [rule_format]:
  "(\<forall>X \<in> set (P # PS). weakly_sequential X) \<longrightarrow>

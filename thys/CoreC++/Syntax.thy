@@ -6,12 +6,12 @@
     Extracted from the Jinja theory J/Expr.thy by Tobias Nipkow
 *)
 
-section {* Syntax *}
+section \<open>Syntax\<close>
 
 theory Syntax imports Exceptions begin
 
 
-text{*Syntactic sugar*}
+text\<open>Syntactic sugar\<close>
 
 abbreviation (input)
   InitBlock :: "vname \<Rightarrow> ty \<Rightarrow> expr \<Rightarrow> expr \<Rightarrow> expr"   ("(1'{_:_ := _;/ _})") where

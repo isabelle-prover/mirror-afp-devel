@@ -6,15 +6,15 @@ section "Thread Tracking"
 theory ThreadTracking
 imports Main "HOL-Library.Multiset" LTS Misc
 begin
-text_raw {*\label{thy:ThreadTracking}*}
+text_raw \<open>\label{thy:ThreadTracking}\<close>
 
-text {*
+text \<open>
   This theory defines some general notion of an interleaving semantics. It defines how to extend a semantics specified on a single thread and a context to a semantic on multisets of threads.
   The context is needed in order to keep track of synchronization.
-*}
+\<close>
 
 subsection "Semantic on multiset configuration"
-text {* The interleaving semantics is defined on a multiset of stacks. The thread to make the next step is nondeterministically chosen from all threads ready to make steps. *}
+text \<open>The interleaving semantics is defined on a multiset of stacks. The thread to make the next step is nondeterministically chosen from all threads ready to make steps.\<close>
 definition 
   "gtr gtrs == { (add_mset s c,e,add_mset s' c') | s c e s' c' . ((s,c),e,(s',c'))\<in>gtrs }"
 
@@ -83,11 +83,11 @@ done
 
 
 subsection "Context preservation assumption"
-text {*
+text \<open>
   We now assume that the original semantics does not modify threads in the context, i.e. it may only add new threads to the context and use the context to obtain monitor information, but not change any
   existing thread in the context. This assumption is valid for our semantics, where the context is just needed to determine the set of allocated monitors. It allows us to generally derive some further properties of
   such semantics.
-*}
+\<close>
 locale env_no_step =
   fixes gtrs :: "(('s\<times>'s multiset),'l) LTS"
   assumes env_no_step_s[cases set, case_names csp]: 
@@ -112,14 +112,14 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-text {*
+text \<open>
   The following lemma can be used to make a case distinction how a step operated on a given thread in the end configuration:
     \begin{description}
-      \item[@{text "loc"}] The thread made the step
-      \item[@{text "spawn"}] The thread was spawned by the step
-      \item[@{text "env"}] The thread was not involved in the step
+      \item[\<open>loc\<close>] The thread made the step
+      \item[\<open>spawn\<close>] The thread was spawned by the step
+      \item[\<open>env\<close>] The thread was not involved in the step
     \end{description}
-*}
+\<close>
 
 lemma (in env_no_step) rev_cases_p[cases set, case_names loc spawn env]: 
   assumes STEP: "(c,e,add_mset s' ce')\<in>gtr gtrs" and
@@ -154,8 +154,8 @@ next
 qed
 
 subsection "Explicit local context"
-text_raw {*\label{sec:ThreadTracking:exp_local}*}
-text {*
+text_raw \<open>\label{sec:ThreadTracking:exp_local}\<close>
+text \<open>
   In the multiset semantics, a single thread has no identity. This may become a problem when reasoning about a fixed thread during an execution. For example, in our constraint-system-based approach
   the operational characterization of the least solution of the constraint system requires to state properties of the steps of the initial thread in some execution. With the multiset semantics, we are unable 
   to identify those steps among all steps.
@@ -169,7 +169,7 @@ text {*
   threads are {\em environment} threads. We then attach to every step the information whether it was on the local or on some environment thread. 
 
   We call this semantics {\em loc/env}-semantics in contrast to the {\em multiset}-semantics of the last section.
-*}
+\<close>
 
 subsubsection "Lifted step datatype"
 datatype 'a el_step = LOC 'a | ENV 'a
@@ -183,7 +183,7 @@ definition
 definition
   "le_rem_s e == case e of LOC a \<Rightarrow> a | ENV a \<Rightarrow> a"
 
-text {* Standard simplification lemmas *}
+text \<open>Standard simplification lemmas\<close>
 lemma loc_env_simps[simp]: 
   "loc [] = []" 
   "env [] = []"
@@ -205,7 +205,7 @@ lemma env_uncons[simp]:
 lemma env_unconc[simp]: "env (a@b) = env a @ env b"
   by (unfold env_def, simp)
 
-text {* The following simplification lemmas are for converting between paths of the multiset- and loc/env-semantics *}
+text \<open>The following simplification lemmas are for converting between paths of the multiset- and loc/env-semantics\<close>
 lemma le_rem_simps [simp]: 
   "le_rem_s (LOC a) = a" 
   "le_rem_s (ENV a) = a"

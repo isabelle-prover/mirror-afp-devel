@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Iterings *}
+section \<open>Iterings\<close>
 
-text {*
+text \<open>
 This theory introduces algebraic structures with an operation that describes iteration in various relational computation models.
 An iteration describes the repeated sequential execution of a computation.
 This is typically modelled by fixpoints, but different computation models use different fixpoints in the refinement order.
@@ -19,7 +19,7 @@ Many properties of iteration follow already from these equational axioms.
 Next we introduce iterings, which use generalised versions of simulation axioms in addition to sumstar and productstar.
 Unlike the induction axioms of the Kleene star, which hold only in partial-correctness models, the simulation axioms are also valid in total and general correctness models.
 They are still powerful enough to prove the correctness of complex results such as separation theorems of \cite{Cohen2000} and Back's atomicity refinement theorem \cite{BackWright1999,Wright2004}.
-*}
+\<close>
 
 theory Iterings
 
@@ -27,13 +27,13 @@ imports Stone_Relation_Algebras.Semirings
 
 begin
 
-subsection {* Conway Semirings *}
+subsection \<open>Conway Semirings\<close>
 
-text {*
+text \<open>
 In this section, we consider equational axioms for iteration.
 The algebraic structures are based on idempotent left semirings, which are expanded by a unary iteration operation.
 We start with an unfold property, one inequality of the sliding rule and distributivity over joins, which is similar to Conway's sumstar.
-*}
+\<close>
 
 class circ =
   fixes circ :: "'a \<Rightarrow> 'a" ("_\<^sup>\<circ>" [100] 100)
@@ -44,9 +44,9 @@ class left_conway_semiring = idempotent_left_semiring + circ +
   assumes circ_sup_1: "(x \<squnion> y)\<^sup>\<circ> = x\<^sup>\<circ> * (y * x\<^sup>\<circ>)\<^sup>\<circ>"
 begin
 
-text {*
+text \<open>
 We obtain one inequality of Conway's productstar, as well as of the other unfold rule.
-*}
+\<close>
 
 lemma circ_mult_sub:
   "1 \<squnion> x * (y * x)\<^sup>\<circ> * y \<le> (x * y)\<^sup>\<circ>"
@@ -80,10 +80,10 @@ lemma circ_transitive_equal:
   "x\<^sup>\<circ> * x\<^sup>\<circ> = x\<^sup>\<circ>"
   by (metis sup_idem circ_sup_1 circ_left_unfold mult_assoc)
 
-text {*
+text \<open>
 While iteration is not idempotent, a fixpoint is reached after applying this operation twice.
 Iteration is idempotent for the unit.
-*}
+\<close>
 
 lemma circ_circ_circ:
   "x\<^sup>\<circ>\<^sup>\<circ>\<^sup>\<circ> = x\<^sup>\<circ>\<^sup>\<circ>"
@@ -101,9 +101,9 @@ lemma circ_plus_one:
   "x\<^sup>\<circ> = 1 \<squnion> x\<^sup>\<circ>"
   by (metis le_iff_sup circ_reflexive)
 
-text {*
+text \<open>
 Iteration satisfies a characteristic property of reflexive transitive closures.
-*}
+\<close>
 
 lemma circ_rtc_2:
   "1 \<squnion> x \<squnion> x\<^sup>\<circ> * x\<^sup>\<circ> = x\<^sup>\<circ>"
@@ -205,9 +205,9 @@ lemma circ_back_loop_prefixpoint:
   "(z * y\<^sup>\<circ>) * y \<squnion> z \<le> z * y\<^sup>\<circ>"
   by (metis sup.bounded_iff circ_left_unfold mult_assoc mult_left_sub_dist_sup_left mult_right_isotone mult_1_right right_plus_below_circ)
 
-text {*
+text \<open>
 We obtain the fixpoint and prefixpoint properties of iteration, but not least or greatest fixpoint properties.
-*}
+\<close>
 
 lemma circ_loop_is_fixpoint:
   "is_fixpoint (\<lambda>x . y * x \<squnion> z) (y\<^sup>\<circ> * z)"
@@ -319,9 +319,9 @@ lemma "x\<^sup>\<circ> * y\<^sup>\<circ> \<le> (x\<^sup>\<circ> * y)\<^sup>\<cir
 
 end
 
-text {*
+text \<open>
 The next class considers the interaction of iteration with a greatest element.
-*}
+\<close>
 
 class bounded_left_conway_semiring = bounded_idempotent_left_semiring + left_conway_semiring
 begin
@@ -357,9 +357,9 @@ lemma circ_unfold_sum:
 
 end
 
-text {*
+text \<open>
 The next class assumes the full sliding equation.
-*}
+\<close>
 
 class left_conway_semiring_1 = left_conway_semiring +
   assumes circ_right_slide: "x * (y * x)\<^sup>\<circ> \<le> (x * y)\<^sup>\<circ> * x"
@@ -369,9 +369,9 @@ lemma circ_slide_1:
   "x * (y * x)\<^sup>\<circ> = (x * y)\<^sup>\<circ> * x"
   by (metis antisym circ_left_slide circ_right_slide)
 
-text {*
+text \<open>
 This implies the full unfold rules and Conway's productstar.
-*}
+\<close>
 
 lemma circ_right_unfold_1:
   "1 \<squnion> x\<^sup>\<circ> * x = x\<^sup>\<circ>"
@@ -412,12 +412,12 @@ lemma circ_elimination:
 
 end
 
-subsection {* Iterings *}
+subsection \<open>Iterings\<close>
 
-text {*
+text \<open>
 This section adds simulation axioms to Conway semirings.
 We consider several classes with increasingly general simulation axioms.
-*}
+\<close>
 
 class itering_1 = left_conway_semiring_1 +
   assumes circ_simulate: "z * x \<le> y * z \<longrightarrow> z * x\<^sup>\<circ> \<le> y\<^sup>\<circ> * z"
@@ -431,9 +431,9 @@ lemma sub_mult_one_circ:
   "x * 1\<^sup>\<circ> \<le> 1\<^sup>\<circ> * x"
   by (metis circ_simulate mult_1_left mult_1_right order_refl)
 
-text {*
+text \<open>
 The left simulation axioms is enough to prove a basic import property of tests.
-*}
+\<close>
 
 lemma circ_import:
   assumes "p \<le> p * p"
@@ -451,9 +451,9 @@ qed
 
 end
 
-text {*
+text \<open>
 Including generalisations of both simulation axioms allows us to prove separation rules.
-*}
+\<close>
 
 class itering_2 = left_conway_semiring_1 +
   assumes circ_simulate_right: "z * x \<le> y * z \<squnion> w \<longrightarrow> z * x\<^sup>\<circ> \<le> y\<^sup>\<circ> * (z \<squnion> w * x\<^sup>\<circ>)"
@@ -494,9 +494,9 @@ lemma circ_circ_mult_1:
 
 end
 
-text {*
+text \<open>
 With distributivity, we also get Back's atomicity refinement theorem.
-*}
+\<close>
 
 class itering_3 = itering_2 + left_zero_conway_semiring_1
 begin
@@ -555,10 +555,10 @@ qed
 
 end
 
-text {*
+text \<open>
 The following class contains the most general simulation axioms we consider.
 They allow us to prove further separation properties.
-*}
+\<close>
 
 class itering = idempotent_left_zero_semiring + circ +
   assumes circ_sup: "(x \<squnion> y)\<^sup>\<circ> = (x\<^sup>\<circ> * y)\<^sup>\<circ> * x\<^sup>\<circ>"
@@ -718,9 +718,9 @@ lemma "y * x \<le> x \<longrightarrow> y\<^sup>\<circ> * x \<le> 1\<^sup>\<circ>
 
 end
 
-text {*
+text \<open>
 We finally expand Conway semirings and iterings by an element that corresponds to the endless loop.
-*}
+\<close>
 
 class L =
   fixes L :: "'a"

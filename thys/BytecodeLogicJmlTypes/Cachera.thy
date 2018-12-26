@@ -9,9 +9,9 @@
 theory Cachera imports Logic begin
 (*>*)
 
-section{*A derived logic for a strong type system*}
+section\<open>A derived logic for a strong type system\<close>
 
-text{*In this section we consider a system of derived assertions, for
+text\<open>In this section we consider a system of derived assertions, for
 a type system for bounded heap consumption. The type system arises by
 reformulating the analysis of Cachera, Jensen, Pichardie, and
 Schneider \cite{CaJePiSc05MemoryUsage} for a high-level functional
@@ -48,65 +48,65 @@ is then formally proven sound, using the derived logic for bytecode.
 By virtue of the invariants, the guarantee given by the present system
 is stronger than the one given by our encoding of the Hofmann-Jost
 system, as even non-terminating programs can be verified in a
-meaningful way.*}
+meaningful way.\<close>
 
-subsection{*Syntax and semantics of judgements*}
+subsection\<open>Syntax and semantics of judgements\<close>
 
-text{*The formal interpretation at JVM level of a type @{text n} is
+text\<open>The formal interpretation at JVM level of a type \<open>n\<close> is
 given by a triple $$\mathit{Cachera}(n) = (A, B, I)$$ consisting of a
-(trivial) precondition, a post-condition, and a strong invariant. *}
+(trivial) precondition, a post-condition, and a strong invariant.\<close>
 
 definition Cachera::"nat \<Rightarrow> (Assn \<times> Post \<times> Inv)" where
 "Cachera n = (\<lambda> s0 s . True,
               \<lambda> s0 (ops,s,h) (k,v) . |k| \<le> |h| + n,
               \<lambda> s0 (ops,s,h) k.  |k| \<le> |h| + n)"
 
-text{*This definition is motivated by the expectation that $\rhd
+text\<open>This definition is motivated by the expectation that $\rhd
 \lbrace A \rbrace\; \ulcorner\, e \urcorner\, \lbrace B \rbrace\, I$
 should be derivable whenever the type judgement $\Sigma \rhd e:n$
 holds, where $ \ulcorner e \urcorner$ is the translation of compiling
-the expression $e$ into JVML, and the specification table @{text MST}
-contains the interpretations of the entries in $\Sigma$.*}
+the expression $e$ into JVML, and the specification table \<open>MST\<close>
+contains the interpretations of the entries in $\Sigma$.\<close>
 
-text{*We abbreviate the above construction of judgements by a
-predicate @{text deriv}.*}
+text\<open>We abbreviate the above construction of judgements by a
+predicate \<open>deriv\<close>.\<close>
 
 definition deriv::"CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
                     (Assn \<times> Post \<times> Inv) \<Rightarrow> bool" where
 "deriv G C m l (ABI) = (let (A,B,I) = ABI in (G \<rhd> \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I))"
 
-text{*Thus, the intended interpretation of a typing judgement $\Sigma
+text\<open>Thus, the intended interpretation of a typing judgement $\Sigma
 \rhd e: n$ is $$\mathit{deriv}\; C\; m\; l\; (\mathit{Cachera}\; n)$$
 if $e$ translates to a code block whose first instruction is at
-$C.m.l$.*}
+$C.m.l$.\<close>
 
-text{*We also define a judgement of the auxiliary form of
-sequents.*}
+text\<open>We also define a judgement of the auxiliary form of
+sequents.\<close>
 
 definition derivAssum::"CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> 
                          (Assn \<times> Post \<times> Inv) \<Rightarrow> bool" where
 "derivAssum G C m l (ABI) = (let (A,B,I) = ABI in G \<rhd>  \<langle> A \<rangle> C,m,l \<langle> B \<rangle> I)"
 
-text{*The following operation converts a derived judgement into the
-syntactical form of method specifications.*}
+text\<open>The following operation converts a derived judgement into the
+syntactical form of method specifications.\<close>
 
 definition mkSPEC::"(Assn \<times> Post \<times> Inv) \<Rightarrow> ANNO \<Rightarrow>
                    (MethSpec \<times> MethInv \<times> ANNO)" where
 "mkSPEC (ABI) Anno = (let (A,B,I) = ABI in
        (\<lambda> s0 t . B s0 (mkState s0) t, \<lambda> s0 h . I s0 (mkState s0) h, Anno))"
 
-text{*This enables the interpretation of typing contexts $\Sigma$ as a
-set of constraints on the specification table @{text MST}.*}
+text\<open>This enables the interpretation of typing contexts $\Sigma$ as a
+set of constraints on the specification table \<open>MST\<close>.\<close>
 
-subsection{*Derived proof rules*}
+subsection\<open>Derived proof rules\<close>
 (*<*)
 declare Let_def[simp]
 (*>*)
-text{*We are now ready to prove derived rules, i.e.~proof rules where
+text\<open>We are now ready to prove derived rules, i.e.~proof rules where
 assumptions as well as conclusions are of the restricted assertion
 form. While their justification unfolds the definition of the
-predicate @{text deriv}, their application will not. We first give
-syntax-directed proof rules for all JVM instructions:*}
+predicate \<open>deriv\<close>, their application will not. We first give
+syntax-directed proof rules for all JVM instructions:\<close>
 
 lemma CACH_NEW:
  "\<lbrakk> ins_is C m l (new c); MST\<down>(C,m)=Some(Mspec,Minv,Anno);
@@ -244,7 +244,7 @@ apply clarsimp apply (simp add: SINV_inv_def mkState_def)
 done
 (*>*)
 
-text{*In addition, we have two rules for subtyping*}
+text\<open>In addition, we have two rules for subtyping\<close>
 
 lemma CACH_SUB:
  "\<lbrakk> deriv G C m l (Cachera n); n \<le> k\<rbrakk> \<Longrightarrow> deriv G C m l (Cachera k)"
@@ -269,7 +269,7 @@ apply simp
 done
 (*>*)
 
-text{*and specialised forms of the axiom rule and the injection rule.*}
+text\<open>and specialised forms of the axiom rule and the injection rule.\<close>
 
 lemma CACH_AX:
  "\<lbrakk> G\<down>(C,m,l) = Some (Cachera n); MST\<down>(C,m)=Some(Mspec,Minv,Anno); 
@@ -290,10 +290,9 @@ apply (erule INJECT)
 done
 (*>*)
 
-text{*Finally, a verified-program rule relates specifications to
+text\<open>Finally, a verified-program rule relates specifications to
 judgements for the method bodies. Thus, even the method specifications
-may be given as derived assertions (modulo the @{text
-mkSPEC}-conversion).*}
+may be given as derived assertions (modulo the \<open>mkSPEC\<close>-conversion).\<close>
 
 lemma CACH_VP:
  "\<lbrakk> \<forall> c m par code l0. mbody_is c m (par, code, l0) \<longrightarrow>
@@ -321,15 +320,15 @@ apply (simp add: mkState_def mkInv_def)
 done
 (*>*)
 
-subsection{*Soundness of high-level type system*}
+subsection\<open>Soundness of high-level type system\<close>
 
-text{*We define a first-order functional language where expressions
+text\<open>We define a first-order functional language where expressions
 are stratified into primitive expressions and general expressions. The
 language supports the construction of lists using constructors
 $\mathit{NilPrim}$ and $\mathit{ConsPrim}\; h\; t$, and includes a
 corresponding pattern match operation. In order to simplify the
 compilation, function identifiers are taken to be pairs of class names
-and method names.*}
+and method names.\<close>
 
 type_synonym Fun = "Class \<times> Method"
 
@@ -349,12 +348,12 @@ datatype Expr =
 
 type_synonym FunProg = "(Fun,Var list \<times> Expr) AssList"
 
-text{*The type system uses contexts that associate a type (natural
-number) to function identifiers.*}
+text\<open>The type system uses contexts that associate a type (natural
+number) to function identifiers.\<close>
 
 type_synonym TP_Sig = "(Fun, nat) AssList"
 
-text{* We first give the rules for primitive expressions.*}
+text\<open>We first give the rules for primitive expressions.\<close>
 
 inductive_set TP_prim::"(TP_Sig \<times> Prim \<times> nat)set"
 where
@@ -370,7 +369,7 @@ TP_cons: "(\<Sigma>,ConsPrim x y,1) : TP_prim"
 |
 TP_Call: "\<lbrakk>\<Sigma>\<down>f = Some n\<rbrakk> \<Longrightarrow> (\<Sigma>,CallPrim f args,n) : TP_prim"
 
-text{*Next, the rules for general expressions.*}
+text\<open>Next, the rules for general expressions.\<close>
 
 inductive_set TP_expr::"(TP_Sig \<times> Expr \<times> nat) set"
 where
@@ -387,17 +386,17 @@ TP_Cond:"\<lbrakk>(\<Sigma>,e1,n):TP_expr; (\<Sigma>,e2,n):TP_expr\<rbrakk>
 TP_Match:"\<lbrakk>(\<Sigma>,e1,n):TP_expr; (\<Sigma>,e2,n):TP_expr \<rbrakk>
           \<Longrightarrow> (\<Sigma>,MatchE x e1 h t e2,n):TP_expr"
 
-text{*A functional program is well-typed if its domain agrees with
+text\<open>A functional program is well-typed if its domain agrees with
 that of some context such that each function body validates the
-context entry.*}
+context entry.\<close>
 
 definition TP::"TP_Sig \<Rightarrow> FunProg \<Rightarrow> bool" where
 "TP \<Sigma> F = ((\<forall> f . (\<Sigma>\<down>f = None) = (F\<down>f = None)) \<and> 
           (\<forall> f n par e . \<Sigma>\<down>f = Some n \<longrightarrow> F\<down>f = Some (par,e) \<longrightarrow> (\<Sigma>,e,n):TP_expr))"
 
-text{*For the translation into bytecode, we introduce identifiers for
+text\<open>For the translation into bytecode, we introduce identifiers for
 a class of lists, the expected field names, and a temporary (reserved)
-variable name.*} 
+variable name.\<close> 
 
 axiomatization
   LIST::Class and
@@ -405,9 +404,9 @@ axiomatization
   TL::Field and
   tmp::Var
 
-text{*The compilation of primitive expressions extends a code block by
+text\<open>The compilation of primitive expressions extends a code block by
 a sequence of JVM instructions that leave a value on the top of the
-operand stack.*}
+operand stack.\<close>
 
 inductive_set compilePrim::
   "(Label \<times>  (Label,Instr) AssList \<times> Prim \<times> ((Label,Instr) AssList \<times> Label)) set" 
@@ -439,9 +438,9 @@ compileCall_Cons:
   "\<lbrakk> (l+1,code[l\<mapsto>load x], CallPrim f args, OUT) : compilePrim\<rbrakk>
    \<Longrightarrow> (l, code, CallPrim f (x#args), OUT): compilePrim"            
 
-text{*The following lemma shows that the resulting code is an
+text\<open>The following lemma shows that the resulting code is an
 extension of the code submitted as an argument, and that the
-new instructions define a contiguous block.*}
+new instructions define a contiguous block.\<close>
 
 lemma compilePrim_Prop1[rule_format]:
 "(l, code, p, OUT) : compilePrim \<Longrightarrow>
@@ -591,9 +590,9 @@ apply clarsimp
 done
 (*>*)
 
-text{*A signature corresponds to a method specification table if all
-context entries are represented as @{text MST} entries and method
-names that are defined in the global program @{text P}.*}
+text\<open>A signature corresponds to a method specification table if all
+context entries are represented as \<open>MST\<close> entries and method
+names that are defined in the global program \<open>P\<close>.\<close>
 
 definition Sig_good::"TP_Sig \<Rightarrow> bool" where
 "Sig_good \<Sigma> =
@@ -601,16 +600,16 @@ definition Sig_good::"TP_Sig \<Rightarrow> bool" where
     (MST\<down>(C, m) = Some (mkSPEC (Cachera n) emp) \<and>
     (\<exists> par code l0 . mbody_is C m (par,code,l0))))"
 
-text{*This definition requires @{text MST} to associate the
+text\<open>This definition requires \<open>MST\<close> to associate the
 specification $$\mathit{mkSPEC}\; (\mathit{Cachera}\; n)\;
 \mathit{emp}$$ to each method to which the type signature associates
 the type $n$. In particular, this requires the annotation table of
 such a method to be empty. Additionally, the global program $P$ is
 required to contain a method definition for each method
-(i.e.~function) name occurring in the domain of the signature.*}
+(i.e.~function) name occurring in the domain of the signature.\<close>
 
-text{*An auxiliary abbreviation that captures when a block of code has
-trivial annotations and only comprises defined program labels.*}
+text\<open>An auxiliary abbreviation that captures when a block of code has
+trivial annotations and only comprises defined program labels.\<close>
 
 definition Segment::
   "Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Label \<Rightarrow> (Label,Instr)AssList \<Rightarrow> bool"
@@ -638,8 +637,8 @@ lemma Segment_A:
   "\<lbrakk>Segment C m l l1 code; l \<le> ll; ll < l1\<rbrakk> \<Longrightarrow> Segment C m ll l1 code" by (simp add: Segment_def, clarsimp)
 (*>*)
 
-text{*The soundness of (the translation of) a function call is proven
-by induction on the list of arguments.*}
+text\<open>The soundness of (the translation of) a function call is proven
+by induction on the list of arguments.\<close>
 
 lemma Call_SoundAux[rule_format]:
  "\<Sigma>\<down>f = Some n \<longrightarrow> 
@@ -704,7 +703,7 @@ apply assumption apply assumption apply assumption apply assumption
 done
 (*>*)
  
-text{*The definition of basic instructions.*}
+text\<open>The definition of basic instructions.\<close>
 
 definition basic::"Instr \<Rightarrow> bool" where
 "basic ins = ((\<exists> c . ins = const c) \<or> ins = dup \<or> 
@@ -714,9 +713,9 @@ definition basic::"Instr \<Rightarrow> bool" where
               (\<exists> c2 F2. ins=  putfield c2 F2) \<or>
               (\<exists> c3. ins=  checkcast c3))"
 
-text{*Next, we prove the soundness of basic instructions. The
+text\<open>Next, we prove the soundness of basic instructions. The
 hypothesis refers to instructions located at the program
-continuation.*}
+continuation.\<close>
 
 lemma Basic_Sound: 
   "\<lbrakk> Segment C m l ll code; MST\<down>(C,m) = Some (T, MI,Anno); l\<le>l1; l1 < ll;
@@ -738,9 +737,9 @@ apply clarsimp apply (erule CACH_INSTR) apply fast apply assumption apply assump
 done
 (*>*)
 
-text{*Following this, the soundness of the type system for primitive
+text\<open>Following this, the soundness of the type system for primitive
 expressions. The proof proceeds by induction on the typing
-judgement.*}
+judgement.\<close>
 
 lemma TP_prim_Sound[rule_format]:
   "(\<Sigma>,p,n):TP_prim \<Longrightarrow> 
@@ -860,8 +859,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*The translation of general expressions is defined similarly, but
-no code continuation is required.*}
+text\<open>The translation of general expressions is defined similarly, but
+no code continuation is required.\<close>
 
 inductive_set compileExpr::
   "(Label \<times> (Label,Instr) AssList \<times> Expr \<times> ((Label,Instr) AssList \<times> Label)) set"
@@ -896,8 +895,8 @@ compileMatchE:
                    [(l+8)\<mapsto>(store t)], lRes) \<rbrakk>
    \<Longrightarrow> (l, code, MatchE x e1 h t e2, OUT): compileExpr"
 
-text{*Again, we prove an auxiliary result on the emitted code, by
-induction on the compilation judgement.*}
+text\<open>Again, we prove an auxiliary result on the emitted code, by
+induction on the compilation judgement.\<close>
 
 lemma compileExpr_Prop1[rule_format]:
 "(l,code,e,OUT) : compileExpr \<Longrightarrow> 
@@ -1022,8 +1021,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*Then, soundness of the epxression type system is proven by
-induction on the typing judgement.*}
+text\<open>Then, soundness of the epxression type system is proven by
+induction on the typing judgement.\<close>
 
 lemma TP_epxr_Sound[rule_format]:
 "(\<Sigma>,e,n):TP_expr \<Longrightarrow> Sig_good \<Sigma> \<longrightarrow>
@@ -1327,8 +1326,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*The full translation of a functional program into a bytecode
-program is defined as follows.*}
+text\<open>The full translation of a functional program into a bytecode
+program is defined as follows.\<close>
 
 definition compileProg::"FunProg \<Rightarrow> bool" where
 "compileProg F =
@@ -1337,8 +1336,8 @@ definition compileProg::"FunProg \<Rightarrow> bool" where
                        (l0,[],e,(code,l)):compileExpr)) \<and>
    (\<forall> C m. (\<exists> M. mbody_is C m M) = (\<exists> fdecl . F\<down>(C,m) = Some fdecl)))"
 
-text{*The final condition relating a typing context to a method
-specification table.*}
+text\<open>The final condition relating a typing context to a method
+specification table.\<close>
 
 definition TP_MST::"TP_Sig \<Rightarrow> bool" where
 "TP_MST \<Sigma> =
@@ -1348,8 +1347,8 @@ definition TP_MST::"TP_Sig \<Rightarrow> bool" where
                                 (\<exists> n . \<Sigma>\<down>(C,m)=Some n \<and> 
                                 (T,MI,Anno) = mkSPEC (Cachera n) emp))"
 
-text{*For well-typed programs, this property implies the earlier
-condition on signatures. *}
+text\<open>For well-typed programs, this property implies the earlier
+condition on signatures.\<close>
 
 lemma translation_good: "\<lbrakk>compileProg F; TP_MST \<Sigma>; TP \<Sigma> F\<rbrakk> \<Longrightarrow> Sig_good \<Sigma>"
 (*<*)
@@ -1363,8 +1362,8 @@ apply (case_tac "MST\<down>(C,m)", clarsimp,clarsimp)
 done
 (*>*)
 
-text{*We can thus prove that well-typed function bodies satisfy the
-specifications asserted by the typing context.*}
+text\<open>We can thus prove that well-typed function bodies satisfy the
+specifications asserted by the typing context.\<close>
 
 lemma CACH_BodiesDerivable[rule_format]:
   "\<lbrakk> mbody_is C m (par, code, l); compileProg F; TP_MST \<Sigma>; TP \<Sigma> F\<rbrakk> 
@@ -1401,7 +1400,7 @@ apply (simp add: mbody_is_def get_ins_def ins_is_def)
 done
 (*>*)
 
-text{*From this, the overall soundness result follows easily.*}
+text\<open>From this, the overall soundness result follows easily.\<close>
 
 theorem CACH_VERIFIED: "\<lbrakk>TP \<Sigma> F; TP_MST \<Sigma>; compileProg F\<rbrakk> \<Longrightarrow> VP"
 (*<*)

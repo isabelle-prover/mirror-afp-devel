@@ -4,10 +4,10 @@ imports TAO_5_MetaSolver
 begin
 (*>*)
 
-section{* General Identity *}
-text{* \label{TAO_Identifiable} *}
+section\<open>General Identity\<close>
+text\<open>\label{TAO_Identifiable}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   In order to define a general identity symbol that can act
   on all types of terms a type class is introduced
@@ -16,10 +16,10 @@ text{*
   This type class is instantiated for all relation types, individual terms
   and individuals.
 \end{remark}
-*}
+\<close>
 
-subsection{* Type Classes *}
-text{* \label{TAO_Identifiable_Class} *}
+subsection\<open>Type Classes\<close>
+text\<open>\label{TAO_Identifiable_Class}\<close>
 
 class identifiable =
 fixes identity :: "'a\<Rightarrow>'a\<Rightarrow>\<o>" (infixl "\<^bold>=" 63)
@@ -38,8 +38,8 @@ begin
   declare exists_unique_def[conn_defs]
 end
 
-subsection{* Instantiations *}
-text{* \label{TAO_Identifiable_Instantiation} *}
+subsection\<open>Instantiations\<close>
+text\<open>\label{TAO_Identifiable_Instantiation}\<close>
 
 instantiation \<kappa> :: identifiable
 begin
@@ -115,16 +115,16 @@ instance \<Pi>\<^sub>2 :: quantifiable_and_identifiable ..
 instance \<Pi>\<^sub>3 :: quantifiable_and_identifiable ..
 instance \<o> :: quantifiable_and_identifiable ..
 
-subsection{* New Identity Definitions *}
-text{* \label{TAO_Identifiable_Definitions} *}
+subsection\<open>New Identity Definitions\<close>
+text\<open>\label{TAO_Identifiable_Definitions}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   The basic definitions of identity use type specific quantifiers
   and identity symbols. Equivalent definitions that
   use the general identity symbol and general quantifiers are provided.
 \end{remark}
-*}
+\<close>
 
 named_theorems identity_defs
 lemma identity\<^sub>E_def[identity_defs]:

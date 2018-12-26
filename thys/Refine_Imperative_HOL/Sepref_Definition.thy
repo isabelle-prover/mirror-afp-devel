@@ -4,7 +4,7 @@ imports Sepref_Rules "Lib/Pf_Mono_Prover" "Lib/Term_Synth"
 keywords "sepref_definition" :: thy_goal
       and "sepref_thm" :: thy_goal
 begin
-subsection {* Setup of Extraction-Tools *}
+subsection \<open>Setup of Extraction-Tools\<close>
   declare [[cd_patterns "hn_refine _ ?f _ _ _"]]
 
   lemma heap_fixp_codegen:

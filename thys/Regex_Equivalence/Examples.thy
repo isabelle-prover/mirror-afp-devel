@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-section {* Some Tests *}
+section \<open>Some Tests\<close>
 
 (*<*)
 theory Examples
@@ -8,10 +8,10 @@ imports Regex_Equivalence.Regex_Equivalence
 begin
 (*>*)
 
-section {* Examples *}
+section \<open>Examples\<close>
 
 (*<*)
-text{* Test: \<open>B(n) = (One + a + aa + \<cdots> + a\<^sup>n\<^sup>-\<^sup>1) (a\<^sup>n)\<^sup>* = a\<^sup>*\<close> (see Asperti) *}
+text\<open>Test: \<open>B(n) = (One + a + aa + \<cdots> + a\<^sup>n\<^sup>-\<^sup>1) (a\<^sup>n)\<^sup>* = a\<^sup>*\<close> (see Asperti)\<close>
 (*>*)
 
 fun pow where

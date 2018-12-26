@@ -1,11 +1,11 @@
-section {* Standard HOL Bindings *}
+section \<open>Standard HOL Bindings\<close>
 theory Autoref_Bindings_HOL
 imports "Tool/Autoref_Tool"
 begin
 
 
   subsection "Structural Expansion"
-  text {*
+  text \<open>
     In some situations, autoref imitates the operations on typeclasses and
     the typeclass hierarchy. This may result in structural mismatches, e.g.,
     a hashcode side-condition may look like:
@@ -18,12 +18,12 @@ begin
     that expand the structure of an operator as far as possible.
     These lemmas are integrated into a tagged solver, that can prove equality
     between operators modulo structural expansion.
-    *}
+\<close>
 
 definition [simp]: "STRUCT_EQ_tag x y \<equiv> x = y"
 lemma STRUCT_EQ_tagI: "x=y \<Longrightarrow> STRUCT_EQ_tag x y" by simp
 
-ML {*
+ML \<open>
   structure Autoref_Struct_Expand = struct
     structure autoref_struct_expand = Named_Thms (
       val name = @{binding autoref_struct_expand}
@@ -44,23 +44,23 @@ ML {*
         (expand_tac) phi
 
   end
-*}
+\<close>
 
 setup Autoref_Struct_Expand.setup
 declaration Autoref_Struct_Expand.decl_setup
 
 
-text {* Sometimes, also relators must be expanded. Usually to check them to be the identity relator *}
+text \<open>Sometimes, also relators must be expanded. Usually to check them to be the identity relator\<close>
 definition [simp]: "REL_IS_ID R \<equiv> R=Id"
 definition [simp]: "REL_FORCE_ID R \<equiv> R=Id"
 lemma REL_IS_ID_trigger: "R=Id \<Longrightarrow> REL_IS_ID R" by simp
 lemma REL_FORCE_ID_trigger: "R=Id \<Longrightarrow> REL_FORCE_ID R" by simp
 
-declaration {* Tagged_Solver.add_triggers 
-  "Relators.relator_props_solver" @{thms REL_IS_ID_trigger} *}
+declaration \<open>Tagged_Solver.add_triggers 
+  "Relators.relator_props_solver" @{thms REL_IS_ID_trigger}\<close>
 
-declaration {* Tagged_Solver.add_triggers 
-  "Relators.force_relator_props_solver" @{thms REL_FORCE_ID_trigger} *}
+declaration \<open>Tagged_Solver.add_triggers 
+  "Relators.force_relator_props_solver" @{thms REL_FORCE_ID_trigger}\<close>
 
 abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
 
@@ -105,9 +105,9 @@ abbreviation "PREFER_id R \<equiv> PREFER REL_IS_ID R"
 
 
 context begin interpretation autoref_syn .
-  text {*
+  text \<open>
     We allow these operators for all interfaces.
-    *}
+\<close>
   lemma [autoref_itype]:
     "(<) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
     "(\<le>) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i i_bool"
@@ -616,9 +616,9 @@ end
 
 subsection "Examples"
 
-text {* Be careful to make the concrete type a schematic type variable.
-  The default behaviour of @{text "schematic_lemma"} makes it a fixed variable,
-  that will not unify with the infered term! *}
+text \<open>Be careful to make the concrete type a schematic type variable.
+  The default behaviour of \<open>schematic_lemma\<close> makes it a fixed variable,
+  that will not unify with the infered term!\<close>
 schematic_goal 
   "(?f::?'c,[1,2,3]@[4::nat])\<in>?R"
   by autoref
@@ -635,34 +635,34 @@ schematic_goal
   "(?f::?'c,[1,2,3] = [])\<in>?R"
   by autoref
 
-text {*
+text \<open>
   When specifying custom refinement rules on the fly, be careful with
-  the type-inference between @{text "notes"} and @{text "shows"}. It's
-  too easy to ,,decouple'' the type @{text "'a"} in the autoref-rule and
+  the type-inference between \<open>notes\<close> and \<open>shows\<close>. It's
+  too easy to ,,decouple'' the type \<open>'a\<close> in the autoref-rule and
   the actual goal, as shown below!
-*}
+\<close>
 
 schematic_goal 
   notes [autoref_rules] = IdI[where 'a="'a"]
   notes [autoref_itype] = itypeI[where 't="'a::numeral" and I=i_std]
   shows "(?f::?'c, hd [a,b,c::'a::numeral])\<in>?R"
-  txt {* The autoref-rule is bound with type @{text "'a::typ"}, while
-    the goal statement has @{text "'a::numeral"}! *}
+  txt \<open>The autoref-rule is bound with type \<open>'a::typ\<close>, while
+    the goal statement has \<open>'a::numeral\<close>!\<close>
   apply (autoref (keep_goal))
-  txt {* We get an unsolved goal, as it finds no rule to translate 
-    @{text "a"} *}
+  txt \<open>We get an unsolved goal, as it finds no rule to translate 
+    \<open>a\<close>\<close>
   oops
 
-text {* Here comes the correct version. Note the duplicate sort annotation
-  of type @{text "'a"}: *}
+text \<open>Here comes the correct version. Note the duplicate sort annotation
+  of type \<open>'a\<close>:\<close>
 schematic_goal 
   notes [autoref_rules_raw] = IdI[where 'a="'a::numeral"]
   notes [autoref_itype] = itypeI[where 't="'a::numeral" and I=i_std]
   shows "(?f::?'c, hd [a,b,c::'a::numeral])\<in>?R"
   by (autoref)
 
-text {* Special cases of equality: Note that we do not require equality
-  on the element type! *}
+text \<open>Special cases of equality: Note that we do not require equality
+  on the element type!\<close>
 schematic_goal 
   (*notes [autoref_itype] = itypeI[of a "\<langle>I\<rangle>\<^sub>ii_option"]*)
   assumes [autoref_rules]: "(ai,a)\<in>\<langle>R\<rangle>option_rel"

@@ -1,10 +1,10 @@
-section {* A generic model for separation kernels \label{sect:generic} *}
+section \<open>A generic model for separation kernels \label{sect:generic}\<close>
 
 theory K
   imports List_Theorems Option_Binders
 begin
 
-text {*
+text \<open>
 {\em
   This section defines a detailed generic model of separation kernels
   called CISK (Controlled Interruptible Separation Kernel).  It
@@ -44,11 +44,11 @@ text {*
         to manage aborting of action sequences.
   \end{itemize}
   }
-*}
+\<close>
   
-subsection {* K (Kernel) *}
+subsection \<open>K (Kernel)\<close>
 
-text {*
+text \<open>
 The model makes use of the following types:
 \begin{description}
 \item['state\_t] A state  contains information about the resources of the system, 
@@ -66,12 +66,12 @@ Non-kernel actions are not take into account.
 \item['output\_t] Given the current state and an action an output can be computed deterministically.
 \item[time\_t] Time is modelled using natural numbers. Each atomic kernel action can be executed within one time unit.
 \end{description}
-*}
+\<close>
 
 type_synonym ('action_t) execution = "'action_t list list"
 type_synonym time_t = nat
 
-text {*
+text \<open>
   Function \emph{kstep} (for kernel step) computes the next state based on the current state $s$ and a given action $a$.
   It may assume that it makes sense to perform this action, i.e., that any precondition that is necessary for execution of action $a$ in state $s$ is met.
   If not, it may return any result. This precondition is represented by generic predicate \emph{kprecondition} (for kernel precondition).
@@ -88,7 +88,7 @@ text {*
   First, it returns the next action that domain $d$ will perform. Commonly, this is the next action in execution $\alpha$. It may also return None, indicating that no action is done.
   Secondly, it returns the updated execution. When executing action $a$, typically, this action will be removed from the current execution (i.e., updating the program stack).
   Thirdly, it can update the state to set, e.g., error codes.
-*}
+\<close>
 
 locale Kernel =
   fixes kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t"
@@ -104,11 +104,11 @@ locale Kernel =
     and kinvolved :: "'action_t \<Rightarrow> 'dom_t set"
 begin
 
-subsubsection {* Execution semantics *}
+subsubsection \<open>Execution semantics\<close>
 
-text {*
+text \<open>
   Short hand notations for using function control.
-*}
+\<close>
 definition next_action::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'action_t option"
 where "next_action s execs = fst (control s (current s) (execs (current s)))"
 definition next_execs::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution)"
@@ -116,15 +116,15 @@ where "next_execs s execs = (fun_upd execs (current s) (fst (snd (control s  (cu
 definition next_state::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'state_t"
 where "next_state s execs = snd (snd (control s  (current s) (execs (current s))))"
 
-text {*
+text \<open>
   A thread is empty iff either it has no further action sequences to execute, or when the current action sequence is finished and there are no further action sequences to execute.
-*}
+\<close>
 abbreviation thread_empty::"'action_t execution \<Rightarrow> bool"
 where "thread_empty exec \<equiv> exec = [] \<or> exec = [[]]"
 
-text {*
+text \<open>
   Wrappers for function kstep and kprecondition that deal with the case where the given action is None.
-*}
+\<close>
 definition step where "step s oa \<equiv> case oa of None \<Rightarrow> s | (Some a) \<Rightarrow> kstep s a"
 definition precondition :: "'state_t \<Rightarrow> 'action_t option \<Rightarrow> bool"
 where "precondition s a \<equiv> a \<rightharpoonup> kprecondition s"
@@ -132,7 +132,7 @@ definition involved
 where "involved oa \<equiv> case oa of None \<Rightarrow> {} | (Some a) \<Rightarrow> kinvolved a"
 
 
-text {*
+text \<open>
   Execution semantics are defined as follows: a run consists of consecutively running sequences of actions.
   These sequences are interruptable.
   Run first checks whether an interrupt occurs.
@@ -144,7 +144,7 @@ text {*
   Note that run is a partial function, i.e., it computes results only when at all times the preconditions hold.
   Such runs are the realistic ones. For other runs, we do not need to -- and cannot -- prove security.
   All the theorems are formulated in such a way that they hold vacuously for unrealistic runs.
-*} 
+\<close> 
 function run :: "time_t \<Rightarrow> 'state_t option \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'state_t option"
 where "run 0 s execs = s"
 | "run (Suc n) None execs = None"

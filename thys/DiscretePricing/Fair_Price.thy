@@ -2,17 +2,17 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* Fair Prices *}
+section \<open>Fair Prices\<close>
 
-text  {* This section contains the formalization of financial notions, such as markets, price processes, portfolios,
+text  \<open>This section contains the formalization of financial notions, such as markets, price processes, portfolios,
 arbitrages, fair prices, etc. It also defines risk-neutral probability spaces, and proves the main result about the fair
 price of a derivative in a risk-neutral probability space, namely that this fair price is equal to the expectation of
-the discounted value of the derivative's payoff. *}
+the discounted value of the derivative's payoff.\<close>
 
 theory Fair_Price imports Filtration Martingale Geometric_Random_Walk
 begin
 
-subsection {* Preliminary results  *}
+subsection \<open>Preliminary results\<close>
 
 lemma (in prob_space) finite_borel_measurable_integrable:
   assumes "f\<in> borel_measurable M"
@@ -29,7 +29,7 @@ proof -
 qed
 
 
-subsubsection {* On the almost everywhere filter *}
+subsubsection \<open>On the almost everywhere filter\<close>
 
 lemma AE_eq_trans[trans]:
   assumes "AE x in M. A x = B x"
@@ -89,7 +89,7 @@ proof (rule ccontr)
     by (meson Nprops(2) \<open>emeasure M (space M) \<noteq> 0\<close> \<open>emeasure M N = 0\<close> \<open>space M \<subseteq> N\<close> emeasure_eq_0)
 qed
 
-subsubsection {* On conditional expectations *}
+subsubsection \<open>On conditional expectations\<close>
 
 lemma (in prob_space) subalgebra_sigma_finite:
   assumes "subalgebra M N"
@@ -190,9 +190,9 @@ proof (rule real_cond_exp_charact)
   then have A_meas [measurable]: "A \<in> sets M" by (meson set_mp subalg subalgebra_def)
 
   have *: "\<And>i. i \<in> I \<Longrightarrow> integrable M (\<lambda>x. indicator A x * f i x)"
-    using integrable_mult_indicator[OF `A \<in> sets M` assms(1)]  by auto
+    using integrable_mult_indicator[OF \<open>A \<in> sets M\<close> assms(1)]  by auto
   have **: "\<And>i. i \<in> I \<Longrightarrow> integrable M (\<lambda>x. indicator A x * real_cond_exp M F (f i) x)"
-    using integrable_mult_indicator[OF `A \<in> sets M` real_cond_exp_int(1)[OF assms(1)]]  by auto
+    using integrable_mult_indicator[OF \<open>A \<in> sets M\<close> real_cond_exp_int(1)[OF assms(1)]]  by auto
   have inti: "\<And>i. i \<in> I \<Longrightarrow>(\<integral>x. indicator A x * f i x \<partial>M) = (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M)" using
       real_cond_exp_intg(2)[symmetric,of "indicator A" ]
     using "*" \<open>A \<in> sets F\<close> assms borel_measurable_indicator by blast
@@ -209,9 +209,9 @@ proof (rule real_cond_exp_charact)
   finally show "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)" by auto
 qed (auto simp add: assms real_cond_exp_int(1)[OF assms(1)])
 
-subsection {* Financial formalizations *}
+subsection \<open>Financial formalizations\<close>
 
-subsubsection {* Markets *}
+subsubsection \<open>Markets\<close>
 
 
 
@@ -261,18 +261,18 @@ proof -
   have "discrete_market_of S A = Abs_discrete_market (if (discr_mkt S A) then S else {}, A)" unfolding discrete_market_of_def by simp
   hence "Rep_discrete_market (discrete_market_of S A) = (if (discr_mkt S A) then S else {},A)"
     using Abs_discrete_market_inverse[of "(if (discr_mkt S A) then S else {}, A)"] fct  by simp
-  thus ?thesis unfolding stocks_def using `discr_mkt S A` by simp
+  thus ?thesis unfolding stocks_def using \<open>discr_mkt S A\<close> by simp
 qed
 
 lemma mkt_stocks_assets:
   shows "discr_mkt (stocks Mkt) (prices Mkt)" unfolding stocks_def prices_def
   by (metis Rep_discrete_market mem_Collect_eq split_beta')
 
-subsubsection {* Quantity processes and portfolios *}
-text {* These are functions that assign quantities to assets; each quantity is a stochastic process. Basic
-operations are defined on these processes. *}
+subsubsection \<open>Quantity processes and portfolios\<close>
+text \<open>These are functions that assign quantities to assets; each quantity is a stochastic process. Basic
+operations are defined on these processes.\<close>
 
-paragraph {* Basic operations *}
+paragraph \<open>Basic operations\<close>
 
 definition empty_pf where
   "empty_pf = (\<lambda> (x::'a) (n::nat) w. 0::real)"
@@ -293,9 +293,9 @@ definition pf_replace_comp where
   "pf_replace_comp pf1 x pf2 = pf_sum (pf_remove_comp pf1 x) (pf_mult_comp pf2 (pf1 x))"
 
 
-paragraph {* Support sets *}
+paragraph \<open>Support sets\<close>
 
-text {* If p x n w is different from 0, this means that this quantity is held on interval ]n-1, n]. *}
+text \<open>If p x n w is different from 0, this means that this quantity is held on interval ]n-1, n].\<close>
 definition support_set::"('b \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> 'b set" where
   "support_set p = {x. \<exists> n w. p x n w \<noteq> 0}"
 
@@ -380,7 +380,7 @@ proof
   thus "{asset} \<subseteq> support_set (single_comp_pf asset qty)" by auto
 qed
 
-paragraph {* Portfolios *}
+paragraph \<open>Portfolios\<close>
 
 definition portfolio where
   "portfolio p \<longleftrightarrow> finite (support_set p)"
@@ -459,7 +459,7 @@ lemma single_comp_portfolio:
   shows "portfolio (single_comp_pf asset qty)"
   by (meson finite.emptyI finite.insertI finite_subset portfolio_def single_comp_support)
 
-paragraph {* Value processes *}
+paragraph \<open>Value processes\<close>
 
 definition value_process where
   "value_process Mkt p = (if (\<not> (portfolio p)) then (\<lambda> n w. 0)
@@ -644,7 +644,7 @@ qed
 
 
 
-subsubsection {* Trading strategies *}
+subsubsection \<open>Trading strategies\<close>
 
 
 
@@ -654,11 +654,11 @@ locale disc_equity_market = triv_init_disc_filtr_prob_space +
   fixes Mkt::"('a,'b) discrete_market"
 
 
-paragraph {* Discrete predictable processes *}
+paragraph \<open>Discrete predictable processes\<close>
 
 
 
-paragraph {* Trading strategy *}
+paragraph \<open>Trading strategy\<close>
 
 definition (in disc_filtr_prob_space) trading_strategy
 where
@@ -971,9 +971,9 @@ qed
 
 
 
-subsubsection {* Self-financing portfolios *}
+subsubsection \<open>Self-financing portfolios\<close>
 
-paragraph {* Closing value process*}
+paragraph \<open>Closing value process\<close>
 
 fun up_cl_proc where
   "up_cl_proc Mkt p 0 = value_process Mkt p 0" |
@@ -1061,7 +1061,7 @@ next
       from this obtain m where "Suc m = n" by auto
       hence "closing_value_process Mkt p n = up_cl_proc Mkt p n" unfolding closing_value_process_def using True by simp
       also have "... = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w)"
-        using up_cl_proc.simps(2) `Suc m = n` by auto
+        using up_cl_proc.simps(2) \<open>Suc m = n\<close> by auto
       finally have "closing_value_process Mkt p n = (\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w)" .
     moreover have "(\<lambda>w. \<Sum>x\<in>support_set p. prices Mkt x n w * p x n w) \<in> borel_measurable (F n)"
     proof (rule borel_measurable_sum)
@@ -1329,7 +1329,7 @@ qed
 
 
 
-paragraph {* Self-financing *}
+paragraph \<open>Self-financing\<close>
 
 definition self_financing where
   "self_financing Mkt p \<longleftrightarrow> (\<forall>n. value_process Mkt p (Suc n) = closing_value_process Mkt p (Suc n))"
@@ -1551,7 +1551,7 @@ proof -
   thus ?thesis unfolding self_financing_def by auto
 qed   *)
 
-paragraph {* Make a portfolio self-financing *}
+paragraph \<open>Make a portfolio self-financing\<close>
 
 fun  remaining_qty where
   init: "remaining_qty Mkt v pf asset 0 = (\<lambda>w. 0)" |
@@ -1729,7 +1729,7 @@ proof-
 qed
 
 
-subsubsection {* Replicating portfolios *}
+subsubsection \<open>Replicating portfolios\<close>
 
 
 definition (in disc_filtr_prob_space) price_structure::"('a \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> real \<Rightarrow> (nat \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool" where
@@ -1776,7 +1776,7 @@ proof (intro conjI)
 qed
 
 
-subsubsection {* Arbitrages *}
+subsubsection \<open>Arbitrages\<close>
 
 (*definition (in disc_filt_prob_space) arbitrage_process
 where
@@ -2052,7 +2052,7 @@ proof
     using calculation by presburger
 qed
 
-subsubsection {* Fair prices *}
+subsubsection \<open>Fair prices\<close>
 definition (in disc_filtr_prob_space) fair_price where
   "fair_price Mkt \<pi> pyf matur \<longleftrightarrow>
     (\<exists> pr. price_structure pyf matur \<pi> pr \<and>
@@ -2074,7 +2074,7 @@ lemma (in disc_filtr_prob_space) fair_priceI:
       (\<forall> Mkt2 p. (coincides_on Mkt Mkt2 (stocks Mkt)) \<and> (prices Mkt2 x = pr) \<and> portfolio p \<and> support_set p \<subseteq> stocks Mkt \<union> {x} \<longrightarrow>
         \<not> arbitrage_process Mkt2 p))))" using assms unfolding fair_price_def by simp
 
-paragraph {* Existence when replicating portfolio *}
+paragraph \<open>Existence when replicating portfolio\<close>
 
 
 lemma (in disc_equity_market) replicating_fair_price:
@@ -2142,10 +2142,10 @@ proof (rule ccontr)
 qed
 
 
-paragraph {* Uniqueness when replicating portfolio *}
+paragraph \<open>Uniqueness when replicating portfolio\<close>
 
 
-text {* The proof of uniqueness requires the existence of a stock that always takes strictly positive values. *}
+text \<open>The proof of uniqueness requires the existence of a stock that always takes strictly positive values.\<close>
 
 
 locale disc_market_pos_stock = disc_equity_market +
@@ -2793,9 +2793,9 @@ proof -
 qed
 
 
-subsection {* Risk-neutral probability space *}
+subsection \<open>Risk-neutral probability space\<close>
 
-subsubsection {* risk-free rate and discount factor processes *}
+subsubsection \<open>risk-free rate and discount factor processes\<close>
 
 fun disc_rfr_proc:: "real \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> real"
 where
@@ -2963,7 +2963,7 @@ locale rfr_disc_equity_market = disc_equity_market   + rsk_free_asset +
 sublocale rfr_disc_equity_market \<subseteq> disc_market_pos_stock _ _ _ "risk_free_asset"
 by (unfold_locales, (auto simp add: rf_stock rd disc_rfr_proc_positive rf_price acceptable_rate))
 
-subsubsection {* Discounted value of a stochastic process *}
+subsubsection \<open>Discounted value of a stochastic process\<close>
 
 definition discounted_value where
   "discounted_value r X = (\<lambda> n w. discount_factor r n w * X n w)"
@@ -3077,7 +3077,7 @@ proof -
 qed
 
 
-subsubsection {* Results on risk-neutral probability spaces *}
+subsubsection \<open>Results on risk-neutral probability spaces\<close>
 
 definition (in rfr_disc_equity_market) risk_neutral_prob where
   "risk_neutral_prob N \<longleftrightarrow> (prob_space N) \<and> (\<forall> asset \<in> stocks Mkt. martingale N F (discounted_value r (prices Mkt asset)))"

@@ -9,13 +9,13 @@ The prefix order of llists.
 Safety and liveness.
 *)
 
-section{* More on llists *}
+section\<open>More on llists\<close>
 
 theory LList2
 imports Coinductive.Coinductive_List
 begin
 
-subsection{*Preliminaries*}
+subsection\<open>Preliminaries\<close>
 
 notation
   LCons  (infixr "##" 65) and
@@ -28,7 +28,7 @@ translations
 
 lemmas llistE = llist.exhaust
 
-subsection{*Finite and infinite llists over an alphabet*}
+subsection\<open>Finite and infinite llists over an alphabet\<close>
 
 inductive_set
   finlsts :: "'a set \<Rightarrow> 'a llist set" ("(_\<^sup>\<star>)" [1000] 999)
@@ -56,7 +56,7 @@ definition poslsts :: "'a set \<Rightarrow> 'a llist set"  ("(_\<^sup>\<spadesui
 where "A\<^sup>\<spadesuit> \<equiv> A\<^sup>\<infinity> - {LNil}"
 
 
-subsubsection{*Facts about all llists*}
+subsubsection\<open>Facts about all llists\<close>
 
 lemma alllsts_UNIV [iff]:
   "s \<in> UNIV\<^sup>\<infinity>"
@@ -90,7 +90,7 @@ lemma LConsE [iff]: "x##xs \<in> A\<^sup>\<infinity> = (x\<in>A \<and> xs \<in> 
   by (auto elim: alllsts.cases)
 
 
-subsubsection{*Facts about non-empty (positive) llists*}
+subsubsection\<open>Facts about non-empty (positive) llists\<close>
 
 lemma poslsts_iff [iff]:
   "(s \<in> A\<^sup>\<spadesuit>) = (s \<in> A\<^sup>\<infinity> \<and> s \<noteq> LNil)"
@@ -107,7 +107,7 @@ lemma poslsts_mono:
   "A \<subseteq> B \<Longrightarrow> A\<^sup>\<spadesuit> \<subseteq> B\<^sup>\<spadesuit>"
   by (auto dest: alllsts_mono)
 
-subsubsection{*Facts about finite llists*}
+subsubsection\<open>Facts about finite llists\<close>
 
 lemma finlsts_empty [simp]: "{}\<^sup>\<star> = {LNil}"
   by (auto elim: finlsts.cases)
@@ -154,7 +154,7 @@ lemma finT_simp [simp]:
   by auto
 
 
-subsubsection{*A recursion operator for finite llists*}
+subsubsection\<open>A recursion operator for finite llists\<close>
 
 definition finlsts_pred :: "('a llist \<times> 'a llist) set"
 where "finlsts_pred \<equiv> {(r,s). r \<in> UNIV\<^sup>\<star> \<and> (\<exists>a. a##r = s)}"
@@ -200,7 +200,7 @@ lemma finlsts_rec_LCons_def:
   by (auto simp: finlsts_rec_LCons)
 
 
-subsubsection{*Facts about non-empty (positive) finite llists*}
+subsubsection\<open>Facts about non-empty (positive) finite llists\<close>
 
 lemma fpslsts_iff [iff]:
   "(s \<in> A\<^sup>\<clubsuit>) = (s \<in> A\<^sup>\<star> \<and> s \<noteq> LNil)"
@@ -224,7 +224,7 @@ proof-
 qed
 
 
-subsubsection{*Facts about infinite llists*}
+subsubsection\<open>Facts about infinite llists\<close>
 
 lemma inflstsI [intro]:
   "\<lbrakk> x \<in> A\<^sup>\<infinity>; x \<in> UNIV\<^sup>\<star> \<Longrightarrow> False \<rbrakk> \<Longrightarrow> x \<in> A\<^sup>\<omega>"
@@ -283,9 +283,9 @@ lemma notinf_fin [iff]: "(x \<notin> UNIV\<^sup>\<omega>) = (x \<in> UNIV\<^sup>
   by auto
 
 
-subsection{*Lappend*}
+subsection\<open>Lappend\<close>
 
-subsubsection{*Simplification*}
+subsubsection\<open>Simplification\<close>
 
 lemma lapp_inf [simp]:
   assumes "s \<in> A\<^sup>\<omega>"
@@ -305,7 +305,7 @@ lemma same_lappend_eq [iff]:
  "r \<in> A\<^sup>\<star> \<Longrightarrow> (r @@ s = r @@ t) = (s = t)"
   by (erule finlsts.induct) simp+
 
-subsubsection{*Typing rules*}
+subsubsection\<open>Typing rules\<close>
 
 lemma lappT: 
   assumes sllist: "s \<in> A\<^sup>\<infinity>"
@@ -337,7 +337,7 @@ next
   proof (cases "r")
     case LNil thus ?thesis by auto
   next
-    case (LCons x xs) with `a##l' = r @@ s`
+    case (LCons x xs) with \<open>a##l' = r @@ s\<close>
     have "a = x" and "l' = xs @@ s" by auto
     with LCons_fin LCons show ?thesis by auto
   qed
@@ -375,7 +375,7 @@ proof (induct arbitrary: s)
   case LNil_fin thus ?case by simp
 next
   case (LCons_fin a l)
-  from `(a ## l) @@ s \<in> A\<^sup>\<omega>`
+  from \<open>(a ## l) @@ s \<in> A\<^sup>\<omega>\<close>
   have "a ## (l @@ s) \<in> A\<^sup>\<omega>" by simp
   hence "l @@ s \<in> A\<^sup>\<omega>" by (auto elim: inflsts_cases)
   with LCons_fin show "s \<in> A\<^sup>\<omega>" by blast
@@ -407,7 +407,7 @@ next
   assume ?R thus ?L by (auto dest: finsubsetall intro: lappT)
 qed
 
-subsection{*Length, indexing, prefixes, and suffixes of llists*}
+subsection\<open>Length, indexing, prefixes, and suffixes of llists\<close>
 
 primrec ll2f :: "'a llist \<Rightarrow> nat \<Rightarrow> 'a option" (infix "!!" 100)
 where
@@ -532,7 +532,7 @@ next
     case LNil thus ?thesis by auto
   next
     case (LCons x l')
-    with `l' !! n = None \<Longrightarrow> l' \<in> UNIV\<^sup>\<star>` `t !! Suc n = None`
+    with \<open>l' !! n = None \<Longrightarrow> l' \<in> UNIV\<^sup>\<star>\<close> \<open>t !! Suc n = None\<close>
     show ?thesis by auto
   qed
 qed
@@ -627,7 +627,7 @@ proof (induct "i" arbitrary: t)
   case 0 thus ?case by simp
 next
   case (Suc j)
-  from `t \<in> A\<^sup>\<omega>` `\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> llength (t \<down> j) = j` show ?case
+  from \<open>t \<in> A\<^sup>\<omega>\<close> \<open>\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> llength (t \<down> j) = j\<close> show ?case
     by(cases) (auto simp: llength_LCons [of _ UNIV])
 qed
 
@@ -687,7 +687,7 @@ proof (induct i arbitrary: t)
   case 0 thus ?case by simp
 next
   case (Suc n)
-  from `t \<in> A\<^sup>\<omega>` `\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> n \<in> A\<^sup>\<omega>` show ?case
+  from \<open>t \<in> A\<^sup>\<omega>\<close> \<open>\<And>t. t \<in> A\<^sup>\<omega> \<Longrightarrow> t \<up> n \<in> A\<^sup>\<omega>\<close> show ?case
     by (cases "t") auto
 qed
 
@@ -795,7 +795,7 @@ next
 qed
 
 
-subsection{*The constant llist *}
+subsection\<open>The constant llist\<close>
 
 definition lconst :: "'a \<Rightarrow> 'a llist" where
   "lconst a \<equiv> iterates (\<lambda>x. x) a"
@@ -841,7 +841,7 @@ next assume lconst: "lconst a \<in> UNIV\<^sup>\<star>"
 qed
 
 
-subsection{*The prefix order of llists*}
+subsection\<open>The prefix order of llists\<close>
 
 instantiation llist :: (type) order
 begin
@@ -916,7 +916,7 @@ instance
 end
 
 
-subsubsection{*Typing rules*}
+subsubsection\<open>Typing rules\<close>
 
 lemma llist_le_finT [simp]:
  "r\<le>s \<Longrightarrow> s \<in> A\<^sup>\<star> \<Longrightarrow> r \<in> A\<^sup>\<star>"
@@ -941,7 +941,7 @@ lemma llist_less_finT [iff]:
   by (auto simp: less_le)
 
 
-subsubsection{*More simplification rules*}
+subsubsection\<open>More simplification rules\<close>
 
 lemma LNil_less_LCons [iff]: "LNil < a ## t"
   by (simp add: less_le)
@@ -975,7 +975,7 @@ proof (induct i arbitrary: t)
   case 0 thus ?case by (auto elim: inflsts_cases)
 next
   case (Suc i) 
-  from `t \<in> UNIV\<^sup>\<omega>` show ?case
+  from \<open>t \<in> UNIV\<^sup>\<omega>\<close> show ?case
   proof (cases "t")
     case (LCons a l) with Suc show ?thesis
       by auto
@@ -992,7 +992,7 @@ proof (cases "r \<in> UNIV\<^sup>\<star>")
     case 0 thus ?case by (cases "r") auto
   next
     case (Suc j)
-    from `r \<in> UNIV\<^sup>\<star>` `Suc j < llength r` `\<And>r. \<lbrakk>r \<in> UNIV\<^sup>\<star>; j < llength r\<rbrakk> \<Longrightarrow> lappend r s \<down> j < r`
+    from \<open>r \<in> UNIV\<^sup>\<star>\<close> \<open>Suc j < llength r\<close> \<open>\<And>r. \<lbrakk>r \<in> UNIV\<^sup>\<star>; j < llength r\<rbrakk> \<Longrightarrow> lappend r s \<down> j < r\<close>
     show ?case by (cases) auto
   qed
 next
@@ -1000,7 +1000,7 @@ next
 qed
 
 
-subsubsection{*Finite prefixes and infinite suffixes*}
+subsubsection\<open>Finite prefixes and infinite suffixes\<close>
 
 definition finpref :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a llist set"
 where "finpref A s \<equiv> {r. r \<in> A\<^sup>\<star> \<and> r \<le> s}"
@@ -1156,8 +1156,8 @@ proof-
       case LNil_fin thus ?case by simp
     next
       case (LCons_fin a l)
-      note alx = `a ## l \<le> x`
-      note tx = `t \<le> x`
+      note alx = \<open>a ## l \<le> x\<close>
+      note tx = \<open>t \<le> x\<close>
       show ?case
       proof(rule disjCI)
         assume tal: "\<not> t \<le> a ## l"
@@ -1193,7 +1193,7 @@ lemma pfinpref_iff [iff]:
   "(x \<in> pfinpref A s) = (x \<in> finpref A s \<and> x \<noteq> LNil)"
   by (auto simp: pfinpref_def)
 
-subsection{* Safety and Liveness *}
+subsection\<open>Safety and Liveness\<close>
 
 definition infsafety :: "'a set \<Rightarrow> 'a llist set \<Rightarrow> bool"
 where "infsafety A P \<equiv> \<forall> t \<in> A\<^sup>\<omega>. (\<forall> r \<in> finpref A t. \<exists> s \<in> A\<^sup>\<omega>. r @@ s \<in> P) \<longrightarrow> t \<in> P"

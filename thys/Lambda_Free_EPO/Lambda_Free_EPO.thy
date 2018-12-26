@@ -12,7 +12,7 @@ abbrevs ">t" = ">\<^sub>t"
 begin
 
 text \<open>
-This theory defines the embedding path order for @{text \<lambda>}-free
+This theory defines the embedding path order for \<open>\<lambda>\<close>-free
 higher-order terms.
 \<close>
 
@@ -159,7 +159,7 @@ proof (simp only: atomize_imp,
           then have "chop t >\<^sub>t chop s" 
             by (metis Var args.simps(1) chkchop_def chkchop_same_def epo.extf_min_empty 
                 epo_axioms gt_hd_def gt_hd_irrefl hd.disc(1) local.gt_same(2) local.gt_same(3) tm.collapse(1) tm.disc(2))
-          then have "vars (chop s) \<subseteq> vars (chop t)" using ih[OF _ `chop t >\<^sub>t chop s`] 
+          then have "vars (chop s) \<subseteq> vars (chop t)" using ih[OF _ \<open>chop t >\<^sub>t chop s\<close>] 
             by (metis App add_mono_thms_linordered_field(5) args_Nil_iff_is_Hd extf_min_empty gt_hd_def gt_hd_irrefl local.gt_same(3) size_chop_lt tm.disc(2))
           then show ?thesis using  gt_same(1) vars_chop[of t] vars_chop[of s]
             by (metis App args_Nil_iff_is_Hd extf_min_empty gt_hd_def gt_hd_irrefl le_sup_iff local.gt_same(3) order_refl sup.coboundedI1 tm.disc(2))
@@ -431,7 +431,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
                 emb_step_at (replicate (num_args (fun s)) Left) Right t" 
             using merge_emb_step_at[of "replicate (num_args (fun s)) Left" Right Nil Right t, unfolded append_Nil2 opp_simps(1) replicate_append_same]
             by (metis \<open>Suc (num_args (fun s)) = num_args (fun t)\<close> \<open>is_App t\<close> chop_emb_step_at replicate_Suc)
-          then have "emb_step_at (replicate (num_args (fun s)) dir.Left) dir.Right (chop t) = chop s" unfolding chop_emb_step_at[OF `is_App s`]
+          then have "emb_step_at (replicate (num_args (fun s)) dir.Left) dir.Right (chop t) = chop s" unfolding chop_emb_step_at[OF \<open>is_App s\<close>]
             using merge_emb_step_at[of "replicate (num_args (fun s)) Left" Right Nil Left t, unfolded append_Nil2 opp_simps(1) replicate_append_same]
             by (metis Left True \<open>Suc (num_args (fun s)) = num_args (fun t)\<close> \<open>emb_step_at p d t = s\<close> q_rep_t replicate_Suc)
           then show "chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s"
@@ -441,8 +441,8 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
         case False
         assume "is_App s" 
         have p_rep: "p = replicate (length p) Left" 
-          by (metis (full_types) `list_all (\<lambda>x. x = Left) p` list_all_iff replicate_length_same)
-        have length_p:"length p < num_args t" using no_position_replicate_num_args `position_of t (p @ [d])` 
+          by (metis (full_types) \<open>list_all (\<lambda>x. x = Left) p\<close> list_all_iff replicate_length_same)
+        have length_p:"length p < num_args t" using no_position_replicate_num_args \<open>position_of t (p @ [d])\<close> 
             replicate_add[of "num_args t" "length p - num_args t" Left]  p_rep q_rep_t
           by (metis Left add_diff_inverse_nat replicate_app_Cons_same replicate_append_same shallower_pos)
         then have "length p \<le> length q" 
@@ -456,8 +456,8 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
         have "Suc (num_args (fun s)) = num_args (fun t)" 
           by (metis (no_types, lifting) Cons_nth_drop_Suc Suc_num_args \<open>args s = take i (args t) @ drop (Suc i) (args t)\<close> \<open>i < num_args t\<close> \<open>is_App s\<close> \<open>is_App t\<close> add_Suc_right append_take_drop_id diff_Suc_1 length_Cons length_append)
         then have "chop s = emb_step_at p dir.Left (chop t)"
-          using swap_nested_emb_step_at[of p q' Right Left t] chop_emb_step_at[OF `is_App s`]
-            chop_emb_step_at[OF `is_App t`]  
+          using swap_nested_emb_step_at[of p q' Right Left t] chop_emb_step_at[OF \<open>is_App s\<close>]
+            chop_emb_step_at[OF \<open>is_App t\<close>]  
           by (metis (no_types, lifting) Cons_replicate_eq Left \<open>emb_step_at p d t = s\<close> \<open>q = p @ [dir.Left] @ q'\<close> append.assoc append_Cons diff_Suc_1 p_rep q_rep_t replicate_append_same)
         then show "chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s" 
           by (metis Left \<open>is_App t\<close> \<open>position_of t (p @ [d])\<close> \<open>q = p @ [dir.Left] @ q'\<close> chop_emb_step_at emb_step_at_if_position pos_emb_step_at_nested q_rep_t)
@@ -488,8 +488,8 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
     case False
     have "num_args t = num_args s" using emb_step_under_args_num_args[OF False] 
       by (metis (no_types) \<open>\<And>t d. num_args (emb_step_at p d t) = num_args t\<close> \<open>emb_step_at p d t = s\<close>)
-    then have "is_App s" using `num_args t = num_args s` 
-      by (metis args_Nil_iff_is_Hd length_0_conv `is_App t`)
+    then have "is_App s" using \<open>num_args t = num_args s\<close> 
+      by (metis args_Nil_iff_is_Hd length_0_conv \<open>is_App t\<close>)
 
     have q_rep_s: "q = replicate (num_args (fun s)) Left"
       by (metis  q_rep_t \<open>is_App s\<close> \<open>is_App t\<close> \<open>num_args t = num_args s\<close> args.simps(2) butlast_snoc length_butlast tm.collapse(2))
@@ -510,7 +510,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
       proof (rule ccontr)
         assume "p ! num_args (fun t) \<noteq> Right"
         then have "p ! num_args (fun t) = Left" using dir.exhaust by blast
-        then have "take (num_args t) p = replicate (num_args t) Left" using True Suc_num_args[OF `is_App t`] q_rep_t
+        then have "take (num_args t) p = replicate (num_args t) Left" using True Suc_num_args[OF \<open>is_App t\<close>] q_rep_t
             take_Suc_conv_app_nth[of "num_args (fun t)" p]
           by (metis \<open>num_args (fun t) < length p\<close> replicate_Suc replicate_append_same)
         then show False 
@@ -521,8 +521,8 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
       then obtain q' where "p = q @ [Right] @ q'"
         by (metis Cons_nth_drop_Suc True \<open>num_args (fun t) < length p\<close> append_Cons append_Nil append_eq_conv_conj length_replicate q_rep_t)
       have "emb_step_at (q @ q') d (chop t) = chop s"
-        unfolding chop_emb_step_at[OF `is_App t`] chop_emb_step_at[OF `is_App s`] 
-        using swap_nested_emb_step_at[of q q' d Right t, unfolded] \<open>emb_step_at p d t = s\<close> `p = q @ [Right] @ q'` 
+        unfolding chop_emb_step_at[OF \<open>is_App t\<close>] chop_emb_step_at[OF \<open>is_App s\<close>] 
+        using swap_nested_emb_step_at[of q q' d Right t, unfolded] \<open>emb_step_at p d t = s\<close> \<open>p = q @ [Right] @ q'\<close> 
         q_rep_t q_rep_s by auto
       moreover have "chop t \<noteq> chop s"
         by (metis \<open>is_App s\<close> \<open>is_App t\<close> \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b s\<close> emb_step_size nat_less_le size_chop)
@@ -533,7 +533,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
       then have takepq: "take (length q) p \<noteq> q" 
         using q_rep_t by auto
       have takeqp: "length p \<le> length q \<Longrightarrow> take (length p) q \<noteq> p"
-        using `\<not> list_all (\<lambda>x. x = Left) p`[unfolded list_all_length]
+        using \<open>\<not> list_all (\<lambda>x. x = Left) p\<close>[unfolded list_all_length]
         using diff_diff_cancel take_replicate length_replicate  nth_replicate q_rep_s by metis
       have "chop s = emb_step_at p d (chop t)" 
         using swap_disjunct_emb_step_at[of p q Right d t, OF takeqp takepq, unfolded \<open>emb_step_at p d t = s\<close>] 
@@ -551,7 +551,7 @@ proof(simp only: split_paired_all prod.case atomize_imp[symmetric])
         by (simp add: Var)
     next
       case (Sym _)
-      then show ?thesis unfolding chkchop_same_def using `chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s` 
+      then show ?thesis unfolding chkchop_same_def using \<open>chop t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b chop s\<close> 
          \<open>is_App t\<close> add_Suc add_Suc_shift chkchop_def gt_trans ih 
          less_Suc_eq size_chop t_gt_chop_t 
         by (metis (no_types, lifting))
@@ -697,7 +697,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(s',s,t)
   }
   note chkchop_compat_arg = this
 
-  show "App s' t' >\<^sub>t App s t " using `s' >\<^sub>t s`
+  show "App s' t' >\<^sub>t App s t " using \<open>s' >\<^sub>t s\<close>
   proof (cases rule:gt.cases)
     case gt_chop
     then show ?thesis 
@@ -826,7 +826,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
                {# size tt, size ss #} < {# size t, size s #} \<Longrightarrow>
                tt >\<^sub>t ss \<Longrightarrow> subst \<rho> tt >\<^sub>t subst \<rho> ss" 
     and "t >\<^sub>t s" 
-  show "subst \<rho> t >\<^sub>t subst \<rho> s" using `t >\<^sub>t s`
+  show "subst \<rho> t >\<^sub>t subst \<rho> s" using \<open>t >\<^sub>t s\<close>
   proof (cases)
     case t_gt_s_chop: gt_chop
     then show ?thesis 
@@ -888,7 +888,7 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
               case s_Hd: (Hd _)
               show ?thesis 
                 apply (rule gt_same) 
-                using extf_map_ts  args_Nil_iff_is_Hd s_Hd u_Hd `args u = []` less by fastforce+
+                using extf_map_ts  args_Nil_iff_is_Hd s_Hd u_Hd \<open>args u = []\<close> less by fastforce+
             next
               case s_App: (App _ _)
               then have "is_App t" 
@@ -902,12 +902,12 @@ proof (simp only:atomize_imp,induction rule:measure_induct[of "\<lambda>(t,s). {
               define ut where "ut = apps u (map (subst \<rho>) (args t))"
               define us where "us = apps u (map (subst \<rho>) (args s))"
               have 0:"\<And>ss. args (apps u ss) = ss" 
-                using  `args u = []` by simp
+                using  \<open>args u = []\<close> by simp
               have chop_us: "chop us = subst \<rho> (chop s)" 
                 unfolding chop_def subst_apps us_def 0 using hd_map
                 by (metis (no_types, lifting) args_Nil_iff_is_Hd map_tl s_App tm.disc(2))
               have chop_ut: "chop ut = subst \<rho> (chop t)"
-                unfolding chop_def subst_apps ut_def 0 using `is_App t` 
+                unfolding chop_def subst_apps ut_def 0 using \<open>is_App t\<close> 
                 by (simp add: args_Nil_iff_is_Hd hd_map map_tl)
   
               have "head ut = head us" 

@@ -1,5 +1,5 @@
-section {* Definition and Soundness of Refinement Mappings,
-  Forward Simulations and Backward Simulations *}
+section \<open>Definition and Soundness of Refinement Mappings,
+  Forward Simulations and Backward Simulations\<close>
 
 theory Simulations
 imports IOA
@@ -37,7 +37,7 @@ definition
                 \<and> (let tr = trace (ioa.asig A) e in 
                       if a \<in> ext A then tr = [a] else tr = [])))"
 
-subsection {* A series of lemmas that will be useful in the soundness proofs *}
+subsection \<open>A series of lemmas that will be useful in the soundness proofs\<close>
 
 lemma step_eq_traces:
   fixes e_B' A e e_A' a t
@@ -75,7 +75,7 @@ proof -
   thus ?thesis by fast
 qed
 
-subsection {* Soundness of Refinement Mappings *}
+subsection \<open>Soundness of Refinement Mappings\<close>
 
 lemma ref_map_execs:
   fixes A::"('sA,'a)ioa" and B::"('sB,'a)ioa" and f::"'sB \<Rightarrow> 'sA" and e_B
@@ -141,7 +141,7 @@ theorem ref_map_soundness:
   shows "traces B \<subseteq> traces A"
   using assms ref_map_execs exec_inc_imp_trace_inc by metis
 
-subsection {* Soundness of Forward Simulations *}
+subsection \<open>Soundness of Forward Simulations\<close>
 
 lemma forward_sim_execs:
   fixes A::"('sA,'a)ioa" and B::"('sB,'a)ioa" and f::"'sB \<Rightarrow> 'sA set" and e_B
@@ -209,7 +209,7 @@ theorem forward_sim_soundness:
   shows "traces B \<subseteq> traces A"
   using assms forward_sim_execs exec_inc_imp_trace_inc by metis
 
-subsection {* Soundness of Backward Simulations *}
+subsection \<open>Soundness of Backward Simulations\<close>
 
 lemma backward_sim_execs:
   fixes A::"('sA,'a)ioa" and B::"('sB,'a)ioa" and f::"'sB \<Rightarrow> 'sA set" and e_B

@@ -1,4 +1,4 @@
-section {* \isaheader{Generic Collection Framework (Internal)} *}
+section \<open>\isaheader{Generic Collection Framework (Internal)}\<close>
 theory GenCF
 imports 
   "Impl/Impl_List_Set" 
@@ -18,9 +18,9 @@ imports
   "../Lib/Code_Target_ICF"
 begin
 
-  text {* Use one of the @{text "Refine_Dflt"}-theories as entry-point! *}
+  text \<open>Use one of the \<open>Refine_Dflt\<close>-theories as entry-point!\<close>
 
-  text {* Useful Abbreviations *}
+  text \<open>Useful Abbreviations\<close>
   abbreviation "dflt_rs_rel \<equiv> map2set_rel dflt_rm_rel"
   abbreviation "iam_set_rel \<equiv> map2set_rel iam_map_rel"
   abbreviation "dflt_ahs_rel \<equiv> map2set_rel dflt_ahm_rel"

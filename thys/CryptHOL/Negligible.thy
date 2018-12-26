@@ -1,7 +1,7 @@
 (* Title: Negligible.thy
   Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* Negligibility *}
+section \<open>Negligibility\<close>
 
 theory Negligible imports
   Complex_Main
@@ -100,10 +100,10 @@ lemma negligible_power [negligible_intros]:
   assumes "negligible f"
   and "n > 0"
   shows "negligible (\<lambda>\<eta>. f \<eta> ^ n :: real)"
-using `n > 0`
+using \<open>n > 0\<close>
 proof(induct n)
   case (Suc n)
-  thus ?case using `negligible f` by(cases n)(simp_all add: negligible_times)
+  thus ?case using \<open>negligible f\<close> by(cases n)(simp_all add: negligible_times)
 qed simp
 
 lemma negligible_powr [negligible_intros]:

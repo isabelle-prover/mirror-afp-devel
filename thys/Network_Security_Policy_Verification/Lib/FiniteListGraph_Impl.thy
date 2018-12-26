@@ -12,7 +12,7 @@ begin
 
 
 
-text {* A graph's well-formed-ness can be tested with an executable function. *}  
+text \<open>A graph's well-formed-ness can be tested with an executable function.\<close>  
   fun wf_list_graph_impl::"'v list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> bool" where
     "wf_list_graph_impl V [] = True" |
     "wf_list_graph_impl V ((v1,v2)#Es) = (v1 \<in> set V \<and> v2 \<in> set V \<and> wf_list_graph_impl V Es)"
@@ -48,7 +48,7 @@ lemma rbt_contains: "rbt_contains a (rbt_fromlist V) \<longleftrightarrow> a \<i
   lemma[code]: "FiniteListGraph.wf_list_graph_axioms G = wf_list_graph_impl (nodesL G) (edgesL G)"
     by(simp add: FiniteListGraph.wf_list_graph_axioms_def wf_list_graph_impl_axioms_locale_props)
 
-  text{*The list implementation matches the @{term "wf_graph"} definition*}
+  text\<open>The list implementation matches the @{term "wf_graph"} definition\<close>
   theorem wf_list_graph_iff_wf_graph: 
     "wf_graph (list_graph_to_graph G) \<longleftrightarrow> wf_list_graph_axioms G"
   apply(unfold list_graph_to_graph_def wf_graph_def wf_list_graph_axioms_def wf_list_graph_impl_axioms_locale_props)
@@ -60,7 +60,7 @@ lemma rbt_contains: "rbt_contains a (rbt_fromlist V) \<longleftrightarrow> a \<i
 
 
  
-text {* Code examples. *}
+text \<open>Code examples.\<close>
   definition wf_graph_example where
   "wf_graph_example \<equiv> \<lparr> nodesL = [1::nat,4,6], edgesL = [(1,4), (1,6), (6,4)] \<rparr>"
 

@@ -2,16 +2,16 @@ theory SimulationRelations
   imports ProcessCalculi
 begin
 
-section {* Simulation Relations *}
+section \<open>Simulation Relations\<close>
 
-text {* Simulation relations are a special kind of property on relations on processes. They usually
+text \<open>Simulation relations are a special kind of property on relations on processes. They usually
         require that steps are (strongly or weakly) preserved and/or reflected modulo the relation.
-        We consider different kinds of simulation relations. *}
+        We consider different kinds of simulation relations.\<close>
 
-subsection {* Simulation *}
+subsection \<open>Simulation\<close>
 
-text {* A weak reduction simulation is relation R such that if (P, Q) in R and P evolves to some P'
-        then there exists some Q' such that Q evolves to Q' and (P', Q') in R. *}
+text \<open>A weak reduction simulation is relation R such that if (P, Q) in R and P evolves to some P'
+        then there exists some Q' such that Q evolves to Q' and (P', Q') in R.\<close>
 
 abbreviation weak_reduction_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -19,7 +19,7 @@ abbreviation weak_reduction_simulation
   "weak_reduction_simulation Rel Cal \<equiv>
    \<forall>P Q P'. (P, Q) \<in> Rel \<and> P \<longmapsto>Cal* P' \<longrightarrow> (\<exists>Q'. Q \<longmapsto>Cal* Q' \<and> (P', Q') \<in> Rel)"
 
-text {* A weak barbed simulation is weak reduction simulation that weakly preserves barbs. *}
+text \<open>A weak barbed simulation is weak reduction simulation that weakly preserves barbs.\<close>
 
 abbreviation weak_barbed_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -27,7 +27,7 @@ abbreviation weak_barbed_simulation
   "weak_barbed_simulation Rel CWB \<equiv>
    weak_reduction_simulation Rel (Calculus CWB) \<and> rel_weakly_preserves_barbs Rel CWB"
 
-text {* The reflexive and/or transitive closure of a weak simulation is a weak simulation. *}
+text \<open>The reflexive and/or transitive closure of a weak simulation is a weak simulation.\<close>
 
 lemma weak_reduction_simulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -99,9 +99,9 @@ next
     by blast
 qed
 
-text {* In the case of a simulation weak preservation of barbs can be replaced by the weaker
+text \<open>In the case of a simulation weak preservation of barbs can be replaced by the weaker
         condition that whenever (P, Q) in the relation and P has a barb then Q have to be able to
-        reach this barb. *}
+        reach this barb.\<close>
 
 abbreviation weak_barbed_preservation_cond
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -154,16 +154,16 @@ next
   qed
 qed
 
-text {* A strong reduction simulation is relation R such that for each pair (P, Q) in R and each
+text \<open>A strong reduction simulation is relation R such that for each pair (P, Q) in R and each
         step of P to some P' there exists some Q' such that there is a step of Q to Q' and (P', Q')
-        in R. *}
+        in R.\<close>
 
 abbreviation strong_reduction_simulation :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
   where
   "strong_reduction_simulation Rel Cal \<equiv>
    \<forall>P Q P'. (P, Q) \<in> Rel \<and> P \<longmapsto>Cal P' \<longrightarrow> (\<exists>Q'. Q \<longmapsto>Cal Q' \<and> (P', Q') \<in> Rel)"
 
-text {* A strong barbed simulation is strong reduction simulation that preserves barbs. *}
+text \<open>A strong barbed simulation is strong reduction simulation that preserves barbs.\<close>
 
 abbreviation strong_barbed_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -171,7 +171,7 @@ abbreviation strong_barbed_simulation
   "strong_barbed_simulation Rel CWB \<equiv>
    strong_reduction_simulation Rel (Calculus CWB) \<and> rel_preserves_barbs Rel CWB"
 
-text {* A strong strong simulation is also a weak simulation. *}
+text \<open>A strong strong simulation is also a weak simulation.\<close>
 
 lemma strong_impl_weak_reduction_simulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -241,7 +241,7 @@ lemma strong_impl_weak_barbed_simulation:
             strong_barbed_simulation_impl_weak_preservation_of_barbs[where Rel="Rel" and CWB="CWB"]
     by blast
 
-text {* The reflexive and/or transitive closure of a strong simulation is a strong simulation. *}
+text \<open>The reflexive and/or transitive closure of a strong simulation is a strong simulation.\<close>
 
 lemma strong_reduction_simulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -314,10 +314,10 @@ next
     by blast
 qed
 
-subsection {* Contrasimulation *}
+subsection \<open>Contrasimulation\<close>
 
-text {* A weak reduction contrasimulation is relation R such that if (P, Q) in R and P evolves to
-        some P' then there exists some Q' such that Q evolves to Q' and (Q', P') in R. *}
+text \<open>A weak reduction contrasimulation is relation R such that if (P, Q) in R and P evolves to
+        some P' then there exists some Q' such that Q evolves to Q' and (Q', P') in R.\<close>
 
 abbreviation weak_reduction_contrasimulation
     :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -325,8 +325,8 @@ abbreviation weak_reduction_contrasimulation
   "weak_reduction_contrasimulation Rel Cal \<equiv>
    \<forall>P Q P'. (P, Q) \<in> Rel \<and> P \<longmapsto>Cal* P' \<longrightarrow> (\<exists>Q'. Q \<longmapsto>Cal* Q' \<and> (Q', P') \<in> Rel)"
 
-text {* A weak barbed contrasimulation is weak reduction contrasimulation that weakly preserves
-        barbs. *}
+text \<open>A weak barbed contrasimulation is weak reduction contrasimulation that weakly preserves
+        barbs.\<close>
 
 abbreviation weak_barbed_contrasimulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -334,8 +334,8 @@ abbreviation weak_barbed_contrasimulation
   "weak_barbed_contrasimulation Rel CWB \<equiv>
    weak_reduction_contrasimulation Rel (Calculus CWB) \<and> rel_weakly_preserves_barbs Rel CWB"
 
-text {* The reflexive and/or transitive closure of a weak contrasimulation is a weak
-        contrasimulation. *}
+text \<open>The reflexive and/or transitive closure of a weak contrasimulation is a weak
+        contrasimulation.\<close>
 
 lemma weak_reduction_contrasimulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -408,11 +408,11 @@ next
     by blast
 qed
 
-subsection {* Coupled Simulation *}
+subsection \<open>Coupled Simulation\<close>
 
-text {* A weak reduction coupled simulation is relation R such that if (P, Q) in R and P evolves to
+text \<open>A weak reduction coupled simulation is relation R such that if (P, Q) in R and P evolves to
         some P' then there exists some Q' such that Q evolves to Q' and (P', Q') in R and there
-        exits some Q' such that Q evolves to Q' and (Q', P') in R. *}
+        exits some Q' such that Q evolves to Q' and (Q', P') in R.\<close>
 
 abbreviation weak_reduction_coupled_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -421,8 +421,8 @@ abbreviation weak_reduction_coupled_simulation
    \<forall>P Q P'. (P, Q) \<in> Rel \<and> P \<longmapsto>Cal* P'
    \<longrightarrow> (\<exists>Q'. Q \<longmapsto>Cal* Q' \<and> (P', Q') \<in> Rel) \<and> (\<exists>Q'. Q \<longmapsto>Cal* Q' \<and> (Q', P') \<in> Rel)"
 
-text {* A weak barbed coupled simulation is weak reduction coupled simulation that weakly preserves
-        barbs. *}
+text \<open>A weak barbed coupled simulation is weak reduction coupled simulation that weakly preserves
+        barbs.\<close>
 
 abbreviation weak_barbed_coupled_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -430,8 +430,8 @@ abbreviation weak_barbed_coupled_simulation
   "weak_barbed_coupled_simulation Rel CWB \<equiv>
    weak_reduction_coupled_simulation Rel (Calculus CWB) \<and> rel_weakly_preserves_barbs Rel CWB"
 
-text {* A weak coupled simulation combines the conditions on a weak simulation and a weak
-        contrasimulation. *}
+text \<open>A weak coupled simulation combines the conditions on a weak simulation and a weak
+        contrasimulation.\<close>
 
 lemma weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -447,8 +447,8 @@ lemma weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation:
          = (weak_barbed_simulation Rel CWB \<and> weak_barbed_contrasimulation Rel CWB)"
     by blast
 
-text {* The reflexive and/or transitive closure of a weak coupled simulation is a weak coupled
-        simulation. *}
+text \<open>The reflexive and/or transitive closure of a weak coupled simulation is a weak coupled
+        simulation.\<close>
 
 lemma weak_reduction_coupled_simulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -491,13 +491,13 @@ next
     by blast
 qed
 
-subsection {* Correspondence Simulation *}
+subsection \<open>Correspondence Simulation\<close>
 
-text {* A weak reduction correspondence simulation is relation R such that
+text \<open>A weak reduction correspondence simulation is relation R such that
         (1) if (P, Q) in R and P evolves to some P' then there exists some Q' such that Q evolves
             to Q' and (P', Q') in R, and
         (2) if (P, Q) in R and P evolves to some P' then there exists some P'' and Q'' such that
-            P evolves to P'' and Q' evolves to Q'' and (P'', Q'') in Rel. *}
+            P evolves to P'' and Q' evolves to Q'' and (P'', Q'') in Rel.\<close>
 
 abbreviation weak_reduction_correspondence_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -507,8 +507,8 @@ abbreviation weak_reduction_correspondence_simulation
    \<and> (\<forall>P Q Q'. (P, Q) \<in> Rel \<and> Q \<longmapsto>Cal* Q'
       \<longrightarrow> (\<exists>P'' Q''. P \<longmapsto>Cal* P'' \<and> Q' \<longmapsto>Cal* Q'' \<and> (P'', Q'') \<in> Rel))"
 
-text {* A weak barbed correspondence simulation is weak reduction correspondence simulation that
-        weakly respects barbs. *}
+text \<open>A weak barbed correspondence simulation is weak reduction correspondence simulation that
+        weakly respects barbs.\<close>
 
 abbreviation weak_barbed_correspondence_simulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -517,8 +517,8 @@ abbreviation weak_barbed_correspondence_simulation
    weak_reduction_correspondence_simulation Rel (Calculus CWB)
    \<and> rel_weakly_respects_barbs Rel CWB"
 
-text {* For each weak correspondence simulation R there exists a weak coupled simulation that
-        contains all pairs of R in both directions. *}
+text \<open>For each weak correspondence simulation R there exists a weak coupled simulation that
+        contains all pairs of R in both directions.\<close>
 
 inductive_set cSim_cs :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> ('proc \<times> 'proc) set"
     for Rel :: "('proc \<times> 'proc) set"
@@ -696,8 +696,8 @@ proof clarify
     by blast
 qed
 
-text {* The reflexive and/or transitive closure of a weak correspondence simulation is a weak
-        correspondence simulation. *}
+text \<open>The reflexive and/or transitive closure of a weak correspondence simulation is a weak
+        correspondence simulation.\<close>
 
 lemma weak_reduction_correspondence_simulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -824,13 +824,13 @@ next
     by blast
 qed
 
-subsection {* Bisimulation *}
+subsection \<open>Bisimulation\<close>
 
-text {* A weak reduction bisimulation is relation R such that
+text \<open>A weak reduction bisimulation is relation R such that
         (1) if (P, Q) in R and P evolves to some P' then there exists some Q' such that Q evolves
             to Q' and (P', Q') in R, and
         (2) if (P, Q) in R and Q evolves to some Q' then there exists some P' such that P evolves
-            to P' and (P', Q') in R. *}
+            to P' and (P', Q') in R.\<close>
 
 abbreviation weak_reduction_bisimulation
     :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -839,7 +839,7 @@ abbreviation weak_reduction_bisimulation
    (\<forall>P Q P'. (P, Q) \<in> Rel \<and> P \<longmapsto>Cal* P' \<longrightarrow> (\<exists>Q'. Q \<longmapsto>Cal* Q' \<and> (P', Q') \<in> Rel))
    \<and> (\<forall>P Q Q'. (P, Q) \<in> Rel \<and> Q \<longmapsto>Cal* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Cal* P' \<and> (P', Q') \<in> Rel))"
 
-text {* A weak barbed bisimulation is weak reduction bisimulation that weakly respects barbs. *}
+text \<open>A weak barbed bisimulation is weak reduction bisimulation that weakly respects barbs.\<close>
 
 abbreviation weak_barbed_bisimulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -847,7 +847,7 @@ abbreviation weak_barbed_bisimulation
   "weak_barbed_bisimulation Rel CWB \<equiv>
    weak_reduction_bisimulation Rel (Calculus CWB) \<and> rel_weakly_respects_barbs Rel CWB"
 
-text {* A symetric weak simulation is a weak bisimulation. *}
+text \<open>A symetric weak simulation is a weak bisimulation.\<close>
 
 lemma symm_weak_reduction_simulation_is_bisimulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -867,8 +867,8 @@ lemma symm_weak_barbed_simulation_is_bisimulation:
       using assms symD[of Rel]
     by blast
 
-text {* If a relation as well as its inverse are weak simulations, then this relation is a weak
-        bisimulation. *}
+text \<open>If a relation as well as its inverse are weak simulations, then this relation is a weak
+        bisimulation.\<close>
 
 lemma weak_reduction_simulations_impl_bisimulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -955,7 +955,7 @@ next
     by blast
 qed
 
-text {* A weak bisimulation is a weak correspondence simulation. *}
+text \<open>A weak bisimulation is a weak correspondence simulation.\<close>
 
 lemma weak_reduction_bisimulation_is_correspondence_simulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -989,8 +989,8 @@ lemma weak_barbed_bisimulation_is_correspondence_simulation:
                    and Cal="Calculus CWB"]
     by blast
 
-text {* The reflexive, symmetric, and/or transitive closure of a weak bisimulation is a weak
-        bisimulation. *}
+text \<open>The reflexive, symmetric, and/or transitive closure of a weak bisimulation is a weak
+        bisimulation.\<close>
 
 lemma weak_reduction_bisimulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -1103,11 +1103,11 @@ next
     by blast
 qed
 
-text {* A strong reduction bisimulation is relation R such that
+text \<open>A strong reduction bisimulation is relation R such that
         (1) if (P, Q) in R and P' is a derivative of P then there exists some Q' such that Q' is a
             derivative of Q and (P', Q') in R, and
         (2) if (P, Q) in R and Q' is a derivative of Q then there exists some P' such that P' is a
-            derivative of P and (P', Q') in R. *}
+            derivative of P and (P', Q') in R.\<close>
 
 abbreviation strong_reduction_bisimulation
     :: "('proc \<times> 'proc) set \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -1116,7 +1116,7 @@ abbreviation strong_reduction_bisimulation
    (\<forall>P Q P'. (P, Q) \<in> Rel \<and> P \<longmapsto>Cal P' \<longrightarrow> (\<exists>Q'. Q \<longmapsto>Cal Q' \<and> (P', Q') \<in> Rel))
    \<and> (\<forall>P Q Q'. (P, Q) \<in> Rel \<and> Q \<longmapsto>Cal Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Cal P' \<and> (P', Q') \<in> Rel))"
 
-text {* A strong barbed bisimulation is strong reduction bisimulation that respects barbs. *}
+text \<open>A strong barbed bisimulation is strong reduction bisimulation that respects barbs.\<close>
 
 abbreviation strong_barbed_bisimulation
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> bool"
@@ -1124,7 +1124,7 @@ abbreviation strong_barbed_bisimulation
   "strong_barbed_bisimulation Rel CWB \<equiv>
    strong_reduction_bisimulation Rel (Calculus CWB) \<and> rel_respects_barbs Rel CWB"
 
-text {* A symetric strong simulation is a strong bisimulation. *}
+text \<open>A symetric strong simulation is a strong bisimulation.\<close>
 
 lemma symm_strong_reduction_simulation_is_bisimulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -1144,8 +1144,8 @@ lemma symm_strong_barbed_simulation_is_bisimulation:
       using assms symD[of Rel]
     by blast
 
-text {* If a relation as well as its inverse are strong simulations, then this relation is a strong
-        bisimulation. *}
+text \<open>If a relation as well as its inverse are strong simulations, then this relation is a strong
+        bisimulation.\<close>
 
 lemma strong_reduction_simulations_impl_bisimulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -1233,7 +1233,7 @@ next
     by blast
 qed
 
-text {* A strong bisimulation is a weak bisimulation. *}
+text \<open>A strong bisimulation is a weak bisimulation.\<close>
 
 lemma strong_impl_weak_reduction_bisimulation:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -1317,8 +1317,8 @@ lemma strong_impl_weak_barbed_bisimulation:
             strong_barbed_bisimulation_impl_weak_respection_of_barbs[where Rel="Rel" and CWB="CWB"]
     by blast
 
-text {* The reflexive, symmetric, and/or transitive closure of a strong bisimulation is a strong
-        bisimulation. *}
+text \<open>The reflexive, symmetric, and/or transitive closure of a strong bisimulation is a strong
+        bisimulation.\<close>
 
 lemma strong_reduction_bisimulation_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -1433,10 +1433,10 @@ next
     by blast
 qed
 
-subsection {* Step Closure of Relations *}
+subsection \<open>Step Closure of Relations\<close>
 
-text {* The step closure of a relation on process terms is the transitive closure of the union of
-        the relation and the inverse of the reduction relation of the respective calculus. *}
+text \<open>The step closure of a relation on process terms is the transitive closure of the union of
+        the relation and the inverse of the reduction relation of the respective calculus.\<close>
 
 inductive_set stepsClosure :: "('a \<times> 'a) set \<Rightarrow> 'a processCalculus \<Rightarrow> ('a \<times> 'a) set"
     for Rel :: "('a \<times> 'a) set"
@@ -1452,7 +1452,7 @@ abbreviation stepsClosureInfix ::
   where
   "P \<R>\<mapsto><Rel,Cal> Q \<equiv> (P, Q) \<in> stepsClosure Rel Cal"
 
-text {* Applying the steps closure twice does not change the relation. *}
+text \<open>Applying the steps closure twice does not change the relation.\<close>
 
 lemma steps_closure_of_steps_closure:
   fixes Rel :: "('a \<times> 'a) set"
@@ -1485,7 +1485,7 @@ next
     by (rule stepsClosure.rel)
 qed
 
-text {* The steps closure is a preorder. *}
+text \<open>The steps closure is a preorder.\<close>
 
 lemma stepsClosure_refl:
   fixes Rel :: "('a \<times> 'a) set"
@@ -1520,7 +1520,7 @@ next
     by blast
 qed
 
-text {* The steps closure of a relation is always a weak reduction simulation. *}
+text \<open>The steps closure of a relation is always a weak reduction simulation.\<close>
 
 lemma steps_closure_is_weak_reduction_simulation:
   fixes Rel :: "('a \<times> 'a) set"
@@ -1570,8 +1570,8 @@ proof clarify
   qed
 qed
 
-text {* If Rel is a weak simulation and its inverse is a weak contrasimulation, then the steps
-        closure of Rel is a contrasimulation. *}
+text \<open>If Rel is a weak simulation and its inverse is a weak contrasimulation, then the steps
+        closure of Rel is a contrasimulation.\<close>
 
 lemma inverse_contrasimulation_impl_reverse_pair_in_steps_closure:
   fixes Rel :: "('a \<times> 'a) set"
@@ -1641,8 +1641,8 @@ proof clarify
   qed
 qed
 
-text {* Accordingly, if Rel is a weak simulation and its inverse is a weak contrasimulation, then
-        the steps closure of Rel is a coupled simulation. *}
+text \<open>Accordingly, if Rel is a weak simulation and its inverse is a weak contrasimulation, then
+        the steps closure of Rel is a coupled simulation.\<close>
 
 lemma simulation_and_inverse_contrasimulation_impl_steps_closure_is_coupled_simulation:
   fixes Rel :: "('a \<times> 'a) set"
@@ -1654,8 +1654,8 @@ lemma simulation_and_inverse_contrasimulation_impl_steps_closure_is_coupled_simu
             steps_closure_is_weak_reduction_simulation[where Rel="Rel" and Cal="Cal"]
     by simp
 
-text {* If the relation that is closed under steps is a (contra)simulation, then we can conlude
-        from a pair in the closure on a pair in the original relation. *}
+text \<open>If the relation that is closed under steps is a (contra)simulation, then we can conlude
+        from a pair in the closure on a pair in the original relation.\<close>
 
 lemma stepsClosure_simulation_impl_refl_trans_closure_of_Rel:
   fixes Rel :: "('a \<times> 'a) set"

@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Results for natural arithmetics *}
+section \<open>Results for natural arithmetics\<close>
 
 theory Util_Nat
 imports Main
 begin
 
-subsection {* Some convenience arithmetic lemmata *}
+subsection \<open>Some convenience arithmetic lemmata\<close>
 
 lemma add_1_Suc_conv: "m + 1 = Suc m" by simp
 lemma sub_Suc0_sub_Suc_conv: "b - a - Suc 0 = b - Suc a" by simp
@@ -71,7 +71,7 @@ by (simp add: less_diff_eq)
 lemma ord_zero_le_diff: "(0 \<le> (b::'a::ordered_ab_group_add) - a) = (a \<le> b)"
 by (simp add: le_diff_eq)
 
-text {* @{text diff_diff_right} in rule format *}
+text \<open>\<open>diff_diff_right\<close> in rule format\<close>
 lemmas diff_diff_right = Nat.diff_diff_right[rule_format]
 
 
@@ -98,7 +98,7 @@ by (subst linorder_not_le[symmetric], blast)+
 
 
 
-text {* Lemmas for @term{abs} function *}
+text \<open>Lemmas for @term{abs} function\<close>
 
 lemma leq_pos_imp_abs_leq: "\<lbrakk> 0 \<le> (a::'a::ordered_ab_group_add_abs); a \<le> b \<rbrakk> \<Longrightarrow> \<bar>a\<bar> \<le> \<bar>b\<bar>"
 by simp
@@ -111,7 +111,7 @@ done
 
 
 
-text {* Lemmas for @term{sgn} function *}
+text \<open>Lemmas for @term{sgn} function\<close>
 
 lemma sgn_abs:"(x::'a::linordered_idom) \<noteq> 0 \<Longrightarrow> \<bar>sgn x\<bar> = 1"
 by (case_tac "x < 0", simp+)
@@ -123,7 +123,7 @@ lemma sgn_mono: "a \<le> b \<Longrightarrow> sgn (a::'a::{linordered_idom,linord
 by (auto simp add: sgn_if)
 
 
-subsection {* Additional facts about inequalities *}
+subsection \<open>Additional facts about inequalities\<close>
 
 lemma add_diff_le: "k \<le> n \<Longrightarrow> m + k - n \<le> (m::nat)"
 by (case_tac "m + k < n", simp_all)
@@ -162,7 +162,7 @@ lemma le_diff_le_imp_le: "\<lbrakk> (i::nat) \<le> j - m; n \<le> m \<rbrakk> \<
 lemma le_imp_diff_le: "(j::nat) \<le> k \<Longrightarrow> j - n \<le> k" by simp
 
 
-subsection {* Inequalities for Suc and pred *}
+subsection \<open>Inequalities for Suc and pred\<close>
 
 corollary less_eq_le_pred: "0 < (n::nat) \<Longrightarrow> (m < n) = (m \<le> n - Suc 0)"
 by (safe, simp_all)
@@ -185,7 +185,7 @@ lemma Suc_le_pred_conv: "0 < n \<Longrightarrow> (Suc m \<le> n) = (m \<le> n - 
 lemma Suc_le_imp_le_pred: "Suc m \<le> n \<Longrightarrow> m \<le> n - Suc 0" by simp
 
 
-subsection {* Additional facts about cancellation in (in-)equalities *}
+subsection \<open>Additional facts about cancellation in (in-)equalities\<close>
 
 lemma diff_cancel_imp_eq: "\<lbrakk> 0 < (n::nat);  n + i - j = n \<rbrakk> \<Longrightarrow> i = j" by simp
 
@@ -210,7 +210,7 @@ by (safe, simp_all)
 lemma eq_imp_diff_eq: "m = (n::nat) \<Longrightarrow> m - k = n - k" by simp
 
 
-text {* List of definitions and lemmas *}
+text \<open>List of definitions and lemmas\<close>
 
 thm
   Nat.add_Suc_right

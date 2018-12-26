@@ -165,10 +165,10 @@ text \<open>
             proof (rule ccontr)
               assume "\<not> ?thesis"
               have f1: "\<forall>(u, v, c) \<in> set (e # es). c>0" 
-                using `ln_invar es` fct0 obt1
+                using \<open>ln_invar es\<close> fct0 obt1
                 unfolding ln_invar_def by auto
               have f2: "distinct (map (\<lambda>(u, v, _). (u,v)) es)" 
-                using `ln_invar es`
+                using \<open>ln_invar es\<close>
                 unfolding ln_invar_def by auto
               
               have "\<exists>c1'. (u1, v1, c1') \<in> (set es) \<and> c1' \<noteq> 0"
@@ -179,14 +179,14 @@ text \<open>
                     using obt1 f2 f1 by auto
                   then have "ln_invar (e # es)" 
                     unfolding ln_invar_def using f1 by simp
-                  thus "False" using `\<not> ln_invar (e # es)` by blast
+                  thus "False" using \<open>\<not> ln_invar (e # es)\<close> by blast
                 qed
               then obtain c1' where "(u1, v1, c1') \<in> (set es) \<and> c1' \<noteq> 0" 
                 by blast
               then have "c' (u1, v1) = (SOME c. (u1, v1, c) \<in> set es \<and> c \<noteq> 0)"
-                using `c' = ln_\<alpha> es` unfolding ln_\<alpha>_def by auto
+                using \<open>c' = ln_\<alpha> es\<close> unfolding ln_\<alpha>_def by auto
               then have "c' (u1, v1) \<noteq> 0" 
-                using `(u1, v1, c1') \<in> (set es) \<and> c1' \<noteq> 0` f1
+                using \<open>(u1, v1, c1') \<in> (set es) \<and> c1' \<noteq> 0\<close> f1
                 by (metis (mono_tags, lifting) tfl_some)
               thus "False" using fct0 obt3 by simp
             qed
@@ -195,7 +195,7 @@ text \<open>
               fix a
               have f1: "distinct (map (\<lambda>(u, v, _). (u,v)) (e # es))"
                 and f2: "\<forall>u v. (u, v, 0) \<notin> set (e # es)"
-                using `ln_invar (e # es)` unfolding ln_invar_def by auto
+                using \<open>ln_invar (e # es)\<close> unfolding ln_invar_def by auto
               have "c a = ln_\<alpha> (e # es) a"
                 proof (cases "a = (u1, v1)")
                   case True
@@ -235,16 +235,16 @@ text \<open>
                             "\<exists> c1'. (u1', v1', c1') \<in> set (e # es) \<and> c1' \<noteq> 0")
                           case True
                             thus ?thesis unfolding ln_\<alpha>_def 
-                              using f1 False True `a = (u1', v1')` by auto
+                              using f1 False True \<open>a = (u1', v1')\<close> by auto
                         next
                           case False
                             thus ?thesis unfolding ln_\<alpha>_def by auto
                         qed
                       then have "(ln_\<alpha> (e # es)) a = (ln_\<alpha> es) a" 
-                        using `a = (u1', v1')` by simp
+                        using \<open>a = (u1', v1')\<close> by simp
                     }
                     moreover have "c a = c' a" using False fct4 by simp
-                    moreover have "c' a = ln_\<alpha> es a" using `c' = ln_\<alpha> es` 
+                    moreover have "c' a = ln_\<alpha> es a" using \<open>c' = ln_\<alpha> es\<close> 
                       by simp
                     ultimately show ?thesis by simp
                 qed
@@ -305,11 +305,11 @@ text \<open>
         moreover {
           fix a b
           assume "c (a, b) \<noteq> 0"
-          then have "a \<noteq> b" using `\<forall>u. c (u, u) = 0` by auto
+          then have "a \<noteq> b" using \<open>\<forall>u. c (u, u) = 0\<close> by auto
           have "c (b, a) = 0"
             proof (cases "(a, b) = (u1, v1)")
               case True
-                then have "c (b, a) = c' (v1, u1)" using fct4 `a \<noteq> b` by auto 
+                then have "c (b, a) = c' (v1, u1)" using fct4 \<open>a \<noteq> b\<close> by auto 
                 moreover have "c' (v1, u1) = 0" using fct0 obt3 by auto
                 ultimately show ?thesis by simp
             next
@@ -317,16 +317,16 @@ text \<open>
                 thus ?thesis
                   proof (cases "(b, a) = (u1, v1)")
                     case True
-                      then have "c (a, b) = c' (v1, u1)" using fct4 `a \<noteq> b` 
+                      then have "c (a, b) = c' (v1, u1)" using fct4 \<open>a \<noteq> b\<close> 
                         by auto
                       moreover have "c' (v1, u1) = 0" using fct0 obt3 by auto
-                      ultimately show ?thesis using `c (a, b) \<noteq> 0` by simp
+                      ultimately show ?thesis using \<open>c (a, b) \<noteq> 0\<close> by simp
                   next
                     case False
                       then have "c (b, a) = c' (b, a)" using fct4 by auto
                       moreover have "c (a, b) = c' (a, b)" 
-                        using False `(a, b) \<noteq> (u1, v1)` fct4 by auto
-                      ultimately show ?thesis using fct `c (a, b) \<noteq> 0` by auto 
+                        using False \<open>(a, b) \<noteq> (u1, v1)\<close> fct4 by auto
+                      ultimately show ?thesis using fct \<open>c (a, b) \<noteq> 0\<close> by auto 
                   qed
             qed
         } note n_fct = this
@@ -338,7 +338,7 @@ text \<open>
             moreover have "set (sc' a) = Graph.E c' `` {a} \<and> distinct (sc' a)"
               using fct by blast
             ultimately have "set (succ a) = Graph.E c``{a} \<and> distinct (succ a)"
-              unfolding Graph.E_def using fct4 `a \<noteq> u1` by auto 
+              unfolding Graph.E_def using fct4 \<open>a \<noteq> u1\<close> by auto 
           }
           moreover {
             fix a
@@ -349,7 +349,7 @@ text \<open>
                   have fct: "set (sc' a) = Graph.E c' `` {a} \<and> distinct (sc' a)"
                     using fct by blast
                   
-                  have "succ a = v1 # sc' a" using `a = u1` fct6 True by simp
+                  have "succ a = v1 # sc' a" using \<open>a = u1\<close> fct6 True by simp
                   moreover have "Graph.E c = Graph.E c' \<union> {(u1, v1)}" 
                     unfolding Graph.E_def using fct4 fct0 by auto
                   moreover have "v1 \<notin> set (sc' a)"
@@ -357,9 +357,9 @@ text \<open>
                       assume "\<not> ?thesis"
                       then have "c' (a, v1) \<noteq> 0" 
                         using fct unfolding Graph.E_def by auto
-                      thus "False" using True `a = u1` by simp
+                      thus "False" using True \<open>a = u1\<close> by simp
                     qed
-                  ultimately show ?thesis using `a = u1` fct by auto
+                  ultimately show ?thesis using \<open>a = u1\<close> fct by auto
               next
                 case False
                   thus ?thesis using fct0 obt3 by auto
@@ -379,7 +379,7 @@ text \<open>
               using fct by blast
             ultimately have 
               "set (pred a) = (Graph.E c)\<inverse>``{a} \<and> distinct (pred a)"
-              unfolding Graph.E_def using fct4 `a \<noteq> v1` by auto 
+              unfolding Graph.E_def using fct4 \<open>a \<noteq> v1\<close> by auto 
           }
           moreover {
             fix a
@@ -391,7 +391,7 @@ text \<open>
                     "set (pd' a) = (Graph.E c')\<inverse> `` {a} \<and> distinct (pd' a)"
                     using fct by blast
                   
-                  have "pred a = u1 # pd' a" using `a = v1` fct7 True by simp
+                  have "pred a = u1 # pd' a" using \<open>a = v1\<close> fct7 True by simp
                   moreover have "Graph.E c = Graph.E c' \<union> {(u1, v1)}" 
                     unfolding Graph.E_def using fct4 fct0 by auto
                   moreover have "u1 \<notin> set (pd' a)"
@@ -399,9 +399,9 @@ text \<open>
                       assume "\<not> ?thesis"
                       then have "c' (u1, a) \<noteq> 0" 
                         using fct unfolding Graph.E_def by auto
-                      thus "False" using True `a = v1` by simp
+                      thus "False" using True \<open>a = v1\<close> by simp
                     qed
-                  ultimately show ?thesis using `a = v1` fct by auto
+                  ultimately show ?thesis using \<open>a = v1\<close> fct by auto
               next
                 case False
                   thus ?thesis using fct0 obt3 by auto
@@ -422,7 +422,7 @@ text \<open>
             ultimately have 
               "set (adjmap a) = Graph.E c``{a} \<union> (Graph.E c)\<inverse>``{a} 
                 \<and> distinct (adjmap a)" 
-              unfolding Graph.E_def using fct4 `a \<noteq> u1 \<and> a \<noteq> v1` by auto
+              unfolding Graph.E_def using fct4 \<open>a \<noteq> u1 \<and> a \<noteq> v1\<close> by auto
         }
         moreover {
           fix a
@@ -441,7 +441,7 @@ text \<open>
                       using fct by blast
                     
                     have "adjmap a = v1 # ps' a" 
-                      using `a = u1` fct8 True by simp
+                      using \<open>a = u1\<close> fct8 True by simp
                     moreover have "Graph.E c = Graph.E c' \<union> {(u1, v1)}" 
                       unfolding Graph.E_def using fct4 fct0 by auto
                     moreover have "v1 \<notin> set (ps' a)"
@@ -449,9 +449,9 @@ text \<open>
                         assume "\<not> ?thesis"
                         then have "c' (a, v1) \<noteq> 0 \<or> c' (v1, a) \<noteq> 0"
                           using fct unfolding Graph.E_def by auto
-                        thus "False" using True `a = u1` by simp
+                        thus "False" using True \<open>a = u1\<close> by simp
                       qed
-                    ultimately show ?thesis using `a = u1` fct by auto
+                    ultimately show ?thesis using \<open>a = u1\<close> fct by auto
                 next
                   case False
                     thus ?thesis using fct0 obt3 by auto 
@@ -467,7 +467,7 @@ text \<open>
                       using fct by blast
                     
                     have "adjmap a = u1 # ps' a" 
-                      using `a = v1` fct8 True by simp
+                      using \<open>a = v1\<close> fct8 True by simp
                     moreover have "Graph.E c = Graph.E c' \<union> {(u1, v1)}" 
                       unfolding Graph.E_def using fct4 fct0 by auto
                     moreover have "u1 \<notin> set (ps' a)"
@@ -475,9 +475,9 @@ text \<open>
                         assume "\<not> ?thesis"
                         then have "c' (u1, a) \<noteq> 0 \<or> c' (a, u1) \<noteq> 0"
                           using fct unfolding Graph.E_def by auto
-                        thus "False" using True `a = v1` by simp
+                        thus "False" using True \<open>a = v1\<close> by simp
                       qed
-                    ultimately show ?thesis using `a = v1` fct by auto
+                    ultimately show ?thesis using \<open>a = v1\<close> fct by auto
                 next
                   case False
                     thus ?thesis using fct0 obt3 by auto
@@ -596,7 +596,7 @@ text \<open>
             moreover {
               assume "c' (u1, v1) \<noteq> 0"
               then have "\<exists>c1'. (u1, v1, c1') \<in> set el" 
-                using `c' = ln_\<alpha> el` unfolding ln_\<alpha>_def 
+                using \<open>c' = ln_\<alpha> el\<close> unfolding ln_\<alpha>_def 
                 by (auto split:if_splits)
               then have "\<not> distinct (map (\<lambda>(u, v, _). (u, v)) (e # el))" 
                 using obt2 by force
@@ -605,7 +605,7 @@ text \<open>
             moreover {
               assume "c' (v1, u1) \<noteq> 0"
               then have "\<exists>c1'. (v1, u1, c1') \<in> set el \<and> c1' \<noteq> 0" 
-                using `c' = ln_\<alpha> el` unfolding ln_\<alpha>_def 
+                using \<open>c' = ln_\<alpha> el\<close> unfolding ln_\<alpha>_def 
                 by (auto split:if_splits)
               then have "\<not>ln_invar (e # el) \<or> (
                 \<exists>u v c1 c2.
@@ -614,7 +614,7 @@ text \<open>
                 proof (cases "c1 \<noteq> 0")
                   case True
                     thus ?thesis 
-                      using `\<exists>c1'. (v1, u1, c1') \<in> set el  \<and> c1' \<noteq> 0` obt2 
+                      using \<open>\<exists>c1'. (v1, u1, c1') \<in> set el  \<and> c1' \<noteq> 0\<close> obt2 
                       by auto
                 next
                   case False
@@ -862,8 +862,8 @@ text \<open>
             moreover {
               have "finite (Graph.V c)" and "s \<in> (Graph.V c)" 
                 using fct obt by auto
-              note Graph.reachable_ss_V[OF `s \<in> (Graph.V c)`]
-              note finite_subset[OF this `finite (Graph.V c)`]
+              note Graph.reachable_ss_V[OF \<open>s \<in> (Graph.V c)\<close>]
+              note finite_subset[OF this \<open>finite (Graph.V c)\<close>]
             }
             ultimately have "Network (pn_c x) s t" 
               unfolding Network_def using asm1 fct asm7 
@@ -929,7 +929,7 @@ text \<open>
                 proof (cases "p = []")
                   case True
                     then have "x = t" 
-                      using `Graph.isPath c x p t` Graph.isPath.simps(1) 
+                      using \<open>Graph.isPath c x p t\<close> Graph.isPath.simps(1) 
                       by auto
                     thus ?thesis using fct by auto
                 next
@@ -937,7 +937,7 @@ text \<open>
                     then obtain p1 ps where "p = p1 # ps" 
                       by (meson neq_Nil_conv)
                     then have "Graph.isPath c x (p1 # ps) t" 
-                      using `Graph.isPath c x p t` by auto
+                      using \<open>Graph.isPath c x p t\<close> by auto
                     then have "fst p1 = x \<and> c p1 \<noteq> 0" 
                       using Graph.isPath_head[of c x p1 ps t] 
                       by (auto simp: Graph.E_def)
@@ -958,7 +958,7 @@ text \<open>
                 proof (rule ccontr)
                   assume "\<not>?thesis"
                   then obtain p where "Graph.isPath c x p t" by blast
-                  thus "False" using Graph.isPath_rtc `(x , t) \<notin> (Graph.E c)\<^sup>*` 
+                  thus "False" using Graph.isPath_rtc \<open>(x , t) \<notin> (Graph.E c)\<^sup>*\<close> 
                   by auto
                 qed
               then have "\<not>Graph.isReachable c x t" 
@@ -990,7 +990,7 @@ text \<open>
                 proof (cases "p = []")
                   case True
                     then have "x = s" 
-                      using `Graph.isPath c s p x` 
+                      using \<open>Graph.isPath c s p x\<close> 
                       by (auto simp: Graph.isPath.simps(1))
                     thus ?thesis using fct by auto
                 next
@@ -998,7 +998,7 @@ text \<open>
                     then obtain p1 ps where "p = ps @ [p1]" 
                       by (metis append_butlast_last_id)
                     then have "Graph.isPath c s (ps @ [p1]) x"
-                      using `Graph.isPath c s p x` by auto
+                      using \<open>Graph.isPath c s p x\<close> by auto
                     then have "snd p1 = x \<and> c p1 \<noteq> 0"
                       using Graph.isPath_tail[of c s ps p1 x] 
                       by (auto simp: Graph.E_def)
@@ -1018,7 +1018,7 @@ text \<open>
                 proof (rule ccontr)
                   assume "\<not>?thesis"
                   then obtain p where "Graph.isPath c s p x" by blast
-                  thus "False" using Graph.isPath_rtc `(s, x) \<notin> (Graph.E c)\<^sup>*` 
+                  thus "False" using Graph.isPath_rtc \<open>(s, x) \<notin> (Graph.E c)\<^sup>*\<close> 
                     by auto
                 qed
               then have "\<not>Graph.isReachable c s x" 
@@ -1049,11 +1049,11 @@ text \<open>
       next {
         assume "s \<noteq> t" and "read el s t = None" and "ln_invar el" 
           and "Network (ln_\<alpha> el) s t"
-        note read_correct2[OF `read el s t = None`]
+        note read_correct2[OF \<open>read el s t = None\<close>]
         thus "False"
           proof
             assume "\<not>ln_invar el"
-            thus ?thesis using `ln_invar el` by blast
+            thus ?thesis using \<open>ln_invar el\<close> by blast
           next
             assume asm: "
               (\<exists>u v c. (u, v, c) \<in> set el \<and> \<not>(c > 0)) 
@@ -1075,7 +1075,7 @@ text \<open>
                 unfolding ln_\<alpha>_def apply (auto split:if_splits)
                 by (metis (mono_tags, lifting) tfl_some)
               then have "False" 
-                using `Network (ln_\<alpha> el) s t` 
+                using \<open>Network (ln_\<alpha> el) s t\<close> 
                 unfolding Network_def by (auto simp: Graph.E_def)
             }
             moreover {
@@ -1084,7 +1084,7 @@ text \<open>
                 unfolding ln_\<alpha>_def 
                 by (clarsimp) (metis (mono_tags, lifting) tfl_some)
               then have "False" 
-                using `Network (ln_\<alpha> el) s t` unfolding Network_def 
+                using \<open>Network (ln_\<alpha> el) s t\<close> unfolding Network_def 
                 by (auto simp: Graph.E_def)
             }
             moreover {
@@ -1093,7 +1093,7 @@ text \<open>
               unfolding ln_\<alpha>_def 
                 by (clarsimp) (metis (mono_tags, lifting) tfl_some)
               then have "False" 
-                using `Network (ln_\<alpha> el) s t` unfolding Network_def 
+                using \<open>Network (ln_\<alpha> el) s t\<close> unfolding Network_def 
                 by (auto simp: Graph.E_def)
             }
             moreover {
@@ -1111,7 +1111,7 @@ text \<open>
                 "\<not> (\<forall>u v. (ln_\<alpha> el) (u, v) \<noteq> 0 \<longrightarrow> (ln_\<alpha> el) (v, u) = 0)" 
                 by auto
               then have "False" 
-                using `Network (ln_\<alpha> el) s t` unfolding Network_def 
+                using \<open>Network (ln_\<alpha> el) s t\<close> unfolding Network_def 
                 by (auto simp: Graph.E_def)
             }
             ultimately show ?thesis by force
@@ -1196,12 +1196,12 @@ text \<open>
             assume "\<not>pn_s_node x"
             then have "\<not>s_node" using obt fct by auto
             then have "s \<notin> Graph.V c" using fct by auto
-            thus ?thesis using `c = ln_\<alpha> el` asm5 Network_def by auto
+            thus ?thesis using \<open>c = ln_\<alpha> el\<close> asm5 Network_def by auto
           next
             assume "\<not>pn_t_node x"
             then have "\<not>t_node" using obt fct by auto
             then have "t \<notin> Graph.V c" using fct by auto
-            thus ?thesis using `c = ln_\<alpha> el` asm5 Network_def by auto
+            thus ?thesis using \<open>c = ln_\<alpha> el\<close> asm5 Network_def by auto
           qed
       }
     qed (blast dest: checkNet_pre_correct2_aux)  

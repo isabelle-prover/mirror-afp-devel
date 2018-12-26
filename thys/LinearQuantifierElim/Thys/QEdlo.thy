@@ -30,10 +30,10 @@ proof
     then obtain i j where [simp]: "a = Less i j"
       using less by (force simp:is_Less_iff)
     with dep obtain k where "i = 0 \<and> j = Suc k \<or> i = Suc k \<and> j = 0"
-      using `Less 0 0 \<notin> set as` `a \<in> set as`
+      using \<open>Less 0 0 \<notin> set as\<close> \<open>a \<in> set as\<close>
       by auto (metis Nat.nat.nchotomy depends\<^sub>d\<^sub>l\<^sub>o.simps(2))
     moreover hence "i=0 \<and> k \<in> ?Us \<or> j=0 \<and> k \<in> ?Ls"
-      using `a \<in> set as` by force
+      using \<open>a \<in> set as\<close> by force
     ultimately show "(\<exists>i\<in>?Ls. a=Less (Suc i) 0) \<or> (\<exists>i\<in>?Us. a=Less 0 (Suc i))"
       by force
   qed
@@ -130,7 +130,7 @@ lemmas [folded DLOe_code_lemmas, code] =
   DLO\<^sub>e.lift_dnfeq_qe_def DLO\<^sub>e.lift_eq_qe_def
 (*>*)
 
-setup {* Sign.revert_abbrev "" @{const_abbrev DLO\<^sub>e.lift_dnfeq_qe} *}
+setup \<open>Sign.revert_abbrev "" @{const_abbrev DLO\<^sub>e.lift_dnfeq_qe}\<close>
 
 definition "qe_dlo = DLO\<^sub>e.lift_dnfeq_qe qe_dlo\<^sub>1"
 (*<*)

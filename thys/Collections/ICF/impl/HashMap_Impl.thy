@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Hash maps implementation} *}
+section \<open>\isaheader{Hash maps implementation}\<close>
 theory HashMap_Impl
 imports 
   RBTMapImpl 
@@ -11,20 +11,20 @@ imports
   "../../Lib/Code_Target_ICF"
 begin
 
-text {*
+text \<open>
   We use a red-black tree instead of an indexed array. This
   has the disadvantage of being more complex, however we need not bother
   about a fixed-size array and rehashing if the array becomes too full.
 
   The entries of the red-black tree are lists of (key,value) pairs.
-*}
+\<close>
 
-subsection {* Abstract Hashmap *}
-text {*
+subsection \<open>Abstract Hashmap\<close>
+text \<open>
   We first specify the behavior of our hashmap on the level of maps.
   We will then show that our implementation based on hashcode-map and bucket-map 
   is a correct implementation of this specification.
-*}
+\<close>
 type_synonym 
   ('k,'v) abs_hashmap = "hashcode \<rightharpoonup> ('k \<rightharpoonup> 'v)"
 
@@ -79,11 +79,11 @@ definition ahm_delete where
 definition ahm_isEmpty where
   "ahm_isEmpty m == m=Map.empty"
 
-text {*
+text \<open>
   Now follow correctness lemmas, that relate the hashmap operations to
   operations on the corresponding map. Those lemmas are named op\_correct, where
   (is) the operation.
-*}
+\<close>
 
 lemma ahm_invarI: "\<lbrakk> 
   !!hc cm k. \<lbrakk>m hc = Some cm; k\<in>dom cm\<rbrakk> \<Longrightarrow> hashcode k = hc;
@@ -205,14 +205,14 @@ lemma ahm_e_is_be: "\<lbrakk>
   by (unfold ahm_\<alpha>_def)
      (auto split: option.split_asm)
 
-subsection {* Concrete Hashmap *}
-text {*
+subsection \<open>Concrete Hashmap\<close>
+text \<open>
   In this section, we define the concrete hashmap that is made from the 
   hashcode map and the bucket map.
 
   We then show the correctness of the operations w.r.t. the abstract hashmap, and
   thus, indirectly, w.r.t. the corresponding map.
-*}
+\<close>
 
 type_synonym
   ('k,'v) hm_impl = "(hashcode, ('k,'v) lm) rm"
@@ -291,13 +291,13 @@ qed
 
 
 subsubsection "Correctness w.r.t. Abstract HashMap"
-text {*
+text \<open>
   The following lemmas establish the correctness of the operations w.r.t. the 
   abstract hashmap.
 
   They have the naming scheme op\_correct', where (is) the name of the 
   operation.
-*}
+\<close>
 
   \<comment> \<open>Abstract concrete hashmap to abstract hashmap\<close>
 definition hm_\<alpha>' where "hm_\<alpha>' m == \<lambda>hc. case rm.\<alpha> m hc of
@@ -359,7 +359,7 @@ proof -
                           rm.correct lm.correct Let_def 
                 split: option.split option.split_asm)
     done
-  thus "invar (delete k m)" using `invar m`
+  thus "invar (delete k m)" using \<open>invar m\<close>
     by (simp add: ahm_delete_correct invar_def)
 qed
 

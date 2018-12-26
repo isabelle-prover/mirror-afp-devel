@@ -1,4 +1,4 @@
-section {* Program Dependence Graph *}
+section \<open>Program Dependence Graph\<close>
 
 theory PDG imports 
   DataDependence 
@@ -73,34 +73,34 @@ by(induct rule:PDG_path.induct,auto intro:PDG_path.intros)
 
 lemma PDG_cdep_edge_CFG_path:
   assumes "n \<longrightarrow>\<^sub>c\<^sub>d n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using `n \<longrightarrow>\<^sub>c\<^sub>d n'`
+  using \<open>n \<longrightarrow>\<^sub>c\<^sub>d n'\<close>
   by(auto elim:PDG_edge.cases dest:control_dependence_path)
 
 lemma PDG_ddep_edge_CFG_path:
   assumes "n -V\<rightarrow>\<^sub>d\<^sub>d n'" obtains as where "n -as\<rightarrow>* n'" and "as \<noteq> []"
-  using `n -V\<rightarrow>\<^sub>d\<^sub>d n'`
+  using \<open>n -V\<rightarrow>\<^sub>d\<^sub>d n'\<close>
   by(auto elim!:PDG_edge.cases simp:data_dependence_def)
 
 lemma PDG_path_CFG_path:
   assumes "n \<longrightarrow>\<^sub>d* n'" obtains as where "n -as\<rightarrow>* n'"
 proof(atomize_elim)
-  from `n \<longrightarrow>\<^sub>d* n'` show "\<exists>as. n -as\<rightarrow>* n'"
+  from \<open>n \<longrightarrow>\<^sub>d* n'\<close> show "\<exists>as. n -as\<rightarrow>* n'"
   proof(induct rule:PDG_path.induct)
     case (PDG_path_Nil n)
     hence "n -[]\<rightarrow>* n" by(rule empty_path)
     thus ?case by blast
   next
     case (PDG_path_Append_cdep n n'' n')
-    from `n'' \<longrightarrow>\<^sub>c\<^sub>d n'` obtain as where "n'' -as\<rightarrow>* n'"
+    from \<open>n'' \<longrightarrow>\<^sub>c\<^sub>d n'\<close> obtain as where "n'' -as\<rightarrow>* n'"
       by(fastforce elim:PDG_cdep_edge_CFG_path)
-    with `\<exists>as. n -as\<rightarrow>* n''` obtain as' where "n -as'@as\<rightarrow>* n'"
+    with \<open>\<exists>as. n -as\<rightarrow>* n''\<close> obtain as' where "n -as'@as\<rightarrow>* n'"
       by(auto dest:path_Append)
     thus ?case by blast
   next
     case (PDG_path_Append_ddep n n'' V n')
-    from `n'' -V\<rightarrow>\<^sub>d\<^sub>d n'` obtain as where "n'' -as\<rightarrow>* n'"
+    from \<open>n'' -V\<rightarrow>\<^sub>d\<^sub>d n'\<close> obtain as where "n'' -as\<rightarrow>* n'"
       by(fastforce elim:PDG_ddep_edge_CFG_path)
-    with `\<exists>as. n -as\<rightarrow>* n''` obtain as' where "n -as'@as\<rightarrow>* n'"
+    with \<open>\<exists>as. n -as\<rightarrow>* n''\<close> obtain as' where "n -as'@as\<rightarrow>* n'"
       by(auto dest:path_Append)
     thus ?case by blast
   qed
@@ -120,7 +120,7 @@ proof(induct rule:PDG_path.induct)
   thus ?case by simp
 next
   case (PDG_path_Append_cdep n n'' n')
-  from `n'' \<longrightarrow>\<^sub>c\<^sub>d n'` `\<not> inner_node n'` have False
+  from \<open>n'' \<longrightarrow>\<^sub>c\<^sub>d n'\<close> \<open>\<not> inner_node n'\<close> have False
     apply -
     apply(erule PDG_edge.cases) apply(auto simp:inner_node_def)
       apply(fastforce dest:control_dependence_path path_valid_node)
@@ -129,7 +129,7 @@ next
   thus ?case by simp
 next
   case (PDG_path_Append_ddep n n'' V n')
-  from `n'' -V\<rightarrow>\<^sub>d\<^sub>d n'` `\<not> inner_node n'` have False
+  from \<open>n'' -V\<rightarrow>\<^sub>d\<^sub>d n'\<close> \<open>\<not> inner_node n'\<close> have False
     apply -
     apply(erule PDG_edge.cases) 
     by(auto dest:path_valid_node simp:inner_node_def data_dependence_def)
@@ -137,10 +137,10 @@ next
 qed
 
 
-subsection {* Definition of the static backward slice *}
+subsection \<open>Definition of the static backward slice\<close>
 
-text {* Node: instead of a single node, we calculate the backward slice of a set
-  of nodes. *}
+text \<open>Node: instead of a single node, we calculate the backward slice of a set
+  of nodes.\<close>
 
 definition PDG_BS :: "'node set \<Rightarrow> 'node set"
   where "PDG_BS S \<equiv> {n'. \<exists>n. n' \<longrightarrow>\<^sub>d* n \<and> n \<in> S \<and> valid_node n}"
@@ -157,9 +157,9 @@ lemma Exit_PDG_BS:"n \<in> PDG_BS {(_Exit_)} \<Longrightarrow> n = (_Exit_)"
 end
 
 
-subsection {* Instantiate static PDG *}
+subsection \<open>Instantiate static PDG\<close>
 
-subsubsection {* Standard control dependence *}
+subsubsection \<open>Standard control dependence\<close>
 
 locale StandardControlDependencePDG = 
   Postdomination sourcenode targetnode kind valid_edge Entry Exit +
@@ -180,7 +180,7 @@ proof(unfold_locales)
   show "n' \<noteq> (_Exit_)"
   proof
     assume "n' = (_Exit_)"
-    with `n controls\<^sub>s n'` show False
+    with \<open>n controls\<^sub>s n'\<close> show False
       by(fastforce intro:Exit_not_standard_control_dependent)
   qed
 next
@@ -216,7 +216,7 @@ lemmas Exit_PDG_BS = PDG.Exit_PDG_BS[OF PDG_scd,simplified]
 
 end
 
-subsubsection {* Weak control dependence *}
+subsubsection \<open>Weak control dependence\<close>
 
 locale WeakControlDependencePDG = 
   StrongPostdomination sourcenode targetnode kind valid_edge Entry Exit +
@@ -237,7 +237,7 @@ proof(unfold_locales)
   show "n' \<noteq> (_Exit_)"
   proof
     assume "n' = (_Exit_)"
-    with `n weakly controls n'` show False
+    with \<open>n weakly controls n'\<close> show False
       by(fastforce intro:Exit_not_weak_control_dependent)
   qed
 next

@@ -10,11 +10,11 @@ imports HOLCF
 begin
 (*>*)
 
-section{* Boxed Types, HOL's natural numbers hoisted. *}
+section\<open>Boxed Types, HOL's natural numbers hoisted.\<close>
 
-subsection{* Unboxed naturals. *}
+subsection\<open>Unboxed naturals.\<close>
 
-text{* We can represent the unboxed naturals as a discrete domain (every
+text\<open>We can represent the unboxed naturals as a discrete domain (every
 number is equal to itself and unequal to everything else, and there is no
 bottom). Think of these functions as the machine operations.
 
@@ -24,7 +24,7 @@ fine-grained as this development.
 
 Note: we default to just CPOs (not pointed CPOs) in this theory. We
 adopt bothg the Isabelle syntax for overloaded arithmetic and the
-notation for unboxed operators of \citet{SPJ-JL:1991}. *}
+notation for unboxed operators of \citet{SPJ-JL:1991}.\<close>
 
 default_sort predomain
 
@@ -112,9 +112,9 @@ lemma uMult_left_commute: "a *\<^sub># (b *\<^sub># c) = b *\<^sub># (a *\<^sub>
 lemmas uMult_arithmetic =
   uMult_unit_left uMult_unit_right uMult_assoc uMult_commute uMult_left_commute
 
-subsection {* The "@{term \<bottom>}" monad. *}
+subsection \<open>The "@{term \<bottom>}" monad.\<close>
 
-text{*
+text\<open>
 
 As Brian Huffman helpfully observed, the "@{term "\<bottom>"}" type
 constructor supports the monadic operations; it's isomorphic to
@@ -122,7 +122,7 @@ Haskell's @{term "Maybe a"}, or ML's @{typ "'a option"}.
 
 Note that @{term "return"} is @{term "up"}.
 
-*}
+\<close>
 
 definition
   bbind :: "('a::cpo)\<^sub>\<bottom> \<rightarrow> ('a \<rightarrow> ('b::pcpo)) \<rightarrow> 'b" where
@@ -146,7 +146,7 @@ lemma bbind_assoc[simp]: "f >>= g >>= h = f >>= (\<Lambda> x. g\<cdot>x >>= h)"
 lemma bbind_case_distr_strict: "f\<cdot>\<bottom> = \<bottom> \<Longrightarrow> f\<cdot>(g >>= h) = g >>= (\<Lambda> x. f\<cdot>(h\<cdot>x))"
   unfolding bbind_def by (cases g, simp_all)
 
-text{*
+text\<open>
 
 Kleisli composition is sometimes helpful. It forms a monad too,
 and has many useful algebraic properties. Unfortunately it is more
@@ -154,7 +154,7 @@ work than is useful to write the lemmas in a way that makes the
 higher-order unifier in the simplifier happy. Seems easier just to
 unfold the definition and go from there.
 
-*}
+\<close>
 
 definition
   bKleisli :: "('a::cpo \<rightarrow> ('b::cpo)\<^sub>\<bottom>) \<rightarrow> ('b \<rightarrow> ('c::cpo)\<^sub>\<bottom>) \<rightarrow> ('a \<rightarrow> 'c\<^sub>\<bottom>)" where
@@ -172,7 +172,7 @@ lemma bKleisli_strict2[simp]: "b >=> \<bottom> = \<bottom>"
 lemma bKleisli_bbind: "(f >>= g) >=> h = f >>= (\<Lambda> x. g\<cdot>x >=> h)"
   by (cases f, simp_all)
 
-text {*
+text \<open>
 
 The "Box" type denotes computations that, when demanded, yield
 either @{term "\<bottom>"} or an unboxed value. Note that the @{term "Box"}
@@ -181,7 +181,7 @@ constructor is strict, and so merely tags the lifted computation @{typ
 us to distinguish the boxed values from the lifted-function-space that
 models recursive functions with unboxed codomains.
 
-*}
+\<close>
 
 domain 'a Box = Box (unbox :: "'a\<^sub>\<bottom>")
 
@@ -193,12 +193,12 @@ lemma boxI: "Box\<cdot>(up\<cdot>x) = box\<cdot>x" unfolding box_def by simp
 lemma unbox_box[simp]: "unbox\<cdot>(box\<cdot>x) = up\<cdot>x" unfolding box_def by simp
 lemma unbox_Box[simp]: "x \<noteq> \<bottom> \<Longrightarrow> unbox\<cdot>(Box\<cdot>x) = x" by simp
 
-text{*
+text\<open>
 
 If we suceed in @{term "box"}ing something, then clearly that
 something was not @{term "\<bottom>"}.
 
-*}
+\<close>
 
 lemma box_casedist[case_names bottom Box, cases type: Box]:
   assumes xbot: "x = \<bottom> \<Longrightarrow> P"
@@ -214,14 +214,14 @@ qed
 lemma bbind_leftID'[simp]: "unbox\<cdot>a >>= box = a" by (cases a, simp_all add: bbind_def)
 
 (*<*)
-text {*
+text \<open>
 
 The optimisations of \citet{SPJ-JL:1991}.
 
 p11: Repeated unboxing of the same value can be done once (roughly:
 store the value in a register). Their story is more general.
 
-*}
+\<close>
 
 lemma box_repeated:
   "x >>= (\<Lambda> x'. f >>= (\<Lambda> y'. x >>= body\<cdot>x'\<cdot>y'))
@@ -229,10 +229,10 @@ lemma box_repeated:
   by (cases x, simp_all)
 (*>*)
 
-text{* Lift binary predicates over @{typ "'a discr"} into @{typ "'a discr Box"}. *}
+text\<open>Lift binary predicates over @{typ "'a discr"} into @{typ "'a discr Box"}.\<close>
 
-text {* @{term "bliftM"} and @{term "bliftM2"} encapsulate the boxing
-and unboxing. *}
+text \<open>@{term "bliftM"} and @{term "bliftM2"} encapsulate the boxing
+and unboxing.\<close>
 
 definition
   bliftM :: "('a::predomain \<rightarrow> 'b::predomain) \<Rightarrow> 'a Box \<rightarrow> 'b Box" where
@@ -249,13 +249,13 @@ lemma bliftM2_strict1[simp]: "bliftM2 f\<cdot>\<bottom> = \<bottom>" by (rule cf
 lemma bliftM2_strict2[simp]: "bliftM2 f\<cdot>x\<cdot>\<bottom> = \<bottom>" by (cases x, simp_all add: bliftM2_def)
 lemma bliftM2_op[simp]: "bliftM2 f\<cdot>(box\<cdot>x)\<cdot>(box\<cdot>y) = box\<cdot>(f\<cdot>x\<cdot>y)" by (simp add: bliftM2_def)
 
-text{*
+text\<open>
 
 Define the arithmetic operations. We need extra continuity lemmas as
 we're using the full function space, so we can re-use the conventional
 operators. The goal is to work at this level.
 
-*}
+\<close>
 
 instantiation Box :: ("{predomain,plus}") plus
 begin
@@ -324,10 +324,10 @@ abbreviation
   blt_syn :: "'a::{countable,ord} discr Box \<Rightarrow> 'a discr Box \<Rightarrow> tr" (infix "<\<^sub>B" 50) where
   "x <\<^sub>B y \<equiv> bpred (<)\<cdot>x\<cdot>y"
 
-subsection{* The flat domain of natural numbers *}
+subsection\<open>The flat domain of natural numbers\<close>
 
-text{* Lift arithmetic to the boxed naturals. Define some things that make
-playing with boxed naturals more convenient. *}
+text\<open>Lift arithmetic to the boxed naturals. Define some things that make
+playing with boxed naturals more convenient.\<close>
 
 type_synonym Nat = "UNat Box"
 
@@ -343,7 +343,7 @@ definition one_Nat_def: "1 \<equiv> box\<cdot>1"
 instance ..
 end
 
-text {* We need to know the underlying operations are continuous for these to work. *}
+text \<open>We need to know the underlying operations are continuous for these to work.\<close>
 
 lemma plus_Nat_eval[simp]: "(box\<cdot>x :: Nat) + box\<cdot>y = box\<cdot>(x + y)" unfolding plus_Box_def by simp
 lemma minus_Nat_eval[simp]: "(box\<cdot>x :: Nat) - box\<cdot>y = box\<cdot>(x - y)" unfolding minus_Box_def by simp
@@ -478,7 +478,7 @@ proof -
     by (simp add: ac)
 qed
 
-text{* Restore the HOLCF default sort. *}
+text\<open>Restore the HOLCF default sort.\<close>
 
 default_sort "domain"
 

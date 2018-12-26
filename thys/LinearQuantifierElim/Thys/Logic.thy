@@ -1,14 +1,14 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-section{* Logic *}
+section\<open>Logic\<close>
 
 theory Logic
 imports Main "HOL-Library.FuncSet"
 begin
 
-text{* \noindent
+text\<open>\noindent
 We start with a generic formalization of quantified logical formulae
-using de Bruijn notation. The syntax is parametric in the type of atoms. *}
+using de Bruijn notation. The syntax is parametric in the type of atoms.\<close>
 
 declare Let_def[simp]
 
@@ -143,11 +143,11 @@ fun "interpret" :: "('a \<Rightarrow> 'b list \<Rightarrow> bool) \<Rightarrow> 
 "interpret h (Neg \<phi>) xs = (\<not> interpret h \<phi> xs)" |
 "interpret h (ExQ \<phi>) xs = (\<exists>x. interpret h \<phi> (x#xs))"
 
-subsection{*Atoms*}
+subsection\<open>Atoms\<close>
 
-text{* The locale ATOM of atoms provides a minimal framework for the
+text\<open>The locale ATOM of atoms provides a minimal framework for the
 generic formulation of theory-independent algorithms, in particular
-quantifier elimination. *}
+quantifier elimination.\<close>
 
 locale ATOM =
 fixes aneg :: "'a \<Rightarrow> 'a fm"

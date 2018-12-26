@@ -5,7 +5,7 @@ Author:Wenda Li
 
 theory MoreGraph imports Complex_Main Dijkstra_Shortest_Path.Graph
 begin
-section {*Undirected Multigraph and undirected trails*}
+section \<open>Undirected Multigraph and undirected trails\<close>
 
 locale valid_unMultigraph=valid_graph G for G::"('v,'w) graph"+
               assumes corres[simp]: "(v,w,u') \<in> edges G \<longleftrightarrow> (u',w,v) \<in> edges G"
@@ -18,7 +18,7 @@ fun (in valid_unMultigraph) is_trail :: "'v \<Rightarrow> ('v,'w) path \<Rightar
 
 (*This section mainly includes lemmas related to degrees of nodes, especially when edges and paths 
 are removed from an undirected graph*)
-section {* Degrees and related properties*}
+section \<open>Degrees and related properties\<close>
 
 definition degree :: "'v \<Rightarrow> ('v,'w) graph \<Rightarrow> nat" where
     "degree v g\<equiv> card({e. e\<in>edges g \<and> fst e=v})"
@@ -76,7 +76,7 @@ proof -
   also have "...=card ({ea \<in>  edges g. fst ea = v}) - card({ea \<in> {(v, e, v'), (v', e, v)}. 
       fst ea = v})+1" 
     proof -
-      have "{(v, e, v'), (v', e, v)} \<subseteq> edges g" using `(v,e,v') \<in> edges g` `(v',e,v) \<in> edges g` 
+      have "{(v, e, v'), (v', e, v)} \<subseteq> edges g" using \<open>(v,e,v') \<in> edges g\<close> \<open>(v',e,v) \<in> edges g\<close> 
         by auto
       hence "{ea \<in> {(v, e, v'), (v', e, v)}. fst ea = v} \<subseteq> {ea \<in>  edges g. fst ea = v}" by auto
       moreover have "finite {ea \<in> {(v, e, v'), (v', e, v)}. fst ea = v}" by auto
@@ -158,9 +158,9 @@ proof (cases "(v,w,v') \<in> edges G")
     by (simp add:del_unEdge_def degree_def)
   also have "...=card({e. e\<in>edges G \<and> fst e=x}-{e. e\<in>{(v,w,v'),(v',w,v)} \<and> fst e=x})"
     by (metis  set_compre_diff)
-  also have "...=card({e. e\<in>edges G \<and> fst e=x})" using `x \<notin> {v, v'}` 
+  also have "...=card({e. e\<in>edges G \<and> fst e=x})" using \<open>x \<notin> {v, v'}\<close> 
     proof -
-      have "x\<noteq>v \<and> x\<noteq> v'" using `x\<notin>{v,v'}`by simp
+      have "x\<noteq>v \<and> x\<noteq> v'" using \<open>x\<notin>{v,v'}\<close>by simp
       hence "{e. e\<in>{(v,w,v'),(v',w,v)} \<and> fst e=x}={}" by auto
       thus ?thesis by (metis Diff_empty)
     qed
@@ -406,7 +406,7 @@ next
   hence "(v1,w,v2)\<notin>set ps \<and> (v1,w,v2)\<notin>set (rev_path ps)" by simp
   hence "(v1,w,v2)\<notin>set ps \<union> set (rev_path ps)" by simp
   hence "(v1,w,v2)\<in>edges G - (set ps \<union> set (rev_path ps))"
-    using `(v1, w, v2) \<in> E` by auto
+    using \<open>(v1, w, v2) \<in> E\<close> by auto
   thus "(v1,w,v2)\<in>edges(rem_unPath ps G)" 
     by (metis rem_unPath_edges)
 qed
@@ -419,7 +419,7 @@ proof (induct ps arbitrary:v)
   case Nil
   hence "v=v'\<and>v'\<in>nodes G1" 
     by (metis (full_types) assms(1) valid_unMultigraph.is_trail.simps(1))
-  hence "v=v'\<and>v'\<in>nodes G2" using `nodes G1 \<subseteq> nodes G2` by auto
+  hence "v=v'\<and>v'\<in>nodes G2" using \<open>nodes G1 \<subseteq> nodes G2\<close> by auto
   thus ?case by (metis assms(2) valid_unMultigraph.is_trail.simps(1))
 next
   case (Cons x xs)
@@ -429,7 +429,7 @@ next
   hence "valid_unMultigraph.is_trail G2 x3 xs v'" using Cons by auto
   moreover have "x\<in>edges G1"
     by (metis Cons.prems assms(1) valid_unMultigraph.is_trail.simps(2) x)
-  hence "x\<in>edges G2" using `edges G1 \<subseteq> edges G2` by auto
+  hence "x\<in>edges G2" using \<open>edges G1 \<subseteq> edges G2\<close> by auto
   moreover have "v=x1\<and>(x1,x2,x3)\<notin>set xs\<and>(x3,x2,x1)\<notin>set xs"
     by (metis Cons.prems assms(1) valid_unMultigraph.is_trail.simps(2) x)
   hence "v=x1" "(x1,x2,x3)\<notin>set xs" "(x3,x2,x1)\<notin>set xs" by auto
@@ -528,7 +528,7 @@ proof -
   thus "num_of_odd_nodes(del_unEdge v w v' G) = num_of_odd_nodes G + 2"
     proof -
       assume "odd_nodes_set(del_unEdge v w v' G)=odd_nodes_set G \<union> {v,v'}"
-      moreover have "v\<noteq>v'" using G.no_id `(v,w,v')\<in>edges G` by auto
+      moreover have "v\<noteq>v'" using G.no_id \<open>(v,w,v')\<in>edges G\<close> by auto
       hence "card{v,v'}=2" by simp
       moreover have " odd_nodes_set G \<inter> {v,v'} = {}" 
         using vv'_odd_disjoint by auto
@@ -561,7 +561,7 @@ proof -
       moreover have "x\<notin>{v,v'} \<Longrightarrow> x \<in> odd_nodes_set (del_unEdge v w v' G)" 
         using x_prems by auto
       hence "x\<notin>{v,v'} \<Longrightarrow> x \<in> odd_nodes_set G" unfolding odd_nodes_set_def
-        using G.degree_frame `finite (edges G)` by auto
+        using G.degree_frame \<open>finite (edges G)\<close> by auto
       hence "x\<notin>{v,v'} \<Longrightarrow> x\<in>odd_nodes_set G \<union> {v}" by simp 
       ultimately show "x \<in> odd_nodes_set G \<union> {v}" by auto
     qed
@@ -575,7 +575,7 @@ proof -
         by auto
       moreover have "x\<notin>{v,v'} \<Longrightarrow> x \<in> odd_nodes_set G \<union> {v}" using x_prems by auto
       hence "x\<notin>{v,v'} \<Longrightarrow>  x\<in>odd_nodes_set (del_unEdge v w v' G)" unfolding odd_nodes_set_def
-        using G.degree_frame `finite (edges G)` by auto
+        using G.degree_frame \<open>finite (edges G)\<close> by auto
       hence "x\<notin>{v,v'} \<Longrightarrow> x \<in> odd_nodes_set (del_unEdge v w v' G) \<union> {v'}" by simp
         ultimately show "x \<in> odd_nodes_set (del_unEdge v w v' G) \<union> {v'}" by auto
     qed
@@ -586,8 +586,8 @@ proof -
   moreover have " odd_nodes_set(del_unEdge v w v' G) \<inter> {v'}={}" 
     by (metis Int_insert_left_if0 inf_bot_left inf_commute not_odd_v')
   moreover have "finite (odd_nodes_set(del_unEdge v w v' G))" 
-     using `finite (nodes G)` by auto
-  moreover have "finite (odd_nodes_set G)" using `finite (nodes G)` by auto
+     using \<open>finite (nodes G)\<close> by auto
+  moreover have "finite (odd_nodes_set G)" using \<open>finite (nodes G)\<close> by auto
   ultimately have "card(odd_nodes_set G) + card {v} = 
                    card(odd_nodes_set(del_unEdge v w v' G)) + card {v'}" 
     using card_Un_disjoint[of "odd_nodes_set (del_unEdge v w v' G)" "{v'}"] 
@@ -616,7 +616,7 @@ proof -
     by (metis (full_types) Int_insert_left_if0 inf_bot_left)
   moreover have extra_odd_nodes:"{v,v'} \<subseteq> odd_nodes_set( G)"
     unfolding odd_nodes_set_def 
-    using `(v,w,v')\<in>edges G`
+    using \<open>(v,w,v')\<in>edges G\<close>
     by (metis (lifting) G.E_validD empty_subsetI insert_subset mem_Collect_eq parity_assms)  
   moreover have "odd_nodes_set G -{v,v'}\<subseteq>odd_nodes_set (del_unEdge v w v' G) " 
     proof
@@ -661,7 +661,7 @@ proof -
         unfolding num_of_odd_nodes_def 
         using card_Un_disjoint 
         by metis 
-      moreover have "v\<noteq>v'" using G.no_id `(v,w,v')\<in>edges G` by auto
+      moreover have "v\<noteq>v'" using G.no_id \<open>(v,w,v')\<in>edges G\<close> by auto
       hence "card{v,v'}=2" by simp
       ultimately show ?thesis unfolding num_of_odd_nodes_def by simp
     qed
@@ -684,7 +684,7 @@ next
       case True 
       assume "x3=v'"
       have "x1=v'" using x by (metis Cons.prems(2) True is_trail.simps(2))
-      thus ?thesis using `x3=v'` by (metis Cons.prems(2) is_trail.simps(2) no_id x)
+      thus ?thesis using \<open>x3=v'\<close> by (metis Cons.prems(2) is_trail.simps(2) no_id x)
     next
       case False
       assume "x3=v'"
@@ -699,7 +699,7 @@ next
           moreover have "(x3,x2,x1) \<in>edges( rem_unPath xs G)"
             by (metis Cons.prems(2) corres distinct_elim_rev is_trail.simps(2) x)
           ultimately show ?thesis 
-            by (metis `x3 = v'` del_edge_undirected_degree_minus delete_edge_sym  x)
+            by (metis \<open>x3 = v'\<close> del_edge_undirected_degree_minus delete_edge_sym  x)
         qed
       also have "...=even(degree v' (rem_unPath xs G))"
         proof -
@@ -707,15 +707,15 @@ next
           hence "(x3,x2,x1)\<in>edges (rem_unPath xs G)" 
             by (metis Cons.prems(2) corres distinct_elim_rev x)
           hence "(x3,x2,x1)\<in>{e \<in> edges (rem_unPath xs G). fst e = v'}" 
-            using `x3=v'` by (metis (mono_tags) fst_conv mem_Collect_eq)
+            using \<open>x3=v'\<close> by (metis (mono_tags) fst_conv mem_Collect_eq)
           moreover have "finite {e \<in> edges (rem_unPath xs G). fst e = v'}"
-            using `finite E` by auto
+            using \<open>finite E\<close> by auto
           ultimately have "degree v' (rem_unPath xs G)\<noteq>0" 
             unfolding degree_def by auto
           thus ?thesis by auto
         qed
       also have "...=even (degree v' G)" 
-        using `x3 = v'` assms
+        using \<open>x3 = v'\<close> assms
         by (metis (mono_tags) Cons.hyps Cons.prems(2) is_trail.simps(2) x)
       finally have "odd (degree v' (rem_unPath (x # xs) G))=even (degree v' G)" .
       thus ?thesis by (metis False)
@@ -744,16 +744,16 @@ next
           hence "(x1,x2,x3)\<in>edges (rem_unPath xs G)" 
             by (metis Cons.prems(2) distinct_elim x)
           hence "(x1,x2,x3)\<in>{e \<in> edges (rem_unPath xs G). fst e = v'}" 
-            using `v=v'` x  Cons
+            using \<open>v=v'\<close> x  Cons
             by (metis (lifting, mono_tags) fst_conv is_trail.simps(2) mem_Collect_eq) 
           moreover have "finite {e \<in> edges (rem_unPath xs G). fst e = v'}"
-            using `finite E` by auto
+            using \<open>finite E\<close> by auto
           ultimately have "degree v' (rem_unPath xs G)\<noteq>0" 
             unfolding degree_def by auto
           thus ?thesis by auto
         qed
       also have "...\<noteq>even (degree v' G)" 
-        using `x3 \<noteq> v'` assms 
+        using \<open>x3 \<noteq> v'\<close> assms 
         by (metis Cons.hyps Cons.prems(2)is_trail.simps(2) x)
       finally have "odd (degree v' (rem_unPath (x # xs) G))\<noteq>even (degree v' G)" .
       thus ?thesis by (metis True)
@@ -765,7 +765,7 @@ next
       also have "...=odd(degree v' (rem_unPath xs G))" 
         proof -
           have "v=x1" by (metis Cons.prems(2) is_trail.simps(2) x)
-          hence "v'\<notin>{x1,x3}" by (metis (mono_tags) False `x3 \<noteq> v'` empty_iff insert_iff) 
+          hence "v'\<notin>{x1,x3}" by (metis (mono_tags) False \<open>x3 \<noteq> v'\<close> empty_iff insert_iff) 
           moreover have "valid_unMultigraph (rem_unPath xs G)" 
             using valid_unMultigraph_axioms by auto
           moreover have "finite (edges (rem_unPath xs G))" 
@@ -776,7 +776,7 @@ next
           thus ?thesis by simp
         qed
       also have "...=even (degree v' G)"
-        using assms x `x3 \<noteq> v'`
+        using assms x \<open>x3 \<noteq> v'\<close>
         by (metis Cons.hyps Cons.prems(2)  is_trail.simps(2))
       finally have "odd (degree v' (rem_unPath (x # xs) G))=even (degree v' G)" .
       thus ?thesis by (metis False)
@@ -816,7 +816,7 @@ next
           moreover have "(x3,x2,x1) \<in>edges( rem_unPath xs G)"
             by (metis Cons.prems(2) corres distinct_elim_rev is_trail.simps(2) x)
           ultimately show ?thesis 
-            using `n = x3` del_edge_undirected_degree_minus' 
+            using \<open>n = x3\<close> del_edge_undirected_degree_minus' 
             by auto
         qed
       also have "...=odd(degree n (rem_unPath xs G))"
@@ -825,20 +825,20 @@ next
           hence "(x3,x2,x1)\<in>edges (rem_unPath xs G)" 
             by (metis Cons.prems(2) corres distinct_elim_rev x)
           hence "(x3,x2,x1)\<in>{e \<in> edges (rem_unPath xs G). fst e = n}" 
-            using `n=x3` by (metis (mono_tags) fst_conv mem_Collect_eq)
+            using \<open>n=x3\<close> by (metis (mono_tags) fst_conv mem_Collect_eq)
           moreover have "finite {e \<in> edges (rem_unPath xs G). fst e = n}"
-            using `finite E` by auto
+            using \<open>finite E\<close> by auto
           ultimately have "degree n (rem_unPath xs G)\<noteq>0" 
             unfolding degree_def by auto
           thus ?thesis by auto
         qed
       also have "...=even(degree n G)" 
         proof -
-          have "x3\<noteq>v'" by (metis `n = x3` assms(3) insert_iff)
+          have "x3\<noteq>v'" by (metis \<open>n = x3\<close> assms(3) insert_iff)
           hence "odd (degree x3 (rem_unPath xs G)) = even(degree x3 G)"
             using Cons assms
             by (metis is_trail.simps(2) rem_UnPath_parity_v x)
-          thus ?thesis using `n=x3` by auto
+          thus ?thesis using \<open>n=x3\<close> by auto
         qed
       finally have "even (degree n (rem_unPath (x#xs) G))=even(degree n G)" .
       thus ?thesis .
@@ -852,7 +852,7 @@ next
       also have "...=even(degree n (rem_unPath xs G))" 
         proof -
           have "v=x1" by (metis Cons.prems(2) is_trail.simps(2) x)
-          hence "n\<notin>{x1,x3}" by (metis Cons.prems(3) `n \<noteq> x3` insertE insertI1 singletonE)
+          hence "n\<notin>{x1,x3}" by (metis Cons.prems(3) \<open>n \<noteq> x3\<close> insertE insertI1 singletonE)
           moreover have "valid_unMultigraph (rem_unPath xs G)" 
             using valid_unMultigraph_axioms by auto
           moreover have "finite (edges (rem_unPath xs G))" 
@@ -863,7 +863,7 @@ next
           thus ?thesis by simp
         qed
       also have "...=even(degree n G)" 
-        using Cons assms `n \<noteq> x3` x by auto
+        using Cons assms \<open>n \<noteq> x3\<close> x by auto
       finally have "even (degree n (rem_unPath (x#xs) G))=even(degree n G)" .
       thus ?thesis .
     qed
@@ -899,8 +899,8 @@ next
         using  parity_x1_x3  fin_nodes fin_edges valid_rem_xs x_in del_UnEdge_even_even 
         by metis
       also have "...=num_of_odd_nodes G+(if even(degree x3 G) \<and> x3\<noteq>v' then 2 else 0 )+2"
-        using Cons.hyps[OF `finite E` `finite V`, of x3] `is_trail v (x # xs) v'`
-          `even (degree v' G)` x 
+        using Cons.hyps[OF \<open>finite E\<close> \<open>finite V\<close>, of x3] \<open>is_trail v (x # xs) v'\<close>
+          \<open>even (degree v' G)\<close> x 
         by auto
       also have "...=num_of_odd_nodes G+2" 
         proof -
@@ -919,7 +919,7 @@ next
           hence  "even(degree x1 G)" 
             using Cons.prems(3) assms(1) assms(2) parity_x1_x3(1) 
             by (metis (full_types)  is_trail.simps(2) rem_UnPath_parity_others x)
-          hence "even(degree x1 G) \<and> x1\<noteq>v'" using `x1 \<noteq> v'` by auto
+          hence "even(degree x1 G) \<and> x1\<noteq>v'" using \<open>x1 \<noteq> v'\<close> by auto
           hence "even(degree v G) \<and> v\<noteq>v'" by (metis Cons.prems(3) is_trail.simps(2) x)
           thus ?thesis by auto
         qed
@@ -958,7 +958,7 @@ next
           hence  "even(degree x1 G)" 
             using Cons.prems(3) assms(1) assms(2) parity_x1_x3(1) 
             by (metis (full_types)  is_trail.simps(2) rem_UnPath_parity_others x)
-          hence "even(degree x1 G) \<and> x1\<noteq>v'" using `x1 \<noteq> v'` by auto
+          hence "even(degree x1 G) \<and> x1\<noteq>v'" using \<open>x1 \<noteq> v'\<close> by auto
           hence "even(degree v G) \<and> v\<noteq>v'" by (metis Cons.prems(3) is_trail.simps(2) x)
           thus ?thesis by auto
         qed
@@ -1082,8 +1082,8 @@ next
         using  parity_x1_x3  fin_nodes fin_edges valid_rem_xs x_in del_UnEdge_even_even 
         by metis
       also have "...=num_of_odd_nodes G+(if odd(degree x3 G) \<and> x3\<noteq>v' then - 2 else 0 )+2"
-        using Cons.hyps[OF `finite E` `finite V`,of x3] `is_trail v (x # xs) v'`
-          `odd (degree v' G)` x
+        using Cons.hyps[OF \<open>finite E\<close> \<open>finite V\<close>,of x3] \<open>is_trail v (x # xs) v'\<close>
+          \<open>odd (degree v' G)\<close> x
         by auto
       also have "...=num_of_odd_nodes G" 
         proof -
@@ -1127,7 +1127,7 @@ next
         using  parity_x1_x3  fin_nodes fin_edges valid_rem_xs x_in 
         by (metis del_UnEdge_even_odd)
       also have "...=num_of_odd_nodes G+(if odd(degree x3 G) \<and> x3\<noteq>v' then - 2 else 0 )"
-        using  Cons.hyps[OF `finite E` `finite V`, of x3] Cons.prems(3) assms(1) assms(2) 
+        using  Cons.hyps[OF \<open>finite E\<close> \<open>finite V\<close>, of x3] Cons.prems(3) assms(1) assms(2) 
           parity_assms x
         by auto
       also have "...=num_of_odd_nodes G" 
@@ -1190,7 +1190,7 @@ next
           hence  "odd(degree x1 G)" 
             using Cons.prems(3) assms(1) assms(2) parity_x1_x3(1) 
             by (metis (full_types)  is_trail.simps(2) rem_UnPath_parity_others x)
-          hence "odd(degree x1 G) \<and> x1\<noteq>v'" using `x1 \<noteq> v'` by auto
+          hence "odd(degree x1 G) \<and> x1\<noteq>v'" using \<open>x1 \<noteq> v'\<close> by auto
           hence "odd(degree v G) \<and> v\<noteq>v'" by (metis Cons.prems(3) is_trail.simps(2) x)
           thus ?thesis by auto
         qed
@@ -1220,7 +1220,7 @@ next
             by (metis Cons.hyps Cons.prems(3) assms(1) assms(2) 
                 is_trail.simps(2) parity_assms x)
           thus ?thesis 
-            using `\<not> (odd (degree x3 G) \<and> x3 \<noteq> v')` by auto 
+            using \<open>\<not> (odd (degree x3 G) \<and> x3 \<noteq> v')\<close> by auto 
         qed
       also have "...=num_of_odd_nodes G+(if odd(degree v G) \<and> v\<noteq>v' then -2 else 0)" 
         proof -
@@ -1232,7 +1232,7 @@ next
           hence  "odd(degree x1 G)" 
             using Cons.prems(3) assms(1) assms(2) parity_x1_x3(1) 
             by (metis (full_types)  is_trail.simps(2) rem_UnPath_parity_others x)
-          hence "odd(degree x1 G) \<and> x1\<noteq>v'" using `x1 \<noteq> v'` by auto
+          hence "odd(degree x1 G) \<and> x1\<noteq>v'" using \<open>x1 \<noteq> v'\<close> by auto
           hence "odd(degree v G) \<and> v\<noteq>v'" by (metis Cons.prems(3) is_trail.simps(2) x)
           hence "v\<in>odd_nodes_set G" 
             using Cons.prems(3) E_validD(1)  x unfolding odd_nodes_set_def
@@ -1242,13 +1242,13 @@ next
             unfolding odd_nodes_set_def 
             by auto
           ultimately have "{v,v'}\<subseteq>odd_nodes_set G" by auto
-          moreover have "v\<noteq>v'" by (metis `odd (degree v G) \<and> v \<noteq> v'`)
+          moreover have "v\<noteq>v'" by (metis \<open>odd (degree v G) \<and> v \<noteq> v'\<close>)
           hence "card{v,v'}=2" by auto 
           moreover have "finite(odd_nodes_set G)" 
-            using `finite V` unfolding odd_nodes_set_def
+            using \<open>finite V\<close> unfolding odd_nodes_set_def
             by auto
           ultimately have "num_of_odd_nodes G\<ge>2" by (metis card_mono num_of_odd_nodes_def)  
-          thus ?thesis using `odd (degree v G) \<and> v \<noteq> v'` by auto
+          thus ?thesis using \<open>odd (degree v G) \<and> v \<noteq> v'\<close> by auto
         qed
       finally have "num_of_odd_nodes (rem_unPath (x#xs) G)=
                         num_of_odd_nodes G+(if odd(degree v G) \<and> v\<noteq>v' then -2 else 0)" .
@@ -1269,12 +1269,12 @@ next
   case False
   hence "?L = num_of_odd_nodes G + (if odd (degree v G)\<and> v\<noteq>v' then -2 else 0)" 
     by (metis assms(1) assms(2) assms(3) rem_UnPath_odd)
-  thus ?thesis using `v = v'` by auto   
+  thus ?thesis using \<open>v = v'\<close> by auto   
 qed
 
 
 
-section{*Connectivity*}
+section\<open>Connectivity\<close>
 
 definition (in valid_unMultigraph) connected::bool where
   "connected \<equiv> \<forall> v\<in>V. \<forall>v'\<in>V. v\<noteq>v' \<longrightarrow> (\<exists>ps. is_path v ps v')"
@@ -1284,7 +1284,7 @@ proof (rule,rule,rule)
   fix v v'
   assume "v\<in>V" "v'\<in>V" "v\<noteq>v'"
   assume connected
-  obtain ps where "is_path v ps v'" by (metis `connected` `v \<in> V` `v' \<in> V` `v\<noteq>v'`  connected_def)
+  obtain ps where "is_path v ps v'" by (metis \<open>connected\<close> \<open>v \<in> V\<close> \<open>v' \<in> V\<close> \<open>v\<noteq>v'\<close>  connected_def)
   then obtain ps' where "is_trail v ps' v'"
     proof (induct ps arbitrary:v )
       case Nil
@@ -1304,7 +1304,7 @@ proof (rule,rule,rule)
               assume "(x1,x2,x3)\<in>set ps'"
               then obtain ps1 ps2 where "ps'=ps1@(x1,x2,x3)#ps2" by (metis split_list)
               hence "is_trail v (x#ps2) v'" 
-                using `is_trail x3 ps' v'` x
+                using \<open>is_trail x3 ps' v'\<close> x
                 by (metis Cons.prems(2) is_trail.simps(2) 
                     is_trail_split is_path.simps(2))
               thus ?thesis by rule
@@ -1314,7 +1314,7 @@ proof (rule,rule,rule)
               assume "(x3,x2,x1)\<in>set ps'"
               then obtain ps1 ps2 where "ps'=ps1@(x3,x2,x1)#ps2" by (metis split_list)
               hence "is_trail v ps2 v'" 
-                using `is_trail x3 ps' v'` x
+                using \<open>is_trail x3 ps' v'\<close> x
                 by (metis Cons.prems(2) is_trail.simps(2) 
                     is_trail_split is_path.simps(2))
               thus ?thesis by rule 
@@ -1360,10 +1360,10 @@ proof (rule ccontr)
            \<and> (\<forall>v'. \<forall>e\<in>E. \<not>is_trail v' (e#max_path) n))"
   hence  induct:"(\<forall>v max_path.  is_trail v max_path n 
            \<longrightarrow> (\<exists>v'. \<exists>e\<in>E. is_trail v' (e#max_path) n))" by auto
-  have "is_trail n [] n" using `n \<in> V` by auto 
+  have "is_trail n [] n" using \<open>n \<in> V\<close> by auto 
   hence "exist_path_length n 0" unfolding exist_path_length_def by auto
   moreover have "\<forall>y. exist_path_length n y \<longrightarrow> y \<le> card E" 
-    using trail_bound[OF `finite E`] unfolding exist_path_length_def 
+    using trail_bound[OF \<open>finite E\<close>] unfolding exist_path_length_def 
     by auto
   hence bound:"\<forall>y. exist_path_length n y \<longrightarrow> y \<le> card E" by auto
   ultimately have "exist_path_length n (GREATEST x. exist_path_length n x)"
@@ -1389,7 +1389,7 @@ proof (rule ccontr)
   hence "\<forall>y\<in>A. y=x" by auto
   hence "A={x}" by (metis all_not_in_conv assms(2) insertI2 mk_disjoint_insert)
   hence "card(A)=1" by auto
-  thus False using `even(card A)` by auto
+  thus False using \<open>even(card A)\<close> by auto
 qed
 
 lemma odd_card: 
@@ -1418,7 +1418,7 @@ proof -
   thus ?thesis by metis
 qed
 
-text{*replace an edge (or its reverse in a path) by another path (in an undirected graph)*}
+text\<open>replace an edge (or its reverse in a path) by another path (in an undirected graph)\<close>
 fun replace_by_UnPath:: "('v,'w) path \<Rightarrow> 'v \<times>'w \<times>'v \<Rightarrow> ('v,'w) path \<Rightarrow>  ('v,'w) path" where
   "replace_by_UnPath [] _ _ = []" |
   "replace_by_UnPath (x#xs) (v,e,v') ps = 
@@ -1443,7 +1443,7 @@ proof -
     assume  n': "n'\<in>nodes (del_unEdge v e v' G)"
     assume "n\<noteq>n'"
     obtain ps where ps:"is_path n ps n'" 
-      by (metis `n\<noteq>n'` n n' `connected` connected_def del_UnEdge_node)
+      by (metis \<open>n\<noteq>n'\<close> n n' \<open>connected\<close> connected_def del_UnEdge_node)
     hence "valid_graph.is_path (del_unEdge v e v' G) 
            n (replace_by_UnPath ps (v,e,v') ex_path) n'" 
       proof (induct ps arbitrary:n)
@@ -1462,7 +1462,7 @@ proof -
                 n (ex_path@(replace_by_UnPath xs (v,e,v') ex_path)) n'" 
               by (metis replace_by_UnPath.simps(2))
             also have "...=True" 
-              by (metis Cons.hyps Cons.prems `x = (v, e, v')` ex_path is_path.simps(2) valid_graph 
+              by (metis Cons.hyps Cons.prems \<open>x = (v, e, v')\<close> ex_path is_path.simps(2) valid_graph 
                   valid_graph.is_path_split)
             finally show ?thesis by simp
           qed
@@ -1475,7 +1475,7 @@ proof -
                 n ((rev_path ex_path)@(replace_by_UnPath xs (v,e,v') ex_path)) n'" 
               by (metis Cons.prems is_path.simps(2) no_id replace_by_UnPath.simps(2))
             also have "...=True" 
-              by (metis Cons.hyps Cons.prems `x = (v', e, v)` is_path.simps(2) ex_path valid_graph 
+              by (metis Cons.hyps Cons.prems \<open>x = (v', e, v)\<close> is_path.simps(2) ex_path valid_graph 
                   valid_graph.is_path_split valid_unMulti valid_unMultigraph.is_path_rev)
             finally show ?thesis by simp
           qed
@@ -1496,17 +1496,17 @@ proof -
     proof (rule ccontr)
       assume "v\<notin>V"
       hence "\<forall>e \<in> E. fst e \<noteq> v" by (metis E_valid(1) imageI set_mp)
-      hence "degree v G=0" unfolding degree_def using `finite E` 
+      hence "degree v G=0" unfolding degree_def using \<open>finite E\<close> 
         by force
-      thus False using `odd(degree v G)` by auto
+      thus False using \<open>odd(degree v G)\<close> by auto
     qed
   have "v'\<in>V" 
     proof (rule ccontr)
       assume "v'\<notin>V"
       hence "\<forall>e \<in> E. fst e \<noteq> v'" by (metis E_valid(1) imageI set_mp)
-      hence "degree v' G=0" unfolding degree_def using `finite E` 
+      hence "degree v' G=0" unfolding degree_def using \<open>finite E\<close> 
         by force
-     thus False using `odd(degree v' G)` by auto
+     thus False using \<open>odd(degree v' G)\<close> by auto
     qed
   then obtain max_path v0 where max_path:
       "is_trail  v0 max_path v'" 
@@ -1533,22 +1533,22 @@ proof -
     proof (rule ccontr)
       assume "v0 \<noteq> v" "odd(degree v0 G)" "v0\<noteq>v'"
       moreover have "v\<in>odd_nodes_set G" 
-        using `v \<in> V` ` odd (degree v G)` unfolding odd_nodes_set_def
+        using \<open>v \<in> V\<close> \<open> odd (degree v G)\<close> unfolding odd_nodes_set_def
         by auto
       moreover have "v'\<in>odd_nodes_set G" 
-        using `v' \<in> V` `odd (degree v' G)`
+        using \<open>v' \<in> V\<close> \<open>odd (degree v' G)\<close>
         unfolding odd_nodes_set_def
         by auto
       ultimately have "{v,v',v0} \<subseteq> odd_nodes_set G" 
-        using   is_path_memb[OF is_trail_intro[OF `is_trail v0 max_path v'`]] max_path(1)
+        using   is_path_memb[OF is_trail_intro[OF \<open>is_trail v0 max_path v'\<close>]] max_path(1)
         unfolding odd_nodes_set_def
         by auto
-      moreover have "card {v,v',v0}=3" using `v0\<noteq>v` `v\<noteq>v'` `v0\<noteq>v'` by auto
+      moreover have "card {v,v',v0}=3" using \<open>v0\<noteq>v\<close> \<open>v\<noteq>v'\<close> \<open>v0\<noteq>v'\<close> by auto
       moreover have "finite (odd_nodes_set G)" 
         using assms(5) card_eq_0_iff[of "odd_nodes_set G"] unfolding num_of_odd_nodes_def 
         by auto
       ultimately have "3\<le>card(odd_nodes_set G)" by (metis card_mono)
-      thus False using `num_of_odd_nodes G=2` unfolding num_of_odd_nodes_def by auto
+      thus False using \<open>num_of_odd_nodes G=2\<close> unfolding num_of_odd_nodes_def by auto
     qed
   ultimately have "v0=v" by auto
   thus ?thesis by (metis max_path(1))
@@ -1573,22 +1573,22 @@ proof -
   have "even (degree v G)" by (metis (full_types) E_validD(1) assms(4) assms(5))
   moreover have "even (degree v' G)" by (metis (full_types) E_validD(2) assms(4) assms(5))
   moreover have "num_of_odd_nodes G = 0" 
-    using `\<forall>n\<in>V. even(degree n G)` `finite V`
+    using \<open>\<forall>n\<in>V. even(degree n G)\<close> \<open>finite V\<close>
     unfolding num_of_odd_nodes_def odd_nodes_set_def by auto
   ultimately have "num_of_odd_nodes (del_unEdge v e v' G) = 2" 
     using del_UnEdge_even_even[of G v e v',OF valid_unMultigraph_axioms] 
     by (metis assms(1) assms(2) assms(5) monoid_add_class.add.left_neutral)
   moreover have " odd (degree v (del_unEdge v e v' G))" 
-    using `even (degree v G)` del_UnEdge_even[OF `(v,e,v')\<in>E` `finite E`] 
+    using \<open>even (degree v G)\<close> del_UnEdge_even[OF \<open>(v,e,v')\<in>E\<close> \<open>finite E\<close>] 
     unfolding odd_nodes_set_def 
     by auto
   moreover have "odd (degree v' (del_unEdge v e v' G))" 
-    using `even (degree v' G)` del_UnEdge_even'[OF `(v,e,v')\<in>E` `finite E`] 
+    using \<open>even (degree v' G)\<close> del_UnEdge_even'[OF \<open>(v,e,v')\<in>E\<close> \<open>finite E\<close>] 
     unfolding odd_nodes_set_def 
     by auto  
   moreover have "finite (edges (del_unEdge v e v' G))" 
-    using `finite E` by auto
-  moreover have "v\<noteq>v'" using no_id `(v,e,v')\<in>E` by auto
+    using \<open>finite E\<close> by auto
+  moreover have "v\<noteq>v'" using no_id \<open>(v,e,v')\<in>E\<close> by auto
   ultimately have "\<exists>ps. valid_unMultigraph.is_trail (del_unEdge v e v' G) v ps v'"
     using valid_unMultigraph.path_between_odds[OF valid_unMulti,of v v']    
     by auto
@@ -1670,7 +1670,7 @@ proof -
             n_neg_v': "\<not>(\<exists>ps. valid_graph.is_path (del_unEdge v w v' G) n ps v')"
         using G1 G1_nodes G2 G2_nodes by auto
       hence "n\<noteq>v" by (metis n(1) valid0 valid_graph.is_path_simps(1))
-      then obtain nvs where nvs: "is_path n nvs v" using `connected` 
+      then obtain nvs where nvs: "is_path n nvs v" using \<open>connected\<close> 
         by (metis E_validD(1) assms(3) connected_def del_UnEdge_node n(1))
       then obtain nvs' where nvs': "nvs'=takeWhile (\<lambda>x. x\<noteq>(v,w,v')\<and>x\<noteq>(v',w,v)) nvs" by auto
       moreover have nvs_nvs':"nvs=nvs'@dropWhile (\<lambda>x. x\<noteq>(v,w,v')\<and>x\<noteq>(v',w,v)) nvs" 
@@ -1692,7 +1692,7 @@ proof -
             by (metis (lifting, full_types) hd_dropWhile)
           hence "x=(v,w,v')\<or>x=(v',w,v)" using Cons by auto
           thus ?thesis
-            using `is_path n' (dropWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) nvs) v`
+            using \<open>is_path n' (dropWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) nvs) v\<close>
             by (metis Cons  is_path.simps(2))
         qed
       moreover have "valid_graph.is_path (del_unEdge v w v' G) n nvs' n'" 
@@ -1705,7 +1705,7 @@ proof -
           obtain x1 x2 x3 where x:"x=(x1,x2,x3)" by (metis prod_cases3)
           hence "is_path x3 xs n'" using Cons by auto
           moreover have "xs = takeWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) (tl nvs)" 
-            using `x # xs = takeWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) nvs` 
+            using \<open>x # xs = takeWhile (\<lambda>x. x \<noteq> (v, w, v') \<and> x \<noteq> (v', w, v)) nvs\<close> 
             by (metis (lifting, no_types) append_Cons list.distinct(1) takeWhile.simps(2) 
                 takeWhile_dropWhile_id list.sel(3))
           ultimately have "valid_graph.is_path (del_unEdge v w v' G) x3 xs n'" 
@@ -1750,7 +1750,7 @@ proof -
       moreover have "n'\<in>nodes (del_unEdge v w v' G)" 
         by (metis nen'(1) valid0 valid_graph.E_validD(2))
       ultimately have "(n\<in>nodes G1 \<and> n'\<in>nodes G2)\<or>(n\<in>nodes G2\<and>n'\<in>nodes G1)" 
-        using G1 G2 `nodes G1 \<union> nodes G2=nodes (del_unEdge v w v' G)` by auto
+        using G1 G2 \<open>nodes G1 \<union> nodes G2=nodes (del_unEdge v w v' G)\<close> by auto
       moreover have "n\<in>nodes G1 \<Longrightarrow> n'\<in>nodes G2 \<Longrightarrow> False" 
         proof -
           assume "n\<in>nodes G1" "n'\<in>nodes G2"
@@ -1761,7 +1761,7 @@ proof -
           hence "valid_graph.is_path (del_unEdge v w v' G) v 
                   ((rev_path nvs)@(n,e,n')#nv's) v'"
             using valid_unMultigraph.is_path_rev[OF valid0'] valid_graph.is_path_split'[OF valid0]
-                  `(n,e,n')\<in>edges (del_unEdge v w v' G)`
+                  \<open>(n,e,n')\<in>edges (del_unEdge v w v' G)\<close>
             by auto 
           hence "valid_unMultigraph.connected (del_unEdge v w v' G)" 
             by (metis assms(1) del_unEdge_connectivity)
@@ -1791,7 +1791,7 @@ proof -
       assume "edges G1 \<inter> edges G2 \<noteq> {}"
       then obtain n e n' where "(n,e,n')\<in>edges G1" "(n,e,n')\<in>edges G2" by auto
       hence "n\<in>nodes G1" "n\<in>nodes G2" using G1 G2 by auto
-      thus False using `nodes G1 \<inter> nodes G2={}` by auto
+      thus False using \<open>nodes G1 \<inter> nodes G2={}\<close> by auto
     qed
   moreover have "valid_unMultigraph.connected G1" 
     unfolding valid_unMultigraph.connected_def[OF valid_G1]
@@ -1819,7 +1819,7 @@ proof -
           moreover have "(x1,x2,x3)\<in>edges (del_unEdge v w v' G)" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
           ultimately have "(x1,x2,x3)\<in>edges G1" 
-            using G1 G2 `nodes G1 \<inter> nodes G2={}` `edges G1 \<union> edges G2=edges (del_unEdge v w v' G)`
+            using G1 G2 \<open>nodes G1 \<inter> nodes G2={}\<close> \<open>edges G1 \<union> edges G2=edges (del_unEdge v w v' G)\<close>
             by (metis (full_types) IntI Un_iff  bex_empty   valid_G2' valid_graph.E_validD(1) )
           moreover have "valid_graph.is_path (del_unEdge v w v' G) x3 xs v" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
@@ -1846,8 +1846,8 @@ proof -
           moreover have "(x1,x2,x3)\<in>edges (del_unEdge v w v' G)" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
           ultimately have "(x1,x2,x3)\<in>edges G1" 
-            using G1 G2 `nodes G1 \<inter> nodes G2={}` 
-              `edges G1 \<union> edges G2=edges (del_unEdge v w v' G)`
+            using G1 G2 \<open>nodes G1 \<inter> nodes G2={}\<close> 
+              \<open>edges G1 \<union> edges G2=edges (del_unEdge v w v' G)\<close>
             by (metis (full_types) IntI Un_iff  bex_empty  valid_G2' valid_graph.E_validD(1))
           moreover have "valid_graph.is_path (del_unEdge v w v' G) x3 xs v" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
@@ -1889,7 +1889,7 @@ proof -
           moreover have "(x1,x2,x3)\<in>edges (del_unEdge v w v' G)" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
           ultimately have "(x1,x2,x3)\<in>edges G2" 
-            using `nodes G1 \<inter> nodes G2={}` `edges G1 \<union> edges G2=edges (del_unEdge v w v' G)`
+            using \<open>nodes G1 \<inter> nodes G2={}\<close> \<open>edges G1 \<union> edges G2=edges (del_unEdge v w v' G)\<close>
             by (metis IntI Un_iff assms(1) bex_empty connected_def del_UnEdge_node valid0 valid0'
               valid_G1' valid_graph.E_validD(1) valid_graph.E_validD(2) valid_unMultigraph.no_id)
           moreover have "valid_graph.is_path (del_unEdge v w v' G) x3 xs v'" 
@@ -1917,7 +1917,7 @@ proof -
           moreover have "(x1,x2,x3)\<in>edges (del_unEdge v w v' G)" 
             by (metis Cons.prems valid0 valid_graph.is_path.simps(2) x)
           ultimately have "(x1,x2,x3)\<in>edges G2" 
-            using  `nodes G1 \<inter> nodes G2={}` `edges G1 \<union> edges G2=edges (del_unEdge v w v' G)`
+            using  \<open>nodes G1 \<inter> nodes G2={}\<close> \<open>edges G1 \<union> edges G2=edges (del_unEdge v w v' G)\<close>
             by (metis IntI Un_iff assms(1) bex_empty connected_def del_UnEdge_node valid0 valid0' 
               valid_G1' valid_graph.E_validD(1) valid_graph.E_validD(2) valid_unMultigraph.no_id)
           moreover have "valid_graph.is_path (del_unEdge v w v' G) x3 xs v'" 
@@ -1947,12 +1947,12 @@ proof -
       fix e assume  "e \<in> {e \<in> edges G. fst e = n}"
       hence "e\<in>edges G" "fst e=n" by auto
       moreover have "n\<notin>nodes G2" 
-        using `nodes G1 \<inter> nodes G2={}` `n\<in>nodes G1`
+        using \<open>nodes G1 \<inter> nodes G2={}\<close> \<open>n\<in>nodes G1\<close>
         by auto
-      hence "e\<notin>edges G2" using valid_graph.E_validD[OF `valid_graph G2`] `fst e=n` 
+      hence "e\<notin>edges G2" using valid_graph.E_validD[OF \<open>valid_graph G2\<close>] \<open>fst e=n\<close> 
         by (metis prod.exhaust fst_conv)  
-      ultimately have "e\<in>edges G1" using `edges G1 \<union> edges G2 =edges G` by auto
-      thus "e \<in> {e \<in> edges G1. fst e = n}" using `fst e=n` by auto
+      ultimately have "e\<in>edges G1" using \<open>edges G1 \<union> edges G2 =edges G\<close> by auto
+      thus "e \<in> {e \<in> edges G1. fst e = n}" using \<open>fst e=n\<close> by auto
     qed
   moreover have "{e \<in> edges G1. fst e = n}\<subseteq>{e \<in> edges G. fst e = n}" 
     by (metis (lifting) Collect_mono Un_iff assms(2))
@@ -1962,7 +1962,7 @@ qed
 lemma odd_nodes_no_edge[simp]: "finite (nodes g) \<Longrightarrow> num_of_odd_nodes (g \<lparr>edges:={} \<rparr>) = 0" 
   unfolding  num_of_odd_nodes_def odd_nodes_set_def degree_def by simp
 
-section {*Adjacent nodes*}
+section \<open>Adjacent nodes\<close>
   
 definition (in valid_unMultigraph) adjacent:: "'v \<Rightarrow> 'v \<Rightarrow> bool" where
     "adjacent v v' \<equiv> \<exists>w. (v,w,v')\<in>E"
@@ -2007,10 +2007,10 @@ proof -
         ultimately show ?case by auto
       qed }
   note aux=this
-  show ?thesis using aux[OF `finite E`, of v]  unfolding adjacent_def by auto
+  show ?thesis using aux[OF \<open>finite E\<close>, of v]  unfolding adjacent_def by auto
 qed
 
-section{* Undirected simple graph*}
+section\<open>Undirected simple graph\<close>
 
 locale valid_unSimpGraph=valid_unMultigraph G for G::"('v,'w) graph"+
               assumes no_multi[simp]: "(v,w,u) \<in> edges G \<Longrightarrow> (v,w',u) \<in>edges G \<Longrightarrow> w = w'"
@@ -2025,7 +2025,7 @@ proof (cases "{(v1,v2). adjacent v1 v2}={}")
 next
   case False
   have "{(v1,v2). adjacent v1 v2} \<subseteq> V \<times> V" using adjacent_V by auto
-  moreover have "finite (V \<times> V)" using `finite V` by auto
+  moreover have "finite (V \<times> V)" using \<open>finite V\<close> by auto
   ultimately have "finite {(v1,v2). adjacent v1 v2}" using finite_subset by auto
   hence "card {(v1,v2). adjacent v1 v2}\<noteq>0" using False card_eq_0_iff by auto
   moreover have "card E=card {(v1,v2). adjacent v1 v2}" 
@@ -2052,7 +2052,7 @@ proof -
   hence "valid_unMultigraph (del_unEdge v w u G)" 
     using valid_unSimpGraph_def[of G] del_unEdge_valid[of G] by auto
   moreover have "valid_unSimpGraph_axioms (del_unEdge v w u G)"
-    using valid_unSimpGraph.no_multi[OF `valid_unSimpGraph G`]
+    using valid_unSimpGraph.no_multi[OF \<open>valid_unSimpGraph G\<close>]
     unfolding valid_unSimpGraph_axioms_def del_unEdge_def by auto
   ultimately show "valid_unSimpGraph (del_unEdge v w u G)" using valid_unSimpGraph_def
     by auto
@@ -2070,37 +2070,37 @@ proof
   hence "(v,w',u)\<notin>{(v,w,u),(u,w,v)}" unfolding del_unEdge_def by auto
   hence "w'\<noteq>w" by auto
   moreover have "(v,w',u)\<in>E" using vw'u unfolding del_unEdge_def by auto
-  ultimately show False using no_multi[of v w u w'] `(v, w, u) \<in> E` by auto
+  ultimately show False using no_multi[of v w u w'] \<open>(v, w, u) \<in> E\<close> by auto
 qed
 
 lemma (in valid_unSimpGraph) degree_adjacent: "finite E \<Longrightarrow> degree v G=card {n. adjacent v n}"
   using valid_unSimpGraph_axioms 
 proof (induct "degree v G" arbitrary: G)
   case 0
-  note valid3=`valid_unSimpGraph G`
+  note valid3=\<open>valid_unSimpGraph G\<close>
   hence valid2: "valid_unMultigraph G" using valid_unSimpGraph_def by auto
   have "{a. valid_unMultigraph.adjacent G v a}={}" 
     proof (rule ccontr)
       assume "{a. valid_unMultigraph.adjacent G v a} \<noteq> {}"
       then obtain w u where "(v,w,u)\<in>edges G" 
         unfolding valid_unMultigraph.adjacent_def[OF valid2] by auto
-      hence "degree v G\<noteq>0" using `finite (edges G)` unfolding degree_def by auto
-      thus False using `0 = degree v G` by auto
+      hence "degree v G\<noteq>0" using \<open>finite (edges G)\<close> unfolding degree_def by auto
+      thus False using \<open>0 = degree v G\<close> by auto
     qed
   thus ?case by (metis "0.hyps" card_empty)
 next
   case (Suc n)
   hence "{e \<in> edges G. fst e = v}\<noteq>{}" using card_empty unfolding degree_def  by force
   then obtain w u where "(v,w,u)\<in>edges G" by auto
-  have valid:"valid_unMultigraph G" using `valid_unSimpGraph G` valid_unSimpGraph_def by auto
+  have valid:"valid_unMultigraph G" using \<open>valid_unSimpGraph G\<close> valid_unSimpGraph_def by auto
   hence valid':"valid_unMultigraph (del_unEdge v w u G)" by auto
   have "valid_unSimpGraph (del_unEdge v w u G)" 
-    using del_unEdge_valid' `valid_unSimpGraph G` by auto
+    using del_unEdge_valid' \<open>valid_unSimpGraph G\<close> by auto
   moreover have "n = degree v (del_unEdge v w u G)" 
-    using `Suc n = degree v G``(v, w, u) \<in> edges G`  del_edge_undirected_degree_plus[of G v w u]
+    using \<open>Suc n = degree v G\<close>\<open>(v, w, u) \<in> edges G\<close>  del_edge_undirected_degree_plus[of G v w u]
     by (metis Suc.prems(1) Suc_eq_plus1 diff_Suc_1 valid valid_unMultigraph.corres)
   moreover have "finite (edges (del_unEdge v w u G))" 
-    using `finite (edges G)` unfolding del_unEdge_def
+    using \<open>finite (edges G)\<close> unfolding del_unEdge_def
     by auto
   ultimately have "degree v (del_unEdge v w u G) 
       = card (Collect (valid_unMultigraph.adjacent (del_unEdge v w u G) v))"
@@ -2116,7 +2116,7 @@ next
           valid_unMultigraph.adjacent_def[OF valid]
         by auto
       moreover have "u\<in>{n. valid_unMultigraph.adjacent G v n}" 
-        using `(v,w,u)\<in>edges G` unfolding valid_unMultigraph.adjacent_def[OF valid] by auto
+        using \<open>(v,w,u)\<in>edges G\<close> unfolding valid_unMultigraph.adjacent_def[OF valid] by auto
       ultimately have "{n. valid_unMultigraph.adjacent (del_unEdge v w u G) v n} \<union> {u}
           \<subseteq> {n. valid_unMultigraph.adjacent G v n}" by auto
       moreover have "{n. valid_unMultigraph.adjacent G v n} - {u}
@@ -2128,14 +2128,14 @@ next
       ultimately have "{n. valid_unMultigraph.adjacent (del_unEdge v w u G) v n} \<union> {u}
           = {n. valid_unMultigraph.adjacent G v n}" by auto
       moreover have "u\<notin>{n. valid_unMultigraph.adjacent (del_unEdge v w u G) v n}" 
-        using valid_unSimpGraph.del_UnEdge_non_adj[OF `valid_unSimpGraph G` `(v,w,u)\<in>edges G`]
+        using valid_unSimpGraph.del_UnEdge_non_adj[OF \<open>valid_unSimpGraph G\<close> \<open>(v,w,u)\<in>edges G\<close>]
         by auto
       moreover have "finite {n. valid_unMultigraph.adjacent G v n}" 
-        using valid_unMultigraph.adjacent_finite[OF valid `finite (edges G)`] by simp 
+        using valid_unMultigraph.adjacent_finite[OF valid \<open>finite (edges G)\<close>] by simp 
       ultimately show ?thesis 
         by (metis Un_insert_right card_insert_disjoint finite_Un sup_bot_right)
     qed
-  ultimately show ?case by (metis Suc.hyps(2) `n = degree v (del_unEdge v w u G)`)
+  ultimately show ?case by (metis Suc.hyps(2) \<open>n = degree v (del_unEdge v w u G)\<close>)
 qed 
   
 end

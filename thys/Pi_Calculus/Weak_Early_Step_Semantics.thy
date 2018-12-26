@@ -80,16 +80,16 @@ next
   thus ?case by(force simp add: pi.supp)
 next
   case(Comm1 P a b P' Q Q')
-  from `P \<longmapsto>a<b> \<prec> P'` have "(supp P') - {b} \<subseteq> supp P" by(rule inputSupportDerivative)
-  moreover from `Q \<longmapsto> a[b] \<prec> Q'` have "((supp Q')::name set) \<subseteq> supp Q" by(rule outputSupportDerivative)
-  moreover from `Q \<longmapsto> a[b] \<prec> Q'` have "b \<in> supp Q"
+  from \<open>P \<longmapsto>a<b> \<prec> P'\<close> have "(supp P') - {b} \<subseteq> supp P" by(rule inputSupportDerivative)
+  moreover from \<open>Q \<longmapsto> a[b] \<prec> Q'\<close> have "((supp Q')::name set) \<subseteq> supp Q" by(rule outputSupportDerivative)
+  moreover from \<open>Q \<longmapsto> a[b] \<prec> Q'\<close> have "b \<in> supp Q"
     by(nominal_induct rule: outputInduct) (auto simp add: pi.supp abs_supp supp_atm)
   ultimately show ?case by(auto simp add: pi.supp)
 next
   case(Comm2 P a b P' Q Q')
-  from `P \<longmapsto> a[b] \<prec> P'` have "((supp P')::name set) \<subseteq> supp P" by(rule outputSupportDerivative)
-  moreover from `Q \<longmapsto>a<b> \<prec> Q'` have "(supp Q') - {b} \<subseteq> supp Q" by(rule inputSupportDerivative)
-  moreover from `P \<longmapsto> a[b] \<prec> P'` have "b \<in> supp P"
+  from \<open>P \<longmapsto> a[b] \<prec> P'\<close> have "((supp P')::name set) \<subseteq> supp P" by(rule outputSupportDerivative)
+  moreover from \<open>Q \<longmapsto>a<b> \<prec> Q'\<close> have "(supp Q') - {b} \<subseteq> supp Q" by(rule inputSupportDerivative)
+  moreover from \<open>P \<longmapsto> a[b] \<prec> P'\<close> have "b \<in> supp P"
     by(nominal_induct rule: outputInduct) (auto simp add: pi.supp abs_supp supp_atm)
   ultimately show ?case by(auto simp add: pi.supp)
 next
@@ -167,8 +167,8 @@ next
                                 and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
     by(force dest: transitionE)
   note PChain 
-  moreover from PChain `y \<sharp> P` have "y \<sharp> P'''" by(rule freshChain)
-  with P'''Trans have "y \<sharp> P''" using `y \<noteq> x` by(rule freshTransition)
+  moreover from PChain \<open>y \<sharp> P\<close> have "y \<sharp> P'''" by(rule freshChain)
+  with P'''Trans have "y \<sharp> P''" using \<open>y \<noteq> x\<close> by(rule freshTransition)
   with P'''Trans have "P''' \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P'')" by(simp add: alphaBoundOutput name_swap)
   moreover from P''Chain have "([(x, y)] \<bullet> P'') \<Longrightarrow>\<^sub>\<tau> ([(x, y)] \<bullet> P')"
     by(rule eqvtChainI)
@@ -253,12 +253,12 @@ proof -
   proof(cases "P = P'''")
     case True
     have "[a\<frown>a]P \<Longrightarrow>\<^sub>\<tau> [a\<frown>a]P" by simp
-    moreover from `P = P'''` P'''Trans have "[a\<frown>a]P \<longmapsto> b<\<nu>x> \<prec> P''"
+    moreover from \<open>P = P'''\<close> P'''Trans have "[a\<frown>a]P \<longmapsto> b<\<nu>x> \<prec> P''"
       by(rule_tac Early_Semantics.Match) auto
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `P \<noteq> P'''` have "[a\<frown>a]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule matchChain)
+    from PChain \<open>P \<noteq> P'''\<close> have "[a\<frown>a]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule matchChain)
     thus ?thesis using P'''Trans P''Chain by(rule transitionI)
   qed
 next
@@ -271,12 +271,12 @@ next
   proof(cases "P = P'''")
     case True
     have "[a\<frown>a]P \<Longrightarrow>\<^sub>\<tau> [a\<frown>a]P" by simp
-    moreover from `P = P'''` P'''Trans have "[a\<frown>a]P \<longmapsto>\<alpha> \<prec> P''"
+    moreover from \<open>P = P'''\<close> P'''Trans have "[a\<frown>a]P \<longmapsto>\<alpha> \<prec> P''"
       by(rule_tac Early_Semantics.Match) auto
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `P \<noteq> P'''` have "[a\<frown>a]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule matchChain)
+    from PChain \<open>P \<noteq> P'''\<close> have "[a\<frown>a]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule matchChain)
     thus ?thesis using P'''Trans P''Chain by(rule transitionI)
   qed
 qed
@@ -303,12 +303,12 @@ proof -
   proof(cases "P = P'''")
     case True
     have "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> [a\<noteq>b]P" by simp
-    moreover from `P = P'''` `a \<noteq> b` P'''Trans have "[a\<noteq>b]P \<longmapsto> c<\<nu>x> \<prec> P''"
+    moreover from \<open>P = P'''\<close> \<open>a \<noteq> b\<close> P'''Trans have "[a\<noteq>b]P \<longmapsto> c<\<nu>x> \<prec> P''"
       by(rule_tac Early_Semantics.Mismatch) auto
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `a \<noteq> b` `P \<noteq> P'''` have "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule mismatchChain)
+    from PChain \<open>a \<noteq> b\<close> \<open>P \<noteq> P'''\<close> have "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule mismatchChain)
     thus ?thesis using P'''Trans P''Chain by(rule transitionI)
   qed
 next
@@ -322,12 +322,12 @@ next
   proof(cases "P = P'''")
     case True
     have "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> [a\<noteq>b]P" by simp
-    moreover from `P = P'''` `a \<noteq> b` P'''Trans have "[a\<noteq>b]P \<longmapsto>\<alpha> \<prec> P''"
+    moreover from \<open>P = P'''\<close> \<open>a \<noteq> b\<close> P'''Trans have "[a\<noteq>b]P \<longmapsto>\<alpha> \<prec> P''"
       by(rule_tac Early_Semantics.Mismatch) auto
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `a \<noteq> b` `P \<noteq> P'''` have "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule mismatchChain)
+    from PChain \<open>a \<noteq> b\<close> \<open>P \<noteq> P'''\<close> have "[a\<noteq>b]P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule mismatchChain)
     thus ?thesis using P'''Trans P''Chain by(rule transitionI)
   qed
 qed
@@ -348,7 +348,7 @@ proof -
                                 and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
     by(force dest: transitionE)
   from PChain have "<\<nu>b>P \<Longrightarrow>\<^sub>\<tau> <\<nu>b>P'''" by(rule ResChain)
-  moreover from P'''Trans `a \<noteq> b` have "<\<nu>b>P''' \<longmapsto>a<\<nu>b> \<prec> P''" by(rule Open)
+  moreover from P'''Trans \<open>a \<noteq> b\<close> have "<\<nu>b>P''' \<longmapsto>a<\<nu>b> \<prec> P''" by(rule Open)
   ultimately show ?thesis using P''Chain by(rule transitionI)
 qed
 
@@ -372,11 +372,11 @@ proof -
   proof(cases "P = P'''")
     case True
     have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P \<oplus> Q" by simp
-    moreover from P'''Trans `P = P'''` have "P \<oplus> Q \<longmapsto> a<\<nu>x> \<prec> P''" by(blast intro: Sum1)
+    moreover from P'''Trans \<open>P = P'''\<close> have "P \<oplus> Q \<longmapsto> a<\<nu>x> \<prec> P''" by(blast intro: Sum1)
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `P \<noteq> P'''` have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''" by(rule sum1Chain)
+    from PChain \<open>P \<noteq> P'''\<close> have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''" by(rule sum1Chain)
     thus ?thesis using P'''Trans P''Chain by(rule transitionI)
   qed
 next
@@ -389,11 +389,11 @@ next
   proof(cases "P = P'''")
     case True
     have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P \<oplus> Q" by simp
-    moreover from P'''Trans `P = P'''` have "P \<oplus> Q \<longmapsto>\<alpha> \<prec> P''" by(blast intro: Sum1)
+    moreover from P'''Trans \<open>P = P'''\<close> have "P \<oplus> Q \<longmapsto>\<alpha> \<prec> P''" by(blast intro: Sum1)
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `P \<noteq> P'''` have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''" by(rule sum1Chain)
+    from PChain \<open>P \<noteq> P'''\<close> have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P'''" by(rule sum1Chain)
     thus ?thesis using P'''Trans P''Chain by(rule transitionI)
   qed
 qed
@@ -418,11 +418,11 @@ proof -
   proof(cases "Q = Q'''")
     case True
     have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P \<oplus> Q" by simp
-    moreover from Q'''Trans `Q = Q'''` have "P \<oplus> Q \<longmapsto>a<\<nu>x> \<prec> Q''" by(blast intro: Sum2)
+    moreover from Q'''Trans \<open>Q = Q'''\<close> have "P \<oplus> Q \<longmapsto>a<\<nu>x> \<prec> Q''" by(blast intro: Sum2)
     ultimately show ?thesis using Q''Chain by(rule transitionI)
   next
     case False
-    from QChain `Q \<noteq> Q'''` have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''" by(rule sum2Chain)
+    from QChain \<open>Q \<noteq> Q'''\<close> have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''" by(rule sum2Chain)
     thus ?thesis using Q'''Trans Q''Chain by(rule transitionI)
   qed
 next
@@ -435,11 +435,11 @@ next
   proof(cases "Q = Q'''")
     case True
     have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> P \<oplus> Q" by simp
-    moreover from Q'''Trans `Q = Q'''` have "P \<oplus> Q \<longmapsto>\<alpha> \<prec> Q''" by(blast intro: Sum2)
+    moreover from Q'''Trans \<open>Q = Q'''\<close> have "P \<oplus> Q \<longmapsto>\<alpha> \<prec> Q''" by(blast intro: Sum2)
     ultimately show ?thesis using Q''Chain by(rule transitionI)
   next
     case False
-    from QChain `Q \<noteq> Q'''` have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''" by(rule sum2Chain)
+    from QChain \<open>Q \<noteq> Q'''\<close> have "P \<oplus> Q \<Longrightarrow>\<^sub>\<tau> Q'''" by(rule sum2Chain)
     thus ?thesis using Q'''Trans Q''Chain by(rule transitionI)
   qed
 qed
@@ -461,7 +461,7 @@ proof -
                                 and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
     by(blast dest: transitionE)
   from PChain have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P''' \<parallel> Q" by(rule Par1Chain)
-  moreover from P'''Trans `x \<sharp> Q` have "P''' \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> (P'' \<parallel> Q)" by(rule Early_Semantics.Par1B)
+  moreover from P'''Trans \<open>x \<sharp> Q\<close> have "P''' \<parallel> Q \<longmapsto>a<\<nu>x> \<prec> (P'' \<parallel> Q)" by(rule Early_Semantics.Par1B)
   moreover from P''Chain have "P'' \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q" by(rule Par1Chain)
   ultimately show "P \<parallel> Q \<Longrightarrow>a<\<nu>x> \<prec> (P' \<parallel> Q)" by(rule transitionI)
 qed
@@ -503,7 +503,7 @@ proof -
                                 and Q''Chain: "Q'' \<Longrightarrow>\<^sub>\<tau> Q'"
     by(blast dest: transitionE)
   from QChain have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P \<parallel> Q'''" by(rule Par2Chain)
-  moreover from Q'''Trans `x \<sharp> P` have "P \<parallel> Q''' \<longmapsto>a<\<nu>x> \<prec> (P \<parallel> Q'')" by(rule Early_Semantics.Par2B)
+  moreover from Q'''Trans \<open>x \<sharp> P\<close> have "P \<parallel> Q''' \<longmapsto>a<\<nu>x> \<prec> (P \<parallel> Q'')" by(rule Early_Semantics.Par2B)
   moreover from Q''Chain have "P \<parallel> Q'' \<Longrightarrow>\<^sub>\<tau> P \<parallel> Q'" by(rule Par2Chain)
   ultimately show "P \<parallel> Q \<Longrightarrow>a<\<nu>x> \<prec> (P \<parallel> Q')" by(rule transitionI)
 qed
@@ -611,7 +611,7 @@ proof -
 
 
   from PChain QChain have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P''' \<parallel> Q'''" by(rule chainPar)
-  moreover from PChain `x \<sharp> P` have "x \<sharp> P'''" by(rule freshChain)
+  moreover from PChain \<open>x \<sharp> P\<close> have "x \<sharp> P'''" by(rule freshChain)
   with P'''Trans Q'''Trans have "P''' \<parallel> Q''' \<longmapsto>\<tau> \<prec> <\<nu>x>(P'' \<parallel> Q'')"
     by(rule Early_Semantics.Close1)
   moreover from P''Chain Q''Chain have "P'' \<parallel> Q'' \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q'" by(rule chainPar)
@@ -643,7 +643,7 @@ proof -
     by(blast dest: transitionE)
 
   from PChain QChain have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P''' \<parallel> Q'''" by(rule chainPar)
-  moreover from QChain `x \<sharp> Q` have "x \<sharp> Q'''" by(rule freshChain)
+  moreover from QChain \<open>x \<sharp> Q\<close> have "x \<sharp> Q'''" by(rule freshChain)
 
   with P'''Trans Q'''Trans have "P''' \<parallel> Q''' \<longmapsto>\<tau> \<prec> <\<nu>x>(P'' \<parallel> Q'')"
     by(rule Early_Semantics.Close2)
@@ -669,7 +669,7 @@ proof -
     by(blast dest: transitionE)
 
   from PChain have "<\<nu>x>P \<Longrightarrow>\<^sub>\<tau> <\<nu>x>P'''" by(rule ResChain)
-  moreover from P'''Trans `x \<sharp> \<alpha>` have "<\<nu>x>P''' \<longmapsto>\<alpha> \<prec> <\<nu>x>P''"
+  moreover from P'''Trans \<open>x \<sharp> \<alpha>\<close> have "<\<nu>x>P''' \<longmapsto>\<alpha> \<prec> <\<nu>x>P''"
     by(rule Early_Semantics.ResF)
   moreover from P''Chain have "<\<nu>x>P'' \<Longrightarrow>\<^sub>\<tau> <\<nu>x>P'" by(rule ResChain)
   ultimately show ?thesis by(rule transitionI)
@@ -694,7 +694,7 @@ proof -
     by(blast dest: transitionE)
 
   from PChain have "<\<nu>y>P \<Longrightarrow>\<^sub>\<tau> <\<nu>y>P'''" by(rule ResChain)
-  moreover from P'''Trans  `y \<noteq> a` `y \<noteq> x` have "<\<nu>y>P''' \<longmapsto>a<\<nu>x> \<prec> (<\<nu>y>P'')"
+  moreover from P'''Trans  \<open>y \<noteq> a\<close> \<open>y \<noteq> x\<close> have "<\<nu>y>P''' \<longmapsto>a<\<nu>x> \<prec> (<\<nu>y>P'')"
     by(rule Early_Semantics.ResB)
   moreover from P''Chain have "<\<nu>y>P'' \<Longrightarrow>\<^sub>\<tau> <\<nu>y>P'" by(rule ResChain)
   ultimately show ?thesis by(rule transitionI)
@@ -719,11 +719,11 @@ proof -
   proof(cases "P''' = P \<parallel> !P")
     case True
     have "!P \<Longrightarrow>\<^sub>\<tau> !P" by simp
-    moreover from P'''Trans `P''' = P \<parallel> !P` have "!P \<longmapsto>a<\<nu>x> \<prec> P''" by(blast intro: Early_Semantics.Bang)
+    moreover from P'''Trans \<open>P''' = P \<parallel> !P\<close> have "!P \<longmapsto>a<\<nu>x> \<prec> P''" by(blast intro: Early_Semantics.Bang)
     ultimately show ?thesis using P''Chain by(rule transitionI)
   next
     case False
-    from PChain `P''' \<noteq> P \<parallel> !P` have "!P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule bangChain)
+    from PChain \<open>P''' \<noteq> P \<parallel> !P\<close> have "!P \<Longrightarrow>\<^sub>\<tau> P'''" by(rule bangChain)
     with P'''Trans P''Chain show ?thesis by(blast intro: transitionI)
   qed
 next
@@ -834,8 +834,8 @@ proof -
                                 and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
     by(blast dest: transitionE)
 
-  from PChain `c \<sharp> P` have "c \<sharp> P'''" by(rule freshChain)
-  with P'''Trans have "c \<sharp> P''" using `c \<noteq> x` by(rule Early_Semantics.freshTransition)
+  from PChain \<open>c \<sharp> P\<close> have "c \<sharp> P'''" by(rule freshChain)
+  with P'''Trans have "c \<sharp> P''" using \<open>c \<noteq> x\<close> by(rule Early_Semantics.freshTransition)
   with P''Chain show "c \<sharp> P'" by(rule freshChain)
 qed
 
@@ -849,7 +849,7 @@ lemma freshTauTransition:
   shows "c \<sharp> P'"
 proof -
   from PTrans have "P \<Longrightarrow>\<^sub>\<tau> P'" by(rule tauTransitionChain)
-  thus ?thesis using `c \<sharp> P` by(rule freshChain)
+  thus ?thesis using \<open>c \<sharp> P\<close> by(rule freshChain)
 qed
 
 lemma freshOutputTransition:
@@ -869,7 +869,7 @@ proof -
                                 and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
       by(blast dest: transitionE)
 
-    from PChain `c \<sharp> P` have "c \<sharp> P'''" by(rule freshChain)
+    from PChain \<open>c \<sharp> P\<close> have "c \<sharp> P'''" by(rule freshChain)
     with P'''Trans have "c \<sharp> P''" by(rule Early_Semantics.freshTransition)
     with P''Chain show ?thesis by(rule freshChain)
 qed
@@ -934,8 +934,8 @@ proof -
                                 and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
     by(blast dest: transitionE)
 
-  from PChain `c \<sharp> P` have "c \<sharp> P'''" by(rule freshChain)
-  with P'''Trans have "c \<sharp> P''" using `c \<noteq> b` by(rule Early_Semantics.freshInputTransition)
+  from PChain \<open>c \<sharp> P\<close> have "c \<sharp> P'''" by(rule freshChain)
+  with P'''Trans have "c \<sharp> P''" using \<open>c \<noteq> b\<close> by(rule Early_Semantics.freshInputTransition)
   with P''Chain show ?thesis by(rule freshChain)
 qed
 

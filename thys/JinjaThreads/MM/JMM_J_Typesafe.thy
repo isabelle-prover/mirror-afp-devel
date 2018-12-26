@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JMM type safety for source code *}
+section \<open>JMM type safety for source code\<close>
 
 theory JMM_J_Typesafe imports
   JMM_Typesafe2
@@ -94,7 +94,7 @@ qed
 
 end
 
-subsection {* Specific part for JMM implementation 2 *}
+subsection \<open>Specific part for JMM implementation 2\<close>
 
 abbreviation jmm_J_\<E>
   :: "addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> status \<Rightarrow> (addr \<times> (addr, addr) obs_event action) llist set"

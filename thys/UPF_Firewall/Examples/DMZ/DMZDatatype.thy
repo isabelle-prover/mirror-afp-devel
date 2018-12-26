@@ -35,14 +35,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* DMZ Datatype *}
+subsection \<open>DMZ Datatype\<close>
 theory 
   DMZDatatype
   imports 
     "../../UPF-Firewall"
 begin
   
-text{* 
+text\<open>
   This is the fourth scenario, slightly more complicated than the previous one, as we now also 
   model specific servers within one network. Therefore, we could not use anymore the modelling 
   using datatype synonym, but only use the one where an address is modelled as an
@@ -51,7 +51,7 @@ text{*
   Just for comparison, this theory is the same scenario with datatype synonym anyway, but with four 
   distinct networks instead of one contained in another. As there is no corresponding network model 
   included, we need to define a custom one.  
-*}
+\<close>
   
 datatype Adr = Intranet | Internet | Mail | Web | DMZ
 instance Adr::adr ..
@@ -98,10 +98,10 @@ definition
                   Internet_mail_port ++ 
                   Internet_web_port"
 
-text {* 
+text \<open>
   We only want to create test cases which are sent between the three main networks: e.g. not 
   between the mailserver and the dmz. Therefore, the constraint looks as follows. \
-*}
+\<close>
 
 definition
   not_in_same_net :: "(Networks,DummyContent) packet \<Rightarrow> bool" where

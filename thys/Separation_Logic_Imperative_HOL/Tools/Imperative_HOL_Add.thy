@@ -1,12 +1,12 @@
-section {* Additions to Imperative/HOL *}
+section \<open>Additions to Imperative/HOL\<close>
 theory Imperative_HOL_Add
 imports "HOL-Imperative_HOL.Imperative_HOL" 
 begin 
 
-text {* This theory loads the Imperative HOL framework and provides 
-        some additional lemmas needed for the separation logic framework. *} 
+text \<open>This theory loads the Imperative HOL framework and provides 
+        some additional lemmas needed for the separation logic framework.\<close> 
 
-text {* A stronger elimination rule for @{text ref} *}
+text \<open>A stronger elimination rule for \<open>ref\<close>\<close>
 
 lemma effect_ref[effect_elims]:
   assumes "effect (ref (x::('a::heap))) h h' r"
@@ -19,8 +19,8 @@ proof -
 qed
 
 
-text {* Some lemmas about the evaluation of the limit for modifications on 
-  a heap *}
+text \<open>Some lemmas about the evaluation of the limit for modifications on 
+  a heap\<close>
 
 lemma lim_Ref_alloc[simp]: "lim (snd (Ref.alloc x h)) = Suc (lim h)"
   unfolding Ref.alloc_def
@@ -41,8 +41,8 @@ lemma lim_Array_update[simp]: "lim (Array.update a i x h) = lim h"
   by (simp add: Let_def)
 
 
-text {* Simplification rules for the addresses of new allocated arrays and
-  references *}
+text \<open>Simplification rules for the addresses of new allocated arrays and
+  references\<close>
 
 lemma addr_of_ref_alloc[simp]:
   "addr_of_ref (fst (Ref.alloc x h)) = lim h"

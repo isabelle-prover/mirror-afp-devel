@@ -7,7 +7,7 @@ theory Sep_Tactics_Test
 imports "../Sep_Tactics"
 begin
 
-text {* Substitution and forward/backward reasoning *}
+text \<open>Substitution and forward/backward reasoning\<close>
 
 typedecl p
 typedecl val
@@ -55,17 +55,17 @@ schematic_goal
   oops
 
 
-text {* Example of low-level rewrites *}
+text \<open>Example of low-level rewrites\<close>
 
 lemma "\<lbrakk> unrelated s ; (P ** Q ** R) s \<rbrakk> \<Longrightarrow> (A ** B ** Q ** P) s"
-  apply (tactic {* dresolve_tac @{context} [mk_sep_select_rule @{context} true (3, 1)] 1 *})
-  apply (tactic {* resolve_tac @{context} [mk_sep_select_rule @{context} false (4, 2)] 1 *})
+  apply (tactic \<open>dresolve_tac @{context} [mk_sep_select_rule @{context} true (3, 1)] 1\<close>)
+  apply (tactic \<open>resolve_tac @{context} [mk_sep_select_rule @{context} false (4, 2)] 1\<close>)
   (* now sep_conj_impl1 can be used *)
   apply (erule (1) sep_conj_impl)
   oops
 
 
-text {* Conjunct selection *}
+text \<open>Conjunct selection\<close>
 
 lemma "(A ** B ** Q ** P) s"
   apply (sep_select 1)
@@ -78,7 +78,7 @@ lemma "\<lbrakk> also unrelated; (A ** B ** Q ** P) s \<rbrakk> \<Longrightarrow
   oops
 
 
-section {* Test cases for @{text sep_cancel}. *}
+section \<open>Test cases for \<open>sep_cancel\<close>.\<close>
 
 lemma
   assumes forward: "\<And>s g p v. A g p v s \<Longrightarrow> AA g p s "

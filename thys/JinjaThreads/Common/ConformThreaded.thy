@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Conformance for threads *}
+section \<open>Conformance for threads\<close>
 
 theory ConformThreaded
 imports
@@ -11,7 +11,7 @@ imports
   Conform
 begin
 
-text {* Every thread must be represented as an object whose address is its thread ID *}
+text \<open>Every thread must be represented as an object whose address is its thread ID\<close>
 
 context heap_base begin
 

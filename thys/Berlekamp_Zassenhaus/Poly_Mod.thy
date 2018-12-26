@@ -178,7 +178,7 @@ proof (induct b)
   finally show ?case by simp
 qed simp
 
-text {* Polynomial evaluation modulo *}
+text \<open>Polynomial evaluation modulo\<close>
 definition "M_poly p x \<equiv> M (poly p x)"
 
 lemma M_poly_Mp[simp]: "M_poly (Mp p) = M_poly p"

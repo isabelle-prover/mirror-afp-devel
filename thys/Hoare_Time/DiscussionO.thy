@@ -40,7 +40,7 @@ proof -
       unfolding t pre post apply(rule the_equality)   
        using idiff_enat_enat by auto 
     with p have ieq: "p \<le> k * (pre - post)" by auto
-    then have "p + k * post \<le> k * pre" using `p>0`
+    then have "p + k * post \<le> k * pre" using \<open>p>0\<close>
       using diff_mult_distrib2 by auto
        then 
     have ii: "enat p + k * Q' t \<le> k * P' s" unfolding post pre by simp                           

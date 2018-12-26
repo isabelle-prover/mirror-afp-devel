@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Fixed-points *}
+section \<open>Fixed-points\<close>
 
 theory OrdinalFix
 imports OrdinalInverse
@@ -101,7 +101,7 @@ lemma oFix_eq_self: "F a = a \<Longrightarrow> oFix F a = a"
 done
 
 
-subsection {* Derivatives of ordinal functions *}
+subsection \<open>Derivatives of ordinal functions\<close>
 
 text "The derivative of F enumerates all the fixed-points of F"
 

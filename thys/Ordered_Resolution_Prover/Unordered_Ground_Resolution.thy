@@ -20,7 +20,7 @@ Resolution'') of Bachmair and Ganzinger's chapter.
 subsection \<open>Inference Rule\<close>
 
 text \<open>
-Unordered ground resolution consists of a single rule, called @{text unord_resolve} below, which is
+Unordered ground resolution consists of a single rule, called \<open>unord_resolve\<close> below, which is
 sound and counterexample-reducing.
 \<close>
 

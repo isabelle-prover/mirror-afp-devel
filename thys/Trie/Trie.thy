@@ -107,7 +107,7 @@ fun update_with_trie ::
 "update_with_trie (k#ks) f (Trie v ps) =
   Trie v (AList.update_with_aux empty_trie k (update_with_trie ks f) ps)"
 
-text{* The function argument @{text f} of @{const update_with_trie}
+text\<open>The function argument \<open>f\<close> of @{const update_with_trie}
 does not return an optional value because @{const None} could break the invariant
 that no empty tries are contained in a trie because @{const AList.update_with_aux}
 cannot recognise and remove empty tries.
@@ -116,8 +116,8 @@ Therefore the delete function is implemented separately rather than via
 
 Do not use @{const update_with_trie} if most of the calls do not change
 the entry (because of the garbage this creates); use @{const lookup_trie} possibly
-followed by @{text update_trie}. This shortcoming could be addressed if
-@{text f} indicated that the entry is unchanged, eg by @{const None}. *}
+followed by \<open>update_trie\<close>. This shortcoming could be addressed if
+\<open>f\<close> indicated that the entry is unchanged, eg by @{const None}.\<close>
 
 definition update_trie :: "'k list \<Rightarrow> 'v \<Rightarrow> ('k, 'v) trie \<Rightarrow> ('k, 'v) trie" where
 "update_trie ks v = update_with_trie ks (%_. v)"
@@ -159,7 +159,7 @@ fun invar_trie :: "('key, 'val) trie \<Rightarrow> bool" where
    (\<forall>(k, t) \<in> set kts. \<not> is_empty_trie t \<and> invar_trie t))"
 
 
-subsection {* Empty trie *}
+subsection \<open>Empty trie\<close>
 
 lemma invar_empty [simp]: "invar_trie empty_trie"
 by(simp add: empty_trie_def)
@@ -167,7 +167,7 @@ by(simp add: empty_trie_def)
 lemma is_empty_conv: "is_empty_trie ts \<longleftrightarrow> ts = Trie None []"
 by(cases ts)(simp)
 
-subsection {* @{const lookup_trie} *}
+subsection \<open>@{const lookup_trie}\<close>
 
 lemma lookup_empty [simp]: "lookup_trie empty_trie = Map.empty"
 proof
@@ -269,7 +269,7 @@ next
   thus ?case by(auto simp: * map_of_update_with_aux split: option.split)
 qed
 
-subsection {* @{const delete_trie} *}
+subsection \<open>@{const delete_trie}\<close>
 
 lemma delete_eq_empty_lookup_other_fail:
   "\<lbrakk> delete_trie ks t = Trie None []; ks' \<noteq> ks \<rbrakk> \<Longrightarrow> lookup_trie t ks' = None"
@@ -383,7 +383,7 @@ next
         proof(cases "k' = k")
           case True
           with eq have "t' = delete_trie ks t" by simp
-          with `invar_trie (delete_trie ks t)` False
+          with \<open>invar_trie (delete_trie ks t)\<close> False
           show ?thesis by simp
         next
           case False
@@ -396,7 +396,7 @@ next
 qed
 
 
-subsection {* @{const update_with_trie} *}
+subsection \<open>@{const update_with_trie}\<close>
 
 (* FIXME mv *)
 lemma nonempty_update_with_aux: "AList.update_with_aux v k f ps \<noteq> []"
@@ -413,7 +413,7 @@ by(induction ks f t rule: update_with_trie.induct)
      split: option.split prod.splits)
 
 
-subsection {* Domain of a trie *}
+subsection \<open>Domain of a trie\<close>
 
 lemma dom_lookup: 
   "dom (lookup_trie (Trie vo kts)) = 
@@ -461,12 +461,12 @@ proof(induct t)
     moreover have "kvs = []"
     proof(cases kvs)
       case (Cons kt kvs')
-      with `invar_trie (Trie vo kvs)`
+      with \<open>invar_trie (Trie vo kvs)\<close>
       have "\<not> is_empty_trie (snd kt)" "invar_trie (snd kt)" by auto
       from Cons have "(fst kt, snd kt) \<in> set kvs" by simp
       hence "dom (lookup_trie (snd kt)) = {} \<longleftrightarrow> is_empty_trie (snd kt)"
-        using `invar_trie (snd kt)` by(rule Trie)
-      with `\<not> is_empty_trie (snd kt)` have "dom (lookup_trie (snd kt)) \<noteq> {}" by simp
+        using \<open>invar_trie (snd kt)\<close> by(rule Trie)
+      with \<open>\<not> is_empty_trie (snd kt)\<close> have "dom (lookup_trie (snd kt)) \<noteq> {}" by simp
       with dom Cons have False by(auto simp add: dom_lookup)
       thus ?thesis ..
     qed
@@ -479,7 +479,7 @@ proof(induct t)
 qed
 
 
-subsection {* Range of a trie *}
+subsection \<open>Range of a trie\<close>
 
 lemma ran_lookup_Trie: "invar_trie (Trie vo ps) \<Longrightarrow>
   ran (lookup_trie (Trie vo ps)) =

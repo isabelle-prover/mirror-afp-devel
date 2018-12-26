@@ -42,9 +42,9 @@ definition
                      END"
 
 
-subsection {* Parameterized Examples *}
+subsection \<open>Parameterized Examples\<close>
 
-subsubsection {* Set Elements of an Array to Zero *}
+subsubsection \<open>Set Elements of an Array to Zero\<close>
 
 record Example1 =
   ex1_a :: "nat \<Rightarrow> nat"
@@ -57,7 +57,7 @@ lemma Example1:
         apply (simp ; fail)+
  done
 
-text {* Same example but with a Call. *}
+text \<open>Same example but with a Call.\<close>
 definition
    "Example1'a \<equiv> \<lbrace>True\<rbrace> \<acute>ex1_a:=\<acute>ex1_a (0:=0)"
 
@@ -96,7 +96,7 @@ done
 
 type_synonym routine = nat
 
-text {* Same example but with a Call. *}
+text \<open>Same example but with a Call.\<close>
 record Example2 =
   ex2_n :: "routine \<Rightarrow> nat"
   ex2_a :: "nat \<Rightarrow> string"
@@ -150,7 +150,7 @@ shows
 
 lemmas Example2'n_proc_simp[proc_simp del]
 
-text {* Same example with lists as auxiliary variables. *}
+text \<open>Same example with lists as auxiliary variables.\<close>
 
 record Example2_list =
   ex2_A :: "nat list"

@@ -4,7 +4,7 @@ imports
   Example_BLP
 begin
 
-setup {* fn thy =>
+setup \<open>fn thy =>
   let
     val package = "package tum.in.net.psn.log_topo.SecurityInvariants.GENERATED";   
     val date = Date.toString (Date.fromTimeLocal (Time.now ()));
@@ -13,7 +13,7 @@ setup {* fn thy =>
   in
     Code_Target.set_printings (Code_Symbol.Module ("", [("Scala", SOME (header, []))])) thy
   end
-*}
+\<close>
 
 
 export_code 

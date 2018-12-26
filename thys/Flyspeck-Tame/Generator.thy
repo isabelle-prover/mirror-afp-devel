@@ -1,13 +1,13 @@
 (*  Author: Gertrud Bauer, Tobias Nipkow *)
 
-section {* Enumeration of Tame Plane Graphs *}
+section \<open>Enumeration of Tame Plane Graphs\<close>
 
 theory Generator
 imports Plane1 Tame
 begin
 
 
-text{* \paragraph{Lower bounds for total weight} *}
+text\<open>\paragraph{Lower bounds for total weight}\<close>
 
 
 definition faceSquanderLowerBound :: "graph \<Rightarrow> nat" where
@@ -37,7 +37,7 @@ definition ExcessAt :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
 definition ExcessTable :: "graph \<Rightarrow> vertex list \<Rightarrow> (vertex \<times> nat) list" where
  "ExcessTable g vs \<equiv>
      [(v, ExcessAt g v). v \<leftarrow> [v \<leftarrow> vs. 0 < ExcessAt g v ]]"
-text{* Implementation: *}
+text\<open>Implementation:\<close>
 lemma [code]:
   "ExcessTable g =
    List.map_filter (\<lambda>v. let e = ExcessAt g v in if 0 < e then Some (v, e) else None)"
@@ -49,7 +49,7 @@ definition deleteAround :: "graph \<Rightarrow> vertex \<Rightarrow> (vertex \<t
       let fs = facesAt g v;
       ws = \<Squnion>\<^bsub>f\<in>fs\<^esub> if |vertices f| = 4 then [f\<bullet>v, f\<^bsup>2\<^esup>\<bullet>v] else [f\<bullet>v] in
       removeKeyList ws ps"
-text{* Implementation: *}
+text\<open>Implementation:\<close>
 lemma [code]: "deleteAround g v ps =
       (let vs = (\<lambda>f. let n = f\<bullet>v
                      in if |vertices f| = 4 then [n, f\<bullet>n] else [n])
@@ -78,7 +78,7 @@ definition squanderLowerBound :: "graph \<Rightarrow> nat" where
 
 
 
-text{* \paragraph{Tame graph enumeration} *}
+text\<open>\paragraph{Tame graph enumeration}\<close>
 
 definition is_tame13a :: "graph \<Rightarrow> bool" where
 "is_tame13a g \<equiv> squanderLowerBound g < squanderTarget"
@@ -110,9 +110,9 @@ definition next_tame0 :: "nat \<Rightarrow> graph \<Rightarrow> graph list" ("ne
      else let f = minimalFace fs; v = minimalVertex g f
           in \<Squnion>\<^bsub>i \<in> polysizes p g\<^esub> generatePolygonTame i v f g"
 
-text{*\noindent Extensionally, @{const next_tame0} is just
-@{term"filter P \<circ> next_plane p"} for some suitable @{text P}. But
+text\<open>\noindent Extensionally, @{const next_tame0} is just
+@{term"filter P \<circ> next_plane p"} for some suitable \<open>P\<close>. But
 efficiency suffers considerably if we first create many graphs and
-then filter out the ones not in @{const polysizes}. *}
+then filter out the ones not in @{const polysizes}.\<close>
 
 end

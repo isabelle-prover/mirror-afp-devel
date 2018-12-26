@@ -2,16 +2,16 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Orders as predicates *}
+section \<open>Orders as predicates\<close>
 
 theory Orders
 imports
   Main
 begin
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-text {* transfer @{term "refl_on"} et al. from @{theory HOL.Relation} to predicates *}
+text \<open>transfer @{term "refl_on"} et al. from @{theory HOL.Relation} to predicates\<close>
 
 abbreviation refl_onP :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "refl_onP A r \<equiv> refl_on A {(x, y). r x y}"
@@ -130,7 +130,7 @@ by(rule symI)(blast)
 lemma symPD: "\<lbrakk> symP r; r x y \<rbrakk> \<Longrightarrow> r y x"
 by(blast dest: symD)
 
-subsection {* Easy properties *}
+subsection \<open>Easy properties\<close>
 
 lemma porder_onI:
   "\<lbrakk> refl_onP A r; antisymp r; transp r \<rbrakk> \<Longrightarrow> porder_on A r"
@@ -166,7 +166,7 @@ lemma total_onPD:
   "\<lbrakk> total_onP A r; x \<in> A; y \<in> A \<rbrakk> \<Longrightarrow> r x y \<or> x = y \<or> r y x"
 by(drule (2) total_onD) blast
 
-subsection {* Order consistency *}
+subsection \<open>Order consistency\<close>
 
 lemma order_consistentI:
   "(\<And>a a'. \<lbrakk> r a a'; s a' a \<rbrakk> \<Longrightarrow> a = a') \<Longrightarrow> order_consistent r s"
@@ -229,7 +229,7 @@ proof(atomize_elim)
       with s have "x \<in> B" "y \<in> B"
         by(blast elim: torder_onE porder_onE dest: refl_onPD1 refl_onPD2)+
       with B_subset_A have "x \<in> A" "y \<in> A" by blast+
-      with refl_onPD[OF `refl_onP A r`, of x] refl_onPD[OF `refl_onP A r`, of y] `s x y`
+      with refl_onPD[OF \<open>refl_onP A r\<close>, of x] refl_onPD[OF \<open>refl_onP A r\<close>, of y] \<open>s x y\<close>
       show ?thesis by(iprover)
     next
       assume "r x y"
@@ -237,35 +237,35 @@ proof(atomize_elim)
     qed
   next
     case (step y z)
-    note IH = `r x y \<or> (\<exists>u v. r x u \<and> s u v \<and> r v y)`
-    from `r y z \<or> s y z` show ?case
+    note IH = \<open>r x y \<or> (\<exists>u v. r x u \<and> s u v \<and> r v y)\<close>
+    from \<open>r y z \<or> s y z\<close> show ?case
     proof
       assume "s y z"
-      with `refl_onP B s` have "y \<in> B" "z \<in> B"
+      with \<open>refl_onP B s\<close> have "y \<in> B" "z \<in> B"
         by(blast dest: refl_onPD2 refl_onPD1)+
       from IH show ?thesis
       proof
         assume "r x y"
-        moreover from `z \<in> B` B_subset_A r have "r z z"
+        moreover from \<open>z \<in> B\<close> B_subset_A r have "r z z"
           by(blast elim: porder_onE dest: refl_onPD)
-        ultimately show ?thesis using `s y z` by blast
+        ultimately show ?thesis using \<open>s y z\<close> by blast
       next
         assume "\<exists>u v. r x u \<and> s u v \<and> r v y"
         then obtain u v where "r x u" "s u v" "r v y" by blast
-        from `refl_onP B s` `s u v` have "v \<in> B" by(rule refl_onPD2)
-        with `total_onP B s` `refl_onP B s` order_consistent_sym[OF consist]
-        have "s v y" using `y \<in> B` `r v y`
+        from \<open>refl_onP B s\<close> \<open>s u v\<close> have "v \<in> B" by(rule refl_onPD2)
+        with \<open>total_onP B s\<close> \<open>refl_onP B s\<close> order_consistent_sym[OF consist]
+        have "s v y" using \<open>y \<in> B\<close> \<open>r v y\<close>
           by(rule total_on_refl_on_consistent_into)
-        with `transp s` have "s v z" using `s y z` by(rule transPD)
-        with `transp s` `s u v` have "s u z" by(rule transPD)
-        moreover from `z \<in> B` B_subset_A have "z \<in> A" ..
-        with `refl_onP A r` have "r z z" by(rule refl_onPD)
-        ultimately show ?thesis using `r x u` by blast
+        with \<open>transp s\<close> have "s v z" using \<open>s y z\<close> by(rule transPD)
+        with \<open>transp s\<close> \<open>s u v\<close> have "s u z" by(rule transPD)
+        moreover from \<open>z \<in> B\<close> B_subset_A have "z \<in> A" ..
+        with \<open>refl_onP A r\<close> have "r z z" by(rule refl_onPD)
+        ultimately show ?thesis using \<open>r x u\<close> by blast
       qed
     next
       assume "r y z"
       with IH show ?thesis
-        by(blast intro: transPD[OF `transp r`])
+        by(blast intro: transPD[OF \<open>transp r\<close>])
     qed
   qed
 qed
@@ -284,51 +284,51 @@ proof(rule antisymPI)
   from s have "total_onP B s" "refl_onP B s" "transp s" "antisymp s"
     by(blast elim: torder_onE porder_onE)+
 
-  from r s consist B_subset_A `?rs^++ x y`
+  from r s consist B_subset_A \<open>?rs^++ x y\<close>
   show "x = y"
   proof(cases rule: porder_torder_tranclpE)
     case base
-    from r s consist B_subset_A `?rs^++ y x`
+    from r s consist B_subset_A \<open>?rs^++ y x\<close>
     show ?thesis
     proof(cases rule: porder_torder_tranclpE)
       case base
-      with `antisymp r` `r x y` show ?thesis by(rule antisymPD)
+      with \<open>antisymp r\<close> \<open>r x y\<close> show ?thesis by(rule antisymPD)
     next
       case (step u v)
-      from `r v x` `r x y` `r y u` have "r v u" by(blast intro: transPD[OF `transp r`])
-      with consist have "v = u" using `s u v` by(rule order_consistentD)
-      with `r y u` `r v x` have "r y x" by(blast intro: transPD[OF `transp r`])
-      with `r x y` show ?thesis by(rule antisymPD[OF `antisymp r`])
+      from \<open>r v x\<close> \<open>r x y\<close> \<open>r y u\<close> have "r v u" by(blast intro: transPD[OF \<open>transp r\<close>])
+      with consist have "v = u" using \<open>s u v\<close> by(rule order_consistentD)
+      with \<open>r y u\<close> \<open>r v x\<close> have "r y x" by(blast intro: transPD[OF \<open>transp r\<close>])
+      with \<open>r x y\<close> show ?thesis by(rule antisymPD[OF \<open>antisymp r\<close>])
     qed
   next
     case (step u v)
-    from r s consist B_subset_A `?rs^++ y x`
+    from r s consist B_subset_A \<open>?rs^++ y x\<close>
     show ?thesis
     proof(cases rule: porder_torder_tranclpE)
       case base
-      from `r v y` `r y x` `r x u` have "r v u" by(blast intro: transPD[OF `transp r`])
-      with order_consistent_sym[OF consist] `s u v`
+      from \<open>r v y\<close> \<open>r y x\<close> \<open>r x u\<close> have "r v u" by(blast intro: transPD[OF \<open>transp r\<close>])
+      with order_consistent_sym[OF consist] \<open>s u v\<close>
       have "u = v" by(rule order_consistentD)
-      with `r v y` `r x u` have "r x y" by(blast intro: transPD[OF `transp r`])
-      thus ?thesis using `r y x` by(rule antisymPD[OF `antisymp r`])
+      with \<open>r v y\<close> \<open>r x u\<close> have "r x y" by(blast intro: transPD[OF \<open>transp r\<close>])
+      thus ?thesis using \<open>r y x\<close> by(rule antisymPD[OF \<open>antisymp r\<close>])
     next
       case (step u' v')
-      note r_into_s = total_on_refl_on_consistent_into[OF `total_onP B s` `refl_onP B s` order_consistent_sym[OF consist]]
-      from `refl_onP B s` `s u v` `s u' v'`
+      note r_into_s = total_on_refl_on_consistent_into[OF \<open>total_onP B s\<close> \<open>refl_onP B s\<close> order_consistent_sym[OF consist]]
+      from \<open>refl_onP B s\<close> \<open>s u v\<close> \<open>s u' v'\<close>
       have "u \<in> B" "v \<in> B" "u' \<in> B" "v' \<in> B" by(blast dest: refl_onPD1 refl_onPD2)+
-      from `r v' x` `r x u` have "r v' u" by(rule transPD[OF `transp r`])
-      with `v' \<in> B` `u \<in> B` have "s v' u" by(rule r_into_s)
-      also note `s u v`
-      also (transPD[OF `transp s`])
-      from `r v y` `r y u'` have "r v u'" by(rule transPD[OF `transp r`])
-      with `v \<in> B` `u' \<in> B` have "s v u'" by(rule r_into_s)
-      finally (transPD[OF `transp s`])
-      have "v' = u'" using `s u' v'` by(rule antisymPD[OF `antisymp s`])
-      moreover with `s v u'` `s v' u` have "s v u" by(blast intro: transPD[OF `transp s`])
-      with `s u v` have "u = v" by(rule antisymPD[OF `antisymp s`])
-      ultimately have "r x y" "r y x" using `r x u` `r v y` `r y u'` `r v' x`
-        by(blast intro: transPD[OF `transp r`])+
-      thus ?thesis by(rule antisymPD[OF `antisymp r`])
+      from \<open>r v' x\<close> \<open>r x u\<close> have "r v' u" by(rule transPD[OF \<open>transp r\<close>])
+      with \<open>v' \<in> B\<close> \<open>u \<in> B\<close> have "s v' u" by(rule r_into_s)
+      also note \<open>s u v\<close>
+      also (transPD[OF \<open>transp s\<close>])
+      from \<open>r v y\<close> \<open>r y u'\<close> have "r v u'" by(rule transPD[OF \<open>transp r\<close>])
+      with \<open>v \<in> B\<close> \<open>u' \<in> B\<close> have "s v u'" by(rule r_into_s)
+      finally (transPD[OF \<open>transp s\<close>])
+      have "v' = u'" using \<open>s u' v'\<close> by(rule antisymPD[OF \<open>antisymp s\<close>])
+      moreover with \<open>s v u'\<close> \<open>s v' u\<close> have "s v u" by(blast intro: transPD[OF \<open>transp s\<close>])
+      with \<open>s u v\<close> have "u = v" by(rule antisymPD[OF \<open>antisymp s\<close>])
+      ultimately have "r x y" "r y x" using \<open>r x u\<close> \<open>r v y\<close> \<open>r y u'\<close> \<open>r v' x\<close>
+        by(blast intro: transPD[OF \<open>transp r\<close>])+
+      thus ?thesis by(rule antisymPD[OF \<open>antisymp r\<close>])
     qed
   qed
 qed
@@ -377,7 +377,7 @@ proof(rule porder_onI)
     assume "t x y"
     hence "s x y" by(rule t)
     hence "x \<in> B" "y \<in> B"
-      by(blast dest: refl_onPD1[OF `refl_onP B s`] refl_onPD2[OF `refl_onP B s`])+
+      by(blast dest: refl_onPD1[OF \<open>refl_onP B s\<close>] refl_onPD2[OF \<open>refl_onP B s\<close>])+
     with subset have "x \<in> A" "y \<in> A" by blast+ }
   note t_reflD = this
 
@@ -387,18 +387,18 @@ proof(rule porder_onI)
     fix a a'
     assume "?rt^++ a a'"
     thus "a \<in> A \<and> a' \<in> A"
-      by(induct)(auto dest: refl_onPD1[OF `refl_onP A r`] refl_onPD2[OF `refl_onP A r`] t_reflD)
+      by(induct)(auto dest: refl_onPD1[OF \<open>refl_onP A r\<close>] refl_onPD2[OF \<open>refl_onP A r\<close>] t_reflD)
   next
     fix a
     assume "a \<in> A"
-    with `refl_onP A r` have "r a a" by(rule refl_onPD)
+    with \<open>refl_onP A r\<close> have "r a a" by(rule refl_onPD)
     thus "?rt^++ a a" by(blast intro: tranclp.r_into_trancl)
   qed
 
   show "transp ?rt^++" by(rule transP_tranclp)
 qed
 
-subsection {* Order restrictions *}
+subsection \<open>Order restrictions\<close>
 
 lemma restrictPI [intro!, simp]:
   "\<lbrakk> r a b; a \<in> A; b \<in> A \<rbrakk> \<Longrightarrow> (r |` A) a b"
@@ -474,7 +474,7 @@ lemma restrictP_idem [simp]:
   shows "r |` A |` A = r |` A"
 by(simp add: restrictP_subsume1)
 
-subsection {* Maximal elements w.r.t. a total order *}
+subsection \<open>Maximal elements w.r.t. a total order\<close>
 
 definition max_torder :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
 where "max_torder r a b = (if Domainp r a \<and> Domainp r b then if r a b then b else a
@@ -609,9 +609,9 @@ lemma Max_torder_above:
   shows "r a (Max_torder r B)"
 proof -
   from tot have refl: "refl_onP A r" by(auto elim: torder_onE porder_onE)
-  with `a \<in> B` `B \<subseteq> A` have "r a a" by(blast dest: refl_onPD[OF refl])
-  from `a \<in> B` have "B \<noteq> {}" by auto
-  from Max_torder_above_iff [OF tot `finite B` this `B \<subseteq> A`, of a] `r a a` `a \<in> B`
+  with \<open>a \<in> B\<close> \<open>B \<subseteq> A\<close> have "r a a" by(blast dest: refl_onPD[OF refl])
+  from \<open>a \<in> B\<close> have "B \<noteq> {}" by auto
+  from Max_torder_above_iff [OF tot \<open>finite B\<close> this \<open>B \<subseteq> A\<close>, of a] \<open>r a a\<close> \<open>a \<in> B\<close>
   show ?thesis by blast
 qed
 

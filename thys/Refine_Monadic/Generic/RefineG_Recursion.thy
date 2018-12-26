@@ -1,19 +1,19 @@
-section {* Generic Recursion Combinator for Complete Lattice Structured Domains *}
+section \<open>Generic Recursion Combinator for Complete Lattice Structured Domains\<close>
 theory RefineG_Recursion
 imports "../Refine_Misc" RefineG_Transfer RefineG_Domain
 begin
 
-text {*
+text \<open>
   We define a recursion combinator that asserts monotonicity.
-*}
+\<close>
 
 
 (* TODO: Move to Domain.*)
-text {*
+text \<open>
   The following lemma allows to compare least fixed points wrt.\ different flat
   orderings. At any point, the fixed points are either equal or have their 
   orderings bottom values.
-*}
+\<close>
 lemma fp_compare:
   \<comment> \<open>At any point, fixed points wrt.\ different orderings are either equal, 
     or both bottom.\<close>
@@ -53,7 +53,7 @@ lemma trimonoI[refine_mono]:
 
 lemma trimono_trigger: "trimono B \<Longrightarrow> trimono B" .
 
-declaration {* Refine_Mono_Prover.declare_mono_triggers @{thms trimono_trigger} *}
+declaration \<open>Refine_Mono_Prover.declare_mono_triggers @{thms trimono_trigger}\<close>
 
 (*lemma trimonoD_flatf_le: "trimono B \<Longrightarrow> flatf_mono_le B"
   unfolding trimono_def by auto*)
@@ -385,7 +385,7 @@ proof
 qed
 
 
-subsection {* Transfer *}
+subsection \<open>Transfer\<close>
 
 lemma (in transfer) transfer_RECT'[refine_transfer]:
   assumes REC_EQ: "\<And>x. fr x = b fr x"

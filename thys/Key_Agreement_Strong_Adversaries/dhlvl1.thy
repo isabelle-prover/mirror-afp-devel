@@ -455,7 +455,7 @@ subsubsection \<open>inv1\<close>
 (**************************************************************************************************)
 text \<open>If an initiator commit signal exists for $(@{term "g"}^@{term "ny"})^@{term "Ra$nx"}$
   then @{term "Ra"} is
-  @{term "Init"}, has passed step 3, and has @{text "(g^ny)^(Ra$nx)"} as the key in its frame.\<close>
+  @{term "Init"}, has passed step 3, and has \<open>(g^ny)^(Ra$nx)\<close> as the key in its frame.\<close>
 
 definition
   l1_inv1 :: "l1_state set"

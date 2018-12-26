@@ -3,65 +3,65 @@
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
-section {* Fault-tolerant Midpoint algorithm *}
+section \<open>Fault-tolerant Midpoint algorithm\<close>
 
 theory LynchInstance imports Complex_Main begin
 
-text {* This algorithm is presented in \cite{lynch_cs}. *}
+text \<open>This algorithm is presented in \cite{lynch_cs}.\<close>
 
-subsection {* Model of the system *}
+subsection \<open>Model of the system\<close>
 
-text {* The main ideas for the formalization of the system were
-obtained from \cite{shankar92mechanical}.  *}
+text \<open>The main ideas for the formalization of the system were
+obtained from \cite{shankar92mechanical}.\<close>
 
-subsubsection {* Types in the formalization *}
+subsubsection \<open>Types in the formalization\<close>
 
-text {* The election of the basics types was based on
+text \<open>The election of the basics types was based on
 \cite{shankar92mechanical}. There, the process are natural numbers and
-the real time and the clock readings are reals. *}
+the real time and the clock readings are reals.\<close>
 
 type_synonym process = nat  
 type_synonym time = real      \<comment> \<open>real time\<close>
 type_synonym Clocktime = real \<comment> \<open>time of the clock readings (clock time)\<close>
 
-subsubsection {* Some constants *}
+subsubsection \<open>Some constants\<close>
 
-text{* Here we define some parameters of the algorithm that we use:
+text\<open>Here we define some parameters of the algorithm that we use:
 the number of process and the number of lowest and highest readed
 values that the algorithm discards. The defined constants must satisfy
 this axiom. If not, the algorithm cannot obtain the maximum and
-minimum value, because it will have discarded all the values. *}
+minimum value, because it will have discarded all the values.\<close>
 
 axiomatization
   np  :: nat  \<comment> \<open>Number of processes\<close> and
   khl :: nat  \<comment> \<open>Number of lowest and highest values\<close> where
   constants_ax: "2 * khl < np"
 
-text {* We define also the set of process that the algorithm
-manage. This definition exist only for readability matters. *}
+text \<open>We define also the set of process that the algorithm
+manage. This definition exist only for readability matters.\<close>
 
 definition
 PR :: "process set" where
 [simp]: "PR = {..<np}"
 
 
-subsubsection {* Convergence function *}
+subsubsection \<open>Convergence function\<close>
 
-text {* This functions is called ``Fault-tolerant Midpoint''
-(\cite{schneider87understanding})*}
+text \<open>This functions is called ``Fault-tolerant Midpoint''
+(\cite{schneider87understanding})\<close>
 
-text {* In this algorithm each process has an array where it store the
+text \<open>In this algorithm each process has an array where it store the
 clocks readings from the others processes (including itself). We
 formalise that as a function from processes to clock time as
-\cite{shankar92mechanical}. *}
+\cite{shankar92mechanical}.\<close>
 
-text {* First we define two functions. They take a function of clock
+text \<open>First we define two functions. They take a function of clock
 readings and a set of processes and they return a set of @{term khl}
 processes which has the greater (smaller) clock readings. They were
 defined with the Hilbert's $\varepsilon$-operator (the indefinite
-description operator @{text SOME} in Isabelle) because in this way the
+description operator \<open>SOME\<close> in Isabelle) because in this way the
 formalization is not fixed to a particular eleccion of the processes's
-readings to discards and then the modelization is more general. *}
+readings to discards and then the modelization is more general.\<close>
 
 definition
 kmax :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> process set" where
@@ -73,32 +73,32 @@ kmin :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarro
 "kmin f P = (SOME S. S \<subseteq> P \<and> card S = khl \<and> 
                 (\<forall> i\<in>S. \<forall> j\<in>(P-S). f i <= f j))"
 
-text {* With the previus functions we define a new one @{term
+text \<open>With the previus functions we define a new one @{term
 reduce}\footnote{The name of this function was taken from
 \cite{lynch_cs}.}. This take a function of clock readings and a set of
 processes and return de set of readings of the not dicarded
 processes. In order to define this function we use the image operator
-(@{term "(`)"}) of Isabelle.*}
+(@{term "(`)"}) of Isabelle.\<close>
 
 definition
 reduce :: "(process \<Rightarrow> Clocktime) \<Rightarrow> process set \<Rightarrow> Clocktime set" where
 "reduce f P = f ` (P - (kmax f P \<union> kmin f P))"
 
-text {* And finally the convergence function. This is defined with the
+text \<open>And finally the convergence function. This is defined with the
 builtin @{term Max} and @{term Min} functions of Isabelle.
-*}
+\<close>
 
 definition
 cfnl :: "process  \<Rightarrow> (process \<Rightarrow> Clocktime) \<Rightarrow> Clocktime" where
 "cfnl p f = (Max (reduce f PR) + Min (reduce f PR)) / 2"
 
 
-subsection {* Translation Invariance property.*}
+subsection \<open>Translation Invariance property.\<close>
 
-subsubsection {* Auxiliary lemmas *}
+subsubsection \<open>Auxiliary lemmas\<close>
 
-text {* These lemmas proves the existence of the maximum and minimum
-of the image of a set, if the set is finite and not empty. *}
+text \<open>These lemmas proves the existence of the maximum and minimum
+of the image of a set, if the set is finite and not empty.\<close>
 
 (* The proofs are almost the same one that those of the lemmas @{thm *)
 (* [source] ex_Max} and @{thm [source] ex_Min} in the Isabelle's standard *)
@@ -158,16 +158,16 @@ next
   qed
 qed
 
-text {* This trivial lemma is needed by the next two. *}
+text \<open>This trivial lemma is needed by the next two.\<close>
 
 lemma khl_bound: "khl < np"
   using constants_ax by arith
 
-text {* The next two lemmas prove that de functions kmin and kmax
+text \<open>The next two lemmas prove that de functions kmin and kmax
 return some values that satisfy their definition. This is not trivial
 because we need to prove the existence of these values, according to
 the rule of the Hilbert's operator. We will need this lemma many
-times because is the only thing that we know about these functions. *}
+times because is the only thing that we know about these functions.\<close>
 
 lemma kmax_prop:
 fixes f :: "nat \<Rightarrow> Clocktime"
@@ -295,7 +295,7 @@ proof-
       (rule someI [where P="\<lambda>S. S \<subseteq> PR \<and> card S = khl \<and> (\<forall>i\<in>S. \<forall>j\<in>PR - S. f i \<le> f j)"])
 qed
 
-text {* The next two lemmas are trivial from the previous ones *}
+text \<open>The next two lemmas are trivial from the previous ones\<close>
 
 lemma finite_kmax:
 "finite (kmax f PR)"
@@ -313,8 +313,8 @@ proof-
     by blast
 qed
 
-text {* This lemma is necesary because the definition of the
-convergence function use the builtin Max and Min. *}
+text \<open>This lemma is necesary because the definition of the
+convergence function use the builtin Max and Min.\<close>
 
 lemma reduce_not_empty:
 "reduce f PR \<noteq> {}"
@@ -351,8 +351,8 @@ proof-
     by (auto simp add: reduce_def)
 qed
 
-text {* The next three are the main lemmas necessary for prove the
-Translation Invariance property.*}
+text \<open>The next three are the main lemmas necessary for prove the
+Translation Invariance property.\<close>
 
 lemma reduce_shift:
 fixes f :: "nat \<Rightarrow> Clocktime"
@@ -394,7 +394,7 @@ proof-
   thus ?thesis by force
 qed
 
-subsubsection {* Main theorem *}
+subsubsection \<open>Main theorem\<close>
   
 theorem trans_inv: 
 fixes f :: "nat \<Rightarrow> Clocktime"
@@ -462,15 +462,15 @@ proof-
 qed
 
 
-subsection {* Precision Enhancement property *}
+subsection \<open>Precision Enhancement property\<close>
 
-text {* An informal proof of this theorem can be found in \cite{miner93} *}
+text \<open>An informal proof of this theorem can be found in \cite{miner93}\<close>
 
-subsubsection {* Auxiliary lemmas *}
+subsubsection \<open>Auxiliary lemmas\<close>
 
-text {* This first lemma is most important for prove the
+text \<open>This first lemma is most important for prove the
 property. This is a consecuence of the @{thm [source] card_Un_Int}
-lemma *}
+lemma\<close>
 
 lemma pigeonhole:
 assumes
@@ -491,13 +491,13 @@ proof-
     using card_Un_Int and h by force
 qed
 
-text {*This lemma is a trivial consecuence of the previous one. With
+text \<open>This lemma is a trivial consecuence of the previous one. With
 only this lemma we can prove the Precision Enhancement property with
 the bound $\pi(x,y) = x + y$. But this bound not satisfy the property
 \[ \pi(2\Lambda + 2 \beta\rho, \delta_S + 2\rho(r_{max}+\beta) +
 2\Lambda) \leq \delta_S 
 \] that is used in \cite{shankar92mechanical} for prove the
-Schneider's schema. *}
+Schneider's schema.\<close>
 
 lemma subsets_int:
 assumes
@@ -513,8 +513,8 @@ proof-
   thus ?thesis by auto
 qed
 
-text {* This lemma is true because @{term "reduce f PR"} is the image
-of @{term "PR-(kmax f PR \<union> kmin f PR)"} by the function @{term f}. *}
+text \<open>This lemma is true because @{term "reduce f PR"} is the image
+of @{term "PR-(kmax f PR \<union> kmin f PR)"} by the function @{term f}.\<close>
 
 lemma exist_reduce:
 "\<forall> c \<in> reduce f PR. \<exists> i\<in> PR-(kmax f PR \<union> kmin f PR). f i = c"
@@ -524,8 +524,8 @@ thus "\<exists> i\<in> PR-(kmax f PR \<union> kmin f PR). f i = c"
   by (auto simp add: reduce_def kmax_def kmin_def)
 qed
 
-text {* The next three lemmas are consequence of the definition of
-@{term reduce}, @{term kmax} and @{term kmin} *}
+text \<open>The next three lemmas are consequence of the definition of
+@{term reduce}, @{term kmax} and @{term kmin}\<close>
  
 lemma finite_reduce:
 "finite (reduce f PR)"
@@ -580,12 +580,11 @@ proof
   qed
 qed
 
-text {* The next lemma is used for prove the Precision Enhancement
+text \<open>The next lemma is used for prove the Precision Enhancement
 property. This has been proved in ICS. The proof is in the appendix
-\ref{sec:abs_distrib_mult}.  This cannot be prove by a simple @{text
-arith} or @{text auto} tactic. *}
+\ref{sec:abs_distrib_mult}.  This cannot be prove by a simple \<open>arith\<close> or \<open>auto\<close> tactic.\<close>
 
-text{* This lemma is true also with @{text "0 <= c"} !! *}
+text\<open>This lemma is true also with \<open>0 <= c\<close> !!\<close>
 
 
 lemma abs_distrib_div:
@@ -614,9 +613,9 @@ proof-
     by (auto simp add: divide_inverse)
 qed
 
-text {* The next three lemmas are about the existence of bounds of the
+text \<open>The next three lemmas are about the existence of bounds of the
 values @{term "Max (reduce f PR)"} and @{term "Min (reduce f PR)"}. These
-are used in the proof of the main property. *}
+are used in the proof of the main property.\<close>
 
 lemma uboundmax:
 assumes 
@@ -831,10 +830,10 @@ proof-
 qed
 
 
-subsubsection {* Main theorem *}
+subsubsection \<open>Main theorem\<close>
 
-text {* The most part of this theorem can be proved with CVC-lite
-using the three previous lemmas (appendix \ref{sec:bound_prec_enh}).*}
+text \<open>The most part of this theorem can be proved with CVC-lite
+using the three previous lemmas (appendix \ref{sec:bound_prec_enh}).\<close>
 
 theorem prec_enh:
 assumes 
@@ -968,14 +967,14 @@ proof-
     by simp
 qed
 
-subsection {* Accuracy Preservation property *}
+subsection \<open>Accuracy Preservation property\<close>
 
-text {* No new lemmas are needed for prove this property. The bound
+text \<open>No new lemmas are needed for prove this property. The bound
 has been found using the lemmas @{thm [source] uboundmax} and @{thm
-[source] lboundmin} *}
+[source] lboundmin}\<close>
 
-text {* This theorem can be proved with ICS and CVC-lite assuming
-those lemmas (see appendix \ref{sec:accur_pres}).  *}
+text \<open>This theorem can be proved with ICS and CVC-lite assuming
+those lemmas (see appendix \ref{sec:accur_pres}).\<close>
 
 theorem accur_pres:
 assumes

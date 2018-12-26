@@ -35,15 +35,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Integer Addresses with Ports and Protocols *}
+subsection \<open>Integer Addresses with Ports and Protocols\<close>
 theory 
   IntegerPort_TCPUDP
   imports 
     NetworkCore
 begin
 
-text{* A theory describing addresses which are modelled as a pair of Integers - the first being 
-       the host address, the second the port number.*}
+text\<open>A theory describing addresses which are modelled as a pair of Integers - the first being 
+       the host address, the second the port number.\<close>
 
 type_synonym 
   address = int
@@ -92,7 +92,7 @@ lemma src_port: "src_port (a,x::adr\<^sub>i\<^sub>p\<^sub>p,d,e) = fst (snd x)"
 lemma dest_port: "dest_port (a,d,x::adr\<^sub>i\<^sub>p\<^sub>p,e) = fst (snd x)"
   by (simp add: dest_port_int_TCPUDP_def in_subnet)
 
-text {* Common test constraints: *}
+text \<open>Common test constraints:\<close>
 
 definition port_positive :: "(adr\<^sub>i\<^sub>p\<^sub>p,'b) packet \<Rightarrow> bool" where
   "port_positive x = (dest_port x > (0::port))"

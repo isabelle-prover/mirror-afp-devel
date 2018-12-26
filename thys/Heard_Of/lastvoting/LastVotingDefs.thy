@@ -2,24 +2,24 @@ theory LastVotingDefs
 imports "../HOModel"
 begin
 
-section {* Verification of the \emph{LastVoting} Consensus Algorithm *}
+section \<open>Verification of the \emph{LastVoting} Consensus Algorithm\<close>
 
-text {*
+text \<open>
   The \emph{LastVoting} algorithm can be considered as a representation of
   Lamport's Paxos consensus algorithm~\cite{lamport:part-time}
   in the Heard-Of model. It is a coordinated algorithm designed to
   tolerate benign failures. Following~\cite{charron:heardof}, we formalize
-  its proof of correctness in Isabelle, using the framework of theory @{text HOModel}.
-*}
+  its proof of correctness in Isabelle, using the framework of theory \<open>HOModel\<close>.
+\<close>
 
 
-subsection {* Model of the Algorithm *}
+subsection \<open>Model of the Algorithm\<close>
 
-text {*
+text \<open>
   We begin by introducing an anonymous type of processes of finite
-  cardinality that will instantiate the type variable @{text "'proc"}
+  cardinality that will instantiate the type variable \<open>'proc\<close>
   of the generic CHO model.
-*}
+\<close>
 
 typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
@@ -28,12 +28,12 @@ instance Proc :: finite by (rule Proc_finite)
 abbreviation
   "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
-text {*
+text \<open>
   The algorithm proceeds in \emph{phases} of $4$ rounds each (we call
   \emph{steps} the individual rounds that constitute a phase).
   The following utility functions compute the phase and step of a round,
   given the round number.
-*}
+\<close>
 
 definition phase where "phase (r::nat) \<equiv> r div 4"
 
@@ -48,9 +48,9 @@ by (simp add: step_def)
 lemma phase_step: "(phase r * 4) + step r = r"
   by (auto simp add: phase_def step_def)
 
-text {*
+text \<open>
   The following record models the local state of a process.
-*}
+\<close>
 
 record 'val pstate =
   x :: 'val                \<comment> \<open>current value held by process\<close>
@@ -61,9 +61,9 @@ record 'val pstate =
   decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
   coord\<Phi> :: Proc           \<comment> \<open>coordinator for current phase\<close>
 
-text {*
+text \<open>
   Possible messages sent during the execution of the algorithm.
-*}
+\<close>
 
 datatype 'val msg =
   ValStamp "'val" "nat"
@@ -71,9 +71,9 @@ datatype 'val msg =
 | Ack
 | Null  \<comment> \<open>dummy message in case nothing needs to be sent\<close>
 
-text {*
+text \<open>
   Characteristic predicates on messages.
-*}
+\<close>
 
 definition isValStamp where "isValStamp m \<equiv> \<exists>v ts. m = ValStamp v ts"
 
@@ -81,10 +81,10 @@ definition isVote where "isVote m \<equiv> \<exists>v. m = Vote v"
 
 definition isAck where "isAck m \<equiv> m = Ack"
 
-text {*
+text \<open>
   Selector functions to retrieve components of messages. These functions
   have a meaningful result only when the message is of an appropriate kind.
-*}
+\<close>
 
 fun val where
   "val (ValStamp v ts) = v"
@@ -93,10 +93,10 @@ fun val where
 fun stamp where
   "stamp (ValStamp v ts) = ts"
 
-text {*
-  The @{text x} field of the initial state is unconstrained, all other
+text \<open>
+  The \<open>x\<close> field of the initial state is unconstrained, all other
   fields are initialized appropriately.
-*}
+\<close>
 
 definition LV_initState where
   "LV_initState p st crd \<equiv>
@@ -107,10 +107,10 @@ definition LV_initState where
    \<and> decide st = None
    \<and> coord\<Phi> st = crd"
 
-text {*
+text \<open>
   We separately define the transition predicates and the send functions
   for each step and later combine them to define the overall next-state relation.
-*}
+\<close>
 
 \<comment> \<open>processes from which values and timestamps were received\<close>
 definition valStampsRcvd where
@@ -121,14 +121,14 @@ definition highestStampRcvd where
   "highestStampRcvd msgs \<equiv> 
    Max {ts . \<exists>q v. (msgs::Proc \<rightharpoonup> 'val msg) q = Some (ValStamp v ts)}"
 
-text {*
-  In step 0, each process sends its current @{text x} and @{text timestamp}
+text \<open>
+  In step 0, each process sends its current \<open>x\<close> and \<open>timestamp\<close>
   values to its coordinator.
 
   A process that considers itself to be a coordinator updates its
-  @{text vote} field if it has received messages from a majority of processes.
-  It then sets its @{text commt} field to true.
-*}
+  \<open>vote\<close> field if it has received messages from a majority of processes.
+  It then sets its \<open>commt\<close> field to true.
+\<close>
 
 definition send0 where
   "send0 r p q st \<equiv>
@@ -141,13 +141,13 @@ definition next0 where
                 \<and> st' = st \<lparr> vote := Some v, commt := True \<rparr> )
       else st' = st"
 
-text {*
+text \<open>
   In step 1, coordinators that have committed send their vote to all
   processes.
 
-  Processes update their @{text x} and @{text timestamp} fields if they
+  Processes update their \<open>x\<close> and \<open>timestamp\<close> fields if they
   have received a vote from their coordinator.
-*}
+\<close>
 
 definition send1 where
   "send1 r p q st \<equiv>
@@ -159,13 +159,13 @@ definition next1 where
    then st' = st \<lparr> x := val (the (msgs (coord\<Phi> st))), timestamp := Suc(phase r) \<rparr>
    else st' = st"
 
-text {*
+text \<open>
   In step 2, processes that have current timestamps send an acknowledgement
   to their coordinator.
 
-  A coordinator sets its @{text ready} field to true if it receives a majority
+  A coordinator sets its \<open>ready\<close> field to true if it receives a majority
   of acknowledgements.
-*}
+\<close>
 
 definition send2 where
   "send2 r p q st \<equiv>
@@ -182,14 +182,14 @@ definition next2 where
    then st' = st \<lparr> ready := True \<rparr>
    else st' = st"
 
-text {*
+text \<open>
   In step 3, coordinators that are ready send their vote to all processes.
 
   Processes that received a vote from their coordinator decide on that value.
-  Coordinators reset their @{text ready} and @{text commt} fields to false.
+  Coordinators reset their \<open>ready\<close> and \<open>commt\<close> fields to false.
   All processes reset the coordinators as indicated by the parameter of
   the operator.
-*}
+\<close>
 
 definition send3 where
   "send3 r p q st \<equiv>
@@ -208,10 +208,10 @@ definition next3 where
    \<and> timestamp st' = timestamp st
    \<and> coord\<Phi> st' = crd"
 
-text {*
+text \<open>
   The overall send function and next-state relation are simply obtained as
   the composition of the individual relations defined above.
-*}
+\<close>
 
 definition LV_sendMsg :: "nat \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> 'val pstate \<Rightarrow> 'val msg" where
   "LV_sendMsg (r::nat) \<equiv>
@@ -232,27 +232,27 @@ definition
    else next3 r"
 
 
-subsection {* Communication Predicate for \emph{LastVoting} *}
+subsection \<open>Communication Predicate for \emph{LastVoting}\<close>
 
-text {*
+text \<open>
   We now define the communication predicate that will be assumed for the
   correctness proof of the \emph{LastVoting} algorithm.
   The ``per-round'' part is trivial: integrity and agreement are always ensured.
 
   For the ``global'' part, Charron-Bost and Schiper propose a predicate
-  that requires the existence of infinitely many phases @{text ph} such that:
+  that requires the existence of infinitely many phases \<open>ph\<close> such that:
   \begin{itemize}
-  \item all processes agree on the same coordinator @{text c},
-  \item @{text c} hears from a strict majority of processes in steps 0 and 2
-    of phase @{text ph}, and
-  \item every process hears from @{text c} in steps 1 and 3 (this is slightly
+  \item all processes agree on the same coordinator \<open>c\<close>,
+  \item \<open>c\<close> hears from a strict majority of processes in steps 0 and 2
+    of phase \<open>ph\<close>, and
+  \item every process hears from \<open>c\<close> in steps 1 and 3 (this is slightly
     weaker than the predicate that appears in~\cite{charron:heardof}, but
     obviously sufficient).
   \end{itemize}
 
   Instead of requiring infinitely many such phases, we only assume the
   existence of one such phase (Charron-Bost and Schiper note that this is enough.)
-*}
+\<close>
 
 definition
   LV_commPerRd where
@@ -268,12 +268,12 @@ definition
          \<and> (\<forall>p. c \<in> HOs (4*ph+1) p \<inter> HOs (4*ph+3) p)"
 
 
-subsection {* The \emph{LastVoting} Heard-Of Machine *}
+subsection \<open>The \emph{LastVoting} Heard-Of Machine\<close>
 
-text {*
+text \<open>
   We now define the coordinated HO machine for the \emph{LastVoting} algorithm
   by assembling the algorithm definition and its communication-predicate.
-*}
+\<close>
 
 definition LV_CHOMachine where
   "LV_CHOMachine \<equiv>

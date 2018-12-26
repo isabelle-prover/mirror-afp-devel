@@ -4,17 +4,17 @@ imports
   "HOL-Library.Extended_Real"
 begin
 
-section {* Auxilliary lemmas and setup *}
+section \<open>Auxilliary lemmas and setup\<close>
 
-text {*
+text \<open>
   This section contains facts about general concepts which are not directly
   connected to the proof of the Chromatic-Girth theorem. At some point in time,
   most of them could be moved to the Isabelle base library.
 
   Also, a little bit of setup happens.
-*}
+\<close>
 
-subsection {* Numbers *}
+subsection \<open>Numbers\<close>
 
 lemma enat_in_Inf:
   fixes S :: "enat set"
@@ -26,7 +26,7 @@ proof (rule ccontr)
   obtain n where Inf_conv: "Inf S = enat n" using assms by (auto simp: top_enat_def)
   { fix s assume "s \<in> S"
     then have "Inf S \<le> s" by (rule complete_lattice_class.Inf_lower)
-    moreover have "Inf S \<noteq> s" using A `s \<in> S` by auto
+    moreover have "Inf S \<noteq> s" using A \<open>s \<in> S\<close> by auto
     ultimately have "Inf S < s" by simp
     with Inf_conv have "enat (Suc n) \<le> s" by (cases s) auto
   }
@@ -62,7 +62,7 @@ next
     assume ?L
     then have "\<lbrakk>enat k \<le> (if finite M then Max M else \<infinity>); M \<noteq> {}\<rbrakk> \<Longrightarrow> \<exists>m\<in>M. enat k \<le> m"
       by (metis Max_in Sup_enat_def finite_enat_bounded linorder_linear)
-    with `k \<noteq> 0` and `?L` show ?R
+    with \<open>k \<noteq> 0\<close> and \<open>?L\<close> show ?R
       unfolding Sup_enat_def
       by (cases "M={}") (auto simp add: enat_0[symmetric])
   next
@@ -103,7 +103,7 @@ proof -
     then obtain m where "n = Suc (Suc m)"
       by (metis add_Suc le_Suc_ex numeral_2_eq_2)
     moreover have "(n choose 2) = (fact n div fact (n - 2)) div 2"
-      using `2 \<le> n` by (simp add: binomial_altdef_nat
+      using \<open>2 \<le> n\<close> by (simp add: binomial_altdef_nat
         div_mult2_eq[symmetric] mult.commute numeral_2_eq_2)
     ultimately show ?thesis by (simp add: algebra_simps)
   qed (auto simp: binomial_eq_0)
@@ -119,21 +119,21 @@ lemma powr_le_one_le: "\<And>x y::real. 0 < x \<Longrightarrow> x \<le> 1 \<Long
 proof -
   fix x y :: real
   assume "0 < x" "x \<le> 1" "1 \<le> y"
-  have "x powr y = (1 / (1 / x)) powr y" using `0 < x` by (simp add: field_simps)
-  also have "\<dots> = 1 / (1 / x) powr y" using `0 < x` by (simp add: powr_divide)
+  have "x powr y = (1 / (1 / x)) powr y" using \<open>0 < x\<close> by (simp add: field_simps)
+  also have "\<dots> = 1 / (1 / x) powr y" using \<open>0 < x\<close> by (simp add: powr_divide)
   also have "\<dots> \<le> 1 / (1 / x) powr 1" proof -
-    have "1 \<le> 1 / x" using `0 < x` `x \<le> 1` by (auto simp: field_simps)
-    then have "(1 / x) powr 1  \<le> (1 / x) powr y" using `0 < x`
-      using `1 \<le> y` by ( simp only: powr_mono)
+    have "1 \<le> 1 / x" using \<open>0 < x\<close> \<open>x \<le> 1\<close> by (auto simp: field_simps)
+    then have "(1 / x) powr 1  \<le> (1 / x) powr y" using \<open>0 < x\<close>
+      using \<open>1 \<le> y\<close> by ( simp only: powr_mono)
     then show ?thesis
-      by (metis `1 \<le> 1 / x` `1 \<le> y` neg_le_iff_le powr_minus_divide powr_mono)
+      by (metis \<open>1 \<le> 1 / x\<close> \<open>1 \<le> y\<close> neg_le_iff_le powr_minus_divide powr_mono)
   qed
-  also have "\<dots> \<le> x" using `0 < x` by (auto simp: field_simps)
+  also have "\<dots> \<le> x" using \<open>0 < x\<close> by (auto simp: field_simps)
   finally show "?thesis x y" .
 qed
 
 
-subsection {* Lists and Sets *}
+subsection \<open>Lists and Sets\<close>
 
 lemma list_set_tl: "x \<in> set (tl xs) \<Longrightarrow> x \<in> set xs"
 by (cases xs) auto
@@ -148,13 +148,13 @@ by (induct rule: inc_induct) (auto simp: card_Suc_eq)
 
 
 
-subsection {* Limits and eventually *}
+subsection \<open>Limits and eventually\<close>
 
-text {*
+text \<open>
   We employ filters and the @{term eventually} predicate to deal with the
   @{term "\<exists>N. \<forall>n\<ge>N. P n"} cases. To make this more convenient, introduce
   a shorter syntax.
-*}
+\<close>
 
 abbreviation evseq :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" (binder "\<forall>\<^sup>\<infinity>" 10) where
   "evseq P \<equiv> eventually P sequentially"
@@ -175,7 +175,7 @@ lemma LIMSEQ_inv_powr:
   assumes "0 < c" "0 < d"
   shows "(\<lambda>n :: nat. (c / n) powr d) \<longlonglongrightarrow> 0"
 proof (rule tendsto_zero_powrI)
-  from `0 < c` have "\<And>x. 0 < x \<Longrightarrow> 0 < c / x" by simp
+  from \<open>0 < c\<close> have "\<And>x. 0 < x \<Longrightarrow> 0 < c / x" by simp
   then show "\<forall>\<^sup>\<infinity>n. 0 \<le> c / real n"
     using assms(1) by auto
   show "(\<lambda>x. c / real x) \<longlonglongrightarrow> 0"

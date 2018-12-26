@@ -7,31 +7,31 @@ theory Containers_Userguide imports
   Containers
 begin
 (*>*)
-chapter {* User guide *}
-text_raw {* \label{chapter:Userguide} *}
+chapter \<open>User guide\<close>
+text_raw \<open>\label{chapter:Userguide}\<close>
 
-text {*
+text \<open>
   This user guide shows how to use and extend the lightweight containers framework (LC).
   For a more theoretical discussion, see \cite{Lochbihler2013ITP}.
   This user guide assumes that you are familiar with refinement in the code generator \cite{HaftmannBulwahn2013codetut,HaftmannKrausKuncarNipkow2013ITP}.
-  The theory @{text Containers_Userguide} generates it; so if you want to experiment with the examples, you can find their source code there.
+  The theory \<open>Containers_Userguide\<close> generates it; so if you want to experiment with the examples, you can find their source code there.
   Further examples can be found in the @{dir Examples} folder.
-*}
+\<close>
 
-section {* Characteristics *}
+section \<open>Characteristics\<close>
 
-text_raw {*
+text_raw \<open>
   \isastyletext
   \begin{itemize}
-*}
-text_raw {*
+\<close>
+text_raw \<open>
   \isastyletext
   \item \textbf{Separate type classes for code generation}
     \\
     LC follows the ideal that type classes for code generation should be separate from the standard type classes in Isabelle.
     LC's type classes are designed such that every type can become an instance, so well-sortedness errors during code generation can always be remedied.
-*}
-text_raw {*
+\<close>
+text_raw \<open>
   \isastyletext
   \item \textbf{Multiple implementations}
     \\
@@ -41,9 +41,9 @@ text_raw {*
     (ii)~@{typ "int set"} as a RBT of the elements or as the RBT of the complement, and
     (iii)~sets of functions as monad-style lists:
     \par
-*}
+\<close>
 value "({True}, {1 :: int}, - {2 :: int, 3}, {\<lambda>x :: int. x * x, \<lambda>y. y + 1})"
-text_raw {*
+text_raw \<open>
     \isastyletext
     \par
     The LC type classes are the key to simultaneously supporting different implementations.
@@ -53,32 +53,32 @@ text_raw {*
     The LC framework is designed for being extensible.
     You can add new containers, implementations and element types any time.
   \end{itemize}
-*}
+\<close>
 
-section {* Getting started *}
-text_raw {* \label{section:getting:started} *}
+section \<open>Getting started\<close>
+text_raw \<open>\label{section:getting:started}\<close>
 
-text {*
+text \<open>
   Add the entry theory @{theory Containers.Containers} for LC to the end of your imports.
   This will reconfigure the code generator such that it implements the types @{typ "'a set"} for sets and @{typ "('a, 'b) mapping"} for maps with one of the data structures supported.
   As with all the theories that adapt the code generator setup, it is important that @{theory Containers.Containers} comes at the end of the imports.
 
   Run the following command, e.g., to check that LC works correctly and implements sets of @{typ int}s as red-black trees (RBT):
-*}
+\<close>
 
 value [code] "{1 :: int}"
 
-text {*
+text \<open>
   This should produce @{value [names_short] "{1 :: int}"}.
   Without LC, sets are represented as (complements of) a list of elements, i.e., @{term "set [1 :: int]"} in the example.
-*}
+\<close>
 
-text {*
+text \<open>
   If your exported code does not use your own types as elements of sets or maps and you have not declared any code equation for these containers, then your \isacommand{export{\isacharunderscore}code} command will use LC to implement @{typ "'a set"} and @{typ "('a, 'b) mapping"}.
   
   Our running example will be arithmetic expressions.
   The function @{term "vars e"} computes the variables that occur in the expression @{term e}
-*}
+\<close>
 
 type_synonym vname = string
 datatype expr = Var vname | Lit int | Add expr expr
@@ -89,9 +89,9 @@ fun vars :: "expr \<Rightarrow> vname set" where
 
 value "vars (Var ''x'')"
 
-text {*
+text \<open>
   To illustrate how to deal with type variables, we will use the following variant where variable names are polymorphic:
-*}
+\<close>
 
 datatype 'a expr' = Var' 'a | Lit' int | Add' "'a expr'" "'a expr'"
 fun vars' ::  "'a expr' \<Rightarrow> 'a set" where
@@ -101,9 +101,9 @@ fun vars' ::  "'a expr' \<Rightarrow> 'a set" where
 
 value "vars' (Var' (1 :: int))"
 
-section {* New types as elements *}
+section \<open>New types as elements\<close>
 
-text {*
+text \<open>
   This section explains LC's type classes and shows how to instantiate them.
   If you want to use your own types as the elements of sets or the keys of maps, you must instantiate up to eight type classes: @{class ceq} (\S\ref{subsection:ceq}), @{class ccompare} (\S\ref{subsection:ccompare}), @{class set_impl} (\S\ref{subsection:set_impl}), @{class mapping_impl} (\S\ref{subsection:mapping_impl}), @{class cenum} (\S\ref{subsection:cenum}), @{class finite_UNIV} (\S\ref{subsection:finite_UNIV}), @{class card_UNIV} (\S\ref{subsection:card_UNIV}), and @{class cproper_interval} (\S\ref{subsection:cproper_interval}).
   Otherwise, well-sortedness errors like the following will occur:
@@ -129,13 +129,13 @@ text {*
     }
     @{class ccompare} (\S\ref{subsection:ccompare}) and @{class mapping_impl} (\S\ref{subsection:mapping_impl}) for @{typ "('a, 'b) mapping"}.
   \end{itemize}
-*}
+\<close>
 
-subsection {* Equality testing *}
-text_raw {* \label{subsection:ceq} *}
+subsection \<open>Equality testing\<close>
+text_raw \<open>\label{subsection:ceq}\<close>
 
 (*<*)context fixes dummy :: "'a :: {cenum, ceq, ccompare, set_impl, mapping_impl}" begin(*>*)
-text {*
+text \<open>
   The type class @{class ceq} defines the operation @{term [source] "CEQ('a) :: ('a \<Rightarrow> 'a \<Rightarrow> bool) option" } for testing whether two elements are equal.%
   \footnote{%
     Technically, the type class @{class ceq} defines the operation @{term [source] ceq}.
@@ -147,13 +147,13 @@ text {*
     @{term [source] "MAPPING_IMPL('a)"} (constrains the operation @{term [source] mapping_impl}, (\S\ref{subsection:mapping_impl}), and
     @{term "CENUM('a)"} constrains the operation @{term [source] cenum}, \S\ref{subsection:cenum}.
   }
-  The test is embedded in an @{text option} value to allow for types that do not support executable equality test such as @{typ "'a \<Rightarrow> 'b"}.
+  The test is embedded in an \<open>option\<close> value to allow for types that do not support executable equality test such as @{typ "'a \<Rightarrow> 'b"}.
   Whenever possible, @{term "CEQ('a)"} should provide an executable equality operator.
   Otherwise, membership tests on such sets will raise an exception at run-time.
 
-  For data types, the @{text derive} command can automatically instantiates of @{class ceq},
-  we only have to tell it whether an equality operation should be provided or not (parameter @{text no}).
-*}
+  For data types, the \<open>derive\<close> command can automatically instantiates of @{class ceq},
+  we only have to tell it whether an equality operation should be provided or not (parameter \<open>no\<close>).
+\<close>
 (*<*)end(*>*)
 
 derive (eq) ceq expr
@@ -161,10 +161,10 @@ derive (eq) ceq expr
 datatype example = Example
 derive (no) ceq example
 
-text {*
+text \<open>
   In the remainder of this subsection, we look at how to manually instantiate a type for @{class ceq}.
-  First, the simple case of a type constructor @{text simple_tycon} without parameters that already is an instance of @{class equal}:
-*}
+  First, the simple case of a type constructor \<open>simple_tycon\<close> without parameters that already is an instance of @{class equal}:
+\<close>
 typedecl simple_tycon
 axiomatization where simple_tycon_equal: "OFCLASS(simple_tycon, equal_class)"
 instance simple_tycon :: equal by (rule simple_tycon_equal)
@@ -174,12 +174,12 @@ definition "CEQ(simple_tycon) = Some (=)"
 instance by(intro_classes)(simp add: ceq_simple_tycon_def)
 end
 
-text {*
-  For polymorphic types, this is a bit more involved, as the next example with @{typ "'a expr'"} illustrates (note that we could have delegated all this to @{text derive}). 
+text \<open>
+  For polymorphic types, this is a bit more involved, as the next example with @{typ "'a expr'"} illustrates (note that we could have delegated all this to \<open>derive\<close>). 
   First, we need an operation that implements equality tests with respect to a given equality operation on the polymorphic type.
-  For data types, we can use the relator which the transfer package (method @{text transfer}) requires and the BNF package generates automatically.
+  For data types, we can use the relator which the transfer package (method \<open>transfer\<close>) requires and the BNF package generates automatically.
   As we have used the old datatype package for @{typ "'a expr'"}, we must define it manually:
-*}
+\<close>
 
 context fixes R :: "'a \<Rightarrow> 'b \<Rightarrow> bool" begin
 fun expr'_rel :: "'a expr' \<Rightarrow> 'b expr' \<Rightarrow> bool"
@@ -190,13 +190,13 @@ where
 | "expr'_rel _                 _                \<longleftrightarrow> False"
 end
 
-text {* If we give HOL equality as parameter, the relator is equality: *}
+text \<open>If we give HOL equality as parameter, the relator is equality:\<close>
 
 lemma expr'_rel_eq: "expr'_rel (=) e\<^sub>1 e\<^sub>2 \<longleftrightarrow> e\<^sub>1 = e\<^sub>2"
 by(induct e\<^sub>1 e\<^sub>2 rule: expr'_rel.induct) simp_all
-text {*
+text \<open>
   Then, the instantiation is again canonical:
-*}
+\<close>
 instantiation expr' :: (ceq) ceq begin
 definition
   "CEQ('a expr') =
@@ -208,25 +208,25 @@ instance
           split: option.split_asm)
 end
 (*<*)context fixes dummy :: "'a :: ceq" begin(*>*)
-text {*
+text \<open>
   Note the following two points:
   First, the instantiation should avoid to use @{term "(=)"} on terms of the polymorphic type.
   This keeps the LC framework separate from the type class @{class equal}, i.e., every choice of @{typ "'a"}
   in @{typ "'a expr'"} can be of sort @{class "ceq"}.
   The easiest way to achieve this is to obtain the equality test from @{term "CEQ('a)"}.
   Second, we use @{term "ID CEQ('a)"} instead of @{term "CEQ('a)"}.
-  In proofs, we want that the simplifier uses assumptions like @{text "CEQ('a) = Some \<dots>"} for rewriting.
-  However, @{term "CEQ('a)"} is a nullary constant, so the simplifier reverses such an equation, i.e., it only rewrites @{text "Some \<dots>"} to @{term "CEQ('a :: ceq)"}.
+  In proofs, we want that the simplifier uses assumptions like \<open>CEQ('a) = Some \<dots>\<close> for rewriting.
+  However, @{term "CEQ('a)"} is a nullary constant, so the simplifier reverses such an equation, i.e., it only rewrites \<open>Some \<dots>\<close> to @{term "CEQ('a :: ceq)"}.
   Applying the identity function @{term "ID"} to @{term "CEQ('a :: ceq)"} avoids this, and the code generator eliminates all occurrences of @{term "ID"}.
   Although @{thm ID_def} by definition, do not use the conventional @{term "id"} instead of @{term ID}, because @{term "id CEQ('a :: ceq)"} immediately simplifies to @{term "CEQ('a :: ceq)"}.
-*}
+\<close>
 (*<*)end(*>*)
 
-subsection {* Ordering *}
-text_raw {* \label{subsection:ccompare} *}
+subsection \<open>Ordering\<close>
+text_raw \<open>\label{subsection:ccompare}\<close>
 
 (*<*)context fixes dummy :: "'a :: {ccompare, ceq}" begin(*>*)
-text {* 
+text \<open>
   LC takes the order for storing elements in search trees from the type class @{class ccompare} rather than @{class compare}, because we cannot instantiate @{class compare} for some types (e.g., @{typ "'a set"} as @{term "(\<subseteq>)"} is not linear).
   Similar to @{term "CEQ('a)"} in class @{term ceq}, the class @{class ccompare} specifies an optional comparator @{term [source] "CCOMPARE('a) :: (('a \<Rightarrow> 'a \<Rightarrow> order)) option" }.
   If you cannot or do not want to implement a comparator on your type, you can default to @{term "None"}.
@@ -234,36 +234,36 @@ text {*
 
   If the type is a data type or instantiates @{class compare} and we wish to use that comparator also for the search tree, instantiation is again canonical:
   For our data type @{typ expr}, derive does everything!
-*}
+\<close>
 (*<*)end(*>*)
 (*<*)(*>*)
 derive ccompare expr
 (*<*)(*>*)
 
-text {*
+text \<open>
   In general, the pattern for type constructors without parameters looks as follows:
-*}
+\<close>
 axiomatization where simple_tycon_compare: "OFCLASS(simple_tycon, compare_class)"
 instance simple_tycon :: compare by (rule simple_tycon_compare)
 
 derive (compare) ccompare simple_tycon
 
 
-text {* 
+text \<open>
   For polymorphic types like @{typ "'a expr'"}, we should not do everything manually:
   First, we must define a comparator that takes the comparator on the type variable @{typ "'a"} as a parameter.
   This is necessary to maintain the separation between Isabelle/HOL's type classes (like @{class compare}) and LC's.
   Such a comparator is again easily defined by derive.
-*}
+\<close>
 
 derive ccompare expr'
 
 thm ccompare_expr'_def comparator_expr'_simps
 
-subsection {* Heuristics for picking an implementation *}
-text_raw {* \label{subsection:set_impl} \label{subsection:mapping_impl} *}
+subsection \<open>Heuristics for picking an implementation\<close>
+text_raw \<open>\label{subsection:set_impl} \label{subsection:mapping_impl}\<close>
 (*<*)context fixes dummy :: "'a :: {ceq, ccompare, set_impl, mapping_impl}" begin(*>*)
-text {*
+text \<open>
   Now, we have defined the necessary operations on @{typ expr} and @{typ "'a expr'"} to store them in a set 
   or use them as the keys in a map.
   But before we can actually do so, we also have to say which data structure to use.
@@ -282,19 +282,19 @@ text {*
   For maps, the choices are @{term "mapping_Assoc_List"} (associative list without duplicates), @{term "mapping_RBT"} (red-black tree), and @{term "mapping_Mapping"} (closures with function update).
   Again, there is also the @{term "mapping_Choose"} heuristics.
   
-  For simple cases, @{text derive} can be used again (even if the type is not a data type).
+  For simple cases, \<open>derive\<close> can be used again (even if the type is not a data type).
   Consider, e.g., the following instantiations:
   @{typ "expr set"} uses RBTs, @{typ "(expr, _) mapping"} and @{typ "'a expr' set"} use the heuristics, and @{typ "('a expr', _) mapping"} uses the same implementation as @{typ "('a, _) mapping"}.
-*}
+\<close>
 (*<*)end(*>*)
 
 derive (rbt) set_impl expr
 derive (choose) mapping_impl expr
 derive (choose) set_impl expr'
 
-text {*
+text \<open>
   More complex cases such as taking the implementation preference of a type parameter must be done manually.
-*}
+\<close>
 
 instantiation expr' :: (mapping_impl) mapping_impl begin
 definition
@@ -308,12 +308,12 @@ locale mynamespace begin
 definition empty where "empty = Mapping.empty" 
 declare (in -) mynamespace.empty_def [code]
 (*>*)
-text {* 
+text \<open>
   To see the effect of the different configurations, consider the following examples where @{term [names_short] "empty"} refers to @{term "Mapping.empty"}.
   For that, we must disable pretty printing for sets as follows:
-*}
+\<close>
 declare (*<*)(in -) (*>*)pretty_sets[code_post del]
-text {*
+text \<open>
   \begin{center}
     \small
     \begin{tabular}{ll}
@@ -362,7 +362,7 @@ text {*
   For sets, in contrast, @{term "SET_IMPL('a expr')"} discards @{typ 'a}'s preferences and picks RBTs, because there is a comparison operation.
 
   Finally, let's enable pretty-printing for sets again:
-*}
+\<close>
 declare (*<*)(in -) (*>*)pretty_sets [code_post]
 (*<*)
   (* The following value commands ensure that the code generator executes @{value ...} above,
@@ -376,11 +376,11 @@ declare (*<*)(in -) (*>*)pretty_sets [code_post]
 (*>*)   
 (*<*)end(*>*)
 
-subsection {* Set comprehensions *}
-text_raw {* \label{subsection:cenum} *}
+subsection \<open>Set comprehensions\<close>
+text_raw \<open>\label{subsection:cenum}\<close>
 
 (*<*)context fixes dummy :: "'a :: cenum" begin(*>*)
-text {*
+text \<open>
   If you use the default code generator setup that comes with Isabelle, set comprehensions @{term [source] "{x. P x} :: 'a set"} are only executable if the type @{typ 'a} has sort @{class enum}.
   Internally, Isabelle's code generator transforms set comprehensions into an explicit list of elements which it obtains from the list @{term enum} of all of @{typ "'a"}'s elements.
   Thus, the type must be an instance of @{class enum}, i.e., finite in particular.
@@ -388,13 +388,13 @@ text {*
 
   For compatibility, LC also implements such an enumeration strategy, but avoids the finiteness restriction.
   The type class @{class cenum} mimicks @{class enum}, but its single parameter @{term [source] "cEnum :: ('a list \<times> (('a \<Rightarrow> bool) \<Rightarrow> bool) \<times> (('a \<Rightarrow> bool) \<Rightarrow> bool)) option"} combines all of @{class enum}'s parameters, namely a list of all elements, a universal and an existential quantifier.
-  @{text "option"} ensures that every type can be an instance as @{term "CENUM('a)"} can always default to @{term None}.
+  \<open>option\<close> ensures that every type can be an instance as @{term "CENUM('a)"} can always default to @{term None}.
   
   For types that define @{term "CENUM('a)"}, set comprehensions evaluate to a list of their elements.
   Otherwise, set comprehensions are represented as a closure.
   This means that if the generated code contains at least one set comprehension, all element types of a set must instantiate @{class cenum}.
   Infinite types default to @{term None}, and enumerations for finite types are canoncial, see @{theory Containers.Collection_Enum} for examples.
-*}
+\<close>
 (*<*)end(*>*)
 
 instantiation expr :: cenum begin
@@ -405,30 +405,30 @@ end
 derive (no) cenum expr'
 derive compare_order expr
 
-text_raw {* \par\medskip \isastyletext For example, *}
+text_raw \<open>\par\medskip \isastyletext For example,\<close>
 value "({b. b = True}, {x. compare x (Lit 0) = Lt})"
-text_raw {*
+text_raw \<open>
   \isastyletext{}
   yields @{value "({b. b = True}, {x. compare x (Lit 0) = Lt})"}
-*}
+\<close>
 
-text {*
+text \<open>
   LC keeps complements of such enumerated set comprehensions, i.e., @{term "- {b. b = True}"} evaluates to @{value "- {b. b = True}"}.
   If you want that the complement operation actually computes the elements of the complements, you have to replace the code equations for @{term uminus} as follows:
-*}
+\<close>
 declare Set_uminus_code[code del] Set_uminus_cenum[code]
 (*<*)value "- {b. b = True}"(*>*)
-text {*
+text \<open>
   Then, @{term "- {b. b = True}"} becomes @{value "- {b. b = True}"}, but this applies to all complement invocations.
   For example, @{term [source] "UNIV :: bool set"} becomes @{value "UNIV :: bool set"}.
-*}
+\<close>
 (*<*)declare Set_uminus_cenum[code del] Set_uminus_code[code](*>*)
 
-subsection {* Nested sets *}
-text_raw {* \label{subsection:finite_UNIV} \label{subsection:card_UNIV} \label{subsection:cproper_interval} *}
+subsection \<open>Nested sets\<close>
+text_raw \<open>\label{subsection:finite_UNIV} \label{subsection:card_UNIV} \label{subsection:cproper_interval}\<close>
 
 (*<*)context fixes dummy :: "'a :: {card_UNIV, cproper_interval}" begin(*>*)
-text {*
+text \<open>
   To deal with nested sets such as @{typ "expr set set"}, the element type must provide three operations from three type classes:
   \begin{itemize}
   \item @{class finite_UNIV} from theory @{theory "HOL-Library.Cardinality"} defines the constant @{term [source] "finite_UNIV :: ('a, bool) phantom"} which designates whether the type is finite.
@@ -441,13 +441,13 @@ text {*
 
   Note that the type class @{class finite_UNIV} must not be confused with the type class @{class finite}.
   @{class finite_UNIV} allows the generated code to examine whether a type is finite whereas @{class finite} requires that the type in fact is finite.
-*}
+\<close>
 (*<*)end(*>*)
 
-text {* 
+text \<open>
   For datatypes, the theory @{theory Containers.Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file "Examples/Card_Datatype_Ex.thy"} for examples.
   With this, it is easy to instantiate @{class card_UNIV} for our running examples:
-*}
+\<close>
 
 lemma inj_expr [simp]: "inj Lit" "inj Var" "inj Add" "inj (Add e)"
 by(simp_all add: fun_eq_iff inj_on_def)
@@ -485,12 +485,12 @@ instance
      (simp_all add: finite_UNIV_expr'_def card_UNIV_expr'_def infinite_UNIV_expr')
 end
 
-text {*
+text \<open>
   As @{typ expr} and @{typ "'a expr'"} are infinite, instantiating @{class cproper_interval} is trivial,
   because @{class cproper_interval} only makes assumptions about its parameters for finite types.
   Nevertheless, it is important to actually define @{term cproper_interval}, because the
   code generator requires a code equation.
-*}
+\<close>
 
 instantiation expr :: cproper_interval begin
 definition cproper_interval_expr :: "expr proper_interval" 
@@ -504,9 +504,9 @@ definition cproper_interval_expr' :: "'a expr' proper_interval"
 instance by(intro_classes)(simp add: infinite_UNIV_expr')
 end
 
-subsubsection {* Instantiation of @{class proper_interval} *}
+subsubsection \<open>Instantiation of @{class proper_interval}\<close>
 
-text {*
+text \<open>
   To illustrate what to do with finite types, we instantiate @{class proper_interval} for @{typ expr}.
   Like @{class ccompare} relates to @{class compare}, the class @{class cproper_interval} has a counterpart @{class proper_interval} without the finiteness assumption.
   Here, we first have to gather the simplification rules of the comparator from the derive
@@ -515,7 +515,7 @@ text {*
   Since the order on lists is not yet shown to be consistent with the comparators that are used
   for lists, this part of the userguide is currently not available.
   
-*}
+\<close>
 (*
 instantiation expr :: proper_interval begin
 
@@ -611,28 +611,28 @@ value "{{{Lit 1}}}"
 value "{{{{Lit 1}}}}"
 (*>*)
 
-section {* New implementations for containers *}
-text_raw {* \label{section:new:implementation} *}
+section \<open>New implementations for containers\<close>
+text_raw \<open>\label{section:new:implementation}\<close>
 
 (*<*)
 typedecl 'v trie_raw
 (*>*)
 
-text {*
+text \<open>
   This section explains how to add a new implementation for a container type.
   If you do so, please consider to add your implementation to this AFP entry.
-*}
+\<close>
 
-subsection {* Model and verify the data structure *}
-text_raw {* \label{subsection:implement:data:structure} *}
-text {*
+subsection \<open>Model and verify the data structure\<close>
+text_raw \<open>\label{subsection:implement:data:structure}\<close>
+text \<open>
   First, you of course have to define the data structure and verify that it has the required properties.
   As our running example, we use a trie to implement @{typ "('a, 'b) mapping"}.
   A trie is a binary tree whose the nodes store the values, the keys are the paths from the root to the given node.
   We use lists of @{typ bool}ans for the keys where the @{typ bool}ean indicates whether we should go to the left or right child.
 
   For brevity, we skip this step and rather assume that the type @{typ "'v trie_raw"} of tries has following operations and properties:
-*}
+\<close>
 type_synonym trie_key = "bool list"
 axiomatization
   trie_empty :: "'v trie_raw" and
@@ -644,10 +644,10 @@ where trie_lookup_empty: "trie_lookup trie_empty = Map.empty"
     "trie_lookup (trie_update k v t) = (trie_lookup t)(k \<mapsto> v)"
   and trie_keys_dom_lookup: "trie_keys t = dom (trie_lookup t)"
 
-text {*
+text \<open>
   This is only a minimal example.
   A full-fledged implementation has to provide more operations and -- for efficiency -- should use more than just @{typ bool}eans for the keys.
-*}
+\<close>
 
 (*<*) (* Implement trie by free term algebra *)
 code_datatype trie_empty trie_update
@@ -661,16 +661,16 @@ lemma trie_keys_update [code]:
 by(simp add: trie_keys_dom_lookup trie_lookup_update)
 (*>*)
 
-subsection {* Generalise the data structure *}
-text_raw {* \label{subsection:introduce:type:class} *}
-text {*
+subsection \<open>Generalise the data structure\<close>
+text_raw \<open>\label{subsection:introduce:type:class}\<close>
+text \<open>
   As @{typ "('k, 'v) mapping"} store keys of arbitrary type @{typ "'k"}, not just @{typ "trie_key"}, we cannot use @{typ "'v trie_raw"} directly.
   Instead, we must first convert arbitrary types @{typ "'k"} into @{typ "trie_key"}.
   Of course, this is not always possbile, but we only have to make sure that we pick tries as implementation only if the types do.
   This is similar to red-black trees which require an order.
   Hence, we introduce a type class to convert arbitrary keys into trie keys.
   We make the conversions optional such that every type can instantiate the type class, just as LC does for @{class ceq} and @{class ccompare}.
-*}
+\<close>
 type_synonym 'a cbl = "(('a \<Rightarrow> bool list) \<times> (bool list \<Rightarrow> 'a)) option"
 class cbl =
   fixes cbl :: "'a cbl"
@@ -681,10 +681,10 @@ abbreviation from_bl where "from_bl \<equiv> snd (the (ID cbl))"
 abbreviation to_bl where "to_bl \<equiv> fst (the (ID cbl))"
 end
 
-text {*
+text \<open>
   It is best to immediately provide the instances for as many types as possible.
   Here, we only present two examples: @{typ unit} provides conversion functions, @{typ "'a \<Rightarrow> 'b"} does not.
-*}
+\<close>
 instantiation unit :: cbl begin
 definition "cbl = Some (\<lambda>_. [], \<lambda>_. ())"
 instance by(intro_classes)(auto simp add: cbl_unit_def ID_Some intro: injI)
@@ -695,16 +695,16 @@ definition "cbl = (None :: ('a \<Rightarrow> 'b) cbl)"
 instance by intro_classes(simp_all add: cbl_fun_def ID_None)
 end
 
-subsection {* Hide the invariants of the data structure *}
-text_raw {* \label{subsection:hide:invariants} *}
-text {*
+subsection \<open>Hide the invariants of the data structure\<close>
+text_raw \<open>\label{subsection:hide:invariants}\<close>
+text \<open>
   Many data structures have invariants on which the operations rely.
   You must hide such invariants in a \isamarkuptrue\isacommand{typedef}\isamarkupfalse{} before connecting to the container, because the code generator cannot handle explicit invariants.
   The type must be inhabited even if the types of the elements do not provide the required operations.
   The easiest way is often to ignore all invariants in that case.
 
   In our example, we require that all keys in the trie represent encoded values.
-*}
+\<close>
 typedef (overloaded) ('k :: cbl, 'v) trie = 
   "{t :: 'v trie_raw. 
     trie_keys t \<subseteq> range (to_bl :: 'k \<Rightarrow> trie_key) \<or> ID (cbl :: 'k cbl) = None}"
@@ -713,10 +713,10 @@ proof
     by(simp add: trie_keys_dom_lookup trie_lookup_empty)
 qed
 
-text {*
+text \<open>
   Next, transfer the operations to the new type.
   The transfer package does a good job here.
-*}
+\<close>
 
 setup_lifting type_definition_trie \<comment> \<open>also sets up code generation\<close>
 
@@ -734,10 +734,10 @@ lift_definition update :: "'k \<Rightarrow> 'v \<Rightarrow> ('k :: cbl, 'v) tri
 lift_definition keys :: "('k :: cbl, 'v) trie \<Rightarrow> 'k set"
   is "\<lambda>t. from_bl ` trie_keys t" .
 
-text {*
+text \<open>
   And now we go for the properties.
   Note that some properties hold only if the type class operations are actually provided, i.e., @{term "cbl \<noteq> None"} in our example.
-*}
+\<close>
 
 lemma lookup_empty: "lookup empty = Map.empty"
 by transfer(simp add: trie_lookup_empty fun_eq_iff)
@@ -757,9 +757,9 @@ by transfer(force simp add: trie_keys_dom_lookup to_bl_inverse intro: rev_image_
 
 end
 
-subsection {* Connecting to the container *}
-text_raw {* \label{subsection:connect:container} *}
-text {*
+subsection \<open>Connecting to the container\<close>
+text_raw \<open>\label{subsection:connect:container}\<close>
+text \<open>
   Connecting to the container (@{typ "('a, 'b) mapping"} in our example) takes three steps:
   \begin{enumerate}
   \item Define a new pseudo-constructor
@@ -768,25 +768,25 @@ text {*
   \item Test thoroughly
   \end{enumerate}
   Thorough testing is particularly important, because Isabelle does not check whether you have implemented all your operations, whether you have configured your heuristics sensibly, nor whether your implementation always terminates.
-*}
+\<close>
 
-subsubsection {* Define a new pseudo-constructor *}
+subsubsection \<open>Define a new pseudo-constructor\<close>
 
-text {*
+text \<open>
   Define a function that returns the abstract container view for a data structure value, and declare it as a datatype constructor for code generation with \isamarkuptrue\isacommand{code{\isacharunderscore}datatype}\isamarkupfalse.
   Unfortunately, you have to repeat all existing pseudo-constructors, because there is no way to extract the current set of pseudo-constructors from the code generator.
   We call them pseudo-constructors, because they do not behave like datatype constructors in the logic.
   For example, ours are neither injective nor disjoint.
-*}
+\<close>
 
 definition Trie_Mapping :: "('k :: cbl, 'v) trie \<Rightarrow> ('k, 'v) mapping" 
 where [simp, code del]: "Trie_Mapping t = Mapping.Mapping (lookup t)"
 
 code_datatype Assoc_List_Mapping RBT_Mapping Mapping Trie_Mapping
 
-subsubsection {* Implement the operations *}
+subsubsection \<open>Implement the operations\<close>
 
-text {*
+text \<open>
   Next, you have to prove and declare code equations that implement the container operations for the new implementation.
   Typically, these just dispatch to the operations on the type from \S\ref{subsection:hide:invariants}.
   Some operations depend on the type class operations from \S\ref{subsection:introduce:type:class} being defined; then, the code equation must check that the operations are indeed defined.
@@ -795,7 +795,7 @@ text {*
   This function gets the exception message and the unit-closure of the equation's left-hand side as argument, because it is then trivial to prove equality.
 
   Again, we only show a small set of operations; a realistic implementation should cover as many as possible.
-*}
+\<close>
 context fixes t :: "('k :: cbl, 'v) trie" begin
 
 lemma lookup_Trie_Mapping [code]:
@@ -820,15 +820,15 @@ by(simp add: Mapping.keys.abs_eq keys_conv_dom_lookup split: option.split)
 
 end
 
-text {*
+text \<open>
   These equations do not replace the existing equations for the other constructors, but they do take precedence over them.
   If there is already a generic implementation for an operation @{term "foo"}, say @{term "foo A = gen_foo A"}, and you prove a specialised equation @{term "foo (Trie_Mapping t) = trie_foo t"}, then when you call @{term "foo"} on some @{term "Trie_Mapping t"}, your equation will kick in.
   LC exploits this sequentiality especially for binary operators on sets like @{term "(\<inter>)"}, where there are generic implementations and faster specialised ones.
-*}
+\<close>
 
-subsubsection {* Configure the heuristics *}
+subsubsection \<open>Configure the heuristics\<close>
 
-text {*
+text \<open>
   Finally, you should setup the heuristics that automatically picks a container implementation based on the types of the elements (\S\ref{subsection:set_impl}).
 
   The heuristics uses a type with a single value, e.g., @{typ mapping_impl} with value @{term Mapping_IMPL}, but there is one pseudo-constructor for each container implementation in the generated code.
@@ -838,20 +838,20 @@ text {*
 
   First, define and declare a new pseudo-constructor for the heuristics.
   Again, be sure to redeclare all previous pseudo-constructors.
-*}
+\<close>
 definition mapping_Trie :: mapping_impl 
 where [simp]: "mapping_Trie = Mapping_IMPL"
 
 code_datatype 
   mapping_Choose mapping_Assoc_List mapping_RBT mapping_Mapping mapping_Trie
 
-text {*
+text \<open>
   Then, adjust the implementation of the automatic choice.
   For every initial value of the container (such as the empty map or the empty set), there is one new constant (e.g., @{term mapping_empty_choose} and @{term set_empty_choose}) equivalent to it.
   Its code equation, however, checks the available operations from the type classes and picks an appropriate implementation.
   
   For example, the following prefers red-black trees over tries, but tries over associative lists:
-*}
+\<close>
 
 lemma mapping_empty_choose_code [code]:
   "(mapping_empty_choose :: ('a :: {ccompare, cbl}, 'b) mapping) =
@@ -861,30 +861,30 @@ lemma mapping_empty_choose_code [code]:
       | None \<Rightarrow> Assoc_List_Mapping DAList.empty)"
 by(auto split: option.split simp add: DAList.lookup_empty[abs_def] Mapping.empty_def lookup_empty)
 
-text {*
+text \<open>
   There is also a second function for every such initial value that dispatches on the pseudo-constructors for @{typ mapping_impl}.
   This function is used to pick the right implementation for types that specify a preference.
-*}
+\<close>
 lemma mapping_empty_code [code]:
   "mapping_empty mapping_Trie = Trie_Mapping empty"
 by(simp add: lookup_empty Mapping.empty_def)
 
-text {*
+text \<open>
   For @{typ "('k, 'v) mapping"}, LC also has a function @{term "mapping_impl_choose2"} which is given two preferences and returns one (for @{typ "'a set"}, it is called @{term "set_impl_choose2"}).
   Polymorphic type constructors like @{typ "'a + 'b"} use it to pick an implementation based on the preferences of @{typ "'a"} and @{typ "'b"}.
   By default, it returns @{term mapping_Choose}, i.e., ignore the preferences.
   You should add a code equation like the following that overrides this choice if both preferences are your new data structure:
-*}
+\<close>
 
 lemma mapping_impl_choose2_Trie [code]:
   "mapping_impl_choose2 mapping_Trie mapping_Trie = mapping_Trie"
 by(simp add: mapping_Trie_def)
 
-text {*
+text \<open>
   If your new data structure is better than the existing ones for some element type, you should reconfigure the type's preferene.
   As all preferences are logically equal, you can prove (and declare) the appropriate code equation.
   For example, the following prefers tries for keys of type @{typ "unit"}:
-*}
+\<close>
 
 lemma mapping_impl_unit_Trie [code]:
   "MAPPING_IMPL(unit) = Phantom(unit) mapping_Trie"
@@ -892,14 +892,14 @@ by(simp add: mapping_impl_unit_def)
 
 value "Mapping.empty :: (unit, int) mapping"
 
-text {*
-  You can also use your new pseudo-constructor with @{text derive} in instantiations, just give its name as option:
-*}
+text \<open>
+  You can also use your new pseudo-constructor with \<open>derive\<close> in instantiations, just give its name as option:
+\<close>
 derive (mapping_Trie) mapping_impl simple_tycon
 
-section {* Changing the configuration *}
+section \<open>Changing the configuration\<close>
 
-text {*
+text \<open>
   As containers are connected to data structures only by refinement in the code generator, this can always be adapted later on.
   You can add new data structures as explained in \S\ref{section:new:implementation}.
   If you want to drop one, you redeclare the remaining pseudo-constructors with \isamarkuptrue\isacommand{code{\isacharunderscore}datatype}\isamarkupfalse{} and delete all code equations that pattern-match on the obsolete pseudo-constructors.
@@ -907,11 +907,11 @@ text {*
   You can also freely adapt the heuristics for picking implementations as described in \S\ref{subsection:connect:container}.
 
   One thing, however, you cannot change afterwards, namely the decision whether an element type supports an operation and if so how it does, because this decision is visible in the logic.
-*}
+\<close>
 
-section {* New containers types *}
+section \<open>New containers types\<close>
 
-text {*
+text \<open>
   We hope that the above explanations and the examples with sets and maps suffice to show what you need to do if you add a new container type, e.g., priority queues.
   There are three steps:
   \begin{enumerate}
@@ -930,29 +930,29 @@ text {*
     \\
     See \cite{Lochbihler2013ITP} for an explanation.
   \end{enumerate}
-*}
+\<close>
 
-section {* Troubleshooting *}
+section \<open>Troubleshooting\<close>
 
-text {*
+text \<open>
   This section describes some difficulties in using LC that we have come across, provides some background for them, and discusses how to overcome them.
   If you experience other difficulties, please contact the author.
-*}
+\<close>
 
-subsection {* Nesting of mappings *}
+subsection \<open>Nesting of mappings\<close>
 
-text {*
+text \<open>
   Mappings can be arbitrarily nested on the value side, e.g., @{typ "('a, ('b, 'c) mapping) mapping"}.
   However, @{typ "('a, 'b) mapping"} cannot currently be the key of a mapping, i.e., code generation fails for @{typ "(('a, 'b) mapping, 'c) mapping"}.
   Simiarly, you cannot have a set of mappings like @{typ "('a, 'b) mapping set"} at the moment.
   There are no issues to make this work, we have just not seen the need for it.
   If you need to generate code for such types, please get in touch with the author.
-*}
+\<close>
 
-subsection {* Wellsortedness errors *}
-text_raw {* \label{subsection:well:sortedness} *}
+subsection \<open>Wellsortedness errors\<close>
+text_raw \<open>\label{subsection:well:sortedness}\<close>
 
-text {*
+text \<open>
   LC uses its own hierarchy of type classes which is distinct from Isabelle/HOL's.
   This ensures that every type can be made an instance of LC's type classes.
   Consequently, you must instantiate these classes for your own types.
@@ -992,7 +992,7 @@ text {*
   If your code does not need complements, you can manually delete the code equations involving @{const "Complement"}, the theorem list @{thm [source] set_complement_code} collects them.
   It is also recommended that you remove the pseudo-constructor @{const Complement} from the code generator.
   Note that some set operations like @{term "A - B"} and @{const UNIV} have no code equations any more.
-*}
+\<close>
 declare set_complement_code[code del]
 code_datatype Collect_set DList_set RBT_set Set_Monad
 (*<*)
@@ -1004,10 +1004,10 @@ derive (no) cenum minimal_sorts
 value "{Minimal_Sorts True} \<union> {} \<inter> Minimal_Sorts ` {True, False}"
 (*>*)
 
-subsection {* Exception raised at run-time *}
-text_raw {* \label{subsection:set_impl_unsupported_operation} *}
+subsection \<open>Exception raised at run-time\<close>
+text_raw \<open>\label{subsection:set_impl_unsupported_operation}\<close>
 
-text {*
+text \<open>
   Not all combinations of data and container implementation are possible.
   For example, you cannot implement a set of functions with a RBT, because there is no order on @{typ "'a \<Rightarrow> 'b"}.
   If you try, the code will raise an exception \texttt{Fail} (with an exception message) or \texttt{Match}.
@@ -1029,7 +1029,7 @@ text {*
 
     Note that the code generator preprocesses set comprehensions like @{term "{i < 4|i :: int. i > 2}"} to @{term "(\<lambda>i :: int. i < 4) ` {i. i > 2}"}, so this is a set comprehension over @{typ int} rather than @{typ bool}.
   \end{enumerate}
-*}
+\<close>
 
 (*<*)
 definition test_set_impl_unsupported_operation1 :: "unit \<Rightarrow> (int \<Rightarrow> int) set"
@@ -1043,7 +1043,7 @@ where
   "test_mapping_impl_unsupported_operation _ = 
    Mapping.is_empty (RBT_Mapping (RBT_Mapping2.empty) :: (Enum.finite_4, unit) mapping)"
 
-ML_val {*
+ML_val \<open>
 fun test_fail s f =
   let
     fun error s' = Fail ("exception Fail \"" ^ s ^ "\" expected, but got " ^ s')
@@ -1056,20 +1056,20 @@ fun test_fail s f =
 test_fail "union RBT_set Set_Monad: ccompare = None" @{code test_set_impl_unsupported_operation1};
 test_fail "image Collect_set" @{code test_set_impl_unsupported_operation2};
 test_fail "is_empty RBT_Mapping: ccompare = None" @{code test_mapping_impl_unsupported_operation};
-*}
+\<close>
 (*>*)
 
-subsection {* LC slows down my code *}
+subsection \<open>LC slows down my code\<close>
 
-text {*
+text \<open>
   Normally, this will not happen, because LC's data structures are more efficient than Isabelle's list-based implementations.
   However, in some rare cases, you can experience a slowdown:
-*}
+\<close>
 (*<*)
 definition tiny_set :: "nat set"
 where tiny_set_code: "tiny_set = {1, 2}"
 (*>*)
-text_raw {*
+text_raw \<open>
   \isastyletext
   \begin{enumerate}
   \item \textbf{Your containers contain just a few elements.}
@@ -1080,10 +1080,10 @@ text_raw {*
     For example, if @{thm [source] tiny_set_code}: @{thm tiny_set_code} is your code equation with a tiny set,
     the following changes the code equation to directly use the list-based representation, i.e., disables the heuristics:
     \par
-*}
+\<close>
 lemma empty_Set_Monad: "{} = Set_Monad []" by simp
 declare tiny_set_code[code del, unfolded empty_Set_Monad, code]
-text_raw {*
+text_raw \<open>
     \isastyletext
     \par
      If you want to globally disable the heuristics, you can also declare an equation like @{thm [source] empty_Set_Monad} as [code].
@@ -1095,7 +1095,7 @@ text_raw {*
     If the element type is polymorphic, the compiler cannot precompute these recursive calls and therefore they have to be constructed repeatedly at run time.
     If you wrap your complicated type in a new type constructor, you can define optimised equations for the type class parameters.
   \end{enumerate}
-*}
+\<close>
 
 (*<*)
 end

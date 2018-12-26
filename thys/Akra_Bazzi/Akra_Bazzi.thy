@@ -5,7 +5,7 @@
   The Akra-Bazzi theorem for functions on the naturals.
 *)
 
-section {* The discrete Akra-Bazzi theorem *}
+section \<open>The discrete Akra-Bazzi theorem\<close>
 theory Akra_Bazzi
 imports
   Complex_Main
@@ -25,7 +25,7 @@ proof (rule DERIV_nonneg_imp_mono[of _ _ "\<lambda>x. x / ln x powr e"])
   from assms(1) have "1 < exp e" by simp
   from this and assms(2) have "x > 1" by (rule less_trans)
   with t have t': "t > 1" by simp
-  from `x > exp e` and t have "t > exp e" by simp
+  from \<open>x > exp e\<close> and t have "t > exp e" by simp
   with t' have "ln t > ln (exp e)" by (subst ln_less_cancel_iff) simp_all
   hence t'': "ln t > e" by simp
   show "((\<lambda>x. x / ln x powr e) has_real_derivative 

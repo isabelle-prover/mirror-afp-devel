@@ -13,14 +13,14 @@ imports
 begin
 (*>*)
 
-section{* Memoisation using streams. *}
+section\<open>Memoisation using streams.\<close>
 
-text {*
-\label{sec:memoisation-example} *}
+text \<open>
+\label{sec:memoisation-example}\<close>
 
-subsection{* Streams. *}
+subsection\<open>Streams.\<close>
 
-text{* The type of infinite streams. *}
+text\<open>The type of infinite streams.\<close>
 
 domain 'a Stream = stcons (lazy sthead :: "'a") (lazy sttail :: "'a Stream") (infixr "&&" 65)
 
@@ -62,7 +62,7 @@ lemma i_th_0[simp]: "(s !! 0) = sthead\<cdot>s" by (subst i_th.unfold, cases s, 
 lemma i_th_suc[simp]: "i \<noteq> \<bottom> \<Longrightarrow> (x && xs) !! (i + 1) = xs !! i" by (subst i_th.unfold, simp)
 (*>*)
 
-text{* The infinite stream of natural numbers. *}
+text\<open>The infinite stream of natural numbers.\<close>
 
 fixrec nats :: "Nat Stream"
 where
@@ -72,7 +72,7 @@ where
 declare nats.simps[simp del]
 (*>*)
 
-subsection{* The wrapper/unwrapper functions. *}
+subsection\<open>The wrapper/unwrapper functions.\<close>
 
 definition
   unwrapS' :: "(Nat \<rightarrow> 'a) \<rightarrow> 'a Stream" where
@@ -89,9 +89,9 @@ where
 declare unwrapS.simps[simp del]
 (*>*)
 
-text{* The two versions of @{term "unwrapS"} are equivalent. We could
+text\<open>The two versions of @{term "unwrapS"} are equivalent. We could
 try to fold some definitions here but it's easier if the stream
-constructor is manifest. *}
+constructor is manifest.\<close>
 
 lemma unwrapS_unwrapS'_eq: "unwrapS = unwrapS'" (is "?lhs = ?rhs")
 proof(rule cfun_eqI)
@@ -128,12 +128,12 @@ definition
   wrapS :: "'a Stream \<rightarrow> Nat \<rightarrow> 'a" where
   "wrapS \<equiv> \<Lambda> s i . s !! i"
 
-text{* Note the identity requires that @{term "f"} be
+text\<open>Note the identity requires that @{term "f"} be
 strict. \citet[\S6.1]{GillHutton:2009} do not make this requirement,
 an oversight on their part.
 
 In practice all functions worth memoising are strict in the memoised
-argument. *}
+argument.\<close>
 
 lemma wrapS_unwrapS_id':
   assumes strictF: "(f::Nat \<rightarrow> 'a)\<cdot>\<bottom> = \<bottom>"
@@ -156,7 +156,7 @@ qed
 lemma wrapS_unwrapS_id: "f\<cdot>\<bottom> = \<bottom> \<Longrightarrow> (wrapS oo unwrapS)\<cdot>f = f"
   by (rule cfun_eqI, simp add: wrapS_unwrapS_id' wrapS_def)
 
-subsection{* Fibonacci example. *}
+subsection\<open>Fibonacci example.\<close>
 
 definition
   fib_body :: "(Nat \<rightarrow> Nat) \<rightarrow> Nat \<rightarrow> Nat" where
@@ -175,7 +175,7 @@ lemma fib_strict[simp]: "fib\<cdot>\<bottom> = \<bottom>"
   by (unfold fib_def, subst fix_eq, fold fib_def, simp add: fib_body_def)
 (*>*)
 
-text{* Apply worker/wrapper. *}
+text\<open>Apply worker/wrapper.\<close>
 
 definition
   fib_work :: "Nat Stream" where
@@ -195,7 +195,7 @@ lemma fib_ww_eq: "fib = fib_wrap"
   using worker_wrapper_body[OF wrapS_unwrapS_fib_body]
   by (simp add: fib_def fib_wrap_def fib_work_def)
 
-text{* Optimise. *}
+text\<open>Optimise.\<close>
 
 fixrec
   fib_work_final :: "Nat Stream"
@@ -211,7 +211,7 @@ definition
   fib_final :: "Nat \<rightarrow> Nat" where
   "fib_final \<equiv> \<Lambda> n. fib_work_final !! n"
 
-text{*
+text\<open>
 
 This proof is only fiddly due to the way mutual recursion is encoded:
 we need to use Beki\'{c}'s Theorem \citep{Bekic:1969}\footnote{The
@@ -219,7 +219,7 @@ interested reader can find some historical commentary in
 \citet{Harel:1980, DBLP:journals/toplas/Sangiorgi09}.} to massage the
 definitions into their final form.
 
-*}
+\<close>
 
 lemma fib_work_final_fib_work_eq: "fib_work_final = fib_work" (is "?lhs = ?rhs")
 proof -

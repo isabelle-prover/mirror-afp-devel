@@ -4,13 +4,13 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Relation Algebra *}
+section \<open>Relation Algebra\<close>
 
 theory Relation_Algebra
   imports More_Boolean_Algebra Kleene_Algebra.Kleene_Algebra
 begin
 
-text {* We follow Tarski's original article and Maddux's book, in particular we
+text \<open>We follow Tarski's original article and Maddux's book, in particular we
 use their notation. In contrast to Schmidt and Str\"ohlein we do not assume
 that the Boolean algebra is complete and we do not consider the Tarski rule in
 this development.
@@ -21,7 +21,7 @@ iteration. In fact, several chapters of Schmidt and Str\"ohlein's book deal
 with iteration.
 
 We capture iteration in an alternative way by linking relation algebras with
-Kleene algebras (cf.~\emph{relation-algebra-rtc}). *}
+Kleene algebras (cf.~\emph{relation-algebra-rtc}).\<close>
 
 class relation_algebra = boolean_algebra +
   fixes composition :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"  (infixl ";" 75)
@@ -35,10 +35,10 @@ class relation_algebra = boolean_algebra +
     and conv_contrav [simp]: "(x ; y)\<^sup>\<smile> = y\<^sup>\<smile> ; x\<^sup>\<smile>"
     and comp_res: "x\<^sup>\<smile> ; -(x ; y) \<le> -y"
 
-text {* We first show that every relation algebra is a dioid. We do not yet
+text \<open>We first show that every relation algebra is a dioid. We do not yet
 treat the zero (the minimal element of the boolean reduct) since the proof of
 the annihilation laws is rather tricky to automate. Following Maddux we derive
-them from properties of Boolean algebras with operators. *}
+them from properties of Boolean algebras with operators.\<close>
 
 sublocale relation_algebra \<subseteq> dioid_one "(+)" "(;)" "(\<le>) " "(<)" "1'"
 proof
@@ -68,7 +68,7 @@ qed
 context relation_algebra
 begin
 
-text {* First we prove some basic facts about joins and meets. *}
+text \<open>First we prove some basic facts about joins and meets.\<close>
 
 lemma meet_interchange: "(w \<cdot> x) ; (y \<cdot> z) \<le> w ; y \<cdot> x ; z"
 by (metis inf_le1 inf_le2 le_infI mult_isol_var)
@@ -76,7 +76,7 @@ by (metis inf_le1 inf_le2 le_infI mult_isol_var)
 lemma join_interchange: "w ; x + y ; z \<le> (w + y) ; (x + z)"
 using local.mult_isol_var local.sup.bounded_iff local.sup.cobounded2 local.sup_ge1 by presburger
 
-text {* We now prove some simple facts about conversion. *}
+text \<open>We now prove some simple facts about conversion.\<close>
 
 lemma conv_iso: "x \<le> y \<longleftrightarrow> x\<^sup>\<smile> \<le> y\<^sup>\<smile>"
 by (metis conv_add conv_invol le_iff_sup)
@@ -102,8 +102,8 @@ by (metis comp_unitr conv_contrav conv_invol)
 lemma conv_times [simp]: "(x \<cdot> y)\<^sup>\<smile> = x\<^sup>\<smile> \<cdot> y\<^sup>\<smile>"
 by (metis compl_inf double_compl conv_add conv_compl)
 
-text {* The next lemmas show that conversion is self-conjugate in the sense of
-Boolean algebra with operators. *}
+text \<open>The next lemmas show that conversion is self-conjugate in the sense of
+Boolean algebra with operators.\<close>
 
 lemma conv_self_conjugate: "x\<^sup>\<smile> \<cdot> y = 0 \<longleftrightarrow> x \<cdot> y\<^sup>\<smile> = 0"
 by (metis conv_invol conv_times conv_zero)
@@ -111,7 +111,7 @@ by (metis conv_invol conv_times conv_zero)
 lemma conv_self_conjugate_var: "is_conjugation converse converse"
 by (metis conv_self_conjugate is_conjugation_def)
 
-text {* The following lemmas link the relative product and meet. *}
+text \<open>The following lemmas link the relative product and meet.\<close>
 
 lemma one_idem_mult [simp]: "1 ; 1 = 1"
 by (metis compl_eq_compl_iff galois_aux2 inf.commute inf_top_right mult_1_left mult_isor top_greatest)
@@ -125,10 +125,10 @@ by (metis inf_le1 mult_isor)
 lemma mult_subdistr_var: "(x \<cdot> y) ; z \<le> x ; z \<cdot> y ; z"
 by (metis inf.commute le_inf_iff mult_subdistr)
 
-text {* The following lemmas deal with variants of the Peirce law, the
+text \<open>The following lemmas deal with variants of the Peirce law, the
 Schr\"oder laws and the Dedekind law. Some of them are obtained from Boolean
 algebras with operators by instantiation, using conjugation properties.
-However, Isabelle does not always pick up this relationship. *}
+However, Isabelle does not always pick up this relationship.\<close>
 
 lemma peirce_1: "x ; y \<cdot> z\<^sup>\<smile> = 0 \<Longrightarrow> y ; z \<cdot> x\<^sup>\<smile> = 0"
 by (metis compl_le_swap1 conv_contrav conv_self_conjugate galois_aux comp_res conv_invol galois_aux mult_isol order_trans)
@@ -142,9 +142,9 @@ by (metis conv_invol peirce conv_contrav conv_invol conv_self_conjugate inf.comm
 lemma schroeder_2: "y ; x \<cdot> z = 0 \<longleftrightarrow> y \<cdot> z ; x\<^sup>\<smile> = 0"
 by (metis conv_invol peirce schroeder_1)
 
-text {* The following two conjugation properties between multiplication with
+text \<open>The following two conjugation properties between multiplication with
 elements and their converses are used for deriving modular laws of relation
-algebra from those of Boolean algebras with operators. *}
+algebra from those of Boolean algebras with operators.\<close>
 
 lemma schroeder_1_var: "is_conjugation (composition x) (composition (x\<^sup>\<smile>))"
 by (metis schroeder_1 is_conjugation_def)
@@ -152,9 +152,9 @@ by (metis schroeder_1 is_conjugation_def)
 lemma schroeder_2_var: "is_conjugation (\<lambda>x. x ; y) (\<lambda>x. x ; y\<^sup>\<smile>)"
 by (unfold is_conjugation_def, metis schroeder_2)
 
-text {* The following Galois connections define residuals. They link relation
+text \<open>The following Galois connections define residuals. They link relation
 algebras with action algebras. This could be further explored and formalised.
-*}
+\<close>
 
 lemma conv_galois_1: "x ; y \<le> z \<longleftrightarrow> y \<le> -(x\<^sup>\<smile> ; -z)"
 by (metis galois_aux galois_aux2 schroeder_1)
@@ -162,8 +162,8 @@ by (metis galois_aux galois_aux2 schroeder_1)
 lemma conv_galois_2: "y ; x \<le> z \<longleftrightarrow> y \<le> -(-z ; x\<^sup>\<smile>)"
 by (metis galois_aux galois_aux2 schroeder_2)
 
-text {* Variants of the modular law for relation algebras can now be
-instantiated from Boolean algebras with operators. *}
+text \<open>Variants of the modular law for relation algebras can now be
+instantiated from Boolean algebras with operators.\<close>
 
 lemma modular_1_aux': "x ; (y \<cdot> -(x\<^sup>\<smile> ; z)) \<cdot> z = 0"
 by (metis schroeder_1_var modular_1_aux)
@@ -194,7 +194,7 @@ by (metis inf_top_right modular_1_var)
 lemma modular_var_3: "x ; y \<le> (x \<cdot> 1 ; y\<^sup>\<smile>) ; y"
 by (metis inf_top_right modular_2_var)
 
-text {* The modular laws are used to prove the Dedekind rule. *}
+text \<open>The modular laws are used to prove the Dedekind rule.\<close>
 
 lemma dedekind: "x ; y \<cdot> z \<le> (x \<cdot> z ; y\<^sup>\<smile>) ; (y \<cdot> x\<^sup>\<smile> ; z)"
 proof -
@@ -211,9 +211,9 @@ by (metis dedekind inf.commute inf_top_left)
 
 end (* relation_algebra *)
 
-text {* The Schr\"oder laws allow us, finally, to prove the annihilation laws
+text \<open>The Schr\"oder laws allow us, finally, to prove the annihilation laws
 for zero. We formalise this by proving that relation algebras form dioids with
-zero. *}
+zero.\<close>
 
 sublocale relation_algebra < dioid_one_zero "(+)" "(;)" "1'" 0 "(\<le>)" "(<)"
 proof
@@ -229,9 +229,9 @@ qed
 context relation_algebra
 begin
 
-text {* Next we prove miscellaneous properties which we found in the books of
+text \<open>Next we prove miscellaneous properties which we found in the books of
 Maddux and Schmidt and Str\"ohlein. Most of them do not carry any meaningful
-names. *}
+names.\<close>
 
 lemma ra_1: "(x \<cdot> y ; 1) ; z = x ; z \<cdot> y ; 1"
 proof (rule antisym)
@@ -292,9 +292,9 @@ by (metis annil le_bot maddux_20)
 
 end (* relation_algebra *)
 
-text {* This finishes our development of the basic laws of relation algebras.
+text \<open>This finishes our development of the basic laws of relation algebras.
 The next sections are devoted to special elements such as vectors, test or
-subidentities, and, in particular, functions. *}
+subidentities, and, in particular, functions.\<close>
 
 end
 

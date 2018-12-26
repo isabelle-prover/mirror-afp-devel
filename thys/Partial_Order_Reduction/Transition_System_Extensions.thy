@@ -1,4 +1,4 @@
-section {* Transition Systems *}
+section \<open>Transition Systems\<close>
 
 theory Transition_System_Extensions
 imports

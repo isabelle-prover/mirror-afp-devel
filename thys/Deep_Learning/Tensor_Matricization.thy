@@ -163,7 +163,7 @@ proof (rule tensor_lookup_eqI)
     unfolding matricize_def
     by (simp add: decode_r decode_c \<open>is \<lhd> Tensor.dims T\<close> valid_index_nths)
   then show "Tensor.lookup (dematricize rmodes (matricize rmodes T) (Tensor.dims T)) is = Tensor.lookup T is"
-    by (simp add: dematricize_def dims_tensor_from_lookup lookup_tensor_from_lookup[OF `is \<lhd> Tensor.dims T`])
+    by (simp add: dematricize_def dims_tensor_from_lookup lookup_tensor_from_lookup[OF \<open>is \<lhd> Tensor.dims T\<close>])
 qed
 
 lemma matricize_dematricize:
@@ -190,9 +190,9 @@ proof (rule eq_matI)
       digit_decode_encode_lt[OF \<open>r < dim_row A\<close>[unfolded assms(1)]]
       valid_index_weave(2)[OF valid1 valid2] valid_index_weave(3)[OF valid1 valid2]
       by presburger
-  from `r < dim_row A` have r_le: "r < prod_list (nths (Tensor.dims (dematricize rmodes A ds)) rmodes)"
+  from \<open>r < dim_row A\<close> have r_le: "r < prod_list (nths (Tensor.dims (dematricize rmodes A ds)) rmodes)"
     by (metis \<open>dim_row (matricize rmodes (dematricize rmodes A ds)) = dim_row A\<close> matricize_def dim_row_mat(1))
-  from `c < dim_col A `have c_le: "c < prod_list (nths (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
+  from \<open>c < dim_col A \<close>have c_le: "c < prod_list (nths (Tensor.dims (dematricize rmodes A ds)) (- rmodes))"
     by (metis \<open>dim_col (matricize rmodes (dematricize rmodes A ds)) = dim_col A\<close> matricize_def dim_col_mat(1))
   then show "(matricize rmodes (dematricize rmodes A ds)) $$ (r, c) = A $$ (r, c)"
     unfolding matricize_def using r_le c_le 0 by simp

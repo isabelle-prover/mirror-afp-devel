@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Executable semantics for the JVM *}
+section \<open>Executable semantics for the JVM\<close>
 
 theory ExternalCall_Execute
 imports
@@ -10,7 +10,7 @@ imports
   "../Basic/Set_without_equal"
 begin
 
-subsection {* Translated versions of external calls for the JVM *}
+subsection \<open>Translated versions of external calls for the JVM\<close>
 
 locale heap_execute = addr_base +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 

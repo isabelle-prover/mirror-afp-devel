@@ -1,4 +1,4 @@
-section {* Refinement for Transition Systems *}
+section \<open>Refinement for Transition Systems\<close>
 
 theory Transition_System_Refine
 imports

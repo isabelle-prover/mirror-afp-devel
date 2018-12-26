@@ -7,11 +7,11 @@ subsection "Foreach Loops"
 
 subsubsection "Monadic Version of Foreach"
 
-text {*
+text \<open>
   In a first step, we define a version of foreach where the continuation condition
   is also monadic, and show that it is equal to the standard version for
-  continuation conditions of the form @{text "\<lambda>x. RETURN (c x)"}
-*}
+  continuation conditions of the form \<open>\<lambda>x. RETURN (c x)\<close>
+\<close>
 
 definition "FOREACH_inv xs \<Phi> s \<equiv> 
   case s of (it, \<sigma>) \<Rightarrow> \<exists>xs'. xs = xs' @ it \<and> \<Phi> (set it) \<sigma>"
@@ -43,7 +43,7 @@ lemma FOREACH_oci_to_monadic:
   done
 
 
-text {* Next, we define a characterization w.r.t. @{text "nfoldli"} *}
+text \<open>Next, we define a characterization w.r.t. \<open>nfoldli\<close>\<close>
 definition "monadic_nfoldli l c f s \<equiv> RECT (\<lambda>D (l,s). case l of 
     [] \<Rightarrow> RETURN s
   | x#ls \<Rightarrow> do {
@@ -234,8 +234,8 @@ lemma id_FOREACHoci[id_rules]: "PR_CONST (FOREACHoci R I) ::\<^sub>i
   TYPE('c set \<Rightarrow> ('d \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> 'd nres) \<Rightarrow> 'd \<Rightarrow> 'd nres)"
   by simp
 
-text {* We set up the monadify-phase such that all FOREACH-loops get
-  rewritten to the monadic version of FOREACH *}
+text \<open>We set up the monadify-phase such that all FOREACH-loops get
+  rewritten to the monadic version of FOREACH\<close>
 lemma FOREACH_arities[sepref_monadify_arity]:
   (*"FOREACHc \<equiv> FOREACHoci$(\<lambda>\<^sub>2_ _. True)$(\<lambda>\<^sub>2_ _. True)"
   "FOREACHci \<equiv> FOREACHoci$(\<lambda>\<^sub>2_ _. True)"
@@ -252,8 +252,8 @@ lemma FOREACHoci_comb[sepref_monadify_comb]:
   by (simp_all add: FOREACH_oci_to_monadic)
 
 subsubsection "Imperative Version of nfoldli"
-text {* We define an imperative version of @{text "nfoldli"}. It is the
-  equivalent to the monadic version in the nres-monad *}
+text \<open>We define an imperative version of \<open>nfoldli\<close>. It is the
+  equivalent to the monadic version in the nres-monad\<close>
 
 definition "imp_nfoldli l c f s \<equiv> heap.fixp_fun (\<lambda>D (l,s). case l of 
     [] \<Rightarrow> return s
@@ -311,7 +311,7 @@ lemma monadic_nfoldli_refine_aux:
     applyF simp
     apply (rule hn_refine_cons_post)
     apply (rule hn_refine_frame[OF hnr_RETURN_pass])
-    apply (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+    apply (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
     apply (simp add: hn_ctxt_def ent_true_drop invalid_assn_const)
     solved
 
@@ -319,10 +319,10 @@ lemma monadic_nfoldli_refine_aux:
     apply1 (simp only: imp_nfoldli_simps monadic_nfoldli_simp)
     applyF (rule hnr_bind)
       apply1 (rule hn_refine_frame[OF c_ref])
-      applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+      applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
 
       applyF (rule hnr_If)
-        applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+        applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
         applyF (rule hnr_bind)
           apply1 (rule hn_refine_frame[OF f_ref])
           apply1 (simp add: assn_assoc)
@@ -346,14 +346,14 @@ lemma monadic_nfoldli_refine_aux:
   
           apply simp
 
-          applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+          applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
         solved  
 
         apply1 (rule hn_refine_frame[OF hnr_RETURN_pass])
-        applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+        applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
 
         apply1 (simp add: assn_assoc)
-        applyS (tactic {* Sepref_Frame.merge_tac (K (K no_tac)) @{context} 1 *})
+        applyS (tactic \<open>Sepref_Frame.merge_tac (K (K no_tac)) @{context} 1\<close>)
       solved  
 
       apply (rule enttI)
@@ -480,9 +480,9 @@ proof -
     apply (rule hnr_bind)
     apply (rule hn_refine_frame)
     apply (rule STL[to_hnr, unfolded APP_def])
-    apply (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
+    apply (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
     apply (rule hn_monadic_nfoldli[unfolded APP_def])
-    apply (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
+    apply (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
     apply (rule hn_refine_cons_post)
     apply (rule c_ref[unfolded APP_def])
     apply (rule C_FR)
@@ -492,8 +492,8 @@ proof -
     apply (rule f_ref[unfolded APP_def])
     apply (rule entt_trans[OF F_FR])
     apply (rule TERMI)
-    applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
-    applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
+    applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
+    applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
 
     apply simp
     done
@@ -558,17 +558,17 @@ lemma monadic_nfoldli_refine_aux':
   applyF simp
   apply (rule hn_refine_cons_post)
   apply (rule hn_refine_frame[OF hnr_RETURN_pass])
-  apply (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+  apply (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
   apply (simp add: hn_ctxt_def ent_true_drop)
   solved
 
   apply (simp only: imp_nfoldli_simps monadic_nfoldli_simp)
   apply (rule hnr_bind)
   apply (rule hn_refine_frame[OF c_ref])
-  apply (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+  apply (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
 
   apply (rule hnr_If)
-  apply (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+  apply (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
   apply (simp only: nres_monad_laws)
   apply (rule hnr_ASSERT)
   apply (rule hnr_bind)
@@ -604,10 +604,10 @@ lemma monadic_nfoldli_refine_aux':
   solved  
 
   apply1 (rule hn_refine_frame[OF hnr_RETURN_pass])
-  applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1 *})
+  applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
 
   apply1 (simp add: assn_assoc)
-  applyS (tactic {* Sepref_Frame.merge_tac (K (K no_tac)) @{context} 1 *})
+  applyS (tactic \<open>Sepref_Frame.merge_tac (K (K no_tac)) @{context} 1\<close>)
 
   apply simp
   apply (rule ent_imp_entt)
@@ -665,15 +665,15 @@ lemma hn_monadic_nfoldli_rl'[sepref_comb_rules]:
         applyS (rule f_ref; simp)
 
         apply1 (rule entt_trans[OF F_FR[OF TERMI]])
-        applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
+        applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
       solved
 
       apply (rule MERGE)
     solved  
 
-    applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
-    applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
-    applyS (tactic {* Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1*})
+    applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
+    applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
+    applyS (tactic \<open>Sepref_Frame.frame_tac (K (K no_tac)) @{context} 1\<close>)
   solved  
   done
 

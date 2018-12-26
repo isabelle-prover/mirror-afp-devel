@@ -1,11 +1,11 @@
 
-section {*  Marking Using a Set  *}
+section \<open>Marking Using a Set\<close>
 
 theory SetMark
 imports Graph DataRefinementIBP.DataRefinement
 begin
 
-text{*
+text\<open>
 We construct in this theory a diagram which computes all reachable nodes
 from a given root node in a graph. The graph is defined in the theory
 Graph and is given by a relation $next$ on the nodes of the graph.
@@ -22,7 +22,7 @@ root element and the root is marked. As long as $X$ is not empty, if $x\in X$
 and $y$ is an unmarked sucessor of $x$ we add $y$ to $X$. If $x\in X$ has
 no unmarked sucessors it is removed from $X$. 
 The algorithm terminates when $X$ is empty.  
-*}
+\<close>
 
 datatype I = init | loop | final
 
@@ -61,10 +61,10 @@ qed (simp)
 end
 
 
-text{*
+text\<open>
 The set $\mathit{path}\ S \ \mathit{mrk}$ contains all reachable nodes from S along paths with
 unmarked nodes.
-*}
+\<close>
 
 lemma trascl_less: "x \<noteq> y \<Longrightarrow> (a, x) \<in> R\<^sup>* \<Longrightarrow> 
     ((a,x) \<in> (R \<inter> (-{y})\<times>(-{y}))\<^sup>* \<or>  (y,x) \<in> R O (R \<inter> (-{y})\<times>(-{y}))\<^sup>* )"
@@ -138,7 +138,7 @@ lemma (in graph)  init_set2: "x \<in> reach root \<Longrightarrow> x \<notin> pa
   apply (drule init_set)
   by simp_all
 
-subsection {* Transitions *}
+subsection \<open>Transitions\<close>
 
 definition (in graph)
   "Q1_a \<equiv> [: X, mrk \<leadsto> X', mrk'. (root::'node) = nil \<and> X' = {} \<and> mrk' = mrk :]"
@@ -158,7 +158,7 @@ definition (in graph)
 definition (in graph)
   "Q5_a \<equiv> [: X, mrk \<leadsto> X', mrk' . X = {} \<and> mrk = mrk' :]"
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 
 definition (in graph) 
   "Loop \<equiv> { (X, mrk) .
@@ -205,7 +205,7 @@ definition  (in graph) [simp]:
       I.loop  \<Rightarrow> Loop \<inter> {s . trm s = w} |
       I.final \<Rightarrow> Final)"
 
-subsection {* Diagram *}
+subsection \<open>Diagram\<close>
 
 definition (in graph) 
   "SetMark \<equiv> \<lambda> (i, j) . (case (i, j) of
@@ -219,7 +219,7 @@ lemma (in graph)  SetMark_dmono [simp]:
   apply (unfold dmono_def SetMark_def Q1_a_def Q2_a_def Q3_a_def Q4_a_def Q5_a_def)
   by simp
 
-subsection {* Correctness of the transitions *}
+subsection \<open>Correctness of the transitions\<close>
 
 
 lemma  (in graph) init_loop_1_a[simp]: "\<Turnstile> Init {| Q1_a |} Loop"
@@ -272,12 +272,12 @@ lemma forall_simp [simp]: "(\<forall>a b. \<forall>x\<in>A. (a = (t x)) \<longri
 lemma forall_simp2 [simp]: "(\<forall>a b. \<forall>x\<in>A. \<forall>y. (a  = t x y) \<longrightarrow> (h x y) \<longrightarrow> (g x y) \<or> b \<noteq> u x y) = (\<forall>x\<in>A. \<forall>y. h x y \<longrightarrow> g x y)"
   by auto
 
-subsection {* Diagram correctness *}
+subsection \<open>Diagram correctness\<close>
 
-text{*
+text\<open>
 The termination ordering for the $\mathit{SetMark}$ diagram is the lexicographic
 ordering on pairs $(i,\, n)$ where $i\in I$ and $n\in \mathit{nat}$.
-*}
+\<close>
 
 interpretation  DiagramTermination "\<lambda> (n::nat) (i :: I) . (i, n)"
   done

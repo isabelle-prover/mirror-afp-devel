@@ -4,7 +4,7 @@ Author: Hitoshi Furusawa, Georg Struth
 Maintainer: <g.struth at sheffield.ac.uk>
 *)
 
-section {* C-Algebras*}
+section \<open>C-Algebras\<close>
 
 theory C_Algebras
 imports Kleene_Algebra.Dioid 
@@ -13,9 +13,9 @@ begin
 no_notation
   times (infixl "\<cdot>" 70)
 
-subsection {* C-Monoids *}
+subsection \<open>C-Monoids\<close>
 
-text {* We start with the c-monoid axioms. These can be found in Section~4 of~\cite{FurusawaS15a}. *}
+text \<open>We start with the c-monoid axioms. These can be found in Section~4 of~\cite{FurusawaS15a}.\<close>
 
 class proto_monoid = 
   fixes s_id :: "'a" ("1\<^sub>\<sigma>")
@@ -39,9 +39,9 @@ class c_monoid = proto_bi_monoid +
 
 begin
 
-text {* Next we define domain explicitly as at the beginning of Section 4 in~\cite{FurusawaS15a} 
+text \<open>Next we define domain explicitly as at the beginning of Section 4 in~\cite{FurusawaS15a} 
 and start proving the algebraic facts from Section 4. Those involving concrete multirelations, such as Proposition 4.1,
-are considered in the theory file for multirelations. *}
+are considered in the theory file for multirelations.\<close>
 
 definition (in c_monoid) d :: "'a \<Rightarrow> 'a" where
   "d x = (x \<cdot> 1\<^sub>\<pi>) \<parallel> 1\<^sub>\<sigma>" 
@@ -49,7 +49,7 @@ definition (in c_monoid) d :: "'a \<Rightarrow> 'a" where
 lemma c_prod_idr [simp]: "x \<parallel> 1\<^sub>\<pi> = x"
   by (simp add: local.c_prod_comm)
 
-text {* We prove the retraction properties of Lemma 4.2. *}
+text \<open>We prove the retraction properties of Lemma 4.2.\<close>
 
 lemma c_idem [simp]: "1\<^sub>\<pi> \<cdot> 1\<^sub>\<pi> = 1\<^sub>\<pi>"
   by (metis c_prod_idr local.c1)
@@ -60,7 +60,7 @@ lemma d_idem [simp]: "d (d x) = d x"
 lemma p_id_idem: "(x \<cdot> 1\<^sub>\<pi>) \<cdot> 1\<^sub>\<pi> = x \<cdot> 1\<^sub>\<pi>"
   by (simp add: local.c4)
 
-text {* Lemma 4.3. *}
+text \<open>Lemma 4.3.\<close>
 
 lemma c2_d: "d x \<cdot> y = (x \<cdot> 1\<^sub>\<pi>) \<parallel> y"
   by (simp add: local.d_def)
@@ -80,8 +80,8 @@ lemma ds_prop [simp]: "d x \<parallel> 1\<^sub>\<sigma> = d x"
 lemma dc [simp]: "d 1\<^sub>\<pi> = 1\<^sub>\<sigma>"
   by (simp add: local.d_def)
 
-text {* Part (5) of this Lemma has already been verified above. The next two statements 
-verify the two algebraic properties mentioned in the proof of Proposition 4.4.*}
+text \<open>Part (5) of this Lemma has already been verified above. The next two statements 
+verify the two algebraic properties mentioned in the proof of Proposition 4.4.\<close>
 
 lemma dc_iso [simp]: "d (d x \<cdot> 1\<^sub>\<pi>) = d x"
   by simp
@@ -89,7 +89,7 @@ lemma dc_iso [simp]: "d (d x \<cdot> 1\<^sub>\<pi>) = d x"
 lemma cd_iso [simp]: "d (x \<cdot> 1\<^sub>\<pi>) \<cdot> 1\<^sub>\<pi> = x \<cdot> 1\<^sub>\<pi>"
   by simp
 
-text {* Proposition 4.5. *}
+text \<open>Proposition 4.5.\<close>
 
 lemma d_conc6: "d (x \<parallel> y) = d x \<parallel> d y"
 proof - 
@@ -151,7 +151,7 @@ qed
 lemma d_s_id_prop [simp]: "d 1\<^sub>\<sigma> = 1\<^sub>\<sigma>"
   using local.d_def by auto
 
-text {* Next we verify the conditions of Proposition 4.6. *}
+text \<open>Next we verify the conditions of Proposition 4.6.\<close>
 
 lemma d_s_prod_closed [simp]: "d (d x \<cdot> d y) = d x \<cdot> d y"
   by simp
@@ -173,7 +173,7 @@ qed
 lemma iso_1 [simp]: "(d x \<cdot> 1\<^sub>\<pi>) \<parallel> 1\<^sub>\<sigma> = d x"
   by (simp add: local.d_def)
 
-text {* Lemma 4.7. *}
+text \<open>Lemma 4.7.\<close>
 
 lemma x_c_par_idem [simp]: "(x \<cdot> 1\<^sub>\<pi>) \<parallel> (x \<cdot> 1\<^sub>\<pi>) = x \<cdot> 1\<^sub>\<pi>"
 proof -
@@ -198,7 +198,7 @@ proof -
     by (simp add: c2_d local.c_prod_assoc)
 qed
 
-text {* Now we provide the counterexamples of Lemma 4.8. *}
+text \<open>Now we provide the counterexamples of Lemma 4.8.\<close>
 
 lemma "(x \<parallel> y) \<cdot> d z = (x \<cdot> d z) \<parallel> (y \<cdot> d z)"
   nitpick
@@ -214,10 +214,10 @@ lemma "1\<^sub>\<pi> \<cdot> x = 1\<^sub>\<pi>"
 
 end
 
-subsection {* C-Trioids *}
+subsection \<open>C-Trioids\<close>
 
-text {* We can now define the class of c-trioids and prove properties in this class. This covers 
-the algebraic material of Section 5 in~\cite{FurusawaS15a}. *}
+text \<open>We can now define the class of c-trioids and prove properties in this class. This covers 
+the algebraic material of Section 5 in~\cite{FurusawaS15a}.\<close>
 
 class proto_dioid = join_semilattice_zero + proto_monoid +
   assumes  s_prod_distr: "(x + y) \<cdot> z = x \<cdot> z + y \<cdot> z"
@@ -273,7 +273,7 @@ class c_trioid = proto_trioid + c_monoid +
 
 begin
 
-text {* We show that every c-trioid is a c-monoid. *}
+text \<open>We show that every c-trioid is a c-monoid.\<close>
 
 subclass c_monoid ..
 
@@ -286,7 +286,7 @@ lemma "1\<^sub>\<pi> \<cdot> 0 = 1\<^sub>\<pi>"
 lemma zero_p_id_prop [simp]: "(x \<cdot> 0) \<cdot> 1\<^sub>\<pi> = x \<cdot> 0"
   by (simp add: local.c4)
 
-text {* The following facts prove and refute properties related to sequential and parallel subidentities. *}
+text \<open>The following facts prove and refute properties related to sequential and parallel subidentities.\<close>
 
 lemma d_subid: "d x = x \<Longrightarrow> x \<le> 1\<^sub>\<sigma>"
   by (metis local.c6 local.c_idem local.d_def local.dc local.mult_isor)
@@ -302,8 +302,8 @@ lemma "x \<le> 1\<^sub>\<pi> \<Longrightarrow> x \<cdot> 1\<^sub>\<pi> = x"
   nitpick
   oops
 
-text {* Proposition 5.1. is covered by the theory file on multirelations. 
-We verify the remaining conditions in Proposition 5.2. *}
+text \<open>Proposition 5.1. is covered by the theory file on multirelations. 
+We verify the remaining conditions in Proposition 5.2.\<close>
 
 lemma dlp_ax: "x \<le> d x \<cdot> x"
   by simp
@@ -331,7 +331,7 @@ qed
 lemma d_zero_ax [simp]: "d 0 = 0"
   by (simp add: local.d_def)
 
-text{* We verify the algebraic conditions in Proposition 5.3. *}
+text\<open>We verify the algebraic conditions in Proposition 5.3.\<close>
 
 lemma d_absorb1 [simp]: "d x + (d x \<cdot> d y) = d x"
 proof (rule antisym)
@@ -367,7 +367,7 @@ qed
 lemma d_add_prod_closed [simp]: "d (d x + d y) = d x + d y"
   by (simp add: d_add_ax)
 
-text {* The following properties are not covered in the article. *}
+text \<open>The following properties are not covered in the article.\<close>
 
 lemma x_zero_prop: "(x \<cdot> 0) \<parallel> y = d (x \<cdot> 0) \<cdot> y"
   by (simp add: local.c2_d)
@@ -378,17 +378,17 @@ lemma cda_add_ax: "d ((x + y) \<cdot> z) = d (x \<cdot> z) + d (y \<cdot> z)"
 lemma d_x_zero: "d (x \<cdot> 0) = (x \<cdot> 0) \<parallel> 1\<^sub>\<sigma>"
   by (simp add: x_zero_prop)
 
-text {* Lemma 5.4 is verified below because its proofs are simplified by using facts from the next subsection. *}
+text \<open>Lemma 5.4 is verified below because its proofs are simplified by using facts from the next subsection.\<close>
 
-subsection {* Results for Concurrent Dynamic Algebra *}
+subsection \<open>Results for Concurrent Dynamic Algebra\<close>
 
-text {* The following proofs and refutation are related to Section 6 in~\cite{FurusawaS15a}. 
+text \<open>The following proofs and refutation are related to Section 6 in~\cite{FurusawaS15a}. 
 We do not consider those involving Kleene algebras in this section. We also do not introduce specific 
-notation for diamond operators. *}
+notation for diamond operators.\<close>
 
-text {* First we prove Lemma 6.1. Part (1) and (3) have already been verified above. Part (2) and (4) require
+text \<open>First we prove Lemma 6.1. Part (1) and (3) have already been verified above. Part (2) and (4) require
 additional assumptions which are present in the context of concurrent dynamic algebra~\cite{FurusawaS15b}. We
-also present the counterexamples from Lemma 6.3. *}
+also present the counterexamples from Lemma 6.3.\<close>
 
 lemma "(x \<cdot> y) \<cdot> d z = x \<cdot> (y \<cdot> d z)"
   nitpick
@@ -414,7 +414,7 @@ assumes "(x \<parallel> y) \<cdot> d z = (x \<cdot> d z) \<parallel> (y \<cdot> 
 shows "d ((x \<parallel> y) \<cdot> z) = d (x \<cdot> z) \<cdot> d (y \<cdot> z)"
   by (metis assms local.d_conc6 local.d_conc_s_prod_ax local.d_loc_ax)
 
-text {* Next we present some results that do not feature in the article. *}
+text \<open>Next we present some results that do not feature in the article.\<close>
 
 lemma "(x \<cdot> y) \<cdot> 0 = x \<cdot> (y \<cdot> 0)"
 nitpick
@@ -435,7 +435,7 @@ lemma "x \<le> x \<parallel> x"
 nitpick
 oops
 
-text {* Lemma 5.4 *} 
+text \<open>Lemma 5.4\<close> 
 
 lemma d_lb1: "d x \<cdot> d y \<le> d x"
   by (simp add: less_eq_def add_commute)
@@ -481,9 +481,9 @@ lemma x_c_glb_iff: "z \<cdot> 1\<^sub>\<pi> \<le> x \<cdot> 1\<^sub>\<pi> \<and>
 
 end
 
-subsection {* C-Lattices *}
+subsection \<open>C-Lattices\<close>
 
-text {* We can now define c-lattices and prove the results from Section 7 in~\cite{FurusawaS15a}.  *}
+text \<open>We can now define c-lattices and prove the results from Section 7 in~\cite{FurusawaS15a}.\<close>
 
 class pbl_monoid = proto_trioid +
   fixes U :: 'a
@@ -539,7 +539,7 @@ lemma d_equiv_prop: "(\<forall>z. z + x = z + y \<and> z \<sqinter> x = z \<sqin
 
 end
 
-text {* The symbol $\overline{1}_\pi$ from~\cite{FurusawaS15a} is written nc in this theory file. *}
+text \<open>The symbol $\overline{1}_\pi$ from~\cite{FurusawaS15a} is written nc in this theory file.\<close>
 
 class c_lattice =  pbdl_monoid +
   fixes nc :: "'a"
@@ -557,8 +557,8 @@ class c_lattice =  pbdl_monoid +
 
 begin
 
-text {* We show that every c-lattice is a c-trioid (Proposition 7.1) Proposition 7.2 is again 
-covered by the theory for multirelations. *}
+text \<open>We show that every c-lattice is a c-trioid (Proposition 7.1) Proposition 7.2 is again 
+covered by the theory for multirelations.\<close>
 
 subclass c_trioid
   proof 
@@ -577,7 +577,7 @@ subclass c_trioid
     by (metis x local.eq_iff local.cl3 local.mult_1_right local.mult_commute local.mult_isol local.s_prod_idr)
 qed
 
-text {* First we verify the complementation conditions after the definition of c-lattices. *}
+text \<open>First we verify the complementation conditions after the definition of c-lattices.\<close>
 
 lemma c_nc_comp1 [simp]: "1\<^sub>\<pi> + nc = U"
   by (metis local.cl1 local.s_prod_idl)
@@ -588,7 +588,7 @@ lemma c_nc_comp2 [simp]: "1\<^sub>\<pi> \<sqinter> nc = 0"
 lemma  c_0: "x \<sqinter> 1\<^sub>\<pi> = x \<cdot> 0"
   by (metis c_nc_comp2 local.add_zeror local.cl2 local.lat_dist3 local.meet_comm)
 
-text {* Next we verify the conditions in Proposition 7.2. *}
+text \<open>Next we verify the conditions in Proposition 7.2.\<close>
 
 lemma d_s_subid: "d x = x \<longleftrightarrow> x \<le> 1\<^sub>\<sigma>"
   by (metis local.cl9 local.d_def local.d_subid local.inf.absorb_iff1)
@@ -626,8 +626,8 @@ qed
 lemma nc_iff2: "x \<le> nc \<longleftrightarrow> x \<cdot> 0 = 0"
   using c_0 nc_iff1 by auto
 
-text {* The results of Lemma 7.3 are again at the multirelational level. 
-Hence we continue with Lemma 7.4. *}
+text \<open>The results of Lemma 7.3 are again at the multirelational level. 
+Hence we continue with Lemma 7.4.\<close>
 
 lemma assoc_p_subid: "(x \<cdot> y) \<cdot> (z \<cdot> 1\<^sub>\<pi>) = x \<cdot> (y \<cdot> (z \<cdot> 1\<^sub>\<pi>))"
   by (metis c_0 local.c6 local.cl5 local.inf.absorb_iff1)
@@ -662,7 +662,7 @@ proof -
     using local.inf_le1 local.inf_le2 local.mult_isol_var local.order_trans subidem_par by blast
 qed
 
-text{* Next we verify Lemma 7.5 and prove some related properties. *}
+text\<open>Next we verify Lemma 7.5 and prove some related properties.\<close>
 
 lemma x_split [simp]: "(x \<sqinter> nc) + (x \<sqinter> 1\<^sub>\<pi>) = x"
 proof - 
@@ -719,7 +719,7 @@ lemma zero_nc [simp]: "(x \<cdot> 0) \<sqinter> nc = 0"
 lemma nc_zero [simp]: "(x \<sqinter> nc) \<cdot> 0 = 0"
   by (meson local.inf_le2 nc_iff2)
 
-text {* Lemma 7.6. *}
+text \<open>Lemma 7.6.\<close>
 
 lemma c_def [simp]: "U \<cdot> 0 = 1\<^sub>\<pi>"
   by (metis c_nc_comp1 c_0 local.absorp1 local.meet_comm)  
@@ -801,7 +801,7 @@ proof -
     by simp
 qed
 
-text {* We prove Lemma 7.8 and related properties. *}
+text \<open>We prove Lemma 7.8 and related properties.\<close>
 
 lemma x_y_split [simp]: "(x \<sqinter> nc) \<cdot> y + x \<cdot> 0 = x \<cdot> y"
   by (metis c_0 local.cl6 local.s_prod_distr x_split)
@@ -863,9 +863,9 @@ proof -
     by (metis c_nc_comp1 calculation local.add_comm local.distrib_left local.mult_oner)
 qed
 
-subsection {* Domain in C-Lattices *}
+subsection \<open>Domain in C-Lattices\<close>
 
-text {* We now prove variants of the domain axioms and verify the properties of Section 8 in~\cite{FurusawaS15a}. *}
+text \<open>We now prove variants of the domain axioms and verify the properties of Section 8 in~\cite{FurusawaS15a}.\<close>
 
 lemma cl9_d [simp]: "d (x \<sqinter> 1\<^sub>\<sigma>) = x \<sqinter> 1\<^sub>\<sigma>"
   by (simp add: local.d_def)
@@ -885,7 +885,7 @@ lemma cl10_d_var2: "d (x \<sqinter> nc) = 1\<^sub>\<sigma> \<sqinter> (x \<sqint
 lemma cl10_d_var3: "d (x \<sqinter> nc) = 1\<^sub>\<sigma> \<sqinter> x \<cdot> U"
   by (simp add: cl10_d_var1 s_nc_U)
 
-text {* We verify the remaining properties of Lemma 8.1. *}
+text \<open>We verify the remaining properties of Lemma 8.1.\<close>
 
 lemma d_U [simp]: "d U = 1\<^sub>\<sigma>"
   by (simp add: local.d_def)
@@ -899,7 +899,7 @@ lemma alt_d_def_nc_nc: "d (x \<sqinter> nc) = 1\<^sub>\<sigma> \<sqinter> ((x \<
 lemma alt_d_def_nc_U: "d (x \<sqinter> nc) = 1\<^sub>\<sigma> \<sqinter> ((x \<sqinter> nc) \<cdot> 1\<^sub>\<pi>) \<parallel> U"
   by (metis alt_d_def_nc_nc local.c2_d s_nc_U)
 
-text {* We verify the identity before Lemma 8.2 of~\cite{FurusawaS15a} together with variants. *}
+text \<open>We verify the identity before Lemma 8.2 of~\cite{FurusawaS15a} together with variants.\<close>
 
 lemma d_def_split [simp]: "d (x \<sqinter> nc) + d (x \<cdot> 0) = d x"
   by (metis local.d_add_ax x_split_var)
@@ -910,7 +910,7 @@ lemma d_def_split_var [simp]: "d (x \<sqinter> nc) + (x \<cdot> 0) \<parallel> 1
 lemma ax7 [simp]: "(1\<^sub>\<sigma> \<sqinter> x \<cdot> U) + (x \<cdot> 0) \<parallel> 1\<^sub>\<sigma> = d x"
   by (metis cl10_d_var3 d_def_split_var)
 
-text {* Lemma 8.2. *}
+text \<open>Lemma 8.2.\<close>
 
 lemma dom12_d: "d x = 1\<^sub>\<sigma> \<sqinter> (x \<cdot> 1\<^sub>\<pi>) \<parallel> nc"
 proof -
@@ -930,7 +930,7 @@ lemma dom12_d_U: "d x = 1\<^sub>\<sigma> \<sqinter> (x \<cdot> 1\<^sub>\<pi>) \<
 lemma dom_def_var: "d x = (x \<cdot> U \<sqinter> 1\<^sub>\<pi>) \<parallel> 1\<^sub>\<sigma>"
   by (simp add: c_0 local.d_def zero_assoc3)
 
-text{* Lemma 8.3. *}
+text\<open>Lemma 8.3.\<close>
 
 lemma ax5_d [simp]: "d (x \<sqinter> nc) \<cdot> U = (x \<sqinter> nc) \<cdot> U"
 proof -
@@ -966,8 +966,8 @@ lemma d_x_nc [simp]: "d (x \<cdot> nc) = d x"
 lemma d_x_U [simp]: "d (x \<cdot> U) = d x"
   by (simp add: local.c4 local.d_def)
 
-text {* The next properties of domain are important, but do not feature in~\cite{FurusawaS15a}. 
-Proofs can be found in~\cite{FurusawaS15b}. *}
+text \<open>The next properties of domain are important, but do not feature in~\cite{FurusawaS15a}. 
+Proofs can be found in~\cite{FurusawaS15b}.\<close>
 
 lemma d_llp1: "d x \<le> d y \<Longrightarrow> x \<le> d y \<cdot> x"
   by (metis local.d_rest_ax local.s_prod_isor)
@@ -1003,10 +1003,10 @@ proof -
     using local.d_conc6 local.d_conc_s_prod_ax local.d_glb_iff by fastforce
 qed
 
-subsection {* Structural Properties of C-Lattices *}
+subsection \<open>Structural Properties of C-Lattices\<close>
 
-text {* Now we consider the results from Section 9 and 10 in~\cite{FurusawaS15a}. 
-First we verify the conditions for Proposition 9.1. *}
+text \<open>Now we consider the results from Section 9 and 10 in~\cite{FurusawaS15a}. 
+First we verify the conditions for Proposition 9.1.\<close>
       
 lemma d_meet_closed [simp]: "d (d x \<sqinter> d y) = d x \<sqinter> d y"
   using d_s_subid local.d_sub_id_ax local.inf_le1 local.order_trans by blast
@@ -1025,7 +1025,7 @@ lemma s_id_par_s_prod: "(x \<sqinter> 1\<^sub>\<sigma>) \<parallel> (y \<sqinter
 lemma s_id_par [simp]: "x \<sqinter> 1\<^sub>\<sigma> \<parallel> x \<sqinter> 1\<^sub>\<sigma> = x \<sqinter> 1\<^sub>\<sigma>"
   using local.meet_assoc local.meet_comm local.inf.absorb_iff1 meet_le_par by auto 
 
-text {* We verify the remaining conditions in Proposition 9.2. *}
+text \<open>We verify the remaining conditions in Proposition 9.2.\<close>
 
 lemma p_subid_par_eq_meet: "(x \<cdot> 0) \<parallel> (y \<cdot> 0) = (x \<cdot> 0) \<sqinter> (y \<cdot> 0)"
   by (simp add: local.meet_glb local.order.antisym local.p_subid_lb1 local.p_subid_lb2 meet_le_par)
@@ -1039,7 +1039,7 @@ lemma x_zero_add_closed: "x \<cdot> 0 + y \<cdot> 0 = (x + y) \<cdot> 0"
 lemma x_zero_meet_closed: "(x \<cdot> 0) \<sqinter> (y \<cdot> 0) = (x \<sqinter> y) \<cdot> 0"
   by (metis c_0 local.cl6 local.meet_assoc local.meet_comm)
 
-text {* The following set of lemmas investigates the closure properties of vectors, including Lemma 9,3. *}
+text \<open>The following set of lemmas investigates the closure properties of vectors, including Lemma 9,3.\<close>
 
 lemma U_par_zero [simp]: "(0 \<cdot> c) \<parallel> U = 0"
   by fastforce
@@ -1071,7 +1071,7 @@ proof -
     by (metis local.d_sub_id_ax local.inf.absorb_iff1)
 qed
 
-text {* Proposition 9.4 *}
+text \<open>Proposition 9.4\<close>
 
 lemma nc_zero_closed [simp]: "0 \<sqinter> nc = 0"
   by (simp add: local.inf.commute local.inf_absorb2)
@@ -1102,7 +1102,7 @@ qed
 lemma nc_ccomp_closed_alt [simp]: "(x \<parallel> (y \<sqinter> nc)) \<sqinter> nc = x \<parallel> (y \<sqinter> nc)"
   by (metis U_nc_par local.U_def local.inf_le2 local.mult_isol_var local.inf.absorb_iff1)
 
-text {* Lemma 9.6. *}
+text \<open>Lemma 9.6.\<close>
  
 lemma tarski_prod:
 assumes "\<And>x. x \<sqinter> nc \<noteq> 0 \<Longrightarrow> nc \<cdot> ((x \<sqinter> nc) \<cdot> nc) = nc"
@@ -1126,7 +1126,7 @@ next
     by (simp add: assm)
 qed
 
-text {* We show the remaining conditions of Proposition 9.8. *}
+text \<open>We show the remaining conditions of Proposition 9.8.\<close>
 
 lemma nc_prod_aux [simp]: "((x \<sqinter> nc) \<cdot> nc) \<cdot> nc = (x \<sqinter> nc) \<cdot> nc"
 proof -
@@ -1185,7 +1185,7 @@ proof -
     using one by blast 
 qed
 
-text {* Proposition 10.1 and 10.2. *}
+text \<open>Proposition 10.1 and 10.2.\<close>
 
 lemma iso3 [simp]: "d (d x \<cdot> U) = d x "
   by simp
@@ -1211,7 +1211,7 @@ lemma iso5_sharp [simp]: "(((x \<sqinter> nc) \<cdot> 1\<^sub>\<pi>) \<parallel>
 lemma iso6_sharp [simp]: "(((x \<sqinter> nc) \<cdot> nc) \<cdot> 1\<^sub>\<pi>) \<parallel> nc = (x \<sqinter> nc) \<cdot> nc"
   using local.c4 local.cl11 nc_c by presburger
 
-text{* We verify Lemma 15.2 at this point, because it is helpful for the following proofs. *}
+text\<open>We verify Lemma 15.2 at this point, because it is helpful for the following proofs.\<close>
 
 lemma uc_par_meet: "x \<parallel> U \<sqinter> y \<parallel> U = x \<parallel> U \<parallel> y \<parallel> U"
   apply (rule antisym)
@@ -1229,7 +1229,7 @@ proof -
     by (simp add: local.cl4) 
 qed
 
-text{* We verify the remaining cases of Proposition 10.3. *}
+text\<open>We verify the remaining cases of Proposition 10.3.\<close>
 
 lemma sc_hom_meet: "(d x \<sqinter> d y) \<cdot> 1\<^sub>\<pi> = (d x) \<cdot> 1\<^sub>\<pi> \<sqinter> (d y) \<cdot> 1\<^sub>\<pi>"
   by (metis d_p_prod_eq_meet local.c3 p_subid_par_eq_meet_var)
@@ -1289,7 +1289,7 @@ proof -
     by (simp add: assoc_p_subid calculation)
 qed
 
-text {* Proposition 10.4. *}
+text \<open>Proposition 10.4.\<close>
   
 lemma nsv_hom_meet: "(d x \<sqinter> d y) \<cdot> nc = (d x) \<cdot> nc \<sqinter> (d y) \<cdot> nc"
 proof  (rule antisym)
@@ -1336,10 +1336,10 @@ lemma ncv_hom_par: "(x \<parallel> y) \<parallel> nc = x \<parallel> nc \<parall
 lemma nvc_hom_meet: "((x \<sqinter> nc) \<cdot>  nc \<sqinter> (y \<sqinter> nc) \<cdot> nc) \<cdot> 1\<^sub>\<pi> = ((x \<sqinter> nc) \<cdot>  nc) \<cdot> 1\<^sub>\<pi> \<sqinter> ((y \<sqinter> nc) \<cdot> nc) \<cdot> 1\<^sub>\<pi>"
   by (metis local.c3 p_subid_par_eq_meet_var vec_p_prod_meet)
 
-subsection {* Terminal and Nonterminal Elements *}
+subsection \<open>Terminal and Nonterminal Elements\<close>
 
-text {* Now we define the projection functions on terminals and nonterminal parts and verify the properties
-of Section 11 in~\cite{FurusawaS15a}. *}
+text \<open>Now we define the projection functions on terminals and nonterminal parts and verify the properties
+of Section 11 in~\cite{FurusawaS15a}.\<close>
 
 definition tau :: "'a \<Rightarrow> 'a" ("\<tau>") where 
   "\<tau> x = x \<cdot> 0"
@@ -1347,7 +1347,7 @@ definition tau :: "'a \<Rightarrow> 'a" ("\<tau>") where
 definition nu :: "'a \<Rightarrow> 'a" ("\<nu>") where 
   "\<nu> x = x \<sqinter> nc"
 
-text {* Lemma 11.1. *}
+text \<open>Lemma 11.1.\<close>
 
 lemma tau_int: "\<tau> x \<le> x"
   by (metis c_0 local.inf_le1 tau_def)
@@ -1367,7 +1367,7 @@ lemma tau_iso: "x \<le> y \<Longrightarrow> \<tau> x \<le> \<tau> y"
 lemma nu_iso: "x \<le> y \<Longrightarrow> \<nu> x \<le> \<nu> y"
   using local.inf_mono nu_def by auto
 
-text {* Lemma 11.2. *}
+text \<open>Lemma 11.2.\<close>
 
 lemma tau_zero [simp]: "\<tau> 0 = 0"
   by (simp add: tau_def)
@@ -1399,7 +1399,7 @@ lemma tau_U [simp]: "\<tau> U = 1\<^sub>\<pi>"
 lemma nu_U [simp]: "\<nu> U = nc"
   using local.U_def local.meet_comm local.inf.absorb_iff1 nu_def by fastforce
 
-text {* Lemma 11.3. *}
+text \<open>Lemma 11.3.\<close>
 
 lemma tau_add [simp]: "\<tau> (x + y) = \<tau> x + \<tau> y"
   by (simp add: tau_def x_zero_add_closed)
@@ -1441,7 +1441,7 @@ proof -
     using local.join.sup_assoc local.join.sup_commute local.mult_commute nu_par_aux1 by auto
 qed
 
-text {* Lemma 11.5. *}
+text \<open>Lemma 11.5.\<close>
 
 lemma sprod_tau_nu: "x \<cdot> y = \<tau> x + \<nu> x \<cdot> y"
   by (metis local.add_comm nu_def tau_def x_y_split)
@@ -1456,7 +1456,7 @@ proof -
     using add_assoc add_commute calculation by force
 qed
 
-text {* We now verify some additional properties which are not mentioned in the paper. *}
+text \<open>We now verify some additional properties which are not mentioned in the paper.\<close>
 
 lemma tau_idem [simp]: "\<tau> x \<cdot> \<tau> x = \<tau> x"
   by (simp add: tau_def)
@@ -1544,7 +1544,7 @@ proof -
     using alpha_par local.c2_d nu_def by force
 qed
 
-text {* Lemma 11.6 and 11.7.*}
+text \<open>Lemma 11.6 and 11.7.\<close>
 
 lemma nu_ideal1: "\<lbrakk>\<nu> x = x; y \<le> x\<rbrakk> \<Longrightarrow> \<nu> y = y"
   by (metis local.meet_prop local.inf.absorb_iff1 nu_def)
@@ -1561,7 +1561,7 @@ lemma tau_ideal2: "\<lbrakk>\<tau> x = x; \<tau> y = y\<rbrakk> \<Longrightarrow
 lemma tau_ideal3: "\<tau> x = x \<Longrightarrow> \<tau> (x \<cdot> y) = x \<cdot> y"
   by (simp add: tau_seq_prop)
 
-text {* We prove the precongruence properties of Lemma 11.9. *}
+text \<open>We prove the precongruence properties of Lemma 11.9.\<close>
 
 lemma tau_add_precong: "\<tau> x \<le> \<tau> y \<Longrightarrow> \<tau> (x + z) \<le> \<tau> (y + z)"
 proof -
@@ -1589,7 +1589,7 @@ proof -
   hence "x \<parallel> z \<cdot> 0 \<le> y \<cdot> 0" 
     by (metis (no_types) local.dual_order.trans local.p_subid_lb1 tau_def tau_par)
   thus "\<tau> (x \<parallel> z) \<le> \<tau> (y \<parallel> z)"
-    by (simp add: `\<tau> x \<le> \<tau> y` local.mult_isor) 
+    by (simp add: \<open>\<tau> x \<le> \<tau> y\<close> local.mult_isor) 
 qed
 
 lemma tau_seq_precongl: "\<tau> x \<le> \<tau> y \<Longrightarrow> \<tau> (z \<cdot> x) \<le> \<tau> (z \<cdot> y)"
@@ -1628,7 +1628,7 @@ proof -
     by simp
 qed
 
-text{* We prove the congruence properties of Corollary~11.11. *}
+text\<open>We prove the congruence properties of Corollary~11.11.\<close>
 
 definition tcg :: "'a \<Rightarrow> 'a \<Rightarrow> bool"  where 
   "tcg x y = (\<tau> x \<le> \<tau> y \<and> \<tau> y \<le> \<tau> x)"
@@ -1683,9 +1683,9 @@ lemma ncg_seqr: "\<nu> x = \<nu> y \<Longrightarrow> \<nu> (x \<cdot> z) = \<nu>
 
 end
 
-subsection {* Powers in C-Algebras *}
+subsection \<open>Powers in C-Algebras\<close>
 
-text {* We define the power functions from Section~6 in~\cite{FurusawaS15a} after Lemma~12.4. *}
+text \<open>We define the power functions from Section~6 in~\cite{FurusawaS15a} after Lemma~12.4.\<close>
 
 context proto_dioid
 begin
@@ -1702,7 +1702,7 @@ primrec power_sq :: "'a  \<Rightarrow> nat \<Rightarrow> 'a"  where
  "power_sq x 0       = 1\<^sub>\<sigma>" |
  "power_sq x (Suc n) = 1\<^sub>\<sigma> + x \<cdot> power_sq x n"
 
-text {* Lemma~12.5 *}
+text \<open>Lemma~12.5\<close>
 
 lemma power_rd_chain: "power_rd x n \<le> power_rd x (n + 1)"
   by (induct n, simp, metis Suc_eq_plus1 local.add_comm local.add_iso local.s_prod_isol power_rd.simps(2))
@@ -1735,7 +1735,7 @@ next
   with f1 show ?case by (simp add: add_ac)
 qed
 
-text {* Next we verify facts from the proofs of Lemma~12.6. *}
+text \<open>Next we verify facts from the proofs of Lemma~12.6.\<close>
 
 lemma power_rd_le_sq: "power_rd x n \<le> power_sq x n"
   by (induct n, simp, simp add: local.join.le_supI2 local.s_prod_isol)
@@ -1750,10 +1750,10 @@ lemma power_sq_power: "power_sq x n = p_power (1\<^sub>\<sigma> + x) n"
 
 end
 
-subsection {* C-Kleene Algebras *}
+subsection \<open>C-Kleene Algebras\<close>
 
-text {* The definition of c-Kleene algebra is slightly different from that in Section~6
-of~\cite{FurusawaS15a}. It is used to prove properties from Section~6 and Section~12. *}
+text \<open>The definition of c-Kleene algebra is slightly different from that in Section~6
+of~\cite{FurusawaS15a}. It is used to prove properties from Section~6 and Section~12.\<close>
 
 class c_kleene_algebra = c_lattice + star_op +
   assumes star_unfold: "1\<^sub>\<sigma> + x \<cdot> x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -1799,7 +1799,7 @@ proof (rule antisym)
     by (simp add: local.star_induct)
 qed
 
-text {* Lemma 12.2. *}
+text \<open>Lemma 12.2.\<close>
 
 lemma nu_star1:
 assumes "\<And>x y z. x \<cdot> (y \<cdot> z) = (x \<cdot> y) \<cdot> z"
@@ -1835,7 +1835,7 @@ and "\<And>x y z. x \<cdot> (y \<cdot> z) = (x \<cdot> y) \<cdot> z"
 shows "(\<nu> x)\<^sup>\<star> \<cdot> (1\<^sub>\<sigma> + \<tau> x) = x\<^sup>\<star>"
   by (simp add: assms(1) assms(2) local.dual_order.antisym nu_star1 nu_star2)
 
-text {* Lemma 12.3. *}
+text \<open>Lemma 12.3.\<close>
 
 lemma tau_star: "(\<tau> x)\<^sup>\<star> = 1\<^sub>\<sigma> + \<tau> x"
   by (metis local.cl6 local.tau_def star_unfold_eq)
@@ -1861,7 +1861,7 @@ lemma tau_star_tau [simp]: "\<tau> ((\<tau> x)\<^sup>\<star>) = \<tau> x"
 lemma tau_star_nu [simp]: "\<tau> ((\<nu> x)\<^sup>\<star>) = 0"
   using local.alpha_fp local.tau_def nu_star_nu by presburger
 
-text {* Finally we verify Lemma 6.2. Proofs can be found in~\cite{FurusawaS15b}.*}
+text \<open>Finally we verify Lemma 6.2. Proofs can be found in~\cite{FurusawaS15b}.\<close>
 
 lemma d_star_unfold [simp]: 
 assumes "\<And>x y z. (x \<cdot> y) \<cdot> d z = x \<cdot> (y \<cdot> d z)"
@@ -1924,13 +1924,13 @@ qed
 
 end
 
-subsection {* C-Omega Algebras *}
+subsection \<open>C-Omega Algebras\<close>
 
-text {* These structures do not feature in~\cite{FurusawaS15a}, but in fact, 
+text \<open>These structures do not feature in~\cite{FurusawaS15a}, but in fact, 
 many lemmas from Section 13 can be proved in this setting. The proto-quantales and c-quantales
 using in~\cite{FurusawaS15a} provide a more expressive setting in which least and greatest fixpoints 
 need not be postulated; they exists due to properties of sequential composition and addition over 
-complete lattices. *}
+complete lattices.\<close>
 
 class c_omega_algebra = c_kleene_algebra + omega_op +
   assumes om_unfold: "x\<^sup>\<omega> \<le> x \<cdot> x\<^sup>\<omega>"
@@ -1938,7 +1938,7 @@ class c_omega_algebra = c_kleene_algebra + omega_op +
 
 begin
 
-text {* Lemma 13.4. *}
+text \<open>Lemma 13.4.\<close>
 
 lemma om_unfold_eq [simp]: "x \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
   apply (rule antisym)
@@ -1947,7 +1947,7 @@ lemma om_unfold_eq [simp]: "x \<cdot> x\<^sup>\<omega> = x\<^sup>\<omega>"
 lemma om_iso: "x \<le> y \<Longrightarrow> x\<^sup>\<omega> \<le> y\<^sup>\<omega>"
   by (metis local.om_coinduct local.s_prod_isor om_unfold_eq)
  
-text {* Lemma 13.5. *}
+text \<open>Lemma 13.5.\<close>
 
 lemma zero_om [simp]: "0\<^sup>\<omega> = 0"
   by (metis local.s_prod_annil om_unfold_eq)
@@ -1964,7 +1964,7 @@ lemma nc_om [simp]: "nc\<^sup>\<omega> = U"
 lemma U_om [simp]: "U\<^sup>\<omega> = U"
   by (simp add: local.U_def local.eq_iff local.om_coinduct)
 
-text {* Lemma 13.6. *}
+text \<open>Lemma 13.6.\<close>
 
 lemma tau_om1: "\<tau> x \<le> \<tau> (x\<^sup>\<omega>)"
   using local.om_coinduct local.s_prod_isor local.tau_def local.tau_int by fastforce
@@ -1975,7 +1975,7 @@ lemma tau_om2 [simp]: "\<tau> x\<^sup>\<omega> = \<tau> x"
 lemma tau_om3: "(\<tau> x)\<^sup>\<omega> \<le> \<tau> (x\<^sup>\<omega>)"
   by (simp add: tau_om1)
 
-text {* Lemma 13.7. *}
+text \<open>Lemma 13.7.\<close>
 
 lemma om_nu_tau: "(\<nu> x)\<^sup>\<omega> + (\<nu> x)\<^sup>\<star> \<cdot> \<tau> x \<le> x\<^sup>\<omega>"
 proof -
@@ -1995,9 +1995,9 @@ qed
 
 end
 
-subsection {* C-Nabla Algebras *}
+subsection \<open>C-Nabla Algebras\<close>
 
-text {* Nabla-algebras provide yet another way of formalising non-terminating behaviour in Section 13. *}
+text \<open>Nabla-algebras provide yet another way of formalising non-terminating behaviour in Section 13.\<close>
 
 class c_nabla_algebra = c_omega_algebra + 
   fixes nabla :: "'a \<Rightarrow> 'a" ("\<nabla>")
@@ -2025,7 +2025,7 @@ lemma nabla_nu [simp]: "\<nu> (\<nabla> x) = \<nabla> x"
   using local.nu_ideal1 local.nu_s nabla_le_s by blast
 
  
-text {* Proposition 13.9. *}
+text \<open>Proposition 13.9.\<close>
 
 lemma nabla_omega_U: 
 assumes "\<And>x y z. x \<cdot> (d y \<cdot> z) = (x \<cdot> d y ) \<cdot> z"
@@ -2049,14 +2049,14 @@ proof (rule antisym)
     using local.nabla_unfold local.om_coinduct local.s_prod_isor by presburger
 qed
 
-text {* Corollary 13.10. *}
+text \<open>Corollary 13.10.\<close>
 
 lemma nabla_omega_U_cor: 
 assumes  "\<And>x y z. x \<cdot> (d y \<cdot> z) = (x \<cdot> d y ) \<cdot> z"
 shows "\<nabla> (\<nu> x) \<cdot> U + (\<nu> x)\<^sup>\<star> \<cdot> \<tau> x \<le> x\<^sup>\<omega>"
   by (metis assms nabla_omega_U local.om_nu_tau)
 
-text {* Lemma 13.11. *}
+text \<open>Lemma 13.11.\<close>
 
 lemma nu_om_nu: 
 assumes  "\<And>x y z. x \<cdot> (d y \<cdot> z) = (x \<cdot> d y ) \<cdot> z"
@@ -2084,7 +2084,7 @@ proof -
     using local.tau_U by blast
 qed
 
-text {* Proposition 13.12. *}
+text \<open>Proposition 13.12.\<close>
 
 lemma wf_eq_defl: "(\<forall>y. d y \<le> d (x \<cdot> y) \<longrightarrow> d y = 0) \<longleftrightarrow> (\<forall>y. y \<le> x \<cdot> y \<longrightarrow> y = 0)"
   apply standard
@@ -2099,11 +2099,11 @@ lemma wf_eq_om_trivial: "x\<^sup>\<omega> = 0  \<longleftrightarrow> (\<forall>y
 
 end
 
-subsection {* Proto-Quantales *}
+subsection \<open>Proto-Quantales\<close>
 
-text {* Finally we define the class of proto-quantales and prove some of the 
+text \<open>Finally we define the class of proto-quantales and prove some of the 
 remaining facts from the article. Full c-quantales, as defined there, are not needed
-for these proofs. *}
+for these proofs.\<close>
 
 class proto_quantale = complete_lattice + proto_monoid +
   assumes Sup_mult_distr: "Sup X \<cdot> y = Sup {x \<cdot> y | x. x \<in> X}"
@@ -2153,7 +2153,7 @@ definition star_rd :: "'a \<Rightarrow> 'a" where
 definition star_sq :: "'a \<Rightarrow> 'a" where
   "star_sq x = Sup {power_sq x i |i. i \<in> \<nat>}"
 
-text {* Now we prove Lemma 12.6. *}
+text \<open>Now we prove Lemma 12.6.\<close>
 
 lemma star_rd_le_sq: "star_rd x \<le> star_sq x"
   apply (auto simp: star_rd_def star_sq_def)
@@ -2172,7 +2172,7 @@ lemma star_rd_sq: "star_rd x = star_sq x"
 lemma star_sq_power: "star_sq x = Sup {pd.p_power (sup 1\<^sub>\<sigma> x) i | i. i \<in> \<nat>}"
   by (auto simp: star_sq_def pd.power_sq_power [symmetric] intro: Sup_eqI)
 
-text {* The following lemma should be somewhere close to complete lattices. *}
+text \<open>The following lemma should be somewhere close to complete lattices.\<close>
 
 end
 

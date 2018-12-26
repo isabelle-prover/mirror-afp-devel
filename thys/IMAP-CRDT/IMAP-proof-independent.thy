@@ -1,4 +1,4 @@
-section {* Independence of IMAP Commands *}
+section \<open>Independence of IMAP Commands\<close>
 
 text\<open>In this section we show that two concurrent operations that reference to the same tag must be 
 identical.\<close>

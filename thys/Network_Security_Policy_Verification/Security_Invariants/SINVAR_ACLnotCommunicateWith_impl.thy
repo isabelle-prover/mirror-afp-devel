@@ -5,7 +5,7 @@ begin
 code_identifier code_module SINVAR_ACLnotCommunicateWith_impl => (Scala) SINVAR_ACLnotCommunicateWith
 
 
-subsubsection {* SecurityInvariant ACLnotCommunicateWith List Implementation *}
+subsubsection \<open>SecurityInvariant ACLnotCommunicateWith List Implementation\<close>
 
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> 'v set) \<Rightarrow> bool" where
@@ -58,7 +58,7 @@ interpretation ACLnotCommunicateWith_impl:TopoS_List_Impl
  apply(simp only: sinvar_correct)
 done
 
-subsubsection {* packing *}
+subsubsection \<open>packing\<close>
   definition SINVAR_LIB_ACLnotCommunicateWith:: "('v::vertex, 'v set) TopoS_packed" where
     "SINVAR_LIB_ACLnotCommunicateWith \<equiv> 
     \<lparr> nm_name = ''ACLnotCommunicateWith'', 
@@ -79,7 +79,7 @@ subsubsection {* packing *}
 
 
 
-text {* Examples*}
+text \<open>Examples\<close>
 
 
 

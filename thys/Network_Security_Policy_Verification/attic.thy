@@ -1,9 +1,9 @@
-section{*Attic*}
+section\<open>Attic\<close>
 theory attic
 imports Main "Lib/FiniteGraph"
 begin
 
-text{*old lemma, mainly unused. *}
+text\<open>old lemma, mainly unused.\<close>
 
 lemma exists_x1x2_x1notoffending_natLeq: 
   fixes 
@@ -58,13 +58,13 @@ lemma exCasePairNotSimp: "(\<exists>x. x \<in> A \<and> \<not> (case x of (e1, e
 
 
 (* moved here from FiniteGraph.thy. Currently unused *)
-subsection {* Paths *}
-  text {* A path is represented by a list of adjacent edges. *}
+subsection \<open>Paths\<close>
+  text \<open>A path is represented by a list of adjacent edges.\<close>
   type_synonym 'v path = "('v \<times> 'v) list"
 
   context wf_graph
   begin
-    text {* The following predicate describes a valid path:*}
+    text \<open>The following predicate describes a valid path:\<close>
     (* is-path src [src, ...., dst] dst *)
     fun is_path :: "'v \<Rightarrow> 'v path \<Rightarrow> 'v \<Rightarrow> bool" where
       "is_path v [] v' \<longleftrightarrow> v=v' \<and> v'\<in>V" |
@@ -91,9 +91,9 @@ subsection {* Paths *}
       by (auto simp add: is_path_split)
   end
 
-  text {* Set of intermediate vertices of a path. These are all vertices but
+  text \<open>Set of intermediate vertices of a path. These are all vertices but
     the last one. Note that, if the last vertex also occurs earlier on the path,
-    it is contained in @{text "int_vertices"}. *}
+    it is contained in \<open>int_vertices\<close>.\<close>
   definition int_vertices :: "'v path \<Rightarrow> 'v set" where
     "int_vertices p \<equiv> set (map fst p)"
 
@@ -113,8 +113,8 @@ subsection {* Paths *}
   lemma int_vertices_empty[simp]: "int_vertices p = {} \<longleftrightarrow> p=[]"
     by (cases p) auto
 
-subsubsection {* Splitting Paths *}
-  text {*Split a path at the point where it first leaves the set @{text W}: *}
+subsubsection \<open>Splitting Paths\<close>
+  text \<open>Split a path at the point where it first leaves the set \<open>W\<close>:\<close>
   lemma (in wf_graph) path_split_set:
     assumes "is_path v p v'" and "v\<in>W" and "v'\<notin>W"
     obtains p1 p2 u w u' where
@@ -125,16 +125,16 @@ subsubsection {* Splitting Paths *}
     case Nil thus ?case by auto
   next
     case (Cons vv p)
-    note [simp, intro!] = `v\<in>W` `v'\<notin>W`
+    note [simp, intro!] = \<open>v\<in>W\<close> \<open>v'\<notin>W\<close>
     from Cons.prems obtain u' where 
       [simp]: "vv=(v,u')" and
         REST: "is_path u' p v'"
       by (cases vv) auto
     
-    txt {* Distinguish wether the second node @{text u'} of the path is 
-      in @{text W}. If yes, the proposition follows by the 
+    txt \<open>Distinguish wether the second node \<open>u'\<close> of the path is 
+      in \<open>W\<close>. If yes, the proposition follows by the 
       induction hypothesis, otherwise it is straightforward, as
-      the split takes place at the first edge of the path. *}
+      the split takes place at the first edge of the path.\<close>
     {
       assume A [simp, intro!]: "u'\<in>W"
       from Cons.hyps[OF _ REST] obtain p1 uu uu' p2 where
@@ -147,7 +147,7 @@ subsubsection {* Splitting Paths *}
     } ultimately show thesis by blast
   qed
   
-  text {*Split a path at the point where it first enters the set @{text W}:*}
+  text \<open>Split a path at the point where it first enters the set \<open>W\<close>:\<close>
   lemma (in wf_graph) path_split_set':
     assumes "is_path v p v'" and "v'\<in>W"
     obtains p1 p2 u where
@@ -165,16 +165,16 @@ subsubsection {* Splitting Paths *}
       case Nil thus ?case by auto
     next
       case (Cons vv p)
-      note [simp, intro!] = `v'\<in>W` `v\<notin>W`
+      note [simp, intro!] = \<open>v'\<in>W\<close> \<open>v\<notin>W\<close>
       from Cons.prems obtain u' where 
         [simp]: "vv=(v,u')" and [simp]: "(v,u')\<in>E" and
           REST: "is_path u' p v'"
         by (cases vv) auto
     
-      txt {* Distinguish wether the second node @{text u'} of the path is 
-        in @{text W}. If yes, the proposition is straightforward, otherwise,
+      txt \<open>Distinguish wether the second node \<open>u'\<close> of the path is 
+        in \<open>W\<close>. If yes, the proposition is straightforward, otherwise,
         it follows by the induction hypothesis.
-        *}
+\<close>
       {
         assume A [simp, intro!]: "u'\<in>W"
         from Cons.prems(3)[of "[vv]" p u'] REST have ?case by auto
@@ -191,7 +191,7 @@ subsubsection {* Splitting Paths *}
     qed
   qed
 
-  text {* Split a path at the point where a given vertex is first visited: *}
+  text \<open>Split a path at the point where a given vertex is first visited:\<close>
   lemma (in wf_graph) path_split_vertex:
     assumes "is_path v p v'" and "u\<in>int_vertices p"
     obtains p1 p2 where

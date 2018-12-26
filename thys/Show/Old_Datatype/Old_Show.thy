@@ -16,24 +16,24 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Converting Values to Readable Strings *}
+section \<open>Converting Values to Readable Strings\<close>
 
 theory Old_Show
 imports Main
 keywords "standard_shows_list" :: thy_decl
 begin
 
-text {*
+text \<open>
   A type class similar to Haskell's \texttt{Show} class, allowing for constant-time concatenation of
   @{type string}s using function composition.
-*}
+\<close>
 
 type_synonym
   "shows" = "string \<Rightarrow> string"
 
-text {*
+text \<open>
   Convert a string to a show-function that simply prepends the string unchanged.
-*}
+\<close>
 definition shows_string :: "string \<Rightarrow> shows"
 where
   "shows_string = (@)"
@@ -119,7 +119,7 @@ lemma shows_list_aux_assoc:
   shows "shows_list_aux elt xs r @ s = shows_list_aux elt xs (r @ s)"
   using assms by (simp add: shows_list_aux_def)
 
-ML {*
+ML \<open>
 (* FIXME export proper ML interfaces: define_shows_list, define_shows_list_cmd *)
 let 
   fun define_shows_list assoc_thm_ref lthy =
@@ -170,7 +170,7 @@ in
     (*standard way: "shows_list = shows_list_aux shows"*)
     (Parse.thm >> define_shows_list)
 end
-*}
+\<close>
 
 instantiation char :: "show"
 begin
@@ -282,10 +282,10 @@ definition shows_quote :: "shows \<Rightarrow> shows"
 where
   "shows_quote s = shows_between (shows (CHR 0x27)) s (shows (CHR 0x27))"
 
-text {*
+text \<open>
   Don't use Haskell's existing "Show" class for code-generation, since it is not compatible to the
   formalized class.
-*}
+\<close>
 code_reserved Haskell "Show"
 
 end

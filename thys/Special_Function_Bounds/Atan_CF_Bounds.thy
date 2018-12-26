@@ -1,4 +1,4 @@
-chapter {* Arctan Upper and Lower Bounds *}
+chapter \<open>Arctan Upper and Lower Bounds\<close>
 
 theory Atan_CF_Bounds
 imports Bounds_Lemmas  
@@ -6,10 +6,10 @@ imports Bounds_Lemmas
 
 begin
 
-text{*Covers all bounds used in arctan-upper.ax, arctan-lower.ax and arctan-extended.ax,
-excepting only arctan-extended2.ax, which is used in two atan-error-analysis problems.*}
+text\<open>Covers all bounds used in arctan-upper.ax, arctan-lower.ax and arctan-extended.ax,
+excepting only arctan-extended2.ax, which is used in two atan-error-analysis problems.\<close>
 
-section {*Upper Bound 1*}
+section \<open>Upper Bound 1\<close>
 
 definition arctan_upper_11 :: "real \<Rightarrow> real"
   where "arctan_upper_11 \<equiv> \<lambda>x. -(pi/2) - 1/x"
@@ -28,7 +28,7 @@ lemma d_delta_arctan_upper_11_pos: "x \<noteq> 0 \<Longrightarrow> diff_delta_ar
 unfolding diff_delta_arctan_upper_11_def
 by (simp add: divide_simps zero_less_mult_iff add_pos_pos)
 
-text{*Different proof needed here: they coincide not at zero, but at (-) infinity!*}
+text\<open>Different proof needed here: they coincide not at zero, but at (-) infinity!\<close>
 
 lemma arctan_upper_11:
   assumes "x < 0"
@@ -62,7 +62,7 @@ lemma d_delta_arctan_upper_12:
   apply (auto simp: divide_simps add_nonneg_eq_0_iff, algebra)
   done
 
-text{*Strict inequalities also possible*}
+text\<open>Strict inequalities also possible\<close>
 lemma arctan_upper_12:
   assumes "x \<le> 0" shows "arctan(x) \<le> arctan_upper_12 x"
 apply (rule gen_upper_bound_decreasing [OF assms d_delta_arctan_upper_12])
@@ -116,7 +116,7 @@ lemma lim14: "((\<lambda>x::real. 3 * x / (1 + 3 * x\<^sup>2)) \<longlongrightar
   apply (simp add: power_eq_if abs_if divide_simps add_sign_intros)
   done
 
-text{*Different proof needed here: they coincide not at zero, but at (+) infinity!*}
+text\<open>Different proof needed here: they coincide not at zero, but at (+) infinity!\<close>
 
 lemma arctan_upper_14:
   assumes "x > 0"
@@ -137,7 +137,7 @@ proof -
     by auto
 qed
 
-section {*Lower Bound 1*}
+section \<open>Lower Bound 1\<close>
 
 definition arctan_lower_11 :: "real \<Rightarrow> real"
   where "arctan_lower_11 \<equiv> \<lambda>x. -(pi/2) - 3*x / (1 + 3*x^2)"
@@ -173,7 +173,7 @@ lemma arctan_lower_14:
     using arctan_upper_11 [of "-x"] assms
     by (auto simp: arctan_upper_11_def arctan_lower_14_def arctan_minus)
 
-section {*Upper Bound 3*}
+section \<open>Upper Bound 3\<close>
 
 definition arctan_upper_31 :: "real \<Rightarrow> real"
   where "arctan_upper_31 \<equiv> \<lambda>x. -(pi/2) - (64 + 735*x^2 + 945*x^4) / (15*x*(15 + 70*x^2 + 63*x^4))"
@@ -307,7 +307,7 @@ proof -
     by auto
 qed
 
-section {*Lower Bound 3*}
+section \<open>Lower Bound 3\<close>
 
 definition arctan_lower_31 :: "real \<Rightarrow> real"
   where "arctan_lower_31 \<equiv> \<lambda>x. -(pi/2) - (33 + 170*x^2 + 165*x^4)*7*x / (5*(5 + 105*x^2 + 315*x^4 + 231*x^6))"
@@ -343,7 +343,7 @@ lemma arctan_lower_34:
     using arctan_upper_31 [of "-x"] assms
     by (auto simp: arctan_upper_31_def arctan_lower_34_def arctan_minus)
 
-section {*Upper Bound 4*}
+section \<open>Upper Bound 4\<close>
 
 definition arctan_upper_41 :: "real \<Rightarrow> real"
   where "arctan_upper_41 \<equiv>
@@ -485,7 +485,7 @@ proof -
     by auto
 qed
 
-section {*Lower Bound 4*}
+section \<open>Lower Bound 4\<close>
 
 definition arctan_lower_41 :: "real \<Rightarrow> real"
   where "arctan_lower_41 \<equiv>

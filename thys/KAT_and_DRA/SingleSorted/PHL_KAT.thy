@@ -3,13 +3,13 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Propositional Hoare Logic *}
+section \<open>Propositional Hoare Logic\<close>
 
 theory PHL_KAT
   imports KAT Kleene_Algebra.PHL_KA
 begin
 
-text {* We define a class of pre-dioids with notions of assertions, tests and iteration. The above rules of PHL are derivable in that class. *}
+text \<open>We define a class of pre-dioids with notions of assertions, tests and iteration. The above rules of PHL are derivable in that class.\<close>
 
 class at_pre_dioid = pre_dioid_one +
   fixes alpha :: "'a \<Rightarrow> 'a" ("\<alpha>")
@@ -19,8 +19,8 @@ class at_pre_dioid = pre_dioid_one +
 
 begin
 
-text {* Only the conditional and the iteration rule need to be considered (in addition to the export laws. 
-In this context, they no longer depend on external assumptions. The other ones do not depend on any assumptions anyway. *}
+text \<open>Only the conditional and the iteration rule need to be considered (in addition to the export laws. 
+In this context, they no longer depend on external assumptions. The other ones do not depend on any assumptions anyway.\<close>
 
 lemma at_phl_cond: 
 assumes "\<alpha> u \<cdot> \<tau> v \<cdot> x \<le> x \<cdot> z" and "\<alpha> u \<cdot> \<tau> w \<cdot> y \<le> y \<cdot> z" 
@@ -59,9 +59,9 @@ shows "\<lbrace>\<alpha> p\<rbrace> it (\<tau> s \<cdot> x) \<cdot> \<tau> w \<l
 
 end
 
-text {* The following statements show that pre-Conway algebras, Kleene algebras with tests
+text \<open>The following statements show that pre-Conway algebras, Kleene algebras with tests
 and demonic refinement algebras form pre-dioids with test and assertions. This automatically
-generates propositional Hoare logics for these structures. *}
+generates propositional Hoare logics for these structures.\<close>
 
 sublocale test_pre_dioid_zerol < phl: at_pre_dioid where alpha = t and tau = t
 proof 
@@ -179,7 +179,7 @@ lemma (in kat) "test p \<Longrightarrow> test q \<Longrightarrow>  p \<cdot> x \
 lemma (in kat) "test p \<Longrightarrow> test q \<Longrightarrow>  p \<cdot> x \<cdot> y \<cdot> !q = 0 \<Longrightarrow>(\<exists>r. test r \<and> p \<cdot> x \<cdot> !r = 0 \<and> r \<cdot> y \<cdot> !q = 0)"
   (* nitpick *) oops
 
-text {* The following facts should be moved. They show that the rules of Hoare logic based on Tarlecki triples are invertible. *}
+text \<open>The following facts should be moved. They show that the rules of Hoare logic based on Tarlecki triples are invertible.\<close>
 
 abbreviation (in near_dioid) tt :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("\<lparr>_\<rparr>_\<lparr>_\<rparr>") where
   "\<lparr>x\<rparr> y \<lparr>z\<rparr> \<equiv> x \<cdot> y \<le> z" 
@@ -202,7 +202,7 @@ lemma (in dioid) tt_cond: "\<lparr>p \<cdot> v\<rparr> x \<lparr>q\<rparr> \<and
 lemma (in kleene_algebra) tt_while: "w \<le> 1 \<Longrightarrow> \<lparr>p \<cdot> v\<rparr> x \<lparr>p\<rparr> \<Longrightarrow> \<lparr>p\<rparr> (v \<cdot> x)\<^sup>\<star> \<cdot> w \<lparr>p\<rparr>"
   by (metis local.star_inductr_var_equiv local.star_subid local.tt_seq local.tt_skip mult_assoc)
 
-text {* The converse implication can be refuted. The situation is similar to the ht case. *}
+text \<open>The converse implication can be refuted. The situation is similar to the ht case.\<close>
 
 lemma (in kat) tt_while: "test v \<Longrightarrow>  \<lparr>p\<rparr> (v \<cdot> x)\<^sup>\<star> \<cdot> !v \<lparr>p\<rparr> \<Longrightarrow> \<lparr>p \<cdot> v\<rparr> x \<lparr>p\<rparr>"
   (* nitpick *) oops
@@ -210,9 +210,9 @@ lemma (in kat) tt_while: "test v \<Longrightarrow>  \<lparr>p\<rparr> (v \<cdot>
 lemma (in kat) tt_while: "test v \<Longrightarrow>  \<lparr>p\<rparr> (v \<cdot> x)\<^sup>\<star>  \<lparr>p\<rparr> \<Longrightarrow> \<lparr>p \<cdot> v\<rparr> x \<lparr>p\<rparr>"
   using local.star_inductr_var_equiv mult_assoc by auto
 
-text {* Perhaps this holds with possibly infinite loops in DRA... *}
+text \<open>Perhaps this holds with possibly infinite loops in DRA...\<close>
 
-text {* wlp in KAT *}
+text \<open>wlp in KAT\<close>
 
 lemma (in kat) "test y \<Longrightarrow> (\<exists> z. test z \<and> z \<cdot> x \<cdot> !y = 0)"
   by (metis local.annil local.test_zero_var)

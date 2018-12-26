@@ -1735,7 +1735,7 @@ text\<open>Where @{typ "(iface \<times> ('i::len word \<times> nat) list) list"}
  The sanity checkers need to iterate over the interfaces, hence we don't pass a map but a list of tuples.\<close>
 
 
-text\<open>In @{file "Transform.thy"} there should be the final correctness theorem for @{text "iface_try_rewrite"}. 
+text\<open>In @{file "Transform.thy"} there should be the final correctness theorem for \<open>iface_try_rewrite\<close>. 
      Here are some structural properties.\<close>
 
 

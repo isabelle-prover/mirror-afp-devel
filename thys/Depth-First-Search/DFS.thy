@@ -61,14 +61,14 @@ apply auto[1]
 apply (simp_all add: finite_psubset_def)
 by (case_tac  "x \<in> nodes_of g") (auto simp add: List.member_def)
 
-text {*
+text \<open>
   \begin{itemize}
   \item The second argument of \isatext{\isastyle{dfs}} is a stack of nodes that will be
   visited.
   \item The third argument of \isatext{\isastyle{dfs}} is a list of nodes that have
   been visited already.
   \end{itemize}
-*}
+\<close>
 
 
 subsection "Depth-First Search with Nested-Recursion"

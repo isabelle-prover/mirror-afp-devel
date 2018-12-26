@@ -21,7 +21,7 @@ begin
 
 text \<open>
 This theory defines the graceful transfinite Knuth--Bendix order (KBO) with
-subterm coefficients for @{text \<lambda>}-free higher-order terms. The proof was
+subterm coefficients for \<open>\<lambda>\<close>-free higher-order terms. The proof was
 developed by copying that of the standard KBO and generalizing it along two
 axes:\ subterm coefficients and ordinals. Both features complicate the
 definitions and proofs substantially.

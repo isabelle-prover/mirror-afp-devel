@@ -49,29 +49,29 @@ proof -
 qed
 
 
-section {* Pratt's Primality Certificates *}
-text_raw {* \label{sec:pratt} *}
+section \<open>Pratt's Primality Certificates\<close>
+text_raw \<open>\label{sec:pratt}\<close>
 
-text {*
+text \<open>
   This work formalizes Pratt's proof system as described in his article
   ``Every Prime has a Succinct Certificate''\cite{pratt1975certificate}.
   The proof system makes use of two types of predicates:
   \begin{itemize}
     \item $\text{Prime}(p)$: $p$ is a prime number
-    \item $(p, a, x)$: @{text "\<forall>q \<in> prime_factors(x). [a^((p - 1) div q) \<noteq> 1] (mod p)"}
+    \item $(p, a, x)$: \<open>\<forall>q \<in> prime_factors(x). [a^((p - 1) div q) \<noteq> 1] (mod p)\<close>
   \end{itemize}
   We represent these predicates with the following datatype:
-*}
+\<close>
 
 datatype pratt = Prime nat | Triple nat nat nat
 
-text {*
+text \<open>
   Pratt describes an inference system consisting of the axiom $(p, a, 1)$
   and the following inference rules:
   \begin{itemize}
-  \item R1: If we know that $(p, a, x)$ and @{text "[a^((p - 1) div q) \<noteq> 1] (mod p)"} hold for some
+  \item R1: If we know that $(p, a, x)$ and \<open>[a^((p - 1) div q) \<noteq> 1] (mod p)\<close> hold for some
               prime number $q$ we can conclude $(p, a, qx)$ from that.
-  \item R2: If we know that $(p, a, p - 1)$ and  @{text "[a^(p - 1) = 1] (mod p)"} hold, we can
+  \item R2: If we know that $(p, a, p - 1)$ and  \<open>[a^(p - 1) = 1] (mod p)\<close> hold, we can
               infer $\text{Prime}(p)$.
   \end{itemize}
   Both rules follow from Lehmer's theorem as we will show later on.
@@ -84,8 +84,8 @@ text {*
   We call a certificate @{term "xs :: pratt list"} a \emph{certificate for @{term p}},
   if @{term "Prime p"} occurs in @{term "xs :: pratt list"}.
 
-  The function @{text valid_cert} checks whether a list is a certificate.
-*}
+  The function \<open>valid_cert\<close> checks whether a list is a certificate.
+\<close>
 
 fun valid_cert :: "pratt list \<Rightarrow> bool" where
   "valid_cert [] = True"
@@ -95,12 +95,12 @@ fun valid_cert :: "pratt list \<Rightarrow> bool" where
     (\<exists>q y. x = q * y \<and> Prime q \<in> set xs \<and> Triple p a y \<in> set xs
       \<and> [a^((p - 1) div q) \<noteq> 1] (mod p)))"
 
-text {*
+text \<open>
   We define a function @{term size_cert} to measure the size of a certificate, assuming
   a binary encoding of numbers. We will use this to show that there is a certificate for a
   prime number $p$ such that the size of the certificate is polynomially bounded in the size
   of the binary representation of $p$.
-*}
+\<close>
 fun size_pratt :: "pratt \<Rightarrow> real" where
   "size_pratt (Prime p) = log 2 p" |
   "size_pratt (Triple p a x) = log 2 p + log 2 a + log 2 x"
@@ -110,13 +110,13 @@ fun size_cert :: "pratt list \<Rightarrow> real" where
   "size_cert (x # xs) = 1 + size_pratt x + size_cert xs"
 
 
-subsection {* Soundness *}
+subsection \<open>Soundness\<close>
 
-text {*
+text \<open>
   In Section \ref{sec:pratt} we introduced the predicates $\text{Prime}(p)$ and $(p, a, x)$.
   In this section we show that for a certificate every predicate occurring in this certificate
   holds. In particular, if $\text{Prime}(p)$ occurs in a certificate, $p$ is prime.
-*}
+\<close>
 
 lemma prime_factors_one [simp]: shows "prime_factors (Suc 0) = {}"
   using prime_factorization_1 [where ?'a = nat] by simp
@@ -143,12 +143,12 @@ proof (induction c arbitrary: p a x t)
     obtain q z where "x=q*z" "Prime q \<in> set ys \<and> Triple p a z \<in> set ys"
                and cong:"[a^((p - 1) div q) \<noteq> 1] (mod p)" using Cons.prems x_y by auto
     then have factors_IH:"(\<forall> r \<in> prime_factors z . [a^((p - 1) div r) \<noteq> 1] (mod p))" "prime q" "z>0"
-      using Cons.IH Cons.prems `x>0` `y=Triple p a x`
+      using Cons.IH Cons.prems \<open>x>0\<close> \<open>y=Triple p a x\<close>
       by force+
-    then have "prime_factors x = prime_factors z \<union> {q}"  using `x =q*z` `x>0`
+    then have "prime_factors x = prime_factors z \<union> {q}"  using \<open>x =q*z\<close> \<open>x>0\<close>
       by (simp add: prime_factors_product prime_factors_of_prime)
     then have "(\<forall> q \<in> prime_factors x . [a^((p - 1) div q) \<noteq> 1] (mod p)) \<and> 0 < x"
-      using factors_IH cong by (simp add: `x>0`)
+      using factors_IH cong by (simp add: \<open>x>0\<close>)
     }
   ultimately have y_Triple:"y=Triple p a x \<Longrightarrow> (\<forall> q \<in> prime_factors x .
                                                 [a^((p - 1) div q) \<noteq> 1] (mod p)) \<and> 0<x" by linarith
@@ -157,7 +157,7 @@ proof (induction c arbitrary: p a x t)
       using Cons.prems by auto
     then have Bier:"(\<forall>q\<in>prime_factors (p - 1). [a^((p - 1) div q) \<noteq> 1] (mod p))"
       using Cons.IH Cons.prems(1) by (simp add:y(1))
-    then have "prime p" using lehmers_theorem[OF _ _a(1)] `p>2` by fastforce
+    then have "prime p" using lehmers_theorem[OF _ _a(1)] \<open>p>2\<close> by fastforce
     }
   moreover
   { assume "y=Prime p" "p=2" hence "prime p" by simp }
@@ -177,9 +177,9 @@ qed
 
 
 
-subsection {* Completeness *}
+subsection \<open>Completeness\<close>
 
-text {*
+text \<open>
   In this section we show completeness of Pratt's proof system, i.e., we show that for
   every prime number $p$ there exists a certificate for $p$. We also give an upper
   bound for the size of a minimal certificate
@@ -187,7 +187,7 @@ text {*
   The prove we give is constructive. We assume that we have certificates for all prime
   factors of $p - 1$ and use these to build a certificate for $p$ from that. It is
   important to note that certificates can be concatenated.
-*}
+\<close>
 
 lemma valid_cert_appendI:
   assumes "valid_cert r"
@@ -211,7 +211,7 @@ fun build_fpc :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat list
   "build_fpc p a r [] = [Triple p a r]" |
   "build_fpc p a r (y # ys) = Triple p a r # build_fpc p a (r div y) ys"
 
-text {*
+text \<open>
   The function @{term build_fpc} helps us to construct a certificate for $p$ from
   the certificates for the prime factors of $p - 1$. Called as
   @{term "build_fpc p a (p - 1) qs"} where $@{term "qs"} = q_1 \ldots q_n$
@@ -224,12 +224,12 @@ text {*
   I.e., if there is an appropriate $a$ and and a certificate @{term rs} for all
   prime factors of $p$, then we can construct a certificate for $p$ as
   @{term [display] "Prime p # build_fpc p a (p - 1) qs @ rs"}
-*}
+\<close>
 
-text {*
-  The following lemma shows that @{text "build_fpc"} extends a certificate that
+text \<open>
+  The following lemma shows that \<open>build_fpc\<close> extends a certificate that
   satisfies the preconditions described before to a correct certificate.
-*}
+\<close>
 
 lemma correct_fpc:
   assumes "valid_cert xs" "p > 1"
@@ -249,7 +249,7 @@ next
   have "valid_cert (build_fpc p a (r div y) ys @ xs)"
     using Cons.prems by (intro Cons.IH) auto
   then have "valid_cert (Triple p a r # build_fpc p a (r div y) ys @ xs)"
-    using `r \<noteq> 0` T_in Cons.prems by auto
+    using \<open>r \<noteq> 0\<close> T_in Cons.prems by auto
   then show ?case by simp
 qed
 
@@ -259,8 +259,8 @@ lemma length_fpc:
 lemma div_gt_0:
   fixes m n :: nat assumes "m \<le> n" "0 < m" shows "0 < n div m"
 proof -
-  have "0 < m div m" using `0 < m` div_self by auto
-  also have "m div m \<le> n div m" using `m \<le> n` by (rule div_le_mono)
+  have "0 < m div m" using \<open>0 < m\<close> div_self by auto
+  also have "m div m \<le> n div m" using \<open>m \<le> n\<close> by (rule div_le_mono)
   finally show ?thesis .
 qed
 
@@ -277,7 +277,7 @@ next
   then have  "log 2 a + log 2 r \<le> 2 * log 2 p" by arith
   moreover have "r div q > 0" using Cons.prems by (fastforce intro: div_gt_0)
   moreover hence "prod_list qs = r div q" using Cons.prems(6) by auto
-  moreover have "r div q \<le> p" using `r\<le>p` div_le_dividend[of r q] by linarith
+  moreover have "r div q \<le> p" using \<open>r\<le>p\<close> div_le_dividend[of r q] by linarith
   ultimately show ?case using Cons by simp
 qed
 
@@ -295,7 +295,7 @@ proof
   then show "2 \<le> p" by (auto dest: prime_gt_1_nat)
 
   from assms show "p dvd n" by auto
-  then show "p \<le> n" using  `0 < n` by (rule dvd_imp_le)
+  then show "p \<le> n" using  \<open>0 < n\<close> by (rule dvd_imp_le)
 qed
 
 lemma prime_factors_list_prime:
@@ -310,20 +310,20 @@ lemma prime_factors_list:
   using assms
 proof (induction n rule: less_induct)
   case (less n)
-    obtain p where "p \<in> prime_factors n" using `n > 3` prime_factors_elem by force
+    obtain p where "p \<in> prime_factors n" using \<open>n > 3\<close> prime_factors_elem by force
     then have p':"2 \<le> p" "p \<le> n" "p dvd n" "prime p"
-      using `3 < n` by (auto elim: p_in_prime_factorsE)
+      using \<open>3 < n\<close> by (auto elim: p_in_prime_factorsE)
     { assume "n div p > 3" "\<not> prime (n div p)"
       then obtain qs
         where "prime_factors (n div p) = set qs" "prod_list qs = (n div p)" "length qs \<ge> 2"
         using p' by atomize_elim (auto intro: less simp: div_gt_0)
       moreover
       have "prime_factors (p * (n div p)) = insert p (prime_factors (n div p))"
-        using `3 < n` `2 \<le> p` `p \<le> n` `prime p`
+        using \<open>3 < n\<close> \<open>2 \<le> p\<close> \<open>p \<le> n\<close> \<open>prime p\<close>
       by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
       have "prime_factors n = set (p # qs)" "prod_list (p # qs) = n" "length (p#qs) \<ge> 2"
-        using `p dvd n` by simp_all
+        using \<open>p dvd n\<close> by simp_all
       hence ?case by blast
     }
     moreover
@@ -333,17 +333,17 @@ proof (induction n rule: less_induct)
         using prime_factors_list_prime by blast
       moreover
       have "prime_factors (p * (n div p)) = insert p (prime_factors (n div p))"
-        using `3 < n` `2 \<le> p` `p \<le> n` `prime p`
+        using \<open>3 < n\<close> \<open>2 \<le> p\<close> \<open>p \<le> n\<close> \<open>prime p\<close>
       by (auto simp: prime_factors_product div_gt_0 prime_factors_of_prime)
       ultimately
       have "prime_factors n = set (p # qs)" "prod_list (p # qs) = n" "length (p#qs) \<ge> 2"
-        using `p dvd n` by simp_all
+        using \<open>p dvd n\<close> by simp_all
       hence ?case by blast
     } note case_prime = this
     moreover
     { assume "n div p = 1"
-      hence "n = p" using `n>3`  using One_leq_div[OF `p dvd n`] p'(2) by force
-      hence ?case using `prime p` `\<not> prime n` by auto
+      hence "n = p" using \<open>n>3\<close>  using One_leq_div[OF \<open>p dvd n\<close>] p'(2) by force
+      hence ?case using \<open>prime p\<close> \<open>\<not> prime n\<close> by auto
     }
     moreover
     { assume "n div p = 2"
@@ -393,15 +393,15 @@ proof
   have "\<not> even p" using assms by (simp add: prime_odd_nat)
   hence "2 dvd (p - 1)" by presburger
   then obtain q where "p - 1 = 2 * q" ..
-  then have "2 \<in> prime_factors (p - 1)" using `p>3`
+  then have "2 \<in> prime_factors (p - 1)" using \<open>p>3\<close>
     by (auto simp: prime_factorization_times_prime)
-  thus False using prime_factors_of_prime `p>3` `prime (p - 1)` by auto
+  thus False using prime_factors_of_prime \<open>p>3\<close> \<open>prime (p - 1)\<close> by auto
 qed
 
-text {*
+text \<open>
   We now prove that Pratt's proof system is complete and derive upper bounds for
   the length and the size of the entries of a minimal certificate.
-*}
+\<close>
 
 theorem pratt_complete':
   assumes "prime p"
@@ -427,22 +427,22 @@ proof (induction p rule: less_induct)
       by (intro exI[where x = "?cert"]) (simp add: cong_def)
   next
     assume "p > 3"
-    have qlp: "\<forall>q \<in> prime_factors (p - 1) . q < p" using `prime p`
+    have qlp: "\<forall>q \<in> prime_factors (p - 1) . q < p" using \<open>prime p\<close>
       by (metis One_nat_def Suc_pred le_imp_less_Suc lessI less_trans p_in_prime_factorsE prime_gt_1_nat zero_less_diff)
     hence factor_certs:"\<forall>q \<in> prime_factors (p - 1) . (\<exists>c . ((Prime q \<in> set c) \<and> (valid_cert c)
                                                       \<and> length c \<le> 6*log 2 q - 4) \<and> (\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 q))"
       by (auto intro: less.IH)
     obtain a where a:"[a^(p - 1) = 1] (mod p) \<and> (\<forall> q. q \<in> prime_factors (p - 1)
               \<longrightarrow> [a^((p - 1) div q) \<noteq> 1] (mod p))" and a_size: "a > 0" "a < p"
-      using converse_lehmer[OF `prime p`] by blast
+      using converse_lehmer[OF \<open>prime p\<close>] by blast
 
-    have "\<not> prime (p - 1)" using `p>3` prime_gt_3_impl_p_minus_one_not_prime `prime p` by auto
-    have "p \<noteq> 4" using `prime p` by auto
-    hence "p - 1 > 3" using `p > 3` by auto
+    have "\<not> prime (p - 1)" using \<open>p>3\<close> prime_gt_3_impl_p_minus_one_not_prime \<open>prime p\<close> by auto
+    have "p \<noteq> 4" using \<open>prime p\<close> by auto
+    hence "p - 1 > 3" using \<open>p > 3\<close> by auto
 
     then obtain qs where prod_qs_eq:"prod_list qs = p - 1"
         and qs_eq:"set qs = prime_factors (p - 1)" and qs_length_eq: "length qs \<ge> 2"
-      using prime_factors_list[OF _ `\<not> prime (p - 1)`] by auto
+      using prime_factors_list[OF _ \<open>\<not> prime (p - 1)\<close>] by auto
     obtain f where f:"\<forall>q \<in> prime_factors (p - 1) . \<exists> c. f q = c
                      \<and> ((Prime q \<in> set c) \<and> (valid_cert c) \<and> length c \<le> 6*log 2 q - 4)
                      \<and> (\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 q)"
@@ -458,12 +458,12 @@ proof (induction p rule: less_induct)
       fix c assume "c \<in> set (map f qs)"
       then obtain q where "c = f q" and "q \<in> set qs" by auto
       hence *:"\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 q" using f qs_eq by blast
-      have "q < p" "q > 0" using qlp `q \<in> set qs` qs_eq prime_factors_gt_0_nat by auto
+      have "q < p" "q > 0" using qlp \<open>q \<in> set qs\<close> qs_eq prime_factors_gt_0_nat by auto
       show "\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 p"
       proof
         fix x assume "x \<in> set c"
         hence "size_pratt x \<le> 3 * log 2 q" using * by fastforce
-        also have "\<dots> \<le> 3 * log 2 p" using `q < p` `q > 0` `p > 3` by simp
+        also have "\<dots> \<le> 3 * log 2 p" using \<open>q < p\<close> \<open>q > 0\<close> \<open>p > 3\<close> by simp
         finally show "size_pratt x \<le> 3 * log 2 p" .
       qed
     qed
@@ -472,7 +472,7 @@ proof (induction p rule: less_induct)
       using f qs_eq by fastforce
 
     have "\<forall>x \<in> set (build_fpc p a (p - 1) qs). size_pratt x \<le> 3 * log 2 p"
-      using cs_cert_size a_size `p > 3` prod_qs_eq by (intro size_pratt_fpc) auto
+      using cs_cert_size a_size \<open>p > 3\<close> prod_qs_eq by (intro size_pratt_fpc) auto
     hence "\<forall>x \<in> set (build_fpc p a (p - 1) qs @ concat ?cs) . size_pratt x \<le> 3 * log 2 p"
       using cs_cert_size by auto
     moreover
@@ -483,7 +483,7 @@ proof (induction p rule: less_induct)
       show "valid_cert (concat ?cs)"
         using cs_valid_all by (auto simp: valid_cert_concatI)
       show "prod_list qs = p - 1" by (rule prod_qs_eq)
-      show "p - 1 \<noteq> 0" using prime_gt_1_nat[OF `prime p`] by arith
+      show "p - 1 \<noteq> 0" using prime_gt_1_nat[OF \<open>prime p\<close>] by arith
       show "\<forall> q \<in> set qs . Prime q \<in> set (concat ?cs)"
         using concat_set[of "prime_factors (p - 1)"] cs qs_eq by blast
       show "\<forall> q \<in> set qs . [a^((p - 1) div q) \<noteq> 1] (mod p)" using qs_eq a by auto
@@ -502,9 +502,9 @@ proof (induction p rule: less_induct)
             by (simp add: o_def length_fpc)
       also have "\<dots> = (6*(\<Sum>q\<leftarrow>(map real qs). log 2 q) + (-4 * real ?k) + ?k + 2)"
         by (simp add: o_def sum_list_subtractf sum_list_triv sum_list_const_mult)
-      also have "\<dots> \<le> 6*log 2 (p - 1) - 4" using `?k\<ge>2` prod_qs_eq sum_list_log[of 2 qs] qs_ge_2
+      also have "\<dots> \<le> 6*log 2 (p - 1) - 4" using \<open>?k\<ge>2\<close> prod_qs_eq sum_list_log[of 2 qs] qs_ge_2
         by force
-      also have "\<dots> \<le> 6*log 2 p - 4" using log_le_cancel_iff[of 2 "p - 1" p] `p>3` by force
+      also have "\<dots> \<le> 6*log 2 p - 4" using log_le_cancel_iff[of 2 "p - 1" p] \<open>p>3\<close> by force
       ultimately have "length (Prime p # ((build_fpc p a (p - 1) qs)@ concat ?cs))
                        \<le> 6*log 2 p - 4" by linarith }
     ultimately obtain c where c:"Triple p a (p - 1) \<in> set c" "valid_cert c"
@@ -512,16 +512,16 @@ proof (induction p rule: less_induct)
                                "(\<forall> x \<in> set c. size_pratt x \<le> 3 * log 2 p)" by blast
     hence "Prime p \<in> set (Prime p # c)" "valid_cert (Prime p # c)"
          "(\<forall> x \<in> set (Prime p # c). size_pratt x \<le> 3 * log 2 p)"
-    using a `prime p` by (auto simp: Primes.prime_gt_Suc_0_nat)
+    using a \<open>prime p\<close> by (auto simp: Primes.prime_gt_Suc_0_nat)
     thus ?case using c by blast
   qed
 qed
 
-text {*
+text \<open>
   We now recapitulate our results. A number $p$ is prime if and only if there
   is a certificate for $p$. Moreover, for a prime $p$ there always is a certificate
   whose size is polynomially bounded in the logarithm of $p$.
-*}
+\<close>
 
 corollary pratt:
   "prime p \<longleftrightarrow> (\<exists>c. Prime p \<in> set c \<and> valid_cert c)"

@@ -1,6 +1,6 @@
 (*  Author: Tobias Nipkow, Dmitriy Traytel *)
 
-section {* Framework Instantiations using Marked Regular Expressions *}
+section \<open>Framework Instantiations using Marked Regular Expressions\<close>
 
 (*<*)
 theory Position_Autos
@@ -9,7 +9,7 @@ imports
 begin
 (*>*)
 
-subsection {* Marked Regular Expressions *}
+subsection \<open>Marked Regular Expressions\<close>
 
 type_synonym 'a mrexp = "(bool * 'a) rexp"
 
@@ -108,9 +108,9 @@ next
           conc_Diff_if_Nil1 Nil_notin_tl_if_not_final star_Diff_Nil_fold)
 qed auto
 
-subsection {* Mark Before Atom *}
+subsection \<open>Mark Before Atom\<close>
 
-text{* Position automaton where mark is placed before atoms. *}
+text\<open>Position automaton where mark is placed before atoms.\<close>
 
 abbreviation "empty_mrexp \<equiv> map_rexp (\<lambda>a. (False,a))"
 
@@ -166,10 +166,10 @@ next
   then show "finite {fold delta_b w (init_b s) |w. True}" by (rule finite_subset) simp
 qed
 
-subsection {* Mark After Atom *}
+subsection \<open>Mark After Atom\<close>
 
-text{* Position automaton where mark is placed after atoms. This is the
-Glushkov and McNaughton/Yamada construction. *}
+text\<open>Position automaton where mark is placed after atoms. This is the
+Glushkov and McNaughton/Yamada construction.\<close>
 
 definition "init_a r = (True, empty_mrexp r)"
 
@@ -222,11 +222,11 @@ next
   then show "finite {fold delta_a w (init_a s) |w. True}" by (rule finite_subset) simp
 qed
 
-text {*
+text \<open>
 The ``before'' atomaton is a quotient of the ``after'' automaton.
 
 The proof below follows an informal proof given by Helmut Seidl in personal communication. 
-*}
+\<close>
 
 fun hom_ab where
   "hom_ab (b, r) = (follow b r, final_a (b, r))"
@@ -246,7 +246,7 @@ lemma reachable_ab: "reachable_b as r = hom_ab ` reachable_a as r"
 theorem card_reachable_ab: "card (reachable_b as r) \<le> card (reachable_a as r)"
   unfolding reachable_ab using after.finite_reachable by (rule card_image_le)
 
-text{* The implementation by Fischer et al.: *}
+text\<open>The implementation by Fischer et al.:\<close>
 
 (* better: shift b m r and move m b r *)
 fun shift :: "bool \<Rightarrow> 'a mrexp \<Rightarrow> 'a \<Rightarrow> 'a mrexp" where
@@ -261,8 +261,8 @@ fun shift :: "bool \<Rightarrow> 'a mrexp \<Rightarrow> 'a \<Rightarrow> 'a mrex
 lemma shift_read_follow: "shift m r x = read x (follow m r)"
 by (induction m r x rule: shift.induct) auto
 
-text{* In the spirit of Asperti, and similarly quadratic because of need
-to call final1 in move. *}
+text\<open>In the spirit of Asperti, and similarly quadratic because of need
+to call final1 in move.\<close>
 
 fun final1 :: "'a mrexp \<Rightarrow> 'a \<Rightarrow> bool" where
 "final1 Zero _ = False" |

@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-section {* \isaheader{Set implementation via tries} *}
+section \<open>\isaheader{Set implementation via tries}\<close>
 theory TrieSetImpl imports
   TrieMapImpl
   "../gen_algo/SetByMap"
@@ -35,7 +35,7 @@ interpretation ts: StdSet_no_invar ts_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "ts"*}
+setup \<open>ICF_Tools.revert_abbrevs "ts"\<close>
 
 lemmas ts_it_to_it_map_code_unfold[code_unfold] = 
   it_to_it_map_fold'[OF pi_trie]

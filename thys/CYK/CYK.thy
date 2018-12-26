@@ -7,11 +7,11 @@ theory CYK
 imports Main 
 begin
 
-text {* The theory is structured as follows. First section deals with modelling
+text \<open>The theory is structured as follows. First section deals with modelling
       of grammars, derivations, and the language semantics. Then the basic 
       properties are proved. Further, CYK is abstractly specified and its 
       underlying recursive relationship proved. The final section contains a 
-      prototypical implementation accompanied by a proof of its correctness. *}
+      prototypical implementation accompanied by a proof of its correctness.\<close>
 
 
 
@@ -37,10 +37,10 @@ where "xs \<cdot> ys \<equiv> xs @ ys"
 
 subsection "Derivation by grammars"
 
-text{* A \emph{word form} (or sentential form) may be built of both non-terminal and terminal 
+text\<open>A \emph{word form} (or sentential form) may be built of both non-terminal and terminal 
        symbols, as opposed to a \emph{word} that contains only terminals. By the usage of disjoint 
        union, non-terminals are injected into a word form by @{term "Inl"} whereas terminals -- 
-       by @{term "Inr"}. *}
+       by @{term "Inr"}.\<close>
 type_synonym ('n, 't) word_form = "('n + 't) list"
 type_synonym 't word = "'t list"
 
@@ -81,8 +81,8 @@ definition Lang :: "('n, 't) CNG \<Rightarrow> 'n \<Rightarrow> 't word set"
 where "Lang G S = {w. [Inl S] -G\<rightarrow>\<^sup>+ map Inr w }" 
 
 
-text{* So, for instance, a grammar generating the language $a^nb^n$  
-       from the non-terminal @{term "''S''"} might look as follows. *}
+text\<open>So, for instance, a grammar generating the language $a^nb^n$  
+       from the non-terminal @{term "''S''"} might look as follows.\<close>
 definition "G_anbn = 
 [(''S'', Branch ''A'' ''T''),
  (''S'', Branch ''A'' ''B''),
@@ -90,9 +90,9 @@ definition "G_anbn =
  (''A'', Leaf ''a''),
  (''B'', Leaf ''b'')]"
 
-text{* Now the term @{term "Lang G_anbn ''S''"} denotes the set of words of
+text\<open>Now the term @{term "Lang G_anbn ''S''"} denotes the set of words of
        the form $a^nb^n$ with $n > 0$. This is intuitively clear, but not 
-       straight forward to show, and a lengthy proof for that is out of scope. *}
+       straight forward to show, and a lengthy proof for that is out of scope.\<close>
 
 
 
@@ -501,7 +501,7 @@ definition "CYK G w i j = {S. subword w i j \<in> Lang G S}"
 
 
 
-subsection {* Properties of @{term "subword"} *}
+subsection \<open>Properties of @{term "subword"}\<close>
 
 lemma subword_length :
 "i + j \<le> length w \<Longrightarrow> length(subword w i j) = j"
@@ -569,7 +569,7 @@ qed
 
 
 
-subsection {* Properties of @{term "CYK"} *}
+subsection \<open>Properties of @{term "CYK"}\<close>
 
 
 lemma CYK_Lang :
@@ -726,9 +726,9 @@ qed
    
    
 
-text{* Now the main part of the algorithm just iterates through all subwords up to the given length $len$,
+text\<open>Now the main part of the algorithm just iterates through all subwords up to the given length $len$,
        calls @{term "inner"} on these, and stores the results in the table $T$. The length $j$ is supposed to 
-       be greater than $1$ -- the subwords of length $1$ will be handled in the initialisation phase below. *} 
+       be greater than $1$ -- the subwords of length $1$ will be handled in the initialisation phase below.\<close> 
 function main :: "('n, 't) CNG \<Rightarrow> (nat \<times> nat \<Rightarrow> 'n list) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (nat \<times> nat \<Rightarrow> 'n list)"
 where "main G T len i j = (let T' = T((i, j) := inner G T i 1 j) in
                             if i + j < len then main G T' len (i + 1) j
@@ -906,8 +906,8 @@ qed
 
 subsection "Initialisation phase"
 
-text{* Similarly to @{term "match_prods"} above, here we collect non-terminals from which
-       the given terminal symbol can be derived. *} 
+text\<open>Similarly to @{term "match_prods"} above, here we collect non-terminals from which
+       the given terminal symbol can be derived.\<close> 
 fun init_match :: "('n, 't) CNG \<Rightarrow> 't \<Rightarrow> 'n list"
 where "init_match [] t = []" |
       "init_match ((X, Branch A B)#ps) t = init_match ps t" |
@@ -964,11 +964,11 @@ qed
 
 
 
-text{* The next version of initialization refines @{term "init'"} in that
+text\<open>The next version of initialization refines @{term "init'"} in that
       it takes additional account of the cases when the given word is 
       empty or contains a terminal symbol that does not have any matching 
       production (that is, @{term "init_match"} is an empty list). No initial 
-      table is then needed as such words can immediately be rejected. *}  
+      table is then needed as such words can immediately be rejected.\<close>  
 fun init :: "('n, 't) CNG \<Rightarrow> 't list \<Rightarrow> nat \<Rightarrow> (nat \<times> nat \<Rightarrow> 'n list) option"
 where "init G [] k = None" |
       "init G [t] k = (case (init_match G t) of
@@ -996,7 +996,7 @@ by(induct_tac G w k rule: init.induct, simp, simp split: list.split,
 
 
 
-subsection {* The overall procedure *}
+subsection \<open>The overall procedure\<close>
 
 
 definition "cyk G S w = (case init G w 0 of

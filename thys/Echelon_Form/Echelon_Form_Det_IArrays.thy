@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Determinant of matrices computed using immutable arrays*}
+section\<open>Determinant of matrices computed using immutable arrays\<close>
 
 theory Echelon_Form_Det_IArrays
 imports 
@@ -12,7 +12,7 @@ imports
   Echelon_Form_IArrays
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
 definition echelon_form_of_column_k_det_iarrays :: 
           "'a::{bezout_ring} \<times> 'a iarray iarray \<times> nat \<times> ('a \<Rightarrow> 'a \<Rightarrow> 'a \<times> 'a \<times> 'a \<times> 'a \<times> 'a) 
@@ -43,9 +43,9 @@ definition "det_iarrays_rings A =
     (let A' = echelon_form_of_det_iarrays A euclid_ext2 
      in 1 div (fst A') * prod_list (map (\<lambda>i. (snd A') !! i !! i) [0..<nrows_iarray A]))"
 
-subsection{*Properties*}
+subsection\<open>Properties\<close>
 
-subsubsection{*Echelon Form of column k*}
+subsubsection\<open>Echelon Form of column k\<close>
 
 lemma vector_all_zero_from_index3:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
@@ -111,7 +111,7 @@ lemma fst_snd_snd_echelon_form_of_column_k_det_le_nrows:
   unfolding echelon_form_of_column_k_det_def Let_def fst_conv snd_conv
   by (simp add: assms fst_snd_echelon_form_of_column_k_le_nrows)
 
-subsubsection{*Echelon Form up to column k*}
+subsubsection\<open>Echelon Form up to column k\<close>
 
 lemma snd_snd_snd_foldl_echelon_form_of_column_k_det_iarrays:
   "snd (snd (snd (foldl echelon_form_of_column_k_det_iarrays (n, A, 0, bezout) [0..<k]))) = bezout"
@@ -270,7 +270,7 @@ next
   qed
 qed
 
-subsubsection{*Echelon Form*}
+subsubsection\<open>Echelon Form\<close>
 
 lemma matrix_to_iarray_echelon_form_of_det[code_unfold]:
   "matrix_to_iarray (snd (echelon_form_of_det A bezout)) 
@@ -286,7 +286,7 @@ lemma fst_echelon_form_of_det[code_unfold]:
   unfolding matrix_to_iarray_ncols[symmetric]
   by (rule matrix_to_iarray_fst_echelon_form_of_upt_k_det, simp add: ncols_def)
 
-subsubsection{*Computing the determinant*}
+subsubsection\<open>Computing the determinant\<close>
 
 lemma det_echelon_form_of_euclidean_iarrays[code]:
   fixes A::"'a::{euclidean_ring_gcd}^'n::{mod_type}^'n::{mod_type}"
@@ -331,7 +331,7 @@ corollary matrix_to_iarray_det_euclidean_ring:
   unfolding det_echelon_form_of_euclidean_iarrays det_iarrays_rings_def ..
 
 
-subsubsection{*Computing the characteristic polynomial of a matrix*}
+subsubsection\<open>Computing the characteristic polynomial of a matrix\<close>
 
 definition "mat2matofpoly_iarrays A 
   = tabulate2 (nrows_iarray A) (ncols_iarray A)  (\<lambda>i j. [:A !! i !! j:])"
@@ -351,8 +351,8 @@ proof (rule matrix_to_iarray_eq_of_fun, auto)
     by (auto, metis IArray.sub_def vec_matrix vec_to_iarray_nth)
 qed
 
-text{*The following two lemmas must be added to the file @{text "Matrix_To_IArray"} 
-  of the AFP Gauss-Jordan development.*}
+text\<open>The following two lemmas must be added to the file \<open>Matrix_To_IArray\<close> 
+  of the AFP Gauss-Jordan development.\<close>
 
 lemma vec_to_iarray_minus[code_unfold]: "vec_to_iarray (a - b) 
   = (vec_to_iarray a) - (vec_to_iarray b)"

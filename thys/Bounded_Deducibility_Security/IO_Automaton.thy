@@ -1,4 +1,4 @@
-section {* IO Automaton *}
+section \<open>IO Automaton\<close>
 
 (*<*)
 theory IO_Automaton
@@ -7,9 +7,9 @@ begin
 (*>*)
 
 
-subsection{* Preliminaries *}
+subsection\<open>Preliminaries\<close>
 
-text {* Transitions *}
+text \<open>Transitions\<close>
 
 datatype ('state,'act,'out) trans =
 Trans (srcOf: 'state) (actOf: 'act) (outOf: 'out) (tgtOf: 'state)
@@ -24,7 +24,7 @@ fixes istate :: "'state" (* initial step *)
 begin
 
 
-subsection{* Reachability and invariance *}
+subsection\<open>Reachability and invariance\<close>
 
 (* Reachable states: *)
 inductive reach :: "'state \<Rightarrow> bool" where
@@ -52,7 +52,7 @@ using a apply (induct rule: reach.induct)
 using h i unfolding holdsIstate_def invar_def by auto
 
 
-subsection{* System traces *}
+subsection\<open>System traces\<close>
 
 (* The output and effect of an action on a state: *)
 definition out :: "'state \<Rightarrow> 'act \<Rightarrow> 'out" where "out s a \<equiv> fst (step s a)"
@@ -163,7 +163,7 @@ shows "validFrom s (Trans s a ou s' # tr)"
 using assms unfolding validFrom_def by auto
 
 
-subsection {* Traces versus reachability *}
+subsection \<open>Traces versus reachability\<close>
 
 lemma valid_reach_src_tgt:
 assumes "valid tr" and "reach (srcOf (hd tr))"

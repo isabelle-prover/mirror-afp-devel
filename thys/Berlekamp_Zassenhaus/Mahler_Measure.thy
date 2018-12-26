@@ -100,7 +100,7 @@ proof -
   using complex_roots[of "map_poly of_int p"] unfolding complex_roots_int_def by auto
 qed
 
-text {* The measure for polynomials, after K. Mahler *}
+text \<open>The measure for polynomials, after K. Mahler\<close>
 
 definition mahler_measure_poly where
   "mahler_measure_poly p = cmod (lead_coeff p) * (\<Prod>a\<leftarrow>complex_roots_complex p. (max 1 (cmod a)))"

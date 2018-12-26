@@ -1,4 +1,4 @@
-section {* Conjunctive and Disjunctive Functions *}
+section \<open>Conjunctive and Disjunctive Functions\<close>
 
 (*
     Author: Viorel Preoteasa
@@ -8,11 +8,11 @@ theory Conj_Disj
 imports Main
 begin
 
-text{*
+text\<open>
 This theory introduces the definitions and some properties for 
 conjunctive, disjunctive, universally conjunctive, and universally 
 disjunctive functions.
-*}
+\<close>
 
 locale conjunctive =
   fixes inf_b :: "'b \<Rightarrow> 'b \<Rightarrow> 'b"

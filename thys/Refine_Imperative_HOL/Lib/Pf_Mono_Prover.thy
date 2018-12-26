@@ -1,4 +1,4 @@
-section {* Interfacing Partial-Function's Monotonicity Prover *}
+section \<open>Interfacing Partial-Function's Monotonicity Prover\<close>
 theory Pf_Mono_Prover
 imports Separation_Logic_Imperative_HOL.Sep_Main
 begin

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JVM Semantics for the delay bisimulation proof from intermediate language to byte code *}
+section \<open>JVM Semantics for the delay bisimulation proof from intermediate language to byte code\<close>
 
 theory Execs imports JVMTau begin
 
@@ -383,23 +383,23 @@ lemma exec_meth_stk_offer:
 using exec
 proof(cases)
   case (exec_catch xcp d)
-  from `match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor>`
+  from \<open>match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor>\<close>
   have "match_ex_table P (cname_of h xcp) pc (stack_xlift (length stk'') xt) = \<lfloor>(pc', length stk'' + d)\<rfloor>"
     by(simp add: match_ex_table_stack_xlift)
-  moreover have "length stk'' + d \<le> length (stk @ stk'')" using `d \<le> length stk` by simp
+  moreover have "length stk'' + d \<le> length (stk @ stk'')" using \<open>d \<le> length stk\<close> by simp
   ultimately have "exec_meth ci P ins (stack_xlift (length stk'') xt) t h ((stk @ stk''), loc, pc, \<lfloor>xcp\<rfloor>) \<epsilon> h ((Addr xcp # drop (length (stk @ stk'') - (length stk'' + d)) (stk @ stk'')), loc, pc', None)"
     by(rule exec_meth.exec_catch)
   with exec_catch show ?thesis by(simp)
 next
   case exec_instr
-  note ciins = `ci_app ci (ins ! pc) P h stk loc undefined undefined pc []`
+  note ciins = \<open>ci_app ci (ins ! pc) P h stk loc undefined undefined pc []\<close>
   hence "ci_app ci (ins ! pc) P h (stk @ stk'') loc undefined undefined pc []"
     by(rule wf_ci_stk_offerD)
   moreover from ciins
   have "check_instr' (ins ! pc) P h stk loc undefined undefined  pc []"
     by(rule wf_ciD2_ci_app)
   hence "(ta, xcp', h', [(stk' @ stk'', loc', undefined, undefined, pc')]) \<in> exec_instr (ins ! pc) P t h (stk @ stk'') loc undefined undefined pc []"
-    using `(ta, xcp', h', [(stk', loc', undefined,undefined , pc')]) \<in> exec_instr (ins ! pc) P t h stk loc undefined undefined pc []`
+    using \<open>(ta, xcp', h', [(stk', loc', undefined,undefined , pc')]) \<in> exec_instr (ins ! pc) P t h stk loc undefined undefined pc []\<close>
     by(rule exec_instr_stk_offer)
   ultimately show ?thesis using exec_instr by(auto intro: exec_meth.exec_instr)
 qed
@@ -428,7 +428,7 @@ lemma append_exec_meth_xt:
 using exec
 proof(cases)
   case (exec_catch xcp d)
-  from `match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor>`
+  from \<open>match_ex_table P (cname_of h xcp) pc xt = \<lfloor>(pc', d)\<rfloor>\<close>
   have "match_ex_table P (cname_of h xcp) (length ins' + pc) (shift (length ins') xt) = \<lfloor>(length ins' + pc', d)\<rfloor>"
     by(simp add: match_ex_table_shift)
   moreover from pcs have "length ins' + pc \<notin> pcs xt'" by(auto)
@@ -437,16 +437,16 @@ proof(cases)
   with exec_catch show ?thesis by(auto dest: exec_meth.exec_catch)
 next
   case exec_instr
-  note exec = `(ta, xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr (ins ! pc) P t h stk loc undefined undefined pc []`
+  note exec = \<open>(ta, xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr (ins ! pc) P t h stk loc undefined undefined pc []\<close>
   hence "(ta, xcp', h', [(stk', loc', undefined, undefined, length ins' + pc')]) \<in> exec_instr (ins ! pc) P t h stk loc undefined undefined (length ins' + pc) []"
   proof(cases "ins ! pc")
     case (Goto i)
-    with jump `pc < length ins` have "- int pc  \<le> i" "i < int (length ins - pc + n)"
+    with jump \<open>pc < length ins\<close> have "- int pc  \<le> i" "i < int (length ins - pc + n)"
       by(auto dest: jump_ok_GotoD)
     with exec Goto show ?thesis by(auto)
   next
     case (IfFalse i)
-    with jump `pc < length ins` have "- int pc  \<le> i" "i < int (length ins - pc + n)"
+    with jump \<open>pc < length ins\<close> have "- int pc  \<le> i" "i < int (length ins - pc + n)"
       by(auto dest: jump_ok_IfFalseD)
     with exec IfFalse show ?thesis by(auto)
   next
@@ -454,11 +454,11 @@ next
     with exec show ?thesis 
       by(auto split: if_split_asm extCallRet.splits split del: if_split simp add: split_beta nth_append min_def extRet2JVM_def)
   qed(auto simp add: split_beta split: if_split_asm sum.split_asm)
-  moreover from `ci_app ci (ins ! pc) P h stk loc undefined undefined pc []`
+  moreover from \<open>ci_app ci (ins ! pc) P h stk loc undefined undefined pc []\<close>
   have "ci_app ci (ins ! pc) P h stk loc undefined undefined (length ins' + pc) []"
     by(rule wf_ciD3'_ci_app) simp
   ultimately have "exec_meth ci P (ins' @ ins) (xt' @ shift (length ins') xt) t h (stk, loc, (length ins' + pc), None) ta h' (stk', loc', (length ins' + pc'), xcp')"
-    using `pc < length ins` by -(rule exec_meth.exec_instr, simp_all)
+    using \<open>pc < length ins\<close> by -(rule exec_meth.exec_instr, simp_all)
   thus ?thesis using exec_instr by(auto)
 qed
 
@@ -498,27 +498,27 @@ using exec
 proof(cases rule: exec_meth.cases)
   case exec_instr
   let ?PC = "length ins + pc"
-  note [simp] = `xcp = None`
-  from `?PC < length (ins @ ins')` have pc: "pc < length ins'" by simp
-  moreover with `(ta, xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr ((ins @ ins') ! ?PC) P t h stk loc undefined undefined ?PC []`
+  note [simp] = \<open>xcp = None\<close>
+  from \<open>?PC < length (ins @ ins')\<close> have pc: "pc < length ins'" by simp
+  moreover with \<open>(ta, xcp', h', [(stk', loc', undefined, undefined, pc')]) \<in> exec_instr ((ins @ ins') ! ?PC) P t h stk loc undefined undefined ?PC []\<close>
   have "(ta, xcp', h', [(stk', loc', undefined, undefined, pc' - length ins)]) \<in> exec_instr (ins' ! pc) P t h stk loc undefined undefined pc []"
     apply(cases "ins' ! pc")
     apply(simp_all add: split_beta split: if_split_asm sum.split_asm split del: if_split)
     apply(force split: extCallRet.splits simp add: min_def extRet2JVM_def)+
     done
-  moreover from `ci_app ci ((ins @ ins') ! ?PC) P h stk loc undefined undefined ?PC []` jump pc
+  moreover from \<open>ci_app ci ((ins @ ins') ! ?PC) P h stk loc undefined undefined ?PC []\<close> jump pc
   have "ci_app ci (ins' ! pc) P h stk loc undefined undefined pc []"
     by(fastforce elim: wf_ciD3_ci_app dest: jump_ok_ins_jump_ok)
   ultimately show ?thesis by(auto intro: exec_meth.intros)
 next
   case (exec_catch XCP D)
   let ?PC = "length ins + pc"
-  note [simp] = `xcp = \<lfloor>XCP\<rfloor>`
-    `ta = \<epsilon>` `h' = h` `stk' = Addr XCP # drop (length stk - D) stk` `loc' = loc` `xcp' = None`
-  from `match_ex_table P (cname_of h XCP) ?PC (xt @ shift (length ins) xt') = \<lfloor>(pc', D)\<rfloor>` xt
+  note [simp] = \<open>xcp = \<lfloor>XCP\<rfloor>\<close>
+    \<open>ta = \<epsilon>\<close> \<open>h' = h\<close> \<open>stk' = Addr XCP # drop (length stk - D) stk\<close> \<open>loc' = loc\<close> \<open>xcp' = None\<close>
+  from \<open>match_ex_table P (cname_of h XCP) ?PC (xt @ shift (length ins) xt') = \<lfloor>(pc', D)\<rfloor>\<close> xt
   have "match_ex_table P (cname_of h XCP) pc xt' = \<lfloor>(pc' - length ins, D)\<rfloor>"
     by(auto simp add: match_ex_table_append dest: match_ex_table_shift_pcD match_ex_table_pcsD)
-  with `D \<le> length stk` show ?thesis by(auto intro: exec_meth.intros)
+  with \<open>D \<le> length stk\<close> show ?thesis by(auto intro: exec_meth.intros)
 qed
 
 lemma exec_meth_drop:
@@ -2010,16 +2010,16 @@ lemma exec_move_exec_1:
 using exec unfolding exec_move_def
 proof(cases)
   case exec_instr
-  note [simp] = `xcp = None`
-    and exec = `(ta, xcp', h', [(stk', loc', undefined, undefined, pc')])
-                \<in> exec_instr (compE2 body ! pc) (compP2 P) t h stk loc undefined undefined pc []`
+  note [simp] = \<open>xcp = None\<close>
+    and exec = \<open>(ta, xcp', h', [(stk', loc', undefined, undefined, pc')])
+                \<in> exec_instr (compE2 body ! pc) (compP2 P) t h stk loc undefined undefined pc []\<close>
   from exec have "(ta, xcp', h', [(stk', loc', C, M, pc')])
                 \<in> exec_instr (compE2 body ! pc) (compP2 P) t h stk loc C M pc []"
     by(rule exec_instr_CM_change)
   from exec_instr_frs_offer[OF this, of frs]
   have "(ta, xcp', h', (stk', loc', C, M, pc') # frs)
         \<in> exec_instr (compE2 body ! pc) (compP2 P) t h stk loc C M pc frs" by simp
-  with sees `pc < length (compE2 body)` show ?thesis
+  with sees \<open>pc < length (compE2 body)\<close> show ?thesis
     by(simp add: exec_1_iff compP2_def compMb2_def nth_append)
 next
   case exec_catch

@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Program annotation *}
+section \<open>Program annotation\<close>
 
 theory Annotate
 imports
@@ -161,44 +161,44 @@ lemma fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" 
   and Annos_fun: "\<lbrakk> is_lub,P,E \<turnstile> es [\<leadsto>] es'; is_lub,P,E \<turnstile> es [\<leadsto>] es'' \<rbrakk> \<Longrightarrow> es' = es''"
 proof(induct arbitrary: e'' and es'' rule: Anno_Annos.inducts)
   case (AnnoFAcc E e e' U C F T fm D)
-  from `is_lub,P,E \<turnstile> e\<bullet>F{STR ''''} \<leadsto> e''` show ?case
+  from \<open>is_lub,P,E \<turnstile> e\<bullet>F{STR ''''} \<leadsto> e''\<close> show ?case
   proof(rule Anno_cases)
     fix e''' U' C' T' fm' D'
     assume "is_lub,P,E \<turnstile> e \<leadsto> e'''" "is_lub,P,E \<turnstile> e''' :: U'"
       and "class_type_of' U' = \<lfloor>C'\<rfloor>"
       and "P \<turnstile> C' sees F:T' (fm') in D'" "e'' = e'''\<bullet>F{D'}"
-    from `is_lub,P,E \<turnstile> e \<leadsto> e'''` have "e' = e'''" by(rule AnnoFAcc)
-    with `is_lub,P,E \<turnstile> e' :: U` `is_lub,P,E \<turnstile> e''' :: U'`
+    from \<open>is_lub,P,E \<turnstile> e \<leadsto> e'''\<close> have "e' = e'''" by(rule AnnoFAcc)
+    with \<open>is_lub,P,E \<turnstile> e' :: U\<close> \<open>is_lub,P,E \<turnstile> e''' :: U'\<close>
     have "U = U'" by(auto intro: WT_unique is_lub_unique)
-    with `class_type_of' U = \<lfloor>C\<rfloor>` `class_type_of' U' = \<lfloor>C'\<rfloor>`
+    with \<open>class_type_of' U = \<lfloor>C\<rfloor>\<close> \<open>class_type_of' U' = \<lfloor>C'\<rfloor>\<close>
     have "C = C'" by(auto)
-    with `P \<turnstile> C' sees F:T' (fm') in D'` `P \<turnstile> C sees F:T (fm) in D`
+    with \<open>P \<turnstile> C' sees F:T' (fm') in D'\<close> \<open>P \<turnstile> C sees F:T (fm) in D\<close>
     have "D' = D" by(auto dest: sees_field_fun)
-    with `e'' = e'''\<bullet>F{D'}` `e' = e'''` show ?thesis by simp
+    with \<open>e'' = e'''\<bullet>F{D'}\<close> \<open>e' = e'''\<close> show ?thesis by simp
   next
     fix e''' T
     assume "e'' = e'''\<bullet>length"
       and "is_lub,P,E \<turnstile> e''' :: T\<lfloor>\<rceil>"
       and "is_lub,P,E \<turnstile> e \<leadsto> e'''"
       and "F = array_length_field_name"
-    from `is_lub,P,E \<turnstile> e \<leadsto> e'''` have "e' = e'''" by(rule AnnoFAcc)
-    with `is_lub,P,E \<turnstile> e' :: U` `is_lub,P,E \<turnstile> e''' :: T\<lfloor>\<rceil>` have "U = T\<lfloor>\<rceil>" by(auto intro: WT_unique is_lub_unique)
-    with `class_type_of' U = \<lfloor>C\<rfloor>` `is_Array U \<longrightarrow> F \<noteq> array_length_field_name`
-    show ?thesis using `F = array_length_field_name` by simp
+    from \<open>is_lub,P,E \<turnstile> e \<leadsto> e'''\<close> have "e' = e'''" by(rule AnnoFAcc)
+    with \<open>is_lub,P,E \<turnstile> e' :: U\<close> \<open>is_lub,P,E \<turnstile> e''' :: T\<lfloor>\<rceil>\<close> have "U = T\<lfloor>\<rceil>" by(auto intro: WT_unique is_lub_unique)
+    with \<open>class_type_of' U = \<lfloor>C\<rfloor>\<close> \<open>is_Array U \<longrightarrow> F \<noteq> array_length_field_name\<close>
+    show ?thesis using \<open>F = array_length_field_name\<close> by simp
   next
     fix C' D' fs ms T D''
     assume "E this = \<lfloor>Class C'\<rfloor>"
       and "class P C' = \<lfloor>(D', fs, ms)\<rfloor>"
       and "e = Var super"
       and "e'' = Cast (Class D') (Var this)\<bullet>F{D''}"
-    with `is_lub,P,E \<turnstile> e \<leadsto> e'` have False by(auto)
+    with \<open>is_lub,P,E \<turnstile> e \<leadsto> e'\<close> have False by(auto)
     thus ?thesis ..
   qed
 next
   case AnnoFAccALength thus ?case by(fastforce intro: WT_unique[OF is_lub_unique])
 next
   case (AnnoFAss E e1 e1' e2 e2' U C F T fm D)
-  from `is_lub,P,E \<turnstile> e1\<bullet>F{STR ''''} := e2 \<leadsto> e''` 
+  from \<open>is_lub,P,E \<turnstile> e1\<bullet>F{STR ''''} := e2 \<leadsto> e''\<close> 
   show ?case
   proof(rule Anno_cases)
     fix e1'' e2'' U' C' T' fm' D'
@@ -206,15 +206,15 @@ next
       and "is_lub,P,E \<turnstile> e1'' :: U'" and "class_type_of' U' = \<lfloor>C'\<rfloor>"
       and "P \<turnstile> C' sees F:T' (fm') in D'"
       and "e'' = e1''\<bullet>F{D'} := e2''"
-    from `is_lub,P,E \<turnstile> e1 \<leadsto> e1''` have "e1' = e1''" by(rule AnnoFAss)
-    moreover with `is_lub,P,E \<turnstile> e1' :: U` `is_lub,P,E \<turnstile> e1'' :: U'`
+    from \<open>is_lub,P,E \<turnstile> e1 \<leadsto> e1''\<close> have "e1' = e1''" by(rule AnnoFAss)
+    moreover with \<open>is_lub,P,E \<turnstile> e1' :: U\<close> \<open>is_lub,P,E \<turnstile> e1'' :: U'\<close>
     have "U = U'" by(auto intro: WT_unique is_lub_unique)
-    with `class_type_of' U = \<lfloor>C\<rfloor>` `class_type_of' U' = \<lfloor>C'\<rfloor>`
+    with \<open>class_type_of' U = \<lfloor>C\<rfloor>\<close> \<open>class_type_of' U' = \<lfloor>C'\<rfloor>\<close>
     have "C = C'" by(auto)
-    with `P \<turnstile> C' sees F:T' (fm') in D'` `P \<turnstile> C sees F:T (fm) in D`
+    with \<open>P \<turnstile> C' sees F:T' (fm') in D'\<close> \<open>P \<turnstile> C sees F:T (fm) in D\<close>
     have "D' = D" by(auto dest: sees_field_fun)
-    moreover from `is_lub,P,E \<turnstile> e2 \<leadsto> e2''` have "e2' = e2''" by(rule AnnoFAss)
-    ultimately show ?thesis using `e'' = e1''\<bullet>F{D'} := e2''` by simp
+    moreover from \<open>is_lub,P,E \<turnstile> e2 \<leadsto> e2''\<close> have "e2' = e2''" by(rule AnnoFAss)
+    ultimately show ?thesis using \<open>e'' = e1''\<bullet>F{D'} := e2''\<close> by simp
   next
     fix C' D' fs ms T' fm' D'' e'''
     assume "e'' = Cast (Class D') (Var this)\<bullet>F{D''} := e'''"
@@ -223,12 +223,12 @@ next
       and "P \<turnstile> D' sees F:T' (fm') in D''"
       and "is_lub,P,E \<turnstile> e2 \<leadsto> e'''"
       and "e1 = Var super"
-    with `is_lub,P,E \<turnstile> e1 \<leadsto> e1'` have False by(auto elim: Anno_cases)
+    with \<open>is_lub,P,E \<turnstile> e1 \<leadsto> e1'\<close> have False by(auto elim: Anno_cases)
     thus ?thesis ..
   qed
 qed(fastforce dest: sees_field_fun)+
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 definition Anno_code :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr \<Rightarrow> bool" ("_,_ \<turnstile> _ \<leadsto>' _"   [51,0,0,51]50)
 where "Anno_code P = Anno (is_lub_sup P) P"
@@ -277,13 +277,13 @@ lemma fixes is_lub1 :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool"
   "\<lbrakk> is_lub1,P,E \<turnstile> es [\<leadsto>] es'; ran E \<union> set (blocks_types es) \<subseteq> types P \<rbrakk> \<Longrightarrow> is_lub2,P,E \<turnstile> es [\<leadsto>] es'"
 proof(induct rule: Anno_Annos.inducts)
   case (AnnoBlock E V T e e' vo)
-  from `ran E \<union> set (block_types {V:T=vo; e}) \<subseteq> types P`
+  from \<open>ran E \<union> set (block_types {V:T=vo; e}) \<subseteq> types P\<close>
   have "ran (E(V \<mapsto> T)) \<union> set (block_types e) \<subseteq> types P"
     by(auto simp add: ran_def)
   thus ?case using AnnoBlock by(blast intro: Anno_Annos.intros)
 next
   case (AnnoTry E e1 e1' V C e2 e2')
-  from `ran E \<union> set (block_types (try e1 catch(C V) e2)) \<subseteq> types P`
+  from \<open>ran E \<union> set (block_types (try e1 catch(C V) e2)) \<subseteq> types P\<close>
   have "ran (E(V \<mapsto> Class C)) \<union> set (block_types e2) \<subseteq> types P"
     by(auto simp add: ran_def)
   thus ?case using AnnoTry by(simp del: fun_upd_apply)(blast intro: Anno_Annos.intros)

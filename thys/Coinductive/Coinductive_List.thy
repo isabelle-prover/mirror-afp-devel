@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Coinductive lists and their operations *}
+section \<open>Coinductive lists and their operations\<close>
 
 theory Coinductive_List
 imports
@@ -12,7 +12,7 @@ imports
   Coinductive_Nat
 begin
 
-subsection {* Auxiliary lemmata *}
+subsection \<open>Auxiliary lemmata\<close>
 
 lemma funpow_Suc_conv [simp]: "(Suc ^^ n) m = m + n"
 by(induct n arbitrary: m) simp_all
@@ -30,7 +30,7 @@ next
   thus ?thesis by(rule sym)
 qed
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 codatatype (lset: 'a) llist =
     lnull: LNil
@@ -43,9 +43,9 @@ where
 | "ltl LNil = LNil"
 
 
-text {*
+text \<open>
   Coiterator setup.
-*}
+\<close>
 
 primcorec unfold_llist :: "('a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'b llist" where
   "p a \<Longrightarrow> unfold_llist p g21 g22 a = LNil" |
@@ -55,20 +55,20 @@ declare
   unfold_llist.ctr(1) [simp]
   llist.corec(1) [simp]
 
-text {*
+text \<open>
   The following setup should be done by the BNF package.
-*}
+\<close>
 
-text {* congruence rule *}
+text \<open>congruence rule\<close>
 
 declare llist.map_cong [cong]
 
-text {* Code generator setup *}
+text \<open>Code generator setup\<close>
 
 lemma corec_llist_never_stop: "corec_llist IS_LNIL LHD (\<lambda>_. False) MORE LTL x = unfold_llist IS_LNIL LHD LTL x"
 by(coinduction arbitrary: x) auto
 
-text {* lemmas about generated constants *}
+text \<open>lemmas about generated constants\<close>
 
 lemma eq_LConsD: "xs = LCons y ys \<Longrightarrow> xs \<noteq> LNil \<and> lhd xs = y \<and> ltl xs = ys"
 by auto
@@ -134,7 +134,7 @@ by(cases xs) auto
 lemma in_lset_ltlD: "x \<in> lset (ltl xs) \<Longrightarrow> x \<in> lset xs"
 using lset_ltl[of xs] by auto
 
-text {* induction rules *}
+text \<open>induction rules\<close>
 
 theorem llist_set_induct[consumes 1, case_names find step]:
   assumes "x \<in> lset xs" and "\<And>xs. \<not> lnull xs \<Longrightarrow> P (lhd xs) xs"
@@ -142,7 +142,7 @@ theorem llist_set_induct[consumes 1, case_names find step]:
   shows "P x xs"
 using assms by(induct)(fastforce simp del: llist.disc(2) iff: llist.disc(2), auto)
 
-text {* Test quickcheck setup *}
+text \<open>Test quickcheck setup\<close>
 
 lemma "\<And>xs. xs = LNil"
 quickcheck[random, expect=counterexample]
@@ -153,7 +153,7 @@ lemma "LCons x xs = LCons x xs"
 quickcheck[narrowing, expect=no_counterexample]
 oops
 
-subsection {* Properties of predefined functions *}
+subsection \<open>Properties of predefined functions\<close>
 
 lemmas lhd_LCons = llist.sel(1)
 lemmas ltl_simps = llist.sel(2,3)
@@ -209,7 +209,7 @@ lemmas lset_LNil = llist.set(1)
 lemma lset_lnull: "lnull xs \<Longrightarrow> lset xs = {}"
 by(auto dest: llist.collapse)
 
-text {* Alternative definition of @{term lset} for nitpick *}
+text \<open>Alternative definition of @{term lset} for nitpick\<close>
 
 inductive lsetp :: "'a llist \<Rightarrow> 'a \<Rightarrow> bool"
 where
@@ -231,7 +231,7 @@ by(auto intro: lset_into_lsetp dest: lsetp_into_lset)
 hide_const (open) lsetp
 hide_fact (open) lsetp.intros lsetp.cases lsetp.induct lset_into_lsetp lset_eq_lsetp
 
-text {* code setup for @{term lset} *}
+text \<open>code setup for @{term lset}\<close>
 
 definition gen_lset :: "'a set \<Rightarrow> 'a llist \<Rightarrow> 'a set"
 where "gen_lset A xs = A \<union> lset xs"
@@ -259,7 +259,7 @@ by(simp add: lmember_def)
 
 lemmas lset_lmap [simp] = llist.set_map
 
-subsection {* The subset of finite lazy lists @{term "lfinite"} *}
+subsection \<open>The subset of finite lazy lists @{term "lfinite"}\<close>
 
 inductive lfinite :: "'a llist \<Rightarrow> bool"
 where
@@ -294,7 +294,7 @@ lemma lfinite_imp_finite_lset:
   shows "finite (lset xs)"
 using assms by induct auto
 
-subsection {* Concatenating two lists: @{term "lappend"} *}
+subsection \<open>Concatenating two lists: @{term "lappend"}\<close>
 
 primcorec lappend :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> 'a llist"
 where
@@ -410,7 +410,7 @@ qed
 lemma split_llist: "x \<in> lset xs \<Longrightarrow> \<exists>ys zs. xs = lappend ys (LCons x zs) \<and> lfinite ys"
 by(blast dest: split_llist_first)
 
-subsection {* The prefix ordering on lazy lists: @{term "lprefix"} *}
+subsection \<open>The prefix ordering on lazy lists: @{term "lprefix"}\<close>
 
 coinductive lprefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool" (infix "\<sqsubseteq>" 65)
 where
@@ -550,21 +550,21 @@ proof
   show "?rhs"
   proof
     assume "lfinite xs"
-    thus "ys \<sqsubseteq> zs" using `?lhs` by(induct) simp_all
+    thus "ys \<sqsubseteq> zs" using \<open>?lhs\<close> by(induct) simp_all
   qed
 next
   assume "?rhs"
   show ?lhs
   proof(cases "lfinite xs")
     case True
-    hence yszs: "ys \<sqsubseteq> zs" by(rule `?rhs`[rule_format])
+    hence yszs: "ys \<sqsubseteq> zs" by(rule \<open>?rhs\<close>[rule_format])
     from True show ?thesis by induct (simp_all add: yszs)
   next
     case False thus ?thesis by(simp add: lappend_inf)
   qed
 qed
 
-subsection {* Setup for partial\_function *}
+subsection \<open>Setup for partial\_function\<close>
 
 primcorec lSup :: "'a llist set \<Rightarrow> 'a llist"
 where
@@ -631,13 +631,13 @@ qed
 lemma lSup_finite_gen_prefixes:
   assumes "zs \<sqsubseteq> xs" "lfinite zs"
   shows "lSup {ys. ys \<sqsubseteq> xs \<and> zs \<sqsubseteq> ys \<and> lfinite ys} = xs"
-using `lfinite zs` `zs \<sqsubseteq> xs`
+using \<open>lfinite zs\<close> \<open>zs \<sqsubseteq> xs\<close>
 proof(induction arbitrary: xs)
   case lfinite_LNil
   thus ?case by(simp add: lSup_finite_prefixes)
 next
   case (lfinite_LConsI zs z)
-  from `LCons z zs \<sqsubseteq> xs` obtain xs' where xs: "xs = LCons z xs'"
+  from \<open>LCons z zs \<sqsubseteq> xs\<close> obtain xs' where xs: "xs = LCons z xs'"
     and "zs \<sqsubseteq> xs'" by(auto simp add: LCons_lprefix_conv)
   show ?case (is "?lhs = ?rhs")
   proof(rule llist.expand)
@@ -650,9 +650,9 @@ next
     moreover
     have "ltl ` ({ys. ys \<sqsubseteq> xs \<and> LCons z zs \<sqsubseteq> ys \<and> lfinite ys} \<inter> {xs. \<not> lnull xs}) =
           {ys. ys \<sqsubseteq> xs' \<and> zs \<sqsubseteq> ys \<and> lfinite ys}"
-      using xs `\<not> lnull ?rhs`
+      using xs \<open>\<not> lnull ?rhs\<close>
       by(auto 4 3 simp add: lprefix_LCons_conv intro: rev_image_eqI del: disjCI intro: disjI2)
-    hence "ltl ?lhs = ltl ?rhs" using lfinite_LConsI.IH[OF `zs \<sqsubseteq> xs'`] xs by simp
+    hence "ltl ?lhs = ltl ?rhs" using lfinite_LConsI.IH[OF \<open>zs \<sqsubseteq> xs'\<close>] xs by simp
     ultimately show "lhd ?lhs = lhd ?rhs \<and> ltl ?lhs = ltl ?rhs" ..
   qed
 qed
@@ -679,8 +679,8 @@ lemma chain_lprefix_lSup:
   \<Longrightarrow> xs \<sqsubseteq> lSup A"
 proof(coinduction arbitrary: xs A)
   case (lprefix xs A)
-  note chain = `Complete_Partial_Order.chain (\<sqsubseteq>) A`
-  from `xs \<in> A` show ?case
+  note chain = \<open>Complete_Partial_Order.chain (\<sqsubseteq>) A\<close>
+  from \<open>xs \<in> A\<close> show ?case
     by(auto 4 3 dest: chainD[OF chain] lprefix_lhdD intro: chain_lprefix_ltl[OF chain] intro!: the_equality[symmetric])
 qed
 
@@ -689,8 +689,8 @@ lemma chain_lSup_lprefix:
   \<Longrightarrow> lSup A \<sqsubseteq> zs"
 proof(coinduction arbitrary: A zs)
   case (lprefix A zs)
-  note chain = `Complete_Partial_Order.chain (\<sqsubseteq>) A`
-  from `\<forall>xs. xs \<in> A \<longrightarrow> xs \<sqsubseteq> zs`
+  note chain = \<open>Complete_Partial_Order.chain (\<sqsubseteq>) A\<close>
+  from \<open>\<forall>xs. xs \<in> A \<longrightarrow> xs \<sqsubseteq> zs\<close>
   show ?case
     by(auto 4 4 dest: lprefix_lnullD lprefix_lhdD intro: chain_lprefix_ltl[OF chain] lprefix_ltlI rev_image_eqI intro!: the_equality)
 qed
@@ -836,17 +836,17 @@ lemma mcont_lprefix_case_lfp [cont_intro, simp]:
   shows "mcont lSup (\<sqsubseteq>) Sup (\<le>) (\<lambda>xs. case xs of LNil \<Rightarrow> \<bottom> | LCons x xs \<Rightarrow> f x xs (LCons x xs))"
 using assms by(rule mcont_lprefix_case_aux)(rule complete_lattice_ccpo', simp)
 
-declaration {* Partial_Function.init "llist" @{term llist.fixp_fun}
-  @{term llist.mono_body} @{thm llist.fixp_rule_uc} @{thm llist.fixp_strong_induct_uc} NONE *}
+declaration \<open>Partial_Function.init "llist" @{term llist.fixp_fun}
+  @{term llist.mono_body} @{thm llist.fixp_rule_uc} @{thm llist.fixp_strong_induct_uc} NONE\<close>
 
-subsection {* Monotonicity and continuity of already defined functions *}
+subsection \<open>Monotonicity and continuity of already defined functions\<close>
 
 lemma fixes f F
   defines "F \<equiv> \<lambda>lmap xs. case xs of LNil \<Rightarrow> LNil | LCons x xs \<Rightarrow> LCons (f x) (lmap xs)"
   shows lmap_conv_fixp: "lmap f \<equiv> ccpo.fixp (fun_lub lSup) (fun_ord (\<sqsubseteq>)) F" (is "?lhs \<equiv> ?rhs")
   and lmap_mono: "\<And>xs. mono_llist (\<lambda>lmap. F lmap xs)" (is "PROP ?mono")
 proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix xs
   show "?lhs xs = ?rhs xs"
   proof(coinduction arbitrary: xs)
@@ -891,7 +891,7 @@ lemma fixes f F
   shows lset_conv_fixp: "lset \<equiv> ccpo.fixp (fun_lub Union) (fun_ord (\<subseteq>)) F" (is "_ \<equiv> ?fixp")
   and lset_mono: "\<And>x. monotone (fun_ord (\<subseteq>)) (\<subseteq>) (\<lambda>f. F f x)" (is "PROP ?mono")
 proof(rule eq_reflection ext antisym subsetI)+
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix x xs
   show "?fixp xs \<subseteq> lset xs"
     by(induct arbitrary: xs rule: lfp.fixp_induct_uc[of "\<lambda>x. x" F "\<lambda>x. x", OF mono reflexive refl])(auto simp add: F_def split: llist.split)
@@ -985,7 +985,7 @@ qed
 lemma compact_eq_lfinite [simp]: "ccpo.compact lSup (\<sqsubseteq>) = lfinite"
 by(blast intro: compact_lfiniteI compact_lfiniteD)
 
-subsection {* More function definitions *}
+subsection \<open>More function definitions\<close>
 
 primcorec iterates :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> 'a llist"
 where "iterates f x = LCons x (iterates f (f x))"
@@ -1071,7 +1071,7 @@ where "repeat \<equiv> iterates (\<lambda>x. x)"
 definition lstrict_prefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
 where [code del]: "lstrict_prefix xs ys \<equiv> xs \<sqsubseteq> ys \<and> xs \<noteq> ys"
 
-text {* longest common prefix *}
+text \<open>longest common prefix\<close>
 definition llcp :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> enat"
 where [code del]:
   "llcp xs ys =
@@ -1114,7 +1114,7 @@ where "lnths xs A = lmap fst (lfilter (\<lambda>(x, y). y \<in> A) (lzip xs (ite
 definition (in monoid_add) lsum_list :: "'a llist \<Rightarrow> 'a"
 where "lsum_list xs = (if lfinite xs then sum_list (list_of xs) else 0)"
 
-subsection {* Converting ordinary lists to lazy lists: @{term "llist_of"} *}
+subsection \<open>Converting ordinary lists to lazy lists: @{term "llist_of"}\<close>
 
 lemma lhd_llist_of [simp]: "lhd (llist_of xs) = hd xs"
 by(cases xs)(simp_all add: hd_def lhd_def)
@@ -1187,7 +1187,7 @@ qed simp
 lemma inj_llist_of [simp]: "inj llist_of"
 by(rule inj_onI) simp
 
-subsection {* Converting finite lazy lists to ordinary lists: @{term "list_of"} *}
+subsection \<open>Converting finite lazy lists to ordinary lists: @{term "list_of"}\<close>
 
 lemma list_of_llist_of [simp]: "list_of (llist_of xs) = xs"
 by(fastforce simp add: list_of_def intro: inv_f_f inj_onI)
@@ -1204,9 +1204,9 @@ proof(induct arbitrary: x rule: lfinite.induct)
   show ?case using list_of_llist_of[of "[x]"] by simp
 next
   case (lfinite_LConsI xs' x')
-  from `list_of (LCons x' xs') = x' # list_of xs'` show ?case
+  from \<open>list_of (LCons x' xs') = x' # list_of xs'\<close> show ?case
     using list_of_llist_of[of "x # x' # list_of xs'"]
-      llist_of_list_of[OF `lfinite xs'`] by simp
+      llist_of_list_of[OF \<open>lfinite xs'\<close>] by simp
 qed
 
 lemma list_of_LCons_conv [nitpick_simp]:
@@ -1216,7 +1216,7 @@ by(auto)(auto simp add: list_of_def)
 lemma list_of_lappend:
   assumes "lfinite xs" "lfinite ys"
   shows "list_of (lappend xs ys) = list_of xs @ list_of ys"
-using `lfinite xs` by induct(simp_all add: `lfinite ys`)
+using \<open>lfinite xs\<close> by induct(simp_all add: \<open>lfinite ys\<close>)
 
 lemma list_of_lmap [simp]:
   assumes "lfinite xs"
@@ -1234,7 +1234,7 @@ by(clarsimp simp add: lfinite_eq_range_llist_of)
 lemma tl_list_of: "lfinite xs \<Longrightarrow> tl (list_of xs) = list_of (ltl xs)"
 by(auto simp add: lfinite_eq_range_llist_of)
 
-text {* Efficient implementation via tail recursion suggested by Brian Huffman *}
+text \<open>Efficient implementation via tail recursion suggested by Brian Huffman\<close>
 
 definition list_of_aux :: "'a list \<Rightarrow> 'a llist \<Rightarrow> 'a list"
 where "list_of_aux xs ys = (if lfinite ys then rev xs @ list_of ys else undefined)"
@@ -1247,7 +1247,7 @@ lemma list_of_aux_code [code]:
   "list_of_aux xs (LCons y ys) = list_of_aux (y # xs) ys"
 by(simp_all add: list_of_aux_def)
 
-subsection {* The length of a lazy list: @{term "llength"} *}
+subsection \<open>The length of a lazy list: @{term "llength"}\<close>
 
 lemma [simp, nitpick_simp]:
   shows llength_LNil: "llength LNil = 0"
@@ -1291,7 +1291,7 @@ proof(induct n arbitrary: xs)
   thus ?case by simp
 next
   case (Suc n)
-  note len = `llength xs = enat (Suc n)`
+  note len = \<open>llength xs = enat (Suc n)\<close>
   then obtain x xs' where "xs = LCons x xs'"
     by(cases xs)(auto simp add: zero_enat_def)
   moreover with len have "llength xs' = enat n"
@@ -1321,7 +1321,7 @@ by(simp add: lfinite_conv_llength_enat)
 lemma lfinite_finite_index: "lfinite xs \<Longrightarrow> finite {n. enat n < llength xs}"
 by(auto dest: lfinite_llength_enat)
 
-text {* tail-recursive implementation for @{term llength} *}
+text \<open>tail-recursive implementation for @{term llength}\<close>
 
 definition gen_llength :: "nat \<Rightarrow> 'a llist \<Rightarrow> enat"
 where "gen_llength n xs = enat n + llength xs"
@@ -1339,7 +1339,7 @@ lemma fixes F
   shows llength_conv_fixp: "llength \<equiv> ccpo.fixp (fun_lub Sup) (fun_ord (\<le>)) F" (is "_ \<equiv> ?fixp")
   and llength_mono: "\<And>xs. monotone (fun_ord (\<le>)) (\<le>) (\<lambda>llength. F llength xs)" (is "PROP ?mono")
 proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix xs
   show "llength xs = ?fixp xs"
     by(coinduction arbitrary: xs rule: enat_coinduct)(subst (1 2 3) lfp.mono_body_fixp[OF mono], fastforce simp add: F_def split: llist.split del: iffI)+
@@ -1353,7 +1353,7 @@ lemma mcont2mcont_llength[THEN lfp.mcont2mcont, simp, cont_intro]:
   shows mcont_llength: "mcont lSup (\<sqsubseteq>) Sup (\<le>) llength"
 by(rule lfp.fixp_preserves_mcont1[OF llength_mono llength_conv_fixp])(fold bot_enat_def, simp)
 
-subsection {* Taking and dropping from lazy lists: @{term "ltake"}, @{term "ldropn"}, and @{term "ldrop"} *}
+subsection \<open>Taking and dropping from lazy lists: @{term "ltake"}, @{term "ldropn"}, and @{term "ldrop"}\<close>
 
 lemma ltake_LNil [simp, code, nitpick_simp]: "ltake n LNil = LNil"
 by simp
@@ -1509,7 +1509,7 @@ lemma fixes f F
   shows ltake_conv_fixp: "ltake \<equiv> curry (ccpo.fixp (fun_lub lSup) (fun_ord (\<sqsubseteq>)) (\<lambda>ltake. case_prod (F (curry ltake))))" (is "?lhs \<equiv> ?rhs")
   and ltake_mono: "\<And>nxs. mono_llist (\<lambda>ltake. case nxs of (n, xs) \<Rightarrow> F (curry ltake) n xs)" (is "PROP ?mono")
 proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix n xs
   show "?lhs n xs = ?rhs n xs"
   proof(coinduction arbitrary: n xs)
@@ -1623,7 +1623,7 @@ lemma fixes f F
   shows ldrop_conv_fixp: "(\<lambda>xs n. ldropn n xs) \<equiv> ccpo.fixp (fun_lub (fun_lub lSup)) (fun_ord (fun_ord lprefix)) (\<lambda>ldrop. F ldrop)" (is "?lhs \<equiv> ?rhs")
   and ldrop_mono: "\<And>xs. mono_llist_lift (\<lambda>ldrop. F ldrop xs)" (is "PROP ?mono")
 proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix n xs
   show "?lhs xs n = ?rhs xs n"
     by(induction n arbitrary: xs)
@@ -1867,7 +1867,7 @@ by(induct xs arbitrary: n m)(simp_all add: ldrop_LCons iadd_Suc_right split: co.
 lemma ldrop_ltake: "ldrop n (ltake m xs) = ltake (m - n) (ldrop n xs)"
 by(induct xs arbitrary: n m)(simp_all add: ltake_LCons ldrop_LCons split: co.enat.split)
 
-subsection {* Taking the $n$-th element of a lazy list: @{term "lnth" } *}
+subsection \<open>Taking the $n$-th element of a lazy list: @{term "lnth" }\<close>
 
 lemma lnth_LNil:
   "lnth LNil n = undefined n"
@@ -1903,9 +1903,9 @@ proof(induct n arbitrary: xs)
   case 0 thus ?case by(cases xs) auto
 next
   case (Suc n)
-  from `enat (Suc n) < llength xs` obtain x xs'
+  from \<open>enat (Suc n) < llength xs\<close> obtain x xs'
     where [simp]: "xs = LCons x xs'" by(cases xs) auto
-  from `enat (Suc n) < llength xs`
+  from \<open>enat (Suc n) < llength xs\<close>
   have "enat n < llength xs'" by(simp add: Suc_ile_eq)
   hence "lhd (ldropn n xs') = lnth xs' n" by(rule Suc)
   thus ?case by simp
@@ -1942,7 +1942,7 @@ proof(induct n arbitrary: xs)
   case 0 thus ?case by(cases xs) simp_all
 next
   case (Suc n)
-  from `enat (Suc n) < llength xs` obtain x xs'
+  from \<open>enat (Suc n) < llength xs\<close> obtain x xs'
     where xs: "xs = LCons x xs'" and len: "enat n < llength xs'"
     by(cases xs)(auto simp add: Suc_ile_eq)
   from len have "lnth (lmap f xs') n = f (lnth xs' n)" by(rule Suc)
@@ -1953,9 +1953,9 @@ lemma lnth_ldropn [simp]:
   "enat (n + m) < llength xs \<Longrightarrow> lnth (ldropn n xs) m = lnth xs (m + n)"
 proof(induct n arbitrary: xs)
   case (Suc n)
-  from `enat (Suc n + m) < llength xs`
+  from \<open>enat (Suc n + m) < llength xs\<close>
   obtain x xs' where "xs = LCons x xs'" by(cases xs) auto
-  moreover with `enat (Suc n + m) < llength xs`
+  moreover with \<open>enat (Suc n + m) < llength xs\<close>
   have "enat (n + m) < llength xs'" by(simp add: Suc_ile_eq)
   hence "lnth (ldropn n xs') m = lnth xs' (m + n)" by(rule Suc)
   ultimately show ?case by simp
@@ -2020,7 +2020,7 @@ proof(induct n arbitrary: xs)
   case 0 thus ?case by(auto simp add: zero_enat_def[symmetric] not_lnull_conv)
 next
   case (Suc n)
-  from `enat (Suc n) < llength xs` obtain x xs'
+  from \<open>enat (Suc n) < llength xs\<close> obtain x xs'
     where [simp]: "xs = LCons x xs'" and len: "enat n < llength xs'"
     by(cases xs)(auto simp add: Suc_ile_eq)
   from len have "lnth (lappend xs' ys) n = lnth xs' n" by(rule Suc)
@@ -2054,10 +2054,10 @@ proof(induct m arbitrary: xs n)
     by(cases n rule: enat_coexhaust)(auto, cases xs, auto)
 next
   case (Suc m)
-  from `enat (Suc m) < n` obtain n' where "n = eSuc n'"
+  from \<open>enat (Suc m) < n\<close> obtain n' where "n = eSuc n'"
     by(cases n rule: enat_coexhaust) auto
-  with `enat (Suc m) < n` have "enat m < n'" by(simp add: eSuc_enat[symmetric])
-  with Suc `n = eSuc n'` show ?case by(cases xs) auto
+  with \<open>enat (Suc m) < n\<close> have "enat m < n'" by(simp add: eSuc_enat[symmetric])
+  with Suc \<open>n = eSuc n'\<close> show ?case by(cases xs) auto
 qed
 
 lemma ldropn_Suc_conv_ldropn:
@@ -2066,9 +2066,9 @@ proof(induct n arbitrary: xs)
   case 0 thus ?case by(cases xs) auto
 next
   case (Suc n)
-  from `enat (Suc n) < llength xs` obtain x xs'
+  from \<open>enat (Suc n) < llength xs\<close> obtain x xs'
     where [simp]: "xs = LCons x xs'" by(cases xs) auto
-  from `enat (Suc n) < llength xs`
+  from \<open>enat (Suc n) < llength xs\<close>
   have "enat n < llength xs'" by(simp add: Suc_ile_eq)
   hence "LCons (lnth xs' n) (ldropn (Suc n) xs') = ldropn n xs'" by(rule Suc)
   thus ?case by simp
@@ -2099,14 +2099,14 @@ next
     then obtain xs' where "xs = llist_of xs'"
       by(auto simp add: lfinite_eq_range_llist_of)
     hence "lappend (llist_of xs') ys = lappend (llist_of xs') vs"
-      using eq `xs = us` by blast
+      using eq \<open>xs = us\<close> by blast
     thus "ys = vs"
       by (induct xs') simp_all
   qed
 qed
 
 
-subsection{* iterates *}
+subsection\<open>iterates\<close>
 
 lemmas iterates [code, nitpick_simp] = iterates.ctr
   and lnull_iterates = iterates.simps(1)
@@ -2188,9 +2188,9 @@ by(auto simp add: lset_conv_lnth)
 lemma lset_repeat [simp]: "lset (repeat x) = {x}"
 by(simp add: lset_iterates id_def[symmetric])
 
-subsection {*
+subsection \<open>
   More on the prefix ordering on lazy lists: @{term "lprefix"} and @{term "lstrict_prefix"}
-*}
+\<close>
 
 lemma lstrict_prefix_code [code, simp]:
   "lstrict_prefix LNil LNil \<longleftrightarrow> False"
@@ -2214,14 +2214,14 @@ lemma lstrict_prefix_llength_less:
   shows "llength xs < llength ys"
 proof(rule ccontr)
   assume "\<not> llength xs < llength ys"
-  moreover from `lstrict_prefix xs ys` have "xs \<sqsubseteq> ys" "xs \<noteq> ys"
+  moreover from \<open>lstrict_prefix xs ys\<close> have "xs \<sqsubseteq> ys" "xs \<noteq> ys"
     unfolding lstrict_prefix_def by simp_all
-  from `xs \<sqsubseteq> ys` have "llength xs \<le> llength ys"
+  from \<open>xs \<sqsubseteq> ys\<close> have "llength xs \<le> llength ys"
     by(rule lprefix_llength_le)
   ultimately have "llength xs = llength ys" by auto
-  with `xs \<sqsubseteq> ys` have "xs = ys"
+  with \<open>xs \<sqsubseteq> ys\<close> have "xs = ys"
     by(rule lprefix_llength_eq_imp_eq)
-  with `xs \<noteq> ys` show False by contradiction
+  with \<open>xs \<noteq> ys\<close> show False by contradiction
 qed
 
 lemma lstrict_prefix_lfinite1: "lstrict_prefix xs ys \<Longrightarrow> lfinite xs"
@@ -2280,7 +2280,7 @@ lemma lprefix_lappendD:
 proof(rule ccontr)
   assume "\<not> (xs \<sqsubseteq> ys \<or> ys \<sqsubseteq> xs)"
   hence "\<not> xs \<sqsubseteq> ys" "\<not> ys \<sqsubseteq> xs" by simp_all
-  from `xs \<sqsubseteq> lappend ys zs` obtain xs'
+  from \<open>xs \<sqsubseteq> lappend ys zs\<close> obtain xs'
     where "lappend xs xs' = lappend ys zs"
     unfolding lprefix_conv_lappend by auto
   hence eq: "lappend (ltake (llength ys) xs) (lappend (ldrop (llength ys) xs) xs') =
@@ -2295,15 +2295,15 @@ proof(rule ccontr)
            lappend (ltake (llength xs) ys) (lappend (ldrop (llength xs) ys) zs)"
       unfolding lappend_assoc[symmetric] lappend_ltake_ldrop
       using eq by(simp add: lappend_assoc)
-    hence xs: "xs = ltake (llength xs) ys" using `llength xs < llength ys`
+    hence xs: "xs = ltake (llength xs) ys" using \<open>llength xs < llength ys\<close>
       by(subst (asm) lappend_eq_lappend_conv)(auto simp add: min_def)
     have "xs \<sqsubseteq> ys" by(subst xs) auto
-    with `\<not> xs \<sqsubseteq> ys` show False by contradiction
+    with \<open>\<not> xs \<sqsubseteq> ys\<close> show False by contradiction
   qed
   ultimately have ys: "ys = ltake (llength ys) xs"
     by(subst (asm) lappend_eq_lappend_conv)(simp_all add: min_def)
   have "ys \<sqsubseteq> xs" by(subst ys) auto
-  with `\<not> ys \<sqsubseteq> xs` show False by contradiction
+  with \<open>\<not> ys \<sqsubseteq> xs\<close> show False by contradiction
 qed
 
 lemma lstrict_prefix_lappend_conv:
@@ -2362,13 +2362,13 @@ next
   show ?lhs
   proof(cases "A = {}")
     case False
-    with chain `finite A`
+    with chain \<open>finite A\<close>
     have "lSup A \<in> A" by(rule ccpo.in_chain_finite[OF llist_ccpo])
-    with `\<forall>xs\<in>A. lfinite xs` show ?thesis ..
+    with \<open>\<forall>xs\<in>A. lfinite xs\<close> show ?thesis ..
   qed simp
 qed(rule lfinite_lSupD)
 
-text {* Setup for @{term "lprefix"} for Nitpick *}
+text \<open>Setup for @{term "lprefix"} for Nitpick\<close>
 
 definition finite_lprefix :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool"
 where "finite_lprefix = (\<sqsubseteq>)"
@@ -2387,7 +2387,7 @@ by(simp add: finite_lprefix_def not_lfinite_lprefix_conv_eq)
 hide_const (open) finite_lprefix
 hide_fact (open) finite_lprefix_def finite_lprefix_nitpick_simps lprefix_nitpick_simps
 
-subsection {* Length of the longest common prefix *}
+subsection \<open>Length of the longest common prefix\<close>
 
 lemma llcp_simps [simp, code, nitpick_simp]:
   shows llcp_LNil1: "llcp LNil ys = 0"
@@ -2442,7 +2442,7 @@ by(metis llcp_commute llcp_ltake1)
 lemma llcp_ltake [simp]: "llcp (ltake n xs) (ltake m ys) = min (min n m) (llcp xs ys)"
 by(metis llcp_ltake1 llcp_ltake2 min.assoc)
 
-subsection {* Zipping two lazy lists to a lazy list of pairs @{term "lzip" } *}
+subsection \<open>Zipping two lazy lists to a lazy list of pairs @{term "lzip" }\<close>
 
 lemma lzip_simps [simp, code, nitpick_simp]:
   "lzip LNil ys = LNil"
@@ -2486,7 +2486,7 @@ lemma
   shows lzip_conv_fixp: "lzip \<equiv> curry (ccpo.fixp (fun_lub lSup) (fun_ord (\<sqsubseteq>)) F)" (is "?lhs \<equiv> ?rhs")
   and lzip_mono: "mono_llist (\<lambda>lzip. F lzip xs)" (is "?mono xs")
 proof(intro eq_reflection ext)
-  show mono: "\<And>xs. ?mono xs" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "\<And>xs. ?mono xs" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix xs ys
   show "lzip xs ys = ?rhs xs ys"
   proof(coinduction arbitrary: xs ys)
@@ -2637,13 +2637,13 @@ proof -
       by(rule not_lfinite_llength)
     moreover with len
     have "llength xs = \<infinity>" "llength ys = \<infinity>" by auto
-    moreover with `llength us = \<infinity>`
+    moreover with \<open>llength us = \<infinity>\<close>
     have "xs = ?xs'" "ys = ?ys'" by(simp_all add: ltake_all)
-    from `llength us = \<infinity>` len
+    from \<open>llength us = \<infinity>\<close> len
     have "\<not> lfinite ?xs'" "\<not> lfinite ?ys'"
       by(auto simp del: llength_ltake lfinite_ltake
              simp add: ltake_all dest: lfinite_llength_enat)
-    with `xs = ?xs'` `ys = ?ys'`
+    with \<open>xs = ?xs'\<close> \<open>ys = ?ys'\<close>
     have "xs = lappend ?xs' ?xs''" "ys = lappend ?ys' ?ys''"
       by(simp_all add: lappend_inf)
     moreover have "vs = lzip ?xs'' ?ys''"
@@ -2678,7 +2678,7 @@ lemma lzip_conv_lzip_ltake_min_llength:
        (ltake (min (llength xs) (llength ys)) ys)"
 by(coinduction arbitrary: xs ys)(auto simp add: enat_min_eq_0_iff ltl_ltake epred_llength)
 
-subsection {* Taking and dropping from a lazy list: @{term "ltakeWhile"} and @{term "ldropWhile"} *}
+subsection \<open>Taking and dropping from a lazy list: @{term "ltakeWhile"} and @{term "ldropWhile"}\<close>
 
 lemma ltakeWhile_simps [simp, code, nitpick_simp]:
   shows ltakeWhile_LNil: "ltakeWhile P LNil = LNil"
@@ -2695,7 +2695,7 @@ lemma fixes f F P
   shows ltakeWhile_conv_fixp: "ltakeWhile P \<equiv> ccpo.fixp (fun_lub lSup) (fun_ord lprefix) F" (is "?lhs \<equiv> ?rhs")
   and ltakeWhile_mono: "\<And>xs. mono_llist (\<lambda>ltakeWhile. F ltakeWhile xs)" (is "PROP ?mono")
 proof(intro eq_reflection ext)
-  show mono: "PROP ?mono" unfolding F_def by(tactic {* Partial_Function.mono_tac @{context} 1 *})
+  show mono: "PROP ?mono" unfolding F_def by(tactic \<open>Partial_Function.mono_tac @{context} 1\<close>)
   fix xs
   show "?lhs xs = ?rhs xs"
   proof(coinduction arbitrary: xs)
@@ -2958,7 +2958,7 @@ lemma lhd_ldropWhile_conv_lnth:
   "\<exists>x\<in>lset xs. \<not> P x \<Longrightarrow> lhd (ldropWhile P xs) = lnth xs (the_enat (llength (ltakeWhile P xs)))"
 by(simp add: ldropWhile_eq_ldrop lhd_ldrop llength_ltakeWhile_lt_iff)
 
-subsection {* @{term "llist_all2"} *}
+subsection \<open>@{term "llist_all2"}\<close>
 
 lemmas llist_all2_LNil_LNil = llist.rel_inject(1)
 lemmas llist_all2_LNil_LCons = llist.rel_distinct(1)
@@ -3048,13 +3048,13 @@ proof(rule llist_all2_all_lnthI)
   fix n
   assume "enat n < llength xs"
   thus "P (lnth xs n) (lnth ys n)"
-    using major `llength xs = llength ys`
+    using major \<open>llength xs = llength ys\<close>
   proof(induct n arbitrary: xs ys)
     case 0 thus ?case
       by(cases "lnull xs")(auto dest: step simp add: zero_enat_def[symmetric] lnth_0_conv_lhd)
   next
     case (Suc n)
-    from step[OF `X xs ys`] `enat (Suc n) < llength xs` Suc show ?case
+    from step[OF \<open>X xs ys\<close>] \<open>enat (Suc n) < llength xs\<close> Suc show ?case
       by(auto 4 3 simp add: not_lnull_conv Suc_ile_eq intro: Suc.hyps llist_all2_lnthD dest: llist_all2_llengthD)
   qed
 qed
@@ -3196,7 +3196,7 @@ proof(coinduction arbitrary: Y)
     by(auto dest: llist_all2_lnullD simp add: split_beta)
 next
   case (LCons Y)
-  note chain = `Complete_Partial_Order.chain _ Y`
+  note chain = \<open>Complete_Partial_Order.chain _ Y\<close>
   from LCons have Y: "\<And>xs ys. (xs, ys) \<in> Y \<Longrightarrow> llist_all2 P xs ys" by blast
   from LCons obtain xs ys where xsysY: "(xs, ys) \<in> Y"
     and [simp]: "\<not> lnull xs" "\<not> lnull ys"
@@ -3236,7 +3236,7 @@ proof(rule ccpo.admissibleI)
   from chain have "Complete_Partial_Order.chain (rel_prod (\<sqsubseteq>) (\<sqsubseteq>)) ((\<lambda>x. (f x, g x)) ` Y)"
     by(rule chain_imageI)(auto intro: mcont_monoD[OF f] mcont_monoD[OF g])
   from llist_all2_lSupI[OF this, of P] chain Y
-  show "llist_all2 P (f (lub Y)) (g (lub Y))" using `Y \<noteq> {}`
+  show "llist_all2 P (f (lub Y)) (g (lub Y))" using \<open>Y \<noteq> {}\<close>
     by(simp add: mcont_contD[OF f chain] mcont_contD[OF g chain] image_image)
 qed
 
@@ -3271,7 +3271,7 @@ apply(drule llist_all2_lnthD)
 apply(erule (2) transpD)
 done
 
-subsection {* The last element @{term "llast"} *}
+subsection \<open>The last element @{term "llast"}\<close>
 
 lemma llast_LNil: "llast LNil = undefined"
 by(simp add: llast_def zero_enat_def)
@@ -3337,7 +3337,7 @@ proof induct
   thus ?case by(cases xs) simp_all
 qed simp
 
-subsection {* Distinct lazy lists @{term "ldistinct"} *}
+subsection \<open>Distinct lazy lists @{term "ldistinct"}\<close>
 
 inductive_simps ldistinct_LCons [code, simp]:
   "ldistinct (LCons x xs)"
@@ -3355,7 +3355,7 @@ lemma ldistinct_coinduct [consumes 1, case_names ldistinct, case_conclusion ldis
   and step: "\<And>xs. \<lbrakk> X xs; \<not> lnull xs \<rbrakk>
     \<Longrightarrow> lhd xs \<notin> lset (ltl xs) \<and> (X (ltl xs) \<or> ldistinct (ltl xs))"
   shows "ldistinct xs"
-using `X xs`
+using \<open>X xs\<close>
 proof(coinduct)
   case (ldistinct xs)
   thus ?case by(cases xs)(auto dest: step)
@@ -3403,7 +3403,7 @@ proof(intro iffI conjI strip)
 
   assume "lfinite xs"
   thus "ldistinct ys" "lset xs \<inter> lset ys = {}"
-    using `?lhs` by induct simp_all
+    using \<open>?lhs\<close> by induct simp_all
 next
   assume "?rhs"
   thus ?lhs
@@ -3439,7 +3439,7 @@ proof(intro iffI strip)
   thus "?lhs"
   proof(coinduct xs)
     case (ldistinct xs)
-    from `\<not> lnull xs`
+    from \<open>\<not> lnull xs\<close>
     obtain x xs' where LCons: "xs = LCons x xs'"
       by(auto simp add: not_lnull_conv)
     have "x \<notin> lset xs'"
@@ -3456,7 +3456,7 @@ proof(intro iffI strip)
       assume "enat i < llength xs'" "enat j < llength xs'" "i \<noteq> j"
       hence "enat (Suc i) < llength xs" "enat (Suc j) < llength xs"
         by(simp_all add: LCons Suc_ile_eq)
-      with `i \<noteq> j` have "lnth xs (Suc i) \<noteq> lnth xs (Suc j)"
+      with \<open>i \<noteq> j\<close> have "lnth xs (Suc i) \<noteq> lnth xs (Suc j)"
         by(auto dest: ldistinct(1)[rule_format])
       hence "lnth xs' i \<noteq> lnth xs' j" unfolding LCons by simp }
     ultimately show ?case using LCons by simp
@@ -3470,12 +3470,12 @@ next
     case symmetry thus ?case by simp
   next
     case (le i j)
-    from `?lhs` have "ldistinct (ldropn i xs)" by(rule ldistinct_ldropn)
+    from \<open>?lhs\<close> have "ldistinct (ldropn i xs)" by(rule ldistinct_ldropn)
     also note ldropn_Suc_conv_ldropn[symmetric]
     also from le have "i < j" by simp
     hence "lnth xs j \<in> lset (ldropn (Suc i) xs)" using le unfolding in_lset_conv_lnth
       by(cases "llength xs")(auto intro!: exI[where x="j - Suc i"])
-    ultimately show ?case using `enat i < llength xs` by auto
+    ultimately show ?case using \<open>enat i < llength xs\<close> by auto
   qed
 qed
 
@@ -3494,7 +3494,7 @@ proof(intro iffI conjI)
     then obtain i j
       where "enat i < llength xs" "x = lnth xs i" "enat j < llength xs" "y = lnth xs j"
       unfolding lset_conv_lnth by blast
-    with dist `f x = f y` show "x = y"
+    with dist \<open>f x = f y\<close> show "x = y"
       unfolding ldistinct_conv_lnth by auto
   qed
 next
@@ -3509,7 +3509,7 @@ by(coinduction arbitrary: xs ys)(auto simp add: not_lnull_conv dest: lset_lzipD1
 lemma ldistinct_lzipI2: "ldistinct ys \<Longrightarrow> ldistinct (lzip xs ys)"
 by(coinduction arbitrary: xs ys)(auto 4 3 simp add: not_lnull_conv dest: lset_lzipD2)
 
-subsection {* Sortedness @{term lsorted} *}
+subsection \<open>Sortedness @{term lsorted}\<close>
 
 context ord begin
 
@@ -3550,8 +3550,8 @@ lemma lsorted_lSup:
 proof(coinduction arbitrary: Y)
   case (lsorted Y)
   hence sorted: "\<And>xs. xs \<in> Y \<Longrightarrow> lsorted xs" by blast
-  note chain = `Complete_Partial_Order.chain (\<sqsubseteq>) Y`
-  from `\<not> lnull (lSup Y)` `\<not> lnull (ltl (lSup Y))`
+  note chain = \<open>Complete_Partial_Order.chain (\<sqsubseteq>) Y\<close>
+  from \<open>\<not> lnull (lSup Y)\<close> \<open>\<not> lnull (ltl (lSup Y))\<close>
   obtain xs where "xs \<in> Y" "\<not> lnull xs" "\<not> lnull (ltl xs)" by auto
   hence "lhd (lSup Y) = lhd xs" "lhd (ltl (lSup Y)) = lhd (ltl xs)" "lhd xs \<le> lhd (ltl xs)"
     using chain sorted by(auto intro: lhd_lSup_eq chain_lprefix_ltl lsorted_lhdD)
@@ -3614,9 +3614,9 @@ proof
   assume ?lhs
   { fix y
     assume "y \<in> lset xs"
-    hence "x \<le> y" using `?lhs`
+    hence "x \<le> y" using \<open>?lhs\<close>
       by(induct arbitrary: x)(auto intro: order_trans) }
-  with `?lhs` show ?rhs by cases auto
+  with \<open>?lhs\<close> show ?rhs by cases auto
 next
   assume ?rhs
   thus ?lhs by(cases xs) simp_all
@@ -3636,14 +3636,14 @@ end
 lemma lsorted_lmap':
   assumes "ord.lsorted orda xs" "monotone orda ordb f"
   shows "ord.lsorted ordb (lmap f xs)"
-using `ord.lsorted orda xs`
-by(coinduction arbitrary: xs rule: ord.lsorted_coinduct')(auto intro: monotoneD[OF `monotone orda ordb f`] ord.lsorted_lhdD ord.lsorted_ltlI)
+using \<open>ord.lsorted orda xs\<close>
+by(coinduction arbitrary: xs rule: ord.lsorted_coinduct')(auto intro: monotoneD[OF \<open>monotone orda ordb f\<close>] ord.lsorted_lhdD ord.lsorted_ltlI)
 
 lemma lsorted_lmap:
   assumes "lsorted xs" "monotone (\<le>) (\<le>) f"
   shows "lsorted (lmap f xs)"
-using `lsorted xs`
-by(coinduction arbitrary: xs rule: lsorted_coinduct')(auto intro: monotoneD[OF `monotone (\<le>) (\<le>) f`] lsorted_lhdD lsorted_ltlI)
+using \<open>lsorted xs\<close>
+by(coinduction arbitrary: xs rule: lsorted_coinduct')(auto intro: monotoneD[OF \<open>monotone (\<le>) (\<le>) f\<close>] lsorted_lhdD lsorted_ltlI)
 
 context linorder begin
 
@@ -3663,7 +3663,7 @@ end
 lemma lsorted_llist_of[simp]: "lsorted (llist_of xs) \<longleftrightarrow> sorted xs"
 by(induct xs)(auto simp: lsorted_LCons)
 
-subsection {* Lexicographic order on lazy lists: @{term "llexord"} *}
+subsection \<open>Lexicographic order on lazy lists: @{term "llexord"}\<close>
 
 lemma llexord_coinduct [consumes 1, case_names llexord, coinduct pred: llexord]:
   assumes X: "X xs ys"
@@ -3792,10 +3792,10 @@ proof(rule disjCI)
       case LNil thus ?thesis using llexord by simp
     next
       case (LCons x xs')
-      with `\<not> llexord r ys xs` obtain y ys'
+      with \<open>\<not> llexord r ys xs\<close> obtain y ys'
         where ys: "ys = LCons y ys'" "\<not> r y x" "y \<noteq> x \<or> \<not> llexord r ys' xs'"
         by(cases ys) auto
-      with `\<not> r y x` linear[of x y] ys LCons show ?thesis by auto
+      with \<open>\<not> r y x\<close> linear[of x y] ys LCons show ?thesis by auto
     qed
   qed
 qed
@@ -3817,7 +3817,7 @@ proof
   show ?rhs (is "_ \<or> ?prefix")
   proof(rule disjCI)
     assume "\<not> ?prefix"
-    with `?lhs` show "xs = ys"
+    with \<open>?lhs\<close> show "xs = ys"
     proof(coinduction arbitrary: xs ys)
       case (Eq_llist xs ys)
       hence "llexord r xs ys"
@@ -3825,7 +3825,7 @@ proof
                                       ys = lappend zs (LCons y ys') \<rbrakk>
                                      \<Longrightarrow> xs' \<noteq> LNil \<and> \<not> r (lhd xs') y"
         by auto
-      from `llexord r xs ys` show ?case
+      from \<open>llexord r xs ys\<close> show ?case
       proof(cases)
         case (llexord_LCons_eq xs' ys' x)
         { fix zs xs'' y ys''
@@ -3864,7 +3864,7 @@ next
         from llexord(1) show ?thesis
         proof
           assume "xs = ys"
-          with True LCons `ys = LCons y ys'` show ?thesis by simp
+          with True LCons \<open>ys = LCons y ys'\<close> show ?thesis by simp
         next
           assume "\<exists>zs xs' y ys'. lfinite zs \<and> xs = lappend zs xs' \<and>
                                  ys = lappend zs (LCons y ys') \<and>
@@ -3873,14 +3873,14 @@ next
             where "lfinite zs" "xs = lappend zs xs'"
             and "ys = lappend zs (LCons y' ys'')"
             and "xs' = LNil \<or> r (lhd xs') y'" by blast
-          with True LCons `ys = LCons y ys'`
+          with True LCons \<open>ys = LCons y ys'\<close>
           show ?thesis by(cases zs) auto
         qed
       next
         case False
-        with LCons llexord `ys = LCons y ys'`
+        with LCons llexord \<open>ys = LCons y ys'\<close>
         have "r x y" by(fastforce elim: lfinite.cases)
-        with LCons `ys = LCons y ys'` show ?thesis by auto
+        with LCons \<open>ys = LCons y ys'\<close> show ?thesis by auto
       qed
     qed
   qed
@@ -3912,15 +3912,15 @@ proof(rule iffI)
       thus ?thesis ..
     next
       case LCons
-      with `xs' = LNil \<or> r (lhd xs') y` have "r (lhd xs') y" by simp
-      from `lfinite zs` obtain zs' where [simp]: "zs = llist_of zs'"
+      with \<open>xs' = LNil \<or> r (lhd xs') y\<close> have "r (lhd xs') y" by simp
+      from \<open>lfinite zs\<close> obtain zs' where [simp]: "zs = llist_of zs'"
         unfolding lfinite_eq_range_llist_of by blast
       with LCons have "enat (length zs') < min (llength xs) (llength ys)"
         by(auto simp add: less_enat_def eSuc_def split: enat.split)
       moreover have "ltake (enat (length zs')) xs = ltake (enat (length zs')) ys"
         by(simp add: ltake_lappend1)
       moreover have "r (lnth xs (length zs')) (lnth ys (length zs'))"
-        using LCons `r (lhd xs') y`
+        using LCons \<open>r (lhd xs') y\<close>
         by(simp add: lappend_llist_of_LCons lnth_lappend1)
       ultimately have ?B by blast
       thus ?thesis ..
@@ -3963,19 +3963,19 @@ proof
     assume "lfinite zs" "llist_of xs = lappend zs xs'"
       and "llist_of ys = lappend zs (LCons y ys')"
       and "xs' = LNil \<or> r (lhd xs') y"
-    from `lfinite zs` obtain zs' where [simp]: "zs = llist_of zs'"
+    from \<open>lfinite zs\<close> obtain zs' where [simp]: "zs = llist_of zs'"
       unfolding lfinite_eq_range_llist_of by blast
     have "lfinite (llist_of xs)" by simp
-    hence "lfinite xs'" unfolding `llist_of xs = lappend zs xs'` by simp
+    hence "lfinite xs'" unfolding \<open>llist_of xs = lappend zs xs'\<close> by simp
     then obtain XS' where [simp]: "xs' = llist_of XS'"
       unfolding lfinite_eq_range_llist_of by blast
-    from `llist_of xs = lappend zs xs'` have [simp]: "xs = zs' @ XS'"
+    from \<open>llist_of xs = lappend zs xs'\<close> have [simp]: "xs = zs' @ XS'"
       by(simp add: lappend_llist_of_llist_of)
     have "lfinite (llist_of ys)" by simp
-    hence "lfinite ys'" unfolding `llist_of ys = lappend zs (LCons y ys')` by simp
+    hence "lfinite ys'" unfolding \<open>llist_of ys = lappend zs (LCons y ys')\<close> by simp
     then obtain YS' where [simp]: "ys' = llist_of YS'"
       unfolding lfinite_eq_range_llist_of by blast
-    from `llist_of ys = lappend zs (LCons y ys')` have [simp]: "ys = zs' @ y # YS'"
+    from \<open>llist_of ys = lappend zs (LCons y ys')\<close> have [simp]: "ys = zs' @ y # YS'"
       by(auto simp add: llist_of.simps(2)[symmetric] lappend_llist_of_llist_of simp del: llist_of.simps(2))
     have "(\<exists>a ys'. ys = xs @ a # ys') \<or>
           (\<exists>zs a b. r a b \<and> (\<exists>xs'. xs = zs @ a # xs') \<and> (\<exists>ys'. ys = zs @ b # ys'))"
@@ -3984,7 +3984,7 @@ proof
       case LNil thus ?thesis by(auto simp add: llist_of_eq_LNil_conv)
     next
       case (LCons x xs'')
-      with `xs' = LNil \<or> r (lhd xs') y`
+      with \<open>xs' = LNil \<or> r (lhd xs') y\<close>
       have "r (lhd xs') y" by(auto simp add: llist_of_eq_LCons_conv)
       with LCons have ?B by(auto simp add: llist_of_eq_LCons_conv) fastforce
       thus ?thesis ..
@@ -3993,7 +3993,7 @@ proof
                                     (\<exists>u a b v w. (a, b) \<in> {(x, y). r x y} \<and>
                                                  x = u @ a # v \<and> y = u @ b # w)}"
       by auto }
-  with `?lhs` show ?rhs
+  with \<open>?lhs\<close> show ?rhs
     unfolding lexord_def llexord_conv llist_of_inject by blast
 next
   assume "?rhs"
@@ -4007,7 +4007,7 @@ next
   qed
 qed
 
-subsection {* The filter functional on lazy lists: @{term "lfilter"} *}
+subsection \<open>The filter functional on lazy lists: @{term "lfilter"}\<close>
 
 lemma lfilter_code [simp, code]:
   shows lfilter_LNil: "lfilter P LNil = LNil"
@@ -4067,7 +4067,7 @@ lemma lhd_lfilter [simp]: "lhd (lfilter P xs) = lhd (ldropWhile (Not \<circ> P) 
 proof(cases "\<exists>x\<in>lset xs. P x")
   case True
   then obtain x where "x \<in> lset xs" and "P x" by blast
-  from `x \<in> lset xs` show ?thesis by induct(simp_all add: `P x`)
+  from \<open>x \<in> lset xs\<close> show ?thesis by induct(simp_all add: \<open>P x\<close>)
 qed(simp add: o_def)
 
 lemma ltl_lfilter: "ltl (lfilter P xs) = lfilter P (ltl (ldropWhile (Not \<circ> P) xs))"
@@ -4151,7 +4151,7 @@ lemma lfinite_lfilter:
 proof
   assume "lfinite (lfilter P xs)"
   { assume "\<not> lfinite xs"
-    with `lfinite (lfilter P xs)`
+    with \<open>lfinite (lfilter P xs)\<close>
     have "finite {n. enat n < llength xs \<and> P (lnth xs n)}"
     proof(induct ys\<equiv>"lfilter P xs" arbitrary: xs rule: lfinite_induct)
       case LNil
@@ -4161,7 +4161,7 @@ proof
       show ?case unfolding eq ..
     next
       case (LCons xs)
-      from `\<not> lnull (lfilter P xs)`
+      from \<open>\<not> lnull (lfilter P xs)\<close>
       have exP: "\<exists>x\<in>lset xs. P x" by simp
       let ?xs = "ltl (ldropWhile (\<lambda>x. \<not> P x) xs)"
       let ?xs' = "ltakeWhile (\<lambda>x. \<not> P x) xs"
@@ -4211,7 +4211,7 @@ next
           by(case_tac [!] xs)(auto simp add: Suc_ile_eq)
         hence "\<not> P (lnth xs (Suc n))" by(rule Suc)
         hence "\<not> P (lnth (ltl xs) n)"
-          using `enat n < llength (ltl xs)` by(cases xs) (simp_all) }
+          using \<open>enat n < llength (ltl xs)\<close> by(cases xs) (simp_all) }
       hence "lfinite (lfilter P (ltl xs))" by(rule Suc)
       thus ?case by(cases xs) simp_all
     qed }
@@ -4244,7 +4244,7 @@ lemma lfilter_eq_lappend_lfiniteD:
   assumes "lfilter P xs = lappend ys zs" and "lfinite ys"
   shows "\<exists>us vs. xs = lappend us vs \<and> lfinite us \<and>
                       ys = lfilter P us \<and> zs = lfilter P vs"
-using `lfinite ys` `lfilter P xs = lappend ys zs`
+using \<open>lfinite ys\<close> \<open>lfilter P xs = lappend ys zs\<close>
 proof(induct arbitrary: xs zs)
   case lfinite_LNil
   hence "xs = lappend LNil xs" "LNil = lfilter P LNil" "zs = lfilter P xs"
@@ -4252,10 +4252,10 @@ proof(induct arbitrary: xs zs)
   thus ?case by blast
 next
   case (lfinite_LConsI ys y)
-  note IH = `\<And>xs zs. lfilter P xs = lappend ys zs \<Longrightarrow>
+  note IH = \<open>\<And>xs zs. lfilter P xs = lappend ys zs \<Longrightarrow>
             \<exists>us vs. xs = lappend us vs \<and> lfinite us \<and>
-                    ys = lfilter P us \<and> zs = lfilter P vs`
-  from `lfilter P xs = lappend (LCons y ys) zs`
+                    ys = lfilter P us \<and> zs = lfilter P vs\<close>
+  from \<open>lfilter P xs = lappend (LCons y ys) zs\<close>
   have "lfilter P xs = LCons y (lappend ys zs)" by simp
   from lfilter_eq_LConsD[OF this] obtain us vs
     where xs: "xs = lappend us (LCons y vs)" "lfinite us"
@@ -4299,16 +4299,16 @@ next
     qed
   next
     case (Suc n)
-    from `Suc n \<le> m` obtain m' where m [simp]: "m = Suc m'" by(cases m) simp
-    with `Suc n \<le> m` have "n \<le> m'" by simp
-    moreover from `enat (Suc n) < llength xs`
+    from \<open>Suc n \<le> m\<close> obtain m' where m [simp]: "m = Suc m'" by(cases m) simp
+    with \<open>Suc n \<le> m\<close> have "n \<le> m'" by simp
+    moreover from \<open>enat (Suc n) < llength xs\<close>
     obtain x xs' where xs [simp]: "xs = LCons x xs'" by(cases xs) simp
-    from `ldistinct (lfilter P xs)` have "ldistinct (lfilter P xs')" by(simp split: if_split_asm)
-    moreover from `enat (Suc n) < llength xs` `enat m < llength xs`
+    from \<open>ldistinct (lfilter P xs)\<close> have "ldistinct (lfilter P xs')" by(simp split: if_split_asm)
+    moreover from \<open>enat (Suc n) < llength xs\<close> \<open>enat m < llength xs\<close>
     have "enat n < llength xs'" "enat m' < llength xs'" by(simp_all add: Suc_ile_eq)
-    moreover note `P a`
+    moreover note \<open>P a\<close>
     moreover have "lnth xs' n = a" "lnth xs' m' = a"
-      using `lnth xs (Suc n) = a` `lnth xs m = a` by simp_all
+      using \<open>lnth xs (Suc n) = a\<close> \<open>lnth xs m = a\<close> by simp_all
     ultimately have "m' = n" by(rule Suc)
     thus ?case by simp
   qed
@@ -4355,7 +4355,7 @@ qed
 lemma lfilter_repeat [simp]: "lfilter P (repeat x) = (if P x then repeat x else LNil)"
 by(simp add: lfilter_id_conv)
 
-subsection {* Concatenating all lazy lists in a lazy list: @{term "lconcat"} *}
+subsection \<open>Concatenating all lazy lists in a lazy list: @{term "lconcat"}\<close>
 
 lemma lconcat_simps [simp, code]:
   shows lconcat_LNil: "lconcat LNil = LNil"
@@ -4411,7 +4411,7 @@ proof
     where "xss = lappend (llist_of xss') (LCons (LCons x xs') xss'')"
     and "xs = lappend xs' (lconcat xss'')"
     and "set xss' \<subseteq> {xs. lnull xs}" by blast
-  moreover from `set xss' \<subseteq> {xs. lnull xs}`
+  moreover from \<open>set xss' \<subseteq> {xs. lnull xs}\<close>
   have "lnull (lconcat (llist_of xss'))" by simp
   ultimately show ?lhs by(simp add: lappend_lnull1)
 next
@@ -4426,15 +4426,15 @@ next
     and "lfinite us"
     and "lset us \<subseteq> {xs. lnull xs}" "\<not> lnull y"
     and ys: "ys = lfilter (\<lambda>xs. \<not> lnull xs) vs" by blast
-  from `lfinite us` obtain us' where [simp]: "us = llist_of us'"
+  from \<open>lfinite us\<close> obtain us' where [simp]: "us = llist_of us'"
     unfolding lfinite_eq_range_llist_of by blast
-  from `lset us \<subseteq> {xs. lnull xs}` have us: "lnull (lconcat us)"
+  from \<open>lset us \<subseteq> {xs. lnull xs}\<close> have us: "lnull (lconcat us)"
     unfolding lnull_lconcat .
-  from `\<not> lnull y` obtain y' ys' where y: "y = LCons y' ys'"
+  from \<open>\<not> lnull y\<close> obtain y' ys' where y: "y = LCons y' ys'"
     unfolding not_lnull_conv by blast
-  from `?lhs` us have [simp]: "y' = x" "xs = lappend ys' (lconcat vs)"
+  from \<open>?lhs\<close> us have [simp]: "y' = x" "xs = lappend ys' (lconcat vs)"
     unfolding xss y by(simp_all add: lappend_lnull1)
-  from `lset us \<subseteq> {xs. lnull xs}` ys show ?rhs unfolding xss y by simp blast
+  from \<open>lset us \<subseteq> {xs. lnull xs}\<close> ys show ?rhs unfolding xss y by simp blast
 qed
 
 lemma llength_lconcat_lfinite_conv_sum:
@@ -4449,7 +4449,7 @@ next
     by(auto simp add: zero_enat_def[symmetric] Suc_ile_eq gr0_conv_Suc)
   also have "\<dots> = insert 0 (Suc ` {i. enat i < llength xss})" by auto
   also have "0 \<notin> Suc ` {i. enat i < llength xss}" by auto
-  moreover from `lfinite xss` have "finite {i. enat i < llength xss}"
+  moreover from \<open>lfinite xss\<close> have "finite {i. enat i < llength xss}"
     by(rule lfinite_finite_index)
   ultimately show ?case using lfinite_LConsI
     by(simp add: sum.reindex)
@@ -4539,7 +4539,7 @@ proof(induct n arbitrary: xss)
     assume "i \<in> {..< length xss'}"
     hence "xss' ! i \<in> set xss'" unfolding in_set_conv_nth by blast
     with LNil have "xss' ! i = LNil" by auto
-    moreover from `i \<in> {..< length xss'}` have "lnth xss i = xss' ! i"
+    moreover from \<open>i \<in> {..< length xss'}\<close> have "lnth xss i = xss' ! i"
       unfolding xss by(simp add: lnth_lappend1)
     ultimately show "llength (lnth xss i) = 0" by simp
   qed
@@ -4548,7 +4548,7 @@ proof(induct n arbitrary: xss)
   ultimately show ?case by blast
 next
   case (Suc n)
-  from `enat (Suc n) < llength (lconcat xss)`
+  from \<open>enat (Suc n) < llength (lconcat xss)\<close>
   have "\<not> lnull (lconcat xss)" by auto
   then obtain x xs where concat_xss: "lconcat xss = LCons x xs"
     unfolding not_lnull_conv by blast
@@ -4558,7 +4558,7 @@ next
     unfolding lconcat_eq_LCons_conv by blast
   from LNil have concat_xss': "lnull (lconcat (llist_of xss'))" by simp
   from xs have "xs = lconcat (LCons xs' xss'')" by simp
-  with concat_xss `enat (Suc n) < llength (lconcat xss)`
+  with concat_xss \<open>enat (Suc n) < llength (lconcat xss)\<close>
   have "enat n < llength (lconcat (LCons xs' xss''))"
     by(simp add: Suc_ile_eq)
   from Suc.hyps[OF this] obtain m n'
@@ -4623,7 +4623,7 @@ next
              (\<Sum>i = Suc 0..<m. llength (lnth (LCons xs' xss'') i))" by(simp)
       also have "eSuc (llength xs') + \<dots> = 1 + (llength (lnth (LCons xs' xss'') 0) + \<dots>)"
         by(simp add: eSuc_plus_1 ac_simps)
-      also note sum_head_upt_Suc[symmetric, OF `0 < m`]
+      also note sum_head_upt_Suc[symmetric, OF \<open>0 < m\<close>]
       finally have "enat (Suc n) = (\<Sum>i<m + length xss'. llength (lnth xss i)) + enat n'"
         unfolding eSuc_enat[symmetric] n_eq by(simp add: eSuc_plus_1 ac_simps atLeast0LessThan) }
     ultimately show ?thesis by blast
@@ -4666,13 +4666,13 @@ proof
     ultimately show ?case by(auto)
   next
     case (lfinite_LConsI xs x)
-    from `LCons x xs = lconcat xss`[symmetric]
+    from \<open>LCons x xs = lconcat xss\<close>[symmetric]
     obtain xs' xss' xss'' where xss [simp]: "xss = lappend (llist_of xss') (LCons (LCons x xs') xss'')"
       and xs [simp]: "xs = lappend xs' (lconcat xss'')"
       and xss': "set xss' \<subseteq> {xs. lnull xs}" unfolding lconcat_eq_LCons_conv by blast
     have "xs = lconcat (LCons xs' xss'')" by simp
     hence "?concl (LCons xs' xss'')" by(rule lfinite_LConsI)
-    thus ?case using `lfinite xs` xss' by(auto split: if_split_asm)
+    thus ?case using \<open>lfinite xs\<close> xss' by(auto split: if_split_asm)
   qed
 next
   assume "?rhs"
@@ -4681,21 +4681,21 @@ next
   thus ?lhs
   proof(induct "lfilter (\<lambda>xs. \<not> lnull xs) xss" arbitrary: xss)
     case lfinite_LNil
-    from `LNil = lfilter (\<lambda>xs. \<not> lnull xs) xss`[symmetric]
+    from \<open>LNil = lfilter (\<lambda>xs. \<not> lnull xs) xss\<close>[symmetric]
     have "lset xss \<subseteq> {xs. lnull xs}" unfolding lfilter_empty_conv by blast
     hence "lnull (lconcat xss)" by(simp)
     thus ?case by(simp)
   next
     case (lfinite_LConsI xs x)
-    from lfilter_eq_LConsD[OF `LCons x xs = lfilter (\<lambda>xs. \<not> lnull xs) xss`[symmetric]]
+    from lfilter_eq_LConsD[OF \<open>LCons x xs = lfilter (\<lambda>xs. \<not> lnull xs) xss\<close>[symmetric]]
     obtain xss' xss'' where xss [simp]: "xss = lappend xss' (LCons x xss'')"
       and xss': "lfinite xss'" "lset xss' \<subseteq> {xs. lnull xs}"
       and x: "\<not> lnull x"
       and xs [simp]: "xs = lfilter (\<lambda>xs. \<not> lnull xs) xss''" by blast
     moreover
-    from `\<forall>xs\<in>lset xss. lfinite xs` xss' have "\<forall>xs\<in>lset xss''. lfinite xs" by auto
+    from \<open>\<forall>xs\<in>lset xss. lfinite xs\<close> xss' have "\<forall>xs\<in>lset xss''. lfinite xs" by auto
     with xs have "lfinite (lconcat xss'')" by(rule lfinite_LConsI)
-    ultimately show ?case using `\<forall>xs\<in>lset xss. lfinite xs` by(simp)
+    ultimately show ?case using \<open>\<forall>xs\<in>lset xss. lfinite xs\<close> by(simp)
   qed
 qed
 
@@ -4728,7 +4728,7 @@ apply(auto simp add: ldistinct_lappend fun_ord_def split: llist.split)
 apply(blast dest!: subsetD[OF lprefix_lsetD] subsetD[OF lset_lconcat_subset])
 done
 
-subsection {* Sublist view of a lazy list: @{term "lnths"} *}
+subsection \<open>Sublist view of a lazy list: @{term "lnths"}\<close>
 
 lemma lnths_empty [simp]: "lnths xs {} = LNil"
 by(auto simp add: lnths_def split_def lfilter_empty_conv)
@@ -4887,7 +4887,7 @@ proof -
   have "lfilter (\<lambda>(x, y). y \<in> A) (lzip ys (iterates Suc 0)) =
         lfilter (\<lambda>(x, y). y \<in> B) (lzip ys (iterates Suc 0))"
     by(rule lfilter_cong[OF refl])(auto simp add: lset_lzip A)
-  thus ?thesis unfolding `xs = ys` lnths_def by simp
+  thus ?thesis unfolding \<open>xs = ys\<close> lnths_def by simp
 qed
 
 lemma lnths_insert:
@@ -4936,7 +4936,7 @@ next
     by(auto simp add: lnths_def lfinite_lfilter)
 qed
 
-subsection {* @{const "lsum_list"} *}
+subsection \<open>@{const "lsum_list"}\<close>
 
 context monoid_add begin
 
@@ -4967,10 +4967,10 @@ lemma lsum_list_mono:
 using assms
 by(auto simp add: lsum_list_def intro: sum_list_mono)
 
-subsection {*
+subsection \<open>
   Alternative view on @{typ "'a llist"} as datatype
   with constructors @{term "llist_of"} and @{term "inf_llist"}
-*}
+\<close>
 
 lemma lnull_inf_llist [simp]: "\<not> lnull (inf_llist f)"
 by(simp add: inf_llist_def)
@@ -5108,13 +5108,13 @@ by(simp add: llist_all2_conv_lzip)
 lemma (in monoid_add) lsum_list_infllist: "lsum_list (inf_llist f) = 0"
 by simp
 
-subsection {* Setup for lifting and transfer *}
+subsection \<open>Setup for lifting and transfer\<close>
 
-subsubsection {* Relator and predicator properties *}
+subsubsection \<open>Relator and predicator properties\<close>
 
 abbreviation "llist_all == pred_llist"
 
-subsubsection {* Transfer rules for the Transfer package *}
+subsubsection \<open>Transfer rules for the Transfer package\<close>
 
 context includes lifting_syntax
 begin
@@ -5145,7 +5145,7 @@ proof(rule rel_funI)+
   fix IS_LNIL1 :: "'a \<Rightarrow> bool" and IS_LNIL2 LHD1 LHD2 LTL1 LTL2 x y
   assume rel: "(A ===> (=)) IS_LNIL1 IS_LNIL2" "(A ===> B) LHD1 LHD2" "(A ===> A) LTL1 LTL2"
     and "A x y"
-  from `A x y`
+  from \<open>A x y\<close>
   show "llist_all2 B (unfold_llist IS_LNIL1 LHD1 LTL1 x) (unfold_llist IS_LNIL2 LHD2 LTL2 y)"
     apply(coinduction arbitrary: x y)
     using rel by(auto 4 4 elim: rel_funE)
@@ -5165,7 +5165,7 @@ proof(rule rel_funI)+
     show ?case by simp transfer_prover
   next
     case (LCons x y)
-    note [transfer_rule] = `A x y`
+    note [transfer_rule] = \<open>A x y\<close>
     have ?lhd by(simp add: LCons[simplified]) transfer_prover
     moreover
     have "STOP1 x = STOP2 y" "llist_all2 B (MORE1 x) (MORE2 y)" "A (LTL1 x) (LTL2 y)" by transfer_prover+

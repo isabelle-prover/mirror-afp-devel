@@ -11,7 +11,7 @@ begin
 
   section "Definition of a Natural Transformation"
     
-  text{*
+  text\<open>
     As is the case for functors, the ``object-free'' definition of category
     makes it possible to view natural transformations as functions on arrows.
     In particular, a natural transformation between functors
@@ -31,7 +31,7 @@ begin
     Natural transformations also ``preserve'' domain and codomain, but in a more general
     sense than functors. The naturality conditions, which express the two ways of factoring
     the diagonal of a commuting square, are degenerate in the case of an identity transformation.
-  *}
+\<close>
 
   locale natural_transformation =
     A: category A +
@@ -55,10 +55,10 @@ begin
     shows "\<tau> (A.cod f) \<cdot>\<^sub>B F f = G f \<cdot>\<^sub>B \<tau> (A.dom f)"
       using assms is_natural_1 is_natural_2 by simp
 
-    text{*
+    text\<open>
       The following fact for natural transformations provides us with the same advantages
       as the corresponding fact for functors.
-    *}
+\<close>
 
     lemma preserves_reflects_arr [iff]:
     shows "B.arr (\<tau> f) \<longleftrightarrow> A.arr f"
@@ -83,10 +83,10 @@ begin
       using assms
       by (metis A.arr_cod_iff_arr A.cod_comp B.comp_assoc F.preserves_comp is_natural_2)
 
-    text{*
+    text\<open>
       A natural transformation that also happens to be a functor is equal to
       its own domain and codomain.
-    *}
+\<close>
 
     lemma functor_implies_equals_dom:
     assumes "functor A B \<tau>"
@@ -117,11 +117,11 @@ begin
 
   section "Components of a Natural Transformation"
 
-  text{*
+  text\<open>
     The values taken by a natural transformation on identities are the \emph{components}
     of the transformation.  We have the following basic technique for proving two natural
     transformations equal: show that they have the same components.
-  *}
+\<close>
 
   lemma eqI:
   assumes "natural_transformation A B F G \<sigma>" and "natural_transformation A B F G \<sigma>'"
@@ -137,12 +137,12 @@ begin
     thus ?thesis by auto
   qed
 
-  text{*
+  text\<open>
     As equality of natural transformations is determined by equality of components,
     a natural transformation may be uniquely defined by specifying its components.
     The extension to all arrows is given by @{prop is_natural_1} or equivalently
     by @{prop is_natural_2}.
-  *}
+\<close>
 
   locale transformation_by_components =
     A: category A +
@@ -195,10 +195,10 @@ begin
 
   section "Functors as Natural Transformations"
 
-  text{*
+  text\<open>
     A functor is a special case of a natural transformation, in the sense that the same map
     that defines the functor also defines an identity natural transformation.
-  *}
+\<close>
 
   lemma functor_is_transformation [simp]:
   assumes "functor A B F"
@@ -214,9 +214,9 @@ begin
 
   section "Constant Natural Transformations"
 
-  text{*
+  text\<open>
     A constant natural transformation is one whose components are all the same arrow.
-  *}
+\<close>
 
   locale constant_transformation =
     A: category A +
@@ -269,15 +269,15 @@ begin
 
   section "Vertical Composition"
 
-  text{*
-    Vertical composition is a way of composing natural transformations @{text "\<sigma>: F \<rightarrow> G"}
-    and @{text "\<tau>: G \<rightarrow> H"}, between parallel functors @{term F}, @{term G}, and @{term H}
+  text\<open>
+    Vertical composition is a way of composing natural transformations \<open>\<sigma>: F \<rightarrow> G\<close>
+    and \<open>\<tau>: G \<rightarrow> H\<close>, between parallel functors @{term F}, @{term G}, and @{term H}
     to obtain a natural transformation from @{term F} to @{term H}.
-    The composite is traditionally denoted by @{text "\<tau> o \<sigma>"}, however in the present
+    The composite is traditionally denoted by \<open>\<tau> o \<sigma>\<close>, however in the present
     setting this notation is misleading because it is horizontal composite, rather than
     vertical composite, that coincides with composition of natural transformations as
     functions on arrows.
-  *}
+\<close>
 
   locale vertical_composite =
     A: category A +
@@ -296,12 +296,12 @@ begin
   and \<tau> :: "'a \<Rightarrow> 'b"
   begin
 
-    text{*
+    text\<open>
       Vertical composition takes an arrow @{term "A.in_hom a b f"} to an arrow in
       @{term "B.hom (F a) (G b)"}, which we can obtain by forming either of
       the composites @{term "B (\<tau> b) (\<sigma> f)"} or @{term "B (\<tau> f) (\<sigma> a)"}, which are
       equal to each other.
-    *}
+\<close>
 
     definition map
     where "map f = (if A.arr f then \<tau> (A.cod f) \<cdot>\<^sub>B \<sigma> f else B.null)"
@@ -338,9 +338,9 @@ begin
   sublocale vertical_composite \<subseteq> natural_transformation A B F H map
     using is_natural_transformation by auto
 
-  text{*
+  text\<open>
     Functors are the identities for vertical composition.
-  *}
+\<close>
 
   lemma vcomp_ide_dom [simp]:
   assumes "natural_transformation A B F G \<tau>"
@@ -381,9 +381,9 @@ begin
       by simp
   qed
 
-  text{*
+  text\<open>
     Vertical composition is associative.
-  *}
+\<close>
 
   lemma vcomp_assoc [simp]:
   assumes "natural_transformation A B F G \<rho>"
@@ -412,11 +412,11 @@ begin
 
   section "Natural Isomorphisms"
 
-  text{*
+  text\<open>
     A natural isomorphism is a natural transformation each of whose components
     is an isomorphism.  Equivalently, a natural isomorphism is a natural transformation
     that is invertible with respect to vertical composition.
-  *}
+\<close>
 
   locale natural_isomorphism = natural_transformation A B F G \<tau>
   for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
@@ -427,11 +427,11 @@ begin
   assumes components_are_iso [simp]: "A.ide a \<Longrightarrow> B.iso (\<tau> a)"
   begin
 
-    text {*
+    text \<open>
       Natural isomorphisms preserve isomorphisms, in the sense that the sides of
       of the naturality square determined by an isomorphism are all isomorphisms,
       so the diagonal is, as well.
-    *}
+\<close>
 
     lemma preserves_iso:
     assumes "A.iso f"
@@ -442,13 +442,13 @@ begin
 
   end
 
-  text {*
+  text \<open>
     Since the function that represents a functor is formally identical to the function
     that represents the corresponding identity natural transformation, no additional locale
     is needed for identity natural transformations.  However, an identity natural transformation
     is also a natural isomorphism, so it is useful for @{locale functor} to inherit from the
     @{locale natural_isomorphism} locale.
-  *}
+\<close>
 
   sublocale "functor" \<subseteq> natural_isomorphism A B F F F
     apply unfold_locales
@@ -766,13 +766,13 @@ begin
 
   section "Horizontal Composition"
 
-  text{*
+  text\<open>
     Horizontal composition is a way of composing parallel natural transformations
     @{term \<sigma>} from @{term F} to @{term G} and @{term \<tau>} from @{term H} to @{term K},
     where functors @{term F} and @{term G} map @{term A} to @{term B} and
     @{term H} and @{term K} map @{term B} to @{term C}, to obtain a natural transformation
     from @{term "H o F"} to @{term "K o G"}.
-  *}
+\<close>
 
   locale horizontal_composite =
     A: category A +
@@ -864,9 +864,9 @@ begin
       using \<tau>.B.map_def \<tau>.is_extensional by auto
   qed
 
-  text{*
+  text\<open>
     Horizontal composition of a functor with a vertical composite.
-  *}
+\<close>
 
   lemma hcomp_functor_vcomp:
   assumes "functor A B F"
@@ -889,9 +889,9 @@ begin
       using \<tau>'Fo\<tau>F.map_def \<tau>'o\<tau>.map_def \<tau>'o\<tau>_F.is_extensional by auto
   qed
 
-  text{*
+  text\<open>
     Horizontal composition of a vertical composite with a functor.
-  *}
+\<close>
 
   lemma hcomp_vcomp_functor:
   assumes "functor B C K"
@@ -915,9 +915,9 @@ begin
       by auto
   qed
 
-  text{*
+  text\<open>
     The interchange law for horizontal and vertical composition.
-  *}
+\<close>
 
   lemma interchange:
   assumes "natural_transformation B C F G \<sigma>"

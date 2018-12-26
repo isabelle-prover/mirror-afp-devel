@@ -87,11 +87,11 @@ proof (rule pathsCard_below)
   
   have "pathCard (tl p) \<sqsubseteq> record_call x\<cdot>(pathCard p)"
     apply (rule fun_belowI)
-    using `hd p = x` by (auto simp add: pathCard_def record_call_simp no_call_in_tail dest: one_imp_one_tail)
+    using \<open>hd p = x\<close> by (auto simp add: pathCard_def record_call_simp no_call_in_tail dest: one_imp_one_tail)
     
   hence "pathCard (tl p) \<sqsubseteq> record_call x\<cdot>(pathsCard fs)"
-    by (rule below_trans[OF _ monofun_cfun_arg[OF  paths_Card_above[OF `p \<in> fs`]]])
-  thus "pathCard p' \<sqsubseteq> record_call x\<cdot>(pathsCard fs)" using `p' = _` by simp
+    by (rule below_trans[OF _ monofun_cfun_arg[OF  paths_Card_above[OF \<open>p \<in> fs\<close>]]])
+  thus "pathCard p' \<sqsubseteq> record_call x\<cdot>(pathsCard fs)" using \<open>p' = _\<close> by simp
 qed
   
 lemma pathCards_noneD:

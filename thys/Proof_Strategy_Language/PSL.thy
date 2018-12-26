@@ -9,7 +9,7 @@ theory PSL
 imports Try_Hard
 begin
 
-text{* Uncomment the following to unleash the power parallelism. *}
+text\<open>Uncomment the following to unleash the power parallelism.\<close>
 
 (*
 ML{* Multithreading.max_threads_update 28 *}

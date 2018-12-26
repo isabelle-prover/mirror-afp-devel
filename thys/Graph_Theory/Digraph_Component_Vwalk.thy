@@ -8,7 +8,7 @@ imports
   Vertex_Walk
 begin
 
-section {* Lemmas for Vertex Walks *}
+section \<open>Lemmas for Vertex Walks\<close>
 
 lemma vwalkI_subgraph:
   assumes "vwalk p H"
@@ -21,7 +21,7 @@ proof
   have "set (vwalk_arcs p) \<subseteq> arcs_ends H"
     using assms by (simp add: vwalk_def)
   also have "\<dots> \<subseteq> arcs_ends G"
-    using `subgraph H G` by (rule arcs_ends_mono)
+    using \<open>subgraph H G\<close> by (rule arcs_ends_mono)
   finally show "set (vwalk_arcs p) \<subseteq> arcs_ends G" .
 qed
 

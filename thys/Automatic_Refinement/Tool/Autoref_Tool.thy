@@ -1,15 +1,15 @@
-section {* Automatic Refinement Tool *}
+section \<open>Automatic Refinement Tool\<close>
 theory Autoref_Tool
 imports 
   Autoref_Translate 
   Autoref_Gen_Algo
   Autoref_Relator_Interface
 begin
-  subsection {* Standard setup *}
+  subsection \<open>Standard setup\<close>
 
-text {* Declaration of standard phases *}
+text \<open>Declaration of standard phases\<close>
 
-declaration {* fn phi => let open Autoref_Phases in
+declaration \<open>fn phi => let open Autoref_Phases in
   I
   #> register_phase "id_op" 10 Autoref_Id_Ops.id_phase phi
   #> register_phase "rel_inf" 20 
@@ -19,7 +19,7 @@ declaration {* fn phi => let open Autoref_Phases in
   #> register_phase "trans" 30
        Autoref_Translate.trans_phase phi
 end
-*}
+\<close>
 
 
 (*
@@ -36,8 +36,8 @@ end
 *}
 *)
 
-text {* Main method *}
-method_setup autoref = {* let
+text \<open>Main method\<close>
+method_setup autoref = \<open>let
     open Refine_Util
     val autoref_flags = 
           parse_bool_config "trace" Autoref_Phases.cfg_trace
@@ -62,11 +62,11 @@ method_setup autoref = {* let
 
   end
 
- *} "Automatic Refinement"
+\<close> "Automatic Refinement"
 
-subsection {* Tools *}
+subsection \<open>Tools\<close>
 
-setup {*
+setup \<open>
   let
     fun higher_order_rl_of ctxt thm = case Thm.concl_of thm of
       @{mpat "Trueprop ((_,?t)\<in>_)"} => let
@@ -100,60 +100,60 @@ setup {*
     Attrib.setup @{binding autoref_higher_order_rule} 
       (Scan.succeed higher_order_rl_attr) "Autoref: Convert rule to higher-order form"
   end
-*}
+\<close>
 
-subsection {* Advanced Debugging *}
-method_setup autoref_trans_step_keep = {*
+subsection \<open>Advanced Debugging\<close>
+method_setup autoref_trans_step_keep = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Translate.trans_dbg_step_tac (Autoref_Phases.init_data ctxt)
   ))
-  *} "Single translation step, leaving unsolved side-coditions"
+\<close> "Single translation step, leaving unsolved side-coditions"
 
-method_setup autoref_trans_step = {*
+method_setup autoref_trans_step = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Translate.trans_step_tac (Autoref_Phases.init_data ctxt)
   ))
-  *} "Single translation step"
+\<close> "Single translation step"
 
-method_setup autoref_trans_step_only = {*
+method_setup autoref_trans_step_only = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Translate.trans_step_only_tac (Autoref_Phases.init_data ctxt)
   ))
-  *} "Single translation step, not attempting to solve side-coditions"
+\<close> "Single translation step, not attempting to solve side-coditions"
 
-method_setup autoref_side = {*
+method_setup autoref_side = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Translate.side_dbg_tac (Autoref_Phases.init_data ctxt)
   ))
-  *} "Solve side condition, leave unsolved subgoals"
+\<close> "Solve side condition, leave unsolved subgoals"
 
-method_setup autoref_try_solve = {*
+method_setup autoref_try_solve = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Fix_Rel.try_solve_tac (Autoref_Phases.init_data ctxt)
   ))
-  *} "Try to solve constraint and trace debug information"
+\<close> "Try to solve constraint and trace debug information"
 
-method_setup autoref_solve_step = {*
+method_setup autoref_solve_step = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Fix_Rel.solve_step_tac (Autoref_Phases.init_data ctxt)
   ))
-  *} "Single-step of constraint solver"
+\<close> "Single-step of constraint solver"
 
-method_setup autoref_id_op = {*
+method_setup autoref_id_op = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Id_Ops.id_tac ctxt
   ))
-*}
+\<close>
 
-method_setup autoref_solve_id_op = {*
+method_setup autoref_solve_id_op = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (
     Autoref_Id_Ops.id_tac (Config.put Autoref_Id_Ops.cfg_ss_id_op false ctxt)
   ))
-*}
+\<close>
 
 
 
-ML {*
+ML \<open>
   structure Autoref_Debug = struct
     fun print_thm_pairs ctxt = let
       val ctxt = Autoref_Phases.init_data ctxt
@@ -180,11 +180,11 @@ ML {*
       warning p
     end
   end
-*}
+\<close>
 
 
-text {* General casting-tag, that allows type-casting on concrete level, while 
-  being identity on abstract level. *}
+text \<open>General casting-tag, that allows type-casting on concrete level, while 
+  being identity on abstract level.\<close>
 definition [simp]: "CAST \<equiv> id"
 lemma [autoref_itype]: "CAST ::\<^sub>i I \<rightarrow>\<^sub>i I" by simp
 
@@ -200,7 +200,7 @@ lemma [autoref_itype]: "CAST ::\<^sub>i I \<rightarrow>\<^sub>i I" by simp
 
 
 
-text {* Hide internal stuff *}
+text \<open>Hide internal stuff\<close>
 
 notation (input) rel_ANNOT (infix ":::\<^sub>r" 10)
 notation (input) ind_ANNOT (infix "::#\<^sub>r" 10)

@@ -796,7 +796,7 @@ proof -
     proof -
       have "u \<in> U" using U_def by simp
       moreover have "u \<in> U \<Longrightarrow> excess f u \<ge> 0" for u 
-        using fct1 excess_non_negative' `s \<notin> U` by auto
+        using fct1 excess_non_negative' \<open>s \<notin> U\<close> by auto
       ultimately show ?thesis using assms fct1 finite_V
         by (metis Diff_cancel Diff_eq_empty_iff 
                   Diff_infinite_finite finite_Diff sum_pos2)
@@ -824,14 +824,14 @@ proof -
     then obtain u' v' where "u' \<in> U" and "v' \<in> U'" and "f (v', u') > 0" 
       by blast
     
-    obtain p1 where "cf.isSimplePath u p1 u'" using U_def `u' \<in> U` by auto
+    obtain p1 where "cf.isSimplePath u p1 u'" using U_def \<open>u' \<in> U\<close> by auto
     moreover have "(u', v') \<in> cf.E"
     proof -
       have "(v', u') \<in> E" 
-        using capacity_const `f (v', u') > 0` 
+        using capacity_const \<open>f (v', u') > 0\<close> 
         by (metis not_less zero_flow_simp)
       then have "cf (u', v') > 0" unfolding cf_def 
-        using no_parallel_edge `f (v', u') > 0` by (auto split: if_split)
+        using no_parallel_edge \<open>f (v', u') > 0\<close> by (auto split: if_split)
       thus ?thesis unfolding cf.E_def by simp
     qed
     ultimately have "cf.isPath u (p1 @ [(u', v')]) v'" 
@@ -839,7 +839,7 @@ proof -
     then obtain p2 where "cf.isSimplePath u p2 v'" 
       using cf.isSPath_pathLE by blast
     then have "v' \<in> U" using U_def by auto
-    thus False using `v' \<in> U'` and U'_def by simp
+    thus False using \<open>v' \<in> U'\<close> and U'_def by simp
   qed
   then obtain p' where "cf.isSimplePath u p' s" using U_def by auto
   thus ?thesis ..
@@ -858,7 +858,7 @@ proof -
   from assms have "excess f u > 0" unfolding relabel_precond_def by auto
   with l'.excess_imp_source_path obtain p where p_obt: "cf.isSimplePath u p s" .
   
-  have "u \<in> V" using excess_nodes_only `excess f u > 0` .
+  have "u \<in> V" using excess_nodes_only \<open>excess f u > 0\<close> .
   then have "length p < card V" 
     using cf.simplePath_length_less_V[of u p] p_obt by auto
   moreover have "?l' u \<le> ?l' s + length p" 

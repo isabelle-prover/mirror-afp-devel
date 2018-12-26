@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of method calls that cannot be defined inside JinjaThreads *}
+section \<open>Semantics of method calls that cannot be defined inside JinjaThreads\<close>
 
 theory ExternalCall
 imports
@@ -14,7 +14,7 @@ type_synonym
   ('addr,'thread_id,'heap) external_thread_action = "('addr, 'thread_id, cname \<times> mname \<times> 'addr,'heap) Jinja_thread_action"
 
 (* pretty printing for external_thread_action type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [a1, t
@@ -25,10 +25,10 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
-*}
+\<close>
 typ "('addr,'thread_id,'heap) external_thread_action"
 
-subsection {* Typing of external calls *}
+subsection \<open>Typing of external calls\<close>
 
 inductive external_WT_defs :: "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> bool" ("(_\<bullet>_'(_')) :: _" [50, 0, 0, 50] 60)
 where
@@ -93,7 +93,7 @@ by(auto 5 2 simp add: external_WT'_iff dest: typeof_addr_hext_mono map_typeof_he
 
 end
 
-subsection {* Semantics of external calls *}
+subsection \<open>Semantics of external calls\<close>
 
 datatype 'addr extCallRet = 
     RetVal "'addr val"
@@ -126,7 +126,7 @@ inductive_cases heap_copies_cases:
   "heap_copies a a' [] h ops h'"
   "heap_copies a a' (al#als) h ops h'"
 
-text {*
+text \<open>
   Contrary to Sun's JVM 1.6.0\_07, cloning an interrupted thread does not yield an interrupted thread,
   because the interrupt flag is not stored inside the thread object.
   Starting a clone of a started thread with Sun JVM 1.6.0\_07 raises an illegal thread state exception,
@@ -138,7 +138,7 @@ text {*
   such that \texttt{Object.clone()} can no longer be accessed for Thread and subclasses in Java 7.
 
   Array cells are never volatile themselves.
-  *}
+\<close>
 
 inductive heap_clone :: "'m prog \<Rightarrow> 'heap \<Rightarrow> 'addr \<Rightarrow> 'heap \<Rightarrow> (('addr, 'thread_id) obs_event list \<times> 'addr) option \<Rightarrow> bool"
 for P :: "'m prog" and h :: 'heap and a :: 'addr 
@@ -287,7 +287,7 @@ where
 | RedYield:
   "P,t \<turnstile> \<langle>a\<bullet>yield([]), h\<rangle> -\<lbrace>Yield\<rbrace>\<rightarrow>ext \<langle>RetVal Unit, h\<rangle>"
 
-subsection {* Aggressive formulation for external cals *}
+subsection \<open>Aggressive formulation for external cals\<close>
 
 definition red_external_aggr :: 
   "'m prog \<Rightarrow> 'thread_id \<Rightarrow> 'addr \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> 'heap \<Rightarrow> 
@@ -475,7 +475,7 @@ using assms by(induct)(auto dest!: heap_copy_loc_length)
 
 end
 
-subsection {* @{text "\<tau>"}-moves *}
+subsection \<open>\<open>\<tau>\<close>-moves\<close>
 
 inductive \<tau>external_defs :: "cname \<Rightarrow> mname \<Rightarrow> bool"
 where
@@ -521,7 +521,7 @@ by(auto elim!: \<tau>external_defs.cases simp add: \<tau>external_def red_extern
 
 end
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 code_pred 
   (modes:
@@ -571,10 +571,10 @@ proof -
     by(rule heap_base.heap_clone.cases[folded Predicate_Compile.contains_def])(erule (3) heap_clone.that[OF refl refl refl refl refl refl refl]|assumption)+
 qed
 
-text {* 
+text \<open>
   code\_pred in Isabelle2012 cannot handle boolean parameters as premises properly, 
   so this replacement rule explicitly tests for @{term "True"}
-*}
+\<close>
 
 lemma (in heap_base) RedWaitSpurious_Code:
   "spurious_wakeups = True \<Longrightarrow> 

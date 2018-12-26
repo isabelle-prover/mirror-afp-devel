@@ -4,7 +4,7 @@
     Copyright   2000 TUM
 *)
 
-section {* LBV for the JVM \label{sec:JVM} *}
+section \<open>LBV for the JVM \label{sec:JVM}\<close>
 
 theory LBVJVM
 imports "../DFA/Abstract_BV" TF_JVM

@@ -364,7 +364,7 @@ proof -
       using Cons.prems(2) by auto
     have "a \<unrhd>\<^sub>e\<^sub>m\<^sub>b s" unfolding sequence_emb_steps 
       by (metis append_Cons append_Nil last_append list.sel(1) list.simps(3) local.Cons(2) local.Cons(3) nth_Cons_Suc)
-    show ?case using step[OF `t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b a` `a \<unrhd>\<^sub>e\<^sub>m\<^sub>b s` `P a s`] .
+    show ?case using step[OF \<open>t \<rightarrow>\<^sub>e\<^sub>m\<^sub>b a\<close> \<open>a \<unrhd>\<^sub>e\<^sub>m\<^sub>b s\<close> \<open>P a s\<close>] .
   qed
 qed
 
@@ -649,7 +649,7 @@ proof (rule ccontr)
     case False
     define p' where "p' = butlast ?p1"
     have "take (length p') p \<noteq> p'" 
-      using `take (length (butlast ?p1)) (butlast ?p2) \<noteq> butlast ?p1` p'_def p_def by blast
+      using \<open>take (length (butlast ?p1)) (butlast ?p2) \<noteq> butlast ?p1\<close> p'_def p_def by blast
     have "take (length p) p' \<noteq> p" using False p'_def by metis
     have "u = emb_step_at p dp (emb_step_at p' dq t)" 
       unfolding u_def prio_emb_step_def 
@@ -909,7 +909,7 @@ proof -
     "hd ws = subst \<rho> w"
     "last ws = u"
     "\<forall>i. Suc i < length ws \<longrightarrow> prio_emb_step prio (ws ! i) u = ws ! Suc i \<and> ws ! i \<rightarrow>\<^sub>e\<^sub>m\<^sub>b ws ! Suc i"
-    using `subst \<rho> w \<unrhd>\<^sub>e\<^sub>m\<^sub>b u` sequence_prio_emb_steps by blast
+    using \<open>subst \<rho> w \<unrhd>\<^sub>e\<^sub>m\<^sub>b u\<close> sequence_prio_emb_steps by blast
 
   have ws_emb_u:"\<forall>i. Suc i < length ws \<longrightarrow> ws ! i \<noteq> u \<and> ws ! i \<unrhd>\<^sub>e\<^sub>m\<^sub>b u"
   proof (rule allI)
@@ -1002,7 +1002,7 @@ proof -
     "s \<unrhd>\<^sub>e\<^sub>m\<^sub>b w" 
     "subst \<rho> w \<unrhd>\<^sub>e\<^sub>m\<^sub>b u" 
     "\<forall>w'. w \<rightarrow>\<^sub>e\<^sub>m\<^sub>b w' \<longrightarrow> \<not> subst \<rho> w' \<unrhd>\<^sub>e\<^sub>m\<^sub>b u" 
-    using perform_emb_above_vars0[OF `subst \<rho> s \<unrhd>\<^sub>e\<^sub>m\<^sub>b u`] by metis
+    using perform_emb_above_vars0[OF \<open>subst \<rho> s \<unrhd>\<^sub>e\<^sub>m\<^sub>b u\<close>] by metis
   {
     assume "is_Sym (head w)"
     obtain ws where ws_def:
@@ -1012,7 +1012,7 @@ proof -
       "\<forall>i. Suc i < length ws \<longrightarrow> (\<exists>p d. emb_step_at p d (ws ! i) = ws ! Suc i \<and> \<not> list_all (\<lambda>x. x = Left) p)"
       "\<forall>i<length ws. head (ws ! i) = head w \<and> num_args (ws ! i) = num_args w"
       "\<forall>i<length ws. \<forall>k<num_args w. args (subst \<rho> w) ! k \<unrhd>\<^sub>e\<^sub>m\<^sub>b args (ws ! i) ! k"
-      using emb_only_below_vars[OF `subst \<rho> s \<unrhd>\<^sub>e\<^sub>m\<^sub>b u` `s \<unrhd>\<^sub>e\<^sub>m\<^sub>b w` `is_Sym (head w)` `subst \<rho> w \<unrhd>\<^sub>e\<^sub>m\<^sub>b u` w_def(3)] by metis
+      using emb_only_below_vars[OF \<open>subst \<rho> s \<unrhd>\<^sub>e\<^sub>m\<^sub>b u\<close> \<open>s \<unrhd>\<^sub>e\<^sub>m\<^sub>b w\<close> \<open>is_Sym (head w)\<close> \<open>subst \<rho> w \<unrhd>\<^sub>e\<^sub>m\<^sub>b u\<close> w_def(3)] by metis
     then have "head w = head u \<and> num_args w = num_args u \<and> (\<forall>k. k<num_args w \<longrightarrow> args (subst \<rho> w) ! k \<unrhd>\<^sub>e\<^sub>m\<^sub>b args u ! k)"
       by (metis One_nat_def append_butlast_last_id diff_Suc_1 diff_Suc_less length_append_singleton length_greater_0_conv nth_append_length)
 

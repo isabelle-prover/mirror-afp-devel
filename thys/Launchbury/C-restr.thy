@@ -2,19 +2,19 @@ theory "C-restr"
 imports C "C-Meet" "HOLCF-Utils"
 begin
 
-subsubsection {* The demand of a $C$-function *}
+subsubsection \<open>The demand of a $C$-function\<close>
 
-text {*
+text \<open>
 The demand is the least amount of resources required to produce a non-bottom element,
 if at all.
-*}
+\<close>
 
 definition demand :: "(C \<rightarrow> 'a::pcpo) \<Rightarrow> C" where
   "demand f = (if f\<cdot>C\<^sup>\<infinity> \<noteq> \<bottom> then C\<^bsup>(LEAST n. f\<cdot>C\<^bsup>n\<^esup> \<noteq> \<bottom>)\<^esup> else C\<^sup>\<infinity>)"
 
-text {*
+text \<open>
 Because of continuity, a non-bottom value can always be obtained with finite resources.
-*}
+\<close>
 
 lemma finite_resources_suffice:
   assumes "f\<cdot>C\<^sup>\<infinity> \<noteq> \<bottom>"
@@ -30,9 +30,9 @@ proof-
   thus ?thesis using that by blast
 qed
 
-text {*
+text \<open>
 Because of monotonicity, a non-bottom value can always be obtained with more resources.
-*}
+\<close>
 
 
 lemma more_resources_suffice:
@@ -123,7 +123,7 @@ proof(cases "demand f" rule:C_cases)
   thus "demand g \<sqsubseteq> demand f" unfolding not_bot_demand by auto
 qed auto
 
-subsubsection {* Restricting functions with domain C *}
+subsubsection \<open>Restricting functions with domain C\<close>
 
 fixrec C_restr :: "C \<rightarrow> (C \<rightarrow> 'a::pcpo) \<rightarrow> (C \<rightarrow> 'a)"
   where "C_restr\<cdot>r\<cdot>f\<cdot>r' = (f\<cdot>(r \<sqinter> r'))" 
@@ -203,7 +203,7 @@ proof(rule cfun_eqI)
   thus "(f|\<^bsub>r\<^esub>)\<cdot>r' = \<bottom>\<cdot>r'" by simp
 qed
 
-subsubsection {* Restricting maps of C-ranged functions *}
+subsubsection \<open>Restricting maps of C-ranged functions\<close>
 
 definition env_C_restr :: "C \<rightarrow> ('var::type \<Rightarrow> (C \<rightarrow> 'a::pcpo)) \<rightarrow> ('var \<Rightarrow> (C \<rightarrow> 'a))" where
   "env_C_restr = (\<Lambda> r f.  cfun_comp\<cdot>(C_restr\<cdot>r)\<cdot>f)"

@@ -1,4 +1,4 @@
-section{* The subgraph threshold theorem *}
+section\<open>The subgraph threshold theorem\<close>
 
 theory Subgraph_Threshold
 imports
@@ -8,7 +8,7 @@ begin
 lemma (in edge_space) measurable_pred[measurable]: "Measurable.pred P Q"
   by (simp add: P_def sets_point_measure space_point_measure subset_eq)
 
-text{* This section contains the main theorem. For a fixed nonempty graph $H$, we consider the graph
+text\<open>This section contains the main theorem. For a fixed nonempty graph $H$, we consider the graph
 property of `containing an isomorphic subgraph of $H$'. This is obviously a valid property, since
 it is closed under isomorphism.
 
@@ -16,7 +16,7 @@ The corresponding threshold function is
 
   \[ t(n) = n^{-\frac{1}{\rho'(H)}}, \]
 
-where $\rho'$ denotes @{term max_density}. *}
+where $\rho'$ denotes @{term max_density}.\<close>
 
 definition subgraph_threshold :: "ugraph \<Rightarrow> nat \<Rightarrow> real" where
 "subgraph_threshold H n = n powr (-(1 / max_density H))"
@@ -121,7 +121,7 @@ next
             have "uverts H\<^sub>0' \<subseteq> {1..n}" "uedges H\<^sub>0' \<subseteq> es"
               using H\<^sub>0'(1) unfolding subgraph_def ES.edge_ugraph_def ES.S_verts_def ES.S_edges_def by simp+
             moreover have "card (uverts H\<^sub>0') = ?v" "card (uedges H\<^sub>0') = ?e"
-              by (simp add: isomorphic_cards[OF `H\<^sub>0 \<simeq> H\<^sub>0'`])+
+              by (simp add: isomorphic_cards[OF \<open>H\<^sub>0 \<simeq> H\<^sub>0'\<close>])+
             moreover have "uedges H\<^sub>0' \<subseteq> all_edges (uverts H\<^sub>0')"
               using H\<^sub>0' by (simp add: wellformed_all_edges)
             ultimately show "H\<^sub>0' \<in> ?I"
@@ -218,7 +218,7 @@ next
     also have "\<dots> \<le> ((?v choose 2) choose ?e) * (p n ^ ?e * n ^ ?v)" (is "_ \<le> ?factor * _")
       by simp
     also have "\<dots> = ?factor * (p n powr ?e * n powr ?v)"
-      using n card(1) `nonzero_prob_fun p` by (simp add: powr_realpow)
+      using n card(1) \<open>nonzero_prob_fun p\<close> by (simp add: powr_realpow)
 
     finally have "prob_in_class p {G. H \<sqsubseteq> G} n \<le> ?factor * (p n powr ?e * n powr ?v)"
       .
@@ -442,12 +442,12 @@ next
       hence *: "prob (?A S) * prob (?A T) = p n ^ (2 * ?e)"
         using prob_A by (simp add: power_even_eq power2_eq_square)
 
-      note S = I[OF `S \<in> ?I`]
-      note T = I[OF `T \<in> ?I`]
+      note S = I[OF \<open>S \<in> ?I\<close>]
+      note T = I[OF \<open>T \<in> ?I\<close>]
       assume disj: "S \<inter> T = {}"
 
       have "prob (?A S \<inter> ?A T) = p n ^ card (uedges (f S) \<union> uedges (f T))"
-        using `S \<in> ?I` `T \<in> ?I` by (fact prob_A_intersect)
+        using \<open>S \<in> ?I\<close> \<open>T \<in> ?I\<close> by (fact prob_A_intersect)
       also have "\<dots> = p n ^ (card (uedges (f S)) + card (uedges (f T)))"
         proof (rule arg_cong[OF card_Un_disjoint])
           have "finite_graph (f S)" "finite_graph (f T)"
@@ -509,14 +509,14 @@ next
         assume "S \<in> ?I" "T \<in> {T. T \<in> ?I \<and> card (S \<inter> T) = k}"
         hence "T \<in> ?I" and ST_k: "card (S \<inter> T) = k"
           by auto
-        note S = I[OF `S \<in> ?I`]
-        note T = I[OF `T \<in> ?I`]
+        note S = I[OF \<open>S \<in> ?I\<close>]
+        note T = I[OF \<open>T \<in> ?I\<close>]
 
         let ?cST = "card (uedges (f S) \<inter> uedges (f T))"
 
         \<comment> \<open>We already know the intersection probability.\<close>
         have "prob (?A S \<inter> ?A T) = p n ^ card (uedges (f S) \<union> uedges (f T))"
-          using `S \<in> ?I` `T \<in> ?I` by (fact prob_A_intersect)
+          using \<open>S \<in> ?I\<close> \<open>T \<in> ?I\<close> by (fact prob_A_intersect)
 
         \<comment> \<open>Now, we consider the number of edges shared by the copies of @{term H} over @{term S}
              and @{term T}.\<close>

@@ -1,4 +1,4 @@
-section {* \isaheader{Array-Based Maps with Natural Number Keys} *}
+section \<open>\isaheader{Array-Based Maps with Natural Number Keys}\<close>
 theory Impl_Array_Map
 imports 
   Automatic_Refinement.Automatic_Refinement
@@ -11,7 +11,7 @@ begin
 
 type_synonym 'v iam = "'v option array"
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 definition iam_\<alpha> :: "'v iam \<Rightarrow> nat \<rightharpoonup> 'v" where
   "iam_\<alpha> a i \<equiv> if i < array_length a then array_get a i else None"
@@ -72,7 +72,7 @@ definition iam_iteratei :: "'v iam \<Rightarrow> (nat \<times> 'v,'\<sigma>) set
 
 
 
-subsection {* Parametricity *}
+subsection \<open>Parametricity\<close>
 
 definition iam_rel_def_internal: 
   "iam_rel R \<equiv> \<langle>\<langle>R\<rangle> option_rel\<rangle> array_rel"
@@ -143,7 +143,7 @@ lemma param_iam_iteratei[param]:
 
 
 
-subsection {* Correctness *}
+subsection \<open>Correctness\<close>
 
 definition "iam_rel' \<equiv> br iam_\<alpha> iam_invar"
 
@@ -233,7 +233,7 @@ declare iam_map_impl[autoref_rules]
 
 
 
-subsection {* Iterator proofs *}
+subsection \<open>Iterator proofs\<close>
 
 abbreviation "iam_to_list a \<equiv> it_to_list iam_iteratei a"
 
@@ -361,7 +361,7 @@ proof (clarify)
             \<in> \<langle>\<langle>nat_rel, Rv\<rangle>prod_rel\<rangle>list_rel" by parametricity
 
   moreover from distinct_iam_to_list and 
-                iam_to_list_set_correct[OF `(a',m')\<in>iam_rel'`]
+                iam_to_list_set_correct[OF \<open>(a',m')\<in>iam_rel'\<close>]
       have "RETURN (iam_to_list a') \<le> it_to_sorted_list
                (key_rel (\<lambda>_ _. True)) (map_to_set m')" 
       unfolding it_to_sorted_list_def key_rel_def[abs_def]
@@ -419,7 +419,7 @@ proof-
           finally show ?thesis by simp
       qed
   qed
-  thus ?thesis by (simp add: `a = Array l`)
+  thus ?thesis by (simp add: \<open>a = Array l\<close>)
 qed
 
 

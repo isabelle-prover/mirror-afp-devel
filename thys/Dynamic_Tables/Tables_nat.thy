@@ -67,7 +67,7 @@ proof -
         proof -
           have "f1 \<le> (f2 - f1*e)*l0"
             using l0f2f1e f1f2e by(simp add: field_simps)
-          also note `l0 \<le> l`
+          also note \<open>l0 \<le> l\<close>
           finally show ?thesis using f1f2e[simplified field_simps]
             by (simp add:ac_simps mult_left_mono) (simp add:algebra_simps)
        qed
@@ -75,16 +75,16 @@ proof -
       qed
       have "n+1 \<le> f2*e*l"
       proof -
-        have "n+1 \<le> f2*l+1" using `n \<le> f2*l` by linarith
+        have "n+1 \<le> f2*l+1" using \<open>n \<le> f2*l\<close> by linarith
         also have "1 = f2*(e-1)*(1/(f2*(e-1)))" by(simp)
         also note l0f2e
-        also note `l0 \<le> l`
+        also note \<open>l0 \<le> l\<close>
         finally show ?thesis by simp (simp add: algebra_simps)
       qed
       also have "f2*e*l \<le> f2*\<lceil>e*l\<rceil>" by simp
       finally have f2: "n+1 \<le> f2*\<lceil>e*l\<rceil>" .
-      have "l < e*l" using `l0 \<le> l` by simp
-      hence "l0 \<le> e*l" using `l0\<le>l` by linarith
+      have "l < e*l" using \<open>l0 \<le> l\<close> by simp
+      hence "l0 \<le> e*l" using \<open>l0\<le>l\<close> by linarith
       with 0 f1 f2 show ?thesis by (auto simp add: field_simps) linarith
     qed
   next
@@ -105,16 +105,16 @@ proof -
           assume l: "l0 \<le> \<lfloor>l/c\<rfloor>"
           hence l': "l0 \<le> l/c" by linarith
           have "f1 * \<lfloor>l/c\<rfloor> \<le> f1*(l/c)" by(simp del: times_divide_eq_right)
-          hence f1: "f1*\<lfloor>l/c\<rfloor> \<le> n-1" using l' f1_l0[OF l'] assms `n \<noteq> 0`
+          hence f1: "f1*\<lfloor>l/c\<rfloor> \<le> n-1" using l' f1_l0[OF l'] assms \<open>n \<noteq> 0\<close>
             by(simp add: le_floor_iff)
           have "n-1 \<le> f2 * \<lfloor>l/c\<rfloor>"
           proof -
-            have "n-1 < f1*l" using 0 `n \<noteq> 0` by linarith
+            have "n-1 < f1*l" using 0 \<open>n \<noteq> 0\<close> by linarith
             also have "f1*l \<le> f2*(l/c) - f2"
             proof -
               have "(f2 - f1*c)*l0 \<ge> f2"
                 using l0f2f1c f1cf2 by(simp add: field_simps)
-              with mult_left_mono[OF `l0 \<le> l/c`, of "f2-f1*c"] f1cf2
+              with mult_left_mono[OF \<open>l0 \<le> l/c\<close>, of "f2-f1*c"] f1cf2
               have "(f2 - f1*c)*(l/c) \<ge> f2" by linarith
               thus ?thesis by(simp add: field_simps)
             qed
@@ -124,9 +124,9 @@ proof -
               from mult_left_mono[OF this, of f2] show ?thesis
                 by(simp add: algebra_simps)
             qed
-            finally show ?thesis using 0 `n \<noteq> 0` by linarith
+            finally show ?thesis using 0 \<open>n \<noteq> 0\<close> by linarith
           qed
-          with l 0 f1 `n \<noteq> 0` show ?thesis by (auto)
+          with l 0 f1 \<open>n \<noteq> 0\<close> show ?thesis by (auto)
         next
           assume "\<not> l0 \<le> \<lfloor>l/c\<rfloor>"
           with 0 assms show ?thesis by (auto simp add: field_simps)
@@ -268,7 +268,7 @@ next
           lc f1_less_f1' f1'f1 by (simp add: field_simps)
         hence "n < f1'*l" using n by(simp add: algebra_simps)
         hence Phi: "\<Phi> s = ad*(f1'*l - n)"
-          apply(simp) using `f1'*l \<le> f2'*l` lc by linarith
+          apply(simp) using \<open>f1'*l \<le> f2'*l\<close> lc by linarith
         have "?A \<le> n - ad*(f1' - f1)*l + ad + f2'*ai" (is "_ \<le> ?R + _")
         proof cases
           assume f2': "n-1 < f2'*\<lfloor>l/c\<rfloor>"
@@ -385,7 +385,7 @@ next
     next
       assume [arith]: "\<not> n+1 \<le> f2*l"
       have [arith]: "l \<ge> l0"  "n \<le> f2*l" using 5 by auto
-      have "l0 \<le> e*l" using `l0 \<le> l` e1 mult_mono[of 1 e l0 l] by simp
+      have "l0 \<le> e*l" using \<open>l0 \<le> l\<close> e1 mult_mono[of 1 e l0 l] by simp
       have "(f2 - f2'')*l \<ge> 1"
         using mult_mono[OF order_refl, of l0 l "f2-f2''"] f2''_less_f2 f2f2''
         by (simp add: algebra_simps)
@@ -397,7 +397,7 @@ next
       proof cases
         assume f2'': "n+1 < f2''*\<lceil>e*l\<rceil>"
         have "f1''*\<lceil>e*l\<rceil> \<le> f1''*(e*l + 1)" by(simp)
-        also note f1''_f1'[OF `l0 \<le> e*l`]
+        also note f1''_f1'[OF \<open>l0 \<le> e*l\<close>]
         also have "f1'*(e*l) \<le> f2*l" using f1'ef2 by(simp)
         also have "f2*l \<le> n+1" by linarith
         finally have "?L \<le> n+1 - ai*(n - f2''*l)"
@@ -445,12 +445,12 @@ next
           by (simp add: field_simps)
         hence "n < f1''*l" using n by(simp add: algebra_simps)
         hence Phi: "\<Phi> s = ad*(f1''*l - n)"
-          apply(simp) using `f1''*l \<le> f2''*l` lc by linarith
+          apply(simp) using \<open>f1''*l \<le> f2''*l\<close> lc by linarith
         have f2': "n-1 < f2''*\<lfloor>l/c\<rfloor>"
         proof -
           have "n-1 < f1*l" using n by linarith
           also have "f1*l \<le> f2'*(l/c)" using f1f2'c by(auto simp: field_simps)
-          also note f2'_f2''[OF `l/c\<ge>l0`]
+          also note f2'_f2''[OF \<open>l/c\<ge>l0\<close>]
           also have "f2''*(l/c - 1) \<le> f2''*\<lfloor>l/c\<rfloor>" by simp
           finally show ?thesis by(simp)
         qed
@@ -559,13 +559,13 @@ proof -
     by(simp add: f1''_def field_simps)
   also have "l0/(l0+1) \<le> l/(l+1)" using assms
     by(simp add: field_simps)
-  finally show ?thesis using `l0 \<le> l` by(simp)
+  finally show ?thesis using \<open>l0 \<le> l\<close> by(simp)
 qed
 
 lemma f2'_f2'': assumes "l \<ge> real l0" shows "f2' * l \<le> f2'' * (l-1)"
 proof -
   have "f2' * l = f2' * l + f2'*((l0-1)/(l0-1) - 1)" using l0_gr1 by simp
-  also have "(l0-1)/(l0-1) \<le> (l-1)/(l0-1)" using `l\<ge>l0` by(simp)
+  also have "(l0-1)/(l0-1) \<le> (l-1)/(l0-1)" using \<open>l\<ge>l0\<close> by(simp)
   also have "f2'*l + f2'*((l-1)/(l0-1) - 1) = f2''*(l-1)"
     using l0_gr1 by(simp add: f2''_def field_simps)
   finally show ?thesis by simp

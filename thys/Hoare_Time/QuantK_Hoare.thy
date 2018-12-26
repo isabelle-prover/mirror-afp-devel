@@ -11,7 +11,7 @@ type_synonym lvname = string
 type_synonym assn = "state \<Rightarrow> bool" (* time bound *)
 type_synonym qassn = "state \<Rightarrow> enat" (* time bound *)
 
-text {* The support of an assn2 *}
+text \<open>The support of an assn2\<close>
  
 abbreviation state_subst :: "state \<Rightarrow> aexp \<Rightarrow> vname \<Rightarrow> state"
   ("_[_'/_]" [1000,0,0] 999)
@@ -411,10 +411,10 @@ lemma ASSt: "(THE t. \<exists>p. (x ::= e, s) \<Rightarrow> p \<Down> t) = s(x :
 lemma ASSnot: "( \<not> (x ::= e, s) \<Rightarrow> p \<Down> t ) = (p\<noteq>Suc 0 \<or> t\<noteq>s(x := aval e s))"
   apply auto done
 
-text{*
+text\<open>
 The completeness proof proceeds along the same lines as the one for partial
 correctness. First we have to strengthen our notion of weakest precondition
-to take termination into account: *}
+to take termination into account:\<close>
 
 definition wpQ :: "com \<Rightarrow> qassn \<Rightarrow> qassn" ("wp\<^sub>Q") where
 "wp\<^sub>Q c Q  =  (\<lambda>s. (if (\<exists>t p. (c,s) \<Rightarrow> p \<Down> t \<and> Q t < \<infinity>)  then enat (THE p. \<exists>t. (c,s) \<Rightarrow> p \<Down> t) + Q (THE t. \<exists>p. (c,s) \<Rightarrow> p \<Down> t) else \<infinity>))"

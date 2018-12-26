@@ -2,27 +2,27 @@ theory ProcessCalculi
   imports Relations
 begin
 
-section {* Process Calculi *}
+section \<open>Process Calculi\<close>
 
-text {* A process calculus is given by a set of process terms (syntax) and a relation on terms
-        (semantics). We consider reduction as well as labelled variants of the semantics. *}
+text \<open>A process calculus is given by a set of process terms (syntax) and a relation on terms
+        (semantics). We consider reduction as well as labelled variants of the semantics.\<close>
 
-subsection {* Reduction Semantics *}
+subsection \<open>Reduction Semantics\<close>
 
-text {* A set of process terms and a relation on pairs of terms (called reduction semantics) define
-        a process calculus. *}
+text \<open>A set of process terms and a relation on pairs of terms (called reduction semantics) define
+        a process calculus.\<close>
 
 record 'proc processCalculus =
   Reductions :: "'proc \<Rightarrow> 'proc \<Rightarrow> bool"
 
-text {* A pair of the reduction relation is called a (reduction) step. *}
+text \<open>A pair of the reduction relation is called a (reduction) step.\<close>
 
 abbreviation step :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> 'proc \<Rightarrow> bool"
     ("_ \<longmapsto>_ _" [70, 70, 70] 80)
   where
   "P \<longmapsto>Cal Q \<equiv> Reductions Cal P Q"
 
-text {* We use * to indicate the reflexive and transitive closure of the reduction relation. *}
+text \<open>We use * to indicate the reflexive and transitive closure of the reduction relation.\<close>
 
 primrec nSteps
   :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> nat \<Rightarrow> 'proc \<Rightarrow> bool"
@@ -37,7 +37,7 @@ definition steps
   where
   "P \<longmapsto>Cal* Q \<equiv> \<exists>n. P \<longmapsto>Cal\<^bsup>n\<^esup> Q"
 
-text {* A process is divergent, if it can perform an infinite sequence of steps. *}
+text \<open>A process is divergent, if it can perform an infinite sequence of steps.\<close>
 
 definition divergent
   :: "'proc \<Rightarrow> 'proc processCalculus \<Rightarrow> bool"
@@ -45,7 +45,7 @@ definition divergent
   where
   "P \<longmapsto>(Cal)\<omega> \<equiv> \<forall>P'. P \<longmapsto>Cal* P' \<longrightarrow> (\<exists>P''. P' \<longmapsto>Cal P'')"
 
-text {* Each term can perform an (empty) sequence of steps to itself. *}
+text \<open>Each term can perform an (empty) sequence of steps to itself.\<close>
 
 lemma steps_refl:
   fixes Cal :: "'proc processCalculus"
@@ -60,7 +60,7 @@ proof -
     by (simp add: steps_def)
 qed
 
-text {* A single step is a sequence of steps of length one. *}
+text \<open>A single step is a sequence of steps of length one.\<close>
 
 lemma step_to_steps:
   fixes Cal  :: "'proc processCalculus"
@@ -75,8 +75,8 @@ proof -
     by blast
 qed
 
-text {* If there is a sequence of steps from P to Q and from Q to R, then there is also a sequence
-        of steps from P to R. *}
+text \<open>If there is a sequence of steps from P to Q and from Q to R, then there is also a sequence
+        of steps from P to R.\<close>
 
 lemma nSteps_add:
   fixes Cal   :: "'proc processCalculus"
@@ -117,11 +117,11 @@ proof -
     by (simp add: steps_def, blast)
 qed
 
-subsubsection {* Observables or Barbs *}
+subsubsection \<open>Observables or Barbs\<close>
 
-text {* We assume a predicate that tests terms for some kind of observables. At this point we do
+text \<open>We assume a predicate that tests terms for some kind of observables. At this point we do
         not limit or restrict the kind of observables used for a calculus nor the method to check
-        them. *}
+        them.\<close>
 
 record ('proc, 'barbs) calculusWithBarbs =
   Calculus :: "'proc processCalculus"
@@ -133,7 +133,7 @@ abbreviation hasBarb
   where
   "P\<down><CWB>a \<equiv> HasBarb CWB P a"
 
-text {* A term reaches a barb if it can evolve to a term that has this barb. *}
+text \<open>A term reaches a barb if it can evolve to a term that has this barb.\<close>
 
 abbreviation reachesBarb
   :: "'proc \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs \<Rightarrow> bool"
@@ -141,8 +141,8 @@ abbreviation reachesBarb
   where
   "P\<Down><CWB>a \<equiv> \<exists>P'. P \<longmapsto>(Calculus CWB)* P' \<and> P'\<down><CWB>a"
 
-text {* A relation R preserves barbs if whenever (P, Q) in R and P has a barb then also Q has this
-        barb. *}
+text \<open>A relation R preserves barbs if whenever (P, Q) in R and P has a barb then also Q has this
+        barb.\<close>
 
 abbreviation rel_preserves_barb_set
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs set \<Rightarrow> bool"
@@ -161,8 +161,8 @@ lemma preservation_of_barbs_and_set_of_barbs:
   shows "rel_preserves_barbs Rel CWB = (\<forall>Barbs. rel_preserves_barb_set Rel CWB Barbs)"
     by blast
 
-text {* A relation R reflects barbs if whenever (P, Q) in R and Q has a barb then also P has this
-        barb. *}
+text \<open>A relation R reflects barbs if whenever (P, Q) in R and Q has a barb then also P has this
+        barb.\<close>
 
 abbreviation rel_reflects_barb_set
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs set \<Rightarrow> bool"
@@ -181,7 +181,7 @@ lemma reflection_of_barbs_and_set_of_barbs:
   shows "rel_reflects_barbs Rel CWB = (\<forall>Barbs. rel_reflects_barb_set Rel CWB Barbs)"
     by blast
 
-text {* A relation respects barbs if it preserves and reflects barbs. *}
+text \<open>A relation respects barbs if it preserves and reflects barbs.\<close>
 
 abbreviation rel_respects_barb_set
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs set \<Rightarrow> bool"
@@ -200,7 +200,7 @@ lemma respection_of_barbs_and_set_of_barbs:
   shows "rel_respects_barbs Rel CWB = (\<forall>Barbs. rel_respects_barb_set Rel CWB Barbs)"
     by blast
 
-text {* If a relation preserves barbs then so does its reflexive or/and transitive closure. *}
+text \<open>If a relation preserves barbs then so does its reflexive or/and transitive closure.\<close>
 
 lemma preservation_of_barbs_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -213,7 +213,7 @@ lemma preservation_of_barbs_and_closures:
             preservation_of_binary_predicates_and_closures[where Rel="Rel" and Pred="HasBarb CWB"]
     by blast+
 
-text {* If a relation reflects barbs then so does its reflexive or/and transitive closure. *}
+text \<open>If a relation reflects barbs then so does its reflexive or/and transitive closure.\<close>
 
 lemma reflection_of_barbs_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -226,8 +226,8 @@ lemma reflection_of_barbs_and_closures:
             reflection_of_binary_predicates_and_closures[where Rel="Rel" and Pred="HasBarb CWB"]
     by blast+
 
-text {* If a relation respects barbs then so does its reflexive, symmetric, or/and transitive
-        closure. *}
+text \<open>If a relation respects barbs then so does its reflexive, symmetric, or/and transitive
+        closure.\<close>
 
 lemma respection_of_barbs_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -265,8 +265,8 @@ next
     by blast
 qed
 
-text {* A relation R weakly preserves barbs if it preserves reachability of barbs, i.e., if (P, Q)
-        in R and P reaches a barb then also Q has to reach this barb. *}
+text \<open>A relation R weakly preserves barbs if it preserves reachability of barbs, i.e., if (P, Q)
+        in R and P reaches a barb then also Q has to reach this barb.\<close>
 
 abbreviation rel_weakly_preserves_barb_set
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs set \<Rightarrow> bool"
@@ -286,8 +286,8 @@ lemma weak_preservation_of_barbs_and_set_of_barbs:
          = (\<forall>Barbs. rel_weakly_preserves_barb_set Rel CWB Barbs)"
     by blast
 
-text {* A relation R weakly reflects barbs if it reflects reachability of barbs, i.e., if (P, Q) in
-        R and Q reaches a barb then also P has to reach this barb. *}
+text \<open>A relation R weakly reflects barbs if it reflects reachability of barbs, i.e., if (P, Q) in
+        R and Q reaches a barb then also P has to reach this barb.\<close>
 
 abbreviation rel_weakly_reflects_barb_set
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs set \<Rightarrow> bool"
@@ -306,7 +306,7 @@ lemma weak_reflection_of_barbs_and_set_of_barbs:
   shows "rel_weakly_reflects_barbs Rel CWB = (\<forall>Barbs. rel_weakly_reflects_barb_set Rel CWB Barbs)"
     by blast
 
-text {* A relation weakly respects barbs if it weakly preserves and weakly reflects barbs. *}
+text \<open>A relation weakly respects barbs if it weakly preserves and weakly reflects barbs.\<close>
 
 abbreviation rel_weakly_respects_barb_set
     :: "('proc \<times> 'proc) set \<Rightarrow> ('proc, 'barbs) calculusWithBarbs \<Rightarrow> 'barbs set \<Rightarrow> bool"
@@ -326,8 +326,8 @@ lemma weak_respection_of_barbs_and_set_of_barbs:
   shows "rel_weakly_respects_barbs Rel CWB = (\<forall>Barbs. rel_weakly_respects_barb_set Rel CWB Barbs)"
     by blast
 
-text {* If a relation weakly preserves barbs then so does its reflexive or/and transitive closure.
-      *}
+text \<open>If a relation weakly preserves barbs then so does its reflexive or/and transitive closure.
+\<close>
 
 lemma weak_preservation_of_barbs_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -340,8 +340,8 @@ lemma weak_preservation_of_barbs_and_closures:
                           and Pred="\<lambda>P a. P\<Down><CWB>a"]
     by blast+
 
-text {* If a relation weakly reflects barbs then so does its reflexive or/and transitive closure.
-      *}
+text \<open>If a relation weakly reflects barbs then so does its reflexive or/and transitive closure.
+\<close>
 
 lemma weak_reflection_of_barbs_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"
@@ -354,8 +354,8 @@ lemma weak_reflection_of_barbs_and_closures:
                         and Pred="\<lambda>P a. P\<Down><CWB>a"]
     by blast+
 
-text {* If a relation weakly respects barbs then so does its reflexive, symmetric, or/and
-        transitive closure. *}
+text \<open>If a relation weakly respects barbs then so does its reflexive, symmetric, or/and
+        transitive closure.\<close>
 
 lemma weak_respection_of_barbs_and_closures:
   fixes Rel :: "('proc \<times> 'proc) set"

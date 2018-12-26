@@ -117,7 +117,7 @@ proof-
     case True
     thus ?thesis
       using prefixToLevelAppend[of "0" "getM state" "[(?l, True)]"]
-      using `getM ?state' = getM state @ [(?l, True)]`
+      using \<open>getM ?state' = getM state @ [(?l, True)]\<close>
       by auto
   next
     case False
@@ -128,15 +128,15 @@ proof-
     hence "prefixToLevel 0 (getM state @ [(?l, True)]) = getM state"
       by simp
     thus ?thesis
-      using `getM ?state' = getM state @ [(?l, True)]`
+      using \<open>getM ?state' = getM state @ [(?l, True)]\<close>
       using currentLevelZeroTrailEqualsItsPrefixToLevelZero[of "getM state"]
       using False
       by simp
   qed
   thus ?thesis
-    using `InvariantEquivalentZL (getF state) (getM state) F0`
+    using \<open>InvariantEquivalentZL (getF state) (getM state) F0\<close>
     unfolding InvariantEquivalentZL_def
-    using `getF ?state' = getF state`
+    using \<open>getF ?state' = getF state\<close>
     by simp
 qed
 
@@ -185,7 +185,7 @@ proof-
               using valuationContainsItsLiteralsVariable[of "l" "elements (getM state)"]
               by simp
             hence False
-              using `\<not> vars (elements (getM state)) \<supseteq> Vbl`
+              using \<open>\<not> vars (elements (getM state)) \<supseteq> Vbl\<close>
               using selectLiteral_def[of "Vbl" "state"]
               by auto
           } thus ?thesis
@@ -196,7 +196,7 @@ proof-
           where "getReason state l = Some reason \<and>
           0 \<le> reason \<and> reason < length (getF state) \<and>
           isReason (getF state ! reason) l (elements (getM state))"
-          using `InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))`
+          using \<open>InvariantGetReasonIsReason (getReason state) (getF state) (getM state) (set (getQ state))\<close>
           unfolding InvariantGetReasonIsReason_def
           by auto
         thus ?thesis
@@ -218,7 +218,7 @@ proof-
       qed
     }
     thus ?thesis
-      using `getQ state = []`
+      using \<open>getQ state = []\<close>
       unfolding InvariantGetReasonIsReason_def
       by auto
   qed
@@ -232,7 +232,7 @@ proof-
     unfolding InvariantWatchListsCharacterization_def
     unfolding InvariantWatchListsContainOnlyClausesFromF_def
     unfolding InvariantWatchListsUniq_def
-    using `getQ state = []`
+    using \<open>getQ state = []\<close>
     by (simp add: Let_def)
 qed
 

@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Program State *}
+section \<open>Program State\<close>
 
 theory State imports "../Common/Exceptions" begin
 

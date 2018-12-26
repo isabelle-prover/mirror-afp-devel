@@ -6,10 +6,10 @@ begin
 code_identifier code_module SINVAR_Dependability_impl => (Scala) SINVAR_Dependability
 
 
-subsubsection {* SecurityInvariant Dependability List Implementation *}
+subsubsection \<open>SecurityInvariant Dependability List Implementation\<close>
 
 
-text {* Less-equal other nodes depend on the output of a node than its dependability level. *}
+text \<open>Less-equal other nodes depend on the output of a node than its dependability level.\<close>
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> set (edgesL G). (num_reachable G e1) \<le> (nP e1))"
 
@@ -25,7 +25,7 @@ value "sinvar
 
 
 
-text{* Generate a valid configuration to start from: *}
+text\<open>Generate a valid configuration to start from:\<close>
    fun dependability_fix_nP :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> ('v \<Rightarrow> dependability_level)" where
       "dependability_fix_nP G nP = (\<lambda>v. let nr = num_reachable G v in (if nr \<le> (nP v) then (nP v) else nr))"
 
@@ -96,7 +96,7 @@ interpretation Dependability_impl:TopoS_List_Impl
  apply(simp only: sinvar_correct)
 done
 
-subsubsection {* Dependability packing *}
+subsubsection \<open>Dependability packing\<close>
   definition SINVAR_LIB_Dependability :: "('v::vertex, SINVAR_Dependability.dependability_level) TopoS_packed" where
     "SINVAR_LIB_Dependability \<equiv> 
     \<lparr> nm_name = ''Dependability'', 
@@ -115,7 +115,7 @@ subsubsection {* Dependability packing *}
     apply(simp)
     by(unfold_locales)
 
-text {*Example: *}
+text \<open>Example:\<close>
   value "let G = \<lparr> nodesL = [1::nat,2,3,4,8,9,10], edgesL = [(1,2), (2,3), (3,4), (8,9),(9,8)] \<rparr>
       in sinvar G  ((\<lambda> n. SINVAR_Dependability.default_node_properties)(1:=3, 2:=2, 3:=1, 4:=0, 8:=2, 9:=2, 10:=0))"
   

@@ -11,11 +11,11 @@ theory Set_Impl imports
   Complex_Main
 begin
 
-section {* Different implementations of sets *}
+section \<open>Different implementations of sets\<close>
 
-subsection {* Auxiliary functions *}
+subsection \<open>Auxiliary functions\<close>
 
-text {* A simple quicksort implementation *}
+text \<open>A simple quicksort implementation\<close>
 
 context ord begin
 
@@ -91,17 +91,17 @@ next
   case 3 thus ?case by simp
 next
   case (4 ac x lts eqs gts)
-  note ac_greater = `\<forall>y\<in>set lts \<union> {x} \<union> set eqs \<union> set gts \<union> set []. \<forall>a\<in>set ac. y < a`
-  have "sorted eqs" "set eqs \<subseteq> {x}" using `\<forall>y\<in>set eqs. y = x` 
+  note ac_greater = \<open>\<forall>y\<in>set lts \<union> {x} \<union> set eqs \<union> set gts \<union> set []. \<forall>a\<in>set ac. y < a\<close>
+  have "sorted eqs" "set eqs \<subseteq> {x}" using \<open>\<forall>y\<in>set eqs. y = x\<close> 
     by(induct eqs)(simp_all)
   moreover have "\<forall>y \<in> set ac \<union> set gts. x \<le> y"
-    using `\<forall>a\<in>set gts. x < a` ac_greater by auto
+    using \<open>\<forall>a\<in>set gts. x < a\<close> ac_greater by auto
   moreover have "sorted (quicksort_acc ac gts)" 
-    using `sorted ac` ac_greater by(auto intro: "4.IH")
+    using \<open>sorted ac\<close> ac_greater by(auto intro: "4.IH")
   ultimately have "sorted (eqs @ x # quicksort_acc ac gts)"
     by(auto simp add: sorted_append)
   moreover have "\<forall>y\<in>set lts. \<forall>a\<in>set (eqs @ x # quicksort_acc ac gts). y < a"
-    using `\<forall>y\<in>set lts. y < x` ac_greater `\<forall>a\<in>set gts. x < a` `\<forall>y\<in>set eqs. y = x`
+    using \<open>\<forall>y\<in>set lts. y < x\<close> ac_greater \<open>\<forall>a\<in>set gts. x < a\<close> \<open>\<forall>y\<in>set eqs. y = x\<close>
     by fastforce
   ultimately show ?case by(simp add: "4.IH")
 next
@@ -163,7 +163,7 @@ next
   case 3 thus ?case by simp
 next
   case (4 ac x lts eqs gts)
-  note eqs = `\<forall>y\<in>set eqs. y = x`
+  note eqs = \<open>\<forall>y\<in>set eqs. y = x\<close>
   { fix eqs
     assume "\<forall>y\<in>set eqs. y = x"
     hence "insort x eqs = x # eqs" by(induct eqs) simp_all }
@@ -215,7 +215,7 @@ by(rule sorted_distinct_set_unique) simp_all
 
 end
 
-text {* Removing duplicates from a sorted list *}
+text \<open>Removing duplicates from a sorted list\<close>
 
 context ord begin
 
@@ -245,7 +245,7 @@ by(induct xs rule: remdups_sorted.induct)(auto)
 
 end
 
-text {* An specialised operation to convert a finite set into a sorted list *}
+text \<open>An specialised operation to convert a finite set into a sorted list\<close>
 
 definition csorted_list_of_set :: "'a :: ccompare set \<Rightarrow> 'a list"
 where [code del]: 
@@ -267,7 +267,7 @@ by(auto simp add: csorted_list_of_set_def linorder.sorted_list_of_set[OF ID_ccom
 code_identifier code_module Set \<rightharpoonup> (SML) Set_Impl
   | code_module Set_Impl \<rightharpoonup> (SML) Set_Impl
 
-subsection {* Delete code equation with set as constructor *}
+subsection \<open>Delete code equation with set as constructor\<close>
 
 lemma is_empty_unfold [code_unfold]:
   "set_eq A {} = Set.is_empty A"
@@ -354,7 +354,7 @@ declare
   Cardinality.finite'_def[code]
   Cardinality.card'_def[code]
 
-subsection {* Set implementations *}
+subsection \<open>Set implementations\<close>
 
 definition Collect_set :: "('a \<Rightarrow> bool) \<Rightarrow> 'a set"
 where [simp]: "Collect_set = Collect"
@@ -384,21 +384,21 @@ lemma RBT_set_conv_keys:
   \<Longrightarrow> RBT_set (t :: 'a set_rbt) = set (RBT_Set2.keys t)"
 by(clarsimp simp add: RBT_set_def member_conv_keys)
 
-subsection {* Set operations *}
+subsection \<open>Set operations\<close>
 
-text {*
+text \<open>
   A collection of all the theorems about @{const Complement}.
-*}
-ML {*
+\<close>
+ML \<open>
 structure Set_Complement_Eqs = Named_Thms
 (
   val name = @{binding set_complement_code}
   val description = "Code equations involving set complement"
 )
-*}
-setup {* Set_Complement_Eqs.setup *}
+\<close>
+setup \<open>Set_Complement_Eqs.setup\<close>
 
-text {* Various fold operations over sets *}
+text \<open>Various fold operations over sets\<close>
 
 typedef ('a, 'b) comp_fun_commute = "{f :: 'a \<Rightarrow> 'b \<Rightarrow> 'b. comp_fun_commute f}"
   morphisms comp_fun_commute_apply Abs_comp_fun_commute
@@ -548,7 +548,7 @@ proof -
     by(simp add: set_fold1_def semilattice_set.F_set_conv_fold comp_fun_idem.fold_set_fold RBT_set_def RBT_Set2.member_conv_keys RBT_Set2.fold1_conv_fold split: option.split)
 qed simp_all
 
-text {* Implementation of set operations *}
+text \<open>Implementation of set operations\<close>
 
 lemma Collect_code [code]:
   fixes P :: "'a :: cenum \<Rightarrow> bool" shows
@@ -623,12 +623,12 @@ proof -
     proof
       assume ?lhs
       have "finite (UNIV :: 'a set)"
-        unfolding `?lhs`[unfolded is_UNIV_def, symmetric]
+        unfolding \<open>?lhs\<close>[unfolded is_UNIV_def, symmetric]
         using linorder 
         by(simp add: finite_code)
       moreover
       hence "proper_intrvl.exhaustive cproper_interval (RBT_Set2.keys rbt)"
-        using linorder `?lhs`
+        using linorder \<open>?lhs\<close>
         by(simp add: linorder_proper_interval.exhaustive_correct[OF ID_ccompare_interval[OF linorder]] sorted_RBT_Set_keys is_UNIV_def RBT_set_conv_keys)
       ultimately show ?rhs ..
     next
@@ -719,10 +719,10 @@ lemma Set_uminus_code [code, set_complement_code]:
   "- (Complement B) = B"
 by auto
 
-text {*
+text \<open>
   These equations represent complements as true complements.
   If you want that the complement operations returns an explicit enumeration of the elements, use the following set of equations which use @{class cenum}.
-*}
+\<close>
 
 lemma Set_uminus_cenum:
   fixes A :: "'a :: cenum set" shows
@@ -919,10 +919,10 @@ lift_definition max_sls :: "'a :: linorder semilattice_set" is max by unfold_loc
 lemma Max_code [code]: "Max A = set_fold1 max_sls A"
 by transfer(simp add: Max_def)
 
-text {*
+text \<open>
   We do not implement @{term Ball}, @{term Bex}, and @{term sorted_list_of_set} for @{term Collect_set} using @{term cEnum},
   because it should already have been converted to an explicit list of elements if that is possible.
-*}
+\<close>
 
 lemma Ball_code [code]:
   fixes rbt :: "'a :: ccompare set_rbt"
@@ -1241,12 +1241,12 @@ end
 
 lemmas [code] = ord.sorted_list_subset_fusion_code
 
-text {* 
+text \<open>
   Define a new constant for the subset operation
   because @{theory "HOL-Library.Cardinality"} introduces @{const "Cardinality.subset'"}
   and rewrites @{const "subset"} to @{const "Cardinality.subset'"} 
   based on the sort of the element type.
-*}
+\<close>
 
 definition subset_eq :: "'a set \<Rightarrow> 'a set \<Rightarrow> bool"
 where [simp, code del]: "subset_eq = (\<subseteq>)"
@@ -1793,12 +1793,12 @@ lemma pred_of_set_code [code]:
                       | Some _ \<Rightarrow> RBT_Set2.fold (sup \<circ> Predicate.single) rbt bot)"
 by(auto simp add: pred_of_set_set_fold_sup fold_map DList_set_def RBT_set_def Collect_member member_conv_keys DList_Set.fold.rep_eq fold_conv_fold_keys split: option.split)
 
-text {* 
+text \<open>
   @{typ "'a Predicate.pred"} is implemented as a monad, 
   so we keep the monad when converting to @{typ "'a set"}. 
   For this case, @{term insert_monad} and @{term union_monad} 
   avoid the unnecessary dictionary construction.
-*}
+\<close>
 
 definition insert_monad :: "'a \<Rightarrow> 'a set \<Rightarrow> 'a set"
 where [simp]: "insert_monad = insert"
@@ -1829,7 +1829,7 @@ by(simp_all add: of_seq_code)
 
 hide_const (open) insert_monad union_monad
 
-subsection {* Type class instantiations *}
+subsection \<open>Type class instantiations\<close>
 
 datatype set_impl = Set_IMPL
 declare
@@ -1888,14 +1888,14 @@ class set_impl =
 syntax (input)
   "_SET_IMPL" :: "type => logic"  ("(1SET'_IMPL/(1'(_')))")
 
-parse_translation {*
+parse_translation \<open>
 let
   fun set_impl_tr [ty] =
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "set_impl"} $
        (Syntax.const @{type_syntax phantom} $ ty $ Syntax.const @{type_syntax set_impl}))
     | set_impl_tr ts = raise TERM ("set_impl_tr", ts);
 in [(@{syntax_const "_SET_IMPL"}, K set_impl_tr)] end
-*}
+\<close>
 
 declare [[code drop: "{}"]]
 
@@ -1903,9 +1903,9 @@ lemma empty_code [code, code_unfold]:
   "({} :: 'a :: set_impl set) = set_empty (of_phantom SET_IMPL('a))"
 by simp
 
-subsection {* Generator for the @{class set_impl}-class *}
+subsection \<open>Generator for the @{class set_impl}-class\<close>
 
-text {*
+text \<open>
 This generator registers itself at the derive-manager for the classes @{class set_impl}.
 Here, one can choose
 the desired implementation via the parameter.
@@ -1913,12 +1913,12 @@ the desired implementation via the parameter.
 \begin{itemize}
 \item \texttt{instantiation type :: (type,\ldots,type) (rbt,dlist,collect,monad,choose, or arbitrary constant name) set-impl}
 \end{itemize}
-*}
+\<close>
 
 
-text {*
+text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
-*}
+\<close>
 
 ML_file "set_impl_generator.ML" 
 
@@ -1957,7 +1957,7 @@ definition "SET_IMPL(('a, 'b) phantom) = Phantom (('a, 'b) phantom) (of_phantom 
 instance ..
 end
 
-text {*
+text \<open>
   We enable automatic implementation selection for sets constructed by @{const set},
   although they could be directly converted using @{const Set_Monad} in constant time.
   However, then it is more likely that the parameters of binary operators have 
@@ -1965,7 +1965,7 @@ text {*
 
   However, we test whether automatic selection picks @{const Set_Monad} anyway and
   take a short-cut.
-*}
+\<close>
 
 definition set_aux :: "set_impl \<Rightarrow> 'a list \<Rightarrow> 'a set"
 where [simp, code del]: "set_aux _ = set"
@@ -1991,13 +1991,13 @@ lemma set_code [code]:
   shows "set xs = set_aux (of_phantom (ID SET_IMPL('a))) xs"
 by(simp)
 
-subsection {* Pretty printing for sets *}
+subsection \<open>Pretty printing for sets\<close>
 
-text {*
+text \<open>
   @{term code_post} marks contexts (as hypothesis) in which we use code\_post as a
   decision procedure rather than a pretty-printing engine. 
   The intended use is to enable more rules when proving assumptions of rewrite rules.
-*}
+\<close>
 
 definition code_post :: bool where "code_post = True"
 
@@ -2006,10 +2006,10 @@ lemma conj_code_post [code_post]:
   shows "True & x \<longleftrightarrow> x" "False & x \<longleftrightarrow> False"
 by simp_all
 
-text {*
+text \<open>
   A flag to switch post-processing of sets on and off.
   Use \verb$declare pretty_sets[code_post del]$ to disable pretty printing of sets in value.
-*}
+\<close>
 
 definition code_post_set :: bool
 where pretty_sets [code_post, simp]: "code_post_set = True"

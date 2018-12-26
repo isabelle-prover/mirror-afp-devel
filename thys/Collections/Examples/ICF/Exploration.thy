@@ -2,13 +2,13 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{State Space Exploration} *}
+section \<open>\isaheader{State Space Exploration}\<close>
 theory Exploration
 imports Main Collections.Collections
 begin
-text_raw {*\label{thy:Exploration}*}
+text_raw \<open>\label{thy:Exploration}\<close>
   
-text {*
+text \<open>
   In this theory, a workset algorithm for state-space exploration is defined.
   It explores the set of states that are reachable by a given relation, 
    starting at a given set of initial states.
@@ -17,7 +17,7 @@ text {*
   while-algorithms (cf. Section~\ref{thy:DatRef}), and is thus suited for 
   being refined to an executable algorithm, using the Isabelle Collections Framework
   to provide the necessary data structures.
-  *}
+\<close>
 
 subsection "Generic Search Algorithm"
 
@@ -212,11 +212,11 @@ theorem sse_while_algo: "finite (R\<^sup>*``\<Sigma>i) \<Longrightarrow> while_a
   done
 
 subsection "Depth First Search"
-text_raw {*\label{sec:sse:dfs}*}
-text {*
+text_raw \<open>\label{sec:sse:dfs}\<close>
+text \<open>
   In this section, the generic state space exploration algorithm is refined
   to a DFS-algorithm, that uses a stack to implement the workset.
-*}
+\<close>
 
 type_synonym '\<Sigma> dfs_state = "'\<Sigma> set \<times> '\<Sigma> list"
 

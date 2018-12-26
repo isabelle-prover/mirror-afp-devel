@@ -5,13 +5,13 @@
   A sorting algorithm that sorts values according to a key function and groups equivalent 
   elements using a commutative and associative binary operation.
 *)
-section {* Sorting and grouping factors *}
+section \<open>Sorting and grouping factors\<close>
 
 theory Group_Sort
 imports Main "HOL-Library.Multiset"
 begin
 
-text {*
+text \<open>
   For the reification of products of powers of primitive functions such as
   @{term "\<lambda>x. x * ln x ^2"} into a canonical form, we need to be able to sort the factors 
   according to the growth of the primitive function it contains and merge terms with the same 
@@ -24,7 +24,7 @@ text {*
   that reduces a list to a single value. This function must be invariant w.r.t. the order of 
   list elements and be compatible with merging of equivalent elements. In our case, this list 
   reduction function will be the product of all list elements.
-*}
+\<close>
 
 locale groupsort = 
   fixes f :: "'a \<Rightarrow> ('b::linorder)"

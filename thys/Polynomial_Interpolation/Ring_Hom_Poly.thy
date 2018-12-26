@@ -12,7 +12,7 @@ imports
   Missing_Polynomial
 begin
 
-text{* @{term poly} as a homomorphism. Note that types differ. *}
+text\<open>@{term poly} as a homomorphism. Note that types differ.\<close>
 
 interpretation poly_hom: comm_semiring_hom "\<lambda>p. poly p a" by (unfold_locales, auto)
 
@@ -20,7 +20,7 @@ interpretation poly_hom: comm_ring_hom "\<lambda>p. poly p a"..
 
 interpretation poly_hom: idom_hom "\<lambda>p. poly p a"..
 
-text {* @{term "(\<circ>\<^sub>p)"} as a homomorphism. *}
+text \<open>@{term "(\<circ>\<^sub>p)"} as a homomorphism.\<close>
 
 interpretation pcompose_hom: comm_semiring_hom "\<lambda>q. q \<circ>\<^sub>p p"
   using pcompose_add pcompose_mult pcompose_1 by (unfold_locales, auto)
@@ -104,10 +104,10 @@ lemma smult_as_map_poly: "smult a = map_poly ((*) a)"
   by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
 
 
-subsection {* @{const map_poly} of Homomorphisms *}
+subsection \<open>@{const map_poly} of Homomorphisms\<close>
 
 context zero_hom begin
-  text {* We will consider @{term hom} is always simpler than @{term "map_poly hom"}.*}
+  text \<open>We will consider @{term hom} is always simpler than @{term "map_poly hom"}.\<close>
   lemma map_poly_hom_monom[simp]: "map_poly hom (monom a i) = monom (hom a) i"
     by(rule map_poly_monom, auto)
   lemma coeff_map_poly_hom[simp]: "coeff (map_poly hom p) i = hom (coeff p i)"
@@ -119,7 +119,7 @@ begin
   sublocale zero_hom "map_poly hom" by (unfold_locales, auto)
 end
 
-text {* @{const map_poly} preserves homomorphisms over addition. *}
+text \<open>@{const map_poly} preserves homomorphisms over addition.\<close>
 
 context comm_monoid_add_hom
 begin
@@ -133,7 +133,7 @@ begin
   sublocale comm_monoid_add_hom "map_poly hom" by (unfold_locales, auto simp:hom_distribs)
 end
 
-text {* To preserve homomorphisms over multiplication, it demands commutative ring homomorphisms. *}
+text \<open>To preserve homomorphisms over multiplication, it demands commutative ring homomorphisms.\<close>
 context comm_semiring_hom begin
   lemma map_poly_pCons_hom[hom_distribs]: "map_poly hom (pCons a p) = pCons (hom a) (map_poly hom p)"
     unfolding map_poly_simps by auto
@@ -167,7 +167,7 @@ begin
   sublocale idom_hom "map_poly hom"..
 end
 
-subsubsection {* Injectivity *}
+subsubsection \<open>Injectivity\<close>
 
 locale map_poly_inj_zero_hom = base: inj_zero_hom
 begin
@@ -423,7 +423,7 @@ lemma order_hom: "order (hom x) (map_poly hom f) = order x f"
 end
 
 
-subsection {* Example Interpretations *}
+subsection \<open>Example Interpretations\<close>
 
 abbreviation "of_int_poly \<equiv> map_poly of_int"
 
@@ -436,7 +436,7 @@ interpretation of_int_poly_hom:
   map_poly_inj_idom_hom "of_int :: int  \<Rightarrow> 'a :: {idom,ring_char_0}" ..
 
 
-text {* The following operations are homomorphic w.r.t. only @{class monoid_add}. *}
+text \<open>The following operations are homomorphic w.r.t. only @{class monoid_add}.\<close>
 
 interpretation pCons_0_hom: injective "pCons 0" by (unfold_locales, auto)
 interpretation pCons_0_hom: zero_hom_0 "pCons 0" by (unfold_locales, auto)

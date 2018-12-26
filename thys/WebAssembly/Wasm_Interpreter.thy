@@ -1,4 +1,4 @@
-section {* WebAssembly Interpreter *}
+section \<open>WebAssembly Interpreter\<close>
 
 theory Wasm_Interpreter imports Wasm begin
 

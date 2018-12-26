@@ -2,18 +2,18 @@ theory TopoS_Stateful_Policy
 imports TopoS_Composition_Theory
 begin
 
-section{*Stateful Policy*}
+section\<open>Stateful Policy\<close>
 
 
-text{*Details described in \cite{diekmann2014esss}. *}
+text\<open>Details described in \cite{diekmann2014esss}.\<close>
 
 
-text{* Algorithm *}
+text\<open>Algorithm\<close>
 term TopoS_Composition_Theory.generate_valid_topology
-text{* generates a valid high-level topology. Now we discuss how to turn this into
-       a stateful policy. *}
+text\<open>generates a valid high-level topology. Now we discuss how to turn this into
+       a stateful policy.\<close>
 
-text{*
+text\<open>
 Example:
   SensorNode produces data and has no security level.
   SensorSink has high security level
@@ -28,20 +28,20 @@ Example:
 Result:
   IFS violations undesirable.
   ACS violations may be okay under certain conditions.
-*}
+\<close>
 
 term all_security_requirements_fulfilled
 
-text{* @{term "G = (V, E\<^sub>f\<^sub>i\<^sub>x, E\<^sub>s\<^sub>t\<^sub>a\<^sub>t\<^sub>e)"} *}
+text\<open>@{term "G = (V, E\<^sub>f\<^sub>i\<^sub>x, E\<^sub>s\<^sub>t\<^sub>a\<^sub>t\<^sub>e)"}\<close>
 record 'v stateful_policy =
     hosts :: "'v set" \<comment> \<open>nodes, vertices\<close>
     flows_fix :: "('v \<times>'v) set" \<comment> \<open>edges in high-level policy\<close>
     flows_state :: "('v \<times>'v) set" \<comment> \<open>edges that can have stateful flows, i.e. backflows\<close>
 
-text{* All the possible ways packets can travel in a @{typ "'v stateful_policy"}.
+text\<open>All the possible ways packets can travel in a @{typ "'v stateful_policy"}.
         They can either choose the fixed links;
         Or use a stateful link, i.e. establish state.
-        Once state is established, packets can flow back via the established link.*}
+        Once state is established, packets can flow back via the established link.\<close>
 definition all_flows :: "'v stateful_policy \<Rightarrow> ('v \<times> 'v) set" where
   "all_flows \<T> \<equiv> flows_fix \<T> \<union> flows_state \<T> \<union> backflows (flows_state \<T>)"
 
@@ -50,7 +50,7 @@ definition stateful_policy_to_network_graph :: "'v stateful_policy \<Rightarrow>
   "stateful_policy_to_network_graph \<T> = \<lparr> nodes = hosts \<T>, edges = all_flows \<T> \<rparr>"
 
 
-text{* @{typ "'v stateful_policy"} syntactically well-formed *}
+text\<open>@{typ "'v stateful_policy"} syntactically well-formed\<close>
 locale wf_stateful_policy = 
   fixes \<T> :: "'v stateful_policy"
   assumes E_wf: "fst ` (flows_fix \<T>) \<subseteq> (hosts \<T>)"
@@ -107,7 +107,7 @@ begin
 end
 
 
-text{*Minimizing stateful flows such that only newly added backflows remain*}
+text\<open>Minimizing stateful flows such that only newly added backflows remain\<close>
   definition filternew_flows_state :: "'v stateful_policy \<Rightarrow> ('v \<times> 'v) set" where
     "filternew_flows_state \<T> \<equiv> {(s, r) \<in> flows_state \<T>. (r, s) \<notin> flows_fix \<T>}"
 
@@ -148,13 +148,13 @@ text{*Minimizing stateful flows such that only newly added backflows remain*}
 
 
 
-text{* Given a high-level policy, we can construct a pretty large syntactically valid low level policy. However, the stateful policy will
-       almost certainly violate security requirements! *}
+text\<open>Given a high-level policy, we can construct a pretty large syntactically valid low level policy. However, the stateful policy will
+       almost certainly violate security requirements!\<close>
   lemma "wf_graph G \<Longrightarrow> wf_stateful_policy \<lparr> hosts = nodes G, flows_fix = nodes G \<times> nodes G, flows_state = nodes G \<times> nodes G \<rparr>"
     by(simp add: wf_stateful_policy_def wf_graph_def)
 
 
-text{* @{const wf_stateful_policy} implies @{term wf_graph} *}
+text\<open>@{const wf_stateful_policy} implies @{term wf_graph}\<close>
   lemma wf_stateful_policy_is_wf_graph: "wf_stateful_policy \<T> \<Longrightarrow> wf_graph \<lparr>nodes = hosts \<T>, edges = all_flows \<T>\<rparr>"
     apply(frule wf_stateful_policy.E_state_backflows_wf)
     apply(frule wf_stateful_policy.E_state_backflows_wf(2))
@@ -175,7 +175,7 @@ lemma "(\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_net
     by(simp add: filternew_flows_state_alt backflows_minus_backflows, blast)
 
 
-text{* When is a stateful policy @{term "\<T>"} compliant with a high-level policy @{term "G"} and the security requirements @{term "M"}? *}
+text\<open>When is a stateful policy @{term "\<T>"} compliant with a high-level policy @{term "G"} and the security requirements @{term "M"}?\<close>
 locale stateful_policy_compliance =  
   fixes \<T> :: "('v::vertex) stateful_policy"
   fixes G :: "'v graph"
@@ -238,7 +238,7 @@ locale stateful_policy_compliance =
         lemma and substract @{term "backflows (filternew_flows_state \<T>) - E"}, on the right hand side @{term E} remains, as Graph's edges @{term "flows_fix \<T>  \<union> E"} remains\<close>
 
       from configured_SecurityInvariant.Un_set_offending_flows_bound_minus_subseteq[where X="backflows (filternew_flows_state \<T>)", OF _ wfGfilternew this]
-        `valid_reqs (get_ACS M)`
+        \<open>valid_reqs (get_ACS M)\<close>
         have
         "\<And> m E. m \<in> set (get_ACS M) \<Longrightarrow>
         \<forall>F\<in>c_offending_flows m \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> filternew_flows_state \<T> \<union> backflows (filternew_flows_state \<T>) - E\<rparr>. F \<subseteq> backflows (filternew_flows_state \<T>) - E"
@@ -253,7 +253,7 @@ locale stateful_policy_compliance =
       from a1 this have "finite E" by (metis rev_finite_subset)
     
       from a1 obtain E' where E'_prop1: "backflows (filternew_flows_state \<T>) - E' = E" and E'_prop2: "E' = backflows (filternew_flows_state \<T>) - E" by blast
-      from E'_prop2 `finite (backflows (filternew_flows_state \<T>))` `finite E` have "finite E'" by blast
+      from E'_prop2 \<open>finite (backflows (filternew_flows_state \<T>))\<close> \<open>finite E\<close> have "finite E'" by blast
     
       from Set.double_diff[where B="backflows (filternew_flows_state \<T>)" and C="backflows (filternew_flows_state \<T>)" and A="E", OF a1, simplified] have Ebackflowssimp:
         "backflows (filternew_flows_state \<T>) - (backflows (filternew_flows_state \<T>) - E) = E" .
@@ -315,15 +315,15 @@ locale stateful_policy_compliance =
           \<comment> \<open>hence, E2 disappears\<close>
           from Set.Un_absorb1[OF this] have E2_absorb: "flows_fix \<T> \<union> E2 = flows_fix \<T>" by blast
     
-          from `E = E1 \<union> E2` have E2E1eq: "E2 \<union> E1 = E" by blast
+          from \<open>E = E1 \<union> E2\<close> have E2E1eq: "E2 \<union> E1 = E" by blast
     
-          from `E = E1 \<union> E2` `E1 \<inter> E2 = {}` have "E1 \<subseteq> E" by simp
+          from \<open>E = E1 \<union> E2\<close> \<open>E1 \<inter> E2 = {}\<close> have "E1 \<subseteq> E" by simp
     
           from compliant_stateful_ACS_no_side_effects_filternew_helper E1_prop have "\<forall>F\<in>get_offending_flows (get_ACS M) \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> E1 \<rparr>. F \<subseteq> E1" by simp
           hence "\<forall>F\<in>get_offending_flows (get_ACS M) \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> E2 \<union> E1 \<rparr>. F \<subseteq> E1" using E2_absorb[symmetric] by simp
           hence "\<forall>F\<in>get_offending_flows (get_ACS M) \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> E \<rparr>. F \<subseteq> E1" using E2E1eq by (metis Un_assoc)
     
-          from this `E1 \<subseteq> E` show "\<forall>F\<in>get_offending_flows (get_ACS M) \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> E\<rparr>. F \<subseteq> E" by blast
+          from this \<open>E1 \<subseteq> E\<close> show "\<forall>F\<in>get_offending_flows (get_ACS M) \<lparr>nodes = hosts \<T>, edges = flows_fix \<T> \<union> E\<rparr>. F \<subseteq> E" by blast
         qed
     
       from this backflows_split show ?thesis by presburger
@@ -334,13 +334,13 @@ locale stateful_policy_compliance =
       using compliant_stateful_ACS_no_side_effects wf_stateful_policy.E_state_fix[OF stateful_policy_wf] by (metis Un_absorb2)
 
 
-    text{* The high level graph generated from the low level policy is a valid graph*}
+    text\<open>The high level graph generated from the low level policy is a valid graph\<close>
     lemma valid_stateful_policy: "wf_graph \<lparr>nodes = hosts \<T>, edges = all_flows \<T>\<rparr>"
       by(rule wf_stateful_policy_is_wf_graph,fact stateful_policy_wf)
 
-    text{* The security requirements are definitely fulfilled if we consider only the fixed flows and the
+    text\<open>The security requirements are definitely fulfilled if we consider only the fixed flows and the
            normal direction of the stateful flows (i.e. no backflows).
-           I.e. considering no states, everything must be fulfilled *}
+           I.e. considering no states, everything must be fulfilled\<close>
     lemma compliant_stateful_ACS_static_valid: "all_security_requirements_fulfilled (get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T>  \<rparr>"
     proof -
       from validReqs have valid_ReqsACS: "valid_reqs (get_ACS M)" by(simp add: get_ACS_def valid_reqs_def)
@@ -370,12 +370,12 @@ locale stateful_policy_compliance =
           by fastforce
     qed
 
-    text{* The flows with state are a subset of the flows allowed by the policy *}
+    text\<open>The flows with state are a subset of the flows allowed by the policy\<close>
     theorem flows_state_edges: "flows_state \<T> \<subseteq> edges G"
       using wf_stateful_policy.E_state_fix[OF stateful_policy_wf] flows_edges by simp
 
 
-    text{* All offending flows are subsets of the reveres stateful flows *}
+    text\<open>All offending flows are subsets of the reveres stateful flows\<close>
     lemma compliant_stateful_ACS_only_state_violations:
       "\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>). F \<subseteq> backflows (flows_state \<T>)"
       proof -
@@ -398,15 +398,15 @@ locale stateful_policy_compliance =
       qed
 
 
-    text {* All violations are backflows of valid flows *}
+    text \<open>All violations are backflows of valid flows\<close>
     corollary compliant_stateful_ACS_only_state_violations_union: "\<Union> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T>) \<subseteq> backflows (flows_state \<T>)"
     using compliant_stateful_ACS_only_state_violations by fastforce
 
     corollary compliant_stateful_ACS_only_state_violations_union': "\<Union> get_offending_flows M (stateful_policy_to_network_graph \<T>) \<subseteq> backflows (flows_state \<T>)"
     using compliant_stateful_ACS_only_state_violations' by fastforce
 
-    text{* All individual flows cause no side effects, i.e. each backflow causes at most itself as violation, no other
-           side-effect violations are induced. *}
+    text\<open>All individual flows cause no side effects, i.e. each backflow causes at most itself as violation, no other
+           side-effect violations are induced.\<close>
     lemma  compliant_stateful_ACS_no_state_singleflow_side_effect:
       "\<forall> (v\<^sub>1, v\<^sub>2) \<in> backflows (flows_state \<T>). 
        (\<Union> get_offending_flows(get_ACS M) \<lparr> nodes = hosts \<T>, edges = flows_fix \<T> \<union> flows_state \<T> \<union> {(v\<^sub>1, v\<^sub>2)} \<rparr>) \<subseteq> {(v\<^sub>1, v\<^sub>2)}"
@@ -414,26 +414,26 @@ locale stateful_policy_compliance =
   end
 
 
-subsection{* Summarizing the important theorems *}
+subsection\<open>Summarizing the important theorems\<close>
 
-  text{* No information flow security requirements are violated (including all added stateful flows)*}
+  text\<open>No information flow security requirements are violated (including all added stateful flows)\<close>
   thm stateful_policy_compliance.compliant_stateful_IFS
   
   
-  text{* There are not access control side effects when allowing stateful backflows. 
-          I.e. for all possible subsets of the to-allow backflows, the violations they cause are only these backflows themselves*}
+  text\<open>There are not access control side effects when allowing stateful backflows. 
+          I.e. for all possible subsets of the to-allow backflows, the violations they cause are only these backflows themselves\<close>
   thm stateful_policy_compliance.compliant_stateful_ACS_no_side_effects'
   
-    text{* Also, considering all backflows individually, they cause no side effect, i.e. the only violation added is the backflow itself *}
+    text\<open>Also, considering all backflows individually, they cause no side effect, i.e. the only violation added is the backflow itself\<close>
     thm stateful_policy_compliance.compliant_stateful_ACS_no_state_singleflow_side_effect
   
-    text{* In particular, all introduced offending flows for access control strategies are at most the stateful backflows *}
+    text\<open>In particular, all introduced offending flows for access control strategies are at most the stateful backflows\<close>
     thm stateful_policy_compliance.compliant_stateful_ACS_only_state_violations_union
-    text{* Which implies: all introduced offending flows are at most the stateful backflows *}
+    text\<open>Which implies: all introduced offending flows are at most the stateful backflows\<close>
     thm stateful_policy_compliance.compliant_stateful_ACS_only_state_violations_union'
     
   
-  text{* Disregarding the backflows of stateful flows, all security requirements are fulfilled. *}
+  text\<open>Disregarding the backflows of stateful flows, all security requirements are fulfilled.\<close>
   thm stateful_policy_compliance.compliant_stateful_ACS_static_valid'
 
 

@@ -5,7 +5,7 @@ begin
 definition [simp]: "INDEP v \<equiv> True"
 lemma INDEPI: "INDEP v" by simp
 
-ML {*
+ML \<open>
   signature INDEP_VARS = sig
     val indep_tac: Proof.context -> tactic'
   end
@@ -54,6 +54,6 @@ ML {*
         (CONVERSION Thm.eta_conversion THEN' indep_tac_aux ctxt)
     end
   end
-*}
+\<close>
 
 end

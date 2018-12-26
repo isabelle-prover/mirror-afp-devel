@@ -3,7 +3,7 @@
     Copyright   2001 Technische Universitaet Muenchen
 *)
 
-section {* Exception handling in the JVM *}
+section \<open>Exception handling in the JVM\<close>
 
 theory JVMExceptions imports JVMInstructions "../Common/Exceptions" begin
 

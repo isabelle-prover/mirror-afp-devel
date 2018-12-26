@@ -14,12 +14,12 @@ begin
 
 (* **************************************** *)
 
-section{* General Lemmas *}
+section\<open>General Lemmas\<close>
 
-subsection{* Extra Finite-Set Lemmas *}
+subsection\<open>Extra Finite-Set Lemmas\<close>
 
-text{* Small variant of @{thm [source] "Finite_Set.finite_subset_induct"}:
-also assume @{term "F \<subseteq> A"} in the induction hypothesis. *}
+text\<open>Small variant of @{thm [source] "Finite_Set.finite_subset_induct"}:
+also assume @{term "F \<subseteq> A"} in the induction hypothesis.\<close>
 
 lemma finite_subset_induct' [consumes 2, case_names empty insert]:
   assumes "finite F" and "F \<subseteq> A"
@@ -27,7 +27,7 @@ lemma finite_subset_induct' [consumes 2, case_names empty insert]:
     and insert: "\<And>a F. \<lbrakk>finite F; a \<in> A; F \<subseteq> A; a \<notin> F; P F \<rbrakk> \<Longrightarrow> P (insert a F)"
   shows "P F"
 proof -
-  from `finite F`
+  from \<open>finite F\<close>
   have "F \<subseteq> A \<Longrightarrow> ?thesis"
   proof induct
     show "P {}" by fact
@@ -45,11 +45,11 @@ proof -
       show "F \<subseteq> A" by fact
     qed
   qed
-  with `F \<subseteq> A` show ?thesis by blast
+  with \<open>F \<subseteq> A\<close> show ?thesis by blast
 qed
 
-text{* A slight improvement on @{thm [source] "List.finite_list"} - add
-@{term "distinct"}. *}
+text\<open>A slight improvement on @{thm [source] "List.finite_list"} - add
+@{term "distinct"}.\<close>
 
 lemma finite_list: "finite A \<Longrightarrow> \<exists>l. set l = A \<and> distinct l"
 proof(induct rule: finite_induct)
@@ -59,7 +59,7 @@ proof(induct rule: finite_induct)
   thus ?case by blast
 qed auto
 
-subsection{* Extra bijection lemmas *}
+subsection\<open>Extra bijection lemmas\<close>
 
 lemma bij_betw_onto: "bij_betw f A B \<Longrightarrow> f ` A = B" unfolding bij_betw_def by simp
 
@@ -191,9 +191,9 @@ proof -
   ultimately show thesis ..
 qed
 
-subsection{* Collections of witnesses: @{term "hasw"}, @{term "has"} *}
+subsection\<open>Collections of witnesses: @{term "hasw"}, @{term "has"}\<close>
 
-text {*
+text \<open>
 
 Given a set of cardinality at least $n$, we can find up to $n$ distinct
 witnesses. The built-in @{term "card"} function unfortunately satisfies:
@@ -207,7 +207,7 @@ These lemmas handle the infinite case uniformly.
 
 Thanks to Gerwin Klein suggesting this approach.
 
-*}
+\<close>
 
 definition hasw :: "'a list \<Rightarrow> 'a set \<Rightarrow> bool" where
   "hasw xs S \<equiv> set xs \<subseteq> S \<and> distinct xs"

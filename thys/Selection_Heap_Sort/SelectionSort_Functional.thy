@@ -1,23 +1,23 @@
 (*  Title:      Sort.thy
     Author:     Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade *)
 
-section {* Verification of functional Selection Sort *}
+section \<open>Verification of functional Selection Sort\<close>
 
 theory SelectionSort_Functional
 imports RemoveMax
 begin
 
-subsection {* Defining data structure *}
+subsection \<open>Defining data structure\<close>
 
-text{* Selection sort works with list and that is the reason why {\em
-  Collection} should be interpreted as list. *}
+text\<open>Selection sort works with list and that is the reason why {\em
+  Collection} should be interpreted as list.\<close>
 
 interpretation Collection "[]" "\<lambda> l. l = []" id mset
 by (unfold_locales, auto)
 
-subsection {* Defining function remove\_max *}
+subsection \<open>Defining function remove\_max\<close>
 
-text{* The following is definition of {\em remove\_max} function. 
+text\<open>The following is definition of {\em remove\_max} function. 
 The idea is very well known -- assume that the maximum element is the
 first one and then compare with each element of the list. Function
 {\em f} is one step in iteration, it compares current maximum {\em m}
@@ -25,7 +25,7 @@ with one element {\em x}, if it is bigger then {\em m} stays current
 maximum and {\em x} is added in the resulting list, otherwise {\em x}
 is current maximum and {\em m} is added in the resulting
 list.
-*}
+\<close>
 
 fun f where "f (m, l) x = (if x \<ge> m then (x, m#l) else (m, x#l))"
 
@@ -37,8 +37,8 @@ lemma max_Max_commute:
   apply (cases "A = {}", simp)  
   by (metis Max_insert max.commute max.left_commute)
 
-text{* The function really returned the
-maximum value. *}
+text\<open>The function really returned the
+maximum value.\<close>
 
 lemma remove_max_max_lemma:
   shows "fst (foldl f (m, t) l) =  Max (set (m # l))"
@@ -62,8 +62,8 @@ using remove_max_max_lemma[of "hd l" "[]" "tl l"]
 using fst_conv[of m l']
 by simp
 
-text{* Nothing new is added in the list and noting is deleted
-from the list except the maximum element. *}
+text\<open>Nothing new is added in the list and noting is deleted
+from the list except the maximum element.\<close>
 
 lemma remove_max_mset_lemma:
   assumes "(m, l') = foldl f (m', t') l"

@@ -42,12 +42,12 @@ where
 "redex (Await b c) = Await b c" |
 "redex (Parallel cs) = Parallel cs"
 
-subsection {*Small-Step Computation: @{text "\<Gamma> \<turnstile>(c, s) \<rightarrow> (c', s')"}*}
+subsection \<open>Small-Step Computation: \<open>\<Gamma> \<turnstile>(c, s) \<rightarrow> (c', s')\<close>\<close>
 
-text {* The final configuration is either of the form @{text "(Skip,_)"} for normal
+text \<open>The final configuration is either of the form \<open>(Skip,_)\<close> for normal
 termination, or @{term "(Throw,Normal s)"} in case the program was started in 
 a @{term "Normal"} state and terminated abruptly. Explicit abrupt states are removed
-from the language definition and thus do not need to be propogated. *}
+from the language definition and thus do not need to be propogated.\<close>
 
 type_synonym ('s,'p,'f) config = "('s,'p,'f)com  \<times> ('s,'f) xstate"
 
@@ -156,9 +156,9 @@ Basic Spec SpecStuck Guard GuardFault Seq SeqSkip SeqThrow CondTrue CondFalse
 WhileTrue WhileFalse Call CallUndefined DynCom Catch CatchThrow CatchSkip
 FaultProp StuckProp Parallel ParSkip Await, induct set]
 
-text {* The execution of a command is blocked if it cannot make progress, but is not in a final
-state. It is the intention that @{text "\<exists>cfg. \<Gamma> \<turnstile> (c, s) \<rightarrow> cfg) \<or> final (c, s) \<or> blocked \<Gamma> c s"}, but
-we do not prove this. *}
+text \<open>The execution of a command is blocked if it cannot make progress, but is not in a final
+state. It is the intention that \<open>\<exists>cfg. \<Gamma> \<turnstile> (c, s) \<rightarrow> cfg) \<or> final (c, s) \<or> blocked \<Gamma> c s\<close>, but
+we do not prove this.\<close>
 
 function(sequential) blocked :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s,'f)xstate \<Rightarrow> bool" where
   "blocked \<Gamma> (Seq (Await b c\<^sub>1) c\<^sub>2) (Normal s) = (s \<notin> b)"

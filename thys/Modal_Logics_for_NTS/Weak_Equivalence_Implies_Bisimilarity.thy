@@ -85,7 +85,7 @@ begin
       with card_B obtain p where "x' = p \<bullet> x"
         using Abs_bset_inverse mem_Collect_eq by auto
       then show "weak_formula x'"
-        using `weak_formula x` by (metis weak_formula_eqvt)
+        using \<open>weak_formula x\<close> by (metis weak_formula_eqvt)
     qed
     moreover from finite_supp_B and card_B and supp_B_subset_supp_P have "supp ?y \<subseteq> supp P"
       by simp
@@ -146,7 +146,7 @@ begin
 
             let ?z = "\<langle>\<langle>\<tau>\<rangle>\<rangle>(Conj (binsert (Pred \<phi>) (bsingleton ?y)))"
             have "weak_formula ?z"
-              by standard (fact `weak_formula ?y`)
+              by standard (fact \<open>weak_formula ?y\<close>)
             moreover have "P \<Turnstile> ?z"
               proof -
                 have "P \<Rightarrow>\<langle>\<tau>\<rangle> P"
@@ -158,7 +158,7 @@ begin
                   with "*" have "P \<Turnstile> f Q'"
                     by (metis is_distinguishing_formula_def mem_Collect_eq)
                 }
-                with `P \<turnstile> \<phi>` have "P \<Turnstile> Conj (binsert (Pred \<phi>) (bsingleton ?y))"
+                with \<open>P \<turnstile> \<phi>\<close> have "P \<Turnstile> Conj (binsert (Pred \<phi>) (bsingleton ?y))"
                   by (simp add: binsert.rep_eq finite_supp_image card_image)
                 ultimately show ?thesis
                   using valid_weak_action_modality by blast
@@ -176,7 +176,7 @@ begin
                   using is_distinguishing_formula_def by blast
               qed
             ultimately have False
-              by (metis `P \<equiv>\<cdot> Q` weakly_logically_equivalent_def)
+              by (metis \<open>P \<equiv>\<cdot> Q\<close> weakly_logically_equivalent_def)
           }
           then show ?thesis
             by blast
@@ -255,7 +255,7 @@ begin
               qed
             moreover have "P \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>?y"
               unfolding valid_weak_action_modality proof (standard+)
-                from `P \<rightarrow> \<langle>\<alpha>,P'\<rangle>` show "P \<Rightarrow>\<langle>\<alpha>\<rangle> P'"
+                from \<open>P \<rightarrow> \<langle>\<alpha>,P'\<rangle>\<close> show "P \<Rightarrow>\<langle>\<alpha>\<rangle> P'"
                   by simp
               next
                 {
@@ -271,14 +271,14 @@ begin
               proof
                 assume "Q \<Turnstile> \<langle>\<langle>\<alpha>\<rangle>\<rangle>?y"
                 then obtain Q' where 1: "Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'" and 2: "Q' \<Turnstile> ?y"
-                  using `bn \<alpha> \<sharp>* Q` by (metis valid_weak_action_modality_fresh)
+                  using \<open>bn \<alpha> \<sharp>* Q\<close> by (metis valid_weak_action_modality_fresh)
                 from 2 have "\<And>Q''. Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'' \<longrightarrow> Q' \<Turnstile> f Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False
                   using is_distinguishing_formula_def by blast
               qed
             ultimately have False
-              by (metis `P \<equiv>\<cdot> Q` weakly_logically_equivalent_def)
+              by (metis \<open>P \<equiv>\<cdot> Q\<close> weakly_logically_equivalent_def)
           }
           then show ?thesis by auto
         qed

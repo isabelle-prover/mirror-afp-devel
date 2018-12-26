@@ -1,11 +1,11 @@
-section {* Soundness for graphical diagrams *}
+section \<open>Soundness for graphical diagrams\<close>
 
 theory Ribbons_Graphical_Soundness imports
   Ribbons_Graphical
   More_Finite_Map
 begin
 
-text {* We prove that the proof rules for graphical ribbon proofs are sound
+text \<open>We prove that the proof rules for graphical ribbon proofs are sound
   with respect to the rules of separation logic.
 
   We impose an additional assumption to achieve soundness: that the
@@ -19,42 +19,42 @@ text {* We prove that the proof rules for graphical ribbon proofs are sound
   don't just include the commands, but the assertions in between them. Our
   main lemma for proving soundness says that each of these proofchains
   corresponds to a valid separation logic proof.
-*}
+\<close>
 
-subsection {* Proofstate chains *}
+subsection \<open>Proofstate chains\<close>
 
-text {* When extracting a proofchain from a diagram, we need to keep track
+text \<open>When extracting a proofchain from a diagram, we need to keep track
   of which nodes we have processed and which ones we haven't. A
   proofstate, defined below, maps a node to ``Top'' if it hasn't been
-  processed and ``Bot'' if it has. *}
+  processed and ``Bot'' if it has.\<close>
 
 datatype topbot = Top | Bot
 
 type_synonym proofstate = "node \<rightharpoonup>\<^sub>f topbot"
 
-text {* A proofstate chain contains all the nodes and edges of a graphical
+text \<open>A proofstate chain contains all the nodes and edges of a graphical
   diagram, interspersed with proofstates that track which nodes have been
-  processed at each point. *}
+  processed at each point.\<close>
 
 type_synonym ps_chain = "(proofstate, node + edge) chain"
 
-text {* The @{term "next_ps \<sigma>"} function processes one node or one edge in a
+text \<open>The @{term "next_ps \<sigma>"} function processes one node or one edge in a
   diagram, given the current proofstate @{term \<sigma>}. It processes a node
   @{term v} by replacing the mapping from @{term v} to @{term Top} with a
   mapping from @{term v} to @{term Bot}. It processes an edge @{term e}
   (whose source and target nodes are @{term vs} and @{term ws} respectively)
   by removing all the mappings from @{term vs} to @{term Bot}, and adding
-  mappings from @{term ws} to @{term Top}. *}
+  mappings from @{term ws} to @{term Top}.\<close>
 
 fun next_ps :: "proofstate \<Rightarrow> node + edge \<Rightarrow> proofstate"
 where
   "next_ps \<sigma> (Inl v) = \<sigma> \<ominus> {|v|} ++\<^sub>f [{|v|} |=> Bot]"
 | "next_ps \<sigma> (Inr e) = \<sigma> \<ominus> fst3 e ++\<^sub>f [thd3 e |=> Top]"
 
-text {* The function @{term "mk_ps_chain \<Pi> \<pi>"} generates from @{term \<pi>}, which
+text \<open>The function @{term "mk_ps_chain \<Pi> \<pi>"} generates from @{term \<pi>}, which
   is a list of nodes and edges, a proofstate chain, by interspersing the
   elements of @{term \<pi>} with the appropriate proofstates. The first argument
-  @{term \<Pi>} is the part of the chain that has already been converted. *}
+  @{term \<Pi>} is the part of the chain that has already been converted.\<close>
 
 definition
   mk_ps_chain :: "[ps_chain, (node + edge) list] \<Rightarrow> ps_chain"
@@ -76,18 +76,18 @@ next
   done
 qed
 
-text {* Distributing @{term mk_ps_chain} over @{term Cons}. *}
+text \<open>Distributing @{term mk_ps_chain} over @{term Cons}.\<close>
 lemma mk_ps_chain_cons:
   "mk_ps_chain \<Pi> (x # \<pi>) = mk_ps_chain (cSnoc \<Pi> x (next_ps (post \<Pi>) x)) \<pi>"
 by (auto simp add: mk_ps_chain_def)
 
-text {* Distributing @{term mk_ps_chain} over @{term snoc}. *}
+text \<open>Distributing @{term mk_ps_chain} over @{term snoc}.\<close>
 lemma mk_ps_chain_snoc:
   "mk_ps_chain \<Pi> (\<pi> @ [x])
     = cSnoc (mk_ps_chain \<Pi> \<pi>) x (next_ps (post (mk_ps_chain \<Pi> \<pi>)) x)"
 by (unfold mk_ps_chain_def, auto)
 
-text {* Distributing @{term mk_ps_chain} over @{term cCons}. *}
+text \<open>Distributing @{term mk_ps_chain} over @{term cCons}.\<close>
 lemma mk_ps_chain_ccons:
   fixes \<pi> \<Pi>
   shows "mk_ps_chain (\<lbrace> \<sigma> \<rbrace> \<cdot> x \<cdot> \<Pi>) \<pi> = \<lbrace> \<sigma> \<rbrace> \<cdot> x \<cdot> mk_ps_chain \<Pi> \<pi> "
@@ -100,10 +100,10 @@ apply (induct \<pi> arbitrary: \<Pi>)
 apply (auto simp add: mk_ps_chain_def mk_ps_chain_cons pre_snoc)
 done
 
-text {* A chain which is obtained from the list @{term \<pi>}, has @{term \<pi>}
+text \<open>A chain which is obtained from the list @{term \<pi>}, has @{term \<pi>}
   as its list of commands. The following lemma states this in a slightly
   more general form, that allows for part of the chain to have already
-  been processed. *}
+  been processed.\<close>
 
 lemma comlist_mk_ps_chain:
   "comlist (mk_ps_chain \<Pi> \<pi>) = comlist \<Pi> @ \<pi>"
@@ -118,7 +118,7 @@ next
   done
 qed
 
-text {* In order to perform induction over our diagrams, we shall wish
+text \<open>In order to perform induction over our diagrams, we shall wish
   to obtain ``smaller'' diagrams, by removing nodes or edges. However, the
   syntax and well-formedness constraints for diagrams are such that although
   we can always remove an edge from a diagram, we cannot (in general) remove
@@ -133,7 +133,7 @@ text {* In order to perform induction over our diagrams, we shall wish
   We now give an updated version of the @{term "lins G"} function. This was
   originally defined in @{theory Ribbon_Proofs.Ribbons_Graphical}. We provide an extra
   parameter, @{term S}, which denotes the subset of @{term G}'s initial nodes
-  that shouldn't be included in the linear extensions. *}
+  that shouldn't be included in the linear extensions.\<close>
 
 definition lins2 :: "[node fset, diagram] \<Rightarrow> lin set"
 where
@@ -173,27 +173,27 @@ apply assumption+
 apply blast+
 done
 
-text {* When @{term S} is empty, the two definitions coincide. *}
+text \<open>When @{term S} is empty, the two definitions coincide.\<close>
 lemma lins_is_lins2_with_empty_S:
   "lins G = lins2 {||} G"
 by (unfold lins_def lins2_def, auto)
 
-text {* The first proofstate for a diagram @{term G} is obtained by
-  mapping each of its initial nodes to @{term Top}. *}
+text \<open>The first proofstate for a diagram @{term G} is obtained by
+  mapping each of its initial nodes to @{term Top}.\<close>
 definition
   initial_ps :: "diagram \<Rightarrow> proofstate"
 where
   "initial_ps G \<equiv> [ initials G |=> Top ]"
 
-text {* The first proofstate for the partially-processed diagram @{term G} is
+text \<open>The first proofstate for the partially-processed diagram @{term G} is
   obtained by mapping each of its initial nodes to @{term Top}, except those
-  in @{term S}, which are mapped to @{term Bot}. *}
+  in @{term S}, which are mapped to @{term Bot}.\<close>
 definition
   initial_ps2 :: "[node fset, diagram] \<Rightarrow> proofstate"
 where
   "initial_ps2 S G \<equiv> [ initials G - S |=> Top ] ++\<^sub>f [ S |=> Bot ]"
 
-text {* When @{term S} is empty, the above two definitions coincide. *}
+text \<open>When @{term S} is empty, the above two definitions coincide.\<close>
 lemma initial_ps_is_initial_ps2_with_empty_S:
   "initial_ps = initial_ps2 {||}"
 apply (unfold fun_eq_iff, intro allI)
@@ -201,22 +201,22 @@ apply (unfold initial_ps_def initial_ps2_def)
 apply simp
 done
 
-text {* The following function extracts the set of proofstate chains from
-   a diagram. *}
+text \<open>The following function extracts the set of proofstate chains from
+   a diagram.\<close>
 definition
   ps_chains :: "diagram \<Rightarrow> ps_chain set"
 where
   "ps_chains G \<equiv> mk_ps_chain (cNil (initial_ps G)) ` lins G"
 
-text {* The following function extracts the set of proofstate chains from
+text \<open>The following function extracts the set of proofstate chains from
    a partially-processed diagram. Nodes in @{term S} are excluded from
-   the resulting chains. *}
+   the resulting chains.\<close>
 definition
   ps_chains2 :: "[node fset, diagram] \<Rightarrow> ps_chain set"
 where
   "ps_chains2 S G \<equiv> mk_ps_chain (cNil (initial_ps2 S G)) ` lins2 S G"
 
-text {* When @{term S} is empty, the above two definitions coincide. *}
+text \<open>When @{term S} is empty, the above two definitions coincide.\<close>
 lemma ps_chains_is_ps_chains2_with_empty_S:
   "ps_chains = ps_chains2 {||}"
 apply (unfold fun_eq_iff, intro allI)
@@ -226,7 +226,7 @@ apply (fold lins_is_lins2_with_empty_S)
 apply auto
 done
 
-text {* We now wish to describe proofstates chain that are well-formed. First,
+text \<open>We now wish to describe proofstates chain that are well-formed. First,
   let us say that @{term "f ++\<^sub>fdisjoint g"} is defined, when @{term f} and
   @{term g} have disjoint domains, as @{term "f ++\<^sub>f g"}. Then, a well-formed
   proofstate chain consists of triples of the form @{term "(\<sigma> ++\<^sub>fdisjoint
@@ -236,7 +236,7 @@ text {* We now wish to describe proofstates chain that are well-formed. First,
   and target nodes @{term vs} and @{term ws} respectively.
 
   The definition below describes a well-formed triple; we then lift this
-  to complete chains shortly. *}
+  to complete chains shortly.\<close>
 
 definition
   wf_ps_triple :: "proofstate \<times> (node + edge) \<times> proofstate \<Rightarrow> bool"
@@ -443,7 +443,7 @@ proof -
 qed
 
 
-text {* We wish to prove that every proofstate chain that can be obtained from
+text \<open>We wish to prove that every proofstate chain that can be obtained from
   a linear extension of @{term G} is well-formed and has as its final
   proofstate that state in which every terminal node in @{term G} is mapped
   to @{term Bot}.
@@ -454,7 +454,7 @@ text {* We wish to prove that every proofstate chain that can be obtained from
   We use induction on the size of the partially-processed diagram. The size of
   a partially-processed diagram @{term "(G,S)"} is defined as the number of
   nodes in @{term G}, plus the number of edges, minus the number of nodes in
-  @{term S}. *}
+  @{term S}.\<close>
 
 lemmas [simp] = fmember.rep_eq
 
@@ -475,16 +475,16 @@ proof (induct k arbitrary: S G \<Pi>)
   have "fcard V \<le> fcard S"
     using "0.prems"(4)
     by (unfold G_def, auto)
-  from fcard_seteq[OF `S |\<subseteq>| V` this] have "S = V" by auto
+  from fcard_seteq[OF \<open>S |\<subseteq>| V\<close> this] have "S = V" by auto
   hence "E = []" using "0.prems"(4) by (unfold G_def, auto)
   have "initials G = V"
-    by (unfold G_def `E=[]`, rule no_edges_imp_all_nodes_initial)
+    by (unfold G_def \<open>E=[]\<close>, rule no_edges_imp_all_nodes_initial)
   have "terminals G = V"
-    by (unfold G_def `E=[]`, rule no_edges_imp_all_nodes_terminal)
+    by (unfold G_def \<open>E=[]\<close>, rule no_edges_imp_all_nodes_terminal)
   have "{} <+> {} = {}" by auto
   have "lins2 S G = { [] }"
-  apply (unfold G_def `S=V` `E=[]`)
-  apply (unfold lins2_def, auto simp add: `{} <+> {} = {}`)
+  apply (unfold G_def \<open>S=V\<close> \<open>E=[]\<close>)
+  apply (unfold lins2_def, auto simp add: \<open>{} <+> {} = {}\<close>)
   done
   hence \<Pi>_def: "\<Pi> = \<lbrace> initial_ps2 S G \<rbrace>"
     using "0.prems"(3)
@@ -492,8 +492,8 @@ proof (induct k arbitrary: S G \<Pi>)
   show ?case
   apply (intro conjI)
   apply (unfold \<Pi>_def wf_ps_chain_def, auto)
-  apply (unfold post.simps initial_ps2_def `initials G = V` `terminals G = V`)
-  apply (unfold `S=V`)
+  apply (unfold post.simps initial_ps2_def \<open>initials G = V\<close> \<open>terminals G = V\<close>)
+  apply (unfold \<open>S=V\<close>)
   apply (subgoal_tac "V - V = {||}", simp_all)
   done
 next
@@ -511,10 +511,10 @@ next
   proof (cases \<pi>)
     case Nil
     from \<pi>_in have "V = S" "E = []"
-    apply (-, unfold `\<pi> = []` lins2_def, simp_all)
+    apply (-, unfold \<open>\<pi> = []\<close> lins2_def, simp_all)
     apply (unfold empty_eq_Plus_conv)
     apply (unfold G_def vertices.simps edges.simps, auto)
-    by (metis `S |\<subseteq>| V` less_eq_fset.rep_eq subset_antisym)
+    by (metis \<open>S |\<subseteq>| V\<close> less_eq_fset.rep_eq subset_antisym)
 
     with Suc.prems(4) have False by (simp add: G_def)
     thus ?thesis by auto
@@ -555,7 +555,7 @@ next
         then obtain j where
           "j < length \<pi>" "0 < length \<pi>" "\<pi>!j = Inr e" "\<pi>!0 = Inl v"
         by (metis \<pi>_def x_def in_set_conv_nth length_pos_if_in_set nth_Cons_0)
-        with lins2(4)[OF this `v |\<in>| (thd3 e)`] show False by auto
+        with lins2(4)[OF this \<open>v |\<in>| (thd3 e)\<close>] show False by auto
       qed
 
       define S' where "S' = {|v|} |\<union>| S"
@@ -646,7 +646,7 @@ next
       note lin = linearityD[OF this(1)]
 
       have acy: "\<And>e. e \<in> set E \<Longrightarrow> fst3 e |\<inter>| thd3 e = {||}"
-      apply (fold fset_cong, insert `acyclicity E`)
+      apply (fold fset_cong, insert \<open>acyclicity E\<close>)
       apply (unfold acyclicity_def acyclic_def, auto)
       done
 
@@ -735,22 +735,22 @@ next
         apply (metis \<pi>_def G_def x_def \<pi>_in)
         by (simp only: vs_in_S e_def)+
       next
-        have "vs |\<subseteq>| V" by (metis (lifting) `S |\<subseteq>| V` order_trans vs_in_S)
-        have "distinct E" using `linearity E` linearity_def by auto
+        have "vs |\<subseteq>| V" by (metis (lifting) \<open>S |\<subseteq>| V\<close> order_trans vs_in_S)
+        have "distinct E" using \<open>linearity E\<close> linearity_def by auto
         show "fcard G'^V + length G'^E = k + fcard S'"
         apply (insert Suc.prems(4))
         apply (unfold G_def G'_def vertices.simps edges.simps)
         apply (unfold V'_def E'_def S'_def)
-        apply (unfold fcard_funion_fsubset[OF `vs |\<subseteq>| V`])
-        apply (unfold fcard_funion_fsubset[OF `vs |\<subseteq>| S`])
-        apply (fold distinct_remove1_removeAll[OF `distinct E`])
+        apply (unfold fcard_funion_fsubset[OF \<open>vs |\<subseteq>| V\<close>])
+        apply (unfold fcard_funion_fsubset[OF \<open>vs |\<subseteq>| S\<close>])
+        apply (fold distinct_remove1_removeAll[OF \<open>distinct E\<close>])
         apply (unfold length_remove1)
         apply (simp add: e_in_E)
         apply (drule arg_cong[of _ _ "\<lambda>x. x - fcard vs - 1"])
         apply (subst (asm) add_diff_assoc2[symmetric])
-        apply (simp add: fcard_mono[OF `vs |\<subseteq>| V`])
+        apply (simp add: fcard_mono[OF \<open>vs |\<subseteq>| V\<close>])
         apply (subst add_diff_assoc, insert length_pos_if_in_set[OF e_in_E], arith, auto)
-        apply (subst add_diff_assoc, auto simp add: fcard_mono[OF `vs |\<subseteq>| S`])
+        apply (subst add_diff_assoc, auto simp add: fcard_mono[OF \<open>vs |\<subseteq>| S\<close>])
         done
       qed
       hence
@@ -825,7 +825,7 @@ next
         apply blast
         apply (metis G_def Suc(3) e_in_E set_mp less_eq_fset.rep_eq wf_dia_inv')
         prefer 2
-        apply (metis (lifting) IntI Suc(2) `ws |\<inter>| initials G = {||}`
+        apply (metis (lifting) IntI Suc(2) \<open>ws |\<inter>| initials G = {||}\<close>
             empty_iff fset_simps(1) in_mono inter_fset less_eq_fset.rep_eq ws_def)
         apply auto
         done
@@ -853,18 +853,18 @@ apply (intro wf_chains2[of "{||}"], insert assms(2))
 by (auto simp add: assms(1) ps_chains_is_ps_chains2_with_empty_S fcard_fempty)
 
 
-subsection {* Interface chains *}
+subsection \<open>Interface chains\<close>
 
 type_synonym int_chain = "(interface, assertion_gadget + command_gadget) chain"
 
-text {* An interface chain is similar to a proofstate chain. However, where a
+text \<open>An interface chain is similar to a proofstate chain. However, where a
   proofstate chain talks about nodes and edges, an interface chain talks about
   the assertion-gadgets and command-gadgets that label those nodes and edges
   in a diagram. And where a proofstate chain talks about proofstates, an
   interface chain talks about the interfaces obtained from those proofstates.
 
   The following functions convert a proofstate chain into an
-  interface chain. *}
+  interface chain.\<close>
 
 definition
   ps_to_int :: "[diagram, proofstate] \<Rightarrow> interface"
@@ -883,9 +883,9 @@ lemma ps_chain_to_int_chain_simp:
     chainmap (ps_to_int (Graph V \<Lambda> E)) ((case_sum (Inl \<circ> \<Lambda>) (Inr \<circ> snd3))) \<Pi>"
 by (simp add: ps_chain_to_int_chain_def)
 
-subsection {* Soundness proof *}
+subsection \<open>Soundness proof\<close>
 
-text {*  We assume that @{term wr_com} always returns @{term "{}"}. This is
+text \<open>We assume that @{term wr_com} always returns @{term "{}"}. This is
   equivalent to changing our axiomatization of separation logic such that the
   frame rule has no side-condition. One way to obtain a separation logic
   lacking a side-condition on its frame rule is to use variables-as-
@@ -902,7 +902,7 @@ text {*  We assume that @{term wr_com} always returns @{term "{}"}. This is
   from @{term C}; and (3) if an assertion-gadget @{term A} is provable, and if
   the top and bottom interfaces of @{term A} are @{term P} and @{term Q}
   respectively, then the Hoare triple @{term "(asn P, c, asn Q)"} is provable
-  for each command @{term c} that can be extracted from @{term A}. *}
+  for each command @{term c} that can be extracted from @{term A}.\<close>
 
 
 
@@ -1021,13 +1021,13 @@ next
       show "prov_triple (asn (fst3 (nthtriple (ps_chain_to_int_chain G \<Pi>) i)),
                  cs ! i, asn (thd3 (nthtriple (ps_chain_to_int_chain G \<Pi>) i)))"
       apply (unfold ps_chain_to_int_chain_def)
-      apply (unfold nthtriple_chainmap[OF `i < chainlen \<Pi>`])
+      apply (unfold nthtriple_chainmap[OF \<open>i < chainlen \<Pi>\<close>])
       apply (unfold fst3_simp thd3_simp)
       proof (cases "\<pi>!i")
         case (Inl v)
 
         have "snd3 (nthtriple \<Pi> i) = Inl v"
-        apply (unfold snds_of_triples_form_comlist[OF `i < chainlen \<Pi>`])
+        apply (unfold snds_of_triples_form_comlist[OF \<open>i < chainlen \<Pi>\<close>])
         apply (auto simp add: \<Pi>_def comlist_mk_ps_chain Inl)
         done
 
@@ -1039,8 +1039,8 @@ next
         show "prov_triple (asn (ps_to_int G (fst3 (nthtriple \<Pi> i))),
                    cs ! i, asn (ps_to_int G (thd3 (nthtriple \<Pi> i))))"
         apply (intro prov_vertex[where v=v])
-        apply (metis (no_types) Inl `i < length \<pi>` \<pi>_cs o_def sum.simps(5))
-        apply (metis (lifting) Inl lins(2) Inl_not_Inr PlusE `i < length \<pi>`
+        apply (metis (no_types) Inl \<open>i < length \<pi>\<close> \<pi>_cs o_def sum.simps(5))
+        apply (metis (lifting) Inl lins(2) Inl_not_Inr PlusE \<open>i < length \<pi>\<close>
           nth_mem sum.simps(1) vertices.simps)
         apply (unfold fst_\<Pi>i thd_\<Pi>i)
         apply (unfold ps_to_int_def)
@@ -1059,7 +1059,7 @@ next
       next
         case (Inr e)
         have "snd3 (nthtriple \<Pi> i) = Inr e"
-        apply (unfold snds_of_triples_form_comlist[OF `i < chainlen \<Pi>`])
+        apply (unfold snds_of_triples_form_comlist[OF \<open>i < chainlen \<Pi>\<close>])
         apply (auto simp add: \<Pi>_def comlist_mk_ps_chain Inr)
         done
 
@@ -1075,8 +1075,8 @@ next
         apply (intro prov_edge[where e=e])
         apply (subgoal_tac "Inr e \<in> set \<pi>")
         apply (metis Inr_not_Inl PlusE edges.simps lins(2) sum.simps(2))
-        apply (metis Inr `i < length \<pi>` nth_mem)
-        apply (metis (no_types) Inr `i < length \<pi>` \<pi>_cs o_def sum.simps(6))
+        apply (metis Inr \<open>i < length \<pi>\<close> nth_mem)
+        apply (metis (no_types) Inr \<open>i < length \<pi>\<close> \<pi>_cs o_def sum.simps(6))
         apply (unfold fst_\<Pi>i thd_\<Pi>i)
         apply (unfold ps_to_int_def)
         apply (unfold G_def labelling.simps)
@@ -1114,9 +1114,9 @@ next
   qed
 qed
 
-text {* The soundness theorem states that any diagram provable using the
+text \<open>The soundness theorem states that any diagram provable using the
   proof rules for ribbons can be recreated as a valid proof in separation
-  logic. *}
+  logic.\<close>
 
 corollary soundness_graphical:
   assumes "\<And>c. wr_com c = {}"

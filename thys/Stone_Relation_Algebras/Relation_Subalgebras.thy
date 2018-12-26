@@ -3,12 +3,12 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Subalgebras of Relation Algebras *}
+section \<open>Subalgebras of Relation Algebras\<close>
 
-text {*
+text \<open>
 In this theory we consider the algebraic structure of regular elements, coreflexives, vectors and covectors in Stone relation algebras.
 These elements form important subalgebras and substructures of relation algebras.
-*}
+\<close>
 
 theory Relation_Subalgebras
 
@@ -16,9 +16,9 @@ imports Stone_Algebras.Stone_Construction Relation_Algebras
 
 begin
 
-text {*
+text \<open>
 The regular elements of a Stone relation algebra form a relation subalgebra.
-*}
+\<close>
 
 instantiation regular :: (stone_relation_algebra) relation_algebra
 begin
@@ -45,9 +45,9 @@ instance
 
 end
 
-text {*
+text \<open>
 The coreflexives (tests) in an idempotent semiring form a bounded idempotent subsemiring.
-*}
+\<close>
 
 typedef (overloaded) 'a coreflexive = "coreflexives::'a::non_associative_left_semiring set"
   by auto
@@ -99,9 +99,9 @@ instance
 
 end
 
-text {*
+text \<open>
 The coreflexives (tests) in a Stone relation algebra form a Stone relation algebra where the pseudocomplement is taken relative to the identity relation and converse is the identity function.
-*}
+\<close>
 
 instantiation coreflexive :: (stone_relation_algebra) stone_relation_algebra
 begin
@@ -135,9 +135,9 @@ instance
 
 end
 
-text {*
+text \<open>
 Vectors in a Stone relation algebra form a Stone subalgebra.
-*}
+\<close>
 
 typedef (overloaded) 'a vector = "vectors::'a::bounded_pre_left_semiring set"
   using surjective_top_closed by blast
@@ -179,9 +179,9 @@ instance
 
 end
 
-text {*
+text \<open>
 Covectors in a Stone relation algebra form a Stone subalgebra.
-*}
+\<close>
 
 typedef (overloaded) 'a covector = "covectors::'a::bounded_pre_left_semiring set"
   using surjective_top_closed by blast

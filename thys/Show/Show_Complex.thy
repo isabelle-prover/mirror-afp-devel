@@ -32,9 +32,9 @@ lemma showsp_complex_append [show_law_simps]:
   "showsp_complex p r (x @ y) = showsp_complex p r x @ y"
   by (intro show_lawD show_law_intros)
 
-local_setup {*
+local_setup \<open>
   Show_Generator.register_foreign_showsp @{typ complex} @{term "showsp_complex"} @{thm show_law_complex}
-*}
+\<close>
 
 derive "show" complex
 end

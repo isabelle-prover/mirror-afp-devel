@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/Aux.thy by David von Oheimb and Tobias Nipkow
 *)
 
-section {* Auxiliary Definitions and Lemmata *}
+section \<open>Auxiliary Definitions and Lemmata\<close>
 
 theory Auxiliary
 imports
@@ -62,11 +62,11 @@ proof(induct xs arbitrary: ys zs f)
   case Nil thus ?case by simp
 next
   case (Cons x xs)
-  note IH = `\<And>f ys zs. \<lbrakk> length xs \<le> length ys; length xs \<le> length zs; \<forall>i<length xs. ys ! i = zs ! i\<rbrakk>
-             \<Longrightarrow> f(xs [\<mapsto>] ys) = f(xs [\<mapsto>] zs)`
-  note leny = `length (x # xs) \<le> length ys`
-  note lenz = `length (x # xs) \<le> length zs`
-  note nth = `\<forall>i<length (x # xs). ys ! i = zs ! i`
+  note IH = \<open>\<And>f ys zs. \<lbrakk> length xs \<le> length ys; length xs \<le> length zs; \<forall>i<length xs. ys ! i = zs ! i\<rbrakk>
+             \<Longrightarrow> f(xs [\<mapsto>] ys) = f(xs [\<mapsto>] zs)\<close>
+  note leny = \<open>length (x # xs) \<le> length ys\<close>
+  note lenz = \<open>length (x # xs) \<le> length zs\<close>
+  note nth = \<open>\<forall>i<length (x # xs). ys ! i = zs ! i\<close>
   from lenz obtain z zs' where zs [simp]: "zs = z # zs'" by(cases zs, auto)
   from leny obtain y ys' where ys [simp]: "ys = y # ys'" by(cases ys, auto)
   from lenz leny nth have "(f(x \<mapsto> y))(xs [\<mapsto>] ys') = (f(x \<mapsto> y))(xs [\<mapsto>] zs')"
@@ -75,7 +75,7 @@ next
   ultimately show ?case by(simp add: map_upds_def)
 qed
 
-subsection {*@{text distinct_fst}*}
+subsection \<open>\<open>distinct_fst\<close>\<close>
  
 definition
   distinct_fst  :: "('a \<times> 'b) list \<Rightarrow> bool"
@@ -113,14 +113,14 @@ lemma rel_option_Some2:
   "rel_option R x (Some y) \<longleftrightarrow> (\<exists>x'. x = Some x' \<and> R x' y)"
 by(cases x) simp_all
 
-subsection {* Using @{term list_all2} for relations *}
+subsection \<open>Using @{term list_all2} for relations\<close>
 
 definition
   fun_of :: "('a \<times> 'b) set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool"
 where
   "fun_of S \<equiv> \<lambda>x y. (x,y) \<in> S"
 
-text {* Convenience lemmas *}
+text \<open>Convenience lemmas\<close>
 (*<*)
 declare fun_of_def [simp]
 (*>*)
@@ -412,7 +412,7 @@ by(simp)
 (* rearrange parameters and premises to allow application of one-point-rules *)
 (* adapted from Tools/induct.ML and Isabelle Developer Workshop 2010 *)
 
-simproc_setup rearrange_eqs ("Pure.all t") = {* 
+simproc_setup rearrange_eqs ("Pure.all t") = \<open>
 let
   fun swap_params_conv ctxt i j cv =
     let
@@ -450,7 +450,7 @@ let
 in
   fn _ => mk_swap_rrule
 end
-*}
+\<close>
 declare [[simproc del: rearrange_eqs]]
 lemmas meta_onepoint = meta_all_eq_conv meta_all_eq_conv2
 
@@ -614,17 +614,17 @@ lemma wfP_minimalE:
   obtains z where "P z" "r^** z x" "\<And>y. r y z \<Longrightarrow> \<not> P y"
 proof -
   let ?Q = "\<lambda>x'. P x' \<and> r^** x' x"
-  from `P x` have "?Q x" by blast
-  from `wfP r` have "\<And>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. r y z \<longrightarrow> y \<notin> Q)"
+  from \<open>P x\<close> have "?Q x" by blast
+  from \<open>wfP r\<close> have "\<And>Q. x \<in> Q \<longrightarrow> (\<exists>z\<in>Q. \<forall>y. r y z \<longrightarrow> y \<notin> Q)"
     unfolding wfP_eq_minimal by blast
-  from this[rule_format, of "Collect ?Q"] `?Q x`
+  from this[rule_format, of "Collect ?Q"] \<open>?Q x\<close>
   obtain z where "?Q z" and min: "\<And>y. r y z \<Longrightarrow> \<not> ?Q y" by auto
-  from `?Q z` have "P z" "r^** z x" by auto
+  from \<open>?Q z\<close> have "P z" "r^** z x" by auto
   moreover
   { fix y
     assume "r y z"
     hence "\<not> ?Q y" by(rule min)
-    moreover from `r y z` `r^** z x` have "r^** y x"
+    moreover from \<open>r y z\<close> \<open>r^** z x\<close> have "r^** y x"
       by(rule converse_rtranclp_into_rtranclp)
     ultimately have "\<not> P y" by blast }
   ultimately show thesis ..
@@ -635,17 +635,17 @@ lemma coinduct_set_wf [consumes 3, case_names coinduct, case_conclusion coinduct
   and step: "\<And>x b. (x, b) \<in> X \<Longrightarrow> (\<exists>b'. (b', b) \<in> r \<and> (x, b') \<in> X) \<or> (x \<in> f (fst ` X \<union> gfp f))"
   shows "a \<in> gfp f"
 proof -
-  from `(a, b) \<in> X` have "a \<in> fst ` X" by(auto intro: rev_image_eqI)
+  from \<open>(a, b) \<in> X\<close> have "a \<in> fst ` X" by(auto intro: rev_image_eqI)
   moreover
   { fix a b
     assume "(a, b) \<in> X"
-    with `wf r` have "a \<in> f (fst ` X \<union> gfp f)"
+    with \<open>wf r\<close> have "a \<in> f (fst ` X \<union> gfp f)"
       by(induct)(blast dest: step) }
   hence "fst ` X \<subseteq> f (fst ` X \<union> gfp f)" by(auto)
-  ultimately show ?thesis by(rule coinduct_set[OF `mono f`])
+  ultimately show ?thesis by(rule coinduct_set[OF \<open>mono f\<close>])
 qed
 
-subsection {* reflexive transitive closure for label relations *}
+subsection \<open>reflexive transitive closure for label relations\<close>
 
 inductive converse3p :: "('a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
   for r :: "'a \<Rightarrow> 'b \<Rightarrow> 'c \<Rightarrow> bool"
@@ -844,7 +844,7 @@ lemma invariant3p_IntI [simp, intro]:
   "\<lbrakk> invariant3p r I; invariant3p r J \<rbrakk> \<Longrightarrow> invariant3p r (I \<inter> J)"
 by(blast dest: invariant3pD intro: invariant3pI)
 
-subsection {* Concatenation for @{typ String.literal} *}
+subsection \<open>Concatenation for @{typ String.literal}\<close>
 
 definition concat :: "String.literal list \<Rightarrow> String.literal"
   where [code_abbrev, code del]: "concat = sum_list"

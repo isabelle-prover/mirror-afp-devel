@@ -5,14 +5,14 @@ imports
   "../Intf/Intf_Set" 
   Native_Word.Bits_Integer
 begin
-  text {*
+  text \<open>
     Based on the Native-Word library, using bit-operations on arbitrary
     precision integers. Fast for sets of small numbers, 
     direct and fast implementations of equal, union, inter, diff.
 
     Note: On Poly/ML 5.5.1, bit-operations on arbitrary precision integers are 
       rather inefficient. Use MLton instead, here they are efficiently implemented.
-    *}
+\<close>
 
   type_synonym bitset = integer
 
@@ -151,7 +151,7 @@ end
     bs_complement_correct
 
 
-subsection {* Autoref Setup *}
+subsection \<open>Autoref Setup\<close>
 
 definition bs_set_rel_def_internal: 
   "bs_set_rel Rk \<equiv> 

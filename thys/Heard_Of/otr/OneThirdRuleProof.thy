@@ -2,23 +2,23 @@ theory OneThirdRuleProof
 imports OneThirdRuleDefs "../Reduction" "../Majorities"
 begin
 
-text {*
+text \<open>
   We prove that \emph{One-Third Rule} solves the Consensus problem
   under the communication predicate defined above. The proof is
   split into proofs of the Integrity, Agreement, and Termination
   properties.
-*}
+\<close>
 
-subsection {* Proof of Integrity *}
+subsection \<open>Proof of Integrity\<close>
 
-text {*
+text \<open>
   Showing integrity of the algorithm is a simple, if slightly tedious
   exercise in invariant reasoning. The following inductive invariant
-  asserts that the values of the @{text x} and @{text decide} fields
-  of the process states are limited to the @{text x} values present
+  asserts that the values of the \<open>x\<close> and \<open>decide\<close> fields
+  of the process states are limited to the \<open>x\<close> values present
   in the initial states since the algorithm does not introduce any
   new values.
-*}
+\<close>
 
 definition VInv where
   "VInv rho n \<equiv>
@@ -114,9 +114,9 @@ next
   show "VInv rho (Suc m)" by (auto simp: VInv_def image_def)
 qed
 
-text {*
+text \<open>
   Integrity is an immediate consequence.
-*}
+\<close>
 theorem OTR_integrity:
   assumes run:"HORun OTR_M rho HOs" and dec: "decide (rho n p) = Some v"
   shows "\<exists>q. v = x (rho 0 q)"
@@ -131,16 +131,16 @@ proof -
 qed
 
 
-subsection {* Proof of Agreement *}
+subsection \<open>Proof of Agreement\<close>
 
-text {*
-  The following lemma @{text A1} asserts that if process @{text p} 
-  decides in a round on a value @{text v} then more than $2/3$ of 
-  all processes have @{text v} as their @{text x} value in their 
+text \<open>
+  The following lemma \<open>A1\<close> asserts that if process \<open>p\<close> 
+  decides in a round on a value \<open>v\<close> then more than $2/3$ of 
+  all processes have \<open>v\<close> as their \<open>x\<close> value in their 
   local state.
 
   We show a few simple lemmas in preparation.
-*}
+\<close>
 
 lemma nextState_change:
   assumes "HORun OTR_M rho HOs"
@@ -188,12 +188,12 @@ proof -
 qed
 
 
-text {*
-  The following lemma @{text A2} contains the crucial correctness argument:
-  if more than $2/3$ of all processes send @{text v} and process @{text p}
-  hears from more than $2/3$ of all processes then the @{text x} field of
-  @{text p} will be updated to @{text v}.
-*}
+text \<open>
+  The following lemma \<open>A2\<close> contains the crucial correctness argument:
+  if more than $2/3$ of all processes send \<open>v\<close> and process \<open>p\<close>
+  hears from more than $2/3$ of all processes then the \<open>x\<close> field of
+  \<open>p\<close> will be updated to \<open>v\<close>.
+\<close>
 
 lemma A2:
   assumes run: "HORun OTR_M rho HOs"
@@ -228,7 +228,7 @@ proof -
   have othHO: "?HOVothers \<subseteq> { q . ?msgs q \<noteq> None }"
     by (auto simp: HOV_def)
 
-  txt {* Show that @{text v} has been received from more than $N/3$ processes. *}
+  txt \<open>Show that \<open>v\<close> has been received from more than $N/3$ processes.\<close>
   from HO have "N div 3 < card { q . ?msgs q \<noteq> None } - (N div 3)" 
     by auto
   also from w HO have "\<dots> \<le> card { q . ?msgs q \<noteq> None } - card ?HOVothers" 
@@ -237,12 +237,12 @@ proof -
     by (auto simp: card_Diff_subset)
   finally have HOV: "N div 3 < card (HOV ?msgs v)" .
 
-  txt {* All other values are received from at most $N/3$ processes. *}
+  txt \<open>All other values are received from at most $N/3$ processes.\<close>
   have "\<forall>w. w \<noteq> v \<longrightarrow> card (HOV ?msgs w) \<le> card ?HOVothers"
     by (force intro: card_mono)
   with w have cardw: "\<forall>w. w \<noteq> v \<longrightarrow> card (HOV ?msgs w) \<le> N div 3" by auto
 
-  txt {* In particular, @{text v} is the single most frequently received value. *}
+  txt \<open>In particular, \<open>v\<close> is the single most frequently received value.\<close>
   with HOV have "MFR ?msgs v" by (auto simp: MFR_def)
 
   moreover
@@ -262,10 +262,10 @@ proof -
   with HO mfrv nxt show ?thesis by (auto simp: OTR_nextState_def)
 qed
 
-text {*
-  Therefore, once more than two thirds of the processes hold @{text v}
-  in their @{text x} field, this will remain true forever.
-*}
+text \<open>
+  Therefore, once more than two thirds of the processes hold \<open>v\<close>
+  in their \<open>x\<close> field, this will remain true forever.
+\<close>
 
 lemma A3:
   assumes run:"HORun OTR_M rho HOs"
@@ -297,11 +297,11 @@ next
 qed
 
 
-text {*
-  It now follows that once a process has decided on some value @{text v}, 
-  more than two thirds of all processes continue to hold @{text v} in
-  their @{text x} field.
-*}
+text \<open>
+  It now follows that once a process has decided on some value \<open>v\<close>, 
+  more than two thirds of all processes continue to hold \<open>v\<close> in
+  their \<open>x\<close> field.
+\<close>
 
 lemma A4:
   assumes run: "HORun OTR_M rho HOs" 
@@ -321,11 +321,11 @@ next
   proof
     fix k
     have "?twothird (m + Suc k)"
-    txt {*
-      There are two cases to consider: if @{text p} had already decided on @{text v}
+    txt \<open>
+      There are two cases to consider: if \<open>p\<close> had already decided on \<open>v\<close>
       before, the assertion follows from the induction hypothesis. Otherwise, the
-      assertion follows from lemmas @{text A1} and @{text A3}.
-    *}
+      assertion follows from lemmas \<open>A1\<close> and \<open>A3\<close>.
+\<close>
     proof (cases "?dec m")
       case True with ih show ?thesis by blast
     next
@@ -337,17 +337,17 @@ next
   qed
 qed
 
-text {*
-  The Agreement property follows easily from lemma @{text A4}: if processes
-  @{text p} and @{text q} decide values @{text v} and @{text w},
+text \<open>
+  The Agreement property follows easily from lemma \<open>A4\<close>: if processes
+  \<open>p\<close> and \<open>q\<close> decide values \<open>v\<close> and \<open>w\<close>,
   respectively, then more than two thirds of the processes must propose
-  @{text v} and more than two thirds must propose @{text w}.
+  \<open>v\<close> and more than two thirds must propose \<open>w\<close>.
   Because these two majorities must have an intersection, we must have
-  @{text "v=w"}.
+  \<open>v=w\<close>.
 
   We first prove an ``asymmetric'' version of the agreement property before
   deriving the general agreement theorem.
-*}
+\<close>
 
 
 lemma A5:
@@ -387,19 +387,19 @@ next
 qed
 
 
-subsection {* Proof of  Termination *}
+subsection \<open>Proof of  Termination\<close>
 
-text {*
+text \<open>
   We now show that every process must eventually decide.
 
   The idea of the proof is to observe that the communication predicate
   guarantees the existence of two uniform rounds where every process hears
   from the same two-thirds majority of processes. The first such round
-  serves to ensure that all @{text x} fields hold the same value, the
+  serves to ensure that all \<open>x\<close> fields hold the same value, the
   second round copies that value into all decision fields.
 
-  Lemma @{text A2} is instrumental in this proof.
-*}
+  Lemma \<open>A2\<close> is instrumental in this proof.
+\<close>
 
 theorem OTR_termination:
   assumes run: "HORun OTR_M rho HOs"
@@ -475,13 +475,13 @@ proof -
 qed
 
 
-subsection {* \emph{One-Third Rule} Solves Consensus *}
+subsection \<open>\emph{One-Third Rule} Solves Consensus\<close>
 
-text {*
+text \<open>
   Summing up, all (coarse-grained) runs of \emph{One-Third Rule} for
   HO collections that satisfy the communication predicate satisfy
   the Consensus property.
-*}
+\<close>
 
 theorem OTR_consensus:
   assumes run: "HORun OTR_M rho HOs" and commG: "HOcommGlobal OTR_M HOs"
@@ -489,11 +489,11 @@ theorem OTR_consensus:
   using OTR_integrity[OF run] OTR_agreement[OF run] OTR_termination[OF run commG]
   by (auto simp: consensus_def image_def)
 
-text {*
+text \<open>
   By the reduction theorem, the correctness of the algorithm also follows
   for fine-grained runs of the algorithm. It would be much more tedious
   to establish this theorem directly.
-*}
+\<close>
 
 theorem OTR_consensus_fg:
   assumes run: "fg_run OTR_M rho HOs HOs (\<lambda>r q. undefined)"

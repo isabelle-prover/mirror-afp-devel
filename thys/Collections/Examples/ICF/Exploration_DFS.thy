@@ -2,17 +2,17 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{DFS Implementation by Hashset} *}
+section \<open>\isaheader{DFS Implementation by Hashset}\<close>
 theory Exploration_DFS
 imports Exploration 
 begin
-text_raw {*\label{thy:Exploration_Example}*}
+text_raw \<open>\label{thy:Exploration_Example}\<close>
 
-text {*
+text \<open>
   This theory implements the DFS-algorithm by using a hashset to remember the
   explored states. It illustrates how to use data refinement with the Isabelle Collections 
   Framework in a realistic, non-trivial application.
-*}
+\<close>
 
 subsection "Definitions"
 \<comment> \<open>The concrete algorithm uses a hashset (@{typ [source] "'q hs"}) and a worklist.\<close>
@@ -77,8 +77,8 @@ definition "hs_dfs \<Sigma>i post
 
 subsection "Refinement"
 
-text {* We first show that a concrete step implements its abstract specification, and preserves the
-  additional concrete invariant *}
+text \<open>We first show that a concrete step implements its abstract specification, and preserves the
+  additional concrete invariant\<close>
 lemma hs_dfs_step_correct:
   (*assumes [simp]: "hs_invar Q"
                   "!!s. ls_invar (post s)"*)

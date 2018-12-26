@@ -2,16 +2,16 @@ theory TopoS_Composition_Theory_impl
 imports TopoS_Interface_impl TopoS_Composition_Theory
 begin
 
-section{*Composition Theory -- List Implementation*}
+section\<open>Composition Theory -- List Implementation\<close>
 
-text{*Several invariants may apply to one policy. *}
+text\<open>Several invariants may apply to one policy.\<close>
 
 
 (*the packed network model record from the list implementation*)
 term "X::('v::vertex, 'a) TopoS_packed"
 
 
-subsection{*Generating instantiated (configured) network security invariants*}
+subsection\<open>Generating instantiated (configured) network security invariants\<close>
 
   \<comment> \<open>a configured network security invariant in list implementaion\<close>
   (*very minimal version, no eval, ...*)
@@ -22,7 +22,7 @@ subsection{*Generating instantiated (configured) network security invariants*}
     implc_offending_flows ::"('v) list_graph \<Rightarrow> ('v \<times> 'v) list list"
     implc_isIFS :: "bool"
 
-  text{* Test if this definition is compliant with the formal definition on sets. *}
+  text\<open>Test if this definition is compliant with the formal definition on sets.\<close>
   definition SecurityInvariant_complies_formal_def :: 
     "('v) SecurityInvariant \<Rightarrow> 'v TopoS_Composition_Theory.SecurityInvariant_configured \<Rightarrow> bool" where
     "SecurityInvariant_complies_formal_def impl spec \<equiv> 
@@ -44,8 +44,8 @@ subsection{*Generating instantiated (configured) network security invariants*}
             implc_isIFS = nm_receiver_violation m
           \<rparr>)"
 
-  text{* the @{term TopoS_Composition_Theory.new_configured_SecurityInvariant} must give a
-         result if we have the SecurityInvariant modelLibrary*}
+  text\<open>the @{term TopoS_Composition_Theory.new_configured_SecurityInvariant} must give a
+         result if we have the SecurityInvariant modelLibrary\<close>
   lemma TopoS_modelLibrary_yields_new_configured_SecurityInvariant:
     assumes NetModelLib: "TopoS_modelLibrary m sinvar_spec"
     and     nPdef:       "nP = nm_node_props m C"
@@ -103,9 +103,9 @@ subsection{*Generating instantiated (configured) network security invariants*}
   thm new_configured_SecurityInvariant_sound
   \<comment> \<open>we get that @{const new_configured_list_SecurityInvariant} has all the necessary properties (modulo @{const SecurityInvariant_complies_formal_def})\<close>
 
-subsection{*About security invariants*}
+subsection\<open>About security invariants\<close>
 
-   text{*specification and implementation comply. *}
+   text\<open>specification and implementation comply.\<close>
    type_synonym 'v security_models_spec_impl="('v SecurityInvariant \<times> 'v TopoS_Composition_Theory.SecurityInvariant_configured) list"
    
    definition get_spec :: "'v security_models_spec_impl \<Rightarrow> ('v TopoS_Composition_Theory.SecurityInvariant_configured) list" where
@@ -113,7 +113,7 @@ subsection{*About security invariants*}
    definition get_impl :: "'v security_models_spec_impl \<Rightarrow> ('v SecurityInvariant) list" where
     "get_impl M \<equiv> [fst m. m \<leftarrow> M]"
 
-subsection{*Calculating offending flows*}
+subsection\<open>Calculating offending flows\<close>
   fun implc_get_offending_flows :: "('v) SecurityInvariant list \<Rightarrow> 'v list_graph \<Rightarrow> (('v \<times> 'v) list list)" where
     "implc_get_offending_flows [] G = []"  |
     "implc_get_offending_flows (m#Ms) G = (implc_offending_flows m G)@(implc_get_offending_flows Ms G)"  
@@ -156,7 +156,7 @@ subsection{*Calculating offending flows*}
 
 
 
-subsection{*Accessors*}
+subsection\<open>Accessors\<close>
   definition get_IFS :: "'v SecurityInvariant list \<Rightarrow> 'v SecurityInvariant list" where
     "get_IFS M \<equiv> [m \<leftarrow> M. implc_isIFS m]"
   definition get_ACS :: "'v SecurityInvariant list \<Rightarrow> 'v SecurityInvariant list" where
@@ -262,7 +262,7 @@ subsection{*Accessors*}
  
    thm get_IFS_get_ACS_select_simps
 
-subsection{*All security requirements fulfilled*}
+subsection\<open>All security requirements fulfilled\<close>
    definition all_security_requirements_fulfilled :: "'v SecurityInvariant list \<Rightarrow> 'v list_graph \<Rightarrow> bool" where
       "all_security_requirements_fulfilled M G \<equiv> \<forall>m \<in> set M. (implc_sinvar m) G"
 
@@ -274,7 +274,7 @@ subsection{*All security requirements fulfilled*}
     apply(simp add: get_impl_def get_spec_def)
     using SecurityInvariant_complies_formal_def_def by fastforce
 
-subsection{*generate valid topology*}
+subsection\<open>generate valid topology\<close>
   value "concat [[1::int,2,3], [4,6,5]]"
 
   fun generate_valid_topology :: "'v SecurityInvariant list \<Rightarrow> 'v list_graph \<Rightarrow> ('v list_graph)" where
@@ -296,10 +296,10 @@ subsection{*generate valid topology*}
 
 
 
-subsection{*generate valid topology*}
-  text{*tuned for invariants where we don't want to calculate all offending flows*}
+subsection\<open>generate valid topology\<close>
+  text\<open>tuned for invariants where we don't want to calculate all offending flows\<close>
 
-  text{*Theoretic foundations: The algorithm @{const generate_valid_topology_SOME} picks
+  text\<open>Theoretic foundations: The algorithm @{const generate_valid_topology_SOME} picks
         ONE offending flow non-deterministically.
         This is sound: @{thm generate_valid_topology_SOME_sound}.
         However, this non-deterministic choice is hard to implement. 
@@ -310,7 +310,7 @@ subsection{*generate valid topology*}
         @{const SecurityInvariant_withOffendingFlows.set_offending_flows}. Therefore, 
         it can be used for security invariants which may have an exponential number of offending flows. 
         The corresponding algorithm that uses this function is @{const TopoS_Composition_Theory.generate_valid_topology_some}.
-        It is also sound: @{thm generate_valid_topology_some_sound}.*}
+        It is also sound: @{thm generate_valid_topology_some_sound}.\<close>
 
   fun generate_valid_topology_some :: "'v SecurityInvariant list \<Rightarrow> 'v list_graph \<Rightarrow> ('v list_graph)" where
     "generate_valid_topology_some [] G = G" |

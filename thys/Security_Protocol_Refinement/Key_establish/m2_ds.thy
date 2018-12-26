@@ -333,7 +333,7 @@ subsubsection \<open>inv3a: Session key compromise\<close>
 (******************************************************************************)
 
 text \<open>A L2 version of a session key comprise invariant. Roughly, it states
-that adding a set of keys @{term KK} to the parameter @{text T} of @{term extr} 
+that adding a set of keys @{term KK} to the parameter \<open>T\<close> of @{term extr} 
 does not help the intruder to extract keys other than those in @{term KK} or
 extractable without adding @{term KK}.
 \<close>

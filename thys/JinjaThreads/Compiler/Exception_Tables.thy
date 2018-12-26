@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Various Operations for Exception Tables *}
+section \<open>Various Operations for Exception Tables\<close>
 
 theory Exception_Tables imports
   Compiler2

@@ -5,28 +5,28 @@ imports
   AutoCorres_Misc
 begin
 
-section {* AutoCorres setup for VCG labelling *}
+section \<open>AutoCorres setup for VCG labelling\<close>
 
-text {* Theorem collections for the VCG *}
+text \<open>Theorem collections for the VCG\<close>
 
 ML_file "../../Case_Labeling/util.ML"
 
-ML {*
+ML \<open>
   fun vcg_tac nt_rules nt_comb ctxt =
     let
       val rules = Named_Theorems.get ctxt nt_rules
       val comb = Named_Theorems.get ctxt nt_comb
     in REPEAT_ALL_NEW_FWD ( resolve_tac ctxt rules ORELSE' (resolve_tac ctxt comb THEN' resolve_tac ctxt rules)) end
-*}
+\<close>
 
 named_theorems vcg_l
 named_theorems vcg_l_comb
 named_theorems vcg_elim
 named_theorems vcg_simp
 
-method_setup vcg_l = {*
+method_setup vcg_l = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (FIRSTGOAL (vcg_tac @{named_theorems "vcg_l"} @{named_theorems "vcg_l_comb"} ctxt)))
-*}
+\<close>
 
 method vcg_l' = (vcg_l; (elim vcg_elim)?; (unfold vcg_simp)?)
 

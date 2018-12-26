@@ -1,4 +1,4 @@
-section {* Coinductive Lists *}
+section \<open>Coinductive Lists\<close>
 
 theory Coinductive_List_Extensions
 imports
@@ -319,7 +319,7 @@ begin
 
   end
 
-  subsection {* Index Sets *}
+  subsection \<open>Index Sets\<close>
   
     definition liset :: "'a set \<Rightarrow> 'a llist \<Rightarrow> nat set"
       where "liset A w \<equiv> {i. enat i < llength w \<and> w ? i \<in> A}"
@@ -432,7 +432,7 @@ begin
 
     lemmas mcont2mcont_liset = liset_mcont[THEN lfp.mcont2mcont, simp, cont_intro]
 
-  subsection {* Selections *}
+  subsection \<open>Selections\<close>
 
     (* TODO: thm lfitler_K_False *)
 

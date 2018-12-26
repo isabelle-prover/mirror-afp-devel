@@ -34,14 +34,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Part ... *}
+chapter\<open>Part ...\<close>
 
 theory  Isabelle_code_runtime
 imports Main
   keywords "code_reflect'" :: thy_decl
 begin
 
-ML{*
+ML\<open>
 structure Code_Runtime =
 struct
 (*  Title:      Tools/Code/code_runtime.ML
@@ -214,6 +214,6 @@ val _ =
 end; (*local*)
 
 end
-*}
+\<close>
 
 end

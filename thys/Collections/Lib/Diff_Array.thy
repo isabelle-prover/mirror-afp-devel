@@ -1,4 +1,4 @@
-section {* Arrays with in-place updates *}
+section \<open>Arrays with in-place updates\<close>
 theory Diff_Array imports
   Assoc_List
   Automatic_Refinement.Parametricity
@@ -7,7 +7,7 @@ begin
 
 datatype 'a array = Array "'a list"
 
-subsection {* primitive operations *}
+subsection \<open>primitive operations\<close>
 
 definition new_array :: "'a \<Rightarrow> nat \<Rightarrow> 'a array"
 where "new_array a n = Array (replicate n a)"
@@ -37,14 +37,14 @@ primrec array_shrink :: "'a array \<Rightarrow> nat \<Rightarrow> 'a array"
     Array (take sz A)
   )"
 
-subsection {* Derived operations *}
+subsection \<open>Derived operations\<close>
 
-text {* The following operations are total versions of
-  @{text "array_get"} and @{text "array_set"}, which return a default
+text \<open>The following operations are total versions of
+  \<open>array_get\<close> and \<open>array_set\<close>, which return a default
   value in case the index is out of bounds.
   They can be efficiently implemented in the target language by catching
   exceptions.
-  *}
+\<close>
 definition "array_get_oo x a i \<equiv>
   if i<array_length a then array_get a i else x"
 definition "array_set_oo f a i v \<equiv>
@@ -74,7 +74,7 @@ where "array_foldr f a b = foldr (\<lambda>(k, v). f k v) (assoc_list_of_array a
 definition array_foldl :: "(nat \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'b \<Rightarrow> 'a array \<Rightarrow> 'b"
 where "array_foldl f b a = foldl (\<lambda>b (k, v). f k b v) b (assoc_list_of_array a)"
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
 lemma array_length_new_array [simp]:
   "array_length (new_array a n) = n"
@@ -171,7 +171,7 @@ proof(cases a)
           by(rule 1)
         moreover from True have "n < length A" by simp
         moreover then obtain a A' where A: "drop n A = a # A'" by(cases "drop n A") auto
-        moreover with `n < length A` have [simp]: "a = A ! n"
+        moreover with \<open>n < length A\<close> have [simp]: "a = A ! n"
           by(subst append_take_drop_id[symmetric, where n=n])(simp add: nth_append min_def)
         moreover from A have "drop (Suc n) A = A'"
           by(induct A arbitrary: n)(simp_all add: drop_Cons split: nat.split_asm)
@@ -210,12 +210,12 @@ proof(cases a)
     case Nil thus ?case by simp
   next
     case (snoc x xs ys)
-    from `length (xs @ [x]) \<le> length ys` have "length xs \<le> length ys" by simp
+    from \<open>length (xs @ [x]) \<le> length ys\<close> have "length xs \<le> length ys" by simp
     hence "foldr (\<lambda>x y. array_set y (fst x) (f (fst x) (snd x)))
                  (rev (zip [0..<length xs] xs)) (Array ys) =
            Array (map (\<lambda>x. f (fst x) (snd x)) (zip [0..<length xs] xs) @ drop (length xs) ys)"
       by(rule snoc)
-    moreover from `length (xs @ [x]) \<le> length ys`
+    moreover from \<open>length (xs @ [x]) \<le> length ys\<close>
     obtain y ys' where ys: "drop (length xs) ys = y # ys'"
       by(cases "drop (length xs) ys") auto
     moreover hence "drop (Suc (length xs)) ys = ys'" by(auto dest: drop_eq_ConsD)
@@ -225,7 +225,7 @@ proof(cases a)
     by(simp add: array_map_def split_beta array_of_list_def foldl_conv_foldr)
 qed
 
-subsection {* Lemmas about empty arrays *}
+subsection \<open>Lemmas about empty arrays\<close>
 
 lemma array_length_eq_0 [simp]:
   "array_length a = 0 \<longleftrightarrow> a = Array []"
@@ -278,14 +278,14 @@ proof(cases a)
     have "foldl (\<lambda>a (k, v). array_set a k (f k v)) (Array a) (zip [0..<length (xs @ [x])] (xs @ [x])) =
           array_set (foldl (\<lambda>a (k, v). array_set a k (f k v)) (Array a) (zip [0..<length xs] xs))
                     (length xs) (f (length xs) x)" by simp
-    also from `length (xs @ [x]) \<le> length a` have "length xs \<le> length a" by simp
+    also from \<open>length (xs @ [x]) \<le> length a\<close> have "length xs \<le> length a" by simp
     hence "foldl (\<lambda>a (k, v). array_set a k (f k v)) (Array a) (zip [0..<length xs] xs) =
            Array (map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ drop (length xs) a)" by(rule snoc)
     also note array_set.simps
     also have "(map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ drop (length xs) a) [length xs := f (length xs) x] =
               (map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ (drop (length xs) a) [0 := f (length xs) x])"
       by(simp add: list_update_append)
-    also from `length (xs @ [x]) \<le> length a`
+    also from \<open>length (xs @ [x]) \<le> length a\<close>
     have "(drop (length xs) a)[0 := f (length xs) x] =
           f (length xs) x # drop (Suc (length xs)) a"
       by(simp add: upd_conv_take_nth_drop)
@@ -311,7 +311,7 @@ lemma array_length_list: "array_length a = length (list_of_array a)"
   by (cases a) simp
 
 
-subsection {* Parametricity lemmas *}
+subsection \<open>Parametricity lemmas\<close>
 
 lemma rec_array_is_case[simp]: "rec_array = case_array"
   apply (intro ext)
@@ -452,9 +452,9 @@ lemma param_array_foldl[param]:
        (nat_rel \<rightarrow> Rb \<rightarrow> Ra \<rightarrow> Rb) \<rightarrow> Rb \<rightarrow> \<langle>Ra\<rangle>array_rel \<rightarrow> Rb"
   unfolding array_foldl_def[abs_def] by parametricity
 
-subsection {* Code Generator Setup *}
+subsection \<open>Code Generator Setup\<close>
 
-subsubsection {* Code-Numeral Preparation *}
+subsubsection \<open>Code-Numeral Preparation\<close>
 
 definition [code del]: "new_array' v == new_array v o nat_of_integer"
 definition [code del]: "array_length' == integer_of_nat o array_length"
@@ -482,11 +482,11 @@ lemma [code]:
     add: new_array'_def array_length'_def array_get'_def array_set'_def
       array_grow'_def array_shrink'_def array_get_oo'_def array_set_oo'_def)
 
-text {* Fallbacks *}
+text \<open>Fallbacks\<close>
 lemmas [code] = array_get_oo'_def[unfolded array_get_oo_def[abs_def]]
 lemmas [code] = array_set_oo'_def[unfolded array_set_oo_def[abs_def]]
 
-subsubsection {* Code generator setup for Haskell *}
+subsubsection \<open>Code generator setup for Haskell\<close>
 
 code_printing type_constructor array \<rightharpoonup>
   (Haskell) "Array.ArrayType/ _"
@@ -545,7 +545,7 @@ array_shrink a sz = if sz > array_length a then undefined else array_of_size sz 
 (* TODO/FIXME: Using standard functional arrays here, as DiffArray seems 
   to be discontinued in Haskell! *)
 code_printing code_module "Array" \<rightharpoonup>
-  (Haskell) {*
+  (Haskell) \<open>
 --import qualified Data.Array.Diff as Arr;
 import qualified Data.Array as Arr;
 
@@ -575,7 +575,7 @@ array_grow a i x = let (s, e) = Arr.bounds a in Arr.listArray (s, e+i) (Arr.elem
 
 array_shrink :: ArrayType e -> Integer -> ArrayType e;
 array_shrink a sz = if sz > array_length a then undefined else array_of_size sz (Arr.elems a);
-*}
+\<close>
 
 
 
@@ -589,17 +589,17 @@ code_printing constant array_of_list \<rightharpoonup> (Haskell) "Array.array'_o
 code_printing constant array_grow' \<rightharpoonup> (Haskell) "Array.array'_grow"
 code_printing constant array_shrink' \<rightharpoonup> (Haskell) "Array.array'_shrink"
 
-subsubsection {* Code Generator Setup For SML *}
+subsubsection \<open>Code Generator Setup For SML\<close>
 
-text {*
+text \<open>
   We have the choice between single-threaded arrays, that raise an exception if an old version is accessed,
   and truly functional arrays, that update the array in place, but store undo-information to restore
   old versions.
- *}
+\<close>
 
 code_printing code_module "STArray" \<rightharpoonup>
   (SML)
-{*
+\<open>
 structure STArray = struct
 
 datatype 'a Cell = Invalid | Value of 'a array;
@@ -778,7 +778,7 @@ end;
 end;
 
 
-*}
+\<close>
 
 code_printing
   type_constructor array \<rightharpoonup> (SML) "_/ FArray.IsabelleMapping.ArrayType"
@@ -794,12 +794,12 @@ code_printing
 | constant array_set_oo' \<rightharpoonup> (SML) "FArray.IsabelleMapping.array'_set'_oo"
 
 
-subsection {* Code Generator Setup for Scala *}
-text {*
+subsection \<open>Code Generator Setup for Scala\<close>
+text \<open>
   We use a DiffArray-Implementation in Scala.
-*}
+\<close>
 code_printing code_module "DiffArray" \<rightharpoonup>
-  (Scala) {*
+  (Scala) \<open>
 object DiffArray {
 
   import scala.collection.mutable.ArraySeq
@@ -1046,7 +1046,7 @@ object Test {
 
 }*/
 
-*}
+\<close>
 
 code_printing
   type_constructor array \<rightharpoonup> (Scala) "DiffArray.T[_]"

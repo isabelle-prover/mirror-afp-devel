@@ -4,29 +4,29 @@ imports "../TopoS_Helper"
 begin
 
 
-subsection{*SecurityInvariant DomainHierarchyNG*}
+subsection\<open>SecurityInvariant DomainHierarchyNG\<close>
 
-subsubsection {* Datatype Domain Hierarchy *}
+subsubsection \<open>Datatype Domain Hierarchy\<close>
 
-  text{* A fully qualified domain name for an entity in a tree-like hierarchy *}
+  text\<open>A fully qualified domain name for an entity in a tree-like hierarchy\<close>
     datatype domainNameDept =  Dept "string" domainNameDept (infixr "--" 65) |
                                Leaf \<comment> \<open>leaf of the tree, end of all domainNames\<close>
     
-    text {*Example: the CoffeeMachine of I8 *}
+    text \<open>Example: the CoffeeMachine of I8\<close>
     value "''i8''--''CoffeeMachine''--Leaf"
 
-  text{* A tree strucuture to represent the general hierarchy, i.e. possible domainNameDepts*}
+  text\<open>A tree strucuture to represent the general hierarchy, i.e. possible domainNameDepts\<close>
     datatype domainTree = Department 
         "string"  \<comment> \<open>division\<close>
         "domainTree list"  \<comment> \<open>sub divisions\<close>
 
-  text{*one step in tree to find matching department*}
+  text\<open>one step in tree to find matching department\<close>
     fun hierarchy_next :: "domainTree list \<Rightarrow> domainNameDept \<Rightarrow> domainTree option" where
       "hierarchy_next [] _ = None" | 
       "hierarchy_next (s#ss) Leaf = None" | 
       "hierarchy_next ((Department d ds)#ss) (Dept n ns) = (if d=n then Some (Department d ds) else hierarchy_next ss (Dept n ns))"
 
-    text {*Examples: *}
+    text \<open>Examples:\<close>
     lemma "hierarchy_next [Department ''i20'' [], Department ''i8'' [Department ''CoffeeMachine'' [], Department ''TeaMachine'' []]] 
         (''i8''--Leaf)
         =
@@ -42,7 +42,7 @@ subsubsection {* Datatype Domain Hierarchy *}
         (''i0''--Leaf)
         = None" by eval
 
-  text {* Does a given @{typ domainNameDept} match the specified tree structure? *}
+  text \<open>Does a given @{typ domainNameDept} match the specified tree structure?\<close>
     fun valid_hierarchy_pos :: "domainTree \<Rightarrow> domainNameDept \<Rightarrow> bool" where
       "valid_hierarchy_pos (Department d ds) Leaf = True" |
       "valid_hierarchy_pos (Department d ds) (Dept n Leaf) = (d=n)" |
@@ -52,7 +52,7 @@ subsubsection {* Datatype Domain Hierarchy *}
           Some t \<Rightarrow> valid_hierarchy_pos t ns))"
 
 
-     text {* Examples: *}
+     text \<open>Examples:\<close>
      lemma "valid_hierarchy_pos (Department ''TUM'' []) Leaf" by eval
      lemma "valid_hierarchy_pos (Department ''TUM'' []) Leaf" by eval
      lemma "valid_hierarchy_pos (Department ''TUM'' []) (''TUM''--Leaf)" by eval
@@ -205,8 +205,8 @@ subsubsection {* Datatype Domain Hierarchy *}
 
 
 
-  subsubsection {*Adding Chop*}
-  text{* by putting entities higher in the hierarchy.  *}
+  subsubsection \<open>Adding Chop\<close>
+  text\<open>by putting entities higher in the hierarchy.\<close>
     fun domainNameDeptChopOne :: "domainNameDept \<Rightarrow> domainNameDept" where
       "domainNameDeptChopOne Leaf = Leaf" |
       "domainNameDeptChopOne (name--Leaf) = Leaf" |
@@ -247,7 +247,7 @@ subsubsection {* Datatype Domain Hierarchy *}
     
     lemma "(domainNameDeptChopOne^^2) (''d1''--''d2''--''d3''--Leaf) = ''d1''--Leaf" by eval
     
-    text {* domainNameChop is equal to applying n times chop one *}
+    text \<open>domainNameChop is equal to applying n times chop one\<close>
     lemma domainNameChopFunApply: "domainNameChop dn n = (domainNameDeptChopOne^^n) dn"
       apply(induction dn n rule: domainNameChop.induct)
         apply (simp_all)
@@ -281,7 +281,7 @@ subsubsection {* Datatype Domain Hierarchy *}
     by (metis chop_not_decrease_hierarchy domainNameChopFunApply domainNameChopRotateSuc)
       
 
-   text{*compute maximum common level of both inputs*}
+   text\<open>compute maximum common level of both inputs\<close>
    fun chop_sup :: "domainNameDept \<Rightarrow> domainNameDept \<Rightarrow> domainNameDept" where
       "chop_sup Leaf _ = Leaf" | 
       "chop_sup _ Leaf = Leaf" | 
@@ -331,7 +331,7 @@ subsubsection {* Datatype Domain Hierarchy *}
   datatype domainName = DN domainNameDept | Unassigned
 
 
-  subsubsection {*Makeing it a complete Lattice*}
+  subsubsection \<open>Makeing it a complete Lattice\<close>
     instantiation domainName :: partial_order
     begin
       (* adding trust here would violate transitivity or antsymmetry *)
@@ -360,7 +360,7 @@ subsubsection {* Datatype Domain Hierarchy *}
     lemma "is_Inf {Unassigned, DN Leaf} Unassigned"
       by(simp add: is_Inf_def)
     
-    text {*The infinum of two elements: *}
+    text \<open>The infinum of two elements:\<close>
     fun DN_inf :: "domainName \<Rightarrow> domainName \<Rightarrow> domainName" where
       "DN_inf Unassigned _ = Unassigned" |
       "DN_inf _ Unassigned = Unassigned" |
@@ -416,7 +416,7 @@ subsubsection {* Datatype Domain Hierarchy *}
       apply(simp add: chop_sup_is_sup)
       done
    
-    text {* domainName is a Lattice:*}
+    text \<open>domainName is a Lattice:\<close>
     instantiation domainName :: lattice
       begin
       instance
@@ -462,19 +462,19 @@ subsubsection {* Datatype Domain Hierarchy *}
     apply(simp)
     done
 
-subsubsection{*The network security invariant *}
+subsubsection\<open>The network security invariant\<close>
 
 definition default_node_properties :: "domainNameTrust"
   where  "default_node_properties = Unassigned"
 
-text{*The sender is, noticing its trust level, on the same or higher hierarchy level as the receiver.*}
+text\<open>The sender is, noticing its trust level, on the same or higher hierarchy level as the receiver.\<close>
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (s, r) \<in> edges G. (nP r) \<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t (nP s))"
 
 
 
 (*TODO: old legacy function!*)
-text{* a domain name must be in the supplied tree *}
+text\<open>a domain name must be in the supplied tree\<close>
 fun verify_globals :: "'v graph \<Rightarrow> ('v \<Rightarrow> domainNameTrust) \<Rightarrow> domainTree \<Rightarrow> bool" where
   "verify_globals G nP tree = (\<forall> v \<in> nodes G. 
     case (nP v) of Unassigned \<Rightarrow> True | DN (level, trust) \<Rightarrow> valid_hierarchy_pos tree level
@@ -513,7 +513,7 @@ where sinvar = sinvar
 done
 
 
-subsubsection {*ENF*}
+subsubsection \<open>ENF\<close>
   lemma DomainHierarchyNG_ENF: "SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form sinvar (\<lambda> s r. r \<sqsubseteq>\<^sub>t\<^sub>r\<^sub>u\<^sub>s\<^sub>t s)"
     unfolding SecurityInvariant_withOffendingFlows.sinvar_all_edges_normal_form_def
     by simp

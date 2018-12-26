@@ -83,7 +83,7 @@ next
   have "P f2" by (simp add: single f12_def(2))
   have "f1 + f2 = f" using remove_key_sum f12_def by auto
   have "k \<notin> keys f1" using remove_key_keys f12_def by fast
-  then show ?case using `P f1` `P f2` sum[of f1 f2 k "lookup f k"] `f1 + f2 = f` f12_def by auto
+  then show ?case using \<open>P f1\<close> \<open>P f2\<close> sum[of f1 f2 k "lookup f k"] \<open>f1 + f2 = f\<close> f12_def by auto
 qed
 
 
@@ -107,13 +107,13 @@ proof
   proof
     fix x assume "x\<in>keys f"
     then have "lookup (f+g) x = lookup f x " by (metis add.right_neutral assms disjoint_iff_not_equal not_in_keys_iff_lookup_eq_zero plus_poly_mapping.rep_eq)
-    then show "x\<in>keys (f+g)" using `x\<in>keys f` by (metis not_in_keys_iff_lookup_eq_zero)
+    then show "x\<in>keys (f+g)" using \<open>x\<in>keys f\<close> by (metis not_in_keys_iff_lookup_eq_zero)
   qed
   moreover have "keys g \<subseteq> keys (f+g)"
   proof
     fix x assume "x\<in>keys g"
     then have "lookup (f+g) x = lookup g x "  by (metis IntI add.left_neutral assms empty_iff not_in_keys_iff_lookup_eq_zero plus_poly_mapping.rep_eq)
-    then show "x\<in>keys (f+g)" using `x\<in>keys g` by (metis not_in_keys_iff_lookup_eq_zero)
+    then show "x\<in>keys (f+g)" using \<open>x\<in>keys g\<close> by (metis not_in_keys_iff_lookup_eq_zero)
   qed
   ultimately show "keys f \<union> keys g \<subseteq> keys (f+g)" by simp
 next
@@ -163,18 +163,18 @@ proof(cases "k=0")
   then have "(Poly_Mapping.single v k) = 0" by simp
   then have "vars (monom (Poly_Mapping.single v k) a) = {}"
     by (metis (mono_tags, lifting) single_zero singleton_inject subset_singletonD vars_monom_single zero_neq_one)
-  then show ?thesis using `k=0` by auto
+  then show ?thesis using \<open>k=0\<close> by auto
 next
   assume "k\<noteq>0"
   then show ?thesis
   proof (cases "a=0")
     assume "a=0"
     then have "monom (Poly_Mapping.single v k) a = 0" by (metis monom.abs_eq monom_zero single_zero)
-    then show ?thesis by (metis (mono_tags, hide_lams) `k \<noteq> 0` `a=0` monom.abs_eq single_zero singleton_inject subset_singletonD vars_monom_single)
+    then show ?thesis by (metis (mono_tags, hide_lams) \<open>k \<noteq> 0\<close> \<open>a=0\<close> monom.abs_eq single_zero singleton_inject subset_singletonD vars_monom_single)
   next
     assume "a\<noteq>0"
-    then have "v \<in> vars (monom (Poly_Mapping.single v k) a)" by (simp add: `k \<noteq> 0` vars_def)
-    then show ?thesis using `a\<noteq>0` `k \<noteq> 0` vars_monom_single by fastforce
+    then have "v \<in> vars (monom (Poly_Mapping.single v k) a)" by (simp add: \<open>k \<noteq> 0\<close> vars_def)
+    then show ?thesis using \<open>a\<noteq>0\<close> \<open>k \<noteq> 0\<close> vars_monom_single by fastforce
   qed
 qed
 
@@ -188,7 +188,7 @@ proof
   fix w assume "w \<in> vars (p1 + p2)"
   then obtain m where "w \<in> keys m" "m \<in> keys (mapping_of (p1 + p2))" by (metis UN_E vars_def)
   then have "m \<in> keys (mapping_of (p1)) \<union> keys (mapping_of (p2))" by (metis keys_add_subset plus_mpoly.rep_eq subsetCE)
-  then show "w \<in> vars p1 \<union> vars p2" using vars_def `w \<in> keys m` by fastforce
+  then show "w \<in> vars p1 \<union> vars p2" using vars_def \<open>w \<in> keys m\<close> by fastforce
 qed
 
 lemma vars_mult: "vars (p*q) \<subseteq> vars p \<union> vars q"
@@ -211,7 +211,7 @@ shows "vars (p1 + p2) = vars p1 \<union> vars p2"
 proof -
   have "keys (mapping_of p2) \<subseteq> {m}" using monom_def keys_single assms by auto
   have "keys (mapping_of (p1+p2)) = keys (mapping_of p1) \<union> keys (mapping_of p2)"
-    using keys_add by (metis Int_insert_right_if0 `keys (mapping_of p2) \<subseteq> {m}` assms(2) inf_bot_right plus_mpoly.rep_eq subset_singletonD)
+    using keys_add by (metis Int_insert_right_if0 \<open>keys (mapping_of p2) \<subseteq> {m}\<close> assms(2) inf_bot_right plus_mpoly.rep_eq subset_singletonD)
   then show ?thesis unfolding vars_def by simp
 qed
 
@@ -423,9 +423,9 @@ proof-
       using monom.abs_eq monom_zero single_zero by metis
   }
   then have 0:"{a. monom (remove_key v a) (monom (Poly_Mapping.single v (lookup a v)) (coeff p a)) \<noteq> 0} \<subseteq> S"
-    using `{m'. coeff p m' \<noteq> 0} \<subseteq> S` by fastforce
+    using \<open>{m'. coeff p m' \<noteq> 0} \<subseteq> S\<close> by fastforce
   then show ?thesis
-    unfolding extract_var_def using Sum_any.expand_superset [OF `finite S` 0] by metis
+    unfolding extract_var_def using Sum_any.expand_superset [OF \<open>finite S\<close> 0] by metis
 qed
 
 lemma extract_var_non_zero_coeff: "extract_var p v = (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
@@ -439,9 +439,9 @@ proof -
   have "finite S" unfolding S_def using coeff_def finite_lookup
     by (metis (mono_tags) Collect_disj_eq finite_Collect_disjI)
   then show ?thesis  unfolding
-    extract_var_finite_set[OF subsets(1) `finite S`]
-    extract_var_finite_set[OF subsets(2) `finite S`]
-    extract_var_finite_set[OF subsets(3) `finite S`]
+    extract_var_finite_set[OF subsets(1) \<open>finite S\<close>]
+    extract_var_finite_set[OF subsets(2) \<open>finite S\<close>]
+    extract_var_finite_set[OF subsets(3) \<open>finite S\<close>]
     coeff_add[symmetric] monom_add sum.distrib
     by metis
 qed
@@ -516,7 +516,7 @@ proof
   then have "x \<in> vars (\<Sum>m\<in>{m'. coeff p m' \<noteq> 0}. monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
     unfolding extract_var_non_zero_coeff by metis
   then have "x \<in> (\<Union>m\<in>{m'. coeff p m' \<noteq> 0}. vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m))))"
-    using vars_setsum[OF `finite {m'. coeff p m' \<noteq> 0}`] by auto
+    using vars_setsum[OF \<open>finite {m'. coeff p m' \<noteq> 0}\<close>] by auto
   then obtain m where "m\<in>{m'. coeff p m' \<noteq> 0}" "x \<in> vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m)))"
     by blast
   show "x \<in> vars p" by (metis (mono_tags, lifting) DiffD1 UN_I \<open>m \<in> {m'. coeff p m' \<noteq> 0}\<close>
@@ -532,7 +532,7 @@ proof -
   then have "v \<notin> (\<Union>m\<in>{m'. coeff p m' \<noteq> 0}. vars (monom (remove_key v m) (monom (Poly_Mapping.single v (lookup m v)) (coeff p m))))"
     by simp
   then show ?thesis
-   unfolding extract_var_non_zero_coeff using vars_setsum[OF `finite {m'. coeff p m' \<noteq> 0}`] by blast
+   unfolding extract_var_non_zero_coeff using vars_setsum[OF \<open>finite {m'. coeff p m' \<noteq> 0}\<close>] by blast
 qed
 
 lemma vars_coeff_extract_var: "vars (coeff (extract_var p v) j) \<subseteq> {v}"
@@ -564,7 +564,7 @@ assumes "f 0 = 0"
 shows "replace_coeff f (monom m a) = monom m (f a)"
   unfolding replace_coeff_def
   unfolding  mapping_of_inject[symmetric] lookup_inject[symmetric] apply (rule HOL.ext)
-  unfolding lookup_single  mapping_of_monom fun_when[of f, OF `f 0 = 0`]
+  unfolding lookup_single  mapping_of_monom fun_when[of f, OF \<open>f 0 = 0\<close>]
   by (metis coeff_def coeff_monom lookup_single lookup_single_not_eq monom.abs_eq single.abs_eq)
 
 lemma replace_coeff_add:

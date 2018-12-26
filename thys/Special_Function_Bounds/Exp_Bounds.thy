@@ -1,4 +1,4 @@
-chapter {* Exp Upper and Lower Bounds *}
+chapter \<open>Exp Upper and Lower Bounds\<close>
 
 theory Exp_Bounds
 imports Bounds_Lemmas
@@ -7,15 +7,15 @@ imports Bounds_Lemmas
 
 begin
 
-text{*Covers all bounds used in exp-upper.ax, exp-lower.ax and exp-extended.ax.*}
+text\<open>Covers all bounds used in exp-upper.ax, exp-lower.ax and exp-extended.ax.\<close>
 
-section {*Taylor Series Bounds*}
+section \<open>Taylor Series Bounds\<close>
 
-text{*@{text exp_positive} is the theorem @{thm Transcendental.exp_ge_zero}*}
+text\<open>\<open>exp_positive\<close> is the theorem @{thm Transcendental.exp_ge_zero}\<close>
 
-text{*@{text exp_lower_taylor_1} is the theorem @{thm Transcendental.exp_ge_add_one_self} *}
+text\<open>\<open>exp_lower_taylor_1\<close> is the theorem @{thm Transcendental.exp_ge_add_one_self}\<close>
 
-text{*All even approximants are lower bounds.*}
+text\<open>All even approximants are lower bounds.\<close>
 lemma exp_lower_taylor_even: 
   fixes x::real
   shows "even n \<Longrightarrow> (\<Sum>m<n. (x ^ m) / (fact m)) \<le> exp x"
@@ -30,7 +30,7 @@ lemma exp_upper_taylor_even:
   using exp_lower_taylor_even [OF n, of "-x"]
   by (metis exp_minus inverse_inverse_eq le_imp_inverse_le pos)
 
-text{*3 if the previous lemma is expressed in terms of @{term "2*m"}.*}
+text\<open>3 if the previous lemma is expressed in terms of @{term "2*m"}.\<close>
 lemma exp_lower_taylor_3:
   fixes x::real
   shows "1 + x + (1/2)*x^2 + (1/6)*x^3 + (1/24)*x^4 + (1/120)*x^5 \<le> exp x"
@@ -116,7 +116,7 @@ proof -
 qed
 
 
-section {*Continued Fraction Bound 2*}
+section \<open>Continued Fraction Bound 2\<close>
 
 definition exp_cf2 :: "real \<Rightarrow> real"
   where "exp_cf2 \<equiv> \<lambda>x. (x^2 + 6*x + 12) / (x^2 - 6*x + 12)"
@@ -150,7 +150,7 @@ lemma d_delta_lnexp_cf2:
   apply algebra
   done
 
-text{*Upper bound for non-positive x*}
+text\<open>Upper bound for non-positive x\<close>
 lemma ln_exp_cf2_upper_bound_neg:
   assumes "x \<le> 0"
     shows "x \<le> ln (exp_cf2 x)"
@@ -160,7 +160,7 @@ lemma ln_exp_cf2_upper_bound_neg:
 theorem exp_cf2_upper_bound_neg: "x\<le>0 \<Longrightarrow> exp(x) \<le> exp_cf2 x"
   by (metis ln_exp_cf2_upper_bound_neg exp_cf2_pos exp_le_cancel_iff exp_ln_iff)
 
-text{*Lower bound for non-negative x*}
+text\<open>Lower bound for non-negative x\<close>
 lemma ln_exp_cf2_lower_bound_pos:
   assumes "0\<le>x"
     shows "ln (exp_cf2 x) \<le> x"
@@ -171,9 +171,9 @@ theorem exp_cf2_lower_bound_pos: "0\<le>x \<Longrightarrow> exp_cf2 x \<le> exp 
   by (metis exp_cf2_pos exp_le_cancel_iff exp_ln ln_exp_cf2_lower_bound_pos)
 
 
-section {*Continued Fraction Bound 3*}
+section \<open>Continued Fraction Bound 3\<close>
 
-text{*This bound crosses the X-axis twice, causing complications.*}
+text\<open>This bound crosses the X-axis twice, causing complications.\<close>
 
 definition numer_cf3 :: "real \<Rightarrow> real"
   where "numer_cf3 \<equiv> \<lambda>x. x^3 + 12*x^2 + 60*x + 120"
@@ -211,7 +211,7 @@ lemma numer_cf3_mono: "y \<le> x \<Longrightarrow> numer_cf3 y \<le> numer_cf3 x
   by (sos "(((A<0 * R<1) + ((A<=0 * R<1) * ((R<60 * [1/10*x + 1/10*y + 1]^2) +
                 ((R<2/5 * [x + ~1/4*y]^2) + (R<3/8 * [y]^2))))))")
 
-text{*Upper bound for non-negative x*}
+text\<open>Upper bound for non-negative x\<close>
 lemma ln_exp_cf3_upper_bound_nonneg:
   assumes x0: "0 \<le> x" and xless: "numer_cf3 (-x) > 0"
     shows "x \<le> ln (exp_cf3 x)"
@@ -233,7 +233,7 @@ corollary "0 \<le> x \<Longrightarrow> x \<le> 4.64 \<Longrightarrow> exp x \<le
   by (metis numer_cf3_pos neg_le_iff_le exp_cf3_upper_bound_pos)
 
 
-text{*Lower bound for negative x, provided @{term"exp_cf3 x > 0"}]*}
+text\<open>Lower bound for negative x, provided @{term"exp_cf3 x > 0"}]\<close>
 lemma ln_exp_cf3_lower_bound_neg:
   assumes x0: "x \<le> 0" and xgtr: "numer_cf3 x > 0"
     shows "ln (exp_cf3 x) \<le> x"
@@ -268,9 +268,9 @@ next
 qed
 
 
-section {*Continued Fraction Bound 4*}
+section \<open>Continued Fraction Bound 4\<close>
 
-text {*Here we have the extended exp continued fraction bounds*}
+text \<open>Here we have the extended exp continued fraction bounds\<close>
 
 definition numer_cf4 :: "real \<Rightarrow> real"
   where "numer_cf4 \<equiv> \<lambda>x. x^4 + 20*x^3 + 180*x^2 + 840*x + 1680"
@@ -306,7 +306,7 @@ lemma d_delta_lnexp_cf4:
   apply algebra
   done
 
-text{*Upper bound for non-positive x*}
+text\<open>Upper bound for non-positive x\<close>
 lemma ln_exp_cf4_upper_bound_neg:
   assumes "x \<le> 0"
     shows "x \<le> ln (exp_cf4 x)"
@@ -316,7 +316,7 @@ lemma ln_exp_cf4_upper_bound_neg:
 theorem exp_cf4_upper_bound_neg: "x\<le>0 \<Longrightarrow> exp(x) \<le> exp_cf4 x"
   by (metis ln_exp_cf4_upper_bound_neg exp_cf4_pos exp_le_cancel_iff exp_ln_iff)
 
-text{*Lower bound for non-negative x*}
+text\<open>Lower bound for non-negative x\<close>
 lemma ln_exp_cf4_lower_bound_pos:
   assumes "0\<le>x"
     shows "ln (exp_cf4 x) \<le> x"
@@ -327,9 +327,9 @@ theorem exp_cf4_lower_bound_pos: "0\<le>x \<Longrightarrow> exp_cf4 x \<le> exp 
   by (metis exp_cf4_pos exp_le_cancel_iff exp_ln ln_exp_cf4_lower_bound_pos)
 
 
-section {*Continued Fraction Bound 5*}
+section \<open>Continued Fraction Bound 5\<close>
 
-text{*This bound crosses the X-axis twice, causing complications.*}
+text\<open>This bound crosses the X-axis twice, causing complications.\<close>
 
 definition numer_cf5 :: "real \<Rightarrow> real"
   where "numer_cf5 \<equiv> \<lambda>x. x^5 + 30*x^4 + 420*x^3 + 3360*x^2 + 15120*x + 30240"
@@ -363,7 +363,7 @@ apply (auto simp add: divide_simps add_nonneg_eq_0_iff)
 apply algebra
 done
 
-subsection{*Proving monotonicity via a non-negative derivative*}
+subsection\<open>Proving monotonicity via a non-negative derivative\<close>
 
 definition numer_cf5_deriv :: "real \<Rightarrow> real"
   where "numer_cf5_deriv \<equiv> \<lambda>x. 5*x^4 + 120*x^3 + 1260*x^2 + 6720*x + 15120"
@@ -380,9 +380,9 @@ lemma numer_cf5_deriv_pos: "numer_cf5_deriv x \<ge> 0"
 lemma numer_cf5_mono: "y \<le> x \<Longrightarrow> numer_cf5 y \<le> numer_cf5 x"
   by (auto intro: DERIV_nonneg_imp_nondecreasing numer_cf5_deriv numer_cf5_deriv_pos)
 
-subsection{*Results*}
+subsection\<open>Results\<close>
 
-text{*Upper bound for non-negative x*}
+text\<open>Upper bound for non-negative x\<close>
 lemma ln_exp_cf5_upper_bound_nonneg:
   assumes x0: "0 \<le> x" and xless: "numer_cf5 (-x) > 0"
     shows "x \<le> ln (exp_cf5 x)"
@@ -403,7 +403,7 @@ theorem exp_cf5_upper_bound_pos: "0 \<le> x \<Longrightarrow> numer_cf5 (-x) > 0
 corollary "0 \<le> x \<Longrightarrow> x \<le> 7.293 \<Longrightarrow> exp x \<le> exp_cf5 x"
   by (metis neg_le_iff_le numer_cf5_pos exp_cf5_upper_bound_pos)
 
-text{*Lower bound for negative x, provided @{term"exp_cf5 x > 0"}]*}
+text\<open>Lower bound for negative x, provided @{term"exp_cf5 x > 0"}]\<close>
 lemma ln_exp_cf5_lower_bound_neg:
   assumes x0: "x \<le> 0" and xgtr: "numer_cf5 x > 0"
     shows "ln (exp_cf5 x) \<le> x"
@@ -438,7 +438,7 @@ next
 qed
 
 
-section {*Continued Fraction Bound 6*}
+section \<open>Continued Fraction Bound 6\<close>
 
 definition numer_cf6 :: "real \<Rightarrow> real"
   where "numer_cf6 \<equiv> \<lambda>x. x^6 + 42*x^5 + 840*x^4 + 10080*x^3 + 75600*x^2 + 332640*x + 665280"
@@ -474,7 +474,7 @@ lemma d_delta_lnexp_cf6:
   apply algebra
   done
 
-text{*Upper bound for non-positive x*}
+text\<open>Upper bound for non-positive x\<close>
 lemma ln_exp_cf6_upper_bound_neg:
   assumes "x \<le> 0"
     shows "x \<le> ln (exp_cf6 x)"
@@ -484,7 +484,7 @@ lemma ln_exp_cf6_upper_bound_neg:
 theorem exp_cf6_upper_bound_neg: "x\<le>0 \<Longrightarrow> exp(x) \<le> exp_cf6 x"
   by (metis ln_exp_cf6_upper_bound_neg exp_cf6_pos exp_le_cancel_iff exp_ln_iff)
 
-text{*Lower bound for non-negative x*}
+text\<open>Lower bound for non-negative x\<close>
 lemma ln_exp_cf6_lower_bound_pos:
   assumes "0\<le>x"
     shows "ln (exp_cf6 x) \<le> x"
@@ -495,9 +495,9 @@ theorem exp_cf6_lower_bound_pos: "0\<le>x \<Longrightarrow> exp_cf6 x \<le> exp 
   by (metis exp_cf6_pos exp_le_cancel_iff exp_ln ln_exp_cf6_lower_bound_pos)
 
   
-section {*Continued Fraction Bound 7*}
+section \<open>Continued Fraction Bound 7\<close>
 
-text{*This bound crosses the X-axis twice, causing complications.*}
+text\<open>This bound crosses the X-axis twice, causing complications.\<close>
 
 definition numer_cf7 :: "real \<Rightarrow> real"
   where "numer_cf7 \<equiv> \<lambda>x. x^7 + 56*x^6 + 1512*x^5 + 25200*x^4 + 277200*x^3 + 1995840*x^2 + 8648640*x + 17297280"
@@ -530,7 +530,7 @@ apply (auto simp: divide_simps add_nonneg_eq_0_iff)
 apply algebra
 done
 
-subsection{*Proving monotonicity via a non-negative derivative*}
+subsection\<open>Proving monotonicity via a non-negative derivative\<close>
 
 definition numer_cf7_deriv :: "real \<Rightarrow> real"
   where "numer_cf7_deriv \<equiv> \<lambda>x. 7*x^6 + 336*x^5 + 7560*x^4 + 100800*x^3 + 831600*x^2 + 3991680*x + 8648640"
@@ -548,9 +548,9 @@ lemma numer_cf7_deriv_pos: "numer_cf7_deriv x \<ge> 0"
 lemma numer_cf7_mono: "y \<le> x \<Longrightarrow> numer_cf7 y \<le> numer_cf7 x"
   by (auto intro: DERIV_nonneg_imp_nondecreasing numer_cf7_deriv numer_cf7_deriv_pos)
 
-subsection{*Results*}
+subsection\<open>Results\<close>
 
-text{*Upper bound for non-negative x*}
+text\<open>Upper bound for non-negative x\<close>
 lemma ln_exp_cf7_upper_bound_nonneg:
   assumes x0: "0 \<le> x" and xless: "numer_cf7 (-x) > 0"
     shows "x \<le> ln (exp_cf7 x)"
@@ -571,7 +571,7 @@ theorem exp_cf7_upper_bound_pos: "0 \<le> x \<Longrightarrow> numer_cf7 (-x) > 0
 corollary "0 \<le> x \<Longrightarrow> x \<le> 9.943 \<Longrightarrow> exp x \<le> exp_cf7 x"
   by (metis neg_le_iff_le numer_cf7_pos exp_cf7_upper_bound_pos)
 
-text{*Lower bound for negative x, provided @{term"exp_cf7 x > 0"}]*}
+text\<open>Lower bound for negative x, provided @{term"exp_cf7 x > 0"}]\<close>
 lemma ln_exp_cf7_lower_bound_neg:
   assumes x0: "x \<le> 0" and xgtr: "numer_cf7 x > 0"
     shows "ln (exp_cf7 x) \<le> x"

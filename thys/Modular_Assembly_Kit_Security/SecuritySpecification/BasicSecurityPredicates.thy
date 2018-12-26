@@ -38,7 +38,7 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr" 
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "R \<V> ?Tr'" 
       proof -
@@ -47,10 +47,10 @@ proof -
           assume "\<tau> \<in> {t. (set t) \<subseteq> E}"
           let ?\<tau>'="\<tau>\<upharpoonleft>(V\<^bsub>\<V>\<^esub>)"
           have "?\<tau>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []  \<and> ?\<tau>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<tau> \<upharpoonleft> V\<^bsub>\<V>\<^esub>" 
-            using `isViewOn \<V> E`  disjoint_projection projection_idempotent 
+            using \<open>isViewOn \<V> E\<close>  disjoint_projection projection_idempotent 
             unfolding isViewOn_def V_valid_def VC_disjoint_def  by metis
           moreover
-          from `\<tau> \<in> {t. (set t) \<subseteq> E}` have "?\<tau>' \<in> ?Tr'" using `isViewOn \<V> E`
+          from \<open>\<tau> \<in> {t. (set t) \<subseteq> E}\<close> have "?\<tau>' \<in> ?Tr'" using \<open>isViewOn \<V> E\<close>
             unfolding isViewOn_def
             by (simp add: list_subset_iff_projection_neutral projection_commute) 
           ultimately 
@@ -85,7 +85,7 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr" 
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "D \<V> ?Tr'"
       unfolding D_def by auto
@@ -114,9 +114,9 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
-    have "I \<V> ?Tr'" using `isViewOn \<V> E` 
+    have "I \<V> ?Tr'" using \<open>isViewOn \<V> E\<close> 
       unfolding isViewOn_def I_def by auto
     ultimately
     have  "\<exists> Tr'. Tr' \<supseteq> Tr  \<and> I \<V> Tr'"
@@ -153,9 +153,9 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
-    have "IA \<rho> \<V> ?Tr'" using `isViewOn \<V> E`
+    have "IA \<rho> \<V> ?Tr'" using \<open>isViewOn \<V> E\<close>
       unfolding isViewOn_def IA_def by auto
     ultimately
     have  "\<exists> Tr'. Tr' \<supseteq> Tr  \<and> IA \<rho> \<V> Tr'"
@@ -182,7 +182,7 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "BSD \<V> ?Tr'"
       unfolding BSD_def by auto
@@ -210,9 +210,9 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
-    have "BSI \<V> ?Tr'" using `isViewOn \<V> E`
+    have "BSI \<V> ?Tr'" using \<open>isViewOn \<V> E\<close>
       unfolding isViewOn_def BSI_def by auto
     ultimately
     have  "\<exists> Tr'. Tr' \<supseteq> Tr  \<and> BSI \<V> Tr'"
@@ -238,9 +238,9 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
-    have "BSIA \<rho> \<V> ?Tr'" using `isViewOn \<V> E`
+    have "BSIA \<rho> \<V> ?Tr'" using \<open>isViewOn \<V> E\<close>
       unfolding isViewOn_def BSIA_def by auto
     ultimately
     have  "\<exists> Tr'. Tr' \<supseteq> Tr  \<and> BSIA \<rho> \<V> Tr'"
@@ -292,7 +292,7 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr" 
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "FCD \<Gamma> \<V> ?Tr'"
       proof -
@@ -303,12 +303,12 @@ proof -
              and  "\<beta> @ [c ,v] @ \<alpha> \<in> ?Tr'"
              and  "\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []"
           let ?\<alpha>'="\<alpha>" and ?\<delta>'="[]"  
-          from `\<beta> @ [c ,v] @ \<alpha> \<in> ?Tr'` have "\<beta> @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> ?Tr'"
+          from \<open>\<beta> @ [c ,v] @ \<alpha> \<in> ?Tr'\<close> have "\<beta> @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> ?Tr'"
             by auto 
           hence  "(set ?\<delta>') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ((\<beta> @ ?\<delta>' @ [v] @ ?\<alpha>') \<in> ?Tr'  
                       \<and> ?\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [])"   
-            using `isViewOn \<V> E` `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []` 
-            unfolding isViewOn_def `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []` by auto
+            using \<open>isViewOn \<V> E\<close> \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close> 
+            unfolding isViewOn_def \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close> by auto
           hence "\<exists>\<alpha>'. \<exists>\<delta>'. (set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ((\<beta> @ \<delta>' @ [v] @ \<alpha>') \<in> ?Tr'  
             \<and> \<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^esub> \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [])"
             by blast
@@ -343,7 +343,7 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr" 
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "FCI \<Gamma> \<V> ?Tr'"
       proof -
@@ -354,14 +354,14 @@ proof -
              and  "\<beta> @ [v] @ \<alpha> \<in> ?Tr'"
              and  "\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []"
           let ?\<alpha>'="\<alpha>" and ?\<delta>'="[]"  
-          from `c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>` have" c \<in> E" 
-            using `isViewOn \<V> E`
+          from \<open>c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>\<close> have" c \<in> E" 
+            using \<open>isViewOn \<V> E\<close>
             unfolding isViewOn_def by auto
-          with  `\<beta> @ [v] @ \<alpha> \<in> ?Tr'` have "\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> ?Tr'" 
+          with  \<open>\<beta> @ [v] @ \<alpha> \<in> ?Tr'\<close> have "\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> ?Tr'" 
             by auto 
           hence  "(set ?\<delta>') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ((\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>') \<in> ?Tr'  
                       \<and> ?\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [])"   
-           using `isViewOn \<V> E` `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []`  unfolding isViewOn_def `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []` by auto
+           using \<open>isViewOn \<V> E\<close> \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close>  unfolding isViewOn_def \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close> by auto
          hence 
            "\<exists>\<alpha>'. \<exists>\<delta>'. (set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ((\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>') \<in> ?Tr'  
             \<and> \<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^esub> \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [])" 
@@ -397,7 +397,7 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "FCIA \<rho> \<Gamma> \<V> ?Tr'"
     proof -
@@ -408,14 +408,14 @@ proof -
              and  "\<beta> @ [v] @ \<alpha> \<in> ?Tr'"
              and  "\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []"
           let ?\<alpha>'="\<alpha>" and ?\<delta>'="[]"  
-          from `c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>` have" c \<in> E" 
-            using `isViewOn \<V> E` unfolding isViewOn_def by auto
-          with  `\<beta> @ [v] @ \<alpha> \<in> ?Tr'` have "\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> ?Tr'"
+          from \<open>c \<in> C\<^bsub>\<V>\<^esub> \<inter> \<Upsilon>\<^bsub>\<Gamma>\<^esub>\<close> have" c \<in> E" 
+            using \<open>isViewOn \<V> E\<close> unfolding isViewOn_def by auto
+          with  \<open>\<beta> @ [v] @ \<alpha> \<in> ?Tr'\<close> have "\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>' \<in> ?Tr'"
             by auto 
           hence  "(set ?\<delta>') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ((\<beta> @ [c] @ ?\<delta>' @ [v] @ ?\<alpha>') \<in> ?Tr'  
                       \<and> ?\<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^esub> \<and> ?\<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [])"   
-            using `isViewOn \<V> E` `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []`  
-            unfolding isViewOn_def `\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []` by auto
+            using \<open>isViewOn \<V> E\<close> \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close>  
+            unfolding isViewOn_def \<open>\<alpha> \<upharpoonleft> C\<^bsub>\<V>\<^esub> = []\<close> by auto
           hence 
             "\<exists>\<alpha>'. \<exists>\<delta>'. (set \<delta>') \<subseteq> (N\<^bsub>\<V>\<^esub> \<inter> \<Delta>\<^bsub>\<Gamma>\<^esub>) \<and> ((\<beta> @ [c] @ \<delta>' @ [v] @ \<alpha>') \<in> ?Tr'  
             \<and> \<alpha>' \<upharpoonleft> V\<^bsub>\<V>\<^esub> = \<alpha> \<upharpoonleft> V\<^bsub>\<V>\<^esub> \<and> \<alpha>' \<upharpoonleft> C\<^bsub>\<V>\<^esub> = [])" 
@@ -453,7 +453,7 @@ proof -
         fix \<tau>
         assume "\<tau> \<in> ?Tr'"
         {
-          from `\<tau> \<in> ?Tr'` have "(\<exists>t\<in>Tr. \<tau> = t \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)) \<or> \<tau> \<in> Tr"
+          from \<open>\<tau> \<in> ?Tr'\<close> have "(\<exists>t\<in>Tr. \<tau> = t \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>)) \<or> \<tau> \<in> Tr"
             by auto
           hence "\<tau> \<upharpoonleft> (V\<^bsub>\<V>\<^esub> \<union> N\<^bsub>\<V>\<^esub>) \<in> ?Tr'" 
             proof 
@@ -493,7 +493,7 @@ proof -
     assume "isViewOn \<V> E"
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
-    have "?Tr'\<supseteq> Tr" by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+    have "?Tr'\<supseteq> Tr" by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "SD \<V> ?Tr'" unfolding SD_def by auto
     ultimately
@@ -517,10 +517,10 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr"
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "SI \<V> ?Tr'" 
-      using `isViewOn \<V> E` 
+      using \<open>isViewOn \<V> E\<close> 
       unfolding isViewOn_def SI_def by auto
     ultimately
     have  "\<exists> Tr'. Tr' \<supseteq> Tr  \<and> SI \<V> Tr'" 
@@ -546,10 +546,10 @@ proof -
     and "areTracesOver Tr E"     
     let ?Tr'="{t. (set t) \<subseteq> E}"
     have "?Tr'\<supseteq> Tr" 
-      by (meson Ball_Collect `areTracesOver Tr E` areTracesOver_def)
+      by (meson Ball_Collect \<open>areTracesOver Tr E\<close> areTracesOver_def)
     moreover
     have "SIA \<rho> \<V> ?Tr'" 
-      using `isViewOn \<V> E` 
+      using \<open>isViewOn \<V> E\<close> 
       unfolding isViewOn_def SIA_def by auto
     ultimately
     have  "\<exists> Tr'. Tr' \<supseteq> Tr  \<and> SIA \<rho> \<V> Tr'" 

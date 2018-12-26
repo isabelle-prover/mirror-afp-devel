@@ -7,19 +7,19 @@ imports
   Automatic_Refinement.Misc
 begin
 
-subsection {* Partial Heaps *}
-text {*
+subsection \<open>Partial Heaps\<close>
+text \<open>
   A partial heap is modeled by a heap and a set of valid addresses, with the
   side condition that the valid addresses have to be within the limit of the
   heap. This modeling is somewhat strange for separation logic, however, it 
   allows us to solve some technical problems related to definition of 
   Hoare triples, that will be detailed later.
-*}
+\<close>
 type_synonym pheap = "heap \<times> addr set"
 
-text {* Predicate that expresses that the address set of a partial heap is 
+text \<open>Predicate that expresses that the address set of a partial heap is 
   within the heap's limit.
-*}
+\<close>
 fun in_range :: "(heap \<times> addr set) \<Rightarrow> bool" 
   where "in_range (h,as) \<longleftrightarrow> (\<forall>a\<in>as. a < lim h)"
 
@@ -36,8 +36,8 @@ lemma in_range_subset:
   "\<lbrakk>as \<subseteq> as'; in_range (h,as')\<rbrakk> \<Longrightarrow> in_range (h,as)"
   by (auto simp: in_range.simps)
 
-text {* Relation that holds if two heaps are identical on a given 
-  address range*}
+text \<open>Relation that holds if two heaps are identical on a given 
+  address range\<close>
 definition relH :: "addr set \<Rightarrow> heap \<Rightarrow> heap \<Rightarrow> bool" 
   where "relH as h h' \<equiv> 
   in_range (h,as) 
@@ -99,12 +99,12 @@ lemma relH_set_array: "\<lbrakk>addr_of_array r \<notin> as; in_range (h,as)\<rb
   unfolding relH_def Array.set_def 
   by (auto simp: in_range.simps)
 
-subsection {* Assertions *}
-text {*
+subsection \<open>Assertions\<close>
+text \<open>
   Assertions are predicates on partial heaps, that fulfill a well-formedness 
   condition called properness: They only depend on the part of the heap
   by the address set, and must be false for partial heaps that are not in range.
-*}
+\<close>
 type_synonym assn_raw = "pheap \<Rightarrow> bool"
 
 definition proper :: "assn_raw \<Rightarrow> bool" where
@@ -142,7 +142,7 @@ lemma proper_iff:
   using assms
   by (metis properD2 relH_in_rangeI(1) relH_sym) 
 
-text {* We encapsulate assertions in their own type *}  
+text \<open>We encapsulate assertions in their own type\<close>  
 typedef assn = "Collect proper" 
   apply simp
   unfolding proper_def 
@@ -164,10 +164,10 @@ lemma models_in_range: "h\<Turnstile>P \<Longrightarrow> in_range h"
   apply (cases h)
   by (metis mem_Collect_eq Rep_assn properD1)
     
-subsubsection {* Empty Partial Heap*}
-text {* The empty partial heap satisfies some special properties.
+subsubsection \<open>Empty Partial Heap\<close>
+text \<open>The empty partial heap satisfies some special properties.
   We set up a simplification that tries to rewrite it to the standard
-  empty partial heap @{text "h\<^sub>\<bottom>"}*}
+  empty partial heap \<open>h\<^sub>\<bottom>\<close>\<close>
 abbreviation h_bot ("h\<^sub>\<bottom>") where "h\<^sub>\<bottom> \<equiv> (undefined,{})"
 lemma mod_h_bot_indep: "(h,{})\<Turnstile>P \<longleftrightarrow> (h',{})\<Turnstile>P"
   by (metis mem_Collect_eq Rep_assn emptyE in_range_empty 
@@ -177,18 +177,18 @@ lemma mod_h_bot_normalize[simp]:
   "syntax_fo_nomatch undefined h \<Longrightarrow> (h,{})\<Turnstile>P \<longleftrightarrow> h\<^sub>\<bottom> \<Turnstile> P"
   using mod_h_bot_indep[where h'=undefined] by simp
 
-text {* Properness, lifted to the assertion type. *}
+text \<open>Properness, lifted to the assertion type.\<close>
 lemma mod_relH: "relH as h h' \<Longrightarrow> (h,as)\<Turnstile>P \<longleftrightarrow> (h',as)\<Turnstile>P"
   by (metis mem_Collect_eq Rep_assn proper_iff relH_in_rangeI(2))
     
-subsection {* Connectives *}
-text {*
+subsection \<open>Connectives\<close>
+text \<open>
   We define several operations on assertions, and instantiate some type classes.
-*}
+\<close>
 
-subsubsection {* Empty Heap and Separation Conjunction *}
-text {* The assertion that describes the empty heap, and the separation
-  conjunction form a commutative monoid: *}
+subsubsection \<open>Empty Heap and Separation Conjunction\<close>
+text \<open>The assertion that describes the empty heap, and the separation
+  conjunction form a commutative monoid:\<close>
 instantiation assn :: one begin
   fun one_assn_raw :: "pheap \<Rightarrow> bool" 
     where "one_assn_raw (h,as) \<longleftrightarrow> as={}"
@@ -274,7 +274,7 @@ instantiation assn :: comm_monoid_mult begin
 
 end
   
-subsubsection {* Magic Wand *}
+subsubsection \<open>Magic Wand\<close>
 fun wand_raw :: "assn_raw \<Rightarrow> assn_raw \<Rightarrow> assn_raw" where
   "wand_raw P Q (h,as) \<longleftrightarrow> in_range (h,as) 
   \<and> (\<forall>h' as'. as\<inter>as'={} \<and> relH as h h' \<and> in_range (h',as)
@@ -305,7 +305,7 @@ lemma wand_assnI:
   apply (auto simp: Abs_assn_inverse)
   done
 
-subsubsection {* Boolean Algebra on Assertions *}
+subsubsection \<open>Boolean Algebra on Assertions\<close>
 instantiation assn :: boolean_algebra begin
   definition top_assn where "top \<equiv> Abs_assn in_range"
   definition bot_assn where "bot \<equiv> Abs_assn (\<lambda>_. False)"
@@ -327,9 +327,9 @@ instantiation assn :: boolean_algebra begin
       simp: proper_iff)
     done
 
-  text {* (And, Or, True, False, Not) are a Boolean algebra. 
+  text \<open>(And, Or, True, False, Not) are a Boolean algebra. 
     Due to idiosyncrasies of the Isabelle/HOL class setup, we have to
-    also define a difference and an ordering: *}
+    also define a difference and an ordering:\<close>
   definition less_eq_assn where
   [simp]: "(a::assn) \<le> b \<equiv> a = inf a b"
 
@@ -363,7 +363,7 @@ instantiation assn :: boolean_algebra begin
 
 end
 
-text {* We give the operations some more standard names *}
+text \<open>We give the operations some more standard names\<close>
 abbreviation top_assn::assn ("true") where "top_assn \<equiv> top"
 abbreviation bot_assn::assn ("false") where "bot_assn \<equiv> bot"
 abbreviation sup_assn::"assn\<Rightarrow>assn\<Rightarrow>assn" (infixr "\<or>\<^sub>A" 61) 
@@ -373,8 +373,8 @@ abbreviation inf_assn::"assn\<Rightarrow>assn\<Rightarrow>assn" (infixr "\<and>\
 abbreviation uminus_assn::"assn \<Rightarrow> assn" ("\<not>\<^sub>A _" [81] 80) 
   where "uminus_assn \<equiv> uminus"
 
-text {* Now we prove some relations between the Boolean algebra operations
-  and the (empty heap,separation conjunction) monoid *}
+text \<open>Now we prove some relations between the Boolean algebra operations
+  and the (empty heap,separation conjunction) monoid\<close>
 
 lemma star_false_left[simp]: "false * P = false"
   unfolding times_assn_def bot_assn_def
@@ -412,7 +412,7 @@ lemma assn_basic_inequalities[simp, intro!]:
   done
   
   
-subsubsection {* Existential Quantification *}
+subsubsection \<open>Existential Quantification\<close>
 definition ex_assn :: "('a \<Rightarrow> assn) \<Rightarrow> assn" (binder "\<exists>\<^sub>A" 11)
   where "(\<exists>\<^sub>Ax. P x) \<equiv> Abs_assn (\<lambda>h. \<exists>x. h\<Turnstile>P x)"
 
@@ -455,8 +455,8 @@ lemma ex_join_or: "(\<exists>\<^sub>Ax. P x \<or>\<^sub>A (\<exists>\<^sub>Ax. Q
   apply (auto simp add: Abs_assn_inverse)
   done
 
-subsubsection {* Pure Assertions *}
-text {* Pure assertions do not depend on any heap content. *}
+subsubsection \<open>Pure Assertions\<close>
+text \<open>Pure assertions do not depend on any heap content.\<close>
 fun pure_assn_raw where "pure_assn_raw b (h,as) \<longleftrightarrow> as={} \<and> b"
 definition pure_assn :: "bool \<Rightarrow> assn" ("\<up>") where
   "\<up>b \<equiv> Abs_assn (pure_assn_raw b)"
@@ -543,10 +543,10 @@ lemma is_pure_assn_starI[simp,intro!]:
     
     
     
-subsubsection {* Pointers *}
-text {* In Imperative HOL, we have to distinguish between pointers to single
+subsubsection \<open>Pointers\<close>
+text \<open>In Imperative HOL, we have to distinguish between pointers to single
   values and pointers to arrays. For both, we define assertions that 
-  describe the part of the heap that a pointer points to. *}
+  describe the part of the heap that a pointer points to.\<close>
 fun sngr_assn_raw :: "'a::heap ref \<Rightarrow> 'a \<Rightarrow> assn_raw" where
   "sngr_assn_raw r x (h,as) \<longleftrightarrow> Ref.get h r = x \<and> as = {addr_of_ref r} \<and> 
   addr_of_ref r < lim h"
@@ -575,8 +575,8 @@ definition
   snga_assn :: "'a::heap array \<Rightarrow> 'a list \<Rightarrow> assn" (infix "\<mapsto>\<^sub>a" 82)
   where "r\<mapsto>\<^sub>aa \<equiv> Abs_assn (snga_assn_raw r a)"
 
-text {* Two disjoint parts of the heap cannot be pointed to by the 
-  same pointer*}
+text \<open>Two disjoint parts of the heap cannot be pointed to by the 
+  same pointer\<close>
 lemma sngr_same_false[simp]: 
   "p \<mapsto>\<^sub>r x * p \<mapsto>\<^sub>r y = false"
   unfolding times_assn_def bot_assn_def sngr_assn_def
@@ -591,7 +591,7 @@ lemma snga_same_false[simp]:
   apply (auto simp: Abs_assn_inverse)
   done
 
-subsection {* Properties of the Models-Predicate *}
+subsection \<open>Properties of the Models-Predicate\<close>
 lemma mod_true[simp]: "h\<Turnstile>true \<longleftrightarrow> in_range h"
   unfolding top_assn_def by (simp add: Abs_assn_inverse)
 lemma mod_false[simp]: "\<not> h\<Turnstile>false"
@@ -673,7 +673,7 @@ lemma mod_h_bot_iff[simp]:
   apply (simp add: ex_assn_def Abs_assn_inverse)
   done
 
-subsection {* Entailment *}
+subsection \<open>Entailment\<close>
 definition entails :: "assn \<Rightarrow> assn \<Rightarrow> bool" (infix "\<Longrightarrow>\<^sub>A" 10)
   where "P \<Longrightarrow>\<^sub>A Q \<equiv> \<forall>h. h\<Turnstile>P \<longrightarrow> h\<Turnstile>Q"
 
@@ -688,7 +688,7 @@ lemma entailsD:
   shows "h\<Turnstile>Q" 
   using assms unfolding entails_def by blast
 
-subsubsection {* Properties *}
+subsubsection \<open>Properties\<close>
 lemma ent_fwd: 
   assumes "h\<Turnstile>P"
   assumes "P \<Longrightarrow>\<^sub>A Q"
@@ -775,9 +775,9 @@ proof -
     and "in_range (h',as)" 
     and "(h',as') \<Turnstile> Q"
 
-  from `(h,as)\<Turnstile>P` and `relH as h h'` have "(h',as)\<Turnstile>P" 
+  from \<open>(h,as)\<Turnstile>P\<close> and \<open>relH as h h'\<close> have "(h',as)\<Turnstile>P" 
     by (simp add: mod_relH)
-  with `(h',as') \<Turnstile> Q` and `as\<inter>as'={}` have "(h',as\<union>as')\<Turnstile>Q*P" 
+  with \<open>(h',as') \<Turnstile> Q\<close> and \<open>as\<inter>as'={}\<close> have "(h',as\<union>as')\<Turnstile>Q*P" 
     by (metis star_assnI Int_commute Un_commute)
   with IMP show "(h',as\<union>as') \<Turnstile> R" by (blast dest: ent_fwd)
 qed
@@ -924,14 +924,14 @@ lemma entt_disjD2: "A\<or>\<^sub>AB\<Longrightarrow>\<^sub>tC \<Longrightarrow> 
   using entt_disjI2_direct entt_trans by blast
     
     
-subsection {* Precision *}
-text {*
+subsection \<open>Precision\<close>
+text \<open>
   Precision rules describe that parts of an assertion may depend only on the
   underlying heap. For example, the data where a pointer points to is the same
   for the same heap.
-*}
-text {* Precision rules should have the form: 
-  @{text [display] "\<forall>x y. (h\<Turnstile>(P x * F1) \<and>\<^sub>A (P y * F2)) \<longrightarrow> x=y"}*}
+\<close>
+text \<open>Precision rules should have the form: 
+  @{text [display] "\<forall>x y. (h\<Turnstile>(P x * F1) \<and>\<^sub>A (P y * F2)) \<longrightarrow> x=y"}\<close>
 definition "precise R \<equiv> \<forall>a a' h p F F'. 
   h \<Turnstile> R a p * F \<and>\<^sub>A R a' p * F' \<longrightarrow> a = a'"
 

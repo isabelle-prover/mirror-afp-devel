@@ -1,4 +1,4 @@
-subsection {* Measure spaces \label{sec:measure-spaces} *}
+subsection \<open>Measure spaces \label{sec:measure-spaces}\<close>
 
 theory Measure
 imports Sigma_Algebra MonConv
@@ -8,20 +8,20 @@ begin
 Markus Wenzel here,
   which does not need an explicit definition of countable,
   changing the names according to Joe Hurd*)
-text {* Now we are already set for the central concept of
+text \<open>Now we are already set for the central concept of
   measure. The following definitions are translated as faithfully as possible
-  from those in Joe Hurd's thesis \cite{hurd2002}. *}
+  from those in Joe Hurd's thesis \cite{hurd2002}.\<close>
 
 definition
   measurable:: "'a set set \<Rightarrow> 'b set set \<Rightarrow> ('a \<Rightarrow> 'b) set" where
   "measurable F G = {f. \<forall>g\<in>G. f -` g \<in> F}"
 
-text {*So a function is called $F$-$G$-measurable if and only if the inverse
+text \<open>So a function is called $F$-$G$-measurable if and only if the inverse
   image of any set in $G$ is in $F$. $F$ and $G$ are usually the sets of
   measurable sets, the first component of a measure space\footnote{In
   standard mathematical notation, the universe is first in a
   measure space triple, but in our definitions, following Joe Hurd, it is always the
-  whole type universe and therefore omitted.}.*}
+  whole type universe and therefore omitted.}.\<close>
 
 
 definition
@@ -32,10 +32,10 @@ definition
   measure:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a set \<Rightarrow> real)" where
   "measure = snd"
 
-text {*The other component is the measure itself. It is a function that
+text \<open>The other component is the measure itself. It is a function that
   assigns a nonnegative real number to every measurable set and has
   the property of being
-  countably additive for disjoint sets.*}
+  countably additive for disjoint sets.\<close>
 
 
 definition
@@ -52,16 +52,16 @@ definition
   \<and> (\<forall>m n. m \<noteq> n \<longrightarrow> f m \<inter> f n = {}) \<and>  (\<Union>i. f i) \<in> measurable_sets M
   \<longrightarrow> (\<lambda>n. measure M (f n)) sums  measure M (\<Union>i. f i))" 
 
-text {*This last property deserves some comments. The conclusion is
+text \<open>This last property deserves some comments. The conclusion is
   usually --- also in the aforementioned source --- phrased as
   
-  @{text "measure M (\<Union>i. f i) = (\<Sum>n. measure M (f n))"}.
+  \<open>measure M (\<Union>i. f i) = (\<Sum>n. measure M (f n))\<close>.
 
   In our formal setting this is unsatisfactory, because the
   sum operator\footnote{Which is merely syntactic sugar for the
   \isa{suminf} functional from the \isa{Series} theory
   \cite{Fleuriot:2000:MNR}.}, like any HOL function, is total, although
-  a series obviously need not converge. It is defined using the @{text \<epsilon>} operator, and its
+  a series obviously need not converge. It is defined using the \<open>\<epsilon>\<close> operator, and its
   behavior is unspecified in the diverging case. Hence, the above assertion
   would give no information about the convergence of the series. 
   
@@ -70,15 +70,15 @@ text {*This last property deserves some comments. The conclusion is
   measurable sets form a sigma algebra, which is postulated in the
   final definition\footnote{Joe Hurd inherited this practice from a very
   influential probability textbook \cite{Williams.mart}}. 
-  *}
+\<close>
 
 definition
   measure_space:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> bool" where
   "measure_space M \<longleftrightarrow> sigma_algebra (measurable_sets M) \<and> 
   positive M \<and> countably_additive M"
 
-text {*Note that our definition is restricted to finite measure
-  spaces --- that is, @{text "measure M UNIV < \<infinity>"} --- since the measure
+text \<open>Note that our definition is restricted to finite measure
+  spaces --- that is, \<open>measure M UNIV < \<infinity>\<close> --- since the measure
   must be a real number for any measurable set. In probability, this
   is naturally the case.    
 
@@ -89,7 +89,7 @@ text {*Note that our definition is restricted to finite measure
   sufficient to be measurable regarding only a generator of the target
   sigma algebra. Formalizing the interesting proof out of Bauer's
   textbook \cite{Bauer} is relatively straightforward using rule
-  induction. *}
+  induction.\<close>
 
 theorem assumes sig: "sigma_algebra a" and meas: "f \<in> measurable a b" shows 
   measurable_lift: "f \<in> measurable a (sigma b)"
@@ -133,7 +133,7 @@ proof -
     by (auto simp add: measurable_def Q_def)
 qed
 
-text {*The case is different for the second theorem. It is only five
+text \<open>The case is different for the second theorem. It is only five
   lines in the book (ibid.), but almost 200 in formal text. Precision
   still pays here, gaining a detailed view of a technique that
   is often employed in measure theory --- making a sequence of sets
@@ -143,7 +143,7 @@ text {*The case is different for the second theorem. It is only five
 
   To enable application of the additivity of measures, the following construction
   yields disjoint sets. We skip the justification of the lemmata for
-  brevity. *} 
+  brevity.\<close> 
 
 primrec mkdisjoint:: "(nat \<Rightarrow> 'a set) \<Rightarrow> (nat \<Rightarrow> 'a set)"
 where
@@ -235,7 +235,7 @@ qed(*>*)
     Also, it's not as strong as it could be,
     but we need no more.*)
 
-text {* Joe Hurd calls the following the Monotone Convergence Theorem,
+text \<open>Joe Hurd calls the following the Monotone Convergence Theorem,
   though in mathematical literature this name is often reserved for a
   similar fact
   about integrals that we will prove in \ref{nnfis}, which depends on this
@@ -243,7 +243,7 @@ text {* Joe Hurd calls the following the Monotone Convergence Theorem,
   approach the measure of their limit. A strengthened version would
   imply monotone convergence of the measures, but is not needed in the
   development.
-  *}
+\<close>
 
 theorem measure_mon_conv: 
   assumes ms: "measure_space M" and 

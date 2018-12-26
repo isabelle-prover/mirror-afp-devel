@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-section {* \isaheader{Map implementation via tries} *}
+section \<open>\isaheader{Map implementation via tries}\<close>
 theory TrieMapImpl imports
   Trie2
   "../gen_algo/MapGA"
@@ -13,7 +13,7 @@ begin
   Maps over keys of type @{typ "'k list"} implemented by tries.
 *)
 
-subsection {* Operations *}
+subsection \<open>Operations\<close>
 
 type_synonym ('k, 'v) tm = "('k, 'v) trie"
 
@@ -48,7 +48,7 @@ interpretation tm: StdMap_no_invar tm_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "tm"*}
+setup \<open>ICF_Tools.revert_abbrevs "tm"\<close>
 
 lemma pi_trie_impl[proper_it]: 
   shows "proper_it'
@@ -136,7 +136,7 @@ interpretation pi_trie: proper_it_loc Trie2.iteratei Trie2.iteratei
   apply (rule pi_trie)
   done
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 definition "test_codegen \<equiv> (
   tm.add ,
   tm.add_dj ,

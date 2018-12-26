@@ -2,7 +2,7 @@ theory Substitution
 imports Terms
 begin
 
-text {* Defining a substitution function on terms turned out to be slightly tricky. *}
+text \<open>Defining a substitution function on terms turned out to be slightly tricky.\<close>
 
 fun
   subst_var :: "var \<Rightarrow> var \<Rightarrow> var \<Rightarrow> var" ("_[_::v=_]" [1000,100,100] 1000)

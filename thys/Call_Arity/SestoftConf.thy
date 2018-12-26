@@ -156,7 +156,7 @@ lemma restr_stack_noop[simp]:
      (auto dest: Upd_eq_restr_stackD2)
   
 
-subsubsection {* Invariants of the semantics *}
+subsubsection \<open>Invariants of the semantics\<close>
 
 inductive invariant :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> bool"
   where "(\<And> x y. rel x y \<Longrightarrow> I x \<Longrightarrow> I y) \<Longrightarrow> invariant rel I"
@@ -191,16 +191,16 @@ proof-
   have "P b" and "I b"
   proof(induction)
     case base
-    from `P a` show "P a".
-    from `I a` show "I a".
+    from \<open>P a\<close> show "P a".
+    from \<open>I a\<close> show "I a".
   next
     case (step y z)
-    with `I a` have "P y" and "I y" by auto
+    with \<open>I a\<close> have "P y" and "I y" by auto
 
-    from assms(2) `r y z` `I y`
+    from assms(2) \<open>r y z\<close> \<open>I y\<close>
     show "I z" by (rule invariantE)
 
-    from `r\<^sup>*\<^sup>* a y` `r y z` `I y` `I z` `P y`
+    from \<open>r\<^sup>*\<^sup>* a y\<close> \<open>r y z\<close> \<open>I y\<close> \<open>I z\<close> \<open>P y\<close>
     show "P z" by (rule assms(5))
   qed
   thus "P b" by-

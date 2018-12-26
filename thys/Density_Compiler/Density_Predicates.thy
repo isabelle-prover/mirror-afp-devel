@@ -3,13 +3,13 @@
   Authors: Manuel Eberl
 *)
 
-section {* Density Predicates *}
+section \<open>Density Predicates\<close>
 
 theory Density_Predicates
 imports "HOL-Probability.Probability"
 begin
 
-subsection {* Probability Densities *}
+subsection \<open>Probability Densities\<close>
 
 definition is_subprob_density :: "'a measure \<Rightarrow> ('a \<Rightarrow> ennreal) \<Rightarrow> bool" where
   "is_subprob_density M f \<equiv> (f \<in> borel_measurable M) \<and> space M \<noteq> {} \<and>
@@ -27,7 +27,7 @@ lemma is_subprob_densityD[dest]:
   "is_subprob_density M f \<Longrightarrow> (\<integral>\<^sup>+x. f x \<partial>M) \<le> 1"
   unfolding is_subprob_density_def by simp_all
 
-subsection {* Measure spaces with densities *}
+subsection \<open>Measure spaces with densities\<close>
 
 definition has_density :: "'a measure \<Rightarrow> 'a measure \<Rightarrow> ('a \<Rightarrow> ennreal) \<Rightarrow> bool" where
   "has_density M N f \<longleftrightarrow> (f \<in> borel_measurable N) \<and> space N \<noteq> {} \<and> M = density N f"
@@ -95,7 +95,7 @@ lemma has_density_dens_AE:
   unfolding has_density_def by (simp cong: density_cong)
 
 
-subsection {* Probability spaces with densities *}
+subsection \<open>Probability spaces with densities\<close>
 
 lemma is_subprob_density_imp_has_density:
     "\<lbrakk>is_subprob_density N f; M = density N f\<rbrakk> \<Longrightarrow> has_density M N f"
@@ -106,7 +106,7 @@ lemma has_subprob_density_imp_subprob_space':
 proof (rule subprob_spaceI)
   assume "has_density M N f"
   hence "M = density N f" by (simp add: has_density_def)
-  also from `has_density M N f` have "space ... \<noteq> {}" by (simp add: has_density_def)
+  also from \<open>has_density M N f\<close> have "space ... \<noteq> {}" by (simp add: has_density_def)
   finally show "space M \<noteq> {}" .
 qed (auto simp add: has_density_emeasure_space dest: has_densityD)
 
@@ -165,7 +165,7 @@ lemma has_subprob_density_dens_AE:
   unfolding has_subprob_density_def by (simp add: has_density_dens_AE)
 
 
-subsection {* Parametrized probability densities *}
+subsection \<open>Parametrized probability densities\<close>
 
 definition
   "has_parametrized_subprob_density M N R f \<equiv>
@@ -220,7 +220,7 @@ proof (intro conjI ballI)
 qed fact
 
 
-subsection {* Density in the Giry monad *}
+subsection \<open>Density in the Giry monad\<close>
 
 lemma emeasure_bind_density:
   assumes "space M \<noteq> {}" "\<And>x. x \<in> space M \<Longrightarrow> has_density (f x) N (g x)"
@@ -248,18 +248,18 @@ proof (rule measure_eqI)
   with eq have [measurable]: "X \<in> sets N" by auto
   with assms have "emeasure (M \<bind> f) X = \<integral>\<^sup>+x. \<integral>\<^sup>+y. g x y * indicator X y \<partial>N \<partial>M"
     by (intro emeasure_bind_density) simp_all
-  also from `X \<in> sets N` have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+x. g x y * indicator X y \<partial>M \<partial>N"
+  also from \<open>X \<in> sets N\<close> have "... = \<integral>\<^sup>+y. \<integral>\<^sup>+x. g x y * indicator X y \<partial>M \<partial>N"
     by (intro sfNM.Fubini') measurable
   also {
     fix y assume "y \<in> space N"
     have "(\<lambda>x. g x y) = case_prod g \<circ> (\<lambda>x. (x, y))" by (rule ext) simp
-    also from `y \<in> space N` have "... \<in> borel_measurable M"
+    also from \<open>y \<in> space N\<close> have "... \<in> borel_measurable M"
       by (intro measurable_comp[OF _ assms(5)] measurable_Pair2')
     finally have "(\<lambda>x. g x y) \<in> borel_measurable M" .
   }
   hence "... = \<integral>\<^sup>+y. (\<integral>\<^sup>+x. g x y \<partial>M) * indicator X y \<partial>N"
     by (intro nn_integral_cong nn_integral_multc)  simp_all
-  also from `X \<in> sets N` and assms have "... = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X"
+  also from \<open>X \<in> sets N\<close> and assms have "... = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X"
     by (subst emeasure_density) (simp_all add: sfN.borel_measurable_nn_integral)
   finally show "emeasure (M \<bind> f) X = emeasure (density N (\<lambda>y. \<integral>\<^sup>+x. g x y \<partial>M)) X" .
 qed
@@ -277,7 +277,7 @@ proof
     by (intro borel_measurable_nn_integral, subst measurable_pair_swap_iff) simp
   show "M \<bind> f = density N (\<lambda>y. \<integral>\<^sup>+ x. g x y \<partial>M)"
     by (intro bind_density) (simp_all add: assms)
-  from `space M \<noteq> {}` obtain x where "x \<in> space M" by blast
+  from \<open>space M \<noteq> {}\<close> obtain x where "x \<in> space M" by blast
   with assms have "has_density (f x) N (g x)" by simp
   thus "space N \<noteq> {}" by (rule has_densityD)
 qed

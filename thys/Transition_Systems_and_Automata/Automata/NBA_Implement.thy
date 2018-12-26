@@ -1,4 +1,4 @@
-section {* Implementation of Nondeterministic Büchi Automata *}
+section \<open>Implementation of Nondeterministic Büchi Automata\<close>
 
 theory NBA_Implement
 imports

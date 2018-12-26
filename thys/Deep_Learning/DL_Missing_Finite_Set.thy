@@ -14,7 +14,7 @@ next
   have "{a \<in> Collect even. a < 2 * Suc n} = insert (2*n) {a \<in> Collect even. a < 2 * n}"
     using le_eq_less_or_eq less_Suc_eq_le subset_antisym by force
   show ?case
-    unfolding `{a \<in> Collect even. a < 2 * Suc n} = insert (2*n) {a \<in> Collect even. a < 2 * n}`
+    unfolding \<open>{a \<in> Collect even. a < 2 * Suc n} = insert (2*n) {a \<in> Collect even. a < 2 * n}\<close>
     using Suc card_insert_disjoint[of "{a \<in> Collect even. a < 2 * n}" "2*n"]
     by (simp add: finite_M_bounded_by_nat less_not_refl2)
 qed
@@ -28,7 +28,7 @@ next
   have "{a \<in> Collect odd. a < 2 * Suc n} = insert (2*n+1) {a \<in> Collect odd. a < 2 * n}"
     using le_eq_less_or_eq less_Suc_eq_le subset_antisym by force
   show ?case
-    unfolding `{a \<in> Collect odd. a < 2 * Suc n} = insert (2*n+1) {a \<in> Collect odd. a < 2 * n}`
+    unfolding \<open>{a \<in> Collect odd. a < 2 * Suc n} = insert (2*n+1) {a \<in> Collect odd. a < 2 * n}\<close>
     using Suc card_insert_disjoint[of "{a \<in> Collect even. a < 2 * n}" "2*n"]
     by (simp add: finite_M_bounded_by_nat less_not_refl2)
 qed

@@ -12,7 +12,7 @@ theory OG_Hoare
 imports OG_Annotations 
 begin
 
-subsection {* Validity of Hoare Tuples: @{text "\<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A"} *}
+subsection \<open>Validity of Hoare Tuples: \<open>\<Gamma>\<Turnstile>\<^bsub>/F\<^esub> P c Q,A\<close>\<close>
 
 definition
   valid :: "[('s,'p,'f) body,'f set,'s assn,('s,'p,'f) com,'s assn,'s assn] => bool"
@@ -21,7 +21,7 @@ where
   "\<Gamma> \<Turnstile>\<^bsub>/F\<^esub> P c Q,A \<equiv> \<forall>s t c'. \<Gamma>\<turnstile>(c,s) \<rightarrow>\<^sup>* (c', t) \<longrightarrow> final (c', t ) \<longrightarrow> s \<in> Normal ` P \<longrightarrow> t \<notin> Fault ` F  
                       \<longrightarrow>  c' = Skip \<and> t \<in> Normal ` Q \<or> c' = Throw \<and> t \<in> Normal ` A"
 
-subsection {* Interference Freedom *}
+subsection \<open>Interference Freedom\<close>
 
 inductive
  atomicsR :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> ('s, 'p, 'f) ann \<Rightarrow> ('s,'p,'f) com \<Rightarrow> ('s assn \<times> ('s, 'p, 'f) com) \<Rightarrow> bool"
@@ -121,7 +121,7 @@ where
   "interfree \<Gamma> \<Theta> F Ps Ts \<equiv> \<forall>i j. i < length Ts \<and> j < length Ts \<and> i \<noteq> j \<longrightarrow> 
                          interfree_aux \<Gamma> \<Theta> F (Ts!i, Ps!i, Ts!j, fst (Ps!j))"
 
-subsection {* The Owicki-Gries Logic for COMPLX *}
+subsection \<open>The Owicki-Gries Logic for COMPLX\<close>
 
 inductive
   oghoare :: "('s,'p,'f) body \<Rightarrow> ('s,'p,'f) proc_assns \<Rightarrow> 'f set

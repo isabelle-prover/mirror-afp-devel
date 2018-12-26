@@ -1,10 +1,10 @@
-section {* Real-Valued random variables \label{sec:realrandvar} *}
+section \<open>Real-Valued random variables \label{sec:realrandvar}\<close>
 
 theory RealRandVar
 imports Measure "HOL-Library.Countable"
 begin
 
-text {*While most of the above material was modeled after Hurd's work
+text \<open>While most of the above material was modeled after Hurd's work
   (but still proved independently),
   the original content basically starts here\footnote{There are two
   main reasons why the above has not been imported using Sebastian
@@ -19,7 +19,7 @@ Skalberg's import tool \cite{Skalberg}. Firstly, there are
   algebra on the reals, the Borel sigma algebra. These functions will
   be called real-valued random variables. The terminology is slightly
   imprecise, as random variables hint at a probability space, which
-  usually requires @{text "measure M UNIV = 1"}. Notwithstanding, as we regard
+  usually requires \<open>measure M UNIV = 1\<close>. Notwithstanding, as we regard
   only finite measures (cf. \ref{sec:measure-spaces}), this condition can
   easily be achieved by normalization. After all, the other standard
   name, ``measurable functions'', is even less precise.
@@ -29,7 +29,7 @@ Skalberg's import tool \cite{Skalberg}. Firstly, there are
   abstract of the second source hints that it was also planned as a
   stepping stone for Lebesgue integration, though further results in
   this line could not be found. The main difference lies in the use of
-  extended real numbers --- the reals together with @{text "\<plusminus>\<infinity>"} --- in
+  extended real numbers --- the reals together with \<open>\<plusminus>\<infinity>\<close> --- in
   those documents. It is established practice in measure theory
   to allow infinite values, but ``($\ldots$) we felt that the complications
   that this generated ($\ldots$) more than canceled out the gain in
@@ -37,7 +37,7 @@ Skalberg's import tool \cite{Skalberg}. Firstly, there are
   the standard real numbers.'' \cite[p.~32f]{hurd2002}. Hurd also advocates
   going directly to the hyper-reals, should the need for infinite
   measures arise. I agree, nevertheless sticking to his example for the reasons
-  mentioned in the prologue.  *}
+  mentioned in the prologue.\<close>
   
 (*First of all, for the definition of a real valued random variable,
 we need the Borel-\<sigma>-Algebra on the Reals*)
@@ -54,8 +54,8 @@ definition
   rv:: "('a set set * ('a set \<Rightarrow> real)) \<Rightarrow> ('a \<Rightarrow> real) set" where
   "rv M = {f. measure_space M \<and> f \<in> measurable (measurable_sets M) \<bool>}"
 
-text {* As explained in the first paragraph, the preceding
-  definitions\footnote{The notation $@{text"{..u}"}$ signifies the
+text \<open>As explained in the first paragraph, the preceding
+  definitions\footnote{The notation $\<open>{..u}\<close>$ signifies the
   interval from negative infinity to $u$ included.}
   determine the rest of this section. There are many ways to define
   the Borel sets. For example, taking into account only rationals for
@@ -65,7 +65,7 @@ text {* As explained in the first paragraph, the preceding
   possibilities testifies to the relevance of the concept.  
 
   The latter path leads the way to the fact that any continuous function is
-  measurable. Generalization for $@{text \<real>}^n$ brings another unified way to
+  measurable. Generalization for $\<open>\<real>\<close>^n$ brings another unified way to
   prove all the measurability theorems in this theory plus, for instance,
   measurability of the trigonometric and exponential functions. This approach is detailed in another influential textbook
   by Billingsley \cite{Billingsley86}. It requires some concepts of
@@ -77,7 +77,7 @@ text {* As explained in the first paragraph, the preceding
   measure with respect to a measurable function is calculated as the measure of the
   inverse image of a set. Characteristic functions will
   be frequently needed in the rest of the development. 
-  *}
+\<close>
 (*Perhaps one day we will need distributions, this might be the right
 time to define them*)
 
@@ -96,9 +96,9 @@ proof (rule ext)
   show "\<chi> {} t = 0" by (simp add: characteristic_function_def)
 qed
 
-text {* Now that random variables are defined, we aim to show that a
+text \<open>Now that random variables are defined, we aim to show that a
   broad class of functions belongs to them. For a constant function
-  this is easy, as there are only two possible preimages. *}
+  this is easy, as there are only two possible preimages.\<close>
   (*measurability lemmata*)
 
 lemma assumes sigma: "sigma_algebra S"
@@ -120,7 +120,7 @@ proof (unfold measurable_def, rule, rule)
     moreover from sigma have "{} \<in> S" 
       by (simp only: sigma_algebra_def)
     ultimately show ?thesis by simp
-    txt{*\nopagebreak*}   
+    txt\<open>\nopagebreak\<close>   
   qed                     
 qed                       
 
@@ -128,8 +128,8 @@ theorem assumes ms: "measure_space M"
   shows const_rv: "(\<lambda>x. c) \<in> rv M" using ms
   by (auto simp only: measure_space_def const_measurable rv_def)
 
-text{*Characteristic functions produce four cases already, so the
-  details are glossed over.*}
+text\<open>Characteristic functions produce four cases already, so the
+  details are glossed over.\<close>
 
 lemma assumes a: "a \<in> S" and sigma: "sigma_algebra S" shows 
 char_measurable : "\<chi> a \<in> measurable S x"
@@ -141,11 +141,11 @@ char_measurable : "\<chi> a \<in> measurable S x"
       show ?thesis
       proof (cases "0 \<in> g") 
         case True
-        with `1 \<in> g` have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
+        with \<open>1 \<in> g\<close> have "\<chi> a -` g = UNIV" by (auto simp add: vimage_def characteristic_function_def)
         with sigma show ?thesis by (auto simp add: sigma_algebra_UNIV) 
       next
         case False 
-        with `1 \<in> g` have "\<chi> a -` g = a" 
+        with \<open>1 \<in> g\<close> have "\<chi> a -` g = a" 
           by (auto simp add: vimage_def characteristic_function_def)
         with a show ?thesis by simp
       qed
@@ -155,12 +155,12 @@ char_measurable : "\<chi> a \<in> measurable S x"
       show ?thesis
       proof (cases "0 \<in> g")
         case True
-        with `1 \<notin> g` have "\<chi> a -` g = -a" 
+        with \<open>1 \<notin> g\<close> have "\<chi> a -` g = -a" 
           by (auto simp add: vimage_def characteristic_function_def)
         with a sigma show ?thesis by (simp add: sigma_algebra_def)
       next
         case False
-        with `1 \<notin> g` have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
+        with \<open>1 \<notin> g\<close> have "\<chi> a -` g = {}" by (auto simp add: vimage_def characteristic_function_def)
         moreover from sigma have "{} \<in> S" by  (simp only: sigma_algebra_def)
         ultimately show ?thesis by simp
       qed
@@ -173,9 +173,9 @@ theorem assumes ms: "measure_space M" and A: "A \<in> measurable_sets M"
   shows char_rv: "\<chi> A \<in> rv M" using ms A
   by (auto simp only: measure_space_def char_measurable rv_def)  
 
-text {*For more intricate functions, the following application of the
+text \<open>For more intricate functions, the following application of the
   measurability lifting theorem from \ref{sec:measure-spaces} gives a
-  useful characterization.*}
+  useful characterization.\<close>
 
 theorem assumes ms: "measure_space M" shows 
   rv_le_iff: "(f \<in> rv M) = (\<forall>a. {w. f w \<le> a} \<in> measurable_sets M)"
@@ -205,14 +205,14 @@ proof -
       by (simp only: Borelsets_def measure_space_def measurable_lift)
     with ms show ?thesis 
       by (auto simp add: rv_def)
-   txt{*\nopagebreak*}                            
+   txt\<open>\nopagebreak\<close>                            
   qed
   ultimately show ?thesis by rule 
 qed 
 
  
-text {*The next four lemmata allow for a ring deduction that helps establish
-  this fact for all of the signs @{text "<"}, @{text ">"} and @{text "\<ge>"} as well.*}
+text \<open>The next four lemmata allow for a ring deduction that helps establish
+  this fact for all of the signs \<open><\<close>, \<open>>\<close> and \<open>\<ge>\<close> as well.\<close>
 
 lemma assumes sigma: "sigma_algebra A" and le: "\<forall>a. {w. f w \<le> a} \<in> A" 
   shows le_less: "\<forall>a. {w. f w < (a::real)} \<in> A"
@@ -359,10 +359,10 @@ theorem assumes ms: "measure_space M" shows
 qed(*>*)
 
 
-text {*As a first application we show that addition and multiplication
+text \<open>As a first application we show that addition and multiplication
   with constants preserve measurability. This is a precursor to the
   more general addition and multiplication theorems later on. You can see that
-  quite a few properties of the real numbers are employed.*}
+  quite a few properties of the real numbers are employed.\<close>
 
 lemma assumes g: "g \<in> rv M" 
   shows affine_rv: "(\<lambda>x. (a::real) + (g x) * b) \<in> rv M"
@@ -386,7 +386,7 @@ next
   have "\<forall>c. {w.  a + g w * b \<le> c} \<in> measurable_sets M"
   proof (cases "b<0")    
     case False
-    with `b \<noteq> 0` have "0<b" by arith
+    with \<open>b \<noteq> 0\<close> have "0<b" by arith
     hence "\<And>x c.  (g x * b  \<le> c - a) = (g x \<le> (c - a) / b)"  
       by (rule pos_le_divide_eq [THEN sym])
     with calc have "\<And>c. {w.  a + g w * b \<le> c} = {w. g w \<le> (c - a) / b}" 
@@ -414,8 +414,8 @@ next
     by (simp only: rv_le_iff [THEN sym])
 qed
   
-text {*For the general case of addition, we need one more set to be
-  measurable, namely @{text "{w. f w \<le> g w}"}. This follows from a
+text \<open>For the general case of addition, we need one more set to be
+  measurable, namely \<open>{w. f w \<le> g w}\<close>. This follows from a
   like statement for $<$. A dense and countable
   subset of the reals is needed to establish it. 
 
@@ -425,7 +425,7 @@ text {*For the general case of addition, we need one more set to be
   positive rational numbers contributed \cite{Fleuriot:2000:MNR}.}, so
   I built a theory with the necessary properties on my own. [Meanwhile
   Isabelle has proper rationals and SR's development of the rationals has been
-  moved to and merged with Isabelle's rationals.*}
+  moved to and merged with Isabelle's rationals.\<close>
 
 (*For this theorem, we need some properties of the rational numbers
 (or any other dense and countable set in the reals - so why not use
@@ -484,7 +484,7 @@ proof -
     by (simp only: sigma_algebra_def)
   also have "-{w. g w < f w} = ?a" 
     by auto
-txt{*\nopagebreak*}  
+txt\<open>\nopagebreak\<close>  
   finally show ?thesis .
 qed
 
@@ -517,8 +517,8 @@ proof -
   finally show ?thesis .
 qed(*>*)
 
-text {* With these tools, a short proof for the addition theorem is
-  possible. *}
+text \<open>With these tools, a short proof for the addition theorem is
+  possible.\<close>
 
 theorem assumes f: "f \<in> rv M" and g: "g \<in> rv M" 
   shows rv_plus_rv: "(\<lambda>w. f w + g w) \<in> rv M"
@@ -538,9 +538,9 @@ proof -
   thm rv_ge_iff
 qed
 
-text {*To show preservation of measurability by multiplication, it is
+text \<open>To show preservation of measurability by multiplication, it is
   expressed by addition and squaring. This requires a few technical
-  lemmata including the one stating measurability for squares, the proof of which is skipped.*}
+  lemmata including the one stating measurability for squares, the proof of which is skipped.\<close>
 
 (*This lemma should probably be in the RealPow Theory or a special Sqroot-Theory*)
 lemma pow2_le_abs: "(a\<^sup>2 \<le> b\<^sup>2) = (\<bar>a\<bar> \<le> \<bar>b::real\<bar>)"
@@ -605,7 +605,7 @@ lemma assumes f: "f \<in> rv M"
    
       next
         case False
-        with `\<not> a < 0` have "0<a" by (simp add: order_less_le)
+        with \<open>\<not> a < 0\<close> have "0<a" by (simp add: order_less_le)
         then have "\<exists> sqra. 0<sqra \<and> sqra\<^sup>2 = a" by (simp only: realpow_pos_nth2 numeral_2_eq_2)
         then have "\<And>w. \<exists> sqra. ?F a = {w. -sqra \<le> f w} \<inter> {w. f w \<le> sqra}"
           by (force simp only: pow2_le_abs abs_le_iff)
@@ -655,12 +655,12 @@ proof -
       by (rule affine_rv)
     ultimately show ?thesis 
       by (simp add: rv_plus_rv diff_conv_add_uminus del: add_uminus_conv_diff)
-  qed txt{*\nopagebreak*}
+  qed txt\<open>\nopagebreak\<close>
   ultimately show ?thesis by simp
 qed 
  
-text{*The case of substraction is an easy consequence of @{text rv_plus_rv} and
-  @{text rv_times_rv}.*}
+text\<open>The case of substraction is an easy consequence of \<open>rv_plus_rv\<close> and
+  \<open>rv_times_rv\<close>.\<close>
  
 theorem rv_minus_rv:
   assumes f: "f \<in> rv M" and g: "g \<in> rv M"
@@ -673,8 +673,8 @@ theorem rv_minus_rv:
   with f have "(\<lambda>t. f t +-g t) \<in> rv M" by (rule rv_plus_rv)
   thus ?thesis by simp
 qed(*>*)
-text{*Measurability for limit functions of
-    monotone convergent series is also surprisingly straightforward.*}
+text\<open>Measurability for limit functions of
+    monotone convergent series is also surprisingly straightforward.\<close>
 
 theorem assumes u: "\<And>n. u n \<in> rv M" and mon_conv: "u\<up>f"
   shows mon_conv_rv: "f \<in> rv M"
@@ -719,12 +719,12 @@ proof -
     by (simp add: rv_le_iff)
 qed
 
-text {* Before we end this chapter to start the formalization of the
+text \<open>Before we end this chapter to start the formalization of the
   integral proper, there is one more concept missing: The
   positive and negative part of a function. Their definition is quite intuitive,
   and some useful properties are given right away, including the fact
   that they are random variables, provided that their argument
-  functions are measurable. *}
+  functions are measurable.\<close>
 
 definition
   nonnegative:: "('a \<Rightarrow> ('b::{ord,zero})) \<Rightarrow> bool" where
@@ -887,10 +887,10 @@ theorem pp_np_rv_iff: "(f::'a \<Rightarrow> real) \<in> rv M = (pp f \<in> rv M 
 qed(*>*)
 
 
-text{*This completes the chapter about measurable functions. As we
+text\<open>This completes the chapter about measurable functions. As we
   will see in the next one, measurability is the prime condition on
   Lebesgue integrable functions; and the theorems and lemmata
   established here suffice --- at least in principle --- to show it holds for any
-  function that is to be integrated there.*}
+  function that is to be integrated there.\<close>
 
 end

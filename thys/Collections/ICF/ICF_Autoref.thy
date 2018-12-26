@@ -1,4 +1,4 @@
-section {* ICF-setup for Automatic Refinement *}
+section \<open>ICF-setup for Automatic Refinement\<close>
 theory ICF_Autoref
 imports 
   ICF_Refine_Monadic 
@@ -6,7 +6,7 @@ imports
   "../GenCF/Intf/Intf_Map"
 begin
 
-subsection {* Unique Priority Queue *}
+subsection \<open>Unique Priority Queue\<close>
 consts i_prio :: "interface \<Rightarrow> interface \<Rightarrow> interface"
 definition [simp]: "op_uprio_empty \<equiv> Map.empty"
 definition [simp]: "op_uprio_is_empty x \<equiv> x = Map.empty"
@@ -180,7 +180,7 @@ end
 *)
 
 
-setup {* Revert_Abbrev.revert_abbrev "Autoref_Binding_ICF.*.rel" *}
+setup \<open>Revert_Abbrev.revert_abbrev "Autoref_Binding_ICF.*.rel"\<close>
 
 
 

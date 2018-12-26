@@ -14,8 +14,8 @@ lemma funpow_rec: "f ^^ n = (if n = 0 then id else f \<circ> f ^^ (n - 1))"
   by (induct n) auto
 
 text \<open>
-The @{text f} function captures the semantics of McCarthy's 91 function. The
-@{text g} function is a tail-recursive implementation of the function, whose
+The \<open>f\<close> function captures the semantics of McCarthy's 91 function. The
+\<open>g\<close> function is a tail-recursive implementation of the function, whose
 termination is established using the multiset order. The definitions follow
 Dershowitz and Manna.
 \<close>

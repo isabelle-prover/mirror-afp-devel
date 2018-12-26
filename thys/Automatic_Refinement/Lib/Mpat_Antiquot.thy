@@ -1,4 +1,4 @@
-section {* Matching-Pattern Antiquotation *}
+section \<open>Matching-Pattern Antiquotation\<close>
 theory Mpat_Antiquot
 imports Refine_Util_Bootstrap1
 begin
@@ -28,7 +28,7 @@ consts
   mpaq_TVar :: "string*nat \<Rightarrow> sort \<Rightarrow> typ_struct"
   mpaq_Type :: "string \<Rightarrow> typ_struct list \<Rightarrow> typ_struct"
 
-ML {*
+ML \<open>
   (*
     Antiquotation to generate a term-pattern in ML. 
     Features:
@@ -219,15 +219,15 @@ ML {*
   in
     val mpat_antiquot = read >> process
   end
-*}
+\<close>
 
-setup {*
+setup \<open>
   ML_Antiquotation.inline @{binding "mpat"} mpat_antiquot
-*}
+\<close>
 
-subsection {* Examples *}
+subsection \<open>Examples\<close>
 
-ML_val {*
+ML_val \<open>
   fun dest_pair_singleton @{mpat "{(?a,_)}"} = (a)
     | dest_pair_singleton t = raise TERM ("dest_pair_singleton",[t])
 
@@ -247,7 +247,7 @@ ML_val {*
   | foo t = raise TERM ("foo",[t])
 
 
-*}
+\<close>
 
 hide_type (open) term_struct typ_struct sort
 

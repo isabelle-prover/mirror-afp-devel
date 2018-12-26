@@ -1,14 +1,14 @@
-section {* The case $y = new\_last$ *}
+section \<open>The case $y = new\_last$\<close>
 
 theory Y_eq_new_last imports MengerInduction begin
 
-text {*
+text \<open>
   We may assume @{term "y \<noteq> v1"} now because @{thm ProofStepInduct_NonTrivial_P_k_pre.y_eq_v1_solves}
   shows that @{term "y = v1"} already gives us @{term "Suc sep_size"} many disjoint paths.
 
   We also assume that we have chosen the previous paths optimally in the sense that the distance
   from @{term new_last} to @{term v1} is minimal.
-*}
+\<close>
 
 locale ProofStepInduct_y_eq_new_last = ProofStepInduct_NonTrivial_P_k_pre +
   assumes y_neq_v1: "y \<noteq> v1" and y_eq_new_last: "y = new_last"
@@ -17,7 +17,7 @@ locale ProofStepInduct_y_eq_new_last = ProofStepInduct_NonTrivial_P_k_pre +
             \<Longrightarrow> H.distance (last P_new) v1 \<le> H.distance (last P_new') v1"
 begin
 
-text {* Let @{term R} be a shortest path from @{term new_last} to @{term v1}. *}
+text \<open>Let @{term R} be a shortest path from @{term new_last} to @{term v1}.\<close>
 definition R where "R \<equiv>
   SOME R. new_last \<leadsto>R\<leadsto>\<^bsub>H\<^esub> v1 \<and> (\<forall>R'. new_last \<leadsto>R'\<leadsto>\<^bsub>H\<^esub> v1 \<longrightarrow> length R \<le> length R')"
 
@@ -47,10 +47,10 @@ lemma R_decomp_exists:
       and "\<And>z'. z' \<in> set R_pre \<Longrightarrow> \<not>Q.hitting_paths z'"
   using R_hits_Q split_list_first_prop[of R Q.hitting_paths] by blast
 
-text {*
+text \<open>
   We open an anonymous context in order to hide all but the final lemma.  This also gives us the
   decomposition of @{term R} whose existence we established above.
-*}
+\<close>
 
 context fixes R_pre z R_post
   assumes R_decomp: "R = R_pre @ z # R_post"
@@ -92,7 +92,7 @@ begin
     ultimately show "\<not>Q.hitting_paths v" unfolding R'_walk_def using R'_walk_def by auto
   qed
 
-  text {*
+  text \<open>
     The original proof goes like this:
     ``Let @{term z} be the first vertex of @{term R} on some path in @{term Q}.
     Then the distance in @{term "H"} from @{term z} to @{term v1} is less than the distance
@@ -105,7 +105,7 @@ begin
     @{term P_k_pre} and @{term R_pre} could intersect.
 
     So we use @{thm walk_to_path} to transform @{term R'_walk} into a path @{term R'}.
-  *}
+\<close>
   private definition R' where
     "R' \<equiv> SOME R'. hd (tl R'_walk) \<leadsto>R'\<leadsto> z \<and> set R' \<subseteq> set (tl R'_walk)"
 

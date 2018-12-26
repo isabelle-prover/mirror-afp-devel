@@ -2,21 +2,21 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Specification of Maps} *}
+section \<open>\isaheader{Specification of Maps}\<close>
 theory MapSpec
 imports ICF_Spec_Base
 begin
-text_raw{*\label{thy:MapSpec}*}
+text_raw\<open>\label{thy:MapSpec}\<close>
 
 (*@intf Map
   @abstype 'k\<rightharpoonup>'v
   This interface specifies maps from keys to values.
 *)
 
-text {*
+text \<open>
   This theory specifies map operations by means of mapping to
   HOL's map type, i.e. @{typ "'k \<rightharpoonup> 'v"}.
-*}
+\<close>
 
 type_synonym ('k,'v,'s) map_\<alpha> = "'s \<Rightarrow> 'k \<rightharpoonup> 'v"
 type_synonym ('k,'v,'s) map_invar = "'s \<Rightarrow> bool"
@@ -149,13 +149,13 @@ locale map_size_abort = finite_map +
   assumes size_abort_correct: "invar s \<Longrightarrow> size_abort m s = min m (card (dom (\<alpha> s)))"
 
 subsubsection "Iterators"
-text {*
+text \<open>
   An iteration combinator over a map applies a function to a state for each 
   map entry, in arbitrary order.
   Proving of properties is done by invariant reasoning.
   An iterator can also contain a continuation condition. Iteration is
   interrupted if the condition becomes false.
-*}
+\<close>
 
 (* Deprecated *)
 (*locale map_iteratei = finite_map +
@@ -511,8 +511,8 @@ locale list_to_map = map +
 
 subsubsection "Image of a Map"
 
-text {* This locale allows to apply a function to both the keys and
- the values of a map while at the same time filtering entries. *}
+text \<open>This locale allows to apply a function to both the keys and
+ the values of a map while at the same time filtering entries.\<close>
 
 definition transforms_to_unique_keys ::
   "('u1 \<rightharpoonup> 'v1) \<Rightarrow> ('u1 \<times> 'v1 \<rightharpoonup> ('u2 \<times> 'v2)) \<Rightarrow> bool"
@@ -566,8 +566,8 @@ begin
 end
     
 
-text {* Most of the time the mapping function is only applied to values. Then,
-  the precondition disapears.*}
+text \<open>Most of the time the mapping function is only applied to values. Then,
+  the precondition disapears.\<close>
 type_synonym ('k,'v1,'m1,'k2,'v2,'m2) map_value_image_filter  
   = "('k \<Rightarrow> 'v1 \<Rightarrow> 'v2 option) \<Rightarrow> 'm1 \<Rightarrow> 'm2"
 
@@ -657,7 +657,7 @@ subsection "Ordered Maps"
   locale ordered_finite_map = finite_map \<alpha> invar + ordered_map \<alpha> invar
     for \<alpha> :: "'s \<Rightarrow> ('u::linorder) \<rightharpoonup> 'v" and invar
 
-subsubsection {* Ordered Iteration *}
+subsubsection \<open>Ordered Iteration\<close>
   (* Deprecated *)
 (*
   locale map_iterateoi = ordered_finite_map \<alpha> invar
@@ -922,7 +922,7 @@ begin
 
 end
 
-subsubsection {* Minimal and Maximal Elements *}
+subsubsection \<open>Minimal and Maximal Elements\<close>
 
   type_synonym ('k,'v,'s) map_min 
     = "'s \<Rightarrow> ('k \<times> 'v \<Rightarrow> bool) \<Rightarrow> ('k \<times> 'v) option"
@@ -945,7 +945,7 @@ subsubsection {* Minimal and Maximal Elements *}
      show thesis 
        apply (rule that[OF KV])
        apply (clarify)
-       apply (drule min_correct(2)[OF `invar s`])
+       apply (drule min_correct(2)[OF \<open>invar s\<close>])
        apply (simp add: KV(1))
        done
    qed
@@ -996,7 +996,7 @@ subsubsection {* Minimal and Maximal Elements *}
      show thesis 
        apply (rule that[OF KV])
        apply (clarify)
-       apply (drule max_correct(2)[OF `invar s`])
+       apply (drule max_correct(2)[OF \<open>invar s\<close>])
        apply (simp add: KV(1))
        done
    qed

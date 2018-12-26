@@ -1,12 +1,12 @@
-section {* Interface for Lists *}
+section \<open>Interface for Lists\<close>
 theory Imp_List_Spec
 imports "../Sep_Main"
 begin
-text {*
+text \<open>
   This file specifies an abstract interface for list data structures. It can
   be implemented by concrete list data structures, as demonstrated in the open
   and circular singly linked list examples.
-*}
+\<close>
 
 locale imp_list =
   fixes is_list :: "'a list \<Rightarrow> 'l \<Rightarrow> assn"

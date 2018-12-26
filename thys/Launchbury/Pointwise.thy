@@ -1,8 +1,8 @@
 theory Pointwise imports Main begin
 
-text {*
+text \<open>
 Lifting a relation to a function.
-*}
+\<close>
 
 definition pointwise where "pointwise P m m' = (\<forall> x. P (m x) (m' x))"
 

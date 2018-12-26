@@ -30,10 +30,10 @@ proof -
         ultimately have "\<Psi> \<rhd> \<tau>.(P) \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakBisim)> P"
           by(rule tauLaw1StatImpLeft)
       }
-      with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by auto 
+      with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?thesis by auto 
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by auto
       {
         fix \<Psi> P
         have "\<Psi> \<rhd> P \<lessapprox><weakBisim> P" using weakBisimReflexive
@@ -45,7 +45,7 @@ proof -
           by(auto dest: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> P \<lessapprox>\<^sub>w<( ?X \<union> ?Y \<union> weakBisim)> \<tau>.(P)" by(rule weakStatImpWeakenStatImp)
       }
-      with `(\<Psi>, P, Q) \<in> ?Y` show ?thesis by auto
+      with \<open>(\<Psi>, P, Q) \<in> ?Y\<close> show ?thesis by auto
     qed
   next
     case(cSim \<Psi> P Q)
@@ -74,7 +74,7 @@ proof -
       {
         fix P
         have "\<Psi> \<rhd> P \<leadsto><?Z> P" using weakenBisimEqWeakBisim by(blast intro: weakSimReflexive weakBisimReflexive bisimReflexive)
-        moreover note `eqvt ?Z`
+        moreover note \<open>eqvt ?Z\<close>
         moreover have "\<And>\<Psi> P Q R. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?Z"
           by(blast intro: bisimTransitive)
         ultimately have "\<Psi> \<rhd> \<tau>.(P) \<leadsto><?Z> P"
@@ -83,13 +83,13 @@ proof -
           by simp (blast intro: statEqWeakBisim statEqBisim)
         ultimately have "\<Psi> \<rhd> \<tau>.(P) \<leadsto>\<^sub>w<?Z> P" by(rule weakSimWeakenSim)
       }
-      with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by auto
+      with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?thesis by auto
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by auto
       moreover {
         fix P
-        note `eqvt ?Z`  
+        note \<open>eqvt ?Z\<close>  
         moreover have "(\<Psi>, P, P) \<in> ?Z" by simp (blast intro: weakBisimReflexive bisimReflexive)
         moreover have "\<And>\<Psi> P Q R. \<lbrakk>(\<Psi>, P, Q) \<in> ?Z; \<Psi> \<rhd> Q \<sim> R\<rbrakk> \<Longrightarrow> (\<Psi>, P, R) \<in> ?Z"
           by(blast intro: bisimTransitive)
@@ -136,7 +136,7 @@ proof -
           by(fastforce intro: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>(\<tau>.(P)) \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>P" by(rule weakStatImpWeakenStatImp)
       }
-      with `(\<Psi>, P, Q) \<in> ?X` show ?thesis by blast
+      with \<open>(\<Psi>, P, Q) \<in> ?X\<close> show ?thesis by blast
     next
       case False
       {
@@ -147,7 +147,7 @@ proof -
           by(fastforce intro: statEqWeakBisim)
         ultimately have "\<Psi> \<rhd> \<alpha>\<cdot>P \<lessapprox>\<^sub>w<(?X \<union> ?Y \<union> weakenBisim)> \<alpha>\<cdot>(\<tau>.(P))" by(rule weakStatImpWeakenStatImp)
       }
-      moreover from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
+      moreover from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by blast
       ultimately show ?thesis by auto
     qed
   next
@@ -173,10 +173,10 @@ proof -
     show ?case
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
-      note `(\<Psi>, P, Q) \<in> ?X`
+      note \<open>(\<Psi>, P, Q) \<in> ?X\<close>
       moreover {
         fix \<Psi> P \<alpha>
-        note `eqvt ?Z`
+        note \<open>eqvt ?Z\<close>
         moreover have "(\<Psi>, P, P) \<in> ?Z" using weakenBisimEqWeakBisim by(blast intro: weakBisimReflexive bisimReflexive)
         moreover have "\<And>xvec Tvec. length xvec = length Tvec \<Longrightarrow> (\<Psi>, P[xvec::=Tvec], P[xvec::=Tvec]) \<in> ?Z"
            using weakenBisimEqWeakBisim by(blast intro: weakBisimReflexive bisimReflexive)
@@ -189,10 +189,10 @@ proof -
       ultimately show ?thesis by auto
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by blast
       moreover {
         fix \<Psi> P \<alpha>
-        note `eqvt ?Z`
+        note \<open>eqvt ?Z\<close>
         moreover have "\<And>\<Psi> xvec Tvec. length xvec=length Tvec \<Longrightarrow> (\<Psi>, P[xvec::=Tvec], \<tau>.(P[xvec::=Tvec])) \<in> ?Z"
           by simp (blast intro: weakBisimE(4) bisimReflexive tauLaw1)
         moreover have "\<And>\<Psi> P Q R S. \<lbrakk>\<Psi> \<rhd> P \<sim> Q; (\<Psi>, Q, R) \<in> ?Z; \<Psi> \<rhd> R \<sim> S\<rbrakk> \<Longrightarrow> (\<Psi>, P, S) \<in> ?Z" by(blast intro: bisimTransitive)
@@ -249,15 +249,15 @@ proof(induct rule: weakCongI)
     case(pInput M yvec N)
     obtain p where "set p \<subseteq> set yvec \<times> set(p \<bullet> yvec)" and "(p \<bullet> yvec) \<sharp>* N" and "(p \<bullet> yvec) \<sharp>* P" and "(p \<bullet> yvec) \<sharp>* \<sigma>"
       by(rule_tac xvec=yvec and c="(N, P, \<sigma>)" in name_list_avoiding) auto
-    thus ?case using `wellFormedSubst \<sigma>` tauLaw3PsiCong[where \<alpha>="pInput (substTerm.seqSubst M \<sigma>) (p \<bullet> yvec) (substTerm.seqSubst (p \<bullet> N) \<sigma>)"]
+    thus ?case using \<open>wellFormedSubst \<sigma>\<close> tauLaw3PsiCong[where \<alpha>="pInput (substTerm.seqSubst M \<sigma>) (p \<bullet> yvec) (substTerm.seqSubst (p \<bullet> N) \<sigma>)"]
       by(simp add: inputChainAlpha' eqvts)
   next
     case(pOutput M N)
-    thus ?case using  `wellFormedSubst \<sigma>` tauLaw3PsiCong[where \<alpha>="pOutput (substTerm.seqSubst M \<sigma>) (substTerm.seqSubst N \<sigma>)"]
+    thus ?case using  \<open>wellFormedSubst \<sigma>\<close> tauLaw3PsiCong[where \<alpha>="pOutput (substTerm.seqSubst M \<sigma>) (substTerm.seqSubst N \<sigma>)"]
       by simp
   next
     case pTau
-    thus ?case using  `wellFormedSubst \<sigma>` tauLaw3PsiCong[where \<alpha>="pTau"]
+    thus ?case using  \<open>wellFormedSubst \<sigma>\<close> tauLaw3PsiCong[where \<alpha>="pTau"]
       by simp
   qed
 qed

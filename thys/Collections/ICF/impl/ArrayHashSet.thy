@@ -35,7 +35,7 @@ interpretation ahs: StdSet_no_invar ahs_ops
   by (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "ahs"*}
+setup \<open>ICF_Tools.revert_abbrevs "ahs"\<close>
 
 lemmas ahs_it_to_it_map_code_unfold[code_unfold] = 
   it_to_it_map_fold'[OF pi_ahm]

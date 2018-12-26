@@ -7,14 +7,14 @@ theory Native_Word_Test_Emu imports
   Code_Target_Bits_Int
 begin
 
-section {* Test cases for emulation of native words *}
+section \<open>Test cases for emulation of native words\<close>
 
-subsection {* Tests for @{typ uint16} *}
+subsection \<open>Tests for @{typ uint16}\<close>
 
-text {*
+text \<open>
   Test that @{typ uint16} is emulated for PolyML and OCaml via @{typ "16 word"} 
   if @{theory Native_Word.Code_Target_Bits_Int} is imported.
-*}
+\<close>
 
 definition test_uint16_emulation :: bool where
   "test_uint16_emulation \<longleftrightarrow> (0xFFFFF - 0x1000 = (0xEFFF :: uint16))"
@@ -29,22 +29,22 @@ have test_uint16_emulation by normalization
 have test_uint16_emulation by code_simp
 end
 
-ML_val {* 
+ML_val \<open>
   val true = @{code test_uint16};
   val true = @{code test_uint16_emulation};
-*}
+\<close>
 
 lemma "x AND y = x OR (y :: uint16)"
 quickcheck[random, expect=counterexample]
 quickcheck[exhaustive, expect=counterexample]
 oops
 
-subsection {* Tests for @{typ uint8} *}
+subsection \<open>Tests for @{typ uint8}\<close>
 
-text {*
+text \<open>
   Test that @{typ uint8} is emulated for OCaml via @{typ "8 word"} 
   if @{theory Native_Word.Code_Target_Bits_Int} is imported.
-*}
+\<close>
 
 definition test_uint8_emulation :: bool where
   "test_uint8_emulation \<longleftrightarrow> (0xFFF - 0x10 = (0xEF :: uint8))"

@@ -1057,9 +1057,9 @@ ML \<open>fun reify_floatariths_tac ctxt i =
   CONVERSION (preproc_form_conv ctxt) i
   THEN REPEAT_ALL_NEW (fn i => resolve_tac ctxt (interpret_floatariths_congs ctxt) i) i\<close>
 
-method_setup reify_floatariths = {*
+method_setup reify_floatariths = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (reify_floatariths_tac ctxt))
-  *} "reification of floatariths expression"
+\<close> "reification of floatariths expression"
 
 schematic_goal reify_example:
   "[xs!i * xs!j, xs!i + xs!j powr (sin (xs!0)), xs!k + (2 / 3 * xs!i * xs!j)] = interpret_floatariths ?fas xs"
@@ -1067,9 +1067,9 @@ schematic_goal reify_example:
 
 ML \<open>fun interpret_floatariths_step_tac ctxt i = resolve_tac ctxt (interpret_floatariths_congs ctxt) i\<close>
 
-method_setup reify_floatariths_step = {*
+method_setup reify_floatariths_step = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (interpret_floatariths_step_tac ctxt))
-  *} "reification of floatariths expression (step)"
+\<close> "reification of floatariths expression (step)"
 
 lemma eucl_of_list_interpret_floatariths_cong:
   fixes y::"'a::executable_euclidean_space"

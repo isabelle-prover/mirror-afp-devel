@@ -6,7 +6,7 @@ theory Native_Word_Test_MLton imports
   Native_Word_Test
 begin
 
-section {* Test with MLton *}
+section \<open>Test with MLton\<close>
 
 test_code
   test_uint64 "test_uint64' = 0x12"
@@ -19,10 +19,10 @@ test_code
   test_casts_uint''
 in MLton
 
-text {* MLton provides \texttt{Word16} and \texttt{Word64} structures. To test them in the
-  SML\_word target, we have to associate a driver with the combination. *}
+text \<open>MLton provides \texttt{Word16} and \texttt{Word64} structures. To test them in the
+  SML\_word target, we have to associate a driver with the combination.\<close>
 
-setup {* Code_Test.add_driver ("MLton_word", (Code_Test.evaluate_in_mlton, "SML_word")) *}
+setup \<open>Code_Test.add_driver ("MLton_word", (Code_Test.evaluate_in_mlton, "SML_word"))\<close>
 
 test_code
   test_uint64 "test_uint64' = 0x12"

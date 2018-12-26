@@ -9,15 +9,15 @@ theory SetCategory
 imports Category Functor
 begin
 
-  text{*
-    This theory defines a locale @{text set_category} that axiomatizes the notion
+  text\<open>
+    This theory defines a locale \<open>set_category\<close> that axiomatizes the notion
     ``category of all @{typ 'a}-sets and functions between them'' in the context of HOL.
     A primary reason for doing this is to make it possible to prove results
     (such as the Yoneda Lemma) that use such categories without having to commit to a
     particular element type @{typ 'a} and without having the results depend on the
     concrete details of a particular construction.
     The axiomatization given here is categorical, in the sense that if categories
-    @{term S} and @{term S'} each interpret the @{text set_category} locale,
+    @{term S} and @{term S'} each interpret the \<open>set_category\<close> locale,
     then a bijection between the sets of terminal objects of @{term S} and @{term S'}
     extends to an isomorphism of @{term S} and @{term S'} as categories.
 
@@ -32,22 +32,22 @@ begin
     choice of such a correspondence, we can then associate with each object @{term a}
     of @{term S} a set @{term "set a"} that consists of all terminal objects @{term t}
     that correspond to some point @{term x} of @{term a}.  Each arrow @{term f}
-    then induces a function @{text "Fun f \<in> set (dom f) \<rightarrow> set (cod f)"},
+    then induces a function \<open>Fun f \<in> set (dom f) \<rightarrow> set (cod f)\<close>,
     defined on terminal objects of @{term S} by passing to points of @{term "dom f"},
     composing with @{term f}, then passing back from points of @{term "cod f"}
     to terminal objects.  Once we can associate a set with each object of @{term S}
     and a function with each arrow, we can force @{term S} to be isomorphic to the
     category of @{typ 'a}-sets by imposing suitable extensionality and completeness axioms.
-  *}
+\<close>
  
   section "Some Lemmas about Restriction"
 
-    text{*
-      The development of the @{text set_category} locale makes heavy use of the
+    text\<open>
+      The development of the \<open>set_category\<close> locale makes heavy use of the
       theory @{theory "HOL-Library.FuncSet"}.  However, in some cases, I found that
       @{theory "HOL-Library.FuncSet"} did not provide results about restriction in the form that was
       most useful to me. I used the following additional results in various places.
-    *}
+\<close>
 
   (* This variant of FuncSet.restrict_ext is sometimes useful. *)
 
@@ -71,15 +71,15 @@ begin
 
   section "Set Categories"
 
-  text{*
-    We first define the locale @{text set_category_data}, which sets out the basic
-    data and definitions for the @{text set_category} locale, without imposing any conditions
+  text\<open>
+    We first define the locale \<open>set_category_data\<close>, which sets out the basic
+    data and definitions for the \<open>set_category\<close> locale, without imposing any conditions
     other than that @{term S} is a category and that @{term img} is a function defined
     on the arrow type of @{term S}.  The function @{term img} should be thought of
     as a mapping that takes a point @{term "x \<in> hom unity a"} to a corresponding
     terminal object @{term "img x"}.  Eventually, assumptions will be introduced so
     that this is in fact the case.
-  *}
+\<close>
 
   locale set_category_data = category S
   for S :: "'s comp"      (infixr "\<cdot>" 55)
@@ -88,38 +88,38 @@ begin
 
     notation in_hom       ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
-    text{*
+    text\<open>
       Call the set of all terminal objects of S the ``universe''.
-    *}
+\<close>
     abbreviation Univ :: "'s set"
     where "Univ \<equiv> Collect terminal"
   
-    text{*
+    text\<open>
       Choose an arbitrary element of the universe and call it @{term unity}.
-    *}
+\<close>
     definition unity :: 's
     where "unity = (SOME t. terminal t)"
     
-    text{*
+    text\<open>
       Each object @{term a} determines a subset @{term "set a"} of the universe,
       consisting of all those terminal objects @{term t} such that @{term "t = img x"}
       for some @{term "x \<in> hom unity a"}.
-    *}
+\<close>
     definition set :: "'s \<Rightarrow> 's set"
     where "set a = img ` hom unity a"
 
-    text{*
+    text\<open>
       The inverse of the map @{term set} is a map @{term mkIde} that takes each subset
       of the universe to an identity of @{term[source=true] S}.
-    *}
+\<close>
     definition mkIde :: "'s set \<Rightarrow> 's"
     where "mkIde A = (if A \<subseteq> Univ then inv_into (Collect ide) set A else null)"
 
   end
 
-  text{*
-    Next, we define a locale @{text set_category_given_img} that augments the
-    @{text set_category_data} locale with assumptions that serve to define
+  text\<open>
+    Next, we define a locale \<open>set_category_given_img\<close> that augments the
+    \<open>set_category_data\<close> locale with assumptions that serve to define
     the notion of a set category with a chosen correspondence between points
     and terminal objects.  The assumptions require that the universe be nonempty
     (so that the definition of @{term unity} makes sense), that the map
@@ -131,7 +131,7 @@ begin
     and for any objects @{term a} and @{term b} and function
     @{term "F \<in> hom unity a \<rightarrow> hom unity b"} there is an arrow @{term "f \<in> hom a b"}
     whose action under the composition of @{term S} coincides with the function @{term F}.
-  *}
+\<close>
     
   locale set_category_given_img = set_category_data S img
   for S :: "'s comp"      (infixr "\<cdot>" 55)
@@ -147,11 +147,11 @@ begin
                           \<Longrightarrow> \<exists>f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<longrightarrow> f \<cdot> x = F x)"
   begin
   
-    text{*
+    text\<open>
       Each arrow @{term "f \<in> hom a b"} determines a function @{term "Fun f \<in> Univ \<rightarrow> Univ"},
       by passing from @{term Univ} to @{term "hom a unity"}, composing with @{term f},
       then passing back to @{term Univ}.
-    *}
+\<close>
 
     definition Fun :: "'s \<Rightarrow> 's \<Rightarrow> 's"
     where "Fun f = restrict (img o S f o inv_into (hom unity (dom f)) img) (set (dom f))"
@@ -166,9 +166,9 @@ begin
         using assms Fun_def inj_img set_def by simp
     qed
       
-    text{*
+    text\<open>
       Parallel arrows that determine the same function are equal.
-    *}
+\<close>
 
     lemma arr_eqI:
     assumes "par f f'" and "Fun f = Fun f'"
@@ -192,10 +192,10 @@ begin
     shows "inj_on set (Collect ide)"
       using extensional_set by (intro inj_onI, auto)
       
-    text{*
+    text\<open>
       The mapping @{term mkIde}, which takes subsets of the universe to identities,
       and @{term set}, which takes identities to subsets of the universe, are inverses.
-    *}
+\<close>
 
     lemma mkIde_set [simp]:
     assumes "ide a"
@@ -227,10 +227,10 @@ begin
     shows "cod (mkIde A) = mkIde A"
       using assms ide_mkIde by simp
       
-    text{*
+    text\<open>
       Each arrow @{term f} determines an extensional function from
       @{term "set (dom f)"} to @{term "set (cod f)"}.
-    *}
+\<close>
 
     lemma Fun_mapsto:
     assumes "arr f"
@@ -249,9 +249,9 @@ begin
       qed
     qed
     
-    text{*
+    text\<open>
       Identities of @{term[source=true] S} correspond to restrictions of the identity function.
-    *}
+\<close>
 
     lemma Fun_ide [simp]:
     assumes "ide a"
@@ -263,9 +263,9 @@ begin
     shows "Fun (mkIde A) = restrict (\<lambda>x. x) A"
       using assms by simp
     
-    text{*
+    text\<open>
       Composition in @{term S} corresponds to extensional function composition.
-    *}
+\<close>
 
     lemma Fun_comp [simp]:
     assumes "seq g f"
@@ -307,20 +307,20 @@ begin
       thus ?thesis using Fun_def by auto
     qed
 
-    text{*
+    text\<open>
       The constructor @{term mkArr} is used to obtain an arrow given subsets
       @{term A} and @{term B} of the universe and a function @{term "F \<in> A \<rightarrow> B"}.
-    *}
+\<close>
     
     definition mkArr :: "'s set \<Rightarrow> 's set \<Rightarrow> ('s \<Rightarrow> 's) \<Rightarrow> 's"
     where "mkArr A B F = (if A \<subseteq> Univ \<and> B \<subseteq> Univ \<and> F \<in> A \<rightarrow> B
                           then (THE f. f \<in> hom (mkIde A) (mkIde B) \<and> Fun f = restrict F A)
                           else null)"
 
-    text{*
+    text\<open>
       Each function @{term "F \<in> set a \<rightarrow> set b"} determines a unique arrow @{term "f \<in> hom a b"},
       such that @{term "Fun f"} is the restriction of @{term F} to @{term "set a"}.
-    *}
+\<close>
 
     lemma fun_complete:
     assumes "ide a" and "ide b" and "F \<in> set a \<rightarrow> set b"
@@ -388,7 +388,7 @@ begin
             theI' [of "\<lambda>f. f \<in> hom (mkIde A) (mkIde B) \<and> Fun f = restrict F A"]
       by simp
 
-    text{*
+    text\<open>
       The ``only if'' direction of the next lemma can be achieved only if there exists a
       non-arrow element of type @{typ 's}, which can be used as the value of @{term "mkArr A B F"}
       in cases where @{term "F \<notin> A \<rightarrow> B"}.  Nevertheless, it is essential to have this,
@@ -398,10 +398,10 @@ begin
       This is is usually highly inconvenient and it makes the theory very weak and almost
       unusable in practice.  The observation that having a non-arrow value of type @{typ 's}
       solves this problem is ultimately what led me to incorporate @{term null} first into the
-      definition of the @{text set_category} locale and then, ultimately, into the definition
-      of the @{text category} locale.  I believe this idea is critical to the usability of the
+      definition of the \<open>set_category\<close> locale and then, ultimately, into the definition
+      of the \<open>category\<close> locale.  I believe this idea is critical to the usability of the
       entire development.
-    *}
+\<close>
 
     (* TODO: This gets used as an introduction rule, but the conjunction on the right-hand side
        is not very convenient. *)
@@ -466,10 +466,10 @@ begin
     shows "Fun (mkArr A B F) = restrict F A"
       using assms Fun_mkArr' by auto
 
-    text{*
+    text\<open>
       The following provides the basic technique for showing that arrows
       constructed using @{term mkArr} are equal.
-    *}
+\<close>
 
     lemma mkArr_eqI [intro]:
     assumes "arr (mkArr A B F)"
@@ -478,10 +478,10 @@ begin
       using assms arr_mkArr Fun_mkArr
       by (intro arr_eqI, auto simp add: Pi_iff)
 
-    text{*
+    text\<open>
       This version avoids trivial proof obligations when the domain and codomain
       sets are identical from the context.
-    *}
+\<close>
     
     lemma mkArr_eqI' [intro]:
     assumes "arr (mkArr A B F)" and "\<And>x. x \<in> A \<Longrightarrow> F x = F' x"
@@ -515,14 +515,14 @@ begin
         using 1 2 by fastforce
     qed
     
-    text{*
+    text\<open>
       The locale assumption @{prop stable_img} forces @{term "t \<in> set t"} in case
       @{term t} is a terminal object.  This is very convenient, as it results in the
       characterization of terminal objects as identities @{term t} for which
       @{term "set t = {t}"}.  However, it is not absolutely necessary to have this.
       The following weaker characterization of terminal objects can be proved without
       the @{prop stable_img} assumption.
-    *}
+\<close>
 
     lemma terminal_char1:
     shows "terminal t \<longleftrightarrow> ide t \<and> (\<exists>!x. x \<in> set t)"
@@ -588,10 +588,10 @@ begin
       ultimately show ?thesis by blast
     qed
     
-    text{*
+    text\<open>
       As stated above, in the presence of the @{prop stable_img} assumption we have
       the following stronger characterization of terminal objects.
-    *}
+\<close>
 
     lemma terminal_char2:
     shows "terminal t \<longleftrightarrow> ide t \<and> set t = {t}"
@@ -614,11 +614,11 @@ begin
 
   end
 
-  text{*
-    At last, we define the @{text set_category} locale by existentially quantifying
+  text\<open>
+    At last, we define the \<open>set_category\<close> locale by existentially quantifying
     out the choice of a particular @{term img} map.  We need to know that such a map
     exists, but it does not matter which one we choose.
-  *}
+\<close>
 
   locale set_category = category S
   for S :: "'s comp"      (infixr "\<cdot>" 55) +
@@ -643,10 +643,10 @@ begin
   context set_category
   begin
 
-    text{*
+    text\<open>
       The arbitrary choice of @{term img} induces a system of inclusions,
       which are arrows corresponding to inclusions of subsets.
-    *}
+\<close>
 
     definition incl :: "'s \<Rightarrow> bool"
     where "incl f = (arr f \<and> set (dom f) \<subseteq> set (cod f) \<and>
@@ -684,12 +684,12 @@ begin
 
   section "Categoricity"
 
-  text{*
-    In this section we show that the @{text set_category} locale completely characterizes
+  text\<open>
+    In this section we show that the \<open>set_category\<close> locale completely characterizes
     the structure of its interpretations as categories, in the sense that for any two
     interpretations @{term S} and @{term S'}, a bijection between the universe of @{term S}
     and the universe of @{term S'} extends to an isomorphism of @{term S} and @{term S'}.
-  *}
+\<close>
   
   locale two_set_categories_bij_betw_Univ =
     S: set_category S +
@@ -726,10 +726,10 @@ begin
     shows "\<phi> ` \<psi> ` A' = A'"
       using assms bij_\<phi> by (simp add: bij_betw_def image_inv_into_cancel)
   
-    text{*
+    text\<open>
       The object map @{term \<Phi>o} of a functor from @{term[source=true] S}
       to @{term[source=true] S'}.
-    *}
+\<close>
 
     definition \<Phi>o
     where "\<Phi>o = (\<lambda>a \<in> Collect S.ide. S'.mkIde (\<phi> ` S.set a))"
@@ -751,12 +751,12 @@ begin
       unfolding \<Phi>o_def
       by (metis (mono_tags, lifting) mem_Collect_eq)
       
-    text{*
+    text\<open>
       The map @{term \<Phi>a} assigns to each arrow @{term f} of @{term[source=true] S} the function on
       the universe of @{term[source=true] S'} that is the same as the function induced by @{term f}
       on the universe of @{term[source=true] S}, up to the bijection @{term \<phi>} between the two
       universes.
-    *}
+\<close>
 
     definition \<Phi>a
     where "\<Phi>a = (\<lambda>f. \<lambda>x' \<in> \<phi> ` S.set (S.dom f). \<phi> (S.Fun f (\<psi> x')))"
@@ -778,10 +778,10 @@ begin
       thus ?thesis using assms set_\<Phi>o \<Phi>o_preserves_ide by auto
     qed
     
-    text{*
+    text\<open>
       The map @{term \<Phi>a} takes composition of arrows to extensional
       composition of functions.
-    *}
+\<close>
 
     lemma \<Phi>a_comp:
     assumes gf: "S.seq g f"
@@ -830,9 +830,9 @@ begin
       finally show ?thesis by auto
     qed
     
-    text{*
+    text\<open>
       Finally, we use @{term \<Phi>o} and @{term \<Phi>a} to define a functor @{term \<Phi>}.
-    *}
+\<close>
 
     definition \<Phi>
     where "\<Phi> f = (if S.arr f then
@@ -1018,7 +1018,7 @@ begin
           hence "\<Phi>a m = restrict (\<lambda>x'. x') (S'.set (S'.dom (\<Phi> m)))"
             using 1 set_dom_\<Phi> by auto
           thus ?thesis
-            using 2 3 `S'.arr (\<Phi> m)` S'.mkArr_restrict_eq S'.ide_cod S'.ide_dom S'.incl_def
+            using 2 3 \<open>S'.arr (\<Phi> m)\<close> S'.mkArr_restrict_eq S'.ide_cod S'.ide_dom S'.incl_def
             by (metis S'.arr_mkArr image_restrict_eq image_subset_iff_funcset)
         qed
         finally show ?thesis by auto
@@ -1026,10 +1026,10 @@ begin
       ultimately show ?thesis using S'.incl_def by blast
     qed
 
-    text{*
-      Interchange the role of @{term \<phi>} and @{term \<psi>} to obtain a functor @{text \<Psi>}
+    text\<open>
+      Interchange the role of @{term \<phi>} and @{term \<psi>} to obtain a functor \<open>\<Psi>\<close>
       from @{term[source=true] S'} to @{term[source=true] S}.
-    *}
+\<close>
 
     interpretation INV: two_set_categories_bij_betw_Univ S' S \<psi>
       apply unfold_locales by (simp add: bij_\<phi> bij_betw_inv_into)
@@ -1046,9 +1046,9 @@ begin
     interpretation \<Psi>: "functor" S' S \<Psi>
       using INV.\<Phi>_is_functor by auto
 
-    text{*
+    text\<open>
       The functors @{term \<Phi>} and @{term \<Psi>} are inverses.
-    *}
+\<close>
 
     lemma Fun_\<Psi>:
     assumes "S'.arr f'" and "x' \<in> S'.set (S'.dom f')"
@@ -1232,11 +1232,11 @@ begin
   
   section "Further Properties of Set Categories"
 
-  text{*
-    In this section we further develop the consequences of the @{text set_category}
+  text\<open>
+    In this section we further develop the consequences of the \<open>set_category\<close>
     axioms, and establish characterizations of a number of standard category-theoretic
-    notions for a @{text set_category}.
-  *}
+    notions for a \<open>set_category\<close>.
+\<close>
 
   context set_category
   begin
@@ -1249,9 +1249,9 @@ begin
 
     subsection "Initial Object"
 
-    text{*
+    text\<open>
       The object corresponding to the empty set is an initial object.
-    *}
+\<close>
 
     definition empty
     where "empty = mkIde {}"
@@ -1287,9 +1287,9 @@ begin
 
     subsection "Identity Arrows"
     
-    text{*
+    text\<open>
       Identity arrows correspond to restrictions of the identity function.
-    *}
+\<close>
 
     lemma ide_char:
     assumes "arr f"
@@ -1358,18 +1358,18 @@ begin
         using assms incl_def incl_in_def by fastforce
     qed
     
-    text{*
+    text\<open>
       There is at most one inclusion between any pair of objects.
-    *}
+\<close>
 
     lemma incls_coherent:
     assumes "par f f'" and "incl f" and "incl f'"
     shows "f = f'"
       using assms incl_def fun_complete by auto
 
-    text{*
+    text\<open>
       The set of inclusions is closed under composition.
-    *}
+\<close>
 
     lemma incl_comp [simp]:
     assumes "incl f" and "incl g" and "cod f = dom g"
@@ -1387,10 +1387,10 @@ begin
 
     subsection "Image Factorization"
 
-    text{*
+    text\<open>
       The image of an arrow is the object that corresponds to the set-theoretic
       image of the domain set under the function induced by the arrow.
-    *}
+\<close>
 
     abbreviation Img
     where "Img f \<equiv> Fun f ` Dom f"
@@ -1455,11 +1455,11 @@ begin
       ultimately show ?thesis by auto
     qed
 
-    text{*
+    text\<open>
       The corestriction of an arrow @{term f} is the arrow
       @{term "corestr f \<in> hom (dom f) (img f)"} that induces the same function
       on the universe as @{term f}.
-    *}
+\<close>
 
     definition corestr
     where "corestr f = mkArr (Dom f) (Img f) (Fun f)"
@@ -1481,9 +1481,9 @@ begin
       thus ?thesis using corestr_def by fastforce
     qed
     
-    text{*
+    text\<open>
       Every arrow factors as a corestriction followed by an inclusion.
-    *}
+\<close>
 
     lemma img_fact:
     assumes "arr f"
@@ -1542,11 +1542,11 @@ begin
     
     subsection "Points and Terminal Objects"
 
-    text{*
+    text\<open>
       To each element @{term t} of @{term "set a"} is associated a point
       @{term "mkPoint a t \<in> hom unity a"}.  The function induced by such
       a point is the constant-@{term t} function on the set @{term "{unity}"}.
-    *}
+\<close>
 
     definition mkPoint
     where "mkPoint a t \<equiv> mkArr {unity} (set a) (\<lambda>_. t)"
@@ -1562,10 +1562,10 @@ begin
     shows "Fun (mkPoint a t) = (\<lambda>_ \<in> {unity}. t)"
       using assms mkPoint_def terminal_unity by force
 
-    text{*
+    text\<open>
       For each object @{term a} the function @{term "mkPoint a"} has as its inverse
       the restriction of the function @{term img} to @{term "hom unity a"}
-    *}
+\<close>
 
     lemma mkPoint_img:
     shows "img \<in> hom unity a \<rightarrow> set a"
@@ -1627,10 +1627,10 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       For each object @{term a} the elements of @{term "hom unity a"} are therefore in
       bijective correspondence with @{term "set a"}.
-    *}
+\<close>
 
     lemma bij_betw_points_and_set:
     assumes "ide a"
@@ -1646,11 +1646,11 @@ begin
         using assms img_mkPoint by auto
     qed
 
-    text{*
+    text\<open>
       The function on the universe induced by an arrow @{term f} agrees, under the bijection
       between @{term "hom unity (dom f)"} and @{term "Dom f"}, with the action of @{term f}
       by composition on @{term "hom unity (dom f)"}.
-    *}
+\<close>
 
     lemma Fun_point:
     assumes "\<guillemotleft>x : unity \<rightarrow> a\<guillemotright>"
@@ -1693,9 +1693,9 @@ begin
         by (simp add: img_point_elem_set)
     qed
 
-    text{*
+    text\<open>
       This agreement allows us to express @{term "Fun f"} in terms of composition.
-    *}
+\<close>
 
     lemma Fun_in_terms_of_comp:
     assumes "arr f"
@@ -1720,10 +1720,10 @@ begin
       ultimately show "Fun f t = restrict (img o S f o mkPoint (dom f)) (Dom f) t" by auto
     qed
 
-    text{*
+    text\<open>
       We therefore obtain a rule for proving parallel arrows equal by showing
       that they have the same action by composition on points.
-    *}
+\<close>
 
     (*
      * TODO: Find out why attempts to use this as the main rule for a proof loop
@@ -1734,10 +1734,10 @@ begin
     shows "f = f'"
       using assms Fun_in_terms_of_comp mkPoint_in_hom by (intro arr_eqI, auto)
 
-    text{*
+    text\<open>
       An arrow can therefore be specified by giving its action by composition on points.
       In many situations, this is more natural than specifying it as a function on the universe.
-    *}
+\<close>
 
     definition mkArr'
     where "mkArr' a b F = mkArr (set a) (set b) (img o F o mkPoint a)"
@@ -1774,10 +1774,10 @@ begin
         using assms x mkPoint_img(2) by auto
     qed
 
-    text{*
+    text\<open>
       A third characterization of terminal objects is as those objects whose set of
       points is a singleton.
-    *}
+\<close>
 
     lemma terminal_char3:
     assumes "\<exists>!x. \<guillemotleft>x : unity \<rightarrow> a\<guillemotright>"
@@ -1796,10 +1796,10 @@ begin
       thus ?thesis using a terminal_char1 by simp
     qed
 
-    text{*
+    text\<open>
       The following is an alternative formulation of functional completeness, which says that
       any function on points uniquely determines an arrow.
-    *}
+\<close>
 
     lemma fun_complete':
     assumes "ide a" and "ide b" and "F \<in> hom unity a \<rightarrow> hom unity b"
@@ -1818,13 +1818,13 @@ begin
 
     subsection "The `Determines Same Function' Relation on Arrows"
 
-    text{*
+    text\<open>
       An important part of understanding the structure of a category of sets and functions
       is to characterize when it is that two arrows ``determine the same function''.
       The following result provides one answer to this: two arrows with a common domain
       determine the same function if and only if they can be rendered equal by composing with
       a cospan of inclusions.
-    *}
+\<close>
 
     lemma eq_Fun_iff_incl_joinable:
     assumes "span f f'"
@@ -1854,7 +1854,7 @@ begin
           by (metis Fun_ide Fun_mkArr comp_cod_arr ide_cod)
       qed
       hence "incl ?m \<and> incl ?m' \<and> seq ?m f \<and> seq ?m' f' \<and> ?m \<cdot> f = ?m' \<cdot> f'"
-        using seq `incl ?m` `incl ?m'` by simp
+        using seq \<open>incl ?m\<close> \<open>incl ?m'\<close> by simp
       thus "\<exists>m m'. incl m \<and> incl m' \<and> seq m f \<and> seq m' f' \<and> m \<cdot> f = m' \<cdot> f'" by auto
       next
       assume ff': "\<exists>m m'. incl m \<and> incl m' \<and> seq m f \<and> seq m' f' \<and> m \<cdot> f = m' \<cdot> f'"
@@ -1869,10 +1869,10 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       Another answer to the same question: two arrows with a common domain determine the
       same function if and only if their corestrictions are equal.
-    *}
+\<close>
 
     lemma eq_Fun_iff_eq_corestr:
     assumes "span f f'"
@@ -1881,9 +1881,9 @@ begin
 
     subsection "Retractions, Sections, and Isomorphisms"
 
-    text{*
+    text\<open>
       An arrow is a retraction if and only if its image coincides with its codomain.
-    *}
+\<close>
 
     lemma retraction_if_Img_eq_Cod:
     assumes "arr g" and "Img g = Cod g"
@@ -1951,20 +1951,20 @@ begin
       thus "retraction g" using retraction_if_Img_eq_Cod by blast
     qed
 
-    text{*
+    text\<open>
       Every corestriction is a retraction.
-    *}
+\<close>
 
     lemma retraction_corestr:
     assumes "arr f"
     shows "retraction (corestr f)"
       using assms retraction_char Fun_corestr corestr_in_hom by fastforce
 
-    text{*
+    text\<open>
       An arrow is a section if and only if it induces an injective function on its
       domain, except in the special case that it has an empty domain set and a
       nonempty codomain set.
-    *}
+\<close>
 
     lemma section_if_inj:
     assumes "arr f" and "inj_on (Fun f) (Dom f)" and "Dom f = {} \<longrightarrow> Cod f = {}"
@@ -2063,10 +2063,10 @@ begin
       thus "section f" using section_if_inj by auto
     qed
 
-    text{*
+    text\<open>
       Section-retraction pairs can also be characterized by an inverse relationship
       between the functions they induce.
-    *}
+\<close>
 
     lemma section_retraction_char:
     shows "ide (g \<cdot> f) \<longleftrightarrow> antipar f g \<and> compose (Dom f) (Fun g) (Fun f) = (\<lambda>x \<in> Dom f. x)"
@@ -2102,10 +2102,10 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       Antiparallel arrows @{term f} and @{term g} are inverses if the functions
       they induce are inverses.
-    *}
+\<close>
 
     lemma inverse_arrows_char:
     shows "inverse_arrows f g \<longleftrightarrow>
@@ -2113,9 +2113,9 @@ begin
                          \<and> compose (Dom g) (Fun f) (Fun g) = (\<lambda>y \<in> Dom g. y)"
       using section_retraction_char by blast
 
-    text{*
+    text\<open>
       An arrow is an isomorphism if and only if the function it induces is a bijection.
-    *}
+\<close>
 
     lemma iso_char:
     shows "iso f \<longleftrightarrow> arr f \<and> bij_betw (Fun f) (Dom f) (Cod f)"
@@ -2129,9 +2129,9 @@ begin
       finally show ?thesis by auto
     qed
 
-    text{*
+    text\<open>
       The inverse of an isomorphism is constructed by inverting the induced function.
-    *}
+\<close>
 
     lemma inv_char:
     assumes "iso f"
@@ -2176,9 +2176,9 @@ begin
 
     subsection "Monomorphisms and Epimorphisms"
 
-    text{*
+    text\<open>
       An arrow is a monomorphism if and only if the function it induces is injective.
-    *}
+\<close>
 
     lemma mono_char:
     shows "mono f \<longleftrightarrow> arr f \<and> inj_on (Fun f) (Dom f)"
@@ -2200,13 +2200,13 @@ begin
         assume x: "x \<in> Dom f" and x': "x' \<in> Dom f" and xx': "Fun f x = Fun f x'"
         have 1: "mkPoint (dom f) x \<in> hom unity (dom f) \<and>
                  mkPoint (dom f) x' \<in> hom unity (dom f)"
-          using x x' `arr f` mkPoint_in_hom by simp
+          using x x' \<open>arr f\<close> mkPoint_in_hom by simp
         have "f \<cdot> mkPoint (dom f) x = f \<cdot> mkPoint (dom f) x'"
-          using `arr f` x x' xx' comp_arr_mkPoint by simp
+          using \<open>arr f\<close> x x' xx' comp_arr_mkPoint by simp
         hence "mkPoint (dom f) x = mkPoint (dom f) x'"
           using 0 1 inj_onD [of "S f" "hom unity (dom f)" "mkPoint (dom f) x"] by simp
         thus "x = x'"
-          using `arr f` x x' img_mkPoint(2) img_mkPoint(2) ide_dom by metis
+          using \<open>arr f\<close> x x' img_mkPoint(2) img_mkPoint(2) ide_dom by metis
       qed
       ultimately show "arr f \<and> inj_on (Fun f) (Dom f)" by auto
       next
@@ -2248,30 +2248,30 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       Inclusions are monomorphisms.
-    *}
+\<close>
 
     lemma mono_imp_incl:
     assumes "incl f"
     shows "mono f"
       using assms incl_def Fun_incl mono_char by auto
 
-    text{*
+    text\<open>
       A monomorphism is a section, except in case it has an empty domain set and
       a nonempty codomain set.
-    *}
+\<close>
 
     lemma mono_imp_section:
     assumes "mono f" and "Dom f = {} \<longrightarrow> Cod f = {}"
     shows "section f"
       using assms mono_char section_char by auto
 
-    text{*
+    text\<open>
       An arrow is an epimorphism if and only if either its image coincides with its
       codomain, or else the universe has only a single element (in which case all arrows
       are epimorphisms).
-    *}
+\<close>
   
     lemma epi_char:
     shows "epi f \<longleftrightarrow> arr f \<and> (Img f = Cod f \<or> (\<forall>t t'. t \<in> Univ \<and> t' \<in> Univ \<longrightarrow> t = t'))"
@@ -2361,21 +2361,21 @@ begin
       qed
     qed
 
-    text{*
+    text\<open>
       An epimorphism is a retraction, except in the case of a degenerate universe with only
       a single element.
-    *}
+\<close>
 
     lemma epi_imp_retraction:
     assumes "epi f" and "\<exists>t t'. t \<in> Univ \<and> t' \<in> Univ \<and> t \<noteq> t'"
     shows "retraction f"
       using assms epi_char retraction_char by auto
 
-    text{*
+    text\<open>
       Retraction/inclusion factorization is unique (not just up to isomorphism -- remember
       that the notion of inclusion is not categorical but depends on the arbitrarily chosen
       @{term img}).
-    *}
+\<close>
 
     lemma unique_retr_incl_fact:
     assumes "seq m e" and "seq m' e'" and "m \<cdot> e = m' \<cdot> e'"
@@ -2400,17 +2400,17 @@ begin
 
   section "Concrete Set Categories"
 
-  text{*
-    The @{text set_category} locale is useful for stating results that depend on a
+  text\<open>
+    The \<open>set_category\<close> locale is useful for stating results that depend on a
     category of @{typ 'a}-sets and functions, without having to commit to a particular
     element type @{typ 'a}.  However, in applications we often need to work with a
     category of sets and functions that is guaranteed to contain sets corresponding
     to the subsets of some extrinsically given type @{typ 'a}.
-    A \emph{concrete set category} is a set category @{text S} that is equipped
-    with an injective function @{term \<iota>} from type @{typ 'a} to @{text "S.Univ"}.
+    A \emph{concrete set category} is a set category \<open>S\<close> that is equipped
+    with an injective function @{term \<iota>} from type @{typ 'a} to \<open>S.Univ\<close>.
     The following locale serves to facilitate some of the technical aspects of passing
-    back and forth between elements of type @{typ 'a} and the elements of @{text "S.Univ"}.
-  *}
+    back and forth between elements of type @{typ 'a} and the elements of \<open>S.Univ\<close>.
+\<close>
 
   locale concrete_set_category = set_category S
     for S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)

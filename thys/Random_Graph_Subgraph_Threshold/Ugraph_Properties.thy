@@ -1,4 +1,4 @@
-section{* Classes and properties of graphs *}
+section\<open>Classes and properties of graphs\<close>
 
 theory Ugraph_Properties
 imports
@@ -6,7 +6,7 @@ imports
   Girth_Chromatic.Girth_Chromatic
 begin
 
-text{* A ``graph property'' is a set of graphs which is closed under isomorphism. *}
+text\<open>A ``graph property'' is a set of graphs which is closed under isomorphism.\<close>
 
 type_synonym ugraph_class = "ugraph set"
 
@@ -16,7 +16,7 @@ definition ugraph_property :: "ugraph_class \<Rightarrow> bool" where
 abbreviation prob_in_class :: "(nat \<Rightarrow> real) \<Rightarrow> ugraph_class \<Rightarrow> nat \<Rightarrow> real" where
 "prob_in_class p c n \<equiv> probGn p n (\<lambda>es. edge_space.edge_ugraph n es \<in> c)"
 
-text{* From now on, we consider random graphs not with fixed edge probabilities but rather with a
+text\<open>From now on, we consider random graphs not with fixed edge probabilities but rather with a
 probability function depending on the number of vertices. Such a function is called a ``threshold''
 for a graph property iff
 \begin{itemize}
@@ -24,7 +24,7 @@ for a graph property iff
     is an element of that class tends to \emph{$1$} (``$1$-statement''), and
   \item for asymptotically \emph{smaller} probability functions, the probability that a random graph
     is an element of that class tends to \emph{$0$} (``$0$-statement'').
-\end{itemize} *}
+\end{itemize}\<close>
 
 definition is_threshold :: "ugraph_class \<Rightarrow> (nat \<Rightarrow> real) \<Rightarrow> bool" where
 "is_threshold c t \<equiv> ugraph_property c \<and> (\<forall>p. nonzero_prob_fun p \<longrightarrow>

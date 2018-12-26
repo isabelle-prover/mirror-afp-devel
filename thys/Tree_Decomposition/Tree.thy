@@ -1,27 +1,27 @@
-section {* Trees *}
+section \<open>Trees\<close>
 
 theory Tree
 imports Graph begin
 
-text {* A tree is a connected graph without cycles. *}
+text \<open>A tree is a connected graph without cycles.\<close>
 locale Tree = Graph +
   assumes connected: "\<lbrakk> v \<in> V; w \<in> V \<rbrakk> \<Longrightarrow> v \<rightarrow>\<^sup>* w" and no_cycles: "\<not>cycle xs"
 begin
 
-subsection {* Unique Connecting Path *}
+subsection \<open>Unique Connecting Path\<close>
 
-text {* For every pair of vertices in a tree, there exists a unique path connecting these two
+text \<open>For every pair of vertices in a tree, there exists a unique path connecting these two
   vertices.
-*}
+\<close>
 lemma unique_connecting_path: "\<lbrakk> v \<in> V; w \<in> V \<rbrakk> \<Longrightarrow> \<exists>!xs. v \<leadsto>xs\<leadsto> w"
   using connected no_cycles no_cycles_implies_unique_paths by blast
 
-text {* Let us define a function mapping pair of vertices to their unique connecting path. *}
+text \<open>Let us define a function mapping pair of vertices to their unique connecting path.\<close>
 end \<comment> \<open>locale Tree\<close>
 definition unique_connecting_path :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a Walk"
   (infix "\<leadsto>\<index>" 71) where "unique_connecting_path G v w \<equiv> THE xs. v \<leadsto>xs\<leadsto>\<^bsub>G\<^esub> w"
-text {* We defined this outside the locale in order to be able to use the index in the shorthand
-  syntax @{term "v \<leadsto>\<index> w"}. *}
+text \<open>We defined this outside the locale in order to be able to use the index in the shorthand
+  syntax @{term "v \<leadsto>\<index> w"}.\<close>
 
 context Tree begin
 
@@ -108,7 +108,7 @@ proof (rule ccontr)
   thus False using no_cycles by auto
 qed
 
-text {* Every tree with at least two vertices contains an edge. *}
+text \<open>Every tree with at least two vertices contains an edge.\<close>
 lemma tree_has_edge:
   assumes "card V > 1"
   shows "\<exists>v w. v\<rightarrow>w"
@@ -125,14 +125,14 @@ proof-
   thus ?thesis by blast
 qed
 
-subsection {* Separations *}
+subsection \<open>Separations\<close>
 
-text {*
+text \<open>
   Removing a single edge always splits a tree into two subtrees.  Here we define the set of vertices
   of the left subtree.  The definition may not be obvious at first glance, but we will soon prove
   that it behaves as expected.  We say that a vertex @{term u} is in the left subtree if and only
   if the unique path from @{term u} to @{term t} visits @{term s}.
-*}
+\<close>
 definition left_tree :: "'a \<Rightarrow> 'a \<Rightarrow> 'a set" where
   "left_tree s t \<equiv> { u \<in> V. s \<in> set (u \<leadsto> t) }"
 lemma left_treeI [intro]: "\<lbrakk> u \<in> V; s \<in> set (u \<leadsto> t) \<rbrakk> \<Longrightarrow> u \<in> left_tree s t"
@@ -149,7 +149,7 @@ lemma left_tree_initial': "\<lbrakk> s \<in> V; t \<in> V; s \<noteq> t \<rbrakk
 lemma left_tree_initial_edge: "s\<rightarrow>t \<Longrightarrow> t \<notin> left_tree s t"
   using edges_are_in_V(1) left_tree_initial' no_loops undirected by blast
 
-text {* The union of the left and right subtree is @{term V}. *}
+text \<open>The union of the left and right subtree is @{term V}.\<close>
 lemma left_tree_union_V:
   assumes "s\<rightarrow>t"
   shows "left_tree s t \<union> left_tree t s = V"
@@ -157,11 +157,11 @@ proof
   show "left_tree s t \<union> left_tree t s \<subseteq> V" using left_tree_in_V by auto
   {
     have s: "s \<in> V" and t: "t \<in> V" using assms using edges_are_in_V by blast+
-    text {* Assume to the contrary that @{term "u \<in> V"} is in neither part. *}
+    text \<open>Assume to the contrary that @{term "u \<in> V"} is in neither part.\<close>
     fix u assume u: "u \<in> V" "u \<notin> left_tree s t" "u \<notin> left_tree t s"
-    text {* Then we can construct two different paths from @{term s} to @{term u}, which, in a
+    text \<open>Then we can construct two different paths from @{term s} to @{term u}, which, in a
       tree, is a contradiction.  First, we get paths from @{term s} to @{term u} and from
-      @{term t} to @{term u}. *}
+      @{term t} to @{term u}.\<close>
     let ?xs = "s \<leadsto> u"
     let ?ys = "t \<leadsto> u"
     have "t \<notin> set ?xs" using u(1,3) unfolding left_tree_def
@@ -169,7 +169,7 @@ proof
     have "s \<notin> set ?ys" using u(1,2) unfolding left_tree_def
       by (metis (no_types, lifting) unique_connecting_path_rev mem_Collect_eq set_rev t)
 
-    text {* Now we can define two different paths from @{term s} to @{term u}. *}
+    text \<open>Now we can define two different paths from @{term s} to @{term u}.\<close>
     define xs' where [simp]: "xs' = ?xs"
     define ys' where [simp]: "ys' = s # ?ys"
 
@@ -180,13 +180,13 @@ proof
     moreover have "hd ys' = s" "last ys' = u"
       by simp (simp add: unique_connecting_path_properties(2,4) t u(1))
     moreover have "xs' \<noteq> ys'" using unique_connecting_path_set(1) \<open>t \<notin> set ?xs\<close> t u(1) by auto
-    text {* The existence of two different paths is a contradiction. *}
+    text \<open>The existence of two different paths is a contradiction.\<close>
     ultimately have False using unique_connecting_path_unique by blast
   }
   thus "V \<subseteq> left_tree s t \<union> left_tree t s" by blast
 qed
 
-text {* The left and right subtrees are disjoint. *}
+text \<open>The left and right subtrees are disjoint.\<close>
 lemma left_tree_disjoint:
   assumes "s\<rightarrow>t"
   shows "left_tree s t \<inter> left_tree t s = {}"
@@ -211,10 +211,10 @@ proof (rule ccontr)
   thus False using less_trans[OF ** *] by simp
 qed
 
-text {*
+text \<open>
   The path from a vertex in the left subtree to a vertex in the right subtree goes through @{term s}.
   In other words, an edge @{term "s\<rightarrow>t"} is a separator in a tree.
-*}
+\<close>
 theorem left_tree_separates:
   assumes st: "s\<rightarrow>t" and u: "u \<in> left_tree s t" and u': "u' \<in> left_tree t s"
   shows "s \<in> set (u \<leadsto> u')"
@@ -284,7 +284,7 @@ proof (rule ccontr)
   thus False by (meson left_tree_disjoint disjoint_iff_not_equal st u')
 qed
 
-text {* By symmetry, the path also visits @{term t}. *}
+text \<open>By symmetry, the path also visits @{term t}.\<close>
 corollary left_tree_separates':
   assumes "s\<rightarrow>t" "u \<in> left_tree s t" "u' \<in> left_tree t s"
   shows "t \<in> set (u \<leadsto> u')"
@@ -292,15 +292,15 @@ corollary left_tree_separates':
 
 end \<comment> \<open>locale Tree\<close>
 
-subsection {* Rooted Trees *}
+subsection \<open>Rooted Trees\<close>
 
-text {* A rooted tree is a tree with a distinguished vertex called root. *}
+text \<open>A rooted tree is a tree with a distinguished vertex called root.\<close>
 
 locale RootedTree = Tree +
   fixes root :: 'a
   assumes root_in_V: "root \<in> V"
 begin
-  text {* In a rooted tree, we can define the parent relation. *}
+  text \<open>In a rooted tree, we can define the parent relation.\<close>
   definition parent :: "'a \<Rightarrow> 'a" where
     "parent v \<equiv> hd (tl (v \<leadsto> root))"
 

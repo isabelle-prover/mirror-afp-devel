@@ -4,23 +4,23 @@
     License:     LGPL
 *)
 
-section {* Widening the Direct Subtype Relation *}
+section \<open>Widening the Direct Subtype Relation\<close>
 
 theory Subtype
 imports "../Isa_Counter/DirectSubtypes"
 begin
 
-text {*
+text \<open>
 In this theory, we define the widening subtype relation of types and prove 
 that it is a partial order.
-*}
+\<close>
 
-subsection {* Auxiliary lemmas *}
+subsection \<open>Auxiliary lemmas\<close>
 
-text {* These general lemmas are not especially related to Jive. 
+text \<open>These general lemmas are not especially related to Jive. 
 They capture
 some useful properties of general relations. 
-*}
+\<close>
 lemma distinct_rtrancl_into_trancl:
   assumes neq_x_y: "x\<noteq>y"
   assumes x_y_rtrancl: "(x,y) \<in> r\<^sup>*"
@@ -90,19 +90,19 @@ next
 qed
 
 
-subsection {* The Widening (Subtype) Relation of Javatypes *}
+subsection \<open>The Widening (Subtype) Relation of Javatypes\<close>
 
 
-text {* \label{widening_subtypes}
+text \<open>\label{widening_subtypes}
 In this section we widen the direct subtype relations specified in Sec. 
 \ref{direct_subtype_relations}.
 It is done by a calculation of the transitive closure of the 
 direct subtype relation. 
-*}
+\<close>
 
-text {* This is the concrete syntax that expresses the subtype relations 
+text \<open>This is the concrete syntax that expresses the subtype relations 
 between all types. 
-\label{subtype_relations_concrete_syntax} *}
+\label{subtype_relations_concrete_syntax}\<close>
 
 abbreviation
   direct_subtype_syntax :: "Javatype \<Rightarrow> Javatype \<Rightarrow> bool" ("_ \<prec>1 _" [71,71] 70)
@@ -120,9 +120,9 @@ where \<comment> \<open>transitive closure of direct subtype relation\<close>
   "A \<prec> B == (A,B) \<in> direct_subtype\<^sup>+"
 
 
-subsection {* The Subtype Relation as Partial Order *}
+subsection \<open>The Subtype Relation as Partial Order\<close>
 
-text {* We prove the axioms required for partial orders, i.e.\ 
+text \<open>We prove the axioms required for partial orders, i.e.\ 
 reflexivity, transitivity and antisymmetry, for the widened subtype
 relation. The direct subtype relation has been
 defined in Sec. \ref{direct_subtype_relations}.
@@ -131,7 +131,7 @@ added to the Simplifier and to the Classical reasoner (via the
 attribute iff), and the transitivity and antisymmetry lemmas
 are made known as transitivity rules (via the attribute trans).
 This way, these lemmas will be automatically used in subsequent proofs.
-*}
+\<close>
 
 lemma acyclic_direct_subtype: "acyclic direct_subtype"
 proof (clarsimp simp add: acyclic_def)
@@ -146,18 +146,18 @@ using acyclic_direct_subtype by (rule acyclic_imp_antisym_rtrancl)
 lemma widen_strict_to_widen: "C \<prec> D = (C \<preceq> D \<and> C\<noteq>D)"
 using acyclic_direct_subtype by (rule acyclic_trancl_rtrancl)
 
-text {* The widening relation on Javatype is reflexive. *}
+text \<open>The widening relation on Javatype is reflexive.\<close>
 
 lemma widen_refl [iff]: "X \<preceq> X" ..
 
-text {* The widening relation on Javatype is transitive. *}
+text \<open>The widening relation on Javatype is transitive.\<close>
 
 lemma widen_trans [trans] : 
   assumes a_b: "a \<preceq> b"
   shows "\<And> c. b \<preceq> c \<Longrightarrow> a \<preceq> c"
   by (insert a_b, rule rtrancl_trans)
 
-text {* The widening relation on Javatype is antisymmetric. *}
+text \<open>The widening relation on Javatype is antisymmetric.\<close>
 
 lemma widen_antisym [trans]: 
   assumes a_b: "a \<preceq> b" 
@@ -167,21 +167,21 @@ lemma widen_antisym [trans]:
   by (unfold antisym_def) blast
 
 
-subsection {* Javatype Ordering Properties *}
+subsection \<open>Javatype Ordering Properties\<close>
 
-text {* The type class @{term ord} allows us to overwrite the two comparison 
+text \<open>The type class @{term ord} allows us to overwrite the two comparison 
 operators $<$ and $\leq$.
   These are  the two comparison operators on @{typ Javatype} that we want
-to use subsequently. *}
+to use subsequently.\<close>
 
-text {* We can also prove that @{typ Javatype} is in the type class @{term order}. 
+text \<open>We can also prove that @{typ Javatype} is in the type class @{term order}. 
 For this we
   have to prove reflexivity, transitivity, antisymmetry and that $<$ and $\leq$ are 
 defined in such
   a way that @{thm Orderings.order_less_le [no_vars]} holds. This proof can easily 
 be achieved by using the
   lemmas proved above and the definition of @{term less_Javatype_def}.
-  *}
+\<close>
 
 instantiation Javatype:: order
 begin
@@ -217,7 +217,7 @@ qed
 end
 
 
-subsection {* Enhancing the Simplifier *}
+subsection \<open>Enhancing the Simplifier\<close>
 
 lemmas subtype_defs = le_Javatype_def less_Javatype_def
                       direct_subtype_def 
@@ -228,16 +228,16 @@ lemmas subtype_defs = le_Javatype_def less_Javatype_def
 lemmas subtype_ok_simps = subtype_defs 
 lemmas subtype_wrong_elims = rtranclE
 
-text {* During verification we will often have to solve the goal that one type
+text \<open>During verification we will often have to solve the goal that one type
 widens to the other. So we equip the simplifier with a special solver-tactic.
-*}
+\<close>
 
 lemma widen_asm: "(a::Javatype) \<le> b \<Longrightarrow> a \<le> b"
   by simp
 
 lemmas direct_subtype_widened = direct_subtype[THEN r_into_rtrancl]
 
-ML {*
+ML \<open>
 local val ss = simpset_of @{context} in
 
 fun widen_tac ctxt =
@@ -247,28 +247,28 @@ fun widen_tac ctxt =
   simp_tac (put_simpset (simpset_of @{theory_context Transitive_Closure}) ctxt)
 
 end
-*}
+\<close>
 
-declaration {* fn _ =>
+declaration \<open>fn _ =>
   Simplifier.map_ss (fn ss => ss addSolver (mk_solver "widen" widen_tac))
-*}
+\<close>
 
 
-text {* In this solver-tactic, we first try the trivial resolution with @{text "widen_asm"} to
+text \<open>In this solver-tactic, we first try the trivial resolution with \<open>widen_asm\<close> to
 check if the actual subgaol really is a request to solve a subtyping problem.
 If so, we unfold the comparison operator, insert the direct subtype
 relations and call the simplifier.
-*}
+\<close>
 
 
-subsection {* Properties of the Subtype Relation *}
+subsection \<open>Properties of the Subtype Relation\<close>
 
 
-text {* The class @{text "Object"} has to be the root of the class hierarchy, 
+text \<open>The class \<open>Object\<close> has to be the root of the class hierarchy, 
 i.e.~it is supertype of each concrete class, abstract class, interface
 and array type.
   The proof scripts should run on every correctly generated type hierarchy.
-*}
+\<close>
 
 
 lemma Object_root: "CClassT C \<le> CClassT Object"
@@ -314,8 +314,8 @@ lemma Object_root_array: "ArrT C \<le> CClassT Object"
       using c by simp
 qed
 
-text {* If another type is (non-strict) supertype of Object, 
-then it must be the type Object itself. *}
+text \<open>If another type is (non-strict) supertype of Object, 
+then it must be the type Object itself.\<close>
 
 lemma Object_rootD: 
   assumes p: "CClassT Object \<le> c"
@@ -326,8 +326,8 @@ lemma Object_rootD:
   \<comment> \<open>In this lemma, we only get contradictory cases except for Object itself.\<close>
 done
 
-text {* The type NullT has to be the leaf of each branch of the class
-hierarchy, i.e.~it is subtype of each type. *}
+text \<open>The type NullT has to be the leaf of each branch of the class
+hierarchy, i.e.~it is subtype of each type.\<close>
 
 lemma NullT_leaf [simp]: "NullT \<le> CClassT C"
   by (cases C, simp_all)

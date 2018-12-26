@@ -139,26 +139,26 @@ lemma weakPsiCongResPres:
   and     "x \<sharp> \<Psi>"
 
   shows "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<doteq> \<lparr>\<nu>x\<rparr>Q"
-using `\<Psi> \<rhd> P \<doteq> Q`
+using \<open>\<Psi> \<rhd> P \<doteq> Q\<close>
 proof(induct rule: weakPsiCongSymI)
   case(cSym P Q)
   thus ?case by(rule weakPsiCongSym)
 next
   case(cWeakBisim P Q)
-  thus ?case using `x \<sharp> \<Psi>` by(metis weakPsiCongE weakBisimResPres)
+  thus ?case using \<open>x \<sharp> \<Psi>\<close> by(metis weakPsiCongE weakBisimResPres)
 next
   case(cSim P Q)
   obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> P" and "y \<sharp> Q"
     by(generate_fresh "name") auto
-  from `\<Psi> \<rhd> P \<doteq> Q` have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<doteq> ([(x, y)] \<bullet> Q)" by(rule weakPsiCongClosed)
+  from \<open>\<Psi> \<rhd> P \<doteq> Q\<close> have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<doteq> ([(x, y)] \<bullet> Q)" by(rule weakPsiCongClosed)
   hence "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<leadsto>\<guillemotleft>weakBisim\<guillemotright> ([(x, y)] \<bullet> Q)" by(rule weakPsiCongE)
-  with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi>  \<rhd> ([(x, y)] \<bullet> P) \<leadsto>\<guillemotleft>weakBisim\<guillemotright> ([(x, y)] \<bullet> Q)" by simp
+  with \<open>x \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>\<close> have "\<Psi>  \<rhd> ([(x, y)] \<bullet> P) \<leadsto>\<guillemotleft>weakBisim\<guillemotright> ([(x, y)] \<bullet> Q)" by simp
   moreover have "eqvt weakBisim" by simp
-  moreover note `y \<sharp> \<Psi>`
+  moreover note \<open>y \<sharp> \<Psi>\<close>
   moreover have "weakBisim \<subseteq> weakBisim" by auto
   moreover note weakBisimResPres
   ultimately have "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P) \<leadsto>\<guillemotleft>weakBisim\<guillemotright> \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q)" by(rule weakCongSimResPres)
-  with `y \<sharp> P` `y \<sharp> Q` show ?case by(simp add: alphaRes)
+  with \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> show ?case by(simp add: alphaRes)
 qed
 
 lemma weakPsiCongResChainPres:
@@ -194,15 +194,15 @@ next
   case(cSim P Q)
   {
     fix \<Psi>
-    from `\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(auto dest: weakPsiCongE)
+    from \<open>\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<leadsto>\<guillemotleft>weakBisim\<guillemotright> Q" by(auto dest: weakPsiCongE)
   }
   moreover {
     fix \<Psi>
-    from `\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(auto dest: weakPsiCongE weakBisimE)
+    from \<open>\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(auto dest: weakPsiCongE weakBisimE)
   }
   moreover {
     fix \<Psi>
-    from `\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q` have "\<Psi> \<rhd> P \<approx> Q" by(auto dest: weakPsiCongE)
+    from \<open>\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q\<close> have "\<Psi> \<rhd> P \<approx> Q" by(auto dest: weakPsiCongE)
     hence "\<Psi> \<rhd> Q \<lessapprox><weakBisim> P" by(metis weakBisimE)
   }
   ultimately show ?case using weakBisimEqvt weakBisimEqvt weakBisimE(4)  weakBisimE(3) weakBisimParPresAux weakBisimResChainPres statEqWeakBisim

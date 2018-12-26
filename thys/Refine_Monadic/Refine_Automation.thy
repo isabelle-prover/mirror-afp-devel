@@ -6,12 +6,12 @@ keywords "concrete_definition" :: thy_decl
   and "uses"
 begin
 
-text {*
+text \<open>
   This theory provides a tool for extracting definitions from terms, and
   for generating code equations for recursion combinators.
-*}
+\<close>
 
-ML {*
+ML \<open>
 signature REFINE_AUTOMATION = sig
   type extraction = {
     pattern: term,   (* Pattern to be defined as own constant *)
@@ -386,11 +386,11 @@ end;
 
 
 end;
-*}
+\<close>
 
 setup Refine_Automation.setup
 
-setup {*
+setup \<open>
   let
     fun parse_cpat cxt = let 
       val (t, (context, tks)) = Scan.lift Args.embedded_inner_syntax cxt 
@@ -410,7 +410,7 @@ setup {*
     )
       "Add/delete concrete_definition pattern"
   end
-*}
+\<close>
 
 
 (* Command setup *)
@@ -418,7 +418,7 @@ setup {*
 (* TODO: Folding of .refine-lemma seems not to work, if the function has
   parameters on which it does not depend *)
 
-ML {* Outer_Syntax.local_theory 
+ML \<open>Outer_Syntax.local_theory 
   @{command_keyword concrete_definition} 
   "Define function from refinement theorem" 
   (Parse.binding 
@@ -441,30 +441,30 @@ ML {* Outer_Syntax.local_theory
       NONE name attribs params thm pats lthy 
     |> snd
   end))
-*}
+\<close>
 
-text {* 
+text \<open>
   Command: 
-    @{text "concrete_definition name [attribs] for params uses thm is patterns"}
-  where @{text "attribs"}, @{text "for"}, and @{text "is"}-parts are optional.
+    \<open>concrete_definition name [attribs] for params uses thm is patterns\<close>
+  where \<open>attribs\<close>, \<open>for\<close>, and \<open>is\<close>-parts are optional.
 
-  Declares a new constant @{text "name"} by matching the theorem @{text "thm"} 
+  Declares a new constant \<open>name\<close> by matching the theorem \<open>thm\<close> 
   against a pattern.
   
-  If the @{text "for"} clause is given, it lists variables in the theorem, 
+  If the \<open>for\<close> clause is given, it lists variables in the theorem, 
   and thus determines the order of parameters of the defined constant. Otherwise,
   parameters will be in order of occurrence.
 
-  If the @{text "is"} clause is given, it lists patterns. The conclusion of the
+  If the \<open>is\<close> clause is given, it lists patterns. The conclusion of the
   theorem will be matched against each of these patterns. For the first matching
   pattern, the constant will be declared to be the term that matches the first
-  non-dummy variable of the pattern. If no @{text "is"}-clause is specified,
+  non-dummy variable of the pattern. If no \<open>is\<close>-clause is specified,
   the default patterns will be tried.
 
-  Attribute: @{text "cd_patterns pats"}. Declaration attribute. Declares
-    default patterns for the @{text "concrete_definition"} command.
+  Attribute: \<open>cd_patterns pats\<close>. Declaration attribute. Declares
+    default patterns for the \<open>concrete_definition\<close> command.
   
-*}
+\<close>
 
 
 declare [[ cd_patterns "(?f,_)\<in>_"]]
@@ -472,7 +472,7 @@ declare [[ cd_patterns "RETURN ?f \<le> _" "nres_of ?f \<le> _"]]
 declare [[ cd_patterns "(RETURN ?f,_)\<in>_" "(nres_of ?f,_)\<in>_"]]
 declare [[ cd_patterns "_ = ?f" "_ == ?f" ]]
 
-ML {* 
+ML \<open>
   let
     val modes = (Scan.optional
      (@{keyword "("} |-- Parse.list1 Parse.name --| @{keyword ")"}) [])
@@ -488,16 +488,16 @@ ML {*
       end)
     )
   end
-*}
+\<close>
 
-text {* 
+text \<open>
   Command: 
-    @{text "prepare_code_thms (modes) thm"}
-  where the @{text "(mode)"}-part is optional.
+    \<open>prepare_code_thms (modes) thm\<close>
+  where the \<open>(mode)\<close>-part is optional.
 
-  Set up code-equations for recursions in constant defined by @{text "thm"}.
-  The optional @{text "modes"} is a comma-separated list of extraction modes.
-*}
+  Set up code-equations for recursions in constant defined by \<open>thm\<close>.
+  The optional \<open>modes\<close> is a comma-separated list of extraction modes.
+\<close>
 
 lemma gen_code_thm_RECT:
   fixes x
@@ -517,7 +517,7 @@ lemma gen_code_thm_REC:
   apply (subst REC_unfold)
   by (rule M)
 
-setup {*
+setup \<open>
   Refine_Automation.add_extraction "nres" {
     pattern = Logic.varify_global @{term "REC x"},
     gen_thm = @{thm gen_code_thm_REC},
@@ -529,27 +529,27 @@ setup {*
     gen_thm = @{thm gen_code_thm_RECT},
     gen_tac = Refine_Mono_Prover.mono_tac
   }
-*}
+\<close>
 
-text {*
-  Method @{text "vc_solve (no_pre) clasimp_modifiers
-    rec (add/del): ... solve (add/del): ..."}
-  Named theorems @{text vcs_rec} and @{text vcs_solve}.
+text \<open>
+  Method \<open>vc_solve (no_pre) clasimp_modifiers
+    rec (add/del): ... solve (add/del): ...\<close>
+  Named theorems \<open>vcs_rec\<close> and \<open>vcs_solve\<close>.
 
   This method is specialized to
   solve verification conditions. It first clarsimps all goals, then
-  it tries to apply a set of safe introduction rules (@{text "vcs_rec"}, @{text "rec add"}).
-  Finally, it applies introduction rules (@{text "vcs_solve"}, @{text "solve add"}) and tries
+  it tries to apply a set of safe introduction rules (\<open>vcs_rec\<close>, \<open>rec add\<close>).
+  Finally, it applies introduction rules (\<open>vcs_solve\<close>, \<open>solve add\<close>) and tries
   to discharge all emerging subgoals by auto. If this does not succeed, it
   backtracks over the application of the solve-rule.
-*}
+\<close>
 
 method_setup vc_solve = 
-  {* Scan.lift (Args.mode "nopre") 
+  \<open>Scan.lift (Args.mode "nopre") 
       --| Method.sections Refine_Automation.vc_solve_modifiers >>
   (fn (nopre) => fn ctxt => SIMPLE_METHOD (
     CHANGED (ALLGOALS (Refine_Automation.vc_solve_tac ctxt nopre))
-  )) *} "Try to solve verification conditions"
+  ))\<close> "Try to solve verification conditions"
 
 
 end

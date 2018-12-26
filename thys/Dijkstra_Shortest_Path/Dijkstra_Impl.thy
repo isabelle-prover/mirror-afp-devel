@@ -1,4 +1,4 @@
-section {* Implementation of Dijkstra's-Algorithm using the ICF *}
+section \<open>Implementation of Dijkstra's-Algorithm using the ICF\<close>
 theory Dijkstra_Impl
 imports 
   Dijkstra 
@@ -6,7 +6,7 @@ imports
   HashGraphImpl 
   "HOL-Library.Code_Target_Numeral"
 begin 
-text{*
+text\<open>
   In this second refinement step, we use interfaces from the 
   Isabelle Collection Framework (ICF) to implement the priority queue and
   the result map. Moreover, we use a graph interface (that is not contained 
@@ -19,7 +19,7 @@ text{*
   Finally, we instantiate the ICF-interfaces by concrete implementations, 
   obtaining an executable algorithm, for that we generate code using 
   Isabelle/HOL's code generator.
-*}
+\<close>
 
 locale dijkstraC =
   g: StdGraph g_ops + 
@@ -154,7 +154,7 @@ begin
 
 end
 
-text {*
+text \<open>
   The following theorem states correctness of the algorithm independent
   from the refinement framework.
 
@@ -166,7 +166,7 @@ text {*
   Note that this is the main theorem for a user of Dijkstra's algorithm in some 
   bigger context. It may also be specialized for concrete instances of the
   implementation, as exemplarily done below.
-  *}
+\<close>
 theorem (in dijkstraC_fixg) idijkstra_correct:
   shows
   "weighted_graph.is_shortest_path_map ga v0 (\<alpha>r (mr.\<alpha> (idijkstra g v0)))" 
@@ -214,10 +214,10 @@ proof -
 qed
 
 
-text {*
+text \<open>
   Example instantiation with HashSet.based graph, 
   red-black-tree based result map, and finger-tree based priority queue.
-*}
+\<close>
 setup Locale_Code.open_block
 interpretation hrf: dijkstraC hlg_ops rm_ops aluprioi_ops
   by unfold_locales
@@ -248,9 +248,9 @@ definition "test_hrfn_dijkstra
   \<equiv> rm.to_list 
     (hrfn_dijkstra (hlg.from_list ([0..<4],[(0,3,1),(0,4,2),(2,1,3),(1,4,3)])) 0)"
 
-ML_val {*
+ML_val \<open>
   @{code test_hrfn_dijkstra}
 
-*}
+\<close>
 
 end

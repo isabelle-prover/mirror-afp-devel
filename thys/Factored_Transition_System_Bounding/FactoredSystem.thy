@@ -1354,7 +1354,7 @@ proof (induction PROB rule: finite.induct)
     using empty_domain_fmap_set
     by force
   then show ?case
-    by(subst `valid_states {} = {fmempty}`) auto
+    by(subst \<open>valid_states {} = {fmempty}\<close>) auto
 next
   case (insertI A a)
   {
@@ -3141,7 +3141,7 @@ proof (induction as arbitrary: s1 s2)
                 have "fmlookup (snd a ++ s1) v = fmlookup s1 v"
                   using as_needed_asses_submap_exec_xii'[OF False I(1)]
                   by simp
-                moreover from `fmlookup (snd a ++ s1) v = fmlookup s1 v`
+                moreover from \<open>fmlookup (snd a ++ s1) v = fmlookup s1 v\<close>
                 have "fmlookup (fst a') v = fmlookup s1 v"
                   using A(1)
                   by argo
@@ -3161,14 +3161,14 @@ proof (induction as arbitrary: s1 s2)
                 unfolding state_succ_def
                 using P_1_1(2)
                 by presburger
-              moreover from `fmlookup ?f v = fmlookup (snd a ++ s2) v`
+              moreover from \<open>fmlookup ?f v = fmlookup (snd a ++ s2) v\<close>
               have \<alpha>: "fmlookup ?f v = fmlookup s2 v"
                 using as_needed_asses_submap_exec_xii'[OF False I(2)]
                 by argo
               ultimately have "fmlookup (snd a ++ s2) v = fmlookup s2 v"
                 by argo
               moreover {
-                from `fmlookup (snd a ++ s2) v = fmlookup s2 v`
+                from \<open>fmlookup (snd a ++ s2) v = fmlookup s2 v\<close>
                 have "fmlookup (fst a') v = fmlookup s2 v"
                   using B(1)
                   by argo
@@ -3270,7 +3270,7 @@ proof (induction as arbitrary: s1 s2)
                 from P_1_1(2) have "state_succ s2 a = snd a ++ s2"
                   unfolding state_succ_def
                   by simp
-                moreover from `state_succ s2 a = snd a ++ s2` have
+                moreover from \<open>state_succ s2 a = snd a ++ s2\<close> have
                   "fmlookup (state_succ s2 a) v = fmlookup s2 v"
                   using as_needed_asses_submap_exec_xii'[OF False I]
                   by simp
@@ -3283,7 +3283,7 @@ proof (induction as arbitrary: s1 s2)
                 from P_1_1(3) have "state_succ s1 a = snd a ++ s1"
                   unfolding state_succ_def
                   by simp
-                moreover from `state_succ s1 a = snd a ++ s1` False
+                moreover from \<open>state_succ s1 a = snd a ++ s1\<close> False
                 have "fmlookup (state_succ s1 a) v = fmlookup s1 v"
                   unfolding fmap_add_ltr_def
                   using fmlookup_add

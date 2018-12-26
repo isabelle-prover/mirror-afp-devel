@@ -1,11 +1,11 @@
-section{*Theory of Cryptographic Keys for Security Protocols against the General Attacker*}
+section\<open>Theory of Cryptographic Keys for Security Protocols against the General Attacker\<close>
 
 theory PublicGA imports EventGA begin
 
 lemma invKey_K: "K \<in> symKeys \<Longrightarrow> invKey K = K"
 by (simp add: symKeys_def)
 
-subsection{*Asymmetric Keys*}
+subsection\<open>Asymmetric Keys\<close>
 
 datatype keymode = Signature | Encryption
 
@@ -34,8 +34,8 @@ abbreviation
   "priSK A == privateKey Signature A"
 
 
-text{*These abbreviations give backward compatibility.  They represent the
-simple situation where the signature and encryption keys are the same.*}
+text\<open>These abbreviations give backward compatibility.  They represent the
+simple situation where the signature and encryption keys are the same.\<close>
 
 abbreviation
   pubK :: "agent => key" where
@@ -46,8 +46,8 @@ abbreviation
   "priK A == invKey (pubEK A)"
 
 
-text{*By freeness of agents, no two agents have the same key.  Since
-  @{term "True\<noteq>False"}, no agent has identical signing and encryption keys*}
+text\<open>By freeness of agents, no two agents have the same key.  Since
+  @{term "True\<noteq>False"}, no agent has identical signing and encryption keys\<close>
 specification (publicKey)
   injective_publicKey:
     "publicKey b A = publicKey c A' \<Longrightarrow> b=c \<and> A=A'"
@@ -68,7 +68,7 @@ lemmas publicKey_neq_privateKey = privateKey_neq_publicKey [THEN not_sym]
 declare publicKey_neq_privateKey [iff]
 
 
-subsection{*Basic properties of @{term pubK} and @{term priK}*}
+subsection\<open>Basic properties of @{term pubK} and @{term priK}\<close>
 
 lemma publicKey_inject [iff]: "(publicKey b A = publicKey c A') = (b=c \<and> A=A')"
 by (blast dest!: injective_publicKey) 
@@ -95,7 +95,7 @@ by (auto simp add: symKeys_def)
 
 
 
-subsection{*"Image" equations that hold for injective functions*}
+subsection\<open>"Image" equations that hold for injective functions\<close>
 
 lemma invKey_image_eq [simp]: "(invKey x \<in> invKey`A) = (x \<in> A)"
 by auto
@@ -116,11 +116,11 @@ lemma publicKey_notin_image_privateKey [simp]: "publicKey b A \<notin> invKey ` 
 by auto
 
 
-subsection{*Symmetric Keys*}
+subsection\<open>Symmetric Keys\<close>
 
-text{*For some protocols, it is convenient to equip agents with symmetric as
-well as asymmetric keys.  The theory @{text Shared} assumes that all keys
-are symmetric.*}
+text\<open>For some protocols, it is convenient to equip agents with symmetric as
+well as asymmetric keys.  The theory \<open>Shared\<close> assumes that all keys
+are symmetric.\<close>
 
 consts
   shrK    :: "agent => key"    \<comment> \<open>long-term shared keys\<close>
@@ -135,7 +135,7 @@ specification (shrK)
 axiomatization where
   sym_shrK [iff]: "shrK X \<in> symKeys" \<comment> \<open>All shared keys are symmetric\<close>
 
-text{*Injectiveness: Agents' long-term keys are distinct.*}
+text\<open>Injectiveness: Agents' long-term keys are distinct.\<close>
 lemmas shrK_injective = inj_shrK [THEN inj_eq]
 declare shrK_injective [iff]
 
@@ -180,11 +180,11 @@ by auto
 lemma shrK_image_eq [simp]: "(shrK x \<in> shrK ` AA) = (x \<in> AA)"
 by auto
 
-text{*For some reason, moving this up can make some proofs loop!*}
+text\<open>For some reason, moving this up can make some proofs loop!\<close>
 declare invKey_K [simp]
 
 
-subsection{*Initial States of Agents*}
+subsection\<open>Initial States of Agents\<close>
 
 overloading
   initState \<equiv> initState
@@ -207,15 +207,15 @@ apply (induct evs)
  apply (rule ballI)  
  apply (case_tac a, auto)  
 apply (auto dest!: parts_cut) 
-txt{*Base case*}
+txt\<open>Base case\<close>
 apply (simp add: used_Nil) 
 done
 
 lemma MPair_used_D: "\<lbrace>X,Y\<rbrace> \<in> used H \<Longrightarrow> X \<in> used H \<and> Y \<in> used H"
 by (drule used_parts_subset_parts, simp, blast)
 
-text{*There was a similar theorem in Event.thy, so perhaps this one can
-  be moved up if proved directly by induction.*}
+text\<open>There was a similar theorem in Event.thy, so perhaps this one can
+  be moved up if proved directly by induction.\<close>
 lemma MPair_used [elim!]:
      "[| \<lbrace>X,Y\<rbrace> \<in> used H;
          [| X \<in> used H; Y \<in> used H |] ==> P |] 
@@ -223,8 +223,8 @@ lemma MPair_used [elim!]:
 by (blast dest: MPair_used_D) 
 
 
-text{*Rewrites should not refer to  @{term "initState(Friend i)"} because
-  that expression is not in normal form.*}
+text\<open>Rewrites should not refer to  @{term "initState(Friend i)"} because
+  that expression is not in normal form.\<close>
 
 lemma keysFor_parts_initState [simp]: "keysFor (parts (initState C)) = {}"
 apply (unfold keysFor_def)
@@ -265,20 +265,20 @@ lemmas neq_shrK = shrK_neq [THEN not_sym]
 declare neq_shrK [simp]
 
 
-subsection{*Function @{term "knows Spy"} *}
+subsection\<open>Function @{term "knows Spy"}\<close>
 
 lemma not_SignatureE [elim!]: "b \<noteq> Signature \<Longrightarrow> b = Encryption"
   by (cases b, auto) 
 
-text{*Agents see their own private keys!*}
+text\<open>Agents see their own private keys!\<close>
 lemma priK_in_initState [iff]: "Key (privateKey b A) \<in> initState A"
   by (cases A, auto)
 
-text{*Agents see all public keys!*}
+text\<open>Agents see all public keys!\<close>
 lemma publicKey_in_initState [iff]: "Key (publicKey b A) \<in> initState B"
   by (cases B, auto) 
 
-text{*All public keys are visible*}
+text\<open>All public keys are visible\<close>
 lemma spies_pubK [iff]: "Key (publicKey b A) \<in> knows B evs"
 apply (induct_tac "evs")
 apply (auto simp add: imageI knows_Cons split: event.split)
@@ -306,7 +306,7 @@ lemma Crypt_analz_bad:
 by force
 
 
-subsection{*Fresh Nonces*}
+subsection\<open>Fresh Nonces\<close>
 
 lemma Nonce_notin_initState [iff]: "Nonce N \<notin> parts (initState B)"
 by (induct_tac "B", auto)
@@ -315,9 +315,9 @@ lemma Nonce_notin_used_empty [simp]: "Nonce N \<notin> used []"
 by (simp add: used_Nil)
 
 
-subsection{*Supply fresh nonces for possibility theorems*}
+subsection\<open>Supply fresh nonces for possibility theorems\<close>
 
-text{*In any trace, there is an upper bound N on the greatest nonce in use*}
+text\<open>In any trace, there is an upper bound N on the greatest nonce in use\<close>
 lemma Nonce_supply_lemma: "\<exists>N. \<forall>n. N\<le>n \<longrightarrow> Nonce n \<notin> used evs"
 apply (induct_tac "evs")
 apply (rule_tac x = 0 in exI)
@@ -334,7 +334,7 @@ apply (rule Nonce_supply_lemma [THEN exE])
 apply (rule someI, fast)
 done
 
-subsection{*Specialized Rewriting for Theorems About @{term analz} and Image*}
+subsection\<open>Specialized Rewriting for Theorems About @{term analz} and Image\<close>
 
 lemma insert_Key_singleton: "insert (Key K) H = Key ` {K} \<union> H"
 by blast
@@ -346,8 +346,8 @@ by blast
 lemma Crypt_imp_keysFor :"[|Crypt K X \<in> H; K \<in> symKeys|] ==> K \<in> keysFor H"
 by (drule Crypt_imp_invKey_keysFor, simp)
 
-text{*Lemma for the trivial direction of the if-and-only-if of the 
-Session Key Compromise Theorem*}
+text\<open>Lemma for the trivial direction of the if-and-only-if of the 
+Session Key Compromise Theorem\<close>
 lemma analz_image_freshK_lemma:
      "(Key K \<in> analz (Key`nE \<union> H)) \<longrightarrow> (K \<in> nE | Key K \<in> analz H)  \<Longrightarrow>  
          (Key K \<in> analz (Key`nE \<union> H)) = (K \<in> nE | Key K \<in> analz H)"
@@ -361,7 +361,7 @@ lemmas analz_image_freshK_simps =
        insert_Key_singleton 
        Key_not_used insert_Key_image Un_assoc [THEN sym]
 
-ML {*
+ML \<open>
 structure Public =
 struct
 
@@ -388,25 +388,25 @@ fun basic_possibility_tac ctxt =
      REPEAT_FIRST (resolve_tac ctxt [refl, conjI]))
 
 end
-*}
+\<close>
 
-method_setup analz_freshK = {*
+method_setup analz_freshK = \<open>
     Scan.succeed (fn ctxt =>
      (SIMPLE_METHOD
       (EVERY [REPEAT_FIRST (resolve_tac ctxt [allI, ballI, impI]),
           REPEAT_FIRST (resolve_tac ctxt @{thms analz_image_freshK_lemma}),
-          ALLGOALS (asm_simp_tac (put_simpset Public.analz_image_freshK_ss ctxt))]))) *}
+          ALLGOALS (asm_simp_tac (put_simpset Public.analz_image_freshK_ss ctxt))])))\<close>
     "for proving the Session Key Compromise theorem"
 
 
-subsection{*Specialized Methods for Possibility Theorems*}
+subsection\<open>Specialized Methods for Possibility Theorems\<close>
 
-method_setup possibility = {*
-    Scan.succeed (SIMPLE_METHOD o Public.possibility_tac) *}
+method_setup possibility = \<open>
+    Scan.succeed (SIMPLE_METHOD o Public.possibility_tac)\<close>
     "for proving possibility theorems"
 
-method_setup basic_possibility = {*
-    Scan.succeed (SIMPLE_METHOD o Public.basic_possibility_tac) *}
+method_setup basic_possibility = \<open>
+    Scan.succeed (SIMPLE_METHOD o Public.basic_possibility_tac)\<close>
     "for proving possibility theorems"
 
 end

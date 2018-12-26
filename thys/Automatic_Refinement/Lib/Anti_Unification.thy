@@ -1,15 +1,15 @@
-section {* Anti-Unification *}
+section \<open>Anti-Unification\<close>
 theory Anti_Unification
 imports Refine_Util
 begin
-  text {* We implement a simple anti-unification.
+  text \<open>We implement a simple anti-unification.
     Currently, we do not handle lambdas, nor sorts, and avoid
     higher-order variables, i.e.,
     f x and g x will be unified to ?v, not ?v x, and existing higher-order
     patterns will be collapsed, e.g.: ?f x and ?f x will become ?v.
-    *}
+\<close>
 
-ML {*
+ML \<open>
   signature ANTI_UNIFICATION = sig
     type typ_env
     type term_env
@@ -162,6 +162,6 @@ ML {*
 
 
   end
-*}
+\<close>
 
 end

@@ -1,4 +1,4 @@
-section{* Pseudo Waisberg Algebra *}
+section\<open>Pseudo Waisberg Algebra\<close>
 
 theory PseudoWaisbergAlgebra
 imports Operations

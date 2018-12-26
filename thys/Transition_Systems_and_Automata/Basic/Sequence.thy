@@ -1,4 +1,4 @@
-section {* Finite and Infinite Sequences *}
+section \<open>Finite and Infinite Sequences\<close>
 
 theory Sequence
 imports
@@ -7,7 +7,7 @@ imports
   "HOL-Library.Monad_Syntax"
 begin
 
-  subsection {* List Basics *}
+  subsection \<open>List Basics\<close>
 
   declare upt_Suc[simp del]
   declare last.simps[simp del]
@@ -52,7 +52,7 @@ begin
     finally show ?case by this
   qed
 
-  subsection {* Stream Basics *}
+  subsection \<open>Stream Basics\<close>
 
   declare stream.map_id[simp]
   declare stream.set_map[simp]
@@ -256,7 +256,7 @@ begin
   lemma pred_stream_streamsp[pred_set_conv]: "pred_stream = streamsp"
     unfolding stream.pred_set streams_iff_sset[to_pred] by auto
 
-  subsection {* The @{term scan} Function *}
+  subsection \<open>The @{term scan} Function\<close>
 
   primrec (transfer) scan :: "('a \<Rightarrow> 'b \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b \<Rightarrow> 'b list" where
     "scan f [] a = []" | "scan f (x # xs) a = f x a # scan f xs (f x a)"
@@ -318,7 +318,7 @@ begin
   lemma sscan_sdrop[simp]: "sdrop k (sscan f xs a) = sscan f (sdrop k xs) (fold f (stake k xs) a)"
     by (induct k arbitrary: a xs) (auto)
 
-  subsection {* Distinct Streams *}
+  subsection \<open>Distinct Streams\<close>
 
   coinductive sdistinct :: "'a stream \<Rightarrow> bool" where
     scons[intro!]: "x \<notin> sset xs \<Longrightarrow> sdistinct xs \<Longrightarrow> sdistinct (x ## xs)"
@@ -360,7 +360,7 @@ begin
     show False using assms 4 by auto
   qed
 
-  subsection {* Sorted Streams *}
+  subsection \<open>Sorted Streams\<close>
 
   coinductive (in order) sascending :: "'a stream \<Rightarrow> bool" where
     "a \<le> b \<Longrightarrow> sascending (b ## w) \<Longrightarrow> sascending (a ## b ## w)"

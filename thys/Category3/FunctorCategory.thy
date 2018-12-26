@@ -9,8 +9,8 @@ theory FunctorCategory
 imports Category AbstractedCategory BinaryFunctor
 begin
 
-  text{*
-    The functor category @{text "[A, B]"} is the category whose objects are functors
+  text\<open>
+    The functor category \<open>[A, B]\<close> is the category whose objects are functors
     from @{term A} to @{term B} and whose arrows correspond to natural transformations
     between these functors.
     Since the arrows of a functor category cannot (in the context of the present development)
@@ -22,31 +22,31 @@ begin
     What we do first is to construct a ``classical category'' whose objects are
     functors and whose arrows are natural transformations.  Then, we extract from this
     construction a partial composition using the standard result proved in the
-    @{text "classical_category"} locale.  The effect of this standard result is to define
+    \<open>classical_category\<close> locale.  The effect of this standard result is to define
     arrows of the resulting category to be triples that consist of natural transformations
     equipped with their domain and codomain functors, injected into an option type
     in order to provide a value to be used as @{term null}.
-    We then use the @{text abstracted_category} locale to lift the resulting category to an
+    We then use the \<open>abstracted_category\<close> locale to lift the resulting category to an
     opaque arrow type, to avoid the possibility of a client of this theory inadvertently
     depending on the details of the concrete construction.
     Finally, we define a set of constructors for the opaque arrow type and characterize the
     resulting category in terms of these constructors so that the details of the concrete
     construction are no longer required and only the constructors and associated facts need
     be used.
-  *}
+\<close>
 
   section "Construction"
 
-  text{*
+  text\<open>
     In this section a construction for functor categories is given.
-    For convenience, we proceed indirectly, by way of the @{text "classical_category"} locale,
+    For convenience, we proceed indirectly, by way of the \<open>classical_category\<close> locale,
     though the construction could also have been done directly.
     Some auxiliary definitions are involved, but these are declared ``private'' and in
     the end what is exported is an opaque arrow type, a partial composition operation on
     this arrow type defining the category, functions for constructing and destructing arrows,
     and facts that characterize the basic notions (domain, codomain, \emph{etc.}) in terms
     of these functions.
-  *}
+\<close>
 
   locale functor_category =
     A: category A +
@@ -60,11 +60,11 @@ begin
 
     context begin
 
-      text{*
+      text\<open>
         First, we construct a ``classical category'' whose objects are functors and
-        whose arrows are triples @{text "(\<tau>, (F, G))"}, where @{text F} and @{text G}
-        are functors and @{text \<tau>} is a natural transformation from @{text F} to @{text G}.
-      *}
+        whose arrows are triples \<open>(\<tau>, (F, G))\<close>, where \<open>F\<close> and \<open>G\<close>
+        are functors and \<open>\<tau>\<close> is a natural transformation from \<open>F\<close> to \<open>G\<close>.
+\<close>
 
       private abbreviation Dom'
       where "Dom' t \<equiv> fst (snd t)"
@@ -137,26 +137,26 @@ begin
       private lemma CC_is_classical_category:
       shows "classical_category Obj' Arr' Dom' Cod' Id' Comp'" ..
 
-      text{*
+      text\<open>
         At this point, @{term CC.comp} is a partial composition that defines a category.
         The arrow type for this category is @{typ "(('a \<Rightarrow> 'b) \<times> ('a \<Rightarrow> 'b) \<times> ('a \<Rightarrow> 'b)) option"},
         because the definition of @{term CC.comp} introduces an option type to provide
         a value to be used as @{term null}.  We next define a corresponding opaque arrow type.
-      *}
+\<close>
 
       typedef ('c, 'd) arr = "UNIV :: (('c \<Rightarrow> 'd) * ('c \<Rightarrow> 'd) * ('c \<Rightarrow> 'd)) option set" ..
 
-      text{*
+      text\<open>
         The category defined by @{term CC.comp} is then lifted to the opaque arrow type.
-      *}
+\<close>
 
       interpretation AC: abstracted_category CC.comp Abs_arr Rep_arr UNIV
         using Rep_arr_inverse Abs_arr_inverse apply unfold_locales by auto
 
-      text{*
+      text\<open>
         The function @{term AC.comp} is now the partial composition that defines the
         desired category.
-      *}
+\<close>
 
       definition comp :: "('a, 'b) arr comp"     (infixr "\<cdot>" 55)
       where "comp \<equiv> AC.comp"
@@ -170,10 +170,10 @@ begin
 
       notation in_hom                            ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
-      text{*
-        We introduce a constructor @{text mkArr} for building an arrow from two
+      text\<open>
+        We introduce a constructor \<open>mkArr\<close> for building an arrow from two
         functors and a natural transformation.
-      *}
+\<close>
 
       definition mkArr :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a, 'b) arr"
       where "mkArr F G \<tau> \<equiv> (if natural_transformation A B F G \<tau>
@@ -182,10 +182,10 @@ begin
       abbreviation mkIde
       where "mkIde F \<equiv> mkArr F F F"
 
-      text{*
+      text\<open>
         Destructors @{term Dom}, @{term Cod}, and @{term Fun} extract the components
         of an arrow.
-      *}
+\<close>
 
       definition Dom :: "('a, 'b) arr \<Rightarrow> 'a \<Rightarrow> 'b"
       where "Dom t \<equiv> Dom' (the (Rep_arr t))"
@@ -196,11 +196,11 @@ begin
       definition Fun :: "('a, 'b) arr \<Rightarrow> 'a \<Rightarrow> 'b"
       where "Fun t \<equiv> Fun' (the (Rep_arr t))"
 
-      text{*
+      text\<open>
         Finally, we prove a set of facts that characterize the basic categorical notions
         in terms of the constructors and destructors.  These are the facts that will
         be exported.
-      *}
+\<close>
 
       lemma null_char:
       shows "null = Abs_arr None"
@@ -356,10 +356,10 @@ begin
 
   section "Additional Properties"
 
-  text{*
+  text\<open>
     In this section some additional facts are proved, which make it easier to
     work with the @{term "functor_category"} locale.
-  *}
+\<close>
 
   context functor_category
   begin
@@ -517,11 +517,11 @@ begin
 
   section "Evaluation Functor"
 
-  text{*
+  text\<open>
     This section defines the evaluation map that applies an arrow of the functor
-    category @{text "[A, B]"} to an arrow of @{term A} to obtain an arrow of @{term B}
+    category \<open>[A, B]\<close> to an arrow of @{term A} to obtain an arrow of @{term B}
     and shows that it is functorial.
-  *}
+\<close>
 
   locale evaluation_functor =
     A: category A +
@@ -598,15 +598,15 @@ begin
 
   section "Currying"
 
-  text{*
+  text\<open>
     This section defines the notion of currying of a natural transformation
     between binary functors, to obtain a natural transformation between
     functors into a functor category, along with the inverse operation of uncurrying.
     We have only proved here what is needed to establish the results
-    in theory @{text Limit} about limits in functor categories and have not
+    in theory \<open>Limit\<close> about limits in functor categories and have not
     attempted to fully develop the functoriality and naturality properties of
     these notions.
-  *}
+\<close>
 
   locale currying =
   A1: category A1 +
@@ -629,12 +629,12 @@ begin
     notation A2_B.in_hom         ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>] _\<guillemotright>")
     notation A2_BxA2.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>A\<^sub>2\<^sub>,\<^sub>B\<^sub>]\<^sub>x\<^sub>A\<^sub>2 _\<guillemotright>")
 
-    text{*
+    text\<open>
       A proper definition for @{term curry} requires that it be parametrized by
       binary functors @{term F} and @{term G} that are the domain and codomain
       of the natural transformations to which it is being applied.
       Similar parameters are not needed in the case of @{term uncurry}.
-    *}
+\<close>
 
     definition curry :: "('a1 \<times> 'a2 \<Rightarrow> 'b) \<Rightarrow> ('a1 \<times> 'a2 \<Rightarrow> 'b) \<Rightarrow> ('a1 \<times> 'a2 \<Rightarrow> 'b)
                            \<Rightarrow> 'a1 \<Rightarrow> ('a2, 'b) A2_B.arr"

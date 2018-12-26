@@ -1,4 +1,4 @@
-section {* Deterministic Co-Büchi Automata *}
+section \<open>Deterministic Co-Büchi Automata\<close>
 
 theory DCA
 imports

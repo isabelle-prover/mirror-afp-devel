@@ -2,7 +2,7 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* \isaheader{Iterators over Finite Sets} *}
+section \<open>\isaheader{Iterators over Finite Sets}\<close>
 theory SetIterator
 imports 
   Automatic_Refinement.Misc 
@@ -10,12 +10,12 @@ imports
   (*"../../Refine_Monadic/Refine_Monadic"*)
 begin
 
-text {* When reasoning about finite sets, it is often handy to be able to iterate over the elements
+text \<open>When reasoning about finite sets, it is often handy to be able to iterate over the elements
   of the set. If the finite set is represented by a list, the @{term fold} operation can be used.
   For general finite sets, the order of elements is not fixed though. Therefore, nondeterministic
-  iterators are introduced in this theory. *}
+  iterators are introduced in this theory.\<close>
 
-subsection {* General Iterators *}
+subsection \<open>General Iterators\<close>
 
 type_synonym ('x,'\<sigma>) set_iterator = "('\<sigma>\<Rightarrow>bool) \<Rightarrow> ('x\<Rightarrow>'\<sigma>\<Rightarrow>'\<sigma>) \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
 
@@ -26,8 +26,8 @@ locale set_iterator_genord =
   assumes foldli_transform:
     "\<exists>l0. distinct l0 \<and> S0 = set l0 \<and> sorted_wrt R l0 \<and> iti = foldli l0"
 begin
-  text {* Let's prove some trivial lemmata to show that the formalisation agrees with
-          the view of iterators described above. *}
+  text \<open>Let's prove some trivial lemmata to show that the formalisation agrees with
+          the view of iterators described above.\<close>
   lemma set_iterator_weaken_R :
     "(\<And>x y. \<lbrakk>x \<in> S0; y \<in> S0; R x y\<rbrakk> \<Longrightarrow> R' x y) \<Longrightarrow> 
              set_iterator_genord iti S0 R'"
@@ -57,8 +57,8 @@ begin
     show ?thesis by simp
   qed
 
-  text {* Reducing everything to folding is cumbersome. Let's
-          define a few high-level inference rules. *}
+  text \<open>Reducing everything to folding is cumbersome. Let's
+          define a few high-level inference rules.\<close>
 
   lemma iteratei_rule_P:
     assumes 
@@ -132,7 +132,7 @@ begin
     done
   qed
 
-  text {* Instead of removing elements one by one from the invariant, adding them is sometimes more natural. *}
+  text \<open>Instead of removing elements one by one from the invariant, adding them is sometimes more natural.\<close>
   lemma iteratei_rule_insert_P:
   assumes pre :
       "I {} \<sigma>0"
@@ -180,15 +180,15 @@ begin
     done
   qed
 
-  text {* Show that iti without interruption is related to fold *}
+  text \<open>Show that iti without interruption is related to fold\<close>
   lemma iti_fold: 
   assumes lc_f: "comp_fun_commute f"
     shows "iti (\<lambda>_. True) f \<sigma>0 = Finite_Set.fold f \<sigma>0 S0"
   proof (rule iteratei_rule_insert_P [where I = "\<lambda>X \<sigma>'. \<sigma>' = Finite_Set.fold f \<sigma>0 X"])
     fix S \<sigma> x
     assume "x \<in> S0 - S" "S \<subseteq> S0" and \<sigma>_eq: "\<sigma> = Finite_Set.fold f \<sigma>0 S"
-    from finite_S0 `S \<subseteq> S0` have fin_S: "finite S" by (metis finite_subset)
-    from `x \<in> S0 - S` have x_nin_S: "x \<notin> S" by simp
+    from finite_S0 \<open>S \<subseteq> S0\<close> have fin_S: "finite S" by (metis finite_subset)
+    from \<open>x \<in> S0 - S\<close> have x_nin_S: "x \<notin> S" by simp
     note fold_eq = comp_fun_commute.fold_insert [OF lc_f fin_S x_nin_S]
 
     show "f x \<sigma> = Finite_Set.fold f \<sigma>0 (insert x S)" 
@@ -197,18 +197,18 @@ begin
 end
 
 
-subsection {* Iterators over Maps *}
+subsection \<open>Iterators over Maps\<close>
 
 type_synonym ('k,'v,'\<sigma>) map_iterator = "('k\<times>'v,'\<sigma>) set_iterator"
 
-text {* Iterator over the key-value pairs of a finite map are called iterators over maps.*}
+text \<open>Iterator over the key-value pairs of a finite map are called iterators over maps.\<close>
 abbreviation "map_iterator_genord it m R \<equiv> set_iterator_genord it (map_to_set m) R"
 
-subsection {* Unordered Iterators *}
+subsection \<open>Unordered Iterators\<close>
 
-text {* Often one does not care about the order in which the elements are processed. 
+text \<open>Often one does not care about the order in which the elements are processed. 
         Therefore, the selection function can be set to not impose any further restrictings.
-        This leads to considerably simpler theorems. *}
+        This leads to considerably simpler theorems.\<close>
 
 definition "set_iterator it S0 \<equiv> set_iterator_genord it S0 (\<lambda>_ _. True)"
 abbreviation "map_iterator it m \<equiv> set_iterator it (map_to_set m)"
@@ -263,8 +263,8 @@ using set_iterator_genord.iteratei_rule_insert_P [of it S0 "\<lambda>_ _. True" 
 by simp  
 
 
-text{* The following rules is adapted for maps. Instead of a set of key-value pairs the invariant
-       now only sees the keys. *}
+text\<open>The following rules is adapted for maps. Instead of a set of key-value pairs the invariant
+       now only sees the keys.\<close>
 lemma map_iterator_genord_rule_P:
   assumes "map_iterator_genord it m R"
       and I0: "I (dom m) \<sigma>0"
@@ -293,12 +293,12 @@ next
 
   show "P \<sigma>"
   proof (rule II [where it = ?S'])
-    from `S \<subseteq> map_to_set m`
+    from \<open>S \<subseteq> map_to_set m\<close>
     show "?S' \<subseteq> dom m"
       unfolding map_to_set_dom
       by auto
   next
-    from `S \<noteq> {}` show "?S' \<noteq> {}" by auto
+    from \<open>S \<noteq> {}\<close> show "?S' \<noteq> {}" by auto
   next
     show "\<not> (c \<sigma>)" by fact
   next
@@ -314,11 +314,11 @@ next
       assume pre_k: "k \<notin> fst ` S" "m k = Some v"
       assume pre_k': "k' \<in> fst ` S" "m k' = Some v'"
 
-      from `S \<subseteq> map_to_set m` pre_k' 
+      from \<open>S \<subseteq> map_to_set m\<close> pre_k' 
       have kv'_in: "(k', v') \<in> S"
         unfolding map_to_set_def by auto
 
-      from `S \<subseteq> map_to_set m` pre_k
+      from \<open>S \<subseteq> map_to_set m\<close> pre_k
       have kv_in: "(k, v) \<in> map_to_set m - S"
         unfolding map_to_set_def 
         by (auto simp add: image_iff)
@@ -339,20 +339,20 @@ next
   proof (rule IP)
     show "c \<sigma>" by fact
   next
-    from `kv \<in> S` show "k \<in> ?S'" by (auto simp add: image_iff Bex_def)
+    from \<open>kv \<in> S\<close> show "k \<in> ?S'" by (auto simp add: image_iff Bex_def)
   next
-    from `kv \<in> S` `S \<subseteq> map_to_set m` 
+    from \<open>kv \<in> S\<close> \<open>S \<subseteq> map_to_set m\<close> 
     have "kv \<in> map_to_set m" by auto
     thus m_k_eq: "m k = Some v" unfolding map_to_set_def by simp
   next
-    from `S \<subseteq> map_to_set m`
+    from \<open>S \<subseteq> map_to_set m\<close>
     show S'_subset: "?S' \<subseteq> dom m"
       unfolding map_to_set_dom
       by auto
   next
     show "I (fst ` S) \<sigma>" by fact
   next
-    from `S \<subseteq> map_to_set m` `kv \<in> S`
+    from \<open>S \<subseteq> map_to_set m\<close> \<open>kv \<in> S\<close>
     have S_simp: "{(k', v'). k' \<in> (fst ` S) - {k} \<and> m k' = Some v'} = S - {kv}"
       unfolding map_to_set_def subset_iff
       apply (auto simp add: image_iff Bex_def)
@@ -364,7 +364,7 @@ next
                   R (k, v) (k', v') " 
       by simp
   next
-    from `S \<subseteq> map_to_set m` R_not_S
+    from \<open>S \<subseteq> map_to_set m\<close> R_not_S
     show "\<forall>k' v'. k' \<notin> fst ` S \<and> m k' = Some v' \<longrightarrow> R (k', v') (k, v)" 
       apply (simp add: Ball_def map_to_set_def subset_iff image_iff)
       apply metis
@@ -372,7 +372,7 @@ next
   qed
 
   moreover 
-    from `S \<subseteq> map_to_set m` `kv \<in> S`
+    from \<open>S \<subseteq> map_to_set m\<close> \<open>kv \<in> S\<close>
     have "fst ` (S - {kv}) = fst ` S - {k}"
       apply (simp add: set_eq_iff image_iff Bex_def map_to_set_def subset_iff)
       apply (metis option.inject)
@@ -466,11 +466,11 @@ unfolding set_iterator_def
 by simp
 
 
-subsection {* Ordered Iterators *}
+subsection \<open>Ordered Iterators\<close>
 
-text {* Selecting according to a linear order is another case that is interesting. 
+text \<open>Selecting according to a linear order is another case that is interesting. 
  Ordered iterators over maps, i.\,e.\ iterators over key-value pairs,
- use an order on the keys.*}
+ use an order on the keys.\<close>
 
 context linorder begin
   definition "set_iterator_linord it S0 
@@ -669,7 +669,7 @@ context linorder begin
   by (rule map_iterator_genord_rule_insert_P) auto
 end
 
-subsection {* Conversions to foldli *}
+subsection \<open>Conversions to foldli\<close>
 
 lemma set_iterator_genord_foldli_conv :
   "set_iterator_genord iti S R \<longleftrightarrow>

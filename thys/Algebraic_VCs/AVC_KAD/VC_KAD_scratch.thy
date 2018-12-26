@@ -4,16 +4,16 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsection{* Component Based on Kleene Algebra with Domain *}
+subsection\<open>Component Based on Kleene Algebra with Domain\<close>
 
-text {* This component supports the verification and step-wise refinement of simple while programs
-in a partial correctness setting. *}
+text \<open>This component supports the verification and step-wise refinement of simple while programs
+in a partial correctness setting.\<close>
 
 theory VC_KAD_scratch
   imports Main
 begin
 
-subsubsection {* KAD: Definitions and Basic Properties *}
+subsubsection \<open>KAD: Definitions and Basic Properties\<close>
 
 notation times (infixl "\<cdot>" 70)
 
@@ -217,7 +217,7 @@ next
     by simp
 qed
 
-subsubsection {* wp Calculus *}
+subsubsection \<open>wp Calculus\<close>
 
 definition if_then_else :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
   "if p then x else y fi = d p \<cdot> x + ad p \<cdot> y"
@@ -301,7 +301,7 @@ lemma wp_while_inv_break: "d p \<le> wp y i \<Longrightarrow> d i \<cdot> ad r \
 
 end
 
-subsubsection {* Soundness and Relation KAD*}
+subsubsection \<open>Soundness and Relation KAD\<close>
 
 notation relcomp (infixl ";" 70)
 
@@ -343,7 +343,7 @@ interpretation rel_aka: antidomain_kleene_algebra Id "{}" "(\<union>)"  "(;)" "(
   apply auto[2]
   by (auto simp: rel_star_contr rel_d.pow_inductl rel_star_contl SUP_least rel_d.pow_inductr rel_ad_def)
 
-subsubsection {* Embedding Predicates in Relations *}
+subsubsection \<open>Embedding Predicates in Relations\<close>
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
@@ -365,7 +365,7 @@ lemma p2r_conj_hom_var [simp]: "\<lceil>P\<rceil> ; \<lceil>Q\<rceil> = \<lceil>
 lemma p2r_disj_hom [simp]: "\<lceil>P\<rceil> \<union> \<lceil>Q\<rceil> = \<lceil>\<lambda>s. P s \<or> Q s\<rceil>"
   by auto
 
-subsubsection {* Store and Assignment *}
+subsubsection \<open>Store and Assignment\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
@@ -384,7 +384,7 @@ abbreviation if_then_else_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> '
 abbreviation while_inv_sugar :: "'a pred \<Rightarrow> 'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a rel" ("WHILE _ INV _ DO _ OD" [64,64,64] 63) where
   "WHILE P INV I DO X OD \<equiv> rel_aka.while_inv \<lceil>P\<rceil> \<lceil>I\<rceil> X"
 
-subsubsection {* Verification Example *}
+subsubsection \<open>Verification Example\<close>
 
 lemma euclid:
   "PRE (\<lambda>s::nat store. s ''x'' = x \<and> s ''y'' = y)
@@ -400,7 +400,7 @@ lemma euclid:
 context antidomain_kleene_algebra
 begin
 
-subsubsection{* Propositional Hoare Logic *}
+subsubsection\<open>Propositional Hoare Logic\<close>
 
 definition H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "H p x q \<longleftrightarrow> d p \<le> wp x q"
@@ -439,7 +439,7 @@ lemma H_while_inv: "d p \<le> d i \<Longrightarrow> d i \<cdot> ad r \<le> d q \
 
 end
 
-subsubsection{* Definition of Refinement KAD *}
+subsubsection\<open>Definition of Refinement KAD\<close>
 
 class rkad = antidomain_kleene_algebra +
   fixes R :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -447,7 +447,7 @@ class rkad = antidomain_kleene_algebra +
 
 begin
 
-subsubsection {* Propositional Refinement Calculus *}
+subsubsection \<open>Propositional Refinement Calculus\<close>
 
 lemma HR: "H p x q \<longleftrightarrow> x \<le> R p q"
   by (simp add: H_def R_def)
@@ -484,7 +484,7 @@ lemma R_loop: "while q do (R (d p \<cdot> d q) p) od \<le> R p (d p \<cdot> ad q
 
 end
 
-subsubsection {* Soundness and Relation RKAD*}
+subsubsection \<open>Soundness and Relation RKAD\<close>
 
 definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where 
   "rel_R P Q = \<Union>{X. rel_aka.dom_op P \<subseteq> rel_aka.wp X Q}"
@@ -492,7 +492,7 @@ definition rel_R :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
 interpretation rel_rkad: rkad Id "{}" "(\<union>)"  "(;)" "(\<subseteq>)" "(\<subset>)" rtrancl rel_ad rel_R
   by (standard, auto simp: rel_R_def rel_aka.dom_op_def rel_ad_def rel_aka.wp_def, blast)
 
-subsubsection {* Assignment Laws *}
+subsubsection \<open>Assignment Laws\<close>
 
 lemma R_assign: "(\<forall>s. P s \<longrightarrow> Q (s (v := e s))) \<Longrightarrow> (v ::= e) \<subseteq> rel_R \<lceil>P\<rceil> \<lceil>Q\<rceil>"
   by (auto simp: rel_rkad.R_def)
@@ -507,7 +507,7 @@ lemma R_assignr: "(\<forall>s. Q' s \<longrightarrow> Q (s (v := e s))) \<Longri
 lemma R_assignl: "(\<forall>s. P s \<longrightarrow> P' (s (v := e s))) \<Longrightarrow> (v ::= e) ; (rel_R \<lceil>P'\<rceil> \<lceil>Q\<rceil>) \<subseteq> rel_R \<lceil>P\<rceil> \<lceil>Q\<rceil>"
   by (subst rel_rkad.HR[symmetric], rule rel_aka.H_seq, erule H_assign_var, simp add: rel_rkad.H_R1)
 
-subsubsection {* Refinement Example *}
+subsubsection \<open>Refinement Example\<close>
 
 lemma var_swap_ref1: 
   "rel_R \<lceil>\<lambda>s. s ''x'' = a \<and> s ''y'' = b\<rceil> \<lceil>\<lambda>s. s ''x'' = b \<and> s ''y'' = a\<rceil> 

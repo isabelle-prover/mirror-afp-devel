@@ -1,4 +1,4 @@
-section {* \isaheader{List Based Sets} *}
+section \<open>\isaheader{List Based Sets}\<close>
 theory Impl_List_Set
 imports
   "../../Iterator/Iterator" 
@@ -93,7 +93,7 @@ next
     thus ?case ..
 qed
 
-  text {* All finite sets can be represented *}
+  text \<open>All finite sets can be represented\<close>
   lemma list_set_rel_range:
     "Range (\<langle>R\<rangle>list_set_rel) = { S. finite S \<and> S\<subseteq>Range R }"
       (is "?A = ?B")
@@ -285,7 +285,7 @@ context begin interpretation autoref_syn .
     done
 end
 
-  subsection {* More Operations *}
+  subsection \<open>More Operations\<close>
   lemma list_set_autoref_isEmpty[autoref_rules]:
     "(is_Nil,op_set_isEmpty) \<in> \<langle>R\<rangle>list_set_rel \<rightarrow> bool_rel"
     by (auto simp: list_set_rel_def br_def split: list.split_asm)
@@ -374,12 +374,12 @@ end
   qed
 
 
-  subsection {* Optimizations *}
+  subsection \<open>Optimizations\<close>
   lemma glist_delete_hd: "eq x y \<Longrightarrow> glist_delete eq x (y#s) = s"
     by (simp add: glist_delete_def)
 
-  text {* Hack to ensure specific ordering. Note that ordering has no meaning
-    abstractly *}
+  text \<open>Hack to ensure specific ordering. Note that ordering has no meaning
+    abstractly\<close>
   definition [simp]: "LIST_SET_REV_TAG \<equiv> \<lambda>x. x"
   
   lemma LIST_SET_REV_TAG_autoref[autoref_rules]: 

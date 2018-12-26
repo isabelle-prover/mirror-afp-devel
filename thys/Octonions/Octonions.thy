@@ -1007,7 +1007,7 @@ qed (auto intro: continuous_intros)
 
 subsection\<open>Octonions for describing 7D isometries\<close>
 
-subsubsection\<open>The @{text HIm} operator\<close>
+subsubsection\<open>The \<open>HIm\<close> operator\<close>
 
 definition HIm :: "octo \<Rightarrow> real^7" where
   "HIm q \<equiv> vector[Im1 q, Im2 q, Im3 q, Im4 q, Im5 q, Im6 q, Im7 q]"
@@ -1050,7 +1050,7 @@ lemma him_sum [simp]: "HIm (sum f S) = (\<Sum>x\<in>S. HIm (f x))"
 lemma linear_him: "linear HIm"
   by (simp add: linearI)
 
-subsubsection\<open>The @{text Hv} operator\<close>
+subsubsection\<open>The \<open>Hv\<close> operator\<close>
 
 definition Hv :: "real^7 \<Rightarrow> octo" where
   "Hv v \<equiv> Octo 0 (v$1) (v$2) (v$3) (v$4) (v$5) (v$6) (v$7)  "

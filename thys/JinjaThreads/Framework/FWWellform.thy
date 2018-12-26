@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Wellformedness conditions for the multithreaded state *}
+section \<open>Wellformedness conditions for the multithreaded state\<close>
 
 theory FWWellform
 imports
@@ -12,7 +12,7 @@ imports
   FWCondAction
 begin
 
-text{* Well-formedness property: Locks are held by real threads *}
+text\<open>Well-formedness property: Locks are held by real threads\<close>
 
 definition
   lock_thread_ok :: "('l, 't) locks \<Rightarrow> ('l, 't,'x) thread_info \<Rightarrow> bool"
@@ -109,7 +109,7 @@ lemma acquire_all_preserves_lock_thread_ok:
   shows "\<lbrakk> lock_thread_ok ls ts; ts t = \<lfloor>(x, ln)\<rfloor> \<rbrakk> \<Longrightarrow> lock_thread_ok (acquire_all ls t ln) (ts(t \<mapsto> xw))"
 by(rule lock_thread_okI)(auto dest!: has_lock_acquire_locks_implies_has_lock dest: lock_thread_okD)
 
-text {* Well-formedness condition: Wait sets contain only real threads *}
+text \<open>Well-formedness condition: Wait sets contain only real threads\<close>
 
 definition wset_thread_ok :: "('w, 't) wait_sets \<Rightarrow> ('l, 't, 'x) thread_info \<Rightarrow> bool"
 where "wset_thread_ok ws ts \<equiv> \<forall>t. ts t = None \<longrightarrow> ws t = None"
@@ -165,7 +165,7 @@ lemma redT_updWs_preserve_wset_thread_ok:
 unfolding redT_updWs_def apply(rotate_tac 1)
 by(induct rule: rtrancl3p_converse_induct)(auto intro: redT_updW_preserve_wset_thread_ok)
 
-text {* Well-formedness condition: Wait sets contain only non-final threads *}
+text \<open>Well-formedness condition: Wait sets contain only non-final threads\<close>
 
 context final_thread begin
 

@@ -40,14 +40,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section {* Policy Transformation for Testing *}
+section \<open>Policy Transformation for Testing\<close>
 theory 
   NormalisationTestSpecification
   imports 
     Normalisation
 begin
 
-text{* 
+text\<open>
   This theory provides functions and theorems which are useful if one wants to test policy 
   which are transformed. Most exist in two versions: one where the domains of the rules
   of the list (which is the result of a transformation) are pairwise disjoint, and one where 
@@ -55,11 +55,11 @@ text{*
 
   The examples in the firewall case study provide a good documentation how these theories can
   be applied. 
-*}
+\<close>
 
-text{* 
+text\<open>
   This invariant establishes that the domains of a list of rules are pairwise disjoint. 
-*}
+\<close>
 fun disjDom where
  "disjDom (x#xs) = ((\<forall>y\<in>(set xs). dom x \<inter> dom y = {}) \<and> disjDom xs)"
 |"disjDom [] = True" 
@@ -110,11 +110,11 @@ lemma distrPUTL:
     apply (auto)
   done
 
-text{* 
+text\<open>
   It makes sense to cater for the common special case where the normalisation returns a list 
   where the last element is a default-catch-all rule. It seems easier to cater for this globally,
   rather than to require the normalisation procedures to do this.  
-*}
+\<close>
 
 fun gatherDomain_aux where
   "gatherDomain_aux (x#xs) = (dom x \<union> (gatherDomain_aux xs))"

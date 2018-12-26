@@ -4,8 +4,8 @@
 
   Provides the "master_theorem" and "akra_bazzi_termination" proof methods.
 *)
-section {* The proof methods *}
-subsection {* Master theorem and termination *}
+section \<open>The proof methods\<close>
+subsection \<open>Master theorem and termination\<close>
 theory Akra_Bazzi_Method
 imports 
   Complex_Main
@@ -27,7 +27,7 @@ proof-
   from taylor_up[of 3 "\<lambda>_. exp" exp 0 1 0] 
     obtain t :: real where "t > 0" "t < 1" "exp 1 = 5/2 + exp t / 6" by (auto simp: eval_nat_numeral)
   note this(3)
-  also from `t < 1` have "exp t < exp 1" by simp
+  also from \<open>t < 1\<close> have "exp t < exp 1" by simp
   finally show "exp (1::real) < 3" by (simp add: field_simps)
 qed
 
@@ -362,7 +362,7 @@ lemmas master_automation =
   master2_2_automation master3_automation
 
 
-ML {*
+ML \<open>
 
 fun generalize_master_thm ctxt thm =
   let
@@ -386,9 +386,9 @@ fun generalize_master_thm ctxt thm =
 fun generalize_master_thm' (binding, thm) ctxt =
   Local_Theory.note ((binding, []), [generalize_master_thm ctxt thm]) ctxt |> snd
 
-*}
+\<close>
 
-local_setup {*
+local_setup \<open>
   fold generalize_master_thm' 
     [(@{binding master1_automation'}, @{thm master1_automation}), 
      (@{binding master1_bigo_automation'}, @{thm master1_bigo_automation}), 
@@ -396,7 +396,7 @@ local_setup {*
      (@{binding master2_2_automation'}, @{thm master2_2_automation}),
      (@{binding master2_3_automation'}, @{thm master2_3_automation}), 
      (@{binding master3_automation'}, @{thm master3_automation})]
-*}
+\<close>
 
 end
 
@@ -410,13 +410,13 @@ ML_file "akra_bazzi.ML"
 
 hide_const arith_consts
 
-method_setup master_theorem = {*
+method_setup master_theorem = \<open>
   Akra_Bazzi.setup_master_theorem
-*} "automatically apply the Master theorem for recursive functions"
+\<close> "automatically apply the Master theorem for recursive functions"
 
-method_setup akra_bazzi_termination = {*
+method_setup akra_bazzi_termination = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (Akra_Bazzi.akra_bazzi_termination_tac ctxt))
-*} "prove termination of Akra-Bazzi functions"
+\<close> "prove termination of Akra-Bazzi functions"
 
 hide_const CLAMP CLAMP' MASTER_BOUND MASTER_BOUND' MASTER_BOUND''
 

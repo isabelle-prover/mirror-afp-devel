@@ -5,7 +5,7 @@
 More about options.
 *)
 
-section {* More about Options *}
+section \<open>More about Options\<close>
 
 theory Opt imports Err begin
 

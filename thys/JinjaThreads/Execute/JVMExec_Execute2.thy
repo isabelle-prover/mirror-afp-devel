@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* An optimized JVM *}
+section \<open>An optimized JVM\<close>
 
 theory JVMExec_Execute2
 imports
@@ -10,12 +10,12 @@ imports
   ExternalCall_Execute
 begin
 
-text {*
+text \<open>
   This JVM must lookup the method declaration of the top call frame at every step to find the next instruction.
   It is more efficient to refine it such that the instruction list and the exception table are
   cached in the call frame. Even further, this theory adds keeps track of @{term "drop pc ins"}, 
   whose head is the next instruction to execute. 
-*}
+\<close>
 
 locale JVM_heap_execute = heap_execute +
   constrains addr2thread_id :: "('addr :: addr) \<Rightarrow> 'thread_id" 

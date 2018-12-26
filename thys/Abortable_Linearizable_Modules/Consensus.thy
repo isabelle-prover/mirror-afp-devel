@@ -1,11 +1,11 @@
-section {* The Consensus Data Type *}
+section \<open>The Consensus Data Type\<close>
 
 theory Consensus
 imports RDR
 begin
 
-text {* This theory provides a model for the RDR locale, thus showing 
-  that the assumption of the RDR locale are consistent. *}
+text \<open>This theory provides a model for the RDR locale, thus showing 
+  that the assumption of the RDR locale are consistent.\<close>
 
 typedecl proc
 typedecl val
@@ -74,7 +74,7 @@ proof (unfold_locales)
   show "s \<bullet> r = s"
   proof -
     obtain rs where "s = \<bottom> \<star> rs" and "rs \<noteq> []" 
-      using `contains s r`
+      using \<open>contains s r\<close>
       by (auto simp add:contains_def, force)
     thus ?thesis
     by (metis \<delta>.simps(2) rev_exhaust single_use)

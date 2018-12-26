@@ -14,10 +14,10 @@ imports
 
 begin
 
-section {* Examples *}
-subsection {* Compositions of non-basic relations *}
-text{* Basic relations are the 13 time interval relations. The unions of basic relations are also relations and their compositions is the union of compositions.
-We prove few of these compositions that are required in theory nest.thy.  *}
+section \<open>Examples\<close>
+subsection \<open>Compositions of non-basic relations\<close>
+text\<open>Basic relations are the 13 time interval relations. The unions of basic relations are also relations and their compositions is the union of compositions.
+We prove few of these compositions that are required in theory nest.thy.\<close>
 
 method (in arelations) e_compose = (match conclusion in "e O b \<subseteq> _"   \<Rightarrow> \<open>insert ceb, blast\<close>  
                                       \<bar> _ \<Rightarrow> \<open>match conclusion in "e O m \<subseteq> _"  \<Rightarrow> \<open>insert cem, blast\<close> \<bar> _ \<Rightarrow> \<open>fail\<close>\<close>)
@@ -172,7 +172,7 @@ apply (simp, intro conjI)
         using crs_rules apply auto[5]
           using crd_rules by auto
    
-subsection {* Intersection of non-basic relations *}
+subsection \<open>Intersection of non-basic relations\<close>
 
 lemma  inter_ov:
 assumes  "(i,j) \<in>  (b \<union> m \<union> ov \<union> f\<inverse> \<union> d\<inverse>) \<inter> (e \<union> b^-1 \<union> m^-1 \<union> ov^-1 \<union> ov \<union> s^-1 \<union> s \<union> f^-1 \<union> f \<union> d^-1 \<union> d) \<inter> (b \<union> m \<union> ov \<union> s \<union> d)" 

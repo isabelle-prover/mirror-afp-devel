@@ -123,18 +123,18 @@ by (induct set: reach) auto
 lemmas new_invs = prevk_issued currk_not_prevk key2_not_currk
 (*>*)
 
-subsection{*An extension*}
+subsection\<open>An extension\<close>
 
-text{*
+text\<open>
 To test the flexibility of our model we extended it with the
 possibility for obtaining a new card, e.g.\ when one has lost one's
 card. Now reception needs to remember not just the current but also
-the previous key for each room, i.e.\ a new field @{text"prevk :: room
-\<Rightarrow> key"} is added to @{typ state}. It is initialized with the same value
+the previous key for each room, i.e.\ a new field \<open>prevk :: room
+\<Rightarrow> key\<close> is added to @{typ state}. It is initialized with the same value
 as @{const currk}: though strictly speaking it could be arbitrary,
 this permits the convenient invariant @{prop"prevk s r \<in> issued s"}.
-Upon check-in we set @{text prevk} to \mbox{@{term"(prevk s)(r := currk s r)"}}.
-Event @{text new_card} is simple enough:
+Upon check-in we set \<open>prevk\<close> to \mbox{@{term"(prevk s)(r := currk s r)"}}.
+Event \<open>new_card\<close> is simple enough:
 @{thm[display] new_card}
 
 The verification is not seriously affected. Some additional
@@ -143,7 +143,7 @@ invariants are required
 but the proofs are still of the same trivial induct-auto format.
 
 Adding a further event for loosing a card has no impact at all on the proofs.
-*}
+\<close>
 
 (*<*)
 end

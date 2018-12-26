@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* Welltyped Programs produce no Type Errors *}
+section \<open>Welltyped Programs produce no Type Errors\<close>
 
 theory BVNoTypeError
 imports
@@ -28,10 +28,10 @@ declare is_IntgI [simp, intro]
 declare is_BoolI [simp, intro]
 declare is_RefI [simp]
 
-text {*
+text \<open>
   The main theorem: welltyped programs do not produce type errors if they
   are started in a conformant state.
-*}
+\<close>
 theorem no_type_error:
   assumes welltyped: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P" and conforms: "\<Phi> \<turnstile> t:\<sigma> \<surd>"
   shows "exec_d P t \<sigma> \<noteq> TypeError"
@@ -236,7 +236,7 @@ proof -
             where U: "class_type_of' (ty_of_htype U) = \<lfloor>C'\<rfloor>" and "P \<turnstile> C' \<preceq>\<^sup>* D"
             by(rule widen_is_class_type_of) simp
 
-          from `P \<turnstile> C' \<preceq>\<^sup>* D` wf M' obtain m' Ts' T' D'' where 
+          from \<open>P \<turnstile> C' \<preceq>\<^sup>* D\<close> wf M' obtain m' Ts' T' D'' where 
             C': "P \<turnstile> C' sees M': Ts'\<rightarrow>T' = m' in D''" and
             Ts': "P \<turnstile> Ts [\<le>] Ts'"
             by (auto dest!: sees_method_mono)

@@ -7,7 +7,7 @@ theory Boolean_Expression_Checkers_AList_Mapping
   imports Main "HOL-Library.AList_Mapping" Boolean_Expression_Checkers
 begin
 
-section{* Tweaks for @{const AList_Mapping.Mapping} *}
+section\<open>Tweaks for @{const AList_Mapping.Mapping}\<close>
                                                        
 \<comment> \<open>If mappings are implemented by @{const AList_Mapping.Mapping}, the functions @{const reduce} and @{const normif} 
     search for x twice. The following code equations remove this redundant operation\<close>

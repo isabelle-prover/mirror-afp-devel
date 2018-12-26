@@ -10,9 +10,9 @@ sublocale sifum_example \<subseteq>
 
 context sifum_example begin
 
-text {* This predicate can be used to express arbitrary relational invariants for
+text \<open>This predicate can be used to express arbitrary relational invariants for
   compiler-specific features, but for this trivial case the vacuous one is fine.
-*}
+\<close>
 definition P_true :: "('a \<times> 'a) set"
 where
   "P_true  \<equiv> UNIV"
@@ -70,10 +70,10 @@ lemma Id_secure_refinement:
       by(auto simp: closed_glob_consistent_def P_true_def)
   qed
 
-text {*
+text \<open>
   This doesn't really mean much, but shows the lemmas in action.
   (I suspect that @{term "R\<^sub>C_of R Id"} is equivalent to @{term R}. But who cares?)
-*}
+\<close>
 lemma "strong_low_bisim_mm (gen_refine.R\<^sub>C_of (\<R> \<Gamma> \<S> P) Id P_true)"
   apply(rule R\<^sub>C_of_strong_low_bisim_mm)
    apply(rule \<R>_bisim)

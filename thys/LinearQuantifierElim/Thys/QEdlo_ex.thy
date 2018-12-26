@@ -22,19 +22,19 @@ lemmas reify_eqs =
   Logic.interpret.simps(1,2,4-7)[of I\<^sub>d\<^sub>l\<^sub>o, folded interpret_def]
   interpret_others interpret_Atoms
 
-method_setup dlo_reify = {*
+method_setup dlo_reify = \<open>
   Scan.succeed
   (fn ctxt =>
     Method.SIMPLE_METHOD' (Reification.tac ctxt @{thms reify_eqs} NONE
      THEN' simp_tac (put_simpset HOL_basic_ss ctxt addsimps [@{thm"interpret_def"}])))
-*} "dlo reification"
+\<close> "dlo reification"
 
 (* leave just enough equations in to convert back to True/False by eval *)
 declare I\<^sub>d\<^sub>l\<^sub>o.simps(1)[code]
 declare Logic.interpret.simps[code del]
 declare Logic.interpret.simps(1-2)[code]
 
-subsection{* Examples *}
+subsection\<open>Examples\<close>
 
 lemma "\<forall>x::real. \<not> x < x"
 apply dlo_reify

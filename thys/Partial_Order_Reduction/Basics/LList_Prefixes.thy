@@ -1,4 +1,4 @@
-section {* Prefixes on Coinductive Lists *}
+section \<open>Prefixes on Coinductive Lists\<close>
 
 theory LList_Prefixes
 imports

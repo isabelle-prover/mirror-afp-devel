@@ -1,4 +1,4 @@
-section {* Resumption-Based Noninterference *}
+section \<open>Resumption-Based Noninterference\<close>
 
 theory Resumption_Based
 imports Language_Semantics
@@ -11,7 +11,7 @@ begin
 
 type_synonym 'a rel = "('a \<times>'a) set"
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
 lemma int_emp[simp]:
 assumes "i > 0"
@@ -133,11 +133,11 @@ proof-
   by (metis bis_def gfp_upperbound th_def)
   hence "bis ^-1 \<subseteq> bis" and "bis ^+ \<subseteq> bis"
   apply(metis equalityI gfp_upperbound le_supI1 subset_refl sym_Un_converse sym_conv_converse_eq th_def trancl_id trancl_imp_trans)
-  by (metis Un_absorb `(bis \<union> bis\<inverse>)\<^sup>+ \<subseteq> bis` less_supI1 psubset_eq sym_Un_converse sym_conv_converse_eq sym_trancl trancl_id trancl_imp_trans)
+  by (metis Un_absorb \<open>(bis \<union> bis\<inverse>)\<^sup>+ \<subseteq> bis\<close> less_supI1 psubset_eq sym_Un_converse sym_conv_converse_eq sym_trancl trancl_id trancl_imp_trans)
   thus ?thesis unfolding bis_def sym_def using trancl_imp_trans by auto
 qed
 
-subsection {* Infrastructure for partitions *}
+subsection \<open>Infrastructure for partitions\<close>
 
 (* Being a partition *)
 definition part where
@@ -181,7 +181,7 @@ definition partCompat where
 definition lift where
 "lift P F II \<equiv> Union {F I | I . I \<in> P \<and> I \<subseteq> II}"
 
-text{* part: *}
+text\<open>part:\<close>
 
 lemma part_emp[simp]:
 "part J (insert {} P) = part J P"
@@ -235,7 +235,7 @@ apply (metis UnionE)
 apply (metis Union_upper disjoint_iff_not_equal insert_absorb insert_subset)
 by (metis UnionI disjoint_iff_not_equal)
 
-text{* gen: *}
+text\<open>gen:\<close>
 
 lemma incl_gen[simp]:
 "I \<subseteq> gen P I"
@@ -389,7 +389,7 @@ assumes "gen P I = {}"
 shows "I = {}"
 by (metis all_not_in_conv assms gen.incl)
 
-text{* partGen: *}
+text\<open>partGen:\<close>
 
 lemma partGen_ex:
 assumes "I \<in> P"
@@ -436,7 +436,7 @@ assumes "{} \<notin> P"
 shows "{} \<notin> partGen P"
 using assms unfolding partGen_def using emp_gen[of P] by blast
 
-text{* finer: *}
+text\<open>finer:\<close>
 
 lemma finer_partGen:
 "finer P (partGen P)"
@@ -475,7 +475,7 @@ next
   thus ?thesis using assms I II finer_nchotomy[of I0 P Q I II] by auto
 qed
 
-text{* partJoin: *}
+text\<open>partJoin:\<close>
 
 lemma partJoin_commute:
 "partJoin P Q = partJoin Q P"
@@ -532,7 +532,7 @@ assumes "finer {} Q"
 shows "Q \<subseteq> { {} }"
 using assms unfolding finer_def by auto
 
-text{* compat: *}
+text\<open>compat:\<close>
 
 lemma part_emp_R[simp]:
 "part I {} \<longleftrightarrow> I = {}"
@@ -552,7 +552,7 @@ assumes "{} \<notin> P" and "{} \<notin> Q"
 shows "{} \<notin> partJoin P Q"
 using assms unfolding partJoin_def by auto
 
-text{* partCompat: *}
+text\<open>partCompat:\<close>
 
 lemma partCompat_Un[simp]:
 "partCompat (P Un Q) theta f \<longleftrightarrow>
@@ -580,15 +580,15 @@ next
       thus ?thesis using case_i 1 by simp
     next
       case False
-      hence "(f j, f j0) \<in> theta" using `j0 \<in> J` `j \<in> J` `J \<in> P`
+      hence "(f j, f j0) \<in> theta" using \<open>j0 \<in> J\<close> \<open>j \<in> J\<close> \<open>J \<in> P\<close>
       using fP unfolding partCompat_def compat_def by auto
       hence "(f j0, f j) \<in> theta" using theta unfolding sym_def by simp
       thus ?thesis using 1 theta unfolding trans_def by blast
     qed
   next
     case True note case_i = True
-    hence "j0 \<noteq> j" using `i \<noteq> j` by auto
-    hence "(f j0, f j) \<in> theta" using `j0 \<in> J` `j \<in> J` `J \<in> P`
+    hence "j0 \<noteq> j" using \<open>i \<noteq> j\<close> by auto
+    hence "(f j0, f j) \<in> theta" using \<open>j0 \<in> J\<close> \<open>j \<in> J\<close> \<open>J \<in> P\<close>
     using fP unfolding partCompat_def compat_def by auto
     thus ?thesis unfolding case_i .
   qed
@@ -655,7 +655,7 @@ and "partCompat P theta f" and "partCompat Q theta f"
 shows "partCompat (partJoin P Q) theta f"
 by (metis assms partCompat_Un partCompat_partGen partJoin_def)
 
-text{* lift: *}
+text\<open>lift:\<close>
 
 lemma inj_on_lift:
 assumes P: "part I0 P" and Q: "part I0 Q" and PQ: "finer P Q"
@@ -759,7 +759,7 @@ next
 qed
 
 
-subsection {* Basic setting for bisimilarity *}
+subsection \<open>Basic setting for bisimilarity\<close>
 
 locale PL_Indis =
   PL aval tval cval
@@ -794,7 +794,7 @@ lemma indis_sym[sym]: "s \<approx> s' \<Longrightarrow> s' \<approx> s"
 using sym_indis unfolding sym_def by blast
 
 
-subsection{* Discreetness *}
+subsection\<open>Discreetness\<close>
 
 coinductive discr where
 intro:
@@ -827,7 +827,7 @@ proof(cases "n < length cl")
   qed
 qed (insert cl, auto)
 
-text{* Coinduction for discreetness: *}
+text\<open>Coinduction for discreetness:\<close>
 
 lemma discr_coind[consumes 1, case_names Hyp, induct pred: discr]:
 assumes *: "phi c" and
@@ -842,7 +842,7 @@ assumes *: "phi c" and
 shows "discr c"
 using * apply(induct) using ** by blast
 
-text{* Discreetness versus transition: *}
+text\<open>Discreetness versus transition:\<close>
 
 lemma discr_cont[simp]:
 assumes *: "discr c" and **: "i < brn c"
@@ -855,7 +855,7 @@ shows "s \<approx> eff c s i"
 using * apply(cases rule: discr.cases) using ** by blast
 
 
-subsection{* Self-isomorphism *}
+subsection\<open>Self-isomorphism\<close>
 
 coinductive siso where
 intro:
@@ -891,7 +891,7 @@ proof(cases "n < length cl")
   qed
 qed (insert cl, auto)
 
-text{* Coinduction for self-isomorphism: *}
+text\<open>Coinduction for self-isomorphism:\<close>
 
 lemma siso_coind[consumes 1, case_names Obs Cont, induct pred: siso]:
 assumes *: "phi c" and
@@ -909,7 +909,7 @@ assumes *: "phi c" and
 shows "siso c"
 using * apply induct using ** *** by blast+
 
-text{* Self-Isomorphism versus transition: *}
+text\<open>Self-Isomorphism versus transition:\<close>
 
 lemma siso_cont[simp]:
 assumes *: "siso c" and **: "i < brn c"
@@ -922,9 +922,9 @@ shows "eff c s i \<approx> eff c t i \<and> wt c s i = wt c t i \<and> cont c s 
 using * apply(cases rule: siso.cases) using ** by blast
 
 
-subsection{* Notions of bisimilarity *}
+subsection\<open>Notions of bisimilarity\<close>
 
-text{* Matchers *}
+text\<open>Matchers\<close>
 
 (* The notations are essentially the ones from the paper, except that,
    instead the paper's "Q" (which is redundant), we write "F P".
@@ -1070,7 +1070,7 @@ shows "matchC_LC theta c d"
 using assms mC_C_mC_ZOC unfolding match_defs by blast
 
 
-text{* Retracts: *}
+text\<open>Retracts:\<close>
 
 (* Strong retract: *)
 definition Sretr where
@@ -1098,7 +1098,7 @@ unfolding Retr_defs
 using matchC_C_matchC_LC by blast+
 
 
-text{* The associated bisimilarity relations: *}
+text\<open>The associated bisimilarity relations:\<close>
 
 definition Sbis where "Sbis \<equiv> gfp Sretr"
 definition ZObis where "ZObis \<equiv> gfp ZOretr"
@@ -1527,7 +1527,7 @@ lemma ZObis_sym: "c \<approx>01 d \<Longrightarrow> d \<approx>01 c"
 using sym_ZObis unfolding sym_def by blast
 
 
-subsection {* List versions of the bisimilarities *}
+subsection \<open>List versions of the bisimilarities\<close>
 
 (* For Sbis: *)
 
@@ -1636,7 +1636,7 @@ proof-
 qed
 
 
-subsection{* Discreetness for configurations *}
+subsection\<open>Discreetness for configurations\<close>
 
 coinductive discrCf where
 intro:
@@ -1644,7 +1644,7 @@ intro:
        snd cf \<approx> snd (cont_eff cf i) \<and> discrCf (cont_eff cf i))
  \<Longrightarrow> discrCf cf"
 
-text{* Coinduction for discrness: *}
+text\<open>Coinduction for discrness:\<close>
 
 lemma discrCf_coind[consumes 1, case_names Hyp, induct pred: discr]:
 assumes *: "phi cf" and
@@ -1661,7 +1661,7 @@ assumes *: "phi cf" and
 shows "discrCf cf"
 using * apply(induct) using ** by blast
 
-text{* Discreetness versus transition: *}
+text\<open>Discreetness versus transition:\<close>
 
 lemma discrCf_cont[simp]:
 assumes *: "discrCf cf" and **: "i < brn (fst cf)"

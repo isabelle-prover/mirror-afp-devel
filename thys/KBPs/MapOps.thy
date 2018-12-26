@@ -10,16 +10,16 @@ imports Main
 begin
 (*>*)
 
-subsection{* Finite map operations *}
+subsection\<open>Finite map operations\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-map-ops}
 
 The algorithm represents an automaton as a pair of maps, which we
 capture abstractly with a record and a predicate:
 
-*}
+\<close>
 
 record ('m, 'k, 'e) MapOps =
   empty :: "'m"
@@ -54,7 +54,7 @@ lemma MapOps_lookup_updateD:
 
 (*>*)
 
-text{*
+text\<open>
 
 The function @{term "\<alpha>"} abstracts concrete keys of type @{typ "'k"},
 and the parameter @{term "d"} specifies the valid abstract keys.
@@ -66,7 +66,7 @@ functions separately (as in the DFS theory of \S\ref{sec:dfs}).
 We use the following function to test for membership in the domain of
 the map:
 
-*}
+\<close>
 
 definition isSome :: "'a option \<Rightarrow> bool" where
   "isSome opt \<equiv> case opt of None \<Rightarrow> False | Some _ \<Rightarrow> True"

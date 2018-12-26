@@ -6,12 +6,12 @@ text \<open>
   Implementation of node and edge restriction via pre-initialized visited set.
 
   We now further refine the simple implementation in case that the graph has
-  the form @{text "G'=(rel_restrict E R, V0-R)"} for some @{text "fb_graph G=(E,V0)"}.
+  the form \<open>G'=(rel_restrict E R, V0-R)\<close> for some \<open>fb_graph G=(E,V0)\<close>.
   If, additionally, the parameterization is not "too sensitive" to the 
-  visited set, we can pre-initialize the visited set with @{text R}, and use the
-  @{text V0} and @{text E} of @{text G}. This may be a more efficient implementation 
+  visited set, we can pre-initialize the visited set with \<open>R\<close>, and use the
+  \<open>V0\<close> and \<open>E\<close> of \<open>G\<close>. This may be a more efficient implementation 
   than explicitely
-  restricting @{text V0} and @{text E}, as it saves additional membership queries in @{text R} 
+  restricting \<open>V0\<close> and \<open>E\<close>, as it saves additional membership queries in \<open>R\<close> 
   on each successor function call. 
   
   Moreover, in applications where the restriction is updated between multiple 

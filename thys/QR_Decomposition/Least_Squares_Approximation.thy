@@ -4,16 +4,16 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Least Squares Approximation*}
+section\<open>Least Squares Approximation\<close>
 
 theory Least_Squares_Approximation
 imports
  QR_Decomposition
 begin
 
-subsection{*Second part of the Fundamental Theorem of Linear Algebra*}
+subsection\<open>Second part of the Fundamental Theorem of Linear Algebra\<close>
 
-text{*See @{url "http://en.wikipedia.org/wiki/Fundamental_theorem_of_linear_algebra"}*}
+text\<open>See @{url "http://en.wikipedia.org/wiki/Fundamental_theorem_of_linear_algebra"}\<close>
 
 lemma null_space_orthogonal_complement_row_space:
   fixes A::"real^'cols^'rows::{finite,wellorder}"
@@ -41,11 +41,11 @@ lemma left_null_space_orthogonal_complement_col_space:
   unfolding col_space_eq_row_space_transpose .
 
 
-subsection{*Least Squares Approximation*}
+subsection\<open>Least Squares Approximation\<close>
 
-text{*See @{url "https://people.math.osu.edu/husen.1/teaching/571/least_squares.pdf"}*}
+text\<open>See @{url "https://people.math.osu.edu/husen.1/teaching/571/least_squares.pdf"}\<close>
 
-text{*Part 3 of the Theorem 1.7 in the previous website.*}
+text\<open>Part 3 of the Theorem 1.7 in the previous website.\<close>
 
 lemma least_squares_approximation:
   fixes X::"'a::{euclidean_space} set"

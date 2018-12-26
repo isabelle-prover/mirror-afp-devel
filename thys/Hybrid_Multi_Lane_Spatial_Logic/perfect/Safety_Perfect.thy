@@ -6,12 +6,12 @@ Safety theorem and invariance with respect to switching views.
 *)
 
 section\<open>Safety for Cars with Perfect Sensors\<close>
-text{* 
+text\<open>
 This section contains the definition of requirements for
 lane change and distance controllers for cars, with the assumption
 of perfect sensors. Using these definitions, we show that safety
 is an invariant along all possible behaviour of cars.
-*}
+\<close>
 
 theory Safety_Perfect
   imports HMLSL_Perfect
@@ -31,52 +31,52 @@ notation hmlsl.re ("re'(_')")
 notation hmlsl.cl("cl'(_')")
 notation hmlsl.len ("len")
   
-text{*
+text\<open>
 Safety in the context of HMLSL means the absence of overlapping
 reservations. Using the somewhere modality, this is easy to formalise. 
-*}
+\<close>
 abbreviation safe::"cars\<Rightarrow>\<sigma>" 
   where "safe e \<equiv> \<^bold>\<forall> c. \<^bold>\<not>(c \<^bold>= e) \<^bold>\<rightarrow> \<^bold>\<not> \<^bold>\<langle>re(c) \<^bold>\<and> re(e) \<^bold>\<rangle>" 
 
-text{*
+text\<open>
 The distance controller ensures, that as long as the cars do not try
 to change their lane, they keep their distance. More formally,
 if the reservations of two cars do not overlap, they will also not
 overlap after an arbitrary amount of time passed. Observe that
 the cars are allowed to change their dynamical behaviour, i.e.,
 to accelerate and brake.
-*}
+\<close>
 
 abbreviation DC::"\<sigma>"
   where "DC \<equiv> \<^bold>G(\<^bold>\<forall> c d. \<^bold>\<not>(c \<^bold>= d) \<^bold>\<rightarrow>
                    \<^bold>\<not>\<^bold>\<langle>re(c) \<^bold>\<and> re(d)\<^bold>\<rangle> \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<tau> \<^bold>\<not>\<^bold>\<langle>re(c) \<^bold>\<and> re(d)\<^bold>\<rangle>)"
 
-text{* 
+text\<open>
 To identify possibly dangerous situations during a lane change manoeuvre, 
 we use the \emph{potential collision check}. It allows us to identify
 situations, where the claim of a car \(d\) overlaps with 
 any part of the car \(c\).
-*}
+\<close>
 
 abbreviation pcc::"cars \<Rightarrow> cars \<Rightarrow> \<sigma>" 
   where "pcc c d \<equiv> \<^bold>\<not> (c \<^bold>= d) \<^bold>\<and> \<^bold>\<langle> cl(d) \<^bold>\<and> (re(c) \<^bold>\<or> cl(c)) \<^bold>\<rangle>"
 
-text {*
+text \<open>
 The only restriction the lane change controller imposes onto the cars is
 that in the case of a potential collision, they are not allowed to change
 the claim into a reservation. 
-*}
+\<close>
 
 abbreviation LC::"\<sigma>"
   where "LC \<equiv> \<^bold>G ( \<^bold>\<forall>d.( \<^bold>\<exists> c. pcc c d) \<^bold>\<rightarrow> \<^bold>\<box>r(d) \<^bold>\<bottom>)  "
     
 
-text{* 
+text\<open>
 The safety theorem is as follows. If the controllers of all
 cars adhere to the specifications given by \(LC\) and \(DC\),
 and we start with an initially safe traffic snapshot, then
 all reachable traffic snapshots are also safe.
-*}
+\<close>
     
 theorem safety:"\<Turnstile>( \<^bold>\<forall>e. safe e ) \<^bold>\<and> DC \<^bold>\<and> LC \<^bold>\<rightarrow> \<^bold>G (\<^bold>\<forall> e. safe e)"
 proof (rule allI|rule impI)+
@@ -296,12 +296,12 @@ proof (rule allI|rule impI)+
   qed
 qed
 
-text{*
+text\<open>
 While the safety theorem was only proven for a single car, we can
 show that the choice of this car is irrelevant. That is, if we have
 a safe situation, and switch the perspective to another car,
 the resulting situation is also safe.
-*}
+\<close>
   
 lemma safety_switch_invariant:"\<Turnstile>(\<^bold>\<forall>e. safe(e)) \<^bold>\<rightarrow>  \<^bold>@c (\<^bold>\<forall>e. safe(e))"
 proof (rule allI|rule impI)+

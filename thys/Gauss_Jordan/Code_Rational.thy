@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Code Generation for rational numbers in Haskell*}
+section\<open>Code Generation for rational numbers in Haskell\<close>
 
 theory Code_Rational
 imports
@@ -21,18 +21,18 @@ imports
   "HOL-Library.Code_Target_Int"
 begin
 
-subsection{*Serializations*}
+subsection\<open>Serializations\<close>
 
-text{*The following @{text "code_printing code_module"} module is the usual way to import libraries 
+text\<open>The following \<open>code_printing code_module\<close> module is the usual way to import libraries 
 in Haskell. In this case, we rebind some functions from Data.Ratio. 
-See @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2013-June/msg00007.html"}*}
+See @{url "https://lists.cam.ac.uk/pipermail/cl-isabelle-users/2013-June/msg00007.html"}\<close>
 
-code_printing code_module Rational => (Haskell) {*
+code_printing code_module Rational => (Haskell) \<open>
  import qualified Data.Ratio;
  fract (a, b) = a Data.Ratio.% b;
  numerator a = Data.Ratio.numerator a;
  denominator a = Data.Ratio.denominator a;
-*}
+\<close>
 
 context
 includes integer.lifting

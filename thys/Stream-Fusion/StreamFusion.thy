@@ -1,10 +1,10 @@
-section {* Stream Fusion *}
+section \<open>Stream Fusion\<close>
 
 theory StreamFusion
 imports Stream
 begin
 
-subsection {* Type constructors for state types *}
+subsection \<open>Type constructors for state types\<close>
 
 domain Switch = S1 | S2
 
@@ -19,7 +19,7 @@ domain ('a, 'b) Both  (infixl ":!:" 25) = Both 'a 'b (infixl ":!:" 75)
 domain 'a L = L (lazy 'a)
 
 
-subsection {* Map function *}
+subsection \<open>Map function\<close>
 
 fixrec
   mapStep :: "('a \<rightarrow> 'b) \<rightarrow> ('s \<rightarrow> ('a, 's) Step) \<rightarrow> 's \<rightarrow> ('b, 's) Step"
@@ -41,14 +41,14 @@ lemma unfold_mapStep:
   shows "unfold\<cdot>(mapStep\<cdot>f\<cdot>h)\<cdot>s = mapL\<cdot>f\<cdot>(unfold\<cdot>h\<cdot>s)"
 proof (rule below_antisym)
   show "unfold\<cdot>(mapStep\<cdot>f\<cdot>h)\<cdot>s \<sqsubseteq> mapL\<cdot>f\<cdot>(unfold\<cdot>h\<cdot>s)"
-  using `s \<noteq> \<bottom>`
+  using \<open>s \<noteq> \<bottom>\<close>
   apply (induct arbitrary: s rule: unfold_ind [where h="mapStep\<cdot>f\<cdot>h"])
   apply (simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: unfold)
   done
 next
   show "mapL\<cdot>f\<cdot>(unfold\<cdot>h\<cdot>s) \<sqsubseteq> unfold\<cdot>(mapStep\<cdot>f\<cdot>h)\<cdot>s"
-  using `s \<noteq> \<bottom>`
+  using \<open>s \<noteq> \<bottom>\<close>
   apply (induct arbitrary: s rule: unfold_ind [where h="h"])
   apply (simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: unfold)
@@ -75,7 +75,7 @@ lemma mapL_eq: "mapL\<cdot>f\<cdot>xs = unstream\<cdot>(mapS\<cdot>f\<cdot>(stre
 by (simp add: unstream_mapS)
 
 
-subsection {* Filter function *}
+subsection \<open>Filter function\<close>
 
 fixrec
   filterStep :: "('a \<rightarrow> tr) \<rightarrow> ('s \<rightarrow> ('a, 's) Step) \<rightarrow> 's \<rightarrow> ('a, 's) Step"
@@ -97,7 +97,7 @@ lemma unfold_filterStep:
   shows "unfold\<cdot>(filterStep\<cdot>p\<cdot>h)\<cdot>s = filterL\<cdot>p\<cdot>(unfold\<cdot>h\<cdot>s)"
 proof (rule below_antisym)
   show "unfold\<cdot>(filterStep\<cdot>p\<cdot>h)\<cdot>s \<sqsubseteq> filterL\<cdot>p\<cdot>(unfold\<cdot>h\<cdot>s)"
-  using `s \<noteq> \<bottom>`
+  using \<open>s \<noteq> \<bottom>\<close>
   apply (induct arbitrary: s rule: unfold_ind [where h="filterStep\<cdot>p\<cdot>h"])
   apply (simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: unfold)
@@ -105,7 +105,7 @@ proof (rule below_antisym)
   done
 next
   show "filterL\<cdot>p\<cdot>(unfold\<cdot>h\<cdot>s) \<sqsubseteq> unfold\<cdot>(filterStep\<cdot>p\<cdot>h)\<cdot>s"
-  using `s \<noteq> \<bottom>`
+  using \<open>s \<noteq> \<bottom>\<close>
   apply (induct arbitrary: s rule: unfold_ind [where h="h"])
   apply (simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: unfold)
@@ -132,7 +132,7 @@ lemma filterL_eq: "filterL\<cdot>p\<cdot>xs = unstream\<cdot>(filterS\<cdot>p\<c
 by (simp add: unstream_filterS)
 
 
-subsection {* Foldr function *}
+subsection \<open>Foldr function\<close>
 
 fixrec
   foldrS :: "('a \<rightarrow> 'b \<rightarrow> 'b) \<rightarrow> 'b \<rightarrow> ('a, 's) Stream \<rightarrow> 'b"
@@ -147,14 +147,14 @@ lemma unfold_foldrS:
   assumes "s \<noteq> \<bottom>" shows "foldrS\<cdot>f\<cdot>z\<cdot>(Stream\<cdot>h\<cdot>s) = foldrL\<cdot>f\<cdot>z\<cdot>(unfold\<cdot>h\<cdot>s)"
 proof (rule below_antisym)
   show "foldrS\<cdot>f\<cdot>z\<cdot>(Stream\<cdot>h\<cdot>s) \<sqsubseteq> foldrL\<cdot>f\<cdot>z\<cdot>(unfold\<cdot>h\<cdot>s)"
-  using `s \<noteq> \<bottom>`
+  using \<open>s \<noteq> \<bottom>\<close>
   apply (induct arbitrary: s rule: foldrS.induct)
   apply (simp, simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: monofun_cfun unfold)
   done
 next
   show "foldrL\<cdot>f\<cdot>z\<cdot>(unfold\<cdot>h\<cdot>s) \<sqsubseteq> foldrS\<cdot>f\<cdot>z\<cdot>(Stream\<cdot>h\<cdot>s)"
-  using `s \<noteq> \<bottom>`
+  using \<open>s \<noteq> \<bottom>\<close>
   apply (induct arbitrary: s rule: unfold_ind)
   apply (simp, simp)
   apply (case_tac "h\<cdot>s", simp_all add: monofun_cfun unfold)
@@ -176,7 +176,7 @@ lemma foldrL_eq:
 by (simp add: unstream_foldrS)
 
 
-subsection {* EnumFromTo function *}
+subsection \<open>EnumFromTo function\<close>
 
 type_synonym int' = "int\<^sub>\<bottom>"
 
@@ -245,7 +245,7 @@ lemma enumFromToL_eq: "enumFromToL\<cdot>x\<cdot>y = unstream\<cdot>(enumFromToS
 by (simp add: unstream_enumFromToS)
 
 
-subsection {* Append function *}
+subsection \<open>Append function\<close>
 
 fixrec
   appendStep ::
@@ -365,7 +365,7 @@ lemma appendL_eq: "appendL\<cdot>xs\<cdot>ys = unstream\<cdot>(appendS\<cdot>(st
 by (simp add: unstream_appendS)
 
 
-subsection {* ZipWith function *}
+subsection \<open>ZipWith function\<close>
 
 fixrec
   zipWithStep ::
@@ -541,7 +541,7 @@ lemma zipWithL_eq:
 by (simp add: unstream_zipWithS)
 
 
-subsection {* ConcatMap function *}
+subsection \<open>ConcatMap function\<close>
 
 fixrec
   concatMapStep ::
@@ -685,7 +685,7 @@ lemma concatMapL_eq:
 by (simp add: unstream_concatMapS oo_def eta_cfun)
 
 
-subsection {* Examples *}
+subsection \<open>Examples\<close>
 
 lemmas stream_eqs =
   mapL_eq

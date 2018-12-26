@@ -1,4 +1,4 @@
-section{*Study on knowledge equivalence --- results to relate the knowledge of an agent to that of another's*}
+section\<open>Study on knowledge equivalence --- results to relate the knowledge of an agent to that of another's\<close>
 
 theory Knowledge
 imports NS_Public_Bad_GA
@@ -84,10 +84,10 @@ lemma knowledge_equiv_eq_old:
 apply (induct_tac "evs", induct_tac "A", induct_tac "B")
 apply force
 apply (induct_tac "a")
-txt{*Gets case solves because this event doesn't touch any agent knowledge*}
+txt\<open>Gets case solves because this event doesn't touch any agent knowledge\<close>
 apply simp_all
-apply safe txt{*speeds up subsequent blasting*}
-apply blast+  txt{*very very slow*}
+apply safe txt\<open>speeds up subsequent blasting\<close>
+apply blast+  txt\<open>very very slow\<close>
 done
 
 (* New proof*)

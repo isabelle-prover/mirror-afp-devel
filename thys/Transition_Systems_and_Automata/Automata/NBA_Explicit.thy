@@ -1,4 +1,4 @@
-section {* Explicit Nondeterministic Büchi Automata *}
+section \<open>Explicit Nondeterministic Büchi Automata\<close>
 
 theory NBA_Explicit
 imports NBA_Nodes

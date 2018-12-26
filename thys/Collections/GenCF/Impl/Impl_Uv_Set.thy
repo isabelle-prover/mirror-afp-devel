@@ -5,9 +5,9 @@ imports
   Native_Word.Uint
 begin
 
-  subsection {* Bit-Vectors as Lists of Words *}
+  subsection \<open>Bit-Vectors as Lists of Words\<close>
 
-  subsubsection {* Lookup *}
+  subsubsection \<open>Lookup\<close>
 
   primrec lookup :: "nat \<Rightarrow> ('a::len) word list \<Rightarrow> bool" where
     "lookup _ [] \<longleftrightarrow> False"
@@ -32,11 +32,11 @@ begin
     by (induction uv arbitrary: i) auto
 
 
-  subsubsection {* Empty *}
+  subsubsection \<open>Empty\<close>
 
   definition empty :: "'a::len word list" where "empty = []"
 
-  subsubsection {* Set and Reset Bit *}
+  subsubsection \<open>Set and Reset Bit\<close>
 
   function single_bit :: "nat \<Rightarrow> ('a::len) word list" 
     where "single_bit n = (
@@ -87,7 +87,7 @@ find_consts name: set_bit
     apply (auto simp: test_bit_set_gen word_size)
     done
 
-  subsubsection {* Binary Operations *}
+  subsubsection \<open>Binary Operations\<close>
 
   definition 
     is_bin_op_impl 
@@ -113,7 +113,7 @@ find_consts name: set_bit
     apply (auto simp: is_strict_bin_op_impl_def is_bin_op_impl_def)
     done
 
-  subsection {* Abstraction to Sets of Naturals *}
+  subsection \<open>Abstraction to Sets of Naturals\<close>
 
   definition "\<alpha> uv \<equiv> {n. lookup n uv}"
   
@@ -293,7 +293,7 @@ find_consts name: set_bit
     by (auto simp: \<alpha>_def disjoint_lookup)
 
   
-subsection {* Lifting to Uint *}
+subsection \<open>Lifting to Uint\<close>
   type_synonym uint_vector = "uint list"
 
   lift_definition uv_\<alpha> :: "uint_vector \<Rightarrow> nat set" is \<alpha> .
@@ -347,7 +347,7 @@ subsection {* Lifting to Uint *}
     equal subseteq subset disjoint
 
 
-subsection {* Autoref Setup *}
+subsection \<open>Autoref Setup\<close>
 
   definition uv_set_rel_def_internal: 
     "uv_set_rel Rk \<equiv> 

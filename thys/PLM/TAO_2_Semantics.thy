@@ -6,18 +6,18 @@ imports
 begin
 (*>*)
 
-section{* Semantic Abstraction *}
-text{* \label{TAO_Semantics} *}
+section\<open>Semantic Abstraction\<close>
+text\<open>\label{TAO_Semantics}\<close>
 
-subsection{* Semantics *}
-text{* \label{TAO_Semantics_Semantics} *}
+subsection\<open>Semantics\<close>
+text\<open>\label{TAO_Semantics_Semantics}\<close>
 
 locale Semantics
 begin
   named_theorems semantics
 
-  subsubsection{* Semantic Domains *}
-  text{* \label{TAO_Semantics_Semantics_Domains} *}
+  subsubsection\<open>Semantic Domains\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Domains}\<close>
   type_synonym R\<^sub>\<kappa> = "\<nu>"
   type_synonym R\<^sub>0 = "j\<Rightarrow>i\<Rightarrow>bool"
   type_synonym R\<^sub>1 = "\<upsilon>\<Rightarrow>R\<^sub>0"
@@ -25,8 +25,8 @@ begin
   type_synonym R\<^sub>3 = "\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>\<upsilon>\<Rightarrow>R\<^sub>0"
   type_synonym W = i
 
-  subsubsection{* Denotation Functions *}
-  text{* \label{TAO_Semantics_Semantics_Denotations} *}
+  subsubsection\<open>Denotation Functions\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Denotations}\<close>
 
   lift_definition d\<^sub>\<kappa> :: "\<kappa>\<Rightarrow>R\<^sub>\<kappa> option" is id .
   lift_definition d\<^sub>0 :: "\<Pi>\<^sub>0\<Rightarrow>R\<^sub>0 option" is Some .
@@ -34,12 +34,12 @@ begin
   lift_definition d\<^sub>2 :: "\<Pi>\<^sub>2\<Rightarrow>R\<^sub>2 option" is Some .
   lift_definition d\<^sub>3 :: "\<Pi>\<^sub>3\<Rightarrow>R\<^sub>3 option" is Some .
 
-  subsubsection{* Actual World *}
-  text{* \label{TAO_Semantics_Semantics_Actual_World} *}
+  subsubsection\<open>Actual World\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Actual_World}\<close>
   definition w\<^sub>0 where "w\<^sub>0 \<equiv> dw"
 
-  subsubsection{* Exemplification Extensions *}
-  text{* \label{TAO_Semantics_Semantics_Exemplification_Extensions} *}
+  subsubsection\<open>Exemplification Extensions\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Exemplification_Extensions}\<close>
 
   definition ex0 :: "R\<^sub>0\<Rightarrow>W\<Rightarrow>bool"
     where "ex0 \<equiv> \<lambda> F . F dj"
@@ -50,15 +50,15 @@ begin
   definition ex3 :: "R\<^sub>3\<Rightarrow>W\<Rightarrow>((R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>\<times>R\<^sub>\<kappa>) set)"
     where "ex3 \<equiv> \<lambda> F w . { (x,y,z) . F (\<nu>\<upsilon> x) (\<nu>\<upsilon> y) (\<nu>\<upsilon> z) dj w }"
 
-  subsubsection{* Encoding Extensions *}
-  text{* \label{TAO_Semantics_Semantics_Encoding_Extension} *}
+  subsubsection\<open>Encoding Extensions\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Encoding_Extension}\<close>
 
   definition en :: "R\<^sub>1\<Rightarrow>(R\<^sub>\<kappa> set)"
     where "en \<equiv> \<lambda> F . { x . case x of \<alpha>\<nu> y \<Rightarrow> make\<Pi>\<^sub>1 (\<lambda> x . F x) \<in> y
                                        | _ \<Rightarrow> False }"
 
-  subsubsection{* Collection of Semantic Definitions *}
-  text{* \label{TAO_Semantics_Semantics_Definitions} *}
+  subsubsection\<open>Collection of Semantic Definitions\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Definitions}\<close>
 
   named_theorems semantics_defs
   declare d\<^sub>0_def[semantics_defs] d\<^sub>1_def[semantics_defs]
@@ -68,8 +68,8 @@ begin
           en_def[semantics_defs] d\<^sub>\<kappa>_def[semantics_defs]
           w\<^sub>0_def[semantics_defs]
 
-  subsubsection{* Truth Conditions of Exemplification Formulas *}
-  text{* \label{TAO_Semantics_Semantics_Exemplification} *}
+  subsubsection\<open>Truth Conditions of Exemplification Formulas\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Exemplification}\<close>
 
   lemma T1_1[semantics]:
     "(w \<Turnstile> \<lparr>F,x\<rparr>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> ex1 r w)"
@@ -97,8 +97,8 @@ begin
     unfolding semantics_defs
     by (simp add: meta_defs meta_aux)
 
-  subsubsection{* Truth Conditions of Encoding Formulas *}
-  text{* \label{TAO_Semantics_Semantics_Encoding} *}
+  subsubsection\<open>Truth Conditions of Encoding Formulas\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Encoding}\<close>
 
   lemma T2[semantics]:
     "(w \<Turnstile> \<lbrace>x,F\<rbrace>) = (\<exists> r o\<^sub>1 . Some r = d\<^sub>1 F \<and> Some o\<^sub>1 = d\<^sub>\<kappa> x \<and> o\<^sub>1 \<in> en r)"
@@ -107,8 +107,8 @@ begin
     by (metis \<nu>.exhaust \<nu>.inject(2) \<nu>.simps(4) \<nu>\<kappa>.rep_eq option.collapse
               option.discI rep.rep_eq rep_proper_id)
 
-  subsubsection{* Truth Conditions of Complex Formulas *}
-  text{* \label{TAO_Semantics_Semantics_Complex_Formulas} *}
+  subsubsection\<open>Truth Conditions of Complex Formulas\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Complex_Formulas}\<close>
 
   lemma T4[semantics]: "(w \<Turnstile> \<^bold>\<not>\<psi>) = (\<not>(w \<Turnstile> \<psi>))"
     by (simp add: meta_defs meta_aux)
@@ -140,8 +140,8 @@ begin
   lemma T8_\<o>[semantics]: "(w \<Turnstile> \<^bold>\<forall>\<^sub>\<o> x. \<psi> x) = (\<forall> x . (w \<Turnstile> \<psi> x))"
     by (simp add: meta_defs meta_aux)
 
-  subsubsection{* Denotations of Descriptions  *}
-  text{* \label{TAO_Semantics_Semantics_Descriptions} *}
+  subsubsection\<open>Denotations of Descriptions\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Descriptions}\<close>
 
   lemma D3[semantics]:
     "d\<^sub>\<kappa> (\<^bold>\<iota>x . \<psi> x) = (if (\<exists>x . (w\<^sub>0 \<Turnstile> \<psi> x) \<and> (\<forall> y . (w\<^sub>0  \<Turnstile> \<psi> y) \<longrightarrow> y = x))
@@ -149,8 +149,8 @@ begin
     unfolding semantics_defs
     by (auto simp: meta_defs meta_aux)
 
-  subsubsection{* Denotations of Lambda Expressions *}
-  text{* \label{TAO_Semantics_Semantics_Lambda_Expressions} *}
+  subsubsection\<open>Denotations of Lambda Expressions\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Lambda_Expressions}\<close>
 
   lemma D4_1[semantics]: "d\<^sub>1 (\<^bold>\<lambda> x . \<lparr>F, x\<^sup>P\<rparr>) = d\<^sub>1 F"
     by (simp add: meta_defs meta_aux)
@@ -187,8 +187,8 @@ begin
   lemma D6[semantics]: "(\<And> w r . Some r = d\<^sub>0 (\<^bold>\<lambda>\<^sup>0 \<phi>) \<longrightarrow> ex0 r w = (w \<Turnstile> \<phi>))"
     by (auto simp: meta_defs meta_aux semantics_defs)
 
-  subsubsection{* Auxiliary Lemmas *}
-  text{* \label{TAO_Semantics_Semantics_Auxiliary_Lemmata} *}
+  subsubsection\<open>Auxiliary Lemmas\<close>
+  text\<open>\label{TAO_Semantics_Semantics_Auxiliary_Lemmata}\<close>
 
   lemma propex\<^sub>0: "\<exists> r . Some r = d\<^sub>0 F"
     unfolding d\<^sub>0_def by simp
@@ -224,15 +224,15 @@ begin
   qed
 end
 
-subsection{* Introduction Rules for Proper Maps *}
-text{* \label{TAO_Semantics_Proper} *}
+subsection\<open>Introduction Rules for Proper Maps\<close>
+text\<open>\label{TAO_Semantics_Proper}\<close>
 
-text{*
+text\<open>
 \begin{remark}
   Every map whose arguments only occur in exemplification
   expressions is proper.
 \end{remark}
-*}
+\<close>
 
 named_theorems IsProper_intros
 
@@ -351,8 +351,8 @@ lemma IsProperInXYZ_intro[IsProper_intros]:
 
 method show_proper = (fast intro: IsProper_intros)
 
-subsection{* Validity Syntax *}
-text{* \label{TAO_Semantics_Validity} *}
+subsection\<open>Validity Syntax\<close>
+text\<open>\label{TAO_Semantics_Validity}\<close>
 
 (* disable list syntax [] to replace it with truth evaluation *)
 (*<*) no_syntax "_list" :: "args \<Rightarrow> 'a list" ("[(_)]") (*>*) 

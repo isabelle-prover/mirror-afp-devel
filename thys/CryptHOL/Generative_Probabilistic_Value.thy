@@ -9,7 +9,7 @@ begin
 
 hide_const (open) Done
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 context notes [[bnf_internals]] begin
 
@@ -20,7 +20,7 @@ end
 
 declare gpv.rel_eq [relator_eq]
 
-text {* Reactive values are like generative, except that they take an input first. *}
+text \<open>Reactive values are like generative, except that they take an input first.\<close>
 
 type_synonym ('a, 'out, 'in) rpv = "'in \<Rightarrow> ('a, 'out, 'in) gpv"
 print_translation \<comment> \<open>pretty printing for @{typ "('a, 'out, 'in) rpv"}\<close> \<open>
@@ -614,7 +614,7 @@ lemma map_gpv_parametric': "((A ===> A') ===> (C ===> C') ===> rel_gpv'' A C R =
 
 end
 
-subsection {* Simple, derived operations *}
+subsection \<open>Simple, derived operations\<close>
 
 primcorec Done :: "'a \<Rightarrow> ('a, 'out, 'in) gpv"
 where "the_gpv (Done a) = return_spmf (Pure a)"
@@ -697,7 +697,7 @@ lemma [simp]:
   and Done_neq_Fail: "Done x \<noteq> Fail"
 by(simp_all add: Fail_def Pause.ctr Done.ctr)
 
-text {* Add @{typ unit} closure to circumvent SML value restriction *}
+text \<open>Add @{typ unit} closure to circumvent SML value restriction\<close>
 
 definition Fail' :: "unit \<Rightarrow> ('a, 'out, 'in) gpv"
 where [code del]: "Fail' _ = Fail"
@@ -810,7 +810,7 @@ by(simp add: Fail_def)
 lemma map_gpv'_Fail [simp]: "map_gpv' f g h Fail = Fail"
 by(simp add: Fail_def)
 
-subsection {* Monad structure *}
+subsection \<open>Monad structure\<close>
 
 primcorec bind_gpv :: "('a, 'out, 'in) gpv \<Rightarrow> ('a \<Rightarrow> ('b, 'out, 'in) gpv) \<Rightarrow> ('b, 'out, 'in) gpv"
 where
@@ -840,7 +840,7 @@ apply(auto split: generat.split simp add: map_spmf_bind_spmf fun_eq_iff spmf.map
 done
 
 lemma bind_gpv_code_cong: "f = f' \<Longrightarrow> bind_gpv f g = bind_gpv f' g" by simp
-setup {* Code_Simp.map_ss (Simplifier.add_cong @{thm bind_gpv_code_cong}) *}
+setup \<open>Code_Simp.map_ss (Simplifier.add_cong @{thm bind_gpv_code_cong})\<close>
 
 lemma bind_gpv_sel:
   "the_gpv (r \<bind> f) =
@@ -1085,7 +1085,7 @@ by(simp add: bind_rpv_def fun_eq_iff)
 adhoc_overloading Monad_Syntax.bind bind_rpv
 
 lemma bind_rpv_code_cong: "rpv = rpv' \<Longrightarrow> bind_rpv rpv f = bind_rpv rpv' f" by simp
-setup {* Code_Simp.map_ss (Simplifier.add_cong @{thm bind_rpv_code_cong}) *}
+setup \<open>Code_Simp.map_ss (Simplifier.add_cong @{thm bind_rpv_code_cong})\<close>
 
 lemma bind_rpv_rDone [simp]: "bind_rpv rpv Done = rpv"
 by(simp add: bind_rpv_def)
@@ -1125,7 +1125,7 @@ locale spmf_to_gpv begin
 
 text \<open>
   The lifting package cannot handle free term variables in the merging of transfer rules,
-  so for the embedding we define a specialised relator @{text "rel_gpv'"}
+  so for the embedding we define a specialised relator \<open>rel_gpv'\<close>
   which acts only on the returned values.
 \<close>
 
@@ -1161,7 +1161,7 @@ unfolding rel_gpv'_def by(simp add: bi_total_rel_gpv bi_total_eq)
 
 
 text \<open>
-  We cannot use @{text setup_lifting} because @{typ "('a, 'out, 'in) gpv"} contains
+  We cannot use \<open>setup_lifting\<close> because @{typ "('a, 'out, 'in) gpv"} contains
   type variables which do not appear in @{typ "'a spmf"}.
 \<close>
 
@@ -1396,7 +1396,7 @@ end
 
 end
 
-subsection {* Embedding resumptions *}
+subsection \<open>Embedding resumptions\<close>
 
 primcorec lift_resumption :: "('a, 'out, 'in) resumption \<Rightarrow> ('a, 'out, 'in) gpv"
 where
@@ -1458,7 +1458,7 @@ lemma lift_resumption_bind: "lift_resumption (r \<bind> f) = lift_resumption r \
 by(coinduction arbitrary: r rule: gpv.coinduct_strong)
   (auto simp add: lift_resumption.sel Done_bind split: resumption.split option.split del: rel_funI intro!: rel_funI)
 
-subsection {* Assertions *}
+subsection \<open>Assertions\<close>
 
 definition assert_gpv :: "bool \<Rightarrow> (unit, 'out, 'in) gpv"
 where "assert_gpv b = (if b then Done () else Fail)"
@@ -1548,7 +1548,7 @@ by(simp)
 
 
 
-subsection {* Order for @{typ "('a, 'out, 'in) gpv"} *}
+subsection \<open>Order for @{typ "('a, 'out, 'in) gpv"}\<close>
 
 coinductive ord_gpv :: "('a, 'out, 'in) gpv \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool"
 where
@@ -1561,7 +1561,7 @@ lemma ord_gpv_coinduct [consumes 1, case_names ord_gpv, coinduct pred: ord_gpv]:
   assumes "X f g"
   and step: "\<And>f g. X f g \<Longrightarrow> ord_spmf (rel_generat (=) (=) (rel_fun (=) X)) (the_gpv f) (the_gpv g)"
   shows "ord_gpv f g"
-using `X f g`
+using \<open>X f g\<close>
 by(coinduct)(auto dest: step simp add: eq_GPV_iff intro: ord_spmf_mono rel_generat_mono rel_fun_mono)
 
 lemma ord_gpv_the_gpvD:
@@ -1615,14 +1615,14 @@ qed
 lemma RFail_least [simp]: "ord_gpv Fail f"
 by(coinduction arbitrary: f)(simp add: eq_GPV_iff)
 
-subsection {* Bounds on interaction *}
+subsection \<open>Bounds on interaction\<close>
 
 context
   fixes "consider" :: "'out \<Rightarrow> bool"
   notes monotone_SUP[partial_function_mono] [[function_internals]]
 begin
-declaration {* Partial_Function.init "lfp_strong" @{term lfp.fixp_fun} @{term lfp.mono_body}
-  @{thm lfp.fixp_rule_uc} @{thm lfp.fixp_induct_strong2_uc} NONE *}
+declaration \<open>Partial_Function.init "lfp_strong" @{term lfp.fixp_fun} @{term lfp.mono_body}
+  @{thm lfp.fixp_rule_uc} @{thm lfp.fixp_induct_strong2_uc} NONE\<close>
 
 partial_function (lfp_strong) interaction_bound :: "('a, 'out, 'in) gpv \<Rightarrow> enat"
 where
@@ -1956,9 +1956,9 @@ unfolding id_def map_gpv_conv_bind by interaction_bound simp
 abbreviation interaction_any_bounded_by :: "('a, 'out, 'in) gpv \<Rightarrow> enat \<Rightarrow> bool"
 where "interaction_any_bounded_by \<equiv> interaction_bounded_by (\<lambda>_. True)"
 
-subsection {* Typing *}
+subsection \<open>Typing\<close>
 
-subsubsection {* Interface between gpvs and rpvs / callees *}
+subsubsection \<open>Interface between gpvs and rpvs / callees\<close>
 
 lemma is_empty_parametric [transfer_rule]: "rel_fun (rel_set A) (=) Set.is_empty Set.is_empty" (* Move *)
 by(auto simp add: rel_fun_def Set.is_empty_def dest: rel_setD1 rel_setD2)
@@ -2059,7 +2059,7 @@ lemma resultsp_gpv_results_gpv_eq [pred_set_conv]: "resultsp_gpv \<Gamma> x gpv 
 by(simp add: results_gpv_def)
 
 context begin
-local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "results_gpv") *}
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "results_gpv")\<close>
 
 lemmas intros [intro?] = resultsp_gpv.intros[to_set]
   and Pure = Pure[to_set]
@@ -2118,7 +2118,7 @@ proof(intro set_eqI iffI)
         and c: "\<And>input. c input = bind_gpv (c' input) f" using * by simp_all
       from IO.hyps(4)[OF c] obtain y where y: "y \<in> results_gpv \<Gamma> (c' input)"
         and "x \<in> results_gpv \<Gamma> (f y)" by blast
-      from y IO generat have "y \<in> results_gpv \<Gamma> gpv" using `input \<in> responses_\<I> \<Gamma> out`
+      from y IO generat have "y \<in> results_gpv \<Gamma> gpv" using \<open>input \<in> responses_\<I> \<Gamma> out\<close>
         by(auto intro: results_gpv.IO)
       with \<open>x \<in> results_gpv \<Gamma> (f y)\<close> show ?thesis by blast
     qed
@@ -2165,7 +2165,7 @@ lemma bind_gpv_bind_option_assoc:
   "bind_gpv (monad.bind_option Fail x f) g = monad.bind_option Fail x (\<lambda>x. bind_gpv (f x) g)"
 by(cases x) simp_all
 
-subsubsection {* Type judgements *}
+subsubsection \<open>Type judgements\<close>
 
 coinductive WT_gpv :: "('out, 'in) \<I> \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool" ("((_)/ \<turnstile>g (_) \<surd>)" [100, 0] 99)
   for \<Gamma>
@@ -2357,7 +2357,7 @@ proof
   thus "x \<in> outs_\<I> \<I>" by(simp)
 qed
 
-subsection {* Sub-gpvs *}
+subsection \<open>Sub-gpvs\<close>
 
 context begin
 qualified inductive sub_gpvsp :: "('out, 'in) \<I> \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> ('a, 'out, 'in) gpv \<Rightarrow> bool"
@@ -2382,7 +2382,7 @@ lemma sub_gpvsp_sub_gpvs_eq [pred_set_conv]: "sub_gpvsp \<I> x gpv \<longleftrig
 by(simp add: sub_gpvs_def)
 
 context begin
-local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "sub_gpvs") *}
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "sub_gpvs")\<close>
 
 lemmas intros [intro?] = sub_gpvsp.intros[to_set]
   and base = sub_gpvsp_base[to_set]
@@ -2404,11 +2404,11 @@ lemma WT_sub_gpvsI:
   \<Longrightarrow> \<Gamma> \<turnstile>g gpv \<surd>"
 by(rule WT_gpvI)(auto intro: sub_gpvs.base)
 
-subsection {* Losslessness *}
+subsection \<open>Losslessness\<close>
 
-text {* A gpv is lossless iff we are guaranteed to get a result after a finite number of interactions
+text \<open>A gpv is lossless iff we are guaranteed to get a result after a finite number of interactions
   that respect the interface. It is colossless if the interactions may go on for ever, but there is
-  no non-termination. *}
+  no non-termination.\<close>
 
 text \<open> We define both notions of losslessness simultaneously by mimicking what the (co)inductive
   package would do internally. Thus, we get a constant which is parametrised by the choice of the
@@ -3163,7 +3163,7 @@ lemma bind_gpv'_cong2:
   \<Longrightarrow> bind_gpv' gpv f = bind_gpv' gpv' f'"
 by(rule bind_gpv'_cong) auto
 
-subsection {* Inlining *}
+subsection \<open>Inlining\<close>
 
 lemma gpv_coinduct_bind [consumes 1, case_names Eq_gpv]:
   fixes gpv gpv' :: "('a, 'call, 'ret) gpv"
@@ -3205,11 +3205,11 @@ proof -
   thus ?thesis by(simp add: gpv1_def gpv1'_def f_def f'_def)
 qed
 
-text {*
+text \<open>
   Inlining one gpv into another. This may throw out arbitrarily many
   interactions between the two gpvs if the inlined one does not call its callee.
   So we define it as the coiteration of a least-fixpoint search operator.
-*}
+\<close>
 
 context
   fixes callee :: "'s \<Rightarrow> 'call \<Rightarrow> ('ret \<times> 's, 'call', 'ret') gpv"
@@ -3263,12 +3263,12 @@ lemma inline1_fixp_induct_strong2 [case_names adm bottom step]:
 using assms
 by(rule spmf.fixp_induct_strong2_uc[where P="\<lambda>f. P (curry f)" and U=case_prod and C=curry, OF inline1.mono inline1_def, simplified curry_case_prod, simplified curry_conv[abs_def] fun_ord_def split_paired_All prod.case case_prod_eta, OF refl]) blast+
 
-text {*
+text \<open>
   Iterate @{const inline1} over all interactions. We'd like to use @{const bind_gpv} before
   the recursive call, but primcorec does not support this. So we emulate @{const bind_gpv}
   by effectively defining two mutually recursive functions (sum type in the argument)
-  where the second is exactly @{const bind_gpv} specialised to call @{text inline} in the bind.
-*}
+  where the second is exactly @{const bind_gpv} specialised to call \<open>inline\<close> in the bind.
+\<close>
 
 primcorec inline_aux
   :: "('a, 'call, 'ret) gpv \<times> 's + ('ret \<Rightarrow> ('a, 'call, 'ret) gpv) \<times> ('ret \<times> 's, 'call', 'ret') gpv
@@ -4089,7 +4089,7 @@ by(subst inline1.simps)(auto simp add: id_oracle_def map_spmf_conv_bind_spmf int
 lemma inline_id_oracle [simp]: "inline id_oracle gpv s = map_gpv (\<lambda>x. (x, s)) id gpv"
 by(coinduction arbitrary: gpv s)(auto 4 3 simp add: inline_sel inline1_id_oracle spmf_rel_map gpv.map_sel o_def generat.rel_map intro!: rel_spmf_reflI rel_funI split: generat.split)
 
-subsection {* Running GPVs *}
+subsection \<open>Running GPVs\<close>
 
 type_synonym ('call, 'ret, 's) callee = "'s \<Rightarrow> 'call \<Rightarrow> ('ret \<times> 's) spmf"
 
@@ -5091,7 +5091,7 @@ next
       hence "ennreal (?o True) \<le> k" using k_nonneg by(simp del: o_apply)
       hence "?o True + ennreal k * (n - 1) * ?o False \<le> ennreal k + ennreal k * (n - 1) * ennreal 1"
         by(rule add_mono)(rule mult_left_mono, simp_all add: pmf_le_1 k_nonneg)
-      also have "\<dots> \<le> ennreal k * n" using `n > 0`
+      also have "\<dots> \<le> ennreal k * n" using \<open>n > 0\<close>
         by(cases n)(auto simp add: zero_enat_def ennreal_top_mult gr0_conv_Suc eSuc_enat[symmetric] field_simps)
       finally show ?thesis using True by(simp del: o_apply add: ereal_of_enat_mult)
     next

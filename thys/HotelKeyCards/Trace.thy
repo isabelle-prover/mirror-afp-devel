@@ -6,24 +6,23 @@ begin
 declare Let_def[simp] if_split_asm[split]
 (*>*)
 
-section{*A trace based model*}
+section\<open>A trace based model\<close>
 
-text{* The only clumsy aspect of the state based model is @{text
-safe}: we use a state component to record if the sequence of events
+text\<open>The only clumsy aspect of the state based model is \<open>safe\<close>: we use a state component to record if the sequence of events
 that lead to a state satisfies some property. That is, we simulate a
 condition on traces via the state. Unsurprisingly, it is not trivial
-to convince oneself that @{text safe} really has the informal meaning
+to convince oneself that \<open>safe\<close> really has the informal meaning
 set out at the beginning of subsection~\ref{sec:formalizing-safety}.
 Hence we now describe an alternative, purely trace based model,
 similar to Paulson's inductive protocol model~\cite{Paulson-JCS98}.
 The events are:
-*}
+\<close>
 
 datatype event =
   Check_in guest room card | Enter guest room card | Exit guest room
 
-text{* Instead of a state, we have a trace, i.e.\ list of events, and
-extract the state from the trace: *}
+text\<open>Instead of a state, we have a trace, i.e.\ list of events, and
+extract the state from the trace:\<close>
 
 consts
   initk :: "room \<Rightarrow> key"
@@ -76,7 +75,7 @@ primrec hotel :: "event list \<Rightarrow> bool" where
   Enter g r (k,k') \<Rightarrow> (k,k') : cards s g & (roomk s r : {k, k'}) |
   Exit g r \<Rightarrow> g : isin s r))"
 
-text{* Except for @{const initk}, which is completely unspecified,
+text\<open>Except for @{const initk}, which is completely unspecified,
 all these functions are defined by primitive recursion over traces:
 @{thm[display]owns.simps}
 @{thm[display]currk.simps}
@@ -96,29 +95,29 @@ The difference is only slight.
 \label{sec:FormalSafetyTrace}
 
 The principal advantage of the trace model is the intuitive
-specification of safety. Using the auxiliary predicate @{text no_Check_in}
-*}
+specification of safety. Using the auxiliary predicate \<open>no_Check_in\<close>
+\<close>
 
 (*<*)abbreviation no_Check_in :: "event list \<Rightarrow> room \<Rightarrow> bool" where(*>*)
 "no_Check_in s r \<equiv> \<not>(\<exists>g c. Check_in g r c \<in> set s)"
 
-text{*\medskip\noindent we define a trace to be @{text safe\<^sub>0} for a
+text\<open>\medskip\noindent we define a trace to be \<open>safe\<^sub>0\<close> for a
 room if the card obtained at the last @{const Check_in} was later
-actually used to @{const Enter} the room: *}
+actually used to @{const Enter} the room:\<close>
 
 (*<*)definition safe\<^sub>0 :: "event list \<Rightarrow> room \<Rightarrow> bool" where(*>*)
 "safe\<^sub>0 s r = (\<exists>s\<^sub>1 s\<^sub>2 s\<^sub>3 g c.
  s = s\<^sub>3 @ [Enter g r c] @ s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and> no_Check_in (s\<^sub>3 @ s\<^sub>2) r)"
 
-text{* \medskip\noindent A trace is @{text safe} if additionally the room was
-empty when it was entered: *}
+text\<open>\medskip\noindent A trace is \<open>safe\<close> if additionally the room was
+empty when it was entered:\<close>
 
 (*<*)definition safe :: "event list \<Rightarrow> room \<Rightarrow> bool" where(*>*)
 "safe s r = (\<exists>s\<^sub>1 s\<^sub>2 s\<^sub>3 g c.
  s = s\<^sub>3 @ [Enter g r c] @ s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1 \<and>
  no_Check_in (s\<^sub>3 @ s\<^sub>2) r \<and> isin (s\<^sub>2 @ [Check_in g r c] @ s\<^sub>1) r = {})"
 
-text{* \medskip\noindent The two notions of safety are distinguished because,
+text\<open>\medskip\noindent The two notions of safety are distinguished because,
 except for the main theorem, @{const safe\<^sub>0} suffices.
 
 The alert reader may already have wondered why, in contrast to the
@@ -126,12 +125,11 @@ state based model, we do not require @{const initk} to be
 injective. If @{const initk} is not injective, e.g.\ @{prop"initk
 r\<^sub>1 = initk r\<^sub>2"} and @{prop"r\<^sub>1 \<noteq> r\<^sub>2"},
 then @{term"[Enter g r\<^sub>2 (initk r\<^sub>1,k), Check_in g
-r\<^sub>1 (initk r\<^sub>1,k)]"} is a legal trace and guest @{text
-g} ends up in a room he is not the owner of.  However, this is not a
-safe trace for room @{text r\<^sub>2} according to our
+r\<^sub>1 (initk r\<^sub>1,k)]"} is a legal trace and guest \<open>g\<close> ends up in a room he is not the owner of.  However, this is not a
+safe trace for room \<open>r\<^sub>2\<close> according to our
 definition. This reflects that hotel rooms are not safe until
 the first time their owner has entered them. We no longer protect the
-hotel from its guests.  *}
+hotel from its guests.\<close>
 
 (* state thm w/o "isin"
 hotel s ==> s = Enter g # s' \<Longrightarrow> owns s' r = Some g \<or> s' = s1 @ Checkin g @ s2 \<and> 
@@ -252,7 +250,7 @@ next
   case (Cons a xs)
   show ?case
   proof cases
-    assume "x = a \<or> P a" hence "?P (a#xs) [] a xs" using `P x` by auto
+    assume "x = a \<or> P a" hence "?P (a#xs) [] a xs" using \<open>P x\<close> by auto
     thus ?case by blast
   next
     assume "\<not>(x = a \<or> P a)"
@@ -315,11 +313,11 @@ apply simp
 done
 (*>*)
 
-text_raw{*
+text_raw\<open>
   \begin{figure}
   \begin{center}\begin{minipage}{\textwidth}  
   \isastyle\isamarkuptrue
-*}
+\<close>
 theorem safe: assumes "hotel s" and "safe s r" and "g \<in> isin s r"
                     shows "owns s r = \<lfloor>g\<rfloor>"
 proof -
@@ -342,21 +340,21 @@ proof -
           show "g' = g"
           proof cases
             assume [simp]: "g'' = g"
-            have 1: "hotel ?s" and 2: "c \<in> cards ?s g" using `hotel ?t` by auto
-            have 3: "safe ?s r" using `no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r` 0
+            have 1: "hotel ?s" and 2: "c \<in> cards ?s g" using \<open>hotel ?t\<close> by auto
+            have 3: "safe ?s r" using \<open>no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r\<close> 0
               by(simp add:safe_def) blast
             obtain k\<^sub>1 k\<^sub>2 where [simp]: "c = (k\<^sub>1,k\<^sub>2)" by force
             have "roomk ?s r = k'"
               using safe_roomk_currk[OF 1 safe_safe[OF 3]]
-                `no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r` by auto
+                \<open>no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r\<close> by auto
             hence "k\<^sub>1 \<noteq> roomk ?s r"
               using no_checkin_no_newkey[where s\<^sub>2 = "s\<^sub>3 @ [Enter g' r (k,k')] @ s\<^sub>2"]
-                1 2 `no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r` by auto
-            hence "k\<^sub>2 = roomk ?s r" using `hotel ?t` by auto
+                1 2 \<open>no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r\<close> by auto
+            hence "k\<^sub>2 = roomk ?s r" using \<open>hotel ?t\<close> by auto
             with only_owner_enter_normal[OF 1 safe_safe[OF 3]] 2
             have "owns ?t r =  \<lfloor>g\<rfloor>" by auto
             moreover have "owns ?t r = \<lfloor>g'\<rfloor>"
-              using `hotel ?t` `no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r` by simp
+              using \<open>hotel ?t\<close> \<open>no_Check_in ((e \<cdot> s\<^sub>3) @ s\<^sub>2) r\<close> by simp
             ultimately show "g' = g" by simp
           next
             assume "g'' \<noteq> g" thus "g' = g" using Cons by auto
@@ -368,13 +366,13 @@ proof -
     qed
   } with assms show "owns s r = \<lfloor>g\<rfloor>" by(auto simp:safe_def)
 qed
-text_raw{*
+text_raw\<open>
   \end{minipage}
   \end{center}
   \caption{Isar proof of Theorem~\ref{safe}}\label{fig:proof}
   \end{figure}
-*}
-text{*
+\<close>
+text\<open>
 \subsection{Verifying safety}
 
 Lemma~\ref{state-lemmas} largely carries over after replacing
@@ -390,7 +388,7 @@ They are replaced by two somewhat similar properties:
   @{thm[display,margin=100] no_checkin_no_newkey}
 \end{enumerate}
 \end{lemma}
-Both are proved by induction on @{text s\<^sub>2}.
+Both are proved by induction on \<open>s\<^sub>2\<close>.
 In addition we need some easy structural properties:
 \begin{lemma}\label{app-lemmas}
 \begin{enumerate}
@@ -410,21 +408,21 @@ the state based version. For the core of the proof let
 @{prop"s = s\<^sub>3 @ [Enter g' r (k,k')] @ s\<^sub>2 @ [Check_in g' r (k,k')] @ s\<^sub>1"}
 and assume
 @{prop"isin (s\<^sub>2 @ [Check_in g' r (k,k')] @ s\<^sub>1) r = {}"} (0). By induction on
-@{text s\<^sub>3} we prove
+\<open>s\<^sub>3\<close> we prove
 @{prop[display]"\<lbrakk>hotel s; no_Check_in (s\<^sub>3 @ s\<^sub>2) r; g \<in> isin s r \<rbrakk> \<Longrightarrow> g' = g"}
 The actual theorem follows by definition of @{const safe}.
 The base case of the induction follows from (0). For the induction step let
 @{prop"t = (e#s\<^sub>3) @ [Enter g' r (k,k')] @ s\<^sub>2 @ [Check_in g' r (k,k')] @ s\<^sub>1"}.
 We assume @{prop"hotel t"}, @{prop"no_Check_in ((e#s\<^sub>3) @ s\<^sub>2) r"},
 and @{prop"g \<in> isin s r"}, and show @{prop"g' = g"}.
-The proof is by case distinction on the event @{text e}.
+The proof is by case distinction on the event \<open>e\<close>.
 The cases @{const Check_in} and @{const Exit} follow directly from the
-induction hypothesis because the set of occupants of @{text r}
+induction hypothesis because the set of occupants of \<open>r\<close>
 can only decrease. Now we focus on the case @{prop"e = Enter g'' r' c"}.
-If @{prop"r' \<noteq> r"} the set of occupants of @{text r} remains unchanged
+If @{prop"r' \<noteq> r"} the set of occupants of \<open>r\<close> remains unchanged
 and the claim follow directly from the induction hypothesis.
-If @{prop"g'' \<noteq> g"} then @{text g} must already have been in @{text r}
-before the @{text Enter} event and the claim again follows directly
+If @{prop"g'' \<noteq> g"} then \<open>g\<close> must already have been in \<open>r\<close>
+before the \<open>Enter\<close> event and the claim again follows directly
 from the induction hypothesis. Now assume @{prop"r' = r"}
 and @{prop"g'' = g"}.
 From @{prop"hotel t"} we obtain @{prop"hotel s"} (1) and
@@ -433,7 +431,7 @@ from @{prop"no_Check_in (s\<^sub>3 @ s\<^sub>2) r"} and (0)
 we obtain @{prop"safe s r"} (3). Let @{prop"c = (k\<^sub>1,k\<^sub>2)"}.
 From Lemma~\ref{state-lemmas}.\ref{safe_roomk_currk} and
 Lemma~\ref{app-lemmas}.\ref{currk_app} we obtain
-@{text"roomk s r = currk s r = k'"}.
+\<open>roomk s r = currk s r = k'\<close>.
 Hence @{prop"k\<^sub>1 \<noteq> roomk s r"} by
 Lemma~\ref{trace-lemmas}.\ref{no_checkin_no_newkey}
 using (1), (2) and @{prop"no_Check_in (s\<^sub>3 @ s\<^sub>2) r"}.
@@ -442,7 +440,7 @@ With Lemma~\ref{state-lemmas}.\ref{safe_only_owner_enter_normal}
 and (1--3) we obtain
 @{prop"owns t r =  \<lfloor>g\<rfloor>"}. At the same time we have @{prop"owns t r = \<lfloor>g'\<rfloor>"}
 because @{prop"hotel t"} and @{prop"no_Check_in ((e # s\<^sub>3) @ s\<^sub>2) r"}: nobody
-has checked in to room @{text r} after @{text g'}. Thus the claim
+has checked in to room \<open>r\<close> after \<open>g'\<close>. Thus the claim
 @{prop"g' = g"} follows.
 
 The details of this proof differ from those of Theorem~\ref{safe-state}
@@ -457,11 +455,11 @@ enters a safe room, he is the owner:
 \begin{theorem}\label{Enter_safe}
 @{thm[mode=IfThen] Enter_safe}
 \end{theorem}
-From @{prop"safe\<^sub>0 s r"} it follows that @{text s} must be of the form
+From @{prop"safe\<^sub>0 s r"} it follows that \<open>s\<close> must be of the form
 @{term"s\<^sub>2 @ [Check_in g\<^sub>0 r c'] @ s\<^sub>1"} such that @{prop"no_Check_in s\<^sub>2 r"}.
 Let @{prop"c = (x,y)"} and @{prop"c' = (k,k')"}.
 By Lemma~\ref{state-lemmas}.\ref{safe_roomk_currk} we have
-@{text"roomk s r = currk s r = k'"}.
+\<open>roomk s r = currk s r = k'\<close>.
 From @{prop"hotel(Enter g r c # s)"} it follows that
 @{prop"(x,y) \<in> cards s g"} and @{prop"k' \<in> {x,y}"}.
 By Lemma~\ref{trace-lemmas}.\ref{no_checkin_no_newkey}
@@ -495,18 +493,18 @@ restrictive. It turns out that @{const safe} is incomplete for two
 different reasons.  The trivial one is that in case @{const initk} is
 injective, every room is protected against intruders right from the
 start. That is, @{term"[Check_in g r c]"} will only allow @{term g} to
-enter @{text r} until somebody else checks in to @{text r}. The
+enter \<open>r\<close> until somebody else checks in to \<open>r\<close>. The
 second, more subtle incompleteness is that even if there are previous
 owners of a room, it may be safe to enter a room with an old card
-@{text c}: one merely needs to make sure that no other guest checked
-in after the check-in where one obtained @{text c}. However,
+\<open>c\<close>: one merely needs to make sure that no other guest checked
+in after the check-in where one obtained \<open>c\<close>. However,
 formalizing this is not only messy, it is also somewhat pointless:
 this liberalization is not something a guest can take advantage of
 because there is no (direct) way he can find out which of his cards
 meets this criterion. But without this knowledge, the only safe thing
 to do is to make sure he has used his latest card. This incompleteness
 applies to the state based model as well.
-*}
+\<close>
 
 (*<*)
 end

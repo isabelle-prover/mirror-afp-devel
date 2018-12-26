@@ -7,7 +7,7 @@ imports
   "HOL-Library.Sum_of_Squares"
 begin
 
-text{* This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}. *}
+text\<open>This analysis follows Schoenmakers~\cite{Schoenmakers-IPL93}.\<close>
 
 subsubsection "Analysis of splay"
 
@@ -79,7 +79,7 @@ next
 next
   case (6 x b a lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
-  hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
+  hence 1: "x \<in> set_tree lb" using "6.prems" \<open>x<b\<close> by (auto)
   then obtain lu u ru where sp: "splay x lb = Node lu u ru"
     using "6.prems"(1,2) by(cases "splay x lb") auto
   have "b < a" using "6.prems"(1,2) by (auto)
@@ -96,7 +96,7 @@ next
 next
   case (8 b x a rb lb ra)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra" using "8.prems"(1) by(auto)
-  hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
+  hence 1: "x \<in> set_tree rb" using "8.prems" \<open>b<x\<close> \<open>x<a\<close> by (auto)
   then obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using "8.prems"(1,2) by(cases "splay x rb") auto
   let ?lu = "real (size1 lu)" let ?ru = "real (size1 ru)"
@@ -112,7 +112,7 @@ next
 next
   case (11 a x b lb la rb)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la" using "11.prems"(1) by (auto)
-  hence 1: "x \<in> set_tree lb" using "11.prems" `a<x` `x<b` by (auto)
+  hence 1: "x \<in> set_tree lb" using "11.prems" \<open>a<x\<close> \<open>x<b\<close> by (auto)
   then obtain lu u ru where sp: "splay x lb = Node lu u ru"
     using "11.prems"(1,2) by(cases "splay x lb") auto
   let ?lu = "real (size1 lu)" let ?ru = "real (size1 ru)"
@@ -129,7 +129,7 @@ next
 next
   case (14 a x b rb la lb)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la" using "14.prems"(1) by(auto)
-  hence 1: "x \<in> set_tree rb" using "14.prems" `a<x` `b<x` by (auto)
+  hence 1: "x \<in> set_tree rb" using "14.prems" \<open>a<x\<close> \<open>b<x\<close> by (auto)
   then obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using "14.prems"(1,2) by(cases "splay x rb") auto
   let ?la = "real(size1 la)"  let ?lb = "real(size1 lb)"
@@ -205,7 +205,7 @@ next
       show "\<alpha> powr ?L \<le> \<alpha> powr ?R" using A2[of ?r' ?l' ?rl ?l]
         by(simp add: powr_add add.commute add.left_commute mult.commute[of \<beta>] powr_powr[symmetric])
     qed
-    thus ?case using 3 sp 1 `rr \<noteq> Leaf`
+    thus ?case using 3 sp 1 \<open>rr \<noteq> Leaf\<close>
       by(auto simp add: Am_simp3' \<phi>_def log_divide algebra_simps)
   qed
 qed
@@ -216,7 +216,7 @@ proof cases
 next
   assume "t \<noteq> Leaf"
   have [arith]: "log \<alpha> 2 > 0" by simp
-  show ?thesis using Am_ub[OF assms `t \<noteq> Leaf`] by(simp add: Am_def log_divide)
+  show ?thesis using Am_ub[OF assms \<open>t \<noteq> Leaf\<close>] by(simp add: Am_def log_divide)
 qed
 
 end
@@ -454,7 +454,7 @@ next
       proof (cases "e=a")
         case False thus ?thesis using opt
           apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-          using `?lslr \<ge> 0` by arith
+          using \<open>?lslr \<ge> 0\<close> by arith
       next
         case [simp]: True
         show ?thesis
@@ -463,7 +463,7 @@ next
           have "S34.\<phi> Leaf r \<ge> 0" by(simp add: S34.\<phi>_def)
           thus ?thesis using Leaf opt
             apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-            using `?lslr \<ge> 0` by arith
+            using \<open>?lslr \<ge> 0\<close> by arith
         next
           case (Node ll y lr)
           then obtain l' y' r' where [simp]:
@@ -473,7 +473,7 @@ next
           have "S34.\<Phi> r' \<ge> 0" apply (induction r') by (auto simp add: S34.\<phi>_def)
           have optm: "real(t_splay_max l) + S34.\<Phi> (splay_max l) - S34.\<Phi> l
             \<le> 3/2 * log 2 (real (size1 l)) + 1"
-            using S34.Am_ub3[OF `bst l`, simplified S34.Am_def]
+            using S34.Am_ub3[OF \<open>bst l\<close>, simplified S34.Am_def]
             by (simp add: log4_log2 field_simps Node)
           have 1: "log 4 (2+(real(size l')+real(size r))) \<le>
             log 4 (2+(real(size l)+real(size r)))"
@@ -485,7 +485,7 @@ next
             using size_if_splay[OF sp] Node by simp
           show ?thesis using add_mono[OF opt optm] Node 3
             apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-            using 4 `S34.\<Phi> r' \<ge> 0` by arith
+            using 4 \<open>S34.\<Phi> r' \<ge> 0\<close> by arith
         qed
       qed
     qed

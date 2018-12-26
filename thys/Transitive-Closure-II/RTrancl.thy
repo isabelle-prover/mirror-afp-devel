@@ -22,14 +22,14 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* A work-list algorithm for reflexive-transitive closures *}
+section \<open>A work-list algorithm for reflexive-transitive closures\<close>
 
 
 theory RTrancl
 imports "Regular-Sets.Regexp_Method"
 begin
 
-text {* In previous work \cite{rtrancl_fin} we described a generic work-list
+text \<open>In previous work \cite{rtrancl_fin} we described a generic work-list
 algorithm to compute reflexive-transitive closures for \emph{finite} relations:
 given a finite relation $r$, it computed $@{term "r^*"}$. 
 
@@ -62,11 +62,11 @@ has to be computed. Here, the relation is size-change graph composition.
 \item Subsumption was useful to generate even fewer elements.
 \end{itemize}
 
-*}
+\<close>
 
-subsection {* The generic case *}
+subsection \<open>The generic case\<close>
 
-text {*
+text \<open>
   Let $r$ be some finite relation.
 
   We present a standard work-list algorithm to compute all elements
@@ -85,15 +85,15 @@ text {*
   
   The algorithm can further be parametrized by a subsumption relation 
   which allows for early pruning. 
-*}
+\<close>
 
-text {* In the following locales, $r$ is a relation of type @{typ "'a \<Rightarrow> 'a"},
+text \<open>In the following locales, $r$ is a relation of type @{typ "'a \<Rightarrow> 'a"},
   the successors of an element are represented by some collection 
   type @{typ 'b} which size can be measured using the @{term size} function. 
   The selection function @{term sel} is used to meant to split a non-empty
   collection into one element and a remaining collection. The union on
   @{typ 'b} is given by @{term un}.
-*} 
+\<close> 
 
 locale subsumption = 
   fixes r :: "'a \<Rightarrow> 'b"
@@ -143,7 +143,7 @@ proof -
   qed
 qed
 
-text {* a standard work-list algorithm with subsumption *}
+text \<open>a standard work-list algorithm with subsumption\<close>
 function mk_rtrancl_main where 
   "mk_rtrancl_main todo fin = (if set_of todo = {} then fin
       else (let (a,tod) = sel todo
@@ -375,12 +375,12 @@ lemma mk_rtrancl_no_subsumption: assumes "subsumes = (=)"
   by auto
 end
 
-subsection {* Instantiation using list operations *}
+subsection \<open>Instantiation using list operations\<close>
 
-text {* It follows an implementation based on lists. 
+text \<open>It follows an implementation based on lists. 
  Here, the working list algorithm is implemented outside the locale so that
  it can be used for code generation. In general, it is not terminating, 
- therefore we use partial\_function instead of function. *}
+ therefore we use partial\_function instead of function.\<close>
 
 partial_function(tailrec) mk_rtrancl_list_main where 
  [code]:  "mk_rtrancl_list_main subsumes r todo fin = (case todo of [] \<Rightarrow> fin
@@ -413,8 +413,8 @@ sublocale relation_subsumption_list \<subseteq> relation_subsumption_impl r subs
 context relation_subsumption_list
 begin
 
-text {* The main equivalence proof between the generic work list algorithm
-and the one operating on lists *}
+text \<open>The main equivalence proof between the generic work list algorithm
+and the one operating on lists\<close>
 lemma mk_rtrancl_list_main: "fin = set finl \<Longrightarrow> set (mk_rtrancl_list_main subsumes r todo finl) = mk_rtrancl_main todo fin"
 proof (induct todo fin arbitrary: finl rule: mk_rtrancl_main.induct)
   case (1 todo fin finl)

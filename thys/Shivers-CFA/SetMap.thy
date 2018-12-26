@@ -1,11 +1,11 @@
-section {* Set-valued maps *}
+section \<open>Set-valued maps\<close>
 theory SetMap
   imports Main
 begin
 
-text {*
-For the abstract semantics, we need methods to work with set-valued maps, i.e.\ functions from a key type to sets of values. For this type, some well known operations are introduced and properties shown, either borrowing the nomenclature from finite maps (@{text sdom}, @{text sran},...) or of sets (@{text "{}."}, @{text "\<union>."},...).
-*}
+text \<open>
+For the abstract semantics, we need methods to work with set-valued maps, i.e.\ functions from a key type to sets of values. For this type, some well known operations are introduced and properties shown, either borrowing the nomenclature from finite maps (\<open>sdom\<close>, \<open>sran\<close>,...) or of sets (\<open>{}.\<close>, \<open>\<union>.\<close>,...).
+\<close>
 
 definition
   sdom :: "('a => 'b set) => 'a set" where

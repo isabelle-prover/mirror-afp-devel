@@ -4,20 +4,20 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Finite Suprema *}
+section \<open>Finite Suprema\<close>
 
 theory Finite_Suprema
 imports Dioid
 begin
 
-text {* This file contains an adaptation of Isabelle's library for
+text \<open>This file contains an adaptation of Isabelle's library for
 finite sums to the case of (join) semilattices and dioids. In this
 setting, addition is idempotent; finite sums are finite suprema.
 
 We add some basic properties of finite suprema for (join) semilattices
-and dioids. *}
+and dioids.\<close>
 
-subsection {* Auxiliary Lemmas *}
+subsection \<open>Auxiliary Lemmas\<close>
 
 lemma fun_im: "{f a |a. a \<in> A} = {b. b \<in> f ` A}"
   by auto
@@ -34,10 +34,10 @@ lemma cart_flip: "(\<lambda>p. f (snd p) (fst p)) ` (B \<times> A) = (\<lambda>p
 lemma fprod_aux: "{x \<cdot> y |x y. x \<in> (f ` A) \<and> y \<in> (g ` B)} = {f x \<cdot> g y |x y. x \<in> A \<and> y \<in> B}"
   by auto
 
-subsection {*Finite Suprema in Semilattices *}
+subsection \<open>Finite Suprema in Semilattices\<close>
 
-text {* The first lemma shows that, in the context of semilattices,
-finite sums satisfy the defining property of finite suprema. *}
+text \<open>The first lemma shows that, in the context of semilattices,
+finite sums satisfy the defining property of finite suprema.\<close>
 
 lemma sum_sup:
   assumes "finite (A :: 'a::join_semilattice_zero set)"
@@ -66,7 +66,7 @@ next
   qed
 qed
 
-text {* This immediately implies some variants. *}
+text \<open>This immediately implies some variants.\<close>
 
 lemma sum_less_eqI:
   "(\<And>x. x \<in> A \<Longrightarrow> f x \<le> y) \<Longrightarrow> sum f A \<le> (y::'a::join_semilattice_zero)"
@@ -101,7 +101,7 @@ lemma sum_intro:
   shows "(\<forall>a \<in> A. \<exists>b \<in> B. a \<le> b) \<longrightarrow> (\<Sum>A \<le> \<Sum>B)"
   by (metis assms order_refl order_trans sum_sup)
 
-text {* Next we prove an additivity property for suprema. *}
+text \<open>Next we prove an additivity property for suprema.\<close>
 
 lemma sum_union:
   assumes "finite (A :: 'a::join_semilattice_zero set)"
@@ -114,22 +114,22 @@ proof -
     by (simp add: eq_iff)
 qed
 
-text {* It follows that the sum (supremum) of a two-element set is the
-join of its elements. *}
+text \<open>It follows that the sum (supremum) of a two-element set is the
+join of its elements.\<close>
 
 lemma sum_bin[simp]: "\<Sum>{(x :: 'a::join_semilattice_zero),y} = x + y"
   by (subst insert_is_Un, subst sum_union, auto)
 
-text {* Next we show that finite suprema are order preserving. *}
+text \<open>Next we show that finite suprema are order preserving.\<close>
 
 lemma sum_iso:
   assumes "finite (B :: 'a::join_semilattice_zero set)"
   shows "A \<subseteq> B \<longrightarrow> \<Sum> A \<le> \<Sum> B"
   by (metis assms finite_subset order_refl set_rev_mp sum_sup)
 
-text {* The following lemmas state unfold properties for suprema and
+text \<open>The following lemmas state unfold properties for suprema and
 finite sets. They are subtly different from the non-idempotent case,
-where additional side conditions are required. *}
+where additional side conditions are required.\<close>
 
 lemma sum_insert [simp]:
   assumes "finite (A :: 'a::join_semilattice_zero set)"
@@ -147,8 +147,8 @@ lemma sum_fun_insert:
   shows "\<Sum>(f ` (insert x A)) = f x + \<Sum>(f ` A)"
   by (simp add: assms)
 
-text {* Now we show that set comprehensions with nested suprema can
-be flattened. *}
+text \<open>Now we show that set comprehensions with nested suprema can
+be flattened.\<close>
 
 lemma flatten1_im:
   fixes f :: "'a \<Rightarrow> 'a \<Rightarrow> 'b::join_semilattice_zero"
@@ -189,7 +189,7 @@ lemma sum_flatten2:
  apply simp
 done
 
-text {* Next we show another additivity property for suprema. *}
+text \<open>Next we show another additivity property for suprema.\<close>
 
 lemma sum_fun_sum:
   fixes f g :: "'a \<Rightarrow> 'b::join_semilattice_zero"
@@ -205,10 +205,10 @@ proof -
     by (simp add: eq_iff)
 qed
 
-text {* The last lemma of this section prepares the distributivity
+text \<open>The last lemma of this section prepares the distributivity
   laws that hold for dioids. It states that a strict additive function
   distributes over finite suprema, which is a continuity property in
-  the finite. *}
+  the finite.\<close>
 
 lemma sum_fun_add:
   fixes f :: "'a::join_semilattice_zero \<Rightarrow> 'b::join_semilattice_zero"
@@ -233,9 +233,9 @@ proof (induct rule: finite_induct[OF assms(1)])
   finally show "f (\<Sum>(insert x F)) = \<Sum>(f ` insert x F)" .
 qed
 
-subsection {* Finite Suprema in Dioids *}
+subsection \<open>Finite Suprema in Dioids\<close>
 
-text {* In this section we mainly prove variants of distributivity laws. *}
+text \<open>In this section we mainly prove variants of distributivity laws.\<close>
 
 lemma sum_distl:
   assumes "finite Y"
@@ -387,7 +387,7 @@ lemma sum_interval_distr:
   finally show ?thesis .
 qed
 
-text {* There are interesting theorems for finite sums in Kleene
-algebras; we leave them for future consideration. *}
+text \<open>There are interesting theorems for finite sums in Kleene
+algebras; we leave them for future consideration.\<close>
 
 end

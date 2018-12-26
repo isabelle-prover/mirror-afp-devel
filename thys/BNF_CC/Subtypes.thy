@@ -462,7 +462,7 @@ end (* context includes lifting_syntax *)
 subsection \<open>Subtypes of BNFs without co- and contravariance\<close>
 
 text \<open>
-  If all variables are live, @{command lift_bnf}'s requirement @{text "P_zip_closed"} is equivalent
+  If all variables are live, @{command lift_bnf}'s requirement \<open>P_zip_closed\<close> is equivalent
   to our closedness under zippings, and Popescu's weaker condition is equivalent to negative
   subdistributivity restricted to the subset.
 \<close>

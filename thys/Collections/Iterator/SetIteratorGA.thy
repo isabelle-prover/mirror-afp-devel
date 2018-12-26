@@ -2,12 +2,12 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* General Algorithms for Iterators over Finite Sets *}
+section \<open>General Algorithms for Iterators over Finite Sets\<close>
 theory SetIteratorGA
 imports Main SetIteratorOperations
 begin
 
-subsection {* Quantification *}
+subsection \<open>Quantification\<close>
 
 definition iterate_ball where
     "iterate_ball (it::('x,bool) set_iterator) P = it id (\<lambda>x \<sigma>. P x) True"
@@ -32,7 +32,7 @@ apply (rule set_iterator_rule_P [OF it, where I = "\<lambda>S \<sigma>. \<sigma>
 apply auto
 done
 
-subsection {* Iterator to List *}
+subsection \<open>Iterator to List\<close>
 
 definition iterate_to_list where
     "iterate_to_list (it::('x,'x list) set_iterator) = it (\<lambda>_. True) (\<lambda>x \<sigma>. x # \<sigma>) []"
@@ -83,7 +83,7 @@ using it_OK unfolding map_iterator_rev_linord_foldli_conv
 by clarify (simp add: rev_map[symmetric])
 
 
-subsection {* Size *}
+subsection \<open>Size\<close>
 
 lemma set_iterator_finite :
 assumes it: "set_iterator it S0"
@@ -120,18 +120,18 @@ proof (rule set_iterator_rule_insert_P [OF it,
   case (4 \<sigma> S)
   assume "S \<subseteq> S0" "S \<noteq> S0" "\<not> \<sigma> < n" "\<sigma> = min n (card S) \<and> finite S" 
 
-  from `\<sigma> = min n (card S) \<and> finite S` `\<not> \<sigma> < n` 
+  from \<open>\<sigma> = min n (card S) \<and> finite S\<close> \<open>\<not> \<sigma> < n\<close> 
   have "\<sigma> = n" "n \<le> card S"
     by (auto simp add: min_less_iff_disj)
 
   note fin_S0 = set_iterator_genord.finite_S0 [OF it[unfolded set_iterator_def]]
-  from card_mono [OF fin_S0 `S \<subseteq> S0`] have "card S \<le> card S0" .
+  from card_mono [OF fin_S0 \<open>S \<subseteq> S0\<close>] have "card S \<le> card S0" .
   
-  with `\<sigma> = n` `n \<le> card S` fin_S0
+  with \<open>\<sigma> = n\<close> \<open>n \<le> card S\<close> fin_S0
   show "\<sigma> = min n (card S0) \<and> finite S0" by simp
 qed simp_all
 
-subsection {* Emptyness Check *}
+subsection \<open>Emptyness Check\<close>
 
 definition iterate_is_empty_by_size where
     "iterate_is_empty_by_size it = (iterate_size_abort it 1 = 0)"
@@ -155,7 +155,7 @@ apply (rule set_iterator_rule_insert_P [OF it,
 apply auto
 done
 
-subsection {* Check for singleton Sets *}
+subsection \<open>Check for singleton Sets\<close>
 
 definition iterate_is_sng where
     "iterate_is_sng it = (iterate_size_abort it 2 = 1)"
@@ -170,7 +170,7 @@ apply (case_tac n')
 apply auto
 done
 
-subsection {* Selection *}
+subsection \<open>Selection\<close>
 
 definition iterate_sel where
     "iterate_sel (it::('x,'y option) set_iterator) f = it (\<lambda>\<sigma>. \<sigma> = None) (\<lambda>x \<sigma>. f x) None"
@@ -289,11 +289,11 @@ proof -
 qed
 
 
-subsection {* Creating ordered iterators *}
+subsection \<open>Creating ordered iterators\<close>
 
-text {* One can transform an iterator into an ordered one by converting it to list, 
+text \<open>One can transform an iterator into an ordered one by converting it to list, 
         sorting this list and then converting back to an iterator. In general, this brute-force
-        method is inefficient, though. *}
+        method is inefficient, though.\<close>
 
 definition iterator_to_ordered_iterator where
   "iterator_to_ordered_iterator sort_fun it =

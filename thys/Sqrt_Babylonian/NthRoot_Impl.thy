@@ -21,7 +21,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Executable algorithms for $p$-th roots *}
+section \<open>Executable algorithms for $p$-th roots\<close>
 
 theory NthRoot_Impl
 imports
@@ -29,32 +29,32 @@ imports
   Cauchy.CauchysMeanTheorem
 begin
 
-text {*
+text \<open>
 We implemented algorithms to decide $\sqrt[p]{n} \in \rats$ and to compute $\lfloor \sqrt[p]{n} \rfloor$.
 To this end, we use a variant of Newton iteration which works with integer division instead of floating
 point or rational division. To get suitable starting values for the Newton iteration, we also implemented
 a function to approximate logarithms.
-*}
+\<close>
 
-subsection {* Logarithm *}
+subsection \<open>Logarithm\<close>
 
-text {* For computing the $p$-th root of a number $n$, we must choose a starting value
+text \<open>For computing the $p$-th root of a number $n$, we must choose a starting value
   in the iteration. Here, we use @{term "2 ^ (nat \<lceil>of_int \<lceil>log 2 n\<rceil> / p\<rceil>)"}.
-  *}
+\<close>
 
-text {* We use a partial efficient algorithm, which does not terminate on
+text \<open>We use a partial efficient algorithm, which does not terminate on
   corner-cases, like $b = 0$ or $p = 1$, and invoke it properly afterwards.
   Then there is a second algorithm which terminates on these corner-cases by additional
   guards and on which we can perform induction.
-*}
+\<close>
 
-subsection {* Computing the $p$-th root of an integer number *}
+subsection \<open>Computing the $p$-th root of an integer number\<close>
 
-text {* Using the logarithm, we can define an executable version of the
+text \<open>Using the logarithm, we can define an executable version of the
   intended  starting value. Its main property is the inequality
   @{term "(start_value x p) ^ p \<ge> x"}, i.e., the start value is larger
   than the p-th root. This property is essential, since our algorithm will abort
-  as soon as we fall below the p-th root. *}
+  as soon as we fall below the p-th root.\<close>
 
 definition start_value :: "int \<Rightarrow> nat \<Rightarrow> int" where
   "start_value n p = 2 ^ (nat \<lceil>of_nat (log_ceiling 2 n) / rat_of_nat p\<rceil>)"
@@ -110,10 +110,10 @@ qed
 lemma start_value: assumes x: "x \<ge> 0" and p: "p > 0" shows "x \<le> (start_value x p) ^ p" "start_value x p \<ge> 0"
   using start_value_main[OF x p] by auto
 
-text {* We now define the Newton iteration to compute the $p$-th root. We are working on the integers,
+text \<open>We now define the Newton iteration to compute the $p$-th root. We are working on the integers,
   where every @{term "(/)"} is replaced by @{term "(div)"}. We are proving several things within
   a locale which ensures that $p > 0$, and where $pm = p - 1$.
-  *}
+\<close>
 
 locale fixed_root =
   fixes p pm :: nat
@@ -126,24 +126,24 @@ function root_newton_int_main :: "int \<Rightarrow> int \<Rightarrow> int \<time
     by pat_completeness auto
 end
 
-text {* For the executable algorithm we omit the guard and use a let-construction *}
+text \<open>For the executable algorithm we omit the guard and use a let-construction\<close>
 
 partial_function (tailrec) root_int_main' :: "nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   [code]: "root_int_main' pm ipm ip x n = (let xpm = x^pm; xp = xpm * x in if xp \<le> n then (x, xp = n)
     else root_int_main' pm ipm ip ((n div xpm + x * ipm) div ip) n)"
 
-text {* In the following algorithm, we
+text \<open>In the following algorithm, we
   start the iteration.
-  It will compute @{term "\<lfloor>root p n\<rfloor>"} and a boolean to indicate whether the root is exact. *}
+  It will compute @{term "\<lfloor>root p n\<rfloor>"} and a boolean to indicate whether the root is exact.\<close>
 
 definition root_int_main :: "nat \<Rightarrow> int \<Rightarrow> int \<times> bool" where
   "root_int_main p n \<equiv> if p = 0 then (1,n = 1) else
      let pm = p - 1
        in root_int_main' pm (int pm) (int p) (start_value n p) n"
 
-text {* Once we have proven soundness of @{const fixed_root.root_newton_int_main} and equivalence
+text \<open>Once we have proven soundness of @{const fixed_root.root_newton_int_main} and equivalence
   to @{const root_int_main}, it
-  is easy to assemble the following algorithm which computes all roots for arbitrary integers. *}
+  is easy to assemble the following algorithm which computes all roots for arbitrary integers.\<close>
 
 definition root_int :: "nat \<Rightarrow> int \<Rightarrow> int list" where
   "root_int p x \<equiv> if p = 0 then [] else
@@ -151,7 +151,7 @@ definition root_int :: "nat \<Rightarrow> int \<Rightarrow> int list" where
       let e = even p; s = sgn x; x' = abs x
       in if x < 0 \<and> e then [] else case root_int_main p x' of (y,True) \<Rightarrow> if e then [y,-y] else [s * y] | _ \<Rightarrow> []"
 
-text {* We start with proving termination of @{const fixed_root.root_newton_int_main}. *}
+text \<open>We start with proving termination of @{const fixed_root.root_newton_int_main}.\<close>
 
 context fixed_root
 begin
@@ -164,9 +164,9 @@ qed
 
 lemma p0: "p \<noteq> 0" unfolding p by auto
 
-text {* The following property is the essential property for
+text \<open>The following property is the essential property for
   proving termination of @{const "root_newton_int_main"}.
-*}
+\<close>
 lemma iteration_mono_less: assumes x: "x \<ge> 0"
   and n: "n \<ge> 0"
   and xn: "x ^ p > (n :: int)"
@@ -238,11 +238,11 @@ proof -
   qed auto
 qed
 
-text {* We next prove that @{const root_int_main'} is a correct implementation of @{const root_newton_int_main}.
+text \<open>We next prove that @{const root_int_main'} is a correct implementation of @{const root_newton_int_main}.
 We additionally prove that the result is always positive, a lower bound, and that the returned boolean indicates
 whether the result has a root or not. We prove all these results in one go, so that we can share the
 inductive proof.
- *}
+\<close>
 
 abbreviation root_main' where "root_main' \<equiv> root_int_main' pm (int pm) (int p)"
 
@@ -281,9 +281,9 @@ lemma root_main'_pos: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> r
 lemma root_main'_sound: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> b = (y ^ p = n)"
   using root_main'_newton_pos by blast
 
-text {* In order to prove completeness of the algorithms, we provide sharp upper and lower bounds
+text \<open>In order to prove completeness of the algorithms, we provide sharp upper and lower bounds
   for @{const root_main'}. For the upper bounds, we use Cauchy's mean theorem where we added
-  the non-strict variant to Porter's formalization of this theorem. *}
+  the non-strict variant to Porter's formalization of this theorem.\<close>
 
 lemma root_main'_lower: "x \<ge> 0 \<Longrightarrow> n \<ge> 0 \<Longrightarrow> root_main' x n = (y,b) \<Longrightarrow> y ^ p \<le> n"
   using root_main'_newton_pos by blast
@@ -433,7 +433,7 @@ lemma root_main'_upper:
   using root_newton_int_main_upper[of n x y b] root_main'[of x n] by auto
 end
 
-text {* Now we can prove all the nice properties of @{const root_int_main}. *}
+text \<open>Now we can prove all the nice properties of @{const root_int_main}.\<close>
 
 lemma root_int_main_all: assumes n: "n \<ge> 0"
   and rm: "root_int_main p n = (y,b)"
@@ -589,12 +589,12 @@ proof -
   qed
 qed
 
-subsection {* Floor and ceiling of roots *}
+subsection \<open>Floor and ceiling of roots\<close>
 
-text {* Using the bounds for @{const root_int_main} we can easily design
+text \<open>Using the bounds for @{const root_int_main} we can easily design
   algorithms which compute @{term "floor (root p x)"} and @{term "ceiling (root p x)"}.
   To this end, we first develop algorithms for non-negative @{term x}, and later on
-  these are used for the general case. *}
+  these are used for the general case.\<close>
 
 definition "root_int_floor_pos p x = (if p = 0 then 0 else fst (root_int_main p x))"
 definition "root_int_ceiling_pos p x = (if p = 0 then 0 else (case root_int_main p x of (y,b) \<Rightarrow> if b then y else y + 1))"
@@ -695,7 +695,7 @@ next
             by (metis floor_power floor_of_int)
           hence "\<lfloor>root p (of_int x)\<rfloor> \<in> set (root_int p x)" using p by simp
           hence "root_int p x \<noteq> []" by force
-          with s False `p \<noteq> 0` x x0 show False unfolding root_int_def
+          with s False \<open>p \<noteq> 0\<close> x x0 show False unfolding root_int_def
             by (cases p, auto)
         qed
         from le neq show ?thesis by arith
@@ -739,7 +739,7 @@ proof -
   qed
 qed
 
-subsection {* Downgrading algorithms to the naturals *}
+subsection \<open>Downgrading algorithms to the naturals\<close>
 
 definition root_nat_floor :: "nat \<Rightarrow> nat \<Rightarrow> int" where
   "root_nat_floor p x = root_int_floor_pos p (int x)"
@@ -788,14 +788,14 @@ proof -
     hence y: "int y ^ p = int x"
       by (metis of_nat_power)
     hence "set (root_int p (int x)) \<noteq> {}" using root_int[of p "int x"] p0
-      by (metis (mono_tags) One_nat_def `y ^ p = x` empty_Collect_eq nat_power_eq_Suc_0_iff)
+      by (metis (mono_tags) One_nat_def \<open>y ^ p = x\<close> empty_Collect_eq nat_power_eq_Suc_0_iff)
     then obtain yi ys where ri: "root_int p (int x) = yi # ys"
       by (cases "root_int p (int x)", auto)
     from root_int_pos[OF _ this] have yip: "yi \<ge> 0" by auto
     from root_int[of p "int x", unfolded ri] p0 have yi: "yi ^ p = int x" by auto
     with y have "int y ^ p = yi ^ p" by auto
     from arg_cong[OF this, of nat] have id: "y ^ p = nat yi ^ p"
-      by (metis `y ^ p = x` nat_int nat_power_eq yi yip)
+      by (metis \<open>y ^ p = x\<close> nat_int nat_power_eq yi yip)
     {
       assume p: "p \<noteq> 0"
       hence p0: "p > 0" by auto
@@ -817,10 +817,10 @@ proof -
   ultimately show ?thesis by blast
 qed
 
-subsection {* Upgrading algorithms to the rationals *}
+subsection \<open>Upgrading algorithms to the rationals\<close>
 
-text {* The main observation to lift everything from the integers to the rationals is the fact, that one
-  can reformulate $\frac{a}{b}^{1/p}$ as $\frac{(ab^{p-1})^{1/p}}b$. *}
+text \<open>The main observation to lift everything from the integers to the rationals is the fact, that one
+  can reformulate $\frac{a}{b}^{1/p}$ as $\frac{(ab^{p-1})^{1/p}}b$.\<close>
 
 definition root_rat_floor :: "nat \<Rightarrow> rat \<Rightarrow> int" where
   "root_rat_floor p x \<equiv> case quotient_of x of (a,b) \<Rightarrow> root_int_floor p (a * b^(p - 1)) div b"

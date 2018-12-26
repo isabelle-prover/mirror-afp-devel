@@ -11,7 +11,7 @@ imports
 begin
 (*>*)
 
-subsection {* Brzozowski Derivatives Modulo ACI *}
+subsection \<open>Brzozowski Derivatives Modulo ACI\<close>
 
 lemma ACI_norm_derivs_alt: "\<guillemotleft>derivs w r\<guillemotright> = fold (\<lambda>a r. \<guillemotleft>deriv a r\<guillemotright>) w \<guillemotleft>r\<guillemotright>"
   by (induct w arbitrary: r) (auto simp: ACI_norm_deriv)
@@ -33,7 +33,7 @@ next
 qed
 
 
-subsection {* Brzozowski Derivatives Modulo ACI Operating on the Quotient Type *}
+subsection \<open>Brzozowski Derivatives Modulo ACI Operating on the Quotient Type\<close>
 
 lemma derivs_alt: "derivs = fold deriv"
 proof
@@ -94,7 +94,7 @@ next
 qed
 
 
-subsection {* Brzozowski Derivatives Modulo ACI++ (Only Soundness) *}
+subsection \<open>Brzozowski Derivatives Modulo ACI++ (Only Soundness)\<close>
 
 global_interpretation nderiv: rexp_DA "\<lambda>x. norm x" nderiv nullable lang
   defines nderiv_closure = nderiv.closure
@@ -111,7 +111,7 @@ next
 qed
 
 
-subsection {* Partial Derivatives *}
+subsection \<open>Partial Derivatives\<close>
 
 global_interpretation pderiv: rexp_DFA "\<lambda>r. {r}" pderiv_set "\<lambda>P. \<exists>p\<in>P. nullable p" "\<lambda>P. \<Union>(lang ` P)"
   defines pderiv_closure = pderiv.closure
@@ -152,9 +152,9 @@ next
     by (rule finite_surj[OF pderiv.fin, of _ "flatten PLUS" s]) (auto simp: fold_pnorm_deriv)
 qed
 
-subsection {* Languages as States *}
+subsection \<open>Languages as States\<close>
 
-text {* Not executable but still instructive. *}
+text \<open>Not executable but still instructive.\<close>
 
 lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
   by (induct w arbitrary: L) simp_all

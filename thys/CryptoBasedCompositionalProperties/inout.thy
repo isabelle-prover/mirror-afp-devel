@@ -3,7 +3,7 @@
    Author:    Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
  
-section {*Correctness of the relations between sets of Input/Output channels*}
+section \<open>Correctness of the relations between sets of Input/Output channels\<close>
  
 theory  inout 
 imports Secrecy_types

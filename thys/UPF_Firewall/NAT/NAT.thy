@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection{* Network Address Translation *}
+subsection\<open>Network Address Translation\<close>
 theory 
   NAT
   imports 
@@ -91,10 +91,10 @@ definition srcPat2pool_IntProtocol ::
   "srcPat2pool_IntProtocol srcs transl = 
   {x. (fst (src x)) \<in> srcs} \<triangleleft> (A\<^sub>f (srcPat2poolPort_Protocol_t transl))" 
 
-text{* 
+text\<open>
   The following lemmas are used for achieving a normalized output format of packages after 
   applying NAT. This is used, e.g., by our firewall execution tool. 
-*}
+\<close>
 
 lemma datasimp: "{(i, (s1, s2, s3), aba).
                     \<forall>a aa b ba. aba = ((a, aa, b), ba) \<longrightarrow> i = i1 \<and> s1 = i101 \<and> 

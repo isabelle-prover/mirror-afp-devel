@@ -1,4 +1,4 @@
-section {* Complementation *}
+section \<open>Complementation\<close>
 
 theory Complementation
 imports
@@ -6,7 +6,7 @@ imports
   "Ranking"
 begin
 
-  subsection {* Level Rankings and Complementation States *}
+  subsection \<open>Level Rankings and Complementation States\<close>
 
   type_synonym 'state lr = "'state \<rightharpoonup> nat"
 
@@ -122,7 +122,7 @@ begin
       using assms(2) 1 unfolding complement_def complement_succ_def trace_alt_def by auto
   qed
 
-  subsection {* Word in Complement Language Implies Ranking *}
+  subsection \<open>Word in Complement Language Implies Ranking\<close>
 
   lemma complement_ranking:
     assumes "w \<in> language (complement A)"
@@ -286,7 +286,7 @@ begin
     qed
   qed
 
-  subsection {* Ranking Implies Word in Complement Language *}
+  subsection \<open>Ranking Implies Word in Complement Language\<close>
 
   definition reach where
     "reach A w i \<equiv> {target r p |r p. path A r p \<and> p \<in> initial A \<and> map fst r = stake i w}"
@@ -590,7 +590,7 @@ begin
     qed
   qed
 
-  subsection {* Correctness Theorem *}
+  subsection \<open>Correctness Theorem\<close>
 
   theorem complement_language:
     assumes "finite (nodes A)"

@@ -1,10 +1,10 @@
-section {* Automation for Record Based Interfaces *}
+section \<open>Automation for Record Based Interfaces\<close>
 theory Record_Intf
   imports Main ICF_Tools Ord_Code_Preproc
 begin
 
-text {* The ICF uses coercions to simulate multiple inheritance of
-  operation records *}
+text \<open>The ICF uses coercions to simulate multiple inheritance of
+  operation records\<close>
 declare [[coercion_enabled]]
 
 lemma icf_rec_def_rule: "\<lbrakk>sel B = x; A\<equiv>B \<rbrakk> \<Longrightarrow> sel A = x " by auto
@@ -12,7 +12,7 @@ lemma icf_rec_def_rule: "\<lbrakk>sel B = x; A\<equiv>B \<rbrakk> \<Longrightarr
 ML_val Context.mapping
 
 
-ML {*
+ML \<open>
 signature RECORD_INTF = sig
   val get_unf_ss: Context.generic -> simpset
   val get_unf_thms: Context.generic -> thm list
@@ -142,21 +142,21 @@ structure Record_Intf: RECORD_INTF = struct
 
 
 end;
-*}
+\<close>
 
-setup {* Record_Intf.setup *}
+setup \<open>Record_Intf.setup\<close>
 
-text {*
+text \<open>
   Sets up unfolding for an operation record definition.
   New operation record definitions should be declared as 
-  @{text "[icf_rec_def]"}.
-*}
-attribute_setup icf_rec_def = {* Record_Intf.icf_rec_def_attr *} 
+  \<open>[icf_rec_def]\<close>.
+\<close>
+attribute_setup icf_rec_def = \<open>Record_Intf.icf_rec_def_attr\<close> 
   "ICF: Setup unfolding for record definition"
 
-method_setup icf_locales = {*
+method_setup icf_locales = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (Record_Intf.icf_locales_tac ctxt))
-*} "ICF: Normalize records and discharge locale subgoals"
+\<close> "ICF: Normalize records and discharge locale subgoals"
 
 end
 

@@ -1,11 +1,11 @@
-section {* \isaheader{Maps from Naturals by Arrays} *}
+section \<open>\isaheader{Maps from Naturals by Arrays}\<close>
 theory ArrayMapImpl
 imports 
   "../spec/MapSpec"
   "../gen_algo/MapGA"
   "../../Lib/Diff_Array"
 begin
-  text_raw {*\label{thy:ArrayMapImpl}*}
+  text_raw \<open>\label{thy:ArrayMapImpl}\<close>
 
 (*@impl Map
   @type 'v iam
@@ -15,7 +15,7 @@ begin
 
   type_synonym 'v iam = "'v option array"
 
-  subsection {* Definitions *}
+  subsection \<open>Definitions\<close>
   definition iam_\<alpha> :: "'v iam \<Rightarrow> nat \<rightharpoonup> 'v" where
     "iam_\<alpha> a i \<equiv> if i < array_length a then array_get a i else None"
 
@@ -302,7 +302,7 @@ begin
   interpretation iam: StdMap_no_invar iam_ops
     by unfold_locales (simp add: icf_rec_unf)
   setup Locale_Code.close_block
-  setup {* ICF_Tools.revert_abbrevs "iam"*}
+  setup \<open>ICF_Tools.revert_abbrevs "iam"\<close>
 
   lemma pi_iam[proper_it]: 
     "proper_it' iam_iterateoi iam_iterateoi"
@@ -322,7 +322,7 @@ begin
   interpretation pi_iam_rev: proper_it_loc iam_rev_iterateoi iam_rev_iterateoi
     apply unfold_locales by (rule pi_iam_rev)
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 definition "test_codegen \<equiv> (
   iam.add ,
   iam.add_dj ,

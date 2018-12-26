@@ -3,19 +3,19 @@ imports Samplers
 
 begin
 
-section {* Stuttering Equivalence *}
+section \<open>Stuttering Equivalence\<close>
 
-text {*
+text \<open>
   Stuttering equivalence of two sequences is formally defined as the equality
   of their maximally reduced versions.
-*}
+\<close>
 
 definition stutter_equiv  (infix "\<approx>" 50) where
   "\<sigma> \<approx> \<tau> \<equiv> \<natural>\<sigma> = \<natural>\<tau>"
 
-text {*
+text \<open>
   Stuttering equivalence is an equivalence relation.
-*}
+\<close>
 
 lemma stutter_equiv_refl: "\<sigma> \<approx> \<sigma>"
   unfolding stutter_equiv_def ..
@@ -26,10 +26,10 @@ lemma stutter_equiv_sym [sym]: "\<sigma> \<approx> \<tau> \<Longrightarrow> \<ta
 lemma stutter_equiv_trans [trans]: "\<rho> \<approx> \<sigma> \<Longrightarrow> \<sigma> \<approx> \<tau> \<Longrightarrow> \<rho> \<approx> \<tau>"
   unfolding stutter_equiv_def by simp
 
-text {*
+text \<open>
   In particular, any sequence sampled by a stuttering sampler
   is stuttering equivalent to the original one.
-*}
+\<close>
 lemma sampled_stutter_equiv:
   assumes "stutter_sampler f \<sigma>"
   shows "\<sigma> \<circ> f \<approx> \<sigma>"
@@ -38,12 +38,12 @@ lemma sampled_stutter_equiv:
 lemma stutter_reduced_equivalent: "\<natural>\<sigma> \<approx> \<sigma>"
   unfolding stutter_equiv_def by (rule stutter_reduced_reduced)
 
-text {*
+text \<open>
   For proving stuttering equivalence of two sequences, it is enough
   to exhibit two arbitrary sampling functions that equalize the reductions
   of the sequences. This can be more convenient than computing the
   maximal stutter-reduced version of the sequences.
-*}
+\<close>
 
 lemma stutter_equivI:
   assumes f: "stutter_sampler f \<sigma>" and g: "stutter_sampler g \<tau>" 
@@ -56,10 +56,10 @@ proof -
   finally show ?thesis by (unfold stutter_equiv_def)
 qed
 
-text {*
+text \<open>
   The corresponding elimination rule is easy to prove, given that the
   maximal stuttering sampling function is a stuttering sampling function.
-*}
+\<close>
 
 lemma stutter_equivE:
   assumes eq: "\<sigma> \<approx> \<tau>"
@@ -70,18 +70,18 @@ proof (rule p)
     by (unfold stutter_equiv_def stutter_reduced_def)
 qed (rule max_stutter_sampler)+
 
-text {*
+text \<open>
   Therefore we get the following alternative characterization: two
   sequences are stuttering equivalent iff there are stuttering sampling
   functions that equalize the two sequences.
-*}
+\<close>
 lemma stutter_equiv_eq:
   "\<sigma> \<approx> \<tau> = (\<exists>f g. stutter_sampler f \<sigma> \<and> stutter_sampler g \<tau> \<and> \<sigma> \<circ> f = \<tau> \<circ> g)"
   by (blast intro: stutter_equivI elim: stutter_equivE)
 
-text {*
+text \<open>
   The initial elements of stutter equivalent sequences are equal.
-*}
+\<close>
 lemma stutter_equiv_0:
   assumes "\<sigma> \<approx> \<tau>"
   shows "\<sigma> 0 = \<tau> 0"
@@ -95,12 +95,12 @@ abbreviation suffix_notation ("_ [_..]")
 where
   "suffix_notation w k \<equiv> suffix k w"
 
-text {*
-  Given any stuttering sampling function @{text f} for sequence @{text "\<sigma>"},
-  any suffix of @{text "\<sigma>"} starting at index @{text "f n"} is stuttering
-  equivalent to the suffix of the stutter-reduced version of @{text "\<sigma>"}
-  starting at @{text "n"}.
-*}
+text \<open>
+  Given any stuttering sampling function \<open>f\<close> for sequence \<open>\<sigma>\<close>,
+  any suffix of \<open>\<sigma>\<close> starting at index \<open>f n\<close> is stuttering
+  equivalent to the suffix of the stutter-reduced version of \<open>\<sigma>\<close>
+  starting at \<open>n\<close>.
+\<close>
 lemma suffix_stutter_equiv:
   assumes f: "stutter_sampler f \<sigma>"
   shows "suffix (f n) \<sigma> \<approx> suffix n (\<sigma> \<circ> f)"
@@ -122,12 +122,12 @@ proof -
     by (rule stutter_equivI)
 qed
 
-text {*
-  Given a stuttering sampling function @{text f} and a point @{text "n"}
-  within the interval from @{text "f k"} to @{text "f (k+1)"}, the suffix
-  starting at @{text n} is stuttering equivalent to the suffix starting
-  at @{text "f k"}.
-*}
+text \<open>
+  Given a stuttering sampling function \<open>f\<close> and a point \<open>n\<close>
+  within the interval from \<open>f k\<close> to \<open>f (k+1)\<close>, the suffix
+  starting at \<open>n\<close> is stuttering equivalent to the suffix starting
+  at \<open>f k\<close>.
+\<close>
 lemma stutter_equiv_within_interval:
   assumes f: "stutter_sampler f \<sigma>"
       and lo: "f k \<le> n" and hi: "n < f (Suc k)"
@@ -156,16 +156,16 @@ proof -
   ultimately show ?thesis by (rule stutter_equivI)
 qed
 
-text {*
-  Given two stuttering equivalent sequences @{text "\<sigma>"} and @{text "\<tau>"},
-  we obtain a zig-zag relationship as follows: for any suffix @{text "\<tau>[n..]"}
-  there is a suffix @{text "\<sigma>[m..]"} such that:
+text \<open>
+  Given two stuttering equivalent sequences \<open>\<sigma>\<close> and \<open>\<tau>\<close>,
+  we obtain a zig-zag relationship as follows: for any suffix \<open>\<tau>[n..]\<close>
+  there is a suffix \<open>\<sigma>[m..]\<close> such that:
   \begin{enumerate}
-  \item @{text "\<sigma>[m..] \<approx> \<tau>[n..]"} and
-  \item for every suffix @{text "\<sigma>[j..]"} where @{text "j<m"} there is a
-    corresponding suffix @{text "\<tau>[k..]"} for some @{text "k<n"}.
+  \item \<open>\<sigma>[m..] \<approx> \<tau>[n..]\<close> and
+  \item for every suffix \<open>\<sigma>[j..]\<close> where \<open>j<m\<close> there is a
+    corresponding suffix \<open>\<tau>[k..]\<close> for some \<open>k<n\<close>.
   \end{enumerate}
-*}
+\<close>
 theorem stutter_equiv_suffixes_left:
   assumes "\<sigma> \<approx> \<tau>"
   obtains m where "\<sigma>[m..] \<approx> \<tau>[n..]" and "\<forall>j<m. \<exists>k<n. \<sigma>[j..] \<approx> \<tau>[k..]"
@@ -226,10 +226,10 @@ proof -
     by (blast dest: stutter_equiv_sym)
 qed
 
-text {*
-  In particular, if @{text "\<sigma>"} and @{text "\<tau>"} are stutter equivalent then
+text \<open>
+  In particular, if \<open>\<sigma>\<close> and \<open>\<tau>\<close> are stutter equivalent then
   every element that occurs in one sequence also occurs in the other.
-*}
+\<close>
 lemma stutter_equiv_element_left:
   assumes "\<sigma> \<approx> \<tau>"
   obtains m where "\<sigma> m = \<tau> n" and "\<forall>j<m. \<exists>k<n. \<sigma> j = \<tau> k"

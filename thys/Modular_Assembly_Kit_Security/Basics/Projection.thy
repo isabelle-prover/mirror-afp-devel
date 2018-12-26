@@ -269,7 +269,7 @@ proof -
         unfolding projection_def by simp
       with "0.prems"(1) "0.prems"(2) have "\<tau>\<upharpoonleft>X = x # \<beta>\<upharpoonleft>X"
         unfolding projection_def by simp
-      with `\<alpha>\<upharpoonleft>X = []` show ?case
+      with \<open>\<alpha>\<upharpoonleft>X = []\<close> show ?case
         using projection_split_first_with_suffix by fastforce
     next
       case (Suc n)
@@ -282,34 +282,34 @@ proof -
                          and "a\<^sub>1\<upharpoonleft>X = []"
                          and "a\<^sub>2\<upharpoonleft>X = xs'" 
         using projection_split_first_with_suffix by metis
-      with `x' \<in> X` "Suc.prems"(1) have "\<tau>\<upharpoonleft>X= x' #  (a\<^sub>2 @ [x] @ \<beta>) \<upharpoonleft>X" 
+      with \<open>x' \<in> X\<close> "Suc.prems"(1) have "\<tau>\<upharpoonleft>X= x' #  (a\<^sub>2 @ [x] @ \<beta>) \<upharpoonleft>X" 
         unfolding projection_def by simp 
       then obtain t\<^sub>1 t\<^sub>2 where "\<tau>= t\<^sub>1 @ [x'] @ t\<^sub>2"
                          and "t\<^sub>1\<upharpoonleft>X = []"
                          and "t\<^sub>2\<upharpoonleft>X = (a\<^sub>2 @ [x] @ \<beta>) \<upharpoonleft>X"
         using projection_split_first_with_suffix by metis
-      from Suc.prems(3) `\<alpha> \<upharpoonleft>X= x' # xs'` `\<alpha> = a\<^sub>1 @ [x'] @ a\<^sub>2` `a\<^sub>1\<upharpoonleft>X = []` `a\<^sub>2\<upharpoonleft>X = xs'`
+      from Suc.prems(3) \<open>\<alpha> \<upharpoonleft>X= x' # xs'\<close> \<open>\<alpha> = a\<^sub>1 @ [x'] @ a\<^sub>2\<close> \<open>a\<^sub>1\<upharpoonleft>X = []\<close> \<open>a\<^sub>2\<upharpoonleft>X = xs'\<close>
       have "n=length(a\<^sub>2\<upharpoonleft>X)"
         by auto               
-      with "Suc.hyps"(1) "Suc.prems"(2) `t\<^sub>2\<upharpoonleft>X = (a\<^sub>2 @ [x] @ \<beta>) \<upharpoonleft>X` 
+      with "Suc.hyps"(1) "Suc.prems"(2) \<open>t\<^sub>2\<upharpoonleft>X = (a\<^sub>2 @ [x] @ \<beta>) \<upharpoonleft>X\<close> 
         obtain t\<^sub>2' t\<^sub>3' where "t\<^sub>2=t\<^sub>2' @ [x] @ t\<^sub>3'"
                          and "t\<^sub>2'\<upharpoonleft>X = a\<^sub>2\<upharpoonleft>X"
                          and "t\<^sub>3'\<upharpoonleft>X = \<beta>\<upharpoonleft>X"
           using projection_concatenation_commute by blast
       
       let ?\<alpha>'="t\<^sub>1 @ [x'] @ t\<^sub>2'" and ?\<beta>'="t\<^sub>3'"
-      from `\<tau>= t\<^sub>1 @ [x'] @ t\<^sub>2` `t\<^sub>2=t\<^sub>2' @ [x] @ t\<^sub>3'` have "\<tau>=?\<alpha>'@[x]@?\<beta>'"
+      from \<open>\<tau>= t\<^sub>1 @ [x'] @ t\<^sub>2\<close> \<open>t\<^sub>2=t\<^sub>2' @ [x] @ t\<^sub>3'\<close> have "\<tau>=?\<alpha>'@[x]@?\<beta>'"
         by auto
       moreover
-      from  `\<alpha> \<upharpoonleft>X= x' # xs'`  `t\<^sub>1\<upharpoonleft>X = []` `x' \<in> X` `t\<^sub>2'\<upharpoonleft>X = a\<^sub>2\<upharpoonleft>X` `a\<^sub>2\<upharpoonleft>X = xs'`
+      from  \<open>\<alpha> \<upharpoonleft>X= x' # xs'\<close>  \<open>t\<^sub>1\<upharpoonleft>X = []\<close> \<open>x' \<in> X\<close> \<open>t\<^sub>2'\<upharpoonleft>X = a\<^sub>2\<upharpoonleft>X\<close> \<open>a\<^sub>2\<upharpoonleft>X = xs'\<close>
       have "?\<alpha>'\<upharpoonleft>X = \<alpha>\<upharpoonleft>X"
         using projection_concatenation_commute unfolding projection_def by simp 
       ultimately
-      show ?case using `t\<^sub>3'\<upharpoonleft>X = \<beta>\<upharpoonleft>X`
+      show ?case using \<open>t\<^sub>3'\<upharpoonleft>X = \<beta>\<upharpoonleft>X\<close>
         by blast
     qed    
   }
-  with `\<tau> \<upharpoonleft> X = (\<alpha> @ [x] @ \<beta>) \<upharpoonleft> X` ` x \<in> X` show ?thesis
+  with \<open>\<tau> \<upharpoonleft> X = (\<alpha> @ [x] @ \<beta>) \<upharpoonleft> X\<close> \<open> x \<in> X\<close> show ?thesis
     by simp
 qed
         

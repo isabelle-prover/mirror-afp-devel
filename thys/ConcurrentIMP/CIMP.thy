@@ -19,7 +19,7 @@ begin
 ML_file "mkterm_antiquote.ML"
 ML_file "cimp.ML"
 
-setup {* Com.setup #> Loc.setup *}
+setup \<open>Com.setup #> Loc.setup\<close>
 
 end
 (*>*)

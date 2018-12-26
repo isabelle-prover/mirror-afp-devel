@@ -6,12 +6,12 @@ section "Tests"
 theory PerformanceTest
 imports Collections.Collections "HOL-Library.Code_Target_Numeral" 
 begin
-text_raw {*\label{thy:PerformanceTest}*}
+text_raw \<open>\label{thy:PerformanceTest}\<close>
 
-text {*
+text \<open>
   In this theory, the performance of the basic operations (memb, ins, delete and iterator) of
   various set implementations is tested.
-*}
+\<close>
 
   \<comment> \<open>Simple linear congruence generator for (low-quality) random numbers\<close>
   definition "lcg_next s r = (s mod r, ((22695477::nat)*s + 1) mod 268435456)"
@@ -122,11 +122,11 @@ text {*
     Ad-hoc test code:
   *)
   definition "test_hs_eval a b c = test_hs (nat_of_integer a) (nat_of_integer b) (nat_of_integer c)"
-  ML_val {*
+  ML_val \<open>
     val start = Time.now();
     @{code test_hs_eval} 1 100000 200000;
     val rt = Time.toMilliseconds (Time.now() - start);
-    *}
+\<close>
 
   (*
   export_code 

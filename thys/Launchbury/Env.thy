@@ -4,12 +4,12 @@ begin
 
 default_sort type
 
-text {*
+text \<open>
 Our type for environments is a function with a pcpo as the co-domain; this theory collects
 related definitions.
-*}
+\<close>
 
-subsubsection {* The domain of a pcpo-valued function *}
+subsubsection \<open>The domain of a pcpo-valued function\<close>
 
 definition edom :: "('key \<Rightarrow> 'value::pcpo) \<Rightarrow> 'key set"
   where "edom m = {x. m x \<noteq> \<bottom>}"
@@ -50,14 +50,14 @@ lemma edom_subset_adm[simp]:
   apply simp
   done
 
-subsubsection {* Updates *}
+subsubsection \<open>Updates\<close>
 
 lemma edom_fun_upd_subset: "edom (h (x := v)) \<subseteq> insert x (edom h)"
   by (auto simp add: edom_def)
 
 declare fun_upd_same[simp] fun_upd_other[simp]
 
-subsubsection {* Restriction *}
+subsubsection \<open>Restriction\<close>
 
 definition env_restr :: "'a set \<Rightarrow> ('a \<Rightarrow> 'b::pcpo) \<Rightarrow> ('a \<Rightarrow> 'b)"
   where "env_restr S m = (\<lambda> x. if x \<in> S then m x else \<bottom>)"
@@ -163,7 +163,7 @@ lemmas cont_compose[OF env_restr_cont, cont2cont, simp]
 lemma env_restr_cong: "(\<And>x. edom m \<subseteq> S \<inter> S' \<union> -S \<inter> -S')  \<Longrightarrow> m f|` S = m f|` S'"
   by (rule ext)(auto simp add: lookup_env_restr_eq edom_def)
 
-subsubsection {* Deleting *}
+subsubsection \<open>Deleting\<close>
 
 definition env_delete :: "'a \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b::pcpo)"
   where "env_delete x m = m(x := \<bottom>)"
@@ -232,11 +232,11 @@ lemma env_delete_below_arg:
   unfolding env_delete_restr
   by (rule env_restr_below_self)
 
-subsubsection {* Merging of two functions *}
+subsubsection \<open>Merging of two functions\<close>
 
-text {*
+text \<open>
 We'd like to have some nice syntax for @{term "override_on"}.
-*}
+\<close>
 
 abbreviation override_on_syn ("_ ++\<^bsub>_\<^esub> _" [100, 0, 100] 100) where "f1 ++\<^bsub>S\<^esub> f2 \<equiv> override_on f1 f2 S"
 
@@ -265,7 +265,7 @@ lemma env_restr_add: "(m1 ++\<^bsub>S2\<^esub> m2) f|` S = m1 f|` S ++\<^bsub>S2
 lemma env_delete_add: "env_delete x (m1 ++\<^bsub>S\<^esub> m2) = env_delete x m1 ++\<^bsub>S - {x}\<^esub> env_delete x m2"
   by (auto simp add: override_on_def  edom_def env_restr_def env_delete_def)
 
-subsubsection {* Environments with binary joins *}
+subsubsection \<open>Environments with binary joins\<close>
 
 lemma edom_join[simp]: "edom (f \<squnion> (g::('a::type \<Rightarrow> 'b::{Finite_Join_cpo,pcpo}))) = edom f \<union> edom g"
   unfolding edom_def by auto
@@ -297,7 +297,7 @@ lemma env_restr_below_split:
   "m f|` S \<sqsubseteq> m' \<Longrightarrow> m f|` (- S) \<sqsubseteq> m' \<Longrightarrow> m \<sqsubseteq> m'"
   by (metis ComplI fun_below_iff lookup_env_restr)
 
-subsubsection {* Singleton environments *}
+subsubsection \<open>Singleton environments\<close>
 
 definition esing :: "'a \<Rightarrow> 'b::{pcpo} \<rightarrow> ('a \<Rightarrow> 'b)"
   where "esing x = (\<Lambda> a. (\<lambda> y . (if x = y then a else \<bottom>)))"

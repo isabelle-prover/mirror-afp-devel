@@ -14,7 +14,7 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* VCG auction: Scala code extraction *}
+section \<open>VCG auction: Scala code extraction\<close>
 
 theory CombinatorialAuctionCodeExtraction
 

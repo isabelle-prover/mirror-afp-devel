@@ -3,14 +3,14 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* System Classes *}
+section \<open>System Classes\<close>
 
 theory SystemClasses imports Exceptions begin
 
 
-text {*
+text \<open>
   This theory provides definitions for the system exceptions.
-*}
+\<close>
 
 definition NullPointerC :: "cdecl" where
   "NullPointerC \<equiv> (NullPointer, ([],[],[]))"

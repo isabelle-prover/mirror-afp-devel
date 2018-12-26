@@ -1,4 +1,4 @@
-section {* Deterministic Rabin Automata Combinations *}
+section \<open>Deterministic Rabin Automata Combinations\<close>
 
 theory DRA_Combine
 imports "DBA" "DCA" "DRA"

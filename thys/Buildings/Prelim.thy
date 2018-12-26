@@ -1,17 +1,17 @@
-section {* Preliminaries *}
+section \<open>Preliminaries\<close>
 
-text {*
+text \<open>
   In this section, we establish some basic facts about natural numbers, logic, sets, functions and
   relations, lists, and orderings and posets, that are either not available in the HOL library or
   are in a form not suitable for our purposes.
-*}
+\<close>
 
 theory Prelim
 imports Main
 
 begin
 
-subsection {* Natural numbers *}
+subsection \<open>Natural numbers\<close>
 
 lemma nat_cases_2Suc [case_names 0 1 SucSuc]:
   assumes      0: "n = 0 \<Longrightarrow> P"
@@ -51,7 +51,7 @@ next
 qed
 
 
-subsection {* Logic *}
+subsection \<open>Logic\<close>
 
 lemma ex1_unique: "\<exists>!x. P x \<Longrightarrow> P a \<Longrightarrow> P b \<Longrightarrow> a=b"
   by blast
@@ -72,7 +72,7 @@ lemma two_cases [case_names both one other neither]:
   by      fast
 
 
-subsection {* Sets *}
+subsection \<open>Sets\<close>
 
 lemma bex1_equality: "\<lbrakk> \<exists>!x\<in>A. P x; x\<in>A; P x; y\<in>A; P y \<rbrakk> \<Longrightarrow> x=y"
   by blast
@@ -121,9 +121,9 @@ lemma separated_by_not_empty: "separated_by w x y \<Longrightarrow> w\<noteq>{}"
 lemma not_self_separated_by_disjoint: "A\<inter>B={} \<Longrightarrow> \<not> separated_by {A,B} x x"
   unfolding separated_by_def by auto
 
-subsection {* Functions and relations *}
+subsection \<open>Functions and relations\<close>
 
-subsubsection {* Miscellaneous *}
+subsubsection \<open>Miscellaneous\<close>
 
 lemma cong_let: "(let x = y in f x) = f y" by simp
 
@@ -140,7 +140,7 @@ abbreviation restrict1 :: "('a\<Rightarrow>'a) \<Rightarrow> 'a set \<Rightarrow
 lemma restrict1_image: "B\<subseteq>A \<Longrightarrow> restrict1 f A ` B = f`B"
   by auto
 
-subsubsection {* Equality of functions restricted to a set *}
+subsubsection \<open>Equality of functions restricted to a set\<close>
 
 definition "fun_eq_on f g A \<equiv> (\<forall>a\<in>A. f a = g a)"
 
@@ -245,7 +245,7 @@ next
   ultimately show ?case using subst[of _ _ "\<lambda>f. fixespointwise f A"] by fast
 qed
 
-subsubsection {* Injectivity, surjectivity, bijectivity, and inverses *}
+subsubsection \<open>Injectivity, surjectivity, bijectivity, and inverses\<close>
 
 lemma inj_on_to_singleton:
   assumes "inj_on f A" "f`A = {b}"
@@ -380,12 +380,12 @@ lemma the_inv_leftinv: "bij f \<Longrightarrow> the_inv f \<circ> f = id"
   using bij_def[of f] the_inv_f_f by fastforce
 
 
-subsubsection {* Induced functions on sets of sets and lists of sets *}
+subsubsection \<open>Induced functions on sets of sets and lists of sets\<close>
 
-text {*
+text \<open>
   Here we create convenience abbreviations for distributing a function over a set of sets and over
   a list of sets.
-*}
+\<close>
 
 abbreviation setsetmapim :: "('a\<Rightarrow>'b) \<Rightarrow> 'a set set \<Rightarrow> 'b set set" (infix "\<turnstile>" 70)
   where "f\<turnstile>X \<equiv> ((`) f) ` X"
@@ -436,12 +436,12 @@ next
 qed
 
 
-subsubsection {* Induced functions on quotients *}
+subsubsection \<open>Induced functions on quotients\<close>
 
-text {*
+text \<open>
   Here we construct the induced function on a quotient for an inducing function that respects the
   relation that defines the quotient.
-*}
+\<close>
 
 lemma respects_imp_unique_image_rel: "f respects r \<Longrightarrow> y\<in>f`r``{a} \<Longrightarrow> y = f a"
   using congruentD[of r f] by auto
@@ -472,7 +472,7 @@ lemma quotientfun_classrep_equality:
   using refl_onD by (fastforce intro: quotientfun_equality quotientI)
 
 
-subsubsection {* Support of a function *}
+subsubsection \<open>Support of a function\<close>
 
 definition supp :: "('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a set" where "supp f = {x. f x \<noteq> 0}"
 
@@ -493,10 +493,10 @@ proof-
 qed
 
 
-subsection {* Lists *}
+subsection \<open>Lists\<close>
 
 
-subsubsection {* Miscellaneous facts *}
+subsubsection \<open>Miscellaneous facts\<close>
 
 lemma snoc_conv_cons: "\<exists>x xs. ys@[y] = x#xs"
   by (cases ys) auto
@@ -539,7 +539,7 @@ proof (induct Xs)
   qed
 qed simp
 
-subsubsection {* Cases *}
+subsubsection \<open>Cases\<close>
 
 lemma list_cases_Cons_snoc [case_names Nil Single Cons_snoc]:
   assumes       Nil: "xs = [] \<Longrightarrow> P"
@@ -615,7 +615,7 @@ next
 qed
 
 
-subsubsection {* Induction *}
+subsubsection \<open>Induction\<close>
 
 lemma list_induct_CCons [case_names Nil Single CCons]:
   assumes Nil   : "P []"
@@ -689,7 +689,7 @@ lemma list_induct3_snoc_Conssnoc_Cons_pairwise
   by      auto
 
 
-subsubsection {* Alternating lists *}
+subsubsection \<open>Alternating lists\<close>
 
 primrec alternating_list :: "nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list"
   where zero: "alternating_list 0 s t = []"
@@ -775,9 +775,9 @@ lemma alternating_list_in_lists: "a\<in>A \<Longrightarrow> b\<in>A \<Longrighta
   by (induct n) auto
 
 
-subsubsection {* Binary relation chains *}
+subsubsection \<open>Binary relation chains\<close>
 
-text {* Here we consider lists where each pair of adjacent elements satisfy a given relation. *}
+text \<open>Here we consider lists where each pair of adjacent elements satisfy a given relation.\<close>
 
 fun binrelchain :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool"
   where "binrelchain P []  = True"
@@ -918,7 +918,7 @@ proof (induct xs arbitrary: x)
   case Cons with assms show ?case using binrelchain_Cons_reduce by auto
 qed (simp add: assms)
 
-subsubsection {* Set of subseqs *}
+subsubsection \<open>Set of subseqs\<close>
 
 lemma subseqs_Cons: "subseqs (x#xs) = map (Cons x) (subseqs xs) @ (subseqs xs)"
   using cong_let[of "subseqs xs" "\<lambda>xss. map (Cons x) xss @ xss"] by simp
@@ -971,14 +971,14 @@ lemma delete2_ssubseqs:
 
 
 
-subsection {* Orders and posets *}
+subsection \<open>Orders and posets\<close>
 
-text {*
+text \<open>
   We have chosen to work with the @{const ordering} locale instead of the @{class order} class to
   more easily facilitate simultaneously working with both an order and its dual.
-*}
+\<close>
 
-subsubsection {* Dual ordering *}
+subsubsection \<open>Dual ordering\<close>
 
 context ordering
 begin
@@ -993,7 +993,7 @@ lemma dual: "ordering greater_eq greater"
 
 end (* context ordering *)
 
-subsubsection {* Morphisms of posets *}
+subsubsection \<open>Morphisms of posets\<close>
 
 locale OrderingSetMap =
   domain  : ordering less_eq less
@@ -1143,7 +1143,7 @@ proof
   qed
 qed
 
-subsubsection {* More @{const arg_min} *}
+subsubsection \<open>More @{const arg_min}\<close>
 
 lemma is_arg_minI:
   "\<lbrakk> P x; \<And>y. P y \<Longrightarrow> \<not> m y < m x \<rbrakk> \<Longrightarrow> is_arg_min m P x"
@@ -1182,7 +1182,7 @@ proof-
     using is_arg_min_size[of m] is_arg_min_size[of m] by fastforce
 qed
 
-subsubsection {* Bottom of a set *}
+subsubsection \<open>Bottom of a set\<close>
 
 context ordering
 begin
@@ -1251,12 +1251,12 @@ lemma (in OrderingSetIso) pullback_bottom:
   using im_has_bottom codomain.bottomD(2) rev_ordsetmap
   by    (auto intro: domain.bottomI)
 
-subsubsection {* Minimal and pseudominimal elements in sets *}
+subsubsection \<open>Minimal and pseudominimal elements in sets\<close>
 
-text {*
+text \<open>
   We will call an element of a poset pseudominimal if the only element below it is the bottom of
   the poset.
-*}
+\<close>
 
 context ordering
 begin
@@ -1334,7 +1334,7 @@ lemma (in OrderingSetIso) pullback_pseudominimal_in:
         codomain.pseudominimal_inD2 pullback_bottom
   by    (blast intro: domain.pseudominimal_inI)
 
-subsubsection {* Set of elements below another *}
+subsubsection \<open>Set of elements below another\<close>
 
 abbreviation (in ordering) below_in :: "'a set \<Rightarrow> 'a \<Rightarrow> 'a set" (infix ".\<^bold>\<le>" 70)
   where "P.\<^bold>\<le>x \<equiv> {y\<in>P. y\<^bold>\<le>x}"
@@ -1481,7 +1481,7 @@ qed
 
 end (* context ordering *)
 
-subsubsection {* Lower bounds *}
+subsubsection \<open>Lower bounds\<close>
 
 context ordering
 begin
@@ -1533,9 +1533,9 @@ lemma pseudominimal_in_below_in_less_eq_glbound:
 
 end (* context ordering *)
 
-subsubsection {* Simplex-like posets *}
+subsubsection \<open>Simplex-like posets\<close>
 
-text {* Define a poset to be simplex-like if it is isomorphic to the power set of some set. *}
+text \<open>Define a poset to be simplex-like if it is isomorphic to the power set of some set.\<close>
 
 context ordering
 begin
@@ -1688,7 +1688,7 @@ proof-
     by (blast intro: order.simplex_likeI)
 qed
 
-subsubsection {* The superset ordering *}
+subsubsection \<open>The superset ordering\<close>
 
 abbreviation "supset_has_bottom       \<equiv> ordering.has_bottom       (\<supseteq>)"
 abbreviation "supset_bottom           \<equiv> ordering.bottom           (\<supseteq>)"

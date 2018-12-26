@@ -102,7 +102,7 @@ value[code] "access_matrix_pretty_ipv4 parts_connection_http
 value[code] "access_matrix_pretty_ipv4 parts_connection_http 
     (preprocess_ESTABLISHED unfold_ruleset_FORWARD upper_closure ipassmt docker_fw2_FORWARD_default_policy docker_fw2)"
 
-text{*Only one of the flows additionally allows answers for ESTABLISHED connections*}
+text\<open>Only one of the flows additionally allows answers for ESTABLISHED connections\<close>
 lemma "let new = access_matrix_pretty_ipv4 parts_connection_http 
                     (preprocess unfold_ruleset_FORWARD upper_closure ipassmt docker_fw2_FORWARD_default_policy docker_fw2);
                  est = access_matrix_pretty_ipv4 parts_connection_http 

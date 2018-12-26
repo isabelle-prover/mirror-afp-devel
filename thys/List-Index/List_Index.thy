@@ -13,21 +13,20 @@ subsection \<open>Finding an index\<close>
 text \<open>
 This subsection defines three functions for finding the index of items in a list:
 \begin{description}
-\item[@{text "find_index P xs"}] finds the index of the first element in
- @{text xs} that satisfies @{text P}.
-\item[@{text "index xs x"}] finds the index of the first occurrence of
- @{text x} in @{text xs}.
-\item[@{text "last_index xs x"}] finds the index of the last occurrence of
- @{text x} in @{text xs}.
+\item[\<open>find_index P xs\<close>] finds the index of the first element in
+ \<open>xs\<close> that satisfies \<open>P\<close>.
+\item[\<open>index xs x\<close>] finds the index of the first occurrence of
+ \<open>x\<close> in \<open>xs\<close>.
+\item[\<open>last_index xs x\<close>] finds the index of the last occurrence of
+ \<open>x\<close> in \<open>xs\<close>.
 \end{description}
-All functions return @{term "length xs"} if @{text xs} does not contain a
+All functions return @{term "length xs"} if \<open>xs\<close> does not contain a
 suitable element.
 
-The argument order of @{text find_index} follows the function of the same
-name in the Haskell standard library. For @{text index} (and @{text
-last_index}) the order is intentionally reversed: @{text index} maps
+The argument order of \<open>find_index\<close> follows the function of the same
+name in the Haskell standard library. For \<open>index\<close> (and \<open>last_index\<close>) the order is intentionally reversed: \<open>index\<close> maps
 lists to a mapping from elements to their indices, almost the inverse of
-function @{text nth}.\<close>
+function \<open>nth\<close>.\<close>
 
 primrec find_index :: "('a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> nat" where
 "find_index _ [] = 0" |

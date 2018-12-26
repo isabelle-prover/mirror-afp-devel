@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* The Jinja Type System as a Semilattice *}
+section \<open>The Jinja Type System as a Semilattice\<close>
 
 theory SemiType
 imports
@@ -102,10 +102,10 @@ proof(rule single_valuedI)
       by(auto dest: single_valuedpD)
   next
     case (widen1_Array_Array T U z)
-    from `P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 z` `P \<turnstile> T <\<^sup>1 U` `\<not> is_NT_Array T`
+    from \<open>P \<turnstile> T\<lfloor>\<rceil> <\<^sup>1 z\<close> \<open>P \<turnstile> T <\<^sup>1 U\<close> \<open>\<not> is_NT_Array T\<close>
     obtain z' where z': "z = z'\<lfloor>\<rceil>" and Tz': "P \<turnstile> T <\<^sup>1 z'"
       by(auto elim: widen1.cases)
-    with `P \<turnstile> T <\<^sup>1 z' \<Longrightarrow> U = z'` have "U = z'" by blast
+    with \<open>P \<turnstile> T <\<^sup>1 z' \<Longrightarrow> U = z'\<close> have "U = z'" by blast
     with z' show ?case by simp
   qed simp_all
 qed
@@ -197,11 +197,11 @@ next
     thus "P \<turnstile> T'\<lfloor>\<rceil> <\<^sup>1 U'"
     proof(cases T')
       case (Class D)
-      thus ?thesis using U' icO `is_type P (T'\<lfloor>\<rceil>)`
+      thus ?thesis using U' icO \<open>is_type P (T'\<lfloor>\<rceil>)\<close>
         by(cases "D = Object")(auto simp add: is_class_def intro: subcls1.intros)
     next
       case Array thus ?thesis
-        using IH `is_type P (T'\<lfloor>\<rceil>)` U' by(auto simp add: ty.split_asm)
+        using IH \<open>is_type P (T'\<lfloor>\<rceil>)\<close> U' by(auto simp add: ty.split_asm)
     qed simp_all
   qed
   thus ?case by(simp)
@@ -270,9 +270,9 @@ proof(induction A)
   thus ?case by(rule rtrancl_into_trancl1) simp
 next
   case (Array A)
-  from `is_type P (A\<lfloor>\<rceil>\<lfloor>\<rceil>)` have "is_type P (A\<lfloor>\<rceil>)" by(rule is_type_ArrayD)
+  from \<open>is_type P (A\<lfloor>\<rceil>\<lfloor>\<rceil>)\<close> have "is_type P (A\<lfloor>\<rceil>)" by(rule is_type_ArrayD)
   hence "P \<turnstile> A\<lfloor>\<rceil> <\<^sup>+ Class Object" by(rule Array.IH)
-  moreover from `is_type P (A\<lfloor>\<rceil>\<lfloor>\<rceil>)` have "\<not> is_NT_Array (A\<lfloor>\<rceil>)" by auto
+  moreover from \<open>is_type P (A\<lfloor>\<rceil>\<lfloor>\<rceil>)\<close> have "\<not> is_NT_Array (A\<lfloor>\<rceil>)" by auto
   ultimately have "P \<turnstile> A\<lfloor>\<rceil>\<lfloor>\<rceil> <\<^sup>+ Class Object\<lfloor>\<rceil>"
     by(rule widen1_trancl_into_Array_widen1_trancl)
   thus ?case by(rule trancl_into_trancl) simp
@@ -283,7 +283,7 @@ lemma widen_into_widen1_trancl:
   shows "\<lbrakk> P \<turnstile> A \<le> B; A \<noteq> B; A \<noteq> NT; is_type P A \<rbrakk> \<Longrightarrow> P \<turnstile> A <\<^sup>+ B"
 proof(induct rule: widen.induct)
   case (widen_subcls C D)
-  from `Class C \<noteq> Class D` `P \<turnstile> C \<preceq>\<^sup>* D` have "(subcls1 P)\<^sup>+\<^sup>+ C D"
+  from \<open>Class C \<noteq> Class D\<close> \<open>P \<turnstile> C \<preceq>\<^sup>* D\<close> have "(subcls1 P)\<^sup>+\<^sup>+ C D"
     by(auto elim: rtranclp.cases intro: rtranclp_into_tranclp1)
   thus ?case by(rule subcls1_trancl_widen1_trancl)
 next
@@ -291,7 +291,7 @@ next
 next
   case (widen_array_array A B)
   hence "P \<turnstile> A <\<^sup>+ B" by(cases A) auto
-  with `is_type P (A\<lfloor>\<rceil>)` show ?case by(auto intro: widen1_trancl_into_Array_widen1_trancl)
+  with \<open>is_type P (A\<lfloor>\<rceil>)\<close> show ?case by(auto intro: widen1_trancl_into_Array_widen1_trancl)
 qed(auto)
 
 lemma wf_prog_impl_acc_widen:
@@ -329,7 +329,7 @@ proof -
             by -(rule widen_into_widen1_trancl[OF wfP])
           hence ynM: "y \<notin> M \<inter> types P - {NT}"
             by -(rule y, simp add: trancl_converse)
-          thus "y \<notin> M" using Pzy znnt `is_type P y` by auto
+          thus "y \<notin> M" using Pzy znnt \<open>is_type P y\<close> by auto
         qed
       qed
       from True show ?thesis by(fastforce intro: BNTthesis)
@@ -355,7 +355,7 @@ proof -
           thus ?thesis using U by(auto simp del: is_type.simps)
         next
           case False
-          with `\<not> (\<exists>C. Class C \<in> M)` TM
+          with \<open>\<not> (\<exists>C. Class C \<in> M)\<close> TM
           have "\<forall>y. P \<turnstile> T \<le> y \<and> T \<noteq> y \<longrightarrow> y \<notin> M"
             by(cases T)(fastforce simp add: NT_widen)+
           thus ?thesis using TM by blast
@@ -567,7 +567,7 @@ proof -
   ultimately show ?thesis by (simp add: esl_def semilat_def sl_def Err.sl_def)
 qed
 
-subsection {* Relation between @{term "sup P T U = OK V"} and @{term "P \<turnstile> lub(T, U) = V"} *}
+subsection \<open>Relation between @{term "sup P T U = OK V"} and @{term "P \<turnstile> lub(T, U) = V"}\<close>
 
 lemma sup_is_lubI:
   assumes wf: "wf_prog wf_md P"
@@ -601,7 +601,7 @@ lemma is_lub_is_type:
   "\<lbrakk> wf_prog wf_md P; is_type P T; is_type P U; P \<turnstile> lub(T, U) = V \<rbrakk> \<Longrightarrow> is_type P V"
 by(frule (3) is_lub_subD)(erule (3) sup_is_type)
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 code_pred widen1p .
 lemmas [code] = widen1_def

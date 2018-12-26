@@ -3,7 +3,7 @@ theory Three_Steps
 imports "../Consensus_Misc"
 begin
 (*>*)
-subsection {* Step definitions for 3-step algorithms *}
+subsection \<open>Step definitions for 3-step algorithms\<close>
 
 abbreviation (input) "nr_steps \<equiv> 3"
 

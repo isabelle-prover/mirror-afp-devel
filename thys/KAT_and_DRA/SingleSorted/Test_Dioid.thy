@@ -3,18 +3,18 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Test Dioids *}
+section \<open>Test Dioids\<close>
 
 theory Test_Dioid
   imports Kleene_Algebra.Dioid
 begin
 
-text {*
+text \<open>
   Tests are embedded in a weak dioid, a dioid without the right annihilation and left distributivity axioms, using an 
   operator $t$ defined by a complementation operator. This allows us to use tests in weak settings, such as Probabilistic Kleene Algebra and Demonic Refinement Algebra.
-*}
+\<close>
 
-subsection {* Test Monoids *}
+subsection \<open>Test Monoids\<close>
 
 class n_op =
   fixes n_op :: "'a \<Rightarrow> 'a" ("n _" [90] 91)
@@ -274,7 +274,7 @@ lemma n_dist_var2: "n (n x \<cdot> n y \<oplus> t x \<cdot> n z) = n x \<cdot> t
 
 end
 
-subsection {* Test Near-Semirings *}
+subsection \<open>Test Near-Semirings\<close>
  
 class test_near_semiring_zerol = ab_near_semiring_one_zerol + n_op + plus_ord + 
   assumes test_one [simp]: "n n 1 = 1" 
@@ -703,12 +703,12 @@ lemma test_distrib: "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> (p + q)\
 
 end
 
-subsection {* Test Near Semirings with Distributive Tests *}
+subsection \<open>Test Near Semirings with Distributive Tests\<close>
 
-text {*
+text \<open>
   We now make the assumption that tests distribute over finite sums of arbitrary elements from the left.
   This can be justified in models such as multirelations and probabilistic predicate transformers.
-*}
+\<close>
 
 class test_near_semiring_zerol_distrib = test_near_semiring_zerol  +
   assumes n_left_distrib: "n x \<cdot> (y + z) = n x \<cdot> y + n x \<cdot> z"
@@ -736,7 +736,7 @@ lemma "\<lbrakk>test p; test q; p \<cdot> x \<cdot> !q = 0\<rbrakk> \<Longrighta
 lemma "\<lbrakk>test p; test q; x \<cdot> !q = !p \<cdot> x \<cdot> !q\<rbrakk> \<Longrightarrow> p \<cdot> x = p \<cdot> x \<cdot> q"
   (* nitpick *) oops
 
-text {* Next, we study tests with commutativity conditions. *}
+text \<open>Next, we study tests with commutativity conditions.\<close>
 
 lemma comm_add: "test p \<Longrightarrow>  p \<cdot> x = x \<cdot> p \<Longrightarrow>  p \<cdot> y = y \<cdot> p \<Longrightarrow> p \<cdot> (x + y) = (x + y) \<cdot> p"
   by (simp add: n_left_distrib_var)
@@ -773,11 +773,11 @@ qed
 
 end
 
-subsection {* Test Predioids *}
+subsection \<open>Test Predioids\<close>
 
-text {*
+text \<open>
   The following class is relevant for probabilistic Kleene algebras.
-*}
+\<close>
 
 class test_pre_dioid_zerol = test_near_semiring_zerol_distrib + pre_dioid
 
@@ -822,9 +822,9 @@ lemma "\<lbrakk>test p; test q\<rbrakk> \<Longrightarrow> x \<cdot> (p + q) \<le
 
 end
 
-text {*
+text \<open>
   The following class is relevant for Demonic Refinement Algebras.
-*}
+\<close>
 
 class test_semiring_zerol = test_near_semiring_zerol + semiring_one_zerol
 
@@ -887,11 +887,11 @@ lemma "test p \<Longrightarrow> p \<cdot> x = p \<cdot> x \<cdot> p \<and> !p \<
 
 end
 
-subsection {* Test Semirings *}
+subsection \<open>Test Semirings\<close>
 
-text {*
+text \<open>
   The following class is relevant for Kleene Algebra with Tests.
-*}
+\<close>
 
 class test_semiring = test_semiring_zerol + semiring_one_zero
 

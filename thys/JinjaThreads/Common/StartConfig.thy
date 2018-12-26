@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* The initial configuration *}
+section \<open>The initial configuration\<close>
 
 theory StartConfig
 imports
@@ -120,7 +120,7 @@ lemma in_set_start_addrs_conv_NewHeapElem:
 by(blast dest: start_addrs_NewHeapElem_start_heap_obsD intro: NewHeapElem_start_heap_obs_start_addrsD)
 
 
-subsection {* @{term preallocated} *}
+subsection \<open>@{term preallocated}\<close>
 
 definition preallocated :: "'heap \<Rightarrow> bool"
 where "preallocated h \<equiv> \<forall>C \<in> sys_xcpts. typeof_addr h (addr_of_sys_xcpt C) = \<lfloor>Class_type C\<rfloor>"
@@ -250,11 +250,11 @@ proof -
       case Nil thus ?case by auto
     next
       case (Cons x xs)
-      note ads = `set ads \<subseteq> dom (typeof_addr h)`
-      note dist = `distinct (Cs @ x # xs)`
-      note len = `length Cs = length ads`
-      note type = `\<And>C a. (C, a) \<in> set (zip Cs ads) \<Longrightarrow> typeof_addr h a = \<lfloor>Class_type C\<rfloor>`
-      note is_class = `\<And>C. C \<in> set (x # xs) \<Longrightarrow> is_class P C`
+      note ads = \<open>set ads \<subseteq> dom (typeof_addr h)\<close>
+      note dist = \<open>distinct (Cs @ x # xs)\<close>
+      note len = \<open>length Cs = length ads\<close>
+      note type = \<open>\<And>C a. (C, a) \<in> set (zip Cs ads) \<Longrightarrow> typeof_addr h a = \<lfloor>Class_type C\<rfloor>\<close>
+      note is_class = \<open>\<And>C. C \<in> set (x # xs) \<Longrightarrow> is_class P C\<close>
       show ?case
       proof(cases "b \<and> allocate h (Class_type x) \<noteq> {}")
         case False thus ?thesis
@@ -293,7 +293,7 @@ proof -
             moreover from new_obj is_class
             have "typeof_addr h' a' = \<lfloor>Class_type x\<rfloor>" by(auto dest: allocate_SomeD)
             ultimately have "C = x" by simp
-            with dist `C \<in> set Cs` show False by simp
+            with dist \<open>C \<in> set Cs\<close> show False by simp
           qed
           moreover note calculation }
         ultimately show ?thesis by(simp add: create_initial_object_simps new_obj h'a')
@@ -324,10 +324,10 @@ proof -
         case Nil thus ?case by auto
       next
         case (Cons x xs)
-        note inv = `\<forall>(C, a) \<in> set (zip Cs ads). typeof_addr h a = \<lfloor>Class_type C\<rfloor>`
-          and Ca = `(C, a) \<in> set (zip (Cs @ x # xs) (fst (snd (foldl create_initial_object (h, ads, b) (x # xs)))))`
-          and len = `length Cs = length ads`
-          and is_class = `\<forall>C \<in> set (x # xs). is_class P C`
+        note inv = \<open>\<forall>(C, a) \<in> set (zip Cs ads). typeof_addr h a = \<lfloor>Class_type C\<rfloor>\<close>
+          and Ca = \<open>(C, a) \<in> set (zip (Cs @ x # xs) (fst (snd (foldl create_initial_object (h, ads, b) (x # xs)))))\<close>
+          and len = \<open>length Cs = length ads\<close>
+          and is_class = \<open>\<forall>C \<in> set (x # xs). is_class P C\<close>
         show ?case
         proof(cases "b \<and> allocate h (Class_type x) \<noteq> {}")
           case False thus ?thesis
@@ -367,7 +367,7 @@ qed
 end
 
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 definition pick_addr :: "('heap \<times> 'addr) set \<Rightarrow> 'heap \<times> 'addr"
 where "pick_addr HA = (SOME ha. ha \<in> HA)"

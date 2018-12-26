@@ -7,9 +7,9 @@ begin
 text \<open>
 Contents: 
 \<^item> We define the localization of a commutative ring R with respect to a multiplicative subset, 
-i.e. with respect to a submonoid of R (seen as a multiplicative monoid), cf. [@{text "rec_rng_of_frac"}]. 
-\<^item> We prove that this localization is a commutative ring (cf. [@{text"crng_rng_of_frac"}]) equipped with a 
-homomorphism of rings from R (cf. [@{text"rng_to_rng_of_frac_is_ring_hom"}]).
+i.e. with respect to a submonoid of R (seen as a multiplicative monoid), cf. [\<open>rec_rng_of_frac\<close>]. 
+\<^item> We prove that this localization is a commutative ring (cf. [\<open>crng_rng_of_frac\<close>]) equipped with a 
+homomorphism of rings from R (cf. [\<open>rng_to_rng_of_frac_is_ring_hom\<close>]).
 \<close>
 
 section \<open>The Localization of a Commutative Ring\<close>

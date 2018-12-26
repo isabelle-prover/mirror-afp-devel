@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Instances of the Show Class for Standard Types *}
+section \<open>Instances of the Show Class for Standard Types\<close>
 
 theory Old_Show_Instances
 imports
@@ -24,17 +24,17 @@ imports
   HOL.Rat
 begin
 
-text {*
+text \<open>
   For several types, we just derive the show function.
-*}
+\<close>
 
 derive "show" bool option sum
 
-text {*
+text \<open>
   The derive-command is not used for @{type unit}, @{type prod}, and numbers: for @{type unit} and
   @{type prod}, we do not want to display ``Unity'' and ``Pair''; for @{type nat}, we do not want to
   display ``Suc (Suc ... Suc (0))''; and neither @{type int} nor @{type rat} are datatypes.
-*}
+\<close>
 
 instantiation unit :: "show"
 begin

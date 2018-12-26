@@ -2,14 +2,14 @@ theory Encodings
   imports ProcessCalculi
 begin
 
-section {* Encodings *}
+section \<open>Encodings\<close>
 
-text {* In the simplest case an encoding from a source into a target language is a mapping from
+text \<open>In the simplest case an encoding from a source into a target language is a mapping from
         source into target terms. Encodability criteria describe properties on such mappings. To
         analyse encodability criteria we map them on conditions on relations between source and
         target terms. More precisely, we consider relations on pairs of the disjoint union of
         source and target terms. We denote this disjoint union of source and target terms by Proc.
-      *}
+\<close>
 
 datatype ('procS, 'procT) Proc =
   SourceTerm 'procS |
@@ -33,8 +33,8 @@ definition STCalWB
    HasBarb   = \<lambda>P a. (\<exists>SP. P = SourceTerm SP \<and> (calculusWithBarbs.HasBarb Source) SP a) \<or>
                      (\<exists>TP. P = TargetTerm TP \<and> (calculusWithBarbs.HasBarb Target) TP a)\<rparr>"
 
-text {* An encoding consists of a source language, a target language, and a mapping from source
-        into target terms. *}
+text \<open>An encoding consists of a source language, a target language, and a mapping from source
+        into target terms.\<close>
 
 locale encoding =
   fixes Source :: "'procS processCalculus"
@@ -61,7 +61,7 @@ abbreviation getTarget
   where
   "T \<in>T P \<equiv> (P = TargetTerm T)"
 
-text {* A step of a term in Proc is either a source term step or a target term step. *}
+text \<open>A step of a term in Proc is either a source term step or a target term step.\<close>
 
 abbreviation stepST
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<longmapsto>ST _" [70, 70] 80)
@@ -90,8 +90,8 @@ lemma STCal_step:
     and "TargetTerm T \<longmapsto>(STCal Source Target) P' = (\<exists>T'. T' \<in>T P' \<and> T \<longmapsto>Target T')"
     by (simp add: STCal_def)+
 
-text {* A sequence of steps of a term in Proc is either a sequence of source term steps or a
-        sequence of target term steps. *}
+text \<open>A sequence of steps of a term in Proc is either a sequence of source term steps or a
+        sequence of target term steps.\<close>
 
 abbreviation stepsST
     :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<longmapsto>ST* _" [70, 70] 80)
@@ -271,7 +271,7 @@ proof -
     by (simp add: stepsST_STCal_steps)
 qed
 
-text {* A divergent term of Proc is either a divergent source term or a divergent target term. *}
+text \<open>A divergent term of Proc is either a divergent source term or a divergent target term.\<close>
 
 abbreviation divergentST
     :: "('procS, 'procT) Proc \<Rightarrow> bool" ("_ \<longmapsto>ST\<omega>" [70] 80)
@@ -303,9 +303,9 @@ next
     by simp
 qed
 
-text {* Similar to relations we define what it means for an encoding to preserve, reflect, or
+text \<open>Similar to relations we define what it means for an encoding to preserve, reflect, or
         respect a predicate. An encoding preserves some predicate P if P(S) implies P(enc S) for
-        all source terms S. *}
+        all source terms S.\<close>
 
 abbreviation enc_preserves_pred :: "(('procS, 'procT) Proc \<Rightarrow> bool) \<Rightarrow> bool" where
   "enc_preserves_pred Pred \<equiv> \<forall>S. Pred (SourceTerm S) \<longrightarrow> Pred (TargetTerm (\<lbrakk>S\<rbrakk>))"
@@ -315,7 +315,7 @@ abbreviation enc_preserves_binary_pred
   where
   "enc_preserves_binary_pred Pred \<equiv> \<forall>S x. Pred (SourceTerm S) x \<longrightarrow> Pred (TargetTerm (\<lbrakk>S\<rbrakk>)) x"
 
-text {* An encoding reflects some predicate P if P(S) implies P(enc S) for all source terms S. *}
+text \<open>An encoding reflects some predicate P if P(S) implies P(enc S) for all source terms S.\<close>
 
 abbreviation enc_reflects_pred :: "(('procS, 'procT) Proc \<Rightarrow> bool) \<Rightarrow> bool" where
   "enc_reflects_pred Pred \<equiv> \<forall>S. Pred (TargetTerm (\<lbrakk>S\<rbrakk>)) \<longrightarrow> Pred (SourceTerm S)"
@@ -325,7 +325,7 @@ abbreviation enc_reflects_binary_pred
   where
   "enc_reflects_binary_pred Pred \<equiv> \<forall>S x. Pred (TargetTerm (\<lbrakk>S\<rbrakk>)) x \<longrightarrow> Pred (SourceTerm S) x"
 
-text {* An encoding respects a predicate if it preserves and reflects it. *}
+text \<open>An encoding respects a predicate if it preserves and reflects it.\<close>
 
 abbreviation enc_respects_pred :: "(('procS, 'procT) Proc \<Rightarrow> bool) \<Rightarrow> bool" where
   "enc_respects_pred Pred \<equiv> enc_preserves_pred Pred \<and> enc_reflects_pred Pred"
@@ -338,8 +338,8 @@ abbreviation enc_respects_binary_pred
 
 end
 
-text {* To compare source terms and target terms w.r.t. their barbs or observables we assume that
-        each languages defines its own predicate for the existence of barbs. *}
+text \<open>To compare source terms and target terms w.r.t. their barbs or observables we assume that
+        each languages defines its own predicate for the existence of barbs.\<close>
 
 locale encoding_wrt_barbs =
   encoding Source Target Enc
@@ -357,10 +357,10 @@ lemma STCalWB_STCal:
       unfolding STCalWB_def using calS calT
     by auto
 
-text {* We say a term P of Proc has some barbs a if either P is a source term that has barb a or P
+text \<open>We say a term P of Proc has some barbs a if either P is a source term that has barb a or P
         is a target term that has the barb b. For simplicity we assume that the sets of barbs is
         large enough to contain all barbs of the source terms, the target terms, and all barbs they
-        might have in common. *}
+        might have in common.\<close>
 
 abbreviation hasBarbST
     :: "('procS, 'procT) Proc \<Rightarrow> 'barbs \<Rightarrow> bool" ("_\<down>._" [70, 70] 80)
@@ -407,8 +407,8 @@ lemma respection_of_barbs_in_barbed_encoding:
             respection rel
     by blast
 
-text {* A term P of Proc reaches a barb a if either P is a source term that reaches a or P is a
-        target term that reaches a. *}
+text \<open>A term P of Proc reaches a barb a if either P is a source term that reaches a or P is a
+        target term that reaches a.\<close>
 
 abbreviation reachesBarbST
     :: "('procS, 'procT) Proc \<Rightarrow> 'barbs \<Rightarrow> bool" ("_\<Down>._" [70, 70] 80)

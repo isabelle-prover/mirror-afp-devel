@@ -1,19 +1,19 @@
-section {* Galois Connections and Fusion Theorems \label{S:galois} *}
+section \<open>Galois Connections and Fusion Theorems \label{S:galois}\<close>
 
 theory Galois_Connections
 imports Refinement_Lattice
 begin
 
-text {*
+text \<open>
   The concept of Galois connections is introduced here to prove the fixed-point fusion lemmas. 
   The definition of Galois connections used is quite simple but encodes a lot of 
   information.
   The material in this section is largely based on the work of the Eindhoven
   Mathematics of Program Construction Group \cite{fixedpointcalculus1995}
   and the reader is referred to their work for a full explanation of this section.
-*}
+\<close>
 
-subsection {* Lower Galois connections *}
+subsection \<open>Lower Galois connections\<close>
 
 (* auxiliary lemma to prefer 2-element sets rather than disjunction *)
 lemma Collect_2set [simp]:  "{F x |x. x = a \<or> x = b} = {F a, F b}"
@@ -73,12 +73,12 @@ lemma v_simple_fusion: "mono G \<Longrightarrow> \<forall>x. ((F \<circ> G) x \<
   by (metis comp_eq_dest_lhs gfp_unfold gfp_upperbound)
 
 
-subsection {* Greatest fixpoint fusion theorems *}
+subsection \<open>Greatest fixpoint fusion theorems\<close>
 
-text {*
+text \<open>
   Combining lower Galois connections and greatest fixed points allows 
   elegant proofs of the weak fusion lemmas. 
-*}
+\<close>
 
 theorem fusion_gfp_geq:
   assumes monoH: "mono H"
@@ -108,7 +108,7 @@ qed
 
 end
 
-subsection {* Upper Galois connections *}
+subsection \<open>Upper Galois connections\<close>
 
 locale upper_galois_connections
 begin
@@ -163,12 +163,12 @@ qed
 lemma u_simple_fusion: "mono H \<Longrightarrow> \<forall>x. ((F \<circ> G) x \<sqsubseteq> (G \<circ> H) x) \<Longrightarrow> lfp F \<sqsubseteq> G (lfp H)"
   by (metis comp_def lfp_lowerbound lfp_unfold)
 
-subsection {* Least fixpoint fusion theorems *}
+subsection \<open>Least fixpoint fusion theorems\<close>
 
-text {* 
+text \<open>
   Combining upper Galois connections and least fixed points allows elegant proofs 
   of the strong fusion lemmas.
-*}
+\<close>
 
 
 theorem fusion_lfp_leq:

@@ -6,12 +6,12 @@
     Based on the Jinja theory J/Equivalence.thy by Tobias Nipkow
 *)
 
-section {* Equivalence of Big Step and Small Step Semantics *}
+section \<open>Equivalence of Big Step and Small Step Semantics\<close>
 
 theory Equivalence imports BigStep SmallStep WWellForm begin
 
 
-subsection{* Some casts-lemmas *}
+subsection\<open>Some casts-lemmas\<close>
 
 lemma assumes wf:"wf_prog wf_md P"
 shows casts_casts:
@@ -253,9 +253,9 @@ qed (auto intro:casts_casts wf)
   
 
 
-subsection{*Small steps simulate big step*}
+subsection\<open>Small steps simulate big step\<close>
 
-subsection {*Cast*}
+subsection \<open>Cast\<close>
 
 lemma StaticCastReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>\<lparr>C\<rparr>e,s\<rangle> \<rightarrow>* \<langle>\<lparr>C\<rparr>e',s'\<rangle>"
@@ -392,7 +392,7 @@ apply(simp add:red_reds.DynCastThrow)
 done
 
 
-subsection {*LAss*}
+subsection \<open>LAss\<close>
 
 lemma LAssReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>V:=e,s\<rangle> \<rightarrow>* \<langle>V:=e',s'\<rangle>"
@@ -423,7 +423,7 @@ apply(simp add:red_reds.LAssThrow)
 done
 
 
-subsection {*BinOp*}
+subsection \<open>BinOp\<close>
 
 lemma BinOp1Reds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle> e \<guillemotleft>bop\<guillemotright> e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e' \<guillemotleft>bop\<guillemotright> e\<^sub>2, s'\<rangle>"
@@ -479,7 +479,7 @@ apply(simp add:red_reds.BinOpThrow2)
 done
 
 
-subsection {*FAcc*}
+subsection \<open>FAcc\<close>
 
 lemma FAccReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs}, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{Cs}, s'\<rangle>"
@@ -520,7 +520,7 @@ apply(simp add:red_reds.FAccThrow)
 done
 
 
-subsection {*FAss*}
+subsection \<open>FAss\<close>
 
 lemma FAssReds1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e\<bullet>F{Cs}:=e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e'\<bullet>F{Cs}:=e\<^sub>2, s'\<rangle>"
@@ -590,7 +590,7 @@ apply(simp add:red_reds.FAssThrow2)
 done
 
 
-subsection {*;;*}
+subsection \<open>;;\<close>
 
 lemma  SeqReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e;;e\<^sub>2, s\<rangle> \<rightarrow>* \<langle>e';;e\<^sub>2, s'\<rangle>"
@@ -623,7 +623,7 @@ done
 
 
 
-subsection {*If*}
+subsection \<open>If\<close>
 
 lemma CondReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>if (e) e\<^sub>1 else e\<^sub>2,s\<rangle> \<rightarrow>* \<langle>if (e') e\<^sub>1 else e\<^sub>2,s'\<rangle>"
@@ -667,7 +667,7 @@ done
 
 
 
-subsection {*While*}
+subsection \<open>While\<close>
 
 lemma WhileFReds:
   "P,E \<turnstile> \<langle>b,s\<rangle> \<rightarrow>* \<langle>false,s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>while (b) c,s\<rangle> \<rightarrow>* \<langle>unit,s'\<rangle>"
@@ -727,7 +727,7 @@ apply simp
 done
 
 
-subsection {*Throw*}
+subsection \<open>Throw\<close>
 
 lemma ThrowReds:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>throw e,s\<rangle> \<rightarrow>* \<langle>throw e',s'\<rangle>"
@@ -757,7 +757,7 @@ apply(simp add:red_reds.ThrowThrow)
 done
 
 
-subsection {*InitBlock*}
+subsection \<open>InitBlock\<close>
 
 lemma assumes wf:"wf_prog wf_md P"
 shows InitBlockReds_aux:
@@ -870,7 +870,7 @@ qed
 
 
 
-subsection {*Block*}
+subsection \<open>Block\<close>
 
 lemma BlockRedsFinal:
 assumes reds: "P,E(V \<mapsto> T) \<turnstile> \<langle>e\<^sub>0,s\<^sub>0\<rangle> \<rightarrow>* \<langle>e\<^sub>2,(h\<^sub>2,l\<^sub>2)\<rangle>" and fin: "final e\<^sub>2"
@@ -941,7 +941,7 @@ qed
 
 
 
-subsection {*List*}
+subsection \<open>List\<close>
 
 lemma ListReds1:
   "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e#es,s\<rangle> [\<rightarrow>]* \<langle>e' # es,s'\<rangle>"
@@ -973,9 +973,9 @@ apply(erule ListReds2)
 done
 
 
-subsection {*Call*}
+subsection \<open>Call\<close>
 
-text{* First a few lemmas on what happens to free variables during redction. *}
+text\<open>First a few lemmas on what happens to free variables during redction.\<close>
 
 
 lemma assumes wf: "wwf_prog P"
@@ -1024,7 +1024,7 @@ apply(blast dest: Red_fv Red_dom_lcl)
 done
 
 
-text{* Now a few lemmas on the behaviour of blocks during reduction. *}
+text\<open>Now a few lemmas on the behaviour of blocks during reduction.\<close>
 
 
 lemma override_on_upd_lemma:
@@ -1156,7 +1156,7 @@ qed
 
 
 
-text{* An now the actual method call reduction lemmas. *}
+text\<open>An now the actual method call reduction lemmas.\<close>
 
 lemma CallRedsObj:
  "P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle> \<Longrightarrow> 
@@ -1501,7 +1501,7 @@ done
 
 
 
-subsection {*The main Theorem*}
+subsection \<open>The main Theorem\<close>
 
 lemma assumes wwf: "wwf_prog P"
 shows big_by_small: "P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<rangle> \<rightarrow>* \<langle>e',s'\<rangle>"
@@ -1649,10 +1649,10 @@ qed
 
 
 
-subsection{*Big steps simulates small step*}
+subsection\<open>Big steps simulates small step\<close>
 
 
-text {* The big step equivalent of @{text RedWhile}: *} 
+text \<open>The big step equivalent of \<open>RedWhile\<close>:\<close> 
 
 lemma unfold_while: 
   "P,E \<turnstile> \<langle>while(b) c,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>  =  P,E \<turnstile> \<langle>if(b) (c;;while(b) c) else (unit),s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
@@ -2062,8 +2062,8 @@ abschalten. Wieder anschalten siehe nach dem Beweis. *)
 
 declare split_paired_All [simp del] split_paired_Ex [simp del]
 
-declaration {* K (Simplifier.map_ss (fn ss => ss delloop "split_all_tac")) *}
-setup {* map_theory_claset (fn ctxt => ctxt delSWrapper "split_all_tac") *}
+declaration \<open>K (Simplifier.map_ss (fn ss => ss delloop "split_all_tac"))\<close>
+setup \<open>map_theory_claset (fn ctxt => ctxt delSWrapper "split_all_tac")\<close>
 
 
 lemma list_eval_Throw: 
@@ -2116,7 +2116,7 @@ qed
 
 
 
-text {* The key lemma: *}
+text \<open>The key lemma:\<close>
 
 lemma
 assumes wf: "wwf_prog P"
@@ -2758,11 +2758,11 @@ qed
 
 (* ... und wieder anschalten: *)
 declare split_paired_All [simp] split_paired_Ex [simp]
-setup {* map_theory_claset (fn ctxt => ctxt addSbefore ("split_all_tac", split_all_tac)) *}
-setup {* map_theory_simpset (fn ctxt => ctxt addloop ("split_all_tac", split_all_tac)) *}
+setup \<open>map_theory_claset (fn ctxt => ctxt addSbefore ("split_all_tac", split_all_tac))\<close>
+setup \<open>map_theory_simpset (fn ctxt => ctxt addloop ("split_all_tac", split_all_tac))\<close>
 
 
-text {* Its extension to @{text"\<rightarrow>*"}: *} 
+text \<open>Its extension to \<open>\<rightarrow>*\<close>:\<close> 
 
 lemma extend_eval:
 assumes wf: "wwf_prog P"
@@ -2795,8 +2795,8 @@ apply assumption+
 done
 
 
-text {* Finally, small step semantics can be simulated by big step semantics:
-*}
+text \<open>Finally, small step semantics can be simulated by big step semantics:
+\<close>
 
 theorem
 assumes wf: "wwf_prog P"
@@ -2822,9 +2822,9 @@ next
 qed
 
 
-subsection {*Equivalence*}
+subsection \<open>Equivalence\<close>
 
-text{* And now, the crowning achievement: *}
+text\<open>And now, the crowning achievement:\<close>
 
 corollary big_iff_small:
   "wwf_prog P \<Longrightarrow>

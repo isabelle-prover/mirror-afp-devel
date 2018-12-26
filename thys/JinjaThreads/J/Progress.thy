@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Progress of Small Step Semantics *}
+section \<open>Progress of Small Step Semantics\<close>
 
 theory Progress
 imports
@@ -64,7 +64,7 @@ next
       thus ?thesis
       proof (cases "0 <=s i")
         case True
-        thus ?thesis using True `v = Intg i` WTrtNewArray.prems
+        thus ?thesis using True \<open>v = Intg i\<close> WTrtNewArray.prems
           by(cases "allocate h (Array_type T (nat (sint i))) = {}")(auto simp del: split_paired_Ex intro: RedNewArrayFail RedNewArray)
       next
         assume "\<not> 0 <=s i"
@@ -169,7 +169,7 @@ next
         proof (rule finalE)
           fix v2 assume [simp]: "e2 = Val v2"
           with WTrtBinOp have type: "typeof\<^bsub>h\<^esub> v1 = \<lfloor>T1\<rfloor>" "typeof\<^bsub>h\<^esub> v2 = \<lfloor>T2\<rfloor>" by auto
-          from binop_progress[OF this `P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T`] obtain va
+          from binop_progress[OF this \<open>P \<turnstile> T1\<guillemotleft>bop\<guillemotright>T2 : T\<close>] obtain va
             where "binop bop v1 v2 = \<lfloor>va\<rfloor>" by blast
           thus ?thesis by(cases va)(fastforce intro: RedBinOp RedBinOpFail)+
         next
@@ -306,13 +306,13 @@ next
           assume i: "i = Val v"
           have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Val v\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>THROW NullPointer, (h,l)\<rangle>"
             by (rule RedAAccNull)
-          with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
+          with WTrtAAccNT \<open>final a\<close> null \<open>final i\<close> i show ?thesis by blast
         next
           fix ex
           assume i: "i = Throw ex"
           have "extTA,P,t \<turnstile> \<langle>null\<lfloor>Throw ex\<rceil>, (h, l)\<rangle> -\<epsilon>\<rightarrow> \<langle>Throw ex, (h,l)\<rangle>"
             by(rule AAccThrow2)
-          with WTrtAAccNT `final a` null `final i` i show ?thesis by blast
+          with WTrtAAccNT \<open>final a\<close> null \<open>final i\<close> i show ?thesis by blast
         qed
       next
         assume "\<not> final i"
@@ -417,7 +417,7 @@ next
                   show ?thesis by(fastforce intro: RedAAss)
                 next
                   case False
-                  with ty vidx ivalv evalw Array wte `\<not> (idx <s 0 \<or> sint idx \<ge> int n)`
+                  with ty vidx ivalv evalw Array wte \<open>\<not> (idx <s 0 \<or> sint idx \<ge> int n)\<close>
                   show ?thesis by(fastforce intro: RedAAssStore)
                 qed
               qed
@@ -488,7 +488,7 @@ next
   show ?case
   proof(cases "final a")
     case True
-    note wta = `P,E,h \<turnstile> a : T\<lfloor>\<rceil>`
+    note wta = \<open>P,E,h \<turnstile> a : T\<lfloor>\<rceil>\<close>
     thus ?thesis 
     proof(rule finalRefE[OF _ _ True])
       show "is_refT (T\<lfloor>\<rceil>)" by simp
@@ -506,8 +506,8 @@ next
     qed simp
   next
     case False
-    from `\<D> (a\<bullet>length) \<lfloor>dom l\<rfloor>` have "\<D> a \<lfloor>dom l\<rfloor>" by simp
-    with False `\<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. extTA,P,t \<turnstile> \<langle>a,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+    from \<open>\<D> (a\<bullet>length) \<lfloor>dom l\<rfloor>\<close> have "\<D> a \<lfloor>dom l\<rfloor>" by simp
+    with False \<open>\<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. extTA,P,t \<turnstile> \<langle>a,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
     obtain e' s' ta where "extTA,P,t \<turnstile> \<langle>a,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by blast
     thus ?thesis by(blast intro: ALengthRed)
   qed
@@ -516,7 +516,7 @@ next
   show ?case
   proof(cases "final a")
     case True
-    note wta = `P,E,h \<turnstile> a : NT`
+    note wta = \<open>P,E,h \<turnstile> a : NT\<close>
     thus ?thesis
     proof(rule finalRefE[OF _ _ True])
       show "is_refT NT" by simp
@@ -530,8 +530,8 @@ next
     qed simp_all
   next
     case False
-    from `\<D> (a\<bullet>length) \<lfloor>dom l\<rfloor>` have "\<D> a \<lfloor>dom l\<rfloor>" by simp
-    with False `\<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. extTA,P,t \<turnstile> \<langle>a,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>`
+    from \<open>\<D> (a\<bullet>length) \<lfloor>dom l\<rfloor>\<close> have "\<D> a \<lfloor>dom l\<rfloor>" by simp
+    with False \<open>\<lbrakk>\<D> a \<lfloor>dom l\<rfloor>; \<not> final a\<rbrakk> \<Longrightarrow> \<exists>e' s' ta. extTA,P,t \<turnstile> \<langle>a,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>\<close>
     obtain e' s' ta where "extTA,P,t \<turnstile> \<langle>a,(h, l)\<rangle> -ta\<rightarrow> \<langle>e',s'\<rangle>" by blast
     thus ?thesis by(blast intro: ALengthRed)
   qed
@@ -589,7 +589,7 @@ next
           fix v assume e2: "e2 = Val v"
           from wte1 field icto e1 have adal: "P,h \<turnstile> a@CField D F : T"
             by(auto intro: addr_loc_type.intros)
-          from e2 `P \<turnstile> T2 \<le> T` `P,E,h \<turnstile> e2 : T2`
+          from e2 \<open>P \<turnstile> T2 \<le> T\<close> \<open>P,E,h \<turnstile> e2 : T2\<close>
           have "P,h \<turnstile> v :\<le> T" by(auto simp add: conf_def)
           from heap_write_total[OF hconf adal this] obtain h' 
             where "heap_write h a (CField D F) v h'" ..
@@ -600,7 +600,7 @@ next
           thus ?thesis using e1 by(fastforce intro:FAssThrow2)
         qed
       next
-        assume "\<not> final e2" with WTrtFAss `final e1` e1 show ?thesis
+        assume "\<not> final e2" with WTrtFAss \<open>final e1\<close> e1 show ?thesis
           by simp (fast intro!:FAssRed2)
       qed
     next
@@ -619,11 +619,11 @@ next
     show ?thesis
     proof cases
       assume "final e\<^sub>2"  \<comment> \<open>@{term e\<^sub>2} is @{term Val} or @{term throw}\<close>
-      with WTrtFAssNT `final e\<^sub>1` show ?thesis
+      with WTrtFAssNT \<open>final e\<^sub>1\<close> show ?thesis
         by(fastforce simp:final_iff intro: RedFAssNull FAssThrow1 FAssThrow2)
     next
       assume "\<not> final e\<^sub>2" \<comment> \<open>@{term e\<^sub>2} reduces by IH\<close>
-      with WTrtFAssNT `final e\<^sub>1` show ?thesis
+      with WTrtFAssNT \<open>final e\<^sub>1\<close> show ?thesis
         by (fastforce  simp:final_iff intro!:FAssRed2 FAssThrow1)
     qed
   next
@@ -757,7 +757,7 @@ next
           with sees wf have "D\<bullet>M(Ts) :: T" by(auto intro: sees_wf_native)
           moreover from es obtain vs where vs: "es = map Val vs" ..
           with wtes have tyes: "map typeof\<^bsub>h\<^esub> vs = map Some Ts'" by simp
-          with ha `D\<bullet>M(Ts) :: T` icto sees None
+          with ha \<open>D\<bullet>M(Ts) :: T\<close> icto sees None
           have "P,h \<turnstile> a\<bullet>M(vs) : T" using subtype by(auto simp add: external_WT'_iff)
           from external_call_progress[OF wf this hconf, of t] obtain ta va h'
             where "P,t \<turnstile> \<langle>a\<bullet>M(vs), h\<rangle> -ta\<rightarrow>ext \<langle>va, h'\<rangle>" by blast
@@ -823,14 +823,14 @@ next
         assume "finals es"
         moreover
         { fix vs assume "es = map Val vs"
-          with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: RedCallNull) }
+          with WTrtCallNT \<open>e = null\<close> \<open>finals es\<close> have ?thesis by(fastforce intro: RedCallNull) }
         moreover
         { fix vs a es' assume "es = map Val vs @ Throw a # es'"
-          with WTrtCallNT `e = null` `finals es` have ?thesis by(fastforce intro: CallThrowParams) }
+          with WTrtCallNT \<open>e = null\<close> \<open>finals es\<close> have ?thesis by(fastforce intro: CallThrowParams) }
         ultimately show ?thesis by(fastforce simp:finals_iff)
       next
         assume "\<not> finals es" \<comment> \<open>@{term es} reduces by IH\<close>
-        with WTrtCallNT `e = null` show ?thesis by(fastforce intro: CallParams)
+        with WTrtCallNT \<open>e = null\<close> show ?thesis by(fastforce intro: CallParams)
       qed
     }
     moreover
@@ -866,12 +866,12 @@ next
   qed
 next
   case (WTrtSynchronized E o' T e T' l)
-  note wto = `P,E,h \<turnstile> o' : T`
-  note IHe = `\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>`
-  note wte = `P,E,h \<turnstile> e : T'`
-  note IHo = `\<And>l. \<lbrakk>\<D> o' \<lfloor>dom l\<rfloor>; \<not> final o' \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>`
-  note refT = `is_refT T`
-  note dae = `\<D> (sync(o') e) \<lfloor>dom l\<rfloor>`
+  note wto = \<open>P,E,h \<turnstile> o' : T\<close>
+  note IHe = \<open>\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>\<close>
+  note wte = \<open>P,E,h \<turnstile> e : T'\<close>
+  note IHo = \<open>\<And>l. \<lbrakk>\<D> o' \<lfloor>dom l\<rfloor>; \<not> final o' \<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>o',(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>\<close>
+  note refT = \<open>is_refT T\<close>
+  note dae = \<open>\<D> (sync(o') e) \<lfloor>dom l\<rfloor>\<close>
   show ?case
   proof(cases "final o'")
     assume fino: "final o'" 
@@ -907,8 +907,8 @@ next
       by(fastforce elim!: finalE intro: UnlockSynchronized SynchronizedThrow2)
   next
     case False 
-    moreover from `\<D> (insync(a) e) \<lfloor>dom l\<rfloor>` have "\<D> e \<lfloor>dom l\<rfloor>" by simp
-    moreover note IHe = `\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>`
+    moreover from \<open>\<D> (insync(a) e) \<lfloor>dom l\<rfloor>\<close> have "\<D> e \<lfloor>dom l\<rfloor>" by simp
+    moreover note IHe = \<open>\<And>l. \<lbrakk>\<D> e \<lfloor>dom l\<rfloor>; \<not> final e\<rbrakk> \<Longrightarrow> \<exists>e' s' tas. extTA,P,t \<turnstile> \<langle>e,(h, l)\<rangle> -tas\<rightarrow> \<langle>e',s'\<rangle>\<close>
     ultimately show ?thesis by(fastforce intro: SynchronizedRed2)
   qed
 next
@@ -956,7 +956,7 @@ next
     thus ?thesis
     proof(induct rule: finalE)
       case (Val v)
-      with `P \<turnstile> T \<le> Class Throwable` `\<not> final (throw e)` `P,E,h \<turnstile> e : T`
+      with \<open>P \<turnstile> T \<le> Class Throwable\<close> \<open>\<not> final (throw e)\<close> \<open>P,E,h \<turnstile> e : T\<close>
       have "v = Null" by(cases v)(auto simp add: final_iff widen_Class)
       thus ?thesis using Val by(fastforce intro: RedThrowNull)
     next

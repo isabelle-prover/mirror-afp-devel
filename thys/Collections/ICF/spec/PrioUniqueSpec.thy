@@ -1,4 +1,4 @@
-section {*\isaheader{Specification of Unique Priority Queues}*}
+section \<open>\isaheader{Specification of Unique Priority Queues}\<close>
 theory PrioUniqueSpec
 imports ICF_Spec_Base
 begin
@@ -9,13 +9,13 @@ begin
   decrease-key operation.
 *)
 
-text {*
+text \<open>
   We define unique priority queues, where each element may occur at most once.
   We provide operations to get and remove the element with the minimum priority,
   as well as to access and change an elements priority (decrease-key operation).
 
   Unique priority queues are abstracted to maps from elements to priorities.
-*}
+\<close>
 locale uprio =  
   fixes \<alpha> :: "'s \<Rightarrow> ('e \<rightharpoonup> 'a::linorder)" 
   fixes invar :: "'s \<Rightarrow> bool"                     
@@ -75,10 +75,10 @@ begin
 end
 
 subsubsection "Insert"
-text {*
+text \<open>
   If an existing element is inserted, its priority will be overwritten.
   This can be used to implement a decrease-key operation.
-*}
+\<close>
 (* TODO: Implement decrease-key generic algorithm, and specify decrease-key operation here! *)
 locale uprio_insert = uprio +
   constrains \<alpha> :: "'s \<Rightarrow> ('e \<rightharpoonup> 'a::linorder)"
@@ -88,10 +88,10 @@ locale uprio_insert = uprio +
   "invar s \<Longrightarrow> \<alpha> (insert s e a) = (\<alpha> s)(e \<mapsto> a)" 
 
 subsubsection "Distinct Insert"
-text {*
+text \<open>
   This operation only allows insertion of elements
   that are not yet in the queue.
-*}
+\<close>
 locale uprio_distinct_insert = uprio +
   constrains \<alpha> :: "'s \<Rightarrow> ('e \<rightharpoonup> 'a::linorder)"
   fixes insert :: "'s \<Rightarrow> 'e \<Rightarrow> 'a \<Rightarrow> 's"

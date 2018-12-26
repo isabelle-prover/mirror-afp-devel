@@ -1,4 +1,4 @@
-section {*  Preliminaries  *}
+section \<open>Preliminaries\<close>
 
 theory Preliminaries
 imports Main LatticeProperties.Complete_Lattice_Prop 
@@ -15,7 +15,7 @@ notation
   Inf ("\<Sqinter>_" [900] 900) and
   Sup ("\<Squnion>_" [900] 900)
 
-subsection {*Simplification Lemmas*}
+subsection \<open>Simplification Lemmas\<close>
 
 declare fun_upd_idem[simp]
 
@@ -26,7 +26,7 @@ lemma simp_eq_emptyset:
 lemma mono_comp: "mono f \<Longrightarrow> mono g \<Longrightarrow> mono (f o g)" 
   by (unfold mono_def) auto
 
-text {*Some lattice simplification rules*}
+text \<open>Some lattice simplification rules\<close>
 
 lemma inf_bot_bot: (* FIXME *)
   "(x::'a::{semilattice_inf,order_bot}) \<sqinter> \<bottom> = \<bottom>"

@@ -3,7 +3,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* Program Execution in the JVM *}
+section \<open>Program Execution in the JVM\<close>
 
 theory JVMExec
 imports JVMExecInstr JVMExceptions
@@ -97,12 +97,12 @@ done
 (*>*)
 
 
-text {*
+text \<open>
   The start configuration of the JVM: in the start heap, we call a 
-  method @{text m} of class @{text C} in program @{text P}. The 
-  @{text this} pointer of the frame is set to @{text Null} to simulate
+  method \<open>m\<close> of class \<open>C\<close> in program \<open>P\<close>. The 
+  \<open>this\<close> pointer of the frame is set to \<open>Null\<close> to simulate
   a static method invokation.
-*}
+\<close>
 definition start_state :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> jvm_state" where
   "start_state P C M =
   (let (D,Ts,T,mxs,mxl\<^sub>0,b) = method P C M in

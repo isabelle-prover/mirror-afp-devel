@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Abstract heap locales for J1 programs *}
+section \<open>Abstract heap locales for J1 programs\<close>
 
 theory J1Heap imports
   J1State

@@ -2,7 +2,7 @@ theory Example_NetModel
 imports "../TopoS_Interface" "../TopoS_Helper"
 begin
 
-text{* A toy example that defines a valid network security requirement model *}
+text\<open>A toy example that defines a valid network security requirement model\<close>
 
 definition default_node_properties :: "bool"
   where  "default_node_properties \<equiv> False"
@@ -68,6 +68,6 @@ and receiver_violation = receiver_violation (*yep, that's a variable*)
 done
 
 
-text{*And we end up with a totally useless network security requirement model. I hope this was instructive.*}
+text\<open>And we end up with a totally useless network security requirement model. I hope this was instructive.\<close>
 
 end

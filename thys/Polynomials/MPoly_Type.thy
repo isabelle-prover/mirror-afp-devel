@@ -445,11 +445,11 @@ lift_definition sdiv :: "'a::euclidean_ring \<Rightarrow> 'a mpoly \<Rightarrow>
   is "\<lambda>a. Poly_Mapping.map (\<lambda>b. b div a) :: ((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a) \<Rightarrow> _"
 .
 text \<open>
-  \qt{Polynomial division} is only possible on univariate polynomials @{text "K[x]"}
-  over a field @{text K}, all other kinds of polynomials only allow pseudo-division
+  \qt{Polynomial division} is only possible on univariate polynomials \<open>K[x]\<close>
+  over a field \<open>K\<close>, all other kinds of polynomials only allow pseudo-division
   [1]p.40/41":
 
-  @{text "\<forall>x y :: 'a mpoly. y \<noteq> 0 \<Rightarrow> \<exists>a q r. smult a x = q * y + r"}
+  \<open>\<forall>x y :: 'a mpoly. y \<noteq> 0 \<Rightarrow> \<exists>a q r. smult a x = q * y + r\<close>
 
   The introduction of pseudo-division below generalises @{file "~~/src/HOL/Computational_Algebra/Polynomial.thy"}.
   [1] Winkler, Polynomial Algorithms, 1996.

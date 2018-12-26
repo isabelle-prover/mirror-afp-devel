@@ -7,7 +7,7 @@
 
   TODO: more functions (exp?), more preprocessing (log)
 *)
-section {* Decision procedure for real functions *}
+section \<open>Decision procedure for real functions\<close>
 
 theory Landau_Real_Products
 imports
@@ -18,13 +18,13 @@ imports
   Group_Sort
 begin
 
-subsection {* Eventual non-negativity/non-zeroness *}
+subsection \<open>Eventual non-negativity/non-zeroness\<close>
 
-text {* 
+text \<open>
   For certain transformations of Landau symbols, it is required that the functions involved 
   are eventually non-negative of non-zero. In the following, we set up a system to guide the 
   simplifier to discharge these requirements during simplification at least in obvious cases.
-*}
+\<close>
 
 definition "eventually_nonzero F f \<longleftrightarrow> eventually (\<lambda>x. (f x :: _ :: real_normed_field) \<noteq> 0) F"
 definition "eventually_nonneg F f \<longleftrightarrow> eventually (\<lambda>x. (f x :: _ :: linordered_field) \<ge> 0) F"
@@ -250,7 +250,7 @@ lemma eventually_nonneg_diff2 [eventually_nonzero_simps]:
   by eventually_elim simp_all
 
 
-subsection {* Rewriting Landau symbols *}
+subsection \<open>Rewriting Landau symbols\<close>
 
 lemma bigtheta_mult_eq: "\<Theta>[F](\<lambda>x. f x * g x) = \<Theta>[F](f) * \<Theta>[F](g)"
 proof (intro equalityI subsetI)
@@ -322,14 +322,14 @@ next
   ultimately show "h \<in> \<Theta>[F](f) * \<Theta>[F](g)" by blast
 qed
 
-text {* 
+text \<open>
   Since the simplifier does not currently rewriting with relations other than equality,
   but we want to rewrite terms like @{term "\<Theta>(\<lambda>x. log 2 x * x)"} to @{term "\<Theta>(\<lambda>x. ln x * x)"}, 
   we need to bring the term into something that contains @{term "\<Theta>(\<lambda>x. log 2 x)"} and 
   @{term "\<Theta>(\<lambda>x. x)"}, which can then be rewritten individually.
   For this, we introduce the following constants and rewrite rules. The rules are mainly used 
   by the simprocs, but may be useful for manual reasoning occasionally.
-*}
+\<close>
 
 definition "set_mult A B = {\<lambda>x. f x * g x |f g. f \<in> A \<and> g \<in> B}"
 definition "set_inverse A = {\<lambda>x. inverse (f x) |f. f \<in> A}"
@@ -352,7 +352,7 @@ next
   fix g :: "'a \<Rightarrow> 'b" assume "g \<in> set_inverse (\<Theta>[F](f))"
   then obtain g' where "g = (\<lambda>x. inverse (g' x))" "g' \<in> \<Theta>[F](f)" unfolding set_inverse_def by blast
   hence "(\<lambda>x. inverse (g' x)) \<in> \<Theta>[F](\<lambda>x. inverse (f x))" by (subst bigtheta_inverse)
-  also from `g = (\<lambda>x. inverse (g' x))` have "(\<lambda>x. inverse (g' x)) = g" by (intro ext) simp
+  also from \<open>g = (\<lambda>x. inverse (g' x))\<close> have "(\<lambda>x. inverse (g' x)) = g" by (intro ext) simp
   finally show "g \<in> \<Theta>[F](\<lambda>x. inverse (f x))" .
 qed
 
@@ -363,13 +363,13 @@ proof (intro equalityI subsetI)
   then obtain g h where "f = (\<lambda>x. g x / h x)" "g \<in> A" "h \<in> B" unfolding set_divide_def by blast
   hence "f = g * (\<lambda>x. inverse (h x))" "(\<lambda>x. inverse (h x)) \<in> set_inverse B"
     unfolding set_inverse_def by (auto simp: divide_inverse)
-  with `g \<in> A` show "f \<in> set_mult A (set_inverse B)" unfolding set_mult_def by force
+  with \<open>g \<in> A\<close> show "f \<in> set_mult A (set_inverse B)" unfolding set_mult_def by force
 next
   fix f assume "f \<in> set_mult A (set_inverse B)"
   then obtain g h where "f = g * (\<lambda>x. inverse (h x))" "g \<in> A" "h \<in> B"
     unfolding set_times_def set_inverse_def set_mult_def by force
   hence "f = (\<lambda>x. g x / h x)" by (intro ext) (simp add: divide_inverse)
-  with `g \<in> A` `h \<in> B` show "f \<in> set_divide A B" unfolding set_divide_def by blast
+  with \<open>g \<in> A\<close> \<open>h \<in> B\<close> show "f \<in> set_divide A B" unfolding set_divide_def by blast
 qed
 
 lemma bigtheta_divide_eq_set_divide:
@@ -585,7 +585,7 @@ lemma bigtheta_const_ln [simp]: "a > 0 \<Longrightarrow> (\<lambda>x::real. ln (
   using tendsto_ln_over_ln[of a 1]  by (intro bigthetaI_tendsto[of 1]) simp_all
 
 
-text {*
+text \<open>
   If there are two functions @{term "f"} and @{term "g"} where any power of @{term "g"} is
   asymptotically smaller than @{term "f"}, propositions like @{term "(\<lambda>x. f x ^ p1 * g x ^ q1) \<in>
   O(\<lambda>x. f x ^ p2 * g x ^ q2)"} can be decided just by looking at the exponents:
@@ -600,9 +600,9 @@ text {*
   We will now give the mathematical background for this and implement reification to bring
   functions from this class into a canonical form, allowing the decision procedure to be
   implemented in a simproc.
-*}
+\<close>
 
-subsection {* Decision procedure *}
+subsection \<open>Decision procedure\<close>
 
 definition "powr_closure f \<equiv> {\<lambda>x. f x powr p :: real |p. True}"
 
@@ -1166,7 +1166,7 @@ lemma eval_primfuns_nonzero: "eventually (\<lambda>x. eval_primfuns fs x \<noteq
 
 
 
-subsection {* Reification *}
+subsection \<open>Reification\<close>
 
 definition LANDAU_PROD' where
   "LANDAU_PROD' L c f = L(\<lambda>x. c * f x)"

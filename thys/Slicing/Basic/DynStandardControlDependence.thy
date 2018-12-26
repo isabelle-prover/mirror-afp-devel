@@ -1,4 +1,4 @@
-section {* Dynamic Standard Control Dependence *}
+section \<open>Dynamic Standard Control Dependence\<close>
 
 theory DynStandardControlDependence imports Postdomination begin
 

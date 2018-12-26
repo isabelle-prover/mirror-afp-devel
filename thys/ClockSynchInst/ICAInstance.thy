@@ -3,84 +3,84 @@
     Maintainer:  Damián Barsotti <damian at hal.famaf.unc.edu.ar>
 *)
 
-section {* Interactive Convergence Algorithms (ICA) *}
+section \<open>Interactive Convergence Algorithms (ICA)\<close>
 
 theory ICAInstance imports Complex_Main begin
 
-text {* This algorithm is presented in \cite{lamport_cs}. *}
+text \<open>This algorithm is presented in \cite{lamport_cs}.\<close>
 
-text {* A proof of the three properties can be found in
-\cite{shankar92mechanical}. *}
+text \<open>A proof of the three properties can be found in
+\cite{shankar92mechanical}.\<close>
 
-subsection {* Model of the system *}
+subsection \<open>Model of the system\<close>
 
-text {* The main ideas for the formalization of the system were
-obtained from \cite{shankar92mechanical}.  *}
+text \<open>The main ideas for the formalization of the system were
+obtained from \cite{shankar92mechanical}.\<close>
 
-subsubsection {* Types in the formalization *}
+subsubsection \<open>Types in the formalization\<close>
 
-text {* The election of the basics types was based on
+text \<open>The election of the basics types was based on
 \cite{shankar92mechanical}. There, the process are natural numbers and
-the real time and the clock readings are reals. *}
+the real time and the clock readings are reals.\<close>
 
 type_synonym process = nat
 type_synonym time = real       \<comment> \<open>real time\<close>
 type_synonym Clocktime = real  \<comment> \<open>time of the clock readings (clock time)\<close>
 
-subsubsection {* Some constants *}
+subsubsection \<open>Some constants\<close>
 
-text{* Here we define some parameters of the algorithm that we use:
+text\<open>Here we define some parameters of the algorithm that we use:
 the number of process and the fix value that is used to discard the
 processes whose clocks differ more than this amount from the own one
 (see \cite{shankar92mechanical}). The defined constants must satisfy
 this axiom (if $np = 0$ we have a division by cero in the definition
-of the convergence function).  *}
+of the convergence function).\<close>
 
 axiomatization
   np :: nat      \<comment> \<open>Number of processes\<close> and
   \<Delta> :: Clocktime \<comment> \<open>Fix value to discard processes\<close> where
   constants_ax: "0 <= \<Delta> \<and> np > 0" 
 
-text {* We define also the set of process that the algorithm
-manage. This definition exist only for readability matters. *}
+text \<open>We define also the set of process that the algorithm
+manage. This definition exist only for readability matters.\<close>
 
 definition
 PR :: "process set" where
 [simp]: "PR = {..<np}"
 
 
-subsubsection {* Convergence function *}
+subsubsection \<open>Convergence function\<close>
 
-text {* This functions is called ``Egocentric Average''
-(\cite{schneider87understanding})*}
+text \<open>This functions is called ``Egocentric Average''
+(\cite{schneider87understanding})\<close>
 
-text {* In this algorithm each process has an array where it store the
+text \<open>In this algorithm each process has an array where it store the
 clocks readings from the others processes (including itself). We
 formalise that as a function from processes to clock time as
-\cite{shankar92mechanical}. *}
+\cite{shankar92mechanical}.\<close>
 
-text {* First we define an auxiliary function. It takes a function of
+text \<open>First we define an auxiliary function. It takes a function of
 clock readings and two processes, and return de reading of the second
 process if the difference of the readings is grater than @{term \<Delta>},
-otherwise it returns the reading of the first one. *}
+otherwise it returns the reading of the first one.\<close>
 
 definition
   fiX :: "[(process \<Rightarrow> Clocktime), process, process] \<Rightarrow> Clocktime" where
   "fiX f p l = (if \<bar>f p - f l\<bar> <= \<Delta> then (f l) else (f p))"
 
-text {* And finally the convergence function. This is defined with the
+text \<open>And finally the convergence function. This is defined with the
 builtin generalized summation over a set constructor of Isabelle.
 Also we had to use the overloaded @{term real} function to typecast de
-number @{term np}. *}
+number @{term np}.\<close>
 
 definition
   (* The averaging function to calculate clock adjustment *)
   cfni :: "[process, (process \<Rightarrow> Clocktime)] \<Rightarrow> Clocktime" where
   "cfni p f = (\<Sum> l\<in>{..<np}. fiX f p l) / (real np)"
 
-subsection {* Translation Invariance property.*}
+subsection \<open>Translation Invariance property.\<close>
 
-text {*We first need to prove this auxiliary lemma.*}
+text \<open>We first need to prove this auxiliary lemma.\<close>
 
 lemma trans_inv': 
 "(\<Sum> l\<in>{..<np'}. fiX (\<lambda> y. f y + x) p l) = 
@@ -96,12 +96,12 @@ apply (auto simp add: cfni_def trans_inv' distrib_right
        divide_inverse  constants_ax)
 done
 
-subsection {* Precision Enhancement property *}
+subsection \<open>Precision Enhancement property\<close>
 
-text {* An informal proof of this theorem can be found in
-\cite{shankar92mechanical} *}
+text \<open>An informal proof of this theorem can be found in
+\cite{shankar92mechanical}\<close>
 
-subsubsection {* Auxiliary lemmas *}
+subsubsection \<open>Auxiliary lemmas\<close>
 
 lemma finitC:
   "C \<subseteq> PR \<Longrightarrow> finite C"
@@ -117,8 +117,8 @@ proof-
 qed
  
 
-text {* The next lemmas are about arithmetic properties of the
-generalized summation over a set constructor. *}
+text \<open>The next lemmas are about arithmetic properties of the
+generalized summation over a set constructor.\<close>
 
 lemma sum_abs_triangle_ineq:
 "finite S \<Longrightarrow>
@@ -202,8 +202,8 @@ proof-
   show ?thesis .
 qed
 
-text {* The next lemmas are about the existence of bounds that are
-necesary in order to prove the Precicion Enhancement theorem. *}
+text \<open>The next lemmas are about the existence of bounds that are
+necesary in order to prove the Precicion Enhancement theorem.\<close>
   
 lemma fiX_ubound:
   "fiX f p l <= f p + \<Delta>"
@@ -437,7 +437,7 @@ next
   with False show "?thesis" by simp
 qed
 
-subsubsection {* Main theorem *}
+subsubsection \<open>Main theorem\<close>
 
 theorem prec_enh:
 assumes 
@@ -508,10 +508,10 @@ proof-
   qed
 qed
 
-subsection {* Accuracy Preservation property *}
+subsection \<open>Accuracy Preservation property\<close>
 
-text {* First, a simple lemma about an arithmetic propertie of the
-generalized summation over a set constructor. *}
+text \<open>First, a simple lemma about an arithmetic propertie of the
+generalized summation over a set constructor.\<close>
 
 lemma sum_div_card:
 "(\<Sum>l\<in>{..<n::nat}. f l) + q * real n= 
@@ -525,7 +525,7 @@ thus ?case
   by (auto simp: of_nat_Suc distrib_left lessThan_Suc) 
 qed
 
-text {* Next, some lemmas about bounds that are used in the proof of Accuracy Preservation *}
+text \<open>Next, some lemmas about bounds that are used in the proof of Accuracy Preservation\<close>
 
 lemma bound_aux_C:
 assumes
@@ -586,7 +586,7 @@ next
   show ?thesis using constants_ax by arith
 qed
 
-subsubsection {* Main theorem *}
+subsubsection \<open>Main theorem\<close>
 
 lemma accur_pres:
 assumes 

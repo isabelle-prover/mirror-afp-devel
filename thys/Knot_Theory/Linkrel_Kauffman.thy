@@ -1,4 +1,4 @@
-section{*Tangle moves and Kauffman bracket*}
+section\<open>Tangle moves and Kauffman bracket\<close>
 
 theory Linkrel_Kauffman 
 imports Computations

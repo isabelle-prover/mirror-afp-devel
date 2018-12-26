@@ -4,14 +4,14 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Reflexive Transitive Closure *}
+section \<open>Reflexive Transitive Closure\<close>
 
 theory Relation_Algebra_RTC
   imports Relation_Algebra
 begin
 
-text {* We impose the Kleene algebra axioms for the star on relation algebras.
-This gives us a reflexive transitive closure operation. *}
+text \<open>We impose the Kleene algebra axioms for the star on relation algebras.
+This gives us a reflexive transitive closure operation.\<close>
 
 class relation_algebra_rtc = relation_algebra + star_op +
   assumes rtc_unfoldl: "1' +  x ; x\<^sup>\<star> \<le> x\<^sup>\<star>"
@@ -28,8 +28,8 @@ done
 context relation_algebra_rtc
 begin
 
-text {* First, we prove that the obvious interaction between the star and
-converse is captured by the axioms. *}
+text \<open>First, we prove that the obvious interaction between the star and
+converse is captured by the axioms.\<close>
 
 lemma star_conv: "(x\<^sup>\<star>)\<^sup>\<smile> = (x\<^sup>\<smile>)\<^sup>\<star>"
 proof (rule antisym)
@@ -39,8 +39,8 @@ proof (rule antisym)
     by (metis boffa_var conv_add conv_contrav conv_e conv_invol conv_iso star_denest star_ext star_iso star_plus_one sup.idem)
 qed
 
-text {* Next we provide an example to show how facts from Kleene algebra are
-picked up in relation algebra. *}
+text \<open>Next we provide an example to show how facts from Kleene algebra are
+picked up in relation algebra.\<close>
 
 lemma rel_church_rosser: "(x\<^sup>\<smile>)\<^sup>\<star> ; x\<^sup>\<star> \<le> x\<^sup>\<star> ; (x\<^sup>\<smile>)\<^sup>\<star> \<Longrightarrow> (x + x\<^sup>\<smile>)\<^sup>\<star> = x\<^sup>\<star> ; (x\<^sup>\<smile>)\<^sup>\<star>"
 by (fact church_rosser)

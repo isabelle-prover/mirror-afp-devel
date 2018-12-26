@@ -3,17 +3,17 @@
       Maintainer:         Filip Maric <filip at matf.bg.ac.yu>
 *)
 
-section{* Transition system of Nieuwenhuis, Oliveras and Tinelli. *}
+section\<open>Transition system of Nieuwenhuis, Oliveras and Tinelli.\<close>
 theory NieuwenhuisOliverasTinelli
 imports SatSolverVerification
 begin
 
-text{* This theory formalizes the transition rule system given by
-Nieuwenhuis et al. in \cite{NieuwenhuisOliverasTinelli} *}
+text\<open>This theory formalizes the transition rule system given by
+Nieuwenhuis et al. in \cite{NieuwenhuisOliverasTinelli}\<close>
 
 
 (******************************************************************************)
-subsection{* Specification *}
+subsection\<open>Specification\<close>
 (******************************************************************************)
 
 record State = 
@@ -89,7 +89,7 @@ where
 
 
 
-text{* Solving starts with the initial formula and the empty trail. *}
+text\<open>Solving starts with the initial formula and the empty trail.\<close>
 definition
 isInitialState :: "State \<Rightarrow> Formula \<Rightarrow> bool"
 where
@@ -98,7 +98,7 @@ where
       getM state = []
 "
 
-text{* Transitions are preformed only by using given rules. *}
+text\<open>Transitions are preformed only by using given rules.\<close>
 definition
 "transition stateA stateB decisionVars == 
      appliedDecide        stateA stateB decisionVars \<or>
@@ -107,19 +107,19 @@ definition
      appliedBackjump      stateA stateB 
 "
 
-text{* Transition relation is obtained by applying transition rules
-iteratively. It is defined using a reflexive-transitive closure. *}
+text\<open>Transition relation is obtained by applying transition rules
+iteratively. It is defined using a reflexive-transitive closure.\<close>
 definition
 "transitionRelation decisionVars == ({(stateA, stateB). transition stateA stateB decisionVars})^*"
 
-text{* Final state is one in which no rules apply *}
+text\<open>Final state is one in which no rules apply\<close>
 definition
 isFinalState :: "State \<Rightarrow> Variable set \<Rightarrow> bool"
 where
 "isFinalState state decisionVars == \<not> (\<exists> state'. transition state state' decisionVars)"
 
 
-text{* The following several lemmas establish conditions for applicability of different rules. *}
+text\<open>The following several lemmas establish conditions for applicability of different rules.\<close>
 lemma applicableDecideCharacterization:
   fixes stateA::State
   shows "applicableDecide stateA decisionVars = 
@@ -259,7 +259,7 @@ next
     by auto
 qed
 
-text{* Final states are the ones where no rule is applicable. *}
+text\<open>Final states are the ones where no rule is applicable.\<close>
 lemma finalStateNonApplicable: 
   fixes state::State
   shows "isFinalState state decisionVars = 
@@ -276,9 +276,9 @@ unfolding applicableLearn_def
 by auto
 
 (******************************************************************************)
-subsection{* Invariants *}
+subsection\<open>Invariants\<close>
 (******************************************************************************)
-text{* Invariants that are relevant for the rest of correctness proof. *}
+text\<open>Invariants that are relevant for the rest of correctness proof.\<close>
 definition
 invariantsHoldInState :: "State \<Rightarrow> Formula \<Rightarrow> Variable set \<Rightarrow> bool"
 where
@@ -291,7 +291,7 @@ where
     InvariantEquivalent F0 (getF state)
 "
 
-text{* Invariants hold in initial states. *}
+text\<open>Invariants hold in initial states.\<close>
 lemma invariantsHoldInInitialState:
   fixes state :: State and F0 :: Formula
   assumes "isInitialState state F0" 
@@ -308,14 +308,14 @@ by (auto simp add:
   InvariantEquivalent_def equivalentFormulae_def
 )
 
-text{* Valid transitions preserve invariants. *}
+text\<open>Valid transitions preserve invariants.\<close>
 lemma transitionsPreserveInvariants: 
   fixes stateA::State and stateB::State
   assumes "transition stateA stateB decisionVars" and 
   "invariantsHoldInState stateA F0 decisionVars"
   shows "invariantsHoldInState stateB F0 decisionVars"
 proof-
-    from `invariantsHoldInState stateA F0 decisionVars`
+    from \<open>invariantsHoldInState stateA F0 decisionVars\<close>
     have 
       "InvariantImpliedLiterals (getF stateA) (getM stateA)" and 
       "InvariantVarsM (getM stateA) F0 decisionVars" and
@@ -336,49 +336,49 @@ proof-
       unfolding appliedDecide_def
       by auto
 
-    from `\<not> literalTrue l (elements (getM stateA))` `\<not> literalFalse l (elements (getM stateA))` 
+    from \<open>\<not> literalTrue l (elements (getM stateA))\<close> \<open>\<not> literalFalse l (elements (getM stateA))\<close> 
     have *: "var l \<notin> vars (elements (getM stateA))"
       using variableDefinedImpliesLiteralDefined[of "l" "elements (getM stateA)"]
       by simp
 
     have "InvariantImpliedLiterals (getF stateB) (getM stateB)"
-      using `getF stateB = getF stateA`
-        `getM stateB = getM stateA @ [(l, True)]` 
-        `InvariantImpliedLiterals (getF stateA) (getM stateA)`
-        `InvariantUniq (getM stateA)`
-        `var l \<notin> vars (elements (getM stateA))`
+      using \<open>getF stateB = getF stateA\<close>
+        \<open>getM stateB = getM stateA @ [(l, True)]\<close> 
+        \<open>InvariantImpliedLiterals (getF stateA) (getM stateA)\<close>
+        \<open>InvariantUniq (getM stateA)\<close>
+        \<open>var l \<notin> vars (elements (getM stateA))\<close>
         InvariantImpliedLiteralsAfterDecide[of "getF stateA" "getM stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantVarsM (getM stateB) F0 decisionVars"
-      using `getM stateB = getM stateA @ [(l, True)]` 
-        `InvariantVarsM (getM stateA) F0 decisionVars`
-        `var l \<in> decisionVars`
+      using \<open>getM stateB = getM stateA @ [(l, True)]\<close> 
+        \<open>InvariantVarsM (getM stateA) F0 decisionVars\<close>
+        \<open>var l \<in> decisionVars\<close>
         InvariantVarsMAfterDecide[of "getM stateA" "F0" "decisionVars" "l" "getM stateB"]
       by simp
     moreover 
     have "InvariantVarsF (getF stateB) F0 decisionVars"
-      using `getF stateB = getF stateA`
-      `InvariantVarsF (getF stateA) F0 decisionVars`
+      using \<open>getF stateB = getF stateA\<close>
+      \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
-      using `getM stateB = getM stateA @ [(l, True)]` 
-        `InvariantConsistent (getM stateA)`
-        `var l \<notin> vars (elements (getM stateA))`
+      using \<open>getM stateB = getM stateA @ [(l, True)]\<close> 
+        \<open>InvariantConsistent (getM stateA)\<close>
+        \<open>var l \<notin> vars (elements (getM stateA))\<close>
         InvariantConsistentAfterDecide[of "getM stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
-      using `getM stateB = getM stateA @ [(l, True)]` 
-        `InvariantUniq (getM stateA)`
-        `var l \<notin> vars (elements (getM stateA))`
+      using \<open>getM stateB = getM stateA @ [(l, True)]\<close> 
+        \<open>InvariantUniq (getM stateA)\<close>
+        \<open>var l \<notin> vars (elements (getM stateA))\<close>
         InvariantUniqAfterDecide[of "getM stateA" "l" "getM stateB"]
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
-      using `getF stateB = getF stateA`
-      `InvariantEquivalent F0 (getF stateA)`
+      using \<open>getF stateB = getF stateA\<close>
+      \<open>InvariantEquivalent F0 (getF stateA)\<close>
       by simp
     ultimately
     have ?thesis
@@ -396,63 +396,63 @@ proof-
       unfolding appliedUnitPropagate_def
       by auto
 
-    from `isUnitClause uc ul (elements (getM stateA))`
+    from \<open>isUnitClause uc ul (elements (getM stateA))\<close>
     have "ul el uc"
       unfolding isUnitClause_def
       by simp
 
-    from `uc el (getF stateA)`
+    from \<open>uc el (getF stateA)\<close>
     have "formulaEntailsClause (getF stateA) uc"
       by (simp add: formulaEntailsItsClauses)
 
     
     have "InvariantImpliedLiterals (getF stateB) (getM stateB)"
-      using `getF stateB = getF stateA` 
-        `InvariantImpliedLiterals (getF stateA) (getM stateA)` 
-        `formulaEntailsClause (getF stateA) uc`
-        `isUnitClause uc ul (elements (getM stateA))`
-        `getM stateB = getM stateA @ [(ul, False)]`
+      using \<open>getF stateB = getF stateA\<close> 
+        \<open>InvariantImpliedLiterals (getF stateA) (getM stateA)\<close> 
+        \<open>formulaEntailsClause (getF stateA) uc\<close>
+        \<open>isUnitClause uc ul (elements (getM stateA))\<close>
+        \<open>getM stateB = getM stateA @ [(ul, False)]\<close>
         InvariantImpliedLiteralsAfterUnitPropagate[of "getF stateA" "getM stateA" "uc" "ul" "getM stateB"]
       by simp
     moreover
-    from `ul el uc` `uc el (getF stateA)`
+    from \<open>ul el uc\<close> \<open>uc el (getF stateA)\<close>
     have "ul el (getF stateA)"
       by (auto simp add: literalElFormulaCharacterization)
-    with `InvariantVarsF (getF stateA) F0 decisionVars`
+    with \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
     have "var ul \<in> vars F0 \<union> decisionVars"
       using "formulaContainsItsLiteralsVariable" [of "ul" "getF stateA"]
       unfolding InvariantVarsF_def
       by auto
 
     have "InvariantVarsM (getM stateB) F0 decisionVars"
-      using `InvariantVarsM (getM stateA) F0 decisionVars`
-        `var ul \<in> vars F0 \<union> decisionVars`
-        `getM stateB = getM stateA @ [(ul, False)]`
+      using \<open>InvariantVarsM (getM stateA) F0 decisionVars\<close>
+        \<open>var ul \<in> vars F0 \<union> decisionVars\<close>
+        \<open>getM stateB = getM stateA @ [(ul, False)]\<close>
         InvariantVarsMAfterUnitPropagate[of "getM stateA" "F0" "decisionVars" "ul" "getM stateB"]
       by simp
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
-      using `getF stateB = getF stateA`
-      `InvariantVarsF (getF stateA) F0 decisionVars`
+      using \<open>getF stateB = getF stateA\<close>
+      \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
-      using `InvariantConsistent (getM stateA)`
-        `isUnitClause uc ul (elements (getM stateA))`
-        `getM stateB = getM stateA @ [(ul, False)]`
+      using \<open>InvariantConsistent (getM stateA)\<close>
+        \<open>isUnitClause uc ul (elements (getM stateA))\<close>
+        \<open>getM stateB = getM stateA @ [(ul, False)]\<close>
         InvariantConsistentAfterUnitPropagate [of "getM stateA" "uc" "ul" "getM stateB"]
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
-      using `InvariantUniq (getM stateA)`
-        `isUnitClause uc ul (elements (getM stateA))`
-        `getM stateB = getM stateA @ [(ul, False)]`
+      using \<open>InvariantUniq (getM stateA)\<close>
+        \<open>isUnitClause uc ul (elements (getM stateA))\<close>
+        \<open>getM stateB = getM stateA @ [(ul, False)]\<close>
         InvariantUniqAfterUnitPropagate [of "getM stateA" "uc" "ul" "getM stateB"]
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
-      using `getF stateB = getF stateA` 
-      `InvariantEquivalent F0 (getF stateA)`
+      using \<open>getF stateB = getF stateA\<close> 
+      \<open>InvariantEquivalent F0 (getF stateA)\<close>
       by simp
     ultimately
     have ?thesis
@@ -472,47 +472,47 @@ proof-
     
     have "InvariantImpliedLiterals (getF stateB) (getM stateB)"
       using 
-        `InvariantImpliedLiterals (getF stateA) (getM stateA)`
-        `getF stateB = getF stateA @ [c]`
-        `getM stateB = getM stateA`
+        \<open>InvariantImpliedLiterals (getF stateA) (getM stateA)\<close>
+        \<open>getF stateB = getF stateA @ [c]\<close>
+        \<open>getM stateB = getM stateA\<close>
         InvariantImpliedLiteralsAfterLearn[of "getF stateA" "getM stateA" "getF stateB"]
       by simp
     moreover
     have "InvariantVarsM (getM stateB) F0 decisionVars"
       using 
-        `InvariantVarsM (getM stateA) F0 decisionVars`
-        `getM stateB = getM stateA`
+        \<open>InvariantVarsM (getM stateA) F0 decisionVars\<close>
+        \<open>getM stateB = getM stateA\<close>
       by simp
     moreover
-    from `vars c \<subseteq> vars (getF stateA) \<union> vars (elements (getM stateA))`
-      `InvariantVarsM (getM stateA) F0 decisionVars`
-        `InvariantVarsF (getF stateA) F0 decisionVars`
+    from \<open>vars c \<subseteq> vars (getF stateA) \<union> vars (elements (getM stateA))\<close>
+      \<open>InvariantVarsM (getM stateA) F0 decisionVars\<close>
+        \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
     have "vars c \<subseteq> vars F0 \<union> decisionVars"
       unfolding InvariantVarsM_def
       unfolding InvariantVarsF_def
       by auto
     hence "InvariantVarsF (getF stateB) F0 decisionVars"
-      using `InvariantVarsF (getF stateA) F0 decisionVars`
-        `getF stateB = getF stateA @ [c]`
+      using \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
+        \<open>getF stateB = getF stateA @ [c]\<close>
       using varsAppendFormulae [of "getF stateA" "[c]"]
       unfolding InvariantVarsF_def
       by simp
     moreover
     have "InvariantConsistent (getM stateB)"
-      using `InvariantConsistent (getM stateA)`
-        `getM stateB = getM stateA`
+      using \<open>InvariantConsistent (getM stateA)\<close>
+        \<open>getM stateB = getM stateA\<close>
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
-      using `InvariantUniq (getM stateA)`
-        `getM stateB = getM stateA`
+      using \<open>InvariantUniq (getM stateA)\<close>
+        \<open>getM stateB = getM stateA\<close>
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
       using
-        `InvariantEquivalent F0 (getF stateA)`
-        `formulaEntailsClause (getF stateA) c`
-        `getF stateB = getF stateA @ [c]`
+        \<open>InvariantEquivalent F0 (getF stateA)\<close>
+        \<open>formulaEntailsClause (getF stateA) c\<close>
+        \<open>getF stateB = getF stateA @ [c]\<close>
         InvariantEquivalentAfterLearn[of "F0" "getF stateA" "c" "getF stateB"]
       by simp
     ultimately
@@ -537,57 +537,57 @@ proof-
       by (simp add:isPrefixPrefixToLevel)
 
     have "InvariantImpliedLiterals (getF stateB) (getM stateB)"
-      using `InvariantImpliedLiterals (getF stateA) (getM stateA)`
-        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-        `isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))`
-        `formulaEntailsClause (getF stateA) bc`
-        `getF stateB = getF stateA`
-        `getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]`
+      using \<open>InvariantImpliedLiterals (getF stateA) (getM stateA)\<close>
+        \<open>isPrefix (prefixToLevel level (getM stateA)) (getM stateA)\<close>
+        \<open>isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))\<close>
+        \<open>formulaEntailsClause (getF stateA) bc\<close>
+        \<open>getF stateB = getF stateA\<close>
+        \<open>getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]\<close>
         InvariantImpliedLiteralsAfterBackjump[of "getF stateA" "getM stateA" "prefixToLevel level (getM stateA)" "bc" "bl" "getM stateB"]
       by simp
     moreover
 
-    from `InvariantVarsF (getF stateA) F0 decisionVars`
-      `InvariantVarsM (getM stateA) F0 decisionVars`
-      `var bl \<in> vars (getF stateA) \<union> vars (elements (getM stateA))`
+    from \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
+      \<open>InvariantVarsM (getM stateA) F0 decisionVars\<close>
+      \<open>var bl \<in> vars (getF stateA) \<union> vars (elements (getM stateA))\<close>
     have "var bl \<in> vars F0 \<union> decisionVars"
       unfolding InvariantVarsM_def
       unfolding InvariantVarsF_def
       by auto
 
     have "InvariantVarsM (getM stateB) F0 decisionVars"
-      using `InvariantVarsM (getM stateA) F0 decisionVars`
-        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-        `getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]`
-        `var bl \<in> vars F0 \<union> decisionVars`
+      using \<open>InvariantVarsM (getM stateA) F0 decisionVars\<close>
+        \<open>isPrefix (prefixToLevel level (getM stateA)) (getM stateA)\<close>
+        \<open>getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]\<close>
+        \<open>var bl \<in> vars F0 \<union> decisionVars\<close>
         InvariantVarsMAfterBackjump[of "getM stateA" "F0" "decisionVars" "prefixToLevel level (getM stateA)" "bl" "getM stateB"]
       by simp
     moreover
     have "InvariantVarsF (getF stateB) F0 decisionVars"
-      using `getF stateB = getF stateA`
-      `InvariantVarsF (getF stateA) F0 decisionVars`
+      using \<open>getF stateB = getF stateA\<close>
+      \<open>InvariantVarsF (getF stateA) F0 decisionVars\<close>
       by simp
     moreover    
     have "InvariantConsistent (getM stateB)"
-      using `InvariantConsistent (getM stateA)`
-        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-        `isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))`
-        `getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]`
+      using \<open>InvariantConsistent (getM stateA)\<close>
+        \<open>isPrefix (prefixToLevel level (getM stateA)) (getM stateA)\<close>
+        \<open>isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))\<close>
+        \<open>getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]\<close>
         InvariantConsistentAfterBackjump[of "getM stateA" "prefixToLevel level (getM stateA)" "bc" "bl" "getM stateB"]
       by simp
     moreover
     have "InvariantUniq (getM stateB)"
-      using `InvariantUniq (getM stateA)`
-        `isPrefix (prefixToLevel level (getM stateA)) (getM stateA)`
-        `isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))`
-        `getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]`
+      using \<open>InvariantUniq (getM stateA)\<close>
+        \<open>isPrefix (prefixToLevel level (getM stateA)) (getM stateA)\<close>
+        \<open>isUnitClause bc bl (elements (prefixToLevel level (getM stateA)))\<close>
+        \<open>getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]\<close>
         InvariantUniqAfterBackjump[of "getM stateA" "prefixToLevel level (getM stateA)" "bc" "bl" "getM stateB"]
       by simp
     moreover
     have "InvariantEquivalent F0 (getF stateB)"
       using
-      `InvariantEquivalent F0 (getF stateA)`
-      `getF stateB = getF stateA`
+      \<open>InvariantEquivalent F0 (getF stateA)\<close>
+      \<open>getF stateB = getF stateA\<close>
       by simp
     ultimately
     have ?thesis
@@ -596,12 +596,12 @@ proof-
   }
   ultimately
   show ?thesis
-    using `transition stateA stateB decisionVars`
+    using \<open>transition stateA stateB decisionVars\<close>
     unfolding transition_def
     by auto
 qed
 
-text{* The consequence is that invariants hold in all valid runs. *}
+text\<open>The consequence is that invariants hold in all valid runs.\<close>
 lemma invariantsHoldInValidRuns: 
   fixes F0 :: Formula and decisionVars :: "Variable set"
   assumes "invariantsHoldInState stateA F0 decisionVars" and
@@ -620,7 +620,7 @@ lemma invariantsHoldInValidRunsFromInitialState:
   and "(state0, state) \<in> transitionRelation decisionVars"
   shows "invariantsHoldInState state F0 decisionVars"
 proof-
-  from `isInitialState state0 F0`
+  from \<open>isInitialState state0 F0\<close>
   have "invariantsHoldInState state0 F0 decisionVars"
     by (simp add:invariantsHoldInInitialState)
   with assms
@@ -629,7 +629,7 @@ proof-
     by simp
 qed
 
-text{*
+text\<open>
  In the following text we will show that there are two kinds of states:
  \begin{enumerate}
   \item \textit{UNSAT} states where @{term "formulaFalse F0 (elements (getM state))"}
@@ -646,11 +646,11 @@ text{*
  \textit{UNSAT} or \textit{SAT}. A consequence of this and soundness
  theorems, is that if formula is unsatisfiable the solver will finish
  in an \textit{UNSAT} state, and if the formula is satisfiable the
- solver will finish in a \textit{SAT} state.  *}
+ solver will finish in a \textit{SAT} state.\<close>
 
 
 (******************************************************************************)
-subsection{* Soundness *}
+subsection\<open>Soundness\<close>
 (******************************************************************************)
 (*----------------------------------------------------------------------------*)
 theorem soundnessForUNSAT:
@@ -665,15 +665,15 @@ theorem soundnessForUNSAT:
   shows "\<not> satisfiable F0"
 (*----------------------------------------------------------------------------*)
 proof-
-  from `isInitialState state0 F0` `(state0, state) \<in> transitionRelation decisionVars`
+  from \<open>isInitialState state0 F0\<close> \<open>(state0, state) \<in> transitionRelation decisionVars\<close>
   have "invariantsHoldInState state F0 decisionVars" 
     using invariantsHoldInValidRunsFromInitialState
     by simp
   hence "InvariantImpliedLiterals (getF state) (getM state)" "InvariantEquivalent F0 (getF state)"
     unfolding invariantsHoldInState_def
     by auto
-  with `formulaFalse (getF state) (elements (getM state))`
-    `decisions (getM state) = []`
+  with \<open>formulaFalse (getF state) (elements (getM state))\<close>
+    \<open>decisions (getM state) = []\<close>
   show ?thesis
     using unsatReport[of "getF state" "getM state" "F0"]
     by simp
@@ -694,7 +694,7 @@ theorem soundnessForSAT:
   "model (elements (getM state)) F0"
 (*----------------------------------------------------------------------------*)
 proof-
-  from `isInitialState state0 F0` `(state0, state) \<in> transitionRelation decisionVars`
+  from \<open>isInitialState state0 F0\<close> \<open>(state0, state) \<in> transitionRelation decisionVars\<close>
   have "invariantsHoldInState state F0 decisionVars" 
     using invariantsHoldInValidRunsFromInitialState
     by simp
@@ -712,9 +712,9 @@ qed
 
 
 (******************************************************************************)
-subsection{* Termination *}
+subsection\<open>Termination\<close>
 (******************************************************************************)
-text{* This system is terminating, but only under assumption that
+text\<open>This system is terminating, but only under assumption that
 there is no infinite derivation consisting only of applications of 
 rule $Learn$. We will formalize this condition by requiring that there
 there exists an ordering @{term learnL} on the formulae that is
@@ -722,7 +722,7 @@ well-founded such that the state is decreased with each application
 of the $Learn$ rule. If such ordering exists, the termination
 ordering is built as a lexicographic combination of @{term lexLessRestricted} 
 trail ordering and the @{term learnL} ordering. 
-*}
+\<close>
 
 definition "lexLessState F0 decisionVars == {((stateA::State), (stateB::State)). 
                        (getM stateA, getM stateB) \<in> lexLessRestricted (vars F0 \<union> decisionVars)}" 
@@ -733,14 +733,14 @@ definition "terminationLess F0 decisionVars learnL ==
       (stateA,stateB) \<in> lexLessState F0 decisionVars \<or> 
       (stateA,stateB) \<in> learnLessState learnL}"
 
-text{* We want to show that every valid transition decreases a state
+text\<open>We want to show that every valid transition decreases a state
   with respect to the constructed termination ordering. Therefore, we
   show that $Decide$, $UnitPropagate$ and $Backjump$ rule decrease the
   trail with respect to the restricted trail ordering @{term
   lexLessRestricted}.  Invariants ensure that trails are indeed uniq,
   consistent and with finite variable sets. By assumption, $Learn$
   rule will decrease the formula component of the state with respect
-  to the @{term learnL} ordering. *}
+  to the @{term learnL} ordering.\<close>
 
 lemma trailIsDecreasedByDeciedUnitPropagateAndBackjump:
   fixes stateA::State and stateB::State
@@ -748,20 +748,20 @@ lemma trailIsDecreasedByDeciedUnitPropagateAndBackjump:
   "appliedDecide stateA stateB decisionVars \<or> appliedUnitPropagate stateA stateB \<or> appliedBackjump stateA stateB"
   shows "(getM stateB, getM stateA) \<in> lexLessRestricted (vars F0 \<union> decisionVars)"
 proof-
-  from `appliedDecide stateA stateB decisionVars \<or> appliedUnitPropagate stateA stateB \<or> appliedBackjump stateA stateB`
-    `invariantsHoldInState stateA F0 decisionVars` 
+  from \<open>appliedDecide stateA stateB decisionVars \<or> appliedUnitPropagate stateA stateB \<or> appliedBackjump stateA stateB\<close>
+    \<open>invariantsHoldInState stateA F0 decisionVars\<close> 
   have "invariantsHoldInState stateB F0 decisionVars"
       using transitionsPreserveInvariants
       unfolding transition_def
       by auto
-    from `invariantsHoldInState stateA F0 decisionVars` 
+    from \<open>invariantsHoldInState stateA F0 decisionVars\<close> 
     have *: "uniq (elements (getM stateA))" "consistent (elements (getM stateA))" "vars (elements (getM stateA)) \<subseteq> vars F0 \<union> decisionVars"
       unfolding invariantsHoldInState_def
       unfolding InvariantVarsM_def
       unfolding InvariantConsistent_def
       unfolding InvariantUniq_def
       by auto
-    from `invariantsHoldInState stateB F0 decisionVars` 
+    from \<open>invariantsHoldInState stateB F0 decisionVars\<close> 
     have **: "uniq (elements (getM stateB))" "consistent (elements (getM stateB))" "vars (elements (getM stateB)) \<subseteq> vars F0 \<union> decisionVars"
       unfolding invariantsHoldInState_def
       unfolding InvariantVarsM_def
@@ -803,7 +803,7 @@ proof-
       unfolding appliedBackjump_def
       by auto
     
-    with `getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]`
+    with \<open>getM stateB = prefixToLevel level (getM stateA) @ [(bl, False)]\<close>
     have "(getM stateB, getM stateA) \<in> lexLess"
       by (simp add:lexLessBackjump)
     with * ** 
@@ -817,9 +817,9 @@ proof-
     by auto
 qed
 
-text{* Now we can show that, under the assumption for $Learn$ rule,
+text\<open>Now we can show that, under the assumption for $Learn$ rule,
   every rule application decreases a state with respect to the
-  constructed termination ordering. *}
+  constructed termination ordering.\<close>
 theorem stateIsDecreasedByValidTransitions:
   fixes stateA::State and stateB::State 
   assumes "invariantsHoldInState stateA F0 decisionVars" and "transition stateA stateB decisionVars"
@@ -828,7 +828,7 @@ theorem stateIsDecreasedByValidTransitions:
 proof-
   {
     assume "appliedDecide stateA stateB decisionVars \<or> appliedUnitPropagate stateA stateB \<or> appliedBackjump stateA stateB"
-    with `invariantsHoldInState stateA F0 decisionVars`
+    with \<open>invariantsHoldInState stateA F0 decisionVars\<close>
     have "(getM stateB, getM stateA) \<in> lexLessRestricted (vars F0 \<union> decisionVars)"
       using trailIsDecreasedByDeciedUnitPropagateAndBackjump
       by simp
@@ -842,11 +842,11 @@ proof-
   moreover
   {
     assume "appliedLearn stateA stateB"
-    with `appliedLearn stateA stateB \<longrightarrow> (getF stateB, getF stateA) \<in> learnL`
+    with \<open>appliedLearn stateA stateB \<longrightarrow> (getF stateB, getF stateA) \<in> learnL\<close>
     have "(getF stateB, getF stateA) \<in> learnL"
       by simp
     moreover
-    from `appliedLearn stateA stateB`
+    from \<open>appliedLearn stateA stateB\<close>
     have "(getM stateB) = (getM stateA)"
       unfolding appliedLearn_def
       by auto
@@ -860,13 +860,13 @@ proof-
   }
   ultimately
   show ?thesis
-    using `transition stateA stateB decisionVars`
+    using \<open>transition stateA stateB decisionVars\<close>
     unfolding transition_def
     by auto
 qed
 
-text{* The minimal states with respect to the termination ordering are
-  final i.e., no further transition rules are applicable. *}
+text\<open>The minimal states with respect to the termination ordering are
+  final i.e., no further transition rules are applicable.\<close>
 definition 
 "isMinimalState stateMin F0 decisionVars learnL == (\<forall> state::State. (state, stateMin) \<notin> terminationLess F0 decisionVars learnL)"
 
@@ -882,12 +882,12 @@ proof-
       where "transition state state' decisionVars"
       unfolding isFinalState_def
       by auto
-    with `invariantsHoldInState state F0 decisionVars` *
+    with \<open>invariantsHoldInState state F0 decisionVars\<close> *
     have "(state', state) \<in> terminationLess F0 decisionVars learnL"
       using stateIsDecreasedByValidTransitions[of "state" "F0" "decisionVars" "state'" "learnL"]
       unfolding transition_def
       by auto
-    with `isMinimalState state F0 decisionVars learnL` 
+    with \<open>isMinimalState state F0 decisionVars learnL\<close> 
     have False
       unfolding isMinimalState_def
       by auto
@@ -896,8 +896,8 @@ proof-
     by auto
 qed
 
-text{* We now prove that termination ordering is well founded. We
-start with two auxiliary lemmas. *}
+text\<open>We now prove that termination ordering is well founded. We
+start with two auxiliary lemmas.\<close>
 lemma wfLexLessState: 
   fixes decisionVars :: "Variable set" and F0 :: "Formula"
   assumes "finite decisionVars"
@@ -910,23 +910,23 @@ proof-
       fix Q :: "State set" and state :: State
       assume "state \<in> Q"
       let ?Q1 = "{M::LiteralTrail. \<exists> state. state \<in> Q \<and> (getM state) = M}"
-      from `state \<in> Q`
+      from \<open>state \<in> Q\<close>
       have "getM state \<in> ?Q1"
         by auto
-      from `finite decisionVars` 
+      from \<open>finite decisionVars\<close> 
       have "finite (vars F0 \<union> decisionVars)"
         using finiteVarsFormula[of "F0"]
         by simp
       hence "wf (lexLessRestricted (vars F0 \<union> decisionVars))"
       using  wfLexLessRestricted[of "vars F0 \<union> decisionVars"]
       by simp
-    with `getM state \<in> ?Q1`
+    with \<open>getM state \<in> ?Q1\<close>
       obtain Mmin where "Mmin \<in> ?Q1" "\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> decisionVars) \<longrightarrow> M' \<notin> ?Q1"
         unfolding wf_eq_minimal
         apply (erule_tac x="?Q1" in allE)
         apply (erule_tac x="getM state" in allE)
         by auto 
-      from `Mmin \<in> ?Q1` obtain stateMin
+      from \<open>Mmin \<in> ?Q1\<close> obtain stateMin
         where "stateMin \<in> Q" "(getM stateMin) = Mmin"
         by auto
       have "\<forall>state'. (state', stateMin) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
@@ -938,16 +938,16 @@ proof-
           hence "(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)"
             unfolding lexLessState_def
             by auto
-          from `\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> decisionVars) \<longrightarrow> M' \<notin> ?Q1`
-            `(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)` `getM stateMin = Mmin`
+          from \<open>\<forall>M'. (M', Mmin) \<in> lexLessRestricted (vars F0 \<union> decisionVars) \<longrightarrow> M' \<notin> ?Q1\<close>
+            \<open>(getM state', getM stateMin) \<in> lexLessRestricted (vars F0 \<union> decisionVars)\<close> \<open>getM stateMin = Mmin\<close>
           have "getM state' \<notin> ?Q1"
             by simp
-          with `getM stateMin = Mmin`
+          with \<open>getM stateMin = Mmin\<close>
           show "state' \<notin> Q"
             by auto
         qed
       qed
-      with `stateMin \<in> Q`
+      with \<open>stateMin \<in> Q\<close>
       have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q)"
         by auto
     }
@@ -968,16 +968,16 @@ proof-
       assume "state \<in> Q"
       let ?M = "(getM state)"
       let ?Q1 = "{f::Formula. \<exists> state. state \<in> Q \<and> (getM state) = ?M \<and> (getF state) = f}"
-      from `state \<in> Q` 
+      from \<open>state \<in> Q\<close> 
       have "getF state \<in> ?Q1"
         by auto            
-      with `wf learnL`
+      with \<open>wf learnL\<close>
       obtain FMin where "FMin \<in> ?Q1" "\<forall>F'. (F', FMin) \<in> learnL \<longrightarrow> F' \<notin> ?Q1"
         unfolding wf_eq_minimal
         apply (erule_tac x="?Q1" in allE)
         apply (erule_tac x="getF state" in allE)
         by auto
-      from `FMin \<in> ?Q1` obtain stateMin
+      from \<open>FMin \<in> ?Q1\<close> obtain stateMin
         where "stateMin \<in> Q" "(getM stateMin) = ?M" "getF stateMin = FMin"
         by auto
       have "\<forall>state'. (state', stateMin) \<in> learnLessState learnL \<longrightarrow> state' \<notin> Q"
@@ -986,20 +986,20 @@ proof-
         show "(state', stateMin) \<in> learnLessState learnL \<longrightarrow> state' \<notin> Q"
         proof
           assume "(state', stateMin) \<in> learnLessState learnL"
-          with `getM stateMin = ?M` 
+          with \<open>getM stateMin = ?M\<close> 
           have "getM state' = getM stateMin" "(getF state', getF stateMin) \<in> learnL"
             unfolding learnLessState_def
             by auto
-          from `\<forall>F'. (F', FMin) \<in> learnL \<longrightarrow> F' \<notin> ?Q1` 
-            `(getF state', getF stateMin) \<in> learnL` `getF stateMin = FMin`
+          from \<open>\<forall>F'. (F', FMin) \<in> learnL \<longrightarrow> F' \<notin> ?Q1\<close> 
+            \<open>(getF state', getF stateMin) \<in> learnL\<close> \<open>getF stateMin = FMin\<close>
           have "getF state' \<notin> ?Q1"
             by simp
-          with `getM state' = getM stateMin` `getM stateMin = ?M`
+          with \<open>getM state' = getM stateMin\<close> \<open>getM stateMin = ?M\<close>
           show "state' \<notin> Q"
             by auto
         qed
       qed
-      with `stateMin \<in> Q` 
+      with \<open>stateMin \<in> Q\<close> 
       have "\<exists> stateMin \<in> Q. (\<forall>state'. (state', stateMin) \<in> learnLessState learnL \<longrightarrow> state' \<notin> Q)"
         by auto
     }
@@ -1008,8 +1008,8 @@ proof-
   qed
 qed
 
-text{* Now we can prove the following key lemma which shows that the
-termination ordering is well founded. *}
+text\<open>Now we can prove the following key lemma which shows that the
+termination ordering is well founded.\<close>
 lemma wfTerminationLess:
   fixes F0 :: Formula and decisionVars :: "Variable set"
   assumes "finite decisionVars" "wf learnL"
@@ -1024,27 +1024,27 @@ proof-
       assume "state \<in> Q"
       have "wf (lexLessState F0 decisionVars)"
         using wfLexLessState[of "decisionVars" "F0"]
-        using `finite decisionVars`
+        using \<open>finite decisionVars\<close>
         by simp
-      with `state \<in> Q` obtain state0
+      with \<open>state \<in> Q\<close> obtain state0
         where "state0 \<in> Q" "\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q"
         unfolding wf_eq_minimal
         by auto
       let ?Q0 = "{state. state \<in> Q \<and> (getM state) = (getM state0)}"
-      from `state0 \<in> Q`
+      from \<open>state0 \<in> Q\<close>
       have "state0 \<in> ?Q0"
         by simp
-      from `wf learnL` 
+      from \<open>wf learnL\<close> 
       have "wf (learnLessState learnL)"
         using wfLearnLessState
         by simp
-      with `state0 \<in> ?Q0` obtain state1
+      with \<open>state0 \<in> ?Q0\<close> obtain state1
         where "state1 \<in> ?Q0" "\<forall>state'. (state', state1) \<in> learnLessState learnL \<longrightarrow> state' \<notin> ?Q0"
         unfolding wf_eq_minimal
         apply (erule_tac x="?Q0" in allE)
         apply (erule_tac x="state0" in allE)
         by auto
-      from `state1 \<in> ?Q0`
+      from \<open>state1 \<in> ?Q0\<close>
       have "state1 \<in> Q" "getM state1 = getM state0"
         by auto
       let ?stateMin = state1
@@ -1062,25 +1062,25 @@ proof-
           moreover
           {
             assume "(state', ?stateMin) \<in> lexLessState F0 decisionVars"
-            with `getM state1 = getM state0`
+            with \<open>getM state1 = getM state0\<close>
             have "(state', state0) \<in> lexLessState F0 decisionVars"
               unfolding lexLessState_def
               by simp
-            with `\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q`
+            with \<open>\<forall>state'. (state', state0) \<in> lexLessState F0 decisionVars \<longrightarrow> state' \<notin> Q\<close>
             have "state' \<notin> Q"
               by simp
           }
           moreover
           {
             assume "(state', ?stateMin) \<in> learnLessState learnL"
-            with `\<forall>state'. (state', state1) \<in> learnLessState learnL \<longrightarrow> state' \<notin> ?Q0`
+            with \<open>\<forall>state'. (state', state1) \<in> learnLessState learnL \<longrightarrow> state' \<notin> ?Q0\<close>
             have "state' \<notin> ?Q0"
               by simp
-            from `(state', state1) \<in> learnLessState learnL` `getM state1 = getM state0`
+            from \<open>(state', state1) \<in> learnLessState learnL\<close> \<open>getM state1 = getM state0\<close>
             have "getM state' = getM state0"
               unfolding learnLessState_def
               by auto
-            with `state' \<notin> ?Q0`
+            with \<open>state' \<notin> ?Q0\<close>
             have "state' \<notin> Q"
               by simp
           }
@@ -1089,7 +1089,7 @@ proof-
             by auto
         qed
       qed
-      with `?stateMin \<in> Q` have "(\<exists> stateMin \<in> Q. \<forall>state'. (state', stateMin) \<in> terminationLess F0 decisionVars learnL \<longrightarrow> state' \<notin> Q)"
+      with \<open>?stateMin \<in> Q\<close> have "(\<exists> stateMin \<in> Q. \<forall>state'. (state', stateMin) \<in> terminationLess F0 decisionVars learnL \<longrightarrow> state' \<notin> Q)"
         by auto
     }
     thus ?thesis
@@ -1097,9 +1097,9 @@ proof-
   qed
 qed
 
-text{* Using the termination ordering we show that the transition
+text\<open>Using the termination ordering we show that the transition
  relation is well founded on states reachable from initial state.  The
- assumption for the $Learn$ rule is neccessary. *}
+ assumption for the $Learn$ rule is neccessary.\<close>
 (*----------------------------------------------------------------------------*)
 theorem wfTransitionRelation:
   fixes decisionVars :: "Variable set" and F0 :: "Formula"
@@ -1126,7 +1126,7 @@ proof-
       fix stateA::State and stateB::State
       assume "(stateB, stateA) \<in> ?rel"
       hence "(stateB, stateA) \<in> ?rel'"
-        using `isInitialState state0 F0`
+        using \<open>isInitialState state0 F0\<close>
         using invariantsHoldInValidRunsFromInitialState[of "state0" "F0" "stateA" "decisionVars"]
         using stateIsDecreasedByValidTransitions[of "stateA" "F0" "decisionVars" "stateB"] **
         by simp
@@ -1136,7 +1136,7 @@ proof-
   qed
   moreover 
   have "wf ?rel'"
-    using `finite decisionVars` `wf learnL`
+    using \<open>finite decisionVars\<close> \<open>wf learnL\<close>
     by (rule wfTerminationLess)
   ultimately
   show ?thesis
@@ -1144,9 +1144,9 @@ proof-
     by simp
 qed
 
-text{* We will now give two corollaries of the previous theorem. First
+text\<open>We will now give two corollaries of the previous theorem. First
   is a weak termination result that shows that there is a terminating
-  run from every intial state to the final one. *}
+  run from every intial state to the final one.\<close>
 corollary 
   fixes decisionVars :: "Variable set" and F0 :: "Formula" and state0 :: "State"
   assumes "finite decisionVars" and "isInitialState state0 F0" and
@@ -1175,17 +1175,17 @@ proof-
       by simp
     hence " (\<exists> x. x \<in> ?Q) \<longrightarrow> (\<exists> stateMin \<in> ?Q. \<forall> state. (state, stateMin) \<in> ?rel \<longrightarrow> state \<notin> ?Q)"
       by rule
-    with `\<exists> state. state \<in> ?Q`
+    with \<open>\<exists> state. state \<in> ?Q\<close>
     have "\<exists> stateMin \<in> ?Q. \<forall> state. (state, stateMin) \<in> ?rel \<longrightarrow> state \<notin> ?Q"
       by simp
     then obtain stateMin
       where "stateMin \<in> ?Q" and "\<forall> state. (state, stateMin) \<in> ?rel \<longrightarrow> state \<notin> ?Q"
       by auto
     
-    from `stateMin \<in> ?Q` 
+    from \<open>stateMin \<in> ?Q\<close> 
     have "(state0, stateMin) \<in> transitionRelation decisionVars"
       by simp
-    with `\<not> ?thesis`
+    with \<open>\<not> ?thesis\<close>
     have "\<not> isFinalState stateMin decisionVars"
       by simp
     then obtain state'::State
@@ -1193,14 +1193,14 @@ proof-
       unfolding isFinalState_def
       by auto
     have "(state', stateMin) \<in> ?rel"
-      using `(state0, stateMin) \<in> transitionRelation decisionVars`
-            `transition stateMin state' decisionVars`
+      using \<open>(state0, stateMin) \<in> transitionRelation decisionVars\<close>
+            \<open>transition stateMin state' decisionVars\<close>
       by simp
-    with `\<forall> state. (state, stateMin) \<in> ?rel \<longrightarrow> state \<notin> ?Q`
+    with \<open>\<forall> state. (state, stateMin) \<in> ?rel \<longrightarrow> state \<notin> ?Q\<close>
     have "state' \<notin> ?Q"
       by force
     moreover
-    from `(state0, stateMin) \<in> transitionRelation decisionVars` `transition stateMin state' decisionVars`
+    from \<open>(state0, stateMin) \<in> transitionRelation decisionVars\<close> \<open>transition stateMin state' decisionVars\<close>
     have "state' \<in> ?Q"
       unfolding transitionRelation_def
       using rtrancl_into_rtrancl[of "state0" "stateMin" "{(stateA, stateB). transition stateA stateB decisionVars}" "state'"]
@@ -1214,12 +1214,12 @@ proof-
 qed
 
 
-text{* Now we prove the final strong termination result which states
+text\<open>Now we prove the final strong termination result which states
 that there cannot be infinite chains of transitions. If there is an
 infinite transition chain that starts from an initial state, its
 elements would for a set that would contain initial state and for
 every element of that set there would be another element of that set
-that is directly reachable from it. We show that no such set exists. *}
+that is directly reachable from it. We show that no such set exists.\<close>
 corollary noInfiniteTransitionChains:
   fixes F0::Formula and decisionVars::"Variable set"
   assumes "finite decisionVars" and
@@ -1238,7 +1238,7 @@ proof-
     by auto
   let ?rel = "{(stateB, stateA). (state0, stateA) \<in> transitionRelation decisionVars \<and>
                          transition stateA stateB decisionVars}"
-  from `finite decisionVars` `isInitialState state0 F0` *
+  from \<open>finite decisionVars\<close> \<open>isInitialState state0 F0\<close> *
   have "wf ?rel"
     using wfTransitionRelation
     by simp
@@ -1247,7 +1247,7 @@ proof-
     unfolding wf_eq_minimal 
     by simp
   let ?Q = "{state \<in> Q. (state0, state) \<in> transitionRelation decisionVars}"
-  from `state0 \<in> Q`
+  from \<open>state0 \<in> Q\<close>
   have "state0 \<in> ?Q"
     unfolding transitionRelation_def
     by simp
@@ -1257,28 +1257,28 @@ proof-
     apply (erule_tac x="?Q" in allE)
     by auto
 
-  from `stateMin \<in> ?Q`
+  from \<open>stateMin \<in> ?Q\<close>
   have "stateMin \<in> Q" "(state0, stateMin) \<in> transitionRelation decisionVars"
     by auto
-  with `\<forall> state \<in> Q. (\<exists> state' \<in> Q. transition state state' decisionVars)`
+  with \<open>\<forall> state \<in> Q. (\<exists> state' \<in> Q. transition state state' decisionVars)\<close>
   obtain state'::State
     where "state' \<in> Q" "transition stateMin state' decisionVars"
     by auto
 
-  with `(state0, stateMin) \<in> transitionRelation decisionVars`
+  with \<open>(state0, stateMin) \<in> transitionRelation decisionVars\<close>
   have "(state', stateMin) \<in> ?rel"
     by simp
-  with `\<forall>y. (y, stateMin) \<in> ?rel \<longrightarrow> y \<notin> ?Q`
+  with \<open>\<forall>y. (y, stateMin) \<in> ?rel \<longrightarrow> y \<notin> ?Q\<close>
   have "state' \<notin> ?Q"
     by force
   
-  from `state' \<in> Q` `(state0, stateMin) \<in> transitionRelation decisionVars`
-    `transition stateMin state' decisionVars`
+  from \<open>state' \<in> Q\<close> \<open>(state0, stateMin) \<in> transitionRelation decisionVars\<close>
+    \<open>transition stateMin state' decisionVars\<close>
   have "state' \<in> ?Q"
     unfolding transitionRelation_def
     using rtrancl_into_rtrancl[of "state0" "stateMin" "{(stateA, stateB). transition stateA stateB decisionVars}" "state'"]
     by simp
-  with `state' \<notin> ?Q`
+  with \<open>state' \<notin> ?Q\<close>
   have False
     by simp
   }
@@ -1288,11 +1288,11 @@ qed
 
 
 (******************************************************************************)
-subsection{* Completeness *}
+subsection\<open>Completeness\<close>
 (******************************************************************************)
 
-text{* In this section we will first show that each final state is
-either \textit{SAT} or \textit{UNSAT} state. *}
+text\<open>In this section we will first show that each final state is
+either \textit{SAT} or \textit{UNSAT} state.\<close>
 
 lemma finalNonConflictState: 
   fixes state::State and FO :: Formula
@@ -1305,11 +1305,11 @@ proof
   assume "x \<in> decisionVars"
   hence "var ?l = x" and "var ?l \<in> decisionVars" and "var (opposite ?l) \<in> decisionVars"
     by auto
-  with `\<not> applicableDecide state decisionVars` 
+  with \<open>\<not> applicableDecide state decisionVars\<close> 
   have "literalTrue ?l (elements (getM state)) \<or> literalFalse ?l (elements (getM state))"
     unfolding applicableDecideCharacterization
     by force
-  with `var ?l = x`
+  with \<open>var ?l = x\<close>
   show "x \<in> vars (elements (getM state))"
     using valuationContainsItsLiteralsVariable[of "?l" "elements (getM state)"]
     using valuationContainsItsLiteralsVariable[of "opposite ?l" "elements (getM state)"]
@@ -1328,11 +1328,11 @@ lemma finalConflictingState:
   shows
   "decisions (getM state) = []"
 proof-
-  from `InvariantUniq (getM state)`
+  from \<open>InvariantUniq (getM state)\<close>
   have "uniq (elements (getM state))"
     unfolding InvariantUniq_def
     .
-  from `InvariantConsistent (getM state)`
+  from \<open>InvariantConsistent (getM state)\<close>
   have "consistent (elements (getM state))"
     unfolding InvariantConsistent_def
     .
@@ -1363,9 +1363,9 @@ proof-
     moreover
     let ?l = "getLastAssertedLiteral (oppositeLiteralList ?c) (elements (getM state))"
     have "isLastAssertedLiteral ?l (oppositeLiteralList ?c) (elements (getM state))"
-      using `InvariantUniq (getM state)`
+      using \<open>InvariantUniq (getM state)\<close>
       using getLastAssertedLiteralCharacterization[of "?c" "elements (getM state)"]
-        `?c \<noteq> []` `clauseFalse ?c (elements (getM state))`
+        \<open>?c \<noteq> []\<close> \<open>clauseFalse ?c (elements (getM state))\<close>
       unfolding InvariantUniq_def
       by simp
     moreover
@@ -1383,31 +1383,31 @@ proof-
     qed
     ultimately
     have "\<exists> level. (isBackjumpLevel level (opposite ?l) ?c (getM state))"
-      using `uniq (elements (getM state))`
+      using \<open>uniq (elements (getM state))\<close>
       using allDecisionsThenExistsBackjumpLevel[of "getM state" "?c" "opposite ?l"]
       by simp
     then obtain level::nat
       where "isBackjumpLevel level (opposite ?l) ?c (getM state)"
       by auto
-    with `consistent (elements (getM state))` `uniq (elements (getM state))` `clauseFalse ?c (elements (getM state))`
+    with \<open>consistent (elements (getM state))\<close> \<open>uniq (elements (getM state))\<close> \<open>clauseFalse ?c (elements (getM state))\<close>
     have "isUnitClause ?c (opposite ?l) (elements (prefixToLevel level (getM state)))"
       using isBackjumpLevelEnsuresIsUnitInPrefix[of "getM state" "?c" "level" "opposite ?l"]
       by simp
     moreover
     have "formulaEntailsClause (getF state) ?c"
     proof-
-      from `clauseFalse ?c (elements (getM state))` `consistent (elements (getM state))`
+      from \<open>clauseFalse ?c (elements (getM state))\<close> \<open>consistent (elements (getM state))\<close>
       have "\<not> clauseTautology ?c"
         using tautologyNotFalse[of "?c" "elements (getM state)"]
         by auto
 
-      from `formulaFalse (getF state) (elements (getM state))` `InvariantImpliedLiterals (getF state) (getM state)`
+      from \<open>formulaFalse (getF state) (elements (getM state))\<close> \<open>InvariantImpliedLiterals (getF state) (getM state)\<close>
       have "\<not> satisfiable ((getF state) @ val2form (decisions (getM state)))"
         using InvariantImpliedLiteralsAndFormulaFalseThenFormulaAndDecisionsAreNotSatisfiable
         by simp
       hence "\<not> satisfiable ((getF state) @ val2form (oppositeLiteralList ?c))"
         by simp
-      with `\<not> clauseTautology ?c`
+      with \<open>\<not> clauseTautology ?c\<close>
       show ?thesis
         using unsatisfiableFormulaWithSingleLiteralClauses
         by simp
@@ -1415,7 +1415,7 @@ proof-
     moreover 
     have "var ?l \<in> vars (getF state) \<union> vars (elements (getM state))"
     proof-
-      from `isLastAssertedLiteral ?l (oppositeLiteralList ?c) (elements (getM state))`
+      from \<open>isLastAssertedLiteral ?l (oppositeLiteralList ?c) (elements (getM state))\<close>
       have "?l el (oppositeLiteralList ?c)"
         unfolding isLastAssertedLiteral_def
         by simp
@@ -1430,7 +1430,7 @@ proof-
     moreover 
     have "0 \<le> level" "level < (currentLevel (getM state))"
     proof-
-      from `isBackjumpLevel level (opposite ?l) ?c (getM state)`
+      from \<open>isBackjumpLevel level (opposite ?l) ?c (getM state)\<close>
       have "0 \<le> level" "level < (elementLevel ?l (getM state))"
         unfolding isBackjumpLevel_def
         by auto
@@ -1442,7 +1442,7 @@ proof-
     have "applicableBackjump state"
       unfolding applicableBackjumpCharacterization
       by force
-    with `\<not> applicableBackjump state`
+    with \<open>\<not> applicableBackjump state\<close>
     have "False"
       by simp
   }
@@ -1493,7 +1493,7 @@ theorem finalStateCharacterization:
    (formulaFalse (getF state) (elements (getM state)) \<and> decisions (getM state) = [])"
 (*----------------------------------------------------------------------------*)
 proof-
-  from `isInitialState state0 F0` `(state0, state) \<in> transitionRelation decisionVars`
+  from \<open>isInitialState state0 F0\<close> \<open>(state0, state) \<in> transitionRelation decisionVars\<close>
   have "invariantsHoldInState state F0 decisionVars"
     using invariantsHoldInValidRunsFromInitialState
     by simp
@@ -1504,7 +1504,7 @@ proof-
     unfolding invariantsHoldInState_def
     by auto
 
-  from `isFinalState state decisionVars` 
+  from \<open>isFinalState state decisionVars\<close> 
   have **: 
     "\<not> applicableBackjump state"
     "\<not> applicableDecide state decisionVars"
@@ -1517,8 +1517,8 @@ proof-
     by simp
 qed
 
-text{* Completeness theorems are easy consequences of this characterization and 
- soundness. *}
+text\<open>Completeness theorems are easy consequences of this characterization and 
+ soundness.\<close>
 
 (*----------------------------------------------------------------------------*)
 theorem completenessForSAT: 
@@ -1546,7 +1546,7 @@ proof-
       have "\<not> satisfiable F0"
       using soundnessForUNSAT
       by simp
-    with `satisfiable F0`
+    with \<open>satisfiable F0\<close>
     have False
       by simp
   }
@@ -1585,7 +1585,7 @@ proof-
       using soundnessForSAT[of "F0" "decisionVars" "state0" "state"]
       unfolding satisfiable_def
       by auto
-    with `\<not> satisfiable F0`
+    with \<open>\<not> satisfiable F0\<close>
     have False
       by simp
   }

@@ -12,8 +12,8 @@ begin
 hide_const (open) Nil Cons
 
 text \<open>
-The @{text h} function and its auxiliaries @{text f} and @{text d} represent the
-hydra battle. The @{text encode} function converts a hydra (represented as a
+The \<open>h\<close> function and its auxiliaries \<open>f\<close> and \<open>d\<close> represent the
+hydra battle. The \<open>encode\<close> function converts a hydra (represented as a
 Lisp-like tree) to a syntactic ordinal. The definitions follow Dershowitz and
 Moser.
 \<close>

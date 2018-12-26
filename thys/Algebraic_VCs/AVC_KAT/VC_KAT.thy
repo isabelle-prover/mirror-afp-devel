@@ -4,12 +4,12 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Components Based on Kleene Algebra with Tests *}
+section \<open>Components Based on Kleene Algebra with Tests\<close>
 
-subsection {* Verification Component *}      
+subsection \<open>Verification Component\<close>      
 
-text {* This component supports the verification of simple while programs
-in a partial correctness setting. *}
+text \<open>This component supports the verification of simple while programs
+in a partial correctness setting.\<close>
 
 theory VC_KAT
 imports "../P2S2R"
@@ -18,8 +18,8 @@ imports "../P2S2R"
 
 begin
 
-text{* This first part changes some of the facts from the AFP KAT theories. It should be added to KAT in the next AFP version. 
-Currently these facts provide an interface between the KAT theories and the verification component. *}
+text\<open>This first part changes some of the facts from the AFP KAT theories. It should be added to KAT in the next AFP version. 
+Currently these facts provide an interface between the KAT theories and the verification component.\<close>
 
 no_notation if_then_else ("if _ then _ else _ fi" [64,64,64] 63)
 no_notation while ("while _ do _ od" [64,64] 63)
@@ -31,7 +31,7 @@ notation p2r ("\<lceil>_\<rceil>")
 context kat 
 begin
 
-subsubsection {* Definitions of Hoare Triple *}
+subsubsection \<open>Definitions of Hoare Triple\<close>
 
 definition H :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" where
   "H p x q \<longleftrightarrow> t p \<cdot> x \<le> x \<cdot> t q" 
@@ -42,7 +42,7 @@ lemma H_var1: "H p x q \<longleftrightarrow> t p \<cdot> x \<cdot> n q = 0"
 lemma H_var2: "H p x q \<longleftrightarrow> t p \<cdot> x = t p \<cdot> x \<cdot> t q"
   by (simp add: H_def n_kat_2)
 
-subsubsection {* Syntax for Conditionals and Loops *}
+subsubsection \<open>Syntax for Conditionals and Loops\<close>
 
 definition ifthenelse :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("if _ then _ else _ fi" [64,64,64] 63) where
   "if p then x else y fi = (t p \<cdot> x + n p \<cdot> y)"
@@ -53,7 +53,7 @@ definition while :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ do _ od" [6
 definition while_inv :: "'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" ("while _ inv _ do _ od" [64,64,64] 63) where
   "while p inv i do x od = while p do x od"
 
-subsubsection {* Propositional Hoare Logic *}
+subsubsection \<open>Propositional Hoare Logic\<close>
 
 lemma H_skip:  "H p 1 p"
   by (simp add: H_def)
@@ -106,7 +106,7 @@ qed
 lemma H_while_inv: "t p \<le> t i \<Longrightarrow> t i \<cdot> n r \<le> t q \<Longrightarrow> H (t i \<cdot> t r) x i \<Longrightarrow> H p (while r inv i do x od) q"
   by (metis H_cons H_loop test_mult while_inv_def)
 
-text {* Finally we prove a frame rule. *}
+text \<open>Finally we prove a frame rule.\<close>
 
 lemma H_frame: "H p x p \<Longrightarrow> H q x r \<Longrightarrow> H (t p \<cdot> t q) x (t p \<cdot> t r)"
 proof -
@@ -123,9 +123,9 @@ qed
     
 end
 
-subsubsection {* Store and Assignment *}
+subsubsection \<open>Store and Assignment\<close>
 
-text {* The proper verification component starts here. *}
+text \<open>The proper verification component starts here.\<close>
 
 type_synonym 'a store = "string  \<Rightarrow> 'a"
 
@@ -144,7 +144,7 @@ lemma Id_p2r [simp]: "Id \<inter> \<lceil>P\<rceil> = \<lceil>P\<rceil>"
 lemma Id_p2r_simp [simp]: "Id \<inter> (- Id \<union> \<lceil>P\<rceil>) = \<lceil>P\<rceil>"
   by simp 
 
-text {* Next we derive the assignment command and assignment rules.  *}
+text \<open>Next we derive the assignment command and assignment rules.\<close>
 
 definition gets :: "string \<Rightarrow> ('a store \<Rightarrow> 'a) \<Rightarrow> 'a store rel" ("_ ::= _" [70, 65] 61) where 
   "v ::= e = {(s,s (v := e s)) |s. True}"
@@ -164,7 +164,7 @@ lemma H_assign_iff [simp]: "rel_kat.H \<lceil>P\<rceil> (v ::= e) \<lceil>Q\<rce
 lemma H_assign_floyd: " rel_kat.H \<lceil>P\<rceil> (v ::= e) \<lceil>\<lambda>s. \<exists>w. s v = e (s(v := w)) \<and> P (s(v := w))\<rceil>"
   by (rule H_assign_var, metis fun_upd_same fun_upd_triv fun_upd_upd)
 
-subsubsection {* Simplified Hoare Rules *}
+subsubsection \<open>Simplified Hoare Rules\<close>
 
 lemma sH_cons_1: "\<forall>s. P s \<longrightarrow> P' s \<Longrightarrow> rel_kat.H \<lceil>P'\<rceil> X \<lceil>Q\<rceil> \<Longrightarrow> rel_kat.H \<lceil>P\<rceil> X \<lceil>Q\<rceil>"
   by (rule rel_kat.H_cons_1, auto simp only: p2r_def)
@@ -188,7 +188,7 @@ lemma sH_while_inv: "\<forall>s. P s \<longrightarrow> I s \<Longrightarrow> \<f
 lemma sH_H: "rel_kat.H \<lceil>P\<rceil> X \<lceil>Q\<rceil> \<longleftrightarrow> (\<forall>s s'. P s \<longrightarrow> (s,s') \<in> X \<longrightarrow> Q s')"
   by (simp add: rel_kat.H_def, auto simp add: p2r_def)
 
-text {* Finally we provide additional syntax for specifications and commands. *}
+text \<open>Finally we provide additional syntax for specifications and commands.\<close>
  
 abbreviation H_sugar :: "'a pred \<Rightarrow> 'a rel \<Rightarrow> 'a pred \<Rightarrow> bool" ("PRE _ _ POST _" [64,64,64] 63) where
   "PRE P X POST Q \<equiv> rel_kat.H \<lceil>P\<rceil> X \<lceil>Q\<rceil>"

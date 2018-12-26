@@ -1,4 +1,4 @@
-section {* Noninterference for models with finitely many users, commands and outputs *}
+section \<open>Noninterference for models with finitely many users, commands and outputs\<close>
 
 (*<*)
 theory Finite_Noninterference
@@ -7,15 +7,15 @@ begin
 (*>*)
 
 
-text{* In the Noninterference section, we showed how to express Goguen-Meseguer
+text\<open>In the Noninterference section, we showed how to express Goguen-Meseguer
 noninterference as a shallow HyperCTL* formula.  Here we show that, if one assumes
 finiteness of the sets of users, commands and outputs,
 then one can express the property as (the denotation of) a syntactic formula.
 Note that we do {\em not} need to assume the state space finite -- this is
-important for a potential application to infinite-state systems.  *}
+important for a potential application to infinite-state systems.\<close>
 
 
-text{* The Goguen-Meseguer security model with finiteness assumptions  *}
+text\<open>The Goguen-Meseguer security model with finiteness assumptions\<close>
 
 locale GM_sec_model_finite = GM_sec_model st0 do out
   for st0 :: 'St
@@ -129,8 +129,8 @@ lemma closed_nonintDfmla[simp]: "FV nonintDfmla = {}"
 unfolding nonintDfmla_def Fall2_def Fall_def der_Op_defs
 using FV_EqButGH FV_EqOnGL by fastforce
 
-text{* In the end, we obtain that the semantics of the closed (syntactic) formula
-nonintDfmla expresses noninterference faithfully:   *}
+text\<open>In the end, we obtain that the semantics of the closed (syntactic) formula
+nonintDfmla expresses noninterference faithfully:\<close>
 
 theorem semClosed_nonintDfmla: "semClosed nonintDfmla = nonint"
 unfolding nonintSfmla_iff_nonint[symmetric]
@@ -142,7 +142,7 @@ apply(subst sem_nonintDfmla[symmetric]) apply(rule semClosed_Nil) by auto
 end (* context GM_sec_model_finite  *)
 (*>*)
 
-text{* end-of-context GM-sec-model-finite  *}
+text\<open>end-of-context GM-sec-model-finite\<close>
 
 (*<*)
 end

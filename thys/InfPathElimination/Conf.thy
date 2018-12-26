@@ -2,9 +2,9 @@ theory Conf
 imports Store
 begin
 
-section {* Configurations, Subsumption and Symbolic Execution *}
+section \<open>Configurations, Subsumption and Symbolic Execution\<close>
 
-text {* In this section, we first introduce most elements related to our modeling of program 
+text \<open>In this section, we first introduce most elements related to our modeling of program 
 behaviors. We first define the type of configurations, on which symbolic execution performs, and 
 define the various concepts we will rely upon in the following and state and prove properties about 
 them. Then, we introduce symbolic execution. After giving a number of basic properties about 
@@ -14,19 +14,19 @@ Isabelle/HOL requires the actual formalization of a number of facts one would no
 implementing or writing a sketch proof. Here, we will need to prove that there exist successors of 
 the configurations on which symbolic execution is performed. Although this seems quite obvious in 
 practice, proofs of such facts will be needed a number of times in the following theories. Finally, 
-we define the feasibility of a sequence of labels.  *}
+we define the feasibility of a sequence of labels.\<close>
 
 
-subsection {* Basic Definitions and Properties *}
+subsection \<open>Basic Definitions and Properties\<close>
 
-subsubsection{* Configurations *}
+subsubsection\<open>Configurations\<close>
 
-text {* Configurations are pairs @{term "(store,pred)"} where:
+text \<open>Configurations are pairs @{term "(store,pred)"} where:
 \begin{itemize}
   \item @{term "store"} is a store mapping program variable to symbolic variables,
   \item @{term "pred"} is a set of boolean expressions over program variables whose conjunction is
 the actual path predicate.
-\end{itemize}*}
+\end{itemize}\<close>
 
 
 record ('v,'d) conf = 
@@ -34,10 +34,10 @@ record ('v,'d) conf =
   pred  :: "('v symvar,'d) bexp set"
 
 
-subsubsection {* Symbolic variables of a configuration. *}
+subsubsection \<open>Symbolic variables of a configuration.\<close>
 
-text {* The set of symbolic variables of a configuration is the union of the set of symbolic 
-variables of its store component with the set of variables of its path predicate. *}
+text \<open>The set of symbolic variables of a configuration is the union of the set of symbolic 
+variables of its store component with the set of variables of its path predicate.\<close>
 
 
 definition symvars :: 
@@ -46,10 +46,10 @@ where
   "symvars c = Store.symvars (store c) \<union> Bexp.vars (conjunct (pred c))"
 
 
-subsubsection {* Freshness. *}
+subsubsection \<open>Freshness.\<close>
 
-text {* A symbolic variable is said to be fresh for a configuration if it is not an element of its 
-set of symbolic variables. *}
+text \<open>A symbolic variable is said to be fresh for a configuration if it is not an element of its 
+set of symbolic variables.\<close>
 
 
 definition fresh_symvar :: 
@@ -58,9 +58,9 @@ where
   "fresh_symvar sv c = (sv \<notin> symvars c)"
 
 
-subsubsection {* Satisfiability *}
+subsubsection \<open>Satisfiability\<close>
 
-text {* A configuration is said to be satisfiable if its path predicate is satisfiable. *}
+text \<open>A configuration is said to be satisfiable if its path predicate is satisfiable.\<close>
 
 
 abbreviation sat :: 
@@ -69,12 +69,12 @@ where
   "sat c \<equiv> Bexp.sat (conjunct (pred c))"
 
 
-subsubsection {* States of a configuration *}
+subsubsection \<open>States of a configuration\<close>
 
-text {* Configurations represent sets of program states. The set of program states represented by a 
+text \<open>Configurations represent sets of program states. The set of program states represented by a 
 configuration, or simply its set of program states, is defined as the set of program states such that 
 consistent symbolic states wrt.\ the store component of the configuration satisfies its path 
-predicate. *}
+predicate.\<close>
 
 
 definition states :: 
@@ -83,7 +83,7 @@ where
  "states c = {\<sigma>. \<exists> \<sigma>\<^sub>s\<^sub>y\<^sub>m. consistent \<sigma> \<sigma>\<^sub>s\<^sub>y\<^sub>m (store c) \<and> conjunct (pred c) \<sigma>\<^sub>s\<^sub>y\<^sub>m}"
 
 
-text {* A configuration is satisfiable if and only if its set of states is not empty. *}
+text \<open>A configuration is satisfiable if and only if its set of states is not empty.\<close>
 
 
 lemma sat_eq :  
@@ -92,10 +92,10 @@ using consistentI2 by (simp add : sat_def states_def) fast
 
 
 
-subsubsection {* Subsumption *}
+subsubsection \<open>Subsumption\<close>
 
-text {* A configuration @{term "c\<^sub>2"} is subsumed by a configuration @{term "c\<^sub>1"} if the set of 
-states of @{term "c\<^sub>2"} is a subset of the set of states of @{term "c\<^sub>1"}. *}
+text \<open>A configuration @{term "c\<^sub>2"} is subsumed by a configuration @{term "c\<^sub>1"} if the set of 
+states of @{term "c\<^sub>2"} is a subset of the set of states of @{term "c\<^sub>1"}.\<close>
 
 
 definition subsums :: 
@@ -104,7 +104,7 @@ where
   "c\<^sub>2 \<sqsubseteq> c\<^sub>1 \<equiv> (states c\<^sub>2 \<subseteq> states c\<^sub>1)"
 
 
-text {* The subsumption relation is reflexive and transitive. *}
+text \<open>The subsumption relation is reflexive and transitive.\<close>
 
 
 lemma subsums_refl :
@@ -117,9 +117,9 @@ lemma subsums_trans :
 unfolding subsums_def by simp
 
 
-text {* However, it is not anti-symmetric. This is due to the fact that different configurations 
+text \<open>However, it is not anti-symmetric. This is due to the fact that different configurations 
 can have the same sets of program states. However, the following lemma trivially follows the 
-definition of subsumption. *}
+definition of subsumption.\<close>
 
 
 lemma
@@ -129,7 +129,7 @@ lemma
 using assms by (simp add : subsums_def)
 
 
-text {* A satisfiable configuration can only be subsumed by satisfiable configurations. *}
+text \<open>A satisfiable configuration can only be subsumed by satisfiable configurations.\<close>
 
 
 lemma sat_sub_by_sat :
@@ -140,8 +140,8 @@ using assms sat_eq[of c\<^sub>1] sat_eq[of c\<^sub>2]
 by (simp add : subsums_def) fast
 
 
-text {* On the other hand, an unsatisfiable configuration can only subsume unsatisfiable 
-configurations. *}
+text \<open>On the other hand, an unsatisfiable configuration can only subsume unsatisfiable 
+configurations.\<close>
 
 
 lemma unsat_subs_unsat :
@@ -152,15 +152,15 @@ using assms sat_eq[of c1] sat_eq[of c2]
 by (simp add : subsums_def)
 
 
-subsubsection {* Semantics of a configuration *}
+subsubsection \<open>Semantics of a configuration\<close>
 
-text {* The semantics of a configuration @{term "c"} is a boolean expression @{term "e"} over 
+text \<open>The semantics of a configuration @{term "c"} is a boolean expression @{term "e"} over 
 program states associating \emph{true} to a program state if it is a state of @{term "c"}. In 
 practice, given two configurations @{term "c\<^sub>1"} and @{term "c\<^sub>2"}, it is not possible to enumerate 
 their sets of states to establish the inclusion in order to detect a subsumption. We detect the 
 subsumption of the former by the latter by asking a constraint solver if @{term "sem c\<^sub>1"} entails 
 @{term "sem c\<^sub>2"}. The following theorem shows that the way we detect subsumption in practice is 
-correct.*}
+correct.\<close>
 
 
 definition sem :: 
@@ -174,12 +174,12 @@ theorem
 unfolding subsums_def sem_def subset_iff entails_def by (rule refl)
 
 
-subsubsection {* Abstractions *}
+subsubsection \<open>Abstractions\<close>
 
-text {* Abstracting a configuration consists in removing a given expression from its @{term "pred"} 
+text \<open>Abstracting a configuration consists in removing a given expression from its @{term "pred"} 
 component, i.e.\ weakening its path predicate. This definition of abstraction motivates the fact 
 that the @{term "pred"} component of configurations has been defined as a set of boolean expressions 
-instead of a boolean expression. *}
+instead of a boolean expression.\<close>
 
 
 definition abstract ::
@@ -188,10 +188,10 @@ where
   "abstract c c\<^sub>a \<equiv> c \<sqsubseteq> c\<^sub>a"
 
 
-subsubsection {* Entailment *}
+subsubsection \<open>Entailment\<close>
 
-text {* A configuration \emph{entails} a boolean expression if its semantics entails this expression. 
-This is equivalent to say that this expression holds for any state of this configuration. *}
+text \<open>A configuration \emph{entails} a boolean expression if its semantics entails this expression. 
+This is equivalent to say that this expression holds for any state of this configuration.\<close>
 
 
 abbreviation entails :: 

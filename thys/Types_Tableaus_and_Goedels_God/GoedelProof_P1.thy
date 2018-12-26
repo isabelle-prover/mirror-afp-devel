@@ -112,7 +112,7 @@ proof -
   thus ?thesis by (rule allI)
 qed    
     
-text\<open>  \emph{A3} implies @{text "P(G)"} (as global consequence): \<close>
+text\<open>  \emph{A3} implies \<open>P(G)\<close> (as global consequence): \<close>
 lemma A3implT2_global: "\<lfloor>\<^bold>\<forall>Z X. (pos Z \<^bold>\<and> intersec X Z) \<^bold>\<rightarrow> \<P> X\<rfloor> \<longrightarrow> \<lfloor>\<P> G\<rfloor>" 
   using A3implT2_local by (rule localImpGlobalCons) 
   

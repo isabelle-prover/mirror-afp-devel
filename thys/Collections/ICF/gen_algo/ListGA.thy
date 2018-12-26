@@ -1,11 +1,11 @@
-section {* \isaheader{Generic Algorithms for Sequences} *}
+section \<open>\isaheader{Generic Algorithms for Sequences}\<close>
 theory ListGA
 imports "../spec/ListSpec" 
 begin
 
-subsection {* Iterators *}
+subsection \<open>Iterators\<close>
 
-subsubsection {* iteratei (by get, size) *}
+subsubsection \<open>iteratei (by get, size)\<close>
 
 locale idx_iteratei_loc = 
   list_size + list_get +
@@ -73,7 +73,7 @@ begin
 
   lemmas idx_iteratei_unfold[code_unfold] = idx_iteratei_correct[symmetric]
 
-  subsubsection {* reverse\_iteratei (by get, size) *}
+  subsubsection \<open>reverse\_iteratei (by get, size)\<close>
 
   fun idx_reverse_iteratei_aux 
     :: "nat \<Rightarrow> nat \<Rightarrow> 's \<Rightarrow> ('\<sigma>\<Rightarrow>bool) \<Rightarrow> ('a \<Rightarrow>'\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>"
@@ -130,7 +130,7 @@ begin
 
 end
 
-subsection {* Size (by iterator) *}
+subsection \<open>Size (by iterator)\<close>
 
 locale it_size_loc = poly_list_iteratei +
   constrains \<alpha> :: "'s \<Rightarrow> 'a list"
@@ -146,7 +146,7 @@ begin
     done
 end
 
-subsubsection {* Size (by reverse\_iterator) *}
+subsubsection \<open>Size (by reverse\_iterator)\<close>
 
 locale rev_it_size_loc = poly_list_rev_iteratei +
   constrains \<alpha> :: "'s \<Rightarrow> 'a list"
@@ -164,7 +164,7 @@ begin
 
 end
 
-subsection {* Get (by iteratori) *}
+subsection \<open>Get (by iteratori)\<close>
 locale it_get_loc = poly_list_iteratei + 
   constrains \<alpha> :: "'s \<Rightarrow> 'a list"
 begin
@@ -183,7 +183,7 @@ begin
     assume "invar s" "i < length (\<alpha> s)"
 
     define l where "l = \<alpha> s"
-    from `i < length (\<alpha> s)`
+    from \<open>i < length (\<alpha> s)\<close>
     show "it_get s i = \<alpha> s ! i"
       unfolding it_get_def iteratei_correct l_def[symmetric]
     proof (induct i arbitrary: l)

@@ -3,18 +3,18 @@
    Maintainer: Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Residuated Boolean Algebras *}
+section \<open>Residuated Boolean Algebras\<close>
 
 theory Residuated_Boolean_Algebras
   imports Residuated_Lattices
 begin
 
-subsection {* Conjugation on Boolean Algebras *}
+subsection \<open>Conjugation on Boolean Algebras\<close>
 
-text {*
+text \<open>
   Similarly, as in the previous section, we define the conjugation for
   arbitrary residuated functions on boolean algebras.
-*}
+\<close>
 
 context boolean_algebra
 begin
@@ -28,11 +28,11 @@ lemma le_iff_inf_bot: "x \<le> y \<longleftrightarrow> x \<sqinter> -y = \<botto
 lemma indirect_eq: "(\<And>z. x \<le> z \<longleftrightarrow> y \<le> z) \<Longrightarrow> x = y"
   by (metis eq_iff)
 
-text {*
+text \<open>
   Let $B$ be a boolean algebra. The maps $f$ and $g$ on $B$ are
   a pair of conjugates if and only if for all $x, y \in B$,
   $f(x) \sqcap y = \bot \Leftrightarrow x \sqcap g(t) = \bot$.
-*}
+\<close>
   
 definition conjugation_pair :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> bool" where
   "conjugation_pair f g \<equiv> \<forall>x y. f(x) \<sqinter> y = \<bottom> \<longleftrightarrow> x \<sqinter> g(y) = \<bottom>"
@@ -51,9 +51,9 @@ lemma residuated_iff_conjugate: "residuated_pair f g = conjugation_pair f (\<lam
   apply (clarsimp simp: conjugation_pair_def residuated_pair_def inf_bot_iff_le)
   by (metis double_compl)
 
-text {*
+text \<open>
   A map $f$ has a conjugate pair if and only if it is residuated.
-*}
+\<close>
   
 lemma conj_residuatedI1: "\<exists>g. conjugation_pair f g \<Longrightarrow> residuated f"
   by (metis conjugate_iff_residuated residuated_def)
@@ -67,9 +67,9 @@ lemma exist_conjugateI[intro]: "residuated f \<Longrightarrow> \<exists>g. conju
 lemma exist_conjugateI2[intro]: "residuated f \<Longrightarrow> \<exists>g. conjugation_pair g f"
   by (metis exist_conjugateI conjugation_pair_commute)
 
-text {*
+text \<open>
   The conjugate of a residuated function $f$ is unique.
-*}
+\<close>
 
 lemma unique_conjugate[intro]: "residuated f \<Longrightarrow> \<exists>!g. conjugation_pair f g"
 proof - 
@@ -88,10 +88,10 @@ qed
 lemma unique_conjugate2[intro]: "residuated f \<Longrightarrow> \<exists>!g. conjugation_pair g f"
   by (metis unique_conjugate conjugation_pair_commute)
 
-text {*
+text \<open>
   Since the conjugate of a residuated map is unique, we define a
   conjugate operation.
-*}
+\<close>
   
 definition conjugate :: "('a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a)" where
   "conjugate f \<equiv> THE g. conjugation_pair g f"
@@ -109,9 +109,9 @@ lemma conjugateI1: "residuated f \<Longrightarrow> f(x) \<sqinter> y = \<bottom>
 lemma conjugateI2: "residuated f \<Longrightarrow> x \<sqinter> conjugate f y = \<bottom> \<Longrightarrow> f(x) \<sqinter> y = \<bottom>"
   by (metis conjugate_iff_def)
 
-text {*
+text \<open>
   Few more lemmas about conjugation follow.
-*}
+\<close>
   
 lemma residuated_conj1: "residuated f \<Longrightarrow> conjugation_pair f (conjugate f)"
   using conjugateI1 conjugateI2 conjugation_pair_def by auto
@@ -147,10 +147,10 @@ lemma conjugate_sup: "residuated f \<Longrightarrow> conjugate f (x \<squnion> y
 lemma conjugate_subinf: "residuated f \<Longrightarrow> conjugate f (x \<sqinter> y) \<le> conjugate f x \<sqinter> conjugate f y"
   by (auto simp: conj_iso)
  
-text {* 
+text \<open>
   Next we prove some lemmas from Maddux's article. Similar lemmas have been proved in AFP entry
   for relation algebras. They should be consolidated in the future.
-*}
+\<close>
 
 lemma maddux1: "residuated f \<Longrightarrow> f(x \<sqinter> - conjugate f(y)) \<le> f(x) \<sqinter> -y"
 proof -
@@ -213,10 +213,10 @@ end (* boolean_algebra *)
 
 context complete_boolean_algebra begin
 
-text {*
+text \<open>
   On a complete boolean algebra, it is possible to give an explicit
   definition of conjugation.
-*}
+\<close>
 
 lemma conjugate_eq: "residuated f \<Longrightarrow> conjugate f y = \<Sqinter>{x. y \<le> -f(-x)}"
 proof -
@@ -233,14 +233,14 @@ qed
 
 end (* complete_boolean_algebra *)
 
-subsection {* Residuated Boolean Structures *}
+subsection \<open>Residuated Boolean Structures\<close>
 
-text {*
+text \<open>
   In this section, we present various residuated structures based on
   boolean algebras.
   The left and right conjugation of the multiplicative operation is
   defined, and a number of facts is derived.
-*}
+\<close>
 
 class residuated_boolean_algebra = boolean_algebra + residuated_pogroupoid
 begin
@@ -363,10 +363,10 @@ lemma conjr1_iff: "x \<rhd> y \<le> z \<longleftrightarrow> y \<le> -(x\<cdot>-z
 lemma conjr2_iff: "x \<rhd> y \<le> z \<longleftrightarrow> x \<le> -(y \<lhd> -z)"
   by (metis conjugation_conj double_compl inf.commute le_iff_inf_bot)
 
-text {*
+text \<open>
   We apply Maddux's lemmas regarding conjugation of an arbitrary residuated function 
   for each of the 6 functions.
-*}
+\<close>
   
 lemma maddux1a: "a\<cdot>(x \<sqinter> -(a \<rhd> y)) \<le> a\<cdot>x"
   by (insert maddux1 [of "\<lambda>x. a\<cdot>x"]) simp
@@ -422,10 +422,10 @@ lemma maddux2e: "(x \<lhd> a) \<sqinter> y \<le> (x \<sqinter> y\<cdot>a) \<lhd>
 lemma maddux2f: "(x \<rhd> a) \<sqinter> y \<le> (x \<sqinter> (a \<lhd> y)) \<rhd> a"
   by (insert maddux2 [of "\<lambda>x. x \<rhd> a"]) simp
   
-text {*
+text \<open>
   The multiplicative operation $\cdot$ on a residuated boolean algebra is generally not
   associative. We prove some equivalences related to associativity.
-*}
+\<close>
 
 lemma res_assoc_iff1: "(\<forall>x y z. x\<cdot>(y\<cdot>z) = (x\<cdot>y)\<cdot>z) \<longleftrightarrow> (\<forall>x y z. x \<rhd> (y \<rhd> z) = y\<cdot>x \<rhd> z)"
 proof safe
@@ -473,9 +473,9 @@ class unital_residuated_boolean = residuated_boolean_algebra + one +
   and mult_oner [simp]: "1\<cdot>x = x"
 begin
 
-text {*
+text \<open>
   The following equivalences are taken from J{\'o}sson and Tsinakis.
-*}
+\<close>
 
 lemma jonsson1a: "(\<exists>f. \<forall>x y. x \<rhd> y = f(x)\<cdot>y) \<longleftrightarrow> (\<forall>x y. x \<rhd> y = (x \<rhd> 1)\<cdot>y)"
   apply standard
@@ -612,9 +612,9 @@ begin
 
 subclass residuated_boolean_algebra ..
 
-text {*
+text \<open>
   The following lemmas hold trivially, since they are equivalent to associativity.
-*}
+\<close>
 
 lemma res_assoc1: "x \<rhd> (y \<rhd> z) = y\<cdot>x \<rhd> z"
   by (metis res_assoc_iff1 mult_assoc)

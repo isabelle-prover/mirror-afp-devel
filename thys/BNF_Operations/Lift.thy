@@ -46,7 +46,7 @@ theorem F'map_cong:
   "\<lbrakk>\<And>z. z \<in> F'set1 x \<Longrightarrow> f1 z = g1 z; \<And>z. z \<in> F'set2 x \<Longrightarrow> f2 z = g2 z;
    \<And>z. z \<in> F'set3 x \<Longrightarrow> f3 z = g3 z; \<And>z. z \<in> F'set4 x \<Longrightarrow> f4 z = g4 z\<rbrakk>
   \<Longrightarrow> F'map f1 f2 f3 f4 x = F'map g1 g2 g3 g4 x"
-  apply (tactic {* BNF_Util.rtac @{context} @{thm F.map_cong0} 1 THEN REPEAT_DETERM_N 2 (assume_tac @{context} 1)*})
+  apply (tactic \<open>BNF_Util.rtac @{context} @{thm F.map_cong0} 1 THEN REPEAT_DETERM_N 2 (assume_tac @{context} 1)\<close>)
    apply assumption+
   done
 
@@ -69,10 +69,10 @@ theorem F'bd_cinfinite: "cinfinite bd_F"
   by (rule F.bd_cinfinite)
 
 theorem F'set1_bd: "|F'set1 x| \<le>o F'bd"
-  by (tactic {* BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Card_order} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Card_order}\<close>)
 
 theorem F'set2_bd: "|F'set2 x| \<le>o F'bd"
-  by (tactic {* BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Card_order} *})
+  by (tactic \<open>BNF_Comp_Tactics.mk_lift_set_bd_tac @{context} @{thm F.bd_Card_order}\<close>)
 
 theorem F'set3_bd: "|F'set3 (x :: ('c, 'a, 'd) F)| \<le>o (F'bd :: 'c bd_type_F rel)"
   by (rule F.set_bd(1))

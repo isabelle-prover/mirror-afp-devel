@@ -39,9 +39,9 @@ begin
       by (fact tau_transition.tau_refl)
   next
     case (tau_step P P' P'')
-      from `P \<rightarrow> \<langle>\<tau>,P'\<rangle>` have "p \<bullet> P \<rightarrow> \<langle>\<tau>,p \<bullet> P'\<rangle>"
+      from \<open>P \<rightarrow> \<langle>\<tau>,P'\<rangle>\<close> have "p \<bullet> P \<rightarrow> \<langle>\<tau>,p \<bullet> P'\<rangle>"
         using tau_eqvt transition_eqvt' by fastforce
-      with `p \<bullet> P' \<Rightarrow> p \<bullet> P''` show ?case
+      with \<open>p \<bullet> P' \<Rightarrow> p \<bullet> P''\<close> show ?case
         using tau_transition.tau_step by blast
   qed
 
@@ -75,7 +75,7 @@ begin
     assumes "P \<Rightarrow>{\<tau>} P'"
     shows "P \<Rightarrow> P'"
   proof -
-    from `P \<Rightarrow>{\<tau>} P'` obtain Q Q' where "P \<Rightarrow> Q" and "Q \<rightarrow> \<langle>\<tau>, Q'\<rangle>" and "Q' \<Rightarrow> P'"
+    from \<open>P \<Rightarrow>{\<tau>} P'\<close> obtain Q Q' where "P \<Rightarrow> Q" and "Q \<rightarrow> \<langle>\<tau>, Q'\<rangle>" and "Q' \<Rightarrow> P'"
       unfolding observable_transition_def by blast
     then show ?thesis
       by (metis tau_step tau_transition_trans)
@@ -224,12 +224,12 @@ begin
   lemma weakly_bisimilar_tau_simulation_step:
     assumes "P \<approx>\<cdot> Q" and "P \<Rightarrow> P'"
     obtains Q' where "Q \<Rightarrow> Q'" and "P' \<approx>\<cdot> Q'"
-  using `P \<Rightarrow> P'` `P \<approx>\<cdot> Q` proof (induct arbitrary: Q)
+  using \<open>P \<Rightarrow> P'\<close> \<open>P \<approx>\<cdot> Q\<close> proof (induct arbitrary: Q)
     case (tau_refl P) then show ?case
       by (metis tau_transition.tau_refl)
   next
     case (tau_step P P'' P')
-    from `P \<rightarrow> \<langle>\<tau>,P''\<rangle>` and `P \<approx>\<cdot> Q` obtain Q'' where "Q \<Rightarrow> Q''" and "P'' \<approx>\<cdot> Q''"
+    from \<open>P \<rightarrow> \<langle>\<tau>,P''\<rangle>\<close> and \<open>P \<approx>\<cdot> Q\<close> obtain Q'' where "Q \<Rightarrow> Q''" and "P'' \<approx>\<cdot> Q''"
       by (metis bn_tau_fresh is_weak_bisimulation_def weak_transition_def weakly_bisimilar_is_weak_bisimulation)
     then show ?case
       using tau_step.hyps(3) tau_step.prems(1) by (metis tau_transition_trans)
@@ -239,14 +239,14 @@ begin
     assumes "P \<approx>\<cdot> Q" and "bn \<alpha> \<sharp>* Q" and "P \<Rightarrow>\<langle>\<alpha>\<rangle> P'"
     obtains Q' where "Q \<Rightarrow>\<langle>\<alpha>\<rangle> Q'" and "P' \<approx>\<cdot> Q'"
   proof (cases "\<alpha> = \<tau>")
-    case True with `P \<approx>\<cdot> Q` and `P \<Rightarrow>\<langle>\<alpha>\<rangle> P'` and that show ?thesis
+    case True with \<open>P \<approx>\<cdot> Q\<close> and \<open>P \<Rightarrow>\<langle>\<alpha>\<rangle> P'\<close> and that show ?thesis
       using weak_transition_tau_iff weakly_bisimilar_tau_simulation_step by force
   next
-    case False with `P \<Rightarrow>\<langle>\<alpha>\<rangle> P'` have "P \<Rightarrow>{\<alpha>} P'"
+    case False with \<open>P \<Rightarrow>\<langle>\<alpha>\<rangle> P'\<close> have "P \<Rightarrow>{\<alpha>} P'"
       by simp
     then obtain P1 P2 where tauP: "P \<Rightarrow> P1" and trans: "P1 \<rightarrow> \<langle>\<alpha>,P2\<rangle>" and tauP2: "P2 \<Rightarrow> P'"
       using observable_transition_def by blast
-    from `P \<approx>\<cdot> Q` and tauP obtain Q1 where tauQ: "Q \<Rightarrow> Q1" and P1Q1: "P1 \<approx>\<cdot> Q1"
+    from \<open>P \<approx>\<cdot> Q\<close> and tauP obtain Q1 where tauQ: "Q \<Rightarrow> Q1" and P1Q1: "P1 \<approx>\<cdot> Q1"
       by (metis weakly_bisimilar_tau_simulation_step)
 
     \<comment> \<open>rename~@{term "\<langle>\<alpha>,P2\<rangle>"} to avoid~@{term Q1}, without touching~@{term Q}\<close>
@@ -258,7 +258,7 @@ begin
       next
         show "finite (supp (\<langle>\<alpha>,P2\<rangle>, Q))" by (simp add: finite_supp supp_Pair)
       next
-        show "bn \<alpha> \<sharp>* (\<langle>\<alpha>,P2\<rangle>, Q)" using `bn \<alpha> \<sharp>* Q` by (simp add: fresh_star_Pair)
+        show "bn \<alpha> \<sharp>* (\<langle>\<alpha>,P2\<rangle>, Q)" using \<open>bn \<alpha> \<sharp>* Q\<close> by (simp add: fresh_star_Pair)
       qed metis
     from 2 have 3: "supp \<langle>\<alpha>,P2\<rangle> \<sharp>* p" and 4: "supp Q \<sharp>* p"
       by (simp add: fresh_star_Un supp_Pair)+
@@ -303,13 +303,13 @@ begin
         assume phi: "P \<turnstile> \<phi>" and PR: "P \<approx>\<cdot> R" and RQ: "R \<approx>\<cdot> Q"
         from PR and phi obtain R' where "R \<Rightarrow> R'" and "P \<approx>\<cdot> R'" and *: "R' \<turnstile> \<phi>"
           using weakly_bisimilar_is_weak_bisimulation is_weak_bisimulation_def by force
-        from RQ and `R \<Rightarrow> R'` obtain Q' where "Q \<Rightarrow> Q'" and "R' \<approx>\<cdot> Q'"
+        from RQ and \<open>R \<Rightarrow> R'\<close> obtain Q' where "Q \<Rightarrow> Q'" and "R' \<approx>\<cdot> Q'"
           by (metis weakly_bisimilar_tau_simulation_step)
-        from `R' \<approx>\<cdot> Q'` and * obtain Q'' where "Q' \<Rightarrow> Q''" and "R' \<approx>\<cdot> Q''" and **: "Q'' \<turnstile> \<phi>"
+        from \<open>R' \<approx>\<cdot> Q'\<close> and * obtain Q'' where "Q' \<Rightarrow> Q''" and "R' \<approx>\<cdot> Q''" and **: "Q'' \<turnstile> \<phi>"
           using weakly_bisimilar_is_weak_bisimulation is_weak_bisimulation_def by force
-        from `Q \<Rightarrow> Q'` and `Q' \<Rightarrow> Q''` have "Q \<Rightarrow> Q''"
+        from \<open>Q \<Rightarrow> Q'\<close> and \<open>Q' \<Rightarrow> Q''\<close> have "Q \<Rightarrow> Q''"
           by (fact tau_transition_trans)
-        moreover from `P \<approx>\<cdot> R'` and `R' \<approx>\<cdot> Q''` have "?bisim P Q''"
+        moreover from \<open>P \<approx>\<cdot> R'\<close> and \<open>R' \<approx>\<cdot> Q''\<close> have "?bisim P Q''"
           by blast
         ultimately show "\<exists>Q'. Q \<Rightarrow> Q' \<and> ?bisim P Q' \<and> Q' \<turnstile> \<phi>"
           using ** by metis

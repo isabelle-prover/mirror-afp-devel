@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Semirings *}
+section \<open>Semirings\<close>
 
-text {*
+text \<open>
 This theory develops a hierarchy of idempotent semirings.
 All kinds of semiring considered here are bounded semilattices, but many lack additional properties typically assumed for semirings.
 In particular, we consider the variants of semirings, in which
@@ -20,7 +20,7 @@ We have applied results from this theory a number of papers for unifying computa
 For example, see \cite{Guttmann2012c} for various relational and matrix-based computation models and \cite{BerghammerGuttmann2015b} for multirelational models.
 
 The main results in this theory relate different ways of defining reflexive-transitive closures as discussed in \cite{BerghammerGuttmann2015b}.
-*}
+\<close>
 
 theory Semirings
 
@@ -28,13 +28,13 @@ imports Fixpoints
 
 begin
 
-subsection {* Idempotent Semirings *}
+subsection \<open>Idempotent Semirings\<close>
 
-text {*
+text \<open>
 The following definitions are standard for relations.
 Putting them into a general class that depends only on the signature facilitates reuse.
 Coreflexives are sometimes called partial identities, subidentities, monotypes or tests.
-*}
+\<close>
 
 class times_one_ord = times + one + ord
 begin
@@ -52,9 +52,9 @@ abbreviation "coreflexives \<equiv> { x . coreflexive x }"
 
 end
 
-text {*
+text \<open>
 The first algebra is a very weak idempotent semiring, in which multiplication is not necessarily associative.
-*}
+\<close>
 
 class non_associative_left_semiring = bounded_semilattice_sup_bot + times + one +
   assumes mult_left_sub_dist_sup: "x * y \<squnion> x * z \<le> x * (y \<squnion> z)"
@@ -66,9 +66,9 @@ begin
 
 subclass times_one_ord .
 
-text {*
+text \<open>
 We first show basic isotonicity and subdistributivity properties of multiplication.
-*}
+\<close>
 
 lemma mult_left_isotone:
   "x \<le> y \<Longrightarrow> x * z \<le> y * z"
@@ -118,9 +118,9 @@ lemma case_split_left_equal:
   "w \<squnion> z = 1 \<Longrightarrow> w * x = w * y \<Longrightarrow> z * x = z * y \<Longrightarrow> x = y"
   by (metis mult_left_one mult_right_dist_sup)
 
-text {*
+text \<open>
 Next we consider under which semiring operations the above properties are closed.
-*}
+\<close>
 
 lemma reflexive_one_closed:
   "reflexive 1"
@@ -190,11 +190,11 @@ lemma preorder_idempotent:
   "preorder x \<Longrightarrow> idempotent x"
   using antisym mult_isotone by fastforce
 
-text {*
+text \<open>
 We study the following three ways of defining reflexive-transitive closures.
 Each of them is given as a least prefixpoint, but the underlying functions are different.
 They implement left recursion, right recursion and symmetric recursion, respectively.
-*}
+\<close>
 
 abbreviation Lf :: "'a \<Rightarrow> ('a \<Rightarrow> 'a)" where "Lf y \<equiv> (\<lambda>x . 1 \<squnion> x * y)"
 abbreviation Rf :: "'a \<Rightarrow> ('a \<Rightarrow> 'a)" where "Rf y \<equiv> (\<lambda>x . 1 \<squnion> y * x)"
@@ -204,9 +204,9 @@ abbreviation lstar :: "'a \<Rightarrow> 'a" where "lstar y \<equiv> p\<mu> (Lf y
 abbreviation rstar :: "'a \<Rightarrow> 'a" where "rstar y \<equiv> p\<mu> (Rf y)"
 abbreviation sstar :: "'a \<Rightarrow> 'a" where "sstar y \<equiv> p\<mu> (Sf y)"
 
-text {*
+text \<open>
 All functions are isotone and, therefore, if the prefixpoints exist they are also fixpoints.
-*}
+\<close>
 
 lemma lstar_rec_isotone:
   "isotone (Lf y)"
@@ -236,9 +236,9 @@ lemma sstar_increasing:
   "has_least_prefixpoint (Sf y) \<Longrightarrow> y \<le> sstar y"
   using order_trans pmu_unfold sup_ge1 sup_ge2 by blast
 
-text {*
+text \<open>
 The fixpoint given by right recursion is always below the one given by symmetric recursion.
-*}
+\<close>
 
 lemma rstar_below_sstar:
   assumes "has_least_prefixpoint (Rf y)"
@@ -257,11 +257,11 @@ qed
 
 end
 
-text {*
+text \<open>
 Our next structure adds one half of the associativity property.
 This inequality holds, for example, for multirelations under the compositions defined by Parikh and Peleg \cite{Parikh1983,Peleg1987}.
 The converse inequality requires up-closed multirelations for Parikh's composition.
-*}
+\<close>
 
 class pre_left_semiring = non_associative_left_semiring +
   assumes mult_semi_associative: "(x * y) * z \<le> x * (y * z)"
@@ -287,14 +287,14 @@ qed
 
 end
 
-text {*
+text \<open>
 For the next structure we add a left residual operation.
 Such a residual is available, for example, for multirelations.
 
 The operator notation for binary division is introduced in a class that requires a unary inverse.
 This is appropriate for fields, but too strong in the present context of semirings.
 We therefore reintroduce it without requiring a unary inverse.
-*}
+\<close>
 
 no_notation
   inverse_divide (infixl "'/" 70)
@@ -306,9 +306,9 @@ class residuated_pre_left_semiring = pre_left_semiring + divide +
   assumes lres_galois: "x * y \<le> z \<longleftrightarrow> x \<le> z / y"
 begin
 
-text {*
+text \<open>
 We first derive basic properties of left residuals from the Galois connection.
-*}
+\<close>
 
 lemma lres_left_isotone:
   "x \<le> y \<Longrightarrow> x / z \<le> y / z"
@@ -334,9 +334,9 @@ lemma mult_lres_sub_assoc:
   "x * (y / z) \<le> (x * y) / z"
   by (meson dual_order.trans lres_galois mult_right_isotone lres_inverse lres_mult_sub_lres_lres)
 
-text {*
+text \<open>
 With the help of a left residual, it follows that left recursion is below right recursion.
-*}
+\<close>
 
 lemma lstar_below_rstar:
   assumes "has_least_prefixpoint (Lf y)"
@@ -359,10 +359,10 @@ proof -
     using assms(1) is_least_prefixpoint_def least_prefixpoint by auto
 qed
 
-text {*
+text \<open>
 Moreover, right recursion gives the same result as symmetric recursion.
 The next proof follows an argument of \cite[Satz 10.1.5]{Berghammer2012}.
-*}
+\<close>
 
 lemma rstar_sstar:
   assumes "has_least_prefixpoint (Rf y)"
@@ -391,10 +391,10 @@ qed
 
 end
 
-text {*
+text \<open>
 In the next structure we add full associativity of multiplication, as well as a right unit.
 Still, multiplication does not need to have a right zero and does not need to distribute over addition from the left.
-*}
+\<close>
 
 class idempotent_left_semiring = non_associative_left_semiring + monoid_mult
 begin
@@ -406,11 +406,11 @@ lemma zero_right_mult_decreasing:
   "x * bot \<le> x"
   by (metis bot_least mult_1_right mult_right_isotone)
 
-text {*
+text \<open>
 The following result shows that for dense coreflexives there are two equivalent ways to express that a property is preserved.
 In the setting of Kleene algebras, this is well known for tests, which form a Boolean subalgebra.
 The point here is that only very few properties of tests are needed to show the equivalence.
-*}
+\<close>
 
 lemma test_preserves_equation:
   assumes "dense_rel p"
@@ -432,11 +432,11 @@ qed
 
 end
 
-text {*
+text \<open>
 The next structure has both distributivity properties of multiplication.
 Only a right zero is missing from full semirings.
 This is important as many computation models do not have a right zero of sequential composition.
-*}
+\<close>
 
 class idempotent_left_zero_semiring = idempotent_left_semiring +
   assumes mult_left_dist_sup: "x * (y \<squnion> z) = x * y \<squnion> x * z"
@@ -458,9 +458,9 @@ lemma case_split_right_equal:
   "w \<squnion> z = 1 \<Longrightarrow> x * w = y * w \<Longrightarrow> x * z = y * z \<Longrightarrow> x = y"
   by (metis mult_1_right mult_left_dist_sup)
 
-text {*
+text \<open>
 This is the first structure we can connect to the semirings provided by Isabelle/HOL.
-*}
+\<close>
 
 sublocale semiring: ordered_semiring sup bot less_eq less times
   apply unfold_locales
@@ -474,9 +474,9 @@ sublocale semiring: semiring_numeral 1 times sup ..
 
 end
 
-text {*
+text \<open>
 Completing this part of the hierarchy, we obtain idempotent semirings by adding a right zero of multiplication.
-*}
+\<close>
 
 class idempotent_semiring = idempotent_left_zero_semiring +
   assumes mult_right_zero [simp]: "x * bot = bot"
@@ -487,13 +487,13 @@ sublocale semiring: semiring_0 sup bot times
 
 end
 
-subsection {* Bounded Idempotent Semirings *}
+subsection \<open>Bounded Idempotent Semirings\<close>
 
-text {*
+text \<open>
 All of the following semirings have a greatest element in the underlying semilattice order.
 With this element, we can express further standard properties of relations.
 We extend each class in the above hierarchy in turn.
-*}
+\<close>
 
 class times_top = times + top
 begin
@@ -514,9 +514,9 @@ begin
 
 subclass times_top .
 
-text {*
+text \<open>
 We first give basic properties of the greatest element.
-*}
+\<close>
 
 lemma sup_left_top [simp]:
   "top \<squnion> x = top"
@@ -538,9 +538,9 @@ lemma top_mult_top [simp]:
   "top * top = top"
   by (simp add: antisym top_left_mult_increasing)
 
-text {*
+text \<open>
 Closure of the above properties under the semiring operations is considered next.
-*}
+\<close>
 
 lemma vector_bot_closed:
   "vector bot"
@@ -604,9 +604,9 @@ lemma preorder_top_closed:
 
 end
 
-text {*
+text \<open>
 Some closure properties require at least half of associativity.
-*}
+\<close>
 
 class bounded_pre_left_semiring = pre_left_semiring + bounded_non_associative_left_semiring
 begin
@@ -621,9 +621,9 @@ lemma surjective_mult_closed:
 
 end
 
-text {*
+text \<open>
 We next consider residuals with the greatest element.
-*}
+\<close>
 
 class bounded_residuated_pre_left_semiring = residuated_pre_left_semiring + bounded_pre_left_semiring
 begin
@@ -642,9 +642,9 @@ lemma covector_lres_closed:
 
 end
 
-text {*
+text \<open>
 Some closure properties require full associativity.
-*}
+\<close>
 
 class bounded_idempotent_left_semiring = bounded_pre_left_semiring + idempotent_left_semiring
 begin
@@ -659,9 +659,9 @@ lemma total_mult_closed:
 
 end
 
-text {*
+text \<open>
 Some closure properties require distributivity from the left.
-*}
+\<close>
 
 class bounded_idempotent_left_zero_semiring = bounded_idempotent_left_semiring + idempotent_left_zero_semiring
 begin
@@ -672,9 +672,9 @@ lemma covector_sup_closed:
 
 end
 
-text {*
+text \<open>
 Our final structure is an idempotent semiring with a greatest element.
-*}
+\<close>
 
 class bounded_idempotent_semiring = bounded_idempotent_left_zero_semiring + idempotent_semiring
 begin

@@ -1,22 +1,22 @@
-section {* Hoare-Triples *}
+section \<open>Hoare-Triples\<close>
 theory Hoare_Triple
 imports Run Assertions
 begin
 
-text {* In this theory, we define Hoare-Triples, which are our basic tool
-  for specifying properties of Imperative HOL programs.*}
+text \<open>In this theory, we define Hoare-Triples, which are our basic tool
+  for specifying properties of Imperative HOL programs.\<close>
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
-text {* Analyze the heap before and after executing a command, to add
-  the allocated addresses to the covered address range. *}
+text \<open>Analyze the heap before and after executing a command, to add
+  the allocated addresses to the covered address range.\<close>
 definition new_addrs :: "heap \<Rightarrow> addr set \<Rightarrow> heap \<Rightarrow> addr set" where
   "new_addrs h as h' = as \<union> {a. lim h \<le> a \<and> a < lim h'}"
 
 lemma new_addr_refl[simp]: "new_addrs h as h = as"
   unfolding new_addrs_def by auto
 
-text {*
+text \<open>
   Apart from correctness of the program wrt. the pre- and post condition,
   a Hoare-triple also encodes some well-formedness conditions of the command:
   The command must not change addresses outside the address range of the 
@@ -27,7 +27,7 @@ text {*
   complicated to express with the heap model of Imperative/HOL, and is not 
   necessary in our formalization of partial heaps, that always contain the 
   information for all addresses.
-*}
+\<close>
 definition hoare_triple 
   :: "assn \<Rightarrow> 'a Heap \<Rightarrow> ('a \<Rightarrow> assn) \<Rightarrow> bool" ("<_>/ _/ <_>")
   where
@@ -50,19 +50,19 @@ lemma hoare_tripleD:
   unfolding hoare_triple_def h'_def as'_def 
   by (auto simp: Let_def)
 
-text {* For garbage-collected languages, specifications usually allow for some
+text \<open>For garbage-collected languages, specifications usually allow for some
   arbitrary heap parts in the postcondition. The following abbreviation defines
-  a handy shortcut notation for such specifications. *}
+  a handy shortcut notation for such specifications.\<close>
 abbreviation hoare_triple' 
   :: "assn \<Rightarrow> 'r Heap \<Rightarrow> ('r \<Rightarrow> assn) \<Rightarrow> bool" ("<_> _ <_>\<^sub>t") 
   where "<P> c <Q>\<^sub>t \<equiv> <P> c <\<lambda>r. Q r * true>"
 
 
-subsection {* Rules *}
-text {*
+subsection \<open>Rules\<close>
+text \<open>
   In this section, we provide a set of rules to prove Hoare-Triples correct.
-*}
-subsubsection {* Basic Rules *}
+\<close>
+subsubsection \<open>Basic Rules\<close>
 
 lemma hoare_triple_preI: 
   assumes "\<And>h. h\<Turnstile>P \<Longrightarrow> <P> c <Q>"
@@ -184,7 +184,7 @@ lemma post_exI_rule: "<P> c <\<lambda>r. Q r x> \<Longrightarrow> <P> c <\<lambd
   by (blast intro: cons_post_rule ent_ex_postI ent_refl)
 
 
-subsubsection {* Rules for Atomic Commands*}
+subsubsection \<open>Rules for Atomic Commands\<close>
 lemma ref_rule:
   "<emp> ref x <\<lambda>r. r \<mapsto>\<^sub>r x>"
   unfolding one_assn_def sngr_assn_def hoare_triple_def
@@ -263,8 +263,8 @@ lemma length_rule:
   )
   done
 
-text {* Note that the Boolean expression is placed at meta level and not 
-  inside the precondition. This makes frame inference simpler.*}
+text \<open>Note that the Boolean expression is placed at meta level and not 
+  inside the precondition. This makes frame inference simpler.\<close>
 lemma nth_rule:
   "\<lbrakk>i < length xs\<rbrakk> \<Longrightarrow> <a \<mapsto>\<^sub>a xs> Array.nth a i <\<lambda>r. a \<mapsto>\<^sub>a xs * \<up>(r = xs ! i)>"
   unfolding hoare_triple_def snga_assn_def
@@ -331,7 +331,7 @@ lemma raise_iff:
 lemma raise_rule: "<false> raise s <Q>"
   by (simp add: raise_iff)
 
-subsubsection {* Rules for Composed Commands *}
+subsubsection \<open>Rules for Composed Commands\<close>
 lemma bind_rule: 
   assumes T1: "<P> f <R>"
   assumes T2: "\<And>x. <R x> g x <Q>"

@@ -1,21 +1,21 @@
-section{* Guard-Based Encodings  *}
+section\<open>Guard-Based Encodings\<close>
 theory G
 imports T_G_Prelim Mcalc2C
 begin
 
 
-subsection{* The guard translation *}
+subsection\<open>The guard translation\<close>
 
-text{* The extension of the function symbols with type witnesses: *}
+text\<open>The extension of the function symbols with type witnesses:\<close>
 
 datatype ('fsym,'tp) efsym = Oldf 'fsym | Wit 'tp
 
-text{* The extension of the predicate symbols with type guards: *}
+text\<open>The extension of the predicate symbols with type guards:\<close>
 
 datatype ('psym,'tp) epsym = Oldp 'psym | Guard 'tp
 
-text{* Extension of the partitioned infinitely augmented problem
-for dealing with guards: *}
+text\<open>Extension of the partitioned infinitely augmented problem
+for dealing with guards:\<close>
 
 locale ProblemIkTpartG =
 Ik? : ProblemIkTpart wtFsym wtPsym arOf resOf parOf \<Phi> infTp prot protFw
@@ -49,7 +49,7 @@ assumes "protCl (resOf f)" and "i < length (arOf f)"
 shows "protCl (arOf f ! i)"
 using assms protCl_fsym unfolding list_all_length by auto
 
-text{* ``GE'' stands for ``guard encoding'': *}
+text\<open>``GE'' stands for ``guard encoding'':\<close>
 
 fun GE_wtFsym where
  "GE_wtFsym (Oldf f) \<longleftrightarrow> wtFsym f"
@@ -110,12 +110,12 @@ using countable_tp countable_GE_wtFsym countable_GE_wtPsym by auto
 context ProblemIkTpartG
 begin
 
-text{* The guarding literal of a variable: *}
+text\<open>The guarding literal of a variable:\<close>
 
 definition grdLit :: "var \<Rightarrow> (('fsym, 'tp) efsym, ('psym, 'tp) epsym) lit"
 where "grdLit x \<equiv> Neg (Pr (Guard (tpOfV x)) [Var x])"
 
-text{* The (set of) guarding literals of a literal and of a clause: *}
+text\<open>The (set of) guarding literals of a literal and of a clause:\<close>
 
 (* of a literal: *)
 fun glitOfL ::
@@ -159,9 +159,9 @@ lemma set_gC[simp]: "set (gC c) = gL ` (set c) \<union> glitOfC c"
 unfolding gC_def by simp
 
 
-text{* The extra axioms: *}
+text\<open>The extra axioms:\<close>
 
-text{* The function axioms: *}
+text\<open>The function axioms:\<close>
 
 (* conclusion (atom): *)
 definition "cOfFax f = Pr (Guard (resOf f)) [Fn (Oldf f) (getTvars (arOf f))]"
@@ -176,7 +176,7 @@ definition
 "Fax \<equiv> {fax f | f. wtFsym f \<and> \<not> unprot (resOf f) \<and> \<not> protCl (resOf f)} \<union>
        {faxCD f | f. wtFsym f \<and> protCl (resOf f)}"
 
-text{* The witness axioms: *}
+text\<open>The witness axioms:\<close>
 
 (* The axiom (clause): *)
 definition "wax \<sigma> \<equiv> [Pos (Pr (Guard \<sigma>) [Fn (Wit \<sigma>) []])]"
@@ -185,7 +185,7 @@ definition "Wax \<equiv> {wax \<sigma> | \<sigma>. \<not> unprot \<sigma> \<and>
 
 definition "gPB = gC ` \<Phi> \<union> Fax \<union> Wax"
 
-text{* Well-typedness of the translation: *}
+text\<open>Well-typedness of the translation:\<close>
 
 lemma tpOf_g[simp]: "GE.tpOf (gT T) = Ik.tpOf T"
 by (cases T) auto
@@ -276,7 +276,7 @@ lemma tpOf_Wit: "GE.tpOf (Fn (Wit \<sigma>) Tl) = \<sigma>" by simp
 end (* context ProblemIkTpartG *)
 
 
-subsection{* Soundness *}
+subsection\<open>Soundness\<close>
 
 context ModelIkTpartG begin
 
@@ -360,7 +360,7 @@ and \<Phi> = gPB and intF = GE_intF and intP = GE_intP
 using G_soundness .
 
 
-subsection{* Completeness  *}
+subsection\<open>Completeness\<close>
 
 (* Problem with type partition and model of its guard-encoding translation: *)
 locale ProblemIkTpartG_GEModel =
@@ -378,7 +378,7 @@ and eintT and eintF and eintP
 
 context ProblemIkTpartG_GEModel begin
 
-text{* The reduct structure of a given structure in the guard-extended signature: *}
+text\<open>The reduct structure of a given structure in the guard-extended signature:\<close>
 definition
 "intT \<sigma> a \<equiv>
  if unprot \<sigma> then eintT \<sigma> a
@@ -430,7 +430,7 @@ proof(intro conjI impI)
   }
   {assume ?A2 and ?H2
    hence "GE.satC \<xi> (faxCD f)" using f Fax unfolding GE.satPB_def Fax_def by auto
-   thus ?C using `?H2`
+   thus ?C using \<open>?H2\<close>
    unfolding faxCD_def fax_def cOfFax_def hOfFax_def
    unfolding GE.satC_append 1 unfolding GE.satC_def by (simp add: 0)
   }
@@ -636,7 +636,7 @@ where intT = intT and intF = intF and intP = intP
 using G_completeness .
 
 
-subsection{* The result of the guard translation is an infiniteness-augmented problem *}
+subsection\<open>The result of the guard translation is an infiniteness-augmented problem\<close>
 
 (* An observation similar to the corresponding one for tags applies here.  *)
 
@@ -670,8 +670,8 @@ proof
 qed
 
 
-subsection{* The verification of the second monotonicity calculus criterion
-for the guarded problem  *}
+subsection\<open>The verification of the second monotonicity calculus criterion
+for the guarded problem\<close>
 
 context ProblemIkTpartG begin
 

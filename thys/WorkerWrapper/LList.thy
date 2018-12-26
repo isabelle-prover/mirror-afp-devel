@@ -12,9 +12,9 @@ imports
 begin
 (*>*)
 
-section{* The fully-lazy list type. *}
+section\<open>The fully-lazy list type.\<close>
 
-text{* The list can contain anything that is a predomain. *}
+text\<open>The list can contain anything that is a predomain.\<close>
 
 default_sort predomain
 
@@ -58,9 +58,9 @@ abbreviation
 lemma lappend_strict': "lappend\<cdot>\<bottom> = (\<Lambda> a. \<bottom>)"
   by fixrec_simp
 
-text{* This gives us that @{thm lappend_strict'}. *}
+text\<open>This gives us that @{thm lappend_strict'}.\<close>
 
-text {* This is where we use @{thm inst_cfun_pcpo} *}
+text \<open>This is where we use @{thm inst_cfun_pcpo}\<close>
 lemma lappend_strict[simp]: "lappend\<cdot>\<bottom> = \<bottom>"
   by (rule cfun_eqI) (simp add: lappend_strict')
 
@@ -135,8 +135,8 @@ where
 
 declare literate.simps[simp del]
 
-text{* This order of tests is convenient for the nub proof. I can
-imagine the other would be convenient for other proofs... *}
+text\<open>This order of tests is convenient for the nub proof. I can
+imagine the other would be convenient for other proofs...\<close>
 
 fixrec lmember :: "('a \<rightarrow> 'a \<rightarrow> tr) \<rightarrow> 'a \<rightarrow> 'a llist \<rightarrow> tr"
 where
@@ -166,7 +166,7 @@ lemma lmap_lmap:
   "lmap\<cdot>f\<cdot>(lmap\<cdot>g\<cdot>xs) = lmap\<cdot>(f oo g)\<cdot>xs"
   by (induct xs) simp_all
 
-text {* The traditional list monad uses lconcatMap as its bind. *}
+text \<open>The traditional list monad uses lconcatMap as its bind.\<close>
 
 definition
   "lconcatMap \<equiv> (\<Lambda> f. lconcat oo lmap\<cdot>f)"
@@ -181,8 +181,8 @@ lemma lconcatMap_lsingleton[simp]:
   "lconcatMap\<cdot>lsingleton\<cdot>x = x"
   by (induct x) (simp_all add: lconcatMap_def)
 
-text{* This @{term "zipWith"} function is only fully defined if the
-lists have the same length. *}
+text\<open>This @{term "zipWith"} function is only fully defined if the
+lists have the same length.\<close>
 
 fixrec lzipWith0 :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> 'a llist \<rightarrow> 'b llist \<rightarrow> 'c llist"
 where
@@ -200,9 +200,9 @@ lemma lzipWith0_undefs [simp]:
   "lzipWith0\<cdot>f\<cdot>(x :@ xs)\<cdot>lnil = \<bottom>"
   by fixrec_simp+
 
-text{* This @{term "zipWith"} function follows Haskell's in being more
+text\<open>This @{term "zipWith"} function follows Haskell's in being more
 permissive: zipping uneven lists results in a list as long as the
-shortest one. This is what the backtracking monad expects. *}
+shortest one. This is what the backtracking monad expects.\<close>
 
 fixrec lzipWith :: "('a \<rightarrow> 'b \<rightarrow> 'c) \<rightarrow> 'a llist \<rightarrow> 'b llist \<rightarrow> 'c llist"
 where
@@ -221,7 +221,7 @@ lemma lzipWith_stricts [simp]:
   "lzipWith\<cdot>f\<cdot>(x :@ xs)\<cdot>\<bottom> = \<bottom>"
   by fixrec_simp+
 
-text{* Homomorphism properties, see Bird's life's work. *}
+text\<open>Homomorphism properties, see Bird's life's work.\<close>
 
 lemma lmap_lappend_dist:
   "lmap\<cdot>f\<cdot>(xs :++ ys) = lmap\<cdot>f\<cdot>xs :++ lmap\<cdot>f\<cdot>ys"

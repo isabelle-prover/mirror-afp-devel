@@ -3,15 +3,15 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Models for Kleene Algebra with Tests *}
+section \<open>Models for Kleene Algebra with Tests\<close>
 
 theory KAT_Models
   imports Kleene_Algebra.Kleene_Algebra_Models KAT
 begin
 
-text {*
+text \<open>
   We show that binary relations under the obvious definitions form a Kleene algebra with tests.
-*}
+\<close>
 
 interpretation rel_dioid_tests: test_semiring "(\<union>)" "(O)" Id "{}" "(\<subseteq>)" "(\<subset>)" "\<lambda>x. Id \<inter> ( - x)"
   by (standard, auto)

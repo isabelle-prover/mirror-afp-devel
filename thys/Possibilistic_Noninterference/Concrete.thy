@@ -1,4 +1,4 @@
-section {* Concrete setting *}
+section \<open>Concrete setting\<close>
 
 theory Concrete 
 imports Syntactic_Criteria After_Execution
@@ -28,7 +28,7 @@ proof -
   qed (auto simp: \<phi>_def)
 qed
 
-text{*
+text\<open>
 
 We instatiate the following notions, kept generic so far:
 
@@ -41,7 +41,7 @@ We instatiate the following notions, kept generic so far:
   \end{itemize}
   \item On the security semantics, the lattice of levels and the indis relation, again, just like at the possibilistic case. 
 \end{itemize}
-*}
+\<close>
 
 datatype level = Lo | Hi
 
@@ -160,7 +160,7 @@ abbreviation Wbis_abbrev (infix "\<approx>w" 55) where "c1 \<approx>w c2 \<equiv
 abbreviation WbisT_abbrev (infix "\<approx>wT" 55) where "c1 \<approx>wT c2 \<equiv> (c1,c2) \<in> Example_PL.WbisT"
 abbreviation BisT_abbrev (infix "\<approx>T" 55) where "c1 \<approx>T c2 \<equiv> (c1,c2) \<in> Example_PL.BisT"
 
-subsection {* Programs from EXAMPLE 1 *}
+subsection \<open>Programs from EXAMPLE 1\<close>
 
 definition [simp]: "c0 = (h ::= Ct 0)"
 
@@ -212,7 +212,7 @@ theorem c4: "c4 \<approx>01 c4"
 theorem c5: "c5 \<approx>w c5"
   by auto
 
-text{* Example 4 from the paper *}
+text\<open>Example 4 from the paper\<close>
 
 theorem "c3 \<approx>wT c3" by auto
 
@@ -221,7 +221,7 @@ theorem "c5 \<approx>wT c5" by auto
 corollary "discr (while Eq (Var h) (Ct 0)  do h ::= Ct 0)"
   by auto
 
-text{* Example 5 from the paper *}
+text\<open>Example 5 from the paper\<close>
 
 definition [simp]: "c12 \<equiv> h ::= Ct 4 ;;
   while Gt (Var h) (Ct 0)

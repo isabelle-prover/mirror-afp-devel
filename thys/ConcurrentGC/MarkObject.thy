@@ -15,9 +15,9 @@ imports
 begin
 
 (*>*)
-subsection{* Object colours, reference validity, worklist validity *}
+subsection\<open>Object colours, reference validity, worklist validity\<close>
 
-text{*
+text\<open>
 
 We adopt the classical tricolour scheme for object colours due to
 \citet{DBLP:journals/cacm/DijkstraLMSS78}, but tweak it somewhat in
@@ -39,7 +39,7 @@ Note that this allows the colours to overlap: an object being marked
 may be white (on the heap) and in @{const "ghost_honorary_grey"} for
 some process, i.e. grey.
 
-*}
+\<close>
 
 abbreviation marked :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "marked r s \<equiv> obj_at (\<lambda>obj. obj_mark obj = sys_fM s) r s"
@@ -56,7 +56,7 @@ definition grey :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
 definition black :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "black r \<equiv> marked r and not grey r"
 
-text{*
+text\<open>
 
 We show that if a mutator can load a reference into its roots (its
 working set of references), then there is an object in the heap at
@@ -70,7 +70,7 @@ tricolour invariant (\S\ref{sec:strong-tricolour-invariant}), black
 objects point to black or grey objects, and so we do not need to treat
 these specially.
 
-*}
+\<close>
 
 abbreviation write_refs :: "('field, 'ref) mem_write_action \<Rightarrow> 'ref set" where
   "write_refs w \<equiv> case w of mw_Mutate r f r' \<Rightarrow> {r} \<union> Option.set_option r' | _ \<Rightarrow> {}"
@@ -88,7 +88,7 @@ definition grey_reachable :: "'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred"
 definition valid_refs_inv :: "('field, 'mut, 'ref) lsts_pred" where
  "valid_refs_inv \<equiv> ALLS x. ((EXS m. mut_m.reachable m x) or grey_reachable x) imp valid_ref x"
 
-text{*
+text\<open>
 
 \label{def:valid_W_inv}
 
@@ -102,7 +102,7 @@ The safety of the collector does not to depend on disjointness; we
 include it as proof that the single-threading of grey objects in the
 implementation is sound.
 
-*}
+\<close>
 
 definition valid_W_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "valid_W_inv \<equiv> ALLS p q r.
@@ -135,7 +135,7 @@ lemma valid_ref_valid_null_ref_simps[simp]:
 by (auto simp: do_write_action_def valid_null_ref_def
         split: mem_write_action.splits obj_at_splits option.splits)
 
-text{* points to, reaches, reachable mut, reachable grey *}
+text\<open>points to, reaches, reachable mut, reachable grey\<close>
 
 lemma reaches_fields:
   assumes "(x reaches y) s'"
@@ -238,7 +238,7 @@ lemma grey_reachableE:
 by (auto simp: grey_reachable_def
          elim: rtranclp.intros(2))
 
-text{* colours and work lists *}
+text\<open>colours and work lists\<close>
 
 lemma black_eq_imp:
   "eq_imp (\<lambda>_::unit. (\<lambda>s. r \<in> (\<Union>p. WL p s)) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)))
@@ -277,7 +277,7 @@ lemma blackD[dest]:
   "black r s \<Longrightarrow> r \<notin> WL p s"
 by (simp_all add: black_def grey_def)
 
-text{* valid refs inv *}
+text\<open>valid refs inv\<close>
 
 lemma valid_refs_inv_eq_imp:
   "eq_imp (\<lambda>(m', r'). (\<lambda>s. roots (s (mutator m'))) \<otimes> (\<lambda>s. ghost_honorary_root (s (mutator m'))) \<otimes> (\<lambda>s. Option.map_option obj_fields (sys_heap s r')) \<otimes> tso_pending_mutate (mutator m') \<otimes> (\<lambda>s. \<Union>p. WL p s))
@@ -338,7 +338,7 @@ apply (clarsimp simp: valid_refs_inv_def mut_m.reachable_def mut_m.tso_write_ref
 apply (fastforce dest: spec[where x=y] spec[where x=m])
 done
 
-text{* WL *}
+text\<open>WL\<close>
 
 lemma WLI[intro]:
   "r \<in> W (s p) \<Longrightarrow> r \<in> WL p s"
@@ -358,7 +358,7 @@ lemma greyI[intro]:
   "r \<in> WL p s \<Longrightarrow> grey r s"
 by (case_tac [!] p) (auto simp: grey_def WL_def)
 
-text{* @{const "valid_W_inv"} *}
+text\<open>@{const "valid_W_inv"}\<close>
 
 lemma valid_W_inv_eq_imp:
   "eq_imp (\<lambda>(p, r). (\<lambda>s. W (s p)) \<otimes> (\<lambda>s. ghost_honorary_grey (s p)) \<otimes> sys_fM \<otimes> (\<lambda>s. Option.map_option obj_mark (sys_heap s r)) \<otimes> sys_mem_lock \<otimes> tso_pending_mark p)
@@ -446,9 +446,9 @@ apply (rule fold_invariant[where P="\<lambda>fr. Option.map_option obj_mark (hea
 done
 
 (*>*)
-subsection{* Mark Object *}
+subsection\<open>Mark Object\<close>
 
-text{*
+text\<open>
 
 Local invariants for @{const "mark_object_fn"}. Invoking this code in
 phases where @{const "sys_fM"} is constant marks the reference in
@@ -459,7 +459,7 @@ Each use needs to provide extra facts to justify validity of
 references, etc.  We do not include a post-condition for @{const
 "mark_object_fn"} here as it is different at each call site.
 
-*}
+\<close>
 
 locale mark_object =
   fixes p :: "'mut process_name"
@@ -541,12 +541,12 @@ lemmas mark_object_invL_niE[nie] =
 
 end (* locale mark_object *)
 
-text{*
+text\<open>
 
 The uses of @{const "mark_object_fn"} in the GC and during the root
 marking are straightforward.
 
-*}
+\<close>
 (* FIXME we'd like:
 
 sublocale mut < get_roots: mark_object "mutator mut" "''hs_get_roots_loop''" .
@@ -567,14 +567,14 @@ interpretation mut_get_roots: mark_object "mutator m" "''hs_get_roots_loop''" "\
 
 lemmas mut_get_roots_mark_object_invL_def2[inv] = mut_get_roots.mark_object_invL_def[simplified]
 
-text{*
+text\<open>
 
 The most interesting cases are the two asynchronous uses of @{const
 "mark_object_fn"} in the mutators: we need something that holds even
 before we read the phase. In particular we need to avoid interference
 by an @{const "fM"} flip.
 
-*}
+\<close>
 
 interpretation mut_store_del: mark_object "mutator m" "''store_del''" "mut_m.mut_ghost_handshake_phase m neq \<langle>hp_Idle\<rangle>" for m
   by standard (simp add: eq_imp_def)
@@ -588,38 +588,38 @@ lemmas mut_store_ins_mark_object_invL_def2[inv] = mut_store_ins.mark_object_invL
 
 (* **************************************** *)
 
-text{*
+text\<open>
 
 Local invariant for the mutator's uses of @{term "mark_object"}.
 
-*}
+\<close>
 
 definition "mut_hs_get_roots_loop_locs \<equiv>
   prefixed ''hs_get_roots_loop''"
-local_setup {* Cimp.locset @{thm "mut_hs_get_roots_loop_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_hs_get_roots_loop_locs_def"}\<close>
 
 definition "mut_hs_get_roots_loop_mo_locs \<equiv>
   prefixed ''hs_get_roots_loop_mo'' \<union> {''hs_get_roots_loop_done''}"
-local_setup {* Cimp.locset @{thm "mut_hs_get_roots_loop_mo_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_hs_get_roots_loop_mo_locs_def"}\<close>
 
 abbreviation "mut_async_mark_object_prefixes \<equiv> { ''store_del'', ''store_ins'' }"
 
 definition "mut_hs_not_hp_Idle_locs \<equiv>
   \<Union>pref\<in>mut_async_mark_object_prefixes.
   \<Union>l\<in>{''mo_co_lock'', ''mo_co_cmark'', ''mo_co_ctest'', ''mo_co_mark'', ''mo_co_unlock'', ''mo_co_won'', ''mo_co_W''}. {pref @ ''_'' @ l}"
-local_setup {* Cimp.locset @{thm "mut_hs_not_hp_Idle_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_hs_not_hp_Idle_locs_def"}\<close>
 
 definition "mut_async_mo_ptest_locs \<equiv>
   \<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''}"
-local_setup {* Cimp.locset @{thm "mut_async_mo_ptest_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_async_mo_ptest_locs_def"}\<close>
 
 definition "mut_mo_ptest_locs \<equiv>
   \<Union>pref\<in>mut_async_mark_object_prefixes. {pref @ ''_mo_ptest''}"
-local_setup {* Cimp.locset @{thm "mut_mo_ptest_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_mo_ptest_locs_def"}\<close>
 
 definition "mut_mo_valid_ref_locs \<equiv>
   prefixed ''store_del'' \<union> prefixed ''store_ins'' \<union> { ''deref_del'', ''lop_store_ins''}"
-local_setup {* Cimp.locset @{thm "mut_mo_valid_ref_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "mut_mo_valid_ref_locs_def"}\<close>
 (*<*)
 
 lemma mut_hs_get_roots_loop_locs_subseteq_hs_get_roots:
@@ -637,15 +637,14 @@ apply (clarsimp simp: hp_step_rel_def)
 done
 
 (*>*)
-text{*
+text\<open>
 
 This local invariant for the mutators illustrates the handshake
 structure: we can rely on the insertion barrier earlier than on the
-deletion barrier. Both need to be installed before @{text "get_roots"}
+deletion barrier. Both need to be installed before \<open>get_roots\<close>
 to ensure we preserve the strong tricolour invariant. All black
 objects at that point are allocated: we need to know that the
-insertion barrier is installed to preserve it. This limits when @{text
-"fA"} can be set.
+insertion barrier is installed to preserve it. This limits when \<open>fA\<close> can be set.
 
 It is interesting to contrast the two barriers. Intuitively a mutator
 can locally guarantee that it, in the relevant phases, will insert
@@ -653,13 +652,13 @@ only marked references. Less often can it be sure that the reference
 it is overwriting is marked. We also need to consider writes pending
 in TSO buffers.
 
-*}
+\<close>
 
 definition ghost_honorary_grey_empty_locs :: "location set" where
   "ghost_honorary_grey_empty_locs \<equiv>
      - (\<Union>pref\<in>{ ''mark_loop'', ''hs_get_roots_loop'', ''store_del'', ''store_ins'' }.
         \<Union>l\<in>{ ''mo_co_unlock'', ''mo_co_won'', ''mo_co_W'' }. {pref @ ''_'' @ l})"
-local_setup {* Cimp.locset @{thm "ghost_honorary_grey_empty_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "ghost_honorary_grey_empty_locs_def"}\<close>
 
 definition (in mut_m) mark_object_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "mark_object_invL \<equiv>
@@ -902,7 +901,7 @@ apply vcg_ni
 done
 
 (*>*)
-text{*
+text\<open>
 
 The GC's use of @{const "mark_object_fn"} is correct.
 
@@ -910,7 +909,7 @@ When we take grey @{const "tmp_ref"} to black, all of the objects it
 points to are marked, ergo the new black does not point to white, and
 so we preserve the strong tricolour invariant.
 
-*}
+\<close>
 
 definition (in gc) obj_fields_marked_inv :: "('field, 'mut, 'ref) lsts_pred" where
   "obj_fields_marked_inv \<equiv>
@@ -934,13 +933,13 @@ lemma (in gc) obj_fields_marked_inv_mark_field_done[iff]:
      \<Longrightarrow> obj_fields_marked_inv (s(gc := (s gc)\<lparr>field_set := gc_field_set s - {gc_field s}\<rparr>))"
 by (force simp: obj_fields_marked_inv_def obj_at_field_on_heap_def split: option.splits obj_at_splits)
 (*>*)
-text{**}
+text\<open>\<close>
 
 definition obj_fields_marked_locs :: "location set" where
   "obj_fields_marked_locs \<equiv>
      { ''mark_loop_mark_object_loop'', ''mark_loop_mark_choose_field'', ''mark_loop_mark_deref'', ''mark_loop_mark_field_done'', ''mark_loop_blacken'' }
    \<union> prefixed ''mark_loop_mo''"
-local_setup {* Cimp.locset @{thm "obj_fields_marked_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "obj_fields_marked_locs_def"}\<close>
 
 definition (in gc) obj_fields_marked_invL :: "('field, 'mut, 'ref) gc_pred" where
 [inv]: "obj_fields_marked_invL \<equiv>

@@ -175,7 +175,7 @@ proof-
     let ?c' = "c \<triangle>\<^sub>c f c"
     have "?P ?c'"
     proof
-      have "f ?c' \<sqsubseteq> f c"  by(rule monoD[OF `mono f` narrow2_acom[OF 1]])
+      have "f ?c' \<sqsubseteq> f c"  by(rule monoD[OF \<open>mono f\<close> narrow2_acom[OF 1]])
       also have "\<dots> \<sqsubseteq> ?c'" by(rule narrow1_acom[OF 1])
       finally show "f ?c' \<sqsubseteq> ?c'" .
       have "?c' \<sqsubseteq> c" by (rule narrow2_acom[OF 1])
@@ -238,9 +238,9 @@ subsection "Tests"
 definition "step_up_ivl n = ((\<lambda>c. c \<nabla>\<^sub>c step_ivl \<top> c)^^n)"
 definition "step_down_ivl n = ((\<lambda>c. c \<triangle>\<^sub>c step_ivl \<top> c)^^n)"
 
-text{* For @{const test3_ivl}, @{const AI_ivl} needed as many iterations as
+text\<open>For @{const test3_ivl}, @{const AI_ivl} needed as many iterations as
 the loop took to execute. In contrast, @{const AI_ivl'} converges in a
-constant number of steps: *}
+constant number of steps:\<close>
 
 value "show_acom (step_up_ivl 1 (\<bottom>\<^sub>c test3_ivl))"
 value "show_acom (step_up_ivl 2 (\<bottom>\<^sub>c test3_ivl))"
@@ -251,7 +251,7 @@ value "show_acom (step_down_ivl 1 (step_up_ivl 5 (\<bottom>\<^sub>c test3_ivl)))
 value "show_acom (step_down_ivl 2 (step_up_ivl 5 (\<bottom>\<^sub>c test3_ivl)))"
 value "show_acom (step_down_ivl 3 (step_up_ivl 5 (\<bottom>\<^sub>c test3_ivl)))"
 
-text{* Now all the analyses terminate: *}
+text\<open>Now all the analyses terminate:\<close>
 
 value "show_acom_opt (AI_ivl' test4_ivl)"
 value "show_acom_opt (AI_ivl' test5_ivl)"
@@ -344,7 +344,7 @@ proof-
           by (metis m_ivl_anti_mono widen1)
       next
         show "\<exists>x\<in>?X\<inter>?Y. m_ivl(?f x \<nabla> ?g x) < m_ivl(?f x)"
-          using `x:?X` `x:?Y` `\<not> lookup S2 x \<sqsubseteq> ?f x`
+          using \<open>x:?X\<close> \<open>x:?Y\<close> \<open>\<not> lookup S2 x \<sqsubseteq> ?f x\<close>
           by (metis IntI m_ivl_widen lookup_def)
       qed
       also have "\<dots> \<le> ?R" by(simp add: sum_mono2[OF _ Int_lower1])
@@ -357,12 +357,12 @@ proof-
           by (metis m_ivl_anti_mono widen1)
       qed
       also have "\<dots> < m_ivl(?f x) + \<dots>"
-        using m_ivl_widen[OF `\<not> lookup S2 x \<sqsubseteq> ?f x`]
+        using m_ivl_widen[OF \<open>\<not> lookup S2 x \<sqsubseteq> ?f x\<close>]
         by (metis Nat.le_refl add_strict_increasing gr0I not_less0)
       also have "\<dots> = (\<Sum>y\<in>insert x (?X\<inter>?Y). m_ivl(?f y))"
-        using `x ~: ?Y` by simp
+        using \<open>x ~: ?Y\<close> by simp
       also have "\<dots> \<le> (\<Sum>x\<in>?X. m_ivl(?f x))"
-        by(rule sum_mono2)(insert `x:?X`, auto)
+        by(rule sum_mono2)(insert \<open>x:?X\<close>, auto)
       finally show ?thesis .
     qed
   } with assms show ?thesis
@@ -394,7 +394,7 @@ proof-
     by(auto simp: le_st_def narrow_st_def lookup_def intro: n_ivl_narrow
             split: if_splits)
   have "(\<Sum>x\<in>X. n_ivl(lookup (S1 \<triangle> S2) x)) < (\<Sum>x\<in>X. n_ivl(lookup S1 x))"
-    apply(rule sum_strict_mono_ex1[OF `finite X`]) using 1 2 by blast+
+    apply(rule sum_strict_mono_ex1[OF \<open>finite X\<close>]) using 1 2 by blast+
   thus ?thesis by(simp add: n_st_def)
 qed
 
@@ -549,7 +549,7 @@ proof(simp add: iter_widen_def, rule wf_while_option_Some[where P = "P"])
   show "wf {(cc', c). (P c \<and> \<not> f c \<sqsubseteq> c) \<and> cc' = c \<nabla>\<^sub>c f c}"
     apply(rule wf_subset[OF assms(3)]) by(blast intro: P_f)
 next
-  show "P c0" by(rule `P c0`)
+  show "P c0" by(rule \<open>P c0\<close>)
 next
   fix c assume "P c" thus "P (c \<nabla>\<^sub>c f c)" by(simp add: P_f P_widen)
 qed
@@ -562,7 +562,7 @@ proof(simp add: iter_narrow_def, rule wf_while_option_Some[where P = "P"])
   show "wf {(c', c). (P c \<and> \<not> c \<sqsubseteq> c \<triangle>\<^sub>c f c) \<and> c' = c \<triangle>\<^sub>c f c}"
     apply(rule wf_subset[OF wf]) by(blast intro: P_f)
 next
-  show "P c0" by(rule `P c0`)
+  show "P c0" by(rule \<open>P c0\<close>)
 next
   fix c assume "P c" thus "P (c \<triangle>\<^sub>c f c)" by(simp add: P_f)
 qed

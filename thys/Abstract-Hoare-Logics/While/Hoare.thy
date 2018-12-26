@@ -5,29 +5,29 @@
 
 theory Hoare imports Lang begin
 
-subsection{* Hoare logic for partial correctness *}
+subsection\<open>Hoare logic for partial correctness\<close>
 
-text{* We continue our semantic approach by modelling assertions just
-like boolean expressions, i.e.\ as functions:*}
+text\<open>We continue our semantic approach by modelling assertions just
+like boolean expressions, i.e.\ as functions:\<close>
 
 type_synonym assn = "state \<Rightarrow> bool"
 
-text{*Hoare triples are triples of the form @{text"{P} c {Q}"}, where
-the assertions @{text P} and @{text Q} are the so-called pre and
-postconditions. Such a triple is \emph{valid} (denoted by @{text"\<Turnstile>"})
-iff every (terminating) execution starting in a state satisfying @{text P}
-ends up in a state satisfying @{text Q}: *}
+text\<open>Hoare triples are triples of the form \<open>{P} c {Q}\<close>, where
+the assertions \<open>P\<close> and \<open>Q\<close> are the so-called pre and
+postconditions. Such a triple is \emph{valid} (denoted by \<open>\<Turnstile>\<close>)
+iff every (terminating) execution starting in a state satisfying \<open>P\<close>
+ends up in a state satisfying \<open>Q\<close>:\<close>
 
 definition
  hoare_valid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile> {(1_)}/ (_)/ {(1_)}" 50) where
  "\<Turnstile> {P}c{Q} \<longleftrightarrow> (\<forall>s t. s -c\<rightarrow> t \<longrightarrow> P s \<longrightarrow> Q t)"
 
-text{*\noindent
+text\<open>\noindent
 This notion of validity is called \emph{partial correctness} because
 it does not require termination of @{term c}.
 
-Provability in Hoare logic is indicated by @{text"\<turnstile>"} and defined
-inductively:*}
+Provability in Hoare logic is indicated by \<open>\<turnstile>\<close> and defined
+inductively:\<close>
 
 inductive
   hoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile> ({(1_)}/ (_)/ {(1_)})" 50)
@@ -46,8 +46,8 @@ where
 | (*<*)Local:(*>*) "\<lbrakk> \<And>s. P s \<Longrightarrow> P' s (f s); \<forall>s. \<turnstile> {P' s} c {Q \<circ> (g s)} \<rbrakk> \<Longrightarrow>
         \<turnstile> {P} LOCAL f;c;g {Q}"
 
-text{* Soundness is proved by induction on the derivation of @{prop"\<turnstile>
-{P} c {Q}"}: *}
+text\<open>Soundness is proved by induction on the derivation of @{prop"\<turnstile>
+{P} c {Q}"}:\<close>
 
 theorem hoare_sound: "\<turnstile> {P}c{Q}  \<Longrightarrow>  \<Turnstile> {P}c{Q}"
 apply(unfold hoare_valid_def)
@@ -72,22 +72,22 @@ apply(erule mp)
 apply(simp)
 done
 
-text{*
+text\<open>
 Completeness is not quite as straightforward, but still easy. The
-proof is best explained in terms of the \emph{weakest precondition}:*}
+proof is best explained in terms of the \emph{weakest precondition}:\<close>
 
 definition
  wp :: "com \<Rightarrow> assn \<Rightarrow> assn" where
  "wp c Q = (\<lambda>s. \<forall>t. s -c\<rightarrow> t \<longrightarrow> Q t)"
 
-text{*\noindent Dijkstra calls this the weakest \emph{liberal}
+text\<open>\noindent Dijkstra calls this the weakest \emph{liberal}
 precondition to emphasize that it corresponds to partial
 correctness. We use ``weakest precondition'' all the time and let the
 context determine if we talk about partial or total correctness ---
 the latter is introduced further below.
 
 The following lemmas about @{term wp} are easily derived:
-*}
+\<close>
 
 lemma [simp]: "wp (Do f) Q = (\<lambda>s. \<forall>t \<in> f s. Q(t))"
 apply(unfold wp_def)
@@ -135,7 +135,7 @@ apply(rule hoare.Conseq)
 apply(fast, assumption, assumption)
 done
 
-text{* By induction on @{term c} one can easily prove*}
+text\<open>By induction on @{term c} one can easily prove\<close>
 
 lemma wp_is_pre[rule_format]: "\<turnstile> {wp c Q} c {Q}"
 apply (induct c arbitrary: Q)
@@ -162,9 +162,9 @@ apply(simp split:if_split_asm)
 apply(fast intro!: hoare.Local)
 done
 
-text{*\noindent
+text\<open>\noindent
 from which completeness follows more or less directly via the
-rule of consequence:*}
+rule of consequence:\<close>
 
 theorem hoare_relative_complete: "\<Turnstile> {P}c{Q}  \<Longrightarrow>  \<turnstile> {P}c{Q}"
 apply (rule strengthen_pre[OF _ wp_is_pre])

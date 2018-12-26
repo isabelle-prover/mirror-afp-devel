@@ -213,7 +213,7 @@ qed
 end
 
 
-subsection {* Quotioning by the same letter *}
+subsection \<open>Quotioning by the same letter\<close>
 
 definition "fin_cut_same x xs = take (LEAST n. drop n xs = replicate (length xs - n) x) xs"
 
@@ -232,7 +232,7 @@ next
     fix i assume "i < length xs - m"
     hence "rev xs ! i \<in> set (drop m xs)"
       by (induct xs arbitrary: i rule: rev_induct) (auto simp: nth_Cons')
-    with `?P m` show "rev xs ! i = y" by simp
+    with \<open>?P m\<close> show "rev xs ! i = y" by simp
   qed simp
   thus "?min \<le> m" by linarith
 qed
@@ -483,7 +483,7 @@ unfolding samequot_exec_samequot by (rule lang_samequot)
 
 end
 
-subsection {* Suffix and Prefix Languages *}
+subsection \<open>Suffix and Prefix Languages\<close>
 
 definition Suffix :: "'a lang \<Rightarrow> 'a lang" where
   "Suffix L = {w. \<exists>u. u @ w \<in> L}"

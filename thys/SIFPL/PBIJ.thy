@@ -2,19 +2,19 @@
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory PBIJ imports OBJ begin
 
-subsection{*Partial bijections*}
+subsection\<open>Partial bijections\<close>
 
-text{*Partial bijections between locations will be used in the next
+text\<open>Partial bijections between locations will be used in the next
 section to define indistinguishability of objects and heaps. We define
 such bijections as sets of pairs which satisfy the obvious
-condition.*}
+condition.\<close>
 
 type_synonym PBij = "(Location \<times> Location) set"
 definition Pbij :: "PBij set"
 where "Pbij = { \<beta> . \<forall> l1 l2 l3 l4. (l1,l2):\<beta> \<longrightarrow> (l3,l4):\<beta> \<longrightarrow> 
                               ((l1 = l3) = (l2 = l4))}"
 
-text{*Domain and codomain are defined as expected.*}
+text\<open>Domain and codomain are defined as expected.\<close>
 
 definition Pbij_Dom::"PBij \<Rightarrow> (Location set)"
 where "Pbij_Dom \<beta> = {l . \<exists> ll .(l,ll):\<beta>}"
@@ -22,8 +22,8 @@ where "Pbij_Dom \<beta> = {l . \<exists> ll .(l,ll):\<beta>}"
 definition Pbij_Rng::"PBij \<Rightarrow> (Location set)"
 where "Pbij_Rng \<beta> = {ll . \<exists> l .(l,ll):\<beta>}"
 
-text{*We also define the inverse operation, the composition, and a
-test deciding when one bijection extends another.*}
+text\<open>We also define the inverse operation, the composition, and a
+test deciding when one bijection extends another.\<close>
 
 definition Pbij_inverse::"PBij \<Rightarrow> PBij"
 where "Pbij_inverse \<beta> = {(l,ll) . (ll,l):\<beta>}"
@@ -46,7 +46,7 @@ by (simp add: Pbij_compose_def)
 definition Pbij_extends ::"PBij \<Rightarrow> PBij \<Rightarrow> bool"
 where "Pbij_extends \<gamma> \<beta> = (\<beta> \<subseteq> \<gamma>)"
 
-text{*These definitions satisfy the following properties.*}
+text\<open>These definitions satisfy the following properties.\<close>
 
 lemma Pbij_insert:
   "\<lbrakk>\<beta> \<in> Pbij;l \<notin> Pbij_Rng \<beta>; ll \<notin> Pbij_Dom \<beta>\<rbrakk> 
@@ -142,8 +142,8 @@ lemma Pbij_inverse_extends_twice:
 by (simp add: Pbij_extends_def Pbij_inverse_def)
 (*>*)
 
-text{*The identity bijection on a heap associates each element of the
-heap's domain with itself.*}
+text\<open>The identity bijection on a heap associates each element of the
+heap's domain with itself.\<close>
 
 definition mkId::"Heap \<Rightarrow> (Location \<times> Location) set"
 where "mkId h = {(l1,l2) . l1 = l2 \<and> l1 : Dom h}"
@@ -173,5 +173,5 @@ lemma mkId4b: "(l,ll):(mkId h) \<Longrightarrow> l:Dom h \<and> l = ll"
 by (simp add: mkId_def, clarsimp)
 (*>*)
 
-text{*End of theory PBIJ*}
+text\<open>End of theory PBIJ\<close>
 end

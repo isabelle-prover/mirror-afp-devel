@@ -11,7 +11,7 @@ begin
   named_theorems_rev synth_rules \<open>Term synthesis rules\<close>
 
   text \<open>Term synthesis works by proving @{term "SYNTH_TERM t v"}, by repeatedly applying the 
-    first matching intro-rule from @{text "synth_rules"}.  \<close>
+    first matching intro-rule from \<open>synth_rules\<close>.  \<close>
 
 
 ML \<open>

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, Tobias Nipkow
 *)
 
-section {* Compilation Stage 2 *}
+section \<open>Compilation Stage 2\<close>
 
 theory Compiler2
 imports PCompiler J1State "../JVM/JVMInstructions"
@@ -53,8 +53,8 @@ where
 | "compEs2 (e#es) = compE2 e @ compEs2 es"
 
 
-text{* Compilation of exception table. Is given start address of code
-to compute absolute addresses necessary in exception table. *}
+text\<open>Compilation of exception table. Is given start address of code
+to compute absolute addresses necessary in exception table.\<close>
 
 
 fun compxE2  :: "'addr expr1      \<Rightarrow> pc \<Rightarrow> nat \<Rightarrow> ex_table"

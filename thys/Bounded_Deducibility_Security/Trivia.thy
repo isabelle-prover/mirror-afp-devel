@@ -1,4 +1,4 @@
-section {* Trivia *}
+section \<open>Trivia\<close>
 
 (*<*)
 theory Trivia
@@ -18,7 +18,7 @@ proof-
   thus ?thesis by auto
 qed
 
-text{* Right cons: *}
+text\<open>Right cons:\<close>
 
 abbreviation Rcons (infix "##" 70) where "xs ## x \<equiv> xs @ [x]"
 

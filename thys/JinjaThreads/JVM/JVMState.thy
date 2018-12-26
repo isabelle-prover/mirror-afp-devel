@@ -2,16 +2,16 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-chapter {* Jinja Virtual Machine \label{cha:jvm} *}
+chapter \<open>Jinja Virtual Machine \label{cha:jvm}\<close>
 
-section {* State of the JVM *}
+section \<open>State of the JVM\<close>
 
 theory JVMState
 imports
   "../Common/Observable_Events"
 begin
 
-subsection {* Frame Stack *}
+subsection \<open>Frame Stack\<close>
 
 type_synonym 
   pc = nat
@@ -25,7 +25,7 @@ type_synonym
   \<comment> \<open>program counter within frame\<close>
 
 (* pretty printing for frame type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [Const (@{type_syntax "list"}, _) $ (Const (@{type_syntax "val"}, _) $ a1),
@@ -40,10 +40,10 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "prod"}, K tr')]
   end
-*}
+\<close>
 typ "'addr frame"
 
-subsection {* Runtime State *}
+subsection \<open>Runtime State\<close>
 type_synonym
   ('addr, 'heap) jvm_state = "'addr option \<times> 'heap \<times> 'addr frame list"  
   \<comment> \<open>exception flag, heap, frames\<close>
@@ -59,7 +59,7 @@ type_synonym
   ('addr, 'thread_id, 'heap) jvm_ta_state = "('addr, 'thread_id, 'heap) jvm_thread_action \<times> ('addr, 'heap) jvm_state"
 
 (* pretty printing for jvm_thread_action type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [a1, t
@@ -81,7 +81,7 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
-*}
+\<close>
 typ "('addr, 'thread_id, 'heap) jvm_thread_action"
 
 end

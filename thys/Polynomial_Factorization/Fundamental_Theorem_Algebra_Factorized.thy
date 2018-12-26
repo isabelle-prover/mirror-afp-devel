@@ -33,7 +33,7 @@ proof -
     from fundamental_theorem_of_algebra[OF this] obtain c where rt: "poly p c = 0" by auto
     hence "[:-c,1 :] dvd p" by (simp add: dvd_iff_poly_eq_0)
     then obtain q where p: "p = q * [: -c,1 :]" by (metis dvd_def mult.commute)
-    from `degree p = Suc n` have dq: "degree q = n" using p
+    from \<open>degree p = Suc n\<close> have dq: "degree q = n" using p
       by simp (metis add.right_neutral degree_synthetic_div diff_Suc_1 mult.commute mult_left_cancel p pCons_eq_0_iff rt synthetic_div_correct' zero_neq_one) 
     from Suc(1)[OF this] obtain as where q: "[:coeff q (degree q):] * (\<Prod>a\<leftarrow>as. [:- a, 1:]) = q"
       and deg: "length as = degree q" by auto

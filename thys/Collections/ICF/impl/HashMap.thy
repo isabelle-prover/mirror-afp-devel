@@ -2,11 +2,11 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-section {* \isaheader{Hash Maps} *}
+section \<open>\isaheader{Hash Maps}\<close>
 theory HashMap 
   imports HashMap_Impl 
 begin
-text_raw {*\label{thy:HashMap}*}
+text_raw \<open>\label{thy:HashMap}\<close>
 
 (*@impl Map
   @type 'a::hashable hm
@@ -70,12 +70,12 @@ lemma impl_of_hm_delete [simp, code abstract]:
 by(simp add: hm_delete_def delete_correct' RBT_HM_inverse)
 
 subsection "Correctness w.r.t. Map"
-text {* 
+text \<open>
   The next lemmas establish the correctness of the hashmap operations w.r.t. the 
   associated map. This is achieved by chaining the correctness lemmas of the 
   concrete hashmap w.r.t. the abstract hashmap and the correctness lemmas of the
   abstract hashmap w.r.t. maps.
-*}
+\<close>
 
 type_synonym ('k, 'v) hm = "('k, 'v) hashmap"
 
@@ -124,9 +124,9 @@ lemma hm_iteratei_impl:
   done
 
 subsection "Integration in Isabelle Collections Framework"
-text {*
+text \<open>
   In this section, we integrate hashmaps into the Isabelle Collections Framework.
-*}
+\<close>
 
 
 
@@ -160,7 +160,7 @@ interpretation hm: StdMap_no_invar hm_ops
   by unfold_locales (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "hm"*}
+setup \<open>ICF_Tools.revert_abbrevs "hm"\<close>
 
 lemma pi_hm[proper_it]:
   shows "proper_it' hm_iteratei hm_iteratei"
@@ -173,7 +173,7 @@ interpretation pi_hm: proper_it_loc hm_iteratei hm_iteratei
   apply (rule pi_hm)
   done
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 
 definition test_codegen where "test_codegen \<equiv> (
   hm.add ,

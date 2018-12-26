@@ -8,7 +8,7 @@ theory Shortest_Path imports
   "HOL-Library.Extended_Real"
 begin
 
-section {* Shortest Paths *}
+section \<open>Shortest Paths\<close>
 
 
 context wf_digraph begin
@@ -84,20 +84,20 @@ next
   show "y \<le> - \<infinity>"
   proof (subst ereal_infty_less_eq, rule ereal_bot)
     fix B :: real
-    obtain real_x where "a + real_x * c \<le> B" using `c < 0`
+    obtain real_x where "a + real_x * c \<le> B" using \<open>c < 0\<close>
       by atomize_elim
          (rule exI[where x="(- abs B -a)/c"], auto simp: field_simps)
     obtain x :: nat where "a + x * c \<le> B"
     proof (atomize_elim, intro exI[where x="nat(ceiling real_x)"] conjI)
       have "real (nat(ceiling real_x)) * c \<le> real_x * c"
-        using `c < 0` by (simp add: real_nat_ceiling_ge)
+        using \<open>c < 0\<close> by (simp add: real_nat_ceiling_ge)
       then show "a + nat(ceiling real_x) * c \<le> B"
-        using `a + real_x * c \<le> B` by simp
+        using \<open>a + real_x * c \<le> B\<close> by simp
     qed
     then show "y \<le> ereal B"
     proof -
       have "ereal (a + x * c) \<le> ereal B"
-        using `a + x * c \<le> B` by simp
+        using \<open>a + x * c \<le> B\<close> by simp
       with l_assm show ?thesis by (rule order_trans)
     qed
   qed
@@ -118,7 +118,7 @@ proof -
 
   have ext_p_cost: "\<And>n. awalk_cost f (ext_p n)
       = (awalk_cost f q + awalk_cost f r) + n * awalk_cost f c"
-    using `awalk w c w`
+    using \<open>awalk w c w\<close>
     by (auto simp: ext_p_def intro: mk_cycles_awalk_cost)
 
   from q_def r_def have "awlast u q = w"
@@ -140,7 +140,7 @@ proof -
   also have "\<dots> = (INF i\<in> UNIV. ereal (awalk_cost f (ext_p i)))"
     by (rule arg_cong[where f=Inf], auto)
   also have "\<dots> = - \<infinity>" unfolding ext_p_cost 
-    by (rule inf_over_nats[OF `awalk_cost f c < 0`])
+    by (rule inf_over_nats[OF \<open>awalk_cost f c < 0\<close>])
   finally show ?thesis unfolding \<mu>_def by simp
 qed
 
@@ -161,9 +161,9 @@ proof -
     then obtain w where p_props: "p = q @ r @ s" "awalk u q w" "awalk w r w" "awalk w s v"
       by (auto elim: awalk_cyc_decompE)
     then have "awalk u (q @ s) v"
-      using `awalk u p v` by (auto simp: awalk_appendI)
+      using \<open>awalk u p v\<close> by (auto simp: awalk_appendI)
     then have verts_ss: "set (awalk_verts u (q @ s)) \<subseteq> set (awalk_verts u p)"
-      using `awalk u p v` `p = q @ r @ s` by (auto simp: set_awalk_verts)
+      using \<open>awalk u p v\<close> \<open>p = q @ r @ s\<close> by (auto simp: set_awalk_verts)
 
     show ?case
     proof (cases "ereal (awalk_cost f (q @ s)) < path_\<mu>")
@@ -172,17 +172,17 @@ proof -
       then show ?thesis using verts_ss by auto
     next
       case False
-      note `awalk_cost f p < path_\<mu>`
+      note \<open>awalk_cost f p < path_\<mu>\<close>
       also have "path_\<mu> \<le> awalk_cost f (q @ s)"
         using False by simp
-      finally have "awalk_cost f r < 0" using `p = q @ r @ s` by simp
+      finally have "awalk_cost f r < 0" using \<open>p = q @ r @ s\<close> by simp
       moreover
-      have "w \<in> set (awalk_verts u q)" using `awalk u q w` by auto
+      have "w \<in> set (awalk_verts u q)" using \<open>awalk u q w\<close> by auto
       then have "w \<in> set (awalk_verts u p)"
-        using `awalk u p v` `awalk u q w` `p = q @ r @ s`
+        using \<open>awalk u p v\<close> \<open>awalk u q w\<close> \<open>p = q @ r @ s\<close>
         by (auto simp: set_awalk_verts)    
       ultimately
-      show ?thesis using `awalk w r w` by auto
+      show ?thesis using \<open>awalk w r w\<close> by auto
     qed
   qed
 qed
@@ -211,7 +211,7 @@ proof -
     by atomize_elim (auto simp: \<mu>_def INF_less_iff)
   then have "\<exists>w c. awalk w c w \<and> w \<in> set (awalk_verts u pw) \<and> awalk_cost f c < 0"
     by (intro walk_cheaper_path_imp_neg_cyc) (auto simp: path_\<mu>_def)
-  with `awalk u pw v` show ?thesis by auto
+  with \<open>awalk u pw v\<close> show ?thesis by auto
 qed
 
 lemma (in fin_digraph) no_neg_cyc_imp_no_neg_inf:
@@ -262,9 +262,9 @@ next
   also have "\<dots> \<le> awalk_cost f (q @ s)"
   proof -
     have "awalk u (q @ s) v"
-      using `awalk u p v` decomp_props by (auto dest!: awalk_ends_eqD)
+      using \<open>awalk u p v\<close> decomp_props by (auto dest!: awalk_ends_eqD)
     then have "set (awalk_verts u (q @ s)) \<subseteq> set (awalk_verts u p)"
-      using `awalk u p v` `p = q @ r @ s`
+      using \<open>awalk u p v\<close> \<open>p = q @ r @ s\<close>
       by (auto simp add: set_awalk_verts)
     then show ?thesis using decomp.prems by (intro decomp.hyps) auto
   qed
@@ -274,11 +274,11 @@ next
       using decomp by (auto elim: awalk_cyc_decompE)
     then have "w \<in> set (awalk_verts u q)" by auto
     then have "w \<in> set (awalk_verts u p)"
-      using `p = q @ r @ s` `awalk u p v` `awalk u q w`
+      using \<open>p = q @ r @ s\<close> \<open>awalk u p v\<close> \<open>awalk u q w\<close>
       by (auto simp add: set_awalk_verts)
-    then have "0 \<le> awalk_cost f r" using `awalk w r w`
+    then have "0 \<le> awalk_cost f r" using \<open>awalk w r w\<close>
       using decomp.prems by (auto simp: not_less)
-    then show ?thesis using `p = q @ r @ s` by simp
+    then show ?thesis using \<open>p = q @ r @ s\<close> by simp
   qed
   finally show ?case .
 qed
@@ -332,7 +332,7 @@ proof -
       by (rule INF_superset_mono) simp
   qed
   also have "\<dots> \<in> (\<lambda>p. ereal (awalk_cost f p)) ` set_paths"
-    using apaths_finite `set_paths \<noteq> {}`
+    using apaths_finite \<open>set_paths \<noteq> {}\<close>
     by (intro finite_INF_in) (auto simp: set_paths_def)
   finally show ?thesis
     by (simp add: set_paths_def image_def)
@@ -368,7 +368,7 @@ next
 
   have "awalk u [e] v"
     using e_props by (auto simp: arc_to_ends_def awalk_simps)
-  with `apath s p u`
+  with \<open>apath s p u\<close>
   have "awalk s (p @ [e]) v"
     by (auto simp: apath_def awalk_appendI)
   then have "\<mu> c s v \<le> awalk_cost c (p @ [e])"
@@ -387,15 +387,15 @@ proof -
   obtain p where p_path: "apath s p v"
     and p_cost: "\<mu> c s v = awalk_cost c p"
     using assms by (metis min_cost_awalk)
-  then obtain e p' where p'_props: "p = p' @ [e]" using `v \<noteq> s`
+  then obtain e p' where p'_props: "p = p' @ [e]" using \<open>v \<noteq> s\<close>
     by (cases p rule: rev_cases) (auto simp: apath_def)
   then obtain u where "awalk s p' u" "awalk u [e] v"
-    using `apath s p v` by (auto simp: apath_def)
+    using \<open>apath s p v\<close> by (auto simp: apath_def)
   then have mu_le: "\<mu> c s v \<le> \<mu> c s u + c e" and arc: "arc e (u,v)"
     using nonneg_arcs by (auto intro!: pos_cost_mu_triangle simp: arc_to_ends_def arc_def)
 
   have "\<mu> c s u + c e \<le> ereal (awalk_cost c p') + ereal (c e)"
-    using `awalk s p' u`
+    using \<open>awalk s p' u\<close>
     by (fast intro: add_right_mono min_cost_le_walk_cost)
   also have "\<dots> = awalk_cost c p" using p'_props by simp
   also have "\<dots> = \<mu> c s v" using p_cost by simp
@@ -431,18 +431,18 @@ next
   show "\<mu> c s v = Inf S"
   proof cases
     assume "S = {}"
-    then show ?thesis unfolding `\<mu> c s v = \<infinity>`
+    then show ?thesis unfolding \<open>\<mu> c s v = \<infinity>\<close>
       by (simp add: top_ereal_def)
   next
     assume "S \<noteq> {}"
     { fix x assume "x \<in> S"
       then obtain u e where "arc e (u,v)" and x_val: "x = \<mu> c s u + c e"
         unfolding S_def by auto
-      then have "\<not>s \<rightarrow>\<^sup>* u" using `\<not> s \<rightarrow>\<^sup>* v` by (metis reachable_arc_trans)
+      then have "\<not>s \<rightarrow>\<^sup>* u" using \<open>\<not> s \<rightarrow>\<^sup>* v\<close> by (metis reachable_arc_trans)
       then have "\<mu> c s u + c e= \<infinity>" by (simp add: shortest_path_inf)
       then have "x = \<infinity>" using x_val by simp }
-    then have "S = {\<infinity>}" using `S \<noteq> {}` by auto
-    then show ?thesis using `\<mu> c s v = \<infinity>` by (simp add: min_def)
+    then have "S = {\<infinity>}" using \<open>S \<noteq> {}\<close> by auto
+    then show ?thesis using \<open>\<mu> c s v = \<infinity>\<close> by (simp add: min_def)
   qed
 qed
 

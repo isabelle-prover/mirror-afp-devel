@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of execution over matrices represented as functions*}
+section\<open>Examples of execution over matrices represented as functions\<close>
 
 theory Examples_Echelon_Form_Abstract
 imports
@@ -14,10 +14,10 @@ imports
   "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
-text{*The definitions introduced in this file will be also used in 
+text\<open>The definitions introduced in this file will be also used in 
   the computations presented in file @{file "Examples_Echelon_Form_IArrays.thy"}. 
   Some of these definitions are not even used in this file since they are quite 
-  time consuming.*}
+  time consuming.\<close>
 
 definition test_real_6x4 :: "real^6^4"
   where "test_real_6x4 = list_of_list_to_matrix
@@ -49,7 +49,7 @@ definition test_real_3x3 :: "real^3^3"
 
 value "charpoly test_real_3x3"
 
-text{*We check that the Cayley-Hamilton theorem holds for this particular case:*}
+text\<open>We check that the Cayley-Hamilton theorem holds for this particular case:\<close>
 
 value "matrix_to_list_of_list (evalmat (charpoly test_real_3x3) test_real_3x3)"
 
@@ -58,7 +58,7 @@ definition test_int_3x3_02 :: "int^3^3"
 
 value "matrix_to_list_of_list (adjugate test_int_3x3_02)"
 
-text{*The following integer matrix is not invertible, so the result is @{text "None"}*}
+text\<open>The following integer matrix is not invertible, so the result is \<open>None\<close>\<close>
 
 value "inverse_matrix test_int_3x3_02"
 
@@ -67,7 +67,7 @@ definition test_int_3x3_03 :: "int^3^3"
 
 value "matrix_to_list_of_list (the (inverse_matrix test_int_3x3_03))"
 
-text{*We check that the previous inverse has been correctly computed:*}
+text\<open>We check that the previous inverse has been correctly computed:\<close>
 
 value "test_int_3x3_03 ** (the (inverse_matrix test_int_3x3_03)) = (mat 1::int^3^3)"
 
@@ -82,15 +82,15 @@ definition test_int_8x8 :: "int^8^8"
         [-2, 4,-2, 6, 7, 8, 0, 3],
         [ 7, 1, 3, 0,-9,-3, 4,-5]]"
 
-text{*SLOW; several minutes.*}
+text\<open>SLOW; several minutes.\<close>
 
 (*value "det test_int_8x8"
 
 value "matrix_to_list_of_list (echelon_form_of test_int_8x8 euclid_ext2)"*)
 
-text{*The following definitions will be used in 
+text\<open>The following definitions will be used in 
   file @{file "Examples_Echelon_Form_IArrays.thy"}.
-  Using the abstract version of matrices would produce lengthy computations.*}
+  Using the abstract version of matrices would produce lengthy computations.\<close>
 
 definition test_int_6x6 :: "int^6^6"
   where "test_int_6x6 = list_of_list_to_matrix 

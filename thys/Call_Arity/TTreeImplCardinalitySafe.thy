@@ -120,7 +120,7 @@ begin
     assume "ae x = up\<cdot>u"
 
     assume "isVal e"
-    hence "x \<notin> thunks \<Gamma>" using `map_of \<Gamma> x = Some e` by (metis thunksE)
+    hence "x \<notin> thunks \<Gamma>" using \<open>map_of \<Gamma> x = Some e\<close> by (metis thunksE)
     hence [simp]: "f_nxt (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) x = FBinds \<Gamma>\<cdot>ae" by (auto simp add: f_nxt_def)
 
     have "prognosis ae as u (\<Gamma>, e, S) = pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (Texp e\<cdot>u \<otimes>\<otimes> Fstack as S)))"
@@ -132,7 +132,7 @@ begin
     also have "\<dots> \<sqsubseteq> pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (nxt (single x \<otimes>\<otimes> Fstack as S) x \<otimes>\<otimes> Texp e\<cdot>u)))"
       by (intro pathsCard_mono' paths_mono substitute_mono2' both_mono1'  nxt_both_left) simp
     also have "\<dots> = pathsCard (paths (nxt (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (single x \<otimes>\<otimes> Fstack as S)) x))"
-      using `map_of \<Gamma> x = Some e` `ae x = up\<cdot>u` by (simp add: Texp.AnalBinds_lookup)
+      using \<open>map_of \<Gamma> x = Some e\<close> \<open>ae x = up\<cdot>u\<close> by (simp add: Texp.AnalBinds_lookup)
     also have "\<dots> \<sqsubseteq> record_call x \<cdot>(pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (single x \<otimes>\<otimes> Fstack as S))))"
       by (rule pathsCard_paths_nxt)
     also have "\<dots> \<sqsubseteq> record_call x \<cdot>(pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) ((Texp (Var x)\<cdot>a) \<otimes>\<otimes> Fstack as S))))"
@@ -146,7 +146,7 @@ begin
     assume "map_of \<Gamma> x = Some e"
     assume "ae x = up\<cdot>u"
     assume "\<not> isVal e"
-    hence "x \<in> thunks \<Gamma>" using `map_of \<Gamma> x = Some e` by (metis thunksI)
+    hence "x \<in> thunks \<Gamma>" using \<open>map_of \<Gamma> x = Some e\<close> by (metis thunksI)
     hence [simp]: "f_nxt (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) x = FBinds (delete x \<Gamma>)\<cdot>ae" 
       by (auto simp add: f_nxt_def Texp.AnalBinds_delete_to_fun_upd empty_is_bottom)
 
@@ -161,7 +161,7 @@ begin
     also have "\<dots> \<sqsubseteq> pathsCard (paths (substitute (FBinds (delete x \<Gamma>)\<cdot>ae) (thunks \<Gamma>) (nxt (single x \<otimes>\<otimes> Fstack as S) x  \<otimes>\<otimes> Texp e\<cdot>u)))"
       by (intro pathsCard_mono' paths_mono substitute_mono2' both_mono1'  nxt_both_left) simp
     also have "\<dots> = pathsCard (paths (nxt (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (single x \<otimes>\<otimes> Fstack as S)) x))"
-      using `map_of \<Gamma> x = Some e` `ae x = up\<cdot>u` by (simp add: Texp.AnalBinds_lookup)
+      using \<open>map_of \<Gamma> x = Some e\<close> \<open>ae x = up\<cdot>u\<close> by (simp add: Texp.AnalBinds_lookup)
     also have "\<dots> \<sqsubseteq> record_call x \<cdot>(pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) (single x \<otimes>\<otimes> Fstack as S))))"
       by (rule pathsCard_paths_nxt)
     also have "\<dots> \<sqsubseteq> record_call x \<cdot>(pathsCard (paths (substitute (FBinds \<Gamma>\<cdot>ae) (thunks \<Gamma>) ((Texp (Var x)\<cdot>a) \<otimes>\<otimes> Fstack as S))))"
@@ -178,14 +178,14 @@ begin
     assume [simp]: "x \<notin> domA \<Gamma>"
 
     have [simp]: "thunks ((x, e) # \<Gamma>) = thunks \<Gamma>" 
-      using `isVal e`
+      using \<open>isVal e\<close>
       by (auto simp add: thunks_Cons dest: set_mp[OF thunks_domA])
 
     have "fup\<cdot>(Texp e)\<cdot>(ae x) \<sqsubseteq> Texp e\<cdot>0" by (metis fup2 monofun_cfun_arg up_zero_top)
     hence "substitute ((FBinds \<Gamma>\<cdot>ae)(x := fup\<cdot>(Texp e)\<cdot>(ae x))) (thunks \<Gamma>) (Texp e\<cdot>0 \<otimes>\<otimes> Fstack as S) \<sqsubseteq> substitute ((FBinds \<Gamma>\<cdot>ae)(x := Texp e\<cdot>0)) (thunks \<Gamma>) (Texp e\<cdot>0 \<otimes>\<otimes> Fstack as S)"
       by (intro substitute_mono1' fun_upd_mono below_refl monofun_cfun_arg)
     also have "\<dots> = substitute (((FBinds \<Gamma>\<cdot>ae)(x := Texp e\<cdot>0))(x := empty)) (thunks \<Gamma>) (Texp e\<cdot>0 \<otimes>\<otimes> Fstack as S)"
-      using `repeatable (Texp e\<cdot>0)` by (rule substitute_remove_anyways, simp)
+      using \<open>repeatable (Texp e\<cdot>0)\<close> by (rule substitute_remove_anyways, simp)
     also have "((FBinds \<Gamma>\<cdot>ae)(x := Texp e\<cdot>0))(x := empty) = FBinds \<Gamma>\<cdot>ae"
       by (simp add: fun_upd_idem Texp.AnalBinds_not_there empty_is_bottom)
     finally
@@ -261,27 +261,27 @@ begin
     assume "edom ae \<subseteq> domA \<Gamma> \<union> upds S"
 
     have "domA \<Delta> \<inter> edom ae = {}"
-      using fresh_distinct[OF `atom \` domA \<Delta> \<sharp>* \<Gamma>`] fresh_distinct_fv[OF `atom \` domA \<Delta> \<sharp>* S`] 
-            `edom ae \<subseteq> domA \<Gamma> \<union> upds S` ups_fv_subset[of S]
+      using fresh_distinct[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>] fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* S\<close>] 
+            \<open>edom ae \<subseteq> domA \<Gamma> \<union> upds S\<close> ups_fv_subset[of S]
       by auto
 
     have const_on1:  "\<And> x. const_on (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (carrier ((FBinds \<Gamma>\<cdot>ae) x)) empty"
-      unfolding const_on_edom_disj using fresh_distinct_fv[OF `atom \` domA \<Delta> \<sharp>* \<Gamma>`]
+      unfolding const_on_edom_disj using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>]
       by (auto dest!: set_mp[OF carrier_FBinds] set_mp[OF Texp.edom_AnalBinds])
     have const_on2:  "const_on (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (carrier (Fstack as S)) empty"
-      unfolding const_on_edom_disj using fresh_distinct_fv[OF `atom \` domA \<Delta> \<sharp>* S`]
+      unfolding const_on_edom_disj using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* S\<close>]
       by (auto dest!: set_mp[OF carrier_FBinds] set_mp[OF carrier_Fstack] set_mp[OF Texp.edom_AnalBinds] set_mp[OF ap_fv_subset ])
     have  const_on3: "const_on (FBinds \<Gamma>\<cdot>ae) (- (- domA \<Delta>)) TTree.empty"
       and const_on4: "const_on (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) (domA \<Gamma>) TTree.empty"
-      unfolding const_on_edom_disj using fresh_distinct[OF `atom \` domA \<Delta> \<sharp>* \<Gamma>`]
+      unfolding const_on_edom_disj using fresh_distinct[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>]
       by (auto dest!:  set_mp[OF Texp.edom_AnalBinds])
 
     have disj1: "\<And> x. carrier ((FBinds \<Gamma>\<cdot>ae) x) \<inter> domA \<Delta> = {}"
-      using fresh_distinct_fv[OF `atom \` domA \<Delta> \<sharp>* \<Gamma>`]
+      using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>]
       by (auto dest: set_mp[OF carrier_FBinds])
     hence disj1': "\<And> x. carrier ((FBinds \<Gamma>\<cdot>ae) x) \<subseteq> - domA \<Delta>" by auto
     have disj2: "\<And> x. carrier (Fstack as S) \<inter> domA \<Delta> = {}"
-      using fresh_distinct_fv[OF `atom \` domA \<Delta> \<sharp>* S`] by (auto dest!: set_mp[OF carrier_Fstack])
+      using fresh_distinct_fv[OF \<open>atom ` domA \<Delta> \<sharp>* S\<close>] by (auto dest!: set_mp[OF carrier_Fstack])
     hence disj2': "carrier (Fstack as S) \<subseteq> - domA \<Delta>" by auto
     
 
@@ -290,9 +290,9 @@ begin
     have "(FBinds (\<Delta> @ \<Gamma>)\<cdot>(ae \<squnion> Aheap \<Delta> e\<cdot>a)) x = (FBinds \<Gamma>\<cdot>ae) x \<otimes>\<otimes> (FBinds \<Delta>\<cdot>(Aheap \<Delta> e\<cdot>a)) x"
     proof (cases "x \<in> domA \<Delta>")
       case True
-      have "map_of \<Gamma> x = None" using True fresh_distinct[OF `atom \` domA \<Delta> \<sharp>* \<Gamma>`] by (metis disjoint_iff_not_equal domA_def map_of_eq_None_iff)
+      have "map_of \<Gamma> x = None" using True fresh_distinct[OF \<open>atom ` domA \<Delta> \<sharp>* \<Gamma>\<close>] by (metis disjoint_iff_not_equal domA_def map_of_eq_None_iff)
       moreover
-      have "ae x = \<bottom>" using True `domA \<Delta> \<inter> edom ae = {}` by auto
+      have "ae x = \<bottom>" using True \<open>domA \<Delta> \<inter> edom ae = {}\<close> by auto
       ultimately
       show ?thesis using True 
           by (auto simp add: Texp.AnalBinds_lookup empty_is_bottom[symmetric] cong: option.case_cong)

@@ -1,4 +1,4 @@
-section {* \isaheader{Additions to Distinct Lists} *}
+section \<open>\isaheader{Additions to Distinct Lists}\<close>
 theory Dlist_add 
   imports 
   "HOL-Library.Dlist" 

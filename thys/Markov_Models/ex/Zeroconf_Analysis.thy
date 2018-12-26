@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Formalizing the IPv4-address allocation in ZeroConf *}
+section \<open>Formalizing the IPv4-address allocation in ZeroConf\<close>
 
 theory Zeroconf_Analysis
   imports "../Discrete_Time_Markov_Chain"
@@ -8,7 +8,7 @@ begin
 
 declare UNIV_bool[simp]
 
-subsection {* Definition of a ZeroConf allocation run *}
+subsection \<open>Definition of a ZeroConf allocation run\<close>
 
 datatype zc_state = start
                   | probe nat
@@ -18,7 +18,7 @@ datatype zc_state = start
 lemma inj_probe: "inj_on probe X"
   by (auto simp: inj_on_def)
 
-text {* Countability of @{typ zc_state} simplifies measurability of functions on @{typ zc_state}. *}
+text \<open>Countability of @{typ zc_state} simplifies measurability of functions on @{typ zc_state}.\<close>
 
 instance zc_state :: countable
 proof
@@ -63,7 +63,7 @@ lemma \<rho>_nonneg'[simp]: "0 \<le> \<rho> s t"
 sublocale MC_with_rewards \<tau> \<rho> "\<lambda>s. 0"
   proof qed (simp_all add: pair_measure_countable)
 
-subsection {* The allocation run is a rewarded DTMC *}
+subsection \<open>The allocation run is a rewarded DTMC\<close>
 
 abbreviation "E s \<equiv> set_pmf (\<tau> s)"
 
@@ -89,13 +89,13 @@ proof -
 qed
 
 lemma to_error: assumes "n \<le> N" shows "(probe n, error) \<in> acc"
-  using `n \<le> N`
+  using \<open>n \<le> N\<close>
 proof (induction rule: inc_induct)
   case (step n') with p show ?case
     by (intro rtrancl_trans[OF r_into_rtrancl step.IH]) auto
 qed (insert p, auto)
 
-subsection {* Probability of a erroneous allocation *}
+subsection \<open>Probability of a erroneous allocation\<close>
 
 definition "P_err s = \<P>(\<omega> in T s. ev (HLD {error}) (s ## \<omega>))"
 
@@ -133,7 +133,7 @@ qed (insert p q, auto intro!: integrable_measure_pmf_finite split: if_split_asm)
 lemma P_err_start: "P_err start = (q * p ^ Suc N) / (1 - q * (1 - p ^ Suc N))"
   by (simp add: P_err)
 
-subsection {* An allocation run terminates almost surely *}
+subsection \<open>An allocation run terminates almost surely\<close>
 
 lemma states_closed:
   assumes "s \<in> states"
@@ -155,7 +155,7 @@ proof (rule AE_T_ev_HLD)
       by auto }
 qed (rule finite_reached[OF s])
 
-subsection {* Expected runtime of an allocation run *}
+subsection \<open>Expected runtime of an allocation run\<close>
 
 definition "R s = (\<integral>\<^sup>+ \<omega>. reward_until {error, ok} s \<omega> \<partial>T s)"
 

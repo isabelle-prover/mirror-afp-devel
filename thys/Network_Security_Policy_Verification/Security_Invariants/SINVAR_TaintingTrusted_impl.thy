@@ -3,7 +3,7 @@ imports SINVAR_TaintingTrusted "../TopoS_Interface_impl"
 begin
 
 
-subsubsection {* SecurityInvariant Tainting with Trust List Implementation *}
+subsubsection \<open>SecurityInvariant Tainting with Trust List Implementation\<close>
 
 code_identifier code_module SINVAR_Tainting_impl => (Scala) SINVAR_Tainting
 
@@ -71,7 +71,7 @@ interpretation TaintingTrusted_impl:TopoS_List_Impl
 
 
 
-subsubsection {* TaintingTrusted packing *}
+subsubsection \<open>TaintingTrusted packing\<close>
   definition SINVAR_LIB_TaintingTrusted :: "('v::vertex, SINVAR_TaintingTrusted.taints) TopoS_packed" where
     "SINVAR_LIB_TaintingTrusted \<equiv> 
     \<lparr> nm_name = ''TaintingTrusted'', 
@@ -90,7 +90,7 @@ subsubsection {* TaintingTrusted packing *}
     apply(simp)
     by(unfold_locales)
 
-subsubsection{* Example *}
+subsubsection\<open>Example\<close>
 context
 begin
   private definition tainting_example :: "string list_graph" where

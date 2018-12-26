@@ -4,14 +4,14 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection {* Verification Examples with Automated VCG *}
+subsubsection \<open>Verification Examples with Automated VCG\<close>
 
 theory VC_KAT_Examples2
   imports VC_KAT "HOL-Eisbach.Eisbach"
 begin
 
-text {* The following simple tactic for verification condition generation has been 
-implemented with the Eisbach proof methods language. *}
+text \<open>The following simple tactic for verification condition generation has been 
+implemented with the Eisbach proof methods language.\<close>
 
 named_theorems hl_intro
 

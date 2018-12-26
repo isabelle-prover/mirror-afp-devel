@@ -3,11 +3,11 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Subalgebras of Kleene Relation Algebras *}
+section \<open>Subalgebras of Kleene Relation Algebras\<close>
 
-text {*
+text \<open>
 In this theory we show that the regular elements of a Stone-Kleene relation algebra form a Kleene relation subalgebra.
-*}
+\<close>
 
 theory Kleene_Relation_Subalgebras
 

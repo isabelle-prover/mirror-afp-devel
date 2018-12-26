@@ -58,7 +58,7 @@ lemma tauChainAppend[dest]:
   and     "P' \<Longrightarrow>\<^sub>\<tau> P''"
 
   shows "P \<Longrightarrow>\<^sub>\<tau> P''"
-using `P' \<Longrightarrow>\<^sub>\<tau> P''` `P \<Longrightarrow>\<^sub>\<tau> P'`
+using \<open>P' \<Longrightarrow>\<^sub>\<tau> P''\<close> \<open>P \<Longrightarrow>\<^sub>\<tau> P'\<close>
 by(induct rule: tauChainInduct) auto
 
 lemma tauChainSum1:

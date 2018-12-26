@@ -1,10 +1,10 @@
-section {* Transition Systems *}
+section \<open>Transition Systems\<close>
 
 theory Transition_System
 imports "../Basic/Sequence"
 begin
 
-  subsection {* Universal Transition Systems *}
+  subsection \<open>Universal Transition Systems\<close>
 
   locale transition_system_universal =
     fixes execute :: "'transition \<Rightarrow> 'state \<Rightarrow> 'state"
@@ -18,7 +18,7 @@ begin
 
   end
 
-  subsection {* Transition Systems *}
+  subsection \<open>Transition Systems\<close>
 
   locale transition_system =
     transition_system_universal execute
@@ -116,7 +116,7 @@ begin
 
   end
 
-  subsection {* Transition Systems with Initial States *}
+  subsection \<open>Transition Systems with Initial States\<close>
 
   locale transition_system_initial =
     transition_system execute enabled

@@ -49,7 +49,7 @@ begin
         case (tau_step P P' P'')
         then obtain n where "P' \<Turnstile> tau_steps x n"
           by meson
-        with `P \<rightarrow> \<langle>\<tau>,P'\<rangle>` have "P \<Turnstile> tau_steps x (Suc n)"
+        with \<open>P \<rightarrow> \<langle>\<tau>,P'\<rangle>\<close> have "P \<Turnstile> tau_steps x (Suc n)"
           by (auto simp add: valid_Act_fresh[OF bn_tau_fresh])
         then show ?case
           by meson
@@ -67,28 +67,28 @@ begin
     case True show ?thesis
     proof
       assume "?l"
-      with `\<alpha> = \<tau>` obtain P' where trans: "P \<Rightarrow> P'" and valid: "P' \<Turnstile> x"
+      with \<open>\<alpha> = \<tau>\<close> obtain P' where trans: "P \<Rightarrow> P'" and valid: "P' \<Turnstile> x"
         by (metis valid_weak_tau_modality weak_action_modality_tau)
       from trans have "P \<Rightarrow>\<langle>\<tau>\<rangle> P'"
         by simp
-      with `\<alpha> = \<tau>` and valid show "?r"
+      with \<open>\<alpha> = \<tau>\<close> and valid show "?r"
         by blast
     next
       assume "?r"
       then obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<Rightarrow>\<langle>\<alpha>'\<rangle> P'" and valid: "P' \<Turnstile> x'"
         by blast
       from eq have "\<alpha>' = \<tau> \<and> x' = x"
-        using `\<alpha> = \<tau>` by simp
+        using \<open>\<alpha> = \<tau>\<close> by simp
       with trans and valid have "P \<Rightarrow> P'" and "P' \<Turnstile> x"
         by simp+
-      with `\<alpha> = \<tau>` show "?l"
+      with \<open>\<alpha> = \<tau>\<close> show "?l"
         by (metis valid_weak_tau_modality weak_action_modality_tau)
     qed
   next
     case False show ?thesis
     proof
       assume "?l"
-      with `\<alpha> \<noteq> \<tau>` obtain Q where trans: "P \<Rightarrow> Q" and valid: "Q \<Turnstile> Act \<alpha> (weak_tau_modality x)"
+      with \<open>\<alpha> \<noteq> \<tau>\<close> obtain Q where trans: "P \<Rightarrow> Q" and valid: "Q \<Turnstile> Act \<alpha> (weak_tau_modality x)"
         by (metis valid_weak_tau_modality weak_action_modality_not_tau)
       from valid obtain \<alpha>' x' Q' where eq: "Act \<alpha> (weak_tau_modality x) = Act \<alpha>' x'" and trans': "Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and valid': "Q' \<Turnstile> x'"
         by (metis valid_Act)
@@ -110,7 +110,7 @@ begin
       assume "?r"
       then obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<Rightarrow>\<langle>\<alpha>'\<rangle> P'" and valid: "P' \<Turnstile> x'"
         by blast
-      with `\<alpha> \<noteq> \<tau>` have \<alpha>': "\<alpha>' \<noteq> \<tau>"
+      with \<open>\<alpha> \<noteq> \<tau>\<close> have \<alpha>': "\<alpha>' \<noteq> \<tau>"
         using eq by (metis Act_tau_eq_iff)
       with trans obtain Q Q' where trans': "P \<Rightarrow> Q" and trans'': "Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and trans''': "Q' \<Rightarrow> P'"
         by (meson observable_transition_def weak_transition_def)
@@ -148,7 +148,7 @@ begin
           by (metis weak_transition_def observable_transition_def)
         have "finite (bn \<alpha>')"
           by (fact bn_finite)
-        moreover note `finite (supp X)`
+        moreover note \<open>finite (supp X)\<close>
         moreover have "finite (supp (Act \<alpha>' x', \<langle>\<alpha>',Q'\<rangle>))"
           by (metis finite_Diff finite_UnI finite_supp supp_Pair supp_abs_residual_pair)
         moreover have "bn \<alpha>' \<sharp>* (Act \<alpha>' x', \<langle>\<alpha>',Q'\<rangle>)"

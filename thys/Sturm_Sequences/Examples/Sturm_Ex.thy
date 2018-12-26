@@ -1,13 +1,13 @@
-section {* Example usage of the ``sturm'' method *}
+section \<open>Example usage of the ``sturm'' method\<close>
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Ex
 imports "../Sturm"
 begin
 
-text {*
+text \<open>
   In this section, we give a variety of statements about real polynomials that can b
   proven by the \emph{sturm} method.
-*}
+\<close>
 
 lemma
  "\<forall>x::real. x^2 + 1 \<noteq> 0"
@@ -42,7 +42,7 @@ lemma "\<forall>x::real. x*x \<noteq> 0 \<or> x*x - 1 \<noteq> 2*x" by sturm
 
 lemma "(x::real)*x+1 \<noteq> 0 \<and> (x^2+1)*(x^2+2) \<noteq> 0" by sturm
 
-text{*3 examples related to continued fraction approximants to exp: LCP*}
+text\<open>3 examples related to continued fraction approximants to exp: LCP\<close>
 lemma fixes x::real
   shows "-7.29347719 \<le> x \<Longrightarrow> 0 < x^5 + 30*x^4 + 420*x^3 + 3360*x^2 + 15120*x + 30240"
 by sturm

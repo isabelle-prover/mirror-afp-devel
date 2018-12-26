@@ -4,22 +4,22 @@
     License:     LGPL
 *)
 
-section {* Store *}
+section \<open>Store\<close>
 
 theory Store
 imports Location
 begin
 
-subsection {* New *}
-text {* The store provides a uniform interface to allocate new objects and
+subsection \<open>New\<close>
+text \<open>The store provides a uniform interface to allocate new objects and
 new arrays. The constructors of this datatype distinguish both cases.
- *}
+\<close>
 datatype New = new_instance CTypeId    \<comment> \<open>New object, can only be of a concrete class type\<close> 
              | new_array Arraytype nat \<comment> \<open>New array with given size\<close>
 
-text {* The discriminator @{text "isNewArr"} can be used to distinguish both 
+text \<open>The discriminator \<open>isNewArr\<close> can be used to distinguish both 
 kinds of newly created elements.
-*}
+\<close>
 
 definition isNewArr :: "New \<Rightarrow> bool" where
 "isNewArr t = (case t of 
@@ -31,8 +31,8 @@ lemma isNewArr_simps [simp]:
 "isNewArr (new_array T l)  = True"
   by (simp_all add: isNewArr_def)
 
-text {* The function @{text "typeofNew"} yields the type of the newly created
-element. *}
+text \<open>The function \<open>typeofNew\<close> yields the type of the newly created
+element.\<close>
 
 definition typeofNew :: "New \<Rightarrow> Javatype" where
 "typeofNew n = (case n of
@@ -44,26 +44,26 @@ lemma typeofNew_simps:
 "typeofNew (new_array T l)  = ArrT T"
   by (simp_all add: typeofNew_def)
 
-subsection {* The Definition of the Store *}
+subsection \<open>The Definition of the Store\<close>
 
-text {* In our store model, all objects\footnote{In the following, the term ``objects'' 
+text \<open>In our store model, all objects\footnote{In the following, the term ``objects'' 
 includes arrays. This keeps the explanations compact.}
 of all classes exist at all times, but only those objects that have already been allocated
 are alive. Objects cannot be deallocated, thus an object that once gained
 the aliveness status cannot lose it later on.
 \\[12pt]
  To model the store, we need two functions that give us fresh object Id's for 
-the allocation of new objects (function @{text "newOID"}) and arrays
-(function @{text "newAID"}) as well as a function that maps locations to
-their contents (function @{text "vals"}). *}
+the allocation of new objects (function \<open>newOID\<close>) and arrays
+(function \<open>newAID\<close>) as well as a function that maps locations to
+their contents (function \<open>vals\<close>).\<close>
 
 record StoreImpl = newOID :: "CTypeId \<Rightarrow> ObjectId"
                    newAID :: "Arraytype \<Rightarrow> ObjectId"
                    vals   :: "Location \<Rightarrow> Value"
 
-text {* The function @{text "aliveImpl"} determines for a given value whether
+text \<open>The function \<open>aliveImpl\<close> determines for a given value whether
 it is alive in a given store.
-*}
+\<close>
 
 definition aliveImpl::"Value \<Rightarrow> StoreImpl \<Rightarrow> bool" where
 "aliveImpl x s = (case x of
@@ -76,13 +76,13 @@ definition aliveImpl::"Value \<Rightarrow> StoreImpl \<Rightarrow> bool" where
                   | nullV    \<Rightarrow> True)"
 
 
-text {* The store itself is defined as new type. The store ensures
+text \<open>The store itself is defined as new type. The store ensures
 and maintains the following 
 properties: All stored values are alive; for all locations whose values are
 not alive, the store yields the location type's init value; and
 all stored values are of the correct type (i.e.~of the type of the location
 they are stored in).
-*}
+\<close>
 
 definition "Store = {s. (\<forall> l. aliveImpl (vals s l) s) \<and> 
                   (\<forall> l. \<not> aliveImpl (ref l) s \<longrightarrow> vals s l = init (ltype l)) \<and>
@@ -96,22 +96,22 @@ typedef Store = Store
   apply (auto simp add: aliveImpl_def init_def NullT_leaf_array split: Javatype.splits)
   done
 
-text {* One might also model the Store as axiomatic type class and prove that the type StoreImpl belongs
+text \<open>One might also model the Store as axiomatic type class and prove that the type StoreImpl belongs
 to this type class. This way, a clearer separation between the axiomatic description of the store and its
 properties on the one hand and the realization that has been chosen in this formalization on the other hand
 could be achieved. Additionally, it would be easier to make use of  different store implementations that
 might have different additional features. This separation remains to be performed as future work.
-*}
+\<close>
 
-subsection{* The Store Interface *}
+subsection\<open>The Store Interface\<close>
 
-text {* The Store interface consists of five functions:
-@{text "access"} to read the value that is stored at a location;
-@{text "alive"} to test whether a value is alive in the store;
-@{text "alloc"} to allocate a new element in the store;
-@{text "new"} to read the value of a newly allocated element;
-@{text "update"} to change the value that is stored at a location.
- *}
+text \<open>The Store interface consists of five functions:
+\<open>access\<close> to read the value that is stored at a location;
+\<open>alive\<close> to test whether a value is alive in the store;
+\<open>alloc\<close> to allocate a new element in the store;
+\<open>new\<close> to read the value of a newly allocated element;
+\<open>update\<close> to change the value that is stored at a location.
+\<close>
 
 consts access:: "Store \<Rightarrow> Location \<Rightarrow> Value"  ("_@@_" [71,71] 70)     
        alive:: "Value \<Rightarrow> Store \<Rightarrow> bool"
@@ -132,14 +132,14 @@ translations
   "s\<langle>c\<rangle>"                             == "CONST alloc s c" 
  
 
-text {* With this syntactic setup we can write chains of (array) updates and 
+text \<open>With this syntactic setup we can write chains of (array) updates and 
 allocations like in the
 following term  
 @{term "s\<langle>new_instance Node,x:=y,z:=intgV 3,new_array IntgAT 3,a.[i]:=intgV 4,k:=boolV True\<rangle>"}. 
-*}
+\<close>
 
-text {* In the following, the definitions of the five store interface functions and some lemmas 
-about them are given. *}
+text \<open>In the following, the definitions of the five store interface functions and some lemmas 
+about them are given.\<close>
 
 overloading alive \<equiv> alive
 begin
@@ -195,19 +195,19 @@ definition new
 
 end
 
-text {* The predicate @{text "wts"} tests whether the store is well-typed. *}
+text \<open>The predicate \<open>wts\<close> tests whether the store is well-typed.\<close>
 
 definition
 wts :: "Store \<Rightarrow> bool" where
 "wts OS = (\<forall> (l::Location) . (typeof (OS@@l)) \<le> (ltype l))"
 
 
-subsection {* Derived Properties of the Store *}
+subsection \<open>Derived Properties of the Store\<close>
 
-text {* In this subsection, a number of lemmas formalize various properties of the Store.
+text \<open>In this subsection, a number of lemmas formalize various properties of the Store.
 Especially the 13 axioms are proven that must hold for a modelling of a Store 
 (see \cite[p. 45]{Poetzsch-Heffter97specification}). They are labeled with
-Store1 to Store13.  *}
+Store1 to Store13.\<close>
 
 lemma alive_init [simp,intro]: "alive (init T) s"
   by (cases T) (simp_all add: alive_def aliveImpl_def) 
@@ -244,12 +244,12 @@ proof -
     by (auto simp add: access_def Store_def)
 qed
 
-text {* The store is well-typed by construction. *}
+text \<open>The store is well-typed by construction.\<close>
 lemma always_welltyped_store: "wts OS"
   by (simp add: wts_def access_type_safe)
 
 
-text {* Store8 *}
+text \<open>Store8\<close>
 lemma alive_access [simp,intro]: "alive (s@@l) s"
 proof -
   have "Rep_Store s \<in> Store"
@@ -258,7 +258,7 @@ proof -
     by (auto simp add: access_def Store_def alive_def aliveImpl_def)
 qed
 
-text {* Store3 *}
+text \<open>Store3\<close>
 lemma access_unalive [simp]: 
   assumes unalive: "\<not> alive (ref l) s" 
   shows "s@@l = init (ltype l)"
@@ -344,7 +344,7 @@ proof -
     by (simp add: Store_def)
 qed
 
-text {* Store6 *}
+text \<open>Store6\<close>
 lemma alive_update_invariant [simp]: "alive x (s\<langle>l:=y\<rangle>) = alive x s"
 proof (rule update_induct)
   show "alive x s = alive x s"..
@@ -360,7 +360,7 @@ next
     by (simp add: alive_def aliveImpl_def split: Value.split)
 qed
 
-text {* Store1 *}
+text \<open>Store1\<close>
 lemma access_update_other [simp]: 
   assumes neq_l_m: "l \<noteq> m" 
   shows "s\<langle>l:=x\<rangle>@@m = s@@m"
@@ -377,7 +377,7 @@ next
     by (auto simp add: access_def)
 qed
 
-text {* Store2 *}
+text \<open>Store2\<close>
 lemma update_access_same [simp]: 
   assumes alive_l: "alive (ref l) s" 
   assumes alive_x: "alive x s" 
@@ -396,7 +396,7 @@ proof -
     by (simp add: update_def)
 qed
 
-text {* Store4 *}
+text \<open>Store4\<close>
 lemma update_unalive_val [simp,intro]: "\<not> alive x s \<Longrightarrow> s\<langle>l:=x\<rangle> = s"
   by (simp add: update_def)
 
@@ -407,11 +407,11 @@ lemma update_type_mismatch [simp,intro]: "\<not> typeof x \<le> ltype l \<Longri
   by (simp add: update_def)
 
 
-text {* Store9 *}
+text \<open>Store9\<close>
 lemma alive_primitive [simp,intro]: "isprimitive (typeof x) \<Longrightarrow> alive x s"
   by (cases x) (simp_all)
 
-text {* Store10 *}
+text \<open>Store10\<close>
 lemma new_unalive_old_Store [simp]: "\<not> alive (new s t) s"
   by (cases t) (simp_all add: alive_def aliveImpl_def new_def)
 
@@ -545,9 +545,9 @@ next
 qed
 
 
-text {* The following three lemmas are helper lemmas that are not related to the store theory.
+text \<open>The following three lemmas are helper lemmas that are not related to the store theory.
 They might as well be stored in a separate helper theory.
-*}
+\<close>
 
 lemma le_Suc_eq: "(\<forall>a. (a < Suc n) = (a < Suc m)) = (\<forall>a. (a < n) = (a < m))"
  (is "(\<forall>a. ?A a) = (\<forall> a. ?B a)")
@@ -576,11 +576,11 @@ qed
 lemma all_le_eq: "(\<forall> a::nat. (a < d) = (a < c)) = (d = c)"
 using all_le_eq_imp_eq by auto
 
-text {* Store11 *}
+text \<open>Store11\<close>
 lemma typeof_new: "typeof (new s t) = typeofNew t"
   by (cases t) (simp_all add: new_def typeofNew_def)
 
-text {* Store12 *}
+text \<open>Store12\<close>
 lemma new_eq: "(new s1 t = new s2 t) = 
                  (\<forall> x. typeof x = typeofNew t \<longrightarrow> alive x s1 = alive x s2)"
 by (cases t)
@@ -604,7 +604,7 @@ next
                       alloc_new_array_in_Store [THEN Abs_Store_inverse])
 qed
   
-text {* Store7 *} 
+text \<open>Store7\<close> 
 lemma alive_alloc_exhaust: "alive x (s\<langle>t\<rangle>) = (alive x s \<or> (x = new s t))"
 proof 
   assume alive_alloc: "alive x (s\<langle>t\<rangle>)"
@@ -680,8 +680,8 @@ proof -
     by (subst access_def) (simp)
 qed
 
-text {* Store5. We have to take into account that the length of an array
-is changed during allocation. *}
+text \<open>Store5. We have to take into account that the length of an array
+is changed during allocation.\<close>
 lemma access_alloc [simp]:
   assumes no_arr_len_new: "isNewArr t \<longrightarrow> l \<noteq> arr_len (new s t)"
   shows "s\<langle>t\<rangle>@@l = s@@l"
@@ -730,7 +730,7 @@ proof -
   qed
 qed
    
-text {* Store13 *}
+text \<open>Store13\<close>
 lemma Store_eqI: 
   assumes eq_alive: "\<forall> x. alive x s1 = alive x s2" 
   assumes eq_access: "\<forall> l. s1@@l = s2@@l"
@@ -803,9 +803,9 @@ next
   qed
 qed
 
-text {* Lemma 3.1 in [Poetzsch-Heffter97]. The proof of this lemma is quite an
+text \<open>Lemma 3.1 in [Poetzsch-Heffter97]. The proof of this lemma is quite an
 impressive demostration of readable Isar proofs since it closely follows the
-textual proof. *}
+textual proof.\<close>
 lemma comm: 
   assumes neq_l_new: "ref l \<noteq> new s t"
   assumes neq_x_new: "x \<noteq> new s t"

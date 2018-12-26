@@ -8,9 +8,9 @@ theory Plane1
 imports Plane
 begin
 
-text{* This is an optimized definition of plane graphs and the one we
+text\<open>This is an optimized definition of plane graphs and the one we
 adopt as our point of reference. In every step only one fixed nonfinal
-face (the smallest one) and one edge in that face are picked. *}
+face (the smallest one) and one edge in that face are picked.\<close>
 
 
 definition minimalFace :: "face list \<Rightarrow> face" where

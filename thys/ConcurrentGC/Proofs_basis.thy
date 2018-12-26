@@ -16,16 +16,16 @@ imports
 begin
 
 (*>*)
-subsection{* Functions and predicates *}
+subsection\<open>Functions and predicates\<close>
 
-text{*
+text\<open>
 
 We define a pile of predicates and accessor functions for the
 process's local states. One might hope that a more sophisticated
 approach would automate all of this (cf
 \citet{DBLP:journals/entcs/SchirmerW09}).
 
-*}
+\<close>
 
 abbreviation "is_mw_Mark w \<equiv> \<exists>r fl. w = mw_Mark r fl"
 abbreviation "is_mw_Mutate w \<equiv> \<exists>r f r'. w = mw_Mutate r f r'"
@@ -142,7 +142,7 @@ abbreviation "sys_W s \<equiv> W (s sys)"
 abbreviation atS_sys :: "location set \<Rightarrow> ('field, 'mut, 'ref) lsts_pred \<Rightarrow> ('field, 'mut, 'ref) gc_pred" where
   "atS_sys ls P \<equiv> atS sys ls imp LSTP P"
 
-text{* Projections on TSO buffers. *}
+text\<open>Projections on TSO buffers.\<close>
 
 abbreviation (input) "tso_unlocked s \<equiv> mem_lock (s sys) = None"
 abbreviation (input) "tso_locked_by p s \<equiv> mem_lock (s sys) = Some p"
@@ -158,13 +158,13 @@ abbreviation (input) "tso_pending_phase p \<equiv> tso_pending p is_mw_Phase"
 
 abbreviation (input) "tso_no_pending_marks \<equiv> ALLS p. list_null (tso_pending_mark p)"
 
-text{*
+text\<open>
 
 A somewhat-useful abstraction of the heap, following l4.verified,
 which asserts that there is an object at the given reference with the
 given property.
 
-*}
+\<close>
 
 definition obj_at :: "(('field, 'ref) object \<Rightarrow> bool) \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "obj_at P r \<equiv> \<lambda>s. case sys_heap s r of None \<Rightarrow> False | Some obj \<Rightarrow> P obj"
@@ -178,22 +178,22 @@ definition valid_null_ref :: "'ref option \<Rightarrow> ('field, 'mut, 'ref) lst
 abbreviation pred_points_to :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" (infix "points'_to" 51) where
   "x points_to y \<equiv> \<lambda>s. obj_at (\<lambda>obj. y \<in> ran (obj_fields obj)) x s"
 
-text{*
+text\<open>
 
 We use Isabelle's standard transitive-reflexive closure to define
 reachability through the heap.
 
-*}
+\<close>
 
 abbreviation pred_reaches :: "'ref \<Rightarrow> 'ref \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" (infix "reaches" 51) where
   "x reaches y \<equiv> \<lambda>s. (\<lambda>x y. (x points_to y) s)\<^sup>*\<^sup>* x y"
 
-text{*
+text\<open>
 
-The predicate @{text "obj_at_field_on_heap"} asserts that if there is
-an object at @{text "r.f"} on the heap, then it satisfies @{text "P"}.
+The predicate \<open>obj_at_field_on_heap\<close> asserts that if there is
+an object at \<open>r.f\<close> on the heap, then it satisfies \<open>P\<close>.
 
-*}
+\<close>
 
 definition obj_at_field_on_heap :: "('ref \<Rightarrow> bool) \<Rightarrow> 'ref \<Rightarrow> 'field \<Rightarrow> ('field, 'mut, 'ref) lsts_pred" where
   "obj_at_field_on_heap P r f \<equiv> \<lambda>s.
@@ -204,7 +204,7 @@ definition obj_at_field_on_heap :: "('ref \<Rightarrow> bool) \<Rightarrow> 'ref
 
 (* **************************************** *)
 
-subsection{* Garbage collector locations. *}
+subsection\<open>Garbage collector locations.\<close>
 
 definition idle_locs :: "location set" where
   "idle_locs \<equiv> prefixed ''idle''"
@@ -222,17 +222,17 @@ definition sweep_locs :: "location set" where
   "sweep_locs \<equiv> prefixed ''sweep''"
 (*<*)
 
-local_setup {* Cimp.locset @{thm "idle_locs_def"} *}
-local_setup {* Cimp.locset @{thm "init_locs_def"} *}
-local_setup {* Cimp.locset @{thm "mark_locs_def"} *}
-local_setup {* Cimp.locset @{thm "mark_loop_locs_def"} *}
-local_setup {* Cimp.locset @{thm "sweep_locs_def"} *}
+local_setup \<open>Cimp.locset @{thm "idle_locs_def"}\<close>
+local_setup \<open>Cimp.locset @{thm "init_locs_def"}\<close>
+local_setup \<open>Cimp.locset @{thm "mark_locs_def"}\<close>
+local_setup \<open>Cimp.locset @{thm "mark_loop_locs_def"}\<close>
+local_setup \<open>Cimp.locset @{thm "sweep_locs_def"}\<close>
 
 (*>*)
 (* **************************************** *)
 (*<*)
 
-text{* Lemma bucket. *}
+text\<open>Lemma bucket.\<close>
 
 lemma obj_at_split:
   "Q (obj_at P r s) = ((sys_heap s r = None \<longrightarrow> Q False) \<and> (\<forall>obj. sys_heap s r = Some obj \<longrightarrow> Q (P obj)))"

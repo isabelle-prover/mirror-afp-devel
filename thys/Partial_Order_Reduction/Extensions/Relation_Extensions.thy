@@ -1,4 +1,4 @@
-section {* Relations *}
+section \<open>Relations\<close>
 
 theory Relation_Extensions
 imports

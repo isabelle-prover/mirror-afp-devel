@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JMM heap implementation 1 *}
+section \<open>JMM heap implementation 1\<close>
 
 theory JMM_Type
 imports 
@@ -11,11 +11,11 @@ imports
   JMM_Heap
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-text {*
+text \<open>
   The JMM heap only stores type information.
-*}
+\<close>
 
 type_synonym 'addr JMM_heap = "'addr \<rightharpoonup> htype"
 
@@ -75,7 +75,7 @@ notation jmm.addr_loc_type ("_,_ \<turnstile>jmm _@_ : _" [50, 50, 50, 50, 50] 5
 notation jmm.confs ("_,_ \<turnstile>jmm _ [:\<le>] _"  [51,51,51,51] 50)
 notation jmm.tconf ("_,_ \<turnstile>jmm _ \<surd>t" [51,51,51] 50)
 
-text {* Now a variation of the JMM with a different read operation that permits to read only type-conformant values *}
+text \<open>Now a variation of the JMM with a different read operation that permits to read only type-conformant values\<close>
 
 interpretation jmm': heap_base
   addr2thread_id thread_id2addr
@@ -89,9 +89,9 @@ notation jmm'.addr_loc_type ("_,_ \<turnstile>jmm' _@_ : _" [50, 50, 50, 50, 50]
 notation jmm'.confs ("_,_ \<turnstile>jmm' _ [:\<le>] _"  [51,51,51,51] 50)
 notation jmm'.tconf ("_,_ \<turnstile>jmm' _ \<surd>t" [51,51,51] 50)
 
-subsection {* Heap locale interpretations *}
+subsection \<open>Heap locale interpretations\<close>
 
-subsection {* Locale @{text heap} *}
+subsection \<open>Locale \<open>heap\<close>\<close>
 
 lemma jmm_heap: "heap addr2thread_id thread_id2addr jmm_allocate jmm_typeof_addr jmm_heap_write P"
 proof
@@ -132,7 +132,7 @@ by(rule jmm'_heap)
 
 declare jmm'.typeof_addr_thread_id2_addr_addr2thread_id [simp del]
 
-subsection {* Locale @{text "heap_conf"} *}
+subsection \<open>Locale \<open>heap_conf\<close>\<close>
 
 interpretation jmm: heap_conf_base
   addr2thread_id thread_id2addr
@@ -202,7 +202,7 @@ interpretation jmm': heap_conf
   for P
 by(rule jmm'_heap_conf)
 
-subsection {* Locale @{text heap_progress} *}
+subsection \<open>Locale \<open>heap_progress\<close>\<close>
 
 lemma jmm_heap_progress:
   "heap_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_read jmm_heap_write (jmm_hconf P) P"
@@ -252,7 +252,7 @@ interpretation jmm': heap_progress
   for P
 by(rule jmm'_heap_progress)
 
-subsection {* Locale @{text heap_conf_read} *}
+subsection \<open>Locale \<open>heap_conf_read\<close>\<close>
 
 lemma jmm'_heap_conf_read:
   "heap_conf_read addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr (jmm.heap_read_typed P) jmm_heap_write (jmm'_hconf P) P"
@@ -274,7 +274,7 @@ interpretation jmm': heap_typesafe
   for P
 ..
 
-subsection {* Locale @{text allocated_heap} *}
+subsection \<open>Locale \<open>allocated_heap\<close>\<close>
 
 lemma jmm_allocated_heap: 
   "allocated_heap addr2thread_id thread_id2addr jmm_empty jmm_allocate jmm_typeof_addr jmm_heap_write jmm_allocated P"
@@ -311,7 +311,7 @@ interpretation jmm': allocated_heap
   for P
 by(rule jmm'_allocated_heap)
 
-subsection {* Syntax translations *}
+subsection \<open>Syntax translations\<close>
 
 notation jmm'.external_WT' ("_,_ \<turnstile>jmm' (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
 

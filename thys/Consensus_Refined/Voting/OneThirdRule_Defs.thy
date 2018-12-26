@@ -1,52 +1,52 @@
-section {* The OneThirdRule Algorithm *}
+section \<open>The OneThirdRule Algorithm\<close>
 
 theory OneThirdRule_Defs
 imports Heard_Of.HOModel "../Consensus_Types"
 begin
 
-text {* The contents of this file have been taken almost verbatim from the
+text \<open>The contents of this file have been taken almost verbatim from the
   Heard Of Model AFP entry. The only difference is that the types have been
-  changed. *}
+  changed.\<close>
 
 
-subsection {* Model of the algorithm *}
+subsection \<open>Model of the algorithm\<close>
 
-text {*
-  The state of each process consists of two fields: @{text last_vote} holds
-  the current value proposed by the process and @{text decision} the
+text \<open>
+  The state of each process consists of two fields: \<open>last_vote\<close> holds
+  the current value proposed by the process and \<open>decision\<close> the
   value (if any, hence the option type) it has decided.
-*}
+\<close>
 
 record 'val pstate =
   last_vote :: "'val"
   decision :: "'val option"
 
-text {*
-  The initial value of field @{text last_vote} is unconstrained, but no decision
+text \<open>
+  The initial value of field \<open>last_vote\<close> is unconstrained, but no decision
   has been taken initially.
-*}
+\<close>
 
 definition OTR_initState where
   "OTR_initState p st \<equiv> decision st = None"
 
-text {*
-  Given a vector @{text msgs} of values (possibly null) received from 
+text \<open>
+  Given a vector \<open>msgs\<close> of values (possibly null) received from 
   each process, @{term "HOV msgs v"} denotes the set of processes from
-  which value @{text v} was received.
-*}
+  which value \<open>v\<close> was received.
+\<close>
 
 definition HOV :: "(process \<Rightarrow> 'val option) \<Rightarrow> 'val \<Rightarrow> process set" where
   "HOV msgs v \<equiv> { q . msgs q = Some v }"
 
-text {*
+text \<open>
   @{term "MFR msgs v"} (``most frequently received'') holds for
-  vector @{text msgs} if no value has been received more frequently
-  than @{text v}.
+  vector \<open>msgs\<close> if no value has been received more frequently
+  than \<open>v\<close>.
 
   Some such value always exists, since there is only a finite set of
   processes and thus a finite set of possible cardinalities of the
   sets @{term "HOV msgs v"}.
-*}
+\<close>
 
 definition MFR :: "(process \<Rightarrow> 'val option) \<Rightarrow> 'val \<Rightarrow> bool" where
   "MFR msgs v \<equiv> \<forall>w. card (HOV msgs w) \<le> card (HOV msgs v)"
@@ -69,10 +69,10 @@ proof -
   thus ?thesis ..
 qed
 
-text {*
+text \<open>
   Also, if a process has heard from at least one other process,
   the most frequently received values are among the received messages.
-*}
+\<close>
 
 lemma MFR_in_msgs:
   assumes HO:"HOs m p \<noteq> {}"
@@ -94,27 +94,27 @@ proof -
     by (auto simp: HOV_def HOrcvdMsgs_def)
 qed
 
-text {*
-  @{term "TwoThirds msgs v"} holds if value @{text v} has been
+text \<open>
+  @{term "TwoThirds msgs v"} holds if value \<open>v\<close> has been
   received from more than $2/3$ of all processes.
-*}
+\<close>
 
 definition TwoThirds where
   "TwoThirds msgs v \<equiv> (2*N) div 3 < card (HOV msgs v)"
 
-text {*
+text \<open>
   The next-state relation of algorithm \emph{One-Third Rule} for every process
   is defined as follows:
   if the process has received values from more than $2/3$ of all processes,
-  the @{text last_vote} field is set to the smallest among the most frequently received
+  the \<open>last_vote\<close> field is set to the smallest among the most frequently received
   values, and the process decides value $v$ if it received $v$ from more than
-  $2/3$ of all processes. If @{text p} hasn't heard from more than $2/3$ of
+  $2/3$ of all processes. If \<open>p\<close> hasn't heard from more than $2/3$ of
   all processes, the state remains unchanged.
-  (Note that @{text Some} is the constructor of the option datatype, whereas
-  @{text "\<some>"} is Hilbert's choice operator.)
+  (Note that \<open>Some\<close> is the constructor of the option datatype, whereas
+  \<open>\<some>\<close> is Hilbert's choice operator.)
   We require the type of values to be linearly ordered so that the minimum
   is guaranteed to be well-defined.
-*}
+\<close>
 
 definition OTR_nextState where
   "OTR_nextState r p (st::('val::linorder) pstate) msgs st' \<equiv> 
@@ -125,25 +125,25 @@ definition OTR_nextState where
                     else decision st) \<rparr>
    else st' = st"
 
-text {*
+text \<open>
   The message sending function is very simple: at every round, every process
-  sends its current proposal (field @{text last_vote} of its local state) to all 
+  sends its current proposal (field \<open>last_vote\<close> of its local state) to all 
   processes.
-*}
+\<close>
 
 definition OTR_sendMsg where
   "OTR_sendMsg r p q st \<equiv> last_vote st"
 
-subsection {* Communication predicate for \emph{One-Third Rule} *}
+subsection \<open>Communication predicate for \emph{One-Third Rule}\<close>
 
-text {*
+text \<open>
   We now define the communication predicate for the \emph{One-Third Rule}
   algorithm to be correct.
   It requires that, infinitely often, there is a round where all processes
-  receive messages from the same set @{text "\<Pi>"} of processes where @{text "\<Pi>"}
+  receive messages from the same set \<open>\<Pi>\<close> of processes where \<open>\<Pi>\<close>
   contains more than two thirds of all processes.
   The ``per-round'' part of the communication predicate is trivial.
-*}
+\<close>
 
 definition OTR_commPerRd where
   "OTR_commPerRd HOrs \<equiv> True"
@@ -152,14 +152,14 @@ definition OTR_commGlobal where
   "OTR_commGlobal HOs \<equiv>
     \<forall>r. \<exists>r0 \<Pi>. r0 \<ge> r \<and> (\<forall>p. HOs r0 p = \<Pi>) \<and> card \<Pi> > (2*N) div 3"
 
-subsection {* The \emph{One-Third Rule} Heard-Of machine *}
+subsection \<open>The \emph{One-Third Rule} Heard-Of machine\<close>
 
-text {*
+text \<open>
   We now define the HO machine for the \emph{One-Third Rule} algorithm
   by assembling the algorithm definition and its communication-predicate.
-  Because this is an uncoordinated algorithm, the @{text crd} arguments
+  Because this is an uncoordinated algorithm, the \<open>crd\<close> arguments
   of the initial- and next-state predicates are unused.
-*}
+\<close>
 
 definition OTR_HOMachine where
   "OTR_HOMachine =

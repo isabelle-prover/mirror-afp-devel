@@ -3,16 +3,16 @@ theory Weight
 imports Complex_Main
 begin
 
-text {*
+text \<open>
   In this theory, we set up a type class for weights, and
   a typeclass for weights with an infinity element. The latter
   one is used internally in Dijkstra's algorithm.
 
   Moreover, we provide a datatype that adds an infinity element to a given
   base type.
-*}
+\<close>
 
-subsection {* Type Classes Setup *}
+subsection \<open>Type Classes Setup\<close>
 
 class weight = ordered_ab_semigroup_add + comm_monoid_add + linorder
 begin
@@ -76,10 +76,10 @@ lemma not_less_inf[simp]:
   
 end
 
-subsection {* Adding Infinity *}
-text {*
+subsection \<open>Adding Infinity\<close>
+text \<open>
   We provide a standard way to add an infinity element to any type.
-*}
+\<close>
 
 datatype 'a infty = Infty | Num 'a
 
@@ -137,11 +137,11 @@ begin
     done
 end
 
-subsubsection {* Unboxing *}
+subsubsection \<open>Unboxing\<close>
 
-text {* Conversion between the constants defined by the
+text \<open>Conversion between the constants defined by the
   typeclass, and the concrete functions on the @{typ "'a infty"} type. 
-*}
+\<close>
 lemma infty_inf_unbox:
   "Num a \<noteq> top"
   "top \<noteq> Num a"

@@ -11,7 +11,7 @@ theory GenericUnwinding
 imports Noninterference_Ipurge_Unwinding.DeterministicProcesses
 begin
 
-text {*
+text \<open>
 \null
 
 The classical definition of noninterference security for a deterministic state machine with outputs
@@ -56,17 +56,17 @@ The contents of this paper are based on those of \cite{R1} and \cite{R2}. The sa
 definitions and proofs are commented; for additional information, cf. Isabelle documentation,
 particularly \cite{R5}, \cite{R6}, \cite{R7}, and \cite{R8}.
 
-For the sake of brevity, given a function @{text F} of type
-@{text "'a\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>m \<Rightarrow> 'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b"}, the explanatory text may discuss of @{text F}
-using attributes that would more exactly apply to a term of type @{text "'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b"}.
+For the sake of brevity, given a function \<open>F\<close> of type
+\<open>'a\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>m \<Rightarrow> 'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b\<close>, the explanatory text may discuss of \<open>F\<close>
+using attributes that would more exactly apply to a term of type \<open>'a\<^sub>m\<^sub>+\<^sub>1 \<Rightarrow> \<dots> \<Rightarrow> 'a\<^sub>n \<Rightarrow> 'b\<close>.
 In this case, it shall be understood that strictly speaking, such attributes apply to a term
-matching pattern @{text "F a\<^sub>1 \<dots> a\<^sub>m"}.
-*}
+matching pattern \<open>F a\<^sub>1 \<dots> a\<^sub>m\<close>.
+\<close>
 
 
 subsection "Propaedeutic definitions and lemmas"
 
-text {*
+text \<open>
 Here below are the translations of Rushby's predicates \emph{weakly step consistent} and
 \emph{locally respects} \cite{R4}, applying to deterministic state machines, into Hoare's
 Communicating Sequential Processes model of computation \cite{R3}.
@@ -95,7 +95,7 @@ lists not being process traces.
 \end{itemize}
 
 \null
-*}
+\<close>
 
 definition weakly_step_consistent ::
  "'a process \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> ('a, 'd) dom_rel_map \<Rightarrow> bool" where
@@ -108,14 +108,14 @@ definition locally_respects ::
 "locally_respects P I D R \<equiv> \<forall>u \<in> range D. \<forall>xs x.
   (D x, u) \<notin> I \<and> x \<in> next_events P xs \<longrightarrow> (xs, xs @ [x]) \<in> R u"
 
-text {*
+text \<open>
 \null
 
 In what follows, some lemmas propaedeutic for the proof of the Generic Unwinding Theorem are
 demonstrated.
 
 \null
-*}
+\<close>
 
 lemma ipurge_tr_aux_single_event:
  "ipurge_tr_aux I D U [x] = (if \<exists>v \<in> U. (v, D x) \<in> I
@@ -212,7 +212,7 @@ qed
 
 subsection "The Generic Unwinding Theorem: proof of condition sufficiency"
 
-text {*
+text \<open>
 Rushby's \emph{Unwinding Theorem for Intransitive Policies} \cite{R4} states that a sufficient
 condition for a deterministic state machine with outputs to be secure is the existence of some
 domain-relation map \emph{R} such that:
@@ -261,7 +261,7 @@ interpretation, so that taking it as an additional assumption does not give rise
 limitation on the applicability of the theorem.
 
 As a result of these considerations, the Generic Unwinding Theorem, formalized in what follows as
-theorem @{text generic_unwinding}, states that a sufficient condition for the CSP noninterference
+theorem \<open>generic_unwinding\<close>, states that a sufficient condition for the CSP noninterference
 security \cite{R1} of a process being refusals union closed \cite{R2} is the existence of some
 domain-relation map \emph{R} such that:
 
@@ -282,7 +282,7 @@ domain-relation map \emph{R} such that:
 \end{enumerate}
 
 \null
-*}
+\<close>
 
 lemma ruc_wfc_failures:
   assumes
@@ -851,7 +851,7 @@ proof (simp add: secure_def futures_def, (rule allI)+, rule impI, erule conjE)
   qed
 qed
 
-text {*
+text \<open>
 \null
 
 It is interesting to observe that unlike symmetry and transitivity, the assumed reflexivity of the
@@ -868,7 +868,7 @@ Here below are convenient variants of the Generic Unwinding Theorem applying to 
 processes and trace set processes (cf. \cite{R2}).
 
 \null
-*}
+\<close>
 
 theorem d_generic_unwinding:
  "deterministic P \<Longrightarrow>
@@ -893,7 +893,7 @@ qed (rule ts_process_d)
 
 subsection "The Generic Unwinding Theorem: counterexample to condition necessity"
 
-text {*
+text \<open>
 At a first glance, it seems reasonable to hypothesize that the Generic Unwinding Theorem expresses
 a necessary, as well as sufficient, condition for security, viz. that whenever a process is secure
 with respect to a policy, there should exist a set of "views" of process traces, one per domain,
@@ -903,9 +903,9 @@ It can thus be surprising to discover that this hypothesis is false, as proven i
 constructing a counterexample. The key observation for attaining this result is that symmetry,
 transitivity, weak step consistency, and local policy respect permit to infer the correlation of
 pairs of traces, and can then be given the form of introduction rules in the inductive definition of
-a set. In this way, a "minimum" domain-relation map @{text rel_induct} is obtained, viz. a map such
-that, for each domain @{text u}, the image of @{text u} under this map is included in the image of
-@{text u} under any map which has the aforesaid properties -- particularly, which satisfies the
+a set. In this way, a "minimum" domain-relation map \<open>rel_induct\<close> is obtained, viz. a map such
+that, for each domain \<open>u\<close>, the image of \<open>u\<close> under this map is included in the image of
+\<open>u\<close> under any map which has the aforesaid properties -- particularly, which satisfies the
 assumptions of the Generic Unwinding Theorem.
 
 Although reflexivity can be given the form of an introduction rule, too, it has been omitted from
@@ -914,7 +914,7 @@ map, and consequently the counterexample as well, still remain such even if refl
 unnecessary (cf. above), were removed from the assumptions of the Generic Unwinding Theorem.
 
 \null
-*}
+\<close>
 
 inductive_set rel_induct_aux ::
  "'a process \<Rightarrow> ('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> ('d \<times> 'a list \<times> 'a list) set"
@@ -994,16 +994,16 @@ next
   ultimately show "(xs, xs @ [x]) \<in> R u" by simp
 qed
 
-text {*
+text \<open>
 \null
 
-The next step consists of the definition of a trace set @{text T\<^sub>c}, the corresponding trace set
-process @{text P\<^sub>c} (cf. \cite{R2}), and a reflexive, intransitive noninterference policy @{text I\<^sub>c}
+The next step consists of the definition of a trace set \<open>T\<^sub>c\<close>, the corresponding trace set
+process \<open>P\<^sub>c\<close> (cf. \cite{R2}), and a reflexive, intransitive noninterference policy \<open>I\<^sub>c\<close>
 for this process, where subscript "c" stands for "counterexample". As event-domain map, the identity
 function is used, which explains why the policy is defined over events themselves.
 
 \null
-*}
+\<close>
 
 datatype event\<^sub>c = a\<^sub>c | b\<^sub>c | c\<^sub>c
 
@@ -1018,7 +1018,7 @@ definition P\<^sub>c :: "event\<^sub>c process" where
 definition I\<^sub>c :: "(event\<^sub>c \<times> event\<^sub>c) set" where
 "I\<^sub>c \<equiv> {(a\<^sub>c, a\<^sub>c), (b\<^sub>c, b\<^sub>c), (b\<^sub>c, c\<^sub>c), (c\<^sub>c, c\<^sub>c), (c\<^sub>c, a\<^sub>c)}"
 
-text {*
+text \<open>
 \null
 
 Process @{term P\<^sub>c} can be shown to be secure with respect to policy @{term I\<^sub>c}. This result can be
@@ -1029,7 +1029,7 @@ possible by virtue of their finiteness.
 Nevertheless, @{term P\<^sub>c} and @{term I\<^sub>c} are such that there exists no domain-relation map satisfying
 the assumptions of the Generic Unwinding Theorem. A proof \emph{ad absurdum} is given, based on the
 fact that the pair of traces @{term "([a\<^sub>c, b\<^sub>c, c\<^sub>c], [b\<^sub>c, a\<^sub>c, c\<^sub>c])"} can be shown to be contained in
-the image of @{term a\<^sub>c} under the "minimum" domain-relation map @{text rel_induct}. Therefore, it
+the image of @{term a\<^sub>c} under the "minimum" domain-relation map \<open>rel_induct\<close>. Therefore, it
 would also be contained in the image of @{term a\<^sub>c} under a map satisfying the assumptions of the
 Generic Unwinding Theorem, so that according to weak future consistency, @{term a\<^sub>c} should be a
 possible subsequent event for trace @{term "[a\<^sub>c, b\<^sub>c, c\<^sub>c]"} just in case it were such for trace
@@ -1037,7 +1037,7 @@ possible subsequent event for trace @{term "[a\<^sub>c, b\<^sub>c, c\<^sub>c]"} 
 subsequent event for the former trace only.
 
 \null
-*}
+\<close>
 
 lemma counterexample_trace_set:
  "trace_set T\<^sub>c"

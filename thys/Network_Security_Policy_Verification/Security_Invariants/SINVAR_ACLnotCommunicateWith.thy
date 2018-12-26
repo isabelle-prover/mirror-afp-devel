@@ -2,10 +2,10 @@ theory SINVAR_ACLnotCommunicateWith
 imports "../TopoS_Helper" SINVAR_ACLcommunicateWith
 begin
 
-subsection {* SecurityInvariant ACLnotCommunicateWith*}
-text{*An access control list strategy that says that hosts must not transitively access each other.*}
+subsection \<open>SecurityInvariant ACLnotCommunicateWith\<close>
+text\<open>An access control list strategy that says that hosts must not transitively access each other.\<close>
 
-text{* node properties: a set of hosts this host must not access *}
+text\<open>node properties: a set of hosts this host must not access\<close>
 
 definition default_node_properties :: "'v set"
   where  "default_node_properties \<equiv> UNIV"
@@ -17,7 +17,7 @@ fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> 'v set) \<Rightarrow> bo
 definition receiver_violation :: "bool" where 
   "receiver_violation \<equiv> False"
 
-text{*It is the inverse of @{const SINVAR_ACLcommunicateWith.sinvar}*}
+text\<open>It is the inverse of @{const SINVAR_ACLcommunicateWith.sinvar}\<close>
 lemma ACLcommunicateNotWith_inverse_ACLcommunicateWith:
   "\<forall>v. UNIV - nP' v = set (nP v) \<Longrightarrow> SINVAR_ACLcommunicateWith.sinvar G nP \<longleftrightarrow> sinvar G nP'"
   by auto

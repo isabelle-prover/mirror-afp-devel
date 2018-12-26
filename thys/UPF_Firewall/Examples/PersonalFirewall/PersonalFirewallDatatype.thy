@@ -35,20 +35,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Personal Firewall: Datatype *}
+subsection \<open>Personal Firewall: Datatype\<close>
 theory 
   PersonalFirewallDatatype
   imports 
     "../../UPF-Firewall"
 begin
 
-text{* 
+text\<open>
   The most basic firewall scenario; there is a personal PC on one side and the Internet on the 
   other. There are two policies: the first one allows all traffic from the PC to the Internet and 
   denies all coming into the PC. The second policy only allows specific ports from the PC. This 
   scenario comes in three variants: the first one specifies the allowed protocols directly, the 
   second together with their respective port numbers, the third one only with the port numbers.  
-*}
+\<close>
 
 datatype Adr = pc | internet
   
@@ -68,12 +68,12 @@ definition
   not_in_same_net :: "(DatatypeTwoNets,DummyContent) packet \<Rightarrow> bool" where
   "not_in_same_net x = ((src x \<sqsubset> PC \<longrightarrow> dest x \<sqsubset> Internet) \<and> (src x \<sqsubset> Internet \<longrightarrow> dest x \<sqsubset> PC))" 
   
-text {*
+text \<open>
   Definitions of the policies 
 
   In fact, the short definitions wouldn't have to be written down - they
   are the automatically simplified versions of their big counterparts.
-*}
+\<close>
 
 definition
   strictPolicy :: "(DatatypeTwoNets,DummyContent) FWPolicy" where

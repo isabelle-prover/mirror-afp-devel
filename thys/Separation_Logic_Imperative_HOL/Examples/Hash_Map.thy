@@ -3,7 +3,7 @@ theory Hash_Map
   imports Hash_Table
 begin
 
-subsection {* Auxiliary Lemmas *}
+subsection \<open>Auxiliary Lemmas\<close>
 lemma map_of_ls_update: 
   "map_of (fst (ls_update k v l)) = (map_of l)(k \<mapsto> v)"
   apply (induct l rule: ls_update.induct)
@@ -58,7 +58,7 @@ lemma ls_update_map_of_neq:
   apply (induct ls rule: ls_update.induct)
   by (auto simp add: Let_def)
 
-subsection {* Main Definitions and Lemmas *}
+subsection \<open>Main Definitions and Lemmas\<close>
 
 definition is_hashmap' 
   :: "('k, 'v) map 
@@ -677,7 +677,7 @@ lemma ht_hash_dom_map_of_disj_drop:
     hence "\<exists>j. j < length (drop (Suc i) l) 
       \<and> x \<in> dom (map_of ((drop (Suc i) l)!j))"
       by (metis Hash_Map.map_of_concat 
-        `x \<in> dom (map_of (concat (drop (Suc i) l)))` length_drop)
+        \<open>x \<in> dom (map_of (concat (drop (Suc i) l)))\<close> length_drop)
     from this obtain j where 
       j: "j < length (drop (Suc i) l) 
         \<and> x \<in> dom (map_of ((drop (Suc i) l)!j))" 
@@ -748,9 +748,9 @@ lemma hm_size_rule:
   unfolding is_hashmap_def
   by (sep_auto heap: hm_size_rule')
 
-subsection {* Iterators *}
+subsection \<open>Iterators\<close>
 
-subsubsection {* Definitions *}
+subsubsection \<open>Definitions\<close>
 type_synonym ('k,'v) hm_it = "(nat \<times> ('k\<times>'v) list \<times> ('k,'v) hashtable)"
 
 fun hm_it_adjust 
@@ -809,7 +809,7 @@ definition "hm_is_it m ht m' it \<equiv> \<exists>\<^sub>Al l'.
   * \<up>(map_of (concat l) = m \<and> map_of l' = m') 
   "
 
-subsubsection {* Auxiliary Lemmas *}
+subsubsection \<open>Auxiliary Lemmas\<close>
 lemma concat_take_Suc_empty: "\<lbrakk> n < length l; l!n=[] \<rbrakk> 
   \<Longrightarrow> concat (take (Suc n) l) = concat (take n l)"
   apply (induct n arbitrary: l)
@@ -885,7 +885,7 @@ proof (intro allI impI, elim exE)
   show "fst (concat l ! i) \<noteq> fst (concat l ! j)"
   proof cases
     assume [simp]: "ji=jj"
-    with IFMT JFMT `i\<noteq>j` have "ki\<noteq>kj" by auto
+    with IFMT JFMT \<open>i\<noteq>j\<close> have "ki\<noteq>kj" by auto
     moreover from HM JJ_LEN have "distinct (map fst (l!jj))"
       unfolding is_hashmap'_def is_hashtable_def ht_distinct_def
       by auto
@@ -1030,7 +1030,7 @@ lemma hm_it_next_rule': "l'\<noteq>[] \<Longrightarrow>
   apply (auto simp: butlast_append) []
   by (metis Ex_list_of_length Suc_leD concat_take_Suc_app_nth le_neq_implies_less le_trans nat.inject not_less_eq_eq)
 
-subsubsection {* Main Lemmas *}
+subsubsection \<open>Main Lemmas\<close>
 
 lemma hm_it_next_rule: "m'\<noteq>Map.empty \<Longrightarrow> 
     <hm_is_it m ht m' it> 

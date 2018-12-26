@@ -212,8 +212,8 @@ proof (induct U rule: infinite_finite_induct)
     hence aU: "a : U \<rightarrow> carrier K" by auto
     have b: "?b : insert u U \<rightarrow> carrier K" using a c by auto
     show ?case
-      unfolding lincomb_insert2[OF finU U a `u\<notin>U` u]
-      unfolding lincomb_insert2[OF finU U b `u\<notin>U` u]
+      unfolding lincomb_insert2[OF finU U a \<open>u\<notin>U\<close> u]
+      unfolding lincomb_insert2[OF finU U b \<open>u\<notin>U\<close> u]
       using insert U aU c u smult_r_distr smult_assoc1 by auto next
   case (infinite U)
     thus ?case unfolding lincomb_def using assms by simp

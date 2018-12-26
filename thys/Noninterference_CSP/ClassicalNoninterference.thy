@@ -11,7 +11,7 @@ theory ClassicalNoninterference
 imports CSPNoninterference
 begin
 
-text {*
+text \<open>
 \null
 
 The purpose of this section is to prove the equivalence of CSP noninterference security as defined
@@ -20,22 +20,22 @@ case of processes representing deterministic state machines, henceforth briefly 
 \emph{classical processes}.
 
 For clarity, all the constants and fact names defined in this section, with the possible exception
-of main theorems, contain prefix @{text c_}.
-*}
+of main theorems, contain prefix \<open>c_\<close>.
+\<close>
 
 
 subsection "Classical noninterference"
 
-text {*
+text \<open>
 Here below are the formalizations of the functions \emph{sources} and \emph{ipurge} defined in
 \cite{R3}, as well as of the classical notion of noninterference security as stated ibid. for a
 deterministic state machine in the general case of a possibly intransitive noninterference policy.
 
 Observe that the function \emph{run} used in \emph{R3} is formalized as function
-@{text "foldl step"}, where @{text step} is the state transition function of the machine.
+\<open>foldl step\<close>, where \<open>step\<close> is the state transition function of the machine.
 
 \null
-*}
+\<close>
 
 primrec c_sources :: "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd \<Rightarrow> 'a list \<Rightarrow> 'd set" where
 "c_sources _ _ u [] = {u}" |
@@ -54,16 +54,16 @@ definition c_secure ::
 "c_secure step out s\<^sub>0 I D \<equiv>
   \<forall>x xs. out (foldl step s\<^sub>0 xs) x = out (foldl step s\<^sub>0 (c_ipurge I D (D x) xs)) x"
 
-text {*
+text \<open>
 \null
 
-In addition, the definitions are given of variants of functions @{text c_sources} and
-@{text c_ipurge} accepting in input a set of security domains rather than a single domain, and then
+In addition, the definitions are given of variants of functions \<open>c_sources\<close> and
+\<open>c_ipurge\<close> accepting in input a set of security domains rather than a single domain, and then
 some lemmas concerning them are demonstrated. These definitions and lemmas will turn out to be
 useful in subsequent proofs.
 
 \null
-*}
+\<close>
 
 primrec c_sources_aux :: "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd set \<Rightarrow> 'a list \<Rightarrow> 'd set" where
 "c_sources_aux _ _ U [] = U" |
@@ -99,14 +99,14 @@ lemma c_ipurge_aux_append:
     else c_ipurge_aux I D U xs)"
 by (induction xs, simp_all add: c_sources_aux_append)
 
-text {*
+text \<open>
 \null
 
-In what follows, a few useful lemmas are proven about functions @{text c_sources}, @{text c_ipurge}
-and their relationships with functions @{text sinks}, @{text ipurge_tr}.
+In what follows, a few useful lemmas are proven about functions \<open>c_sources\<close>, \<open>c_ipurge\<close>
+and their relationships with functions \<open>sinks\<close>, \<open>ipurge_tr\<close>.
 
 \null
-*}
+\<close>
 
 lemma c_sources_ipurge: "c_sources I D u (c_ipurge I D u xs) = c_sources I D u xs"
 by (induction xs, simp_all)
@@ -284,30 +284,30 @@ qed
 
 subsection "Classical processes"
 
-text {*
+text \<open>
 The deterministic state machines used as model of computation in the classical theory of
 noninterference security, as expounded in \cite{R3}, have the property that each action produces an
 output. Hence, it is natural to take as alphabet of a classical process the universe of the pairs
-@{text "(x, p)"}, where @{text x} is an action and @{text p} an output. For any state @{text s},
-such an event @{text "(x, p)"} may occur just in case @{text p} matches the output produced by
-@{text x} in @{text s}.
+\<open>(x, p)\<close>, where \<open>x\<close> is an action and \<open>p\<close> an output. For any state \<open>s\<close>,
+such an event \<open>(x, p)\<close> may occur just in case \<open>p\<close> matches the output produced by
+\<open>x\<close> in \<open>s\<close>.
 
-Therefore, a trace of a classical process can be defined as an event list @{text xps} such that for
-each item @{text "(x, p)"}, @{text p} is equal to the output produced by @{text x} in the state
-resulting from the previous actions in @{text xps}. Furthermore, for each trace @{text xps}, the
-refusals set associated to @{text xps} is comprised of any set of pairs @{text "(x, p)"} such that
-@{text p} is different from the output produced by @{text x} in the state resulting from the actions
-in @{text xps}.
+Therefore, a trace of a classical process can be defined as an event list \<open>xps\<close> such that for
+each item \<open>(x, p)\<close>, \<open>p\<close> is equal to the output produced by \<open>x\<close> in the state
+resulting from the previous actions in \<open>xps\<close>. Furthermore, for each trace \<open>xps\<close>, the
+refusals set associated to \<open>xps\<close> is comprised of any set of pairs \<open>(x, p)\<close> such that
+\<open>p\<close> is different from the output produced by \<open>x\<close> in the state resulting from the actions
+in \<open>xps\<close>.
 
 In accordance with the previous considerations, an inductive definition is formulated here below for
-the failures set @{text "c_failures step out s\<^sub>0"} corresponding to the deterministic state machine
-with state transition function @{text step}, output function @{text out}, and initial state
-@{text s\<^sub>0}. Then, the classical process @{text "c_process step out s\<^sub>0"} representing this machine is
-defined as the process having @{text "c_failures step out s\<^sub>0"} as failures set and the empty set as
+the failures set \<open>c_failures step out s\<^sub>0\<close> corresponding to the deterministic state machine
+with state transition function \<open>step\<close>, output function \<open>out\<close>, and initial state
+\<open>s\<^sub>0\<close>. Then, the classical process \<open>c_process step out s\<^sub>0\<close> representing this machine is
+defined as the process having \<open>c_failures step out s\<^sub>0\<close> as failures set and the empty set as
 divergences set.
 
 \null
-*}
+\<close>
 
 inductive_set c_failures ::
  "('s \<Rightarrow> 'a \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 'a \<Rightarrow> 'o) \<Rightarrow> 's \<Rightarrow> ('a \<times> 'o) failure set"
@@ -322,13 +322,13 @@ definition c_process ::
  "('s \<Rightarrow> 'a \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 'a \<Rightarrow> 'o) \<Rightarrow> 's \<Rightarrow> ('a \<times> 'o) process" where
 "c_process step out s\<^sub>0 \<equiv> Abs_process (c_failures step out s\<^sub>0, {})"
 
-text {*
+text \<open>
 \null
 
 In what follows, the fact that classical processes are indeed processes is proven as a theorem.
 
 \null
-*}
+\<close>
 
 lemma c_process_prop_1 [simp]: "process_prop_1 (c_failures step out s\<^sub>0, {})"
 proof (simp add: process_prop_1_def)
@@ -425,13 +425,13 @@ proof (simp only: process_prop_4_def fst_conv, (rule allI)+, rule impI)
       "X' \<subseteq> Y"
     show "(xps' @ [xp], {}) \<in> c_failures step out s\<^sub>0 \<or> (xps', insert xp X')
       \<in> c_failures step out s\<^sub>0"
-    using `?A \<or> ?B`
+    using \<open>?A \<or> ?B\<close>
     proof (rule disjE)
       assume ?A
       thus ?thesis ..
     next
       assume ?B
-      moreover have "insert xp X' \<subseteq> insert xp Y" using `X' \<subseteq> Y`
+      moreover have "insert xp X' \<subseteq> insert xp Y" using \<open>X' \<subseteq> Y\<close>
        by (rule insert_mono)
       ultimately have "(xps', insert xp X') \<in> c_failures step out s\<^sub>0" by (rule R2)
       thus ?thesis ..
@@ -448,7 +448,7 @@ by (simp add: process_prop_6_def)
 theorem c_process_process: "(c_failures step out s\<^sub>0, {}) \<in> process_set"
 by (simp add: process_set_def)
 
-text {*
+text \<open>
 \null
 
 The continuation of this section is dedicated to the proof of a few lemmas on the properties of
@@ -458,7 +458,7 @@ deterministic. Since they are intended to be a representation of deterministic s
 processes, this result provides an essential confirmation of the correctness of such correspondence.
 
 \null
-*}
+\<close>
 
 lemma c_failures_last [rule_format]:
  "(xps, X) \<in> c_failures step out s\<^sub>0 \<Longrightarrow> xps \<noteq> [] \<longrightarrow>
@@ -553,7 +553,7 @@ proof (simp add: deterministic_def c_refusals c_next_events set_eq_iff, rule bal
       assume "(x, p) \<in> X" and "p = out ?s x"
       hence "(xps @ [(x, out ?s x)], {(y, p). p \<noteq> out (step ?s x) y})
         \<notin> c_failures step out s\<^sub>0"
-       using `?Q` by simp
+       using \<open>?Q\<close> by simp
       moreover have "?s = foldl step s\<^sub>0 (map fst xps)" by simp
       with A have "(xps @ [(x, out ?s x)], {(y, p). p \<noteq> out (step ?s x) y})
         \<in> c_failures step out s\<^sub>0"
@@ -567,14 +567,14 @@ qed
 
 subsection "Traces in classical processes"
 
-text {*
-Here below is the definition of function @{text c_tr}, where @{text "c_tr step out s xs"} is the
-trace of classical process @{text "c_process step out s"} corresponding to the trace @{text xs} of
+text \<open>
+Here below is the definition of function \<open>c_tr\<close>, where \<open>c_tr step out s xs\<close> is the
+trace of classical process \<open>c_process step out s\<close> corresponding to the trace \<open>xs\<close> of
 the associated deterministic state machine. Moreover, some useful lemmas are proven about this
 function.
 
 \null
-*}
+\<close>
 
 function c_tr :: "('s \<Rightarrow> 'a \<Rightarrow> 's) \<Rightarrow> ('s \<Rightarrow> 'a \<Rightarrow> 'o) \<Rightarrow> 's \<Rightarrow> 'a list \<Rightarrow> ('a \<times> 'o) list" where
 "c_tr _ _ _ [] = []" |
@@ -682,25 +682,25 @@ qed
 
 subsection "Noninterference in classical processes"
 
-text {*
-Given a mapping @{text D} of the actions of a deterministic state machine into their security
-domains, it is natural to map each event @{text "(x, p)"} of the corresponding classical process
-into the domain @{text "D x"} of action @{text x}.
+text \<open>
+Given a mapping \<open>D\<close> of the actions of a deterministic state machine into their security
+domains, it is natural to map each event \<open>(x, p)\<close> of the corresponding classical process
+into the domain \<open>D x\<close> of action \<open>x\<close>.
 
-Such mapping of events into domains, formalized as function @{text "c_dom D"} in the continuation,
+Such mapping of events into domains, formalized as function \<open>c_dom D\<close> in the continuation,
 ensures that the same noninterference policy applying to a deterministic state machine be applicable
 to the associated classical process as well. This is the simplest, and thus preferable way to
 construct a policy for the process such as to be isomorphic to the one assigned for the machine, as
 required in order to prove the equivalence of CSP noninterference security to the classical notion
 in the case of classical processes.
 
-In what follows, function @{text c_dom} will be used in the proof of some useful lemmas concerning
-the application of functions @{text sinks}, @{text ipurge_tr}, @{text c_sources}, @{text c_ipurge}
+In what follows, function \<open>c_dom\<close> will be used in the proof of some useful lemmas concerning
+the application of functions \<open>sinks\<close>, \<open>ipurge_tr\<close>, \<open>c_sources\<close>, \<open>c_ipurge\<close>
 from noninterference theory to the traces of classical processes, constructed by means of function
-@{text c_tr}.
+\<open>c_tr\<close>.
 
 \null
-*}
+\<close>
 
 definition c_dom :: "('a \<Rightarrow> 'd) \<Rightarrow> ('a \<times> 'o) \<Rightarrow> 'd" where
 "c_dom D xp \<equiv> D (fst xp)"
@@ -936,7 +936,7 @@ qed
 
 subsection "Equivalence between security properties"
 
-text {*
+text \<open>
 The remainder of this section is dedicated to the proof of the equivalence between the CSP
 noninterference security of a classical process and the classical noninterference security of the
 corresponding deterministic state machine.
@@ -948,7 +948,7 @@ out to be equivalent if the enforced noninterference policy is reflexive, which 
 policy of practical significance.
 
 \null
-*}
+\<close>
 
 lemma secure_implies_c_secure_aux:
   assumes S: "secure (c_process step out s\<^sub>0) I (c_dom D)"

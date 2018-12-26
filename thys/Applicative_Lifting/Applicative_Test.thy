@@ -14,7 +14,7 @@ begin
 
 unbundle applicative_syntax
 
-subsection {* Normal form conversion *}
+subsection \<open>Normal form conversion\<close>
 
 notepad
 begin
@@ -46,7 +46,7 @@ lemma "\<And>f x::'a af. f \<diamondop> x = x"
 apply applicative_nf
 oops
 
-subsection {* Sets *}
+subsection \<open>Sets\<close>
 
 instantiation set :: (plus) plus
 begin
@@ -73,7 +73,7 @@ instance proof
 qed
 end
 
-subsection {* Sum type (a.k.a. either) *}
+subsection \<open>Sum type (a.k.a. either)\<close>
 
 lemma "Inl plus \<diamondop> (x :: nat + 'e list) \<diamondop> x = Inl (\<lambda>x. 2 * x) \<diamondop> x"
 by applicative_lifting simp
@@ -85,7 +85,7 @@ proof -
 qed
 
 
-subsection {* Streams *}
+subsection \<open>Streams\<close>
 
 lemma "(x::int stream) * sconst 0 = sconst 0"
 by applicative_lifting simp
@@ -145,7 +145,7 @@ lemma "sconcat (lift_streams [sconst ''Hello '', sconst ''world!'']) = sconst ''
 by applicative_lifting simp
 
 
-subsection {* Relators *}
+subsection \<open>Relators\<close>
 
 lemma "rel_fun (=) (\<le>) (const (0::nat)) x"
 by applicative_lifting simp

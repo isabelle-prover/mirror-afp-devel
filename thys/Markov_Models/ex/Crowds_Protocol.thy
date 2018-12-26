@@ -1,6 +1,6 @@
 (* Author: Johannes Hölzl <hoelzl@in.tum.de> *)
 
-section {* Formalization of the Crowds-Protocol *}
+section \<open>Formalization of the Crowds-Protocol\<close>
 
 theory Crowds_Protocol
   imports "../Discrete_Time_Markov_Chain"
@@ -24,7 +24,7 @@ proof (subst emeasure_suntil_disj)
     by (auto intro!: monoI max.mono add_mono nn_integral_mono mult_left_mono mult_right_mono simp: le_fun_def)
 
   have 1: "lfp ?f \<le> lfp ?F s"
-    using `s \<in> X`
+    using \<open>s \<in> X\<close>
   proof (induction arbitrary: s rule: lfp_ordinal_induct[OF \<open>mono ?f\<close>])
     case step: (1 x)
     then have "?f x \<le> ?F (\<lambda>_. x) s"
@@ -37,28 +37,28 @@ proof (subst emeasure_suntil_disj)
       by (subst lfp_unfold[OF \<open>mono ?F\<close>]) (auto simp: le_fun_def)
   qed (auto intro!: Sup_least)
   also have 2: "lfp ?F s \<le> r / (1 - p)"
-    using `s \<in> X`
+    using \<open>s \<in> X\<close>
   proof (induction arbitrary: s rule: lfp_ordinal_induct[OF \<open>mono ?F\<close>])
     case (1 S)
     with r have "?F S s \<le> ennreal r + (\<integral>\<^sup>+x. ennreal (r / (1 - p)) * indicator X x \<partial>K s)"
       by (intro add_mono nn_integral_mono) (auto split: split_indicator)
     also have "\<dots> \<le> ennreal r + ennreal (r * p / (1 - p))"
-      using `s \<in> X` by (simp add: nn_integral_cmult_indicator p ennreal_mult''[symmetric])
+      using \<open>s \<in> X\<close> by (simp add: nn_integral_cmult_indicator p ennreal_mult''[symmetric])
     also have "\<dots> = ennreal (r / (1 - p))"
-      using `p < 1` by (simp add: field_simps ennreal_plus[symmetric] del: ennreal_plus)
+      using \<open>p < 1\<close> by (simp add: field_simps ennreal_plus[symmetric] del: ennreal_plus)
     finally show ?case .
   qed (auto intro!: SUP_least)
   finally obtain x where x: "lfp ?f = ennreal x" and [simp]: "0 \<le> x"
     by (cases "lfp ?f") (auto simp: top_unique)
-  from `p < 1` have "\<And>x. x = r + p * x \<Longrightarrow> x = r / (1 - p)"
+  from \<open>p < 1\<close> have "\<And>x. x = r + p * x \<Longrightarrow> x = r / (1 - p)"
     by (auto simp: field_simps)
-  with lfp_unfold[OF \<open>mono ?f\<close>] `p < 1` have "lfp ?f = r / (1 - p)"
+  with lfp_unfold[OF \<open>mono ?f\<close>] \<open>p < 1\<close> have "lfp ?f = r / (1 - p)"
     unfolding x by (auto simp add: ennreal_plus[symmetric] ennreal_mult[symmetric] simp del: ennreal_plus)
   with 1 2 show "lfp ?F s = ennreal (r / (1 - p))"
     by auto
 qed fact+
 
-subsection {* Definition of the Crowds-Protocol *}
+subsection \<open>Definition of the Crowds-Protocol\<close>
 
 datatype 'a state = Start | Init 'a | Mix 'a | End
 
@@ -260,11 +260,11 @@ proof -
     done
 qed
 
-text {*
+text \<open>
 
 What is the probability that the server sees a specific jondo (including the initiator) as sender.
 
-*}
+\<close>
 
 definition visit :: "'a set \<Rightarrow> 'a set \<Rightarrow> 'a state stream \<Rightarrow> bool" where
   "visit I L = Init`(I \<inter> H) \<cdot> (HLD (Mix`J) suntil (Mix`(L \<inter> J) \<cdot> HLD {End}))"
@@ -313,9 +313,9 @@ proof -
   let ?P = "\<lambda>x P. emeasure (T x) {\<omega>\<in>space (T x). P \<omega>}"
 
   have [intro]: "finite L"
-    using finite_J `L \<subseteq> J` by (blast intro: finite_subset)
+    using finite_J \<open>L \<subseteq> J\<close> by (blast intro: finite_subset)
   have [simp, intro]: "finite I"
-    using finite_J `I \<subseteq> H` by (blast intro: finite_subset)
+    using finite_J \<open>I \<subseteq> H\<close> by (blast intro: finite_subset)
 
   { fix j assume j: "j \<in> H"
     have "?P (Mix j) (?J suntil ?E) = (p_f * p_j * (1 - p_f) * card L) / (1 - p_f)"
@@ -365,7 +365,7 @@ proof (rule T.AE_I_eq_1)
     using J_not_empty by (subst emeasure_visit ) (simp_all add: p_j_def)
 qed simp
 
-subsection {* Server gets no information *}
+subsection \<open>Server gets no information\<close>
 
 lemma server_view1: "j \<in> J \<Longrightarrow> \<P>(\<omega> in \<PP>. visit H {j} \<omega>) = p_j"
   unfolding measure_def by (subst emeasure_visit) simp_all
@@ -385,7 +385,7 @@ proof (subst T.prob_sum[where I="H" and P="\<lambda>j. visit {j} {j}"])
     by (auto dest: visit_unique1)
 qed simp_all
 
-subsection {* Probability that collaborators gain information *}
+subsection \<open>Probability that collaborators gain information\<close>
 
 definition "hit_C = Init`H \<cdot> ev (HLD (Mix`C))"
 definition "before_C B = (HLD (Jondo H)) suntil ((Jondo (B \<inter> H)) \<cdot> HLD (Mix ` C))"
@@ -425,7 +425,7 @@ proof -
   note this[of "stl \<omega>" "shd \<omega>"]
   ultimately show ?thesis
     using assms
-    using `enabled Start \<omega>`
+    using \<open>enabled Start \<omega>\<close>
     unfolding before_C_def suntil.simps[of _ _ \<omega>] enabled.simps[of _ \<omega>]
     by (auto simp: E_Start HLD_iff)
 qed
@@ -463,7 +463,7 @@ lemma before_C_single:
 lemma before_C_imp_in_H: "before_C {i} \<omega> \<Longrightarrow> i \<in> H"
   by (auto dest: before_C_single)
 
-subsection {* The probability that the sender hits a collaborator *}
+subsection \<open>The probability that the sender hits a collaborator\<close>
 
 lemma Pr_hit_C: "\<P>(\<omega> in \<PP>. hit_C \<omega>) = (1 - p_H) / (1 - p_H * p_f)"
 proof -
@@ -513,7 +513,7 @@ proof -
         by (subst emeasure_Init_eq_Mix)
            (auto simp: ev_Stream AE_End ev_sconst HLD_iff mult_le_one divide_ennreal) }
     then show "?P x (ev ?M) = (1 - p_H) / (1 - p_f * p_H)"
-      using `x \<in> ?I` by (auto simp: mult_ac)
+      using \<open>x \<in> ?I\<close> by (auto simp: mult_ac)
   qed
   also have "\<dots> = ennreal ((1 - p_H) / (1 - p_H * p_f))"
     using p_j_pos p_H p_H_p_f_less_1
@@ -674,7 +674,7 @@ proof -
   then have "1 * p_j \<le> p_H"
     unfolding H_eq2[symmetric] using C_smaller
     by (intro mult_mono) (auto simp: Suc_le_eq card_Diff_subset not_le)
-  with `p_H \<noteq> p_j` have "p_j < p_H" by auto
+  with \<open>p_H \<noteq> p_j\<close> have "p_j < p_H" by auto
   with approx show "1 - (p_H - p_j) * p_f \<le> 1 / 2"
     by (auto simp add: field_simps divide_le_eq split: if_split_asm)
 qed
@@ -708,7 +708,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Probability space of hitting a collaborator *}
+subsection \<open>Probability space of hitting a collaborator\<close>
 
 definition "hC = uniform_measure \<PP> {\<omega>\<in>space \<PP>. hit_C \<omega>}"
 
@@ -748,7 +748,7 @@ lemma simple_functionI:
   using assms unfolding simple_function_def hC_def
   by (simp add: vimage_def space_stream_space)
 
-subsection {* Estimate the information to the collaborators *}
+subsection \<open>Estimate the information to the collaborators\<close>
 
 lemma measure_hC[simp]:
   assumes A[measurable]: "A \<in> sets S"
@@ -757,7 +757,7 @@ lemma measure_hC[simp]:
   using emeasure_hit_C_not_0 A
   by (subst measure_uniform_measure) (simp_all add: T.emeasure_eq_measure Int_def conj_ac)
 
-subsubsection {* Setup random variables for mutual information *}
+subsubsection \<open>Setup random variables for mutual information\<close>
 
 definition "first_J \<omega> = (THE i. visit {i} J \<omega>)"
 
@@ -833,11 +833,11 @@ proof -
     by (simp add: h_def card_Diff_subset card_mono field_simps del: C_le_J)
 
   have log_le_0: "?f * log 2 (p_H * p_f) \<le> ?f * log 2 1"
-    using p_H_p_f_less_1 p_H_p_f_pos p_j_pos p_f `1 \<le> h`
+    using p_H_p_f_less_1 p_H_p_f_pos p_j_pos p_f \<open>1 \<le> h\<close>
     by (intro mult_left_mono log_le mult_nonneg_nonneg) auto
 
   have "(h - 1) * p_j < 1"
-    using `1 \<le> h` C_smaller
+    using \<open>1 \<le> h\<close> C_smaller
     by (auto simp: h_def p_j_def divide_less_eq card_Diff_subset card_mono)
   then have 1: "(h - 1) * p_j * p_f < 1 * 1"
     using p_f by (intro mult_strict_mono) auto
@@ -920,16 +920,16 @@ proof -
       apply (auto simp: field_simps)
       done
     also have "\<dots> = (?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h"
-      using neq0 p_f by (simp add: card_idx field_simps `p_H = h * p_j`)
+      using neq0 p_f by (simp add: card_idx field_simps \<open>p_H = h * p_j\<close>)
     finally have "?inner i = (?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)) / h" . }
   then have "(\<Sum>i\<in>H. ?inner i) = ?f * log 2 (h * p_j * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
     using h_pos by (simp add: h_def[symmetric])
   also have "\<dots> = ?f * log 2 (p_H * p_f) + (1 - ?f) * log 2 ((1 - ?f) * h)"
-    by (simp add: `h = p_H / p_j`)
+    by (simp add: \<open>h = p_H / p_j\<close>)
   also have "\<dots> \<le> (1 - ?f) * log 2 ((1 - ?f) * h)"
     using log_le_0 by simp
   also have "\<dots> \<le> (1 - ?f) * log 2 h"
-    using h_pos `1 \<le> h` 1 p_j_pos p_f
+    using h_pos \<open>1 \<le> h\<close> 1 p_j_pos p_f
     by (intro mult_left_mono log_le mult_pos_pos mult_nonneg_nonneg) auto
   finally have "(\<Sum>i\<in>H. ?inner i) \<le> (1 - ?f) * log 2 h" .
   also have "(\<Sum>i\<in>H. ?inner i) =

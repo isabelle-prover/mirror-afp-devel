@@ -8,13 +8,13 @@
     see the file Changelog for a list of changes
 *)
 
-section {* AVL Trees in 2 Stages *}
+section \<open>AVL Trees in 2 Stages\<close>
 
 theory AVL2
 imports Main
 begin
 
-text {*
+text \<open>
   This development of AVL trees leads to the same implementation
   as the monolithic one (in theorey AVL) but via an intermediate
   abstraction: AVL trees where the height is recomputed rather than
@@ -23,19 +23,19 @@ text {*
   be viewed as a blueprint for the development of data structures where
   some of the fields contain redundant information (for efficiency
   reasons).
-*}
+\<close>
 
-subsection {* Step 1: Pure binary and AVL trees *}
+subsection \<open>Step 1: Pure binary and AVL trees\<close>
 
-text {*
+text \<open>
   The basic formulation of AVL trees builds on pure binary trees
   and recomputes all height information whenever it is required. This
   simplifies the correctness proofs.
-*}
+\<close>
 
 datatype (set_of: 'a) tree\<^sub>0 = ET\<^sub>0 |  MKT\<^sub>0 'a "'a tree\<^sub>0" "'a tree\<^sub>0"
 
-subsubsection {* Auxiliary functions *}
+subsubsection \<open>Auxiliary functions\<close>
 
 primrec height :: "'a tree\<^sub>0 \<Rightarrow> nat" where
   "height ET\<^sub>0 = 0"
@@ -53,7 +53,7 @@ primrec is_bal :: "'a tree\<^sub>0 \<Rightarrow> bool" where
      is_bal l \<and> is_bal r)"
 
 
-subsubsection {* AVL interface and simple implementation *}
+subsubsection \<open>AVL interface and simple implementation\<close>
 
 primrec is_in\<^sub>0 :: "('a::preorder) \<Rightarrow> 'a tree\<^sub>0 \<Rightarrow> bool" where
   "is_in\<^sub>0 k ET\<^sub>0 = False"
@@ -92,7 +92,7 @@ primrec insrt\<^sub>0 :: "'a::preorder \<Rightarrow> 'a tree\<^sub>0 \<Rightarro
                    else MKT\<^sub>0 n l r')"
 
 
-subsubsection {* Insertion maintains AVL balance *}
+subsubsection \<open>Insertion maintains AVL balance\<close>
 
 lemma height_l_bal:
  "height l = height r + 2
@@ -118,9 +118,9 @@ next
       case True with height_l_bal [of _ _ n]
       have "height (l_bal\<^sub>0 n (insrt\<^sub>0 x t1) t2) =
         height t2 + 2 \<or> height (l_bal\<^sub>0 n (insrt\<^sub>0 x t1) t2) = height t2 + 3" by simp
-      with `x < n` MKT\<^sub>0 show ?thesis by auto
+      with \<open>x < n\<close> MKT\<^sub>0 show ?thesis by auto
     next
-      case False with `x < n` MKT\<^sub>0 show ?thesis by auto
+      case False with \<open>x < n\<close> MKT\<^sub>0 show ?thesis by auto
     qed
   next
     case False show ?thesis
@@ -128,9 +128,9 @@ next
       case True with height_r_bal [of _ _ n]
       have "height (r_bal\<^sub>0 n t1 (insrt\<^sub>0 x t2)) = height t1 + 2 \<or>
         height (r_bal\<^sub>0 n t1 (insrt\<^sub>0 x t2)) = height t1 + 3" by simp
-      with `\<not> x < n` MKT\<^sub>0 show ?thesis by auto
+      with \<open>\<not> x < n\<close> MKT\<^sub>0 show ?thesis by auto
     next
-      case False with `\<not> x < n` MKT\<^sub>0 show ?thesis by auto
+      case False with \<open>\<not> x < n\<close> MKT\<^sub>0 show ?thesis by auto
     qed
   qed
 qed
@@ -151,26 +151,26 @@ next
   case (MKT\<^sub>0 n t1 t2) show ?case proof (cases "x < n")
     case True show ?thesis
     proof (cases "height (insrt\<^sub>0 x t1) = height t2 + 2")
-      case True with `x < n` MKT\<^sub>0 show ?thesis
+      case True with \<open>x < n\<close> MKT\<^sub>0 show ?thesis
         by (simp add: is_bal_l_bal)
     next
-      case False with `x < n` MKT\<^sub>0 show ?thesis
+      case False with \<open>x < n\<close> MKT\<^sub>0 show ?thesis
         using height_insrt [of t1 x] by auto
     qed
   next
     case False show ?thesis
     proof (cases "height (insrt\<^sub>0 x t2) = height t1 + 2")
-      case True with `\<not> x < n` MKT\<^sub>0 show ?thesis
+      case True with \<open>\<not> x < n\<close> MKT\<^sub>0 show ?thesis
         by (simp add: is_bal_r_bal)
     next
-      case False with `\<not> x < n` MKT\<^sub>0 show ?thesis
+      case False with \<open>\<not> x < n\<close> MKT\<^sub>0 show ?thesis
         using height_insrt [of t2 x] by auto
     qed
   qed
 qed
 
 
-subsubsection {* Correctness of insertion *}
+subsubsection \<open>Correctness of insertion\<close>
 
 lemma set_of_l_bal: "height l = height r + 2 \<Longrightarrow>
   set_of (l_bal\<^sub>0 x l r) = insert x (set_of l \<union> set_of r)"
@@ -185,13 +185,13 @@ theorem set_of_insrt:
   by (induct t) (auto simp add:set_of_l_bal set_of_r_bal Let_def)
 
 
-subsubsection {* Correctness of lookup *}
+subsubsection \<open>Correctness of lookup\<close>
 
 theorem is_in_correct: "is_ord t \<Longrightarrow> is_in\<^sub>0 k t = (k : set_of t)"
   by (induct t) (auto simp add: less_le_not_le)
   
 
-subsubsection {* Insertion maintains order *}
+subsubsection \<open>Insertion maintains order\<close>
 
 lemma is_ord_l_bal:
  "is_ord (MKT\<^sub>0 x l r) \<Longrightarrow> height l = Suc (Suc (height r)) \<Longrightarrow>
@@ -204,7 +204,7 @@ lemma is_ord_r_bal:
   by (cases r) (auto split:tree\<^sub>0.splits intro: order_less_trans)
 
 
-text {* If the order is linear, @{const insrt\<^sub>0} maintains the order: *}
+text \<open>If the order is linear, @{const insrt\<^sub>0} maintains the order:\<close>
 
 theorem is_ord_insrt:
  "is_ord t \<Longrightarrow> is_ord (insrt\<^sub>0 (x::'a::linorder) t)"
@@ -212,12 +212,12 @@ theorem is_ord_insrt:
     linorder_not_less order_neq_le_trans Let_def)
 
 
-subsection {* Step 2: Binary and AVL trees with height information *}
+subsection \<open>Step 2: Binary and AVL trees with height information\<close>
 
 datatype 'a tree = ET |  MKT 'a "'a tree" "'a tree" nat
 
 
-subsubsection {* Auxiliary functions *}
+subsubsection \<open>Auxiliary functions\<close>
 
 primrec erase :: "'a tree \<Rightarrow> 'a tree\<^sub>0" where
   "erase ET = ET\<^sub>0"
@@ -232,7 +232,7 @@ definition avl :: "'a tree \<Rightarrow> bool" where
   "avl t \<longleftrightarrow> is_bal (erase t) \<and> hinv t"
 
 
-subsubsection {* AVL interface and efficient implementation *}
+subsubsection \<open>AVL interface and efficient implementation\<close>
 
 primrec is_in :: "('a::preorder) \<Rightarrow> 'a tree \<Rightarrow> bool" where
   "is_in k ET \<longleftrightarrow> False"
@@ -276,9 +276,9 @@ primrec insrt :: "'a::preorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" wher
                    else MKT n l r' (1 + max hl hr'))"
 
 
-subsubsection {* Correctness proof *}
+subsubsection \<open>Correctness proof\<close>
 
-text{* The auxiliary functions are implemented correctly: *}
+text\<open>The auxiliary functions are implemented correctly:\<close>
 
 lemma height_hinv: "hinv t \<Longrightarrow> ht t = height (erase t)"
   by (induct t) simp_all
@@ -296,7 +296,7 @@ lemma erase_r_bal:
   erase (r_bal n l r) = r_bal\<^sub>0 n (erase l) (erase r)"
   by (cases r) (simp_all add: height_hinv erase_mkt split: tree.split)
 
-text {* Function @{const insrt} maintains the invariant: *}
+text \<open>Function @{const insrt} maintains the invariant:\<close>
 
 lemma hinv_mkt: "hinv l \<Longrightarrow> hinv r \<Longrightarrow> hinv (mkt x l r)"
   by (simp add: height_hinv mkt_def)
@@ -315,16 +315,16 @@ theorem hinv_insrt: "hinv t \<Longrightarrow> hinv (insrt x t)"
   by (induct t) (simp_all add: Let_def height_hinv hinv_l_bal hinv_r_bal)
 
 
-text{* Function @{const insrt} implements @{const insrt\<^sub>0}: *}
+text\<open>Function @{const insrt} implements @{const insrt\<^sub>0}:\<close>
 lemma erase_insrt: "hinv t \<Longrightarrow> erase (insrt x t) = insrt\<^sub>0 x (erase t)"
   by (induct t) (simp_all add: Let_def hinv_insrt height_hinv erase_l_bal erase_r_bal)
 
-text{* Function @{const insrt} meets its spec: *}
+text\<open>Function @{const insrt} meets its spec:\<close>
 
 corollary "avl t \<Longrightarrow> set_of (erase (insrt x t)) = insert x (set_of (erase t))"
   by (simp add: avl_def erase_insrt set_of_insrt)
 
-text{* Function @{const insrt} preserves the invariants: *}
+text\<open>Function @{const insrt} preserves the invariants:\<close>
 
 corollary "avl t \<Longrightarrow> avl (insrt x t)"
   by (simp add: hinv_insrt avl_def erase_insrt is_bal_insrt)
@@ -333,12 +333,12 @@ corollary
   "avl t \<Longrightarrow> is_ord (erase t) \<Longrightarrow> is_ord (erase (insrt (x::'a::linorder) t))"
   by (simp add: avl_def erase_insrt is_ord_insrt)
 
-text{* Function @{const is_in} implements @{const is_in}: *}
+text\<open>Function @{const is_in} implements @{const is_in}:\<close>
 
 theorem is_in: "is_in x t = is_in\<^sub>0 x (erase t)"
   by (induct t) simp_all
 
-text{* Function @{const is_in} meets its spec: *}
+text\<open>Function @{const is_in} meets its spec:\<close>
 
 corollary "is_ord (erase t) \<Longrightarrow> is_in x t \<longleftrightarrow> x \<in> set_of (erase t)"
   by (simp add:is_in is_in_correct)

@@ -2,7 +2,7 @@ theory "HOLCF-Join"
 imports HOLCF
 begin
 
-subsubsection {* Binary Joins and compatibility *}
+subsubsection \<open>Binary Joins and compatibility\<close>
 
 context cpo
 begin
@@ -90,9 +90,9 @@ lemma join_mono:
 proof-
   from assms obtain x y where "{a, b} <<| x" "{c, d} <<| y" unfolding compatible_def by auto
   with assms have "a \<sqsubseteq> y" "b \<sqsubseteq> y" by (metis below.r_trans is_lubD1 is_ub_insert)+
-  with `{a, b} <<| x` have "x \<sqsubseteq> y" by (metis is_lub_below_iff is_lub_singleton is_ub_insert)
+  with \<open>{a, b} <<| x\<close> have "x \<sqsubseteq> y" by (metis is_lub_below_iff is_lub_singleton is_ub_insert)
   moreover
-  from `{a, b} <<| x` `{c, d} <<| y` have "a \<squnion> b = x" "c \<squnion> d = y" by (metis lub_is_join)+
+  from \<open>{a, b} <<| x\<close> \<open>{c, d} <<| y\<close> have "a \<squnion> b = x" "c \<squnion> d = y" by (metis lub_is_join)+
   ultimately
   show ?thesis by simp
 qed
@@ -171,7 +171,7 @@ proof(rule admI)
   proof(rule compatibleI)
     have c2: "chain (\<lambda>i. x \<squnion> Y i)"
       apply (rule chainI)
-      apply (rule join_mono[OF a a below_refl chainE[OF `chain Y`]])
+      apply (rule join_mono[OF a a below_refl chainE[OF \<open>chain Y\<close>]])
       done
     show "x \<sqsubseteq> (\<Squnion> i. x \<squnion> Y i)"
       by (auto intro: admD[OF _ c2] join_above1[OF a])
@@ -181,8 +181,8 @@ proof(rule admI)
     assume "x \<sqsubseteq> a" and "(\<Squnion> i. Y i) \<sqsubseteq> a"
     show "(\<Squnion> i. x \<squnion> Y i) \<sqsubseteq> a"
       apply (rule lub_below[OF c2])
-      apply (rule join_below[OF a `x \<sqsubseteq> a`])
-      apply (rule below_trans[OF is_ub_thelub[OF c] `(\<Squnion> i. Y i) \<sqsubseteq> a`])
+      apply (rule join_below[OF a \<open>x \<sqsubseteq> a\<close>])
+      apply (rule below_trans[OF is_ub_thelub[OF c] \<open>(\<Squnion> i. Y i) \<sqsubseteq> a\<close>])
       done
   qed
 qed
@@ -197,16 +197,16 @@ lemma join_cont1:
 proof-
   have c: "chain (\<lambda>i. Y i \<squnion> y)"
     apply (rule chainI)
-    apply (rule join_mono[OF compat compat chainE[OF `chain Y`] below_refl])
+    apply (rule join_mono[OF compat compat chainE[OF \<open>chain Y\<close>] below_refl])
     done
 
   show ?thesis
     apply (rule is_joinI)
-    apply (rule lub_mono[OF `chain Y` c join_above1[OF compat]])
+    apply (rule lub_mono[OF \<open>chain Y\<close> c join_above1[OF compat]])
     apply (rule below_lub[OF c join_above2[OF compat]])
     apply (rule lub_below[OF c])
     apply (rule join_below[OF compat])
-    apply (metis lub_below_iff[OF `chain Y`])
+    apply (metis lub_below_iff[OF \<open>chain Y\<close>])
     apply assumption
     done
 qed
@@ -218,17 +218,17 @@ lemma join_cont2:
 proof-
   have c: "chain (\<lambda>i. x \<squnion> Y i)"
     apply (rule chainI)
-    apply (rule join_mono[OF compat compat below_refl chainE[OF `chain Y`]])
+    apply (rule join_mono[OF compat compat below_refl chainE[OF \<open>chain Y\<close>]])
     done
 
   show ?thesis
     apply (rule is_joinI)
     apply (rule below_lub[OF c join_above1[OF compat]])
-    apply (rule lub_mono[OF `chain Y` c join_above2[OF compat]])
+    apply (rule lub_mono[OF \<open>chain Y\<close> c join_above2[OF compat]])
     apply (rule lub_below[OF c])
     apply (rule join_below[OF compat])
     apply assumption
-    apply (metis lub_below_iff[OF `chain Y`])
+    apply (metis lub_below_iff[OF \<open>chain Y\<close>])
     done
 qed
 
@@ -238,13 +238,13 @@ lemma join_cont12:
   shows "(\<Squnion>i. Y i) \<squnion> (\<Squnion>i. Z i) = (\<Squnion> i. Y i  \<squnion> Z i)"
 proof-
   have "(\<Squnion>i. Y i) \<squnion> (\<Squnion>i. Z i) = (\<Squnion>i. Y i \<squnion> (\<Squnion>j. Z j))"
-    by (rule join_cont1[OF `chain Y` admD[OF compatible_adm2 `chain Z` compat]])
+    by (rule join_cont1[OF \<open>chain Y\<close> admD[OF compatible_adm2 \<open>chain Z\<close> compat]])
   also have "... = (\<Squnion>i j. Y i \<squnion> Z j)"
-    by (subst join_cont2[OF `chain Z` compat], rule)
+    by (subst join_cont2[OF \<open>chain Z\<close> compat], rule)
   also have "... = (\<Squnion>i. Y i \<squnion> Z i)"
     apply (rule diag_lub)
-    apply (rule chainI, rule join_mono[OF compat compat chainE[OF `chain Y`] below_refl])
-    apply (rule chainI, rule join_mono[OF compat compat below_refl chainE[OF `chain Z`]])
+    apply (rule chainI, rule join_mono[OF compat compat chainE[OF \<open>chain Y\<close>] below_refl])
+    apply (rule chainI, rule join_mono[OF compat compat below_refl chainE[OF \<open>chain Z\<close>]])
     done
   finally show ?thesis.
 qed

@@ -1,15 +1,15 @@
 theory Reactive
   imports Temporal Refinement
 begin
-  section{*Reactive Systems*}
+  section\<open>Reactive Systems\<close>
 
-  text{*
+  text\<open>
     In this section we introduce reactive systems which are modeled as 
     monotonic property transformers where properties are predicates on
     traces. We start with introducing some examples that uses LTL to
     specify global behaviour on traces, and later we introduce property
     transformers based on symbolic transition systems.
-    *}
+\<close>
 
   definition "HAVOC = [:x \<leadsto> y . True:]"
   definition "ASSERT_LIVE = {. \<box> \<diamond> (\<lambda> x . x 0).}"
@@ -63,9 +63,9 @@ begin
    qed
 
 
-  subsection{*Symbolic transition systems*}
+  subsection\<open>Symbolic transition systems\<close>
   
-  text{*
+  text\<open>
     In this section we introduce property transformers basend on symbolic
     transition systems. These are systems with local state. The execution
     starts in some initial state, and with some input value the system computes
@@ -80,7 +80,7 @@ begin
     $p$ is the precondition of the input and the current state, and the
     relation $r$ gives the next state and the output based on the
     input and the current state.
-*}
+\<close>
  
   definition "fail_sys init p r x = (\<exists> n u y . u \<in> init \<and> (\<forall> i < n . r (u i) (u (Suc i)) (x i) (y i)) \<and> (\<not> p (u n) (u (Suc n)) (x n)))"
   definition "run r u x y = (\<forall> i . r (u i) (u (Suc i)) (x i) (y i))"
@@ -289,8 +289,8 @@ begin
         by simp
      qed
 
-  text{*We show next that the composition of two SymSystem $S$ and $S'$ is not equal to the SymSystem of the 
-  compostion of local transitions of $S$ and $S'$*}
+  text\<open>We show next that the composition of two SymSystem $S$ and $S'$ is not equal to the SymSystem of the 
+  compostion of local transitions of $S$ and $S'$\<close>
 
   definition "initS = {u . fst (u (0::nat)) = (0::nat)}"
   definition "localPrecS = (\<top>:: nat \<times> nat  \<Rightarrow> nat \<times> nat \<Rightarrow> nat \<Rightarrow> bool)"
@@ -424,13 +424,13 @@ begin
                 by (metis Suc.IH B comp_apply)
            next
              assume "\<not> i < n"
-             from this and `i < Suc n` have [simp]: "i = n" by simp
+             from this and \<open>i < Suc n\<close> have [simp]: "i = n" by simp
              show ?thesis
                proof cases
                 assume "?A"
                 from this and A have D: "?B" by simp
                 from D show ?thesis
-                  by (metis `i = n`)
+                  by (metis \<open>i = n\<close>)
               next
                 assume "\<not> ?A"
                 then obtain j where j: "j < n \<and> \<not> inpt_st (\<lambda> (u, v) . \<lambda> (u', v') . r u u' OO r' v v') (u j) (u (Suc j)) (x j)"
@@ -460,13 +460,13 @@ begin
                 by simp
            next
              assume "\<not> i < n"
-             from this and `i < Suc n` have [simp]: "i = n" by simp
+             from this and \<open>i < Suc n\<close> have [simp]: "i = n" by simp
              show ?thesis
                proof (cases ?A)
                 case True
                 with A have D: "?B" by simp
                 from D and E show ?thesis
-                  by (metis `i = n`)
+                  by (metis \<open>i = n\<close>)
               next
                 case False
                 then obtain j where j: "j < n \<and> \<not> inpt_st (\<lambda> (u, v) . \<lambda> (u', v') . r u u' OO r' v v') (u j) (u (Suc j)) (x j)"
@@ -629,8 +629,8 @@ begin
   lemma "GrdSymSystem init r = SymSystem init (inpt_st r) r"
     by (simp add: GrdSymSystem_def SymSystem_def trs_def  prec_st_inpt comp_assoc inpt_always)
 
-  subsection{*Example: COUNTER*}
-  text{*
+  subsection\<open>Example: COUNTER\<close>
+  text\<open>
     In this section we introduce an example counter that counts how many times
     the input variable $x$ is true. The input is a sequence of boolen values
     and the output is a sequence of natural numbers. The output at some moment in 
@@ -644,7 +644,7 @@ begin
     values seen so far, and initially the local variable is zero. At every step
     we increase the local variable if the input is true. The output of the
     system at every step is equal to the local variable.
-  *}
+\<close>
 
   primrec count :: "bool trace \<Rightarrow> nat trace" where
     "count x 0 = (if x 0 then 1 else 0)" |
@@ -743,9 +743,9 @@ begin
    qed
  
 
-  subsection{*Example: LIVE*}
+  subsection\<open>Example: LIVE\<close>
 
-  text{*
+  text\<open>
     The last example of this formalization introduces a system which does some
     local computation, and ensures some global liveness property.
     We show that this example is the fusion of a symbolic transition system and a demonic
@@ -753,7 +753,7 @@ begin
     We also show that asumming some liveness property for the input, we can refine
     the example into an executable system that does not ensure the liveness
     property of the output on its own, but relies on the liveness of the input.
-  *}
+\<close>
 
   definition "rel_ex u u' x y = (((x \<and> u' = u + (1::int)) \<or> (\<not> x \<and> u' = u - 1) \<or> u' = 0) \<and> (y = (u' = 0)))"
   definition "prec_ex u u' x = (-1 \<le> u \<and> u \<le> 3)"

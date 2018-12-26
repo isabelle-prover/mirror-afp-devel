@@ -119,14 +119,14 @@ proof -
              and "distinctPerm p"
     by(rule_tac xvec=xvec and c="(T, xvec)" in name_list_avoiding) auto 
 
-  from `length xvec = length Tvec` have "length(p \<bullet> xvec) = length Tvec" by simp
-  moreover from `(p \<bullet> xvec) \<sharp>* T` have "(p \<bullet> p \<bullet> xvec) \<sharp>* (p \<bullet> T)"
+  from \<open>length xvec = length Tvec\<close> have "length(p \<bullet> xvec) = length Tvec" by simp
+  moreover from \<open>(p \<bullet> xvec) \<sharp>* T\<close> have "(p \<bullet> p \<bullet> xvec) \<sharp>* (p \<bullet> T)"
     by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-  with `distinctPerm p` have "xvec \<sharp>* (p \<bullet> T)" by simp
-  ultimately have "(set xvec) \<sharp>* (p \<bullet> T)[(p \<bullet> xvec)::=Tvec]" using `xvec \<sharp>* Tvec` `(p \<bullet> xvec) \<sharp>* xvec`
+  with \<open>distinctPerm p\<close> have "xvec \<sharp>* (p \<bullet> T)" by simp
+  ultimately have "(set xvec) \<sharp>* (p \<bullet> T)[(p \<bullet> xvec)::=Tvec]" using \<open>xvec \<sharp>* Tvec\<close> \<open>(p \<bullet> xvec) \<sharp>* xvec\<close>
     by auto
 
-  thus ?thesis using `length xvec = length Tvec` `distinct xvec` S `(p \<bullet> xvec) \<sharp>* T` `distinctPerm p`
+  thus ?thesis using \<open>length xvec = length Tvec\<close> \<open>distinct xvec\<close> S \<open>(p \<bullet> xvec) \<sharp>* T\<close> \<open>distinctPerm p\<close>
     by(simp add: renaming)
 qed
 

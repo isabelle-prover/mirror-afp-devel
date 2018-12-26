@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Buffer example *}
+section \<open>Buffer example\<close>
 
 theory BufferExample imports 
   "../Execute/Code_Generation"
@@ -143,7 +143,7 @@ by eval
 definition main where "main = STR ''main''"
 definition five :: int where "five = 5"
 
-ML_val {*
+ML_val \<open>
   val program = @{code BufferExample_annotated} @{code "five"};
   val compiled = @{code J2JVM} program;
 
@@ -164,6 +164,6 @@ ML_val {*
       @{code main}
       [ @{code Null}];
   val _ = @{code terminal} run;
-*}
+\<close>
 
 end

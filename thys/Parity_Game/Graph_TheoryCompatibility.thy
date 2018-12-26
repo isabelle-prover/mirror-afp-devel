@@ -1,4 +1,4 @@
-section {* Compatibility with the Graph Theory Package *}
+section \<open>Compatibility with the Graph Theory Package\<close>
 
 theory Graph_TheoryCompatibility
 imports
@@ -7,18 +7,18 @@ imports
   Graph_Theory.Digraph_Isomorphism
 begin
 
-text {*
+text \<open>
   In this section, we show that our @{locale Digraph} locale is compatible to the
   @{locale nomulti_digraph} locale from the graph theory package from the Archive of Formal Proofs.
 
   For this, we will define two functions converting between the different types and show that with
   these conversion functions the locales interpret each other.  Together, this indicates that our
   definition of digraph is reasonable.
-*}
+\<close>
 
-subsection {* To Graph Theory *}
+subsection \<open>To Graph Theory\<close>
 
-text {* We can easily convert our graphs into @{type pre_digraph} objects. *}
+text \<open>We can easily convert our graphs into @{type pre_digraph} objects.\<close>
 definition to_pre_digraph :: "('a, 'b) Graph_scheme \<Rightarrow> ('a, 'a \<times> 'a) pre_digraph"
   where "to_pre_digraph G \<equiv> \<lparr>
     pre_digraph.verts = Graph.verts G,
@@ -27,10 +27,10 @@ definition to_pre_digraph :: "('a, 'b) Graph_scheme \<Rightarrow> ('a, 'a \<time
     head = snd
   \<rparr>"
 
-text {*
+text \<open>
   With this conversion function, our @{locale Digraph} locale contains the locale
   @{locale nomulti_digraph} from the graph theory package.
-*}
+\<close>
 context Digraph begin
 interpretation is_nomulti_digraph: nomulti_digraph "to_pre_digraph G" proof
   fix e assume *: "e \<in> pre_digraph.arcs (to_pre_digraph G)"
@@ -42,9 +42,9 @@ qed (simp add: arc_to_ends_def to_pre_digraph_def)
 end
 
 
-subsection {* From Graph Theory *}
+subsection \<open>From Graph Theory\<close>
 
-text {* We can also convert in the other direction. *}
+text \<open>We can also convert in the other direction.\<close>
 definition from_pre_digraph :: "('a, 'b) pre_digraph \<Rightarrow> 'a Graph"
   where "from_pre_digraph G \<equiv> \<lparr>
     Graph.verts = pre_digraph.verts G,
@@ -64,14 +64,14 @@ interpretation is_Digraph: Digraph "from_pre_digraph G" proof-
 qed
 end
 
-subsection {* Isomorphisms *}
+subsection \<open>Isomorphisms\<close>
 
-text {*
+text \<open>
   We also show that our conversion functions make sense.  That is, we show that they are nearly
   inverses of each other.  Unfortunately, @{const from_pre_digraph} irretrievably loses information
   about the arcs, and only keeps tail/head intact, so the best we can get for this case is that the
   back-and-forth converted graphs are isomorphic.
-*}
+\<close>
 
 lemma graph_conversion_bij: "G = from_pre_digraph (to_pre_digraph G)"
   unfolding to_pre_digraph_def from_pre_digraph_def arcs_ends_def arc_to_ends_def by auto

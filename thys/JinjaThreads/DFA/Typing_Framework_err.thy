@@ -3,7 +3,7 @@
     Copyright   2000 TUM
 *)
 
-section {* Lifting the Typing Framework to err, app, and eff *}
+section \<open>Lifting the Typing Framework to err, app, and eff\<close>
 
 theory Typing_Framework_err
 imports

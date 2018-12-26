@@ -6,9 +6,9 @@ begin
 
 context begin interpretation BoolProg_Syntax .
 
-subsection {* Macros *}
+subsection \<open>Macros\<close>
 
-text {* Counters \<approx> bounded natural numbers *}
+text \<open>Counters \<approx> bounded natural numbers\<close>
 
 (* Vars: offset, number of vars, value *)
 fun set_counter :: "nat list \<Rightarrow> bexp list \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> com"
@@ -56,7 +56,7 @@ definition array_access where
 definition array_check where
   "array_check ctr chk m = foldl (\<lambda>bexp c. And (Or (Not (ctr c)) (chk c)) (Or (ctr c) bexp)) FF [0..<m]"
 
-subsection {* Gather statistics *}
+subsection \<open>Gather statistics\<close>
 
 fun stat' where
   "stat' (a,t,c,g) instr = (case instr of
@@ -68,7 +68,7 @@ fun stat' where
 definition stats where
   "stats ls = foldl stat' (0,0,0,0) ls"
 
-subsection {* Misc *}
+subsection \<open>Misc\<close>
 (* this is only used for the code setup in Programs/* *)
 type_synonym const_map = "(String.literal, bexp) mapping"
 type_synonym fun_map = "(String.literal, nat \<Rightarrow> bexp) mapping"

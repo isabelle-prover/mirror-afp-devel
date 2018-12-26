@@ -4,15 +4,15 @@
                Georg Struth <g.struth at sheffield.ac.uk>               
 *)
 
-section {* Dioids, Powers and Finite Sums *}
+section \<open>Dioids, Powers and Finite Sums\<close>
 
 theory Dioid_Power_Sum
   imports Kleene_Algebra.Dioid Kleene_Algebra.Finite_Suprema
 
 begin
 
-text {* We add a few facts about powers and finite
- sums---in fact, finite suprema---to an existing theory field for dioids. *}
+text \<open>We add a few facts about powers and finite
+ sums---in fact, finite suprema---to an existing theory field for dioids.\<close>
 
 context dioid_one_zero
 

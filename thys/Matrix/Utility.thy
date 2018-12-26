@@ -23,13 +23,13 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Utility Functions and Lemmas *}
+section \<open>Utility Functions and Lemmas\<close>
 
 theory Utility
 imports Main
 begin
 
-subsection {* Miscellaneous *}
+subsection \<open>Miscellaneous\<close>
 
 lemma ballI2[Pure.intro]:
   assumes "\<And>x y. (x, y) \<in> A \<Longrightarrow> P x y"
@@ -99,7 +99,7 @@ next
   proof (intro allI impI)
     fix i
     assume "i < Suc n"
-    with `?r` show "P i" by (cases i, auto)
+    with \<open>?r\<close> show "P i" by (cases i, auto)
   qed
 qed
 

@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Preservation of Deadlock *}
+section \<open>Preservation of Deadlock\<close>
 
 theory Deadlocked
 imports
@@ -47,7 +47,7 @@ next
   case CastRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedCast s v U T E T')
-  from `P,E,H \<turnstile> Cast T (Val v) : T'` show ?case
+  from \<open>P,E,H \<turnstile> Cast T (Val v) : T'\<close> show ?case
   proof(rule WTrt_elim_cases)
     fix T''
     assume wt: "P,E,H \<turnstile> Val v : T''" "T = T'"
@@ -56,7 +56,7 @@ next
   qed
 next 
   case (RedCastFail s v U T E T')
-  from `P,E,H \<turnstile> Cast T (Val v) : T'` 
+  from \<open>P,E,H \<turnstile> Cast T (Val v) : T'\<close> 
   obtain T'' where "P,E,H \<turnstile> Val v : T''" "T = T'" by auto
   thus ?case
     by(cases "P \<turnstile> T'' \<le> T")(fastforce intro: red_reds.RedCast red_reds.RedCastFail)+
@@ -91,17 +91,17 @@ next
     by(fastforce intro: red_reds.RedAAccBounds dest: hext_arrD)
 next 
   case (RedAAcc h a T n i v l E T')
-  from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'` 
+  from \<open>P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> : T'\<close> 
   have wt: "P,E,H \<turnstile> addr a : T'\<lfloor>\<rceil>" by(auto)
-  with `H \<unlhd> hp (h, l)` `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>`
+  with \<open>H \<unlhd> hp (h, l)\<close> \<open>typeof_addr h a = \<lfloor>Array_type T n\<rfloor>\<close>
   have Ha: "typeof_addr H a = \<lfloor>Array_type T n\<rfloor>" by(auto dest: hext_arrD)
-  with `0 <=s i` `sint i < int n`
+  with \<open>0 <=s i\<close> \<open>sint i < int n\<close>
   have "nat (sint i) < n" by(metis nat_less_iff sint_0 word_sle_def)
   with Ha have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_total[OF hconf this]
   obtain v where "heap_read H a (ACell (nat (sint i))) v" by blast
-  with Ha `0 <=s i` `sint i < int n` show ?case
+  with Ha \<open>0 <=s i\<close> \<open>sint i < int n\<close> show ?case
     by(fastforce intro: red_reds.RedAAcc simp add: ta_upd_simps)
 next
   case AAssRed1 thus ?case by(fastforce intro: red_reds.intros)
@@ -115,41 +115,41 @@ next
   case RedAAssBounds thus ?case by(fastforce intro: red_reds.RedAAssBounds dest: hext_arrD)
 next
   case (RedAAssStore s a T n i w U E T')
-  from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'` 
+  from \<open>P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'\<close> 
   obtain T'' T''' where wt: "P,E,H \<turnstile> addr a : T''\<lfloor>\<rceil>"
     and wtw: "P,E,H \<turnstile> Val w : T'''" by auto
-  with `H \<unlhd> hp s` `typeof_addr (hp s) a = \<lfloor>Array_type T n\<rfloor>`
+  with \<open>H \<unlhd> hp s\<close> \<open>typeof_addr (hp s) a = \<lfloor>Array_type T n\<rfloor>\<close>
   have Ha: "typeof_addr H a = \<lfloor>Array_type T n\<rfloor>" by(auto dest: hext_arrD)
-  from `typeof\<^bsub>hp s\<^esub> w = \<lfloor>U\<rfloor>` wtw `H \<unlhd> hp s` have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
+  from \<open>typeof\<^bsub>hp s\<^esub> w = \<lfloor>U\<rfloor>\<close> wtw \<open>H \<unlhd> hp s\<close> have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
     by(auto dest: type_of_hext_type_of)
-  with Ha `0 <=s i` `sint i < int n` `\<not> P \<turnstile> U \<le> T` show ?case
+  with Ha \<open>0 <=s i\<close> \<open>sint i < int n\<close> \<open>\<not> P \<turnstile> U \<le> T\<close> show ?case
     by(fastforce intro: red_reds.RedAAssStore)
 next
   case (RedAAss h a T n i w U h' l E T')
-  from `P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'`
+  from \<open>P,E,H \<turnstile> addr a\<lfloor>Val (Intg i)\<rceil> := Val w : T'\<close>
   obtain T'' T''' where wt: "P,E,H \<turnstile> addr a : T''\<lfloor>\<rceil>"
       and wtw: "P,E,H \<turnstile> Val w : T'''" by auto
-  with `H \<unlhd> hp (h, l)` `typeof_addr h a = \<lfloor>Array_type T n\<rfloor>`
+  with \<open>H \<unlhd> hp (h, l)\<close> \<open>typeof_addr h a = \<lfloor>Array_type T n\<rfloor>\<close>
   have Ha: "typeof_addr H a = \<lfloor>Array_type T n\<rfloor>" by(auto dest: hext_arrD)
-  from `typeof\<^bsub>h\<^esub> w = \<lfloor>U\<rfloor>` wtw `H \<unlhd> hp (h, l)` have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
+  from \<open>typeof\<^bsub>h\<^esub> w = \<lfloor>U\<rfloor>\<close> wtw \<open>H \<unlhd> hp (h, l)\<close> have "typeof\<^bsub>H\<^esub> w = \<lfloor>U\<rfloor>" 
     by(auto dest: type_of_hext_type_of)
   moreover
-  with `P \<turnstile> U \<le> T` have conf: "P,H \<turnstile> w :\<le> T"
+  with \<open>P \<turnstile> U \<le> T\<close> have conf: "P,H \<turnstile> w :\<le> T"
     by(auto simp add: conf_def)
-  from `0 <=s i` `sint i < int n`
+  from \<open>0 <=s i\<close> \<open>sint i < int n\<close>
   have "nat (sint i) < n"
     by (metis nat_less_iff sint_0 word_sle_def)
   with Ha have "P,H \<turnstile> a@ACell (nat (sint i)) : T"
     by(auto intro: addr_loc_type.intros)
   from heap_write_total[OF hconf this conf]
   obtain H' where "heap_write H a (ACell (nat (sint i))) w H'" ..
-  ultimately show ?case using `0 <=s i` `sint i < int n` Ha `P \<turnstile> U \<le> T`
+  ultimately show ?case using \<open>0 <=s i\<close> \<open>sint i < int n\<close> Ha \<open>P \<turnstile> U \<le> T\<close>
     by(fastforce simp del: split_paired_Ex intro: red_reds.RedAAss)
 next
   case ALengthRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedALength h a T n l E T')
-  from `P,E,H \<turnstile> addr a\<bullet>length : T'`
+  from \<open>P,E,H \<turnstile> addr a\<bullet>length : T'\<close>
   obtain T'' where [simp]: "T' = Integer"
       and wta: "P,E,H \<turnstile> addr a : T''\<lfloor>\<rceil>" by(auto)
   then obtain n'' where "typeof_addr H a = \<lfloor>Array_type T'' n''\<rfloor>" by(auto)
@@ -160,13 +160,13 @@ next
   case FAccRed thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedFAcc h a D F v l E T)
-  from `P,E,H \<turnstile> addr a\<bullet>F{D} : T` obtain U C' fm
+  from \<open>P,E,H \<turnstile> addr a\<bullet>F{D} : T\<close> obtain U C' fm
     where wt: "P,E,H \<turnstile> addr a : U"
     and icto: "class_type_of' U = \<lfloor>C'\<rfloor>"
     and has: "P \<turnstile> C' has F:T (fm) in D"
     by(auto)
   then obtain hU where Ha: "typeof_addr H a = \<lfloor>hU\<rfloor>" "U = ty_of_htype hU" by(auto)
-  with icto `P \<turnstile> C' has F:T (fm) in D` have "P,H \<turnstile> a@CField D F : T"
+  with icto \<open>P \<turnstile> C' has F:T (fm) in D\<close> have "P,H \<turnstile> a@CField D F : T"
     by(auto intro: addr_loc_type.intros)
   from heap_read_total[OF hconf this]
   obtain v where "heap_read H a (CField D F) v" by blast
@@ -181,7 +181,7 @@ next
   case RedFAssNull thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedFAss h a D F v h' l E T)
-  from `P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T` obtain U C' T' T2 fm
+  from \<open>P,E,H \<turnstile> addr a\<bullet>F{D} := Val v : T\<close> obtain U C' T' T2 fm
     where wt: "P,E,H \<turnstile> addr a : U"
     and icto: "class_type_of' U = \<lfloor>C'\<rfloor>"
     and has: "P \<turnstile> C' has F:T' (fm) in D"
@@ -245,7 +245,7 @@ next
   case CallParams thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedCall s a U M Ts T pns body D vs E T')
-  from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'` 
+  from \<open>P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T'\<close> 
   obtain U' C' Ts' meth D' Ts''
     where wta: "P,E,H \<turnstile> addr a : U'"
     and icto: "class_type_of' U' = \<lfloor>C'\<rfloor>"
@@ -253,13 +253,13 @@ next
     and wtes: "P,E,H \<turnstile> map Val vs [:] Ts''"
     and widens: "P \<turnstile> Ts'' [\<le>] Ts'" by auto
   from wta obtain hU' where Ha: "typeof_addr H a = \<lfloor>hU'\<rfloor>" "U' = ty_of_htype hU'" by(auto)
-  moreover from `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `H \<unlhd> hp s` Ha
+  moreover from \<open>typeof_addr (hp s) a = \<lfloor>U\<rfloor>\<close> \<open>H \<unlhd> hp s\<close> Ha
   have [simp]: "U = hU'" by(auto dest: typeof_addr_hext_mono)
   from wtes have "length vs = length Ts''"
     by(auto intro: map_eq_imp_length_eq)
   moreover from widens have "length Ts'' = length Ts'"
     by(auto dest: widens_lengthD)
-  moreover from sees icto sees `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D` Ha
+  moreover from sees icto sees \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D\<close> Ha
   have [simp]: "meth = \<lfloor>(pns, body)\<rfloor>" by(auto dest: sees_method_fun)
   with sees wf have "wf_mdecl wf_J_mdecl P D' (M, Ts', T', \<lfloor>(pns, body)\<rfloor>)"
     by(auto intro: sees_wf_mdecl)
@@ -268,28 +268,28 @@ next
     by(fastforce intro: red_reds.RedCall)
 next
   case (RedCallExternal s a U M Ts T' D vs ta va h' ta' e' s')
-  from `P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T` 
+  from \<open>P,E,H \<turnstile> addr a\<bullet>M(map Val vs) : T\<close> 
   obtain U' C' Ts' meth D' Ts'' 
     where wta: "P,E,H \<turnstile> addr a : U'" and icto: "class_type_of' U' = \<lfloor>C'\<rfloor>"
     and sees: "P \<turnstile> C' sees M: Ts'\<rightarrow>T = meth in D'"
     and wtvs: "P,E,H \<turnstile> map Val vs [:] Ts''" 
     and sub: "P \<turnstile> Ts'' [\<le>] Ts'" by auto
-  from wta `typeof_addr (hp s) a = \<lfloor>U\<rfloor>` `hext H (hp s)` have [simp]: "U' = ty_of_htype U"
+  from wta \<open>typeof_addr (hp s) a = \<lfloor>U\<rfloor>\<close> \<open>hext H (hp s)\<close> have [simp]: "U' = ty_of_htype U"
     by(auto dest: typeof_addr_hext_mono)
   with icto have [simp]: "C' = class_type_of U" by(auto)
-  from sees `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T' = Native in D`
+  from sees \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T' = Native in D\<close>
   have [simp]: "meth = Native" by(auto dest: sees_method_fun)
   with wta sees icto wtvs sub have "P,H \<turnstile> a\<bullet>M(vs) : T"
     by(cases U)(auto 4 4 simp add: external_WT'_iff)
-  from red_external_wt_hconf_hext[OF wf `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>` `H \<unlhd> hp s` this tconf hconf]
-    wta icto sees `ta' = convert_extTA extNTA ta` `e' = extRet2J (addr a\<bullet>M(map Val vs)) va` `s' = (h', lcl s)`
+  from red_external_wt_hconf_hext[OF wf \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close> \<open>H \<unlhd> hp s\<close> this tconf hconf]
+    wta icto sees \<open>ta' = convert_extTA extNTA ta\<close> \<open>e' = extRet2J (addr a\<bullet>M(map Val vs)) va\<close> \<open>s' = (h', lcl s)\<close>
   show ?case by(cases U)(auto 4 5 intro: red_reds.RedCallExternal simp del: split_paired_Ex)
 next
   case RedCallNull thus ?case by(fastforce intro: red_reds.intros)
 next
   case (BlockRed e h l V vo ta e' h' l' T E T')
   note IH = BlockRed.hyps(2)
-  from IH[of "E(V \<mapsto> T)" T'] `P,E,H \<turnstile> {V:T=vo; e} : T'` `hext H (hp (h, l))`
+  from IH[of "E(V \<mapsto> T)" T'] \<open>P,E,H \<turnstile> {V:T=vo; e} : T'\<close> \<open>hext H (hp (h, l))\<close>
   show ?case by(fastforce dest: red_reds.BlockRed)
 next
   case RedBlock thus ?case by(fastforce intro: red_reds.intros)
@@ -325,21 +325,21 @@ next
   case RedTry thus ?case by(fastforce intro: red_reds.intros)
 next
   case (RedTryCatch s a D C V e2 E T)
-  from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
+  from \<open>P,E,H \<turnstile> try Throw a catch(C V) e2 : T\<close>
   obtain T' where "P,E,H \<turnstile> addr a : T'" by auto
-  with `typeof_addr (hp s) a = \<lfloor>Class_type D\<rfloor>` `hext H (hp s)`
+  with \<open>typeof_addr (hp s) a = \<lfloor>Class_type D\<rfloor>\<close> \<open>hext H (hp s)\<close>
   have Ha: "typeof_addr H a = \<lfloor>Class_type D\<rfloor>"
     by(auto dest: typeof_addr_hext_mono)
-  with `P \<turnstile> D \<preceq>\<^sup>* C` show ?case
+  with \<open>P \<turnstile> D \<preceq>\<^sup>* C\<close> show ?case
     by(fastforce intro: red_reds.RedTryCatch)
 next
   case (RedTryFail s a D C V e2 E T)
-  from `P,E,H \<turnstile> try Throw a catch(C V) e2 : T`
+  from \<open>P,E,H \<turnstile> try Throw a catch(C V) e2 : T\<close>
   obtain T' where "P,E,H \<turnstile> addr a : T'" by auto
-  with `typeof_addr (hp s) a = \<lfloor>Class_type D\<rfloor>` `hext H (hp s)`
+  with \<open>typeof_addr (hp s) a = \<lfloor>Class_type D\<rfloor>\<close> \<open>hext H (hp s)\<close>
   have Ha: "typeof_addr H a = \<lfloor>Class_type D\<rfloor>" 
     by(auto dest: typeof_addr_hext_mono)
-  with `\<not> P \<turnstile> D \<preceq>\<^sup>* C` show ?case
+  with \<open>\<not> P \<turnstile> D \<preceq>\<^sup>* C\<close> show ?case
     by(fastforce intro: red_reds.RedTryFail)
 next
   case ListRed1 thus ?case by(fastforce intro: red_reds.intros)

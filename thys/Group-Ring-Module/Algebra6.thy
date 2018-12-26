@@ -1181,7 +1181,7 @@ apply (induct_tac d)
  apply (simp add:deg_n_of_X)
 done
 
-subsection {* Degree with value in @{text "aug_minf"} *}
+subsection \<open>Degree with value in \<open>aug_minf\<close>\<close>
 
 lemma (in PolynRg) nonzero_deg_pos:"\<lbrakk>p \<in> carrier R; p \<noteq> \<zero>\<rbrakk> \<Longrightarrow> 
                                                  0 \<le> deg R S X p"

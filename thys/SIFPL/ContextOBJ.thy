@@ -1,9 +1,9 @@
 (*File: ContextOBJ.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory ContextOBJ imports VS_OBJ begin
-subsection{*Contextual closure*}
+subsection\<open>Contextual closure\<close>
 
-text{*\label{sec:contextObj}We first define contexts with multiple holes.*}
+text\<open>\label{sec:contextObj}We first define contexts with multiple holes.\<close>
 
 datatype CtxtProg =
   Ctxt_Here
@@ -17,11 +17,11 @@ datatype CtxtProg =
 | Ctxt_While BExpr CtxtProg
 | Ctxt_Call
 
-text{*The definition of a procedure body with holes.*}
+text\<open>The definition of a procedure body with holes.\<close>
 
 consts Ctxt_Body::CtxtProg
 
-text{*Next, the substitution of a command into a context:*}
+text\<open>Next, the substitution of a command into a context:\<close>
 
 primrec Fill::"CtxtProg \<Rightarrow> OBJ \<Rightarrow> OBJ"
 where
@@ -36,7 +36,7 @@ where
 "Fill (Ctxt_While b C) J = While b (Fill C J)" |
 "Fill Ctxt_Call J = Call"
 
-text{*The variables mentioned by an expression:*}
+text\<open>The variables mentioned by an expression:\<close>
 
 primrec EVars::"Expr \<Rightarrow> Var set"
 where
@@ -48,8 +48,8 @@ primrec BVars::"BExpr \<Rightarrow> Var set"
 where
 "BVars (compB f e1 e2) = EVars e1 \<union> EVars e2"
 
-text{*The variables possibly read from during the evaluation of $I$
-are denoted by $\mathit{Vars\; I}$.*}
+text\<open>The variables possibly read from during the evaluation of $I$
+are denoted by $\mathit{Vars\; I}$.\<close>
 
 primrec Vars::"OBJ \<Rightarrow> Var set"
 where
@@ -193,14 +193,14 @@ done
 (*>*)
 
 
-text{*An abbreviating definition saying when a value is not a constant
-location.*}
+text\<open>An abbreviating definition saying when a value is not a constant
+location.\<close>
 
 definition ValIsNoLoc ::"Val => bool"
 where "ValIsNoLoc v = (v = RVal Nullref \<or> (\<exists> i . v = IVal i))"
 
-text{*Expressions satisfying the following predicate are guaranteed
-not to return a state-independent location.*}
+text\<open>Expressions satisfying the following predicate are guaranteed
+not to return a state-independent location.\<close>
 
 primrec Expr_noLoc::"Expr \<Rightarrow> bool"
 where
@@ -214,7 +214,7 @@ where
 "BExpr_noLoc (compB f e1 e2) =
    (Expr_noLoc e1 \<and> Expr_noLoc e2 \<and> compBGood f)"
 
-text{*By induction on $e$ one may show the following three properties.*}
+text\<open>By induction on $e$ one may show the following three properties.\<close>
 
 lemma Expr_lemma1[rule_format]:
   "Expr_noLoc e \<longrightarrow> EVars e \<subseteq> X \<longrightarrow> 
@@ -325,7 +325,7 @@ apply clarsimp apply (erule_tac x=ll in allE, clarsimp)
 done
 (*>*)
 
-text{*The first of these can be lifted to boolean expressions.*}
+text\<open>The first of these can be lifted to boolean expressions.\<close>
 
 lemma BExpr_lemma:
 "\<lbrakk>BVars b \<subseteq> X; \<forall>x. x \<in> X \<longrightarrow> CONTEXT x = low; BExpr_noLoc b\<rbrakk> \<Longrightarrow> BExpr_low b"
@@ -337,12 +337,12 @@ apply (simp add: BExpr_low_def Expr_low_def compBGood_def, clarsimp) apply fast
 done
 (*>*)
 
-text{*For contexts, we define when a set $X$ of variables is an upper
-bound for the variables read from. In addition, the @{text noLoc}
+text\<open>For contexts, we define when a set $X$ of variables is an upper
+bound for the variables read from. In addition, the \<open>noLoc\<close>
 condition is imposed on expressions occurring in assignments and field
 modifications in order to express that if these expressions evaluate
 to locations then these must stem from lookup operations in the
-state.*}
+state.\<close>
 
 primrec CtxtVars::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
 where
@@ -360,8 +360,8 @@ where
    (BVars b \<subseteq> X \<and> CtxtVars X C \<and> BExpr_noLoc b)" |
 "CtxtVars X Ctxt_Call = True"
 
-text{*A context is "obviously" low if all accessed variables are
-(contained in a set $X$ whose members are) low.*}
+text\<open>A context is "obviously" low if all accessed variables are
+(contained in a set $X$ whose members are) low.\<close>
 
 definition LOW::"Var set \<Rightarrow> CtxtProg \<Rightarrow> bool"
 where "LOW X C = (CtxtVars X C \<and> (\<forall> x . x : X \<longrightarrow> CONTEXT x = low))"
@@ -651,9 +651,9 @@ apply clarsimp apply (erule Sem_eval_cases) apply (erule Sem_eval_cases)
 done
 (*>*)
 
-text{*Finally, we obtain the following result by induction on an upper
+text\<open>Finally, we obtain the following result by induction on an upper
 bound on the derivation heights of the two executions of $Fill\ C\
-I$.*}
+I$.\<close>
 
 theorem secureI_secureFillI: 
  "\<lbrakk>secure I; LOW X C; LOW X Ctxt_Body; body = Fill Ctxt_Body I\<rbrakk>
@@ -678,11 +678,11 @@ apply (simp add: secure_def Sem_def)
 done
 (*>*)
 
-text{*For a variable*}
+text\<open>For a variable\<close>
 
 consts res::Var
 
-text{*representing the output of the attacking context, the result specialises to*}
+text\<open>representing the output of the attacking context, the result specialises to\<close>
 
 theorem SecureForAttackingContext:
  "\<lbrakk> secure I; LOW X C;  LOW X Ctxt_Body; s \<equiv>\<^sub>\<beta> ss;
@@ -699,5 +699,5 @@ apply (simp add: twiddle_def twiddleStore_def) apply fast
 done
 (*>*)
 
-text{*End of theory ContextObj*}
+text\<open>End of theory ContextObj\<close>
 end

@@ -316,7 +316,7 @@ proof -
     by(force simp add: fresh_prod)
 
   from QTrans cFreshQ' have "Q \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>c> \<prec> ([(x, c)] \<bullet> Q')" by(simp add: alphaBoundResidual)
-  with PSimQ have "\<exists>P'. P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>c> \<prec> P' \<and> (P', [(x, c)] \<bullet> Q') \<in> Rel" using cFreshP cFreshQ `(P, Q) \<in> Rel`
+  with PSimQ have "\<exists>P'. P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>c> \<prec> P' \<and> (P', [(x, c)] \<bullet> Q') \<in> Rel" using cFreshP cFreshQ \<open>(P, Q) \<in> Rel\<close>
     by(rule Goal)
   then obtain P' where PTrans: "P \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>c> \<prec> P'" and P'RelQ': "(P', [(x, c)] \<bullet> Q') \<in> Rel"
     by force

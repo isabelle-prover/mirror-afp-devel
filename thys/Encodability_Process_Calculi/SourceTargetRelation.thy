@@ -2,14 +2,14 @@ theory SourceTargetRelation
   imports Encodings SimulationRelations
 begin
 
-section {* Relation between Source and Target Terms *}
+section \<open>Relation between Source and Target Terms\<close>
 
-subsection {* Relations Induced by the Encoding Function *}
+subsection \<open>Relations Induced by the Encoding Function\<close>
 
-text {* We map encodability criteria on conditions of relations between source and target terms.
+text \<open>We map encodability criteria on conditions of relations between source and target terms.
         The encoding function itself induces such relations. To analyse the preservation of source
         term behaviours we use relations that contain the pairs (S, enc S) for all source terms S.
-        *}
+\<close>
 
 inductive_set (in encoding) indRelR
     :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
@@ -115,10 +115,10 @@ next
   qed
 qed
 
-text {* The relation indRelR is the smallest relation that relates all source terms and their
+text \<open>The relation indRelR is the smallest relation that relates all source terms and their
         literal translations. Thus there exists a relation that relates source terms and their
         literal translations and satisfies some predicate on its pairs iff the predicate holds for
-        the pairs of indRelR. *}
+        the pairs of indRelR.\<close>
 
 lemma (in encoding) indRelR_impl_exists_source_target_relation:
   fixes PredA :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set \<Rightarrow> bool"
@@ -247,8 +247,8 @@ next
   qed
 qed
 
-text {* An encoding preserves, reflects, or respects a predicate iff indRelR preserves, reflects,
-        or respects this predicate. *}
+text \<open>An encoding preserves, reflects, or respects a predicate iff indRelR preserves, reflects,
+        or respects this predicate.\<close>
 
 lemma (in encoding) enc_satisfies_pred_impl_indRelR_satisfies_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
@@ -339,9 +339,9 @@ lemma (in encoding) enc_respects_pred_iff_indRelRPO_respects_pred:
             indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="\<lambda>(P, Q). Pred Q = Pred P"]
     apply simp by blast
 
-text {* Accordingly an encoding preserves, reflects, or respects a predicate iff there exists a
+text \<open>Accordingly an encoding preserves, reflects, or respects a predicate iff there exists a
         relation that relates source terms with their literal translations and preserves, reflects,
-        or respects this predicate. *}
+        or respects this predicate.\<close>
 
 lemma (in encoding) enc_satisfies_pred_iff_source_target_satisfies_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
@@ -499,8 +499,8 @@ proof -
     by simp
 qed
 
-text {* To analyse the reflection of source term behaviours we use relations that contain the pairs
-        (enc S, S) for all source terms S. *}
+text \<open>To analyse the reflection of source term behaviours we use relations that contain the pairs
+        (enc S, S) for all source terms S.\<close>
 
 inductive_set (in encoding) indRelL
     :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
@@ -606,9 +606,9 @@ next
   qed
 qed
 
-text {* The relations indRelR and indRelL are dual. indRelR preserves some predicate iff indRelL
+text \<open>The relations indRelR and indRelL are dual. indRelR preserves some predicate iff indRelL
         reflects it. indRelR reflects some predicate iff indRelL reflects it. indRelR respects some
-        predicate iff indRelL does. *}
+        predicate iff indRelL does.\<close>
 
 lemma (in encoding) indRelR_preserves_pred_iff_indRelL_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
@@ -944,8 +944,8 @@ next
     by blast
 qed
 
-text {* An encoding preserves, reflects, or respects a predicate iff indRelL reflects, preserves,
-        or respects this predicate. *}
+text \<open>An encoding preserves, reflects, or respects a predicate iff indRelL reflects, preserves,
+        or respects this predicate.\<close>
 
 lemma (in encoding) enc_preserves_pred_iff_indRelL_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
@@ -968,9 +968,9 @@ lemma (in encoding) enc_respects_pred_iff_indRelL_respects_pred:
             enc_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
     by blast
 
-text {* An encoding preserves, reflects, or respects a predicate iff there exists a relation,
+text \<open>An encoding preserves, reflects, or respects a predicate iff there exists a relation,
         namely indRelL, that relates literal translations with their source terms and reflects,
-        preserves, or respects this predicate. *}
+        preserves, or respects this predicate.\<close>
 
 lemma (in encoding) enc_preserves_pred_iff_source_target_rel_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
@@ -996,8 +996,8 @@ lemma (in encoding) enc_respects_pred_iff_source_target_rel_respects_pred_encL:
             indRelR_cond_respection_iff_indRelL_cond_respection[where Pred="Pred"]
     by simp
 
-text {* To analyse the respection of source term behaviours we use relations that contain both kind
-        of pairs: (S, enc S) as well as (enc S, S) for all source terms S. *}
+text \<open>To analyse the respection of source term behaviours we use relations that contain both kind
+        of pairs: (S, enc S) as well as (enc S, S) for all source terms S.\<close>
 
 inductive_set (in encoding) indRel
     :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
@@ -1202,8 +1202,8 @@ proof -
     by simp
 qed
 
-text {* The relation indRel is a combination of indRelL and indRelR. indRel respects a predicate
-        iff indRelR (or indRelL) respects it. *}
+text \<open>The relation indRel is a combination of indRelL and indRelR. indRel respects a predicate
+        iff indRelR (or indRelL) respects it.\<close>
 
 lemma (in encoding) indRel_respects_pred_iff_indRelR_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
@@ -1344,7 +1344,7 @@ next
     by blast
 qed
 
-text {* An encoding respects a predicate iff indRel respects this predicate. *}
+text \<open>An encoding respects a predicate iff indRel respects this predicate.\<close>
 
 lemma (in encoding) enc_respects_pred_iff_indRel_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
@@ -1353,9 +1353,9 @@ lemma (in encoding) enc_respects_pred_iff_indRel_respects_pred:
             indRel_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
     by simp
 
-text {* An encoding respects a predicate iff there exists a relation, namely indRel, that relates
+text \<open>An encoding respects a predicate iff there exists a relation, namely indRel, that relates
         source terms and their literal translations in both directions and respects this predicate.
-        *}
+\<close>
 
 lemma (in encoding) enc_respects_pred_iff_source_target_rel_respects_pred_encRL:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
@@ -1367,11 +1367,11 @@ lemma (in encoding) enc_respects_pred_iff_source_target_rel_respects_pred_encRL:
             indRel_cond_respection_iff_indRelR_cond_respection[where Pred="Pred"]
     by simp
 
-subsection {* Relations Induced by the Encoding and a Relation on Target Terms *}
+subsection \<open>Relations Induced by the Encoding and a Relation on Target Terms\<close>
 
-text {* Some encodability like e.g. operational correspondence are defined w.r.t. a relation on
+text \<open>Some encodability like e.g. operational correspondence are defined w.r.t. a relation on
         target terms. To analyse such criteria we include the respective target term relation in
-        the considered relation on the disjoint union of source and target terms. *}
+        the considered relation on the disjoint union of source and target terms.\<close>
 
 inductive_set (in encoding) indRelRT
     :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
@@ -1515,10 +1515,10 @@ proof -
   qed
 qed
 
-text {* The relation indRelRT is the smallest relation that relates all source terms and their
+text \<open>The relation indRelRT is the smallest relation that relates all source terms and their
         literal translations and contains TRel. Thus there exists a relation that relates source
         terms and their literal translations and satisfies some predicate on its pairs iff the
-        predicate holds for the pairs of indRelR. *}
+        predicate holds for the pairs of indRelR.\<close>
 
 lemma (in encoding) indRelR_modulo_pred_impl_indRelRT_modulo_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
@@ -1622,8 +1622,8 @@ proof -
     by simp
 qed
 
-text {* The relation indRelLT includes TRel and relates literal translations and their source
-        terms. *}
+text \<open>The relation indRelLT includes TRel and relates literal translations and their source
+        terms.\<close>
 
 inductive_set (in encoding) indRelLT
     :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
@@ -1979,8 +1979,8 @@ proof -
     by simp
 qed
 
-text {* If the relations indRelRT, indRelLT, or indRelT contain a pair of target terms, then this
-        pair is also related by the considered target term relation. *}
+text \<open>If the relations indRelRT, indRelLT, or indRelT contain a pair of target terms, then this
+        pair is also related by the considered target term relation.\<close>
 
 lemma (in encoding) indRelRT_to_TRel:
   fixes TRel  :: "('procT \<times> 'procT) set"
@@ -2006,9 +2006,9 @@ lemma (in encoding) indRelT_to_TRel:
       using rel
     by (simp add: indRelT.simps)
 
-text {* If the preorders indRelRTPO, indRelLTPO, or the equivalence indRelTEQ contain a pair of
+text \<open>If the preorders indRelRTPO, indRelLTPO, or the equivalence indRelTEQ contain a pair of
         terms, then the pair of target terms that is related to these two terms is also related by
-        the reflexive and transitive closure of the considered target term relation. *}
+        the reflexive and transitive closure of the considered target term relation.\<close>
 
 lemma (in encoding) indRelRTPO_to_TRel:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2432,8 +2432,8 @@ next
     by simp
 qed
 
-text {* Note that if indRelRTPO relates a source term S to a target term T, then the translation of
-        S is equal to T or indRelRTPO also relates the translation of S to T. *}
+text \<open>Note that if indRelRTPO relates a source term S to a target term T, then the translation of
+        S is equal to T or indRelRTPO also relates the translation of S to T.\<close>
 
 lemma (in encoding) indRelRTPO_relates_source_target:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2458,8 +2458,8 @@ proof -
     by blast
 qed
 
-text {* If indRelRTPO, indRelLTPO, or indRelTPO preserves barbs then so does the corresponding
-        target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTPO preserves barbs then so does the corresponding
+        target term relation.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_target_impl_TRel_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2551,8 +2551,8 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_weakly_preserves_barbs:
                           Rel="indRelTEQ TRel" and TRel="TRel"]
     by (simp add: indRelTEQ.target)
 
-text {* If indRelRTPO, indRelLTPO, or indRelTPO reflects barbs then so does the corresponding
-        target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTPO reflects barbs then so does the corresponding
+        target term relation.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_target_impl_TRel_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2644,8 +2644,8 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_weakly_reflects_barbs:
                         Rel="indRelTEQ TRel" and TRel="TRel"]
     by (simp add: indRelTEQ.target)
 
-text {* If indRelRTPO, indRelLTPO, or indRelTPO respects barbs then so does the corresponding
-        target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTPO respects barbs then so does the corresponding
+        target term relation.\<close>
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2695,8 +2695,8 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_weakly_respects_barbs:
             indRelTEQ_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
     by blast
 
-text {* If indRelRTPO, indRelLTPO, or indRelTEQ is a simulation then so is the corresponding target
-        term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a simulation then so is the corresponding target
+        term relation.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3193,8 +3193,8 @@ next
     by blast
 qed
 
-text {* If indRelRTPO, indRelLTPO, or indRelTEQ is a contrasimulation then so is the corresponding
-        target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a contrasimulation then so is the corresponding
+        target term relation.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3368,8 +3368,8 @@ next
     by blast
 qed
 
-text {* If indRelRTPO, indRelLTPO, or indRelTEQ is a coupled simulation then so is the
-        corresponding target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a coupled simulation then so is the
+        corresponding target term relation.\<close>
 
 lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3425,8 +3425,8 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_weak_barbed_coupled_simulat
             indRelTEQ_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
     by blast
 
-text {* If indRelRTPO, indRelLTPO, or indRelTEQ is a correspondence simulation then so is the
-        corresponding target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a correspondence simulation then so is the
+        corresponding target term relation.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3654,8 +3654,8 @@ next
     by blast
 qed
 
-text {* If indRelRTPO, indRelLTPO, or indRelTEQ is a bisimulation then so is the corresponding
-        target term relation. *}
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a bisimulation then so is the corresponding
+        target term relation.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -4031,11 +4031,11 @@ next
     by blast
 qed
 
-subsection {* Relations Induced by the Encoding and Relations on Source Terms and Target Terms *}
+subsection \<open>Relations Induced by the Encoding and Relations on Source Terms and Target Terms\<close>
 
-text {* Some encodability like e.g. full abstraction are defined w.r.t. a relation on source terms
+text \<open>Some encodability like e.g. full abstraction are defined w.r.t. a relation on source terms
         and a relation on target terms. To analyse such criteria we include these two relations in
-        the considered relation on the disjoint union of source and target terms. *}
+        the considered relation on the disjoint union of source and target terms.\<close>
 
 inductive_set (in encoding) indRelRST
     :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
@@ -4871,9 +4871,9 @@ next
   qed
 qed
 
-text {* If the relations indRelRST, indRelLST, or indRelST contain a pair of target terms, then
+text \<open>If the relations indRelRST, indRelLST, or indRelST contain a pair of target terms, then
         this pair is also related by the considered target term relation. Similarly a pair of
-        source terms is related by the considered source term relation. *}
+        source terms is related by the considered source term relation.\<close>
 
 lemma (in encoding) indRelRST_to_SRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
@@ -4929,12 +4929,12 @@ lemma (in encoding) indRelST_to_TRel:
       using rel
     by (simp add: indRelST.simps)
 
-text {* If the relations indRelRSTPO or indRelLSTPO contain a pair of target terms, then this pair
+text \<open>If the relations indRelRSTPO or indRelLSTPO contain a pair of target terms, then this pair
         is also related by the transitive closure of the considered target term relation. Similarly
         a pair of source terms is related by the transitive closure of the source term relation. A
         pair of a source and a target term results from the combination of pairs in the source
         relation, the target relation, and the encoding function. Note that, because of the
-        symmetry, no similar condition holds for indRelSTEQ. *}
+        symmetry, no similar condition holds for indRelSTEQ.\<close>
 
 lemma (in encoding) indRelRSTPO_to_SRel_and_TRel:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5226,8 +5226,8 @@ next
   qed
 qed
 
-text {* If indRelRSTPO, indRelLSTPO, or indRelSTPO preserves barbs then so do the corresponding
-        source term and target term relations. *}
+text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO preserves barbs then so do the corresponding
+        source term and target term relations.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_source_impl_SRel_preserves_barbs:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5379,8 +5379,8 @@ next
     by (simp add: indRelSTEQ.target)
 qed
 
-text {* If indRelRSTPO, indRelLSTPO, or indRelSTPO reflects barbs then so do the corresponding
-        source term and target term relations. *}
+text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO reflects barbs then so do the corresponding
+        source term and target term relations.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_source_impl_SRel_reflects_barbs:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5532,8 +5532,8 @@ next
     by (simp add: indRelSTEQ.target)
 qed
 
-text {* If indRelRSTPO, indRelLSTPO, or indRelSTPO respects barbs then so do the corresponding
-        source term and target term relations. *}
+text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO respects barbs then so do the corresponding
+        source term and target term relations.\<close>
 
 lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_respect_barbs:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5661,9 +5661,9 @@ next
     by blast
 qed
 
-text {* If TRel is reflexive then ind relRTPO is a subrelation of indRelTEQ. If SRel is reflexive
+text \<open>If TRel is reflexive then ind relRTPO is a subrelation of indRelTEQ. If SRel is reflexive
         then indRelRTPO is a subrelation of indRelRTPO. Moreover, indRelRSTPO is a subrelation of
-        indRelSTEQ. *}
+        indRelSTEQ.\<close>
 
 lemma (in encoding) indRelRTPO_to_indRelTEQ:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -5751,8 +5751,8 @@ next
     by (rule indRelSTEQ.trans)
 qed
 
-text {* If indRelRTPO is a bisimulation and SRel is a reflexive bisimulation then also indRelRSTPO
-        is a bisimulation. *}
+text \<open>If indRelRTPO is a bisimulation and SRel is a reflexive bisimulation then also indRelRSTPO
+        is a bisimulation.\<close>
 
 lemma (in encoding) indRelRTPO_weak_reduction_bisimulation_impl_indRelRSTPO_bisimulation:
   fixes SRel :: "('procS \<times> 'procS) set"

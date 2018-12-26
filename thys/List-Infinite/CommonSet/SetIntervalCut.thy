@@ -3,19 +3,19 @@
     Author:     David Trachtenherz
 *)
 
-section {* Cutting linearly ordered and natural sets *}
+section \<open>Cutting linearly ordered and natural sets\<close>
 
 theory SetIntervalCut
 imports SetInterval2
 begin
 
-subsection {* Set restriction *}
+subsection \<open>Set restriction\<close>
 
-text {*
-  A set to set function @{text f} is a @{text "set restriction"},
-  if there exists a predicate @{text P},
-  so that for every set @{text s} the function result @{text "f s"}
-  contains all its elements fulfilling @{text P} *}
+text \<open>
+  A set to set function \<open>f\<close> is a \<open>set restriction\<close>,
+  if there exists a predicate \<open>P\<close>,
+  so that for every set \<open>s\<close> the function result \<open>f s\<close>
+  contains all its elements fulfilling \<open>P\<close>\<close>
 
 definition set_restriction :: "('a set \<Rightarrow> 'a set) \<Rightarrow> bool"
   where "set_restriction f \<equiv> \<exists>P. \<forall>A. f A = {x \<in> A. P x}"
@@ -38,7 +38,7 @@ lemma set_restriction_commute: "
   \<lbrakk> set_restriction f; set_restriction g \<rbrakk> \<Longrightarrow> f (g I) = g (f I)"
 unfolding set_restriction_def by fastforce
 
-text {* Constructs a set restriction function with the given restriction predicate *}
+text \<open>Constructs a set restriction function with the given restriction predicate\<close>
 definition
   set_restriction_fun :: "('a \<Rightarrow> bool) \<Rightarrow> ('a set \<Rightarrow> 'a set)"
 where
@@ -119,9 +119,9 @@ lemma set_restriction_fun_empty_conv: "
 unfolding set_restriction_fun_def by blast
 
 
-subsection {* Cut operators for sets/intervals *}
+subsection \<open>Cut operators for sets/intervals\<close>
 
-subsubsection {* Definitions and basic lemmata for cut operators *}
+subsubsection \<open>Definitions and basic lemmata for cut operators\<close>
 
 definition cut_le :: "'a::linorder set \<Rightarrow> 'a \<Rightarrow> 'a set"   (infixl "\<down>\<le>" 100)
   where "I \<down>\<le> t \<equiv> {x\<in>I. x \<le> t}"
@@ -203,7 +203,7 @@ lemmas i_cut_Diff_conv =
   cut_ge_Diff_conv cut_greater_Diff_conv
 
 
-subsubsection {* Basic results for cut operators *}
+subsubsection \<open>Basic results for cut operators\<close>
 
 lemma
   cut_less_eq_set_restriction_fun':    "(\<lambda>I. I \<down>< t) = set_restriction_fun (\<lambda>x. x < t)" and
@@ -534,7 +534,7 @@ by fastforce
 
 
 
-subsubsection {* Relations between cut operators *}
+subsubsection \<open>Relations between cut operators\<close>
 
 lemma insert_Int_conv_if: "A \<inter> (insert x B) = (
   if x \<in> A then insert x (A \<inter> B) else A \<inter> B)"
@@ -585,7 +585,7 @@ lemma nat_cut_greater_ge_conv: "0 < t \<Longrightarrow> I \<down>> (t - Suc 0) =
 by fastforce
 
 
-subsubsection {* Function images with cut operators *}
+subsubsection \<open>Function images with cut operators\<close>
 
 lemma cut_less_image: "
   \<lbrakk> strict_mono_on f A; I \<subseteq> A; n \<in> A \<rbrakk> \<Longrightarrow>
@@ -630,7 +630,7 @@ lemmas i_cut_image =
   cut_ge_image cut_greater_image
 
 
-subsubsection {* Finiteness and cardinality with cut operators *}
+subsubsection \<open>Finiteness and cardinality with cut operators\<close>
 
 lemma
   cut_le_finite:      "finite I \<Longrightarrow> finite (I \<down>\<le> t)" and
@@ -675,7 +675,7 @@ apply (simp add: nat_cut_ge_finite_iff)
 done
 
 
-subsubsection {* Cutting a set at  @{text Min} or @{text Max} element *}
+subsubsection \<open>Cutting a set at  \<open>Min\<close> or \<open>Max\<close> element\<close>
 
 lemma cut_greater_Min_eq_Diff: "I \<down>> (iMin I) = I - {iMin I}"
 by blast
@@ -807,7 +807,7 @@ apply fastforce
 done
 
 
-subsubsection {* Cut operators with intervals from SetInterval *}
+subsubsection \<open>Cut operators with intervals from SetInterval\<close>
 
 lemma
   UNIV_cut_le:      "UNIV \<down>\<le> t = {..t}" and
@@ -860,12 +860,12 @@ apply fastforce+
 done
 
 
-subsubsection {* Mirroring finite natural sets between their @{term Min} and @{term Max} element *}
+subsubsection \<open>Mirroring finite natural sets between their @{term Min} and @{term Max} element\<close>
 
-text {* Mirroring a number at the middle of the interval {min l r..max l r} *}
-text_raw {* \bigskip *}
+text \<open>Mirroring a number at the middle of the interval {min l r..max l r}\<close>
+text_raw \<open>\bigskip\<close>
 
-text {* Mirroring a single element n between the interval boundaries l and r *}
+text \<open>Mirroring a single element n between the interval boundaries l and r\<close>
 definition nat_mirror :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
   where "nat_mirror n l r \<equiv> l + r - n"
 
@@ -909,7 +909,7 @@ lemma nat_mirror_eq_conv: "
   (nat_mirror a l r = nat_mirror b l r) = (a = b)"
 unfolding nat_mirror_def by fastforce
 
-text {* Mirroring a single element n between the interval boundaries of I *}
+text \<open>Mirroring a single element n between the interval boundaries of I\<close>
 definition
   mirror_elem :: "nat \<Rightarrow> nat set \<Rightarrow> nat"
 where
@@ -969,7 +969,7 @@ definition
 where
   "imirror_bounds I l r \<equiv> (\<lambda>x. nat_mirror x l r) ` I"
 
-text {* Mirroring all elements between the interval boundaries of I *}
+text \<open>Mirroring all elements between the interval boundaries of I\<close>
 definition
   imirror :: "nat set \<Rightarrow> nat set"
 where

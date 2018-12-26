@@ -1,4 +1,4 @@
-section {* Set by Characteristic Function *}
+section \<open>Set by Characteristic Function\<close>
 theory Impl_Cfun_Set
 imports "../Intf/Intf_Set"
 begin

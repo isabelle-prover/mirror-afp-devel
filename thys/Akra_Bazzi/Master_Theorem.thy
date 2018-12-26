@@ -4,7 +4,7 @@
 
   The Master theorem in a generalised form as derived from the Akra-Bazzi theorem.
 *)
-section {* The Master theorem *}
+section \<open>The Master theorem\<close>
 theory Master_Theorem
 imports
   "HOL-Analysis.Analysis"

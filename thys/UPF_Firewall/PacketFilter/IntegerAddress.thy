@@ -35,14 +35,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Integer Addresses *}
+subsection \<open>Integer Addresses\<close>
 theory 
   IntegerAddress
   imports 
     NetworkCore
 begin
 
-text{* A theory where addresses are modelled as Integers.*}
+text\<open>A theory where addresses are modelled as Integers.\<close>
 
 type_synonym 
   adr\<^sub>i = "int" 

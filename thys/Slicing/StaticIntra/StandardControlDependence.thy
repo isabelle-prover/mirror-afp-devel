@@ -1,4 +1,4 @@
-section {* Static Standard Control Dependence *}
+section \<open>Static Standard Control Dependence\<close>
 
 theory StandardControlDependence imports 
   "../Basic/Postdomination" 
@@ -7,7 +7,7 @@ begin
 
 context Postdomination begin
 
-subsubsection {* Definition and some lemmas *}
+subsubsection \<open>Definition and some lemmas\<close>
 
 definition standard_control_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> bool" 
   ("_ controls\<^sub>s _" [51,0])

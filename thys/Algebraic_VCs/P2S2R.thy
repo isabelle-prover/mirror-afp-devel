@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Isomorphisms Between Predicates, Sets and Relations *}
+section \<open>Isomorphisms Between Predicates, Sets and Relations\<close>
 
 theory P2S2R
 imports Main
@@ -24,7 +24,7 @@ definition rel_n :: "'a rel \<Rightarrow> 'a rel" where
 lemma subid_meet: "R \<subseteq> Id \<Longrightarrow> S \<subseteq> Id \<Longrightarrow> R \<inter> S = R ; S"
   by blast
 
-subsection{* Isomorphism Between Sets and Relations *}
+subsection\<open>Isomorphism Between Sets and Relations\<close>
 
 lemma srs: "r2s \<circ> s2r = id"
   by auto
@@ -68,7 +68,7 @@ lemma r2s_inter_hom_var: "R \<subseteq> Id \<Longrightarrow> S \<subseteq> Id \<
 lemma r2s_ad_hom: "R \<subseteq> Id \<Longrightarrow> r2s (rel_n R) = - r2s R"
   by (metis r2s_surj rsr s2r_compl_hom)
 
-subsection {* Isomorphism Between Predicates and Sets *}
+subsection \<open>Isomorphism Between Predicates and Sets\<close>
 
 type_synonym 'a pred = "'a \<Rightarrow> bool"
 
@@ -105,7 +105,7 @@ lemma p2s_conj_hom: "p2s (P \<sqinter> Q) = p2s P \<inter> p2s Q"
 lemma p2s_disj_hom: "p2s (P \<squnion> Q) = p2s P \<union> p2s Q"
   by blast
 
-subsection {* Isomorphism Between Predicates and Relations *}
+subsection \<open>Isomorphism Between Predicates and Relations\<close>
 
 definition p2r :: "'a pred \<Rightarrow> 'a rel" where
   "p2r P = {(s,s) |s. P s}"

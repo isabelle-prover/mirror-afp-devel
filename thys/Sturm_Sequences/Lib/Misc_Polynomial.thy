@@ -3,13 +3,13 @@ theory Misc_Polynomial
 imports "HOL-Computational_Algebra.Polynomial" "HOL-Computational_Algebra.Polynomial_Factorial"
 begin
 
-subsection {* Analysis *}
+subsection \<open>Analysis\<close>
 
 lemma fun_eq_in_ivl:
   assumes "a \<le> b" "\<forall>x::real. a \<le> x \<and> x \<le> b \<longrightarrow> eventually (\<lambda>\<xi>. f \<xi> = f x) (at x)"
   shows "f a = f b"
 proof (rule connected_local_const)
-  show "connected {a..b}" "a \<in> {a..b}" "b \<in> {a..b}" using `a \<le> b` by (auto intro: connected_Icc)
+  show "connected {a..b}" "a \<in> {a..b}" "b \<in> {a..b}" using \<open>a \<le> b\<close> by (auto intro: connected_Icc)
   show "\<forall>aa\<in>{a..b}. eventually (\<lambda>b. f aa = f b) (at aa within {a..b})"
   proof
     fix x assume "x \<in> {a..b}"
@@ -19,9 +19,9 @@ proof (rule connected_local_const)
   qed
 qed
 
-subsection {* Polynomials *}
+subsection \<open>Polynomials\<close>
 
-subsubsection {* General simplification lemmas *}
+subsubsection \<open>General simplification lemmas\<close>
 
 lemma pderiv_div:
   assumes [simp]: "q dvd p" "q \<noteq> 0"
@@ -50,11 +50,11 @@ proof-
 qed
 
 
-subsubsection {* Divisibility of polynomials *}
+subsubsection \<open>Divisibility of polynomials\<close>
 
-text {*
+text \<open>
   Two polynomials that are coprime have no common roots.
-*}
+\<close>
 lemma coprime_imp_no_common_roots:
   "\<not> (poly p x = 0 \<and> poly q x = 0)" if "coprime p q"
      for x :: "'a :: field"
@@ -117,7 +117,7 @@ proof -
     hence "v*x' = x*(w - v')" by (simp add: algebra_simps)
     hence "x dvd v*pderiv x" by simp
     then obtain y where y: "v*x' = x*y" unfolding dvd_def by force
-    from `t \<noteq> 0` and vw have "x \<noteq> 0" by simp
+    from \<open>t \<noteq> 0\<close> and vw have "x \<noteq> 0" by simp
 
     have x_pow_n_dvd_d: "\<And>n. x^n dvd d"
     proof-
@@ -126,7 +126,7 @@ proof -
         fix n assume "n = (0::nat)"
         from vw and C have "d = x*(d*r*v + d*s*w + s*v*d')"
             by (simp add: algebra_simps)
-        with `n = 0` show "x^Suc n dvd d" by (force intro: dvdI)
+        with \<open>n = 0\<close> show "x^Suc n dvd d" by (force intro: dvdI)
       next
         fix n n' assume IH: "x^n dvd d" and "n = Suc n'"
         hence [simp]: "Suc n' = n" "x * x^n' = x^n" by simp_all
@@ -137,14 +137,14 @@ proof -
 
         from IH obtain z where d: "d = x^n * z" unfolding dvd_def by blast
         define z' where [simp]: "z' = pderiv z"
-        from d `d \<noteq> 0` have "x^n \<noteq> 0" "z \<noteq> 0" by force+
+        from d \<open>d \<noteq> 0\<close> have "x^n \<noteq> 0" "z \<noteq> 0" by force+
         from C d have "x^n*z = z*r*v*x^Suc n + z*s*c*x^n*(v*x') +
                           s*v*z'*x^Suc n + s*z*(v*x')*x^n + s*z*v'*x^Suc n"
             by (simp add: algebra_simps vw pderiv_mult)
         also have "... = x^n*x * (z*r*v + z*s*c*y + s*v*z' + s*z*y + s*z*v')"
             by (simp only: y, simp add: algebra_simps)
         finally have "z = x*(z*r*v+z*s*c*y+s*v*z'+s*z*y+s*z*v')"
-             using `x^n \<noteq> 0` by force
+             using \<open>x^n \<noteq> 0\<close> by force
         hence "x dvd z" by (metis dvd_triv_left)
         with d show "x^Suc n dvd d" by simp
      qed
@@ -156,13 +156,13 @@ proof -
        hence "x \<noteq> 0" by auto
        with Suc have "degree (x ^ (Suc (degree d))) > degree d"
            by (subst degree_power_eq, simp_all)
-       moreover from x_pow_n_dvd_d[of "Suc (degree d)"] and `d \<noteq> 0`
+       moreover from x_pow_n_dvd_d[of "Suc (degree d)"] and \<open>d \<noteq> 0\<close>
            have "degree (x^Suc (degree d)) \<le> degree d"
                 by (simp add: dvd_imp_degree_le)
        ultimately show ?thesis by simp
     qed
     then obtain c where [simp]: "x = [:c:]" by (cases x, simp split: if_split_asm)
-    moreover from `x \<noteq> 0` have "c \<noteq> 0" by simp
+    moreover from \<open>x \<noteq> 0\<close> have "c \<noteq> 0" by simp
     ultimately show "x dvd 1" using dvdI[of 1 x "[:inverse c:]"]
       by simp
   qed
@@ -183,10 +183,10 @@ lemma unit_factor_field [simp]:
   "unit_factor (x :: 'a :: {field,normalization_semidom}) = x"
   by (cases "x = 0") (auto simp: is_unit_unit_factor dvd_field_iff)
 
-text {*
+text \<open>
   Dividing a polynomial by its gcd with its derivative yields
   a squarefree polynomial with the same roots.
-*}
+\<close>
 lemma poly_div_gcd_squarefree:
   assumes "(p :: ('a::{field_char_0,euclidean_ring_gcd}) poly) \<noteq> 0"
   defines "d \<equiv> gcd p (pderiv p)"
@@ -214,11 +214,11 @@ qed
 
 
 
-subsubsection {* Sign changes of a polynomial *}
+subsubsection \<open>Sign changes of a polynomial\<close>
 
-text {*
+text \<open>
   If a polynomial has different signs at two points, it has a root inbetween.
-*}
+\<close>
 lemma poly_different_sign_imp_root:
   assumes "a < b" and "sgn (poly p a) \<noteq> sgn (poly p (b::real))"
   shows "\<exists>x. a \<le> x \<and> x \<le> b \<and> poly p x = 0"
@@ -236,7 +236,7 @@ next
         hence "sgn (poly p a) = -1" by simp
         with assms True have "poly p b > 0"
             by (auto simp: sgn_real_def split: if_split_asm)
-        from poly_IVT_pos[OF `a < b` True this] guess x ..
+        from poly_IVT_pos[OF \<open>a < b\<close> True this] guess x ..
         thus ?thesis by (intro exI[of _ x], simp)
     next
       case False
@@ -245,7 +245,7 @@ next
         with assms False have "poly p b < 0"
             by (auto simp: sgn_real_def not_less
                            less_eq_real_def split: if_split_asm)
-        from poly_IVT_neg[OF `a < b` `poly p a > 0` this] guess x ..
+        from poly_IVT_neg[OF \<open>a < b\<close> \<open>poly p a > 0\<close> this] guess x ..
         thus ?thesis by (intro exI[of _ x], simp)
     qed
 qed
@@ -264,7 +264,7 @@ lemma no_roots_inbetween_imp_same_sign:
 
 
 
-subsubsection {* Limits of polynomials *}
+subsubsection \<open>Limits of polynomials\<close>
 
 lemma poly_neighbourhood_without_roots:
   assumes "(p :: real poly) \<noteq> 0"
@@ -274,7 +274,7 @@ proof-
     fix \<epsilon> :: real assume "\<epsilon> > 0"
     have fin: "finite {x. \<bar>x-x\<^sub>0\<bar> < \<epsilon> \<and> x \<noteq> x\<^sub>0 \<and> poly p x = 0}"
         using poly_roots_finite[OF assms] by simp
-    with `\<epsilon> > 0`have "\<exists>\<delta>>0. \<delta>\<le>\<epsilon> \<and> (\<forall>x. \<bar>x-x\<^sub>0\<bar> < \<delta> \<and> x \<noteq> x\<^sub>0 \<longrightarrow> poly p x \<noteq> 0)"
+    with \<open>\<epsilon> > 0\<close>have "\<exists>\<delta>>0. \<delta>\<le>\<epsilon> \<and> (\<forall>x. \<bar>x-x\<^sub>0\<bar> < \<delta> \<and> x \<noteq> x\<^sub>0 \<longrightarrow> poly p x \<noteq> 0)"
     proof (induction "card {x. \<bar>x-x\<^sub>0\<bar> < \<epsilon> \<and> x \<noteq> x\<^sub>0 \<and> poly p x = 0}"
            arbitrary: \<epsilon> rule: less_induct)
     case (less \<epsilon>)
@@ -290,7 +290,7 @@ proof-
         then obtain x where x_props: "\<bar>x - x\<^sub>0\<bar> < \<epsilon>" "x \<noteq> x\<^sub>0" "poly p x = 0" by blast
         define \<epsilon>' where "\<epsilon>' = \<bar>x - x\<^sub>0\<bar> / 2"
         have "\<epsilon>' > 0" "\<epsilon>' < \<epsilon>" unfolding \<epsilon>'_def using x_props by simp_all
-        from x_props(1,2) and `\<epsilon> > 0`
+        from x_props(1,2) and \<open>\<epsilon> > 0\<close>
             have "x \<notin> {x'. \<bar>x' - x\<^sub>0\<bar> < \<epsilon>' \<and> x' \<noteq> x\<^sub>0 \<and> poly p x' = 0}" (is "_ \<notin> ?B")
             by (auto simp: \<epsilon>'_def)
         moreover from x_props
@@ -299,8 +299,8 @@ proof-
         hence "card ?B < card ?A" "finite ?B"
             by (rule psubset_card_mono[OF less(3)],
                 blast intro: finite_subset[OF _ less(3)])
-        from less(1)[OF this(1) `\<epsilon>' > 0` this(2)]
-            show ?thesis using `\<epsilon>' < \<epsilon>` by force
+        from less(1)[OF this(1) \<open>\<epsilon>' > 0\<close> this(2)]
+            show ?thesis using \<open>\<epsilon>' < \<epsilon>\<close> by force
       qed
     qed
   }
@@ -330,7 +330,7 @@ proof (rule_tac lhopital)
   have "isCont (poly p) x" "isCont (poly q) x" by simp_all
   with assms(1,2) show "poly p \<midarrow>x\<rightarrow> 0" "poly q \<midarrow>x\<rightarrow> 0"
        by (simp_all add: isCont_def)
-  from `q \<noteq> 0` and `poly q x = 0` have "pderiv q \<noteq> 0"
+  from \<open>q \<noteq> 0\<close> and \<open>poly q x = 0\<close> have "pderiv q \<noteq> 0"
       by (auto dest: pderiv_iszero)
   from poly_neighbourhood_without_roots[OF this]
       show "eventually (\<lambda>x. poly (pderiv q) x \<noteq> 0) (at x)" .
@@ -354,7 +354,7 @@ proof
   define l where "l = Min ?roots' - 1"
   define u where "u = Max ?roots' + 1"
 
-  from `finite ?roots` have A: "finite ?roots'"  by auto
+  from \<open>finite ?roots\<close> have A: "finite ?roots'"  by auto
   from Min_le[OF this, of 0] and Max_ge[OF this, of 0]
       show "l \<le>  u" by (simp add: l_def u_def)
   from Min_le[OF A] have l_props: "\<And>x. x\<le>l \<Longrightarrow> poly p x \<noteq> 0"
@@ -459,12 +459,12 @@ proof (subst filterlim_cong, rule refl, rule refl)
                          intro exI[of _ 1], simp add: dist_real_def)
     next
       case False
-        hence "n - i > 0" using `i \<le> n` by simp
+        hence "n - i > 0" using \<open>i \<le> n\<close> by simp
         from tendsto_inverse_0 and divide_real_def[of 1]
             have "((\<lambda>x. 1 / x :: real) \<longlongrightarrow> 0) at_infinity" by simp
         from tendsto_power[OF this, of "n - i"]
             have "((\<lambda>x::real. 1 / x ^ (n - i)) \<longlongrightarrow> 0) at_infinity"
-                using `n - i > 0` by (simp add: power_0_left power_one_over)
+                using \<open>n - i > 0\<close> by (simp add: power_0_left power_one_over)
         from tendsto_mult_right_zero[OF this, of "coeff p i"]
             have "((\<lambda>x. coeff p i / x ^ (n - i)) \<longlongrightarrow> 0) at_infinity"
                 by (simp add: field_simps)
@@ -537,14 +537,14 @@ next
                              intro exI[of _ x\<^sub>0], simp add: True)
     next
       case False
-        hence "?lc < 0" using `?lc \<noteq> 0` by linarith
+        hence "?lc < 0" using \<open>?lc \<noteq> 0\<close> by linarith
         from poly_at_bot_at_top[OF deg this]
           obtain x\<^sub>0 where "\<And>x. x \<ge> x\<^sub>0 \<Longrightarrow> poly p x \<le> -1"
               by (fastforce simp: filterlim_at_bot
                       eventually_at_top_linorder less_eq_real_def)
         hence "\<And>x. x \<ge> x\<^sub>0 \<Longrightarrow> sgn (poly p x) = -1" by force
         thus ?thesis by (simp only: eventually_at_top_linorder poly_inf_def,
-                             intro exI[of _ x\<^sub>0], simp add: `?lc < 0`)
+                             intro exI[of _ x\<^sub>0], simp add: \<open>?lc < 0\<close>)
     qed
 qed
 
@@ -626,7 +626,7 @@ next
       qed
     next
       case False
-        hence lc_neg: "?lc < 0" using `?lc \<noteq> 0` by linarith
+        hence lc_neg: "?lc < 0" using \<open>?lc \<noteq> 0\<close> by linarith
         show ?thesis
         proof (cases "even (degree p)")
           case True
@@ -656,7 +656,7 @@ qed
 
 
 
-subsubsection {* Signs of polynomials for sufficiently large values *}
+subsubsection \<open>Signs of polynomials for sufficiently large values\<close>
 
 lemma polys_inf_sign_thresholds:
   assumes "finite (ps :: real poly set)"
@@ -707,7 +707,7 @@ proof goal_cases
 qed
 
 
-subsubsection {* Positivity of polynomials *}
+subsubsection \<open>Positivity of polynomials\<close>
 
 lemma poly_pos:
   "(\<forall>x::real. poly p x > 0) \<longleftrightarrow> poly_inf p = 1 \<and> (\<forall>x. poly p x \<noteq> 0)"
@@ -767,7 +767,7 @@ next
         by (auto simp: sgn_real_def split: if_split_asm)
     show False
         apply (cases x' "max x\<^sub>0 (a+1)" rule: linorder_cases)
-        using B E `x' > a`
+        using B E \<open>x' > a\<close>
             apply (force dest!: poly_different_sign_imp_root[of _ _ p])+
         done
   qed
@@ -824,7 +824,7 @@ next
         by (auto simp: sgn_real_def split: if_split_asm)
     show False
         apply (cases x' "min x\<^sub>0 (a - 1)" rule: linorder_cases)
-        using B E `x' < a`
+        using B E \<open>x' < a\<close>
             apply (auto dest!: poly_different_sign_imp_root[of _ _ p])+
         done
   qed
@@ -867,15 +867,15 @@ next
          simp only: not_le not_less)
     fix x assume "a < b" "a < x" "x < b" "poly p x \<le> 0"
     with B have "poly p x < 0" by (simp add: less_eq_real_def)
-    moreover from A and `a < b` have "poly p ((a+b)/2) > 0" by simp
+    moreover from A and \<open>a < b\<close> have "poly p ((a+b)/2) > 0" by simp
     ultimately have "sgn (poly p x) \<noteq> sgn (poly p ((a+b)/2))" by simp
     thus False using B
        apply (cases x "(a+b)/2" rule: linorder_cases)
        apply (drule poly_different_sign_imp_root[of _ _ p], assumption,
-              insert `a < b` `a < x` `x < b` , force) []
+              insert \<open>a < b\<close> \<open>a < x\<close> \<open>x < b\<close> , force) []
        apply simp
        apply (drule poly_different_sign_imp_root[of _ _ p], simp,
-              insert `a < b` `a < x` `x < b` , force)
+              insert \<open>a < b\<close> \<open>a < x\<close> \<open>x < b\<close> , force)
        done
   qed
 qed
@@ -897,11 +897,11 @@ next
          simp only: not_le not_less)
     fix x assume "a < b" "a < x" "x \<le> b" "poly p x \<le> 0"
     with B have "poly p x < 0" by (simp add: less_eq_real_def)
-    moreover from A and `a < b` have "poly p b > 0" by simp
-    ultimately have "x < b" using `x \<le> b` by (auto simp: less_eq_real_def)
-    from `poly p x < 0` and `poly p b > 0`
+    moreover from A and \<open>a < b\<close> have "poly p b > 0" by simp
+    ultimately have "x < b" using \<open>x \<le> b\<close> by (auto simp: less_eq_real_def)
+    from \<open>poly p x < 0\<close> and \<open>poly p b > 0\<close>
         have "sgn (poly p x) \<noteq> sgn (poly p b)" by simp
-    from poly_different_sign_imp_root[OF `x < b` this] and B and `x > a`
+    from poly_different_sign_imp_root[OF \<open>x < b\<close> this] and B and \<open>x > a\<close>
         show False by auto
   qed
 qed
@@ -923,11 +923,11 @@ next
          simp only: not_le not_less)
     fix x assume "a < b" "a \<le> x" "x < b" "poly p x \<le> 0"
     with B have "poly p x < 0" by (simp add: less_eq_real_def)
-    moreover from A and `a < b` have "poly p a > 0" by simp
-    ultimately have "x > a" using `x \<ge> a` by (auto simp: less_eq_real_def)
-    from `poly p x < 0` and `poly p a > 0`
+    moreover from A and \<open>a < b\<close> have "poly p a > 0" by simp
+    ultimately have "x > a" using \<open>x \<ge> a\<close> by (auto simp: less_eq_real_def)
+    from \<open>poly p x < 0\<close> and \<open>poly p a > 0\<close>
         have "sgn (poly p a) \<noteq> sgn (poly p x)" by simp
-    from poly_different_sign_imp_root[OF `x > a` this] and B and `x < b`
+    from poly_different_sign_imp_root[OF \<open>x > a\<close> this] and B and \<open>x < b\<close>
         show False by auto
   qed
 qed
@@ -949,11 +949,11 @@ next
          simp only: not_le not_less)
     fix x assume "a \<le> b" "a \<le> x" "x \<le> b" "poly p x \<le> 0"
     with B have "poly p x < 0" by (simp add: less_eq_real_def)
-    moreover from A and `a \<le> b` have "poly p a > 0" by simp
-    ultimately have "x > a" using `x \<ge> a` by (auto simp: less_eq_real_def)
-    from `poly p x < 0` and `poly p a > 0`
+    moreover from A and \<open>a \<le> b\<close> have "poly p a > 0" by simp
+    ultimately have "x > a" using \<open>x \<ge> a\<close> by (auto simp: less_eq_real_def)
+    from \<open>poly p x < 0\<close> and \<open>poly p a > 0\<close>
         have "sgn (poly p a) \<noteq> sgn (poly p x)" by simp
-    from poly_different_sign_imp_root[OF `x > a` this] and B and `x \<le> b`
+    from poly_different_sign_imp_root[OF \<open>x > a\<close> this] and B and \<open>x \<le> b\<close>
         show False by auto
   qed
 qed

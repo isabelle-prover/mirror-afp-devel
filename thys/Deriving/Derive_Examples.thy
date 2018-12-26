@@ -68,7 +68,7 @@ derive compare_order mtree mtree_list
 derive countable mtree mtree_list
 derive hashable mtree mtree_list
 
-text \<open>For @{text "derive (equality|comparator|hash_code) mutual_recursive_type"} 
+text \<open>For \<open>derive (equality|comparator|hash_code) mutual_recursive_type\<close> 
   there is the speciality that only one of the mutual recursive types has to be mentioned in
   order to register all of them. So one of @{type mtree} and @{type mtree_list} suffices.\<close>
 
@@ -99,10 +99,10 @@ derive equality "term" lab
 derive hashable "term" lab
 
 subsection "A Complex Datatype"
-text {*
+text \<open>
 The following datatype has nested and mutual recursion, and
 uses other datatypes.
-*}
+\<close>
 
 datatype ('a, 'b) complex = 
   C1 nat "'a ttree \<times> rat + ('a,'b) complex list" |
@@ -120,8 +120,8 @@ text \<open>On this last example type we illustrate the difference of the variou
   The instance will be @{type complex2} :: (@{class compare}, @{class compare}) @{class compare}, i.e., 
   again the argument types have to be in class @{class compare}.
 
-  To avoid the dependence on @{class compare}, we can also instruct @{text derive} to be based on 
-  @{class linorder}. Here, the command @{text "derive linorder complex2"} will create the instance
+  To avoid the dependence on @{class compare}, we can also instruct \<open>derive\<close> to be based on 
+  @{class linorder}. Here, the command \<open>derive linorder complex2\<close> will create the instance
   @{type complex2} :: (@{class linorder}, @{class linorder}) @{class linorder}, i.e., 
   here the argument types have to be in class @{class linorder}.
   \<close>

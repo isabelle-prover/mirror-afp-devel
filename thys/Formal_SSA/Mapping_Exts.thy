@@ -4,7 +4,7 @@
 
 subsection "Mapping Extensions"
 
-text {* Some lifted definition on mapping and efficient implementations. *}
+text \<open>Some lifted definition on mapping and efficient implementations.\<close>
 
 theory Mapping_Exts
 imports "HOL-Library.Mapping" FormalSSA_Misc

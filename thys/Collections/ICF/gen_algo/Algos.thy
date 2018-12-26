@@ -2,14 +2,14 @@
     Author:      Peter Lammich <lammich at in.tum.de>
     Maintainer:  Peter Lammich <lammich at in.tum.de>
 *)
-section {* \isaheader{More Generic Algorithms} *}
+section \<open>\isaheader{More Generic Algorithms}\<close>
 theory Algos
 imports 
   "../spec/SetSpec"
   "../spec/MapSpec"
   "../spec/ListSpec"
 begin
-text_raw {*\label{thy:Algos}*}
+text_raw \<open>\label{thy:Algos}\<close>
      
 
 subsection "Injective Map to Naturals"

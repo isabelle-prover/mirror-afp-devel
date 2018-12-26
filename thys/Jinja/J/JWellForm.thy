@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Well-formedness Constraints *}
+section \<open>Well-formedness Constraints\<close>
 
 theory JWellForm
 imports "../Common/WellForm" WWellForm WellType DefAss

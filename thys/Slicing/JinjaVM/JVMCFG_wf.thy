@@ -1,8 +1,8 @@
 theory JVMCFG_wf imports JVMInterpretation "../Basic/CFGExit_wf" begin
 
-section {* Instantiation of the @{text "CFG_wf"} locale *}
+section \<open>Instantiation of the \<open>CFG_wf\<close> locale\<close>
 
-subsection {* Variables and Values *}
+subsection \<open>Variables and Values\<close>
 
 datatype jinja_var = HeapVar "addr" | Stk "nat" "nat" | Loc "nat" "nat"
 datatype jinja_val = Object "obj option" | Primitive "val"
@@ -14,7 +14,7 @@ where
 | "state_val (h, stk, loc) (Loc cd idx) = Primitive (loc (cd, idx))"
 
 
-subsection {* The @{text Def} and @{text Use} sets *}
+subsection \<open>The \<open>Def\<close> and \<open>Use\<close> sets\<close>
 
 inductive_set Def :: "wf_jvmprog \<Rightarrow> j_node \<Rightarrow> jinja_var set"
   for P :: "wf_jvmprog"
@@ -287,7 +287,7 @@ proof
         from P_wf C_sees_M
         have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-        with Store C_sees_M wt `pc < length is`
+        with Store C_sees_M wt \<open>pc < length is\<close>
         show ?thesis
           by (fastforce simp: wt_method_def)
       qed
@@ -355,7 +355,7 @@ proof
             by (cases cs', auto dest: sees_method_fun)
           from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
             by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-          with Getfield sees_M wt `pc < length is` show ?thesis
+          with Getfield sees_M wt \<open>pc < length is\<close> show ?thesis
             by (fastforce simp: wt_method_def)
         qed
         then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce)
@@ -401,7 +401,7 @@ proof
             by (cases cs', auto dest: sees_method_fun)
           from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
             by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-          with Putfield sees_M `pc < length is` wt show ?thesis
+          with Putfield sees_M \<open>pc < length is\<close> wt show ?thesis
             by (fastforce simp: wt_method_def)
         qed
         then obtain ST1 STr' where "ST = ST1#STr' \<and> length STr' > 0"
@@ -480,7 +480,7 @@ proof
               by (cases cs', auto dest: sees_method_fun)
             from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
               by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-            with Invoke sees_M `pc < length is` wt show ?thesis
+            with Invoke sees_M \<open>pc < length is\<close> wt show ?thesis
               by (fastforce simp: wt_method_def)
           qed
           moreover obtain STn where "STn = take n' ST" by fastforce
@@ -722,7 +722,7 @@ proof -
           by (cases cs', (cases x, auto dest: sees_method_fun)+)
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-        with Getfield wt sees_M `pc < length is` show ?thesis
+        with Getfield wt sees_M \<open>pc < length is\<close> show ?thesis
           by (fastforce simp: wt_method_def)
       qed
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
@@ -754,7 +754,7 @@ proof -
           by (cases cs', (cases x, auto dest: sees_method_fun)+)
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-        with Putfield wt sees_M `pc < length is` show ?thesis
+        with Putfield wt sees_M \<open>pc < length is\<close> show ?thesis
           by (fastforce simp: wt_method_def)
       qed
       then obtain ST1 STr' where "ST = ST1#STr' \<and> STr' \<noteq> []" by (cases ST, fastforce+)
@@ -787,7 +787,7 @@ proof -
           by (cases cs', (cases x, auto dest: sees_method_fun)+)
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-        with Checkcast wt sees_M `pc < length is` show ?thesis
+        with Checkcast wt sees_M \<open>pc < length is\<close> show ?thesis
           by (fastforce simp: wt_method_def)
       qed
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)
@@ -827,7 +827,7 @@ proof -
           by (cases cs', (cases x, auto dest: sees_method_fun)+)
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-        with Invoke wt sees_M `pc < length is` show ?thesis
+        with Invoke wt sees_M \<open>pc < length is\<close> show ?thesis
           by (fastforce simp: wt_method_def)
       qed
       moreover obtain STn where "STn = take n' ST" by fastforce
@@ -909,7 +909,7 @@ proof -
           by (cases cs', (cases x, auto dest: sees_method_fun)+)
         from P_wf sees_M have "wt_method (P\<^bsub>wf\<^esub>) C Ts T mxs mxl is xt (P\<^bsub>\<Phi>\<^esub> C M)"
           by (auto dest: sees_wf_mdecl simp: wf_jvm_prog_phi_def wf_mdecl_def)
-        with Throw wt sees_M `pc < length is` show ?thesis
+        with Throw wt sees_M \<open>pc < length is\<close> show ?thesis
           by (fastforce simp: wt_method_def)
       qed
       then obtain ST1 STr where [simp]: "ST = ST1#STr" by (cases ST, fastforce+)

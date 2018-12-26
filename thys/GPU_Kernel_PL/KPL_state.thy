@@ -1,10 +1,10 @@
-section {* Thread, group and kernel states *}
+section \<open>Thread, group and kernel states\<close>
 
 theory KPL_state imports 
   KPL_syntax
 begin
 
-text {* Thread state *}
+text \<open>Thread state\<close>
 record thread_state =
   (* We use "V + bool" to indicate that the domain of
      l is extended with two extra values. Let's say
@@ -18,13 +18,13 @@ record thread_state =
 abbreviation "GID \<equiv> Inr True"
 abbreviation "LID \<equiv> Inr False"
 
-text {* Group state *}
+text \<open>Group state\<close>
 record group_state = 
   thread_states :: "lid \<rightharpoonup> thread_state" ("_ \<^sub>t\<^sub>s" [1000] 1000)
   R_group :: "(lid \<times> nat) set"
   W_group :: "(lid \<times> nat) set"
 
-text {* Valid group state *}
+text \<open>Valid group state\<close>
 fun valid_group_state :: "(gid \<rightharpoonup> lid set) \<Rightarrow> gid \<Rightarrow> group_state \<Rightarrow> bool"
 where
   "valid_group_state T i \<gamma> = (
@@ -33,22 +33,22 @@ where
   l (the (\<gamma> \<^sub>t\<^sub>s j)) GID = i \<and>
   l (the (\<gamma> \<^sub>t\<^sub>s j)) LID = j))"
 
-text {* Predicated statements *}
+text \<open>Predicated statements\<close>
 type_synonym pred_stmt = "stmt \<times> local_expr"
 type_synonym pred_basic_stmt = "basic_stmt \<times> local_expr"
 
-text {* Kernel state *}
+text \<open>Kernel state\<close>
 type_synonym kernel_state = 
   "(gid \<rightharpoonup> group_state) \<times> pred_stmt list \<times> V list"
 
-text {* Valid kernel state *}
+text \<open>Valid kernel state\<close>
 fun valid_kernel_state :: "threadset \<Rightarrow> kernel_state \<Rightarrow> bool"
 where
   "valid_kernel_state (G,T) (\<kappa>, ss, _) = (
   dom \<kappa> = G \<and>
   (\<forall>i \<in> G. valid_group_state T i (the (\<kappa> i))))"
 
-text {* Valid initial kernel state *}
+text \<open>Valid initial kernel state\<close>
 fun valid_initial_kernel_state :: "stmt \<Rightarrow> threadset \<Rightarrow> kernel_state \<Rightarrow> bool"
 where
   "valid_initial_kernel_state S (G,T) (\<kappa>, ss, vs) = ( 

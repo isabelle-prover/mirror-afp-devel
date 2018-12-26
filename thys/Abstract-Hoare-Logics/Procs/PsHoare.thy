@@ -5,7 +5,7 @@
 
 theory PsHoare imports PsLang begin
 
-subsection{* Hoare logic for partial correctness *}
+subsection\<open>Hoare logic for partial correctness\<close>
 
 type_synonym 'a assn = "'a \<Rightarrow> state \<Rightarrow> bool"
 type_synonym 'a cntxt = "('a assn \<times> com \<times> 'a assn)set"
@@ -26,12 +26,12 @@ definition
  nvalids :: "nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("|\<Turnstile>'__/ _" 50) where
  "|\<Turnstile>_n C \<equiv> (\<forall>(P,c,Q) \<in> C. \<Turnstile>n {P}c{Q})"
 
-text{* We now need an additional notion of
-validity \mbox{@{text"C |\<Turnstile> D"}} where @{term D} is a set as well. The
+text\<open>We now need an additional notion of
+validity \mbox{\<open>C |\<Turnstile> D\<close>} where @{term D} is a set as well. The
 reason is that we can now have mutually recursive procedures whose
 correctness needs to be established by simultaneous induction. Instead
 of sets of Hoare triples we may think of conjunctions. We define both
-@{text"C |\<Turnstile> D"} and its relativized version: *}
+\<open>C |\<Turnstile> D\<close> and its relativized version:\<close>
 
 definition
  cvalids :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>/ _" 50) where
@@ -41,10 +41,10 @@ definition
  cnvalids :: "'a cntxt \<Rightarrow> nat \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ |\<Turnstile>'__/ _" 50) where
   "C |\<Turnstile>_n D \<longleftrightarrow> |\<Turnstile>_n C \<longrightarrow> |\<Turnstile>_n D"
 
-text{*Our Hoare logic now defines judgements of the form @{text"C \<tturnstile>
-D"} where both @{term C} and @{term D} are (potentially infinite) sets
-of Hoare triples; @{text"C \<turnstile> {P}c{Q}"} is simply an abbreviation for
-@{text"C \<tturnstile> {(P,c,Q)}"}.*}
+text\<open>Our Hoare logic now defines judgements of the form \<open>C \<tturnstile>
+D\<close> where both @{term C} and @{term D} are (potentially infinite) sets
+of Hoare triples; \<open>C \<turnstile> {P}c{Q}\<close> is simply an abbreviation for
+\<open>C \<tturnstile> {(P,c,Q)}\<close>.\<close>
 
 inductive
   hoare :: "'a cntxt \<Rightarrow> 'a cntxt \<Rightarrow> bool" ("_ \<tturnstile>/ _" 50)
@@ -81,9 +81,9 @@ lemmas valid_defs = valid_def valids_def cvalids_def
 
 theorem "C \<tturnstile> D  \<Longrightarrow>  C |\<Turnstile> D"
 
-txt{*\noindent As before, we prove a generalization of @{prop"C |\<Turnstile> D"},
+txt\<open>\noindent As before, we prove a generalization of @{prop"C |\<Turnstile> D"},
 namely @{prop"\<forall>n. C |\<Turnstile>_n D"}, by induction on @{prop"C \<tturnstile> D"}, with an
-induction on @{term n} in the @{term CALL} case.*}
+induction on @{term n} in the @{term CALL} case.\<close>
 
 apply(subgoal_tac "\<forall>n. C |\<Turnstile>_n D")
 apply(unfold valid_defs exec_iff_execn[THEN eq_reflection])

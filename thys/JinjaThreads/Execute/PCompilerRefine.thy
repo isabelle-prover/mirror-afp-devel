@@ -10,14 +10,14 @@ imports
   "../Compiler/PCompiler"
 begin
 
-subsection {* @{term "compP"} *}
+subsection \<open>@{term "compP"}\<close>
 
-text {* 
+text \<open>
   Applying the compiler to a tabulated program either compiles every
   method twice (once for the program itself and once for method lookup)
   or recomputes the class and method lookup tabulation from scratch.
   We follow the second approach.
-*}
+\<close>
 
 fun compP_code' :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a prog_impl' \<Rightarrow> 'b prog_impl'"
 where
@@ -44,7 +44,7 @@ lemma compP_program [code]:
   "compP f (program P) = program (compP_code f P)"
 by(cases P)(clarsimp simp add: program_def compP_code_code)
 
-text {* Merge module names to avoid cycles in module dependency *}
+text \<open>Merge module names to avoid cycles in module dependency\<close>
 
 code_identifier
   code_module PCompiler \<rightharpoonup>
@@ -52,6 +52,6 @@ code_identifier
 | code_module PCompilerRefine \<rightharpoonup>
     (SML) PCompiler and (OCaml) PCompiler and (Haskell) PCompiler 
 
-ML_val {* @{code compP} *}
+ML_val \<open>@{code compP}\<close>
 
 end

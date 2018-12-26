@@ -161,7 +161,7 @@ context ordered_cancel_semiring begin
 subclass ordered_cancel_ab_semigroup_add ..
 end
 
-text {* partially ordered variant *}
+text \<open>partially ordered variant\<close>
 class ordered_semiring_strict = semiring + comm_monoid_add + ordered_cancel_ab_semigroup_add +
   assumes mult_strict_left_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> c * a < c * b"
   assumes mult_strict_right_mono: "a < b \<Longrightarrow> 0 < c \<Longrightarrow> a * c < b * c"
@@ -190,11 +190,11 @@ using mult_strict_left_mono [of b 0 a] by simp
 lemma mult_neg_pos: "a < 0 \<Longrightarrow> 0 < b \<Longrightarrow> a * b < 0"
 using mult_strict_right_mono [of a 0 b] by simp
 
-text {* Legacy - use @{text mult_neg_pos} *}
+text \<open>Legacy - use \<open>mult_neg_pos\<close>\<close>
 lemma mult_pos_neg2: "0 < a \<Longrightarrow> b < 0 \<Longrightarrow> b * a < 0" 
 by (drule mult_strict_right_mono [of b 0], auto)
 
-text{*Strict monotonicity in both arguments*}
+text\<open>Strict monotonicity in both arguments\<close>
 lemma mult_strict_mono:
   assumes "a < b" and "c < d" and "0 < b" and "0 \<le> c"
   shows "a * c < b * d"
@@ -205,7 +205,7 @@ lemma mult_strict_mono:
   apply (erule mult_strict_left_mono, assumption)
   done
 
-text{*This weaker variant has more natural premises*}
+text\<open>This weaker variant has more natural premises\<close>
 lemma mult_strict_mono':
   assumes "a < b" and "c < d" and "0 \<le> a" and "0 \<le> c"
   shows "a * c < b * d"

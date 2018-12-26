@@ -1,10 +1,10 @@
-section {* Program statements, Hoare and refinement rules *}
+section \<open>Program statements, Hoare and refinement rules\<close>
 
 theory Statements
 imports Assertion_Algebra
 begin
 
-text {*In this section we introduce assume, if, and while program statements
+text \<open>In this section we introduce assume, if, and while program statements
 as well as Hoare triples, and data refienment. We prove Hoare correctness
 rules for the program statements and we prove some theorems linking Hoare
 correctness statement to (data) refinement. Most of the theorems assume
@@ -12,7 +12,7 @@ a monotonic boolean transformers algebra. The theorem stating the
 equivalence between a Hoare
 correctness triple and a refinement statement holds under the
 assumption that we have a monotonic boolean transformers algebra with
-post condition statement.*}
+post condition statement.\<close>
 
 definition
   "assume" :: "'a::mbt_algebra Assertion \<Rightarrow> 'a"  ("[\<cdot> _ ]" [0] 1000) where
@@ -152,7 +152,7 @@ lemma dual_assume: "[\<cdot>p] ^ o = {\<cdot>p}"
 lemma assume_prop: "([\<cdot>p] * \<bottom>) \<squnion> 1 = [\<cdot>p]"
   by (simp add: assume_def dual_assertion_prop)
 
-text{*An alternative definition of a Hoare triple*}
+text\<open>An alternative definition of a Hoare triple\<close>
 
 definition "hoare1 p S q = ([\<cdot> p ] * S * [\<cdot> -q ] = \<top>)"
 

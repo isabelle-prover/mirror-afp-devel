@@ -2,7 +2,7 @@
     Author:      Johannes Hölzl, TU Munich
 *)
 
-section {* CCPO topologies *}
+section \<open>CCPO topologies\<close>
 
 theory CCPO_Topology
 imports
@@ -40,10 +40,10 @@ proof (subst continuous_on_open_vimage, (intro open_greaterThan allI impI)+)
     show ?thesis
       unfolding *
       apply (rule ereal_open_affinity_pos)
-      using `open B`
+      using \<open>open B\<close>
       apply (auto simp: real)
       done
-  qed (insert `0 \<le> t`, auto)
+  qed (insert \<open>0 \<le> t\<close>, auto)
 qed
 
 lemma tendsto_add_ereal:
@@ -57,7 +57,7 @@ lemma tendsto_add_ereal:
 lemma tendsto_LimI: "(f \<longlongrightarrow> y) F \<Longrightarrow> (f \<longlongrightarrow> Lim F f) F"
   by (metis tendsto_Lim tendsto_bot)
 
-subsection {* The filter @{text at'} *}
+subsection \<open>The filter \<open>at'\<close>\<close>
 
 abbreviation (in ccpo) "compact_element \<equiv> ccpo.compact Sup (\<le>)"
 
@@ -89,11 +89,11 @@ lemma tendsto_id_at'[simp, intro]: "((\<lambda>x. x) \<longlongrightarrow> x) (a
 lemma cont_at': "(f \<longlongrightarrow> f x) (at' x) \<longleftrightarrow> f \<midarrow>x\<rightarrow> f x"
   using at_eq_bot_iff[of x] by (auto split: if_split_asm intro!: topological_tendstoI simp: eventually_principal at'_def)
 
-subsection {* The type class @{text ccpo_topology} *}
+subsection \<open>The type class \<open>ccpo_topology\<close>\<close>
 
-text {* Temporarily relax type constraints for @{term "open"}. *}
-setup {* Sign.add_const_constraint
-  (@{const_name "open"}, SOME @{typ "'a::open set \<Rightarrow> bool"}) *}
+text \<open>Temporarily relax type constraints for @{term "open"}.\<close>
+setup \<open>Sign.add_const_constraint
+  (@{const_name "open"}, SOME @{typ "'a::open set \<Rightarrow> bool"})\<close>
 
 class ccpo_topology = "open" + ccpo +
   assumes open_ccpo: "open A \<longleftrightarrow> (\<forall>C. chain C \<longrightarrow> C \<noteq> {} \<longrightarrow> Sup C \<in> A \<longrightarrow> C \<inter> A \<noteq> {})"
@@ -106,18 +106,18 @@ proof (rule ccontr)
   assume "\<not> ?thesis"
   then have *: "\<And>c. c \<in> C \<Longrightarrow> \<exists>c'\<in>C. c \<le> c' \<and> c' \<notin> A"
     by auto
-  with `chain C` `C \<noteq> {}` have "chain (C - A)" "C - A \<noteq> {}"
+  with \<open>chain C\<close> \<open>C \<noteq> {}\<close> have "chain (C - A)" "C - A \<noteq> {}"
     by (auto intro: chain_Diff)
   moreover have "Sup C = Sup (C - A)"
-  proof (safe intro!: antisym ccpo_Sup_least `chain C` chain_Diff)
+  proof (safe intro!: antisym ccpo_Sup_least \<open>chain C\<close> chain_Diff)
     fix c assume "c \<in> C"
     with * obtain c' where "c' \<in> C" "c \<le> c'" "c' \<notin> A"
       by auto
-    with `c\<in>C` show "c \<le> \<Squnion>(C - A)"
-      by (intro ccpo_Sup_upper2 `chain (C - A)`) auto
-  qed (auto intro: `chain C` ccpo_Sup_upper)
+    with \<open>c\<in>C\<close> show "c \<le> \<Squnion>(C - A)"
+      by (intro ccpo_Sup_upper2 \<open>chain (C - A)\<close>) auto
+  qed (auto intro: \<open>chain C\<close> ccpo_Sup_upper)
   ultimately show False
-    using `open A` `Sup C \<in> A` by (auto simp: open_ccpo)
+    using \<open>open A\<close> \<open>Sup C \<in> A\<close> by (auto simp: open_ccpo)
 qed
 
 lemma open_ccpo_Iic: "open {.. b}"
@@ -133,7 +133,7 @@ next
     unfolding open_ccpo
   proof (intro allI impI)
     fix C assume C: "chain C" "C \<noteq> {}" and "\<Squnion>C \<in> S \<inter> T"
-    with open_ccpoD[OF `open S` C] open_ccpoD[OF `open T` C]
+    with open_ccpoD[OF \<open>open S\<close> C] open_ccpoD[OF \<open>open T\<close> C]
     show "C \<inter> (S \<inter> T) \<noteq> {}"
       unfolding chain_def by blast
   qed
@@ -166,10 +166,10 @@ lemma closed_Ici: "closed {.. b}"
 lemma closed_Iic: "closed {b ..}"
   by (auto simp: closed_ccpo intro: ccpo_Sup_upper2)
 
-text {*
+text \<open>
   @{class ccpo_topology}s are also @{class t2_space}s.
   This is necessary to have a unique continuous extension.
-*}
+\<close>
 
 subclass t2_space
 proof
@@ -181,7 +181,7 @@ proof
         by (auto intro: open_ccpo_Iic closed_Ici) }
     moreover assume "x \<le> y \<or> y \<le> x"
     ultimately show ?thesis
-      using `x \<noteq> y` by (metis Int_commute)
+      using \<open>x \<noteq> y\<close> by (metis Int_commute)
   next
     assume "\<not> (x \<le> y \<or> y \<le> x)"
     then have "open ({..x} \<inter> - {..y}) \<and> open ({..y} \<inter> - {..x}) \<and>
@@ -205,7 +205,7 @@ proof (rule ccontr)
   show False
   proof cases
     assume "x \<le> y"
-    with `\<not> y \<le> x`
+    with \<open>\<not> y \<le> x\<close>
     have "open {..x}" "open (- {..x})" "x \<in> {..x}" "y \<in> - {..x}" "{..x} \<inter> - {..x} = {}"
       by (auto intro: open_ccpo_Iic closed_Ici)
     with topological_tendstoD[OF x, of "{..x}"] topological_tendstoD[OF y, of "- {..x}"]
@@ -215,7 +215,7 @@ proof (rule ccontr)
     with F show False by (auto simp: eventually_False)
   next
     assume "\<not> x \<le> y"
-    with `\<not> y \<le> x` have "open ({..x} \<inter> - {..y})" "open ({..y} \<inter> - {..x})"
+    with \<open>\<not> y \<le> x\<close> have "open ({..x} \<inter> - {..y})" "open ({..y} \<inter> - {..x})"
         "x \<in> {..x} \<inter> - {..y}" "y \<in> {..y} \<inter> - {..x}" "({..x} \<inter> - {..y}) \<inter> ({..y} \<inter> - {..x}) = {}"
       by (auto intro: open_ccpo_Iic closed_Ici)
     with topological_tendstoD[OF x, of "{..x} \<inter> - {..y}"]
@@ -244,7 +244,7 @@ proof (intro tendsto_ccpoI conjI)
     using mcont C by (simp add: mcont_def cont_def)
 qed
 
-subsection {* Instances for @{class ccpo_topology}s and continuity theorems *}
+subsection \<open>Instances for @{class ccpo_topology}s and continuity theorems\<close>
 
 instantiation set :: (type) ccpo_topology
 begin
@@ -270,9 +270,9 @@ proof
     show "C \<inter> A \<noteq> {}"
     proof cases
       assume "\<Squnion>C = \<infinity>"
-      with `\<Squnion>C \<in> A` `open A` obtain n where "{enat n <..} \<subseteq> A"
+      with \<open>\<Squnion>C \<in> A\<close> \<open>open A\<close> obtain n where "{enat n <..} \<subseteq> A"
         unfolding open_enat_iff by auto
-      with `\<Squnion>C = \<infinity>` Sup_eq_top_iff[of C] show ?thesis
+      with \<open>\<Squnion>C = \<infinity>\<close> Sup_eq_top_iff[of C] show ?thesis
         by (auto simp: top_enat_def)
     next
       assume "\<Squnion>C \<noteq> \<infinity>"
@@ -282,7 +282,7 @@ proof
         by (auto intro: finite_enat_bounded)
       ultimately have "finite C"
         by (auto intro: finite_subset)
-      from in_chain_finite[OF `chain C` `finite C` `C \<noteq> {}`] `\<Squnion>C \<in> A` show ?thesis
+      from in_chain_finite[OF \<open>chain C\<close> \<open>finite C\<close> \<open>C \<noteq> {}\<close>] \<open>\<Squnion>C \<in> A\<close> show ?thesis
         by auto
     qed
   next
@@ -294,14 +294,14 @@ proof
       { fix C :: "enat set" assume "infinite C"
         then have "\<Squnion>C = \<infinity>"
           by (auto simp: Sup_enat_def)
-        with `infinite C` C[THEN spec, of C] `\<infinity> \<in> A` have "C \<inter> A \<noteq> {}"
+        with \<open>infinite C\<close> C[THEN spec, of C] \<open>\<infinity> \<in> A\<close> have "C \<inter> A \<noteq> {}"
           by auto }
       note inf_C = this
 
       show "\<exists>x. {enat x<..} \<subseteq> A"
       proof (rule ccontr)
         assume "\<not> (\<exists>x. {enat x<..} \<subseteq> A)"
-        with `\<infinity> \<in> A` have "\<And>x. \<exists>y>x. enat y \<notin> A"
+        with \<open>\<infinity> \<in> A\<close> have "\<And>x. \<exists>y>x. enat y \<notin> A"
           by (simp add: subset_eq Bex_def) (metis enat.exhaust enat_ord_simps(2))
         then have "infinite {n. enat n \<notin> A}"
           unfolding infinite_nat_iff_unbounded by auto

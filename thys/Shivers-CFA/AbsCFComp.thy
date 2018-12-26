@@ -1,4 +1,4 @@
-section {* The abstract semantics is computable *}
+section \<open>The abstract semantics is computable\<close>
 
 theory AbsCFComp
 imports AbsCF Computability FixTransform CPSUtils MapSets
@@ -6,11 +6,11 @@ begin
 
 default_sort type
 
-text {*
-The point of the abstract semantics is that it is computable. To show this, we exploit the special structure of @{text \<aF>} and @{text \<aC>}: Each call adds some elements to the result set and joins this with the results from a number of recursive calls. So we separate these two actions into separate functions. These take as arguments the direct sum of @{text \<afstate>} and @{text \<acstate>}, i.e.\ we treat the two mutually recursive functions now as one.
+text \<open>
+The point of the abstract semantics is that it is computable. To show this, we exploit the special structure of \<open>\<aF>\<close> and \<open>\<aC>\<close>: Each call adds some elements to the result set and joins this with the results from a number of recursive calls. So we separate these two actions into separate functions. These take as arguments the direct sum of \<open>\<afstate>\<close> and \<open>\<acstate>\<close>, i.e.\ we treat the two mutually recursive functions now as one.
 
-@{text abs_g} gives the local result for the given argument.
-*}
+\<open>abs_g\<close> gives the local result for the given argument.
+\<close>
 
 fixrec abs_g :: "('c::contour \<afstate> + 'c \<acstate>) discr \<rightarrow> 'c \<aans>"
   where "abs_g\<cdot>x = (case undiscr x of
@@ -38,9 +38,9 @@ fixrec abs_g :: "('c::contour \<afstate> + 'c \<acstate>) discr \<rightarrow> 'c
             | (Inr (Let lab ls c',\<beta>,ve,b)) \<Rightarrow> {}
         )"
 
-text {*
-@{text abs_R} gives the set of arguments passed to the recursive calls.
-*}
+text \<open>
+\<open>abs_R\<close> gives the set of arguments passed to the recursive calls.
+\<close>
 
 fixrec abs_R :: "('c::contour \<afstate> + 'c \<acstate>) discr \<rightarrow> ('c::contour \<afstate> + 'c \<acstate>) discr set"
   where "abs_R\<cdot>x = (case undiscr x of
@@ -77,19 +77,19 @@ fixrec abs_R :: "('c::contour \<afstate> + 'c \<acstate>) discr \<rightarrow> ('
                  in {Discr (Inr (c',\<beta>',ve',b'))}
         )"
 
-text {*
-The initial argument vector, as created by @{text \<aPR>}.
-*}
+text \<open>
+The initial argument vector, as created by \<open>\<aPR>\<close>.
+\<close>
 
 definition initial_r :: "prog \<Rightarrow> ('c::contour \<afstate> + 'c \<acstate>) discr"
   where "initial_r prog = Discr (Inl
      (the_elem (\<aA> (L prog) Map.empty {}.), [{AStop}], {}., \<abinit>))"
 
-subsection {* Towards finiteness *}
+subsection \<open>Towards finiteness\<close>
 
-text {*
-We need to show that the set of possible arguments for a given program @{text p} is finite. Therefore, we define the set of possible procedures, of possible arguments to @{text \<aF>}, or possible arguments to @{text \<aC>} and of possible arguments.
-*}
+text \<open>
+We need to show that the set of possible arguments for a given program \<open>p\<close> is finite. Therefore, we define the set of possible procedures, of possible arguments to \<open>\<aF>\<close>, or possible arguments to \<open>\<aC>\<close> and of possible arguments.
+\<close>
 
 definition proc_poss :: "prog \<Rightarrow> 'c::contour proc set"
   where "proc_poss p = PC ` (lambdas p \<times> maps_over (labels p) UNIV) \<union> PP ` prims p \<union> {AStop}"
@@ -103,18 +103,18 @@ definition cstate_poss :: "prog \<Rightarrow> 'c::contour a_cstate set"
 definition arg_poss :: "prog \<Rightarrow> ('c::contour a_fstate + 'c a_cstate) discr set"
   where "arg_poss p = Discr ` (fstate_poss p <+> cstate_poss p)"
 
-text {*
+text \<open>
 Using the auxiliary results from @{theory "Shivers-CFA.CPSUtils"}, we see that the argument space as defined here is finite.
-*}
+\<close>
 
 lemma finite_arg_space: "finite (arg_poss p)"
   unfolding arg_poss_def and cstate_poss_def and fstate_poss_def and proc_poss_def
   by (auto intro!: finite_cartesian_product finite_imageI maps_over_finite smaps_over_finite finite_UNIV finite_Nlist)
 
 
-text {*
-But is it closed? I.e.\ if we pass a member of @{text arg_poss} to @{text abs_R}, are the generated recursive call arguments also in @{text arg_poss}? This is shown in @{text arg_space_complete}, after proving an auxiliary result about the possible outcome of a call to @{text \<aA>} and an admissibility lemma.
-*}
+text \<open>
+But is it closed? I.e.\ if we pass a member of \<open>arg_poss\<close> to \<open>abs_R\<close>, are the generated recursive call arguments also in \<open>arg_poss\<close>? This is shown in \<open>arg_space_complete\<close>, after proving an auxiliary result about the possible outcome of a call to \<open>\<aA>\<close> and an admissibility lemma.
+\<close>
 
 lemma evalV_possible:
   assumes f: "f \<in> \<aA> d \<beta> ve"
@@ -158,7 +158,7 @@ case (Step abs_R)
      case (Inl fstate) show ?thesis
      using Inl Discr state
      proof (cases fstate rule: a_fstate_case, auto)
-     txt {* Case Lambda *}
+     txt \<open>Case Lambda\<close>
      fix l vs c \<beta> as ve b
      assume "Discr (Inl (PC (Lambda l vs c, \<beta>), as, ve, b)) \<in> arg_poss p"
        hence lam: "Lambda l vs c \<in> lambdas p"
@@ -192,7 +192,7 @@ case (Step abs_R)
        unfolding arg_poss_def by auto
      next
 
-     txt {* Case Plus *}
+     txt \<open>Case Plus\<close>
      fix ve b l v1 v2 cnts cnt
      assume "Discr (Inl (PP (prim.Plus l), [v1, v2, cnts], ve, b)) \<in> arg_poss p"
          and "cnt \<in> cnts"
@@ -210,7 +210,7 @@ case (Step abs_R)
        unfolding arg_poss_def by auto
      next
   
-     txt {* Case If (true case) *}
+     txt \<open>Case If (true case)\<close>
      fix ve b l1 l2 v cntst cntsf cnt
      assume "Discr (Inl (PP (prim.If l1 l2), [v, cntst, cntsf], ve, b)) \<in> arg_poss p"
          and "cnt \<in> cntst"
@@ -228,7 +228,7 @@ case (Step abs_R)
        unfolding arg_poss_def by auto
      next
   
-     txt {* Case If (false case) *}
+     txt \<open>Case If (false case)\<close>
      fix ve b l1 l2 v cntst cntsf cnt
      assume "Discr (Inl (PP (prim.If l1 l2), [v, cntst, cntsf], ve, b)) \<in> arg_poss p"
          and "cnt \<in> cntsf"
@@ -251,7 +251,7 @@ case (Step abs_R)
    case (fields c \<beta> ve b)
    show ?thesis using Discr Inr fields state proof(cases c, auto simp add:HOL.Let_def simp del:evalV_a.simps)
 
-     txt {* Case App *}
+     txt \<open>Case App\<close>
      fix l d ds f
      assume arg: "Discr (Inr (App l d ds, \<beta>, ve, b)) \<in> arg_poss p"
        and f: "f \<in> \<aA> d \<beta> ve"
@@ -279,7 +279,7 @@ case (Step abs_R)
        unfolding arg_poss_def by auto
 
    next
-     txt {* Case Let *}
+     txt \<open>Case Let\<close>
      fix l binds c'
      assume arg: "Discr (Inr (Let l binds c', \<beta>, ve, b)) \<in> arg_poss p"
      hence l: "l \<in> labels p"
@@ -313,16 +313,16 @@ qed
 qed
 qed
 
-text {*
-This result is now lifted to the powerset of @{text abs_R}.
-*}
+text \<open>
+This result is now lifted to the powerset of \<open>abs_R\<close>.
+\<close>
 
 lemma arg_space_complete_ps: "states \<subseteq> arg_poss p \<Longrightarrow> (\<^ps>abs_R)\<cdot>states \<subseteq> arg_poss p"
 using arg_space_complete unfolding powerset_lift_def by auto
 
-text {*
+text \<open>
 We are not so much interested in the finiteness of the set of possible arguments but rather of the the set of occurring arguments, when we start with the initial argument. But as this is of course a subset of the set of possible arguments, this is not hard to show.
-*}
+\<close>
 
 lemma UN_iterate_less: 
   assumes start: "x \<in> S"
@@ -332,7 +332,7 @@ proof- {
   fix i
   have "iterate i\<cdot>f\<cdot>{x} \<subseteq> S"
   proof(induct i)
-    case 0 show ?case using `x \<in> S` by simp next
+    case 0 show ?case using \<open>x \<in> S\<close> by simp next
     case (Suc i) thus ?case using step[of "iterate i\<cdot>f\<cdot>{x}"] by simp
   qed
   } thus ?thesis by auto
@@ -348,11 +348,11 @@ proof (rule finite_subset[OF _finite_arg_space])
          intro!: imageI)
 qed
 
-subsection {* A decomposition *}
+subsection \<open>A decomposition\<close>
 
-text {*
-The functions @{text abs_g} and @{text abs_R} are derived from @{text \<aF>} and @{text \<aC>}. This connection has yet to expressed explicitly. 
-*}
+text \<open>
+The functions \<open>abs_g\<close> and \<open>abs_R\<close> are derived from \<open>\<aF>\<close> and \<open>\<aC>\<close>. This connection has yet to expressed explicitly. 
+\<close>
 
 lemma Un_commute_helper:"(a \<union> b) \<union> (c \<union> d) = (a \<union> c) \<union> (b \<union> d)"
 by auto
@@ -372,11 +372,11 @@ apply (case_tac aa)
 apply (simp_all add:HOL.Let_def)
 done
 
-subsection {* The iterative equation *}
+subsection \<open>The iterative equation\<close>
 
-text {*
-Because of the special form of @{text \<aF>} (and thus @{text \<aPR>}) derived in the previous lemma, we can apply our generic results from @{theory "Shivers-CFA.Computability"} and express the abstract semantics as the image of a finite set under a computable function.
-*}
+text \<open>
+Because of the special form of \<open>\<aF>\<close> (and thus \<open>\<aPR>\<close>) derived in the previous lemma, we can apply our generic results from @{theory "Shivers-CFA.Computability"} and express the abstract semantics as the image of a finite set under a computable function.
+\<close>
 
 lemma a_evalF_iterative:
   "\<aF>\<cdot>(Discr x) = \<^ps>abs_g\<cdot>(\<Union>i. iterate i\<cdot>(\<^ps>abs_R)\<cdot>{Discr (Inl x)})"

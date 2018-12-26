@@ -1,8 +1,8 @@
 section "Arrays without bounds"
 theory CArrays imports Main begin
 
-text {* For these arrays there is no
-        built-in protection against reading or writing out-of-bounds. *}
+text \<open>For these arrays there is no
+        built-in protection against reading or writing out-of-bounds.\<close>
 
 type_synonym 'a cArray = "nat => 'a"
 

@@ -17,9 +17,9 @@ imports
 begin
 (*>*)
 
-subsection{* Perfect Recall in Deterministic Broadcast Environments *}
+subsection\<open>Perfect Recall in Deterministic Broadcast Environments\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-spr-deterministic-protocols}
 
@@ -38,12 +38,12 @@ prescribes at most one action. In practice this constraint is easier
 to verify than the circularity would suggest; we return to this point
 at the end of this section.
 
-*}
+\<close>
 
-text_raw{*
+text_raw\<open>
 \begin{figure}[tb]
 \begin{isabellebody}%
-*}
+\<close>
 
 record (overloaded) ('a, 'es, 'ps) BEState =
   es :: "'es"
@@ -69,12 +69,12 @@ locale FiniteDetBroadcastEnvironment =
              \<longrightarrow> ODList.lookup (ps (envTrans eact aact s)) a
                = ODList.lookup (ps (envTrans eact' aact' s')) a"
   assumes jkbpDet: "\<forall>a. \<forall>t \<in> SPR.jkbpC. length (jAction SPR.MC t a) \<le> 1"
-text_raw{*
+text_raw\<open>
   \end{isabellebody}%
   \caption{Finite broadcast environments with a deterministic JKBP.}
   \label{fig:kbps-theory-det-broadcast-envs}
 \end{figure}
-*}(*<*)
+\<close>(*<*)
 
 instantiation BEState_ext :: (linorder, linorder, linorder, linorder) linorder
 begin
@@ -106,7 +106,7 @@ proof
 qed
 
 (*>*)
-text{*
+text\<open>
 
 We encode our expectations of the scenario in the @{term
 "FiniteBroadcastEnvironment"} locale of
@@ -115,12 +115,12 @@ modelled by having all agents make the same common observation of the
 shared state of type @{typ "'es"}. We also allow each agent to
 maintain a private state of type @{typ "'ps"}; that other agents
 cannot influence it or directly observe it is enforced by the
-constraint @{text "envTrans"} and the definition of @{term "envObs"}.
+constraint \<open>envTrans\<close> and the definition of @{term "envObs"}.
 
 We do however allow the environment's protocol to be non-deterministic
 and a function of the entire system state, including private states.
 
-*}
+\<close>
 
 context FiniteDetBroadcastEnvironment
 begin
@@ -134,7 +134,7 @@ lemma envObs_def_raw:
   done
 
 (*>*)
-text{*
+text\<open>
 
 We seek a suitable simulation space by considering what determines an
 agent's knowledge. Intuitively any set of traces that is relevant to
@@ -142,16 +142,16 @@ the agents' states of knowledge with respect to @{term "t \<in> jkbpC"}
 need include only those with the same common observation as @{term
 "t"}:
 
-*}
+\<close>
 
 definition tObsC :: "('a, 'es, 'as) BEState Trace \<Rightarrow> 'cobs Trace" where
   "tObsC \<equiv> tMap (envObsC \<circ> es)"
 
-text{*
+text\<open>
 
 Clearly this is an abstraction of the SPR jview of the given trace.
 
-*}
+\<close>
 
 lemma spr_jview_tObsC:
   assumes "spr_jview a t = spr_jview a t'"
@@ -199,7 +199,7 @@ lemma spr_jview_tObsC_trans:
   by (fastforce dest: spr_jview_tObsC)
 
 (*>*)
-text{*
+text\<open>
 
 Unlike the single-agent case of \S\ref{sec:kbps-spr-single-agent}, it
 is not sufficient for a simulation to record only the final states; we
@@ -208,7 +208,7 @@ states they consider possible, as the initial states may contain
 information that is not common knowledge. This motivates the following
 abstraction:
 
-*}
+\<close>
 
 definition
   tObsC_abs :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) BEState Relation"
@@ -259,16 +259,16 @@ lemma tObsC_abs_tInit[iff]:
   done
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 end (* context FiniteDetBroadcastEnvironment *)
 
-text{*
+text\<open>
 
 We use the following record to represent the worlds of the simulated
 Kripke structure:
 
-*}
+\<close>
 
 record (overloaded) ('a, 'es, 'as) spr_simWorld =
   sprFst :: "('a, 'es, 'as) BEState"
@@ -293,27 +293,27 @@ qed
 context FiniteDetBroadcastEnvironment
 begin
 
-text{*
+text\<open>
 
 The simulation of a trace @{term "t \<in> jkbpC"} records its initial and
 final states, and the relation between initial and final states of all
 commonly-plausible traces:
 
-*}
+\<close>
 
 definition
   spr_sim :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) spr_simWorld"
 where
   "spr_sim \<equiv> \<lambda>t. \<lparr> sprFst = tFirst t, sprLst = tLast t, sprCRel = tObsC_abs t \<rparr>"
 
-text{*
+text\<open>
 
 The associated Kripke structure relates two worlds for an agent if the
 agent's observation on the the first and last states corresponds, and
 the worlds have the same common observation relation. As always, we
 evaluate propositions on the final state of the trace.
 
-*}
+\<close>
 
 definition
   spr_simRels :: "'a \<Rightarrow> ('a, 'es, 'as) spr_simWorld Relation"
@@ -366,7 +366,7 @@ lemma envDetJKBP':
   done
 
 (*>*)
-text{*
+text\<open>
 
 All the properties of a simulation are easy to show for @{term
 "spr_sim"} except for reverse simulation.
@@ -376,7 +376,7 @@ same common observations, and an agent makes the same observation on
 their initial states, then that agent's private states at each point
 on the two traces are identical.
 
-*}
+\<close>
 
 lemma spr_jview_det_ps:
   assumes tt'C: "{t, t'} \<subseteq> SPR.jkbpC"
@@ -484,7 +484,7 @@ proof(rule sim_rI)
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The proof proceeds by lock-step induction over @{term "t"} and @{term
 "t'"}, appealing to the @{term "jkbpDet"} assumption, the definition
@@ -493,7 +493,7 @@ of @{term "envObs"} and the constraint @{term "envTrans"}.
 It is then a short step to showing reverse simulation, and hence
 simulation:
 
-*}
+\<close>
 
 lemma spr_sim: "sim SPR.MC spr_simMC spr_sim"
 (*<*)
@@ -514,9 +514,9 @@ sublocale FiniteDetBroadcastEnvironment
 
 (* **************************************** *)
 
-subsubsection{* Representations *}
+subsubsection\<open>Representations\<close>
 
-text{*
+text\<open>
 
 As before we canonically represent the quotient of the simulated
 worlds @{typ "('a, 'es, 'as) spr_simWorld"} under @{term
@@ -524,7 +524,7 @@ worlds @{typ "('a, 'es, 'as) spr_simWorld"} under @{term
 the type @{typ "('a \<times> 'a) odlist"} (abbreviated @{typ "'a
 odrelation"}) to canonically represent relations.
 
-*}
+\<close>
 
 context FiniteDetBroadcastEnvironment
 begin
@@ -534,12 +534,12 @@ type_synonym (in -) ('a, 'es, 'as) spr_simWorldsECRep
 type_synonym (in -) ('a, 'es, 'as) spr_simWorldsRep
   = "('a, 'es, 'as) spr_simWorldsECRep \<times> ('a, 'es, 'as) spr_simWorldsECRep"
 
-text{*
+text\<open>
 
 We can abstract such a representation into a set of simulated
 equivalence classes:
 
-*}
+\<close>
 
 definition
   spr_simAbs :: "('a, 'es, 'as) spr_simWorldsRep
@@ -548,13 +548,13 @@ where
   "spr_simAbs \<equiv> \<lambda>(cec, aec). { \<lparr> sprFst = s, sprLst = s', sprCRel = toSet cec \<rparr>
                                 |s s'. (s, s') \<in> toSet aec }"
 
-text{*
+text\<open>
 
 Assuming @{term "X"} represents a simulated equivalence class for
 @{term "t \<in> jkbpC"}, we can decompose @{term "spr_simAbs X"} in terms
 of @{term "tObsC_abs t"} and @{term "agent_abs t"}:
 
-*}
+\<close>
 
 definition
   agent_abs :: "'a \<Rightarrow> ('a, 'es, 'as) BEState Trace
@@ -595,12 +595,12 @@ lemma spr_simAbs_agent_abs[simp]:
   done
 
 (*>*)
-text{*
+text\<open>
 
 This representation is canonical on the domain of interest (though not
 in general):
 
-*}
+\<close>
 
 lemma spr_simAbs_inj_on:
   "inj_on spr_simAbs { x . spr_simAbs x \<in> SPRdet.jkbpSEC }"
@@ -623,13 +623,13 @@ proof(rule inj_onI)
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The following sections make use of a Kripke structure constructed over
 @{term "tObsC_abs t"} for some canonical trace @{term "t"}. Note that
 we use the relation in the generated code.
 
-*}
+\<close>
 
 type_synonym (in -) ('a, 'es, 'as) spr_simWorlds
   = "('a, 'es, 'as) BEState \<times> ('a, 'es, 'as) BEState"
@@ -666,13 +666,13 @@ lemma spr_repMC_S5n[intro, simp]: "S5n (spr_repMC X)"
   by (intro S5nI equivI refl_onI symI transI) auto
 
 (*>*)
-text{*
+text\<open>
 
 As before we can show that this Kripke structure is adequate for a
 particular canonical trace @{term "t"} by showing that it simulates
 @{term "spr_repMC"} We introduce an intermediate structure:
 
-*}
+\<close>
 
 abbreviation
   spr_jkbpCSt :: "('a, 'es, 'as) BEState Trace \<Rightarrow> ('a, 'es, 'as) spr_simWorld set"
@@ -705,7 +705,7 @@ lemma jkbpCSt_jkbpCS_subset:
   by auto
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma spr_repSim:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -748,26 +748,25 @@ next
     done
 qed
 (*>*)
-text{*
+text\<open>
 
-As before we define a set of constants that satisfy the @{text
-"Algorithm"} locale given the assumptions of the @{term
+As before we define a set of constants that satisfy the \<open>Algorithm\<close> locale given the assumptions of the @{term
 "FiniteDetBroadcastEnvironment"} locale.
 
-*}
+\<close>
 
 (* **************************************** *)
 
-subsubsection{* Initial states *}
+subsubsection\<open>Initial states\<close>
 
-text{*
+text\<open>
 
 The initial states for agent @{term "a"} given an initial observation
 @{term "iobs"} consist of the set of states that yield a common
 observation consonant with @{term "iobs"} paired with the set of
 states where @{term "a"} observes @{term "iobs"}:
 
-*}
+\<close>
 
 definition (in -)
   spr_simInit ::
@@ -787,7 +786,7 @@ where
   "spr_simInit \<equiv> SPRViewDet.spr_simInit envInit envObsC envObs"
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma spr_simInit:
   assumes "iobs \<in> envObs a ` set envInit"
@@ -806,14 +805,14 @@ lemma spr_simInit:
 
 (* **************************************** *)
 
-subsubsection{* Simulated observations *}
+subsubsection\<open>Simulated observations\<close>
 
-text{*
+text\<open>
 
 An observation can be made at any element of the representation of a
 simulated equivalence class of a canonical trace:
 
-*}
+\<close>
 
 definition (in -)
   spr_simObs ::
@@ -831,7 +830,7 @@ where
   "spr_simObs \<equiv> SPRViewDet.spr_simObs envObsC"
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma spr_simObs:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -855,9 +854,9 @@ qed
 
 (* **************************************** *)
 
-subsubsection{* Evaluation *}
+subsubsection\<open>Evaluation\<close>
 
-text{*
+text\<open>
 
 As for the clock semantics (\S\ref{sec:kbps-theory-clock-view-eval}),
 we use the general evalation function @{term "evalS"}.
@@ -865,7 +864,7 @@ we use the general evalation function @{term "evalS"}.
 Once again we propositions are used to filter the set of possible
 worlds @{term "X"}:
 
-*}
+\<close>
 
 abbreviation (in -)
   spr_evalProp ::
@@ -875,13 +874,13 @@ abbreviation (in -)
 where
   "spr_evalProp envVal \<equiv> \<lambda>X p. ODList.filter (\<lambda>s. envVal (snd s) p) X"
 
-text{*
+text\<open>
 
 The knowledge operation computes the subset of possible worlds @{term
 "cec"} that yield the same observation as @{term "s"} for agent @{term
 "a"}:
 
-*}
+\<close>
 
 definition (in -)
   spr_knowledge ::
@@ -906,13 +905,13 @@ lemma (in -) [code]:
   unfolding spr_knowledge_def spr_repRels_def by (simp add: split_def)
 
 (*>*)
-text{*
+text\<open>
 
 Similarly the common knowledge operation computes the transitive
 closure \citep{AFP:TRANCL} of the union of the knowledge relations for
-the agents @{text "as"}:
+the agents \<open>as\<close>:
 
-*}
+\<close>
 
 definition (in -)
   spr_commonKnowledge ::
@@ -945,12 +944,12 @@ lemma (in -) [code]:
   unfolding spr_commonKnowledge_def spr_repRels_def by (simp add: split_def)
 
 (*>*)
-text{*
+text\<open>
 
 The evaluation function evaluates a subjective knowledge formula on
 the representation of an equivalence class:
 
-*}
+\<close>
 
 definition (in -)
   "eval envVal envObs \<equiv> \<lambda>(cec, X).
@@ -984,7 +983,7 @@ lemma eval_rec_models:
 using XY s
 proof(induct \<phi> arbitrary: X s)
   case (Kknows a' \<phi> X s)
-  from `s \<in> toSet X` spr_knowledge[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
+  from \<open>s \<in> toSet X\<close> spr_knowledge[OF set_mp[OF Kknows(2) Kknows(3)], where a=a']
   show ?case
     apply simp
     apply rule
@@ -1003,10 +1002,10 @@ next
   case (Kcknows as \<phi> X s)
   show ?case
   proof(cases "as = Nil")
-    case True with `s \<in> toSet X` show ?thesis by clarsimp
+    case True with \<open>s \<in> toSet X\<close> show ?thesis by clarsimp
   next
     case False
-    with `s \<in> toSet X` spr_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
+    with \<open>s \<in> toSet X\<close> spr_commonKnowledge_relation_image[OF set_mp[OF Kcknows(2) Kcknows(3)], where as=as]
     show ?thesis
       apply simp
       apply rule
@@ -1192,11 +1191,11 @@ next
 qed simp_all
 
 (*>*)
-text{*
+text\<open>
 
 This function corresponds with the standard semantics:
 
-*}
+\<close>
 
 lemma eval_models:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -1213,14 +1212,14 @@ lemma eval_models:
 
 (* **************************************** *)
 
-subsubsection{* Simulated actions *}
+subsubsection\<open>Simulated actions\<close>
 
-text{*
+text\<open>
 
 From a common equivalence class and a subjective equivalence class for
 agent @{term "a"}, we can compute the actions enabled for @{term "a"}:
 
-*}
+\<close>
 
 definition (in -)
   spr_simAction ::
@@ -1240,14 +1239,12 @@ where
   "spr_simAction \<equiv> SPRViewDet.spr_simAction jkbp envVal envObs"
 
 (*>*)
-text{*
+text\<open>
 
-Using the above result about evaluation, we can relate @{text
-"spr_simAction"} to @{term "jAction"}. Firstly, @{text
-"spr_simAction"} behaves the same as @{term "jAction"} using the
+Using the above result about evaluation, we can relate \<open>spr_simAction\<close> to @{term "jAction"}. Firstly, \<open>spr_simAction\<close> behaves the same as @{term "jAction"} using the
 @{term "spr_repMC"} structure:
 
-*}
+\<close>
 
 lemma spr_action_jaction:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -1321,14 +1318,13 @@ next
 qed (insert s, auto)
 
 (*>*)
-text{*
+text\<open>
 
-We can connect the agent's choice of actions on the @{text
-"spr_repMC"} structure to those on the @{text "SPR.MC"} structure
+We can connect the agent's choice of actions on the \<open>spr_repMC\<close> structure to those on the \<open>SPR.MC\<close> structure
 using our earlier results about actions being preserved by generated
 models and simulations.
 
-*}
+\<close>
 
 lemma spr_simAction:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -1353,15 +1349,15 @@ qed
 
 (* **************************************** *)
 
-subsubsection{* Simulated transitions *}
+subsubsection\<open>Simulated transitions\<close>
 
-text{*
+text\<open>
 
 The story of simulated transitions takes some doing. We begin by
 computing the successor relation of a given equivalence class @{term
 "X"} with respect to the common equivalence class @{term "cec"}:
 
-*}
+\<close>
 
 abbreviation (in -)
   "spr_jAction jkbp envVal envObs cec s \<equiv> \<lambda>a.
@@ -1388,13 +1384,13 @@ where
                                                 (initialS, finalS))
                                    (toList agents) ] ]"
 
-text{*
+text\<open>
 
 We will split the result of this function according to the common
 observation and also agent @{term "a"}'s observation, where @{term
 "a"} is the agent we are constructing the automaton for.
 
-*}
+\<close>
 
 definition (in -)
   spr_simObsC :: "('es \<Rightarrow> 'cobs)
@@ -1410,11 +1406,11 @@ abbreviation (in -)
 where
   "envObs_rel envObs \<equiv> \<lambda>(s, s'). envObs (snd s') = envObs (snd s)"
 
-text{*
+text\<open>
 
 The above combine to yield the successor equivalence classes like so:
 
-*}
+\<close>
 
 definition (in -)
   spr_simTrans :: "'a odlist
@@ -1742,14 +1738,14 @@ lemma envObs_rel_equiv:
   by (intro equivI refl_onI symI transI) auto
 
 (*>*)
-text{*
+text\<open>
 
-Showing that @{text "spr_simTrans"} works requires a series of
+Showing that \<open>spr_simTrans\<close> works requires a series of
 auxiliary lemmas that show we do in fact compute the correct successor
 equivalence classes. We elide the unedifying details, skipping
 straight to the lemma that the @{term "Algorithm"} locale expects:
 
-*}
+\<close>
 
 lemma spr_simTrans:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -1962,7 +1958,7 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The explicit-state approach sketched above is quite inefficient, and
 also some distance from the symbolic techniques we use in
@@ -1970,18 +1966,18 @@ also some distance from the symbolic techniques we use in
 demonstrate the theory on the muddy children example in
 \S\ref{sec:kbps-theory-mc}.
 
-*}
+\<close>
 
 end (* context FiniteDetBroadcastEnvironment *)
 
-subsubsection{* Maps *}
+subsubsection\<open>Maps\<close>
 
-text{*
+text\<open>
 
 As always we use a pair of tries. The domain of these maps is the pair
 of relations.
 
-*}
+\<close>
 
 type_synonym ('a, 'es, 'obs, 'as) trans_trie
     = "(('a, 'es, 'as) BEState,
@@ -2121,11 +2117,11 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 This suffices to placate the @{term "Algorithm"} locale.
 
-*}
+\<close>
 
 sublocale FiniteDetBroadcastEnvironment
         < SPRdet: Algorithm
@@ -2194,7 +2190,7 @@ lemma (in FiniteDetBroadcastEnvironment)
   unfolding mkSPRDetAuto_def mkAlgAuto_def SPRDetAutoDFS_def alg_mk_auto_def by (simp add: Let_def)
 
 (*>*)
-text{*
+text\<open>
 
 As we remarked earlier in this section, in general it may be difficult
 to establish the determinacy of a KBP as it is a function of the
@@ -2203,7 +2199,7 @@ manifest as the guards are logically disjoint, independently of the
 knowledge subformulas. The following lemma generates the required
 proof obligations for this case:
 
-*}
+\<close>
 
 lemma (in PreEnvironmentJView) jkbpDetI:
   assumes tC: "t \<in> jkbpC"
@@ -2227,14 +2223,14 @@ proof -
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The scenario presented here is a variant of the broadcast environments
 treated by \citet{Ron:1996}, which we cover in the next section.
 
 \FloatBarrier
 
-*}
+\<close>
 (*<*)
 end
 (*>*)

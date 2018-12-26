@@ -4,7 +4,7 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsection{* Verification Component for Total Correctness *}
+subsection\<open>Verification Component for Total Correctness\<close>
 
 theory VC_KAD_wf
 
@@ -12,14 +12,14 @@ imports VC_KAD KAD.Modal_Kleene_Algebra_Applications
 
 begin
 
-text {* This component supports the verification of simple while programs
-in a total correctness setting. *}
+text \<open>This component supports the verification of simple while programs
+in a total correctness setting.\<close>
 
-subsubsection {* Relation Divergence Kleene Algebras *}
+subsubsection \<open>Relation Divergence Kleene Algebras\<close>
 
-text{* Divergence Kleene algebras have been formalised in the AFP entry for Kleene algebra with domain.
+text\<open>Divergence Kleene algebras have been formalised in the AFP entry for Kleene algebra with domain.
 The nabla or divergence operation models those states of a relation from which infinitely ascending chains
-may start. *}
+may start.\<close>
 
 definition rel_nabla :: "'a rel \<Rightarrow> 'a rel" where 
   "rel_nabla X = \<Union> {P. P \<subseteq> relfdia X P}"
@@ -45,8 +45,8 @@ lemma rel_nabla_coinduct_var: "P \<subseteq> relfdia X P \<Longrightarrow> P \<s
 lemma rel_nabla_bin_coinduct: "P \<subseteq> relfdia X P \<union> rdom Q \<Longrightarrow> P \<subseteq> rel_nabla_bin X Q"
   by (simp add: rel_nabla_bin_def rel_antidomain_kleene_algebra.fdia_def rel_ad_def, blast)
 
-text {* The two fusion lemmas are, in fact, hard-coded fixpoint fusion proofs. They might be replaced
-by more generic fusion proofs eventually. *}
+text \<open>The two fusion lemmas are, in fact, hard-coded fixpoint fusion proofs. They might be replaced
+by more generic fusion proofs eventually.\<close>
 
 lemma nabla_fusion1: "rel_nabla X \<union> relfdia (X\<^sup>*) Q \<subseteq> rel_nabla_bin X Q"  
 proof -
@@ -97,12 +97,12 @@ proof
     by (simp add: rel_nabla_coinduct)
 qed
 
-subsubsection {* Meta-Equational Loop  Rule *}
+subsubsection \<open>Meta-Equational Loop  Rule\<close>
 
 context fdivergence_kleene_algebra
 begin
 
-text {* The rule below is inspired by Arden' rule from language theory. It can be used in total correctness proofs. *}
+text \<open>The rule below is inspired by Arden' rule from language theory. It can be used in total correctness proofs.\<close>
 
 lemma fdia_arden: "\<nabla>x = 0 \<Longrightarrow> d p \<le> d q + |x\<rangle> p \<Longrightarrow> d p \<le> |x\<^sup>\<star>\<rangle> q"
 proof -
@@ -151,11 +151,11 @@ lemma fbox_arden_whilei: "\<nabla> (d t \<cdot> x) = 0 \<Longrightarrow> (d i = 
 lemma fbox_arden_whilei_iff: "\<nabla> (d t \<cdot> x) = 0 \<Longrightarrow> (d i = (d t + d q) \<cdot> |d t \<cdot> x] i \<longleftrightarrow> d i = |while t inv i do x od] q)"
   using fbox_arden_while_iff whilei_def by auto
 
-subsubsection {* Noethericity and Absence of Divergence *}
+subsubsection \<open>Noethericity and Absence of Divergence\<close>
 
-text {* Noetherian elements have been defined in the AFP entry for Kleene algebra with domain. First we show 
+text \<open>Noetherian elements have been defined in the AFP entry for Kleene algebra with domain. First we show 
 that noethericity and absence of divergence coincide. Then we turn to the relational model and 
-show that noetherian relations model terminating programs. *}
+show that noetherian relations model terminating programs.\<close>
 
 lemma noether_nabla: "Noetherian x \<Longrightarrow> \<nabla> x = 0"
   by (metis nabla_closure nabla_unfold noetherian_alt)
@@ -181,8 +181,8 @@ lemma wf_nabla_aux: "(P \<subseteq> (converse R) `` P \<longrightarrow> P = {}) 
   apply (standard, metis Domain_Id_on Domain_mono Id_on_empty fdia_rel_im1)
   using fdia_rel_im1 by fastforce
 
-text {* A relation is noeterian if its converse is wellfounded. Hence a relation is noetherian if and only if its 
-divergence is empty. In the relational program semantics, noetherian programs terminate. *}
+text \<open>A relation is noeterian if its converse is wellfounded. Hence a relation is noetherian if and only if its 
+divergence is empty. In the relational program semantics, noetherian programs terminate.\<close>
 
 lemma wf_nabla: "wf (converse R) \<longleftrightarrow> rel_nabla R = {}"
   by (metis (no_types, lifting) fdia_rel_im2 rel_fdivka.nabla_unfold_eq rel_nabla_prop rel_nabla_unfold wfE_pf wfI_pf wf_nabla_aux)

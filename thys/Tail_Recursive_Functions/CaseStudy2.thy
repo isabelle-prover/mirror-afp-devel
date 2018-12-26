@@ -11,11 +11,11 @@ theory CaseStudy2
 imports Main "HOL-Library.Multiset"
 begin
 
-text {*
+text \<open>
 \null
 
 In the second case study, the problem will be examined of defining a function
-@{text t_ins} performing item insertion into binary search trees (admitting value
+\<open>t_ins\<close> performing item insertion into binary search trees (admitting value
 repetitions) of elements of a linear order, and then proving the correctness of
 this definition, i.e. that the trees output by the function still be sorted if
 the input ones are and contain one more occurrence of the inserted value, the
@@ -24,7 +24,7 @@ number of occurrences of any other value being left unaltered.
 Here below is a naive tail-recursive definition of such function:
 
 \null
-*}
+\<close>
 
 datatype 'a bintree = Leaf | Branch 'a "'a bintree" "'a bintree"
 
@@ -42,7 +42,7 @@ where
 "t_ins_naive True x [xt] = xt"
 by pat_completeness auto
 
-text {*
+text \<open>
 \null
 
 The list appearing as the third argument, deputed to initially contain the sole
@@ -50,20 +50,20 @@ tree into which the second argument has to be inserted, is used to unfold all th
 involved subtrees until a leaf is reached; then, such leaf is replaced with a branch
 whose root value matches the second argument, and the subtree list is folded again.
 The information on whether unfolding or folding is taking place is conveyed by the
-first argument, whose value will respectively be @{text False} or @{text True}.
+first argument, whose value will respectively be \<open>False\<close> or \<open>True\<close>.
 
 According to this plan, the computation is meant to terminate in correspondence
-with pattern @{text True}, @{text _}, @{text "[_]"}. Hence, the above naive
+with pattern \<open>True\<close>, \<open>_\<close>, \<open>[_]\<close>. Hence, the above naive
 definition comprises a non-recursive equation for this pattern only, so that the
-residual ones @{text True}, @{text _}, @{text "_ # Leaf # _"} and @{text _},
-@{text _}, @{text "[]"} are not covered by any equation.
+residual ones \<open>True\<close>, \<open>_\<close>, \<open>_ # Leaf # _\<close> and \<open>_\<close>,
+\<open>_\<close>, \<open>[]\<close> are not covered by any equation.
 
 That which decreases in recursive calls is the size of the head of the subtree
 list during unfolding, and the length of the list during folding. Furthermore,
 unfolding precedes folding in the recursive call pipeline, viz. there is a
 recursive equation switching from unfolding to folding, but no one carrying out
 the opposite transition. These considerations suggest that a measure function
-suitable to prove the termination of function @{text t_ins_naive} should roughly
+suitable to prove the termination of function \<open>t_ins_naive\<close> should roughly
 match the sum of the length of the list and the size of the list head during
 unfolding, and the length of the list alone during folding.
 
@@ -80,7 +80,7 @@ As a result, a suitable measure function and the corresponding termination proof
 are as follows:
 
 \null
-*}
+\<close>
 
 fun t_ins_naive_measure :: "bool \<times> 'a \<times> 'a bintree list \<Rightarrow> nat" where
 "t_ins_naive_measure (b, x, ts) = (if b
@@ -90,14 +90,14 @@ fun t_ins_naive_measure :: "bool \<times> 'a \<times> 'a bintree list \<Rightarr
 termination t_ins_naive
 by (relation "measure t_ins_naive_measure", simp_all)
 
-text {*
+text \<open>
 \null
 
 Some further functions are needed to express the aforesaid correctness
-properties of function @{text t_ins_naive}:
+properties of function \<open>t_ins_naive\<close>:
 
 \null
-*}
+\<close>
 
 primrec t_set :: "'a bintree \<Rightarrow> 'a set" where
 "t_set Leaf = {}" |
@@ -118,35 +118,35 @@ primrec t_sorted :: "'a::linorder bintree \<Rightarrow> bool" where
 definition t_count :: "'a \<Rightarrow> 'a bintree \<Rightarrow> nat" where
 "t_count x xt \<equiv> count (t_multiset xt) x"
 
-text {*
+text \<open>
 \null
 
-Functions @{text t_set} and @{text t_multiset} return the set and the multiset,
+Functions \<open>t_set\<close> and \<open>t_multiset\<close> return the set and the multiset,
 respectively, of the items of the input tree; the connection between them
-expressed by lemma @{text t_set_multiset} will be used in step 9.
+expressed by lemma \<open>t_set_multiset\<close> will be used in step 9.
 
 The target correctness theorems can then be enunciated as follows:
 
 \null
 
-@{text "t_sorted xt \<longrightarrow> t_sorted (t_ins_naive False x [xt])"}
+\<open>t_sorted xt \<longrightarrow> t_sorted (t_ins_naive False x [xt])\<close>
 
 \null
 
-@{text "t_count y (t_ins_naive False x [xt]) ="}
+\<open>t_count y (t_ins_naive False x [xt]) =\<close>
 
-@{text "(if y = x then Suc else id) (t_count y xt)"}
-*}
+\<open>(if y = x then Suc else id) (t_count y xt)\<close>
+\<close>
 
 subsection "Step 1"
 
-text {*
+text \<open>
 This time, the Cartesian product of the input types will be implemented as a
 record type. The second command instructs the system to regard such type as a
 datatype, thus enabling record patterns:
 
 \null
-*}
+\<close>
 
 record 'a t_type =
  folding :: bool
@@ -169,24 +169,24 @@ function (sequential) t_ins_aux :: "'a::linorder t_type \<Rightarrow> 'a t_type"
 "t_ins_aux X = X"
 by pat_completeness auto
 
-text {*
+text \<open>
 \null
 
 Observe that the pattern appearing in the non-recursive equation matches any
 one of the residual patterns
-@{text "\<lparr>folding = True, item = _, subtrees = [_]\<rparr>"},
-@{text "\<lparr>folding = True, item = _, subtrees = _ # Leaf # _\<rparr>"},
-@{text "\<lparr>folding = _, item = _, subtrees = []\<rparr>"}, thus complying with the
-requirement that the definition of function @{text t_ins_aux} be total.
+\<open>\<lparr>folding = True, item = _, subtrees = [_]\<rparr>\<close>,
+\<open>\<lparr>folding = True, item = _, subtrees = _ # Leaf # _\<rparr>\<close>,
+\<open>\<lparr>folding = _, item = _, subtrees = []\<rparr>\<close>, thus complying with the
+requirement that the definition of function \<open>t_ins_aux\<close> be total.
 
 Since the arguments of recursive calls in the definition of function
-@{text t_ins_aux} are the same as those of function @{text t_ins_naive},
+\<open>t_ins_aux\<close> are the same as those of function \<open>t_ins_naive\<close>,
 the termination proof developed for the latter can be applied to the former
 as well by just turning the input product type of the previous measure
-function into the input record type of function @{text t_ins_aux}.
+function into the input record type of function \<open>t_ins_aux\<close>.
 
 \null
-*}
+\<close>
 
 fun t_ins_aux_measure :: "'a t_type \<Rightarrow> nat" where
 "t_ins_aux_measure \<lparr>folding = b, item = x, subtrees = ts\<rparr> = (if b
@@ -207,12 +207,12 @@ definition t_ins_out :: "'a t_type \<Rightarrow> 'a bintree" where
 definition t_ins :: "'a::linorder \<Rightarrow> 'a bintree \<Rightarrow> 'a bintree" where
 "t_ins x xt \<equiv> t_ins_out (t_ins_aux (t_ins_in x xt))"
 
-text {*
+text \<open>
 \null
 
-Since the significant inputs of function @{text t_ins_naive} match pattern
-@{text False}, @{text _}, @{text "[_]"}, those of function @{text t_ins_aux}
-match pattern @{text "\<lparr>folding = False, item = _, subtrees = [_]\<rparr>"}, thus
+Since the significant inputs of function \<open>t_ins_naive\<close> match pattern
+\<open>False\<close>, \<open>_\<close>, \<open>[_]\<close>, those of function \<open>t_ins_aux\<close>
+match pattern \<open>\<lparr>folding = False, item = _, subtrees = [_]\<rparr>\<close>, thus
 being in a one-to-one correspondence with the Cartesian product of the types
 of the second and the third component.
 
@@ -221,13 +221,13 @@ form:
 
 \null
 
-@{text "t_sorted xt \<longrightarrow> t_sorted (t_ins x xt)"}
+\<open>t_sorted xt \<longrightarrow> t_sorted (t_ins x xt)\<close>
 
 \null
 
-@{text "t_count y (t_ins x xt) ="}
-@{text "(if y = x then Suc else id) (t_count y xt)"}
-*}
+\<open>t_count y (t_ins x xt) =\<close>
+\<open>(if y = x then Suc else id) (t_count y xt)\<close>
+\<close>
 
 subsection "Step 3"
 
@@ -312,14 +312,14 @@ proof (induction rule: t_ins_aux.induct,
     with 0 have "?X' \<in> t_ins_set ?X" by (rule R1)
     hence "t_ins_set ?X' \<subseteq> t_ins_set ?X" by (rule t_ins_subset)
     moreover have "t_ins_aux ?X' \<in> t_ins_set ?X'"
-     using case1 and `x \<le> y` by simp
+     using case1 and \<open>x \<le> y\<close> by simp
     ultimately show "t_ins_aux ?X' \<in> t_ins_set ?X" by (rule subsetD)
   next
     assume "\<not> x \<le> y"
     with 0 have "?X'' \<in> t_ins_set ?X" by (rule R2)
     hence "t_ins_set ?X'' \<subseteq> t_ins_set ?X" by (rule t_ins_subset)
     moreover have "t_ins_aux ?X'' \<in> t_ins_set ?X''"
-     using case2 and `\<not> x \<le> y` by simp
+     using case2 and \<open>\<not> x \<le> y\<close> by simp
     ultimately show "t_ins_aux ?X'' \<in> t_ins_set ?X" by (rule subsetD)
   qed
 next
@@ -348,14 +348,14 @@ next
     with 0 have "?X' \<in> t_ins_set ?X" by (rule R4)
     hence "t_ins_set ?X' \<subseteq> t_ins_set ?X" by (rule t_ins_subset)
     moreover have "t_ins_aux ?X' \<in> t_ins_set ?X'"
-     using case1 and `x \<le> y` by simp
+     using case1 and \<open>x \<le> y\<close> by simp
     ultimately show "t_ins_aux ?X' \<in> t_ins_set ?X" by (rule subsetD)
   next
     assume "\<not> x \<le> y"
     with 0 have "?X'' \<in> t_ins_set ?X" by (rule R5)
     hence "t_ins_set ?X'' \<subseteq> t_ins_set ?X" by (rule t_ins_subset)
     moreover have "t_ins_aux ?X'' \<in> t_ins_set ?X''"
-     using case2 and `\<not> x \<le> y` by simp
+     using case2 and \<open>\<not> x \<le> y\<close> by simp
     ultimately show "t_ins_aux ?X'' \<in> t_ins_set ?X" by (rule subsetD)
   qed
 qed
@@ -371,7 +371,7 @@ primrec t_left :: "'a bintree \<Rightarrow> 'a bintree" where
 primrec t_right :: "'a bintree \<Rightarrow> 'a bintree" where
 "t_right (Branch x xl xr) = xr"
 
-text {*
+text \<open>
 \null
 
 The partiality of the definition of the previous functions, which merely return
@@ -382,7 +382,7 @@ These functions are used to define the following invariant -- this time, a singl
 invariant for both of the target correctness theorems:
 
 \null
-*}
+\<close>
 
 fun t_ins_inv :: "'a::linorder \<Rightarrow> 'a bintree \<Rightarrow> 'a t_type \<Rightarrow> bool" where
 "t_ins_inv x xt \<lparr>folding = b, item = y, subtrees = ts\<rparr> =
@@ -396,14 +396,14 @@ fun t_ins_inv :: "'a::linorder \<Rightarrow> 'a bintree \<Rightarrow> 'a t_type 
         then t_multiset (t_left (ts' ! Suc n))
         else t_multiset (t_right (ts' ! Suc n))))))"
 
-text {*
+text \<open>
 \null
 
-More precisely, the invariant, whose type has to match @{text "'a t_type \<Rightarrow> bool"}
+More precisely, the invariant, whose type has to match \<open>'a t_type \<Rightarrow> bool\<close>
 according to the method specification, shall be comprised of function
-@{text "t_ins_inv x xt"}, where @{text x}, @{text xt} are the free variables
-appearing in the target theorems as the arguments of function @{text t_ins}.
-*}
+\<open>t_ins_inv x xt\<close>, where \<open>x\<close>, \<open>xt\<close> are the free variables
+appearing in the target theorems as the arguments of function \<open>t_ins\<close>.
+\<close>
 
 subsection "Step 6"
 
@@ -429,37 +429,37 @@ lemma t_ins_intro_2:
 proof (rule t_ins_form.cases [of X], simp_all add: t_ins_out_def t_count_def)
 qed (erule conjE, drule_tac x = "Suc 0" in bspec, simp_all)
 
-text {*
+text \<open>
 \null
 
-Defining predicate @{text t_ins_form} by means of pattern matching rather than
+Defining predicate \<open>t_ins_form\<close> by means of pattern matching rather than
 quantifiers permits a faster proof of the introduction rules through a case
 distinction followed by simplification. These steps leave the subgoal
 corresponding to pattern
-@{text "\<lparr>folding = True, item = _, subtrees = _ # Leaf # _\<rparr>"} to be proven, which
+\<open>\<lparr>folding = True, item = _, subtrees = _ # Leaf # _\<rparr>\<close> to be proven, which
 can be done \emph{ad absurdum} as this pattern is incompatible with the invariant,
 stating that all the subtrees in the list except for its head are branches.
 
 The reason why this pattern, unlike
-@{text "\<lparr>folding = _, item = _, subtrees = []\<rparr>"}, is not filtered by predicate
-@{text t_ins_form}, is that the lack of its occurrences in recursive calls in
+\<open>\<lparr>folding = _, item = _, subtrees = []\<rparr>\<close>, is not filtered by predicate
+\<open>t_ins_form\<close>, is that the lack of its occurrences in recursive calls in
 correspondence with significant inputs cannot be proven by rule inversion,
-being it compatible with the patterns introduced by rules @{text R3},
-@{text R4}, and @{text R5}.
-*}
+being it compatible with the patterns introduced by rules \<open>R3\<close>,
+\<open>R4\<close>, and \<open>R5\<close>.
+\<close>
 
 subsection "Step 8"
 
-text {*
+text \<open>
 This step will be accomplished by first proving by recursion induction that
-the outputs of function @{text t_ins_aux} match either of the patterns
-satisfying predicate @{text t_ins_form} or else the residual one
-@{text "\<lparr>folding = _, item = _, subtrees = []\<rparr>"}, and then proving by rule
+the outputs of function \<open>t_ins_aux\<close> match either of the patterns
+satisfying predicate \<open>t_ins_form\<close> or else the residual one
+\<open>\<lparr>folding = _, item = _, subtrees = []\<rparr>\<close>, and then proving by rule
 inversion that the last pattern may not occur in recursive calls in
 correspondence with significant inputs.
 
 \null
-*}
+\<close>
 
 definition t_ins_form_all :: "'a t_type \<Rightarrow> bool" where
 "t_ins_form_all X \<equiv> t_ins_form X \<or> subtrees X = []"

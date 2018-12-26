@@ -2,7 +2,7 @@
     Author:     Denis Lohner, Sebastian Ullrich
 *)
 
-subsubsection {* Instantiation for a Simple While Language *}
+subsubsection \<open>Instantiation for a Simple While Language\<close>
 
 theory WhileGraphSSA imports
 Generic_Interpretation

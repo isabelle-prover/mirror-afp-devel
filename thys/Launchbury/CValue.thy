@@ -36,8 +36,8 @@ lemma CB_project_not_bot:
   apply simp
   by (metis (poly_guards_query) CB_project.simps CValue.injects(2) discr.exhaust undiscr_Discr)
 
-text {* HOLCF provides us @{const CValue_take}@{text "::"}@{typeof CValue_take};
-we want a similar function for @{typ "C \<rightarrow> CValue"}. *}
+text \<open>HOLCF provides us @{const CValue_take}\<open>::\<close>@{typeof CValue_take};
+we want a similar function for @{typ "C \<rightarrow> CValue"}.\<close>
 
 abbreviation C_to_CValue_take :: "nat \<Rightarrow> (C \<rightarrow> CValue) \<rightarrow> (C \<rightarrow> CValue)"
    where "C_to_CValue_take n \<equiv> cfun_map\<cdot>ID\<cdot>(CValue_take n)"

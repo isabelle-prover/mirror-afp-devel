@@ -10,7 +10,7 @@ type_synonym lvname = string
 type_synonym assn = "state \<Rightarrow> bool" (* time bound *)
 type_synonym qassn = "state \<Rightarrow> enat" (* time bound *)
 
-text {* The support of an assn2 *}
+text \<open>The support of an assn2\<close>
  
 
 abbreviation state_subst :: "state \<Rightarrow> aexp \<Rightarrow> vname \<Rightarrow> state"
@@ -79,7 +79,7 @@ subsection "Soundness"
   
   
     
-text{* The soundness theorem: *}
+text\<open>The soundness theorem:\<close>
    
 lemma help1: assumes " enat a + X \<le> Y"
     "enat b + Z \<le> X"

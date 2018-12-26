@@ -9,11 +9,11 @@ section "Expectation Transformers"
 
 theory Transformers imports Expectations begin
 
-text_raw {* \label{s:transformers} *}
+text_raw \<open>\label{s:transformers}\<close>
 
 type_synonym 's trans = "'s expect \<Rightarrow> 's expect"
 
-text {* Transformers are functions from expectations to expectations i.e. @{typ "('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow>
+text \<open>Transformers are functions from expectations to expectations i.e. @{typ "('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow>
 real"}. 
 
 The set of \emph{healthy} transformers is the universe into which we place our semantic
@@ -56,9 +56,9 @@ to either $a$ or $d$. The most we can now say is that we must reach $b$ with pro
 least} 0.5 (the minimum from either $a$ or $d$) and $c$ with at least probability 0.3. Note that
 these probabilities do not sum to one (although the sum will still always be less than one). The
 associated expectation transformer is now \emph{sub-}linear: $P_\text{prior}(e) = 0.5 *
-P_\text{post}(b) + 0.3 * P_\text{post}(c)$. *}
+P_\text{post}(b) + 0.3 * P_\text{post}(c)$.\<close>
 
-text_raw {*
+text_raw \<open>
 \begin{figure}
 \begin{center}
 \mbox{
@@ -73,9 +73,9 @@ text_raw {*
 \end{center}
 \caption{\label{f:automaton_3}A diverging automaton.}
 \end{figure}
-*}
+\<close>
 
-text {*
+text \<open>
 Finally, \autoref{f:automaton_3} shows the other way in which strict sublinearity arises:
 divergence.  This automaton transitions with probability 0.5 to state $d$, from which it never
 escapes.  Once there, the probability of reaching any terminating state is zero, and thus the
@@ -109,20 +109,20 @@ lattice. Specifically, for any $b$, the set of expectations bounded by $b$ is a 
 ($\bot = (\lambda s. 0)$, $\top = (\lambda s. b)$), and is closed under the action of feasible
 transformers, including $\sqcap$ and $\sqcup$, which are themselves feasible. We are thus able to
 define both least and greatest fixed points on this set, and thus give semantics to recursive
-programs built from feasible components. *}
+programs built from feasible components.\<close>
 
-subsection {* Comparing Transformers *}
+subsection \<open>Comparing Transformers\<close>
 
-text {* Transformers are compared pointwise, but only on @{term sound} expectations. From the
-preorder so generated, we define equivalence by antisymmetry, giving a partial order. *}
+text \<open>Transformers are compared pointwise, but only on @{term sound} expectations. From the
+preorder so generated, we define equivalence by antisymmetry, giving a partial order.\<close>
 
 definition
   le_trans :: "'s trans \<Rightarrow> 's trans \<Rightarrow> bool"
 where
   "le_trans t u \<equiv> \<forall>P. sound P \<longrightarrow> t P \<le> u P"
 
-text {* We also need to define relations restricted to @{term unitary} transformers, for the
-liberal (wlp) semantics. *}
+text \<open>We also need to define relations restricted to @{term unitary} transformers, for the
+liberal (wlp) semantics.\<close>
 
 definition
   le_utrans :: "'s trans \<Rightarrow> 's trans \<Rightarrow> bool"
@@ -170,7 +170,7 @@ definition
 where
   "l_trans t u \<longleftrightarrow> le_trans t u \<and> \<not> le_trans u t"
 
-text {* Transformer equivalence is induced by comparison: *}
+text \<open>Transformer equivalence is induced by comparison:\<close>
 
 definition
   equiv_trans :: "'s trans \<Rightarrow> 's trans \<Rightarrow> bool"
@@ -300,18 +300,18 @@ lemma equiv_trans_equiv_utrans[dest]:
   "equiv_trans t u \<Longrightarrow> equiv_utrans t u"
   by(auto)
 
-subsection {* Healthy Transformers *}
+subsection \<open>Healthy Transformers\<close>
 
-subsubsection {* Feasibility *}
+subsubsection \<open>Feasibility\<close>
 
 definition feasible :: "(('a \<Rightarrow> real) \<Rightarrow> ('a \<Rightarrow> real)) \<Rightarrow> bool"
 where     "feasible t \<longleftrightarrow> (\<forall>P b. bounded_by b P \<and> nneg P \<longrightarrow>
                                bounded_by b (t P) \<and> nneg (t P))"
 
-text {* A @{term feasible} transformer preserves non-negativity, and bounds. A @{term feasible}
+text \<open>A @{term feasible} transformer preserves non-negativity, and bounds. A @{term feasible}
 transformer always takes its argument `closer to 0' (or leaves it where it is). Note that any
 particular value of the expectation may increase, but no element of the new expectation may exceed
-any bound on the old. This is thus a relatively weak condition. *}
+any bound on the old. This is thus a relatively weak condition.\<close>
 
 lemma feasibleI[intro]:
   "\<lbrakk> \<And>b P. \<lbrakk> bounded_by b P; nneg P \<rbrakk> \<Longrightarrow> bounded_by b (t P);
@@ -380,14 +380,14 @@ proof(rule unitaryI)
   from assms show "bounded_by 1 (t P)" by(auto)
 qed
 
-subsubsection {* Monotonicity *}
+subsubsection \<open>Monotonicity\<close>
 
 definition
   mono_trans :: "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
 where
   "mono_trans t \<equiv> \<forall>P Q. (sound P \<and> sound Q \<and> P \<le> Q) \<longrightarrow> t P \<le> t Q"
 
-text {* Monotonicity allows us to compose transformers, and thus model sequential computation.
+text \<open>Monotonicity allows us to compose transformers, and thus model sequential computation.
 Recall the definition of predicate entailment (\autoref{s:entailment}) as less-than-or-equal. The
 statement @{term "Q \<tturnstile> t R"} means that @{term Q} is everywhere below @{term "t R"}. For standard
 expectations (\autoref{s:standard}), this simply means that @{term Q} \emph{implies} @{term "t R"},
@@ -398,7 +398,7 @@ weakest precondition of @{term Q} under @{term u} entails that of @{term R} unde
 @{term "u o t"}.  If we additionally know that @{term "P \<tturnstile> u Q"}, then by transitivity we have
 @{term "P \<tturnstile> u (t R)"}.  We thus derive a probabilistic form of the standard rule for sequential
 composition: @{term "\<lbrakk> mono_trans t; P \<tturnstile> u Q; Q \<tturnstile> t R \<rbrakk> \<Longrightarrow> P \<tturnstile> u (t R)"}.
-*}
+\<close>
 
 lemma mono_transI[intro]:
   "\<lbrakk> \<And>P Q. \<lbrakk> sound P; sound Q; P \<le> Q \<rbrakk> \<Longrightarrow>  t P \<le> t Q \<rbrakk> \<Longrightarrow> mono_trans t"
@@ -408,23 +408,23 @@ lemma mono_transD[dest]:
   "\<lbrakk> mono_trans t; sound P; sound Q; P \<le> Q \<rbrakk> \<Longrightarrow> t P \<le> t Q"
   by(simp add:mono_trans_def)
 
-subsubsection {* Scaling *}
-text_raw {* \label{s:scaling} *}
+subsubsection \<open>Scaling\<close>
+text_raw \<open>\label{s:scaling}\<close>
 
-text {* A healthy transformer commutes with scaling by a non-negative constant. *}
+text \<open>A healthy transformer commutes with scaling by a non-negative constant.\<close>
 
 definition
   scaling :: "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
 where
   "scaling t \<equiv> \<forall>P c x. sound P \<and> 0 \<le> c \<longrightarrow> c * t P x = t (\<lambda>x. c * P x) x"
 
-text {* The @{term scaling} and feasibility properties together allow us to treat transformers as a
+text \<open>The @{term scaling} and feasibility properties together allow us to treat transformers as a
 complete lattice, when operating on bounded expectations. The action of a transformer on such a
 bounded expectation is completely determined by its action on \emph{unitary} expectations (those
 bounded by 1): @{term "t P s = bound_of P * t (\<lambda>s. P s / bound_of P) s"}. Feasibility in turn
 ensures that the lattice of unitary expectations is closed under the action of a healthy
 transformer. We take advantage of this fact in \autoref{s:induction}, in order to define the fixed
-points of healthy transformers. *}
+points of healthy transformers.\<close>
 
 lemma scalingI[intro]:
   "\<lbrakk> \<And>P c x. \<lbrakk> sound P; 0 \<le> c \<rbrakk> \<Longrightarrow> c * t P x = t (\<lambda>x. c * P x) x \<rbrakk> \<Longrightarrow> scaling t"
@@ -446,9 +446,9 @@ proof -
   finally show ?thesis .
 qed
 
-subsubsection {* Healthiness *}
+subsubsection \<open>Healthiness\<close>
 
-text {* Healthy transformers are feasible and monotonic, and respect scaling *}
+text \<open>Healthy transformers are feasible and monotonic, and respect scaling\<close>
 
 definition
   healthy :: "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
@@ -509,8 +509,8 @@ lemma healthy_id[simp,intro!]:
 
 lemmas healthy_fixes_bot = feasible_fixes_bot[OF healthy_feasibleD]
 
-text {* Some additional results on @{term le_trans}, specific to
-@{term healthy} transformers. *}
+text \<open>Some additional results on @{term le_trans}, specific to
+@{term healthy} transformers.\<close>
 
 lemma le_trans_bot[intro,simp]:
   "healthy t \<Longrightarrow> le_trans (\<lambda>P s. 0) t"
@@ -524,7 +524,7 @@ lemma healthy_pr_bot[simp]:
   "healthy t \<Longrightarrow> t (\<lambda>s. 0) = (\<lambda>s. 0)"
   by(blast intro:feasible_pr_0)
 
-text {* The first significant result is that healthiness is preserved by equivalence: *}
+text \<open>The first significant result is that healthiness is preserved by equivalence:\<close>
 
 lemma healthy_equivI:
   fixes t::"('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real" and u
@@ -641,9 +641,9 @@ lemma healthy_bot[iff]:
   "healthy (\<lambda>P s. 0)"
   by(auto intro!:healthy_parts)
 
-text {* This weaker healthiness condition is for the liberal (wlp) semantics. We only insist that
+text \<open>This weaker healthiness condition is for the liberal (wlp) semantics. We only insist that
 the transformer preserves \emph{unitarity} (bounded by 1), and drop scaling (it is unnecessary in
-establishing the lattice structure here, unlike for the strict semantics). *}
+establishing the lattice structure here, unlike for the strict semantics).\<close>
 
 definition
   nearly_healthy :: "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
@@ -672,13 +672,13 @@ lemma healthy_nearly_healthy[dest]:
 lemmas nearly_healthy_id[iff] =
   healthy_nearly_healthy[OF healthy_id, unfolded id_def]
 
-subsection {* Sublinearity *}
+subsection \<open>Sublinearity\<close>
 
-text {* As already mentioned, the core healthiness property (aside from feasibility and continuity)
+text \<open>As already mentioned, the core healthiness property (aside from feasibility and continuity)
 for transformers is \emph{sublinearity}: The transformation of a quasi-linear combination of sound
 expectations is greater than the same combination applied to the transformation of the expectations
 themselves. The term @{term "x \<ominus> y"} represents \emph{truncated subtraction} i.e. @{term "max (x-y)
-0"} (see \autoref{s:trunc_sub}). *}
+0"} (see \autoref{s:trunc_sub}).\<close>
 
 definition sublinear ::
   "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
@@ -699,11 +699,11 @@ lemma sublinearD[dest]:
    t (\<lambda>s'. a * P s' + b * Q s' \<ominus> c) s"
   by(simp add:sublinear_def)
 
-text {* It is easier to see the relevance of sublinearity by breaking it into several component
-properties, as in the following sections. *}
+text \<open>It is easier to see the relevance of sublinearity by breaking it into several component
+properties, as in the following sections.\<close>
 
-subsubsection {* Sub-additivity *}
-text_raw {* \label{s:subadd} *}
+subsubsection \<open>Sub-additivity\<close>
+text_raw \<open>\label{s:subadd}\<close>
 
 definition sub_add ::
   "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
@@ -711,7 +711,7 @@ where
   "sub_add t \<longleftrightarrow> (\<forall>P Q s. (sound P \<and> sound Q) \<longrightarrow>
                 t P s + t Q s \<le> t (\<lambda>s'. P s' + Q s') s)"
 
-text {*
+text \<open>
 \begin{figure}
 \begin{center}
 \begin{displaymath}
@@ -738,9 +738,9 @@ text {*
 \end{center}
 \caption{\label{f:subadd_plot}A graphical depiction of sub-additivity as convexity.}
 \end{figure}
-*}
+\<close>
 
-text {* Sub-additivity, together with scaling (\autoref{s:scaling}) gives the \emph{linear} portion
+text \<open>Sub-additivity, together with scaling (\autoref{s:scaling}) gives the \emph{linear} portion
 of sublinearity. Together, these two properties are equivalent to \emph{convexity}, as
 \autoref{f:subadd_plot} illustrates by analogy.
 
@@ -776,7 +776,7 @@ Which holds everywhere exactly when $v$ is sub-additive i.e.:
 \begin{displaymath}
 vR + vS \le v(R+S)
 \end{displaymath}
-*}
+\<close>
 
 lemma sub_addI[intro]:
   "\<lbrakk> \<And>P Q s. \<lbrakk> sound P; sound Q \<rbrakk> \<Longrightarrow>
@@ -814,7 +814,7 @@ proof
   finally show "u P s + u Q s \<le> u (\<lambda>s. P s + Q s) s" .
 qed
 
-text {* Sublinearity and feasibility imply sub-additivity. *}
+text \<open>Sublinearity and feasibility imply sub-additivity.\<close>
 lemma sublinear_subadd:
   fixes t::"('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real"
   assumes slt: "sublinear t"
@@ -843,7 +843,7 @@ proof
   finally show "t P s + t Q s \<le> t (\<lambda>s. P s + Q s) s" .
 qed
 
-text {* A few properties following from sub-additivity: *}
+text \<open>A few properties following from sub-additivity:\<close>
 lemma standard_negate:
   assumes ht: "healthy t"
       and sat: "sub_add t"
@@ -943,7 +943,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsubsection {* Sub-distributivity *}
+subsubsection \<open>Sub-distributivity\<close>
 
 definition sub_distrib ::
   "(('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)) \<Rightarrow> bool"
@@ -978,7 +978,7 @@ proof
   finally show "u P s \<ominus> 1 \<le> u (\<lambda>s. P s \<ominus> 1) s" .
 qed
 
-text {* Sublinearity implies sub-distributivity: *}
+text \<open>Sublinearity implies sub-distributivity:\<close>
 lemma sublinear_sub_distrib:
   fixes t::"('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real"
   assumes slt: "sublinear t"
@@ -991,8 +991,8 @@ proof
     by(rule sublinearD[OF slt, where a=1 and b=0 and c=1, simplified])
 qed
 
-text {* Healthiness, sub-additivity and sub-distributivity imply
-  sublinearity.  This is how we usually show sublinearity. *}
+text \<open>Healthiness, sub-additivity and sub-distributivity imply
+  sublinearity.  This is how we usually show sublinearity.\<close>
 lemma sd_sa_sublinear:
   fixes t::"('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real"
   assumes sdt: "sub_distrib t" and sat: "sub_add t" and ht: "healthy t"
@@ -1094,7 +1094,7 @@ proof
   qed
 qed
 
-subsubsection {* Sub-conjunctivity *}
+subsubsection \<open>Sub-conjunctivity\<close>
 definition
   sub_conj :: "(('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real) \<Rightarrow> bool"
 where
@@ -1128,7 +1128,7 @@ proof(rule sub_conjI, rule le_funI)
   finally show "((\<lambda>s. f s P s) && (\<lambda>s. f s Q s)) s \<le> f s (P && Q) s" .
 qed
 
-text {* Sublinearity implies sub-conjunctivity: *}
+text \<open>Sublinearity implies sub-conjunctivity:\<close>
 lemma sublinear_sub_conj:
   fixes t::"('s \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real"
   assumes slt: "sublinear t"
@@ -1140,9 +1140,9 @@ proof(rule sub_conjI, rule le_funI, unfold exp_conj_def pconj_def)
     by(rule sublinearD[OF slt, where a=1 and b=1 and c=1, simplified])
 qed
 
-subsubsection {* Sublinearity under equivalence *}
+subsubsection \<open>Sublinearity under equivalence\<close>
 
-text {* Sublinearity is preserved by equivalence. *}
+text \<open>Sublinearity is preserved by equivalence.\<close>
 lemma equiv_sublinear:
   "\<lbrakk> equiv_trans t u; sublinear t; healthy t \<rbrakk> \<Longrightarrow> sublinear u"
   by(iprover intro:sd_sa_sublinear healthy_equivI
@@ -1150,15 +1150,15 @@ lemma equiv_sublinear:
                   sublinear_sub_distrib sublinear_subadd
                   healthy_feasibleD)
 
-subsection {* Determinism *}
+subsection \<open>Determinism\<close>
 
-text {* Transformers which are both additive, and maximal among those that
+text \<open>Transformers which are both additive, and maximal among those that
 satisfy feasibility are \emph{deterministic}, and will turn out to be maximal
-in the refinement order. *}
+in the refinement order.\<close>
 
-subsubsection {* Additivity *}
-text {* Full additivity is not generally satisfied.  It holds for
-  (sub-)probabilistic transformers however. *}
+subsubsection \<open>Additivity\<close>
+text \<open>Full additivity is not generally satisfied.  It holds for
+  (sub-)probabilistic transformers however.\<close>
 definition
   additive :: "(('a \<Rightarrow> real) \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool"
 where
@@ -1174,12 +1174,12 @@ lemma additiveI[intro]:
    additive t"
   unfolding additive_def by(blast)
 
-text {* Additivity is strictly stronger than sub-additivity. *}
+text \<open>Additivity is strictly stronger than sub-additivity.\<close>
 lemma additive_sub_add:
   "additive t \<Longrightarrow> sub_add t"
   by(simp add:sub_addI additiveD)
 
-text {* The additivity property extends to finite summation. *}
+text \<open>The additivity property extends to finite summation.\<close>
 lemma additive_sum:
   fixes S::"'s set"
   assumes additive: "additive t"
@@ -1203,10 +1203,10 @@ proof(rule finite_induct, simp_all add:assms)
                 (\<lambda>x. t (P z) x + (\<Sum>y\<in>T. t (P y) x))" .
 qed
 
-text {* An additive transformer (over a finite state space) is linear: it is
+text \<open>An additive transformer (over a finite state space) is linear: it is
   simply the weighted sum of final expectation values, the weights being the
   probability of reaching a given final state.  This is useful for reasoning
-  using the forward, or ``gambling game'' interpretation. *}
+  using the forward, or ``gambling game'' interpretation.\<close>
 lemma additive_delta_split:
   fixes t::"('s::finite \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real"
   assumes additive: "additive t"
@@ -1236,8 +1236,8 @@ proof -
   finally show "t P x = (\<Sum>y\<in>UNIV. P y * t \<guillemotleft> \<lambda>z. z = y \<guillemotright> x)" .
 qed
 
-text {* We can group the states in the linear form, to split on the value
-  of a predicate (guard). *}
+text \<open>We can group the states in the linear form, to split on the value
+  of a predicate (guard).\<close>
 lemma additive_guard_split:
   fixes t::"('s::finite \<Rightarrow> real) \<Rightarrow> 's \<Rightarrow> real"
   assumes additive: "additive t"
@@ -1264,7 +1264,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsubsection {* Maximality *}
+subsubsection \<open>Maximality\<close>
 definition
   maximal :: "(('a \<Rightarrow> real) \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool"
 where
@@ -1278,7 +1278,7 @@ lemma maximalD[dest]:
   "\<lbrakk> maximal t; 0 \<le> c \<rbrakk>  \<Longrightarrow> t (\<lambda>_. c) = (\<lambda>_. c)"
   by(simp add:maximal_def)
 
-text {* A transformer that is both additive and maximal is deterministic: *}
+text \<open>A transformer that is both additive and maximal is deterministic:\<close>
 definition determ :: "(('a \<Rightarrow> real) \<Rightarrow> 'a \<Rightarrow> real) \<Rightarrow> bool"
 where
   "determ t \<equiv> additive t \<and> maximal t"
@@ -1295,8 +1295,8 @@ lemma determ_maximalD[intro]:
   "determ t \<Longrightarrow> maximal t"
   by(simp add:determ_def)
 
-text {* For a fully-deterministic transformer, a transformed standard
-  expectation, and its transformed negation are complementary. *}
+text \<open>For a fully-deterministic transformer, a transformed standard
+  expectation, and its transformed negation are complementary.\<close>
 lemma determ_negate:
   assumes determ:  "determ t"
   shows "t \<guillemotleft>P\<guillemotright> s + t \<guillemotleft>\<N> P\<guillemotright> s = 1"
@@ -1314,15 +1314,15 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Modular Reasoning *}
+subsection \<open>Modular Reasoning\<close>
 
-text {* The emphasis of a mechanised logic is on automation, and letting
+text \<open>The emphasis of a mechanised logic is on automation, and letting
   the computer tackle the large, uninteresting problems.  However, as
   terms generally grow exponentially in the size of a program, it is
   still essential to break up a proof and reason in a modular fashion.
 
   The following rules allow proof decomposition, and later will be
-  incorporated into a verification condition generator. *}
+  incorporated into a verification condition generator.\<close>
 
 lemma entails_combine:
   assumes wp1: "P \<tturnstile> t R"
@@ -1339,7 +1339,7 @@ proof -
   finally show ?thesis .
 qed
 
-text {* These allow mismatched results to be composed *}
+text \<open>These allow mismatched results to be composed\<close>
 
 lemma entails_strengthen_post:
   "\<lbrakk> P \<tturnstile> t Q; healthy t; sound R; Q \<tturnstile> R; sound Q \<rbrakk> \<Longrightarrow> P \<tturnstile> t R"
@@ -1349,8 +1349,8 @@ lemma entails_weaken_pre:
   "\<lbrakk> Q \<tturnstile> t R; P \<tturnstile> Q \<rbrakk> \<Longrightarrow> P \<tturnstile> t R"
   by(blast intro:entails_trans)
 
-text {* This rule is unique to pGCL.  Use it to scale the post-expectation
-        of a rule to 'fit under' the precondition you need to satisfy. *}
+text \<open>This rule is unique to pGCL.  Use it to scale the post-expectation
+        of a rule to 'fit under' the precondition you need to satisfy.\<close>
 lemma entails_scale:
   assumes wp: "P \<tturnstile> t Q" and h: "healthy t"
       and sQ: "sound Q" and pos: "0 \<le> c"
@@ -1363,13 +1363,13 @@ proof(rule le_funI)
     by(simp add:scalingD healthy_scalingD)
 qed
 
-subsection {* Transforming Standard Expectations *}
+subsection \<open>Transforming Standard Expectations\<close>
 
-text {* Reasoning with \emph{standard} expectations, those obtained
+text \<open>Reasoning with \emph{standard} expectations, those obtained
   by embedding a predicate, is often easier, as the analogues of
-  many familiar boolean rules hold in modified form. *}
+  many familiar boolean rules hold in modified form.\<close>
 
-text {* One may use a standard pre-expectation as an assumption: *}
+text \<open>One may use a standard pre-expectation as an assumption:\<close>
 lemma use_premise:
   assumes h: "healthy t" and wP: "\<And>s. P s \<Longrightarrow> 1 \<le> t \<guillemotleft>Q\<guillemotright> s"
   shows "\<guillemotleft>P\<guillemotright> \<tturnstile> t \<guillemotleft>Q\<guillemotright>"
@@ -1382,7 +1382,7 @@ proof(rule entailsI)
   qed
 qed
 
-text {* The other direction works too. *}
+text \<open>The other direction works too.\<close>
 lemma fold_premise:
   assumes ht: "healthy t"
   and wp: "\<guillemotleft>P\<guillemotright> \<tturnstile> t \<guillemotleft>Q\<guillemotright>"
@@ -1394,12 +1394,12 @@ proof(clarify)
   finally show "1 \<le> t \<guillemotleft>Q\<guillemotright> s" .
 qed
 
-text {* Predicate conjunction behaves as expected: *}
+text \<open>Predicate conjunction behaves as expected:\<close>
 lemma conj_post:
   "\<lbrakk> P \<tturnstile> t \<guillemotleft>\<lambda>s. Q s \<and> R s\<guillemotright>; healthy t \<rbrakk> \<Longrightarrow> P \<tturnstile> t \<guillemotleft>Q\<guillemotright>"
   by(blast intro:entails_strengthen_post implies_entails)
 
-text {* Similar to @{thm use_premise}, but more general. *}
+text \<open>Similar to @{thm use_premise}, but more general.\<close>
 lemma entails_pconj_assumption:
   assumes f: "feasible t" and wP: "\<And>s. P s \<Longrightarrow> Q s \<le> t R s"
       and uQ: "unitary Q" and uR: "unitary R"

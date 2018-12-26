@@ -1,20 +1,20 @@
-section {* Graphs *}
+section \<open>Graphs\<close>
 theory Graph
 imports Main
 begin
-text {*
+text \<open>
   This theory defines a notion of graphs. A graph is a record that
-  contains a set of nodes @{text "V"} and a set of labeled edges 
-  @{text "E \<subseteq> V\<times>W\<times>V"}, where @{text "W"} are the edge labels.
-*}
+  contains a set of nodes \<open>V\<close> and a set of labeled edges 
+  \<open>E \<subseteq> V\<times>W\<times>V\<close>, where \<open>W\<close> are the edge labels.
+\<close>
 
-subsection {* Definitions *}
-  text {* A graph is represented by a record. *}
+subsection \<open>Definitions\<close>
+  text \<open>A graph is represented by a record.\<close>
   record ('v,'w) graph =
     nodes :: "'v set"
     edges :: "('v \<times> 'w \<times> 'v) set"
 
-  text {* In a valid graph, edges only go from nodes to nodes. *}
+  text \<open>In a valid graph, edges only go from nodes to nodes.\<close>
   locale valid_graph = 
     fixes G :: "('v,'w) graph"
     assumes E_valid: "fst`edges G \<subseteq> nodes G"
@@ -34,32 +34,32 @@ subsection {* Definitions *}
 
   end
 
-  subsection {* Basic operations on Graphs *}
+  subsection \<open>Basic operations on Graphs\<close>
 
-  text {* The empty graph. *}
+  text \<open>The empty graph.\<close>
   definition empty where 
     "empty \<equiv> \<lparr> nodes = {}, edges = {} \<rparr>"
-  text {* Adds a node to a graph. *}
+  text \<open>Adds a node to a graph.\<close>
   definition add_node where 
     "add_node v g \<equiv> \<lparr> nodes = insert v (nodes g), edges=edges g\<rparr>"
-  text {* Deletes a node from a graph. Also deletes all adjacent edges. *}
+  text \<open>Deletes a node from a graph. Also deletes all adjacent edges.\<close>
   definition delete_node where "delete_node v g \<equiv> \<lparr> 
     nodes = nodes g - {v},   
     edges = edges g \<inter> (-{v})\<times>UNIV\<times>(-{v})
     \<rparr>"
-  text {* Adds an edge to a graph. *}
+  text \<open>Adds an edge to a graph.\<close>
   definition add_edge where "add_edge v e v' g \<equiv> \<lparr>
     nodes = {v,v'} \<union> nodes g,
     edges = insert (v,e,v') (edges g)
     \<rparr>"
-  text {* Deletes an edge from a graph. *}
+  text \<open>Deletes an edge from a graph.\<close>
   definition delete_edge where "delete_edge v e v' g \<equiv> \<lparr>
     nodes = nodes g, edges = edges g - {(v,e,v')} \<rparr>"
-  text {* Successors of a node. *}
+  text \<open>Successors of a node.\<close>
   definition succ :: "('v,'w) graph \<Rightarrow> 'v \<Rightarrow> ('w\<times>'v) set"
     where "succ G v \<equiv> {(w,v'). (v,w,v')\<in>edges G}"
 
-  text {* Now follow some simplification lemmas. *}
+  text \<open>Now follow some simplification lemmas.\<close>
   lemma empty_valid[simp]: "valid_graph empty"
     unfolding empty_def by unfold_locales auto
   lemma add_node_valid[simp]: assumes "valid_graph g" 
@@ -119,13 +119,13 @@ subsection {* Definitions *}
     unfolding succ_def using E_valid
     by (force)
 
-subsection {* Paths *}
-  text {* A path is represented by a list of adjacent edges. *}
+subsection \<open>Paths\<close>
+  text \<open>A path is represented by a list of adjacent edges.\<close>
   type_synonym ('v,'w) path = "('v\<times>'w\<times>'v) list"
 
   context valid_graph
   begin
-    text {* The following predicate describes a valid path: *}
+    text \<open>The following predicate describes a valid path:\<close>
     fun is_path :: "'v \<Rightarrow> ('v,'w) path \<Rightarrow> 'v \<Rightarrow> bool" where
       "is_path v [] v' \<longleftrightarrow> v=v' \<and> v'\<in>V" |
       "is_path v ((v1,w,v2)#p) v' \<longleftrightarrow> v=v1 \<and> (v1,w,v2)\<in>E \<and> is_path v2 p v'"
@@ -151,9 +151,9 @@ subsection {* Paths *}
       by (auto simp add: is_path_split)
   end
 
-  text {* Set of intermediate vertices of a path. These are all vertices but
+  text \<open>Set of intermediate vertices of a path. These are all vertices but
     the last one. Note that, if the last vertex also occurs earlier on the path,
-    it is contained in @{text "int_vertices"}. *}
+    it is contained in \<open>int_vertices\<close>.\<close>
   definition int_vertices :: "('v,'w) path \<Rightarrow> 'v set" where
     "int_vertices p \<equiv> set (map fst p)"
 
@@ -173,8 +173,8 @@ subsection {* Paths *}
   lemma int_vertices_empty[simp]: "int_vertices p = {} \<longleftrightarrow> p=[]"
     by (cases p) auto
 
-subsubsection {* Splitting Paths *}
-  text {*Split a path at the point where it first leaves the set @{text W}: *}
+subsubsection \<open>Splitting Paths\<close>
+  text \<open>Split a path at the point where it first leaves the set \<open>W\<close>:\<close>
   lemma (in valid_graph) path_split_set:
     assumes "is_path v p v'" and "v\<in>W" and "v'\<notin>W"
     obtains p1 p2 u w u' where
@@ -185,16 +185,16 @@ subsubsection {* Splitting Paths *}
     case Nil thus ?case by auto
   next
     case (Cons vv p)
-    note [simp, intro!] = `v\<in>W` `v'\<notin>W`
+    note [simp, intro!] = \<open>v\<in>W\<close> \<open>v'\<notin>W\<close>
     from Cons.prems obtain w u' where 
       [simp]: "vv=(v,w,u')" and
         REST: "is_path u' p v'"
       by (cases vv) auto
     
-    txt {* Distinguish wether the second node @{text u'} of the path is 
-      in @{text W}. If yes, the proposition follows by the 
+    txt \<open>Distinguish wether the second node \<open>u'\<close> of the path is 
+      in \<open>W\<close>. If yes, the proposition follows by the 
       induction hypothesis, otherwise it is straightforward, as
-      the split takes place at the first edge of the path. *}
+      the split takes place at the first edge of the path.\<close>
     {
       assume A [simp, intro!]: "u'\<in>W"
       from Cons.hyps[OF _ REST] obtain p1 uu ww uu' p2 where
@@ -207,7 +207,7 @@ subsubsection {* Splitting Paths *}
     } ultimately show thesis by blast
   qed
   
-  text {*Split a path at the point where it first enters the set @{text W}:*}
+  text \<open>Split a path at the point where it first enters the set \<open>W\<close>:\<close>
   lemma (in valid_graph) path_split_set':
     assumes "is_path v p v'" and "v'\<in>W"
     obtains p1 p2 u where
@@ -225,16 +225,16 @@ subsubsection {* Splitting Paths *}
       case Nil thus ?case by auto
     next
       case (Cons vv p)
-      note [simp, intro!] = `v'\<in>W` `v\<notin>W`
+      note [simp, intro!] = \<open>v'\<in>W\<close> \<open>v\<notin>W\<close>
       from Cons.prems obtain w u' where 
         [simp]: "vv=(v,w,u')" and [simp]: "(v,w,u')\<in>E" and
           REST: "is_path u' p v'"
         by (cases vv) auto
     
-      txt {* Distinguish wether the second node @{text u'} of the path is 
-        in @{text W}. If yes, the proposition is straightforward, otherwise,
+      txt \<open>Distinguish wether the second node \<open>u'\<close> of the path is 
+        in \<open>W\<close>. If yes, the proposition is straightforward, otherwise,
         it follows by the induction hypothesis.
-        *}
+\<close>
       {
         assume A [simp, intro!]: "u'\<in>W"
         from Cons.prems(3)[of "[vv]" p u'] REST have ?case by auto
@@ -251,7 +251,7 @@ subsubsection {* Splitting Paths *}
     qed
   qed
 
-  text {* Split a path at the point where a given vertex is first visited: *}
+  text \<open>Split a path at the point where a given vertex is first visited:\<close>
   lemma (in valid_graph) path_split_vertex:
     assumes "is_path v p v'" and "u\<in>int_vertices p"
     obtains p1 p2 where
@@ -281,7 +281,7 @@ subsubsection {* Splitting Paths *}
     } ultimately show ?case by blast
   qed
 
-subsection {* Weighted Graphs *}
+subsection \<open>Weighted Graphs\<close>
   locale valid_mgraph = valid_graph G for G::"('v,'w::monoid_add) graph"
 
   definition path_weight :: "('v,'w::monoid_add) path \<Rightarrow> 'w"

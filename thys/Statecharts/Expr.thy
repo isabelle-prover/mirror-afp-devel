@@ -4,7 +4,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Label Expressions *}
+section \<open>Label Expressions\<close>
 theory Expr
 imports Update
 begin

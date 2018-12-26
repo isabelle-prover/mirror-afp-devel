@@ -4,14 +4,14 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-subsubsection{* Verification Examples *}
+subsubsection\<open>Verification Examples\<close>
 
 theory VC_KAD_dual_Examples
 imports VC_KAD_dual
 
 begin
 
-text{* The proofs are essentially the same as with forward boxes. *}
+text\<open>The proofs are essentially the same as with forward boxes.\<close>
 
 lemma euclid:
   "FPRE (\<lambda>s::nat store. s ''x'' = x \<and> s ''y'' = y)

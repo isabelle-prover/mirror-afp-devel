@@ -74,7 +74,7 @@ lemma sc_jvm_start_state_invar:
 using sc_execute.correct_jvm_state_initial[OF assms]
 by(simp add: sc_execute.correct_jvm_state_def)
 
-subsection {* Round-robin scheduler *}
+subsection \<open>Round-robin scheduler\<close>
 
 interpretation JVM_rr: 
   sc_round_robin_base
@@ -113,7 +113,7 @@ apply(rule sc_execute.mexec_deterministic[OF assms sc_deterministic_heap_ops])
 apply(simp add: sc_spurious_wakeups)
 done
 
-subsection {* Random scheduler *}
+subsection \<open>Random scheduler\<close>
 
 interpretation JVM_rnd: 
   sc_random_scheduler_base
@@ -151,8 +151,8 @@ apply(rule sc_execute.mexec_deterministic[OF assms sc_deterministic_heap_ops])
 apply(simp add: sc_spurious_wakeups)
 done
 
-ML_val {* @{code exec_JVM_rr} *}
+ML_val \<open>@{code exec_JVM_rr}\<close>
 
-ML_val {* @{code exec_JVM_rnd} *}
+ML_val \<open>@{code exec_JVM_rnd}\<close>
 
 end

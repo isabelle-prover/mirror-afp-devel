@@ -35,14 +35,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection{* Packets and Networks *}
+subsection\<open>Packets and Networks\<close>
 theory 
   NetworkCore
   imports 
     Main
 begin
 
-text{* 
+text\<open>
   In networks based e.g. on TCP/IP, a message from A to B is encapsulated in  \emph{packets}, which 
   contain the content of the message and routing information. The routing information mainly 
   contains its source and its destination address.
@@ -50,15 +50,15 @@ text{*
   In the case of stateless packet filters, a firewall bases its decision upon this routing 
   information and, in the stateful case, on the content. Thus, we model a packet as a four-tuple of 
   the mentioned elements, together with an id field.
-*}
+\<close>
 
-text{*  The ID is an integer: *}
+text\<open>The ID is an integer:\<close>
 type_synonym id = int
 
-text{* 
+text\<open>
   To enable different representations of addresses (e.g. IPv4 and IPv6, with or without ports), 
   we model them as an unconstrained type class and directly provide several instances: 
-*}
+\<close>
 class adr
 
 type_synonym    '\<alpha> src  = "'\<alpha>"
@@ -70,36 +70,36 @@ instance nat ::adr ..
 instance "fun" :: (adr,adr) adr ..
 instance prod :: (adr,adr) adr ..
 
-text{* 
+text\<open>
   The content is also specified with an unconstrained generic type: 
-*}
+\<close>
 type_synonym '\<beta> content = "'\<beta>"
 
-text {* 
+text \<open>
   For applications where the concrete representation of the content field does not matter (usually 
   the case for stateless packet filters), we provide a default type which can be used in those
   cases: 
-*}
+\<close>
  
 datatype DummyContent = data
 
-text{* Finally, a packet is:*}
+text\<open>Finally, a packet is:\<close>
 
 type_synonym ('\<alpha>,'\<beta>) packet = "id \<times> '\<alpha> src \<times> '\<alpha> dest \<times> '\<beta> content"
 
-text{* 
+text\<open>
   Protocols (e.g. http) are not modelled explicitly. In the case of stateless packet filters, they 
   are only visible by the destination port of a packet, which are modelled as part of the address. 
   Additionally, stateful firewalls often determine the protocol by the content of a packet. 
-*}
+\<close>
 
 definition src :: "('\<alpha>::adr,'\<beta>) packet \<Rightarrow> '\<alpha>"
   where "src  = fst o snd "
 
-text{* 
+text\<open>
   Port numbers (which are part of an address) are also modelled in a generic way. The integers and 
   the naturals are typical representations of port numbers. 
-*}
+\<close>
 
 class port
 
@@ -108,13 +108,13 @@ instance nat :: port ..
 instance "fun" :: (port,port) port ..
 instance "prod" :: (port,port) port ..
 
-text{* 
+text\<open>
   A packet therefore has two parameters, the first being the address, the second the content. For 
   the sake of simplicity, we do not allow to have a different address representation format for the 
   source and the destination of a packet. 
   
   To access the different parts of a packet directly, we define a couple of projectors: 
-*}
+\<close>
 definition id :: "('\<alpha>::adr,'\<beta>) packet \<Rightarrow> id" 
   where "id = fst"
 
@@ -135,28 +135,28 @@ lemma either2[simp]: "(a \<noteq> tcp) = (a = udp)"
 lemma either3[simp]: "(a \<noteq> udp) = (a = tcp)"
   by (case_tac "a",simp_all)                
 
-text{* 
+text\<open>
   The following two constants give the source and destination port number of a packet. Address 
   representations using port numbers need to provide a definition for these types.
-*}
+\<close>
 
 consts src_port :: "('\<alpha>::adr,'\<beta>) packet \<Rightarrow> '\<gamma>::port" 
 consts dest_port :: "('\<alpha>::adr,'\<beta>) packet \<Rightarrow> '\<gamma>::port"
 consts src_protocol :: "('\<alpha>::adr,'\<beta>) packet \<Rightarrow> protocol"
 consts dest_protocol :: "('\<alpha>::adr,'\<beta>) packet \<Rightarrow> protocol"
 
-text{* A subnetwork (or simply a network) is a set of sets of addresses.*}
+text\<open>A subnetwork (or simply a network) is a set of sets of addresses.\<close>
 
 type_synonym '\<alpha> net = "'\<alpha> set set"
  
-text{* The relation {in\_subnet} (@{text "\<sqsubset>"}) checks if an address is in a specific network. *}
+text\<open>The relation {in\_subnet} (\<open>\<sqsubset>\<close>) checks if an address is in a specific network.\<close>
 
 definition
   in_subnet :: "'\<alpha>::adr \<Rightarrow> '\<alpha> net \<Rightarrow> bool"  (infixl "\<sqsubset>" 100)  where
   "in_subnet a S = (\<exists> s \<in> S. a \<in> s)"
 
 
-text{* The following lemmas will be useful later. *}
+text\<open>The following lemmas will be useful later.\<close>
 
 lemma in_subnet: 
   "(a, e) \<sqsubset> {{(x1,y). P x1 y}} = P a e"
@@ -170,10 +170,10 @@ lemma dest_in_subnet:
   "dest (q,r,((a),e),t) \<sqsubset> {{(x1,y). P x1 y}} = P a e"
   by (simp add: in_subnet_def in_subnet dest_def)
 
-text{* 
+text\<open>
   Address models should provide a definition for the following constant, returning a network 
   consisting of the input address only. 
-*}
+\<close>
 
 consts subnet_of :: "'\<alpha>::adr \<Rightarrow> '\<alpha> net"
 

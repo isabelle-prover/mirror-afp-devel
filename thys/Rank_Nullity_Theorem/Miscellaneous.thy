@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Miscellaneous*}
+section\<open>Miscellaneous\<close>
 
 theory Miscellaneous
   imports
@@ -21,9 +21,9 @@ end
 hide_const (open) Real_Vector_Spaces.linear
 abbreviation "linear \<equiv> Vector_Spaces.linear"
 
-text{*In this file, we present some basic definitions and lemmas about linear algebra and matrices.*}
+text\<open>In this file, we present some basic definitions and lemmas about linear algebra and matrices.\<close>
 
-subsection{*Definitions of number of rows and columns of a matrix*}
+subsection\<open>Definitions of number of rows and columns of a matrix\<close>
 
 definition nrows :: "'a^'columns^'rows => nat"
   where "nrows A = CARD('rows)"
@@ -35,7 +35,7 @@ definition matrix_scalar_mult :: "'a::ab_semigroup_mult => 'a ^'n^'m => 'a ^'n^'
     (infixl "*k" 70)
   where "k *k A \<equiv> (\<chi> i j. k * A $ i $ j)"
 
-subsection{*Basic properties about matrices*}
+subsection\<open>Basic properties about matrices\<close>
 
 lemma nrows_not_0[simp]:
   shows "0 \<noteq> nrows A" unfolding nrows_def by simp
@@ -62,11 +62,11 @@ lemma transpose_zero[simp]: "(transpose A = 0) = (A = 0)"
   unfolding transpose_def zero_vec_def vec_eq_iff by auto
 
 
-subsection{*Theorems obtained from the AFP*}
+subsection\<open>Theorems obtained from the AFP\<close>
 
-text{*The following theorems and definitions have been obtained from the AFP 
+text\<open>The following theorems and definitions have been obtained from the AFP 
 @{url "http://isa-afp.org/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}.
-I have removed some restrictions over the type classes.*}
+I have removed some restrictions over the type classes.\<close>
 
 
 lemma vector_scalar_matrix_ac:
@@ -99,7 +99,7 @@ lemma card_finite:
   assumes "card S = CARD('n::finite)"
   shows "finite S"
 proof -
-  from `card S = CARD('n)` have "card S \<noteq> 0" by simp
+  from \<open>card S = CARD('n)\<close> have "card S \<noteq> 0" by simp
   with card_eq_0_iff [of S] show "finite S" by simp
 qed
 
@@ -109,13 +109,13 @@ lemma independent_is_basis:
 proof
   assume "vec.independent B \<and> card B = CARD('n)"
   hence "vec.independent B" and "card B = CARD('n)" by simp+
-  from card_finite [of B, where 'n = 'n] and `card B = CARD('n)`
+  from card_finite [of B, where 'n = 'n] and \<open>card B = CARD('n)\<close>
   have "finite B" by simp
-  from `card B = CARD('n)`
+  from \<open>card B = CARD('n)\<close>
   have "card B = vec.dim (UNIV :: (('a^'n) set))" unfolding vec_dim_card .
-  with vec.card_eq_dim [of B UNIV] and `finite B` and `vec.independent B`
+  with vec.card_eq_dim [of B UNIV] and \<open>finite B\<close> and \<open>vec.independent B\<close>
   have "vec.span B = UNIV" by auto
-  with `vec.independent B` show "is_basis B" unfolding is_basis_def ..
+  with \<open>vec.independent B\<close> show "is_basis B" unfolding is_basis_def ..
 next
   assume "is_basis B"
   hence "vec.independent B" unfolding is_basis_def ..
@@ -123,7 +123,7 @@ next
   proof -
     have "B \<subseteq> UNIV" by simp
     moreover
-    { from `is_basis B` have "UNIV \<subseteq> vec.span B" and "vec.independent B"
+    { from \<open>is_basis B\<close> have "UNIV \<subseteq> vec.span B" and "vec.independent B"
         unfolding is_basis_def
         by simp+ }
     ultimately have "card B = vec.dim (UNIV::((real^'n) set))"
@@ -141,21 +141,21 @@ lemma basis_finite:
   assumes "is_basis B"
   shows "finite B"
 proof -
-  from independent_is_basis [of B] and `is_basis B` have "card B = CARD('n)"
+  from independent_is_basis [of B] and \<open>is_basis B\<close> have "card B = CARD('n)"
     by simp
   with card_finite [of B, where 'n = 'n] show "finite B" by simp
 qed
 
-text{*Here ends the statements obtained from AFP: 
+text\<open>Here ends the statements obtained from AFP: 
   @{url "http://isa-afp.org/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}
-  which have been generalized.*}
+  which have been generalized.\<close>
 
-subsection{*Basic properties involving span, linearity and dimensions*}
+subsection\<open>Basic properties involving span, linearity and dimensions\<close>
 
 context finite_dimensional_vector_space
 begin
 
-text{*This theorem is the reciprocal theorem of @{thm "indep_card_eq_dim_span"}*}
+text\<open>This theorem is the reciprocal theorem of @{thm "indep_card_eq_dim_span"}\<close>
 
 lemma card_eq_dim_span_indep:
   assumes "dim (span A) = card A" and "finite A"
@@ -195,7 +195,7 @@ end
 lemma snd_if_conv:
   shows "snd (if P then (A,B) else (C,D))=(if P then B else D)" by simp
 
-subsection{*Basic properties about matrix multiplication*}
+subsection\<open>Basic properties about matrix multiplication\<close>
 
 lemma row_matrix_matrix_mult:
   fixes A::"'a::{comm_ring_1}^'n^'m"
@@ -245,19 +245,19 @@ proof (rule exI[of _ "\<lambda>y. sum (\<lambda>i. x $ i) {i. y = column i A}"])
 qed
 
 
-subsection{*Properties about invertibility*}
+subsection\<open>Properties about invertibility\<close>
 
 lemma matrix_inv:
   assumes "invertible M"
   shows matrix_inv_left: "matrix_inv M ** M = mat 1"
     and matrix_inv_right: "M ** matrix_inv M = mat 1"
-  using `invertible M` and someI_ex [of "\<lambda> N. M ** N = mat 1 \<and> N ** M = mat 1"]
+  using \<open>invertible M\<close> and someI_ex [of "\<lambda> N. M ** N = mat 1 \<and> N ** M = mat 1"]
   unfolding invertible_def and matrix_inv_def
   by simp_all
 
 
-text{*In the library, @{thm "matrix_inv_def"} allows the use of non squary matrices.
-  The following lemma can be also proved fixing @{term "A::'a::{semiring_1}^'n^'m"}*}
+text\<open>In the library, @{thm "matrix_inv_def"} allows the use of non squary matrices.
+  The following lemma can be also proved fixing @{term "A::'a::{semiring_1}^'n^'m"}\<close>
 
 lemma matrix_inv_unique:
   fixes A::"'a::{semiring_1}^'n^'n"
@@ -312,7 +312,7 @@ moreover have "((*v) (matrix_inv P))` (((*v) P)` B) = B"
 ultimately show ?thesis by simp
 qed
 
-subsection{*Properties about the dimension of vectors*}
+subsection\<open>Properties about the dimension of vectors\<close>
 
 lemma dimension_vector[code_unfold]: "vec.dimension TYPE('a::{field}) TYPE('rows::{mod_type})=CARD('rows)"
 proof -
@@ -331,9 +331,9 @@ also have "... = CARD('rows)" by (metis card_lessThan)
 finally show ?thesis .
 qed
 
-subsection{*Instantiations and interpretations*}
+subsection\<open>Instantiations and interpretations\<close>
 
-text{*Functions between two real vector spaces form a real vector*}
+text\<open>Functions between two real vector spaces form a real vector\<close>
 instantiation "fun" :: (real_vector, real_vector) real_vector
 begin
 

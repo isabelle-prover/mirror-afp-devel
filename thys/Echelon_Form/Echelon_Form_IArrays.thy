@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Echelon Form refined to immutable arrays*}
+section\<open>Echelon Form refined to immutable arrays\<close>
 
 theory Echelon_Form_IArrays
 imports
@@ -12,7 +12,7 @@ imports
   Gauss_Jordan.Gauss_Jordan_IArrays
 begin
 
-subsection{*The algorithm over immutable arrays*}
+subsection\<open>The algorithm over immutable arrays\<close>
 
 definition
   "bezout_matrix_iarrays A a b j bezout =
@@ -55,9 +55,9 @@ definition "echelon_form_of_upt_k_iarrays A k bezout
 definition "echelon_form_of_iarrays A bezout 
   = echelon_form_of_upt_k_iarrays A (ncols_iarray A - 1) bezout"
 
-subsection{*Properties*}
+subsection\<open>Properties\<close>
 
-subsubsection{*Bezout Matrix for immutable arrays*}
+subsubsection\<open>Bezout Matrix for immutable arrays\<close>
 
 lemma matrix_to_iarray_bezout_matrix:
   shows "matrix_to_iarray (bezout_matrix A a b j bezout) 
@@ -142,7 +142,7 @@ proof -
   qed
 qed
 
-subsubsection{*Bezout Iterate for immutable arrays*}
+subsubsection\<open>Bezout Iterate for immutable arrays\<close>
 
 lemma matrix_to_iarray_bezout_iterate:
   assumes n: "n<nrows A"
@@ -208,7 +208,7 @@ next
   finally show ?thesis .
 qed
 
-subsubsection{*Echelon form of column k for immutable arrays*}
+subsubsection\<open>Echelon form of column k for immutable arrays\<close>
 
 lemma matrix_to_iarray_echelon_form_of_column_k:
   fixes A::"'a::{bezout_ring}^'cols::{mod_type}^'rows::{mod_type}"
@@ -304,7 +304,7 @@ corollary fst_snd_matrix_to_iarray_echelon_form_of_column_k:
   = fst (snd (echelon_form_of_column_k_iarrays (matrix_to_iarray A, i, bezout) k))"
   using snd_matrix_to_iarray_echelon_form_of_column_k[OF assms] by simp
 
-subsubsection{*Echelon form up to column k for immutable arrays*}
+subsubsection\<open>Echelon form up to column k for immutable arrays\<close>
 
 lemma snd_snd_foldl_echelon_form_of_column_k_iarrays:
   "snd (snd (foldl echelon_form_of_column_k_iarrays (matrix_to_iarray A, 0, bezout) [0..<k])) 
@@ -402,7 +402,7 @@ next
     using hyp3 le_antisym not_less_eq_eq unfolding nrows_def by fastforce
 qed
 
-subsubsection{*Echelon form up to column k for immutable arrays*}
+subsubsection\<open>Echelon form up to column k for immutable arrays\<close>
 
 lemma matrix_to_iarray_echelon_form_of[code_unfold]:
   "matrix_to_iarray (echelon_form_of A bezout) 

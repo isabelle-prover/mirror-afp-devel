@@ -4,12 +4,12 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Update-Functions on Data Spaces *}
+section \<open>Update-Functions on Data Spaces\<close>
 theory Update
 imports Data
 begin
 
-subsection {* Total update-functions *}
+subsection \<open>Total update-functions\<close>
 
 definition
   Update :: "(('d data) => ('d data)) => bool" where 
@@ -36,7 +36,7 @@ definition
   DefaultUpdate :: "('d update)" where
  "DefaultUpdate ==  Abs_update (\<lambda> D. D)"
 
-subsubsection {* Basic lemmas *}
+subsubsection \<open>Basic lemmas\<close>
 
 lemma Update_select:
    "Update (Rep_update U)"
@@ -52,7 +52,7 @@ apply (unfold Update_def)
 apply auto
 done
 
-subsubsection {* @{text "DefaultUpdate"} *}
+subsubsection \<open>\<open>DefaultUpdate\<close>\<close>
 
 lemma Update_DefaultUpdate [simp]:
    "Update (\<lambda> D. D)"
@@ -66,7 +66,7 @@ lemma DataSpace_UpdateApply [simp]:
    "Data.DataSpace (U !!! D) = Data.DataSpace D"
 by (unfold UpdateApply_def, auto)
 
-subsection {* Partial update-functions *}
+subsection \<open>Partial update-functions\<close>
 
 definition
   PUpdate :: "(('d data) => ('d pdata)) => bool" where
@@ -92,7 +92,7 @@ definition
   DefaultPUpdate :: "('d pupdate)" where
  "DefaultPUpdate = Abs_pupdate (\<lambda> D. DefaultPData (Data.DataSpace D))"
                       
-subsubsection {* Basic lemmas *}
+subsubsection \<open>Basic lemmas\<close>
 
 lemma PUpdate_select:
    "PUpdate (Rep_pupdate U)"
@@ -108,7 +108,7 @@ apply (unfold PUpdate_def)
 apply auto
 done
 
-subsubsection {* @{text "Data2PData"} *}
+subsubsection \<open>\<open>Data2PData\<close>\<close>
 
 lemma  PUpdate_Data2PData [simp]: 
    "PUpdate Data2PData"
@@ -118,7 +118,7 @@ lemma pupdate_Data2PData  [simp]:
    "Data2PData \<in> pupdate"
 by (unfold pupdate_def, auto)
 
-subsubsection {* @{text "PUpdate"} *}
+subsubsection \<open>\<open>PUpdate\<close>\<close>
 
 lemma PUpdate_DefaultPUpdate [simp]:
    "PUpdate (\<lambda> D. DefaultPData (Data.DataSpace D))"
@@ -139,7 +139,7 @@ apply (subst Abs_pupdate_inverse)
 apply auto
 done
 
-subsubsection {* @{text "SequentialRacing"} *}
+subsubsection \<open>\<open>SequentialRacing\<close>\<close>
 
 definition
  UpdateOverride :: "['d pupdate, 'd update] => 

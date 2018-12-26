@@ -2,7 +2,7 @@
     Author:     Sebastian Ullrich, Denis Lohner
 *)
 
-subsection {* Inductive Removal of Trivial Phi Functions *}
+subsection \<open>Inductive Removal of Trivial Phi Functions\<close>
 
 theory Construct_SSA_notriv
 imports SSA_CFG Minimality "HOL-Library.While_Combinator"
@@ -105,14 +105,14 @@ begin
         hence "old.dominates g ?n' m" by - (rule allUses_dominated, auto)
         thus "?thesis m" by (simp add:asm)
       qed
-      with non_dominated_predecessor[of ?n g] other_preds_dominated `?n \<noteq> Entry g` show False by auto
+      with non_dominated_predecessor[of ?n g] other_preds_dominated \<open>?n \<noteq> Entry g\<close> show False by auto
     qed
 
     show "old.dominates g ?n' ?n"
     proof
       fix ns
       assume asm: "g \<turnstile> Entry g-ns\<rightarrow>?n"
-      from `?n \<noteq> Entry g` obtain m ns'
+      from \<open>?n \<noteq> Entry g\<close> obtain m ns'
         where ns': "g \<turnstile> Entry g-ns'\<rightarrow>m" "m \<in> set (old.predecessors g ?n)" "?n \<notin> set ns'" "set ns' \<subseteq> set ns"
         by - (rule old.simple_path2_unsnoc[OF asm], auto)
       hence[simp]: "m \<in> set (\<alpha>n g)" by auto
@@ -130,16 +130,16 @@ begin
   shows "False"
   using assms
   proof -
-    from `isTrivialPhi g a b`
+    from \<open>isTrivialPhi g a b\<close>
     have "b \<in> allVars g"
       unfolding isTrivialPhi_def
       by (fastforce intro!: phiArg_in_allVars simp: phiArg_def split: option.splits)
-    from `isTrivialPhi g b a`
+    from \<open>isTrivialPhi g b a\<close>
     have "a \<in> allVars g"
       unfolding isTrivialPhi_def
       by (fastforce intro!: phiArg_in_allVars simp: phiArg_def split: option.splits)
-    from trivialPhi_strict_dom [OF `a \<in> allVars g` assms(1)]
-       trivialPhi_strict_dom [OF `b \<in> allVars g` assms(2)]
+    from trivialPhi_strict_dom [OF \<open>a \<in> allVars g\<close> assms(1)]
+       trivialPhi_strict_dom [OF \<open>b \<in> allVars g\<close> assms(2)]
     show ?thesis by blast
   qed
 
@@ -445,11 +445,11 @@ begin
       proof
         assume "ns\<^sub>1 = []"
         hence "?n\<^sub>0 = n" "hd ns = n" using assms(1) ns\<^sub>3 by (auto simp:ns old.path2_def)
-        thus False by (metis `n = defNode g v` dom)
+        thus False by (metis \<open>n = defNode g v\<close> dom)
       qed
       hence "length (ns\<^sub>1@[?n\<^sub>0]) \<ge> 2" by (cases ns\<^sub>1, auto)
       with ns\<^sub>1 have 1: "g \<turnstile> n-ns\<^sub>1\<rightarrow>last ns\<^sub>1" "last ns\<^sub>1 \<in> set (old.predecessors g ?n\<^sub>0)" by - (erule old.path2_unsnoc, simp, simp, erule old.path2_unsnoc, auto)
-      from `v\<^sub>0 = chooseNext g` v\<^sub>0 have triv: "isTrivialPhi g v\<^sub>0 v" using substitution[of g] by (auto simp:substNext_def)
+      from \<open>v\<^sub>0 = chooseNext g\<close> v\<^sub>0 have triv: "isTrivialPhi g v\<^sub>0 v" using substitution[of g] by (auto simp:substNext_def)
       then obtain vs where vs: "phi g v\<^sub>0 = Some vs" "set vs = {v\<^sub>0,v} \<or> set vs = {v}" by (auto simp:isTrivialPhi_def split:option.splits)
       hence[simp]: "var g v\<^sub>0 = var g v" by - (rule phiArg_same_var[symmetric], auto simp: phiArg_def)
       have[simp]: "v \<in> phiUses g (last ns\<^sub>1)"
@@ -483,7 +483,7 @@ begin
               using ns\<^sub>3 by - (rule defNode_eq[symmetric], auto)
             {
               assume "v' = v\<^sub>0"
-              hence False using assms(6) `v\<^sub>0 = chooseNext g` simpleDefs_phiDefs_disjoint[of x g] vs(1)
+              hence False using assms(6) \<open>v\<^sub>0 = chooseNext g\<close> simpleDefs_phiDefs_disjoint[of x g] vs(1)
                 by (auto simp: step.allDefs_def step.phiDefs_def)
             }
             moreover {
@@ -492,7 +492,7 @@ begin
                 by auto
               from ns\<^sub>3 asm ns obtain ns\<^sub>3 where ns\<^sub>3: "g \<turnstile> ?n\<^sub>0-ns\<^sub>3\<rightarrow>?n\<^sub>0" "?n\<^sub>0 \<notin> set (tl (butlast ns\<^sub>3))" "x \<in> set ns\<^sub>3" "set ns\<^sub>3 \<subseteq> set (tl ns)"
                 by - (rule old.path2_simple_loop, auto)
-              with `x \<noteq> ?n\<^sub>0` have "length ns\<^sub>3 > 1"
+              with \<open>x \<noteq> ?n\<^sub>0\<close> have "length ns\<^sub>3 > 1"
                 by (metis empty_iff graph_path_base.path2_def hd_Cons_tl insert_iff length_greater_0_conv length_tl list.set(1) list.set(2) zero_less_diff)
               with ns\<^sub>3 obtain ns' m where ns': "g \<turnstile> ?n\<^sub>0-ns'\<rightarrow>m" "m \<in> set (old.predecessors g ?n\<^sub>0)" "ns' = butlast ns\<^sub>3"
                 by - (rule old.path2_unsnoc, auto)
@@ -506,14 +506,14 @@ begin
                   have "n \<notin> set (tl ns\<^sub>1)" using ns assms(2) by auto
                   moreover have "n \<notin> set ns'" using ns'(3) ns\<^sub>3(4) assms(2) by (auto dest: in_set_butlastD)
                   ultimately show "n \<notin> set (tl (ns\<^sub>1 @ ns'))" by simp
-                  show "v \<in> allDefs g n" using `v \<in> allDefs g n` .
+                  show "v \<in> allDefs g n" using \<open>v \<in> allDefs g n\<close> .
                   show "?n\<^sub>0 \<in> set (tl (ns\<^sub>1 @ ns'))" using ns'(1) by (auto simp: old.path2_def)
-                qed (auto simp: `v \<in> phiUses g m`)
+                qed (auto simp: \<open>v \<in> phiUses g m\<close>)
                 hence False by simp
               }
               moreover {
                 assume "v\<^sub>0 \<in> phiUses g m"
-                moreover from ns\<^sub>3(1,3) `x \<noteq> ?n\<^sub>0` `length ns\<^sub>3 > 1` have "x \<in> set (tl (butlast ns\<^sub>3))"
+                moreover from ns\<^sub>3(1,3) \<open>x \<noteq> ?n\<^sub>0\<close> \<open>length ns\<^sub>3 > 1\<close> have "x \<in> set (tl (butlast ns\<^sub>3))"
                   by (cases ns\<^sub>3, auto simp: old.path2_def intro: in_set_butlastI)
                 ultimately have "var g v' \<noteq> var g v\<^sub>0"
                   using assms(6)[THEN allDefs_narrows] ns\<^sub>3(2,3) ns'(3) by - (rule conventional[OF ns'(1)], auto)
@@ -528,11 +528,11 @@ begin
             have "var g v' \<noteq> var g v\<^sub>0"
             proof (cases "x = ?n\<^sub>0")
               case True
-              moreover have "v\<^sub>0 \<notin> step.allDefs g ?n\<^sub>0" by (auto simp:`v\<^sub>0 = chooseNext g` chooseNext_eliminated)
+              moreover have "v\<^sub>0 \<notin> step.allDefs g ?n\<^sub>0" by (auto simp:\<open>v\<^sub>0 = chooseNext g\<close> chooseNext_eliminated)
               ultimately show ?thesis using assms(6) vs(1) by - (rule allDefs_var_disjoint[of x g], auto)
             next
               case False
-              with `x \<notin> set (tl ns\<^sub>1)` assms(5) asm have "x \<in> set ns\<^sub>2" by (auto simp:ns)
+              with \<open>x \<notin> set (tl ns\<^sub>1)\<close> assms(5) asm have "x \<in> set ns\<^sub>2" by (auto simp:ns)
               thus ?thesis using assms(2,6) v\<^sub>0(2) ns\<^sub>2(2) by - (rule conventional[OF ns\<^sub>2(1), where x=x], auto simp:ns)
             qed
           }
@@ -615,13 +615,13 @@ begin
         case [simp]: True
         with "1.prems"(3) have[simp]: "v \<noteq> v'" by simp
         from True have "trivial g v'" using chooseNext[OF redundant] by auto
-        with `phiArg g v' v` have "isTrivialPhi g v' v" by (auto simp: phiArg_def trivial_def isTrivialPhi_def)
+        with \<open>phiArg g v' v\<close> have "isTrivialPhi g v' v" by (auto simp: phiArg_def trivial_def isTrivialPhi_def)
         hence[simp]: "substitution g = v" unfolding substitution_def
         by - (rule the1_equality, auto intro!: isTrivialPhi_det[unfolded trivial_def])
   
         obtain vs'\<^sub>2 where vs'\<^sub>2: "suffix (v'#vs'\<^sub>2) (v'#vs')" "v' \<notin> set vs'\<^sub>2"
           using split_list_last[of v' "v'#vs'"] by (auto simp: Sublist.suffix_def)
-        with `liveVal' g (v'#vs')` have "liveVal' g (v'#vs'\<^sub>2)" by - (rule liveVal'_suffix, simp_all)
+        with \<open>liveVal' g (v'#vs')\<close> have "liveVal' g (v'#vs'\<^sub>2)" by - (rule liveVal'_suffix, simp_all)
         thus thesis
         proof (cases rule: liveVal'.cases)
           case (liveSimple' n)
@@ -633,12 +633,12 @@ begin
           from vs'\<^sub>2(2) livePhi'(1) have[simp]: "v'' \<noteq> v'" by auto
           show thesis
           proof (rule "1.hyps"[rule_format, of "length vs''" vs'' v''])
-            show "length vs'' < length vs" using `vs = v'#vs'` livePhi'(1) vs'\<^sub>2(1)[THEN suffix_ConsD2]
+            show "length vs'' < length vs" using \<open>vs = v'#vs'\<close> livePhi'(1) vs'\<^sub>2(1)[THEN suffix_ConsD2]
               by (auto simp: Sublist.suffix_def)
           next
             fix vs''\<^sub>2
             assume asm: "step.liveVal' g (v''#vs''\<^sub>2)"
-            from livePhi' `phiArg g v' v` have "step.phiArg g v'' v" by (auto simp: phiArg_def step.phiArg_def step_phi substNext_def)
+            from livePhi' \<open>phiArg g v' v\<close> have "step.phiArg g v'' v" by (auto simp: phiArg_def step.phiArg_def step_phi substNext_def)
             thus thesis by - (rule "1.prems"(1), rule step.livePhi', rule asm)
           qed (auto simp: livePhi'(2))
         qed
@@ -662,7 +662,7 @@ begin
     assume "v \<in> step.phiDefs g n" and[simp]: "n \<in> set (\<alpha>n g)"
     hence "v \<in> phiDefs g n" "v \<noteq> chooseNext g" by (auto simp: step.CFG_SSA_defs CFG_SSA_defs split: if_split_asm)
     hence "liveVal g v" using assms by (auto simp: pruned_def)
-    thus "step.liveVal g v" using `v \<noteq> chooseNext g` by (rule liveVal_inv)
+    thus "step.liveVal g v" using \<open>v \<noteq> chooseNext g\<close> by (rule liveVal_inv)
   qed
 end
 

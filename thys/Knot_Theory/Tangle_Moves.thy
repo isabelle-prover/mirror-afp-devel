@@ -1,11 +1,11 @@
-section{*Tangle\_Moves: Defining moves on tangles*}
+section\<open>Tangle\_Moves: Defining moves on tangles\<close>
 
 theory Tangle_Moves
 imports Tangles Tangle_Algebra Tangle_Relation
 begin
 
 
-text{* Two Links diagrams represent the same link if and only if the diagrams can be related by a 
+text\<open>Two Links diagrams represent the same link if and only if the diagrams can be related by a 
 set of moves called the reidemeister moves. For links defined through Tangles, addition set of moves 
 are needed to account for different tangle representations of the same link diagram.
 
@@ -19,12 +19,12 @@ from which all other moves can be obtained, which is conducive to probe invarian
 on diagrams. However, such an approach might not be conducive to establish equivalence of two 
 diagrams. We opt for the former approach of minimising the number of tangle moves. 
 However, the moves that would be useful in practise are proved as theorems in
-  *}
+\<close>
 
 
 type_synonym relation = "wall \<Rightarrow> wall \<Rightarrow> bool" 
 
-text{* Link uncross*}
+text\<open>Link uncross\<close>
 
 abbreviation right_over::"wall"
 where
@@ -76,7 +76,7 @@ where
 
 
 
-text{*swing begins*}
+text\<open>swing begins\<close>
 
 abbreviation r_over_braid::"wall"
 where
@@ -113,7 +113,7 @@ definition swing::relation
 where
 "swing x y \<equiv> (swing_pos x y)\<or>(swing_neg x y)"
 
-text{*pull begins*}
+text\<open>pull begins\<close>
 
 definition pull_posneg::relation
 where
@@ -128,13 +128,13 @@ where
                           \<and>(y = ((basic (vert#vert#[])))
                                    \<circ>(basic ((vert#vert#[])))))"
 
-text{* pull definition*}
+text\<open>pull definition\<close>
 definition pull::relation
 where
 "pull x y \<equiv> ((pull_posneg x y) \<or> (pull_negpos x y))"                   
 
-text{*linkrel-pull ends*}    
-text{*linkrel-straighten*}
+text\<open>linkrel-pull ends\<close>    
+text\<open>linkrel-straighten\<close>
 
 definition straighten_topdown::relation
 where
@@ -153,15 +153,15 @@ where
 
 
 
-text{*definition straighten*}
+text\<open>definition straighten\<close>
 definition straighten::relation
 where
 "straighten x y \<equiv> ((straighten_topdown x y) \<or> (straighten_downtop x y))"
 
 
 
-text{*straighten ends*}
-text{* rotate moves*}
+text\<open>straighten ends\<close>
+text\<open>rotate moves\<close>
 
 definition rotate_toppos::relation
 where
@@ -195,7 +195,7 @@ where
                                     \<circ>(basic ((over#vert#[]))))))"
 
 
-text{*rotate definition*}
+text\<open>rotate definition\<close>
 
 
 definition rotate::"wall \<Rightarrow> wall \<Rightarrow> bool"
@@ -203,13 +203,13 @@ where
 "rotate x y \<equiv> ((rotate_toppos x y) \<or> (rotate_topneg x y)
 \<or> (rotate_downpos x y) \<or> (rotate_downneg x y))"
 
-text{*rotate ends*}
+text\<open>rotate ends\<close>
 
 
-text{*Compress -  Compress has two levels of equivalences. It is a composition of Compress-null, compbelow
+text\<open>Compress -  Compress has two levels of equivalences. It is a composition of Compress-null, compbelow
 and compabove. compbelow and compabove are further written as disjunction of many other relations.
 Compbelow refers to when the bottom row is extended or compressed. Compabove refers to when the 
-row above is extended or compressed*}
+row above is extended or compressed\<close>
 
 definition compress_top1::"wall \<Rightarrow> wall \<Rightarrow> bool"
 where
@@ -241,7 +241,7 @@ definition compress::"wall \<Rightarrow> wall \<Rightarrow> bool"
 where
 "compress x y = ((compress_top x y) \<or> (compress_bottom x y))"
 (*(compress_top1 x y) \<or> (compress_bottom1 x y))*)
-text{*slide relation refer to the relation where a crossing is slided over a vertical strand*}
+text\<open>slide relation refer to the relation where a crossing is slided over a vertical strand\<close>
 definition slide::"wall \<Rightarrow> wall \<Rightarrow> bool"
 where
 "slide x y \<equiv>  \<exists>B.((x = ((basic (make_vert_block (nat (domain_block B))))\<circ>(basic B)))
@@ -249,7 +249,7 @@ where
 \<and> ((domain_block B) \<noteq> 0))"
 (*can integrate slide and compress using domain-codomain fundas.
 ALSO check for domain and codomain in the above equations*)
-text{*linkrel-definition*}
+text\<open>linkrel-definition\<close>
 
 definition linkrel::"wall =>wall \<Rightarrow>bool"
 where

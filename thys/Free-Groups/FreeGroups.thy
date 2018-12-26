@@ -1,4 +1,4 @@
-section {* The Free Group *}
+section \<open>The Free Group\<close>
 
 theory "FreeGroups"
 imports
@@ -7,17 +7,17 @@ imports
    Generators
 begin
 
-text {*
+text \<open>
 Based on the work in @{theory "Free-Groups.Cancelation"}, the free group is now easily defined
 over the set of fully canceled words with the corresponding operations.
-*}
+\<close>
 
-subsection {* Inversion *}
+subsection \<open>Inversion\<close>
 
-text {*
+text \<open>
 To define the inverse of a word, we first create a helper function that inverts
 a single generator, and show that it is self-inverse.
-*}
+\<close>
 
 definition inv1 :: "'a g_i \<Rightarrow> 'a g_i"
  where "inv1 = apfst Not"
@@ -30,11 +30,11 @@ lemmas inv1_inv1_simp [simp] = inv1_inv1[unfolded id_def]
 lemma snd_inv1: "snd \<circ> inv1 = snd"
   by(simp add: fun_eq_iff comp_def inv1_def)
 
-text {*
+text \<open>
 The inverse of a word is obtained by reversing the order of the generators and
 inverting each generator using @{term inv1}. Some properties of @{term inv_fg}
 are noted.
-*}
+\<close>
 
 definition inv_fg :: "'a word_g_i \<Rightarrow> 'a word_g_i"
  where "inv_fg l = rev (map inv1 l)"
@@ -66,7 +66,7 @@ next
     by (auto simp add: cancels_to_1_def)
   hence "cancels_to (xs @ [x] @ (inv_fg (xs @ [x]))) (xs @ inv_fg xs)"
     by (auto simp add:cancels_to_def)
-  with `normalize (xs @ (inv_fg xs)) = []`
+  with \<open>normalize (xs @ (inv_fg xs)) = []\<close>
   show "normalize ((xs @ [x]) @ (inv_fg (xs @ [x]))) = []"
     by auto
 qed
@@ -89,14 +89,14 @@ proof(rule ccontr)
     and "canceling (rev l ! i) (rev l ! Suc i)"
     by (auto simp add:cancels_to_1_at_def)
   let ?x = "length l - i - 2"
-  from `Suc i < length (rev l)`
+  from \<open>Suc i < length (rev l)\<close>
   have "Suc ?x < length l" by auto
   moreover
-  from `Suc i < length (rev l)`
+  from \<open>Suc i < length (rev l)\<close>
   have "i < length l" and "length l - Suc i = Suc(length l - Suc (Suc i))" by auto
   hence "rev l ! i = l ! Suc ?x" and "rev l ! Suc i = l ! ?x"
     by (auto simp add: rev_nth map_nth)
-  with `canceling (rev l ! i) (rev l ! Suc i)`
+  with \<open>canceling (rev l ! i) (rev l ! Suc i)\<close>
   have "canceling (l ! Suc ?x) (l ! ?x)" by auto
   hence "canceling (l ! ?x) (l ! Suc ?x)" by (rule cancel_sym)
   hence "canceling (l ! ?x) (l ! Suc ?x)" by simp
@@ -107,7 +107,7 @@ proof(rule ccontr)
     by (auto simp add:cancels_to_1_def)
   hence "\<not>canceled l"
     by (auto simp add:canceled_def)
-  with `canceled l` show False by contradiction
+  with \<open>canceled l\<close> show False by contradiction
 qed
 
 lemma inv_fg_closure1:
@@ -120,7 +120,7 @@ proof-
   have "inj_on id (snd ` set l)" by auto
   ultimately
   have "canceled (map (map_prod Not id) l)" 
-    using `canceled l` 
+    using \<open>canceled l\<close> 
     by -(rule rename_gens_canceled)
   thus "canceled (rev (map (map_prod Not id) l))" by (rule canceled_rev)
 qed
@@ -129,12 +129,12 @@ lemma inv_fg_closure2:
   "l \<in> lists (UNIV \<times> gens) \<Longrightarrow> inv_fg l \<in> lists (UNIV \<times> gens)"
   by (auto iff:lists_eq_set simp add:inv1_def inv_fg_def)
 
-subsection {* The definition *}
+subsection \<open>The definition\<close>
 
-text {*
+text \<open>
 Finally, we can define the Free Group over a set of generators, and show that it
 is indeed a group.
-*}
+\<close>
 
 definition free_group :: "'a set => ((bool * 'a) list) monoid" ("\<F>\<index>")
 where 
@@ -210,7 +210,7 @@ next
                   canceled y \<and>
                   normalize (y @ x) = [] \<and> normalize (x @ y) = []"
       by auto
-    with `x \<in> {y\<in>lists(UNIV\<times>gens). canceled y}`
+    with \<open>x \<in> {y\<in>lists(UNIV\<times>gens). canceled y}\<close>
     show "x \<in> {y \<in> lists (UNIV \<times> gens).  canceled y  \<and>
           (\<exists>x. x \<in> lists (UNIV \<times> gens) \<and>
                   canceled x \<and>
@@ -224,11 +224,11 @@ lemma inv_is_inv_fg[simp]:
 by (rule group.inv_equality,auto simp add:free_group_is_group,auto simp add: free_group_def inv_fg_cancel inv_fg_cancel2 inv_fg_closure1 inv_fg_closure2)
 
 
-subsection {* The universal property *}
+subsection \<open>The universal property\<close>
 
-text {* Free Groups are important due to their universal property: Every map of
+text \<open>Free Groups are important due to their universal property: Every map of
 the set of generators to another group can be extended uniquely to an
-homomorphism from the Free Group. *}
+homomorphism from the Free Group.\<close>
 
 definition insert ("\<iota>")
   where "\<iota> g = [(False, g)]"
@@ -258,7 +258,7 @@ lemma (in group) lift_closed[simp]:
   shows "lift f x \<in> carrier G"
 proof-
   have "set (map (lift_gi f) x) \<subseteq> carrier G"
-    using `x \<in> lists (UNIV \<times> gens)`
+    using \<open>x \<in> lists (UNIV \<times> gens)\<close>
     by (auto simp add:lift_gi_closed[OF cl])
   thus "lift f x \<in> carrier G"
     by (auto simp add:lift_def)
@@ -270,12 +270,12 @@ lemma (in group) lift_append[simp]:
       and "y \<in> lists (UNIV \<times> gens)"
   shows "lift f (x @ y) = lift f x \<otimes> lift f y"
 proof-
-  from `x \<in> lists (UNIV \<times> gens)`
+  from \<open>x \<in> lists (UNIV \<times> gens)\<close>
   have "set (map snd x) \<subseteq> gens" by auto
   hence "set (map (lift_gi f) x) \<subseteq> carrier G"
     by (induct x)(auto simp add:lift_gi_closed[OF cl])
   moreover
-  from `y \<in> lists (UNIV \<times> gens)`
+  from \<open>y \<in> lists (UNIV \<times> gens)\<close>
   have "set (map snd y) \<subseteq> gens" by auto
   hence "set (map (lift_gi f) y) \<subseteq> carrier G"
     by (induct y)(auto simp add:lift_gi_closed[OF cl])
@@ -293,14 +293,14 @@ using assms
 unfolding cancels_to_def
 proof(induct rule:rtranclp_induct)
   case (step y z)
-    from `cancels_to_1\<^sup>*\<^sup>* x y`
-    and `x \<in> lists (UNIV \<times> gens)`
+    from \<open>cancels_to_1\<^sup>*\<^sup>* x y\<close>
+    and \<open>x \<in> lists (UNIV \<times> gens)\<close>
     have "y \<in> lists (UNIV \<times> gens)"
       by -(rule cancels_to_preserves_generators, simp add:cancels_to_def)
     hence "lift f x = lift f y"
       using step by auto
     also
-    from `cancels_to_1 y z`
+    from \<open>cancels_to_1 y z\<close>
     obtain ys1 y1 y2 ys2
       where y: "y = ys1 @ y1 # y2 # ys2"
       and "z = ys1 @ ys2"
@@ -309,26 +309,26 @@ proof(induct rule:rtranclp_induct)
     have "lift f y  = lift f (ys1 @ [y1] @ [y2] @ ys2)"
       using y by simp
     also
-    from y and cl and `y \<in> lists (UNIV \<times> gens)`
+    from y and cl and \<open>y \<in> lists (UNIV \<times> gens)\<close>
     have "lift f (ys1 @ [y1] @ [y2] @ ys2)
         = lift f ys1 \<otimes> (lift f [y1] \<otimes> lift f [y2]) \<otimes> lift f ys2"
       by (auto intro:lift_append[OF cl] simp del: append_Cons simp add:m_assoc iff:lists_eq_set)
     also
     from cl[THEN funcset_image]
-     and y and `y \<in> lists (UNIV \<times> gens)`
-     and `canceling y1 y2`
+     and y and \<open>y \<in> lists (UNIV \<times> gens)\<close>
+     and \<open>canceling y1 y2\<close>
     have "(lift f [y1] \<otimes> lift f [y2]) = \<one>"
       by (auto simp add:lift_def lift_gi_def canceling_def iff:lists_eq_set)
     hence "lift f ys1 \<otimes> (lift f [y1] \<otimes> lift f [y2]) \<otimes> lift f ys2
            = lift f ys1 \<otimes> \<one> \<otimes> lift f ys2"
       by simp
     also
-    from y and `y \<in> lists (UNIV \<times> gens)`
+    from y and \<open>y \<in> lists (UNIV \<times> gens)\<close>
      and cl
      have "lift f ys1 \<otimes> \<one> \<otimes> lift f ys2 = lift f (ys1 @ ys2)"
       by (auto intro:lift_append iff:lists_eq_set)
     also
-    from `z = ys1 @ ys2`
+    from \<open>z = ys1 @ ys2\<close>
     have "lift f (ys1 @ ys2) = lift f z" by simp
     finally show "lift f x = lift f z" .
 qed auto
@@ -351,17 +351,17 @@ proof-
     fix y
     assume "y \<in> carrier \<F>\<^bsub>gens\<^esub>"
 
-    from `x \<in> carrier \<F>\<^bsub>gens\<^esub>` and `y \<in> carrier \<F>\<^bsub>gens\<^esub>`
+    from \<open>x \<in> carrier \<F>\<^bsub>gens\<^esub>\<close> and \<open>y \<in> carrier \<F>\<^bsub>gens\<^esub>\<close>
     have "x \<in> lists (UNIV \<times> gens)" and "y \<in> lists (UNIV \<times> gens)"
       by (auto simp add:free_group_def)
 
     have "cancels_to (x @ y) (normalize (x @ y))" by simp
-    from `x \<in> lists (UNIV \<times> gens)` and `y \<in> lists (UNIV \<times> gens)`
-     and lift_cancels_to[THEN sym, OF `cancels_to (x @ y) (normalize (x @ y))`] and cl
+    from \<open>x \<in> lists (UNIV \<times> gens)\<close> and \<open>y \<in> lists (UNIV \<times> gens)\<close>
+     and lift_cancels_to[THEN sym, OF \<open>cancels_to (x @ y) (normalize (x @ y))\<close>] and cl
     have "lift f (x \<otimes>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub> y) = lift f (x @ y)"
       by (auto simp add:free_group_def iff:lists_eq_set)
     also
-    from `x \<in> lists (UNIV \<times> gens)` and `y \<in> lists (UNIV \<times> gens)` and cl
+    from \<open>x \<in> lists (UNIV \<times> gens)\<close> and \<open>y \<in> lists (UNIV \<times> gens)\<close> and cl
     have "lift f (x @ y) = lift f x \<otimes> lift f y"
       by simp
     finally
@@ -391,14 +391,14 @@ proof
         by (simp add:free_group_def)
     next
     case (Cons a x)
-      from `a # x \<in> carrier \<F>\<^bsub>gens\<^esub>`
+      from \<open>a # x \<in> carrier \<F>\<^bsub>gens\<^esub>\<close>
       have "x \<in> carrier \<F>\<^bsub>gens\<^esub>"
         by (auto intro:cons_canceled simp add:free_group_def)
       hence "x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         using Cons by simp
       moreover
 
-      from `a # x \<in> carrier \<F>\<^bsub>gens\<^esub>`
+      from \<open>a # x \<in> carrier \<F>\<^bsub>gens\<^esub>\<close>
       have "snd a \<in> gens"
         by (auto simp add:free_group_def)
       hence isa: "\<iota> (snd a) \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
@@ -410,7 +410,7 @@ proof
            with isa show "[a] \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>" by simp
        next
         case True
-          from `snd a \<in> gens`
+          from \<open>snd a \<in> gens\<close>
           have "\<iota> (snd a) \<in> carrier \<F>\<^bsub>gens\<^esub>" 
             by (auto simp add:free_group_def insert_def)
           with True
@@ -428,7 +428,7 @@ proof
       have "mult \<F>\<^bsub>gens\<^esub> [a] x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>"
         by (auto intro:gen_mult)
       with
-      `a # x \<in> carrier \<F>\<^bsub>gens\<^esub>`
+      \<open>a # x \<in> carrier \<F>\<^bsub>gens\<^esub>\<close>
       show "a # x \<in> \<langle>\<iota> ` gens\<rangle>\<^bsub>\<F>\<^bsub>gens\<^esub>\<^esub>" by (simp add:free_group_def)
     qed
   qed
@@ -453,7 +453,7 @@ next
 next
   show "lift f \<in> hom \<F>\<^bsub>gens\<^esub> G" by (rule lift_is_hom[OF cl])
 next
-  from `\<forall>g\<in> gens. h (\<iota> g) = f g` and cl[THEN funcset_image]
+  from \<open>\<forall>g\<in> gens. h (\<iota> g) = f g\<close> and cl[THEN funcset_image]
   show "\<forall>g\<in> \<iota> ` gens. h g = lift f g"
     by(auto simp add:insert_def lift_def lift_gi_def)
 qed

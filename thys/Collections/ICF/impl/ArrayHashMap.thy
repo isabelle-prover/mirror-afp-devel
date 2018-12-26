@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler <andreas dot lochbihler at kit.edu>
     Maintainer:  Andreas Lochbihler <andreas dot lochbihler at kit.edu>
 *)
-section {* \isaheader{Array-based hash maps without explicit invariants} *}
+section \<open>\isaheader{Array-based hash maps without explicit invariants}\<close>
 theory ArrayHashMap 
   imports ArrayHashMap_Impl
 begin
@@ -13,7 +13,7 @@ begin
   Array based hash maps without explicit invariant.
 *)
 
-subsection {* Abstract type definition *}
+subsection \<open>Abstract type definition\<close>
 
 typedef (overloaded) ('key :: hashable, 'val) hashmap =
   "{hm :: ('key, 'val) ArrayHashMap_Impl.hashmap. ArrayHashMap_Impl.ahm_invar hm}"
@@ -33,7 +33,7 @@ using impl_of[of hm] by simp
 lemma HashMap_impl_of [code abstype]: "HashMap (impl_of t) = t"
 by(rule impl_of_inverse)
 
-subsection {* Primitive operations *}
+subsection \<open>Primitive operations\<close>
 
 definition ahm_empty_const :: "('key :: hashable, 'val) hashmap"
 where "ahm_empty_const \<equiv> (HashMap (ArrayHashMap_Impl.ahm_empty ()))"
@@ -91,7 +91,7 @@ lemma ahm_iteratei_impl[simp]: "map_iterator (ahm_iteratei m) (ahm_\<alpha> m)"
   apply (rule ahm_iteratei_correct)
   by simp
 
-subsection {* ICF Integration *}
+subsection \<open>ICF Integration\<close>
 
 definition [icf_rec_def]: "ahm_basic_ops \<equiv> \<lparr>
   bmap_op_\<alpha> = ahm_\<alpha>,
@@ -122,7 +122,7 @@ interpretation ahm: StdMap_no_invar ahm_ops
   unfolding icf_rec_unf ..
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "ahm"*}
+setup \<open>ICF_Tools.revert_abbrevs "ahm"\<close>
 
 lemma pi_ahm[proper_it]: 
   "proper_it' ahm_iteratei ahm_iteratei"
@@ -141,7 +141,7 @@ interpretation pi_ahm: proper_it_loc ahm_iteratei ahm_iteratei
   apply (rule pi_ahm)
   done
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 definition test_codegen where "test_codegen \<equiv> (
   ahm.add ,
   ahm.add_dj ,

@@ -4,34 +4,34 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* BV Type Safety Proof \label{sec:BVSpecTypeSafe} *}
+section \<open>BV Type Safety Proof \label{sec:BVSpecTypeSafe}\<close>
 
 theory BVSpecTypeSafe
 imports BVConform
 begin
 
-text {*
+text \<open>
   This theory contains proof that the specification of the bytecode
   verifier only admits type safe programs.  
-*}
+\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-text {*
+text \<open>
   Simp and intro setup for the type safety proof:
-*}
+\<close>
 lemmas defs1 = correct_state_def conf_f_def wt_instr_def eff_def norm_eff_def app_def xcpt_app_def
 
 lemmas widen_rules [intro] = conf_widen confT_widen confs_widens confTs_widen
 
   
-subsection {* Exception Handling *}
+subsection \<open>Exception Handling\<close>
 
 
-text {*
-  For the @{text Invoke} instruction the BV has checked all handlers
-  that guard the current @{text pc}.
-*}
+text \<open>
+  For the \<open>Invoke\<close> instruction the BV has checked all handlers
+  that guard the current \<open>pc\<close>.
+\<close>
 lemma Invoke_handlers:
   "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 
   \<exists>(f,t,D,h,d) \<in> set (relevant_entries P (Invoke n M) pc xt). 
@@ -40,14 +40,14 @@ lemma Invoke_handlers:
                                  is_relevant_entry_def split: if_split_asm)
 
 
-text {*
+text \<open>
   We can prove separately that the recursive search for exception
-  handlers (@{text find_handler}) in the frame stack results in 
+  handlers (\<open>find_handler\<close>) in the frame stack results in 
   a conforming state (if there was no matching exception handler 
   in the current frame). We require that the exception is a valid
   heap address, and that the state before the exception occurred
   conforms. 
-*} term find_handler
+\<close> term find_handler
 lemma uncaught_xcpt_correct:
   assumes wt: "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
   assumes h:  "h xcp = Some obj"
@@ -143,11 +143,11 @@ next
 qed
 (*>*)
 
-text {*
-  The requirement of lemma @{text uncaught_xcpt_correct} (that
+text \<open>
+  The requirement of lemma \<open>uncaught_xcpt_correct\<close> (that
   the exception is a valid reference on the heap) is always met
   for welltyped instructions and conformant states:
-*}
+\<close>
 lemma exec_instr_xcpt_h:
   "\<lbrakk>  fst (exec_instr (ins!pc) P h stk vars Cl M pc frs) = Some xcp;
        P,T,mxs,size ins,xt \<turnstile> ins!pc,pc :: \<Phi> C M;
@@ -181,10 +181,10 @@ lemma match_ex_table_SomeD:
   by (induct xt) (auto split: if_split_asm)
 
 
-text {*
+text \<open>
   Finally we can state that, whenever an exception occurs, the
   next state always conforms:
-*}
+\<close>
 lemma xcpt_correct:
   fixes \<sigma>' :: jvm_state
   assumes wtp:  "wf_jvm_prog\<^bsub>\<Phi>\<^esub> P"
@@ -332,14 +332,14 @@ qed
 (*>*)
 
 
-subsection {* Single Instructions *}
+subsection \<open>Single Instructions\<close>
 
-text {*
+text \<open>
   In this section we prove for each single (welltyped) instruction
   that the state after execution of the instruction still conforms.
   Since we have already handled exceptions above, we can now assume that
   no exception occurs in this step.
-*}
+\<close>
 
 declare defs1 [simp]
 
@@ -950,13 +950,13 @@ lemma Throw_correct:
   by simp
 
 
-text {*
+text \<open>
   The next theorem collects the results of the sections above,
   i.e.~exception handling and the execution step for each 
   instruction. It states type safety for single step execution:
   in welltyped programs, a conforming state is transformed
   into another conforming state when one instruction is executed.
-*}
+\<close>
 theorem instr_correct:
 "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=(mxs,mxl\<^sub>0,ins,xt) in C;
@@ -993,7 +993,7 @@ apply (rule Throw_correct, assumption+)
 done
 (*>*)
 
-subsection {* Main *}
+subsection \<open>Main\<close>
 
 lemma correct_state_impl_Some_method:
   "P,\<Phi> \<turnstile> (None, h, (stk,loc,C,M,pc)#frs)\<surd> 

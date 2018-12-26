@@ -75,14 +75,14 @@ proof (induction K)
         and "m = m'(k \<mapsto> the (m k))"
         apply (simp, blast, auto) 
         apply (insert map_equal[of m "m'(k \<mapsto> the (m k))"])
-        apply (unfold dom_map_update `dom m = set (k#ks)` `dom m' = set ks`)
+        apply (unfold dom_map_update \<open>dom m = set (k#ks)\<close> \<open>dom m' = set ks\<close>)
         by fastforce
       moreover
       hence "m \<in> set (map (\<lambda>v. m'(k \<mapsto> v)) (V k))"
         by simp
       ultimately
       have "m \<in> ?l"
-        using `dom m = set (k#ks)` by blast       
+        using \<open>dom m = set (k#ks)\<close> by blast       
     }
     ultimately
     have "{Mapping.update k v m |v m. v \<in> set (V k) \<and> m \<in> {m. Mapping.keys m = set ks \<and> (\<forall>k\<in>set ks. the (Mapping.lookup m k) \<in> set (V k))}} 

@@ -774,7 +774,7 @@ proof -
   finally have sig_le_sr: "\<sigma> \<le> sr" .
   {
     assume "\<sigma> = sr" 
-    hence r_sr: "r y = sr" and sr_sig: "sr = \<sigma>" using `\<sigma> \<le> r y` `r y \<le> sr` by auto
+    hence r_sr: "r y = sr" and sr_sig: "sr = \<sigma>" using \<open>\<sigma> \<le> r y\<close> \<open>r y \<le> sr\<close> by auto
     from sr_u_pos[OF y r_sr] have pos: "lt_vec 0 y" .
     from sr_imp_eigen_vector[OF y r_sr] have ev': "eigen_vector A y sr" .
     have "(A - B) *v y = A *v y - B *v y" unfolding matrix_vector_mult_def

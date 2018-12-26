@@ -2,37 +2,37 @@ theory SubRel
 imports Graph
 begin 
 
-section {* Graphs equipped with a subsumption relation *}
+section \<open>Graphs equipped with a subsumption relation\<close>
 
-text {* In this section, we define subsumption relations and the notion of sub\hyp{}paths in 
+text \<open>In this section, we define subsumption relations and the notion of sub\hyp{}paths in 
 rooted graphs equipped with such relations. Sub-paths are defined in the same way than in 
 \verb?Graph.thy?: first we define the consistency of a sequence of edges in presence of a 
 subsumption relation, then sub-paths. We are interested in subsumptions taking places between red 
 vertices of red-black graphs (see \verb?RB.thy?), i.e.\ occurrences of locations of LTSs. Here 
 subsumptions are defined as pairs of indexed vertices of a LTS, and subsumption relations as sets 
-of subsumptions. The type of vertices of such LTSs is represented by the abstract type @{text "'v"} 
-in the following. *}
+of subsumptions. The type of vertices of such LTSs is represented by the abstract type \<open>'v\<close> 
+in the following.\<close>
 
-subsection {* Basic definitions and properties *}
+subsection \<open>Basic definitions and properties\<close>
 
-subsubsection {* Subsumptions and subsumption relations *}
+subsubsection \<open>Subsumptions and subsumption relations\<close>
 
-text {* Subsumptions take place between occurrences of the vertices of a graph. We represent 
+text \<open>Subsumptions take place between occurrences of the vertices of a graph. We represent 
 such occurrences by indexed versions of vertices. A subsumption is defined as pair of indexed 
-vertices. *}
+vertices.\<close>
 
 
 type_synonym 'v sub_t = "(('v \<times> nat) \<times> ('v \<times> nat))"
 
 
-text {* A subsumption relation is a set of subsumptions. *}
+text \<open>A subsumption relation is a set of subsumptions.\<close>
 
 
 type_synonym 'v sub_rel_t = "'v sub_t set"
 
 
-text {* We consider the left member to be subsumed by the right one. The left member of a 
-subsumption is called its \emph{subsumee}, the right member its \emph{subsumer}. *}
+text \<open>We consider the left member to be subsumed by the right one. The left member of a 
+subsumption is called its \emph{subsumee}, the right member its \emph{subsumer}.\<close>
 
 
 abbreviation subsumee :: 
@@ -47,7 +47,7 @@ where
   "subsumer sub \<equiv> snd sub"
 
 
-text {* We will need to talk about the sets of subsumees and subsumers of a subsumption relation. *}
+text \<open>We will need to talk about the sets of subsumees and subsumers of a subsumption relation.\<close>
 
 
 abbreviation subsumees :: 
@@ -62,7 +62,7 @@ where
   "subsumers subs \<equiv> subsumer ` subs"
 
 
-text {* The two following lemmas will prove useful in the following. *}
+text \<open>The two following lemmas will prove useful in the following.\<close>
 
 
 lemma subsumees_conv :
@@ -76,7 +76,7 @@ by force
 
 
 
-text {* We call set of vertices of the relation the union of its sets of subsumees and subsumers. *}
+text \<open>We call set of vertices of the relation the union of its sets of subsumees and subsumers.\<close>
 
 
 abbreviation vertices ::
@@ -85,27 +85,27 @@ where
   "vertices subs \<equiv> subsumers subs \<union> subsumees subs"
 
 
-subsection {* Well-formed subsumption relation of a graph  *}
+subsection \<open>Well-formed subsumption relation of a graph\<close>
 
-subsubsection {* Well-formed subsumption relations *}
+subsubsection \<open>Well-formed subsumption relations\<close>
 
-text {* In the following, we make an intensive use of \emph{locales}. We use them as a convenient 
+text \<open>In the following, we make an intensive use of \emph{locales}. We use them as a convenient 
 way to add assumptions to the following lemmas, in order to ease their reading. Locales can be 
 built from locales, allowing some modularity in the formalization. The following locale simply 
 states that we suppose there exists  a subsumption relation called \emph{subs}. It will 
-be used later in order to constrain subsumption relations. *}
+be used later in order to constrain subsumption relations.\<close>
 
 
 locale sub_rel =
   fixes subs :: "'v sub_rel_t" (structure)
 
 
-text {* We are only interested in subsumptions involving two different
+text \<open>We are only interested in subsumptions involving two different
 occurrences of the same LTS 
 location. Moreover, once a vertex has been subsumed, there is no point in trying to subsume it again
 by another subsumer: subsumees must have a unique subsumer. Finally, we do not allow chains of 
 subsumptions, thus the intersection of the sets of subsumers and subsumees must be empty. Such 
-subsumption relations are said to be \emph{well-formed}. *}
+subsumption relations are said to be \emph{well-formed}.\<close>
 
 
 locale wf_sub_rel = sub_rel +
@@ -121,7 +121,7 @@ locale wf_sub_rel = sub_rel +
 begin
   lemmas wf_sub_rel = sub_imp_same_verts subsumed_by_one inter_empty
 
-  text {* A rephrasing of the assumption @{term "subsumed_by_one"}. *}
+  text \<open>A rephrasing of the assumption @{term "subsumed_by_one"}.\<close>
 
   lemma (in wf_sub_rel) subsumed_by_two_imp : 
     assumes "(v,v1) \<in> subs"
@@ -129,8 +129,8 @@ begin
     shows   "v1 = v2"
   using assms wf_sub_rel unfolding subsumees_conv by blast
   
-  text {* A well-formed subsumption relation is equal to its transitive closure. We will see in the 
-  following one has to handle transitive closures of such relations. *}
+  text \<open>A well-formed subsumption relation is equal to its transitive closure. We will see in the 
+  following one has to handle transitive closures of such relations.\<close>
 
   lemma in_trancl_imp :
     assumes "(v,v') \<in> subs\<^sup>+"
@@ -146,7 +146,7 @@ begin
 end
 
 
-text {* The empty subsumption relation is well-formed. *}
+text \<open>The empty subsumption relation is well-formed.\<close>
 
 
 lemma
@@ -154,13 +154,13 @@ lemma
 by (auto simp add : wf_sub_rel_def)
 
 
-subsubsection {* Subsumption relation of a graph *}
+subsubsection \<open>Subsumption relation of a graph\<close>
 
-text {* We consider subsumption relations to equip rooted graphs. However, nothing in the previous 
+text \<open>We consider subsumption relations to equip rooted graphs. However, nothing in the previous 
 definitions relates these relations to graphs: subsumptions relations involve objects that are of 
 the type of indexed vertices, but that might to not be vertices of an actual graph. We equip 
 graphs with subsumption relations using the notion of \emph{sub-relation of a graph}. Such a 
-relation must only involve vertices of the graph it equips. *}
+relation must only involve vertices of the graph it equips.\<close>
 
 
 locale rgraph = 
@@ -172,8 +172,8 @@ locale sub_rel_of = rgraph + sub_rel +
 begin
   lemmas sub_rel_of = related_are_verts
 
-  text {* The transitive closure of a sub-relation of a graph @{term "g"} is also a sub-relation of 
-  @{term "g"}. *}
+  text \<open>The transitive closure of a sub-relation of a graph @{term "g"} is also a sub-relation of 
+  @{term "g"}.\<close>
 
   lemma trancl_sub_rel_of :
      "sub_rel_of g (subs\<^sup>+)"
@@ -182,7 +182,7 @@ begin
 end
 
 
-text {* The empty relation is a sub-relation of any graph. *}
+text \<open>The empty relation is a sub-relation of any graph.\<close>
 
 
 lemma
@@ -190,10 +190,10 @@ lemma
 by (auto simp add : sub_rel_of_def)
 
 
-subsubsection {* Well-formed sub-relations *}
+subsubsection \<open>Well-formed sub-relations\<close>
 
-text {* We pack both previous locales into a third one. We speak about 
-\emph{well-formed sub-relations}. *}
+text \<open>We pack both previous locales into a third one. We speak about 
+\emph{well-formed sub-relations}.\<close>
 
 
 locale wf_sub_rel_of = rgraph + sub_rel +
@@ -204,7 +204,7 @@ begin
 end
 
 
-text {* The empty relation is a well-formed sub-relation of any graph. *}
+text \<open>The empty relation is a well-formed sub-relation of any graph.\<close>
 
 
 lemma
@@ -212,14 +212,14 @@ lemma
 by (auto simp add : sub_rel_of_def wf_sub_rel_def wf_sub_rel_of_def)
 
 
-text {* As previously, even if, in the end, we are only interested by well-formed sub-relations, we 
-assume the relation is such only when needed. *}
+text \<open>As previously, even if, in the end, we are only interested by well-formed sub-relations, we 
+assume the relation is such only when needed.\<close>
 
-subsection {* Consistent Edge Sequences, Sub-paths *}
+subsection \<open>Consistent Edge Sequences, Sub-paths\<close>
 
-subsubsection {* Consistency in presence of a subsumption relation *}
+subsubsection \<open>Consistency in presence of a subsumption relation\<close>
 
-text {* We model sub-paths in the same spirit than in \verb?Graph.thy?, by starting with 
+text \<open>We model sub-paths in the same spirit than in \verb?Graph.thy?, by starting with 
 defining the consistency of a sequence of edges wrt.\ a subsumption relation. The idea is 
 that subsumption links can ``fill the gaps'' between subsequent edges that would have made 
 the sequence inconsistent otherwise. For now, we define consistency of a sequence wrt.\ any 
@@ -227,7 +227,7 @@ subsumption relation. Thus, we cannot account yet for the fact that we only cons
 without chains of subsumptions. The empty sequence is consistent wrt.\ to a subsumption relation 
 from @{term "v1"} to @{term "v2"} if these two vertices are equal or if they belong to the 
 transitive closure of the relation. A non-empty sequence is consistent if it is made of consistent 
-sequences whose extremities are linked in the transitive closure of the subsumption relation. *}
+sequences whose extremities are linked in the transitive closure of the subsumption relation.\<close>
 
 
 fun ces :: "('v \<times> nat) \<Rightarrow> ('v \<times> nat) edge list \<Rightarrow> ('v \<times> nat) \<Rightarrow> 'v sub_rel_t \<Rightarrow> bool" where
@@ -235,8 +235,8 @@ fun ces :: "('v \<times> nat) \<Rightarrow> ('v \<times> nat) edge list \<Righta
 | "ces v1 (e#es) v2 subs = ((v1 = src e \<or> (v1,src e) \<in> subs\<^sup>+) \<and> ces (tgt e) es v2 subs)"
 
 
-text {* A consistent sequence from @{term "v1"} to @{term "v2"} without a  subsumption relation is 
-consistent between these two vertices in presence of any relation. *}
+text \<open>A consistent sequence from @{term "v1"} to @{term "v2"} without a  subsumption relation is 
+consistent between these two vertices in presence of any relation.\<close>
 
 
 lemma
@@ -245,8 +245,8 @@ lemma
 using assms by (induct es arbitrary : v1, auto)
 
 
-text {* Consistency in presence of the empty subsumption relation reduces to consistency as defined 
-in \verb?Graph.thy?. *}
+text \<open>Consistency in presence of the empty subsumption relation reduces to consistency as defined 
+in \verb?Graph.thy?.\<close>
 
 
 lemma
@@ -255,10 +255,10 @@ lemma
 using assms by (induct es arbitrary : v1, auto)
 
 
-text {* Let @{term "(v1,v2)"} be an element of a subsumption relation, and @{term "es"} a sequence of 
+text \<open>Let @{term "(v1,v2)"} be an element of a subsumption relation, and @{term "es"} a sequence of 
 edges consistent wrt.\ this relation from vertex @{term "v2"}. Then @{term "es"} is also consistent 
 from @{term "v1"}. Even if this lemma will not be used much in the following, this is the base fact 
-for saying that paths feasible from a subsumee are also feasible from its subsumer. *}
+for saying that paths feasible from a subsumee are also feasible from its subsumer.\<close>
 
 
 lemma acas_imp_dcas :
@@ -268,8 +268,8 @@ lemma acas_imp_dcas :
 using assms by (cases es, simp_all) (intro disjI2, force)+
 
 
-text {* Let @{term "es"} be a sequence of edges consistent wrt. a subsumption relation. Extending 
-this relation preserves the consistency of @{term "es"}. *}
+text \<open>Let @{term "es"} be a sequence of edges consistent wrt. a subsumption relation. Extending 
+this relation preserves the consistency of @{term "es"}.\<close>
 
 
 lemma ces_Un :
@@ -278,7 +278,7 @@ lemma ces_Un :
 using assms by (induct es arbitrary : v1, auto simp add : trancl_mono)
 
 
-text {* A rephrasing of the previous lemma. *}
+text \<open>A rephrasing of the previous lemma.\<close>
 
 
 lemma cas_subset :
@@ -288,7 +288,7 @@ lemma cas_subset :
 using assms by (induct es arbitrary : v1, auto simp add : trancl_mono)
 
 
-text {* Simplification lemmas for @{term "ces"}. *}
+text \<open>Simplification lemmas for @{term "ces"}.\<close>
 
 
 lemma ces_append_one :
@@ -324,10 +324,10 @@ next
 qed
 
 
-text {* Let @{term "es"} be a sequence of edges consistent from @{term "v1"} to @{term "v2"} wrt.\ a 
+text \<open>Let @{term "es"} be a sequence of edges consistent from @{term "v1"} to @{term "v2"} wrt.\ a 
 sub-relation @{term "subs"} of a graph @{term "g"}. Suppose elements of this sequence are edges of 
 @{term "g"}. If @{term "v1"} is a vertex of @{term "g"} then @{term "v2"} is also a vertex of 
-@{term "g"}. *}
+@{term "g"}.\<close>
 
 
 lemma (in sub_rel_of) ces_imp_ends_vertices :
@@ -340,13 +340,13 @@ unfolding sub_rel_of_def subsumers_conv vertices_def
 by (induct es arbitrary : v1) (force, (simp del : split_paired_Ex, fast))
 
 
-subsubsection {* Sub-paths *}
+subsubsection \<open>Sub-paths\<close>
 
-text {* A sub-path leading from @{term "v1"} to @{term "v2"}, two vertices of a graph @{term "g"} 
+text \<open>A sub-path leading from @{term "v1"} to @{term "v2"}, two vertices of a graph @{term "g"} 
 equipped with a subsumption relation @{term "subs"}, is a sequence of edges consistent wrt.\ 
 @{term "subs"} from @{term "v1"} to @{term "v2"} whose elements are edges of @{term "g"}. 
 Moreover, we must assume that @{term "subs"} is a sub-relation of @{term "g"}, otherwise 
-@{term "es"} could ``exit'' @{term "g"} through subsumption links. *}
+@{term "es"} could ``exit'' @{term "g"} through subsumption links.\<close>
 
 
 definition subpath :: 
@@ -358,7 +358,7 @@ where
                            \<and> set es \<subseteq> edges g"
 
 
-text {* Once again, in some cases, we will not be interested in the ending vertex of a sub-path. *}
+text \<open>Once again, in some cases, we will not be interested in the ending vertex of a sub-path.\<close>
 
 
 abbreviation subpath_from ::
@@ -367,7 +367,7 @@ where
   "subpath_from g v es subs \<equiv> \<exists> v'. subpath g v es v' subs"
 
 
-text {* Simplification lemmas for @{term subpath}. *}
+text \<open>Simplification lemmas for @{term subpath}.\<close>
 
 
 lemma Nil_sp :
@@ -377,8 +377,8 @@ lemma Nil_sp :
 by (auto simp add : subpath_def)
 
 
-text {* When the subsumption relation is well-formed (denoted by @{text "(in wf_sub_rel)"}), 
-there is no need to account for the transitive closure of the relation. *}
+text \<open>When the subsumption relation is well-formed (denoted by \<open>(in wf_sub_rel)\<close>), 
+there is no need to account for the transitive closure of the relation.\<close>
 
 
 lemma (in wf_sub_rel) Nil_sp :
@@ -388,7 +388,7 @@ lemma (in wf_sub_rel) Nil_sp :
 using trancl_eq by (simp add : Nil_sp)
 
 
-text {* Simplification lemma for the one-element sequence.  *}
+text \<open>Simplification lemma for the one-element sequence.\<close>
 
 
 lemma sp_one :
@@ -400,8 +400,8 @@ using sub_rel_of.trancl_sub_rel_of[of g subs]
 by (intro iffI, auto simp add : vertices_def sub_rel_of_def subpath_def) 
 
 
-text {* Once again, when the subsumption relation is well-formed, the previous lemma can be 
-simplified since, in this case, the transitive closure of the relation is the relation itself. *}
+text \<open>Once again, when the subsumption relation is well-formed, the previous lemma can be 
+simplified since, in this case, the transitive closure of the relation is the relation itself.\<close>
 
 
 lemma (in wf_sub_rel_of) sp_one :
@@ -412,7 +412,7 @@ lemma (in wf_sub_rel_of) sp_one :
 using sp_one wf_sub_rel.trancl_eq[OF wf_sub_rel] by fast
 
 
-text {* Simplification lemma for the non-empty sequence (which might contain more than one element). *}
+text \<open>Simplification lemma for the non-empty sequence (which might contain more than one element).\<close>
 
 
 lemma sp_Cons :
@@ -424,7 +424,7 @@ using sub_rel_of.trancl_sub_rel_of[of g subs]
 by (intro iffI, auto simp add : subpath_def vertices_def sub_rel_of_def)
 
 
-text {* The same lemma when the subsumption relation is well-formed. *}
+text \<open>The same lemma when the subsumption relation is well-formed.\<close>
 
 
 lemma (in wf_sub_rel_of) sp_Cons :
@@ -435,8 +435,8 @@ lemma (in wf_sub_rel_of) sp_Cons :
 using sp_Cons wf_sub_rel.trancl_eq[OF wf_sub_rel] by fast
 
 
-text {* Simplification lemma for @{term "subpath"} when the sequence is known to end by a given 
-edge. *}
+text \<open>Simplification lemma for @{term "subpath"} when the sequence is known to end by a given 
+edge.\<close>
 
 
 lemma sp_append_one :
@@ -446,7 +446,7 @@ lemma sp_append_one :
 unfolding subpath_def by (auto simp add :  ces_append_one)
 
 
-text {* Simpler version in the case of a well-formed subsumption relation. *}
+text \<open>Simpler version in the case of a well-formed subsumption relation.\<close>
 
 
 lemma (in wf_sub_rel) sp_append_one :
@@ -456,8 +456,8 @@ lemma (in wf_sub_rel) sp_append_one :
 using sp_append_one in_trancl_imp by fast
 
 
-text {* Simplification lemma when the sequence is known to be the concatenation of two 
-sub-sequences. *}
+text \<open>Simplification lemma when the sequence is known to be the concatenation of two 
+sub-sequences.\<close>
 
 
 lemma sp_append :
@@ -474,10 +474,10 @@ next
 qed
 
 
-text {* Let @{term "es"} be a sub-path of a graph @{term "g"} starting at vertex @{term "v1"}. 
+text \<open>Let @{term "es"} be a sub-path of a graph @{term "g"} starting at vertex @{term "v1"}. 
 By definition of @{term "subpath"}, @{term "v1"} is a vertex of @{term "g"}. Even if this is a 
 direct consequence of the definition of @{term "subpath"}, this lemma will ease the proofs of some 
-goals in the following. *}
+goals in the following.\<close>
 
 
 lemma fst_of_sp_is_vert :
@@ -486,8 +486,8 @@ lemma fst_of_sp_is_vert :
 using assms by (simp add : subpath_def)
 
 
-text {* The same property (which also follows the definition of @{term "subpath"}, but not as 
-trivially as the previous lemma) can be established for the final vertex @{term "v2"}. *}
+text \<open>The same property (which also follows the definition of @{term "subpath"}, but not as 
+trivially as the previous lemma) can be established for the final vertex @{term "v2"}.\<close>
 
 
 lemma lst_of_sp_is_vert :
@@ -498,8 +498,8 @@ by (induction es arbitrary : v1)
    (force simp add : subpath_def sub_rel_of_def, (simp add : sp_Cons, fast))
 
 
-text {* A sub-path ending in a subsumed vertex can be extended to the subsumer of this vertex, 
-provided that the subsumption relation is a sub-relation of the graph it equips. *}
+text \<open>A sub-path ending in a subsumed vertex can be extended to the subsumer of this vertex, 
+provided that the subsumption relation is a sub-relation of the graph it equips.\<close>
 
 
 lemma sp_append_sub :
@@ -529,14 +529,14 @@ next
 qed
 
 
-text {* Let @{term "g"} be a graph equipped with a well-formed sub-relation. A sub-path starting at 
+text \<open>Let @{term "g"} be a graph equipped with a well-formed sub-relation. A sub-path starting at 
 a subsumed vertex @{term "v1"} whose set of out-edges is empty is either:
 \begin{enumerate}
   \item empty,
   \item a sub-path starting at the subsumer @{term "v2"} of @{term "v1"}.
 \end{enumerate}
 The third assumption represent the fact that, when building red-black graphs, we do not allow to 
-build the successor of a subsumed vertex. *}
+build the successor of a subsumed vertex.\<close>
 
 
 lemma (in wf_sub_rel_of) sp_from_subsumee :
@@ -550,14 +550,14 @@ by (cases es)
    (fast, (intro disjI2, fastforce simp add : sp_Cons))
 
 
-text {* Note that it is not possible to split this lemma into two lemmas (one for each member of the 
+text \<open>Note that it is not possible to split this lemma into two lemmas (one for each member of the 
 disjunctive conclusion). Suppose @{term "v"} is @{term "v1"}, then 
 @{term "es"} could be empty or it could also be a non-empty sub-path leading from @{term "v2"} to 
 @{term "v1"}. If @{term "v"} is not @{term "v1"}, it could be @{term "v2"} and @{term "es"} could 
-be empty or not. *}
+be empty or not.\<close>
 
 
-text {* A sub-path starting at a non-subsumed vertex whose set of out-edges is empty is also empty. *}
+text \<open>A sub-path starting at a non-subsumed vertex whose set of out-edges is empty is also empty.\<close>
 
 
 lemma sp_from_de_empty :
@@ -568,9 +568,9 @@ lemma sp_from_de_empty :
 using assms tranclD by (cases es) (auto simp add : sp_Cons, force)
 
 
-text {* Let @{term "e"} be an edge whose target is not subsumed and has not out-going edges. A 
+text \<open>Let @{term "e"} be an edge whose target is not subsumed and has not out-going edges. A 
 sub-path @{term "es"} containing @{term "e"} ends by @{term "e"} and this occurrence of @{term "e"} 
-is unique along @{term "es"}. *}
+is unique along @{term "es"}.\<close>
 
 
 lemma sp_through_de_decomp :
@@ -598,9 +598,9 @@ next
 qed
 
 
-text {* Consider a sub-path ending at the target of a recently added edge @{term "e"}, whose target 
+text \<open>Consider a sub-path ending at the target of a recently added edge @{term "e"}, whose target 
 did not belong to the graph prior to its addition. If @{term "es"} starts in another vertex than 
-the target of @{term "e"}, then it contains @{term "e"}. *}
+the target of @{term "e"}, then it contains @{term "e"}.\<close>
 
 
 lemma (in sub_rel_of) sp_ends_in_tgt_imp_mem :
@@ -622,7 +622,7 @@ proof -
   
   moreover
   have "tgt e' = tgt e"  
-  using tranclD2 assms(3) `tgt e \<notin> subsumers subs` `es = es' @ [e']`
+  using tranclD2 assms(3) \<open>tgt e \<notin> subsumers subs\<close> \<open>es = es' @ [e']\<close>
   by (force simp add : sp_append_one)
   
   ultimately

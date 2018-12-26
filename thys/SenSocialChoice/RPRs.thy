@@ -14,9 +14,9 @@ begin
 
 (* **************************************** *)
 
-section{* Preliminaries *}
+section\<open>Preliminaries\<close>
 
-text{*
+text\<open>
 
 The auxiliary concepts defined here are standard \cite{Routley:79, Sen:70a,
 Taylor:2005}. Throughout we make use of a fixed set @{term "A"} of
@@ -24,13 +24,13 @@ alternatives, drawn from some arbitrary type @{typ "'a"} of suitable
 size. Taylor \cite{Taylor:2005} terms this set an \emph{agenda}. Similarly
 we have a type @{typ "'i"} of individuals and a population @{term "Is"}.
 
-*}
+\<close>
 
 (* **************************************** *)
 
-subsection{* Rational Preference Relations (RPRs) *}
+subsection\<open>Rational Preference Relations (RPRs)\<close>
 
-text{*
+text\<open>
 
 Definitions for rational preference relations (RPRs), which represent
 indifference or strict preference amongst some set of alternatives.  These
@@ -40,7 +40,7 @@ Unfortunately Isabelle's standard ordering operators and lemmas are
 typeclass-based, and as introducing new types is painful and we need several
 orders per type, we need to repeat some things.
 
-*}
+\<close>
 
 type_synonym 'a RPR = "('a * 'a) set"
 
@@ -64,23 +64,23 @@ lemma strict_pref_def_irrefl[simp]: "\<not> (x \<^bsub>r\<^esub>\<prec> x)" unfo
 lemma strict_prefI[intro]: "\<lbrakk> x \<^bsub>r\<^esub>\<preceq> y; \<not>(y \<^bsub>r\<^esub>\<preceq> x) \<rbrakk> \<Longrightarrow> x \<^bsub>r\<^esub>\<prec> y"
   unfolding strict_pref_def by simp
 
-text{*
+text\<open>
 
 Traditionally, @{term "x \<^bsub>r\<^esub>\<preceq> y"} would be written $x\ R\ y$,
 @{term "x \<^bsub>r\<^esub>\<approx> y"} as $x\ I\ y$ and @{term "x
 \<^bsub>r\<^esub>\<prec> y"} as $x\ P\ y$, where the relation $r$ is implicit, and
 profiles are indexed by subscripting.
 
-*}
+\<close>
 
-text{*
+text\<open>
 
 \emph{Complete} means that every pair of distinct alternatives is
 ranked. The "distinct" part is a matter of taste, as it makes sense to
 regard an alternative as as good as itself. Here I take reflexivity
 separately.
 
-*}
+\<close>
 
 definition complete :: "'a set \<Rightarrow> 'a RPR \<Rightarrow> bool" where
   "complete A r \<equiv> (\<forall>x \<in> A. \<forall>y \<in> A - {x}. x \<^bsub>r\<^esub>\<preceq> y \<or> y \<^bsub>r\<^esub>\<preceq> x)"
@@ -107,12 +107,12 @@ lemma complete_exh:
     | (xIy) "x \<^bsub>r\<^esub>\<approx> y"
   using assms unfolding complete_def strict_pref_def indifferent_pref_def by auto
 
-text{*
+text\<open>
 
 Use the standard @{term "refl"}. Also define \emph{irreflexivity}
 analogously to how @{term "refl"} is defined in the standard library.
 
-*}
+\<close>
 
 declare refl_onI[intro] refl_onD[dest]
 
@@ -133,8 +133,8 @@ lemma irreflD'[dest]:
   "\<lbrakk> irrefl A r; r \<noteq> {} \<rbrakk> \<Longrightarrow> \<exists>x y. hasw [x,y] A \<and> (x, y) \<in> r"
   unfolding irrefl_def by auto
 
-text{* Rational preference relations, also known as weak orders and (I
-guess) complete pre-orders. *}
+text\<open>Rational preference relations, also known as weak orders and (I
+guess) complete pre-orders.\<close>
 
 definition rpr :: "'a set \<Rightarrow> 'a RPR \<Rightarrow> bool" where
   "rpr A r \<equiv> complete A r \<and> refl_on A r \<and> trans r"
@@ -177,10 +177,10 @@ lemma rpr_complete: "\<lbrakk> rpr A r; x \<in> A; y \<in> A \<rbrakk> \<Longrig
 
 (* **************************************** *)
 
-subsection{* Profiles *}
+subsection\<open>Profiles\<close>
 
-text {* A \emph{profile} (also termed a collection of \emph{ballots}) maps
-each individual to an RPR for that individual. *}
+text \<open>A \emph{profile} (also termed a collection of \emph{ballots}) maps
+each individual to an RPR for that individual.\<close>
 
 type_synonym ('a, 'i) Profile = "'i \<Rightarrow> 'a RPR"
 

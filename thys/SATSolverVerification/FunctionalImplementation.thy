@@ -3,7 +3,7 @@ imports Initialization SolveLoop
 begin
 
 (******************************************************************************)
-subsection{* Total correctness theorem *}
+subsection\<open>Total correctness theorem\<close>
 (******************************************************************************)
 
 theorem correctness:

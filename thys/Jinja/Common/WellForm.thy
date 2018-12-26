@@ -4,21 +4,21 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Generic Well-formedness of programs *}
+section \<open>Generic Well-formedness of programs\<close>
 
 theory WellForm imports TypeRel SystemClasses begin
 
-text {*\noindent This theory defines global well-formedness conditions
+text \<open>\noindent This theory defines global well-formedness conditions
 for programs but does not look inside method bodies.  Hence it works
 for both Jinja and JVM programs. Well-typing of expressions is defined
-elsewhere (in theory @{text WellType}).
+elsewhere (in theory \<open>WellType\<close>).
 
 Because Jinja does not have method overloading, its policy for method
 overriding is the classical one: \emph{covariant in the result type
 but contravariant in the argument types.} This means the result type
 of the overriding method becomes more specific, the argument types
 become more general.
-*}
+\<close>
 
 type_synonym 'm wf_mdecl_test = "'m prog \<Rightarrow> cname \<Rightarrow> 'm mdecl \<Rightarrow> bool"
 
@@ -51,7 +51,7 @@ where
   "wf_prog wf_md P  \<equiv>  wf_syscls P \<and> (\<forall>c \<in> set P. wf_cdecl wf_md P c) \<and> distinct_fst P"
 
 
-subsection{* Well-formedness lemmas *}
+subsection\<open>Well-formedness lemmas\<close>
 
 lemma class_wf: 
   "\<lbrakk>class P C = Some c; wf_prog wf_md P\<rbrakk> \<Longrightarrow> wf_cdecl wf_md P (C,c)"
@@ -254,7 +254,7 @@ qed
 (*>*)
 
 
-subsection{* Well-formedness and method lookup *}
+subsection\<open>Well-formedness and method lookup\<close>
 
 lemma sees_wf_mdecl:
   "\<lbrakk> wf_prog wf_md P; P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<rbrakk> \<Longrightarrow> wf_mdecl wf_md P D (M,Ts,T,m)"
@@ -392,7 +392,7 @@ qed
 (*>*)
 
 
-subsection{* Well-formedness and field lookup *}
+subsection\<open>Well-formedness and field lookup\<close>
 
 lemma wf_Fields_Ex:
   "\<lbrakk> wf_prog wf_md P; is_class P C \<rbrakk> \<Longrightarrow> \<exists>FDTs. P \<turnstile> C has_fields FDTs"

@@ -3,24 +3,24 @@
     Maintainer:  T. V. H. Prathamesh
 *)
 
-text{*
+text\<open>
 We define Tensor Product of Matrics and prove properties such as associativity and mixed product 
-property(distributivity) of the tensor product.*}
+property(distributivity) of the tensor product.\<close>
 
-section{*Tensor Product of Matrices*}
+section\<open>Tensor Product of Matrices\<close>
 
 theory Matrix_Tensor
 imports Matrix.Utility Matrix.Matrix_Legacy
 begin
 
 
-subsection{*Defining the Tensor Product*}
+subsection\<open>Defining the Tensor Product\<close>
 
 
 
-text{*We define a multiplicative locale here - mult, 
+text\<open>We define a multiplicative locale here - mult, 
 where the multiplication satisfies commutativity, 
-associativity and contains a left and right identity*}
+associativity and contains a left and right identity\<close>
 
 locale mult = 
  fixes id::"'a"
@@ -34,8 +34,8 @@ context mult
 begin   
 
 
-text{*times a v , gives us the product of the vector v with 
-multiplied pointwise with a *}
+text\<open>times a v , gives us the product of the vector v with 
+multiplied pointwise with a\<close>
 
 primrec times:: "'a \<Rightarrow> 'a vec \<Rightarrow> 'a vec"
 where
@@ -51,12 +51,12 @@ lemma times_vector_id: "times v [id] = [v]"
 lemma preserving_length: "length (times n y) = (length y)"
  by(induction y)(auto)
 
-text{* vec$\_$vec$\_$Tensor is the tensor product of two vectors. It is 
+text\<open>vec$\_$vec$\_$Tensor is the tensor product of two vectors. It is 
 illustrated by the following relation
  
 $vec\_vec\_Tensor (v_1,v_2,...v_n) (w_1,w_2,...w_m) 
                  = (v_1 \cdot w_1,...,v_1 \cdot w_m,...
-                          , v_n \cdot w_1 , ..., v_n \cdot w_m)$ *}
+                          , v_n \cdot w_1 , ..., v_n \cdot w_m)$\<close>
 
 primrec vec_vec_Tensor:: "'a vec \<Rightarrow> 'a vec \<Rightarrow> 'a vec"
 where
@@ -82,12 +82,12 @@ shows "vec (m*n) (vec_vec_Tensor x y)"
  done
 
 
-text{* vec$\_$mat$\_$Tensor is the tensor product of two vectors. It is 
+text\<open>vec$\_$mat$\_$Tensor is the tensor product of two vectors. It is 
 illusstrated by the following relation
  
 vec\_mat\_Tensor ($v_1,v_2,...v_n) (C_1,C_2,...C_m) 
                  = (v_1 \cdot C_1,...,v_n \cdot C_1,
-                               ...,v_1 \cdot C_m , ..., v_n \cdot C_m$) *}
+                               ...,v_1 \cdot C_m , ..., v_n \cdot C_m$)\<close>
 
 
 primrec vec_mat_Tensor::"'a vec \<Rightarrow> 'a mat \<Rightarrow>'a mat"
@@ -120,7 +120,7 @@ proof-
    have "length (vec_vec_Tensor v y) = nr*k" 
        using assms vec_vec_Tensor_length  by auto
  from this 
-   have "length x = nr*k" by (simp add: `vec_vec_Tensor v y = x`)
+   have "length x = nr*k" by (simp add: \<open>vec_vec_Tensor v y = x\<close>)
  from this 
    have "vec (nr*k) x" using vec_def by auto
  from this 
@@ -174,7 +174,7 @@ proof-
  then have step2: "((x \<in> (set M)) \<longrightarrow> (vec nr2 x))" using Ball_def assms by auto
  from step1 and step2 
    have step3:"\<forall>x.((x \<in> (set M))\<longrightarrow> ((vec nr1 x)\<and> (vec nr2 x)))"
-   by (metis `Ball (set M) (vec nr1)` `Ball (set M) (vec nr2)`)
+   by (metis \<open>Ball (set M) (vec nr1)\<close> \<open>Ball (set M) (vec nr2)\<close>)
  have "((vec nr1 x)\<and> (vec nr2 x)) \<longrightarrow> (nr1 = nr2)" using vec_uniqueness by auto
  with step3  
    have "(\<forall>x.((x \<in> (set M)) \<longrightarrow>((nr1 = nr2))))" by (metis vec_uniqueness) 
@@ -205,8 +205,8 @@ lemma null_mat:"null_matrix = [[]]"
 lemma zero_matrix:" mat 0 0 []" using mat_def in_set_insert insert_Nil list.size(3) not_Cons_self2
  by (metis (full_types))
 
-text{*row\_length gives the length of the first row of a matrix. For a `valid'
-matrix, it is equal to the number of rows *}
+text\<open>row\_length gives the length of the first row of a matrix. For a `valid'
+matrix, it is equal to the number of rows\<close>
 
 definition row_length:: "'a mat \<Rightarrow> nat"
 where
@@ -256,7 +256,7 @@ proof(induct m)
   from this show ?case by auto
 qed
 
-text{*Tensor is the tensor product of matrices*}
+text\<open>Tensor is the tensor product of matrices\<close>
 
 primrec Tensor::" 'a mat \<Rightarrow> 'a mat \<Rightarrow>'a mat" (infixl "\<otimes>" 63)
 where
@@ -266,7 +266,7 @@ where
 lemma Tensor_null: "xs \<otimes>[] = []" 
  by(induction xs)(auto)
 
-text{*Tensor commutes with left and right identity*}
+text\<open>Tensor commutes with left and right identity\<close>
 
 lemma Tensor_left_id: "  [[id]] \<otimes> xs = xs"
  by(induction xs)(auto simp add:times_scalar_id)
@@ -274,8 +274,8 @@ lemma Tensor_left_id: "  [[id]] \<otimes> xs = xs"
 lemma Tensor_right_id: "  xs \<otimes> [[id]] = xs"
  by(induction xs)(auto simp add: vec_vec_Tensor_right_id)
 
-text{*row$\_$length of tensor product of matrices is the product of 
-their respective row lengths*}
+text\<open>row$\_$length of tensor product of matrices is the product of 
+their respective row lengths\<close>
 
 lemma row_length_mat: 
     "(row_length (m1\<otimes>m2)) = (row_length m1)*(row_length m2)"
@@ -342,7 +342,7 @@ proof(induct m1)
 lemma hd_set:assumes "x \<in> set (a#M)" shows "(x = a) \<or> (x\<in>(set M))"
  using set_def assms set_ConsD  by auto
 
-text{*for every valid matrix can also be written in the following form*}
+text\<open>for every valid matrix can also be written in the following form\<close>
 
 theorem matrix_row_length: 
  assumes "mat nr nc M" 
@@ -569,7 +569,7 @@ proof(induct M)
     with  hyp  show ?case by auto  
  qed
 
-text{* The following theorem  gives length of tensor product of two matrices*}
+text\<open>The following theorem  gives length of tensor product of two matrices\<close>
 
 lemma length_Tensor:" (length (M1\<otimes>M2)) = (length M1)*(length M2)"
 proof(induct M1)
@@ -618,8 +618,8 @@ proof(induct M1)
   from this show?thesis by simp
 qed
 
-text{*The following theorem proves that tensor product of two valid matrices
-is a valid matrix*}
+text\<open>The following theorem proves that tensor product of two valid matrices
+is a valid matrix\<close>
 
 theorem well_defined_Tensor:
  "(mat (row_length M1) (length M1) M1) 
@@ -1177,7 +1177,7 @@ theorem vec_vec_Tensor_elements:
   then show ?case by auto
 qed
 
-text{*a few more results that will be used later on*}
+text\<open>a few more results that will be used later on\<close>
 
 lemma nat_int:  "nat (int x + int y) = x + y"
  using nat_int of_nat_add by auto
@@ -1251,8 +1251,8 @@ proof-
  then show ?thesis by auto
 qed
 
-text{* The following theorem tells us the relationship between entries of 
-vec\_mat\_Tensor v M and entries of v and M respectivety*}
+text\<open>The following theorem tells us the relationship between entries of 
+vec\_mat\_Tensor v M and entries of v and M respectivety\<close>
 
 theorem vec_mat_Tensor_elements: 
  "\<forall>i.\<forall>j.
@@ -1474,8 +1474,8 @@ theorem vec_mat_Tensor_elements:
  from this show ?case by auto
  qed
 
-text{* The following theorem tells us about the relationship between
-entries of tensor products of two matrices and the entries of matrices*}
+text\<open>The following theorem tells us about the relationship between
+entries of tensor products of two matrices and the entries of matrices\<close>
 
 theorem matrix_Tensor_elements: 
  fixes M1 M2
@@ -1778,8 +1778,8 @@ shows
  qed
    
 
-text{* we restate the theorem in two different forms for convenience 
-of reuse*}
+text\<open>we restate the theorem in two different forms for convenience 
+of reuse\<close>
 
 theorem effective_matrix_tensor_elements:
   " (((i<((row_length M1)*(row_length M2))) 
@@ -1801,8 +1801,8 @@ theorem effective_matrix_tensor_elements2:
               * (M2!(j mod length M2)!(i mod (row_length M2)))"
  using assms matrix_Tensor_elements by auto
 
-text{* the following lemmas are useful in proving associativity of tensor
-products*}
+text\<open>the following lemmas are useful in proving associativity of tensor
+products\<close>
 
 lemma div_left_ineq:
  assumes "(x::nat) < y*z" 
@@ -1853,9 +1853,9 @@ lemma div_right_ineq:
  shows " (x div y) < z"
  using assms div_left_ineq mult.commute   by (metis)
 
-text{* In the following theorem, we obtain columns of vec$\_$mat$\_$Tensor of 
+text\<open>In the following theorem, we obtain columns of vec$\_$mat$\_$Tensor of 
 a vector v and a matrix M in terms of the vector v and columns of the 
-matrix M*}
+matrix M\<close>
 
 lemma col_vec_mat_Tensor_prelim:
  " \<forall>j.(j < (length M) 
@@ -2207,8 +2207,8 @@ lemma row_vec_mat_Tensor_prelim:
     then show ?case by auto
  qed
 
-text{*The following lemma gives us a formula for the row of a tensor of 
-two matrices*}
+text\<open>The following lemma gives us a formula for the row of a tensor of 
+two matrices\<close>
 
 lemma  row_formula:
  fixes M1 and M2
@@ -2362,17 +2362,17 @@ lemma mod_prop1:"((a::nat) mod (b*c)) mod c = (a mod c)"
   then obtain m where "( ?x = m*c + ?z)"
          by auto
   then have "(a - m1*(b*c)) = m*c + ?z"
-        using  `a mod (b * c) = a - m1 * (b * c)`   by (metis)
+        using  \<open>a mod (b * c) = a - m1 * (b * c)\<close>   by (metis)
   then have "a = m1*b*c + m*c + ?z"
-        using `a = m1 * (b * c) + a mod (b * c)` `a mod (b * c) 
-        = m * c + a mod (b * c) mod c`
+        using \<open>a = m1 * (b * c) + a mod (b * c)\<close> \<open>a mod (b * c) 
+        = m * c + a mod (b * c) mod c\<close>
         by (metis  ab_semigroup_add_class.add_ac(1) 
         ab_semigroup_mult_class.mult_ac(1))
   then have 1:"a = (m1*b + m)*c + ?z"
         by (metis add_mult_distrib2 mult.commute) 
   let ?y = "(a mod c)"
   have "\<exists>n. a = n*(c) + ?y"
-        by (metis "1" `a mod (b * c) = m * c + a mod (b * c) mod c` mod_mult_self3)  
+        by (metis "1" \<open>a mod (b * c) = m * c + a mod (b * c) mod c\<close> mod_mult_self3)  
   then obtain n where "a = n*(c) + ?y"
         by auto
   with 1 have "(m1*b + m)*c + ?z = n*c + ?y"
@@ -2474,8 +2474,8 @@ proof(cases "b*c = 0")
    then show ?thesis using False by auto 
 qed
 
-text{*The following lemma proves that the tensor product of matrices
-is associative*}
+text\<open>The following lemma proves that the tensor product of matrices
+is associative\<close>
 
 lemma associativity:
  fixes M1 M2 M3
@@ -2849,7 +2849,7 @@ end
 lemma " \<And>(a::nat) b.(times  a  b) =(times  b  a)"
  by auto
 
-subsection{*Associativity and Distributive properties*}
+subsection\<open>Associativity and Distributive properties\<close>
 
 locale plus_mult = 
  mult + 
@@ -2877,8 +2877,8 @@ lemma fixes M1 M2 M3
         using associativity by auto
 
 
-text{*matrix$\_$mult refers to multiplication of matrices in the locale 
-plus\_mult *}
+text\<open>matrix$\_$mult refers to multiplication of matrices in the locale 
+plus\_mult\<close>
 
 abbreviation matrix_mult::"'a mat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" (infixl "\<circ>" 65)
  where
@@ -2940,10 +2940,10 @@ lemma matrix_mult_index:
  shows  "matrix_mult  m1 m2 ! j ! i = scalar_product  (row m1 i) (col m2 j)"
  using matrix_index unique_row_col assms by (metis matrix_row_length)
 
-text{* the following definition checks if the given four matrices
+text\<open>the following definition checks if the given four matrices
  are such that the compositions in the mixed-product property which
  will be proved, hold true. It further checks that the matrices are 
- non empty and valid*}
+ non empty and valid\<close>
 
 definition matrix_match::"'a mat \<Rightarrow> 'a mat \<Rightarrow>'a mat \<Rightarrow> 'a mat  \<Rightarrow> bool"
 where 
@@ -3144,7 +3144,7 @@ proof-
        by auto
  moreover have j:"(j < ((length A2)*(length B2))) 
                          = (j < (length  ((A1\<circ>A2)\<otimes>(B1\<circ>B2))))"
-       using 3 `length A2 * length B2 = length (A1 \<circ> A2 \<otimes> B1 \<circ> B2)` 
+       using 3 \<open>length A2 * length B2 = length (A1 \<circ> A2 \<otimes> B1 \<circ> B2)\<close> 
        by (metis)
  have 4:"mat (row_length A1) (length A2) (A1 \<circ> A2)"
        using assms mat_mult by auto
@@ -3655,9 +3655,9 @@ lemma scalar_product_distributivity:
                     +  scalar_product (vec_vec_Tensor u1 w1) (vec_vec_Tensor u2 w2)"
           using effective_scalar_product_append by auto 
     then show ?thesis 
-          using Cons_6 Cons_7 `a1 * a2 + scalar_product u1 u2 * scalar_product w1 w2 
+          using Cons_6 Cons_7 \<open>a1 * a2 + scalar_product u1 u2 * scalar_product w1 w2 
                  = a1 * a2 * scalar_product w1 w2 
-                  + (scalar_product u1 u2 * scalar_product w1 w2)` 
+                  + (scalar_product u1 u2 * scalar_product w1 w2)\<close> 
           by (metis Cons_3 Cons_4 )
    qed
    then show ?case by auto
@@ -3808,8 +3808,8 @@ assumes wf1:"mat nr nc ((A1\<circ>A2)\<otimes>(B1\<circ>B2))"
  using application wf1 wf2 wf3 by blast
  
 
-text{*The following theorem gives us the distributivity relation of tensor
-product with matrix multiplication *}
+text\<open>The following theorem gives us the distributivity relation of tensor
+product with matrix multiplication\<close>
 
 theorem distributivity: 
  assumes  "matrix_match A1 A2 B1 B2"

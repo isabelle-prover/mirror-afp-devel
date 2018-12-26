@@ -1,4 +1,4 @@
-section {* Positional Strategies *}
+section \<open>Positional Strategies\<close>
 
 theory Strategy
 imports
@@ -6,17 +6,17 @@ imports
   ParityGame
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-text {*
+text \<open>
   A \emph{strategy} is simply a function from nodes to nodes
   We only consider positional strategies.
-*}
+\<close>
 type_synonym 'a Strategy = "'a \<Rightarrow> 'a"
 
-text {*
+text \<open>
   A \emph{valid} strategy for player @{term p} is a function assigning a successor to each node
-  in @{term "VV p"}. *}
+  in @{term "VV p"}.\<close>
 definition (in ParityGame) strategy :: "Player \<Rightarrow> 'a Strategy \<Rightarrow> bool" where
   "strategy p \<sigma> \<equiv> \<forall>v \<in> VV p. \<not>deadend v \<longrightarrow> v\<rightarrow>\<sigma> v"
 
@@ -24,14 +24,14 @@ lemma (in ParityGame) strategyI [intro]:
   "(\<And>v. \<lbrakk> v \<in> VV p; \<not>deadend v \<rbrakk> \<Longrightarrow> v\<rightarrow>\<sigma> v) \<Longrightarrow> strategy p \<sigma>"
   unfolding strategy_def by blast
 
-subsection {* Strategy-Conforming Paths *}
+subsection \<open>Strategy-Conforming Paths\<close>
 
-text {*
+text \<open>
   If @{term "path_conforms_with_strategy p P \<sigma>"} holds, then we call @{term P} a
   \emph{@{term \<sigma>}-path}.
   This means that @{term P} follows @{term \<sigma>} on all nodes of player @{term p}
   except maybe the last node on the path.
-*}
+\<close>
 coinductive (in ParityGame) path_conforms_with_strategy
   :: "Player \<Rightarrow> 'a Path \<Rightarrow> 'a Strategy \<Rightarrow> bool" where
   path_conforms_LNil:  "path_conforms_with_strategy p LNil \<sigma>"
@@ -41,30 +41,30 @@ coinductive (in ParityGame) path_conforms_with_strategy
 | path_conforms_VVpstar: "\<lbrakk> v \<notin> VV p; path_conforms_with_strategy p Ps \<sigma> \<rbrakk>
     \<Longrightarrow> path_conforms_with_strategy p (LCons v Ps) \<sigma>"
 
-text {*
+text \<open>
   Define a locale for valid maximal paths that conform to a given strategy, because we need
   this concept quite often.  However, we are not yet able to add interesting lemmas to this locale.
   We will do this at the end of this section, where we have more lemmas available.
-*}
+\<close>
 locale vmc_path = vm_path +
   fixes p \<sigma> assumes P_conforms [simp]: "path_conforms_with_strategy p P \<sigma>"
 
-text {*
+text \<open>
   Similary, define a locale for valid maximal paths that conform to given strategies for both
   players.
-*}
+\<close>
 locale vmc2_path = comp?: vmc_path G P v0 "p**" \<sigma>' + vmc_path G P v0 p \<sigma>
   for G P v0 p \<sigma> \<sigma>'
 
 
-subsection {* An Arbitrary Strategy *}
+subsection \<open>An Arbitrary Strategy\<close>
 
 context ParityGame begin
 
-text {*
+text \<open>
   Define an arbitrary strategy.  This is useful to define other strategies by overriding part of
   this strategy.
-*}
+\<close>
 definition "\<sigma>_arbitrary \<equiv> \<lambda>v. SOME w. v\<rightarrow>w"
 
 lemma valid_arbitrary_strategy [simp]: "strategy p \<sigma>_arbitrary" proof
@@ -72,7 +72,7 @@ lemma valid_arbitrary_strategy [simp]: "strategy p \<sigma>_arbitrary" proof
   thus "v \<rightarrow> \<sigma>_arbitrary v" unfolding \<sigma>_arbitrary_def using someI_ex[of "\<lambda>w. v\<rightarrow>w"] by blast
 qed
 
-subsection {* Valid Strategies *}
+subsection \<open>Valid Strategies\<close>
 
 lemma valid_strategy_updates: "\<lbrakk> strategy p \<sigma>; v0\<rightarrow>w0 \<rbrakk> \<Longrightarrow> strategy p (\<sigma>(v0 := w0))"
   unfolding strategy_def by auto
@@ -107,10 +107,10 @@ proof
   fix v assume v: "v \<in> VV p" "\<not>deadend v"
   show "v \<rightarrow> ?\<sigma> v" proof (cases)
     assume "v \<in> V'"
-    hence "v \<in> G'.VV p" using subgame_VV `v \<in> VV p` by blast
-    moreover have "\<not>G'.deadend v" using G'_no_deadends `v \<in> V'` by blast
+    hence "v \<in> G'.VV p" using subgame_VV \<open>v \<in> VV p\<close> by blast
+    moreover have "\<not>G'.deadend v" using G'_no_deadends \<open>v \<in> V'\<close> by blast
     ultimately have "v \<rightarrow>\<^bsub>subgame V'\<^esub> \<sigma>' v" using \<sigma>' unfolding G'.strategy_def by blast
-    moreover have "\<sigma>' v = ?\<sigma> v" using `v \<in> V'` by simp
+    moreover have "\<sigma>' v = ?\<sigma> v" using \<open>v \<in> V'\<close> by simp
     ultimately show ?thesis by (metis subgame_E subsetCE)
   next
     assume "v \<notin> V'"
@@ -124,7 +124,7 @@ lemma valid_strategy_in_V: "\<lbrakk> strategy p \<sigma>; v \<in> VV p; \<not>d
 lemma valid_strategy_only_in_V: "\<lbrakk> strategy p \<sigma>; \<And>v. v \<in> V \<Longrightarrow> \<sigma> v = \<sigma>' v \<rbrakk> \<Longrightarrow> strategy p \<sigma>'"
   unfolding strategy_def using edges_are_in_V(1) by auto
 
-subsection {* Conforming Strategies *}
+subsection \<open>Conforming Strategies\<close>
 
 lemma path_conforms_with_strategy_ltl [intro]:
   "path_conforms_with_strategy p P \<sigma> \<Longrightarrow> path_conforms_with_strategy p (ltl P) \<sigma>"
@@ -177,7 +177,7 @@ using assms proof (coinduction arbitrary: P)
   thus ?case proof (cases rule: path_conforms_with_strategy.cases)
     case (path_conforms_VVp v' w Ps)
     have "w = ?\<sigma> v'" proof-
-      from `valid_path P` have "\<not>deadend v'"
+      from \<open>valid_path P\<close> have "\<not>deadend v'"
         using local.path_conforms_VVp(1) valid_path_cons_simp by blast
       with assms(2) have "v' \<noteq> v" using local.path_conforms_VVp(2) by blast
       thus "w = ?\<sigma> v'" by (simp add: local.path_conforms_VVp(3))
@@ -242,7 +242,7 @@ using assms proof (induct P rule: lfinite_induct)
         using LCons.prems(5) by auto
       ultimately show ?thesis
         using path_conforms_VVp[of "lhd P" p "lhd P'" \<sigma>]
-        by (metis (no_types) LCons.prems(4) `\<not>lnull P'` lhd_LCons_ltl)
+        by (metis (no_types) LCons.prems(4) \<open>\<not>lnull P'\<close> lhd_LCons_ltl)
     next
       assume "lhd P \<notin> VV p"
       thus ?thesis using path_conforms_VVpstar using LCons.prems(4) v0 by blast
@@ -256,16 +256,16 @@ using assms proof (induct P rule: lfinite_induct)
     have "path_conforms_with_strategy p (LCons (lhd P) (lappend (ltl P) P')) \<sigma>" proof (cases)
       assume "lhd P \<in> VV p"
       moreover hence "lhd (ltl P) = \<sigma> (lhd P)"
-        by (metis LCons.prems(1) LCons.prems(2) `\<not>lnull (ltl P)`
+        by (metis LCons.prems(1) LCons.prems(2) \<open>\<not>lnull (ltl P)\<close>
                   lhd_LCons_ltl path_conforms_with_strategy_start)
       ultimately show ?thesis
-        using path_conforms_VVp[of "lhd P" p "lhd (ltl P)" \<sigma>] * `\<not>lnull (ltl P)`
+        using path_conforms_VVp[of "lhd P" p "lhd (ltl P)" \<sigma>] * \<open>\<not>lnull (ltl P)\<close>
         by (metis lappend_code(2) lhd_LCons_ltl)
     next
       assume "lhd P \<notin> VV p"
       thus ?thesis by (simp add: "*" path_conforms_VVpstar)
     qed
-    with `\<not>lnull P` show "path_conforms_with_strategy p (lappend P P') \<sigma>"
+    with \<open>\<not>lnull P\<close> show "path_conforms_with_strategy p (lappend P P') \<sigma>"
       by (metis lappend_code(2) lhd_LCons_ltl)
   qed
 qed simp
@@ -302,16 +302,16 @@ proof-
   qed simp_all
 qed
 
-subsection {* Greedy Conforming Path *}
+subsection \<open>Greedy Conforming Path\<close>
 
-text {*
+text \<open>
   Given a starting point and two strategies, there exists a path conforming to both strategies.
   Here we define this path.  Incidentally, this also shows that the assumptions of the locales
-  @{text vmc_path} and @{text vmc2_path} are satisfiable.
+  \<open>vmc_path\<close> and \<open>vmc2_path\<close> are satisfiable.
 
   We are only interested in proving the existence of such a path, so the definition
   (i.e., the implementation) and most lemmas are private.
-*}
+\<close>
 
 context begin
 
@@ -380,16 +380,16 @@ proof-
     let ?P = "greedy_conforming_path p \<sigma> \<sigma>' v0"
     assume asm: "\<not>(\<exists>v. ?P = LCons v LNil)"
     obtain P' where P': "?P = LCons v0 P'" by (metis greedy_path_LNil greedy_path_lhd neq_LNil_conv)
-    hence "\<not>deadend v0" using asm greedy_path_deadend_v0 `v0 \<in> V` by blast
-    from P' have 1: "\<not>lnull P'" using asm llist.collapse(1) `v0 \<in> V` greedy_path_deadend_v0 by blast
-    moreover from P' `\<not>deadend v0` assms(2,3) `v0 \<in> V`
+    hence "\<not>deadend v0" using asm greedy_path_deadend_v0 \<open>v0 \<in> V\<close> by blast
+    from P' have 1: "\<not>lnull P'" using asm llist.collapse(1) \<open>v0 \<in> V\<close> greedy_path_deadend_v0 by blast
+    moreover from P' \<open>\<not>deadend v0\<close> assms(2,3) \<open>v0 \<in> V\<close>
       have "v0\<rightarrow>lhd P'"
       unfolding strategy_def using greedy_path_ltl_VVp greedy_path_ltl_VVpstar
       by (cases "v0 \<in> VV p") auto
     moreover hence "lhd P' \<in> V" by blast
     moreover hence "\<exists>v. P' = greedy_conforming_path p \<sigma> \<sigma>' v \<and> v \<in> V"
       by (metis P' calculation(1) greedy_conforming_path.simps(2) greedy_path_ltl_ex lnull_def)
-    text {* The conjunction of all the above. *}
+    text \<open>The conjunction of all the above.\<close>
     ultimately
       have "\<exists>P'. ?P = LCons v0 P' \<and> \<not>lnull P' \<and> v0\<rightarrow>lhd P' \<and> lhd P' \<in> V
         \<and> (\<exists>v. P' = greedy_conforming_path p \<sigma> \<sigma>' v \<and> v \<in> V)"
@@ -399,33 +399,33 @@ proof-
   show "valid_path P" using assms unfolding P_def
   proof (coinduction arbitrary: v0 rule: valid_path.coinduct)
     case (valid_path v0)
-    from `v0 \<in> V` assms(2,3) show ?case
+    from \<open>v0 \<in> V\<close> assms(2,3) show ?case
       using coinduction_helper[of v0] greedy_path_lhd by blast
   qed
 
   show "maximal_path P" using assms unfolding P_def
   proof (coinduction arbitrary: v0)
     case (maximal_path v0)
-    from `v0 \<in> V` assms(2,3) show ?case
+    from \<open>v0 \<in> V\<close> assms(2,3) show ?case
       using coinduction_helper[of v0] greedy_path_deadend_v' by blast
   qed
 
   {
     fix p'' \<sigma>'' assume p'': "(p'' = p \<and> \<sigma>'' = \<sigma>) \<or> (p'' = p** \<and> \<sigma>'' = \<sigma>')"
     moreover with assms have "strategy p'' \<sigma>''" by blast
-    hence "path_conforms_with_strategy p'' P \<sigma>''" using `v0 \<in> V` unfolding P_def
+    hence "path_conforms_with_strategy p'' P \<sigma>''" using \<open>v0 \<in> V\<close> unfolding P_def
     proof (coinduction arbitrary: v0)
       case (path_conforms_with_strategy v0)
       show ?case proof (cases "v0 \<in> VV p''")
         case True
         { assume "\<not>(\<exists>v. greedy_conforming_path p \<sigma> \<sigma>' v0 = LCons v LNil)"
-          with `v0 \<in> V` obtain P' where
+          with \<open>v0 \<in> V\<close> obtain P' where
             P': "greedy_conforming_path p \<sigma> \<sigma>' v0 = LCons v0 P'" "\<not>lnull P'" "v0\<rightarrow>lhd P'"
                 "lhd P' \<in> V" "\<exists>v. P' = greedy_conforming_path p \<sigma> \<sigma>' v \<and> v \<in> V"
             using coinduction_helper by blast
-          with `v0 \<in> VV p''` p'' have "\<sigma>'' v0 = lhd P'"
+          with \<open>v0 \<in> VV p''\<close> p'' have "\<sigma>'' v0 = lhd P'"
             using greedy_path_ltl_VVp greedy_path_ltl_VVpstar by blast
-          with `v0 \<in> VV p''` P'(1,2,5) have ?path_conforms_VVp
+          with \<open>v0 \<in> VV p''\<close> P'(1,2,5) have ?path_conforms_VVp
             using greedy_conforming_path.code path_conforms_with_strategy(1) by fastforce
         }
         thus ?thesis by auto
@@ -458,9 +458,9 @@ end
 
 end
 
-subsection {* Valid Maximal Conforming Paths *}
+subsection \<open>Valid Maximal Conforming Paths\<close>
 
-text {* Now is the time to add some lemmas to the locale @{text "vmc_path"}. *}
+text \<open>Now is the time to add some lemmas to the locale \<open>vmc_path\<close>.\<close>
 
 context vmc_path begin
 lemma Ptl_conforms [simp]: "path_conforms_with_strategy p (ltl P) \<sigma>"
@@ -493,13 +493,13 @@ lemma (in ParityGame) valid_maximal_conforming_path_0:
   shows "vmc_path G P (P $ 0) p \<sigma>"
   using assms by unfold_locales (simp_all add: lnth_0_conv_lhd)
 
-subsection {* Valid Maximal Conforming Paths with One Edge *}
+subsection \<open>Valid Maximal Conforming Paths with One Edge\<close>
 
-text {*
+text \<open>
   We define a locale for valid maximal conforming paths that contain at least one edge.
   This is equivalent to the first node being no deadend.  This assumption allows us to prove
   much stronger lemmas about @{term "ltl P"} compared to @{term "vmc_path"}.
-*}
+\<close>
 
 locale vmc_path_no_deadend = vmc_path +
   assumes v0_no_deadend [simp]: "\<not>deadend v0"
@@ -543,9 +543,9 @@ proof-
   thus ?thesis using P'_def P'.P_Suc_0 assms(1) by simp
 qed
 
-subsection {* @{term lset} Induction Schemas for Paths *}
+subsection \<open>@{term lset} Induction Schemas for Paths\<close>
 
-text {* Let us define an induction schema useful for proving @{term "lset P \<subseteq> S"}. *}
+text \<open>Let us define an induction schema useful for proving @{term "lset P \<subseteq> S"}.\<close>
 
 lemma vmc_path_lset_induction [consumes 1, case_names base step]:
   assumes "Q P"
@@ -572,14 +572,14 @@ proof
         using vmc_path_lnull_ltl_no_deadend by blast
       show "v \<in> S"
         using step.hyps(3)
-              step_assumption[OF vmc_path_no_deadend_axioms `v0 \<in> S` `Q P`]
+              step_assumption[OF vmc_path_no_deadend_axioms \<open>v0 \<in> S\<close> \<open>Q P\<close>]
               vmc_path_ltl
         by blast
     qed
   qed
 qed
 
-text {* @{thm vmc_path_lset_induction} without the Q predicate. *}
+text \<open>@{thm vmc_path_lset_induction} without the Q predicate.\<close>
 corollary vmc_path_lset_induction_simple [case_names base step]:
   assumes base: "v0 \<in> S"
     and step: "\<And>P v0. \<lbrakk> vmc_path_no_deadend G P v0 p \<sigma>; v0 \<in> S \<rbrakk>
@@ -587,7 +587,7 @@ corollary vmc_path_lset_induction_simple [case_names base step]:
   shows "lset P \<subseteq> S"
   using assms vmc_path_lset_induction[of "\<lambda>P. True"] by blast
 
-text {* Another induction schema for proving @{term "lset P \<subseteq> S"} based on closure properties. *}
+text \<open>Another induction schema for proving @{term "lset P \<subseteq> S"} based on closure properties.\<close>
 
 lemma vmc_path_lset_induction_closed_subset [case_names VVp VVpstar v0 disjoint]:
   assumes VVp: "\<And>v. \<lbrakk> v \<in> S; \<not>deadend v; v \<in> VV p \<rbrakk> \<Longrightarrow> \<sigma> v \<in> S \<union> T"

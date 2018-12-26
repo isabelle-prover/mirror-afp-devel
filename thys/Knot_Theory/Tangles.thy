@@ -1,4 +1,4 @@
-section{*Tangles: Definition as a type and basic functions on tangles*}
+section\<open>Tangles: Definition as a type and basic functions on tangles\<close>
 theory Tangles 
 imports Preliminaries
 begin
@@ -6,8 +6,8 @@ begin
 
 (* Time to split the file: Links and Tangles in another file*)
 
-text{*well-defined wall as a type called diagram. The morphisms Abs\_diagram maps a well defined wall to 
-its diagram type and Rep\_diagram maps the diagram back to the wall *}
+text\<open>well-defined wall as a type called diagram. The morphisms Abs\_diagram maps a well defined wall to 
+its diagram type and Rep\_diagram maps the diagram back to the wall\<close>
 
 typedef Tangle_Diagram = "{(x::wall). is_tangle_diagram x}"
  by (rule_tac x = "prod (cup#[]) (basic (cap#[]))" in exI) (auto)
@@ -17,17 +17,17 @@ typedef Link_Diagram = "{(x::wall). is_link_diagram x}"
  add:is_link_diagram_def abs_def)
  
 
-text{*The next few lemmas list the properties of well defined diagrams*}
+text\<open>The next few lemmas list the properties of well defined diagrams\<close>
 
-text{*For a well defined diagram, the morphism Rep\_diagram acts as an inverse of Abs\_diagram 
-the morphism which maps a well defined wall to its representative in the type diagram*}
+text\<open>For a well defined diagram, the morphism Rep\_diagram acts as an inverse of Abs\_diagram 
+the morphism which maps a well defined wall to its representative in the type diagram\<close>
 
 lemma Abs_Rep_well_defined: 
  assumes " is_tangle_diagram x" 
  shows "Rep_Tangle_Diagram (Abs_Tangle_Diagram x) = x"
  using Rep_Tangle_Diagram Abs_Tangle_Diagram_inverse assms mem_Collect_eq  by auto
 
-text{*The map Abs\_diagram is injective*}
+text\<open>The map Abs\_diagram is injective\<close>
 lemma Rep_Abs_well_defined: 
  assumes "is_tangle_diagram x"  
      and "is_tangle_diagram y" 
@@ -36,12 +36,12 @@ lemma Rep_Abs_well_defined:
  using Rep_Tangle_Diagram Abs_Tangle_Diagram_inverse assms mem_Collect_eq  
  by metis
 
-text{* restating the property of well-defined wall in terms of diagram*}
+text\<open>restating the property of well-defined wall in terms of diagram\<close>
 
-text{* In order to locally defined moves, it helps to prove that if composition of two wall is a 
+text\<open>In order to locally defined moves, it helps to prove that if composition of two wall is a 
 well defined wall then the number of outgoing strands of the wall below are equal to the number of 
 incoming strands of the wall above. The following lemmas prove that for a well defined wall, t
-he number of incoming and outgoing strands are zero*}
+he number of incoming and outgoing strands are zero\<close>
 
 
 (*is-tangle-compose*)

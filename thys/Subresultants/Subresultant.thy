@@ -269,7 +269,7 @@ proof -
   let ?n = "(?df - J) + (?dg - J)"
   let ?m = "?dg - J"
   let ?M = "mat ?n ?n (\<lambda> (i,j). if i = j then if i < ?m then [:c:] else 1 else 0)"
-  from `c \<noteq> 0` have deg: "degree (smult c f) = ?df" by simp
+  from \<open>c \<noteq> 0\<close> have deg: "degree (smult c f) = ?df" by simp
   let ?S = "subresultant_mat J f g"
   let ?cS = "subresultant_mat J (smult c f) g"
   have dim: "dim_row ?S = ?n" "dim_col ?S = ?n"  "dim_row ?cS = ?n" "dim_col ?cS = ?n" using deg by auto

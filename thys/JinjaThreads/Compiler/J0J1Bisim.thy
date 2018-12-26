@@ -4,7 +4,7 @@
     Reminiscent of the Jinja theory Compiler/Correctness1
 *)
 
-section {* The bisimulation relation betwenn source and intermediate language *}
+section \<open>The bisimulation relation betwenn source and intermediate language\<close>
 
 theory J0J1Bisim imports
   J1
@@ -14,7 +14,7 @@ theory J0J1Bisim imports
   J0
 begin
 
-subsection{*Correctness of program compilation *}
+subsection\<open>Correctness of program compilation\<close>
 
 primrec unmod :: "'addr expr1 \<Rightarrow> nat \<Rightarrow> bool"
   and unmods :: "'addr expr1 list \<Rightarrow> nat \<Rightarrow> bool"
@@ -71,8 +71,8 @@ lemma fixes e :: "'addr expr" and es :: "'addr expr list"
   and fvs_unmods_compEs1: "\<lbrakk> i < length Vs; Vs ! i \<notin> fvs es \<rbrakk> \<Longrightarrow> unmods (compEs1 Vs es) i"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Block Vs V ty vo exp)
-  note IH = `\<lbrakk>i < length (Vs @ [V]); (Vs @ [V]) ! i \<notin> fv exp \<rbrakk> \<Longrightarrow> unmod (compE1 (Vs @ [V]) exp) i`
-  note len = `i < length Vs`
+  note IH = \<open>\<lbrakk>i < length (Vs @ [V]); (Vs @ [V]) ! i \<notin> fv exp \<rbrakk> \<Longrightarrow> unmod (compE1 (Vs @ [V]) exp) i\<close>
+  note len = \<open>i < length Vs\<close>
   hence i: "i < length (Vs @ [V])" by simp
   show ?case
   proof(cases "Vs ! i = V")
@@ -81,15 +81,15 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
     with len True show ?thesis by(auto intro: hidden_unmod)
   next
     case False
-    with `Vs ! i \<notin> fv {V:ty=vo; exp}` len have "(Vs @ [V]) ! i \<notin> fv exp"
+    with \<open>Vs ! i \<notin> fv {V:ty=vo; exp}\<close> len have "(Vs @ [V]) ! i \<notin> fv exp"
       by(auto simp add: nth_append)
     from IH[OF i this] len show ?thesis by(auto)
   qed
 next
   case (TryCatch Vs e1 C V e2)
-  note IH1 = `\<lbrakk>i < length Vs; Vs ! i \<notin> fv e1 \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e1) i`
-  note IH2 = `\<lbrakk>i < length (Vs @ [V]); (Vs @ [V]) ! i \<notin> fv e2 \<rbrakk> \<Longrightarrow> unmod (compE1 (Vs @ [V]) e2) i`
-  note len = `i < length Vs`
+  note IH1 = \<open>\<lbrakk>i < length Vs; Vs ! i \<notin> fv e1 \<rbrakk> \<Longrightarrow> unmod (compE1 Vs e1) i\<close>
+  note IH2 = \<open>\<lbrakk>i < length (Vs @ [V]); (Vs @ [V]) ! i \<notin> fv e2 \<rbrakk> \<Longrightarrow> unmod (compE1 (Vs @ [V]) e2) i\<close>
+  note len = \<open>i < length Vs\<close>
   hence i: "i < length (Vs @ [V])" by simp
   have "unmod (compE1 (Vs @ [V]) e2) i"
   proof(cases "Vs ! i = V")
@@ -98,11 +98,11 @@ next
     with len True show ?thesis by(auto intro: hidden_unmod)
   next
     case False
-    with `Vs ! i \<notin> fv (try e1 catch(C V) e2)` len have "(Vs @ [V]) ! i \<notin> fv e2"
+    with \<open>Vs ! i \<notin> fv (try e1 catch(C V) e2)\<close> len have "(Vs @ [V]) ! i \<notin> fv e2"
       by(auto simp add: nth_append)
     from IH2[OF i this] len show ?thesis by(auto)
   qed
-  with IH1[OF len] `Vs ! i \<notin> fv (try e1 catch(C V) e2)` len show ?case by(auto)
+  with IH1[OF len] \<open>Vs ! i \<notin> fv (try e1 catch(C V) e2)\<close> len show ?case by(auto)
 qed(auto dest: index_le_lengthD simp add: nth_append)
 
 lemma hidden_lengthD: "hidden Vs i \<Longrightarrow> i < length Vs"
@@ -121,9 +121,9 @@ apply(insert fin)
 apply(auto simp add: is_vals_conv)
 done
 
-subsection {* The delay bisimulation relation *}
+subsection \<open>The delay bisimulation relation\<close>
 
-text {* Delay bisimulation for expressions *}
+text \<open>Delay bisimulation for expressions\<close>
 
 inductive bisim :: "vname list \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr1 \<Rightarrow> 'addr val list \<Rightarrow> bool"
   and bisims :: "vname list \<Rightarrow> 'addr expr list \<Rightarrow> 'addr expr1 list \<Rightarrow> 'addr val list \<Rightarrow> bool"
@@ -257,7 +257,7 @@ inductive_cases bisims_cases [elim]:
   "bisims Vs (e # es) es' xs"
   "bisims Vs es' (e # es) xs"
 
-text {* Delay bisimulation for call stacks *}
+text \<open>Delay bisimulation for call stacks\<close>
 
 inductive bisim01 :: "'addr expr \<Rightarrow> 'addr expr1 \<times> 'addr locals1 \<Rightarrow> bool"
 where
@@ -364,7 +364,7 @@ next
   thus ?case by(cases "is_val obj")(auto)
 next
   case (Block Vs V T vo exp xs)
-  from `fv {V:T=vo; exp} \<subseteq> set Vs` have "fv exp \<subseteq> set (Vs@[V])" by(auto)
+  from \<open>fv {V:T=vo; exp} \<subseteq> set Vs\<close> have "fv exp \<subseteq> set (Vs@[V])" by(auto)
   with Block show ?case by(cases vo)(auto)
 next
   case (Cons Vs exp list x)
@@ -379,12 +379,12 @@ lemma bisim_fv_unmod: "\<lbrakk> bisim Vs e e' xs; i < length Vs; Vs ! i \<notin
   and bisims_fvs_unmods: "\<lbrakk> bisims Vs es es' xs; i < length Vs; Vs ! i \<notin> fvs es \<rbrakk> \<Longrightarrow> unmods es' i"
 proof(induct rule: bisim_bisims.inducts)
   case (bisimBlockNone Vs V e e' xs T)
-  note len = `i < length Vs`
+  note len = \<open>i < length Vs\<close>
   have "unmod e' i"
   proof(cases "Vs ! i = V")
     case True
     from len have "hidden (Vs @ [Vs ! i]) i" by(rule hidden_snoc_nth)
-    with len True `bisim (Vs @ [V]) e e' xs` show ?thesis by(auto intro: bisim_hidden_unmod)
+    with len True \<open>bisim (Vs @ [V]) e e' xs\<close> show ?thesis by(auto intro: bisim_hidden_unmod)
   next
     case False
     with bisimBlockNone show ?thesis by(auto simp add: nth_append)
@@ -392,12 +392,12 @@ proof(induct rule: bisim_bisims.inducts)
   thus ?case by simp
 next
   case (bisimBlockSome Vs V e e' xs v T)
-  note len = `i < length Vs`
+  note len = \<open>i < length Vs\<close>
   show ?case
   proof(cases "Vs ! i = V")
     case True
     from len have "hidden (Vs @ [Vs ! i]) i" by(rule hidden_snoc_nth)
-    with len True `bisim (Vs @ [V]) e e' (xs[length Vs := v])`
+    with len True \<open>bisim (Vs @ [V]) e e' (xs[length Vs := v])\<close>
     show ?thesis by(auto intro: bisim_hidden_unmod)
   next
     case False
@@ -405,12 +405,12 @@ next
   qed
 next
   case (bisimBlockSomeNone Vs V e e' xs v T)
-  note len = `i < length Vs`
+  note len = \<open>i < length Vs\<close>
   show ?case
   proof(cases "Vs ! i = V")
     case True
     from len have "hidden (Vs @ [Vs ! i]) i" by(rule hidden_snoc_nth)
-    with len True `bisim (Vs @ [V]) e e' xs`
+    with len True \<open>bisim (Vs @ [V]) e e' xs\<close>
     show ?thesis by(auto intro: bisim_hidden_unmod)
   next
     case False
@@ -472,13 +472,13 @@ proof -
     from sees_wf_mdecl[OF wf sees] obtain T' where "P,[this \<mapsto> Class D] \<turnstile> body :: T'" "this \<notin> set pns"
       and "\<D> body \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>" by(auto simp add: wf_mdecl_def)
     hence "\<not> contains_insync body" by(auto simp add: contains_insync_conv dest: WT_expr_locks)
-    with `fv body \<subseteq> set [this]`
+    with \<open>fv body \<subseteq> set [this]\<close>
     have "bisim ([] @ [this]) body (compE1 (this # pns) body) ?xs"
-      unfolding append.simps `pns = []` by(rule compE1_bisim)
+      unfolding append.simps \<open>pns = []\<close> by(rule compE1_bisim)
     hence "bisim [] {this:Class D=\<lfloor>Addr a\<rfloor>; body} {length ([] :: String.literal list):Class D=None; compE1 (this # pns) body} ?xs"
       by(rule bisimBlockSomeNone)(simp)
     thus "bisim [] ({this:Class D=\<lfloor>Addr a\<rfloor>; body}) ?e' ?xs" by simp
-    from `\<D> body \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>` show "\<D> ({this:Class D=\<lfloor>Addr a\<rfloor>; body}) \<lfloor>{}\<rfloor>" by simp
+    from \<open>\<D> body \<lfloor>dom [this \<mapsto> Addr a]\<rfloor>\<close> show "\<D> ({this:Class D=\<lfloor>Addr a\<rfloor>; body}) \<lfloor>{}\<rfloor>" by simp
     show "max_vars ?e' \<le> length ?xs" by simp
   qed
   ultimately show ?thesis by(simp)
@@ -516,13 +516,13 @@ lemma blocks_bisim:
 using bisim length xs
 proof(induct pns Ts vs e arbitrary: e' Vs rule: blocks.induct)
   case (1 V Vs T Ts v vs e e' VS)
-  note IH = `\<And>e' Vsa. \<lbrakk>bisim (Vsa @ Vs) e e' xs;
+  note IH = \<open>\<And>e' Vsa. \<lbrakk>bisim (Vsa @ Vs) e e' xs;
                        length vs = length Vs; length Ts = length Vs; \<forall>i<length vs. xs ! (i + length Vsa) = vs ! i\<rbrakk>
-           \<Longrightarrow> bisim Vsa (blocks Vs Ts vs e) (blocks1 (length Vsa) Ts e') xs`
-  note xs = `\<forall>i<length (v # vs). xs ! (i + length VS) = (v # vs) ! i`
+           \<Longrightarrow> bisim Vsa (blocks Vs Ts vs e) (blocks1 (length Vsa) Ts e') xs\<close>
+  note xs = \<open>\<forall>i<length (v # vs). xs ! (i + length VS) = (v # vs) ! i\<close>
   hence xs': "\<forall>i<length vs. xs ! (i + length (VS @ [V])) = vs ! i" and v: "xs ! length VS = v" by(auto)
-  from `bisim (VS @ V # Vs) e e' xs` have "bisim ((VS @ [V]) @ Vs) e e' xs" by simp
-  from IH[OF this _ _ xs'] `length (v # vs) = length (V # Vs)` `length (T # Ts) = length (V # Vs)`
+  from \<open>bisim (VS @ V # Vs) e e' xs\<close> have "bisim ((VS @ [V]) @ Vs) e e' xs" by simp
+  from IH[OF this _ _ xs'] \<open>length (v # vs) = length (V # Vs)\<close> \<open>length (T # Ts) = length (V # Vs)\<close>
   have "bisim (VS @ [V]) (blocks Vs Ts vs e) (blocks1 (length (VS @ [V])) Ts e') xs"
     by auto
   hence "bisim VS ({V:T=\<lfloor>v\<rfloor>; blocks Vs Ts vs e}) {length VS:T=None; blocks1 (length (VS @ [V])) Ts e'} xs"
@@ -540,10 +540,10 @@ lemma assumes "final E" "bisim VS E E' xs"
   and inline_calls_compEs1: "calls es = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_calls E' (compEs1 Vs es) = compEs1 Vs (inline_calls E es)"
 proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
   case (Call Vs obj M params)
-  note IHobj = `call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_call E' (compE1 Vs obj) = compE1 Vs (inline_call E obj)`
-  note IHparams = `calls params = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_calls E' (compEs1 Vs params) = compEs1 Vs (inline_calls E params)`
+  note IHobj = \<open>call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_call E' (compE1 Vs obj) = compE1 Vs (inline_call E obj)\<close>
+  note IHparams = \<open>calls params = \<lfloor>aMvs\<rfloor> \<Longrightarrow> inline_calls E' (compEs1 Vs params) = compEs1 Vs (inline_calls E params)\<close>
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by (cases aMvs, auto)
-  with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>" by simp
+  with \<open>call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>\<close> have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>" by simp
   thus ?case
   proof(induct rule: call_callE)
     case CallObj
@@ -555,7 +555,7 @@ proof(induct Vs e and Vs es rule: compE1_compEs1_induct)
     with CallParams show ?case by(auto simp add: is_vals_conv)
   next
     case Call
-    with `final E` `bisim VS E E' xs` show ?case by(auto simp add: is_vals_conv)
+    with \<open>final E\<close> \<open>bisim VS E E' xs\<close> show ?case by(auto simp add: is_vals_conv)
   qed
 qed(auto split: if_split_asm)
 
@@ -599,42 +599,42 @@ next
 next
   case (bisimCallObj Vs e e' xs es M)
   obtain a M' vs where "aMvs = (a, M', vs)" by(cases aMvs, auto)
-  with `call (e\<bullet>M(es)) = \<lfloor>aMvs\<rfloor>` have "call (e\<bullet>M(es)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
+  with \<open>call (e\<bullet>M(es)) = \<lfloor>aMvs\<rfloor>\<close> have "call (e\<bullet>M(es)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
   thus ?case
   proof(induct rule: call_callE)
     case CallObj
-    with `fv (e\<bullet>M(es)) \<subseteq> set Vs` `aMvs = (a, M', vs)`
-      `\<lbrakk>call e = \<lfloor>aMvs\<rfloor>; fv e \<subseteq> set Vs\<rbrakk> \<Longrightarrow> bisim Vs (inline_call E e) (inline_call E' e') xs`
+    with \<open>fv (e\<bullet>M(es)) \<subseteq> set Vs\<close> \<open>aMvs = (a, M', vs)\<close>
+      \<open>\<lbrakk>call e = \<lfloor>aMvs\<rfloor>; fv e \<subseteq> set Vs\<rbrakk> \<Longrightarrow> bisim Vs (inline_call E e) (inline_call E' e') xs\<close>
     have IH': "bisim Vs (inline_call E e) (inline_call E' e') xs" by(auto)
-    with `bisim Vs e e' xs` `fv (e\<bullet>M(es)) \<subseteq> set Vs` CallObj `\<not> contains_insyncs es` show ?thesis
+    with \<open>bisim Vs e e' xs\<close> \<open>fv (e\<bullet>M(es)) \<subseteq> set Vs\<close> CallObj \<open>\<not> contains_insyncs es\<close> show ?thesis
       by(cases "is_val (inline_call E e)")(fastforce)+
   next
     case (CallParams v)
     hence "inline_calls E' (compEs1 Vs es) = compEs1 Vs (inline_calls E es)"
       by -(rule inline_calls_compEs1[OF final bisim])
-    moreover from `fv (e\<bullet>M(es)) \<subseteq> set Vs` final fvs_inline_calls[of E es]
+    moreover from \<open>fv (e\<bullet>M(es)) \<subseteq> set Vs\<close> final fvs_inline_calls[of E es]
     have "fvs (inline_calls E es) \<subseteq> set Vs" by(auto elim!: final.cases)
-    moreover note CallParams `bisim Vs e e' xs` `fv (e\<bullet>M(es)) \<subseteq> set Vs` `\<not> contains_insyncs es` final
+    moreover note CallParams \<open>bisim Vs e e' xs\<close> \<open>fv (e\<bullet>M(es)) \<subseteq> set Vs\<close> \<open>\<not> contains_insyncs es\<close> final
     ultimately show ?case by(auto simp add: is_vals_conv final_iff)
   next
     case Call
-    with final bisim `bisim Vs e e' xs` show ?case by(auto simp add: is_vals_conv)
+    with final bisim \<open>bisim Vs e e' xs\<close> show ?case by(auto simp add: is_vals_conv)
   qed
 next
   case (bisimCallParams Vs es es' xs v M)
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
-  with `call (Val v\<bullet>M(es)) = \<lfloor>aMvs\<rfloor>` have "call (Val v\<bullet>M(es)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
+  with \<open>call (Val v\<bullet>M(es)) = \<lfloor>aMvs\<rfloor>\<close> have "call (Val v\<bullet>M(es)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
   thus ?case
   proof(induct rule: call_callE)
     case CallObj thus ?case by simp
   next
     case (CallParams v')
-    with ` \<lbrakk>calls es = \<lfloor>aMvs\<rfloor>; fvs es \<subseteq> set Vs\<rbrakk> \<Longrightarrow> bisims Vs (inline_calls E es) (inline_calls E' es') xs` `fv (Val v\<bullet>M(es)) \<subseteq> set Vs`
+    with \<open> \<lbrakk>calls es = \<lfloor>aMvs\<rfloor>; fvs es \<subseteq> set Vs\<rbrakk> \<Longrightarrow> bisims Vs (inline_calls E es) (inline_calls E' es') xs\<close> \<open>fv (Val v\<bullet>M(es)) \<subseteq> set Vs\<close>
     have "bisims Vs (inline_calls E es) (inline_calls E' es') xs" by(auto)
-    with final bisim `bisims Vs es es' xs` show ?case by(auto simp add: is_vals_conv)
+    with final bisim \<open>bisims Vs es es' xs\<close> show ?case by(auto simp add: is_vals_conv)
   next
     case Call
-    with final bisim `bisims Vs es es' xs` show ?case by(auto)
+    with final bisim \<open>bisims Vs es es' xs\<close> show ?case by(auto)
   qed
 next
   case (bisimsCons1 Vs e e' xs es)
@@ -654,15 +654,15 @@ lemma A_inline_call: "call e = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A> e \
 proof(induct e and es rule: call.induct calls.induct)
   case (Call obj M params)
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
-  with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
+  with \<open>call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>\<close> have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
   thus ?case
   proof(induct rule: call_callE)
     case CallObj
-    with `call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A> obj \<sqsubseteq> \<A> (inline_call e' obj)`
+    with \<open>call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A> obj \<sqsubseteq> \<A> (inline_call e' obj)\<close>
     show ?case by(auto intro: sqUn_lem)
   next
     case CallParams
-    with `calls params = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A>s params \<sqsubseteq> \<A>s (inline_calls e' params)`
+    with \<open>calls params = \<lfloor>aMvs\<rfloor> \<Longrightarrow> \<A>s params \<sqsubseteq> \<A>s (inline_calls e' params)\<close>
     show ?case by(auto intro: sqUn_lem)
   next
     case Call
@@ -682,42 +682,42 @@ lemma assumes "final e'"
 proof(induct e and es arbitrary: A and A rule: call.induct calls.induct)
   case (Call obj M params A)
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
-  with `call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
+  with \<open>call (obj\<bullet>M(params)) = \<lfloor>aMvs\<rfloor>\<close> have "call (obj\<bullet>M(params)) = \<lfloor>(a, M', vs)\<rfloor>"  by simp
   thus ?case
   proof(cases rule: call_callE)
     case CallObj
-    with `\<D> (obj\<bullet>M(params)) A` `\<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; \<D> obj A\<rbrakk> \<Longrightarrow> \<D> (inline_call e' obj) A`
+    with \<open>\<D> (obj\<bullet>M(params)) A\<close> \<open>\<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; \<D> obj A\<rbrakk> \<Longrightarrow> \<D> (inline_call e' obj) A\<close>
     have "\<D> (inline_call e' obj) A" by simp
     moreover from A_inline_call[OF CallObj, of e']
     have "A \<squnion> (\<A> obj) \<sqsubseteq> A \<squnion> (\<A> (inline_call e' obj))" by(rule sqUn_lem2)
-    with `\<D> (obj\<bullet>M(params)) A` have "\<D>s params (A \<squnion> \<A> (inline_call e' obj))" by(auto elim: Ds_mono')
+    with \<open>\<D> (obj\<bullet>M(params)) A\<close> have "\<D>s params (A \<squnion> \<A> (inline_call e' obj))" by(auto elim: Ds_mono')
     ultimately show ?thesis using CallObj by auto
   next
     case (CallParams v)
-    with `\<D> (obj\<bullet>M(params)) A` `\<lbrakk>calls params = \<lfloor>aMvs\<rfloor>; \<D>s params A\<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' params) A`
+    with \<open>\<D> (obj\<bullet>M(params)) A\<close> \<open>\<lbrakk>calls params = \<lfloor>aMvs\<rfloor>; \<D>s params A\<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' params) A\<close>
     have "\<D>s (inline_calls e' params) A" by(simp)
     with CallParams show ?thesis by(auto)
   next
     case Call
-    with `final e'` show ?thesis by(auto elim!: D_mono' simp add: hyperset_defs)
+    with \<open>final e'\<close> show ?thesis by(auto elim!: D_mono' simp add: hyperset_defs)
   qed
 next
   case (Cons_exp exp exps A)
   show ?case
   proof(cases "is_val exp")
     case True
-    with `\<D>s (exp # exps) A` `\<lbrakk>calls exps = \<lfloor>aMvs\<rfloor>; \<D>s exps A\<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' exps) A` 
-      `calls (exp # exps) = \<lfloor>aMvs\<rfloor>`
+    with \<open>\<D>s (exp # exps) A\<close> \<open>\<lbrakk>calls exps = \<lfloor>aMvs\<rfloor>; \<D>s exps A\<rbrakk> \<Longrightarrow> \<D>s (inline_calls e' exps) A\<close> 
+      \<open>calls (exp # exps) = \<lfloor>aMvs\<rfloor>\<close>
     have "\<D>s (inline_calls e' exps) A" by(auto)
     with True show ?thesis by(auto)
   next
     case False
-    with `\<lbrakk>call exp = \<lfloor>aMvs\<rfloor>; \<D> exp A\<rbrakk> \<Longrightarrow> \<D> (inline_call e' exp) A` `calls (exp # exps) = \<lfloor>aMvs\<rfloor>` `\<D>s (exp # exps) A`
+    with \<open>\<lbrakk>call exp = \<lfloor>aMvs\<rfloor>; \<D> exp A\<rbrakk> \<Longrightarrow> \<D> (inline_call e' exp) A\<close> \<open>calls (exp # exps) = \<lfloor>aMvs\<rfloor>\<close> \<open>\<D>s (exp # exps) A\<close>
     have "\<D> (inline_call e' exp) A" by auto
-    moreover from False `calls (exp # exps) = \<lfloor>aMvs\<rfloor>` have "\<A> exp \<sqsubseteq> \<A> (inline_call e' exp)"
+    moreover from False \<open>calls (exp # exps) = \<lfloor>aMvs\<rfloor>\<close> have "\<A> exp \<sqsubseteq> \<A> (inline_call e' exp)"
       by(auto intro: A_inline_call)
     hence "A \<squnion> \<A> exp \<sqsubseteq> A \<squnion> \<A> (inline_call e' exp)" by(rule sqUn_lem2)
-    with `\<D>s (exp # exps) A` have "\<D>s exps (A \<squnion> \<A> (inline_call e' exp))"
+    with \<open>\<D>s (exp # exps) A\<close> have "\<D>s exps (A \<squnion> \<A> (inline_call e' exp))"
       by(auto intro: Ds_mono')
     ultimately show ?thesis using False by(auto)
   qed

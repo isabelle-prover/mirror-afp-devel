@@ -1,4 +1,4 @@
-section {* \isaheader{Default Setup} *}
+section \<open>\isaheader{Default Setup}\<close>
 theory Refine_Dflt
 imports 
   Refine_Monadic.Refine_Monadic
@@ -6,7 +6,7 @@ imports
   "Lib/Code_Target_ICF"
 begin
 
-text {* Configurations *}
+text \<open>Configurations\<close>
 
 lemmas tyrel_dflt_nat_set = 
   ty_REL[where 'a="nat set" and R="\<langle>Id\<rangle>dflt_rs_rel"]
@@ -34,7 +34,7 @@ declare tyrel_dflt[autoref_tyrel]
 
 
 
-local_setup {*
+local_setup \<open>
   let open Autoref_Fix_Rel in
     declare_prio "Gen-AHM-map-hashable" 
       @{term "\<langle>Rk::(_\<times>_::hashable) set,Rv\<rangle>ahm_rel bhc"} PR_LAST #>
@@ -43,16 +43,16 @@ local_setup {*
     declare_prio "Gen-AHM-map" @{term "\<langle>Rk,Rv\<rangle>ahm_rel bhc"} PR_LAST #>
     declare_prio "Gen-RBT-map" @{term "\<langle>Rk,Rv\<rangle>rbt_map_rel lt"} PR_LAST
   end
-*}
+\<close>
 
 
 text "Fallbacks"
-local_setup {*
+local_setup \<open>
   let open Autoref_Fix_Rel in
     declare_prio "Gen-List-Set" @{term "\<langle>R\<rangle>list_set_rel"} PR_LAST #>
     declare_prio "Gen-List-Map" @{term "\<langle>R\<rangle>list_map_rel"} PR_LAST
   end
-*}
+\<close>
 
 text \<open>Quick test of setup:\<close>
 context begin

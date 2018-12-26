@@ -130,27 +130,27 @@ case (ConsCons y ys z zs xs)
       thus ?thesis by blast
     next
     case True
-      from ConsCons.prems(1) `P y` `P z`
+      from ConsCons.prems(1) \<open>P y\<close> \<open>P z\<close>
       have "xs \<in> y # filter P ys  \<otimes> z # filter P zs"  by simp
       thus ?thesis 
       proof(rule interleave_ConsConsE)
         fix xs'
         assume "xs = y # xs'" and "xs' \<in> interleave (filter P ys) (z # filter P zs)"
-        hence "xs' \<in> filter P ys  \<otimes> filter P (z#zs)" using `P z` by simp
+        hence "xs' \<in> filter P ys  \<otimes> filter P (z#zs)" using \<open>P z\<close> by simp
         from ConsCons.IH(1)[OF this]
         obtain xs'' where "xs'' \<in> ys \<otimes> (z # zs)" and "xs' = filter P xs''" by auto
         hence "y#xs'' \<in> y#ys  \<otimes> z#zs" and "y#xs' = filter P (y#xs'')"
-          using `P y` by (auto intro: interleave_intros)
-        thus ?thesis using `xs = _` by blast
+          using \<open>P y\<close> by (auto intro: interleave_intros)
+        thus ?thesis using \<open>xs = _\<close> by blast
       next
         fix xs'
         assume "xs = z # xs'" and "xs' \<in> y # filter P ys  \<otimes> filter P zs"
-        hence "xs' \<in> filter P (y#ys) \<otimes> filter P zs" using `P y` by simp
+        hence "xs' \<in> filter P (y#ys) \<otimes> filter P zs" using \<open>P y\<close> by simp
         from ConsCons.IH(2)[OF this]
         obtain xs'' where "xs'' \<in> y#ys \<otimes> zs" and "xs' = filter P xs''" by auto
         hence "z#xs'' \<in> y#ys \<otimes> z#zs" and "z#xs' = filter P (z#xs'')"
-          using `P z` by (auto intro: interleave_intros)
-        thus ?thesis using `xs = _` by blast
+          using \<open>P z\<close> by (auto intro: interleave_intros)
+        thus ?thesis using \<open>xs = _\<close> by blast
       qed
     qed
   qed

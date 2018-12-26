@@ -1,12 +1,12 @@
 (* Authors:  René Neumann and Florian Haftmann, TU Muenchen *)
 
-section {* Functional Binomial Queues *}
+section \<open>Functional Binomial Queues\<close>
 
 theory Binomial_Queue
 imports PQ
 begin
 
-subsection {* Type definition and projections *}
+subsection \<open>Type definition and projections\<close>
 
 datatype ('a, 'b) bintree = Node "'a" "'b" "('a, 'b) bintree list"
 
@@ -35,32 +35,32 @@ next
   then show ?case by (cases x) simp_all
 qed
 
-text {*
+text \<open>
   \noindent Terminology:
 
   \begin{itemize}
 
-    \item values @{text "v, w"} or @{text "v1, v2"}
+    \item values \<open>v, w\<close> or \<open>v1, v2\<close>
 
-    \item priorities @{text "a, b"} or @{text "a1, a2"}
+    \item priorities \<open>a, b\<close> or \<open>a1, a2\<close>
 
-    \item bintrees @{text "t, r"} or @{text "t1, t2"}
+    \item bintrees \<open>t, r\<close> or \<open>t1, t2\<close>
 
-    \item bintree lists @{text "ts, rs"} or @{text "ts1, ts2"}
+    \item bintree lists \<open>ts, rs\<close> or \<open>ts1, ts2\<close>
 
-    \item binqueue element @{text "x, y"} or @{text "x1, x2"}
+    \item binqueue element \<open>x, y\<close> or \<open>x1, x2\<close>
 
-    \item binqueues = binqueue element lists @{text "xs, ys"} or @{text "xs1, xs2"}
+    \item binqueues = binqueue element lists \<open>xs, ys\<close> or \<open>xs1, xs2\<close>
 
-    \item abstract priority queues @{text "q, p"} or @{text "q1, q2"}
+    \item abstract priority queues \<open>q, p\<close> or \<open>q1, q2\<close>
 
   \end{itemize}
-*}
+\<close>
 
 
-subsection {* Binomial queue properties *}
+subsection \<open>Binomial queue properties\<close>
 
-subsubsection {* Binomial tree property *}
+subsubsection \<open>Binomial tree property\<close>
 
 inductive is_bintree_list :: "nat \<Rightarrow> ('a, 'b) bintree list \<Rightarrow> bool" where
   is_bintree_list_Nil [simp]: "is_bintree_list 0 []"
@@ -94,7 +94,7 @@ lemma is_bintree_children_length_desc:
   using assms by (induct ts) simp_all
 
 
-subsubsection {* Heap property *}
+subsubsection \<open>Heap property\<close>
 
 inductive is_heap_list :: "'a::linorder \<Rightarrow> ('a, 'b) bintree list \<Rightarrow> bool" where
   is_heap_list_Nil: "is_heap_list h []"
@@ -128,7 +128,7 @@ lemma is_heap_Min_children_larger:
   by (simp add: is_heap_children_larger)
 
 
-subsubsection {* Combination of both: binqueue property *}
+subsubsection \<open>Combination of both: binqueue property\<close>
 
 inductive is_binqueue :: "nat \<Rightarrow> ('a::linorder, 'b) binqueue \<Rightarrow> bool" where
   Empty: "is_binqueue l []"
@@ -170,7 +170,7 @@ lemma is_binqueue_select:
   by (induct xs arbitrary: l) (auto intro: is_binqueue.intros elim: is_binqueue.cases)
 
 
-subsubsection {* Normalized representation *}
+subsubsection \<open>Normalized representation\<close>
 
 inductive normalized :: "('a, 'b) binqueue \<Rightarrow> bool" where
   normalized_Nil: "normalized []"
@@ -238,9 +238,9 @@ lemma is_binqueue_normalize:
     by (induct xs arbitrary: l rule: rev_induct) (auto split: option.split)
 
 
-subsection {* Operations *}
+subsection \<open>Operations\<close>
 
-subsubsection {* Adding data *}
+subsubsection \<open>Adding data\<close>
 
 definition merge :: "('a::linorder, 'b) bintree \<Rightarrow> ('a, 'b) bintree \<Rightarrow> ('a, 'b) bintree" where
   "merge t1 t2 = (if priority t1 < priority t2
@@ -465,7 +465,7 @@ using assms proof (induct xs arbitrary: a rule: binqueue_induct)
   proof (cases "ys = []")
     case False
     with Some have N: "normalized ys" using normalized_Cons[of _ ys] by simp
-    with `ys \<noteq> []` have "min ys \<noteq> None"
+    with \<open>ys \<noteq> []\<close> have "min ys \<noteq> None"
       by (simp add: normalized_min_not_None)
     then obtain a' where oa': "min ys = Some a'" by auto
     with Some N False
@@ -490,8 +490,8 @@ proof (rule ccontr)
     proof (rule ccontr, simp)
       assume "least (Some (priority t)) (min ys) = Some a"
       hence "Some (priority t) = Some a \<or> min ys = Some a" by (rule least_split)
-      with `min ys \<noteq> Some a` have "priority t = a" by simp
-      with `priority t \<noteq> a` show False by simp
+      with \<open>min ys \<noteq> Some a\<close> have "priority t = a" by simp
+      with \<open>priority t \<noteq> a\<close> show False by simp
     qed
   qed simp_all
   with assms show False by simp
@@ -574,7 +574,7 @@ proof (rule iffI)
       with * show False by simp
     next
       case (Some b) 
-      with `min xs \<noteq> Some a` have "a \<noteq> b" by simp
+      with \<open>min xs \<noteq> Some a\<close> have "a \<noteq> b" by simp
       with * Some show False using D1 by auto
     qed
   qed
@@ -647,7 +647,7 @@ lemma normalized_delete_min:
     (auto simp add: delete_min_def normalized_normalize split: bintree.split)
 
 
-subsubsection {* Dedicated grand unified operation for generated program *}
+subsubsection \<open>Dedicated grand unified operation for generated program\<close>
 
 definition
   meld' :: "('a, 'b) bintree option \<Rightarrow> ('a::linorder, 'b) binqueue
@@ -677,7 +677,7 @@ lemma [code]:
   by (simp add: meld'_def | cases z)+
 
 
-subsubsection {* Interface operations *}
+subsubsection \<open>Interface operations\<close>
 
 abbreviation (input) empty :: "('a,'b) binqueue" where
   "empty \<equiv> []"

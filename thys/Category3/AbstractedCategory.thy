@@ -9,7 +9,7 @@ theory AbstractedCategory
 imports Category
 begin
 
-  text{*
+  text\<open>
     The locale defined here allows us to lift a category to a different arrow
     type via an abstraction map.  It is used to obtain categories with opaque
     arrow types, by first defining the category on the concrete representation type,
@@ -17,7 +17,7 @@ begin
     in several places to avoid the possibility of ``contaminating'' theories
     with specific details about a particular construction on categories.
     The construction of functor categories is a good example of this.
-  *}
+\<close>
 
   locale abstracted_category =
     C: category C

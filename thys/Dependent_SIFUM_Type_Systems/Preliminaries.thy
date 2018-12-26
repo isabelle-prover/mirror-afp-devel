@@ -4,19 +4,19 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 (Based on the SIFUM-Type-Systems AFP entry, whose authors
  are: Sylvia Grewe, Heiko Mantel, Daniel Schoepe)
 *)
-section {* Preliminaries *}
+section \<open>Preliminaries\<close>
 theory Preliminaries
 imports Main (* "HOL-Library.Lattice_Syntax" *)
 begin
 
-text {* Possible modes for variables: *}
+text \<open>Possible modes for variables:\<close>
 datatype Mode = AsmNoReadOrWrite | AsmNoWrite | GuarNoReadOrWrite | GuarNoWrite
 
-text {* We consider a two-element security lattice: *}
+text \<open>We consider a two-element security lattice:\<close>
 datatype Sec = High | Low
 
 
-text {* @{term Sec} forms a (complete) lattice: *}
+text \<open>@{term Sec} forms a (complete) lattice:\<close>
 instantiation Sec :: complete_lattice
 begin
 
@@ -38,21 +38,21 @@ instance
      by auto
 end
 
-text {* Memories are mappings from variables to values *}
+text \<open>Memories are mappings from variables to values\<close>
 type_synonym ('var, 'val) Mem = "'var \<Rightarrow> 'val"
 
-text {* A mode state maps modes to the set of variables for which the
-  given mode is set. *}
+text \<open>A mode state maps modes to the set of variables for which the
+  given mode is set.\<close>
 type_synonym 'var Mds = "Mode \<Rightarrow> 'var set"
 
-text {* Local configurations: *}
+text \<open>Local configurations:\<close>
 type_synonym ('com, 'var, 'val) LocalConf = "('com \<times> 'var Mds) \<times> ('var, 'val) Mem"
 
-text {* Global configurations: *}
+text \<open>Global configurations:\<close>
 type_synonym ('com, 'var, 'val) GlobalConf = "('com \<times> 'var Mds) list \<times> ('var, 'val) Mem"
 
-text {* A locale to fix various parametric components in Mantel et. al, and assumptions
-  about them: *}
+text \<open>A locale to fix various parametric components in Mantel et. al, and assumptions
+  about them:\<close>
 locale sifum_security_init =
   fixes dma :: "('Var,'Val) Mem \<Rightarrow> 'Var \<Rightarrow> Sec"
   fixes \<C>_vars :: "'Var \<Rightarrow> 'Var set"

@@ -3,7 +3,7 @@
     Author:     Stefan Berghofer and Alex Krauss, TU Muenchen, 2008-2009
 *)
 
-section {* Depth First Search *}
+section \<open>Depth First Search\<close>
 
 theory DFS
 imports Main

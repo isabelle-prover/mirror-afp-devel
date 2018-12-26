@@ -4,15 +4,15 @@
                Georg Struth <g.struth@sheffield.ac.uk> 
 *)
 
-section {* Component for Recursive Programs *}
+section \<open>Component for Recursive Programs\<close>
 
 theory Domain_Quantale
   imports KAD.Modal_Kleene_Algebra
 
 begin
 
-text {* This component supports the verification and step-wise refinement of recursive programs
-in a partial correctness setting. *}
+text \<open>This component supports the verification and step-wise refinement of recursive programs
+in a partial correctness setting.\<close>
 
 notation
   times (infixl "\<cdot>" 70) and
@@ -34,7 +34,7 @@ syntax
 
 *)
 
-subsection {* Lattice-Ordered Monoids with Domain*}
+subsection \<open>Lattice-Ordered Monoids with Domain\<close>
 
 class bd_lattice_ordered_monoid = bounded_lattice + distrib_lattice + monoid_mult +
   assumes left_distrib: "x \<cdot> (y \<squnion> z) = x \<cdot> y \<squnion> x \<cdot> z"
@@ -80,7 +80,7 @@ qed
 
 end
 
-subsection{* Boolean Monoids with Domain *}
+subsection\<open>Boolean Monoids with Domain\<close>
 
 class boolean_monoid = boolean_algebra + monoid_mult +  
   assumes left_distrib': "x \<cdot> (y \<squnion> z) = x \<cdot> y \<squnion> x \<cdot> z"
@@ -150,8 +150,8 @@ lemma a3 [simp]: "a (a x) \<squnion> a x = 1"
 
 subclass domain_bdlo_monoid ..
 
-text {* The next statement shows that every boolean monoid with domain is an antidomain semiring. 
-In this setting the domain operation has been defined explicitly. *}
+text \<open>The next statement shows that every boolean monoid with domain is an antidomain semiring. 
+In this setting the domain operation has been defined explicitly.\<close>
 
 sublocale ad: antidomain_semiring a "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(<)"
   rewrites ad_eq: "ad.ads_d x = d x"
@@ -165,7 +165,7 @@ qed
 
 end 
 
-subsection{* Boolean Monoids with Range *}
+subsection\<open>Boolean Monoids with Range\<close>
 
 class range_boolean_monoid = boolean_monoid + 
   assumes ldv': "y \<cdot> (z \<sqinter> \<top> \<cdot> x) = y \<cdot> z \<sqinter> \<top> \<cdot> x"
@@ -225,9 +225,9 @@ qed
 
 end
 
-subsection {* Quantales *}
+subsection \<open>Quantales\<close>
 
-text {* This part will eventually move into an AFP quantale entry. *} 
+text \<open>This part will eventually move into an AFP quantale entry.\<close> 
 
 class quantale = complete_lattice + monoid_mult +
   assumes Sup_distr: "Sup X \<cdot> y = Sup {z. \<exists>x \<in> X. z = x \<cdot> y}"
@@ -323,7 +323,7 @@ proof (induct n)
     moreover have "... \<le> y \<cdot> x"
       by (metis calculation(1) mult_isor)
     moreover have "... \<le> y"
-      using `z + y \<cdot> x \<le> y` by simp
+      using \<open>z + y \<cdot> x \<le> y\<close> by simp
     ultimately have "z \<cdot> x ^ Suc n \<le> y" by simp
   }
   thus ?case
@@ -361,8 +361,8 @@ sublocale ka: kleene_algebra "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)
 
 end
 
-text {* Distributive quantales are often assumed to satisfy infinite distributivity laws between
-joins and meets, but finite ones suffice for our purposes. *}
+text \<open>Distributive quantales are often assumed to satisfy infinite distributivity laws between
+joins and meets, but finite ones suffice for our purposes.\<close>
 
 class distributive_quantale = quantale + distrib_lattice 
 
@@ -377,7 +377,7 @@ oops
 
 end 
 
-subsection {* Domain Quantales *}
+subsection \<open>Domain Quantales\<close>
 
 class domain_quantale = distributive_quantale +
   assumes rdv'': "(z \<sqinter> x \<cdot> \<top>) \<cdot> y = z \<cdot> y \<sqinter> x \<cdot> \<top>"  
@@ -409,7 +409,7 @@ oops
 
 end
 
-subsection{* Boolean Domain Quantales *} 
+subsection\<open>Boolean Domain Quantales\<close> 
 
 class domain_boolean_quantale = domain_quantale + boolean_quantale
 
@@ -432,7 +432,7 @@ lemma fdia_eq: "ad.fdia x p = Inf{d q |q. x \<cdot> d p \<le> d q \<cdot> x}"
   apply clarsimp
   by (metis ad.fd_eq_fdia ad.fdia_def da_a double_compl ds.fdemodalisation2 inf_bot_iff_le inf_compl_bot)
 
-text {* The specification statement can be defined explicitly. *}
+text \<open>The specification statement can be defined explicitly.\<close>
 
 definition R :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" where
   "R p q \<equiv> Sup{x. (d p) \<cdot> x \<le> x \<cdot> d q}"
@@ -462,13 +462,13 @@ done
 
 end
 
-subsection{* Relational Model of Boolean Domain Quantales *}
+subsection\<open>Relational Model of Boolean Domain Quantales\<close>
 
 interpretation rel_dbq: domain_boolean_quantale Inter Union "(\<inter>)" "(\<subseteq>)" "(\<subset>)" "(\<union>)" "{}" UNIV minus uminus Id "(O)"
   apply (standard, simp_all add: O_assoc)
   by blast +
 
-subsection{* Modal Boolean Quantales *}
+subsection\<open>Modal Boolean Quantales\<close>
 
 class range_boolean_quantale = range_quantale + boolean_quantale
 
@@ -509,15 +509,15 @@ no_notation fbox ("( |_] _)" [61,81] 82)
 
 notation ad.fbox ("( |_] _)" [61,81] 82)
 
-subsection {* Recursion Rule *}
+subsection \<open>Recursion Rule\<close>
 
 lemma recursion: "mono (f :: 'a \<Rightarrow> 'a :: domain_boolean_quantale) \<Longrightarrow> 
   (\<And>x. d p \<le> |x] d q \<Longrightarrow> d p \<le> |f x] d q) \<Longrightarrow>  d p \<le> |lfp f] d q"
   apply (erule lfp_ordinal_induct [where f=f], simp)
   by (auto simp: ad.addual.ardual.fbox_demodalisation3 Sup_distr Sup_distl intro: Sup_mono)
 
-text {* We have already tested this rule in the context of test quantales~\cite{ArmstrongGS15}, which is based
+text \<open>We have already tested this rule in the context of test quantales~\cite{ArmstrongGS15}, which is based
 on a formalisation of quantales that is currently not in the AFP. The two theories will be merged as
-soon as the quantale is available in the AFP. *}
+soon as the quantale is available in the AFP.\<close>
 
 end

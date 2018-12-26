@@ -35,17 +35,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Datatype Addresses *}
+subsection \<open>Datatype Addresses\<close>
 theory 
   DatatypeAddress
   imports 
     NetworkCore 
 begin
 
-text{* 
+text\<open>
   A theory describing a network consisting of three subnetworks. Hosts within a network are not 
   distinguished.
-*}
+\<close>
  
 datatype DatatypeAddress = dmz_adr | intranet_adr | internet_adr
 

@@ -1,4 +1,4 @@
-section {* Directed Graphs *}
+section \<open>Directed Graphs\<close>
 (* Author: Peter Lammich *)
 theory Digraph
   imports 
@@ -174,12 +174,12 @@ begin
     hence "v\<in>V" "w\<in>V" using E_ss by auto
     from rtrancl_into_rtrancl obtain vv where "v' = f vv" "vv\<in>V" "(u,vv)\<in>E\<^sup>*"
       by blast
-    from `v' = f v` `v\<in>V` `v' = f vv` `vv\<in>V` have [simp]: "vv = v"
+    from \<open>v' = f v\<close> \<open>v\<in>V\<close> \<open>v' = f vv\<close> \<open>vv\<in>V\<close> have [simp]: "vv = v"
       using INJ by (metis inj_on_contraD)
 
-    note `(u,vv)\<in>E\<^sup>*`[simplified]
-    also note `(v,w)\<in>E`
-    finally show ?case using `w' = f w` `w\<in>V` by blast
+    note \<open>(u,vv)\<in>E\<^sup>*\<close>[simplified]
+    also note \<open>(v,w)\<in>E\<close>
+    finally show ?case using \<open>w' = f w\<close> \<open>w\<in>V\<close> by blast
   qed auto
     
   lemma rtrancl_E'_to_E: assumes "(u,v)\<in>(g_E G')\<^sup>*" shows "(fi u, fi v)\<in>E\<^sup>*"

@@ -5,21 +5,21 @@
 
 theory HoareTotal imports Hoare Termi begin
 
-subsection{* Hoare logic for total correctness *}
+subsection\<open>Hoare logic for total correctness\<close>
 
-text{*
+text\<open>
 Now that we have termination, we can define
-total validity, @{text"\<Turnstile>\<^sub>t"}, as partial validity and guaranteed termination:*}
+total validity, \<open>\<Turnstile>\<^sub>t\<close>, as partial validity and guaranteed termination:\<close>
 
 definition
  hoare_tvalid :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<Turnstile>\<^sub>t {(1_)}/ (_)/ {(1_)}" 50) where
   "\<Turnstile>\<^sub>t {P}c{Q} \<longleftrightarrow> \<Turnstile> {P}c{Q} \<and> (\<forall>s. P s \<longrightarrow> c\<down>s)"
 
-text{* Proveability of Hoare triples in the proof system for total
-correctness is written @{text"\<turnstile>\<^sub>t {P}c{Q}"} and defined
-inductively. The rules for @{text"\<turnstile>\<^sub>t"} differ from those for
-@{text"\<turnstile>"} only in the one place where nontermination can arise: the
-@{term While}-rule. *}
+text\<open>Proveability of Hoare triples in the proof system for total
+correctness is written \<open>\<turnstile>\<^sub>t {P}c{Q}\<close> and defined
+inductively. The rules for \<open>\<turnstile>\<^sub>t\<close> differ from those for
+\<open>\<turnstile>\<close> only in the one place where nontermination can arise: the
+@{term While}-rule.\<close>
 
 inductive
   thoare :: "assn \<Rightarrow> com \<Rightarrow> assn \<Rightarrow> bool" ("\<turnstile>\<^sub>t ({(1_)}/ (_)/ {(1_)})" 50)
@@ -37,12 +37,12 @@ where
 | Local: "(!!s. P s \<Longrightarrow> P' s (f s)) \<Longrightarrow> \<forall>p. \<turnstile>\<^sub>t {P' p} c {Q o (g p)} \<Longrightarrow>
         \<turnstile>\<^sub>t {P} LOCAL f;c;g {Q}"
 
-text{*\noindent The@{term While}- rule is like the one for partial
+text\<open>\noindent The@{term While}- rule is like the one for partial
 correctness but it requires additionally that with every execution of
 the loop body a wellfounded relation (@{prop"wf r"}) on the state
 space decreases.
 
-The soundness theorem*}
+The soundness theorem\<close>
 
 (* Tried to use this lemma to simplify the soundness proof.
    But "\<turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> (!s. P s \<longrightarrow> c\<down>s)" is not provable because too weak
@@ -101,12 +101,12 @@ apply (erule termi.WhileFalse)
 done
 (*>*)
 
-text{*\noindent In the @{term While}-case we perform a
+text\<open>\noindent In the @{term While}-case we perform a
 local proof by wellfounded induction over the given relation @{term r}.
 
 The completeness proof proceeds along the same lines as the one for partial
 correctness. First we have to strengthen our notion of weakest precondition
-to take termination into account: *}
+to take termination into account:\<close>
 
 definition
  wpt :: "com \<Rightarrow> assn \<Rightarrow> assn" ("wp\<^sub>t") where
@@ -168,11 +168,11 @@ apply(clarsimp simp add: wp_defs)
 apply(blast intro:exec.intros)
 done
 
-text{*\noindent The @{term While}-case is interesting because we now have to furnish a
+text\<open>\noindent The @{term While}-case is interesting because we now have to furnish a
 suitable wellfounded relation. Of course the execution of the loop
 body directly yields the required relation.
 The actual completeness theorem follows directly, in the same manner
-as for partial correctness. *}
+as for partial correctness.\<close>
 
 theorem "\<Turnstile>\<^sub>t {P}c{Q} \<Longrightarrow> \<turnstile>\<^sub>t {P}c{Q}"
 apply (rule strengthen_pre[OF _ wp_is_pre])

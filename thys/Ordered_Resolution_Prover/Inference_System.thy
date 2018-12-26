@@ -253,7 +253,7 @@ begin
 text \<open>
 This result surely holds, but we have yet to prove it. The challenge is: Every time a new clause is
 introduced, we also get a new interpretation (by the definition of
-@{text sat_preserving_inference_system}). But the interpretation we want here is then the one that
+\<open>sat_preserving_inference_system\<close>). But the interpretation we want here is then the one that
 exists "at the limit". Maybe we can use compactness to prove it.
 \<close>
 

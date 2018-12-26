@@ -5,7 +5,7 @@
 Kildall's algorithm.
 *)
 
-section {* Kildall's Algorithm \label{sec:Kildall} *}
+section \<open>Kildall's Algorithm \label{sec:Kildall}\<close>
 
 theory Kildall
 imports SemilatAlg
@@ -491,7 +491,7 @@ proof -
   interpret Semilat A r f by fact
   show "PROP ?P"
   apply(unfold is_bcv_def wt_step_def)
-  apply(insert `Semilat A r f` semilat kildall_properties[of A])
+  apply(insert \<open>Semilat A r f\<close> semilat kildall_properties[of A])
   apply(simp add:stables_def)
   apply clarify
   apply(subgoal_tac "kildall r f step \<tau>s\<^sub>0 \<in> list n A")

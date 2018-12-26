@@ -16,7 +16,7 @@ lemma a_splay_simps[simp]: "a_splay a (Node l a r) = 1"
  "b<a \<Longrightarrow> a_splay a (Node l b (Node rl a rr)) = \<phi> (Node rl b l) - \<phi> (Node rl a rr) + 1"
 by(auto simp add: a_splay_def algebra_simps)
 
-text{* The following lemma is an attempt to prove a generic lemma that covers
+text\<open>The following lemma is an attempt to prove a generic lemma that covers
 both zig-zig cases. However, the lemma is not as nice as one would like.
 Hence it is used only once, as a demo. Ideally the lemma would involve
 function @{const a_splay}, but that is impossible because this involves @{const splay}
@@ -24,7 +24,7 @@ and thus depends on the ordering. We would need a truly symmetric version of @{c
 that takes the ordering as an explicit argument. Then we could define
 all the symmetric cases by one final equation
 @{term"splay2 less t = splay2 (not o less) (mirror t)"}.
-This would simplify the code and the proofs. *}
+This would simplify the code and the proofs.\<close>
 
 lemma zig_zig: fixes lx x rx lb b rb a ra u lb1 lb2
 defines [simp]: "X == Node lx (x) rx" defines[simp]: "B == Node lb b rb"
@@ -86,7 +86,7 @@ next
 next
   case (6 x b a lb rb ra)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree ra" using "6.prems"(1) by auto
-  hence 1: "x \<in> set_tree lb" using "6.prems" `x<b` by (auto)
+  hence 1: "x \<in> set_tree lb" using "6.prems" \<open>x<b\<close> by (auto)
   obtain lu u ru where sp: "splay x lb = Node lu u ru"
     using splay_not_Leaf[OF \<open>lb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
@@ -109,8 +109,8 @@ next
 next
   case (8 b x a rb lb ra)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree ra"
-    using "8.prems"(1) `x < a` by(auto)
-  hence 1: "x \<in> set_tree rb" using "8.prems" `b<x` `x<a` by (auto)
+    using "8.prems"(1) \<open>x < a\<close> by(auto)
+  hence 1: "x \<in> set_tree rb" using "8.prems" \<open>b<x\<close> \<open>x<a\<close> by (auto)
   obtain lu u ru where sp: "splay x rb = Node lu u ru"
      using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node ?B a ra"
@@ -132,8 +132,8 @@ next
 next
   case (11 a x b lb la rb)
   hence 0: "x \<notin> set_tree rb \<and> x \<notin> set_tree la"
-    using "11.prems"(1) `a<x` by (auto)
-  hence 1: "x \<in> set_tree lb" using "11.prems" `a<x` `x<b` by (auto)
+    using "11.prems"(1) \<open>a<x\<close> by (auto)
+  hence 1: "x \<in> set_tree lb" using "11.prems" \<open>a<x\<close> \<open>x<b\<close> by (auto)
   obtain lu u ru where sp: "splay x lb = Node lu u ru"
     using splay_not_Leaf[OF \<open>lb \<noteq> Leaf\<close>] by blast
   let ?X = "Node lx x rx" let ?B = "Node lb b rb"  let ?A = "Node la a ?B"
@@ -155,8 +155,8 @@ next
 next
   case (14 a x b rb la lb)
   hence 0: "x \<notin> set_tree lb \<and> x \<notin> set_tree la"
-    using "14.prems"(1) `b<x` by(auto)
-  hence 1: "x \<in> set_tree rb" using "14.prems" `b<x` `a<x` by (auto)
+    using "14.prems"(1) \<open>b<x\<close> by(auto)
+  hence 1: "x \<in> set_tree rb" using "14.prems" \<open>b<x\<close> \<open>a<x\<close> by (auto)
   obtain lu u ru where sp: "splay x rb = Node lu u ru"
     using splay_not_Leaf[OF \<open>rb \<noteq> Leaf\<close>] by blast
   from zig_zig[of rb x ru lu lx rx _ b lb a la] 14 sp 0
@@ -294,7 +294,7 @@ next
     have "a_splay_max ?B = a_splay_max rr + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 1" using "3.prems" sp 1
       by(auto simp add: a_splay_max_def)
     also have "\<dots> \<le> 3 * (\<phi> rr - 1) + \<phi> ?B' + \<phi> ?C' - \<phi> rr - \<phi> ?C + 2"
-      using 3 `rr \<noteq> Leaf` by auto
+      using 3 \<open>rr \<noteq> Leaf\<close> by auto
     also have "\<dots> = 2 * \<phi> rr + \<phi> ?B' + \<phi> ?C' - \<phi> ?C - 1" by simp
     also have "\<dots> \<le> \<phi> rr + \<phi> ?B' + \<phi> ?C' - 1" by simp
     also have "\<dots> \<le> 2 * \<phi> ?B + \<phi> ?C' - 2"
@@ -310,7 +310,7 @@ proof cases
 next
   assume "t \<noteq> Leaf"
   have [arith]: "log 2 2 > 0" by simp
-  show ?thesis using a_splay_max_ub[OF assms `t \<noteq> Leaf`] by(simp add: a_splay_max_def)
+  show ?thesis using a_splay_max_ub[OF assms \<open>t \<noteq> Leaf\<close>] by(simp add: a_splay_max_def)
 qed
 
 lemma amor_delete: assumes "bst t"
@@ -333,7 +333,7 @@ next
   proof (cases "e=a")
     case False thus ?thesis
       using opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-      using `?lslr \<ge> 0` by arith
+      using \<open>?lslr \<ge> 0\<close> by arith
   next
     case [simp]: True
     show ?thesis
@@ -342,7 +342,7 @@ next
       have 1: "log 2 (real (size r) + 2) \<ge> 0" by(simp)
       show ?thesis
         using Leaf opt apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-        using 1 `?lslr \<ge> 0` by arith
+        using 1 \<open>?lslr \<ge> 0\<close> by arith
     next
       case (Node ll y lr)
       then obtain l' y' r' where [simp]: "splay_max (Node ll y lr) = Node l' y' r'"
@@ -350,7 +350,7 @@ next
       have "bst l" using bst_splay[OF \<open>bst t\<close>, of a] by simp
       have "\<Phi> r' \<ge> 0" apply (induction r') by (auto)
       have optm: "real(t_splay_max l) + \<Phi> (splay_max l) - \<Phi> l  \<le> 3 * \<phi> l + 1"
-        using a_splay_max_ub3[OF `bst l`, simplified a_splay_max_def] by (simp add: field_simps Node)
+        using a_splay_max_ub3[OF \<open>bst l\<close>, simplified a_splay_max_def] by (simp add: field_simps Node)
       have 1: "log 2 (2+(real(size l')+real(size r))) \<le> log 2 (2+(real(size l)+real(size r)))"
         using size_splay_max[of l] Node by simp
       have 2: "log 2 (2 + (real (size l') + real (size r'))) \<ge> 0" by simp
@@ -360,7 +360,7 @@ next
         using size_if_splay[OF sp] Node by simp
       show ?thesis using add_mono[OF opt optm] Node 3
         apply(simp add: Splay_Tree.delete_def t_delete_def field_simps)
-        using 4 `\<Phi> r' \<ge> 0` by arith
+        using 4 \<open>\<Phi> r' \<ge> 0\<close> by arith
     qed
   qed
 qed

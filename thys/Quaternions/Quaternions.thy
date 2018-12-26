@@ -575,7 +575,7 @@ lemma of_real_continuous_on_iff:
 
 subsection\<open>Quaternions for describing 3D isometries\<close>
 
-subsubsection\<open>The @{text HIm} operator\<close>
+subsubsection\<open>The \<open>HIm\<close> operator\<close>
 
 definition HIm :: "quat \<Rightarrow> real^3" where
   "HIm q \<equiv> vector[Im1 q, Im2 q, Im3 q]"
@@ -619,7 +619,7 @@ lemma him_sum [simp]: "HIm (sum f S) = (\<Sum>x\<in>S. HIm (f x))"
 lemma linear_him: "linear HIm"
   by (metis him_add him_mult_right linearI mult.right_neutral mult_scaleR_right of_real_def)
 
-subsubsection\<open>The @{text Hv} operator\<close>
+subsubsection\<open>The \<open>Hv\<close> operator\<close>
 
 definition Hv :: "real^3 \<Rightarrow> quat" where
   "Hv v \<equiv> Quat 0 (v$1) (v$2) (v$3)"

@@ -12,15 +12,12 @@ theory Simplex
     "HOL-Library.Code_Target_Numeral"
 begin
 
-text\<open>Linear constraints are of the form @{text "p \<bowtie> c"} or @{text
-"p\<^sub>1 \<bowtie> p\<^sub>2"}, where @{text "p"}, @{text "p\<^sub>1"}, and @{text "p\<^sub>2"}, are
-linear polynomials, @{text "c"} is a rational constant and @{text "\<bowtie> \<in>
-{<, >, \<le>, \<ge>, =}"}. Their abstract syntax is given by the @{text
-"constraint"} type, and semantics is given by the relation @{text
-"\<Turnstile>\<^sub>c"}, defined straightforwardly by primitive recursion over the
-@{text "constraint"} type. A set of constraints is satisfied,
-denoted by @{text "\<Turnstile>\<^sub>c\<^sub>s"}, if all constraints are. There is also an indexed
-version @{text "\<Turnstile>\<^sub>i\<^sub>c\<^sub>s"} which takes an explicit set of indices and then only
+text\<open>Linear constraints are of the form \<open>p \<bowtie> c\<close> or \<open>p\<^sub>1 \<bowtie> p\<^sub>2\<close>, where \<open>p\<close>, \<open>p\<^sub>1\<close>, and \<open>p\<^sub>2\<close>, are
+linear polynomials, \<open>c\<close> is a rational constant and \<open>\<bowtie> \<in>
+{<, >, \<le>, \<ge>, =}\<close>. Their abstract syntax is given by the \<open>constraint\<close> type, and semantics is given by the relation \<open>\<Turnstile>\<^sub>c\<close>, defined straightforwardly by primitive recursion over the
+\<open>constraint\<close> type. A set of constraints is satisfied,
+denoted by \<open>\<Turnstile>\<^sub>c\<^sub>s\<close>, if all constraints are. There is also an indexed
+version \<open>\<Turnstile>\<^sub>i\<^sub>c\<^sub>s\<close> which takes an explicit set of indices and then only
 demands that these constraints are satisfied.\<close>
 
 datatype constraint = LT linear_poly rat
@@ -136,12 +133,10 @@ text\<open>Note that the above specification requires returning a
 valuation (defined as a HOL function), which is not efficiently
 executable. In order to enable more efficient data structures for
 representing valuations, a refinement of this specification is needed
-and the function @{text "solve"} is replaced by the function @{text
-"solve_exec"} returning optional @{text "(var, rat) mapping"} instead
-of @{text "var \<Rightarrow> rat"} function. This way, efficient data structures
+and the function \<open>solve\<close> is replaced by the function \<open>solve_exec\<close> returning optional \<open>(var, rat) mapping\<close> instead
+of \<open>var \<Rightarrow> rat\<close> function. This way, efficient data structures
 for representing mappings can be easily plugged-in during code
-generation \cite{florian-refinement}. A conversion from the @{text
-"mapping"} datatype to HOL function is denoted by @{text "\<langle>_\<rangle>"} and
+generation \cite{florian-refinement}. A conversion from the \<open>mapping\<close> datatype to HOL function is denoted by \<open>\<langle>_\<rangle>\<close> and
 given by: @{thm map2fun_def'[no_vars]}.\<close>
 
 locale SolveExec =
@@ -164,20 +159,17 @@ text\<open>The first step of the procedure is removing all equalities and
 strict inequalities. Equalities can be easily rewritten to non-strict
 inequalities. Removing strict inequalities can be done by replacing
 the list of constraints by a new one, formulated over an extension
-@{text "\<rat>'"} of the space of rationals @{text "\<rat>"}. @{text "\<rat>'"} must
-have a structure of a linearly ordered vector space over @{text "\<rat>"}
-(represented by the type class @{text "lrv"}) and must guarantee that
-if some non-strict constraints are satisfied in @{text "\<rat>'"}, then
-there is a satisfying valuation for the original constraints in @{text
-"\<rat>"}. Our final implementation uses the @{text "\<rat>\<^sub>\<delta>"} space, defined in
-\cite{simplex-rad} (basic idea is to replace @{text "p < c"} by @{text
-"p \<le> c - \<delta>"} and @{text "p > c"} by @{text "p \<ge> c + \<delta>"} for a symbolic
-parameter @{text \<delta>}). So, all constraints are reduced to the form
-@{text "p \<bowtie> b"}, where @{text "p"} is a linear polynomial (still over
-@{text "\<rat>"}), @{text "b"} is constant from @{text "\<rat>'"} and @{text "\<bowtie>
-\<in> {\<le>, \<ge>}"}. The non-strict constraints are represented by the type
-@{text "'a ns_constraint"}, and their semantics is denoted by @{text
-"\<Turnstile>\<^sub>n\<^sub>s"} and @{text "\<Turnstile>\<^sub>n\<^sub>s\<^sub>s"}. The indexed variant is @{text "\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s"}.\<close>
+\<open>\<rat>'\<close> of the space of rationals \<open>\<rat>\<close>. \<open>\<rat>'\<close> must
+have a structure of a linearly ordered vector space over \<open>\<rat>\<close>
+(represented by the type class \<open>lrv\<close>) and must guarantee that
+if some non-strict constraints are satisfied in \<open>\<rat>'\<close>, then
+there is a satisfying valuation for the original constraints in \<open>\<rat>\<close>. Our final implementation uses the \<open>\<rat>\<^sub>\<delta>\<close> space, defined in
+\cite{simplex-rad} (basic idea is to replace \<open>p < c\<close> by \<open>p \<le> c - \<delta>\<close> and \<open>p > c\<close> by \<open>p \<ge> c + \<delta>\<close> for a symbolic
+parameter \<open>\<delta>\<close>). So, all constraints are reduced to the form
+\<open>p \<bowtie> b\<close>, where \<open>p\<close> is a linear polynomial (still over
+\<open>\<rat>\<close>), \<open>b\<close> is constant from \<open>\<rat>'\<close> and \<open>\<bowtie>
+\<in> {\<le>, \<ge>}\<close>. The non-strict constraints are represented by the type
+\<open>'a ns_constraint\<close>, and their semantics is denoted by \<open>\<Turnstile>\<^sub>n\<^sub>s\<close> and \<open>\<Turnstile>\<^sub>n\<^sub>s\<^sub>s\<close>. The indexed variant is \<open>\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s\<close>.\<close>
 datatype 'a ns_constraint = LEQ_ns linear_poly 'a    |    GEQ_ns linear_poly 'a
 
 type_synonym ('i,'a) i_ns_constraint = "'i \<times> 'a ns_constraint"
@@ -239,12 +231,11 @@ locale Solve_exec_ns =
 
 
 text\<open>After the transformation, the procedure is reduced to solving
-only the non-strict constraints, implemented in the @{text
-"solve_exec_ns"} function having an analogous specification to the
-@{text "solve"} function. If @{text "to_ns"}, @{text "from_ns"} and
-@{text "solve_exec_ns"} are available, the @{text "solve_exec"}
+only the non-strict constraints, implemented in the \<open>solve_exec_ns\<close> function having an analogous specification to the
+\<open>solve\<close> function. If \<open>to_ns\<close>, \<open>from_ns\<close> and
+\<open>solve_exec_ns\<close> are available, the \<open>solve_exec\<close>
 function can be easily defined and it can be easily shown that this
-definition satisfies its specification (also analogous to @{text solve}).
+definition satisfies its specification (also analogous to \<open>solve\<close>).
 \<close>
 
 locale SolveExec' = To_ns to_ns from_ns + Solve_exec_ns solve_exec_ns for
@@ -271,13 +262,13 @@ subsection \<open>Preprocessing\<close>
 text\<open>The next step in the procedure rewrites a list of non-strict
 constraints into an equisatisfiable form consisting of a list of
 linear equations (called the \emph{tableau}) and of a list of
-\emph{atoms} of the form @{text "x\<^sub>i \<bowtie> b\<^sub>i"} where @{text "x\<^sub>i"} is a
-variable and @{text "b\<^sub>i"} is a constant (from the extension field). The
+\emph{atoms} of the form \<open>x\<^sub>i \<bowtie> b\<^sub>i\<close> where \<open>x\<^sub>i\<close> is a
+variable and \<open>b\<^sub>i\<close> is a constant (from the extension field). The
 transformation is straightforward and introduces auxiliary variables
 for linear polynomials occurring in the initial formula. For example,
-@{text "[x\<^sub>1 + x\<^sub>2 \<le> b\<^sub>1, x\<^sub>1 + x\<^sub>2 \<ge> b\<^sub>2, x\<^sub>2 \<ge> b\<^sub>3]"} can be transformed to
-the tableau @{text "[x\<^sub>3 = x\<^sub>1 + x\<^sub>2]"} and atoms @{text "[x\<^sub>3 \<le> b\<^sub>1, x\<^sub>3 \<ge>
-b\<^sub>2, x\<^sub>2 \<ge> b\<^sub>3]"}.\<close>
+\<open>[x\<^sub>1 + x\<^sub>2 \<le> b\<^sub>1, x\<^sub>1 + x\<^sub>2 \<ge> b\<^sub>2, x\<^sub>2 \<ge> b\<^sub>3]\<close> can be transformed to
+the tableau \<open>[x\<^sub>3 = x\<^sub>1 + x\<^sub>2]\<close> and atoms \<open>[x\<^sub>3 \<le> b\<^sub>1, x\<^sub>3 \<ge>
+b\<^sub>2, x\<^sub>2 \<ge> b\<^sub>3]\<close>.\<close>
 
 
 type_synonym eq = "var \<times> linear_poly"
@@ -316,16 +307,16 @@ In this case, the unsat core would be computed as $\{A,B\}$, although already $\
 definition normalized_tableau :: "tableau \<Rightarrow> bool" ("\<triangle>") where
   "normalized_tableau t \<equiv> distinct (map lhs t) \<and> lvars t \<inter> rvars t = {} \<and> 0 \<notin> rhs ` set t"
 
-text\<open>Equations are of the form @{text "x = p"}, where @{text "x"} is
-a variable and @{text "p"} is a polynomial, and are represented by the
-type @{text "eq = var \<times> linear_poly"}. Semantics of equations is given
+text\<open>Equations are of the form \<open>x = p\<close>, where \<open>x\<close> is
+a variable and \<open>p\<close> is a polynomial, and are represented by the
+type \<open>eq = var \<times> linear_poly\<close>. Semantics of equations is given
 by @{thm satisfies_eq_iff[no_vars]}. Tableau is represented as a list
-of equations, by the type @{text "tableau = eq list"}. Semantics for a
+of equations, by the type \<open>tableau = eq list\<close>. Semantics for a
 tableau is given by @{thm satisfies_tableau_def[no_vars]}. Functions
-@{text lvars} and @{text rvars} return sets of variables appearing on
+\<open>lvars\<close> and \<open>rvars\<close> return sets of variables appearing on
 the left hand side (lhs) and the right hand side (rhs) of a
 tableau. Lhs variables are called \emph{basic} while rhs variables are
-called \emph{non-basic} variables. A tableau @{text t} is
+called \emph{non-basic} variables. A tableau \<open>t\<close> is
 \emph{normalized} (denoted by @{term "\<triangle> t"}) iff no variable occurs on
 the lhs of two equations in a tableau and if sets of lhs and rhs
 variables are distinct.\<close>
@@ -482,9 +473,9 @@ proof-
 qed
 
 
-text\<open>Elementary atoms are represented by the type @{text "'a atom"}
-and semantics for atoms and sets of atoms is denoted by @{text "\<Turnstile>\<^sub>a"} and
-@{text "\<Turnstile>\<^sub>a\<^sub>s"} and given by:
+text\<open>Elementary atoms are represented by the type \<open>'a atom\<close>
+and semantics for atoms and sets of atoms is denoted by \<open>\<Turnstile>\<^sub>a\<close> and
+\<open>\<Turnstile>\<^sub>a\<^sub>s\<close> and given by:
 \<close>
 
 datatype 'a atom  = Leq var 'a    |    Geq var 'a
@@ -582,10 +573,10 @@ locale AssertAll =
 
 text\<open>Once the preprocessing is done and tableau and atoms are
 obtained, their satisfiability is checked by the
-@{text assert_all} function. Its precondition is that the starting
+\<open>assert_all\<close> function. Its precondition is that the starting
 tableau is normalized, and its specification is analogue to the one for the
-@{text "solve"} function. If @{text "preprocess"} and @{text "assert_all"}
-are available, the  @{text "solve_exec_ns"} can be defined, and it
+\<open>solve\<close> function. If \<open>preprocess\<close> and \<open>assert_all\<close>
+are available, the  \<open>solve_exec_ns\<close> can be defined, and it
 can easily be shown that this definition satisfies the specification.\<close>
 
 locale Solve_exec_ns' = Preprocess preprocess + AssertAll assert_all for
@@ -661,20 +652,20 @@ iteratively asserting one by one atom from the given list of atoms.
 type_synonym 'a bounds = "var \<rightharpoonup> 'a"
 
 text\<open>Asserted atoms will be stored in a form of \emph{bounds} for a
-given variable. Bounds are of the form @{text "l\<^sub>i \<le> x\<^sub>i \<le> u\<^sub>i"}, where
-@{text "l\<^sub>i"} and @{text "u\<^sub>i"} and are either scalars or $\pm
+given variable. Bounds are of the form \<open>l\<^sub>i \<le> x\<^sub>i \<le> u\<^sub>i\<close>, where
+\<open>l\<^sub>i\<close> and \<open>u\<^sub>i\<close> and are either scalars or $\pm
 \infty$. Each time a new atom is asserted, a bound for the
 corresponding variable is updated (checking for conflict with the
 previous bounds). Since bounds for a variable can be either finite or
 $\pm \infty$, they are represented by (partial) maps from variables to
-values (@{text "'a bounds = var \<rightharpoonup> 'a"}). Upper and lower bounds are
+values (\<open>'a bounds = var \<rightharpoonup> 'a\<close>). Upper and lower bounds are
 represented separately. Infinite bounds map to @{term None} and this
 is reflected in the semantics:
 
 \begin{small}
-@{text "c \<ge>\<^sub>u\<^sub>b b \<longleftrightarrow> case b of None \<Rightarrow> False | Some b' \<Rightarrow> c \<ge> b'"}
+\<open>c \<ge>\<^sub>u\<^sub>b b \<longleftrightarrow> case b of None \<Rightarrow> False | Some b' \<Rightarrow> c \<ge> b'\<close>
 
-@{text "c \<le>\<^sub>u\<^sub>b b \<longleftrightarrow> case b of None \<Rightarrow> True | Some b' \<Rightarrow> c \<le> b'"}
+\<open>c \<le>\<^sub>u\<^sub>b b \<longleftrightarrow> case b of None \<Rightarrow> True | Some b' \<Rightarrow> c \<le> b'\<close>
 \end{small}
 
 \noindent Strict comparisons, and comparisons with lower bounds are performed similarly.
@@ -823,7 +814,7 @@ lemma atoms_equiv_bounds_simps:
 text\<open>A valuation satisfies bounds iff the value of each variable
 respects both its lower and upper bound, i.e, @{thm
 satisfies_bounds_iff[no_vars]}. Asserted atoms are precisely encoded
-by the current bounds in a state (denoted by @{text \<doteq>}) if every
+by the current bounds in a state (denoted by \<open>\<doteq>\<close>) if every
 valuation satisfies them iff it satisfies the bounds, i.e.,
 @{thm atoms_equiv_bounds_simps[no_vars, iff]}.\<close>
 
@@ -834,10 +825,9 @@ to fix that by changing it and changing the tableau if necessary (but
 so that it remains equivalent to the initial tableau).\<close>
 
 text\<open>Therefore, the state of the procedure stores the tableau
-(denoted by @{text "\<T>"}), lower and upper bounds (denoted by @{text
-"\<B>\<^sub>l"} and @{text "\<B>\<^sub>u"}, and ordered pair of lower and upper bounds
-denoted by @{text "\<B>"}), candidate solution (denoted by @{text "\<V>"})
-and a flag (denoted by @{text "\<U>"}) indicating if unsatisfiability has
+(denoted by \<open>\<T>\<close>), lower and upper bounds (denoted by \<open>\<B>\<^sub>l\<close> and \<open>\<B>\<^sub>u\<close>, and ordered pair of lower and upper bounds
+denoted by \<open>\<B>\<close>), candidate solution (denoted by \<open>\<V>\<close>)
+and a flag (denoted by \<open>\<U>\<close>) indicating if unsatisfiability has
 been detected so far:\<close>
 
 text\<open>Since we also need to now about the indices of atoms, actually,
@@ -989,14 +979,13 @@ satisfy the initial tableau and list of atoms. Since tableau is
 changed only by equivalency preserving transformations and asserted
 atoms are encoded in the bounds, a valuation is a solution if it
 satisfies both the tableau and the bounds in the final state (when all
-atoms have been asserted). So, a valuation @{text v} satisfies a state
-@{text s} (denoted by @{text "\<Turnstile>\<^sub>s"}) if it satisfies the tableau and
-the bounds, i.e., @{thm satisfies_state_def [no_vars]}. Since @{text
-"\<V>"} should be a candidate solution, it should satisfy the state
-(unless the @{text \<U>} flag is raised). This is denoted by @{text "\<Turnstile> s"}
-and defined by @{thm curr_val_satisfies_state_def[no_vars]}. @{text "\<nabla>
-s"} will denote that all variables of @{text "\<T> s"} are explicitly
-valuated in @{text "\<V> s"}.\<close>
+atoms have been asserted). So, a valuation \<open>v\<close> satisfies a state
+\<open>s\<close> (denoted by \<open>\<Turnstile>\<^sub>s\<close>) if it satisfies the tableau and
+the bounds, i.e., @{thm satisfies_state_def [no_vars]}. Since \<open>\<V>\<close> should be a candidate solution, it should satisfy the state
+(unless the \<open>\<U>\<close> flag is raised). This is denoted by \<open>\<Turnstile> s\<close>
+and defined by @{thm curr_val_satisfies_state_def[no_vars]}. \<open>\<nabla>
+s\<close> will denote that all variables of \<open>\<T> s\<close> are explicitly
+valuated in \<open>\<V> s\<close>.\<close>
 
 definition update\<B>\<I> where
   [simp]: "update\<B>\<I> field_update i x c s = field_update (upd x (i,c)) s"
@@ -1075,19 +1064,18 @@ definition Negative where
   [simp]: "Negative \<equiv> Direction (>) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<I>\<^sub>u \<I>\<^sub>l \<B>\<^sub>i\<^sub>l_update Geq Leq (\<ge>)"
 
 
-text\<open>Assuming that the @{text \<U>} flag and the current valuation
-@{text "\<V>"} in the final state determine the solution of a problem, the
-@{text assert_all} function can be reduced to the @{text assert_all_state}
+text\<open>Assuming that the \<open>\<U>\<close> flag and the current valuation
+\<open>\<V>\<close> in the final state determine the solution of a problem, the
+\<open>assert_all\<close> function can be reduced to the \<open>assert_all_state\<close>
 function that operates on the states:
 @{text[display] "assert_all t as \<equiv> let s = assert_all_state t as in
    if (\<U> s) then (False, None) else (True, Some (\<V> s))" }
 \<close>
-text\<open>Specification for the @{text assert_all_state} can be directly
-obtained from the specification of @{text assert_all}, and it describes
+text\<open>Specification for the \<open>assert_all_state\<close> can be directly
+obtained from the specification of \<open>assert_all\<close>, and it describes
 the connection between the valuation in the final state and the
 initial tableau and atoms. However, we will make an additional
-refinement step and give stronger assumptions about the @{text
-assert_all_state} function that describes the connection between
+refinement step and give stronger assumptions about the \<open>assert_all_state\<close> function that describes the connection between
 the initial tableau and atoms with the tableau and bounds in the final
 state.\<close>
 
@@ -1120,16 +1108,15 @@ definition assert_all where
      if (\<U> s) then Unsat (the (\<U>\<^sub>c s)) else Sat (\<V> s)"
 end
 
-text\<open>The @{text assert_all_state} function can be implemented by first
-applying the @{text init} function that creates an initial state based
-on the starting tableau, and then by iteratively applying the @{text
-assert} function for each atom in the starting atoms list.\<close>
+text\<open>The \<open>assert_all_state\<close> function can be implemented by first
+applying the \<open>init\<close> function that creates an initial state based
+on the starting tableau, and then by iteratively applying the \<open>assert\<close> function for each atom in the starting atoms list.\<close>
 
 text\<open>
 \begin{small}
-  @{text "assert_loop as s \<equiv> foldl (\<lambda> s' a. if (\<U> s') then s' else assert a s') s as"}
+  \<open>assert_loop as s \<equiv> foldl (\<lambda> s' a. if (\<U> s') then s' else assert a s') s as\<close>
 
-  @{text "assert_all_state t as \<equiv> assert_loop ats (init t)"}
+  \<open>assert_all_state t as \<equiv> assert_loop ats (init t)\<close>
 \end{small}
 \<close>
 
@@ -1144,18 +1131,17 @@ locale Init' =
   assumes init'_atoms_imply_bounds_index: "\<triangle> t \<Longrightarrow> {} \<Turnstile>\<^sub>i \<B>\<I> (init t)"
 
 
-text\<open>Specification for @{text "init"} can be obtained from the
-specification of @{text asser_all_state} since all its assumptions
-must also hold for @{text "init"} (when the list of atoms is
-empty). Also, since @{text init} is the first step in the @{text
-assert_all_state} implementation, the precondition for @{text init}
-the same as for the @{text assert_all_state}. However,
+text\<open>Specification for \<open>init\<close> can be obtained from the
+specification of \<open>asser_all_state\<close> since all its assumptions
+must also hold for \<open>init\<close> (when the list of atoms is
+empty). Also, since \<open>init\<close> is the first step in the \<open>assert_all_state\<close> implementation, the precondition for \<open>init\<close>
+the same as for the \<open>assert_all_state\<close>. However,
 unsatisfiability is never going to be detected during initialization
 and @{term \<U>} flag is never going to be raised. Also, the tableau in
 the initial state can just be initialized with the starting
 tableau. The condition @{term "{} \<doteq> \<B> (init t)"} is equivalent to
 asking that initial bounds are empty. Therefore, specification for
-@{text "init"} can be refined to:\<close>
+\<open>init\<close> can be refined to:\<close>
 
 locale Init = fixes init::"tableau \<Rightarrow> ('i,'a::lrv) state"
   assumes
@@ -1229,23 +1215,22 @@ lemma "tvars t = set (vars_list t)"
   by (auto simp add: set_vars_list lvars_def rvars_def)
 
 
-text\<open>\smallskip The @{text assert} function asserts a single
-atom. Since the @{text init} function does not raise the @{text \<U>}
-flag, from the definition of @{text assert_loop}, it is clear that the
-flag is not raised when the @{text assert} function is
-called. Moreover, the assumptions about the @{text assert_all_state}
-imply that the loop invariant must be that if the @{text \<U>} flag is
+text\<open>\smallskip The \<open>assert\<close> function asserts a single
+atom. Since the \<open>init\<close> function does not raise the \<open>\<U>\<close>
+flag, from the definition of \<open>assert_loop\<close>, it is clear that the
+flag is not raised when the \<open>assert\<close> function is
+called. Moreover, the assumptions about the \<open>assert_all_state\<close>
+imply that the loop invariant must be that if the \<open>\<U>\<close> flag is
 not raised, then the current valuation must satisfy the state (i.e.,
-@{text "\<Turnstile> s"}). The @{text assert} function will be more easily
+\<open>\<Turnstile> s\<close>). The \<open>assert\<close> function will be more easily
 implemented if it is always applied to a state with a normalized and
 valuated tableau, so we make this another loop invariant. Therefore,
-the precondition for the @{text "assert a s"} function call is that
-@{text "\<not> \<U> s"}, @{text "\<Turnstile> s"}, @{text "\<triangle> (\<T> s)"} and @{text "\<nabla> s"}
-hold. The specification for @{text "assert"} directly follows from the
-specification of @{text assert_all_state} (except that it is
+the precondition for the \<open>assert a s\<close> function call is that
+\<open>\<not> \<U> s\<close>, \<open>\<Turnstile> s\<close>, \<open>\<triangle> (\<T> s)\<close> and \<open>\<nabla> s\<close>
+hold. The specification for \<open>assert\<close> directly follows from the
+specification of \<open>assert_all_state\<close> (except that it is
 additionally required that bounds reflect asserted atoms also when
-unsatisfiability is detected, and that it is required that @{text
-assert} keeps the tableau normalized and valuated).\<close>
+unsatisfiability is detected, and that it is required that \<open>assert\<close> keeps the tableau normalized and valuated).\<close>
 
 locale Assert = fixes assert::"('i,'a::lrv) i_atom \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
   assumes
@@ -1396,8 +1381,7 @@ qed
 end
 
 text\<open>Under these assumptions, it can easily be shown (mainly by
-induction) that the previously shown implementation of @{text
-"assert_all_state"} satisfies its specification.\<close>
+induction) that the previously shown implementation of \<open>assert_all_state\<close> satisfies its specification.\<close>
 
 sublocale AssertAllState' < AssertAllState assert_all_state
 proof
@@ -1437,21 +1421,20 @@ subsection\<open>Asserting Single Atoms\<close>
 
 text\<open>The @{term assert} function is split in two phases. First,
 @{term assert_bound} updates the bounds and checks only for conflicts
-cheap to detect. Next, @{text check} performs the full simplex
-algorithm. The @{text assert} function can be implemented as @{text
-"assert a s = check (assert_bound a s)"}. Note that it is also
+cheap to detect. Next, \<open>check\<close> performs the full simplex
+algorithm. The \<open>assert\<close> function can be implemented as \<open>assert a s = check (assert_bound a s)\<close>. Note that it is also
 possible to do the first phase for several asserted atoms, and only
 then to let the expensive second phase work.
 
-\medskip Asserting an atom @{text "x \<bowtie> b"} begins with the function
-@{text assert_bound}.  If the atom is subsumed by the current bounds,
-then no changes are performed. Otherwise, bounds for @{text "x"} are
+\medskip Asserting an atom \<open>x \<bowtie> b\<close> begins with the function
+\<open>assert_bound\<close>.  If the atom is subsumed by the current bounds,
+then no changes are performed. Otherwise, bounds for \<open>x\<close> are
 changed to incorporate the atom. If the atom is inconsistent with the
-previous bounds for @{text "x"}, the @{term \<U>} flag is raised. If
-@{text "x"} is not a lhs variable in the current tableau and if the
-value for @{text "x"} in the current valuation violates the new bound
-@{text "b"}, the value for @{text "x"} can be updated and set to
-@{text "b"}, meanwhile updating the values for lhs variables of
+previous bounds for \<open>x\<close>, the @{term \<U>} flag is raised. If
+\<open>x\<close> is not a lhs variable in the current tableau and if the
+value for \<open>x\<close> in the current valuation violates the new bound
+\<open>b\<close>, the value for \<open>x\<close> can be updated and set to
+\<open>b\<close>, meanwhile updating the values for lhs variables of
 the tableau so that it remains satisfied. Otherwise, no changes to the
 current valuation are performed.\<close>
 
@@ -1479,15 +1462,15 @@ definition bounds_consistent :: "('i,'a::linorder) state \<Rightarrow> bool" ("\
    \<forall> x. if \<B>\<^sub>l s x = None \<or> \<B>\<^sub>u s x = None then True else the (\<B>\<^sub>l s x) \<le> the (\<B>\<^sub>u s x)"
 
 
-text\<open>So, the @{text assert_bound} function must ensure that the
+text\<open>So, the \<open>assert_bound\<close> function must ensure that the
 given atom is included in the bounds, that the tableau remains
 satisfied by the valuation and that all variables except the lhs variables
 in the tableau are within their
-bounds. To formalize this, we introduce the notation @{text "v
-\<Turnstile>\<^sub>b (lb, ub) \<parallel> S"}, and define @{thm
+bounds. To formalize this, we introduce the notation \<open>v
+\<Turnstile>\<^sub>b (lb, ub) \<parallel> S\<close>, and define @{thm
 satisfies_bounds_set_iff[no_vars]}, and @{thm
-curr_val_satisfies_no_lhs_def[no_vars]}. The @{text assert_bound}
-function raises the @{text \<U>} flag if and only if lower and upper
+curr_val_satisfies_no_lhs_def[no_vars]}. The \<open>assert_bound\<close>
+function raises the \<open>\<U>\<close> flag if and only if lower and upper
 bounds overlap. This is formalized as @{thm
 bounds_consistent_def[no_vars]}.\<close>
 
@@ -1528,10 +1511,8 @@ lemma bounds_consistent_lt_lb:
     (auto simp add: bound_compare_defs, erule_tac x="x" in allE, simp)
 
 
-text\<open>Since the @{text assert_bound} is the first step in the @{text
-assert} function implementation, the preconditions for @{text
-assert_bound} are the same as preconditions for the @{text assert}
-function. The specifiction for the @{text assert_bound} is:\<close>
+text\<open>Since the \<open>assert_bound\<close> is the first step in the \<open>assert\<close> function implementation, the preconditions for \<open>assert_bound\<close> are the same as preconditions for the \<open>assert\<close>
+function. The specifiction for the \<open>assert_bound\<close> is:\<close>
 
 locale AssertBound = fixes assert_bound::"('i,'a::lrv) i_atom \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
   assumes
@@ -1591,14 +1572,14 @@ sublocale AssertBoundNoLhs < AssertBound
         assert_bound_nolhs_unsat assert_bound_nolhs_tableau_valuated)+) 
 
 
-text\<open>The second phase of @{text assert}, the @{text check} function,
+text\<open>The second phase of \<open>assert\<close>, the \<open>check\<close> function,
 is the heart of the Simplex algorithm. It is always called after
-@{text assert_bound}, but in two different situations. In the first
-case @{text assert_bound} raised the @{text \<U>} flag and then
-@{text check} should retain the flag and should not perform any changes.
-In the second case @{text assert_bound} did not raise the
-@{text \<U>} flag, so @{text "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"}, @{text "\<diamond> s"}, @{text "\<triangle> (\<T>
-s)"}, and @{text "\<nabla> s"} hold.\<close>
+\<open>assert_bound\<close>, but in two different situations. In the first
+case \<open>assert_bound\<close> raised the \<open>\<U>\<close> flag and then
+\<open>check\<close> should retain the flag and should not perform any changes.
+In the second case \<open>assert_bound\<close> did not raise the
+\<open>\<U>\<close> flag, so \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s\<close>, \<open>\<diamond> s\<close>, \<open>\<triangle> (\<T>
+s)\<close>, and \<open>\<nabla> s\<close> hold.\<close>
 
 locale Check = fixes check::"('i,'a::lrv) state \<Rightarrow> ('i,'a) state"
   assumes
@@ -1773,9 +1754,7 @@ next
   qed
 qed
 
-text\<open>Under these assumptions for @{text "assert_bound"} and @{text
-"check"}, it can be easily shown that the implementation of @{text
-"assert"} (previously given) satisfies its specification.\<close>
+text\<open>Under these assumptions for \<open>assert_bound\<close> and \<open>check\<close>, it can be easily shown that the implementation of \<open>assert\<close> (previously given) satisfies its specification.\<close>
 
 locale AssertAllState'' = Init init + AssertBoundNoLhs assert_bound + Check check for
   init :: "tableau \<Rightarrow> ('i,'a::lrv) state" and
@@ -1788,8 +1767,8 @@ definition assert_all_state where [simp]:
   "assert_all_state t ats \<equiv> check (assert_bound_loop ats (init t))"
 
 text\<open>However, for efficiency reasons, we want to allow
-implementations that delay the @{text check} function call and call it
-after several @{text assert_bound} calls. For example:
+implementations that delay the \<open>check\<close> function call and call it
+after several \<open>assert_bound\<close> calls. For example:
 
 \smallskip
 \begin{small}
@@ -1799,15 +1778,12 @@ after several @{text assert_bound} calls. For example:
 \end{small}
 \smallskip
 
-Then, the loop consists only of @{text assert_bound} calls, so @{text
-assert_bound} postcondition must imply its precondition. This is not
+Then, the loop consists only of \<open>assert_bound\<close> calls, so \<open>assert_bound\<close> postcondition must imply its precondition. This is not
 the case, since variables on the lhs may be out of their
 bounds. Therefore, we make a refinement and specify weaker
-preconditions (replace @{text "\<Turnstile> s"}, by @{text
-"\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"} and @{text
-"\<diamond> s"}) for @{text assert_bound}, and show that these
+preconditions (replace \<open>\<Turnstile> s\<close>, by \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s\<close> and \<open>\<diamond> s\<close>) for \<open>assert_bound\<close>, and show that these
 preconditions are still good enough to prove the correctnes of this
-alternative @{text assert_all_state} definition.\<close>
+alternative \<open>assert_all_state\<close> definition.\<close>
 
 
 lemma AssertAllState''_precond':
@@ -1993,12 +1969,12 @@ qed
 
 subsection\<open>Update and Pivot\<close>
 
-text\<open>Both @{text "assert_bound"} and @{text "check"} need to update
+text\<open>Both \<open>assert_bound\<close> and \<open>check\<close> need to update
 the valuation so that the tableau remains satisfied. If the value for
 a variable not on the lhs of the tableau is changed, this
 can be done rather easily (once the value of that variable is changed,
 one should recalculate and change the values for all lhs
-variables of the tableau). The @{text update} function does this, and
+variables of the tableau). The \<open>update\<close> function does this, and
 it is specified by:\<close>
 
 locale Update = fixes update::"var \<Rightarrow> 'a::lrv \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
@@ -2313,7 +2289,7 @@ lemma rvars_of_lvar_rvars:
 
 end
 
-text \<open>Updating changes the value of @{text x} and then updates
+text \<open>Updating changes the value of \<open>x\<close> and then updates
 values of all lhs variables so that the tableau remains
 satisfied. This can be based on a function that recalculates rhs
 polynomial values in the changed valuation:\<close>
@@ -2324,7 +2300,7 @@ locale RhsEqVal = fixes rhs_eq_val::"(var, 'a::lrv) mapping \<Rightarrow> var \<
 
 begin
 
-text\<open>\noindent Then, the next implementation of @{text update}
+text\<open>\noindent Then, the next implementation of \<open>update\<close>
 satisfies its specification:\<close>
 
 abbreviation update_eq where
@@ -2420,8 +2396,8 @@ equation, in an operation called \emph{pivoting}. Pivoting has the
 precondition that the tableau is normalized and that it is always
 called for a lhs variable of the tableau, and a rhs variable in the
 equation with that lhs variable. The set of rhs variables for the
-given lhs variable is found using the @{text rvars_of_lvar} function
-(specified in a very simple locale @{text EqForLVar}, that we do not
+given lhs variable is found using the \<open>rvars_of_lvar\<close> function
+(specified in a very simple locale \<open>EqForLVar\<close>, that we do not
 print).\<close>
 
 locale Pivot = EqForLVar + fixes pivot::"var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state"
@@ -2495,15 +2471,15 @@ lemma
 end
 
 
-text\<open>Functions @{text pivot} and @{text update} can be used to
-implement the @{text check} function. In its context, @{text pivot}
-and @{text update} functions are always called together, so the
+text\<open>Functions \<open>pivot\<close> and \<open>update\<close> can be used to
+implement the \<open>check\<close> function. In its context, \<open>pivot\<close>
+and \<open>update\<close> functions are always called together, so the
 following definition can be used: @{prop "pivot_and_update x\<^sub>i x\<^sub>j c s =
 update x\<^sub>i c (pivot x\<^sub>i x\<^sub>j s)"}. It is possible to make a more efficient
-implementation of @{text pivot_and_update} that does not use separate
-implementations of @{text pivot} and @{text update}. To allow this, a
-separate specification for @{text pivot_and_update} can be given. It can be
-easily shown that the @{text pivot_and_update} definition above
+implementation of \<open>pivot_and_update\<close> that does not use separate
+implementations of \<open>pivot\<close> and \<open>update\<close>. To allow this, a
+separate specification for \<open>pivot_and_update\<close> can be given. It can be
+easily shown that the \<open>pivot_and_update\<close> definition above
 satisfies this specification.\<close>
 
 
@@ -2600,7 +2576,7 @@ sublocale PivotUpdate < PivotAndUpdate eq_idx_for_lvar pivot_and_update
     pivot_tableau_valuated update_tableau_valuated update_unsat_core_id
   by (unfold_locales, auto)
 
-text\<open>Given the @{term update} function, @{text assert_bound} can be
+text\<open>Given the @{term update} function, \<open>assert_bound\<close> can be
 implemented as follows.
 \vspace{-2mm}
 @{text[display]
@@ -2611,7 +2587,7 @@ implemented as follows.
                else if x \<notin> lvars (\<T> s') \<and> c < \<langle>\<V> s\<rangle> x then update x c s' else s'"
 }
 \vspace{-2mm}
-\noindent The case of @{text "Geq x c"} atoms is analogous (a systematic way to
+\noindent The case of \<open>Geq x c\<close> atoms is analogous (a systematic way to
 avoid symmetries is discussed in Section \ref{sec:symmetries}). This
 implementation satisfies both its specifications.
 \<close>
@@ -3342,7 +3318,7 @@ definition pivot_tableau' :: "var \<Rightarrow> var \<Rightarrow> tableau \<Righ
 definition pivot' :: "var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state" where
   "pivot' x\<^sub>i x\<^sub>j s \<equiv> \<T>_update (pivot_tableau' x\<^sub>i x\<^sub>j (\<T> s)) s"
 
-text\<open>\noindent Then, the next implementation of @{text pivot} satisfies its specification:\<close>
+text\<open>\noindent Then, the next implementation of \<open>pivot\<close> satisfies its specification:\<close>
 
 definition pivot_tableau :: "var \<Rightarrow> var \<Rightarrow> tableau \<Rightarrow> tableau" where
   "pivot_tableau x\<^sub>i x\<^sub>j t \<equiv> let eq = eq_for_lvar t x\<^sub>i; eq' = pivot_eq eq x\<^sub>j in
@@ -3606,7 +3582,7 @@ proof
         from \<open>e \<in> set (\<T> s)\<close> have "rvars_eq e \<subseteq> rvars (\<T> s)" unfolding rvars_def by auto
         hence "x\<^sub>i \<in> vars (rhs (pivot_eq ?eq x\<^sub>j)) - rvars_eq e" 
           unfolding vars_pivot(2) var 
-          using `\<triangle> (\<T> s)`[unfolded normalized_tableau_def] \<open>x\<^sub>i \<in> lvars (\<T> s)\<close> by auto
+          using \<open>\<triangle> (\<T> s)\<close>[unfolded normalized_tableau_def] \<open>x\<^sub>i \<in> lvars (\<T> s)\<close> by auto
         from subst_with_effect[OF True this] rvars_eq
         show ?thesis by (simp add: subst_var_eq_def)
       qed
@@ -3694,25 +3670,21 @@ qed
 
 subsection\<open>Check implementation\<close>
 
-text\<open>The @{text check} function is called when all rhs variables are
+text\<open>The \<open>check\<close> function is called when all rhs variables are
 in bounds, and it checks if there is a lhs variable that is not. If
-there is no such variable, then satisfiability is detected and @{text
-"check"} succeeds. If there is a lhs variable @{text "x\<^sub>i"} out of its
-bounds, a rhs variable @{text "x\<^sub>j"} is sought which allows pivoting
-with @{text "x\<^sub>i"} and updating @{text "x\<^sub>i"} to its violated bound. If
-@{text "x\<^sub>i"} is under its lower bound it must be increased, and if
-@{text "x\<^sub>j"} has a positive coefficient it must be increased so it
+there is no such variable, then satisfiability is detected and \<open>check\<close> succeeds. If there is a lhs variable \<open>x\<^sub>i\<close> out of its
+bounds, a rhs variable \<open>x\<^sub>j\<close> is sought which allows pivoting
+with \<open>x\<^sub>i\<close> and updating \<open>x\<^sub>i\<close> to its violated bound. If
+\<open>x\<^sub>i\<close> is under its lower bound it must be increased, and if
+\<open>x\<^sub>j\<close> has a positive coefficient it must be increased so it
 must be under its upper bound and if it has a negative coefficient it
 must be decreased so it must be above its lower bound. The case when
-@{text "x\<^sub>i"} is above its upper bound is symmetric (avoiding
+\<open>x\<^sub>i\<close> is above its upper bound is symmetric (avoiding
 symmetries is discussed in Section \ref{sec:symmetries}). If there is
-no such @{text "x\<^sub>j"}, unsatisfiability is detected and @{text "check"}
+no such \<open>x\<^sub>j\<close>, unsatisfiability is detected and \<open>check\<close>
 fails. The procedure is recursively repeated, until it either succeeds
-or fails. To ensure termination, variables @{text "x\<^sub>i"} and @{text
-"x\<^sub>j"} must be chosen with respect to a fixed variable ordering. For
-choosing these variables auxiliary functions @{text
-"min_lvar_not_in_bounds"}, @{text "min_rvar_inc"} and @{text
-"min_rvar_dec"} are specified (each in its own locale). For, example:
+or fails. To ensure termination, variables \<open>x\<^sub>i\<close> and \<open>x\<^sub>j\<close> must be chosen with respect to a fixed variable ordering. For
+choosing these variables auxiliary functions \<open>min_lvar_not_in_bounds\<close>, \<open>min_rvar_inc\<close> and \<open>min_rvar_dec\<close> are specified (each in its own locale). For, example:
 \<close>
 
 locale MinLVarNotInBounds = fixes min_lvar_not_in_bounds::"('i,'a::lrv) state \<Rightarrow> var option"
@@ -3908,7 +3880,7 @@ inductive check_dom where
 
 
 text\<open>
-The definition of @{text check} can be given by:
+The definition of \<open>check\<close> can be given by:
 
 @{text[display]
 "check s \<equiv> if \<U> s then s
@@ -3923,8 +3895,8 @@ The definition of @{text check} can be given by:
    case x\<^sub>j' of None \<Rightarrow> s \<lparr> \<U> := True \<rparr> | Some x\<^sub>j \<Rightarrow> pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s"
 }
 
-The definition of @{text check_dec} is analogous. It is shown (mainly
-by induction) that this definition satisfies the @{text "check"}
+The definition of \<open>check_dec\<close> is analogous. It is shown (mainly
+by induction) that this definition satisfies the \<open>check\<close>
 specification. Note that this definition uses general recursion, so
 its termination is non-trivial. It has been shown that it terminates
 for all states satisfying the check preconditions. The proof is based
@@ -6429,33 +6401,31 @@ qed
 subsection\<open>Symmetries\<close>
 
 text\<open>\label{sec:symmetries} Simplex algorithm exhibits many
-symmetric cases. For example, @{text "assert_bound"} treats atoms
-@{text "Leq x c"} and @{text "Geq x c"} in a symmetric manner, @{text
-"check_inc"} and @{text "check_dec"} are symmetric, etc. These
+symmetric cases. For example, \<open>assert_bound\<close> treats atoms
+\<open>Leq x c\<close> and \<open>Geq x c\<close> in a symmetric manner, \<open>check_inc\<close> and \<open>check_dec\<close> are symmetric, etc. These
 symmetric cases differ only in several aspects: order relations
-between numbers (@{text "<"} vs @{text ">"} and @{text "\<le>"} vs @{text
-"\<ge>"}), the role of lower and upper bounds (@{text "\<B>\<^sub>l"} vs
-@{text "\<B>\<^sub>u"}) and their updating functions, comparisons with bounds
-(e.g., @{text "\<ge>\<^sub>u\<^sub>b"} vs @{text "\<le>\<^sub>l\<^sub>b"} or
-@{text "<\<^sub>l\<^sub>b"} vs @{text ">\<^sub>u\<^sub>b"}), and atom constructors (@{text "Leq"}
-and @{text "Geq"}). These can be attributed to two different
+between numbers (\<open><\<close> vs \<open>>\<close> and \<open>\<le>\<close> vs \<open>\<ge>\<close>), the role of lower and upper bounds (\<open>\<B>\<^sub>l\<close> vs
+\<open>\<B>\<^sub>u\<close>) and their updating functions, comparisons with bounds
+(e.g., \<open>\<ge>\<^sub>u\<^sub>b\<close> vs \<open>\<le>\<^sub>l\<^sub>b\<close> or
+\<open><\<^sub>l\<^sub>b\<close> vs \<open>>\<^sub>u\<^sub>b\<close>), and atom constructors (\<open>Leq\<close>
+and \<open>Geq\<close>). These can be attributed to two different
 orientations (positive and negative) of rational axis. To avoid
-duplicating definitions and proofs, @{text "assert_bound"} definition
-cases for @{text "Leq"} and @{text "Geq"} are replaced by a call to a
-newly introduced function parametrized by a @{text "Direction"} --- a
+duplicating definitions and proofs, \<open>assert_bound\<close> definition
+cases for \<open>Leq\<close> and \<open>Geq\<close> are replaced by a call to a
+newly introduced function parametrized by a \<open>Direction\<close> --- a
 record containing minimal set of aspects listed above that differ in
 two definition cases such that other aspects can be derived from them
-(e.g., only @{text "<"} need to be stored while @{text "\<le>"} can be
-derived from it). Two constants of the type @{text "Direction"} are
-defined: @{text "Positive"} (with @{text "<"}, @{text "\<le>"} orders,
-@{text "\<B>\<^sub>l"} for lower and @{text "\<B>\<^sub>u"} for upper bounds and their
-corresponding updating functions, and @{text "Leq"} constructor) and
-@{text "Negative"} (completely opposite from the previous
-one). Similarly, @{text "check_inc"} and @{text "check_dec"} are
-replaced by a new function @{text "check_incdec"} parametrized by a
-@{text "Direction"}. All lemmas, previously repeated for each
+(e.g., only \<open><\<close> need to be stored while \<open>\<le>\<close> can be
+derived from it). Two constants of the type \<open>Direction\<close> are
+defined: \<open>Positive\<close> (with \<open><\<close>, \<open>\<le>\<close> orders,
+\<open>\<B>\<^sub>l\<close> for lower and \<open>\<B>\<^sub>u\<close> for upper bounds and their
+corresponding updating functions, and \<open>Leq\<close> constructor) and
+\<open>Negative\<close> (completely opposite from the previous
+one). Similarly, \<open>check_inc\<close> and \<open>check_dec\<close> are
+replaced by a new function \<open>check_incdec\<close> parametrized by a
+\<open>Direction\<close>. All lemmas, previously repeated for each
 symmetric instance, were replaced by a more abstract one, again
-parametrized by a @{text "Direction"} parameter.
+parametrized by a \<open>Direction\<close> parameter.
 \vspace{-3mm}
 \<close>
 

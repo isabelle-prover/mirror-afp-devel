@@ -6,7 +6,7 @@ begin
 code_identifier code_module SINVAR_Dependability_norefl_impl => (Scala) SINVAR_Dependability_norefl
 
 
-subsubsection {* SecurityInvariant Dependability norefl List Implementation *}
+subsubsection \<open>SecurityInvariant Dependability norefl List Implementation\<close>
 
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
@@ -80,7 +80,7 @@ interpretation Dependability_norefl_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* packing *}
+subsubsection \<open>packing\<close>
   definition SINVAR_LIB_Dependability_norefl :: "('v::vertex, SINVAR_Dependability_norefl.dependability_level) TopoS_packed" where
     "SINVAR_LIB_Dependability_norefl \<equiv> 
     \<lparr> nm_name = ''Dependability_norefl'', 

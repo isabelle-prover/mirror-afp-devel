@@ -3,7 +3,7 @@
     Copyright   2000 Technische Universitaet Muenchen
 *)
 
-section {* Effect of Instructions on the State Type *}
+section \<open>Effect of Instructions on the State Type\<close>
 
 theory Effect
 imports JVM_SemiType "../JVM/JVMExceptions"
@@ -24,7 +24,7 @@ locale jvm_method = prog +
   fixes mxl :: nat
   defines mxl_def: "mxl \<equiv> 1+size Ts+mxl\<^sub>0"
 
-text {* Program counter of successor instructions: *}
+text \<open>Program counter of successor instructions:\<close>
 primrec succs :: "instr \<Rightarrow> ty\<^sub>i \<Rightarrow> pc \<Rightarrow> pc list" where
   "succs (Load idx) \<tau> pc     = [pc+1]"
 | "succs (Store idx) \<tau> pc    = [pc+1]"
@@ -277,10 +277,10 @@ proof -
 qed
 (*>*)
 
-text {* 
+text \<open>
 \medskip
 simp rules for @{term app}
-*}
+\<close>
 lemma appNone[simp]: "app i P mxs T\<^sub>r pc mpc et None = True" 
   by (simp add: app_def)
 
@@ -373,7 +373,7 @@ lemma effNone:
   by (auto simp add: eff_def xcpt_eff_def norm_eff_def)
 
 
-text {* some helpers to make the specification directly executable: *}
+text \<open>some helpers to make the specification directly executable:\<close>
 lemma relevant_entries_append [simp]:
   "relevant_entries P i pc (xt @ xt') = relevant_entries P i pc xt @ relevant_entries P i pc xt'"
   by (unfold relevant_entries_def) simp

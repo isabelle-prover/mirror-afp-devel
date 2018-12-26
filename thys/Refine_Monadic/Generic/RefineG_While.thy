@@ -1,4 +1,4 @@
-section {* Generic While-Combinator *}
+section \<open>Generic While-Combinator\<close>
 theory RefineG_While
 imports 
   RefineG_Recursion
@@ -116,7 +116,7 @@ lemma WHILEI_le_WHILEIT: "WHILEI I b f s \<le> WHILEIT I b f s"
   unfolding WHILEI_def WHILEIT_def
   by (rule REC_le_RECT)
 
-subsubsection {* While without Annotated Invariant*}
+subsubsection \<open>While without Annotated Invariant\<close>
 
 lemma WHILE_unfold: 
   "WHILE b f s = (if b s then bind (f s) (WHILE b f) else return s)"

@@ -1,17 +1,17 @@
-section {* The ``sturm'' proof method *}
+section \<open>The ``sturm'' proof method\<close>
 
 (* Author: Manuel Eberl <eberlm@in.tum.de> *)
 theory Sturm_Method
 imports Sturm_Theorem
 begin
 
-subsection {* Preliminary lemmas *}
+subsection \<open>Preliminary lemmas\<close>
 
-text {*
+text \<open>
   In this subsection, we prove lemmas that reduce root counting and
   related statements to simple, computable expressions using the 
   @{term "count_roots"} function family.
-*}
+\<close>
 
 lemma poly_card_roots_less_leq:
   "card {x. a < x \<and> x \<le> b \<and> poly p x = 0} = count_roots_between p a b"
@@ -174,7 +174,7 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
         by (metis infinite_Ioo less_add_one) 
       moreover have "{a<..<a+1} \<subseteq> {x. x \<ge> a \<and> poly p x = 0}"
                     "{a<..<a+1} \<subseteq> {x. x > a \<and> poly p x = 0}" 
-          using `p = 0` by auto
+          using \<open>p = 0\<close> by auto
       ultimately have "\<not>finite {x. x \<ge> a \<and> poly p x = 0}" 
                       "\<not>finite {x. x > a \<and> poly p x = 0}" 
         by (auto dest!: finite_subset[of "{a<..<a+1}"] simp: infinite_Ioo)
@@ -210,7 +210,7 @@ proof (cases "poly p a = 0 \<and> p \<noteq> 0")
         by (metis infinite_Ioo diff_add_cancel less_add_one) 
       moreover have "{a - 1<..<a} \<subseteq> {x. x \<le> a \<and> poly p x = 0}"
                     "{a - 1<..<a} \<subseteq> {x. x < a \<and> poly p x = 0}" 
-          using `p = 0` by auto
+          using \<open>p = 0\<close> by auto
       ultimately have "\<not>finite {x. x \<le> a \<and> poly p x = 0}" 
                      "\<not>finite {x. x < a \<and> poly p x = 0}" 
           by (auto dest: finite_subset[of "{a - 1<..<a}"] simp: infinite_Ioo)
@@ -424,13 +424,13 @@ lemmas sturm_prop_substs = poly_no_roots poly_no_roots_less_leq
     poly_pos_between_leq_leq poly_pos_between_less_less
 
 
-subsection {* Reification *}
+subsection \<open>Reification\<close>
 
-text {*
+text \<open>
   This subsection defines a number of equations to automatically convert 
   statements about roots of polynomials into a canonical form so that they 
   can be proven using the above substitutions.
-*}
+\<close>
 
 definition "PR_TAG x \<equiv> x"
 
@@ -572,12 +572,12 @@ lemma sturm_imp_conv:
   by auto
 
 
-subsection {* Setup for the ``sturm'' method *}
+subsection \<open>Setup for the ``sturm'' method\<close>
 
 ML_file "sturm.ML"
 
-method_setup sturm = {*
+method_setup sturm = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD' (Sturm.sturm_tac ctxt true))
-*}
+\<close>
 
 end

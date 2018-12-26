@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-section {* A Simple DMZ Setup *}
+section \<open>A Simple DMZ Setup\<close>
 theory 
   DMZ
   imports 

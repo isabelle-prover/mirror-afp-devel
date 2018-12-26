@@ -2,7 +2,7 @@ theory Autoref_Data
 imports Main "../Lib/Refine_Util"
 begin
 
-ML {*
+ML \<open>
   signature AUTOREF_DATA = sig
     type T
     exception exNULL
@@ -46,6 +46,6 @@ ML {*
 
   end
 
-*}
+\<close>
 
 end

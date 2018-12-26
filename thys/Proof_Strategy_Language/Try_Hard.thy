@@ -24,7 +24,7 @@ ML_file "Parser_Combinator.ML"
 ML_file "PSL_Parser.ML"
 ML_file "Isar_Interface.ML"
 
-text{* Prevent overwriting the default basic strategies. *}
+text\<open>Prevent overwriting the default basic strategies.\<close>
 strategy Simp = Simp
 strategy Blast = Blast
 strategy Clarsimp = Clarsimp
@@ -45,7 +45,7 @@ strategy Hammer = Hammer
 strategy Nitpick = Nitpick
 strategy Quickcheck = Quickcheck
 
-text{* Small scale strategies. *}
+text\<open>Small scale strategies.\<close>
 strategy Auto_Solve = Thens [Auto, IsSolved]
 strategy Blast_Solve = Thens [Blast, IsSolved]
 strategy FF_Solve = Thens [Fastforce, IsSolved]
@@ -60,13 +60,13 @@ strategy DCases = Dynamic (Cases)
 strategy DCaseTac = Dynamic (CaseTac)
 strategy DAuto = Dynamic (Auto)
 
-text{* Defining default strategies.
+text\<open>Defining default strategies.
 They can be called by the keywords: try_hard, try_hard_one, try_hard_all, and try_parallel.
 - try_hard tries to discharge at least one sub-goal.
 - try_hard_one tries to discharge the first sub-goal.
 - try_hard_all tries to discharge all the current sub-goals.
 - try_parallel tries to discharge at least one sub-goal exploiting parallelism.
-*}
+\<close>
 
 strategy Basic =
   Ors [

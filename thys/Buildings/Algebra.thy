@@ -1,17 +1,17 @@
-section {* Algebra *}
+section \<open>Algebra\<close>
 
-text {*
+text \<open>
   In this section, we develop the necessary algebra for developing the theory of Coxeter systems,
   including groups, quotient groups, free groups, group presentations, and words in a group over a
   set of generators.
-*}
+\<close>
 
 theory Algebra
 imports Prelim "HOL-Library.Set_Algebras"
 
 begin
 
-subsection {* Miscellaneous algebra facts *}
+subsection \<open>Miscellaneous algebra facts\<close>
 
 lemma times2_conv_add: "(j::nat) + j = 2*j"
   by (induct j) auto
@@ -41,15 +41,15 @@ lemma uminus_sum_list_order2:
 
 end (* context group_add *)
 
-subsection {* The type of permutations of a type *}
+subsection \<open>The type of permutations of a type\<close>
 
-text {*
+text \<open>
   Here we construct a type consisting of all bijective functions on a type. This is the
   prototypical example of a group, where the group operation is composition, and every group can
   be embedded into such a type. It is for this purpose that we construct this type, so that we may
   confer upon suitable subsets of types that are not of class @{class group_add} the properties of
   that class, via a suitable injective correspondence to this permutation type.
-*}
+\<close>
 
 typedef 'a permutation = "{f::'a\<Rightarrow>'a. bij f}"
   morphisms permutation Abs_permutation
@@ -131,13 +131,13 @@ proof
 qed
 
 
-subsection {* Natural action of @{typ nat} on types of class @{class monoid_add} *}
+subsection \<open>Natural action of @{typ nat} on types of class @{class monoid_add}\<close>
 
-subsubsection {* Translation from class @{class power}. *}
+subsubsection \<open>Translation from class @{class power}.\<close>
 
-text {* 
+text \<open>
   Here we translate the @{class power} class to apply to types of class @{class monoid_add}.
-*}
+\<close>
 
 context monoid_add
 begin
@@ -169,7 +169,7 @@ proof (cases n)
     using nataction_add_flip add.assoc[of "-a" "a+b" "(a+b)+^k"] by simp
 qed simp
 
-subsubsection {* Additive order of an element *}
+subsubsection \<open>Additive order of an element\<close>
 
 context monoid_add
 begin
@@ -264,12 +264,12 @@ lemma pair_relator_halflist2_conv_rev_pair_relator_halflist:
  
 end (* context group_add *)
 
-subsection {* Partial sums of a list *}
+subsection \<open>Partial sums of a list\<close>
 
-text {*
+text \<open>
   Here we construct a list that collects the results of adding the elements of a given list
   together one-by-one.
-*}
+\<close>
 
 context monoid_add
 begin
@@ -382,7 +382,7 @@ qed
 
 end (* context monoid_add *)
 
-subsection {* Sums of alternating lists *}
+subsection \<open>Sums of alternating lists\<close>
 
 lemma (in group_add) uminus_sum_list_alternating_order2:
   "s+s=0 \<Longrightarrow> t+t=0 \<Longrightarrow> - sum_list (alternating_list n s t) =
@@ -419,9 +419,9 @@ qed simp
 
 end (* context monoid_add *)
 
-subsection {* Conjugation in @{class group_add} *}
+subsection \<open>Conjugation in @{class group_add}\<close>
 
-subsubsection {* Abbreviations and basic facts *}
+subsubsection \<open>Abbreviations and basic facts\<close>
 
 context group_add
 begin
@@ -504,12 +504,12 @@ qed (auto simp add: assms(1) algebra_simps)
 
 end (* context group_add *)
 
-subsubsection {* The conjugation sequence *}
+subsubsection \<open>The conjugation sequence\<close>
 
-text {*
+text \<open>
   Given a list in @{class group_add}, we create a new list by conjugating each term by all the
   previous terms. This sequence arises in Coxeter systems.
-*}
+\<close>
 
 context group_add
 begin
@@ -622,15 +622,15 @@ qed simp
 
 end (* context group_add *)
 
-subsubsection {* The action on signed @{class group_add} elements *}
+subsubsection \<open>The action on signed @{class group_add} elements\<close>
 
-text {*
+text \<open>
   Here we construct an action of a group on itself by conjugation, where group elements are
   endowed with an auxiliary sign by pairing with a boolean element. In multiple applications of
   this action, the auxiliary sign helps keep track of how many times the elements conjugating and
   being conjugated are the same. This action arises in exploring reduced expressions of group
   elements as words in a set of generators of order two (in particular, in a Coxeter group).
-*}
+\<close>
 
 type_synonym 'a signed = "'a\<times>bool"
 
@@ -755,9 +755,9 @@ qed simp
 
 end (* context group_add *)
 
-subsection {* Cosets *}
+subsection \<open>Cosets\<close>
 
-subsubsection {* Basic facts *}
+subsubsection \<open>Basic facts\<close>
 
 lemma set_zero_plus' [simp]: "(0::'a::monoid_add) +o C = C"
 \<comment> \<open>lemma @{text "Set_Algebras.set_zero_plus"} is restricted to types of class
@@ -783,7 +783,7 @@ lemma lcoset_inj_on: "inj ((+o) (a::'a::group_add))"
 lemma lcoset_conv_set: "(a::'g::group_add) \<in> b +o A \<Longrightarrow> -b + a \<in> A"
   by (auto simp add: elt_set_plus_def)
 
-subsubsection {* The supset order on cosets *}
+subsubsection \<open>The supset order on cosets\<close>
 
 lemma supset_lbound_lcoset_shift:
   "supset_lbound_of X Y B \<Longrightarrow>
@@ -805,7 +805,7 @@ lemma supset_glbound_in_of_lcoset_shift:
           ]
   by      (fastforce simp add: set_plus_rearrange2)
 
-subsubsection {* The afforded partition *}
+subsubsection \<open>The afforded partition\<close>
 
 definition lcoset_rel :: "'a::{uminus,plus} set \<Rightarrow> ('a\<times>'a) set"
   where "lcoset_rel A \<equiv> {(x,y). -x + y \<in> A}"
@@ -814,11 +814,11 @@ lemma lcoset_relI: "-x+y \<in> A \<Longrightarrow> (x,y) \<in> lcoset_rel A"
   using lcoset_rel_def by fast
 
 
-subsection {* Groups *}
+subsection \<open>Groups\<close>
 
-text {* We consider groups as closed sets in a type of class @{class group_add}. *}
+text \<open>We consider groups as closed sets in a type of class @{class group_add}.\<close>
 
-subsubsection {* Locale definition and basic facts *}
+subsubsection \<open>Locale definition and basic facts\<close>
 
 locale    Group =
   fixes   G :: "'g::group_add set"
@@ -865,9 +865,9 @@ lemma sum_list_closed: "set as \<subseteq> G \<Longrightarrow> sum_list as \<in>
 
 end (* context Group *)
 
-subsubsection {* Sets with a suitable binary operation *}
+subsubsection \<open>Sets with a suitable binary operation\<close>
 
-text {*
+text \<open>
   We have chosen to only consider groups in types of class @{class group_add} so that we can take
   advantage of all the algebra lemmas already proven in @{theory HOL.Groups}, as well as
   constructs like @{const sum_list}. The following locale builds a bridge between this restricted
@@ -875,7 +875,7 @@ text {*
   by constructing an injective map into type @{type permutation} (which is of class
   @{class group_add} with respect to the composition operation) that respects the group operation.
   This bridge will be necessary to define quotient groups, in particular.
-*}
+\<close>
 
 locale BinOpSetGroup =
   fixes G     :: "'a set"
@@ -1044,7 +1044,7 @@ lemma inv_correspondence_conv_apply: "x \<in> pG \<Longrightarrow> \<ii>\<pp> x 
 end (* context BinOpSetGroup *)
 
 
-subsubsection {* Cosets of a @{const Group} *}
+subsubsection \<open>Cosets of a @{const Group}\<close>
 
 context Group
 begin
@@ -1116,7 +1116,7 @@ lemma trivial_LCoset: "H\<subseteq>G \<Longrightarrow> H = LCoset_rel H `` {0}"
 
 end (* context Group *)
 
-subsubsection {* The @{const Group} generated by a set *}
+subsubsection \<open>The @{const Group} generated by a set\<close>
 
 inductive_set genby :: "'a::group_add set \<Rightarrow> 'a set" ("\<langle>_\<rangle>")
   for S :: "'a set"
@@ -1264,7 +1264,7 @@ lemma (in Group) genby_set_lconjby_set_rconjby_closed:
   using   assms uminus_closed genby_set_lconjby_set_lconjby_closed
   by      fastforce
 
-subsubsection {* Homomorphisms and isomorphisms *}
+subsubsection \<open>Homomorphisms and isomorphisms\<close>
 
 locale GroupHom = Group G
   for   G :: "'g::group_add set"
@@ -1378,10 +1378,10 @@ proof (unfold_locales, rule inj_onI)
     using im_diff diff_closed by force
 qed
 
-text {*
+text \<open>
   In a @{const BinOpSetGroup}, any map from the set into a type of class @{class group_add} that respects the
   binary operation induces a @{const GroupHom}.
-*}
+\<close>
 
 abbreviation (in BinOpSetGroup) "lift_hom T \<equiv> restrict0 (T \<circ> \<ii>\<pp>) pG"
 
@@ -1400,7 +1400,7 @@ qed (rule supp_restrict0)
 
 
 
-subsubsection {* Normal subgroups *}
+subsubsection \<open>Normal subgroups\<close>
 
 definition rcoset_rel :: "'a::{minus,plus} set \<Rightarrow> ('a\<times>'a) set"
   where "rcoset_rel A \<equiv> {(x,y). x-y \<in> A}"
@@ -1554,12 +1554,12 @@ qed
 
 end (* context Group *)
 
-subsubsection {* Quotient groups *}
+subsubsection \<open>Quotient groups\<close>
 
-text {*
+text \<open>
   Here we use the bridge built by @{const BinOpSetGroup} to make the quotient of a @{const Group}
   by a normal subgroup into a @{const Group} itself.
-*}
+\<close>
 
 context Group
 begin
@@ -1709,13 +1709,13 @@ lemma quotient_group_lift_to_quotient_set:
 
 end (* context Group *)
 
-subsubsection {* The induced homomorphism on a quotient group *}
+subsubsection \<open>The induced homomorphism on a quotient group\<close>
 
-text {*
+text \<open>
   A normal subgroup contained in the kernel of a homomorphism gives rise to a homomorphism on the
   quotient group by that subgroup. When the subgroup is the kernel itself (which is always normal),
   we obtain an isomorphism on the quotient.
-*}
+\<close>
 
 context GroupHom
 begin
@@ -1761,16 +1761,16 @@ qed
 end (* context GroupHom *)
 
 
-subsection {* Free groups *}
+subsection \<open>Free groups\<close>
 
-subsubsection {* Words in letters of @{type signed} type *}
+subsubsection \<open>Words in letters of @{type signed} type\<close>
 
-paragraph {* Definitions and basic fact *}
+paragraph \<open>Definitions and basic fact\<close>
 
-text {*
+text \<open>
   We pair elements of some type with type @{typ bool}, where the @{typ bool} part of the pair
   indicates inversion.
-*}
+\<close>
 
 abbreviation "pairtrue  \<equiv> \<lambda>s. (s,True)"
 abbreviation "pairfalse \<equiv> \<lambda>s. (s,False)"
@@ -1799,11 +1799,11 @@ lemma fst_set_map_charpair_un_uminus:
 abbreviation apply_sign :: "('a\<Rightarrow>'b::uminus) \<Rightarrow> 'a signed \<Rightarrow> 'b"
   where "apply_sign f x \<equiv> (if snd x then f (fst x) else - f (fst x))"
 
-text {* 
+text \<open>
   A word in such pairs will be considered proper if it does not contain consecutive letters that
   have opposite signs (and so are considered inverse), since such consecutive letters would be
   cancelled in a group.
-*}
+\<close>
 
 abbreviation proper_signed_list :: "'a signed list \<Rightarrow> bool"
   where "proper_signed_list \<equiv> binrelchain nflipped_signed"
@@ -1826,13 +1826,13 @@ lemma proper_signed_list_map_uniform_snd:
   "proper_signed_list (map (\<lambda>s. (s,b)) as)"
   using uniform_snd_imp_proper_signed_list[of _ b] by force
 
-paragraph {* Algebra *}
+paragraph \<open>Algebra\<close>
 
-text {* 
+text \<open>
   Addition is performed by appending words and recursively removing any newly created adjacent
   pairs of inverse letters. Since we will only ever be adding proper words, we only need to care
   about newly created adjacent inverse pairs in the middle.
-*}
+\<close>
 
 function prappend_signed_list :: "'a signed list \<Rightarrow> 'a signed list \<Rightarrow> 'a signed list"
   where "prappend_signed_list xs [] = xs"
@@ -1926,27 +1926,27 @@ lemma collapse_flipped_signed:
 
 
 
-subsubsection {* The collection of proper signed lists as a type *}
+subsubsection \<open>The collection of proper signed lists as a type\<close>
 
-text {*
+text \<open>
   Here we create a type out of the collection of proper signed lists. This type will be of class
   @{class group_add}, with the empty list as zero, the modified append operation
   @{const prappend_signed_list} as addition, and inversion performed by flipping the signs of the
   elements in the list and then reversing the order.
-*}
+\<close>
 
-paragraph {* Type definition, instantiations, and instances *}
+paragraph \<open>Type definition, instantiations, and instances\<close>
 
-text {* Here we define the type and instantiate it with respect to various type classes. *}
+text \<open>Here we define the type and instantiate it with respect to various type classes.\<close>
 
 typedef 'a freeword = "{as::'a signed list. proper_signed_list as}"
   morphisms freeword Abs_freeword
   using binrelchain.simps(1) by fast
 
-text {*
+text \<open>
   These two functions act as the natural injections of letters and words in the letter type into
   the @{type freeword} type.
-*}
+\<close>
 
 abbreviation Abs_freeletter :: "'a \<Rightarrow> 'a freeword"
   where "Abs_freeletter s \<equiv> Abs_freeword [pairtrue s]"
@@ -2012,13 +2012,13 @@ proof
   show "a + - b = a - b" by transfer simp
 qed
 
-paragraph {* Basic algebra and transfer facts in the @{type freeword} type *}
+paragraph \<open>Basic algebra and transfer facts in the @{type freeword} type\<close>
 
-text {*
+text \<open>
   Here we record basic algebraic manipulations for the @{type freeword} type as well as various
   transfer facts for dealing with representations of elements of @{type freeword} type as lists of
   signed letters.
-*}
+\<close>
 
 abbreviation Abs_freeletter_add :: "'a \<Rightarrow> 'a \<Rightarrow> 'a freeword" (infixl "[+]" 65)
   where "s [+] t \<equiv> Abs_freeletter s + Abs_freeletter t"
@@ -2102,19 +2102,19 @@ lemma Abs_freeletter_prod_conv_Abs_freeword:
   using prod_eqI[of x "pairtrue (fst x)"] by simp
 
 
-subsubsection {* Lifts of functions on the letter type *}
+subsubsection \<open>Lifts of functions on the letter type\<close>
 
-text {*
+text \<open>
   Here we lift functions on the letter type to type @{type freeword}. In particular, we are
   interested in the case where the function being lifted has codomain of class @{class group_add}.
-*}
+\<close>
 
-paragraph {* The universal property *}
+paragraph \<open>The universal property\<close>
 
-text {* 
+text \<open>
   The universal property for free groups says that every function from the letter type to some
   @{class group_add} type gives rise to a unique homomorphism.
-*}
+\<close>
 
 lemma extend_map_to_freeword_hom':
   fixes   f :: "'a \<Rightarrow> 'b::group_add"
@@ -2234,12 +2234,12 @@ proof
     using uniqueness_of_extended_map_to_freeword_hom by auto
 qed
 
-paragraph {* Properties of homomorphisms afforded by the universal property *}
+paragraph \<open>Properties of homomorphisms afforded by the universal property\<close>
 
-text {* 
+text \<open>
   The lift of a function on the letter set is the unique additive function on @{type freeword}
   that agrees with the original function on letters.
-*}
+\<close>
 
 definition freeword_funlift :: "('a \<Rightarrow> 'b::group_add) \<Rightarrow> ('a freeword\<Rightarrow>'b::group_add)"
   where "freeword_funlift f \<equiv> (THE g. g \<circ> Abs_freeletter = f \<and> UGroupHom g)"
@@ -2337,19 +2337,19 @@ next
 qed
 
 
-subsubsection {* Free groups on a set *}
+subsubsection \<open>Free groups on a set\<close>
 
-text {* 
+text \<open>
   We now take the free group on a set to be the set in the @{type freeword} type with letters
   restricted to the given set.
-*}
+\<close>
 
-paragraph {* Definition and basic facts *}
+paragraph \<open>Definition and basic facts\<close>
 
-text {*
+text \<open>
   Here we define the set of elements of the free group over a set of letters, and record basic
   facts about that set.
-*}
+\<close>
 
 definition FreeGroup :: "'a set \<Rightarrow> 'a freeword set"
   where "FreeGroup S \<equiv> {x. fst ` set (freeword x) \<subseteq> S}"
@@ -2406,12 +2406,12 @@ lemma Abs_freelist_in_FreeGroup: "ss \<in> lists S \<Longrightarrow> Abs_freelis
 lemma Abs_freeletter_in_FreeGroup_iff: "(Abs_freeletter s \<in> FreeGroup S) = (s\<in>S)"
   using Abs_freeword_inverse[of "[pairtrue s]"] unfolding FreeGroup_def by simp
 
-paragraph {* Lifts of functions from the letter set to some type of class @{class group_add} *}
+paragraph \<open>Lifts of functions from the letter set to some type of class @{class group_add}\<close>
 
-text {*
+text \<open>
   We again obtain a universal property for functions from the (restricted) letter set to some type
   of class @{class group_add}.
-*}
+\<close>
 
 abbreviation "res_freeword_funlift f S \<equiv>
                 restrict0 (freeword_funlift f) (FreeGroup S)"
@@ -2540,20 +2540,20 @@ proof (rule ex1I, rule conjI)
 qed (rule hom_restrict0_freeword_funlift)
 
 
-subsubsection {* Group presentations *}
+subsubsection \<open>Group presentations\<close>
 
-text {* 
+text \<open>
   We now define a group presentation to be the quotient of a free group by the subgroup generated by
   all conjugates of a set of relators. We are most concerned with lifting functions on the letter
   set to the free group and with the associated induced homomorphisms on the quotient.
-*}
+\<close>
 
-paragraph {* A first group presentation locale and basic facts *}
+paragraph \<open>A first group presentation locale and basic facts\<close>
 
-text {*
+text \<open>
   Here we define a locale that provides a way to construct a group by providing sets of generators
   and relator words.
-*}
+\<close>
 
 locale GroupByPresentation =
   fixes   S :: "'a set"  \<comment> \<open>the set of generators\<close>
@@ -2598,13 +2598,13 @@ lemmas natural_hom_image =
 
 end (* context GroupByPresentation *)
 
-paragraph {* Functions on the quotient induced from lifted functions *}
+paragraph \<open>Functions on the quotient induced from lifted functions\<close>
 
-text {*
+text \<open>
   A function on the generator set into a type of class @{class group_add} lifts to a unique
   homomorphism on the free group. If this lift is trivial on relators, then it factors to a
   homomorphism of the group described by the generators and relators.
-*}
+\<close>
 
 locale GroupByPresentationInducedFun = GroupByPresentation S P
   for     S :: "'a set"
@@ -2731,14 +2731,14 @@ qed
 
 end (* context GroupByPresentationInducedFun *)
 
-paragraph {* Groups affording a presentation *}
+paragraph \<open>Groups affording a presentation\<close>
 
-text {*
+text \<open>
   The locale @{const GroupByPresentation} allows the construction of a @{const Group} out of any
   type from a set of generating letters and a set of relator words in (signed) letters. The
   following locale concerns the question of when the @{const Group} generated by a set in class
   @{class group_add} is isomorphic to a group presentation.
-*}
+\<close>
 
 locale GroupWithGeneratorsRelators =
   fixes S :: "'g::group_add set" \<comment> \<open>the set of generators\<close>
@@ -2815,11 +2815,11 @@ lemma lconjby_Abs_freelist_relator_freeword:
   "\<lbrakk> rs\<in>R; xs\<in>lists S \<rbrakk> \<Longrightarrow> lconjby (Abs_freelist xs) (relator_freeword rs) \<in> Q"
   using proper_signed_list_map_uniform_snd by (force intro: lconj_relator_freeword_R)
 
-text {*
+text \<open>
   Here we record that the lift of the identity map to the free group on @{term S} induces a
   homomorphic surjection onto the group generated by @{term S} from the group presentation on
   @{term S}, subject to the same relations as the elements of @{term S}.
-*}
+\<close>
 
 theorem induced_id_hom_surj: "GroupHom G induced_id" "induced_id ` G = \<langle>S\<rangle>"
   using GroupByPresentationInducedFun.hom_induced_hom[
@@ -2848,12 +2848,12 @@ lemma inv_induced_id_sum_list_S:
 
 end (* GroupPresentation *)
 
-subsection {* Words over a generating set *}
+subsection \<open>Words over a generating set\<close>
 
-text {*
+text \<open>
   Here we gather the necessary constructions and facts for studying a group generated by some set
   in terms of words in the generators.
-*}
+\<close>
 
 context monoid_add
 begin

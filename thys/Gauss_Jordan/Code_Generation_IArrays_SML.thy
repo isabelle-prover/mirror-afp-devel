@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Exporting code to SML*}
+section\<open>Exporting code to SML\<close>
 
 theory Code_Generation_IArrays_SML
 imports
@@ -12,8 +12,8 @@ imports
   Code_Generation_IArrays
 begin
 
-text{*Some serializations of gcd and abs in SML. Since gcd is not part of the standard SML library,
-we have serialized it to the corresponding operation in PolyML and MLton.*}
+text\<open>Some serializations of gcd and abs in SML. Since gcd is not part of the standard SML library,
+we have serialized it to the corresponding operation in PolyML and MLton.\<close>
 
 context
 includes integer.lifting
@@ -43,7 +43,7 @@ code_printing
 
 declare [[code drop: "abs :: real \<Rightarrow> real"]]
   
-text{*There are several ways to serialize div and mod. The following ones are four examples of it:*}
+text\<open>There are several ways to serialize div and mod. The following ones are four examples of it:\<close>
 
 (*The times are obtained after computing the rref of a 100x100 rational matrix.*)
 

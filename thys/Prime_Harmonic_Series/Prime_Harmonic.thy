@@ -6,7 +6,7 @@
   (#81 on the list of 100 mathematical theorems)
 *)
 
-section {* The Prime Harmonic Series *}
+section \<open>The Prime Harmonic Series\<close>
 theory Prime_Harmonic
 imports
   "HOL-Analysis.Analysis"

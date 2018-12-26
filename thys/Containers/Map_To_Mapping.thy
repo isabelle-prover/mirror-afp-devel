@@ -5,33 +5,33 @@ theory Map_To_Mapping imports
   Mapping_Impl
 begin
 
-section {* Infrastructure for operation identification *}
+section \<open>Infrastructure for operation identification\<close>
 
-text {*
+text \<open>
   To convert theorems from @{typ "'a \<Rightarrow> 'b option"} to @{typ "('a, 'b) mapping"} using lifting / transfer,
   we first introduce constants for the empty map and map lookup, then apply lifting / transfer,
   and finally eliminate the non-converted constants again.
-*}
+\<close>
 
-text {* Dynamic theorem list of rewrite rules that are applied before Transfer.transferred *}
-ML {*
+text \<open>Dynamic theorem list of rewrite rules that are applied before Transfer.transferred\<close>
+ML \<open>
 structure Containers_Pre = Named_Thms
 (
   val name = @{binding containers_pre}
   val description = "Preprocessing rewrite rules in operation identification for Containers"
 )
-*}
-setup {* Containers_Pre.setup *}
+\<close>
+setup \<open>Containers_Pre.setup\<close>
 
-text {* Dynamic theorem list of rewrite rules that are applied after Transfer.transferred *}
-ML {*
+text \<open>Dynamic theorem list of rewrite rules that are applied after Transfer.transferred\<close>
+ML \<open>
 structure Containers_Post = Named_Thms
 (
   val name = @{binding containers_post}
   val description = "Postprocessing rewrite rules in operation identification for Containers"
 )
-*}
-setup {* Containers_Post.setup *}
+\<close>
+setup \<open>Containers_Post.setup\<close>
 
 context includes lifting_syntax
 begin
@@ -56,9 +56,9 @@ by(simp add: map_apply_def)
 
 declare eq_map_apply[symmetric, abs_def, containers_post]
 
-text {* We cannot use @{thm [source] eq_map_apply} as a fold rule for operator identification,
-  because it would loop. We use a simproc instead. *}
-ML {*
+text \<open>We cannot use @{thm [source] eq_map_apply} as a fold rule for operator identification,
+  because it would loop. We use a simproc instead.\<close>
+ML \<open>
 val map_apply_simproc = 
   Simplifier.make_simproc @{context} "map_apply"
    {lhss = [@{term "f x :: 'a option"}],
@@ -78,7 +78,7 @@ val map_apply_simproc =
             SOME (Thm.instantiate' [SOME cTr, SOME cTx] cts @{thm eq_map_apply})
           end
       | _ => NONE)}
-*}
+\<close>
 
 lemma map_apply_parametric [transfer_rule]:
   "((A ===> B) ===> A ===> B) map_apply map_apply"
@@ -98,7 +98,7 @@ lemma map_update_parametric [transfer_rule]:
 unfolding map_update_def[abs_def] by transfer_prover
 
 context begin
-local_setup {* Local_Theory.map_background_naming (Name_Space.mandatory_path "Mapping") *}
+local_setup \<open>Local_Theory.map_background_naming (Name_Space.mandatory_path "Mapping")\<close>
 
 lift_definition update' :: "'a \<Rightarrow> 'b option \<Rightarrow> ('a, 'b) mapping \<Rightarrow> ('a, 'b) mapping"
 is map_update parametric map_update_parametric .
@@ -132,7 +132,7 @@ by(rule rel_funI)+(auto simp del: dom_eq_empty_conv dest: rel_setD2 rel_setD1 Ma
 
 end
 
-ML {*
+ML \<open>
 signature CONTAINERS = sig
   val identify : Context.generic -> thm -> thm;
   val identify_attribute : attribute;
@@ -160,10 +160,10 @@ fun identify context thm =
 val identify_attribute = Thm.rule_attribute [] identify
 
 end
-*}
+\<close>
 
 attribute_setup "containers_identify" =
-  {* Scan.succeed Containers.identify_attribute *}
+  \<open>Scan.succeed Containers.identify_attribute\<close>
   "Transfer theorems for operator identification in Containers"
 
 hide_const (open) map_apply map_empty map_is_empty map_update

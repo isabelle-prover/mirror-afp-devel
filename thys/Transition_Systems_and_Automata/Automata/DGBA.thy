@@ -1,4 +1,4 @@
-section {* Deterministic Generalized Büchi Automata *}
+section \<open>Deterministic Generalized Büchi Automata\<close>
 
 theory DGBA
 imports

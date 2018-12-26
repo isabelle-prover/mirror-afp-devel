@@ -3,7 +3,7 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Constructing Hierarchical Automata *}
+section \<open>Constructing Hierarchical Automata\<close>
 theory HAOps
 imports HA
 begin
@@ -500,7 +500,7 @@ apply (unfold InitConf_def)
 apply simp
 done
 
-subsection {* Extending a HA by a SA (@{text "AddSA"}) *}
+subsection \<open>Extending a HA by a SA (\<open>AddSA\<close>)\<close>
 
 definition
   AddSA :: "[('s,'e,'d)hierauto, 's * ('s,'e,'d)seqauto]
@@ -1128,7 +1128,7 @@ apply auto
 done
 
 
-ML {*
+ML \<open>
 
 val AddSA_SAs_IFF = @{thm AddSA_SAs_IFF};
 val AddSA_Events_IFF = @{thm AddSA_Events_IFF};
@@ -1166,9 +1166,9 @@ fun wellformed_tac ctxt L i =
             PseudoHA_HAInitValue,Un_empty_right]@ L) i),
         fast_tac ctxt i,
         CHANGED (simp_tac ctxt i)];
-*}
+\<close>
 
-method_setup wellformed  = {* Attrib.thms >> (fn thms => fn ctxt => (METHOD (fn facts => 
-                                       (HEADGOAL (wellformed_tac ctxt (facts @ thms)))))) *}
+method_setup wellformed  = \<open>Attrib.thms >> (fn thms => fn ctxt => (METHOD (fn facts => 
+                                       (HEADGOAL (wellformed_tac ctxt (facts @ thms))))))\<close>
 
 end

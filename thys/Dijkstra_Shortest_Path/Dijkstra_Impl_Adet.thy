@@ -1,4 +1,4 @@
-section {* Implementation of Dijkstra's-Algorithm using Automatic Determinization *}
+section \<open>Implementation of Dijkstra's-Algorithm using Automatic Determinization\<close>
 theory Dijkstra_Impl_Adet
 imports 
   Dijkstra 
@@ -9,9 +9,9 @@ imports
 begin 
 
 
-subsection {* Setup *}
+subsection \<open>Setup\<close>
 
-subsubsection {* Infinity *}
+subsubsection \<open>Infinity\<close>
 definition infty_rel_internal_def: 
   "infty_rel R \<equiv> {(Num a, Num a')| a a'. (a,a')\<in>R} \<union> {(Infty,Infty)}"
 lemma infty_rel_def[refine_rel_defs]: 
@@ -117,7 +117,7 @@ lemma infty_plus_autoref[autoref_rules]:
   apply parametricity
   done
 
-subsubsection {* Graph *}
+subsubsection \<open>Graph\<close>
 consts i_graph :: "interface \<Rightarrow> interface \<Rightarrow> interface"
 
 definition graph_more_rel_internal_def:
@@ -230,7 +230,7 @@ proof (intro fun_relI nres_relI)
     by (simp add: it_to_sorted_list_def)
 qed
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 
 locale dijkstraC =
   g: StdGraph g_ops + 
@@ -377,10 +377,10 @@ proof -
   from dc.cdijkstra_correct show ?G1 ?G2 by auto
 qed
 
-text {*
+text \<open>
   Example instantiation with HashSet.based graph, 
   red-black-tree based result map, and finger-tree based priority queue.
-*}
+\<close>
 setup Locale_Code.open_block
 interpretation hrf: dijkstraC hlg_ops rm_ops aluprioi_ops
   by unfold_locales

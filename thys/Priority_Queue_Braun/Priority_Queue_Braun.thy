@@ -10,13 +10,13 @@ begin
 
 subsection "Introduction"
 
-text{* Braun, Rem and Hoogerwoord \cite{BraunRem,Hoogerwoord} used
+text\<open>Braun, Rem and Hoogerwoord \cite{BraunRem,Hoogerwoord} used
 specific balanced binary trees, often called Braun trees (where in
 each node with subtrees $l$ and $r$, $size(r) \le size(l) \le
 size(r)+1$), to implement flexible arrays. Paulson \cite{Paulson}
 (based on code supplied by Okasaki)
 implemented priority queues via Braun trees. This theory verifies
-Paulsons's implementation, including the logarithmic bounds.  *}
+Paulsons's implementation, including the logarithmic bounds.\<close>
 
 text \<open>Direct proof of logarithmic height. Also follows from the fact that Braun
 trees are balanced (proved in the base theory).\<close>
@@ -48,7 +48,7 @@ by(cases h)(auto)
 lemma get_min: "\<lbrakk> heap h;  h \<noteq> Leaf \<rbrakk> \<Longrightarrow> root_val h = Min_mset (mset_tree h)"
 by (auto simp add: eq_Min_iff get_min_in get_min_min)
 
-subsection {* Insertion *}
+subsection \<open>Insertion\<close>
 
 hide_const (open) insert
 
@@ -75,7 +75,7 @@ lemma heap_insert: "heap t \<Longrightarrow> heap(insert x t)"
 by(induction t arbitrary: x) (auto  simp add: ball_Un)
 
 
-subsection {* Deletion *}
+subsection \<open>Deletion\<close>
 
 fun del_left :: "'a tree \<Rightarrow> 'a * 'a tree" where
 "del_left (Node Leaf x Leaf) = (x,Leaf)" |

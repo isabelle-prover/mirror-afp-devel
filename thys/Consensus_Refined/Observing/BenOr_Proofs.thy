@@ -5,7 +5,7 @@ imports Heard_Of.Reduction
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
 type_synonym ben_or_TS_state = "(nat \<times> (process \<Rightarrow> (val pstate)))"
 
@@ -13,7 +13,7 @@ consts
   val0 :: val 
   val1 :: val
 
-text {* Ben-Or works only on binary values. *}
+text \<open>Ben-Or works only on binary values.\<close>
 axiomatization where 
   val_exhaust: "v = val0 \<or> v = val1"
   and val_diff: "val0 \<noteq> val1"
@@ -66,10 +66,10 @@ qed
 
 definition "BenOr_A = CHOAlgorithm.truncate BenOr_M"
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
-text {* Agreement for BenOr only holds if the communication predicates hold *}
+text \<open>Agreement for BenOr only holds if the communication predicates hold\<close>
 context
   fixes
     HOs :: "nat \<Rightarrow> process \<Rightarrow> process set"
@@ -368,10 +368,10 @@ next
     done
 qed(auto intro!: TSO_inv1_inductive TSO_inv2_inductive)
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
-text {* The full termination proof for Ben-Or is probabilistic, and depends on the state
+text \<open>The full termination proof for Ben-Or is probabilistic, and depends on the state
 of the processes, and a "favorable" coin toss, where "favorable" is relative to this state.
 As this termination pre-condition is state-dependent, we cannot capture it in an HO 
 predicate.
@@ -379,7 +379,7 @@ predicate.
 Instead, we prove a variant of the argument, where we assume that there exists a 
 round where all the processes hear from the same set of other processes, and all toss the 
 same coin.
-*}
+\<close>
 
 theorem BenOr_termination:
   shows "\<exists>r v. decide (rho r p) = Some v"

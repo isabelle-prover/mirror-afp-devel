@@ -21,7 +21,7 @@ lemma mk_record_simp_thm:
   shows "f r = x"
   using assms by simp
 
-ML {*
+ML \<open>
   fun mk_record_simp context thm = let
     val ctxt = Context.proof_of context
     val cert = Thm.cterm_of ctxt
@@ -36,10 +36,10 @@ ML {*
     | _ => raise THM("",~1,[thm])
 
   end
-*}
+\<close>
 
 attribute_setup mk_record_simp = 
-  {* Scan.succeed (Thm.rule_attribute [] (mk_record_simp)) *}
+  \<open>Scan.succeed (Thm.rule_attribute [] (mk_record_simp))\<close>
   "Make simplification rule for record definition"
 
 end

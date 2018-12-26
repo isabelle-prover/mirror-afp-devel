@@ -15,19 +15,19 @@ See LICENSE file for details
 (Rationale for this dual licence: http://arxiv.org/abs/1107.3212)
 *)
 
-section {* Locus where a function or a list (of linord type) attains its maximum value *}
+section \<open>Locus where a function or a list (of linord type) attains its maximum value\<close>
 
 theory Argmax
 imports Main
 
 begin
 
-text {* Structural induction is used in proofs on lists.*}
+text \<open>Structural induction is used in proofs on lists.\<close>
 lemma structInduct: assumes "P []" and "\<forall>x xs. P (xs) \<longrightarrow> P (x#xs)" 
                     shows "P l" 
       using assms list_nonempty_induct by (metis)
 
-text {* the subset of elements of a set where a function reaches its maximum *}
+text \<open>the subset of elements of a set where a function reaches its maximum\<close>
 fun argmax :: "('a \<Rightarrow> 'b::linorder) \<Rightarrow> 'a set \<Rightarrow> 'a set"
     where "argmax f A = { x \<in> A . f x = Max (f ` A) }"
 
@@ -57,15 +57,15 @@ lemma argmaxEquivalence:
   using assms argmaxLemma Collect_cong image_cong 
   by (metis(no_types,lifting))
 
-text {* The arg max of a function over a non-empty set is non-empty. *}
+text \<open>The arg max of a function over a non-empty set is non-empty.\<close>
 corollary argmax_non_empty_iff: assumes "finite X" "X \<noteq> {}" 
                                 shows "argmax f X \<noteq>{}"
                                 using assms Max_in finite_imageI image_is_empty lm01 lm02 
                                 by (metis(no_types))
 
-text {* The previous definition of argmax operates on sets. In the following we define a corresponding notion on lists. To this end, we start with defining a filter predicate and are looking for the elements of a list satisfying a given predicate;
+text \<open>The previous definition of argmax operates on sets. In the following we define a corresponding notion on lists. To this end, we start with defining a filter predicate and are looking for the elements of a list satisfying a given predicate;
 but, rather than returning them directly, we return the (sorted) list of their indices. 
-This is done, in different ways, by @{term filterpositions} and @{term filterpositions2}.*}
+This is done, in different ways, by @{term filterpositions} and @{term filterpositions2}.\<close>
 
 (* Given a list l, filterpositions yields the indices of its elements which satisfy a given pred P*)
 definition filterpositions :: "('a => bool) => 'a list => nat list"
@@ -152,7 +152,7 @@ lemma lm08: fixes f l
                    [ l!n . n <- [0..<size l], f (l!n) \<ge> Max (f`(set l))]"
       unfolding lm07 argmaxList_def by (metis lm06)
 
-text{* The theorem expresses that argmaxList is the list of arguments greater equal the Max of the list.  *}
+text\<open>The theorem expresses that argmaxList is the list of arguments greater equal the Max of the list.\<close>
 
 theorem argmaxadequacy: fixes f::"'a => ('b::linorder)" fixes l::"'a list" 
                         shows "argmaxList f l = [ x <- l. f x \<ge> Max (f`(set l))]"

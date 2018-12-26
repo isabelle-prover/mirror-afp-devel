@@ -4,16 +4,16 @@ theory Execute
 imports FJSound
 begin
 
-section {* Executing FeatherweightJava programs *}
-text {* We execute FeatherweightJava programs using the predicate compiler. *}
+section \<open>Executing FeatherweightJava programs\<close>
+text \<open>We execute FeatherweightJava programs using the predicate compiler.\<close>
 
 code_pred (modes: i => i => i => bool,
   i => i => o => bool as supertypes_of) subtyping .
 
 thm subtyping.equation
 
-text {* The reduction relation requires that we inverse the @{term List.append} function.
-Therefore, we define a new predicate append and derive introduction rules. *}
+text \<open>The reduction relation requires that we inverse the @{term List.append} function.
+Therefore, we define a new predicate append and derive introduction rules.\<close>
 
 definition append where "append xs ys zs = (zs = xs @ ys)"
 
@@ -23,7 +23,7 @@ unfolding append_def by simp
 lemma [code_pred_intro]: "append xs ys zs \<Longrightarrow> append (x#xs) ys (x#zs)"
 unfolding append_def by simp
 
-text {* With this at hand, we derive new introduction rules for the reduction relation: *}
+text \<open>With this at hand, we derive new introduction rules for the reduction relation:\<close>
 
 lemma rc_invk_arg': "CT \<turnstile> ei \<rightarrow> ei' \<Longrightarrow> append el (ei # er) e' \<Longrightarrow> append el (ei' # er) e'' \<Longrightarrow>
 CT \<turnstile> MethodInvk e m e' \<rightarrow> MethodInvk e m e''"
@@ -79,8 +79,8 @@ code_pred reductions .
 
 thm reductions.equation
 
-text {* We also make the class typing executable: this requires that
-  we derive rules for @{term "method_typing"}. *}
+text \<open>We also make the class typing executable: this requires that
+  we derive rules for @{term "method_typing"}.\<close>
 
 definition method_typing_aux
 where
@@ -117,9 +117,9 @@ next
     unfolding method_typing_aux_def by auto
 qed
 
-subsection {* A simple example *}
+subsection \<open>A simple example\<close>
 
-text {* We now execute a simple FJ example program: *}
+text \<open>We now execute a simple FJ example program:\<close>
 
 abbreviation A :: className
 where "A == Suc 0"

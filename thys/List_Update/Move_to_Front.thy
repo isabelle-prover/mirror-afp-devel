@@ -11,7 +11,7 @@ begin
 
 declare Let_def[simp]
 
-subsection "Function @{text mtf}"
+subsection "Function \<open>mtf\<close>"
 
 definition mtf :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 "mtf x xs =
@@ -53,7 +53,7 @@ lemma distinct_mtf[simp]: "distinct (mtf x xs) = distinct xs"
 by (metis length_mtf set_mtf card_distinct distinct_card)
 
 
-subsection "Function @{text mtf2}"
+subsection "Function \<open>mtf2\<close>"
 
 definition mtf2 :: "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
 "mtf2 n x xs =
@@ -279,8 +279,8 @@ subsection "Online Algorithm Move-to-Front is 2-Competitive"
 definition MTF :: "('a,unit) alg_on" where
 "MTF = (\<lambda>_. (), \<lambda>s r. ((size (fst s) - 1,[]), ()))"
 
-text{* It was first proved by Sleator and Tarjan~\cite{SleatorT-CACM85} that
-the Move-to-Front algorithm is 2-competitive. *}
+text\<open>It was first proved by Sleator and Tarjan~\cite{SleatorT-CACM85} that
+the Move-to-Front algorithm is 2-competitive.\<close>
 
 (* The core idea with upper bounds: *)
 lemma potential:
@@ -727,8 +727,8 @@ unfolding compet_def using compet_MTF' by fastforce
 
 subsection "Lower Bound for Competitiveness"
 
-text{* This result is independent of MTF
-but is based on the list update problem defined in this theory. *}
+text\<open>This result is independent of MTF
+but is based on the list update problem defined in this theory.\<close>
 
 lemma rat_fun_lem:
    fixes l c :: real
@@ -740,7 +740,7 @@ lemma rat_fun_lem:
    and
      g: "LIM n F. g n :> at_top"
    shows "l \<le> u"
-proof (rule dense_le_bounded[OF `0 < l`])
+proof (rule dense_le_bounded[OF \<open>0 < l\<close>])
    fix x assume x: "0 < x" "x < l"
 
    define m where "m = (x - l) / 2"
@@ -748,7 +748,7 @@ proof (rule dense_le_bounded[OF `0 < l`])
    have "x = l / k + m" "1 < k" "m < 0"
      unfolding k_def m_def using x by (auto simp: divide_simps)
    
-   from `1 < k` have "LIM n F. (k - 1) * g n :> at_top"
+   from \<open>1 < k\<close> have "LIM n F. (k - 1) * g n :> at_top"
      by (intro filterlim_tendsto_pos_mult_at_top[OF tendsto_const _ g]) (simp add: field_simps)
    then have "eventually (\<lambda>n. d \<le> (k - 1) * g n) F"
      by (simp add: filterlim_at_top)
@@ -763,18 +763,18 @@ proof (rule dense_le_bounded[OF `0 < l`])
        by (simp add: field_simps)
      from d have g: "0 < g n" "0 < g n + d"
        by (auto simp: field_simps)
-     with `0 < l` l have "0 < f n"
+     with \<open>0 < l\<close> l have "0 < f n"
        by (auto simp: field_simps intro: mult_pos_pos less_le_trans)
 
-     note `x = l / k + m`
+     note \<open>x = l / k + m\<close>
      also have "l / k \<le> f n / (k * g n)"
-       using l `1 < k` by (simp add: field_simps)
+       using l \<open>1 < k\<close> by (simp add: field_simps)
      also have "\<dots> \<le> f n / (g n + d)"
-       using d `1 < k` `0 < f n` by (intro divide_left_mono mult_pos_pos) (auto simp: field_simps)
+       using d \<open>1 < k\<close> \<open>0 < f n\<close> by (intro divide_left_mono mult_pos_pos) (auto simp: field_simps)
      also have "m \<le> c / (g n + d)"
-       using `c / m - d \<le> g n` `0 < g n` `0 < g n + d` `m < 0` by (simp add: field_simps)
+       using \<open>c / m - d \<le> g n\<close> \<open>0 < g n\<close> \<open>0 < g n + d\<close> \<open>m < 0\<close> by (simp add: field_simps)
      also have "f n / (g n + d) + c / (g n + d) = (f n + c) / (g n + d)"
-       using `0 < g n + d` by (auto simp: add_divide_distrib)
+       using \<open>0 < g n + d\<close> by (auto simp: add_divide_distrib)
      also note u
      finally show "x \<le> u" by simp
    qed
@@ -797,16 +797,16 @@ proof-
   have g': "LIM n sequentially. g s0 (cruel n) + a :> at_top"
     using filterlim_tendsto_add_at_top[OF tendsto_const g]
     by (simp add: ac_simps)
-  from competE[OF assms(5) `c\<ge>0` _ `s0 \<in> S0`] assms(3) obtain b where
+  from competE[OF assms(5) \<open>c\<ge>0\<close> _ \<open>s0 \<in> S0\<close>] assms(3) obtain b where
     "\<forall>rs. static s0 rs \<and> rs \<noteq> [] \<longrightarrow> ?h b s0 rs \<le> c "
     by (fastforce simp del: neq0_conv simp: neq0_conv[symmetric]
         field_simps f_def g_def T_off_neq0[of Aoff, OF assms(3)])
   hence "\<forall>n. (?h b s0 o cruel) n \<le> c" using assms(4,11) by simp
-  with rat_fun_lem[OF sequentially_bot `l>0` _ _ g', of "f s0 o cruel" "-b" "- a" c] assms(7) l
+  with rat_fun_lem[OF sequentially_bot \<open>l>0\<close> _ _ g', of "f s0 o cruel" "-b" "- a" c] assms(7) l
   show "l \<le> c" by (auto)
 qed
 
-text {* Sorting *}
+text \<open>Sorting\<close>
 
 fun ins_sws where
 "ins_sws k x [] = []" |
@@ -834,7 +834,7 @@ lemma swaps_sort_sws[simp]:
   "swaps (sort_sws k xs) xs = sort_key k xs"
 by(induction xs)(auto simp: swaps_ins_sws)
 
-text{* The cruel adversary: *}
+text\<open>The cruel adversary:\<close>
 
 fun cruel :: "('a,'is) alg_on \<Rightarrow> 'a state * 'is \<Rightarrow> nat \<Rightarrow> 'a list" where
 "cruel A s 0 = []" |
@@ -956,12 +956,12 @@ proof-
   finally show "?l \<le> l\<^sup>2 + l + 1 + (l + 1) * n div 2" by auto
 qed
 
-text {* The main theorem: *}
+text \<open>The main theorem:\<close>
 
 theorem compet_lb2:
 assumes "compet A c {xs::nat list. size xs = l}" and "l \<noteq> 0" and "c \<ge> 0"
 shows "c \<ge> 2*l/(l+1)"
-proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
+proof (rule compet_lb0[OF _ _ assms(1) \<open>c\<ge>0\<close>])
   let ?S0 = "{xs::nat list. size xs = l}"
   let ?s0 = "[0..<l]"
   let ?cruel = "cruel A (?s0,fst A ?s0) o Suc"
@@ -973,7 +973,7 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
   { fix Z::real and n::nat assume "n \<ge> nat(ceiling Z)"
     have "?off n \<ge> length(?cruel n)" by(rule T_ge_len) (simp add: adv_def)
     hence "?off n > n" by simp
-    hence "Z \<le> ?off n" using `n \<ge> nat(ceiling Z)` by linarith }
+    hence "Z \<le> ?off n" using \<open>n \<ge> nat(ceiling Z)\<close> by linarith }
   thus "LIM n sequentially. real (?off n) :> at_top"
     by(auto simp only: filterlim_at_top eventually_sequentially)
   let ?a = "- (l^2 + l + 1)"
@@ -982,7 +982,7 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
       by (simp del: One_nat_def)
     also have "\<dots> = 2*real(l*(n+1)) / ((l+1)*(n+1))" by simp
     also have "l * (n+1) \<le> ?on n"
-      using T_cruel[of ?s0 "Suc n"] `l \<noteq> 0`
+      using T_cruel[of ?s0 "Suc n"] \<open>l \<noteq> 0\<close>
       by (simp add: ac_simps)
     also have "2*real(?on n) / ((l+1)*(n+1)) \<le> 2*real(?on n)/(2*(?off n + ?a))"
     proof -
@@ -991,11 +991,11 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
       have "?off n \<ge> length(?cruel n)"
         by(rule T_ge_len) (simp add: adv_def)
       hence "?off n > n" by simp
-      hence "?off n + ?a > 0" using `n \<ge> l^2 + l + 1` by linarith
+      hence "?off n + ?a > 0" using \<open>n \<ge> l^2 + l + 1\<close> by linarith
       hence 2: "real_of_int(2*(?off n + ?a)) > 0"
         by(simp only: of_int_0_less_iff zero_less_mult_iff zero_less_numeral simp_thms)
       have "?off n + ?a \<le> (l+1)*(n) div 2"
-        using T_adv[OF `l\<noteq>0`, of A n]
+        using T_adv[OF \<open>l\<noteq>0\<close>, of A n]
         by (simp only: o_apply of_nat_add of_nat_le_iff)
       also have "\<dots> \<le> (l+1)*(n+1) div 2" by (simp)
       finally have "2*(?off n + ?a) \<le> (l+1)*(n+1)"
@@ -1010,8 +1010,8 @@ proof (rule compet_lb0[OF _ _ assms(1) `c\<ge>0`])
   }
   thus "eventually (\<lambda>n. (2 * l) / (l + 1) \<le> ?on n / (real(?off n) + ?a)) sequentially"
     by(auto simp add: filterlim_at_top eventually_sequentially)
-  show "0 < 2*l / (l+1)" using `l \<noteq> 0` by(simp)
-  show "\<And>n. static ?s0 (?cruel n)" using `l \<noteq> 0` by(simp add: static_cruel del: cruel.simps)
+  show "0 < 2*l / (l+1)" using \<open>l \<noteq> 0\<close> by(simp)
+  show "\<And>n. static ?s0 (?cruel n)" using \<open>l \<noteq> 0\<close> by(simp add: static_cruel del: cruel.simps)
 qed
 
 

@@ -24,14 +24,14 @@ proof-
     by simp
   moreover
   have "formulaFalse (F @ val2form M) M"
-    using `formulaFalse F M`
+    using \<open>formulaFalse F M\<close>
     by (simp add: formulaFalseAppend)
   ultimately
   have "\<not> satisfiable (F @ val2form M)"
     using formulaFalseInEntailedValuationIsUnsatisfiable[of "F @ val2form M" "M"]
     by simp
   thus ?thesis
-    using `equivalentFormulae (F @ val2form M) F0`
+    using \<open>equivalentFormulae (F @ val2form M) F0\<close>
     by (simp add: satisfiableEquivalent)
 qed
 
@@ -41,24 +41,24 @@ lemma soundnessForSat:
   "\<not> formulaFalse F (elements M)" and "vars (elements M) \<supseteq> Vbl"
   shows "model (elements M) F0"
 proof-
-  from `InvariantConsistent M`
+  from \<open>InvariantConsistent M\<close>
   have "consistent (elements M)"
     unfolding InvariantConsistent_def
     .
   moreover
-  from `InvariantVarsF F F0 Vbl` 
+  from \<open>InvariantVarsF F F0 Vbl\<close> 
   have "vars F \<subseteq> vars F0 \<union> Vbl"
     unfolding InvariantVarsF_def
     .
-  with `vars F0 \<subseteq> Vbl` 
+  with \<open>vars F0 \<subseteq> Vbl\<close> 
   have "vars F \<subseteq> Vbl"
     by auto
-  with `vars (elements M) \<supseteq> Vbl`
+  with \<open>vars (elements M) \<supseteq> Vbl\<close>
   have "vars F \<subseteq> vars (elements M)"
     by simp
   hence "formulaTrue F (elements M) \<or> formulaFalse F (elements M)"
     by (simp add:totalValuationForFormulaDefinesItsValue)
-  with `\<not> formulaFalse F (elements M)`
+  with \<open>\<not> formulaFalse F (elements M)\<close>
   have "formulaTrue F (elements M)"
     by simp
   ultimately
@@ -77,11 +77,11 @@ proof-
     using val2formFormulaTrue[of "elements (prefixToLevel 0 M)" "elements M"]
     by auto
   hence "model (elements M) (val2form (elements (prefixToLevel 0 M)))"
-    using `consistent (elements M)`
+    using \<open>consistent (elements M)\<close>
     by simp
   ultimately
   show ?thesis
-    using `InvariantEquivalentZL F M F0`
+    using \<open>InvariantEquivalentZL F M F0\<close>
     unfolding InvariantEquivalentZL_def
     unfolding equivalentFormulae_def
     using formulaTrueAppend[of "F" "val2form (elements (prefixToLevel 0 M))" "elements M"]
@@ -115,13 +115,13 @@ proof-
             hence "getSATFlag stateDef = UNDEF"
               unfolding satFlagLessState_def
               by auto
-            with `getSATFlag stateDef \<noteq> UNDEF` have False
+            with \<open>getSATFlag stateDef \<noteq> UNDEF\<close> have False
               by simp
             thus "state' \<notin> Q"
               by simp
           qed
         qed
-        with `stateDef \<in> Q`
+        with \<open>stateDef \<in> Q\<close>
         show ?thesis
           by auto
       next
@@ -140,7 +140,7 @@ proof-
               by auto
           qed
         qed
-        with `state \<in> Q` 
+        with \<open>state \<in> Q\<close> 
         show ?thesis
           by auto
       qed
@@ -177,12 +177,12 @@ proof-
           by auto
         then obtain MMin::LiteralTrail
           where "MMin \<in> ?Q1" "\<forall>M'. (M', MMin) \<in> lexLessRestricted Vbl \<longrightarrow> M' \<notin> ?Q1"
-          using wfLexLessRestricted[of "Vbl"] `finite Vbl`
+          using wfLexLessRestricted[of "Vbl"] \<open>finite Vbl\<close>
           unfolding wf_eq_minimal
           apply simp
           apply (erule_tac x="?Q1" in allE)
           by auto
-        from `MMin \<in> ?Q1` obtain stateMin
+        from \<open>MMin \<in> ?Q1\<close> obtain stateMin
           where "stateMin \<in> Q" "(getM stateMin) = MMin" "getSATFlag stateMin = UNDEF"
           by auto
         have "\<forall>state'. (state', stateMin) \<in> lexLessState1 Vbl \<longrightarrow> state' \<notin> Q"
@@ -195,16 +195,16 @@ proof-
               unfolding lexLessState1_def
               by auto
             hence "getM state' \<notin> ?Q1"
-              using `\<forall>M'. (M', MMin) \<in> lexLessRestricted Vbl \<longrightarrow> M' \<notin> ?Q1`
-              using `(getM stateMin) = MMin`
+              using \<open>\<forall>M'. (M', MMin) \<in> lexLessRestricted Vbl \<longrightarrow> M' \<notin> ?Q1\<close>
+              using \<open>(getM stateMin) = MMin\<close>
               by auto
             thus "state' \<notin> Q"
-              using `getSATFlag state' = UNDEF`
+              using \<open>getSATFlag state' = UNDEF\<close>
               by auto
           qed
         qed
         thus ?thesis
-          using `stateMin \<in> Q`
+          using \<open>stateMin \<in> Q\<close>
           by auto
       next
         case False
@@ -218,7 +218,7 @@ proof-
               unfolding lexLessState1_def
               by simp
             hence "(getM state) \<in> ?Q1"
-              using `state \<in> Q`
+              using \<open>state \<in> Q\<close>
               by auto
             hence False
               using False
@@ -228,7 +228,7 @@ proof-
           qed
         qed
         thus ?thesis
-          using `state \<in> Q`
+          using \<open>state \<in> Q\<close>
           by auto
       qed
     }
@@ -259,38 +259,38 @@ proof-
           where "state0 \<in> Q" "\<forall>state'. (state', state0) \<in> satFlagLessState \<longrightarrow> state' \<notin> Q"
           using wellFoundedSatFlagLessState
           unfolding wf_eq_minimal
-          using `state \<in> Q`
+          using \<open>state \<in> Q\<close>
           by auto
         show ?thesis
         proof (cases "getSATFlag state0 = UNDEF")
           case False
           hence "\<forall>state'. (state', state0) \<in> terminationLessState1 Vbl \<longrightarrow> state' \<notin> Q"
-            using `\<forall>state'. (state', state0) \<in> satFlagLessState \<longrightarrow> state' \<notin> Q`
+            using \<open>\<forall>state'. (state', state0) \<in> satFlagLessState \<longrightarrow> state' \<notin> Q\<close>
             unfolding terminationLessState1_def
             unfolding lexLessState1_def
             by simp
           thus ?thesis
-            using `state0 \<in> Q`
+            using \<open>state0 \<in> Q\<close>
             by auto
         next
           case True
           then obtain state1
             where "state1 \<in> Q" "\<forall>state'. (state', state1) \<in> lexLessState1 Vbl \<longrightarrow> state' \<notin> Q"
-            using `finite Vbl`
-            using `state \<in> Q`
+            using \<open>finite Vbl\<close>
+            using \<open>state \<in> Q\<close>
             using wellFoundedLexLessState1[of "Vbl"]
             unfolding wf_eq_minimal
             by auto
 
           have "\<forall>state'. (state', state1) \<in> terminationLessState1 Vbl \<longrightarrow> state' \<notin> Q"
-            using `\<forall>state'. (state', state1) \<in> lexLessState1 Vbl \<longrightarrow> state' \<notin> Q`
+            using \<open>\<forall>state'. (state', state1) \<in> lexLessState1 Vbl \<longrightarrow> state' \<notin> Q\<close>
             unfolding terminationLessState1_def
-            using `\<forall>state'. (state', state0) \<in> satFlagLessState \<longrightarrow> state' \<notin> Q`
+            using \<open>\<forall>state'. (state', state0) \<in> satFlagLessState \<longrightarrow> state' \<notin> Q\<close>
             using True
             unfolding satFlagLessState_def
             by simp
           thus ?thesis
-            using `state1 \<in> Q`
+            using \<open>state1 \<in> Q\<close>
             by auto
         qed
       qed
@@ -313,32 +313,32 @@ proof-
         unfolding satFlagLessState_def
         by auto
       hence "getSATFlag z = UNDEF"
-        using `(y, z) \<in> terminationLessState1 Vbl`
+        using \<open>(y, z) \<in> terminationLessState1 Vbl\<close>
         unfolding terminationLessState1_def
         unfolding satFlagLessState_def
         unfolding lexLessState1_def
         by auto
       thus ?thesis
-        using `getSATFlag x \<noteq> UNDEF`
+        using \<open>getSATFlag x \<noteq> UNDEF\<close>
         unfolding terminationLessState1_def
         unfolding satFlagLessState_def
         by simp
     next
       case False
-      with `(x, y) \<in> terminationLessState1 Vbl`
+      with \<open>(x, y) \<in> terminationLessState1 Vbl\<close>
       have "getSATFlag x = UNDEF" "getSATFlag y = UNDEF" "(getM x, getM y) \<in> lexLessRestricted Vbl"
         unfolding terminationLessState1_def
         unfolding lexLessState1_def
         by auto
       hence "getSATFlag z = UNDEF" "(getM y, getM z) \<in> lexLessRestricted Vbl"
-        using `(y, z) \<in> terminationLessState1 Vbl`
+        using \<open>(y, z) \<in> terminationLessState1 Vbl\<close>
         unfolding terminationLessState1_def
         unfolding satFlagLessState_def
         unfolding lexLessState1_def
         by auto
       thus ?thesis
-        using `getSATFlag x = UNDEF` 
-        using `(getM x, getM y) \<in> lexLessRestricted Vbl`
+        using \<open>getSATFlag x = UNDEF\<close> 
+        using \<open>(getM x, getM y) \<in> lexLessRestricted Vbl\<close>
         using transLexLessRestricted[of "Vbl"]
         unfolding trans_def
         unfolding terminationLessState1_def
@@ -468,9 +468,9 @@ proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
     moreover
     have "getSATFlag ?state'' = UNDEF"
       unfolding applyUnitPropagate_def
-      using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state') (getF state')`
-      using `InvariantWatchesEl (getF state') (getWatch1 state') (getWatch2 state')`
-      using `getSATFlag state' = UNDEF`
+      using \<open>InvariantWatchListsContainOnlyClausesFromF (getWatchList state') (getF state')\<close>
+      using \<open>InvariantWatchesEl (getF state') (getWatch1 state') (getWatch2 state')\<close>
+      using \<open>getSATFlag state' = UNDEF\<close>
       using assertLiteralEffect[of "state'" "hd (getQ state')" "False"]
       by (simp add: Let_def)
     ultimately
@@ -478,24 +478,24 @@ proof (induct state rule: exhaustiveUnitPropagate_dom.induct)
             (exhaustiveUnitPropagate state', applyUnitPropagate state') \<in> terminationLessState1 (vars F0 \<union> Vbl)"
       using ih
       using False
-      using `exhaustiveUnitPropagate state' = exhaustiveUnitPropagate ?state''`
+      using \<open>exhaustiveUnitPropagate state' = exhaustiveUnitPropagate ?state''\<close>
       by (simp add: Let_def)
     moreover
     have "(?state'', state') \<in> terminationLessState1 (vars F0 \<union> Vbl)"
       using applyUnitPropagateEffect[of "state'"]
       using lexLessAppend[of "[(hd (getQ state'), False)]" "getM state'"]
       using False
-      using `InvariantUniq (getM state')`
-      using `InvariantConsistent (getM state')`
-      using `InvariantVarsM (getM state') F0 Vbl`
-      using `InvariantWatchesEl (getF state') (getWatch1 state') (getWatch2 state')`
-      using `InvariantWatchListsContainOnlyClausesFromF (getWatchList state') (getF state')`
-      using `InvariantQCharacterization (getConflictFlag state') (getQ state') (getF state') (getM state')`
-      using `InvariantUniq (getM ?state'')`
-      using `InvariantConsistent (getM ?state'')`
-      using `InvariantVarsM (getM ?state'') F0 Vbl`
-      using `getSATFlag state' = UNDEF`
-      using `getSATFlag ?state'' = UNDEF`
+      using \<open>InvariantUniq (getM state')\<close>
+      using \<open>InvariantConsistent (getM state')\<close>
+      using \<open>InvariantVarsM (getM state') F0 Vbl\<close>
+      using \<open>InvariantWatchesEl (getF state') (getWatch1 state') (getWatch2 state')\<close>
+      using \<open>InvariantWatchListsContainOnlyClausesFromF (getWatchList state') (getF state')\<close>
+      using \<open>InvariantQCharacterization (getConflictFlag state') (getQ state') (getF state') (getM state')\<close>
+      using \<open>InvariantUniq (getM ?state'')\<close>
+      using \<open>InvariantConsistent (getM ?state'')\<close>
+      using \<open>InvariantVarsM (getM ?state'') F0 Vbl\<close>
+      using \<open>getSATFlag state' = UNDEF\<close>
+      using \<open>getSATFlag ?state'' = UNDEF\<close>
       unfolding terminationLessState1_def
       unfolding lexLessState1_def
       unfolding lexLessRestricted_def
@@ -571,46 +571,46 @@ proof-
 
   have "?inv' ?state_up"
     using assms
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     using InvariantsAfterExhaustiveUnitPropagate[of "state"]
     using InvariantConflictClauseCharacterizationAfterExhaustivePropagate[of "state"]
     by (simp add: Let_def)
   have "?inv'' ?state_up"
     using assms
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     using InvariantsNoDecisionsWhenConflictNorUnitAfterExhaustivePropagate[of "state"]
     by (simp add: Let_def)
   have "InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'"
     using assms
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     using InvariantEquivalentZLAfterExhaustiveUnitPropagate[of "state"]
     by (simp add: Let_def)
   have "InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up) (getM ?state_up) (set (getQ ?state_up))"
     using assms
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     using InvariantGetReasonIsReasonAfterExhaustiveUnitPropagate[of "state"]
     by (simp add: Let_def)
   have "getSATFlag ?state_up = getSATFlag state"
     using exhaustiveUnitPropagatePreservedVariables[of "state"]
     using assms
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     by (simp add: Let_def)
   have "getConflictFlag ?state_up \<or> getQ ?state_up = []"
     using conflictFlagOrQEmptyAfterExhaustiveUnitPropagate[of "state"]
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     by (simp add: Let_def)
   have "InvariantVarsM (getM ?state_up) F0 Vbl" 
        "InvariantVarsQ (getQ ?state_up) F0 Vbl"
        "InvariantVarsF (getF ?state_up) F0 Vbl"
     using assms
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     using InvariantsAfterExhaustiveUnitPropagate[of "state" "F0" "Vbl"]
     by (auto simp add: Let_def)
 
   have "?state_up = state \<or> (?state_up, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
     using assms
     using TerminationLessAfterExhaustiveUnitPropagate[of "state"]
-    using `exhaustiveUnitPropagate_dom state`
+    using \<open>exhaustiveUnitPropagate_dom state\<close>
     by (simp add: Let_def)
   
   show ?thesis
@@ -624,13 +624,13 @@ proof-
         by simp
       moreover
       have "formulaFalse (getF ?state_up) (elements (getM ?state_up))"
-        using `getConflictFlag ?state_up`
-        using `?inv' ?state_up`
+        using \<open>getConflictFlag ?state_up\<close>
+        using \<open>?inv' ?state_up\<close>
         unfolding InvariantConflictFlagCharacterization_def
         by simp
       ultimately
       have "\<not> satisfiable F0'"
-        using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
+        using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
         unfolding InvariantEquivalentZL_def
         using soundnessForUNSAT[of "getF ?state_up" "elements (getM ?state_up)" "F0'"]
         by simp
@@ -639,19 +639,19 @@ proof-
       have "(?state', state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
         unfolding terminationLessState1_def
         unfolding satFlagLessState_def
-        using `getSATFlag state = UNDEF`
+        using \<open>getSATFlag state = UNDEF\<close>
         by simp
       ultimately
       show ?thesis
-        using `?inv' ?state_up`
-        using `?inv'' ?state_up`
-        using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
-        using `InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up)  (getM ?state_up) (set (getQ ?state_up))`
-        using `InvariantVarsM (getM ?state_up) F0 Vbl`
-        using `InvariantVarsQ (getQ ?state_up) F0 Vbl`
-        using `InvariantVarsF (getF ?state_up) F0 Vbl`
-        using `getConflictFlag ?state_up`
-        using `currentLevel (getM ?state_up) = 0`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>?inv'' ?state_up\<close>
+        using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
+        using \<open>InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up)  (getM ?state_up) (set (getQ ?state_up))\<close>
+        using \<open>InvariantVarsM (getM ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsQ (getQ ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsF (getF ?state_up) F0 Vbl\<close>
+        using \<open>getConflictFlag ?state_up\<close>
+        using \<open>currentLevel (getM ?state_up) = 0\<close>
         unfolding solve_loop_body_def
         by (simp add: Let_def)
     next
@@ -666,10 +666,10 @@ proof-
           "getConflictFlag ?state_c"
           "InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'"
           "currentLevel (getM ?state_c) > 0"
-          using `?inv' ?state_up` `?inv'' ?state_up`
-          using `getConflictFlag ?state_up`
-          using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
-          using `currentLevel (getM ?state_up) \<noteq> 0`
+          using \<open>?inv' ?state_up\<close> \<open>?inv'' ?state_up\<close>
+          using \<open>getConflictFlag ?state_up\<close>
+          using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
+          using \<open>currentLevel (getM ?state_up) \<noteq> 0\<close>
           unfolding applyConflict_def
           unfolding setConflictAnalysisClause_def
           by (auto simp add: Let_def findLastAssertedLiteral_def countCurrentLevelLiterals_def)
@@ -680,16 +680,16 @@ proof-
              "InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)"
              "InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)"
              "InvariantUniqC (getC ?state_c)"
-          using `getConflictFlag ?state_up`
-          using `currentLevel (getM ?state_up) \<noteq> 0`
-          using `?inv' ?state_up`
-          using `?inv'' ?state_up`
-          using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
+          using \<open>getConflictFlag ?state_up\<close>
+          using \<open>currentLevel (getM ?state_up) \<noteq> 0\<close>
+          using \<open>?inv' ?state_up\<close>
+          using \<open>?inv'' ?state_up\<close>
+          using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
           using InvariantsClAfterApplyConflict[of "?state_up"]
           by (auto simp only: Let_def)
 
         have "getSATFlag ?state_c = getSATFlag state"
-          using `getSATFlag ?state_up = getSATFlag state`
+          using \<open>getSATFlag ?state_up = getSATFlag state\<close>
           unfolding applyConflict_def
           unfolding setConflictAnalysisClause_def
           by (simp add: Let_def findLastAssertedLiteral_def countCurrentLevelLiterals_def)
@@ -705,24 +705,24 @@ proof-
           "InvariantVarsM (getM ?state_c) F0 Vbl" 
           "InvariantVarsQ (getQ ?state_c) F0 Vbl"
           "InvariantVarsF (getF ?state_c) F0 Vbl"         
-          using `InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up) (getM ?state_up) (set (getQ ?state_up))`
-          using `InvariantVarsM (getM ?state_up) F0 Vbl`
-          using `InvariantVarsQ (getQ ?state_up) F0 Vbl`
-          using `InvariantVarsF (getF ?state_up) F0 Vbl`
+          using \<open>InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up) (getM ?state_up) (set (getQ ?state_up))\<close>
+          using \<open>InvariantVarsM (getM ?state_up) F0 Vbl\<close>
+          using \<open>InvariantVarsQ (getQ ?state_up) F0 Vbl\<close>
+          using \<open>InvariantVarsF (getF ?state_up) F0 Vbl\<close>
           by auto
 
 
         have "getM ?state_c = getM state \<or> (?state_c, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
-          using `?state_up = state \<or> (?state_up, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)`
-          using `getM ?state_c = getM ?state_up`
-          using `getSATFlag ?state_c = getSATFlag state`
-          using `InvariantUniq (getM state)`
-          using `InvariantConsistent (getM state)`
-          using `InvariantVarsM (getM state) F0 Vbl`
-          using `?inv' ?state_up`
-          using `InvariantVarsM (getM ?state_up) F0 Vbl`
-          using `getSATFlag ?state_up = getSATFlag state`
-          using `getSATFlag state = UNDEF`
+          using \<open>?state_up = state \<or> (?state_up, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)\<close>
+          using \<open>getM ?state_c = getM ?state_up\<close>
+          using \<open>getSATFlag ?state_c = getSATFlag state\<close>
+          using \<open>InvariantUniq (getM state)\<close>
+          using \<open>InvariantConsistent (getM state)\<close>
+          using \<open>InvariantVarsM (getM state) F0 Vbl\<close>
+          using \<open>?inv' ?state_up\<close>
+          using \<open>InvariantVarsM (getM ?state_up) F0 Vbl\<close>
+          using \<open>getSATFlag ?state_up = getSATFlag state\<close>
+          using \<open>getSATFlag state = UNDEF\<close>
           unfolding InvariantConsistent_def
           unfolding InvariantUniq_def
           unfolding InvariantVarsM_def
@@ -740,22 +740,22 @@ proof-
 
         have "applyExplainUIP_dom ?state_c"
           using ApplyExplainUIPTermination[of "?state_c" "F0'"]
-          using `getConflictFlag ?state_c`
-          using `InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'`
-          using `currentLevel (getM ?state_c) > 0`
-          using `?inv' ?state_c`
-          using `InvariantCFalse (getConflictFlag ?state_c) (getM ?state_c) (getC ?state_c)`
-          using `InvariantCEntailed (getConflictFlag ?state_c) F0' (getC ?state_c)`
-          using `InvariantClCharacterization (getCl ?state_c) (getC ?state_c) (getM ?state_c)`
-          using `InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)`
-          using `InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)`
-          using `InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))`
+          using \<open>getConflictFlag ?state_c\<close>
+          using \<open>InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'\<close>
+          using \<open>currentLevel (getM ?state_c) > 0\<close>
+          using \<open>?inv' ?state_c\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_c) (getM ?state_c) (getC ?state_c)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_c) F0' (getC ?state_c)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_c) (getC ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))\<close>
           by simp
         
         
         have "?inv' ?state_euip" "?inv'' ?state_euip"
-          using `?inv' ?state_c` `?inv'' ?state_c`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>?inv' ?state_c\<close> \<open>?inv'' ?state_c\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           by (auto simp add: Let_def)
 
@@ -765,79 +765,79 @@ proof-
           "InvariantCnCharacterization (getCn ?state_euip) (getC ?state_euip) (getM ?state_euip)"
           "InvariantClCurrentLevel (getCl ?state_euip) (getM ?state_euip)"
           "InvariantUniqC (getC ?state_euip)"
-          using `?inv' ?state_c`
-          using `InvariantCFalse (getConflictFlag ?state_c) (getM ?state_c) (getC ?state_c)`
-          using `InvariantCEntailed (getConflictFlag ?state_c) F0' (getC ?state_c)`
-          using `InvariantClCharacterization (getCl ?state_c) (getC ?state_c) (getM ?state_c)`
-          using `InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)`
-          using `InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)`
-          using `InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'`
-          using `InvariantUniqC (getC ?state_c)`
-          using `getConflictFlag ?state_c`
-          using `currentLevel (getM ?state_c) > 0`
-          using `InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>?inv' ?state_c\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_c) (getM ?state_c) (getC ?state_c)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_c) F0' (getC ?state_c)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_c) (getC ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'\<close>
+          using \<open>InvariantUniqC (getC ?state_c)\<close>
+          using \<open>getConflictFlag ?state_c\<close>
+          using \<open>currentLevel (getM ?state_c) > 0\<close>
+          using \<open>InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using InvariantsClAfterExplainUIP[of "?state_c" "F0'"]
           by (auto simp only: Let_def)
 
         have "InvariantEquivalentZL (getF ?state_euip) (getM ?state_euip) F0'"
-          using `InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           by (simp only: Let_def)
 
         have "InvariantGetReasonIsReason (getReason ?state_euip) (getF ?state_euip) (getM ?state_euip) (set (getQ ?state_euip))"
-          using `InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           by (simp only: Let_def)
 
         have "getConflictFlag ?state_euip"
-          using `getConflictFlag ?state_c`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>getConflictFlag ?state_c\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           by (simp add: Let_def)
 
         hence "getSATFlag ?state_euip = getSATFlag state"
-          using `getSATFlag ?state_c = getSATFlag state`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>getSATFlag ?state_c = getSATFlag state\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           by (simp add: Let_def)
 
         have "isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)"
-          using `applyExplainUIP_dom ?state_c`
-          using `?inv' ?state_c`
-          using `InvariantCFalse (getConflictFlag ?state_c) (getM ?state_c) (getC ?state_c)`
-          using `InvariantCEntailed (getConflictFlag ?state_c) F0' (getC ?state_c)`
-          using `InvariantClCharacterization (getCl ?state_c) (getC ?state_c) (getM ?state_c)`
-          using `InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)`
-          using `InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)`
-          using `InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))`
-          using `InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'`
-          using `getConflictFlag ?state_c`
-          using `currentLevel (getM ?state_c) > 0`
+          using \<open>applyExplainUIP_dom ?state_c\<close>
+          using \<open>?inv' ?state_c\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_c) (getM ?state_c) (getC ?state_c)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_c) F0' (getC ?state_c)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_c) (getC ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantCnCharacterization (getCn ?state_c) (getC ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_c) (getM ?state_c)\<close>
+          using \<open>InvariantGetReasonIsReason (getReason ?state_c) (getF ?state_c) (getM ?state_c) (set (getQ ?state_c))\<close>
+          using \<open>InvariantEquivalentZL (getF ?state_c) (getM ?state_c) F0'\<close>
+          using \<open>getConflictFlag ?state_c\<close>
+          using \<open>currentLevel (getM ?state_c) > 0\<close>
           using isUIPApplyExplainUIP[of "?state_c"]
           by (simp add: Let_def)
 
         have "currentLevel (getM ?state_euip) > 0"
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
-          using `currentLevel (getM ?state_c) > 0`
+          using \<open>currentLevel (getM ?state_c) > 0\<close>
           by (simp add: Let_def)
 
         have "InvariantVarsM (getM ?state_euip) F0 Vbl" 
              "InvariantVarsQ (getQ ?state_euip) F0 Vbl"
              "InvariantVarsF (getF ?state_euip) F0 Vbl"
-          using `InvariantVarsM (getM ?state_c) F0 Vbl`
-          using `InvariantVarsQ (getQ ?state_c) F0 Vbl`
-          using `InvariantVarsF (getF ?state_c) F0 Vbl`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>InvariantVarsM (getM ?state_c) F0 Vbl\<close>
+          using \<open>InvariantVarsQ (getQ ?state_c) F0 Vbl\<close>
+          using \<open>InvariantVarsF (getF ?state_c) F0 Vbl\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           by (auto simp add: Let_def)
 
         have "getM ?state_euip = getM state \<or> (?state_euip, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
-          using `getM ?state_c = getM state \<or> (?state_c, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)`
-          using `applyExplainUIP_dom ?state_c`
+          using \<open>getM ?state_c = getM state \<or> (?state_c, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)\<close>
+          using \<open>applyExplainUIP_dom ?state_c\<close>
           using ApplyExplainUIPPreservedVariables[of "?state_c"]
           unfolding terminationLessState1_def
           unfolding satFlagLessState_def
@@ -866,35 +866,35 @@ proof-
         have "?inv' ?state_l"
         proof-
           have "InvariantConflictFlagCharacterization (getConflictFlag ?state_l) (getF ?state_l) (getM ?state_l)"
-            using `?inv' ?state_euip`
-            using `getConflictFlag ?state_euip`
+            using \<open>?inv' ?state_euip\<close>
+            using \<open>getConflictFlag ?state_euip\<close>
             using InvariantConflictFlagCharacterizationAfterApplyLearn[of "?state_euip"]
             by (simp add: Let_def)
           moreover
           hence "InvariantQCharacterization (getConflictFlag ?state_l) (getQ ?state_l) (getF ?state_l) (getM ?state_l)"
-            using `?inv' ?state_euip`
-            using `getConflictFlag ?state_euip`
+            using \<open>?inv' ?state_euip\<close>
+            using \<open>getConflictFlag ?state_euip\<close>
             using InvariantQCharacterizationAfterApplyLearn[of "?state_euip"]
             by (simp add: Let_def)
           moreover
           have "InvariantUniqQ (getQ ?state_l)"
-            using `?inv' ?state_euip`
+            using \<open>?inv' ?state_euip\<close>
             using InvariantUniqQAfterApplyLearn[of "?state_euip"]
             by (simp add: Let_def)
           moreover
           have "InvariantConflictClauseCharacterization (getConflictFlag ?state_l) (getConflictClause ?state_l) (getF ?state_l) (getM ?state_l)"
-            using `?inv' ?state_euip`
-            using `getConflictFlag ?state_euip`
+            using \<open>?inv' ?state_euip\<close>
+            using \<open>getConflictFlag ?state_euip\<close>
             using InvariantConflictClauseCharacterizationAfterApplyLearn[of "?state_euip"]
             by (simp only: Let_def)
           ultimately
           show ?thesis
-            using `?inv' ?state_euip`
-            using `getConflictFlag ?state_euip`
-            using `InvariantUniqC (getC ?state_euip)`
-            using `InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)`
-            using `InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)`
-            using `isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)`
+            using \<open>?inv' ?state_euip\<close>
+            using \<open>getConflictFlag ?state_euip\<close>
+            using \<open>InvariantUniqC (getC ?state_euip)\<close>
+            using \<open>InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)\<close>
+            using \<open>InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)\<close>
+            using \<open>isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)\<close>
             using WatchInvariantsAfterApplyLearn[of "?state_euip"]
             using $
             by (auto simp only: Let_def)
@@ -905,91 +905,91 @@ proof-
              "InvariantNoDecisionsWhenConflict [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)"
              "InvariantNoDecisionsWhenUnit [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)"
           using InvariantNoDecisionsWhenConflictNorUnitAfterApplyLearn[of "?state_euip"]
-          using `?inv' ?state_euip`
-          using `?inv'' ?state_euip`
-          using `getConflictFlag ?state_euip`
-          using `InvariantUniqC (getC ?state_euip)`
-          using `InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)`
-          using `InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)`
-          using `InvariantClCurrentLevel (getCl ?state_euip) (getM ?state_euip)`
-          using `isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)`
-          using `currentLevel (getM ?state_euip) > 0`
+          using \<open>?inv' ?state_euip\<close>
+          using \<open>?inv'' ?state_euip\<close>
+          using \<open>getConflictFlag ?state_euip\<close>
+          using \<open>InvariantUniqC (getC ?state_euip)\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_euip) (getM ?state_euip)\<close>
+          using \<open>isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)\<close>
+          using \<open>currentLevel (getM ?state_euip) > 0\<close>
           by (auto simp only: Let_def)
         
 
         have "isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)"
-          using `isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)`
+          using \<open>isUIP (opposite (getCl ?state_euip)) (getC ?state_euip) (getM ?state_euip)\<close>
           using $
           by simp
 
         have "InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)"
-          using `InvariantClCurrentLevel (getCl ?state_euip) (getM ?state_euip)`
+          using \<open>InvariantClCurrentLevel (getCl ?state_euip) (getM ?state_euip)\<close>
           using $
           by simp
 
         have "InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)"
-          using `InvariantCEntailed (getConflictFlag ?state_euip) F0' (getC ?state_euip)`
+          using \<open>InvariantCEntailed (getConflictFlag ?state_euip) F0' (getC ?state_euip)\<close>
           using $
           unfolding InvariantCEntailed_def
           by simp
 
         have "InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)"
-          using `InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)`
+          using \<open>InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)\<close>
           using $
           by simp
 
         have "InvariantUniqC (getC ?state_l)"
-          using `InvariantUniqC (getC ?state_euip)`
+          using \<open>InvariantUniqC (getC ?state_euip)\<close>
           using $
           by simp
 
         have "InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)"
-          using `InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)`
+          using \<open>InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)\<close>
           unfolding applyLearn_def
           unfolding setWatch1_def
           unfolding setWatch2_def
           by (auto simp add:Let_def)
 
         have "InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)"
-          using `InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)`
-            `InvariantUniqC (getC ?state_euip)`
-            `InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)`
-            `getConflictFlag ?state_euip`
-            `?inv' ?state_euip`
+          using \<open>InvariantClCharacterization (getCl ?state_euip) (getC ?state_euip) (getM ?state_euip)\<close>
+            \<open>InvariantUniqC (getC ?state_euip)\<close>
+            \<open>InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)\<close>
+            \<open>getConflictFlag ?state_euip\<close>
+            \<open>?inv' ?state_euip\<close>
           using InvariantCllCharacterizationAfterApplyLearn[of "?state_euip"]
           by (simp add: Let_def)
 
         have "InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'"
-          using `InvariantEquivalentZL (getF ?state_euip) (getM ?state_euip) F0'`
-          using `getConflictFlag ?state_euip`
+          using \<open>InvariantEquivalentZL (getF ?state_euip) (getM ?state_euip) F0'\<close>
+          using \<open>getConflictFlag ?state_euip\<close>
           using InvariantEquivalentZLAfterApplyLearn[of "?state_euip" "F0'"]
-          using `InvariantCEntailed (getConflictFlag ?state_euip) F0' (getC ?state_euip)`
+          using \<open>InvariantCEntailed (getConflictFlag ?state_euip) F0' (getC ?state_euip)\<close>
           by (simp add: Let_def)
 
         have "InvariantGetReasonIsReason (getReason ?state_l) (getF ?state_l) (getM ?state_l) (set (getQ ?state_l))"
-          using `InvariantGetReasonIsReason (getReason ?state_euip) (getF ?state_euip) (getM ?state_euip) (set (getQ ?state_euip))`
+          using \<open>InvariantGetReasonIsReason (getReason ?state_euip) (getF ?state_euip) (getM ?state_euip) (set (getQ ?state_euip))\<close>
           using InvariantGetReasonIsReasonAfterApplyLearn[of "?state_euip"]
           by (simp only: Let_def)
 
         have "InvariantVarsM (getM ?state_l) F0 Vbl" 
           "InvariantVarsQ (getQ ?state_l) F0 Vbl"
           "InvariantVarsF (getF ?state_l) F0 Vbl"
-          using `InvariantVarsM (getM ?state_euip) F0 Vbl`
-          using `InvariantVarsQ (getQ ?state_euip) F0 Vbl`
-          using `InvariantVarsF (getF ?state_euip) F0 Vbl`
+          using \<open>InvariantVarsM (getM ?state_euip) F0 Vbl\<close>
+          using \<open>InvariantVarsQ (getQ ?state_euip) F0 Vbl\<close>
+          using \<open>InvariantVarsF (getF ?state_euip) F0 Vbl\<close>
           using $
-          using `InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)` 
-          using `getConflictFlag ?state_euip`
+          using \<open>InvariantCFalse (getConflictFlag ?state_euip) (getM ?state_euip) (getC ?state_euip)\<close> 
+          using \<open>getConflictFlag ?state_euip\<close>
           using InvariantVarsFAfterApplyLearn[of "?state_euip" "F0" "Vbl"]
           by auto
 
         have "getConflictFlag ?state_l"
-          using `getConflictFlag ?state_euip`
+          using \<open>getConflictFlag ?state_euip\<close>
           using $
           by simp
 
         have "getSATFlag ?state_l = getSATFlag state"
-          using `getSATFlag ?state_euip = getSATFlag state`
+          using \<open>getSATFlag ?state_euip = getSATFlag state\<close>
           unfolding applyLearn_def
           unfolding setWatch2_def
           unfolding setWatch1_def
@@ -997,7 +997,7 @@ proof-
 
 
         have "currentLevel (getM ?state_l) > 0"
-          using `currentLevel (getM ?state_euip) > 0`
+          using \<open>currentLevel (getM ?state_euip) > 0\<close>
           using $
           by simp
 
@@ -1009,13 +1009,13 @@ proof-
             by simp
         next
           case False
-          with `getM ?state_euip = getM state \<or> (?state_euip, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)`
+          with \<open>getM ?state_euip = getM state \<or> (?state_euip, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)\<close>
           have "(?state_euip, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
             by simp
           hence "(?state_l, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
             using $
-            using `getSATFlag ?state_l = getSATFlag state`
-            using `getSATFlag ?state_euip = getSATFlag state`
+            using \<open>getSATFlag ?state_l = getSATFlag state\<close>
+            using \<open>getSATFlag ?state_euip = getSATFlag state\<close>
             unfolding terminationLessState1_def
             unfolding satFlagLessState_def
             unfolding lexLessState1_def
@@ -1043,23 +1043,23 @@ proof-
             using InvariantUniqQAfterApplyBackjump[of "?state_l"]
             using InvariantConflictClauseCharacterizationAfterApplyBackjump[of "?state_l"]
             using InvariantsVarsAfterApplyBackjump[of "?state_l" "F0'" "F0" "Vbl"]
-            using `?inv' ?state_l`
-            using `getConflictFlag ?state_l`
-            using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-            using `InvariantUniqC (getC ?state_l)`
-            using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-            using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-            using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-            using `currentLevel (getM ?state_l) > 0`
-            using `InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'`
-            using `InvariantVarsM (getM ?state_l) F0 Vbl`
-            using `InvariantVarsQ (getQ ?state_l) F0 Vbl`
-            using `InvariantVarsF (getF ?state_l) F0 Vbl`
-            using `vars F0' \<subseteq> vars F0`
+            using \<open>?inv' ?state_l\<close>
+            using \<open>getConflictFlag ?state_l\<close>
+            using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantUniqC (getC ?state_l)\<close>
+            using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+            using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+            using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>currentLevel (getM ?state_l) > 0\<close>
+            using \<open>InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'\<close>
+            using \<open>InvariantVarsM (getM ?state_l) F0 Vbl\<close>
+            using \<open>InvariantVarsQ (getQ ?state_l) F0 Vbl\<close>
+            using \<open>InvariantVarsF (getF ?state_l) F0 Vbl\<close>
+            using \<open>vars F0' \<subseteq> vars F0\<close>
             using $
             by (simp add: Let_def)
         next
@@ -1073,26 +1073,26 @@ proof-
             using InvariantUniqQAfterApplyBackjump[of "?state_l"]
             using InvariantConflictClauseCharacterizationAfterApplyBackjump[of "?state_l"]
             using InvariantsVarsAfterApplyBackjump[of "?state_l" "F0'" "F0" "Vbl"]
-            using `?inv' ?state_l`
-            using `getConflictFlag ?state_l`
-            using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-            using `InvariantUniqC (getC ?state_l)`
-            using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-            using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-            using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-            using `currentLevel (getM ?state_l) > 0`
-            using `InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantNoDecisionsWhenConflict [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)`
-            using `InvariantNoDecisionsWhenUnit [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)`
+            using \<open>?inv' ?state_l\<close>
+            using \<open>getConflictFlag ?state_l\<close>
+            using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantUniqC (getC ?state_l)\<close>
+            using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+            using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+            using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>currentLevel (getM ?state_l) > 0\<close>
+            using \<open>InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantNoDecisionsWhenConflict [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)\<close>
+            using \<open>InvariantNoDecisionsWhenUnit [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)\<close>
             using $
-            using `InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'`
-            using `InvariantVarsM (getM ?state_l) F0 Vbl`
-            using `InvariantVarsQ (getQ ?state_l) F0 Vbl`
-            using `InvariantVarsF (getF ?state_l) F0 Vbl`
-            using `vars F0' \<subseteq> vars F0`
+            using \<open>InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'\<close>
+            using \<open>InvariantVarsM (getM ?state_l) F0 Vbl\<close>
+            using \<open>InvariantVarsQ (getQ ?state_l) F0 Vbl\<close>
+            using \<open>InvariantVarsF (getF ?state_l) F0 Vbl\<close>
+            using \<open>vars F0' \<subseteq> vars F0\<close>
             by (simp add: Let_def)
         qed
 
@@ -1101,38 +1101,38 @@ proof-
           case True
           thus ?thesis
             using InvariantsNoDecisionsWhenConflictNorUnitAfterApplyBackjump_1[of "?state_l" "F0'"]
-            using `?inv' ?state_l`
-            using `getConflictFlag ?state_l`
-            using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-            using `InvariantUniqC (getC ?state_l)`
-            using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-            using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-            using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-            using `currentLevel (getM ?state_l) > 0`
-            using `InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
+            using \<open>?inv' ?state_l\<close>
+            using \<open>getConflictFlag ?state_l\<close>
+            using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantUniqC (getC ?state_l)\<close>
+            using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+            using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+            using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>currentLevel (getM ?state_l) > 0\<close>
+            using \<open>InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
             using $
             by (simp add: Let_def)
         next
           case False
           thus ?thesis
             using InvariantsNoDecisionsWhenConflictNorUnitAfterApplyBackjump_2[of "?state_l"]
-            using `?inv' ?state_l`
-            using `getConflictFlag ?state_l`
-            using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-            using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-            using `InvariantUniqC (getC ?state_l)`
-            using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-            using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-            using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-            using `currentLevel (getM ?state_l) > 0`
-            using `InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))`
-            using `InvariantNoDecisionsWhenConflict [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)`
-            using `InvariantNoDecisionsWhenUnit [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)`
+            using \<open>?inv' ?state_l\<close>
+            using \<open>getConflictFlag ?state_l\<close>
+            using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+            using \<open>InvariantUniqC (getC ?state_l)\<close>
+            using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+            using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+            using \<open>currentLevel (getM ?state_l) > 0\<close>
+            using \<open>InvariantNoDecisionsWhenConflict (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantNoDecisionsWhenUnit (getF ?state_euip) (getM ?state_l) (currentLevel (getM ?state_l))\<close>
+            using \<open>InvariantNoDecisionsWhenConflict [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)\<close>
+            using \<open>InvariantNoDecisionsWhenUnit [getC ?state_euip] (getM ?state_l) (getBackjumpLevel ?state_l)\<close>
             using $
             by (simp add: Let_def)
         qed
@@ -1152,39 +1152,39 @@ proof-
             by simp
         qed
         hence "InvariantGetReasonIsReason (getReason ?state_bj) (getF ?state_bj) (getM ?state_bj) (set (getQ ?state_bj))"
-          using `InvariantGetReasonIsReason (getReason ?state_l) (getF ?state_l) (getM ?state_l) (set (getQ ?state_l))`
-          using `?inv' ?state_l`
-          using `getConflictFlag ?state_l`
-          using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-          using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-          using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-          using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-          using `InvariantUniqC (getC ?state_l)`
-          using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `currentLevel (getM ?state_l) > 0`
+          using \<open>InvariantGetReasonIsReason (getReason ?state_l) (getF ?state_l) (getM ?state_l) (set (getQ ?state_l))\<close>
+          using \<open>?inv' ?state_l\<close>
+          using \<open>getConflictFlag ?state_l\<close>
+          using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+          using \<open>InvariantUniqC (getC ?state_l)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>currentLevel (getM ?state_l) > 0\<close>
           using InvariantGetReasonIsReasonAfterApplyBackjump[of "?state_l" "F0'"]
           by (simp only: Let_def)
 
         have "InvariantEquivalentZL (getF ?state_bj) (getM ?state_bj) F0'"
-          using `InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'`
-          using `?inv' ?state_l`
-          using `getConflictFlag ?state_l`
-          using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-          using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-          using `InvariantUniqC (getC ?state_l)`
-          using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-          using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-          using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
+          using \<open>InvariantEquivalentZL (getF ?state_l) (getM ?state_l) F0'\<close>
+          using \<open>?inv' ?state_l\<close>
+          using \<open>getConflictFlag ?state_l\<close>
+          using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantUniqC (getC ?state_l)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
           using InvariantEquivalentZLAfterApplyBackjump[of "?state_l" "F0'"]
-          using `currentLevel (getM ?state_l) > 0`
+          using \<open>currentLevel (getM ?state_l) > 0\<close>
           by (simp only: Let_def)
 
 
         have "getSATFlag ?state_bj = getSATFlag state"
-          using `getSATFlag ?state_l = getSATFlag state`
-          using `?inv' ?state_l`
+          using \<open>getSATFlag ?state_l = getSATFlag state\<close>
+          using \<open>?inv' ?state_l\<close>
           using applyBackjumpPreservedVariables[of "?state_l"]
           by (simp only: Let_def)
 
@@ -1194,16 +1194,16 @@ proof-
 
         have "isMinimalBackjumpLevel (getBackjumpLevel ?state_l) (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)"
           using isMinimalBackjumpLevelGetBackjumpLevel[of "?state_l"]
-          using `?inv' ?state_l`
-          using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-          using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-          using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-          using `InvariantUniqC (getC ?state_l)`
-          using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-          using `getConflictFlag ?state_l`
-          using `currentLevel (getM ?state_l) > 0`
+          using \<open>?inv' ?state_l\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+          using \<open>InvariantUniqC (getC ?state_l)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>getConflictFlag ?state_l\<close>
+          using \<open>currentLevel (getM ?state_l) > 0\<close>
           by (simp add: Let_def)
         hence "getBackjumpLevel ?state_l < elementLevel (getCl ?state_l) (getM ?state_l)"
           unfolding isMinimalBackjumpLevel_def
@@ -1214,25 +1214,25 @@ proof-
           by simp
         hence "(?state_bj, ?state_l) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
           using applyBackjumpEffect[of "?state_l" "F0'"]
-          using `?inv' ?state_l`
-          using `getConflictFlag ?state_l`
-          using `isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)`
-          using `InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)`
-          using `InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)`
-          using `InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)`
-          using `InvariantUniqC (getC ?state_l)`
-          using `InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)`
-          using `currentLevel (getM ?state_l) > 0`
+          using \<open>?inv' ?state_l\<close>
+          using \<open>getConflictFlag ?state_l\<close>
+          using \<open>isUIP (opposite (getCl ?state_l)) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantClCurrentLevel (getCl ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCEntailed (getConflictFlag ?state_l) F0' (getC ?state_l)\<close>
+          using \<open>InvariantCFalse (getConflictFlag ?state_l) (getM ?state_l) (getC ?state_l)\<close>
+          using \<open>InvariantUniqC (getC ?state_l)\<close>
+          using \<open>InvariantClCharacterization (getCl ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>InvariantCllCharacterization (getCl ?state_l) (getCll ?state_l) (getC ?state_l) (getM ?state_l)\<close>
+          using \<open>currentLevel (getM ?state_l) > 0\<close>
           using lexLessBackjump[of "?prefix" "?level" "getM ?state_l" "?l"]
-          using `getSATFlag ?state_bj = getSATFlag state`
-          using `getSATFlag ?state_l = getSATFlag state`
-          using `getSATFlag state = UNDEF`
-          using `?inv' ?state_l`
-          using `InvariantVarsM (getM ?state_l) F0 Vbl`
-          using `?inv' ?state_bj \<and> InvariantVarsM (getM ?state_bj) F0 Vbl \<and> 
+          using \<open>getSATFlag ?state_bj = getSATFlag state\<close>
+          using \<open>getSATFlag ?state_l = getSATFlag state\<close>
+          using \<open>getSATFlag state = UNDEF\<close>
+          using \<open>?inv' ?state_l\<close>
+          using \<open>InvariantVarsM (getM ?state_l) F0 Vbl\<close>
+          using \<open>?inv' ?state_bj \<and> InvariantVarsM (getM ?state_bj) F0 Vbl \<and> 
            InvariantVarsQ (getQ ?state_bj) F0 Vbl \<and> 
-           InvariantVarsF (getF ?state_bj) F0 Vbl`
+           InvariantVarsF (getF ?state_bj) F0 Vbl\<close>
           unfolding InvariantConsistent_def
           unfolding InvariantUniq_def
           unfolding InvariantVarsM_def
@@ -1242,10 +1242,10 @@ proof-
           unfolding lexLessRestricted_def
           by (simp add: Let_def)
         hence "(?state_bj, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
-          using `getM ?state_l = getM state \<or> (?state_l, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)`
-          using `getSATFlag state = UNDEF`
-          using `getSATFlag ?state_bj = getSATFlag state`
-          using `getSATFlag ?state_l = getSATFlag state`
+          using \<open>getM ?state_l = getM state \<or> (?state_l, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)\<close>
+          using \<open>getSATFlag state = UNDEF\<close>
+          using \<open>getSATFlag ?state_bj = getSATFlag state\<close>
+          using \<open>getSATFlag ?state_l = getSATFlag state\<close>
           using transTerminationLessState1I[of "?state_bj" "?state_l" "vars F0 \<union> Vbl" "state"]
           unfolding terminationLessState1_def
           unfolding satFlagLessState_def
@@ -1254,17 +1254,17 @@ proof-
           by auto
 
         show ?thesis
-          using `?inv' ?state_bj \<and> InvariantVarsM (getM ?state_bj) F0 Vbl \<and> 
+          using \<open>?inv' ?state_bj \<and> InvariantVarsM (getM ?state_bj) F0 Vbl \<and> 
            InvariantVarsQ (getQ ?state_bj) F0 Vbl \<and> 
-           InvariantVarsF (getF ?state_bj) F0 Vbl`
-          using `?inv'' ?state_bj`
-          using `InvariantEquivalentZL (getF ?state_bj) (getM ?state_bj) F0'`
-          using `InvariantGetReasonIsReason (getReason ?state_bj) (getF ?state_bj) (getM ?state_bj) (set (getQ ?state_bj))`
-          using `getSATFlag state = UNDEF`
-          using `getSATFlag ?state_bj = getSATFlag state`
-          using `getConflictFlag ?state_up`
-          using `currentLevel (getM ?state_up) \<noteq> 0`
-          using `(?state_bj, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)`
+           InvariantVarsF (getF ?state_bj) F0 Vbl\<close>
+          using \<open>?inv'' ?state_bj\<close>
+          using \<open>InvariantEquivalentZL (getF ?state_bj) (getM ?state_bj) F0'\<close>
+          using \<open>InvariantGetReasonIsReason (getReason ?state_bj) (getF ?state_bj) (getM ?state_bj) (set (getQ ?state_bj))\<close>
+          using \<open>getSATFlag state = UNDEF\<close>
+          using \<open>getSATFlag ?state_bj = getSATFlag state\<close>
+          using \<open>getConflictFlag ?state_up\<close>
+          using \<open>currentLevel (getM ?state_up) \<noteq> 0\<close>
+          using \<open>(?state_bj, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)\<close>
           unfolding solve_loop_body_def
           by (auto simp add: Let_def)
       qed
@@ -1276,12 +1276,12 @@ proof-
       case True
       hence "satisfiable F0'"
         using soundnessForSat[of "F0'" "Vbl" "getF ?state_up" "getM ?state_up"]
-        using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
-        using `?inv' ?state_up`
-        using `InvariantVarsF (getF ?state_up) F0 Vbl`
-        using `\<not> getConflictFlag ?state_up`
-        using `vars F0 \<subseteq> Vbl`
-        using `vars F0' \<subseteq> vars F0`
+        using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
+        using \<open>?inv' ?state_up\<close>
+        using \<open>InvariantVarsF (getF ?state_up) F0 Vbl\<close>
+        using \<open>\<not> getConflictFlag ?state_up\<close>
+        using \<open>vars F0 \<subseteq> Vbl\<close>
+        using \<open>vars F0' \<subseteq> vars F0\<close>
         using True
         unfolding InvariantConflictFlagCharacterization_def
         unfolding satisfiable_def
@@ -1290,21 +1290,21 @@ proof-
       moreover
       let ?state' = "?state_up \<lparr> getSATFlag := TRUE \<rparr>"
       have "(?state', state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
-        using `getSATFlag state = UNDEF`
+        using \<open>getSATFlag state = UNDEF\<close>
         unfolding terminationLessState1_def
         unfolding satFlagLessState_def
         by simp
       ultimately
       show ?thesis
-        using `vars (elements (getM ?state_up)) \<supseteq> Vbl`
-        using `?inv' ?state_up`
-        using `?inv'' ?state_up`
-        using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
-        using `InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up)  (getM ?state_up) (set (getQ ?state_up))`
-        using `InvariantVarsM (getM ?state_up) F0 Vbl`
-        using `InvariantVarsQ (getQ ?state_up) F0 Vbl`
-        using `InvariantVarsF (getF ?state_up) F0 Vbl`
-        using `\<not> getConflictFlag ?state_up`
+        using \<open>vars (elements (getM ?state_up)) \<supseteq> Vbl\<close>
+        using \<open>?inv' ?state_up\<close>
+        using \<open>?inv'' ?state_up\<close>
+        using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
+        using \<open>InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up)  (getM ?state_up) (set (getQ ?state_up))\<close>
+        using \<open>InvariantVarsM (getM ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsQ (getQ ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsF (getF ?state_up) F0 Vbl\<close>
+        using \<open>\<not> getConflictFlag ?state_up\<close>
         unfolding solve_loop_body_def
         by (simp add: Let_def)
     next
@@ -1315,71 +1315,71 @@ proof-
       have "InvariantConsistent (getM ?state_d)"
         using InvariantConsistentAfterApplyDecide [of "Vbl" "?state_up"]
         using False
-        using `?inv' ?state_up`
+        using \<open>?inv' ?state_up\<close>
         by (simp add: Let_def)
       moreover
       have "InvariantUniq (getM ?state_d)"
         using InvariantUniqAfterApplyDecide [of "Vbl" "?state_up"]
         using False
-        using `?inv' ?state_up`
+        using \<open>?inv' ?state_up\<close>
         by (simp add: Let_def)
       moreover
       have "InvariantQCharacterization (getConflictFlag ?state_d) (getQ ?state_d) (getF ?state_d) (getM ?state_d)"
         using InvariantQCharacterizationAfterApplyDecide [of "Vbl" "?state_up"]
         using False
-        using `?inv' ?state_up`
-        using `\<not> getConflictFlag ?state_up`
-        using `exhaustiveUnitPropagate_dom state`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>\<not> getConflictFlag ?state_up\<close>
+        using \<open>exhaustiveUnitPropagate_dom state\<close>
         using conflictFlagOrQEmptyAfterExhaustiveUnitPropagate[of "state"]
         by (simp add: Let_def)
       moreover
       have "InvariantConflictFlagCharacterization (getConflictFlag ?state_d) (getF ?state_d) (getM ?state_d)"
-        using `InvariantConsistent (getM ?state_d)`
-        using `InvariantUniq (getM ?state_d)`
+        using \<open>InvariantConsistent (getM ?state_d)\<close>
+        using \<open>InvariantUniq (getM ?state_d)\<close>
         using InvariantConflictFlagCharacterizationAfterAssertLiteral[of "?state_up" "?literal" "True"]
-        using `?inv' ?state_up`
+        using \<open>?inv' ?state_up\<close>
         using assertLiteralEffect
         unfolding applyDecide_def
         by (simp only: Let_def)
       moreover
       have "InvariantConflictClauseCharacterization (getConflictFlag ?state_d) (getConflictClause ?state_d) (getF ?state_d) (getM ?state_d)"
         using InvariantConflictClauseCharacterizationAfterAssertLiteral[of "?state_up" "?literal" "True"]
-        using `?inv' ?state_up`
+        using \<open>?inv' ?state_up\<close>
         using assertLiteralEffect
         unfolding applyDecide_def
         by (simp only: Let_def)
       moreover
       have "InvariantNoDecisionsWhenConflict (getF ?state_d) (getM ?state_d) (currentLevel (getM ?state_d))"
         "InvariantNoDecisionsWhenUnit (getF ?state_d) (getM ?state_d) (currentLevel (getM ?state_d))"
-        using `exhaustiveUnitPropagate_dom state`
+        using \<open>exhaustiveUnitPropagate_dom state\<close>
         using conflictFlagOrQEmptyAfterExhaustiveUnitPropagate[of "state"]
-        using `\<not> getConflictFlag ?state_up` 
-        using `?inv' ?state_up`
-        using `?inv'' ?state_up`
+        using \<open>\<not> getConflictFlag ?state_up\<close> 
+        using \<open>?inv' ?state_up\<close>
+        using \<open>?inv'' ?state_up\<close>
         using InvariantsNoDecisionsWhenConflictNorUnitAfterAssertLiteral[of "?state_up" "True" "?literal"]
         unfolding applyDecide_def
         by (auto simp add: Let_def)
       moreover
       have "InvariantEquivalentZL (getF ?state_d) (getM ?state_d) F0'"
         using InvariantEquivalentZLAfterApplyDecide[of "?state_up" "F0'" "Vbl"]
-        using `?inv' ?state_up`
-        using `InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>InvariantEquivalentZL (getF ?state_up) (getM ?state_up) F0'\<close>
         by (simp add: Let_def)
       moreover
       have "InvariantGetReasonIsReason (getReason ?state_d) (getF ?state_d) (getM ?state_d) (set (getQ ?state_d))"
         using InvariantGetReasonIsReasonAfterApplyDecide[of "Vbl" "?state_up"]
-        using `?inv' ?state_up`
-        using `InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up) (getM ?state_up) (set (getQ ?state_up))`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>InvariantGetReasonIsReason (getReason ?state_up) (getF ?state_up) (getM ?state_up) (set (getQ ?state_up))\<close>
         using False
-        using `\<not> getConflictFlag ?state_up` 
-        using `getConflictFlag ?state_up \<or> getQ ?state_up = []`
+        using \<open>\<not> getConflictFlag ?state_up\<close> 
+        using \<open>getConflictFlag ?state_up \<or> getQ ?state_up = []\<close>
         by (simp add: Let_def)
       moreover
       have "getSATFlag ?state_d = getSATFlag state"
         unfolding applyDecide_def
-        using `getSATFlag ?state_up = getSATFlag state`
+        using \<open>getSATFlag ?state_up = getSATFlag state\<close>
         using assertLiteralEffect[of "?state_up" "selectLiteral ?state_up Vbl" "True"]
-        using `?inv' ?state_up`
+        using \<open>?inv' ?state_up\<close>
         by (simp only: Let_def)
       moreover
       have "InvariantVarsM (getM ?state_d) F0 Vbl"
@@ -1387,25 +1387,25 @@ proof-
         "InvariantVarsQ (getQ ?state_d) F0 Vbl"
         using InvariantsVarsAfterApplyDecide[of "Vbl" "?state_up"]
         using False
-        using `?inv' ?state_up`
-        using `\<not> getConflictFlag ?state_up`
-        using `getConflictFlag ?state_up \<or> getQ ?state_up = []`
-        using `InvariantVarsM (getM ?state_up) F0 Vbl`
-        using `InvariantVarsQ (getQ ?state_up) F0 Vbl`
-        using `InvariantVarsF (getF ?state_up) F0 Vbl`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>\<not> getConflictFlag ?state_up\<close>
+        using \<open>getConflictFlag ?state_up \<or> getQ ?state_up = []\<close>
+        using \<open>InvariantVarsM (getM ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsQ (getQ ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsF (getF ?state_up) F0 Vbl\<close>
         by (auto simp only: Let_def)
       moreover
       have "(?state_d, ?state_up) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
-        using `getSATFlag ?state_up = getSATFlag state`
+        using \<open>getSATFlag ?state_up = getSATFlag state\<close>
         using assertLiteralEffect[of "?state_up" "selectLiteral ?state_up Vbl" "True"]
-        using `?inv' ?state_up`
-        using `InvariantVarsM (getM state) F0 Vbl`
-        using `InvariantVarsM (getM ?state_up) F0 Vbl`
-        using `InvariantVarsM (getM ?state_d) F0 Vbl`
-        using `getSATFlag state = UNDEF`
-        using `?inv' ?state_up`
-        using `InvariantConsistent (getM ?state_d)`
-        using `InvariantUniq (getM ?state_d)`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>InvariantVarsM (getM state) F0 Vbl\<close>
+        using \<open>InvariantVarsM (getM ?state_up) F0 Vbl\<close>
+        using \<open>InvariantVarsM (getM ?state_d) F0 Vbl\<close>
+        using \<open>getSATFlag state = UNDEF\<close>
+        using \<open>?inv' ?state_up\<close>
+        using \<open>InvariantConsistent (getM ?state_d)\<close>
+        using \<open>InvariantUniq (getM ?state_d)\<close>
         using lexLessAppend[of "[(selectLiteral ?state_up Vbl, True)]""getM ?state_up"]
         unfolding applyDecide_def
         unfolding terminationLessState1_def
@@ -1416,14 +1416,14 @@ proof-
         unfolding InvariantConsistent_def
         by (simp add: Let_def)
       hence "(?state_d, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)"
-        using `?state_up = state \<or> (?state_up, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)`
+        using \<open>?state_up = state \<or> (?state_up, state) \<in> terminationLessState1 (vars F0 \<union> Vbl)\<close>
         using transTerminationLessState1I[of "?state_d" "?state_up" "vars F0 \<union> Vbl" "state"]
         by auto
       ultimately
       show ?thesis
-        using `?inv' ?state_up`
-        using `getSATFlag state = UNDEF`
-        using `\<not> getConflictFlag ?state_up`
+        using \<open>?inv' ?state_up\<close>
+        using \<open>getSATFlag state = UNDEF\<close>
+        using \<open>\<not> getConflictFlag ?state_up\<close>
         using False
         using WatchInvariantsAfterAssertLiteral[of "?state_up" "?literal" "True"]
         using InvariantWatchCharacterizationAfterAssertLiteral[of "?state_up" "?literal" "True"]
@@ -1472,7 +1472,7 @@ using assms
 proof (induct rule: wf_induct[of "terminationLessState1 (vars F0 \<union> Vbl)"])
   case 1
   thus ?case
-    using `finite Vbl`
+    using \<open>finite Vbl\<close>
     using finiteVarsFormula[of "F0"]
     using wellFoundedTerminationLessState1[of "vars F0 \<union> Vbl"]
     by simp

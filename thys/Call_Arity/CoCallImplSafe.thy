@@ -66,7 +66,7 @@ next
       apply auto[2]
     apply rule
     done
-  thus ?case using Let(1,2) `\<not> nonrec \<Gamma>` `\<not> nonrec (\<Gamma>[y::h=x])`
+  thus ?case using Let(1,2) \<open>\<not> nonrec \<Gamma>\<close> \<open>\<not> nonrec (\<Gamma>[y::h=x])\<close>
     by (auto simp add: fresh_star_Pair  elim: cc_restr_eq_subset[rotated] )
 
   case [simp]: 2
@@ -82,7 +82,7 @@ next
     apply rule
     done
   thus ?case using Let(1,2)
-    using `\<not> nonrec \<Gamma>` `\<not> nonrec (\<Gamma>[y::h=x])`
+    using \<open>\<not> nonrec \<Gamma>\<close> \<open>\<not> nonrec (\<Gamma>[y::h=x])\<close>
     by (auto simp add: fresh_star_Pair elim:env_restr_eq_subset[rotated])
 next
   case (Let_nonrec x' e exp x y)
@@ -92,11 +92,11 @@ next
 
   note Let_nonrec(1,2)[simp]
   
-  from `x' \<notin> fv e` `y \<noteq> x'` `x \<noteq> x'`
+  from \<open>x' \<notin> fv e\<close> \<open>y \<noteq> x'\<close> \<open>x \<noteq> x'\<close>
   have [simp]: "x' \<notin> fv (e[y::=x])"
     by (auto simp add: fv_subst_eq)
 
-  note `x' \<notin> fv e`[simp] `y \<noteq> x'` [simp]`x \<noteq> x'`  [simp]
+  note \<open>x' \<notin> fv e\<close>[simp] \<open>y \<noteq> x'\<close> [simp]\<open>x \<noteq> x'\<close>  [simp]
 
   case [simp]: 1
 
@@ -336,27 +336,27 @@ next
   proof(cases "nonrec \<Delta>")
     case False
 
-    from `(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'` False
+    from \<open>(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'\<close> False
     have "(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>))) x = up\<cdot>a'" 
       by (simp add: Aheap_def)
     hence "CCexp e'\<cdot>a' \<sqsubseteq> ccBind x e'\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCfix \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCexp e\<cdot>a))"
       by (auto simp add: ccBind_eq dest: set_mp[OF ccField_CCexp])
     also
     have "ccBind x e'\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCfix \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), CCexp e\<cdot>a)) \<sqsubseteq>  ccHeap \<Delta> e\<cdot>a"
-      using `map_of \<Delta> x = Some e'` False
+      using \<open>map_of \<Delta> x = Some e'\<close> False
       by (fastforce simp add: ccHeap_simp1 ccHeap_rec_eq ccBindsExtra_simp  ccBinds_eq  arg_cong[OF CCfix_unroll, where f = "(\<sqsubseteq>) x" for x ]
                   intro: below_trans[OF _ join_above2])
     finally
     show "CCexp e'\<cdot>a' \<sqsubseteq> ccHeap \<Delta> e\<cdot>a" by this simp_all
   next
     case True
-    with `map_of \<Delta> x = Some e'`
+    with \<open>map_of \<Delta> x = Some e'\<close>
     have [simp]: "\<Delta> = [(x,e')]" "x \<notin> fv e'" by (auto elim!: nonrecE split: if_splits)
 
     show ?thesis
     proof(cases "x--x\<notin>CCexp e\<cdot>a \<or> isVal e'")
       case True
-      with `(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'`
+      with \<open>(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'\<close>
       have [simp]: "(CoCallArityAnalysis.Aexp cCCexp e\<cdot>a) x = up\<cdot>a'"
         by (auto simp add: Aheap_nonrec_simp ABind_nonrec_eq split: if_splits)
 
@@ -369,7 +369,7 @@ next
     next
       case False
 
-      from `(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'`
+      from \<open>(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'\<close>
       have [simp]: "a' = 0" using  False
         by (auto simp add: Aheap_nonrec_simp ABind_nonrec_eq split: if_splits)
 
@@ -385,7 +385,7 @@ next
     have "ccProd (fv e') (ccNeighbors x (ccHeap \<Delta> e\<cdot>a) - {x} \<inter> thunks \<Delta>) \<sqsubseteq> ccProd (fv e') (ccNeighbors x (ccHeap \<Delta> e\<cdot>a))"
       by (rule ccProd_mono2) auto
     also have "\<dots> \<sqsubseteq> (\<Squnion>x\<mapsto>e'\<in>map_of \<Delta>. ccProd (fv e') (ccNeighbors x (ccHeap \<Delta> e\<cdot>a)))" 
-      using `map_of \<Delta> x = Some e'` by (rule below_lubmapI)
+      using \<open>map_of \<Delta> x = Some e'\<close> by (rule below_lubmapI)
     also have "\<dots> \<sqsubseteq> ccBindsExtra \<Delta>\<cdot>(Afix \<Delta>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Delta>)), ccHeap \<Delta> e\<cdot>a)"
       by (simp add: ccBindsExtra_simp  below_trans[OF _ join_above2])
     also have "\<dots> \<sqsubseteq> ccHeap \<Delta> e\<cdot>a"
@@ -394,7 +394,7 @@ next
     show ?thesis by this simp_all
   next
     case True
-    with `map_of \<Delta> x = Some e'`
+    with \<open>map_of \<Delta> x = Some e'\<close>
     have [simp]: "\<Delta> = [(x,e')]" "x \<notin> fv e'" by (auto elim!: nonrecE split: if_splits)
 
     have [simp]: "(ccNeighbors x (ccBind x e'\<cdot>(Aexp e\<cdot>a, CCexp e\<cdot>a))) = {}"
@@ -418,11 +418,11 @@ next
     hence "ccProd (fv e') (ccNeighbors x (ccHeap \<Delta> e\<cdot>a) - {x} \<inter> thunks \<Delta>) \<sqsubseteq> ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a) \<union> fv e')" by (rule ccProd_mono2)
     also have "\<dots> \<sqsubseteq> ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a)) \<squnion> ccProd (fv e') (fv e')" by simp
     also have "ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a)) \<sqsubseteq> ccHeap \<Delta> e\<cdot>a"
-      using `map_of \<Delta> x = Some e'` `(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'` True
+      using \<open>map_of \<Delta> x = Some e'\<close> \<open>(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'\<close> True
       by (auto simp add: ccHeap_simp2  below_trans[OF _ join_above2])
     also have "ccProd (fv e') (fv e') = ccSquare (fv e')" by (simp add: ccSquare_def)
     also have "\<dots> \<sqsubseteq> ccHeap \<Delta> e\<cdot>a"
-      using `map_of \<Delta> x = Some e'` `(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'` True
+      using \<open>map_of \<Delta> x = Some e'\<close> \<open>(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'\<close> True
       by (auto simp add: ccHeap_simp2  ccBind_eq below_trans[OF _ join_above2])
     also note join_self
     finally show ?thesis by this simp_all
@@ -441,7 +441,7 @@ next
     hence"ccNeighbors x (ccHeap \<Delta> e\<cdot>a)  - {x} \<inter> thunks \<Delta> \<subseteq> ccNeighbors x (CCexp e\<cdot>a)   - {x} \<inter> thunks \<Delta>" by auto
     hence "ccProd (fv e') (ccNeighbors x (ccHeap \<Delta> e\<cdot>a) - {x} \<inter> thunks \<Delta> ) \<sqsubseteq> ccProd (fv e') (ccNeighbors x (CCexp e\<cdot>a)  - {x} \<inter> thunks \<Delta> )" by (rule ccProd_mono2)
     also have "\<dots> \<sqsubseteq> ccHeap \<Delta> e\<cdot>a"
-      using `map_of \<Delta> x = Some e'` `(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'` False
+      using \<open>map_of \<Delta> x = Some e'\<close> \<open>(Aheap \<Delta> e\<cdot>a) x = up\<cdot>a'\<close> False
       by (auto simp add: ccHeap_simp2  thunks_Cons below_trans[OF _ join_above2])
     finally show ?thesis by this simp_all
    qed
@@ -454,7 +454,7 @@ next
   hence [simp]: "x \<in> domA \<Gamma>" by (rule set_mp[OF thunks_domA])
   assume "x \<in> edom (Aheap \<Gamma> e\<cdot>a)"
 
-  from `x \<in> thunks \<Gamma>`
+  from \<open>x \<in> thunks \<Gamma>\<close>
   have "(Afix \<Gamma>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Gamma>))) x = up\<cdot>0" 
     by (subst Afix_unroll) simp
 
@@ -469,7 +469,7 @@ next
   assume "x--x \<in> CCexp e\<cdot>a"
   hence [simp]: "x'--x'\<in> CCexp  e\<cdot>a" by simp
 
-  from `x \<in> thunks \<Gamma>`
+  from \<open>x \<in> thunks \<Gamma>\<close>
   have "(Afix \<Gamma>\<cdot>(Aexp e\<cdot>a \<squnion> (\<lambda>_.up\<cdot>0)f|` (thunks \<Gamma>))) x = up\<cdot>0" 
     by (subst Afix_unroll) simp
 

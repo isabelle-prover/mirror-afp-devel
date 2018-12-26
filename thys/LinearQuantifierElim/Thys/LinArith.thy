@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-section{* Linear real arithmetic *}
+section\<open>Linear real arithmetic\<close>
 
 theory LinArith
 imports QE "HOL-Library.ListVector" Complex_Main
@@ -8,9 +8,9 @@ begin
 
 declare iprod_assoc[simp]
 
-subsection{*Basics*}
+subsection\<open>Basics\<close>
 
-subsubsection{*Syntax and Semantics*}
+subsubsection\<open>Syntax and Semantics\<close>
 
 datatype atom = Less real "real list" | Eq real "real list"
 
@@ -67,11 +67,11 @@ next
   thus ?case by(simp add:atoms\<^sub>0_def)
 qed
 
-setup {* Sign.revert_abbrev "" @{const_abbrev R.I} *}
-setup {* Sign.revert_abbrev "" @{const_abbrev R.lift_nnf_qe} *}
+setup \<open>Sign.revert_abbrev "" @{const_abbrev R.I}\<close>
+setup \<open>Sign.revert_abbrev "" @{const_abbrev R.lift_nnf_qe}\<close>
 
 
-subsubsection{*Shared constructions*}
+subsubsection\<open>Shared constructions\<close>
 
 fun combine :: "(real * real list) \<Rightarrow> (real * real list) \<Rightarrow> atom" where
 "combine (r\<^sub>1,cs\<^sub>1) (r\<^sub>2,cs\<^sub>2) = Less (r\<^sub>1-r\<^sub>2) (cs\<^sub>2 - cs\<^sub>1)"

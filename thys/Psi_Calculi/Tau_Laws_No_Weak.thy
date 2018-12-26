@@ -26,7 +26,7 @@ proof -
     show ?case
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
-      note `(\<Psi>, P, Q) \<in> ?X`
+      note \<open>(\<Psi>, P, Q) \<in> ?X\<close>
       moreover {
         fix \<Psi> P
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', P \<oplus> \<tau>.(P), \<tau>.(P)) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
@@ -35,7 +35,7 @@ proof -
       ultimately show ?thesis by blast
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by auto
       moreover {
         fix \<Psi> P
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<tau>.(P), P \<oplus> \<tau>.(P)) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
@@ -50,7 +50,7 @@ proof -
       
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
-      note `(\<Psi>, P, Q) \<in> ?X`
+      note \<open>(\<Psi>, P, Q) \<in> ?X\<close>
       moreover {
         fix \<Psi> P
         have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
@@ -61,7 +61,7 @@ proof -
       ultimately show ?thesis by blast
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by auto
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by auto
       moreover {
         fix \<Psi> P
         have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
@@ -122,7 +122,7 @@ proof -
     show ?case
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
-      note `(\<Psi>, P, Q) \<in> ?X`
+      note \<open>(\<Psi>, P, Q) \<in> ?X\<close>
       moreover {
         fix \<Psi> \<alpha> P Q
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y \<union> weakBisim" by blast
@@ -131,7 +131,7 @@ proof -
       ultimately show ?thesis by blast
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by blast
       moreover {
         fix \<Psi> \<alpha> P Q
         have "\<And>\<Psi>'. (\<Psi> \<otimes> \<Psi>', \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q), \<alpha>\<cdot>P \<oplus> \<alpha>\<cdot>(\<tau>.(P) \<oplus> Q)) \<in> ?X \<union> ?Y \<union> weakBisim" by auto
@@ -145,7 +145,7 @@ proof -
     show ?case
     proof(cases "(\<Psi>, P, Q) \<in> ?X")
       case True
-      note `(\<Psi>, P, Q) \<in> ?X`
+      note \<open>(\<Psi>, P, Q) \<in> ?X\<close>
       moreover {
         fix \<Psi> P \<alpha> Q
         have "\<And>\<Psi> P. (\<Psi>, P, P) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
@@ -155,7 +155,7 @@ proof -
       ultimately show ?thesis by blast
     next
       case False
-      from `(\<Psi>, P, Q) \<notin> ?X` `(\<Psi>, P, Q) \<in> ?X \<union> ?Y` have "(\<Psi>, P, Q) \<in> ?Y" by blast
+      from \<open>(\<Psi>, P, Q) \<notin> ?X\<close> \<open>(\<Psi>, P, Q) \<in> ?X \<union> ?Y\<close> have "(\<Psi>, P, Q) \<in> ?Y" by blast
       moreover {
         fix \<Psi> P \<alpha> Q
         have "\<And>\<Psi> P Q. \<Psi> \<rhd> P \<sim> Q \<Longrightarrow> (\<Psi>, P, Q) \<in> ?Z" by(blast intro: weakBisimReflexive bisimReflexive)
@@ -205,15 +205,15 @@ proof(induct rule: weakCongI)
     case(pInput M yvec N)
     obtain p where "set p \<subseteq> set yvec \<times> set(p \<bullet> yvec)" and "(p \<bullet> yvec) \<sharp>* N" and "(p \<bullet> yvec) \<sharp>* P" and "(p \<bullet> yvec) \<sharp>* Q" and "(p \<bullet> yvec) \<sharp>* \<sigma>"
       by(rule_tac xvec=yvec and c="(N, P, Q, \<sigma>)" in name_list_avoiding) auto
-    thus ?case using `wellFormedSubst \<sigma>` tauLaw4PsiCong[where \<alpha>="pInput (substTerm.seqSubst M \<sigma>) (p \<bullet> yvec) (substTerm.seqSubst (p \<bullet> N) \<sigma>)"]
+    thus ?case using \<open>wellFormedSubst \<sigma>\<close> tauLaw4PsiCong[where \<alpha>="pInput (substTerm.seqSubst M \<sigma>) (p \<bullet> yvec) (substTerm.seqSubst (p \<bullet> N) \<sigma>)"]
       by(simp add: inputChainAlpha' eqvts)
   next
     case(pOutput M N)
-    thus ?case using  `wellFormedSubst \<sigma>` tauLaw4PsiCong[where \<alpha>="pOutput (substTerm.seqSubst M \<sigma>) (substTerm.seqSubst N \<sigma>)"]
+    thus ?case using  \<open>wellFormedSubst \<sigma>\<close> tauLaw4PsiCong[where \<alpha>="pOutput (substTerm.seqSubst M \<sigma>) (substTerm.seqSubst N \<sigma>)"]
       by simp
   next
     case pTau
-    thus ?case using  `wellFormedSubst \<sigma>` tauLaw4PsiCong[where \<alpha>="pTau"]
+    thus ?case using  \<open>wellFormedSubst \<sigma>\<close> tauLaw4PsiCong[where \<alpha>="pTau"]
       by simp
   qed
 qed

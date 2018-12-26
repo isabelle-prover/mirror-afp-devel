@@ -1,6 +1,6 @@
 (*  Author:     Tobias Nipkow, 2007  *)
 
-section{* Presburger arithmetic *}
+section\<open>Presburger arithmetic\<close>
 
 theory PresArith
 imports QE "HOL-Library.ListVector"
@@ -8,7 +8,7 @@ begin
 
 declare iprod_assoc[simp]
 
-subsection{*Syntax*}
+subsection\<open>Syntax\<close>
 
 datatype atom =
   Le int "int list" | Dvd int int "int list" | NDvd int int "int list"
@@ -65,8 +65,8 @@ next
   thus ?case by(simp add:atoms\<^sub>0_def)
 qed
 
-setup {* Sign.revert_abbrev "" @{const_abbrev Z.I} *}
-setup {* Sign.revert_abbrev "" @{const_abbrev Z.lift_dnf_qe} *}
+setup \<open>Sign.revert_abbrev "" @{const_abbrev Z.I}\<close>
+setup \<open>Sign.revert_abbrev "" @{const_abbrev Z.lift_dnf_qe}\<close>
 (* FIXME doesn't work*)
 (* FIXME does not help
 setup {* Sign.revert_abbrev "" @{const_abbrev Z.normal} *}
@@ -120,7 +120,7 @@ lemma lbounds_append[simp]: "lbounds(as @ bs) = lbounds as @ lbounds bs"
 by(simp add:lbounds_def)
 
 
-subsection{*LCM and lemmas*}
+subsection\<open>LCM and lemmas\<close>
 
 fun zlcms :: "int list \<Rightarrow> int" where
 "zlcms [] = 1" |
@@ -139,7 +139,7 @@ lemma elem_le_zlcms: "\<forall>i \<in> set is. i \<noteq> 0 \<Longrightarrow> i 
 by (metis dvd_zlcms zdvd_imp_le zlcms_pos)
 
 
-subsection{* Setting coeffiencients to 1 or -1 *}
+subsection\<open>Setting coeffiencients to 1 or -1\<close>
 
 fun hd_coeff1 :: "int \<Rightarrow> atom \<Rightarrow> atom" where
 "hd_coeff1 m (Le i (k#ks)) =
@@ -153,10 +153,10 @@ fun hd_coeff1 :: "int \<Rightarrow> atom \<Rightarrow> atom" where
     else let m' = m div k in NDvd (m'*d) (m'*i) (1 # (m' *\<^sub>s ks)))" |
 "hd_coeff1 _ a = a"
 
-text{* The def of @{const hd_coeff1} on @{const Dvd} and @{const NDvd} is
+text\<open>The def of @{const hd_coeff1} on @{const Dvd} and @{const NDvd} is
 different from the @{const Le} because it allows the resulting head
 coefficient to be 1 rather than 1 or -1. We show that the other version has
-the same semantics: *}
+the same semantics:\<close>
 
 lemma "\<lbrakk> k \<noteq> 0; k dvd m \<rbrakk> \<Longrightarrow>
   I\<^sub>Z (hd_coeff1 m (Dvd d i (k#ks))) (x#e) = (let m' = m div (abs k) in
@@ -185,7 +185,7 @@ proof(induct a)
       assume "k\<noteq>0"
       with Le have "\<bar>k\<bar> dvd m" by simp
       let ?m' = "m div \<bar>k\<bar>"
-      have "?m' > 0" using `\<bar>k\<bar> dvd m` pos_imp_zdiv_pos_iff `m>0` `k\<noteq>0`
+      have "?m' > 0" using \<open>\<bar>k\<bar> dvd m\<close> pos_imp_zdiv_pos_iff \<open>m>0\<close> \<open>k\<noteq>0\<close>
         by(simp add:zdvd_imp_le)
       have 1: "k*(x*?m') = sgn k * x * m"
       proof -
@@ -193,15 +193,15 @@ proof(induct a)
           by(simp only: mult_sgn_abs)
         also have "\<dots> = sgn k * x * (abs k * ?m')" by simp
         also have "\<dots> = sgn k * x * m"
-          using dvd_mult_div_cancel[OF `\<bar>k\<bar> dvd m`] by(simp add:algebra_simps)
+          using dvd_mult_div_cancel[OF \<open>\<bar>k\<bar> dvd m\<close>] by(simp add:algebra_simps)
         finally show ?thesis .
       qed
       have "I\<^sub>Z (hd_coeff1 m (Le i ks)) (m*x#xs) \<longleftrightarrow>
             (i*?m' \<le> sgn k * m*x + ?m' * \<langle>ks',xs\<rangle>)"
-        using `k\<noteq>0` by(simp add: algebra_simps)
+        using \<open>k\<noteq>0\<close> by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> ?m'*i \<le> ?m' * (k*x + \<langle>ks',xs\<rangle>)" using 1
         by(simp (no_asm_simp) add:algebra_simps)
-      also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using `?m'>0`
+      also have "\<dots> \<longleftrightarrow> i \<le> k*x + \<langle>ks',xs\<rangle>" using \<open>?m'>0\<close>
         by simp
       finally show ?thesis by(simp)
     qed
@@ -220,21 +220,21 @@ next
       assume "k\<noteq>0"
       with Dvd have "k dvd m" by simp
       let ?m' = "m div k"
-      have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
+      have "?m' \<noteq> 0" using \<open>k dvd m\<close> zdiv_eq_0_iff \<open>m>0\<close> \<open>k\<noteq>0\<close>
         by(simp add:linorder_not_less zdvd_imp_le)
       have 1: "k*(x*?m') = x * m"
       proof -
         have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-        also have "\<dots> = x*m" using dvd_mult_div_cancel[OF `k dvd m`]
+        also have "\<dots> = x*m" using dvd_mult_div_cancel[OF \<open>k dvd m\<close>]
           by(simp add:algebra_simps)
         finally show ?thesis .
       qed
       have "I\<^sub>Z (hd_coeff1 m (Dvd d i ks)) (m*x#xs) \<longleftrightarrow>
             (?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-        using `k\<noteq>0` by(simp add: algebra_simps)
+        using \<open>k\<noteq>0\<close> by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
         by(simp (no_asm_simp) add:algebra_simps)
-      also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
+      also have "\<dots> \<longleftrightarrow> d dvd i + k*x + \<langle>ks',xs\<rangle>" using \<open>?m'\<noteq>0\<close> by(simp)
       finally show ?thesis by(simp add:algebra_simps)
     qed
   qed
@@ -252,21 +252,21 @@ next
       assume "k\<noteq>0"
       with NDvd have "k dvd m" by simp
       let ?m' = "m div k"
-      have "?m' \<noteq> 0" using `k dvd m` zdiv_eq_0_iff `m>0` `k\<noteq>0`
+      have "?m' \<noteq> 0" using \<open>k dvd m\<close> zdiv_eq_0_iff \<open>m>0\<close> \<open>k\<noteq>0\<close>
         by(simp add:linorder_not_less zdvd_imp_le)
       have 1: "k*(x*?m') = x * m"
       proof -
         have "k*(x*?m') = x*(k*?m')" by(simp add:algebra_simps)
-        also have "\<dots> = x*m" using dvd_mult_div_cancel[OF `k dvd m`]
+        also have "\<dots> = x*m" using dvd_mult_div_cancel[OF \<open>k dvd m\<close>]
           by(simp add:algebra_simps)
         finally show ?thesis .
       qed
       have "I\<^sub>Z (hd_coeff1 m (NDvd d i ks)) (m*x#xs) \<longleftrightarrow>
             \<not>(?m'*d dvd ?m'*i + m*x + ?m' * \<langle>ks',xs\<rangle>)"
-        using `k\<noteq>0` by(simp add: algebra_simps)
+        using \<open>k\<noteq>0\<close> by(simp add: algebra_simps)
       also have "\<dots> \<longleftrightarrow> \<not> ?m'*d dvd ?m' * (i + k*x + \<langle>ks',xs\<rangle>)" using 1
         by(simp (no_asm_simp) add:algebra_simps)
-      also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>ks',xs\<rangle>" using `?m'\<noteq>0` by(simp)
+      also have "\<dots> \<longleftrightarrow> \<not> d dvd i + k*x + \<langle>ks',xs\<rangle>" using \<open>?m'\<noteq>0\<close> by(simp)
       finally show ?thesis by(simp add:algebra_simps)
     qed
   qed
@@ -278,7 +278,7 @@ shows "qfree \<phi> \<Longrightarrow> \<forall> a \<in> set(Z.atoms\<^sub>0 \<ph
  Z.I (map\<^sub>f\<^sub>m (hd_coeff1 m) \<phi>) (m*x#xs) = Z.I \<phi> (x#xs)"
 proof(induct \<phi>)
   case (Atom a)
-  thus ?case using I_hd_coeff1_mult_a[OF `m>0`] by auto
+  thus ?case using I_hd_coeff1_mult_a[OF \<open>m>0\<close>] by auto
 qed simp_all
 
 end

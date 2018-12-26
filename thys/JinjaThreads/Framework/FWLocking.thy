@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Semantics of the thread actions for locking *}
+section \<open>Semantics of the thread actions for locking\<close>
 
 theory FWLocking
 imports
@@ -192,9 +192,9 @@ next
       by -(rule lock_actions_ok_Lock_may_lock)
   next
     case (Lock YS ZS)
-    note LAS = `las $ l = YS @ Lock # ZS`
-    note lao = `lock_actions_ok (ls $ l) t YS`
-    note nml = `\<not> may_lock (upd_locks (ls $ l) t YS) t`
+    note LAS = \<open>las $ l = YS @ Lock # ZS\<close>
+    note lao = \<open>lock_actions_ok (ls $ l) t YS\<close>
+    note nml = \<open>\<not> may_lock (upd_locks (ls $ l) t YS) t\<close>
     from LAS las nmal notin have "Unlock \<in> set YS"
       by -(erule contrapos_np, auto simp add: must_acquire_lock_append append_eq_append_conv2 append_eq_Cons_conv)
     then obtain ys' zs'

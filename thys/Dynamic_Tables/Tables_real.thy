@@ -10,7 +10,7 @@ fun \<Psi> :: "bool \<Rightarrow> real \<Rightarrow> real \<Rightarrow> real \<R
 
 declare of_nat_Suc[simp] of_nat_diff[simp]
 
-text{* An automatic proof: *}
+text\<open>An automatic proof:\<close>
 lemma Psi_diff_Ins:
   "0 < i \<Longrightarrow> 0 < d \<Longrightarrow> \<Psi> b i d x\<^sub>1 x\<^sub>2 (Suc n) - \<Psi> b i d x\<^sub>1 x\<^sub>2 n \<le> i"
 by (simp add: add_mono algebra_simps)
@@ -83,7 +83,7 @@ next
     show ?thesis
     proof cases
       assume [arith]: "n \<ge> x\<^sub>2"
-      hence f1: "x\<^sub>1 \<le> n" using `x\<^sub>1 \<le> x\<^sub>2` by linarith
+      hence f1: "x\<^sub>1 \<le> n" using \<open>x\<^sub>1 \<le> x\<^sub>2\<close> by linarith
       have "?D = d*(x\<^sub>1-(n-1)) - i*(n-x\<^sub>2)" using * by (simp)
       also have "\<dots> = d + d*(x\<^sub>1-n) + -(i*(n-x\<^sub>2))"
         by (simp add: algebra_simps)
@@ -247,14 +247,14 @@ next
       qed
       have f2: "n+1 \<le> f2*e*l"
       proof -
-        have "n+1 \<le> f2*l+1" using `n \<le> f2*l` by linarith
+        have "n+1 \<le> f2*l+1" using \<open>n \<le> f2*l\<close> by linarith
         also have "1 = f2*(e-1)*(1/(f2*(e-1)))" by(simp)
         also note l0f2e
-        also note `l0 \<le> l`
+        also note \<open>l0 \<le> l\<close>
         finally show ?thesis by simp (simp add: algebra_simps)
       qed
       have "l \<le> l*e" by simp
-      hence "l0 \<le> l * e" using `l0\<le>l` by linarith
+      hence "l0 \<le> l * e" using \<open>l0\<le>l\<close> by linarith
       with 0 f1 f2 show ?thesis by(simp add: field_simps)
     qed
   next
@@ -299,7 +299,7 @@ next
     next
       assume [arith]: "\<not> n+1 \<le> f2*l"
       have "(f2 - f2')*l \<ge> 1"
-        using mult_mono[OF order_refl `l\<ge>l0`, of "f2-f2'"] f2'_less_f2 f2f2'
+        using mult_mono[OF order_refl \<open>l\<ge>l0\<close>, of "f2-f2'"] f2'_less_f2 f2f2'
         by (simp add: field_simps)
       hence "n \<ge> f2'*l" by(simp add: algebra_simps)
       hence Phi: "\<Phi> s = ai * (n - f2'*l)" by simp
@@ -308,7 +308,7 @@ next
       have "?A \<le> n - ai*(f2 - f2')*l + ai + 1"
       proof cases
         assume "n+1 < f2'*(e*l)"
-        hence "?A = n+1 - ai*(n - f2'*l)" using Phi `f1'*e*l < n+1` by simp
+        hence "?A = n+1 - ai*(n - f2'*l)" using Phi \<open>f1'*e*l < n+1\<close> by simp
         also have "\<dots> = n + ai*(-(n+1) + f2'*l) + ai+1"
           by(simp add: algebra_simps)
         also have "-(n+1) \<le> -f2*l" by linarith
@@ -345,11 +345,11 @@ next
         hence f2: "n-1 < f2'*l/c" by linarith
         have "f1'*l \<le> f2'*l" using f1'_le_f2' by simp
         have "(f1' - f1)*l \<ge> 1"
-          using mult_mono[OF order_refl `l\<ge>l0*c`, of "f1'-f1"] f1_less_f1' f1'f1
+          using mult_mono[OF order_refl \<open>l\<ge>l0*c\<close>, of "f1'-f1"] f1_less_f1' f1'f1
           by (simp add: field_simps)
         hence "n < f1'*l" by(simp add: algebra_simps)
         hence Phi: "\<Phi> s = ad*(f1'*l - n)"
-          apply(simp) using `f1'*l \<le> f2'*l` by linarith
+          apply(simp) using \<open>f1'*l \<le> f2'*l\<close> by linarith
         have "?A \<le> n - ad*(f1' - f1)*l + ad"
         proof cases
           assume "n-1 < f1'*l/c \<and> l/(c*c) \<ge> l0"

@@ -2,7 +2,7 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Standard Collections} *}
+section \<open>\isaheader{Standard Collections}\<close>
 theory Collections
 imports
   ICF_Impl
@@ -12,7 +12,7 @@ imports
   DatRef
 
 begin
-  text {*
+  text \<open>
     This theory summarizes the components of the Isabelle Collection Framework.
-    *}
+\<close>
 end

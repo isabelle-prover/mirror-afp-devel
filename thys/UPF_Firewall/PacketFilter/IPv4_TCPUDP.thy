@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* IPv4 with Ports and Protocols *}
+subsection \<open>IPv4 with Ports and Protocols\<close>
 theory 
   IPv4_TCPUDP
   imports IPv4

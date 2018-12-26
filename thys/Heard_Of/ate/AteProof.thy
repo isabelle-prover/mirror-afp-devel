@@ -5,13 +5,13 @@ begin
 context ate_parameters
 begin
 
-subsection {* Preliminary Lemmas *}
+subsection \<open>Preliminary Lemmas\<close>
 
-text {* 
-  If a process newly decides value @{text v} at some round,
-  then it received more than @{text "E - \<alpha>"} messages holding @{text v}
+text \<open>
+  If a process newly decides value \<open>v\<close> at some round,
+  then it received more than \<open>E - \<alpha>\<close> messages holding \<open>v\<close>
   at this round.
-*}
+\<close>
 
 lemma decide_sent_msgs_threshold:
   assumes run: "SHORun Ate_M rho HOs SHOs"
@@ -43,11 +43,11 @@ proof -
   show ?thesis using Egta by auto
 qed
 
-text {*
-  If more than @{text "E - \<alpha>"} processes send a value @{text v} to some
-  process @{text q} at some round, then @{text q} will receive at least
-  @{text "N + 2*\<alpha> - E"} messages holding @{text v} at this round. 
-*}
+text \<open>
+  If more than \<open>E - \<alpha>\<close> processes send a value \<open>v\<close> to some
+  process \<open>q\<close> at some round, then \<open>q\<close> will receive at least
+  \<open>N + 2*\<alpha> - E\<close> messages holding \<open>v\<close> at this round. 
+\<close>
 
 lemma other_values_received:
   assumes comm: "SHOcommPerRd Ate_M (HOs r) (SHOs r)"
@@ -78,12 +78,12 @@ proof -
   show ?thesis using EltN Egta by auto
 qed
 
-text {*
-  If more than @{text "E - \<alpha>"} processes send a value @{text v} to some
-  process @{text q} at some round @{text r}, and if @{text q} receives more than
-  @{text T} messages in @{text r}, then @{text v} is the most frequently
-  received value by @{text q} in @{text r}.
-*}
+text \<open>
+  If more than \<open>E - \<alpha>\<close> processes send a value \<open>v\<close> to some
+  process \<open>q\<close> at some round \<open>r\<close>, and if \<open>q\<close> receives more than
+  \<open>T\<close> messages in \<open>r\<close>, then \<open>v\<close> is the most frequently
+  received value by \<open>q\<close> in \<open>r\<close>.
+\<close>
 
 lemma mostOftenRcvd_v:
   assumes comm: "SHOcommPerRd Ate_M (HOs r) (SHOs r)"
@@ -127,10 +127,10 @@ proof -
   thus ?thesis unfolding mostOftenRcvd_def by auto
 qed
 
-text {*
-  If at some round more than @{text "E - \<alpha>"} processes have their @{text x}
-  variable set to @{text v}, then this is also true at next round.
-*}
+text \<open>
+  If at some round more than \<open>E - \<alpha>\<close> processes have their \<open>x\<close>
+  variable set to \<open>v\<close>, then this is also true at next round.
+\<close>
 
 lemma common_x_induct:
   assumes run: "SHORun Ate_M rho HOs SHOs" 
@@ -173,10 +173,10 @@ proof -
   with ih show ?thesis by auto
 qed
 
-text {*
-  Whenever some process newly decides value @{text v}, then any
-  process that updates its @{text x} variable will set it to @{text v}.
-*}
+text \<open>
+  Whenever some process newly decides value \<open>v\<close>, then any
+  process that updates its \<open>x\<close> variable will set it to \<open>v\<close>.
+\<close>
 (* The proof mainly relies on lemmas @{text decide_sent_msgs_threshold},
    @{text mostOftenRcvd_v} and @{text common_x_induct}. *)
 
@@ -225,10 +225,10 @@ proof -
   with xsmall show ?thesis by auto
 qed
 
-text {*
-  A process that holds some decision @{text v} has decided @{text v}
+text \<open>
+  A process that holds some decision \<open>v\<close> has decided \<open>v\<close>
   sometime in the past.
-*}
+\<close>
 lemma decisionNonNullThenDecided:
   assumes run: "SHORun Ate_M rho HOs SHOs"
       and dec: "decide (rho n p) = Some v"
@@ -251,12 +251,12 @@ proof -
 qed
 
 
-subsection {* Proof of Validity *}
+subsection \<open>Proof of Validity\<close>
 
-text {*
+text \<open>
   Validity asserts that if all processes were initialized with the same value,
   then no other value may ever be decided.
-*}
+\<close>
 
 theorem ate_validity:
   assumes run: "SHORun Ate_M rho HOs SHOs"
@@ -407,11 +407,11 @@ proof -
 qed
 
 
-subsection {* Proof of Agreement *}
+subsection \<open>Proof of Agreement\<close>
 
-text {*
+text \<open>
   If two processes decide at the some round, they decide the same value.
-*}
+\<close>
 (* The proof mainly relies on lemma @{text decide_sent_msgs_threshold}. *)
 
 lemma common_decision:
@@ -459,11 +459,11 @@ proof -
   qed
 qed
 
-text {*
-  If process @{text p} decides at step @{text r} and process @{text q} decides
-  at some later step @{text "r+k"} then @{text p} and @{text q} decide the
+text \<open>
+  If process \<open>p\<close> decides at step \<open>r\<close> and process \<open>q\<close> decides
+  at some later step \<open>r+k\<close> then \<open>p\<close> and \<open>q\<close> decide the
   same value.
-*}
+\<close>
 (*
   The proof mainly relies on lemmas @{text common_decision}, @{text common_x},
   @{text decide_with_threshold_E}, @{text unique_majority_E_\<alpha>} 
@@ -543,9 +543,9 @@ proof (rule ccontr)
   with 2 show "False" by simp
 qed
 
-text {* 
+text \<open>
   The Agreement property is now an immediate consequence.
-*}
+\<close>
 (*
   The proof mainly relies on lemmas @{text decisionNonNullThenDecided}
   and @{text laterProcessDecidesSameValue}.
@@ -580,12 +580,12 @@ proof -
 qed
 
 
-subsection {* Proof of Termination *}
+subsection \<open>Proof of Termination\<close>
 
-text {*
+text \<open>
   We now prove that every process must eventually decide, given the
   global and round-by-round communication predicates.
-*}
+\<close>
 (* The proof relies on previous lemmas @{text common_x_induct} and @{text mostOftenRcvd_v}. *)
 
 theorem ate_termination:
@@ -835,13 +835,13 @@ proof -
 qed
 
 
-subsection {* \ate{} Solves Weak Consensus *}
+subsection \<open>\ate{} Solves Weak Consensus\<close>
 
-text {*
+text \<open>
   Summing up, all (coarse-grained) runs of \ate{} for
   HO and SHO collections that satisfy the communication predicate 
   satisfy the Weak Consensus property.
-*}
+\<close>
 
 theorem ate_weak_consensus:
   assumes run: "SHORun Ate_M rho HOs SHOs"
@@ -851,10 +851,10 @@ theorem ate_weak_consensus:
   unfolding weak_consensus_def using assms
   by (auto elim: ate_validity ate_agreement ate_termination)
 
-text {*
+text \<open>
   By the reduction theorem, the correctness of the algorithm carries over
   to the fine-grained model of runs.
-*}
+\<close>
 
 theorem ate_weak_consensus_fg:
   assumes run: "fg_run Ate_M rho HOs SHOs (\<lambda>r q. undefined)"

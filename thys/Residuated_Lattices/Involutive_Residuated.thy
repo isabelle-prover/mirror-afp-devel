@@ -3,7 +3,7 @@
    Maintainer: Victor Gomes <vborgesferreiragomes1 at sheffield.ac.uk>
 *)
 
-section {* Involutive Residuated Structures *}
+section \<open>Involutive Residuated Structures\<close>
 
 theory Involutive_Residuated
   imports Residuated_Lattices
@@ -12,10 +12,10 @@ begin
 class uminus' =
   fixes uminus' :: "'a \<Rightarrow> 'a" ("-' _" [81] 80)
 
-text {*
+text \<open>
   Involutive posets is a structure where the double negation property holds for the 
   negation operations, and a Galois connection for negations exists.
-*}
+\<close>
 class involutive_order = order + uminus + uminus' +
   assumes gn: "x \<le> -'y \<longleftrightarrow> y \<le> -x"
   and dn1[simp]: "-'(-x) = x"
@@ -95,10 +95,10 @@ lemma resr_de_morgan2: "-(inv_resl (-'x) (-'y)) = -(inv_resr x y)"
   
 end
 
-text {* 
+text \<open>
   We prove that an involutive division poset is equivalent to an involutive po-groupoid
   by a lemma to avoid cyclic definitions
-*}
+\<close>
 lemma (in involutive_division_order) inv_pogroupoid: 
   "class.involutive_pogroupoid (\<lambda>x y. -(y \<rightarrow> -'x)) uminus uminus' (\<le>) (<)"
 proof

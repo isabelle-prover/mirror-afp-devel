@@ -1,35 +1,35 @@
-section{* Syntax of Terms and Clauses *}
+section\<open>Syntax of Terms and Clauses\<close>
 theory TermsAndClauses
 imports Preliminaries
 begin
 
 text
-{* These are used for both unsorted and many-sorted FOL, the difference being that,
-for the latter, the signature will fix a variable typing. *}
+\<open>These are used for both unsorted and many-sorted FOL, the difference being that,
+for the latter, the signature will fix a variable typing.\<close>
 
-text{* Terms: *}
+text\<open>Terms:\<close>
 
 datatype 'fsym trm =
   Var var |
   Fn 'fsym "'fsym trm list"
 
-text{* Atomic formulas (atoms): *}
+text\<open>Atomic formulas (atoms):\<close>
 
 datatype ('fsym, 'psym) atm =
   Eq "'fsym trm" "'fsym trm" |
   Pr 'psym "'fsym trm list"
 
-text{* Literals: *}
+text\<open>Literals:\<close>
 
 datatype ('fsym, 'psym) lit =
   Pos "('fsym, 'psym) atm" |
   Neg "('fsym, 'psym) atm"
 
-text{* Clauses: *}
+text\<open>Clauses:\<close>
 
 type_synonym ('fsym, 'psym) cls = "('fsym, 'psym) lit list"
 
-text{* Problems: *}
+text\<open>Problems:\<close>
 
 type_synonym ('fsym, 'psym) prob = "('fsym, 'psym) cls set"
 
@@ -58,7 +58,7 @@ definition "varsC c = \<Union> set (map varsL c)"
 
 definition "varsPB \<Phi> = \<Union> {varsC c | c. c \<in> \<Phi>}"
 
-text{* Substitution: *}
+text\<open>Substitution:\<close>
 
 fun subst where
 "subst \<pi> (Var x) = \<pi> x"

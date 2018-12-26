@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Results for division and modulo operators on integers *}
+section \<open>Results for division and modulo operators on integers\<close>
 
 theory Util_Div
 imports Util_Nat
 begin
 
-subsection {* Additional (in-)equalities with @{text div} and @{text mod} *}
+subsection \<open>Additional (in-)equalities with \<open>div\<close> and \<open>mod\<close>\<close>
 
 corollary Suc_mod_le_divisor: "0 < m \<Longrightarrow> Suc (n mod m) \<le> m"
 by (rule Suc_leI, rule mod_less_divisor)
@@ -53,7 +53,7 @@ corollary Suc0_mod_cong: "
 by (blast intro: arg_cong[OF Suc0_mod])
 
 
-subsection {* Additional results for addition and subtraction with @{text mod} *}
+subsection \<open>Additional results for addition and subtraction with \<open>mod\<close>\<close>
 
 lemma mod_Suc_conv: "
   ((Suc a) mod m = (Suc b) mod m) = (a mod m = b mod m)"
@@ -235,7 +235,7 @@ corollary mod_diff1_eq2: "
 by (simp add: mod_diff1_eq_if)
 
 
-subsubsection {* Divisor subtraction with @{text div} and @{text mod} *}
+subsubsection \<open>Divisor subtraction with \<open>div\<close> and \<open>mod\<close>\<close>
 
 lemma mod_diff_self1: "
   0 < (n::nat) \<Longrightarrow> (m - n) mod m = m - n"
@@ -279,7 +279,7 @@ lemma div_diff_mult_self2: "
 by (simp only: mult.commute div_diff_mult_self1)
 
 
-subsubsection {* Modulo equality and modulo of difference*}
+subsubsection \<open>Modulo equality and modulo of difference\<close>
 
 lemma mod_eq_imp_diff_mod_0:"
   (a::nat) mod m = b mod m \<Longrightarrow> (b - a) mod m = 0"
@@ -344,7 +344,7 @@ corollary mod_eq_diff_dvd_conv: "
 by (rule dvd_eq_mod_eq_0[symmetric, THEN subst], rule mod_eq_diff_mod_0_conv)
 
 
-subsection {* Some additional lemmata about integer @{text div} and @{text mod} *}
+subsection \<open>Some additional lemmata about integer \<open>div\<close> and \<open>mod\<close>\<close>
 
 lemma zmod_eq_imp_diff_mod_0:
   "a mod m = b mod m \<Longrightarrow> (b - a) mod m = 0" for a b m :: int
@@ -509,7 +509,7 @@ apply (insert zmult_div_plus_ge_0[of b a a c] zmult_div_plus_ge_0[of "b'" a a c]
 by (metis zmult_div_leq_mono)
 
 
-subsection {* Some further (in-)equality results for @{text div} and @{text mod} *}
+subsection \<open>Some further (in-)equality results for \<open>div\<close> and \<open>mod\<close>\<close>
 
 lemma less_mod_eq_imp_add_divisor_le: "
   \<lbrakk> (x::nat) < y; x mod m = y mod m \<rbrakk> \<Longrightarrow> x + m \<le> y"
@@ -621,7 +621,7 @@ apply (simp add: add.commute[of "m * k"])
 done
 
 
-subsection {* Additional multiplication results for @{text mod} and @{text div} *}
+subsection \<open>Additional multiplication results for \<open>mod\<close> and \<open>div\<close>\<close>
 
 lemma mod_0_imp_mod_mult_right_0: "
   n mod m = (0::nat) \<Longrightarrow> n * k mod m = 0"
@@ -646,7 +646,7 @@ lemma mod_0_imp_mod_factor_0_right: "
 by fastforce
 
 
-subsection {* Some factor distribution facts for @{text mod}*}
+subsection \<open>Some factor distribution facts for \<open>mod\<close>\<close>
 
 lemma mod_eq_mult_distrib: "
   (a::nat) mod m = b mod m \<Longrightarrow>
@@ -708,7 +708,7 @@ proof -
 qed
 
 
-subsection {* More results about quotient @{text div} with addition and subtraction *}
+subsection \<open>More results about quotient \<open>div\<close> with addition and subtraction\<close>
 
 lemma div_add1_eq_if: "0 < m \<Longrightarrow>
   (a + b) div (m::nat) = a div m + b div m + (
@@ -883,9 +883,9 @@ corollary div_diff1_eq2: "
 by (simp add: div_diff1_eq_if)
 
 
-subsection {* Further results about @{text div} and @{text mod}*}
+subsection \<open>Further results about \<open>div\<close> and \<open>mod\<close>\<close>
 
-subsubsection {* Some auxiliary facts about @{text mod} *}
+subsubsection \<open>Some auxiliary facts about \<open>mod\<close>\<close>
 
 lemma diff_less_divisor_imp_sub_mod_eq: "
   \<lbrakk> (x::nat) \<le> y; y - x < m \<rbrakk> \<Longrightarrow> x = y - (y - x) mod m"
@@ -985,7 +985,7 @@ lemma mod_eq_divisor_minus_Suc_0_conv: "Suc 0 < k \<Longrightarrow> (x mod k = k
 by (simp only: mod_Suc, split if_split, fastforce)
 
 
-subsubsection {* Some auxiliary facts about @{text div} *}
+subsubsection \<open>Some auxiliary facts about \<open>div\<close>\<close>
 
 lemma sub_mod_div_eq_div: "((n::nat) - n mod m) div m = n div m"
 apply (case_tac "m = 0", simp)
@@ -1100,7 +1100,7 @@ apply (drule order_le_less[of y, THEN iffD1], fastforce)
 done
 
 
-text {* List of definitions and lemmas *}
+text \<open>List of definitions and lemmas\<close>
 
 thm
   minus_mod_eq_mult_div [symmetric]

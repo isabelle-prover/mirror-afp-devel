@@ -3,7 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Code generation for Semantics and Type System *}
+section \<open>Code generation for Semantics and Type System\<close>
 
 theory Execute
 imports BigStep WellType
@@ -11,7 +11,7 @@ imports BigStep WellType
   "HOL-Library.Code_Target_Numeral"
 begin
 
-subsection{* General redefinitions *}
+subsection\<open>General redefinitions\<close>
 
 inductive app :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool"
 where
@@ -61,7 +61,7 @@ lemma Set_project_set [code]:
 by(auto simp add: Set_project_def map_filter_def intro: rev_image_eqI split: if_split_asm)
 
 
-text{* Redefine map Val vs *}
+text\<open>Redefine map Val vs\<close>
 
 inductive map_val :: "expr list \<Rightarrow> val list \<Rightarrow> bool"
 where
@@ -130,7 +130,7 @@ qed
 (*>*)
 
 
-subsection{* Code generation *}
+subsection\<open>Code generation\<close>
 
 lemma subclsRp_code [code_pred_intro]:
   "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; Predicate_Compile.contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"
@@ -227,7 +227,7 @@ code_pred
    [inductify, skip_proof]
    path_unique .
 
-text {* Redefine MethodDefs and FieldDecls *}
+text \<open>Redefine MethodDefs and FieldDecls\<close>
 
 (* FIXME: These predicates should be defined inductively in the first place! *)
 
@@ -475,7 +475,7 @@ code_pred
   SelectMethodDef 
 .
 
-text {* Isomorphic subo with mapping instead of a map *}
+text \<open>Isomorphic subo with mapping instead of a map\<close>
 
 type_synonym subo' = "(path \<times> (vname, val) mapping)"
 type_synonym obj'  = "cname \<times> subo' set"
@@ -831,7 +831,7 @@ lemma ConsThrow':
   P,E \<turnstile> \<langle>e#es, s\<^sub>0\<rangle> [\<Rightarrow>'] \<langle>throw e' # es, s\<^sub>1\<rangle>"
 by transfer(rule ConsThrow)
 
-text {* Axiomatic heap address model refinement *}
+text \<open>Axiomatic heap address model refinement\<close>
 
 partial_function (option) lowest :: "(nat \<Rightarrow> bool) \<Rightarrow> nat \<Rightarrow> nat option"
 where
@@ -1090,7 +1090,7 @@ next
   show thesis by transfer(erule evals.cases)
 qed
 
-subsection {* Examples *}
+subsection \<open>Examples\<close>
 
 declare [[values_timeout = 180]]
 
@@ -1130,7 +1130,7 @@ values [expected "{Val (Intg 30)}"]
        (Map.empty,Map.empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
 
 
-text {* progOverrider examples *}
+text \<open>progOverrider examples\<close>
 
 definition
   classBottom :: "cdecl" where
@@ -1209,7 +1209,7 @@ values [expected "{Val(Intg 42)}"] \<comment> \<open>fieldAss\<close>
        (Var ''V''\<bullet>''x''{[''Right2'',''Top'']}),(Map.empty,Map.empty)\<rangle> \<Rightarrow>' \<langle>e', s'\<rangle>}"
 
 
-text {* typing rules *}
+text \<open>typing rules\<close>
 
 values [expected "{Class ''Bottom''}"] \<comment> \<open>typeNew\<close>
   "{T. progOverrider,Map.empty \<turnstile> new ''Bottom'' :: T}"
@@ -1265,7 +1265,7 @@ values [expected "{Integer}"] \<comment> \<open>typeBig\<close>
        :: T}"
 
 
-text {* progDiamond examples *}
+text \<open>progDiamond examples\<close>
 
 definition
   classDiamondBottom :: "cdecl" where
@@ -1342,7 +1342,7 @@ values [expected "{Val (Ref(0, [''Bottom'', ''Left'']))}"] \<comment> \<open>dyn
     progDiamond,[''V''\<mapsto>Class ''Right'']
     \<turnstile> \<langle>''V'' := new ''Bottom'' ;; Cast ''Left'' (Var ''V''),(Map.empty,Map.empty)\<rangle> \<Rightarrow>' \<langle>e',s'\<rangle>}"
 
-text {* failing g++ example *}
+text \<open>failing g++ example\<close>
 
 definition
   classD :: "cdecl" where

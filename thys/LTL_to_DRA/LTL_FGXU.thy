@@ -70,7 +70,7 @@ proof
   hence "w \<Turnstile> \<phi>"
     using suffix_0[of w] ltl_semantics.simps(8)[of w \<phi>] by metis
   moreover
-  from `?lhs` have "w \<Turnstile> X (G \<phi>)"
+  from \<open>?lhs\<close> have "w \<Turnstile> X (G \<phi>)"
     by simp
   ultimately
   show ?rhs by simp
@@ -81,7 +81,7 @@ next
   hence "\<forall>k > 0. suffix k w \<Turnstile> \<phi>"
     by (metis Suc_eq_plus1 gr0_implies_Suc)
   moreover
-  from `?rhs` have "(suffix 0 w) \<Turnstile> \<phi>" by simp
+  from \<open>?rhs\<close> have "(suffix 0 w) \<Turnstile> \<phi>" by simp
   ultimately
   show ?lhs
     using neq0_conv ltl_semantics.simps(8)[of w \<phi>] by blast
@@ -115,14 +115,14 @@ next
   proof (cases "w \<Turnstile> \<psi>")
     case False
       hence "w \<Turnstile> \<phi> \<and> w \<Turnstile> X (\<phi> U \<psi>)"
-        using `?rhs` by blast
+        using \<open>?rhs\<close> by blast
       obtain k where "suffix k (suffix 1 w) \<Turnstile> \<psi>" and "\<forall>j<k. suffix j (suffix 1 w) \<Turnstile> \<phi>"
-        using False `?rhs` by force
+        using False \<open>?rhs\<close> by force
       moreover
       {
         fix j assume "j < 1 + k"
         hence "suffix j w \<Turnstile> \<phi>"
-          using `w \<Turnstile> \<phi> \<and> w \<Turnstile> X (\<phi> U \<psi>)` `\<forall>j<k. suffix j (suffix 1 w) \<Turnstile> \<phi>`[unfolded suffix_suffix]
+          using \<open>w \<Turnstile> \<phi> \<and> w \<Turnstile> X (\<phi> U \<psi>)\<close> \<open>\<forall>j<k. suffix j (suffix 1 w) \<Turnstile> \<phi>\<close>[unfolded suffix_suffix]
           by (cases j) simp+
       }
       ultimately
@@ -158,12 +158,12 @@ next
   assume ?rhs
   {
     fix i
-    from `?rhs` obtain k where "i \<le> k" and "suffix k w \<Turnstile> \<phi>"
+    from \<open>?rhs\<close> obtain k where "i \<le> k" and "suffix k w \<Turnstile> \<phi>"
       using INFM_nat_le[of "\<lambda>n. suffix n w \<Turnstile> \<phi>"] by blast
     then obtain j where "k = i + j"
       using le_iff_add[of i k] by fast
     hence "suffix j (suffix i w) \<Turnstile> \<phi>"
-      using `suffix k w \<Turnstile> \<phi>` suffix_suffix by fastforce
+      using \<open>suffix k w \<Turnstile> \<phi>\<close> suffix_suffix by fastforce
     hence "suffix i w \<Turnstile> F \<phi>" by auto
   }
   thus ?lhs by auto
@@ -192,13 +192,13 @@ next
   assume ?rhs
   obtain S where S_def: "S = {k. \<not> suffix k w \<Turnstile> \<phi>}" by blast
   hence "finite S"
-    using `?rhs` unfolding Alm_all_def Inf_many_def by fast
+    using \<open>?rhs\<close> unfolding Alm_all_def Inf_many_def by fast
   then obtain i where "i = Max S" by blast
   {
     fix j
     assume "i < j"
     hence "j \<notin> S"
-      using `i = Max S` Max.coboundedI[OF `finite S`] less_le_not_le by blast
+      using \<open>i = Max S\<close> Max.coboundedI[OF \<open>finite S\<close>] less_le_not_le by blast
     hence "suffix j w \<Turnstile> \<phi>" using S_def by fast
   }
   hence "\<forall>j > i. (suffix j w \<Turnstile> \<phi>)" by simp
@@ -271,7 +271,7 @@ proof -
       have "\<exists>i. \<forall>j. suffix i w \<Turnstile> G \<psi> = suffix (i + j) w \<Turnstile> G \<psi>"
         by (metis LTL_suffix_G plus_nat.add_0 suffix_0 suffix_suffix)
       then obtain i\<^sub>2 where "\<And>j. suffix i\<^sub>2 w \<Turnstile> \<chi> = suffix (i\<^sub>2 + j) w \<Turnstile> \<chi>"
-        unfolding `\<chi> = G \<psi>` by blast
+        unfolding \<open>\<chi> = G \<psi>\<close> by blast
       ultimately
       have "\<And>\<chi>' j. \<chi>' \<in> \<G> \<union> {\<chi>} \<Longrightarrow> suffix (i\<^sub>1 + i\<^sub>2) w \<Turnstile> \<chi>' = suffix (i\<^sub>1 + i\<^sub>2 + j) w \<Turnstile> \<chi>'"
         unfolding Un_iff singleton_iff by (metis add.commute add.left_commute)
@@ -295,7 +295,7 @@ proof -
     using assms by fastforce
   thus "suffix i w \<Turnstile> G \<psi>"
     by (cases "i \<le> j", insert assms, unfold le_iff_add, blast,
-        metis (erased, lifting) LTL_suffix_G `suffix j w \<Turnstile> G \<psi>` le_add_diff_inverse nat_le_linear suffix_suffix)
+        metis (erased, lifting) LTL_suffix_G \<open>suffix j w \<Turnstile> G \<psi>\<close> le_add_diff_inverse nat_le_linear suffix_suffix)
 qed
 
 subsection \<open>Subformulae\<close>
@@ -734,11 +734,11 @@ proof -
         then obtain C D where "C = (A \<inter> P)" and "D = A - P" and "A = C \<union> D"
           by blast
         then have "C \<Turnstile>\<^sub>P \<phi>" and "C \<subseteq> P" and "D \<subseteq> UNIV - P"
-          using `A \<Turnstile>\<^sub>P \<phi>` LTL_prop_entailment_restrict_to_propos `propos \<phi> \<subseteq> P` by blast+
+          using \<open>A \<Turnstile>\<^sub>P \<phi>\<close> LTL_prop_entailment_restrict_to_propos \<open>propos \<phi> \<subseteq> P\<close> by blast+
         then have "C \<union> D \<in> {A \<union> B | A B. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi> \<and> B \<subseteq> UNIV - P}"
           by blast
         thus ?case
-          using `A = C \<union> D` by simp
+          using \<open>A = C \<union> D\<close> by simp
     qed
     thus "?lhs \<subseteq> ?rhs"
       by blast
@@ -758,7 +758,7 @@ proof -
     hence "S \<subseteq> Pow (Pow P)"
       by blast
     hence "finite S"
-      using `finite P` finite_Pow_iff infinite_super by fast
+      using \<open>finite P\<close> finite_Pow_iff infinite_super by fast
     hence "finite {?map P A | A. A \<in> S}"
       by fastforce
 
@@ -775,14 +775,14 @@ proof -
         by simp
       moreover
       have "{A | A. A \<subseteq> P \<and> A \<Turnstile>\<^sub>P \<phi>} \<in> S"
-        using `nested_propos \<phi> \<subseteq> P` S_def by auto
+        using \<open>nested_propos \<phi> \<subseteq> P\<close> S_def by auto
       ultimately
       show "A \<in> {?map P A | A. A \<in> S}"
         by blast
     qed
 
     show ?thesis
-      using rev_finite_subset[OF `finite {?map P A | A. A \<in> S}` `S' \<subseteq> {?map P A | A. A \<in> S}`]
+      using rev_finite_subset[OF \<open>finite {?map P A | A. A \<in> S}\<close> \<open>S' \<subseteq> {?map P A | A. A \<in> S}\<close>]
       unfolding S'_def .
   qed
 

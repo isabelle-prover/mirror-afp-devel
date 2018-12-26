@@ -15,7 +15,7 @@ text \<open>
 Atoms and substitutions are abstracted away behind some locales, to avoid having a direct dependency
 on the IsaFoR library.
 
-Conventions: @{text 's} substitutions, @{text 'a} atoms.
+Conventions: \<open>'s\<close> substitutions, \<open>'a\<close> atoms.
 \<close>
 
 

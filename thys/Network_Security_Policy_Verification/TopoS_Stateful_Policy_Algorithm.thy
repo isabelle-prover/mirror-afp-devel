@@ -2,9 +2,9 @@ theory TopoS_Stateful_Policy_Algorithm
 imports TopoS_Stateful_Policy TopoS_Composition_Theory
 begin
 
-section{*Stateful Policy -- Algorithm*}
+section\<open>Stateful Policy -- Algorithm\<close>
 
-subsection{* Some unimportant lemmata *}
+subsection\<open>Some unimportant lemmata\<close>
   lemma False_set: "{(r, s). False} = {}" by simp
   lemma valid_reqs_ACS_D: "valid_reqs M \<Longrightarrow> valid_reqs (get_ACS M)"
     by(simp add: valid_reqs_def get_ACS_def)
@@ -35,8 +35,8 @@ subsection{* Some unimportant lemmata *}
    done
 
 
-subsection {* Sketch for generating a stateful policy from a simple directed policy *}
-  text{* Having no stateful flows, we trivially get a valid stateful policy. *}
+subsection \<open>Sketch for generating a stateful policy from a simple directed policy\<close>
+  text\<open>Having no stateful flows, we trivially get a valid stateful policy.\<close>
     lemma trivial_stateful_policy_compliance:
     "\<lbrakk> wf_graph \<lparr> nodes = V, edges = E \<rparr>; valid_reqs M; all_security_requirements_fulfilled M \<lparr> nodes = V, edges = E \<rparr> \<rbrakk> \<Longrightarrow> 
       stateful_policy_compliance \<lparr> hosts = V, flows_fix = E, flows_state = {} \<rparr> \<lparr> nodes = V, edges = E \<rparr> M"
@@ -50,9 +50,9 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       by force
 
 
-  text{*trying better*}
+  text\<open>trying better\<close>
 
-    text{*First, filtering flows that cause no IFS violations*}
+    text\<open>First, filtering flows that cause no IFS violations\<close>
     (*the edges front of the list are more likely to be kept*)
     fun filter_IFS_no_violations_accu :: "'v::vertex graph \<Rightarrow> 'v SecurityInvariant_configured list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list" where
       "filter_IFS_no_violations_accu G M accu [] = accu" |
@@ -247,7 +247,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
 
 
-  text{*Next *}
+  text\<open>Next\<close>
     (*"\<forall>F \<in> get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<T> ). F \<subseteq> backflows (filternew_flows_state \<T>)"*)
     (*first in list are more likely to be kept*)
     fun filter_compliant_stateful_ACS_accu :: "'v::vertex graph \<Rightarrow> 'v SecurityInvariant_configured list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list" where
@@ -335,7 +335,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
         have "\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = {}\<rparr>). F \<subseteq> backflows {}"
           by(simp add: stateful_policy_to_network_graph_def all_flows_def backflows_def False_set)
 
-        from filter_compliant_stateful_ACS_accu_correct_induction[where accu="[]" and edgesList="edgesList", simplified, OF a1 wfVE `set edgesList \<subseteq> E` this a5']
+        from filter_compliant_stateful_ACS_accu_correct_induction[where accu="[]" and edgesList="edgesList", simplified, OF a1 wfVE \<open>set edgesList \<subseteq> E\<close> this a5']
         show ?thesis .
      qed
 
@@ -406,7 +406,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
                   have f1: "e \<in> E - (set Es \<union> insert a (set accu) \<union> {R \<in> E. R \<in> backflows E})"
                     using h1 by simp
                   have f2: "insert a (set accu) \<subseteq> E"
-                    using `set (a # accu) \<subseteq> E` by simp
+                    using \<open>set (a # accu) \<subseteq> E\<close> by simp
                   have f3: "e \<in> E"
                     using f1 by fastforce
                   have "E \<union> insert a (set accu) = E"
@@ -460,9 +460,9 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
               from conjunct1[OF CaseTrue] hlpassm have "dat_offender \<notin> E"
                 by(simp add: backflows_def, fastforce)
               from dat_in_simplified UN_get_subset this have "dat_offender \<in> set accu \<union> backflows (insert e (set accu))" by blast
-              from this Cons.prems(4) `dat_offender \<notin> E` have "dat_offender \<in> backflows (insert e (set accu))" by blast
+              from this Cons.prems(4) \<open>dat_offender \<notin> E\<close> have "dat_offender \<in> backflows (insert e (set accu))" by blast
               from dat_offends_simplified[simplified] this have "dat_offender \<in> E" by simp
-              from `dat_offender \<notin> E` `dat_offender \<in> E` show False by simp
+              from \<open>dat_offender \<notin> E\<close> \<open>dat_offender \<in> E\<close> show False by simp
             qed
 
             from this dat_offends have 
@@ -475,7 +475,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
             apply(subst filternew_flows_state_moveout_a) by blast
           qed
 
-        from Cons.IH[OF Cons.prems(1) Cons.prems(2) `set Es \<subseteq> E` `set (a # accu) \<subseteq> E` statefulsimp this ] show "?case" 
+        from Cons.IH[OF Cons.prems(1) Cons.prems(2) \<open>set Es \<subseteq> E\<close> \<open>set (a # accu) \<subseteq> E\<close> statefulsimp this ] show "?case" 
           by(simp)
       next
         assume CaseFalse: "\<not> ?caseDistinction"
@@ -504,10 +504,10 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
             from Cons.prems(3) Cons.prems(4) have backaaccusubE: "backflows (set (a # accu)) \<subseteq> backflows E" by(simp add: backflows_def, fastforce)
             from h1 have "a \<notin> backflows E" by fastforce
-            from backaaccusubE `a \<notin> backflows E` have "a \<notin> backflows (insert a (set accu))" by auto
+            from backaaccusubE \<open>a \<notin> backflows E\<close> have "a \<notin> backflows (insert a (set accu))" by auto
 
 
-            from `a \<notin> backflows E` CaseFalse have "\<not> (\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set (a # accu)\<rparr>). F \<subseteq> backflows (set (a # accu)))" by(simp)
+            from \<open>a \<notin> backflows E\<close> CaseFalse have "\<not> (\<forall>F\<in>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = set (a # accu)\<rparr>). F \<subseteq> backflows (set (a # accu)))" by(simp)
             from this stateful_to_graph have "\<not> (\<forall>F\<in>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = E \<union> set accu \<union> backflows (insert a (set accu))\<rparr>. F \<subseteq> backflows (insert a (set accu)))" by(simp)
             from this hccontr_simp show False by blast
         qed
@@ -517,7 +517,7 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
           \<subseteq> backflows (filternew_flows_state \<lparr>hosts = V, flows_fix = E, flows_state = set accu \<union> {e}\<rparr>)"
           by auto
 
-        from Cons.IH[OF Cons.prems(1) Cons.prems(2) `set Es \<subseteq> E` `set accu \<subseteq> E` statefulsimp this]
+        from Cons.IH[OF Cons.prems(1) Cons.prems(2) \<open>set Es \<subseteq> E\<close> \<open>set accu \<subseteq> E\<close> statefulsimp this]
         show ?case by simp
       qed
    qed
@@ -561,16 +561,16 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       hence "\<Union>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = E \<union> X \<union> backflows (stateful \<union> X)\<rparr> \<subseteq> backflows (stateful \<union> X) - E"
       using a4 a3 filter_compliant_stateful_ACS_subseteq_input by (metis Diff_subset_conv Un_Diff_cancel Un_assoc a3 bot.extremum_unique sup_bot_right)
       hence accontr_simp: "\<Union>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = E \<union> (backflows stateful) \<union> (backflows X)\<rparr> \<subseteq> backflows (stateful \<union> X) - E"
-      using Set.Un_absorb2[OF `X \<subseteq> E`] backflows_un[of "stateful" "X"] by (metis Un_assoc)
+      using Set.Un_absorb2[OF \<open>X \<subseteq> E\<close>] backflows_un[of "stateful" "X"] by (metis Un_assoc)
       
       from a2 a5 have "finite X" apply(simp add: wf_graph_def) by (metis (full_types) finite_Diff finite_subset)
       from a6 obtain x where "x \<in> X" by blast
 
 
-      from `x \<in> X` a5 have xX_simp1: "(backflows X) - (backflows (X - {x}) - E)  = backflows {x}"
+      from \<open>x \<in> X\<close> a5 have xX_simp1: "(backflows X) - (backflows (X - {x}) - E)  = backflows {x}"
         apply(simp add: backflows_def) by fast
       from a5 have "X \<inter> stateful = {}" by auto
-      from `x \<in> X` this have xX_simp2: "(backflows stateful) - (backflows (X - {x}) - E) = backflows stateful"
+      from \<open>x \<in> X\<close> this have xX_simp2: "(backflows stateful) - (backflows (X - {x}) - E) = backflows stateful"
         apply(simp add: backflows_def) by fast
       have xX_simp3:"backflows (stateful \<union> X) - (backflows (X - {x}) - E) = backflows (stateful \<union> {x})"
         apply(simp only: backflows_un)
@@ -585,18 +585,18 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
       using xX_simp3[simplified backflows_un] by blast
 
       have Eexpand: "E \<union> stateful \<union> {x} = E" 
-      using a4 a3 filter_compliant_stateful_ACS_subseteq_input a5 `x\<in>X` by blast
+      using a4 a3 filter_compliant_stateful_ACS_subseteq_input a5 \<open>x\<in>X\<close> by blast
 
       have "backflows (stateful \<union> X) - E - backflows (X - {x}) = (backflows (stateful \<union> X) - E) - backflows (X - {x})" by simp
-      from `finite X` backflows_finite have finite: "finite (backflows (X - {x}) - E)" by auto
+      from \<open>finite X\<close> backflows_finite have finite: "finite (backflows (X - {x}) - E)" by auto
       from a2 a4 a3 filter_compliant_stateful_ACS_subseteq_input have "wf_graph \<lparr>nodes = V, edges = stateful\<rparr>" by (metis Diff_partition wf_graph_remove_edges_union)
       from backflows_wf[OF this] have "wf_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>" .
-      from a2 `X \<subseteq> E` have "wf_graph \<lparr>nodes = V, edges = X\<rparr>" by (metis double_diff dual_order.refl wf_graph_remove_edges)
+      from a2 \<open>X \<subseteq> E\<close> have "wf_graph \<lparr>nodes = V, edges = X\<rparr>" by (metis double_diff dual_order.refl wf_graph_remove_edges)
        from backflows_wf[OF this] have "wf_graph \<lparr>nodes = V, edges = backflows X\<rparr>" .
-      from this wf_graph_union_edges `wf_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>` a2 have wfG: 
+      from this wf_graph_union_edges \<open>wf_graph \<lparr>nodes = V, edges = backflows stateful\<rparr>\<close> a2 have wfG: 
         "wf_graph \<lparr>nodes = V, edges = E \<union> backflows stateful \<union> backflows X\<rparr>" by metis
 
-      from `x\<in>X` have subset: "backflows (X - {x}) - E \<subseteq> E \<union> backflows stateful \<union> backflows X" apply(simp add: backflows_def) by fast
+      from \<open>x\<in>X\<close> have subset: "backflows (X - {x}) - E \<subseteq> E \<union> backflows stateful \<union> backflows X" apply(simp add: backflows_def) by fast
 
       from Un_set_offending_flows_bound_minus_subseteq'[OF a1 wfG subset accontr_simp] have
         "\<Union>get_offending_flows (get_ACS M) \<lparr>nodes = V, edges = (E \<union> backflows stateful \<union> backflows X) - (backflows (X - {x}) - E)\<rparr> \<subseteq> (backflows (stateful \<union> X) - E) - (backflows (X - {x}) - E)" by simp
@@ -612,18 +612,18 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
       from filter_compliant_stateful_ACS_maximal[OF a1 a2 a3 a4] have
         "\<forall>e\<in>E - (stateful \<union> {e \<in> E. e \<in> backflows E}). \<not> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {e}\<rparr>) \<subseteq> backflows (filternew_flows_state \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {e}\<rparr>)" .
-      from this a5 `x \<in> X` have contr2: "\<not> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {x}\<rparr>) \<subseteq> backflows (filternew_flows_state \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {x}\<rparr>)" by blast
+      from this a5 \<open>x \<in> X\<close> have contr2: "\<not> \<Union>get_offending_flows (get_ACS M) (stateful_policy_to_network_graph \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {x}\<rparr>) \<subseteq> backflows (filternew_flows_state \<lparr>hosts = V, flows_fix = E, flows_state = stateful \<union> {x}\<rparr>)" by blast
 
       from contr1 contr2
       show "False" by simp
     qed
 
 
-    text{*@{term filter_compliant_stateful_ACS} is correct and maximal*}
+    text\<open>@{term filter_compliant_stateful_ACS} is correct and maximal\<close>
     thm filter_compliant_stateful_ACS_correct filter_compliant_stateful_ACS_maximal
 
 
-    text{*Getting those together. We cannot say @{text "edgesList = E"} here because one filters first. I guess filtering ACS first is easier, ...*}
+    text\<open>Getting those together. We cannot say \<open>edgesList = E\<close> here because one filters first. I guess filtering ACS first is easier, ...\<close>
 
 
 
@@ -905,10 +905,10 @@ subsection {* Sketch for generating a stateful policy from a simple directed pol
 
 
 
-  text{*
+  text\<open>
     If there are no IFS requirements and the ACS requirements cause no side effects,
     effectively, the graph can be considered as undirected graph! 
-  *}
+\<close>
   lemma generate_valid_stateful_policy_IFSACS_2_noIFS_noACSsideeffects_imp_fullgraph:
   assumes validReqs: "valid_reqs M"
         and     wfG: "wf_graph G"

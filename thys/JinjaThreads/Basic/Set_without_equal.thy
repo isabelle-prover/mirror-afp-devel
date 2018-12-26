@@ -6,11 +6,11 @@ theory Set_without_equal
 imports Main
 begin
 
-text {*
+text \<open>
   Adapt @{type "set"} code setup such that @{const "insert"}, 
   @{const "union"}, and @{term "set_of_pred"} do not generate
   sort constraint @{class equal}.
-*}
+\<close>
 
 definition insert' :: "'a \<Rightarrow> 'a set \<Rightarrow> 'a set"
 where "insert' = Set.insert"
@@ -34,7 +34,7 @@ declare
   insert'_code [code]
   union'_code [code]
 
-text {* Merge name spaces to avoid cyclic module dependencies *}
+text \<open>Merge name spaces to avoid cyclic module dependencies\<close>
 
 code_identifier
   code_module Set_without_equal \<rightharpoonup>

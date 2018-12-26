@@ -9,15 +9,15 @@ theory ProductCategory
 imports Category EpiMonoIso
 begin
 
-  text{*
+  text\<open>
     This theory defines the product of two categories @{term C1} and @{term C2},
     which is the category @{term C} whose arrows are ordered pairs consisting of an
     arrow of @{term C1} and an arrow of @{term C2}, with composition defined
-    componentwise.  As the ordered pair @{text "(C1.null, C2.null)"} is available
-    to serve as @{text "C.null"}, we may directly identify the arrows of the product
+    componentwise.  As the ordered pair \<open>(C1.null, C2.null)\<close> is available
+    to serve as \<open>C.null\<close>, we may directly identify the arrows of the product
     category @{term C} with ordered pairs, leaving the type of arrows of @{term C}
     transparent.
-  *}
+\<close>
 
   type_synonym ('a1, 'a2) arr = "'a1 * 'a2"
 

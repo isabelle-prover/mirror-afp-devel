@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Code Cayley Hamilton*}
+section\<open>Code Cayley Hamilton\<close>
 
 theory Code_Cayley_Hamilton_IArrays
   imports 
@@ -13,8 +13,8 @@ theory Code_Cayley_Hamilton_IArrays
 begin
 
 
-subsection{*Implementations over immutable arrays of some definitions 
-  presented in the Cayley-Hamilton development*}
+subsection\<open>Implementations over immutable arrays of some definitions 
+  presented in the Cayley-Hamilton development\<close>
 
 definition scalar_matrix_mult_iarrays :: "('a::ab_semigroup_mult) \<Rightarrow> ('a iarray iarray) \<Rightarrow> ('a iarray iarray)" 
   (infixl "*ssi" 70) where "c *ssi A = tabulate2 (nrows_iarray A) (ncols_iarray A) (% i j. c * (A !! i !! j))"

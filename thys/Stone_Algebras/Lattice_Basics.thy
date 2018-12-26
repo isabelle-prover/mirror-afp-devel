@@ -3,11 +3,11 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Lattice Basics *}
+section \<open>Lattice Basics\<close>
 
-text {*
+text \<open>
 This theory provides notations, basic definitions and facts of lattice-related structures used throughout the subsequent development.
-*}
+\<close>
 
 theory Lattice_Basics
 
@@ -15,9 +15,9 @@ imports Main
 
 begin
 
-text {*
+text \<open>
 The following results extend basic Isabelle/HOL facts.
-*}
+\<close>
 
 lemma if_distrib_2:
   "f (if c then x else y) (if c then z else w) = (if c then f x z else f y w)"
@@ -51,10 +51,10 @@ lemma finite_set_of_finite_funs_pred:
     shows "finite { f . (\<forall>x::'a . P (f x)) }"
   using assms finite_set_of_finite_funs by force
 
-text {*
+text \<open>
 We use the following notations for the join, meet and complement operations.
-Changing the precedence of the unary complement allows us to write terms like @{text "--x"} instead of @{text "-(-x)"}.
-*}
+Changing the precedence of the unary complement allows us to write terms like \<open>--x\<close> instead of \<open>-(-x)\<close>.
+\<close>
 
 context sup
 begin
@@ -82,11 +82,11 @@ notation uminus ("- _" [80] 80)
 
 end
 
-text {*
+text \<open>
 We use the following definition of monotonicity for operations defined in classes.
-The standard @{text mono} places a sort constraint on the target type.
+The standard \<open>mono\<close> places a sort constraint on the target type.
 We also give basic properties of Galois connections and lift orders to functions.
-*}
+\<close>
 
 context ord
 begin
@@ -131,9 +131,9 @@ lemma lifted_antisymmetric:
   "f \<le>\<le> g \<Longrightarrow> g \<le>\<le> f \<Longrightarrow> f = g"
   by (metis (full_types) antisym ext lifted_less_eq_def)
 
-text {*
-If the image of a finite non-empty set under @{text f} is a totally ordered, there is an element that minimises the value of @{text f}.
-*}
+text \<open>
+If the image of a finite non-empty set under \<open>f\<close> is a totally ordered, there is an element that minimises the value of \<open>f\<close>.
+\<close>
 
 lemma finite_set_minimal:
   assumes "finite s"
@@ -149,9 +149,9 @@ lemma finite_set_minimal:
 
 end
 
-text {*
+text \<open>
 The following are basic facts in semilattices.
-*}
+\<close>
 
 context semilattice_sup
 begin
@@ -182,10 +182,10 @@ lemma sup_relative_same_increasing:
 
 end
 
-text {*
+text \<open>
 Every bounded semilattice is a commutative monoid.
 Finite sums defined in commutative monoids are available via the following sublocale.
-*}
+\<close>
 
 context bounded_semilattice_sup_bot
 begin
@@ -207,17 +207,17 @@ lemma inf_same_context:
 
 end
 
-text {*
+text \<open>
 The following class requires only the existence of upper bounds, which is a property common to bounded semilattices and (not necessarily bounded) lattices.
 We use it in our development of filters.
-*}
+\<close>
 
 class directed_semilattice_inf = semilattice_inf +
   assumes ub: "\<exists>z . x \<le> z \<and> y \<le> z"
 
-text {*
-We extend the @{text inf} sublocale, which dualises the order in semilattices, to bounded semilattices.
-*}
+text \<open>
+We extend the \<open>inf\<close> sublocale, which dualises the order in semilattices, to bounded semilattices.
+\<close>
 
 context bounded_semilattice_inf_top
 begin
@@ -243,11 +243,11 @@ definition dual_additive :: "('a \<Rightarrow> 'a) \<Rightarrow> bool"
 
 end
 
-text {*
+text \<open>
 Not every bounded lattice has complements, but two elements might still be complements of each other as captured in the following definition.
 In this situation we can apply, for example, the shunting property shown below.
-We introduce most definitions using the @{text abbreviation} command.
-*}
+We introduce most definitions using the \<open>abbreviation\<close> command.
+\<close>
 
 context bounded_lattice
 begin
@@ -275,9 +275,9 @@ lemma relative_equality:
 
 end
 
-text {*
+text \<open>
 Distributive lattices with a greatest element are widely used in the construction theorem for Stone algebras.
-*}
+\<close>
 
 class distrib_lattice_bot = bounded_lattice_bot + distrib_lattice
 
@@ -317,11 +317,11 @@ qed
 
 end
 
-text {*
+text \<open>
 We next consider lattices with a linear order structure.
 In such lattices, join and meet are selective operations, which give the maximum and the minimum of two elements, respectively.
 Moreover, the lattice is automatically distributive.
-*}
+\<close>
 
 class bounded_linorder = linorder + order_bot + order_top
 
@@ -366,9 +366,9 @@ lemma sup_inf_sup:
 
 end
 
-text {*
+text \<open>
 The following class derives additional properties if the linear order of the lattice has a least and a greatest element.
-*}
+\<close>
 
 class linear_bounded_lattice = bounded_lattice + linorder
 begin
@@ -401,10 +401,10 @@ subclass dense_lattice
 
 end
 
-text {*
+text \<open>
 Every bounded linear order can be expanded to a bounded lattice.
 Join and meet are maximum and minimum, respectively.
-*}
+\<close>
 
 class linorder_lattice_expansion = bounded_linorder + sup + inf +
   assumes sup_def [simp]: "x \<squnion> y = max x y"
@@ -417,10 +417,10 @@ subclass linear_bounded_lattice
 
 end
 
-text {*
+text \<open>
 Some results, such as the existence of certain filters, require that the algebras are not trivial.
-This is not an assumption of the order and lattice classes that come with Isabelle/HOL; for example, @{text "bot = top"} may hold in bounded lattices.
-*}
+This is not an assumption of the order and lattice classes that come with Isabelle/HOL; for example, \<open>bot = top\<close> may hold in bounded lattices.
+\<close>
 
 class non_trivial =
   assumes consistent: "\<exists>x y . x \<noteq> y"

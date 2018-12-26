@@ -1,9 +1,9 @@
-section {* Functrans simpset for Code Preprocessing *}
+section \<open>Functrans simpset for Code Preprocessing\<close>
 theory Ord_Code_Preproc
 imports Main ICF_Tools
 begin
 
-ML {*
+ML \<open>
   signature ORD_CODE_PREPROC = sig
     val add: int * string * (theory -> thm -> thm) -> theory -> theory
     val rem: string -> theory -> theory
@@ -103,7 +103,7 @@ ML {*
   end
 
 
-*}
+\<close>
 
 setup Ord_Code_Preproc.setup
 

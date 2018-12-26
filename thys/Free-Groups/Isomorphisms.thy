@@ -1,4 +1,4 @@
-section {* Isomorphisms of Free Groups *}
+section \<open>Isomorphisms of Free Groups\<close>
 
 theory "Isomorphisms"
 imports
@@ -9,10 +9,10 @@ imports
    "HOL-Cardinals.Cardinal_Order_Relation"
 begin
 
-subsection {* The Free Group over the empty set *}
+subsection \<open>The Free Group over the empty set\<close>
 
-text {* The Free Group over an empty set of generators is isomorphic to the trivial
-group. *}
+text \<open>The Free Group over an empty set of generators is isomorphic to the trivial
+group.\<close>
 
 lemma free_group_over_empty_set: "\<exists>h. h \<in> iso \<F>\<^bsub>{}\<^esub> unit_group"
 proof(rule group.unit_group_unique)
@@ -24,10 +24,10 @@ next
     by simp
 qed
 
-subsection {* The Free Group over one generator *}
+subsection \<open>The Free Group over one generator\<close>
 
-text {* The Free Group over one generator is isomorphic to the free abelian group
-over one element, also known as the integers. *}
+text \<open>The Free Group over one generator is isomorphic to the free abelian group
+over one element, also known as the integers.\<close>
 
 abbreviation "int_group"
   where "int_group \<equiv> \<lparr> carrier = carrier \<Z>, monoid.mult = (+), one = 0::int \<rparr>"
@@ -68,13 +68,13 @@ proof
         by simp
     next
     case (step1 i)
-      from `i \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>` and plus1
+      from \<open>i \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>\<close> and plus1
       have "i \<otimes>\<^bsub>int_group\<^esub> 1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" 
         by (rule gen_span.gen_mult)
       thus "i + 1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" by simp
     next
     case (step2 i)
-      from `i \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>` and minus1
+      from \<open>i \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>\<close> and minus1
       have "i \<otimes>\<^bsub>int_group\<^esub> -1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>" 
         by (rule gen_span.gen_mult)
       thus "i - 1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
@@ -134,11 +134,11 @@ proof-
         ultimately
         have "canceling (x ! i) (x ! Suc i)" unfolding canceling_def by auto
         hence "cancels_to_1_at i x (cancel_at i x)"
-          using `\<not> length x \<le> Suc i` unfolding cancels_to_1_at_def 
+          using \<open>\<not> length x \<le> Suc i\<close> unfolding cancels_to_1_at_def 
           by (auto simp add:length_takeWhile_le)
         hence "cancels_to_1 x (cancel_at i x)" unfolding cancels_to_1_def by auto
         hence "\<not> canceled x" unfolding canceled_def by auto
-        thus False using `canceled x` by contradiction
+        thus False using \<open>canceled x\<close> by contradiction
       qed
       hence "length (takeWhile (\<lambda>y. y = a) x) = length x"
         using i[THEN sym] by (auto dest:le_antisym simp add:length_takeWhile_le)
@@ -160,11 +160,11 @@ proof-
         apply (induct x)
         using local.int.nat_pow_Suc local.int.nat_pow_0
         by (auto simp: int_distrib)
-      finally have "\<dots> = 0" using `int.lift f x = 0` by simp
+      finally have "\<dots> = 0" using \<open>int.lift f x = 0\<close> by simp
       hence "nat (abs (group.lift_gi int_group f a * int (length x))) = 0" by simp
       hence "nat (abs (group.lift_gi int_group f a)) * length x = 0" by simp
       hence "nat (abs (group.lift_gi int_group f a)) = 0"
-        using `x \<noteq> []` by auto
+        using \<open>x \<noteq> []\<close> by auto
       moreover
       have "inv\<^bsub>int_group\<^esub> 1 = -1" 
         using int.inv_equality by auto
@@ -196,15 +196,15 @@ proof-
   }
   ultimately
   have "int.lift f \<in> iso \<F>\<^bsub>{()}\<^esub> int_group"
-    using `int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group`
+    using \<open>int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group\<close>
     using hom.hom_mult int.is_group
     by (auto intro:group_isoI simp add: free_group_is_group)
   thus ?thesis by auto
 qed
 
-subsection {* Free Groups over isomorphic sets of generators *}
+subsection \<open>Free Groups over isomorphic sets of generators\<close>
 
-text {* Free Groups are isomorphic if their set of generators are isomorphic. *}
+text \<open>Free Groups are isomorphic if their set of generators are isomorphic.\<close>
 
 definition lift_generator_function :: "('a \<Rightarrow> 'b) \<Rightarrow> (bool \<times> 'a) list \<Rightarrow> (bool \<times> 'b) list"
 where "lift_generator_function f = map (map_prod id f)"
@@ -218,30 +218,30 @@ proof(rule group_isoI)
        map (map_prod id f) x = \<one>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> \<longrightarrow> x = \<one>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub>"
     by(auto simp add:free_group_def)
 next
-  from `bij_betw f gens1 gens2` have "inj_on f gens1" by (auto simp:bij_betw_def)
+  from \<open>bij_betw f gens1 gens2\<close> have "inj_on f gens1" by (auto simp:bij_betw_def)
   show "map (map_prod id f) ` carrier \<F>\<^bsub>gens1\<^esub> = carrier \<F>\<^bsub>gens2\<^esub>"
   proof(rule Set.set_eqI,rule iffI)
-    from `bij_betw f gens1 gens2` have "f ` gens1 = gens2" by (auto simp:bij_betw_def)
+    from \<open>bij_betw f gens1 gens2\<close> have "f ` gens1 = gens2" by (auto simp:bij_betw_def)
     fix x :: "(bool \<times> 'b) list"
     assume "x \<in> image (map (map_prod id f)) (carrier \<F>\<^bsub>gens1\<^esub>)"
     then obtain y :: "(bool \<times> 'a) list" where "x = map (map_prod id f) y"
                     and "y \<in> carrier \<F>\<^bsub>gens1\<^esub>" by auto
-    from `y \<in> carrier \<F>\<^bsub>gens1\<^esub>`
+    from \<open>y \<in> carrier \<F>\<^bsub>gens1\<^esub>\<close>
     have "canceled y" and "y \<in> lists(UNIV\<times>gens1)" by (auto simp add:free_group_def)
 
-    from `y \<in> lists (UNIV\<times>gens1)`
-      and `x = map (map_prod id f) y`
-      and `image f gens1 = gens2`
+    from \<open>y \<in> lists (UNIV\<times>gens1)\<close>
+      and \<open>x = map (map_prod id f) y\<close>
+      and \<open>image f gens1 = gens2\<close>
     have "x \<in> lists (UNIV\<times>gens2)"
       by (auto iff:lists_eq_set)
     moreover
 
-    from `x = map (map_prod id f) y`
-     and `y \<in> lists (UNIV\<times>gens1)`
-     and `canceled y`
-     and `inj_on f gens1`
+    from \<open>x = map (map_prod id f) y\<close>
+     and \<open>y \<in> lists (UNIV\<times>gens1)\<close>
+     and \<open>canceled y\<close>
+     and \<open>inj_on f gens1\<close>
     have "canceled x"
-      by (auto intro!:rename_gens_canceled subset_inj_on[OF `inj_on f gens1`] iff:lists_eq_set)
+      by (auto intro!:rename_gens_canceled subset_inj_on[OF \<open>inj_on f gens1\<close>] iff:lists_eq_set)
     ultimately
     show "x \<in> carrier \<F>\<^bsub>gens2\<^esub>" by (simp add:free_group_def)
   next
@@ -261,11 +261,11 @@ next
     proof(rule map_ext, rule impI)
       fix xa :: "bool \<times> 'b"
       assume "xa \<in> set x"
-      from `x \<in> lists (UNIV\<times>gens2)`
+      from \<open>x \<in> lists (UNIV\<times>gens2)\<close>
       have "set (map snd x) \<subseteq> gens2"  by auto
       hence "snd ` set x \<subseteq> gens2" by (simp add: set_map)
-      with `xa \<in> set x` have "snd xa \<in> gens2" by auto
-      with `bij_betw f gens1 gens2` have "snd xa \<in> f`gens1"
+      with \<open>xa \<in> set x\<close> have "snd xa \<in> gens2" by auto
+      with \<open>bij_betw f gens1 gens2\<close> have "snd xa \<in> f`gens1"
         by (auto simp add: bij_betw_def)
 
       have "map_prod id (f \<circ> the_inv_into gens1 f) xa
@@ -273,7 +273,7 @@ next
       also have "\<dots> = (fst xa, f (the_inv_into gens1 f (snd xa)))"
         by (auto simp del:prod.collapse)
       also
-      from `snd xa \<in> image f gens1` and `inj_on f gens1`
+      from \<open>snd xa \<in> image f gens1\<close> and \<open>inj_on f gens1\<close>
       have "\<dots> = (fst xa, snd xa)"
         by (auto elim:f_the_inv_into_f simp del:prod.collapse)
       also have "\<dots> = id xa" by simp
@@ -283,18 +283,18 @@ next
     finally have "map (map_prod id f) y = x".
     moreover
     {
-      from `bij_betw f gens1 gens2`
+      from \<open>bij_betw f gens1 gens2\<close>
       have "bij_betw (the_inv_into gens1 f) gens2 gens1" by (rule bij_betw_the_inv_into)
       hence "inj_on (the_inv_into gens1 f) gens2" by (rule bij_betw_imp_inj_on)
 
-      with `canceled x`      
-       and `x \<in> lists (UNIV\<times>gens2)`
+      with \<open>canceled x\<close>      
+       and \<open>x \<in> lists (UNIV\<times>gens2)\<close>
       have "canceled y"
         by (auto intro!:rename_gens_canceled[OF subset_inj_on] simp add:y_def)
       moreover
       {
-        from `bij_betw (the_inv_into gens1 f) gens2 gens1`
-         and `x\<in>lists(UNIV\<times>gens2)`
+        from \<open>bij_betw (the_inv_into gens1 f) gens2 gens1\<close>
+         and \<open>x\<in>lists(UNIV\<times>gens2)\<close>
         have "y \<in> lists(UNIV\<times>gens1)"
           unfolding y_def and bij_betw_def
           by (auto iff:lists_eq_set dest!:subsetD)
@@ -306,14 +306,14 @@ next
     show "x \<in> map (map_prod id f) ` carrier \<F>\<^bsub>gens1\<^esub>" by auto
   qed
 next
-  from `bij_betw f gens1 gens2` have "inj_on f gens1" by (auto simp:bij_betw_def)
+  from \<open>bij_betw f gens1 gens2\<close> have "inj_on f gens1" by (auto simp:bij_betw_def)
   {
   fix x
   assume "x \<in> carrier \<F>\<^bsub>gens1\<^esub>"
   fix y
   assume "y \<in> carrier \<F>\<^bsub>gens1\<^esub>"
 
-  from `x \<in> carrier \<F>\<^bsub>gens1\<^esub>` and `y \<in> carrier \<F>\<^bsub>gens1\<^esub>`
+  from \<open>x \<in> carrier \<F>\<^bsub>gens1\<^esub>\<close> and \<open>y \<in> carrier \<F>\<^bsub>gens1\<^esub>\<close>
   have "x \<in> lists(UNIV\<times>gens1)" and "y \<in> lists(UNIV\<times>gens1)"
     by (auto simp add:occuring_gens_in_element)
 (*  hence "occuring_generators (x@y) \<subseteq> gens1"
@@ -324,11 +324,11 @@ next
   have "map (map_prod id f) (x \<otimes>\<^bsub>\<F>\<^bsub>gens1\<^esub>\<^esub> y)
        = map (map_prod id f) (normalize (x@y))" by (simp add:free_group_def)
   also (* from `inj_on f (occuring_generators (x@y))` *)
-       from `x \<in> lists(UNIV\<times>gens1)` and `y \<in> lists(UNIV\<times>gens1)`
-        and `inj_on f gens1`
+       from \<open>x \<in> lists(UNIV\<times>gens1)\<close> and \<open>y \<in> lists(UNIV\<times>gens1)\<close>
+        and \<open>inj_on f gens1\<close>
        have "\<dots> = normalize (map (map_prod id f) (x@y))"
          by -(rule rename_gens_normalize[THEN sym],
-              auto intro!: subset_inj_on[OF `inj_on f gens1`] iff:lists_eq_set)
+              auto intro!: subset_inj_on[OF \<open>inj_on f gens1\<close>] iff:lists_eq_set)
   also have "\<dots> = normalize (map (map_prod id f) x @ map (map_prod id f) y)"
        by (auto)
   also have "\<dots> = map (map_prod id f) x \<otimes>\<^bsub>\<F>\<^bsub>gens2\<^esub>\<^esub> map (map_prod id f) y"
@@ -343,9 +343,9 @@ next
    by auto
 qed (auto intro: free_group_is_group)
 
-subsection {* Bases of isomorphic free groups *}
+subsection \<open>Bases of isomorphic free groups\<close>
 
-text {* 
+text \<open>
 Isomorphic free groups have bases of same cardinality. The proof is very different
 for infinite bases and for finite bases.
 
@@ -354,7 +354,7 @@ group to the group with two elements, as suggested by Christian Sievers. The
 definition of @{term hom} is not suitable for proofs about the cardinality of that
 set, as its definition does not require extensionality. This is amended by the
 following definition:
-*}
+\<close>
 
 definition homr
   where "homr G H = {h. h \<in> hom G H \<and> h \<in> extensional (carrier G)}"
@@ -410,7 +410,7 @@ lemma group_iso_betw_hom:
       and iso: "i \<in> iso G1 G2"
   shows   "\<exists> f . bij_betw f (homr G2 H) (homr G1 H)"
 proof-
-  interpret G2: group G2 by (rule `group G2`)
+  interpret G2: group G2 by (rule \<open>group G2\<close>)
   let ?i' = "restrict (inv_into (carrier G1) i) (carrier G2)"
   have "inv_into (carrier G1) i \<in> iso G2 G1"
     by (simp add: \<open>group G1\<close> group.iso_set_sym iso)    
@@ -424,7 +424,7 @@ proof-
       fix h assume "h \<in> homr G2 H"
       hence "compose (carrier G1) h i \<in> hom G1 H"
         using iso
-        by (auto intro: group.hom_compose[OF `group G1`, of _ G2] simp add:Group.iso_def homr_def)
+        by (auto intro: group.hom_compose[OF \<open>group G1\<close>, of _ G2] simp add:Group.iso_def homr_def)
       thus "compose (carrier G1) h i \<in> homr G1 H"
         unfolding homr_def by simp
      qed
@@ -435,7 +435,7 @@ proof-
       fix h assume "h \<in> homr G1 H"
       hence "compose (carrier G2) h ?i' \<in> hom G2 H"
         using iso'
-        by (auto intro: group.hom_compose[OF `group G2`, of _ G1] simp add:Group.iso_def homr_def)
+        by (auto intro: group.hom_compose[OF \<open>group G2\<close>, of _ G1] simp add:Group.iso_def homr_def)
       thus "compose (carrier G2) h ?i' \<in> homr G2 H"
         unfolding homr_def by simp
      qed
@@ -508,10 +508,10 @@ proof-
    by (rule finite_same_card_bij)
 qed
 
-text {*
+text \<open>
 The proof for the infinite case is trivial once the fact that the free group
 over an infinite set has the same cardinality is established.
-*}
+\<close>
 
 lemma free_group_card_infinite:
   assumes "\<not> finite X"
@@ -527,11 +527,11 @@ proof-
     by (auto intro!:card_of_mono1 simp add:free_group_def)
   moreover
   have "|lists ((UNIV::bool set)\<times>X)| =o |(UNIV::bool set)\<times>X|"
-    using `\<not> finite X`
+    using \<open>\<not> finite X\<close>
     by (auto intro:card_of_lists_infinite dest!:finite_cartesian_productD2)
   moreover
   have  "|(UNIV::bool set)\<times>X| =o |X|"
-    using `\<not> finite X`
+    using \<open>\<not> finite X\<close>
     by (auto intro: card_of_Times_infinite[OF _ _ ordLess_imp_ordLeq[OF finite_ordLess_infinite2], THEN conjunct2])
   ultimately
   show "|X| =o |carrier \<F>\<^bsub>X\<^esub>|"
@@ -550,14 +550,14 @@ case False show ?thesis
   case True
   from iso obtain i' where "i' \<in> iso \<F>\<^bsub>Y\<^esub> \<F>\<^bsub>X\<^esub>"
     using free_group_is_group group.iso_set_sym by blast
-  with `finite Y`
+  with \<open>finite Y\<close>
   have "\<exists>f. bij_betw f Y X" by -(rule isomorphic_free_groups_bases_finite)
   thus "\<exists>f. bij_betw f X Y" by (auto intro: bij_betw_the_inv_into) next
 case False
-  from `\<not> finite X` have "|X| =o |carrier \<F>\<^bsub>X\<^esub>|" 
+  from \<open>\<not> finite X\<close> have "|X| =o |carrier \<F>\<^bsub>X\<^esub>|" 
     by (rule free_group_card_infinite)
   moreover
-  from `\<not> finite Y` have "|Y| =o |carrier \<F>\<^bsub>Y\<^esub>|" 
+  from \<open>\<not> finite Y\<close> have "|Y| =o |carrier \<F>\<^bsub>Y\<^esub>|" 
     by (rule free_group_card_infinite)
   moreover
   from iso have "|carrier \<F>\<^bsub>X\<^esub>| =o |carrier \<F>\<^bsub>Y\<^esub>|"

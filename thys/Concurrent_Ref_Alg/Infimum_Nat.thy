@@ -1,4 +1,4 @@
-section {* Infimum nat lemmas \label{S:infimum-nat} *}
+section \<open>Infimum nat lemmas \label{S:infimum-nat}\<close>
 
 theory Infimum_Nat
 imports 

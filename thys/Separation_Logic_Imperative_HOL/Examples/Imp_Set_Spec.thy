@@ -1,12 +1,12 @@
-section {* Interface for Sets *}
+section \<open>Interface for Sets\<close>
 theory Imp_Set_Spec
 imports "../Sep_Main"
 begin
-text {*
+text \<open>
   This file specifies an abstract interface for set data structures. It can
   be implemented by concrete set data structures, as demonstrated in the 
   hash set example.
-*}
+\<close>
 
 locale imp_set =
   fixes is_set :: "'a set \<Rightarrow> 's \<Rightarrow> assn"

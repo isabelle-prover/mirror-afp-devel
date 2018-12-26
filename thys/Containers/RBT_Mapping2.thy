@@ -8,7 +8,7 @@ imports
   Deriving.RBT_Comparator_Impl
 begin
 
-section {* Mappings implemented by red-black trees *}
+section \<open>Mappings implemented by red-black trees\<close>
 
 lemma distinct_map_filterI: "distinct (map f xs) \<Longrightarrow> distinct (map f (filter P xs))"
 by(induct xs) auto
@@ -19,7 +19,7 @@ lemma map_of_filter_apply:
   (case map_of xs k of None \<Rightarrow> None | Some v \<Rightarrow> if P (k, v) then Some v else None)"
 by(induct xs)(auto simp add: map_of_eq_None_iff split: option.split)
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 typedef (overloaded) ('a, 'b) mapping_rbt
   = "{t :: ('a :: ccompare, 'b) RBT_Impl.rbt. ord.is_rbt cless t \<or> ID CCOMPARE('a) = None}"
@@ -66,7 +66,7 @@ lemma Mapping_RBT_impl_of [simp]:
   "Mapping_RBT (impl_of t) = t"
   by (simp add: impl_of_inverse)
 
-subsection {* Operations *}
+subsection \<open>Operations\<close>
 
 setup_lifting type_definition_mapping_rbt'
 
@@ -140,7 +140,7 @@ is "rbt_init" .
 
 end
 
-subsection {* Properties *}
+subsection \<open>Properties\<close>
 
 lemma unfoldr_rbt_entries_generator:
   "list.unfoldr rbt_entries_generator (init t) = entries t"

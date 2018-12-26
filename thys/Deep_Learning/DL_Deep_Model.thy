@@ -84,7 +84,7 @@ and "j<nr"
 shows "evaluate_net (Conv (id_matrix nr (output_size' m)) m) input $ j
  = (if j<output_size' m then evaluate_net m input $ j else 0)"
   unfolding evaluate_net.simps output_size_correct[OF assms(1) assms(2)[symmetric]]
-  using mult_id_matrix[OF `j<nr`, of "evaluate_net m input", unfolded dim_vec_of_list]
+  using mult_id_matrix[OF \<open>j<nr\<close>, of "evaluate_net m input", unfolded dim_vec_of_list]
   by metis
 
 lemma tensors_from_net_Conv_id:
@@ -104,7 +104,7 @@ proof (rule tensor_lookup_eqI)
   define Convm where "Convm = Conv (id_matrix nr (output_size' m)) m"
   fix "is"
   assume "is \<lhd> Tensor.dims (?a$i)"
-  then have "is \<lhd> input_sizes m" using `Tensor.dims (?a$i) = input_sizes m` by auto
+  then have "is \<lhd> input_sizes m" using \<open>Tensor.dims (?a$i) = input_sizes m\<close> by auto
   have "valid_net' Convm" by (simp add: assms id_matrix_dim valid_net.intros(2) Convm_def)
   have "base_input m is = base_input Convm is" by (simp add: Convm_def base_input_def)
   have "i < output_size' Convm" unfolding Convm_def remove_weights.simps output_size.simps
@@ -128,7 +128,7 @@ and "output_size' m > 0"
 shows "evaluate_net (Conv (copy_first_matrix nr (output_size' m)) m) input $ j
  = evaluate_net m input $ 0"
   unfolding evaluate_net.simps output_size_correct[OF assms(1) assms(2)[symmetric]]
-  using mult_copy_first_matrix[OF `j<nr`, of "evaluate_net m input", unfolded dim_vec_of_list]
+  using mult_copy_first_matrix[OF \<open>j<nr\<close>, of "evaluate_net m input", unfolded dim_vec_of_list]
   assms(3) copy_first_matrix_dim(1) by (metis \<open>output_size' m = dim_vec (evaluate_net m input)\<close> assms(4))
 
 lemma tensors_from_net_Conv_copy_first:
@@ -149,7 +149,7 @@ proof (rule tensor_lookup_eqI)
   define Convm where "Convm = Conv (copy_first_matrix nr (output_size' m)) m"
   fix "is"
   assume "is \<lhd> Tensor.dims (?a$i)"
-  then have "is \<lhd> input_sizes m" using `Tensor.dims (?a$i) = input_sizes m` by auto
+  then have "is \<lhd> input_sizes m" using \<open>Tensor.dims (?a$i) = input_sizes m\<close> by auto
   have "valid_net' Convm" by (simp add: assms copy_first_matrix_dim valid_net.intros(2) Convm_def)
   have "base_input m is = base_input Convm is" by (simp add: Convm_def base_input_def)
   have "i < output_size' Convm" unfolding Convm_def remove_weights.simps output_size.simps
@@ -167,7 +167,7 @@ and "i<nr"
 shows "evaluate_net (Conv (all1_matrix nr (output_size' m)) m) input $ i
  = Groups_List.sum_list (list_of_vec (evaluate_net m input))"
   unfolding evaluate_net.simps output_size_correct[OF assms(1) assms(2)[symmetric]]
-  using mult_all1_matrix[OF `i<nr`, of "evaluate_net m input", unfolded dim_vec_of_list]
+  using mult_all1_matrix[OF \<open>i<nr\<close>, of "evaluate_net m input", unfolded dim_vec_of_list]
   assms(3) all1_matrix_dim(1) by metis
 
 lemma tensors_from_net_Conv_all1:
@@ -193,14 +193,14 @@ proof (rule tensor_lookup_eqI)
     output_size_correct_tensors by presburger
   have "base_input Convm is = base_input m is" unfolding base_input_def Convm_def input_sizes.simps by metis
   have "Tensor.lookup (?a $ i) is = evaluate_net Convm (base_input Convm is) $ i"
-    using lookup_tensors_from_net[OF `valid_net' Convm` `is \<lhd> input_sizes Convm` `i< output_size' Convm`]
+    using lookup_tensors_from_net[OF \<open>valid_net' Convm\<close> \<open>is \<lhd> input_sizes Convm\<close> \<open>i< output_size' Convm\<close>]
     by (metis Convm_def )
   also have "... = monoid_add_class.sum_list (list_of_vec (evaluate_net m (base_input Convm is)))"
     using evaluate_net_Conv_all1 Convm_def \<open>is \<lhd> input_sizes Convm\<close> assms base_input_length \<open>i < nr\<close>
     by simp
   also have "... = monoid_add_class.sum_list (list_of_vec (map_vec (\<lambda>A.  lookup A is)(tensors_from_net m)))"
-    unfolding `base_input Convm is = base_input m is`
-    using lookup_tensors_from_net[OF `valid_net' m` `is \<lhd> input_sizes m`]
+    unfolding \<open>base_input Convm is = base_input m is\<close>
+    using lookup_tensors_from_net[OF \<open>valid_net' m\<close> \<open>is \<lhd> input_sizes m\<close>]
      base_input_length[OF \<open>is \<lhd> input_sizes m\<close>] output_size_correct[OF assms(1)]  output_size_correct_tensors[OF assms(1)]
     eq_vecI[of "evaluate_net m (base_input m is)" "map_vec (\<lambda>A. lookup A is) (tensors_from_net m)"] index_map_vec(1) index_map_vec(2)
     by force
@@ -210,7 +210,7 @@ proof (rule tensor_lookup_eqI)
     nth_list_of_vec length_map list_vec nth_map  index_map_vec(1) index_map_vec(2) vec_list
     by (metis (no_types, lifting))
   also have "... = Tensor.lookup ?b is"  using dims_tensors_from_net set_list_of_vec
-    using lookup_listsum[OF `is \<lhd> input_sizes m`, of "list_of_vec (tensors_from_net m)"]
+    using lookup_listsum[OF \<open>is \<lhd> input_sizes m\<close>, of "list_of_vec (tensors_from_net m)"]
     by metis
   finally show "Tensor.lookup (?a $ i) is = Tensor.lookup ?b is" by blast
 qed
@@ -297,9 +297,9 @@ proof (rule tensor_lookup_eqI)
     by (simp_all add: valid_index.Cons valid_index.Nil dims_unit_vec)
   have "is = [i1] @ [i2]" by (simp add: is_split(1))
   show "Tensor.lookup ?A is = Tensor.lookup ?B is"
-     unfolding `is = [i1] @ [i2]`
-     lookup_tensor_prod[OF `[i1] \<lhd> Tensor.dims (unit_vec M j)` `[i2] \<lhd> Tensor.dims (unit_vec M j)`]
-     lookup_tensor_from_lookup[OF \<open>is \<lhd> [M, M]\<close>, unfolded  `is = [i1] @ [i2]`]
+     unfolding \<open>is = [i1] @ [i2]\<close>
+     lookup_tensor_prod[OF \<open>[i1] \<lhd> Tensor.dims (unit_vec M j)\<close> \<open>[i2] \<lhd> Tensor.dims (unit_vec M j)\<close>]
+     lookup_tensor_from_lookup[OF \<open>is \<lhd> [M, M]\<close>, unfolded  \<open>is = [i1] @ [i2]\<close>]
      lookup_unit_vec[OF \<open>i1 < M\<close>] lookup_unit_vec[OF \<open>i2 < M\<close>] by fastforce
 qed
 
@@ -311,7 +311,7 @@ proof -
   have "valid_net' (Conv (id_matrix r0 M) (Input M))"
     by (metis convnet.inject(3) list.discI witness'.elims witness_l0' witness_valid)
   have j_le:"j < dim_vec (tensors_from_net (Conv (id_matrix r0 M) (Input M)))"
-    using output_size_correct_tensors[OF `valid_net' (Conv (id_matrix r0 M) (Input M))`,
+    using output_size_correct_tensors[OF \<open>valid_net' (Conv (id_matrix r0 M) (Input M))\<close>,
     unfolded remove_weights.simps output_size.simps id_matrix_dim]
     assms by simp
   show ?thesis
@@ -327,13 +327,13 @@ shows "(Tensor.lookup (tensors_from_net (witness' r0 [M]) $ j)) is = (if is=[j,j
 proof (cases "j<M")
   assume "j<M"
   show ?thesis unfolding tensors_ht_l0'[OF assms(1)] tensor_prod_unit_vec
-    apply (cases "is = [j,j]")  using `j<M` assms(2)
+    apply (cases "is = [j,j]")  using \<open>j<M\<close> assms(2)
     by (simp_all add:lookup_tensor_from_lookup)
 next
   assume "\<not>j<M"
   then have "is \<noteq> [j, j]" using assms(2) using list.distinct(1) nth_Cons_0 valid_index.simps by blast
   show ?thesis unfolding tensors_ht_l0'[OF assms(1)] tensor_prod_unit_vec
-    using  `\<not>j<M` by (simp add: lookup_tensor0[OF assms(2)] `is \<noteq> [j, j]`)
+    using  \<open>\<not>j<M\<close> by (simp add: lookup_tensor0[OF assms(2)] \<open>is \<noteq> [j, j]\<close>)
 qed
 
 lemma lookup_tensors_ht_l1:
@@ -357,14 +357,14 @@ proof -
   have "tensors_from_net (witness r1 r0 [M]) $ j =
     Tensor_Plus.listsum [M,M] (list_of_vec (tensors_from_net (witness' r0 [M])))"
     unfolding witness_l1 using tensors_from_net_Conv_all1[OF witness_l0'_valid assms(1)]
-    witness_l0' `output_size' (witness' r0 [M]) = r0` by simp
+    witness_l0' \<open>output_size' (witness' r0 [M]) = r0\<close> by simp
   then have "Tensor.lookup (tensors_from_net (witness r1 r0 [M]) $ j) is
     = monoid_add_class.sum_list (map (\<lambda>A. Tensor.lookup A is) (list_of_vec (tensors_from_net (witness' r0 [M]))))"
-    using lookup_listsum[OF `is \<lhd> [M, M]`]  \<open>input_sizes (witness' r0 [M]) = [M, M]\<close>
+    using lookup_listsum[OF \<open>is \<lhd> [M, M]\<close>]  \<open>input_sizes (witness' r0 [M]) = [M, M]\<close>
     dims_tensors_from_net by (metis set_list_of_vec)
   also have "... = monoid_add_class.sum_list (map (\<lambda>i. lookup (tensors_from_net (witness' r0 [M]) $ i) is) [0..<r0])"
     using map_map[of "(\<lambda>A. Tensor.lookup A is)" "\<lambda>i. (tensors_from_net (witness' r0 [M]) $ i)" "[0..<r0]"]
-    using list_of_vec_map `dim_vec (tensors_from_net (witness' r0 [M])) = r0` by (metis (mono_tags, lifting) comp_apply map_eq_conv)
+    using list_of_vec_map \<open>dim_vec (tensors_from_net (witness' r0 [M])) = r0\<close> by (metis (mono_tags, lifting) comp_apply map_eq_conv)
   also have "... = (\<Sum>i<r0. Tensor.lookup ((tensors_from_net (witness' r0 [M])) $ i) is)"
     using sum_set_upt_conv_sum_list_nat atLeast0LessThan by (metis atLeast_upt)
   also have "... = (if is!0 = is!1 \<and> is!0<r0 then 1 else 0)"
@@ -374,8 +374,8 @@ proof -
     have "is!0 \<in> {0..<r0}" using True by auto
     have "(\<Sum>i<r0. Tensor.lookup ((tensors_from_net (witness' r0 [M])) $ i) is)
       = Tensor.lookup (tensors_from_net (witness' r0 [M]) $ (is!0)) is"
-      using `dim_vec (tensors_from_net (witness' r0 [M])) = r0`
-      using sum.remove[OF `finite {0..<r0}` `is!0 \<in> {0..<r0}`,
+      using \<open>dim_vec (tensors_from_net (witness' r0 [M])) = r0\<close>
+      using sum.remove[OF \<open>finite {0..<r0}\<close> \<open>is!0 \<in> {0..<r0}\<close>,
         of "\<lambda>i. (Tensor.lookup (tensors_from_net (witness' r0 [M])$i) is)"]
       using all0_but1 atLeast0LessThan by force
     then show ?thesis using lookup_tensors_ht_l0' \<open>is ! 0 < r0\<close> \<open>is \<lhd> [M, M]\<close> by fastforce
@@ -430,13 +430,13 @@ and "remove_weights m = deep_model'_l rs"
 shows "Tensor.dims (tensors_from_net m $ j) = replicate (2^(length rs - 1)) (last rs)"
 proof -
   have "dim_vec (tensors_from_net m) > j"
-    using length_output_deep_model' `remove_weights m = deep_model'_l rs` `j < rs!0` by auto
+    using length_output_deep_model' \<open>remove_weights m = deep_model'_l rs\<close> \<open>j < rs!0\<close> by auto
   then have "Tensor.dims (tensors_from_net m $ j) = input_sizes m"
     using dims_tensors_from_net[of _ m] output_size_correct_tensors
     vec_setI by metis
   then show ?thesis
     using assms(1) input_sizes_deep_model'
-    input_sizes_remove_weights[of m, unfolded `remove_weights m = deep_model'_l rs`] by auto
+    input_sizes_remove_weights[of m, unfolded \<open>remove_weights m = deep_model'_l rs\<close>] by auto
 qed
 
 lemma dims_output_witness':
@@ -544,7 +544,7 @@ using assms deep no_zeros y_valid unfolding Aw_def proof (induction "butlast (bu
   case Nil
   have "length rs = 3"
     by (rule antisym, metis Nil.hyps One_nat_def Suc_1 Suc_eq_plus1 add_2_eq_Suc' diff_diff_left
-      length_butlast less_numeral_extra(3) list.size(3) not_le numeral_3_eq_3 zero_less_diff, metis `3 \<le> length rs`)
+      length_butlast less_numeral_extra(3) list.size(3) not_le numeral_3_eq_3 zero_less_diff, metis \<open>3 \<le> length rs\<close>)
   then have "rs = [rs!0, rs!1, rs!2]" by (metis (no_types, lifting) Cons_nth_drop_Suc One_nat_def Suc_eq_plus1
     append_Nil id_take_nth_drop length_0_conv length_tl lessI list.sel(3) list.size(4) not_le numeral_3_eq_3
     numeral_le_one_iff one_add_one semiring_norm(70) take_0 zero_less_Suc)
@@ -563,17 +563,17 @@ using assms deep no_zeros y_valid unfolding Aw_def proof (induction "butlast (bu
     have "length is = 2" by (metis One_nat_def Suc_eq_plus1 \<open>is \<lhd> [rs ! 2, rs ! 2]\<close> list.size(3) list.size(4) numeral_2_eq_2 valid_index_length)
     have "nths is {n. even n} = [is!0]"
       apply (rule nths_only_one)
-      using subset_antisym less_2_cases `length is = 2` by fastforce
+      using subset_antisym less_2_cases \<open>length is = 2\<close> by fastforce
     have "nths is {n. odd n} = [is!1]"
       apply (rule nths_only_one)
-      using subset_antisym less_2_cases `length is = 2` by fastforce
+      using subset_antisym less_2_cases \<open>length is = 2\<close> by fastforce
     have "last (butlast rs) = rs!1" by (metis One_nat_def Suc_eq_plus1 \<open>rs = [rs ! 0, rs ! 1, rs ! 2]\<close>
       append_butlast_last_id last_conv_nth length_butlast length_tl lessI list.sel(3) list.simps(3)
       list.size(3) list.size(4) nat.simps(3) nth_append)
-    show ?thesis unfolding `last (butlast rs) = rs!1`
+    show ?thesis unfolding \<open>last (butlast rs) = rs!1\<close>
       apply (rule iffI; rule conjI)
          apply (simp add: \<open>nths is (Collect even) = [is ! 0]\<close> \<open>nths is {n. odd n} = [is ! 1]\<close>)
-        apply (metis `length is = 2` One_nat_def in_set_conv_nth less_2_cases)
+        apply (metis \<open>length is = 2\<close> One_nat_def in_set_conv_nth less_2_cases)
       apply (simp add: \<open>nths is (Collect even) = [is ! 0]\<close> \<open>nths is {n. odd n} = [is ! 1]\<close>)
      apply (simp add: \<open>length is = 2\<close>)
     done
@@ -648,14 +648,14 @@ next
       using length_nths_even \<open>even (length is2)\<close> by blast
     have cond1_iff: "(nths is1 (Collect even) = nths is1 {n. odd n} \<and> nths is2 (Collect even) = nths is2 {n. odd n})
           = (nths is (Collect even) = nths is {n. odd n})"
-        unfolding `is = is1 @ is2` nths_append
-        `{j. j + length is1 \<in> {n. odd n}} = {n. odd n}` `{j. j + length is1 \<in> {n. even n}} = {n. even n}`
+        unfolding \<open>is = is1 @ is2\<close> nths_append
+        \<open>{j. j + length is1 \<in> {n. odd n}} = {n. odd n}\<close> \<open>{j. j + length is1 \<in> {n. even n}} = {n. even n}\<close>
         by (simp add: \<open>length (nths is2 (Collect even)) = length (nths is2 (Collect odd))\<close>)
     have "last (butlast (tl rs)) = last (butlast rs)" using Nitpick.size_list_simp(2) \<open>even (length is1)\<close>
       \<open>length is1 = 2 ^ (length (tl rs) - 2)\<close> butlast_tl last_tl length_butlast length_tl not_less_eq zero_less_diff
       by (metis (full_types) Cons.hyps(2) length_Cons less_nat_zero_code)
     have cond2_iff: "(\<forall>i\<in>set is1. i < last (butlast (tl rs))) \<and> (\<forall>i\<in>set is2. i < last (butlast (tl rs))) \<longleftrightarrow> (\<forall>i\<in>set is. i < last (butlast rs))"
-      unfolding `last (butlast (tl rs)) = last (butlast rs)` `is = is1 @ is2` set_append by blast
+      unfolding \<open>last (butlast (tl rs)) = last (butlast rs)\<close> \<open>is = is1 @ is2\<close> set_append by blast
     then show ?thesis using cond1_iff cond2_iff by blast
   qed
 
@@ -665,8 +665,8 @@ next
   proof -
     have lookup_prod: "Tensor.lookup ((tensors_from_net (witness_l (tl rs)) $ 0) \<otimes> (tensors_from_net (witness_l (tl rs))) $ 0) is =
       (if ?cond is rs then 1 else 0)"
-      using `?cond is1 (tl rs) \<and> ?cond is2 (tl rs) \<longleftrightarrow> ?cond is rs`
-      unfolding `is = is1 @ is2` lookup_tensor_prod[OF is1_valid is2_valid] IH_is12
+      using \<open>?cond is1 (tl rs) \<and> ?cond is2 (tl rs) \<longleftrightarrow> ?cond is rs\<close>
+      unfolding \<open>is = is1 @ is2\<close> lookup_tensor_prod[OF is1_valid is2_valid] IH_is12
       by auto
     have witness_l_tl: "witness_l (tl rs) = witness (rs ! 1) (rs ! 2) (tl (tl (tl rs)))"
       by (metis One_nat_def Suc_1 \<open>rs = r # tl rs\<close> nth_Cons_Suc)
@@ -702,9 +702,9 @@ next
       by (metis "2" Cons.prems(2) Nitpick.size_list_simp(2) One_nat_def Suc_n_not_le_n not_numeral_le_zero numeral_3_eq_3)
     have "tensors_from_net (Conv (copy_first_matrix (rs ! 0) (rs ! 1)) (witness' (rs ! 1) (tl (tl rs)))) $ j =
       tensors_from_net (witness' (rs ! 1) (tl (tl rs))) $ 0"
-      using tensors_from_net_Conv_copy_first[OF `valid_net' (witness' (rs ! 1) (tl (tl rs)))` `j < rs ! 0`, unfolded `output_size' (witness' (rs ! 1) (tl (tl rs))) = rs ! 1`]
+      using tensors_from_net_Conv_copy_first[OF \<open>valid_net' (witness' (rs ! 1) (tl (tl rs)))\<close> \<open>j < rs ! 0\<close>, unfolded \<open>output_size' (witness' (rs ! 1) (tl (tl rs))) = rs ! 1\<close>]
       using "4" One_nat_def \<open>rs = r # tl rs\<close> nth_Cons_Suc by metis
-    then show ?thesis unfolding witness.simps if_resolve `output_size' (witness' (rs ! 1) (tl (tl rs))) = rs ! 1`
+    then show ?thesis unfolding witness.simps if_resolve \<open>output_size' (witness' (rs ! 1) (tl (tl rs))) = rs ! 1\<close>
       using lookup_witness' \<open>valid_net' (witness' (rs ! 1) (tl (tl rs)))\<close> hd_conv_nth output_size_correct_tensors
       by fastforce
   qed
@@ -720,7 +720,7 @@ proof -
     (digit_encode (nths (Tensor.dims Aw) {n. odd n}) j)"
   have lookup_eq: "Aw' $$ (i, j) = Tensor.lookup Aw is"
     using Aw'_def matricize_def dims_Aw'(1)[symmetric, unfolded A_def] dims_Aw'(2)[symmetric, unfolded A_def Collect_neg_eq]
-    index_mat(1)[OF `i < dim_row Aw'` `j < dim_col Aw'`] is_def Collect_neg_eq case_prod_conv
+    index_mat(1)[OF \<open>i < dim_row Aw'\<close> \<open>j < dim_col Aw'\<close>] is_def Collect_neg_eq case_prod_conv
     by (metis (no_types) Aw'_def Collect_neg_eq  case_prod_conv is_def matricize_def)
   have "is \<lhd> Tensor.dims Aw"
     using is_def valid_index_weave A_def Collect_neg_eq assms digit_encode_valid_index
@@ -763,7 +763,7 @@ proof -
                     unfolded mult_2[symmetric] card_even Collect_neg_eq[symmetric] card_odd]
     Un_absorb card_even card_odd mult_2 by blast
   then show ?thesis unfolding lookup_eq
-    using witness_tensor[OF `is \<lhd> Tensor.dims Aw`]
+    using witness_tensor[OF \<open>is \<lhd> Tensor.dims Aw\<close>]
     by (simp add: A_def \<open>(i = j) = (nths is (Collect even) = nths is {n. odd n})\<close>)
 qed
 
@@ -802,8 +802,8 @@ next
       show "x \<in> {i. low_digits (d # ds) i}" unfolding low_digits_def
       proof (rule; rule conjI)
         have "i1 < prod_list ds" "\<forall>i0\<in>set (digit_encode ds i1). i0 < m"
-          using `low_digits ds i1` low_digits_def by auto
-        show "x < prod_list (d # ds)" unfolding prod_list.Cons `x = i0 + d * i1` using `i0<d` `i1 < prod_list ds`
+          using \<open>low_digits ds i1\<close> low_digits_def by auto
+        show "x < prod_list (d # ds)" unfolding prod_list.Cons \<open>x = i0 + d * i1\<close> using \<open>i0<d\<close> \<open>i1 < prod_list ds\<close>
         proof -
           have "d \<noteq> 0"
             by (metis \<open>i0 < d\<close> gr_implies_not0)
@@ -818,8 +818,8 @@ next
     next
       fix x assume "x \<in> {i. low_digits (d # ds) i}"
       then have "x < prod_list (d # ds)" "\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m" using low_digits_def by auto
-      have "x mod d < m" using `\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m`[unfolded digit_encode.simps] by simp
-      have "x div d < prod_list ds" using `x < prod_list (d # ds)`[unfolded prod_list.Cons]
+      have "x mod d < m" using \<open>\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m\<close>[unfolded digit_encode.simps] by simp
+      have "x div d < prod_list ds" using \<open>x < prod_list (d # ds)\<close>[unfolded prod_list.Cons]
         by (metis div_eq_0_iff div_mult2_eq mult_0_right not_less0)
       have "\<forall>i0\<in>set (digit_encode ds (x div d)). i0 < m" by (simp add: \<open>\<forall>i0\<in>set (digit_encode (d # ds) x). i0 < m\<close>)
       have "f ((x mod d),(x div d)) = x" by (simp add: f_def)
@@ -829,7 +829,7 @@ next
       by (simp add: \<open>inj_on f ({..<m} \<times> {i. low_digits ds i})\<close> bij_betw_def)
     then show ?thesis by (simp add: bij_betw_same_card)
   qed
-  then show ?case unfolding `card {i. low_digits ds i} = m ^ (length ds)` card_cartesian_product using low_digits_def by simp
+  then show ?case unfolding \<open>card {i. low_digits ds i} = m ^ (length ds)\<close> card_cartesian_product using low_digits_def by simp
 qed
 
 lemma card_rows_with_1: "card {i\<in>rows_with_1. i<dim_row Aw'} = r ^ N_half"
@@ -902,7 +902,7 @@ proof -
     by (metis "0" deep last_in_set length_greater_0_conv less_le_trans no_zeros dims_Aw'_pow(1) dims_Aw'(1)
     zero_less_numeral zero_less_power)
   then have "inj ((*) listpr)" by (metis injI mult_left_cancel neq0_conv)
-  then show ?thesis using `\<And>i. listpr dvd i \<Longrightarrow> i \<in> rows_with_1`
+  then show ?thesis using \<open>\<And>i. listpr dvd i \<Longrightarrow> i \<in> rows_with_1\<close>
     by (meson dvd_triv_left image_subset_iff infinite_iff_countable_subset)
 qed
 
@@ -926,7 +926,7 @@ proof
     have "\<forall>i0\<in>set (digit_encode (nths (dims Aw) (Collect even)) (pick rows_with_1 i)). i0 < last (butlast rs)"
       using infinite_rows_with_1 pick_in_set_inf rows_with_1_def by auto
     then have "Aw' $$ (pick rows_with_1 i, pick rows_with_1 j) = (if pick rows_with_1 i = pick rows_with_1 j then 1 else 0)"
-      using witness_matricization[OF `pick rows_with_1 i < dim_row Aw'` `pick rows_with_1 j < dim_col Aw'`] by simp
+      using witness_matricization[OF \<open>pick rows_with_1 i < dim_row Aw'\<close> \<open>pick rows_with_1 j < dim_col Aw'\<close>] by simp
     then have "submatrix Aw' rows_with_1 rows_with_1 $$ (i, j) = (if pick rows_with_1 i = pick rows_with_1 j then 1 else 0)"
       using submatrix_index by (metis (no_types, lifting)
       \<open>dim_col (submatrix Aw' rows_with_1 rows_with_1) = dim_col (1\<^sub>m (r ^ N_half))\<close>

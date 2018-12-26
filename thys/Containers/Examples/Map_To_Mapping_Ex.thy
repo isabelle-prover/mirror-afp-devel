@@ -3,7 +3,7 @@
 
 theory Map_To_Mapping_Ex imports "../Map_To_Mapping" begin
 
-subsection {* Test cases for replacing @{typ "'a \<rightharpoonup> 'b"} with @{typ "('a, 'b) mapping"} *}
+subsection \<open>Test cases for replacing @{typ "'a \<rightharpoonup> 'b"} with @{typ "('a, 'b) mapping"}\<close>
 
 lift_definition mapping_filter :: "('a, 'b) mapping \<Rightarrow> 'a list \<Rightarrow> 'b list" is "List.map_filter" .
 
@@ -38,7 +38,7 @@ where "dom_test \<longleftrightarrow> (dom [(1 :: int) \<mapsto> ([()] :: unit l
 
 lemmas [code] = dom_test_def[containers_identify]
 
-ML {* val true = @{code dom_test} *}
+ML \<open>val true = @{code dom_test}\<close>
 
 end
 

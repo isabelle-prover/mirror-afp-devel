@@ -4,14 +4,14 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*QR Decomposition over iarrays*}
+section\<open>QR Decomposition over iarrays\<close>
 
 theory QR_Decomposition_IArrays 
 imports 
   Gram_Schmidt_IArrays
 begin
 
-subsection{*QR Decomposition refinement over iarrays*}
+subsection\<open>QR Decomposition refinement over iarrays\<close>
 
 definition "norm_iarray A = sqrt (A \<bullet>i A)"
 

@@ -2,7 +2,7 @@
     Author:     Denis Lohner
 *)
 
-subsection {* Locales Transfer Rules *}
+subsection \<open>Locales Transfer Rules\<close>
 
 theory SSA_Transfer_Rules imports
   SSA_CFG

@@ -10,13 +10,13 @@ theory Mapping_Impl imports
   Containers_Generator
 begin
 
-section {* Different implementations of maps *}
+section \<open>Different implementations of maps\<close>
 
 code_identifier
   code_module Mapping \<rightharpoonup> (SML) Mapping_Impl
 | code_module Mapping_Impl \<rightharpoonup> (SML) Mapping_Impl
 
-subsection {* Map implementations *}
+subsection \<open>Map implementations\<close>
 
 definition Assoc_List_Mapping :: "('a, 'b) alist \<Rightarrow> ('a, 'b) mapping"
 where [simp]: "Assoc_List_Mapping al = Mapping.Mapping (DAList.lookup al)"
@@ -26,7 +26,7 @@ where [simp]: "RBT_Mapping t = Mapping.Mapping (RBT_Mapping2.lookup t)"
 
 code_datatype Assoc_List_Mapping RBT_Mapping Mapping
 
-subsection {* Map operations *}
+subsection \<open>Map operations\<close>
 
 declare [[code drop: Mapping.lookup]]
 
@@ -171,7 +171,7 @@ lemma mapping_empty_code [code]:
   "mapping_empty mapping_RBT = RBT_Mapping RBT_Mapping2.empty"
 by(simp_all add: Mapping.empty_def DAList.lookup_empty[abs_def])
 
-subsection {* Type classes *}
+subsection \<open>Type classes\<close>
 
 class mapping_impl = 
   fixes mapping_impl :: "('a, mapping_impl) phantom"
@@ -179,14 +179,14 @@ class mapping_impl =
 syntax (input)
   "_MAPPING_IMPL" :: "type => logic"  ("(1MAPPING'_IMPL/(1'(_')))")
 
-parse_translation {*
+parse_translation \<open>
 let
   fun mapping_impl_tr [ty] =
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "mapping_impl"} $
        (Syntax.const @{type_syntax phantom} $ ty $ Syntax.const @{type_syntax mapping_impl}))
     | mapping_impl_tr ts = raise TERM ("mapping_impl_tr", ts);
 in [(@{syntax_const "_MAPPING_IMPL"}, K mapping_impl_tr)] end
-*}
+\<close>
 
 declare [[code drop: Mapping.empty]]
 
@@ -195,9 +195,9 @@ lemma Mapping_empty_code [code, code_unfold]:
    mapping_empty (of_phantom MAPPING_IMPL('a))"
 by simp
 
-subsection {* Generator for the @{class mapping_impl}-class *}
+subsection \<open>Generator for the @{class mapping_impl}-class\<close>
 
-text {*
+text \<open>
 This generator registers itself at the derive-manager for the classes @{class mapping_impl}.
 Here, one can choose
 the desired implementation via the parameter. 
@@ -205,12 +205,12 @@ the desired implementation via the parameter.
 \begin{itemize}
 \item \texttt{instantiation type :: (type,\ldots,type) (rbt,assoclist,mapping,choose, or arbitrary constant name) mapping-impl}
 \end{itemize}
-*}
+\<close>
 
 
-text {*
+text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
-*}
+\<close>
 
 ML_file "mapping_impl_generator.ML" 
 

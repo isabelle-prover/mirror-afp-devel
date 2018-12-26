@@ -169,12 +169,12 @@ lemma o_append:
 
 ML_file "show_generator.ML"
 
-local_setup {*
+local_setup \<open>
   Show_Generator.register_foreign_partial_and_full_showsp @{type_name "list"} 0
     @{term "pshowsp_list"}
     @{term "showsp_list"} (SOME @{thm showsp_list_def})
     @{term "map"} (SOME @{thm list.map_comp}) [true] @{thm show_law_list}
-*}
+\<close>
 
 instantiation list :: ("show") "show"
 begin

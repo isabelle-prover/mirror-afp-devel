@@ -1,8 +1,8 @@
-section {* Priority Lists *}
+section \<open>Priority Lists\<close>
 theory Prio_List
 imports Main
 begin
-ML {*
+ML \<open>
   (*
     We provide a list of items with insertion operation relative to other
     items (after, before) and relative to absolute positions (first, last).
@@ -94,6 +94,6 @@ ML {*
     fun merge (l1,l2) = #2 (merge' (l1,l2))
 
   end
-*}
+\<close>
 
 end

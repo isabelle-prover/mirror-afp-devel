@@ -9,11 +9,11 @@ section "Expectations"
 
 theory Expectations imports Misc begin
 
-text_raw {* \label{s:expectations} *}
+text_raw \<open>\label{s:expectations}\<close>
 
 type_synonym 's expect = "'s \<Rightarrow> real"
 
-text {* Expectations are a real-valued generalisation of boolean predicates: An expectation on state
+text \<open>Expectations are a real-valued generalisation of boolean predicates: An expectation on state
 @{typ 's} is a function @{typ "'s \<Rightarrow> real"}. A predicate @{term P} on @{typ 's} is embedded as an
 expectation by mapping @{term True} to 1 and @{term False} to 0.  Under this embedding, implication
 becomes comparison, as the truth tables demonstrate:
@@ -54,15 +54,15 @@ clearly bounded:
 \begin{displaymath}
 P_i = \lambda s.\ i\quad\text{where}\ i \in \mathbb{N}
 \end{displaymath}
-*}
+\<close>
 
-subsection {* Bounded Functions *}
+subsection \<open>Bounded Functions\<close>
 
 definition bounded_by :: "real \<Rightarrow> ('a \<Rightarrow> real) \<Rightarrow> bool"
 where     "bounded_by b P \<equiv> \<forall>x. P x \<le> b"
 
-text {* By instantiating the classical reasoner, both establishing and appealing to boundedness
-is largely automatic. *}
+text \<open>By instantiating the classical reasoner, both establishing and appealing to boundedness
+is largely automatic.\<close>
 
 lemma bounded_byI[intro]:
   "\<lbrakk> \<And>x. P x \<le> b \<rbrakk> \<Longrightarrow> bounded_by b P"
@@ -80,12 +80,12 @@ lemma bounded_byD2[dest]:
   "bounded_by b P \<Longrightarrow> P \<le> (\<lambda>s. b)"
   by (blast intro:le_funI)
 
-text {* A function is bounded if there exists at least one upper bound on it. *}
+text \<open>A function is bounded if there exists at least one upper bound on it.\<close>
 
 definition bounded :: "('a \<Rightarrow> real) \<Rightarrow> bool"
 where     "bounded P \<equiv> (\<exists>b. bounded_by b P)"
 
-text {* In the reals, if there exists any upper bound, then there must exist a least upper bound. *}
+text \<open>In the reals, if there exists any upper bound, then there must exist a least upper bound.\<close>
 
 definition bound_of :: "('a \<Rightarrow> real) \<Rightarrow> real"
 where     "bound_of P \<equiv> Sup (P ` UNIV)"
@@ -99,7 +99,7 @@ proof
     unfolding bounded_def by(auto intro:cInf_greatest)
 qed
 
-text {* The least upper bound has the usual properties: *}
+text \<open>The least upper bound has the usual properties:\<close>
 lemma bound_of_least[intro]:
   assumes bP: "bounded_by b P"
   shows "bound_of P \<le> b"
@@ -125,7 +125,7 @@ lemma bounded_by_imp_bounded[intro]:
   "bounded_by b P \<Longrightarrow> bounded P"
   unfolding bounded_def by(blast)
 
-text {* This is occasionally easier to apply: *}
+text \<open>This is occasionally easier to apply:\<close>
 
 lemma bounded_by_bound_of_alt:
   "\<lbrakk> bounded P; bound_of P = a \<rbrakk> \<Longrightarrow> bounded_by a P"
@@ -166,9 +166,9 @@ lemma le_bound_of[intro]:
   "\<And>x. bounded f \<Longrightarrow> f x \<le> bound_of f"
   by(blast)
 
-subsection {* Non-Negative Functions. *}
+subsection \<open>Non-Negative Functions.\<close>
 
-text {* The definitions for non-negative functions are analogous to those for bounded functions. *}
+text \<open>The definitions for non-negative functions are analogous to those for bounded functions.\<close>
 
 definition
   nneg :: "('a \<Rightarrow> 'b::{zero,order}) \<Rightarrow> bool"
@@ -216,14 +216,14 @@ lemma bounded_by_nneg[dest]:
   shows "\<lbrakk> bounded_by b P; nneg P \<rbrakk> \<Longrightarrow> 0 \<le> b"
   by (blast intro:order_trans)
 
-subsection {* Sound Expectations *}
+subsection \<open>Sound Expectations\<close>
 
 definition sound :: "('s \<Rightarrow> real) \<Rightarrow> bool"
 where "sound P \<equiv> bounded P \<and> nneg P"
 
-text {* Combining @{term nneg} and @{term bounded}, we have @{term sound} expectations. We set up
+text \<open>Combining @{term nneg} and @{term bounded}, we have @{term sound} expectations. We set up
 the classical reasoner and the simplifier, such that showing soundess, or deriving a simple
-consequence (e.g. @{term "sound P \<Longrightarrow> 0 \<le> P s"}) will usually follow by blast, force or simp. *}
+consequence (e.g. @{term "sound P \<Longrightarrow> 0 \<le> P s"}) will usually follow by blast, force or simp.\<close>
 
 lemma soundI:
   "\<lbrakk> bounded P; nneg P \<rbrakk> \<Longrightarrow> sound P"
@@ -246,8 +246,8 @@ lemma bound_of_sound[intro]:
   shows "0 \<le> bound_of P"
   using assms by(auto)
 
-text {* This proof demonstrates the use of the classical reasoner (specifically blast), to both
-introduce and eliminate soundness terms. *}
+text \<open>This proof demonstrates the use of the classical reasoner (specifically blast), to both
+introduce and eliminate soundness terms.\<close>
 
 lemma sound_sum[simp,intro]:
   assumes sP: "sound P" and sQ: "sound Q"
@@ -388,10 +388,10 @@ proof(rule soundI2)
     by(auto intro!:sum_nonneg)
 qed
 
-subsection {* Unitary expectations *}
+subsection \<open>Unitary expectations\<close>
 
-text {* A unitary expectation is a sound expectation that is additionally bounded by one.  This
-is the domain on which the \emph{liberal} (partial correctness) semantics operates. *}
+text \<open>A unitary expectation is a sound expectation that is additionally bounded by one.  This
+is the domain on which the \emph{liberal} (partial correctness) semantics operates.\<close>
 
 definition unitary :: "'s expect \<Rightarrow> bool"
 where "unitary P \<longleftrightarrow> sound P \<and> bounded_by 1 P"
@@ -412,17 +412,17 @@ lemma unitary_bound[dest]:
   "unitary P \<Longrightarrow> bounded_by 1 P"
   by(simp add:unitary_def)
 
-subsection {* Standard Expectations *}
-text_raw {* \label{s:standard} *}
+subsection \<open>Standard Expectations\<close>
+text_raw \<open>\label{s:standard}\<close>
 
 definition
   embed_bool :: "('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> real" ("\<guillemotleft> _ \<guillemotright>" 1000)
 where
   "\<guillemotleft>P\<guillemotright> \<equiv> (\<lambda>s. if P s then 1 else 0)"
 
-text {* Standard expectations are the embeddings of boolean predicates, mapping @{term False} to 0
+text \<open>Standard expectations are the embeddings of boolean predicates, mapping @{term False} to 0
 and @{term True} to 1. We write @{term "\<guillemotleft>P\<guillemotright>"} rather than @{term "[P]"} (the syntax employed by
-\citet{McIver_M_04}) for boolean embedding to avoid clashing with the HOL syntax for lists. *}
+\citet{McIver_M_04}) for boolean embedding to avoid clashing with the HOL syntax for lists.\<close>
 
 lemma embed_bool_nneg[simp,intro]:
   "nneg \<guillemotleft>P\<guillemotright>"
@@ -436,8 +436,8 @@ lemma embed_bool_bounded[simp,intro]:
   "bounded \<guillemotleft>P\<guillemotright>"
   by (blast)
 
-text {* Standard expectations have a number of convenient properties, which mostly follow from
-boolean algebra. *}
+text \<open>Standard expectations have a number of convenient properties, which mostly follow from
+boolean algebra.\<close>
 
 lemma embed_bool_idem:
   "\<guillemotleft>P\<guillemotright> s * \<guillemotleft>P\<guillemotright> s = \<guillemotleft>P\<guillemotright> s"
@@ -475,8 +475,8 @@ lemma embed_o[simp]:
   "\<guillemotleft>P\<guillemotright> o f = \<guillemotleft>P o f\<guillemotright>"
   unfolding embed_bool_def o_def by(simp)
 
-text {* Negating a predicate has the expected effect in its
-embedding as an expectation: *}
+text \<open>Negating a predicate has the expected effect in its
+embedding as an expectation:\<close>
 
 definition negate :: "('s \<Rightarrow> bool) \<Rightarrow> 's \<Rightarrow> bool" ("\<N>")
 where     "negate P = (\<lambda>s. \<not> P s)"
@@ -513,11 +513,11 @@ lemma embed_bool_cancel:
   "\<guillemotleft>G\<guillemotright> s * \<guillemotleft>\<N> G\<guillemotright> s = 0"
   by(cases "G s", simp_all)
 
-subsection {* Entailment *}
-text_raw {* \label{s:entailment} *}
+subsection \<open>Entailment\<close>
+text_raw \<open>\label{s:entailment}\<close>
 
-text {* Entailment on expectations is a generalisation of that on predicates, and is defined by
-pointwise comparison: *}
+text \<open>Entailment on expectations is a generalisation of that on predicates, and is defined by
+pointwise comparison:\<close>
 
 abbreviation entails :: "('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> bool" ("_ \<tturnstile> _" 50)
 where "P \<tturnstile> Q \<equiv> P \<le> Q"
@@ -538,8 +538,8 @@ lemma entails_trans[trans]:
   "\<lbrakk> P \<tturnstile> Q; Q \<tturnstile> R \<rbrakk> \<Longrightarrow> P \<tturnstile> R"
   by(blast intro:order_trans)
 
-text {* For standard expectations, both notions of entailment coincide. This result justifies the
-above claim that our definition generalises predicate entailment: *}
+text \<open>For standard expectations, both notions of entailment coincide. This result justifies the
+above claim that our definition generalises predicate entailment:\<close>
 
 lemma implies_entails:
   "\<lbrakk> \<And>s. P s \<Longrightarrow> Q s \<rbrakk> \<Longrightarrow> \<guillemotleft>P\<guillemotright> \<tturnstile> \<guillemotleft>Q\<guillemotright>"
@@ -549,7 +549,7 @@ lemma entails_implies:
   "\<And>s. \<lbrakk> \<guillemotleft>P\<guillemotright> \<tturnstile> \<guillemotleft>Q\<guillemotright>; P s \<rbrakk> \<Longrightarrow> Q s"
   by(rule ccontr, drule_tac s=s in entailsD, simp)
 
-subsection {* Expectation Conjunction *}
+subsection \<open>Expectation Conjunction\<close>
 
 definition
   pconj :: "real \<Rightarrow> real \<Rightarrow>  real" (infixl ".&" 71)
@@ -560,9 +560,9 @@ definition
   exp_conj :: "('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real) \<Rightarrow> ('s \<Rightarrow> real)" (infixl "&&" 71)
 where "a && b \<equiv> \<lambda>s. (a s .& b s)"
 
-text {* Expectation conjunction likewise generalises (boolean) predicate conjunction. We show that
+text \<open>Expectation conjunction likewise generalises (boolean) predicate conjunction. We show that
 the expected properties are preserved, and instantiate both the classical reasoner, and the
-simplifier (in the case of associativity and commutativity). *}
+simplifier (in the case of associativity and commutativity).\<close>
 
 lemma pconj_lzero[intro,simp]:
   "b \<le> 1 \<Longrightarrow> 0 .& b = 0"
@@ -621,7 +621,7 @@ lemma pconj_idem[simp]:
   "\<guillemotleft>P\<guillemotright> s .& \<guillemotleft>P\<guillemotright> s = \<guillemotleft>P\<guillemotright> s"
   unfolding pconj_def by(cases "P s", simp_all)
 
-subsection {* Rules Involving Conjunction. *}
+subsection \<open>Rules Involving Conjunction.\<close>
 
 lemma exp_conj_mono_left:
   "P \<tturnstile> Q \<Longrightarrow> P && R \<tturnstile> Q && R"
@@ -727,10 +727,10 @@ lemma exp_conj_std_split:
   unfolding exp_conj_def embed_bool_def pconj_def
   by(auto)
 
-subsection {* Rules Involving Entailment and Conjunction Together *}
+subsection \<open>Rules Involving Entailment and Conjunction Together\<close>
 
-text {* Meta-conjunction distributes over expectaton entailment,
-becoming expectation conjunction: *}
+text \<open>Meta-conjunction distributes over expectaton entailment,
+becoming expectation conjunction:\<close>
 lemma entails_frame:
   assumes ePR: "P \<tturnstile> R"
       and eQS: "Q \<tturnstile> S"
@@ -745,8 +745,8 @@ proof(rule le_funI)
     unfolding exp_conj_def pconj_def .
 qed
 
-text {* This rule allows something very much akin to a case distinction
-on the pre-expectation. *}
+text \<open>This rule allows something very much akin to a case distinction
+on the pre-expectation.\<close>
 lemma pentails_cases:
   assumes PQe: "\<And>x. P x \<tturnstile> Q x"
       and exhaust: "\<And>s. \<exists>x. P (x s) s = 1"

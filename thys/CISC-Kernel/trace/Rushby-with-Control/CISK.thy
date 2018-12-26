@@ -1,18 +1,18 @@
-subsection {* CISK (Controlled Interruptible Separation Kernel) *}
+subsection \<open>CISK (Controlled Interruptible Separation Kernel)\<close>
 
 theory CISK
   imports ISK
 begin
 
-text {*
+text \<open>
   This section presents a generic model of a Controlled Interruptible Separation Kernel (CISK).
   It formulates security, i.e., intransitive noninterference.
   For a presentation of this model, see Section 2 of~\cite{Verbeek2013}.
-*}
+\<close>
 
-text {*
+text \<open>
   First, a locale is defined that defines all generic functions and all proof obligations (see Section 2.3 of ~\cite{Verbeek2013}).
-*}
+\<close>
 locale Controllable_Interruptible_Separation_Kernel = \<comment> \<open>CISK\<close>
 fixes kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t" \<comment> \<open>Executes one atomic kernel action\<close>
   and output_f :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'output_t" \<comment> \<open>Returns the observable behavior\<close>
@@ -63,15 +63,15 @@ assumes vpeq_transitive: " \<forall> a b c u. (vpeq u a b \<and> vpeq u b c) \<l
     and involved_ifp: "\<forall> s a . \<forall> d \<in> (kinvolved a) . AS_precondition s (current s) a \<longrightarrow> ifp d (current s)"  
 begin  
 
-subsubsection{* Execution semantics *}
+subsubsection\<open>Execution semantics\<close>
 
-text{*
+text\<open>
   Control is based on generic functions \emph{aborting}, \emph{waiting} and \emph{set\_error\_code}.
   Function \emph{aborting} decides whether a certain action is aborting, given its domain and the state.
   If so, then function set\_error\_code will be used to update the state, possibly communicating to other domains that an action has been aborted.
   Function \emph{waiting} can delay the execution of an action.
   This behavior is implemented in function CISK\_control.
-*}
+\<close>
 function CISK_control :: "'state_t \<Rightarrow> 'dom_t \<Rightarrow> 'action_t execution \<Rightarrow> ('action_t option \<times> 'action_t execution \<times> 'state_t)"
 where "CISK_control s d []                = (None,[],s)" \<comment> \<open>The thread is empty\<close>
     | "CISK_control s d ([]#[])           = (None,[],s)" \<comment> \<open>The current action sequence has been finished and the thread has no next action sequences to execute\<close>
@@ -85,29 +85,29 @@ where "CISK_control s d []                = (None,[],s)" \<comment> \<open>The t
 by pat_completeness auto
 termination by lexicographic_order
 
-text{*
+text\<open>
   Function \emph{run} defines the execution semantics.
   This function is presented in ~\cite{Verbeek2013} by pseudo code (see Algorithm 1).
   Before defining the run function, we define accessor functions for the control mechanism.
   Functions next\_action, next\_execs and next\_state correspond to ``control.a'', ``control.x'' and ``control.s'' in ~\cite{Verbeek2013}.
-*}
+\<close>
 abbreviation next_action::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'action_t option"
 where "next_action \<equiv> Kernel.next_action current CISK_control"
 abbreviation next_execs::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution)"
 where "next_execs  \<equiv> Kernel.next_execs current CISK_control"
 abbreviation next_state::"'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'state_t"
 where "next_state  \<equiv> Kernel.next_state current CISK_control"
-text {*
-*}
-text {*
+text \<open>
+\<close>
+text \<open>
   A thread is empty iff either it has no further action sequences to execute, or when the current action sequence is finished and there are no further action sequences to execute.
-*}
+\<close>
 abbreviation thread_empty::"'action_t execution \<Rightarrow> bool"
 where "thread_empty exec \<equiv> exec = [] \<or> exec = [[]]"
 
-text{*
+text\<open>
   The following function defines the execution semantics of CISK, using function CISK\_control.
-*}
+\<close>
 function run :: "time_t \<Rightarrow> 'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'state_t"
 where "run 0 s execs = s"
 | "interrupt (Suc n) \<Longrightarrow> run (Suc n) s execs = run n (cswitch (Suc n) s) execs"
@@ -121,11 +121,11 @@ where "run 0 s execs = s"
 using not0_implies_Suc by (metis prod_cases3,auto)
 termination by lexicographic_order
 
-subsubsection {* Formulations of security *}
+subsubsection \<open>Formulations of security\<close>
 
-text{*
+text\<open>
   The definitions of security as presented in Section 2.2 of~\cite{Verbeek2013}.
-*}
+\<close>
 
 abbreviation kprecondition
   where "kprecondition s a \<equiv> invariant s \<and> AS_precondition s (current s) a"
@@ -154,8 +154,8 @@ definition isecure::bool
 where "isecure \<equiv> NI_unrelated \<and> NI_indirect_sources"
 
 
-subsubsection {*Proofs*}
-text{*
+subsubsection \<open>Proofs\<close>
+text\<open>
   The final theorem is unwinding\_implies\_isecure\_CISK.
   This theorem shows that any interpretation of locale CISK is secure.
 
@@ -165,7 +165,7 @@ text{*
   It is proven that function \emph{CISK\_control} satisfies all the proof obligations concerning generic function \emph{control}.
   In other words, \emph{CISK\_control} is proven to be an interpretation of control.
   Therefore, all theorems on run\_total apply to the run function of CISK as well.
-*}
+\<close>
 
 lemma next_action_consistent: 
 shows "\<forall> s t execs . vpeq (current s) s t \<and> (\<forall> d \<in>  involved (next_action s execs) . vpeq d s t) \<and> current s = current t  \<longrightarrow> next_action s execs = next_action t execs"

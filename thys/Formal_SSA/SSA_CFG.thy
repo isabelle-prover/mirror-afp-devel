@@ -6,7 +6,7 @@ theory SSA_CFG
 imports Graph_path "HOL-Library.Sublist"
 begin
 
-subsection {* CFG *}
+subsection \<open>CFG\<close>
 
 locale CFG_base = graph_Entry_base \<alpha>e \<alpha>n invar inEdges' Entry
 for
@@ -84,7 +84,7 @@ begin
   qed
 end
 
-text {* A CFG is well-formed if it satisfies definite assignment. *}
+text \<open>A CFG is well-formed if it satisfies definite assignment.\<close>
 
 locale CFG_wf = CFG \<alpha>e \<alpha>n invar inEdges' Entry "defs" "uses"
 for
@@ -97,7 +97,7 @@ for
   "uses" :: "'g \<Rightarrow> 'node \<Rightarrow> 'var set" +
 assumes def_ass_uses: "\<forall>m \<in> set (\<alpha>n g). \<forall>v \<in> uses g m. defAss' g m v"
 
-subsection {* SSA CFG *}
+subsection \<open>SSA CFG\<close>
 
 type_synonym ('node, 'val) phis = "'node \<times> 'val \<rightharpoonup> 'val list"
 
@@ -262,8 +262,8 @@ for
   "uses" :: "'g \<Rightarrow> 'node \<Rightarrow> 'val set" and
   phis :: "'g \<Rightarrow> ('node, 'val) phis"
 begin
-  text {* Using the SSA properties, we can map every value to its unique defining node and
-    remove the @{typ 'node} parameter of the @{term phis} map. *}
+  text \<open>Using the SSA properties, we can map every value to its unique defining node and
+    remove the @{typ 'node} parameter of the @{term phis} map.\<close>
 
   definition defNode :: "'g \<Rightarrow> 'val \<Rightarrow> 'node" where
     defNode_code [code]: "defNode g v \<equiv> hd [n \<leftarrow> \<alpha>n g. v \<in> allDefs g n]"
@@ -283,8 +283,8 @@ begin
 
   definition "defAssUses g \<equiv> \<forall>n \<in> set (\<alpha>n g). \<forall>v \<in> allUses g n. defAss g n v"
 
-  text {* 'liveness' of an SSA value is defined inductively starting from simple uses so that
-    a circle of \pf s is not considered live. *}
+  text \<open>'liveness' of an SSA value is defined inductively starting from simple uses so that
+    a circle of \pf s is not considered live.\<close>
 
   declare [[inductive_internals]]
   inductive liveVal :: "'g \<Rightarrow> 'val \<Rightarrow> bool"
@@ -638,7 +638,7 @@ begin
   declare phiArg_def [simp del]
 end
 
-subsection {* Bundling of CFG and Equivalent SSA CFG *}
+subsection \<open>Bundling of CFG and Equivalent SSA CFG\<close>
 
 locale CFG_SSA_Transformed_base = old: CFG_base \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses + CFG_SSA_wf_base \<alpha>e \<alpha>n invar inEdges' Entry "defs" "uses" phis
 for

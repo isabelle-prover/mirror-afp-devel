@@ -1,7 +1,7 @@
 (* Author: Andreas Lochbihler, ETH Zurich
    Author: Peter Gammie *)
 
-section {* A codatatype of infinite binary trees *}
+section \<open>A codatatype of infinite binary trees\<close>
 
 theory Cotree imports 
   Main
@@ -75,7 +75,7 @@ lemma unfold_tree_unique:
   shows "f s = unfold_tree ROOT LEFT RIGHT s"
 by(rule unfold_tree.unique[THEN fun_cong])(auto simp add: fun_eq_iff assms intro: tree.expand)
 
-subsection {* Applicative functor for @{typ "'a tree"} *}
+subsection \<open>Applicative functor for @{typ "'a tree"}\<close>
 
 context fixes x :: "'a" begin
 corec pure_tree :: "'a tree"
@@ -118,7 +118,7 @@ lemma ap_tree_Node_Node [simp]:
   "Node f fl fr \<diamondop> Node x l r = Node (f x) (fl \<diamondop> l) (fr \<diamondop> r)"
 by(rule tree.expand) auto
 
-text {* Applicative functor laws *}
+text \<open>Applicative functor laws\<close>
 
 lemma map_tree_ap_tree_pure_tree:
   "pure f \<diamondop> u = map_tree f u"
@@ -187,15 +187,15 @@ lemma ap_tree_extensional:
   "(\<And>x. f \<diamondop> x = g \<diamondop> x) \<Longrightarrow> f = g"
 by(rule ap_tree_strong_extensional) simp
 
-subsection {* Standard tree combinators *}
+subsection \<open>Standard tree combinators\<close>
 
-subsubsection {* Recurse combinator *}
+subsubsection \<open>Recurse combinator\<close>
 
-text {*
+text \<open>
   This will be the main combinator to define trees recursively
 
   Uniqueness for this gives us the unique fixed-point theorem for guarded recursive definitions.
-*}
+\<close>
 lemma map_unfold_tree [simp]: fixes l r x
  defines "unf \<equiv> unfold_tree (\<lambda>f. f x) (\<lambda>f. f \<circ> l) (\<lambda>f. f \<circ> r)"
  shows "map_tree G (unf F) = unf (G \<circ> F)"
@@ -227,7 +227,7 @@ lemma tree_recurse_fusion:
   shows "map_tree h (tree_recurse l r x) = tree_recurse l' r' (h x)"
 by(rule tree_recurse.unique)(simp add: tree.expand assms)
 
-subsubsection {* Tree iteration *}
+subsubsection \<open>Tree iteration\<close>
 
 context fixes l :: "'a \<Rightarrow> 'a" and r :: "'a \<Rightarrow> 'a" begin
 primcorec tree_iterate :: " 'a \<Rightarrow> 'a tree"
@@ -245,7 +245,7 @@ lemma tree_iterate_fusion:
 apply(coinduction arbitrary: x)
 using assms by(auto simp add: fun_eq_iff)
 
-subsubsection {* Tree traversal *}
+subsubsection \<open>Tree traversal\<close>
 
 datatype dir = L | R
 type_synonym path = "dir list"
@@ -266,7 +266,7 @@ lemma traverse_tree_append [simp]:
   "traverse_tree (path @ ext) t = traverse_tree ext (traverse_tree path t)"
 by (induct path arbitrary: t) simp_all
 
-text{* @{const "traverse_tree"} is an applicative-functor homomorphism. *}
+text\<open>@{const "traverse_tree"} is an applicative-functor homomorphism.\<close>
 
 lemma traverse_tree_pure_tree [simp]:
   "traverse_tree path (pure x) = pure x"
@@ -293,13 +293,13 @@ lemma traverse_tree_tree_iterate:
    tree_iterate l r (traverse_path l r path s)"
 by (induct path arbitrary: s) (simp_all split: dir.splits)
 
-text{*
+text\<open>
 
 \citeauthor{DBLP:journals/jfp/Hinze09} shows that if the tree
 construction function is suitably monoidal then recursion and
 iteration define the same tree.
 
-*}
+\<close>
 
 lemma tree_recurse_iterate:
   assumes monoid:
@@ -312,7 +312,7 @@ apply(rule tree.expand)
 apply(simp add: tree_iterate_fusion[where r'="\<lambda>x. f x r" and l'="\<lambda>x. f x l"] fun_eq_iff monoid)
 done
 
-subsubsection {* Mirroring *}
+subsubsection \<open>Mirroring\<close>
 
 primcorec mirror :: "'a tree \<Rightarrow> 'a tree"
 where

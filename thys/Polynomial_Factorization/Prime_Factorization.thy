@@ -99,7 +99,7 @@ proof (induct n arbitrary: ps rule: less_induct)
   proof (cases "mo = 0")
     case True
     with mo n' have n: "n = n' * i" by auto
-    with `n \<noteq> 0` have n': "n' \<noteq> 0" by auto
+    with \<open>n \<noteq> 0\<close> have n': "n' \<noteq> 0" by auto
     from True res have "remove_prime_factor i n' (i # ps) = (m,qs)" by auto
     from IH[OF this n'] obtain rs where 
       "qs = rs @ i # ps" and "n' = m * prod_list rs \<and> \<not> i dvd m \<and> set rs \<subseteq> {i}" by auto
@@ -122,7 +122,7 @@ proof (intro conjI impI allI)
   fix j
   assume jn: "j dvd n" 
   from jn obtain k where njk: "n = j * k" unfolding dvd_def by auto
-  with `1 < n` have jn: "j \<le> n" by (metis dvd_imp_le jn neq0_conv not_less0)
+  with \<open>1 < n\<close> have jn: "j \<le> n" by (metis dvd_imp_le jn neq0_conv not_less0)
   show "j = 1 \<or> j = n"
   proof (rule ccontr)
     assume "\<not> ?thesis"
@@ -133,7 +133,7 @@ proof (intro conjI impI allI)
       thus ?thesis unfolding njk using j1 by blast
     next
       case False
-      show ?thesis by (rule exI[of _ k], rule exI[of _ j], insert `1 < n` j1 njk False, auto)
+      show ?thesis by (rule exI[of _ k], rule exI[of _ j], insert \<open>1 < n\<close> j1 njk False, auto)
         (metis Suc_lessI mult_0_right neq0_conv)
     qed
     then obtain j k where j1: "1 < j" and jk: "j \<le> k" and njk: "n = j * k" by auto
@@ -176,8 +176,8 @@ proof -
       assume *: "prime i" "n \<le> i" "i < n + 30" "i \<notin> set ps"
       from n * have i11: "i \<ge> 11" by auto
       define j where "j = i - n" 
-      have i: "i = n + j" using `n \<le> i` j_def by auto
-      have "i mod 30 = (j + n) mod 30" using `n \<le> i` unfolding j_def by simp
+      have i: "i = n + j" using \<open>n \<le> i\<close> j_def by auto
+      have "i mod 30 = (j + n) mod 30" using \<open>n \<le> i\<close> unfolding j_def by simp
       also have "\<dots> = (j mod 30 + n mod 30) mod 30"
         by (simp add: mod_simps)
       also have "\<dots> = (j mod 30 + 11) mod 30" unfolding n by simp
@@ -258,7 +258,7 @@ proof -
   from assms have "j > 0" by auto
   from prime_factorization_nat[OF this]
   have "j = (\<Prod>p\<in>?pf. p ^ multiplicity p j)" by auto
-  with `j \<ge> 2` have "?pf \<noteq> {}" by auto
+  with \<open>j \<ge> 2\<close> have "?pf \<noteq> {}" by auto
   then obtain p where p: "p \<in> ?pf" by auto  
   hence pr: "prime p" by auto
   define rem where "rem = (\<Prod>p\<in>?pf - {p}. p ^ multiplicity p j)"
@@ -273,7 +273,7 @@ proof -
   also have "\<dots> = p * (p ^ (multiplicity p j - 1) * rem)" using mult 
     by (cases "multiplicity p j", auto)
   finally have pj: "p dvd j" unfolding dvd_def by blast
-  with `j dvd n` have "p dvd n" by (metis dvd_trans)
+  with \<open>j dvd n\<close> have "p dvd n" by (metis dvd_trans)
   with pj pr show ?thesis by blast
 qed
 
@@ -321,7 +321,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
     from sort_dist have sd_iis: "sorted iis" "distinct iis" and "i' \<notin> set iis" by(auto simp: Cons)
     from sort_dist(1) have "set iis \<subseteq> {i'..}" by(auto simp: Cons)
     with iis have "set iis \<subseteq> {i'..<jj}" by force
-    with `i' \<notin> set iis`  have iis: "set iis \<subseteq> {Suc i'..<jj}"
+    with \<open>i' \<notin> set iis\<close>  have iis: "set iis \<subseteq> {Suc i'..<jj}"
       by (auto, case_tac "x = i'", auto)
     {
       fix j
@@ -336,7 +336,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
         have p2: "2 \<le> p" using p(1) by (rule prime_ge_2_nat)
         from dvd[OF p2] p(3) have pi: "p \<ge> i" by force
         from pj j(2) i' "is"[OF pi _ p(1)] have "p \<in> set is" by auto
-        with `sorted is` have "i' \<le> p" by(auto simp: Cons)
+        with \<open>sorted is\<close> have "i' \<le> p" by(auto simp: Cons)
         with pj j(2) show False by arith
       qed
     } note dvd = this
@@ -366,7 +366,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
           assume "Suc i' \<le> x" "x < jj" "prime x"
           hence "i \<le> x" "x < jj" "prime x" using i' by auto
           from "is"[OF this] have "x \<in> set is" . 
-          with `Suc i' \<le> x` have "x \<in> set iis" unfolding Cons by auto
+          with \<open>Suc i' \<le> x\<close> have "x \<in> set iis" unfolding Cons by auto
         } note iis = this
         show ?thesis 
           by (rule IH[OF _ dvds iis res], insert i_n i', auto)
@@ -389,7 +389,7 @@ proof (induct ni arbitrary: n i "is" jj res rule: wf_induct[OF
       also have "\<dots> = prime n"
       using * proof
         assume "i' < n"
-        with `i' \<ge> 2` \<open>i' dvd n\<close> have "\<not> prime n"
+        with \<open>i' \<ge> 2\<close> \<open>i' dvd n\<close> have "\<not> prime n"
           by (auto simp add: prime_nat_iff)
         with \<open>i' < n\<close> show ?thesis
           by auto
@@ -455,7 +455,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
     from sort_dist have sd_iis: "sorted iis" "distinct iis" and "i' \<notin> set iis" by(auto simp: Cons)
     from sort_dist(1) Cons have "set iis \<subseteq> {i'..}" by(auto)
     with iis have "set iis \<subseteq> {i'..<jj}" by force
-    with `i' \<notin> set iis`  have iis: "set iis \<subseteq> {Suc i'..<jj}"
+    with \<open>i' \<notin> set iis\<close>  have iis: "set iis \<subseteq> {Suc i'..<jj}"
       by (auto, case_tac "x = i'", auto)
     {
       fix j
@@ -470,7 +470,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
         have p2: "2 \<le> p" using p(1) by (rule prime_ge_2_nat)
         from dvd[OF p2] p(3) have pi: "p \<ge> i" by force
         from pj j(2) i' "is"[OF pi _ p(1)] have "p \<in> set is" by auto
-        with `sorted is` have "i' \<le> p" by (auto simp: Cons)
+        with \<open>sorted is\<close> have "i' \<le> p" by (auto simp: Cons)
         with pj j(2) show False by arith
       qed
     } note dvd = this
@@ -481,7 +481,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
       assume "Suc i' \<le> x" "x < jj" "prime x"
       hence "i \<le> x" "x < jj" "prime x" using i' by auto
       from "is"[OF this] have "x \<in> set is" . 
-      with `Suc i' \<le> x` have "x \<in> set iis" unfolding Cons by auto
+      with \<open>Suc i' \<le> x\<close> have "x \<in> set iis" unfolding Cons by auto
     } note iis = this
     show ?thesis
     proof (cases "i' dvd n")
@@ -523,14 +523,14 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
         with i' i have j0: "j \<noteq> 0" by (cases "j = 0", auto)
         from ji i_n have jn: "j dvd n" by (metis dvd_trans)
         with dvd[of j] have j: "2 > j \<or> j \<ge> i'" by linarith
-        from ji `1 < i'` have "j \<le> i'" unfolding dvd_def 
+        from ji \<open>1 < i'\<close> have "j \<le> i'" unfolding dvd_def 
           by (simp add: dvd_imp_le ji)
         with j j0 show "j = 1 \<or> j = i'" by linarith
       qed
       from True n' have id: "n = n' * i'" by auto
       from n id have "n' \<noteq> 0" by (cases "n = 0", auto)
       with id have "i' \<le> n" by auto
-      from remove_prime_factor[OF rp[folded n'] `1 < i'` `n' \<noteq> 0`] obtain rs
+      from remove_prime_factor[OF rp[folded n'] \<open>1 < i'\<close> \<open>n' \<noteq> 0\<close>] obtain rs
         where qs: "qs = rs @ i' # ps" and n': "n' = n'' * prod_list rs" and i_n'': "\<not> i' dvd n''" 
         and rs: "set rs \<subseteq> {i'}" by auto
       {
@@ -544,12 +544,12 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
         with res have res: "res = prime_factorization_nat_main n'' jj iis qs" 
           by simp
         from i i' have "i' \<ge> 2" by simp
-        from False n' `n' \<noteq> 0` have n2: "n'' \<ge> 2" by (cases "n'' = 0"; auto)
-        have lrs: "prod_list rs \<noteq> 0" using n' `n' \<noteq> 0` by (cases "prod_list rs = 0", auto)
-        with `i' \<ge> 2` have "prod_list rs * i' \<ge> 2" by (cases "prod_list rs", auto)
+        from False n' \<open>n' \<noteq> 0\<close> have n2: "n'' \<ge> 2" by (cases "n'' = 0"; auto)
+        have lrs: "prod_list rs \<noteq> 0" using n' \<open>n' \<noteq> 0\<close> by (cases "prod_list rs = 0", auto)
+        with \<open>i' \<ge> 2\<close> have "prod_list rs * i' \<ge> 2" by (cases "prod_list rs", auto)
         hence nn'': "n > n''" unfolding id n' using n2 by simp
         have "i' \<noteq> n" unfolding id n' using pi False by fastforce
-        with `i' \<le> n` i' have "n > i" by auto
+        with \<open>i' \<le> n\<close> i' have "n > i" by auto
         with nn'' i i' have less: "n - i > n'' - Suc i'" by simp
         {
           fix j
@@ -567,7 +567,7 @@ proof (induct ni arbitrary: n i "is" jj res ps rule: wf_induct[OF
       next
         case True
         with res have res: "res = qs" by auto
-        show ?thesis unfolding id n' res qs True using rs `prime i'`
+        show ?thesis unfolding id n' res qs True using rs \<open>prime i'\<close>
           by (intro exI[of _ "rs @ [i']"], auto)
       qed
     qed
@@ -587,7 +587,7 @@ next
     "{i. prime i \<and> 0 \<le> i \<and> i < jj} \<subseteq> set is"
     "set is \<subseteq> {2..} \<inter> {0..<jj}" "distinct is" "is \<noteq> []" by auto  
   from cann have sub: "set is \<subseteq> {2..<jj}" by force
-  with `is \<noteq> []` have jj: "jj \<ge> 2" by (cases "is", auto)
+  with \<open>is \<noteq> []\<close> have jj: "jj \<ge> 2" by (cases "is", auto)
   from n can have res: "prime_nat n = prime_nat_main n jj is"
     unfolding prime_nat_def by auto
   show ?thesis using prime_nat_main[OF refl le_refl n _ _ jj cann(1-3) sub res] cann(4) by auto
@@ -613,7 +613,7 @@ proof -
       "{i. prime i \<and> 0 \<le> i \<and> i < jj} \<subseteq> set is"
       "set is \<subseteq> {2..} \<inter> {0..<jj}" "distinct is" "is \<noteq> []" by auto  
     from cann have sub: "set is \<subseteq> {2..<jj}" by force
-    with `is \<noteq> []` have jj: "jj \<ge> 2" by (cases "is", auto)
+    with \<open>is \<noteq> []\<close> have jj: "jj \<ge> 2" by (cases "is", auto)
     let ?pfm = "prime_factorization_nat_main n jj is []"
     from pf[unfolded can] False
     have res: "pf = rev ?pfm" by simp

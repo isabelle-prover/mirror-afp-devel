@@ -1,15 +1,15 @@
-section {* ListUtilities*}
+section \<open>ListUtilities\<close>
 
-text {*
+text \<open>
   \file{ListUtilities} defines a (proper) prefix relation for lists, and proves some
   additional lemmata, mostly about lists.
-*}
+\<close>
 
 theory ListUtilities
 imports Main
 begin
 
-subsection {* List Prefixes *}
+subsection \<open>List Prefixes\<close>
 
 inductive prefixList ::
   "'a list \<Rightarrow> 'a list \<Rightarrow> bool"
@@ -80,7 +80,7 @@ proof -
   thus "prefixList l1 l3" using TailIsPrefixList by auto  
 qed
 
-subsection {* Lemmas for lists and nat predicates *}
+subsection \<open>Lemmas for lists and nat predicates\<close>
 
 lemma NatPredicateTippingPoint:
 fixes 
@@ -114,10 +114,10 @@ shows
 using assms
 by (metis LeastI2_wellorder Suc_n_not_le_n)
 
-text {*
+text \<open>
   The lemma \isb{MinPredicate2} describes one case of \isb{MinPredicate}
   where the aforementioned smallest element is zero.
-*}
+\<close>
 
 lemma MinPredicate2:
 fixes
@@ -129,11 +129,11 @@ shows
 using assms MinPredicate
 by (metis add_diff_cancel_right' diff_is_0_eq diff_mult_distrib mult_eq_if)
 
-text {*
+text \<open>
   \isb{PredicatePairFunction} allows to obtain functions mapping two arguments
   to pairs from 4-ary predicates which are left-total on their first
   two arguments.
-*}
+\<close>
 
 lemma PredicatePairFunction: 
 fixes
@@ -317,7 +317,7 @@ proof-
   hence "a = liste ! (l + index)" 
     using DropToShift[of "l" "index"] Index(2) by blast
   thus "\<exists>i\<ge>l. i < length liste \<and> a = liste ! i" 
-    by (metis `l + index < length liste` le_add1)
+    by (metis \<open>l + index < length liste\<close> le_add1)
 qed
 
 end

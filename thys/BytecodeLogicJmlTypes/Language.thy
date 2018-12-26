@@ -7,46 +7,46 @@
 theory Language imports AssocLists begin
 (*>*)
 
-section{*Language \label{sec:language}*}
-subsection{*Syntax*}
+section\<open>Language \label{sec:language}\<close>
+subsection\<open>Syntax\<close>
 
-text{*We have syntactic classes of (local) variables, class names,
+text\<open>We have syntactic classes of (local) variables, class names,
 field names, and method names. Naming restrictions, namespaces, long
-Java names etc.~are not modelled.*}
+Java names etc.~are not modelled.\<close>
 
 typedecl Var
 typedecl Class
 typedecl Field
 typedecl Method
 
-text{*Since arithmetic operations are modelled as unimplemented
+text\<open>Since arithmetic operations are modelled as unimplemented
 functions, we introduce the type of values in this section. The domain
-of heap locations is arbitrary.  *}
+of heap locations is arbitrary.\<close>
 
 typedecl Addr 
 
-text{*A reference is either null or an address.*}
+text\<open>A reference is either null or an address.\<close>
 
 datatype Ref = Nullref | Loc Addr
 
-text{* Values are either integer numbers or references.*}
+text\<open>Values are either integer numbers or references.\<close>
 
 datatype Val = RVal Ref | IVal int
 
-text{*The type of (instruction) labels is fixed, since the operational
-semantics increments the program counter after each instruction.*}
+text\<open>The type of (instruction) labels is fixed, since the operational
+semantics increments the program counter after each instruction.\<close>
 
 type_synonym Label = int
 
-text{*Regarding the instructions, we support basic operand-stack
+text\<open>Regarding the instructions, we support basic operand-stack
 manipulations, object creation, field modifications, casts, static
 method invocations, conditional and unconditional jumps, and a return
 instruction.
 
-For every (Isabelle) function @{text "f : Val\<Rightarrow>Val\<Rightarrow>Val"} we have an
-instruction @{text "binop f"} whose semantics is to invoke @{text "f"}
+For every (Isabelle) function \<open>f : Val\<Rightarrow>Val\<Rightarrow>Val\<close> we have an
+instruction \<open>binop f\<close> whose semantics is to invoke \<open>f\<close>
 on the two topmost values on the operand stack and replace them with
-the result.  Similarly for @{text "unop f"}. *}
+the result.  Similarly for \<open>unop f\<close>.\<close>
 
 datatype Instr =
   const Val
@@ -66,39 +66,39 @@ datatype Instr =
 | iftrue Label
 | vreturn 
 
-text{*Method body declarations contain a list of formal parameters, a
+text\<open>Method body declarations contain a list of formal parameters, a
 mapping from instruction labels to instructions, and a start
 label. The operational semantics assumes that instructions are
 labelled consecutively\footnote{In the paper, we slightly abstract
-from this by including a successor functions on labels}.*}
+from this by including a successor functions on labels}.\<close>
 
 type_synonym Mbody = "Var list \<times> (Label, Instr) AssList \<times> Label" 
 
-text{*A class definition associates method bodies to method names.*}
+text\<open>A class definition associates method bodies to method names.\<close>
 type_synonym Classdef = "(Method, Mbody) AssList"
 
-text{*Finally, a program consists of classes.*}
+text\<open>Finally, a program consists of classes.\<close>
 type_synonym Prog = "(Class, Classdef) AssList"
 
-text{*Taken together, the three types @{text Prog}, @{text Classdef},
-and @{text Mbody} represent an abstract model of the virtual machine
+text\<open>Taken together, the three types \<open>Prog\<close>, \<open>Classdef\<close>,
+and \<open>Mbody\<close> represent an abstract model of the virtual machine
 environment. In our opinion, it would be desirable to avoid modelling
 this environment at a finer level, at least for the purpose of the
 program logic. For example, we prefer not to consider in detail the
-representation of the constant pool.*}
+representation of the constant pool.\<close>
 
-subsection{*Dynamic semantics*}
-subsubsection{*Semantic components*}
+subsection\<open>Dynamic semantics\<close>
+subsubsection\<open>Semantic components\<close>
 
-text{*An object consists of the identifier of its dynamic class and a
+text\<open>An object consists of the identifier of its dynamic class and a
 map from field names to values. Currently, we do not model
 type-correctness, nor do we require that all (or indeed any) of the
 fields stem from the static definition of the class, or a super-class.
-Note, however, that type correctness can be expressed in the logic.*}
+Note, however, that type correctness can be expressed in the logic.\<close>
 
 type_synonym Object = "Class \<times> (Field, Val) AssList"
 
-text{*The heap is represented as a map from addresses to values.  The
+text\<open>The heap is represented as a map from addresses to values.  The
 JVM specification does not prescribe any particular object layout. The
 proposed type reflects this indeterminacy, but allows one to calculate
 the byte-correct size of a heap only after a layout scheme has been
@@ -109,35 +109,35 @@ equivalence relation on access paths), or object-based semantics in
 the sense of Reddy~\cite{Reddy1996}, where the heap is represented as
 a history of update operations.  H\"ahnle et al.~use a variant of the
 latter in their dynamic logic for a {\sc
-JavaCard}~~\cite{HaehnleM:Cassis2005}.*}
+JavaCard}~~\cite{HaehnleM:Cassis2005}.\<close>
 
 type_synonym Heap = "(Addr, Object) AssList"
 
-text{*Later, one might extend heaps by a component for static fields.*}
+text\<open>Later, one might extend heaps by a component for static fields.\<close>
 
-text{*The types of the (register) store and the operand stack are as
-expected.*}
+text\<open>The types of the (register) store and the operand stack are as
+expected.\<close>
 
 type_synonym Store = "(Var, Val) AssList"
 type_synonym OpStack = "Val list"
 
-text{*States contain an operand stack, a store, and a heap.*}
+text\<open>States contain an operand stack, a store, and a heap.\<close>
 type_synonym State = "OpStack \<times> Store \<times> Heap"
 
 definition heap::"State \<Rightarrow> Heap"
 where "heap s = snd(snd s)"
 
-text{*The operational semantics and the program logic are defined
-relative to a fixed program @{text P}.  Alternatively, the type of the
+text\<open>The operational semantics and the program logic are defined
+relative to a fixed program \<open>P\<close>.  Alternatively, the type of the
 operational semantics (and proof judgements) could be extended by a
-program component.  We also define the constant value @{text TRUE},
+program component.  We also define the constant value \<open>TRUE\<close>,
 the representation of which does not matter for the current
-formalisation.*}
+formalisation.\<close>
 
 axiomatization P::Prog and TRUE::Val
 
-text{*In order to obtain more readable rules, we define operations
-for extracting method bodies and instructions from the program.*}
+text\<open>In order to obtain more readable rules, we define operations
+for extracting method bodies and instructions from the program.\<close>
 
 definition mbody_is::"Class \<Rightarrow> Method \<Rightarrow> Mbody \<Rightarrow> bool"
 where "mbody_is C m M = (\<exists> CD . P\<down>C = Some CD \<and> CD\<down>m = Some M)"
@@ -148,9 +148,9 @@ where "get_ins M l = (fst(snd M))\<down>l"
 definition ins_is::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Instr \<Rightarrow> bool"
 where "ins_is C m l ins = (\<exists> M . mbody_is C m M \<and> get_ins M l = Some ins)"
 
-text{*The transfer of method arguments from the caller's operand stack
+text\<open>The transfer of method arguments from the caller's operand stack
 to the formal parameters of an invoked method is modelled by the
-predicate *}
+predicate\<close>
 
 inductive_set Frame::"(OpStack \<times> (Var list) \<times> Store \<times> OpStack) set"
 where
@@ -170,16 +170,16 @@ apply (erule Frame.cases, clarsimp, clarsimp)
 done
 (*>*)
 
-text{*In order to obtain a deterministic semantics, we assume the
+text\<open>In order to obtain a deterministic semantics, we assume the
 existence of a function, with the obvious freshness axiom for this
-construction.*}
+construction.\<close>
 
 axiomatization nextLoc::"Heap \<Rightarrow> Addr"
 where nextLoc_fresh: "h\<down>(nextLoc h) = None"
 
-subsubsection{*Operational judgements*} 
+subsubsection\<open>Operational judgements\<close> 
 
-text{*Similar to Bannwart-M\"uller~\cite{BannwartMueller05}, we define
+text\<open>Similar to Bannwart-M\"uller~\cite{BannwartMueller05}, we define
 two operational judgements: a one-step relation and a relation that
 represents the transitive closure of the former until the end of the
 current method invocation. These relations are mutually recursive,
@@ -191,27 +191,27 @@ closure ignores the bottom part of the operand stack and the store of
 the final configuration. It simply returns the heap and the result of
 the method invocation, where the latter is given by the topmost value
 on the operand stack. In contrast to~\cite{BannwartMueller05}, we do
-not use an explicit @{text return} variable. Both relations take an
-additional index of type @{text nat} that monitors the derivation
+not use an explicit \<open>return\<close> variable. Both relations take an
+additional index of type \<open>nat\<close> that monitors the derivation
 height. This is useful in the proof of soundness of the program
-logic.*}
+logic.\<close>
 
-text{*Intuitively, @{text "(M,l,s,n,l',s'):Step"} means that method
-(body) @{text M} evolves in one step from state @{text s} to state
-@{text s'}, while statement @{text "(M,s,n,h,v):Exec"} indicates that
-executing from @{text s} in method @{text M} leads eventually to a
-state whose final value is @{text h}, where precisely the last step in
-this sequence is a @{text vreturn} instruction and the return value is
-@{text v}.*}
+text\<open>Intuitively, \<open>(M,l,s,n,l',s'):Step\<close> means that method
+(body) \<open>M\<close> evolves in one step from state \<open>s\<close> to state
+\<open>s'\<close>, while statement \<open>(M,s,n,h,v):Exec\<close> indicates that
+executing from \<open>s\<close> in method \<open>M\<close> leads eventually to a
+state whose final value is \<open>h\<close>, where precisely the last step in
+this sequence is a \<open>vreturn\<close> instruction and the return value is
+\<open>v\<close>.\<close>
 
-text{*Like Bannwart and M\"uller, we define a "frame-less"
+text\<open>Like Bannwart and M\"uller, we define a "frame-less"
 semantics. i.e.~the execution of a method body is modelled by a
 transitive closure of the basic step-relation, which results in a
 one-step reduction at the invocation site. Arguably, an operational
 semantics with an explicit frame stack is closer to the real JVM. It
 should not be difficult to verify the operational soundness of the
 present system w.r.t.~such a finer model, or to modify the
-semantics. *}
+semantics.\<close>
 
 inductive_set
   Step::"(Mbody \<times> Label \<times> State \<times> nat \<times> Label \<times> State) set"
@@ -277,16 +277,16 @@ Vret: "\<lbrakk>get_ins M l = Some vreturn\<rbrakk> \<Longrightarrow> (M,l,(v # 
 Run:  "\<lbrakk>(M,l,s,n,ll,t):Step; (M,ll,t,m,h,v):Exec; k = (max n m) +1 \<rbrakk>
        \<Longrightarrow> (M,l,s,k,h,v) : Exec"
 
-text{*A big-step operational judgement that abstracts from the
-derivation height is easily defined.*}
+text\<open>A big-step operational judgement that abstracts from the
+derivation height is easily defined.\<close>
 
 definition Opsem::"Mbody \<Rightarrow> Label \<Rightarrow> State \<Rightarrow> Heap \<Rightarrow> Val \<Rightarrow> bool"
 where "Opsem M l s h v = (\<exists> n . (M,l,s,n,h,v):Exec)"
 
-subsection {* Basic properties *}
+subsection \<open>Basic properties\<close>
 
-text {*We provide elimination lemmas for the inductively defined
-relations*}
+text \<open>We provide elimination lemmas for the inductively defined
+relations\<close>
 
 inductive_cases eval_cases: 
  "(M,l,s,n,ll,t) : Step"
@@ -299,7 +299,7 @@ by (rule allI, rule Step_Exec.induct, simp_all)
 lemma no_zero_height_derivsAux2: "((M,l,s,0,ll,t):Step \<longrightarrow> False) \<and> ((MM,lll,ss,0,h,v):Exec \<longrightarrow> False)"
 by (insert no_zero_height_derivsAux, fast)
 (*>*)
-text {*and observe that no derivations of height 0 exist.*}
+text \<open>and observe that no derivations of height 0 exist.\<close>
 lemma no_zero_height_Step_derivs: "(M,l,s,0,ll,t):Step \<Longrightarrow> False"
 (*<*)by (insert no_zero_height_derivsAux2, fast)(*>*)
 (*<*)
@@ -415,8 +415,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*By induction on the derivation system one can show
-determinism.*}
+text\<open>By induction on the derivation system one can show
+determinism.\<close>
 
 (*<*)
 lemma StepExec_determ_Aux[rule_format]:

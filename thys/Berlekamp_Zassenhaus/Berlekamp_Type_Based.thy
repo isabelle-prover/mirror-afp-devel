@@ -317,9 +317,9 @@ next
     using  associatedD2 n p0 q
     by (metis (no_types, lifting) mult_cancel_right1 normalize_eq_0_iff normalize_mult poly_dvd_1)
   then obtain c where k: "k = [: c :]" by (metis degree_0_id)
-  with `k \<noteq> 0` have "c \<noteq> 0" by auto
+  with \<open>k \<noteq> 0\<close> have "c \<noteq> 0" by auto
   have "q = smult c p" unfolding q k by simp
-  with `c \<noteq> 0` show ?thesis by auto
+  with \<open>c \<noteq> 0\<close> show ?thesis by auto
 qed
 
 

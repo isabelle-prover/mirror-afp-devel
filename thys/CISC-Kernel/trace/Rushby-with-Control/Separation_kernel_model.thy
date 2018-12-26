@@ -1,4 +1,4 @@
-subsection {* Separation kernel model \label{sect:separation_kernel_model} *}
+subsection \<open>Separation kernel model \label{sect:separation_kernel_model}\<close>
 
 theory Separation_kernel_model
   imports "../../step/Step"
@@ -9,7 +9,7 @@ theory Separation_kernel_model
           CISK
 begin
 
-text {*
+text \<open>
  First (Section~\ref{sect:initial_state}) we instantiate the CISK generic model.
  Functions that instantiate a generic function of the CISK model are prefixed with an `r',
  `r' standing for ``Rushby';, as CISK is derived originally from a model
@@ -19,16 +19,16 @@ text {*
  Later (Section~\ref{sect:discharging}) all CISK proof obligations are discharged, e.g., 
  weak step consistency, output consistency, etc. These will be used in 
  Section~\ref{sect:link_to_CISK}.
-*}
+\<close>
 
-subsubsection {* Initial state of separation kernel model\label{sect:initial_state} *}
+subsubsection \<open>Initial state of separation kernel model\label{sect:initial_state}\<close>
 
-text {* We assume that the initial state of threads and memory is given.
+text \<open>We assume that the initial state of threads and memory is given.
   The initial state of threads is arbitrary, but the threads are not
   executing the system call. The purpose of the following definitions
   is to obtain the initial state without potentially dangerous axioms.
   The only axioms we admit without proof are formulated using the
-  ``consts'' syntax and thus safe. *}
+  ``consts'' syntax and thus safe.\<close>
 
 consts
   initial_current :: "thread_id_t"
@@ -51,12 +51,12 @@ proof -
     unfolding atomic_step_invariant_def by auto
 qed
 
-subsubsection {* Types for instantiation of the generic model *}
+subsubsection \<open>Types for instantiation of the generic model\<close>
 
-text {* To simplify formulations, we include the state invariant
+text \<open>To simplify formulations, we include the state invariant
  @{term "atomic_step_invariant"} in the state data type. The 
  initial state @{term s0} serves at witness that @{term rstate_t} 
- is non-empty. *}
+ is non-empty.\<close>
 
 typedef (overloaded) rstate_t = "{ s . atomic_step_invariant s }"
   using initial_invariant by auto
@@ -77,7 +77,7 @@ lemma rstate_up_down[simp]:
   shows "(\<down>\<up>s) = s"
   using assms Abs_rstate_t_inverse unfolding rep_def abs_def by auto 
 
-text {* A CISK action is identified with an interrupt point. *}
+text \<open>A CISK action is identified with an interrupt point.\<close>
 
 type_synonym raction_t = int_point_t
 
@@ -87,12 +87,12 @@ definition rcurrent :: "rstate_t \<Rightarrow> thread_id_t" where
 definition rstep :: "rstate_t \<Rightarrow> raction_t \<Rightarrow> rstate_t" where
   "rstep s a \<equiv> \<up>(atomic_step (\<down>s) a)"
 
-text {* Each CISK domain is identified with a thread id. *}
+text \<open>Each CISK domain is identified with a thread id.\<close>
 
 type_synonym rdom_t = "thread_id_t"
 
-text {* The output function returns the contents of all memory accessible
-  to the subject. The action argument of the output function is ignored. *}
+text \<open>The output function returns the contents of all memory accessible
+  to the subject. The action argument of the output function is ignored.\<close>
 
 datatype visible_obj_t = VALUE obj_t | EXCEPTION
 type_synonym routput_t = "page_t \<Rightarrow> visible_obj_t"
@@ -104,15 +104,15 @@ definition routput_f :: "rstate_t \<Rightarrow> raction_t \<Rightarrow> routput_
     else
       EXCEPTION"
 
-text {* The precondition for the generic model. Note that @{term atomic_step_invariant}
-  is already part of the state. *}
+text \<open>The precondition for the generic model. Note that @{term atomic_step_invariant}
+  is already part of the state.\<close>
 
 definition rprecondition :: "rstate_t \<Rightarrow> rdom_t \<Rightarrow> raction_t \<Rightarrow> bool" where
   "rprecondition s d a \<equiv> atomic_step_precondition (\<down>s) d a"
 abbreviation rinvariant
 where "rinvariant s \<equiv> True" \<comment> \<open>The invariant is already in the state type.\<close>
 
-text {* Translate view-partitioning and interaction-allowed relations. *}
+text \<open>Translate view-partitioning and interaction-allowed relations.\<close>
 
 definition rvpeq :: "rdom_t \<Rightarrow> rstate_t \<Rightarrow> rstate_t \<Rightarrow> bool" where
   "rvpeq u s1 s2 \<equiv> vpeq (partition u) (\<down>s1) (\<down>s2)"
@@ -121,60 +121,60 @@ definition rvpeq :: "rdom_t \<Rightarrow> rstate_t \<Rightarrow> rstate_t \<Righ
 definition rifp :: "rdom_t \<Rightarrow> rdom_t \<Rightarrow> bool" where
   "rifp u v = Policy.ifp (partition u) (partition v)"
 
-text {* Context Switches *}
+text \<open>Context Switches\<close>
 definition rcswitch :: "nat \<Rightarrow> rstate_t \<Rightarrow> rstate_t" where
   "rcswitch n s \<equiv> \<up>((\<down>s) \<lparr> current := (SOME t . True) \<rparr>)"
   
-subsubsection  {* Possible action sequences *}
+subsubsection  \<open>Possible action sequences\<close>
 
-text {*
+text \<open>
 An @{term SK_IPC} consists of three atomic actions @{term PREP}, @{term WAIT} and @{term BUF} with the same parameters. 
-*}
+\<close>
 definition is_SK_IPC :: "raction_t list \<Rightarrow> bool"
 where "is_SK_IPC aseq \<equiv> \<exists> dir partner page .
                     aseq = [SK_IPC dir PREP partner page,SK_IPC dir WAIT partner page,SK_IPC dir (BUF (SOME page' . True)) partner page]"
-text {*
+text \<open>
 An @{term SK_EV_WAIT} consists of three atomic actions, one for each of the stages @{term EV_PREP}, @{term EV_WAIT} and @{term EV_FINISH} 
 with the same parameters. 
-*}
+\<close>
 definition is_SK_EV_WAIT :: "raction_t list \<Rightarrow> bool"
 where "is_SK_EV_WAIT aseq \<equiv> \<exists> consume .
                      aseq = [SK_EV_WAIT EV_PREP consume , 
                              SK_EV_WAIT EV_WAIT consume , 
                              SK_EV_WAIT EV_FINISH consume ]"
                     
-text {*
+text \<open>
 An @{term SK_EV_SIGNAL} consists of two atomic actions, one for each of the stages @{term EV_SIGNAL_PREP} and 
 @{term EV_SIGNAL_FINISH} with the same parameters. 
-*}
+\<close>
 definition is_SK_EV_SIGNAL :: "raction_t list \<Rightarrow> bool"
 where "is_SK_EV_SIGNAL aseq \<equiv> \<exists> partner .
                      aseq = [SK_EV_SIGNAL EV_SIGNAL_PREP partner, 
                              SK_EV_SIGNAL EV_SIGNAL_FINISH partner]"
                     
 
-text {*
+text \<open>
   The complete attack surface consists of IPC calls, events, and noops.
-*}
+\<close>
 definition rAS_set :: "raction_t list set"
   where "rAS_set \<equiv> { aseq . is_SK_IPC aseq \<or> is_SK_EV_WAIT aseq \<or> is_SK_EV_SIGNAL aseq } \<union> {[]}"
 
-subsubsection {* Control *}
-text {*
+subsubsection \<open>Control\<close>
+text \<open>
   When are actions aborting, and when are actions waiting.
   We do not currently use the @{term set_error_code} function yet.
-*}
+\<close>
 abbreviation raborting
   where "raborting s \<equiv> aborting (\<down>s)"
 abbreviation rwaiting
   where "rwaiting s \<equiv> waiting (\<down>s)"
 definition rset_error_code :: "rstate_t \<Rightarrow> raction_t \<Rightarrow> rstate_t"
   where "rset_error_code s a \<equiv> s"
-text {*
+text \<open>
   Returns the set of threads that are involved in a certain action.
   For example, for an IPC call, the @{term WAIT} stage synchronizes with the partner.
   This partner is involved in that action.
-*}
+\<close>
 definition rkinvolved :: "int_point_t \<Rightarrow> rdom_t set"
   where "rkinvolved a \<equiv> 
   case a of SK_IPC dir WAIT partner page \<Rightarrow> {partner}
@@ -185,7 +185,7 @@ abbreviation rinvolved :: "int_point_t option \<Rightarrow> rdom_t set"
 
 
 
-subsubsection {* Discharging the proof obligations\label{sect:discharging} *}
+subsubsection \<open>Discharging the proof obligations\label{sect:discharging}\<close>
 
 lemma inst_vpeq_rel:
   shows rvpeq_refl: "rvpeq u s s"
@@ -323,9 +323,9 @@ proof-
   from 1 2 assms show ?thesis unfolding rvpeq_def using vpeq_rel by metis
 qed
 
-text {*
+text \<open>
 For the @{term PREP} stage (the first stage of the IPC action sequence) the precondition is True.
-*}
+\<close>
 lemma prec_first_IPC_action:
 assumes "is_SK_IPC aseq"
   shows "rprecondition s d (hd aseq)"
@@ -333,9 +333,9 @@ using assms
 unfolding is_SK_IPC_def rprecondition_def atomic_step_precondition_def
 by auto
 
-text {*
+text \<open>
 For the the first stage of the @{term EV_WAIT} action sequence the precondition is True.
-*}
+\<close>
 lemma prec_first_EV_WAIT_action:
 assumes "is_SK_EV_WAIT aseq"
   shows "rprecondition s d (hd aseq)"
@@ -343,9 +343,9 @@ using assms
 unfolding is_SK_EV_WAIT_def rprecondition_def atomic_step_precondition_def
 by auto
 
-text {*
+text \<open>
 For the first stage of the @{term EV_SIGNAL} action sequence the precondition is True.
-*}
+\<close>
 lemma prec_first_EV_SIGNAL_action:
 assumes "is_SK_EV_SIGNAL aseq"
   shows "rprecondition s d (hd aseq)"
@@ -354,11 +354,11 @@ unfolding is_SK_EV_SIGNAL_def rprecondition_def atomic_step_precondition_def
           ev_signal_precondition_def
   by auto
 
-text {*
+text \<open>
 When not waiting or aborting, the precondition is ``1-step inductive'', that is at all times
 the precondition holds initially (for the first step of an action sequence) and after doing 
 one step.
-*}
+\<close>
 lemma prec_after_IPC_step:
 assumes prec: "rprecondition s (rcurrent s) (aseq ! n)" 
     and n_bound: "Suc n < length aseq"
@@ -401,9 +401,9 @@ thus ?thesis
   by(auto)
 qed
 
-text {*
+text \<open>
 When not waiting or aborting, the precondition is 1-step inductive.
-*}
+\<close>
 lemma prec_after_EV_WAIT_step:
 assumes prec: "rprecondition s (rcurrent s) (aseq ! n)" 
     and n_bound: "Suc n < length aseq"
@@ -449,9 +449,9 @@ thus ?thesis
 qed
 
 
-text {*
+text \<open>
 When not waiting or aborting, the precondition is 1-step inductive.
-*}
+\<close>
 lemma prec_after_EV_SIGNAL_step:
 assumes prec: "rprecondition s (rcurrent s) (aseq ! n)" 
     and n_bound: "Suc n < length aseq"

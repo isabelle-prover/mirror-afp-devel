@@ -5,7 +5,7 @@ theory IND_CPA_PK_Single imports
   CryptHOL.Computational_Model
 begin
 
-subsection {* The IND-CPA game (public key, single instance) *}
+subsection \<open>The IND-CPA game (public key, single instance)\<close>
 
 locale ind_cpa = 
   fixes key_gen :: "('pub_key \<times> 'priv_key) spmf" \<comment> \<open>probabilistic\<close>
@@ -14,12 +14,12 @@ locale ind_cpa =
   and valid_plains :: "'plain \<Rightarrow> 'plain \<Rightarrow> bool" \<comment> \<open>checks whether a pair of plaintexts is valid, i.e., they both have the right format\<close>
 begin
 
-text {*
+text \<open>
   We cannot incorporate the predicate @{term valid_plain} in the type @{typ "'plain"} of plaintexts,
   because the single @{typ "'plain"} must contain plaintexts for all values of the security parameter,
   as HOL does not have dependent types.  Consequently, the oracle has to ensure that the received
   plaintexts are valid.
-*}
+\<close>
 
 type_synonym ('pub_key', 'plain', 'cipher', 'state) adversary = 
   "('pub_key' \<Rightarrow> (('plain' \<times> 'plain') \<times> 'state) spmf)

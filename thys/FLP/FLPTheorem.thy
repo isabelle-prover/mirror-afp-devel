@@ -1,10 +1,10 @@
-section {* FLPTheorem *}
+section \<open>FLPTheorem\<close>
 
-text {*
+text \<open>
   \file{FLPTheorem} combines the results of \file{FLPSystem} with the concept
   of fair infinite executions and culminates in showing the impossibility
   of a consensus algorithm in the proposed setting.
-*}
+\<close>
 
 theory FLPTheorem
 imports Execution FLPSystem
@@ -21,9 +21,9 @@ assumes
   PseudoTermination: "\<And>cc Q . terminationPseudo 1 cc Q"
 begin
 
-subsection {* Obtaining non-uniform executions *}
+subsection \<open>Obtaining non-uniform executions\<close>
 
-text {*
+text \<open>
   Executions which end with a \isb{nonUniform} configuration can be expanded
   to a strictly longer execution consuming a particular message.
 
@@ -32,7 +32,7 @@ text {*
   the original proof of the theorem, i.e.\ finding the expansion to a longer
   execution where the decision for both values is still possible.
   \voelzer{constructing executions using Lemma 2}
-*}
+\<close>
 lemma NonUniformExecutionsConstructable:
 fixes
   exec :: "('p, 'v, 's ) configuration list " and
@@ -305,19 +305,19 @@ proof -
     using MinEnabledMsg by (metis execution.base)
 qed
 
-subsection {* Non-uniformity even when demanding fairness *}
+subsection \<open>Non-uniformity even when demanding fairness\<close>
 
-text {*
+text \<open>
   Using \isb{NonUniformExecutionBase} and \isb{NonUniformExecutionStep} one can obtain
   non-uniform executions which are fair.
 
   Proving the fairness turned out quite cumbersome.
-*}
+\<close>
 
-text {*
+text \<open>
   These two functions construct infinite series of configurations lists
   and message lists from two extension functions. 
-*}
+\<close>
 fun infiniteExecutionCfg ::
   "('p, 'v, 's) configuration \<Rightarrow>
    (('p, 'v, 's) configuration list \<Rightarrow> ('p, 'v) message list 
@@ -801,7 +801,7 @@ proof -
                   = msgInSet)"
                 using Occ4' Occ3' MessageStaysOrConsumed[of "n1" 
                   "length (fe index) - 1" "index" "msgInSet"]
-                by (metis Suc_pred' `0 < length (fe index)` 
+                by (metis Suc_pred' \<open>0 < length (fe index)\<close> 
                   not_le not_less_eq_eq)
               hence "enabled ((fe index) ! (length (fe index) - 1)) 
                 msgInSet" 
@@ -1126,7 +1126,7 @@ proof -
           qed
           thus False using AssumptionFairContr MessageIndex 
             AssumpMsgNotConsumed(1) 
-            by (metis `length (ft index) \<le> n0'` le_SucI le_trans)
+            by (metis \<open>length (ft index) \<le> n0'\<close> le_SucI le_trans)
         qed
 
         hence FirstOccSetDecrImpl: 
@@ -1174,13 +1174,13 @@ proof -
   qed
 qed
 
-subsection {* Contradiction *}
+subsection \<open>Contradiction\<close>
 
-text {*
+text \<open>
   An infinite execution is said to be a terminating FLP execution if each process
   at some point sends a decision message or if it stops, which is expressed
   by the process not processing any further messages.
-*}
+\<close>
 definition (in flpSystem) terminationFLP::
   "(nat \<Rightarrow> ('p, 'v, 's) configuration list) 
   \<Rightarrow> (nat \<Rightarrow> ('p, 'v) message list) \<Rightarrow> bool"
@@ -1409,15 +1409,15 @@ proof -
       hence OutMsgEx: "0 < msgs ((fe n) ! (i0 + 1)) <\<bottom>, outM b>" 
         using asynchronousSystem.steps_def DecidingPoint(3) by auto
       have "(i0 + 1) < length (fe n)"
-        using DecidingPoint(1) `i0 < length (fe n) - 1` by auto
+        using DecidingPoint(1) \<open>i0 < length (fe n) - 1\<close> by auto
       hence "initReachable ((fe n) ! (i0 + 1))" 
         using AllExecsFromInit Cfg(1) 
         by (metis asynchronousSystem.initReachable_def)
       hence Decided: "vDecided b ((fe n) ! (i0 + 1))" using OutMsgEx 
         by auto
       have "i0 + 1 < length (fe n)" using DecidingPoint(1) 
-        by (metis `(((i0::nat) + (1::nat)) < (length (
-          (fe::(nat \<Rightarrow> ('p, 'v, 's) configuration list)) (n::nat))))`)
+        by (metis \<open>(((i0::nat) + (1::nat)) < (length (
+          (fe::(nat \<Rightarrow> ('p, 'v, 's) configuration list)) (n::nat))))\<close>)
       hence "\<not> vDecided b ((fe n) ! (i0 + 1))" using NoDecided by auto
       hence "False" using Decided by auto
       thus "\<exists>n. (\<forall>n1>n. (\<forall> m \<in> (set (drop (length (ft n)) (ft n1))). 

@@ -4,14 +4,14 @@ imports TAO_9_PLM
 begin
 (*>*)
 
-section{* Possible Worlds *}
-text{* \label{TAO_PossibleWorlds} *}
+section\<open>Possible Worlds\<close>
+text\<open>\label{TAO_PossibleWorlds}\<close>
 
 locale PossibleWorlds = PLM
 begin
 
-subsection{* Definitions *}
-text{* \label{TAO_PossibleWorlds_Definitions} *}
+subsection\<open>Definitions\<close>
+text\<open>\label{TAO_PossibleWorlds_Definitions}\<close>
 
   definition Situation where
     "Situation x \<equiv> \<lparr>A!,x\<rparr> \<^bold>& (\<^bold>\<forall> F. \<lbrace>x,F\<rbrace> \<^bold>\<rightarrow> Propositional F)"
@@ -23,8 +23,8 @@ text{* \label{TAO_PossibleWorlds_Definitions} *}
   definition PossibleWorld where
     "PossibleWorld x \<equiv> Situation x \<^bold>& \<^bold>\<diamond>(\<^bold>\<forall> p . x\<^bold>\<Sigma>p \<^bold>\<equiv> p)"
 
-subsection{* Auxiliary Lemmas *}
-text{* \label{TAO_PossibleWorlds_Aux} *}
+subsection\<open>Auxiliary Lemmas\<close>
+text\<open>\label{TAO_PossibleWorlds_Aux}\<close>
 
   lemma possit_sit_1:
     "[Situation (x\<^sup>P) \<^bold>\<equiv> \<^bold>\<box>(Situation (x\<^sup>P)) in v]"
@@ -157,8 +157,8 @@ text{* \label{TAO_PossibleWorlds_Aux} *}
         unfolding PossibleWorld_def by (rule "\<^bold>&I")
     qed
 
-subsection{* For every syntactic Possible World there is a semantic Possible World *}
-text{* \label{TAO_PossibleWorlds_SyntacticSemantic} *}
+subsection\<open>For every syntactic Possible World there is a semantic Possible World\<close>
+text\<open>\label{TAO_PossibleWorlds_SyntacticSemantic}\<close>
 
   theorem SemanticPossibleWorldForSyntacticPossibleWorlds:
     "\<forall> x . [PossibleWorld (x\<^sup>P) in w] \<longrightarrow>
@@ -237,8 +237,8 @@ text{* \label{TAO_PossibleWorlds_SyntacticSemantic} *}
         by blast
     qed
 
-subsection{* For every semantic Possible World there is a syntactic Possible World *}
-text{* \label{TAO_PossibleWorlds_SemanticSyntactic} *}
+subsection\<open>For every semantic Possible World there is a syntactic Possible World\<close>
+text\<open>\label{TAO_PossibleWorlds_SemanticSyntactic}\<close>
 
   theorem SyntacticPossibleWorldForSemanticPossibleWorlds:
     "\<forall> v . \<exists> x . [PossibleWorld (x\<^sup>P) in w] \<and>

@@ -1,13 +1,13 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-section{* Invariants of (Plane) Graphs *}
+section\<open>Invariants of (Plane) Graphs\<close>
 
 theory Invariants
 imports FaceDivisionProps
 begin
 
-subsection{* Rotation of face into normal form *}
+subsection\<open>Rotation of face into normal form\<close>
 
 definition minVertex :: "face \<Rightarrow> vertex" where
 "minVertex f \<equiv> min_list (vertices f)"
@@ -25,7 +25,7 @@ apply (induct fl) by (auto simp: normFace_def normFaces_def)
 
 (***********************************************************************)
 
-subsection {* Minimal (plane) graph properties *}
+subsection \<open>Minimal (plane) graph properties\<close>
 
 definition minGraphProps' :: "graph \<Rightarrow> bool" where
   "minGraphProps' g \<equiv> \<forall>f \<in> \<F> g. 2 < |vertices f| \<and> distinct (vertices f)"
@@ -329,7 +329,7 @@ apply(auto)
 done
 
 
-subsection {* @{const containsDuplicateEdge} *}
+subsection \<open>@{const containsDuplicateEdge}\<close>
 
 definition
  containsUnacceptableEdgeSnd' :: "(nat \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> nat list \<Rightarrow> bool" where
@@ -388,7 +388,7 @@ declare Nat.diff_is_0_eq' [simp del]
 
 
 (********************************* replaceFacesAt ****************************)
-subsection{* @{const replacefacesAt} *}
+subsection\<open>@{const replacefacesAt}\<close>
 
 primrec replacefacesAt2 ::
   "nat list \<Rightarrow> face \<Rightarrow> face list \<Rightarrow> face list list \<Rightarrow> face list list" where
@@ -564,7 +564,7 @@ lemma len_nth_repAt[simp]:
 by (induct "is") (simp_all add: add:nth_list_update)
 
 
-subsection{*@{const normFace}*}
+subsection\<open>@{const normFace}\<close>
 
 (************************** min_list & minVertex **********************)
 
@@ -713,7 +713,7 @@ by (simp add: normFaces_def)
 
 
 
-subsection{* Invariants of @{const splitFace} *}
+subsection\<open>Invariants of @{const splitFace}\<close>
 (********************************** splitFace & minGraphProps *************************************)
 
 lemma splitFace_holds_minGraphProps':
@@ -1838,7 +1838,7 @@ proof -
       also have "\<dots> = (\<Union>(b,a)\<in>\<E> f\<^sub>2. {a})" by(auto simp:A)
       also have "\<dots> = \<V> f\<^sub>2"
         by(rule vertices_conv_Union_edges2[OF distf\<^sub>2, symmetric])
-      finally show False using `\<V> f\<^sub>1 \<noteq> \<V> f\<^sub>2` by blast
+      finally show False using \<open>\<V> f\<^sub>1 \<noteq> \<V> f\<^sub>2\<close> by blast
     qed
   qed
   { fix h :: face assume hg: "h \<in> \<F> g"
@@ -1853,12 +1853,12 @@ proof -
       assume "\<exists>x \<in> \<V> f\<^sub>1 \<inter> \<V> f\<^sub>2. x \<notin> \<V> g"
       then obtain x where "x \<in> \<V> f\<^sub>1" and "x \<in> \<V> f\<^sub>2" and "x \<notin> \<V> g"
         by blast
-      obtain y where "(x,y) \<in> \<E> f\<^sub>1" using `x \<in> \<V> f\<^sub>1`
+      obtain y where "(x,y) \<in> \<E> f\<^sub>1" using \<open>x \<in> \<V> f\<^sub>1\<close>
         by(auto simp:vertices_conv_Union_edges)
-      moreover obtain z where "(x,z) \<in> \<E> f\<^sub>2" using `x \<in> \<V> f\<^sub>2`
+      moreover obtain z where "(x,z) \<in> \<E> f\<^sub>2" using \<open>x \<in> \<V> f\<^sub>2\<close>
         by(auto simp:vertices_conv_Union_edges)
       moreover have "\<not>(\<exists>y. (y,x) \<in> \<E> h)"
-        using `x \<notin> \<V> g` minGraphProps9[OF mgp hg]
+        using \<open>x \<notin> \<V> g\<close> minGraphProps9[OF mgp hg]
         by(blast dest:in_edges_in_vertices)
       ultimately show ?thesis by blast
     qed
@@ -1910,7 +1910,7 @@ proof -
 qed
 
 
-subsection{* Invariants of @{const makeFaceFinal} *}
+subsection\<open>Invariants of @{const makeFaceFinal}\<close>
 
 
 lemma MakeFaceFinal_minGraphProps':
@@ -2061,7 +2061,7 @@ apply (simp add: MakeFaceFinal_minGraphProps' MakeFaceFinal_facesAt_eq
 done
 
 
-subsection{* Invariants of @{const subdivFace'} *}
+subsection\<open>Invariants of @{const subdivFace'}\<close>
 
 lemma subdivFace'_holds_minGraphProps: "\<And> f v' v n g.
   pre_subdivFace' g f v' v n ovl \<Longrightarrow> f \<in> \<F> g \<Longrightarrow>
@@ -2436,8 +2436,8 @@ apply (induct g) apply simp apply (simp add: edges_graph_def) apply auto apply (
 apply auto apply (simp add: is_nextElem_def) apply safe apply (simp add: is_sublist_def) apply force
 apply (case_tac "vertices x") apply simp apply (case_tac "list" rule: rev_exhaust) apply simp by simp
 
-text{* Requires only @{prop"distinct(vertices f)"} and that @{text g}
-has no self-loops. *}
+text\<open>Requires only @{prop"distinct(vertices f)"} and that \<open>g\<close>
+has no self-loops.\<close>
 
 lemma duplicateEdge_is_duplicateEdge_eq:
 "minGraphProps g \<Longrightarrow> f \<in> \<F> g \<Longrightarrow> a \<in> \<V> f \<Longrightarrow> b \<in> \<V> f \<Longrightarrow>
@@ -2495,7 +2495,7 @@ lemma minVertex_zero2: "minVertex (Face (rev [0..<Suc z]) Nonfinal) = 0"
   by (simp add: minVertex_def min_def)
 
 
-subsection{* Invariants of @{const Seed} *}
+subsection\<open>Invariants of @{const Seed}\<close>
 
 lemma Seed_holds_facesAt_distinct: "facesAt_distinct (Seed p)"
 apply(simp add: Seed_def graph_def
@@ -2626,7 +2626,7 @@ qed
 
 (* Interlude: increasing properties *)
 
-subsection{* Increasing properties of @{const subdivFace'} *}
+subsection\<open>Increasing properties of @{const subdivFace'}\<close>
 
 lemma subdivFace'_incr:
 assumes Ptrans: "\<And>x y z.  Q x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
@@ -2718,7 +2718,7 @@ done
 
 (* End of interlude *)
 
-subsubsection{* Increasing number of faces *}
+subsubsection\<open>Increasing number of faces\<close>
 
 lemma splitFace_incr_faces:
  "pre_splitFace g u v f vs \<Longrightarrow>
@@ -2773,7 +2773,7 @@ lemma two_faces_subdivFace':
 apply(drule (2) subdivFace'_incr_faces)
 using len_faces_sum[of g] len_faces_sum[of "subdivFace' g f v n ovs"] by arith
 
-subsection{* Main invariant theorems *}
+subsection\<open>Main invariant theorems\<close>
 
 lemma inv_genPoly:
 assumes inv: "inv g" and polygen: "g' \<in> set(generatePolygon i v f g)"

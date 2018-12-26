@@ -33,7 +33,7 @@ We model the core Kerberos 5 protocol:
 \<close>
 
 text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"}.\<close>
+\<open>dom\<close>.\<close>
 
 declare domIff [simp, iff del]
 

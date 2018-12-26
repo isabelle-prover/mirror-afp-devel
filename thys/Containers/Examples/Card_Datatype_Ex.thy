@@ -5,9 +5,9 @@ theory Card_Datatype_Ex imports
   "../Card_Datatype"
 begin
 
-subsection {* Examples *}
+subsection \<open>Examples\<close>
 
-subsubsection {* Finite types *}
+subsubsection \<open>Finite types\<close>
 
 datatype ('a, 'b) foo = Foo 'a | Bar 'a 'b | FooBar 'a 'b "'a + 'b" | Stop
 
@@ -89,7 +89,7 @@ by(simp add: UNIV_bar card_bar_def finite_UNIV_bar finite_UNIV_foo finite_prod f
 
 end
 
-subsection {* Infinite types *}
+subsection \<open>Infinite types\<close>
 
 datatype 'a tree = Leaf | Node 'a "'a tree" "'a tree"
 

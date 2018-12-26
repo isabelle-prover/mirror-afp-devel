@@ -1,7 +1,7 @@
 (*  Author:     Tobias Nipkow
 *)
 
-section {* More Rotation *}
+section \<open>More Rotation\<close>
 
 theory Rotation
 imports ListAux PlaneGraphIso

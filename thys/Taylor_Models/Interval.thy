@@ -185,7 +185,7 @@ lemma interval_eq_set_of_iff: "X = Y \<longleftrightarrow> set_of X = set_of Y" 
   by (auto simp: set_of_eq interval_eq_iff)
 
 
-subsection {* Membership *}
+subsection \<open>Membership\<close>
 
 abbreviation (in preorder) in_interval ("(_/ \<in>\<^sub>i _)" [51, 51] 50)
   where "in_interval x X \<equiv> x \<in> set_of X"

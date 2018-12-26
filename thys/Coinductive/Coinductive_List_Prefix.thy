@@ -3,13 +3,13 @@
     Maintainer:  Andreas Lochbihler
 *)
 
-section {* Instantiation of the order type classes for lazy lists *}
+section \<open>Instantiation of the order type classes for lazy lists\<close>
 theory Coinductive_List_Prefix imports
   Coinductive_List
   "HOL-Library.Prefix_Order"
 begin
 
-subsection {* Instantiation of the order type class *}
+subsection \<open>Instantiation of the order type class\<close>
 
 instantiation llist :: (type) order begin
 
@@ -54,7 +54,7 @@ proof(induct xs arbitrary: ys)
     by(cases ys)(auto simp add: LCons_lprefix_conv)
 qed simp
 
-subsection {* Prefix ordering as a lower semilattice *}
+subsection \<open>Prefix ordering as a lower semilattice\<close>
 
 instantiation llist :: (type) semilattice_inf begin
 

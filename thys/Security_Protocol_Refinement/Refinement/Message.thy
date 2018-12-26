@@ -143,7 +143,7 @@ by (blast dest: parts.Fst parts.Snd)
 declare MPair_parts [elim!]  parts.Body [dest!]
 text\<open>NB These two rules are UNSAFE in the formal sense, as they discard the
      compound message.  They work well on THIS FILE.
-  @{text MPair_parts} is left as SAFE because it speeds up proofs.
+  \<open>MPair_parts\<close> is left as SAFE because it speeds up proofs.
   The Crypt rule is normally kept UNSAFE to avoid breaking up certificates.\<close>
 
 lemma parts_increasing: "H \<subseteq> parts(H)"
@@ -205,7 +205,7 @@ text\<open>Added to simplify arguments to parts, analz and synth.
   NOTE: the UN versions are no longer used!\<close>
 
 
-text\<open>This allows @{text blast} to simplify occurrences of
+text\<open>This allows \<open>blast\<close> to simplify occurrences of
   @{term "parts(G\<union>H)"} in the assumption.\<close>
 lemmas in_parts_UnE = parts_Un [THEN equalityD1, THEN subsetD, THEN UnE]
 declare in_parts_UnE [elim!]
@@ -464,8 +464,8 @@ lemma analz_insert_Decrypt:
 by (intro equalityI lemma1 lemma2)
 
 text\<open>Case analysis: either the message is secure, or it is not! Effective,
-but can cause subgoals to blow up! Use with @{text "split_if"}; apparently
-@{text "split_tac"} does not cope with patterns such as @{term"analz (insert
+but can cause subgoals to blow up! Use with \<open>split_if\<close>; apparently
+\<open>split_tac\<close> does not cope with patterns such as @{term"analz (insert
 (Crypt K X) H)"}\<close>
 lemma analz_Crypt_if [simp]:
      "analz (insert (Crypt K X) H) =
@@ -580,7 +580,7 @@ text\<open>Monotonicity\<close>
 lemma synth_mono: "G\<subseteq>H ==> synth(G) \<subseteq> synth(H)"
   by (auto, erule synth.induct, auto)
 
-text\<open>NO @{text Agent_synth}, as any Agent name can be synthesized.
+text\<open>NO \<open>Agent_synth\<close>, as any Agent name can be synthesized.
   The same holds for @{term Number}\<close>
 inductive_cases Nonce_synth [elim!]: "Nonce n \<in> synth H"
 inductive_cases Key_synth   [elim!]: "Key K \<in> synth H"
@@ -810,7 +810,7 @@ declare parts.Body [rule del]
 
 
 text\<open>Rewrites to push in Key and Crypt messages, so that other messages can
-    be pulled out using the @{text analz_insert} rules\<close>
+    be pulled out using the \<open>analz_insert\<close> rules\<close>
 
 lemmas pushKeys =
   insert_commute [of "Key K" "Agent C" for K C]
@@ -828,12 +828,12 @@ lemmas pushCrypts =
   insert_commute [of "Crypt X K" "Hash X'"  for X K X']
   insert_commute [of "Crypt X K" "MPair X' Y"  for X K X' Y]
 
-text\<open>Cannot be added with @{text "[simp]"} -- messages should not always be
+text\<open>Cannot be added with \<open>[simp]\<close> -- messages should not always be
   re-ordered.\<close>
 lemmas pushes = pushKeys pushCrypts
 
 
-text\<open>By default only @{text o_apply} is built-in.  But in the presence of
+text\<open>By default only \<open>o_apply\<close> is built-in.  But in the presence of
 eta-expansion this means that some terms displayed as @{term "f o g"} will be
 rewritten, and others will not!\<close>
 declare o_def [simp]
@@ -859,7 +859,7 @@ apply (simp add: )
 apply (rule synth_analz_mono, blast)
 done
 
-text\<open>Two generalizations of @{text analz_insert_eq}\<close>
+text\<open>Two generalizations of \<open>analz_insert_eq\<close>\<close>
 lemma gen_analz_insert_eq [rule_format]:
      "X \<in> analz H ==> ALL G. H \<subseteq> G --> analz (insert X G) = analz G"
 by (blast intro: analz_cut analz_insertI analz_mono [THEN [2] rev_subsetD])

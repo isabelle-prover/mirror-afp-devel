@@ -4,7 +4,7 @@
 *)
 theory PTermi imports PLang begin
 
-subsection{*Termination*}
+subsection\<open>Termination\<close>
 
 inductive
   termi :: "com \<Rightarrow> state \<Rightarrow> bool" (infixl "\<down>" 50)

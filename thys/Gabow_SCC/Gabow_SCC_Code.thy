@@ -1,4 +1,4 @@
-section {* Code Generation for SCC-Computation \label{sec:scc_code}*}
+section \<open>Code Generation for SCC-Computation \label{sec:scc_code}\<close>
 theory Gabow_SCC_Code
 imports 
   Gabow_SCC 
@@ -6,7 +6,7 @@ imports
   CAVA_Base.CAVA_Code_Target
 begin
 
-section {* Automatic Refinement to Efficient Data Structures *}
+section \<open>Automatic Refinement to Efficient Data Structures\<close>
 context fr_graph_impl_loc
 begin
   schematic_goal last_seg_code_aux: 
@@ -54,7 +54,7 @@ end
 
 export_code compute_SCC_tr checking SML
 
-section {* Correctness Theorem *}
+section \<open>Correctness Theorem\<close>
 
 theorem compute_SCC_tr_correct:
   \<comment> \<open>Correctness theorem for the constant we extracted to SML\<close>
@@ -77,7 +77,7 @@ proof -
   finally show ?thesis using A by simp
 qed
 
-section {* Extraction of Benchmark Code *}
+section \<open>Extraction of Benchmark Code\<close>
 
 schematic_goal list_set_of_list_aux: 
   "(?c,set)\<in>\<langle>nat_rel\<rangle>list_rel \<rightarrow> \<langle>nat_rel\<rangle>list_set_rel"

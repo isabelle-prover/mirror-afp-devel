@@ -9,7 +9,7 @@
 
 *)
 
-section {* \isaheader{Set Implementation by Red-Black-Tree} *}
+section \<open>\isaheader{Set Implementation by Red-Black-Tree}\<close>
 theory RBTSetImpl
 imports 
   "../spec/SetSpec"
@@ -17,7 +17,7 @@ imports
   "../gen_algo/SetByMap"
   "../gen_algo/SetGA"
 begin
-text_raw {*\label{thy:RBTSetImpl}*}
+text_raw \<open>\label{thy:RBTSetImpl}\<close>
 (*@impl Set
   @type ('a::linorder) rs
   @abbrv rs,r
@@ -45,7 +45,7 @@ interpretation rs: StdSet_no_invar rs_ops
   by unfold_locales (simp add: icf_rec_unf SetByMapDefs.invar_def)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "rs"*}
+setup \<open>ICF_Tools.revert_abbrevs "rs"\<close>
 
 lemmas rbt_it_to_it_map_code_unfold[code_unfold] = 
   it_to_it_map_fold'[OF pi_rm]

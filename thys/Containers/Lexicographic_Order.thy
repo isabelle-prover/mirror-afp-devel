@@ -8,7 +8,7 @@ begin
 
 hide_const (open) List.lexordp
 
-section {* List fusion for lexicographic order *}
+section \<open>List fusion for lexicographic order\<close>
 
 context linorder begin
 
@@ -47,7 +47,7 @@ qed
 
 end
 
-subsection {* Setup for list fusion *}
+subsection \<open>Setup for list fusion\<close>
 
 context ord begin
 

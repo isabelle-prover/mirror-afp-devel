@@ -415,7 +415,7 @@ proof -
   define pts where "pts=proots_within p s" 
   define qts where "qts=proots_within q s"
   have [simp]: "finite pts" "finite qts" 
-    using `p*q\<noteq>0` unfolding pts_def qts_def by auto
+    using \<open>p*q\<noteq>0\<close> unfolding pts_def qts_def by auto
   have "(\<Sum>r\<in>pts \<union> qts. order r p) =  (\<Sum>r\<in>pts. order r p)" 
   proof (rule comm_monoid_add_class.sum.mono_neutral_cong_right,simp_all)
     show "\<forall>i\<in>pts \<union> qts - pts. order i p = 0" 
@@ -427,7 +427,7 @@ proof -
       unfolding pts_def qts_def proots_within_def using order_root by fastforce
   qed
   ultimately show ?thesis unfolding proots_count_def
-    apply (simp add:proots_within_times order_mult[OF `p*q\<noteq>0`] sum.distrib)
+    apply (simp add:proots_within_times order_mult[OF \<open>p*q\<noteq>0\<close>] sum.distrib)
     apply (fold pts_def qts_def)
     by auto
 qed
@@ -453,14 +453,14 @@ next
   case (Suc n)
   then have "degree p\<noteq>0" and "p\<noteq>0" by auto
   obtain z where "poly p z = 0" 
-    using Fundamental_Theorem_Algebra.fundamental_theorem_of_algebra `degree p\<noteq>0` constant_degree[of p]
+    using Fundamental_Theorem_Algebra.fundamental_theorem_of_algebra \<open>degree p\<noteq>0\<close> constant_degree[of p]
     by auto
   define onez where "onez=[:-z,1:]" 
   have [simp]: "onez\<noteq>0" "degree onez = 1" unfolding onez_def by auto
   obtain q where q_def:"p= onez * q" 
-    using poly_eq_0_iff_dvd `poly p z = 0` dvdE unfolding onez_def by blast
-  hence "q\<noteq>0" using `p\<noteq>0` by auto
-  hence "n=degree q" using degree_mult_eq[of onez q] `Suc n = degree p` 
+    using poly_eq_0_iff_dvd \<open>poly p z = 0\<close> dvdE unfolding onez_def by blast
+  hence "q\<noteq>0" using \<open>p\<noteq>0\<close> by auto
+  hence "n=degree q" using degree_mult_eq[of onez q] \<open>Suc n = degree p\<close> 
     apply (fold q_def)
     by auto
   hence "degree q = proots_count q UNIV" using Suc.hyps(1) by simp
@@ -468,7 +468,7 @@ next
     unfolding onez_def using proots_count_power_n_n[of z 1 UNIV]
     by auto
   ultimately show ?case 
-    unfolding q_def using degree_mult_eq[of onez q] proots_count_times[of onez q UNIV] `q\<noteq>0`
+    unfolding q_def using degree_mult_eq[of onez q] proots_count_times[of onez q UNIV] \<open>q\<noteq>0\<close>
     by auto
 qed
 

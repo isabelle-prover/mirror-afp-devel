@@ -15,9 +15,9 @@ imports
 begin
 
 (*>*)
-section{* Lifted predicates *}
+section\<open>Lifted predicates\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-lifted-predicates}
 
@@ -25,7 +25,7 @@ Typically we define predicates as functions of a state. The following
 provide a somewhat comfortable imitatation of Isabelle/HOL's
 operators.
 
-*}
+\<close>
 
 (*
 FIXME precedences probably need tweaking. @{text "pred_diff"}

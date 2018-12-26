@@ -10,14 +10,14 @@ begin
 
 subsection Introduction
 
-text {* 
+text \<open>
   In the following, we provide generators for the major classes 
   of the container framework: \texttt{ceq}, \texttt{corder}, \texttt{cenum},
   \texttt{set-impl}, and \texttt{mapping-impl}. 
 
   In this file we provide some common infrastructure on the ML-level which will
   be used by the individual generators.
-*}
+\<close>
 
 ML_file "containers_generator.ML"
 

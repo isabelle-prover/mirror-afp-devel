@@ -5,9 +5,9 @@ imports
 begin
 (*>*)
 
-subsection{* The Synchronous Perfect-Recall View *}
+subsection\<open>The Synchronous Perfect-Recall View\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-pr-view}
 
@@ -19,7 +19,7 @@ one.
 Intuitively it maintains a list of all observations made on the trace,
 with the length of the list recording the time:
 
-*}
+\<close>
 
 definition (in Environment) spr_jview :: "('a, 's, 'obs Trace) JointView" where
   "spr_jview a = tMap (envObs a)"
@@ -47,12 +47,12 @@ lemma spr_jview_prefix_closed[dest]:
 end
 
 (*>*)
-text{*
+text\<open>
 
 The corresponding incremental view appends a new observation to the
 existing ones:
 
-*}
+\<close>
 
 definition (in Environment) spr_jviewInit :: "'a \<Rightarrow> 'obs \<Rightarrow> 'obs Trace" where
   "spr_jviewInit \<equiv> \<lambda>a obs. tInit obs"
@@ -101,7 +101,7 @@ lemma (in Environment) spr_tLast[dest]:
 
 (*>*)
 
-text{*
+text\<open>
 
 \citet[Theorem~5]{Ron:1996} showed that it is not the case that
 finite-state implementations always exist with respect to the SPR
@@ -123,7 +123,7 @@ communicate.
 Note that these cases do overlap but none is wholly
 contained in another.
 
-*}
+\<close>
 
 (*<*)
 end

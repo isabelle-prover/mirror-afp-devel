@@ -4,7 +4,7 @@
     Tabulation for lookup functions
 *)
 
-section {* Tabulation for lookup functions *}
+section \<open>Tabulation for lookup functions\<close>
 
 theory TypeRelRefine
 imports
@@ -12,7 +12,7 @@ imports
   "HOL-Library.AList_Mapping"
 begin
 
-subsection {* Auxiliary lemmata *}
+subsection \<open>Auxiliary lemmata\<close>
 
 lemma rtranclp_tranclpE:
   assumes "r^** x y"
@@ -40,7 +40,7 @@ by(rule map.abs_eq)
 abbreviation subclst :: "'m prog \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"
 where "subclst P \<equiv> (subcls1 P)^++"
 
-subsection {* Representation type for tabulated lookup functions *}
+subsection \<open>Representation type for tabulated lookup functions\<close>
 
 type_synonym
   'm prog_impl' = 
@@ -74,7 +74,7 @@ where
   f = tabulate_sees_field P \<and>
   m = tabulate_Method P"
 
-subsection {* Implementation type for tabulated lookup functions *}
+subsection \<open>Implementation type for tabulated lookup functions\<close>
 
 typedef 'm prog_impl = "{P :: 'm prog_impl'. wf_prog_impl' P}"
   morphisms impl_of ProgRefine 
@@ -117,7 +117,7 @@ by(simp add: program_def)
 lemma class_program [code]: "class (program Pi) = Mapping.lookup (fst (snd (impl_of Pi)))" for Pi
 by(cases Pi)(clarsimp simp add: tabulate_class_def lookup.rep_eq Mapping_inverse)
 
-subsection {* Refining sub class and lookup functions to use precomputed mappings *}
+subsection \<open>Refining sub class and lookup functions to use precomputed mappings\<close>
 
 declare subcls'.equation [code del]
 
@@ -218,7 +218,7 @@ lemma field_program [code]:
 unfolding field_def
 by(cases Pi)(fastforce simp add: Predicate.the_def tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: if_split_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
-subsection {* Implementation for precomputing mappings *}
+subsection \<open>Implementation for precomputing mappings\<close>
 
 definition tabulate_program :: "'m cdecl list \<Rightarrow> 'm prog_impl"
 where "tabulate_program P = ProgRefine (P, tabulate_class P, tabulate_subcls P, tabulate_sees_field P, tabulate_Method P)"
@@ -231,13 +231,13 @@ lemma Program_code [code]:
   "Program = program \<circ> tabulate_program"
 by(simp add: program_def fun_eq_iff tabulate_program_def)
 
-subsubsection {* @{term "class" } *}
+subsubsection \<open>@{term "class" }\<close>
 
 lemma tabulate_class_code [code]:
   "tabulate_class = Mapping.of_alist"
   by transfer (simp add: fun_eq_iff)
 
-subsubsection {* @{term "subcls" } *}
+subsubsection \<open>@{term "subcls" }\<close>
 
 inductive subcls1' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> cname \<Rightarrow> bool"
 where 
@@ -326,20 +326,20 @@ apply(case_tac "map_of P x")
 apply auto
 done
 
-subsubsection {* @{term Fields} *}
+subsubsection \<open>@{term Fields}\<close>
 
-text {* 
+text \<open>
   Problem: Does not terminate for cyclic class hierarchies!
   This problem already occurs in Jinja's well-formedness checker: 
-  @{text wf_cdecl} calls @{text wf_mdecl} before checking for acyclicity, 
-  but @{text wf_J_mdecl} involves the type judgements, 
+  \<open>wf_cdecl\<close> calls \<open>wf_mdecl\<close> before checking for acyclicity, 
+  but \<open>wf_J_mdecl\<close> involves the type judgements, 
   which in turn requires @{term "Fields"} (via @{term sees_field}).
   Checking acyclicity before executing @{term "Fields'"} for tabulation is difficult
   because we would have to intertwine tabulation and well-formedness checking.
   Possible (local) solution:
   additional termination parameter (like memoisation for @{term "rtranclp"}) 
   and list option as error return parameter.
-*}
+\<close>
 inductive
   Fields' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> ((vname \<times> cname) \<times> (ty \<times> fmod)) list \<Rightarrow> bool"
 for P :: "'m cdecl list"
@@ -421,9 +421,9 @@ apply(rule ccontr)
 apply simp
 done
 
-subsubsection {* @{term "Methods" } *}
+subsubsection \<open>@{term "Methods" }\<close>
 
-text {* Same termination problem as for @{term Fields'} *}
+text \<open>Same termination problem as for @{term Fields'}\<close>
 inductive Methods' :: "'m cdecl list \<Rightarrow> cname \<Rightarrow> (mname \<times> (ty list \<times> ty \<times> 'm option) \<times> cname) list \<Rightarrow> bool"
   for P :: "'m cdecl list"
 where 
@@ -527,7 +527,7 @@ apply(simp only: set_map[symmetric] map_map o_def fst_conv)
 apply simp
 done
 
-text {* Merge modules TypeRel, Decl and TypeRelRefine to avoid cyclic modules *}
+text \<open>Merge modules TypeRel, Decl and TypeRelRefine to avoid cyclic modules\<close>
 
 code_identifier
   code_module TypeRel \<rightharpoonup>
@@ -537,6 +537,6 @@ code_identifier
 | code_module Decl \<rightharpoonup>
     (SML) TypeRel and (Haskell) TypeRel and (OCaml) TypeRel
 
-ML_val {* @{code Program} *}
+ML_val \<open>@{code Program}\<close>
 
 end

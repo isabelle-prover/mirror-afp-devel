@@ -43,7 +43,7 @@ where
        less = test A (\<lambda>x. x \<le> of_nat n)
    in (hits, less))"
 
-text {* @{term complete'} is @{term complete} without iteration *}
+text \<open>@{term complete'} is @{term complete} without iteration\<close>
 
 definition complete' :: "nat \<Rightarrow> Random.seed \<Rightarrow> (natural \<times> nat)"
 where "complete' n seed =

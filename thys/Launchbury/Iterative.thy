@@ -2,9 +2,9 @@ theory Iterative
 imports "Env-HOLCF"
 begin
 
-text {*
+text \<open>
 A setup for defining a fixed point of mutual recursive environments iteratively
-*}
+\<close>
 
 locale iterative =
   fixes \<rho> :: "'a::type \<Rightarrow> 'b::pcpo"

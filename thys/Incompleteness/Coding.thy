@@ -1,4 +1,4 @@
-chapter{*De Bruijn Syntax, Quotations, Codes, V-Codes*}
+chapter\<open>De Bruijn Syntax, Quotations, Codes, V-Codes\<close>
 
 theory Coding
 imports SyntaxN
@@ -6,7 +6,7 @@ begin
 
 declare fresh_Nil [iff]
 
-section {* de Bruijn Indices (locally-nameless version) *}
+section \<open>de Bruijn Indices (locally-nameless version)\<close>
 
 nominal_datatype dbtm = DBZero | DBVar name | DBInd nat | DBEats dbtm dbtm
 
@@ -176,9 +176,9 @@ proof -
   then show "(i \<leftrightarrow> c) \<bullet> A = (j \<leftrightarrow> c) \<bullet> B" by simp
 qed
 
-section{*Characterising the Well-Formed de Bruijn Formulas*}
+section\<open>Characterising the Well-Formed de Bruijn Formulas\<close>
 
-subsection{*Well-Formed Terms*}
+subsection\<open>Well-Formed Terms\<close>
 
 inductive wf_dbtm :: "dbtm \<Rightarrow> bool"
   where
@@ -249,7 +249,7 @@ lemma lookup_append: "lookup (e @ [i]) n j = abst_dbtm i (length e + n) (lookup 
 lemma trans_tm_abs: "trans_tm (e@[name]) t = abst_dbtm name (length e) (trans_tm e t)"
   by (induct t rule: tm.induct) (auto simp: lookup_notin lookup_append)
 
-subsection{*Well-Formed Formulas*}
+subsection\<open>Well-Formed Formulas\<close>
 
 nominal_function abst_dbfm :: "name \<Rightarrow> nat \<Rightarrow> dbfm \<Rightarrow> dbfm"
   where
@@ -281,7 +281,7 @@ lemma fresh_iff_non_subst_dbfm: "subst_dbfm DBZero i t = t \<longleftrightarrow>
   by (induct t rule: dbfm.induct) (auto simp: fresh_iff_non_subst_dbtm)
 
 
-section{*Well formed terms and formulas (de Bruijn representation)*}
+section\<open>Well formed terms and formulas (de Bruijn representation)\<close>
 
 inductive wf_dbfm :: "dbfm \<Rightarrow> bool"
   where
@@ -299,7 +299,7 @@ lemma atom_fresh_abst_dbtm [simp]: "atom i \<sharp> abst_dbtm i n t"
 lemma atom_fresh_abst_dbfm [simp]: "atom i \<sharp> abst_dbfm i n A"
   by (nominal_induct A arbitrary: n rule: dbfm.strong_induct) auto
 
-text{*Setting up strong induction: "avoiding" for name. Necessary to allow some proofs to go through*}
+text\<open>Setting up strong induction: "avoiding" for name. Necessary to allow some proofs to go through\<close>
 nominal_inductive wf_dbfm
   avoids Ex: name
   by (auto simp: fresh_star_def)
@@ -397,7 +397,7 @@ lemma subst_fm_trans_commute_eq:
   by (metis subst_fm_trans_commute)
 
 
-section{*Quotations*}
+section\<open>Quotations\<close>
 
 fun htuple :: "nat \<Rightarrow> hf"  where
    "htuple 0 = \<langle>0,0\<rangle>"
@@ -428,7 +428,7 @@ next
     by (cases j) (auto simp: Suc)
 qed
 
-subsection {*Quotations of de Bruijn terms *}
+subsection \<open>Quotations of de Bruijn terms\<close>
 
 definition nat_of_name :: "name \<Rightarrow> nat"
   where "nat_of_name x = nat_of (atom x)"
@@ -451,7 +451,7 @@ lemma name_of_nat_nat_of_name [simp]: "name_of_nat (nat_of_name i) = i"
 lemma HPair_neq_ORD_OF [simp]: "HPair x y \<noteq> ORD_OF i"
   by (metis Not_Ord_hpair Ord_ord_of eval_tm_HPair eval_tm_ORD_OF)
 
-text{*Infinite support, so we cannot use nominal primrec.*}
+text\<open>Infinite support, so we cannot use nominal primrec.\<close>
 function quot_dbtm :: "dbtm \<Rightarrow> tm"
   where
    "quot_dbtm DBZero = Zero"
@@ -481,9 +481,9 @@ qed
 lemma quot_dbtm_inject [iff]: "quot_dbtm t = quot_dbtm u \<longleftrightarrow> t=u"
   by (metis quot_dbtm_inject_lemma)
 
-subsection {*Quotations of de Bruijn formulas *}
+subsection \<open>Quotations of de Bruijn formulas\<close>
 
-text{*Infinite support, so we cannot use nominal primrec.*}
+text\<open>Infinite support, so we cannot use nominal primrec.\<close>
 function quot_dbfm :: "dbfm \<Rightarrow> tm"
   where
    "quot_dbfm (DBMem t u) = HPair (HTuple 0) (HPair (quot_dbtm t) (quot_dbtm u))"
@@ -549,7 +549,7 @@ lemma quot_Var: "\<lceil>Var x\<rceil> = SUCC (ORD_OF (nat_of_name x))"
 lemma quot_Eats: "\<lceil>Eats x y\<rceil> = HPair (HTuple 1) (HPair \<lceil>x\<rceil> \<lceil>y\<rceil>)"
   by (simp add: quot_tm_def)
 
-text{*irrelevance of the environment for quotations, because they are ground terms*}
+text\<open>irrelevance of the environment for quotations, because they are ground terms\<close>
 lemma eval_quot_dbtm_ignore:
     "\<lbrakk>quot_dbtm t\<rbrakk>e = \<lbrakk>quot_dbtm t\<rbrakk>e'"
   by (induct t rule: dbtm.induct) auto
@@ -596,7 +596,7 @@ lemma eval_quot_fm_ignore: fixes A:: fm shows "\<lbrakk>\<lceil>A\<rceil>\<rbrak
 
 lemmas quot_simps = quot_Var quot_Eats quot_Eq quot_Mem quot_Disj quot_Neg quot_Ex
 
-section{*Definitions Involving Coding*}
+section\<open>Definitions Involving Coding\<close>
 
 definition q_Var :: "name \<Rightarrow> hf"
   where "q_Var i \<equiv> succ (ord_of (nat_of_name i))"
@@ -690,9 +690,9 @@ lemma Q_Succ_cong: "H \<turnstile> x EQ x' \<Longrightarrow> H \<turnstile> Q_Su
   by (metis HPair_cong Refl)
 
   
-section{*Quotations are Injective*}
+section\<open>Quotations are Injective\<close>
 
-subsection{*Terms*}
+subsection\<open>Terms\<close>
 
 lemma eval_tm_inject [simp]: fixes t::tm shows "\<lbrakk>\<lceil>t\<rceil>\<rbrakk> e = \<lbrakk>\<lceil>u\<rceil>\<rbrakk> e \<longleftrightarrow> t=u"
 proof (induct t arbitrary: u rule: tm.induct)
@@ -710,7 +710,7 @@ next
     done
 qed
 
-subsection{*Formulas*}
+subsection\<open>Formulas\<close>
 
 lemma eval_fm_inject [simp]: fixes A::fm shows "\<lbrakk>\<lceil>A\<rceil>\<rbrakk> e = \<lbrakk>\<lceil>B\<rceil>\<rbrakk> e \<longleftrightarrow> A=B"
 proof (nominal_induct B arbitrary: A rule: fm.strong_induct)
@@ -734,7 +734,7 @@ next
     by (metis (no_types) Abs1_eq_iff_all(3) dbfm.eq_iff(5) fm.eq_iff(5) fresh_Nil trans_fm.simps(5))
 qed
 
-subsection{*The set @{text \<Gamma>} of Definition 1.1, constant terms used for coding*}
+subsection\<open>The set \<open>\<Gamma>\<close> of Definition 1.1, constant terms used for coding\<close>
 
 inductive coding_tm :: "tm \<Rightarrow> bool"
   where
@@ -778,9 +778,9 @@ lemma coding_tm_hf [simp]: "coding_tm t \<Longrightarrow> coding_hf \<lbrakk>t\<
   by (induct t rule: coding_tm.induct) auto
 
   
-section {*V-Coding for terms and formulas, for the Second Theorem *}
+section \<open>V-Coding for terms and formulas, for the Second Theorem\<close>
 
-text{*Infinite support, so we cannot use nominal primrec.*}
+text\<open>Infinite support, so we cannot use nominal primrec.\<close>
 function vquot_dbtm :: "name set \<Rightarrow> dbtm \<Rightarrow> tm"
   where
    "vquot_dbtm V DBZero = Zero"
@@ -796,7 +796,7 @@ termination
 lemma fresh_vquot_dbtm [simp]: "i \<sharp> vquot_dbtm V tm \<longleftrightarrow> i \<sharp> tm \<or> i \<notin> atom ` V"
   by (induct tm rule: dbtm.induct) (auto simp: fresh_at_base pure_fresh)
 
-text{*Infinite support, so we cannot use nominal primrec.*}
+text\<open>Infinite support, so we cannot use nominal primrec.\<close>
 function vquot_dbfm :: "name set \<Rightarrow> dbfm \<Rightarrow> tm"
   where
    "vquot_dbfm V (DBMem t u) = HPair (HTuple 0) (HPair (vquot_dbtm V t) (vquot_dbtm V u))"

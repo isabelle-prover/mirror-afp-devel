@@ -1,24 +1,24 @@
-section {* Automata *}
+section \<open>Automata\<close>
 (* Author: Peter Lammich *)
 theory Automata
 imports Digraph
 begin
-  text {*
+  text \<open>
     In this theory, we define Generalized Buchi Automata and Buchi Automata 
     based on directed graphs
-    *}
+\<close>
 
 hide_const (open) prod
   
 subsection "Generalized Buchi Graphs"
-text {*
+text \<open>
   A generalized Buchi graph is a graph where each node belongs to a set of
   acceptance classes. An infinite run on this graph is accepted, iff
   it visits nodes from each acceptance class infinitely often.
 
   The standard encoding of acceptance classes is as a set of sets of nodes,
   each inner set representing one acceptance class.
-*}
+\<close>
 
 record 'Q gb_graph_rec = "'Q graph_rec" +
   gbg_F :: "'Q set set"
@@ -152,11 +152,11 @@ begin
 end
 
 subsection "Generalized Buchi Automata"
-text {*
+text \<open>
   A GBA is obtained from a GBG by adding a labeling function, that associates
   each state with a set of labels. A word is accepted if there is an
   accepting run that can be labeld with this word.
-*}
+\<close>
 
 record ('Q,'L) gba_rec = "'Q gb_graph_rec" +
   gba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
@@ -281,7 +281,7 @@ qed
 
 subsection "Buchi Graphs"
 
-text {* A Buchi graph has exactly one acceptance class *}
+text \<open>A Buchi graph has exactly one acceptance class\<close>
 
 record 'Q b_graph_rec = "'Q graph_rec" +
   bg_F :: "'Q set"
@@ -329,7 +329,7 @@ begin
 end
 
 subsection "Buchi Automata"
-text {* Buchi automata are labeled Buchi graphs *}
+text \<open>Buchi automata are labeled Buchi graphs\<close>
 
 record ('Q,'L) ba_rec = "'Q b_graph_rec" +
   ba_L :: "'Q \<Rightarrow> 'L \<Rightarrow> bool"
@@ -515,7 +515,7 @@ begin
 
 end
 
-subsubsection {* Indexing Conversion *}
+subsubsection \<open>Indexing Conversion\<close>
 definition F_to_idx :: "'Q set set \<Rightarrow> (nat \<times> ('Q \<Rightarrow> nat set)) nres" where
   "F_to_idx F \<equiv> do {
     Flist \<leftarrow> SPEC (\<lambda>Flist. distinct Flist \<and> set Flist = F);
@@ -757,7 +757,7 @@ corollary (in gba) gba_to_idx_ext_lang_correct:
   apply auto
   done
 
-subsubsection {* Degeneralization *}
+subsubsection \<open>Degeneralization\<close>
 
 context igb_graph
 begin
@@ -865,7 +865,7 @@ begin
   proof (induction _ "(q,n)" p "(q',n')" arbitrary: q rule: path.induct)
     case (path_prepend qnh p)
     then obtain qh nh where [simp]: "qnh=(qh,nh)" by (cases qnh)
-    from `((q,n),qnh) \<in> degen.E T m` 
+    from \<open>((q,n),qnh) \<in> degen.E T m\<close> 
     have "nh=n \<or> (nh=(n+1) mod num_acc \<and> n\<in>acc q)"
       by (auto simp: degeneralize_ext_def split: if_split_asm)
     thus ?case proof
@@ -1010,10 +1010,10 @@ begin
           moreover from R have 
             "(r (k - 1), r k) \<in> degen.E T m"
             unfolding degen.is_run_def is_run_def ipath_def
-            by clarsimp (metis One_nat_def Suc_diff_1 `k - 1 < k` 
+            by clarsimp (metis One_nat_def Suc_diff_1 \<open>k - 1 < k\<close> 
               less_nat_zero_code neq0_conv)
           moreover have "n \<notin> acc (fst (r (k - 1)))"
-            using `\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> acc (fst (r k))` `i \<le> k - 1` `k - 1 < k` 
+            using \<open>\<forall>k\<ge>i. k < j \<longrightarrow> n \<notin> acc (fst (r k))\<close> \<open>i \<le> k - 1\<close> \<open>k - 1 < k\<close> 
               dual_order.strict_trans1 less.prems(2) 
               by blast
           ultimately show ?thesis
@@ -1023,7 +1023,7 @@ begin
     qed
 
     thus ?thesis 
-      by (metis `i \<le> j` `n \<in> local.acc (fst (r j))` 
+      by (metis \<open>i \<le> j\<close> \<open>n \<in> local.acc (fst (r j))\<close> 
         order_refl surjective_pairing)
   qed
       
@@ -1051,11 +1051,11 @@ begin
     using RI OFS
   proof (induction ofs arbitrary: q n i)
     case 0 
-    from degen_run_bound[OF NN0 R, of i] `r i = (q, n)` 
+    from degen_run_bound[OF NN0 R, of i] \<open>r i = (q, n)\<close> 
     have NLE: "n<num_acc" 
       by simp
 
-    with degen_acc_run_complete_aux1'[OF NN0 R ACC `r i = (q, n)`] show ?case
+    with degen_acc_run_complete_aux1'[OF NN0 R ACC \<open>r i = (q, n)\<close>] show ?case
       by auto
   next
     case (Suc ofs)
@@ -1069,7 +1069,7 @@ begin
       by (auto simp: degeneralize_ext_def mod_simps)
 
     have aux: "\<And>j'. i\<le>j \<Longrightarrow> Suc j \<le> j' \<Longrightarrow> i\<le>j'" by auto
-    from degen_acc_run_complete_aux1'[OF NN0 R ACC RSJ] `j\<ge>i` 
+    from degen_acc_run_complete_aux1'[OF NN0 R ACC RSJ] \<open>j\<ge>i\<close> 
     show ?case 
       by (auto dest: aux)
   qed
@@ -1101,7 +1101,7 @@ begin
       fix i
       obtain q n where RI: "r' (Suc i) = (q,n)" by (cases "r' (Suc i)")
       have "(n + (num_acc - n mod num_acc)) mod num_acc = 0"
-        by (metis NN0 R' `r' (Suc i) = (q, n)` add_diff_cancel_left' 
+        by (metis NN0 R' \<open>r' (Suc i) = (q, n)\<close> add_diff_cancel_left' 
           degen_run_bound less_imp_add_positive mod_self nat_mod_eq' snd_conv)
       then obtain ofs where 
         OFS_LESS: "ofs<num_acc" 
@@ -1138,24 +1138,24 @@ begin
 
     from Least_le[where P="\<lambda>k. i<k \<and> snd (r k) \<noteq> n", folded k_def]
     have LEK_EQN: "\<forall>k'. i\<le>k' \<and> k'<k \<longrightarrow> snd (r k') = n"
-      using `r i = (q,n)`
+      using \<open>r i = (q,n)\<close>
       by clarsimp (metis le_neq_implies_less not_le snd_conv)
-    hence SND_RKMO: "snd (r (k - 1)) = n" using `i<k` by auto
+    hence SND_RKMO: "snd (r (k - 1)) = n" using \<open>i<k\<close> by auto
     moreover from R have "(r (k - 1), r k) \<in> degen.E T m"
-      unfolding degen.is_run_def ipath_def using `i<k`
+      unfolding degen.is_run_def ipath_def using \<open>i<k\<close>
       by clarsimp (metis Suc_pred gr_implies_not0 neq0_conv) 
-    moreover note `snd (r k) \<noteq> n`
+    moreover note \<open>snd (r k) \<noteq> n\<close>
     ultimately have "n \<in> acc (fst (r (k - 1)))"
       by (auto simp: degeneralize_ext_def split: if_split_asm)
     moreover have "k - 1 < j" using A LEK_EQN 
       apply (rule_tac ccontr)
       apply clarsimp
-      by (metis One_nat_def `snd (r (k - 1)) = n` less_Suc_eq 
+      by (metis One_nat_def \<open>snd (r (k - 1)) = n\<close> less_Suc_eq 
         less_imp_diff_less not_less_eq snd_conv)
     ultimately show thesis
       apply -
       apply (rule that[of "k - 1" "fst (r (k - 1))"])
-      using `i<k` SND_RKMO by auto
+      using \<open>i<k\<close> SND_RKMO by auto
   qed
 
 
@@ -1172,7 +1172,7 @@ begin
     from ACC have ACC': "\<forall>i. \<exists>j>i. r j \<in> degen.F T m"
       by (auto simp: INFM_nat)
     
-    show ?thesis using `n<num_acc`
+    show ?thesis using \<open>n<num_acc\<close>
     proof (induction n)
       case 0 thus ?case using A by auto
     next
@@ -1182,16 +1182,16 @@ begin
         unfolding degen.is_run_def ipath_def
         by auto
       ultimately obtain qsj where RSJ: "r (Suc j) = (qsj,Suc n)"
-        unfolding degeneralize_ext_def using `Suc n<num_acc` by auto
+        unfolding degeneralize_ext_def using \<open>Suc n<num_acc\<close> by auto
       
       from ACC' obtain k q0 where "Suc j \<le> k" "r k = (q0, 0)"
         unfolding degeneralize_ext_def apply auto
         by (metis less_imp_le_nat)
-      from degen_run_find_change[OF NN0 R `Suc j \<le> k` RSJ `r k = (q0, 0)`] 
+      from degen_run_find_change[OF NN0 R \<open>Suc j \<le> k\<close> RSJ \<open>r k = (q0, 0)\<close>] 
       obtain l ql where
         "Suc j \<le> l" "l < k" "r l = (ql, Suc n)" "Suc n \<in> acc ql" 
         by blast
-      thus ?case using `i \<le> j`
+      thus ?case using \<open>i \<le> j\<close>
         by (intro exI[where x=l] exI[where x=ql]) auto
     qed
   qed
@@ -1222,13 +1222,13 @@ begin
         assume NLESS: "n<num_acc"
         show "\<exists>j>i. n \<in> acc (fst (r j))"
         proof (cases n)
-          case 0 thus ?thesis using `j>i` RJ ACCJ by auto
+          case 0 thus ?thesis using \<open>j>i\<close> RJ ACCJ by auto
         next
           case [simp]: (Suc n')
           from degen_run_find_acc_aux[OF NN0 A RJ ACCJ NLESS] obtain k qk where
             "j\<le>k" "r k = (qk,n)" "n \<in> acc qk" by auto
           thus ?thesis
-            by (metis `i < j` dual_order.strict_trans1 fst_conv)
+            by (metis \<open>i < j\<close> dual_order.strict_trans1 fst_conv)
         qed
       qed
       hence "\<forall>n<num_acc. \<exists>\<^sub>\<infinity>i. n \<in> acc (fst (r i))"
@@ -1251,10 +1251,10 @@ begin
 end
 
 subsection "System Automata"
-text {*
+text \<open>
   System automata are (finite) rooted graphs with a labeling function. They are 
   used to describe the model (system) to be checked.
-*}
+\<close>
 
 record ('Q,'L) sa_rec = "'Q graph_rec" +
   sa_L :: "'Q \<Rightarrow> 'L"
@@ -1277,11 +1277,11 @@ begin
 end
 
 subsubsection "Product Construction"
-text {*
+text \<open>
   In this section we formalize the product construction between a GBA and a system
   automaton. The result is a GBG and a projection function, such that projected 
   runs of the GBG correspond to words accepted by the GBA and the system.
-*}
+\<close>
 
 locale igba_sys_prod_precond = igba: igba G + sa: sa S for
   G :: "('q,'l,'moreG) igba_rec_scheme"

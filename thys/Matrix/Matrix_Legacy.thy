@@ -23,7 +23,7 @@ You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 
-section {* Basic Operations on Matrices *}
+section \<open>Basic Operations on Matrices\<close>
 
 theory Matrix_Legacy
 imports
@@ -31,19 +31,19 @@ imports
   Ordered_Semiring
 begin
 
-text {* This theory is marked as legacy, since there is a better
+text \<open>This theory is marked as legacy, since there is a better
   implementation of matrices available in @{file "../Jordan_Normal_Form/Matrix.thy"}.
   That formalization is more abstract, more complete in terms of operations,
-  and it still provides an efficient implementation. *}
+  and it still provides an efficient implementation.\<close>
 
-text {*
+text \<open>
   This theory provides the operations of matrix addition, multiplication,
   and transposition as executable functions.
   Most properties are proven via pointwise equality of matrices.
-*}
+\<close>
 
 
-subsection {* types and well-formedness of vectors / matrices *}
+subsection \<open>types and well-formedness of vectors / matrices\<close>
 
 type_synonym 'a vec = "'a list"
 type_synonym 'a mat = "'a vec list" (* list of column-vectors *)
@@ -57,13 +57,13 @@ definition vec :: "nat \<Rightarrow> 'x vec \<Rightarrow> bool"
 definition mat :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> bool" where
  "mat nr nc m = (length m = nc \<and> Ball (set m) (vec nr))"
 
-subsection {* definitions / algorithms *}
+subsection \<open>definitions / algorithms\<close>
 
-text {* note that these algorithms are generic in all basic definitions / operations
+text \<open>note that these algorithms are generic in all basic definitions / operations
 like 0 (ze) 1 (on) addition (pl) multiplication (ti) and in the dimension(s) of the matrix/vector.
 Hence, many of these algorithms require these definitions/operations/sizes as arguments.
 All indices start from 0.
-*}
+\<close>
 
 (* the 0 vector *)
 definition vec0I :: "'a \<Rightarrow> nat \<Rightarrow> 'a vec" where
@@ -137,7 +137,7 @@ definition vec_map :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a vec \<Rightarrow> 
 definition mat_map :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a mat \<Rightarrow> 'a mat"
   where "mat_map f = map (vec_map f)"
 
-subsection {* algorithms preserve dimensions *}
+subsection \<open>algorithms preserve dimensions\<close>
 
 lemma vec0[simp,intro]: "vec nr (vec0I ze nr)"
   by (simp add: vec_def vec0I_def)
@@ -238,7 +238,7 @@ lemma transpose[simp,intro]: assumes "mat nr nc m"
 using assms
 proof (induct m arbitrary: nc)
   case (Cons v m)
-  from `mat nr nc (v # m)` obtain ncc where nc: "nc = Suc ncc" by (cases nc, auto simp: mat_def)
+  from \<open>mat nr nc (v # m)\<close> obtain ncc where nc: "nc = Suc ncc" by (cases nc, auto simp: mat_def)
   with Cons have wfRec: "mat ncc nr (transpose nr m)" unfolding mat_def by auto
   have "min nr (length (transpose nr m)) = nr" using wfRec unfolding mat_def by auto
   moreover have "Ball (set (transpose nr (v # m))) (vec nc)"
@@ -253,7 +253,7 @@ proof (induct m arbitrary: nc)
     thus ?thesis
       by (auto simp: vec_def nc)
   qed
-  moreover from `mat nr nc (v # m)` have wfV: "length v = nr" unfolding mat_def by (simp add: vec_def)
+  moreover from \<open>mat nr nc (v # m)\<close> have wfV: "length v = nr" unfolding mat_def by (simp add: vec_def)
   ultimately
   show ?case unfolding mat_def
     by (intro conjI, auto simp: wfV wfRec mat_def vec_def)
@@ -293,7 +293,7 @@ lemma sub_mat[simp,intro]: assumes wf: "mat nr nc m" and sr: "sr \<le> nr" and s
 using assms in_set_takeD[of _ sc m] sub_vec[OF _ sr] unfolding mat_def sub_mat_def by auto
 
 
-subsection {* properties of algorithms which do not depend on properties of type of matrix *}
+subsection \<open>properties of algorithms which do not depend on properties of type of matrix\<close>
 
 lemma mat0_index[simp]: assumes "i < nc" and "j < nr"
   shows "mat0I ze nr nc ! i ! j = ze"
@@ -329,7 +329,7 @@ proof -
       thus ?thesis by (simp add: nth_append)
     next
       case False
-      with `j \<noteq> i` have gt: "j > i" by auto
+      with \<open>j \<noteq> i\<close> have gt: "j > i" by auto
       from this have "\<exists> k. j = i + Suc k" by arith
       from this obtain k where k: "j = i + Suc k" by auto
       with j show ?thesis by (simp add: nth_append)
@@ -345,8 +345,8 @@ lemma col_transpose_is_row[simp]:
 using wf
 proof (induct m arbitrary: nc)
   case (Cons v m)
-  from `mat nr nc (v # m)` obtain ncc where nc: "nc = Suc ncc" and wf: "mat nr ncc m"  by (cases nc, auto simp: mat_def)
-  from `mat nr nc (v # m)` nc have lengths: "(\<forall> w \<in> set m. length w = nr) \<and> length v = nr \<and> length m = ncc" unfolding mat_def by (auto simp: vec_def)
+  from \<open>mat nr nc (v # m)\<close> obtain ncc where nc: "nc = Suc ncc" and wf: "mat nr ncc m"  by (cases nc, auto simp: mat_def)
+  from \<open>mat nr nc (v # m)\<close> nc have lengths: "(\<forall> w \<in> set m. length w = nr) \<and> length v = nr \<and> length m = ncc" unfolding mat_def by (auto simp: vec_def)
   from wf Cons have colRec: "col (transpose nr m) i = row m i" by auto
   hence simpme: "transpose nr m ! i = row m i" unfolding col_def by auto
   from wf have trans: "mat ncc nr (transpose nr m)" by (rule transpose)
@@ -372,7 +372,7 @@ next
   proof (rule nth_equalityI)
     show "length m1 = length m2" using wf1 wf2 unfolding mat_def by auto
   next
-    from `?r` show "\<And>i. i < length m1 \<Longrightarrow> m1 ! i = m2 ! i" using wf1 unfolding col_def mat_def by auto
+    from \<open>?r\<close> show "\<And>i. i < length m1 \<Longrightarrow> m1 ! i = m2 ! i" using wf1 unfolding col_def mat_def by auto
   qed
 qed
 
@@ -398,7 +398,7 @@ next
     proof (rule nth_equalityI)
       show "length (m1 ! i)  = length (m2 ! i)" using wf1 wf2 i unfolding mat_def by (auto simp: vec_def)
     next
-      from `?r` i show "\<And>j. j < length (m1 ! i) \<Longrightarrow> m1 ! i ! j = m2 ! i ! j" 
+      from \<open>?r\<close> i show "\<And>j. j < length (m1 ! i) \<Longrightarrow> m1 ! i ! j = m2 ! i ! j" 
         using wf1 wf2 unfolding mat_def by (auto simp: vec_def)
     qed
   qed
@@ -422,7 +422,7 @@ next
   proof (rule nth_equalityI)
     from wf1 wf2 show "length v1 = length v2" unfolding vec_def by simp
   next
-    from `?r` wf1 show "\<And>i. i < length v1 \<Longrightarrow> v1 ! i = v2 ! i" unfolding vec_def by simp
+    from \<open>?r\<close> wf1 show "\<And>i. i < length v1 \<Longrightarrow> v1 ! i = v2 ! i" unfolding vec_def by simp
   qed
 qed
 
@@ -483,7 +483,7 @@ next
         show "m1 ! i ! j = m2 ! i ! j" if j: "j < length (m1 ! i)" for j
         proof -
           from i j wf1 have i1: "i < nc" and j1: "j < nr" unfolding mat_def by (auto simp: vec_def)
-          from `?r` j1 have "col m1 i ! j = col m2 i ! j"
+          from \<open>?r\<close> j1 have "col m1 i ! j = col m2 i ! j"
             by (simp add: row_col[OF wf1 j1 i1, symmetric] row_col[OF wf2 j1 i1, symmetric])
           thus "m1 ! i ! j = m2 ! i ! j" unfolding col_def .
         qed
@@ -712,7 +712,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* lemmas requiring properties of plus, times, ... *}
+subsection \<open>lemmas requiring properties of plus, times, ...\<close>
 
 context plus
 begin
@@ -869,7 +869,7 @@ proof (induct m arbitrary: nc c)
 next
   case (Cons v m)
   from this obtain ncc where nc: "nc = Suc ncc" and wf: "mat nr ncc m" unfolding mat_def by (auto simp: vec_def)
-  from nc `vec nc c` obtain a cc where c: "c = a # cc" and wfc: "vec ncc cc" unfolding vec_def by (cases c, auto)
+  from nc \<open>vec nc c\<close> obtain a cc where c: "c = a # cc" and wfc: "vec ncc cc" unfolding vec_def by (cases c, auto)
   have rec: "scalar_prod (map (\<lambda> k. scalar_prod r (m ! k)) [0..<ncc]) cc = scalar_prod r (map (\<lambda> k. scalar_prod (row m k) cc) [0..<nr])"
     by (rule Cons, rule wf, rule wfc)
   have id: "map (\<lambda>k. scalar_prod r ((v # m) ! k)) [0..<Suc ncc] = scalar_prod r v # map (\<lambda> k. scalar_prod r (m ! k)) [0..<ncc]" by (induct ncc, auto)
@@ -1165,7 +1165,7 @@ end
 
 declare vec0[simp del] mat0[simp del] vec0_plus[simp del] plus_vec0[simp del] plus_mat0[simp del]
 
-subsection {* Connection to HOL-Algebra *}
+subsection \<open>Connection to HOL-Algebra\<close>
 
 definition mat_monoid :: "nat \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> (('a :: {plus,zero}) mat,'b) monoid_scheme" where
   "mat_monoid nr nc b \<equiv> \<lparr>

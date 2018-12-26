@@ -1,7 +1,7 @@
 (* Title: Cyclic_Group.thy
   Author: Andreas Lochbihler, ETH Zurich *)
 
-section {* Cyclic groups *}
+section \<open>Cyclic groups\<close>
 
 theory Cyclic_Group imports
   "HOL-Algebra.Coset"
@@ -50,12 +50,12 @@ proof(rule inj_onI)
           by(simp add: nat_pow_pow nat_pow_mult div_mult_mod_eq)
         also have "\<dots> = \<^bold>g [^] (k mod ?d)"
           using \<open>\<^bold>g [^] ?d = \<one>\<close> by simp
-        finally show "x \<in> (\<lambda>n. \<^bold>g [^] n) ` {..<?d}" using `n < m` by auto
+        finally show "x \<in> (\<lambda>n. \<^bold>g [^] n) ` {..<?d}" using \<open>n < m\<close> by auto
       qed
       hence "order G \<le> card ((\<lambda>n. \<^bold>g [^] n) ` {..<?d})"
         by(simp add: order_def card_mono)
       also have "\<dots> \<le> card {..<?d}" by(rule card_image_le) simp
-      also have "\<dots> < order G" using `m < order G` by simp
+      also have "\<dots> < order G" using \<open>m < order G\<close> by simp
       finally have False by simp }
     with \<open>n \<le> m\<close> show "n = m" by(auto simp add: order.order_iff_strict)
   qed

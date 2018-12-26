@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Program Compilation *}
+section \<open>Program Compilation\<close>
 
 theory PCompiler
 imports
@@ -20,9 +20,9 @@ where "compC f  \<equiv>  \<lambda>(C,D,Fdecls,Mdecls). (C,D,Fdecls, map (compM 
 primrec compP :: "(cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'a \<Rightarrow> 'b) \<Rightarrow> 'a prog \<Rightarrow> 'b prog"
 where "compP f (Program P) = Program (map (compC f) P)"
 
-text{* Compilation preserves the program structure.  Therfore lookup
+text\<open>Compilation preserves the program structure.  Therfore lookup
 functions either commute with compilation (like method lookup) or are
-preserved by it (like the subclass relation). *}
+preserved by it (like the subclass relation).\<close>
 
 lemma map_of_map4:
   "map_of (map (\<lambda>(x,a,b,c).(x,a,b,f x a b c)) ts) =
@@ -208,7 +208,7 @@ lemma [simp]: "field (compP f P) F D = field P F D"
 (*<*)by(simp add:field_def)(*>*)
 
 
-subsection{*Invariance of @{term wf_prog} under compilation *}
+subsection\<open>Invariance of @{term wf_prog} under compilation\<close>
 
 lemma [iff]: "distinct_fst (classes (compP f P)) = distinct_fst (classes P)"
 (*<*)
@@ -472,7 +472,7 @@ unfolding heap_conf_read_def heap_conf_read_axioms_def
 unfolding compP_heap_conf heap_base.compP_conf heap_base.compP_addr_loc_type 
 by(rule refl)
 
-text {* compiler composition *}
+text \<open>compiler composition\<close>
 
 lemma compM_compM:
   "compM f (compM g md) = compM (\<lambda>M Ts T. f M Ts T \<circ> g M Ts T) md"

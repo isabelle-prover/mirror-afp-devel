@@ -4,15 +4,15 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 (Based on the SIFUM-Type-Systems AFP entry, whose authors
  are: Sylvia Grewe, Heiko Mantel, Daniel Schoepe)
 *)
-section {* Type System for Ensuring SIFUM-Security of Commands *}
+section \<open>Type System for Ensuring SIFUM-Security of Commands\<close>
 
 theory TypeSystem
 imports Compositionality Language
 begin
 
-subsection {* Typing Rules *}
+subsection \<open>Typing Rules\<close>
 
-text {*
+text \<open>
   Types now depend on memories. To see why, consider an assignment in which some variable
   @{term x} for which we have a @{term AsmNoReadOrWrite} assumption is assigned the value in 
   variable @{term input}, but where @{term input}'s classification depends on some control
@@ -27,10 +27,10 @@ text {*
   
   We choose to deeply embed types as sets of boolean expressions. If any expression in the
   set evaluates to @{term True}, the type is @{term High}; otherwise it is @{term Low}.
-*}
+\<close>
 type_synonym 'BExp Type = "'BExp set"
 
-text {*
+text \<open>
   We require @{term \<Gamma>} to track all stable (i.e. @{term AsmNoWrite} or @{term AsmNoReadOrWrite}), 
   non-@{term \<C>} variables.
   
@@ -42,10 +42,10 @@ text {*
   so that we don't need to be updating @{term \<Gamma>} each time we alter a control variable.
   Even if we tried to keep @{term \<Gamma>} up-to-date in that case, we may not be able to 
   precisely compute the new classification of each variable after the modification anyway.
-*}
+\<close>
 type_synonym ('Var,'BExp) TyEnv = "'Var \<rightharpoonup> 'BExp Type"
 
-text {*
+text \<open>
   This records which variables are \emph{stable} in that we have an assumption
   implying that their value won't change. It duplicates a bit of info in
   @{term \<Gamma>} above but I haven't yet thought of a way to remove that duplication
@@ -59,10 +59,10 @@ text {*
   e.g. @{term AsmNoWrite} but also have @{term AsmNoReadOrWrite} then if we didn't track
   stability info this way we wouldn't know whether we had to remove the variable from
   @{term \<Gamma>} or not.
-*}
+\<close>
 type_synonym 'Var Stable = "('Var set \<times> 'Var set)"
 
-text {*
+text \<open>
   We track a set of predicates on memories as we execute. If we evaluate a boolean expression
   all of whose variables are stable, then we enrich this set predicate with that one.
   If we assign to a stable variable, then we enrich this predicate also.
@@ -73,7 +73,7 @@ text {*
   @{typ "('Var,'Val) Mem \<Rightarrow> bool"} or even @{typ "('Var,'Val) Mem set"}), because we need to be 
   able to identify each individual predicate and for each predicate identify all of the
   variables in it, so we can discard the right predicates each time a variable becomes unstable.
-*}
+\<close>
 type_synonym 'bexp preds = "'bexp set"
 
 context sifum_lang_no_dma begin
@@ -167,9 +167,9 @@ end
 context sifum_types_assign begin
 
 
-text {*
+text \<open>
   the most simple assignment postcondition transformer
-*}
+\<close>
 definition
   assign_post :: "'BExp preds \<Rightarrow> 'Var \<Rightarrow> 'AExp \<Rightarrow> 'BExp preds"
 where
@@ -311,7 +311,7 @@ lemma type_bexpr_type_wellformed:
 inductive_cases type_bexpr_elim [elim]: "\<Gamma> \<turnstile>\<^sub>b e \<in> t"
 
 
-text {*
+text \<open>
   Define a sufficient condition for a type to be stable, assuming the type is wellformed.
   
   We need this because there is no point tracking the fact that e.g. variable @{term x}'s data has
@@ -322,7 +322,7 @@ text {*
   @{term c}'s \emph{old} value, which has now been lost.
   
   Therefore, if a type depends on @{term c}, then @{term c} had better be stable.
-*}
+\<close>
 abbreviation
   pred_stable :: "'Var Stable \<Rightarrow> 'BExp \<Rightarrow> bool"
 where
@@ -467,10 +467,10 @@ definition
 where
   "P \<turnstile> P' \<equiv> \<forall>mem. pred P mem \<longrightarrow> pred P' mem"
 
-text {*
+text \<open>
   We give a predicate interpretation of subtype and then prove it has the correct
   semantic property.
-*}
+\<close>
 definition
   subtype :: "'BExp Type \<Rightarrow> 'BExp preds \<Rightarrow> 'BExp Type \<Rightarrow> bool" ("_ \<le>:\<^sub>_ _" [120, 120, 120] 1000)
 where
@@ -773,20 +773,20 @@ lemma skip_type':
   "\<lbrakk>\<Gamma> = \<Gamma>'; \<S> = \<S>'; P = P'\<rbrakk> \<Longrightarrow> \<turnstile> \<Gamma>,\<S>,P {Skip} \<Gamma>',\<S>',P'"
   using skip_type by simp
 
-text {*
+text \<open>
   Some helper lemmas to discharge the assumption of the @{thm anno_type} rule.
-*}
+\<close>
 lemma anno_type_helpers [simp]:
   "(to_total \<Gamma> x) \<le>:\<^sub>P (to_total (add_anno \<Gamma> \<S> (buffer +=\<^sub>m AsmNoWrite)) x)"
   "(to_total \<Gamma> x) \<le>:\<^sub>P (to_total (add_anno \<Gamma> \<S> (buffer +=\<^sub>m AsmNoReadOrWrite)) x)"
   apply(auto simp: to_total_def add_anno_def subtype_def intro: subset_entailment)
   done
 
-subsection {* Typing Soundness *}
+subsection \<open>Typing Soundness\<close>
 
-text {* The following predicate is needed to exclude some pathological
+text \<open>The following predicate is needed to exclude some pathological
   cases, that abuse the @{term Stop} command which is not allowed to
-  occur in actual programs. *}
+  occur in actual programs.\<close>
 
 
 inductive_cases has_type_elim: "\<turnstile> \<Gamma>,\<S>,P { c } \<Gamma>',\<S>',P'"
@@ -802,10 +802,10 @@ lemma type_max_dma_type [simp]:
   done
 
   
-text {*
+text \<open>
   This result followed trivially for Mantel et al., but we need to know that the
   type environment is wellformed.
-*}
+\<close>
 lemma tyenv_eq_sym': 
   "dom \<Gamma> \<inter> \<C> = {} \<Longrightarrow> types_wellformed \<Gamma> \<Longrightarrow> mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2 \<Longrightarrow> mem\<^sub>2 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>1"
 proof(clarsimp simp: tyenv_eq_def)
@@ -1031,7 +1031,7 @@ proof clarsimp
       fix x
       assume "x \<in> dom \<Gamma>"
       hence "type_wellformed (the (\<Gamma> x))"
-        using `tyenv_wellformed mds \<Gamma> \<S> P`
+        using \<open>tyenv_wellformed mds \<Gamma> \<S> P\<close>
         by(auto simp: tyenv_wellformed_def types_wellformed_def)
       moreover have "\<forall>x\<in>\<C>. mem x = mem' x"
         using in_\<R>\<^sub>1 \<R>\<^sub>1_mem_eq \<C>_Low stuff
@@ -1519,7 +1519,7 @@ proof (induct arbitrary: c' mds rule: has_type.induct)
   case (anno_type \<Gamma>'' \<Gamma> \<S> upd \<S>'' P'' P c\<^sub>1 \<Gamma>' \<S>' P')
   hence step: "\<langle>c\<^sub>1, update_modes upd mds, mem\<rangle> \<leadsto> \<langle>c', mds', mem'\<rangle>"
     by (metis upd_elim)
-  from `no_await (c\<^sub>1@[upd])` no_await.cases have "no_await c\<^sub>1" by fast
+  from \<open>no_await (c\<^sub>1@[upd])\<close> no_await.cases have "no_await c\<^sub>1" by fast
   with step anno_type(5) obtain \<Gamma>''' \<S>''' P''' where
     "\<turnstile> \<Gamma>''',\<S>''',P''' { c' } \<Gamma>',\<S>',P' \<and> 
     (tyenv_wellformed (update_modes upd mds) \<Gamma>'' \<S>'' P'' \<and> pred P'' mem \<and> tyenv_sec (update_modes upd mds) \<Gamma>'' mem \<longrightarrow>
@@ -1622,7 +1622,7 @@ next
       assume [simp]: "v = x"
       hence [simp]: "(the ((\<Gamma>(x \<mapsto> t)) v)) = t" and t_def: "t = t'"
         using \<Gamma>v by auto
-      from `v \<notin> mds' AsmNoReadOrWrite` upd wf have readable: "v \<notin> snd \<S>"
+      from \<open>v \<notin> mds' AsmNoReadOrWrite\<close> upd wf have readable: "v \<notin> snd \<S>"
         by(auto simp: tyenv_wellformed_def mds_consistent_def)
       with assign\<^sub>2(5) have "t \<le>:\<^sub>P' (dma_type x)" by fastforce
       with pred' show ?thesis
@@ -1633,7 +1633,7 @@ next
       hence [simp]: "((\<Gamma>(x \<mapsto> t)) v) = \<Gamma> v"
         by simp
       with \<Gamma>v have \<Gamma>v: "\<Gamma> v = Some t'" by simp
-      with sec upd `v \<notin> mds' AsmNoReadOrWrite` have f_leq: "type_max t' mem \<le> dma mem v"
+      with sec upd \<open>v \<notin> mds' AsmNoReadOrWrite\<close> have f_leq: "type_max t' mem \<le> dma mem v"
         by auto
       have \<C>_eq: "\<forall>x\<in>\<C>. mem x = mem' x"
         using wf assign\<^sub>2(1) upd by(auto simp: tyenv_wellformed_def mds_consistent_def)
@@ -1665,7 +1665,7 @@ next
     fix v t'
     assume wf: "tyenv_wellformed mds \<Gamma> \<S> P"
     assume pred: "pred P mem"
-    hence pred': "pred P' mem'" using `pred P mem \<longrightarrow> pred P' mem'` by blast
+    hence pred': "pred P' mem'" using \<open>pred P mem \<longrightarrow> pred P' mem'\<close> by blast
     assume sec: "tyenv_sec mds \<Gamma> mem"
     assume \<Gamma>v: "\<Gamma> v = Some t'"
     assume readable': "v \<notin> mds' AsmNoReadOrWrite"
@@ -1674,7 +1674,7 @@ next
     show "type_max (the (\<Gamma> v)) mem' \<le> dma mem' v"
     proof(cases "x \<in> \<C>_vars v")
       assume "x \<in> \<C>_vars v"
-      with assign\<^sub>\<C>(6) `v \<notin> snd \<S>` have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
+      with assign\<^sub>\<C>(6) \<open>v \<notin> snd \<S>\<close> have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
       from pred' \<Gamma>v subtype_correct this show ?thesis
         using type_max_dma_type by(auto simp: to_total_def split: if_splits)
     next
@@ -1686,7 +1686,7 @@ next
       from \<Gamma>v assign\<^sub>\<C>(4) have "x \<notin> vars_of_type t'" by force
       have "type_wellformed t'"
         using wf \<Gamma>v by(force simp: tyenv_wellformed_def types_wellformed_def)
-      with `x \<notin> vars_of_type t'` upd have f_eq: "type_max t' mem = type_max t' mem'"
+      with \<open>x \<notin> vars_of_type t'\<close> upd have f_eq: "type_max t' mem = type_max t' mem'"
         using vars_of_type_eq_type_max_eq by fastforce
       from sec \<Gamma>v readable have "type_max t' mem \<le> dma mem v"
         by auto
@@ -1786,7 +1786,7 @@ next
     assume "c\<^sub>1 \<noteq> Stop"
     then obtain c\<^sub>1' where step: "\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = (c\<^sub>1' ;; c\<^sub>2)"
       by (metis seq_elim seq_type.prems)
-    then have "no_await c\<^sub>1" using `no_await (c\<^sub>1 ;; c\<^sub>2)` no_await.cases by blast
+    then have "no_await c\<^sub>1" using \<open>no_await (c\<^sub>1 ;; c\<^sub>2)\<close> no_await.cases by blast
     then obtain \<Gamma>''' \<S>''' P''' where "\<turnstile> \<Gamma>''',\<S>''',P''' {c\<^sub>1'} \<Gamma>\<^sub>1,\<S>\<^sub>1,P\<^sub>1 \<and>
       (tyenv_wellformed mds \<Gamma> \<S> P \<and> pred P mem \<and> tyenv_sec mds \<Gamma> mem \<longrightarrow> 
        tyenv_wellformed mds' \<Gamma>''' \<S>''' P''' \<and> pred P''' mem' \<and> tyenv_sec mds' \<Gamma>''' mem')"
@@ -1797,7 +1797,7 @@ next
     moreover
     ultimately show ?case
       apply (rule_tac x = \<Gamma>''' in exI)
-      using `\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = c\<^sub>1' ;; c\<^sub>2` by blast
+      using \<open>\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = c\<^sub>1' ;; c\<^sub>2\<close> by blast
   qed
 next
   case (sub \<Gamma>\<^sub>1 \<S> P\<^sub>1 c \<Gamma>\<^sub>1' \<S>' P\<^sub>1' \<Gamma>\<^sub>2 P\<^sub>2 \<Gamma>\<^sub>2' P\<^sub>2' c' mds)
@@ -1959,7 +1959,7 @@ next
       assume [simp]: "v = x"
       hence [simp]: "(the ((\<Gamma>(x \<mapsto> t)) v)) = t" and t_def: "t = t'"
         using \<Gamma>v by auto
-      from `v \<notin> mds' AsmNoReadOrWrite` upd wf have readable: "v \<notin> snd \<S>"
+      from \<open>v \<notin> mds' AsmNoReadOrWrite\<close> upd wf have readable: "v \<notin> snd \<S>"
         by(auto simp: tyenv_wellformed_def mds_consistent_def)
       with assign\<^sub>2(5) have "t \<le>:\<^sub>P' (dma_type x)" by fastforce
       with pred' show ?thesis
@@ -1970,7 +1970,7 @@ next
       hence [simp]: "((\<Gamma>(x \<mapsto> t)) v) = \<Gamma> v"
         by simp
       with \<Gamma>v have \<Gamma>v: "\<Gamma> v = Some t'" by simp
-      with sec upd `v \<notin> mds' AsmNoReadOrWrite` have f_leq: "type_max t' mem \<le> dma mem v"
+      with sec upd \<open>v \<notin> mds' AsmNoReadOrWrite\<close> have f_leq: "type_max t' mem \<le> dma mem v"
         by auto
       have \<C>_eq: "\<forall>x\<in>\<C>. mem x = mem' x"
         using wf assign\<^sub>2(1) upd by(auto simp: tyenv_wellformed_def mds_consistent_def)
@@ -2002,7 +2002,7 @@ next
     fix v t'
     assume wf: "tyenv_wellformed mds \<Gamma> \<S> P"
     assume pred: "pred P mem"
-    hence pred': "pred P' mem'" using `pred P mem \<longrightarrow> pred P' mem'` by blast
+    hence pred': "pred P' mem'" using \<open>pred P mem \<longrightarrow> pred P' mem'\<close> by blast
     assume sec: "tyenv_sec mds \<Gamma> mem"
     assume \<Gamma>v: "\<Gamma> v = Some t'"
     assume readable': "v \<notin> mds' AsmNoReadOrWrite"
@@ -2011,7 +2011,7 @@ next
     show "type_max (the (\<Gamma> v)) mem' \<le> dma mem' v"
     proof(cases "x \<in> \<C>_vars v")
       assume "x \<in> \<C>_vars v"
-      with assign\<^sub>\<C>(6) `v \<notin> snd \<S>` have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
+      with assign\<^sub>\<C>(6) \<open>v \<notin> snd \<S>\<close> have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
       from pred' \<Gamma>v subtype_sound[OF this] show ?thesis
         using type_max_dma_type by(auto simp: to_total_def split: if_splits)
     next
@@ -2023,7 +2023,7 @@ next
       from \<Gamma>v assign\<^sub>\<C>(4) have "x \<notin> vars_of_type t'" by force
       have "type_wellformed t'"
         using wf \<Gamma>v by(force simp: tyenv_wellformed_def types_wellformed_def)
-      with `x \<notin> vars_of_type t'` upd have f_eq: "type_max t' mem = type_max t' mem'"
+      with \<open>x \<notin> vars_of_type t'\<close> upd have f_eq: "type_max t' mem = type_max t' mem'"
         using vars_of_type_eq_type_max_eq by fastforce
       from sec \<Gamma>v readable have "type_max t' mem \<le> dma mem v"
         by auto
@@ -2133,7 +2133,7 @@ next
     moreover
     ultimately show ?case
       apply (rule_tac x = \<Gamma>''' in exI)
-      using `\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = c\<^sub>1' ;; c\<^sub>2` by blast
+      using \<open>\<langle>c\<^sub>1, mds, mem\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem'\<rangle> \<and> c' = c\<^sub>1' ;; c\<^sub>2\<close> by blast
   qed
 next
   case (sub \<Gamma>\<^sub>1 \<S> P\<^sub>1 c \<Gamma>\<^sub>1' \<S>' P\<^sub>1' \<Gamma>\<^sub>2 P\<^sub>2 \<Gamma>\<^sub>2' P\<^sub>2' c' mds)
@@ -2325,7 +2325,7 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
     hence [simp]: "c\<^sub>1' = c\<^sub>2" "mds' = mds" "mem\<^sub>1' = mem\<^sub>1"
       using seq_type
       by (auto simp: seq_stop_elim)
-    from seq_type `c\<^sub>1 = Stop` have "context_equiv \<Gamma> P \<Gamma>''" and "\<S> = \<S>''" and "P \<turnstile> P''" and
+    from seq_type \<open>c\<^sub>1 = Stop\<close> have "context_equiv \<Gamma> P \<Gamma>''" and "\<S> = \<S>''" and "P \<turnstile> P''" and
                                    "(\<forall>mds. tyenv_wellformed mds \<Gamma> \<S> P \<longrightarrow> tyenv_wellformed  mds \<Gamma>'' \<S> P'')"
       by (metis stop_cxt)+
     hence "\<turnstile> \<Gamma>,\<S>,P { c\<^sub>2 } \<Gamma>',\<S>',P'"
@@ -2335,21 +2335,21 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
          by auto
     have "\<langle>c\<^sub>2, mds, mem\<^sub>1\<rangle> \<R>\<^sup>1\<^bsub>\<Gamma>',\<S>',P'\<^esub> \<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle>"
       apply (rule \<R>\<^sub>1.intro [of \<Gamma>])
-           apply(rule `\<turnstile> \<Gamma>,\<S>,P { c\<^sub>2 } \<Gamma>',\<S>',P'`)
+           apply(rule \<open>\<turnstile> \<Gamma>,\<S>,P { c\<^sub>2 } \<Gamma>',\<S>',P'\<close>)
           using seq_type by auto
     thus ?case
       using \<R>.intro\<^sub>1
       apply clarify
       apply (rule_tac x = c\<^sub>2 in exI)
       apply (rule_tac x = mem\<^sub>2 in exI)
-      by (auto simp: `c\<^sub>1 = Stop` seq_stop_eval\<^sub>w  \<R>.intro\<^sub>1)
+      by (auto simp: \<open>c\<^sub>1 = Stop\<close> seq_stop_eval\<^sub>w  \<R>.intro\<^sub>1)
   next
     assume "c\<^sub>1 \<noteq> Stop"
-    with `\<langle>c\<^sub>1 ;; c\<^sub>2, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>` obtain c\<^sub>1'' where c\<^sub>1''_props:
+    with \<open>\<langle>c\<^sub>1 ;; c\<^sub>2, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>\<close> obtain c\<^sub>1'' where c\<^sub>1''_props:
       "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = c\<^sub>1'' ;; c\<^sub>2"
       by (metis seq_elim)
-    with `no_await (c\<^sub>1 ;; c\<^sub>2)` have "no_await c\<^sub>1" using no_await.cases by blast
-    with seq_type(2) `no_await c\<^sub>1` obtain c\<^sub>2'' mem\<^sub>2' where c\<^sub>2''_props:
+    with \<open>no_await (c\<^sub>1 ;; c\<^sub>2)\<close> have "no_await c\<^sub>1" using no_await.cases by blast
+    with seq_type(2) \<open>no_await c\<^sub>1\<close> obtain c\<^sub>2'' mem\<^sub>2' where c\<^sub>2''_props:
       "\<langle>c\<^sub>1, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle> \<and> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>'',P''\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>"
       using seq_type.prems(1) seq_type.prems(2) seq_type.prems(3) seq_type.prems(4) seq_type.prems(5) c\<^sub>1''_props
       by blast
@@ -2372,7 +2372,7 @@ next
     assume a: "type_max (to_total \<Gamma>' x) mem\<^sub>1 = Low"
     hence "type_max (to_total \<Gamma> x) mem\<^sub>1 = Low"
     proof -
-      from `pred P mem\<^sub>1` have "pred P' mem\<^sub>1"
+      from \<open>pred P mem\<^sub>1\<close> have "pred P' mem\<^sub>1"
         using anno_type.hyps(3)
         by(auto simp: restrict_preds_to_vars_def pred_def)
       with subtype_correct anno_type.hyps(7) a 
@@ -2406,12 +2406,12 @@ next
       apply(fastforce simp: tyenv_wellformed_def mds_consistent_def)
      using anno_type apply(fastforce simp: tyenv_wellformed_def mds_consistent_def)
     by simp
-  from `no_await (c@[upd])` have "no_await c" using no_await.cases by blast
+  from \<open>no_await (c@[upd])\<close> have "no_await c" using no_await.cases by blast
   ultimately obtain c\<^sub>2' mem\<^sub>2' where "(\<langle>c, update_modes upd mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle> \<and>
     \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>'',P''\<^esub> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>)"
     using anno_type
     apply auto    
-    using `mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2` local.pred_def restrict_preds_to_vars_def upd_elim `no_await c`
+    using \<open>mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2\<close> local.pred_def restrict_preds_to_vars_def upd_elim \<open>no_await c\<close>
       (* TODO: cleanup *)
       using \<open>tyenv_wellformed mds \<Gamma> \<S> P \<and> pred P mem\<^sub>1 \<and> (\<forall>x\<in>dom \<Gamma>. x \<notin> mds AsmNoReadOrWrite \<longrightarrow> type_max (the (\<Gamma> x)) mem\<^sub>1 \<le> dma mem\<^sub>1 x) \<longrightarrow> (\<forall>x\<in>dom \<Gamma>'. x \<notin> update_modes upd mds AsmNoReadOrWrite \<longrightarrow> type_max (the (\<Gamma>' x)) mem\<^sub>1 \<le> dma mem\<^sub>1 x)\<close> mem_Collect_eq by fastforce try0
   thus ?case
@@ -2456,15 +2456,15 @@ next (* assign\<^sub>1 *)
         unfolding to_total_def by (auto split: if_splits)
       have "type_max t' mem\<^sub>1 = type_max t' mem\<^sub>1'"
         apply(rule \<C>_eq_type_max_eq)
-         using `\<Gamma> v = Some t'` assign\<^sub>1(6) 
+         using \<open>\<Gamma> v = Some t'\<close> assign\<^sub>1(6) 
          unfolding tyenv_wellformed_def types_wellformed_def
-         apply (metis `v \<in> dom \<Gamma>` option.sel)
+         apply (metis \<open>v \<in> dom \<Gamma>\<close> option.sel)
                 
         using assign\<^sub>1(2) apply simp
         done
       with is_Low' have is_Low: "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
         by simp
-      from assign\<^sub>1(1) `v \<in> dom \<Gamma>` have "x \<noteq> v" by auto
+      from assign\<^sub>1(1) \<open>v \<in> dom \<Gamma>\<close> have "x \<noteq> v" by auto
       thus ?thesis
         apply simp
         using is_Low assign\<^sub>1(7) unfolding tyenv_eq_def by auto
@@ -2517,7 +2517,7 @@ next (* assign\<^sub>1 *)
   by (auto, metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.assign)
 
   from \<R>' a show ?case
-    using `c\<^sub>1' = Stop` and `mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)`
+    using \<open>c\<^sub>1' = Stop\<close> and \<open>mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)\<close>
     by blast
 next (* assign\<^sub>\<C> *)
   case (assign\<^sub>\<C> x \<Gamma> e t P P' \<S> mds)
@@ -2546,7 +2546,7 @@ next (* assign\<^sub>\<C> *)
         using vars_of_type_eq_type_max_eq by simp
       with is_Low' have is_Low: "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
         by simp  
-      from assign\<^sub>\<C>(1) `v \<in> dom \<Gamma>` assign\<^sub>\<C>(7) have "x \<noteq> v"
+      from assign\<^sub>\<C>(1) \<open>v \<in> dom \<Gamma>\<close> assign\<^sub>\<C>(7) have "x \<noteq> v"
         by(auto simp: tyenv_wellformed_def mds_consistent_def)
       thus ?thesis
         apply simp
@@ -2581,17 +2581,17 @@ next (* assign\<^sub>\<C> *)
           with assign\<^sub>\<C>(9) have "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
             by(auto simp: type_max_def pred_def pred_entailment_def)
           thus ?thesis
-            using not_sym[OF `x \<noteq> v`]
+            using not_sym[OF \<open>x \<noteq> v\<close>]
             apply simp
             using assign\<^sub>\<C>(8)
             unfolding tyenv_eq_def by auto
         next
           assume "x \<notin> \<C>_vars v"
           with is_Low' have "dma mem\<^sub>1 v = Low"
-            using dma_\<C>_vars `\<And>mem. type_max (to_total \<Gamma> v) mem = dma mem v`
+            using dma_\<C>_vars \<open>\<And>mem. type_max (to_total \<Gamma> v) mem = dma mem v\<close>
             by (metis fun_upd_other)
           thus ?thesis
-            using not_sym[OF `x \<noteq> v`]
+            using not_sym[OF \<open>x \<noteq> v\<close>]
             apply simp
             using assign\<^sub>\<C>(8)
             unfolding tyenv_eq_def by auto            
@@ -2611,7 +2611,7 @@ next (* assign\<^sub>\<C> *)
     fix v t'
     assume wf: "tyenv_wellformed mds \<Gamma> \<S> P"
     assume pred: "pred P mem\<^sub>1"
-    hence pred': "pred P' mem\<^sub>1'" using `pred P mem\<^sub>1 \<longrightarrow> pred P' mem\<^sub>1'` by blast
+    hence pred': "pred P' mem\<^sub>1'" using \<open>pred P mem\<^sub>1 \<longrightarrow> pred P' mem\<^sub>1'\<close> by blast
     assume sec: "tyenv_sec mds \<Gamma> mem\<^sub>1"
     assume \<Gamma>v: "\<Gamma> v = Some t'"
     assume readable': "v \<notin> mds' AsmNoReadOrWrite"
@@ -2620,7 +2620,7 @@ next (* assign\<^sub>\<C> *)
     show "type_max (the (\<Gamma> v)) mem\<^sub>1' \<le> dma mem\<^sub>1' v"
     proof(cases "x \<in> \<C>_vars v")
       assume "x \<in> \<C>_vars v"
-      with assign\<^sub>\<C>(6) `v \<notin> snd \<S>` have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
+      with assign\<^sub>\<C>(6) \<open>v \<notin> snd \<S>\<close> have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
       from pred' \<Gamma>v subtype_correct this show ?thesis
         using type_max_dma_type by(auto simp: to_total_def split: if_splits)
     next
@@ -2632,7 +2632,7 @@ next (* assign\<^sub>\<C> *)
       from \<Gamma>v assign\<^sub>\<C>(4) have "x \<notin> vars_of_type t'" by force
       have "type_wellformed t'"
         using wf \<Gamma>v by(force simp: tyenv_wellformed_def types_wellformed_def)
-      with `x \<notin> vars_of_type t'` upd have f_eq: "type_max t' mem\<^sub>1 = type_max t' mem\<^sub>1'"
+      with \<open>x \<notin> vars_of_type t'\<close> upd have f_eq: "type_max t' mem\<^sub>1 = type_max t' mem\<^sub>1'"
         using vars_of_type_eq_type_max_eq by fastforce
       from sec \<Gamma>v readable have "type_max t' mem\<^sub>1 \<le> dma mem\<^sub>1 v"
         by auto
@@ -2651,14 +2651,14 @@ next (* assign\<^sub>\<C> *)
   by (auto, metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.assign)
 
   from \<R>' a show ?case
-    using `c\<^sub>1' = Stop` and `mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)`
+    using \<open>c\<^sub>1' = Stop\<close> and \<open>mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)\<close>
     by blast
 next (* assign\<^sub>2 *)
   case (assign\<^sub>2 x \<Gamma> e t \<S> P' P mds)
   have upd [simp]: "c\<^sub>1' = Stop" "mds' = mds" "mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)"
     using assign_elim[OF assign\<^sub>2(11)]
     by auto
-  from `x \<in> dom \<Gamma>` `tyenv_wellformed mds \<Gamma> \<S> P`
+  from \<open>x \<in> dom \<Gamma>\<close> \<open>tyenv_wellformed mds \<Gamma> \<S> P\<close>
   have x_nin_\<C>: "x \<notin> \<C>"
     by(auto simp: tyenv_wellformed_def mds_consistent_def)
   hence dma_eq [simp]: "dma mem\<^sub>1' = dma mem\<^sub>1"
@@ -2691,7 +2691,7 @@ next (* assign\<^sub>2 *)
           apply(rule \<C>_eq_type_max_eq)
             using assign\<^sub>2(6) 
             apply(clarsimp simp: tyenv_wellformed_def types_wellformed_def)
-            using `v \<in> dom \<Gamma>` `\<Gamma> v = Some t'` apply(metis option.sel)
+            using \<open>v \<in> dom \<Gamma>\<close> \<open>\<Gamma> v = Some t'\<close> apply(metis option.sel)
            using x_nin_\<C> by simp
         from this is_Low' neq neq[THEN not_sym] show "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
           by auto
@@ -2700,19 +2700,19 @@ next (* assign\<^sub>2 *)
         with is_Low' neq
         have "dma mem\<^sub>1' v = Low"
           by(auto simp: to_total_def  split: if_splits)
-        with dma_eq `v \<notin> dom \<Gamma>` show ?thesis
+        with dma_eq \<open>v \<notin> dom \<Gamma>\<close> show ?thesis
           by(auto simp: to_total_def  split: if_splits)
       qed
       with neq assign\<^sub>2(7) show "(mem\<^sub>1(x := ev\<^sub>A mem\<^sub>1 e)) v = (mem\<^sub>2(x := ev\<^sub>A mem\<^sub>2 e)) v"
         by(auto simp: tyenv_eq_def)
     next
       assume eq[simp]: "v = x"
-      with is_Low' `x \<in> dom \<Gamma>` have t_Low': "type_max t mem\<^sub>1' = Low"
+      with is_Low' \<open>x \<in> dom \<Gamma>\<close> have t_Low': "type_max t mem\<^sub>1' = Low"
         by(auto simp: to_total_def split: if_splits)
       have wf_t: "type_wellformed t"
         using type_aexpr_type_wellformed assign\<^sub>2(2) assign\<^sub>2(6)
         by(fastforce simp: tyenv_wellformed_def)
-      with t_Low' `x \<notin> \<C>` have t_Low: "type_max t mem\<^sub>1 = Low"
+      with t_Low' \<open>x \<notin> \<C>\<close> have t_Low: "type_max t mem\<^sub>1 = Low"
         using \<C>_eq_type_max_eq
         by (metis (no_types, lifting) fun_upd_other upd(3))
       show ?thesis
@@ -2775,7 +2775,7 @@ next (* assign\<^sub>2 *)
       assume [simp]: "v = x"
       hence [simp]: "(the ((\<Gamma>(x \<mapsto> t)) v)) = t" and t_def: "t = t'"
         using \<Gamma>v by auto
-      from `v \<notin> mds' AsmNoReadOrWrite` upd wf have readable: "v \<notin> snd \<S>"
+      from \<open>v \<notin> mds' AsmNoReadOrWrite\<close> upd wf have readable: "v \<notin> snd \<S>"
         by(auto simp: tyenv_wellformed_def mds_consistent_def)
       with assign\<^sub>2(5) have "t \<le>:\<^sub>P' (dma_type x)" by fastforce
       with pred' show ?thesis
@@ -2786,7 +2786,7 @@ next (* assign\<^sub>2 *)
       hence [simp]: "((\<Gamma>(x \<mapsto> t)) v) = \<Gamma> v"
         by simp
       with \<Gamma>v have \<Gamma>v: "\<Gamma> v = Some t'" by simp
-      with sec upd `v \<notin> mds' AsmNoReadOrWrite` have f_leq: "type_max t' mem\<^sub>1 \<le> dma mem\<^sub>1 v"
+      with sec upd \<open>v \<notin> mds' AsmNoReadOrWrite\<close> have f_leq: "type_max t' mem\<^sub>1 \<le> dma mem\<^sub>1 v"
         by auto
       have \<C>_eq: "\<forall>x\<in>\<C>. mem\<^sub>1 x = mem\<^sub>1' x"
         using wf assign\<^sub>2(1) upd by(auto simp: tyenv_wellformed_def mds_consistent_def)
@@ -2816,12 +2816,12 @@ next (* assign\<^sub>2 *)
     using \<R>.intro\<^sub>1
     by auto
   thus ?case
-    using `mds' = mds` `c\<^sub>1' = Stop` `mem\<^sub>1' = mem\<^sub>1(x := ev\<^sub>A mem\<^sub>1 e)`
+    using \<open>mds' = mds\<close> \<open>c\<^sub>1' = Stop\<close> \<open>mem\<^sub>1' = mem\<^sub>1(x := ev\<^sub>A mem\<^sub>1 e)\<close>
     by blast
 next (* if *)
   case (if_type \<Gamma> e t P \<S> th \<Gamma>' \<S>' P' el \<Gamma>'' P'' \<Gamma>''' P''')
   let ?P = "if (ev\<^sub>B mem\<^sub>1 e) then P +\<^sub>\<S> e else P +\<^sub>\<S> (bexp_neg e)"
-  from `\<langle>Stmt.If e th el, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>` have ty: "\<turnstile> \<Gamma>,\<S>,?P {c\<^sub>1'} \<Gamma>''',\<S>',P'''"
+  from \<open>\<langle>Stmt.If e th el, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>\<close> have ty: "\<turnstile> \<Gamma>,\<S>,?P {c\<^sub>1'} \<Gamma>''',\<S>',P'''"
   proof (rule if_elim)
     assume "c\<^sub>1' = th" "mem\<^sub>1' = mem\<^sub>1" "mds' = mds" "ev\<^sub>B mem\<^sub>1 e"
     with if_type(3)
@@ -2841,21 +2841,21 @@ next (* if *)
   qed
   have ev\<^sub>B_eq [simp]: "ev\<^sub>B mem\<^sub>1 e = ev\<^sub>B mem\<^sub>2 e"
     apply(rule ev\<^sub>B_eq')
-       apply(rule `mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2`)
-      apply(rule `pred P mem\<^sub>1`)
-     apply(rule `\<Gamma> \<turnstile>\<^sub>b e \<in> t`)
-    by(rule ` P \<turnstile> t`)
+       apply(rule \<open>mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2\<close>)
+      apply(rule \<open>pred P mem\<^sub>1\<close>)
+     apply(rule \<open>\<Gamma> \<turnstile>\<^sub>b e \<in> t\<close>)
+    by(rule \<open> P \<turnstile> t\<close>)
   have "(\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle>, \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>) \<in> \<R> \<Gamma>''' \<S>' P'''"
     apply (rule intro\<^sub>1)
     apply clarify
     apply (rule \<R>\<^sub>1.intro [where \<Gamma> = \<Gamma> and \<Gamma>' = \<Gamma>''' and \<S> = \<S> and P = ?P])
          apply(rule ty)
-        using `tyenv_wellformed mds \<Gamma> \<S> P`
+        using \<open>tyenv_wellformed mds \<Gamma> \<S> P\<close>
         apply(auto simp: tyenv_wellformed_def mds_consistent_def add_pred_def)[1]
-       apply(rule `mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2`)       
-      using `pred P mem\<^sub>1` apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
-     using `pred P mem\<^sub>2` apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
-    by(rule `tyenv_sec mds \<Gamma> mem\<^sub>1`)
+       apply(rule \<open>mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2\<close>)       
+      using \<open>pred P mem\<^sub>1\<close> apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
+     using \<open>pred P mem\<^sub>2\<close> apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
+    by(rule \<open>tyenv_sec mds \<Gamma> mem\<^sub>1\<close>)
 
   show ?case
   proof -
@@ -2868,7 +2868,7 @@ next (* if *)
       apply (subgoal_tac "c\<^sub>1' = el")
        apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
       using if_type.prems(6) by blast
-    with `\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''',\<S>',P'''\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>` show ?thesis  
+    with \<open>\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''',\<S>',P'''\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>\<close> show ?thesis  
     by (metis if_elim if_type.prems(6))    
   qed
 next (* while *)
@@ -2927,7 +2927,7 @@ next
   from imp tyenv_eq obtain c\<^sub>2' mem\<^sub>2' where c\<^sub>2'_props: "\<langle>c, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>"
     "\<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^sub>1',\<S>',P\<^sub>1'\<^esub> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>"
     using sub by blast 
-  with R_equiv_entailment `P\<^sub>1' \<turnstile> P\<^sub>2'` show ?case
+  with R_equiv_entailment \<open>P\<^sub>1' \<turnstile> P\<^sub>2'\<close> show ?case
     using sub.hyps(6) sub.hyps(5) by blast
 next case (await_type \<Gamma> e t P \<S> c \<Gamma>' \<S>' P' \<Gamma>'' P'')
   from this show ?case using no_await_no_await by blast
@@ -2992,7 +2992,7 @@ next
       "pred P'' mem\<^sub>2'"
       "\<forall>x\<in>dom \<Gamma>''. x \<notin> mds' AsmNoReadOrWrite \<longrightarrow> type_max (the (\<Gamma>'' x)) mem\<^sub>1' \<le> dma mem\<^sub>1' x"
       using \<R>\<^sub>1.cases by auto
-    from step\<^sub>2' `no_await c\<^sub>1` step.hyps(1) step.hyps(4) this obtain mem\<^sub>2'' where 
+    from step\<^sub>2' \<open>no_await c\<^sub>1\<close> step.hyps(1) step.hyps(4) this obtain mem\<^sub>2'' where 
         step\<^sub>2'': "\<langle>c\<^sub>1', mds', mem\<^sub>2'\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle>" and 
         rel\<^sub>2'': "\<langle>c\<^sub>1'', mds'', mem\<^sub>1''\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>',\<S>',P'\<^esub> \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle>"
       using no_await_trancl bisim_simple_\<R>\<^sub>u by (metis fst_conv)
@@ -3015,7 +3015,7 @@ next
         using \<R>\<^sub>1.cases by blast
       from this intro\<^sub>1 have typed: "\<turnstile> \<Gamma>v,\<S>v,Pv {c\<^sub>1'1 ;; c\<^sub>1'2} \<Gamma>'',\<S>'',P''"
         using has_type.seq_type by blast
-      from this pre_props `no_await c\<^sub>1` `\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>1'\<rangle>` intro\<^sub>1(13)
+      from this pre_props \<open>no_await c\<^sub>1\<close> \<open>\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>1'\<rangle>\<close> intro\<^sub>1(13)
         obtain mem\<^sub>2'' where 
                step: "\<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>2'\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle> \<and> 
                       \<langle>c\<^sub>1'', mds'', mem\<^sub>1''\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>'',P''\<^esub> \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle>"
@@ -3036,7 +3036,7 @@ next
       from this intro\<^sub>1 have typed: "\<turnstile> \<Gamma>v,\<S>v,Pv {c\<^sub>1'1 ;; c\<^sub>1'2} \<Gamma>'',\<S>'',P''"
         using has_type.seq_type intro\<^sub>3.hyps(3) by blast
 
-      from this pre_props `no_await c\<^sub>1` `\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>1'\<rangle>` intro\<^sub>3
+      from this pre_props \<open>no_await c\<^sub>1\<close> \<open>\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>1'\<rangle>\<close> intro\<^sub>3
         obtain mem\<^sub>2'' where 
         step: "\<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>2'\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle> \<and> 
                \<langle>c\<^sub>1'', mds'', mem\<^sub>1''\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>'',P''\<^esub> \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle>"   
@@ -3045,7 +3045,7 @@ next
                                \<langle>c\<^sub>1'', mds'', mem\<^sub>1''\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>'',P''\<^esub> \<langle>c\<^sub>1'', mds'', mem\<^sub>2''\<rangle> \<Longrightarrow> thesis"
         thus ?thesis using intro\<^sub>3.prems(11)
           using a1 by (metis (no_types) pre_props(2-)
-                       `\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>1'\<rangle>`  `no_await c\<^sub>1` 
+                       \<open>\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1'1 ;; c\<^sub>1'2, mds', mem\<^sub>1'\<rangle>\<close>  \<open>no_await c\<^sub>1\<close> 
                        bisim_simple_\<R>\<^sub>u fst_conv no_await_trancl typed)
       qed
       from this intro\<^sub>3 show ?case using no_await_trancl bisim_simple_\<R>\<^sub>u by blast
@@ -3071,7 +3071,7 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
     hence [simp]: "c\<^sub>1' = c\<^sub>2" "mds' = mds" "mem\<^sub>1' = mem\<^sub>1"
       using seq_type
       by (auto simp: seq_stop_elim)
-    from seq_type `c\<^sub>1 = Stop` have "context_equiv \<Gamma> P \<Gamma>''" and "\<S> = \<S>''" and "P \<turnstile> P''" and
+    from seq_type \<open>c\<^sub>1 = Stop\<close> have "context_equiv \<Gamma> P \<Gamma>''" and "\<S> = \<S>''" and "P \<turnstile> P''" and
                                    "(\<forall>mds. tyenv_wellformed mds \<Gamma> \<S> P \<longrightarrow> tyenv_wellformed  mds \<Gamma>'' \<S> P'')"
       by (metis stop_cxt)+
     hence "\<turnstile> \<Gamma>,\<S>,P { c\<^sub>2 } \<Gamma>',\<S>',P'"
@@ -3081,17 +3081,17 @@ proof (induct arbitrary: mds c\<^sub>1' rule: has_type.induct)
          by auto
     have "\<langle>c\<^sub>2, mds, mem\<^sub>1\<rangle> \<R>\<^sup>1\<^bsub>\<Gamma>',\<S>',P'\<^esub> \<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle>"
       apply (rule \<R>\<^sub>1.intro [of \<Gamma>])
-           apply(rule `\<turnstile> \<Gamma>,\<S>,P { c\<^sub>2 } \<Gamma>',\<S>',P'`)
+           apply(rule \<open>\<turnstile> \<Gamma>,\<S>,P { c\<^sub>2 } \<Gamma>',\<S>',P'\<close>)
           using seq_type by auto
     thus ?case
       using \<R>.intro\<^sub>1
       apply clarify
       apply (rule_tac x = c\<^sub>2 in exI)
       apply (rule_tac x = mem\<^sub>2 in exI)
-      by (auto simp: `c\<^sub>1 = Stop` seq_stop_eval\<^sub>w  \<R>.intro\<^sub>1)
+      by (auto simp: \<open>c\<^sub>1 = Stop\<close> seq_stop_eval\<^sub>w  \<R>.intro\<^sub>1)
   next
     assume "c\<^sub>1 \<noteq> Stop"
-    with `\<langle>c\<^sub>1 ;; c\<^sub>2, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>` obtain c\<^sub>1'' where c\<^sub>1''_props:
+    with \<open>\<langle>c\<^sub>1 ;; c\<^sub>2, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>\<close> obtain c\<^sub>1'' where c\<^sub>1''_props:
       "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = c\<^sub>1'' ;; c\<^sub>2"
       by (metis seq_elim)
     with seq_type(2) obtain c\<^sub>2'' mem\<^sub>2' where c\<^sub>2''_props:
@@ -3116,7 +3116,7 @@ next
     assume a: "type_max (to_total \<Gamma>' x) mem\<^sub>1 = Low"
     hence "type_max (to_total \<Gamma> x) mem\<^sub>1 = Low"
     proof -
-      from `pred P mem\<^sub>1` have "pred P' mem\<^sub>1"
+      from \<open>pred P mem\<^sub>1\<close> have "pred P' mem\<^sub>1"
         using anno_type.hyps(3)
         by(auto simp: restrict_preds_to_vars_def pred_def)
       with subtype_sound[OF anno_type.hyps(7)] a 
@@ -3154,7 +3154,7 @@ next
     \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>'',\<S>'',P''\<^esub> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>)"
     using anno_type
     apply auto    
-    using `mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2` local.pred_def restrict_preds_to_vars_def upd_elim by fastforce
+    using \<open>mem\<^sub>1 =\<^bsub>\<Gamma>'\<^esub> mem\<^sub>2\<close> local.pred_def restrict_preds_to_vars_def upd_elim by fastforce
   thus ?case
     apply (rule_tac x = c\<^sub>2' in exI)
     apply (rule_tac x = mem\<^sub>2' in exI)
@@ -3197,15 +3197,15 @@ next (* assign\<^sub>1 *)
         unfolding to_total_def by (auto split: if_splits)
       have "type_max t' mem\<^sub>1 = type_max t' mem\<^sub>1'"
         apply(rule \<C>_eq_type_max_eq)
-         using `\<Gamma> v = Some t'` assign\<^sub>1(6) 
+         using \<open>\<Gamma> v = Some t'\<close> assign\<^sub>1(6) 
          unfolding tyenv_wellformed_def types_wellformed_def
-         apply (metis `v \<in> dom \<Gamma>` option.sel)
+         apply (metis \<open>v \<in> dom \<Gamma>\<close> option.sel)
                 
         using assign\<^sub>1(2) apply simp
         done
       with is_Low' have is_Low: "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
         by simp
-      from assign\<^sub>1(1) `v \<in> dom \<Gamma>` have "x \<noteq> v" by auto
+      from assign\<^sub>1(1) \<open>v \<in> dom \<Gamma>\<close> have "x \<noteq> v" by auto
       thus ?thesis
         apply simp
         using is_Low assign\<^sub>1(7) unfolding tyenv_eq_def by auto
@@ -3258,7 +3258,7 @@ next (* assign\<^sub>1 *)
   by (auto, metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.assign)
 
   from \<R>' a show ?case
-    using `c\<^sub>1' = Stop` and `mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)`
+    using \<open>c\<^sub>1' = Stop\<close> and \<open>mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)\<close>
     by blast
 next (* assign\<^sub>\<C> *)
   case (assign\<^sub>\<C> x \<Gamma> e t P P' \<S> mds)
@@ -3287,7 +3287,7 @@ next (* assign\<^sub>\<C> *)
         using vars_of_type_eq_type_max_eq by simp
       with is_Low' have is_Low: "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
         by simp  
-      from assign\<^sub>\<C>(1) `v \<in> dom \<Gamma>` assign\<^sub>\<C>(7) have "x \<noteq> v"
+      from assign\<^sub>\<C>(1) \<open>v \<in> dom \<Gamma>\<close> assign\<^sub>\<C>(7) have "x \<noteq> v"
         by(auto simp: tyenv_wellformed_def mds_consistent_def)
       thus ?thesis
         apply simp
@@ -3322,17 +3322,17 @@ next (* assign\<^sub>\<C> *)
           with assign\<^sub>\<C>(9) have "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
             by(auto simp: type_max_def pred_def pred_entailment_def)
           thus ?thesis
-            using not_sym[OF `x \<noteq> v`]
+            using not_sym[OF \<open>x \<noteq> v\<close>]
             apply simp
             using assign\<^sub>\<C>(8)
             unfolding tyenv_eq_def by auto
         next
           assume "x \<notin> \<C>_vars v"
           with is_Low' have "dma mem\<^sub>1 v = Low"
-            using dma_\<C>_vars `\<And>mem. type_max (to_total \<Gamma> v) mem = dma mem v`
+            using dma_\<C>_vars \<open>\<And>mem. type_max (to_total \<Gamma> v) mem = dma mem v\<close>
             by (metis fun_upd_other)
           thus ?thesis
-            using not_sym[OF `x \<noteq> v`]
+            using not_sym[OF \<open>x \<noteq> v\<close>]
             apply simp
             using assign\<^sub>\<C>(8)
             unfolding tyenv_eq_def by auto            
@@ -3352,7 +3352,7 @@ next (* assign\<^sub>\<C> *)
     fix v t'
     assume wf: "tyenv_wellformed mds \<Gamma> \<S> P"
     assume pred: "pred P mem\<^sub>1"
-    hence pred': "pred P' mem\<^sub>1'" using `pred P mem\<^sub>1 \<longrightarrow> pred P' mem\<^sub>1'` by blast
+    hence pred': "pred P' mem\<^sub>1'" using \<open>pred P mem\<^sub>1 \<longrightarrow> pred P' mem\<^sub>1'\<close> by blast
     assume sec: "tyenv_sec mds \<Gamma> mem\<^sub>1"
     assume \<Gamma>v: "\<Gamma> v = Some t'"
     assume readable': "v \<notin> mds' AsmNoReadOrWrite"
@@ -3361,7 +3361,7 @@ next (* assign\<^sub>\<C> *)
     show "type_max (the (\<Gamma> v)) mem\<^sub>1' \<le> dma mem\<^sub>1' v"
     proof(cases "x \<in> \<C>_vars v")
       assume "x \<in> \<C>_vars v"
-      with assign\<^sub>\<C>(6) `v \<notin> snd \<S>` have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
+      with assign\<^sub>\<C>(6) \<open>v \<notin> snd \<S>\<close> have "(to_total \<Gamma> v) \<le>:\<^sub>P' (dma_type v)" by blast
       from pred' \<Gamma>v subtype_sound[OF this] show ?thesis
         using type_max_dma_type by(auto simp: to_total_def split: if_splits)
     next
@@ -3373,7 +3373,7 @@ next (* assign\<^sub>\<C> *)
       from \<Gamma>v assign\<^sub>\<C>(4) have "x \<notin> vars_of_type t'" by force
       have "type_wellformed t'"
         using wf \<Gamma>v by(force simp: tyenv_wellformed_def types_wellformed_def)
-      with `x \<notin> vars_of_type t'` upd have f_eq: "type_max t' mem\<^sub>1 = type_max t' mem\<^sub>1'"
+      with \<open>x \<notin> vars_of_type t'\<close> upd have f_eq: "type_max t' mem\<^sub>1 = type_max t' mem\<^sub>1'"
         using vars_of_type_eq_type_max_eq by fastforce
       from sec \<Gamma>v readable have "type_max t' mem\<^sub>1 \<le> dma mem\<^sub>1 v"
         by auto
@@ -3392,14 +3392,14 @@ next (* assign\<^sub>\<C> *)
   by (auto, metis cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.assign)
 
   from \<R>' a show ?case
-    using `c\<^sub>1' = Stop` and `mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)`
+    using \<open>c\<^sub>1' = Stop\<close> and \<open>mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)\<close>
     by blast
 next (* assign\<^sub>2 *)
   case (assign\<^sub>2 x \<Gamma> e t \<S> P' P mds)
   have upd [simp]: "c\<^sub>1' = Stop" "mds' = mds" "mem\<^sub>1' = mem\<^sub>1 (x := ev\<^sub>A mem\<^sub>1 e)"
     using assign_elim[OF assign\<^sub>2(11)]
     by auto
-  from `x \<in> dom \<Gamma>` `tyenv_wellformed mds \<Gamma> \<S> P`
+  from \<open>x \<in> dom \<Gamma>\<close> \<open>tyenv_wellformed mds \<Gamma> \<S> P\<close>
   have x_nin_\<C>: "x \<notin> \<C>"
     by(auto simp: tyenv_wellformed_def mds_consistent_def)
   hence dma_eq [simp]: "dma mem\<^sub>1' = dma mem\<^sub>1"
@@ -3432,7 +3432,7 @@ next (* assign\<^sub>2 *)
           apply(rule \<C>_eq_type_max_eq)
             using assign\<^sub>2(6) 
             apply(clarsimp simp: tyenv_wellformed_def types_wellformed_def)
-            using `v \<in> dom \<Gamma>` `\<Gamma> v = Some t'` apply(metis option.sel)
+            using \<open>v \<in> dom \<Gamma>\<close> \<open>\<Gamma> v = Some t'\<close> apply(metis option.sel)
            using x_nin_\<C> by simp
         from this is_Low' neq neq[THEN not_sym] show "type_max (to_total \<Gamma> v) mem\<^sub>1 = Low"
           by auto
@@ -3441,19 +3441,19 @@ next (* assign\<^sub>2 *)
         with is_Low' neq
         have "dma mem\<^sub>1' v = Low"
           by(auto simp: to_total_def  split: if_splits)
-        with dma_eq `v \<notin> dom \<Gamma>` show ?thesis
+        with dma_eq \<open>v \<notin> dom \<Gamma>\<close> show ?thesis
           by(auto simp: to_total_def  split: if_splits)
       qed
       with neq assign\<^sub>2(7) show "(mem\<^sub>1(x := ev\<^sub>A mem\<^sub>1 e)) v = (mem\<^sub>2(x := ev\<^sub>A mem\<^sub>2 e)) v"
         by(auto simp: tyenv_eq_def)
     next
       assume eq[simp]: "v = x"
-      with is_Low' `x \<in> dom \<Gamma>` have t_Low': "type_max t mem\<^sub>1' = Low"
+      with is_Low' \<open>x \<in> dom \<Gamma>\<close> have t_Low': "type_max t mem\<^sub>1' = Low"
         by(auto simp: to_total_def split: if_splits)
       have wf_t: "type_wellformed t"
         using type_aexpr_type_wellformed assign\<^sub>2(2) assign\<^sub>2(6)
         by(fastforce simp: tyenv_wellformed_def)
-      with t_Low' `x \<notin> \<C>` have t_Low: "type_max t mem\<^sub>1 = Low"
+      with t_Low' \<open>x \<notin> \<C>\<close> have t_Low: "type_max t mem\<^sub>1 = Low"
         using \<C>_eq_type_max_eq
         by (metis (no_types, lifting) fun_upd_other upd(3))
       show ?thesis
@@ -3516,7 +3516,7 @@ next (* assign\<^sub>2 *)
       assume [simp]: "v = x"
       hence [simp]: "(the ((\<Gamma>(x \<mapsto> t)) v)) = t" and t_def: "t = t'"
         using \<Gamma>v by auto
-      from `v \<notin> mds' AsmNoReadOrWrite` upd wf have readable: "v \<notin> snd \<S>"
+      from \<open>v \<notin> mds' AsmNoReadOrWrite\<close> upd wf have readable: "v \<notin> snd \<S>"
         by(auto simp: tyenv_wellformed_def mds_consistent_def)
       with assign\<^sub>2(5) have "t \<le>:\<^sub>P' (dma_type x)" by fastforce
       with pred' show ?thesis
@@ -3527,7 +3527,7 @@ next (* assign\<^sub>2 *)
       hence [simp]: "((\<Gamma>(x \<mapsto> t)) v) = \<Gamma> v"
         by simp
       with \<Gamma>v have \<Gamma>v: "\<Gamma> v = Some t'" by simp
-      with sec upd `v \<notin> mds' AsmNoReadOrWrite` have f_leq: "type_max t' mem\<^sub>1 \<le> dma mem\<^sub>1 v"
+      with sec upd \<open>v \<notin> mds' AsmNoReadOrWrite\<close> have f_leq: "type_max t' mem\<^sub>1 \<le> dma mem\<^sub>1 v"
         by auto
       have \<C>_eq: "\<forall>x\<in>\<C>. mem\<^sub>1 x = mem\<^sub>1' x"
         using wf assign\<^sub>2(1) upd by(auto simp: tyenv_wellformed_def mds_consistent_def)
@@ -3557,12 +3557,12 @@ next (* assign\<^sub>2 *)
     using \<R>.intro\<^sub>1
     by auto
   thus ?case
-    using `mds' = mds` `c\<^sub>1' = Stop` `mem\<^sub>1' = mem\<^sub>1(x := ev\<^sub>A mem\<^sub>1 e)`
+    using \<open>mds' = mds\<close> \<open>c\<^sub>1' = Stop\<close> \<open>mem\<^sub>1' = mem\<^sub>1(x := ev\<^sub>A mem\<^sub>1 e)\<close>
     by blast
 next (* if *)
   case (if_type \<Gamma> e t P \<S> th \<Gamma>' \<S>' P' el \<Gamma>'' P'' \<Gamma>''' P''')
   let ?P = "if (ev\<^sub>B mem\<^sub>1 e) then P +\<^sub>\<S> e else P +\<^sub>\<S> (bexp_neg e)"
-  from `\<langle>Stmt.If e th el, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>` have ty: "\<turnstile> \<Gamma>,\<S>,?P {c\<^sub>1'} \<Gamma>''',\<S>',P'''"
+  from \<open>\<langle>Stmt.If e th el, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>\<close> have ty: "\<turnstile> \<Gamma>,\<S>,?P {c\<^sub>1'} \<Gamma>''',\<S>',P'''"
   proof (rule if_elim)
     assume "c\<^sub>1' = th" "mem\<^sub>1' = mem\<^sub>1" "mds' = mds" "ev\<^sub>B mem\<^sub>1 e"
     with if_type(3)
@@ -3582,21 +3582,21 @@ next (* if *)
   qed
   have ev\<^sub>B_eq [simp]: "ev\<^sub>B mem\<^sub>1 e = ev\<^sub>B mem\<^sub>2 e"
     apply(rule ev\<^sub>B_eq')
-       apply(rule `mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2`)
-      apply(rule `pred P mem\<^sub>1`)
-     apply(rule `\<Gamma> \<turnstile>\<^sub>b e \<in> t`)
-    by(rule ` P \<turnstile> t`)
+       apply(rule \<open>mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2\<close>)
+      apply(rule \<open>pred P mem\<^sub>1\<close>)
+     apply(rule \<open>\<Gamma> \<turnstile>\<^sub>b e \<in> t\<close>)
+    by(rule \<open> P \<turnstile> t\<close>)
   have "(\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle>, \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>) \<in> \<R> \<Gamma>''' \<S>' P'''"
     apply (rule intro\<^sub>1)
     apply clarify
     apply (rule \<R>\<^sub>1.intro [where \<Gamma> = \<Gamma> and \<Gamma>' = \<Gamma>''' and \<S> = \<S> and P = ?P])
          apply(rule ty)
-        using `tyenv_wellformed mds \<Gamma> \<S> P`
+        using \<open>tyenv_wellformed mds \<Gamma> \<S> P\<close>
         apply(auto simp: tyenv_wellformed_def mds_consistent_def add_pred_def)[1]
-       apply(rule `mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2`)       
-      using `pred P mem\<^sub>1` apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
-     using `pred P mem\<^sub>2` apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
-    by(rule `tyenv_sec mds \<Gamma> mem\<^sub>1`)
+       apply(rule \<open>mem\<^sub>1 =\<^bsub>\<Gamma>\<^esub> mem\<^sub>2\<close>)       
+      using \<open>pred P mem\<^sub>1\<close> apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
+     using \<open>pred P mem\<^sub>2\<close> apply(fastforce simp: pred_def add_pred_def bexp_neg_negates)
+    by(rule \<open>tyenv_sec mds \<Gamma> mem\<^sub>1\<close>)
 
   show ?case
   proof -
@@ -3609,7 +3609,7 @@ next (* if *)
       apply (subgoal_tac "c\<^sub>1' = el")
        apply (metis (hide_lams, mono_tags) cxt_to_stmt.simps(1) eval\<^sub>w.unannotated eval\<^sub>w_simple.if_false if_type(8))
       using if_type.prems(6) by blast
-    with `\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''',\<S>',P'''\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>` show ?thesis  
+    with \<open>\<langle>c\<^sub>1', mds, mem\<^sub>1\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>''',\<S>',P'''\<^esub> \<langle>c\<^sub>1', mds, mem\<^sub>2\<rangle>\<close> show ?thesis  
     by (metis if_elim if_type.prems(6))    
   qed
 next (* while *)
@@ -3668,25 +3668,25 @@ next
   from imp tyenv_eq obtain c\<^sub>2' mem\<^sub>2' where c\<^sub>2'_props: "\<langle>c, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>"
     "\<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>\<^sub>1',\<S>',P\<^sub>1'\<^esub> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>"
     using sub by blast 
-  with R_equiv_entailment `P\<^sub>1' \<turnstile> P\<^sub>2'` show ?case
+  with R_equiv_entailment \<open>P\<^sub>1' \<turnstile> P\<^sub>2'\<close> show ?case
     using sub.hyps(6) sub.hyps(5) by blast
 next case (await_type \<Gamma> e t P \<S> c \<Gamma>' \<S>' P')
   from await_type.prems have "ev\<^sub>B mem\<^sub>1 e" "no_await c" "is_final c\<^sub>1'" and step: "\<langle>c, mds, mem\<^sub>1\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle>"
     using await_elim by simp+
-  from await_type.prems `\<Gamma> \<turnstile>\<^sub>b e \<in> t` `P \<turnstile> t` have "pred P +\<^sub>\<S> e mem\<^sub>1" "pred P +\<^sub>\<S> e mem\<^sub>2" "ev\<^sub>B mem\<^sub>2 e"
-    using pred_plus_impl `ev\<^sub>B mem\<^sub>1 e` `pred P mem\<^sub>1` ev\<^sub>B_eq'
+  from await_type.prems \<open>\<Gamma> \<turnstile>\<^sub>b e \<in> t\<close> \<open>P \<turnstile> t\<close> have "pred P +\<^sub>\<S> e mem\<^sub>1" "pred P +\<^sub>\<S> e mem\<^sub>2" "ev\<^sub>B mem\<^sub>2 e"
+    using pred_plus_impl \<open>ev\<^sub>B mem\<^sub>1 e\<close> \<open>pred P mem\<^sub>1\<close> ev\<^sub>B_eq'
     by blast+
-  from await_type.prems `\<Gamma> \<turnstile>\<^sub>b e \<in> t` `P \<turnstile> t` have wellformed: "tyenv_wellformed mds \<Gamma> \<S> P +\<^sub>\<S> e"
+  from await_type.prems \<open>\<Gamma> \<turnstile>\<^sub>b e \<in> t\<close> \<open>P \<turnstile> t\<close> have wellformed: "tyenv_wellformed mds \<Gamma> \<S> P +\<^sub>\<S> e"
     apply (unfold add_pred_def)[1]
       apply (case_tac "pred_stable \<S> e", clarsimp)
         apply (unfold tyenv_wellformed_def, clarsimp)[1]
         apply (unfold mds_consistent_def, clarsimp)[1]
       by clarsimp
-  from step `is_final c\<^sub>1'` `no_await c` `tyenv_wellformed mds \<Gamma> \<S> P +\<^sub>\<S> e` await_type.prems `pred P +\<^sub>\<S> e mem\<^sub>1` `pred P +\<^sub>\<S> e mem\<^sub>2`
+  from step \<open>is_final c\<^sub>1'\<close> \<open>no_await c\<close> \<open>tyenv_wellformed mds \<Gamma> \<S> P +\<^sub>\<S> e\<close> await_type.prems \<open>pred P +\<^sub>\<S> e mem\<^sub>1\<close> \<open>pred P +\<^sub>\<S> e mem\<^sub>2\<close>
     obtain c\<^sub>2' mem\<^sub>2' where step: "\<langle>c, mds, mem\<^sub>2\<rangle> \<leadsto>\<^sup>+ \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>" and 
       rel: "\<langle>c\<^sub>1', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>',\<S>',P'\<^esub> \<langle>c\<^sub>2', mds', mem\<^sub>2'\<rangle>" "is_final c\<^sub>2'"  
     using \<R>_typed_step_plus await_type.hyps(3) is_final_\<R>\<^sub>u_is_final by meson
-  from wellformed `is_final c\<^sub>2'` `ev\<^sub>B mem\<^sub>2 e` `no_await c` `\<Gamma> \<turnstile>\<^sub>b e \<in> t` `P \<turnstile> t` `pred P +\<^sub>\<S> e mem\<^sub>2` step rel show ?case 
+  from wellformed \<open>is_final c\<^sub>2'\<close> \<open>ev\<^sub>B mem\<^sub>2 e\<close> \<open>no_await c\<close> \<open>\<Gamma> \<turnstile>\<^sub>b e \<in> t\<close> \<open>P \<turnstile> t\<close> \<open>pred P +\<^sub>\<S> e mem\<^sub>2\<close> step rel show ?case 
     using eval\<^sub>w.intros(4) by blast
 qed
 
@@ -3730,26 +3730,26 @@ proof -
           apply (rule_tac x = c in exI)
           apply (rule_tac x = mem\<^sub>2 in exI)
           apply (rule conjI)
-           apply (metis `c\<^sub>1 = Stop` cxt_to_stmt.simps(1) eval\<^sub>w_simplep.seq_stop eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq intro\<^sub>1.prems seq_stop_elim)
+           apply (metis \<open>c\<^sub>1 = Stop\<close> cxt_to_stmt.simps(1) eval\<^sub>w_simplep.seq_stop eval\<^sub>wp.unannotated eval\<^sub>wp_eval\<^sub>w_eq intro\<^sub>1.prems seq_stop_elim)
           apply (rule \<R>.intro\<^sub>1, clarify)
           apply (subgoal_tac "c\<^sub>1' = c")
            apply simp
            apply (rule \<R>\<^sub>1.intro)
                 apply(rule intro\<^sub>1(2))
-               apply (metis (no_types, lifting) `c\<^sub>1 = Stop` intro\<^sub>1.prems seq_stop_elim stop_cxt tyenv_wellformed_sub)
-              using `c\<^sub>1 = Stop` intro\<^sub>1.prems seq_stop_elim stop_cxt context_equiv_tyenv_eq
+               apply (metis (no_types, lifting) \<open>c\<^sub>1 = Stop\<close> intro\<^sub>1.prems seq_stop_elim stop_cxt tyenv_wellformed_sub)
+              using \<open>c\<^sub>1 = Stop\<close> intro\<^sub>1.prems seq_stop_elim stop_cxt context_equiv_tyenv_eq
               apply metis
 
-             using `c\<^sub>1 = Stop` intro\<^sub>1.prems pred_entailment_def seq_stop_elim stop_cxt apply blast
+             using \<open>c\<^sub>1 = Stop\<close> intro\<^sub>1.prems pred_entailment_def seq_stop_elim stop_cxt apply blast
             using pred_entailment_def stop_cxt apply blast
            
-           apply (metis (no_types, lifting) `c\<^sub>1 = Stop` context_equiv_def intro\<^sub>1.prems less_eq_Sec_def seq_stop_elim stop_cxt subtype_sound type_equiv_def)
+           apply (metis (no_types, lifting) \<open>c\<^sub>1 = Stop\<close> context_equiv_def intro\<^sub>1.prems less_eq_Sec_def seq_stop_elim stop_cxt subtype_sound type_equiv_def)
           using intro\<^sub>1.prems seq_stop_elim by auto
       next
         assume "c\<^sub>1 \<noteq> Stop"
         from intro\<^sub>1
         obtain c\<^sub>1'' where "\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = (c\<^sub>1'' ;; c)"
-          by (metis `c\<^sub>1 \<noteq> Stop` intro\<^sub>1.prems seq_elim)
+          by (metis \<open>c\<^sub>1 \<noteq> Stop\<close> intro\<^sub>1.prems seq_elim)
         with intro\<^sub>1
         obtain c\<^sub>2'' mem\<^sub>2' where "\<langle>c\<^sub>2, mds, mem\<^sub>2\<rangle> \<leadsto> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>" "\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>,\<S>,P\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>"
           using \<R>\<^sub>1_weak_bisim and weak_bisim_def
@@ -3763,7 +3763,7 @@ proof -
           apply auto
           apply (rule \<R>.intro\<^sub>3)
           
-          by (simp add: \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = c\<^sub>1'' ;; c`)
+          by (simp add: \<R>_to_\<R>\<^sub>3 \<open>\<langle>c\<^sub>1, mds, mem\<^sub>1\<rangle> \<leadsto> \<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<and> c\<^sub>1' = c\<^sub>1'' ;; c\<close>)
       qed
     next
       case (intro\<^sub>3 c\<^sub>1 mds mem\<^sub>1 \<Gamma> \<S> P c\<^sub>2 mem\<^sub>2 c \<Gamma>' \<S>' P')
@@ -3783,8 +3783,8 @@ proof -
            apply (metis eval\<^sub>w.seq)
           apply (erule \<R>_elim)
             apply simp_all
-            apply (metis \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>,\<S>,P\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>` `c\<^sub>1' = c\<^sub>1'' ;; c` intro\<^sub>3(3))
-          apply (metis (lifting) \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 `\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>,\<S>,P\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>` `c\<^sub>1' = c\<^sub>1'' ;; c` intro\<^sub>3(3))
+            apply (metis \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 \<open>\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>,\<S>,P\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>\<close> \<open>c\<^sub>1' = c\<^sub>1'' ;; c\<close> intro\<^sub>3(3))
+          apply (metis (lifting) \<R>.intro\<^sub>3 \<R>_to_\<R>\<^sub>3 \<open>\<langle>c\<^sub>1'', mds', mem\<^sub>1'\<rangle> \<R>\<^sup>u\<^bsub>\<Gamma>,\<S>,P\<^esub> \<langle>c\<^sub>2'', mds', mem\<^sub>2'\<rangle>\<close> \<open>c\<^sub>1' = c\<^sub>1'' ;; c\<close> intro\<^sub>3(3))
           done
       qed
     qed

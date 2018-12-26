@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Well-formedness Constraints *}
+section \<open>Well-formedness Constraints\<close>
 
 theory JWellForm
 imports
@@ -43,7 +43,7 @@ done
 lemma wf_prog_wwf_prog: "wf_J_prog P \<Longrightarrow> wwf_J_prog P"
 by(erule wf_prog_lift)(erule wf_mdecl_wwf_mdecl)
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 definition typeable_with :: "'addr J_prog \<Rightarrow> env \<Rightarrow> 'addr expr \<Rightarrow> ty \<Rightarrow> bool"
 where [simp]: "typeable_with P E e T \<longleftrightarrow> (\<exists>T'. P,E \<turnstile> e ::' T' \<and> P \<turnstile> T' \<le> T)"
@@ -88,7 +88,7 @@ code_pred
   typeable_with 
 .
 
-text {* Formal code generation test *}
-ML_val {* @{code wf_J_prog'}  *}
+text \<open>Formal code generation test\<close>
+ML_val \<open>@{code wf_J_prog'}\<close>
 
 end

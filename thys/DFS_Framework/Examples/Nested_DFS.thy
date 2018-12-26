@@ -4,7 +4,7 @@ imports DFS_Find_Path
 begin
 text \<open>Nested DFS is a standard method for Buchi-Automaton emptiness check.\<close>
 
-subsection {* Auxiliary Lemmas *}
+subsection \<open>Auxiliary Lemmas\<close>
 
 lemma closed_restrict_aux:
   assumes CL: "E``F \<subseteq> F \<union> S"
@@ -548,7 +548,7 @@ begin
     let ?rE = "rel_restrict E (red s)"
     let ?revs = "rev (tl (stack s))"
     
-    note ne = `stack s \<noteq> []`
+    note ne = \<open>stack s \<noteq> []\<close>
 
     note [simp] = \<open>u=hd (stack s)\<close>
 

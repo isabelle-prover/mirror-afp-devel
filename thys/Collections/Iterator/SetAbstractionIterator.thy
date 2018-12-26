@@ -2,15 +2,15 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* \isaheader{Iterators over Representations of Finite Sets} *}
+section \<open>\isaheader{Iterators over Representations of Finite Sets}\<close>
 theory SetAbstractionIterator
 imports Main SetIterator 
 begin
 
-text {* Sometimes, an iterator does not iterate over an abstract set directly. 
+text \<open>Sometimes, an iterator does not iterate over an abstract set directly. 
  Especialy, if datastructures that are composed of several concrete datastructures 
  for maps or sets are involved, it might be interesting to iterate over 
- representations of values instead of the abstract values. This leads to the following construct. *} 
+ representations of values instead of the abstract values. This leads to the following construct.\<close> 
 
 locale set_iterator_abs_genord =
   fixes \<alpha> :: "'xc \<Rightarrow> 'xa"
@@ -23,9 +23,9 @@ locale set_iterator_abs_genord =
           distinct (map \<alpha> lc) \<and> S0 = set (map \<alpha> lc) \<and> 
           sorted_wrt R (map \<alpha> lc) \<and> iti = foldli lc"
 begin
-  text {* In the simplest case, the function used for iteration does not depend on
+  text \<open>In the simplest case, the function used for iteration does not depend on
     the representation, but just the abstract values. In this case, the \emph{normal} iterators
-    can be used with an adapted function. *} 
+    can be used with an adapted function.\<close> 
   lemma remove_abs :
     assumes f_OK: "\<And>xc. invar xc \<Longrightarrow> \<alpha> xc \<in> S0 \<Longrightarrow> fc xc = fa (\<alpha> xc)"
         and it_OK: "\<And>iti. set_iterator_genord iti S0 R \<Longrightarrow> P (iti c fa \<sigma>0)"
@@ -48,8 +48,8 @@ begin
     with P_OK iti_eq show ?thesis by simp
   qed
 
-  text {* In general, one needs the representation, though. Even in this case,
-    the construct can be reduced to standard iterators. *}
+  text \<open>In general, one needs the representation, though. Even in this case,
+    the construct can be reduced to standard iterators.\<close>
   lemma remove_abs2 :
     "\<exists>S0'. set_iterator_genord iti S0' (\<lambda>x y. R (\<alpha> x) (\<alpha> y)) \<and>
            inj_on \<alpha> S0' \<and> \<alpha> ` S0' = S0 \<and> (\<forall>x \<in> S0'. invar x)"
@@ -70,7 +70,7 @@ begin
     done
   qed
 
-  text {* Let's now derive the inference rules for iterators over representations. *}
+  text \<open>Let's now derive the inference rules for iterators over representations.\<close>
 
   lemma iteratei_abs_simple_rule_P:
   assumes f_OK: "\<And>xc. invar xc \<Longrightarrow> \<alpha> xc \<in> S0 \<Longrightarrow> f xc = f' (\<alpha> xc)"
@@ -215,7 +215,7 @@ proof -
   thus ?thesis by (simp add: set_iterator_abs_genord_trivial)
 qed
 
-subsection {* Introduce iterators over representations *}
+subsection \<open>Introduce iterators over representations\<close>
 lemma set_iterator_abs_genord_I2 :
   assumes it_OK: "set_iterator_genord iti S0 Rc"
       and R_OK: "\<And>xc1 xc2. \<lbrakk>invar xc1; invar xc2; Rc xc1 xc2\<rbrakk> \<Longrightarrow> Ra (\<alpha> xc1) (\<alpha> xc2)"
@@ -254,7 +254,7 @@ lemma set_iterator_abs_genord_I2 :
   qed
 
 
-subsection {* Map-Iterators *}
+subsection \<open>Map-Iterators\<close>
 
 lemma map_to_set_cong: 
   "map_to_set m1 = map_to_set m2 \<longleftrightarrow> m1 = m2"
@@ -426,7 +426,7 @@ proof -
 qed
 
 
-subsection {* Unsorted Iterators *}
+subsection \<open>Unsorted Iterators\<close>
 
 definition "set_iterator_abs \<alpha> invar it S0 \<equiv> set_iterator_abs_genord \<alpha> invar it S0 (\<lambda>_ _. True)"
 
@@ -542,7 +542,7 @@ using set_iterator_abs_rule_insert_P[of \<alpha> invar it S0 I \<sigma>0 "\<lamb
 by simp 
 
 
-subsection {* Unsorted Map-Iterators *}
+subsection \<open>Unsorted Map-Iterators\<close>
 
 definition "map_iterator_abs \<alpha> invar it m \<equiv> map_iterator_abs_genord \<alpha> invar it m (\<lambda>_ _. True)"
 

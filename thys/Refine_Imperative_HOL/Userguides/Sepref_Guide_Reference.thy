@@ -96,7 +96,7 @@ text \<open>The purpose of this phase is to identify the conceptual operations i
 
   However, the Sepref tool must be able to distinguish between maps and functions into the
   option type, because maps shall be refined, to e.g., hash-tables, while functions into the
-  option type shall be not. Consider, e.g., the term @{term "Some x"}. Shall @{text Some} be 
+  option type shall be not. Consider, e.g., the term @{term "Some x"}. Shall \<open>Some\<close> be 
   interpreted as the constructor of the option datatype, or as a map, mapping each element to
   itself, and perhaps be implemented with a hashtable.
   
@@ -315,7 +315,7 @@ sepref_thm my_fold_test is "\<lambda>l. do { RETURN (my_fold (\<lambda>x y. x+y*
 
 subsubsection \<open>Monadify: Dup\<close>
 text \<open>The last three phases, \<open>mark_params\<close>, \<open>dup\<close>, \<open>remove_pass\<close> are to detect 
-  duplicate parameters, and insert @{text COPY} tags. 
+  duplicate parameters, and insert \<open>COPY\<close> tags. 
   The first phase, \<open>mark_params\<close>, adds @{const PASS} tags around all parameters.
   Parameters are bound variables and terms that have a refinement in the 
   precondition.
@@ -1038,7 +1038,7 @@ text \<open>
   Optionally, a basename for the operation can be specified. If none is specified, 
   a heuristics tries to derive one from the specified term.
 
-  A list of properties (separated by space and/or @{text "and"}) can be specified, 
+  A list of properties (separated by space and/or \<open>and\<close>) can be specified, 
   which get constraint-preconditions of the relation. 
 
   Finally, the following flags can be specified. Each flag can be prefixed by \<open>no_\<close> 

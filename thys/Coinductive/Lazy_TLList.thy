@@ -2,7 +2,7 @@
     Author:      Andreas Lochbihler
 *)
 
-section {* Code generator setup to implement terminated lazy lists lazily *}
+section \<open>Code generator setup to implement terminated lazy lists lazily\<close>
 
 theory Lazy_TLList imports
   TLList
@@ -194,9 +194,9 @@ by(cases n)(auto split: tllist.split)
 declare Lazy_tllist_def [simp del]
 declare sum.splits [split del]
 
-text {* Simple ML test for laziness *}
+text \<open>Simple ML test for laziness\<close>
 
-ML_val {*
+ML_val \<open>
   val zeros = @{code unfold_tllist} (K false) (K 0) (K 0) I ();
   val thd = @{code thd} zeros;
   val ttl = @{code ttl} zeros;
@@ -205,7 +205,7 @@ ML_val {*
   val tdropn = @{code tdropn} (@{code Suc} @{code "0::nat"}) zeros;
   
   val tfilter = @{code tfilter} 1 (K false) zeros;
-*}
+\<close>
 
 hide_const (open) force
 

@@ -1,17 +1,17 @@
-section {* Boolean Algebra of Assertions *}
+section \<open>Boolean Algebra of Assertions\<close>
 
 theory  Assertion_Algebra
 imports Mono_Bool_Tran_Algebra
 begin
 
-text{*
+text\<open>
 This section introduces the boolean algebra of assertions. The 
 type $\mathsf{Assertion}$ and the boolean operation are instroduced 
 based on the set $\mathsf{assertion}$ and the operations on the monotonic 
 boolean transformers algebra. The type $\mathsf{Assertion}$ over
 a complete monotonic boolean transformers algebra is a complete boolean 
 algebra.
-*}
+\<close>
 
 typedef (overloaded) ('a::mbt_algebra) Assertion = "assertion::'a set"
   apply (rule_tac x = "\<bottom>" in exI)

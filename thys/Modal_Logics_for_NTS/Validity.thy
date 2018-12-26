@@ -328,7 +328,7 @@ begin
       by (metis valid_Act)
     have "finite (bn \<alpha>')"
       by (fact bn_finite)
-    moreover note `finite (supp X)`
+    moreover note \<open>finite (supp X)\<close>
     moreover have "finite (supp (Act \<alpha>' x', \<langle>\<alpha>',P'\<rangle>))"
       by (metis finite_Diff finite_UnI finite_supp supp_Pair supp_abs_residual_pair)
     moreover have "bn \<alpha>' \<sharp>* (Act \<alpha>' x', \<langle>\<alpha>',P'\<rangle>)"

@@ -2,32 +2,32 @@ theory Distributed_WebApp
 imports "../TopoS_Impl"
 begin
 
-section{*Distributed Web Application Example*}
+section\<open>Distributed Web Application Example\<close>
 
-text{* 
+text\<open>
     The symbolic policy names are of type @{typ string}, e.g. @{term "''WebFrnt''"}
-*}
+\<close>
 
-text{*We start with the empty policy, only the entities are defined.*}
+text\<open>We start with the empty policy, only the entities are defined.\<close>
 definition policy :: "string list_graph" where
     "policy \<equiv> \<lparr> nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
                 edgesL = [] \<rparr>"
 
-text{*Sanity check*}
+text\<open>Sanity check\<close>
 lemma "wf_list_graph policy" by eval
 (*proof by eval means we have executable code to show the lemma. No need to show anything by hand*)
 
 
-text{*Defining the security invariants*}
+text\<open>Defining the security invariants\<close>
 definition LogSink_m::"(string SecurityInvariant)" where
   "LogSink_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Sink \<lparr> 
           node_properties = [''Log'' \<mapsto> Sink]
           \<rparr> ''No information must leave the logging server''"
 
-text{*
+text\<open>
 0 - unclassified
 1 - confidential
-*}
+\<close>
 \<comment> \<open>trusted: can access any security level, privacy-level 0: can reveal to anyone. I.e. can declassify\<close>
 definition BLP_m::"(string SecurityInvariant)" where
     "BLP_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPtrusted \<lparr> 
@@ -54,21 +54,21 @@ definition DBACL_m::"(string SecurityInvariant)" where
                              ]
           \<rparr> ''ACL of db''"
 
-text{*The list of security invariants*}
+text\<open>The list of security invariants\<close>
 definition "security_invariants = [Subnet_m, BLP_m, LogSink_m, DBACL_m]"
 
-text{*All security invariants are fulfilled (obviously, the policy permits no flows).*}
+text\<open>All security invariants are fulfilled (obviously, the policy permits no flows).\<close>
 lemma "all_security_requirements_fulfilled security_invariants policy" by eval
 
-text{*Obviously, no policy rules violate the security invariants.*}
+text\<open>Obviously, no policy rules violate the security invariants.\<close>
 lemma "implc_get_offending_flows security_invariants policy = []" by eval
 
 
-text{*We generate the maximum security policy.*}
+text\<open>We generate the maximum security policy.\<close>
 definition "max_policy = generate_valid_topology security_invariants \<lparr>nodesL = nodesL policy, edgesL = List.product (nodesL policy) (nodesL policy) \<rparr>"
 
 
-text{*Calculating the maximum policy (executing it).*}
+text\<open>Calculating the maximum policy (executing it).\<close>
 value "max_policy"
 lemma "max_policy = 
    \<lparr>nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
@@ -77,18 +77,18 @@ lemma "max_policy =
               (''WebApp'', ''Log''), (''WebApp'', ''WebApp''), (''WebApp'', ''INET''), (''INET'', ''WebFrnt''), (''INET'', ''INET'')]\<rparr>"
 by eval (*proof by eval means it can be directly executed*)
 
-text{*
+text\<open>
 Visualizing the maximum policy
-*}
-ML{*
+\<close>
+ML\<open>
 visualize_graph @{context} @{term "security_invariants"} @{term "max_policy"};
-*}
+\<close>
 
-text{*The maximum policy also fulfills all security invariants. *}
+text\<open>The maximum policy also fulfills all security invariants.\<close>
 lemma "all_security_requirements_fulfilled security_invariants max_policy" by eval
-text{*This holds in general: @{thm generate_valid_topology_sound}.*}
+text\<open>This holds in general: @{thm generate_valid_topology_sound}.\<close>
 
-text{*fine-tuning generated policy.*}
+text\<open>fine-tuning generated policy.\<close>
 definition "my_policy = \<lparr>nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp'', ''INET''],
     edgesL = [(''WebFrnt'', ''WebFrnt''), (''WebFrnt'', ''Log''), (''WebFrnt'', ''WebApp''), (''DB'', ''DB''), (''DB'', ''Log''),
               (''DB'', ''WebApp''), (''Log'', ''Log''), (''WebApp'', ''WebFrnt''), (''WebApp'', ''DB''), (''WebApp'', ''Log''), (''WebApp'', ''WebApp''),
@@ -96,43 +96,43 @@ definition "my_policy = \<lparr>nodesL = [''WebFrnt'', ''DB'', ''Log'', ''WebApp
 lemma "all_security_requirements_fulfilled security_invariants my_policy" by eval
 lemma "set (edgesL my_policy) \<subset> set (edgesL max_policy)" by eval
 
-text{*
+text\<open>
 The diff to the maximum policy.
-*}
-ML_val{*
+\<close>
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL my_policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#3399FF\", constraint=false]", @{term "[e \<leftarrow> edgesL max_policy. e \<notin> set (edgesL my_policy)]"})] ""; 
-*}
+\<close>
 
 
 
-section{*A stateful implementation*}
+section\<open>A stateful implementation\<close>
 definition "stateful_policy = generate_valid_stateful_policy_IFSACS my_policy security_invariants"
 value "stateful_policy"
 
-text{*the stateful compliance criteria*}
+text\<open>the stateful compliance criteria\<close>
 
-text{*No information flow violations*}
+text\<open>No information flow violations\<close>
   lemma "all_security_requirements_fulfilled (get_IFS security_invariants) (stateful_list_policy_to_list_graph stateful_policy)" by eval
   
-  text{*No access control side effects*}
+  text\<open>No access control side effects\<close>
   lemma "\<forall> F \<in> set (implc_get_offending_flows (get_ACS security_invariants) (stateful_list_policy_to_list_graph stateful_policy)).
             set F \<subseteq> set (backlinks (flows_stateL stateful_policy)) - (set (flows_fixL stateful_policy))" by eval
 
-  text{*In general, the calculated stateful policy complies with the security policy: @{thm generate_valid_stateful_policy_IFSACS_stateful_policy_compliance}*}
+  text\<open>In general, the calculated stateful policy complies with the security policy: @{thm generate_valid_stateful_policy_IFSACS_stateful_policy_compliance}\<close>
 
-text{*Visualizing the stateful policy.*}
-ML_val{*
+text\<open>Visualizing the stateful policy.\<close>
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})] ""; 
-*}
+\<close>
 
 
-subsection{*Exporting to Network Security Mechanism Configurations*}
+subsection\<open>Exporting to Network Security Mechanism Configurations\<close>
 
 
-text{*Space-separated policy dump*}
-ML_val{*
+text\<open>Space-separated policy dump\<close>
+ML_val\<open>
 iterate_edges_ML @{context} @{term "flows_fixL stateful_policy"}
   (fn (v1,v2) => writeln (""^v1^" "^v2) )
   (fn _ => () )
@@ -143,10 +143,10 @@ iterate_edges_ML @{context} @{term "flows_stateL stateful_policy"}
   (fn (v1,v2) => writeln (v2^" "^v1) )
   (fn _ => () )
   (fn _ => () )
-*}
+\<close>
 
-text{*firewall -- classical use case*}
-ML_val{*
+text\<open>firewall -- classical use case\<close>
+ML_val\<open>
 
 (*header*)
 writeln ("echo 1 > /proc/sys/net/ipv4/ip_forward"^"\n"^
@@ -164,10 +164,10 @@ iterate_edges_ML @{context} @{term "flows_stateL stateful_policy"}
   (fn (v1,v2) => writeln ("iptables -I FORWARD -m state --state ESTABLISHED -i $"^v2^"_iface -s $"^v2^"_ipv4 -o $"^v1^"_iface -d $"^v1^"_ipv4 -j ACCEPT # "^v2^" -> "^v1^" (answer)") )
   (fn _ => () )
   (fn _ => () )
-*}
+\<close>
 
-text{*firewall -- OpenVPN scenario*}
-ML_val{*
+text\<open>firewall -- OpenVPN scenario\<close>
+ML_val\<open>
 
 (*header*)
 writeln ("echo 1 > /proc/sys/net/ipv4/ip_forward"^"\n"^
@@ -188,7 +188,7 @@ iterate_edges_ML @{context} @{term "flows_stateL stateful_policy"}
   (fn (v1,v2) => writeln ("iptables -I FORWARD -m state --state ESTABLISHED -i "^iface v2^" -s $"^v2^"_ipv4 -o "^iface v1^" -d $"^v1^"_ipv4 -j ACCEPT") )
   (fn _ => () )
   (fn _ => () )
-*}
+\<close>
 
 
 lemma "set (flows_stateL stateful_policy) \<subseteq> set (flows_fixL stateful_policy)" by eval
@@ -201,8 +201,8 @@ definition stateless_flows :: "(string \<times> string) list" where
   "stateless_flows \<equiv> [(src, dst) \<leftarrow> flows_fixL stateful_policy. src \<noteq> dst \<and> (src, dst) \<notin> set stateful_flows]"
 value "stateless_flows"
 
-text{*OpenFlow Flow table Rules*}
-ML_val{*
+text\<open>OpenFlow Flow table Rules\<close>
+ML_val\<open>
 fun ARP (src: string) (dst: string): string =
   "# ARP Request\n"^
   "in_port=${port_"^src^"} dl_src=${mac_"^src^"} dl_dst=ff:ff:ff:ff:ff:ff arp arp_sha=${mac_"^src^"} "^
@@ -240,11 +240,11 @@ iterate_edges_ML @{context} @{term "stateless_flows"}
   (fn (v1,v2) =>  writeln ((ARP v1 v2) ^ "\n" ^ (IPv4 v1 v2) ^ "\n"))
   (fn _ => () )
   (fn _ => () )
-*}
+\<close>
 
 
-text{*Finally, all the functions demonstrated here can be exported to several programming languages
-     to obtain a stand-alone tool.*}
+text\<open>Finally, all the functions demonstrated here can be exported to several programming languages
+     to obtain a stand-alone tool.\<close>
 export_code
   security_invariants
   policy
@@ -286,11 +286,11 @@ definition dockermynet4policy :: "string list_graph" where
 
 lemma "wf_list_graph dockermynet4policy" by eval
 
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "security_invariants"} @{term "dockermynet4policy"};
-*}
+\<close>
 
-ML_val{*
+ML_val\<open>
 writeln ("*filter"^"\n"^
          ":INPUT ACCEPT [0:0]"^"\n"^
          ":FORWARD DROP [0:0]"^"\n"^
@@ -309,17 +309,17 @@ iterate_edges_ML @{context} @{term "flows_stateL (generate_valid_stateful_policy
   (fn _ => () );
 
 writeln ("COMMIT"^"\n");
-*}
+\<close>
 
 
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL (generate_valid_stateful_policy_IFSACS max_policy security_invariants)"})] ""; 
-*}
+\<close>
 
 (*dfwfw (docker firewall) rules: https://github.com/irsl/dfwfw*)
 
-ML_val{*
+ML_val\<open>
 writeln ("{"^"\n"^
          "\"container_to_container\": {"^"\n"^
          "\"rules\": ["^"\n"^
@@ -344,6 +344,6 @@ iterate_edges_ML @{context} @{term "flows_stateL (generate_valid_stateful_policy
   (fn _ => () );
 
 writeln ("]}}"^"\n");
-*}
+\<close>
 
 end

@@ -5,11 +5,11 @@ section "Arrow's Theorem for Utility Functions"
 theory Arrow_Utility imports Complex_Main
 begin
 
-text{* This theory formalizes the first proof due to
+text\<open>This theory formalizes the first proof due to
 Geanakoplos~\cite{Geanakoplos05}.  In contrast to the standard model
 of preferences as linear orders, we model preferences as \emph{utility
 functions} mapping each alternative to a real number. The type of
-alternatives and voters is assumed to be finite. *}
+alternatives and voters is assumed to be finite.\<close>
 
 typedecl alt
 typedecl indi
@@ -93,7 +93,7 @@ apply(unfold extreme_def)
 apply(fastforce dest:top_impl_not_bot)
 done
 
-text{* Auxiliary construction to hide details of preference model. *}
+text\<open>Auxiliary construction to hide details of preference model.\<close>
 
 definition
  mktop :: "pref \<Rightarrow> alt \<Rightarrow> pref" where
@@ -107,7 +107,7 @@ definition
  between :: "pref \<Rightarrow> alt \<Rightarrow> alt \<Rightarrow> alt \<Rightarrow> pref" where
 "between p a b c \<equiv> p(b := (p a + p c)/2)"
 
-text{*To make things simpler:*}
+text\<open>To make things simpler:\<close>
 declare between_def[simp]
 
 lemma [simp]: "a \<noteq> b \<Longrightarrow> mktop p b a = p a"
@@ -134,7 +134,7 @@ proof (simp add:mkbot_def finite_alt)
   thus "\<exists>x. \<not> P p a + 1 < P p x" ..
 qed
 
-text{* The proof starts here. *}
+text\<open>The proof starts here.\<close>
 
 locale arrow =
 fixes F :: "prof \<Rightarrow> pref"
@@ -232,18 +232,18 @@ next
     case True
     have "pivotal i b"
     proof -
-      from `?E P` `?B P` `b \<cdot>< P i` True
+      from \<open>?E P\<close> \<open>?B P\<close> \<open>b \<cdot>< P i\<close> True
       show ?thesis by(unfold pivotal_def, blast)
     qed
     thus ?thesis ..
   next
     case False
     have "D = {i. b \<cdot>< ?P i}"
-      by (rule set_eqI) (simp add:`i \<notin> D`, insert insert, blast)
+      by (rule set_eqI) (simp add:\<open>i \<notin> D\<close>, insert insert, blast)
     moreover have "Extreme ?P b"
-      using `?E P` by (simp add:extreme_def)
+      using \<open>?E P\<close> by (simp add:extreme_def)
     moreover have "b \<cdot>< F ?P"
-      using extremal[OF `Extreme ?P b`] False by(simp del:fun_upd_apply)
+      using extremal[OF \<open>Extreme ?P b\<close>] False by(simp del:fun_upd_apply)
     ultimately show ?thesis by(rule IH)
   qed
 qed
@@ -280,18 +280,18 @@ proof -
       have "F ?P a < F ?P b"
       proof (rule IIA')
         fix j show "(P2 j a < P2 j b) = (?P j a < ?P j b)"
-          using `Extreme P1 b` by(simp add: ac)
+          using \<open>Extreme P1 b\<close> by(simp add: ac)
       next
         show "F P2 a < F P2 b"
-          using `F P2 <\<cdot> b` abc by(simp add: eq_sym_conv)
+          using \<open>F P2 <\<cdot> b\<close> abc by(simp add: eq_sym_conv)
       qed
       also have "\<dots> < F ?P c"
       proof (rule IIA')
         fix j show "(P1 j b < P1 j c) = (?P j b < ?P j c)"
-          using `Extreme P1 b` `b \<cdot>< P1 i` by(simp add: ac)
+          using \<open>Extreme P1 b\<close> \<open>b \<cdot>< P1 i\<close> by(simp add: ac)
       next
         show "F P1 b < F P1 c"
-          using `b \<cdot>< F P1` abc by(simp add: eq_sym_conv)
+          using \<open>b \<cdot>< F P1\<close> abc by(simp add: eq_sym_conv)
       qed
       finally show ?thesis by(simp add:eq)
     qed
@@ -311,13 +311,13 @@ proof (rule ccontr)
   proof
     assume "?ab"
     hence "F P1 a < F P1 b" using d by(simp add: dictates_def dictates2_def)
-    with `b \<cdot>< F P1` show False by simp
+    with \<open>b \<cdot>< F P1\<close> show False by simp
   qed
-  hence "P1 j b < P1 j a" using `Extreme P1 b`[THEN spec, of j] ab
+  hence "P1 j b < P1 j a" using \<open>Extreme P1 b\<close>[THEN spec, of j] ab
     unfolding extreme_def top_def bot_def by metis
   hence "P2 j b < P2 j a" using pd by (simp add:P2)
   hence "F P2 b < F P2 a" using d by(simp add: dictates_def dictates2_def)
-  with `F P2 <\<cdot> b` show False by simp
+  with \<open>F P2 <\<cdot> b\<close> show False by simp
 qed
 
 

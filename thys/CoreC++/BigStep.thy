@@ -5,14 +5,14 @@
     Based on the Jinja theory J/BigStep.thy by Tobias Nipkow
 *)
 
-section {* Big Step Semantics *}
+section \<open>Big Step Semantics\<close>
 
 theory BigStep
 imports Syntax State
 begin
 
 
-subsection {* The rules *}
+subsection \<open>The rules\<close>
 
 inductive
   eval :: "prog \<Rightarrow> env \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
@@ -259,7 +259,7 @@ inductive_cases evals_cases [cases set]:
 
 
 
-subsection {*Final expressions*}
+subsection \<open>Final expressions\<close>
 
 definition final :: "expr \<Rightarrow> bool" where
   "final e  \<equiv>  (\<exists>v. e = Val v) \<or> (\<exists>r. e = Throw r)"
@@ -336,8 +336,8 @@ lemma eval_lcl_incr: "P,E \<turnstile> \<langle>e,(h\<^sub>0,l\<^sub>0)\<rangle>
 by (induct rule:eval_evals_inducts) (auto simp del:fun_upd_apply)
 
 
-text{* Only used later, in the small to big translation, but is already a
-good sanity check: *}
+text\<open>Only used later, in the small to big translation, but is already a
+good sanity check:\<close>
 
 lemma eval_finalId:  "final e \<Longrightarrow> P,E \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e,s\<rangle>"
 by (erule finalE) (fastforce intro: eval_evals.intros)+

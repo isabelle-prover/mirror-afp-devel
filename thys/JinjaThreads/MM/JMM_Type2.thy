@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JMM heap implementation 2 *}
+section \<open>JMM heap implementation 2\<close>
 
 theory JMM_Type2
 imports 
@@ -11,7 +11,7 @@ imports
   JMM_Heap
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 datatype addr = Address htype nat   \<comment> \<open>heap type and sequence number\<close>
 
@@ -34,9 +34,9 @@ end
 primrec the_Address :: "addr \<Rightarrow> htype \<times> nat"
 where "the_Address (Address hT n) = (hT, n)"
 
-text {*
+text \<open>
   The JMM heap only stores which sequence numbers of a given @{typ "htype"} have already been allocated.
-*}
+\<close>
 
 type_synonym JMM_heap = "htype \<Rightarrow> nat set"
 
@@ -129,7 +129,7 @@ interpretation jmm: allocated_heap_base
   for P
 .
 
-text {* Now a variation of the JMM with a different read operation that permits to read only type-conformant values *}
+text \<open>Now a variation of the JMM with a different read operation that permits to read only type-conformant values\<close>
 
 abbreviation jmm_heap_read_typed :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> addr_loc \<Rightarrow> addr val \<Rightarrow> bool"
 where "jmm_heap_read_typed P \<equiv> jmm.heap_read_typed TYPE('m) P P"
@@ -158,9 +158,9 @@ where "jmm'_confs P \<equiv> jmm'.confs TYPE('m) P P"
 abbreviation jmm'_tconf :: "'m prog \<Rightarrow> JMM_heap \<Rightarrow> addr \<Rightarrow> bool" ("_,_ \<turnstile>jmm' _ \<surd>t" [51,51,51] 50)
 where "jmm'_tconf P \<equiv> jmm'.tconf TYPE('m) P P"
 
-subsection {* Heap locale interpretations *}
+subsection \<open>Heap locale interpretations\<close>
 
-subsection {* Locale @{text heap} *}
+subsection \<open>Locale \<open>heap\<close>\<close>
 
 lemma jmm_heap: "heap addr2thread_id thread_id2addr jmm_allocate (jmm_typeof_addr P) jmm_heap_write P"
 proof
@@ -222,7 +222,7 @@ apply(simp add: jmm.start_heap_ok_def jmm.start_heap_data_def initialization_lis
 apply(split prod.split, clarify, clarsimp simp add: jmm.create_initial_object_simps jmm_allocate_eq_empty Thread_neq_sys_xcpts sys_xcpts_neqs dest!: jmm_allocate_Eps jmm_allocate_otherD)+
 done
 
-subsection {* Locale @{text "heap_conf"} *}
+subsection \<open>Locale \<open>heap_conf\<close>\<close>
 
 interpretation jmm: heap_conf_base
   addr2thread_id thread_id2addr
@@ -275,7 +275,7 @@ interpretation jmm': heap_conf
   for P
 by(rule jmm'_heap_conf)
 
-subsection {* Locale @{text heap_progress} *}
+subsection \<open>Locale \<open>heap_progress\<close>\<close>
 
 lemma jmm_heap_progress:
   "heap_progress addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) jmm_heap_read jmm_heap_write jmm_hconf P"
@@ -325,7 +325,7 @@ interpretation jmm': heap_progress
   for P
 by(rule jmm'_heap_progress)
 
-subsection {* Locale @{text heap_conf_read} *}
+subsection \<open>Locale \<open>heap_conf_read\<close>\<close>
 
 lemma jmm'_heap_conf_read:
   "heap_conf_read addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) (jmm_heap_read_typed P) jmm_heap_write jmm'_hconf P"
@@ -347,7 +347,7 @@ interpretation jmm': heap_typesafe
   for P
 ..
 
-subsection {* Locale @{text "allocated_heap"} *}
+subsection \<open>Locale \<open>allocated_heap\<close>\<close>
 
 lemma jmm_allocated_heap:
   "allocated_heap addr2thread_id thread_id2addr jmm_empty jmm_allocate (jmm_typeof_addr P) jmm_heap_write jmm_allocated P"
@@ -384,7 +384,7 @@ interpretation jmm': allocated_heap
   for P
 by(rule jmm'_allocated_heap)
 
-subsection {* Syntax translations *}
+subsection \<open>Syntax translations\<close>
 
 notation jmm'.external_WT' ("_,_ \<turnstile>jmm' (_\<bullet>_'(_')) : _" [50,0,0,0,50] 60)
 

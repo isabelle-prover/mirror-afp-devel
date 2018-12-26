@@ -2,7 +2,7 @@ theory "EvalHeap"
   imports "AList-Utils" Env Nominal2.Nominal2 "HOLCF-Utils"
 begin
 
-subsubsection {* Conversion from heaps to environments *} 
+subsubsection \<open>Conversion from heaps to environments\<close> 
 
 fun
   evalHeap :: "('var \<times> 'exp) list \<Rightarrow> ('exp \<Rightarrow> 'value::{pure,pcpo}) \<Rightarrow> 'var \<Rightarrow> 'value"
@@ -81,7 +81,7 @@ lemma evalHeap_mono:
    apply auto
    done
 
-subsubsection {* Reordering lemmas *}
+subsubsection \<open>Reordering lemmas\<close>
 
 lemma evalHeap_reorder:
   assumes "map_of \<Gamma> = map_of \<Delta>"

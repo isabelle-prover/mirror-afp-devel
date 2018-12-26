@@ -1,4 +1,4 @@
-section {* All ICF Implementations *}
+section \<open>All ICF Implementations\<close>
 theory ICF_Impl
 imports
   (*"../../Refine_Monadic/Refine_Monadic"*)

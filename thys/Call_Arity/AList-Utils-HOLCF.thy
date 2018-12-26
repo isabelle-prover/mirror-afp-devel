@@ -48,9 +48,9 @@ next
   assume "chain (\<lambda>i. \<Squnion>k\<mapsto>v\<in>m. f k v (Y i))"
 
   show "(\<Squnion>k\<mapsto>v\<in>m. f k v (\<Squnion> i. Y i)) \<sqsubseteq> (\<Squnion> i. \<Squnion>k\<mapsto>v\<in>m. f k v (Y i))"
-    apply (subst cont2contlubE[OF assms `chain Y`])
+    apply (subst cont2contlubE[OF assms \<open>chain Y\<close>])
     apply (rule lubmap_belowI)
-    apply (rule lub_mono[OF ch2ch_cont[OF assms `chain Y`] `chain (\<lambda>i. \<Squnion>k\<mapsto>v\<in>m. f k v (Y i))`])
+    apply (rule lub_mono[OF ch2ch_cont[OF assms \<open>chain Y\<close>] \<open>chain (\<lambda>i. \<Squnion>k\<mapsto>v\<in>m. f k v (Y i))\<close>])
     apply (erule below_lubmapI)
     done
 qed

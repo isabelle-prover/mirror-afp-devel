@@ -2,8 +2,8 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Bisimulation proof for between source code small step semantics
-  with and without callstacks for single threads *}
+section \<open>Bisimulation proof for between source code small step semantics
+  with and without callstacks for single threads\<close>
 
 theory J0Bisim imports
   J0
@@ -63,7 +63,7 @@ proof(cases)
         and sees: "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D" by auto
       from sees_wf_mdecl[OF wf sees]
       have "fv body \<subseteq> insert this (set pns)" "length Ts = length pns" by(simp_all add: wf_mdecl_def)
-      thus ?thesis using fv `length vs = length pns` by auto
+      thus ?thesis using fv \<open>length vs = length pns\<close> by auto
     next
       case (red0Return E)
       with fv_inline_call[of e E] show ?thesis using fv by auto
@@ -106,14 +106,14 @@ lemma assumes wf: "wwf_J_prog P"
   "P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> \<exists>ta'. extTA2J0 P,P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es', s'\<rangle> \<and> ta_bisim0 ta ta'"
 proof(induct rule: red_reds.inducts)
   case (RedCallExternal s a T M Ts Tr D vs ta va h' ta' e' s')
-  note red = `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
-  note T = `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
-  from T `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D` red
+  note red = \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
+  note T = \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close>
+  from T \<open>P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D\<close> red
   have "extTA2J0 P,P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J0 P ta\<rightarrow> \<langle>e',(h', lcl s)\<rangle>"
-    by(rule red_reds.RedCallExternal)(simp_all add: `e' = extRet2J (addr a\<bullet>M(map Val vs)) va`)
-  moreover from `ta' = extTA2J P ta` T red wf
+    by(rule red_reds.RedCallExternal)(simp_all add: \<open>e' = extRet2J (addr a\<bullet>M(map Val vs)) va\<close>)
+  moreover from \<open>ta' = extTA2J P ta\<close> T red wf
   have "ta_bisim0 ta' (extTA2J0 P ta)" by(auto intro: ta_bisim0_extNTA2J_extNTA2J0)
-  ultimately show ?case unfolding `s' = (h', lcl s)` by blast
+  ultimately show ?case unfolding \<open>s' = (h', lcl s)\<close> by blast
 next
   case RedTryFail thus ?case by(force intro: red_reds.RedTryFail)
 qed(fastforce intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
@@ -125,14 +125,14 @@ lemma assumes wf: "wwf_J_prog P"
   "extTA2J0 P,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> \<exists>ta'. P,t \<turnstile> \<langle>es, s\<rangle> [-ta'\<rightarrow>] \<langle>es', s'\<rangle> \<and> ta_bisim0 ta' ta"
 proof(induct rule: red_reds.inducts)
   case (RedCallExternal s a T M Ts Tr D vs ta va h' ta' e' s')
-  note red = `P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>`
-  note T = `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
-  from T `P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D` red
+  note red = \<open>P,t \<turnstile> \<langle>a\<bullet>M(vs),hp s\<rangle> -ta\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
+  note T = \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close>
+  from T \<open>P \<turnstile> class_type_of T sees M: Ts\<rightarrow>Tr = Native in D\<close> red
   have "P,t \<turnstile> \<langle>addr a\<bullet>M(map Val vs),s\<rangle> -extTA2J P ta\<rightarrow> \<langle>e',(h', lcl s)\<rangle>"
-    by(rule red_reds.RedCallExternal)(simp_all add: `e' = extRet2J (addr a\<bullet>M(map Val vs)) va`)
-  moreover from `ta' = extTA2J0 P ta` T red wf
+    by(rule red_reds.RedCallExternal)(simp_all add: \<open>e' = extRet2J (addr a\<bullet>M(map Val vs)) va\<close>)
+  moreover from \<open>ta' = extTA2J0 P ta\<close> T red wf
   have "ta_bisim0 (extTA2J P ta) ta'" by(auto intro: ta_bisim0_extNTA2J_extNTA2J0)
-  ultimately show ?case unfolding `s' = (h', lcl s)` by blast
+  ultimately show ?case unfolding \<open>s' = (h', lcl s)\<close> by blast
 next
   case RedTryFail thus ?case by(force intro: red_reds.RedTryFail)
 qed(fastforce intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
@@ -147,10 +147,10 @@ lemma red_inline_call_red:
   (is "_ \<Longrightarrow> ?concls Es x")
 proof(induct E and Es arbitrary: x and x rule: call.induct calls.induct)
   case (Call obj M pns x)
-  note IHobj = `\<And>x. call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl obj x`
-  note IHpns = `\<And>x. calls pns = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concls pns x`
+  note IHobj = \<open>\<And>x. call obj = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl obj x\<close>
+  note IHpns = \<open>\<And>x. calls pns = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concls pns x\<close>
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
-  from `call (obj\<bullet>M(pns)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(pns)) = \<lfloor>(a, M', vs)\<rfloor>" by simp
+  from \<open>call (obj\<bullet>M(pns)) = \<lfloor>aMvs\<rfloor>\<close> have "call (obj\<bullet>M(pns)) = \<lfloor>(a, M', vs)\<rfloor>" by simp
   thus ?case
   proof(induct rule: call_callE)
     case CallObj
@@ -166,21 +166,21 @@ proof(induct E and Es arbitrary: x and x rule: call.induct calls.induct)
   qed
 next
   case (Block V T' vo exp x)
-  note IH = `\<And>x. call exp = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl exp x`
-  from IH[of "x(V := vo)"] `call {V:T'=vo; exp} = \<lfloor>aMvs\<rfloor>`
+  note IH = \<open>\<And>x. call exp = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl exp x\<close>
+  from IH[of "x(V := vo)"] \<open>call {V:T'=vo; exp} = \<lfloor>aMvs\<rfloor>\<close>
   show ?case by(clarsimp simp del: fun_upd_apply)(drule BlockRed, auto)
 next
   case (Cons_exp exp exps x)
   show ?case
   proof(cases "is_val exp")
     case True
-    with `calls (exp # exps) = \<lfloor>aMvs\<rfloor>` have "calls exps = \<lfloor>aMvs\<rfloor>" by auto
-    with `calls exps = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concls exps x` True
+    with \<open>calls (exp # exps) = \<lfloor>aMvs\<rfloor>\<close> have "calls exps = \<lfloor>aMvs\<rfloor>" by auto
+    with \<open>calls exps = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concls exps x\<close> True
     show ?thesis by(fastforce intro: ListRed2)
   next
     case False
-    with `calls (exp # exps) = \<lfloor>aMvs\<rfloor>` have "call exp = \<lfloor>aMvs\<rfloor>" by auto
-    with `call exp = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl exp x`
+    with \<open>calls (exp # exps) = \<lfloor>aMvs\<rfloor>\<close> have "call exp = \<lfloor>aMvs\<rfloor>" by auto
+    with \<open>call exp = \<lfloor>aMvs\<rfloor> \<Longrightarrow> ?concl exp x\<close>
     show ?thesis by(fastforce intro: ListRed1)
   qed
 qed(fastforce intro: red_reds.intros)+
@@ -197,30 +197,30 @@ lemma
   (is "_ \<Longrightarrow> _ \<Longrightarrow> ?reds es s")
 proof(induct e and es arbitrary: s and s rule: call.induct calls.induct)
   case (Call obj M' params s)
-  note IHObj = `\<And>s. \<lbrakk>call obj = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?red obj s`
-  note IHParams = `\<And>s. \<lbrakk> calls params = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?reds params s`
-  from `call (obj\<bullet>M'(params)) = \<lfloor>(a, M, vs)\<rfloor>`
+  note IHObj = \<open>\<And>s. \<lbrakk>call obj = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?red obj s\<close>
+  note IHParams = \<open>\<And>s. \<lbrakk> calls params = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?reds params s\<close>
+  from \<open>call (obj\<bullet>M'(params)) = \<lfloor>(a, M, vs)\<rfloor>\<close>
   show ?case
   proof(induct rule: call_callE)
     case CallObj
-    from IHObj[OF CallObj] `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` have "?red obj s" by blast
+    from IHObj[OF CallObj] \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close> have "?red obj s" by blast
     moreover from CallObj have "\<not> is_val obj" by auto
     ultimately show ?case by(auto intro: red_reds.CallObj)
   next
     case (CallParams v)
-    from IHParams[OF `calls params = \<lfloor>(a, M, vs)\<rfloor>`] `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
+    from IHParams[OF \<open>calls params = \<lfloor>(a, M, vs)\<rfloor>\<close>] \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close>
     have "?reds params s" by blast
     moreover from CallParams have "\<not> is_vals params" by auto
-    ultimately show ?case using `obj = Val v` by(auto intro: red_reds.CallParams)
+    ultimately show ?case using \<open>obj = Val v\<close> by(auto intro: red_reds.CallParams)
   next
     case Call
-    with RedCall[where s=s, simplified, OF `typeof_addr (hp s) a = \<lfloor>T\<rfloor>` `P \<turnstile> class_type_of T sees M:Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D` `length vs = length pns` `length Us = length pns`] 
+    with RedCall[where s=s, simplified, OF \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close> \<open>P \<turnstile> class_type_of T sees M:Us\<rightarrow>U = \<lfloor>(pns, body)\<rfloor> in D\<close> \<open>length vs = length pns\<close> \<open>length Us = length pns\<close>] 
     show ?thesis by(simp)
   qed
 next
   case (Block V ty vo exp s)
-  note IH = `\<And>s. \<lbrakk>call exp = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?red exp s`
-  from `call {V:ty=vo; exp} = \<lfloor>(a, M, vs)\<rfloor>` IH[of "(hp s, (lcl s)(V := vo))"] `typeof_addr (hp s) a = \<lfloor>T\<rfloor>`
+  note IH = \<open>\<And>s. \<lbrakk>call exp = \<lfloor>(a, M, vs)\<rfloor>; typeof_addr (hp s) a = \<lfloor>T\<rfloor> \<rbrakk> \<Longrightarrow> ?red exp s\<close>
+  from \<open>call {V:ty=vo; exp} = \<lfloor>(a, M, vs)\<rfloor>\<close> IH[of "(hp s, (lcl s)(V := vo))"] \<open>typeof_addr (hp s) a = \<lfloor>T\<rfloor>\<close>
   show ?case by(cases s, simp del: fun_upd_apply)(drule red_reds.BlockRed, simp)
 qed(fastforce intro: red_reds.intros)+
 
@@ -267,13 +267,13 @@ next
   case CompareAndSwap thus ?case using eefin by(auto elim!: red_cases split: if_split_asm)
 next
   case (Call obj M pns E' x x')
-  note IHobj = `\<And>x E' x'. \<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee obj,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<rbrakk>
-                \<Longrightarrow> ?concl obj E' x x'`
-  note IHpns = `\<And>Es' x x'. \<lbrakk>calls pns = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_calls ee pns,(h, x)\<rangle> [-ta\<rightarrow>] \<langle>Es',(h', x')\<rangle>\<rbrakk>
-               \<Longrightarrow> ?concls pns Es' x x'`
-  note red = `P,t \<turnstile> \<langle>inline_call ee (obj\<bullet>M(pns)),(h, x)\<rangle> -ta\<rightarrow>  \<langle>E',(h', x')\<rangle>`
+  note IHobj = \<open>\<And>x E' x'. \<lbrakk>call obj = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee obj,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<rbrakk>
+                \<Longrightarrow> ?concl obj E' x x'\<close>
+  note IHpns = \<open>\<And>Es' x x'. \<lbrakk>calls pns = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_calls ee pns,(h, x)\<rangle> [-ta\<rightarrow>] \<langle>Es',(h', x')\<rangle>\<rbrakk>
+               \<Longrightarrow> ?concls pns Es' x x'\<close>
+  note red = \<open>P,t \<turnstile> \<langle>inline_call ee (obj\<bullet>M(pns)),(h, x)\<rangle> -ta\<rightarrow>  \<langle>E',(h', x')\<rangle>\<close>
   obtain a M' vs where [simp]: "aMvs = (a, M', vs)" by(cases aMvs, auto)
-  from `call (obj\<bullet>M(pns)) = \<lfloor>aMvs\<rfloor>` have "call (obj\<bullet>M(pns)) = \<lfloor>(a,M',vs)\<rfloor>" by simp
+  from \<open>call (obj\<bullet>M(pns)) = \<lfloor>aMvs\<rfloor>\<close> have "call (obj\<bullet>M(pns)) = \<lfloor>(a,M',vs)\<rfloor>" by simp
   thus ?case
   proof(cases rule: call_callE)
     case CallObj
@@ -284,7 +284,7 @@ next
     from IHobj[OF _ red'] CallObj obtain ee' 
       where "inline_call ee' obj = obj'" "x = x'"
       and "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', Map.empty)\<rangle>" by(auto simp del: fun_upd_apply)
-    with `E' = obj'\<bullet>M(pns)` CallObj red' show ?thesis by(fastforce simp del: fun_upd_apply)
+    with \<open>E' = obj'\<bullet>M(pns)\<close> CallObj red' show ?thesis by(fastforce simp del: fun_upd_apply)
   next
     case (CallParams v'')
     hence "\<not> is_vals pns" by auto
@@ -295,7 +295,7 @@ next
       where "inline_calls ee' pns = pns'" "x = x'"
       and "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', Map.empty)\<rangle>"
       by(auto simp del: fun_upd_apply)
-    with `E' = obj\<bullet>M(pns')` CallParams red' `\<not> is_vals pns`
+    with \<open>E' = obj\<bullet>M(pns')\<close> CallParams red' \<open>\<not> is_vals pns\<close>
     show ?thesis by(auto simp del: fun_upd_apply)
   next
     case Call
@@ -312,10 +312,10 @@ next
   qed
 next
   case (Block V ty voo exp E' x x')
-  note IH = `\<And>x E' x'. \<lbrakk>call exp = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee exp,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<rbrakk>
-            \<Longrightarrow> ?concl exp E' x x'`
-  from `call {V:ty=voo; exp} = \<lfloor>aMvs\<rfloor>` have ic: "call exp = \<lfloor>aMvs\<rfloor>" by simp
-  note red = `P,t \<turnstile> \<langle>inline_call ee {V:ty=voo; exp},(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>`
+  note IH = \<open>\<And>x E' x'. \<lbrakk>call exp = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee exp,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<rbrakk>
+            \<Longrightarrow> ?concl exp E' x x'\<close>
+  from \<open>call {V:ty=voo; exp} = \<lfloor>aMvs\<rfloor>\<close> have ic: "call exp = \<lfloor>aMvs\<rfloor>" by simp
+  note red = \<open>P,t \<turnstile> \<langle>inline_call ee {V:ty=voo; exp},(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>\<close>
   hence "P,t \<turnstile> \<langle>{V:ty=voo; inline_call ee exp},(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>" by simp
   with ic eefin obtain exp' x'' where "E' = {V:ty=x'' V; exp'}"
     and red': "P,t \<turnstile> \<langle>inline_call ee exp,(h, fun_upd x V voo)\<rangle> -ta\<rightarrow> \<langle>exp',(h', x'')\<rangle>"
@@ -324,8 +324,8 @@ next
   from IH[OF ic red'] obtain ee' vo' 
     where icl: "inline_call ee' exp = exp'" "x'' = fun_upd x V voo"
     and red'': "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', Map.empty)\<rangle>" by blast
-  from `x'' = fun_upd x V voo` have "x'' V = voo" by(simp add: fun_eq_iff)
-  with icl red'' `E' = {V:ty=x'' V; exp'}` `x' = fun_upd x'' V (x V)` red'
+  from \<open>x'' = fun_upd x V voo\<close> have "x'' V = voo" by(simp add: fun_eq_iff)
+  with icl red'' \<open>E' = {V:ty=x'' V; exp'}\<close> \<open>x' = fun_upd x'' V (x V)\<close> red'
   show ?case by(auto simp del: fun_upd_apply)
 next
   case Synchronized thus ?case using eefin by(auto elim!: red_cases)
@@ -365,10 +365,10 @@ next
   with sees show ?case by(auto dest: sees_method_fun)
 next
   case (BlockRed e h x V vo ta e' h' x' T')
-  from `call {V:T'=vo; e} = \<lfloor>(a, M, vs)\<rfloor>` `typeof_addr (hp (h, x)) a = \<lfloor>T\<rfloor>` sees
+  from \<open>call {V:T'=vo; e} = \<lfloor>(a, M, vs)\<rfloor>\<close> \<open>typeof_addr (hp (h, x)) a = \<lfloor>T\<rfloor>\<close> sees
   have "call e = \<lfloor>(a, M, vs)\<rfloor>" and "\<not> synthesized_call P h (a, M, vs)"
     by(auto simp add: synthesized_call_conv dest: sees_method_fun)
-  with `P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+  with \<open>P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>
   have "x(V := vo) = x'" by(auto dest: is_call_red_state_unchanged)
   hence "x' V = vo" by auto
   with BlockRed show ?case by(simp)
@@ -385,8 +385,8 @@ proof(induction es arbitrary: e e')
   case Nil thus ?case by simp
 next
   case (Cons E es)
-  note wf = `wf_state (e, E # es)`
-  note red = `P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', Map.empty)\<rangle>`
+  note wf = \<open>wf_state (e, E # es)\<close>
+  note red = \<open>P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', Map.empty)\<rangle>\<close>
   from wf obtain a M vs arrobj where call: "call E = \<lfloor>(a, M, vs)\<rfloor>" 
     by(auto simp add: is_call_def)
   from red call have "P,t \<turnstile> \<langle>inline_call e E,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>inline_call e' E,(h', Map.empty)\<rangle>"
@@ -407,21 +407,21 @@ lemma red_fold_exs':
 proof(induction es arbitrary: e)
   case Nil
   hence red': "P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
-  with red_dom_lcl[OF this] `wf_state (e, [])` show ?case by auto
+  with red_dom_lcl[OF this] \<open>wf_state (e, [])\<close> show ?case by auto
 next
   case (Cons E es)
-  note wf = `wf_state (e, E # es)`
-  note nfin = `\<not> final e`
+  note wf = \<open>wf_state (e, E # es)\<close>
+  note nfin = \<open>\<not> final e\<close>
   from wf have "fv e = {}" by simp
   from wf obtain a M vs where call: "call E = \<lfloor>(a, M, vs)\<rfloor>" by(auto simp add: is_call_def)
-  from `P,t \<turnstile> \<langle>collapse (e, E # es),(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+  from \<open>P,t \<turnstile> \<langle>collapse (e, E # es),(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>
   have "P,t \<turnstile> \<langle>collapse (inline_call e E, es),(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
   moreover from wf fv_inline_call[of e E] have "wf_state (inline_call e E, es)" by auto
   moreover from nfin call have "\<not> final (inline_call e E)" by(auto elim!: final.cases)
   ultimately have "?concl (inline_call e E) es" by(rule Cons.IH)
   then obtain E' where e': "e' = collapse (E', es)" 
     and red': "P,t \<turnstile> \<langle>inline_call e E,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>E',(h', Map.empty)\<rangle>" by blast
-  from red_inline_call_red'(1)[OF `fv e = {}` nfin `call E = \<lfloor>(a, M, vs)\<rfloor>` red']
+  from red_inline_call_red'(1)[OF \<open>fv e = {}\<close> nfin \<open>call E = \<lfloor>(a, M, vs)\<rfloor>\<close> red']
   obtain e' where "E' = inline_call e' E" "P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', Map.empty)\<rangle>" by auto
   thus ?case using e' by auto
 qed
@@ -462,13 +462,13 @@ proof(induction es arbitrary: e)
   case Nil thus ?case by clarsimp
 next
   case (Cons e es e'')
-  from `\<forall>a\<in>set (e # es). is_call a` obtain aMvs where calls: "\<forall>e\<in>set es. is_call e"
+  from \<open>\<forall>a\<in>set (e # es). is_call a\<close> obtain aMvs where calls: "\<forall>e\<in>set es. is_call e"
     and call: "call e = \<lfloor>aMvs\<rfloor>" by(auto simp add: is_call_def)
   note calls moreover
-  from `\<not> final e''` call have "\<not> final (inline_call e'' e)" by(auto simp add: final_iff)
+  from \<open>\<not> final e''\<close> call have "\<not> final (inline_call e'' e)" by(auto simp add: final_iff)
   ultimately have "\<tau>move0 P h (collapse (inline_call e'' e, es)) = \<tau>move0 P h (inline_call e'' e)"
     by(rule Cons.IH)
-  also from call `\<not> final e''` have "\<dots> = \<tau>move0 P h e''" by(auto simp add: inline_call_\<tau>move0_inv)
+  also from call \<open>\<not> final e''\<close> have "\<dots> = \<tau>move0 P h e''" by(auto simp add: inline_call_\<tau>move0_inv)
   finally show ?case by simp
 qed
 
@@ -560,7 +560,7 @@ next
   have nfin: "\<not> final e'"
   proof
     assume fin: "final e'"
-    hence "es' = []" by(rule `final e' \<Longrightarrow> es' = []`)
+    hence "es' = []" by(rule \<open>final e' \<Longrightarrow> es' = []\<close>)
     with fold fin feq have "final e1" by simp
     with red show False by auto
   qed
@@ -580,7 +580,7 @@ next
     with red'' have "P,t \<turnstile>0 \<langle>e'/es', h1\<rangle> -\<epsilon>\<rightarrow> \<langle>E'/es', h1'\<rangle>" unfolding no_call_def by(rule red0Red)
     moreover from red \<tau> have [simp]: "h1' = h1" by(auto dest: \<tau>move0_heap_unchanged)
     moreover from \<tau> fold feq icl nfin have "\<tau>move0 P h1 e'" by(simp add: collapse_\<tau>move0_inv)
-    ultimately have "\<tau>Red0 P t h1 (e', es') (E', es')" using `\<tau>move0 P h1 e'` by auto
+    ultimately have "\<tau>Red0 P t h1 (e', es') (E', es')" using \<open>\<tau>move0 P h1 e'\<close> by auto
     with red1 have "\<tau>Red0t P t h1 (e, es) (E', es')" by(rule rtranclp_into_tranclp1)
     moreover hence "wf_state (E', es')" using wf_state by(rule \<tau>Red0t_preserves_wf_state[OF wf])
     hence "bisim_red_red0 ((e1', x1'), h1) ((E', es'), h1)" unfolding x1' e1' by(auto)
@@ -602,7 +602,7 @@ next
     ultimately have "\<tau>Red0 P t h1 (e', es') (?e, e' # es')" by auto
     with red1 have "\<tau>Red0t P t h1 (e, es) (?e, e' # es')" by(rule rtranclp_into_tranclp1)
     moreover {
-      from `P,t \<turnstile>0 \<langle>e'/es',h1\<rangle> -\<epsilon>\<rightarrow> \<langle>?e/e' # es',h1\<rangle>` have "wf_state (?e, e' # es')"
+      from \<open>P,t \<turnstile>0 \<langle>e'/es',h1\<rangle> -\<epsilon>\<rightarrow> \<langle>?e/e' # es',h1\<rangle>\<close> have "wf_state (?e, e' # es')"
         using wf_state' by(rule red0_preserves_wf_state[OF wf])
       moreover from is_call_red_inline_callD[OF sees red' call] ha
       have "E' = inline_call ?e e'" by auto
@@ -610,7 +610,7 @@ next
         by(auto del: wf_state.cases wf_state.intros) }
     moreover from red' call notsynth have "h1 = h1'"
       by(auto dest: is_call_red_state_unchanged)
-    ultimately show ?thesis unfolding heap x1' x1 s2 s1' `h1' = h1`
+    ultimately show ?thesis unfolding heap x1' x1 s2 s1' \<open>h1' = h1\<close>
       by(blast intro: \<tau>Red0t_into_silent_movet)
   qed
 next
@@ -694,7 +694,7 @@ next
   have nfin: "\<not> final e'"
   proof
     assume fin: "final e'"
-    hence "es' = []" by(rule `final e' \<Longrightarrow> es' = []`)
+    hence "es' = []" by(rule \<open>final e' \<Longrightarrow> es' = []\<close>)
     with fold fin feq have "final e1" by simp
     with red show False by auto
   qed
@@ -748,26 +748,26 @@ proof -
   obtain e' e es where wf_state: "wf_state (e, es)"
     and [simp]: "x1 = (e', Map.empty)" "x2 = (e, es)" "e' = collapse (e, es)" "m2 = m1"
     by cases(cases x2, auto)
-  from `final_expr x1` have "final (collapse (e, es))" by simp
+  from \<open>final_expr x1\<close> have "final (collapse (e, es))" by simp
   moreover from wf_state have "\<forall>e\<in>set es. is_call e" by auto
   ultimately have "red0_mthr.silent_moves P t ((e, es), m1) ((collapse (e, es), []), m1)"
   proof(induction es arbitrary: e)
     case Nil thus ?case by simp
   next
     case (Cons e' es)
-    from `final (collapse (e, e' # es))` have "final (collapse (inline_call e e', es))" by simp
-    moreover from `\<forall>e\<in>set (e' # es). is_call e` have "\<forall>e\<in>set es. is_call e" by simp
+    from \<open>final (collapse (e, e' # es))\<close> have "final (collapse (inline_call e e', es))" by simp
+    moreover from \<open>\<forall>e\<in>set (e' # es). is_call e\<close> have "\<forall>e\<in>set es. is_call e" by simp
     ultimately have "red0_mthr.silent_moves P t ((inline_call e e', es), m1) ((collapse (inline_call e e', es), []), m1)"
       by(rule Cons.IH)
-    moreover from `final (collapse (e, e' # es))` `\<forall>e\<in>set (e' # es). is_call e`
+    moreover from \<open>final (collapse (e, e' # es))\<close> \<open>\<forall>e\<in>set (e' # es). is_call e\<close>
     have "final e" by(rule collapse_finalD)
     hence "P,t \<turnstile>0 \<langle>e/e'#es, m1\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e e'/es, m1\<rangle>" by(rule red0Return)
-    with `final e` have "red0_mthr.silent_move P t ((e, e'#es), m1) ((inline_call e e', es), m1)" by auto
+    with \<open>final e\<close> have "red0_mthr.silent_move P t ((e, e'#es), m1) ((inline_call e e', es), m1)" by auto
     ultimately show ?case by -(erule converse_rtranclp_into_rtranclp, simp)
   qed
   moreover have "bisim_red_red0 ((collapse (e, es), Map.empty), m1) ((collapse (e, es), []), m1)"
-    using `final (collapse (e, es))` by(auto intro!: bisim_red_red0I)
-  ultimately show ?thesis using `final (collapse (e, es))` by auto
+    using \<open>final (collapse (e, es))\<close> by(auto intro!: bisim_red_red0I)
+  ultimately show ?thesis using \<open>final (collapse (e, es))\<close> by auto
 qed
 
 lemma red0_simulates_red_not_final:
@@ -872,7 +872,7 @@ proof -
     with red_simulates_red0[OF wf b red2] wakeup obtain s1' ta1
       where "mred P t (x1, m1) ta1 s1'" "bisim_red_red0 s1' (x2', m2')" "ta_bisim0 ta1 ta2"
       by(fastforce simp add: split_paired_Ex)
-    moreover from `bisim_red_red0 s1' (x2', m2')` have "m2' = snd s1'" by cases auto
+    moreover from \<open>bisim_red_red0 s1' (x2', m2')\<close> have "m2' = snd s1'" by cases auto
     ultimately
     show "\<exists>ta1 x1' m1'. mred P t (x1, m1) ta1 (x1', m1') \<and> bisim_red_red0 (x1', m1') (x2', m2') \<and> ta_bisim0 ta1 ta2"
       by(cases ta1)(fastforce simp add: split_beta)

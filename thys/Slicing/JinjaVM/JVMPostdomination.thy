@@ -1,24 +1,24 @@
-chapter {* Standard and Weak Control Dependence *}
+chapter \<open>Standard and Weak Control Dependence\<close>
 
-section {* A type for well-formed programs *}
+section \<open>A type for well-formed programs\<close>
 
 theory JVMPostdomination imports JVMInterpretation "../Basic/Postdomination" begin
 
-text {*
-For instantiating @{text Postdomination} every node in the CFG of a program must be
-reachable from the @{text "(_Entry_)"} node and there must be a path to the
-@{text "(_Exit_)"} node from each node.
+text \<open>
+For instantiating \<open>Postdomination\<close> every node in the CFG of a program must be
+reachable from the \<open>(_Entry_)\<close> node and there must be a path to the
+\<open>(_Exit_)\<close> node from each node.
 
 Therefore, we restrict the set of allowed programs to those, where the CFG fulfills
 these requirements. This is done by defining a new type for well-formed programs.
 The universe of every type in Isabelle must be non-empty. That's why we first
-define an example program @{text EP} and its typing @{text "Phi_EP"}, which
+define an example program \<open>EP\<close> and its typing \<open>Phi_EP\<close>, which
 is a member of the carrier set of the later defined type.
 
 Restricting the set of allowed programs in this way is reasonable, as Jinja's compiler
 only produces byte code programs, that are members of this type (A proof for this is
 current work).
-*}
+\<close>
 
 definition EP :: jvm_prog
   where "EP = (''C'', Object, [], [(''M'', [], Void, 1::nat, 0::nat, [Push Unit, Return], [])]) #
@@ -27,10 +27,10 @@ definition EP :: jvm_prog
 definition Phi_EP :: ty\<^sub>P
   where "Phi_EP C M = (if C = ''C'' \<and> M = ''M'' then [\<lfloor>([],[OK (Class ''C'')])\<rfloor>,\<lfloor>([Void],[OK (Class ''C'')])\<rfloor>] else [])"
 
-text {*
-Now we show, that @{text EP} is indeed a well-formed program in the sense of Jinja's
+text \<open>
+Now we show, that \<open>EP\<close> is indeed a well-formed program in the sense of Jinja's
 byte code verifier
-*}
+\<close>
 
 lemma distinct_classes'':
   "''C'' \<noteq> Object"
@@ -354,7 +354,7 @@ abbreviation lift_to_cfg_wf_prog :: "(jvmprog \<Rightarrow> 'a) \<Rightarrow> (c
   ("_\<^bsub>CFG\<^esub>")
   where "f\<^bsub>CFG\<^esub> \<equiv> (\<lambda>P. f (Rep_cfg_wf_prog P))"
 
-section {* Interpretation of the @{text Postdomination} locale *}
+section \<open>Interpretation of the \<open>Postdomination\<close> locale\<close>
 
 interpretation JVM_CFG_Postdomination:
   Postdomination "sourcenode" "targetnode" "kind" "valid_edge\<^bsub>CFG\<^esub> prog" "Entry" "(_Exit_)"
@@ -396,9 +396,9 @@ next
 qed
 
 
-section {* Interpretation of the @{text StrongPostdomination} locale *}
+section \<open>Interpretation of the \<open>StrongPostdomination\<close> locale\<close>
 
-subsection {* Some helpfull lemmas *}
+subsection \<open>Some helpfull lemmas\<close>
 
 lemma find_handler_for_tl_eq:
   "find_handler_for P Exc cs = (C,M,pcx)#cs' \<Longrightarrow> \<exists>cs'' pc. cs = cs'' @ [(C,M,pc)] @ cs'"
@@ -419,15 +419,15 @@ proof (induct cs arbitrary: C' M' pc' cs')
 next
   case (Cons a cs)
   hence [simp]: "a = (C',M',pc')" and [simp]: "cs = cs'" by simp_all
-  note IH = `\<And>C' M' pc' cs'.
+  note IH = \<open>\<And>C' M' pc' cs'.
            \<lbrakk>cs = (C', M', pc') # cs'; valid_callstack (P, C0, Main) cs;
             instrs_of P\<^bsub>wf\<^esub> C' M' ! pc' = Throw \<or>
             (\<exists>M'' n''. instrs_of P\<^bsub>wf\<^esub> C' M' ! pc' = Invoke M'' n'');
             find_handler_for P Exc cs = (C, M, pc) # cs''\<rbrakk>
-           \<Longrightarrow> pc < length (instrs_of P\<^bsub>wf\<^esub> C M)`
-  note throw = `instrs_of P\<^bsub>wf\<^esub> C' M' ! pc' = Throw \<or> (\<exists>M'' n''. instrs_of P\<^bsub>wf\<^esub> C' M' ! pc' = Invoke M'' n'')`
-  note fhf = `find_handler_for P Exc (a # cs) = (C, M, pc) # cs''`
-  note v_cs_a_cs = `valid_callstack (P, C0, Main) (a # cs)`
+           \<Longrightarrow> pc < length (instrs_of P\<^bsub>wf\<^esub> C M)\<close>
+  note throw = \<open>instrs_of P\<^bsub>wf\<^esub> C' M' ! pc' = Throw \<or> (\<exists>M'' n''. instrs_of P\<^bsub>wf\<^esub> C' M' ! pc' = Invoke M'' n'')\<close>
+  note fhf = \<open>find_handler_for P Exc (a # cs) = (C, M, pc) # cs''\<close>
+  note v_cs_a_cs = \<open>valid_callstack (P, C0, Main) (a # cs)\<close>
   show ?case
   proof (cases "match_ex_table (P\<^bsub>wf\<^esub>) Exc pc' (ex_table_of (P\<^bsub>wf\<^esub>) C' M')")
     case None
@@ -438,7 +438,7 @@ next
     from v_cs_a_cs
     have "cs \<noteq> [] \<longrightarrow> (let (C,M,pc) = hd cs in \<exists>n. instrs_of (P\<^bsub>wf\<^esub>) C M ! pc = Invoke M' n)"
       by (cases cs', auto)
-    with IH None fhf_tl `valid_callstack (P, C0, Main) cs`
+    with IH None fhf_tl \<open>valid_callstack (P, C0, Main) cs\<close>
     show ?thesis
       by (cases cs) fastforce+
   next
@@ -462,7 +462,7 @@ next
 qed
 
 
-subsection {* Every node has only finitely many successors *}
+subsection \<open>Every node has only finitely many successors\<close>
 
 lemma successor_set_finite:
   "JVM_CFG_Interpret.valid_node prog n 
@@ -731,7 +731,7 @@ proof -
   qed
 qed
 
-subsection {* Interpretation of the locale *}
+subsection \<open>Interpretation of the locale\<close>
 
 interpretation JVM_CFG_StrongPostdomination:
   StrongPostdomination "sourcenode" "targetnode" "kind" "valid_edge\<^bsub>CFG\<^esub> prog" "Entry" "(_Exit_)"

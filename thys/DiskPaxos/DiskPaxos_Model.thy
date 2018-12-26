@@ -8,7 +8,7 @@ section "Disk Paxos Algorithm Specification"
 
 theory DiskPaxos_Model imports Main begin
 
-text{* This is the specification of the Disk Synod algorithm. *}
+text\<open>This is the specification of the Disk Synod algorithm.\<close>
 
 typedecl InputsOrNi
 typedecl Disk
@@ -239,12 +239,12 @@ where
                 \<or> Fail s s' p
                 \<or> EndPhase0 s s' p)"
 
-text {*
+text \<open>
   In the following, for each action or state {\em name} we name
   {\em Hname} the corresponding action that includes 
   the history part of the HNext action or state predicate that includes 
   history variables.
-*}
+\<close>
 
 definition HInit :: "state \<Rightarrow> bool"
 where
@@ -253,9 +253,9 @@ where
    & chosen s = NotAnInput
    & allInput s = range (inpt s))"
 
-text {* HNextPart is the part of the Next action 
+text \<open>HNextPart is the part of the Next action 
         that is concerned with history variables.
-*}
+\<close>
 
 definition HNextPart :: "state \<Rightarrow> state => bool"
 where
@@ -272,10 +272,10 @@ where
      (Next s s'
    \<and> HNextPart s s')"
 
-text {* 
+text \<open>
   We add HNextPart to every action (rather than proving that Next 
   maintains the HInv invariant) to make proofs easier. 
-*}
+\<close>
 
 definition
   HPhase1or2ReadThen :: "state \<Rightarrow> state \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> Proc \<Rightarrow> bool" where
@@ -313,10 +313,10 @@ definition
   HEndPhase0 :: "state \<Rightarrow> state \<Rightarrow> Proc \<Rightarrow> bool" where
   "HEndPhase0 s s' p = (EndPhase0 s s' p \<and> HNextPart s s')"  
 
-text {* 
+text \<open>
   Since these definitions are the conjunction of two other definitions 
   declaring them as simplification rules should be harmless.
-*}
+\<close>
 
 declare HPhase1or2ReadThen_def [simp]
 declare HPhase1or2ReadElse_def [simp]

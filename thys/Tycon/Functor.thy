@@ -1,51 +1,50 @@
-section {* Functor Class *}
+section \<open>Functor Class\<close>
 
 theory Functor
 imports TypeApp Coerce
 keywords "tycondef" :: thy_decl and "\<cdot>"
 begin
 
-subsection {* Class definition *}
+subsection \<open>Class definition\<close>
 
-text {* Here we define the @{text functor} class, which models the
+text \<open>Here we define the \<open>functor\<close> class, which models the
 Haskell class \texttt{Functor}. For technical reasons, we split the
-definition of @{text functor} into two separate classes: First, we
-introduce @{text prefunctor}, which only requires @{text fmap} to
-preserve the identity function, and not function composition. *}
+definition of \<open>functor\<close> into two separate classes: First, we
+introduce \<open>prefunctor\<close>, which only requires \<open>fmap\<close> to
+preserve the identity function, and not function composition.\<close>
 
-text {* The Haskell class \texttt{Functor f} fixes a polymorphic
+text \<open>The Haskell class \texttt{Functor f} fixes a polymorphic
 function \texttt{fmap :: (a -> b) -> f a -> f b}. Since functions in
 Isabelle type classes can only mention one type variable, we have the
-@{text prefunctor} class fix a function @{text fmapU} that fixes both
+\<open>prefunctor\<close> class fix a function \<open>fmapU\<close> that fixes both
 of the polymorphic types to be the universal domain. We will use the
-coercion operator to recover a polymorphic @{text fmap}. *}
+coercion operator to recover a polymorphic \<open>fmap\<close>.\<close>
 
-text {* The single axiom of the @{text prefunctor} class is stated in
-terms of the HOLCF constant @{text isodefl}, which relates a function
-@{text "f :: 'a \<rightarrow> 'a"} with a deflation @{text "t :: udom defl"}:
-@{thm isodefl_def [of f t, no_vars]}. *}
+text \<open>The single axiom of the \<open>prefunctor\<close> class is stated in
+terms of the HOLCF constant \<open>isodefl\<close>, which relates a function
+\<open>f :: 'a \<rightarrow> 'a\<close> with a deflation \<open>t :: udom defl\<close>:
+@{thm isodefl_def [of f t, no_vars]}.\<close>
 
 class prefunctor = "tycon" +
   fixes fmapU :: "(udom \<rightarrow> udom) \<rightarrow> udom\<cdot>'a \<rightarrow> udom\<cdot>'a::tycon"
   assumes isodefl_fmapU:
     "isodefl (fmapU\<cdot>(cast\<cdot>t)) (TC('a::tycon)\<cdot>t)"
 
-text {* The @{text functor} class extends @{text prefunctor} with an
-axiom stating that @{text fmapU} preserves composition. *}
+text \<open>The \<open>functor\<close> class extends \<open>prefunctor\<close> with an
+axiom stating that \<open>fmapU\<close> preserves composition.\<close>
 
 class "functor" = prefunctor +
   assumes fmapU_fmapU [coerce_simp]:
     "\<And>f g (xs::udom\<cdot>'a::tycon).
       fmapU\<cdot>f\<cdot>(fmapU\<cdot>g\<cdot>xs) = fmapU\<cdot>(\<Lambda> x. f\<cdot>(g\<cdot>x))\<cdot>xs"
 
-text {* We define the polymorphic @{text fmap} by coercion from @{text
-fmapU}, then we proceed to derive the polymorphic versions of the
-functor laws. *}
+text \<open>We define the polymorphic \<open>fmap\<close> by coercion from \<open>fmapU\<close>, then we proceed to derive the polymorphic versions of the
+functor laws.\<close>
 
 definition fmap :: "('a \<rightarrow> 'b) \<rightarrow> 'a\<cdot>'f \<rightarrow> 'b\<cdot>'f::functor"
   where "fmap = coerce\<cdot>(fmapU :: _ \<rightarrow> udom\<cdot>'f \<rightarrow> udom\<cdot>'f)"
 
-subsection {* Polymorphic functor laws *}
+subsection \<open>Polymorphic functor laws\<close>
 
 lemma fmapU_eq_fmap: "fmapU = fmap"
 by (simp add: fmap_def eta_cfun)
@@ -114,10 +113,10 @@ by (simp add: coerce_simp)
 lemma fmap_cfcomp: "fmap\<cdot>(f oo g) = fmap\<cdot>f oo fmap\<cdot>g"
 by (simp add: cfcomp1 fmap_fmap eta_cfun)
 
-subsection {* Derived properties of @{text fmap} *}
+subsection \<open>Derived properties of \<open>fmap\<close>\<close>
 
-text {* Other theorems about @{text fmap} can be derived using only
-the abstract functor laws. *}
+text \<open>Other theorems about \<open>fmap\<close> can be derived using only
+the abstract functor laws.\<close>
 
 lemma deflation_fmap:
   "deflation d \<Longrightarrow> deflation (fmap\<cdot>d)"
@@ -156,7 +155,7 @@ proof (rule bottomI)
   finally show "fmap\<cdot>f\<cdot>\<bottom> \<sqsubseteq> (\<bottom>::'b\<cdot>'f::functor)" .
 qed
 
-subsection {* Proving that @{text "fmap\<cdot>coerce = coerce"} *}
+subsection \<open>Proving that \<open>fmap\<cdot>coerce = coerce\<close>\<close>
 
 lemma fmapU_cast_eq:
   "fmapU\<cdot>(cast\<cdot>A) =
@@ -180,7 +179,7 @@ apply (simp add: emb_prj)
 apply (simp add: cast_cast_below1 cast_cast_below2)
 done
 
-subsection {* Lemmas for reasoning about coercion *}
+subsection \<open>Lemmas for reasoning about coercion\<close>
 
 lemma fmapU_cast_coerce [coerce_simp]:
   fixes m :: "'a\<cdot>'f::functor"
@@ -198,27 +197,27 @@ lemma fmap_coerce [coerce_simp]:
   shows "fmap\<cdot>f\<cdot>(COERCE('a\<cdot>'f, 'b\<cdot>'f)\<cdot>xs) = fmap\<cdot>(\<Lambda> x. f\<cdot>(COERCE('a,'b)\<cdot>x))\<cdot>xs"
 by (simp add: coerce_functor fmap_fmap)
 
-subsection {* Configuration of Domain package *}
+subsection \<open>Configuration of Domain package\<close>
 
-text {* We make various theorem declarations to enable Domain
-  package definitions that involve @{text "tycon"} application. *}
+text \<open>We make various theorem declarations to enable Domain
+  package definitions that involve \<open>tycon\<close> application.\<close>
 
-setup {* Domain_Take_Proofs.add_rec_type (@{type_name app}, [true, false]) *}
+setup \<open>Domain_Take_Proofs.add_rec_type (@{type_name app}, [true, false])\<close>
 
 declare DEFL_app [domain_defl_simps]
 declare fmap_ID [domain_map_ID]
 declare deflation_fmap [domain_deflation]
 declare isodefl_fmap [domain_isodefl]
 
-subsection {* Configuration of the Tycon package *}
+subsection \<open>Configuration of the Tycon package\<close>
 
-text {* We now set up a new type definition command, which is used for
-  defining new @{text tycon} instances. The @{text tycondef} command
+text \<open>We now set up a new type definition command, which is used for
+  defining new \<open>tycon\<close> instances. The \<open>tycondef\<close> command
   is implemented using much of the same code as the Domain package,
   and supports a similar input syntax. It automatically generates a
-  @{text prefunctor} instance for each new type. (The user must
-  provide a proof of the composition law to obtain a @{text functor}
-  class instance.) *}
+  \<open>prefunctor\<close> instance for each new type. (The user must
+  provide a proof of the composition law to obtain a \<open>functor\<close>
+  class instance.)\<close>
 
 ML_file "tycondef.ML"
 

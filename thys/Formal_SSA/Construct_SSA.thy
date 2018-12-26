@@ -2,8 +2,8 @@
     Author:     Sebastian Ullrich
 *)
 
-section {* SSA Construction *}
-subsection {* CFG to SSA CFG *}
+section \<open>SSA Construction\<close>
+subsection \<open>CFG to SSA CFG\<close>
 
 theory Construct_SSA imports SSA_CFG
   "HOL-Library.While_Combinator"
@@ -130,7 +130,7 @@ begin
       hence i: "n = ns ! i" "i < length ns - 1" by (auto simp add:nth_butlast)
       with assms have 1: "n \<noteq> ?n" by (auto iff:nth_eq_iff_index_eq)
       from i assms(1) have "n \<in> set un" by auto
-      with `n \<in> set ?ns'` assms(1) 1 show "n \<in> set ?un'" by auto
+      with \<open>n \<in> set ?ns'\<close> assms(1) 1 show "n \<in> set ?un'" by auto
     qed
     ultimately show ?thesis by simp
   qed
@@ -162,8 +162,8 @@ begin
         using rec(2) ns'
         apply-
         proof (rule "1.IH")
-          from "1.prems"(1) False have "length ns \<ge> 2" by (auto simp del:`m = last ns`)
-          with "1.prems"(2) show "unvisitedPath (removeAll m un) ?ns'" by (subst `m = last ns`, rule unvisitedPath_removeLast)
+          from "1.prems"(1) False have "length ns \<ge> 2" by (auto simp del:\<open>m = last ns\<close>)
+          with "1.prems"(2) show "unvisitedPath (removeAll m un) ?ns'" by (subst \<open>m = last ns\<close>, rule unvisitedPath_removeLast)
           from "1.prems"(3) show "\<forall>n \<in> set ?ns'. v \<notin> defs g n" by (auto intro:in_set_butlastD)
         qed
         with ns'(2) show ?thesis by -(subst rec, rule fold_union_elemI, auto)
@@ -214,7 +214,7 @@ begin
     from assms(1) have "m \<in> set (\<alpha>n g)" by (rule path2_in_\<alpha>n, auto)
     from assms obtain ns' where "g \<turnstile> n-ns'\<rightarrow>m" "distinct ns'" "\<forall>n \<in> set ns'. v \<notin> defs g n" by -(rule simple_path2, auto)
     with assms(4) have 1: "n \<in> phiDefNodes_aux g v (\<alpha>n g) m" by -(rule phiDefNodes_auxI, auto intro:path2_in_\<alpha>n)
-    thus ?thesis using assms(2) `m \<in> set (\<alpha>n g)`
+    thus ?thesis using assms(2) \<open>m \<in> set (\<alpha>n g)\<close>
     unfolding phiDefNodes_def
     by -(rule fold_union_elemI, auto)
   qed
@@ -237,7 +237,7 @@ begin
       thus thesis using False rec assms m by -(subst(asm) lookupDef.simps, drule predecessor_is_node, auto)
     next
       case False
-      thus thesis using `v \<notin> defs g n` assms by -(rule PhiDef, assumption, assumption, subst lookupDef.simps, auto split:list.split)
+      thus thesis using \<open>v \<notin> defs g n\<close> assms by -(rule PhiDef, assumption, assumption, subst lookupDef.simps, auto split:list.split)
     qed
   qed
 

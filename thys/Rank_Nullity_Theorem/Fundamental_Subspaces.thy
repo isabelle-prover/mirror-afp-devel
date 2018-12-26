@@ -5,16 +5,16 @@
     Maintainer: Jose Divasón <jose.divasonm at unirioja.es>
 *)
 
-section{*Fundamental Subspaces*}
+section\<open>Fundamental Subspaces\<close>
 
 theory Fundamental_Subspaces
 imports 
     Miscellaneous
 begin
 
-subsection{*The fundamental subspaces of a matrix*}
+subsection\<open>The fundamental subspaces of a matrix\<close>
 
-subsubsection{*Definitions*}
+subsubsection\<open>Definitions\<close>
 
 definition left_null_space :: "'a::{semiring_1}^'n^'m => ('a^'m) set"
   where "left_null_space A = {x. x v* A = 0}"
@@ -28,7 +28,7 @@ definition row_space :: "'a::{field}^'n^'m=>('a^'n) set"
 definition col_space :: "'a::{field}^'n^'m=>('a^'m) set"
   where "col_space A = vec.span (columns A)"
 
-subsubsection{*Relationships among them*}
+subsubsection\<open>Relationships among them\<close>
 
 lemma left_null_space_eq_null_space_transpose: "left_null_space A = null_space (transpose A)"
   unfolding null_space_def left_null_space_def transpose_vector ..
@@ -48,7 +48,7 @@ lemma col_space_eq_row_space_transpose:
   unfolding col_space_def row_space_def unfolding rows_transpose[of A] ..
 
 
-subsection{*Proving that they are subspaces*}
+subsection\<open>Proving that they are subspaces\<close>
 
 lemma subspace_null_space:
   fixes A::"'a::{field}^'n^'m"
@@ -66,7 +66,7 @@ lemma subspace_row_space:
 lemma subspace_col_space:
   shows "vec.subspace (col_space A)" by (metis col_space_def vec.subspace_span)
   
-subsection{*More useful properties and equivalences*}
+subsection\<open>More useful properties and equivalences\<close>
 
 lemma col_space_eq:
   fixes A::"'a::{field}^'m::{finite, wellorder}^'n"

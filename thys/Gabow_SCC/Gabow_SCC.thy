@@ -1,26 +1,26 @@
-section {* Enumerating the SCCs of a Graph \label{sec:scc}*}
+section \<open>Enumerating the SCCs of a Graph \label{sec:scc}\<close>
 theory Gabow_SCC
 imports Gabow_Skeleton
 begin
 
-text {*
+text \<open>
   As a first variant, we implement an algorithm that computes a list of SCCs 
   of a graph, in topological order. This is the standard variant described by
   Gabow~\cite{Gabow2000}.
-*}
+\<close>
 
-section {* Specification *}
+section \<open>Specification\<close>
 context fr_graph
 begin
-  text {* We specify a distinct list that covers all reachable nodes and
-    contains SCCs in topological order *}
+  text \<open>We specify a distinct list that covers all reachable nodes and
+    contains SCCs in topological order\<close>
 
   definition "compute_SCC_spec \<equiv> SPEC (\<lambda>l. 
     distinct l \<and> \<Union>set l = E\<^sup>*``V0 \<and> (\<forall>U\<in>set l. is_scc E U) 
     \<and> (\<forall>i j. i<j \<and> j<length l \<longrightarrow> l!j \<times> l!i \<inter> E\<^sup>* = {}) )"
 end
 
-section {* Extended Invariant *}
+section \<open>Extended Invariant\<close>
 
 locale cscc_invar_ext = fr_graph G
   for G :: "('v,'more) graph_rec_scheme" + 
@@ -54,7 +54,7 @@ begin
   definition "cscc_invar \<equiv> \<lambda>v0 D0 (l,p,D,pE). cscc_invar_loc G v0 D0 l p D pE"
 end
 
-section {* Definition of the SCC-Algorithm *}
+section \<open>Definition of the SCC-Algorithm\<close>
 
 context fr_graph
 begin
@@ -101,7 +101,7 @@ begin
     }"
 end
 
-section {* Preservation of Invariant Extension *}
+section \<open>Preservation of Invariant Extension\<close>
 context cscc_invar_ext
 begin
   lemma l_disjoint: 
@@ -189,12 +189,12 @@ begin
       fix u'
       assume "u'\<notin>last p" "(u,u')\<in>E\<^sup>*" "(u',v)\<in>E\<^sup>*"
 
-      from `u'\<notin>last p` `u\<in>last p` `(u,u')\<in>E\<^sup>*`
+      from \<open>u'\<notin>last p\<close> \<open>u\<in>last p\<close> \<open>(u,u')\<in>E\<^sup>*\<close>
         and rtrancl_reachable_induct[OF order_refl lastp_un_D_closed[OF NE NO']]
       have "u'\<in>D" by auto
-      with `(u',v)\<in>E\<^sup>*` and rtrancl_reachable_induct[OF order_refl D_closed] 
+      with \<open>(u',v)\<in>E\<^sup>*\<close> and rtrancl_reachable_induct[OF order_refl D_closed] 
       have "v\<in>D" by auto
-      with `v\<in>last p` p_not_D show False by (cases p rule: rev_cases) auto
+      with \<open>v\<in>last p\<close> p_not_D show False by (cases p rule: rev_cases) auto
     qed
 
     {
@@ -204,20 +204,20 @@ begin
       proof (rule disjointI, safe)
         fix u v
         assume "(u, v) \<in> E\<^sup>*" "u \<in> l ! (j - Suc 0)" "v \<in> (last p # l) ! i"
-        from `u \<in> l ! (j - Suc 0)` A have "u\<in>\<Union>set l"
+        from \<open>u \<in> l ! (j - Suc 0)\<close> A have "u\<in>\<Union>set l"
           by (metis Ex_list_of_length Suc_pred UnionI length_greater_0_conv 
             less_nat_zero_code not_less_eq nth_mem) 
         with l_is_D have "u\<in>D" by simp
-        with rtrancl_reachable_induct[OF order_refl D_closed] `(u,v)\<in>E\<^sup>*` 
+        with rtrancl_reachable_induct[OF order_refl D_closed] \<open>(u,v)\<in>E\<^sup>*\<close> 
         have "v\<in>D" by auto
 
         show False proof cases
-          assume "i=0" hence "v\<in>last p" using `v \<in> (last p # l) ! i` by simp
-          with p_not_D `v\<in>D` show False by (cases p rule: rev_cases) auto
+          assume "i=0" hence "v\<in>last p" using \<open>v \<in> (last p # l) ! i\<close> by simp
+          with p_not_D \<open>v\<in>D\<close> show False by (cases p rule: rev_cases) auto
         next
-          assume "i\<noteq>0" with `v \<in> (last p # l) ! i` have "v\<in>l!(i - 1)" by auto
+          assume "i\<noteq>0" with \<open>v \<in> (last p # l) ! i\<close> have "v\<in>l!(i - 1)" by auto
           with l_no_fwd[of "i - 1" "j - 1"] 
-            and `u \<in> l ! (j - Suc 0)` `(u, v) \<in> E\<^sup>*` `i\<noteq>0` A
+            and \<open>u \<in> l ! (j - Suc 0)\<close> \<open>(u, v) \<in> E\<^sup>*\<close> \<open>i\<noteq>0\<close> A
           show False by fastforce 
         qed
       qed
@@ -287,7 +287,7 @@ begin
     cscc_invar_pop cscc_invar_collapse cscc_invar_push cscc_invar_unchanged 
     cscc_outer_invar_initial cscc_invar_outer_newnode cscc_invar_outer_Dnode
 
-  text {* On termination, the invariant implies the specification *}
+  text \<open>On termination, the invariant implies the specification\<close>
   lemma cscc_finI:
     assumes INV: "cscc_outer_invar {} (l,D)"
     shows fin_l_is_scc: "\<lbrakk>U\<in>set l\<rbrakk> \<Longrightarrow> is_scc E U"
@@ -313,7 +313,7 @@ begin
 
 end
 
-section {* Main Correctness Proof *}
+section \<open>Main Correctness Proof\<close>
 
 context fr_graph 
 begin
@@ -328,8 +328,8 @@ begin
     apply (simp split: prod.splits)
     unfolding cscc_outer_invar_loc_def by simp
 
-  text {* With the extended invariant and the auxiliary lemmas, the actual 
-    correctness proof is straightforward: *}
+  text \<open>With the extended invariant and the auxiliary lemmas, the actual 
+    correctness proof is straightforward:\<close>
   theorem compute_SCC_correct: "compute_SCC \<le> compute_SCC_spec"
   proof -
     note [[goals_limit = 2]]
@@ -354,7 +354,7 @@ begin
   qed
 
 
-  text {* Simple proof, for presentation *}
+  text \<open>Simple proof, for presentation\<close>
   context 
     notes [refine]=refine_vcg
     notes [[goals_limit = 1]]
@@ -373,7 +373,7 @@ begin
 end
 
 
-section {* Refinement to Gabow's Data Structure *}
+section \<open>Refinement to Gabow's Data Structure\<close>
 
 context GS begin
   definition "seg_set_impl l u \<equiv> do {

@@ -46,8 +46,8 @@ lemma weakCongClosed:
   shows "(p \<bullet> P) \<doteq>\<^sub>c (p \<bullet> Q)"
 proof(induct rule: weakCongI)
   case(cWeakPsiCong \<Psi> \<sigma>)
-  note `P \<doteq>\<^sub>c Q`
-  moreover from `wellFormedSubst \<sigma>` have "wellFormedSubst (rev p \<bullet> \<sigma>)" by simp
+  note \<open>P \<doteq>\<^sub>c Q\<close>
+  moreover from \<open>wellFormedSubst \<sigma>\<close> have "wellFormedSubst (rev p \<bullet> \<sigma>)" by simp
   ultimately have "((rev p) \<bullet> \<Psi>) \<rhd> P[<(rev p \<bullet> \<sigma>)>] \<doteq>  Q[<(rev p \<bullet> \<sigma>)>]"
     by(rule weakCongE)
   thus ?case by(drule_tac p=p in weakPsiCongClosed) (simp add: eqvts)
@@ -117,7 +117,7 @@ lemma strongBisimWeakCong:
   shows "P \<doteq>\<^sub>c Q"
 proof(induct rule: weakCongI)
   case(cWeakPsiCong \<Psi> \<sigma>)
-  from assms `wellFormedSubst \<sigma>` have "P[<\<sigma>>] \<sim> Q[<\<sigma>>]"
+  from assms \<open>wellFormedSubst \<sigma>\<close> have "P[<\<sigma>>] \<sim> Q[<\<sigma>>]"
     by(rule closeSubstE)
   hence "\<Psi> \<rhd> P[<\<sigma>>] \<sim> Q[<\<sigma>>]" by(metis bisimE(3) statEqBisim Identity Commutativity)
   thus ?case by(rule strongBisimWeakPsiCong)
@@ -146,8 +146,8 @@ lemma weakCongUnfold:
   shows "P[<\<sigma>>] \<doteq>\<^sub>c Q[<\<sigma>>]"
 proof(induct rule: weakCongI)
   case(cWeakPsiCong \<Psi> \<sigma>')
-  with `wellFormedSubst \<sigma>` `wellFormedSubst \<sigma>'` have "wellFormedSubst(\<sigma>@\<sigma>')" by simp
-  with `P \<doteq>\<^sub>c Q` have "\<Psi> \<rhd> P[<(\<sigma>@\<sigma>')>] \<doteq> Q[<(\<sigma>@\<sigma>')>]"
+  with \<open>wellFormedSubst \<sigma>\<close> \<open>wellFormedSubst \<sigma>'\<close> have "wellFormedSubst(\<sigma>@\<sigma>')" by simp
+  with \<open>P \<doteq>\<^sub>c Q\<close> have "\<Psi> \<rhd> P[<(\<sigma>@\<sigma>')>] \<doteq> Q[<(\<sigma>@\<sigma>')>]"
     by(rule weakCongE)
   thus "\<Psi> \<rhd> P[<\<sigma>>][<\<sigma>'>] \<doteq> Q[<\<sigma>>][<\<sigma>'>]"
     by simp
@@ -185,11 +185,11 @@ proof(induct rule: weakCongI)
              and S: "set p \<subseteq> set xvec \<times> set (p \<bullet> xvec)"
       by(rule_tac c="(\<sigma>, P, Q, \<Psi>, N)" in name_list_avoiding) auto
     
-  from `P \<doteq>\<^sub>c Q` have "(p \<bullet> P) \<doteq>\<^sub>c (p \<bullet> Q)"
+  from \<open>P \<doteq>\<^sub>c Q\<close> have "(p \<bullet> P) \<doteq>\<^sub>c (p \<bullet> Q)"
     by(rule weakCongClosed)
   {
     fix Tvec :: "'a list"
-    from `(p \<bullet> P) \<doteq>\<^sub>c (p \<bullet> Q)` `wellFormedSubst \<sigma>` have "(p \<bullet> P)[<\<sigma>>] \<doteq>\<^sub>c (p \<bullet> Q)[<\<sigma>>]"
+    from \<open>(p \<bullet> P) \<doteq>\<^sub>c (p \<bullet> Q)\<close> \<open>wellFormedSubst \<sigma>\<close> have "(p \<bullet> P)[<\<sigma>>] \<doteq>\<^sub>c (p \<bullet> Q)[<\<sigma>>]"
       by(rule weakCongUnfold)
     moreover assume "length xvec = length Tvec" and "distinct xvec"
     ultimately have "\<Psi> \<rhd> ((p \<bullet> P)[<\<sigma>>])[(p \<bullet> xvec)::=Tvec] \<doteq> ((p \<bullet> Q)[<\<sigma>>])[(p \<bullet> xvec)::=Tvec]" 
@@ -198,12 +198,12 @@ proof(induct rule: weakCongI)
       by(rule weakPsiCongE)
   }
 
-  with `(p \<bullet> xvec) \<sharp>* \<sigma>` `distinct xvec`
+  with \<open>(p \<bullet> xvec) \<sharp>* \<sigma>\<close> \<open>distinct xvec\<close>
   have "\<Psi> \<rhd> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P))[<\<sigma>>] \<doteq> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q))[<\<sigma>>]"
     by(force intro: weakPsiCongInputPres)
-  moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) = M\<lparr>\<lambda>*xvec N\<rparr>.P" 
+  moreover from \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close> S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) = M\<lparr>\<lambda>*xvec N\<rparr>.P" 
     apply(simp add: psi.inject) by(rule inputChainAlpha[symmetric]) auto
-  moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* Q` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q) = M\<lparr>\<lambda>*xvec N\<rparr>.Q"
+  moreover from \<open>(p \<bullet> xvec) \<sharp>* N\<close> \<open>(p \<bullet> xvec) \<sharp>* Q\<close> S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q) = M\<lparr>\<lambda>*xvec N\<rparr>.Q"
     apply(simp add: psi.inject) by(rule inputChainAlpha[symmetric]) auto
   ultimately show ?case by force
 qed
@@ -229,20 +229,20 @@ proof -
       assume "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)"
       then obtain \<phi>' P' where "(\<phi>', P') mem CsP" and "\<phi> = substCond.seqSubst \<phi>' \<sigma>" and PeqP': "P = (P'[<\<sigma>>])"
         by(induct CsP) force+
-      from `(\<phi>', P') mem CsP` obtain Q' where "(\<phi>', Q') mem CsQ" and "guarded Q'" and "P' \<doteq>\<^sub>c Q'" by(blast dest: C1)
-      from `(\<phi>', Q') mem CsQ` `\<phi> = substCond.seqSubst \<phi>' \<sigma>` obtain Q where "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)" and "Q = Q'[<\<sigma>>]"
+      from \<open>(\<phi>', P') mem CsP\<close> obtain Q' where "(\<phi>', Q') mem CsQ" and "guarded Q'" and "P' \<doteq>\<^sub>c Q'" by(blast dest: C1)
+      from \<open>(\<phi>', Q') mem CsQ\<close> \<open>\<phi> = substCond.seqSubst \<phi>' \<sigma>\<close> obtain Q where "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)" and "Q = Q'[<\<sigma>>]"
         by(induct CsQ) auto
-      with PeqP' `guarded Q'` `P' \<doteq>\<^sub>c Q'` `wellFormedSubst \<sigma>` show "\<exists>Q. (\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>) \<and> guarded Q \<and> (\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q)"
+      with PeqP' \<open>guarded Q'\<close> \<open>P' \<doteq>\<^sub>c Q'\<close> \<open>wellFormedSubst \<sigma>\<close> show "\<exists>Q. (\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>) \<and> guarded Q \<and> (\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q)"
         by(blast dest: weakCongE guardedSeqSubst)
     next
       fix \<phi> Q
       assume "(\<phi>, Q) mem (caseListSeqSubst CsQ \<sigma>)"
       then obtain \<phi>' Q' where "(\<phi>', Q') mem CsQ" and "\<phi> = substCond.seqSubst \<phi>' \<sigma>" and QeqQ': "Q = Q'[<\<sigma>>]"
         by(induct CsQ) force+
-      from `(\<phi>', Q') mem CsQ` obtain P' where "(\<phi>', P') mem CsP" and "guarded P'" and "P' \<doteq>\<^sub>c Q'" by(blast dest: C2)
-      from `(\<phi>', P') mem CsP` `\<phi> = substCond.seqSubst \<phi>' \<sigma>` obtain P where "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)" and "P = P'[<\<sigma>>]"
+      from \<open>(\<phi>', Q') mem CsQ\<close> obtain P' where "(\<phi>', P') mem CsP" and "guarded P'" and "P' \<doteq>\<^sub>c Q'" by(blast dest: C2)
+      from \<open>(\<phi>', P') mem CsP\<close> \<open>\<phi> = substCond.seqSubst \<phi>' \<sigma>\<close> obtain P where "(\<phi>, P) mem (caseListSeqSubst CsP \<sigma>)" and "P = P'[<\<sigma>>]"
         by(induct CsP) auto
-      with QeqQ' `guarded P'` `P' \<doteq>\<^sub>c Q'` `wellFormedSubst \<sigma>`
+      with QeqQ' \<open>guarded P'\<close> \<open>P' \<doteq>\<^sub>c Q'\<close> \<open>wellFormedSubst \<sigma>\<close>
       show "\<exists>P. (\<phi>, P) mem (caseListSeqSubst CsP \<sigma>) \<and> guarded P \<and> (\<forall>\<Psi>. \<Psi> \<rhd> P \<doteq> Q)"
         by(blast dest: weakCongE guardedSeqSubst)
     qed
@@ -276,12 +276,12 @@ proof(induct rule: weakCongI)
   obtain y::name where "y \<sharp> (\<Psi>::'b)" and "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> \<sigma>"
     by(generate_fresh "name") (auto simp add: fresh_prod)
 
-  from `P \<doteq>\<^sub>c Q` have "([(x, y)] \<bullet> P) \<doteq>\<^sub>c ([(x, y)] \<bullet> Q)" by(rule weakCongClosed)
-  hence "\<Psi> \<rhd> ([(x, y)] \<bullet> P)[<\<sigma>>] \<doteq> ([(x, y)] \<bullet> Q)[<\<sigma>>]" using `wellFormedSubst \<sigma>`
+  from \<open>P \<doteq>\<^sub>c Q\<close> have "([(x, y)] \<bullet> P) \<doteq>\<^sub>c ([(x, y)] \<bullet> Q)" by(rule weakCongClosed)
+  hence "\<Psi> \<rhd> ([(x, y)] \<bullet> P)[<\<sigma>>] \<doteq> ([(x, y)] \<bullet> Q)[<\<sigma>>]" using \<open>wellFormedSubst \<sigma>\<close>
     by(rule weakCongE)
-  hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[<\<sigma>>]) \<doteq> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[<\<sigma>>])" using `y \<sharp> \<Psi>`
+  hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[<\<sigma>>]) \<doteq> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[<\<sigma>>])" using \<open>y \<sharp> \<Psi>\<close>
     by(rule weakPsiCongResPres)
-  with `y \<sharp> P` `y \<sharp> Q`  `y \<sharp> \<sigma>`
+  with \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close>  \<open>y \<sharp> \<sigma>\<close>
   show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>P)[<\<sigma>>] \<doteq> (\<lparr>\<nu>x\<rparr>Q)[<\<sigma>>]"
     by(simp add: alphaRes)
 qed

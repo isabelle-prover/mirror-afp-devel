@@ -1,4 +1,4 @@
-section {* Relations on Nondeterministic Büchi Automata *}
+section \<open>Relations on Nondeterministic Büchi Automata\<close>
 
 theory NBA_Refine
 imports

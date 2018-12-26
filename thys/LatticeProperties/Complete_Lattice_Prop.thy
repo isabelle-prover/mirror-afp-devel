@@ -1,4 +1,4 @@
-section {* Fixpoints and Complete Lattices *}
+section \<open>Fixpoints and Complete Lattices\<close>
 
 (*
     Author: Viorel Preoteasa
@@ -8,12 +8,12 @@ theory Complete_Lattice_Prop
 imports WellFoundedTransitive
 begin
 
-text{*
+text\<open>
 This theory introduces some results about fixpoints of functions on 
 complete lattices. The main result is that a monotonic function 
 mapping momotonic functions to monotonic functions has the least 
 fixpoint monotonic.
-*}
+\<close>
 
 context complete_lattice begin
 

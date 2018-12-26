@@ -5,15 +5,15 @@ imports
   LTL.LTL
 begin
 
-text {* We have a semantic engine for Promela. But we need to have 
+text \<open>We have a semantic engine for Promela. But we need to have 
 an integration with LTL -- more specificly, we must know when a proposition
-is true in a global state. This is achieved in this theory. *}
+is true in a global state. This is achieved in this theory.\<close>
 
-subsection {* LTL optimization *}
+subsection \<open>LTL optimization\<close>
 
-text {* For efficiency reasons, we do not store the whole @{typ expr} on the labels
+text \<open>For efficiency reasons, we do not store the whole @{typ expr} on the labels
 of a system automaton, but @{typ nat} instead. This index then is used to look up the
-corresponding @{typ expr}. *}
+corresponding @{typ expr}.\<close>
 
 type_synonym APs = "expr iarray"
 
@@ -76,7 +76,7 @@ proof (induction xs arbitrary: n ctr)
       have "n = ctr"
       proof (rule ccontr)
         assume "n \<noteq> ctr" with less have "n-ctr > 0" by auto
-        moreover from `n\<noteq>ctr` length have "n-ctr < length(y#xs)" by auto
+        moreover from \<open>n\<noteq>ctr\<close> length have "n-ctr < length(y#xs)" by auto
         ultimately have "(y#xs)!(n-ctr) \<in> set xs" by simp
         with A * show False by auto
       qed
@@ -123,7 +123,7 @@ next
   ultimately have "idx xs x = Some n" by (simp add: idx_correct[OF assms])
   hence "the (idx xs x) = n" by simp
   thus "n \<in> (the \<circ> idx xs) ` set xs" 
-    using `x \<in> set xs` 
+    using \<open>x \<in> set xs\<close> 
     by auto
 qed
 
@@ -198,7 +198,7 @@ lemma prepare_instrument[code]:
 
 export_code prepare checking SML
 
-subsection {* Language of a Promela program *}
+subsection \<open>Language of a Promela program\<close>
 
 definition propValid :: "APs \<Rightarrow> gState \<Rightarrow> nat \<Rightarrow> bool" where
   "propValid APs g i \<longleftrightarrow> i < IArray.length APs \<and> exprArith g emptyProc (APs!!i) \<noteq> 0"

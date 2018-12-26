@@ -2,9 +2,9 @@ theory SINVAR_Dependability_norefl
 imports "../TopoS_Helper"
 begin
 
-subsection {* SecurityInvariant @{text "Dependability_norefl"}*}
+subsection \<open>SecurityInvariant \<open>Dependability_norefl\<close>\<close>
 
-text{*A version of the Dependability model but if a node reaches itself, it is ignored*}
+text\<open>A version of the Dependability model but if a node reaches itself, it is ignored\<close>
 
 
 type_synonym dependability_level = nat
@@ -12,7 +12,7 @@ type_synonym dependability_level = nat
 definition default_node_properties :: "dependability_level"
   where  "default_node_properties \<equiv> 0"
 
-text {* Less-equal other nodes depend on the output of a node than its dependability level. *}
+text \<open>Less-equal other nodes depend on the output of a node than its dependability level.\<close>
 fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> dependability_level) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> (e1,e2) \<in> edges G. (num_reachable_norefl G e1) \<le> (nP e1))"
 

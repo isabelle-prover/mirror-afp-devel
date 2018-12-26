@@ -6,7 +6,7 @@ theory Native_Word_Test_OCaml imports
   Native_Word_Test
 begin
 
-section {* Test with OCaml *}
+section \<open>Test with OCaml\<close>
 
 test_code
   test_uint64 "test_uint64' = 0x12"

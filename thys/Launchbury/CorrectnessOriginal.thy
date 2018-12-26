@@ -2,9 +2,9 @@ theory CorrectnessOriginal
 imports Denotational Launchbury
 begin
 
-text {*
+text \<open>
 This is the main correctness theorem, Theorem 2 from \cite{launchbury}.
-*}
+\<close>
 
 (* Another possible invariant seems to be: "edom \<rho> - domA \<Gamma> \<subseteq> set L" *)
 
@@ -43,11 +43,11 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> v e')
     with True show ?thesis by simp
   next
     case False
-    from False `x \<in> set L \<union> domA \<Gamma>` reds_avoids_live[OF Application.hyps(8)] 
+    from False \<open>x \<in> set L \<union> domA \<Gamma>\<close> reds_avoids_live[OF Application.hyps(8)] 
     show ?thesis by (auto simp add: lookup_HSem_other)
   qed
 
-  text_raw {* % nice proof start *}
+  text_raw \<open>% nice proof start\<close>
   have "\<lbrakk> App e x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = (\<lbrakk> e \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>) \<down>Fn (\<lbrace>\<Gamma>\<rbrace>\<rho>) x"
     by simp
   also have "\<dots> = (\<lbrakk> Lam [y]. e' \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>) \<down>Fn (\<lbrace>\<Gamma>\<rbrace>\<rho>) x"
@@ -64,7 +64,7 @@ case (Application y \<Gamma> e x L \<Delta> \<Theta> v e')
     by (rule Application.hyps(12)[OF prem2])
   finally
   show "\<lbrakk> App e x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> v \<rbrakk>\<^bsub>\<lbrace>\<Theta>\<rbrace>\<rho>\<^esub>".
-  text_raw {* % nice proof end *}
+  text_raw \<open>% nice proof end\<close>
   
   show "(\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma> = (\<lbrace>\<Theta>\<rbrace>\<rho>) f|` domA \<Gamma>"
     using Application.hyps(10)[OF prem1]
@@ -85,7 +85,7 @@ case (Variable \<Gamma> x e L \<Delta> v)
 
   let "?new" = "domA \<Delta> - domA \<Gamma>"
   have "fv (?\<Gamma>, e) \<union> {x} \<subseteq> fv (\<Gamma>, Var x)"
-    by (rule fv_delete_heap[OF `map_of \<Gamma> x = Some e`])
+    by (rule fv_delete_heap[OF \<open>map_of \<Gamma> x = Some e\<close>])
   hence prem: "fv (?\<Gamma>, e) \<subseteq> set (x # L) \<union> domA ?\<Gamma>" using 2 by auto
   hence fv_subset: "fv (?\<Gamma>, e) - domA ?\<Gamma> \<subseteq> - ?new"
     using reds_avoids_live'[OF Variable.hyps(2)] by auto
@@ -118,11 +118,11 @@ case (Variable \<Gamma> x e L \<Delta> v)
       by (fastforce simp add: lookup_override_on_eq  lookup_env_restr_eq dest: env_restr_eqD )
   qed
   also have "\<dots> = (\<mu> \<rho>'. (\<rho> ++\<^bsub>domA \<Delta>\<^esub> (\<lbrace>\<Delta>\<rbrace>\<rho>'))( x := \<lbrakk> v \<rbrakk>\<^bsub>\<rho>'\<^esub>)) f|` (-?new)"
-    by (rule arg_cong[OF iterative_HSem'[symmetric], OF `x \<notin> domA \<Delta>`])
+    by (rule arg_cong[OF iterative_HSem'[symmetric], OF \<open>x \<notin> domA \<Delta>\<close>])
   also have "\<dots> = (\<lbrace>(x,v) # \<Delta>\<rbrace>\<rho>)  f|` (-?new)"
-    by (rule arg_cong[OF iterative_HSem[symmetric], OF `x \<notin> domA \<Delta>`])
+    by (rule arg_cong[OF iterative_HSem[symmetric], OF \<open>x \<notin> domA \<Delta>\<close>])
   finally
-  show le: ?case by (rule env_restr_eq_subset[OF `domA \<Gamma> \<subseteq> (-?new)`])
+  show le: ?case by (rule env_restr_eq_subset[OF \<open>domA \<Gamma> \<subseteq> (-?new)\<close>])
 
   have "\<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub> = \<lbrakk> Var x \<rbrakk>\<^bsub>\<lbrace>(x, v) # \<Delta>\<rbrace>\<rho>\<^esub>"
     using env_restr_eqD[OF le, where x = x]
@@ -156,7 +156,7 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> v)
     unfolding IfThenElse.hyps(2)[OF prem1]..
   also have "\<dots> = \<lbrakk> ?e \<rbrakk>\<^bsub>\<lbrace>\<Gamma>\<rbrace>\<rho>\<^esub>" by simp
   also have "\<dots> = \<lbrakk> ?e \<rbrakk>\<^bsub>\<lbrace>\<Delta>\<rbrace>\<rho>\<^esub>"
-    proof(rule ESem_fresh_cong_subset[OF  `fv ?e \<subseteq> domA \<Gamma> \<union> set L` env_restr_eqI])
+    proof(rule ESem_fresh_cong_subset[OF  \<open>fv ?e \<subseteq> domA \<Gamma> \<union> set L\<close> env_restr_eqI])
       fix x
       assume "x \<in> domA \<Gamma> \<union> set L"
       thus "(\<lbrace>\<Gamma>\<rbrace>\<rho>) x = (\<lbrace>\<Delta>\<rbrace>\<rho>) x"
@@ -164,10 +164,10 @@ case (IfThenElse \<Gamma> scrut L \<Delta> b e\<^sub>1 e\<^sub>2 \<Theta> v)
         assume "x \<in> domA \<Gamma>"
         from IfThenElse.hyps(3)[OF prem1]
         have "((\<lbrace>\<Gamma>\<rbrace>\<rho>) f|` domA \<Gamma>) x  = ((\<lbrace>\<Delta>\<rbrace>\<rho>) f|` domA \<Gamma>) x" by simp
-        with `x \<in> domA \<Gamma>` show ?thesis by simp
+        with \<open>x \<in> domA \<Gamma>\<close> show ?thesis by simp
       next
         assume "x \<notin> domA \<Gamma>"
-        from this `x \<in> domA \<Gamma> \<union> set L` reds_avoids_live[OF IfThenElse.hyps(1)]
+        from this \<open>x \<in> domA \<Gamma> \<union> set L\<close> reds_avoids_live[OF IfThenElse.hyps(1)]
         show ?thesis
           by (simp add: lookup_HSem_other)
       qed

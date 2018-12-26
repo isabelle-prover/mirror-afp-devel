@@ -331,7 +331,7 @@ proof (unfold_locales)
   qed
 qed
 
-text {* @{const poly_y_x} is bijective. *}
+text \<open>@{const poly_y_x} is bijective.\<close>
 lemma poly_y_x_poly_lift:
   fixes p :: "'a :: comm_monoid_add poly"
   shows "poly_y_x (poly_lift p) = [:p:]"

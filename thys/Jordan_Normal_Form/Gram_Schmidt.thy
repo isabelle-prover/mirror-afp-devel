@@ -3,13 +3,13 @@
                  Akihisa Yamada
     License:     BSD
 *)
-section {* Gram-Schmidt Orthogonalization *}
+section \<open>Gram-Schmidt Orthogonalization\<close>
 
-text {*
+text \<open>
   This theory provides the Gram-Schmidt orthogonalization algorithm,
   that takes the conjugate operation into account. It works over fields
   like the rational, real, or complex numbers. 
-*}
+\<close>
 
 theory Gram_Schmidt
 imports 
@@ -18,7 +18,7 @@ imports
   Conjugate
 begin
 
-subsection {* Conjugates of Vectors *}
+subsection \<open>Conjugates of Vectors\<close>
 
 definition vec_conjugate::"'a :: conjugate vec \<Rightarrow> 'a vec" ("conjugate\<^sub>v")
   where "conjugate\<^sub>v v = vec (dim_vec v) (\<lambda>i. conjugate (v $ i))"
@@ -130,7 +130,7 @@ lemma vec_conjugate_rat[simp]: "(conjugate\<^sub>v :: rat vec \<Rightarrow> rat 
 lemma vec_conjugate_real[simp]: "(conjugate\<^sub>v :: real vec \<Rightarrow> real vec) = (\<lambda>x. x)" by force
 
 
-subsection {* Orthogonality with Conjugates *}
+subsection \<open>Orthogonality with Conjugates\<close>
 
 definition "corthogonal vs \<equiv>
     \<forall>i < length vs. \<forall>j < length vs. vs ! i \<bullet>c vs ! j = 0 \<longleftrightarrow> i \<noteq> j"
@@ -190,16 +190,16 @@ proof
   finally show "(us'!i' \<bullet>c us'!j' = 0) = (i' \<noteq> j')".
 qed
 
-subsection{* The Algorithm  *}
+subsection\<open>The Algorithm\<close>
 
 fun adjuster :: "nat \<Rightarrow> 'a :: conjugatable_field vec \<Rightarrow> 'a vec list \<Rightarrow> 'a vec"
   where "adjuster n w [] = 0\<^sub>v n"
     |  "adjuster n w (u#us) = -(w \<bullet>c u)/(u \<bullet>c u) \<cdot>\<^sub>v u + adjuster n w us"
 
-text {*
+text \<open>
   The following formulation is easier to analyze,
   but outputs of the subroutine should be properly reversed.
-*}
+\<close>
 
 fun gram_schmidt_sub
   where "gram_schmidt_sub n us [] = us"
@@ -209,9 +209,9 @@ fun gram_schmidt_sub
 definition gram_schmidt :: "nat \<Rightarrow> 'a :: conjugatable_field vec list \<Rightarrow> 'a vec list"
   where "gram_schmidt n ws = rev (gram_schmidt_sub n [] ws)"
 
-text {*
+text \<open>
   The following formulation requires no reversal.
-*}
+\<close>
 
 fun gram_schmidt_sub2
   where "gram_schmidt_sub2 n us [] = []"
@@ -228,7 +228,7 @@ lemma gram_schmidt_code[code]:
   unfolding gram_schmidt_def
   apply(subst gram_schmidt_sub_eq) by simp
 
-subsection {* Properties of the Algorithms *}
+subsection \<open>Properties of the Algorithms\<close>
 
 locale cof_vec_space = vec_space f_ty for
   f_ty :: "'a :: conjugatable_ordered_field itself"

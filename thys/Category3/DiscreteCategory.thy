@@ -9,7 +9,7 @@ theory DiscreteCategory
 imports Category
 begin
 
-  text{*
+  text\<open>
     The locale defined here permits us to construct a discrete category having
     a specified set of objects, assuming that the set does not exhaust the elements
     of its type.  In that case, we have the convenient situation that the arrows of
@@ -17,8 +17,8 @@ begin
     rather than having to pass between the two via tedious coercion maps.
     If it cannot be guaranteed that the given set is not the universal set at its type,
     then the more general discrete category construction defined (using coercions)
-    in @{text FreeCategory} can be used.
-  *}
+    in \<open>FreeCategory\<close> can be used.
+\<close>
 
   locale discrete_category =
     fixes Obj :: "'a set"

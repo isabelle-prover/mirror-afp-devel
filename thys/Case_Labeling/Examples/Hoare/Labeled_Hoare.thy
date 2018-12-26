@@ -58,12 +58,12 @@ end
 
 ML_file "labeled_hoare_tac.ML"
 
-method_setup labeled_vcg = {*
-  Scan.succeed (fn ctxt => SIMPLE_METHOD' (Labeled_Hoare.hoare_tac ctxt (K all_tac))) *}
+method_setup labeled_vcg = \<open>
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (Labeled_Hoare.hoare_tac ctxt (K all_tac)))\<close>
   "verification condition generator"
 
-method_setup labeled_vcg_simp = {*
-  Scan.succeed (fn ctxt => SIMPLE_METHOD' (Labeled_Hoare.hoare_tac ctxt (asm_full_simp_tac ctxt))) *}
+method_setup labeled_vcg_simp = \<open>
+  Scan.succeed (fn ctxt => SIMPLE_METHOD' (Labeled_Hoare.hoare_tac ctxt (asm_full_simp_tac ctxt)))\<close>
   "verification condition generator"
 
 method_setup casified_vcg = \<open>

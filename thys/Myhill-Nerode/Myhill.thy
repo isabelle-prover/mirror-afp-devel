@@ -4,7 +4,7 @@ theory Myhill
   imports Myhill_2 "Regular-Sets.Derivatives"
 begin
 
-section {* The theorem *}
+section \<open>The theorem\<close>
 
 theorem Myhill_Nerode:
   fixes A::"('a::finite) lang"
@@ -12,12 +12,12 @@ theorem Myhill_Nerode:
 using Myhill_Nerode1 Myhill_Nerode2 by auto
 
 
-subsection {* Second direction proved using partial derivatives *}
+subsection \<open>Second direction proved using partial derivatives\<close>
 
-text {*
+text \<open>
   An alternaive proof using the notion of partial derivatives for regular 
   expressions due to Antimirov \cite{Antimirov95}.
-*}
+\<close>
 
 lemma MN_Rel_Derivs:
   shows "x \<approx>A y \<longleftrightarrow> Derivs x A = Derivs y A"

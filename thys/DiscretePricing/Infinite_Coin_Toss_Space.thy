@@ -2,16 +2,16 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* Infinite coin toss space *}
+section \<open>Infinite coin toss space\<close>
 
-text {* This section contains the formalization of the infinite coin toss space, i.e., the probability
-space constructed on infinite sequences of independent coin tosses. *}
+text \<open>This section contains the formalization of the infinite coin toss space, i.e., the probability
+space constructed on infinite sequences of independent coin tosses.\<close>
 
 theory Infinite_Coin_Toss_Space imports Filtration Generated_Subalgebra Disc_Cond_Expect
 
 begin
 
-subsection {* Preliminary results *}
+subsection \<open>Preliminary results\<close>
 
 lemma decompose_init_prod:
   fixes n::nat
@@ -36,7 +36,7 @@ proof
   proof
     fix x
     assume mem: "x \<in> (\<Inter>C\<in>A. C \<inter> B)"
-    from `A \<noteq> {}` obtain C where "C\<in> A" by blast
+    from \<open>A \<noteq> {}\<close> obtain C where "C\<in> A" by blast
     hence "x\<in> C\<inter> B" using mem by blast
     hence in1: "x\<in> B" by auto
     have "\<And>C. C\<in> A \<Longrightarrow> x \<in> C\<inter>B" using mem by blast
@@ -142,7 +142,7 @@ proof (induct n arbitrary: pw)
     have "shd pw \<in> A" using hyp  streams_shd[of pw A] by simp
     have "stake (Suc 0) pw = [shd pw]" by auto
     hence "set (stake (Suc 0) pw) = {shd pw}" by auto
-    thus ?thesis using `shd pw \<in> A` by auto
+    thus ?thesis using \<open>shd pw \<in> A\<close> by auto
   qed
   thus ?case by (simp add: Suc.hyps Suc.prems streams_stl)
 qed simp
@@ -160,7 +160,7 @@ proof
     hence "\<exists>pw. pw \<in> streams A \<and> l = stake (Suc n) pw" by auto
     from this obtain pw where "pw \<in> streams A" and  "l = stake (Suc n) pw" by blast
     hence "l = shd pw # stake n (stl pw)" unfolding stake_def by auto
-    thus "l\<in> ?R" by (simp add: `pw \<in> streams A` streams_shd streams_stl)
+    thus "l\<in> ?R" by (simp add: \<open>pw \<in> streams A\<close> streams_shd streams_stl)
   qed
   show "?R \<subseteq> ?L"
   proof
@@ -176,7 +176,7 @@ proof
       have "s\<in> A" using swprop by simp
       have "set w \<subseteq> A" using pwprop streams_stake_set by simp
       have "set l = set w \<union> {s}" using swprop by auto
-      thus ?thesis using `s\<in> A` `set w \<subseteq> A` by auto
+      thus ?thesis using \<open>s\<in> A\<close> \<open>set w \<subseteq> A\<close> by auto
     qed
     have "\<exists>x. x \<in> A" using assms by auto
     from this obtain x where "x\<in> A" by blast
@@ -184,10 +184,10 @@ proof
     let ?st = "shift l ?sx"
     have "l = stake (Suc n) ?st" by (simp add: pwprop(2) stake_shift swprop(3))
     have "sset ?sx = {x}" by simp
-    hence "sset ?sx \<subseteq> A" using `x\<in> A` by simp
+    hence "sset ?sx \<subseteq> A" using \<open>x\<in> A\<close> by simp
     hence "?sx \<in> streams A" using sset_streams[of "sconst x"] by simp
-    hence "?st \<in> streams A" using `l \<in> lists A` shift_streams[of l A "sconst x"] by simp
-    thus "l\<in> ?L" using `l = stake (Suc n) ?st` by blast
+    hence "?st \<in> streams A" using \<open>l \<in> lists A\<close> shift_streams[of l A "sconst x"] by simp
+    thus "l\<in> ?L" using \<open>l = stake (Suc n) ?st\<close> by blast
   qed
 qed
 
@@ -205,19 +205,19 @@ proof (induction n)
     from this obtain x where "x\<in> A" by blast
     let ?sx = "sconst x"
     have "sset ?sx = {x}" by simp
-    hence "sset ?sx \<subseteq> A" using `x\<in> A` by simp
+    hence "sset ?sx \<subseteq> A" using \<open>x\<in> A\<close> by simp
     hence "?sx \<in> streams A" using sset_streams[of "sconst x"] by simp
-    thus False using `streams A = {}` by simp
+    thus False using \<open>streams A = {}\<close> by simp
   qed
   have "stake 0 = (\<lambda>s. [])" unfolding stake_def by simp
-  hence "?L = {[]}" using `streams A \<noteq> {}` by auto
-  show "finite (stake 0 `(streams A))"  by (simp add: `?L = {[]}`)
+  hence "?L = {[]}" using \<open>streams A \<noteq> {}\<close> by auto
+  show "finite (stake 0 `(streams A))"  by (simp add: \<open>?L = {[]}\<close>)
 next
   fix n assume "finite (stake n `(streams A))" note hyp = this
   have "(stake (Suc n) `(streams A)) = {s#w| s w. s\<in> A \<and> w\<in> (stake n `(streams A))}" (is "?L = ?R")
   using assms stake_finite_universe_induct[of A n] by simp
   have "finite ?R"  by (simp add: assms(1) finite_image_set2 hyp)
-  thus "finite ?L" using `?L = ?R`by simp
+  thus "finite ?L" using \<open>?L = ?R\<close>by simp
 qed
 
 
@@ -267,10 +267,10 @@ proof (rule sigma_algebra_sigma_sets)
   qed
 qed
 
-subsection {* Bernoulli streams *}
+subsection \<open>Bernoulli streams\<close>
 
-text {* Bernoulli streams represent the formal definition of the infinite coin toss space. The parameter
-@{text p} represents the probability of obtaining a head after a coin toss. *}
+text \<open>Bernoulli streams represent the formal definition of the infinite coin toss space. The parameter
+\<open>p\<close> represents the probability of obtaining a head after a coin toss.\<close>
 
 definition bernoulli_stream::"real \<Rightarrow> (bool stream) measure" where
   "bernoulli_stream p = stream_space (measure_pmf (bernoulli_pmf p))"
@@ -404,17 +404,17 @@ locale infinite_coin_toss_space =
 sublocale infinite_coin_toss_space \<subseteq> prob_space
 by (simp add: bernoulli bernoulli_stream_def prob_space.prob_space_stream_space prob_space_measure_pmf)
 
-subsection {* Natural filtration on the infinite coin toss space *}
+subsection \<open>Natural filtration on the infinite coin toss space\<close>
 
-text {* The natural filtration on the infinite coin toss space is the discrete filtration @{term F}
+text \<open>The natural filtration on the infinite coin toss space is the discrete filtration @{term F}
 such that @{term "F n"} represents the restricted measure space in which the outcome of the first
-@{term n} coin tosses is known. *}
+@{term n} coin tosses is known.\<close>
 
-subsubsection {* The projection function *}
+subsubsection \<open>The projection function\<close>
 
-text {* Intuitively, the restricted measure space in which the outcome of the first @{term n} coin tosses is known
+text \<open>Intuitively, the restricted measure space in which the outcome of the first @{term n} coin tosses is known
 can be defined by any measurable function that maps all infinite sequences that agree on the first
-@{term n} coin tosses to the same element. *}
+@{term n} coin tosses to the same element.\<close>
 
 definition (in infinite_coin_toss_space) pseudo_proj_True:: "nat \<Rightarrow> bool stream \<Rightarrow> bool stream" where
   "pseudo_proj_True n  = (\<lambda>w. shift (stake n w) (sconst True))"
@@ -545,7 +545,7 @@ proof -
   fix i
   have "stake n w= stake n x" using assms by (metis pseudo_proj_True_stake)
   assume "Suc i \<le> n"
-  thus "snth x i = snth w i" using `stake n w = stake n x` stake_snth by auto
+  thus "snth x i = snth w i" using \<open>stake n w = stake n x\<close> stake_snth by auto
 qed
 
 lemma (in infinite_coin_toss_space) pseudo_proj_True_snth':
@@ -706,7 +706,7 @@ case True
   hence "n = 0" using less_eq_Suc_le by auto
   hence "pseudo_proj_True n = (\<lambda>w. sconst True)" by (simp add: pseudo_proj_True_def)
   hence "w = sconst True" using assms by simp
-  hence "(pseudo_proj_True n) -`{w} \<inter> (space (bernoulli_stream p)) = (space (bernoulli_stream p))" by (simp add: `pseudo_proj_True n = (\<lambda>w. sconst True)`)
+  hence "(pseudo_proj_True n) -`{w} \<inter> (space (bernoulli_stream p)) = (space (bernoulli_stream p))" by (simp add: \<open>pseudo_proj_True n = (\<lambda>w. sconst True)\<close>)
   thus "(pseudo_proj_True n) -`{w} \<inter> (space (bernoulli_stream p))\<in> sets (bernoulli_stream p)" by simp
 qed
 
@@ -743,7 +743,7 @@ case True
   hence "pseudo_proj_False n = (\<lambda>w. False ## sconst True)" by (simp add: pseudo_proj_False_def)
   hence "w = False ## sconst True" using assms by simp
   hence "(pseudo_proj_False n) -`{w} \<inter> (space (bernoulli_stream p)) = (space (bernoulli_stream p))"
-    by (simp add: `pseudo_proj_False n = (\<lambda>w. False##sconst True)`)
+    by (simp add: \<open>pseudo_proj_False n = (\<lambda>w. False##sconst True)\<close>)
   thus "(pseudo_proj_False n) -`{w} \<inter> (space (bernoulli_stream p))\<in> sets (bernoulli_stream p)" by simp
 qed
 
@@ -790,10 +790,10 @@ qed
 
 
 
-subsubsection {* Natural filtration locale *}
+subsubsection \<open>Natural filtration locale\<close>
 
-text {* This part is mainly devoted to the proof that the projection function defined above indeed
-permits to obtain a filtration on the infinite coin toss space, and that this filtration is initially trivial. *}
+text \<open>This part is mainly devoted to the proof that the projection function defined above indeed
+permits to obtain a filtration on the infinite coin toss space, and that this filtration is initially trivial.\<close>
 
 definition (in infinite_coin_toss_space) nat_filtration::"nat \<Rightarrow> bool stream measure" where
   "nat_filtration n = fct_gen_subalgebra M M (pseudo_proj_True n)"
@@ -893,7 +893,7 @@ proof (rule ccontr)
   have "f-` A\<inter> (space (nat_filtration n)) \<in> sets (nat_filtration n)"
     using Ah assms borel_open measurable_sets by blast
   hence fn:"f-` A \<in> sets (nat_filtration n)" using nat_filtration_space by simp
-  have "?x\<in> f-`A = (w \<in> f -`A)" using `pseudo_proj_True n ?x = pseudo_proj_True n w` assms
+  have "?x\<in> f-`A = (w \<in> f -`A)" using \<open>pseudo_proj_True n ?x = pseudo_proj_True n w\<close> assms
     fct_gen_subalgebra_info[of "pseudo_proj_True n" M] bernoulli_stream_space
     by (metis Pi_I UNIV_I bernoulli fn nat_filtration_def streams_UNIV)
   also have "... = (f w \<in> A)" by simp
@@ -1028,8 +1028,8 @@ proof -
       finally have tmpeq: "pseudo_proj_True n -`B \<inter> (space M) =
         (\<Union> w \<in> ?Bim. ?preT (Suc n) w) \<union> (\<Union> w \<in> ?Bim. ?preT (Suc n) (pseudo_proj_False n w))" .
       have "(\<Union> w \<in> ?Bim. ?preT (Suc n) w) \<in> sets (nat_filtration (Suc n))"
-        using `finite ?Bim` nat_filtration_singleton pseudo_proj_True_Suc_proj by auto
-      moreover have "(\<Union> w \<in> ?Bim. ?preT (Suc n) (pseudo_proj_False n w)) \<in> sets (nat_filtration (Suc n))" using `finite ?Bim`
+        using \<open>finite ?Bim\<close> nat_filtration_singleton pseudo_proj_True_Suc_proj by auto
+      moreover have "(\<Union> w \<in> ?Bim. ?preT (Suc n) (pseudo_proj_False n w)) \<in> sets (nat_filtration (Suc n))" using \<open>finite ?Bim\<close>
         by (simp add: nat_filtration_singleton pseudo_proj_True_Suc_False_proj sets.finite_UN)
       ultimately have "x \<in> sets (nat_filtration (Suc n))"
         using tmpeq xhyps by simp
@@ -1374,9 +1374,9 @@ qed
 
 
 
-subsubsection {* Probability component *}
+subsubsection \<open>Probability component\<close>
 
-text {* The probability component permits to compute measures of subspaces in a straightforward way. *}
+text \<open>The probability component permits to compute measures of subspaces in a straightforward way.\<close>
 
 definition  prob_component where
   "prob_component (p::real) w n = (if (snth w n) then p else 1-p)"
@@ -1634,14 +1634,14 @@ proof -
       using bernoulli_stream_pref_prob assms diff_Suc_1 le_refl by presburger
     also have "... = prob_component p x 0" using True by simp
     also have "... = emeasure M precS * prob_component p x n" using bernoulli_stream_npref_prob assms
-      by (simp add: `n=0` precS_def)
+      by (simp add: \<open>n=0\<close> precS_def)
     finally show "emeasure M S = emeasure M precS * prob_component p x n" .
   next
     case False
     hence "n \<ge> Suc 0" by simp
     hence "emeasure M S = (\<Prod>i\<in>{0..n}. prob_component p x i)" unfolding S_def
       using bernoulli_stream_pref_prob diff_Suc_1 le_refl assms by fastforce
-    also have "... = (\<Prod>i\<in>{0..n-1}. prob_component p x i) * prob_component p x n" using `n \<ge> Suc 0`
+    also have "... = (\<Prod>i\<in>{0..n-1}. prob_component p x i) * prob_component p x n" using \<open>n \<ge> Suc 0\<close>
       by (metis One_nat_def Suc_le_lessD Suc_pred prod.atLeast0_atMost_Suc)
     also have "... = emeasure M precS * prob_component p x n" using bernoulli_stream_pref_prob
       unfolding precS_def
@@ -1819,7 +1819,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsubsection {* Filtration equivalence for the natural filtration *}
+subsubsection \<open>Filtration equivalence for the natural filtration\<close>
 
 lemma (in infinite_coin_toss_space) nat_filtration_null_set:
   assumes "A\<in> sets (nat_filtration n)"
@@ -1965,7 +1965,7 @@ proof (unfold_locales)
 qed
 
 
-subsubsection {* More results on the projection function *}
+subsubsection \<open>More results on the projection function\<close>
 
 lemma (in infinite_coin_toss_space) pseudo_proj_True_Suc_prefix:
   shows "pseudo_proj_True (Suc n) w = (w!!0)## pseudo_proj_True n (stl w)"
@@ -2422,7 +2422,7 @@ lemma (in infinite_cts_filtration) borel_pseudo_proj_False_preimage':
   shows "pseudo_proj_False n -` (g -` {g z}) = g -` {g z}"
 using assms natural_filtration by (simp add: set_discriminating_if pseudo_proj_False_preimage')
 
-subsubsection {* Integrals and conditional expectations on the natural filtration *}
+subsubsection \<open>Integrals and conditional expectations on the natural filtration\<close>
 
 lemma (in infinite_cts_filtration) cst_integral:
   fixes f::"bool stream\<Rightarrow>real"
@@ -3516,13 +3516,13 @@ proof (rule f_borel_Suc_real_cond_exp)
 qed
 
 
-subsection  {* Images of stochastic processes by prefixes of streams *}
+subsection  \<open>Images of stochastic processes by prefixes of streams\<close>
 
-text {* We define a function that, given a stream of coin tosses and a stochastic process, returns a stream of the values
+text \<open>We define a function that, given a stream of coin tosses and a stochastic process, returns a stream of the values
 of the stochastic process up to a given time. This function will be used to characterize the smallest filtration that,
-at any time n, makes each random variable of a given stochastic process measurable up to time n. *}
+at any time n, makes each random variable of a given stochastic process measurable up to time n.\<close>
 
-subsubsection {* Definitions *}
+subsubsection \<open>Definitions\<close>
 
 
 
@@ -3925,7 +3925,7 @@ proof -
   show "stream_space_single (proj_stoch_proc X n) r \<inter> range (proj_stoch_proc X n) = {r}" using a by simp
 qed
 
-subsubsection {* Induced filtration, relationship with filtration generated by underlying stochastic process*}
+subsubsection \<open>Induced filtration, relationship with filtration generated by underlying stochastic process\<close>
 
 definition comp_proj_i where
 "comp_proj_i X n i y = {z\<in> range (proj_stoch_proc X n). snth z i = y}"

@@ -76,7 +76,7 @@ proof (transfer fixing: P)
   moreover then have "finite Z" by (metis card_of_ordLeq_infinite ctwo_def finite_code)
   ultimately have "card Z \<le> 2" unfolding ctwo_def by (subst (asm) finite_card_of_iff_card2) auto
   moreover assume "Z = {} \<Longrightarrow> P" "\<And>x. Z = {x} \<Longrightarrow> P" "\<And>x y. \<lbrakk>x \<noteq> y; Z = {x, y}\<rbrakk> \<Longrightarrow> P"
-  ultimately show P using `finite Z`
+  ultimately show P using \<open>finite Z\<close>
   proof (induct "card Z")
     case (Suc m) from Suc(2)[symmetric] Suc(2-7) show P by (cases m) (auto simp: card_Suc_eq)
   qed simp

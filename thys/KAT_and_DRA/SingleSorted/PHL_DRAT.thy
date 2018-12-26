@@ -3,7 +3,7 @@
    Maintainer: Georg Struth <g.struth at sheffield.ac.uk>
 *)
 
-section {* Propositional Hoare Logic *}
+section \<open>Propositional Hoare Logic\<close>
 
 theory PHL_DRAT
   imports DRAT Kleene_Algebra.PHL_DRA PHL_KAT

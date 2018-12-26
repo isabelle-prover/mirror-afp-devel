@@ -1,4 +1,4 @@
-section {* LTL Formulae *}
+section \<open>LTL Formulae\<close>
 
 theory Formula
 imports

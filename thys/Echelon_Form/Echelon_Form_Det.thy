@@ -4,16 +4,16 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Determinant of matrices over principal ideal rings*}
+section\<open>Determinant of matrices over principal ideal rings\<close>
 
 theory Echelon_Form_Det
   imports Echelon_Form
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
-text{*The following definition can be improved in terms of performance, because it checks if
-  there exists an element different from zero twice.*}
+text\<open>The following definition can be improved in terms of performance, because it checks if
+  there exists an element different from zero twice.\<close>
 
 definition 
   echelon_form_of_column_k_det :: "('b \<Rightarrow> 'b \<Rightarrow> 'b \<times> 'b \<times> 'b \<times> 'b \<times> 'b) 
@@ -48,9 +48,9 @@ definition
   where 
   "echelon_form_of_det A bezout = echelon_form_of_upt_k_det bezout (1::'a,A) (ncols A - 1)"
 
-subsection{*Properties*}
+subsection\<open>Properties\<close>
 
-subsubsection{*Bezout Iterate*}
+subsubsection\<open>Bezout Iterate\<close>
 
 lemma det_bezout_iterate:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
@@ -98,7 +98,7 @@ next
 qed
 
 
-subsubsection{*Echelon Form of column k*}
+subsubsection\<open>Echelon Form of column k\<close>
 
 lemma det_echelon_form_of_column_k_det:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
@@ -158,7 +158,7 @@ lemma snd_echelon_form_of_column_k_det_eq:
   by auto
 
 
-subsubsection{*Echelon form up to column k*}
+subsubsection\<open>Echelon form up to column k\<close>
 
 lemma snd_foldl_ef_det_eq: "snd (foldl (echelon_form_of_column_k_det bezout) (n, A, 0) [0..<k]) 
   = foldl (echelon_form_of_column_k bezout) (A, 0) [0..<k]"
@@ -204,7 +204,7 @@ next
     by (metis Suc.hyps echelon_form_of_upt_k_det_def fst_conv snd_conv snd_foldl_ef_det_eq)
 qed
 
-subsubsection{*Echelon form*}
+subsubsection\<open>Echelon form\<close>
 
 lemma det_echelon_form_of_det:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
@@ -212,7 +212,7 @@ lemma det_echelon_form_of_det:
   shows "(fst (echelon_form_of_det A bezout)) * det A = det (snd (echelon_form_of_det A bezout))"
   using det_echelon_form_of_upt_k_det ib unfolding echelon_form_of_det_def by simp
 
-subsubsection{*Proving that the first component is a unit*}
+subsubsection\<open>Proving that the first component is a unit\<close>
 
 lemma echelon_form_of_column_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
@@ -246,7 +246,7 @@ lemma echelon_form_of_unit:
   unfolding echelon_form_of_det_def 
   by (rule echelon_form_of_upt_k_det_unit)
 
-subsubsection{*Final lemmas*}
+subsubsection\<open>Final lemmas\<close>
 
 corollary det_echelon_form_of_det':
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"

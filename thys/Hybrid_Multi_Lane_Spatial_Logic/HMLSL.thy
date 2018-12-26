@@ -7,24 +7,24 @@ and view as parameters, and evaluates to True or False.
 *)
 
 section\<open>Basic HMLSL\<close>
-text{* 
+text\<open>
 In this section, we define the basic formulas of HMLSL. 
 All of these basic formulas and theorems are independent 
 of the choice of sensor function. However, they show how
 the general operators (chop, changes in perspective, 
 atomic formulas) work. 
-*}
+\<close>
 
 theory HMLSL
   imports "Restriction" "Move" Length
 begin
 
-subsection{*Syntax of Basic HMLSL*}
+subsection\<open>Syntax of Basic HMLSL\<close>
 
-text {* 
+text \<open>
 Formulas are functions associating a traffic snapshot
 and a view with a Boolean value.
-*}
+\<close>
 type_synonym \<sigma> = " traffic \<Rightarrow> view \<Rightarrow> bool"
 
 locale hmlsl = restriction+
@@ -38,15 +38,15 @@ sublocale hmlsl<sensors
 context hmlsl
 begin
 
-text{* 
+text\<open>
 All formulas are defined as abbreviations. As a consequence,
 proofs will directly refer to the semantics of HMLSL, i.e.,
 traffic snapshots and views.
-*}
+\<close>
 
-text{*
+text\<open>
 The first-order operators are direct translations into HOL operators.
-*}
+\<close>
 
 abbreviation mtrue  :: "\<sigma>" ("\<^bold>\<top>")
   where "\<^bold>\<top> \<equiv> \<lambda> ts w. True" 
@@ -79,10 +79,10 @@ abbreviation mgeq :: "('a::ord) \<Rightarrow> 'a \<Rightarrow> \<sigma>" (infix 
 abbreviation mge ::"('a::ord) \<Rightarrow> 'a \<Rightarrow> \<sigma>" (infix "\<^bold>>" 60)
   where "x \<^bold>> y \<equiv> \<lambda> ts w. x > y"
 
-text{*
+text\<open>
 For the spatial modalities, we use the chopping operations
 defined on views. Observe that our chop modalities are existential.
-*}
+\<close>
 
 abbreviation hchop   :: "\<sigma>\<Rightarrow>\<sigma>\<Rightarrow>\<sigma>" (infixr "\<^bold>\<frown>" 53)
   where "\<phi> \<^bold>\<frown> \<psi> \<equiv> \<lambda> ts w.\<exists>v u. (w=v\<parallel>u) \<and> \<phi>(ts)(v)\<and>\<psi>(ts)(u)"
@@ -93,19 +93,19 @@ abbreviation somewhere ::"\<sigma>\<Rightarrow>\<sigma>" ( "\<^bold>\<langle>_\<
 abbreviation everywhere::"\<sigma>\<Rightarrow>\<sigma>" ("\<^bold>[_\<^bold>]" 55)
   where "\<^bold>[\<phi>\<^bold>] \<equiv> \<^bold>\<not>\<^bold>\<langle>\<^bold>\<not>\<phi>\<^bold>\<rangle>"
 
-text{*
+text\<open>
 To change the perspective of a view, we use 
 an operator in the fashion of Hybrid Logic.
-*}
+\<close>
 abbreviation at :: "cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma> " ("\<^bold>@ _ _" 56)
   where "\<^bold>@c \<phi> \<equiv> \<lambda>ts w .  \<forall>v'. (w=c>v') \<longrightarrow> \<phi>(ts)(v')"
 
-text{*
+text\<open>
 The behavioural modalities are defined as usual modal
 box-like modalities, where the accessibility relations
 are given by the different types of transitions between
 traffic snapshots.
-*}
+\<close>
 
 abbreviation res_box::"cars \<Rightarrow> \<sigma> \<Rightarrow> \<sigma>" ("\<^bold>\<box>r'(_') _" 55)
   where "\<^bold>\<box>r(c) \<phi> \<equiv> \<lambda> ts w. \<forall>ts'. (ts\<^bold>\<midarrow>r(c)\<^bold>\<rightarrow>ts') \<longrightarrow> \<phi>(ts')(w)" 
@@ -121,11 +121,11 @@ abbreviation globally::"\<sigma> \<Rightarrow> \<sigma>" ("\<^bold>G _" 55)
   where "\<^bold>G \<phi> \<equiv> \<lambda>ts w. \<forall>ts'. (ts \<^bold>\<Rightarrow> ts') \<longrightarrow> \<phi>(ts')(move ts ts' w)"
 
 
-text{*
+text\<open>
 The spatial atoms to refer to reservations, claims
 and free space are direct translations of the original
 definitions of MLSL \cite{Hilscher2011} into the Isabelle implementation.
-*}
+\<close>
 
 abbreviation re:: "cars \<Rightarrow> \<sigma>" ("re'(_')" 70)
   where 
@@ -143,13 +143,13 @@ abbreviation free:: "\<sigma>" ("free")
                   (\<forall>c.  \<parallel>len v ts c\<parallel> = 0 \<or> 
                     (restrict v (clm ts) c = \<emptyset> \<and> restrict v (res ts) c = \<emptyset>))"  
 
-text{*
+text\<open>
 Even though we do not need them for the subsequent proofs of safety,
 we define ways to measure the number of lanes (width) and the
 size of the extension (length) of a view. This allows us 
 to connect the atomic formulas for reservations and claims
 with the atom denoting free space \cite{Linker2015a}.
-*}
+\<close>
 
 abbreviation width_eq::"nat \<Rightarrow> \<sigma>" ("\<^bold>\<omega> = _ " 60)
   where "\<^bold>\<omega> = n \<equiv> \<lambda>  ts v. |lan v| = n"  
@@ -169,12 +169,12 @@ abbreviation length_ge:: "real \<Rightarrow> \<sigma>" ("\<^bold>\<l> > _" 60)
 abbreviation length_geq::"real \<Rightarrow> \<sigma>" ("\<^bold>\<l> \<ge> _" 60)
   where "\<^bold>\<l> \<ge> r \<equiv> (\<^bold>\<l> = r) \<^bold>\<or> (\<^bold>\<l> > r)"
 
-text{*
+text\<open>
 For convenience, we use abbreviations for 
 the validity and satisfiability of formulas. While
 the former gives a nice way to express theorems, 
 the latter is useful within proofs.
-*}
+\<close>
 
 abbreviation valid :: "\<sigma> \<Rightarrow> bool" ("\<Turnstile> _" 10 )
   where "\<Turnstile> \<phi> \<equiv>  \<forall>ts. \<forall>v. \<phi>(ts)(v)"
@@ -182,7 +182,7 @@ abbreviation valid :: "\<sigma> \<Rightarrow> bool" ("\<Turnstile> _" 10 )
 abbreviation satisfies::" traffic \<Rightarrow> view \<Rightarrow> \<sigma> \<Rightarrow> bool" ("_ , _ \<Turnstile> _" 10)
   where "ts,v \<Turnstile> \<phi> \<equiv> \<phi>(ts)(v)"
 
-subsection {* Theorems about Basic HMLSL *}
+subsection \<open>Theorems about Basic HMLSL\<close>
 
 lemma hchop_weaken1: " \<Turnstile> \<phi> \<^bold>\<rightarrow> (\<phi> \<^bold>\<frown> \<^bold>\<top>) " 
   using horizontal_chop_empty_right  by fastforce
@@ -790,11 +790,11 @@ lemma free_dense:"\<Turnstile>free \<^bold>\<leftrightarrow> (free \<^bold>\<fro
 lemma free_dense2:"\<Turnstile>free \<^bold>\<rightarrow> \<^bold>\<top> \<^bold>\<frown> free \<^bold>\<frown> \<^bold>\<top>"
   using horizontal_chop_empty_left horizontal_chop_empty_right  by fastforce
 
-text {*
+text \<open>
 The next lemmas show the connection between the spatial. In particular,
 if the view consists of one lane and a non-zero extension, where neither
 a reservation nor a car resides, the view satisfies free (and vice versa). 
-*}
+\<close>
 
 lemma no_cars_means_free:
   "\<Turnstile>((\<^bold>\<l>>0) \<^bold>\<and> (\<^bold>\<omega> = 1) \<^bold>\<and> (\<^bold>\<forall>c. \<^bold>\<not> (\<^bold>\<top> \<^bold>\<frown>  ( cl(c) \<^bold>\<or> re(c) ) \<^bold>\<frown> \<^bold>\<top>))) \<^bold>\<rightarrow> free" 

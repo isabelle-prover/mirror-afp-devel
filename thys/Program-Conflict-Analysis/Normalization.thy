@@ -6,18 +6,18 @@ section "Normalized Paths"
 theory Normalization
 imports Main ThreadTracking Semantics ConsInterleave
 begin
-text_raw {*\label{thy:Normalization}*}
+text_raw \<open>\label{thy:Normalization}\<close>
 
-text {*
+text \<open>
   The idea of normalized paths is to consider particular schedules only. While the original semantics allows a context switch to occur after every single step, we now define a semantics that allows context switches only before
   non-returning calls or after a thread has reached its final stack. We then show that this semantics is able to reach the same set of configurations as the original semantics.
-*}
+\<close>
 
 subsection "Semantic properties of restricted flowgraphs"
-text_raw {*\label{sec:Normalization:eflowgraph}*}
-text {* 
+text_raw \<open>\label{sec:Normalization:eflowgraph}\<close>
+text \<open>
   It makes the formalization smoother, if we assume that every thread's execution begins with a non-returning call. For this purpose, we defined syntactic restrictions on flowgraphs already 
-  (cf. Section~\ref{sec:Flowgraph:extra_asm}). We now show that these restrictions have the desired semantic effect. *}  
+  (cf. Section~\ref{sec:Flowgraph:extra_asm}). We now show that these restrictions have the desired semantic effect.\<close>  
 
 \<comment> \<open>Procedures with isolated return nodes will never return\<close>
 lemma (in eflowgraph) iso_ret_no_ret: "!!u c. \<lbrakk> 
@@ -92,7 +92,7 @@ qed
 
 
 subsection "Definition of normalized paths"
-text {*
+text \<open>
   In order to describe the restricted schedules, we define an operational semantics that performs an atomically scheduled sequence of steps in one step, called a {\em macrostep}. 
   Context switches may occur after macrosteps only. We call this the {\em normalized semantics} and a sequence of macrosteps a {\em normalized path}.  
 
@@ -102,7 +102,7 @@ text {*
 
   As for the original semantics, we first define the normalized semantics on a single thread with a context and then use the theory developed in Section~\ref{thy:ThreadTracking} to derive interleaving semantics on multisets and 
   configurations with an explicit local thread (loc/env-semantics, cf. Section~\ref{sec:ThreadTracking:exp_local}). 
-*}
+\<close>
 
 
 inductive_set
@@ -128,12 +128,12 @@ interpretation ntrs: env_no_step "ntrs fg"
   done
 
 subsection "Representation property for reachable configurations"
-text {*
+text \<open>
   In this section, we show that a configuration is reachable if and only if it is reachable via a normalized path.
-*}
+\<close>
 
-text {* The first direction is to show that a normalized path is also a path. This follows from the definitions. Note that we first show that a single macrostep corresponds to a path and then
-  generalize the result to sequences of macrosteps*}
+text \<open>The first direction is to show that a normalized path is also a path. This follows from the definitions. Note that we first show that a single macrostep corresponds to a path and then
+  generalize the result to sequences of macrosteps\<close>
 lemma ntrs_is_trss_s: "((s,c),w,(s',c'))\<in>ntrs fg \<Longrightarrow> ((s,c),w,(s',c'))\<in>trcl (trss fg)" 
 proof (erule ntrs.cases, auto)
   fix p r u u' v w
@@ -163,16 +163,16 @@ next
 qed
   
 
-text {*
+text \<open>
   The other direction requires to prove that for each path reaching a configuration there is also a normalized path reaching the same configuration. 
   We need an auxiliary lemma for this proof, that is a kind of append rule: {\em Given a normalized path reaching some configuration @{term c}, and a same level or returning path from some 
   stack in @{term c}, we can derive a normalized path to @{term c} modified according to the same-level path}. We cannot simply append the same-level or returning path
   as a macrostep, because it does not start with a non-returning call. Instead, we will have to append it to some macrostep in the normalized path, i.e. move it ,,left'' into the normalized
   path.
-*}
+\<close>
 
   
-text {*
+text \<open>
   Intuitively, we can describe the concept of the proof as follows:
   Due to the restrictions we made on flowgraphs, a same-level or returning path cannot be the first steps on a thread. 
   Hence there is a last macrostep that was executed on the thread. When this macrostep was executed, all threads held less monitors then they do at the end of the execution, because
@@ -181,7 +181,7 @@ text {*
   yields a valid macrostep again and we are done. Appending a returning path to a macrostep yields a same-level path. In this case we inductively repeat our argument. 
 
   The actual proof is strictly inductive; it either appends the same-level path to the {\em last} macrostep or inductively repeats the argument.
-*}
+\<close>
 lemma (in eflowgraph) ntr_sl_move_left: "!!ce u r w r' ce'.  
   \<lbrakk> ({#[entry fg p]#},ww,{# u#r #}+ce)\<in>trcl (ntr fg); 
     (([u],ce),w,(r',ce'))\<in>trcl (trss fg); 
@@ -296,12 +296,12 @@ next
   qed
 qed
 
-text {* Finally we can prove: {\em Any reachable configuration can also be reached by a normalized path}.
+text \<open>Finally we can prove: {\em Any reachable configuration can also be reached by a normalized path}.
   With @{thm [source] eflowgraph.ntr_sl_move_left} we can easily show this lemma
   With @{thm [source] eflowgraph.ntr_sl_move_left} we can easily show this   by induction on the reaching path. For the empty path, the proposition follows trivially.
   Else we consider the last step. If it is a call, we can execute it as a macrostep and get the proposition. Otherwise the last step is a same-level (Base, Spawn) or returning (Ret) path of length 1, and
   we can append it to the normalized path using @{thm [source] eflowgraph.ntr_sl_move_left}.
-  *}
+\<close>
 lemma (in eflowgraph) normalize: "\<lbrakk> 
     (cstart,w,c')\<in>trcl (tr fg); 
     cstart={# [entry fg p] #}; 
@@ -338,15 +338,15 @@ next
   } ultimately show ?case by (cases e, auto)
 qed
  
-text {* As the main result of this section we get: {\em A configuration is reachable if and only if it is also reachable via a normalized path}: *}
+text \<open>As the main result of this section we get: {\em A configuration is reachable if and only if it is also reachable via a normalized path}:\<close>
 theorem (in eflowgraph) ntr_repr:
   "    (\<exists>w. ({#[entry fg (main fg)]#},w,c)\<in>trcl (tr fg)) 
    \<longleftrightarrow> (\<exists>w. ({#[entry fg (main fg)]#},w,c)\<in>trcl (ntr fg))"
   by (auto simp add: initialproc_def intro!: normalize ntr_is_tr)
 
-subsection {* Properties of normalized path *}
+subsection \<open>Properties of normalized path\<close>
 
-text {* Like a usual path, also a macrostep modifies one thread, spawns some threads and preserves the state of all the other threads. The spawned threads do not make any steps, thus they stay in their initial configurations. *}
+text \<open>Like a usual path, also a macrostep modifies one thread, spawns some threads and preserves the state of all the other threads. The spawned threads do not make any steps, thus they stay in their initial configurations.\<close>
 lemma ntrs_c_cases_s[cases set]: "\<lbrakk> 
     ((s,c),w,(s',c'))\<in>ntrs fg; 
     !!csp. \<lbrakk> c'=csp+c; !!s. s \<in># csp \<Longrightarrow> \<exists>p u v. s=[entry fg p] \<and> 
@@ -365,8 +365,8 @@ lemma ntrs_c_cases[cases set]: "\<lbrakk>
   \<rbrakk> \<Longrightarrow> P"
   by (auto dest!: ntrs_is_trss elim!: trss_c_cases)
 
-subsubsection {* Validity *}
-text {* Like usual paths, also normalized paths preserve validity of the configurations. *}
+subsubsection \<open>Validity\<close>
+text \<open>Like usual paths, also normalized paths preserve validity of the configurations.\<close>
 lemmas (in flowgraph) ntrs_valid_preserve_s = trss_valid_preserve[OF ntrs_is_trss_s]
 lemmas (in flowgraph) ntr_valid_preserve_s = tr_valid_preserve[OF ntr_is_tr_s]
 lemmas (in flowgraph) ntrs_valid_preserve = trss_valid_preserve[OF ntrs_is_trss]
@@ -382,8 +382,8 @@ lemma (in flowgraph) ntrp_valid_preserve:
   shows "valid fg (add_mset s' c')"
   using ntr_valid_preserve[OF gtrp2gtr[OF A] V] by assumption 
 
-subsubsection {* Monitors *}
-text {* The following defines the set of monitors used by a normalized path and shows its basic properties: *}
+subsubsection \<open>Monitors\<close>
+text \<open>The following defines the set of monitors used by a normalized path and shows its basic properties:\<close>
 definition 
   "mon_ww fg ww == foldl (\<union>) {} (map (mon_w fg) ww)"
 
@@ -500,12 +500,12 @@ lemma (in flowgraph) ntrp_mon_increasing: "((s,c),e,(s',c'))\<in>trcl (ntrp fg)
   \<Longrightarrow> mon_s fg s \<subseteq> mon_s fg s' \<and> mon_c fg c \<subseteq> mon_c fg c'"
   by (induct rule: trcl_rev_pair_induct) (auto dest!: ntrp_mon_increasing_s)
 
-subsubsection {* Modifying the context *} 
+subsubsection \<open>Modifying the context\<close> 
 
 lemmas (in flowgraph) ntrs_c_no_mon_s = trss_c_no_mon[OF ntrs_is_trss_s]
 lemmas (in flowgraph) ntrs_c_no_mon = trss_c_no_mon[OF ntrs_is_trss]
   
-text {* Also like a usual path, a normalized step must not use any monitors that are allocated by other threads *}
+text \<open>Also like a usual path, a normalized step must not use any monitors that are allocated by other threads\<close>
 lemmas (in flowgraph) ntrs_mon_e_no_ctx = trss_mon_w_no_ctx[OF ntrs_is_trss_s]
 lemma (in flowgraph) ntrs_mon_w_no_ctx: 
   assumes A: "((s,c),w,(s',c'))\<in>trcl (ntrs fg)" 
@@ -528,9 +528,9 @@ lemma (in flowgraph) ntrp_mon_loc_w_no_ctx:
   "((s,c),w,(s',c'))\<in>trcl (ntrp fg) \<Longrightarrow> mon_loc fg w \<inter> mon_c fg c = {}" 
   by (induct rule: trcl_rev_pair_induct) (unfold mon_loc_def, auto split: el_step.split dest!: ntrp_mon_loc_e_no_ctx ntrp_mon_increasing simp add: mon_ww_unconc)
 
-text {*
+text \<open>
   The next lemmas are rules how to add or remove threads while preserving the executability of a path
-*}
+\<close>
 
 (* TODO: There are far too many {ntrs,ntrp}_{add,drop,replace,modify,xchange}_context - lemmas, try to give them a good sructure, find the most general cases and derive the other ones from these cases *)
 lemma (in flowgraph) ntrs_modify_context_s: 
@@ -662,7 +662,7 @@ lemma (in flowgraph) ntrp_add_context: "\<lbrakk>
 
 
 
-subsubsection {* Altering the local stack *}
+subsubsection \<open>Altering the local stack\<close>
 
 lemma ntrs_stack_comp_s: 
   assumes A: "((s,c),ee,(s',c'))\<in>ntrs fg" 
@@ -771,17 +771,17 @@ next
 qed
 
 
-subsection {* Relation to monitor consistent interleaving *}
-text {*
+subsection \<open>Relation to monitor consistent interleaving\<close>
+text \<open>
   In this section, we describe the relation of the consistent interleaving operator (cf. Section~\ref{thy:ConsInterleave}) and the macrostep-semantics.
-*}
+\<close>
 
-subsubsection {* Abstraction function for normalized paths *}
-text {* 
-  We first need to define an abstraction function that maps a macrostep on a pair of entered and passed monitors, as required by the @{text "\<otimes>\<^bsub>\<alpha>\<^esub>"}-operator: 
+subsubsection \<open>Abstraction function for normalized paths\<close>
+text \<open>
+  We first need to define an abstraction function that maps a macrostep on a pair of entered and passed monitors, as required by the \<open>\<otimes>\<^bsub>\<alpha>\<^esub>\<close>-operator: 
   
   A step on a normalized paths enters the monitors of the first called procedure and passes the monitors that occur in the following same-level path.
-*}
+\<close>
 
 definition 
   "\<alpha>n fg e == if e=[] then ({},{}) else (mon_e fg (hd e), mon_w fg (tl e))"
@@ -815,7 +815,7 @@ lemma \<alpha>n_fst_snd[simp]: "fst (\<alpha>n fg w) \<union> snd (\<alpha>n fg 
 lemma mon_pl_of_\<alpha>nl: "mon_pl (map (\<alpha>nl fg) w) = mon_loc fg w \<union> mon_env fg w"
   by (induct w) (auto split: el_step.split)
 
-text {* We now derive specialized introduction lemmas for @{text "\<otimes>\<^bsub>\<alpha>n fg\<^esub>"} *}
+text \<open>We now derive specialized introduction lemmas for \<open>\<otimes>\<^bsub>\<alpha>n fg\<^esub>\<close>\<close>
 lemma cil_\<alpha>n_cons_helper: "mon_pl (map (\<alpha>n fg) wb) = mon_ww fg wb"
   apply (unfold mon_pl_def)
   apply (induct wb)
@@ -871,15 +871,15 @@ lemma (in flowgraph) ntrp_mon_s:
   using ntr_mon_s[OF gtrp2gtr_s[OF A]] by (unfold \<alpha>nl_def)
 
 
-subsubsection {* Interleaving theorem *}
-text {* In this section, we show that the consistent interleaving operator describes the intuition behind interleavability of normalized paths. We show:
+subsubsection \<open>Interleaving theorem\<close>
+text \<open>In this section, we show that the consistent interleaving operator describes the intuition behind interleavability of normalized paths. We show:
   {\em Two paths are simultaneously executable if and only if they are consistently interleavable and the monitors of the initial configurations are compatible}
-*}
+\<close>
 
-text {* The split lemma splits an execution from a context of the form @{term "ca+cb"} into two interleavable executions from @{term ca} and @{term cb} respectively.
+text \<open>The split lemma splits an execution from a context of the form @{term "ca+cb"} into two interleavable executions from @{term ca} and @{term cb} respectively.
   While further down we prove this lemma for loc/env-path, which is more general but also more complicated, we start with the proof for paths of the multiset-semantics
   for illustrating the idea.
-*}
+\<close>
 lemma (in flowgraph) ntr_split: 
   "!!ca cb. \<lbrakk>(ca+cb,w,c')\<in>trcl (ntr fg); valid fg (ca+cb)\<rbrakk> \<Longrightarrow> 
   \<exists>ca' cb' wa wb. 
@@ -978,7 +978,7 @@ next
   qed
 qed
 
-text {* The next lemma is a more general version of @{thm [source] flowgraph.ntr_split} for the semantics with a distinguished local thread. The proof follows exactly the same ideas, but is more complex. *}
+text \<open>The next lemma is a more general version of @{thm [source] flowgraph.ntr_split} for the semantics with a distinguished local thread. The proof follows exactly the same ideas, but is more complex.\<close>
 lemma (in flowgraph) ntrp_split: "
   !!s c1 c2 s' c'. 
   \<lbrakk>((s,c1+c2),w,(s',c'))\<in>trcl (ntrp fg); valid fg ({#s#}+c1+c2)\<rbrakk> 
@@ -1109,8 +1109,8 @@ lemma (in flowgraph) ntr_split':
     (cb,wb,cb')\<in>trcl (ntr fg)"
 using A VALID by(rule ntr_split)
 
-text {* The unsplit lemma combines two interleavable executions. For illustration purposes, we first prove the less general version for multiset-configurations.
-  The general version for loc/env-configurations is shown later. *}   
+text \<open>The unsplit lemma combines two interleavable executions. For illustration purposes, we first prove the less general version for multiset-configurations.
+  The general version for loc/env-configurations is shown later.\<close>   
 lemma (in flowgraph) ntr_unsplit: 
   assumes A: "w\<in>wa\<otimes>\<^bsub>\<alpha>n fg\<^esub>wb" and 
   B: "(ca,wa,ca')\<in>trcl (ntr fg)" 
@@ -1266,8 +1266,8 @@ proof -
 qed
 
 
-text {* And finally we get the desired theorem: {\em Two paths are simultaneously executable if and only if they are consistently interleavable and the monitors of the initial configurations are compatible}.
-Note that we have to assume a valid starting configuration. *}  
+text \<open>And finally we get the desired theorem: {\em Two paths are simultaneously executable if and only if they are consistently interleavable and the monitors of the initial configurations are compatible}.
+Note that we have to assume a valid starting configuration.\<close>  
 theorem (in flowgraph) ntr_interleave: "valid fg (ca+cb) \<Longrightarrow> 
   (ca+cb,w,c')\<in>trcl (ntr fg) \<longleftrightarrow> 
   (\<exists>ca' cb' wa wb. 
@@ -1296,7 +1296,7 @@ theorem (in flowgraph) ntrp_interleave:
       mon_c_unconc)
   done
 
-text {* The next is a corollary of @{thm [source] flowgraph.ntrp_unsplit}, allowing us to convert a path to loc/env semantics by adding a local stack that does not make any steps. *}
+text \<open>The next is a corollary of @{thm [source] flowgraph.ntrp_unsplit}, allowing us to convert a path to loc/env semantics by adding a local stack that does not make any steps.\<close>
 corollary (in flowgraph) ntr2ntrp: "\<lbrakk>
     (c,w,c')\<in>trcl (ntr fg); 
     mon_c fg (add_mset s cl) \<inter> (mon_c fg c \<union> mon_ww fg w)={}
@@ -1304,7 +1304,7 @@ corollary (in flowgraph) ntr2ntrp: "\<lbrakk>
   using ntrp_unsplit[where wa="[]", simplified] by fast
 
 subsubsection "Reverse splitting"
-text {* This section establishes a theorem that allows us to find the thread in the original configuration that created some distinguished thread in the final configuration. *}
+text \<open>This section establishes a theorem that allows us to find the thread in the original configuration that created some distinguished thread in the final configuration.\<close>
 
 lemma (in flowgraph) ntr_reverse_split: "!!w s' ce'. \<lbrakk> 
   (c,w,{#s'#}+ce')\<in>trcl (ntr fg); 

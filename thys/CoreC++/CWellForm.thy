@@ -4,7 +4,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Well-formedness Constraints *}
+section \<open>Well-formedness Constraints\<close>
 
 theory CWellForm imports WellForm WWellForm WellTypeRT DefAss begin
 

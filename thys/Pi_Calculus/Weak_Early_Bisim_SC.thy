@@ -37,7 +37,7 @@ lemma mismatchId:
 
   shows "[a\<noteq>b]P \<approx> P"
 proof -
-  from `a \<noteq> b` have "[a\<noteq>b]P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.mismatchId)
+  from \<open>a \<noteq> b\<close> have "[a\<noteq>b]P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.mismatchId)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -124,7 +124,7 @@ lemma scopeExtPar:
 
   shows "<\<nu>x>(P \<parallel> Q) \<approx> P \<parallel> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sub>e P \<parallel> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtPar)
+  from \<open>x \<sharp> P\<close> have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sub>e P \<parallel> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtPar)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -137,7 +137,7 @@ lemma scopeExtPar':
 
   shows "<\<nu>x>(P \<parallel> Q) \<approx> (<\<nu>x>P) \<parallel> Q"
 proof - 
-  from `x \<sharp> Q` have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sub>e (<\<nu>x>P) \<parallel> Q" by(rule Strong_Early_Bisim_SC.scopeExtPar')
+  from \<open>x \<sharp> Q\<close> have "<\<nu>x>(P \<parallel> Q) \<sim>\<^sub>e (<\<nu>x>P) \<parallel> Q" by(rule Strong_Early_Bisim_SC.scopeExtPar')
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -160,7 +160,7 @@ lemma freshRes:
 
   shows "<\<nu>a>P \<approx> P"
 proof -
-  from `a \<sharp> P` have "<\<nu>a>P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.freshRes)
+  from \<open>a \<sharp> P\<close> have "<\<nu>a>P \<sim>\<^sub>e P" by(rule Strong_Early_Bisim_SC.freshRes)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 
@@ -173,7 +173,7 @@ lemma scopeExtSum:
 
   shows "<\<nu>x>(P \<oplus> Q) \<approx> P \<oplus> <\<nu>x>Q"
 proof -
-  from `x \<sharp> P` have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sub>e P \<oplus> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtSum)
+  from \<open>x \<sharp> P\<close> have "<\<nu>x>(P \<oplus> Q) \<sim>\<^sub>e P \<oplus> <\<nu>x>Q" by(rule Strong_Early_Bisim_SC.scopeExtSum)
   thus ?thesis by(rule strongBisimWeakBisim)
 qed
 

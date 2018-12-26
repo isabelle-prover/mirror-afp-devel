@@ -1,12 +1,12 @@
-section {* Three-step Optimized MRU Model *}
+section \<open>Three-step Optimized MRU Model\<close>
 theory Three_Step_MRU
 imports "../MRU_Vote_Opt" Three_Steps
 begin            
 
-text {* To make the coming proofs of concrete algorithms easier, in this model we split 
-  the @{term opt_mru_round} into three steps  *}
+text \<open>To make the coming proofs of concrete algorithms easier, in this model we split 
+  the @{term opt_mru_round} into three steps\<close>
 
-subsection {* Model definition *}
+subsection \<open>Model definition\<close>
 (******************************************************************************)
 record three_step_mru_state = opt_mru_state + 
   candidates :: "val set"
@@ -75,7 +75,7 @@ definition ts_mru_TS :: "three_step_mru_state TS" where
 
 lemmas ts_mru_TS_defs = ts_mru_TS_def ts_mru_init_def ts_mru_trans_def
 
-subsection {* Refinement *}
+subsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition basic_rel where

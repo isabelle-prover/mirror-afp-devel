@@ -220,14 +220,14 @@ next
   have "i' \<le> j" using shiftr by simp
 
   have "i' < length (Array.get h\<^sub>2 a)"
-    by (metis `i' < Array.length h\<^sub>2 a` length_def)
+    by (metis \<open>i' < Array.length h\<^sub>2 a\<close> length_def)
   have [simp]: "min (Suc j) i' = i'" using \<open>i' \<le> j\<close> by simp
   have [simp]: "min (length (Array.get h\<^sub>2 a)) i' = i'"
     using \<open>i' < length (Array.get h\<^sub>2 a)\<close> by (simp)
   have take_Suc_j: "take (Suc j) (list_update (Array.get h\<^sub>2 a) i' key) =
     take i' (Array.get h\<^sub>2 a) @ key # take (j - i') (drop (Suc i') (Array.get h\<^sub>2 a))"
     unfolding upd_conv_take_nth_drop [OF \<open>i' < length (Array.get h\<^sub>2 a)\<close>]
-    by (auto) (metis Suc_diff_le `i' \<le> j` take_Suc_Cons)
+    by (auto) (metis Suc_diff_le \<open>i' \<le> j\<close> take_Suc_Cons)
 
   have "Array.length h a = Array.length h'' a"
     using shiftr by (auto) (metis step.IH)
@@ -246,7 +246,7 @@ next
       assume [simp]: "i' = 0"
       have *: "take (Suc j) (list_update (Array.get h\<^sub>2 a) 0 key) =
         key # take j (drop 1 (Array.get h\<^sub>2 a))"
-        by (simp) (metis `i' = 0` append_Nil take_Suc_j diff_zero take_0)
+        by (simp) (metis \<open>i' = 0\<close> append_Nil take_Suc_j diff_zero take_0)
       from sorted and shiftr
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
@@ -397,14 +397,14 @@ next
   have "i' \<le> j" using shiftr by simp
 
   have "i' < length (Array.get h\<^sub>2 a)"
-    by (metis `i' < Array.length h\<^sub>2 a` length_def)
+    by (metis \<open>i' < Array.length h\<^sub>2 a\<close> length_def)
   have [simp]: "min (Suc j) i' = i'" using \<open>i' \<le> j\<close> by simp
   have [simp]: "min (length (Array.get h\<^sub>2 a)) i' = i'"
     using \<open>i' < length (Array.get h\<^sub>2 a)\<close> by (simp)
   have take_Suc_j: "take (Suc j) (list_update (Array.get h\<^sub>2 a) i' key) =
     take i' (Array.get h\<^sub>2 a) @ key # take (j - i') (drop (Suc i') (Array.get h\<^sub>2 a))"
     unfolding upd_conv_take_nth_drop [OF \<open>i' < length (Array.get h\<^sub>2 a)\<close>]
-    by (auto) (metis Suc_diff_le `i' \<le> j` take_Suc_Cons)
+    by (auto) (metis Suc_diff_le \<open>i' \<le> j\<close> take_Suc_Cons)
 
   have "Array.length h a = Array.length h'' a"
     using shiftr by (auto) (metis step.hyps(1))
@@ -423,7 +423,7 @@ next
       assume [simp]: "i' = 0"
       have *: "take (Suc j) (list_update (Array.get h\<^sub>2 a) 0 key) =
         key # take j (drop 1 (Array.get h\<^sub>2 a))"
-        by (simp) (metis `i' = 0` append_Nil take_Suc_j diff_zero take_0)
+        by (simp) (metis \<open>i' = 0\<close> append_Nil take_Suc_j diff_zero take_0)
       from sorted and shiftr
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all

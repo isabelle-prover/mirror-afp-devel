@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-section {* Example: NAT *} 
+section \<open>Example: NAT\<close> 
 theory 
   "NAT-FW"
   imports

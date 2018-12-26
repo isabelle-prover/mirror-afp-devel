@@ -12,9 +12,9 @@ imports
 begin
 
 (*>*)
-section{* The transformation according to Gill and Hutton *}
+section\<open>The transformation according to Gill and Hutton\<close>
 
-text{*
+text\<open>
 
 \begin{figure}[tb]
  \begin{center}
@@ -51,7 +51,7 @@ hypothesis.
 The first requires @{term "wrap oo unwrap"} to be the identity for all
 values.
 
-*}
+\<close>
 
 lemma worker_wrapper_id:
   fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
@@ -70,13 +70,13 @@ proof -
   finally show ?thesis .
 qed
 
-text{*
+text\<open>
 
 The second weakens this assumption by requiring that @{term "wrap oo
 wrap"} only act as the identity on values in the image of @{term
 "body"}.
 
-*}
+\<close>
 
 lemma worker_wrapper_body:
   fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
@@ -93,7 +93,7 @@ proof -
   finally show ?thesis .
 qed
 
-text{*
+text\<open>
 
 This is particularly useful when the computation being transformed is
 strict in its argument.
@@ -101,7 +101,7 @@ strict in its argument.
 Finally we can allow the identity to take the full recursive context
 into account. This rule was described by Gill and Hutton but not used.
 
-*}
+\<close>
 
 lemma worker_wrapper_fix:
   fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
@@ -118,15 +118,15 @@ proof -
   finally show ?thesis .
 qed
 
-text{*
+text\<open>
 
-Gill and Hutton's @{text "worker_wrapper_fusion"} rule is intended to
+Gill and Hutton's \<open>worker_wrapper_fusion\<close> rule is intended to
 allow the transformation of @{term "(unwrap oo wrap)\<cdot>R"} to @{term
 "R"} in recursive contexts, where @{term "R"} is meant to be a
 self-call. Note that it assumes that the first worker/wrapper
 hypothesis can be established.
 
-*}
+\<close>
 
 lemma worker_wrapper_fusion:
   fixes wrap :: "'b::pcpo \<rightarrow> 'a::pcpo"
@@ -147,7 +147,7 @@ proof -
   finally show ?thesis using work by simp
 qed
 
-text{*
+text\<open>
 
 The following sections show that this rule only preserves partial
 correctness. This is because Gill and Hutton apply it in the context
@@ -157,7 +157,7 @@ We show that the fusion rule does in fact require extra conditions to
 be totally correct and propose one such sufficient condition.
 
 
-*}
+\<close>
 (*<*)
 
 end

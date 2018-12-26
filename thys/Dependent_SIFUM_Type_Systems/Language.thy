@@ -4,13 +4,13 @@ Authors: Toby Murray, Robert Sison, Edward Pierzchalski, Christine Rizkallah
 (Based on the SIFUM-Type-Systems AFP entry, whose authors
  are: Sylvia Grewe, Heiko Mantel, Daniel Schoepe)
 *)
-section {* Language for Instantiating the SIFUM-Security Property *}
+section \<open>Language for Instantiating the SIFUM-Security Property\<close>
 
 theory Language
 imports Preliminaries
 begin
 
-subsection {* Syntax *}
+subsection \<open>Syntax\<close>
 
 datatype 'var ModeUpd = Acq "'var" Mode (infix "+=\<^sub>m" 75)
   | Rel "'var" Mode (infix "-=\<^sub>m" 75)
@@ -68,7 +68,7 @@ abbreviation conf\<^sub>w_abv :: "('Var, 'AExp, 'BExp) Stmt \<Rightarrow>
   where
   "\<langle> c, mds, mem \<rangle>\<^sub>w \<equiv> ((c, mds), mem)"
 
-subsection {* Semantics *}
+subsection \<open>Semantics\<close>
 
 primrec update_modes :: "'Var ModeUpd \<Rightarrow> 'Var Mds \<Rightarrow> 'Var Mds"
   where
@@ -166,10 +166,10 @@ abbreviation eval\<^sub>w_plus :: "
                   (('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rightarrow> bool" ("_ \<leadsto>\<^sub>w\<^sup>+ _") where
 "ctx \<leadsto>\<^sub>w\<^sup>+ ctx' \<equiv> (ctx, ctx') \<in> eval\<^sub>w\<^sup>+"
   
-subsection {* Semantic Properties *}
+subsection \<open>Semantic Properties\<close>
 
-text {* The following lemmas simplify working with evaluation contexts
-  in the soundness proofs for the type system(s). *}
+text \<open>The following lemmas simplify working with evaluation contexts
+  in the soundness proofs for the type system(s).\<close>
 
 inductive_cases eval_elim: "(((c, mds), mem), ((c', mds'), mem')) \<in> eval\<^sub>w"
 inductive_cases stop_no_eval' [elim]: "((Stop, mem), (c', mem')) \<in> eval\<^sub>w_simple"

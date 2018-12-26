@@ -2,18 +2,18 @@ theory Terms
   imports "Nominal-Utils" Vars  "AList-Utils-Nominal"
 begin
 
-subsubsection {* Expressions *}
+subsubsection \<open>Expressions\<close>
 
-text {*
+text \<open>
 This is the main data type of the development; our minimal lambda calculus with recursive let-bindings.
 It is created using the nominal\_datatype command, which creates alpha-equivalence classes.
 
 The package does not support nested recursion, so the bindings of the let cannot simply be of type
-@{text "(var, exp) list"}. Instead, the definition of lists have to be inlined here, as the custom type
-@{text "assn"}. Later we create conversion functions between these two types, define a properly typed @{text let} 
-and redo the various lemmas in terms of that, so that afterwards, the type @{text "assn"} is no longer
+\<open>(var, exp) list\<close>. Instead, the definition of lists have to be inlined here, as the custom type
+\<open>assn\<close>. Later we create conversion functions between these two types, define a properly typed \<open>let\<close> 
+and redo the various lemmas in terms of that, so that afterwards, the type \<open>assn\<close> is no longer
 referenced.
-*}
+\<close>
 
 nominal_datatype exp =
   Var var
@@ -37,16 +37,16 @@ type_synonym heap = "(var \<times> exp) list"
 lemma exp_assn_size_eqvt[eqvt]: "p \<bullet> (size :: exp \<Rightarrow> nat) = size"
   by (metis exp_assn.size_eqvt(1) fun_eqvtI permute_pure)
 
-subsubsection {* Rewriting in terms of heaps *}
+subsubsection \<open>Rewriting in terms of heaps\<close>
 
-text {*
+text \<open>
 We now work towards using @{type heap} instead of @{type assn}. All this
 could be skipped if Nominal supported nested recursion.
-*}
+\<close>
 
-text {*
+text \<open>
 Conversion from @{typ assn} to @{typ heap}.
-*}
+\<close>
 
 nominal_function asToHeap :: "assn \<Rightarrow> heap" 
  where ANilToHeap: "asToHeap ANil = []"
@@ -64,7 +64,7 @@ lemma asToHeap_eqvt: "eqvt asToHeap"
   unfolding eqvt_def
   by (auto simp add: permute_fun_def asToHeap.eqvt)
 
-text {* The other direction. *}
+text \<open>The other direction.\<close>
 
 fun heapToAssn :: "heap \<Rightarrow> assn"
   where "heapToAssn [] = ANil" 
@@ -85,9 +85,9 @@ lemma set_bn_to_atom_domA:
    by (induct as rule: asToHeap.induct)
       (auto simp add: exp_assn.bn_defs)
 
-text {*
+text \<open>
 They are inverse to each other.
-*}
+\<close>
 
 lemma heapToAssn_asToHeap[simp]:
   "heapToAssn (asToHeap as) = as"
@@ -103,9 +103,9 @@ lemma heapToAssn_inject[simp]:
   "heapToAssn x = heapToAssn y \<longleftrightarrow> x = y"
   by (metis asToHeap_heapToAssn)
 
-text {*
+text \<open>
 They are transparent to various notions from the Nominal package.
-*}
+\<close>
 
 lemma supp_heapToAssn: "supp (heapToAssn \<Gamma>) = supp \<Gamma>"
   by (induct rule: heapToAssn.induct)
@@ -128,7 +128,7 @@ lemma [simp]: "size (heapToAssn \<Gamma>) = size_list (\<lambda> (v,e) . size e)
 lemma Lam_eq_same_var[simp]: "Lam [y]. e = Lam [y]. e' \<longleftrightarrow>  e = e'"
   by auto (metis fresh_PairD(2) obtain_fresh)
 
-text {* Now we define the Let constructor in the form that we actually want. *}
+text \<open>Now we define the Let constructor in the form that we actually want.\<close>
 
 hide_const HOL.Let
 definition Let :: "heap \<Rightarrow> exp \<Rightarrow> exp"
@@ -141,9 +141,9 @@ abbreviation
 where
   "let x be t1 in t2 \<equiv> Let [(x,t1)] t2"
 
-text {*
+text \<open>
 We rewrite all (relevant) lemmas about @{term LetA} in terms of @{term Let}.
-*}
+\<close>
 
 lemma size_Let[simp]: "size (Let \<Gamma> e) = size_list (\<lambda>p. size (snd p)) \<Gamma> + size e + Suc 0"
   unfolding Let_def by (auto simp add: split_beta')
@@ -206,9 +206,9 @@ lemma exp_strong_exhaust:
   apply (metis assms(6))
   done
 
-text {*
+text \<open>
 And finally the induction rules with @{term Let}.
-*}
+\<close>
 
 lemma exp_heap_induct[case_names Var App Let Lam Bool IfThenElse Nil Cons]:
   assumes "\<And>b var. P1 (Var var)"
@@ -261,12 +261,12 @@ proof-
   thus "P1 c e" and "P2 c \<Gamma>" unfolding asToHeap_heapToAssn.
 qed
 
-subsubsection {* Nice induction rules *}
+subsubsection \<open>Nice induction rules\<close>
 
-text {*
+text \<open>
 These rules can be used instead of the original induction rules, which require a separate
 goal for @{typ assn}.
-*}
+\<close>
 
 lemma exp_induct[case_names Var App Let Lam Bool IfThenElse]:
   assumes "\<And>var. P (Var var)"
@@ -325,7 +325,7 @@ lemma  exp_strong_induct[case_names Var App Let Lam Bool IfThenElse]:
   apply auto
   done
 
-subsubsection {* Testing alpha equivalence *}
+subsubsection \<open>Testing alpha equivalence\<close>
               
 lemma alpha_test:
   shows "Lam [x]. (Var x) = Lam [y]. (Var y)"
@@ -343,7 +343,7 @@ lemma alpha_test3:
   by (simp add: bn_heapToAssn Abs1_eq_iff fresh_Pair fresh_at_base
                 Abs_swap2[of "atom x" "(?lb, [(x, Var y), (y, Var x)])" "[atom x, atom y]" "atom y"])
 
-subsubsection {* Free variables *}
+subsubsection \<open>Free variables\<close>
 
 lemma fv_supp_exp: "supp e = atom ` (fv (e::exp) :: var set)" and fv_supp_as: "supp as = atom ` (fv (as::assn) :: var set)"
   by (induction e and as rule:exp_assn.inducts)
@@ -379,7 +379,7 @@ proof-
   ultimately show ?thesis by auto
 qed
 
-subsubsection {* Lemmas helping with nominal definitions *}
+subsubsection \<open>Lemmas helping with nominal definitions\<close>
 
 lemma eqvt_lam_case:
   assumes "Lam [x]. e = Lam [x']. e'"
@@ -397,11 +397,11 @@ proof-
     and [simp]: "p \<bullet> e = e'"
     unfolding  Abs_eq_iff(3) alpha_lst.simps by auto
 
-  from `_ \<sharp>* p`
+  from \<open>_ \<sharp>* p\<close>
   have *: "supp (-p) \<sharp>* (fv (Lam [x]. e) :: var set)"
     by (auto simp add: fresh_star_def fresh_def supp_finite_set_at_base supp_Pair fv_supp_exp fv_supp_heap supp_minus_perm)
 
-  from `_ \<sharp>* p`
+  from \<open>_ \<sharp>* p\<close>
   have **: "supp p \<sharp>* Lam [x]. e"
     by (auto simp add: fresh_star_def fresh_def supp_Pair fv_supp_exp)
 
@@ -450,11 +450,11 @@ proof-
     and [simp]: "p \<bullet> as = as'"
     unfolding  Abs_eq_iff(3) alpha_lst.simps by (auto simp add: domA_def image_image)
 
-  from `_ \<sharp>* p`
+  from \<open>_ \<sharp>* p\<close>
   have *: "supp (-p) \<sharp>* (fv (Terms.Let as body) :: var set)"
     by (auto simp add: fresh_star_def fresh_def supp_finite_set_at_base supp_Pair fv_supp_exp fv_supp_heap supp_minus_perm)
 
-  from `_ \<sharp>* p`
+  from \<open>_ \<sharp>* p\<close>
   have **: "supp p \<sharp>* Terms.Let as body"
     by (auto simp add: fresh_star_def fresh_def supp_Pair fv_supp_exp fv_supp_heap )
 
@@ -463,13 +463,13 @@ proof-
   finally show ?thesis.
 qed
 
-subsubsection {* A smart constructor for lets *}
+subsubsection \<open>A smart constructor for lets\<close>
 
-text {*
+text \<open>
 Certian program transformations might change the bound variables, possibly making it an empty list.
 This smart constructor avoids the empty let in the resulting expression. Semantically, it should
 not make a difference. 
-*}
+\<close>
 
 definition SmartLet :: "heap => exp => exp"
   where "SmartLet \<Gamma> e = (if \<Gamma> = [] then e else Let \<Gamma> e)"
@@ -484,7 +484,7 @@ lemma SmartLet_supp:
 lemma fv_SmartLet[simp]: "fv (SmartLet \<Gamma> e) = (fv \<Gamma> \<union> fv e) - domA \<Gamma>"
   unfolding SmartLet_def by auto
 
-subsubsection {* A predicate for value expressions *}
+subsubsection \<open>A predicate for value expressions\<close>
 
 nominal_function isLam :: "exp \<Rightarrow> bool" where
   "isLam (Var x) = False" |
@@ -528,7 +528,7 @@ lemma isVal_Lam: "isVal (Lam [x]. e)" by simp
 lemma isVal_Bool: "isVal (Bool b)" by simp
 
 
-subsubsection {* The notion of thunks *}
+subsubsection \<open>The notion of thunks\<close>
 (*
 fun thunks :: "heap \<Rightarrow> var set" where
   "thunks [] = {}"
@@ -566,7 +566,7 @@ lemma thunks_eqvt[eqvt]:
     unfolding thunks_def
     by perm_simp rule
 
-subsubsection {* Non-recursive Let bindings *}
+subsubsection \<open>Non-recursive Let bindings\<close>
 
 definition nonrec :: "heap \<Rightarrow> bool" where
   "nonrec \<Gamma> = (\<exists> x e. \<Gamma> = [(x,e)] \<and> x \<notin> fv e)"
@@ -656,7 +656,7 @@ lemma  exp_strong_induct_rec_set[case_names Var App Let Let_nonrec Lam Bool IfTh
 
 
 
-subsubsection {* Renaming a lambda-bound variable *}
+subsubsection \<open>Renaming a lambda-bound variable\<close>
 
 lemma change_Lam_Variable:
   assumes "y' \<noteq> y \<Longrightarrow> atom y' \<sharp> (e,  y)"

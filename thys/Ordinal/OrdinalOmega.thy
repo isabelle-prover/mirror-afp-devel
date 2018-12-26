@@ -4,13 +4,13 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Omega *}
+section \<open>Omega\<close>
 
 theory OrdinalOmega
 imports OrdinalFix
 begin
 
-subsection {* Embedding naturals in the ordinals *}
+subsection \<open>Embedding naturals in the ordinals\<close>
 
 primrec ordinal_of_nat :: "nat \<Rightarrow> ordinal"
 where
@@ -64,7 +64,7 @@ lemma le_ordinal_of_nat:
 by (auto simp add: order_le_less less_ordinal_of_nat)
 
 
-subsection {* Omega, the least limit ordinal *}
+subsection \<open>Omega, the least limit ordinal\<close>
 
 definition
   omega :: "ordinal"  ("\<omega>") where
@@ -119,7 +119,7 @@ lemma "range f = range ordinal_of_nat \<Longrightarrow> oLimit f = \<omega>"
 done
 
 
-subsection {* Arithmetic properties of @{term \<omega>} *}
+subsection \<open>Arithmetic properties of @{term \<omega>}\<close>
 
 lemma oSuc_less_omega [simp]: "(oSuc x < \<omega>) = (x < \<omega>)"
 by (rule oSuc_less_limit_ordinal[OF limit_ordinal_omega])
@@ -184,7 +184,7 @@ lemma ordinal_less_plusL_iff: "(y < x + y) = (y < x * \<omega>)"
 done
 
 
-subsection {* Additive principal ordinals *}
+subsection \<open>Additive principal ordinals\<close>
 
 locale additive_principal =
   fixes a :: ordinal
@@ -313,7 +313,7 @@ lemma absorb_omega_exp2: "a < b \<Longrightarrow> \<omega> ** a + \<omega> ** b 
 by (rule absorb_omega_exp, simp add: ordinal_exp_strict_monoR)
 
 
-subsection {* Cantor normal form *}
+subsection \<open>Cantor normal form\<close>
 
 lemma cnf_lemma: "x > 0 \<Longrightarrow> x - \<omega> ** oLog \<omega> x < x"
   apply (subst ordinal_minus_less_eq)
@@ -451,7 +451,7 @@ lemma is_normalized2_to_cnf2: "is_normalized2 (to_cnf2 x)"
 done
 
 
-subsection {* Epsilon 0 *}
+subsection \<open>Epsilon 0\<close>
 
 definition epsilon0 :: ordinal  ("\<epsilon>\<^sub>0") where
   "epsilon0 = oFix ((**) \<omega>) 0"

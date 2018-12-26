@@ -1,4 +1,4 @@
-section {* Transfer Setup *}
+section \<open>Transfer Setup\<close>
 theory Refine_Transfer
 imports
   Refine_Basic
@@ -7,12 +7,12 @@ imports
   "Generic/RefineG_Transfer"
 begin
 
-subsection {* Transfer to Deterministic Result Lattice *}
-text {*
+subsection \<open>Transfer to Deterministic Result Lattice\<close>
+text \<open>
   TODO: Once lattice and ccpo are connected, also transfer to option monad, that
   is a ccpo, but no complete lattice!
-*}
-subsubsection {* Connecting Deterministic and Non-Deterministic Result Lattices *}
+\<close>
+subsubsection \<open>Connecting Deterministic and Non-Deterministic Result Lattices\<close>
 definition "nres_of r \<equiv> case r of
   dSUCCEEDi \<Rightarrow> SUCCEED
 | dFAILi \<Rightarrow> FAIL
@@ -78,7 +78,7 @@ lemma nres_correctD:
   apply (cases S, simp_all)+
   done
 
-subsubsection {* Transfer Theorems Setup*}
+subsubsection \<open>Transfer Theorems Setup\<close>
 interpretation dres: dist_transfer nres_of 
   apply unfold_locales
   apply (simp add: nres_transfer)
@@ -145,7 +145,7 @@ lemma det_rec_nat[refine_transfer]:
   done
 *)
 
-subsection {* Transfer to Plain Function *}
+subsection \<open>Transfer to Plain Function\<close>
 
 interpretation plain: transfer RETURN .
 
@@ -171,26 +171,26 @@ interpretation plain: transfer_FOREACH RETURN "(\<lambda>x. x)" Let "(\<lambda>x
   done
 *)
 
-subsection {* Total correctness in deterministic monad *}
-text {*
+subsection \<open>Total correctness in deterministic monad\<close>
+text \<open>
   Sometimes one cannot extract total correct programs to executable plain 
   Isabelle functions, for example, if the total correctness only holds for
   certain preconditions. In those cases, one can still show
-  @{text "RETURN (the_res S) \<le> S'"}. Here, @{text "the_res"} extracts
-  the result from a deterministic monad. As @{text "the_res"} is executable,
-  the above shows that @{text "(the_res S)"} is always a correct result.
-*}
+  \<open>RETURN (the_res S) \<le> S'\<close>. Here, \<open>the_res\<close> extracts
+  the result from a deterministic monad. As \<open>the_res\<close> is executable,
+  the above shows that \<open>(the_res S)\<close> is always a correct result.
+\<close>
 
 fun the_res where "the_res (dRETURN x) = x"
 
-text {* The following lemma converts a proof-obligation
+text \<open>The following lemma converts a proof-obligation
   with result extraction to a transfer proof obligation,
   and a proof obligation that the program yields not bottom.
 
   Note that this rule has to be applied manually, as, otherwise,
   it would interfere with the default setup, that tries to generate a
   plain function.
-*}
+\<close>
 lemma the_resI:
   assumes "nres_of S \<le> S'"
   assumes "S \<noteq> dSUCCEED"
@@ -199,8 +199,8 @@ lemma the_resI:
   by (cases S, simp_all)
 
 
-text {* The following rule sets up a refinement goal, a transfer goal, and a 
-  final optimization goal. *}
+text \<open>The following rule sets up a refinement goal, a transfer goal, and a 
+  final optimization goal.\<close>
 definition "detTAG x \<equiv> x"
 lemma detTAGI: "x = detTAG x" unfolding detTAG_def by simp
 lemma autoref_detI:
@@ -213,7 +213,7 @@ lemma autoref_detI:
   by simp
 
 
-subsection {* Relator-Based Transfer *}
+subsection \<open>Relator-Based Transfer\<close>
 
 definition dres_nres_rel_internal_def: 
   "dres_nres_rel R \<equiv> {(c,a). nres_of c \<le> \<Down> R a}"

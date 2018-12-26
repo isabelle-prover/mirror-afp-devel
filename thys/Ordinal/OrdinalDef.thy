@@ -4,17 +4,17 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Definition of Ordinals *}
+section \<open>Definition of Ordinals\<close>
 
 theory OrdinalDef
 imports Main
 begin
 
-subsection {* Preliminary datatype for ordinals *}
+subsection \<open>Preliminary datatype for ordinals\<close>
 
 datatype ord0 = ord0_Zero | ord0_Lim "nat \<Rightarrow> ord0"
 
-text {* subterm ordering on ord0 *}
+text \<open>subterm ordering on ord0\<close>
 
 definition
   ord0_prec :: "(ord0 \<times> ord0) set" where
@@ -30,7 +30,7 @@ done
 lemmas ord0_prec_induct = wf_induct[OF wf_trancl[OF wf_ord0_prec]]
 
 
-text {* less-than-or-equal ordering on ord0 *}
+text \<open>less-than-or-equal ordering on ord0\<close>
 
 inductive_set ord0_leq :: "(ord0 \<times> ord0) set" where
 "\<lbrakk>\<forall>a. (a,x) \<in> ord0_prec\<^sup>+ \<longrightarrow> (\<exists>b. (b,y) \<in> ord0_prec\<^sup>+ \<and> (a,b) \<in> ord0_leq)\<rbrakk>
@@ -74,7 +74,7 @@ lemma wf_ord0_leq: "wf (ord0_leq O ord0_prec\<^sup>+)"
 done
 
 
-text {* ordering on ord0 *}
+text \<open>ordering on ord0\<close>
 
 instantiation ord0 :: ord
 begin
@@ -173,7 +173,7 @@ lemma ord0_order_less_le: "(x::ord0) < y = (x \<le> y \<and> \<not> y \<le> x)"
 done
 
 
-subsection {* Ordinal type *}
+subsection \<open>Ordinal type\<close>
 
 definition
   ord0rel :: "(ord0 \<times> ord0) set" where
@@ -269,7 +269,7 @@ instance ordinal :: wellorder
 done
 
 
-subsection {* Induction over ordinals *}
+subsection \<open>Induction over ordinals\<close>
 
 text "zero and strict limits"
 

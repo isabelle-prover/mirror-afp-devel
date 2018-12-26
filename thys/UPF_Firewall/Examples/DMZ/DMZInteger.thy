@@ -35,14 +35,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* DMZ: Integer *}
+subsection \<open>DMZ: Integer\<close>
 theory 
   DMZInteger
   imports 
     "../../UPF-Firewall"
 begin
   
-text{* This scenario is slightly more complicated than the SimpleDMZ
+text\<open>This scenario is slightly more complicated than the SimpleDMZ
 one, as we now also model specific servers within one
 network. Therefore, we cannot use anymore the modelling using
 datatype synonym, but only use the one where an address is modelled as an
@@ -69,7 +69,7 @@ The scenario is the following:
   \end{itemize}
   
 \end{labeling}
-*}
+\<close>
 
 definition
   intranet::"adr\<^sub>i\<^sub>p net" where
@@ -111,10 +111,10 @@ definition
                   Internet_mail_port ++ 
                   Internet_web_port"
 
-text {* 
+text \<open>
   We only want to create test cases which are sent between the three main networks:
    e.g. not between the mailserver and the dmz. Therefore, the constraint looks as follows. 
-*}
+\<close>
   
 definition
   not_in_same_net :: "(adr\<^sub>i\<^sub>p,DummyContent) packet \<Rightarrow> bool" where

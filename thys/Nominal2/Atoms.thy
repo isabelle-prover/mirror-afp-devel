@@ -10,8 +10,8 @@ begin
 
 
 
-section {* @{const nat_of} is an example of a function 
-  without finite support *}
+section \<open>@{const nat_of} is an example of a function 
+  without finite support\<close>
 
 
 lemma not_fresh_nat_of:
@@ -40,7 +40,7 @@ lemma supp_nat_of:
   using not_fresh_nat_of [unfolded fresh_def] by auto
 
 
-section {* Manual instantiation of class @{text at}. *}
+section \<open>Manual instantiation of class \<open>at\<close>.\<close>
 
 typedef name = "{a. sort_of a = Sort ''name'' []}"
 by (rule exists_eq_simple_sort)
@@ -67,12 +67,12 @@ lemma sort_of_atom_name:
   shows "sort_of (atom (a::name)) = Sort ''name'' []"
   by (simp add: atom_name_def Rep_name[simplified])
 
-text {* Custom syntax for concrete atoms of type at *}
+text \<open>Custom syntax for concrete atoms of type at\<close>
 
 term "a:::name"
 
 
-section {* Automatic instantiation of class @{text at}. *}
+section \<open>Automatic instantiation of class \<open>at\<close>.\<close>
 
 atom_decl name2
 
@@ -81,7 +81,7 @@ lemma
 by (simp add: sort_of_atom_name)
 
 
-text {* example swappings *}
+text \<open>example swappings\<close>
 lemma
   fixes a b::"atom"
   assumes "sort_of a = sort_of b"
@@ -94,7 +94,7 @@ lemma
   shows "(a \<leftrightarrow> b) \<bullet> (a, b) = (b, a)"
 by simp
 
-section {* An example for multiple-sort atoms *}
+section \<open>An example for multiple-sort atoms\<close>
 
 datatype ty =
   TVar string
@@ -136,7 +136,7 @@ done
 
 end
 
-text {* Constructor for variables. *}
+text \<open>Constructor for variables.\<close>
 
 definition
   Var :: "nat \<Rightarrow> ty \<Rightarrow> var"
@@ -158,17 +158,17 @@ lemma
   shows "(Var x \<alpha> \<leftrightarrow> Var y \<alpha>) \<bullet> (Var x \<alpha>, Var x \<beta>) = (Var y \<alpha>, Var x \<beta>)"
   using assms by simp
 
-text {* Projecting out the type component of a variable. *}
+text \<open>Projecting out the type component of a variable.\<close>
 
 definition
   ty_of :: "var \<Rightarrow> ty"
 where
   "ty_of x = inv sort_of_ty (sort_of (atom x))"
 
-text {*
+text \<open>
   Functions @{term Var}/@{term ty_of} satisfy many of the same
   properties as @{term Atom}/@{term sort_of}.
-*}
+\<close>
 
 lemma ty_of_Var [simp]:
   shows "ty_of (Var x t) = t"
@@ -185,7 +185,7 @@ lemma ty_of_permute [simp]:
   by (simp only: sort_of_permute)
 
 
-section {* Tests with subtyping and automatic coercions *}
+section \<open>Tests with subtyping and automatic coercions\<close>
 
 declare [[coercion_enabled]]
 

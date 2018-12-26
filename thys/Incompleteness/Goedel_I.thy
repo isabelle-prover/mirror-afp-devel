@@ -1,12 +1,12 @@
-chapter {* Section 6 Material and Gödel's First Incompleteness Theorem*}
+chapter \<open>Section 6 Material and Gödel's First Incompleteness Theorem\<close>
 
 theory Goedel_I
 imports Pf_Predicates Functions
 begin
 
-section{*The Function W and Lemma 6.1*}
+section\<open>The Function W and Lemma 6.1\<close>
 
-subsection{*Predicate form, defined on sequences*}
+subsection\<open>Predicate form, defined on sequences\<close>
 
 definition SeqWR :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
   where "SeqWR s k y \<equiv> LstSeq s k y \<and> app s 0 = 0 \<and>
@@ -53,7 +53,7 @@ lemma SeqWRP_cong:
 
 declare SeqWRP.simps [simp del]
 
-subsection{*Predicate form of W*}
+subsection\<open>Predicate form of W\<close>
 
 definition WR :: "hf \<Rightarrow> hf \<Rightarrow> bool"
   where "WR x y \<equiv> (\<exists>s. SeqWR s x y)"
@@ -122,7 +122,7 @@ lemma WR_succ: "Ord i \<Longrightarrow> WR (succ i) (q_Eats y y) = WR i y"
 lemma WR_ord_of: "WR (ord_of i) \<lbrakk>\<lceil>ORD_OF i\<rceil>\<rbrakk>e"
   by (induct i) (auto simp: WR0_iff WR_succ_iff quot_Succ q_defs)
 
-text{*Lemma 6.1*}
+text\<open>Lemma 6.1\<close>
 lemma WR_quot_Var: "WR \<lbrakk>\<lceil>Var x\<rceil>\<rbrakk>e \<lbrakk>\<lceil>\<lceil>Var x\<rceil>\<rceil>\<rbrakk>e"
   by (auto simp: quot_Var quot_Succ)
      (metis One_nat_def Ord_ord_of WR_ord_of WR_succ htuple.simps q_Eats_def)
@@ -133,7 +133,7 @@ lemma ground_WRP [simp]: "ground_fm (WRP x y) \<longleftrightarrow> ground x \<a
 lemma prove_WRP:  "{} \<turnstile> WRP \<lceil>Var x\<rceil> \<lceil>\<lceil>Var x\<rceil>\<rceil>"
   by (auto simp: WR_quot_Var ground_aux_def supp_conv_fresh intro: Sigma_fm_imp_thm)
 
-subsection{*Proving that these relations are functions*}
+subsection\<open>Proving that these relations are functions\<close>
 
 lemma SeqWRP_Zero_E:
   assumes "insert (y EQ Zero) H \<turnstile> A"  "H \<turnstile> k EQ Zero"
@@ -228,7 +228,7 @@ proof -
     by (auto simp: SeqWRP_unique [THEN rotate3] WRP.simps [of s _ y]  WRP.simps [of s' _ y'])
 qed
 
-subsection{*The equivalent function*}
+subsection\<open>The equivalent function\<close>
 
 definition W :: "hf \<Rightarrow> tm"
   where "W \<equiv> hmemrec (\<lambda>f z. if z=0 then Zero else Q_Eats (f (pred z)) (f (pred z)))"
@@ -252,14 +252,14 @@ next
 qed
 
 
-section{*The Function HF and Lemma 6.2*}
+section\<open>The Function HF and Lemma 6.2\<close>
 
 definition SeqHR :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
 where "SeqHR x x' s k \<equiv>
        BuildSeq2 (\<lambda>y y'. Ord y \<and> WR y y')
                  (\<lambda>u u' v v' w w'. u = \<langle>v,w\<rangle> \<and> u' = q_HPair v' w') s k x x'"
 
-subsection {*Defining the syntax: quantified body*}
+subsection \<open>Defining the syntax: quantified body\<close>
 
 nominal_function SeqHRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (s,k,sl,sl',m,n,sm,sm',sn,sn');
@@ -334,7 +334,7 @@ lemma SeqHRP_cong:
   shows "H \<turnstile> SeqHRP x y s k IFF SeqHRP x' y' s' k'"
   by (rule P4_cong [OF _ assms], auto)
 
-subsection {*Defining the syntax: main predicate*}
+subsection \<open>Defining the syntax: main predicate\<close>
 
 definition HR :: "hf \<Rightarrow> hf \<Rightarrow> bool"
   where "HR x x' \<equiv> \<exists>s k. SeqHR x x' s k"
@@ -366,7 +366,7 @@ proof -
     by (auto simp: HRP.simps [of s _ _ k])
 qed
 
-subsection{*Proving that these relations are functions*}
+subsection\<open>Proving that these relations are functions\<close>
 
 lemma SeqHRP_lemma:
   assumes "atom m \<sharp> (x,x',s,k,n,sm,sm',sn,sn')" "atom n \<sharp> (x,x',s,k,sm,sm',sn,sn')"
@@ -518,7 +518,7 @@ proof -
     by (auto simp: SeqHRP_unique HRP.simps [of s x y k]  HRP.simps [of s' x y' k'])
 qed
 
-subsection {*Finally The Function HF Itself*}
+subsection \<open>Finally The Function HF Itself\<close>
 
 definition HF :: "hf \<Rightarrow> tm"
   where "HF \<equiv> hmemrec (\<lambda>f z. if Ord z then W z else Q_HPair (f (hfst z)) (f (hsnd z)))"
@@ -553,7 +553,7 @@ proof (induct x rule: hmem_rel_induct)
   qed
 qed
 
-text{*Lemma 6.2*}
+text\<open>Lemma 6.2\<close>
 lemma HF_quot_coding_tm: "coding_tm t \<Longrightarrow> HF \<lbrakk>t\<rbrakk>e = \<lceil>t\<rceil>"
   by (induct t rule: coding_tm.induct) (auto, simp add: HPair_def quot_Eats)
 
@@ -564,7 +564,7 @@ lemma prove_HRP: fixes A::fm shows "{} \<turnstile> HRP \<lceil>A\<rceil> \<lcei
   by (auto simp: supp_conv_fresh Sigma_fm_imp_thm ground_aux_def ground_fm_aux_def HR_quot_fm)
 
 
-section{*The Function K and Lemma 6.3*}
+section\<open>The Function K and Lemma 6.3\<close>
 
 nominal_function KRP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "atom y \<sharp> (v,x,x') \<Longrightarrow>
@@ -613,7 +613,7 @@ lemma KRP_subst_fm: "{KRP \<lceil>Var i\<rceil> \<lceil>\<beta>\<rceil> (Var j)}
   by (metis KRP_unique cut0 prove_KRP)
 
 
-section{*The Diagonal Lemma and Gödel's Theorem*}
+section\<open>The Diagonal Lemma and Gödel's Theorem\<close>
 
 lemma diagonal: 
   obtains \<delta> where "{} \<turnstile> \<delta> IFF \<alpha>(i::=\<lceil>\<delta>\<rceil>)"  "supp \<delta> = supp \<alpha> - {atom i}"
@@ -643,7 +643,7 @@ proof -
     by (metis that 1 2 3 Iff_trans)
 qed
 
-text{*Gödel's first incompleteness theorem: If consistent, our theory is incomplete.*}
+text\<open>Gödel's first incompleteness theorem: If consistent, our theory is incomplete.\<close>
 theorem Goedel_I:
   assumes "\<not> {} \<turnstile> Fls"
   obtains \<delta> where "{} \<turnstile> \<delta> IFF Neg (PfP \<lceil>\<delta>\<rceil>)"  "\<not> {} \<turnstile> \<delta>"  "\<not> {} \<turnstile> Neg \<delta>"  

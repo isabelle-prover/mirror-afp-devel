@@ -3,12 +3,12 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Algebras for Aggregation and Minimisation with a Linear Order *}
+section \<open>Algebras for Aggregation and Minimisation with a Linear Order\<close>
 
-text {*
+text \<open>
 This theory gives several classes of instances of linear aggregation lattices as described in \cite{Guttmann2018a}.
 Each of these instances can be used as edge weights and the resulting graphs will form s-algebras and m-algebras as shown in a separate theory.
-*}
+\<close>
 
 theory Linear_Aggregation_Algebras
 
@@ -20,12 +20,12 @@ no_notation
   inf (infixl "\<sqinter>" 70)
   and uminus ("- _" [81] 80)
 
-subsection {* Linearly Ordered Commutative Semigroups *}
+subsection \<open>Linearly Ordered Commutative Semigroups\<close>
 
-text {*
+text \<open>
 Any linearly ordered commutative semigroup extended by new least and greatest elements forms a linear aggregation lattice.
 The extension is done so that the new least element is a unit of aggregation and the new greatest element is a zero of aggregation.
-*}
+\<close>
 
 datatype 'a ext =
     Bot
@@ -135,18 +135,18 @@ qed
 
 end
 
-text {*
+text \<open>
 An example of a linearly ordered commutative semigroup is the set of real numbers with standard addition as aggregation.
-*}
+\<close>
 
 lemma example_real_ext_matrix:
   fixes x :: "('a::enum,real ext) square"
   shows "minarc\<^sub>M x \<preceq> \<ominus>\<ominus>x"
   by (rule agg_square_m_algebra.minarc_below)
 
-text {*
+text \<open>
 Another example of a linearly ordered commutative semigroup is the set of real numbers with maximum as aggregation.
-*}
+\<close>
 
 datatype real_max = Rmax real
 
@@ -185,9 +185,9 @@ lemma example_real_max_ext_matrix:
   shows "minarc\<^sub>M x \<preceq> \<ominus>\<ominus>x"
   by (rule agg_square_m_algebra.minarc_below)
 
-text {*
+text \<open>
 A third example of a linearly ordered commutative semigroup is the set of real numbers with minimum as aggregation.
-*}
+\<close>
 
 datatype real_min = Rmin real
 
@@ -226,13 +226,13 @@ lemma example_real_min_ext_matrix:
   shows "minarc\<^sub>M x \<preceq> \<ominus>\<ominus>x"
   by (rule agg_square_m_algebra.minarc_below)
 
-subsection {* Linearly Ordered Commutative Monoids *}
+subsection \<open>Linearly Ordered Commutative Monoids\<close>
 
-text {*
+text \<open>
 Any linearly ordered commutative monoid extended by new least and greatest elements forms a linear aggregation lattice.
 This is similar to linearly ordered commutative semigroups except that the aggregation $\bot + \bot$ produces the unit of the monoid instead of the least element.
 Applied to weighted graphs, this means that the aggregation of the empty graph will be the unit of the monoid (for example, $0$ for real numbers under standard addition, instead of $\bot$).
-*}
+\<close>
 
 class linordered_comm_monoid_add = linordered_ab_semigroup_add + comm_monoid_add
 
@@ -347,9 +347,9 @@ qed
 
 end
 
-text {*
+text \<open>
 An example of a linearly ordered commutative monoid is the set of real numbers with standard addition and unit $0$.
-*}
+\<close>
 
 instantiation real :: linordered_comm_monoid_add
 begin
@@ -358,11 +358,11 @@ instance ..
 
 end
 
-subsection {* Linearly Ordered Commutative Monoids with a Least Element *}
+subsection \<open>Linearly Ordered Commutative Monoids with a Least Element\<close>
 
-text {*
+text \<open>
 If a linearly ordered commutative monoid already contains a least element which is a unit of aggregation, only a new greatest element has to be added to obtain a linear aggregation lattice.
-*}
+\<close>
 
 class linordered_comm_monoid_add_bot = linordered_ab_semigroup_add + order_bot +
   assumes bot_zero [simp]: "bot + x = x"
@@ -470,9 +470,9 @@ qed
 
 end
 
-text {*
+text \<open>
 An example of a linearly ordered commutative monoid with a least element is the set of real numbers extended by minus infinity with maximum as aggregation.
-*}
+\<close>
 
 datatype real_max_bot =
     MInfty
@@ -525,11 +525,11 @@ qed
 
 end
 
-subsection {* Linearly Ordered Commutative Monoids with a Greatest Element *}
+subsection \<open>Linearly Ordered Commutative Monoids with a Greatest Element\<close>
 
-text {*
+text \<open>
 If a linearly ordered commutative monoid already contains a greatest element which is a unit of aggregation, only a new least element has to be added to obtain a linear aggregation lattice.
-*}
+\<close>
 
 class linordered_comm_monoid_add_top = linordered_ab_semigroup_add + order_top +
   assumes top_zero [simp]: "top + x = x"
@@ -646,9 +646,9 @@ qed
 
 end
 
-text {*
+text \<open>
 An example of a linearly ordered commutative monoid with a greatest element is the set of real numbers extended by infinity with minimum as aggregation.
-*}
+\<close>
 
 datatype real_min_top =
     R real
@@ -701,12 +701,12 @@ qed
 
 end
 
-text {*
+text \<open>
 Another example of a linearly ordered commutative monoid with a greatest element is the unit interval of real numbers with any triangular norm (t-norm) as aggregation.
-Ideally, we would like to show that the unit interval is an instance of @{text linordered_comm_monoid_add_top}.
+Ideally, we would like to show that the unit interval is an instance of \<open>linordered_comm_monoid_add_top\<close>.
 However, this class has an addition operation, so the instantiation would require dependent types.
 We therefore show only the order property in general and a particular instance of the class.
-*}
+\<close>
 
 typedef (overloaded) unit = "{0..1} :: real set"
   by auto
@@ -732,9 +732,9 @@ instance
 
 end
 
-text {*
+text \<open>
 We give the \L{}ukasiewicz t-norm as a particular instance.
-*}
+\<close>
 
 instantiation unit :: linordered_comm_monoid_add_top
 begin
@@ -762,11 +762,11 @@ instance
 
 end
 
-subsection {* Linearly Ordered Commutative Monoids with a Least Element and a Greatest Element *}
+subsection \<open>Linearly Ordered Commutative Monoids with a Least Element and a Greatest Element\<close>
 
-text {*
+text \<open>
 If a linearly ordered commutative monoid already contains a least element which is a unit of aggregation and a greatest element, it forms a linear aggregation lattice.
-*}
+\<close>
 
 class linordered_bounded_comm_monoid_add_bot = linordered_comm_monoid_add_bot + order_top
 begin
@@ -794,11 +794,11 @@ lemma t_max: "max x y \<le> x + y"
 
 end
 
-text {*
+text \<open>
 An example of a linearly ordered commutative monoid with a least and a greatest element is the unit interval of real numbers with any triangular conorm (t-conorm) as aggregation.
-For the reason outlined above, we show just a particular instance of @{text linordered_bounded_comm_monoid_add_bot}.
-Because the @{text plus} functions in the two instances given for the unit type are different, we work on a copy of the unit type.
-*}
+For the reason outlined above, we show just a particular instance of \<open>linordered_bounded_comm_monoid_add_bot\<close>.
+Because the \<open>plus\<close> functions in the two instances given for the unit type are different, we work on a copy of the unit type.
+\<close>
 
 typedef (overloaded) unit2 = "{0..1} :: real set"
   by auto
@@ -824,9 +824,9 @@ instance
 
 end
 
-text {*
+text \<open>
 We give the product t-conorm as a particular instance.
-*}
+\<close>
 
 instantiation unit2 :: linordered_bounded_comm_monoid_add_bot
 begin
@@ -875,11 +875,11 @@ instance
 
 end
 
-subsection {* Constant Aggregation *}
+subsection \<open>Constant Aggregation\<close>
 
-text {*
+text \<open>
 Any linear order with a constant element extended by new least and greatest elements forms a linear aggregation lattice where the aggregation returns the given constant.
-*}
+\<close>
 
 class pointed_linorder = linorder +
   fixes const :: 'a
@@ -987,10 +987,10 @@ qed
 
 end
 
-text {*
+text \<open>
 An example of a linear order is the set of real numbers.
 Any real number can be chosen as the constant.
-*}
+\<close>
 
 instantiation real :: pointed_linorder
 begin
@@ -999,10 +999,10 @@ instance ..
 
 end
 
-text {*
+text \<open>
 The following instance shows that any linear order with a constant forms a linearly ordered commutative semigroup with the alpha-median operation as aggregation.
 The alpha-median of two elements is the median of these elements and the given constant.
-*}
+\<close>
 
 fun median3 :: "'a::ord \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where
   "median3 x y z =
@@ -1024,11 +1024,11 @@ proof
     by (cases "const \<le> a"; cases "const \<le> b"; cases "const \<le> c"; cases "a \<le> c"; cases "b \<le> c") auto
 qed
 
-subsection {* Counting Aggregation *}
+subsection \<open>Counting Aggregation\<close>
 
-text {*
+text \<open>
 Any linear order extended by new least and greatest elements and a copy of the natural numbers forms a linear aggregation lattice where the aggregation counts non-$\bot$ elements using the copy of the natural numbers.
-*}
+\<close>
 
 datatype 'a extN =
     Bot

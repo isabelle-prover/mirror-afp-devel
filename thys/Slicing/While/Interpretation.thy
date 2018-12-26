@@ -1,11 +1,11 @@
-section {* Instantiate CFG locale with While CFG *}
+section \<open>Instantiate CFG locale with While CFG\<close>
 
 theory Interpretation imports 
   WCFG 
   "../Basic/CFGExit" 
 begin
 
-subsection {* Instatiation of the @{text CFG} locale *}
+subsection \<open>Instatiation of the \<open>CFG\<close> locale\<close>
 
 abbreviation sourcenode :: "w_edge \<Rightarrow> w_node"
   where "sourcenode e \<equiv> fst e"
@@ -30,7 +30,7 @@ lemma While_CFG_aux:
 proof(unfold_locales)
   fix a assume "valid_edge prog a" and "targetnode a = (_Entry_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
-  with `valid_edge prog a` `targetnode a = (_Entry_)` 
+  with \<open>valid_edge prog a\<close> \<open>targetnode a = (_Entry_)\<close> 
   have "prog \<turnstile> nx -et\<rightarrow> (_Entry_)" by(simp add:valid_edge_def)
   thus False by fastforce
 next
@@ -41,7 +41,7 @@ next
   obtain x' et' y' where [simp]:"a' = (x',et',y')" by (cases a') auto
   from assms have "et = et'"
     by(fastforce intro:WCFG_edge_det simp:valid_edge_def)
-  with `sourcenode a = sourcenode a'` `targetnode a = targetnode a'`
+  with \<open>sourcenode a = sourcenode a'\<close> \<open>targetnode a = targetnode a'\<close>
   show "a = a'" by simp
 qed
 
@@ -56,7 +56,7 @@ lemma While_CFGExit_aux:
 proof(unfold_locales)
   fix a assume "valid_edge prog a" and "sourcenode a = (_Exit_)"
   obtain nx et nx' where "a = (nx,et,nx')" by (cases a) auto
-  with `valid_edge prog a` `sourcenode a = (_Exit_)` 
+  with \<open>valid_edge prog a\<close> \<open>sourcenode a = (_Exit_)\<close> 
   have "prog \<turnstile> (_Exit_) -et\<rightarrow> nx'" by(simp add:valid_edge_def)
   thus False by fastforce
 next

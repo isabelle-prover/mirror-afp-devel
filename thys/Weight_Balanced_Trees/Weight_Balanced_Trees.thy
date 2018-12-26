@@ -21,7 +21,7 @@ fun size_wbt :: "'a wbt \<Rightarrow> nat" where
 "size_wbt Leaf = 0" |
 "size_wbt (Node _ _ n _) = n"
 
-text {* Smart constructor: *}
+text \<open>Smart constructor:\<close>
 
 fun N :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "N l a r = Node l a (size_wbt l + size_wbt r + 1) r"
@@ -40,7 +40,7 @@ fun rot2 :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a \<Rig
 
 subsection "WB trees"
 
-text {*
+text \<open>
 Parameters:
   \<^descr> \<open>\<Delta>\<close> determines when a tree needs to be rebalanced
   \<^descr> \<open>\<Gamma>\<close> determines whether it needs to be single or double rotation.
@@ -50,7 +50,7 @@ Parameters:
 
 Hirai and Yamamoto \cite{HiraiY11} proved that under the following constraints
 insertion and deletion preserve the WB invariant, i.e.\
-\<open>\<Delta>\<close> and \<open>\<Gamma>\<close> are \emph{valid}: *}
+\<open>\<Delta>\<close> and \<open>\<Gamma>\<close> are \emph{valid}:\<close>
 
 definition valid_params :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
 "valid_params \<Delta>1 \<Delta>2 \<Gamma>1 \<Gamma>2 = (
@@ -68,7 +68,7 @@ definition valid_params :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow
      \<comment> \<open>\<open>\<Gamma> \<le> 5/3\<close> when \<open>4 \<le> \<Delta> < 4.5\<close>\<close>
   )"
 
-text {* We do not make use of these constraints and do not prove that they guarantee
+text \<open>We do not make use of these constraints and do not prove that they guarantee
 preservation of the invariant. Instead, we provide generic proofs of invariant preservation
 that work for many (all?) interpretations of locale \<open>WBT\<close> (below) with valid parameters.
 Further down we demonstrate this by interpreting \<open>WBT\<close> with a selection of valid parameters.
@@ -78,7 +78,7 @@ This is a shortcoming of \<open>smt\<close> that is under investigation.]
 
 Locale \<open>WBT\<close> comes with some minimal assumptions (\<open>\<Gamma>1 > \<Gamma>2\<close> and \<open>\<Delta>1 > \<Delta>2\<close>) which follow
 from @{const valid_params} and from which we conclude some simple lemmas.
-*}
+\<close>
 
 locale WBT =
 fixes \<Delta>1 \<Delta>2 :: nat and \<Gamma>1 \<Gamma>2 :: nat
@@ -381,9 +381,9 @@ qed
 
 declare [[smt_nat_as_int]]
 
-text {*
+text \<open>
   Show that invariant is preserved by deletion in the left/right subtree:
-*}
+\<close>
 
 lemma wbt_balanceL:
   assumes "wbt (Node l a n r)" "wbt l'" "size l = size l' + 1"

@@ -1,4 +1,4 @@
-section {* Code Generation for GBG Lasso Finding Algorithm\label{sec:gbg_code} *}
+section \<open>Code Generation for GBG Lasso Finding Algorithm\label{sec:gbg_code}\<close>
 theory Gabow_GBG_Code
 imports
   Gabow_GBG 
@@ -8,7 +8,7 @@ imports
   CAVA_Base.CAVA_Code_Target
 begin
 
-section {* Autoref Setup *}
+section \<open>Autoref Setup\<close>
 
 locale impl_lasso_loc = igb_fr_graph G 
   + fr_graph_impl_loc "\<langle>mrel,Id\<rangle>igbg_impl_rel_eext" G_impl G
@@ -45,7 +45,7 @@ begin
   abbreviation "goGSi_rel \<equiv> ce_rel \<times>\<^sub>r oGSi_rel"
 end
 
-section {* Automatic Refinement *}
+section \<open>Automatic Refinement\<close>
 
 context impl_lasso_loc
 begin
@@ -319,7 +319,7 @@ end
 
 export_code find_lasso_tr checking SML
 
-section {* Main Correctness Theorem *}
+section \<open>Main Correctness Theorem\<close>
 
 abbreviation fl_rel :: "(_ \<times> ('a list \<times> 'b list) option) set" where  
   "fl_rel \<equiv> \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel\<rangle>Relators.option_rel"
@@ -344,9 +344,9 @@ proof -
   finally show ?thesis .
 qed
 
-section {* Autoref Setup for @{text "igb_graph.find_lasso_spec"} *}
-text {* Setup for Autoref, such that @{text "igb_graph.find_lasso_spec"} 
-  can be used *}
+section \<open>Autoref Setup for \<open>igb_graph.find_lasso_spec\<close>\<close>
+text \<open>Setup for Autoref, such that \<open>igb_graph.find_lasso_spec\<close> 
+  can be used\<close>
 definition [simp]: "op_find_lasso_spec \<equiv> igb_graph.find_lasso_spec"
 
 context begin interpretation autoref_syn .

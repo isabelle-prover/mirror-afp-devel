@@ -4,15 +4,15 @@ begin
 
 
 
-section {* Security Invariants *}
-  text{*
+section \<open>Security Invariants\<close>
+  text\<open>
     A good documentation of this formalization is available in \cite{diekmann2014forte}. 
-  *}
+\<close>
 
-  text{*
+  text\<open>
     We define security invariants over a graph.
     The graph corresponds to the network's access control structure.
-  *}
+\<close>
 
   (*TODO: make datatype!*)
   \<comment> \<open>@{typ "'v"} is the type of the nodes in the graph (hosts in the network). 
@@ -20,7 +20,7 @@ section {* Security Invariants *}
   record ('v::vertex, 'a) TopoS_Params =
     node_properties :: "'v::vertex \<Rightarrow> 'a option"
 
-text{*
+text\<open>
 A Security Invariant is defined as locale.
 
 We successively define more and more locales with more and more assumptions.
@@ -28,13 +28,13 @@ This clearly depicts which assumptions are necessary to use certain features of 
 In addition, it makes instance proofs of Security Invariants easier, since the lemmas obtained by an (easy, few assumptions) instance proof 
 can be used for the complicated (more assumptions) instance proofs.
 
-A security Invariant consists of one function: @{text "sinvar"}.
-Essentially, it is a predicate over the policy (depicted as graph @{text "G"} and a host attribute mapping (@{text "nP"})).
-*}
+A security Invariant consists of one function: \<open>sinvar\<close>.
+Essentially, it is a predicate over the policy (depicted as graph \<open>G\<close> and a host attribute mapping (\<open>nP\<close>)).
+\<close>
 
-text {* A Security Invariant where the offending flows (flows that invalidate the policy) can be defined and calculated.
+text \<open>A Security Invariant where the offending flows (flows that invalidate the policy) can be defined and calculated.
 No assumptions are necessary for this step.
-*}  
+\<close>  
   locale SecurityInvariant_withOffendingFlows = 
     fixes sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool" \<comment> \<open>policy @{text "\<Rightarrow>"} host attribute mapping @{text "\<Rightarrow>"} bool\<close>
    begin
@@ -52,7 +52,7 @@ No assumptions are necessary for this step.
       "set_offending_flows G  nP = {F. F \<subseteq> (edges G) \<and> is_offending_flows_min_set F G nP}"
   
 
-    text {*Some of the @{const set_offending_flows} definition*}
+    text \<open>Some of the @{const set_offending_flows} definition\<close>
     lemma offending_not_empty: "\<lbrakk> F \<in> set_offending_flows G nP \<rbrakk> \<Longrightarrow> F \<noteq> {}"
      by(auto simp add: set_offending_flows_def is_offending_flows_def is_offending_flows_min_set_def)
     lemma empty_offending_contra:
@@ -95,14 +95,14 @@ No assumptions are necessary for this step.
 print_locale! SecurityInvariant_withOffendingFlows
 
 
-text{*
-The locale @{text SecurityInvariant_withOffendingFlows} has no assumptions about the security invariant @{text sinvar}.
+text\<open>
+The locale \<open>SecurityInvariant_withOffendingFlows\<close> has no assumptions about the security invariant \<open>sinvar\<close>.
 Undesirable things may happen:
 The offending flows can be empty, even for a violated invariant.
 
 We provide an example, the security invariant @{term "(\<lambda>_ _. False)"}.
 As host attributes, we simply use the identity function @{const id}.
-*}
+\<close>
 lemma "SecurityInvariant_withOffendingFlows.set_offending_flows (\<lambda>_ _. False) \<lparr> nodes = {''v1''}, edges={} \<rparr> id = {}"
 by %invisible (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def 
   SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def SecurityInvariant_withOffendingFlows.is_offending_flows_def)
@@ -111,7 +111,7 @@ lemma "SecurityInvariant_withOffendingFlows.set_offending_flows (\<lambda>_ _. F
 by %invisible (simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def 
   SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def SecurityInvariant_withOffendingFlows.is_offending_flows_def)
 
-text {*In general, there exists a @{term sinvar} such that the invariant does not hold and no offending flows exits.*}
+text \<open>In general, there exists a @{term sinvar} such that the invariant does not hold and no offending flows exits.\<close>
   lemma "\<exists>sinvar. \<not> sinvar G nP \<and> SecurityInvariant_withOffendingFlows.set_offending_flows sinvar G nP = {}"
   apply(simp add: SecurityInvariant_withOffendingFlows.set_offending_flows_def
     SecurityInvariant_withOffendingFlows.is_offending_flows_min_set_def SecurityInvariant_withOffendingFlows.is_offending_flows_def)
@@ -120,8 +120,8 @@ text {*In general, there exists a @{term sinvar} such that the invariant does no
   done
 
 
-text{*Thus, we introduce usefulness properties that prohibits such useless invariants.*}
-text{*We summarize them in an invariant.
+text\<open>Thus, we introduce usefulness properties that prohibits such useless invariants.\<close>
+text\<open>We summarize them in an invariant.
 It requires the following: 
 \begin{enumerate}
   \item The offending flows are always defined.
@@ -130,7 +130,7 @@ It requires the following:
 \end{enumerate}
 
 Later, we will show that is suffices to show that the invariant is monotonic. The other two properties can be derived.
-*}
+\<close>
 
   locale SecurityInvariant_preliminaries = SecurityInvariant_withOffendingFlows sinvar
     for sinvar
@@ -146,33 +146,33 @@ Later, we will show that is suffices to show that the invariant is monotonic. Th
       "\<lbrakk> wf_graph G; is_offending_flows ff G nP \<rbrakk> \<Longrightarrow> is_offending_flows (ff \<union> f') G nP"
   begin
 
-  text {*
+  text \<open>
     \begin{small}
     To instantiate a @{const SecurityInvariant_preliminaries}, here are some hints: 
-    Have a look at the @{text "TopoS_withOffendingFlows.thy"} file.
+    Have a look at the \<open>TopoS_withOffendingFlows.thy\<close> file.
     There is a definition of @{prop sinvar_mono}. It impplies @{prop mono_sinvar} and @{prop mono_offending}
-    @{text "apply(fact SecurityInvariant_withOffendingFlows.sinvar_mono_imp_sinvar_mono[OF sinvar_mono])
-    apply(fact SecurityInvariant_withOffendingFlows.sinvar_mono_imp_is_offending_flows_mono[OF sinvar_mono])"}
+    \<open>apply(fact SecurityInvariant_withOffendingFlows.sinvar_mono_imp_sinvar_mono[OF sinvar_mono])
+    apply(fact SecurityInvariant_withOffendingFlows.sinvar_mono_imp_is_offending_flows_mono[OF sinvar_mono])\<close>
   
-    In addition, @{text "SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono]"} gives a nice proof rule for
+    In addition, \<open>SecurityInvariant_withOffendingFlows.mono_imp_set_offending_flows_not_empty[OF sinvar_mono]\<close> gives a nice proof rule for
     @{prop defined_offending}
   
-    Basically, @{text "sinvar_mono."} implies almost all assumptions here and is equal to @{prop mono_sinvar}.
+    Basically, \<open>sinvar_mono.\<close> implies almost all assumptions here and is equal to @{prop mono_sinvar}.
     \end{small}
-  *}
+\<close>
   end
 
 
-subsection{*Security Invariants with secure auto-completion of host attribute mappings*}
+subsection\<open>Security Invariants with secure auto-completion of host attribute mappings\<close>
 
-text{*
+text\<open>
 We will now add a new artifact to the Security Invariant.
-It is a secure default host attribute, we will use the symbol @{text "\<bottom>"}.
+It is a secure default host attribute, we will use the symbol \<open>\<bottom>\<close>.
 
-The newly introduced Boolean @{text "receiver_violation"} tells whether a security violation happens at the sender's or the receiver's side.
+The newly introduced Boolean \<open>receiver_violation\<close> tells whether a security violation happens at the sender's or the receiver's side.
 
 The details can be looked up in \cite{diekmann2014forte}. 
-*}
+\<close>
 
   \<comment> \<open>Some notes about the notation:
           @{term "fst ` F"} means to apply the function @{const "fst"} to the set @{term "F"} element-wise.
@@ -219,13 +219,13 @@ The details can be looked up in \cite{diekmann2014forte}.
     lemma node_props_eq_node_props_formaldef: "node_props_formaldef = node_props"
      by(simp add: fun_eq_iff node_props_formaldef_def option.case_eq_if domIff)
 
-    text{*
+    text\<open>
       Checking whether a security invariant holds.
       \begin{enumerate}
         \item check that the policy @{term G} is syntactically valid
         \item check the security invariant @{term sinvar}
       \end{enumerate}
-    *}
+\<close>
     definition eval::"'v graph \<Rightarrow> ('v, 'a) TopoS_Params \<Rightarrow> bool" where
     "eval G P \<equiv> wf_graph G \<and> sinvar G (node_props P)"
 
@@ -245,8 +245,8 @@ print_locale! SecurityInvariant
 
 
 
-subsection{*Information Flow Security and Access Control*}
-text{*
+subsection\<open>Information Flow Security and Access Control\<close>
+text\<open>
 
 @{term receiver_violation} defines the offending host. Thus, it defines when the violation happens. 
 
@@ -262,9 +262,9 @@ The violations happens only when the receiver reads the data.
 \end{description}
 
 We refine our @{term SecurityInvariant} locale.
-*}
+\<close>
 
-subsection {*Information Flow Security Strategy (IFS)*}
+subsection \<open>Information Flow Security Strategy (IFS)\<close>
   locale SecurityInvariant_IFS = SecurityInvariant_preliminaries sinvar
       for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
       +
@@ -321,7 +321,7 @@ lemma default_uniqueness_by_counterexample_IFS:
    using assms by blast
 
 
-subsection {*Access Control Strategy (ACS)*}
+subsection \<open>Access Control Strategy (ACS)\<close>
   locale SecurityInvariant_ACS = SecurityInvariant_preliminaries sinvar
       for sinvar::"('v::vertex) graph \<Rightarrow> ('v::vertex \<Rightarrow> 'a) \<Rightarrow> bool"
       +
@@ -377,7 +377,7 @@ lemma default_uniqueness_by_counterexample_ACS:
   using assms by blast
 
 
-text{* The sublocale relationships tell that the simplified @{const SecurityInvariant_ACS} and @{const SecurityInvariant_IFS} 
-  assumptions suffice to do tho generic SecurityInvariant assumptions. *}
+text\<open>The sublocale relationships tell that the simplified @{const SecurityInvariant_ACS} and @{const SecurityInvariant_IFS} 
+  assumptions suffice to do tho generic SecurityInvariant assumptions.\<close>
 
 end

@@ -9,16 +9,16 @@ imports
   Arc_Walk
 begin
 
-section {* Digraphs without Parallel Arcs *}
+section \<open>Digraphs without Parallel Arcs\<close>
 
-text {*
+text \<open>
   If no parallel arcs are desired, arcs can be accurately described as pairs of
   This is the natural representation for Digraphs without multi-arcs.
   and @{term "head G"}, making it easier to deal with multiple related graphs
   and to modify a graph by adding edges.
 
   This theory introduces such a specialisation of digraphs.
-*}
+\<close>
 
 record 'a pair_pre_digraph = pverts :: "'a set" parcs :: "'a rel"
 
@@ -184,13 +184,13 @@ lemma (in pair_wf_digraph) apath_succ_decomp:
   assumes "y \<noteq> v"
   shows "\<exists>p1 z p2. p = p1 @ (x,y) # (y,z) # p2 \<and> x \<noteq> z \<and> y \<noteq> z"
 proof -
-  from `(x,y) \<in> set p` obtain p1 p2 where p_decomp: "p = p1 @ (x,y) # p2"
+  from \<open>(x,y) \<in> set p\<close> obtain p1 p2 where p_decomp: "p = p1 @ (x,y) # p2"
     by (metis (no_types) in_set_conv_decomp_first)
-  from p_decomp `apath u p v` `y \<noteq> v` have "p2 \<noteq> []" "awalk y p2 v"
+  from p_decomp \<open>apath u p v\<close> \<open>y \<noteq> v\<close> have "p2 \<noteq> []" "awalk y p2 v"
     by (auto simp: apath_def awalk_Cons_iff)
   then obtain z p2' where p2_decomp: "p2 = (y,z) # p2'"
     by atomize_elim (cases p2, auto simp: awalk_Cons_iff)
-  then have "x \<noteq> z \<and> y \<noteq> z" using p_decomp p2_decomp `apath u p v`
+  then have "x \<noteq> z \<and> y \<noteq> z" using p_decomp p2_decomp \<open>apath u p v\<close>
     by (auto simp: apath_append_iff apath_simps hd_in_awalk_verts)
   with p_decomp p2_decomp have "p = p1 @ (x,y) # (y,z) # p2' \<and> x \<noteq> z \<and> y \<noteq> z"
     by auto
@@ -225,9 +225,9 @@ qed
 
 
 
-subsection {* Path reversal for Pair Digraphs *}
+subsection \<open>Path reversal for Pair Digraphs\<close>
 
-text {* This definition is only meaningful in @{term Pair_Digraph} *}
+text \<open>This definition is only meaningful in @{term Pair_Digraph}\<close>
 
 primrec rev_path :: "('a \<times> 'a) awalk \<Rightarrow> ('a \<times> 'a) awalk" where
   "rev_path [] = []" |
@@ -293,9 +293,9 @@ lemma (in pair_sym_digraph) apath_rev_path[simp]:
 by (auto simp: awalk_verts_rev_path apath_def)
 
 
-subsection {* Subdividing Edges *}
+subsection \<open>Subdividing Edges\<close>
 
-text {* subdivide an edge (=two associated arcs) in graph *}
+text \<open>subdivide an edge (=two associated arcs) in graph\<close>
 fun subdivide :: "'a pair_pre_digraph \<Rightarrow> 'a \<times> 'a \<Rightarrow> 'a \<Rightarrow> 'a pair_pre_digraph" where
   "subdivide G (u,v) w = \<lparr>
     pverts = pverts G \<union> {w},
@@ -303,7 +303,7 @@ fun subdivide :: "'a pair_pre_digraph \<Rightarrow> 'a \<times> 'a \<Rightarrow>
 
 declare subdivide.simps[simp del]
 
-text {* subdivide an arc in a path *}
+text \<open>subdivide an arc in a path\<close>
 fun sd_path :: "'a \<times> 'a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) awalk \<Rightarrow> ('a \<times> 'a) awalk" where
     "sd_path _ _ [] = []"
   | "sd_path (u,v) w (e # es) = (if e = (u,v)
@@ -312,7 +312,7 @@ fun sd_path :: "'a \<times> 'a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) a
                                  then [(v,w),(w,u)]
                                  else [e]) @ sd_path (u,v) w es"
 
-text {* contract an arc in a path  *}
+text \<open>contract an arc in a path\<close>
 fun co_path :: "'a \<times> 'a \<Rightarrow> 'a \<Rightarrow> ('a \<times> 'a) awalk \<Rightarrow> ('a \<times> 'a) awalk" where
     "co_path _ _ [] = []"
   | "co_path _ _ [e] = [e]"
@@ -412,7 +412,7 @@ proof -
   show ?thesis
   proof
     have "\<And>a b. (a, b) \<in> parcs (subdivide G e w) \<Longrightarrow> (b, a) \<in> parcs (subdivide G e w)"
-      unfolding `e = _` arcs_subdivide
+      unfolding \<open>e = _\<close> arcs_subdivide
       by (elim UnE, rule UnI1, rule_tac [2] UnI2) (blast intro: arcs_symmetric)+
     then show "symmetric ?sG"
       unfolding symmetric_def with_proj_simps by (rule symI)
@@ -521,13 +521,13 @@ proof -
       then have "S.awalk u (sd_path (x, y) w ((a, b) # es)) v "
         using ab w_sG by (auto simp: S.apath_def S.awalk_simps S.wellformed')
       then have "u \<notin> set (S.awalk_verts w ((w,b) # sd_path (x,y) w es))"
-        using ab `u \<noteq> w` ev_sd A by (auto simp: apath_Cons_iff S.awalk_def)
+        using ab \<open>u \<noteq> w\<close> ev_sd A by (auto simp: apath_Cons_iff S.awalk_def)
       moreover
       have "w \<notin> set (awalk_verts b (sd_path (x, y) w es))"
         using ab ev_sd A elems by (auto simp: awalk_Cons_iff apath_def)
       ultimately
       have path: "S.apath u (sd_path (x, y) w ((a, b) # es)) v "
-        using ab hyps w_sG `u = a` by (auto simp: S.apath_Cons_iff ) }
+        using ab hyps w_sG \<open>u = a\<close> by (auto simp: S.apath_Cons_iff ) }
     note path = this
     { case (sd es)
       { case 1 with sd show ?case by (intro path) auto }
@@ -591,14 +591,14 @@ proof -
       then have "e1 \<in> parcs (subdivide G e w) - parcs G"
         using pass by (auto simp: S.apath_Cons_iff)
       then have "e1 = (x,w) \<or> e1 = (y,w)"
-        using `fst e1 \<noteq> w` e_w by (auto simp add: e_conv)
+        using \<open>fst e1 \<noteq> w\<close> e_w by (auto simp add: e_conv)
       moreover
-      have "fst e2 = w" using `snd e1 = w` pass.prems by (auto simp: S.apath_Cons_iff)
+      have "fst e2 = w" using \<open>snd e1 = w\<close> pass.prems by (auto simp: S.apath_Cons_iff)
       then have "e2 \<notin> parcs G" using elems by auto
       then have "e2 \<in> parcs (subdivide G e w) - parcs G"
         using pass by (auto simp: S.apath_Cons_iff)
       then have "e2 = (w,x) \<or> e2 = (w,y)"
-        using `fst e2 = w` e_w by (cases e2) (auto simp add: e_conv)
+        using \<open>fst e2 = w\<close> e_w by (cases e2) (auto simp add: e_conv)
       ultimately
       have "e1 = (x,w) \<and> e2 = (w,x) \<or> e1 = (y,w) \<and> e2 = (w,y)"
         using pass.hyps[simplified e_conv] by auto
@@ -606,17 +606,17 @@ proof -
         using pass.prems by (cases es) (auto simp: S.apath_Cons_iff)
     qed
     then have "e1 \<in> parcs G"
-      using `fst e1 \<noteq> w` pass.prems by (auto simp: S.apath_Cons_iff dest: arcs_subdivideD)
+      using \<open>fst e1 \<noteq> w\<close> pass.prems by (auto simp: S.apath_Cons_iff dest: arcs_subdivideD)
 
     have ih: "apath (snd e1) (co_path e w (e2 # es)) v \<and> set (awalk_verts (snd e1) (co_path e w (e2 # es))) = set (awalk_verts (snd e1) (e2 # es)) - {w}"
-      using pass.prems `snd e1 \<noteq> w` by (intro pass.IH) (auto simp: apath_Cons_iff S.apath_Cons_iff)
+      using pass.prems \<open>snd e1 \<noteq> w\<close> by (intro pass.IH) (auto simp: apath_Cons_iff S.apath_Cons_iff)
     then have "fst e1 \<notin> set (awalk_verts (snd e1) (co_path e w (e2 # es)))" "fst e1 = u"
       using pass.prems by (clarsimp simp: S.apath_Cons_iff)+
     then have "apath u (co_path e w (e1 # e2 # es)) v"
-      using ih pass `e1 \<in> parcs G` by (auto simp: apath_Cons_iff S.apath_Cons_iff)[]
+      using ih pass \<open>e1 \<in> parcs G\<close> by (auto simp: apath_Cons_iff S.apath_Cons_iff)[]
     moreover
     have "set (awalk_verts u (co_path e w (e1 # e2 # es))) = set (awalk_verts u (e1 # e2 # es)) - {w}"
-      using pass.hyps ih `fst e1 \<noteq> w` by auto
+      using pass.hyps ih \<open>fst e1 \<noteq> w\<close> by auto
     ultimately show ?case by fast
   qed
   then show ?thesis_set ?thesis_path by blast+

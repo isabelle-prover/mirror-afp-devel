@@ -8,17 +8,17 @@
  * @TAG(DATA61_BSD)
  *)
 
-section {* The COMPLX Syntax *}
+section \<open>The COMPLX Syntax\<close>
 
 theory Language
 imports Main
 begin
 
-subsection {* The Core Language *}
+subsection \<open>The Core Language\<close>
 
-text {* We use a shallow embedding of boolean expressions as well as assertions
+text \<open>We use a shallow embedding of boolean expressions as well as assertions
 as sets of states. 
-*}
+\<close>
 
 type_synonym 's bexp = "'s set"
 type_synonym 's assn = "'s set"
@@ -39,9 +39,9 @@ datatype ('s, 'p, 'f) com =
   | Await "'s bexp" "('s,'p,'f) com"
 
 
-subsection {* Derived Language Constructs *}
+subsection \<open>Derived Language Constructs\<close>
 
-text {* We inherit the remainder of derived language constructs from SIMPL *}
+text \<open>We inherit the remainder of derived language constructs from SIMPL\<close>
 
 definition
   raise:: "('s \<Rightarrow> 's) \<Rightarrow> ('s,'p,'f) com" where

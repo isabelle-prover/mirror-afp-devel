@@ -5,7 +5,7 @@
   Examples for the application of the Master theorem and related proof methods.
 *)
 
-section {* Examples *}
+section \<open>Examples\<close>
 theory Master_Theorem_Examples
 imports
   Complex_Main
@@ -13,7 +13,7 @@ imports
   Akra_Bazzi_Approximation
 begin
 
-subsection {* Merge sort *}
+subsection \<open>Merge sort\<close>
 
 (* A merge sort cost function that is parametrised with the recombination costs *)
 function merge_sort_cost :: "(nat \<Rightarrow> real) \<Rightarrow> nat \<Rightarrow> real" where
@@ -30,7 +30,7 @@ lemma merge_sort_nonneg[simp]: "(\<And>n. t n \<ge> 0) \<Longrightarrow> merge_s
 lemma "t \<in> \<Theta>(\<lambda>n. real n) \<Longrightarrow> (\<And>n. t n \<ge> 0) \<Longrightarrow> merge_sort_cost t \<in> \<Theta>(\<lambda>n. real n * ln (real n))"
   by (master_theorem 2.3) simp_all
 
-subsection {* Karatsuba multiplication *}
+subsection \<open>Karatsuba multiplication\<close>
 
 function karatsuba_cost :: "nat \<Rightarrow> real" where
   "karatsuba_cost 0 = 0"
@@ -54,7 +54,7 @@ lemma "karatsuba_cost \<in> \<Theta>(\<lambda>n. real n powr log 2 3)"
   by (master_theorem 1 p': 1) (auto simp add: powr_divide eventually_at_top_linorder)
 
 
-subsection {* Strassen matrix multiplication *}
+subsection \<open>Strassen matrix multiplication\<close>
 
 function strassen_cost :: "nat \<Rightarrow> real" where
   "strassen_cost 0 = 0"
@@ -77,7 +77,7 @@ lemma "strassen_cost \<in> \<Theta>(\<lambda>n. real n powr log 2 7)"
   by (master_theorem 1 p': 2) (auto simp: powr_divide eventually_at_top_linorder)
 
 
-subsection {* Deterministic select *}
+subsection \<open>Deterministic select\<close>
 
 (* This is not possible with the standard Master theorem from literature *)
 function select_cost :: "nat \<Rightarrow> real" where
@@ -91,7 +91,7 @@ lemma "select_cost \<in> \<Theta>(\<lambda>n. real n)"
   by (master_theorem 3) auto
 
 
-subsection {* Decreasing function *}
+subsection \<open>Decreasing function\<close>
 
 function dec_cost :: "nat \<Rightarrow> real" where
   "n \<le> 2 \<Longrightarrow> dec_cost n = 1"
@@ -103,7 +103,7 @@ lemma "dec_cost \<in> \<Theta>(\<lambda>x::nat. ln x / x)"
   by (master_theorem 2.3) simp_all
 
 
-subsection {* Example taken from Drmota and Szpakowski *}
+subsection \<open>Example taken from Drmota and Szpakowski\<close>
 
 function drmota1 :: "nat \<Rightarrow> real" where
   "n < 20 \<Longrightarrow> drmota1 n = 1"
@@ -136,7 +136,7 @@ lemma boncelet_phrase_length:
 
 
 
-subsection {* Transcendental exponents *}
+subsection \<open>Transcendental exponents\<close>
 
 (* Certain number-theoretic conjectures would imply that if all the parameters are rational,
    the Akra-Bazzi parameter is either rational or transcendental. That makes this case 
@@ -161,7 +161,7 @@ lemma "akra_bazzi_exponent [1,1] [1/3,3/4] \<in> {1.1519623..1.1519624}"
   by (akra_bazzi_approximate 29)
 
 
-subsection {* Functions in locale contexts *}
+subsection \<open>Functions in locale contexts\<close>
 
 locale det_select =
   fixes b :: real
@@ -181,7 +181,7 @@ lemma "a \<ge> 0 \<Longrightarrow> select_cost' \<in> \<Theta>(\<lambda>n. real 
 end
 
 
-subsection {* Non-curried functions *}
+subsection \<open>Non-curried functions\<close>
 
 (* Note: either a or b could be seen as recursion variables. *)
 function baz_cost :: "nat \<times> nat \<Rightarrow> real" where
@@ -211,7 +211,7 @@ by force simp_all
 termination by akra_bazzi_termination simp_all
 
 
-subsection {* Ham-sandwich trees *}
+subsection \<open>Ham-sandwich trees\<close>
 (* f(n) = f(n/4) + f(n/2) + 1 *)
 function ham_sandwich_cost :: "nat \<Rightarrow> real" where
   "n < 4 \<Longrightarrow> ham_sandwich_cost n = 1"
@@ -224,7 +224,7 @@ lemma ham_sandwich_cost_pos [simp]: "ham_sandwich_cost n > 0"
   by (induction n rule: ham_sandwich_cost.induct) simp_all
 
 
-text {* The golden ratio *}
+text \<open>The golden ratio\<close>
 
 definition "\<phi> = ((1 + sqrt 5) / 2 :: real)"
 

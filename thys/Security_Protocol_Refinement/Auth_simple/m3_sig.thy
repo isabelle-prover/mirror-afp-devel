@@ -26,7 +26,7 @@ adversary is realized using Paulson's closure operators for message derivation
 \<close>
 
 text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"} (again).\<close>
+\<open>dom\<close> (again).\<close>
 
 declare domIff [simp, iff del]
 declare analz_into_parts [dest]
@@ -245,7 +245,7 @@ by (rule inv_rule_basic) (auto)
 subsubsection \<open>inv3: Intruder knows all public keys (NOT USED)\<close>
 (******************************************************************************)
 
-text \<open>This invariant is only needed with equality in @{text "R23_msgs"}.\<close>
+text \<open>This invariant is only needed with equality in \<open>R23_msgs\<close>.\<close>
 
 definition
   m3_inv3_pubkeys :: "m3_state set"

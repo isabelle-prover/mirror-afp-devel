@@ -272,14 +272,14 @@ lemma sees_method_fun_wf:
   and "(M', Ts', T', mxs', mxl\<^sub>0', is', xt') \<in> set ms"
   shows "Ts = Ts' \<and> T = T' \<and> mxs = mxs' \<and> mxl\<^sub>0 = mxl\<^sub>0' \<and> is = is' \<and> xt = xt'"
 proof -
-  from distinct_class_names [of P] `(D, D', fs, ms) \<in> set (PROG P)`
+  from distinct_class_names [of P] \<open>(D, D', fs, ms) \<in> set (PROG P)\<close>
   have "class (PROG P) D = \<lfloor>(D', fs, ms)\<rfloor>"
     by (fastforce intro: map_of_SomeI simp: class_def)
   moreover with distinct_method_names have "distinct_fst ms"
     by fastforce
   ultimately show ?thesis using
-    `PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D`
-    `(M', Ts', T', mxs', mxl\<^sub>0', is', xt') \<in> set ms`
+    \<open>PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in D\<close>
+    \<open>(M', Ts', T', mxs', mxl\<^sub>0', is', xt') \<in> set ms\<close>
     by (fastforce dest: visible_method_exists map_of_SomeD distinct_fst_isin_same_fst
       simp: distinct_fst_is_distinct_fst)
 qed
@@ -316,7 +316,7 @@ next
     from CFG_Invoke_Call obtain T' mxs' mpc' xt' where
       "PROG P,T',mxs',mpc',xt' \<turnstile> instrs_of (PROG P) C M ! pc,pc :: TYPING P C M"
       by (blast dest: reachable_node_impl_wt_instr)
-    moreover from `PROG P \<turnstile> D' sees M': Ts\<rightarrow>T = (mxs, mxl0, is, xt) in D`
+    moreover from \<open>PROG P \<turnstile> D' sees M': Ts\<rightarrow>T = (mxs, mxl0, is, xt) in D\<close>
     have "PROG P \<turnstile> D sees M': Ts\<rightarrow>T = (mxs, mxl0, is, xt) in D"
       by -(drule sees_method_idemp)
     with params have "PROG P \<turnstile> D sees M': Ts\<rightarrow>T=(mxs, mxl0, is, xt) in D"
@@ -713,9 +713,9 @@ next
       and "PROG P \<turnstile> D' sees M': Ts\<rightarrow>T = (mxs, mxl0, is, xt) in D"
       and "ins = Heap # map Local [0..<Suc (length Ts)]"
       by (auto elim!: in_set_procsE dest: sees_method_fun sees_method_idemp)
-    moreover with `(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)` `C \<noteq> ClassMain P`
-      `instrs_of (PROG P) C M ! pc = Invoke M' n` `TYPING P C M ! pc = \<lfloor>(ST, LT)\<rfloor>`
-      `ST ! n = Class D'` have "n = length Ts"
+    moreover with \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(C, M, \<lfloor>pc\<rfloor>, Normal)\<close> \<open>C \<noteq> ClassMain P\<close>
+      \<open>instrs_of (PROG P) C M ! pc = Invoke M' n\<close> \<open>TYPING P C M ! pc = \<lfloor>(ST, LT)\<rfloor>\<close>
+      \<open>ST ! n = Class D'\<close> have "n = length Ts"
       by (fastforce dest!: reachable_node_impl_wt_instr dest: sees_method_fun list_all2_lengthD)
     ultimately show ?thesis using CFG_Invoke_Call kind by auto
   qed simp_all
@@ -765,7 +765,7 @@ next
           JVMCFG_Interpret.params fs (JVMCFG_Interpret.state_val s') ! i"
     unfolding valid_edge_def
   proof cases
-    case Main_Call with kind use_Eq `i < length ins` show ?thesis
+    case Main_Call with kind use_Eq \<open>i < length ins\<close> show ?thesis
       by (cases i) auto
   next
     case CFG_Invoke_Call
@@ -778,7 +778,7 @@ next
         by (induct n arbitrary: i) (simp, case_tac i, auto)
     }
     note stack_params = this
-    from CFG_Invoke_Call kind use_Eq `i < length ins` show ?thesis
+    from CFG_Invoke_Call kind use_Eq \<open>i < length ins\<close> show ?thesis
       by (cases i, auto) (case_tac nat, auto intro: stack_params)
   qed simp_all
 next

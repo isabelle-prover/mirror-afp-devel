@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, Tobias Nipkow
 *)
 
-section {* Preservation of definite assignment *}
+section \<open>Preservation of definite assignment\<close>
 
 theory DefAssPreservation
 imports
@@ -11,8 +11,8 @@ imports
   SmallStep
 begin
 
-text{* Preservation of definite assignment more complex and requires a
-few lemmas first. *}
+text\<open>Preservation of definite assignment more complex and requires a
+few lemmas first.\<close>
 
 lemma D_extRetJ [intro!]: "\<D> e A \<Longrightarrow> \<D> (extRet2J e va) A"
 by(cases va) simp_all
@@ -58,7 +58,7 @@ by blast+
 
 end
 
-text{* Now preservation of definite assignment. *}
+text\<open>Now preservation of definite assignment.\<close>
 
 declare hyperUn_comm [simp del]
 declare hyperUn_leftComm [simp del]

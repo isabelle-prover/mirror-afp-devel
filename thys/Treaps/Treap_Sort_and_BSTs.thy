@@ -110,7 +110,7 @@ theorem treap_of_bst_of_list':
   using assms
 proof(induction xs' arbitrary: xs ys rule: bst_of_list.induct)
   case 1
-  from `[] = sort_key p xs`[symmetric] `ys = map (\<lambda>x. (x, p x)) xs`
+  from \<open>[] = sort_key p xs\<close>[symmetric] \<open>ys = map (\<lambda>x. (x, p x)) xs\<close>
   have "ys = []"
     by (cases xs) (auto)
   then show ?case by (simp add: treap_of.simps)
@@ -127,7 +127,7 @@ next
     using assms by simp
   then have h2: "inj_on p {x \<in> set zs. x < z}" "inj_on p (set (filter ((<) z) zs))"
     "inj_on p (set zs)"
-    using `inj_on p (set xs)` by (auto intro!: inj_on_subset[of _ "set xs"])
+    using \<open>inj_on p (set xs)\<close> by (auto intro!: inj_on_subset[of _ "set xs"])
   have "z # zs = (let z = arg_min_on p (set xs) in z # sort_key p (remove1 z xs))"
   proof -
     have "xs \<noteq> []"
@@ -158,7 +158,7 @@ next
   moreover have "map_tree fst (treap_of L) = bst_of_list [y\<leftarrow>zs . y < z]"
   proof -
     have "L = set ls"
-      unfolding L_def ls_def `fst m = z` using helpers assms by force
+      unfolding L_def ls_def \<open>fst m = z\<close> using helpers assms by force
     moreover have "map_tree fst (treap_of (set ls)) = bst_of_list [y\<leftarrow>zs . y < z]"
       unfolding ls_def using helpers 
       by (intro IH(1)[of _ "[y\<leftarrow>zs . y < z]"]) (auto simp add: filter_sort[symmetric])
@@ -168,7 +168,7 @@ next
   moreover have "map_tree fst (treap_of R) = bst_of_list [y\<leftarrow>zs . z < y]"
   proof -
     have 0: "R = set rs"
-      unfolding R_def rs_def `fst m = z` using helpers assms by force
+      unfolding R_def rs_def \<open>fst m = z\<close> using helpers assms by force
     moreover have "map_tree fst (treap_of (set rs)) = bst_of_list [y\<leftarrow>zs . z < y]"
       unfolding rs_def using helpers
       by (intro IH(2)[of _ "[y\<leftarrow>zs . z < y]"]) (auto simp add: filter_sort[symmetric])

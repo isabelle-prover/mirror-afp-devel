@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Unsigned words of 64 bits *}
+chapter \<open>Unsigned words of 64 bits\<close>
 
 theory Uint64 imports
   Word_Misc
@@ -22,13 +22,13 @@ text \<open>
 
 declare prod.Quotient[transfer_rule]
 
-section {* Type definition and primitive operations *}
+section \<open>Type definition and primitive operations\<close>
 
 typedef uint64 = "UNIV :: 64 word set" .. 
 
 setup_lifting type_definition_uint64
 
-text {* Use an abstract type for code generation to disable pattern matching on @{term Abs_uint64}. *}
+text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint64}.\<close>
 declare Rep_uint64_inverse[code abstype]
 
 declare Quotient_uint64[transfer_rule]
@@ -101,7 +101,7 @@ lemma bitval_integer_transfer [transfer_rule]:
   "(rel_fun (=) pcr_integer) of_bool of_bool"
 by(auto simp add: of_bool_def integer.pcr_cr_eq cr_integer_def split: bit.split)
 
-text {* Use pretty numerals from integer for pretty printing *}
+text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin
 
@@ -134,11 +134,11 @@ by(simp add: zero_uint64_def)
 lemma Abs_uint64_1 [code_post]: "Abs_uint64 1 = 1"
 by(simp add: one_uint64_def)
 
-section {* Code setup *}
+section \<open>Code setup\<close>
 
 text \<open> For SML, we generate an implementation of unsigned 64-bit words using \verb$IntInf.int$.
   If @{ML "LargeWord.wordSize > 63"} of the Isabelle/ML runtime environment holds, then we assume
-  that there is also a @{text Word64} structure available and accordingly replace the implementation
+  that there is also a \<open>Word64\<close> structure available and accordingly replace the implementation
   for the target \verb$Eval$.
 \<close>
 code_printing code_module "Uint64" \<rightharpoonup> (SML) \<open>(* Test that words can handle numbers between 0 and 63 *)
@@ -358,20 +358,20 @@ end
 \<close>
 
 code_printing code_module Uint64 \<rightharpoonup> (Haskell)
-{*import qualified Data.Word;
+\<open>import qualified Data.Word;
 import qualified Data.Int;
 
 type Int64 = Data.Int.Int64;
 
-type Word64 = Data.Word.Word64;*}
+type Word64 = Data.Word.Word64;\<close>
 code_reserved Haskell Uint64
 
-text {*
+text \<open>
   OCaml and Scala provide only signed 64bit numbers, so we use these and 
   implement sign-sensitive operations like comparisons manually.
-*}
+\<close>
 code_printing code_module "Uint64" \<rightharpoonup> (OCaml)
-{*module Uint64 : sig
+\<open>module Uint64 : sig
   val less : int64 -> int64 -> bool
   val less_eq : int64 -> int64 -> bool
   val set_bit : int64 -> Big_int.big_int -> bool -> int64
@@ -410,11 +410,11 @@ let test_bit x n =
     Int64.zero
   <> 0;;
 
-end;; (*struct Uint64*)*}
+end;; (*struct Uint64*)\<close>
 code_reserved OCaml Uint64
 
 code_printing code_module Uint64 \<rightharpoonup> (Scala)
-{*object Uint64 {
+\<open>object Uint64 {
 
 def less(x: Long, y: Long) : Boolean =
   if (x < 0) y < 0 && x < y
@@ -439,13 +439,13 @@ def shiftr_signed(x: Long, n: BigInt) : Long = x >> n.intValue
 def test_bit(x: Long, n: BigInt) : Boolean =
   (x & (1L << n.intValue)) != 0
 
-} /* object Uint64 */*}
+} /* object Uint64 */\<close>
 code_reserved Scala Uint64
 
-text {*
+text \<open>
   OCaml's conversion from Big\_int to int64 demands that the value fits int a signed 64-bit integer.
   The following justifies the implementation.
-*}
+\<close>
 
 definition Uint64_signed :: "integer \<Rightarrow> uint64" 
 where "Uint64_signed i = (if i < -(0x8000000000000000) \<or> i \<ge> 0x8000000000000000 then undefined Uint64 i else Uint64 i)"
@@ -463,7 +463,7 @@ lemma Uint64_signed_code [code abstract]:
 unfolding Uint64_signed_def Uint64_def int_of_integer_symbolic_def word_of_integer_def
 by(simp add: Abs_uint64_inverse)
 
-text {* 
+text \<open>
   Avoid @{term Abs_uint64} in generated code, use @{term Rep_uint64'} instead. 
   The symbolic implementations for code\_simp use @{term Rep_uint64}.
 
@@ -476,7 +476,7 @@ text {*
   these instances will be folded away.)
 
   To convert @{typ "64 word"} values into @{typ uint64}, use @{term "Abs_uint64'"}.
-*}
+\<close>
 
 definition Rep_uint64' where [simp]: "Rep_uint64' = Rep_uint64"
 
@@ -633,10 +633,10 @@ lemma uint64_sdiv_code [code abstract]:
     else Rep_uint64 x sdiv Rep_uint64 y)"
 unfolding uint64_sdiv_def by(simp add: Abs_uint64_inverse)
 
-text {* 
+text \<open>
   Note that we only need a translation for signed division, but not for the remainder
   because @{thm uint64_divmod_code} computes both with division only.
-*}
+\<close>
 
 code_printing
   constant uint64_div \<rightharpoonup>
@@ -829,7 +829,7 @@ code_printing
   (OCaml) "Big'_int.big'_int'_of'_int64" and
   (Scala) "BigInt"
 
-section {* Quickcheck setup *}
+section \<open>Quickcheck setup\<close>
 
 definition uint64_of_natural :: "natural \<Rightarrow> uint64"
 where "uint64_of_natural x \<equiv> Uint64 (integer_of_natural x)"

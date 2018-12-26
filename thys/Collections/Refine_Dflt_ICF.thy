@@ -1,4 +1,4 @@
-section {* \isaheader{Entry Point with genCF and original ICF} *}
+section \<open>\isaheader{Entry Point with genCF and original ICF}\<close>
 theory Refine_Dflt_ICF
 imports 
   Refine_Monadic.Refine_Monadic
@@ -8,34 +8,34 @@ imports
 begin
 
 
-text {* Contains the Monadic Refinement Framework, the generic collection 
-  framework and the original Isabelle Collection Framework *}
+text \<open>Contains the Monadic Refinement Framework, the generic collection 
+  framework and the original Isabelle Collection Framework\<close>
 
-local_setup {*
+local_setup \<open>
   let open Autoref_Fix_Rel in
     declare_prio "Gen-RBT-set" @{term "\<langle>R\<rangle>dflt_rs_rel"} PR_LAST #>
     declare_prio "RBT-set" @{term "\<langle>R\<rangle>rs.rel"} PR_LAST #>
     declare_prio "Hash-set" @{term "\<langle>R\<rangle>hs.rel"} PR_LAST #>
     declare_prio "List-set" @{term "\<langle>R\<rangle>lsi.rel"} PR_LAST
   end
-*}
+\<close>
 
-local_setup {*
+local_setup \<open>
   let open Autoref_Fix_Rel in
     declare_prio "RBT-map" @{term "\<langle>Rk,Rv\<rangle>rm.rel"} PR_LAST #>
     declare_prio "Hash-map" @{term "\<langle>Rk,Rv\<rangle>hm.rel"} PR_LAST #>
     (* declare_prio "Gen-RBT-map" @{term "\<langle>Rk,Rv\<rangle>rbt_map_rel ?cmp"} PR_LAST #>*)
     declare_prio "List-map" @{term "\<langle>Rk,Rv\<rangle>lmi.rel"} PR_LAST
   end
-*}
+\<close>
 
 text "Fallbacks"
-local_setup {*
+local_setup \<open>
   let open Autoref_Fix_Rel in
     declare_prio "Gen-List-Set" @{term "\<langle>R\<rangle>list_set_rel"} PR_LAST #>
     declare_prio "Gen-List-Map" @{term "\<langle>Rk,Rv\<rangle>list_map_rel"} PR_LAST
   end
-*}
+\<close>
 
 class id_refine
 

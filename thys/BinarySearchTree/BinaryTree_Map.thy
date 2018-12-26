@@ -4,19 +4,19 @@
     License:     LGPL
 *)
 
-section {* Mostly Isar-style Reasoning for Binary Tree Operations *}
+section \<open>Mostly Isar-style Reasoning for Binary Tree Operations\<close>
 theory BinaryTree_Map imports BinaryTree begin
 
-text {* We prove correctness of map operations
+text \<open>We prove correctness of map operations
  implemented using binary search trees from BinaryTree.
 
  This document is LGPL.
 
- Author: Viktor Kuncak, MIT CSAIL, November 2003 *}
+ Author: Viktor Kuncak, MIT CSAIL, November 2003\<close>
 
 
 (*============================================================*)
-section {* Map implementation and an abstraction function *}
+section \<open>Map implementation and an abstraction function\<close>
 (*============================================================*)
 
 type_synonym 
@@ -35,7 +35,7 @@ definition mapOf :: "'a tarray => index => 'a option" where
    | Some ia => Some (snd ia))"
 
 (*============================================================*)
-section {* Auxiliary Properties of our Implementation *}
+section \<open>Auxiliary Properties of our Implementation\<close>
 (*============================================================*)
 
 lemma mapOf_lookup1: "tlookup fst i t = None ==> mapOf t i = None"
@@ -74,8 +74,8 @@ next case (Some ia) note tsome = this
   from this tsome show "tlookup fst i t = Some (i, a)" by simp
 qed
 
-subsection {* Lemmas @{text mapset_none} and @{text mapset_some} establish 
-              a relation between the set and map abstraction of the tree *}
+subsection \<open>Lemmas \<open>mapset_none\<close> and \<open>mapset_some\<close> establish 
+              a relation between the set and map abstraction of the tree\<close>
 
 lemma assumes v: "valid_tmap t"
       shows mapset_none: "(mapOf t i = None) = (\<forall>a. (i,a) \<notin> setOf t)"
@@ -134,7 +134,7 @@ proof
 qed
 
 (*============================================================*)
-section {* Empty Map *}
+section \<open>Empty Map\<close>
 (*============================================================*)
 
 lemma mnew_spec_valid: "valid_tmap Tip"
@@ -145,7 +145,7 @@ by (simp add: mapOf_def)
 
 
 (*============================================================*)
-section {* Map Update Operation *}
+section \<open>Map Update Operation\<close>
 (*============================================================*)
 
 definition mupdate :: "index => 'a => 'a tarray => 'a tarray" where
@@ -220,7 +220,7 @@ proof -
 qed
 
 (*============================================================*)
-section {* Map Remove Operation *}
+section \<open>Map Remove Operation\<close>
 (*============================================================*)
 
 definition mremove :: "index => 'a tarray => 'a tarray" where

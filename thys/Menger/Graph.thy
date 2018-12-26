@@ -1,12 +1,12 @@
-section {* Graphs *}
+section \<open>Graphs\<close>
 
 theory Graph imports Main begin
 
-text {*
+text \<open>
   Let us now define digraphs, graphs, walks, paths, and related concepts.
-*}
+\<close>
 
-text {* @{typ 'a} is the vertex type. *}
+text \<open>@{typ 'a} is the vertex type.\<close>
 type_synonym 'a Edge = "'a \<times> 'a"
 type_synonym 'a Walk = "'a list"
 
@@ -16,9 +16,9 @@ record 'a Graph =
 abbreviation is_arc :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" (infixl "\<rightarrow>\<index>" 60) where
   "v \<rightarrow>\<^bsub>G\<^esub> w \<equiv> (v,w) \<in> E\<^bsub>G\<^esub>"
 
-text {*
+text \<open>
   We consider directed and undirected finite graphs.  Our graphs do not have multi-edges.
-*}
+\<close>
 locale Digraph =
   fixes G :: "('a, 'b) Graph_scheme" (structure)
   assumes finite_vertex_set: "finite V"
@@ -31,17 +31,17 @@ lemma finite_edge_set [simp]: "finite E" using finite_vertex_set valid_edge_set
 lemma edges_are_in_V: assumes "v\<rightarrow>w" shows "v \<in> V" "w \<in> V"
   using assms valid_edge_set by blast+
 
-subsection {* Walks *}
+subsection \<open>Walks\<close>
 
-text {* A walk is sequence of vertices connected by edges. *}
+text \<open>A walk is sequence of vertices connected by edges.\<close>
 inductive walk :: "'a Walk \<Rightarrow> bool" where
 Nil [simp]: "walk []"
 | Singleton [simp]: "v \<in> V \<Longrightarrow> walk [v]"
 | Cons: "v\<rightarrow>w \<Longrightarrow> walk (w # vs) \<Longrightarrow> walk (v # w # vs)"
 
-text {*
+text \<open>
   Show a few composition/decomposition lemmas for walks.  These will greatly simplify the proofs
-  that follow. *}
+  that follow.\<close>
 lemma walk_2 [simp]: "v\<rightarrow>w \<Longrightarrow> walk [v,w]" by (simp add: edges_are_in_V(2) walk.intros(3))
 lemma walk_comp: "\<lbrakk> walk xs; walk ys; xs = Nil \<or> ys = Nil \<or> last xs\<rightarrow>hd ys \<rbrakk> \<Longrightarrow> walk (xs @ ys)"
   by (induct rule: walk.induct, simp_all add: walk.intros(3))
@@ -66,12 +66,12 @@ lemma walk_last_edge: "\<lbrakk> walk (xs @ ys); xs \<noteq> Nil; ys \<noteq> Ni
   by (metis Cons_eq_appendI append_butlast_last_id append_eq_append_conv2 list.exhaust_sel self_append_conv)
 
 
-subsection {* Paths *}
+subsection \<open>Paths\<close>
 
-text {*
+text \<open>
   A path is a walk without repeated vertices.  This is simple enough, so most of the above lemmas
   transfer directly to paths.
-*}
+\<close>
 
 abbreviation path :: "'a Walk \<Rightarrow> bool" where "path xs \<equiv> walk xs \<and> distinct xs"
 
@@ -99,14 +99,14 @@ lemma path_middle_edge: "path (xs @ v # w # ys) \<Longrightarrow> v \<rightarrow
 lemma path_first_vertex: "path (x # xs) \<Longrightarrow> x \<notin> set xs" by simp
 lemma path_disjoint: "\<lbrakk> path (xs @ ys); xs \<noteq> Nil; x \<in> set xs \<rbrakk> \<Longrightarrow> x \<notin> set ys" by auto
 
-subsection {* The Set of All Paths *}
+subsection \<open>The Set of All Paths\<close>
 
 definition all_paths where "all_paths \<equiv> { xs | xs. path xs }"
 
-text {*
+text \<open>
   Because paths have no repeated vertices, every graph has at most finitely many distinct paths.
   This will be useful later to easily derive that any set of paths is finite.
-*}
+\<close>
 
 lemma finitely_many_paths: "finite all_paths" proof-
   have "all_paths \<subseteq> {xs. set xs \<subseteq> V \<and> length xs \<le> card V}"
@@ -116,7 +116,7 @@ qed
 
 end \<comment> \<open>context Digraph\<close>
 
-text {* We introduce shorthand notation for a path connecting two vertices. *}
+text \<open>We introduce shorthand notation for a path connecting two vertices.\<close>
 
 definition path_from_to :: "('a, 'b) Graph_scheme \<Rightarrow> 'a \<Rightarrow> 'a Walk \<Rightarrow> 'a \<Rightarrow> bool"
   ("_ \<leadsto>_\<leadsto>\<index> _" [71, 71, 71] 70) where
@@ -155,16 +155,16 @@ lemma path_from_to_last: "v \<leadsto>xs\<leadsto> w \<Longrightarrow> w \<notin
 lemma path_from_to_last': "v \<leadsto>(xs @ x # xs')\<leadsto> w \<Longrightarrow> w \<notin> set xs"
   by (metis path_from_toE bex_empty last_appendR last_in_set list.set(1) list.simps(3) path_disjoint)
 
-text {* Every walk contains a path connecting the same vertices. *}
+text \<open>Every walk contains a path connecting the same vertices.\<close>
 
 lemma walk_to_path:
   assumes "walk xs" "xs \<noteq> Nil" "hd xs = v" "last xs = w"
   shows "\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> set xs"
 proof-
-  text {* We prove this by removing loops from @{term xs} until @{term xs} is a path.
+  text \<open>We prove this by removing loops from @{term xs} until @{term xs} is a path.
     We want to perform induction over @{term "length xs"}, but @{term xs} in
     @{term "set ys \<subseteq> set xs"} should not be part of the induction hypothesis. To accomplish this,
-    we hide @{term "set xs"} behind a definition for this specific part of the goal. *}
+    we hide @{term "set xs"} behind a definition for this specific part of the goal.\<close>
   define target_set where "target_set \<equiv> set xs"
   hence "set xs \<subseteq> target_set" by simp
   thus "\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> target_set"
@@ -173,13 +173,13 @@ proof-
     then obtain xs where
       xs: "n = length xs" "walk xs" "xs \<noteq> Nil" "hd xs = v" "last xs = w" "set xs \<subseteq> target_set" and
       hyp: "\<not>(\<exists>ys. v \<leadsto>ys\<leadsto> w \<and> set ys \<subseteq> target_set)" by blast
-    text {* If @{term xs} is not a path, then @{term xs} is not distinct and we can decompose it. *}
+    text \<open>If @{term xs} is not a path, then @{term xs} is not distinct and we can decompose it.\<close>
     then obtain ys rest u
       where xs_decomp: "u \<in> set ys" "distinct ys" "xs = ys @ u # rest"
       using not_distinct_conv_prefix by (metis path_from_toI)
-    text {* @{term u} appears in @{term ys}, so we have a loop in @{term xs} starting from an
+    text \<open>@{term u} appears in @{term ys}, so we have a loop in @{term xs} starting from an
       occurrence of @{term u} in @{term ys} ending in the vertex @{term u} in @{term "u # rest"}.
-      We define @{term zs} as @{term xs} without this loop. *}
+      We define @{term zs} as @{term xs} without this loop.\<close>
     obtain ys' ys_suffix where
       ys_decomp: "ys = ys' @ u # ys_suffix" by (meson split_list xs_decomp(1))
     define zs where "zs \<equiv> ys' @ u # rest"
@@ -194,9 +194,9 @@ proof-
   qed simp
 qed
 
-subsection {* Edges of Walks *}
+subsection \<open>Edges of Walks\<close>
 
-text {* The set of edges on a walk.  Note that this is empty for walks of length 0 or 1. *}
+text \<open>The set of edges on a walk.  Note that this is empty for walks of length 0 or 1.\<close>
 
 definition edges_of_walk :: "'a Walk \<Rightarrow> 'a Edge set" where
   "edges_of_walk xs = { (v,w) | v w xs_pre xs_post. xs = xs_pre @ v # w # xs_post }"
@@ -307,10 +307,10 @@ proof
   qed
 qed
 
-text {*
+text \<open>
   A path has no repeated vertices, so if we split a path at an edge we find that the two pieces
   do not contain this edge any more.
-*}
+\<close>
 
 lemma path_edges:
   assumes "path xs" "(v,w) \<in> edges_of_walk xs"
@@ -349,12 +349,12 @@ proof-
   then show ?thesis using walk_edges_decomp[of xs x xs'] by auto
 qed
 
-subsection {* The First Edge of a Walk *}
+subsection \<open>The First Edge of a Walk\<close>
 
-text {*
+text \<open>
   In the proof of Menger's Theorem, we will often talk about the first edge of a path.  Let us
   define this concept.
-*}
+\<close>
 
 fun first_edge_of_walk where
   "first_edge_of_walk (v # w # xs) = (v, w)"
@@ -380,35 +380,35 @@ next
   then show ?case using path_edges by fastforce
 qed blast
 
-subsection {* Distance *}
+subsection \<open>Distance\<close>
 
-text {*
+text \<open>
   The distance between two vertices is the minimum length of a path.  Note that this is not a
   symmetric function because we are on digraphs.
-*}
+\<close>
 definition distance :: "'a \<Rightarrow> 'a \<Rightarrow> nat" where
   "distance v w \<equiv> Min { length xs | xs. v\<leadsto>xs\<leadsto>w }"
 
-text {*
+text \<open>
   The @{const Min} operator applies only to finite sets, so let us prove that this is the case.
-*}
+\<close>
 lemma distance_lengths_finite: "finite { length xs | xs. v\<leadsto>xs\<leadsto>w }" proof-
   have "{ length xs | xs. v\<leadsto>xs\<leadsto>w } \<subseteq> { n | n. n \<le> card V }" using path_length by blast
   then show ?thesis using finite_Collect_le_nat by (meson finite_subset)
 qed
 
-text {*
+text \<open>
   If we have a concrete path from @{term v} to @{term w}, then the length of this path bounds the
   distance from @{term v} to @{term w}.
-*}
+\<close>
 
 lemma distance_upper_bound: "v\<leadsto>xs\<leadsto>w \<Longrightarrow> distance v w \<le> length xs"
   unfolding distance_def using Min_le[OF distance_lengths_finite] by blast
 
-text {*
+text \<open>
   Another characterization of @{const distance}: If we have a concrete minimal path from @{term v}
   to @{term w}, this defines the distance.
-*}
+\<close>
 
 lemma distance_witness:
   assumes xs: "v \<leadsto>xs\<leadsto> w"
@@ -420,9 +420,9 @@ proof-
     by (metis (mono_tags, lifting) distance_lengths_finite xs mem_Collect_eq)
 qed
 
-subsection {* Subgraphs *}
+subsection \<open>Subgraphs\<close>
 
-text {* We only need one kind of subgraph: The subgraph obtained by removing a single vertex. *}
+text \<open>We only need one kind of subgraph: The subgraph obtained by removing a single vertex.\<close>
 
 definition remove_vertex :: "'a \<Rightarrow> ('a, 'b) Graph_scheme" where
   "remove_vertex x \<equiv> G\<lparr> verts := V - {x}, arcs := Restr E (V - {x}) \<rparr>"
@@ -434,7 +434,7 @@ lemma remove_vertex_E': "v \<rightarrow>\<^bsub>remove_vertex x\<^esub> w \<Long
 lemma remove_vertex_E'': "\<lbrakk> v\<rightarrow>w; v \<noteq> x; w \<noteq> x \<rbrakk> \<Longrightarrow> v \<rightarrow>\<^bsub>remove_vertex x\<^esub> w"
   by (simp add: edges_are_in_V remove_vertex_E)
 
-text {* Of course, this is still a digraph. *}
+text \<open>Of course, this is still a digraph.\<close>
 lemma remove_vertex_Digraph: "Digraph (remove_vertex v)" proof
   let ?V = "V\<^bsub>remove_vertex v\<^esub>" let ?E = "E\<^bsub>remove_vertex v\<^esub>"
   show "finite ?V" unfolding remove_vertex_def using finite_vertex_set by simp
@@ -446,12 +446,12 @@ lemma remove_vertex_Digraph: "Digraph (remove_vertex v)" proof
   have "\<And>x y. \<lbrakk> (x,y) \<in> ?E; (x,y) \<notin> E \<rbrakk> \<Longrightarrow> (y,x) \<in> ?E" unfolding remove_vertex_def by simp
 qed
 
-text {*
+text \<open>
   We are also going to need a few lemmas about how walks and paths behave when we remove a vertex.
 
   First, if we remove a vertex that is not on a walk @{term xs}, then @{term xs} is still a walk
   after removing this vertex.
-*}
+\<close>
 
 lemma remove_vertex_walk:
   assumes "walk xs" "x \<notin> set xs"
@@ -470,16 +470,16 @@ proof-
   qed simp
 qed
 
-text {* The same holds for paths. *}
+text \<open>The same holds for paths.\<close>
 
 lemma remove_vertex_path_from_to:
   "\<lbrakk> v \<leadsto>xs\<leadsto> w; x \<in> V; x \<notin> set xs \<rbrakk> \<Longrightarrow> v \<leadsto>xs\<leadsto>\<^bsub>remove_vertex x\<^esub> w"
   using path_from_to_def remove_vertex_walk by fastforce
 
-text {*
+text \<open>
   Conversely, if something was a walk or a path in the subgraph, then it is also a walk or a path
   in the supergraph.
-*}
+\<close>
 lemma remove_vertex_walk_add:
   assumes "Digraph.walk (remove_vertex x) xs"
   shows "walk xs"
@@ -499,12 +499,12 @@ lemma remove_vertex_path_from_to_add: "v \<leadsto>xs\<leadsto>\<^bsub>remove_ve
 
 end \<comment> \<open>context Digraph\<close>
 
-subsection {* Two Distinguished Distinct Non-adjacent Vertices. *}
+subsection \<open>Two Distinguished Distinct Non-adjacent Vertices.\<close>
 
-text {*
+text \<open>
   The setup for Menger's Theorem requires two distinguished distinct non-adjacent vertices
   @{term v0} and @{term v1}.  Let us pin down this concept with the following locale.
-*}
+\<close>
 
 locale v0_v1_Digraph = Digraph +
   fixes v0 v1 :: "'a"
@@ -512,10 +512,10 @@ locale v0_v1_Digraph = Digraph +
     and v0_nonadj_v1: "\<not>v0\<rightarrow>v1"
     and v0_neq_v1: "v0 \<noteq> v1"
 
-text {*
+text \<open>
   The only lemma we need about @{locale v0_v1_Digraph} for now is that it is closed under removing
   a vertex that is not @{term v0} or @{term v1}.
-*}
+\<close>
 lemma (in v0_v1_Digraph) remove_vertices_v0_v1_Digraph:
   assumes "v \<noteq> v0" "v \<noteq> v1"
   shows "v0_v1_Digraph (remove_vertex v) v0 v1"
@@ -525,22 +525,22 @@ proof (rule v0_v1_Digraph.intro)
     by unfold_locales blast+
 qed (simp add: remove_vertex_Digraph)
 
-subsection {* Undirected Graphs *}
+subsection \<open>Undirected Graphs\<close>
 
-text {*
+text \<open>
   We represent undirecteded graphs as a special case of digraphs where every undirected edge
   is represented as an edge in both directions.  We also exclude loops because loops are uncommon
   in undirected graphs.
 
   As we will explain in the next paragraph, all of this has no bearing on the validity of
   Menger's Theorem for undirected graphs.
-*}
+\<close>
 
 locale Graph = Digraph +
   assumes undirected: "v\<rightarrow>w = w\<rightarrow>v"
       and no_loops: "\<not>v\<rightarrow>v"
 
-text {*
+text \<open>
   We observe that this makes @{locale Digraph} a sublocale of @{locale Graph}, meaning that every
   theorem we prove for digraphs automatically holds for undirected graphs, although it may not make
   sense because for example ``connectedness'' (if we were to define it) would need different
@@ -553,6 +553,6 @@ text {*
 
   For this reason we will not use the @{term Graph} locale again in this proof development and it
   exists merely to show that undirected graphs are covered as a special case by our definitions.
-*}
+\<close>
 
 end

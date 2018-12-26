@@ -1,13 +1,13 @@
-section {* Sequential composition for conjunctive models \label{S:conjunctive-sequential} *}
+section \<open>Sequential composition for conjunctive models \label{S:conjunctive-sequential}\<close>
 
 theory Conjunctive_Sequential
 imports Sequential
 begin
 
-text {*
+text \<open>
   Sequential left-distributivity is only supported by conjunctive models
   but does not apply in general. The relational model is one such example.
-*}
+\<close>
 
 locale seq_finite_conjunctive = seq_distrib_right + 
   assumes seq_inf_distrib: "c;(d\<^sub>0 \<sqinter> d\<^sub>1) = c;d\<^sub>0 \<sqinter> c;d\<^sub>1"

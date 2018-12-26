@@ -2,7 +2,7 @@ theory "AList-Utils-Nominal"
 imports "AList-Utils" "Nominal-Utils"
 begin
 
-subsubsection {* Freshness lemmas related to associative lists *}
+subsubsection \<open>Freshness lemmas related to associative lists\<close>
 
 lemma domA_not_fresh:
   "x \<in> domA \<Gamma> \<Longrightarrow> \<not>(atom x \<sharp> \<Gamma>)"
@@ -66,7 +66,7 @@ lemma map_of_fv_subset: "x \<in> domA \<Gamma> \<Longrightarrow> fv (the (map_of
 lemma map_of_Some_fv_subset: "map_of \<Gamma> x = Some e \<Longrightarrow> fv e \<subseteq> fv \<Gamma>"
   by (metis domA_from_set map_of_fv_subset map_of_SomeD option.sel)
 
-subsubsection {* Equivariance lemmas *}
+subsubsection \<open>Equivariance lemmas\<close>
 
 lemma domA[eqvt]:
   "\<pi> \<bullet> domA \<Gamma> = domA (\<pi> \<bullet> \<Gamma>)"
@@ -77,7 +77,7 @@ lemma mapCollect[eqvt]:
 unfolding mapCollect_def
 by perm_simp rule
 
-subsubsection {* Freshness and distinctness *}
+subsubsection \<open>Freshness and distinctness\<close>
 
 lemma fresh_distinct:
  assumes "atom ` S \<sharp>* \<Gamma>"
@@ -109,7 +109,7 @@ lemma fresh_distinct_fv:
  using assms
  by (metis disjoint_iff_not_equal fresh_star_def fv_not_fresh image_eqI)
 
-subsubsection {* Pure codomains *}
+subsubsection \<open>Pure codomains\<close>
 
 lemma domA_fv_pure:
   fixes \<Gamma> :: "('a::at_base \<times> 'b::pure) list"

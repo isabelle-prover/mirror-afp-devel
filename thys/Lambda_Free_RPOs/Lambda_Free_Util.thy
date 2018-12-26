@@ -12,7 +12,7 @@ begin
 text \<open>
 This theory gathers various lemmas that likely belong elsewhere in Isabelle or
 the \emph{Archive of Formal Proofs}. Most (but certainly not all) of them are
-used to formalize orders on @{text \<lambda>}-free higher-order terms.
+used to formalize orders on \<open>\<lambda>\<close>-free higher-order terms.
 \<close>
 
 hide_const (open) Complex.arg

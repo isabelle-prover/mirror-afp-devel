@@ -28,7 +28,7 @@ next
   assume "y \<Rightarrow> z"
   assume "\<exists>T. trace z T c'"
   then obtain T where "trace z T c'"..
-  with `y \<Rightarrow> z`
+  with \<open>y \<Rightarrow> z\<close>
   have "trace y (z#T) c'" by auto
   thus "\<exists>T. trace y T c'" by blast
 qed
@@ -52,7 +52,7 @@ proof-
     thus ?case 
     proof (cases "P conf'")
     case True
-      from trace_cons.IH[OF True `\<not> P end`]
+      from trace_cons.IH[OF True \<open>\<not> P end\<close>]
       obtain T\<^sub>1 c\<^sub>2 c\<^sub>3 T\<^sub>2 where "T = T\<^sub>1 @ c\<^sub>3 # T\<^sub>2 \<and> trace conf' T\<^sub>1 c\<^sub>2 \<and> (\<forall>x\<in>set T\<^sub>1. P x) \<and> P c\<^sub>2 \<and> c\<^sub>2 \<Rightarrow> c\<^sub>3 \<and> \<not> P c\<^sub>3 \<and> trace c\<^sub>3 T\<^sub>2 end" by auto
       with True
       have "conf' # T = (conf' # T\<^sub>1) @ c\<^sub>3 # T\<^sub>2 \<and> trace conf (conf' # T\<^sub>1) c\<^sub>2 \<and> (\<forall>x\<in>set (conf' # T\<^sub>1). P x)  \<and> P c\<^sub>2 \<and> c\<^sub>2 \<Rightarrow> c\<^sub>3 \<and> \<not> P c\<^sub>3  \<and> trace c\<^sub>3 T\<^sub>2 end" by (auto intro: trace_cons)
@@ -114,7 +114,7 @@ proof-
     thus ?thesis..
   next
     fix x
-    note `stack c\<^sub>2 \<lesssim> stack c\<^sub>3`
+    note \<open>stack c\<^sub>2 \<lesssim> stack c\<^sub>3\<close>
     also
     assume "stack c\<^sub>4 = x # stack c\<^sub>3"
     hence "stack c\<^sub>3 \<lesssim> stack c\<^sub>4" by simp
@@ -158,7 +158,7 @@ proof(rule balE)
   assume "trace c\<^sub>1 (c\<^sub>2 # T) c\<^sub>5"
   hence "c\<^sub>1 \<Rightarrow> c\<^sub>2" and "trace c\<^sub>2 T c\<^sub>5" by (auto elim: trace_consE)
 
-  note `trace c\<^sub>2 T c\<^sub>5`
+  note \<open>trace c\<^sub>2 T c\<^sub>5\<close>
   moreover
   have "stack c\<^sub>2 \<lesssim> stack c\<^sub>2" by simp
   moreover
@@ -173,19 +173,19 @@ proof(rule balE)
   proof (rule that)
     show "T = T\<^sub>1 @ c\<^sub>4 # T\<^sub>2" by fact
 
-    from `c\<^sub>3 \<Rightarrow> c\<^sub>4` `stack c\<^sub>2 \<lesssim> stack c\<^sub>3` `\<not> stack c\<^sub>2 \<lesssim> stack c\<^sub>4`
+    from \<open>c\<^sub>3 \<Rightarrow> c\<^sub>4\<close> \<open>stack c\<^sub>2 \<lesssim> stack c\<^sub>3\<close> \<open>\<not> stack c\<^sub>2 \<lesssim> stack c\<^sub>4\<close>
     have "stack c\<^sub>3 = stack c\<^sub>2" and c\<^sub>2': "stack c\<^sub>4 = tl (stack c\<^sub>2)" by (rule stack_passes_lower_bound)+
 
-    from  `trace c\<^sub>2 T\<^sub>1 c\<^sub>3` `\<forall> a \<in> set T\<^sub>1. stack c\<^sub>2 \<lesssim> stack a` this(1)
+    from  \<open>trace c\<^sub>2 T\<^sub>1 c\<^sub>3\<close> \<open>\<forall> a \<in> set T\<^sub>1. stack c\<^sub>2 \<lesssim> stack a\<close> this(1)
     show "bal c\<^sub>2 T\<^sub>1 c\<^sub>3"..
 
     show "c\<^sub>3 \<Rightarrow> c\<^sub>4" by fact
 
     have c\<^sub>4: "stack c\<^sub>4 = stack c\<^sub>1" using c\<^sub>2 c\<^sub>2' by simp
 
-    note  `trace c\<^sub>4 T\<^sub>2 c\<^sub>5` 
+    note  \<open>trace c\<^sub>4 T\<^sub>2 c\<^sub>5\<close> 
     moreover
-    have "\<forall> a\<in>set T\<^sub>2. stack c\<^sub>4 \<lesssim> stack a" using c\<^sub>4 T `T = _`  by auto
+    have "\<forall> a\<in>set T\<^sub>2. stack c\<^sub>4 \<lesssim> stack a" using c\<^sub>4 T \<open>T = _\<close>  by auto
     moreover
     have "stack c\<^sub>5 = stack c\<^sub>4" unfolding c\<^sub>4 c\<^sub>5..
     ultimately

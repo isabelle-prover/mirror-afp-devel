@@ -2,11 +2,11 @@ theory Partial_Equivalence_Relation
 imports Main
 begin
 
-subsection {* Partial Equivalence Relations *}
-text {*
+subsection \<open>Partial Equivalence Relations\<close>
+text \<open>
   The abstract datatype for a union-find structure is a partial equivalence
   relation.
-*}
+\<close>
 
 definition "part_equiv R \<equiv> sym R \<and> trans R"
 
@@ -30,7 +30,7 @@ lemma part_equiv_trans_sym:
   apply (metis part_equiv_sym part_equiv_trans)+
   done
 
-text {* We define a shortcut for symmetric closure. *}
+text \<open>We define a shortcut for symmetric closure.\<close>
 definition "symcl R \<equiv> R \<union> R\<inverse>"
 
 lemma sym_symcl[simp, intro!]: "sym (symcl R)"
@@ -38,8 +38,8 @@ lemma sym_symcl[simp, intro!]: "sym (symcl R)"
 lemma sym_trans_is_part_equiv[simp, intro!]: "part_equiv ((symcl R)\<^sup>*)"
   by (metis part_equiv_def sym_rtrancl sym_symcl trans_rtrancl)
 
-text {* We also define a shortcut for melding the equivalence classes of
-  two given elements *}
+text \<open>We also define a shortcut for melding the equivalence classes of
+  two given elements\<close>
 definition per_union where "per_union R a b \<equiv> R \<union> 
   { (x,y). (x,a)\<in>R \<and> (y,b)\<in>R } \<union> { (y,x). (x,a)\<in>R \<and> (y,b)\<in>R }"
 

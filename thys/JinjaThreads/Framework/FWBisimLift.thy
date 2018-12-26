@@ -125,7 +125,7 @@ proof -
   proof(cases)
     case (NormalAction ta1 x1' m1')
     with \<tau>1 s1 have "\<not> \<tau>move1 (x1, m1) ta1 (x1', m1')" by(simp)
-    from simulation1[OF bisim `t \<turnstile> (x1, m1) -1-ta1\<rightarrow> (x1', m1')` this]
+    from simulation1[OF bisim \<open>t \<turnstile> (x1, m1) -1-ta1\<rightarrow> (x1', m1')\<close> this]
     obtain x2' m2' x2'' m2'' ta2
       where red2: "r2.silent_moves t (x2, m2) (x2', m2')"
       and red2': "t \<turnstile> (x2', m2') -2-ta2\<rightarrow> (x2'', m2'')"
@@ -136,11 +136,11 @@ proof -
     let ?s2'' = "((Running, x2''), m2'')"
     let ?ta2 = "(convert_TA_initial (convert_obs_initial ta2))"
     from red2 have "\<tau>trsys.silent_moves (r2.init_fin t) r2.init_fin_\<tau>move s2 ?s2'"
-      unfolding s2 `status = Running` by(rule r2.init_fin_silent_moves_RunningI)
+      unfolding s2 \<open>status = Running\<close> by(rule r2.init_fin_silent_moves_RunningI)
     moreover from red2' have "r2.init_fin t ?s2' ?ta2 ?s2''" by(rule r2.init_fin.NormalAction)
     moreover from \<tau>2 have "\<not> r2.init_fin_\<tau>move ?s2' ?ta2 ?s2''" by simp
-    moreover from bisim' have "t \<turnstile> s1' \<approx>i ?s2''"using `s1' = ((Running, x1'), m1')` by simp
-    moreover from tasim `tl1 = convert_TA_initial (convert_obs_initial ta1)`
+    moreover from bisim' have "t \<turnstile> s1' \<approx>i ?s2''"using \<open>s1' = ((Running, x1'), m1')\<close> by simp
+    moreover from tasim \<open>tl1 = convert_TA_initial (convert_obs_initial ta1)\<close>
     have "ta_bisim init_fin_bisim tl1 ?ta2" by simp
     ultimately show ?thesis by blast
   next
@@ -148,19 +148,19 @@ proof -
     with s1 s2 bisim show ?thesis by(auto simp del: split_paired_Ex)
   next
     case ThreadFinishAction
-    from final1_simulation[OF bisim] `final1 x1`
+    from final1_simulation[OF bisim] \<open>final1 x1\<close>
     obtain x2' m2' where red2: "r2.silent_moves t (x2, m2) (x2', m2')"
       and bisim': "t \<turnstile> (x1, m1) \<approx> (x2', m2')"
       and fin2: "final2 x2'" by auto
     let ?s2' = "((Running, x2'), m2')"
     let ?s2'' = "((Finished, x2'), m2')"
     from red2 have "\<tau>trsys.silent_moves (r2.init_fin t) r2.init_fin_\<tau>move s2 ?s2'"
-      unfolding s2 `status = Running` by(rule r2.init_fin_silent_moves_RunningI)
+      unfolding s2 \<open>status = Running\<close> by(rule r2.init_fin_silent_moves_RunningI)
     moreover from fin2 have "r2.init_fin t ?s2' \<lbrace>ThreadFinishAction\<rbrace> ?s2''" ..
     moreover have "\<not> r2.init_fin_\<tau>move ?s2' \<lbrace>ThreadFinishAction\<rbrace> ?s2''" by simp
     moreover have "t \<turnstile> s1' \<approx>i ?s2''"
-      using `s1' = ((Finished, x1), m1)` fin2 `final1 x1` bisim' by simp
-    ultimately show ?thesis unfolding `tl1 = \<lbrace>ThreadFinishAction\<rbrace>`
+      using \<open>s1' = ((Finished, x1), m1)\<close> fin2 \<open>final1 x1\<close> bisim' by simp
+    ultimately show ?thesis unfolding \<open>tl1 = \<lbrace>ThreadFinishAction\<rbrace>\<close>
       by(blast intro: ta_bisim_init_fin_bisim_ThreadFinishAction)
   qed
 qed

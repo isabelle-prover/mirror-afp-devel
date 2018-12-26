@@ -3,7 +3,7 @@ imports Simple_Firewall.Simple_Packet Conntrack_State
 begin
 
 section\<open>Tagged Simple Packet\<close>
-  text\<open>Packet constants are prefixed with @{text p}\<close>
+  text\<open>Packet constants are prefixed with \<open>p\<close>\<close>
 
   text\<open>A packet tagged with the following phantom fields:
              conntrack connection state\<close>

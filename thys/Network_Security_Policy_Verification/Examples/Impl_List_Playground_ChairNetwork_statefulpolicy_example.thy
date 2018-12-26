@@ -3,9 +3,9 @@ imports "../TopoS_Impl"
 begin
 
 
-text{*An example of our chair network [simplified]*}
+text\<open>An example of our chair network [simplified]\<close>
 
-text{*Our access control view on the network*}
+text\<open>Our access control view on the network\<close>
   definition ChairNetwork_empty :: "string list_graph" where
     "ChairNetwork_empty \<equiv> \<lparr> nodesL = [''WebSrv'', ''FilesSrv'', ''Printer'',
                                 ''Students'',
@@ -16,8 +16,8 @@ text{*Our access control view on the network*}
   lemma "wf_list_graph ChairNetwork_empty" by eval
 
 
-subsection{*Our security requirements*}
-  subsubsection{*We have a server with confidential data*}
+subsection\<open>Our security requirements\<close>
+  subsubsection\<open>We have a server with confidential data\<close>
     definition ConfidentialChairData::"(string SecurityInvariant)" where
       "ConfidentialChairData \<equiv> new_configured_list_SecurityInvariant SINVAR_BLPtrusted_impl.SINVAR_LIB_BLPtrusted \<lparr> 
           node_properties = [''FilesSrv'' \<mapsto> \<lparr> security_level = 1, trusted = False \<rparr>,
@@ -25,27 +25,27 @@ subsection{*Our security requirements*}
           \<rparr> ''confidential data''"
 
 
-  subsubsection{* accessibly by employees and students*}
+  subsubsection\<open>accessibly by employees and students\<close>
     definition "PrintingACL \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
           node_properties = [''Printer'' \<mapsto> Master [''Employees'', ''Students''],
                              ''Employees'' \<mapsto> Care,
                              ''Students'' \<mapsto> Care]
           \<rparr> ''printing acl''"
 
-  subsubsection{* Printers are information sinks *}
+  subsubsection\<open>Printers are information sinks\<close>
     definition "PrintingSink \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_Sink \<lparr> 
           node_properties = [''Printer'' \<mapsto> Sink]
           \<rparr> ''printing sink''"
 
 
 
-  subsubsection{*Students and Employees may access each other but are not accessible from the outside*}
+  subsubsection\<open>Students and Employees may access each other but are not accessible from the outside\<close>
     definition "InternalSubnet \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_SubnetsInGW \<lparr> 
           node_properties = [''Students'' \<mapsto> Member, ''Employees'' \<mapsto> Member]
           \<rparr> ''internal subnet''"
 
 
-  subsubsection{* The files server is only accessibly by employees*}
+  subsubsection\<open>The files server is only accessibly by employees\<close>
     definition "FilesSrvACL \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners \<lparr> 
           node_properties = [''FilesSrv'' \<mapsto> Master [''Employees''],
                              ''Employees'' \<mapsto> Care]
@@ -67,9 +67,9 @@ definition "ChairNetwork = generate_valid_topology ChairSecurityRequirements
 value "ChairNetwork"
 
 
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "ChairSecurityRequirements"} @{term "ChairNetwork"};
-*}
+\<close>
 
 
 definition "ChairNetwork_stateful_IFS = \<lparr> hostsL = nodesL ChairNetwork, flows_fixL = edgesL ChairNetwork, flows_stateL = filter_IFS_no_violations ChairNetwork ChairSecurityRequirements \<rparr>"
@@ -111,28 +111,28 @@ lemma "set (flows_stateL (generate_valid_stateful_policy_IFSACS ChairNetwork Cha
 definition "ChairNetwork_stateful = generate_valid_stateful_policy_IFSACS ChairNetwork ChairSecurityRequirements"
 
 
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful"})] ""; 
-*}
+\<close>
 
 (*these requirements impose no restrictoins on the stateful flows*)
 definition "ChairNetwork_stateful_v2 = generate_valid_stateful_policy_IFSACS ChairNetwork
     [ConfidentialChairData, PrintingACL,  InternalSubnet, FilesSrvACL]"
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful_v2"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
      @{term "flows_stateL ChairNetwork_stateful_v2"})] ""; 
-*}
+\<close>
 
 (*The sink requirements imposes the restriction that the printer cannot answer*)
 definition "ChairNetwork_stateful_v3 = generate_valid_stateful_policy_IFSACS ChairNetwork [PrintingSink]"
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL ChairNetwork_stateful_v3"}
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL ChairNetwork_stateful_v3"})] ""; 
-*}
+\<close>
 
-subsection{*An example of bad side-effects in access control policies*}
+subsection\<open>An example of bad side-effects in access control policies\<close>
 
   definition ACL_not_with::"(string SecurityInvariant)" where
     "ACL_not_with \<equiv> new_configured_list_SecurityInvariant SINVAR_ACLnotCommunicateWith_impl.SINVAR_LIB_ACLnotCommunicateWith \<lparr> 
@@ -167,7 +167,7 @@ value "generate_valid_stateful_policy_IFSACS_2 simple_network [ACL_not_with]"
 
 
 
-subsection{*performance test*}
+subsection\<open>performance test\<close>
 (*6 minutes , about 1.8k edges in graph, most of the times, no requirements apply,
   simply added some nodes, edges to the chair network. topology is valid*)
 (*value "generate_valid_stateful_policy_IFSACS biggraph ChairSecurityRequirements"*)

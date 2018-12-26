@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Abstract scheduler *}
+section \<open>Abstract scheduler\<close>
 
 theory Scheduler
 imports
@@ -16,9 +16,9 @@ imports
 
 begin
 
-text {*
+text \<open>
   Define an unfold operation that puts everything into one function to avoid duplicate evaluation.
-*}
+\<close>
 
 definition unfold_tllist' :: "('a \<Rightarrow> 'b \<times> 'a + 'c) \<Rightarrow> 'a \<Rightarrow> ('b, 'c) tllist"
 where [code del]: 
@@ -173,11 +173,11 @@ where
   "thread_ok ts (NewThread t x m) = free_thread_id ts t"
 | "thread_ok ts (ThreadExists t b) = (b \<noteq> free_thread_id ts t)"
 
-text {*
-  We use @{term "redT_updT"} in @{text "thread_ok"} instead of @{term "redT_updT'"} like in theory @{theory JinjaThreads.FWThread}.
+text \<open>
+  We use @{term "redT_updT"} in \<open>thread_ok\<close> instead of @{term "redT_updT'"} like in theory @{theory JinjaThreads.FWThread}.
   This fixes @{typ "'x"} in the @{typ "('t,'x,'m) new_thread_action list"} type, but avoids @{term "undefined"},
   which raises an exception during execution in the generated code.
-*}
+\<close>
 
 primrec thread_oks :: "'m_t \<Rightarrow> ('t,'x,'m) new_thread_action list \<Rightarrow> bool"
 where
@@ -347,9 +347,9 @@ where
 
 end
 
-text {*
-  Implement @{text "pick_wakeup"} by @{text "map_sel'"}
-*}
+text \<open>
+  Implement \<open>pick_wakeup\<close> by \<open>map_sel'\<close>
+\<close>
 
 definition pick_wakeup_via_sel :: 
   "('m_w \<Rightarrow> ('t \<Rightarrow> 'w wait_set_status \<Rightarrow> bool) \<rightharpoonup> 't \<times> 'w wait_set_status) 
@@ -597,7 +597,7 @@ proof -
     let ?f = "\<lambda>(t, w') ws'. if w' = InWS w then ws_update t (PostWS WSNotified) ws' else ws'"
     let ?I = "\<lambda>T ws'. (\<forall>k. if k\<notin>T \<and> ws_\<alpha> ws k = \<lfloor>InWS w\<rfloor> then ws_\<alpha> ws' k = \<lfloor>PostWS WSNotified\<rfloor> else ws_\<alpha> ws' k = ws_\<alpha> ws k) \<and> ws_invar ws'"
     from invar have "?I (dom (ws_\<alpha> ws)) ws" by(auto simp add: ws.lookup_correct)
-    with `ws_invar ws` have "?I {} (ws_iterate ws (\<lambda>_. True) ?f ws)"
+    with \<open>ws_invar ws\<close> have "?I {} (ws_iterate ws (\<lambda>_. True) ?f ws)"
     proof(rule ws.iterate_rule_P[where I="?I"])
       fix t w' T ws'
       assume t: "t \<in> T" and w': "ws_\<alpha> ws t = \<lfloor>w'\<rfloor>"
@@ -630,14 +630,14 @@ lemma exec_updWs_correct:
   shows "redT_updWs t (ws_\<alpha> ws) was (ws_\<alpha> (exec_updWs \<sigma> t ws was))" (is "?thesis1")
   and "ws_invar (exec_updWs \<sigma> t ws was)" (is "?thesis2")
 proof -
-  from `ws_invar ws` `dom (ws_\<alpha> ws) \<subseteq> T` 
+  from \<open>ws_invar ws\<close> \<open>dom (ws_\<alpha> ws) \<subseteq> T\<close> 
   have "?thesis1 \<and> ?thesis2"
   proof(induct was arbitrary: ws)
     case Nil thus ?case by(auto simp add: exec_updWs_def redT_updWs_def)
   next
     case (Cons wa was)
     let ?ws' = "exec_updW \<sigma> t ws wa"
-    from `ws_invar ws` `\<sigma>_invar \<sigma> T` `dom (ws_\<alpha> ws) \<subseteq> T` `t \<in> T`
+    from \<open>ws_invar ws\<close> \<open>\<sigma>_invar \<sigma> T\<close> \<open>dom (ws_\<alpha> ws) \<subseteq> T\<close> \<open>t \<in> T\<close>
     have invar': "ws_invar ?ws'" and red: "redT_updW t (ws_\<alpha> ws) wa (ws_\<alpha> ?ws')"
       by(rule exec_updW_correct)+
     have "dom (ws_\<alpha> ?ws') \<subseteq> T"
@@ -645,7 +645,7 @@ proof -
       fix t' assume "t' \<in> dom (ws_\<alpha> ?ws')"
       with red have "t' \<in> dom (ws_\<alpha> ws) \<or> t = t'"
         by(auto dest!: redT_updW_Some_otherD split: wait_set_status.split_asm)
-      with `dom (ws_\<alpha> ws) \<subseteq> T` `t \<in> T` show "t' \<in> T" by auto
+      with \<open>dom (ws_\<alpha> ws) \<subseteq> T\<close> \<open>t \<in> T\<close> show "t' \<in> T" by auto
     qed
     with invar' have "redT_updWs t (ws_\<alpha> ?ws') was (ws_\<alpha> (exec_updWs \<sigma> t ?ws' was)) \<and> ws_invar (exec_updWs \<sigma> t ?ws' was)"
       by(rule Cons.hyps)
@@ -734,7 +734,7 @@ proof -
   from invar wstok execT show red: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')" 
     and invar': "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))" "\<sigma>'' = \<sigma>"
     by(rule execT_Some)+(rule q)
-  from invariant red `state_\<alpha> s \<in> invariant` 
+  from invariant red \<open>state_\<alpha> s \<in> invariant\<close> 
   show "state_\<alpha> s' \<in> invariant" by(rule invariant3pD)
 qed
 
@@ -761,8 +761,8 @@ proof -
   from assms show ?thesis1
   proof(coinduction arbitrary: \<sigma> s) 
     case (Runs \<sigma> s)
-    note invar = `state_invar s` `\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))` `state_\<alpha> s \<in> invariant`
-      and wstok = `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))`
+    note invar = \<open>state_invar s\<close> \<open>\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))\<close> \<open>state_\<alpha> s \<in> invariant\<close>
+      and wstok = \<open>wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))\<close>
     show ?case
     proof(cases "exec_aux (\<sigma>, s)")
       case (TNil s')
@@ -796,23 +796,23 @@ next
       by(auto simp add: exec_aux_def unfold_tllist' split_beta split: sum.split_asm dest: exec_step_InrD)
   next
     case (TCons \<sigma>tta ttls)
-    from `TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)`
+    from \<open>TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)\<close>
     obtain \<sigma>'' t ta \<sigma>' s' 
       where [simp]: "\<sigma>tta = (\<sigma>'', t, ta)"
       and ttls: "ttls = exec_aux (\<sigma>', s')"
       and step: "exec_step (\<sigma>, s) = Inl ((\<sigma>'', t, ta), \<sigma>', s')"
       unfolding exec_aux_def by(subst (asm) (2) unfold_tllist')(fastforce split: sum.split_asm)
     note ttls moreover
-    from `state_invar s` `\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))` `state_\<alpha> s \<in> invariant` `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))` step
+    from \<open>state_invar s\<close> \<open>\<sigma>_invar \<sigma> (dom (thr_\<alpha> (thr s)))\<close> \<open>state_\<alpha> s \<in> invariant\<close> \<open>wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))\<close> step
     have [simp]: "\<sigma>'' = \<sigma>"
       and invar': "state_invar s'" "\<sigma>_invar \<sigma>' (dom (thr_\<alpha> (thr s')))" "state_\<alpha> s' \<in> invariant"
       and redT: "\<alpha>.redT (state_\<alpha> s) (t, ta) (state_\<alpha> s')"
       by(rule exec_step_into_redT)+
     note invar' moreover
-    from \<alpha>.redT_preserves_wset_thread_ok[OF redT] `wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))`
+    from \<alpha>.redT_preserves_wset_thread_ok[OF redT] \<open>wset_thread_ok (ws_\<alpha> (wset s)) (thr_\<alpha> (thr s))\<close>
     have "wset_thread_ok (ws_\<alpha> (wset s')) (thr_\<alpha> (thr s'))" by simp
     ultimately have "state_invar (terminal (exec_aux (\<sigma>', s')))" by(rule TCons)
-    with `TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)`[symmetric]
+    with \<open>TCons \<sigma>tta ttls = exec_aux (\<sigma>, s)\<close>[symmetric]
     show ?case unfolding ttls by simp
   qed
 qed
@@ -904,11 +904,11 @@ proof -
         show ?thesis
         proof
           assume ?lhs
-          with True xln invar tst `state_invar s` t show ?rhs
+          with True xln invar tst \<open>state_invar s\<close> t show ?rhs
             by(fastforce simp add: holds_eq thr'.ins_dj_correct s split_beta ws.lookup_correct split: if_split_asm elim!: bindE if_predE intro: \<alpha>.active_threads.intros)
         next
           assume ?rhs
-          with True xln invar tst `state_invar s` t show ?lhs
+          with True xln invar tst \<open>state_invar s\<close> t show ?lhs
             by(fastforce elim!: \<alpha>.active_threads.cases simp add: holds_eq s thr'.ins_dj_correct ws.lookup_correct elim!: bindE if_predE intro: bindI if_predI)
         qed
       next
@@ -993,14 +993,14 @@ sublocale scheduler_ext <
     invariant
 by(unfold_locales)(rule invariant)
 
-subsection {* Schedulers for deterministic small-step semantics *}
+subsection \<open>Schedulers for deterministic small-step semantics\<close>
 
-text {*
-  The default code equations for @{term Predicate.the} impose the type class constraint @{text "eq"}
+text \<open>
+  The default code equations for @{term Predicate.the} impose the type class constraint \<open>eq\<close>
   on the predicate elements. For the semantics, which contains the heap, there might be no such
   instance, so we use new constants for which other code equations can be used.
   These do not add the type class constraint, but may fail more often with non-uniqueness exception.
-*}
+\<close>
 
 definition singleton2 where [simp]: "singleton2 = Predicate.singleton"
 definition the_only2 where [simp]: "the_only2 = Predicate.the_only"
@@ -1113,7 +1113,7 @@ proof -
      apply(simp add: singleI aok)
     apply(erule bindE)
     apply(clarsimp split: if_split_asm)
-     apply(drule (1) \<alpha>.deterministicD[OF `\<alpha>.deterministic I`, where s="state_\<alpha> s", simplified, OF red _ tst aok])
+     apply(drule (1) \<alpha>.deterministicD[OF \<open>\<alpha>.deterministic I\<close>, where s="state_\<alpha> s", simplified, OF red _ tst aok])
       apply(rule I)
      apply simp
     done
@@ -1194,7 +1194,7 @@ by(auto simp add: map_option.id dest: \<alpha>.step_thread_Some_SomeD[OF det sym
 
 end
 
-subsection {* Code Generator setup *}
+subsection \<open>Code Generator setup\<close>
 
 lemmas [code] =
   scheduler_base_aux.free_thread_id_def

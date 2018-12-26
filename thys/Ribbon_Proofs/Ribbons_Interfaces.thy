@@ -1,4 +1,4 @@
-section {* Ribbon proof interfaces *}
+section \<open>Ribbon proof interfaces\<close>
 
 theory Ribbons_Interfaces imports
   Ribbons_Basic
@@ -6,16 +6,16 @@ theory Ribbons_Interfaces imports
   "HOL-Library.FSet"
 begin
 
-text {* Interfaces are the top and bottom boundaries through which diagrams 
+text \<open>Interfaces are the top and bottom boundaries through which diagrams 
   can be connected into a surrounding context. For instance, when composing two 
   diagrams vertically, the bottom interface of the upper diagram must match the 
   top interface of the lower diagram. 
 
   We define a datatype of concrete interfaces. We then quotient by the 
   associativity, commutativity and unity properties of our 
-  horizontal-composition operator. *}
+  horizontal-composition operator.\<close>
 
-subsection {* Syntax of interfaces *}
+subsection \<open>Syntax of interfaces\<close>
 
 datatype conc_interface =
   Ribbon_conc "assertion"
@@ -23,11 +23,11 @@ datatype conc_interface =
 | Emp_int_conc ("\<epsilon>\<^sub>c")
 | Exists_int_conc "string" "conc_interface"
 
-text {* We define an equivalence on interfaces. The first three rules make this 
+text \<open>We define an equivalence on interfaces. The first three rules make this 
   an equivalence relation. The next three make it a congruence. The next two 
   identify interfaces up to associativity and commutativity of @{term "(\<otimes>\<^sub>c)"} 
   The final two make @{term "\<epsilon>\<^sub>c"} the left and right unit of @{term "(\<otimes>\<^sub>c)"}. 
-  *}
+\<close>
 inductive
   equiv_int :: "conc_interface \<Rightarrow> conc_interface \<Rightarrow> bool" (infix "\<simeq>" 45)
 where
@@ -91,7 +91,7 @@ lemma comp_fun_commute_hcomp:
   "comp_fun_commute (\<otimes>)"
 by standard (simp add: hcomp_assoc fun_eq_iff, metis hcomp_comm)
 
-subsection {* An iterated horizontal-composition operator *}
+subsection \<open>An iterated horizontal-composition operator\<close>
 
 definition iter_hcomp :: "('a fset) \<Rightarrow> ('a \<Rightarrow> interface) \<Rightarrow> interface"
 where
@@ -132,9 +132,9 @@ using assms
 by (induct vs) (auto simp add: emp_hcomp iter_hcomp_empty iter_hcomp_insert hcomp_assoc)
 
 
-subsection {* Semantics of interfaces *}
+subsection \<open>Semantics of interfaces\<close>
 
-text {* The semantics of an interface is an assertion. *}
+text \<open>The semantics of an interface is an assertion.\<close>
 fun
   conc_asn :: "conc_interface \<Rightarrow> assertion"
 where
@@ -155,7 +155,7 @@ lemma asn_simps [simp]:
   "asn (Exists_int x P) = Exists x (asn P)"
 by (transfer, simp)+
 
-subsection {* Program variables mentioned in an interface. *}
+subsection \<open>Program variables mentioned in an interface.\<close>
 
 fun
   rd_conc_int :: "conc_interface \<Rightarrow> string set"
@@ -170,14 +170,14 @@ lift_definition
 is "rd_conc_int"
 by (induct_tac rule: equiv_int.induct) auto
   
-text {* The program variables read by an interface are the same as those read 
-  by its corresponding assertion. *}
+text \<open>The program variables read by an interface are the same as those read 
+  by its corresponding assertion.\<close>
 
 lemma rd_int_is_rd_ass:
   "rd_ass (asn P) = rd_int P"
 by (transfer, induct_tac P, auto simp add: rd_star rd_exists rd_emp) 
 
-text {* Here is an iterated version of the Hoare logic sequencing rule. *}
+text \<open>Here is an iterated version of the Hoare logic sequencing rule.\<close>
 
 lemma seq_fold: 
   "\<And>\<Pi>. \<lbrakk> length cs = chainlen \<Pi> ; p1 = asn (pre \<Pi>) ; p2 = asn (post \<Pi>) ; 

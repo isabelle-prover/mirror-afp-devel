@@ -1,6 +1,6 @@
 (* Author: Lukas Bulwahn <lukas.bulwahn-at-gmail.com> *)
 
-section {* Derangements *}
+section \<open>Derangements\<close>
 
 theory Derangements
 imports
@@ -8,16 +8,16 @@ imports
   "HOL-Library.Permutations"
 begin
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-subsubsection {* Additions to @{theory HOL.Finite_Set} Theory *}
+subsubsection \<open>Additions to @{theory HOL.Finite_Set} Theory\<close>
 
 lemma card_product_dependent:
   assumes "finite S" "\<forall>x \<in> S. finite (T x)"
   shows "card {(x, y). x \<in> S \<and> y \<in> T x} = (\<Sum>x \<in> S. card (T x))"
 using card_SigmaI[OF assms, symmetric] by (auto intro!: arg_cong[where f=card] simp add: Sigma_def)
 
-subsubsection {* Additions to @{theory "HOL-Library.Permutations"} Theory *}
+subsubsection \<open>Additions to @{theory "HOL-Library.Permutations"} Theory\<close>
 
 lemma permutes_imp_bij':
   assumes "p permutes S"
@@ -94,7 +94,7 @@ lemma permutes_drop_cycle_size_two:
   shows "Fun.swap x (p x) p permutes (S - {x, p x})"
 using assms by (auto intro!: bij_imp_permutes' elim!: permutesE) (metis swap_apply(1,3))
 
-subsection {* Fixpoint-Free Permutations *}
+subsection \<open>Fixpoint-Free Permutations\<close>
 
 definition derangements :: "nat set \<Rightarrow> (nat \<Rightarrow> nat) set"
 where
@@ -110,7 +110,7 @@ lemma derangementsE:
   obtains "d permutes S" "\<forall>x\<in>S. d x \<noteq> x"
 using assms unfolding derangements_def by auto
 
-subsection {* Properties of Derangements *}
+subsection \<open>Properties of Derangements\<close>
 
 lemma derangements_inv:
   assumes d: "d \<in> derangements S"
@@ -149,7 +149,7 @@ lemma finite_derangements:
 using assms unfolding derangements_def
 by (auto simp add: finite_permutations)
 
-subsection {* Construction of Derangements *}
+subsection \<open>Construction of Derangements\<close>
 
 lemma derangements_empty[simp]:
   "derangements {} = {id}"
@@ -170,7 +170,7 @@ proof (rule derangementsI)
   {
     fix x'
     assume "x' : insert x (insert y S)"
-    from s assms `x \<noteq> y` this show "Fun.swap x y d x' \<noteq> x'"
+    from s assms \<open>x \<noteq> y\<close> this show "Fun.swap x y d x' \<noteq> x'"
       by (cases "x' = x"; cases "x' = y") (auto dest: derangements_no_fixpoint)
   }
 qed
@@ -181,11 +181,11 @@ lemma derangements_skip_one:
 proof -
   from d have bij: "bij d"
     by (auto elim: derangementsE simp add: permutes_imp_bij')
-  from d `x : S` have that: "d x : S - {x}"
+  from d \<open>x : S\<close> have that: "d x : S - {x}"
     by (auto dest: derangements_in_image derangements_no_fixpoint)
-  from d `d (d x) \<noteq> x` bij have "\<forall>x'\<in>S - {x}. (d(x := x, inv d x := d x)) x' \<noteq> x'"
+  from d \<open>d (d x) \<noteq> x\<close> bij have "\<forall>x'\<in>S - {x}. (d(x := x, inv d x := d x)) x' \<noteq> x'"
     by (auto elim!: derangementsE simp add: bij_inv_eq_iff)
-  from d `x : S` this show derangements: "d(x:=x, inv d x:= d x) : derangements (S - {x})"
+  from d \<open>x : S\<close> this show derangements: "d(x:=x, inv d x:= d x) : derangements (S - {x})"
     by (meson derangementsE derangementsI permutations_skip_one)
 qed
 
@@ -215,9 +215,9 @@ next
     by (auto elim: derangementsE)
 qed
 
-subsection {* Cardinality of Derangements *}
+subsection \<open>Cardinality of Derangements\<close>
 
-subsubsection {* Recursive Characterization *}
+subsubsection \<open>Recursive Characterization\<close>
 
 fun count_derangements :: "nat \<Rightarrow> nat"
 where
@@ -241,13 +241,13 @@ next
   from 3(4) obtain x where "x \<in> S" using card_eq_SucD insertI1 by auto
   let ?D1 = "(\<lambda>(y, d). Fun.swap x y d) ` {(y, d). y \<in> S & y \<noteq> x & d : derangements (S - {x, y})}"
   let ?D2 = "(\<lambda>(y, f). f(x:=y, inv f y := x)) ` ((S - {x}) \<times> derangements (S - {x}))"
-  from `x \<in> S` have subset1: "?D1 \<subseteq> derangements S"
+  from \<open>x \<in> S\<close> have subset1: "?D1 \<subseteq> derangements S"
   proof (auto)
     fix y d
     assume "y \<in> S" "y \<noteq> x"
     assume d: "d \<in> derangements (S - {x, y})"
-    from `x : S` `y : S` have S: "S = insert x (insert y (S - {x, y}))" by auto
-    from d `x : S` `y : S` `y \<noteq> x` show "Fun.swap x y d \<in> derangements S"
+    from \<open>x : S\<close> \<open>y : S\<close> have S: "S = insert x (insert y (S - {x, y}))" by auto
+    from d \<open>x : S\<close> \<open>y : S\<close> \<open>y \<noteq> x\<close> show "Fun.swap x y d \<in> derangements S"
       by (subst S) (auto intro!: derangements_swap)
   qed
   have subset2: "?D2 \<subseteq> derangements S"
@@ -256,7 +256,7 @@ next
     assume "d : derangements (S - {x})" "y : S" "y \<noteq> x"
     from this have "d(x := y, inv d y := x) \<in> derangements (insert x (S - {x}))"
       by (intro derangements_add_one) auto
-    from this `x : S` show "d(x := y, inv d y := x) \<in> derangements S"
+    from this \<open>x : S\<close> show "d(x := y, inv d y := x) \<in> derangements S"
       using insert_Diff by fastforce
   qed
   have split: "derangements S = ?D1 \<union> ?D2"
@@ -270,27 +270,27 @@ next
       show "d : ?D1 \<union> ?D2"
       proof (cases "d (d x) = x")
         case True
-        from `x : S` d have "d x \<in> S" "d x \<noteq> x"
+        from \<open>x : S\<close> d have "d x \<in> S" "d x \<noteq> x"
           by (auto simp add: derangements_in_image derangements_no_fixpoint)
         from d True have "Fun.swap x (d x) d \<in> derangements (S - {x, d x})"
           by (rule derangements_drop_minimal_cycle)
-        from `d x \<in> S` `d x \<noteq> x` this have "d : ?D1"
+        from \<open>d x \<in> S\<close> \<open>d x \<noteq> x\<close> this have "d : ?D1"
           by (auto intro: image_eqI[where x = "(d x, Fun.swap x (d x) d)"])
         from this show ?thesis by auto
       next
         case False
         from d have bij: "bij d"
           by (auto elim: derangementsE simp add: permutes_imp_bij')
-        from d `x : S` have that: "d x : S - {x}"
+        from d \<open>x : S\<close> have that: "d x : S - {x}"
           by (intro derangements_in_image_strong)
-        from d `x : S` False have derangements: "d(x:=x, inv d x:= d x) : derangements (S - {x})"
+        from d \<open>x : S\<close> False have derangements: "d(x:=x, inv d x:= d x) : derangements (S - {x})"
           by (auto intro: derangements_skip_one)
         from this have "bij (d(x := x, inv d x:= d x))"
           by (metis derangementsE permutes_imp_bij')+
         from this have a: "inv (d(x := x, inv d x := d x)) (d x) = inv d x"
           by (metis bij_inv_eq_iff fun_upd_same)
         from bij have x: "d (inv d x) = x" by (meson bij_inv_eq_iff)
-        from d derangements_inv[of d] `x : S` have "inv d x \<noteq> x" "d x \<noteq> x"
+        from d derangements_inv[of d] \<open>x : S\<close> have "inv d x \<noteq> x" "d x \<noteq> x"
           by (auto dest: derangements_no_fixpoint)
         from this a x have d_eq: "d = d(inv d x := d x, x := d x, inv (d(x := x, inv d x := d x)) (d x) := x)"
           by auto
@@ -337,11 +337,11 @@ next
   proof -
     fix y
     assume "y \<in> S - {x}"
-    from 3(3, 4) `x \<in> S` this have "card (S - {x, y}) = n"
+    from 3(3, 4) \<open>x \<in> S\<close> this have "card (S - {x, y}) = n"
       by (metis Diff_insert2 card_Diff_singleton diff_Suc_1 finite_Diff)
     from 3(3) 3(2)[OF _ this] show "card (derangements (S - {x, y})) = count_derangements n" by auto
   qed
-  from 3(3, 4) `x : S` have card2: "card (S - {x}) = Suc n" by (simp add: card.insert_remove insert_absorb)
+  from 3(3, 4) \<open>x : S\<close> have card2: "card (S - {x}) = Suc n" by (simp add: card.insert_remove insert_absorb)
   from inj have "card ?D1 = card {(y, f). y \<in> S - {x} \<and> f \<in> derangements (S - {x, y})}"
     by (simp add: card_image)
   also from 3(3) have "... = (\<Sum>y\<in>S - {x}. card (derangements (S - {x, y})))"
@@ -355,7 +355,7 @@ next
       assume 1: "d \<in> derangements (S - {x})" "d' \<in> derangements (S - {x})"
       assume 2: "y \<in> S" "y \<noteq> x" "y' \<in> S" "y' \<noteq> x"
       assume eq: "d(x := y, inv d y := x) = d'(x := y', inv d' y' := x)"
-      from 1 2 eq `x \<in> S` have y: "y = y'"
+      from 1 2 eq \<open>x \<in> S\<close> have y: "y = y'"
         by (metis Diff_insert_absorb derangements_in_image derangements_inv
           fun_upd_same fun_upd_twist insert_iff mk_disjoint_insert)
       have "d = d'"
@@ -381,15 +381,15 @@ next
     by auto
   from 3(3) inj_2 have card_2: "card ?D2 = (Suc n) * count_derangements (Suc n)"
     by (simp only: card_image) (auto simp add: card_cartesian_product card3 card2)
-  from `finite S`have finite1: "finite ?D1"
+  from \<open>finite S\<close>have finite1: "finite ?D1"
     unfolding eq' by (auto intro: finite_derangements)
-  from `finite S` have finite2: "finite ?D2"
+  from \<open>finite S\<close> have finite2: "finite ?D2"
     by (auto intro: finite_cartesian_product finite_derangements)
   show ?case
     by (simp add: split card_Un_disjoint finite1 finite2 no_intersect card_1 card_2 field_simps)
 qed
 
-subsubsection {* Closed-Form Characterization *}
+subsubsection \<open>Closed-Form Characterization\<close>
 
 lemma count_derangements:
   "real (count_derangements n) = fact n * (\<Sum>k \<in> {0..n}. (-1) ^ k / fact k)"
@@ -424,7 +424,7 @@ proof (induct n rule: count_derangements.induct)
   finally show ?case by simp
 qed (auto)
 
-subsubsection {* Approximation of Cardinality *}
+subsubsection \<open>Approximation of Cardinality\<close>
 
 lemma two_power_fact_le_fact:
   assumes "n \<ge> 1"

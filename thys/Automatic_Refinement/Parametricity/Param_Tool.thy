@@ -1,9 +1,9 @@
-section {* Basic Parametricity Reasoning *}
+section \<open>Basic Parametricity Reasoning\<close>
 theory Param_Tool
 imports Relators
 begin
 
-  subsection {* Auxiliary Lemmas *}
+  subsection \<open>Auxiliary Lemmas\<close>
   lemma tag_both: "\<lbrakk> (Let x f,Let x' f')\<in>R \<rbrakk> \<Longrightarrow> (f x,f' x')\<in>R" by simp
   lemma tag_rhs: "\<lbrakk> (c,Let x f)\<in>R \<rbrakk> \<Longrightarrow> (c,f x)\<in>R" by simp
   lemma tag_lhs: "\<lbrakk> (Let x f,a)\<in>R \<rbrakk> \<Longrightarrow> (f x,a)\<in>R" by simp
@@ -16,9 +16,9 @@ begin
     by (simp_all add: fun_relD)
 
 
-  subsection {* ML-Setup*}
+  subsection \<open>ML-Setup\<close>
 
-  ML {*
+  ML \<open>
     signature PARAMETRICITY = sig
       type param_ruleT = {
         lhs: term,
@@ -296,7 +296,7 @@ begin
              "Parametricity: Rule in first-order form"
 
     end
-    *}
+\<close>
 
   setup Parametricity.setup
 
@@ -304,7 +304,7 @@ begin
 
   subsection \<open>Convenience Tools\<close>
 
-  ML {*
+  ML \<open>
     (* Prefix p_ or wrong type supresses generation of relAPP *)
   
     fun cnv_relAPP t = let
@@ -339,9 +339,9 @@ begin
     in
       Conv.fconv_rule (Conv.arg1_conv (to_relAPP_conv ctxt))
     end)
-  *}
+\<close>
   
-  attribute_setup to_relAPP = {* Scan.succeed (to_relAPP_attr) *} 
+  attribute_setup to_relAPP = \<open>Scan.succeed (to_relAPP_attr)\<close> 
     "Convert relator definition to prefix-form"
 
 

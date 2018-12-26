@@ -3,7 +3,7 @@ theory Two_Steps
 imports Consensus_Misc
 begin
 (*>*)
-subsection {* Step definitions for 2-step algorithms *}
+subsection \<open>Step definitions for 2-step algorithms\<close>
 
 definition two_phase where "two_phase (r::nat) \<equiv> r div 2"
 

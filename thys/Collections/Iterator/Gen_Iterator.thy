@@ -1,11 +1,11 @@
-section {* \isaheader{Iterators} *}
+section \<open>\isaheader{Iterators}\<close>
 theory Gen_Iterator
 imports Refine_Monadic.Refine_Monadic Proper_Iterator
 begin
-  text {*
+  text \<open>
     Iterators are realized by to-list functions followed by folding.
     A post-optimization step then replaces these constructions by
-    real iterators. *}
+    real iterators.\<close>
 
   lemma param_it_to_list[param]: "(it_to_list,it_to_list) \<in>
     (Rs \<rightarrow> (Ra \<rightarrow> bool_rel) \<rightarrow> 
@@ -20,8 +20,8 @@ begin
   lemma key_rel_UNIV[simp]: "key_rel (\<lambda>_ _. True) = (\<lambda>_ _. True)"
     unfolding key_rel_def[abs_def] by auto
 
-  subsection {* Setup for Autoref *}
-  text {* Default pattern rules for @{text "it_to_sorted_list"}*}
+  subsection \<open>Setup for Autoref\<close>
+  text \<open>Default pattern rules for \<open>it_to_sorted_list\<close>\<close>
   definition "set_to_sorted_list R S \<equiv> it_to_sorted_list R S"
   lemma set_to_sorted_list_itype[autoref_itype]: 
     "set_to_sorted_list R ::\<^sub>i \<langle>I\<rangle>\<^sub>ii_set \<rightarrow>\<^sub>i \<langle>\<langle>I\<rangle>\<^sub>ii_list\<rangle>\<^sub>ii_nres" 
@@ -48,7 +48,7 @@ context begin interpretation autoref_syn .
     unfolding map_to_sorted_list_def[abs_def] by auto
 end
 
-  subsection {* Set iterators *}
+  subsection \<open>Set iterators\<close>
   (*definition "is_set_to_sorted_list_deprecated ordR Rk Rs tsl \<equiv> \<forall>s s'.
     (s,s')\<in>\<langle>Rk\<rangle>Rs \<longrightarrow> 
       (RETURN (tsl s),it_to_sorted_list ordR s')\<in>\<langle>\<langle>Rk\<rangle>list_rel\<rangle>nres_rel"
@@ -98,7 +98,7 @@ end
     shows "det_fold_set R c f \<sigma> result"
     using assms unfolding det_fold_set_def by auto
 
-  text {* Template lemma for generic algorithm using set iterator *}
+  text \<open>Template lemma for generic algorithm using set iterator\<close>
   lemma det_fold_sorted_set:
     assumes 1: "det_fold_set ordR c' f' \<sigma>' result"
     assumes 2: "is_set_to_sorted_list ordR Rk Rs tsl"
@@ -135,9 +135,9 @@ end
     unfolding  is_set_to_list_def
     by (rule det_fold_sorted_set)
 
-  subsection {* Map iterators *}
+  subsection \<open>Map iterators\<close>
 
-  text {* Build relation on keys *}
+  text \<open>Build relation on keys\<close>
   
   (*definition "is_map_to_sorted_list_deprecated ordR Rk Rv Rm tsl \<equiv> \<forall>m m'.
     (m,m')\<in>\<langle>Rk,Rv\<rangle>Rm \<longrightarrow> 
@@ -197,18 +197,18 @@ end
       unfolding map_to_set_def
       apply auto
       done
-    with `distinct l` have DF: "distinct (map fst l)"
+    with \<open>distinct l\<close> have DF: "distinct (map fst l)"
       apply (induct l)
       apply simp
       apply force
       done
-    with `set l = map_to_set m` have [simp]: "m = map_of l"
+    with \<open>set l = map_to_set m\<close> have [simp]: "m = map_of l"
       by (metis map_of_map_to_set)
       
     from 1[OF DF SORTED] show ?thesis by simp
   qed
     
-  text {* Template lemma for generic algorithm using map iterator *}
+  text \<open>Template lemma for generic algorithm using map iterator\<close>
   lemma det_fold_sorted_map:
     assumes 1: "det_fold_map ordR c' f' \<sigma>' result"
     assumes 2: "is_map_to_sorted_list ordR Rk Rv Rm tsl"
@@ -310,13 +310,13 @@ lemma map_to_list_by_tsl[autoref_rules]:
   by simp
 *)
 
-text {*
+text \<open>
   TODO/FIXME: 
     * Integrate mono-prover properly into solver-infrastructure,
         i.e. tag a mono-goal.
     * Tag iterators, such that, for the mono-prover, we can just convert
         a proper iterator back to its foldli-equivalent!
-*}
+\<close>
 lemma proper_it_mono_dres_pair:
   assumes PR: "proper_it' it it'"
   assumes A: "\<And>k v x. f k v x \<le> f' k v x"
@@ -454,7 +454,7 @@ lemmas proper_it_monos =
   theorem. *)
 
 
-attribute_setup "proper_it" = {* 
+attribute_setup "proper_it" = \<open>
   Scan.succeed (Thm.declaration_attribute (fn thm => fn context => 
     let
       val mono_thms = map_filter (try (curry (RS) thm)) @{thms proper_it_monos}
@@ -466,7 +466,7 @@ attribute_setup "proper_it" = {*
       context
     end
   ))
-  *}
+\<close>
   "Proper iterator declaration"
 
 end

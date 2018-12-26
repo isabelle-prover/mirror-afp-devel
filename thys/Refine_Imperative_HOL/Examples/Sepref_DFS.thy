@@ -1,21 +1,21 @@
-section {* Simple DFS Algorithm *}
+section \<open>Simple DFS Algorithm\<close>
 theory Sepref_DFS
 imports 
   "../Sepref"
   Sepref_Graph
 begin
 
-text {*
+text \<open>
   We define a simple DFS-algorithm, prove a simple correctness
   property, and do data refinement to an efficient implementation.
-*}
+\<close>
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
-text {* Recursive DFS-Algorithm. 
-  @{text "E"} is the edge relation of the graph, @{text "vd"} the node to 
-  search for, and @{text "v0"} the start node.
-  Already explored nodes are stored in @{text "V"}.*}
+text \<open>Recursive DFS-Algorithm. 
+  \<open>E\<close> is the edge relation of the graph, \<open>vd\<close> the node to 
+  search for, and \<open>v0\<close> the start node.
+  Already explored nodes are stored in \<open>V\<close>.\<close>
 
 context 
   fixes E :: "'v rel" and v0 :: 'v and tgt :: "'v \<Rightarrow> bool"

@@ -1,4 +1,4 @@
-section {* \isaheader{Simple DFS Algorithm} *}
+section \<open>\isaheader{Simple DFS Algorithm}\<close>
 theory Simple_DFS
 imports 
   Collections.Refine_Dflt 
@@ -42,18 +42,18 @@ lemma refine_succg_succs[autoref_rules]:
   done
 
 section \<open>DFS Algorithm\<close>
-text {*
+text \<open>
   We define a simple DFS-algorithm, prove a simple correctness
   property, and do data refinement to an efficient implementation.
-*}
+\<close>
 
-subsection {* Definition *}
+subsection \<open>Definition\<close>
 
-text {* Recursive DFS-Algorithm. 
-  @{text "E"} is the edge relation of the graph, @{text "tgt"} the node to 
-  search for, and @{text "src"} the start node.
+text \<open>Recursive DFS-Algorithm. 
+  \<open>E\<close> is the edge relation of the graph, \<open>tgt\<close> the node to 
+  search for, and \<open>src\<close> the start node.
   Already explored nodes are 
-  stored in @{text "V"}.*}
+  stored in \<open>V\<close>.\<close>
 
 context 
   fixes E :: "('v\<times>'v) set" and src :: 'v and tgt :: 'v
@@ -268,15 +268,15 @@ subsection \<open>Correctness Proof\<close>
 end
 
 
-subsection {* Data Refinement and Determinization *}
+subsection \<open>Data Refinement and Determinization\<close>
 
-text {*
+text \<open>
   Next, we use automatic data refinement and transfer to generate an
   executable algorithm. We fix the node-type to natural numbers,
   and the successor-function to return a list-set. 
   The implementation of the visited set is left open, and Autoref's heuristics
   will choose one (default for nat set: red-black-trees).
-*}
+\<close>
 
 text \<open>In our first example, we use \<open>autoref_monadic\<close>, which combines the 
   Autoref tool and the determinization of the Monadic Refinement Framework.\<close>
@@ -296,8 +296,8 @@ text \<open>And export the algorithm to all supported target languages\<close>
 export_code dfs_impl checking SML OCaml? Haskell? Scala
 
 
-text {* Chaining the refinement theorems, we get correctness arguments that 
-  are almost independent of the refinement framework: *}
+text \<open>Chaining the refinement theorems, we get correctness arguments that 
+  are almost independent of the refinement framework:\<close>
 
 lemma succ_ran_fin:
   assumes R: "(succi,E) \<in> \<langle>Rv\<rangle>succg_rel"
@@ -370,8 +370,8 @@ schematic_goal dfs_impl_refine_aux2:
   done
   
 
-text {* We can also leave the type of the nodes and its implementation
-  unspecified. However, we need a comparison operator on nodes *}
+text \<open>We can also leave the type of the nodes and its implementation
+  unspecified. However, we need a comparison operator on nodes\<close>
   
 (* With linorder typeclass on abstract type *)  
 schematic_goal dfs_impl_refine_aux3:
@@ -406,7 +406,7 @@ schematic_goal dfs_impl_refine_aux3':
   by autoref_monadic
   
   
-text {* We also generate code for the alternative implementations *}
+text \<open>We also generate code for the alternative implementations\<close>
 concrete_definition dfs_impl2 for succi src tgt uses dfs_impl_refine_aux2
 concrete_definition dfs_impl3 for cmpk succi v0i vdi uses dfs_impl_refine_aux3
 concrete_definition dfs_impl3' for cmpk succi v0i vdi uses dfs_impl_refine_aux3'

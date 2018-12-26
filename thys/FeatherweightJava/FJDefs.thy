@@ -6,23 +6,23 @@
     License:     LGPL
 *)
 
-section {* {\tt FJDefs}: Basic Definitions *}
+section \<open>{\tt FJDefs}: Basic Definitions\<close>
 
 theory FJDefs
 imports Main
 begin
 
-subsection {* Syntax *}
+subsection \<open>Syntax\<close>
 
-text {* We use a named representation for terms: variables, method
+text \<open>We use a named representation for terms: variables, method
 names, and class names, are all represented as {\tt nat}s. We use the
 finite maps defined in {\tt Map.thy} to represent typing contexts and
 the static class table. This section defines the representations of
 each syntactic category (expressions, methods, constructors, classes,
 class tables) and defines several constants ({\tt Object} and {\tt this}).
-*}
+\<close>
 
-subsubsection{* Type definitions *}
+subsubsection\<open>Type definitions\<close>
 
 type_synonym varName = nat
 type_synonym methodName = nat
@@ -32,7 +32,7 @@ record varDef     =
   vdType :: "className"
 type_synonym varCtx = "varName \<rightharpoonup> className"
 
-subsubsection{* Constants *}
+subsubsection\<open>Constants\<close>
 
 definition
   Object :: "className" where
@@ -42,7 +42,7 @@ definition
   this :: "varName" where
   "this == 0"
 
-subsubsection {* Expressions *}
+subsubsection \<open>Expressions\<close>
 
 datatype exp = 
     Var "varName"
@@ -51,7 +51,7 @@ datatype exp =
   | New "className" "exp list"
   | Cast "className" "exp"
 
-subsubsection {* Methods *}
+subsubsection \<open>Methods\<close>
 
 record methodDef = 
   mReturn :: "className"
@@ -60,7 +60,7 @@ record methodDef =
   mBody :: "exp"
 
 
-subsubsection {* Constructors *}
+subsubsection \<open>Constructors\<close>
 
 record constructorDef = 
   kName :: "className"
@@ -68,7 +68,7 @@ record constructorDef =
   kSuper :: "varName list"
   kInits :: "varName list"
 
-subsubsection {* Classes *}
+subsubsection \<open>Classes\<close>
 
 record classDef = 
   cName :: "className"
@@ -77,16 +77,16 @@ record classDef =
   cConstructor :: "constructorDef"
   cMethods :: "methodDef list"
 
-subsubsection {* Class Tables *}
+subsubsection \<open>Class Tables\<close>
 
 type_synonym classTable = "className \<rightharpoonup> classDef"
 
-subsection {* Sub-expression Relation *}
+subsection \<open>Sub-expression Relation\<close>
 
-text {* The sub-expression relation, written $t \in
+text \<open>The sub-expression relation, written $t \in
 \mathit{subexprs}(s)$, is defined as the reflexive and transitive
 closure of the immediate subexpression relation.
-*}
+\<close>
 
 inductive_set
   isubexprs :: "(exp * exp) set" 
@@ -103,11 +103,11 @@ abbreviation
   subexprs :: "[exp,exp] \<Rightarrow> bool"  ("_ \<in> subexprs'(_')" [80,80] 80)  where
   "e' \<in> subexprs(e) \<equiv> (e',e) \<in> isubexprs^*"
 
-subsection {* Values *}
+subsection \<open>Values\<close>
 
-text{* A {\em value} is an expression of the form $\mathtt{new}\
+text\<open>A {\em value} is an expression of the form $\mathtt{new}\
 \mathtt{C}(\mathit{overline{vs}})$, where $\mathit{\overline{vs}}$ is a list
-of values. *}
+of values.\<close>
 
 inductive
   vals :: "[exp list] \<Rightarrow> bool" ("vals'(_')" [80] 80)
@@ -117,14 +117,14 @@ where
  | vals_cons : "\<lbrakk> val(vh); vals(vt) \<rbrakk> \<Longrightarrow> vals((vh # vt))"
  | val : "\<lbrakk> vals(vs) \<rbrakk> \<Longrightarrow> val(New C vs)"
 
-subsection {* Substitution *}
+subsection \<open>Substitution\<close>
 
-text {* The substitutions of a list of expressions $\mathit{ds}$ for a
+text \<open>The substitutions of a list of expressions $\mathit{ds}$ for a
 list of variables $\mathit{xs}$ in another expression $e$ or a list of
 expressions $\mathit{es}$ are defined in the obvious way, and written
 $(\mathit{ds}/\mathit{xs})e$ and $[\mathit{ds}/\mathit{xs}]es$
 respecitvely. 
-*}
+\<close>
 
 primrec substs :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp \<Rightarrow> exp"
   and subst_list1 :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp list \<Rightarrow> exp list"
@@ -150,12 +150,12 @@ abbreviation
   "[ds/xs]es \<equiv> map (substs (map_upds Map.empty xs ds)) es"
 
 
-subsection {* Lookup *}
+subsection \<open>Lookup\<close>
 
-text {* The fuction $\mathit{lookup}\ f\ l$ function returns an option
+text \<open>The fuction $\mathit{lookup}\ f\ l$ function returns an option
 containing the first element of $l$ satisfying $f$, or $\mathtt{None}$
 if no such element exists 
-*}
+\<close>
 
 primrec lookup :: "'a list \<Rightarrow> ('a \<Rightarrow> bool) \<Rightarrow> 'a option"
 where
@@ -167,11 +167,11 @@ where
   "lookup2 [] l2 P = None"
 | "lookup2 (h1#t1) l2 P = (if P h1 then Some(hd l2) else lookup2 t1 (tl l2) P)"
 
-subsection {* Variable Definition Accessors *}
+subsection \<open>Variable Definition Accessors\<close>
 
-text{* This section contains several helper functions for reading off
+text\<open>This section contains several helper functions for reading off
 the names and types of variable definitions (e.g., in field
- and method parameter declarations). *}
+ and method parameter declarations).\<close>
 
 definition
   varDefs_names :: "varDef list \<Rightarrow> varName list" where
@@ -181,15 +181,15 @@ definition
   varDefs_types :: "varDef list \<Rightarrow> className list" where
   "varDefs_types = map vdType"
 
-subsection {* Subtyping Relation *}
+subsection \<open>Subtyping Relation\<close>
 
-text {* The subtyping relation, written $\mathit{CT} \vdash C
+text \<open>The subtyping relation, written $\mathit{CT} \vdash C
 \mathtt{\lt:} D$ is just the reflexive and transitive closure of the
 immediate subclass relation. (For the sake of simplicity, we define
 subtyping directly instead of using the reflexive and transitive
 closure operator.) The subtyping relation is extended to lists of
 classes, written $\mathit{CT} \vdash\mathtt{+} \mathit{Cs} \mathtt{\lt:}
-\mathit{Ds}$. *}
+\mathit{Ds}$.\<close>
 
 inductive
   subtyping :: "[classTable, className, className] \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [80,80,80] 80)
@@ -208,12 +208,12 @@ where
   ss_nil  : "CT \<turnstile>+ [] <: []"
 | ss_cons : "\<lbrakk> CT \<turnstile> C0 <: D0; CT \<turnstile>+ Cs <: Ds \<rbrakk> \<Longrightarrow> CT \<turnstile>+ (C0 # Cs) <: (D0 # Ds)"
 
-subsection {* {\tt fields} Relation *}
+subsection \<open>{\tt fields} Relation\<close>
 
-text{* The {\tt fields} relation, written
+text\<open>The {\tt fields} relation, written
 $\mathtt{fields}(\mathit{CT},C) = \mathit{Cf}$, relates $\mathit{Cf}$
 to $C$ when $\mathit{Cf}$ is the list of fields declared directly or
-indirectly (i.e., by a superclass) in $C$.*}
+indirectly (i.e., by a superclass) in $C$.\<close>
 
 inductive
   fields :: "[classTable, className, varDef list] \<Rightarrow> bool" ("fields'(_,_') = _" [80,80,80] 80)
@@ -224,15 +224,15 @@ where
   "\<lbrakk> CT(C) = Some(CDef); cSuper CDef = D; cFields CDef = Cf; fields(CT,D) = Dg; DgCf = Dg @ Cf \<rbrakk> 
   \<Longrightarrow> fields(CT,C) = DgCf"
 
-subsection {* {\tt mtype } Relation *}
+subsection \<open>{\tt mtype } Relation\<close>
 
-text{* The {\tt mtype} relation, written
+text\<open>The {\tt mtype} relation, written
 $\mathtt{mtype}(\mathit{CT},m,C) = \mathit{Cs} \rightarrow C_0$ relates
 a class $C$, method name $m$, and the arrow type $\mathit{Cs}
 \rightarrow C_0$. It either returns the type of the declaration of $m$
 in $C$, if any such declaration exists, and otherwise returning the
 type of $m$ from $C$'s superclass.
-*}
+\<close>
 
 inductive
   mtype :: "[classTable, methodName, className, className list, className] \<Rightarrow> bool" ("mtype'(_,_,_') = _ \<rightarrow> _" [80,80,80,80] 80)
@@ -251,16 +251,16 @@ where
     mtype(CT,m,D) = Bs \<rightarrow> B \<rbrakk>
   \<Longrightarrow> mtype(CT,m,C) = Bs \<rightarrow> B"
 
-subsection {* {\tt mbody} Relation *}
+subsection \<open>{\tt mbody} Relation\<close>
 
-text{* The {\tt mtype} relation, written
+text\<open>The {\tt mtype} relation, written
 $\mathtt{mbody}(\mathit{CT},m,C) = \mathit{xs} . e_0$ relates a class
 $C$, method name $m$, and the names of the parameters $\mathit{xs}$
 and the body of the method $e_0$. It either returns the parameter
 names and body of the declaration of $m$ in $C$, if any such
 declaration exists, and otherwise the parameter names and body of $m$
 from $C$'s superclass.  
-*}
+\<close>
 
 inductive
   mbody :: "[classTable, methodName, className, varName list, exp] \<Rightarrow> bool" ("mbody'(_,_,_') = _ . _" [80,80,80,80] 80)
@@ -280,15 +280,15 @@ where
   \<Longrightarrow> mbody(CT,m,C) = xs . e"
 
 
-subsection {* Typing Relation *}
+subsection \<open>Typing Relation\<close>
 
-text {* 
+text \<open>
 The typing relation, written $\mathit{CT};\Gamma \vdash e : C$
 relates an expression $e$ to its type $C$, under the typing context
 $\Gamma$. The multi-typing relation, written $\mathit{CT};\Gamma
 \vdash\mathtt{+} \mathit{es}:\mathit{Cs}$ relates lists of expressions
 to lists of types. 
-*}
+\<close>
 
 inductive
   typings :: "[classTable, varCtx, exp list, className list] \<Rightarrow> bool" ("_;_ \<turnstile>+ _ : _" [80,80,80,80] 80)
@@ -342,11 +342,11 @@ where
      CT \<turnstile> D \<not><: C \<rbrakk>
   \<Longrightarrow> CT;\<Gamma> \<turnstile> Cast C e0 : C"
 
-text {* We occasionally find the following induction principle, which
+text \<open>We occasionally find the following induction principle, which
 only mentions the typing of a single expression, more useful than the
 mutual induction principle generated by Isabelle, which mentions the
 typings of single expressions and of lists of expressions. 
-*}
+\<close>
 
 lemma typing_induct:
   assumes "CT;\<Gamma> \<turnstile> e : C" (is ?T)
@@ -388,12 +388,12 @@ proof -
   thus ?thesis using assms by auto
 qed
 
-subsection {* Method Typing Relation *}
+subsection \<open>Method Typing Relation\<close>
 
-text {* A method definition $\mathit{md}$, declared in a class $C$, is
+text \<open>A method definition $\mathit{md}$, declared in a class $C$, is
 well-typed, written $\mathit{CT} \vdash \mathit{md} \texttt{OK IN}\ C$
 if its body is well-typed and it has the same type (i.e., overrides)
-any method with the same name declared in the superclass of $C$. *}
+any method with the same name declared in the superclass of $C$.\<close>
 
 inductive
   method_typing :: "[classTable, methodDef, className] \<Rightarrow> bool" ("_ \<turnstile> _ OK IN _" [80,80,80] 80)
@@ -425,11 +425,11 @@ where
   \<Longrightarrow> CT \<turnstile>+ (m # ms) OK IN C"
 
 
-subsection {* Class Typing Relation *}
+subsection \<open>Class Typing Relation\<close>
 
-text {* A class definition $\mathit{cd}$ is well-typed, written
+text \<open>A class definition $\mathit{cd}$ is well-typed, written
 $\mathit{CT}\vdash \mathit{cd} \texttt{OK}$ if its constructor
-initializes each field, and all of its methods are well-typed. *}
+initializes each field, and all of its methods are well-typed.\<close>
 
 inductive
   class_typing :: "[classTable, classDef] \<Rightarrow> bool" ("_ \<turnstile> _ OK" [80,80] 80)
@@ -446,11 +446,11 @@ t_class: "\<lbrakk> cName CDef = C;
             CT \<turnstile>+ M OK IN C \<rbrakk>
   \<Longrightarrow> CT \<turnstile> CDef OK"
 
-subsection {* Class Table Typing Relation *}
+subsection \<open>Class Table Typing Relation\<close>
 
-text {* A class table is well-typed, written $\mathit{CT}\
+text \<open>A class table is well-typed, written $\mathit{CT}\
 \texttt{OK}$ if for every class name $C$, the class definition mapped
-to by $\mathit{CT}$ is is well-typed and has name $C$. *}
+to by $\mathit{CT}$ is is well-typed and has name $C$.\<close>
 
 inductive
   ct_typing :: "classTable \<Rightarrow> bool" ("_ OK" 80)
@@ -460,11 +460,11 @@ ct_all_ok:
      \<forall>C CDef. CT(C) = Some(CDef) \<longrightarrow> (CT \<turnstile> CDef OK) \<and> (cName CDef = C) \<rbrakk>
   \<Longrightarrow> CT OK"
 
-subsection {* Evaluation Relation *}
+subsection \<open>Evaluation Relation\<close>
 
-text {* The single-step and multi-step evaluation relations are
+text \<open>The single-step and multi-step evaluation relations are
 written $\mathit{CT} \vdash e \rightarrow e'$ and $\mathit{CT} \vdash
-e \rightarrow^* e'$ respectively. *}
+e \rightarrow^* e'$ respectively.\<close>
 
 inductive
   reduction :: "[classTable, exp, exp] \<Rightarrow> bool" ("_ \<turnstile> _ \<rightarrow> _" [80,80,80] 80)

@@ -15,9 +15,9 @@ imports
 begin
 
 (*>*)
-subsection{* Simple-minded Hoare Logic/VCG for CIMP *}
+subsection\<open>Simple-minded Hoare Logic/VCG for CIMP\<close>
 
-text{*
+text\<open>
 
 \label{sec:cimp-vcg}
 
@@ -27,7 +27,7 @@ over the reachable states (\S\ref{sec:cimp-invariants}). This is
 somewhat in the spirit of \citet{DBLP:conf/popl/Ridge09}.
 
 Note that this approach is not compositional: it consults the original
-system to find matching communicating pairs, and @{text "aft"} tracks
+system to find matching communicating pairs, and \<open>aft\<close> tracks
 the labels of possible successor statements. More serious Hoare logics
 are provided by
 \citet{DBLP:journals/acta/Lamport80,DBLP:journals/toplas/LamportS84,CousotCousot89-IC}.
@@ -37,7 +37,7 @@ Intuitively we need to discharge a proof obligation for either @{const
 focus on @{const "Request"}s as we expect to have more local
 information available about these.
 
-*}
+\<close>
 
 inductive
   vcg :: "('answer, 'location, 'proc, 'question, 'state) programs
@@ -92,11 +92,11 @@ where
 | Loop: "pgms, p, aft \<Turnstile> \<lbrace>pre\<rbrace> LOOP DO c OD \<lbrace>post\<rbrace>"
 | Choose: "pgms, p, aft \<Turnstile> \<lbrace>pre\<rbrace> c1 \<squnion> c2 \<lbrace>post\<rbrace>"
 
-text{*
+text\<open>
 
 We abbreviate invariance with one-sided validity syntax.
 
-*}
+\<close>
 
 abbreviation valid_inv ("_, _, _ \<Turnstile>/ \<lbrace>_\<rbrace>/ _") where
   "pgms, p, aft \<Turnstile> \<lbrace>I\<rbrace> c \<equiv> pgms, p, aft \<Turnstile> \<lbrace>I\<rbrace> c \<lbrace>I\<rbrace>"
@@ -122,12 +122,12 @@ lemma vcg_postcond_cong:
 by simp
 
 (*>*)
-text{*
+text\<open>
 
 We tweak @{const "fragments"} by omitting @{const "Response"}s,
 yielding fewer obligations.
 
-*}
+\<close>
 
 fun
   vcg_fragments' :: "('answer, 'location, 'question, 'state) com
@@ -193,12 +193,11 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
-The user sees the conclusion of @{text "V"} for each element of @{text
-"vcg_fragments"}.
+The user sees the conclusion of \<open>V\<close> for each element of \<open>vcg_fragments\<close>.
 
-*}
+\<close>
 
 lemma VCG:
   assumes R: "s \<in> reachable_states sys"
@@ -225,16 +224,16 @@ qed
 
 (* **************************************** *)
 
-subsubsection{* VCG rules *}
+subsubsection\<open>VCG rules\<close>
 
-text{*
+text\<open>
 
 We can develop some (but not all) of the familiar Hoare rules; see
 \citet{DBLP:journals/acta/Lamport80} and the seL4/l4.verified lemma
 buckets for inspiration. We avoid many of the issues Lamport mentions
 as we only treat basic (atomic) commands.
 
-*}
+\<close>
 
 context
   fixes pgms :: "('answer, 'location, 'proc, 'question, 'state) programs"
@@ -340,20 +339,20 @@ lemma vcg_lift_comp:
 
 (* **************************************** *)
 
-subsubsection{* Cheap non-interference rules *}
+subsubsection\<open>Cheap non-interference rules\<close>
 
-text{*
+text\<open>
 
 These rules magically construct VCG lifting rules from the easier to
-prove @{text "eq_imp"} facts. We don't actually use these in the GC,
+prove \<open>eq_imp\<close> facts. We don't actually use these in the GC,
 but we do derive @{const "fun_upd"} equations using the same
 mechanism. Thanks to Thomas Sewell for the requisite syntax magic.
 
-As these @{text "eq_imp"} facts do not usefully compose, we make the
-definition asymmetric (i.e., @{text "g"} does not get a bundle of
+As these \<open>eq_imp\<close> facts do not usefully compose, we make the
+definition asymmetric (i.e., \<open>g\<close> does not get a bundle of
 parameters).
 
-*}
+\<close>
 
 definition eq_imp :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'e) \<Rightarrow> bool" where
   "eq_imp f g \<equiv> (\<forall>s s'. (\<forall>x. f x s = f x s') \<longrightarrow> (g s = g s'))"

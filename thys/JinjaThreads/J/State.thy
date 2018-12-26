@@ -2,9 +2,9 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-chapter {* JinjaThreads source language *}
+chapter \<open>JinjaThreads source language\<close>
 
-section {* Program State *}
+section \<open>Program State\<close>
 
 theory State
 imports

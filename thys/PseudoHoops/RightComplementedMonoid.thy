@@ -1,4 +1,4 @@
-section{* Right Complemented Monoid *}
+section\<open>Right Complemented Monoid\<close>
 
 theory RightComplementedMonoid
 imports LeftComplementedMonoid

@@ -1,13 +1,13 @@
 (*  Author:     Gertrud Bauer
 *)
 
-section {* Enumerating Patches *}
+section \<open>Enumerating Patches\<close>
 
 theory Enumerator
 imports Graph IArray_Syntax
 begin
 
-text {*
+text \<open>
 Generates an Enumeration of lists. 
 (See Kepler98, PartIII, section 8, p.11).
 
@@ -37,9 +37,9 @@ As we run over all $inner$ and all lists
  $[a0, \ldots,  a_{inner_1}]$, 
 we run over all osibilites fro the finishe face along the edge
  $e$ inside $F$.
-*}
+\<close>
 
-text{* \paragraph{Executable enumeration of patches} *}
+text\<open>\paragraph{Executable enumeration of patches}\<close>
 
 definition enumBase :: "nat \<Rightarrow> nat list list" where
  "enumBase nmax \<equiv> [[i]. i \<leftarrow> [0 ..< Suc nmax]]"
@@ -60,7 +60,7 @@ definition enum :: "nat \<Rightarrow> nat \<Rightarrow> nat list list" where
 "enum inner outer \<equiv> if inner < 9 \<and> outer < 9 then enumTab\<lbrakk>inner,outer\<rbrakk>
                     else enumerator inner outer"
 
-text{* \paragraph{Conversion to list of vertices} *}
+text\<open>\paragraph{Conversion to list of vertices}\<close>
 
 primrec hideDupsRec :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a option list" where
   "hideDupsRec a [] = []"

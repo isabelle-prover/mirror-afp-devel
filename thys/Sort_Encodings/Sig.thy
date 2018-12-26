@@ -1,11 +1,11 @@
-section {* Many-Typed (Many-Sorted) First-Order Logic *}
+section \<open>Many-Typed (Many-Sorted) First-Order Logic\<close>
 theory Sig imports Preliminaries
 begin
 
-text{* In this formalization, we call ``types" what the first-order logic community usually calls ``sorts".  *} 
+text\<open>In this formalization, we call ``types" what the first-order logic community usually calls ``sorts".\<close> 
 
 
-subsection{* Signatures *} 
+subsection\<open>Signatures\<close> 
 
 locale Signature =
 fixes
@@ -20,7 +20,7 @@ and countable_wtFsym: "countable {f::'fsym. wtFsym f}"
 and countable_wtPsym: "countable {p::'psym. wtPsym p}"
 begin
 
-text{* Partitioning of the variables in countable sets for each type: *}
+text\<open>Partitioning of the variables in countable sets for each type:\<close>
 
 definition tpOfV_pred :: "(var \<Rightarrow> 'tp) \<Rightarrow> bool" where
 "tpOfV_pred f \<equiv> \<forall> \<sigma>. infinite (f -` {\<sigma>})"
@@ -138,7 +138,7 @@ lemma tpart2_in:
 assumes "tinfinite V" and "x \<in> tpart2 V" shows "x \<in> V"
 using assms tpart2_su by auto
 
-text{* Typed-pick: picking a variable of a given type *}
+text\<open>Typed-pick: picking a variable of a given type\<close>
 
 definition "tpick \<sigma> V \<equiv> pick (V \<inter> tpOfV -` {\<sigma>})"
 

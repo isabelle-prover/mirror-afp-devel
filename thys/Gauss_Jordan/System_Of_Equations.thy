@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Solving systems of equations using the Gauss Jordan algorithm*}
+section\<open>Solving systems of equations using the Gauss Jordan algorithm\<close>
 
 theory System_Of_Equations
 imports
@@ -12,10 +12,10 @@ imports
  Bases_Of_Fundamental_Subspaces
 begin
 
-subsection{*Definitions*}
+subsection\<open>Definitions\<close>
 
-text{*Given a system of equations @{term "A *v x = b"}, the following function returns the pair @{term "(P ** A,P *v b)"}, where P is the matrix
-      which states @{term "Gauss_Jordan A = P ** A"}. That matrix is computed by means of @{term "Gauss_Jordan_PA"}.*}
+text\<open>Given a system of equations @{term "A *v x = b"}, the following function returns the pair @{term "(P ** A,P *v b)"}, where P is the matrix
+      which states @{term "Gauss_Jordan A = P ** A"}. That matrix is computed by means of @{term "Gauss_Jordan_PA"}.\<close>
 
 definition solve_system :: "('a::{field}^'cols::{mod_type}^'rows::{mod_type}) \<Rightarrow> ('a^'rows::{mod_type}) 
   \<Rightarrow> (('a^'cols::{mod_type}^'rows::{mod_type}) \<times> ('a^'rows::{mod_type}))"
@@ -23,7 +23,7 @@ definition solve_system :: "('a::{field}^'cols::{mod_type}^'rows::{mod_type}) \<
 
 definition is_solution where "is_solution x A b = (A *v x = b)"
 
-subsection{*Relationship between @{term "is_solution_def"} and @{term "solve_system_def"}*}
+subsection\<open>Relationship between @{term "is_solution_def"} and @{term "solve_system_def"}\<close>
 
 lemma is_solution_imp_solve_system:
   fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
@@ -67,7 +67,7 @@ lemma is_solution_solve_system:
   shows "is_solution x A b = is_solution x (fst (solve_system A b)) (snd (solve_system A b))"
   using solve_system_imp_is_solution is_solution_imp_solve_system by blast
 
-subsection{*Consistent and inconsistent systems of equations*}
+subsection\<open>Consistent and inconsistent systems of equations\<close>
 
 definition consistent :: "'a::{field}^'cols::{mod_type}^'rows::{mod_type} \<Rightarrow> 'a::{field}^'rows::{mod_type} \<Rightarrow> bool"
   where "consistent A b = (\<exists>x. is_solution x A b)"
@@ -77,7 +77,7 @@ definition inconsistent where "inconsistent A b =  (\<not> (consistent A b))"
 lemma inconsistent: "inconsistent A b = (\<not> (\<exists>x. is_solution x A b))"
   unfolding inconsistent_def consistent_def by simp
 
-text{*The following function will be use to solve consistent systems which are already in the reduced row echelon form.*}
+text\<open>The following function will be use to solve consistent systems which are already in the reduced row echelon form.\<close>
 
 definition solve_consistent_rref :: "'a::{field}^'cols::{mod_type}^'rows::{mod_type} \<Rightarrow> 'a::{field}^'rows::{mod_type} \<Rightarrow> 'a::{field}^'cols::{mod_type}"
   where "solve_consistent_rref A b = (\<chi> j. if (\<exists>i. A $ i $ j = 1 \<and> j=(LEAST n. A $ i $ n \<noteq> 0)) then b $ (THE i. A $ i $ j = 1) else 0)"
@@ -298,7 +298,7 @@ corollary consistent_imp_is_solution':
   unfolding Gauss_Jordan_PA_eq P_Gauss_Jordan_def .
 
 
-text{*Code equations optimized using Lets*}
+text\<open>Code equations optimized using Lets\<close>
 
 lemma inconsistent_eq_rank_less_code[code]:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
@@ -320,7 +320,7 @@ unfolding consistent_eq_rank_ge Let_def rank_Gauss_Jordan_code
 unfolding Gauss_Jordan_PA_eq P_Gauss_Jordan_def ..
 
 
-subsection{*Solution set of a system of equations. Dependent and independent systems.*}
+subsection\<open>Solution set of a system of equations. Dependent and independent systems.\<close>
 
 definition solution_set where "solution_set A b = {x. is_solution x A b}"
 
@@ -438,9 +438,9 @@ lemma dim_solution_set_0:
   using homogeneous_solution_set_subspace vec.dim_zero_subspace_eq by auto
 
 
-text{*We have to impose the restriction @{text "semiring_char_0"} in the following lemma,
+text\<open>We have to impose the restriction \<open>semiring_char_0\<close> in the following lemma,
 because it may not hold over a general field (for instance, in Z2 there is a finite number of elements, so the solution
-set can't be infinite.*}
+set can't be infinite.\<close>
 
 lemma dim_solution_set_not_zero_imp_infinite_solutions_homogeneous:
 fixes A::"'a::{field, semiring_char_0}^'n::{mod_type}^'rows::{mod_type}"
@@ -523,17 +523,17 @@ unfolding infinite_solution_set_no_homogeneous_eq[symmetric] INFM_iff_infinite u
 definition "independent_and_consistent A b = (consistent A b \<and> vec.dim (solution_set A 0) = 0)"
 definition "dependent_and_consistent A b = (consistent A b \<and> vec.dim (solution_set A 0) > 0)"
 
-subsection{*Solving systems of linear equations*}
+subsection\<open>Solving systems of linear equations\<close>
 
-text{*The following function will solve any system of linear equations. Given a matrix @{text "A"} and a vector @{text "b"}, 
-Firstly it makes use of the funcion @{term "solve_system"} to transform the original matrix @{text "A"} and the vector @{text "b"} 
+text\<open>The following function will solve any system of linear equations. Given a matrix \<open>A\<close> and a vector \<open>b\<close>, 
+Firstly it makes use of the funcion @{term "solve_system"} to transform the original matrix \<open>A\<close> and the vector \<open>b\<close> 
 into another ones in reduced row echelon form. Then, that system will have the same solution than the original one but it is easier to be solved.
 So we make use of the function @{term "solve_consistent_rref"} to obtain one solution of the system.
 
 We will prove that any solution of the system can be rewritten as a linear combination of elements of a basis of the null space plus a particular solution of the system.
 So the function @{term "solve"} will return an option type, depending on the consistency of the system:
 \begin{itemize}
-\item If the system is consistent (so there exists at least one solution), the function will return the @{text "Some"} of a pair.
+\item If the system is consistent (so there exists at least one solution), the function will return the \<open>Some\<close> of a pair.
       In the first component of that pair will be one solution of the system and the second one will be a basis of the null space of the matrix. Hence:
     \begin{enumerate}
         \item If the system is consistent and independent (so there exists one and only one solution), the pair will consist of the solution and the empty set (this empty set is 
@@ -541,9 +541,9 @@ So the function @{term "solve"} will return an option type, depending on the con
         \item If the system is consistent and dependent (so there exists more than one solution, maybe an infinite number), 
               the pair will consist of one particular solution and a basis of the null space (which will not be the empty set).
     \end{enumerate}
-\item If the system is inconsistent (so there exists no solution), the function will return @{text "None"}.
+\item If the system is inconsistent (so there exists no solution), the function will return \<open>None\<close>.
 \end{itemize}
-*}
+\<close>
 
 definition "solve A b = (if consistent A b then 
     Some (solve_consistent_rref (fst (solve_system A b)) (snd (solve_system A b)), basis_null_space A) 
@@ -587,8 +587,8 @@ corollary inconsistent_eq_solve_eq_none:
   shows "inconsistent A b = (solve A b = None)"
   unfolding solve_def unfolding inconsistent_def by force
 
-text{*We demonstrate that all solutions of a system of linear equations can be expressed as a linear combination of the basis of the null space plus a particular solution
-obtained. The basis and the particular solution are obtained by means of the function @{term "solve A b"}*}
+text\<open>We demonstrate that all solutions of a system of linear equations can be expressed as a linear combination of the basis of the null space plus a particular solution
+obtained. The basis and the particular solution are obtained by means of the function @{term "solve A b"}\<close>
 
 lemma solution_set_rel_solve:
   fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"

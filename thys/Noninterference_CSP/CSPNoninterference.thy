@@ -11,7 +11,7 @@ theory CSPNoninterference
 imports Main
 begin
 
-text {*
+text \<open>
 \null
 
 An extension of classical noninterference security for deterministic state machines, as introduced
@@ -27,14 +27,14 @@ noninterference policy will be considered.
 
 Throughout this paper, the salient points of definitions and proofs are commented; for additional
 information see Isabelle documentation, particularly \cite{R5}, \cite{R6}, \cite{R7}, and \cite{R8}.
-*}
+\<close>
 
 
 subsection "Processes"
 
-text {*
+text \<open>
 It is convenient to represent CSP processes by means of a type definition including a type variable,
-which stands for the process alphabet. Type @{text process} shall then be isomorphic to the subset
+which stands for the process alphabet. Type \<open>process\<close> shall then be isomorphic to the subset
 of the product type of failures sets and divergences sets comprised of the pairs that satisfy the
 properties enunciated in \cite{R1}, section 3.9. Such subset shall be shown to contain process
 \emph{STOP}, which proves that it is nonempty.
@@ -60,13 +60,13 @@ the truth of \emph{C6} for \emph{t} matching the empty list is a tautology.
 
 The advantage of the proposed formulation is that it facilitates the task to prove that pairs of
 failures and divergences sets defined inductively indeed be processes, viz. be included in the set
-of pairs isomorphic to type @{text process}, since the introduction rules in such inductive
+of pairs isomorphic to type \<open>process\<close>, since the introduction rules in such inductive
 definitions will typically construct process traces by appending one item at a time.
 
 In what follows, the concept of process is formalized according to the previous considerations.
 
 \null
-*}
+\<close>
 
 type_synonym 'a failure = "'a list \<times> 'a set"
 
@@ -110,28 +110,28 @@ by (rule_tac x = "({(xs, X). xs = []}, {})" in exI, simp add:
   process_prop_5_def
   process_prop_6_def)
 
-text {*
+text \<open>
 \null
 
-Here below are the definitions of some functions acting on processes. Functions @{text failures},
-@{text traces}, and @{text deterministic} match the homonymous notions defined in \cite{R1}. As for
+Here below are the definitions of some functions acting on processes. Functions \<open>failures\<close>,
+\<open>traces\<close>, and \<open>deterministic\<close> match the homonymous notions defined in \cite{R1}. As for
 the other ones:
 
 \begin{itemize}
 
 \item
-@{text "futures P xs"} matches the failures set of process \emph{P / xs};
+\<open>futures P xs\<close> matches the failures set of process \emph{P / xs};
 
 \item
-@{text "refusals P xs"} matches the refusals set of process \emph{P / xs};
+\<open>refusals P xs\<close> matches the refusals set of process \emph{P / xs};
 
 \item
-@{text "next_events P xs"} matches the event set (\emph{P / xs})\textsuperscript{0}.
+\<open>next_events P xs\<close> matches the event set (\emph{P / xs})\textsuperscript{0}.
 
 \end{itemize}
 
 \null
-*}
+\<close>
 
 definition failures :: "'a process \<Rightarrow> 'a failure set" where
 "failures P \<equiv> fst (Rep_process P)"
@@ -152,17 +152,17 @@ definition deterministic :: "'a process \<Rightarrow> bool" where
 "deterministic P \<equiv>
   \<forall>xs \<in> traces P. \<forall>X. X \<in> refusals P xs = (X \<inter> next_events P xs = {})"
 
-text {*
+text \<open>
 \null
 
-In what follows, properties @{text process_prop_2} and @{text process_prop_3} of processes are put
+In what follows, properties \<open>process_prop_2\<close> and \<open>process_prop_3\<close> of processes are put
 into the form of introduction rules, which will turn out to be useful in subsequent proofs.
-Particularly, the more general formulation of @{text process_prop_2} as given in \cite{R1} (section
+Particularly, the more general formulation of \<open>process_prop_2\<close> as given in \cite{R1} (section
 3.9, property \emph{C2}) is restored, and it is expressed in terms of both functions
-@{text failures} and @{text futures}.
+\<open>failures\<close> and \<open>futures\<close>.
 
 \null
-*}
+\<close>
 
 lemma process_rule_2: "(xs @ [x], X) \<in> failures P \<Longrightarrow> (xs, {}) \<in> failures P"
 proof (simp add: failures_def)
@@ -204,7 +204,7 @@ by (simp add: futures_def, simp only: append_assoc [symmetric], rule process_rul
 
 subsection "Noninterference"
 
-text {*
+text \<open>
 In the classical theory of noninterference, a deterministic state machine is considered to be secure
 just in case, for any trace of the machine and any action occurring next, the observable effect of
 the action, i.e. the produced output, is compatible with the assigned noninterference policy.
@@ -213,57 +213,57 @@ Thus, by analogy, it seems reasonable to regard a process as being noninterferen
 case, for any of its traces and any event occurring next, the observable effect of the event, i.e.
 the set of the possible futures of the process, is compatible with a given noninterference policy.
 
-More precisely, let @{text "sinks I D u xs"} be the set of the security domains of the events within
-event list @{text xs} that may be affected by domain @{text u} according to interference relation
-@{text I}, where @{text D} is the mapping of events into their domains. Since the general case of a
-possibly intransitive relation @{text I} is considered, function @{text sinks} has to be defined
+More precisely, let \<open>sinks I D u xs\<close> be the set of the security domains of the events within
+event list \<open>xs\<close> that may be affected by domain \<open>u\<close> according to interference relation
+\<open>I\<close>, where \<open>D\<close> is the mapping of events into their domains. Since the general case of a
+possibly intransitive relation \<open>I\<close> is considered, function \<open>sinks\<close> has to be defined
 recursively, similarly to what happens for function \emph{sources} in \cite{R3}. However,
-contrariwise to function \emph{sources}, function @{text sinks} takes into account the influence of
+contrariwise to function \emph{sources}, function \<open>sinks\<close> takes into account the influence of
 the input domain on the input event list, so that the recursive decomposition of the latter has to
 be performed by item appending rather than prepending.
 
-Furthermore, let @{text "ipurge_tr I D u xs"} be the sublist of event list @{text xs} obtained by
-recursively deleting the events that may be affected by domain @{text u} as detected via function
-@{text sinks}, and @{text "ipurge_ref I D u xs X"} be the subset of refusal @{text X} whose elements
-may not be affected by either @{text u} or any domain in @{text "sinks I D u xs"}.
+Furthermore, let \<open>ipurge_tr I D u xs\<close> be the sublist of event list \<open>xs\<close> obtained by
+recursively deleting the events that may be affected by domain \<open>u\<close> as detected via function
+\<open>sinks\<close>, and \<open>ipurge_ref I D u xs X\<close> be the subset of refusal \<open>X\<close> whose elements
+may not be affected by either \<open>u\<close> or any domain in \<open>sinks I D u xs\<close>.
 
-Then, a process @{text P} is secure just in case, for each event list @{text xs} and each
-@{text "(y # ys, Y), (zs, Z) \<in> futures P xs"}, both of the following conditions are satisfied:
+Then, a process \<open>P\<close> is secure just in case, for each event list \<open>xs\<close> and each
+\<open>(y # ys, Y), (zs, Z) \<in> futures P xs\<close>, both of the following conditions are satisfied:
 
 \begin{itemize}
 
 \item
-@{text "(ipurge_tr I D (D y) ys, ipurge_ref I D (D y) ys Y) \<in> futures P xs"}.
-\\Otherwise, the absence of event @{text y} after @{text xs} would affect the possibility for pair
-@{text "(ipurge_tr I D (D y) ys, ipurge_ref I D (D y) ys Y)"} to occur as a future of @{text xs},
-although its components, except for the deletion of @{text y}, are those of possible future
-@{text "(y # ys, Y)"} deprived of any event allowed to be affected by @{text y}.
+\<open>(ipurge_tr I D (D y) ys, ipurge_ref I D (D y) ys Y) \<in> futures P xs\<close>.
+\\Otherwise, the absence of event \<open>y\<close> after \<open>xs\<close> would affect the possibility for pair
+\<open>(ipurge_tr I D (D y) ys, ipurge_ref I D (D y) ys Y)\<close> to occur as a future of \<open>xs\<close>,
+although its components, except for the deletion of \<open>y\<close>, are those of possible future
+\<open>(y # ys, Y)\<close> deprived of any event allowed to be affected by \<open>y\<close>.
 
 \item
-@{text "(y # ipurge_tr I D (D y) zs, ipurge_ref I D (D y) zs Z)"}
-\\@{text "\<in> futures P xs"}.
-\\Otherwise, the presence of event @{text y} after @{text xs} would affect the possibility for pair
-@{text "(y # ipurge_tr I D (D y) zs, ipurge_ref I D (D y) zs Z)"} to occur as a future of
-@{text xs}, although its components, except for the addition of @{text y}, are those of possible
-future @{text "(zs, Z)"} deprived of any event allowed to be affected by @{text y}.
+\<open>(y # ipurge_tr I D (D y) zs, ipurge_ref I D (D y) zs Z)\<close>
+\\\<open>\<in> futures P xs\<close>.
+\\Otherwise, the presence of event \<open>y\<close> after \<open>xs\<close> would affect the possibility for pair
+\<open>(y # ipurge_tr I D (D y) zs, ipurge_ref I D (D y) zs Z)\<close> to occur as a future of
+\<open>xs\<close>, although its components, except for the addition of \<open>y\<close>, are those of possible
+future \<open>(zs, Z)\<close> deprived of any event allowed to be affected by \<open>y\<close>.
 
 \end{itemize}
 
 Observe that this definition of security, henceforth referred to as
 \emph{CSP noninterference security}, does not rest on the supposition that noninterference policy
-@{text I} be reflexive, even though any policy of practical significance will be such.
+\<open>I\<close> be reflexive, even though any policy of practical significance will be such.
 
 Moreover, this simpler formulation is equivalent to the one obtained by restricting the range of
-event list @{text xs} to the traces of process @{text P}. In fact, for each @{text zs}, @{text Z},
-@{text "(zs, Z) \<in> futures P xs"} just in case @{text "(xs @ zs, Z) \<in> failures P"}, which by virtue
-of rule @{text process_rule_2_failures} implies that @{text xs} is a trace of @{text P}. Therefore,
-formula @{text "(zs, Z) \<in> futures P xs"} is invariably false in case @{text xs} is not a trace of
-@{text P}.
+event list \<open>xs\<close> to the traces of process \<open>P\<close>. In fact, for each \<open>zs\<close>, \<open>Z\<close>,
+\<open>(zs, Z) \<in> futures P xs\<close> just in case \<open>(xs @ zs, Z) \<in> failures P\<close>, which by virtue
+of rule \<open>process_rule_2_failures\<close> implies that \<open>xs\<close> is a trace of \<open>P\<close>. Therefore,
+formula \<open>(zs, Z) \<in> futures P xs\<close> is invariably false in case \<open>xs\<close> is not a trace of
+\<open>P\<close>.
 
 Here below are the formal counterparts of the definitions discussed so far.
 
 \null
-*}
+\<close>
 
 function sinks :: "('d \<times> 'd) set \<Rightarrow> ('a \<Rightarrow> 'd) \<Rightarrow> 'd \<Rightarrow> 'a list \<Rightarrow> 'd set" where
 "sinks _ _ _ [] = {}" |
@@ -294,15 +294,15 @@ definition secure :: "'a process \<Rightarrow> ('d \<times> 'd) set \<Rightarrow
   (ipurge_tr I D (D y) ys, ipurge_ref I D (D y) ys Y) \<in> futures P xs \<and>
   (y # ipurge_tr I D (D y) zs, ipurge_ref I D (D y) zs Z) \<in> futures P xs"
 
-text {*
+text \<open>
 \null
 
 The continuation of this section is dedicated to the demonstration of some lemmas concerning
-functions @{text sinks}, @{text ipurge_tr}, and @{text ipurge_ref} which will turn out to be useful
+functions \<open>sinks\<close>, \<open>ipurge_tr\<close>, and \<open>ipurge_ref\<close> which will turn out to be useful
 in subsequent proofs.
 
 \null
-*}
+\<close>
 
 lemma sinks_cons_same:
   assumes R: "refl I"

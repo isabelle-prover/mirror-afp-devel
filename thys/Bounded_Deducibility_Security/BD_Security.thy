@@ -1,4 +1,4 @@
-section {* BD Security *}
+section \<open>BD Security\<close>
 
 (*<*)
 theory BD_Security
@@ -7,7 +7,7 @@ begin
 (*>*)
 
 
-subsection{* Definition *}
+subsection\<open>Definition\<close>
 
 declare Let_def[simp]
 
@@ -121,7 +121,7 @@ by (metis V_iff_non_\<phi> V_imp_Nil)
 end (* context BD_Security *)
 
 
-subsection{* Unwinding proof method *}
+subsection\<open>Unwinding proof method\<close>
 
 context BD_Security
 begin
@@ -328,7 +328,7 @@ next
   proof(cases "\<phi> trn")
     case True
     hence "f trn = hd vl" using Cons by (metis V_simps(3) hd_Cons_tl list.inject vl)
-    moreover have "validFrom s [trn]" using `validFrom s (trn # tr)`
+    moreover have "validFrom s [trn]" using \<open>validFrom s (trn # tr)\<close>
     unfolding validFrom_def by auto
     ultimately show ?thesis using Cons True unfolding exit_def
     by (elim allE[of _ "[]"]) auto
@@ -336,10 +336,10 @@ next
     case False
     hence "V tr = vl" using Cons by auto
     moreover have "never T tr" by (metis Cons.prems list_all_simps)
-    moreover from `validFrom s (trn # tr)` have "validFrom (tgtOf trn) tr" and s: "s = srcOf trn"
+    moreover from \<open>validFrom s (trn # tr)\<close> have "validFrom (tgtOf trn) tr" and s: "s = srcOf trn"
     by (metis list.distinct(1) validFrom_def valid_ConsE Cons.prems(2) 
               IO_Automaton.validFrom_def list.discI list.sel(1))+    
-    moreover have "exit (tgtOf trn) (hd vl)" using `exit s (hd vl)`
+    moreover have "exit (tgtOf trn) (hd vl)" using \<open>exit s (hd vl)\<close>
     unfolding exit_def s by simp
     (metis (no_types) Cons.prems(2) Cons.prems(4) append_Cons list.sel(1)
            list.distinct list_all_simps valid.Cons validFrom_def valid_ConsE)

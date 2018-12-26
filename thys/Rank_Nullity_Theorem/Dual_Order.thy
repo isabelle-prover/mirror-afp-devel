@@ -11,7 +11,7 @@ theory Dual_Order
   imports Main
 begin
 
-subsection{*Interpretation of dual wellorder based on wellorder*}
+subsection\<open>Interpretation of dual wellorder based on wellorder\<close>
 
 lemma wf_wellorderI2:
   assumes wf: "wf {(x::'a::ord, y). y < x}"
@@ -33,7 +33,7 @@ proof (rule wf_wellorderI2)
     unfolding class.preorder_def unfolding class.order_axioms_def by auto  
 qed
 
-subsection{*Properties of the Greatest operator*}
+subsection\<open>Properties of the Greatest operator\<close>
   
 lemma dual_wellorder_Least_eq_Greatest[simp]: "dual_wellorder.Least = Greatest" 
   by (auto simp add: Greatest_def dual_wellorder.Least_def)

@@ -6,17 +6,17 @@
     License:     LGPL
 *)
 
-section {* {\tt FJSound}: Type Soundness *}
+section \<open>{\tt FJSound}: Type Soundness\<close>
 
 theory FJSound imports FJAux
 begin 
 
-text{* Type soundness is proved using the standard technique of
+text\<open>Type soundness is proved using the standard technique of
 progress and subject reduction. The numbered lemmas and theorems in
 this section correspond to the same results in the ACM TOPLAS paper.
-*}
+\<close>
 
-subsection{* Method Type and Body Connection *}
+subsection\<open>Method Type and Body Connection\<close>
 
 lemma mtype_mbody:
   fixes Cs :: "nat list"
@@ -45,7 +45,7 @@ proof -
   with mbody_functional[OF mb mb2] show ?thesis by auto
 qed
 
-subsection{* Method Types and Field Declarations of Subtypes *}
+subsection\<open>Method Types and Field Declarations of Subtypes\<close>
 
 lemma A_1_1:
   assumes "CT \<turnstile> C <: D" and "CT OK"
@@ -110,7 +110,7 @@ next
   thus ?case ..
 qed
 
-subsection{* Substitution Lemma *}
+subsection\<open>Substitution Lemma\<close>
  
 lemma A_1_2:
   assumes "CT OK"
@@ -176,7 +176,7 @@ proof -
       next
         case (Some Bi)
         with G_def t_var have c'_eq_bi: "C' = Bi" by (auto simp add: map_add_SomeD)
-        from `length xs = length ds` asms have "length xs = length Bs" by simp
+        from \<open>length xs = length ds\<close> asms have "length xs = length Bs" by simp
         with Some G2_def have "\<exists>i.(Bs!i = Bi) \<and> (i < length Bs) \<and>
             (\<forall>l.((length l = length Bs) \<longrightarrow> ([xs[\<mapsto>]l] x = Some (l!i))))" 
           by (auto simp add: map_upds_index)
@@ -322,10 +322,10 @@ proof -
 qed
     
 
-subsection{* Weakening Lemma *}
+subsection\<open>Weakening Lemma\<close>
 
-text {* This lemma is not in the same form as in TOPLAS, but rather as
-we need it in subject reduction *}
+text \<open>This lemma is not in the same form as in TOPLAS, but rather as
+we need it in subject reduction\<close>
 
 lemma A_1_3:
   shows "(CT;\<Gamma>2 \<turnstile>+ es : Cs) \<Longrightarrow> (CT;\<Gamma>1++\<Gamma>2 \<turnstile>+ es : Cs)" (is "?P1 \<Longrightarrow> ?P2")
@@ -337,7 +337,7 @@ proof -
 qed
 
 
-subsection {* Method Body Typing Lemma *}
+subsection \<open>Method Body Typing Lemma\<close>
 
 lemma A_1_4: 
   assumes ct_ok: "CT OK" 
@@ -378,7 +378,7 @@ next
   thus ?case using s_trans[OF c_sub_da s1] by blast
 qed
 
-subsection {* Subject Reduction Theorem *}
+subsection \<open>Subject Reduction Theorem\<close>
 
 theorem Thm_2_4_1: 
   assumes "CT \<turnstile> e \<rightarrow> e'" 
@@ -472,7 +472,7 @@ next
     where "CT;\<Gamma> \<turnstile> e0' : C'" 
     and "CT \<turnstile> C' <: C0" by auto
   moreover from sub_fields[OF _ Cf_def] obtain Cf'
-    where "fields(CT,C') = (Cf@Cf')" by rule (rule `CT \<turnstile> C' <: C0`)
+    where "fields(CT,C') = (Cf@Cf')" by rule (rule \<open>CT \<turnstile> C' <: C0\<close>)
   moreover with fd_def have "lookup (Cf@Cf') (\<lambda>fd. (vdName fd = f)) = Some fd" 
     by(simp add:lookup_append)
   ultimately have "CT;\<Gamma> \<turnstile> FieldProj e0' f : C" by(auto simp add:typings_typing.t_field)
@@ -563,7 +563,7 @@ next
   thus ?case using Ca_def by (auto simp add:subtyping.s_refl)
 qed
 
-subsection {* Multi-Step Subject Reduction Theorem *}
+subsection \<open>Multi-Step Subject Reduction Theorem\<close>
 
 corollary Cor_2_4_1_multi:
   assumes "CT \<turnstile> e \<rightarrow>* e'" 
@@ -586,12 +586,12 @@ next
 qed 
 
 
-subsection {* Progress *}
+subsection \<open>Progress\<close>
 
-text {* The two "progress lemmas" proved in the TOPLAS paper alone are
+text \<open>The two "progress lemmas" proved in the TOPLAS paper alone are
 not quite enough to prove type soundness. We prove an additional lemma
 showing that every well-typed expression is either a value or contains
-a potential redex as a sub-expression. *}
+a potential redex as a sub-expression.\<close>
 
 theorem Thm_2_4_2_1: 
   assumes "CT;Map.empty \<turnstile> e : C"
@@ -815,7 +815,7 @@ next
   ultimately show ?case by blast
 qed
 
-subsection {* Type Soundness Theorem *}     
+subsection \<open>Type Soundness Theorem\<close>     
 
 theorem Thm_2_4_3: 
   assumes e_typ: "CT;Map.empty \<turnstile> e : C"

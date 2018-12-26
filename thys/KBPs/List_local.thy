@@ -10,9 +10,9 @@ imports Extra "HOL-Library.While_Combinator"
 begin
 
 
-text{* Partition a list with respect to an equivalence relation. *}
+text\<open>Partition a list with respect to an equivalence relation.\<close>
 
-text{* First up: split a list according to a relation. *}
+text\<open>First up: split a list according to a relation.\<close>
 
 abbreviation "rel_ext r \<equiv> { x . r x }"
 
@@ -69,8 +69,8 @@ lemma partition_split':
   using assms partition_split[where r=r and x=x and xs=xs]
   by simp_all
 
-text{* Next, split an list on each of its members. For this to be
-unambiguous @{term "r"} must be an equivalence relation. *}
+text\<open>Next, split an list on each of its members. For this to be
+unambiguous @{term "r"} must be an equivalence relation.\<close>
 
 definition
   partition_aux_body :: "('a \<times> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<times> 'a list list \<Rightarrow> 'a list \<times> 'a list list"

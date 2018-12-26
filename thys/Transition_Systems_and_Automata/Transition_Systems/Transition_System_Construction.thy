@@ -1,4 +1,4 @@
-section {* Constructing Paths and Runs in Transition Systems *}
+section \<open>Constructing Paths and Runs in Transition Systems\<close>
 
 theory Transition_System_Construction
 imports

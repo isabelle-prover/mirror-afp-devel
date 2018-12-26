@@ -4,29 +4,29 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Formal Power Series *}
+section \<open>Formal Power Series\<close>
 
 theory Formal_Power_Series
 imports Finite_Suprema Kleene_Algebra
 begin
 
-subsection {* The Type of Formal Power Series*}
+subsection \<open>The Type of Formal Power Series\<close>
 
-text {* Formal powerseries are functions from a free monoid into a
+text \<open>Formal powerseries are functions from a free monoid into a
 dioid. They have applications in formal language theory, e.g.,
 weighted automata. As usual, we represent elements of a free monoid
 by lists.
 
 This theory generalises Amine Chaieb's development of formal power
 series as functions from natural numbers, which may be found in {\em
-HOL/Library/Formal\_Power\_Series.thy}. *}
+HOL/Library/Formal\_Power\_Series.thy}.\<close>
 
 typedef ('a, 'b) fps = "{f::'a list \<Rightarrow> 'b. True}"
   morphisms fps_nth Abs_fps
   by simp
 
-text {* It is often convenient to reason about functions, and transfer
-results to formal power series. *}
+text \<open>It is often convenient to reason about functions, and transfer
+results to formal power series.\<close>
 
 setup_lifting type_definition_fps
 
@@ -44,11 +44,11 @@ lemma fps_nth_Abs_fps [simp]: "Abs_fps f $ n = f n"
 by (simp add: Abs_fps_inverse)
 
 
-subsection {* Definition of the Basic Elements~0 and~1 and the Basic
-Operations of Addition and Multiplication *}
+subsection \<open>Definition of the Basic Elements~0 and~1 and the Basic
+Operations of Addition and Multiplication\<close>
 
-text {* The zero formal power series maps all elements of the monoid
-(all lists) to zero. *}
+text \<open>The zero formal power series maps all elements of the monoid
+(all lists) to zero.\<close>
 
 instantiation fps :: (type,zero) zero
 begin
@@ -60,8 +60,8 @@ end
 lemma fps_zero_nth [simp]: "0 $ n = 0"
 unfolding zero_fps_def by simp
 
-text {* The unit formal power series maps the monoidal unit (the empty
-list) to one and all other elements to zero. *}
+text \<open>The unit formal power series maps the monoidal unit (the empty
+list) to one and all other elements to zero.\<close>
 
 instantiation fps :: (type,"{one,zero}") one
 begin
@@ -76,8 +76,8 @@ unfolding one_fps_def by simp
 lemma fps_one_nth_Cons [simp]: "1 $ (x # xs) = 0"
 unfolding one_fps_def by simp
 
-text {* Addition of formal power series is the usual pointwise
-addition of functions. *}
+text \<open>Addition of formal power series is the usual pointwise
+addition of functions.\<close>
 
 instantiation fps :: (type,plus) plus
 begin
@@ -89,8 +89,8 @@ end
 lemma fps_add_nth [simp]: "(f + g) $ n = f $ n + g $ n"
 unfolding plus_fps_def by simp
 
-text {* This directly shows that formal power series form a
-semilattice with zero. *}
+text \<open>This directly shows that formal power series form a
+semilattice with zero.\<close>
 
 lemma fps_add_assoc: "((f::('a,'b::semigroup_add) fps) + g) + h = f + (g + h)"
 unfolding plus_fps_def by (simp add: add.assoc)
@@ -107,11 +107,11 @@ unfolding plus_fps_def by simp
 lemma fps_zeror [simp]: "0 + (f::('a,'b::monoid_add) fps) = f"
 unfolding plus_fps_def by simp
 
-text {* The product of formal power series is convolution. The product
+text \<open>The product of formal power series is convolution. The product
 of two formal powerseries at a list is obtained by splitting the list
 into all possible prefix/suffix pairs, taking the product of the first
 series applied to the first coordinate and the second series applied
-to the second coordinate of each pair, and then adding the results. *}
+to the second coordinate of each pair, and then adding the results.\<close>
 
 instantiation fps :: (type,"{comm_monoid_add,times}") times
 begin
@@ -120,14 +120,14 @@ begin
   instance ..
 end
 
-text {* We call the set of all prefix/suffix splittings of a
-list~@{term xs} the \emph{splitset} of~@{term xs}. *}
+text \<open>We call the set of all prefix/suffix splittings of a
+list~@{term xs} the \emph{splitset} of~@{term xs}.\<close>
 
 definition splitset where
   "splitset xs \<equiv> {(p, q). xs = p @ q}"
 
-text {* Altenatively, splitsets can be defined recursively, which
-yields convenient simplification rules in Isabelle. *}
+text \<open>Altenatively, splitsets can be defined recursively, which
+yields convenient simplification rules in Isabelle.\<close>
 
 fun splitset_fun where
   "splitset_fun []       = {([], [])}"
@@ -143,7 +143,7 @@ apply (induct xs)
 apply (simp add: splitset_consl)
 done
 
-text {* The definition of multiplication is now more precise. *}
+text \<open>The definition of multiplication is now more precise.\<close>
 
 lemma fps_mult_var:
   "(f * g) $ n = \<Sum>{f $ (fst p) * g $ (snd p) | p. p \<in> splitset n}"
@@ -153,7 +153,7 @@ lemma fps_mult_image:
   "(f * g) $ n = \<Sum>((\<lambda>p. f $ (fst p) * g $ (snd p)) ` splitset n)"
 by (simp only: Collect_mem_eq fps_mult_var fun_im)
 
-text {* Next we show that splitsets are finite and non-empty. *}
+text \<open>Next we show that splitsets are finite and non-empty.\<close>
 
 lemma splitset_fun_finite [simp]: "finite (splitset_fun xs)"
   by (induct xs, simp_all)
@@ -170,8 +170,8 @@ lemma splitset_fun_nonempty [simp]: "splitset_fun xs \<noteq> {}"
 lemma splitset_nonempty [simp]: "splitset xs \<noteq> {}"
   by (simp add: splitset_eq_splitset_fun)
 
-text {* We now proceed with proving algebraic properties of formal
-power series. *}
+text \<open>We now proceed with proving algebraic properties of formal
+power series.\<close>
 
 lemma fps_annil [simp]:
   "0 * (f::('a::type,'b::{comm_monoid_add,mult_zero}) fps) = 0"
@@ -189,7 +189,7 @@ lemma fps_distr:
   "((f::('a::type,'b::{join_semilattice_zero,semiring}) fps) + g) * h = (f * h) + (g * h)"
 by (simp add: fps_ext fps_mult_image distrib_right sum_fun_sum)
 
-text {* The multiplicative unit laws are surprisingly tedious. For the
+text \<open>The multiplicative unit laws are surprisingly tedious. For the
 proof of the left unit law we use the recursive definition, which we
 could as well have based on splitlists instead of splitsets.
 
@@ -197,7 +197,7 @@ However, a right unit law cannot simply be obtained along the lines of
 this proofs. The reason is that an alternative recursive definition
 that produces a unit with coordinates flipped would be needed. But
 this is difficult to obtain without snoc lists. We therefore prove the
-right unit law more directly by using properties of suprema. *}
+right unit law more directly by using properties of suprema.\<close>
 
 lemma fps_onel [simp]:
   "1 * (f::('a::type,'b::{join_semilattice_zero,monoid_mult,mult_zero}) fps) = f"
@@ -232,10 +232,10 @@ proof (rule fps_ext)
     by (metis eq_iff)
 qed
 
-text {* Finally we prove associativity of convolution. This requires
+text \<open>Finally we prove associativity of convolution. This requires
 splitting lists into three parts and rearranging these parts in two
 different ways into splitsets. This rearrangement is captured by the
-following technical lemma. *}
+following technical lemma.\<close>
 
 lemma splitset_rearrange:
   fixes F :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'b::join_semilattice_zero"
@@ -268,12 +268,12 @@ proof (rule fps_ext)
 qed
 
 
-subsection {* The Dioid Model of Formal Power Series *}
+subsection \<open>The Dioid Model of Formal Power Series\<close>
 
-text {* We can now show that formal power series with suitably
+text \<open>We can now show that formal power series with suitably
 defined operations form a dioid. Many of the underlying properties
 already hold in weaker settings, where the target algebra is a
-semilattice or semiring. We currently ignore this fact. *}
+semilattice or semiring. We currently ignore this fact.\<close>
 
 subclass (in dioid_one_zero) mult_zero
 proof
@@ -330,14 +330,14 @@ lemma expand_fps_less_eq: "(f::('a,'b::dioid_one_zero) fps) \<le> g \<longleftri
 by (simp add: expand_fps_eq less_eq_def less_eq_fps_def)
 
 
-subsection {* The Kleene Algebra Model of Formal Power Series *}
+subsection \<open>The Kleene Algebra Model of Formal Power Series\<close>
 
-text {* There are two approaches to define the Kleene star. The first
+text \<open>There are two approaches to define the Kleene star. The first
 one defines the star for a certain kind of (so-called proper) formal
 power series into a semiring or dioid. The second one, which is more
 interesting in the context of our algebraic hierarchy, shows that
 formal power series into a Kleene algebra form a Kleene algebra. We
-have only formalised the latter approach. *}
+have only formalised the latter approach.\<close>
 
 lemma Sum_splitlist_nonempty:
   "\<Sum>{f ys zs |ys zs. xs = ys @ zs} = ((f [] xs)::'a::join_semilattice_zero) + \<Sum>{f ys zs |ys zs. xs = ys @ zs \<and> ys \<noteq> []}"
@@ -362,12 +362,12 @@ fun star_fps_rep where
 instantiation fps :: (type,kleene_algebra) kleene_algebra
 begin
 
-  text {* We first define the star on functions, where we can use
+  text \<open>We first define the star on functions, where we can use
   Isabelle's package for recursive functions, before lifting the
   definition to the type of formal power series.
 
   This definition of the star is from an unpublished manuscript by
-  Esik and Kuich. *}
+  Esik and Kuich.\<close>
 
   lift_definition star_fps :: "('a, 'b) fps \<Rightarrow> ('a, 'b) fps" is star_fps_rep ..
 

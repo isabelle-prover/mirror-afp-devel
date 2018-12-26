@@ -26,12 +26,12 @@ a collection of one-step message construction and decomposition events a la
 Strand spaces).\<close>
 
 text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"} (again).\<close>
+\<open>dom\<close> (again).\<close>
 
 declare domIff [simp, iff del]
 
 
-text \<open>A general lemma about @{text "parts"} (move?!).\<close>
+text \<open>A general lemma about \<open>parts\<close> (move?!).\<close>
 
 lemmas parts_insertD = parts_insert [THEN equalityD1, THEN subsetD]
 
@@ -220,7 +220,7 @@ subsection \<open>Simulation relation\<close>
 text \<open>Simulation relation is canonical. It states that the protocol messages
 appearing in the intruder knowledge refine those occurring on the abstract
 confidential channels. Moreover, if the concrete intruder knows a nonce then so 
-does the abstract one (as defined by @{text "ink"}).\<close>
+does the abstract one (as defined by \<open>ink\<close>).\<close>
 
 
 text \<open>Abstraction function on sets of messages.\<close>

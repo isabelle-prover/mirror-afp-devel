@@ -101,7 +101,7 @@ generation_syntax
 \end{verbatim}
 While in theory it is possible to set the @{keyword "deep"} mode
 for generating in all target languages, i.e. by writing 
-@{text "[ in Haskell, in OCaml module_name M, in Scala module_name M, in SML module_name M ]"},
+\<open>[ in Haskell, in OCaml module_name M, in Scala module_name M, in SML module_name M ]\<close>,
 usually using only one target is enough,
 since the task of all target is to generate the same Isabelle content.
 However in case one language takes too much time to setup,
@@ -121,8 +121,8 @@ So globally the universe describing all classes is partial, it
 will only be fully constructed when all classes will be finished to be defined.
 
 This allows to define classes without having to follow a particular order of definitions.
-Here @{text Atom} is defined before the one of @{text Molecule}
-(@{text Molecule} will come after):
+Here \<open>Atom\<close> is defined before the one of \<open>Molecule\<close>
+(\<open>Molecule\<close> will come after):
 \<close>
 
 Class Atom < Molecule
@@ -178,8 +178,8 @@ text\<open>At this position, in the output window,
 we can observe for the first time some generated Isabelle code,
 corresponding to the partial universe of classes being constructed.
 
-Note: By default, @{text "Atom"} and @{text "Molecule"} are not (yet) present in the shown universe
-because @{text "Person"} has not been defined in a separate line (unlike @{text "Galaxy"} above).\<close>
+Note: By default, \<open>Atom\<close> and \<open>Molecule\<close> are not (yet) present in the shown universe
+because \<open>Person\<close> has not been defined in a separate line (unlike \<open>Galaxy\<close> above).\<close>
 
 Class Person < Galaxy
   Attributes salary : Integer
@@ -210,8 +210,8 @@ whenever we are adding meanwhile another class:
 
 As remark, not only the universe is recomputed, but 
 the recomputation takes also into account all meta-commands already encountered. 
-So in the new setting, @{text "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1"}, @{text "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2"} and @{text "X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3"} 
-will be resurrected... after the @{text Big_Bang}.
+So in the new setting, \<open>X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n1\<close>, \<open>X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n2\<close> and \<open>X\<^sub>P\<^sub>e\<^sub>r\<^sub>s\<^sub>o\<^sub>n3\<close> 
+will be resurrected... after the \<open>Big_Bang\<close>.
 \<close>
 
 subsection\<open>Designing Class Models (II): Jumping to Another Semantic Floor\<close>
@@ -269,22 +269,22 @@ text\<open>
 The generation of meta-commands allows to perform various extensions
 on the Toy language being embedded, without altering the semantics of a particular command.
 @{command PrePost} usually only takes ``bound variables'' as parameters
-(not arbitrary @{text "\<lambda>"}-terms), however the semantics of @{command PrePost} was extended
+(not arbitrary \<open>\<lambda>\<close>-terms), however the semantics of @{command PrePost} was extended
 to mimic the support of some particular terms not restricted to variables.
-This extension was implemented by executing some steps of ``@{text "\<zeta>"}-reductions rewriting rules''
+This extension was implemented by executing some steps of ``\<open>\<zeta>\<close>-reductions rewriting rules''
 operating on the meta-level of commands.
 First, it is at least needed to extend the syntax of expressions accepted by @{command PrePost}, 
-we then modify the parsing so that a larger subset of @{text "\<lambda>"}-terms
+we then modify the parsing so that a larger subset of \<open>\<lambda>\<close>-terms
 can be given as parameters.
 Starting from this expression: \\
 @{verbatim "(* PrePost \<sigma>\<^sub>1 [ ([ salary = 1000 , boss = self 1 ] :: Person) ] *)"}
 
 the rewriting begins with a first call to the next semantic floor, we obtain 
-the following meta-commands (where @{command PrePost} @{text "[shallow]"} is an expression 
+the following meta-commands (where @{command PrePost} \<open>[shallow]\<close> is an expression 
 in normal form): \\
 @{verbatim \<open>(* State WFF_10_post = [ ([ "salary" = 1000, "boss" = self 1 ] :: Person) ]\<close>} \\
 @{verbatim "   PrePost[shallow] \<sigma>\<^sub>1 WFF_10_post *)"}
-(@{text "WFF_10_post"} is an automatically generated name).
+(\<open>WFF_10_post\<close> is an automatically generated name).
 
 The rewriting of the above @{command State} is performed in its turn.
 Finally the overall ultimately terminates when reaching @{command Instance} being already 
@@ -309,12 +309,12 @@ for subsequent semantic floors.
 
 This is what is implemented here:
 \<close>
-text{*
+text\<open>
 \verb|Context Person :: content ()| \\
 \verb|  Post "><"|
-*}
+\<close>
 
-text{*
+text\<open>
 Here the expression @{verbatim "><"} is not well-typed in Isabelle, but an error is not raised
 because the above expression is not (yet) parsed as an Inner Syntax element\footnote{
 In any case an error will not be raised, because the above code 
@@ -330,7 +330,7 @@ However, this is not the same for the resulting generated meta-command: \\
 \verb|  Post : "(\<lambda> result self. (><))"| \\
 and an error is immediately raised because the parsing of Inner Syntax expressions
 is activated in this case.
-*}
+\<close>
 
 text\<open>For example, one can put the mouse, with the CTRL gesture,
 over the variable @{term "a"}, @{term "b"} or @{term "c"}

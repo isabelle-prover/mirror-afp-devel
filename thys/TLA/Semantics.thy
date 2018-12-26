@@ -5,15 +5,15 @@
     Maintainer:  Gudmund Grov <ggrov at inf.ed.ac.uk>
 *)
 
-section {* Semantics *} 
+section \<open>Semantics\<close> 
 
 theory Semantics
 imports Sequence Intensional
 begin
 
-text {* 
+text \<open>
   This theory mechanises a \emph{shallow} embedding of \tlastar{} using the
-  @{text Sequence} and @{text Intensional} theories. A shallow embedding
+  \<open>Sequence\<close> and \<open>Intensional\<close> theories. A shallow embedding
   represents \tlastar{} using Isabelle/HOL predicates, while a \emph{deep}
   embedding would represent \tlastar{} formulas and pre-formulas as mutually
   inductive datatypes\footnote{See e.g. \cite{Wildmoser04} for a discussion
@@ -21,19 +21,19 @@ text {*
   The choice of a shallow over a deep embedding is motivated by the following 
   factors: a shallow embedding is usually less involved, and existing Isabelle
   theories and tools can be applied more directly to enhance automation; due to
-  the lifting in the @{text Intensional} theory, a shallow embedding can reuse
+  the lifting in the \<open>Intensional\<close> theory, a shallow embedding can reuse
   standard logical operators, whilst a deep embedding requires a different
   set of operators for both formulas and pre-formulas. Finally, since our 
   target is system verification rather than proving meta-properties of \tlastar{},
   which requires a deep embedding, a shallow embedding is more fit for purpose.
-*}
+\<close>
 
 subsection "Types of Formulas"
 
-text {*
+text \<open>
   To mechanise the \tlastar{} semantics, the following
   type abbreviations are used:
-*}
+\<close>
 
 type_synonym ('a,'b) formfun = "'a seq \<Rightarrow> 'b"
 type_synonym 'a formula = "('a,bool) formfun"
@@ -46,15 +46,15 @@ instance
 instance
  "prod" :: (type,type) world ..
 
-text {*
+text \<open>
   Pair and function are instantiated to be of type class world.
   This allows use of the lifted intensional logic for formulas, and 
   standard logical connectives can therefore be used.
-*}
+\<close>
 
 subsection "Semantics of TLA*"
 
-text {* The semantics of \tlastar{} is defined. *}
+text \<open>The semantics of \tlastar{} is defined.\<close>
 
 definition always :: "('a::world) formula \<Rightarrow> 'a formula" 
 where "always F \<equiv> \<lambda> s. \<forall> n. (s |\<^sub>s n) \<Turnstile> F"
@@ -76,7 +76,7 @@ where "action P v \<equiv> \<lambda> s. \<forall> i. ((s |\<^sub>s i) \<Turnstil
 
 subsubsection "Concrete Syntax"
 
-text{* This is the concrete syntax for the (abstract) operators above. *}
+text\<open>This is the concrete syntax for the (abstract) operators above.\<close>
 
 syntax
  "_always" :: "lift \<Rightarrow> lift" ("(\<box>_)" [90] 90) 
@@ -106,7 +106,7 @@ translations
 
 subsection "Abbreviations"
 
-text {* Some standard temporal abbreviations, with their concrete syntax. *}
+text \<open>Some standard temporal abbreviations, with their concrete syntax.\<close>
 
 definition actrans :: "('a::world) formula \<Rightarrow> ('a,'b) stfun \<Rightarrow> 'a formula"
 where "actrans P v \<equiv> TEMP(P \<or> unch v)"
@@ -148,7 +148,7 @@ translations
 
 subsection "Properties of Operators"
 
-text {* The following lemmas show that these operators have the expected semantics. *}
+text \<open>The following lemmas show that these operators have the expected semantics.\<close>
 
 lemma eventually_defs: "(w \<Turnstile> \<diamond> F) = (\<exists> n. (w |\<^sub>s n) \<Turnstile> F)"
   by (simp add: eventually_def always_def)
@@ -170,7 +170,7 @@ qed
 
 subsection "Invariance Under Stuttering"
 
-text {*
+text \<open>
   A key feature of \tlastar{} is that specification at different abstraction
   levels can be compared. The soundness of this relies on the stuttering invariance 
   of formulas. Since the embedding is shallow, it cannot be shown that a generic 
@@ -179,27 +179,27 @@ text {*
   appropriate sense, which can be used to show stuttering invariance
   for given specifications. 
 
-  Formula @{text F} is stuttering invariant if for any two similar behaviours
-  (i.e., sequences of states), @{text F} holds in one iff it holds in the other.
+  Formula \<open>F\<close> is stuttering invariant if for any two similar behaviours
+  (i.e., sequences of states), \<open>F\<close> holds in one iff it holds in the other.
   The definition is generalised to arbitrary expressions, and not just predicates.
-*}
+\<close>
 
 definition stutinv :: "('a,'b) formfun \<Rightarrow> bool"
 where "stutinv F \<equiv> \<forall> \<sigma> \<tau>. \<sigma> \<approx> \<tau> \<longrightarrow> (\<sigma> \<Turnstile> F) = (\<tau> \<Turnstile> F)"
 
-text{*
+text\<open>
   The requirement for stuttering invariance is too strong for pre-formulas. 
   For example, an action formula specifies a relation between the first two states
   of a behaviour, and will rarely be satisfied by a stuttering step. This is why
   pre-formulas are ``protected'' by (square or angle) brackets in \tlastar{}:
-  the only place a pre-formula @{text P} can be used is inside an action:
-  @{text "\<box>[P]_v"}.
-  To show that @{text "\<box>[P]_v"} is stuttering invariant, is must be shown that a 
+  the only place a pre-formula \<open>P\<close> can be used is inside an action:
+  \<open>\<box>[P]_v\<close>.
+  To show that \<open>\<box>[P]_v\<close> is stuttering invariant, is must be shown that a 
   slightly weaker predicate holds for @{term P}. For example, if @{term P} contains 
-  a term of the form @{text "\<circle>\<circle>Q"}, then it is not a well-formed pre-formula, thus 
-  @{text "\<box>[P]_v"} is not stuttering invariant. This weaker version of
+  a term of the form \<open>\<circle>\<circle>Q\<close>, then it is not a well-formed pre-formula, thus 
+  \<open>\<box>[P]_v\<close> is not stuttering invariant. This weaker version of
   stuttering invariance has been named \emph{near stuttering invariance}.
-*}
+\<close>
 
 definition nstutinv :: "('a,'b) formfun \<Rightarrow> bool"
 where "nstutinv P \<equiv> \<forall> \<sigma> \<tau>. (first \<sigma> = first \<tau>) \<and> (tail \<sigma>) \<approx> (tail \<tau>) \<longrightarrow> (\<sigma> \<Turnstile> P) = (\<tau> \<Turnstile> P)"
@@ -213,13 +213,13 @@ translations
   "_nstutinv" \<rightleftharpoons> "CONST nstutinv"
 
 
-text {*
+text \<open>
   Predicate @{term "stutinv F"} formalises stuttering invariance for
   formula @{term F}. That is if two sequences are similar @{term "s \<approx> t"} (equal up
   to stuttering) then the validity of @{term F} under both @{term s} and @{term t}
   are equivalent. Predicate @{term "nstutinv P"} should be read as \emph{nearly
   stuttering invariant} -- and is required for some stuttering invariance proofs.
-*}
+\<close>
 
 lemma stutinv_strictly_stronger: 
   assumes h: "STUTINV F" shows "NSTUTINV F"
@@ -240,11 +240,11 @@ qed
 
 subsubsection "Properties of @{term stutinv}"
 
-text {* 
+text \<open>
   This subsection proves stuttering invariance, preservation of stuttering invariance
   and introduction of stuttering invariance for different formulas. 
   First, state predicates are stuttering invariant.
-*}
+\<close>
 
 theorem stut_before: "STUTINV $F"
 proof (clarsimp simp: stutinv_def)
@@ -261,7 +261,7 @@ proof (clarsimp simp: nstutinv_def)
   thus "(s \<Turnstile> F$) = (t \<Turnstile> F$)" by (simp add: after_def tail_sim_second)
 qed
 
-text{* The always operator preserves stuttering invariance. *}
+text\<open>The always operator preserves stuttering invariance.\<close>
 
 theorem stut_always: assumes H:"STUTINV F" shows "STUTINV \<box>F"
 proof (clarsimp simp: stutinv_def)
@@ -289,10 +289,10 @@ proof (clarsimp simp: stutinv_def)
   qed
 qed
 
-text {*
+text \<open>
   Assuming that formula @{term P} is nearly suttering invariant
-  then @{text "\<box>[P]_v"} will be stuttering invariant.
-*}
+  then \<open>\<box>[P]_v\<close> will be stuttering invariant.
+\<close>
 
 lemma stut_action_lemma:
   assumes H: "NSTUTINV P" and st: "s \<approx> t" and P: "t \<Turnstile> \<box>[P]_v"
@@ -348,10 +348,10 @@ proof (clarsimp simp: stutinv_def)
   qed
 qed
 
-text {* 
+text \<open>
   The lemmas below shows that propositional and predicate operators 
   preserve stuttering invariance.
-*}
+\<close>
 
 lemma stut_and: "\<lbrakk>STUTINV F;STUTINV G\<rbrakk> \<Longrightarrow> STUTINV (F \<and> G)"
   by (simp add: stutinv_def)
@@ -397,21 +397,21 @@ lemma stut_plus: "\<lbrakk>STUTINV x;STUTINV y\<rbrakk> \<Longrightarrow> STUTIN
 
 subsubsection "Properties of @{term nstutinv}"
 
-text {* 
+text \<open>
   This subsection shows analogous properties about near stuttering
   invariance.
 
-  If a formula @{term F} is stuttering invariant then @{text "\<circle>F"} is
+  If a formula @{term F} is stuttering invariant then \<open>\<circle>F\<close> is
   nearly stuttering invariant.
-*}
+\<close>
 
 lemma nstut_nexts: assumes H: "STUTINV F" shows "NSTUTINV \<circle>F"
 using H by (simp add: stutinv_def nstutinv_def nexts_def)
 
-text {* 
+text \<open>
   The lemmas below shows that propositional and predicate operators 
   preserves near stuttering invariance.
-*}
+\<close>
 
 lemma nstut_and: "\<lbrakk>NSTUTINV F;NSTUTINV G\<rbrakk> \<Longrightarrow> NSTUTINV (F \<and> G)"
   by (auto simp: nstutinv_def)
@@ -457,10 +457,10 @@ lemma nstut_plus: "\<lbrakk>NSTUTINV x;NSTUTINV y\<rbrakk> \<Longrightarrow> NST
 
 subsubsection "Abbreviations"
 
-text {* 
+text \<open>
   We show the obvious fact that the same properties holds for abbreviated
   operators.
-*}
+\<close>
 
 lemmas nstut_before = stut_before[THEN stutinv_strictly_stronger]
 
@@ -471,13 +471,13 @@ proof (unfold unch_def)
   with g1 show "NSTUTINV (v$ = $v)" by (rule nstut_eq)
 qed
 
-text{* 
-  Formulas @{text "[P]_v"} are not \tlastar{} formulas by themselves,
+text\<open>
+  Formulas \<open>[P]_v\<close> are not \tlastar{} formulas by themselves,
   but we need to reason about them when they appear wrapped
-  inside @{text "\<box>[-]_v"}. We only require that it preserves nearly
-  stuttering invariance. Observe that @{text "[P]_v"} trivially holds for
+  inside \<open>\<box>[-]_v\<close>. We only require that it preserves nearly
+  stuttering invariance. Observe that \<open>[P]_v\<close> trivially holds for
   a stuttering step, so it cannot be stuttering invariant.
-*}
+\<close>
 
 lemma nstut_actrans: "NSTUTINV P \<Longrightarrow> NSTUTINV [P]_v"
   by (simp add: actrans_def nstut_unch nstut_or)

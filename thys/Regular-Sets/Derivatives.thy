@@ -315,7 +315,7 @@ by (metis finite_pderivs_lang_UNIV pderivs_lang_subset rev_finite_subset subset_
 
 
 text\<open>The following relationship between the alphabetic width of regular expressions
-(called @{text awidth} below) and the number of partial derivatives was proved
+(called \<open>awidth\<close> below) and the number of partial derivatives was proved
 by Antimirov~\cite{Antimirov95} and formalized by Max Haslbeck.\<close>
 
 fun awidth :: "'a rexp \<Rightarrow> nat" where

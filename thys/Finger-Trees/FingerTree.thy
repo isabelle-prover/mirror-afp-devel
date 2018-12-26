@@ -4,12 +4,12 @@ theory FingerTree
 imports Main
 begin
 
-text {* 
+text \<open>
   We implement and prove correct 2-3 finger trees as described by Ralf Hinze 
   and Ross Paterson\cite{HiPa06}.
-  *}
+\<close>
 
-text {*
+text \<open>
   This theory is organized as follows: 
   Section~\ref{sec:datatype} contains the finger-tree datatype, its invariant
   and its abstraction function to lists.
@@ -18,10 +18,10 @@ text {*
   Section~\ref{sec:hide_invar} contains a finger tree datatype with implicit
   invariant, and, finally, Section~\ref{sec:doc} contains a documentation
   of the implemented operations.
-*}
+\<close>
 
-text_raw {*\paragraph{Technical Issues}*}
-text {*
+text_raw \<open>\paragraph{Technical Issues}\<close>
+text \<open>
   As Isabelle lacks proper support of namespaces, we
   try to simulate namespaces by locales.
 
@@ -38,28 +38,28 @@ text {*
   and then interprets this locale with the prefix {\em FingerTree}.
   This makes all definitions visible outside the locale, with
   qualified names. Inside the locale, however, one can use unqualified names.
-*}
+\<close>
 
 subsection "Datatype definition"
-text_raw{*\label{sec:datatype}*}
+text_raw\<open>\label{sec:datatype}\<close>
 locale FingerTreeStruc_loc
 
-text {* 
+text \<open>
   Nodes: Non empty 2-3 trees, with all elements stored within the leafs plus a 
   cached annotation 
-  *}
+\<close>
 datatype ('e,'a) Node = Tip 'e 'a |
   Node2 'a "('e,'a) Node" "('e,'a) Node" | 
   Node3 'a "('e,'a) Node" "('e,'a) Node" "('e,'a) Node"
 
-  text {* Digit: one to four ordered Nodes *}
+  text \<open>Digit: one to four ordered Nodes\<close>
 datatype ('e,'a) Digit = One "('e,'a) Node" |
    Two "('e,'a) Node" "('e,'a) Node" |
    Three "('e,'a) Node" "('e,'a) Node" "('e,'a) Node" |
    Four "('e,'a) Node" "('e,'a) Node" "('e,'a) Node" "('e,'a) Node"
 
-  text {* FingerTreeStruc: 
-    The empty tree, a single node or some nodes and a deeper tree*}
+  text \<open>FingerTreeStruc: 
+    The empty tree, a single node or some nodes and a deeper tree\<close>
 datatype ('e, 'a) FingerTreeStruc = 
   Empty |
   Single "('e,'a) Node" |
@@ -69,28 +69,28 @@ subsubsection "Invariant"
 
 context FingerTreeStruc_loc
 begin
-text_raw {* \paragraph{Auxiliary functions}\ \\ *}
+text_raw \<open>\paragraph{Auxiliary functions}\ \\\<close>
 
-  text {* Readout the cached annotation of a node *}
+  text \<open>Readout the cached annotation of a node\<close>
 primrec gmn :: "('e,'a::monoid_add) Node \<Rightarrow> 'a" where
   "gmn (Tip e a) = a" |
   "gmn (Node2 a _ _) = a" |
   "gmn (Node3 a _ _ _) = a"
 
-  text {* The annotation of a digit is computed on the fly *}
+  text \<open>The annotation of a digit is computed on the fly\<close>
 primrec gmd :: "('e,'a::monoid_add) Digit \<Rightarrow> 'a" where
   "gmd (One a) = gmn a" |
   "gmd (Two a b) = (gmn a) + (gmn b)"|
   "gmd (Three a b c) = (gmn a) + (gmn b) + (gmn c)"|
   "gmd (Four a b c d) = (gmn a) + (gmn b) + (gmn c) + (gmn d)"
 
-  text {* Readout the cached annotation of a finger tree *}
+  text \<open>Readout the cached annotation of a finger tree\<close>
 primrec gmft :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> 'a" where
   "gmft Empty = 0" |
   "gmft (Single nd) = gmn nd" |
   "gmft (Deep a _ _ _) = a"
 
-text {* Depth and cached annotations have to be correct *}
+text \<open>Depth and cached annotations have to be correct\<close>
 
 fun is_leveln_node :: "nat \<Rightarrow> ('e,'a) Node \<Rightarrow> bool" where
   "is_leveln_node 0 (Tip _ _) \<longleftrightarrow> True" |
@@ -170,7 +170,7 @@ lemma nodeToList_empty: "nodeToList nd \<noteq> Nil"
 lemma digitToList_empty: "digitToList d \<noteq> Nil"
   by (cases d, auto simp add: nodeToList_empty)
 
-text {* Auxiliary lemmas *}
+text \<open>Auxiliary lemmas\<close>
 lemma gmn_correct:
   assumes "is_measured_node nd"
   shows "gmn nd = sum_list (map snd (nodeToList nd))"
@@ -187,20 +187,20 @@ lemma gmft_correct: "is_measured_ftree t
 lemma gmft_correct2: "ft_invar t \<Longrightarrow> (gmft t) = sum_list (map snd (toList t))"
   by (simp only: ft_invar_def gmft_correct)
 
-subsection {* Operations *}
-text_raw{*\label{sec:operations}*}
+subsection \<open>Operations\<close>
+text_raw\<open>\label{sec:operations}\<close>
 
-subsubsection {* Empty tree *}
+subsubsection \<open>Empty tree\<close>
 lemma Empty_correct[simp]: 
   "toList Empty = []"
   "ft_invar Empty"
   by (simp_all add: ft_invar_def)
 
-text {* Exactly the empty finger tree represents the empty list *}
+text \<open>Exactly the empty finger tree represents the empty list\<close>
 lemma toList_empty: "toList t = [] \<longleftrightarrow> t = Empty"
   by (induct t, auto simp add: nodeToList_empty digitToList_empty)
 
-subsubsection {* Annotation *}
+subsubsection \<open>Annotation\<close>
 text "Sum of annotations of all elements of a finger tree"
 definition annot :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> 'a"
   where "annot t = gmft t"
@@ -211,9 +211,9 @@ lemma annot_correct:
   unfolding annot_def
   by (simp add: gmft_correct2)
 
-subsubsection {* Appending *}
+subsubsection \<open>Appending\<close>
 
-text {* Auxiliary functions to fill in the annotations *}
+text \<open>Auxiliary functions to fill in the annotations\<close>
 definition deep:: "('e,'a::monoid_add) Digit \<Rightarrow> ('e,'a) FingerTreeStruc 
     \<Rightarrow> ('e,'a) Digit \<Rightarrow> ('e, 'a) FingerTreeStruc" where
   "deep pr m sf = Deep ((gmd pr) + (gmft m) + (gmd sf)) pr m sf"
@@ -320,7 +320,7 @@ lemma rcons_list[simp]: "toList (t \<rhd> a) = (toList t) @ [a]"
   by(auto simp add: nrcons_list rcons_def) 
 
 
-subsubsection {* Convert list to tree *}
+subsubsection \<open>Convert list to tree\<close>
 primrec toTree :: "('e \<times> 'a::monoid_add) list \<Rightarrow> ('e,'a) FingerTreeStruc" where
   "toTree [] = Empty"|
   "toTree (a#xs) = a \<lhd> (toTree xs)"
@@ -335,13 +335,13 @@ lemma toTree_correct[simp]:
   apply (simp add: toTree_def lcons_list lcons_inv)
   done
 
-text {*
+text \<open>
   Note that this lemma is a completeness statement of our implementation, 
   as it can be read as:
   ,,All lists of elements have a valid representation as a finger tree.''
-*}
+\<close>
 
-subsubsection {* Detaching leftmost/rightmost element *}
+subsubsection \<open>Detaching leftmost/rightmost element\<close>
 
 primrec digitToTree :: "('e,'a::monoid_add) Digit \<Rightarrow> ('e,'a) FingerTreeStruc" 
   where
@@ -367,7 +367,7 @@ primrec digitToNlist :: "('e,'a) Digit \<Rightarrow> ('e,'a) Node list" where
   "digitToNlist (Three a b c) = [a,b,c]" |
   "digitToNlist (Four a b c d) = [a,b,c,d]"
 
-text {* Auxiliary function to unwrap a Node element *} 
+text \<open>Auxiliary function to unwrap a Node element\<close> 
 primrec n_unwrap:: "('e,'a) Node \<Rightarrow> ('e \<times> 'a)" where
   "n_unwrap (Tip e a) = (e,a)"|
   "n_unwrap (Node2 _ a b) = undefined"|
@@ -386,7 +386,7 @@ lemma viewnres_split:
   ((x = None \<longrightarrow> P f1) \<and> (\<forall>a b. x = Some (a,b) \<longrightarrow> P (f2 a b)))"
   by (auto split: option.split prod.split)
 
-text {* Detach the leftmost node. Return @{const None} on empty finger tree. *}
+text \<open>Detach the leftmost node. Return @{const None} on empty finger tree.\<close>
 fun viewLn :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) ViewnRes" where
   "viewLn Empty = None"|
   "viewLn (Single a) = Some (a, Empty)"| 
@@ -399,7 +399,7 @@ fun viewLn :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) ViewnRe
       Some (b, m2) \<Rightarrow> Some (a, (deep (nodeToDigit b) m2 sf)))"
 
 
-text {* Detach the rightmost node. Return @{const None} on empty finger tree.*}
+text \<open>Detach the rightmost node. Return @{const None} on empty finger tree.\<close>
 fun viewRn :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) ViewnRes" where
   "viewRn Empty = None" |
   "viewRn (Single a) = Some (a, Empty)" | 
@@ -639,7 +639,7 @@ lemma viewRn_list: "viewRn t = Some (nd, s)
 
 type_synonym ('e,'a) viewres = "(('e \<times>'a) \<times> ('e,'a) FingerTreeStruc) option"
 
-text {* Detach the leftmost element. Return @{const None} on empty finger tree. *}
+text \<open>Detach the leftmost element. Return @{const None} on empty finger tree.\<close>
 definition viewL :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) viewres" 
   where 
 "viewL t = (case viewLn t of 
@@ -688,7 +688,7 @@ lemma viewL_correct_nonEmpty:
   using assms viewL_correct by blast
 
 
-text {* Detach the rightmost element. Return @{const None} on empty finger tree.*}
+text \<open>Detach the rightmost element. Return @{const None} on empty finger tree.\<close>
 definition viewR :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) viewres" 
   where 
   "viewR t = (case viewRn t of 
@@ -736,10 +736,10 @@ lemma viewR_correct_nonEmpty:
   "viewR t = Some (a, s)" "ft_invar s \<and> toList t = toList s @ [a]"
   using assms viewR_correct by blast
 
-text {* Finger trees viewed as a double-ended queue. The head and tail functions
+text \<open>Finger trees viewed as a double-ended queue. The head and tail functions
   here are only
   defined for non-empty queues, while the view-functions were also defined for
-  empty finger trees.*}
+  empty finger trees.\<close>
 text "Check for emptiness"
 definition isEmpty :: "('e,'a) FingerTreeStruc \<Rightarrow> bool" where
   [code del]: "isEmpty t = (t = Empty)"
@@ -818,7 +818,7 @@ proof -
     by auto
 qed 
 
-subsubsection {* Concatenation *}
+subsubsection \<open>Concatenation\<close>
 primrec lconsNlist :: "('e,'a::monoid_add) Node list 
     \<Rightarrow> ('e,'a) FingerTreeStruc \<Rightarrow> ('e,'a) FingerTreeStruc" where
   "lconsNlist [] t = t" |
@@ -835,8 +835,8 @@ fun nodes :: "('e,'a::monoid_add) Node list  \<Rightarrow> ('e,'a) Node list" wh
   "nodes (a#b#c#xs) = (node3 a b c) # (nodes xs)"
 
 
-text {* Recursively we concatenate two FingerTreeStrucs while we keep the 
-  inner Nodes in a list *}
+text \<open>Recursively we concatenate two FingerTreeStrucs while we keep the 
+  inner Nodes in a list\<close>
 fun app3 :: "('e,'a::monoid_add) FingerTreeStruc \<Rightarrow> ('e,'a) Node list 
     \<Rightarrow> ('e,'a) FingerTreeStruc \<Rightarrow> ('e,'a) FingerTreeStruc" where
   "app3 Empty xs t = lconsNlist xs t" |
@@ -1055,8 +1055,8 @@ type_synonym ('e,'a) SplitDigit =
 type_synonym ('e,'a) SplitTree  = 
   "('e,'a) FingerTreeStruc \<times> ('e,'a) Node \<times> ('e,'a) FingerTreeStruc"
 
-  text {* Auxiliary functions to create a correct finger tree 
-    even if the left or right digit is empty *} 
+  text \<open>Auxiliary functions to create a correct finger tree 
+    even if the left or right digit is empty\<close> 
 fun deepL :: "('e,'a::monoid_add) Node list \<Rightarrow> ('e,'a) FingerTreeStruc 
     \<Rightarrow> ('e,'a) Digit \<Rightarrow> ('e,'a) FingerTreeStruc" where
   "deepL [] m sf = (case (viewLn m) of None \<Rightarrow> digitToTree sf |
@@ -1068,7 +1068,7 @@ fun deepR :: "('e,'a::monoid_add) Digit \<Rightarrow> ('e,'a) FingerTreeStruc
                                  (Some (a, m2)) \<Rightarrow> deep pr m2 (nodeToDigit a))" |
   "deepR pr m sf = deep pr m (nlistToDigit sf)"
 
-  text {* Splitting a list of nodes *}
+  text \<open>Splitting a list of nodes\<close>
 fun splitNlist :: "('a::monoid_add \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> ('e,'a) Node list 
     \<Rightarrow> ('e,'a) SplitDigit" where
   "splitNlist p i [a]   = ([],a,[])" |
@@ -1079,17 +1079,17 @@ fun splitNlist :: "('a::monoid_add \<Rightarrow> bool) \<Rightarrow> 'a \<Righta
         else 
          (let (l,x,r) = (splitNlist p i2 b) in ((a#l),x,r))))" 
 
-  text {* Splitting a digit by converting it into a list of nodes *}
+  text \<open>Splitting a digit by converting it into a list of nodes\<close>
 definition splitDigit :: "('a::monoid_add \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> ('e,'a) Digit 
     \<Rightarrow> ('e,'a) SplitDigit" where
   "splitDigit p i d = splitNlist p i (digitToNlist d)" 
 
-  text {* Creating a finger tree from list of nodes *}
+  text \<open>Creating a finger tree from list of nodes\<close>
 definition nlistToTree :: "('e,'a::monoid_add) Node list 
     \<Rightarrow> ('e,'a) FingerTreeStruc" where 
   "nlistToTree xs = lconsNlist xs Empty"
 
-    text {* Recursive splitting into a left and right tree and a center node *}
+    text \<open>Recursive splitting into a left and right tree and a center node\<close>
 fun nsplitTree :: "('a::monoid_add \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> ('e,'a) FingerTreeStruc 
     \<Rightarrow> ('e,'a) SplitTree" where
   "nsplitTree p i Empty = (Empty, Tip undefined undefined, Empty)" 
@@ -1818,17 +1818,17 @@ next
   qed
 qed
 
-text {*
+text \<open>
   A predicate on the elements of a monoid is called {\em monotone},
   iff, when it holds for some value $a$, it also holds for all values $a+b$:
-*}
+\<close>
 
-text {* Split a finger tree by a monotone predicate on the annotations, using
+text \<open>Split a finger tree by a monotone predicate on the annotations, using
     a given initial value. Intuitively, the elements are summed up from left to 
     right, and the split is done when the predicate first holds for the sum.
     The predicate must not hold for the initial value of the summation, and must
     hold for the sum of all elements.
-*}
+\<close>
 definition splitTree 
   :: "('a::monoid_add \<Rightarrow> bool) \<Rightarrow> 'a \<Rightarrow> ('e, 'a) FingerTreeStruc 
     \<Rightarrow> ('e, 'a) FingerTreeStruc \<times> ('e \<times> 'a) \<times> ('e, 'a) FingerTreeStruc" 
@@ -1929,7 +1929,7 @@ proof -
 qed
 
 
-subsubsection {* Folding *}
+subsubsection \<open>Folding\<close>
 
 fun foldl_node :: "('s \<Rightarrow> 'e \<times> 'a \<Rightarrow> 's) \<Rightarrow> 's \<Rightarrow> ('e,'a) Node \<Rightarrow> 's" where
   "foldl_node f \<sigma> (Tip e a) = f \<sigma> (e,a)"|
@@ -2047,13 +2047,13 @@ no_notation FingerTreeStruc.lcons (infixr "\<lhd>" 65)
 no_notation FingerTreeStruc.rcons (infixl "\<rhd>" 65)
 
 subsection "Hiding the invariant"
-text_raw{*\label{sec:hide_invar}*}
-text {*
+text_raw\<open>\label{sec:hide_invar}\<close>
+text \<open>
   In this section, we define the datatype of all FingerTrees that fulfill their
   invariant, and define the operations to work on this datatype.
   The advantage is, that the correctness lemmas do no longer contain 
   explicit invariant predicates, what makes them more handy to use.
-*}
+\<close>
 
 subsubsection "Datatype"
 typedef (overloaded) ('e, 'a) FingerTree = 
@@ -2455,14 +2455,14 @@ end
 
 interpretation FingerTree: FingerTree_loc .
 
-text_raw{*\clearpage*}
+text_raw\<open>\clearpage\<close>
 subsection "Interface Documentation"
-text_raw{*\label{sec:doc}*}
+text_raw\<open>\label{sec:doc}\<close>
 
-  text {*
+  text \<open>
     In this section, we list all supported operations on finger trees,
     along with a short plaintext documentation and their correctness statements.
-    *}
+\<close>
 
 (*#DOC
   fun [no_spec] FingerTree.toList
@@ -2530,86 +2530,86 @@ text_raw{*\label{sec:doc}*}
 
 *)
 
-text {*
+text \<open>
     \underline{@{term_type "FingerTree.toList"}}\\                                               
         Convert to list ($O(n)$)\\                                                               
 
 
     \underline{@{term_type "FingerTree.empty"}}\\
         The empty finger tree ($O(1)$)\\         
-    {\bf Spec} @{text "FingerTree.empty_correct"}:
+    {\bf Spec} \<open>FingerTree.empty_correct\<close>:
     @{thm [display] "FingerTree.empty_correct"}   
 
 
     \underline{@{term_type "FingerTree.annot"}}\\
         Return sum of all annotations ($O(1)$)\\ 
-    {\bf Spec} @{text "FingerTree.annot_correct"}:
+    {\bf Spec} \<open>FingerTree.annot_correct\<close>:
     @{thm [display] "FingerTree.annot_correct"}   
 
 
     \underline{@{term_type "FingerTree.toTree"}}\\
         Convert list to finger tree ($O(n\log(n))$)\\
-    {\bf Spec} @{text "FingerTree.toTree_correct"}:  
+    {\bf Spec} \<open>FingerTree.toTree_correct\<close>:  
     @{thm [display] "FingerTree.toTree_correct"}     
 
 
     \underline{@{term_type "FingerTree.lcons"}}\\
         Append element at the left end ($O(\log(n))$, $O(1)$ amortized)\\                                                            
-    {\bf Spec} @{text "FingerTree.lcons_correct"}:                                                                                   
+    {\bf Spec} \<open>FingerTree.lcons_correct\<close>:                                                                                   
     @{thm [display] "FingerTree.lcons_correct"}                                                                                      
                                                                                                                      
                                                                                                                      
     \underline{@{term_type "FingerTree.rcons"}}\\                                                                    
         Append element at the right end ($O(\log(n))$, $O(1)$ amortized)\\                                           
-    {\bf Spec} @{text "FingerTree.rcons_correct"}:                                                                   
+    {\bf Spec} \<open>FingerTree.rcons_correct\<close>:                                                                   
     @{thm [display] "FingerTree.rcons_correct"}                                                                      
                                                                                                                      
                                                                                                                      
     \underline{@{term_type "FingerTree.viewL"}}\\                                                                    
         Detach leftmost element ($O(\log(n))$, $O(1)$ amortized)\\                                                   
-    {\bf Spec} @{text "FingerTree.viewL_correct"}:                                                                   
+    {\bf Spec} \<open>FingerTree.viewL_correct\<close>:                                                                   
     @{thm [display] "FingerTree.viewL_correct"}                                                                      
                                                                                                                      
 
     \underline{@{term_type "FingerTree.viewR"}}\\
         Detach rightmost element ($O(\log(n))$, $O(1)$ amortized)\\
-    {\bf Spec} @{text "FingerTree.viewR_correct"}:                 
+    {\bf Spec} \<open>FingerTree.viewR_correct\<close>:                 
     @{thm [display] "FingerTree.viewR_correct"}                    
 
 
     \underline{@{term_type "FingerTree.isEmpty"}}\\
         Check whether tree is empty ($O(1)$)\\     
-    {\bf Spec} @{text "FingerTree.isEmpty_correct"}:
+    {\bf Spec} \<open>FingerTree.isEmpty_correct\<close>:
     @{thm [display] "FingerTree.isEmpty_correct"}   
 
 
     \underline{@{term_type "FingerTree.head"}}\\
         Get leftmost element of non-empty tree ($O(\log(n))$)\\
-    {\bf Spec} @{text "FingerTree.head_correct"}:              
+    {\bf Spec} \<open>FingerTree.head_correct\<close>:              
     @{thm [display] "FingerTree.head_correct"}                 
 
 
     \underline{@{term_type "FingerTree.tail"}}\\
         Get all but leftmost element of non-empty tree ($O(\log(n))$)\\
-    {\bf Spec} @{text "FingerTree.tail_correct"}:                      
+    {\bf Spec} \<open>FingerTree.tail_correct\<close>:                      
     @{thm [display] "FingerTree.tail_correct"}                         
 
 
     \underline{@{term_type "FingerTree.headR"}}\\
         Get rightmost element of non-empty tree ($O(\log(n))$)\\
-    {\bf Spec} @{text "FingerTree.headR_correct"}:              
+    {\bf Spec} \<open>FingerTree.headR_correct\<close>:              
     @{thm [display] "FingerTree.headR_correct"}                 
 
 
     \underline{@{term_type "FingerTree.tailR"}}\\
         Get all but rightmost element of non-empty tree ($O(\log(n))$)\\
-    {\bf Spec} @{text "FingerTree.tailR_correct"}:
+    {\bf Spec} \<open>FingerTree.tailR_correct\<close>:
     @{thm [display] "FingerTree.tailR_correct"}
 
 
     \underline{@{term_type "FingerTree.app"}}\\
         Concatenate two finger trees ($O(\log(m+n))$)\\
-    {\bf Spec} @{text "FingerTree.app_correct"}:
+    {\bf Spec} \<open>FingerTree.app_correct\<close>:
     @{thm [display] "FingerTree.app_correct"}
 
 
@@ -2625,28 +2625,28 @@ text {*
     for the initial value $i$ of the summation, but holds for $i$ plus the sum
     of all annotations. The tree is then split at the position where $p$ starts to
     hold for the sum of all elements up to that position.\\
-    {\bf Spec} @{text "FingerTree.splitTree_correct"}:
+    {\bf Spec} \<open>FingerTree.splitTree_correct\<close>:
     @{thm [display] "FingerTree.splitTree_correct"}
 
 
     \underline{@{term "FingerTree.foldl"}}
     @{term_type [display] "FingerTree.foldl"}
         Fold with function from left\\
-    {\bf Spec} @{text "FingerTree.foldl_correct"}:
+    {\bf Spec} \<open>FingerTree.foldl_correct\<close>:
     @{thm [display] "FingerTree.foldl_correct"}
 
 
     \underline{@{term "FingerTree.foldr"}}
     @{term_type [display] "FingerTree.foldr"}
         Fold with function from right\\
-    {\bf Spec} @{text "FingerTree.foldr_correct"}:
+    {\bf Spec} \<open>FingerTree.foldr_correct\<close>:
     @{thm [display] "FingerTree.foldr_correct"}
 
 
     \underline{@{term_type "FingerTree.count"}}\\
         Return the number of elements\\
-    {\bf Spec} @{text "FingerTree.count_correct"}:
+    {\bf Spec} \<open>FingerTree.count_correct\<close>:
     @{thm [display] "FingerTree.count_correct"}
-*}
+\<close>
 
 end

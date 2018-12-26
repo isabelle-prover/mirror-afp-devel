@@ -4,7 +4,7 @@ begin
 
 subsection "Optimized Verification Condition Generator"
 
-text{* Annotated commands: commands where loops are annotated with invariants. *}
+text\<open>Annotated commands: commands where loops are annotated with invariants.\<close>
 
 datatype acom =
   Askip                  ("SKIP") |
@@ -17,7 +17,7 @@ datatype acom =
   
 notation com.SKIP ("SKIP")
 
-text{* Strip annotations: *}
+text\<open>Strip annotations:\<close>
 
 fun strip :: "acom \<Rightarrow> com" where
   "strip SKIP = SKIP" |
@@ -68,7 +68,7 @@ fun wf :: "acom \<Rightarrow> lvname set \<Rightarrow> bool" where
   "wf ({_/(Qannot,_)/_} CONSEQ C) S = (finite (support Qannot) \<and> wf C S)" |
   "wf ({(_,(_,(_,Es)))} WHILE b DO C) S = ( wf C S)"
     
-text{* Weakest precondition from annotated commands: *}
+text\<open>Weakest precondition from annotated commands:\<close>
 
 fun preT :: "acom \<Rightarrow> tbd \<Rightarrow> tbd" where
   "preT SKIP e = e" |
@@ -175,7 +175,7 @@ lemma TzQ: "preTz C e n s = e (postQz C s n)"
 
 
 
-text{* Weakest precondition from annotated commands: *}
+text\<open>Weakest precondition from annotated commands:\<close>
 
   (* if the annotated command contains no loops,
   then the weakest precondition is just some mangled post condition
@@ -363,7 +363,7 @@ proof (goal_cases)
     by (metis fun_upd_triv)
 qed 
 
-text{* Verification condition: *}
+text\<open>Verification condition:\<close>
 
      
 definition funStar where "funStar f = (%x. {y. (x,y)\<in>{(x,y). y\<in>f x}\<^sup>*})"
@@ -390,7 +390,7 @@ fun vc :: "acom \<Rightarrow> assn2 \<Rightarrow> vname set \<Rightarrow> vname 
   (I l s \<and> \<not> bval b s \<longrightarrow> Q l s \<and> E s \<ge> 1 \<and> (\<forall>v\<in>(\<Union>y\<in>LVE \<union> LVQ. (funStar SS) y). (S s) v  = s v)) ) \<and>
   vc C I Is (es \<union> (\<Union>y\<in>LVE. (funStar SS) y)))"
      
-subsubsection {* Soundness: *}
+subsubsection \<open>Soundness:\<close>
 
 abbreviation "preSet U C l s == (Ball U (%u. case u of (x,e,v) \<Rightarrow> l x = preT C e s))"
 abbreviation "postSet U l s == (Ball U (%u. case u of (x,e,v) \<Rightarrow> l x = e s))"
@@ -731,7 +731,7 @@ next
     
   have ih0: "finite (support Qannot)" using Aconseq(3,6) by simp
   
-  from `vc ({P'2/Qannot2/eannot2} CONSEQ C) Q LVQ LVE`
+  from \<open>vc ({P'2/Qannot2/eannot2} CONSEQ C) Q LVQ LVE\<close>
   obtain k where k0: "k>0" and ih1: "vc C Qannot Q's LVE"
     and ih2: " (\<forall>l s. P' l s \<longrightarrow>  time C s \<le> k * eannot s \<and> (\<forall>t. \<exists>l'. pre C Qannot l' s \<and> (Qannot l' t \<longrightarrow> Q l t)))"
     and pc: "(\<forall>s1 s2 l. (\<forall>x\<in>Ps. s1 x=s2 x) \<longrightarrow> P' l s1 = P' l s2)"
@@ -1055,7 +1055,7 @@ next
   have LV_LV2: "(\<Union>y\<in>LVE \<union> LVQ. SS y) \<subseteq> ?LV" using funStart_prop2 by fast
   have LVE_LV2: "(\<Union>y\<in>LVE. SS y) \<subseteq> (\<Union>y\<in>LVE. (funStar SS) y)" using funStart_prop2 by fast
   note aha = aha2 aha 
-  with aha aha2 `vc (Awhile A b C) Q LVQ LVE` have "vc (Awhile ((I,Is),S,E,Es,SS) b C) Q LVQ LVE" apply auto apply fast+ done
+  with aha aha2 \<open>vc (Awhile A b C) Q LVQ LVE\<close> have "vc (Awhile ((I,Is),S,E,Es,SS) b C) Q LVQ LVE" apply auto apply fast+ done
   then                 
   have vc: "vc C I Is (Es \<union> (\<Union>y\<in>LVE. (funStar SS) y))" 
     and IQ: "\<forall>l s. (I l s \<and> bval b s \<longrightarrow> pre C I l s \<and>  1 + preT C E s + time C s \<le> E s \<and> S s = S (postQ C s) on ?LV)" and

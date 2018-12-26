@@ -42,9 +42,9 @@ proof(auto simp add: substClosed_def)
 
   obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> \<sigma>"
     by(generate_fresh "name") auto
-  from `P \<sim>\<^sup>s Q` have "([(x, y)] \<bullet> P) \<sim>\<^sup>s ([(x, y)] \<bullet> Q)" by(rule eqvtI)
-  hence "(a<y>.([(x, y)] \<bullet> P))[<\<sigma>>] \<sim> (a<y>.([(x, y)] \<bullet> Q))[<\<sigma>>]" using `y \<sharp> \<sigma>` by(rule Goal)
-  moreover from `y \<sharp> P` `y \<sharp> Q` have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" and "a<x>.Q = a<y>.([(x, y)] \<bullet> Q)"
+  from \<open>P \<sim>\<^sup>s Q\<close> have "([(x, y)] \<bullet> P) \<sim>\<^sup>s ([(x, y)] \<bullet> Q)" by(rule eqvtI)
+  hence "(a<y>.([(x, y)] \<bullet> P))[<\<sigma>>] \<sim> (a<y>.([(x, y)] \<bullet> Q))[<\<sigma>>]" using \<open>y \<sharp> \<sigma>\<close> by(rule Goal)
+  moreover from \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> have "a<x>.P = a<y>.([(x, y)] \<bullet> P)" and "a<x>.Q = a<y>.([(x, y)] \<bullet> Q)"
     by(simp add: alphaInput)+
 
   ultimately show "(a<x>.P)[<\<sigma>>] \<sim> (a<x>.Q)[<\<sigma>>]" by simp

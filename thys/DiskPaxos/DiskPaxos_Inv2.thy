@@ -7,13 +7,13 @@
 theory DiskPaxos_Inv2 imports DiskPaxos_Inv1 begin
 
 
-subsection {* Invariant 2 *}
+subsection \<open>Invariant 2\<close>
 
-text {*
+text \<open>
   The second invariant is split into three main conjuncts called
   $Inv2a$, $Inv2b$, and $Inv2c$. The main difficulty is in proving 
   the preservation of the first conjunct.
-*}
+\<close>
 
 definition rdBy :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> BlockProc set"
 where
@@ -83,21 +83,21 @@ definition HInv2 :: "state \<Rightarrow> bool"
   where "HInv2 s = (Inv2a s \<and> Inv2b s \<and> Inv2c s)"
 
 
-subsubsection {* Proofs of Invariant 2 a *}
+subsubsection \<open>Proofs of Invariant 2 a\<close>
 
 theorem HInit_Inv2a: "HInit s \<longrightarrow> Inv2a s"
 by (auto simp add: HInit_def Init_def Inv2a_def Inv2a_inner_def 
                    Inv2a_innermost_def rdBy_def blocksOf_def 
                    InitDB_def)
 
-text{*
+text\<open>
   For every action we define a action-$blocksOf$ lemma. We have two cases: either 
 the new $blocksOf$ is included in the old $blocksOf$, or the new $blocksOf$ is included 
 in the old $blocksOf$ union the new $dblock$. In the former case the assumption $inv$ will 
 imply the thesis. In the latter, we just have to prove the innermost predicate for 
 the particular case of the new $dblock$. 
 This particular case is proved in lemma action-$Inv2a$-$dblock$.  
-*}
+\<close>
 
 lemma HPhase1or2ReadThen_blocksOf:
   "\<lbrakk> HPhase1or2ReadThen s s' p d q \<rbrakk> \<Longrightarrow> blocksOf s' r \<subseteq> blocksOf s r"
@@ -350,10 +350,10 @@ proof -
     by(auto simp add: hasRead_def)
 qed
 
-text {* $EndPhase0$ has the additional difficulty of having a choose expression. We
+text \<open>$EndPhase0$ has the additional difficulty of having a choose expression. We
 prove that there exists an $x$ such that the predicate of the choose expression holds,
 and then apply $someI$: @{thm someI}.
-*}
+\<close>
 
 lemma HEndPhase0_some:
   assumes act:  "HEndPhase0 s s' p"
@@ -698,12 +698,12 @@ proof (clarsimp simp add: Inv2a_def Inv2a_inner_def)
 qed
 
 
-subsubsection {* Proofs of Invariant 2 b *}
+subsubsection \<open>Proofs of Invariant 2 b\<close>
 
-text{*
+text\<open>
 Invariant 2b is proved automatically, given that 
 we expand the definitions involved.
-*}
+\<close>
 
 theorem HInit_Inv2b: "HInit s \<longrightarrow> Inv2b s"
 by (auto simp add: HInit_def Init_def Inv2b_def 
@@ -759,7 +759,7 @@ theorem HEndPhase0_Inv2b:
 by (auto simp add: EndPhase0_def InitializePhase_def 
                    Inv2b_def Inv2b_inner_def hasRead_def)
 
-subsubsection {* Proofs of Invariant 2 c *}
+subsubsection \<open>Proofs of Invariant 2 c\<close>
 
 theorem HInit_Inv2c: "HInit s \<longrightarrow> Inv2c s"
 by (auto simp add: HInit_def Init_def Inv2c_def Inv2c_inner_def)
@@ -1107,7 +1107,7 @@ theorem HInit_HInv2:
 using HInit_Inv2a HInit_Inv2b HInit_Inv2c
 by(auto simp add: HInv2_def)
 
-text{* $HInv1 \wedge HInv2$ is an invariant of $HNext$. *} 
+text\<open>$HInv1 \wedge HInv2$ is an invariant of $HNext$.\<close> 
 
 lemma I2b:
   assumes nxt: "HNext s s'"

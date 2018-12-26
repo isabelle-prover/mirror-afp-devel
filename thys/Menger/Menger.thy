@@ -1,8 +1,8 @@
-section {* Menger's Theorem *}
+section \<open>Menger's Theorem\<close>
 
 theory Menger imports Y_eq_new_last Y_neq_new_last begin
 
-text {* In this section, we combine the cases and finally prove Menger's Theorem. *}
+text \<open>In this section, we combine the cases and finally prove Menger's Theorem.\<close>
 
 locale ProofStepInductOptimalPaths = ProofStepInduct +
   assumes optimal_paths:
@@ -76,7 +76,7 @@ proof-
   show ?thesis using G.one_more_paths_exists by blast
 qed
 
-subsection {* Menger's Theorem *}
+subsection \<open>Menger's Theorem\<close>
 
 theorem (in v0_v1_Digraph) menger:
   assumes "\<And>S. Separation G v0 v1 S \<Longrightarrow> card S \<ge> n"
@@ -157,12 +157,12 @@ next
   qed
 qed
 
-text {*
+text \<open>
   The previous theorem was the difficult direction of Menger's Theorem.  Let us now prove the other
   direction: If we have @{term n} disjoint paths, than every separator must contain at least
   @{term n} vertices.  This direction is rather trivial because every separator needs to separate
   at least the @{term n} paths, so we do not need induction or an elaborate setup to prove this.
-*}
+\<close>
 
 theorem (in v0_v1_Digraph) menger_trivial:
   assumes "DisjointPaths G v0 v1 paths" "card paths = n"
@@ -172,13 +172,13 @@ proof-
   fix S assume "Separation G v0 v1 S"
   then interpret S: Separation G v0 v1 S .
 
-  text {*
+  text \<open>
     Our plan is to show @{term "card S \<ge> n"} by defining an injective function from @{term paths}
     into @{term S}.  Because we have @{term "card paths = n"}, the result follows.
 
     For the injective function, we simply use the observation stated above: Every path needs to
     be separated by @{term S} at some vertex, so we can choose such a vertex.
-  *}
+\<close>
   define f where "f \<equiv> \<lambda>xs. SOME v. v \<in> S \<and> v \<in> set xs"
 
   have f_good: "\<And>xs. xs \<in> paths \<Longrightarrow> f xs \<in> S \<and> f xs \<in> set xs" proof-
@@ -188,7 +188,7 @@ proof-
       using someI[of "\<lambda>v. v \<in> S \<and> v \<in> set xs" v] by blast
   qed
 
-  text {* This @{term f} is injective because no two paths intersect in the same vertex. *}
+  text \<open>This @{term f} is injective because no two paths intersect in the same vertex.\<close>
   have "inj_on f paths" proof
     fix xs ys
     assume *: "xs \<in> paths" "ys \<in> paths" "f xs = f ys"
@@ -201,9 +201,9 @@ proof-
     by (metis S.finite_S finite_paths image_subsetI inj_on_iff_card_le)
 qed
 
-subsection {* Self-contained Statement of the Main Theorem *}
+subsection \<open>Self-contained Statement of the Main Theorem\<close>
 
-text {*
+text \<open>
   Let us state both directions of Menger's Theorem again in a more self-contained way in the
   @{locale Digraph} locale. Stating the theorems in a self-contained way helps avoiding mistakes
   due to wrong definitions hidden in one of the numerous locales we used and also significantly
@@ -212,7 +212,7 @@ text {*
   With the statements below, all you need to do in order to verify that this formalization
   actually expresses Menger's Theorem (and not something else), is to look into the assumptions
   and definitions of the @{locale Digraph} locale.
-*}
+\<close>
 
 theorem (in Digraph) menger:
   fixes v0 v1 :: 'a and n :: nat

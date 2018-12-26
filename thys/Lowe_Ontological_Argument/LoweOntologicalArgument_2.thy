@@ -100,7 +100,7 @@ text\<open>\noindent{Sledgehammer is able to find a proof relying on all premise
 but the two modal axioms \emph{T} and \emph{IV}. By the end of this iteration we see
 that Lowe's modal ontological argument depends for its validity on three non-stated (i.e. implicit) premises:
 the essentiality of abstractness, the existence-entailing nature of concreteness and the modal
-axiom \emph{B} (@{text "\<phi> \<rightarrow>  \<box>\<diamond>\<phi>"}). Moreover, we have also shed some light on the meaning of the concepts
+axiom \emph{B} (\<open>\<phi> \<rightarrow>  \<box>\<diamond>\<phi>\<close>). Moreover, we have also shed some light on the meaning of the concepts
 of abstractness and concreteness.}\<close>
 
 (*<*)

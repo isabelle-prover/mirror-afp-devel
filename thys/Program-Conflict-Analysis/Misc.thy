@@ -3,20 +3,20 @@
     Maintainer:  Peter Lammich <peter.lammich@uni-muenster.de>
 *)
 
-section {* Miscellanneous Definitions and Lemmas *}
+section \<open>Miscellanneous Definitions and Lemmas\<close>
 
 theory Misc
 imports Main "HOL-Library.Multiset" "HOL-Library.Subseq_Order"
 begin
-text_raw {*\label{thy:Misc}*}
+text_raw \<open>\label{thy:Misc}\<close>
 
-text {* Here we provide a collection of miscellaneous definitions and helper lemmas *}
+text \<open>Here we provide a collection of miscellaneous definitions and helper lemmas\<close>
 
 subsection "Miscellanneous (1)"
-text {* This stuff is used in this theory itself, and thus occurs in first place. There is another ,,Miscellaneous''-section at the end of this theory *}
+text \<open>This stuff is used in this theory itself, and thus occurs in first place. There is another ,,Miscellaneous''-section at the end of this theory\<close>
 subsubsection "AC-operators"
   
-text {* Locale to declare AC-laws as simplification rules *}
+text \<open>Locale to declare AC-laws as simplification rules\<close>
 locale AC =
   fixes f
   assumes commute[simp]: "f x y = f y x"
@@ -25,7 +25,7 @@ locale AC =
 lemma (in AC) left_commute[simp]: "f x (f y z) = f y (f x z)"
   by (simp only: assoc[symmetric]) simp
 
-text {* Locale to define functions from surjective, unique relations *}
+text \<open>Locale to define functions from surjective, unique relations\<close>
 locale su_rel_fun =
   fixes F and f
   assumes unique: "\<lbrakk>(A,B)\<in>F; (A,B')\<in>F\<rbrakk> \<Longrightarrow> B=B'"
@@ -44,7 +44,7 @@ lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
   by (blast) 
 
 
-subsection {* Abbreviations for list order *}
+subsection \<open>Abbreviations for list order\<close>
 
 abbreviation ileq :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "\<preceq>" 50) where
   "(\<preceq>) \<equiv> (\<le>)"
@@ -53,7 +53,7 @@ abbreviation ilt :: "'a list \<Rightarrow> 'a list \<Rightarrow> bool"  (infix "
   "(\<prec>) \<equiv> (<)"
 
 
-subsection {* Multisets *}
+subsection \<open>Multisets\<close>
 
 (*
   The following is a syntax extension for multisets. Unfortunately, it depends on a change in the Library/Multiset.thy, so it is commented out here, until it will be incorporated 
@@ -80,18 +80,18 @@ subsection {* Multisets *}
   (* Let's try what happens if declaring AC-rules for multiset union as simp-rules *)
 (*declare union_ac[simp] -- don't do it !*)
 
-subsubsection {* Case distinction *}
+subsubsection \<open>Case distinction\<close>
 
 lemma multiset_induct'[case_names empty add]: "\<lbrakk>P {#}; \<And>M x. P M \<Longrightarrow> P ({#x#}+M)\<rbrakk> \<Longrightarrow> P M"
   by (induct rule: multiset_induct) (auto simp add: union_commute)
 
-subsubsection {* Count *}
+subsubsection \<open>Count\<close>
   lemma count_ne_remove: "\<lbrakk> x ~= t\<rbrakk> \<Longrightarrow> count S x = count (S-{#t#}) x"
     by (auto)
   lemma mset_empty_count[simp]: "(\<forall>p. count M p = 0) = (M={#})"
     by (auto simp add: multiset_eq_iff)
 
-subsubsection {* Union, difference and intersection *}
+subsubsection \<open>Union, difference and intersection\<close>
 
   lemma size_diff_se: "\<lbrakk>t \<in># S\<rbrakk> \<Longrightarrow> size S = size (S - {#t#}) + 1" proof (unfold size_multiset_overloaded_eq)
     let ?SIZE = "sum (count S) (set_mset S)"
@@ -294,7 +294,7 @@ subsubsection {* Union, difference and intersection *}
   qed
 
 
-subsubsection {* Singleton multisets *}   
+subsubsection \<open>Singleton multisets\<close>   
 
 lemma mset_size_le1_cases[case_names empty singleton,consumes 1]: "\<lbrakk> size M \<le> Suc 0; M={#} \<Longrightarrow> P; !!m. M={#m#} \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
   by (cases M) auto
@@ -313,7 +313,7 @@ lemma mset_contains_eq: "(m \<in># M) = ({#m#}+(M-{#m#})=M)" proof (auto)
 qed
 
 
-subsubsection {* Pointwise ordering *}
+subsubsection \<open>Pointwise ordering\<close>
 
   lemma mset_le_incr_right1: "(a::'a multiset)\<subseteq>#b \<Longrightarrow> a\<subseteq>#b+c" using mset_subset_eq_mono_add[of a b "{#}" c, simplified] .
   lemma mset_le_incr_right2: "(a::'a multiset)\<subseteq>#b \<Longrightarrow> a\<subseteq>#c+b" using mset_le_incr_right1
@@ -416,7 +416,7 @@ lemma mset_le_subtract_add_mset_left: "add_mset x B \<subseteq># (X::'a multiset
     by (auto elim: mset_le_addE)
 
 
-subsubsection {* Image under function *}
+subsubsection \<open>Image under function\<close>
 
 notation image_mset (infixr "`#" 90)
 
@@ -432,19 +432,19 @@ lemma mset_map_split_orig: "!!M1 M2. \<lbrakk>f `# P = M1+M2; !!P1 P2. \<lbrakk>
 lemma mset_map_id: "\<lbrakk>!!x. f (g x) = x\<rbrakk> \<Longrightarrow> f `# g `# X = X"
   by (induct X) auto
 
-text {* The following is a very specialized lemma. Intuitively, it splits the original multiset *}
-text {* The following is a very specialized   by a splitting of some pointwise supermultiset of its image.
+text \<open>The following is a very specialized lemma. Intuitively, it splits the original multiset\<close>
+text \<open>The following is a very specialized   by a splitting of some pointwise supermultiset of its image.
 
   Application:
   This lemma came in handy when proving the correctness of a constraint system that collects at most k sized submultisets of the sets of spawned threads.
-*}
+\<close>
 lemma mset_map_split_orig_le: assumes A: "f `# P \<subseteq># M1+M2" and EX: "!!P1 P2. \<lbrakk>P=P1+P2; f `# P1 \<subseteq># M1; f `# P2 \<subseteq># M2\<rbrakk> \<Longrightarrow> Q" shows "Q"
   using A EX by (auto elim: mset_le_distrib mset_map_split_orig)
 
 
-subsection {* Lists *}
+subsection \<open>Lists\<close>
 
-subsubsection {* Reverse lists *}
+subsubsection \<open>Reverse lists\<close>
   lemma list_rev_decomp[rule_format]: "l~=[] \<longrightarrow> (EX ll e . l = ll@[e])"
     apply(induct_tac l)
     apply(auto)
@@ -469,7 +469,7 @@ subsubsection {* Reverse lists *}
   qed
   *)
 
-  text {* Caution: Same order of case variables in snoc-case as @{thm [source] rev_exhaust}, the other way round than @{thm [source] rev_induct} ! *}
+  text \<open>Caution: Same order of case variables in snoc-case as @{thm [source] rev_exhaust}, the other way round than @{thm [source] rev_induct} !\<close>
   lemma length_compl_rev_induct[case_names Nil snoc]: "\<lbrakk>P []; !! l e . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (l@[e])\<rbrakk> \<Longrightarrow> P l"
     apply(induct_tac l rule: length_induct)
     apply(case_tac "xs" rule: rev_cases)
@@ -509,7 +509,7 @@ lemma foldl_set: "foldl (\<union>) {} l = \<Union>{x. x\<in>set l}"
   done
 
 
-subsubsection {* Miscellaneous *}
+subsubsection \<open>Miscellaneous\<close>
   lemma length_compl_induct[case_names Nil Cons]: "\<lbrakk>P []; !! e l . \<lbrakk>!! ll . length ll <= length l \<Longrightarrow> P ll\<rbrakk> \<Longrightarrow> P (e#l)\<rbrakk> \<Longrightarrow> P l"
     apply(induct_tac l rule: length_induct)
     apply(case_tac "xs")
@@ -517,7 +517,7 @@ subsubsection {* Miscellaneous *}
   done
 
 
-  text {* Simultaneous induction over two lists, prepending an element to one of the lists in each step *}
+  text \<open>Simultaneous induction over two lists, prepending an element to one of the lists in each step\<close>
   lemma list_2pre_induct[case_names base left right]: assumes BASE: "P [] []" and LEFT: "!!e w1' w2. P w1' w2 \<Longrightarrow> P (e#w1') w2" and RIGHT: "!!e w1 w2'. P w1 w2' \<Longrightarrow> P w1 (e#w2')" shows "P w1 w2" 
   proof -
     { \<comment> \<open>The proof is done by induction over the sum of the lengths of the lists\<close>
@@ -561,7 +561,7 @@ subsubsection {* Miscellaneous *}
   lemma last_in_set[intro]: "\<lbrakk>l\<noteq>[]\<rbrakk> \<Longrightarrow> last l \<in> set l"
     by (induct l) auto
 
-subsection {* Induction on nat *}
+subsection \<open>Induction on nat\<close>
   lemma nat_compl_induct[case_names 0 Suc]: "\<lbrakk>P 0; !! n . ALL nn . nn <= n \<longrightarrow> P nn \<Longrightarrow> P (Suc n)\<rbrakk> \<Longrightarrow> P n"
     apply(induct_tac n rule: nat_less_induct)
     apply(case_tac n)
@@ -569,7 +569,7 @@ subsection {* Induction on nat *}
   done
 
 
-subsection {* Functions of type @{typ "bool\<Rightarrow>bool"}*}
+subsection \<open>Functions of type @{typ "bool\<Rightarrow>bool"}\<close>
   lemma boolfun_cases_helper: "g=(\<lambda>x. False) | g=(\<lambda>x. x) | g=(\<lambda>x. True) | g= (\<lambda>x. \<not>x)" 
   proof -
     { assume "g False" "g True"
@@ -594,7 +594,7 @@ subsection {* Functions of type @{typ "bool\<Rightarrow>bool"}*}
   qed
 
 
-  subsection {* Definite and indefinite description *}
+  subsection \<open>Definite and indefinite description\<close>
   text "Combined definite and indefinite description for binary predicate"
   lemma some_theI: assumes EX: "\<exists>a b . P a b" and BUN: "!! b1 b2 . \<lbrakk>\<exists>a . P a b1; \<exists>a . P a b2\<rbrakk> \<Longrightarrow> b1=b2" 
     shows "P (SOME a . \<exists>b . P a b) (THE b . \<exists>a . P a b)"

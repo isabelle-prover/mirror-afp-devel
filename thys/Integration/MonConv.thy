@@ -1,10 +1,10 @@
-subsection {* Monotone Convergence \label{sec:monconv} *}
+subsection \<open>Monotone Convergence \label{sec:monconv}\<close>
 
 theory MonConv
 imports Complex_Main
 begin
 
-text {* A sensible requirement for an integral operator is that it be
+text \<open>A sensible requirement for an integral operator is that it be
   ``well-behaved'' with respect to limit functions. To become just a
   little more
   precise, it is expected that the limit operator may be interchanged
@@ -17,7 +17,7 @@ text {* A sensible requirement for an integral operator is that it be
   There are converging sequences of real numbers, real functions and
   sets. Monotone convergence could even be defined more generally for
   any type in the axiomatic type class\footnote{For the concept of axiomatic type
-  classes, see \cite{Nipkow93,wenzelax}} @{text ord} of ordered
+  classes, see \cite{Nipkow93,wenzelax}} \<open>ord\<close> of ordered
   types like this.
 
   @{prop "mon_conv u f \<equiv> (\<forall>n. u n \<le> u (Suc n)) \<and> Sup (range u) = f"}
@@ -29,13 +29,13 @@ text {* A sensible requirement for an integral operator is that it be
   the less-or-equal relation is defined pointwise.
 
   @{thm le_fun_def [no_vars]}
-  *}
+\<close>
 
 (*monotone convergence*)
  
-text {*Now the foundations are laid for the definition of monotone
+text \<open>Now the foundations are laid for the definition of monotone
   convergence. To express the similarity of the different types of
-  convergence, a single overloaded operator is used.*}
+  convergence, a single overloaded operator is used.\<close>
 
 consts
   mon_conv:: "(nat \<Rightarrow> 'a) \<Rightarrow> 'a::ord \<Rightarrow> bool" ("_\<up>_" [60,61] 60) 
@@ -54,12 +54,12 @@ end
 theorem realfun_mon_conv_iff: "(u\<up>f) = (\<forall>w. (\<lambda>n. u n w)\<up>((f w)::real))"
   by (auto simp add: mon_conv_real_def mon_conv_real_fun_def le_fun_def)
 
-text {* The long arrow signifies convergence of real sequences as
-  defined in the theory @{text SEQ} \cite{Fleuriot:2000:MNR}. Monotone convergence
+text \<open>The long arrow signifies convergence of real sequences as
+  defined in the theory \<open>SEQ\<close> \cite{Fleuriot:2000:MNR}. Monotone convergence
   for real functions is simply pointwise monotone convergence.
 
   Quite a few properties of these definitions will be necessary later,
-  and they are listed now, giving only few select proofs. *} 
+  and they are listed now, giving only few select proofs.\<close> 
 
     (*This theorem, too, could be proved just the same for any ord
   Type!*)
@@ -213,7 +213,7 @@ proof -
   ultimately show ?thesis by (simp add: real_mon_conv_bound) 
 qed
 
-text{*\newpage*}
+text\<open>\newpage\<close>
 theorem realfun_mon_conv_bound:
   assumes mon: "\<And>n. c n \<le> c (Suc n)"
   and bound: "\<And>n. c n \<le> (x::'a \<Rightarrow> real)"
@@ -233,10 +233,9 @@ theorem realfun_mon_conv_bound:
   thus "c\<up>r \<and> r \<le> x" by (simp add: realfun_mon_conv_iff le_fun_def)
 qed (*>*)  
 
-text {*This brings the theory to an end. Notice how the definition of the limit of a
-  real sequence is visible in the proof to @{text
-  real_mon_conv_outgrow}, a lemma that will be used for a
-  monotonicity proof of the integral of simple functions later on.*}(*<*)
+text \<open>This brings the theory to an end. Notice how the definition of the limit of a
+  real sequence is visible in the proof to \<open>real_mon_conv_outgrow\<close>, a lemma that will be used for a
+  monotonicity proof of the integral of simple functions later on.\<close>(*<*)
   (*Another set construction. Needed in ImportPredSet, but Set is shadowed beyond 
   reconstruction there.
   Before making disjoint, we first need an ascending series of sets*)

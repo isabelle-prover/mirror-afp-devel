@@ -2,13 +2,13 @@
 Title: SIFUM-Type-Systems
 Authors: Sylvia Grewe, Heiko Mantel, Daniel Schoepe
 *)
-section {* Language for Instantiating the SIFUM-Security Property *}
+section \<open>Language for Instantiating the SIFUM-Security Property\<close>
 
 theory Language
 imports Main Preliminaries
 begin
 
-subsection {* Syntax *}
+subsection \<open>Syntax\<close>
 
 datatype 'var ModeUpd = Acq "'var" Mode (infix "+=\<^sub>m" 75)
   | Rel "'var" Mode (infix "-=\<^sub>m" 75)
@@ -56,7 +56,7 @@ abbreviation conf\<^sub>w_abv :: "('Var, 'AExp, 'BExp) Stmt \<Rightarrow>
   where
   "\<langle> c, mds, mem \<rangle>\<^sub>w \<equiv> ((c, mds), mem)"
 
-subsection {* Semantics *}
+subsection \<open>Semantics\<close>
 
 primrec update_modes :: "'Var ModeUpd \<Rightarrow> 'Var Mds \<Rightarrow> 'Var Mds"
   where
@@ -111,10 +111,10 @@ and eval\<^sub>w_abv :: "(('Var, 'AExp, 'BExp) Stmt, 'Var, 'Val) LocalConf \<Rig
   decl: "\<lbrakk> \<langle>c, update_modes mu mds, mem\<rangle>\<^sub>w \<leadsto>\<^sub>w \<langle>c', mds', mem'\<rangle>\<^sub>w \<rbrakk> \<Longrightarrow>
          (\<langle>cxt_to_stmt E (ModeDecl c mu), mds, mem\<rangle>\<^sub>w, \<langle>cxt_to_stmt E c', mds', mem'\<rangle>\<^sub>w) \<in> eval\<^sub>w"
 
-subsection {* Semantic Properties *}
+subsection \<open>Semantic Properties\<close>
 
-text {* The following lemmas simplify working with evaluation contexts
-  in the soundness proofs for the type system(s). *}
+text \<open>The following lemmas simplify working with evaluation contexts
+  in the soundness proofs for the type system(s).\<close>
 
 inductive_cases eval_elim: "(((c, mds), mem), ((c', mds'), mem')) \<in> eval\<^sub>w"
 inductive_cases stop_no_eval' [elim]: "((Stop, mem), (c', mem')) \<in> eval\<^sub>w_simple"

@@ -375,7 +375,7 @@ subsubsection \<open>inv3a: Session key compromise\<close>
 (*inv**************************************************************************)
 
 text \<open>A L2 version of a session key comprise invariant. Roughly, it states
-that adding a set of keys @{term KK} to the parameter @{text T} of @{term extr} 
+that adding a set of keys @{term KK} to the parameter \<open>T\<close> of @{term extr} 
 does not help the intruder to extract keys other than those in @{term KK} or
 extractable without adding @{term KK}. 
 \<close>
@@ -417,7 +417,7 @@ subsubsection \<open>inv3b: Session key compromise for nonces\<close>
 (*inv**************************************************************************)
 
 text \<open>A variant of the above for nonces. Roughly, it states that adding 
-a set of keys @{term KK} to the parameter @{text T} of @{term extr} 
+a set of keys @{term KK} to the parameter \<open>T\<close> of @{term extr} 
 does not help the intruder to extract more nonces than those extractable 
 without adding @{term KK}.
 
@@ -663,7 +663,7 @@ lemmas m2_inv5_ikk_svE [elim] = m2_inv5_ikk_sv_def [THEN setc_def_to_elim, rule_
 lemmas m2_inv5_ikk_svD = m2_inv5_ikk_sv_def [THEN setc_def_to_dest, rule_format, rotated 1]
 
 
-text \<open>Invariance proof. This invariant follows from @{text m2_inv3_extrKey}.\<close>
+text \<open>Invariance proof. This invariant follows from \<open>m2_inv3_extrKey\<close>.\<close>
 
 lemma m2_inv5_ikk_sv_derived: 
   "s \<in> m2_inv3_extrKey \<Longrightarrow> s \<in> m2_inv5_ikk_sv"
@@ -1200,7 +1200,7 @@ subsection \<open>Inherited and derived invariants\<close>
 (******************************************************************************)
 
 text \<open>Show preservation of invariants @{term "m1_inv2i_serv"} and
-@{term "m1_inv2r_serv"} from @{text "m1"}.\<close>
+@{term "m1_inv2r_serv"} from \<open>m1\<close>.\<close>
 
 (*invh*************************************************************************)
 

@@ -1,4 +1,4 @@
-section {* Code Generation for the Skeleton Algorithm \label{sec:skel_code}*}
+section \<open>Code Generation for the Skeleton Algorithm \label{sec:skel_code}\<close>
 theory Gabow_Skeleton_Code
 imports 
   Gabow_Skeleton
@@ -6,14 +6,14 @@ imports
   CAVA_Base.CAVA_Code_Target
 begin
 
-section {* Statistics *}
-text {*
+section \<open>Statistics\<close>
+text \<open>
   In this section, we do the ML setup that gathers statistics about the 
   algorithm's execution.
-*}
+\<close>
 
 code_printing
-  code_module Gabow_Skeleton_Statistics \<rightharpoonup> (SML) {*
+  code_module Gabow_Skeleton_Statistics \<rightharpoonup> (SML) \<open>
     structure Gabow_Skeleton_Statistics = struct
       val active = Unsynchronized.ref false
       val num_vis = Unsynchronized.ref 0
@@ -43,7 +43,7 @@ code_printing
       val _ = Statistics.register_stat ("Gabow-Skeleton",is_active,to_string)
 
     end
-*}
+\<close>
 code_reserved SML Gabow_Skeleton_Statistics
 
 code_printing
@@ -51,7 +51,7 @@ code_printing
 | constant stat_start \<rightharpoonup> (SML) "Gabow'_Skeleton'_Statistics.start"
 | constant stat_stop \<rightharpoonup> (SML) "Gabow'_Skeleton'_Statistics.stop"
 
-section {* Automatic Refinement Setup *}
+section \<open>Automatic Refinement Setup\<close>
 consts i_node_state :: interface
 
 definition "node_state_rel \<equiv> {(-1::int,DONE)} \<union> {(int k,STACK k) | k. True }"
@@ -120,7 +120,7 @@ begin
 
 end
 
-section {* Generating the Code *}
+section \<open>Generating the Code\<close>
 
 context fr_graph_impl_loc
 begin

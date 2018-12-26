@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* JMM Instantiation for J *}
+section \<open>JMM Instantiation for J\<close>
 
 theory DRF_J
 imports
@@ -395,14 +395,14 @@ lemma red_non_speculative_vs_conf:
   \<Longrightarrow> vs_conf P (hp s') (w_values P vs (take n (map NormalAction \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>)))"
 proof(induct arbitrary: E T and E Ts rule: red_reds.inducts)
   case (RedAAss h a U n i w V h' xs)
-  from `sint i < int n` `0 <=s i` have "nat (sint i) < n"
+  from \<open>sint i < int n\<close> \<open>0 <=s i\<close> have "nat (sint i) < n"
     by (metis nat_less_iff sint_0 word_sle_def)
-  with `typeof_addr h a = \<lfloor>Array_type U n\<rfloor>` have "P,h \<turnstile> a@ACell (nat (sint i)) : U"
+  with \<open>typeof_addr h a = \<lfloor>Array_type U n\<rfloor>\<close> have "P,h \<turnstile> a@ACell (nat (sint i)) : U"
     by(auto intro: addr_loc_type.intros)
-  moreover from `heap_write h a (ACell (nat (sint i))) w h'` have "h \<unlhd> h'" by(rule hext_heap_write)
+  moreover from \<open>heap_write h a (ACell (nat (sint i))) w h'\<close> have "h \<unlhd> h'" by(rule hext_heap_write)
   ultimately have "P,h' \<turnstile> a@ACell (nat (sint i)) : U" by(rule addr_loc_type_hext_mono)
-  moreover from `typeof\<^bsub>h\<^esub> w = \<lfloor>V\<rfloor>` `P \<turnstile> V \<le> U` have "P,h \<turnstile> w :\<le> U" by(simp add: conf_def)
-  with `h \<unlhd> h'` have "P,h' \<turnstile> w :\<le> U" by(rule conf_hext)
+  moreover from \<open>typeof\<^bsub>h\<^esub> w = \<lfloor>V\<rfloor>\<close> \<open>P \<turnstile> V \<le> U\<close> have "P,h \<turnstile> w :\<le> U" by(simp add: conf_def)
+  with \<open>h \<unlhd> h'\<close> have "P,h' \<turnstile> w :\<le> U" by(rule conf_hext)
   ultimately have "\<exists>T. P,h' \<turnstile> a@ACell (nat (sint i)) : T \<and> P,h' \<turnstile> w :\<le> T" by blast 
   thus ?case using RedAAss
     by(auto intro!: vs_confI split: if_split_asm dest: vs_confD simp add: take_Cons')(blast dest: vs_confD hext_heap_write intro: addr_loc_type_hext_mono conf_hext)+
@@ -626,8 +626,8 @@ proof(induct e hxs\<equiv>"(shr s, xs)" ta e' hxs'\<equiv>"(h', xs')"
     by(auto intro: addr_loc_type.intros simp add: nat_less_iff word_sle_def)
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> U" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
   with hrt adal have "heap_read (shr s) a (ACell (nat (sint i))) v'" using hconf by(rule heap_read_typeableD)
-  with `typeof_addr (shr s) a = \<lfloor>Array_type U n\<rfloor>` `0 <=s i` `sint i < int n` 
-    `red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>`
+  with \<open>typeof_addr (shr s) a = \<lfloor>Array_type U n\<rfloor>\<close> \<open>0 <=s i\<close> \<open>sint i < int n\<close> 
+    \<open>red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (ACell (nat (sint i))) v\<rbrace>\<close>
   show ?case by(fastforce intro: red_reds.RedAAcc)
 next
   case (RedFAcc a D F v)
@@ -637,7 +637,7 @@ next
   with RedFAcc have adal: "P,shr s \<turnstile> a@CField D F : T" by(auto 4 4 intro: addr_loc_type.intros)
   from v' vs adal have "P,shr s \<turnstile> v' :\<le> T" by(auto dest!: vs_confD dest: addr_loc_type_fun)  
   with hrt adal have "heap_read (shr s) a (CField D F) v'" using hconf by(rule heap_read_typeableD)
-  with `red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>`
+  with \<open>red_mthr.mthr.if.actions_ok s t \<lbrace>ReadMem a (CField D F) v\<rbrace>\<close>
   show ?case by(fastforce intro: red_reds.RedFAcc)
 next
   case (RedCASSucceed a D F v'' v''')
@@ -684,7 +684,7 @@ next
   qed
 next
   case (RedCallExternal a U M Ts Tr D ps ta' va h' ta e')
-  from `P,t \<turnstile> \<langle>a\<bullet>M(ps),hp (shr s, xs)\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>`
+  from \<open>P,t \<turnstile> \<langle>a\<bullet>M(ps),hp (shr s, xs)\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>\<close>
   have red: "P,t \<turnstile> \<langle>a\<bullet>M(ps),shr s\<rangle> -ta'\<rightarrow>ext \<langle>va,h'\<rangle>" by simp
   from RedCallExternal have aok: "red_mthr.mthr.if.actions_ok s t ta'" by simp
   from RedCallExternal have "I < length \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>"
@@ -692,9 +692,9 @@ next
     and "v' \<in> w_values P vs (map NormalAction (take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)) (a'', al'')"
     and "non_speculative P vs (llist_of (map NormalAction (take I \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub>)))" by simp_all
   from red_external_non_speculative_read[OF hrt vs red aok hconf this]
-    `typeof_addr (hp (shr s, xs)) a = \<lfloor>U\<rfloor>` 
-    `P \<turnstile> class_type_of U sees M: Ts\<rightarrow>Tr = Native in D` `ta = extTA2J P ta'`
-    `I < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>`
+    \<open>typeof_addr (hp (shr s, xs)) a = \<lfloor>U\<rfloor>\<close> 
+    \<open>P \<turnstile> class_type_of U sees M: Ts\<rightarrow>Tr = Native in D\<close> \<open>ta = extTA2J P ta'\<close>
+    \<open>I < length \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>\<close>
   show ?case by(fastforce intro: red_reds.RedCallExternal)
 next
   case NewArrayRed thus ?case by(clarsimp simp add: split_paired_Ex ex_WTrt_simps)(blast intro: red_reds.NewArrayRed)
@@ -1068,7 +1068,7 @@ proof -
   from sc have "ta_seq_consist P Map.empty (lmap snd ?E)"
     unfolding lmap_lappend_distrib lmap_lconcat llist.map_comp split_def o_def lmap_llist_of map_map snd_conv
     by(simp add: ta_seq_consist_lappend ta_seq_consist_start_heap_obs)
-  from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF `?E \<in> ?\<E>`] this]
+  from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF \<open>?E \<in> ?\<E>\<close>] this]
   obtain ws where "sequentially_consistent P (?E, ws)" "P \<turnstile> (?E, ws) \<surd>" by iprover
   ultimately show ?thesis by blast
 qed

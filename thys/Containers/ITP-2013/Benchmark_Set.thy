@@ -27,7 +27,7 @@ by (metis minus_minus plus_word.abs_eq times_word.abs_eq wi_hom_neg word_1_wi wo
 definition word_of :: "natural \<Rightarrow> 'a::len0 word"
 where "word_of = word_of_integer o integer_of_natural"
 
-text {* randomly generate a set of (up to) n elements drawn from 0 to bound *}
+text \<open>randomly generate a set of (up to) n elements drawn from 0 to bound\<close>
 
 fun gen_build1 :: "natural \<Rightarrow> nat \<Rightarrow> (32 word set \<times> Random.seed) \<Rightarrow> (32 word set \<times> Random.seed)"
 where 
@@ -45,7 +45,7 @@ where
        (x, seed''') = gen_build1 bound (Code_Numeral.nat_of_natural n') ({}, seed'')
    in (if compl = 0 then x else - x, seed'''))"
 
-text {* randomly generate a set of (up to) n sets each with a random number between 0 and bound of elements between 0 and bound *}
+text \<open>randomly generate a set of (up to) n sets each with a random number between 0 and bound of elements between 0 and bound\<close>
 
 fun gen_build2 :: "natural \<Rightarrow> nat \<Rightarrow> (32 word set set \<times> Random.seed) \<Rightarrow> (32 word set set \<times> Random.seed)"
 where

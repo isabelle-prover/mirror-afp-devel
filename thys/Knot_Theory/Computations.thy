@@ -1,4 +1,4 @@
-section{*Computations: This section can be skipped*}
+section\<open>Computations: This section can be skipped\<close>
 theory Computations
 imports Kauffman_Matrix
 begin

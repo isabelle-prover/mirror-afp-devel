@@ -1,4 +1,4 @@
-section {* Sets *}
+section \<open>Sets\<close>
 
 theory Set_Extensions
 imports

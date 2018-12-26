@@ -1,11 +1,11 @@
-section {*\isaheader{Implementing Unique Priority Queues by Annotated Lists}*}
+section \<open>\isaheader{Implementing Unique Priority Queues by Annotated Lists}\<close>
 theory PrioUniqueByAnnotatedList
 imports 
   "../spec/AnnotatedListSpec"
   "../spec/PrioUniqueSpec"
 begin
 
-text {*
+text \<open>
   In this theory we use annotated lists to implement unique priority queues 
   with totally ordered elements.
 
@@ -30,7 +30,7 @@ text {*
   Finding the element with minimum priority is done by splitting the sequence
   at the point where the minimum priority of the elements read so far becomes
   equal to the minimum priority of the whole sequence.
-*}
+\<close>
 
 subsection "Definitions"
 
@@ -51,7 +51,7 @@ fun e_less_eq :: "'e \<Rightarrow> ('e::linorder, 'a::linorder) LP \<Rightarrow>
   "e_less_eq e (LP e' _) = (e \<le> e')"
 
 
-text_raw{*\paragraph{Instantiation of classes}\ \\*}
+text_raw\<open>\paragraph{Instantiation of classes}\ \\\<close>
 lemma p_min_re_neut[simp]: "p_min a Infty = a" by (induct a) auto
 lemma p_min_le_neut[simp]: "p_min Infty a = a" by (induct a) auto
 lemma p_min_asso: "p_min (p_min a b) c = p_min a (p_min b c)"

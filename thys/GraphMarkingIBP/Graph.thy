@@ -1,16 +1,16 @@
-section {* Address Graph  *}
+section \<open>Address Graph\<close>
 
 theory Graph
 imports Main
 begin
 
-text {* 
+text \<open>
 This theory introduces the graph to be marked as a relation next on
 nodes (addresses). We assume that we have a special node nil (the
 null address). We have a node root from which we start marking the graph. 
 We also assume that nil is not related by next to any node and any node is 
 not related by next to nil.
- *}
+\<close>
 
 locale node = 
   fixes nil    :: "'node"
@@ -22,7 +22,7 @@ locale graph = node +
   assumes next_not_nil_right: "(!! x . (x, nil) \<notin> next)"
 begin
 
-text {* 
+text \<open>
 On lists of nodes we introduce two operations similar to
 existing hd and tl for getting the head and the tail of
 a list. The new function head applied to a nonempty list
@@ -30,7 +30,7 @@ returns the head of the list, and it reurns nil when
 applied to the empty list. The function tail returns the
 tail of the list when applied to a non-empty list, and
 it returns the empty list otherwise.
-*}
+\<close>
   definition
     "head S \<equiv> (if S = [] then nil else (hd S))"
     

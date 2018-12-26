@@ -6,12 +6,12 @@ imports
 begin
 (*>*)
 
-subsection{*Perfect Recall in Non-deterministic Broadcast Environments*}
+subsection\<open>Perfect Recall in Non-deterministic Broadcast Environments\<close>
 
-text_raw{*
+text_raw\<open>
 \begin{figure}[ht]
 \begin{isabellebody}%
-*}
+\<close>
 record ('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState =
   es :: "'es"
   ps :: "'a \<Rightarrow> 'ps"
@@ -43,12 +43,12 @@ locale FiniteBroadcastEnvironment =
            "envTrans eact aact s \<equiv> \<lparr> es = envTransES eact (fst \<circ> aact) (es s)
                                     , ps = snd \<circ> aact
                                     , pubActs = (fst eact, fst \<circ> aact) \<rparr>"
-text_raw{*
+text_raw\<open>
   \end{isabellebody}%
   \caption{Finite broadcast environments with non-deterministic KBPs.}
   \label{fig:kbps-theory-broadcast-envs}
 \end{figure}
-*}
+\<close>
 
 (*<*)
 instance BEState_ext :: (finite, finite, finite, finite, finite, finite) finite
@@ -64,7 +64,7 @@ proof
 qed
 
 (*>*)
-text{*
+text\<open>
 
 \label{sec:kbps-theory-spr-non-deterministic-protocols}
 
@@ -87,18 +87,18 @@ Our goal in the following is to instantiate the @{term
 the @{term "FiniteBroadcastEnvironment"} locale. We begin by defining
 similar simulation machinery to the previous section.
 
-*}
+\<close>
 
 context FiniteBroadcastEnvironment
 begin
 
-text{*
+text\<open>
 
 As for the deterministic variant, we abstract traces using the common
 observation. Note that this now includes the public part of the
 agents' actions.
 
-*}
+\<close>
 
 definition
   tObsC :: "('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState Trace
@@ -151,11 +151,11 @@ lemma spr_tObsC_trc_aux:
   done
 
 (*>*)
-text{*
+text\<open>
 
 Similarly we introduce common and agent-specific abstraction functions:
 
-*}
+\<close>
 
 definition
   tObsC_abs :: "('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState Trace
@@ -206,11 +206,11 @@ lemma agent_abs_inv[dest]:
 
 end (* context FiniteBroadcastEnvironment *)
 
-text{*
+text\<open>
 
 The simulation is identical to that in the previous section:
 
-*}
+\<close>
 
 record ('a, 'ePubAct, 'es, 'pPubAct, 'ps) SPRstate =
   sprFst :: "('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState"
@@ -232,11 +232,11 @@ lemma spr_sim_tFirst_tLast:
   unfolding spr_sim_def by auto
 
 (*>*)
-text{*
+text\<open>
 
 The Kripke structure over simulated traces is also the same:
 
-*}
+\<close>
 
 definition
   spr_simRels :: "'a \<Rightarrow> ('a, 'ePubAct, 'es, 'pPubAct, 'ps) SPRstate Relation"
@@ -261,7 +261,7 @@ lemma spr_simVal_def2[iff]:
 
 
 (*>*)
-text{*
+text\<open>
 
 As usual, showing that @{term "spr_sim"} is in fact a simulation is
 routine for all properties except for reverse simulation. For that we
@@ -274,7 +274,7 @@ private and initial states.
 
 To do this we define a splicing operation:
 
-*}
+\<close>
 
 definition
   sSplice :: "'a
@@ -317,7 +317,7 @@ lemma sSplice_envObs_not_a:
   unfolding sSplice_def envObs_def by simp
 
 (*>*)
-text{*
+text\<open>
 
 The effect of @{term "sSplice a s s'"} is to update @{term "s"} with
 @{term "a"}'s private state in @{term "s'"}. The key properties are
@@ -329,7 +329,7 @@ same as at @{term "s"}.
 
 We hoist this operation pointwise to traces:
 
-*}
+\<close>
 
 abbreviation
   tSplice :: "('a, 'ePubAct, 'es, 'pPubAct, 'ps) BEState Trace
@@ -396,7 +396,7 @@ lemma tSplice_tLast[simp]:
   done
 
 (*>*)
-text{*
+text\<open>
 
 The key properties are that after splicing, if @{term "t"} and @{term
 "t'"} have the same common observation, then so does @{term "t \<^bsub>\<^esub>\<bowtie>\<^bsub>a\<^esub>
@@ -408,7 +408,7 @@ We can conclude that provided the two traces are initially
 indistinguishable to @{term "a"}, and not commonly distinguishable,
 then @{term "t \<^bsub>\<^esub>\<bowtie>\<^bsub>a\<^esub> t'"} is a canonical trace:
 
-*}
+\<close>
 
 lemma tSplice_jkbpC:
   assumes tt': "{t, t'} \<subseteq> SPR.jkbpC"
@@ -581,14 +581,14 @@ proof(rule sim_rI)
 qed
 
 (*>*)
-text{*
+text\<open>
 
 The proof is by induction over @{term "t"} and @{term "t'"}, and
 depends crucially on the public actions being recorded in the state
 and commonly observed. Showing the reverse simulation property is then
 straightforward.
 
-*}
+\<close>
 
 lemma spr_sim: "sim SPR.MC spr_simMC spr_sim"
 (*<*)
@@ -618,14 +618,14 @@ sublocale FiniteBroadcastEnvironment
   by standard (simp add: spr_sim)
 
 (*>*)
-text{*
+text\<open>
 
 The algorithmic representations and machinery of the deterministic
 JKBP case suffice for this one too, and so we omit the details.
 
 \FloatBarrier
 
-*}
+\<close>
 (*<*)
 
 end

@@ -13,9 +13,9 @@ imports
 begin
 
 (*>*)
-subsection{* The Robot *}
+subsection\<open>The Robot\<close>
 
-text{*
+text\<open>
 \label{sec:kbps-theory-robot}
 
 \begin{figure}[tb]
@@ -81,7 +81,7 @@ as errors instead of don't-cares, and these extraneous distinctions
 are preserved by bisimulation reduction. We discuss this further in
 \S\ref{sec:kbps-alg-auto-min}.
 
-*}(*<*)
+\<close>(*<*)
 
 (*
 
@@ -192,7 +192,7 @@ end
 
 (*>*)
 
-subsubsection{* Locale instantiations *}
+subsubsection\<open>Locale instantiations\<close>
 
 interpretation Robot:
   Environment "\<lambda>_. kbp" envInit envAction envTrans envVal "\<lambda>_. envObs"
@@ -201,7 +201,7 @@ interpretation Robot:
   apply ((case_tac a, simp)+)
   done
 
-subsubsection{* The Clock view implementation *}
+subsubsection\<open>The Clock view implementation\<close>
 
 interpretation Robot_Clock:
   FiniteLinorderEnvironment "\<lambda>_. kbp" envInit envAction envTrans envVal "\<lambda>_. envObs" "fromList [Robot]"
@@ -225,7 +225,7 @@ lemma (in FiniteLinorderEnvironment)
   "Robot.Clock.implements robot_ClockAlg"
   unfolding robot_ClockAlg_def by (rule Robot_Clock.mkClockAuto_implements)
 
-subsubsection{* The SPR view implementation *}
+subsubsection\<open>The SPR view implementation\<close>
 
 interpretation Robot_SPR:
   FiniteSingleAgentEnvironment "\<lambda>_. kbp" envInit envAction envTrans envVal "\<lambda>_. envObs" "Robot"

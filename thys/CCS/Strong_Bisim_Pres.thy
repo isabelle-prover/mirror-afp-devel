@@ -79,15 +79,15 @@ proof -
   thus ?thesis
   proof(coinduct rule: bisimWeakCoinduct)
     case(cSim P Q)
-    from `(P, Q) \<in> bangRel bisim` show ?case
+    from \<open>(P, Q) \<in> bangRel bisim\<close> show ?case
     proof(induct)
       case(BRBang P Q)
-      note `P \<sim> Q` bisimE(1)
+      note \<open>P \<sim> Q\<close> bisimE(1)
       thus "!P \<leadsto>[bangRel bisim] !Q" by(rule bangPres)
     next
       case(BRPar R T P Q)
-      from `R \<sim> T` have "R \<leadsto>[bisim] T" by(rule bisimE)
-      moreover note `R \<sim> T` `P \<leadsto>[bangRel bisim] Q` `(P, Q) \<in> bangRel bisim` bangRel.BRPar
+      from \<open>R \<sim> T\<close> have "R \<leadsto>[bisim] T" by(rule bisimE)
+      moreover note \<open>R \<sim> T\<close> \<open>P \<leadsto>[bangRel bisim] Q\<close> \<open>(P, Q) \<in> bangRel bisim\<close> bangRel.BRPar
       ultimately show ?case by(rule Strong_Sim_Pres.parPresAux)
     qed
   next

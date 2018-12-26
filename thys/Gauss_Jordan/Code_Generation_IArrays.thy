@@ -4,17 +4,17 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Exporting code to SML and Haskell*}
+section\<open>Exporting code to SML and Haskell\<close>
 
 theory Code_Generation_IArrays
 imports
   Examples_Gauss_Jordan_IArrays
 begin
 
-subsection{*Exporting code*}
+subsection\<open>Exporting code\<close>
 
-text{*The following two equations are necessary to execute code. If we don't remove them from code unfold, the exported code
-will not work (there exist problems with the number 1 and number 0. Those problems appear when the HMA library is imported).*}
+text\<open>The following two equations are necessary to execute code. If we don't remove them from code unfold, the exported code
+will not work (there exist problems with the number 1 and number 0. Those problems appear when the HMA library is imported).\<close>
 
 lemma [code_unfold del]: "1 \<equiv> real_of_rat 1" by simp
 lemma [code_unfold del]: "0 \<equiv> real_of_rat 0" by simp
@@ -46,17 +46,17 @@ definition "print_inverse_rat A = print_inverse (matrix_rat)"
 definition "print_system A b = print_result_system_iarrays (solve_iarrays A b)"
 definition "print_system_rat = print_result_system_iarrays (solve_iarrays matrix_rat vec_rat)"
 
-subsection{*The Mathematica bug*}
+subsection\<open>The Mathematica bug\<close>
 
-text{*Varona et al \cite{VA} detected that the commercial software @{text "Mathematica\<registered>"}, 
+text\<open>Varona et al \cite{VA} detected that the commercial software \<open>Mathematica\<registered>\<close>, 
 in its versions 8.0, 9.0 and 9.0.1, was computing erroneously determinants of matrices 
 of big integers, even for small dimensions  (in their work they present an example of a 
-matrix of dimension @{text "14 \<times> 14"}). The situation is
+matrix of dimension \<open>14 \<times> 14\<close>). The situation is
 such that even the same determinant, computed twice, produces two different and wrong results.
 
 Here we reproduce that example. The computation of the determinant is correctly carried out by
 the exported code from this formalization, in both SML and Haskell.
-*}
+\<close>
 
 definition "powersMatrix = 
 IArray[

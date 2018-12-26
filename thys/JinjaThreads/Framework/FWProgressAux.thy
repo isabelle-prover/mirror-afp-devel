@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Auxiliary definitions for the progress theorem for the multithreaded semantics *}
+section \<open>Auxiliary definitions for the progress theorem for the multithreaded semantics\<close>
 
 theory FWProgressAux
 imports
@@ -92,7 +92,7 @@ qed
 
 end
 
-text {* Well-formedness conditions for final *}
+text \<open>Well-formedness conditions for final\<close>
 
 context final_thread begin
 
@@ -139,9 +139,9 @@ proof (induct cas)
   case Nil thus ?case by clarsimp
 next
   case (Cons ca cas)
-  note IH = `\<lbrakk> \<And>t'. Join t' \<in> set cas \<Longrightarrow> \<not> not_final_thread s t' \<and> t \<noteq> t' \<rbrakk>
-             \<Longrightarrow> cond_action_oks s t cas`
-  note ass = `\<And>t'. Join t' \<in> set (ca # cas) \<Longrightarrow> \<not> not_final_thread s t' \<and> t \<noteq> t'`
+  note IH = \<open>\<lbrakk> \<And>t'. Join t' \<in> set cas \<Longrightarrow> \<not> not_final_thread s t' \<and> t \<noteq> t' \<rbrakk>
+             \<Longrightarrow> cond_action_oks s t cas\<close>
+  note ass = \<open>\<And>t'. Join t' \<in> set (ca # cas) \<Longrightarrow> \<not> not_final_thread s t' \<and> t \<noteq> t'\<close>
   hence "\<And>t'. Join t' \<in> set cas \<Longrightarrow> \<not> not_final_thread s t' \<and> t \<noteq> t'" by simp
   hence "cond_action_oks s t cas" by(rule IH)
   moreover have "cond_action_ok s t ca"
@@ -244,10 +244,10 @@ proof(rule invariant3pI)
       from red show ?thesis
       proof(cases)
         case (redT_normal x x' m)
-        note red' = `t' \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m\<rangle>`
-          and tst' = `thr s t' = \<lfloor>(x, no_wait_locks)\<rfloor>`
-          and aok = `actions_ok s t' ta`
-          and s' = `redT_upd s t' ta x' m s'`
+        note red' = \<open>t' \<turnstile> \<langle>x, shr s\<rangle> -ta\<rightarrow> \<langle>x', m\<rangle>\<close>
+          and tst' = \<open>thr s t' = \<lfloor>(x, no_wait_locks)\<rfloor>\<close>
+          and aok = \<open>actions_ok s t' ta\<close>
+          and s' = \<open>redT_upd s t' ta x' m s'\<close>
         from s' have ws': "redT_updWs t' (wset s) \<lbrace>ta\<rbrace>\<^bsub>w\<^esub> (wset s')"
           and m: "m = shr s'" 
           and ts't: "thr s' t' = \<lfloor>(x', redT_updLns (locks s) t' (snd (the (thr s t'))) \<lbrace>ta\<rbrace>\<^bsub>l\<^esub>)\<rfloor>" by auto
@@ -265,12 +265,12 @@ proof(rule invariant3pI)
           with ws' show ?thesis using ws't unfolding True
             by(rule redT_updWs_WokenUp_SuspendD)
         qed
-        with tst' ts't aok `s \<in> I` `s' \<in> I` red red' show ?thesis 
+        with tst' ts't aok \<open>s \<in> I\<close> \<open>s' \<in> I\<close> red red' show ?thesis 
           unfolding True m by blast
       next
         case (redT_acquire x n ln) 
         with ws't True have "wset s t = \<lfloor>w\<rfloor>" by auto
-        from wset_Suspend_okD2[OF wso this] `thr s t' = \<lfloor>(x, ln)\<rfloor>` True
+        from wset_Suspend_okD2[OF wso this] \<open>thr s t' = \<lfloor>(x, ln)\<rfloor>\<close> True
         obtain s0 s1 ttas x0 ta' w' ln' ln''
           where reuse: "s0 \<in> I" "s1 \<in> I" "s0 -t\<triangleright>ta'\<rightarrow> s1" "thr s0 t = \<lfloor>(x0, no_wait_locks)\<rfloor>"
             "t \<turnstile> \<langle>x0, shr s0\<rangle> -ta'\<rightarrow> \<langle>x, shr s1\<rangle>" "Suspend w' \<in> set \<lbrace>ta'\<rbrace>\<^bsub>w\<^esub>" "actions_ok s0 t ta'" "thr s1 t = \<lfloor>(x, ln')\<rfloor>"

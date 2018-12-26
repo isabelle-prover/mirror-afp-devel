@@ -1,4 +1,4 @@
-section {* Some tactics *}
+section \<open>Some tactics\<close>
 
 (* author: Andrei Popescu *)
 
@@ -13,7 +13,7 @@ ML{* val x = [1] @ [2] *}
 ML {* simp_tac *}  *)
 
 
-ML{*  
+ML\<open>
 val impI = @{thm impI}  
 val allI = @{thm allI} 
 val ballI = @{thm ballI}
@@ -37,9 +37,9 @@ fun mautoTacs ctxt i = mclarTacs ctxt i @ [resolve_tac ctxt [conjI] i, eresolve_
 fun mauto_no_simp_tac ctxt = REPEAT(SOMEGOAL(fn i => FIRST (mautoTacs ctxt i)))
 
 fun clarify_all_tac ctxt = TRYALL (clarify_tac ctxt)
-*}
+\<close>
 
-text{* Above, "m" stands for "mild" -- mainly, disjunctions are left untouched. *}
+text\<open>Above, "m" stands for "mild" -- mainly, disjunctions are left untouched.\<close>
 
 
 

@@ -1,18 +1,18 @@
-section {* Relator Fixing *}
+section \<open>Relator Fixing\<close>
 theory Autoref_Fix_Rel
 imports Autoref_Id_Ops
 begin
 
 ML_val "2 upto 5"
 
-subsubsection {* Priority tags *}
-text {*
+subsubsection \<open>Priority tags\<close>
+text \<open>
   Priority tags are used to influence the ordering of refinement theorems.
   A priority tag defines two numeric priorities, a major and a minor priority.
   The major priority is considered first, the minor priority last, i.e., after
   the homogenity and relator-priority criteria.
   The default value for both priorities is 0.
-*}
+\<close>
 definition PRIO_TAG :: "int \<Rightarrow> int \<Rightarrow> bool" 
   where [simp]: "PRIO_TAG ma mi \<equiv> True"
 lemma PRIO_TAGI: "PRIO_TAG ma mi" by simp
@@ -21,36 +21,36 @@ abbreviation "MAJOR_PRIO_TAG i \<equiv> PRIO_TAG i 0"
 abbreviation "MINOR_PRIO_TAG i \<equiv> PRIO_TAG 0 i"
 abbreviation "DFLT_PRIO_TAG \<equiv> PRIO_TAG 0 0"
 
-text {* Some standard tags *}
+text \<open>Some standard tags\<close>
 abbreviation "PRIO_TAG_OPTIMIZATION \<equiv> MINOR_PRIO_TAG 10"
   \<comment> \<open>Optimized version of an algorithm, with additional side-conditions\<close>
 abbreviation "PRIO_TAG_GEN_ALGO \<equiv> MINOR_PRIO_TAG (- 10)"
   \<comment> \<open>Generic algorithm, considered to be less efficient than default algorithm\<close>
 
 
-subsection {* Solving Relator Constraints *}
-text {*
+subsection \<open>Solving Relator Constraints\<close>
+text \<open>
   In this phase, we try to instantiate the annotated relators, using
   the available refinement rules.
-*}
+\<close>
 
 definition CONSTRAINT :: "'a \<Rightarrow> ('c\<times>'a) set \<Rightarrow> bool" 
   where [simp]: "CONSTRAINT f R \<equiv> True"
 
 lemma CONSTRAINTI: "CONSTRAINT f R" by auto
 
-ML {*
+ML \<open>
   structure Autoref_Rules = Named_Thms ( 
     val name = @{binding autoref_rules_raw}
     val description = "Refinement Framework: " ^
         "Automatic refinement rules" 
   );
-*}
+\<close>
 setup Autoref_Rules.setup
 
 
-text {* Generic algorithm tags have to be defined here, as we need them for
-  relator fixing ! *}
+text \<open>Generic algorithm tags have to be defined here, as we need them for
+  relator fixing !\<close>
 
 definition PREFER_tag :: "bool \<Rightarrow> bool" 
   where [simp, autoref_tag_defs]: "PREFER_tag x \<equiv> x"
@@ -64,7 +64,7 @@ lemmas SIDEI = PREFER_tagI DEFER_tagI
 definition [simp, autoref_tag_defs]: "GEN_OP_tag P == P"
 lemma GEN_OP_tagI: "P ==> GEN_OP_tag P" by simp
 abbreviation "SIDE_GEN_OP P == PREFER_tag (GEN_OP_tag P)"
-text {* Shortcut for assuming an operation in a generic algorithm lemma *}
+text \<open>Shortcut for assuming an operation in a generic algorithm lemma\<close>
 abbreviation "GEN_OP c a R \<equiv> SIDE_GEN_OP ((c,OP a ::: R) \<in> R)"
 
 
@@ -84,7 +84,7 @@ lemma TYRELI: "TYREL (R::(_\<times>'a) set)" by simp
 lemma ty_REL: "TYREL (R::(_\<times>'a) set)" by simp
 
 
-ML {*
+ML \<open>
   
   signature AUTOREF_FIX_REL = sig
     
@@ -977,7 +977,7 @@ ML {*
     val setup = hom_rules.setup #> tyrel_rules.setup
   end
 
-*}
+\<close>
 
 setup Autoref_Fix_Rel.setup
 

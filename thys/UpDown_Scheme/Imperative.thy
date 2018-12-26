@@ -116,7 +116,7 @@ proof (induct l arbitrary: p v)
   case 0 then show ?case by sep_auto
 next
   case (Suc l)
-  from Suc.prems `d < dm`
+  from Suc.prems \<open>d < dm\<close>
   have [simp]: "level (child p left d) + l = lm" "level (child p right d) + l = lm" "p \<in> sparsegrid dm lm"
     by (auto simp: sparsegrid_length)
 
@@ -148,7 +148,7 @@ proof (induct l arbitrary: p v fl fr)
   case 0 then show ?case by sep_auto
 next
   case (Suc l)
-  from Suc.prems `d < dm`
+  from Suc.prems \<open>d < dm\<close>
   have [simp]: "level (child p left d) + l = lm" "level (child p right d) + l = lm" "p \<in> sparsegrid dm lm"
     by (auto simp: sparsegrid_length)
 

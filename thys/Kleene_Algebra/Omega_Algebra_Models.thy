@@ -4,22 +4,22 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Models of Omega Algebras *}
+section \<open>Models of Omega Algebras\<close>
 
 theory Omega_Algebra_Models
 imports Omega_Algebra Kleene_Algebra_Models
 begin
 
-text {* The trace, path and language model are not really interesting
-in this setting. *}
+text \<open>The trace, path and language model are not really interesting
+in this setting.\<close>
 
-subsection {* Relation Omega Algebras *}
+subsection \<open>Relation Omega Algebras\<close>
 
-text {* In the relational model, the omega of a relation relates all
+text \<open>In the relational model, the omega of a relation relates all
 those elements in the domain of the relation, from which an infinite
 chain starts, with all other elements; all other elements are not
 related to anything~\cite{hofnerstruth10nontermination}. Thus, the
-omega of a relation is most naturally defined coinductively. *}
+omega of a relation is most naturally defined coinductively.\<close>
 
 coinductive_set omega :: "('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) set" for R where
   "\<lbrakk> (x, y) \<in> R; (y, z) \<in> omega R \<rbrakk> \<Longrightarrow> (x, z) \<in> omega R"
@@ -28,9 +28,9 @@ coinductive_set omega :: "('a \<times> 'a) set \<Rightarrow> ('a \<times> 'a) se
   "x \<in> R O omega R \<Longrightarrow> x \<in> omega R"
 fails due to missing monotonicity lemmas. *)
 
-text {* Isabelle automatically derives a case rule and a coinduction
+text \<open>Isabelle automatically derives a case rule and a coinduction
 theorem for @{const omega}. We prove slightly more elegant
-variants. *}
+variants.\<close>
 
 lemma omega_cases: "(x, z) \<in> omega R \<Longrightarrow>
   (\<And>y. (x, y) \<in> R \<Longrightarrow> (y, z) \<in> omega R \<Longrightarrow> P) \<Longrightarrow> P"

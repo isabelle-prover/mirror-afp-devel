@@ -2,7 +2,7 @@ theory "Nominal-Utils"
 imports Nominal2.Nominal2 "HOL-Library.AList"
 begin
 
-subsubsection {* Lemmas helping with equivariance proofs *}
+subsubsection \<open>Lemmas helping with equivariance proofs\<close>
 
 lemma perm_rel_lemma:
   assumes "\<And> \<pi> x y. r (\<pi> \<bullet> x) (\<pi> \<bullet> y) \<Longrightarrow> r x y"
@@ -43,7 +43,7 @@ proof (induction x)
   show ?case by (auto simp add: permute_pure)
 qed simp
 
-subsubsection {* Freshness via equivariance *}
+subsubsection \<open>Freshness via equivariance\<close>
 
 lemma eqvt_fresh_cong1: "(\<And>p x. p \<bullet> (f x) = f (p \<bullet> x)) \<Longrightarrow> a \<sharp> x \<Longrightarrow> a \<sharp> f x "
   apply (rule fresh_fun_eqvt_app[of f])
@@ -110,7 +110,7 @@ lemma eqvt_fresh_star_cong3:
   shows "a \<sharp>* f x y z"
   by (metis fresh_star_def eqvt_fresh_cong3 assms)
 
-subsubsection {* Additional simplification rules *}
+subsubsection \<open>Additional simplification rules\<close>
 
 lemma not_self_fresh[simp]: "atom x \<sharp> x \<longleftrightarrow> False"
   by (metis fresh_at_base(2))
@@ -118,7 +118,7 @@ lemma not_self_fresh[simp]: "atom x \<sharp> x \<longleftrightarrow> False"
 lemma fresh_star_singleton: "{ x } \<sharp>* e \<longleftrightarrow> x \<sharp> e"
   by (simp add: fresh_star_def)
 
-subsubsection {* Additional equivariance lemmas *}
+subsubsection \<open>Additional equivariance lemmas\<close>
 
 lemma eqvt_cases:
   fixes f x \<pi>
@@ -239,7 +239,7 @@ lemma Projr_permute:
 using a by auto
 
 
-subsubsection {* Freshness lemmas *}
+subsubsection \<open>Freshness lemmas\<close>
 
 lemma fresh_list_elem:
   assumes "a \<sharp> \<Gamma>"
@@ -267,7 +267,7 @@ lemma fresh_star_at_base:
   by (metis fresh_at_base(2) fresh_star_def)
 
 
-subsubsection {* Freshness and support for subsets of variables *}
+subsubsection \<open>Freshness and support for subsets of variables\<close>
 
 lemma supp_mono: "finite (B::'a::fs set) \<Longrightarrow> A \<subseteq> B \<Longrightarrow> supp A \<subseteq> supp B"
   by (metis infinite_super subset_Un_eq supp_of_finite_union)
@@ -284,7 +284,7 @@ lemma fresh_star_set_subset:
   "x \<sharp>* (B :: 'a::at_base list) \<Longrightarrow> set A \<subseteq> set B \<Longrightarrow> x \<sharp>* A"
   by (metis fresh_star_set fresh_star_subset[OF finite_set])
 
-subsubsection {* The set of free variables of an expression *}
+subsubsection \<open>The set of free variables of an expression\<close>
 
 definition fv :: "'a::pt \<Rightarrow> 'b::at_base set"
   where "fv e = {v. atom v \<in> supp e}"
@@ -354,7 +354,7 @@ proof-
 qed
 
 
-subsubsection {* Other useful lemmas *}
+subsubsection \<open>Other useful lemmas\<close>
 
 lemma pure_permute_id: "permute p = (\<lambda> x. (x::'a::pure))"
   by rule (simp add: permute_pure)

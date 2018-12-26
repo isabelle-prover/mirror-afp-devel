@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* \textsc{AutoFocus} message stream processing and temporal logic on intervals *}
+section \<open>\textsc{AutoFocus} message stream processing and temporal logic on intervals\<close>
 
 theory IL_AF_Stream_Exec
 imports Main IL_AF_Stream AF_Stream_Exec
 begin
 
-subsection {* Correlation between Pre/Post-Conditions for @{text f_Exec_Comp_Stream} and @{text f_Exec_Comp_Stream_Init} *}
+subsection \<open>Correlation between Pre/Post-Conditions for \<open>f_Exec_Comp_Stream\<close> and \<open>f_Exec_Comp_Stream_Init\<close>\<close>
 
 lemma i_Exec_Stream_Pre_Post1_iAll: "
   \<lbrakk> result = i_Exec_Comp_Stream trans_fun input c;
@@ -17,7 +17,7 @@ lemma i_Exec_Stream_Pre_Post1_iAll: "
   \<box> t I. (P1 (input t) \<and> P2 (result\<^bsup>\<leftarrow> c\<^esup> t) \<longrightarrow> Q (result t))"
 by (simp add: i_Exec_Stream_Pre_Post1)
 
-text {* Direct relation between input and result after transition *}
+text \<open>Direct relation between input and result after transition\<close>
 lemma i_Exec_Stream_Pre_Post2_iAll: "
   \<lbrakk> result = i_Exec_Comp_Stream trans_fun input c;
     \<forall>x_n c_n. P c_n \<longrightarrow> Q x_n (trans_fun x_n c_n) \<rbrakk> \<Longrightarrow>
@@ -38,7 +38,7 @@ lemma i_Exec_Stream_Init_Pre_Post1_iAll_iNext: "
   \<box> t I. (P1 (input t) \<and> P2 (result t) \<longrightarrow> (\<circle> t1 t I'. Q (result t1)))"
 by (rule iallI, simp add: iNext_def i_Exec_Stream_Init_Pre_Post1)
 
-text {* Direct relation between input and state before transition *}
+text \<open>Direct relation between input and state before transition\<close>
 lemma i_Exec_Stream_Init_Pre_Post2_iAll_iNext: "
   \<lbrakk> result = i_Exec_Comp_Stream_Init trans_fun input c;
     \<forall>x_n c_n. P x_n c_n \<longrightarrow> Q (trans_fun x_n c_n);
@@ -46,7 +46,7 @@ lemma i_Exec_Stream_Init_Pre_Post2_iAll_iNext: "
   \<box> t I. (P (input t) (result t) \<longrightarrow> (\<circle> t1 t I'. Q (result t1)))"
 by (rule iallI, simp add: iNext_def i_Exec_Stream_Init_Pre_Post2)
 
-text {* Relation between input and output *}
+text \<open>Relation between input and output\<close>
 lemma i_Exec_Stream_Init_Pre_Post3_iAll_iNext: "
   \<lbrakk> result = i_Exec_Comp_Stream_Init trans_fun input c;
     \<forall>x_n c_n. P c_n \<longrightarrow> Q x_n (trans_fun x_n c_n);
@@ -58,9 +58,9 @@ apply (blast dest: i_Exec_Stream_Pre_Post2_iAll[OF refl])
 done
 
 
-subsection {* @{text "i_Exec_Comp_Stream_Acc_Output"} and temporal operators with bounded intervals. *}
+subsection \<open>\<open>i_Exec_Comp_Stream_Acc_Output\<close> and temporal operators with bounded intervals.\<close>
 
-text {* Temporal relation between uncompressed and compressed output of accelerated components. *}
+text \<open>Temporal relation between uncompressed and compressed output of accelerated components.\<close>
 
 lemma i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_iAll_conv: "
   0 < k \<Longrightarrow>
@@ -140,7 +140,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_iAll_iSince_conv2: "
 by (simp add: i_Exec_Comp_Stream_Acc_Output__eq_iAll_iSince_conv iT_add)
 
 
-subsection {* @{text "i_Exec_Comp_Stream_Acc_Output"} and temporal operators with unbounded intervals and start/finish events. *}
+subsection \<open>\<open>i_Exec_Comp_Stream_Acc_Output\<close> and temporal operators with unbounded intervals and start/finish events.\<close>
 
 lemma i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_iAll_start_event_conv: "
   \<lbrakk> 0 < k; \<And> t. event t = (t mod k = 0); t0 = t * k;
@@ -255,7 +255,7 @@ apply (simp add: mod_eq_divisor_minus_Suc_0_conv add_Suc[symmetric] del: add_Suc
 done
 
 
-subsection {* @{text "i_Exec_Comp_Stream_Acc_Output"} and temporal operators with idle states. *}
+subsection \<open>\<open>i_Exec_Comp_Stream_Acc_Output\<close> and temporal operators with idle states.\<close>
 
 lemma i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_State_Idle_conv: "
   \<lbrakk> 0 < k;
@@ -466,7 +466,7 @@ apply (subgoal_tac "t1' = t1")
   apply (fastforce dest: linorder_neq_iff[THEN iffD1])+
 done
 
-text {* Here the property to be checked uses only unbounded intervals suitable for LTL. *}
+text \<open>Here the property to be checked uses only unbounded intervals suitable for LTL.\<close>
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_with_State_Idle_conv: "
   \<lbrakk> 0 < k;
     State_Idle localState output_fun trans_fun (
@@ -658,7 +658,7 @@ apply (elim iexE conjE, rename_tac t1)
 apply (rule i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_imp2, assumption+)
 done
 
-text {* Here the property to be checked uses only unbounded intervals suitable for LTL. *}
+text \<open>Here the property to be checked uses only unbounded intervals suitable for LTL.\<close>
 lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_before_State_Idle_imp: "
   \<lbrakk> Suc 0 < k;
     State_Idle localState output_fun trans_fun (
@@ -927,7 +927,7 @@ apply (simp add: i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv)
 done
 
 
-text {* Sufficient conditions for output messages. *}
+text \<open>Sufficient conditions for output messages.\<close>
 
 corollary i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_iEx_imp1: "
   \<lbrakk> Suc 0 < k;
@@ -983,7 +983,7 @@ lemma i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_iUntil_imp2: "
 by (blast intro: i_Exec_Comp_Stream_Acc_Output__eq_Msg_State_Idle_conv'[THEN iffD2])
 
 
-text {* List of selected lemmas about output of accelerated components. *}
+text \<open>List of selected lemmas about output of accelerated components.\<close>
 
 thm i_Exec_Comp_Stream_Acc_Output__eq_NoMsg_iAll_conv
 thm i_Exec_Comp_Stream_Acc_Output__eq_Msg_iEx_iAll_cut_greater_conv

@@ -3,18 +3,18 @@
   Author:     Diego Marmsoler
 *)
 section "A Theory of Blackboard Architectures"
-text{*
+text\<open>
   In the following, we formalize the specification of the blackboard pattern as described in~\cite{Marmsoler2018c}.
-*}
+\<close>
 
 theory Blackboard
 imports Publisher_Subscriber
 begin
 
 subsection "Problems and Solutions"
-text {*
+text \<open>
   Blackboards work with problems and solutions for them.
-*}
+\<close>
 typedecl PROB
 consts sb :: "(PROB \<times> PROB) set"
 axiomatization where sbWF: "wf sb"
@@ -22,9 +22,9 @@ typedecl SOL
 consts solve:: "PROB \<Rightarrow> SOL"
 
 subsection "Blackboard Architectures"
-text {*
+text \<open>
   In the following, we describe the locale for the blackboard pattern.
-*}
+\<close>
 locale blackboard = publisher_subscriber bbactive bbcmp ksactive kscmp bbrp bbcs kscs ksrp
   for bbactive :: "'bid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
     and bbcmp :: "'bid \<Rightarrow> cnf \<Rightarrow> 'BB" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
@@ -83,30 +83,30 @@ begin
   notation pb.nxtAct ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
 
   subsubsection "Calculus Interpretation"
-  text {*
+  text \<open>
   \noindent
   @{thm[source] pb.baIA}: @{thm pb.baIA [no_vars]}
-  *}
-  text {*
+\<close>
+  text \<open>
   \noindent
   @{thm[source] sb.baIA}: @{thm sb.baIA [no_vars]}
-  *}
+\<close>
 
   subsubsection "Results from Singleton"
   abbreviation "the_bb \<equiv> the_pb"
-  text {*
+  text \<open>
   \noindent
   @{thm[source] pb.ts_prop(1)}: @{thm pb.ts_prop(1) [no_vars]}
-  *}
-  text {*
+\<close>
+  text \<open>
   \noindent
   @{thm[source] pb.ts_prop(2)}: @{thm pb.ts_prop(2) [no_vars]}
-  *}
+\<close>
   subsubsection "Results from Publisher Subscriber"
-  text {*
+  text \<open>
 	\noindent
 	@{thm[source] msgDelivery}: @{thm msgDelivery [no_vars]}
-	*}
+\<close>
   lemma conn2_bb:
     fixes k and kid::'kid
     assumes "\<parallel>kid\<parallel>\<^bsub>k\<^esub>"
@@ -119,9 +119,9 @@ begin
   qed
 
   subsubsection "Knowledge Sources"
-  text {*
+  text \<open>
     In the following we introduce an abbreviation for knowledge sources which are able to solve a specific problem.
-  *}
+\<close>
   definition sKs:: "PROB \<Rightarrow> 'kid" where
     "sKs p \<equiv> (SOME kid. p = prob kid)"
 
@@ -130,10 +130,10 @@ begin
   using sKs_def someI_ex[of "\<lambda>kid. p = prob kid"] ks1 by auto
 
   subsubsection "Architectural Guarantees"
-  text{*
+  text\<open>
     The following theorem verifies that a problem is eventually solved by the pattern even if no knowledge source exist which can solve the problem on its own.
     It assumes, however, that for every open sub problem, a corresponding knowledge source able to solve the problem will be eventually activated.
-  *}
+\<close>
   lemma pSolved_Ind:
     fixes t and t'::"nat \<Rightarrow>'BB" and p and t''::"nat \<Rightarrow>'KS"
     assumes "t\<in>arch" and
@@ -164,7 +164,7 @@ begin
           hence "pb.eval the_bb t t' n\<^sub>0 [\<lambda>bb. sub P \<in> bbrp bb \<and> p \<in> P]\<^sub>b" using pb.baI by simp
           moreover from pb.globE[OF bhvbb2] have
             "pb.eval the_bb t t' n\<^sub>0 ([\<lambda>bb. sub P \<in> bbrp bb \<and> p \<in> P]\<^sub>b \<longrightarrow>\<^sup>b \<diamond>\<^sub>b [\<lambda>bb. p = bbop bb]\<^sub>b)"
-            using `t\<in>arch` by simp
+            using \<open>t\<in>arch\<close> by simp
           ultimately have "pb.eval the_bb t t' n\<^sub>0 (\<diamond>\<^sub>b [\<lambda>bb. p = bbop bb]\<^sub>b)" using pb.impE by blast
           then obtain n' where "n'\<ge>n\<^sub>0" and "pb.eval the_bb t t' n' [\<lambda>bb. p = bbop bb]\<^sub>b"
             using pb.evtE by blast
@@ -178,10 +178,10 @@ begin
         from pb.globE[OF bhvbb3] have
           "pb.eval the_bb t t' n ([\<lambda> bb. p = bbop(bb)]\<^sub>b \<longrightarrow>\<^sup>b
           ([\<lambda> bb. p=bbop(bb)]\<^sub>b \<WW>\<^sub>b [\<lambda>bb. (p,solve(p)) = bbcs(bb)]\<^sub>b))"
-          using `t\<in>arch` by auto
-        moreover from `p = bbop (\<sigma>\<^bsub>the_bb\<^esub>(t n))` have
+          using \<open>t\<in>arch\<close> by auto
+        moreover from \<open>p = bbop (\<sigma>\<^bsub>the_bb\<^esub>(t n))\<close> have
           "pb.eval the_bb t t' n [\<lambda> bb. p=bbop bb]\<^sub>b"
-          using `t\<in>arch` pb.baI by simp
+          using \<open>t\<in>arch\<close> pb.baI by simp
         ultimately have "pb.eval the_bb t t' n
           ([\<lambda> bb. p=bbop(bb)]\<^sub>b \<WW>\<^sub>b [\<lambda> bb. (p,solve(p)) = bbcs(bb)]\<^sub>b)"
           using pb.impE by blast
@@ -202,12 +202,12 @@ begin
           hence "\<exists>i\<ge>n. (pb.eval the_bb t t' i
             [\<lambda>bb. (p,solve(p)) = bbcs bb]\<^sub>b \<and>
             (\<forall>k\<ge>n. k<i \<longrightarrow> pb.eval the_bb t t' k [\<lambda>bb. p = bbop bb]\<^sub>b))"
-            using `t\<in>arch` pb.untilE by simp
+            using \<open>t\<in>arch\<close> pb.untilE by simp
           then obtain i where "i\<ge>n" and
             "pb.eval the_bb t t' i [\<lambda>bb. (p,solve(p)) = bbcs bb]\<^sub>b" by auto
           hence "(p,solve(p)) = bbcs(\<sigma>\<^bsub>the_bb\<^esub>(t i))"
-            using `t\<in>arch` pb.baEA by auto
-          moreover from `i\<ge>n` `n\<ge>n\<^sub>0` have "i\<ge>n\<^sub>0" by simp
+            using \<open>t\<in>arch\<close> pb.baEA by auto
+          moreover from \<open>i\<ge>n\<close> \<open>n\<ge>n\<^sub>0\<close> have "i\<ge>n\<^sub>0" by simp
           ultimately show ?thesis by auto
         next
           \<comment> \<open>Now we consider the case in which p is always provided at the output\<close>
@@ -215,16 +215,16 @@ begin
           assume "pb.eval the_bb t t' n
             (\<box>\<^sub>b [\<lambda>bb. p=bbop bb]\<^sub>b)"
           hence "\<forall>n'\<ge>n. (pb.eval the_bb t t' n' [\<lambda>bb. p = bbop bb]\<^sub>b)"
-            using `t\<in>arch` pb.globE by auto
+            using \<open>t\<in>arch\<close> pb.globE by auto
           hence outp: "\<forall>n'\<ge>n. (p = bbop (\<sigma>\<^bsub>the_bb\<^esub>(t n')))"
-            using `t\<in>arch` pb.baE by blast
+            using \<open>t\<in>arch\<close> pb.baE by blast
 
           \<comment> \<open>thus, by assumption there exists a KS which is able to solve p and which\<close>
           \<comment> \<open>is active at @{text n'}...\<close>
           with assms(2) have "\<exists>n'\<ge>n. \<parallel>sKs p\<parallel>\<^bsub>t n'\<^esub>" by auto
           then obtain n\<^sub>k where "n\<^sub>k\<ge>n" and "\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>" by auto
           \<comment> \<open>... and get the problem as its input.\<close>
-          moreover from `n\<^sub>k\<ge>n` have "p = bbop (\<sigma>\<^bsub>the_bb\<^esub>(t n\<^sub>k))"
+          moreover from \<open>n\<^sub>k\<ge>n\<close> have "p = bbop (\<sigma>\<^bsub>the_bb\<^esub>(t n\<^sub>k))"
             using outp by simp
           ultimately have "p\<in>ksop(\<sigma>\<^bsub>sKs p\<^esub>(t n\<^sub>k))" using conn2_bb[of "sKs p" "t n\<^sub>k"] by simp
 
@@ -235,7 +235,7 @@ begin
             (\<forall>n''\<ge>n\<^sub>k. n''<n' \<longrightarrow> \<parallel>sKs p\<parallel>\<^bsub>t n''\<^esub>)) \<or>
             (\<forall>n'\<ge>n\<^sub>k. (\<parallel>sKs p\<parallel>\<^bsub>t n'\<^esub> \<and>
             (\<not>(p, solve p) = ksns (\<sigma>\<^bsub>sKs p\<^esub>(t n')))))"
-            using `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` actks[of t "sKs p"] `t\<in>arch` sks_prob by simp
+            using \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> actks[of t "sKs p"] \<open>t\<in>arch\<close> sks_prob by simp
           thus ?thesis
           proof
             \<comment> \<open>if the ks solves it\<close>
@@ -245,26 +245,26 @@ begin
             then obtain n\<^sub>s where "n\<^sub>s\<ge>n\<^sub>k" and "\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>s\<^esub>"
               and "(p, solve p) = ksns (\<sigma>\<^bsub>sKs p\<^esub>t n\<^sub>s)" by auto
             moreover have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub> = n\<^sub>s"
-              by (simp add: `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>s\<^esub>` sb.nxtAct_active)
+              by (simp add: \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>s\<^esub>\<close> sb.nxtAct_active)
             ultimately have
               "(p,solve(p)) \<in> bbns (\<sigma>\<^bsub>the_bb\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>)))"
-              using conn1[OF pb.ts_prop(2)] `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>s\<^esub>` by auto
+              using conn1[OF pb.ts_prop(2)] \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>s\<^esub>\<close> by auto
 
             \<comment> \<open>finally, the blackboard will forward the solution which finishes the proof.\<close>
             with bhvbb1 have "pb.eval the_bb t t' (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>)
               (\<diamond>\<^sub>b [\<lambda>bb. (p, solve p) = bbcs bb]\<^sub>b)"
-              using `t\<in>arch` pb.globE pb.impE[of the_bb t t'] by blast
+              using \<open>t\<in>arch\<close> pb.globE pb.impE[of the_bb t t'] by blast
             then obtain n\<^sub>f where "n\<^sub>f\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>" and
               "pb.eval the_bb t t' n\<^sub>f [\<lambda>bb. (p, solve p) = bbcs bb]\<^sub>b"
-              using `t\<in>arch` pb.evtE[of t t' "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>"] by auto
+              using \<open>t\<in>arch\<close> pb.evtE[of t t' "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>"] by auto
             hence "(p, solve p) = bbcs (\<sigma>\<^bsub>the_bb\<^esub>(t n\<^sub>f))"
-              using `t \<in> arch` pb.baEA by auto
+              using \<open>t \<in> arch\<close> pb.baEA by auto
             moreover have "n\<^sub>f\<ge>n\<^sub>0"
             proof -
-              from `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<ge>n\<^sub>k"
+              from \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<ge>n\<^sub>k"
                 using sb.nxtActI by blast
-              with `\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub> = n\<^sub>s` show ?thesis
-                using `n\<^sub>f\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>` `n\<^sub>s\<ge>n\<^sub>k` `n\<^sub>k\<ge>n` `n\<ge>n\<^sub>0` by arith
+              with \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub> = n\<^sub>s\<close> show ?thesis
+                using \<open>n\<^sub>f\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>\<close> \<open>n\<^sub>s\<ge>n\<^sub>k\<close> \<open>n\<^sub>k\<ge>n\<close> \<open>n\<ge>n\<^sub>0\<close> by arith
             qed
             ultimately show ?thesis by auto
           next
@@ -272,19 +272,19 @@ begin
             assume case_ass: "\<forall>n'\<ge>n\<^sub>k. \<parallel>sKs p\<parallel>\<^bsub>t n'\<^esub> \<and> \<not>(p, solve p) = ksns (\<sigma>\<^bsub>sKs p\<^esub>t n')"
 
             \<comment> \<open>first, the KS will eventually register for the subproblems P it requires to solve p...\<close>
-            from `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` have "\<exists>i\<ge>0. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by auto
+            from \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> have "\<exists>i\<ge>0. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by auto
             moreover have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> n\<^sub>k" by simp
             ultimately have "sb.eval (sKs p) t t'' n\<^sub>k
               ([\<lambda>ks. p\<in>ksop ks]\<^sub>b \<longrightarrow>\<^sup>b (\<diamond>\<^sub>b [\<lambda>ks. \<exists>P. sub P = ksrp ks]\<^sub>b))"
-              using sb.globEA[OF _ bhvks3[of t p "sKs p" t'']] `t\<in>arch` sks_prob by simp
+              using sb.globEA[OF _ bhvks3[of t p "sKs p" t'']] \<open>t\<in>arch\<close> sks_prob by simp
             moreover have "sb.eval (sKs p) t t'' n\<^sub>k [\<lambda>ks. p \<in> ksop ks]\<^sub>b"
             proof -
-              from `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` have "\<exists>n'\<ge>n\<^sub>k. \<parallel>sKs p\<parallel>\<^bsub>t n'\<^esub>" by auto
+              from \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> have "\<exists>n'\<ge>n\<^sub>k. \<parallel>sKs p\<parallel>\<^bsub>t n'\<^esub>" by auto
               moreover have "p \<in> ksop (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>)))"
               proof -
-                from `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>=n\<^sub>k"
+                from \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>=n\<^sub>k"
                   using sb.nxtAct_active by blast
-                with `p\<in>ksop(\<sigma>\<^bsub>sKs p\<^esub>(t n\<^sub>k))` show ?thesis by simp
+                with \<open>p\<in>ksop(\<sigma>\<^bsub>sKs p\<^esub>(t n\<^sub>k))\<close> show ?thesis by simp
               qed
               ultimately show ?thesis using sb.baIA[of n\<^sub>k "sKs p" t] by blast
             qed
@@ -296,19 +296,19 @@ begin
               \<longrightarrow> sb.eval (sKs p) t t'' n'' [\<lambda>ks. \<exists>P. sub P = ksrp ks]\<^sub>b) \<or>
               \<not> (\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>) \<and>
               sb.eval (sKs p) t t'' n\<^sub>r [\<lambda>ks. \<exists>P. sub P = ksrp ks]\<^sub>b"
-              using `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` sb.evtEA[of n\<^sub>k "sKs p" t] by blast
+              using \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> sb.evtEA[of n\<^sub>k "sKs p" t] by blast
             moreover from case_ass have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<ge>n\<^sub>k" using sb.nxtActI by blast
-            with `n\<^sub>r\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>` have "n\<^sub>r\<ge>n\<^sub>k" by arith
+            with \<open>n\<^sub>r\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<close> have "n\<^sub>r\<ge>n\<^sub>k" by arith
             hence "\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" using case_ass by auto
             hence "n\<^sub>r \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" using sb.nxtActLe by simp
             moreover have "n\<^sub>r \<ge> \<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" by simp
             ultimately have
               "sb.eval (sKs p) t t'' n\<^sub>r [\<lambda>ks. \<exists>P. sub P = ksrp ks]\<^sub>b" by blast
-            with `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` obtain P where
+            with \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> obtain P where
               "sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))"
               using sb.baEA by blast
             hence "sb.eval (sKs p) t t'' n\<^sub>r [\<lambda>ks. sub P = ksrp ks]\<^sub>b"
-              using `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` sb.baIA sks_prob by blast
+              using \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> sb.baIA sks_prob by blast
 
             \<comment> \<open>the knowledgesource will eventually get a solution for each required subproblem:\<close>
             moreover have "sb.eval (sKs p) t t'' n\<^sub>r (\<forall>\<^sub>b p'. (sb.pred (p'\<in>P) \<longrightarrow>\<^sup>b
@@ -328,13 +328,13 @@ begin
                   thus "(sb.eval (sKs p) t t'' n\<^sub>r (\<diamond>\<^sub>b [\<lambda>ks. (p',solve p') \<in> kscs ks]\<^sub>b))"
                   proof -
                     have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> n\<^sub>r" by simp
-                    moreover from `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` have "\<exists>i\<ge>0. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by auto
+                    moreover from \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> have "\<exists>i\<ge>0. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by auto
                     ultimately have "sb.eval (sKs p) t t'' n\<^sub>r ([\<lambda>ks. sub P = ksrp ks]\<^sub>b
                       \<longrightarrow>\<^sup>b ((\<not>\<^sup>b (\<exists>\<^sub>b P'. (sb.pred (p'\<in>P') \<and>\<^sup>b [\<lambda>ks. unsub P' = ksrp ks]\<^sub>b))) \<WW>\<^sub>b
                       [\<lambda>ks. (p',solve p') \<in> kscs ks]\<^sub>b))"
                       using sb.globEA[OF _ bhvks4[of t p' P "sKs p" t'']]
-                      `t\<in>arch` `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` `p'\<in>P` by simp
-                    with `sb.eval (sKs p) t t'' n\<^sub>r [\<lambda>ks. sub P = ksrp ks]\<^sub>b` have
+                      \<open>t\<in>arch\<close> \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> \<open>p'\<in>P\<close> by simp
+                    with \<open>sb.eval (sKs p) t t'' n\<^sub>r [\<lambda>ks. sub P = ksrp ks]\<^sub>b\<close> have
                       "sb.eval (sKs p) t t'' n\<^sub>r ((\<not>\<^sup>b (\<exists>\<^sub>b P'. (sb.pred (p'\<in>P') \<and>\<^sup>b
                       [\<lambda>ks. unsub P' = ksrp ks]\<^sub>b))) \<WW>\<^sub>b [\<lambda>ks. (p',solve p') \<in> kscs ks]\<^sub>b)"
                       using sb.impE[of "(sKs p)" t t'' n\<^sub>r "[\<lambda>ks. sub P = ksrp ks]\<^sub>b"] by blast
@@ -347,14 +347,14 @@ begin
                       let ?\<gamma>'="\<not>\<^sup>b (\<exists>\<^sub>b P'. (sb.pred (p'\<in>P') \<and>\<^sup>b ([\<lambda>ks. unsub P' = ksrp ks]\<^sub>b)))"
                       let ?\<gamma>="[\<lambda>ks. (p',solve p') \<in> kscs ks]\<^sub>b"
                       assume "sb.eval (sKs p) t t'' n\<^sub>r (?\<gamma>' \<UU>\<^sub>b ?\<gamma>)"
-                      with `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` obtain n' where "n'\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" and
+                      with \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> obtain n' where "n'\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" and
                         lass: "(\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>) \<and> (\<forall>n''\<ge>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n'\<^esub>
                         \<longrightarrow> sb.eval (sKs p) t t'' n'' ?\<gamma>) \<and>
                         (\<forall>n''\<ge>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>. n'' < \<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>
                         \<longrightarrow> sb.eval (sKs p) t t'' n'' ?\<gamma>') \<or>
                         \<not> (\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>) \<and> sb.eval (sKs p) t t'' n' ?\<gamma> \<and>
                         (\<forall>n''\<ge>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>. n'' < n' \<longrightarrow> sb.eval (sKs p) t t'' n'' ?\<gamma>')"
-                        using sb.untilEA[of n\<^sub>r "sKs p" t t''] `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` by blast
+                        using sb.untilEA[of n\<^sub>r "sKs p" t t''] \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> by blast
                       thus "?thesis"
                       proof cases
                         assume "\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>"
@@ -366,8 +366,8 @@ begin
                         ultimately have "sb.eval (sKs p) t t'' n' ?\<gamma>" by simp
                         moreover have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> n'" using \<open>n\<^sub>r \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<close>
                         \<open>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> n\<^sub>r\<close> \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> n'\<close> by linarith
-                        ultimately show ?thesis using `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` `\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>`
-                          `n'\<ge>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>` `n' \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n'\<^esub>`
+                        ultimately show ?thesis using \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close>
+                          \<open>n'\<ge>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<close> \<open>n' \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n'\<^esub>\<close>
                           sb.evtIA[of n\<^sub>r "sKs p" t n' t'' ?\<gamma>] by blast
                       next
                         assume "\<not> (\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>)"
@@ -376,7 +376,7 @@ begin
                         moreover have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> n'"
                           using \<open>n\<^sub>r \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<close> \<open>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> n\<^sub>r\<close>
                           \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> n'\<close> by linarith
-                        ultimately show ?thesis using `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>)`
+                        ultimately show ?thesis using \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>)\<close>
                             sb.evtIA[of n\<^sub>r "sKs p" t n' t'' ?\<gamma>] by blast
                       qed
                     next
@@ -390,18 +390,18 @@ begin
                         moreover have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)" by simp
                         ultimately have "sb.eval (sKs p) t t'' (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)
                           [\<lambda>ks. sub P = ksrp ks \<and> p' \<in> P \<longrightarrow> (p', p) \<in> sb]\<^sub>b"
-                          using sb.globEA[OF _ bhvks2[of t p "sKs p" t'' P]] `t \<in> arch` sks_prob by blast
-                        moreover from `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have
+                          using sb.globEA[OF _ bhvks2[of t p "sKs p" t'' P]] \<open>t \<in> arch\<close> sks_prob by blast
+                        moreover from \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have
                           "\<parallel>sKs p\<parallel>\<^bsub>t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)\<^esub>" using sb.nxtActI by blast
                         ultimately show ?thesis
                           using sb.baEANow[of "sKs p" t t'' "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>"] by simp
                       qed
-                      with `p' \<in> P` have "(p', p) \<in> sb"
-                        using `sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))`
+                      with \<open>p' \<in> P\<close> have "(p', p) \<in> sb"
+                        using \<open>sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))\<close>
                         sks_prob by simp
-                      moreover from `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have "\<parallel>sKs p\<parallel>\<^bsub>t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)\<^esub>"
+                      moreover from \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have "\<parallel>sKs p\<parallel>\<^bsub>t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)\<^esub>"
                         using sb.nxtActI by blast
-                        with `sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))`
+                        with \<open>sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))\<close>
                           have "sub P \<in> bbrp (\<sigma>\<^bsub>the_bb\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))"
                           using conn1A by auto
                       with \<open> p' \<in> P\<close> have "sub P \<in> bbrp (\<sigma>\<^bsub>the_bb\<^esub>t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)) \<and> p' \<in> P" by auto
@@ -428,34 +428,34 @@ begin
                           \<and>\<^sup>b [\<lambda>ks. unsub P' = ksrp ks]\<^sub>b)))"
                           using sb.globEA[of n\<^sub>r "sKs p" t t''
                           "\<not>\<^sup>b (\<exists>\<^sub>bP'. sb.pred (p' \<in> P') \<and>\<^sup>b [\<lambda>ks. unsub P' = ksrp ks]\<^sub>b)" n]
-                          `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` by auto
+                          \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> by auto
                         ultimately show False using sb.negE by auto
                       qed
-                      moreover from `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have
+                      moreover from \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have
                         "\<parallel>sKs p\<parallel>\<^bsub>t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)\<^esub>" using sb.nxtActI by blast
                       moreover have "sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))"
-                        using `sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))` .
-                      moreover from `m\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>` have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m" by simp
-                      moreover from `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>`
+                        using \<open>sub P = ksrp (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>)))\<close> .
+                      moreover from \<open>m\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<close> have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m" by simp
+                      moreover from \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close>
                         have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<ge>n\<^sub>r" using sb.nxtActI by blast
-                      hence "m\<ge>n\<^sub>k" using `\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m` \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub> \<le> n\<^sub>r\<close>
-                        `\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub> \<ge> n\<^sub>k` by simp
+                      hence "m\<ge>n\<^sub>k" using \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m\<close> \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub> \<le> n\<^sub>r\<close>
+                        \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub> \<ge> n\<^sub>k\<close> by simp
                       with case_ass have "\<parallel>sKs p\<parallel>\<^bsub>t m\<^esub>" by simp
                       ultimately have "(p', solve p') \<in> kscs (\<sigma>\<^bsub>sKs p\<^esub>(t m))"
                         and "\<parallel>sKs p\<parallel>\<^bsub>t m\<^esub>"
-                        using `t \<in> arch` msgDelivery[of t "sKs p" "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" P m p' "solve p'"]
-                        `p' \<in> P` by auto
+                        using \<open>t \<in> arch\<close> msgDelivery[of t "sKs p" "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" P m p' "solve p'"]
+                        \<open>p' \<in> P\<close> by auto
                       hence "sb.eval (sKs p) t t'' m [\<lambda>ks. (p',solve p') \<in> kscs ks]\<^sub>b"
                         using sb.baIANow by simp
                       moreover have "m \<ge> \<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>m\<^esub>" by simp
-                      moreover from `\<parallel>sKs p\<parallel>\<^bsub>t m\<^esub>` have "m \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>m\<^esub>"
+                      moreover from \<open>\<parallel>sKs p\<parallel>\<^bsub>t m\<^esub>\<close> have "m \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>m\<^esub>"
                         using sb.nxtActLe by auto
-                      moreover from `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have
+                      moreover from \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have
                         "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>" by simp
-                      with `\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m` have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m" by arith
+                      with \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m\<close> have "\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<le> m" by arith
                       ultimately show "sb.eval (sKs p) t t'' n\<^sub>r
                         (\<diamond>\<^sub>b [\<lambda>ks. (p',solve p') \<in> kscs ks]\<^sub>b)"
-                        using `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` sb.evtIA by blast
+                        using \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> sb.evtIA by blast
                     qed
                   qed
                 qed
@@ -471,12 +471,12 @@ begin
               ([\<lambda>ks. sub P = ksrp ks]\<^sub>b \<and>\<^sup>b
               (\<forall>\<^sub>b q. (sb.pred (q \<in> P) \<longrightarrow>\<^sup>b \<diamond>\<^sub>b [\<lambda>ks. (q, solve q) \<in> kscs ks]\<^sub>b)))"
               using sb.conjI by simp
-            moreover from `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have "\<exists>i\<ge>0. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by blast
+            moreover from \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have "\<exists>i\<ge>0. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by blast
             hence "sb.eval (sKs p) t t'' n\<^sub>r
               (([\<lambda>ks. sub P = ksrp ks]\<^sub>b \<and>\<^sup>b
               (\<forall>\<^sub>b q. (sb.pred (q \<in> P) \<longrightarrow>\<^sup>b
               \<diamond>\<^sub>b [\<lambda>ks. (q, solve q) \<in> kscs ks]\<^sub>b))) \<longrightarrow>\<^sup>b
-              (\<diamond>\<^sub>b [\<lambda>ks. (p, solve p) = ksns ks]\<^sub>b))" using `t \<in> arch`
+              (\<diamond>\<^sub>b [\<lambda>ks. (p, solve p) = ksns ks]\<^sub>b))" using \<open>t \<in> arch\<close>
               sb.globEA[OF _ bhvks1[of t p "sKs p" t'' P]] sks_prob by simp
             ultimately have "sb.eval (sKs p) t t'' n\<^sub>r
               (\<diamond>\<^sub>b [\<lambda>ks. (p,solve(p))=ksns(ks)]\<^sub>b)"
@@ -489,43 +489,43 @@ begin
               sb.eval (sKs p) t t'' n'' [\<lambda>ks. (p,solve(p))=ksns(ks)]\<^sub>b)) \<or>
               \<not> (\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>) \<and>
               sb.eval (sKs p) t t'' n\<^sub>s [\<lambda>ks. (p,solve(p))=ksns(ks)]\<^sub>b"
-              using sb.evtEA[of n\<^sub>r "sKs p" t] `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` by blast
-            moreover from `\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<ge> n\<^sub>r` `n\<^sub>r\<ge>n\<^sub>k` `n\<^sub>s\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>`
+              using sb.evtEA[of n\<^sub>r "sKs p" t] \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+            moreover from \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub> \<ge> n\<^sub>r\<close> \<open>n\<^sub>r\<ge>n\<^sub>k\<close> \<open>n\<^sub>s\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<close>
               have "n\<^sub>s\<ge>n\<^sub>k" by arith
             with case_ass have "\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>" by auto
             moreover have "n\<^sub>s\<ge>\<langle>sKs p \<Leftarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>" by simp
-            moreover from `\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have "n\<^sub>s \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>"
+            moreover from \<open>\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have "n\<^sub>s \<le> \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>"
               using sb.nxtActLe by simp
             ultimately have "sb.eval (sKs p) t t'' n\<^sub>s [\<lambda>ks. (p,solve(p))=ksns(ks)]\<^sub>b"
-              using sb.evtEA[of n\<^sub>r "sKs p" t] `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` by blast
-            with `\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` have
+              using sb.evtEA[of n\<^sub>r "sKs p" t] \<open>\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+            with \<open>\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close> have
               "(p,solve(p)) = ksns (\<sigma>\<^bsub>sKs p\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>)))"
               using sb.baEA[of n\<^sub>s "sKs p" t t'' "\<lambda>ks. (p, solve p) = ksns ks"] by auto
-            moreover from `\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>`
+            moreover from \<open>\<exists>i\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>\<close>
               have "\<parallel>sKs p\<parallel>\<^bsub>t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>)\<^esub>" using sb.nxtActI by simp
             ultimately have "(p,solve(p)) \<in> bbns (\<sigma>\<^bsub>the_bb\<^esub>(t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>)))"
               using conn1[OF pb.ts_prop(2)[of "t (\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>)"]] by auto
             hence "pb.eval the_bb t t' \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub> [\<lambda>bb. (p,solve(p)) \<in> bbns bb]\<^sub>b"
-              using `t\<in>arch` pb.baI by simp
+              using \<open>t\<in>arch\<close> pb.baI by simp
 
             \<comment> \<open>finally, the blackboard will forward the solution which finishes the proof.\<close>
             with bhvbb1 have "pb.eval the_bb t t' \<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>
               (\<diamond>\<^sub>b [\<lambda>bb. (p, solve p) = bbcs bb]\<^sub>b)"
-              using `t\<in>arch` pb.globE pb.impE[of the_bb t t'] by blast
+              using \<open>t\<in>arch\<close> pb.globE pb.impE[of the_bb t t'] by blast
             then obtain n\<^sub>f where "n\<^sub>f\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>" and
               "pb.eval the_bb t t' n\<^sub>f [\<lambda>bb. (p, solve p) = bbcs bb]\<^sub>b"
-              using `t\<in>arch` pb.evtE[of t t' "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>"] by auto
+              using \<open>t\<in>arch\<close> pb.evtE[of t t' "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>"] by auto
             hence "(p, solve p) = bbcs (\<sigma>\<^bsub>the_bb\<^esub>(t n\<^sub>f))"
-              using `t \<in> arch` pb.baEA by auto
+              using \<open>t \<in> arch\<close> pb.baEA by auto
             moreover have "n\<^sub>f\<ge>n\<^sub>0"
             proof -
-              from `\<exists>n'''\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t n'''\<^esub>` have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>\<ge>n\<^sub>s"
+              from \<open>\<exists>n'''\<ge>n\<^sub>s. \<parallel>sKs p\<parallel>\<^bsub>t n'''\<^esub>\<close> have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>\<ge>n\<^sub>s"
                 using sb.nxtActLe by simp
-              moreover from `n\<^sub>k\<ge>n` and `\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>` have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<ge>n\<^sub>k"
+              moreover from \<open>n\<^sub>k\<ge>n\<close> and \<open>\<parallel>sKs p\<parallel>\<^bsub>t n\<^sub>k\<^esub>\<close> have "\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<ge>n\<^sub>k"
                 using sb.nxtActI by blast
               ultimately show ?thesis
-                using `n\<^sub>f\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>` `n\<^sub>s\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>`
-                `\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<ge>n\<^sub>r` `n\<^sub>r\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>` `n\<^sub>k\<ge>n` `n\<ge>n\<^sub>0` by arith
+                using \<open>n\<^sub>f\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>s\<^esub>\<close> \<open>n\<^sub>s\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<close>
+                \<open>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>r\<^esub>\<ge>n\<^sub>r\<close> \<open>n\<^sub>r\<ge>\<langle>sKs p \<rightarrow> t\<rangle>\<^bsub>n\<^sub>k\<^esub>\<close> \<open>n\<^sub>k\<ge>n\<close> \<open>n\<ge>n\<^sub>0\<close> by arith
             qed
             ultimately show ?thesis by auto
           qed

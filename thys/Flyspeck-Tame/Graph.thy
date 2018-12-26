@@ -1,7 +1,7 @@
 (*  Author:     Gertrud Bauer, Tobias Nipkow
 *)
 
-section {* Graph *}
+section \<open>Graph\<close>
 
 theory Graph
 imports Rotation
@@ -14,7 +14,7 @@ syntax
   "_INTER"      :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> 'b set"  ("(3\<Inter>(\<open>unbreakable\<close>\<^bsub>_\<in>_\<^esub>)/ _)" [0, 0, 10] 10)
 
 
-subsection{* Notation *}
+subsection\<open>Notation\<close>
 
 type_synonym vertex = "nat"
 
@@ -26,11 +26,11 @@ abbreviation vertices_set :: "'a \<Rightarrow> vertex set" ("\<V>") where
   "\<V> f \<equiv> set (vertices f)"
 
 
-subsection {* Faces *}
+subsection \<open>Faces\<close>
 
-text {*
+text \<open>
 We represent faces by (distinct) lists of vertices and a face type.
-*}
+\<close>
 
 datatype facetype = Final | Nonfinal
 
@@ -60,14 +60,14 @@ definition cong_face :: "face \<Rightarrow> face \<Rightarrow> bool"
 
 end
 
-text {* The following operation makes a face final. *}
+text \<open>The following operation makes a face final.\<close>
 
 definition setFinal :: "face \<Rightarrow> face" where
   "setFinal f \<equiv> Face (vertices f) Final"
 
 
-text {* The function @{text nextVertex} (written @{text "f \<bullet> v"}) is based on
-@{text nextElem}, that returns the successor of an element in a list.  *}
+text \<open>The function \<open>nextVertex\<close> (written \<open>f \<bullet> v\<close>) is based on
+\<open>nextElem\<close>, that returns the successor of an element in a list.\<close>
 
 primrec nextElem :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a" where
  "nextElem [] b x = b"
@@ -78,8 +78,8 @@ definition nextVertex :: "face \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)(
  "f \<bullet> \<equiv> let vs = vertices f in nextElem vs (hd vs)"
 
 
-text {* @{text nextVertices} is $n$-fold application of
-@{text nextvertex}. *}
+text \<open>\<open>nextVertices\<close> is $n$-fold application of
+\<open>nextvertex\<close>.\<close>
 
 definition nextVertices :: "face \<Rightarrow> nat \<Rightarrow> vertex \<Rightarrow> vertex" (*<*)("_\<^bsup>_\<^esup> \<bullet> _" [100, 0, 100]) (*>*)where (* *)
   "f\<^bsup>n\<^esup> \<bullet> v \<equiv> (f \<bullet> ^^ n) v"
@@ -119,7 +119,7 @@ abbreviation
   "triangle f == |vertices f| = 3"
 
 
-subsection {* Graphs *}
+subsection \<open>Graphs\<close>
 
 datatype graph = Graph "(face list)" "nat" "face list list" "nat list"
 
@@ -168,9 +168,9 @@ definition graph :: "nat \<Rightarrow> graph" where
      fs = [ Face vs Final, Face (rev vs) Nonfinal]
      in (Graph fs n (replicate n fs) (replicate n 0)))"
 
-subsection{* Operations on graphs *}
+subsection\<open>Operations on graphs\<close>
 
-text {* final graph, final / nonfinal faces *}
+text \<open>final graph, final / nonfinal faces\<close>
 
 definition finals :: "graph \<Rightarrow> face list" where
   "finals g \<equiv> [f \<leftarrow> faces g. final f]"
@@ -203,7 +203,7 @@ lemma finalVertex_final_face[dest]:
 
 
 
-text {* counting faces *}
+text \<open>counting faces\<close>
 
 definition degree :: "graph \<Rightarrow> vertex \<Rightarrow> nat" where
   "degree g v \<equiv> |facesAt g v|"
@@ -234,8 +234,8 @@ definition noExceptionals :: "graph \<Rightarrow> vertex set \<Rightarrow> bool"
   "noExceptionals g V \<equiv> (\<forall>v \<in> V. \<not> exceptionalVertex g v)"
 
 
-text {* An edge $(a,b)$ is contained in face f,
-  $b$ is the successor of $a$ in $f$. *}
+text \<open>An edge $(a,b)$ is contained in face f,
+  $b$ is the successor of $a$ in $f$.\<close>
 (*>*)
 overloading edges_graph \<equiv> "edges :: graph \<Rightarrow> (vertex \<times> vertex) set"
 begin
@@ -246,12 +246,12 @@ definition neighbors :: "graph \<Rightarrow> vertex \<Rightarrow> vertex list" w
  "neighbors g v \<equiv> [f\<bullet>v. f \<leftarrow> facesAt g v]"
 
 
-subsection {* Navigation in graphs *}
+subsection \<open>Navigation in graphs\<close>
 
-text {*
+text \<open>
 The function $s'$ permutating the faces at a vertex,
-is implemeted by the function @{text nextFace}
-*}
+is implemeted by the function \<open>nextFace\<close>
+\<close>
 
 definition nextFace :: "graph \<times> vertex \<Rightarrow> face \<Rightarrow> face" (*<*)("_ \<bullet>") (*>*)where
 (*<*) nextFace_def_aux: "p \<bullet> \<equiv> \<lambda>f. (let (g,v) = p; fs = (facesAt g v) in
@@ -265,7 +265,7 @@ definition directedLength :: "face \<Rightarrow> vertex \<Rightarrow> vertex \<R
   if a = b then 0 else |(between (vertices f) a b)| + 1"
 
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 definition final_face :: "face \<Rightarrow> bool" where
   final_face_code_def: "final_face = final"

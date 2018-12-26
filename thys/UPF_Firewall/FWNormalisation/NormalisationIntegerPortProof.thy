@@ -35,16 +35,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Normalisation Proofs: Integer Port *}
+subsection \<open>Normalisation Proofs: Integer Port\<close>
 theory 
   NormalisationIntegerPortProof
   imports 
     NormalisationGenericProofs
 begin
 
-text{* 
+text\<open>
   Normalisation proofs which are specific to the IntegerPort address representation. 
-*} 
+\<close> 
 
 lemma ConcAssoc: "C((A \<oplus> B) \<oplus> D) = C(A \<oplus> (B \<oplus> D))"
   by (simp add: C.simps)
@@ -967,7 +967,7 @@ next
       case True thus ?thesis using Cons by (simp) (rule impI, simp) 
     next
       case False thus ?thesis 
-        using Cons False `\<not> not_MT C ys`  apply (simp)
+        using Cons False \<open>\<not> not_MT C ys\<close>  apply (simp)
         by (metis SR3nMT l2p_aux list2FWpolicy.simps(2) nMT_domMT nlpaux)
     qed
   qed
@@ -1693,7 +1693,7 @@ lemmas domain_reasoning = domDA ConcAssoc2 domSubset1 domSubset2
                           domSubsetDistr2 domSubsetDistrA domSubsetDistrD coerc_assoc ConcAssoc 
                           ConcAssoc3
 
-text {* The following lemmas help with the normalisation *}
+text \<open>The following lemmas help with the normalisation\<close>
 lemma list2policyR_Start[rule_format]: "p \<in> dom (C a) \<longrightarrow>
                  C (list2policyR (a # list)) p = C a p"
   by (induct "a # list" rule:list2policyR.induct) (auto simp: C.simps dom_def map_add_def) 
@@ -1798,9 +1798,9 @@ lemma p_eq2_manual[rule_format]:
 lemma norm_notMT_manual: "DenyAll \<in> set (policy2list p) \<Longrightarrow> normalize_manual_order p l \<noteq> []"
   by (simp add: RS2_NMT idNMT normalize_manual_order_def rADnMT sepnMT sortnMT wp1ID)
 
-text{* 
+text\<open>
   As an example, how this theorems can be used for a concrete normalisation instantiation. 
-*}
+\<close>
 
 lemma normalizeNAT: 
   "DenyAll \<in> set (policy2list Filter) \<Longrightarrow> allNetsDistinct (policy2list Filter) \<Longrightarrow>
@@ -1813,11 +1813,11 @@ lemma normalizeNAT:
 lemma domSimpl[simp]: "dom (C (A \<oplus> DenyAll)) = dom (C (DenyAll))"
   by (simp add: PLemmas)
 
-text {* 
+text \<open>
   The followin theorems can be applied when prepending the usual normalisation with an 
   additional step and using another semantical interpretation function. This is a general recipe 
   which can be applied whenever one nees to combine several normalisation strategies. 
-*} 
+\<close> 
 
 lemma CRotate_eq_rotateC: "CRotate p = C (rotatePolicy p)" 
   by (induct p rule: rotatePolicy.induct) (simp_all add: C.simps map_add_def)

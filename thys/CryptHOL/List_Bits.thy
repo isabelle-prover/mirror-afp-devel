@@ -1,7 +1,7 @@
 (* Title: List_Bits.thy
   Author: Andreas Lochbihler, ETH Zurich *)
 
-subsection {* Exclusive or on lists *}
+subsection \<open>Exclusive or on lists\<close>
 
 theory List_Bits imports Misc_CryptHOL begin
 

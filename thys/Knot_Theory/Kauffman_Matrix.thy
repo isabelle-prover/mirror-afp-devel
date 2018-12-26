@@ -1,4 +1,4 @@
-section{*Kauffman Matrix and Kauffman Bracket- Definitions and Properties*}
+section\<open>Kauffman Matrix and Kauffman Bracket- Definitions and Properties\<close>
 theory Kauffman_Matrix
 imports
   Matrix_Tensor.Matrix_Tensor
@@ -8,9 +8,9 @@ imports
 begin
 
 
-section{*Rational Functions*}
+section\<open>Rational Functions\<close>
 
-text{* intpoly is the type of integer polynomials*}
+text\<open>intpoly is the type of integer polynomials\<close>
 type_synonym intpoly = "int poly"
 
 (*The following lemma tells us that (pCons 0 1) is an identity function 
@@ -27,12 +27,12 @@ definition var_def: "x = (pCons 0 1)"
 lemma non_zero:"x \<noteq> 0"
  using var_def pCons_eq_0_iff zero_neq_one by (metis)
 
-text{*rat$\_$poly is the fraction field of integer polynomials. In other
-words, it is the type of rational functions *}
+text\<open>rat$\_$poly is the fraction field of integer polynomials. In other
+words, it is the type of rational functions\<close>
 
 type_synonym rat_poly = "intpoly fract"
 
-text{*A is defined to be x/1, while B is defined to be 1/x*}
+text\<open>A is defined to be x/1, while B is defined to be 1/x\<close>
 
 definition var_def1:"A =  Fract x 1"
       
@@ -94,7 +94,7 @@ lemma mat1_equiv:"mat1 (1::nat) = [[(1::rat_poly)]]"
 
 
 
-text{*rat$\_$poly is an interpretation of the locale plus\_mult *}
+text\<open>rat$\_$poly is an interpretation of the locale plus\_mult\<close>
 
 interpretation  rat_poly:plus_mult "1" "rat_poly_times"  0 "rat_poly_plus" 
                                   "rat_poly_inv"
@@ -145,8 +145,8 @@ lemma "[[1]] \<otimes>  M = M"
 lemma " M \<otimes> [[1]] = M"
  by (metis rat_poly.Tensor_right_id)
 
-section{*Kauffman matrices*}
-text{*We assign every brick to a matrix of rational polynmials*}
+section\<open>Kauffman matrices\<close>
+text\<open>We assign every brick to a matrix of rational polynmials\<close>
 
 primrec brickmat::"brick \<Rightarrow> rat_poly mat"
 where
@@ -283,7 +283,7 @@ lemma "rat_poly.row_length (brickmat cup) = 1"
 lemma two:"(Suc (Suc 0)) = 2"
  by eval
 
-text{*we assign every block to a matrix of rational function as follows*}
+text\<open>we assign every block to a matrix of rational function as follows\<close>
 
 primrec blockmat::"block \<Rightarrow> rat_poly mat"
 where
@@ -710,18 +710,18 @@ lemma matrix_blockmat:
 qed
 
 
-text{*The function kauff$\_$mat below associates every wall to a matrix. 
+text\<open>The function kauff$\_$mat below associates every wall to a matrix. 
  We call this the kauffman matrix. When the wall represents a well defined
  tangle diagram, the Kauffman matrix is a 1 $\times$  1 matrix whose entry is the
- Kauffman bracket.*}       
+ Kauffman bracket.\<close>       
 
 primrec kauff_mat::"wall \<Rightarrow> rat_poly mat"
 where 
 "kauff_mat (basic w) = (blockmat w)"
 |"kauff_mat (w*ws) = rat_poly.matrix_mult (blockmat w) (kauff_mat ws)"
 
-text{*The following theorem tells us  that if a wall
-represents a tangle diagram, then its Kauffman matrix is a `valid' matrix.*}
+text\<open>The following theorem tells us  that if a wall
+represents a tangle diagram, then its Kauffman matrix is a `valid' matrix.\<close>
 theorem matrix_kauff_mat:
 "((is_tangle_diagram ws) 
  \<Longrightarrow> (rat_poly.row_length (kauff_mat ws)) = 2^(nat (domain_wall ws))
@@ -802,8 +802,8 @@ proof(induct ws)
                                =  2^(nat (codomain_wall (w*ws)))"
        by auto
   with res1 res2 show ?case
-    using  `length (kauff_mat ws) = 2 ^ nat (codomain_wall (w * ws))` 
-           `rat_poly.row_length (blockmat w) = 2 ^ nat (domain_wall (w * ws))` 
+    using  \<open>length (kauff_mat ws) = 2 ^ nat (codomain_wall (w * ws))\<close> 
+           \<open>rat_poly.row_length (blockmat w) = 2 ^ nat (domain_wall (w * ws))\<close> 
        by (metis)
 qed
 
@@ -861,10 +861,10 @@ proof-
  ultimately show ?thesis by auto
 qed
 
-text{*It follows from this result that the Kauffman Matrix of a wall representing a link
+text\<open>It follows from this result that the Kauffman Matrix of a wall representing a link
 diagram, is a 1 $\times$ 1 matrix. 
  Thus it establishes a correspondence between links and
-rational functions.*}
+rational functions.\<close>
 
 theorem link_diagram_matrix:
  assumes "is_link_diagram ws"
@@ -1062,8 +1062,8 @@ lemma blockmat_non_empty:"\<forall>bs.(blockmat bs \<noteq> [])"
  apply (metis length_0_conv rat_poly.vec_mat_Tensor_length)
  done
 
-text{* The kauffman matrix of a wall representing a tangle diagram is 
-         non empty*}
+text\<open>The kauffman matrix of a wall representing a tangle diagram is 
+         non empty\<close>
 lemma  kauff_mat_non_empty:
  fixes ws
  assumes "is_tangle_diagram ws"
@@ -1142,8 +1142,8 @@ lemma is_tangle_diagram_matrix_match:
  qed
 
 
-text{*The following function constructs a $2^n \times 2^n$ identity matrix
- for a given $n$ *}
+text\<open>The following function constructs a $2^n \times 2^n$ identity matrix
+ for a given $n$\<close>
 
 primrec make_vert_equiv::"nat \<Rightarrow> rat_poly mat"
 where
@@ -1641,7 +1641,7 @@ proof(induction n)
          ((rat_poly.Tensor (mat1 2)  (mat1 (2^k))!j!i)  = (mat1 (2^(k+1)))!j!i))"
                   by auto
     moreover have "mat (2^(k+1)) (2^(k+1)) (rat_poly.Tensor (mat1 2)  (mat1 (2^k)))"
-               using  `make_vert_equiv (k + 1) = mat1 2 \<otimes> mat1 (2 ^ k)`      
+               using  \<open>make_vert_equiv (k + 1) = mat1 2 \<otimes> mat1 (2 ^ k)\<close>      
                by (metis prop_make_vert_equiv(1) prop_make_vert_equiv(2) 
                   prop_make_vert_equiv(3))
     ultimately have "(rat_poly.Tensor (mat1 2)  (mat1 (2^k))) = (mat1 (2^(k+1)))"
@@ -1649,7 +1649,7 @@ proof(induction n)
     then show ?thesis by auto
    qed
    then show ?case using make_vert_equiv.simps 
-   using  `make_vert_equiv (k + 1) = mat1 2 \<otimes> mat1 (2 ^ k)`
+   using  \<open>make_vert_equiv (k + 1) = mat1 2 \<otimes> mat1 (2 ^ k)\<close>
    by (metis Suc_eq_plus1)
 qed
 
@@ -1684,9 +1684,9 @@ proof-
 qed 
 
 
-text{* The following list of theorems deal with distributivity properties
+text\<open>The following list of theorems deal with distributivity properties
 of tensor product of matrices (with entries as rational functions) 
-      and composition*}
+      and composition\<close>
 definition weak_matrix_match::
               "rat_poly mat \<Rightarrow> rat_poly mat \<Rightarrow> rat_poly mat \<Rightarrow> bool"
 where
@@ -1879,8 +1879,8 @@ proof-
 qed 
 
 
-text{* The following theorem tells us that the the map kauff$\_$mat when 
- restricted to walls representing tangles preserves the tensor product *}
+text\<open>The following theorem tells us that the the map kauff$\_$mat when 
+ restricted to walls representing tangles preserves the tensor product\<close>
 
 theorem Tensor_Invariance:
  "(is_tangle_diagram ws1) \<and> (is_tangle_diagram ws2)

@@ -5,13 +5,13 @@ begin
 
 (*EXPERIMENTAL!!*)
 
-subsection {* SecurityInvariant Subnets2 *}
+subsection \<open>SecurityInvariant Subnets2\<close>
 
-text{*Warning, This is just a test. Please look at @{file "SINVAR_Subnets.thy"}.
+text\<open>Warning, This is just a test. Please look at @{file "SINVAR_Subnets.thy"}.
 This security invariant has the following changes, compared to @{file "SINVAR_Subnets.thy"}:
 A new BorderRouter' is introduced which can send to the members of its subnet.
 A new InboundRouter is accessible by anyone. It can access all other routers and the outside.
-*}
+\<close>
 
 
 datatype subnets = Subnet nat | BorderRouter nat | BorderRouter' nat | InboundRouter | Unassigned
@@ -41,14 +41,14 @@ fun sinvar :: "'v graph \<Rightarrow> ('v \<Rightarrow> subnets) \<Rightarrow> b
 definition receiver_violation :: "bool" where "receiver_violation = False"
 
 
-text{*Only members of the same subnet or their @{const BorderRouter'} can access them.*}
+text\<open>Only members of the same subnet or their @{const BorderRouter'} can access them.\<close>
 lemma "allowed_subnet_flow a (Subnet s1) \<Longrightarrow> a = (BorderRouter' s1) \<or> a = (Subnet s1)"
   apply(cases a)
       apply(simp_all)
   done
 
 
-subsubsection {*Preliminaries*}
+subsubsection \<open>Preliminaries\<close>
   lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
     apply(simp only: SecurityInvariant_withOffendingFlows.sinvar_mono_def)
     apply(clarify)
@@ -69,7 +69,7 @@ subsubsection {*Preliminaries*}
 
 
 
-subsubsection{*ENF*}
+subsubsection\<open>ENF\<close>
   lemma All_to_Unassigned: "\<forall> e1. allowed_subnet_flow e1 Unassigned"
     by (rule allI, case_tac e1, simp_all)
   lemma Unassigned_default_candidate: "\<forall> nP e1 e2. \<not> allowed_subnet_flow (nP e1) (nP e2) \<longrightarrow> \<not> allowed_subnet_flow Unassigned (nP e2)"

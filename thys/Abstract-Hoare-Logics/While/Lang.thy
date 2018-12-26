@@ -7,24 +7,24 @@ section "Hoare Logics for While"
 
 theory Lang imports Main begin
 
-subsection{* The language \label{sec:lang} *}
+subsection\<open>The language \label{sec:lang}\<close>
 
-text{* We start by declaring a type of states: *}
+text\<open>We start by declaring a type of states:\<close>
 
 typedecl state
 
-text{*\noindent
+text\<open>\noindent
 Our approach is completely parametric in the state space.
-We define expressions (@{text bexp}) as functions from states
-to the booleans: *}
+We define expressions (\<open>bexp\<close>) as functions from states
+to the booleans:\<close>
 
 type_synonym bexp = "state \<Rightarrow> bool"
 
-text{*
+text\<open>
 Instead of modelling the syntax of boolean expressions, we
 model their semantics. The (abstract and concrete)
 syntax of our programming is defined as a recursive datatype:
-*}
+\<close>
 
 datatype com = Do "(state \<Rightarrow> state set)"
              | Semi  com com            ("_; _"  [60, 60] 10)
@@ -33,7 +33,7 @@ datatype com = Do "(state \<Rightarrow> state set)"
              | Local "(state \<Rightarrow> state)" com "(state \<Rightarrow> state \<Rightarrow> state)"
                ("LOCAL _; _; _" [0,0,60] 60)
 
-text{*\noindent Statements in this language are called
+text\<open>\noindent Statements in this language are called
 \emph{commands}.  They are modelled as terms of type @{typ
 com}. @{term"Do f"} represents an atomic nondeterministic command that
 changes the state from @{term s} to some element of @{term"f s"}.
@@ -53,11 +53,11 @@ The annotations allow us to write
 instead of @{term[source]"Semi c\<^sub>1 c\<^sub>2"}, @{term[source]"Cond b c\<^sub>1 c\<^sub>2"}
 and @{term[source]"While b c"}.
 
-The command @{term"LOCAL f;c;g"} applies function @{text f} to the state,
+The command @{term"LOCAL f;c;g"} applies function \<open>f\<close> to the state,
 executes @{term c}, and then combines initial and final state via function
-@{text g}. More below.
+\<open>g\<close>. More below.
 The semantics of commands is defined inductively by a so-called
-big-step semantics.*}
+big-step semantics.\<close>
 
 inductive
   exec :: "state \<Rightarrow> com \<Rightarrow> state \<Rightarrow> bool" ("_/ -_\<rightarrow>/ _" [50,0,50] 50)
@@ -74,10 +74,10 @@ where
 
 | (*<*)Local:(*>*) "f s -c\<rightarrow> t \<Longrightarrow> s -LOCAL f; c; g\<rightarrow> g s t"
 
-text{* Assuming that the state is a function from variables to values,
-the declaration of a new local variable @{text x} with inital value
-@{text a} can be modelled as
-@{text"LOCAL (\<lambda>s. s(x := a s)); c; (\<lambda>s t. t(x := s x))"}. *}
+text\<open>Assuming that the state is a function from variables to values,
+the declaration of a new local variable \<open>x\<close> with inital value
+\<open>a\<close> can be modelled as
+\<open>LOCAL (\<lambda>s. s(x := a s)); c; (\<lambda>s t. t(x := s x))\<close>.\<close>
 
 lemma exec_Do_iff[iff]: "(s -Do f\<rightarrow> t) = (t \<in> f s)"
 by(auto elim: exec.cases intro:exec.intros)

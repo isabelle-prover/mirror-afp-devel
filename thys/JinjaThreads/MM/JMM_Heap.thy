@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Locales for heap operations with set of allocated addresses *}
+section \<open>Locales for heap operations with set of allocated addresses\<close>
 
 theory JMM_Heap 
 imports
@@ -67,7 +67,7 @@ proof -
       case Nil thus ?case by auto
     next
       case (Cons x xs)
-      note ads = `allocated h = set ads`
+      note ads = \<open>allocated h = set ads\<close>
       show ?case
       proof(cases "b \<and> allocate h (Class_type x) \<noteq> {}")
         case False thus ?thesis using ads
@@ -83,7 +83,7 @@ proof -
           by(auto dest: allocate_allocatedD)
         with ads have "allocated h' = set (ads @ [a'])" by auto
         hence "?concl xs h' (ads @ [a']) True" by(rule Cons)
-        moreover have "a' \<notin> set ads" using `a' \<notin> allocated h` ads by blast
+        moreover have "a' \<notin> set ads" using \<open>a' \<notin> allocated h\<close> ads by blast
         ultimately show ?thesis by(simp add: create_initial_object_simps new_obj h'a')
       qed
     qed }
@@ -164,11 +164,11 @@ done
 
 end
 
-text {* 
-  @{text heap_read_typeable} must not be defined in @{term heap_conf_base} (where it should be) because
-  this would lead to duplicate definitions of @{text heap_read_typeable} in contexts where @{term heap_conf_base} 
+text \<open>
+  \<open>heap_read_typeable\<close> must not be defined in @{term heap_conf_base} (where it should be) because
+  this would lead to duplicate definitions of \<open>heap_read_typeable\<close> in contexts where @{term heap_conf_base} 
   is imported twice with different parameters, e.g., @{term P} and @{term "J2JVM P"} in @{term "J_JVM_heap_conf_read"}.
-*}
+\<close>
 
 context heap_base begin
 

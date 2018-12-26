@@ -5,7 +5,7 @@
 
 (* Author: David Cock - David.Cock@nicta.com.au *)
 
-section {* Well-Defined Programs. *}
+section \<open>Well-Defined Programs.\<close>
 
 theory WellDefined imports
   Healthiness
@@ -13,18 +13,18 @@ theory WellDefined imports
   LoopInduction
 begin
 
-text {* The definition of a well-defined program collects the various notions of healthiness and
+text \<open>The definition of a well-defined program collects the various notions of healthiness and
 well-behavedness that we have so far established: healthiness of the strict and liberal
 transformers, continuity and sublinearity of the strict transformers, and two new properties.
 These are that the strict transformer always lies below the liberal one (i.e. that it is at least
 as \emph{strict}, recalling the standard embedding of a predicate), and that expectation
 conjunction is distributed between then in a particular manner, which will be crucial in
-establishing the loop rules. *}
+establishing the loop rules.\<close>
 
-subsection {* Strict Implies Liberal *}
+subsection \<open>Strict Implies Liberal\<close>
 
-text {* This establishes the first connection between the strict and
-  liberal interpretations (@{term wp} and @{term wlp}). *}
+text \<open>This establishes the first connection between the strict and
+  liberal interpretations (@{term wp} and @{term wlp}).\<close>
 
 definition
   wp_under_wlp :: "'s prog \<Rightarrow> bool"
@@ -220,7 +220,7 @@ lemmas wp_under_wlp_intros =
   wp_under_wlp_Embed wp_under_wlp_loop
   wp_under_wlp_repeat wp_under_wlp_Bind
 
-subsection {* Sub-Distributivity of Conjunction *}
+subsection \<open>Sub-Distributivity of Conjunction\<close>
 
 definition
   sub_distrib_pconj :: "'s prog \<Rightarrow> bool"
@@ -507,8 +507,8 @@ lemma sdp_Bind:
   unfolding sub_distrib_pconj_def wp_eval exp_conj_def pconj_def
   by(blast)
 
-text {* For loops, we again appeal to our transfinite induction principle, this time taking
-advantage of the simultaneous treatment of both strict and liberal transformers. *}
+text \<open>For loops, we again appeal to our transfinite induction principle, this time taking
+advantage of the simultaneous treatment of both strict and liberal transformers.\<close>
 lemma sdp_loop:
   fixes body::"'s prog"
   assumes sdp_body: "sub_distrib_pconj body"
@@ -678,7 +678,7 @@ lemmas sdp_intros =
   sdp_SetPC  sdp_SetDC sdp_Embed
   sdp_repeat sdp_Bind  sdp_loop
 
-subsection {* The Well-Defined Predicate. *}
+subsection \<open>The Well-Defined Predicate.\<close>
 
 definition
   well_def :: "'s prog \<Rightarrow> bool"

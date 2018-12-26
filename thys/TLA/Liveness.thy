@@ -11,7 +11,7 @@ theory Liveness
 imports Rules
 begin
 
-text{* This theory derives proof rules for liveness properties.*}
+text\<open>This theory derives proof rules for liveness properties.\<close>
 
 definition enabled :: "'a formula \<Rightarrow> 'a formula"
 where "enabled F \<equiv> \<lambda> s. \<exists> t. ((first s) ## t) \<Turnstile> F"
@@ -26,15 +26,15 @@ where "WeakF F v \<equiv> TEMP \<diamond>\<box>Enabled \<langle>F\<rangle>_v \<l
 definition StrongF :: "('a::world) formula \<Rightarrow> ('a,'b) stfun \<Rightarrow> 'a formula"
 where "StrongF F v \<equiv> TEMP \<box>\<diamond>Enabled \<langle>F\<rangle>_v \<longrightarrow> \<box>\<diamond>\<langle>F\<rangle>_v"
 
-text{*
+text\<open>
   Lamport's TLA defines the above notions for actions.
   In \tlastar{}, (pre-)formulas generalise TLA's actions and the above
   definition is the natural generalisation of enabledness to pre-formulas.
-  In particular, we have chosen to define @{text enabled} such that it
+  In particular, we have chosen to define \<open>enabled\<close> such that it
   yields itself a temporal formula, although its value really just depends
   on the first state of the sequence it is evaluated over.
   Then, the definitions of weak and strong fairness are exactly as in TLA.
-*}
+\<close>
 
 syntax
  "_WF" :: "[lift,lift] \<Rightarrow> lift" ("(WF'(_')'_(_))"  [20,1000] 90)
@@ -173,7 +173,7 @@ proof -
   with AA22[OF h1 h2 h4] show ?thesis by force
 qed
 
-text {* Lamport's version of the rule is derived as a special case. *}
+text \<open>Lamport's version of the rule is derived as a special case.\<close>
 
 theorem WF1: 
   assumes h1: "|~ P \<and> [N]_v \<longrightarrow> \<circle>P \<or> \<circle>Q"
@@ -195,11 +195,11 @@ proof -
   thus ?thesis by simp
 qed
 
-text {*
+text \<open>
   The corresponding rule for strong fairness has an additional hypothesis
-  @{text "\<box>F"}, which is typically a conjunction of other fairness properties
+  \<open>\<box>F\<close>, which is typically a conjunction of other fairness properties
   used to prove that the helpful action eventually becomes enabled.
-*}
+\<close>
 
 theorem SF1_general:
   assumes h1: "|~ P \<and> N \<longrightarrow> \<circle>P \<or> \<circle>Q"
@@ -239,9 +239,9 @@ proof -
   thus ?thesis by simp
 qed
 
-text {*
-  Lamport proposes the following rule as an introduction rule for @{text WF} formulas.
-*}
+text \<open>
+  Lamport proposes the following rule as an introduction rule for \<open>WF\<close> formulas.
+\<close>
 
 theorem WF2:
   assumes h1: "|~ \<langle>N \<and> B\<rangle>_f \<longrightarrow> \<langle>M\<rangle>_g"
@@ -306,11 +306,11 @@ proof -
   thus ?thesis by (auto simp: WeakF_def)
 qed
 
-text {*
+text \<open>
   Lamport proposes an analogous theorem for introducing strong fairness, and its
   proof is very similar, in fact, it was obtained by copy and paste, with minimal
   modifications.
-*}
+\<close>
 
 theorem SF2:
   assumes h1: "|~ \<langle>N \<and> B\<rangle>_f \<longrightarrow> \<langle>M\<rangle>_g"
@@ -377,7 +377,7 @@ proof -
   thus ?thesis by (auto simp: StrongF_def)
 qed
 
-text {* This is the lattice rule from TLA *}
+text \<open>This is the lattice rule from TLA\<close>
 
 theorem wf_leadsto:
   assumes h1: "wf r"

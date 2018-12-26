@@ -1,4 +1,4 @@
-section {* Iteration \label{S:iteration} *}
+section \<open>Iteration \label{S:iteration}\<close>
 
 theory Iteration
 imports
@@ -6,11 +6,11 @@ imports
   CRA
 begin
 
-subsection {* Possibly infinite iteration *}
+subsection \<open>Possibly infinite iteration\<close>
 
-text {*
+text \<open>
   Iteration of finite or infinite steps can be defined using a least fixed point.
-*}
+\<close>
 
 
 (* hide_fact (open) Random_Sequence.iter_def *)
@@ -26,10 +26,10 @@ where
 lemma iter_step_mono: "mono (\<lambda> x. nil \<sqinter> c;x)"
   by (meson inf_mono order_refl seq_mono_right mono_def)
 
-text {*
+text \<open>
   This fixed point definition leads to the two core iteration lemmas:
   folding and induction.
-*}
+\<close>
 
 theorem iter_unfold: "c\<^sup>\<omega> = nil \<sqinter> c;c\<^sup>\<omega>"
   using iter_def iter_step_mono lfp_unfold by auto
@@ -112,12 +112,12 @@ end
 
 
 
-subsection {* Finite iteration *}
+subsection \<open>Finite iteration\<close>
 
-text {*
+text \<open>
   Iteration of a finite number of steps (Kleene star) is defined
   using the greatest fixed point.
-*}
+\<close>
 
 locale finite_iteration = seq_distrib + lower_galois_connections
 begin
@@ -131,10 +131,10 @@ where
 lemma fin_iter_step_mono: "mono (\<lambda> x. nil \<sqinter> c;x)"
   by (meson inf_mono order_refl seq_mono_right mono_def)
 
-text {*
+text \<open>
   This definition leads to the two core iteration lemmas:
   folding and induction.
-*}
+\<close>
 
 lemma fiter_unfold: "c\<^sup>\<star> = nil \<sqinter> c;c\<^sup>\<star>"
   using fiter_def gfp_unfold fin_iter_step_mono by auto
@@ -196,12 +196,12 @@ end
 
 
 
-subsection {* Infinite iteration *}
+subsection \<open>Infinite iteration\<close>
 
-text {*
+text \<open>
   Iteration of infinite number of steps can be defined
   using a least fixed point.
-*}
+\<close>
 
 locale infinite_iteration = seq_distrib + lower_galois_connections
 begin
@@ -214,10 +214,10 @@ where
 lemma infiter_step_mono: "mono (\<lambda> x. c;x)"
   by (meson inf_mono order_refl seq_mono_right mono_def)
 
-text {*
+text \<open>
   This definition leads to the two core iteration lemmas:
   folding and induction.
-*}
+\<close>
 
 theorem infiter_unfold: "c\<^sup>\<infinity> = c;c\<^sup>\<infinity>"
   using infiter_def infiter_step_mono lfp_unfold by auto
@@ -246,12 +246,12 @@ end
 
 
 
-subsection {* Combined iteration *}
+subsection \<open>Combined iteration\<close>
 
-text {*
+text \<open>
   The three different iteration operators can be combined to show that 
   finite iteration refines finite-or-infinite iteration.
-*}
+\<close>
 
 locale iteration = finite_or_infinite_iteration + finite_iteration + 
                    infinite_iteration

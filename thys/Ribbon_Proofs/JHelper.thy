@@ -1,4 +1,4 @@
-section {* General purpose definitions and lemmas *}
+section \<open>General purpose definitions and lemmas\<close>
 
 theory JHelper imports
   Main
@@ -25,7 +25,7 @@ lemma empty_eq_Plus_conv:
   "({} = A <+> B) = (A = {} \<and> B = {})"
 by auto
 
-subsection {* Projection functions on triples *}
+subsection \<open>Projection functions on triples\<close>
 
 definition fst3 :: "'a \<times> 'b \<times> 'c \<Rightarrow> 'a"
 where "fst3 \<equiv> fst"

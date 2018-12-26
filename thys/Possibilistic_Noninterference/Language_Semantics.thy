@@ -1,9 +1,9 @@
-section {* The programming language and its semantics *} 
+section \<open>The programming language and its semantics\<close> 
 
 theory Language_Semantics imports Interface begin
 
 
-subsection {* Syntax and operational semantics *}
+subsection \<open>Syntax and operational semantics\<close>
 
 datatype ('test,'atom) com = 
   Atm 'atom | 
@@ -25,14 +25,14 @@ fixes
 context PL
 begin
 
-text{* Conventions and notations:
+text\<open>Conventions and notations:
 -- suffixes: ``C" for ``Continuation", ``T" for ``termination"
 -- prefix: ``M" for multistep
 -- tst, tst' are tests
 -- atm, atm' are atoms (atomic commands)
 -- s, s', t, t' are states
 -- c, c', d, d' are commands
--- cf, cf' are configurations, i.e., pairs command-state  *}
+-- cf, cf' are configurations, i.e., pairs command-state\<close>
 
 inductive transT :: 
 "(('test,'atom)com * 'state) \<Rightarrow> 'state \<Rightarrow> bool"
@@ -172,7 +172,7 @@ assumes "cf \<rightarrow>c cf'" and "cf' \<rightarrow>*t s''"
 shows "cf \<rightarrow>*t s''"
 by (metis PL.MtransC_MtransT assms(1) assms(2) transC_MtransC)
 
-text{* Inversion rules, nchotomies and such: *}
+text\<open>Inversion rules, nchotomies and such:\<close>
 
 lemma Atm_transC_simp[simp]:
 "~ (Atm atm, s) \<rightarrow>c cf"
@@ -291,7 +291,7 @@ proof-
      c = c1 ;; c2 \<longrightarrow>  
      (\<exists> c1'. (c1, s) \<rightarrow>*c (c1',t') \<and> d' = c1' ;; c2) \<or> 
      (\<exists> s'. (c1, s) \<rightarrow>*t s' \<and> (c2, s') \<rightarrow>*c (d',t'))"
-   apply(erule MtransC_induct2) proof(tactic {* mauto_no_simp_tac @{context} *})
+   apply(erule MtransC_induct2) proof(tactic \<open>mauto_no_simp_tac @{context}\<close>)
      fix c s d' t' d'' t'' c1 c2
      assume (*  "(c, s) \<rightarrow>*c (d', t')" and *)
      "\<forall>c1 c2. c = c1 ;; c2 \<longrightarrow> 
@@ -347,7 +347,7 @@ proof-
   qed
 qed
 
-text{* Direct rules for the multi-step relations *}
+text\<open>Direct rules for the multi-step relations\<close>
 
 lemma Seq_MtransC[simp]:
 assumes "(c1, s) \<rightarrow>*c (c1', s')"
@@ -386,7 +386,7 @@ using assms apply - apply(erule MtransT_invert)
 by (metis MtransC_StepC MtransT_invert2 PL.ParTR ParCR_MtransC assms)
 
 
-subsection{* Sublanguages *}
+subsection\<open>Sublanguages\<close>
 
 (* Commands not containing "while": *)
 fun noWhile where 
@@ -484,7 +484,7 @@ intro:
 "\<lbrakk>(c,s) \<rightarrow>c (c',s') \<and> mayDiverge c' s'\<rbrakk> 
   \<Longrightarrow> mayDiverge c s"
 
-text{* Coinduction for may-diverge : *}
+text\<open>Coinduction for may-diverge :\<close>
 
 lemma mayDiverge_coind[consumes 1, case_names Hyp, induct pred: mayDiverge]:
 assumes *: "phi c s" and 
@@ -501,7 +501,7 @@ shows "mayDiverge c s"
 using * apply induct using ** by blast
 
 
-text{* May-diverge versus transition: *}
+text\<open>May-diverge versus transition:\<close>
 
 lemma mayDiverge_transC:
 assumes "mayDiverge c s"

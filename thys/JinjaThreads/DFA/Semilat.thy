@@ -5,9 +5,9 @@
 Semilattices.
 *)
 
-chapter {* Data Flow Analysis Framework \label{cha:bv} *}
+chapter \<open>Data Flow Analysis Framework \label{cha:bv}\<close>
 
-section {* Semilattices *}
+section \<open>Semilattices\<close>
 
 theory Semilat
 imports Main "HOL-Library.While_Combinator"
@@ -280,7 +280,7 @@ lemma extend_lub:
 proof (cases "(y, x) \<in> r\<^sup>*")
   case True show ?thesis
   proof (cases "(y, x') \<in> r\<^sup>*")
-    case True with `(y, x) \<in> r\<^sup>*` show ?thesis by blast
+    case True with \<open>(y, x) \<in> r\<^sup>*\<close> show ?thesis by blast
   next
     case False with True assms show ?thesis
       by (unfold is_lub_def is_ub_def) (blast elim: converse_rtranclE dest: single_valuedD)
@@ -307,7 +307,7 @@ using in_r proof (induct arbitrary: y rule: converse_rtrancl_induct)
   case base then show ?case by (induct rule: converse_rtrancl_induct)
     (blast, blast intro: converse_rtrancl_into_rtrancl)
 next
-  case step with `single_valued r` show ?case by (blast intro: extend_lub)
+  case step with \<open>single_valued r\<close> show ?case by (blast intro: extend_lub)
 qed
 (*>*)
 
@@ -326,7 +326,7 @@ lemma is_lub_some_lub:
   \<Longrightarrow> is_lub (r^* ) x y (some_lub (r^* ) x y)"
   (*<*) by (fastforce dest: single_valued_has_lubs simp add: some_lub_conv) (*>*)
 
-subsection{*An executable lub-finder*}
+subsection\<open>An executable lub-finder\<close>
 
 definition exec_lub :: "('a * 'a) set \<Rightarrow> ('a \<Rightarrow> 'a) \<Rightarrow> 'a binop"
 where

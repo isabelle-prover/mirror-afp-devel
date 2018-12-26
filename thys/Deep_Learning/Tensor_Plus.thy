@@ -60,12 +60,12 @@ shows "lookup (A + B) is = lookup A is + lookup B is"
 using assms proof (induction "A+B" arbitrary:A B "is" rule: subtensor_induct)
   case (order_0 A B "is")
   then have "is = []" by auto
-  have 1:"[] \<lhd> dims A" using order_0 `is = []` by auto
-  have 2:"[] \<lhd> dims B" using order_0 `is = []` by auto
-  have 3:"[] \<lhd> dims (A + B)" using order_0 `is = []` by auto
+  have 1:"[] \<lhd> dims A" using order_0 \<open>is = []\<close> by auto
+  have 2:"[] \<lhd> dims B" using order_0 \<open>is = []\<close> by auto
+  have 3:"[] \<lhd> dims (A + B)" using order_0 \<open>is = []\<close> by auto
   have "length (vec A) = 1" "length (vec B) = 1"
     by (metis length_vec prod_list.Nil order_0.hyps order_0.prems(1) plus_dim1)+
-  then show ?case unfolding lookup_subtensor[OF 1] lookup_subtensor[OF 2] lookup_subtensor[OF 3] `is = []`
+  then show ?case unfolding lookup_subtensor[OF 1] lookup_subtensor[OF 2] lookup_subtensor[OF 3] \<open>is = []\<close>
     fold_simps(1) vec_plus[OF order_0.prems(1)] unfolding vec_plus_def using  order_0.prems  length_map
     list.map_sel(1) list.size(3)  map_fst_zip map_snd_zip order_0.hyps
     zero_neq_one case_prod_unfold length_vec by metis
@@ -77,13 +77,13 @@ next
   have 3:"is \<lhd> dims (A + B)" using order_step by auto
   have "lookup (subtensor A i + subtensor B i) is' = lookup (subtensor A i) is' + lookup (subtensor B i) is'"
      apply (rule order_step.hyps(2)[of i])
-        using `is = i # is'` 3 hd_conv_nth length_greater_0_conv nth_Cons_0 order_step.hyps(1) valid_index_lt
+        using \<open>is = i # is'\<close> 3 hd_conv_nth length_greater_0_conv nth_Cons_0 order_step.hyps(1) valid_index_lt
         apply auto[1]
        apply (metis "2" \<open>is = i # is'\<close> list.inject list.sel(1) list.simps(3) order_step.prems(1) subtensor_plus valid_index.cases)
       using "1" \<open>is = i # is'\<close> order_step.prems(1) plus_dim1 apply auto[1]
      using "1" \<open>is = i # is'\<close> plus_dim1 by auto
   then show ?case using lookup_subtensor[OF 1] lookup_subtensor[OF 2] lookup_subtensor[OF 3]
-    using order_step `is = i # is'` plus_dim1 lookup_subtensor1 list.sel(1) subtensor_plus valid_index_dimsE by metis
+    using order_step \<open>is = i # is'\<close> plus_dim1 lookup_subtensor1 list.sel(1) subtensor_plus valid_index_dimsE by metis
 qed
 
 lemma plus_assoc:

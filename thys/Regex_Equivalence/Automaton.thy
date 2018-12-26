@@ -112,7 +112,7 @@ proof -
   show ?thesis by (auto simp add: leq Ball_def split: if_splits)
 qed
 
-subsection {* The overall procedure *}
+subsection \<open>The overall procedure\<close>
 
 definition check_eqv :: "'a rexp \<Rightarrow> 'a rexp \<Rightarrow> bool" where
 "check_eqv r s =
@@ -132,7 +132,7 @@ qed
 
 (* completeness needs termination of closure, otherwise result could be None *)
 
-text{* Auxiliary functions: *}
+text\<open>Auxiliary functions:\<close>
 definition reachable :: "'a list \<Rightarrow> 'a rexp \<Rightarrow> 's set" where
 "reachable as s =
   snd(the(rtrancl_while (\<lambda>_. True) (\<lambda>s. map (\<lambda>a. delta a s) as) (init s)))"

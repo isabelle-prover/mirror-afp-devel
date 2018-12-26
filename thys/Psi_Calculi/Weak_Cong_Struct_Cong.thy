@@ -206,26 +206,26 @@ lemma tauCongChainBangI:
   obtains Q where "\<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q" and "\<Psi> \<rhd> Q \<sim> P' \<parallel> !P"
 proof -
   assume "\<And>Q. \<lbrakk>\<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q; \<Psi> \<rhd> Q \<sim> P' \<parallel> !P\<rbrakk> \<Longrightarrow> thesis"
-  moreover from `\<Psi> \<rhd> P \<parallel> P \<Longrightarrow>\<^sub>\<tau> P'` have "\<exists>Q. \<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q \<and> \<Psi> \<rhd> Q \<sim> P' \<parallel> !P"
+  moreover from \<open>\<Psi> \<rhd> P \<parallel> P \<Longrightarrow>\<^sub>\<tau> P'\<close> have "\<exists>Q. \<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q \<and> \<Psi> \<rhd> Q \<sim> P' \<parallel> !P"
   proof(induct x1=="P \<parallel> P" P' rule: tauStepChainInduct)
     case(TauBase R')
-    from `\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> R'`
-    obtain Q where "\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> Q" and "Q \<sim> R' \<parallel> !P" using `guarded P` 
+    from \<open>\<Psi> \<rhd> P \<parallel> P \<longmapsto>\<tau> \<prec> R'\<close>
+    obtain Q where "\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> Q" and "Q \<sim> R' \<parallel> !P" using \<open>guarded P\<close> 
       by(rule tauBangI)
-    from `\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> Q` have "\<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q" by auto
-    moreover from `Q \<sim> R' \<parallel> !P` have "\<Psi> \<rhd> Q \<sim> R' \<parallel> !P"
+    from \<open>\<Psi> \<rhd> !P \<longmapsto>\<tau> \<prec> Q\<close> have "\<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q" by auto
+    moreover from \<open>Q \<sim> R' \<parallel> !P\<close> have "\<Psi> \<rhd> Q \<sim> R' \<parallel> !P"
       apply(drule_tac bisimE(3)[where \<Psi>'=\<Psi>])
       by(rule_tac statEqBisim, assumption) (metis Identity AssertionStatEqSym AssertionStatEqTrans Commutativity)
     ultimately show ?case by blast
   next
     case(TauStep R' R'')
     then obtain Q where PChain: "\<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q" and "\<Psi> \<rhd> Q \<sim> R' \<parallel> !P" by auto
-    from `\<Psi> \<rhd> R' \<longmapsto>\<tau> \<prec> R''` have "\<Psi> \<otimes> \<one> \<rhd> R' \<longmapsto>\<tau> \<prec> R''" by(rule statEqTransition) (metis Identity AssertionStatEqSym)
+    from \<open>\<Psi> \<rhd> R' \<longmapsto>\<tau> \<prec> R''\<close> have "\<Psi> \<otimes> \<one> \<rhd> R' \<longmapsto>\<tau> \<prec> R''" by(rule statEqTransition) (metis Identity AssertionStatEqSym)
     hence "\<Psi> \<rhd> R' \<parallel> !P \<longmapsto>\<tau> \<prec> R'' \<parallel> !P" by(rule_tac Par1) auto
-    with `\<Psi> \<rhd> Q \<sim> R' \<parallel> !P` obtain Q' where QTrans: "\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'" and "\<Psi> \<rhd> Q' \<sim> R'' \<parallel> !P"
+    with \<open>\<Psi> \<rhd> Q \<sim> R' \<parallel> !P\<close> obtain Q' where QTrans: "\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'" and "\<Psi> \<rhd> Q' \<sim> R'' \<parallel> !P"
       by(force dest: bisimE(2) simE)
     from PChain QTrans have "\<Psi> \<rhd> !P \<Longrightarrow>\<^sub>\<tau> Q'" by(auto dest: tauActTauStepChain)
-    thus ?case using `\<Psi> \<rhd> Q' \<sim> R'' \<parallel> !P` by blast
+    thus ?case using \<open>\<Psi> \<rhd> Q' \<sim> R'' \<parallel> !P\<close> by blast
   qed
   ultimately show ?thesis by blast
 qed

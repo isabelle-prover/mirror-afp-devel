@@ -4,14 +4,14 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*IArray Addenda QR*}
+section\<open>IArray Addenda QR\<close>
 
 theory IArray_Addenda_QR
 imports
   "HOL-Library.IArray"
 begin
 
-text{*The new file about Iarrays, with different instantiations from the presented ones in the 
+text\<open>The new file about Iarrays, with different instantiations from the presented ones in the 
 Gauss-Jordan algorithm.
 
 In order to make the formalisation of the QR algorithm easier, we have decided to present here some
@@ -20,7 +20,7 @@ alternative instantiatons for immutable arrays.
 Let see an example. The following definition is the one presented in the Gauss-Jordan AFP entry to
 sum two vectors:
 
-@{text "plus_iarray A B =  IArray.of_fun (\<lambda>n. A!!n + B !! n) (IArray.length A)"}
+\<open>plus_iarray A B =  IArray.of_fun (\<lambda>n. A!!n + B !! n) (IArray.length A)\<close>
 
 While the following is the one we will present in this development:
 
@@ -34,14 +34,14 @@ While the following is the one we will present in this development:
 
 Now the sum is done up to the length of the shortest vector and it is completed with zeros up to
 the length of the largest vector. This allows us to prove that iarray is an instance of
-@{text "comm_monoid_add"}, which is quite useful for the QR algorithm (we will be able to do
+\<open>comm_monoid_add\<close>, which is quite useful for the QR algorithm (we will be able to do
 sums involving immutable arrays).
 
 These are just alternative definitions of the main operations over immutable arrays. They have the 
-advantage of being an instance of @{text "comm_monoid_add"}; nevertheless, the performance is slower
+advantage of being an instance of \<open>comm_monoid_add\<close>; nevertheless, the performance is slower
 and proofs become more cumbersome. The user should decide what definitions to use (the presented 
 here or the presented ones in the Gauss-Jordan AFP entry) depending on the algorithm to formalise.
-*}
+\<close>
 
 lemma iarray_exhaust2: 
   "(xs = ys) = (IArray.list_of xs = IArray.list_of ys)"
@@ -52,7 +52,7 @@ lemma of_fun_nth:
   shows "(IArray.of_fun f n) !! i = f i"
   unfolding IArray.of_fun_def using map_nth i by auto
 
-subsection{*Some previous instances*}
+subsection\<open>Some previous instances\<close>
 
 instantiation iarray :: ("{plus,zero}") plus
 begin
@@ -169,11 +169,11 @@ definition minus_iarray :: "'a iarray \<Rightarrow> 'a iarray \<Rightarrow> 'a i
 instance proof qed
 end
 
-subsection{*Some previous definitions and properties for IArrays*}
+subsection\<open>Some previous definitions and properties for IArrays\<close>
 
-subsubsection{*Lemmas*}
+subsubsection\<open>Lemmas\<close>
 
-subsubsection{*Definitions*}
+subsubsection\<open>Definitions\<close>
 
 fun all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a iarray \<Rightarrow> bool"
   where "all p (IArray as) = (ALL a : set as. p a)"
@@ -183,7 +183,7 @@ fun exists :: "('a \<Rightarrow> bool) \<Rightarrow> 'a iarray \<Rightarrow> boo
   where "exists p (IArray as) = (EX a : set as. p a)"
 hide_const (open) exists
 
-subsection{*Code generation*}
+subsection\<open>Code generation\<close>
 
 code_printing 
   constant "IArray_Addenda_QR.exists" \<rightharpoonup> (SML) "Vector.exists"

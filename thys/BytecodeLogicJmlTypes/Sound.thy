@@ -15,34 +15,34 @@ lemma MaxZero[rule_format]: "max n k = (0::nat) \<Longrightarrow> n=0 \<and> k=0
 by (simp add: max_def, case_tac "n\<le>k", clarsimp,clarsimp)
 (*>*)
 
-section{*Soundness*}
-text{*This section contains the soundness proof of the program logic.
+section\<open>Soundness\<close>
+text\<open>This section contains the soundness proof of the program logic.
 In the first subsection, we define our notion of validity, thus
 formalising our intuitive explanation of the terms preconditions,
 specifications, and invariants. The following two subsections contain
 the details of the proof and can easily be skipped during a first pass
-through the document.*}
+through the document.\<close>
 
-subsection{*Validity*}
+subsection\<open>Validity\<close>
 
-text{* A  judgement is valid at the program point @{text C.m.l}
-(i.e.~at label @{text l} in method @{text m} of class @{text C}),
+text\<open>A  judgement is valid at the program point \<open>C.m.l\<close>
+(i.e.~at label \<open>l\<close> in method \<open>m\<close> of class \<open>C\<close>),
 written $\mathit{valid}\; C\; m\; l\; A\; B\; I$ or, in symbols, $$\vDash\,
 \lbrace A \rbrace\, C,m,l\, \lbrace B \rbrace\, I,$$ if $A$ is a
 precondition for $B$ and for all local annotations following $l$ in an
-execution of @{text m}, and all reachable states in the current frame
+execution of \<open>m\<close>, and all reachable states in the current frame
 or yet-to-be created subframes satisfy $I$. More precisely,
 whenever an execution of the method starting in an initial state $s_0$
-reaches the label @{text l} with state @{text s}, the following 
+reaches the label \<open>l\<close> with state \<open>s\<close>, the following 
 properties are implied by $A(s_0,s)$.
 \begin{enumerate}
 
-  \item If the continued execution from @{text s} reaches a final
-  state @{text t} (i.e.~the method terminates), then that final state
-  @{text t} satisfies $B(s_0,s,t)$.
+  \item If the continued execution from \<open>s\<close> reaches a final
+  state \<open>t\<close> (i.e.~the method terminates), then that final state
+  \<open>t\<close> satisfies $B(s_0,s,t)$.
 
   \item Any state $s'$ visited in the current frame during the remaining
-  program execution whose label carries an annotation @{text Q} will
+  program execution whose label carries an annotation \<open>Q\<close> will
   satisfy $Q(s_0,s')$, even if the execution of the frame does not
   terminate.
 
@@ -53,7 +53,7 @@ properties are implied by $A(s_0,s)$.
 \end{enumerate}
 
 Formally, this interpretation is expressed as follows.
-*}
+\<close>
 
 definition valid::"Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" where
 "valid C m l A B I =
@@ -70,26 +70,26 @@ abbreviation valid_syntax :: "Assn \<Rightarrow> Class \<Rightarrow> Method \<Ri
        (" \<Turnstile> \<lbrace> _ \<rbrace> _ , _ , _ \<lbrace> _ \<rbrace> _" [200,200,200,200,200,200] 200)
 where "valid_syntax A C m l B I == valid C m l A B I"
 
-text{*This notion of validity extends that of Bannwart-M\"uller by
+text\<open>This notion of validity extends that of Bannwart-M\"uller by
 allowing the post-condition to differ from method specification and to
 refer to the initial state, and by including invariants.  In
 the logic of Bannwart and M\"uller, the validity of a method
 specification is given by a partial correctness (Hoare-style)
 interpretation, while the validity of  preconditions of
 individual instructions is such that a precondition at $l$ implies the
-preconditions of its immediate control flow successors.*}
+preconditions of its immediate control flow successors.\<close>
 
-text{*Validity us lifted to contexts and the method specification
+text\<open>Validity us lifted to contexts and the method specification
 table. In the case of the former, we simply require that all entries
-be valid.*}
+be valid.\<close>
 
 definition G_valid::"CTXT \<Rightarrow> bool" where
 "G_valid G = (\<forall> C m l A B I. G\<down>(C,m,l) = Some (A,B,I)\<longrightarrow>
                                 \<Turnstile> \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I)"
 
-text{*Regarding the specification table, we require that the initial
+text\<open>Regarding the specification table, we require that the initial
 label of each method satisfies an assertion that ties the method
-precondition to the current state.*}
+precondition to the current state.\<close>
 
 definition MST_valid ::bool where
 "MST_valid = (\<forall> C m par code l0 T MI Anno. 
@@ -99,27 +99,26 @@ definition MST_valid ::bool where
 definition Prog_valid::bool where
 "Prog_valid = (\<exists> G . G_valid G \<and> MST_valid)"
 
-text{*The remainder of this section contains a proof of soundness,
-i.e.~of the property $$@{text VP} \Longrightarrow @{text
-Prog_valid},$$ and is structured into two parts. The first step
+text\<open>The remainder of this section contains a proof of soundness,
+i.e.~of the property $$\<open>VP\<close> \Longrightarrow \<open>Prog_valid\<close>,$$ and is structured into two parts. The first step
 (Section \ref{SoundnessUnderValidContexts}) establishes a soundness
-result where the @{text VP} property is replaced by validity
+result where the \<open>VP\<close> property is replaced by validity
 assumptions regarding the method specification table and the
 context. In the second step (Section \ref{SectionContextElimination}),
 we show that these validity assumptions are satisfied by verified
-programs, which implies the overall soundness theorem.*}
+programs, which implies the overall soundness theorem.\<close>
 
-subsection{*Soundness under valid contexts
-\label{SoundnessUnderValidContexts}*}
+subsection\<open>Soundness under valid contexts
+\label{SoundnessUnderValidContexts}\<close>
 
-text{*The soundness proof proceeds by induction on the axiomatic
+text\<open>The soundness proof proceeds by induction on the axiomatic
 semantics, based on an auxiliary lemma for method invocations that is
 proven by induction on the derivation height of the operational
 semantics. For the latter induction, relativised notions of validity
 are employed that restrict the derivation height of the program
 continuations affected by an assertion. The appropriate definitions of
 relativised validity for judgements, for the precondition table, and
-for the method specification table are as follows.*}
+for the method specification table are as follows.\<close>
 
 definition validn::
   "nat \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Assn \<Rightarrow> Post \<Rightarrow> Inv \<Rightarrow> bool" where
@@ -151,8 +150,8 @@ definition MST_validn::"nat \<Rightarrow> bool" where
 definition Prog_validn::"nat \<Rightarrow> bool" where
 "Prog_validn K = (\<exists> G . G_validn K G \<and> MST_validn K)"
 
-text{*The relativised notions are related to each other, and to the
-native notions of validity as follows.*}
+text\<open>The relativised notions are related to each other, and to the
+native notions of validity as follows.\<close>
 
 lemma valid_validn: "\<Turnstile> \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I \<Longrightarrow> \<Turnstile>\<^sub>K \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I"
 (*<*)
@@ -294,8 +293,8 @@ apply (erule validn_lower) apply assumption
 done
 (*>*)
 
-text{*We define an abbreviation for the side conditions of the rule
-for static method invocations\ldots*}
+text\<open>We define an abbreviation for the side conditions of the rule
+for static method invocations\ldots\<close>
 
 definition INVS_SC::
   "Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow>  MethSpec \<Rightarrow> MethInv \<Rightarrow>
@@ -310,8 +309,8 @@ definition INVS_SC::
     (\<forall> s0 ops1 ops2 S R h t . (ops1,par,R,ops2) : Frame \<longrightarrow>
           A s0 (ops1,S,h) \<longrightarrow> MI (R,h) t \<longrightarrow> I s0 (ops1,S,h) t))"
 
-text{*\ldots and another abbreviation for the soundness property of
-the same rule. *}
+text\<open>\ldots and another abbreviation for the soundness property of
+the same rule.\<close>
 
 definition INVS_soundK::
   "nat \<Rightarrow> CTXT \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> Label \<Rightarrow> Class \<Rightarrow> Method \<Rightarrow> 
@@ -324,8 +323,8 @@ definition INVS_soundK::
         \<lbrace>(SINV_post (fst M') T B)\<rbrace> (SINV_inv (fst M') T I)
    \<longrightarrow> \<Turnstile>\<^sub>(K+1) \<lbrace> A \<rbrace> C,m,l \<lbrace> B \<rbrace> I)"
 
-text{*The proof that this property holds for all $K$ proceeds by
-induction on $K$.*}
+text\<open>The proof that this property holds for all $K$ proceeds by
+induction on $K$.\<close>
 
 lemma INVS_soundK_all:
   "INVS_soundK K G C m l D m' T MI Anno Anno2 M' A B I"
@@ -537,8 +536,8 @@ done
 (*>*)
 
 
-text{*The heart of the soundness proof - the induction on the
-axiomatic semantics.*}
+text\<open>The heart of the soundness proof - the induction on the
+axiomatic semantics.\<close>
 
 lemma SOUND_Aux[rule_format]: 
 "(b,G,C,m,l,A,B,I):SP_Judgement \<Longrightarrow> G_validn K G \<longrightarrow> MST_validn K \<longrightarrow> 
@@ -922,10 +921,10 @@ apply clarsimp apply (simp add: G_validn_def)
 done
 (*>*)
 
-text{*The statement of this lemma gives a semantic interpretation of
-the two judgement forms, as @{text SP_Assum}-judgements enjoy validity
-up to execution height $K$, while @{text SP_Deriv}-judgements are
-valid up to level $K+1$.*}
+text\<open>The statement of this lemma gives a semantic interpretation of
+the two judgement forms, as \<open>SP_Assum\<close>-judgements enjoy validity
+up to execution height $K$, while \<open>SP_Deriv\<close>-judgements are
+valid up to level $K+1$.\<close>
 
 (*<*)
 lemma SOUND_K: 
@@ -935,8 +934,8 @@ apply (drule SOUND_Aux)  apply assumption+ apply simp
 done
 (*>*)
 
-text{*From this, we obtain a soundness result that still involves
-context validity.*}
+text\<open>From this, we obtain a soundness result that still involves
+context validity.\<close>
 
 theorem SOUND_in_CTXT: 
  "\<lbrakk>G \<rhd> \<lbrace>A\<rbrace> C,m,l \<lbrace>B\<rbrace> I; G_valid G; MST_valid\<rbrakk> \<Longrightarrow> \<Turnstile> \<lbrace>A\<rbrace> C, m, l \<lbrace>B\<rbrace> I"
@@ -951,16 +950,16 @@ apply (erule MST_valid_validn)
 done
 (*>*)
 
-text{*We will now show that the two semantic assumptions can be replaced by
-the verified-program property.*}
+text\<open>We will now show that the two semantic assumptions can be replaced by
+the verified-program property.\<close>
 
-subsection{*Soundness of verified programs \label{SectionContextElimination}*} 
+subsection\<open>Soundness of verified programs \label{SectionContextElimination}\<close> 
 
-text{*In order to obtain a soundness result that does not require
+text\<open>In order to obtain a soundness result that does not require
 validity assumptions of the context or the specification table,
-we show that the @{text VP} property implies context validity.
+we show that the \<open>VP\<close> property implies context validity.
 First, the elimination of contexts. By induction on
-@{text k} we prove*}
+\<open>k\<close> we prove\<close>
 
 lemma VPG_MSTn_Gn[rule_format]:
 "VP_G G \<longrightarrow> MST_validn k \<longrightarrow> G_validn k G"
@@ -1002,7 +1001,7 @@ apply (induct k)
 done
 (*>*)
 
-text{*which implies*}
+text\<open>which implies\<close>
 
 lemma VPG_MST_G: "\<lbrakk>VP_G G; MST_valid\<rbrakk> \<Longrightarrow> G_valid G"
 (*<*)
@@ -1012,8 +1011,8 @@ apply (erule MST_valid_validn)
 done
 (*>*)
 
-text{*Next, the elimination of @{text MST_valid}. Again by induction on
-@{text k}, we prove*}
+text\<open>Next, the elimination of \<open>MST_valid\<close>. Again by induction on
+\<open>k\<close>, we prove\<close>
 
 lemma VPG_MSTn[rule_format]: "VP_G G \<longrightarrow> MST_validn k"
 (*<*)
@@ -1047,7 +1046,7 @@ apply clarsimp
 done
 (*>*)
 
-text{*which yields*}
+text\<open>which yields\<close>
 
 lemma VPG_MST:"VP_G G \<Longrightarrow> MST_valid"
 (*<*)
@@ -1056,8 +1055,8 @@ apply (erule VPG_MSTn)
 done
 (*>*)
 
-text{*Combining these two results, and unfolding the definition of
-program validity yields the final soundness result.*}
+text\<open>Combining these two results, and unfolding the definition of
+program validity yields the final soundness result.\<close>
 
 theorem VP_VALID: "VP \<Longrightarrow> Prog_valid"
 (*<*)
@@ -1069,9 +1068,9 @@ done
 
 (*<*)
 
-text {*In particular, the $\mathit{VP}$ property implies that all
+text \<open>In particular, the $\mathit{VP}$ property implies that all
 method specifications are honoured by their respective method
-implementations.*}
+implementations.\<close>
 
 theorem "VP \<Longrightarrow> MST_valid"
 (*<*)

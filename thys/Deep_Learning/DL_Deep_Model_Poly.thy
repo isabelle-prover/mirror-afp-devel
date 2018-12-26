@@ -21,7 +21,7 @@ proof -
   }
   moreover have "finite {i. i permutes {0..<n}}" by (simp add: finite_permutations)
   ultimately show ?thesis  unfolding det_def'[OF assms(1)]
-    using polyfun_Sum[OF `finite {i. i permutes {0..<n}}`, of N "\<lambda>p x. signof p * (\<Prod>i = 0..<n. A x $$ (i, p i))"]
+    using polyfun_Sum[OF \<open>finite {i. i permutes {0..<n}}\<close>, of N "\<lambda>p x. signof p * (\<Prod>i = 0..<n. A x $$ (i, p i))"]
     by blast
 qed
 
@@ -38,23 +38,23 @@ assumes "\<And>i j. i<m \<Longrightarrow> j<n \<Longrightarrow> polyfun N (\<lam
 assumes "j < m"
 shows "polyfun N (\<lambda>x. ((A x) *\<^sub>v (v x)) $ j)"
 proof -
-  have "\<And>x. j < dim_row (A x)" using `j < m` assms(3) carrier_matD(1) by force
+  have "\<And>x. j < dim_row (A x)" using \<open>j < m\<close> assms(3) carrier_matD(1) by force
   have "\<And>x. n = dim_vec (v x)" using assms(1) carrier_vecD by fastforce
   {
     fix i assume "i \<in> {0..<n}"
     then have "i < n" by auto
     {
       fix x
-      have "i < dim_vec (v x)" using assms(1) carrier_vecD `i<n` by fastforce
-      have "j < dim_row (A x)" using `j < m` assms(3) carrier_matD(1) by force
+      have "i < dim_vec (v x)" using assms(1) carrier_vecD \<open>i<n\<close> by fastforce
+      have "j < dim_row (A x)" using \<open>j < m\<close> assms(3) carrier_matD(1) by force
       have "dim_col (A x) = dim_vec (v x)" by (metis assms(1) assms(3) carrier_matD(2) carrier_vecD)
-      then have "row (A x) j $ i = A x $$ (j,i)" "i<n" using `j < dim_row (A x)` `i<n` by (simp_all add: \<open>i < dim_vec (v x)\<close>)
+      then have "row (A x) j $ i = A x $$ (j,i)" "i<n" using \<open>j < dim_row (A x)\<close> \<open>i<n\<close> by (simp_all add: \<open>i < dim_vec (v x)\<close>)
     }
     then have "polyfun N (\<lambda>x. row (A x) j $ i * v x $ i)"
-      using polyfun_mult assms(4)[OF `j < m`] assms(2) by fastforce
+      using polyfun_mult assms(4)[OF \<open>j < m\<close>] assms(2) by fastforce
   }
-  then show ?thesis unfolding index_mult_mat_vec[OF `\<And>x. j < dim_row (A x)`] scalar_prod_def
-    using polyfun_Sum[of "{0..<n}" N "\<lambda>i x. row (A x) j $ i * v x $ i"] finite_atLeastLessThan[of 0 n] `\<And>x. n = dim_vec (v x)`
+  then show ?thesis unfolding index_mult_mat_vec[OF \<open>\<And>x. j < dim_row (A x)\<close>] scalar_prod_def
+    using polyfun_Sum[of "{0..<n}" N "\<lambda>i x. row (A x) j $ i * v x $ i"] finite_atLeastLessThan[of 0 n] \<open>\<And>x. n = dim_vec (v x)\<close>
     by simp
 qed
 
@@ -70,12 +70,12 @@ using assms proof (induction m arbitrary:inputs j a)
 next
   case (Conv x m)
   then obtain x1 x2 where "x=(x1,x2)" by fastforce
-  show ?case unfolding `x=(x1,x2)` insert_weights.simps evaluate_net.simps drop_map unfolding list_of_vec_index
+  show ?case unfolding \<open>x=(x1,x2)\<close> insert_weights.simps evaluate_net.simps drop_map unfolding list_of_vec_index
   proof (rule polyfun_mult_mat_vec)
     {
       fix f
       have 1:"valid_net' (insert_weights s m (\<lambda>i. f (i + x1 * x2)))"
-        using `valid_net (Conv x m)` valid_net.simps by (metis
+        using \<open>valid_net (Conv x m)\<close> valid_net.simps by (metis
         convnet.distinct(1) convnet.distinct(5) convnet.inject(2) remove_insert_weights)
       have 2:"map dim_vec inputs = input_sizes (insert_weights s m (\<lambda>i. f (i + x1 * x2)))"
         using input_sizes_remove_weights remove_insert_weights
@@ -91,16 +91,16 @@ next
     show "\<And>j. j < output_size m \<Longrightarrow>  polyfun {..<a + count_weights s (Conv (x1, x2) m)}
           (\<lambda>f. evaluate_net (insert_weights s m (\<lambda>i. f (i + x1 * x2 + a))) inputs $ j)"
       unfolding vec_of_list_index count_weights.simps
-      using Conv(1)[OF `map dim_vec inputs = input_sizes m` `valid_net m`, of _ "x1 * x2 + a"]
+      using Conv(1)[OF \<open>map dim_vec inputs = input_sizes m\<close> \<open>valid_net m\<close>, of _ "x1 * x2 + a"]
       unfolding semigroup_add_class.add.assoc ab_semigroup_add_class.add.commute[of "x1 * x2" a]
       by blast
 
     have "output_size m = x2" using Conv.prems(2) \<open>x = (x1, x2)\<close> valid_net.cases by fastforce
-    show "\<And>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 \<in> carrier_mat x1 (output_size m)" unfolding `output_size m = x2` using dim_extract_matrix
+    show "\<And>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 \<in> carrier_mat x1 (output_size m)" unfolding \<open>output_size m = x2\<close> using dim_extract_matrix
       using carrier_matI by (metis (no_types, lifting))
 
     show "\<And>i j. i < x1 \<Longrightarrow> j < output_size m \<Longrightarrow> polyfun {..<a + count_weights s (Conv (x1, x2) m)} (\<lambda>f. extract_matrix (\<lambda>i. f (i + a)) x1 x2 $$ (i, j))"
-      unfolding `output_size m = x2` count_weights.simps using polyfun_extract_matrix[of _ x1 _ x2 a "count_weights s m"] by blast
+      unfolding \<open>output_size m = x2\<close> count_weights.simps using polyfun_extract_matrix[of _ x1 _ x2 a "count_weights s m"] by blast
 
     show "j < x1" using Conv.prems(3) \<open>x = (x1, x2)\<close> by auto
   qed
@@ -110,10 +110,10 @@ next
     by (metis Pool.prems(1)  append_eq_conv_conj input_sizes.simps(3) input_sizes_remove_weights remove_insert_weights take_map)
   have B2:"\<And>f. map dim_vec (drop (length (input_sizes (insert_weights s m1 (\<lambda>i. f (i + a))))) inputs) = input_sizes m2"
     using Pool.prems(1) append_eq_conv_conj input_sizes.simps(3) input_sizes_remove_weights remove_insert_weights by (metis drop_map)
-  have A3:"valid_net m1" and B3:"valid_net m2" using `valid_net (Pool m1 m2)` valid_net.simps by blast+
+  have A3:"valid_net m1" and B3:"valid_net m2" using \<open>valid_net (Pool m1 m2)\<close> valid_net.simps by blast+
   have "output_size (Pool m1 m2) = output_size m2" unfolding output_size.simps
-    using `valid_net (Pool m1 m2)` "valid_net.cases" by fastforce
-  then have A4:"j < output_size m1" and B4:"j < output_size m2" using `j < output_size (Pool m1 m2)` by simp_all
+    using \<open>valid_net (Pool m1 m2)\<close> "valid_net.cases" by fastforce
+  then have A4:"j < output_size m1" and B4:"j < output_size m2" using \<open>j < output_size (Pool m1 m2)\<close> by simp_all
 
   let ?net1 = "\<lambda>f. evaluate_net (insert_weights s m1 (\<lambda>i. f (i + a)))
     (take (length (input_sizes (insert_weights s m1 (\<lambda>i. f (i + a))))) inputs)"
@@ -209,8 +209,8 @@ shows "polyfun N (\<lambda>x. (submatrix (A x) I J) $$ (i,j))"
 proof -
   have 1:"\<And>x. (submatrix (A x) I J) $$ (i,j) = (A x) $$ (pick I i, pick J j)"
     using submatrix_index by (metis (no_types, lifting) Collect_cong assms(1) assms(3) assms(4) carrier_matD(1) carrier_matD(2))
-  have "pick I i < m"  "pick J j < n" using card_le_pick_inf[OF `infinite I`] card_le_pick_inf[OF `infinite J`]
-    `i < card {i. i < m \<and> i \<in> I}`[unfolded set_le_in] `j < card {j. j < n \<and> j \<in> J}`[unfolded set_le_in] not_less by metis+
+  have "pick I i < m"  "pick J j < n" using card_le_pick_inf[OF \<open>infinite I\<close>] card_le_pick_inf[OF \<open>infinite J\<close>]
+    \<open>i < card {i. i < m \<and> i \<in> I}\<close>[unfolded set_le_in] \<open>j < card {j. j < n \<and> j \<in> J}\<close>[unfolded set_le_in] not_less by metis+
   then show ?thesis unfolding 1 by (simp add: assms(2))
 qed
 
@@ -231,7 +231,7 @@ proof -
   then have "y < output_size ( deep_model_l rs)" using valid_deep_model y_valid length_output_deep_model by force
   have 0:"{..<weight_space_dim} = set [0..<weight_space_dim]" by auto
   then show ?thesis unfolding weight_space_dim_def using polyfun_tensors_from_net assms(1) valid_deep_model
-    `y < output_size ( deep_model_l rs )` by metis
+    \<open>y < output_size ( deep_model_l rs )\<close> by metis
 qed
 
 lemma input_sizes_deep_model: "input_sizes (deep_model_l rs) = replicate (2 * N_half) (last rs)"
@@ -252,7 +252,7 @@ proof -
   show ?thesis
     unfolding A'_def A_def apply (rule polyfun_matricize)
     using dims_tensor_deep_model[OF 1] 2[unfolded A_def]
-    using dims_A'_pow[unfolded A'_def A_def] `i<(last rs) ^ N_half` `j<(last rs) ^ N_half`
+    using dims_A'_pow[unfolded A'_def A_def] \<open>i<(last rs) ^ N_half\<close> \<open>j<(last rs) ^ N_half\<close>
     by auto
 qed
 

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Exporting code to Haskell*}
+section\<open>Exporting code to Haskell\<close>
 
 theory Code_Generation_IArrays_Haskell
 imports    

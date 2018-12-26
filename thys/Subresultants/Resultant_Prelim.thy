@@ -124,7 +124,7 @@ qed
 definition resultant :: "'a poly \<Rightarrow> 'a poly \<Rightarrow> 'a :: comm_ring_1" where
   "resultant p q = det (sylvester_mat p q)"
 
-text {* Resultant, but the size of the base Sylvester matrix is given. *}
+text \<open>Resultant, but the size of the base Sylvester matrix is given.\<close>
 
 definition "resultant_sub m n p q = det (sylvester_mat_sub m n p q)"
 

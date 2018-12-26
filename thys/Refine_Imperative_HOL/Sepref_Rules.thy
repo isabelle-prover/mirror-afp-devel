@@ -736,8 +736,8 @@ begin
   text \<open>Composed precondition normalizer\<close>  
   named_theorems fcomp_prenorm_simps \<open>fcomp precondition-normalizer: Simplification theorems\<close>
 
-  text \<open>Support for preconditions of the form @{text "_\<in>Domain R"}, 
-    where @{text R} is the relation of the next more abstract level.\<close>
+  text \<open>Support for preconditions of the form \<open>_\<in>Domain R\<close>, 
+    where \<open>R\<close> is the relation of the next more abstract level.\<close>
   declare DomainI[fcomp_prenorm_simps]
 
   lemma auto_weaken_pre_init_hf: 
@@ -1707,21 +1707,21 @@ begin
     end
   \<close>
 
-  attribute_setup to_fref = {*
+  attribute_setup to_fref = \<open>
     Scan.succeed (Thm.rule_attribute [] (Sepref_Rules.to_fref o Context.proof_of))
-  *} "Convert parametricity theorem to uncurried fref-form" 
+\<close> "Convert parametricity theorem to uncurried fref-form" 
 
-  attribute_setup to_foparam = {*
+  attribute_setup to_foparam = \<open>
       Scan.succeed (Thm.rule_attribute [] (Sepref_Rules.to_foparam o Context.proof_of))
-  *} \<open>Convert param or fref rule to first order rule\<close>
+\<close> \<open>Convert param or fref rule to first order rule\<close>
   (* Overloading existing param_fo - attribute from Parametricity.thy *)
-  attribute_setup param_fo = {*
+  attribute_setup param_fo = \<open>
       Scan.succeed (Thm.rule_attribute [] (Sepref_Rules.to_foparam o Context.proof_of))
-  *} \<open>Convert param or fref rule to first order rule\<close>
+\<close> \<open>Convert param or fref rule to first order rule\<close>
 
-  attribute_setup to_hnr = {*
+  attribute_setup to_hnr = \<open>
     Scan.succeed (Thm.rule_attribute [] (Sepref_Rules.to_hnr o Context.proof_of))
-  *} "Convert hfref-rule to hnr-rule"
+\<close> "Convert hfref-rule to hnr-rule"
   
   attribute_setup to_hfref = \<open>Scan.succeed (
       Thm.rule_attribute [] (Context.proof_of #> Sepref_Rules.to_hfref)

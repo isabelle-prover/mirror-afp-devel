@@ -5,9 +5,9 @@ begin
 context ute_parameters
 begin
 
-subsection {* Preliminary Lemmas *}
+subsection \<open>Preliminary Lemmas\<close>
 
-text {* Processes can make a vote only at first round of each phase. *}
+text \<open>Processes can make a vote only at first round of each phase.\<close>
 
 lemma vote_step:
   assumes  nxt: "nextState Ute_M r p (rho r p) \<mu> (rho (Suc r) p)"
@@ -20,7 +20,7 @@ proof (rule ccontr)
   with assms show False by auto
 qed
 
-text {* Processes can make a new decision only at second round of each phase. *}
+text \<open>Processes can make a new decision only at second round of each phase.\<close>
 
 lemma decide_step:
   assumes run: "SHORun Ute_M rho HOs SHOs"
@@ -87,7 +87,7 @@ proof -
   thus ?thesis by auto
 qed
 
-text {* No two processes may vote for different values in the same round. *}
+text \<open>No two processes may vote for different values in the same round.\<close>
 
 lemma common_vote:
   assumes usafe: "SHOcommPerRd Ute_M HO SHO"
@@ -169,10 +169,10 @@ using assms proof -
   qed
 qed
 
-text {* 
+text \<open>
   No decision may be taken by a process unless it received enough messages
   holding the same value.
-*}
+\<close>
 (*
   The proof mainly relies on lemma @{text decide_step}
   and the @{text Ute_commPerRound} predicate. 
@@ -213,13 +213,13 @@ proof -
   show ?thesis using alpha_lt_E by auto
 qed
 
-subsection {* Proof of Agreement and Validity *}
+subsection \<open>Proof of Agreement and Validity\<close>
 
-text {*
-  If more than @{text "E - \<alpha>"} messages holding @{text v} are sent to
-  some process @{text p} at round @{text r}, then every process @{text pp}
-  correctly receives more than @{text "\<alpha>"} such messages.
-*}
+text \<open>
+  If more than \<open>E - \<alpha>\<close> messages holding \<open>v\<close> are sent to
+  some process \<open>p\<close> at round \<open>r\<close>, then every process \<open>pp\<close>
+  correctly receives more than \<open>\<alpha>\<close> such messages.
+\<close>
 (*
   The proof mainly relies on the @{text Ute_commPerRound} predicate. 
 *)
@@ -256,11 +256,11 @@ proof -
   show ?thesis by auto
 qed
 
-text {*
-  If more than @{text "E - \<alpha>"} messages holding @{text v} are sent to @{text p}
-  at some round @{text r}, then any process @{text pp} will set its @{text x} to
-  value @{text v} in @{text r}.
-*}
+text \<open>
+  If more than \<open>E - \<alpha>\<close> messages holding \<open>v\<close> are sent to \<open>p\<close>
+  at some round \<open>r\<close>, then any process \<open>pp\<close> will set its \<open>x\<close> to
+  value \<open>v\<close> in \<open>r\<close>.
+\<close>
 (*
   The proof relies on previous lemmas @{text common_x_argument_1}
   and @{text common_vote} and the @{text Ute_commPerRound} predicate. 
@@ -393,9 +393,9 @@ proof -
   with xw show "x (rho (Suc (Suc r)) pp) = v" by auto
 qed
 
-text {*
+text \<open>
   Inductive argument for the agreement and validity theorems.
-*}
+\<close>
 (*
   The proof relies on previous lemmas @{text common_x_argument_2}
   and @{text unique_majority_T} and the @{text Ute_commPerRound} predicate.
@@ -485,10 +485,10 @@ proof -
   qed
 qed
 
-text {*
-  A process that holds some decision @{text v} has decided @{text v}
+text \<open>
+  A process that holds some decision \<open>v\<close> has decided \<open>v\<close>
   sometime in the past.
-*}
+\<close>
 
 lemma decisionNonNullThenDecided:
   assumes run:"SHORun Ute_M rho HOs SHOs" and dec: "decide (rho n p) = Some v"
@@ -511,10 +511,10 @@ proof -
 qed
 
 
-text {*
-  If process @{text "p1"} has decided value @{text "v1"} and process
-  @{text "p2"} later decides, then @{text "p2"} must decide @{text "v1"}.
-*}
+text \<open>
+  If process \<open>p1\<close> has decided value \<open>v1\<close> and process
+  \<open>p2\<close> later decides, then \<open>p2\<close> must decide \<open>v1\<close>.
+\<close>
 (*
   The proof relies on previous lemmas @{text decide_step},
   @{text decide_with_threshold_E}, @{text unique_majority_E_\<alpha>},
@@ -604,10 +604,10 @@ proof -
   show "v2 = v1" by (auto dest: unique_majority_E_\<alpha>)
 qed
 
-text {* 
+text \<open>
   The Agreement property is an immediate consequence of the two
   preceding lemmas.
-*}
+\<close>
 
 theorem ute_agreement:
   assumes run: "SHORun Ute_M rho HOs SHOs" 
@@ -640,9 +640,9 @@ proof -
   qed
 qed
 
-text {* 
+text \<open>
   Main lemma for the proof of the Validity property.
-*}
+\<close>
 (*
   The proof relies on previous lemmas @{text safety_inductive_argument},
   @{text unique_majority_T} and the @{text Ute_commPerRound} predicate.
@@ -732,9 +732,9 @@ proof -
   show ?thesis by simp
 qed
 
-text {*
+text \<open>
   The following theorem shows the Validity property of algorithm \ute{}.
-*}
+\<close>
 (*
  The proof relies on previous lemmas @{text decisionNonNullThenDecided},
  @{text decide_step}, @{text decide_with_threshold_E},  @{text unique_majority_E_\<alpha>},
@@ -767,13 +767,13 @@ proof -
 qed
 
 
-subsection {* Proof of Termination *}
+subsection \<open>Proof of Termination\<close>
 
-text {*
+text \<open>
   At the second round of a phase that satisfies the conditions expressed in
-  the global communication predicate, processes update their @{text x} variable 
-  with the value @{text v} they receive in more than @{text \<alpha>} messages.
-*}
+  the global communication predicate, processes update their \<open>x\<close> variable 
+  with the value \<open>v\<close> they receive in more than \<open>\<alpha>\<close> messages.
+\<close>
 (* The proof relies on @{text common_vote}. *)
 
 lemma set_x_from_vote:
@@ -830,11 +830,11 @@ proof -
   with xp show ?thesis by simp
 qed
 
-text {* 
+text \<open>
   Assume that HO and SHO sets are uniform at the second step of some
-  phase. Then at the subsequent round there exists some value @{text v}
-  such that any received message which is not corrupted holds @{text v}.
-*}
+  phase. Then at the subsequent round there exists some value \<open>v\<close>
+  such that any received message which is not corrupted holds \<open>v\<close>.
+\<close>
 (* The proof relies on lemma @{text set_x_from_vote}. *)
 
 lemma termination_argument_1:
@@ -954,11 +954,11 @@ proof -
   with that show thesis by blast
 qed
 
-text {*
-  If a process @{text p} votes @{text v} at some round @{text r},
-  then all messages received by @{text p} in @{text r} that are not
-  corrupted hold @{text v}.
-*}
+text \<open>
+  If a process \<open>p\<close> votes \<open>v\<close> at some round \<open>r\<close>,
+  then all messages received by \<open>p\<close> in \<open>r\<close> that are not
+  corrupted hold \<open>v\<close>.
+\<close>
 (* immediate from lemma @{text vote_step} and the algorithm definition. *)
 
 lemma termination_argument_2:
@@ -976,9 +976,9 @@ proof -
   with vq show "\<mu>p q = Some (Vote (Some v))" by auto
 qed
 
-text{* 
+text\<open>
   We now prove the Termination property.
-*}
+\<close>
 (*
   The proof relies on previous lemmas @{text termination_argument_1},
   @{text termination_argument_2}, @{text common_vote}, @{text unique_majority_E},
@@ -1106,13 +1106,13 @@ proof -
 qed
 
 
-subsection {* \ute{} Solves Weak Consensus *}
+subsection \<open>\ute{} Solves Weak Consensus\<close>
 
-text {*
+text \<open>
   Summing up, all (coarse-grained) runs of \ute{} for
   HO and SHO collections that satisfy the communication predicate 
   satisfy the Weak Consensus property.
-*}
+\<close>
 
 theorem ute_weak_consensus:
   assumes run: "SHORun Ute_M rho HOs SHOs"
@@ -1125,10 +1125,10 @@ theorem ute_weak_consensus:
         ute_termination[OF run commR commG]
   by auto
 
-text {*
+text \<open>
   By the reduction theorem, the correctness of the algorithm carries over
   to the fine-grained model of runs.
-*}
+\<close>
 
 theorem ute_weak_consensus_fg:
   assumes run: "fg_run Ute_M rho HOs SHOs (\<lambda>r q. undefined)"

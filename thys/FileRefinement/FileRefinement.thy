@@ -7,7 +7,7 @@
 section "Data refinement of representation of a file"
 theory FileRefinement imports Complex_Main CArrays ResizableArrays begin
 
-text {*
+text \<open>
   We describe a file at
   two levels of abstraction: an abstract file, represented as a resizable array, and
   a concrete file, represented using data blocks.
@@ -18,7 +18,7 @@ afsRead     :: "AFile => nat \<rightharpoonup> byte"
 afsWrite    :: "AFile => nat => byte \<rightharpoonup> AFile"
 afsFileSize :: "AFile => nat"
 \end{verbatim}
-*}
+\<close>
 
 typedecl
   \<comment> \<open>unit of file content\<close>
@@ -35,7 +35,7 @@ where
   nonZeroNumBlocks: "numBlocks > 0"
 
 (* ------------------------------------------------------------ *)
-subsection {* Abstract File *}
+subsection \<open>Abstract File\<close>
 
 type_synonym AFile = "byte rArray" \<comment> \<open>abstract file is a resizable array of bytes\<close>
 
@@ -60,7 +60,7 @@ definition afWrite :: "AFile => nat => byte \<rightharpoonup> AFile" where
    else None"
 
 (* ------------------------------------------------------------ *)
-subsection {* Concrete File *}
+subsection \<open>Concrete File\<close>
 
 type_synonym Block = "byte cArray" \<comment> \<open>array of @{term blockSize} bytes\<close>
 
@@ -91,9 +91,9 @@ definition cfRead :: "CFile => nat \<rightharpoonup> byte" where
          Some (readCArray (readCArray (data cfile) i) j)))
    else None"
 
-subsubsection {* Writing File *}
+subsubsection \<open>Writing File\<close>
 
-text {* We first present some auxiliary operations. *}
+text \<open>We first present some auxiliary operations.\<close>
 
 definition cfWriteNoExtend :: "CFile => nat => byte => CFile" where
   \<comment> \<open>Writing to a file when
@@ -113,7 +113,7 @@ definition cfExtendFile :: "CFile => nat => CFile" where
      cfile(| fileSize := Suc byteIndex,
              nextFreeBlock := Suc (byteIndex div blockSize) |)"
 
-text {* The main file write operation. *}
+text \<open>The main file write operation.\<close>
 
 definition cfWrite :: "CFile => nat => byte \<rightharpoonup> CFile" where
   \<comment> \<open>Writes the file at byte location byteIndex, automatically extending
@@ -127,7 +127,7 @@ definition cfWrite :: "CFile => nat => byte \<rightharpoonup> CFile" where
      else None"
 
 (* ---------------------------------------------------------------*)
-subsection {* Reachability Invariants for Concrete File *}
+subsection \<open>Reachability Invariants for Concrete File\<close>
 
 definition nextFreeBlockInvariant :: "CFile => bool" where
   "nextFreeBlockInvariant state ==
@@ -155,9 +155,9 @@ definition reachabilityInvariant :: "CFile => bool" where
       lastBlockInvariant cfile"
 
 (* ---------------------------------------------------------------*)
-subsection {* Initial File Satisfies Invariants *}
+subsection \<open>Initial File Satisfies Invariants\<close>
 
-text {* We prove each invariant individually and then summarize. *}
+text \<open>We prove each invariant individually and then summarize.\<close>
 
 lemma nextFreeBlockInvariant1:
   "nextFreeBlockInvariant makeCF"
@@ -182,7 +182,7 @@ by (simp add: reachabilityInvariant_def
               lastBlockInvariant1)
 
 (* ---------------------------------------------------------------*)
-subsection {* Properties of Concrete File Operations *}
+subsection \<open>Properties of Concrete File Operations\<close>
 
 lemma cfWriteNoExtendPreservesFileSize:
   "[| index < fileSize cfile1;
@@ -241,10 +241,10 @@ done
 
 
 (* ---------------------------------------------------------------*)
-subsection {* Concrete File Operations Preserve Invariants *}
+subsection \<open>Concrete File Operations Preserve Invariants\<close>
 
-text {* There is only one top-level concrete operation: write, and we
-show that it preserves all reachability invariants. *}
+text \<open>There is only one top-level concrete operation: write, and we
+show that it preserves all reachability invariants.\<close>
 
 lemma cfWritePreservesNextFreeBlockInvariant:
    "[| reachabilityInvariant cfile1;
@@ -364,7 +364,7 @@ apply auto
 apply (simp add: nextFreeBlockIncreases)
 done
 
-text {* Final statement that all invariants are preserved. *}
+text \<open>Final statement that all invariants are preserved.\<close>
 lemma cfWritePreserves: 
    "[| reachabilityInvariant cfile1;
        cfWrite cfile1 byteIndex value = Some cfile2 |] ==> 
@@ -376,12 +376,12 @@ apply (simp add: cfWritePreservesLastBlockInvariant)
 done
 
 (* ---------------------------------------------------------------*)
-subsection {* Commuting Diagrams for Simulation Relation *}
+subsection \<open>Commuting Diagrams for Simulation Relation\<close>
 
-text {* Here we show correctness of file system operations. *}
+text \<open>Here we show correctness of file system operations.\<close>
 
 (* ---------------------------------------------------------------*)
-subsubsection {* Abstraction Function *}
+subsubsection \<open>Abstraction Function\<close>
 
 definition abstFn :: "CFile => AFile" where
   "abstFn cfile == (fileSize cfile, 
@@ -394,19 +394,19 @@ primrec oAbstFn :: "CFile option => AFile option" where
 | "oAbstFn (Some s) = Some (abstFn s)"
 
 (* ---------------------------------------------------------------*)
-subsubsection {* Creating a File *}
+subsubsection \<open>Creating a File\<close>
 
 lemma makeCFCorrect: "abstFn makeCF = makeAF"
 by (simp add: makeCF_def makeAF_def abstFn_def cfRead_def
     split: bool.splits option.splits)
 
-subsubsection {* File Size *}
+subsubsection \<open>File Size\<close>
 
 lemma fileSizeCorrect:
   "cfSize cfile = afSize (abstFn cfile)"
 by (simp add: cfSize_def afSize_def abstFn_def)
 
-subsubsection {* Read Operation *}
+subsubsection \<open>Read Operation\<close>
 
 lemma readCorrect:
   "cfRead cfile = afRead (abstFn cfile)"
@@ -415,7 +415,7 @@ apply (rule ext)
 apply (simp add: cfRead_def afRead_def Let_def)
 done
 
-subsubsection {* Write Operation *}
+subsubsection \<open>Write Operation\<close>
 
 lemma writeNoExtendCorrect:
   "[| index < fileSize cfile1;

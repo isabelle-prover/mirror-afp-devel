@@ -201,7 +201,7 @@ definition "certify iG iM c \<equiv>
   OD"
 
 
-subsection {* Verification *}
+subsection \<open>Verification\<close>
 
 context begin
   interpretation Labeling_Syntax .
@@ -506,7 +506,7 @@ begin
         then have "cyclic_on (edge_succ (mk_map (mk_graph iG) iM)) (out_arcs (mk_graph iG) (tail (mk_graph iG) i))"
           by (auto intro!: dm.edge_succ_cyclic)
         then have "orbit (edge_succ (mk_map (mk_graph iG) iM)) i = out_arcs (mk_graph iG) (ig_tail iG i)"
-          by (simp add: `i \<in> arcs (mk_graph iG)` mkg_simps orbit_cyclic_eq3)
+          by (simp add: \<open>i \<in> arcs (mk_graph iG)\<close> mkg_simps orbit_cyclic_eq3)
         then have "j \<in> orbit (edge_succ (mk_map (mk_graph iG) iM)) i" using A by (simp add: mkg_simps)
         also have "orbit (edge_succ (mk_map (mk_graph iG) iM)) i = orbit (im_succ iM) i"
           using \<open>i \<in> arcs _\<close>
@@ -793,7 +793,7 @@ qed
 declare ovalidNF_is_map[THEN ovalidNF_wp, THEN trivial_label, vcg_l]
 
 
-subsubsection {* @{term isolated_nodes} *}
+subsubsection \<open>@{term isolated_nodes}\<close>
 
 definition "inv_isolated_nodes s iG vcnt ecnt \<equiv>
   vcnt = length (ig_verts iG)

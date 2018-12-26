@@ -4,11 +4,11 @@ imports TAO_3_Quantifiable
 begin
 (*>*)
 
-section{* Basic Definitions *}
-text{* \label{TAO_BasicDefinitions} *}
+section\<open>Basic Definitions\<close>
+text\<open>\label{TAO_BasicDefinitions}\<close>
 
-subsection{* Derived Connectives *}
-text{* \label{TAO_BasicDefinitions_DerivedConnectives} *}
+subsection\<open>Derived Connectives\<close>
+text\<open>\label{TAO_BasicDefinitions_DerivedConnectives}\<close>
 
 definition conj::"\<o>\<Rightarrow>\<o>\<Rightarrow>\<o>" (infixl "\<^bold>&" 53) where
   "conj \<equiv> \<lambda> x y . \<^bold>\<not>(x \<^bold>\<rightarrow> \<^bold>\<not>y)"
@@ -26,14 +26,14 @@ declare diamond_def[conn_defs] conj_def[conn_defs]
         disj_def[conn_defs] equiv_def[conn_defs]
         exists_def[conn_defs]
 
-subsection{* Abstract and Ordinary Objects *}
-text{* \label{TAO_BasicDefinitions_AbstractOrdinary} *}
+subsection\<open>Abstract and Ordinary Objects\<close>
+text\<open>\label{TAO_BasicDefinitions_AbstractOrdinary}\<close>
 
 definition Ordinary :: "\<Pi>\<^sub>1" ("O!") where "Ordinary \<equiv> \<^bold>\<lambda>x. \<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>"
 definition Abstract :: "\<Pi>\<^sub>1" ("A!") where "Abstract \<equiv> \<^bold>\<lambda>x. \<^bold>\<not>\<^bold>\<diamond>\<lparr>E!,x\<^sup>P\<rparr>"
 
-subsection{* Identity Definitions *}
-text{* \label{TAO_BasicDefinitions_Identity} *}
+subsection\<open>Identity Definitions\<close>
+text\<open>\label{TAO_BasicDefinitions_Identity}\<close>
 
 definition basic_identity\<^sub>E::"\<Pi>\<^sub>2" where
   "basic_identity\<^sub>E \<equiv> \<^bold>\<lambda>\<^sup>2 (\<lambda> x y . \<lparr>O!,x\<^sup>P\<rparr> \<^bold>& \<lparr>O!,y\<^sup>P\<rparr>

@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* WS1S *}
+section \<open>WS1S\<close>
 
 (*<*)
 theory WS1S
@@ -8,7 +8,7 @@ imports Formula Pi_Regular_Operators "HOL-Library.Stream"
 begin
 (*>*)
 
-subsection {* Encodings *}
+subsection \<open>Encodings\<close>
 
 definition "cut_same x s = stake (LEAST n. sdrop n s = sconst x) s"
 
@@ -424,14 +424,14 @@ proof (intro equalityI subsetI)
   moreover
   { fix m assume "m \<in> FO"
     with assms have "m < n" by (auto simp: max_idx_vars)
-    with L `m \<in> FO` assms obtain u z v where uzv: "x = u @ z @ v"
+    with L \<open>m \<in> FO\<close> assms obtain u z v where uzv: "x = u @ z @ v"
       "u \<in> star (lang n (Atom (Arbitrary_Except m False)))"
       "z \<in> lang n (Atom (Arbitrary_Except m True))"
       "v \<in> star (lang n (Atom (Arbitrary_Except m False)))" unfolding ENC_def
       by (cases n)
        (auto simp: not_less max_idx_vars valid_ENC_def fin intro!: wf_rexp_valid_ENC finite_FOV
         dest!: iffD1[OF lang_flatten_INTERSECT, rotated -1], fast)
-    with `m < n` have "\<exists>!p.  snd (x ! p) ! m \<and> p < length x"
+    with \<open>m < n\<close> have "\<exists>!p.  snd (x ! p) ! m \<and> p < length x"
     proof (intro ex1I[of _ "length u"])
       fix p assume "m < n" "snd (x ! p) ! m \<and> p < length x"
       with star_Arbitrary_ExceptD[OF uzv(2)] Arbitrary_ExceptD[OF uzv(3)] star_Arbitrary_ExceptD[OF uzv(4)]
@@ -441,7 +441,7 @@ proof (intro equalityI subsetI)
       "\<And>q. snd (x ! q) ! m \<and> q < length x \<longrightarrow> q = p" by auto
     from this(1,2) have "\<exists>!p. snd (?s !! p) ! m"
     proof (intro ex1I[of _ p])
-      fix q from p(1,2) p(3)[of q] `m < n` show "snd (?s !! q) ! m \<Longrightarrow> q = p"
+      fix q from p(1,2) p(3)[of q] \<open>m < n\<close> show "snd (?s !! q) ! m \<Longrightarrow> q = p"
         by (cases "q < length x")  auto
     qed auto
   }
@@ -468,7 +468,7 @@ next
   { fix i from I(2) have "(w @- sconst any) !! i \<in> set \<Sigma>" by (cases "i < length w") auto } note * = this
   from I have "x @- sconst (any, replicate (length I) False) = stream_enc (w, I)" (is "x @- ?F = ?s")
     by (intro stream_enc_enc[symmetric]) auto
-  with * `length I = n` have "\<forall>x \<in> set x. length (snd x) = n \<and> fst x \<in> set \<Sigma>"
+  with * \<open>length I = n\<close> have "\<forall>x \<in> set x. length (snd x) = n \<and> fst x \<in> set \<Sigma>"
     by (auto dest!: shift_snth_less[of _ _ ?F, symmetric] simp: in_set_conv_nth)
   thus "x \<in> ?L"
   proof (cases "FO = {}")
@@ -480,7 +480,7 @@ next
       by (auto simp: max_idx_vars)
     { fix r assume "r \<in> FO"
       with I(2) obtain p where p: "I ! r = Inl p" by (cases "I ! r") auto
-      from `r \<in> FO` assms I(2,3) have r: "r < length I" by (auto dest!: max_idx_vars)
+      from \<open>r \<in> FO\<close> assms I(2,3) have r: "r < length I" by (auto dest!: max_idx_vars)
       from p I(1,2) r have "p < length x"
         using less_length_cut_same_Inl[of I r p w] by auto
       with p I r *
@@ -493,8 +493,8 @@ next
       from p I r * have "drop (Suc p) x \<in> star (lang n (Atom (Arbitrary_Except r False)))"
         by (subst encD[of x]) (auto simp: in_set_conv_nth simp del: lang.simps snth.simps intro!: Ball_starI enc_atom_lang_Arbitrary_Except_False)
       ultimately have "take p x @ [x ! p] @ drop (p + 1) x \<in> lang n (valid_ENC n r)"
-        using `0 < n` unfolding valid_ENC_def by (auto simp del: append.simps)
-      hence "x \<in> lang n (valid_ENC n r)" using id_take_nth_drop[OF `p < length x`] by auto
+        using \<open>0 < n\<close> unfolding valid_ENC_def by (auto simp del: append.simps)
+      hence "x \<in> lang n (valid_ENC n r)" using id_take_nth_drop[OF \<open>p < length x\<close>] by auto
     }
     with False lang_flatten_INTERSECT[OF finite nonempty wf_rexp] show ?thesis by (auto simp: ENC_def)
   qed (simp add: ENC_def, auto simp: \<sigma>_def set_n_lists image_iff)
@@ -508,7 +508,7 @@ proof -
   show ?thesis unfolding lang_ENC[OF *] by simp
 qed
 
-subsection {* Welldefinedness of enc wrt. Models *}
+subsection \<open>Welldefinedness of enc wrt. Models\<close>
 
 lemma wf_interp_for_formula_FExists: 
  "\<lbrakk>wf_formula (length I) (FExists \<phi>)\<rbrakk>\<Longrightarrow>
@@ -634,10 +634,10 @@ next
     moreover
     with FEXISTS.prems(1,2) have "(w', Inr P # I') \<Turnstile> \<phi>"
     proof (intro iffD1[OF FEXISTS.IH[of w "Inr P # I" w' "Inr P # I'"]])
-      from FEXISTS.prems(2,3) `finite P` show "wf_interp_for_formula (w, Inr P # I) \<phi>"
+      from FEXISTS.prems(2,3) \<open>finite P\<close> show "wf_interp_for_formula (w, Inr P # I) \<phi>"
         by (blast dest: wf_interp_for_formula_FEXISTS[of I])
     next
-      from FEXISTS.prems(2,4) `finite P` show "wf_interp_for_formula (w', Inr P # I') \<phi>"
+      from FEXISTS.prems(2,4) \<open>finite P\<close> show "wf_interp_for_formula (w', Inr P # I') \<phi>"
         by (blast dest: wf_interp_for_formula_FEXISTS[of I', unfolded length])
     qed (auto simp: smap2_alt split: sum.splits if_split_asm)
     ultimately show "(w', I') \<Turnstile> FEXISTS \<phi>" by auto
@@ -647,10 +647,10 @@ next
     moreover
     with FEXISTS.prems have "(w, Inr P # I) \<Turnstile> \<phi>"
     proof (intro iffD2[OF FEXISTS.IH[of w "Inr P # I" w' "Inr P # I'"]])
-      from FEXISTS.prems(2,3) `finite P` show "wf_interp_for_formula (w, Inr P # I) \<phi>"
+      from FEXISTS.prems(2,3) \<open>finite P\<close> show "wf_interp_for_formula (w, Inr P # I) \<phi>"
         by (blast dest: wf_interp_for_formula_FEXISTS[of I])
     next
-      from FEXISTS.prems(2,4) `finite P` show "wf_interp_for_formula (w', Inr P # I') \<phi>"
+      from FEXISTS.prems(2,4) \<open>finite P\<close> show "wf_interp_for_formula (w', Inr P # I') \<phi>"
         by (blast dest: wf_interp_for_formula_FEXISTS[of I', unfolded length])
     qed (auto simp: smap2_alt split: sum.splits if_split_asm)
     ultimately show "(w, I) \<Turnstile> FEXISTS \<phi>" by auto
@@ -685,7 +685,7 @@ lemma lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_FAnd:
     lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<phi>\<^sub>1 \<inter> lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S n \<phi>\<^sub>2 \<inter> \<Union>{enc (w, I) | w I. length I = n \<and> wf_interp_for_formula (w, I) (FAnd \<phi>\<^sub>1 \<phi>\<^sub>2)}"
   using assms unfolding lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_def by (fastforce simp del: enc.simps)
 
-subsection {* From WS1S to Regular expressions *}
+subsection \<open>From WS1S to Regular expressions\<close>
 
 fun rexp_of :: "nat \<Rightarrow> 'a formula \<Rightarrow> ('a atom) rexp" where
   "rexp_of n (FQ a m) =
@@ -904,7 +904,7 @@ next
         moreover
         from m I have ex1: "\<exists>!p. snd (stream_enc (w, I) !! p) ! m'" unfolding I(1) by (intro stream_enc_unique) auto
         ultimately have "p' = ?u'" unfolding stream_enc using u' I(3) by auto (metis shift_snth_less)
-      } note * = this `p = length u1`
+      } note * = this \<open>p = length u1\<close>
       with m I have "(dec_word ?x, stream_dec n {m, m'} ?x) \<Turnstile> FLess m m'"
         using stream_enc_enc[OF _ I(1), symmetric]
         by (auto dest: stream_dec_not_Inr stream_dec_enc_Inl split: sum.splits simp del: stream_enc.simps)
@@ -1217,7 +1217,7 @@ next
   from x obtain w I where I: "x \<in> SAMEQUOT (any, replicate n False) (map \<pi> ` enc (w, I))"
     "wf_interp_for_formula (w, I) \<phi>" "length I = Suc n"
     using lang_ENC_formula[OF wf1] unfolding SAMEQUOT_def by fast
-  with `0 \<in> FOV \<phi>` obtain p I' where I': "I = Inl p # I'" by (cases I) (fastforce split: sum.splits)+
+  with \<open>0 \<in> FOV \<phi>\<close> obtain p I' where I': "I = Inl p # I'" by (cases I) (fastforce split: sum.splits)+
   with I have wtlI: "x \<in> enc (w, I')" "length I' = n" using tl_enc[of "Inl p" I' w] by auto
   have "wf_interp_for_formula (w, I') (FExists \<phi>)"
     using wf_interp_for_formula_FExists[OF wf[folded wtlI(2)]]
@@ -1246,7 +1246,7 @@ next
   from x obtain w I where I: "x \<in> SAMEQUOT (any, replicate n False) (map \<pi> ` enc (w, I))"
     "wf_interp_for_formula (w, I) \<phi>" "length I = Suc n"
     using lang_ENC_formula[OF wf1] unfolding SAMEQUOT_def by fast
-  with `0 \<in> SOV \<phi>` obtain P I' where I': "I = Inr P # I'" by (cases I) (fastforce split: sum.splits)+
+  with \<open>0 \<in> SOV \<phi>\<close> obtain P I' where I': "I = Inr P # I'" by (cases I) (fastforce split: sum.splits)+
   with I have wtlI: "x \<in> enc (w, I')" "length I' = n" using tl_enc[of "Inr P" I' w] by auto
   have "wf_interp_for_formula (w, I') (FEXISTS \<phi>)"
     using wf_interp_for_formula_FEXISTS[OF wf[folded wtlI(2)]]
@@ -1409,7 +1409,7 @@ proof -
        replicate m (any, replicate n False) \<in> lang n (ENC n ((\<lambda>x. x - 1) ` X))" and "x \<in> Z"
       show "map \<pi> x \<in> map \<pi> ` (Z \<inter> lang (n + 1) (ENC (n + 1) X))"
       proof (intro imageI IntI)
-        from `x \<in> Z` assms(4) have "\<forall>(_, x)\<in>set x. x \<noteq> []" by (auto simp: \<sigma>_def)
+        from \<open>x \<in> Z\<close> assms(4) have "\<forall>(_, x)\<in>set x. x \<noteq> []" by (auto simp: \<sigma>_def)
         with \<pi>x assms(2) show "x \<in> lang (n + 1) (ENC (n + 1) X)"
         unfolding lang_ENC[OF assms(3) subset_refl] lang_ENC[OF * subset_refl]
         proof (safe, intro UnionI[OF _ project_enc_extend[rotated]] CollectI exI conjI)
@@ -1419,7 +1419,7 @@ proof -
              (Inr (positions_in_row (x @- sconst (any, replicate (Suc (length I)) False)) 0) #I))
            (case_sum (\<lambda>a. True) finite)" by (auto simp del: replicate_Suc)
         qed (auto simp add: nth_Cons' Ball_def in_pred_image_iff)
-      qed (rule `x \<in> Z`)
+      qed (rule \<open>x \<in> Z\<close>)
     qed (rule refl)
   qed
 qed

@@ -28,7 +28,7 @@ proof -
     with QTrans show ?case
     proof(induct rule: inputCases)
       have "a<y>.([(x, y)] \<bullet> P) \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P)" by(rule Input)
-      hence "a<x>.P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P)" using `y \<sharp> P` by(simp add: alphaInput)
+      hence "a<x>.P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P)" using \<open>y \<sharp> P\<close> by(simp add: alphaInput)
       moreover have "derivative ([(x, y)] \<bullet> P) ([(x, y)] \<bullet> Q) (InputS a) y Rel"
       proof(auto simp add: derivative_def)
         fix u
@@ -40,11 +40,11 @@ proof -
         next
           case False
           hence "u \<sharp> P" and "u \<sharp> Q" by(auto simp add: fresh_def supp_prod)
-          moreover from `eqvt Rel` `(P, Q) \<in> Rel` have "([(x, u)] \<bullet> P, [(x, u)] \<bullet> Q) \<in> Rel"
+          moreover from \<open>eqvt Rel\<close> \<open>(P, Q) \<in> Rel\<close> have "([(x, u)] \<bullet> P, [(x, u)] \<bullet> Q) \<in> Rel"
             by(rule eqvtRelI)
           ultimately show ?thesis by(simp only: injPermSubst)
         qed
-        with `y \<sharp> P` `y \<sharp> Q` show "(([(x, y)] \<bullet> P)[y::=u], ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
+        with \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> show "(([(x, y)] \<bullet> P)[y::=u], ([(x, y)] \<bullet> Q)[y::=u]) \<in> Rel"
           by(simp add: renaming)
       qed
       ultimately show "\<exists>P'. a<x>.P \<longmapsto> a<y> \<prec> P' \<and> derivative P' ([(x, y)] \<bullet> Q) (InputS a) y Rel"
@@ -86,7 +86,7 @@ proof -
   thus ?thesis
   proof(coinduct rule: bisimCoinduct)
     case(cSim P Q)
-    thus ?case using `eqvt ?X`
+    thus ?case using \<open>eqvt ?X\<close>
       by(fastforce intro: inputSuppPres)
   next
     case(cSym P Q)
@@ -260,20 +260,20 @@ next
   thus ?case by(rule expandSC)
 next
   case(SumPres P Q R)
-  from `P \<sim> Q` show ?case by(rule sumPres)
+  from \<open>P \<sim> Q\<close> show ?case by(rule sumPres)
 next
   case(ParPres P P' Q Q')
   have "P \<sim> P'" and "Q \<sim> Q'" by fact+
   thus ?case by(metis transitive symmetric parPres parSym)
 next
   case(ResPres P Q x)
-  from `P \<sim> Q` show ?case by(rule resPres)
+  from \<open>P \<sim> Q\<close> show ?case by(rule resPres)
 next
   case(TauPres P Q)
-  from `P \<sim> Q` show ?case by(rule tauPres)
+  from \<open>P \<sim> Q\<close> show ?case by(rule tauPres)
 next
   case(OutputPres P Q a b)
-  from `P \<sim> Q` show ?case by(rule outputPres)
+  from \<open>P \<sim> Q\<close> show ?case by(rule outputPres)
 next
   case(InputPres P Q x a)
   have "\<forall>y \<in> supp(P, Q, x). P[x::=y] \<equiv>\<^sub>e Q[x::=y] \<and> P[x::=y] \<sim> Q[x::=y]" by fact

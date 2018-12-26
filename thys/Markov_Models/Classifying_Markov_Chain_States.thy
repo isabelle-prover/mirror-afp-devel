@@ -1,4 +1,4 @@
-section {* Classifying Markov Chain States *}
+section \<open>Classifying Markov Chain States\<close>
 
 theory Classifying_Markov_Chain_States
   imports
@@ -72,14 +72,14 @@ proof -
     with st have "s \<in> S" "t \<in> S" "t \<noteq> 0" by auto
     then have "Gcd S dvd t" by auto
     then obtain a where a: "t = Gcd S * a" ..
-    with `t \<noteq> 0` have "0 < a" by auto
+    with \<open>t \<noteq> 0\<close> have "0 < a" by auto
 
     show "\<exists>N. \<forall>n\<ge>N. n * Gcd S \<in> S"
     proof (safe intro!: exI[of _ "a * a"])
       fix n
       define m where "m = (n - a * a) div a"
       define r where "r = (n - a * a) mod a"
-      with `0 < a` have "r < a" by simp
+      with \<open>0 < a\<close> have "r < a" by simp
       moreover define am where "am = a + m"
       ultimately have "r < am" by simp
       assume "a * a \<le> n" then have n: "n = a * a + (m * a + r)"
@@ -87,10 +87,10 @@ proof -
       have "n * Gcd S = am * t + r * Gcd S"
         unfolding n a by (simp add: field_simps am_def)
       also have "\<dots> = r * s + (am - r) * t"
-        unfolding `Gcd S = s - t`
-        using `t < s` `r < am` by (simp add: field_simps diff_mult_distrib2)
+        unfolding \<open>Gcd S = s - t\<close>
+        using \<open>t < s\<close> \<open>r < am\<close> by (simp add: field_simps diff_mult_distrib2)
       also have "\<dots> \<in> S"
-        using `s \<in> S` `t \<in> S` `r < am`
+        using \<open>s \<in> S\<close> \<open>t \<in> S\<close> \<open>r < am\<close>
         by (cases "r = 0") (auto intro!: cmult_S S)
       finally show "n * Gcd S \<in> S" .
     qed
@@ -100,7 +100,7 @@ qed
 context MC_syntax
 begin
 
-subsection {* Expected number of visits *}
+subsection \<open>Expected number of visits\<close>
 
 definition "G s t = (\<integral>\<^sup>+\<omega>. scount (HLD {t}) (s ## \<omega>) \<partial>T s)"
 
@@ -243,7 +243,7 @@ lemma lim_gf_G: "((\<lambda>z. ennreal (gf_G x y z)) \<longlongrightarrow> G x y
   unfolding gf_G_def G_eq_suminf real_scaleR_def
   by (intro power_series_tendsto_at_left p_nonneg p_le_1 summable_power_series)
 
-subsection {* Reachability probability *}
+subsection \<open>Reachability probability\<close>
 
 definition "u x y n = \<P>(\<omega> in T x. ev_at (HLD {y}) n \<omega>)"
 
@@ -495,7 +495,7 @@ qed
 lemma U_bounded: "0 \<le> U x y" "U x y \<le> 1"
   unfolding U_def by simp_all
 
-subsection {* Recurrent states *}
+subsection \<open>Recurrent states\<close>
 
 definition recurrent :: "'s \<Rightarrow> bool" where
   "recurrent s \<longleftrightarrow> (AE \<omega> in T s. ev (HLD {s}) \<omega>)"
@@ -624,7 +624,7 @@ proof -
     moreover have "((\<lambda>xa. 1 - gf_U x x xa :: real) \<longlongrightarrow> 1 - U x x) (at_left 1)"
       by (intro tendsto_intros gf_U)
     moreover have "eventually (\<lambda>z. gf_U x x z < 1) (at_left (1::real))"
-      by (auto intro!: eventually_at_left_1 strict simp: `U x x = 1` gf_U_eq_U)
+      by (auto intro!: eventually_at_left_1 strict simp: \<open>U x x = 1\<close> gf_U_eq_U)
     ultimately have "((\<lambda>z. ennreal (1 / (1 - gf_U x x z))) \<longlongrightarrow> top) (at_left 1)"
       unfolding ennreal_tendsto_top_eq_at_top
       by (intro LIM_at_top_divide[where a=1] tendsto_const zero_less_one)
@@ -656,7 +656,7 @@ proof (rule ccontr)
       by induction (auto simp: HLD_iff) }
   with AE_T_reachable[of x] have "U x y = 0"
     unfolding U_def by (intro T.prob_eq_0_AE) auto
-  with `0 < U x y` show False by auto
+  with \<open>0 < U x y\<close> show False by auto
 qed
 
 lemma accD_pos:
@@ -759,7 +759,7 @@ proof -
          (auto intro!: measure_pmf.integrable_const_bound[where B=1] Bochner_Integration.integral_cong
                simp: abs_mult mult_le_one U_bounded(2) split: split_indicator)
     also have "\<dots> \<ge> (\<integral>v. (1 - U y x) * indicator {y} v \<partial>K w)" (is "_ \<ge> ?rhs")
-      using `recurrent x`
+      using \<open>recurrent x\<close>
       by (intro integral_mono measure_pmf.integrable_const_bound[where B=1])
          (auto simp: abs_mult mult_le_one U_bounded(2) recurrent_iff_U_eq_1 field_simps
                split: split_indicator)
@@ -767,27 +767,27 @@ proof -
       by (simp add: measure_pmf.emeasure_eq_measure pmf.rep_eq)
     finally have "(1 - U y x) * pmf (K w) y = 0"
       by (auto intro!: antisym simp: U_bounded(2) mult_le_0_iff)
-    with `y \<in> K w` have "U y x = 1"
+    with \<open>y \<in> K w\<close> have "U y x = 1"
       by (simp add: set_pmf_iff)
     then have "U y x = 1" "H y x = 1"
-      using H_eq(3)[of y x] H_eq(1)[of x] by (simp_all add: `recurrent x`)
+      using H_eq(3)[of y x] H_eq(1)[of x] by (simp_all add: \<open>recurrent x\<close>)
     then have "(y, x) \<in> acc"
       by (intro accI_U) auto
     with step have "(x, y) \<in> communicating"
       by (auto simp add: communicating_def intro: rtrancl_trans)
-    with `recurrent x` have "recurrent y"
+    with \<open>recurrent x\<close> have "recurrent y"
       by (simp add: recurrent_iffI_communicating)
-    note this `U y x = 1` `H y x = 1` `(x, y) \<in> communicating` }
+    note this \<open>U y x = 1\<close> \<open>H y x = 1\<close> \<open>(x, y) \<in> communicating\<close> }
   note enabled = this
 
-  from `(x, y) \<in> acc`
+  from \<open>(x, y) \<in> acc\<close>
   show "U y x = 1" "H y x = 1" "recurrent y" "(x, y) \<in> communicating"
   proof induction
     case base then show "U x x = 1" "H x x = 1" "recurrent x" "(x, x) \<in> communicating"
-      using `recurrent x` H_eq(1)[of x] by (auto simp: recurrent_iff_U_eq_1 communicating_def)
+      using \<open>recurrent x\<close> H_eq(1)[of x] by (auto simp: recurrent_iff_U_eq_1 communicating_def)
   next
     case (step w y)
-    with enabled[of w y] `recurrent x` H_eq(1)[of x]
+    with enabled[of w y] \<open>recurrent x\<close> H_eq(1)[of x]
     have "U y x = 1 \<and> H y x = 1 \<and> recurrent y \<and> (x, y) \<in> communicating"
       by (cases "x = y") (auto simp: recurrent_iff_U_eq_1 communicating_def)
     then show "U y x = 1" "H y x = 1" "recurrent y" "(x, y) \<in> communicating"
@@ -801,11 +801,11 @@ lemma equiv_communicating: "equiv UNIV communicating"
 lemma recurrent_class:
   assumes "recurrent x"
   shows "acc `` {x} = communicating `` {x}"
-  using recurrent_acc(4)[OF `recurrent x`] by (auto simp: communicating_def)
+  using recurrent_acc(4)[OF \<open>recurrent x\<close>] by (auto simp: communicating_def)
 
 lemma irreduccible_recurrent_class:
   assumes "recurrent x" shows "acc `` {x} \<in> UNIV // communicating"
-  unfolding recurrent_class[OF `recurrent x`] by (rule quotientI) simp
+  unfolding recurrent_class[OF \<open>recurrent x\<close>] by (rule quotientI) simp
 
 lemma essential_classI:
   assumes C: "C \<in> UNIV // communicating"
@@ -815,7 +815,7 @@ lemma essential_classI:
 
 lemma essential_recurrent_class:
   assumes "recurrent x" shows "essential_class (communicating `` {x})"
-  unfolding recurrent_class[OF `recurrent x`, symmetric]
+  unfolding recurrent_class[OF \<open>recurrent x\<close>, symmetric]
   apply (rule essential_classI)
   apply (rule irreduccible_recurrent_class[OF assms])
   apply (auto simp: communicating_def)
@@ -849,11 +849,11 @@ proof -
       by (rule pigeonhole_stream) fact
   qed
   then have "1 = \<P>(\<omega> in T x. \<exists>y\<in>C. alw (ev (HLD {y})) \<omega>)"
-    by (subst (asm) T.prob_Collect_eq_1[symmetric]) (auto simp: `finite C`)
+    by (subst (asm) T.prob_Collect_eq_1[symmetric]) (auto simp: \<open>finite C\<close>)
   also have "\<dots> = measure (T x) (\<Union>y\<in>C. {\<omega>\<in>space (T x). alw (ev (HLD {y})) \<omega>})"
     by (intro arg_cong2[where f=measure]) auto
   also have "\<dots> \<le> (\<Sum>y\<in>C. H x y)"
-    unfolding H_def using `finite C` by (rule T.finite_measure_subadditive_finite) auto
+    unfolding H_def using \<open>finite C\<close> by (rule T.finite_measure_subadditive_finite) auto
   also have "\<dots> = (\<Sum>y\<in>C. U x y * H y y)"
     by (auto intro!: sum.cong H_eq)
   finally have "\<exists>y\<in>C. recurrent y"
@@ -976,7 +976,7 @@ proof (subst suminf_pos_iff)
       by (intro antisym allI) (simp_all add: not_less)
     with z have "u x y = (\<lambda>n. 0)"
       by (intro ext) simp
-    with u_sums_U[of x y, THEN sums_unique] `U x y \<noteq> 0` show False
+    with u_sums_U[of x y, THEN sums_unique] \<open>U x y \<noteq> 0\<close> show False
       by simp
   qed
 qed
@@ -986,7 +986,7 @@ lemma inverse_gf_U'_tendsto:
   shows "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) (at_left (1::real))"
 proof cases
   assume inf: "U' y y = \<infinity>"
-  with gf_U'_tendsto_U'[of y y] `recurrent y`
+  with gf_U'_tendsto_U'[of y y] \<open>recurrent y\<close>
   have "LIM z (at_left 1). gf_U' y y z :> at_top"
     by (auto simp: ennreal_tendsto_top_eq_at_top U'_def)
   then have "LIM z (at_left 1). gf_U' y y z :> at_infinity"
@@ -998,15 +998,15 @@ next
   then obtain r where r: "U' y y = ennreal r" and [simp]: "0 \<le> r"
     by (cases "U' y y") (auto simp: U'_def)
   then have eq: "enn2real (1 / U' y y) = - 1 / - r" and "1 \<le> r"
-    using one_le_integral_t[OF `recurrent y`]
+    using one_le_integral_t[OF \<open>recurrent y\<close>]
     by (auto simp add: ennreal_1[symmetric] divide_ennreal simp del: ennreal_1)
   have "((\<lambda>z. ennreal (gf_U' y y z)) \<longlongrightarrow> ennreal r) (at_left 1)"
-    using gf_U'_tendsto_U'[OF `recurrent y`, of y] r by simp
+    using gf_U'_tendsto_U'[OF \<open>recurrent y\<close>, of y] r by simp
   then have gf_U': "(gf_U' y y \<longlongrightarrow> r) (at_left (1::real))"
     by (rule tendsto_ennrealD)
        (insert summable_gf_U', auto intro!: eventually_at_left_1 suminf_nonneg simp: gf_U'_def u_nonneg)
   show ?thesis
-    using `1 \<le> r` unfolding eq by (intro tendsto_intros gf_U') simp
+    using \<open>1 \<le> r\<close> unfolding eq by (intro tendsto_intros gf_U') simp
 qed
 
 lemma gf_G_pos:
@@ -1038,7 +1038,7 @@ proof -
   from y x have recurrent: "recurrent y" "recurrent x" and fin: "U' y y \<noteq> \<infinity>"
     by (auto simp: pos_recurrent_def recurrent_iffI_communicating nn_integral_add)
   have pos: "0 < enn2real (1 / U' y y)"
-    using one_le_integral_t[OF `recurrent y`] fin
+    using one_le_integral_t[OF \<open>recurrent y\<close>] fin
     by (auto simp: U'_def enn2real_positive_iff less_top[symmetric] ennreal_zero_less_divide ennreal_divide_eq_top_iff)
 
   from fin obtain r where r: "U' y y = ennreal r" and [simp]: "0 \<le> r"
@@ -1089,13 +1089,13 @@ proof -
     have "((\<lambda>z. (1 - gf_U y y z) / (1 - gf_U x x z)) \<longlongrightarrow> 0) ?L"
     proof (rule lhopital_left)
       show "((\<lambda>z. 1 - gf_U y y z) \<longlongrightarrow> 0) ?L"
-        using gf_U[of y] recurrent_iff_U_eq_1[of y] `recurrent y` by (auto intro!: tendsto_eq_intros)
+        using gf_U[of y] recurrent_iff_U_eq_1[of y] \<open>recurrent y\<close> by (auto intro!: tendsto_eq_intros)
       show "((\<lambda>z. 1 - gf_U x x z) \<longlongrightarrow> 0) ?L"
-        using gf_U[of x] recurrent_iff_U_eq_1[of x] `recurrent x` by (auto intro!: tendsto_eq_intros)
+        using gf_U[of x] recurrent_iff_U_eq_1[of x] \<open>recurrent x\<close> by (auto intro!: tendsto_eq_intros)
       show "eventually (\<lambda>z. 1 - gf_U x x z \<noteq> 0) ?L"
         by (auto intro!: eventually_at_left_1 simp: gf_G_eq_gf_U(2) convergence_G_less_1)
       show "eventually (\<lambda>z. - gf_U' x x z \<noteq> 0) ?L"
-        using gf_U'_pos[of _ x x] recurrent_iff_U_eq_1[of x] `recurrent x`
+        using gf_U'_pos[of _ x x] recurrent_iff_U_eq_1[of x] \<open>recurrent x\<close>
         by (auto intro!: eventually_at_left_1) (metis less_le)
       show "eventually (\<lambda>z. DERIV (\<lambda>xa. 1 - gf_U x x xa) z :> - gf_U' x x z) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
@@ -1103,14 +1103,14 @@ proof -
         by (auto intro!: eventually_at_left_1 derivative_eq_intros DERIV_gf_U)
 
       have "(gf_U' y y \<longlongrightarrow> U' y y) ?L"
-        using `recurrent y` by (rule gf_U'_tendsto_U') simp
+        using \<open>recurrent y\<close> by (rule gf_U'_tendsto_U') simp
       then have *: "(gf_U' y y \<longlongrightarrow> r) ?L"
         by (auto simp add: r eventually_at_left_1 dest!: tendsto_ennrealD)
       moreover
       have "(gf_U' x x \<longlongrightarrow> U' x x) ?L"
-        using `recurrent x` by (rule gf_U'_tendsto_U') simp
+        using \<open>recurrent x\<close> by (rule gf_U'_tendsto_U') simp
       then have "LIM z ?L. - gf_U' x x z :> at_bot"
-        by (simp add: ennreal_tendsto_top_eq_at_top `U' x x = \<infinity>` filterlim_uminus_at_top
+        by (simp add: ennreal_tendsto_top_eq_at_top \<open>U' x x = \<infinity>\<close> filterlim_uminus_at_top
                  del: ennreal_of_enat_eSuc)
       then have "LIM z ?L. - gf_U' x x z :> at_infinity"
         by (rule filterlim_mono) (auto simp: at_bot_le_at_infinity)
@@ -1122,10 +1122,10 @@ proof -
       by (auto intro!: tendsto_eq_intros)
     ultimately have "p x y n * p y x m \<le> 0"
       using le by (rule tendsto_le[OF trivial_limit_at_left_real])
-    with `0 < p x y n` `0 < p y x m` show False
+    with \<open>0 < p x y n\<close> \<open>0 < p y x m\<close> show False
       by (auto simp add: mult_le_0_iff)
   qed
-  with `recurrent x` show ?thesis
+  with \<open>recurrent x\<close> show ?thesis
     by (simp add: pos_recurrent_def nn_integral_add)
 qed
 
@@ -1140,7 +1140,7 @@ lemma U_le_F: "U x y \<le> F x y"
 lemma not_empty_irreducible: "C \<in> UNIV // communicating \<Longrightarrow> C \<noteq> {}"
   by (auto simp: quotient_def Image_def communicating_def)
 
-subsection {* Stationary distribution *}
+subsection \<open>Stationary distribution\<close>
 
 definition stat :: "'s set \<Rightarrow> 's measure" where
   "stat C = point_measure UNIV (\<lambda>x. indicator C x / U' x x)"
@@ -1156,7 +1156,7 @@ lemma stat_subprob:
   shows "emeasure (stat C) C \<le> 1"
 proof -
   let ?L = "at_left (1::real)"
-  from finite_sequence_to_countable_set[OF `countable C`] guess A . note A = this
+  from finite_sequence_to_countable_set[OF \<open>countable C\<close>] guess A . note A = this
   then have "(\<lambda>n. emeasure (stat C) (A n)) \<longlonglongrightarrow> emeasure (stat C) (\<Union>i. A i)"
     by (intro Lim_emeasure_incseq) (auto simp: incseq_Suc_iff)
   then have "emeasure (stat C) (\<Union>i. A i) \<le> 1"
@@ -1172,21 +1172,21 @@ proof -
     have "((\<lambda>z. (\<Sum>y\<in>A n. gf_F x y z * ((1 - z) / (1 - gf_U y y z)))) \<longlongrightarrow> (\<Sum>y\<in>A n. F x y * enn2real (1 / U' y y))) ?L"
     proof (intro tendsto_intros gf_F, rule lhopital_left)
       fix y assume "y \<in> A n"
-      with `A n \<subseteq> C` have "y \<in> C"
+      with \<open>A n \<subseteq> C\<close> have "y \<in> C"
         by auto
       show "((-) 1 \<longlongrightarrow> 0) ?L"
         by (intro tendsto_eq_intros) simp_all
       have "recurrent y"
-        using pos[THEN bspec, OF `y\<in>C`] by (simp add: pos_recurrent_def)
+        using pos[THEN bspec, OF \<open>y\<in>C\<close>] by (simp add: pos_recurrent_def)
       then have "U y y = 1"
         by (simp add: recurrent_iff_U_eq_1)
 
       show "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
-        using gf_U[of y y] `U y y = 1` by (intro tendsto_eq_intros) auto
+        using gf_U[of y y] \<open>U y y = 1\<close> by (intro tendsto_eq_intros) auto
       show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
         using gf_G_eq_gf_U(2)[OF convergence_G_less_1, where 'z=real] by (auto intro!: eventually_at_left_1)
       have "eventually (\<lambda>x. 0 < gf_U' y y x) ?L"
-        by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: `U y y = 1`)
+        by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: \<open>U y y = 1\<close>)
       then show "eventually (\<lambda>x. - gf_U' y y x \<noteq> 0) ?L"
         by eventually_elim simp
       show "eventually (\<lambda>x. DERIV (\<lambda>x. 1 - gf_U y y x) x :> - gf_U' y y x) ?L"
@@ -1194,15 +1194,15 @@ proof -
       show "eventually (\<lambda>x. DERIV ((-) 1) x :> - 1) ?L"
         by (auto intro!: eventually_at_left_1 derivative_eq_intros)
       show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) ?L"
-        using `recurrent y` by (rule inverse_gf_U'_tendsto)
+        using \<open>recurrent y\<close> by (rule inverse_gf_U'_tendsto)
     qed
     also have "(\<Sum>y\<in>A n. F x y * enn2real (1 / U' y y)) = (\<Sum>y\<in>A n. enn2real (1 / U' y y))"
     proof (intro sum.cong refl)
       fix y assume "y \<in> A n"
-      with `A n \<subseteq> C` have "y \<in> C" by auto
-      with `x \<in> C` have "(x, y) \<in> communicating"
+      with \<open>A n \<subseteq> C\<close> have "y \<in> C" by auto
+      with \<open>x \<in> C\<close> have "(x, y) \<in> communicating"
         by (rule essential_classD3[OF C])
-      with `y\<in>C` have "recurrent y" "(y, x) \<in> acc"
+      with \<open>y\<in>C\<close> have "recurrent y" "(y, x) \<in> acc"
         using pos[THEN bspec, of y] by (auto simp add: pos_recurrent_def communicating_def)
       then have "U x y = 1"
         by (rule recurrent_acc)
@@ -1213,12 +1213,12 @@ proof -
     finally have le: "(\<Sum>y\<in>A n. enn2real (1 / U' y y)) \<le> 1"
     proof (rule tendsto_le[OF trivial_limit_at_left_real tendsto_const], intro eventually_at_left_1)
       fix z :: real assume z: "0 < z" "z < 1"
-      with `x \<in> C` have "norm z < 1"
+      with \<open>x \<in> C\<close> have "norm z < 1"
         by auto
       then have conv: "\<And>x y. convergence_G x y z"
         by (simp add: convergence_G_less_1)
       have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z)) = (\<Sum>y\<in>A n. gf_G x y z)"
-        using `norm z < 1`
+        using \<open>norm z < 1\<close>
         apply (intro sum.cong refl)
         apply (subst gf_G_eq_gf_F)
         apply assumption
@@ -1237,7 +1237,7 @@ proof -
         also have "\<dots> \<le> z ^ l"
         proof (intro mult_left_le_one_le)
           have "(\<Sum>y\<in>A n. p x y l) = \<P>(\<omega> in T x. (x ## \<omega>) !! l \<in> A n)"
-            unfolding p_def using `finite (A n)`
+            unfolding p_def using \<open>finite (A n)\<close>
             by (subst T.finite_measure_finite_Union[symmetric])
                (auto simp: disjoint_family_on_def intro!: arg_cong2[where f=measure])
           then show "(\<Sum>y\<in>A n. p x y l) \<le> 1"
@@ -1246,7 +1246,7 @@ proof -
         finally show "(\<Sum>y\<in>A n. p x y l *\<^sub>R z ^ l) \<le> z ^ l" .
       qed fact
       also have "\<dots> = 1 / (1 - z)"
-        using sums_unique[OF geometric_sums, OF `norm z < 1`] ..
+        using sums_unique[OF geometric_sums, OF \<open>norm z < 1\<close>] ..
       finally have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z)) \<le> 1 / (1 - z)" .
       then have "(\<Sum>y\<in>A n. gf_F x y z / (1 - gf_U y y z)) * (1 - z) \<le> 1"
         using z by (simp add: field_simps)
@@ -1268,7 +1268,7 @@ proof -
       apply (subst sum_ennreal[symmetric], simp)
     proof (intro sum.cong refl)
       fix y assume "y \<in> A n"
-      with `A n \<subseteq> C` pos have "pos_recurrent y"
+      with \<open>A n \<subseteq> C\<close> pos have "pos_recurrent y"
         by auto
       with one_le_integral_t[of y] obtain r where "U' y y = ennreal r" "1 \<le> U' y y" and [simp]: "0 \<le> r"
         by (cases "U' y y") (auto simp: pos_recurrent_def nn_integral_add)
@@ -1286,7 +1286,7 @@ qed
 lemma emeasure_stat_not_C:
   assumes "y \<notin> C"
   shows "emeasure (stat C) {y} = 0"
-  unfolding stat_def using `y \<notin> C`
+  unfolding stat_def using \<open>y \<notin> C\<close>
   by (subst emeasure_point_measure_finite2) auto
 
 definition stationary_distribution :: "'s pmf \<Rightarrow> bool" where
@@ -1392,12 +1392,12 @@ proof -
     have "\<exists>A\<subseteq>C. finite A \<and> 1 - e < measure N A"
     proof (rule ccontr)
       assume contr: "\<not> (\<exists>A \<subseteq> C. finite A \<and> 1 - e < measure N A)"
-      from finite_sequence_to_countable_set[OF `countable C`] guess F . note F = this
+      from finite_sequence_to_countable_set[OF \<open>countable C\<close>] guess F . note F = this
       then have *: "(\<lambda>n. measure N (F n)) \<longlonglongrightarrow> measure N (\<Union>i. F i)"
         by (intro measure_pmf.finite_Lim_measure_incseq) (auto simp: incseq_Suc_iff)
       with F contr have "measure N (\<Union>i. F i) \<le> 1 - e"
         by (intro LIMSEQ_le[OF * tendsto_const]) (auto simp: not_less)
-      with F `0 < e` show False
+      with F \<open>0 < e\<close> show False
         by (simp add: measure_C)
     qed
     then obtain A where "A \<subseteq> C" "finite A" and e: "1 - e < measure N A" by auto
@@ -1406,21 +1406,21 @@ proof -
       from N(1) have "measure N {y} = (\<integral>x. p x y n \<partial>N)"
         by (rule stationary_distribution_iterate')
       also have "\<dots> \<le> (\<integral>x. p x y n * indicator A x + indicator (C - A) x \<partial>N)"
-        using ae_C `A \<subseteq> C`
+        using ae_C \<open>A \<subseteq> C\<close>
         by (intro integral_mono_AE)
            (auto elim!: eventually_mono
                  intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
                    integrable_add
                  split: split_indicator simp: integrable_p less_top[symmetric] top_unique)
       also have "\<dots> = (\<integral>x. p x y n * indicator A x \<partial>N) + measure N (C - A)"
-        using ae_C `A \<subseteq> C`
+        using ae_C \<open>A \<subseteq> C\<close>
         apply (subst Bochner_Integration.integral_add)
         apply (auto elim!: eventually_mono
                     intro!: integral_add integral_indicator p_le_1 integrable_real_mult_indicator
                     split: split_indicator simp: integrable_p less_top[symmetric] top_unique)
         done
       also have "\<dots> \<le> (\<integral>x. p x y n * indicator A x \<partial>N) + e"
-        using e `A \<subseteq> C`  by (simp add: measure_pmf.finite_measure_Diff measure_C)
+        using e \<open>A \<subseteq> C\<close>  by (simp add: measure_pmf.finite_measure_Diff measure_C)
       finally have "measure N {y} \<le> (\<integral>x. p x y n * indicator A x \<partial>N) + e" .
       then have "emeasure N {y} \<le> ennreal (\<integral>x. p x y n * indicator A x \<partial>N) + e"
         by (simp add: measure_pmf.emeasure_eq_measure ennreal_plus[symmetric] del: ennreal_plus)
@@ -1433,7 +1433,7 @@ proof -
 
     { fix y and z :: real assume y: "y \<in> C" and z: "0 < z" "z < 1"
       have summable_int_p: "summable (\<lambda>n. (\<integral> x. p x y n * indicator A x \<partial>N) * (1 - z) * z ^ n)"
-        using `y\<in>C` z `A \<subseteq> C`
+        using \<open>y\<in>C\<close> z \<open>A \<subseteq> C\<close>
         by (auto intro!: summable_comparison_test[OF _ summable_mult[OF summable_geometric[of z], of 1]] exI[of _ 0] mult_le_one
                             measure_pmf.integral_le_const integrable_real_mult_indicator integrable_p AE_I2 p_le_1
                     simp: abs_mult integral_nonneg_AE)
@@ -1447,11 +1447,11 @@ proof -
         by (subst suminf_ennreal[symmetric])
            (auto simp: measure_pmf.emeasure_eq_measure ennreal_mult[symmetric] ennreal_suminf_neq_top)
       also have "\<dots> \<le> (\<Sum>n. ((\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) + e) * (1 - z) * z ^ n)"
-        using `y\<in>C` z `A \<subseteq> C`
+        using \<open>y\<in>C\<close> z \<open>A \<subseteq> C\<close>
         by (intro suminf_le mult_right_mono v_le allI)
            (auto simp: measure_pmf.emeasure_eq_measure)
       also have "\<dots> = (\<Sum>n. (\<integral>\<^sup>+x. ennreal (p x y n) * indicator A x \<partial>N) * (1 - z) * z ^ n) + e"
-        using `0 < e` z sums_mult[OF geometric_sums[of z], of "e * (1 - z)"] \<open>0<z\<close> \<open>z<1\<close>
+        using \<open>0 < e\<close> z sums_mult[OF geometric_sums[of z], of "e * (1 - z)"] \<open>0<z\<close> \<open>z<1\<close>
         by (simp add: distrib_right suminf_add[symmetric] ennreal_suminf_cmult[symmetric]
                       ennreal_mult[symmetric] suminf_ennreal_eq sums_unique[symmetric]
                  del: ennreal_suminf_cmult)
@@ -1475,7 +1475,7 @@ proof -
       also have "\<dots> = ennreal (gf_G y y z) * (\<integral>\<^sup>+x. ennreal (gf_F x y z) * indicator A x \<partial>N)"
         using z by (subst nn_integral_cmult[symmetric]) (simp_all add: gf_G_nonneg gf_F_nonneg ac_simps ennreal_mult)
       also have "\<dots> = ennreal (1 / (1 - gf_U y y z)) * (\<integral>\<^sup>+x. ennreal (gf_F x y z) * indicator A x \<partial>N)"
-        using z `y \<in> C` by (subst gf_G_eq_gf_U) (auto intro!: convergence_G_less_1)
+        using z \<open>y \<in> C\<close> by (subst gf_G_eq_gf_U) (auto intro!: convergence_G_less_1)
       finally have "emeasure N {y} \<le> ennreal ((1 - z) / (1 - gf_U y y z)) * (\<integral>\<^sup>+x. gf_F x y z * indicator A x \<partial>N) + e"
         using z
         by (subst (asm) mult.assoc[symmetric])
@@ -1487,7 +1487,7 @@ proof -
                        ennreal_mult''[symmetric] ennreal_plus[symmetric]
                  simp del: ennreal_plus) }
     then have "\<exists>A \<subseteq> C. finite A \<and> (\<forall>y\<in>C. \<forall>z. 0 < z \<longrightarrow> z < 1 \<longrightarrow> measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e)"
-      using `A \<subseteq> C` `finite A` by auto }
+      using \<open>A \<subseteq> C\<close> \<open>finite A\<close> by auto }
   note eps = this
 
   { fix y A assume "y \<in> C" "finite A" "A \<subseteq> C"
@@ -1508,13 +1508,13 @@ proof -
       have "measure N {y} \<le> 0"
       proof (rule dense_ge)
         fix e :: real assume "0 < e"
-        from eps[OF this] `y \<in> C` obtain A where
+        from eps[OF this] \<open>y \<in> C\<close> obtain A where
           A: "finite A" "A \<subseteq> C" and
           le: "\<And>z. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e"
           by auto
         have "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) \<longlongrightarrow>
           (1 - 1) / (1 - U y y) * (\<integral>x. F x y * indicator A x \<partial>N) + e) (at_left (1::real))"
-          using A `U y y < 1` `y \<in> C` by (intro tendsto_intros gf_U int_gf_F) auto
+          using A \<open>U y y < 1\<close> \<open>y \<in> C\<close> by (intro tendsto_intros gf_U int_gf_F) auto
         then have 1: "((\<lambda>z. (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e) \<longlongrightarrow> e) (at_left (1::real))"
           by simp
         with le show "measure N {y} \<le> e"
@@ -1526,18 +1526,18 @@ proof -
     then have "emeasure N C = 0"
       by (subst emeasure_countable_singleton) (auto simp: measure_pmf.emeasure_eq_measure nn_integral_0_iff_AE ae_C C)
     then show False
-      using `measure N C = 1` by (simp add: measure_pmf.emeasure_eq_measure)
+      using \<open>measure N C = 1\<close> by (simp add: measure_pmf.emeasure_eq_measure)
   qed
   then have "\<And>x. x \<in> C \<Longrightarrow> U x x = 1"
     by (metis recurrent_iff_U_eq_1)
 
   { fix y assume "y \<in> C"
     then have "U y y = 1" "recurrent y"
-      using `y \<in> C \<Longrightarrow> U y y = 1` all_recurrent by auto
+      using \<open>y \<in> C \<Longrightarrow> U y y = 1\<close> all_recurrent by auto
     have "measure N {y} \<le> enn2real (1 / U' y y)"
     proof (rule field_le_epsilon)
       fix e :: real assume "0 < e"
-      from eps[OF `0 < e`] `y \<in> C` obtain A where
+      from eps[OF \<open>0 < e\<close>] \<open>y \<in> C\<close> obtain A where
         A: "finite A" "A \<subseteq> C" and
         le: "\<And>z. 0 < z \<Longrightarrow> z < 1 \<Longrightarrow> measure N {y} \<le> (1 - z) / (1 - gf_U y y z) * (\<integral>x. gf_F x y z * indicator A x \<partial>N) + e"
         by auto
@@ -1547,14 +1547,14 @@ proof -
       proof (intro tendsto_add tendsto_const tendsto_mult int_gf_F,
              rule lhopital_left[where f'="\<lambda>x. - 1" and g'="\<lambda>z. - gf_U' y y z"])
         show "((-) 1 \<longlongrightarrow> 0) ?L" "((\<lambda>x. 1 - gf_U y y x) \<longlongrightarrow> 0) ?L"
-          using gf_U[of y y] by (auto intro!: tendsto_eq_intros simp: `U y y = 1`)
+          using gf_U[of y y] by (auto intro!: tendsto_eq_intros simp: \<open>U y y = 1\<close>)
         show "y \<in> C" "finite A" "A \<subseteq> C" by fact+
         show "eventually (\<lambda>x. 1 - gf_U y y x \<noteq> 0) ?L"
           using gf_G_eq_gf_U(2)[OF convergence_G_less_1, where 'z=real] by (auto intro!: eventually_at_left_1)
         show "((\<lambda>x. - 1 / - gf_U' y y x) \<longlongrightarrow> enn2real (1 / U' y y)) ?L"
-          using `recurrent y` by (rule inverse_gf_U'_tendsto)
+          using \<open>recurrent y\<close> by (rule inverse_gf_U'_tendsto)
         have "eventually (\<lambda>x. 0 < gf_U' y y x) ?L"
-          by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: `U y y = 1`)
+          by (intro eventually_at_left_1 gf_U'_pos) (simp_all add: \<open>U y y = 1\<close>)
         then show "eventually (\<lambda>x. - gf_U' y y x \<noteq> 0) ?L"
           by eventually_elim simp
         show "eventually (\<lambda>x. DERIV (\<lambda>x. 1 - gf_U y y x) x :> - gf_U' y y x) ?L"
@@ -1582,14 +1582,14 @@ proof -
     { fix y assume "y \<in> C"
       with x have "\<not> pos_recurrent y"
         using C by (auto simp: essential_class_def pos_recurrent_iffI_communicating[symmetric] elim!: quotientE)
-      with all_recurrent `y \<in> C` have "enn2real (1 / U' y y) = 0"
+      with all_recurrent \<open>y \<in> C\<close> have "enn2real (1 / U' y y) = 0"
         by (simp add: pos_recurrent_def nn_integral_add)
-      with measure_y_le[OF `y \<in> C`] have "measure N {y} = 0"
+      with measure_y_le[OF \<open>y \<in> C\<close>] have "measure N {y} = 0"
         by (auto intro!: antisym simp: pos_recurrent_def) }
     then have "emeasure N C = 0"
       by (subst emeasure_countable_singleton) (auto simp: C ae_C measure_pmf.emeasure_eq_measure nn_integral_0_iff_AE)
     then show False
-      using `measure N C = 1` by (simp add: measure_pmf.emeasure_eq_measure)
+      using \<open>measure N C = 1\<close> by (simp add: measure_pmf.emeasure_eq_measure)
   qed
 
   { fix A :: "'s set" assume [simp]: "countable A"
@@ -1606,11 +1606,11 @@ proof -
         with one_le_integral_t[of y] obtain r where r: "U' y y = ennreal r" "1 \<le> U' y y" and [simp]: "0 \<le> r"
           by (cases "U' y y") (auto simp: pos_recurrent_def nn_integral_add)
 
-        from measure_y_le[OF `y \<in> C`]
+        from measure_y_le[OF \<open>y \<in> C\<close>]
         have "emeasure N {y} \<le> ennreal (enn2real (1 / U' y y))"
           by (simp add: measure_pmf.emeasure_eq_measure)
         also have "\<dots> = emeasure (stat C) {y}"
-          unfolding stat_def using `y \<in> C` r
+          unfolding stat_def using \<open>y \<in> C\<close> r
           by (subst emeasure_point_measure_finite2)
              (auto simp add: ennreal_1[symmetric] divide_ennreal inverse_ennreal inverse_eq_divide ennreal_mult[symmetric]
                    simp del: ennreal_1)
@@ -1621,7 +1621,7 @@ proof -
         with ae_C have "emeasure N {y} = 0"
           by (subst AE_iff_measurable[symmetric, where P="\<lambda>x. x \<noteq> y"]) (auto elim!: eventually_mono)
         moreover have "emeasure (stat C) {y} = 0"
-          using emeasure_stat_not_C[OF `y \<notin> C`] .
+          using emeasure_stat_not_C[OF \<open>y \<notin> C\<close>] .
         ultimately show ?thesis by simp
       qed
     qed
@@ -1630,7 +1630,7 @@ proof -
     finally have "emeasure N A \<le> emeasure (stat C) A" . }
   note N_le_C = this
 
-  from stat_subprob[OF C(1) `countable C` pos] N_le_C[OF `countable C`] `measure N C = 1`
+  from stat_subprob[OF C(1) \<open>countable C\<close> pos] N_le_C[OF \<open>countable C\<close>] \<open>measure N C = 1\<close>
   have stat_C_eq_1: "emeasure (stat C) C = 1"
     by (auto simp add: measure_pmf.emeasure_eq_measure one_ennreal_def)
   moreover have "emeasure (stat C) (UNIV - C) = 0"
@@ -1679,7 +1679,7 @@ proof -
   from stationary_distributionD[OF C]
   have "measure_pmf N = stat C" and *: "\<forall>x\<in>C. pos_recurrent x" by auto
   show ?thesis
-    unfolding `measure_pmf N = stat C` pmf.rep_eq stat_def
+    unfolding \<open>measure_pmf N = stat C\<close> pmf.rep_eq stat_def
     using *[THEN bspec, OF x] x
     apply (simp add: measure_point_measure_singleton)
     apply (cases "U' x x")
@@ -1700,7 +1700,7 @@ proof -
   { fix x y n assume c: "(x, y) \<in> communicating" "x \<noteq> y" and n: "n \<in> period_set x"
     from c obtain l k where "0 < p x y l" "0 < p y x k"
       by (auto simp: communicating_def dest!: accD_pos)
-    moreover with `x \<noteq> y` have "l \<noteq> 0 \<and> k \<noteq> 0"
+    moreover with \<open>x \<noteq> y\<close> have "l \<noteq> 0 \<and> k \<noteq> 0"
       by (intro notI conjI) (auto simp: p_0)
     ultimately have pos: "0 < l" "0 < k" and l: "0 < p x y l" and k: "0 < p y x k"
       by auto
@@ -1746,29 +1746,29 @@ lemma not_ephemeralD:
   shows "\<exists>n>0. 0 < p x x n"
 proof cases
   assume "\<exists>x. C = {x}"
-  with `x \<in> C` have "C = {x}" by auto
+  with \<open>x \<in> C\<close> have "C = {x}" by auto
   with C p_nonneg[of x x 1] have "0 < p x x 1"
     by (auto simp: not_ephemeral_def less_le)
-  with `C = {x}` show ?thesis by auto
+  with \<open>C = {x}\<close> show ?thesis by auto
 next
   from C have irr: "C \<in> UNIV // communicating"
     by (auto simp: not_ephemeral_def)
   assume "\<not>(\<exists>x. C = {x})"
   then have "\<forall>x. C \<noteq> {x}" by auto
-  with `x \<in> C` obtain y where "y \<in> C" "x \<noteq> y"
+  with \<open>x \<in> C\<close> obtain y where "y \<in> C" "x \<noteq> y"
     by blast
-  with irreducibleD[OF irr, of x y] C `x \<in> C` have c: "(x, y) \<in> communicating" by auto
+  with irreducibleD[OF irr, of x y] C \<open>x \<in> C\<close> have c: "(x, y) \<in> communicating" by auto
   with accD_pos[of x y] accD_pos[of y x]
   obtain k l where pos: "0 < p x y k" "0 < p y x l"
     by (auto simp: communicating_def)
-  with `x \<noteq> y` have "l \<noteq> 0"
+  with \<open>x \<noteq> y\<close> have "l \<noteq> 0"
     by (intro notI) (auto simp: p_0)
   have "0 < p x y k * p y x (k + l - k)"
     using pos by auto
   also have "p x y k * p y x (k + l - k) \<le> p x x (k + l)"
     using prob_reachable_le[of "k" "k + l" x y x] c by auto
   finally show ?thesis
-    using `l \<noteq> 0` `x \<in> C` by (auto intro!: exI[of _ "k + l"])
+    using \<open>l \<noteq> 0\<close> \<open>x \<in> C\<close> by (auto intro!: exI[of _ "k + l"])
 qed
 
 lemma not_ephemeralD_pos_period:
@@ -1783,7 +1783,7 @@ proof -
     using C by (auto simp: not_ephemeral_def)
 
   have "period C \<noteq> 0"
-    unfolding period_eq [OF C' `x \<in> C`]
+    unfolding period_eq [OF C' \<open>x \<in> C\<close>]
     using n by (auto simp: period_set_def)
   then show ?thesis by auto
 qed
@@ -1793,10 +1793,10 @@ lemma period_posD:
   assumes C: "C \<in> UNIV // communicating" and "0 < period C" "x \<in> C"
   shows "\<exists>n>0. 0 < p x x n"
 proof -
-  from `0 < period C` have "period C \<noteq> 0"
+  from \<open>0 < period C\<close> have "period C \<noteq> 0"
     by auto
   then show ?thesis
-    unfolding period_eq [OF C `x \<in> C`]
+    unfolding period_eq [OF C \<open>x \<in> C\<close>]
     unfolding period_set_def by auto
 qed
 
@@ -1822,7 +1822,7 @@ proof -
     using C by auto
 
   have "period C \<noteq> 0"
-    unfolding period_eq [OF C' `x \<in> C`]
+    unfolding period_eq [OF C' \<open>x \<in> C\<close>]
     using n by (auto simp: period_set_def)
   have "eventually (\<lambda>m. m * Gcd (period_set x) \<in> (period_set x)) sequentially"
   proof (rule eventually_mult_Gcd)
@@ -1832,14 +1832,14 @@ proof -
     then have "0 < p x x k * p x x l" "0 < l" "0 < k"
       by (auto simp: period_set_def)
     moreover have "p x x k * p x x l \<le> p x x (k + l)"
-      using prob_reachable_le[of k "k + l" x x x] `x \<in> C`
+      using prob_reachable_le[of k "k + l" x x x] \<open>x \<in> C\<close>
       by auto
     ultimately show "k + l \<in> period_set x"
-      using `0 < l` by (auto simp: period_set_def)
+      using \<open>0 < l\<close> by (auto simp: period_set_def)
   qed
   with eventually_ge_at_top[of 1] show "eventually (\<lambda>m. 0 < p x x (m * period C)) sequentially"
     by eventually_elim 
-       (insert \<open>period C \<noteq> 0\<close> period_eq[OF C' `x \<in> C`, symmetric], auto simp: period_set_def)
+       (insert \<open>period C \<noteq> 0\<close> period_eq[OF C' \<open>x \<in> C\<close>, symmetric], auto simp: period_set_def)
 qed
 
 
@@ -1858,7 +1858,7 @@ next
   then have "{N <..} \<subseteq> period_set x"
     by (auto simp: period_set_def)
   from C show "aperiodic C"
-    unfolding period_eq [OF C `x \<in> C`] aperiodic_def
+    unfolding period_eq [OF C \<open>x \<in> C\<close>] aperiodic_def
   proof
     show "Gcd (period_set x) = 1"
     proof (rule Gcd_eqI)
@@ -1980,7 +1980,7 @@ proof safe
     apply (safe intro!: exI[of _ x1] exI[of _ x2])
   proof -
     fix y1 y2 assume yC: "y1 \<in> C1" "y2 \<in> C2"
-    from K1.irreducibleD[OF C1 `x1 \<in> C1` `y1 \<in> C1`] K2.irreducibleD[OF C2 `x2 \<in> C2` `y2 \<in> C2`]
+    from K1.irreducibleD[OF C1 \<open>x1 \<in> C1\<close> \<open>y1 \<in> C1\<close>] K2.irreducibleD[OF C2 \<open>x2 \<in> C2\<close> \<open>y2 \<in> C2\<close>]
     show "((x1, x2), (y1, y2)) \<in> communicating"
       using 1[of x1 y1 x2 y2] 1[of y1 x1 y2 x2] xC yC
       by (auto simp: communicating_def K1.communicating_def K2.communicating_def)
@@ -2018,7 +2018,7 @@ lemma stationary_distribution_imp_limit:
   shows "(\<lambda>n. \<integral>x. \<bar>p y x n - pmf N x\<bar> \<partial>count_space C) \<longlonglongrightarrow> 0"
     (is "?L \<longlonglongrightarrow> 0")
 proof -
-  from `essential_class C` have C_comm: "C \<in> UNIV // communicating"
+  from \<open>essential_class C\<close> have C_comm: "C \<in> UNIV // communicating"
     by (simp add: essential_class_def)
 
   define K' where "K' = (\<lambda>Some x \<Rightarrow> map_pmf Some (K x) | None \<Rightarrow> map_pmf Some N)"
@@ -2030,7 +2030,7 @@ proof -
   have pos: "\<And>x. x \<in> C \<Longrightarrow> pos_recurrent x" and "measure_pmf N = stat C" by auto
 
   have pos: "\<And>x. x \<in> C \<Longrightarrow> 0 < emeasure N {x}"
-    using pos unfolding stat_def `measure_pmf N = stat C`
+    using pos unfolding stat_def \<open>measure_pmf N = stat C\<close>
     by (subst emeasure_point_measure_finite2)
        (auto simp: U'_def pos_recurrent_def nn_integral_add ennreal_zero_less_divide less_top)
   then have rpos: "\<And>x. x \<in> C \<Longrightarrow> 0 < pmf N x"
@@ -2064,7 +2064,7 @@ proof -
     fix x c assume "c \<in> C" "(Some c, x) \<in> K2.communicating"
     then show "\<exists>c'\<in>C. x = Some c'"
       by (cases x)
-         (auto simp: communicating_iff K2.communicating_iff K_p_eq K_S_None intro!: irreducibleD2[OF C_comm `c\<in>C`])
+         (auto simp: communicating_iff K2.communicating_iff K_p_eq K_S_None intro!: irreducibleD2[OF C_comm \<open>c\<in>C\<close>])
   next
     fix c c' x assume "c \<in> C" "c' \<in> C"
     with irreducibleD[OF C_comm this] show "(Some c, Some c') \<in> K2.communicating"
@@ -2076,17 +2076,17 @@ proof -
              intro!: exI[of _ "Some c0"])
   then have "K2.essential_class (Some ` C)"
     by (rule K2.essential_classI)
-       (auto simp: K2_acc essential_classD2[OF `essential_class C`])
+       (auto simp: K2_acc essential_classD2[OF \<open>essential_class C\<close>])
 
   have "K2.aperiodic (Some ` C)"
     unfolding K2.aperiodic_eventually_recurrent
   proof safe
     fix x assume "x \<in> C" then show "eventually (\<lambda>m. 0 < K2.p (Some x) (Some x) m) sequentially"
-      using `aperiodic C` unfolding aperiodic_eventually_recurrent
+      using \<open>aperiodic C\<close> unfolding aperiodic_eventually_recurrent
       by (auto elim!: eventually_mono simp: K_p_eq)
   qed fact
   then have aperiodic: "KN.aperiodic (C \<times> Some ` C)"
-    by (rule KN.aperiodicI_pair[OF `aperiodic C`])
+    by (rule KN.aperiodicI_pair[OF \<open>aperiodic C\<close>])
 
   have KN_essential: "KN.essential_class (C \<times> Some ` C)"
   proof (rule KN.essential_classI)
@@ -2097,7 +2097,7 @@ proof -
     with KN.P_accD[of "fst x" "snd x" "fst y" "snd y"]
     show "y \<in> C \<times> Some ` C"
       by (cases x y rule: prod.exhaust[case_product prod.exhaust])
-         (auto simp: K2_acc essential_classD2[OF `essential_class C`])
+         (auto simp: K2_acc essential_classD2[OF \<open>essential_class C\<close>])
   qed
 
   { fix n and x y :: 's
@@ -2152,7 +2152,7 @@ proof -
             using T.prob_space by (simp add: K2.p_def)
           also have "\<dots> = \<P>(\<omega>' in KN.T (\<omega> !! i). snd (\<omega>' !! (n - Suc i)) = Some x)"
             by (subst KN.prod_eq_prob_T) simp_all
-          finally show ?thesis using `ev_at (HLD D) i \<omega>` i
+          finally show ?thesis using \<open>ev_at (HLD D) i \<omega>\<close> i
             by (simp del: stake.simps)
         qed simp
       qed
@@ -2231,7 +2231,7 @@ proof -
     show "countable (C \<times> Some`C)"
       using C by auto
     show "set_pmf (pair_pmf N (map_pmf Some N)) \<subseteq> C \<times> Some ` C"
-      using `N \<subseteq> C` by auto
+      using \<open>N \<subseteq> C\<close> by auto
   qed
 
   from c0_D have "\<P>(\<omega> in KN.T (y, None). alw (not (HLD D)) \<omega>) \<le> \<P>(\<omega> in KN.T (y, None). alw (not (HLD {(c0, Some c0)})) \<omega>)"
@@ -2248,10 +2248,10 @@ proof -
     fix t assume t: "t \<in> KN.Kp (y, None)"
     then obtain a b where t_eq: "t = (a, Some b)" "a \<in> K y" "b \<in> N"
       unfolding KN.Kp_def by (auto simp: K'_def)
-    with `y \<in> C` have "a \<in> C"
-      using essential_classD2[OF `essential_class C` `y \<in> C`] by auto
+    with \<open>y \<in> C\<close> have "a \<in> C"
+      using essential_classD2[OF \<open>essential_class C\<close> \<open>y \<in> C\<close>] by auto
     have "b \<in> C"
-      using `N \<subseteq> C` `b \<in> N` by auto
+      using \<open>N \<subseteq> C\<close> \<open>b \<in> N\<close> by auto
 
     from pos_recurrent[THEN bspec, of "(c0, Some c0)"]
     have recurrent_c0: "KN.recurrent (c0, Some c0)"
@@ -2259,7 +2259,7 @@ proof -
     have "C \<times> Some ` C \<in> UNIV // KN.communicating"
       using aperiodic by (simp add: KN.aperiodic_def)
     then have "((c0, Some c0), t) \<in> KN.communicating"
-      by (rule KN.irreducibleD) (simp_all add: t_eq c0 `b \<in> C` `a \<in> C`)
+      by (rule KN.irreducibleD) (simp_all add: t_eq c0 \<open>b \<in> C\<close> \<open>a \<in> C\<close>)
     then have "((c0, Some c0), t) \<in> KN.acc"
       by (simp add: KN.communicating_def)
     then have "KN.U t (c0, Some c0) = 1"
@@ -2333,8 +2333,8 @@ proof (rule essential_classI)
       by induct (auto dest: ED)}
   note accD = this
 
-  from `X \<noteq> {}` obtain x where "x \<in> X" by auto
-  from `x \<in> X` show "X \<in> UNIV // communicating"
+  from \<open>X \<noteq> {}\<close> obtain x where "x \<in> X" by auto
+  from \<open>x \<in> X\<close> show "X \<in> UNIV // communicating"
     by (auto simp add: quotient_def Image_def communicating_def accI dest: accD intro!: exI[of _ x])
 qed
 

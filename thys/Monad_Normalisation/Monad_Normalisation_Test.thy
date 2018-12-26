@@ -246,8 +246,8 @@ done
 
 text \<open>
   The next example shows that even monad normalisation alone is not confluent because 
-  the term ordering prevents the reordering of @{text "f A"} with @{text "f B"}.
-  But if we change @{text A} to @{text E}, then the reordering works as expected.
+  the term ordering prevents the reordering of \<open>f A\<close> with \<open>f B\<close>.
+  But if we change \<open>A\<close> to \<open>E\<close>, then the reordering works as expected.
 \<close>
 
 lemma

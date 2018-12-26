@@ -1,9 +1,9 @@
 (*File: HuntSands.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory HuntSands imports VDM Lattice begin
-section{*Flow-sensitivity a la Hunt and Sands*}
+section\<open>Flow-sensitivity a la Hunt and Sands\<close>
 
-text{*\label{sec:HuntSands}\footnote{As the Isabelle theory representing this section is
+text\<open>\label{sec:HuntSands}\footnote{As the Isabelle theory representing this section is
 dependent only on VDM.thy and Lattice.thy, name conflicts with
 notions defined in Section \ref{sec:BaseLineNI} are avoided.} The
 paper \cite{HuntSands:POPL2006} by Hunt and Sands presents a
@@ -11,16 +11,16 @@ generalisation of the type system of Volpano et al.~to
 flow-sensitivity. Thus, programs such as $l:=h; l:=5$ are not rejected
 any longer by the type system. Following the description in Section 4
 of our paper~\cite{BeringerHofmann:CSF2007}, we embed Hunt and Sands'
-type system into the program logic given in Section \ref{sec:VDM}.*}
+type system into the program logic given in Section \ref{sec:VDM}.\<close>
 
-subsection{*General $A; R \Rightarrow S$-security*}
-text{*\label{sec:ARSsecurity}Again, we define the type $TT$ of
+subsection\<open>General $A; R \Rightarrow S$-security\<close>
+text\<open>\label{sec:ARSsecurity}Again, we define the type $TT$ of
 intermediate formulae $\Phi$, and an assertion operator
 $\mathit{Sec}$. The latter is now parametrised not only by the
 intermediate formulae but also by the (possibly differing) pre- and
 post-relations $R$ and $S$ (both instantiated to $\approx$ in Section
 \ref{sec:BaseLineNI}), and by a specification $A$ that directly links
-pre- and post-states.*}
+pre- and post-states.\<close>
 
 type_synonym TT = "(State \<times> State) \<Rightarrow> bool"
 
@@ -33,15 +33,15 @@ definition ARSsecure::"VDMAssn \<Rightarrow> (State \<Rightarrow> State \<Righta
                       (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow> IMP \<Rightarrow> bool"
 where "ARSsecure A R S c = ((\<Turnstile> c : A) \<and> RSsecure R S c)"
 
-text{*Definition 3 of our paper follows.*}
+text\<open>Definition 3 of our paper follows.\<close>
 
 definition Sec :: "VDMAssn \<Rightarrow> (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow>
                   (State \<Rightarrow> State \<Rightarrow> bool) \<Rightarrow> TT \<Rightarrow> VDMAssn"
 where "Sec A R S \<Phi> s t = (A s t \<and>
                    (\<forall> r . R s r \<longrightarrow> \<Phi>(t,r)) \<and> (\<forall> r . \<Phi>(r,s) \<longrightarrow> S r t))"
 
-text{*With these definitions, we can prove Proposition 4 of our
-paper.*}
+text\<open>With these definitions, we can prove Proposition 4 of our
+paper.\<close>
 
 lemma Prop4A: "\<Turnstile> c : Sec A R S \<Phi> \<Longrightarrow> ARSsecure A R S c"
 (*<*)
@@ -61,20 +61,20 @@ apply (rule, rule, erule exE, erule conjE) apply fast
 done
 (*>*)
 
-subsection{*Basic definitions*}
+subsection\<open>Basic definitions\<close>
 
-text{*Contexts map program variables to lattice elements.*}
+text\<open>Contexts map program variables to lattice elements.\<close>
 
 type_synonym "CONTEXT" = "Var \<Rightarrow> L"
 
 definition upd ::"CONTEXT \<Rightarrow> Var \<Rightarrow> L \<Rightarrow> CONTEXT"
 where "upd G x p = (\<lambda> y . if x=y then p else G y)"
 
-text{*We also define the predicate $\mathit{EQ}$ 
+text\<open>We also define the predicate $\mathit{EQ}$ 
 %(in our paper denoted by the symbol $\ltimes$) 
 which expresses when two states agree on all
 variables whose entry in a given context is below a certain security
-level.*}
+level.\<close>
 
 definition EQ:: "CONTEXT \<Rightarrow> L \<Rightarrow> State \<Rightarrow> State \<Rightarrow> bool"
 where "EQ G p = (\<lambda> s t . \<forall> x . LEQ (G x) p \<longrightarrow>  s x = t x)"
@@ -87,25 +87,25 @@ apply (erule LAT2, assumption)
 done 
 (*>*)
 
-text{*The assertion called $\mathcal{Q}$ in our paper:*}
+text\<open>The assertion called $\mathcal{Q}$ in our paper:\<close>
 
 definition Q::"L \<Rightarrow> CONTEXT \<Rightarrow> VDMAssn"
 where "Q p H = (\<lambda> s t . \<forall> x . (\<not> LEQ p (H x)) \<longrightarrow> t x = s x)"
 
-text{*$Q$ expresses the preservation of values in a single execution,
+text\<open>$Q$ expresses the preservation of values in a single execution,
 and corresponds to the first clause of Definition 3.2 in
 \cite{HuntSands:POPL2006}. In accordance with this, the following
 definition of security instantiates the $A$ position of $A; R
 \Rightarrow S$-security with $Q$, while the context-dependent binary
-state relations are plugged in as the $R$ and $S$ components.*}
+state relations are plugged in as the $R$ and $S$ components.\<close>
 
 definition secure :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
 where "secure p G c H = (\<forall> q . ARSsecure (Q p H) (EQ G q) (EQ H q) c)"
 
-text{*Indeed, one may show that this notion of security amounds to the
+text\<open>Indeed, one may show that this notion of security amounds to the
 conjunction of a unary (i.e.~one-execution-)property and a binary
 (i.e.~two-execution-) property, as expressed in Hunt \& Sands'
-Definition 3.2.*}
+Definition 3.2.\<close>
 
 definition secure1 :: "L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> bool"
 where "secure1 p G c H = (\<forall> s t . (s,c \<Down> t) \<longrightarrow> Q p H s t)"
@@ -120,11 +120,11 @@ lemma secureEQUIV:
               RSsecure_def Q_def VDM_valid_def, auto)
 (*>*)
 
-subsection{*Type system*}
+subsection\<open>Type system\<close>
 
-text{*The type system of Hunt and Sands -- our language formalisation
+text\<open>The type system of Hunt and Sands -- our language formalisation
 uses a concrete datatype of expressions, so we add the obvious typing
-rules for expressions and prove the expected evaluation lemmas.*}
+rules for expressions and prove the expected evaluation lemmas.\<close>
 
 inductive_set HS_E:: "(CONTEXT \<times> Expr \<times> L) set"
 where 
@@ -159,7 +159,7 @@ apply clarsimp
 done
 (*>*)
 
-text{*Likewise for boolean expressions: *}
+text\<open>Likewise for boolean expressions:\<close>
 
 inductive_set HS_B:: "(CONTEXT \<times> BExpr \<times> L) set"
 where
@@ -188,7 +188,7 @@ apply clarsimp
 done
 (*>*)
 
-text{*The typing rules for commands follow.*}
+text\<open>The typing rules for commands follow.\<close>
 
 inductive_set HS::"(L \<times> CONTEXT \<times> IMP \<times> CONTEXT) set"
 where
@@ -217,8 +217,8 @@ HS_Skip:   "(p,G,Skip,G):HS"
        \<forall> x . LEQ (HH x) (H x)\<rbrakk> \<Longrightarrow>
    (p,G,c,H):HS"
 
-text {*Using @{text HS_Sub}, rules @{text If} and @{text If_alg} are
-inter-derivable.*}
+text \<open>Using \<open>HS_Sub\<close>, rules \<open>If\<close> and \<open>If_alg\<close> are
+inter-derivable.\<close>
 
 lemma IF_derivable_from_If_alg:
   "\<lbrakk>(G,b,t):HS_B; (LUB p t,G,c1,H):HS; (LUB p t,G,c2,H):HS\<rbrakk>
@@ -240,7 +240,7 @@ apply (subgoal_tac "LUB p p = p", clarsimp)
   apply (subgoal_tac "p = LUB p p", fastforce) apply (rule LAT7)
 done
 
-text{*An easy induction on typing derivations shows the following property.*}
+text\<open>An easy induction on typing derivations shows the following property.\<close>
 
 lemma HS_Aux1: 
  "(p,G,c,H):HS \<Longrightarrow> \<forall> x. LEQ (G x) (H x) \<or> LEQ p (H x)"
@@ -288,13 +288,13 @@ apply clarsimp
 done
 (*>*)
 
-subsection{*Derived proof rules*}
+subsection\<open>Derived proof rules\<close>
 
-text{*In order to show the derivability of the properties given in
+text\<open>In order to show the derivability of the properties given in
 Theorem 3.3 of Hunt and Sands' paper, we give the following derived
 proof rules. By including the $Q$ property in the $A$ position of
 $Sec$, we prove both parts of theorem in one proof, and can exploit
-the first property ($Q$) in the proof of the second. *}
+the first property ($Q$) in the proof of the second.\<close>
 
 lemma SKIP:
  "X \<rhd> Skip : Sec (Q p H) (EQ G q) (EQ G q) 
@@ -352,14 +352,14 @@ lemma COMP:
 done
 (*>*)
 
-text{*We distinguish, for any given $q$, \emph{parallel} conditionals
+text\<open>We distinguish, for any given $q$, \emph{parallel} conditionals
 from \emph{diagonal} ones. Speaking operationally (i.e.~in terms of
 two executions), conditionals of the former kind evaluate the branch
 condition identically in both executions. The following rule
 expresses this condition explicitly, in the first side condition. The
 formula inside the $\mathit{Sec}$-operator of the conclusion resembles
 the conclusion of the VDM rule for conditionals in that the formula
-chosen depends on the outcome of the branch.*}
+chosen depends on the outcome of the branch.\<close>
 
 lemma IF_PARALLEL:
   "\<lbrakk> \<forall> s ss . EQ G p s ss \<longrightarrow> evalB b s = evalB b ss;
@@ -391,9 +391,9 @@ lemma IF_PARALLEL:
 done
 (*>*)
 
-text{*An alternative formulation replaces the first side condition
+text\<open>An alternative formulation replaces the first side condition
 with a typing hypothesis on the branch condition, thus exploiting
-lemma HS\_B\_eval.*}
+lemma HS\_B\_eval.\<close>
 
 lemma IF_PARALLEL_tp:
   "\<lbrakk> (G, b, p) \<in> HS_B; (p , G, c1, H) \<in> HS; (p, G, c2, H) \<in> HS;
@@ -411,7 +411,7 @@ lemma IF_PARALLEL_tp:
 done
 (*>*)
 
-text{*Diagonal conditionals, in contrast, capture cases where (from
+text\<open>Diagonal conditionals, in contrast, capture cases where (from
 the perspective of an observer at level $q$) the two executions may
 evaluate the branch condition differently. In this case, the formula
 inside the $\mathit{Sec}$-operator in the conclusion cannot depend
@@ -419,7 +419,7 @@ upon the branch outcome, so the least common denominator of the two
 branches must be taken, which is given by the equality condition
 w.r.t.~the post-context $H$. A side condition (the first one given in
 the rule) ensures that indeed no information leaks during the
-execution of either branch, by relating $G$ and $H$.*}
+execution of either branch, by relating $G$ and $H$.\<close>
 
 lemma IF_DIAGONAL:
   "\<lbrakk> \<forall>x. LEQ (G x) (H x) \<or> LEQ p (H x);
@@ -454,10 +454,10 @@ lemma IF_DIAGONAL:
 done
 (*>*)
 
-text{*Again, the first side condition of the rule may be replaced by a
+text\<open>Again, the first side condition of the rule may be replaced by a
 typing condition, but now this condition is on the commands (instead
 of the branch condition) -- in fact, a derivation for either branch
-suffices.*}
+suffices.\<close>
 
 lemma IF_DIAGONAL_tp:
   "\<lbrakk> (p, G, c1, H) \<in> HS \<or> (p, G, c2, H) \<in> HS; 
@@ -473,9 +473,9 @@ lemma IF_DIAGONAL_tp:
 done
 (*>*)
 
-text{*Obviously, given $q$, any conditional is either parallel or
+text\<open>Obviously, given $q$, any conditional is either parallel or
 diagonal as the second side conditions of the diagonal rules and the
-parallel rules are exclusive.*}
+parallel rules are exclusive.\<close>
 
 lemma if_algorithmic:
   "\<lbrakk>\<exists> x . LEQ p (H x) \<and> LEQ (H x) q; 
@@ -484,15 +484,15 @@ lemma if_algorithmic:
 (*<*) by simp (*>*)
 
 
-text{*As in Section \ref{sec:BaseLineNI} we define a fixed point
-construction, useful for the (parallel) while rule.*}
+text\<open>As in Section \ref{sec:BaseLineNI} we define a fixed point
+construction, useful for the (parallel) while rule.\<close>
 
 definition FIX::"(TT \<Rightarrow> TT) \<Rightarrow> TT"
 where "FIX \<phi> = (\<lambda> (s,t). \<forall> \<Phi> . (\<forall> ss tt . \<phi> \<Phi> (ss, tt) \<longrightarrow> \<Phi> (ss, tt))
                             \<longrightarrow> \<Phi> (s, t))"
 
-text{*For monotone invariant transformers, the construction indeed
-yields a fixed point.*}
+text\<open>For monotone invariant transformers, the construction indeed
+yields a fixed point.\<close>
 
 definition Monotone::"(TT \<Rightarrow> TT) \<Rightarrow> bool"
 where "Monotone \<phi> = (\<forall> \<Phi> \<Psi> . (\<forall> s t . \<Phi>(s,t) \<longrightarrow> \<Psi>(s,t)) \<longrightarrow> 
@@ -531,7 +531,7 @@ apply clarsimp apply (erule Fix1) apply assumption
 done
 (*>*)
 
-text{*Next, the definition of a while-operator.*}
+text\<open>Next, the definition of a while-operator.\<close>
 
 definition PhiWhilePOp::
           "VDMAssn \<Rightarrow> BExpr \<Rightarrow> TT \<Rightarrow> TT \<Rightarrow> TT"
@@ -540,7 +540,7 @@ where "PhiWhilePOp A b \<Phi> =
                                         (\<forall>w. A z w \<longrightarrow> \<Psi> (r, w)))) \<and> 
                      ((\<not> evalB b u) \<longrightarrow> A r u)))"
 
-text{*This operator is monotone in $\Phi$.*}
+text\<open>This operator is monotone in $\Phi$.\<close>
 
 lemma PhiWhilePOp_Monotone:"Monotone (PhiWhilePOp A b \<Phi>)"
 (*<*)
@@ -549,13 +549,13 @@ apply (simp add: PhiWhilePOp_def Monotone_def) apply clarsimp
 done
 (*>*)
 
-text{*Therefore, we can define the following fixed point.*}
+text\<open>Therefore, we can define the following fixed point.\<close>
 
 definition PhiWhileP::"VDMAssn \<Rightarrow> BExpr \<Rightarrow> TT \<Rightarrow> TT"
 where "PhiWhileP A b \<Phi> = FIX (PhiWhilePOp A b \<Phi>)"
 
-text{*As as a function on $\phi$, this PhiWhileP is itself monotone
-in $\phi$:*}
+text\<open>As as a function on $\phi$, this PhiWhileP is itself monotone
+in $\phi$:\<close>
 
 lemma PhiWhilePMonotone: "Monotone (\<lambda> \<Phi> . PhiWhileP A b \<Phi>)"
 (*<*)
@@ -569,8 +569,8 @@ apply (rule_tac x=z in exI, simp)
 done
 (*>*)
 
-text{*Now the rule for parallel while loops, i.e.~loops where the
-branch condition evaluates identically in both executions.*}
+text\<open>Now the rule for parallel while loops, i.e.~loops where the
+branch condition evaluates identically in both executions.\<close>
 
 lemma WHILE_PARALLEL:
  "\<lbrakk> X \<rhd> c : Sec (Q p G) (EQ G q) (EQ G q) \<Phi>; 
@@ -618,9 +618,9 @@ apply clarsimp apply (simp add: Sec_def)
 done
 (*>*)
 
-text{*The side condition regarding the evalution of the branch
+text\<open>The side condition regarding the evalution of the branch
 condsition may be replaced by a typing hypothesis, thanks to lemma
-@{text HS_B_eval}.*}
+\<open>HS_B_eval\<close>.\<close>
 
 lemma WHILE_PARALLEL_tp:
  "\<lbrakk> X \<rhd> c : Sec (Q p G) (EQ G q) (EQ G q) \<Phi>; 
@@ -635,7 +635,7 @@ apply assumption
 done
 (*>*)
 
-text{*One may also give an inductive formulation of FIX:*}
+text\<open>One may also give an inductive formulation of FIX:\<close>
 
 inductive_set var::"(BExpr \<times> VDMAssn \<times> TT \<times> State \<times> State) set"
 where
@@ -685,8 +685,8 @@ apply (erule thin_rl, simp add: PhiWhilePOp_def) apply clarsimp
 done
 (*>*)
 
-text{*The inductive formulation and the fixed point formulation are
-equivalent.*}
+text\<open>The inductive formulation and the fixed point formulation are
+equivalent.\<close>
 (*<*)
 lemma varFIXvar: "(PhiWhileP A b \<Phi> (s,t)) = ((b,A,\<Phi>,s,t):var)"
 apply rule
@@ -707,8 +707,8 @@ lemma FIXvarFIX:
 by (rule, rule FIXvarFIX')
 (*>*)
 
-text{*Thus, the above while rule may also be written using the
-inductive formulation.*}
+text\<open>Thus, the above while rule may also be written using the
+inductive formulation.\<close>
 
 lemma WHILE_PARALLEL_IND:
  "\<lbrakk> X \<rhd> c : Sec (Q p G) (EQ G q) (EQ G q) \<Phi>; 
@@ -723,8 +723,8 @@ apply (simp add: FIXvarFIX)
 done
 (*>*)
 
-text{*Again, we may replace the side condition regarding the branch
-condition by a typing hypothesis.*}
+text\<open>Again, we may replace the side condition regarding the branch
+condition by a typing hypothesis.\<close>
 
 lemma WHILE_PARALLEL_IND_tp:
  "\<lbrakk> X \<rhd> c : Sec (Q p G) (EQ G q) (EQ G q) \<Phi>;
@@ -748,7 +748,7 @@ apply clarsimp apply (erule varFalse, simp)
 apply clarsimp apply (erule varTrue) apply fast apply simp
 done
 (*>*)
-text{*Of course, the inductive formulation is also monotone:*}
+text\<open>Of course, the inductive formulation is also monotone:\<close>
 
 lemma var_MonotoneInPhi:
   "Monotone (\<lambda> \<Phi> . (\<lambda> (s,t) .(b,A, \<Phi>,s,t):var))"
@@ -766,22 +766,22 @@ apply (rule PhiWhilePMonotone)
 done  
 (*>*)
 
-text{*In order to derive a diagonal while rule, we directly define an
+text\<open>In order to derive a diagonal while rule, we directly define an
 inductive relation that calculates the transitive closure of relation
 $A$, such that all but the last state evaluate $b$ to
-$\mathit{True}$.*}
+$\mathit{True}$.\<close>
 
 inductive_set varD::"(BExpr \<times> VDMAssn \<times> State \<times> State) set"
 where
 varDFalse: "\<lbrakk>\<not> evalB b s; A s t\<rbrakk> \<Longrightarrow> (b,A,s,t):varD"
 | varDTrue: "\<lbrakk>evalB b s; A s w; (b,A,w,t): varD \<rbrakk> \<Longrightarrow> (b,A,s,t):varD"
 
-text{*Here is the obvious definition of transitivity for assertions.*}
+text\<open>Here is the obvious definition of transitivity for assertions.\<close>
 
 definition transitive::"VDMAssn \<Rightarrow> bool"
 where "transitive P = (\<forall> x y z . P x y \<longrightarrow> P y z \<longrightarrow> P x z)"
 
-text{*The inductive relation satisfies the following property.*}
+text\<open>The inductive relation satisfies the following property.\<close>
 
 lemma varD_transitive[rule_format]: 
  "(b,A,s,t):varD \<Longrightarrow> transitive A \<longrightarrow> A s t"
@@ -793,20 +793,20 @@ apply clarsimp
 done
 (*>*)
 
-text{*On the other hand, the assertion $\mathit{Q}$ defined above is transitive,*}
+text\<open>On the other hand, the assertion $\mathit{Q}$ defined above is transitive,\<close>
 
 lemma Q_transitive:"transitive (Q q G)"
 (*<*)
 by (simp add: Q_def transitive_def) 
 (*>*)
 
-text{*and is hence respected by the inductive closure:*} 
+text\<open>and is hence respected by the inductive closure:\<close> 
 
 lemma varDQ:"(b,Q q G,s,t):varD \<Longrightarrow> Q q G s t"
 (*<*)by (erule varD_transitive,rule Q_transitive)(*>*)
 
-text{*The diagonal while rule has a conclusion that is independent of
-$\phi$.*}
+text\<open>The diagonal while rule has a conclusion that is independent of
+$\phi$.\<close>
 
 lemma WHILE_DIAGONAL:
  "\<lbrakk>X \<rhd> c : Sec (Q p G) (EQ G q) (EQ G q) \<Phi>; \<not> LEQ p q\<rbrakk>
@@ -837,7 +837,7 @@ apply (drule varDQ)  apply (simp add: Q_def EQ_def, clarsimp)
 done
 (*>*)
 
-text{*$\mathit{varD}$ is monotone in the assertion position.*}
+text\<open>$\mathit{varD}$ is monotone in the assertion position.\<close>
 
 lemma varDMonotoneInAssertion[rule_format]:
   "(b, A, s, t) \<in> varD \<Longrightarrow> 
@@ -850,8 +850,8 @@ done
 (*>*)
 
 (*<*)
-text{*As $\mathit{varD}$ does not depend on $\Phi$, the monotonicity
-property in this position is trivially fulfilled.*}
+text\<open>As $\mathit{varD}$ does not depend on $\Phi$, the monotonicity
+property in this position is trivially fulfilled.\<close>
 
 lemma varDMonotoneInPhi[rule_format]:
   "\<lbrakk>(b, A, s, t) \<in> varD; \<forall>s t. \<Phi>(s, t) \<longrightarrow> \<Psi>(s, t)\<rbrakk> 
@@ -859,7 +859,7 @@ lemma varDMonotoneInPhi[rule_format]:
 by simp
 (*>*)
 
-text{*Finally, the subsumption rule.*}
+text\<open>Finally, the subsumption rule.\<close>
 
 lemma SUB:
   "\<lbrakk> LEQ p pp; \<forall>x. LEQ (G x) (GG x); \<forall>x. LEQ (HH x) (H x);
@@ -885,7 +885,7 @@ apply (erule VDMConseq)
 done
 (*>*)
 
-subsection{*Soundness results*}
+subsection\<open>Soundness results\<close>
 
 (*<*)
 definition Theorem3derivProp::"VDMAssn set \<Rightarrow> L \<Rightarrow> CONTEXT \<Rightarrow> IMP \<Rightarrow> CONTEXT \<Rightarrow> L \<Rightarrow> bool"
@@ -947,8 +947,8 @@ apply clarsimp
 done
 (*>*)
 
-text{*An induction on the typing rules now proves the main theorem
-which was called Theorem 4 in~\cite{BeringerHofmann:CSF2007}.*}
+text\<open>An induction on the typing rules now proves the main theorem
+which was called Theorem 4 in~\cite{BeringerHofmann:CSF2007}.\<close>
 
 theorem Theorem4[rule_format]: 
   "(p,G,c,H):HS \<Longrightarrow> 
@@ -957,11 +957,11 @@ theorem Theorem4[rule_format]:
 by (drule Theorem3_derivAux, simp add: Theorem3derivProp_def)
 (*>*)
 
-text{*By the construction of the operator $\mathit{Sec}$ (lemmas
-@{text Prop4A} and @{text Prop4A} in Section \ref{sec:ARSsecurity}) we
+text\<open>By the construction of the operator $\mathit{Sec}$ (lemmas
+\<open>Prop4A\<close> and \<open>Prop4A\<close> in Section \ref{sec:ARSsecurity}) we
 obtain the soundness property with respect to the oprational
 semantics, i.e.~the result stated as Theorem 3.3 in
-\cite{HuntSands:POPL2006}.*}
+\cite{HuntSands:POPL2006}.\<close>
 
 theorem HuntSands33: "(p,G,c,H):HS \<Longrightarrow> secure p G c H"
 (*<*)
@@ -972,8 +972,8 @@ apply (rule VDM_Sound_emptyCtxt)  apply fast
 done
 (*>*)
 
-text {*Both parts of this theorem may also be shown
-individually. We factor both proofs by the program logic.*}
+text \<open>Both parts of this theorem may also be shown
+individually. We factor both proofs by the program logic.\<close>
 
 lemma Sec1_deriv: "(p,G,c,H):HS \<Longrightarrow> X \<rhd> c : (Q p H)"
 (*<*)
@@ -1025,8 +1025,8 @@ apply (insert secureEQUIV [of p G c H]) apply (simp add: secure_def)
 done
 (*>*)
 
-text{*Again, the call rule is formulated for an arbitrary fixed point
-of a monotone transformer.*}
+text\<open>Again, the call rule is formulated for an arbitrary fixed point
+of a monotone transformer.\<close>
 
 lemma CALL: 
   "\<lbrakk> ({B} \<union> X) \<rhd> body : Sec A R S (\<phi>(FIX \<phi>));
@@ -1040,7 +1040,7 @@ done
 (*>*)
 
 (*<*)
-text{*Monotonicity lemmas for the operators occurring in the derived proof rules.*}
+text\<open>Monotonicity lemmas for the operators occurring in the derived proof rules.\<close>
 lemma SkipMonotone:"Monotone (\<lambda> T (s,t). EQ G p s t)"
 by (simp add: Monotone_def)
 
@@ -1067,9 +1067,9 @@ lemma SubMonotone: "Monotone (\<lambda>T. T)"
 by (simp add: Monotone_def)
 (*>*)
 
-text{*As in Section \ref{sec:BaseLineNI}, we define a formal derivation system
+text\<open>As in Section \ref{sec:BaseLineNI}, we define a formal derivation system
 comprising all derived rules and show that all derivable judgements
-are of the for $\mathit{Sec}(\Phi)$ for some monotone $\Phi$.*}
+are of the for $\mathit{Sec}(\Phi)$ for some monotone $\Phi$.\<close>
 
 inductive_set Deriv:: "(VDMAssn set \<times> IMP \<times> VDMAssn) set"
 where
@@ -1197,8 +1197,8 @@ lemma DerivMono:
 by (drule DerivProp_Aux, simp add: DProp_def)
 (*>*)
 
-text{*Also, the @{text Deriv} is indeed a subsystem of the program
-logic.*}
+text\<open>Also, the \<open>Deriv\<close> is indeed a subsystem of the program
+logic.\<close>
 
 theorem Deriv_derivable: "(X,c,A):Deriv \<Longrightarrow> X \<rhd> c :A"
 (*<*)
@@ -1220,5 +1220,5 @@ apply (frule DerivMono) apply (erule exE)+ apply clarsimp
   apply (simp add: Fix_lemma)
 done
 (*>*)
-text{*End of theory HuntSands*}
+text\<open>End of theory HuntSands\<close>
 end

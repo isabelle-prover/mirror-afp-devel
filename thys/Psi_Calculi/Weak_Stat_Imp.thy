@@ -76,7 +76,7 @@ proof(induct rule: weakStatImpI)
   moreover from PimpQ' have "insertAssertion (extractFrame (p \<bullet> P)) (p \<bullet> \<Psi>) \<hookrightarrow>\<^sub>F insertAssertion (extractFrame(p \<bullet> Q')) (p \<bullet> \<Psi>)"
     by(drule_tac p=p in FrameStatImpClosed) (simp add: eqvts)
   moreover from Q'Chain have "(p \<bullet> \<Psi>) \<otimes> \<Psi>' \<rhd> (p \<bullet> Q') \<Longrightarrow>\<^sup>^\<^sub>\<tau> (p \<bullet> Q'')" by(drule_tac p=p in tauChainEqvt) (simp add: eqvts)
-  moreover from `(\<Psi> \<otimes> (rev p \<bullet> \<Psi>'), P, Q'') \<in> Rel` EqvtRel have "((p \<bullet> \<Psi>) \<otimes> \<Psi>', (p \<bullet> P), (p \<bullet> Q'')) \<in> Rel"
+  moreover from \<open>(\<Psi> \<otimes> (rev p \<bullet> \<Psi>'), P, Q'') \<in> Rel\<close> EqvtRel have "((p \<bullet> \<Psi>) \<otimes> \<Psi>', (p \<bullet> P), (p \<bullet> Q'')) \<in> Rel"
     by(drule_tac p=p in eqvtI) (auto simp add: eqvts)
   ultimately show ?case
     by blast
@@ -111,23 +111,23 @@ lemma weakStatImpTransitive:
   shows "\<Psi> \<rhd> P \<lessapprox><Rel''> R"
 proof(induct rule: weakStatImpI)
   case(cStatImp \<Psi>')
-  from `\<Psi> \<rhd> P \<lessapprox><Rel> Q` obtain Q' Q'' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
+  from \<open>\<Psi> \<rhd> P \<lessapprox><Rel> Q\<close> obtain Q' Q'' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
                                          and PimpQ': "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
                                          and Q'Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "(\<Psi> \<otimes> \<Psi>', P, Q'') \<in> Rel"
     by(rule weakStatImpE)
-  from QChain `(\<Psi>, Q, R) \<in> Rel'` obtain R' where RChain: "\<Psi> \<rhd> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> R'" and "(\<Psi>, Q', R') \<in> Rel'"
+  from QChain \<open>(\<Psi>, Q, R) \<in> Rel'\<close> obtain R' where RChain: "\<Psi> \<rhd> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> R'" and "(\<Psi>, Q', R') \<in> Rel'"
     by(metis C2)
-  from `(\<Psi>, Q', R') \<in> Rel'` obtain R'' R''' where R'Chain: "\<Psi> \<rhd> R' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''"
+  from \<open>(\<Psi>, Q', R') \<in> Rel'\<close> obtain R'' R''' where R'Chain: "\<Psi> \<rhd> R' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''"
                                               and Q'impR'': "insertAssertion (extractFrame Q') \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame R'') \<Psi>"
                                               and R''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> R'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R'''" and "(\<Psi> \<otimes> \<Psi>', Q', R''') \<in> Rel'"
     by(blast dest: C1 weakStatImpE)
   from RChain R'Chain have "\<Psi> \<rhd> R \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''" by auto
   moreover from PimpQ' Q'impR'' have "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame R'') \<Psi>"
     by(rule FrameStatImpTrans)
-  moreover from Q'Chain `(\<Psi> \<otimes> \<Psi>', Q',  R''') \<in> Rel'` obtain R'''' where R'''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> R''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''''" and "(\<Psi> \<otimes> \<Psi>', Q'', R'''') \<in> Rel'"
+  moreover from Q'Chain \<open>(\<Psi> \<otimes> \<Psi>', Q',  R''') \<in> Rel'\<close> obtain R'''' where R'''Chain: "\<Psi> \<otimes> \<Psi>' \<rhd> R''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''''" and "(\<Psi> \<otimes> \<Psi>', Q'', R'''') \<in> Rel'"
     by(metis C2)
   from R''Chain R'''Chain have "\<Psi> \<otimes> \<Psi>' \<rhd> R'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> R''''" by auto
-  moreover from `(\<Psi> \<otimes> \<Psi>', P,  Q'') \<in> Rel` `(\<Psi> \<otimes> \<Psi>', Q'', R'''') \<in> Rel'` Set have "(\<Psi> \<otimes> \<Psi>', P, R'''') \<in> Rel''" by blast
+  moreover from \<open>(\<Psi> \<otimes> \<Psi>', P,  Q'') \<in> Rel\<close> \<open>(\<Psi> \<otimes> \<Psi>', Q'', R'''') \<in> Rel'\<close> Set have "(\<Psi> \<otimes> \<Psi>', P, R'''') \<in> Rel''" by blast
   ultimately show ?case
     by blast
 qed
@@ -146,15 +146,15 @@ lemma weakStatImpStatEq:
   shows "\<Psi>' \<rhd> P \<lessapprox><Rel'> Q"
 proof(induct rule: weakStatImpI)
   case(cStatImp \<Psi>'')
-  from `\<Psi> \<rhd> P \<lessapprox><Rel> Q` obtain Q' Q'' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
+  from \<open>\<Psi> \<rhd> P \<lessapprox><Rel> Q\<close> obtain Q' Q'' where QChain: "\<Psi> \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'"
                                          and PimpQ: "insertAssertion (extractFrame P) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>"
                                          and Q'Chain: "\<Psi> \<otimes> \<Psi>'' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" and "(\<Psi> \<otimes> \<Psi>'', P, Q'') \<in> Rel"
     by(rule weakStatImpE)
-  from QChain `\<Psi> \<simeq> \<Psi>'` have "\<Psi>' \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'" by(rule tauChainStatEq)
-  moreover from PimpQ `\<Psi> \<simeq> \<Psi>'` have "insertAssertion (extractFrame P) \<Psi>' \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>'"
+  from QChain \<open>\<Psi> \<simeq> \<Psi>'\<close> have "\<Psi>' \<rhd> Q \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q'" by(rule tauChainStatEq)
+  moreover from PimpQ \<open>\<Psi> \<simeq> \<Psi>'\<close> have "insertAssertion (extractFrame P) \<Psi>' \<hookrightarrow>\<^sub>F insertAssertion (extractFrame Q') \<Psi>'"
     by(rule insertAssertionStatImp)
-  moreover from Q'Chain `\<Psi> \<simeq> \<Psi>'` have "\<Psi>' \<otimes> \<Psi>'' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" by(metis tauChainStatEq Composition)
-  moreover from `(\<Psi> \<otimes> \<Psi>'', P, Q'') \<in> Rel` `\<Psi> \<simeq> \<Psi>'`  have "(\<Psi>' \<otimes> \<Psi>'', P, Q'') \<in> Rel'" by(blast intro: Composition C1)
+  moreover from Q'Chain \<open>\<Psi> \<simeq> \<Psi>'\<close> have "\<Psi>' \<otimes> \<Psi>'' \<rhd> Q' \<Longrightarrow>\<^sup>^\<^sub>\<tau> Q''" by(metis tauChainStatEq Composition)
+  moreover from \<open>(\<Psi> \<otimes> \<Psi>'', P, Q'') \<in> Rel\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close>  have "(\<Psi>' \<otimes> \<Psi>'', P, Q'') \<in> Rel'" by(blast intro: Composition C1)
   ultimately show ?case
     by blast
 qed

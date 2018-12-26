@@ -4,18 +4,18 @@
     Based on the theory Jinja/BV/BVSpec
 *)
 
-section {* The Bytecode Verifier \label{sec:BVSpec} *}
+section \<open>The Bytecode Verifier \label{sec:BVSpec}\<close>
 
 theory BVSpec
 imports
   Effect
 begin
 
-text {*
+text \<open>
   This theory contains a specification of the BV. The specification
   describes correct typings of method bodies; it corresponds 
   to type \emph{checking}.
-*}
+\<close>
 
 \<comment> \<open>The method type only contains declared classes:\<close>
 definition check_types :: "'m prog \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ty\<^sub>i' err list \<Rightarrow> bool"

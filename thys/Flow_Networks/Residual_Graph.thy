@@ -81,13 +81,13 @@ proof
       proof (cases)
         assume "f (u, v) = 0"
         then have "cf (u, v) = c (u, v)"
-          unfolding residualGraph_def using `(u, v) \<in> E` by (auto simp:)
-        then have "cf (u, v) \<noteq> 0" using `(u, v) \<in> E` unfolding E_def by auto
+          unfolding residualGraph_def using \<open>(u, v) \<in> E\<close> by (auto simp:)
+        then have "cf (u, v) \<noteq> 0" using \<open>(u, v) \<in> E\<close> unfolding E_def by auto
         thus ?thesis unfolding Graph.E_def by auto
       next
         assume "f (u, v) \<noteq> 0"
         then have "cf (v, u) = f (u, v)" unfolding residualGraph_def
-          using `(u, v) \<in> E` no_parallel_edge by auto
+          using \<open>(u, v) \<in> E\<close> no_parallel_edge by auto
         then have "cf (v, u) \<noteq> 0" using \<open>f (u, v) \<noteq> 0\<close> by auto
         thus ?thesis unfolding Graph.E_def by auto
       qed
@@ -97,13 +97,13 @@ proof
       proof (cases)
         assume "f (v, u) = 0"
         then have "cf (v, u) = c (v, u)"
-          unfolding residualGraph_def using `(v, u) \<in> E` by (auto)
-        then have "cf (v, u) \<noteq> 0" using `(v, u) \<in> E` unfolding E_def by auto
+          unfolding residualGraph_def using \<open>(v, u) \<in> E\<close> by (auto)
+        then have "cf (v, u) \<noteq> 0" using \<open>(v, u) \<in> E\<close> unfolding E_def by auto
         thus ?thesis unfolding Graph.E_def by auto
       next
         assume "f (v, u) \<noteq> 0"
         then have "cf (u, v) = f (v, u)" unfolding residualGraph_def
-          using `(v, u) \<in> E` no_parallel_edge by auto
+          using \<open>(v, u) \<in> E\<close> no_parallel_edge by auto
         then have "cf (u, v) \<noteq> 0" using \<open>f (v, u) \<noteq> 0\<close> by auto
         thus ?thesis unfolding Graph.E_def by auto
       qed

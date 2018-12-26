@@ -272,8 +272,8 @@ lemma chainPar:
 
   shows "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q'"
 proof -
-  from `P \<Longrightarrow>\<^sub>\<tau> P'` have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q" by(rule Par1Chain)
-  moreover from `Q \<Longrightarrow>\<^sub>\<tau> Q'` have "P' \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q'" by(rule Par2Chain)
+  from \<open>P \<Longrightarrow>\<^sub>\<tau> P'\<close> have "P \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q" by(rule Par1Chain)
+  moreover from \<open>Q \<Longrightarrow>\<^sub>\<tau> Q'\<close> have "P' \<parallel> Q \<Longrightarrow>\<^sub>\<tau> P' \<parallel> Q'" by(rule Par2Chain)
   ultimately show ?thesis by auto
 qed
 
@@ -334,12 +334,12 @@ next
   show ?case
   proof(cases "P' = P \<parallel> !P")
     case True
-    from `P' \<longmapsto>\<tau> \<prec> P''` `P' = P \<parallel> !P` have "!P \<longmapsto>\<tau> \<prec> P''" by(blast intro: Bang)
+    from \<open>P' \<longmapsto>\<tau> \<prec> P''\<close> \<open>P' = P \<parallel> !P\<close> have "!P \<longmapsto>\<tau> \<prec> P''" by(blast intro: Bang)
     thus ?thesis by auto
   next
     case False
-    from `P' \<noteq> P \<parallel> !P` have "!P \<Longrightarrow>\<^sub>\<tau> P'" by(rule ih)
-    with `P' \<longmapsto>\<tau> \<prec> P''` show ?thesis by auto
+    from \<open>P' \<noteq> P \<parallel> !P\<close> have "!P \<Longrightarrow>\<^sub>\<tau> P'" by(rule ih)
+    with \<open>P' \<longmapsto>\<tau> \<prec> P''\<close> show ?thesis by auto
   qed
 qed
 

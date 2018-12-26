@@ -4,7 +4,7 @@
 
 subsection "Serial Relations"
 
-text {* A serial relation on a finite carrier induces a cycle. *}
+text \<open>A serial relation on a finite carrier induces a cycle.\<close>
 
 theory Serial_Rel
 imports Main

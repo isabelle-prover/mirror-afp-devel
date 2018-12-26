@@ -1,17 +1,17 @@
-section {* Execution rules for groups *}
+section \<open>Execution rules for groups\<close>
 
 theory KPL_execution_group imports 
   KPL_execution_thread
 begin
 
-text {* Intra-group race detection *}
+text \<open>Intra-group race detection\<close>
 definition group_race 
   :: "lid set \<Rightarrow> (lid \<rightharpoonup> thread_state) \<Rightarrow> bool"
 where "group_race T \<gamma> \<equiv> 
   \<exists>j \<in> T. \<exists>k \<in> T. j \<noteq> k \<and> 
   W (the (\<gamma> j)) \<inter> (R (the (\<gamma> k)) \<union> W (the (\<gamma> k))) \<noteq> {}"
 
-text {* The constraints for the @{term "merge"} map *}
+text \<open>The constraints for the @{term "merge"} map\<close>
 inductive pre_merge 
   :: "lid set \<Rightarrow> (lid \<rightharpoonup> thread_state) \<Rightarrow> nat \<Rightarrow> word \<Rightarrow> bool"
 where 
@@ -22,10 +22,10 @@ where
 
 inductive_cases pre_merge_inv [elim!]: "pre_merge P \<gamma> z z'"
 
-text {* The @{term "merge"} map maps each nat to the word that 
-   satisfies the above constaints. The @{text "merge_is_unique"}
+text \<open>The @{term "merge"} map maps each nat to the word that 
+   satisfies the above constaints. The \<open>merge_is_unique\<close>
    lemma shows that there exists exactly one such word 
-   per nat, provided there are no group races. *}
+   per nat, provided there are no group races.\<close>
 definition merge :: "lid set \<Rightarrow> (lid \<rightharpoonup> thread_state) \<Rightarrow> nat \<Rightarrow> word"
 where "merge T \<gamma> \<equiv> \<lambda>z. The (pre_merge T \<gamma> z)"
 
@@ -62,9 +62,9 @@ proof -
   done
 qed
  
-text {* The rules of Figure 5, plus an additional rule for
+text \<open>The rules of Figure 5, plus an additional rule for
   equality abstraction (Fig 7a), plus an additional rule for
-  adversarial abstraction (Fig 7b)  *}
+  adversarial abstraction (Fig 7b)\<close>
 inductive step_g
   :: "abs_level \<Rightarrow> gid \<Rightarrow> (gid \<rightharpoonup> lid set) \<Rightarrow> (group_state \<times> pred_stmt) \<Rightarrow> group_state option \<Rightarrow> bool"
 where
@@ -101,7 +101,7 @@ where
     sh := sh', R := {}, W := {} |) \<rbrakk> 
   \<Longrightarrow> step_g Adv_Abst i T (\<gamma>, (Barrier, p)) (Some \<gamma>')"
 
-text {* Rephrasing @{text G_No_Op} to make it more usable *}
+text \<open>Rephrasing \<open>G_No_Op\<close> to make it more usable\<close>
 lemma G_No_Op_helper:
   "\<lbrakk> \<forall>j \<in> the (T i). \<not> (eval_bool p (the (\<gamma> \<^sub>t\<^sub>s j))) ; \<gamma> = \<gamma>' \<rbrakk>
   \<Longrightarrow> step_g a i T (\<gamma>, (Barrier, p)) (Some \<gamma>')"

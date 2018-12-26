@@ -4,13 +4,13 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Ordinal Induction *}
+section \<open>Ordinal Induction\<close>
 
 theory OrdinalInduct
 imports OrdinalDef
 begin
 
-subsection {* Zero and successor ordinals *}
+subsection \<open>Zero and successor ordinals\<close>
 
 definition
   oSuc :: "ordinal \<Rightarrow> ordinal" where
@@ -36,7 +36,7 @@ instance ..
 end
 
 
-subsubsection {* Derived properties of 0 and oSuc *}
+subsubsection \<open>Derived properties of 0 and oSuc\<close>
 
 lemma less_oSuc_eq_le: "(x < oSuc y) = (x \<le> y)"
  apply (rule iffI)
@@ -96,7 +96,7 @@ lemma less_oSucE:
 by (auto simp add: less_oSuc_eq_le order_le_less)
 
 
-subsection {* Strict monotonicity *}
+subsection \<open>Strict monotonicity\<close>
 
 locale strict_mono =
   fixes f
@@ -169,7 +169,7 @@ shows "strict_mono f \<Longrightarrow> (f x \<le> f y) = (x \<le> y)"
 done
 
 
-subsection {* Limit ordinals *}
+subsection \<open>Limit ordinals\<close>
 
 definition
   oLimit :: "(nat \<Rightarrow> ordinal) \<Rightarrow> ordinal" where
@@ -307,7 +307,7 @@ lemma limit_ordinalI:
 done
 
 
-subsubsection {* Making strict monotonic sequences *}
+subsubsection \<open>Making strict monotonic sequences\<close>
 
 primrec make_mono :: "(nat \<Rightarrow> ordinal) \<Rightarrow> nat \<Rightarrow> nat"
 where
@@ -358,7 +358,7 @@ lemma oLimit_make_mono_eq:
 done
 
 
-subsection {* Induction principle for ordinals *}
+subsection \<open>Induction principle for ordinals\<close>
 
 lemma oLimit_le_oStrictLimit: "oLimit f \<le> oStrictLimit f"
  apply (rule oLimit_leI, clarify)

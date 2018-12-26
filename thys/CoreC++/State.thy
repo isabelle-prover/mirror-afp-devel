@@ -3,7 +3,7 @@
     Maintainer:  Daniel Wasserrab <wasserra at fmi.uni-passau.de>
 *)
 
-section {* Program State *}
+section \<open>Program State\<close>
 
 theory State imports Exceptions begin
 

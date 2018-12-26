@@ -4,14 +4,14 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Generalization of the Second Part of the Fundamental Theorem of Linear Algebra*}
+section\<open>Generalization of the Second Part of the Fundamental Theorem of Linear Algebra\<close>
 
 theory Generalizations2
   imports
     Rank_Nullity_Theorem.Fundamental_Subspaces
 begin
 
-subsection{*Conjugate class*}
+subsection\<open>Conjugate class\<close>
 
 class cnj = field +
   fixes cnj :: "'a\<Rightarrow>'a"
@@ -73,7 +73,7 @@ instance
 by (intro_classes, auto simp add: cnj_complex_def)
 end
 
-subsection{*Real\_of\_extended class*}
+subsection\<open>Real\_of\_extended class\<close>
 
 class real_of_extended = real_vector + cnj +
  fixes real_of :: "'a \<Rightarrow> real"
@@ -132,11 +132,11 @@ instance
   by (intro_classes, auto simp add: real_of_complex_def cnj_complex_def)
 end
 
-subsection{*Generalizing HMA*}
+subsection\<open>Generalizing HMA\<close>
 
-subsubsection{*Inner product spaces*}
+subsubsection\<open>Inner product spaces\<close>
 
-text{*We generalize the @{text "real_inner class"} to more general inner product spaces.*}
+text\<open>We generalize the \<open>real_inner class\<close> to more general inner product spaces.\<close>
 
 locale inner_product_space = vector_space scale
   for scale :: "('a::{field, cnj, real_of_extended} => 'b::ab_group_add => 'b)" +
@@ -179,7 +179,7 @@ lemma inner_diff_left: "inner (x - y) z = inner x z - inner y z"
 lemma inner_sum_left: "inner (\<Sum>x\<in>A. f x) y = (\<Sum>x\<in>A. inner (f x) y)"
   by (cases "finite A", induct set: finite, simp_all add: inner_add_left)
 
-text {* Transfer distributivity rules to right argument. *}
+text \<open>Transfer distributivity rules to right argument.\<close>
 
 lemma inner_add_right: "inner x (y + z) = inner x y + inner x z"
 proof -
@@ -225,7 +225,7 @@ lemmas inner_add [algebra_simps] = inner_add_left inner_add_right
 lemmas inner_diff [algebra_simps]  = inner_diff_left inner_diff_right
 lemmas inner_scaleR = inner_scaleR_left inner_scaleR_right
 
-text {* Legacy theorem names *}
+text \<open>Legacy theorem names\<close>
 lemmas inner_left_distrib = inner_add_left
 lemmas inner_right_distrib = inner_add_right
 lemmas inner_distrib = inner_left_distrib inner_right_distrib
@@ -312,7 +312,7 @@ qed
 
 end
 
-subsubsection{*Orthogonality*}
+subsubsection\<open>Orthogonality\<close>
 
 hide_const (open) orthogonal
 
@@ -369,7 +369,7 @@ lemma sum_0_all:
   using a f s0 sum_nonneg_eq_0_iff by blast
 
 
-subsection{*Vecs as inner product spaces*}
+subsection\<open>Vecs as inner product spaces\<close>
 
 locale vec_real_inner = F?: inner_product_space "((*) :: 'a\<Rightarrow>'a\<Rightarrow>'a)" inner_field 
  for inner_field :: "'a\<Rightarrow>'a\<Rightarrow>'a::{field,cnj,real_of_extended}" 
@@ -422,13 +422,13 @@ proof (unfold_locales, auto simp add: real_scalar_mult2)
   show "inner (r *s x) y = r * inner x y" using i3 by blast
   show i: "inner x x = 0 \<Longrightarrow> x = 0" using i4 by blast
   assume "x \<noteq> 0"
-  thus "0 < real_of (inner x x)" by (metis i `x \<noteq> 0` inner_0_0 local.inner_ge_zero 
+  thus "0 < real_of (inner x x)" by (metis i \<open>x \<noteq> 0\<close> inner_0_0 local.inner_ge_zero 
     local.real_scalar_mult2 mult.commute mult_1_left order.not_eq_order_implies_strict real_0)
 qed
 end
 
 
-subsection{*Matrices and inner product*}
+subsection\<open>Matrices and inner product\<close>
 
 locale matrix = 
     COLS?: vec_real_inner "\<lambda>x y. x * cnj y" inner_cols
@@ -456,7 +456,7 @@ qed
 
 end
 
-subsection{*Orthogonal complement generalized*}
+subsection\<open>Orthogonal complement generalized\<close>
 
 context inner_product_space
 begin
@@ -485,16 +485,16 @@ lemma B_in_orthogonal_complement_of_orthogonal_complement:
 end
 
 
-subsection{*Generalizing projections*}
+subsection\<open>Generalizing projections\<close>
 
 context inner_product_space
 begin
 
-text{*Projection of two vectors: v onto u*}
+text\<open>Projection of two vectors: v onto u\<close>
 
 definition "proj v u = scale (inner v u / inner u u) u"
 
-text{*Projection of a onto S*}
+text\<open>Projection of a onto S\<close>
 
 definition "proj_onto a S = (sum (\<lambda>x. proj a x) S)"
 
@@ -534,7 +534,7 @@ lemma orthogonal_real_eq: "RV_inner.orthogonal = real_inner_class.orthogonal"
   unfolding real_inner_class.orthogonal_def[abs_def] ..
 
 
-subsection{*Second Part of the Fundamental Theorem of Linear Algebra generalized*}
+subsection\<open>Second Part of the Fundamental Theorem of Linear Algebra generalized\<close>
 
 context matrix
 begin
@@ -588,7 +588,7 @@ qed
 
 end
 
-text{*We can get the explicit results for complex and real matrices*}
+text\<open>We can get the explicit results for complex and real matrices\<close>
 
 interpretation real_matrix: matrix "\<lambda>x y::real^'cols::{finite,wellorder}. 
   sum (\<lambda>i. (x$i) * (y$i)) UNIV" "\<lambda>x y. sum (\<lambda>i. (x$i) * (y$i)) UNIV"

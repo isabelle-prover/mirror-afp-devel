@@ -2,22 +2,22 @@ theory TAO_99_Paradox
 imports TAO_9_PLM TAO_98_ArtificialTheorems
 begin
 
-section{* Paradox *}
+section\<open>Paradox\<close>
 
 (*<*)
 locale Paradox = PLM
 begin
 (*>*)
 
-text{*
+text\<open>
 \label{TAO_Paradox_paradox}
 Under the additional assumption that expressions of the form
-@{term "(\<lambda>x . \<lparr>G,\<^bold>\<iota>y . \<phi> y x\<rparr>)"} for arbitrary @{text "\<phi>"} are
-\emph{proper maps}, for which @{text "\<beta>"}-conversion holds,
+@{term "(\<lambda>x . \<lparr>G,\<^bold>\<iota>y . \<phi> y x\<rparr>)"} for arbitrary \<open>\<phi>\<close> are
+\emph{proper maps}, for which \<open>\<beta>\<close>-conversion holds,
 the theory becomes inconsistent.
-*}
+\<close>
 
-subsection{* Auxiliary Lemmas *}
+subsection\<open>Auxiliary Lemmas\<close>
 
   lemma exe_impl_exists:
     "[\<lparr>(\<^bold>\<lambda>x . \<^bold>\<forall> p . p \<^bold>\<rightarrow> p), \<^bold>\<iota>y . \<phi> y x\<rparr> \<^bold>\<equiv> (\<^bold>\<exists>!y . \<^bold>\<A>\<phi> y x) in v]"
@@ -103,10 +103,10 @@ subsection{* Auxiliary Lemmas *}
       unfolding exists_unique_def by simp
   qed
 
-subsection{* Fake $\beta$-Conversion using Description Backdoor*}
-text{*
+subsection\<open>Fake $\beta$-Conversion using Description Backdoor\<close>
+text\<open>
   \label{TAO_Paradox_description_backdoor}
-*}
+\<close>
     
   definition backdoor where
     "backdoor \<equiv> \<lambda> \<psi> . \<^bold>\<lambda>x . \<lparr>(\<^bold>\<lambda>x . \<^bold>\<forall> p . p \<^bold>\<rightarrow> p), \<^bold>\<iota>y . y \<^bold>= x \<^bold>& \<psi> (x\<^sup>P)\<rparr>"
@@ -141,11 +141,11 @@ text{*
       logic_actual[necessitation_averse_axiom_instance]
       intro_elim_6_e by blast
 
-subsection{* Resulting Paradox *}
+subsection\<open>Resulting Paradox\<close>
 
-text{*
+text\<open>
   \label{TAO_Paradox_russell-paradox}
-*}
+\<close>
   
   lemma paradox:
     assumes "\<And> G \<phi>. IsProperInX (\<lambda>x . \<lparr>G,\<^bold>\<iota>y . \<phi> y x\<rparr>)"
@@ -191,15 +191,15 @@ text{*
     thus "False" using Semantics.T4 by auto
   qed
 
-subsection{* Original Version of the Paradox *}
+subsection\<open>Original Version of the Paradox\<close>
 
-text{*
+text\<open>
   \label{TAO_Paradox_original-paradox}
   Originally the paradox was discovered using the following
   construction based on the comprehension theorem for relations
   without the explicit construction of the description backdoor
-  and the resulting fake-@{text "\<beta>"}-conversion.
-*}
+  and the resulting fake-\<open>\<beta>\<close>-conversion.
+\<close>
   
   lemma assumes "\<And> G \<phi>. IsProperInX (\<lambda>x . \<lparr>G,\<^bold>\<iota>y . \<phi> y x\<rparr>)"
   shows Fx_equiv_xH: "[\<^bold>\<forall> H . \<^bold>\<exists> F . \<^bold>\<box>(\<^bold>\<forall>x. \<lparr>F,x\<^sup>P\<rparr> \<^bold>\<equiv> \<lbrace>x\<^sup>P,H\<rbrace>) in v]"

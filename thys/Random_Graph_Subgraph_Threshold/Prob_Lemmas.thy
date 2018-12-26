@@ -5,12 +5,12 @@ imports
   Ugraph_Misc
 begin
 
-section{* Lemmas about probabilities *}
+section\<open>Lemmas about probabilities\<close>
 
-text{* In this section, auxiliary lemmas for computing bounds on expectation and probabilites
-of random variables are set up. *}
+text\<open>In this section, auxiliary lemmas for computing bounds on expectation and probabilites
+of random variables are set up.\<close>
 
-subsection{* Indicator variables and valid probability values *}
+subsection\<open>Indicator variables and valid probability values\<close>
 
 abbreviation rind :: "'a set \<Rightarrow> 'a \<Rightarrow> real" where
 "rind \<equiv> indicator"
@@ -20,14 +20,14 @@ lemma product_indicator:
 unfolding indicator_def
 by auto
 
-text{* We call a real number `valid' iff it is in the range 0 to 1, inclusively, and additionally
-`nonzero' iff it is neither 0 nor 1. *}
+text\<open>We call a real number `valid' iff it is in the range 0 to 1, inclusively, and additionally
+`nonzero' iff it is neither 0 nor 1.\<close>
 
 abbreviation "valid_prob (p :: real) \<equiv> 0 \<le> p \<and> p \<le> 1"
 abbreviation "nonzero_prob (p :: real) \<equiv> 0 < p \<and> p < 1"
 
-text{* A function @{typ "'a \<Rightarrow> real"} is a `valid probability function' iff each value in the image
-is valid, and similarly for `nonzero'. *}
+text\<open>A function @{typ "'a \<Rightarrow> real"} is a `valid probability function' iff each value in the image
+is valid, and similarly for `nonzero'.\<close>
 
 abbreviation "valid_prob_fun f \<equiv> (\<forall>n. valid_prob (f n))"
 abbreviation "nonzero_prob_fun f \<equiv> (\<forall>n. nonzero_prob (f n))"
@@ -35,24 +35,24 @@ abbreviation "nonzero_prob_fun f \<equiv> (\<forall>n. nonzero_prob (f n))"
 lemma nonzero_fun_is_valid_fun: "nonzero_prob_fun f \<Longrightarrow> valid_prob_fun f"
 by (simp add: less_imp_le)
 
-subsection{* Expectation and variance *}
+subsection\<open>Expectation and variance\<close>
 
 context prob_space
 begin
 
-text{* Note that there is already a notion of independent sets (see @{term indep_set}), but we use
-the following -- simpler -- definition: *}
+text\<open>Note that there is already a notion of independent sets (see @{term indep_set}), but we use
+the following -- simpler -- definition:\<close>
 
 definition "indep A B \<longleftrightarrow> prob (A \<inter> B) = prob A * prob B"
 
-text{* The probability of an indicator variable is equal to its expectation: *}
+text\<open>The probability of an indicator variable is equal to its expectation:\<close>
 
 lemma expectation_indicator:
   "A \<in> events \<Longrightarrow> expectation (rind A) = prob A"
   by simp
 
-text{* For a non-negative random variable @{term X}, the Markov inequality gives the following
-upper bound: \[ \Pr[X \ge a] \le \frac{\Ex[X]}{a} \] *}
+text\<open>For a non-negative random variable @{term X}, the Markov inequality gives the following
+upper bound: \[ \Pr[X \ge a] \le \frac{\Ex[X]}{a} \]\<close>
 
 lemma markov_inequality:
   assumes "\<And>a. 0 \<le> X a" and "integrable M X" "0 < t"
@@ -67,7 +67,7 @@ proof -
     by (auto cong: nn_integral_cong simp: emeasure_eq_measure ennreal_mult[symmetric])
 qed
 
-text{* $\Var[X] = \Ex[X^2] - \Ex[X]^2 $ *}
+text\<open>$\Var[X] = \Ex[X^2] - \Ex[X]^2 $\<close>
 
 lemma variance_expectation:
   fixes X :: "'a \<Rightarrow> real"
@@ -90,9 +90,9 @@ proof -
     by (simp add: int power2_eq_square)+
 qed
 
-text{* A corollary from the Markov inequality is Chebyshev's inequality, which gives an upper
+text\<open>A corollary from the Markov inequality is Chebyshev's inequality, which gives an upper
 bound for the deviation of a random variable from its expectation:
-\[ \Pr[\left| Y - \Ex[Y] \right| \ge s] \le \frac{\Var[X]}{a^2} \] *}
+\[ \Pr[\left| Y - \Ex[Y] \right| \ge s] \le \frac{\Var[X]}{a^2} \]\<close>
 
 lemma chebyshev_inequality:
   fixes Y :: "'a \<Rightarrow> real"
@@ -115,7 +115,7 @@ proof -
     by simp
 qed
 
-text{* Hence, we can derive an upper bound for the probability that a random variable is $0$. *}
+text\<open>Hence, we can derive an upper bound for the probability that a random variable is $0$.\<close>
 
 corollary chebyshev_prob_zero:
   fixes Y :: "'a \<Rightarrow> real"
@@ -139,11 +139,11 @@ qed
 
 end
 
-subsection{* Sets of indicator variables *}
+subsection\<open>Sets of indicator variables\<close>
 
-text{* \label{sec:delta}
+text\<open>\label{sec:delta}
 This section introduces some inequalities about expectation and other values related to the sum of
-a set of random indicators. *}
+a set of random indicators.\<close>
 
 locale prob_space_with_indicators = prob_space +
   fixes I :: "'i set"
@@ -155,17 +155,17 @@ locale prob_space_with_indicators = prob_space +
   assumes prob_non_zero: "\<exists>i \<in> I. 0 < prob (A i)"
 begin
 
-text{* We call the underlying sets @{term "A i"} for each @{term "i \<in> I"}, and the corresponding
+text\<open>We call the underlying sets @{term "A i"} for each @{term "i \<in> I"}, and the corresponding
 indicator variables @{term "X i"}. The sum is denoted by @{term Y}, and its expectation by
-@{term \<mu>}. *}
+@{term \<mu>}.\<close>
 
 definition "X i = rind (A i)"
 definition "Y x = (\<Sum>i \<in> I. X i x)"
 
 definition "\<mu> = expectation Y"
 
-text{* In the lecture notes, the following two relations are called $\sim$ and $\nsim$,
-respectively. Note that they are not the opposite of each other. *}
+text\<open>In the lecture notes, the following two relations are called $\sim$ and $\nsim$,
+respectively. Note that they are not the opposite of each other.\<close>
 
 abbreviation ineq_indep :: "'i \<Rightarrow> 'i \<Rightarrow> bool" where
 "ineq_indep i j \<equiv> (i \<noteq> j \<and> indep (A i) (A j))"

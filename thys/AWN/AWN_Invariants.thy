@@ -13,8 +13,8 @@ subsection "Invariants via labelled control terms"
 
 text \<open>
   Used to state that the initial control-state of an automaton appears within a process
-  specification @{text \<Gamma>}, meaning that its transitions, and those of its subterms, are
-  subsumed by those of @{text \<Gamma>}.
+  specification \<open>\<Gamma>\<close>, meaning that its transitions, and those of its subterms, are
+  subsumed by those of \<open>\<Gamma>\<close>.
 \<close>
 
 definition

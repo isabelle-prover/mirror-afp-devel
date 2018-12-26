@@ -1,4 +1,4 @@
-section {* Linear Combinations *}
+section \<open>Linear Combinations\<close>
 
 theory LinearCombinations
 imports Main
@@ -9,9 +9,9 @@ imports Main
   FunctionLemmas
 begin
 
-subsection {*Lemmas for simplification *}
-text {*The following are helpful in certain simplifications (esp. congruence rules). Warning: arbitrary
-use leads to looping. *}
+subsection \<open>Lemmas for simplification\<close>
+text \<open>The following are helpful in certain simplifications (esp. congruence rules). Warning: arbitrary
+use leads to looping.\<close>
 lemma (in ring) coeff_in_ring:
   "\<lbrakk>a\<in>A\<rightarrow>carrier R; x\<in>A\<rbrakk> \<Longrightarrow> a x \<in>carrier R"
 by (rule Pi_mem)
@@ -31,9 +31,9 @@ by auto
 
 lemmas (in module) sum_simp = ring_subset_carrier
 
-subsection {* Linear combinations*}
-text {*A linear combination is $\sum_{v\in A} a_v v$. $(a_v)_{v\in S}$ is a function 
-$A\to K$, where $A\subseteq K$.*}
+subsection \<open>Linear combinations\<close>
+text \<open>A linear combination is $\sum_{v\in A} a_v v$. $(a_v)_{v\in S}$ is a function 
+$A\to K$, where $A\subseteq K$.\<close>
 definition (in module) lincomb::"['c \<Rightarrow> 'a, 'c set]\<Rightarrow> 'c"
 where "lincomb a A = (\<Oplus>\<^bsub>M\<^esub>  v\<in>A. (a v \<odot>\<^bsub>M\<^esub> v))"
 
@@ -77,7 +77,7 @@ lemma (in module) lincomb_union:
 using assms
   by (auto cong: finsum_cong2 simp add: lincomb_def finsum_Un_disjoint summands_valid ring_subset_carrier)
 
-text {*This is useful as a simp rule sometimes, for combining linear combinations.*}
+text \<open>This is useful as a simp rule sometimes, for combining linear combinations.\<close>
 lemma (in module) lincomb_union2:
   fixes a b A B 
   assumes h1: "finite (A\<union> B)"  and h3: "A\<union>B \<subseteq> carrier M" 
@@ -126,9 +126,9 @@ using assms
   by (auto cong: finsum_cong2 
         simp add: lincomb_def finsum_Un_disjoint finsum_smult ring_subset_carrier disj_if smult_assoc1 coeff_in_ring)
 
-subsection {*Linear dependence and independence.*}
-text {*A set $S$ in a module/vectorspace is linearly dependent if there is a finite set $A \subseteq S$
- and coefficients $(a_v)_{v\in A}$ such that $sum_{v\in A} a_vv=0$ and for some $v$, $a_v\neq 0$.*}
+subsection \<open>Linear dependence and independence.\<close>
+text \<open>A set $S$ in a module/vectorspace is linearly dependent if there is a finite set $A \subseteq S$
+ and coefficients $(a_v)_{v\in A}$ such that $sum_{v\in A} a_vv=0$ and for some $v$, $a_v\neq 0$.\<close>
 definition (in module) lin_dep where
   "lin_dep S = (\<exists>A a v. (finite A \<and> A\<subseteq>S \<and> (a\<in> (A\<rightarrow>carrier R)) \<and> (lincomb a A = \<zero>\<^bsub>M\<^esub>) \<and> (v\<in>A) \<and> (a v\<noteq> \<zero>\<^bsub>R\<^esub>)))"
   (*shows "\<exists>a. (a\<in> (S\<rightarrow>carrier K)) \<and> (lincomb a S = \<zero>\<^bsub>V\<^esub>) \<and> (\<exists>v\<in>S. a v\<noteq> \<zero>\<^bsub>K\<^esub>)"*)
@@ -136,8 +136,8 @@ definition (in module) lin_dep where
 abbreviation (in module) lin_indpt::"'c set \<Rightarrow> bool"
   where "lin_indpt S \<equiv> \<not>lin_dep S"
 
-text {*In the finite case, we can take $A=S$. This may be more convenient (e.g., when adding two
-linear combinations.*}
+text \<open>In the finite case, we can take $A=S$. This may be more convenient (e.g., when adding two
+linear combinations.\<close>
 lemma (in module) finite_lin_dep: 
   fixes S
   assumes finS:"finite S" and ld: "lin_dep S" and inC: "S\<subseteq>carrier M"
@@ -160,7 +160,7 @@ proof -
     by auto
 qed
 
-text {*Criteria of linear dependency in a easy format to apply: apply (rule lin-dep-crit)*}
+text \<open>Criteria of linear dependency in a easy format to apply: apply (rule lin-dep-crit)\<close>
 lemma (in module) lin_dep_crit: 
   fixes A S a v
   assumes fin: "finite A" and subset: "A\<subseteq>S" and h1: "(a\<in> (A\<rightarrow>carrier R))" and h2: "v\<in> A" 
@@ -171,7 +171,7 @@ proof -
     by (unfold lin_dep_def, auto) 
 qed
 
-text {*If $\sum_{v\in A} a_vv=0$ implies $a_v=0$ for all $v\in S$, then $A$ is linearly independent.*}
+text \<open>If $\sum_{v\in A} a_vv=0$ implies $a_v=0$ for all $v\in S$, then $A$ is linearly independent.\<close>
 lemma (in module) finite_lin_indpt2:
   fixes A 
   assumes A_fin: "finite A" and AinC: "A\<subseteq>carrier M" and
@@ -185,7 +185,7 @@ proof (rule ccontr)
   from av lc0 show False by auto
 qed
 
-text {*Any set containing 0 is linearly dependent.*}
+text \<open>Any set containing 0 is linearly dependent.\<close>
 lemma (in module) zero_lin_dep: 
   assumes 0: "\<zero>\<^bsub>M\<^esub> \<in> S" and nonzero: "carrier R \<noteq> {\<zero>\<^bsub>R\<^esub>}"
   shows "lin_dep S"
@@ -209,15 +209,15 @@ proof (rule ccontr)
   from li ld show False by auto
 qed
 
-text {*The @{text "span"} of $S$ is the set of linear combinations with $A \subseteq S$.*}
+text \<open>The \<open>span\<close> of $S$ is the set of linear combinations with $A \subseteq S$.\<close>
 definition (in module) span::"'c set \<Rightarrow>'c set" 
   where "span S = {lincomb a A | a A. finite A \<and> A\<subseteq>S \<and> a\<in> (A\<rightarrow>carrier R)}"
 
-text {*The @{text "span"} interpreted as a module or vectorspace.*}
+text \<open>The \<open>span\<close> interpreted as a module or vectorspace.\<close>
 abbreviation (in module) span_vs::"'c set \<Rightarrow> ('a,'c,'d) module_scheme" 
   where "span_vs S \<equiv> M \<lparr>carrier := span S\<rparr>"
 
-text {*In the finite case, we can take $A=S$ without loss of generality.*}
+text \<open>In the finite case, we can take $A=S$ without loss of generality.\<close>
 lemma (in module) finite_span:
   assumes fin: "finite S" and inC: "S\<subseteq>carrier M"
   shows "span S = {lincomb a S | a. a\<in> (S\<rightarrow>carrier R)}"
@@ -242,8 +242,8 @@ next
     by (unfold span_def, auto)
 qed
 
-text {*If $v\in \text{span S}$, then we can find a linear combination. This is in an easy to apply
-format (e.g. obtain a A where\ldots)*}
+text \<open>If $v\in \text{span S}$, then we can find a linear combination. This is in an easy to apply
+format (e.g. obtain a A where\ldots)\<close>
 lemma (in module) in_span:
   fixes S v
   assumes  h2: "S\<subseteq>carrier V" and h3: "v\<in>span S"
@@ -254,7 +254,7 @@ proof -
     by auto
 qed
 
-text {*In the finite case, we can take $A=S$.*}
+text \<open>In the finite case, we can take $A=S$.\<close>
 lemma (in module) finite_in_span:
   fixes S v
   assumes fin: "finite S" and h2: "S\<subseteq>carrier M" and h3: "v\<in>span S"
@@ -264,8 +264,8 @@ proof -
   from h3 fin_span show ?thesis by auto
 qed
 
-text {*If a subset is linearly independent, then any linear combination that is 0 must have a 
-nonzero coefficient outside that set.*}
+text \<open>If a subset is linearly independent, then any linear combination that is 0 must have a 
+nonzero coefficient outside that set.\<close>
 lemma (in module) lincomb_must_include:
   fixes A S T b v
   assumes  inC: "T\<subseteq>carrier M" and li: "lin_indpt S" and Ssub: "S\<subseteq>T" and Ssub: "A\<subseteq>T"
@@ -291,11 +291,11 @@ proof (rule ccontr)
   from ld li show False by auto
 qed
 
-text {*A generating set is a set such that the span of $S$ is all of $M$.*}
+text \<open>A generating set is a set such that the span of $S$ is all of $M$.\<close>
 abbreviation (in module) gen_set::"'c set \<Rightarrow> bool"
   where "gen_set S \<equiv> (span S = carrier M)" 
 
-subsection {*Submodules*}
+subsection \<open>Submodules\<close>
 
 lemma module_criteria:
   fixes R and M 
@@ -321,8 +321,8 @@ proof -
     by (unfold module_def module_def, auto)
 qed
 
-text {*A submodule is $N\subseteq M$ that is closed under addition and scalar multiplication, and
-contains 0 (so is not empty).*}
+text \<open>A submodule is $N\subseteq M$ that is closed under addition and scalar multiplication, and
+contains 0 (so is not empty).\<close>
 locale submodule =
   fixes R and N and M (structure)
   assumes module: "module R M" 
@@ -351,7 +351,7 @@ next
       apply (metis (no_types, hide_lams) M.add.m_assoc contra_subsetD)
      apply (metis (no_types, hide_lams) M.add.m_comm contra_subsetD)
     apply (rename_tac v)
-    txt {*The inverse of $v$ under addition is $-v$*}
+    txt \<open>The inverse of $v$ under addition is $-v$\<close>
     apply (rule_tac x="\<ominus>\<^bsub>M\<^esub>v" in bexI)
      apply (metis M.l_neg contra_subsetD)
     by (metis R.add.inv_closed one_closed smult_minus_1 subset_iff)
@@ -363,12 +363,12 @@ next
     by (metis (no_types, hide_lams) smult_assoc1 contra_subsetD)
 qed
 
-text {*$N_1+N_2=\{x+y | x\in N_1,y\in N_2\}$ *}
+text \<open>$N_1+N_2=\{x+y | x\in N_1,y\in N_2\}$\<close>
 definition (in module) submodule_sum:: "['c set, 'c set] \<Rightarrow> 'c set"
   where "submodule_sum N1 N2 = (\<lambda> (x,y). x \<oplus>\<^bsub>M\<^esub> y) `{(x,y). x\<in>  N1 \<and> y\<in> N2}"
 (*This only depends on the carriers, actually, so it could be defined on that level if desired.*)
 
-text {*A module homomorphism $M\to N$ preserves addition and scalar multiplication.*}
+text \<open>A module homomorphism $M\to N$ preserves addition and scalar multiplication.\<close>
 definition module_hom:: "[('a, 'c0) ring_scheme, 
   ('a,'b1,'c1) module_scheme, ('a,'b2,'c2) module_scheme] \<Rightarrow>('b1\<Rightarrow>'b2) set"
   where "module_hom R M N = {f. 
@@ -393,7 +393,7 @@ locale mod_hom =
   notes f_add [simp] = module_hom_add [OF f_hom]
     and f_smult [simp] = module_hom_smult [OF f_hom]
 
-text {*Some basic simplification rules for module homomorphisms.*}
+text \<open>Some basic simplification rules for module homomorphisms.\<close>
 context mod_hom
 begin
 
@@ -472,7 +472,7 @@ lemma (in mod_hom) f_ker:
 by (unfold ker_def, auto)
 end
 
-text {*We will show that for any set $S$, the space of functions $S\to K$ forms a vector space.*}
+text \<open>We will show that for any set $S$, the space of functions $S\to K$ forms a vector space.\<close>
 definition (in ring) func_space:: "'z set\<Rightarrow>('a,('z \<Rightarrow> 'a)) module"
   where "func_space S = \<lparr>carrier = S\<rightarrow>\<^sub>Ecarrier R, 
                   mult = (\<lambda> f g. restrict (\<lambda>v. \<zero>\<^bsub>R\<^esub>) S),
@@ -497,10 +497,10 @@ from 0 show ?thesis
       by (auto simp add: m_assoc l_distr r_distr)
 qed
 
-text {*Note: one can define $M^n$ from this.*}
+text \<open>Note: one can define $M^n$ from this.\<close>
 
-text {*A linear combination is a module homomorphism from the space of coefficients to the module,
- $(a_v)\mapsto \sum_{v\in S} a_vv$.*}
+text \<open>A linear combination is a module homomorphism from the space of coefficients to the module,
+ $(a_v)\mapsto \sum_{v\in S} a_vv$.\<close>
 lemma (in module) lincomb_is_mod_hom:
   fixes S
   assumes h: "finite S" and h2: "S\<subseteq>carrier M"
@@ -573,7 +573,7 @@ proof -
   with 1 2 show ?thesis by auto
 qed
 
-text {*The negative of a function is just pointwise negation.*}
+text \<open>The negative of a function is just pointwise negation.\<close>
 lemma (in cring) func_space_neg: 
   fixes f
   assumes "f\<in> carrier (func_space S)"
@@ -588,7 +588,7 @@ proof -
     by (simp add: l_neg coeff_in_ring)
 qed
 
-text {*Ditto for subtraction. Note the above is really a special case, when a is the 0 function.*}
+text \<open>Ditto for subtraction. Note the above is really a special case, when a is the 0 function.\<close>
 lemma (in module) lincomb_diff:
   assumes A_fin: "finite A" and AinC: "A\<subseteq>carrier M" and a_fun: "a\<in>A\<rightarrow>carrier R" and 
     b_fun: "b\<in>A\<rightarrow>carrier R" 
@@ -620,8 +620,8 @@ proof -
   with 1 2 show ?thesis by auto
 qed
 
-text {*The union of nested submodules is a submodule. We will use this to show that span of any
-set is a submodule.*}
+text \<open>The union of nested submodules is a submodule. We will use this to show that span of any
+set is a submodule.\<close>
 lemma (in module) nested_union_vs: 
   fixes I N N'
   assumes subm: "\<And>i. i\<in>I\<Longrightarrow> submodule R (N i) M"
@@ -716,10 +716,10 @@ next
   qed
 qed
 
-text {*A finite sum does not depend on the ambient module. This can be done for monoid, but 
+text \<open>A finite sum does not depend on the ambient module. This can be done for monoid, but 
 "submonoid" isn't currently defined. (It can be copied, however, for groups\ldots)
 This lemma requires a somewhat annoying lemma foldD-not-depend. Then we show that linear combinations, 
-linear independence, span do not depend on the ambient module.*}
+linear independence, span do not depend on the ambient module.\<close>
 lemma (in module) finsum_not_depend:
   fixes a A N
   assumes h1: "finite A" and h2: "A\<subseteq>N" and h3: "submodule R N M" and h4: "f:A\<rightarrow>N"

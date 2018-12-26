@@ -4,16 +4,16 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Inverse of a matrix using the Gauss Jordan algorithm*}
+section\<open>Inverse of a matrix using the Gauss Jordan algorithm\<close>
 
 theory Inverse
 imports
   Gauss_Jordan_PA
 begin
 
-subsection{*Several properties*}
+subsection\<open>Several properties\<close>
 
-text{*Properties about Gauss Jordan algorithm, reduced row echelon form, rank, identity matrix and invertibility*}
+text\<open>Properties about Gauss Jordan algorithm, reduced row echelon form, rank, identity matrix and invertibility\<close>
 
 lemma rref_id_implies_invertible:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
@@ -30,7 +30,7 @@ finally have "A = (matrix_inv P)" .
 thus ?thesis using P unfolding invertible_def using matrix_inv_unique by blast
 qed
 
-text{*In the following case, nrows is equivalent to ncols due to we are working with a square matrix*}
+text\<open>In the following case, nrows is equivalent to ncols due to we are working with a square matrix\<close>
 lemma full_rank_implies_invertible:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
 assumes rank_n: "rank A = nrows A"
@@ -69,11 +69,11 @@ unfolding mat_def apply vector using assms unfolding id_upt_k_def nrows_def
 using to_nat_less_card[where ?'a='b]
 by presburger
 
-subsection{*Computing the inverse of a matrix using the Gauss Jordan algorithm*}
+subsection\<open>Computing the inverse of a matrix using the Gauss Jordan algorithm\<close>
 
-text{*This lemma is essential to demonstrate that the Gauss Jordan form of an invertible matrix is the identity. 
+text\<open>This lemma is essential to demonstrate that the Gauss Jordan form of an invertible matrix is the identity. 
   The proof is made by induction and it is explained in 
-  @{url "http://www.unirioja.es/cu/jodivaso/Isabelle/Gauss-Jordan-2013-2-Generalized/Demonstration_invertible.pdf"}*}
+  @{url "http://www.unirioja.es/cu/jodivaso/Isabelle/Gauss-Jordan-2013-2-Generalized/Demonstration_invertible.pdf"}\<close>
 
 lemma id_upt_k_Gauss_Jordan:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
@@ -253,7 +253,7 @@ proof (cases "to_nat j < k")
                           ultimately show ?thesis using rref_upt_condition4[OF rref_suc_k] i_not_j by fastforce
                           next
                           case False
-                          hence i_eq_k: "to_nat i = k" by (metis `to_nat i < Suc k` less_SucE)
+                          hence i_eq_k: "to_nat i = k" by (metis \<open>to_nat i < Suc k\<close> less_SucE)
                           hence j_less_k: "to_nat j < k" by (metis i_not_j j_less_suc less_SucE to_nat_from_nat)
                           have "(LEAST n. Gauss_Jordan A $ j $ n \<noteq> 0) = j"
                             proof (rule Least_equality)

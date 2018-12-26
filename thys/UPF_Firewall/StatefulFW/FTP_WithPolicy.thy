@@ -35,18 +35,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* FTP enriched with a security policy *}
+subsection \<open>FTP enriched with a security policy\<close>
 theory  
   FTP_WithPolicy
   imports 
     FTP 
 begin
 
-text{*  FTP where the policy is part of the output.  *}
+text\<open>FTP where the policy is part of the output.\<close>
 
 definition POL :: "'a \<Rightarrow> 'a"   where  "POL x = x"
 
-text{* Variant 2 takes the policy into the output *}
+text\<open>Variant 2 takes the policy into the output\<close>
 fun FTP_STP ::
   "((id \<rightharpoonup> port), adr\<^sub>i\<^sub>p, msg) FWStateTransitionP"
   where

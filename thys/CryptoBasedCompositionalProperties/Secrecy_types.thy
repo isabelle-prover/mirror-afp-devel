@@ -3,7 +3,7 @@
    Author:    Maria Spichkova <maria.spichkova at rmit.edu.au>, 2014
 *)
 
-section {* Auxiliary data types *}
+section \<open>Auxiliary data types\<close>
 
 theory Secrecy_types
 imports Main

@@ -5,9 +5,9 @@ imports Main Graph
   (*"../Collections/Lib/Proper_Iterator"*)
   (*"../Refine_Monadic/Refine_Autodet"*)
 begin
-  text {*
+  text \<open>
     This theory defines an ICF-style interface for graphs.
-    *}
+\<close>
 
   type_synonym ('V,'W,'G) graph_\<alpha> = "'G \<Rightarrow> ('V,'W) graph"
 
@@ -189,7 +189,7 @@ begin
     assumes to_list_correct:
       "invar g \<Longrightarrow> adjl_\<alpha> (to_list g) = \<alpha> g"
 
-  subsection {* Record Based Interface *}
+  subsection \<open>Record Based Interface\<close>
   record ('V,'W,'G) graph_ops =
     gop_\<alpha> :: "('V,'W,'G) graph_\<alpha>"
     gop_invar :: "'G \<Rightarrow> bool"
@@ -243,7 +243,7 @@ begin
 
   end
 
-  subsection {* Refinement Framework Bindings *}
+  subsection \<open>Refinement Framework Bindings\<close>
   lemma (in graph_nodes_it) nodes_it_is_iterator[refine_transfer]:
     "invar g \<Longrightarrow> set_iterator (nodes_it g) (nodes (\<alpha> g))"
     by (rule nodes_it_correct)

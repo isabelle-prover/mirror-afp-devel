@@ -6,13 +6,13 @@
 
 theory DiskPaxos_Inv3 imports DiskPaxos_Inv2  begin
 
-subsection {* Invariant 3 *}
+subsection \<open>Invariant 3\<close>
 
-text {*
+text \<open>
   This invariant says that if two processes have read each other's block 
   from disk $d$ during their current phases, then at least one of them 
   has read the other's current block.
-*}
+\<close>
 
 definition HInv3_L :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightarrow> Disk \<Rightarrow> bool"
 where
@@ -32,7 +32,7 @@ definition HInv3_inner :: "state \<Rightarrow> Proc \<Rightarrow> Proc \<Rightar
 definition HInv3 :: "state \<Rightarrow> bool"
   where "HInv3 s = (\<forall>p q d. HInv3_inner s p q d)"
 
-subsubsection{* Proofs of Invariant 3 *}
+subsubsection\<open>Proofs of Invariant 3\<close>
 
 theorem HInit_HInv3: "HInit s \<Longrightarrow> HInv3 s"
   by(simp add: HInit_def Init_def HInv3_def 
@@ -418,7 +418,7 @@ theorem HEndPhase0_HInv3:
   "\<lbrakk> HEndPhase0 s s' p; HInv3 s \<rbrakk> \<Longrightarrow> HInv3 s'"
   by(auto simp add: HInv3_def dest: EndPhase0_HInv3)
 
-text{* $HInv1 \wedge HInv2 \wedge HInv3$ is an invariant of $HNext$. *}
+text\<open>$HInv1 \wedge HInv2 \wedge HInv3$ is an invariant of $HNext$.\<close>
 
 lemma I2c:
   assumes nxt: "HNext s s'"

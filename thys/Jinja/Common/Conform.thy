@@ -4,7 +4,7 @@
     Copyright   1999 Technische Universitaet Muenchen
 *)
 
-section {* Conformance Relations for Type Soundness Proofs *}
+section \<open>Conformance Relations for Type Soundness Proofs\<close>
 
 theory Conform
 imports Exceptions
@@ -37,7 +37,7 @@ abbreviation
   "P,h \<turnstile> vs [:\<le>] Ts \<equiv> list_all2 (conf P h) vs Ts"
 
 
-subsection{* Value conformance @{text":\<le>"} *}
+subsection\<open>Value conformance \<open>:\<le>\<close>\<close>
 
 lemma conf_Null [simp]: "P,h \<turnstile> Null :\<le> T  =  P \<turnstile> NT \<le> T"
 (*<*)
@@ -110,7 +110,7 @@ done
 (*>*)
 
 
-subsection{* Value list conformance @{text"[:\<le>]"} *}
+subsection\<open>Value list conformance \<open>[:\<le>]\<close>\<close>
 
 lemma confs_widens [trans]: "\<lbrakk>P,h \<turnstile> vs [:\<le>] Ts; P \<turnstile> Ts [\<le>] Ts'\<rbrakk> \<Longrightarrow> P,h \<turnstile> vs [:\<le>] Ts'"
 (*<*)

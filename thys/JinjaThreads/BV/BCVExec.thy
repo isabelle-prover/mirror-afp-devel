@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Code generation for the byte code verifier *}
+section \<open>Code generation for the byte code verifier\<close>
 
 theory BCVExec
 imports
@@ -62,6 +62,6 @@ by(simp add: fun_eq_iff jvm_kildall_correct)
 definition "wf_jvm_prog' = wf_jvm_prog"
 
 (* Formal code generation test *)
-ML_val {* @{code wf_jvm_prog'} *}
+ML_val \<open>@{code wf_jvm_prog'}\<close>
 
 end

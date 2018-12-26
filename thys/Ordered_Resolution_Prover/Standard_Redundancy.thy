@@ -47,7 +47,7 @@ lemma contradiction_Rf: "{#} \<in> N \<Longrightarrow> Rf N = UNIV - {{#}}"
   unfolding Rf_def by force
 
 text \<open>
-The following results correspond to Lemma 4.5. The lemma @{text wlog_non_Rf} generalizes the core of
+The following results correspond to Lemma 4.5. The lemma \<open>wlog_non_Rf\<close> generalizes the core of
 the argument.
 \<close>
 

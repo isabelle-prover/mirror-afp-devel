@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Correctness of both stages *}
+section \<open>Correctness of both stages\<close>
 
 theory Correctness 
 imports
@@ -264,14 +264,14 @@ proof -
       and bisim0': "red_red0.mbisim s' s0''"
       and dead0: "red0_mthr.deadlock P s0''" by auto
     
-    from delay_bisimulation_diverge.simulation_silents1[OF b01mthr, OF bisim01 `red0_mthr.mthr.silent_moves P s0' s0''`]
+    from delay_bisimulation_diverge.simulation_silents1[OF b01mthr, OF bisim01 \<open>red0_mthr.mthr.silent_moves P s0' s0''\<close>]
     obtain s1'' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''"
       and "red0_Red1'.mbisim s0'' s1''" by auto
-    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b01, OF `red0_Red1'.mbisim s0'' s1''` dead0, of convert_RA]
+    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b01, OF \<open>red0_Red1'.mbisim s0'' s1''\<close> dead0, of convert_RA]
     obtain s1''' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''"
       and dead1: "Red1_mthr.deadlock False (compP1 P) s1'''"
       and bisim01': "red0_Red1'.mbisim s0'' s1'''" by auto
-    from `Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''` `Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''`
+    from \<open>Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''\<close> \<open>Red1_mthr.mthr.silent_moves False (compP1 P) s1'' s1'''\<close>
     have "Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1'''" by(rule rtranclp_trans)
 
     from delay_bisimulation_diverge.simulation_silents1[OF b11delay, OF bisim11 this]
@@ -281,20 +281,20 @@ proof -
     with dead1 have dead1': "Red1_mthr.deadlock True (compP1 P) S1''"
       by(simp add: Red1_Red1'_deadlock_inv)
 
-    from delay_bisimulation_diverge.simulation_silents1[OF b12mthr, OF bisim12 `Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''`]
+    from delay_bisimulation_diverge.simulation_silents1[OF b12mthr, OF bisim12 \<open>Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''\<close>]
     obtain cs'' where "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''"
       and "Red1_execd.mbisim S1'' cs''" by auto
-    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b12 `Red1_execd.mbisim S1'' cs''` dead1', of convert_RA]
+    from FWdelay_bisimulation_diverge.deadlock1_imp_\<tau>s_deadlock2[OF b12 \<open>Red1_execd.mbisim S1'' cs''\<close> dead1', of convert_RA]
     obtain cs''' where "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs'' cs'''"
       and bisim12': "Red1_execd.mbisim S1'' cs'''"
       and dead': "execd_mthr.deadlock (compP2 (compP1 P)) cs'''" by auto
-    from `execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''` `execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs'' cs'''`
+    from \<open>execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs''\<close> \<open>execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs'' cs'''\<close>
     have "execd_mthr.mthr.silent_moves (compP2 (compP1 P)) cs' cs'''" by(rule rtranclp_trans)
-    hence "cs''' = cs'" using execd_mthr.mthr.\<tau>Runs_terminal_stuck[OF exec `tfinite \<xi>'` `terminal \<xi>' = \<lfloor>cs'\<rfloor>`]
+    hence "cs''' = cs'" using execd_mthr.mthr.\<tau>Runs_terminal_stuck[OF exec \<open>tfinite \<xi>'\<close> \<open>terminal \<xi>' = \<lfloor>cs'\<rfloor>\<close>]
       by(cases rule: converse_rtranclpE)(fastforce simp add: J2JVM_def)+
     with dead' have "execd_mthr.deadlock (J2JVM P) cs'" by(simp add: J2JVM_def)
     hence "\<exists>cs'. tfinite \<xi>' \<and> terminal \<xi>' = \<lfloor>cs'\<rfloor> \<and> execd_mthr.deadlock (J2JVM P) cs' \<and> bisimJ2JVM s' cs'"
-      using `tfinite \<xi>'` `terminal \<xi>' = \<lfloor>cs'\<rfloor>` bisim' by blast }
+      using \<open>tfinite \<xi>'\<close> \<open>terminal \<xi>' = \<lfloor>cs'\<rfloor>\<close> bisim' by blast }
   moreover {
     assume "tfinite \<xi>" and "terminal \<xi> = None"
     hence "tfinite \<xi>' \<and> terminal \<xi>' = None" using tlsim tllist_all2_tfiniteD[OF tlsim]
@@ -367,35 +367,35 @@ proof -
     obtain S1'' where "Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''"
       and bisim12': "Red1_execd.mbisim S1'' cs'"
       and dead': "Red1_mthr.deadlock True (compP1 P) S1''" by(auto simp add: J2JVM_def)
-    from delay_bisimulation_diverge.simulation_silents2[OF b11delay, OF bisim11 `Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''`]
+    from delay_bisimulation_diverge.simulation_silents2[OF b11delay, OF bisim11 \<open>Red1_mthr.mthr.silent_moves True (compP1 P) S1' S1''\<close>]
     obtain s1'' where "Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''"
       and bisim11': "mbisim_Red1'_Red1 s1'' S1''" by blast
     from bisim11' have "s1'' = S1''" by(simp add: mbisim_Red1'_Red1_def)
     with dead' have dead1: "Red1_mthr.deadlock False (compP1 P) s1''"
       by(simp add: Red1_Red1'_deadlock_inv)
-    from delay_bisimulation_diverge.simulation_silents2[OF b01mthr, OF bisim01 `Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''`]
+    from delay_bisimulation_diverge.simulation_silents2[OF b01mthr, OF bisim01 \<open>Red1_mthr.mthr.silent_moves False (compP1 P) s1' s1''\<close>]
     obtain s0'' where "red0_mthr.mthr.silent_moves P s0' s0''"
       and bisim01': "red0_Red1'.mbisim s0'' s1''" by auto
     from FWdelay_bisimulation_diverge.deadlock2_imp_\<tau>s_deadlock1[OF b01 bisim01' dead1, of convert_RA]
     obtain s0''' where "red0_mthr.mthr.silent_moves P s0'' s0'''"
       and bisim01'': "red0_Red1'.mbisim s0''' s1''"
       and dead0: "red0_mthr.deadlock P s0'''" by auto
-    from `red0_mthr.mthr.silent_moves P s0' s0''` `red0_mthr.mthr.silent_moves P s0'' s0'''`
+    from \<open>red0_mthr.mthr.silent_moves P s0' s0''\<close> \<open>red0_mthr.mthr.silent_moves P s0'' s0'''\<close>
     have "red0_mthr.mthr.silent_moves P s0' s0'''" by(rule rtranclp_trans)
     from delay_bisimulation_diverge.simulation_silents2[OF b0mthr, OF bisim0 this]
     obtain s'' where "red_mthr.mthr.silent_moves P s' s''" 
       and "red_red0.mbisim s'' s0'''" by blast
-    from FWdelay_bisimulation_diverge.deadlock2_imp_\<tau>s_deadlock1[OF b0 `red_red0.mbisim s'' s0'''` dead0, of convert_RA]
+    from FWdelay_bisimulation_diverge.deadlock2_imp_\<tau>s_deadlock1[OF b0 \<open>red_red0.mbisim s'' s0'''\<close> dead0, of convert_RA]
     obtain s''' where "red_mthr.mthr.silent_moves P s'' s'''" 
       and "red_red0.mbisim s''' s0'''"
       and dead: "red_mthr.deadlock P s'''" by blast
-    from `red_mthr.mthr.silent_moves P s' s''` `red_mthr.mthr.silent_moves P s'' s'''`
+    from \<open>red_mthr.mthr.silent_moves P s' s''\<close> \<open>red_mthr.mthr.silent_moves P s'' s'''\<close>
     have "red_mthr.mthr.silent_moves P s' s'''" by(rule rtranclp_trans)
-    hence "s''' = s'" using red_mthr.mthr.\<tau>Runs_terminal_stuck[OF red `tfinite \<xi>` `terminal \<xi> = \<lfloor>s'\<rfloor>`]
+    hence "s''' = s'" using red_mthr.mthr.\<tau>Runs_terminal_stuck[OF red \<open>tfinite \<xi>\<close> \<open>terminal \<xi> = \<lfloor>s'\<rfloor>\<close>]
       by(cases rule: converse_rtranclpE) fastforce+
     with dead have "red_mthr.deadlock P s'" by(simp)
     hence "\<exists>s'. tfinite \<xi> \<and> terminal \<xi> = \<lfloor>s'\<rfloor> \<and> red_mthr.deadlock P s' \<and> bisimJ2JVM s' cs'"
-      using `tfinite \<xi>` `terminal \<xi> = \<lfloor>s'\<rfloor>` bisim' by blast }
+      using \<open>tfinite \<xi>\<close> \<open>terminal \<xi> = \<lfloor>s'\<rfloor>\<close> bisim' by blast }
   moreover {
     assume "tfinite \<xi>'" and "terminal \<xi>' = None"
     hence "tfinite \<xi> \<and> terminal \<xi> = None" using tlsim tllist_all2_tfiniteD[OF tlsim]

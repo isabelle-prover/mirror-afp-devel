@@ -7,9 +7,9 @@ begin
   declaration Refine_Mono_Prover.decl_setup
 
   method_setup refine_mono = 
-    {* Scan.succeed (fn ctxt => SIMPLE_METHOD' (
+    \<open>Scan.succeed (fn ctxt => SIMPLE_METHOD' (
       Refine_Mono_Prover.untriggered_mono_tac ctxt
-    )) *} 
+    ))\<close> 
     "Refinement framework: Monotonicity prover"
 
   locale mono_setup_loc = 
@@ -26,14 +26,14 @@ begin
 
     lemmas mono_thms[refine_mono] = monoI mono_if mono_let refl
 
-    declaration {* Refine_Mono_Prover.declare_mono_triggers @{thms monoI} *}
+    declaration \<open>Refine_Mono_Prover.declare_mono_triggers @{thms monoI}\<close>
 
   end
 
   interpretation order_mono_setup: mono_setup_loc "(\<le>) :: 'a::preorder \<Rightarrow> _"
     by standard auto
 
-  declaration {* Refine_Mono_Prover.declare_mono_triggers @{thms Orderings.monoI} *}
+  declaration \<open>Refine_Mono_Prover.declare_mono_triggers @{thms Orderings.monoI}\<close>
 
   lemmas [refine_mono] = 
     lfp_mono[OF le_funI, THEN le_funD] 

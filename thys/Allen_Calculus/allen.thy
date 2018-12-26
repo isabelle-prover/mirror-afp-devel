@@ -4,7 +4,7 @@ Author:  Fadoua Ghourabi (fadouaghourabi@gmail.com)
 Affiliation: Ochanomizu University, Japan
 *)
 
-section {* Time interval relations *}
+section \<open>Time interval relations\<close>
 
 
 theory allen
@@ -17,10 +17,10 @@ imports
 
 begin
 
-section {* Basic relations *}
+section \<open>Basic relations\<close>
 
-text{* We  define 7 binary relations  between time intervals. 
-Relations e, m, b, ov, d, s and f stand for equal, meets, before, overlaps, during, starts and finishes, respectively. *}
+text\<open>We  define 7 binary relations  between time intervals. 
+Relations e, m, b, ov, d, s and f stand for equal, meets, before, overlaps, during, starts and finishes, respectively.\<close>
 
 class arelations = interval + 
  fixes 
@@ -43,8 +43,8 @@ assumes
  
 
 (** e compositions **)
-subsection {* e-composition *}
-text {* Relation e is the identity relation for composition.  *}
+subsection \<open>e-composition\<close>
+text \<open>Relation e is the identity relation for composition.\<close>
 
 lemma cer:
 assumes  "r \<in> {e,m,b,ov,s,f,d,m^-1,b^-1,ov^-1,s^-1,f^-1,d^-1}" 
@@ -52,8 +52,8 @@ shows "e O r = r"
 proof -
   { fix x y assume a:"(x,y) \<in> e O r" 
     then obtain z where "(x,z) \<in> e" and "(z,y) \<in> r" by auto
-    from `(x,z) \<in> e` have "x = z" using e by auto
-    with `(z,y)\<in> r` have "(x,y) \<in> r" by simp} note c1 = this
+    from \<open>(x,z) \<in> e\<close> have "x = z" using e by auto
+    with \<open>(z,y)\<in> r\<close> have "(x,y) \<in> r" by simp} note c1 = this
   
  { fix x y assume a:"(x,y) \<in>  r"
    have "(x,x) \<in> e" using e by auto
@@ -68,8 +68,8 @@ shows " r O e = r"
 proof -
   { fix x y assume a:"(x,y) \<in> r O e" 
     then obtain z where "(x,z) \<in> r" and "(z,y) \<in> e" by auto
-    from `(z,y) \<in> e` have "z = y" using e by auto
-    with `(x,z)\<in> r` have "(x,y) \<in> r" by simp} note c1 = this
+    from \<open>(z,y) \<in> e\<close> have "z = y" using e by auto
+    with \<open>(x,z)\<in> r\<close> have "(x,y) \<in> r" by simp} note c1 = this
   
  { fix x y assume a:"(x,y) \<in>  r"
    have "(y,y) \<in> e" using e by auto
@@ -107,8 +107,8 @@ lemmas cdie = cre[of "d^-1"]
 (*******)
 
 (* composition with single relation *)
-subsection {* r-composition *}
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq r$, where $r$ is a basic relation.  *}
+subsection \<open>r-composition\<close>
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq r$, where $r$ is a basic relation.\<close>
 
 method (in arelations) r_compose uses r1 r2 r3 = ((auto, (subst (asm) r1 ), (subst (asm) r2), (subst r3)) ,  (meson M5exist_var))
 
@@ -210,19 +210,19 @@ qed
 lemma cfifi:"f^-1 O f^-1 \<subseteq> f^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> f^-1 O f^-1" then obtain p q z where x:"x = (p, q)" and "(p,z) \<in> f^-1" and "(z,q) \<in> f^-1" by auto
-  from `(p,z) \<in> f^-1` obtain k l u  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p\<parallel>u" and zu:"z\<parallel>u"  using f  by blast
-  from `(z,q) \<in> f^-1` obtain k' u' l' where kpz:"k'\<parallel>z" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and qup:"q\<parallel>u'" and zup:"z\<parallel>u'"  using f  by blast
+  from \<open>(p,z) \<in> f^-1\<close> obtain k l u  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p\<parallel>u" and zu:"z\<parallel>u"  using f  by blast
+  from \<open>(z,q) \<in> f^-1\<close> obtain k' u' l' where kpz:"k'\<parallel>z" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and qup:"q\<parallel>u'" and zup:"z\<parallel>u'"  using f  by blast
   from zu zup pu have "p\<parallel>u'" using M1 by blast
   from lz kpz kplp have "l\<parallel>l'" using M1 by blast
   with kl lpq obtain ll where "k\<parallel>ll" and "ll\<parallel>q" using M5exist_var by blast
-  with kp `p\<parallel>u'` qup show "x \<in> f^-1" using x f by blast
+  with kp \<open>p\<parallel>u'\<close> qup show "x \<in> f^-1" using x f by blast
 qed
 
 lemma cfidi:"f^-1 O d^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x : f^-1 O d^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> f^-1" and "(z,q) \<in> d^-1" by auto
   then obtain k l u where kp:"k \<parallel> p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p \<parallel>u" and  zu:"z\<parallel>u" using f  by blast
-  obtain k' l' u' v' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q" and  qup:"q \<parallel>u'" and  upvp:"u'\<parallel>v'" and zvp:"z\<parallel>v'" using d `(z,q)\<in>d^-1` by blast
+  obtain k' l' u' v' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q" and  qup:"q \<parallel>u'" and  upvp:"u'\<parallel>v'" and zvp:"z\<parallel>v'" using d \<open>(z,q)\<in>d^-1\<close> by blast
   from lz kpz kplp have "l\<parallel>l'" using M1 by blast
   with kl lpq obtain ll where "k\<parallel>ll" and "ll\<parallel>q" using M5exist_var by blast
   moreover from zu zvp upvp have "u' \<parallel> u " using M1 by blast
@@ -232,8 +232,8 @@ qed
 lemma cfis:"f^-1 O s \<subseteq> ov"
 proof
    fix x::"'a\<times>'a" assume "x \<in> f^-1 O s" then obtain p q z where x:"x = (p,q)" and "(p,z)\<in> f^-1" and "(z,q) \<in> s" by auto
-   from `(p,z)\<in> f^-1` obtain k l u where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p\<parallel>u" and zu:"z\<parallel>u" using f by blast
-   from `(z,q)\<in> s` obtain k' u' v' where kpz:"k'\<parallel>z" and kpq:"k'\<parallel>q" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" using s M1 by blast
+   from \<open>(p,z)\<in> f^-1\<close> obtain k l u where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p\<parallel>u" and zu:"z\<parallel>u" using f by blast
+   from \<open>(z,q)\<in> s\<close> obtain k' u' v' where kpz:"k'\<parallel>z" and kpq:"k'\<parallel>q" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" using s M1 by blast
    from pu zu zup have pup:"p\<parallel>u'" using M1 by blast
    moreover from lz kpz kpq have lq:"l\<parallel>q" using M1 by blast
    ultimately show "x \<in> ov" using x lz zup kp kl upvp upvp ov qvp by blast
@@ -243,7 +243,7 @@ lemma cfisi:"f^-1 O s^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> f^-1 O s^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> f^-1" and "(z,q) \<in> s^-1" by auto
   then obtain k l u where kp:"k \<parallel> p" and kl:"k\<parallel>l" and lz:"l\<parallel>z"  and pu:"p \<parallel>u" and  zu:"z\<parallel>u" using f  by blast
-  obtain k' u' v' where kpz:"k' \<parallel>z" and kpq:"k' \<parallel>q" and qup:"q \<parallel>u'" and  upvp:"u'\<parallel>v'" and  zvp:"z\<parallel>v'" using s `(z,q): s^-1` by blast
+  obtain k' u' v' where kpz:"k' \<parallel>z" and kpq:"k' \<parallel>q" and qup:"q \<parallel>u'" and  upvp:"u'\<parallel>v'" and  zvp:"z\<parallel>v'" using s \<open>(z,q): s^-1\<close> by blast
   from zu zvp upvp have "u'\<parallel>u" using M1 by blast
   moreover from lz kpz kpq have "l \<parallel>q " using M1 by blast
   ultimately show "x \<in> d^-1" using x d kl kp qup  pu  by blast
@@ -253,7 +253,7 @@ lemma cdifi:"d^-1 O f^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x : d^-1 O f^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d^-1" and "(z,q) \<in> f^-1" by auto
   then obtain k l u v  where kp:"k \<parallel> p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and zu:"z \<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using d  by blast
-  obtain k' l' u' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q" and  qup:"q \<parallel>u'" and zup:"z\<parallel>u'" using f `(z,q): f^-1` by blast
+  obtain k' l' u' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q" and  qup:"q \<parallel>u'" and zup:"z\<parallel>u'" using f \<open>(z,q): f^-1\<close> by blast
   from lz kpz kplp  have "l\<parallel>l'" using M1 by blast
   with kl lpq obtain ll where "k\<parallel>ll" and "ll\<parallel>q" using M5exist_var by blast
   moreover from zu qup zup have "q \<parallel> u " using M1 by blast
@@ -264,7 +264,7 @@ lemma cdidi:"d^-1 O d^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x : d^-1 O d^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d^-1" and "(z,q) \<in> d^-1" by auto
   then obtain k l u v where kp:"k \<parallel> p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and zu:"z \<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using d  by blast
-  obtain k' l' u' v' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q" and  qup:"q \<parallel>u'" and upvp:"u' \<parallel>v'" and zvp:"z \<parallel>v'" using d `(z,q): d^-1` by blast
+  obtain k' l' u' v' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q" and  qup:"q \<parallel>u'" and upvp:"u' \<parallel>v'" and zvp:"z \<parallel>v'" using d \<open>(z,q): d^-1\<close> by blast
   from lz kpz kplp  have "l\<parallel>l'" using M1 by blast
   with kl lpq obtain ll where "k\<parallel>ll" and "ll\<parallel>q" using M5exist_var by blast
   moreover from zvp zu upvp have "u' \<parallel> u " using M1 by blast
@@ -276,7 +276,7 @@ lemma cdisi:"d^-1 O s^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x : d^-1 O s^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d^-1" and "(z,q) \<in> s^-1" by auto
   then obtain k l  u v where kp:"k \<parallel>p" and kl:"k\<parallel>l"  and lz:"l\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using d by blast
-  obtain k' u' v' where kpz:"k' \<parallel>z" and kpq:"k' \<parallel>q" and  qup:"q \<parallel>u'" and upvp:"u' \<parallel>v'" and zvp:"z \<parallel>v'" using s `(z,q): s^-1` by blast
+  obtain k' u' v' where kpz:"k' \<parallel>z" and kpq:"k' \<parallel>q" and  qup:"q \<parallel>u'" and upvp:"u' \<parallel>v'" and zvp:"z \<parallel>v'" using s \<open>(z,q): s^-1\<close> by blast
   from upvp zvp zu have "u'\<parallel>u" using M1 by blast
   with qup uv obtain uu where "q\<parallel>uu" and "uu\<parallel>v" using M5exist_var by blast
   moreover from kpz lz kpq have "l \<parallel>q " using M1 by blast
@@ -294,8 +294,8 @@ using M1 by blast
 lemma css:"s O s \<subseteq> s"
 proof
   fix x::"'a\<times>'a" assume "x \<in> s O s" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> s" and "(z,q) \<in> s" by auto
-  from `(p,z) \<in> s` obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using s by blast
-  from `(z,q) \<in> s` obtain k' u' v' where kpq:"k'\<parallel>q" and kpz:"k'\<parallel>z" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" using s by blast
+  from \<open>(p,z) \<in> s\<close> obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using s by blast
+  from \<open>(z,q) \<in> s\<close> obtain k' u' v' where kpq:"k'\<parallel>q" and kpz:"k'\<parallel>z" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" using s by blast
   from kp kpz kz have "k'\<parallel>p" using M1 by blast
   moreover from uv zup zv have "u\<parallel>u'" using M1 by blast
   moreover with pu upvp obtain uu where "p\<parallel>uu" and "uu\<parallel>v'" using M5exist_var by blast
@@ -306,7 +306,7 @@ lemma csifi:"s^-1 O f^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x : s^-1 O f^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> s^-1" and "(z,q) \<in> f^-1" by auto
   then obtain k u v where kp:"k \<parallel> p" and kz:"k\<parallel>z" and zu:"z \<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using s  by blast
-  obtain k' l' u' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q"  and zup:"z\<parallel>u'" and qup:"q\<parallel>u'" using f `(z,q): f^-1` by blast
+  obtain k' l' u' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l' \<parallel>q"  and zup:"z\<parallel>u'" and qup:"q\<parallel>u'" using f \<open>(z,q): f^-1\<close> by blast
   from kz kpz kplp have "k\<parallel>l'" using M1 by blast
   moreover from qup zup zu have "q \<parallel> u " using M1 by blast
   ultimately show "x \<in> d^-1" using x d kp lpq pv uv by blast
@@ -316,7 +316,7 @@ lemma csidi:"s^-1 O d^-1 \<subseteq> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x : s^-1 O d^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> s^-1" and "(z,q) \<in> d^-1" by auto
   then obtain k u v where kp:"k \<parallel> p" and kz:"k\<parallel>z"  and zu:"z \<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using s  by blast
-  obtain k' l' u' v' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l'\<parallel>q" and qup:"q \<parallel>u'" and upvp:"u' \<parallel>v'" and zvp:"z\<parallel>v'" using d `(z,q): d^-1` by blast
+  obtain k' l' u' v' where kpz:"k' \<parallel>z" and kplp:"k' \<parallel>l'" and lpq:"l'\<parallel>q" and qup:"q \<parallel>u'" and upvp:"u' \<parallel>v'" and zvp:"z\<parallel>v'" using d \<open>(z,q): d^-1\<close> by blast
   from zvp upvp zu have "u'\<parallel>u" using M1 by blast
   with qup uv obtain uu where "q\<parallel>uu" and "uu\<parallel>v" using M5exist_var by blast
   moreover from kz kpz kplp have "k \<parallel>l' " using M1 by blast
@@ -345,8 +345,8 @@ qed
 
 
 (* ========= $\alpah_1$ compositions ============ *)
-subsection {* $\alpha$-composition *}
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq s \cup ov \cup d$.  *}
+subsection \<open>$\alpha$-composition\<close>
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq s \cup ov \cup d$.\<close>
 
 
 lemma (in arelations) cmd:"m O d \<subseteq> s \<union> ov \<union> d"
@@ -434,10 +434,10 @@ qed
 lemma covd:"ov O d \<subseteq> s \<union> ov \<union> d"
 proof
   fix x::"'a\<times>'a" assume "x \<in> ov O d" then obtain p q z where x:"x=(p,q)" and "(p,z) \<in> ov" and "(z,q) \<in> d" by auto
-  from `(p,z) \<in> ov` obtain k u v l c where kp:"k\<parallel>p" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and cu:"c\<parallel>u" using ov by blast
-  from `(z,q) \<in> d` obtain k' l' u' v' where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z" and qvp:"q\<parallel>v'" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" using d by blast
+  from \<open>(p,z) \<in> ov\<close> obtain k u v l c where kp:"k\<parallel>p" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and cu:"c\<parallel>u" using ov by blast
+  from \<open>(z,q) \<in> d\<close> obtain k' l' u' v' where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z" and qvp:"q\<parallel>v'" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" using d by blast
   from uv zv zup have "u\<parallel>u'" using M1 by auto
-  from pu upvp obtain uu where puu:"p\<parallel>uu" and uuvp:"uu\<parallel>v'" using `u\<parallel>u'` using M5exist_var by blast
+  from pu upvp obtain uu where puu:"p\<parallel>uu" and uuvp:"uu\<parallel>v'" using \<open>u\<parallel>u'\<close> using M5exist_var by blast
   from kp kpq have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
   thus "x \<in>  s \<union> ov \<union> d"
@@ -466,8 +466,8 @@ qed
 lemma covf:"ov O f \<subseteq> s \<union> ov \<union> d"
 proof
   fix x::"'a\<times>'a" assume "x \<in> ov O f" then obtain p q z where x:"x=(p,q)" and "(p,z) \<in> ov" and "(z,q) \<in> f" by auto
-  from `(p,z) \<in> ov` obtain k u v l c where kp:"k\<parallel>p" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and cu:"c\<parallel>u" using ov by blast
-  from `(z,q) \<in> f` obtain k' l' u'  where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z" and qup:"q\<parallel>u'" and zup:"z\<parallel>u'" using f by blast
+  from \<open>(p,z) \<in> ov\<close> obtain k u v l c where kp:"k\<parallel>p" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and cu:"c\<parallel>u" using ov by blast
+  from \<open>(z,q) \<in> f\<close> obtain k' l' u'  where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z" and qup:"q\<parallel>u'" and zup:"z\<parallel>u'" using f by blast
   from uv zv zup have uu:"u\<parallel>u'" using M1 by auto
   from kp kpq have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -495,8 +495,8 @@ qed
 lemma cfid:"f^-1 O d \<subseteq> s \<union> ov \<union> d"
 proof
   fix x::"'a\<times>'a" assume "x \<in> f^-1 O d" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> f^-1" and "(z,q)\<in> d" by auto
-  from `(p,z) \<in> f^-1` obtain k l u where "k\<parallel>l" and "l\<parallel>z" and kp:"k\<parallel>p" and pu:"p\<parallel>u" and zu:"z\<parallel>u" using f by blast
-  from `(z,q) \<in> d` obtain k' l' u' v where kplp:"k'\<parallel>l'" and kpq:"k'\<parallel>q" and lpz:"l'\<parallel>z" and zup:"z\<parallel>u'" and upv:"u'\<parallel>v" and qv:"q\<parallel>v" using d by blast
+  from \<open>(p,z) \<in> f^-1\<close> obtain k l u where "k\<parallel>l" and "l\<parallel>z" and kp:"k\<parallel>p" and pu:"p\<parallel>u" and zu:"z\<parallel>u" using f by blast
+  from \<open>(z,q) \<in> d\<close> obtain k' l' u' v where kplp:"k'\<parallel>l'" and kpq:"k'\<parallel>q" and lpz:"l'\<parallel>z" and zup:"z\<parallel>u'" and upv:"u'\<parallel>v" and qv:"q\<parallel>v" using d by blast
   from pu zu zup have pup:"p\<parallel>u'" using M1 by blast
   from kp kpq have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -523,8 +523,8 @@ qed
 lemma cfov:"f O ov \<subseteq> ov \<union> s \<union> d"
 proof
     fix x::"'a\<times>'a" assume "x \<in> f O ov" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> f" and "(z,q)\<in> ov" by auto
-    from `(p,z) \<in> f` obtain  k l u where "k\<parallel>l" and kz:"k\<parallel>z" and lp:"l\<parallel>p" and pu:"p\<parallel>u" and zu:"z\<parallel>u" using f by blast
-    from `(z,q) \<in> ov` obtain k' l' c  u' v where "k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel> q" and  zup:"z\<parallel>u'" and upv:"u'\<parallel>v" and qv:"q\<parallel>v" and lpc:"l'\<parallel>c" and cup:"c\<parallel>u'"  using  ov by blast
+    from \<open>(p,z) \<in> f\<close> obtain  k l u where "k\<parallel>l" and kz:"k\<parallel>z" and lp:"l\<parallel>p" and pu:"p\<parallel>u" and zu:"z\<parallel>u" using f by blast
+    from \<open>(z,q) \<in> ov\<close> obtain k' l' c  u' v where "k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel> q" and  zup:"z\<parallel>u'" and upv:"u'\<parallel>v" and qv:"q\<parallel>v" and lpc:"l'\<parallel>c" and cup:"c\<parallel>u'"  using  ov by blast
     from pu zu zup have pup:"p\<parallel>u'" using M1 by blast
     from lp lpq have "l\<parallel>q \<oplus> ((\<exists>t. l\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. l'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
     then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -548,13 +548,13 @@ proof
 qed
 
 (* ========= $\alpha_2$ composition ========== *)
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq ov \cup f^{-1} \cup d^{-1}$.  *}
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq ov \cup f^{-1} \cup d^{-1}$.\<close>
 
 lemma covsi:"ov O s^-1 \<subseteq> ov \<union> f^-1 \<union> d^-1"
 proof
     fix x::"'a\<times>'a" assume "x \<in> ov O s^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> ov" and "(z,q) \<in> s^-1" by auto
-    from `(p,z) \<in> ov` obtain k l c u  where kp:"k\<parallel>p" and pu:"p\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and lc:"l\<parallel>c" and cu:"c\<parallel>u" using ov by blast
-    from `(z,q) \<in> s^-1` obtain k' u' v' where kpz:"k'\<parallel>z" and kpq:"k'\<parallel>q" and kpz:"k'\<parallel>z" and  zup:"z\<parallel>u'"  and qvp:"q\<parallel>v'" using s by blast
+    from \<open>(p,z) \<in> ov\<close> obtain k l c u  where kp:"k\<parallel>p" and pu:"p\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and lc:"l\<parallel>c" and cu:"c\<parallel>u" using ov by blast
+    from \<open>(z,q) \<in> s^-1\<close> obtain k' u' v' where kpz:"k'\<parallel>z" and kpq:"k'\<parallel>q" and kpz:"k'\<parallel>z" and  zup:"z\<parallel>u'"  and qvp:"q\<parallel>v'" using s by blast
     from lz kpz kpq have lq:"l\<parallel>q" using M1 by blast
     from pu qvp have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
     then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -581,8 +581,8 @@ qed
 lemma cdim:"d^-1 O m \<subseteq>  ov \<union> d^-1 \<union> f^-1"
 proof 
     fix x::"'a\<times>'a" assume "x \<in> d^-1 O m" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d^-1" and "(z,q) \<in> m" by auto
-    from `(p,z) \<in> d^-1` obtain k l u v where kp:"k\<parallel>p" and pv:"p\<parallel>v" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" using d by blast
-    from `(z,q) \<in> m`  have zq:"z\<parallel>q" using m by blast
+    from \<open>(p,z) \<in> d^-1\<close> obtain k l u v where kp:"k\<parallel>p" and pv:"p\<parallel>v" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" using d by blast
+    from \<open>(z,q) \<in> m\<close>  have zq:"z\<parallel>q" using m by blast
     obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd zq by blast
     from kl lz zq obtain lz where klz:"k\<parallel>lz" and lzq:"lz\<parallel>q" using M5exist_var  by blast
     from pv qvp have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -590,7 +590,7 @@ proof
     thus "x \<in>  ov \<union> d^-1 \<union> f^-1"
     proof (elim disjE)
       { assume "?A\<and>\<not>?B\<and>\<not>?C" then have ?A by simp
-        with qvp kp klz lzq`?A` have "(p,q) \<in> f^-1" using f by blast
+        with qvp kp klz lzq\<open>?A\<close> have "(p,q) \<in> f^-1" using f by blast
         thus ?thesis using x by auto}
       next
       { assume "\<not>?A\<and>?B\<and>\<not>?C" then have ?B by simp 
@@ -610,8 +610,8 @@ qed
 lemma cdiov:"d^-1 O ov \<subseteq> ov \<union> f^-1 \<union> d^-1"
 proof
     fix x::"'a\<times>'a" assume "x \<in> d^-1 O ov" then obtain p q r where x:"x = (p,r)" and "(p,q) \<in> d^-1" and "(q,r) \<in> ov" by auto
-    from `(p,q) \<in> d^-1` obtain u v k l  where kp:"k\<parallel>p" and pv:"p\<parallel>v" and kl:"k\<parallel>l" and lq:"l\<parallel>q"  and qu:"q\<parallel>u" and uv:"u\<parallel>v" using d by blast
-    from `(q,r) \<in> ov` obtain k' l' t u' v' where lpr:"l'\<parallel>r" and kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and qup:"q\<parallel>u'" and "u'\<parallel>v'" and rvp:"r\<parallel>v'" and lpt:"l'\<parallel>t" and tup:"t\<parallel>u'" using ov by blast
+    from \<open>(p,q) \<in> d^-1\<close> obtain u v k l  where kp:"k\<parallel>p" and pv:"p\<parallel>v" and kl:"k\<parallel>l" and lq:"l\<parallel>q"  and qu:"q\<parallel>u" and uv:"u\<parallel>v" using d by blast
+    from \<open>(q,r) \<in> ov\<close> obtain k' l' t u' v' where lpr:"l'\<parallel>r" and kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and qup:"q\<parallel>u'" and "u'\<parallel>v'" and rvp:"r\<parallel>v'" and lpt:"l'\<parallel>t" and tup:"t\<parallel>u'" using ov by blast
     from lq kplp kpq have "l\<parallel>l'" using M1 by blast
     with kl lpr  obtain ll where  kll:"k\<parallel>ll" and llr:"ll\<parallel>r"  using M5exist_var by blast
     from pv rvp have "p\<parallel>v' \<oplus> ((\<exists>t'. p\<parallel>t' \<and> t'\<parallel>v') \<oplus> (\<exists>t'. r\<parallel>t' \<and> t'\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -641,8 +641,8 @@ qed
 lemma cdis:"d^-1 O s \<subseteq> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> d^-1 O s" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d^-1" and "(z,q) \<in> s" by auto
-  from `(p,z)\<in>d^-1` obtain k l u v where kl:"k\<parallel>l" and lz:"l\<parallel>z" and kp:"k\<parallel>p" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using d by blast
-  from `(z,q) \<in> s` obtain l'  v' where lpz:"l'\<parallel>z" and lpq:"l'\<parallel>q" and qvp:"q\<parallel>v'" using s by blast
+  from \<open>(p,z)\<in>d^-1\<close> obtain k l u v where kl:"k\<parallel>l" and lz:"l\<parallel>z" and kp:"k\<parallel>p" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using d by blast
+  from \<open>(z,q) \<in> s\<close> obtain l'  v' where lpz:"l'\<parallel>z" and lpq:"l'\<parallel>q" and qvp:"q\<parallel>v'" using s by blast
   from lz lpz lpq have lq:"l\<parallel>q" using M1 by blast
   from pv qvp have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -669,8 +669,8 @@ qed
 lemma csim:"s^-1 O m \<subseteq> ov \<union> f^-1 \<union> d^-1"
 proof 
   fix x::"'a\<times>'a" assume "x \<in> s^-1 O m" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> s^-1" and "(z,q) \<in> m" by auto
-  from `(p,z)\<in>s^-1` obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using s by blast
-  from `(z,q) \<in> m` have zq:"z\<parallel>q" using m by auto
+  from \<open>(p,z)\<in>s^-1\<close> obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using s by blast
+  from \<open>(z,q) \<in> m\<close> have zq:"z\<parallel>q" using m by auto
   obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd zq by blast
   from pv qvp have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -696,8 +696,8 @@ qed
 lemma csiov:"s^-1 O ov \<subseteq> ov \<union> f^-1 \<union> d^-1"
 proof 
   fix x::"'a\<times>'a" assume "x \<in> s^-1 O ov" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> s^-1" and "(z,q) \<in> ov" by auto
-  from `(p,z)\<in>s^-1` obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using s by blast
-  from `(z,q) \<in> ov` obtain k' l' u' v' c where kpz:"k'\<parallel>z" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and qvp:"q\<parallel>v'" and lpc:"l'\<parallel>c" and cup:"c\<parallel>u'" using ov by blast
+  from \<open>(p,z)\<in>s^-1\<close> obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and pv:"p\<parallel>v" using s by blast
+  from \<open>(z,q) \<in> ov\<close> obtain k' l' u' v' c where kpz:"k'\<parallel>z" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and qvp:"q\<parallel>v'" and lpc:"l'\<parallel>c" and cup:"c\<parallel>u'" using ov by blast
   from kz kpz kplp have klp:"k\<parallel>l'" using M1 by auto
   from pv qvp have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -725,8 +725,8 @@ qed
 lemma covim:"ov^-1 O m \<subseteq> ov \<union> f^-1 \<union> d^-1"
 proof
     fix x::"'a\<times>'a" assume "x \<in> ov^-1 O m" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> ov^-1" and "(z,q) \<in> m" by auto
-    from `(p,z) \<in> ov^-1` obtain k l c u v  where kz:"k\<parallel>z" and zu:"z\<parallel>u" and kl:"k\<parallel>l" and lp:"l\<parallel>p" and lc:"l\<parallel>c" and cu:"c\<parallel>u" and pv:"p\<parallel>v" and uv:"u\<parallel>v" using ov by blast
-    from `(z,q) \<in> m`  have zq:"z\<parallel>q" using m by auto
+    from \<open>(p,z) \<in> ov^-1\<close> obtain k l c u v  where kz:"k\<parallel>z" and zu:"z\<parallel>u" and kl:"k\<parallel>l" and lp:"l\<parallel>p" and lc:"l\<parallel>c" and cu:"c\<parallel>u" and pv:"p\<parallel>v" and uv:"u\<parallel>v" using ov by blast
+    from \<open>(z,q) \<in> m\<close>  have zq:"z\<parallel>q" using m by auto
     obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd zq by blast
     from zu zq cu have cq:"c\<parallel>q" using M1 by blast
     from pv qvp have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -751,13 +751,13 @@ proof
 qed
 
 (* =========$\alpha_3$ compositions========== *)
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov$.  *}
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov$.\<close>
 
 lemma covov:"ov O ov \<subseteq> b \<union> m \<union> ov"
 proof
    fix x::"'a\<times>'a" assume "x \<in> ov O ov" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> ov" and "(z,q)\<in> ov" by auto
-   from `(p,z) \<in> ov` obtain k u l t v where kp:"k\<parallel>p" and pu:"p\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and "l\<parallel>t" and "t\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using ov by blast
-   from  `(z,q) \<in> ov` obtain k' l' y u' v' where kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel>q" and lpy:"l'\<parallel>y" and "y\<parallel>u'" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" using ov by blast
+   from \<open>(p,z) \<in> ov\<close> obtain k u l t v where kp:"k\<parallel>p" and pu:"p\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and "l\<parallel>t" and "t\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using ov by blast
+   from  \<open>(z,q) \<in> ov\<close> obtain k' l' y u' v' where kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel>q" and lpy:"l'\<parallel>y" and "y\<parallel>u'" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" using ov by blast
    from lz kplp kpz have llp:"l\<parallel>l'" using M1 by blast
    from uv zv zup have "u\<parallel>u'" using M1 by blast
    with pu upvp obtain uu where puu:"p\<parallel>uu" and uuv:"uu\<parallel>v'" using M5exist_var by blast
@@ -777,7 +777,7 @@ proof
         then obtain t' where lptp:"l'\<parallel>t'" and "t'\<parallel>uu" by auto
         from kl llp lpq obtain ll where  kll:"k\<parallel>ll" and llq:"ll\<parallel>q" using M5exist_var by blast
         with lpq lptp  have "ll\<parallel>t'" using M1 by blast
-        with kp puu uuv kll llq qvp `t'\<parallel>uu` have "(p,q) \<in> ov" using ov by blast
+        with kp puu uuv kll llq qvp \<open>t'\<parallel>uu\<close> have "(p,q) \<in> ov" using ov by blast
         thus ?thesis using x by auto}
       qed
 qed
@@ -785,8 +785,8 @@ qed
 lemma covfi:"ov O f^-1 \<subseteq> b \<union> m \<union> ov"
 proof
    fix x::"'a\<times>'a" assume "x \<in> ov O f^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> ov" and "(z,q)\<in> f^-1" by auto
-   from `(p,z) \<in> ov` obtain k u l c v where kp:"k\<parallel>p" and pu:"p\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and "l\<parallel>c" and "c\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using ov by blast
-   from  `(z,q) \<in> f^-1` obtain k' l' v'  where kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel>q"  and qvp:"q\<parallel>v'" and zvp:"z\<parallel>v'" using f by blast
+   from \<open>(p,z) \<in> ov\<close> obtain k u l c v where kp:"k\<parallel>p" and pu:"p\<parallel>u" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and "l\<parallel>c" and "c\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using ov by blast
+   from  \<open>(z,q) \<in> f^-1\<close> obtain k' l' v'  where kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel>q"  and qvp:"q\<parallel>v'" and zvp:"z\<parallel>v'" using f by blast
    from lz kplp kpz have llp:"l\<parallel>l'" using M1 by blast
    from  zv qvp zvp have qv:"q\<parallel>v" using M1 by blast
    from pu lpq have "p\<parallel>q \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. l'\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -805,7 +805,7 @@ proof
         then obtain t where lptp:"l'\<parallel>t" and "t\<parallel>u" by auto
         from kl llp lpq obtain ll where  kll:"k\<parallel>ll" and llr:"ll\<parallel>q" using M5exist_var by blast
         with lpq lptp  have "ll\<parallel>t" using M1 by blast
-        with kp pu uv kll llr qv `t\<parallel>u` have "(p,q) \<in> ov" using ov by blast
+        with kp pu uv kll llr qv \<open>t\<parallel>u\<close> have "(p,q) \<in> ov" using ov by blast
         thus ?thesis using x by auto}
       qed
 qed
@@ -814,8 +814,8 @@ qed
 lemma csov:"s O ov \<subseteq> b \<union> m \<union> ov"
 proof
    fix x::"'a\<times>'a" assume "x \<in> s O ov" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> s" and "(z,q)\<in> ov" by auto
-   from `(p,z) \<in> s` obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and  pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using s by blast
-   from  `(z,q) \<in> ov` obtain k' l'  u' v'   where kpz:"k'\<parallel>z"  and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and zup:"z\<parallel>u'"  and qvp:"q\<parallel>v'" and upvp:"u'\<parallel>v'" using ov by blast
+   from \<open>(p,z) \<in> s\<close> obtain k u v where kp:"k\<parallel>p" and kz:"k\<parallel>z" and  pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using s by blast
+   from  \<open>(z,q) \<in> ov\<close> obtain k' l'  u' v'   where kpz:"k'\<parallel>z"  and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and zup:"z\<parallel>u'"  and qvp:"q\<parallel>v'" and upvp:"u'\<parallel>v'" using ov by blast
    from  kz kpz kplp have klp:"k\<parallel>l'" using M1 by blast
    from  uv zv zup  have uup:"u\<parallel>u'" using M1 by blast
    with pu upvp obtain uu where puu:"p\<parallel>uu" and uuvp:"uu\<parallel>v'" using M5exist_var by blast
@@ -843,8 +843,8 @@ qed
 lemma csfi:"s O f^-1 \<subseteq> b \<union> m \<union> ov"
 proof
    fix x::"'a\<times>'a" assume "x \<in> s O f^-1" then obtain p q r where x:"x = (p,r)" and "(p,q) \<in> s" and "(q,r)\<in> f^-1" by auto
-   from `(p,q) \<in> s` obtain k u v where kp:"k\<parallel>p" and kq:"k\<parallel>q" and  pu:"p\<parallel>u" and uv:"u\<parallel>v"  and qv:"q\<parallel>v"  using s by blast
-   from  `(q,r) \<in> f^-1` obtain k' l  v'  where kpq:"k'\<parallel>q"  and kpl:"k'\<parallel>l" and lr:"l\<parallel>r"   and rvp:"r\<parallel>v'" and qvp:"q\<parallel>v'" using f by blast
+   from \<open>(p,q) \<in> s\<close> obtain k u v where kp:"k\<parallel>p" and kq:"k\<parallel>q" and  pu:"p\<parallel>u" and uv:"u\<parallel>v"  and qv:"q\<parallel>v"  using s by blast
+   from  \<open>(q,r) \<in> f^-1\<close> obtain k' l  v'  where kpq:"k'\<parallel>q"  and kpl:"k'\<parallel>l" and lr:"l\<parallel>r"   and rvp:"r\<parallel>v'" and qvp:"q\<parallel>v'" using f by blast
    from kpq kpl kq have kl:"k\<parallel>l" using M1 by blast 
    from qvp qv uv have uvp:"u\<parallel>v'" using M1 by blast
    from pu lr have "p\<parallel>r \<oplus> ((\<exists>t'. p\<parallel>t' \<and> t'\<parallel>r) \<oplus> (\<exists>t'. l\<parallel>t' \<and> t'\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -867,7 +867,7 @@ proof
 qed
 
 (* =========$\alpha_4$ compositions========== *)
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq f \cup f^{-1} \cup e$.  *}
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq f \cup f^{-1} \cup e$.\<close>
 
 lemma cmmi:"m O m^-1 \<subseteq> f \<union> f^-1 \<union> e"
 proof 
@@ -926,8 +926,8 @@ qed
 lemma cffi:"f O f^-1 \<subseteq> e \<union> f \<union> f^-1"
 proof
    fix x::"'a\<times>'a" assume "x \<in> f O f^-1" then obtain p q r where x:"x = (p,r)" and "(p,q)\<in>f" and "(q,r) \<in>f^-1" by auto
-   from `(p,q)\<in>f` `(q,r) \<in> f^-1` obtain k k' where kp:"k\<parallel>p" and kpr:"k'\<parallel>r" using f by blast
-   from `(p,q)\<in>f` `(q,r) \<in> f^-1` obtain u where pu:"p\<parallel>u" and "q\<parallel>u" and ru:"r\<parallel>u" using f M1 by blast
+   from \<open>(p,q)\<in>f\<close> \<open>(q,r) \<in> f^-1\<close> obtain k k' where kp:"k\<parallel>p" and kpr:"k'\<parallel>r" using f by blast
+   from \<open>(p,q)\<in>f\<close> \<open>(q,r) \<in> f^-1\<close> obtain u where pu:"p\<parallel>u" and "q\<parallel>u" and ru:"r\<parallel>u" using f M1 by blast
    from kp kpr have "k\<parallel>r \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>r) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
    then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
    thus "x \<in> e \<union> f \<union> f^-1"
@@ -947,13 +947,13 @@ proof
 qed
 
 (* =========$\alpha_5$ composition========== *)
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq e \cup s \cup s^{-1}$.  *}
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq e \cup s \cup s^{-1}$.\<close>
 
 lemma cssi:"s O s^-1 \<subseteq> e \<union> s \<union> s^-1"
 proof
    fix x::"'a\<times>'a" assume "x \<in> s O s^-1" then obtain p q r where x:"x = (p,r)" and "(p,q)\<in>s" and "(q,r) \<in>s^-1" by auto
-   from `(p,q)\<in>s` `(q,r) \<in> s^-1` obtain k  where kp:"k\<parallel>p" and kr:"k\<parallel>r" and kq:"k\<parallel>q" using s M1  by blast
-   from `(p,q)\<in>s` `(q,r) \<in> s^-1` obtain u u' where pu:"p\<parallel>u" and  rup:"r\<parallel>u'" using s by blast
+   from \<open>(p,q)\<in>s\<close> \<open>(q,r) \<in> s^-1\<close> obtain k  where kp:"k\<parallel>p" and kr:"k\<parallel>r" and kq:"k\<parallel>q" using s M1  by blast
+   from \<open>(p,q)\<in>s\<close> \<open>(q,r) \<in> s^-1\<close> obtain u u' where pu:"p\<parallel>u" and  rup:"r\<parallel>u'" using s by blast
    then have "p\<parallel>u' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>u') \<oplus> (\<exists>t. r\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
    then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
    thus "x \<in> e \<union> s \<union> s^-1"
@@ -975,8 +975,8 @@ qed
 lemma csis:"s^-1 O s \<subseteq> e \<union> s \<union> s^-1"
 proof
    fix x::"'a\<times>'a" assume "x \<in> s^-1 O s" then obtain p q r where x:"x = (p,r)" and "(p,q)\<in>s^-1" and "(q,r) \<in>s" by auto
-   from `(p,q)\<in>s^-1` `(q,r) \<in> s` obtain k  where kp:"k\<parallel>p" and kr:"k\<parallel>r" and kq:"k\<parallel>q" using s M1  by blast
-   from `(p,q)\<in>s^-1` `(q,r) \<in> s` obtain u u' where pu:"p\<parallel>u" and  rup:"r\<parallel>u'" using s by blast
+   from \<open>(p,q)\<in>s^-1\<close> \<open>(q,r) \<in> s\<close> obtain k  where kp:"k\<parallel>p" and kr:"k\<parallel>r" and kq:"k\<parallel>q" using s M1  by blast
+   from \<open>(p,q)\<in>s^-1\<close> \<open>(q,r) \<in> s\<close> obtain u u' where pu:"p\<parallel>u" and  rup:"r\<parallel>u'" using s by blast
    then have "p\<parallel>u' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>u') \<oplus> (\<exists>t. r\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
    then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
    thus "x \<in> e \<union> s \<union> s^-1"
@@ -998,7 +998,7 @@ qed
 lemma cmim:"m^-1 O m \<subseteq> s \<union> s^-1 \<union> e"
 proof
    fix x::"'a\<times>'a" assume "x \<in> m^-1 O m" then obtain p q r where x:"x = (p,r)" and "(p,q)\<in>m^-1" and "(q,r) \<in>m" by auto
-   from `(p,q)\<in>m^-1` `(q,r) \<in> m`  have qp:"q\<parallel>p" and qr:"q\<parallel>r" using m  by auto
+   from \<open>(p,q)\<in>m^-1\<close> \<open>(q,r) \<in> m\<close>  have qp:"q\<parallel>p" and qr:"q\<parallel>r" using m  by auto
    obtain u u'  where pu:"p\<parallel>u" and  rup:"r\<parallel>u'" using M3 meets_wd qp qr by fastforce
    then have "p\<parallel>u' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>u') \<oplus> (\<exists>t. r\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
    then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1019,15 +1019,15 @@ proof
 qed
 
 (* =========$\beta_1$ composition========== *)
-subsection {* $\beta$-composition *}
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov \cup s \cup d$.  *}
+subsection \<open>$\beta$-composition\<close>
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov \cup s \cup d$.\<close>
 
 lemma cbd:"b O d \<subseteq> b \<union> m \<union> ov \<union> s \<union> d"
 proof 
   fix x::"'a\<times>'a" assume "x \<in> b O d" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> b" and "(z,q) \<in> d" by auto
-  from `(p,z) \<in> b` obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
+  from \<open>(p,z) \<in> b\<close> obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
   obtain a where ap:"a\<parallel>p" using M3 meets_wd pc by blast
-  from `(z,q) \<in> d` obtain k l u v where "k\<parallel>l" and "l\<parallel>z" and kq:"k\<parallel>q" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and qv:"q\<parallel>v" using d by blast
+  from \<open>(z,q) \<in> d\<close> obtain k l u v where "k\<parallel>l" and "l\<parallel>z" and kq:"k\<parallel>q" and zu:"z\<parallel>u" and uv:"u\<parallel>v" and qv:"q\<parallel>v" using d by blast
   from pc cz zu obtain cz where pcz:"p\<parallel>cz" and czu:"cz\<parallel>u" using M5exist_var by blast
   with uv obtain czu where pczu:"p\<parallel>czu" and czuv:"czu\<parallel>v" using M5exist_var by blast
   from ap kq  have "a\<parallel>q \<oplus> ((\<exists>t. a\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -1053,7 +1053,7 @@ proof
            { assume "\<not>?A \<and> \<not>?B \<and> ?C" then have ?C by simp
              then obtain t' where "t\<parallel>t'" and "t'\<parallel>c" by auto
              with pc pczu have "t'\<parallel>czu" using M1 by auto
-             with at tq ap pczu czuv qv `t\<parallel>t'` have "(p,q)\<in>ov" using ov by blast
+             with at tq ap pczu czuv qv \<open>t\<parallel>t'\<close> have "(p,q)\<in>ov" using ov by blast
              thus ?thesis using x by auto}
         qed
         }  
@@ -1068,9 +1068,9 @@ qed
 lemma cbf:"b O f \<subseteq> b \<union> m \<union> ov \<union> s \<union> d"
 proof 
   fix x::"'a\<times>'a" assume "x \<in> b O f" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> b" and "(z,q) \<in> f" by auto
-  from `(p,z) \<in> b` obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
+  from \<open>(p,z) \<in> b\<close> obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
   obtain a where ap:"a\<parallel>p" using M3 meets_wd pc by blast
-  from `(z,q) \<in> f` obtain k l u  where "k\<parallel>l" and "l\<parallel>z" and kq:"k\<parallel>q" and zu:"z\<parallel>u" and qu:"q\<parallel>u" using f  by blast
+  from \<open>(z,q) \<in> f\<close> obtain k l u  where "k\<parallel>l" and "l\<parallel>z" and kq:"k\<parallel>q" and zu:"z\<parallel>u" and qu:"q\<parallel>u" using f  by blast
   from pc cz zu obtain cz where pcz:"p\<parallel>cz" and czu:"cz\<parallel>u" using M5exist_var by blast
   from ap kq  have "a\<parallel>q \<oplus> ((\<exists>t. a\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1095,7 +1095,7 @@ proof
            { assume "\<not>?A \<and> \<not>?B \<and> ?C" then have ?C by simp
              then obtain t' where "t\<parallel>t'" and "t'\<parallel>c" by auto
              with pc pcz have "t'\<parallel>cz" using M1 by auto
-             with at tq ap pcz czu qu `t\<parallel>t'` have "(p,q)\<in>ov" using ov by blast
+             with at tq ap pcz czu qu \<open>t\<parallel>t'\<close> have "(p,q)\<in>ov" using ov by blast
              thus ?thesis using x by auto}
         qed
         }  
@@ -1110,9 +1110,9 @@ qed
 lemma cbovi:"b O ov^-1 \<subseteq> b \<union> m \<union> ov \<union> s \<union> d"
 proof 
   fix x::"'a\<times>'a" assume "x \<in> b O ov^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> b" and "(z,q) \<in> ov^-1" by auto
-  from `(p,z) \<in> b` obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
+  from \<open>(p,z) \<in> b\<close> obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
   obtain a where ap:"a\<parallel>p" using M3 meets_wd pc by blast
-  from `(z,q) \<in> ov^-1` obtain k l u v w where "k\<parallel>l" and lz:"l\<parallel>z" and kq:"k\<parallel>q" and zv:"z\<parallel>v" and qu:"q\<parallel>u" and uv:"u\<parallel>v" and lw:"l\<parallel>w" and wu:"w\<parallel>u" using ov  by blast
+  from \<open>(z,q) \<in> ov^-1\<close> obtain k l u v w where "k\<parallel>l" and lz:"l\<parallel>z" and kq:"k\<parallel>q" and zv:"z\<parallel>v" and qu:"q\<parallel>u" and uv:"u\<parallel>v" and lw:"l\<parallel>w" and wu:"w\<parallel>u" using ov  by blast
   from cz lz lw have "c\<parallel>w" using M1 by auto
   with pc wu obtain cw where pcw:"p\<parallel>cw" and cwu:"cw\<parallel>u" using M5exist_var by blast
   from ap kq  have "a\<parallel>q \<oplus> ((\<exists>t. a\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -1138,7 +1138,7 @@ proof
            { assume "\<not>?A \<and> \<not>?B \<and> ?C" then have ?C by simp
              then obtain t' where "t\<parallel>t'" and "t'\<parallel>c" by auto
              with pc pcw have "t'\<parallel>cw" using M1 by auto
-             with at tq ap pcw cwu qu `t\<parallel>t'` have "(p,q)\<in>ov" using ov by blast
+             with at tq ap pcw cwu qu \<open>t\<parallel>t'\<close> have "(p,q)\<in>ov" using ov by blast
              thus ?thesis using x by auto}
         qed
         }  
@@ -1153,9 +1153,9 @@ qed
 lemma cbmi:"b O m^-1 \<subseteq> b \<union> m \<union> ov \<union> s \<union> d"
 proof 
    fix x::"'a\<times>'a" assume "x \<in> b O m^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> b" and "(z,q) \<in> m^-1" by auto
-   from `(p,z) \<in> b` obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
+   from \<open>(p,z) \<in> b\<close> obtain c where pc:"p\<parallel>c" and cz:"c\<parallel>z" using b by auto
    obtain k where kp:"k\<parallel>p" using M3 meets_wd pc by blast
-   from `(z,q) \<in> m^-1` have qz:"q\<parallel>z" using m by auto
+   from \<open>(z,q) \<in> m^-1\<close> have qz:"q\<parallel>z" using m by auto
    obtain k' where kpq:"k'\<parallel>q" using M3 meets_wd qz by blast 
    from kp kpq  have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
    then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1194,8 +1194,8 @@ qed
 lemma cdov:"d O ov \<subseteq>b \<union> m \<union> ov \<union> s \<union> d"
 proof
    fix x::"'a\<times>'a" assume "x \<in> d O ov" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d" and "(z,q) \<in> ov" by auto
-   from `(p,z) \<in> d` obtain k l u v where kl:"k\<parallel>l" and lp:"l\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using d by blast
-   from `(z,q) \<in> ov` obtain k' l' u' v' c where kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel>q" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" and "l'\<parallel>c" and "c\<parallel>u'" using ov by blast
+   from \<open>(p,z) \<in> d\<close> obtain k l u v where kl:"k\<parallel>l" and lp:"l\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using d by blast
+   from \<open>(z,q) \<in> ov\<close> obtain k' l' u' v' c where kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and lpq:"l'\<parallel>q" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'" and qvp:"q\<parallel>v'" and "l'\<parallel>c" and "c\<parallel>u'" using ov by blast
    from zup zv uv have "u\<parallel>u'" using M1 by auto
    with pu upvp obtain uu where puu:"p\<parallel>uu" and uuvp:"uu\<parallel>v'" using M5exist_var by blast
    from lp lpq  have "l\<parallel>q \<oplus> ((\<exists>t. l\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. l'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -1236,8 +1236,8 @@ qed
 lemma cdfi:"d O f^-1 \<subseteq> b \<union> m \<union> ov \<union> s \<union> d"
 proof
    fix x::"'a\<times>'a" assume "x \<in> d O f^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d" and "(z,q) \<in> f^-1" by auto
-   from `(p,z) \<in> d` obtain k l u v where kl:"k\<parallel>l" and lp:"l\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using d by blast
-   from `(z,q) \<in> f^-1` obtain k' l' u'  where kpz:"k'\<parallel>z" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and zup:"z\<parallel>u'" and  qup:"q\<parallel>u'" using f by blast
+   from \<open>(p,z) \<in> d\<close> obtain k l u v where kl:"k\<parallel>l" and lp:"l\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v" using d by blast
+   from \<open>(z,q) \<in> f^-1\<close> obtain k' l' u'  where kpz:"k'\<parallel>z" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and zup:"z\<parallel>u'" and  qup:"q\<parallel>u'" using f by blast
    from zup zv uv have uup:"u\<parallel>u'" using M1 by auto
    from lp lpq  have "l\<parallel>q \<oplus> ((\<exists>t. l\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. l'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
    then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1274,13 +1274,13 @@ proof
 qed
 
 (* =========$\beta_2$ composition ==========*)
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov \cup f^{-1} \cup d^{-1}$.  *}
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov \cup f^{-1} \cup d^{-1}$.\<close>
 
 lemma covdi:"ov O d^-1 \<subseteq> b \<union> m \<union> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> ov O d^-1" then obtain p q z where "(p,z) : ov" and "(z,q) : d^-1" and x:"x = (p,q)" by auto
-  from `(p,z) : ov` obtain k l u v c  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v"  and zv:"z\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" using ov by blast
-  from `(z,q) : d^-1` obtain l' k' u' v'  where lpq:"l'\<parallel>q" and kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and qup:"q\<parallel>u'" and upvp:"u'\<parallel>v'" and zvp:"z\<parallel>v'"  using d  by blast
+  from \<open>(p,z) : ov\<close> obtain k l u v c  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v"  and zv:"z\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" using ov by blast
+  from \<open>(z,q) : d^-1\<close> obtain l' k' u' v'  where lpq:"l'\<parallel>q" and kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and qup:"q\<parallel>u'" and upvp:"u'\<parallel>v'" and zvp:"z\<parallel>v'"  using d  by blast
   from lz kpz kplp have "l\<parallel>l'" using M1 by auto
   with kl lpq obtain ll where kll:"k\<parallel>ll" and llq:"ll\<parallel>q" using M5exist_var by blast
   from pu qup  have "p\<parallel>u' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>u') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -1321,8 +1321,8 @@ qed
 lemma cdib:"d^-1 O b \<subseteq> b \<union> m \<union> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> d^-1 O b" then obtain p q z where "(p,z) : d^-1" and "(z,q) : b" and x:"x = (p,q)" by auto
-  from `(p,z) : d^-1` obtain k l u v  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pv:"p\<parallel>v" and uv:"u\<parallel>v"  and zu:"z\<parallel>u"  using d by blast
-  from `(z,q) : b` obtain c  where  zc:"z\<parallel>c" and cq:"c\<parallel>q"  using b by blast
+  from \<open>(p,z) : d^-1\<close> obtain k l u v  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pv:"p\<parallel>v" and uv:"u\<parallel>v"  and zu:"z\<parallel>u"  using d by blast
+  from \<open>(z,q) : b\<close> obtain c  where  zc:"z\<parallel>c" and cq:"c\<parallel>q"  using b by blast
   with kl lz obtain lzc where klzc:"k\<parallel>lzc" and lzcq:"lzc\<parallel>q" using M5exist_var by blast
   obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd cq by blast
   from pv qvp  have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -1363,8 +1363,8 @@ qed
 lemma csdi:"s O d^-1 \<subseteq> b \<union> m \<union> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> s O d^-1" then obtain p q z where "(p,z) : s" and "(z,q) : d^-1" and x:"x = (p,q)" by auto
-  from `(p,z) : s` obtain k  u v  where kp:"k\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v"  and zv:"z\<parallel>v"  using s by blast
-  from `(z,q) : d^-1` obtain l' k' u' v'  where lpq:"l'\<parallel>q" and kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and qup:"q\<parallel>u'" and upvp:"u'\<parallel>v'" and zvp:"z\<parallel>v'"  using d  by blast
+  from \<open>(p,z) : s\<close> obtain k  u v  where kp:"k\<parallel>p" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v"  and zv:"z\<parallel>v"  using s by blast
+  from \<open>(z,q) : d^-1\<close> obtain l' k' u' v'  where lpq:"l'\<parallel>q" and kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and qup:"q\<parallel>u'" and upvp:"u'\<parallel>v'" and zvp:"z\<parallel>v'"  using d  by blast
   from kp kz kpz have kpp:"k'\<parallel>p" using M1 by auto
   from pu qup  have "p\<parallel>u' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>u') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>u))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1403,8 +1403,8 @@ qed
 lemma csib:"s^-1 O b \<subseteq> b \<union> m \<union> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> s^-1 O b" then obtain p q z where "(p,z) : s^-1" and "(z,q) : b" and x:"x = (p,q)" by auto
-  from `(p,z) : s^-1` obtain k  u v  where kp:"k\<parallel>p" and kz:"k\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v"  and pv:"p\<parallel>v"  using s by blast
-  from `(z,q) : b` obtain c  where  zc:"z\<parallel>c" and cq:"c\<parallel>q"  using b by blast
+  from \<open>(p,z) : s^-1\<close> obtain k  u v  where kp:"k\<parallel>p" and kz:"k\<parallel>z" and zu:"z\<parallel>u" and uv:"u\<parallel>v"  and pv:"p\<parallel>v"  using s by blast
+  from \<open>(z,q) : b\<close> obtain c  where  zc:"z\<parallel>c" and cq:"c\<parallel>q"  using b by blast
   from kz zc cq obtain zc where kzc:"k\<parallel>zc" and zcq:"zc\<parallel>q" using M5exist_var by blast
   obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd cq by blast
   from pv qvp  have "p\<parallel>v' \<oplus> ((\<exists>t. p\<parallel>t \<and> t\<parallel>v') \<oplus> (\<exists>t. q\<parallel>t \<and> t\<parallel>v))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
@@ -1445,8 +1445,8 @@ qed
 lemma covib:"ov^-1 O b \<subseteq> b \<union> m \<union> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> ov^-1 O b" then obtain p q z where "(p,z) : ov^-1" and "(z,q) : b" and x:"x = (p,q)" by auto
-  from `(p,z) : ov^-1` obtain k l u v c  where kz:"k\<parallel>z" and kl:"k\<parallel>l" and lp:"l\<parallel>p" and zu:"z\<parallel>u" and uv:"u\<parallel>v"  and pv:"p\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" using ov by blast
-  from `(z,q) : b` obtain w  where  zw:"z\<parallel>w" and wq:"w\<parallel>q"  using b by blast
+  from \<open>(p,z) : ov^-1\<close> obtain k l u v c  where kz:"k\<parallel>z" and kl:"k\<parallel>l" and lp:"l\<parallel>p" and zu:"z\<parallel>u" and uv:"u\<parallel>v"  and pv:"p\<parallel>v" and lc:"l\<parallel>c" and cu:"c\<parallel>u" using ov by blast
+  from \<open>(z,q) : b\<close> obtain w  where  zw:"z\<parallel>w" and wq:"w\<parallel>q"  using b by blast
   from cu zu zw have cw:"c\<parallel>w" using M1 by auto
   with lc wq obtain cw where lcw:"l\<parallel>cw" and cwq:"cw\<parallel>q" using M5exist_var by blast
   obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd wq by blast
@@ -1488,8 +1488,8 @@ qed
 lemma cmib:"m^-1 O b \<subseteq> b \<union> m \<union> ov \<union> f^-1 \<union> d^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> m^-1 O b" then obtain p q z where "(p,z) : m^-1" and "(z,q) : b" and x:"x = (p,q)" by auto
-  from `(p,z) : m^-1` have zp:"z\<parallel>p" using m by auto
-  from `(z,q) : b` obtain w  where  zw:"z\<parallel>w" and wq:"w\<parallel>q"  using b by blast
+  from \<open>(p,z) : m^-1\<close> have zp:"z\<parallel>p" using m by auto
+  from \<open>(z,q) : b\<close> obtain w  where  zw:"z\<parallel>w" and wq:"w\<parallel>q"  using b by blast
   obtain v where pv:"p\<parallel>v" using M3 meets_wd zp  by blast
   obtain v' where qvp:"q\<parallel>v'" using M3 meets_wd wq by blast
 
@@ -1528,14 +1528,14 @@ proof
 qed
 
 (*==========$\gamma$ composition =======*)
-subsection {* $\gamma$-composition *}
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq ov \cup s \cup d \cup f \cup e \cup f^{-1} \cup d^{-1} \cup s^{-1} \cup ov^{-1}$.  *}
+subsection \<open>$\gamma$-composition\<close>
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq ov \cup s \cup d \cup f \cup e \cup f^{-1} \cup d^{-1} \cup s^{-1} \cup ov^{-1}$.\<close>
 
 lemma covovi:"ov O ov^-1 \<subseteq> e \<union> ov \<union> ov^-1 \<union> d \<union> d^-1 \<union> s \<union> s^-1 \<union> f \<union> f^-1 "
 proof
   fix x::"'a\<times>'a" assume "x \<in> ov O ov^-1" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> ov" and "(z, q) \<in> ov^-1" by auto
-  from `(p,z) \<in> ov` obtain k l c u  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and lc:"l\<parallel>c" and pu:"p\<parallel>u" and cu:"c\<parallel>u"  using ov by blast
-  from `(z,q) \<in> ov^-1` obtain k' l' c' u'  where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z" and lpcp:"l'\<parallel>c'" and qup:"q\<parallel>u'" and cpup:"c'\<parallel>u'"  using ov by blast
+  from \<open>(p,z) \<in> ov\<close> obtain k l c u  where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and lc:"l\<parallel>c" and pu:"p\<parallel>u" and cu:"c\<parallel>u"  using ov by blast
+  from \<open>(z,q) \<in> ov^-1\<close> obtain k' l' c' u'  where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z" and lpcp:"l'\<parallel>c'" and qup:"q\<parallel>u'" and cpup:"c'\<parallel>u'"  using ov by blast
 
   from kp kpq  have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1607,8 +1607,8 @@ qed
 lemma cdid:"d^-1 O d \<subseteq> e \<union> ov \<union> ov^-1 \<union> d \<union> d^-1 \<union> s \<union> s^-1 \<union> f \<union> f^-1 "
 proof
   fix x::"'a\<times>'a" assume "x \<in> d^-1 O d" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> d^-1" and "(z, q) \<in> d" by auto
-  from `(p,z) \<in> d^-1` obtain k l u v where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pv:"p\<parallel>v" and zu:"z\<parallel>u" and uv:"u\<parallel>v"  using d by blast
-  from `(z,q) \<in> d` obtain k' l'  u' v'  where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z"  and qvp:"q\<parallel>v'" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'"  using d by blast
+  from \<open>(p,z) \<in> d^-1\<close> obtain k l u v where kp:"k\<parallel>p" and kl:"k\<parallel>l" and lz:"l\<parallel>z" and pv:"p\<parallel>v" and zu:"z\<parallel>u" and uv:"u\<parallel>v"  using d by blast
+  from \<open>(z,q) \<in> d\<close> obtain k' l'  u' v'  where kpq:"k'\<parallel>q" and kplp:"k'\<parallel>l'" and lpz:"l'\<parallel>z"  and qvp:"q\<parallel>v'" and zup:"z\<parallel>u'" and upvp:"u'\<parallel>v'"  using d by blast
 
   from kp kpq  have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1643,7 +1643,7 @@ proof
             then obtain t' where ptp:"p\<parallel>t'" and tpvp:"t'\<parallel>v'" by auto
             from tq kpq kplp have "t\<parallel>l'" using M1 by auto
             moreover with ptp pv uv have "u\<parallel>t'" using M1 by auto
-            moreover with lpz zu `t\<parallel>l'` obtain lzu where "t\<parallel>lzu" and "lzu\<parallel>t'" using  M5exist_var   by blast
+            moreover with lpz zu \<open>t\<parallel>l'\<close> obtain lzu where "t\<parallel>lzu" and "lzu\<parallel>t'" using  M5exist_var   by blast
             ultimately  show ?thesis using x ov kt tq kp ptp tpvp qvp by blast}
           next
           { assume "\<not>?A\<and>\<not>?B\<and>?C" then have ?C by simp
@@ -1668,7 +1668,7 @@ proof
             then obtain t' where qtp:"q\<parallel>t'" and tpv:"t'\<parallel>v" by auto
             from tp kp kl have "t\<parallel>l" using M1 by auto
             moreover with qtp qvp upvp have "u'\<parallel>t'" using M1 by auto
-            moreover with lz zup `t\<parallel>l` obtain lzu where "t\<parallel>lzu" and "lzu\<parallel>t'" using  M5exist_var by blast
+            moreover with lz zup \<open>t\<parallel>l\<close> obtain lzu where "t\<parallel>lzu" and "lzu\<parallel>t'" using  M5exist_var by blast
             ultimately show ?thesis using x ov kpt tp kpq qtp tpv pv  by blast}
           qed}
       qed
@@ -1677,8 +1677,8 @@ qed
 lemma coviov:"ov^-1 O ov \<subseteq> e \<union> ov \<union> ov^-1 \<union> d \<union> d^-1 \<union> s \<union> s^-1 \<union> f \<union> f^-1"
 proof
   fix x::"'a\<times>'a" assume "x \<in> ov^-1 O ov" then obtain p q z where x:"x = (p,q)" and "(p,z) \<in> ov^-1" and "(z, q) \<in> ov" by auto
-  from `(p,z) \<in> ov^-1` obtain k l c u v where kz:"k\<parallel>z" and kl:"k\<parallel>l" and lp:"l\<parallel>p" and lc:"l\<parallel>c" and zu:"z\<parallel>u" and pv:"p\<parallel>v" and cu:"c\<parallel>u" and uv:"u\<parallel>v"  using ov by blast
-  from `(z,q) \<in> ov` obtain k' l' c' u' v' where kpz:"k'\<parallel>z" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and lpcp:"l'\<parallel>c'" and qvp:"q\<parallel>v'" and zup:"z\<parallel>u'" and cpup:"c'\<parallel>u'" and upvp:"u'\<parallel>v'" using ov by blast
+  from \<open>(p,z) \<in> ov^-1\<close> obtain k l c u v where kz:"k\<parallel>z" and kl:"k\<parallel>l" and lp:"l\<parallel>p" and lc:"l\<parallel>c" and zu:"z\<parallel>u" and pv:"p\<parallel>v" and cu:"c\<parallel>u" and uv:"u\<parallel>v"  using ov by blast
+  from \<open>(z,q) \<in> ov\<close> obtain k' l' c' u' v' where kpz:"k'\<parallel>z" and kplp:"k'\<parallel>l'" and lpq:"l'\<parallel>q" and lpcp:"l'\<parallel>c'" and qvp:"q\<parallel>v'" and zup:"z\<parallel>u'" and cpup:"c'\<parallel>u'" and upvp:"u'\<parallel>v'" using ov by blast
 
   from lp lpq  have "l\<parallel>q \<oplus> ((\<exists>t. l\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. l'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1747,15 +1747,15 @@ proof
 qed
 
 (* ===========$\delta$ composition =========*)
-subsection {* $\gamma$-composition *}
-text {* We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov \cup s \cup d \cup f \cup e \cup f^{-1} \cup d^{-1} \cup s^{-1} \cup ov^{-1} \cup b^{-1} \cup m^{-1}$.  *}
+subsection \<open>$\gamma$-composition\<close>
+text \<open>We prove compositions of the form $r_1 \circ r_2 \subseteq b \cup m \cup ov \cup s \cup d \cup f \cup e \cup f^{-1} \cup d^{-1} \cup s^{-1} \cup ov^{-1} \cup b^{-1} \cup m^{-1}$.\<close>
 
 
 lemma cbbi:"b O b^-1 \<subseteq> b \<union> b^-1 \<union> m \<union> m^-1 \<union> e \<union> ov \<union> ov^-1 \<union> s \<union> s^-1 \<union> d \<union> d^-1 \<union> f \<union> f^-1" (is "b O b^-1 \<subseteq> ?R")
 proof
   fix x::"'a\<times>'a" assume "x \<in> b O b^-1" then obtain p q z::'a where x:"x = (p,q)" and "(p,z) \<in> b" and "(z,q) \<in> b^-1" by auto
-  from `(p,z)\<in>b` obtain c where pc:"p\<parallel>c" and "c\<parallel>z" using b  by blast
-  from `(z,q) \<in> b^-1` obtain c' where qcp:"q\<parallel>c'" and "c'\<parallel>z" using b  by blast
+  from \<open>(p,z)\<in>b\<close> obtain c where pc:"p\<parallel>c" and "c\<parallel>z" using b  by blast
+  from \<open>(z,q) \<in> b^-1\<close> obtain c' where qcp:"q\<parallel>c'" and "c'\<parallel>z" using b  by blast
   obtain k k' where kp:"k\<parallel>p" and kpq:"k'\<parallel>q" using M3 meets_wd pc qcp by fastforce
   then have "k\<parallel>q \<oplus> ((\<exists>t. k\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. k'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1845,8 +1845,8 @@ qed
 lemma cbib:"b^-1 O b \<subseteq> b \<union> b^-1 \<union> m \<union> m^-1 \<union> e \<union> ov \<union> ov^-1 \<union> s \<union> s^-1 \<union> d \<union> d^-1 \<union> f \<union> f^-1" (is "b^-1 O b \<subseteq> ?R")
 proof
   fix x::"'a\<times>'a" assume "x \<in> b^-1 O b" then obtain p q z::'a where x:"x = (p,q)" and "(p,z) \<in> b^-1" and "(z,q) \<in> b" by auto
-  from `(p,z)\<in>b^-1` obtain c where zc:"z\<parallel>c" and cp:"c\<parallel>p" using b  by blast
-  from `(z,q) \<in> b` obtain c' where zcp:"z\<parallel>c'" and cpq:"c'\<parallel>q" using b  by blast
+  from \<open>(p,z)\<in>b^-1\<close> obtain c where zc:"z\<parallel>c" and cp:"c\<parallel>p" using b  by blast
+  from \<open>(z,q) \<in> b\<close> obtain c' where zcp:"z\<parallel>c'" and cpq:"c'\<parallel>q" using b  by blast
   obtain u u' where pu:"p\<parallel>u" and qup:"q\<parallel>u'" using M3 meets_wd cp cpq by fastforce
   from cp cpq have "c\<parallel>q \<oplus> ((\<exists>t. c\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. c'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
@@ -1934,8 +1934,8 @@ qed
 lemma cddi:"d O d^-1 \<subseteq> b \<union> b^-1 \<union> m \<union> m^-1 \<union> e \<union> ov \<union> ov^-1 \<union> s \<union> s^-1 \<union> d \<union> d^-1 \<union> f \<union> f^-1" (is "d O d^-1 \<subseteq> ?R")
 proof
   fix x::"'a\<times>'a" assume "x \<in> d O d^-1" then obtain p q z::'a where x:"x = (p,q)" and "(p,z) \<in> d" and "(z,q) \<in> d^-1" by auto
-  from `(p,z) \<in> d` obtain k l u v where lp:"l\<parallel>p" and kl:"k\<parallel>l" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v"  using d  by blast
-  from `(z,q) \<in> d^-1` obtain k' l' u' v' where lpq:"l'\<parallel>q" and kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and qup:"q\<parallel>u'" and upvp:"u'\<parallel>v'" and zv':"z\<parallel>v'"  using d  by blast
+  from \<open>(p,z) \<in> d\<close> obtain k l u v where lp:"l\<parallel>p" and kl:"k\<parallel>l" and kz:"k\<parallel>z" and pu:"p\<parallel>u" and uv:"u\<parallel>v" and zv:"z\<parallel>v"  using d  by blast
+  from \<open>(z,q) \<in> d^-1\<close> obtain k' l' u' v' where lpq:"l'\<parallel>q" and kplp:"k'\<parallel>l'" and kpz:"k'\<parallel>z" and qup:"q\<parallel>u'" and upvp:"u'\<parallel>v'" and zv':"z\<parallel>v'"  using d  by blast
   from lp lpq have "l\<parallel>q \<oplus> ((\<exists>t. l\<parallel>t \<and> t\<parallel>q) \<oplus> (\<exists>t. l'\<parallel>t \<and> t\<parallel>p))" (is "?A \<oplus> (?B \<oplus> ?C)") using M2 by blast
   then have "(?A\<and>\<not>?B\<and>\<not>?C) \<or> ((\<not>?A\<and>?B\<and>\<not>?C) \<or> (\<not>?A\<and>\<not>?B\<and>?C))" by (insert xor_distr_L[of ?A ?B ?C], auto simp:elimmeets)
   thus "x \<in>?R"
@@ -2021,8 +2021,8 @@ qed
 
 
 (* ========= inverse ========== *)
-subsection {* The rest of the composition table *}
-text {* Because of the symmetry $(r_1 \circ r_2)^{-1} = r_2^{-1} \circ r_1^{-1} $, the rest of the compositions is easily deduced.  *}
+subsection \<open>The rest of the composition table\<close>
+text \<open>Because of the symmetry $(r_1 \circ r_2)^{-1} = r_2^{-1} \circ r_1^{-1} $, the rest of the compositions is easily deduced.\<close>
 
 
 lemma cmbi:"m O b^-1 \<subseteq> b^-1 \<union> m^-1 \<union> s^-1 \<union> ov^-1 \<union> d^-1"
@@ -2227,7 +2227,7 @@ lemma cbibi:"b^-1 O b^-1 \<subseteq> b^-1"
 
 (****)
 
-subsection {* Composition rules *} 
+subsection \<open>Composition rules\<close> 
 named_theorems ce_rules declare cem[ce_rules] and ceb[ce_rules] and ceov[ce_rules] and ces[ce_rules] and cef[ce_rules] and ced[ce_rules] and 
 cemi[ce_rules] and cebi[ce_rules] and ceovi[ce_rules] and cesi[ce_rules] and cefi[ce_rules] and cedi[ce_rules]
 

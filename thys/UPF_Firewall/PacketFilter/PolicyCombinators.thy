@@ -35,17 +35,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* Policy Combinators *}
+subsection \<open>Policy Combinators\<close>
 theory 
   PolicyCombinators
   imports 
     PolicyCore
 begin
 
-text{* In order to ease the specification of a concrete policy, we
+text\<open>In order to ease the specification of a concrete policy, we
   define some combinators. Using these combinators, the specification
   of a policy gets very easy, and can be done similarly as in tools
-  like IPTables.  *}
+  like IPTables.\<close>
 
 definition 
   allow_all_from :: "'\<alpha>::adr net \<Rightarrow> (('\<alpha>,'\<beta>) packet \<mapsto> unit)" where
@@ -73,9 +73,9 @@ definition
   "deny_all_from_to src_net dest_net = {pa. src pa \<sqsubset> src_net \<and> dest pa \<sqsubset> dest_net} \<triangleleft> D\<^sub>U"
 
 
-text{* All these combinators and the default rules are put into one
-  single lemma called @{text PolicyCombinators} to facilitate proving
-  over policies.  *}
+text\<open>All these combinators and the default rules are put into one
+  single lemma called \<open>PolicyCombinators\<close> to facilitate proving
+  over policies.\<close>
 
 
 lemmas PolicyCombinators = allow_all_from_def deny_all_from_def

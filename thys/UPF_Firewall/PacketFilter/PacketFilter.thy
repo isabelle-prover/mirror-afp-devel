@@ -34,7 +34,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
-section {* Network Policies: Packet Filter *}
+section \<open>Network Policies: Packet Filter\<close>
 theory 
   PacketFilter
   imports

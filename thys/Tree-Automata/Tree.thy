@@ -6,11 +6,11 @@ section "Trees"
 theory Tree
 imports Main
 begin
-text_raw {*\label{sec:tree}*}
+text_raw \<open>\label{sec:tree}\<close>
 
-text {*
+text \<open>
   This theory defines trees as nodes with a label and a list of subtrees.
-*}
+\<close>
 
 datatype 'l tree = NODE 'l "'l tree list"
 

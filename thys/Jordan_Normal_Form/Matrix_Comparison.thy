@@ -283,7 +283,7 @@ proof -
     from mat_gtD[OF this] obtain i j where
       ge: "A \<ge>\<^sub>m B" and ij: "i < sd" "j < sd" and wgt: "weak_gt (A $$ (i,j)) (B $$ (i,j))"
       by auto
-    from ij `sd \<le> n` have ij': "i < n" "j < n" by auto
+    from ij \<open>sd \<le> n\<close> have ij': "i < n" "j < n" by auto
     have gt: "gt (A $$ (i,j)) (B $$ (i,j))"
       by (rule orient2, insert ij' AB wgt, force)
     show "mat_gt gt sd A B" using ij gt ge by auto
@@ -313,7 +313,7 @@ proof -
   from mat_gtD[OF AB] obtain i j where AB: "A \<ge>\<^sub>m B" and 
     ij: "i < sd" "j < sd" and gt: "A $$ (i,j) \<succ> B $$ (i,j)" by auto
   show ?thesis unfolding sum_mat_def id
-    by (rule sum_mono_gt[of _ _ _ "(i,j)"], insert ij gt mat_geD[OF AB] A B `sd \<le> n`, auto)
+    by (rule sum_mono_gt[of _ _ _ "(i,j)"], insert ij gt mat_geD[OF AB] A B \<open>sd \<le> n\<close>, auto)
 qed
 
 lemma mat_plus_gt_left_mono: assumes sd_n: "sd \<le> n" and gt: "mat_gt (\<succ>) sd A B"  

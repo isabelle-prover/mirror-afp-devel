@@ -29,8 +29,8 @@ begin
 
 chapter "Preliminaries"
 
-text{* Some of the lemmas of this section are proved in src/HOL/Integ
-   of Isabelle version 2003. *}
+text\<open>Some of the lemmas of this section are proved in src/HOL/Integ
+   of Isabelle version 2003.\<close>
 
 section "Lemmas for logical manipulation"
 
@@ -58,7 +58,7 @@ by blast
 
 section "Natural numbers and Integers"
 
-text{* Elementary properties of natural numbers and integers *}
+text\<open>Elementary properties of natural numbers and integers\<close>
 
 lemma nat_nonzero_pos:"(a::nat) \<noteq> 0 \<Longrightarrow> 0 < a"
 by simp
@@ -1946,7 +1946,7 @@ lemma less_convert2:"\<lbrakk>a = b; b < c\<rbrakk> \<Longrightarrow> a < c"
 apply auto
 done 
 
-section {* Augmented integer: integer and @{text "\<infinity>-\<infinity>"} *}
+section \<open>Augmented integer: integer and \<open>\<infinity>-\<infinity>\<close>\<close>
 
 definition
   zag :: "(int * int) set" where
@@ -3003,7 +3003,7 @@ done
 
 subsection "Ordering of integers and ordering nats"
 
-subsection {*The @{text "\<le>"} Ordering*}
+subsection \<open>The \<open>\<le>\<close> Ordering\<close>
 
 lemma zneq_aneq:"(n \<noteq> m) = ((ant n) \<noteq> (ant m))" 
 apply (rule iffI)
@@ -3974,7 +3974,7 @@ done
 
 section "Cardinality of sets"
 
-text {* cardinality is defined for the finite sets only *}
+text \<open>cardinality is defined for the finite sets only\<close>
 
 lemma card_eq:"A = B \<Longrightarrow> card A = card B"
  apply simp
@@ -4989,7 +4989,7 @@ apply (simp add:SIod_carrier)
 apply (rule rel_SIod[of "D" "E"], assumption+)
 done 
 
-subsection {* Total ordering *}
+subsection \<open>Total ordering\<close>
 
 locale Torder = Order + 
        assumes le_linear: "\<lbrakk>a \<in> carrier D; b \<in> carrier D\<rbrakk> \<Longrightarrow>
@@ -5066,7 +5066,7 @@ apply (simp add:Iod_carrier)+
 done
 
 
-subsection {* Two ordered sets *}
+subsection \<open>Two ordered sets\<close>
 
 definition
   Order_Pow :: "'a set \<Rightarrow> 'a set Order"    ("(po _)" [999] 1000) where
@@ -5103,7 +5103,7 @@ apply (unfold split_paired_all)
 apply (auto intro: funcset_eq)
 done
  
-subsection {* Homomorphism of ordered sets *}
+subsection \<open>Homomorphism of ordered sets\<close>
 
 definition
  ord_inj :: "[('a, 'm0) Order_scheme, ('b, 'm1) Order_scheme, 

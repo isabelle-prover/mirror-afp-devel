@@ -9,13 +9,13 @@ theory Functor
 imports Category DualCategory InitialTerminal
 begin
 
-  text{*
+  text\<open>
     One advantage of the ``object-free'' definition of category is that a functor
-    from category @{text A} to category @{text B} is simply a function from the type
-    of arrows of @{text A} to the type of arrows of @{text B} that satisfies certain
+    from category \<open>A\<close> to category \<open>B\<close> is simply a function from the type
+    of arrows of \<open>A\<close> to the type of arrows of \<open>B\<close> that satisfies certain
     conditions: namely, that arrows are mapped to arrows, non-arrows are mapped to
-    @{text null}, and domains, codomains, and composition of arrows are preserved.
-  *}
+    \<open>null\<close>, and domains, codomains, and composition of arrows are preserved.
+\<close>
 
   locale "functor" =
     A: category A +
@@ -39,13 +39,13 @@ begin
       using assms B.in_homI
       by (metis A.in_homE preserves_arr preserves_cod preserves_dom)
 
-    text{*
-      The following, which is made possible through the presence of @{text null},
+    text\<open>
+      The following, which is made possible through the presence of \<open>null\<close>,
       allows us to infer that the subterm @{term f} denotes an arrow if the
       term @{term "F f"} denotes an arrow.  This is very useful, because otherwise
       doing anything with @{term f} would require a separate proof that it is an arrow
       by some other means.
-    *}
+\<close>
 
     lemma preserves_reflects_arr [iff]:
     shows "B.arr (F f) \<longleftrightarrow> A.arr f"
@@ -234,21 +234,21 @@ begin
   sublocale identity_functor \<subseteq> "functor" C C map
     using is_functor by auto
 
-  text {*
+  text \<open>
     It is convenient to have an easy way to obtain from a category the identity functor
     on that category. The following declaration causes the definitions and facts from the
     @{locale identity_functor} locale to be inherited by the @{locale category} locale,
     including the function @{term map} on arrows that represents the identity functor.
     This makes it generally unnecessary to give explicit interpretations of
     @{locale identity_functor}.
-  *}
+\<close>
 
   sublocale category \<subseteq> identity_functor C ..
 
-  text{*
+  text\<open>
     Composition of functors coincides with function composition, thanks to the
-    magic of @{text null}.
-  *}
+    magic of \<open>null\<close>.
+\<close>
 
   lemma functor_comp:
   assumes "functor A B F" and "functor B C G"
@@ -407,9 +407,9 @@ begin
   sublocale invertible_functor \<subseteq> inverse_functors A B F inv
     using inv_is_inverse by simp
 
-  text {*
+  text \<open>
     Inverse functors uniquely determine each other.
-  *}
+\<close>
 
   lemma inverse_functor_eq:
   assumes "inverse_functors C D F G" and "inverse_functors C D F G'"

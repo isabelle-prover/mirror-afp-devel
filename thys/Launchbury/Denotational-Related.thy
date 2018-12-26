@@ -2,11 +2,11 @@ theory "Denotational-Related"
 imports Denotational ResourcedDenotational ValueSimilarity
 begin
 
-text {*
+text \<open>
 Given the similarity relation it is straight-forward to prove that the standard
 and the resourced denotational semantics produce similar results. (Theorem 10 in
 |cite{functionspaces}).
-*}
+\<close>
 
 theorem denotational_semantics_similar: 
   assumes "\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>"
@@ -20,7 +20,7 @@ next
   case (Lam v e)
   { fix x y
     assume "x \<triangleleft>\<triangleright> y\<cdot>C\<^sup>\<infinity>"
-    with `\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>`
+    with \<open>\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>\<close>
     have "\<rho>(v := x) \<triangleleft>\<triangleright>\<^sup>* \<sigma>(v := y)"
       by (auto 1 4)
     hence "\<lbrakk>e\<rbrakk>\<^bsub>\<rho>(v := x)\<^esub> \<triangleleft>\<triangleright> (\<N>\<lbrakk>e\<rbrakk>\<^bsub>\<sigma>(v := y)\<^esub>)\<cdot>C\<^sup>\<infinity>"
@@ -33,7 +33,7 @@ next
   thus ?case
   proof (cases rule: slimilar_bot_cases)
     case (Fn f g)
-    from `\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>`
+    from \<open>\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>\<close>
     have "\<rho> v \<triangleleft>\<triangleright> (\<sigma> v)\<cdot>C\<^sup>\<infinity>"  by auto
     thus ?thesis using Fn App' by auto
   qed auto
@@ -61,8 +61,8 @@ next
     show "\<rho> ++\<^bsub>domA as\<^esub> \<^bold>\<lbrakk> as \<^bold>\<rbrakk>\<^bsub>\<rho>'\<^esub> \<triangleleft>\<triangleright>\<^sup>* \<sigma> ++\<^bsub>domA as\<^esub> evalHeap as (\<lambda>e. \<N>\<lbrakk> e \<rbrakk>\<^bsub>\<sigma>'\<^esub>)"
     proof(rule pointwiseI, goal_cases)
       case (1 x)
-      show ?case using `\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>`
-        by (auto simp add: lookup_override_on_eq lookupEvalHeap elim: Let(1)[OF _  `\<rho>' \<triangleleft>\<triangleright>\<^sup>* \<sigma>'`] )
+      show ?case using \<open>\<rho> \<triangleleft>\<triangleright>\<^sup>* \<sigma>\<close>
+        by (auto simp add: lookup_override_on_eq lookupEvalHeap elim: Let(1)[OF _  \<open>\<rho>' \<triangleleft>\<triangleright>\<^sup>* \<sigma>'\<close>] )
     qed
   qed auto
   hence "\<lbrakk>e\<rbrakk>\<^bsub>\<lbrace>as\<rbrace>\<rho>\<^esub> \<triangleleft>\<triangleright> (\<N>\<lbrakk>e\<rbrakk>\<^bsub>\<N>\<lbrace>as\<rbrace>\<sigma>\<^esub>)\<cdot>C\<^sup>\<infinity>" by (rule Let(2))

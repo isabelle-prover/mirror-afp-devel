@@ -17,7 +17,7 @@ lemma tauPres:
   shows "\<tau>.(P) \<approx> \<tau>.(Q)"
 proof -
   let ?X = "{(\<tau>.(P), \<tau>.(Q)) | P Q. P \<approx> Q}"
-  from `P \<approx> Q` have "(\<tau>.(P), \<tau>.(Q)) \<in> ?X" by auto
+  from \<open>P \<approx> Q\<close> have "(\<tau>.(P), \<tau>.(Q)) \<in> ?X" by auto
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim P Q)
@@ -40,7 +40,7 @@ lemma outputPres:
   shows "a{b}.P \<approx> a{b}.Q"
 proof -
   let ?X = "{(a{b}.(P), a{b}.(Q)) | P Q a b. P \<approx> Q}"
-  from `P \<approx> Q` have "(a{b}.(P), a{b}.(Q)) \<in> ?X" by auto
+  from \<open>P \<approx> Q\<close> have "(a{b}.(P), a{b}.(Q)) \<in> ?X" by auto
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim P Q)
@@ -87,7 +87,7 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim P Q)
-    thus ?case using `eqvt ?X`
+    thus ?case using \<open>eqvt ?X\<close>
       by(force intro: Weak_Early_Sim_Pres.inputPres)
   next
     case(cSym P Q)
@@ -106,7 +106,7 @@ lemma resPres:
   shows "<\<nu>x>P \<approx> <\<nu>x>Q"
 proof -
   let ?X = "{(<\<nu>x>P, <\<nu>x>Q) | x P Q. P \<approx> Q}"
-  from `P \<approx> Q` have "(<\<nu>x>P, <\<nu>x>Q) \<in> ?X" by blast
+  from \<open>P \<approx> Q\<close> have "(<\<nu>x>P, <\<nu>x>Q) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim xP xQ)
@@ -122,7 +122,7 @@ proof -
       ultimately have "<\<nu>x>P \<leadsto><(?X \<union> weakBisim)> <\<nu>x>Q"
         by(rule Weak_Early_Sim_Pres.resPres)
     }
-    with `(xP, xQ) \<in> ?X` show ?case by blast
+    with \<open>(xP, xQ) \<in> ?X\<close> show ?case by blast
   next
     case(cSym xP xQ)
     thus ?case by(blast dest: Weak_Early_Bisim.symetric)
@@ -140,7 +140,7 @@ lemma matchPres:
   shows "[a\<frown>b]P \<approx> [a\<frown>b]Q"
 proof -
   let ?X = "{([a\<frown>b]P, [a\<frown>b]Q) | a b P Q. P \<approx> Q}"
-  from `P \<approx> Q` have "([a\<frown>b]P, [a\<frown>b]Q) \<in> ?X" by blast
+  from \<open>P \<approx> Q\<close> have "([a\<frown>b]P, [a\<frown>b]Q) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim abP abQ)
@@ -154,7 +154,7 @@ proof -
       ultimately have"[a\<frown>b]P \<leadsto><(?X \<union> weakBisim)> [a\<frown>b]Q" 
         by(rule Weak_Early_Sim_Pres.matchPres)
     }
-    with `(abP, abQ) \<in> ?X` show ?case by blast
+    with \<open>(abP, abQ) \<in> ?X\<close> show ?case by blast
   next
     case(cSym abP abQ)
     thus ?case by(blast dest: Weak_Early_Bisim.symetric)
@@ -172,7 +172,7 @@ lemma mismatchPres:
   shows "[a\<noteq>b]P \<approx> [a\<noteq>b]Q"
 proof -
   let ?X = "{([a\<noteq>b]P, [a\<noteq>b]Q)| a b P Q. P \<approx> Q}"
-  from `P \<approx> Q` have "([a\<noteq>b]P, [a\<noteq>b]Q) \<in> ?X" by blast
+  from \<open>P \<approx> Q\<close> have "([a\<noteq>b]P, [a\<noteq>b]Q) \<in> ?X" by blast
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSim abP abQ)
@@ -186,7 +186,7 @@ proof -
       ultimately have "[a\<noteq>b]P \<leadsto><(?X \<union> weakBisim)> [a\<noteq>b]Q"
         by(rule Weak_Early_Sim_Pres.mismatchPres) 
     }
-    with `(abP, abQ) \<in> ?X` show ?case by blast
+    with \<open>(abP, abQ) \<in> ?X\<close> show ?case by blast
   next
     case(cSym abP abQ)
     thus ?case by(blast dest: Weak_Early_Bisim.symetric)
@@ -204,7 +204,7 @@ lemma parPres:
 proof -
   let ?X = "{(resChain lst (P \<parallel> R), resChain lst (Q \<parallel> R)) | lst P R Q. P \<approx> Q}"
   have BC: "\<And>P Q. P \<parallel> Q = resChain [] (P \<parallel> Q)" by auto
-  from `P \<approx> Q` have "(P \<parallel> R, Q \<parallel> R) \<in> ?X" by(blast intro: BC)
+  from \<open>P \<approx> Q\<close> have "(P \<parallel> R, Q \<parallel> R) \<in> ?X" by(blast intro: BC)
   thus ?thesis
   proof(coinduct rule: weakBisimCoinduct)
     case(cSym PR QR)
@@ -221,7 +221,7 @@ proof -
           by auto
         from A have "<\<nu>x>PR = resChain (x#lst) (P \<parallel> R)" by auto
         moreover from B have "<\<nu>x>QR = resChain (x#lst) (Q \<parallel> R)" by auto
-        ultimately have "(<\<nu>x>PR, <\<nu>x>QR) \<in> ?X" using `P \<approx> Q`
+        ultimately have "(<\<nu>x>PR, <\<nu>x>QR) \<in> ?X" using \<open>P \<approx> Q\<close>
           by blast
       }
       note Res = this
@@ -234,7 +234,7 @@ proof -
       hence "resChain lst (P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> resChain lst (Q \<parallel> R)"
         by(force intro: Weak_Early_Sim.monotonic)
     }
-    with `(PR, QR) \<in> ?X` show "PR \<leadsto><(?X \<union> weakBisim)> QR"
+    with \<open>(PR, QR) \<in> ?X\<close> show "PR \<leadsto><(?X \<union> weakBisim)> QR"
       by blast
   next
     case(cSym PR QR)

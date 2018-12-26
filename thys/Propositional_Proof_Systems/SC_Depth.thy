@@ -14,7 +14,7 @@ we think that arguments about depth do not need much meta-explanation,
 but structural induction and rule induction usually need extra explanation
 for students unfamiliar with Isabelle/HOL.
 They are also a lot harder to execute.
-We dare the reader to write down (a few of) the cases for, e.g. @{text AndL_inv'}, by hand.
+We dare the reader to write down (a few of) the cases for, e.g. \<open>AndL_inv'\<close>, by hand.
 \<close>
 
 (* Warning: This theory may have name collisions with SC.thy\<dots> *)

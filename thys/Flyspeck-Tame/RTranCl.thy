@@ -1,14 +1,14 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-section {* Transitive Closure of Successor List Function *}
+section \<open>Transitive Closure of Successor List Function\<close>
 
 theory RTranCl
 imports Main
 begin
 
-text{* The reflexive transitive closure of a relation induced by a
+text\<open>The reflexive transitive closure of a relation induced by a
 function of type @{typ"'a \<Rightarrow> 'a list"}. Instead of defining the closure
-again it would have been simpler to take @{term"{(x,y) . y \<in> set(f x)}\<^sup>*"}. *}
+again it would have been simpler to take @{term"{(x,y) . y \<in> set(f x)}\<^sup>*"}.\<close>
 
 abbreviation (input)
   in_set :: "'a \<Rightarrow> ('a \<Rightarrow> 'b list) \<Rightarrow> 'b \<Rightarrow> bool" ("_ [_]\<rightarrow> _" [55,0,55] 50) where

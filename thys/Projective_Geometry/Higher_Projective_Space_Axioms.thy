@@ -7,7 +7,7 @@ begin
 text \<open>
 Contents:
 \<^item> We introduce the types of points and lines and an incidence relation between them.
-\<^item> A set of axioms for higher projective spaces, i.e. we allow models of dimension @{text ">"} 3. 
+\<^item> A set of axioms for higher projective spaces, i.e. we allow models of dimension \<open>>\<close> 3. 
 \<close>
 
 section \<open>The axioms for Higher Projective Geometry\<close>

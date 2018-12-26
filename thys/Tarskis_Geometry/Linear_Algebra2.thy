@@ -45,7 +45,7 @@ lemma card_finite:
   assumes "card S = CARD('n::finite)"
   shows "finite S"
 proof -
-  from `card S = CARD('n)` have "card S \<noteq> 0" by simp
+  from \<open>card S = CARD('n)\<close> have "card S \<noteq> 0" by simp
   with card_eq_0_iff [of S] show "finite S" by simp
 qed
 
@@ -69,7 +69,7 @@ lemma basis_finite:
   assumes "is_basis B"
   shows "finite B"
 proof -
-  from independent_is_basis [of B] and `is_basis B` have "card B = CARD('n)"
+  from independent_is_basis [of B] and \<open>is_basis B\<close> have "card B = CARD('n)"
     by simp
   with card_finite [of B, where 'n = 'n] show "finite B" by simp
 qed
@@ -78,9 +78,9 @@ lemma basis_expand:
   assumes "is_basis B"
   shows "\<exists>c. v = (\<Sum>w\<in>B. (c w) *\<^sub>R w)"
 proof -
-  from `is_basis B` have "v \<in> span B" unfolding is_basis_def by simp
-  from basis_finite [of B] and `is_basis B` have "finite B" by simp
-  with span_finite [of B] and `v \<in> span B`
+  from \<open>is_basis B\<close> have "v \<in> span B" unfolding is_basis_def by simp
+  from basis_finite [of B] and \<open>is_basis B\<close> have "finite B" by simp
+  with span_finite [of B] and \<open>v \<in> span B\<close>
   show "\<exists>c. v = (\<Sum>w\<in>B. (c w) *\<^sub>R w)" by (simp add: scalar_equiv) auto
 qed
 
@@ -135,17 +135,17 @@ proof
   have "finite ?S" by simp
 
   { assume "dependent ?S"
-    with dependent_explicit_finite [of ?S] and `finite ?S` and `v \<noteq> w`
+    with dependent_explicit_finite [of ?S] and \<open>finite ?S\<close> and \<open>v \<noteq> w\<close>
     show "\<exists> i j. (i \<noteq> 0 \<or> j \<noteq> 0) \<and> i *\<^sub>R v + j *\<^sub>R w = 0" by auto }
 
   { assume "\<exists> i j. (i \<noteq> 0 \<or> j \<noteq> 0) \<and> i *\<^sub>R v + j *\<^sub>R w = 0"
     then obtain i and j where "i \<noteq> 0 \<or> j \<noteq> 0" and "i *\<^sub>R v + j *\<^sub>R w = 0" by auto
     let ?u = "\<lambda> x. if x = v then i else j"
-    from `i \<noteq> 0 \<or> j \<noteq> 0` and `v \<noteq> w` have "\<exists> x\<in>?S. ?u x \<noteq> 0" by simp
-    from `i *\<^sub>R v + j *\<^sub>R w = 0` and `v \<noteq> w`
+    from \<open>i \<noteq> 0 \<or> j \<noteq> 0\<close> and \<open>v \<noteq> w\<close> have "\<exists> x\<in>?S. ?u x \<noteq> 0" by simp
+    from \<open>i *\<^sub>R v + j *\<^sub>R w = 0\<close> and \<open>v \<noteq> w\<close>
     have "(\<Sum> x\<in>?S. ?u x *\<^sub>R x) = 0" by simp
     with dependent_explicit_finite [of ?S]
-      and `finite ?S` and `\<exists> x\<in>?S. ?u x \<noteq> 0`
+      and \<open>finite ?S\<close> and \<open>\<exists> x\<in>?S. ?u x \<noteq> 0\<close>
     show "dependent ?S" by best }
 qed
 
@@ -155,8 +155,8 @@ lemma zero_not_invertible:
   "\<not> (invertible (0::real^'n^'n))"
   using invertible_times_eq_zero matrix_vector_mult_0 by blast
 
-text {* Based on matrix-vector-column in
-  HOL/Multivariate\_Analysis/Euclidean\_Space.thy in Isabelle 2009-1: *}
+text \<open>Based on matrix-vector-column in
+  HOL/Multivariate\_Analysis/Euclidean\_Space.thy in Isabelle 2009-1:\<close>
 lemma vector_matrix_row:
   fixes x :: "('a::comm_semiring_1)^'m" and A :: "('a^'n^'m)"
   shows "x v* A = (\<Sum> i\<in>UNIV. (x$i) *s (A$i))"
@@ -167,14 +167,14 @@ lemma matrix_inv:
   assumes "invertible M"
   shows "matrix_inv M ** M = mat 1"
   and "M ** matrix_inv M = mat 1"
-  using `invertible M` and someI_ex [of "\<lambda> N. M ** N = mat 1 \<and> N ** M = mat 1"]
+  using \<open>invertible M\<close> and someI_ex [of "\<lambda> N. M ** N = mat 1 \<and> N ** M = mat 1"]
   unfolding invertible_def and matrix_inv_def
   by simp_all
 
 lemma matrix_inv_invertible:
   assumes "invertible M"
   shows "invertible (matrix_inv M)"
-  using `invertible M` and matrix_inv
+  using \<open>invertible M\<close> and matrix_inv
   unfolding invertible_def [of "matrix_inv M"]
   by auto
 
@@ -182,7 +182,7 @@ lemma invertible_times_non_zero:
   fixes M :: "real^'n^'n"
   assumes "invertible M" and "v \<noteq> 0"
   shows "M *v v \<noteq> 0"
-  using `invertible M` and `v \<noteq> 0` and invertible_times_eq_zero [of M v]
+  using \<open>invertible M\<close> and \<open>v \<noteq> 0\<close> and invertible_times_eq_zero [of M v]
   by auto
 
 lemma matrix_right_invertible_ker:
@@ -218,7 +218,7 @@ lemma non_zero_mult_invertible_non_zero:
   fixes M :: "real^'n^'n"
   assumes "v \<noteq> 0" and "invertible M"
   shows "v v* M \<noteq> 0"
-  using `v \<noteq> 0` and `invertible M` and times_invertible_eq_zero
+  using \<open>v \<noteq> 0\<close> and \<open>invertible M\<close> and times_invertible_eq_zero
   by auto
 
 end

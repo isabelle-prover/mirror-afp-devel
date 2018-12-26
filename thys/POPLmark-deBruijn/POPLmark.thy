@@ -7,21 +7,21 @@ imports Basis
 begin
 
 
-section {* Formalization of the basic calculus *}
+section \<open>Formalization of the basic calculus\<close>
 
-text {*
+text \<open>
 \label{sec:basic-calculus}
 In this section, we describe the formalization of the basic calculus
 without records. As a main result, we prove {\it type safety}, presented
 as two separate theorems, namely {\it preservation} and {\it progress}.
-*}
+\<close>
 
 
-subsection {* Types and Terms *}
+subsection \<open>Types and Terms\<close>
 
-text {*
+text \<open>
 The types of System \fsub{} are represented by the following datatype:
-*}
+\<close>
 
 datatype type =
     TVar nat
@@ -29,23 +29,23 @@ datatype type =
   | Fun type type    (infixr "\<rightarrow>" 200)
   | TyAll type type  ("(3\<forall><:_./ _)" [0, 10] 10)
 
-text {*
+text \<open>
 The subtyping and typing judgements depend on a {\it context} (or environment) @{term \<Gamma>}
 containing bindings for term and type variables. A context is a list of bindings,
 where the @{term i}th element @{term "\<Gamma>\<langle>i\<rangle>"} corresponds to the variable
 with index @{term i}.
-*}
+\<close>
 
 datatype binding = VarB type | TVarB type
 type_synonym env = "binding list"
 
-text {*
+text \<open>
 In contrast to the usual presentation of type systems often found in textbooks, new
-elements are added to the left of a context using the @{text Cons} operator @{text "\<Colon>"} for lists.
+elements are added to the left of a context using the \<open>Cons\<close> operator \<open>\<Colon>\<close> for lists.
 We write @{term is_TVarB} for the predicate that returns @{term True} when applied to
 a type variable binding, function @{term type_ofB} extracts the type contained in a binding,
 and @{term "mapB f"} applies @{term f} to the type contained in a binding.
-*}
+\<close>
 
 primrec is_TVarB :: "binding \<Rightarrow> bool"
 where
@@ -62,9 +62,9 @@ where
   "mapB f (VarB T) = VarB (f T)"
 | "mapB f (TVarB T) = TVarB (f T)"
 
-text {*
+text \<open>
 The following datatype represents the terms of System \fsub{}:
-*}
+\<close>
 
 datatype trm =
     Var nat
@@ -74,18 +74,18 @@ datatype trm =
   | TApp trm type  (infixl "\<bullet>\<^sub>\<tau>" 200)
 
 
-subsection {* Lifting and Substitution *}
+subsection \<open>Lifting and Substitution\<close>
 
-text {*
+text \<open>
 One of the central operations of $\lambda$-calculus is {\it substitution}.
 In order to avoid that free variables in a term or type get ``captured''
 when substituting it for a variable occurring in the scope of a binder,
 we have to increment the indices of its free variables during substitution.
-This is done by the lifting functions @{text "\<up>\<^sub>\<tau> n k"} and @{text "\<up> n k"}
+This is done by the lifting functions \<open>\<up>\<^sub>\<tau> n k\<close> and \<open>\<up> n k\<close>
 for types and terms, respectively, which increment the indices of all free
-variables with indices @{text "\<ge> k"} by @{term n}. The lifting functions on
+variables with indices \<open>\<ge> k\<close> by @{term n}. The lifting functions on
 types and terms are defined by
-*}
+\<close>
 
 primrec liftT :: "nat \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type" ("\<up>\<^sub>\<tau>")
 where
@@ -102,14 +102,14 @@ where
 | "\<up> n k (s \<bullet> t) = \<up> n k s \<bullet> \<up> n k t"
 | "\<up> n k (t \<bullet>\<^sub>\<tau> T) = \<up> n k t \<bullet>\<^sub>\<tau> \<up>\<^sub>\<tau> n k T"
 
-text {*
-It is useful to also define an ``unlifting'' function @{text "\<down>\<^sub>\<tau> n k"} for
-decrementing all free variables with indices @{text "\<ge> k"} by @{term n}.
+text \<open>
+It is useful to also define an ``unlifting'' function \<open>\<down>\<^sub>\<tau> n k\<close> for
+decrementing all free variables with indices \<open>\<ge> k\<close> by @{term n}.
 Moreover, we need several substitution functions, denoted by
-\mbox{@{text "T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>"}}, \mbox{@{text "t[k \<mapsto>\<^sub>\<tau> S]"}}, and \mbox{@{text "t[k \<mapsto> s]"}},
+\mbox{\<open>T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>\<close>}, \mbox{\<open>t[k \<mapsto>\<^sub>\<tau> S]\<close>}, and \mbox{\<open>t[k \<mapsto> s]\<close>},
 which substitute type variables in types, type variables in terms,
 and term variables in terms, respectively. They are defined as follows:
-*}
+\<close>
 
 primrec substTT :: "type \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> type"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>\<tau>" [300, 0, 0] 300)
 where
@@ -140,9 +140,9 @@ where
 | "(\<lambda>:T. t)[k \<mapsto>\<^sub>\<tau> S] = (\<lambda>:T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>. t[k+1 \<mapsto>\<^sub>\<tau> S])"
 | "(\<lambda><:T. t)[k \<mapsto>\<^sub>\<tau> S] = (\<lambda><:T[k \<mapsto>\<^sub>\<tau> S]\<^sub>\<tau>. t[k+1 \<mapsto>\<^sub>\<tau> S])"
 
-text {*
+text \<open>
 Lifting and substitution extends to typing contexts as follows:
-*}
+\<close>
 
 primrec liftE :: "nat \<Rightarrow> nat \<Rightarrow> env \<Rightarrow> env" ("\<up>\<^sub>e")
 where
@@ -159,7 +159,7 @@ where
   "\<down>\<^sub>e 0 k \<Gamma> = \<Gamma>"
 | "\<down>\<^sub>e (Suc n) k \<Gamma> = \<down>\<^sub>e n k (\<Gamma>[k \<mapsto>\<^sub>\<tau> Top]\<^sub>e)"
 
-text {*
+text \<open>
 Note that in a context of the form @{term "B \<Colon> \<Gamma>"}, all variables in @{term B} with
 indices smaller than the length of @{term \<Gamma>} refer to entries in @{term \<Gamma>} and therefore
 must not be affected by substitution and lifting. This is the reason why an
@@ -169,7 +169,7 @@ and substitution, which can be proved by structural induction on terms and types
 are proved below. Properties of this kind are
 quite standard for encodings using de Bruijn indices and can also be found in
 papers by Barras and Werner \cite{Barras-Werner-JAR} and Nipkow \cite{Nipkow-JAR01}.
-*}
+\<close>
 
 lemma liftE_length [simp]: "\<parallel>\<up>\<^sub>e n k \<Gamma>\<parallel> = \<parallel>\<Gamma>\<parallel>"
   by (induct \<Gamma>) simp_all
@@ -269,9 +269,9 @@ lemma substT_substT:
   done
 
 
-subsection {* Well-formedness *}
+subsection \<open>Well-formedness\<close>
 
-text {*
+text \<open>
 \label{sec:wf}
 The subtyping and typing judgements to be defined in \secref{sec:subtyping}
 and \secref{sec:typing} may only operate on types and contexts that
@@ -279,7 +279,7 @@ are well-formed. Intuitively, a type @{term T} is well-formed with respect to a
 context @{term \<Gamma>}, if all variables occurring in it are defined in @{term \<Gamma>}.
 More precisely, if @{term T} contains a type variable @{term "TVar i"}, then
 the @{term i}th element of @{term \<Gamma>} must exist and have the form @{term "TVarB U"}.
-*}
+\<close>
 
 inductive
   well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f _" [50, 50] 50)
@@ -289,10 +289,10 @@ where
 | wf_arrow: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<rightarrow> U"
 | wf_all: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> TVarB T \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f (\<forall><:T. U)"
 
-text {*
+text \<open>
 A context @{term "\<Gamma>"} is well-formed, if all types occurring in it only refer to type variables
 declared ``further to the right'':
-*}
+\<close>
 
 inductive
   well_formedE :: "env \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f" [50] 50)
@@ -302,12 +302,12 @@ where
 | wf_Nil: "[] \<turnstile>\<^sub>w\<^sub>f"
 | wf_Cons: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
 
-text {*
-The judgement @{text "\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B"}, which denotes well-formedness of the binding @{term B}
-with respect to context @{term \<Gamma>}, is just an abbreviation for @{text "\<Gamma> \<turnstile>\<^sub>w\<^sub>f type_ofB B"}.
+text \<open>
+The judgement \<open>\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B\<close>, which denotes well-formedness of the binding @{term B}
+with respect to context @{term \<Gamma>}, is just an abbreviation for \<open>\<Gamma> \<turnstile>\<^sub>w\<^sub>f type_ofB B\<close>.
 We now present a number of properties of the well-formedness judgements that will be used
 in the proofs in the following sections.
-*}
+\<close>
 
 inductive_cases well_formed_cases:
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f TVar i"
@@ -334,20 +334,20 @@ lemma map_is_TVarb:
   apply simp_all
   done
 
-text {*
+text \<open>
 A type that is well-formed in a context @{term \<Gamma>} is also well-formed in another context
 @{term \<Gamma>'} that contains type variable bindings at the same positions as @{term \<Gamma>}:
-*}
+\<close>
 
 lemma wf_equallength:
   assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
   shows "map is_TVarB \<Gamma>' = map is_TVarB \<Gamma> \<Longrightarrow> \<Gamma>' \<turnstile>\<^sub>w\<^sub>f T" using H
   by (induct arbitrary: \<Gamma>') (auto intro: well_formed.intros dest: map_is_TVarb)
 
-text {*
+text \<open>
 A well-formed context of the form @{term "\<Delta> @ B \<Colon> \<Gamma>"} remains well-formed if we replace
 the binding @{term B} by another well-formed binding @{term B'}:
-*}
+\<close>
 
 lemma wfE_replace:
   "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f\<^sub>B B' \<Longrightarrow> is_TVarB B' = is_TVarB B \<Longrightarrow>
@@ -372,10 +372,10 @@ lemma wfE_replace:
   apply simp
   done
 
-text {*
+text \<open>
 The following weakening lemmas can easily be proved by structural induction on
 types and contexts:
-*}
+\<close>
 
 lemma wf_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
@@ -428,9 +428,9 @@ lemma wfE_weaken: "\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrighta
   apply simp
   done
 
-text {*
-Intuitively, lemma @{text wf_weaken} states that a type @{term T} which is well-formed
-in a context is still well-formed in a larger context, whereas lemma @{text wfE_weaken}
+text \<open>
+Intuitively, lemma \<open>wf_weaken\<close> states that a type @{term T} which is well-formed
+in a context is still well-formed in a larger context, whereas lemma \<open>wfE_weaken\<close>
 states that a well-formed context remains well-formed when extended with a
 well-formed binding. Owing to the encoding of variables using de Bruijn
 indices, the statements of the above lemmas involve additional lifting functions.
@@ -441,7 +441,7 @@ a type @{term T} stored at position @{term i} in an environment @{term \<Gamma>}
 environment, as opposed to the smaller environment consisting only of the entries in
 @{term \<Gamma>} at positions greater than @{term i}, we need to increment the indices of all
 free type variables in @{term T} by @{term "Suc i"}:
-*}
+\<close>
 
 lemma wf_liftB:
   assumes H: "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"
@@ -459,10 +459,10 @@ lemma wf_liftB:
   apply simp
   done
 
-text {*
+text \<open>
 We also need lemmas stating that substitution of well-formed types preserves the well-formedness
 of types and contexts:
-*}
+\<close>
 
 theorem wf_subst:
   "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U \<Longrightarrow> \<Delta>[0 \<mapsto>\<^sub>\<tau> U]\<^sub>e @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f T[\<parallel>\<Delta>\<parallel> \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau>"
@@ -519,12 +519,12 @@ theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f 
   done
 
 
-subsection {* Subtyping *}
+subsection \<open>Subtyping\<close>
 
-text {*
+text \<open>
 \label{sec:subtyping}
-We now come to the definition of the subtyping judgement @{text "\<Gamma> \<turnstile> T <: U"}.
-*}
+We now come to the definition of the subtyping judgement \<open>\<Gamma> \<turnstile> T <: U\<close>.
+\<close>
 
 inductive
   subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [50, 50, 50] 50)
@@ -537,16 +537,16 @@ where
 | SA_all: "\<Gamma> \<turnstile> T\<^sub>1 <: S\<^sub>1 \<Longrightarrow> TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> S\<^sub>2 <: T\<^sub>2 \<Longrightarrow>
     \<Gamma> \<turnstile> (\<forall><:S\<^sub>1. S\<^sub>2) <: (\<forall><:T\<^sub>1. T\<^sub>2)"
 
-text {*
-The rules @{text SA_Top} and @{text SA_refl_TVar}, which appear at the leaves of
+text \<open>
+The rules \<open>SA_Top\<close> and \<open>SA_refl_TVar\<close>, which appear at the leaves of
 the derivation tree for a judgement @{term "\<Gamma> \<turnstile> T <: U"}, contain additional
 side conditions ensuring the well-formedness of the contexts and types involved.
-In order for the rule @{text SA_trans_TVar} to be applicable, the context @{term \<Gamma>}
+In order for the rule \<open>SA_trans_TVar\<close> to be applicable, the context @{term \<Gamma>}
 must be of the form \mbox{@{term "\<Gamma>\<^sub>1 @ B \<Colon> \<Gamma>\<^sub>2"}}, where @{term "\<Gamma>\<^sub>1"} has the length @{term i}.
 Since the indices of variables in @{term B} can only refer to variables defined in
 @{term "\<Gamma>\<^sub>2"}, they have to be incremented by @{term "Suc i"} to ensure that they point
-to the right variables in the larger context @{text \<Gamma>}.
-*}
+to the right variables in the larger context \<open>\<Gamma>\<close>.
+\<close>
 
 lemma wf_subtype_env:
   assumes PQ: "\<Gamma> \<turnstile> P <: Q"
@@ -569,29 +569,29 @@ lemma wf_subtypeE:
   apply (rule wf_subtype [OF H, THEN conjunct2])
   done
 
-text {*
+text \<open>
 By induction on the derivation of @{term "\<Gamma> \<turnstile> T <: U"}, it can easily be shown
 that all types and contexts occurring in a subtyping judgement must be well-formed:
-*}
+\<close>
 
 lemma wf_subtype_conj:
   "\<Gamma> \<turnstile> T <: U \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f U"
   by (erule wf_subtypeE) iprover
 
-text {*
+text \<open>
 By induction on types, we can prove that the subtyping relation is reflexive:
-*}
+\<close>
 
 lemma subtype_refl: \<comment> \<open>A.1\<close>
   "\<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T \<Longrightarrow> \<Gamma> \<turnstile> T <: T"
   by (induct T arbitrary: \<Gamma>) (blast intro:
     subtyping.intros wf_Nil wf_TVarB elim: well_formed_cases)+
 
-text {*
+text \<open>
 The weakening lemma for the subtyping relation is proved in two steps:
 by induction on the derivation of the subtyping relation, we first prove
 that inserting a single type into the context preserves subtyping:
-*}
+\<close>
 
 lemma subtype_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> P <: Q"
@@ -641,14 +641,14 @@ next
   show ?case by simp (iprover intro: subtyping.SA_all)
 qed
 
-text {*
-All cases are trivial, except for the @{text SA_trans_TVar} case, which
+text \<open>
+All cases are trivial, except for the \<open>SA_trans_TVar\<close> case, which
 requires a case distinction on whether the index of the variable is smaller
 than @{term "\<parallel>\<Delta>\<parallel>"}.
 The stronger result that appending a new context @{term \<Delta>} to a context
 @{term \<Gamma>} preserves subtyping can be proved by induction on @{term \<Delta>},
 using the previous result in the induction step:
-*}
+\<close>
 
 lemma subtype_weaken': \<comment> \<open>A.2\<close>
   "\<Gamma> \<turnstile> P <: Q \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 Q"
@@ -660,11 +660,11 @@ lemma subtype_weaken': \<comment> \<open>A.2\<close>
   apply simp_all
   done
 
-text {*
+text \<open>
 An unrestricted transitivity rule has the disadvantage that it can
 be applied in any situation. In order to make the above definition of the
-subtyping relation {\it syntax-directed}, the transitivity rule @{text "SA_trans_TVar"}
-is restricted to the case where the type on the left-hand side of the @{text "<:"}
+subtyping relation {\it syntax-directed}, the transitivity rule \<open>SA_trans_TVar\<close>
+is restricted to the case where the type on the left-hand side of the \<open><:\<close>
 operator is a variable. However, the unrestricted transitivity rule
 can be derived from this definition.
 In order for the proof to go through, we have to simultaneously prove
@@ -674,7 +674,7 @@ is on the size of the type @{term Q}, whereas the two inner inductions for
 proving transitivity and narrowing are on the derivation of the
 subtyping judgements. The transitivity property is needed in the proof of
 narrowing, which is by induction on the derivation of \mbox{@{term "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> M <: N"}}.
-In the case corresponding to the rule @{text SA_trans_TVar}, we must prove
+In the case corresponding to the rule \<open>SA_trans_TVar\<close>, we must prove
 \mbox{@{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> TVar i <: T"}}. The only interesting case
 is the one where @{term "i = \<parallel>\<Delta>\<parallel>"}. By induction hypothesis, we know that
 @{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (i+1) 0 Q <: T"} and
@@ -684,8 +684,8 @@ By assumption, we have @{term "\<Gamma> \<turnstile> P <: Q"} and hence
 Since @{term "\<up>\<^sub>\<tau> (i+1) 0 Q"} has the same size as @{term Q}, we can use
 the transitivity property, which yields
 @{term "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (i+1) 0 P <: T"}. The claim then follows
-easily by an application of @{text SA_trans_TVar}.
-*}
+easily by an application of \<open>SA_trans_TVar\<close>.
+\<close>
 
 lemma subtype_trans: \<comment> \<open>A.3\<close>
   "\<Gamma> \<turnstile> S <: Q \<Longrightarrow> \<Gamma> \<turnstile> Q <: T \<Longrightarrow> \<Gamma> \<turnstile> S <: T"
@@ -773,7 +773,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
           case True
           from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
             by (auto elim!: wf_subtypeE)
-          with `\<Gamma> \<turnstile> P <: Q`
+          with \<open>\<Gamma> \<turnstile> P <: Q\<close>
           have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
             by (rule subtype_weaken')
           with SA_trans_TVar True False have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc \<parallel>\<Delta>\<parallel>) 0 P <: T"
@@ -798,11 +798,11 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
   }
 qed
 
-text {*
+text \<open>
 In the proof of the preservation theorem presented in \secref{sec:evaluation},
 we will also need a substitution theorem, which is proved by
 induction on the subtyping derivation:
-*}
+\<close>
 
 lemma substT_subtype: \<comment> \<open>A.10\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> S <: T"
@@ -941,12 +941,12 @@ lemma subst_subtype:
   done
 
 
-subsection {* Typing *}
+subsection \<open>Typing\<close>
 
-text {*
+text \<open>
 \label{sec:typing}
-We are now ready to give a definition of the typing judgement @{text "\<Gamma> \<turnstile> t : T"}.
-*}
+We are now ready to give a definition of the typing judgement \<open>\<Gamma> \<turnstile> t : T\<close>.
+\<close>
 
 inductive
   typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"    ("_ \<turnstile> _ : _" [50, 50, 50] 50)
@@ -959,15 +959,15 @@ where
     \<Gamma> \<turnstile> t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>"
 | T_Sub: "\<Gamma> \<turnstile> t : S \<Longrightarrow> \<Gamma> \<turnstile> S <: T \<Longrightarrow> \<Gamma> \<turnstile> t : T"
 
-text {*
-Note that in the rule @{text T_Var}, the indices of the type @{term U} looked up in
+text \<open>
+Note that in the rule \<open>T_Var\<close>, the indices of the type @{term U} looked up in
 the context @{term \<Gamma>} need to be incremented in order for the type to be well-formed
-with respect to @{term \<Gamma>}. In the rule @{text T_Abs}, the type @{term "T\<^sub>2"} of the
-abstraction body @{term "t\<^sub>2"} may not contain the variable with index @{text 0},
+with respect to @{term \<Gamma>}. In the rule \<open>T_Abs\<close>, the type @{term "T\<^sub>2"} of the
+abstraction body @{term "t\<^sub>2"} may not contain the variable with index \<open>0\<close>,
 since it is a term variable. To compensate for the disappearance of the context
 element @{term "VarB T\<^sub>1"} in the conclusion of thy typing rule, the indices of all
-free type variables in @{term "T\<^sub>2"} have to be decremented by @{text 1}.
-*}
+free type variables in @{term "T\<^sub>2"} have to be decremented by \<open>1\<close>.
+\<close>
 
 theorem wf_typeE1:
   assumes H: "\<Gamma> \<turnstile> t : T"
@@ -1005,17 +1005,17 @@ theorem wf_typeE2:
   apply assumption
   done
 
-text {*
+text \<open>
 Like for the subtyping judgement, we can again prove that all types and contexts
 involved in a typing judgement are well-formed:
-*}
+\<close>
 lemma wf_type_conj: "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<and> \<Gamma> \<turnstile>\<^sub>w\<^sub>f T"
   by (frule wf_typeE1, drule wf_typeE2) iprover
 
-text {*
+text \<open>
 The narrowing theorem for the typing judgement states that replacing the type
 of a variable in the context by a subtype preserves typability:
-*}
+\<close>
 
 lemma narrow_type: \<comment> \<open>A.7\<close>
   assumes H: "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile> t : T"
@@ -1066,14 +1066,14 @@ lemma Abs_type: \<comment> \<open>A.13(1)\<close>
   using H
 proof (induct \<Gamma> "\<lambda>:S. s" T arbitrary: U U' S s P)
   case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
-  from `\<Gamma> \<turnstile> T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U \<rightarrow> U'`
+  from \<open>\<Gamma> \<turnstile> T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U \<rightarrow> U'\<close>
   obtain ty1: "\<Gamma> \<turnstile> U <: T\<^sub>1" and ty2: "\<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U'"
     by cases simp_all
-  from ty1 `VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2` ty2
+  from ty1 \<open>VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2\<close> ty2
   show ?case by (rule T_Abs)
 next
   case (T_Sub \<Gamma> S' T)
-  from `\<Gamma> \<turnstile> S' <: T` and `\<Gamma> \<turnstile> T <: U \<rightarrow> U'`
+  from \<open>\<Gamma> \<turnstile> S' <: T\<close> and \<open>\<Gamma> \<turnstile> T <: U \<rightarrow> U'\<close>
   have "\<Gamma> \<turnstile> S' <: U \<rightarrow> U'" by (rule subtype_trans(1))
   then show ?case
     by (rule T_Sub) (rule T_Sub(5))
@@ -1094,16 +1094,16 @@ lemma TAbs_type: \<comment> \<open>A.13(2)\<close>
   using H
 proof (induct \<Gamma> "\<lambda><:S. s" T arbitrary: U U' S s P)
   case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
-  from `\<Gamma> \<turnstile> (\<forall><:T\<^sub>1. T\<^sub>2) <: (\<forall><:U. U')`
+  from \<open>\<Gamma> \<turnstile> (\<forall><:T\<^sub>1. T\<^sub>2) <: (\<forall><:U. U')\<close>
   obtain ty1: "\<Gamma> \<turnstile> U <: T\<^sub>1" and ty2: "TVarB U \<Colon> \<Gamma> \<turnstile> T\<^sub>2 <: U'"
     by cases simp_all
-  from `TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2`
+  from \<open>TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2\<close>
   have "TVarB U \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2" using ty1
     by (rule narrow_type [of "[]", simplified])
   with ty1 show ?case using ty2 by (rule T_TAbs)
 next
   case (T_Sub \<Gamma> S' T)
-  from `\<Gamma> \<turnstile> S' <: T` and `\<Gamma> \<turnstile> T <: (\<forall><:U. U')`
+  from \<open>\<Gamma> \<turnstile> S' <: T\<close> and \<open>\<Gamma> \<turnstile> T <: (\<forall><:U. U')\<close>
   have "\<Gamma> \<turnstile> S' <: (\<forall><:U. U')" by (rule subtype_trans(1))
   then show ?case
     by (rule T_Sub) (rule T_Sub(5))
@@ -1118,10 +1118,10 @@ lemma TAbs_type':
 
 lemma T_eq: "\<Gamma> \<turnstile> t : T \<Longrightarrow> T = T' \<Longrightarrow> \<Gamma> \<turnstile> t : T'" by simp
 
-text {*
+text \<open>
 The weakening theorem states that inserting a binding @{term B}
 does not affect typing:
-*}
+\<close>
 
 lemma type_weaken:
   assumes H: "\<Delta> @ \<Gamma> \<turnstile> t : T"
@@ -1163,10 +1163,10 @@ lemma type_weaken:
   apply simp+
   done
 
-text {*
+text \<open>
 We can strengthen this result, so as to mean that concatenating a new context
 @{term \<Delta>} to the context @{term \<Gamma>} preserves typing:
-*}
+\<close>
 
 lemma type_weaken': \<comment> \<open>A.5(6)\<close>
   "\<Gamma> \<turnstile> t : T \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<Longrightarrow> \<Delta> @ \<Gamma> \<turnstile> \<up> \<parallel>\<Delta>\<parallel> 0 t : \<up>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T"
@@ -1179,16 +1179,16 @@ lemma type_weaken': \<comment> \<open>A.5(6)\<close>
   apply simp+
   done
 
-text {*
+text \<open>
 This property is proved by structural induction on the context @{term \<Delta>},
 using the previous result in the induction step. In the proof of the preservation
 theorem, we will need two substitution theorems for term and type variables,
 both of which are proved by induction on the typing derivation.
 Since term and type variables are stored in the same context, we again have to
-decrement the free type variables in @{term \<Delta>} and @{term T} by @{text 1}
+decrement the free type variables in @{term \<Delta>} and @{term T} by \<open>1\<close>
 in the substitution rule for term variables in order to compensate for the
 disappearance of the variable.
-*}
+\<close>
 
 theorem subst_type: \<comment> \<open>A.8\<close>
   assumes H: "\<Delta> @ VarB U \<Colon> \<Gamma> \<turnstile> t : T"
@@ -1304,14 +1304,14 @@ theorem substT_type: \<comment> \<open>A.11\<close>
   done
 
 
-subsection {* Evaluation *}
+subsection \<open>Evaluation\<close>
 
-text {*
+text \<open>
 \label{sec:evaluation}
 For the formalization of the evaluation strategy, it is useful to first define
 a set of {\it canonical values} that are not evaluated any further. The canonical
 values of call-by-value \fsub{} are exactly the abstractions over term and type variables:
-*}
+\<close>
 
 inductive_set
   "value" :: "trm set"
@@ -1319,9 +1319,9 @@ where
   Abs: "(\<lambda>:T. t) \<in> value"
 | TAbs: "(\<lambda><:T. t) \<in> value"
 
-text {*
+text \<open>
 The notion of a @{term value} is now used in the defintion of the evaluation
-relation \mbox{@{text "t \<longmapsto> t'"}}. There are several ways for defining this evaluation
+relation \mbox{\<open>t \<longmapsto> t'\<close>}. There are several ways for defining this evaluation
 relation: Aydemir et al.\ \cite{PoplMark} advocate the use of {\it evaluation
 contexts} that allow to separate the description of the ``immediate'' reduction rules,
 i.e.\ $\beta$-reduction, from the description of the context in which these reductions
@@ -1331,7 +1331,7 @@ We will take a closer look at this style of presentation in section
 approach: both the ``immediate'' reductions and the reduction context are described
 within the same inductive definition, where the context is described by additional
 congruence rules.
-*}
+\<close>
 
 inductive
   eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<longmapsto>" 50)
@@ -1342,9 +1342,9 @@ where
 | E_App2: "v \<in> value \<Longrightarrow> t \<longmapsto> t' \<Longrightarrow> v \<bullet> t \<longmapsto> v \<bullet> t'"
 | E_TApp: "t \<longmapsto> t' \<Longrightarrow> t \<bullet>\<^sub>\<tau> T \<longmapsto> t' \<bullet>\<^sub>\<tau> T"
 
-text {*
-Here, the rules @{text E_Abs} and @{text E_TAbs} describe the ``immediate'' reductions,
-whereas @{text E_App1}, @{text E_App2}, and @{text E_TApp} are additional congruence
+text \<open>
+Here, the rules \<open>E_Abs\<close> and \<open>E_TAbs\<close> describe the ``immediate'' reductions,
+whereas \<open>E_App1\<close>, \<open>E_App2\<close>, and \<open>E_TApp\<close> are additional congruence
 rules describing reductions in a context. The most important theorems of this section
 are the {\it preservation} theorem, stating that the reduction of a well-typed term
 does not change its type, and the {\it progress} theorem, stating that reduction of
@@ -1353,22 +1353,22 @@ term @{term t} is either a value, or there is a term @{term t'} to which @{term 
 can be reduced. The preservation theorem
 is proved by induction on the derivation of @{term "\<Gamma> \<turnstile> t : T"}, followed by a case
 distinction on the last rule used in the derivation of @{term "t \<longmapsto> t'"}.
-*}
+\<close>
 
 theorem preservation: \<comment> \<open>A.20\<close>
   assumes H: "\<Gamma> \<turnstile> t : T"
   shows "t \<longmapsto> t' \<Longrightarrow> \<Gamma> \<turnstile> t' : T" using H
 proof (induct arbitrary: t')
   case (T_Var \<Gamma> i U T t')
-  from `Var i \<longmapsto> t'`
+  from \<open>Var i \<longmapsto> t'\<close>
   show ?case by cases
 next
   case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 t')
-  from `(\<lambda>:T\<^sub>1. t\<^sub>2) \<longmapsto> t'`
+  from \<open>(\<lambda>:T\<^sub>1. t\<^sub>2) \<longmapsto> t'\<close>
   show ?case by cases
 next
   case (T_App \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2 t')
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t'`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t'\<close>
   show ?case
   proof cases
     case (E_Abs T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
@@ -1377,7 +1377,7 @@ next
       where T\<^sub>1\<^sub>1: "\<Gamma> \<turnstile> T\<^sub>1\<^sub>1 <: T\<^sub>1\<^sub>1'"
       and t\<^sub>1\<^sub>2: "VarB T\<^sub>1\<^sub>1' \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : S'"
       and S': "\<Gamma> \<turnstile> S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau> <: T\<^sub>1\<^sub>2" by (rule Abs_type' [simplified]) blast
-    from `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
+    from \<open>\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1\<close>
     have "\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1'" using T\<^sub>1\<^sub>1 by (rule T_Sub)
     with t\<^sub>1\<^sub>2 have "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto> t\<^sub>2] : S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
       by (rule subst_type [where \<Delta>="[]", simplified])
@@ -1385,14 +1385,14 @@ next
     with E_Abs show ?thesis by simp
   next
     case (E_App1 t'')
-    from `t\<^sub>1 \<longmapsto> t''`
+    from \<open>t\<^sub>1 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2" by (rule T_App)
-    hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2" using `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
+    hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2" using \<open>\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1\<close>
       by (rule typing.T_App)
     with E_App1 show ?thesis by simp
   next
     case (E_App2 t'')
-    from `t\<^sub>2 \<longmapsto> t''`
+    from \<open>t\<^sub>2 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : T\<^sub>1\<^sub>1" by (rule T_App)
     with T_App(1) have "\<Gamma> \<turnstile> t\<^sub>1 \<bullet> t'' : T\<^sub>1\<^sub>2"
       by (rule typing.T_App)
@@ -1400,11 +1400,11 @@ next
   qed
 next
   case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 t')
-  from `(\<lambda><:T\<^sub>1. t\<^sub>2) \<longmapsto> t'`
+  from \<open>(\<lambda><:T\<^sub>1. t\<^sub>2) \<longmapsto> t'\<close>
   show ?case by cases
 next
   case (T_TApp \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 t')
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t'`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t'\<close>
   show ?case
   proof cases
     case (E_TAbs T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
@@ -1418,27 +1418,27 @@ next
     with E_TAbs show ?thesis by simp
   next
     case (E_TApp t'')
-    from `t\<^sub>1 \<longmapsto> t''`
+    from \<open>t\<^sub>1 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2)" by (rule T_TApp)
-    hence "\<Gamma> \<turnstile> t'' \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>" using `\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1`
+    hence "\<Gamma> \<turnstile> t'' \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>" using \<open>\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1\<close>
       by (rule typing.T_TApp)
     with E_TApp show ?thesis by simp
   qed
 next
   case (T_Sub \<Gamma> t S T t')
-  from `t \<longmapsto> t'`
+  from \<open>t \<longmapsto> t'\<close>
   have "\<Gamma> \<turnstile> t' : S" by (rule T_Sub)
-  then show ?case using `\<Gamma> \<turnstile> S <: T`
+  then show ?case using \<open>\<Gamma> \<turnstile> S <: T\<close>
     by (rule typing.T_Sub)
 qed
 
-text {*
+text \<open>
 The progress theorem is also proved by induction on the derivation of
 @{term "[] \<turnstile> t : T"}. In the induction steps, we need the following two lemmas
 about {\it canonical forms}
 stating that closed values of types @{term "T\<^sub>1 \<rightarrow> T\<^sub>2"} and @{term "\<forall><:T\<^sub>1. T\<^sub>2"}
 must be abstractions over term and type variables, respectively.
-*}
+\<close>
 
 lemma Fun_canonical: \<comment> \<open>A.14(1)\<close>
   assumes ty: "[] \<turnstile> v : T\<^sub>1 \<rightarrow> T\<^sub>2"
@@ -1448,15 +1448,15 @@ proof (induct "[]::env" v "T\<^sub>1 \<rightarrow> T\<^sub>2" arbitrary: T\<^sub
   show ?case by iprover
 next
   case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 T\<^sub>1 T\<^sub>2)
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1 T\<^sub>2')
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_Sub t S T\<^sub>1 T\<^sub>2)
-  from `[] \<turnstile> S <: T\<^sub>1 \<rightarrow> T\<^sub>2`
+  from \<open>[] \<turnstile> S <: T\<^sub>1 \<rightarrow> T\<^sub>2\<close>
   obtain S\<^sub>1 S\<^sub>2 where S: "S = S\<^sub>1 \<rightarrow> S\<^sub>2"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+
@@ -1467,18 +1467,18 @@ lemma TyAll_canonical: \<comment> \<open>A.14(3)\<close>
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda><:S. t)" using ty
 proof (induct "[]::env" v "\<forall><:T\<^sub>1. T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2)
   case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 T\<^sub>1 T\<^sub>2)
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case T_TAbs
   show ?case by iprover
 next
   case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1 T\<^sub>2')
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_Sub t S T\<^sub>1 T\<^sub>2)
-  from `[] \<turnstile> S <: (\<forall><:T\<^sub>1. T\<^sub>2)`
+  from \<open>[] \<turnstile> S <: (\<forall><:T\<^sub>1. T\<^sub>2)\<close>
   obtain S\<^sub>1 S\<^sub>2 where S: "S = (\<forall><:S\<^sub>1. S\<^sub>2)"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+

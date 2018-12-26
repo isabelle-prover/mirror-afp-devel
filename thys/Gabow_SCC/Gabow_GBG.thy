@@ -1,4 +1,4 @@
-section {* Lasso Finding Algorithm for Generalized B\"uchi Graphs \label{sec:gbg}*}
+section \<open>Lasso Finding Algorithm for Generalized B\"uchi Graphs \label{sec:gbg}\<close>
 theory Gabow_GBG
 imports 
   Gabow_Skeleton 
@@ -20,12 +20,12 @@ proof -
   show ?thesis using assms(2) by unfold_locales
 qed
 
-text {*
+text \<open>
   We implement an algorithm that computes witnesses for the 
   non-emptiness of Generalized B\"uchi Graphs (GBG).
-*}
+\<close>
 
-section {* Specification *}
+section \<open>Specification\<close>
 context igb_graph
 begin
   definition ce_correct 
@@ -53,9 +53,9 @@ begin
 
 end
 
-section {* Invariant Extension *}
+section \<open>Invariant Extension\<close>
 
-text {* Extension of the outer invariant: *}
+text \<open>Extension of the outer invariant:\<close>
 context igb_fr_graph
 begin
   definition no_acc_over
@@ -73,7 +73,7 @@ begin
   
 end
 
-text {* Extension of the inner invariant: *}
+text \<open>Extension of the inner invariant:\<close>
 locale fgl_invar_loc = 
   invar_loc G v0 D0 p D pE 
   + igb_graph G
@@ -93,7 +93,7 @@ end
 definition (in igb_graph) "fgl_invar v0 D0 \<equiv> 
   \<lambda>(brk, p, D, pE). fgl_invar_loc G v0 D0 brk p D pE"
 
-section {* Definition of the Lasso-Finding Algorithm*}
+section \<open>Definition of the Lasso-Finding Algorithm\<close>
 
 context igb_fr_graph
 begin
@@ -145,7 +145,7 @@ begin
     }"
 end
 
-section {* Invariant Preservation *}
+section \<open>Invariant Preservation\<close>
 
 
 context igb_fr_graph
@@ -201,7 +201,7 @@ begin
       unfolding fgl_invar_part_def
       apply (simp split: prod.splits add: initial_def)
       apply unfold_locales
-      using `v0\<notin>D0`
+      using \<open>v0\<notin>D0\<close>
       using AUX1 no_acc unfolding no_acc_over_def apply blast
       by simp
   qed
@@ -235,15 +235,15 @@ begin
     shows "fgl_invar_part (Some (\<Union>set (butlast p), last p), p, D, pE)"
   proof -
     from INV interpret invar_loc G v0 D0 p D pE by (simp add: invar_def)
-    txt {* The last collapsed node on the path contains states from all 
+    txt \<open>The last collapsed node on the path contains states from all 
       accepting sets.
       As it is strongly connected and reachable, we get a counter-example. 
-      Here, we explicitely construct the lasso. *}
+      Here, we explicitely construct the lasso.\<close>
 
     let ?Er = "E \<inter> (\<Union>set (butlast p) \<times> UNIV)"
 
-    txt {* We choose a node in the last Cnode, that is reachable only using
-      former Cnodes. *}
+    txt \<open>We choose a node in the last Cnode, that is reachable only using
+      former Cnodes.\<close>
 
     obtain w where "(v0,w)\<in>?Er\<^sup>*" "w\<in>last p"
     proof cases
@@ -258,20 +258,20 @@ begin
       hence "Suc (length p - 2) < length p" by auto
       from p_connected'[OF this] obtain u v where
         UIP: "u\<in>p!(length p - 2)" and VIP: "v\<in>p!(length p - 1)" and "(u,v)\<in>lvE"
-        using `length p > 1` by auto
+        using \<open>length p > 1\<close> by auto
       from root_v0 have V0IP: "v0\<in>p!0" by (cases p) auto
       
       from VIP have "v\<in>last p" by (cases p rule: rev_cases) auto
 
-      from pathI[OF V0IP UIP] `length p > 1` have 
+      from pathI[OF V0IP UIP] \<open>length p > 1\<close> have 
         "(v0,u)\<in>(lvE \<inter> (\<Union>set (butlast p)) \<times> (\<Union>set (butlast p)))\<^sup>*"
         (is "_ \<in> \<dots>\<^sup>*")  
         by (simp add: path_seg_butlast)
       also have "\<dots> \<subseteq> ?Er" using lvE_ss_E by auto
       finally (rtrancl_mono_mp[rotated]) have "(v0,u)\<in>?Er\<^sup>*" .
-      also note `(u,v)\<in>lvE` UIP hence "(u,v)\<in>?Er" using lvE_ss_E `length p > 1` 
+      also note \<open>(u,v)\<in>lvE\<close> UIP hence "(u,v)\<in>?Er" using lvE_ss_E \<open>length p > 1\<close> 
         apply (auto simp: Bex_def in_set_conv_nth)
-        by (metis One_nat_def Suc_lessE `Suc (length p - 2) < length p` 
+        by (metis One_nat_def Suc_lessE \<open>Suc (length p - 2) < length p\<close> 
           diff_Suc_1 length_butlast nth_butlast)
       finally show ?thesis by (rule that) fact 
     qed
@@ -288,8 +288,8 @@ begin
 
     have [simp]: "last p = p!(length p - 1)" by (cases p rule: rev_cases) auto
 
-    txt {* From that node, we construct a lasso by inductively appending a path
-      for each accepting set *}
+    txt \<open>From that node, we construct a lasso by inductively appending a path
+      for each accepting set\<close>
     {
       fix na
       assume na_def: "na = num_acc"
@@ -305,11 +305,11 @@ begin
         from NONTRIV obtain u v 
           where "(u,v)\<in>lvE \<inter> last p \<times> last p" "u\<in>last p" "v\<in>last p"
           by auto
-        from cnode_connectedI `w\<in>last p` `u\<in>last p` 
+        from cnode_connectedI \<open>w\<in>last p\<close> \<open>u\<in>last p\<close> 
         have "(w,u)\<in>(lvE \<inter> last p \<times> last p)\<^sup>*"
           by auto
-        also note `(u,v)\<in>lvE \<inter> last p \<times> last p`
-        also (rtrancl_into_trancl1) from cnode_connectedI `v\<in>last p` `w\<in>last p` 
+        also note \<open>(u,v)\<in>lvE \<inter> last p \<times> last p\<close>
+        also (rtrancl_into_trancl1) from cnode_connectedI \<open>v\<in>last p\<close> \<open>w\<in>last p\<close> 
         have "(v,w)\<in>(lvE \<inter> last p \<times> last p)\<^sup>*"
           by auto
         finally obtain pl where "pl\<noteq>[]" "path (lvE \<inter> last p \<times> last p) w pl w"
@@ -325,11 +325,11 @@ begin
           by blast
   
         from Suc.prems obtain v where "v\<in>last p" and "n\<in>acc v" by auto
-        from cnode_connectedI `w\<in>last p` `v\<in>last p` 
+        from cnode_connectedI \<open>w\<in>last p\<close> \<open>v\<in>last p\<close> 
         have "(w,v)\<in>(lvE \<inter> last p \<times> last p)\<^sup>*" by auto
         then obtain pl1 where P1: "path (lvE \<inter> last p \<times> last p) w pl1 v" 
           by (rule rtrancl_is_path)
-        also from cnode_connectedI `w\<in>last p` `v\<in>last p` 
+        also from cnode_connectedI \<open>w\<in>last p\<close> \<open>v\<in>last p\<close> 
         have "(v,w)\<in>(lvE \<inter> last p \<times> last p)\<^sup>*" by auto
         then obtain pl2 where P2: "path (lvE \<inter> last p \<times> last p) v pl2 w"
           by (rule rtrancl_is_path)
@@ -344,7 +344,7 @@ begin
           apply (cases pl, simp_all add: path_cons_conv)
           apply (cases pl1, simp_all add: path_cons_conv)
           done
-        with `n\<in>acc v` have "\<exists>q\<in>set (pl1@pl2@pl). n\<in>acc q" by auto
+        with \<open>n\<in>acc v\<close> have "\<exists>q\<in>set (pl1@pl2@pl). n\<in>acc q" by auto
         ultimately show ?case
           apply (intro exI conjI)
           apply assumption+
@@ -430,12 +430,12 @@ begin
       by (simp_all add: i_def)
 
     have "u\<in>last p'" 
-      using `u\<in>last p` `i<length p` 
+      using \<open>u\<in>last p\<close> \<open>i<length p\<close> 
       unfolding p'_def collapse_aux_def
       apply (simp add: last_drop last_snoc)
       by (metis Misc.last_in_set drop_eq_Nil last_drop not_le)
     moreover have "v\<in>last p'" 
-      using `v\<in>p!i` `i<length p` 
+      using \<open>v\<in>p!i\<close> \<open>i<length p\<close> 
       unfolding p'_def collapse_aux_def
       by (metis UnionI append_Nil Cons_nth_drop_Suc in_set_conv_decomp last_snoc)
     ultimately have "vE p' D pE' \<inter> last p' \<times> last p' \<noteq> {}" 
@@ -488,12 +488,12 @@ begin
       by (simp_all add: i_def)
 
     have "u\<in>last p'" 
-      using `u\<in>last p` `i<length p`
+      using \<open>u\<in>last p\<close> \<open>i<length p\<close>
       unfolding p'_def collapse_aux_def
       apply (simp add: last_drop last_snoc)
       by (metis Misc.last_in_set drop_eq_Nil last_drop leD)
     moreover have "v\<in>last p'" 
-      using `v\<in>p!i` `i<length p` 
+      using \<open>v\<in>p!i\<close> \<open>i<length p\<close> 
       unfolding p'_def collapse_aux_def
       by (metis UnionI append_Nil Cons_nth_drop_Suc in_set_conv_decomp last_snoc)
     ultimately have "vE' \<inter> last p' \<times> last p' \<noteq> {}" 
@@ -502,19 +502,19 @@ begin
     have "p'\<noteq>[]" by (simp add: p'_def collapse_aux_def)
 
     {
-      txt {*
+      txt \<open>
         We show that no visited strongly connected component contains states
-        from all acceptance sets. *}
+        from all acceptance sets.\<close>
       fix w pl
-      txt {* For this, we chose a non-trivial loop inside the visited edges *}
+      txt \<open>For this, we chose a non-trivial loop inside the visited edges\<close>
       assume P: "path vE' w pl w" and NT: "pl\<noteq>[]"
-      txt {* And show that there is one acceptance set disjoint with the nodes
-        of the loop *}
+      txt \<open>And show that there is one acceptance set disjoint with the nodes
+        of the loop\<close>
       have "\<exists>i<num_acc. \<forall>q\<in>set pl. i\<notin>acc q"
       proof cases
         assume "set pl \<inter> last p' = {}" 
           \<comment> \<open>Case: The loop is outside the last Cnode\<close>
-        with path_restrict[OF P] `u\<in>last p'` `v\<in>last p'` have "path lvE w pl w"
+        with path_restrict[OF P] \<open>u\<in>last p'\<close> \<open>v\<in>last p'\<close> have "path lvE w pl w"
           apply -
           apply (drule path_mono[of _ lvE, rotated])
           unfolding vE'_alt
@@ -523,8 +523,8 @@ begin
       next
         assume "set pl \<inter> last p' \<noteq> {}" 
           \<comment> \<open>Case: The loop touches the last Cnode\<close>
-        txt {* Then, the loop must be completely inside the last CNode *}
-        from inv'.loop_in_lastnode[folded vE'_def, OF P `p'\<noteq>[]` this] 
+        txt \<open>Then, the loop must be completely inside the last CNode\<close>
+        from inv'.loop_in_lastnode[folded vE'_def, OF P \<open>p'\<noteq>[]\<close> this] 
         have "w\<in>last p'" "set pl \<subseteq> last p'" .
         with NACC show ?thesis by blast
       qed
@@ -565,25 +565,25 @@ begin
     note defs_fold = vE_push[OF E UIL VNE, folded pE'_def]
 
     {
-      txt {* We show that there still is no loop that contains all accepting
-        nodes. For this, we choose some loop. *}
+      txt \<open>We show that there still is no loop that contains all accepting
+        nodes. For this, we choose some loop.\<close>
       fix w pl
       assume P: "path (insert (u,v) lvE) w pl w" and [simp]: "pl\<noteq>[]"
       have "\<exists>i<num_acc. \<forall>q\<in>set pl. i\<notin>acc q" 
       proof cases
         assume "v\<in>set pl" \<comment> \<open>Case: The newly pushed last cnode is on the loop\<close>
-        txt {* Then the loop is entirely on the last cnode*}
+        txt \<open>Then the loop is entirely on the last cnode\<close>
         with inv'.loop_in_lastnode[unfolded defs_fold, OF P]
         have [simp]: "w=v" and SPL: "set pl = {v}" by auto
-        txt {* However, we then either have that the last cnode is contained in
+        txt \<open>However, we then either have that the last cnode is contained in
           the last but one cnode, or that there is a visited edge inside the
-          last cnode.*}
+          last cnode.\<close>
         from P SPL have "u=v \<or> (v,v)\<in>lvE" 
           apply (cases pl) apply (auto simp: path_cons_conv)
           apply (case_tac list)
           apply (auto simp: path_cons_conv)
           done
-        txt {* Both leads to a contradiction *}
+        txt \<open>Both leads to a contradiction\<close>
         hence False proof
           assume "u=v" \<comment> \<open>This is impossible, as @{text "u"} was on the 
             original path, but @{text "v"} was not\<close>
@@ -597,7 +597,7 @@ begin
       next
         assume A: "v\<notin>set pl" 
           \<comment> \<open>Case: The newly pushed last cnode is not on the loop\<close>
-        txt {* Then, the path lays inside the old visited edges *}
+        txt \<open>Then, the path lays inside the old visited edges\<close>
         have "path lvE w pl w" 
         proof -
           have "w\<in>set pl" using P by (cases pl) (auto simp: path_cons_conv)
@@ -609,11 +609,11 @@ begin
             apply assumption
             done
         qed
-        txt {* And thus, the proposition follows from the invariant on the old
-          state *}
+        txt \<open>And thus, the proposition follows from the invariant on the old
+          state\<close>
         with no_acc show ?thesis 
           apply simp
-          using `pl\<noteq>[]` 
+          using \<open>pl\<noteq>[]\<close> 
           by blast
       qed
     } note AUX_no_acc = this
@@ -646,22 +646,22 @@ begin
       by (simp add: invar_def)
 
     {
-      txt {* We show that there still is no loop that contains all accepting
-        nodes. For this, we choose some loop. *}
+      txt \<open>We show that there still is no loop that contains all accepting
+        nodes. For this, we choose some loop.\<close>
       fix w pl
       assume P: "path (insert (u,v) lvE) w pl w" and [simp]: "pl\<noteq>[]"
       from P have "\<exists>i<num_acc. \<forall>q\<in>set pl. i\<notin>acc q" 
       proof (cases rule: path_edge_rev_cases)
         case no_use \<comment> \<open>Case: The loop does not use the new edge\<close>
-        txt {* The proposition follows from the invariant for the old state *}
+        txt \<open>The proposition follows from the invariant for the old state\<close>
         with no_acc show ?thesis 
           apply simp
-          using `pl\<noteq>[]` 
+          using \<open>pl\<noteq>[]\<close> 
           by blast
       next
         case (split p1 p2) \<comment> \<open>Case: The loop uses the new edge\<close>
-        txt {* As done is closed under transitions, the nodes of the edge have
-          already been visited *}
+        txt \<open>As done is closed under transitions, the nodes of the edge have
+          already been visited\<close>
         from split(2) D_closed_vE_rtrancl 
         have WID: "w\<in>D" 
           using VID by (auto dest!: path_is_rtrancl)
@@ -669,7 +669,7 @@ begin
           apply (cases rule: path_edge_cases)
           apply (auto dest!: path_is_rtrancl)
           done
-        txt {* Which is a contradition to the assumptions *}
+        txt \<open>Which is a contradition to the assumptions\<close>
         with UIL p_not_D have False by (cases p rule: rev_cases) auto
         thus ?thesis ..
       qed
@@ -788,7 +788,7 @@ begin
 
 end
 
-section {* Main Correctness Proof *}
+section \<open>Main Correctness Proof\<close>
 
 context igb_fr_graph
 begin
@@ -829,7 +829,7 @@ begin
 end
 
 section "Emptiness Check"
-text {* Using the lasso-finding algorithm, we can define an emptiness check *}
+text \<open>Using the lasso-finding algorithm, we can define an emptiness check\<close>
 
 context igb_fr_graph
 begin
@@ -882,17 +882,17 @@ begin
 
 end
 
-section {* Refinement *}
-text {*
+section \<open>Refinement\<close>
+text \<open>
   In this section, we refine the lasso finding algorithm to use efficient
   data structures. First, we explicitely keep track of the set of acceptance
   classes for every c-node on the path. Second, we use Gabow's data structure
   to represent the path.
-*}
+\<close>
 
-subsection {* Addition of Explicit Accepting Sets *}
-text {* In a first step, we explicitely keep track of the current set of
-  acceptance classes for every c-node on the path. *}
+subsection \<open>Addition of Explicit Accepting Sets\<close>
+text \<open>In a first step, we explicitely keep track of the current set of
+  acceptance classes for every c-node on the path.\<close>
 
 type_synonym 'a abs_gstate = "nat set list \<times> 'a abs_state"
 type_synonym 'a ce = "('a set \<times> 'a set) option"
@@ -1077,9 +1077,9 @@ begin
     done
 end
 
-subsection {* Refinement to Gabow's Data Structure *}
+subsection \<open>Refinement to Gabow's Data Structure\<close>
 
-subsubsection {* Preliminaries *}
+subsubsection \<open>Preliminaries\<close>
 definition Un_set_drop_impl :: "nat \<Rightarrow> 'a set list \<Rightarrow> 'a set nres"
   \<comment> \<open>Executable version of @{text "\<Union>set (drop i A)"}, using indexing to
   access @{text "A"}\<close>
@@ -1133,7 +1133,7 @@ lemma Un_set_drop_autoref[autoref_rules]:
   by simp
 
 
-subsubsection {* Actual Refinement *}
+subsubsection \<open>Actual Refinement\<close>
 
 type_synonym 'Q gGS = "nat set list \<times> 'Q GS"
 
@@ -1407,7 +1407,7 @@ begin
         apply (auto simp: GS.p_\<alpha>_def)
         apply (drule arg_cong[where f=length])
         using GS_invar.p_\<alpha>_disjoint_sym[OF GS_invar]
-          and PRE `GS.p_\<alpha> (S', B', I', P') = p` idx_of_props(1)[of p v]
+          and PRE \<open>GS.p_\<alpha> (S', B', I', P') = p\<close> idx_of_props(1)[of p v]
         by simp
     } note AUX1 = this
 
@@ -1542,10 +1542,10 @@ begin
       from I_consistent[of v j] have [simp]: "j<length S" "v=S!j" by auto
       
       from B0 have "B!0=0" by simp
-      from `j<last B` have "j<B!(length B - 1)" by (simp add: last_conv_nth)
-      from find_seg_bounds[OF `j<length S`] find_seg_correct[OF `j<length S`]
+      from \<open>j<last B\<close> have "j<B!(length B - 1)" by (simp add: last_conv_nth)
+      from find_seg_bounds[OF \<open>j<length S\<close>] find_seg_correct[OF \<open>j<length S\<close>]
       have "v\<in>seg (find_seg j)" "find_seg j < length B" by auto
-      moreover with `j<B!(length B - 1)` have "find_seg j < length B - 1"
+      moreover with \<open>j<B!(length B - 1)\<close> have "find_seg j < length B - 1"
         (* What follows is an unreadable, auto-generated structured proof
           that replaces the following smt-call:
         by (smt GS.seg_start_def `seg_start (find_seg j) \<le> j`)*)
@@ -1553,16 +1553,16 @@ begin
         have f1: "\<And>x\<^sub>1 x. \<not> (x\<^sub>1::nat) < x\<^sub>1 - x"
           using less_imp_diff_less by blast
         have "j \<le> last B"
-          by (metis `j < last B` less_le)
+          by (metis \<open>j < last B\<close> less_le)
         hence f2: "\<And>x\<^sub>1. \<not> last B < x\<^sub>1 \<or> \<not> x\<^sub>1 \<le> j"
           using f1 by (metis diff_diff_cancel le_trans)
         have "\<And>x\<^sub>1. seg_end x\<^sub>1 \<le> j \<or> \<not> x\<^sub>1 < find_seg j"
-          by (metis `seg_start (find_seg j) \<le> j` calculation(2) 
+          by (metis \<open>seg_start (find_seg j) \<le> j\<close> calculation(2) 
             le_trans seg_end_less_start)
         thus "find_seg j < length B - 1"
           using f1 f2 
-          by (metis GS.seg_start_def `B \<noteq> []` `j < B ! (length B - 1)`
-            `seg_start (find_seg j) \<le> j` calculation(2) diff_diff_cancel 
+          by (metis GS.seg_start_def \<open>B \<noteq> []\<close> \<open>j < B ! (length B - 1)\<close>
+            \<open>seg_start (find_seg j) \<le> j\<close> calculation(2) diff_diff_cancel 
             last_conv_nth nat_neq_iff seg_start_less_end)
       qed
       ultimately show "v\<in>?R" 
@@ -1576,16 +1576,16 @@ begin
         by (auto simp: p_\<alpha>_def map_butlast[symmetric] butlast_upt)
       then obtain j where "j < seg_end i" and "v=S!j"
         by (auto simp: seg_def)
-      hence "j<B!(i+1)" and "i+1 \<le> length B - 1" using `i<length B - 1`
+      hence "j<B!(i+1)" and "i+1 \<le> length B - 1" using \<open>i<length B - 1\<close>
         by (auto simp: seg_end_def last_conv_nth split: if_split_asm)
-      with sorted_nth_mono[OF B_sorted `i+1 \<le> length B - 1`] have "j<last B"
+      with sorted_nth_mono[OF B_sorted \<open>i+1 \<le> length B - 1\<close>] have "j<last B"
         by (auto simp: last_conv_nth)
-      moreover from `j < seg_end i` have "j<length S"
-        by (metis GS.seg_end_def add_diff_inverse_nat `i + 1 \<le> length B - 1`
+      moreover from \<open>j < seg_end i\<close> have "j<length S"
+        by (metis GS.seg_end_def add_diff_inverse_nat \<open>i + 1 \<le> length B - 1\<close>
           add_lessD1 less_imp_diff_less less_le_not_le nat_neq_iff 
           seg_end_bound)
         (*by (smt `i < length B - 1` seg_end_bound)*)
-      with I_consistent `v=S!j` have "I v = Some (STACK j)" by auto
+      with I_consistent \<open>v=S!j\<close> have "I v = Some (STACK j)" by auto
       ultimately show "v\<in>?L"
         by (auto simp: on_stack_less_def)
     }
@@ -1606,7 +1606,7 @@ begin
         by (auto simp: on_stack_ge_def split: option.splits node_state.splits)
 
       from I_consistent[of v j] have [simp]: "j<length S" "v=S!j" by auto
-      hence "v\<in>seg (length B - 1)" using `j\<ge>last B`
+      hence "v\<in>seg (length B - 1)" using \<open>j\<ge>last B\<close>
         by (auto simp: seg_def last_conv_nth seg_start_def seg_end_def)
       thus "v\<in>last p_\<alpha>" by (auto simp: p_\<alpha>_def last_map)
     }
@@ -1619,7 +1619,7 @@ begin
       then obtain j where "v=S!j" "j\<ge>last B" "j<length S"
         by (auto simp: seg_def last_conv_nth seg_start_def seg_end_def)
       with I_consistent have "I v = Some (STACK j)" by simp
-      with `j\<ge>last B` show "v\<in>?L" by (auto simp: on_stack_ge_def)
+      with \<open>j\<ge>last B\<close> show "v\<in>?L" by (auto simp: on_stack_ge_def)
     }
   qed
 
@@ -1816,9 +1816,9 @@ begin
 
 end
 
-section {* Constructing a Lasso from Counterexample *}
+section \<open>Constructing a Lasso from Counterexample\<close>
 
-subsection {* Lassos in GBAs *}
+subsection \<open>Lassos in GBAs\<close>
 
 context igb_fr_graph begin
 
@@ -1859,7 +1859,7 @@ context igb_fr_graph begin
       apply (refine_rcg refine_vcg order_trans[OF find_path_ex_rule])
       apply (clarsimp_all simp: FIN_aux finite_V0)
 
-      using `va\<in>Vl` 1 apply auto []
+      using \<open>va\<in>Vl\<close> 1 apply auto []
 
       apply (auto dest: path_mono[of "E \<inter> Vr \<times> UNIV" E, simplified]) []
       done
@@ -2001,9 +2001,9 @@ proof -
     fix a b
     assume "a\<in>Vl" "b\<in>Vl"
     from NONTRIV obtain u v where E: "(u,v)\<in>(E \<inter> Vl\<times>Vl)" by auto
-    from CONN `a\<in>Vl` E have "(a,u)\<in>(E\<inter>Vl\<times>Vl)\<^sup>*" by auto
+    from CONN \<open>a\<in>Vl\<close> E have "(a,u)\<in>(E\<inter>Vl\<times>Vl)\<^sup>*" by auto
     also note E
-    also (rtrancl_into_trancl1) from CONN `b\<in>Vl` E have "(v,b)\<in>(E\<inter>Vl\<times>Vl)\<^sup>*"
+    also (rtrancl_into_trancl1) from CONN \<open>b\<in>Vl\<close> E have "(v,b)\<in>(E\<inter>Vl\<times>Vl)\<^sup>*"
       by auto
     finally show "(a,b)\<in>(?E)\<^sup>+" using trancl_mono[OF _ E_SS] by auto
   qed
@@ -2060,7 +2060,7 @@ proof -
     have "is_lasso_prpl (pr,p@p')"
       unfolding is_lasso_prpl_def is_lasso_prpl_pre_def
       apply (clarsimp simp: ACC)
-      using PR PL `p\<noteq>[]` by auto
+      using PR PL \<open>p\<noteq>[]\<close> by auto
   } note INV_POST2 = this
 
   show ?thesis

@@ -156,8 +156,8 @@ qed (auto simp: root_free_def)
 (* **************************************************************** *)
 subsection \<open>Real Algebraic Numbers -- Innermost Layer\<close>
 
-text \<open>We represent a real algebraic number @{text \<alpha>} by a tuple (p,l,r):
-    @{text \<alpha>} is the unique root in the interval [l,r]
+text \<open>We represent a real algebraic number \<open>\<alpha>\<close> by a tuple (p,l,r):
+    \<open>\<alpha>\<close> is the unique root in the interval [l,r]
     and l and r have the same sign. We always assume that p is normalized, i.e.,
     p is the unique irreducible and positive content-free polynomial 
     which represents the algebraic number.
@@ -270,13 +270,13 @@ proof -
     case equal
     with bnd have "?l \<le> 0" "?r \<ge> 0" by auto
     hence "l \<le> 0" "r \<ge> 0" by auto
-    with `sgn l = sgn r` have "l = 0" "r = 0" unfolding sgn_rat_def by (auto split: if_splits)
+    with \<open>sgn l = sgn r\<close> have "l = 0" "r = 0" unfolding sgn_rat_def by (auto split: if_splits)
     with rc[unfolded plr]
     show ?thesis by auto
   next
     case greater
     with bnd(1) have "?l < 0" by arith
-    thus ?thesis unfolding `sgn l = sgn r`[symmetric] using greater by simp
+    thus ?thesis unfolding \<open>sgn l = sgn r\<close>[symmetric] using greater by simp
   qed
   from the_unique_root_eqI[OF ur] rc
   show "\<And> y. root_cond plr y \<longleftrightarrow> y = x" by metis
@@ -910,7 +910,7 @@ proof -
         finally have delta: "delta_gt delta ?diff ?DIFF" .
         have "L \<le> l' \<and> r' \<le> R \<and> \<not> (l' \<le> x \<and> x \<le> r') \<and> root_cond (p, l', r') u \<and> sr' = sgn (ipoly p r')"
           by (rule IH, insert delta diff0 tighten(6), auto)
-        with `l \<le> L` `R \<le> r` show ?thesis by auto
+        with \<open>l \<le> L\<close> \<open>R \<le> r\<close> show ?thesis by auto
       qed
     qed
   qed

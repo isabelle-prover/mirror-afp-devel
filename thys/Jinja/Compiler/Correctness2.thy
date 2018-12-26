@@ -3,7 +3,7 @@
     Copyright   TUM 2003
 *)
 
-section {* Correctness of Stage 2 *}
+section \<open>Correctness of Stage 2\<close>
 
 theory Correctness2
 imports "HOL-Library.Sublist" Compiler2
@@ -11,11 +11,11 @@ begin
 
 (*<*)hide_const (open) Throw(*>*)
 
-subsection{* Instruction sequences *}
+subsection\<open>Instruction sequences\<close>
 
-text{* How to select individual instructions and subsequences of
+text\<open>How to select individual instructions and subsequences of
 instructions from a program given the class, method and program
-counter. *}
+counter.\<close>
 
 definition before :: "jvm_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> nat \<Rightarrow> instr list \<Rightarrow> bool"
    ("(_,_,_,_/ \<rhd> _)" [51,0,0,0,51] 50) where
@@ -64,7 +64,7 @@ apply(simp add:before_def compP\<^sub>2_def compMb\<^sub>2_def)
 done
 (*>*)
 
-text{* This lemma executes a single instruction by rewriting: *}
+text\<open>This lemma executes a single instruction by rewriting:\<close>
 
 lemma [simp]:
   "P,C,M,pc \<triangleright> instr \<Longrightarrow>
@@ -78,7 +78,7 @@ done
 (*>*)
 
 
-subsection{* Exception tables *}
+subsection\<open>Exception tables\<close>
 
 definition pcs :: "ex_table \<Rightarrow> nat set"
 where
@@ -277,7 +277,7 @@ lemma match_ex_table_SomeD1:
 (*<*)by(auto elim: match_ex_table_SomeD2)(*>*)
 
 
-subsection{* The correctness proof *}
+subsection\<open>The correctness proof\<close>
 
 (*<*)
 declare nat_add_distrib[simp] caught_def[simp]

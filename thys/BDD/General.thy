@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 USA
 *)
 
-section {* General Lemmas on BDD Abstractions*}
+section \<open>General Lemmas on BDD Abstractions\<close>
 
 theory General imports BinDag begin
 
@@ -507,7 +507,7 @@ next
         case False
         with Node.prems ltTip have "no \<in> set_of rt" 
           by simp
-        with ord_rt * `Dag no low high not` show ?thesis
+        with ord_rt * \<open>Dag no low high not\<close> show ?thesis
           by (rule Node.hyps)
       qed
     qed
@@ -535,7 +535,7 @@ next
         case False
         with Node.prems Tip have "no \<in> set_of lt" 
           by simp
-        with ord_lt * `Dag no low high not` show ?thesis
+        with ord_lt * \<open>Dag no low high not\<close> show ?thesis
           by (rule Node.hyps)
       qed   
     next

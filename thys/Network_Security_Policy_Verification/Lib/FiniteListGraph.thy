@@ -4,17 +4,17 @@ imports
   "Transitive-Closure.Transitive_Closure_List_Impl"
 begin
 
-section {*Specification of a finite graph, implemented by lists*}
+section \<open>Specification of a finite graph, implemented by lists\<close>
 
-text{* A graph @{text "G=(V,E)"} consits of a list of vertices @{term V}, also called nodes, 
+text\<open>A graph \<open>G=(V,E)\<close> consits of a list of vertices @{term V}, also called nodes, 
        and a list of edges @{term E}. The edges are tuples of vertices.
-       Using lists instead of sets, code can be easily created. *}
+       Using lists instead of sets, code can be easily created.\<close>
 
   record 'v list_graph =
     nodesL :: "'v list"
     edgesL :: "('v \<times>'v) list"
 
-text{*Correspondence the FiniteGraph*}
+text\<open>Correspondence the FiniteGraph\<close>
   definition list_graph_to_graph :: "'v list_graph \<Rightarrow> 'v graph" where 
     "list_graph_to_graph G = \<lparr> nodes = set (nodesL G), edges = set (edgesL G) \<rparr>"
 
@@ -27,28 +27,28 @@ text{*Correspondence the FiniteGraph*}
   unfolding list_graph_to_graph_def wf_graph_def wf_list_graph_axioms_def
   by simp
 
-  text{*We say a @{typ "'v list_graph"} is valid if it fulfills the graph axioms and its lists are distinct*}
+  text\<open>We say a @{typ "'v list_graph"} is valid if it fulfills the graph axioms and its lists are distinct\<close>
   definition wf_list_graph::"('v) list_graph \<Rightarrow> bool" where
    "wf_list_graph G = (distinct (nodesL G) \<and> distinct (edgesL G) \<and> wf_list_graph_axioms G)"
 
 
-section{*FiniteListGraph operations*}
+section\<open>FiniteListGraph operations\<close>
 
-  text {* Adds a node to a graph. *}
+  text \<open>Adds a node to a graph.\<close>
   definition add_node :: "'v \<Rightarrow> 'v list_graph \<Rightarrow> 'v list_graph" where 
     "add_node v G = \<lparr> nodesL = (if v \<in> set (nodesL G) then nodesL G else v#nodesL G), edgesL=edgesL G \<rparr>"
 
-  text {* Adds an edge to a graph. *}
+  text \<open>Adds an edge to a graph.\<close>
   definition add_edge :: "'v \<Rightarrow> 'v \<Rightarrow> 'v list_graph \<Rightarrow> 'v list_graph" where 
     "add_edge v v' G = (add_node v (add_node v' G)) \<lparr>edgesL := (if (v, v') \<in> set (edgesL G) then edgesL G else (v, v')#edgesL G) \<rparr>"
 
-  text {* Deletes a node from a graph. Also deletes all adjacent edges. *}
+  text \<open>Deletes a node from a graph. Also deletes all adjacent edges.\<close>
   definition delete_node :: "'v \<Rightarrow> 'v list_graph \<Rightarrow> 'v list_graph" where 
   "delete_node v G = \<lparr> 
     nodesL = remove1 v (nodesL G), edgesL = [(e1,e2) \<leftarrow> (edgesL G). e1 \<noteq> v \<and> e2 \<noteq> v]
     \<rparr>"
 
-  text {* Deletes an edge from a graph. *}
+  text \<open>Deletes an edge from a graph.\<close>
   definition delete_edge :: "'v \<Rightarrow> 'v \<Rightarrow> 'v list_graph \<Rightarrow> 'v list_graph" where 
     "delete_edge v v' G = \<lparr>nodesL = nodesL G, edgesL = [(e1,e2) \<leftarrow> edgesL G. e1 \<noteq> v \<or> e2 \<noteq> v'] \<rparr>"
 
@@ -59,16 +59,16 @@ section{*FiniteListGraph operations*}
 
 
 
-text {* extended graph operations *}
-   text {* Reflexive transitive successors of a node. Or: All reachable nodes for v including v. *}
+text \<open>extended graph operations\<close>
+   text \<open>Reflexive transitive successors of a node. Or: All reachable nodes for v including v.\<close>
     definition succ_rtran :: "'v list_graph \<Rightarrow> 'v \<Rightarrow> 'v list" where
       "succ_rtran G v = rtrancl_list_impl (edgesL G) [v]"
 
-   text {* Transitive successors of a node. Or: All reachable nodes for v. *}
+   text \<open>Transitive successors of a node. Or: All reachable nodes for v.\<close>
     definition succ_tran :: "'v list_graph \<Rightarrow> 'v \<Rightarrow> 'v list" where
       "succ_tran G v = trancl_list_impl (edgesL G) [v]"
   
-   text {* The number of reachable nodes from v *}
+   text \<open>The number of reachable nodes from v\<close>
     definition num_reachable :: "'v list_graph \<Rightarrow> 'v \<Rightarrow> nat" where
       "num_reachable G v = length (succ_tran G v)"
 
@@ -77,8 +77,8 @@ text {* extended graph operations *}
       "num_reachable_norefl G v = length ([ x \<leftarrow> succ_tran G v. x \<noteq> v])"
 
 
-subsection{*undirected graph simulation*}
-  text {* Create undirected graph from directed graph by adding backward links *}
+subsection\<open>undirected graph simulation\<close>
+  text \<open>Create undirected graph from directed graph by adding backward links\<close>
   fun backlinks :: "('v \<times> 'v) list \<Rightarrow> ('v \<times> 'v) list" where
     "backlinks [] = []" |
     "backlinks ((e1, e2)#es) = (e2, e1)#(backlinks es)"
@@ -86,7 +86,7 @@ subsection{*undirected graph simulation*}
   definition undirected :: "'v list_graph \<Rightarrow> 'v list_graph"
     where "undirected G \<equiv> \<lparr> nodesL = nodesL G, edgesL = remdups (edgesL G @ backlinks (edgesL G)) \<rparr>"
 
-section{*Correctness lemmata*}
+section\<open>Correctness lemmata\<close>
 
   \<comment> \<open>add node\<close>
   lemma add_node_wf: "wf_list_graph G \<Longrightarrow> wf_list_graph (add_node v G)"

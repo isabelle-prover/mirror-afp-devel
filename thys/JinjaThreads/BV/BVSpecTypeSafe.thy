@@ -2,7 +2,7 @@
     Author:     Cornelia Pusch, Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* BV Type Safety Proof \label{sec:BVSpecTypeSafe} *}
+section \<open>BV Type Safety Proof \label{sec:BVSpecTypeSafe}\<close>
 
 theory BVSpecTypeSafe
 imports
@@ -12,29 +12,29 @@ begin
 
 declare listE_length [simp del]
 
-text {*
+text \<open>
   This theory contains proof that the specification of the bytecode
   verifier only admits type safe programs.  
-*}
+\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-text {*
+text \<open>
   Simp and intro setup for the type safety proof:
-*}
+\<close>
 context JVM_heap_conf_base begin
 
 lemmas widen_rules [intro] = conf_widen confT_widen confs_widens confTs_widen
 
 end
   
-subsection {* Exception Handling *}
+subsection \<open>Exception Handling\<close>
 
 
-text {*
-  For the @{text Invoke} instruction the BV has checked all handlers
-  that guard the current @{text pc}.
-*}
+text \<open>
+  For the \<open>Invoke\<close> instruction the BV has checked all handlers
+  that guard the current \<open>pc\<close>.
+\<close>
 lemma Invoke_handlers:
   "match_ex_table P C pc xt = Some (pc',d') \<Longrightarrow> 
   \<exists>(f,t,D,h,d) \<in> set (relevant_entries P (Invoke n M) pc xt). 
@@ -140,14 +140,14 @@ qed
 
 end
 
-subsection {* Single Instructions *}
+subsection \<open>Single Instructions\<close>
 
-text {*
+text \<open>
   In this subsection we prove for each single (welltyped) instruction
   that the state after execution of the instruction still conforms.
   Since we have already handled raised exceptions above, we can now assume that
   no exception has been raised in this step.
-*}
+\<close>
 
 context JVM_conf_read begin
 
@@ -218,7 +218,7 @@ proof -
     from n stk D have "P,h \<turnstile> stk!n :\<le> ST ! n"
       by (auto simp add: list_all2_conv_all_nth)
       
-    from `P,h \<turnstile> stk!n :\<le> ST ! n` Null D
+    from \<open>P,h \<turnstile> stk!n :\<le> ST ! n\<close> Null D
     obtain U a where
       Addr:   "stk!n = Addr a" and
       obj:    "typeof_addr h a = Some U" and
@@ -275,7 +275,7 @@ proof -
         from obj heap_ok have "is_htype P U" by (rule typeof_addr_is_type)
         with C' have "P \<turnstile> ty_of_htype U \<le> Class C'" 
           by(cases U)(simp_all add: widen_array_object)
-        with `P \<turnstile> C' \<preceq>\<^sup>* D''` obj C' have "P,h \<turnstile> Addr a :\<le> Class D''"
+        with \<open>P \<turnstile> C' \<preceq>\<^sup>* D''\<close> obj C' have "P,h \<turnstile> Addr a :\<le> Class D''"
           by (auto simp add: conf_def intro: widen_trans)
         ultimately
         have "P,h \<turnstile> ?loc' [:\<le>\<^sub>\<top>] ?LT" by simp
@@ -305,9 +305,9 @@ proof -
         by(auto simp add: confs_conv_map)
       hence Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
         by- (simp only: rev_map[symmetric], simp)
-      from `P \<turnstile> rev Us [\<le>] rev (take n ST)` Ts Ts'
+      from \<open>P \<turnstile> rev Us [\<le>] rev (take n ST)\<close> Ts Ts'
       have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
-      with obj `map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)` C' m_C' 
+      with obj \<open>map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)\<close> C' m_C' 
       have wtext': "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'" by(simp add: external_WT'.intros)
       from va have va': "P,t \<turnstile> \<langle>a\<bullet>M'(rev (take n stk)),h\<rangle> -tas'\<rightarrow>ext \<langle>va,h'\<rangle>"
         by(unfold WT_red_external_list_conv[OF wfprog wtext' tconf])
@@ -330,7 +330,7 @@ proof -
           by(auto dest: red_external_conf_extRet[OF wfprog])
         from stk have "P,h \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" by(rule list_all2_dropI)
         hence "P,h' \<turnstile> drop (n + 1) stk [:\<le>] drop (n+1) ST" using hext by(rule confs_hext)
-        with `P,h' \<turnstile> v :\<le> T'` have "P,h' \<turnstile> v # drop (n + 1) stk [:\<le>] T' # drop (n+1) ST"
+        with \<open>P,h' \<turnstile> v :\<le> T'\<close> have "P,h' \<turnstile> v # drop (n + 1) stk [:\<le>] T' # drop (n+1) ST"
           by(auto simp add: conf_def intro: widen_trans)
         also
         with NT ins wti \<Phi>_pc \<Phi>' nec False D m_D T'
@@ -338,7 +338,7 @@ proof -
           by(auto dest: sees_method_fun intro: widen_trans)
         also from loc hext have "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT" by(rule confTs_hext)
         hence "P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT'" using LT' by(rule confTs_widen)
-        ultimately show ?thesis using `hconf h'` \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastforce
+        ultimately show ?thesis using \<open>hconf h'\<close> \<sigma> meth_C \<Phi>' pc' frames' tconf' preh' by fastforce
       qed }
     ultimately show ?thesis by(cases meth') auto
   qed
@@ -1451,13 +1451,13 @@ proof -
   qed
 qed
 
-text {*
+text \<open>
   The next theorem collects the results of the sections above,
   i.e.~exception handling and the execution step for each 
   instruction. It states type safety for single step execution:
   in welltyped programs, a conforming state is transformed
   into another conforming state when one instruction is executed.
-*}
+\<close>
 theorem instr_correct:
 "\<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P;
   P \<turnstile> C sees M:Ts\<rightarrow>T=\<lfloor>(mxs,mxl\<^sub>0,ins,xt)\<rfloor> in C;
@@ -1503,7 +1503,7 @@ declare defs1 [simp del]
 
 end
 
-subsection {* Main *}
+subsection \<open>Main\<close>
 
 lemma (in JVM_conf_read) BV_correct_1 [rule_format]:
 "\<And>\<sigma>. \<lbrakk> wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t: \<sigma>\<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> \<sigma> -tas-jvm\<rightarrow> \<sigma>' \<longrightarrow> \<Phi> \<turnstile> t: \<sigma>'\<surd>"
@@ -1774,7 +1774,7 @@ proof -
         from n ST D have "P,h \<turnstile> stk!n :\<le> ST!n"
           by (auto simp add: list_all2_conv_all_nth)
 
-        from `P,h \<turnstile> stk!n :\<le> ST!n` Null D
+        from \<open>P,h \<turnstile> stk!n :\<le> ST!n\<close> Null D
         obtain a T' where
           Addr:   "stk!n = Addr a" and
           obj:    "typeof_addr h a = Some T'" and
@@ -1801,7 +1801,7 @@ proof -
             by(auto simp add: confs_conv_map)
           hence Us: "map typeof\<^bsub>h\<^esub> (rev (take n stk)) = map Some (rev Us)" "P \<turnstile> rev Us [\<le>] rev (take n ST)"
             by- (simp only: rev_map[symmetric], simp)
-          with Ts `P \<turnstile> Ts [\<le>] Ts'` have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
+          with Ts \<open>P \<turnstile> Ts [\<le>] Ts'\<close> have "P \<turnstile> rev Us [\<le>] Ts'" by(blast intro: widens_trans)
           with obj Us Call' C' have "P,h \<turnstile> a\<bullet>M'(rev (take n stk)) : T'"
             by(auto intro!: external_WT'.intros)
           from external_call_progress[OF wf this hconf, of t] obj Addr Call' C'

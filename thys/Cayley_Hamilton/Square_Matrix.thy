@@ -15,7 +15,7 @@ typedef ('a, 'n) sq_matrix = "UNIV :: ('n \<Rightarrow> 'n \<Rightarrow> 'a) set
 
 syntax "_sq_matrix" :: "type \<Rightarrow> type \<Rightarrow> type" ("(_ ^^/ _)" [15, 16] 15)
 
-parse_translation {*
+parse_translation \<open>
   let
     fun vec t u = Syntax.const @{type_syntax sq_matrix} $ t $ u;
     fun sq_matrix_tr [t, u] =
@@ -29,7 +29,7 @@ parse_translation {*
   in
     [(@{syntax_const "_sq_matrix"}, K sq_matrix_tr)]
   end
-*}
+\<close>
 
 setup_lifting type_definition_sq_matrix
 
@@ -582,14 +582,14 @@ proof (transfer fixing: i i')
 
   note p = permutes_UNIV_permutation evenperm_comp permutes_swap_id evenperm_swap permutes_compose
     sign_compose sign_swap_id
-  { fix q assume "q \<notin> ?s`?E" "q permutes UNIV" with `i \<noteq> i'` have "evenperm q"
+  { fix q assume "q \<notin> ?s`?E" "q permutes UNIV" with \<open>i \<noteq> i'\<close> have "evenperm q"
       by (auto simp add: comp_assoc[symmetric] image_iff p elim!: allE[of _ "?s q"]) }
   then have "(\<Sum>p | p permutes UNIV. ?p p) = (\<Sum>p \<in> ?E \<union> ?s`?E. ?p p)"
     by (fastforce simp: permutes_compose permutes_swap_id intro: sum.cong)
   also have "\<dots> = (\<Sum>p\<in>?E. ?p p) + (\<Sum>p\<in>?s`?E. ?p p)"
-    by (intro sum.union_disjoint) (auto simp: p `i \<noteq> i'`)
+    by (intro sum.union_disjoint) (auto simp: p \<open>i \<noteq> i'\<close>)
   also have "(\<Sum>p\<in>?s`?E. ?p p) = (\<Sum>p\<in>?E. - ?p p)"
-    using `i \<noteq> i'` by (subst sum.reindex) (auto intro!: sum.cong simp: p)
+    using \<open>i \<noteq> i'\<close> by (subst sum.reindex) (auto intro!: sum.cong simp: p)
   finally show "(\<Sum>p | p permutes UNIV. ?p p) = 0"
     by (simp add: sum_negf)
 qed
@@ -603,12 +603,12 @@ proof (induct T arbitrary: M rule: infinite_finite_induct)
   case (insert i T)
   have "(\<Sum>f\<in>insert i T \<rightarrow>\<^sub>E S. det (upd_cols M (insert i T) (\<lambda>i. a i (f i)))) =
     (\<Sum>s\<in>S. \<Sum>f\<in>T \<rightarrow>\<^sub>E S. det (upd_cols (upd_col M i (a i s)) T (\<lambda>i. a i (f i))))"
-    unfolding sum.cartesian_product PiE_insert_eq using `i \<notin> T`
-    by (subst sum.reindex[OF inj_combinator[OF `i \<notin> T`]])
+    unfolding sum.cartesian_product PiE_insert_eq using \<open>i \<notin> T\<close>
+    by (subst sum.reindex[OF inj_combinator[OF \<open>i \<notin> T\<close>]])
        (auto intro!: sum.cong arg_cong[where f=det] upd_cols_cong
              simp: upd_cols_insert_rev simp_implies_def)
   also have "\<dots> = det (upd_col (upd_cols M T (\<lambda>i. sum (a i) S)) i (\<Sum>s\<in>S. a i s))"
-    unfolding insert(3)[symmetric] by (simp add: upd_cols_upd_col_swap[OF `i \<notin> T`] det_col_sum)
+    unfolding insert(3)[symmetric] by (simp add: upd_cols_upd_col_swap[OF \<open>i \<notin> T\<close>] det_col_sum)
   finally show ?case
     by (simp add: upd_cols_insert)
 qed auto
@@ -695,8 +695,8 @@ next
   also have "minor ?B' i j = minor B i j"
     using r insert.prems by transfer (simp add: fun_eq_iff axis_def)
   also have "det ?B' = det B"
-    using `r \<noteq> i`
-    by (simp add: det_row_minus det_row_mul det_identical_rows[OF `r \<noteq> i`] row_upd_row_If)
+    using \<open>r \<noteq> i\<close>
+    by (simp add: det_row_minus det_row_mul det_identical_rows[OF \<open>r \<noteq> i\<close>] row_upd_row_If)
   finally show ?case .
 qed simp
 

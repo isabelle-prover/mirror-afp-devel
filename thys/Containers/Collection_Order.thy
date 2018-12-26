@@ -9,12 +9,12 @@ imports
   Deriving.Compare_Instances
 begin
 
-chapter {* Light-weight containers *}
-text_raw {* \label{chapter:light-weight:containers} *}
+chapter \<open>Light-weight containers\<close>
+text_raw \<open>\label{chapter:light-weight:containers}\<close>
 
-section {* A linear order for code generation *}
+section \<open>A linear order for code generation\<close>
 
-subsection {* Optional comparators *}
+subsection \<open>Optional comparators\<close>
 
 class ccompare =
   fixes ccompare :: "'a comparator option"
@@ -35,7 +35,7 @@ lemma (in ccompare) ID_ccompare:
   
 syntax "_CCOMPARE" :: "type => logic"  ("(1CCOMPARE/(1'(_')))")
 
-parse_translation {*
+parse_translation \<open>
 let
   fun ccompare_tr [ty] =
      (Syntax.const @{syntax_const "_constrain"} $ Syntax.const @{const_syntax "ccompare"} $
@@ -44,7 +44,7 @@ let
            (Syntax.const @{type_syntax fun} $ ty $ Syntax.const @{type_syntax order}))))
     | ccompare_tr ts = raise TERM ("ccompare_tr", ts);
 in [(@{syntax_const "_CCOMPARE"}, K ccompare_tr)] end
-*}
+\<close>
 
 definition is_ccompare :: "'a :: ccompare itself \<Rightarrow> bool"
 where "is_ccompare _ \<longleftrightarrow> ID CCOMPARE('a) \<noteq> None"
@@ -62,9 +62,9 @@ proof -
 qed
 end
 
-subsection {* Generator for the @{class ccompare}--class *}
+subsection \<open>Generator for the @{class ccompare}--class\<close>
 
-text {*
+text \<open>
 This generator registers itself at the derive-manager for the class
 @{class ccompare}. To be more precise, one can choose whether one does not want to
 support a comparator by passing parameter "no", one wants to register an arbitrary type which
@@ -84,20 +84,20 @@ which can usually be achieved via "derive comparator type" or "derive compare ty
 If the parameter "no" is not used, then the corresponding
 @{const is_ccompare}-theorem is automatically generated and attributed with 
 \texttt{[simp, code-post]}.
-*}
+\<close>
 
 
-text {* 
+text \<open>
 To create a new comparator, we just invoke the functionality provided by the generator.
 The only difference is the boilerplate-code, which for the generator has to perform
 the class instantiation for a comparator, whereas here we have to invoke the methods to 
 satisfy the corresponding locale for comparators.
-*}
+\<close>
 
-text {*
+text \<open>
 This generator can be used for arbitrary types, not just datatypes. 
 When passing no parameters, we get same limitation as for the order generator.
-*}
+\<close>
 
 lemma corder_intro: "class.linorder le lt \<Longrightarrow> a = Some (le, lt)\<Longrightarrow> a = Some (le',lt') \<Longrightarrow>
   class.linorder le' lt'" by auto
@@ -109,7 +109,7 @@ lemma (in compare) compare_subst: "\<And> comp. compare = comp \<Longrightarrow>
 
 ML_file "ccompare_generator.ML"
 
-subsection {* Instantiations for HOL types *}
+subsection \<open>Instantiations for HOL types\<close>
 
 derive (linorder) compare_order 
   Enum.finite_1 Enum.finite_2 Enum.finite_3 natural String.literal
@@ -148,7 +148,7 @@ lemma ccompare_set_code [code]:
 
 derive (no) ccompare Predicate.pred
 
-subsection {* Proper intervals *}
+subsection \<open>Proper intervals\<close>
 
 class cproper_interval = ccompare + 
   fixes cproper_interval :: "'a option \<Rightarrow> 'a option \<Rightarrow> bool"
@@ -387,7 +387,7 @@ end
 
 
 instantiation "fun" :: (type, type) cproper_interval begin
-text {* No interval checks on functions needed because we have not defined an order on them. *}
+text \<open>No interval checks on functions needed because we have not defined an order on them.\<close>
 definition "cproper_interval = (undefined :: ('a \<Rightarrow> 'b) proper_interval)"
 instance by(intro_classes)(simp add: ccompare_fun_def ID_None)
 end

@@ -1,4 +1,4 @@
-section {* \isaheader{Operations on sorted Lists} *}
+section \<open>\isaheader{Operations on sorted Lists}\<close>
 theory Sorted_List_Operations
 imports Main Automatic_Refinement.Misc
 begin 

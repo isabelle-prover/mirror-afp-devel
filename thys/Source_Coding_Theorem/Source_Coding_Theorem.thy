@@ -6,7 +6,7 @@
 theory Source_Coding_Theorem
 imports "HOL-Probability.Information"
 begin
-section{* Basic types *}
+section\<open>Basic types\<close>
 
 type_synonym bit = bool
 type_synonym bword = "bit list"
@@ -16,7 +16,7 @@ type_synonym 'b word = "'b list"
 type_synonym 'b encoder = "'b word \<Rightarrow> bword"
 type_synonym 'b decoder = "bword \<Rightarrow> 'b word option"
 
-section{* Locale for the source coding theorem *}
+section\<open>Locale for the source coding theorem\<close>
 locale source_code = information_space +
   fixes fi :: "'b \<Rightarrow> real"
   fixes X :: "'a \<Rightarrow> 'b"
@@ -31,10 +31,10 @@ locale source_code = information_space +
   "enc w = [] \<longleftrightarrow> w = []"
   "x \<noteq> [] \<longrightarrow> enc x = enc [hd x] @ enc (tl x)"
 
-section{* Source coding theorem, direct: the entropy is a lower bound of the code rate*}
+section\<open>Source coding theorem, direct: the entropy is a lower bound of the code rate\<close>
 context source_code
 begin
-subsection{* The letter set *}
+subsection\<open>The letter set\<close>
 
 definition L :: "'b set" where
   "L \<equiv> X ` space M"
@@ -47,7 +47,7 @@ lemma emp_L: "L \<noteq> {}"
     using L_def subprob_not_empty
     by auto
 
-subsection{* Codes and words *}
+subsection\<open>Codes and words\<close>
 
 abbreviation real_word :: "'b word \<Rightarrow> bool" where
   "real_word w \<equiv> (set w \<subseteq> L)"
@@ -112,7 +112,7 @@ lemma max_cw:
   "l \<in> L \<Longrightarrow> cw_len l \<le> max_len"
     by (simp add: max_len_def fin_L)
 
-subsection{* Related to the Kraft theorem *}
+subsection\<open>Related to the Kraft theorem\<close>
 definition \<K> :: "real" where
   "\<K> = (\<Sum>i\<in>L. 1 / b ^ (cw_len i))"
 
@@ -221,8 +221,8 @@ lemma bound_len_concat:
 shows "w \<in> k_words k \<Longrightarrow> cw_len_concat w \<le> k * max_len"
     using max_cw maj_fold by blast
 
-subsection{* Inequality of the kraft sum (source coding theorem, direct) *}
-subsubsection{* Sum manipulation lemmas and McMillan theorem *}
+subsection\<open>Inequality of the kraft sum (source coding theorem, direct)\<close>
+subsubsection\<open>Sum manipulation lemmas and McMillan theorem\<close>
 
 lemma sum_vimage_proof:
   fixes g::"nat \<Rightarrow> real"
@@ -375,7 +375,7 @@ lemma entropy_rw: "\<H>(X) = -(\<Sum>i \<in> L. fi i * log b (fi i))"
     using entropy_simple_distributed[OF distr_i]
     by (simp add: L_def)
 
-subsubsection{* Technical lemmas about the logarithm *}
+subsubsection\<open>Technical lemmas about the logarithm\<close>
 lemma log_mult_ext3:
   "0 \<le> x \<Longrightarrow> 0 < y \<Longrightarrow> 0 < z \<Longrightarrow> x * log b (x*y*z) = x * log b (x*y) + x * log b z"
     by(cases "x=0")(simp add: log_mult_eq abs_of_pos distrib_left less_eq_real_def)+
@@ -384,7 +384,7 @@ lemma log_mult_ext2:
   "0 \<le> x \<Longrightarrow> 0 < y \<Longrightarrow> x * log b (x*y) = x * log b x + x * log b y"
     using log_mult_ext3[where y=1] by simp
 
-subsubsection {* KL divergence and properties *}
+subsubsection \<open>KL divergence and properties\<close>
 definition KL_div ::"'b set \<Rightarrow> ('b \<Rightarrow> real) \<Rightarrow> ('b \<Rightarrow> real) \<Rightarrow> real" where
   "KL_div S a d = (\<Sum> i \<in> S. a i * log b (a i / d i))"
 

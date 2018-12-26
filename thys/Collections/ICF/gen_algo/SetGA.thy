@@ -9,13 +9,13 @@
 
 *)
 
-section {* \isaheader{Generic Algorithms for Sets} *}
+section \<open>\isaheader{Generic Algorithms for Sets}\<close>
 theory SetGA
 imports "../spec/SetSpec" SetIteratorCollectionsGA
 begin
-text_raw {*\label{thy:SetGA}*}
+text_raw \<open>\label{thy:SetGA}\<close>
 
-subsection {* Generic Set Algorithms *}
+subsection \<open>Generic Set Algorithms\<close>
 
 locale g_set_xx_defs_loc = 
   s1: StdSetDefs ops1 + s2: StdSetDefs ops2
@@ -429,7 +429,7 @@ sublocale g_set_xyy_loc <
   set_Union_image s0.\<alpha> s0.invar s1.\<alpha> s1.invar s2.\<alpha> s2.invar g_Union_image
   by (rule g_Union_image_impl)
 
-subsection {* Default Set Operations*}
+subsection \<open>Default Set Operations\<close>
 
 record ('x,'s) set_basic_ops = 
   bset_op_\<alpha> :: "'s \<Rightarrow> 'x set"
@@ -569,7 +569,7 @@ begin
       set_op_from_list = g_from_list
     \<rparr>"
 
-  local_setup {* Locale_Code.lc_decl_del @{term dflt_ops} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term dflt_ops}\<close>
 end
 
 context StdBasicSet
@@ -812,7 +812,7 @@ begin
         set_op_to_sorted_list = g_to_sorted_list,
         set_op_to_rev_list = g_to_rev_list
       \<rparr>"
-  local_setup {* Locale_Code.lc_decl_del @{term dflt_oops} *}
+  local_setup \<open>Locale_Code.lc_decl_del @{term dflt_oops}\<close>
 
 end
 
@@ -913,10 +913,10 @@ begin
 end
 
 subsection "More Generic Set Algorithms"
-text {*
+text \<open>
   These algorithms do not have a function specification in a locale, but
   their specification is done  ad-hoc in the correctness lemma.
-*}
+\<close>
 
 subsubsection "Image and Filter of Cartesian Product"
 
@@ -1128,14 +1128,14 @@ begin
 end
 
 
-subsection {* Generic Algorithms outside basic-set *}
-text {*
+subsection \<open>Generic Algorithms outside basic-set\<close>
+text \<open>
   In this section, we present some generic algorithms that are not
   formulated in terms of basic-set. They are useful for setting up 
   some data structures.
-*}
+\<close>
 
-subsection {* Image (by image-filter) *}
+subsection \<open>Image (by image-filter)\<close>
 definition "iflt_image iflt f s == iflt (\<lambda>x. Some (f x)) s"
 
 lemma iflt_image_correct:
@@ -1150,7 +1150,7 @@ proof -
     done
 qed
 
-subsection{* Injective Image-Filter (by image-filter)*}
+subsection\<open>Injective Image-Filter (by image-filter)\<close>
 
 definition [code_unfold]: "iflt_inj_image = iflt_image"
 
@@ -1171,7 +1171,7 @@ proof -
 qed
 
 
-subsection{* Filter (by image-filter)*}
+subsection\<open>Filter (by image-filter)\<close>
 definition "iflt_filter iflt P s == iflt (\<lambda>x. if P x then Some x else None) s"
 
 lemma iflt_filter_correct:

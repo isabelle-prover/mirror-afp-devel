@@ -2,11 +2,11 @@
     Author:     Mnacho Echenim, Univ. Grenoble Alpes
 *)
 
-section {* The Cox Ross Rubinstein model *}
+section \<open>The Cox Ross Rubinstein model\<close>
 
-text {* This section defines the Cox-Ross-Rubinstein model of a financial market, and charcterizes a risk-neutral
+text \<open>This section defines the Cox-Ross-Rubinstein model of a financial market, and charcterizes a risk-neutral
 probability space for this market. This, together with the proof that every derivative is attainable, permits to
-obtain a formula to explicitely compute the fair price of any derivative. *}
+obtain a formula to explicitely compute the fair price of any derivative.\<close>
 
 theory CRR_Model imports Fair_Price
 
@@ -26,7 +26,7 @@ locale CRR_market = CRR_hyps +
   fixes G
 assumes stock_filtration:"G = stoch_proc_filt M geom_proc borel"
 
-subsection {* Preliminary results on the market *}
+subsection \<open>Preliminary results on the market\<close>
 
 lemma (in CRR_market) case_asset:
   assumes "asset \<in> stocks Mkt"
@@ -679,7 +679,7 @@ proof (rule ccontr)
     show "0 < prob {w \<in> space M. 0 < closing_value_process Mkt arb_pf (Suc 0) w}"
     proof -
       have "closing_value_process Mkt arb_pf (Suc 0) \<in> borel_measurable M" using borel_adapt_stoch_proc_borel_measurable
-        closing_value_process_adapted `trading_strategy arb_pf` \<open>stock_portfolio Mkt arb_pf\<close>
+        closing_value_process_adapted \<open>trading_strategy arb_pf\<close> \<open>stock_portfolio Mkt arb_pf\<close>
         using support_adapt_def readable unfolding  stock_portfolio_def by blast
       hence set_event:"{w \<in> space M. 0 < closing_value_process Mkt arb_pf (Suc 0) w} \<in> sets M"
         using borel_measurable_iff_greater by blast
@@ -829,7 +829,7 @@ proof (rule ccontr)
     show "0 < prob {w \<in> space M. 0 < closing_value_process Mkt arb_pf (Suc 0) w}"
     proof -
       have "closing_value_process Mkt arb_pf (Suc 0) \<in> borel_measurable M" using borel_adapt_stoch_proc_borel_measurable
-        closing_value_process_adapted `trading_strategy arb_pf` \<open>stock_portfolio Mkt arb_pf\<close>
+        closing_value_process_adapted \<open>trading_strategy arb_pf\<close> \<open>stock_portfolio Mkt arb_pf\<close>
          using support_adapt_def readable unfolding stock_portfolio_def by blast
       hence set_event:"{w \<in> space M. 0 < closing_value_process Mkt arb_pf (Suc 0) w} \<in> sets M"
         using borel_measurable_iff_greater by blast
@@ -858,7 +858,7 @@ lemma (in CRR_market) viable_iff:
 shows "viable_market Mkt \<longleftrightarrow> (d < 1+r \<and> 1+r < u)" using viable_if viable_only_if_d viable_only_if_u by auto
 
 
-subsection {* Risk-neutral probability space for the geometric random walk *}
+subsection \<open>Risk-neutral probability space for the geometric random walk\<close>
 
 
 
@@ -1553,7 +1553,7 @@ and "q < 1"
 shows "rfr_disc_equity_market.risk_neutral_prob G Mkt r N \<longleftrightarrow> q= (1 + r - d) / (u - d)"
   using bernoulli_stream_equiv assms risk_neutral_iff' psgt pslt by auto
 
-subsection {* Existence of a replicating portfolio *}
+subsection \<open>Existence of a replicating portfolio\<close>
 
 
 
@@ -2687,7 +2687,7 @@ proof -
   let ?m = "matur - Suc n"
   have "matur -n = Suc ?m" by (simp add: assms Suc_diff_Suc Suc_le_lessD)
   have "(1+r) * V n w = (1+r) * rn_price_ind N der matur n w" using rn_price_eq assms unfolding V_def by simp
-  also have "... = (1+r) * rn_rev_price N der matur (Suc ?m) w" using `matur -n = Suc ?m`
+  also have "... = (1+r) * rn_rev_price N der matur (Suc ?m) w" using \<open>matur -n = Suc ?m\<close>
     unfolding rn_price_ind_def by simp
   also have "... = (1+r) * discount_factor r (Suc 0) w *
                     expl_cond_expect N (proj_stoch_proc geom_proc (matur - Suc ?m)) (rn_rev_price N der matur ?m) w"
@@ -3039,7 +3039,7 @@ proof -
             (1 - q) * V (Suc n) (pseudo_proj_False n w)"
             by (simp add: mult.commute right_diff_distrib)
           also have "... = (1+r) * V n w + (1 - q) * V (Suc n) (pseudo_proj_True n w) -
-            (1 - q) * V (Suc n) (pseudo_proj_False n w)" using `X n w = V n w` by simp
+            (1 - q) * V (Suc n) (pseudo_proj_False n w)" using \<open>X n w = V n w\<close> by simp
           also have "... = q * V (Suc n) (pseudo_proj_True n w) + (1 - q) * V (Suc n) (pseudo_proj_False n w) +
             (1 - q) * V (Suc n) (pseudo_proj_True n w) - (1 - q) * V (Suc n) (pseudo_proj_False n w)"
           using assms Suc rn_price_eq_ind[of N q n matur der w] \<open>n < matur\<close> qprops unfolding V_def q_def
@@ -3117,7 +3117,7 @@ proof -
             by (metis (no_types, hide_lams) add.inverse_inverse distrib_right minus_mult_commute minus_real_def mult_minus_left)
           also have "... = (1+r) * X n w - q * V (Suc n) (pseudo_proj_True n w) + q * V (Suc n) (pseudo_proj_False n w)" by simp
           also have "... = (1+r) * V n w -q * V (Suc n) (pseudo_proj_True n w) +
-            q * V (Suc n) (pseudo_proj_False n w)" using `X n w = V n w` by simp
+            q * V (Suc n) (pseudo_proj_False n w)" using \<open>X n w = V n w\<close> by simp
           also have "... = q * V (Suc n) (pseudo_proj_True n w) + (1 - q) * V (Suc n) (pseudo_proj_False n w) -
             q * V (Suc n) (pseudo_proj_True n w) + q * V (Suc n) (pseudo_proj_False n w)"
             using assms Suc rn_price_eq_ind[of N q n matur der w] \<open>n < matur\<close> qprops unfolding V_def q_def

@@ -6,7 +6,7 @@ theory List_Proper_Interval imports
   Collection_Order
 begin
 
-section {* Instantiate @{class proper_interval} of for @{typ "'a list"} *}
+section \<open>Instantiate @{class proper_interval} of for @{typ "'a list"}\<close>
 
 lemma Nil_less_conv_neq_Nil: "[] < xs \<longleftrightarrow> xs \<noteq> []"
 by(cases xs) simp_all

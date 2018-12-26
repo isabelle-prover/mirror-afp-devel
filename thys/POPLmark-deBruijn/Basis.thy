@@ -5,14 +5,14 @@ theory Basis
 imports Main
 begin
 
-section {* General Utilities *}
+section \<open>General Utilities\<close>
 
-text {*
+text \<open>
 This section introduces some general utilities that will be useful later on in
 the formalization of System \fsub{}.
 
 The following rewrite rules are useful for simplifying mutual induction rules.
-*}
+\<close>
 
 lemma True_simps:
   "(True \<Longrightarrow> PROP P) \<equiv> PROP P"
@@ -30,10 +30,10 @@ lemma True_simps:
   apply (rule TrueI)+
   done
 
-text {*
+text \<open>
 Unfortunately, the standard introduction and elimination rules for bounded
 universal and existential quantifier do not work properly for sets of pairs.
-*}
+\<close>
 
 lemma ballpI: "(\<And>x y. (x, y) \<in> A \<Longrightarrow> P x y) \<Longrightarrow> \<forall>(x, y) \<in> A. P x y"
   by blast
@@ -69,10 +69,10 @@ notation
 notation
   Cons ("_ \<Colon>/ _" [66, 65] 65)
 
-text {*
-The following variant of the standard @{text nth} function returns
-@{text "\<bottom>"} if the index is out of range.
-*}
+text \<open>
+The following variant of the standard \<open>nth\<close> function returns
+\<open>\<bottom>\<close> if the index is out of range.
+\<close>
 
 primrec
   nth_el :: "'a list \<Rightarrow> nat \<Rightarrow> 'a option" ("_\<langle>_\<rangle>" [90, 0] 91)
@@ -94,7 +94,7 @@ lemma [simp]: "\<parallel>xs\<parallel> \<le> i \<Longrightarrow> (xs @ ys)\<lan
   apply simp_all
   done
 
-text {* Association lists *}
+text \<open>Association lists\<close>
 
 primrec assoc :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option" ("_\<langle>_\<rangle>\<^sub>?" [90, 0] 91)
 where

@@ -1003,7 +1003,7 @@ proof (induct i j rule: pivot_positions_main_gen.induct[of nr nc A 0])
         assume **: "i \<le> i'" "i' < nr" 
         hence "i + (i' - i) = i'" by auto
         from pivotB[of i "i' - i", unfolded this] ** * have "nc \<le> f i'" by auto
-        with pivot'(1)[OF `i' < nr`] have "f i' = nc" by auto
+        with pivot'(1)[OF \<open>i' < nr\<close>] have "f i' = nc" by auto
       }
       thus ?thesis using IH unfolding p id1 by auto
     qed
@@ -1481,7 +1481,7 @@ lemma gauss_jordan_check_invertable: assumes A: "A \<in> carrier_mat n n" and B:
 proof 
   assume ?l
   show ?r
-    by (rule gauss_jordan_inverse_other_direction[OF `?l` B])
+    by (rule gauss_jordan_inverse_other_direction[OF \<open>?l\<close> B])
 next
   let ?g = "gauss_jordan A B"
   assume ?r

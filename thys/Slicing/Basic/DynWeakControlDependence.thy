@@ -1,4 +1,4 @@
-section {* Dynamic Weak Control Dependence *}
+section \<open>Dynamic Weak Control Dependence\<close>
 
 theory DynWeakControlDependence imports Postdomination begin
 

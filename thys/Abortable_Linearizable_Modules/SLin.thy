@@ -1,6 +1,6 @@
 (* Author: Giuliano Losa *)
 
-section {* The SLin Automata specification*}
+section \<open>The SLin Automata specification\<close>
 
 theory SLin
 imports IOA RDR

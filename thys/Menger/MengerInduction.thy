@@ -1,14 +1,14 @@
-section {* Induction of Menger's Theorem *}
+section \<open>Induction of Menger's Theorem\<close>
 
 theory MengerInduction imports Separations DisjointPaths begin
 
-subsection {* No Small Separations *}
+subsection \<open>No Small Separations\<close>
 
-text {*
+text \<open>
   In this section we set up the general structure of the proof of Menger's Theorem.
   The proof is based on induction over @{term sep_size} (called @{term n} in McCuaig's proof), the
   minimum size of a separator.
-*}
+\<close>
 
 locale NoSmallSeparationsInduct = v0_v1_Digraph +
   fixes sep_size :: nat
@@ -20,7 +20,7 @@ locale NoSmallSeparationsInduct = v0_v1_Digraph +
     \<Longrightarrow> v0_v1_Digraph G' v0 v1
     \<Longrightarrow> \<exists>paths. DisjointPaths G' v0 v1 paths \<and> card paths = sep_size"
 
-text {*
+text \<open>
   Next, we want to combine this with @{locale DisjointPathsPlusOne}.
 
   If a minimum separator has size at least @{term "Suc sep_size"}, then it follows immediately from
@@ -45,7 +45,7 @@ text {*
   vertex is @{term new_last}.
 
   We will add the assumption @{term "new_last \<noteq> v1"} soon.
-*}
+\<close>
 
 locale ProofStepInduct =
   NoSmallSeparationsInduct G v0 v1 sep_size + DisjointPathsPlusOne G v0 v1 paths P_new
@@ -56,19 +56,19 @@ locale ProofStepInduct =
 lemma (in ProofStepInduct) hitting_paths_v1: "hitting_paths v1"
   unfolding hitting_paths_def using paths v0_neq_v1 by force
 
-subsection {* Choosing Paths Avoiding $new\_last$ *}
+subsection \<open>Choosing Paths Avoiding $new\_last$\<close>
 
-text {* Let us now consider only the non-trivial case that @{term "new_last \<noteq> v1"}. *}
+text \<open>Let us now consider only the non-trivial case that @{term "new_last \<noteq> v1"}.\<close>
 
 locale ProofStepInduct_NonTrivial = ProofStepInduct +
   assumes new_last_neq_v1: "new_last \<noteq> v1"
 begin
 
-text {*
+text \<open>
   The next step is the observation that in the graph @{term "remove_vertex new_last"}, which 
   we called @{term H_x}, there are also @{term sep_size} many internally vertex-disjoint paths,
   again by the induction hypothesis.
-*}
+\<close>
 lemma Q_exists: "\<exists>Q. DisjointPaths H_x v0 v1 Q \<and> card Q = sep_size"
 proof-
   have "\<And>S. Separation H_x v0 v1 S \<Longrightarrow> card S \<ge> sep_size"
@@ -77,11 +77,11 @@ proof-
   then show ?thesis using H_x_v0_v1_Digraph new_last_neq_v1 by (meson no_small_separations_hyp)
 qed
 
-text {*
+text \<open>
   We want to choose these paths in a clever way, too.  Our goal is to choose these paths such that
   the number of edges in @{term "(\<Union>(edges_of_walk ` Q) \<inter> (E - \<Union>(edges_of_walk ` paths_with_new)))"}
   is minimal.
-*}
+\<close>
 
 definition B where "B \<equiv> E - \<Union>(edges_of_walk ` paths_with_new)"
 
@@ -92,7 +92,7 @@ definition Q_good where "Q_good \<equiv> \<lambda>Q. DisjointPaths H_x v0 v1 Q \
 
 definition Q where "Q \<equiv> SOME Q. Q_good Q"
 
-text {* It is easy to show that such a @{const Q} exists. *}
+text \<open>It is easy to show that such a @{const Q} exists.\<close>
 
 lemma Q: "DisjointPaths H_x v0 v1 Q" "card Q = sep_size"
   and Q_min: "\<And>Q'. DisjointPaths H_x v0 v1 Q' \<and> card Q' = sep_size \<Longrightarrow> Q_weight Q \<le> Q_weight Q'"
@@ -109,14 +109,14 @@ qed
 
 sublocale Q: DisjointPaths H_x v0 v1 Q using Q(1) .
 
-subsection {* Finding a Path Avoiding $Q$ *}
+subsection \<open>Finding a Path Avoiding $Q$\<close>
 
-text {*
+text \<open>
   Because @{const Q} contains only @{term sep_size} many paths, we have
   @{term "card Q.second_vertices = sep_size"}.  So there exists a path @{term P_k} among the
   @{term "Suc sep_size"} many paths in @{term paths_with_new} such that the second vertex of
   @{term P_k} is not among @{term Q.second_vertices}.
-*}
+\<close>
 definition P_k where
   "P_k \<equiv> SOME P_k. P_k \<in> paths_with_new \<and> hd (tl P_k) \<notin> Q.second_vertices"
 
@@ -144,10 +144,10 @@ lemma hd_P_k_v0 [simp]: "hd P_k = v0" by (simp add: P_k(1) paths_with_new_start_
 definition hitting_Q_or_new_last where
   "hitting_Q_or_new_last \<equiv> \<lambda>y. y \<noteq> v0 \<and> (y = new_last \<or> (\<exists>Q_hit \<in> Q. y \<in> set Q_hit))"
 
-text {*
+text \<open>
   @{term P_k} hits a vertex in @{term Q} or it hits @{term new_last} because it either ends in
   @{term v1} or in @{term new_last}.
-*}
+\<close>
 
 lemma P_k_hits_Q: "\<exists>y \<in> set P_k. hitting_Q_or_new_last y" proof (cases)
   assume "P_k \<noteq> P_new"
@@ -160,13 +160,13 @@ qed (metis P_new new_last_neq_v0 hitting_Q_or_new_last_def last_in_set path_from
 
 end \<comment> \<open>locale @{locale ProofStepInduct_NonTrivial}\<close>
 
-subsection {* Decomposing $P_k$ *}
+subsection \<open>Decomposing $P_k$\<close>
 
-text {*
+text \<open>
   Having established with the previous lemma that @{term P_k} hits @{term Q} or @{term new_last},
   let @{term y} be the first such vertex on @{term P_k}.  Then we can split @{term P_k} at
   this vertex.
-*}
+\<close>
 
 locale ProofStepInduct_NonTrivial_P_k_pre = ProofStepInduct_NonTrivial +
   fixes P_k_pre y P_k_post
@@ -174,9 +174,9 @@ locale ProofStepInduct_NonTrivial_P_k_pre = ProofStepInduct_NonTrivial +
       and y: "hitting_Q_or_new_last y"
       and y_min: "\<And>y'. y' \<in> set P_k_pre \<Longrightarrow> \<not>hitting_Q_or_new_last y'"
 
-text {*
+text \<open>
   We can always go from @{locale ProofStepInduct_NonTrivial} to @{locale ProofStepInduct_NonTrivial_P_k_pre}.
-*}
+\<close>
 lemma (in ProofStepInduct_NonTrivial) ProofStepInduct_NonTrivial_P_k_pre_exists:
   shows "\<exists>P_k_pre y P_k_post.
      ProofStepInduct_NonTrivial_P_k_pre G v0 v1 paths P_new sep_size P_k_pre y P_k_post"
@@ -216,7 +216,7 @@ context ProofStepInduct_NonTrivial_P_k_pre begin
     then show False using new_last_neq_v1 by blast
   qed
 
-  text {* If @{term "y = v1"}, then we are done. *}
+  text \<open>If @{term "y = v1"}, then we are done.\<close>
   lemma y_eq_v1_solves:
     assumes "y = v1"
     shows "\<exists>paths. DisjointPaths G v0 v1 paths \<and> card paths = Suc sep_size"

@@ -5,7 +5,7 @@ begin
 code_identifier code_module SINVAR_ACLcommunicateWith_impl => (Scala) SINVAR_ACLcommunicateWith
 
 
-subsubsection {* List Implementation *}
+subsubsection \<open>List Implementation\<close>
 
 fun sinvar :: "'v list_graph \<Rightarrow> ('v \<Rightarrow> 'v list) \<Rightarrow> bool" where
   "sinvar G nP = (\<forall> v \<in> set (nodesL G). \<forall>a \<in> (set (succ_tran G v)). a \<in> set (nP v))"
@@ -57,7 +57,7 @@ interpretation SINVAR_ACLcommunicateWith_impl:TopoS_List_Impl
 done
 
 
-subsubsection {* packing *}
+subsubsection \<open>packing\<close>
   definition SINVAR_LIB_ACLcommunicateWith:: "('v::vertex, 'v list) TopoS_packed" where
     "SINVAR_LIB_ACLcommunicateWith \<equiv> 
     \<lparr> nm_name = ''ACLcommunicateWith'', 
@@ -78,12 +78,12 @@ subsubsection {* packing *}
 
 
 
-text {* Examples*}
+text \<open>Examples\<close>
 context begin
-  text{*
+  text\<open>
     1 can access 2 and 3
     2 can access 3
-  *}
+\<close>
   private lemma "sinvar
             \<lparr> nodesL = [1::nat, 2, 3],
               edgesL = [(1,2), (2,3)]\<rparr>
@@ -91,10 +91,10 @@ context begin
                     (1 := [2,3]))
                     (2 := [3]))" by eval
 
-  text{*
+  text\<open>
     Everyone can access everyone, except for 1: 1 must not access 4.
     The offending flows may be any edge on the path from 1 to 4
-  *}
+\<close>
   lemma "ACLcommunicateWith_offending_list 
           \<lparr> nodesL = [1::nat, 2, 3, 4],
             edgesL = [(1,2), (2,3), (3, 4)]\<rparr>
@@ -104,11 +104,11 @@ context begin
           (3 := [1,2,3,4]))
           (4 := [1,2,3,4])) =
        [[(1, 2)], [(2, 3)], [(3, 4)]]" by eval
-  text{*
+  text\<open>
     If we add the additional edge from 1 to 3, then the offending flows are either
     \<^item> [(3.4)], because this disconnects 4 from the graph completely
     \<^item> any pair of edges which disconnects 1 from 3
-  *}
+\<close>
   lemma "ACLcommunicateWith_offending_list 
           \<lparr> nodesL = [1::nat, 2, 3, 4],
             edgesL = [(1,2), (1,3), (2,3), (3, 4)]\<rparr>

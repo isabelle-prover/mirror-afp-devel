@@ -33,7 +33,7 @@ at Level 2. In this version, there is no ticket forwarding.
 \<close>
 
 text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"}.\<close>
+\<open>dom\<close>.\<close>
 
 declare domIff [simp, iff del]
 

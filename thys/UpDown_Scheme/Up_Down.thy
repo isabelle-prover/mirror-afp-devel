@@ -21,20 +21,20 @@ next
   let "?leafs p" = "(lgrid p {d} lm) - {p}"
   let "?parents" = "parents d (base {d} p) p"
   let ?b = "base {0..<d} p"
-  have "d < dm" using `Suc d \<le> dm` by auto
+  have "d < dm" using \<open>Suc d \<le> dm\<close> by auto
 
-  have p_spg: "p \<in> grid (start dm) {0..<dm}" and p_spg': "p \<in> sparsegrid' dm" and "level p < lm" using `p \<in> sparsegrid dm lm`
+  have p_spg: "p \<in> grid (start dm) {0..<dm}" and p_spg': "p \<in> sparsegrid' dm" and "level p < lm" using \<open>p \<in> sparsegrid dm lm\<close>
     unfolding sparsegrid_def and sparsegrid'_def and lgrid_def by auto
   have p'_in_spg: "!! p'. p' \<in> ?subgrid d p \<Longrightarrow> p' \<in> sparsegrid dm lm"
     using base_grid[OF p_spg'] unfolding sparsegrid'_def sparsegrid_def lgrid_def by auto
 
   from baseE[OF p_spg', where ds="{0..<d}"]
   have "?b \<in> grid (start dm) {d..<dm}" and p_bgrid: "p \<in> grid ?b {0..<d}" by auto
-  hence "d < length ?b" using `Suc d \<le> dm` by auto
-  have "p ! d = ?b ! d" using base_out[OF _ _ p_spg'] `Suc d \<le> dm` by auto
+  hence "d < length ?b" using \<open>Suc d \<le> dm\<close> by auto
+  have "p ! d = ?b ! d" using base_out[OF _ _ p_spg'] \<open>Suc d \<le> dm\<close> by auto
 
-  have "length p = dm" using `p \<in> sparsegrid dm lm` unfolding sparsegrid_def lgrid_def by auto
-  hence "d < length p" using `d < dm` by auto
+  have "length p = dm" using \<open>p \<in> sparsegrid dm lm\<close> unfolding sparsegrid_def lgrid_def by auto
+  hence "d < length p" using \<open>d < dm\<close> by auto
 
   have "updown' dm lm d (up dm lm d \<alpha>) p =
     (\<Sum> p' \<in> ?subgrid d p. (up dm lm d \<alpha>) p' * (?prod d p' p))"
@@ -42,11 +42,11 @@ next
   also have "\<dots> = (\<Sum> p' \<in> ?subgrid d p. (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * ?prod (Suc d) p'' p))"
   proof (intro sum.cong refl)
     fix p' assume "p' \<in> ?subgrid d p"
-    hence "d < length p'" unfolding lgrid_def using base_length[OF p_spg'] `Suc d \<le> dm` by auto
+    hence "d < length p'" unfolding lgrid_def using base_length[OF p_spg'] \<open>Suc d \<le> dm\<close> by auto
 
     have "up dm lm d \<alpha> p' * ?prod d p' p =
       (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * l2_\<phi> (p'' ! d) (p' ! d)) * ?prod d p' p"
-      using `p' \<in> ?subgrid d p` up `Suc d \<le> dm` p'_in_spg by auto
+      using \<open>p' \<in> ?subgrid d p\<close> up \<open>Suc d \<le> dm\<close> p'_in_spg by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * l2_\<phi> (p'' ! d) (p' ! d) * ?prod d p' p)"
       using sum_distrib_right by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?leafs p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
@@ -55,12 +55,12 @@ next
       have "?prod d p' p = ?prod d p'' p"
       proof (intro prod.cong refl)
         fix d' assume "d' \<in> {0..<d}"
-        hence d_lt_p: "d' < length p'" and d'_not_d: "d' \<notin> {d}" using `d < length p'` by auto
-        hence "p' ! d' = p'' ! d'" using `p'' \<in> ?leafs p'` grid_invariant[OF d_lt_p d'_not_d] unfolding lgrid_def by auto
+        hence d_lt_p: "d' < length p'" and d'_not_d: "d' \<notin> {d}" using \<open>d < length p'\<close> by auto
+        hence "p' ! d' = p'' ! d'" using \<open>p'' \<in> ?leafs p'\<close> grid_invariant[OF d_lt_p d'_not_d] unfolding lgrid_def by auto
         thus "l2_\<phi> (p'!d') (p!d') = l2_\<phi> (p''!d') (p!d')" by auto
       qed
       moreover have "p' ! d = p ! d"
-        using `p' \<in> ?subgrid d p` and grid_invariant[OF `d < length ?b`, where p=p' and ds="{0..<d}"] unfolding lgrid_def `p ! d = ?b ! d` by auto
+        using \<open>p' \<in> ?subgrid d p\<close> and grid_invariant[OF \<open>d < length ?b\<close>, where p=p' and ds="{0..<d}"] unfolding lgrid_def \<open>p ! d = ?b ! d\<close> by auto
       ultimately have "l2_\<phi> (p'' ! d) (p' ! d) * ?prod d p' p =
         l2_\<phi> (p'' ! d) (p ! d) * ?prod d p'' p" by auto
       also have "\<dots> = ?prod (Suc d) p'' p"
@@ -91,20 +91,20 @@ next
   finally have up_part: "updown' dm lm d (up dm lm d \<alpha>) p = (\<Sum> p'' \<in> (\<Union> p' \<in> ?subgrid d p. ?leafs p'). \<alpha> p'' * (?prod (Suc d) p'' p))" .
 
   have "down dm lm d (updown' dm lm d \<alpha>) p = (\<Sum> p' \<in> ?parents. (updown' dm lm d \<alpha> p') * l2_\<phi> (p ! d) (p' ! d))"
-    using `Suc d \<le> dm` and down and `p \<in> sparsegrid dm lm` by auto
+    using \<open>Suc d \<le> dm\<close> and down and \<open>p \<in> sparsegrid dm lm\<close> by auto
   also have "\<dots> = (\<Sum> p' \<in> ?parents. \<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
   proof (rule sum.cong[OF refl])
     fix p' let ?b' = "base {d} p"
     assume "p' \<in> ?parents"
     hence p_lgrid: "p' \<in> lgrid ?b' {d} (level p + 1)" using parents_subset_lgrid by auto
-    hence "p' \<in> sparsegrid dm lm" and p'_spg': "p' \<in> sparsegrid' dm" using `level p < lm` base_grid[OF p_spg'] unfolding sparsegrid_def lgrid_def sparsegrid'_def by auto
+    hence "p' \<in> sparsegrid dm lm" and p'_spg': "p' \<in> sparsegrid' dm" using \<open>level p < lm\<close> base_grid[OF p_spg'] unfolding sparsegrid_def lgrid_def sparsegrid'_def by auto
     hence "length p' = dm" unfolding sparsegrid_def lgrid_def by auto
-    hence "d < length p'" using `Suc d \<le> dm` by auto
+    hence "d < length p'" using \<open>Suc d \<le> dm\<close> by auto
 
     from p_lgrid have p'_grid: "p' \<in> grid ?b' {d}" unfolding lgrid_def by auto
 
     have "(updown' dm lm d \<alpha> p') * l2_\<phi> (p ! d) (p' !  d) = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod d p'' p') * l2_\<phi> (p ! d) (p' ! d)"
-      using `p' \<in> sparsegrid dm lm` Suc by auto
+      using \<open>p' \<in> sparsegrid dm lm\<close> Suc by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod d p'' p' * l2_\<phi> (p ! d) (p' ! d))"
       using sum_distrib_right by auto
     also have "\<dots> = (\<Sum> p'' \<in> ?subgrid d p'. \<alpha> p'' * ?prod (Suc d) p'' p)"
@@ -114,15 +114,15 @@ next
       have "?prod d p'' p' = ?prod d p'' p"
       proof (rule prod.cong, rule refl)
         fix d' assume "d' \<in> {0..<d}"
-        hence "d' < dm" and "d' \<notin> {d}" using `Suc d \<le> dm` by auto
+        hence "d' < dm" and "d' \<notin> {d}" using \<open>Suc d \<le> dm\<close> by auto
         from grid_base_out[OF this p_spg' p'_grid]
         show "l2_\<phi> (p''!d') (p'!d') = l2_\<phi> (p''!d') (p!d')" by auto
       qed
       moreover
       have "l2_\<phi> (p ! d) (p' ! d) = l2_\<phi> (p'' ! d) (p ! d)"
       proof -
-        have "d < dm" and "d \<notin> {0..<d}" using `Suc d \<le> dm` base_length p'_spg' by auto
-        from grid_base_out[OF this p'_spg'] `p'' \<in> ?subgrid d p'`[unfolded lgrid_def]
+        have "d < dm" and "d \<notin> {0..<d}" using \<open>Suc d \<le> dm\<close> base_length p'_spg' by auto
+        from grid_base_out[OF this p'_spg'] \<open>p'' \<in> ?subgrid d p'\<close>[unfolded lgrid_def]
         show ?thesis using l2_commutative by auto
       qed
       moreover have "?prod d p'' p * l2_\<phi> (p'' ! d) (p ! d) = ?prod (Suc d) p'' p"
@@ -162,24 +162,24 @@ next
     assume "snd x = snd y"
     have "fst x = fst y"
     proof (rule nth_equalityI)
-      show l_eq: "length (fst x) = length (fst y)" using grid_length[OF `p \<in> grid (fst y) {d}`] grid_length[OF `p \<in> grid (fst x) {d}`]
+      show l_eq: "length (fst x) = length (fst y)" using grid_length[OF \<open>p \<in> grid (fst y) {d}\<close>] grid_length[OF \<open>p \<in> grid (fst x) {d}\<close>]
         by auto
       show "fst x ! i = fst y ! i" if "i < length (fst x)" for i
       proof -
-        have "i < length (fst y)" and "i < dm" using that l_eq and `length (fst y) = dm` by auto
+        have "i < length (fst y)" and "i < dm" using that l_eq and \<open>length (fst y) = dm\<close> by auto
         show "fst x ! i = fst y ! i"
         proof (cases "i = d")
           case False hence "i \<notin> {d}" by auto
-          with grid_invariant[OF `i < length (fst x)` this `p \<in> grid (fst x) {d}`]
-            grid_invariant[OF `i < length (fst y)` this `p \<in> grid (fst y) {d}`]
+          with grid_invariant[OF \<open>i < length (fst x)\<close> this \<open>p \<in> grid (fst x) {d}\<close>]
+            grid_invariant[OF \<open>i < length (fst y)\<close> this \<open>p \<in> grid (fst y) {d}\<close>]
           show ?thesis by auto
         next
-          case True with grid_base_out[OF `i < dm` _ y_spg y_snd] grid_base_out[OF `i < dm` _ x_spg x_snd]
-          show ?thesis using `snd x = snd y` by auto
+          case True with grid_base_out[OF \<open>i < dm\<close> _ y_spg y_snd] grid_base_out[OF \<open>i < dm\<close> _ x_spg x_snd]
+          show ?thesis using \<open>snd x = snd y\<close> by auto
         qed
       qed
     qed
-    show "x = y" using prod_eqI[OF `fst x = fst y` `snd x = snd y`] .
+    show "x = y" using prod_eqI[OF \<open>fst x = fst y\<close> \<open>snd x = snd y\<close>] .
   qed
   also have "\<dots> = (\<Sum> p'' \<in> (\<Union> p' \<in> ?parents. (\<Union> p'' \<in> ?subgrid d p'. snd ` { (p', p'') })).
     \<alpha> p'' * (?prod (Suc d) p'' p))" by (auto simp only: image_UN)
@@ -197,7 +197,7 @@ next
     fix x y
     assume "x \<in> (\<Union> p' \<in> ?subgrid d p. ?leafs p')"
     then obtain px where "px \<in> grid (base {0..<d} p) {0..<d}" and "x \<in> grid px {d}" and "x \<noteq> px" unfolding lgrid_def by auto
-    with grid_base_out[OF _ _ p_spg' this(1)] `Suc d \<le> dm` base_length[OF p_spg'] grid_level_d
+    with grid_base_out[OF _ _ p_spg' this(1)] \<open>Suc d \<le> dm\<close> base_length[OF p_spg'] grid_level_d
     have "lv px d < lv x d" and "px ! d = p ! d" by auto
     hence "lv p d < lv x d" unfolding lv_def by auto
     moreover
@@ -205,8 +205,8 @@ next
     then obtain py where y_grid: "y \<in> grid (base {0..<d} py) {0..<d}" and "py \<in> ?parents" unfolding lgrid_def by auto
     hence "py \<in> grid (base {d} p) {d}" and "p \<in> grid py {d}" unfolding parents_def by auto
     hence py_spg: "py \<in> sparsegrid' dm" using base_grid[OF p_spg'] by auto
-    have "y ! d = py ! d" using grid_base_out[OF _ _ py_spg y_grid] `Suc d \<le> dm` by auto
-    hence "lv y d \<le> lv p d" using grid_single_level[OF `p \<in> grid py {d}`] `Suc d \<le> dm` and sparsegrid'_length[OF py_spg] unfolding lv_def by auto
+    have "y ! d = py ! d" using grid_base_out[OF _ _ py_spg y_grid] \<open>Suc d \<le> dm\<close> by auto
+    hence "lv y d \<le> lv p d" using grid_single_level[OF \<open>p \<in> grid py {d}\<close>] \<open>Suc d \<le> dm\<close> and sparsegrid'_length[OF py_spg] unfolding lv_def by auto
     ultimately
     show "x \<noteq> y" by auto
   qed
@@ -217,7 +217,7 @@ next
       fix x assume "x \<in> ?in"
       show "x \<in> ?out"
       proof (cases "x \<in> ?children")
-        case False hence "x \<in> ?siblings" using `x \<in> ?in` by auto
+        case False hence "x \<in> ?siblings" using \<open>x \<in> ?in\<close> by auto
         then obtain px where "px \<in> parents d (base {d} p) p" and "x \<in> lgrid (base {0..<d} px) {0..<d} lm" by auto
         hence "level x < lm" and "px \<in> grid (base {d} p) {d}" and "x \<in> grid (base {0..<d} px) {0..<d}" and "{d} \<union> {0..<d} = {0..<Suc d}" unfolding lgrid_def parents_def by auto
         with grid_base_union[OF p_spg' this(2) this(3)] show ?thesis unfolding lgrid_def by auto
@@ -228,8 +228,8 @@ next
         hence "px \<in> grid (base {0..<d} p) {0..<d}" and "x \<in> grid px {d}" and "level x < lm" and "{d} \<union> {0..<d} = {0..<Suc d}" unfolding lgrid_def by auto
         from grid_base_dim_add[OF _ p_spg' this(1)]
         have "px \<in> grid (base {0..<Suc d} p) {0..<Suc d}" by auto
-        from grid_transitive[OF `x \<in> grid px {d}` this]
-        show ?thesis unfolding lgrid_def using `level x < lm` d_eq by auto
+        from grid_transitive[OF \<open>x \<in> grid px {d}\<close> this]
+        show ?thesis unfolding lgrid_def using \<open>level x < lm\<close> d_eq by auto
       qed
     qed
 
@@ -250,11 +250,11 @@ next
         assume "x \<in> grid (base {0..<d} p) {0..<Suc d} - grid (base {0..<d} p) {0..<d}"
         hence "x \<in> grid (base {0..<d} p) ({d} \<union> {0..<d})" and x_ngrid: "x \<notin> grid (base {0..<d} p) {0..<d}" using ds_eq by auto
         from grid_split[OF this(1)] obtain px where px_grid: "px \<in> grid (base {0..<d} p) {0..<d}" and "x \<in> grid px {d}" by auto
-        from grid_level[OF this(2)] `level x < lm` have "level px < lm" by auto
+        from grid_level[OF this(2)] \<open>level x < lm\<close> have "level px < lm" by auto
         hence "px \<in> ?subgrid d p" using px_grid unfolding lgrid_def by auto
         hence "x \<notin> grid px {d} - {px}" using up_ps by auto
         moreover have "x \<noteq> px" proof (rule ccontr) assume "\<not> x \<noteq> px" with px_grid and x_ngrid show False by auto qed
-        ultimately show False using `x \<in> grid px {d}` by auto
+        ultimately show False using \<open>x \<in> grid px {d}\<close> by auto
       qed
       moreover have "p \<in> ?parents" unfolding parents_def using baseE(2)[OF p_spg'] by auto
       hence "x \<notin> grid (base {0..<d} p) {0..<d}" by (rule down_ps)
@@ -274,7 +274,7 @@ next
         thus False using x_ngrid by auto
       qed
 
-      have "d < length ?bx" and "d < length ?bp" and "d < length ?bx1" and "d < length ?bp1" using base_length[OF x_spg] base_length[OF p_spg'] and `d < dm` by auto
+      have "d < length ?bx" and "d < length ?bp" and "d < length ?bx1" and "d < length ?bp1" using base_length[OF x_spg] base_length[OF p_spg'] and \<open>d < dm\<close> by auto
       have p_nochild_x: "?bp \<notin> grid ?bx {d}" (is "?assm")
       proof (rule ccontr)
         have ds: "{0..<d} \<union> {0..<Suc d} = {d} \<union> {0..<d}" by auto
@@ -282,17 +282,17 @@ next
         assume "\<not> ?assm" hence b_in_bx: "base {0..<d} p \<in> grid ?bx {d}" by auto
 
         have "d \<notin> {0..<d}" and "d \<in> {d}" by auto
-        from grid_replace_dim[OF `d < length ?bx` `d < length p` grid.Start[where b=p and ds="{d}"] b_in_bx]
-        have "p \<in> grid ?px {d}" unfolding base_out[OF `d < dm` `d \<notin> {0..<d}` x_spg] base_out[OF `d < dm` `d \<notin> {0..<d}` p_spg'] list_update_id .
+        from grid_replace_dim[OF \<open>d < length ?bx\<close> \<open>d < length p\<close> grid.Start[where b=p and ds="{d}"] b_in_bx]
+        have "p \<in> grid ?px {d}" unfolding base_out[OF \<open>d < dm\<close> \<open>d \<notin> {0..<d}\<close> x_spg] base_out[OF \<open>d < dm\<close> \<open>d \<notin> {0..<d}\<close> p_spg'] list_update_id .
         moreover
-        from grid_replace_dim[OF `d < length ?bx1` `d < length ?bp1` baseE(2)[OF p_spg', where ds="{d}"] baseE(2)[OF x_spg, where ds="{d}"]]
-        have "?px \<in> grid ?bp1 {d}" unfolding base_in[OF `d < dm` `d \<in> {d}` x_spg] unfolding base_in[OF `d < dm` `d \<in> {d}` p_spg', symmetric] list_update_id .
+        from grid_replace_dim[OF \<open>d < length ?bx1\<close> \<open>d < length ?bp1\<close> baseE(2)[OF p_spg', where ds="{d}"] baseE(2)[OF x_spg, where ds="{d}"]]
+        have "?px \<in> grid ?bp1 {d}" unfolding base_in[OF \<open>d < dm\<close> \<open>d \<in> {d}\<close> x_spg] unfolding base_in[OF \<open>d < dm\<close> \<open>d \<in> {d}\<close> p_spg', symmetric] list_update_id .
         ultimately
         have "x \<notin> grid (base {0..<d} ?px) {0..<d}" using down_ps[unfolded parents_def, where p'="?px"] by (auto simp only:)
         moreover
         have "base {0..<d} ?px = ?bx"
         proof (rule nth_equalityI)
-          from `?px \<in> grid ?bp1 {d}` have px_spg: "?px \<in> sparsegrid' dm" using base_grid[OF p_spg'] by auto
+          from \<open>?px \<in> grid ?bp1 {d}\<close> have px_spg: "?px \<in> sparsegrid' dm" using base_grid[OF p_spg'] by auto
           from base_length[OF this] base_length[OF x_spg] show l_eq: "length (base {0..<d} ?px) = length ?bx"  by auto
           show "base {0..<d} ?px ! i = ?bx ! i" if "i < length (base {0..<d} ?px)" for i
           proof -
@@ -300,20 +300,20 @@ next
             show "base {0..<d} ?px ! i = ?bx ! i"
             proof (cases "i < d")
               case True hence "i \<in> {0..<d}" by auto
-              from base_in[OF `i < dm` this] show ?thesis using px_spg x_spg by auto
+              from base_in[OF \<open>i < dm\<close> this] show ?thesis using px_spg x_spg by auto
             next
               case False hence "i \<notin> {0..<d}" by auto
               have "?px ! i = x ! i"
               proof (cases "i > d")
-                have i_le: "i < length (base {0..<Suc d} p)" using base_length[OF p_spg'] and `i < dm` by auto
+                have i_le: "i < length (base {0..<Suc d} p)" using base_length[OF p_spg'] and \<open>i < dm\<close> by auto
                 case True hence "i \<notin> {0..<Suc d}" by auto
-                from grid_invariant[OF i_le this x_eq] base_out[OF `i < dm` this p_spg']
+                from grid_invariant[OF i_le this x_eq] base_out[OF \<open>i < dm\<close> this p_spg']
                 show ?thesis using list_update_id and True by auto
               next
-                case False hence "d = i" using `\<not> i < d` by auto
-                thus ?thesis unfolding `d = i` using `i < dm` `length p = dm` nth_list_update_eq by auto
+                case False hence "d = i" using \<open>\<not> i < d\<close> by auto
+                thus ?thesis unfolding \<open>d = i\<close> using \<open>i < dm\<close> \<open>length p = dm\<close> nth_list_update_eq by auto
               qed
-              thus ?thesis using base_out[OF `i < dm` `i \<notin> {0..<d}` px_spg] base_out[OF `i < dm` `i \<notin> {0..<d}` x_spg] by auto
+              thus ?thesis using base_out[OF \<open>i < dm\<close> \<open>i \<notin> {0..<d}\<close> px_spg] base_out[OF \<open>i < dm\<close> \<open>i \<notin> {0..<d}\<close> x_spg] by auto
             qed
           qed
         qed
@@ -327,14 +327,14 @@ next
 
       have "l2_\<phi> (?bp ! d) (?bx ! d) = 0"
       proof (cases "lv ?bx d \<le> lv ?bp d")
-        case True from l2_disjoint[OF _ x_grid p_grid p_nochild_x this] `d < dm` and base_length[OF p_spg']
+        case True from l2_disjoint[OF _ x_grid p_grid p_nochild_x this] \<open>d < dm\<close> and base_length[OF p_spg']
         show ?thesis by auto
       next
         case False hence "lv ?bx d \<ge> lv ?bp d" by auto
-        from l2_disjoint[OF _ p_grid x_grid x_nochild_p this] `d < dm` and base_length[OF p_spg']
+        from l2_disjoint[OF _ p_grid x_grid x_nochild_p this] \<open>d < dm\<close> and base_length[OF p_spg']
         show ?thesis by (auto simp: l2_commutative)
       qed
-      hence "l2_\<phi> (p ! d) (x ! d) = 0" using base_out[OF `d < dm`] p_spg' x_spg by auto
+      hence "l2_\<phi> (p ! d) (x ! d) = 0" using base_out[OF \<open>d < dm\<close>] p_spg' x_spg by auto
       hence "\<exists> d \<in> {0..<Suc d}. l2_\<phi> (p ! d) (x ! d) = 0" by auto
       from prod_zero[OF _ this]
       show "?F x = 0" by (auto simp: l2_commutative)
@@ -351,7 +351,7 @@ proof -
   have "!!p'. p' \<in> lgrid (base {0..<dm} p) {0..<dm} lm \<Longrightarrow> length p' = dm"
   proof -
     fix p' assume "p' \<in> lgrid (base {0..<dm} p) {0..<dm} lm"
-    with base_grid[OF `p \<in> sparsegrid' dm`] have "p' \<in> sparsegrid' dm" unfolding lgrid_def by auto
+    with base_grid[OF \<open>p \<in> sparsegrid' dm\<close>] have "p' \<in> sparsegrid' dm" unfolding lgrid_def by auto
     thus "length p' = dm"  by auto
   qed
   thus ?thesis

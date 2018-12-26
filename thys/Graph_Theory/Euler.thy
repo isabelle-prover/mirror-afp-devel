@@ -7,14 +7,14 @@ theory Euler imports
   Digraph_Isomorphism
 begin
 
-section {* Euler Trails in Digraphs *}
+section \<open>Euler Trails in Digraphs\<close>
 
-text {*
+text \<open>
   In this section we prove the well-known theorem characterizing the
   existence of an Euler Trail in an directed graph
-*}
+\<close>
 
-subsection {* Trails and Euler Trails *}
+subsection \<open>Trails and Euler Trails\<close>
 
 definition (in pre_digraph) euler_trail :: "'a \<Rightarrow> 'b awalk \<Rightarrow> 'a \<Rightarrow> bool" where
   "euler_trail u p v \<equiv> trail u p v \<and> set p = arcs G \<and> set (awalk_verts u p) = verts G"
@@ -51,7 +51,7 @@ proof -
   then have B: "awalk w (r @ q) w" by auto
 
   have C: "set (awalk_verts w (r @ q)) = set (awalk_verts u p)"
-    using `awalk u p u` A A' by (auto simp: set_awalk_verts_append)
+    using \<open>awalk u p u\<close> A A' by (auto simp: set_awalk_verts_append)
 
   from A B C show ?thesis ..
 qed
@@ -85,7 +85,7 @@ proof -
   proof cases
     assume A: "w2 \<in> set (awalk_verts u q)"
     obtain s where "awalk w2 s w1"
-      using awalk_decomp[OF `awalk u q w1` A] by blast
+      using awalk_decomp[OF \<open>awalk u q w1\<close> A] by blast
     then have "w2 \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> w1" 
       by (intro reachable_awalkI reachable_mk_symmetricI)
     with symmetric_mk_symmetric show ?thesis by (rule symmetric_reachable)
@@ -94,7 +94,7 @@ proof -
     then have A: "w2 \<in> set (awalk_verts w1 r)"
       using w2_in by blast
     obtain s where "awalk w1 s w2"
-      using awalk_decomp[OF `awalk w1 r v` A] by blast
+      using awalk_decomp[OF \<open>awalk w1 r v\<close> A] by blast
     then show "w1 \<rightarrow>\<^sup>*\<^bsub>mk_symmetric G\<^esub> w2" 
       by (intro reachable_awalkI reachable_mk_symmetricI)
   qed
@@ -116,7 +116,7 @@ end
 
 
 
-subsection {* Arc Balance of Walks *}
+subsection \<open>Arc Balance of Walks\<close>
 
 context pre_digraph begin
 
@@ -157,7 +157,7 @@ lemma arc_balance_Cons:
 proof -
   from assms have "e \<notin> set es" "e \<in> arcs G" by (auto simp: trail_def)
 
-  with `e \<notin> set es` show ?thesis
+  with \<open>e \<notin> set es\<close> show ?thesis
     apply (cases "w = tail G e")
      apply (case_tac [!] "w = head G e")
        apply (auto simp: arc_set_balance_def)
@@ -176,9 +176,9 @@ next
   moreover
   have "\<And>w. arc_balance w [e] = (if w = tail G e \<and> tail G e \<noteq> head G e then -1
       else if w = head G e \<and> tail G e \<noteq> head G e then 1 else 0)"
-      using `e \<in> _` by (case_tac "w = tail G e") (auto simp: arc_set_balance_def)
+      using \<open>e \<in> _\<close> by (case_tac "w = tail G e") (auto simp: arc_set_balance_def)
   ultimately show ?case
-    by (auto simp: arc_set_balanced_def arc_balance_Cons[OF `trail u _ _`])
+    by (auto simp: arc_set_balanced_def arc_balance_Cons[OF \<open>trail u _ _\<close>])
 qed
 
 lemma trail_arc_balanceE:
@@ -193,7 +193,7 @@ end
 
 
 
-subsection {* Closed Euler Trails *}
+subsection \<open>Closed Euler Trails\<close>
 
 lemma (in wf_digraph) awalk_vertex_props:
   assumes "awalk u p v" "p \<noteq> []"
@@ -227,7 +227,7 @@ proof -
   { assume "\<exists>v. verts G = {v}"
     then obtain v where "verts G = {v}" by (auto simp: card_Suc_eq)
     moreover
-    with `arcs G \<noteq> {}` obtain e where "e \<in> arcs G" "tail G e = v" "head G e = v"
+    with \<open>arcs G \<noteq> {}\<close> obtain e where "e \<in> arcs G" "tail G e = v" "head G e = v"
       by (auto dest: tail_in_verts head_in_verts)
     moreover have "tail G ` arcs G \<union> head G ` arcs G \<subseteq> verts G" by auto 
     ultimately have ?thesis by auto }
@@ -238,8 +238,8 @@ proof -
       interpret S: pair_wf_digraph "mk_symmetric G" by rule
       from A obtain v where "v \<in> verts G" "u \<noteq> v" by blast
       then obtain p where "S.awalk u p v"
-        using `connected G` `u \<in> verts G` by (auto elim: connected_awalkE)
-      with `u \<noteq> v` obtain e where "e \<in> parcs (mk_symmetric G)" "fst e = u"
+        using \<open>connected G\<close> \<open>u \<in> verts G\<close> by (auto elim: connected_awalkE)
+      with \<open>u \<noteq> v\<close> obtain e where "e \<in> parcs (mk_symmetric G)" "fst e = u"
         by (metis S.awalk_Cons_iff S.awalk_empty_ends list_exhaust2)
       then obtain e' where "tail G e' = u \<or> head G e' = u" "e' \<in> arcs G"
         by (force simp: parcs_mk_symmetric)
@@ -255,15 +255,15 @@ proof (atomize_elim, rule ccontr)
 
   interpret S: pair_wf_digraph "mk_symmetric G" by rule
 
-  from `verts G \<noteq> {}` obtain u where "u \<in> verts G" by auto
+  from \<open>verts G \<noteq> {}\<close> obtain u where "u \<in> verts G" by auto
   with A obtain v where "v \<in> verts G" "u \<noteq> v" by auto
 
-  from `connected G` `u \<in> verts G` `v \<in> verts G`
+  from \<open>connected G\<close> \<open>u \<in> verts G\<close> \<open>v \<in> verts G\<close>
   obtain p where "S.awalk u p v"
-    using `connected G` `u \<in> verts G` by (auto elim: connected_awalkE)
-  with `u \<noteq> v` obtain e where "e \<in> parcs (mk_symmetric G)"
+    using \<open>connected G\<close> \<open>u \<in> verts G\<close> by (auto elim: connected_awalkE)
+  with \<open>u \<noteq> v\<close> obtain e where "e \<in> parcs (mk_symmetric G)"
     by (metis S.awalk_Cons_iff S.awalk_empty_ends list_exhaust2)
-  with `arcs G = {}` show False
+  with \<open>arcs G = {}\<close> show False
     by (auto simp: parcs_mk_symmetric)
 qed
 
@@ -273,11 +273,11 @@ lemma (in wf_digraph) euler_trail_conv_connected:
 proof
   assume ?R show ?L
   proof cases
-    assume "p = []" with assms `?R` show ?thesis
+    assume "p = []" with assms \<open>?R\<close> show ?thesis
       by (auto simp: euler_trail_def trail_def awalk_def elim: connected_arcs_empty)
   next
-    assume "p \<noteq> []" then have "arcs G \<noteq> {}" using `?R` by auto
-    with assms `?R` `p \<noteq> []` show ?thesis
+    assume "p \<noteq> []" then have "arcs G \<noteq> {}" using \<open>?R\<close> by auto
+    with assms \<open>?R\<close> \<open>p \<noteq> []\<close> show ?thesis
       by (auto simp: euler_trail_def trail_def set_awalk_verts_not_Nil connected_verts)
   qed
 qed (simp add: euler_trail_def)
@@ -295,18 +295,18 @@ proof (rule ccontr)
 
   interpret S: pair_wf_digraph "mk_symmetric G" ..
 
-  have "u \<in> verts G" using `awalk u p v` by (auto simp: awalk_hd_in_verts)
-  with `tail G e \<in> _` and `connected G`
+  have "u \<in> verts G" using \<open>awalk u p v\<close> by (auto simp: awalk_hd_in_verts)
+  with \<open>tail G e \<in> _\<close> and \<open>connected G\<close>
   obtain q where q: "S.awalk u q (tail G e)"
     by (auto elim: connected_awalkE)
 
   have "u \<in> set (awalk_verts u p)"
-    using `awalk u p v` by (auto simp: set_awalk_verts)
+    using \<open>awalk u p v\<close> by (auto simp: set_awalk_verts)
 
-  have "q \<noteq> []" using `u \<in> set _` `tail G e \<notin> _` q by auto
+  have "q \<noteq> []" using \<open>u \<in> set _\<close> \<open>tail G e \<notin> _\<close> q by auto
 
   have "\<exists>e \<in> set q. fst e \<in> set (awalk_verts u p) \<and> snd e \<notin> set (awalk_verts u p)"
-    by (rule S.awalk_vertex_props[OF `S.awalk _ _ _` `q \<noteq> []`]) (auto simp: `u \<in> set _` `tail G e \<notin> _`)
+    by (rule S.awalk_vertex_props[OF \<open>S.awalk _ _ _\<close> \<open>q \<noteq> []\<close>]) (auto simp: \<open>u \<in> set _\<close> \<open>tail G e \<notin> _\<close>)
   then obtain se' where se': "se' \<in> set q" "fst se' \<in> set (awalk_verts u p)" "snd se' \<notin> set (awalk_verts u p)"
     by auto
 
@@ -314,7 +314,7 @@ proof (rule ccontr)
   then obtain e' where "e' \<in> arcs G" "(tail G e' = fst se' \<and> head G e' = snd se') \<or> (tail G e' = snd se' \<and> head G e' = fst se')"
     by (auto simp: parcs_mk_symmetric)
   moreover
-  then have "e' \<notin> set p" using se' `awalk u p v`
+  then have "e' \<notin> set p" using se' \<open>awalk u p v\<close>
     by (auto dest: awalk_verts_arc2 awalk_verts_arc1)
   ultimately show False using se'
     using A by auto
@@ -339,7 +339,7 @@ proof -
       case 0
       then have "u \<in> verts G" by (auto simp: trail_def)
 
-      have "set p \<subseteq> arcs G" using `trail u p v` by (auto simp: trail_def)
+      have "set p \<subseteq> arcs G" using \<open>trail u p v\<close> by (auto simp: trail_def)
       with 0 have "set p = arcs G"
         by (auto simp: trail_def distinct_card[symmetric] card_seteq)
       then have "euler_trail u p v"
@@ -360,7 +360,7 @@ proof -
         also have "\<dots> \<le> card (out_arcs G u)"
           by (rule card_mono) auto
         finally have "card (in_arcs G u \<inter> set p) < card (in_arcs G u)"
-          using deg[OF `u \<in> _`] unfolding out_degree_def in_degree_def by simp
+          using deg[OF \<open>u \<in> _\<close>] unfolding out_degree_def in_degree_def by simp
         then have "in_arcs G u - set p \<noteq> {}"
           by (auto dest: card_psubset[rotated 2])
         then obtain a where "a \<in> arcs G" "head G a = u" "a \<notin> set p"
@@ -375,11 +375,11 @@ proof -
         obtain a where a_in: "a \<in> arcs G - set p"
             and a_end: "(tail G a \<in> set (awalk_verts u p) \<or> head G a \<in> set (awalk_verts u p))"
           by (atomize_elim) (rule trail_connected)
-        have "trail u p u" using Suc `u = v` by simp
+        have "trail u p u" using Suc \<open>u = v\<close> by simp
         show ?case
         proof (cases "tail G a \<in> set (awalk_verts u p)")
           case True
-          with `trail u p u` obtain q where q: "set p = set q" "trail (tail G a) q (tail G a)"
+          with \<open>trail u p u\<close> obtain q where q: "set p = set q" "trail (tail G a) q (tail G a)"
             by (rule rotate_trailE') blast
           with True a_in have *: "trail (tail G a) (q @ [a]) (head G a)"
             by (fastforce simp: trail_def awalk_simps )
@@ -391,7 +391,7 @@ proof -
         next
           case False
           with a_end have "head G a \<in> set (awalk_verts u p)" by blast
-          with `trail u p u` obtain q where q: "set p = set q" "trail (head G a) q (head G a)"
+          with \<open>trail u p u\<close> obtain q where q: "set p = set q" "trail (head G a) q (head G a)"
             by (rule rotate_trailE') blast
           with False a_in have *: "trail (tail G a) (a # q) (head G a)"
             by (fastforce simp: trail_def awalk_simps )
@@ -408,9 +408,9 @@ proof -
   have "u = v"
   proof -
     have "arc_balanced u p v"
-      using `euler_trail u p v` by (auto simp: euler_trail_def dest: arc_balancedI_trail)
+      using \<open>euler_trail u p v\<close> by (auto simp: euler_trail_def dest: arc_balancedI_trail)
     then show ?thesis
-      using `euler_trail u p v` deg
+      using \<open>euler_trail u p v\<close> deg
       by (auto simp add: euler_trail_def trail_def arc_set_balanced_all split: if_split_asm)
   qed
   ultimately show ?thesis by blast
@@ -426,7 +426,7 @@ proof -
   with assms have "arc_balance v p = 0"
     unfolding arc_set_balanced_def by auto
   moreover
-  from `set p = _` have "in_arcs G v \<inter> set p = in_arcs G v" "out_arcs G v \<inter> set p = out_arcs G v"
+  from \<open>set p = _\<close> have "in_arcs G v \<inter> set p = in_arcs G v" "out_arcs G v \<inter> set p = out_arcs G v"
     by (auto intro: in_arcs_in_arcs out_arcs_in_arcs)
   ultimately
   show ?thesis unfolding arc_set_balance_def in_degree_def out_degree_def by auto
@@ -451,9 +451,9 @@ corollary (in fin_digraph) closed_euler:
 
 
 
-subsection {* Open euler trails *}
+subsection \<open>Open euler trails\<close>
 
-text {*
+text \<open>
   Intuitively, a graph has an open euler trail if and only if it is possible to add
   an arc such that the resulting graph has a closed euler trail. However, this is
   not true in our formalization, as the arc type @{typ 'b} might be finite:
@@ -467,7 +467,7 @@ text {*
   @{term H} with arc type @{typ "'a \<times> nat \<times> 'a"}. Hence, we first characterize
   the existence of euler trail for the infinite arc type @{typ "'a \<times> nat \<times> 'a"}
   and transfer that result back to arbitrary arc types.
-*}
+\<close>
 
 lemma open_euler_infinite_label:
   fixes G :: "('a, 'a \<times> nat \<times> 'a) pre_digraph"
@@ -493,7 +493,7 @@ proof -
   let ?e = "(v,l,u)"
 
   have e_notin:"?e \<notin> arcs G"
-    using `l \<notin> _` by (auto simp: image_def)
+    using \<open>l \<notin> _\<close> by (auto simp: image_def)
 
   let ?H = "add_arc ?e"
     \<comment> \<open>We define a graph which has an closed euler trail\<close>
@@ -552,7 +552,7 @@ proof -
       have "arcs G = arcs ?H - {?e}" using e_notin by auto
       also have "arcs ?H = set p" using Het
         by (auto simp: pre_digraph.euler_trail_def pre_digraph.trail_def)
-      finally show ?thesis using `?e \<notin> set _` by (auto simp: p_decomp)
+      finally show ?thesis using \<open>?e \<notin> set _\<close> by (auto simp: p_decomp)
     qed
   qed
   then show ?thesis by blast
@@ -624,7 +624,7 @@ proof -
 
   have "pre_digraph.euler_trail (app_iso ?iso_g ?H) (iso_verts ?iso_g u) (map (iso_arcs ?iso_g) p) (iso_verts ?iso_g v)"
     using Het by (intro H.euler_trail_app_isoI digraph_isomorphism_invI di_iso_f)
-  then show ?thesis using di_iso_f `u \<in> _` `v \<in> _` by simp rule
+  then show ?thesis using di_iso_f \<open>u \<in> _\<close> \<open>v \<in> _\<close> by simp rule
 qed
 
 theorem open_euler2:
@@ -668,7 +668,7 @@ next
     "out_degree G v + 1 = in_degree G v"
     by blast
   then have "u \<noteq> v" by auto
-  from * show ?L by (metis open_euler1 `u \<noteq> v`)
+  from * show ?L by (metis open_euler1 \<open>u \<noteq> v\<close>)
 qed
 
 end

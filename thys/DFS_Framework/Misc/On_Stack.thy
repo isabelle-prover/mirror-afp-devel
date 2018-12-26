@@ -2,8 +2,8 @@
 theory On_Stack
 imports Collections.Refine_Dflt
 begin
-subsection {* Implementation of a stack with efficient on-stack operation *}
-text {* This generic implementation combines a stack implementation and
+subsection \<open>Implementation of a stack with efficient on-stack operation\<close>
+text \<open>This generic implementation combines a stack implementation and
   a set implementation that is used to keep track of the elements on the stack.
   It requires a distinct stack, i.e., no duplicate elements on the stack.
 
@@ -11,7 +11,7 @@ text {* This generic implementation combines a stack implementation and
   concrete stack-relation in order to avoid looping of the autoref-tool,
   which otherwise tries to instantiate the stack-implementation with itself
   indefinitely often.
-*}
+\<close>
 
 definition stack_rel_internal_def: "stack_rel lrel srel vrel \<equiv> {
   ((li,si),l). (li,l)\<in>\<langle>vrel\<rangle>lrel \<and> (si,set l)\<in>\<langle>vrel\<rangle>srel \<and> distinct l}"

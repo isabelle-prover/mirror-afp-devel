@@ -1,6 +1,6 @@
-section {* Auxiliary Lemmas for Coinductive Lists *}
+section \<open>Auxiliary Lemmas for Coinductive Lists\<close>
 
-text {* Some lemmas to allow better reasoning with coinductive lists. *}
+text \<open>Some lemmas to allow better reasoning with coinductive lists.\<close>
 
 theory MoreCoinductiveList
 imports
@@ -8,7 +8,7 @@ imports
   Coinductive.Coinductive_List
 begin
 
-subsection {* @{term "lset"} *}
+subsection \<open>@{term "lset"}\<close>
 
 lemma lset_lnth: "x \<in> lset xs \<Longrightarrow> \<exists>n. lnth xs n = x"
   by (induct rule: llist.set_induct, meson lnth_0, meson lnth_Suc_LCons)
@@ -47,7 +47,7 @@ qed simp
 lemma lset_subset: "\<not>(lset xs \<subseteq> A) \<Longrightarrow> \<exists>n. enat n < llength xs \<and> lnth xs n \<notin> A"
   by (metis in_lset_conv_lnth subsetI)
 
-subsection {* @{term "llength"} *}
+subsection \<open>@{term "llength"}\<close>
 
 lemma enat_Suc_ltl:
   assumes "enat (Suc n) < llength xs"
@@ -70,7 +70,7 @@ lemma lnull_0_llength: "\<not>lnull xs \<Longrightarrow> enat 0 < llength xs"
 lemma Suc_llength: "enat (Suc n) < llength xs \<Longrightarrow> enat n < llength xs"
   using dual_order.strict_trans enat_ord_simps(2) by blast
 
-subsection {* @{term "ltake"} *}
+subsection \<open>@{term "ltake"}\<close>
 
 lemma ltake_lnth: "ltake n xs = ltake n ys \<Longrightarrow> enat m < n \<Longrightarrow> lnth xs m = lnth ys m"
   by (metis lnth_ltake)
@@ -120,12 +120,12 @@ proof (cases)
   thus ?thesis using lset_LCons[of v0 "ltake (enat n) (ltl xs)"] by blast
 qed (simp add: lnull_def)
 
-subsection {* @{term "ldropn"} *}
+subsection \<open>@{term "ldropn"}\<close>
 
 lemma ltl_ldrop: "\<lbrakk> \<And>xs. P xs \<Longrightarrow> P (ltl xs); P xs \<rbrakk> \<Longrightarrow> P (ldropn n xs)"
   unfolding ldropn_def by (induct n) simp_all
 
-subsection {* @{term "lfinite"} *}
+subsection \<open>@{term "lfinite"}\<close>
 
 lemma lfinite_drop_set: "lfinite xs \<Longrightarrow> \<exists>n. v \<notin> lset (ldrop n xs)"
   by (metis ldrop_inf lmember_code(1) lset_lmember)
@@ -147,7 +147,7 @@ next
   ultimately show ?case using Suc.hyps Suc.prems(1) x by auto
 qed
 
-subsection {* @{term "lmap"} *}
+subsection \<open>@{term "lmap"}\<close>
 
 lemma lnth_lmap_ldropn:
   "enat n < llength xs \<Longrightarrow> lnth (lmap f (ldropn n xs)) 0 = lnth (lmap f xs) n"
@@ -158,9 +158,9 @@ lemma lnth_lmap_ldropn_Suc:
   by (metis (no_types, lifting) Suc_llength ldropn_ltl leD llist.map_disc_iff lnth_lmap_ldropn
                                 lnth_ltl lnull_ldropn ltl_ldropn ltl_lmap)
 
-subsection {* Notation *}
+subsection \<open>Notation\<close>
 
-text {* We introduce the notation \$ to denote @{term "lnth"}. *}
+text \<open>We introduce the notation \$ to denote @{term "lnth"}.\<close>
 
 notation lnth (infix "$" 61)
 

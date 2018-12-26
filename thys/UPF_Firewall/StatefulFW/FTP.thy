@@ -35,46 +35,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-subsection {* The File Transfer Protocol (ftp) *}
+subsection \<open>The File Transfer Protocol (ftp)\<close>
 theory 
   FTP
   imports 
     StatefulCore 
 begin
 
-subsubsection{* The protocol syntax *}
-text{* 
+subsubsection\<open>The protocol syntax\<close>
+text\<open>
   The File Transfer Protocol FTP is a well known example of a protocol which uses dynamic ports and
   is therefore a natural choice to use as an example for our model. 
 
   We model only a simplified version of the FTP protocol over IntegerPort addresses, still 
   containing all messages that matter for our purposes. It consists of the following four messages:
   \begin{enumerate} 
-    \item @{text "init"}: The client contacts the server indicating
+    \item \<open>init\<close>: The client contacts the server indicating
           his wish to get some data.
-    \item @{text "ftp_port_request p"}: The client, usually after having
+    \item \<open>ftp_port_request p\<close>: The client, usually after having
           received an acknowledgement of the server, indicates a port
           number on which he wants to receive the data.
-    \item @{text "ftp_ftp_data"}: The server sends the requested data over
+    \item \<open>ftp_ftp_data\<close>: The server sends the requested data over
           the new channel. There might be an arbitrary number of such
           messages, including zero.
-      \item @{text "ftp_close"}: The client closes the connection. The
+      \item \<open>ftp_close\<close>: The client closes the connection. The
           dynamic port gets closed again.
   \end{enumerate}
 
   The content field of a packet therefore now consists of either one of those four messages or a 
   default one.  
-*}
+\<close>
 
 datatype  msg = ftp_init  | ftp_port_request port | ftp_data | ftp_close | ftp_other
 
-text{* 
+text\<open>
   We now also make use of the ID field of a packet. It is used as session ID and we make the 
   assumption that they are all unique among different protocol runs.
 
   At first, we need some predicates which check if a packet is a specific FTP message and has the 
   correct session ID. 
-*}
+\<close>
 
 definition
   is_init :: "id \<Rightarrow> (adr\<^sub>i\<^sub>p, msg)packet \<Rightarrow> bool" where 
@@ -104,8 +104,8 @@ fun are_ftp_other where
   "are_ftp_other i (x#xs) = (is_ftp_other i x \<and> are_ftp_other i xs)"
   |"are_ftp_other i [] = True"
 
-subsubsection{* The protocol policy specification *}
-text{*
+subsubsection\<open>The protocol policy specification\<close>
+text\<open>
   We now have to model the respective state transitions. It is important to note that state 
   transitions themselves allow all packets which are allowed by the policy, not only those which 
   are allowed by the protocol. Their only task is to change the policy. As an alternative, we could 
@@ -116,7 +116,7 @@ text{*
   cases, one is enough. In our example, only messages 2 and 4 need special transitions. The default 
   says that if the policy accepts the packet, it is added to the history, otherwise it is simply 
   dropped. The policy remains the same in both cases.  
-*}
+\<close>
 
 fun last_opened_port where
   "last_opened_port i ((j,s,d,ftp_port_request p)#xs) = (if i=j then p else last_opened_port i xs)"
@@ -153,11 +153,11 @@ definition TRPolicy ::"    (adr\<^sub>i\<^sub>p,msg)packet \<times> (adr\<^sub>i
 definition TRPolicy\<^sub>M\<^sub>o\<^sub>n
   where     "TRPolicy\<^sub>M\<^sub>o\<^sub>n = policy2MON(TRPolicy)"
 
-text{* If required to contain the policy in the output *}
+text\<open>If required to contain the policy in the output\<close>
 definition TRPolicy\<^sub>M\<^sub>o\<^sub>n' 
   where     "TRPolicy\<^sub>M\<^sub>o\<^sub>n' = policy2MON (((\<lambda>(x,y,z). (z,(y,z))) o_f  TRPolicy ))"
 
-text{* 
+text\<open>
   Now we specify our test scenario in more detail. We could test:
   \begin{itemize}
     \item one correct FTP-Protocol run,
@@ -168,17 +168,17 @@ text{*
   \end{itemize}
 
   We only do the the simplest case here: one correct protocol run.
-*}
+\<close>
 
-text{*
+text\<open>
   There are four different states which are modelled as a datatype.
-*}
+\<close>
 datatype ftp_states = S0 | S1 | S2 | S3
 
-text{* 
-  The following constant is @{text "True"} for all sets which are correct FTP runs for a given 
+text\<open>
+  The following constant is \<open>True\<close> for all sets which are correct FTP runs for a given 
   source and destination address, ID, and data-port number.  
-*}
+\<close>
 
 
 fun
@@ -197,13 +197,13 @@ fun
 definition  is_single_ftp_run :: "adr\<^sub>i\<^sub>p src \<Rightarrow> adr\<^sub>i\<^sub>p dest \<Rightarrow> id \<Rightarrow> port  \<Rightarrow> (adr\<^sub>i\<^sub>p,msg) history set" 
   where      "is_single_ftp_run s d i p = {x. (is_ftp S0 s d i p x)}"
 
-text{* 
+text\<open>
   The following constant then returns a set of all the historys which denote such a normal 
   behaviour FTP run, again for a given source and destination address, ID, and data-port. 
 
   The following definition returns the set of all possible interleaving of two correct FTP protocol 
   runs. 
-*}
+\<close>
 definition 
   ftp_2_interleaved :: "adr\<^sub>i\<^sub>p src \<Rightarrow> adr\<^sub>i\<^sub>p dest \<Rightarrow> id \<Rightarrow> port  \<Rightarrow>
                adr\<^sub>i\<^sub>p src \<Rightarrow> adr\<^sub>i\<^sub>p dest \<Rightarrow> id \<Rightarrow> port  \<Rightarrow>

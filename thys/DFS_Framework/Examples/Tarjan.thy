@@ -19,9 +19,9 @@ lemma tjs_union:
 proof -
   from takeWhile_dropWhile_id have "set tjs = set (tw@dw)" by (auto simp: dw_def tw_def)
   hence "set tjs = set tw \<union> set dw" by (metis set_append)
-  moreover from `u \<in> set tjs` dropWhile_eq_Nil_conv have "dw \<noteq> []" by (auto simp: dw_def)
+  moreover from \<open>u \<in> set tjs\<close> dropWhile_eq_Nil_conv have "dw \<noteq> []" by (auto simp: dw_def)
   from hd_dropWhile[OF this[unfolded dw_def]] have "hd dw = u" by (simp add: dw_def)
-  with `dw \<noteq> []` have "set dw = insert u (set (tl dw))" by (cases "dw") auto
+  with \<open>dw \<noteq> []\<close> have "set dw = insert u (set (tl dw))" by (cases "dw") auto
   ultimately show ?thesis by blast
 qed
 
@@ -208,7 +208,7 @@ context Tarjan begin
 
       assume A: "k < Suc (length (tj_stack s))" "j < k" "(v#tj_stack s) ! j \<noteq> v"
       hence gt_0: "j > 0 \<and> k>0" by (cases "j=0") simp_all
-      moreover with `j < k` have "j' < k'" by (simp add: j'_def k'_def)
+      moreover with \<open>j < k\<close> have "j' < k'" by (simp add: j'_def k'_def)
       moreover from A have "k' < length (tj_stack s)" by (simp add: k'_def)
       ultimately have "\<delta> s (tj_stack s ! j') > \<delta> s (tj_stack s ! k')"
         using new_discover by blast
@@ -233,20 +233,20 @@ context Tarjan begin
       hence "?dw \<noteq> []" by auto
 
       define j' k' where "j' = Suc j + length ?tw" and "k' = Suc k + length ?tw"
-      with `j < k` have "j' < k'" by simp
+      with \<open>j < k\<close> have "j' < k'" by simp
       
       have "length (tj_stack s) = length ?tw + length ?dw"
         by (simp add: length_append[symmetric])
       moreover from A have *: "Suc k < length ?dw" and **: "Suc j < length ?dw" by auto
       ultimately have "k' < length (tj_stack s)" by (simp add: k'_def)
 
-      with finish `j'<k'` have "\<delta> s (tj_stack s ! k') < \<delta> s (tj_stack s ! j')" by simp
+      with finish \<open>j'<k'\<close> have "\<delta> s (tj_stack s ! k') < \<delta> s (tj_stack s ! j')" by simp
       also from dropWhile_nth[OF *] have "tj_stack s ! k' = ?dw ! Suc k"
         by (simp add: k'_def)
       also from dropWhile_nth[OF **] have "tj_stack s ! j' = ?dw ! Suc j"
         by (simp add: j'_def)
-      also from nth_tl[OF `?dw \<noteq> []`] have "?dw ! Suc k = a ! k" by (simp add: A)
-      also from nth_tl[OF `?dw \<noteq> []`] have "?dw ! Suc j = a ! j" by (simp add: A)
+      also from nth_tl[OF \<open>?dw \<noteq> []\<close>] have "?dw ! Suc k = a ! k" by (simp add: A)
+      also from nth_tl[OF \<open>?dw \<noteq> []\<close>] have "?dw ! Suc j = a ! j" by (simp add: A)
       finally have "\<delta> s (a ! k) < \<delta> s (a ! j)" .
     } note aux = this
 
@@ -305,12 +305,12 @@ context Tarjan begin context begin interpretation timing_syntax .
       proof (rule ccontr)
         assume "x \<notin> dom (finished s)"
         with x_tj tj_stack_discovered discovered_eq_finished_un_stack have "x \<in> set (stack s)" by blast
-        with `x\<noteq>u` finish have "x \<in> set (tl (stack s))" by (cases "stack s") auto
+        with \<open>x\<noteq>u\<close> finish have "x \<in> set (tl (stack s))" by (cases "stack s") auto
         with tl_lt_stack_hd_discover finish have *: "\<delta> s x < \<delta> s u" by simp
 
         from A have "?dw \<noteq> []" by simp
         with hd_dropWhile[OF this] hd_in_set have "u \<in> set ?dw" by metis
-        with tjs_disc_dw_tw `x \<in> set ?tw` have "\<delta> s u < \<delta> s x" by simp
+        with tjs_disc_dw_tw \<open>x \<in> set ?tw\<close> have "\<delta> s u < \<delta> s x" by simp
 
         with * show False by force
       qed
@@ -325,12 +325,12 @@ context Tarjan begin context begin interpretation timing_syntax .
       moreover
       from A have "x \<in> set (stack s)" by (metis in_set_tlD)
       with stack_not_finished have "x \<notin> dom (finished s)" by simp
-      with A aux_scc[OF `x \<noteq> u`] have "x \<notin> set ?tw" by blast
+      with A aux_scc[OF \<open>x \<noteq> u\<close>] have "x \<notin> set ?tw" by blast
 
       moreover 
-      from finish `x \<in> set (stack s)` have "x \<in> set (tj_stack s)" by auto
+      from finish \<open>x \<in> set (stack s)\<close> have "x \<in> set (tj_stack s)" by auto
 
-      moreover note tjs_union[OF `u \<in> set (tj_stack s)`]
+      moreover note tjs_union[OF \<open>u \<in> set (tj_stack s)\<close>]
 
       ultimately have "x \<in> set (tl ?dw)" by blast
     } note aux_tj = this
@@ -498,7 +498,7 @@ context Tarjan begin context begin interpretation timing_syntax .
 
           also from hd_stack_in_tj_stack finish have ne: "?dw \<noteq> []" and "length ?dw > 0" by simp_all
           from hd_dropWhile[OF ne] hd_conv_nth[OF ne] have "?dw ! 0 = u" by simp
-          with dropWhile_nth[OF `length ?dw > 0`] have "tj_stack s ! length ?tw = u" by simp
+          with dropWhile_nth[OF \<open>length ?dw > 0\<close>] have "tj_stack s ! length ?tw = u" by simp
 
           also from i have "?dw ! Suc i = x" "Suc i < length ?dw" by (simp_all add: nth_tl[OF ne])
           with dropWhile_nth[OF this(2)] have "tj_stack s ! (Suc i + length ?tw) = x" by simp
@@ -561,7 +561,7 @@ context Tarjan_invar begin
       assume "r \<in> set (tl (stack s))"
       with tl_stack_hd_tree_path ne have "(r,hd (stack s)) \<in> (tree_edges s)\<^sup>+" by simp
       with trancl_mono_mp tree_edges_ssE have "(r,hd (stack s))\<in>E\<^sup>*" by (metis rtrancl_eq_or_trancl)
-      with `(v,r)\<in>E\<^sup>*` show ?thesis by (metis rtrancl_trans)
+      with \<open>(v,r)\<in>E\<^sup>*\<close> show ?thesis by (metis rtrancl_trans)
     qed
   qed
   
@@ -649,9 +649,9 @@ context Tarjan begin context begin interpretation timing_syntax .
             proof (rule ccontr)
               assume "v \<notin> dom (finished s)" 
               with v_disc stack_set_def have "v \<in> set (stack s)" by auto
-              with `v\<noteq>u` finish have "v \<in> set (tl (stack s))" by (cases "stack s") auto
+              with \<open>v\<noteq>u\<close> finish have "v \<in> set (tl (stack s))" by (cases "stack s") auto
               with tl_lt_stack_hd_discover finish have "\<delta> s v < \<delta> s u" by simp
-              with `\<delta> s v > \<delta> s u` show False by force
+              with \<open>\<delta> s v > \<delta> s u\<close> show False by force
             qed
 
             ultimately have "(u,v) \<in> (tree_edges s)\<^sup>+" 
@@ -831,7 +831,7 @@ context begin interpretation timing_syntax .
               have "False"
               proof (cases i)
                 case "0" with i have "hd p = v" by (simp add: hd_conv_nth)
-                with `hd p = w` `w \<noteq> v` show False by simp
+                with \<open>hd p = w\<close> \<open>w \<noteq> v\<close> show False by simp
               next
                 case (Suc n) with i s'.lowlink_path_finished[OF p, where j=i] have 
                   "v \<in> dom (finished ?s)" by simp
@@ -901,7 +901,7 @@ context begin interpretation timing_syntax .
           case True show ?thesis
           proof (cases "(\<delta> s v < \<delta> s w \<and> v \<in> set (tj_stack s) \<and> \<delta> s v < \<zeta> s w)")
             case False note all_False = this
-            with `w = u` have "\<zeta> ?s w = \<zeta> s w"
+            with \<open>w = u\<close> have "\<zeta> ?s w = \<zeta> s w"
               by (rule_tac TRANS) (auto simp add: tarjan_back_def cross_back_edge)
             also from cross_back_edge w_disc have \<zeta>w: "... = LowLink s w" by simp
             also have "LowLink s w = LowLink ?s w"
@@ -909,11 +909,11 @@ context begin interpretation timing_syntax .
               assume v: "v \<in> lowlink_set ?s w"
               show "LowLink s w \<le> \<delta> ?s v"
               proof (cases "\<delta> s v < \<delta> s w \<and> \<delta> s v < \<zeta> s w")
-                case False with `LowLink s w \<le> \<delta> s w` \<zeta>w show ?thesis by auto
+                case False with \<open>LowLink s w \<le> \<delta> s w\<close> \<zeta>w show ?thesis by auto
               next
                 case True with all_False have v_n_tj: "v \<notin> set (tj_stack s)" by simp
                 from v have e: "(v,u) \<in> E\<^sup>*" "(u,v) \<in> E\<^sup>*" 
-                  unfolding lowlink_set_def by (auto simp add: `w=u`)
+                  unfolding lowlink_set_def by (auto simp add: \<open>w=u\<close>)
                 
                 from v_n_tj have "v \<notin> set (stack s)" using stack_ss_tj_stack by auto
                 with cross_back_edge have "v \<in> dom (finished s)" by (auto simp add: stack_set_def)
@@ -927,7 +927,7 @@ context begin interpretation timing_syntax .
             finally show ?thesis .
           next
             case True note all_True = this
-            with `w=u` have "\<zeta> ?s w = \<delta> s v"
+            with \<open>w=u\<close> have "\<zeta> ?s w = \<delta> s v"
               by (rule_tac TRANS) (simp add: tarjan_back_def cross_back_edge)
 
             also from True cross_back_edge w_disc have "\<delta> s v < LowLink s w" by simp
@@ -939,8 +939,8 @@ context begin interpretation timing_syntax .
               moreover from cb s'.cross_edges_ssE s'.back_edges_ssE have "(u,v) \<in> E" by blast
               hence "(u,v) \<in> E\<^sup>*" ..
               moreover from all_True tj_stack_reach_hd_stack have "(v,u) \<in> E\<^sup>*" by (simp add: cross_back_edge)
-              moreover note `v \<in> dom (discovered s)`
-              ultimately show ?thesis by (auto intro: s'.lowlink_setI simp: `w=u`)
+              moreover note \<open>v \<in> dom (discovered s)\<close>
+              ultimately show ?thesis by (auto intro: s'.lowlink_setI simp: \<open>w=u\<close>)
             qed
             with ll_sub ll_sub_rev have "lowlink_set ?s w = lowlink_set s w \<union> {v}" by auto
             hence "Min (?L \<union> {\<delta> s v}) = LowLink ?s w" by simp
@@ -975,7 +975,7 @@ context begin interpretation timing_syntax .
                 have "False"
                 proof (cases i)
                   case "0" with i have "hd p = u" by (simp add: hd_conv_nth)
-                  with `hd p = w` `w \<noteq> u` show False by simp
+                  with \<open>hd p = w\<close> \<open>w \<noteq> u\<close> show False by simp
                 next
                   case (Suc n) with i s'.lowlink_path_finished[OF p(1), where j=i] have 
                     "u \<in> dom (finished ?s)" by simp
@@ -1072,7 +1072,7 @@ context begin interpretation timing_syntax .
                 moreover from l have "i+1\<le>length p" by simp
                 ultimately have "?dp!1 \<in> dom (finished ?s)" by simp
                 moreover from aux[of 0] * have "(?dp!0,?dp!Suc 0) \<in> tree_edges s" by simp
-                with `hd ?dp = u` hd_conv_nth[of "?dp"] * have "(u,?dp!Suc 0) \<in> tree_edges s" by simp
+                with \<open>hd ?dp = u\<close> hd_conv_nth[of "?dp"] * have "(u,?dp!Suc 0) \<in> tree_edges s" by simp
                 with no_self_loop_in_tree have "?dp!1 \<noteq> u" by auto
                 ultimately have "?dp!1 \<in> dom (finished s)" by simp
               }
@@ -1081,12 +1081,12 @@ context begin interpretation timing_syntax .
 
                 have "p = (take i p)@?dp" by simp
                 with P path_conc_conv obtain x where p': "path E x ?dp ll" "path E w (take i p) x" by metis
-                with `?dp \<noteq> []` path_hd have "hd ?dp = x" by metis
-                with `hd ?dp = u` p' have u_path: "path E u ?dp ll" and path_u: "path E w (take i p) u" by metis+
+                with \<open>?dp \<noteq> []\<close> path_hd have "hd ?dp = x" by metis
+                with \<open>hd ?dp = u\<close> p' have u_path: "path E u ?dp ll" and path_u: "path E w (take i p) u" by metis+
 
               ultimately have "lowlink_path s u ?dp ll" using p by (simp add: lowlink_path_def)
-              moreover from u_path path_is_trancl `?dp \<noteq> []` have "(u,ll) \<in> E\<^sup>+" by force
-              moreover { from ll `ll \<noteq> w` have "(ll,w) \<in> E\<^sup>+" by (auto simp add: lowlink_set_def)
+              moreover from u_path path_is_trancl \<open>?dp \<noteq> []\<close> have "(u,ll) \<in> E\<^sup>+" by force
+              moreover { from ll \<open>ll \<noteq> w\<close> have "(ll,w) \<in> E\<^sup>+" by (auto simp add: lowlink_set_def)
                 also from path_u path_is_rtrancl have "(w,u) \<in> E\<^sup>*" by metis
                 finally have "(ll,u)\<in>E\<^sup>+" .
               }
@@ -1217,7 +1217,7 @@ context begin interpretation timing_syntax .
               hence e: "(v,w) \<in> E\<^sup>*" "(w,v) \<in> E\<^sup>*"
                 and v_disc: "v \<in> dom (discovered s)" by (auto simp add: lowlink_set_def)
               
-              from v `v\<noteq>w` obtain p where p: "lowlink_path ?s w p v" by (auto simp add: lowlink_set_def)
+              from v \<open>v\<noteq>w\<close> obtain p where p: "lowlink_path ?s w p v" by (auto simp add: lowlink_set_def)
               hence [simp]: "p\<noteq>[]" by (simp add: lowlink_path_def)
               
               from p have "hd p = w" by (auto simp add: lowlink_path_def path_hd)
@@ -1235,7 +1235,7 @@ context begin interpretation timing_syntax .
                 show "False"
                 proof (cases i)
                   case "0" with i have "hd p = u" by (simp add: hd_conv_nth)
-                  with `hd p = w` `w \<noteq> u` show False by simp
+                  with \<open>hd p = w\<close> \<open>w \<noteq> u\<close> show False by simp
                 next
                   case (Suc n) with i p have *: "(p!n,u) \<in> tree_edges s" "n < length p"
                     unfolding lowlink_path_def
@@ -1255,8 +1255,8 @@ context begin interpretation timing_syntax .
                   show ?thesis
                   proof (cases n)
                     case "0" with * have "hd p = p!n" by (simp add: hd_conv_nth)
-                    with `hd p = w` ** have "w = hd (stack ?s)" by simp
-                    with `w\<noteq>hd (stack ?s)` show False ..
+                    with \<open>hd p = w\<close> ** have "w = hd (stack ?s)" by simp
+                    with \<open>w\<noteq>hd (stack ?s)\<close> show False ..
                   next
                     case (Suc m) with * ** s'.lowlink_path_finished[OF p, where j=n] have 
                       "hd (stack ?s) \<in> dom (finished ?s)" by simp

@@ -2,7 +2,7 @@
     Author:     Tobias Nipkow, Andreas Lochbihler
 *)
 
-section {* Small Step Semantics *}
+section \<open>Small Step Semantics\<close>
 
 theory SmallStep
 imports
@@ -20,7 +20,7 @@ type_synonym
   "('addr,'thread_id,'addr expr \<times> 'addr locals,'heap,'addr) state"
 
 (* pretty printing for J_thread_action type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [a1, t
@@ -36,11 +36,11 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "Jinja_thread_action"}, K tr')]
   end
-*}
+\<close>
 typ "('addr,'thread_id,'heap) J_thread_action"
 
 (* pretty printing for J_state type *)
-print_translation {*
+print_translation \<open>
   let
     fun tr'
        [a1, t
@@ -56,7 +56,7 @@ print_translation {*
       else raise Match;
     in [(@{type_syntax "state"}, K tr')]
   end
-*}
+\<close>
 typ "('addr, 'thread_id, 'heap) J_state"
 
 definition extNTA2J :: "'addr J_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> 'addr expr \<times> 'addr locals"
@@ -88,7 +88,7 @@ where "extTA2J P \<equiv> convert_extTA (extNTA2J P)"
 lemma extTA2J_\<epsilon>: "extTA2J P \<epsilon> = \<epsilon>"
 by(simp)
 
-text{* Locking mechanism:
+text\<open>Locking mechanism:
   The expression on which the thread is synchronized is evaluated first to a value.
   If this expression evaluates to null, a null pointer expression is thrown.
   If this expression evaluates to an address, a lock must be obtained on this address, the
@@ -100,7 +100,7 @@ text{* Locking mechanism:
   the expression on which the thread synchronized is evaluated except for the last step.
   If the thread can obtain the lock on the object immediately after the last evaluation step, the evaluation is
   done and the lock acquired. If the lock cannot be obtained, the evaluation step is discarded. If another thread
-  changes the evaluation result of this last step, the thread then will try to synchronize on the new object. *}
+  changes the evaluation result of this last step, the thread then will try to synchronize on the new object.\<close>
 
 context J_heap_base begin
 
@@ -446,7 +446,7 @@ abbreviation reds' ::
   ("_,_ \<turnstile> ((1\<langle>_,/_\<rangle>) [-_\<rightarrow>]/ (1\<langle>_,/_\<rangle>))" [51,0,0,0,0,0,0] 81)
 where "reds' P \<equiv> reds (extTA2J P) P"
 
-subsection{*Some easy lemmas*}
+subsection\<open>Some easy lemmas\<close>
 
 lemma [iff]:
   "\<not> extTA,P,t \<turnstile> \<langle>Val v, s\<rangle> -ta\<rightarrow> \<langle>e', s'\<rangle>"
@@ -479,7 +479,7 @@ lemma red_lcl_add_aux:
   "extTA,P,t \<turnstile> \<langle>es, s\<rangle> [-ta\<rightarrow>] \<langle>es', s'\<rangle> \<Longrightarrow> extTA,P,t \<turnstile> \<langle>es, (hp s, l0 ++ lcl s)\<rangle> [-ta\<rightarrow>] \<langle>es', (hp s', l0 ++ lcl s')\<rangle>"
 proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
   case (BlockRed e h x V vo ta e' h' x' T)
-  note IH = `\<And>l0. extTA,P,t \<turnstile> \<langle>e,(hp (h, x(V := vo)), l0 ++ lcl (h, x(V := vo)))\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), l0 ++ lcl (h', x'))\<rangle>`[simplified]
+  note IH = \<open>\<And>l0. extTA,P,t \<turnstile> \<langle>e,(hp (h, x(V := vo)), l0 ++ lcl (h, x(V := vo)))\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), l0 ++ lcl (h', x'))\<rangle>\<close>[simplified]
   have lrew: "\<And>x x'. x(V := vo) ++ x'(V := vo) = (x ++ x')(V := vo)" 
     by(simp add:fun_eq_iff map_add_def)
   have lrew1: "\<And>X X' X'' vo. (X(V := vo) ++ X')(V := (X ++ X'') V) = X ++ X'(V := X'' V)"
@@ -496,7 +496,7 @@ proof (induct arbitrary: l0 and l0 rule:red_reds.inducts)
       by(simp only: lrew1 None lrew2)
   next
     case (Some v)
-    with `extTA,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+    with \<open>extTA,P,t \<turnstile> \<langle>e,(h, x(V := vo))\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>\<close>
     have "x' V \<noteq> None"
       by -(drule red_lcl_incr, auto split: if_split_asm)
     with IH[of "l0(V := vo)"]
@@ -541,7 +541,7 @@ proof(induct arbitrary: W and W rule: red_reds.inducts)
 next
   case (BlockRed e h x V vo ta e' h' x' T)
   have IH: "\<And>W. fv e \<subseteq> W \<Longrightarrow> extTA,P,t \<turnstile> \<langle>e,(hp (h, x(V := vo)), lcl (h, x(V := vo)) |` W)\<rangle> -ta\<rightarrow> \<langle>e',(hp (h', x'), lcl (h', x') |` W)\<rangle>" by fact
-  from `fv {V:T=vo; e} \<subseteq> W` have fve: "fv e \<subseteq> insert V W" by auto
+  from \<open>fv {V:T=vo; e} \<subseteq> W\<close> have fve: "fv e \<subseteq> insert V W" by auto
   show ?case
   proof(cases "V \<in> W")
     case True
@@ -605,7 +605,7 @@ by(drule reds_hext_incr)(rule tconf_hext_mono)
 
 end
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 context J_heap_base begin
 

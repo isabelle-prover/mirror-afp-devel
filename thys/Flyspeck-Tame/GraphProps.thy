@@ -1,6 +1,6 @@
 (*  Author:  Gertrud Bauer, Tobias Nipkow  *)
 
-section{* Properties of Graph Utilities *}
+section\<open>Properties of Graph Utilities\<close>
 
 theory GraphProps
 imports Graph
@@ -27,7 +27,7 @@ lemma distinct_vertices[iff]: "distinct(vertices(g::graph))"
 by(induct g) simp
 
 
-subsection{* @{const nextElem} *}
+subsection\<open>@{const nextElem}\<close>
 
 lemma nextElem_append[simp]:
  "y \<notin> set xs \<Longrightarrow> nextElem (xs @ ys) d y = nextElem ys d y"
@@ -128,7 +128,7 @@ apply clarsimp
 done
 
 
-subsection {* @{text nextVertex} *}
+subsection \<open>\<open>nextVertex\<close>\<close>
 
 lemma nextVertex_in_face'[simp]:
   "vertices f \<noteq> [] \<Longrightarrow> f \<bullet> v \<in> \<V> f"
@@ -174,7 +174,7 @@ apply(simp add:nextVertex_def nextElem_nth hd_conv_nth)
 done
 
 
-subsection {* @{text"\<E>"} *}
+subsection \<open>\<open>\<E>\<close>\<close>
 
 lemma edges_face_eq:
  "((a,b) \<in> \<E> (f::face)) = ((f \<bullet> a = b) \<and> a \<in> \<V> f)"
@@ -209,7 +209,7 @@ lemma prevVertex_in_edges:
 by(simp add:edges_face_eq)
 
 
-subsection {* Triangles *}
+subsection \<open>Triangles\<close>
 
 lemma vertices_triangle:
    "|vertices f| = 3 \<Longrightarrow> a \<in> \<V> f \<Longrightarrow>
@@ -250,7 +250,7 @@ proof -
     by (simp, elim disjE) (auto simp add: nextVertex_def prevVertex_def)
 qed
 
-subsection {* Quadrilaterals *}
+subsection \<open>Quadrilaterals\<close>
 
 
 lemma vertices_quad:
@@ -309,7 +309,7 @@ next
 qed
 
 
-subsection{* No loops *}
+subsection\<open>No loops\<close>
 
 lemma distinct_no_loop2:
  "\<lbrakk> distinct(vertices f); v \<in> \<V> f; u \<in> \<V> f; u \<noteq> v \<rbrakk> \<Longrightarrow> f \<bullet> v \<noteq> v"
@@ -328,7 +328,7 @@ apply (clarsimp simp:neq_Nil_conv)
 done
 
 
-subsection{* @{const between} *}
+subsection\<open>@{const between}\<close>
 
 lemma between_front[simp]:
  "v \<notin> set us \<Longrightarrow> between (u # us @ v # vs) u v = us"

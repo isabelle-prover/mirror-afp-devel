@@ -19,7 +19,7 @@ derive (hashcode) hash_code int integer bool char unit nat
 
 derive hash_code prod sum option list 
 
-text \<open>There is no need to @{text "derive hashable prod sum option list"} since all of these types 
+text \<open>There is no need to \<open>derive hashable prod sum option list\<close> since all of these types 
   are already instances of class @{class hashable}. Still the above command is necessary to register
   these types in the generator.\<close>
 

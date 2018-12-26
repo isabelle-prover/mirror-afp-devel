@@ -16,10 +16,10 @@ begin
   proof -
     have "finite (supp Q)"
       by (fact finite_supp)
-    with `P \<Turnstile> Act \<alpha> x` obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* Q"
+    with \<open>P \<Turnstile> Act \<alpha> x\<close> obtain \<alpha>' x' P' where eq: "Act \<alpha> x = Act \<alpha>' x'" and trans: "P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* Q"
       by (metis valid_Act_strong)
 
-    from `P \<sim>\<cdot> Q` and fresh and trans obtain Q' where trans': "Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot> Q'"
+    from \<open>P \<sim>\<cdot> Q\<close> and fresh and trans obtain Q' where trans': "Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot> Q'"
       by (metis bisimilar_simulation_step)
 
     from eq obtain p where px: "x' = p \<bullet> x"
@@ -30,7 +30,7 @@ begin
     moreover from bisim' have "(-p \<bullet> P') \<sim>\<cdot> (-p \<bullet> Q')"
       by (metis bisimilar_eqvt)
     ultimately have "-p \<bullet> Q' \<Turnstile> x"
-      using `\<And>P Q. P \<sim>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
+      using \<open>\<And>P Q. P \<sim>\<cdot> Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x\<close> by metis
     with px have "Q' \<Turnstile> x'"
       by (metis permute_minus_cancel(1) valid_eqvt)
 

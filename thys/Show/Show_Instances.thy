@@ -131,7 +131,7 @@ text \<open>
   nor @{type rat} are datatypes.
 \<close>
 
-local_setup {*
+local_setup \<open>
   Show_Generator.register_foreign_partial_and_full_showsp @{type_name prod} 0
        @{term "pshowsp_prod"}
        @{term "showsp_prod"} (SOME @{thm showsp_prod_def})
@@ -143,7 +143,7 @@ local_setup {*
   #> Show_Generator.register_foreign_showsp @{typ nat} @{term "showsp_nat"} @{thm show_law_nat}
   #> Show_Generator.register_foreign_showsp @{typ int} @{term "showsp_int"} @{thm show_law_int}
   #> Show_Generator.register_foreign_showsp @{typ rat} @{term "showsp_rat"} @{thm show_law_rat}
-*}
+\<close>
 
 derive "show" option sum prod unit bool nat int rat
 

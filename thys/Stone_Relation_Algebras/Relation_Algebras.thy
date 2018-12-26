@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Relation Algebras *}
+section \<open>Relation Algebras\<close>
 
-text {*
+text \<open>
 The main structures introduced in this theory are Stone relation algebras.
 They generalise Tarski's relation algebras \cite{Tarski1941} by weakening the Boolean algebra lattice structure to a Stone algebra.
 Our motivation is to generalise relation-algebraic methods from unweighted graphs to weighted graphs.
@@ -23,7 +23,7 @@ Second, we extend these structures by a pseudocomplement operation with addition
 
 Tarski's relation algebras are then obtained by a simple extension that imposes a Boolean algebra.
 See, for example, \cite{BirdMoor1997,HirschHodkinson2002,Maddux1996,Maddux2006,Schmidt2011,SchmidtStroehlein1993} for further details about relations and relation algebras, and \cite{AndrekaMikulas2011,BredihinSchein1978} for algebras of relations with a smaller signature.
-*}
+\<close>
 
 theory Relation_Algebras
 
@@ -31,12 +31,12 @@ imports Stone_Algebras.P_Algebras Semirings
 
 begin
 
-subsection {* Single-Object Bounded Distributive Allegories *}
+subsection \<open>Single-Object Bounded Distributive Allegories\<close>
 
-text {*
+text \<open>
 We start with developing bounded distributive allegories.
 The following definitions concern properties of relations that require converse in addition to lattice and semiring operations.
-*}
+\<close>
 
 class conv =
   fixes conv :: "'a \<Rightarrow> 'a" ("_\<^sup>T" [100] 100)
@@ -69,12 +69,12 @@ abbreviation linear_order   :: "'a \<Rightarrow> bool" where "linear_order x   \
 
 end
 
-text {*
-We reuse the relation algebra axioms given in \cite{Maddux1996} except for one -- see lemma @{text conv_complement_sub} below -- which we replace with the Dedekind rule (or modular law) @{text dedekind_1}.
+text \<open>
+We reuse the relation algebra axioms given in \cite{Maddux1996} except for one -- see lemma \<open>conv_complement_sub\<close> below -- which we replace with the Dedekind rule (or modular law) \<open>dedekind_1\<close>.
 The Dedekind rule or variants of it are known from \cite{BirdMoor1997,FreydScedrov1990,KawaharaFurusawaMori1999,SchmidtStroehlein1993}.
-We add @{text comp_left_zero}, which follows in relation algebras but not in the present setting.
+We add \<open>comp_left_zero\<close>, which follows in relation algebras but not in the present setting.
 The main change is that only a bounded distributive lattice is required, not a Boolean algebra.
-*}
+\<close>
 
 class bounded_distrib_allegory = bounded_distrib_lattice + times + one + conv +
   assumes comp_associative      : "(x * y) * z = x * (y * z)"
@@ -89,9 +89,9 @@ begin
 
 subclass bounded_distrib_allegory_signature .
 
-text {*
+text \<open>
 Many properties of relation algebras already follow in bounded distributive allegories.
-*}
+\<close>
 
 lemma conv_isotone:
   "x \<le> y \<Longrightarrow> x\<^sup>T \<le> y\<^sup>T"
@@ -173,9 +173,9 @@ lemma comp_right_conjugate:
   apply (unfold conjugate_def, intro allI)
   by (metis comp_left_conjugate[unfolded conjugate_def] conv_inf_bot_iff conv_dist_comp conv_involutive)
 
-text {*
+text \<open>
 We still obtain a semiring structure.
-*}
+\<close>
 
 subclass bounded_idempotent_semiring
   by (unfold_locales)
@@ -200,9 +200,9 @@ lemma dedekind_2:
   "y * x \<sqinter> z \<le> (y \<sqinter> (z * x\<^sup>T)) * x"
   by (metis conv_dist_inf conv_order conv_dist_comp dedekind_1)
 
-text {*
+text \<open>
 The intersection with a vector can still be exported from the first argument of a composition, and many other properties of vectors and covectors continue to hold.
-*}
+\<close>
 
 lemma vector_inf_comp:
   "vector x \<Longrightarrow> (x \<sqinter> y) * z = x \<sqinter> (y * z)"
@@ -276,9 +276,9 @@ lemma covector_comp_inf_1:
   "covector x \<Longrightarrow> (y \<sqinter> x) * z = y * (x\<^sup>T \<sqinter> z)"
   using covector_conv_vector covector_inf_comp_3 by fastforce
 
-text {*
+text \<open>
 We still have two ways to represent surjectivity and totality.
-*}
+\<close>
 
 lemma surjective_var:
   "surjective x \<longleftrightarrow> surjective_var x"
@@ -314,9 +314,9 @@ lemma univalent_conv_injective:
   "univalent x \<longleftrightarrow> injective (x\<^sup>T)"
   by simp
 
-text {*
+text \<open>
 We continue with studying further closure properties.
-*}
+\<close>
 
 lemma univalent_bot_closed:
   "univalent bot"
@@ -542,18 +542,18 @@ lemma linear_order_conv_closed:
   "linear_order x \<Longrightarrow> linear_order (x\<^sup>T)"
   using equivalence_top_closed conv_dist_sup inf_commute reflexive_conv_closed transitive_conv_closed by force
 
-text {*
+text \<open>
 We show a fact about equivalences.
-*}
+\<close>
 
 lemma equivalence_comp_dist_inf:
   "equivalence x \<Longrightarrow> x * y \<sqinter> x * z = x * (y \<sqinter> x * z)"
   by (metis antisym comp_right_subdist_inf dedekind_1 eq_iff inf.absorb1 inf.absorb2 mult_1_right mult_assoc)
 
-text {*
+text \<open>
 The following result generalises the fact that composition with a test amounts to intersection with the corresponding vector.
 Both tests and vectors can be used to represent sets as relations.
-*}
+\<close>
 
 lemma coreflexive_comp_top_inf:
   "coreflexive x \<Longrightarrow> x * top \<sqinter> y = x * y"
@@ -606,9 +606,9 @@ lemma coreflexive_dedekind:
   "coreflexive x \<Longrightarrow> coreflexive y \<Longrightarrow> coreflexive z \<Longrightarrow> x * y \<sqinter> z \<le> x * (y \<sqinter> x * z)"
   by (simp add: coreflexive_comp_inf inf.coboundedI1 inf.left_commute)
 
-text {*
+text \<open>
 Also the equational version of the Dedekind rule continues to hold.
-*}
+\<close>
 
 lemma dedekind_eq:
   "x * y \<sqinter> z = (x \<sqinter> (z * y\<^sup>T)) * (y \<sqinter> (x\<^sup>T * z)) \<sqinter> z"
@@ -643,9 +643,9 @@ lemma vector_export_comp_unit:
   "(x * top \<sqinter> 1) * y = x * top \<sqinter> y"
   by (simp add: vector_export_comp)
 
-text {*
+text \<open>
 We solve a few exercises from \cite{SchmidtStroehlein1993}.
-*}
+\<close>
 
 lemma ex231a [simp]:
   "(1 \<sqinter> x * x\<^sup>T) * x = x"
@@ -679,10 +679,10 @@ lemma arc_univalent:
   "arc x \<Longrightarrow> univalent x"
   using arc_conv_closed arc_injective univalent_conv_injective by blast
 
-text {*
+text \<open>
 The following result generalises \cite[Exercise 2]{Oliveira2009}.
 It is used to show that the while-loop preserves injectivity of the constructed tree.
-*}
+\<close>
 
 lemma injective_sup:
   assumes "injective t"
@@ -739,9 +739,9 @@ lemma comp_inf_covector:
   "x * (y \<sqinter> top * z) = x * y \<sqinter> top * z"
   by (simp add: covector_comp_inf covector_mult_closed)
 
-text {*
+text \<open>
 Well-known distributivity properties of univalent and injective relations over meet continue to hold.
-*}
+\<close>
 
 lemma univalent_comp_left_dist_inf:
   assumes "univalent x"
@@ -772,9 +772,9 @@ lemma comp_inf_vector_1:
   "(x \<sqinter> top * y) * z = x * (z \<sqinter> (top * y)\<^sup>T)"
   by (simp add: comp_inf_vector conv_dist_comp)
 
-text {*
+text \<open>
 The shunting properties for bijective relations and mappings continue to hold.
-*}
+\<close>
 
 lemma shunt_bijective:
   assumes "bijective z"
@@ -839,12 +839,12 @@ qed
 
 end
 
-subsection {* Single-Object Pseudocomplemented Distributive Allegories *}
+subsection \<open>Single-Object Pseudocomplemented Distributive Allegories\<close>
 
-text {*
+text \<open>
 We extend single-object bounded distributive allegories by a pseudocomplement operation.
 The following definitions concern properties of relations that require a pseudocomplement.
-*}
+\<close>
 
 class relation_algebra_signature = bounded_distrib_allegory_signature + uminus
 begin
@@ -855,9 +855,9 @@ abbreviation strict_linear       :: "'a \<Rightarrow> bool" where "strict_linear
 abbreviation strict_order        :: "'a \<Rightarrow> bool" where "strict_order x        \<equiv> irreflexive x \<and> transitive x"
 abbreviation linear_strict_order :: "'a \<Rightarrow> bool" where "linear_strict_order x \<equiv> strict_order x \<and> strict_linear x"
 
-text {*
+text \<open>
 The following variants are useful for the graph model.
-*}
+\<close>
 
 abbreviation pp_mapping          :: "'a \<Rightarrow> bool" where "pp_mapping x          \<equiv> univalent x \<and> total (--x)"
 abbreviation pp_bijective        :: "'a \<Rightarrow> bool" where "pp_bijective x        \<equiv> injective x \<and> surjective (--x)"
@@ -898,9 +898,9 @@ lemma complement_conv_sub:
   "-(y * x) * x\<^sup>T \<le> -y"
   by (metis conv_complement conv_complement_sub_leq conv_order conv_dist_comp)
 
-text {*
+text \<open>
 The following so-called Schr\"oder equivalences, or De Morgan's Theorem K, hold only with a pseudocomplemented element on both right-hand sides.
-*}
+\<close>
 
 lemma schroeder_3_p:
   "x * y \<le> -z \<longleftrightarrow> x\<^sup>T * z \<le> -y"
@@ -914,9 +914,9 @@ lemma comp_pp_semi_commute:
   "x * --y \<le> --(x * y)"
   using conv_complement_sub_leq schroeder_3_p by fastforce
 
-text {*
+text \<open>
 The following result looks similar to a property of (anti)domain.
-*}
+\<close>
 
 lemma p_comp_pp [simp]:
   "-(x * --y) = -(x * y)"
@@ -945,9 +945,9 @@ proof -
     using comp_right_subdist_inf antisym inf.coboundedI2 inf.commute by auto
 qed
 
-text {*
+text \<open>
 Even in Stone relation algebras, we do not obtain the backward implication in the following result.
-*}
+\<close>
 
 lemma vector_complement_closed:
   "vector x \<Longrightarrow> vector (-x)"
@@ -1066,9 +1066,9 @@ lemma regular_conv_closed:
   "regular x \<Longrightarrow> regular (x\<^sup>T)"
   by (metis conv_complement)
 
-text {*
+text \<open>
 We show a number of facts about equivalences.
-*}
+\<close>
 
 lemma equivalence_comp_left_complement:
   "equivalence x \<Longrightarrow> x * -x = -x"
@@ -1080,9 +1080,9 @@ lemma equivalence_comp_right_complement:
   "equivalence x \<Longrightarrow> -x * x = -x"
   by (metis equivalence_comp_left_complement conv_complement conv_dist_comp)
 
-text {*
+text \<open>
 The pseudocomplement of tests is given by the following operation.
-*}
+\<close>
 
 abbreviation coreflexive_complement :: "'a \<Rightarrow> 'a" ("_ '" [80] 80)
   where "x ' \<equiv> -x \<sqinter> 1"
@@ -1164,9 +1164,9 @@ next
     by (metis conv_complement conv_dist_comp equivalence_top_closed inf.orderE inf_top.left_neutral mult_right_isotone pp_comp_semi_commute)
 qed
 
-text {*
+text \<open>
 The following operation represents states with infinite executions of non-strict computations.
-*}
+\<close>
 
 abbreviation N :: "'a \<Rightarrow> 'a"
   where "N x \<equiv> -(-x * top) \<sqinter> 1"
@@ -1215,9 +1215,9 @@ lemma n_split_omega_mult_pp:
   "xs * --xo = xo \<Longrightarrow> vector xo \<Longrightarrow> N top * xo = xs * N xo * top"
   by (metis N_top N_vector_top_pp comp_associative comp_left_one)
 
-text {*
+text \<open>
 Many of the following results have been derived for verifying Prim's minimum spanning tree algorithm.
-*}
+\<close>
 
 lemma ee:
   assumes "vector v"
@@ -1294,9 +1294,9 @@ lemma vTeT:
   "vector v \<Longrightarrow> e \<le> v * -v\<^sup>T \<Longrightarrow> v\<^sup>T * e\<^sup>T = bot"
   using conv_bot ev conv_dist_comp by fastforce
 
-text {*
+text \<open>
 The following result is used to show that the while-loop of Prim's algorithm preserves that the constructed tree is a subgraph of g.
-*}
+\<close>
 
 lemma prim_subgraph_inv:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
@@ -1328,18 +1328,18 @@ next
     .
 qed
 
-text {*
+text \<open>
 The following result shows how to apply the Schr\"oder equivalence to the middle factor in a composition of three relations.
 Again the elements on the right-hand side need to be pseudocomplemented.
-*}
+\<close>
 
 lemma triple_schroeder_p:
   "x * y * z \<le> -w \<longleftrightarrow> x\<^sup>T * w * z\<^sup>T \<le> -y"
   using mult_assoc p_antitone_iff schroeder_3_p schroeder_4_p by auto
 
-text {*
+text \<open>
 The rotation versions of the Schr\"oder equivalences continue to hold, again with pseudocomplemented elements on the right-hand side.
-*}
+\<close>
 
 lemma schroeder_5_p:
   "x * y \<le> -z \<longleftrightarrow> y * z\<^sup>T \<le> -x\<^sup>T"
@@ -1353,9 +1353,9 @@ lemma vector_conv_compl:
   "vector v \<Longrightarrow> top * -v\<^sup>T = -v\<^sup>T"
   by (simp add: covector_complement_closed vector_conv_covector)
 
-text {*
+text \<open>
 Composition commutes, relative to the diversity relation.
-*}
+\<close>
 
 lemma comp_commute_below_diversity:
   "x * y \<le> -1 \<longleftrightarrow> y * x \<le> -1"
@@ -1369,9 +1369,9 @@ lemma comp_univalent_below_complement:
   "univalent x \<Longrightarrow> x * -y \<le> -(x * y)"
   by (metis p_inf pseudo_complement semiring.mult_zero_right univalent_comp_left_dist_inf)
 
-text {*
+text \<open>
 Bijective relations and mappings can be exported from a pseudocomplement.
-*}
+\<close>
 
 lemma comp_bijective_complement:
   "bijective y \<Longrightarrow> -x * y = -(x * y)"
@@ -1381,9 +1381,9 @@ lemma comp_mapping_complement:
   "mapping x \<Longrightarrow> x * -y = -(x * y)"
   by (metis (full_types) comp_bijective_complement conv_complement conv_dist_comp conv_involutive total_conv_surjective)
 
-text {*
+text \<open>
 The following facts are used in the correctness proof of Kruskal's minimum spanning tree algorithm.
-*}
+\<close>
 
 lemma kruskal_injective_inv:
   assumes "injective f"
@@ -1499,22 +1499,22 @@ qed
 
 end
 
-subsection {* Stone Relation Algebras *}
+subsection \<open>Stone Relation Algebras\<close>
 
-text {*
-We add @{text pp_dist_comp} and @{text pp_one}, which follow in relation algebras but not in the present setting.
+text \<open>
+We add \<open>pp_dist_comp\<close> and \<open>pp_one\<close>, which follow in relation algebras but not in the present setting.
 The main change is that only a Stone algebra is required, not a Boolean algebra.
-*}
+\<close>
 
 class stone_relation_algebra = pd_allegory + stone_algebra +
   assumes pp_dist_comp : "--(x * y) = --x * --y"
   assumes pp_one [simp]: "--1 = 1"
 begin
 
-text {*
+text \<open>
 The following property is a simple consequence of the Stone axiom.
 We cannot hope to remove the double complement in it.
-*}
+\<close>
 
 lemma conv_complement_0_p [simp]:
   "(-x)\<^sup>T \<squnion> (--x)\<^sup>T = top"
@@ -1544,9 +1544,9 @@ lemma regular_one_closed:
   "regular 1"
   by simp
 
-text {*
+text \<open>
 The following variants of total and surjective are useful for graphs.
-*}
+\<close>
 
 lemma pp_total:
   "total (--x) \<longleftrightarrow> -(x*top) = bot"
@@ -1556,11 +1556,11 @@ lemma pp_surjective:
   "surjective (--x) \<longleftrightarrow> -(top*x) = bot"
   by (metis p_bot p_comp_pp p_top pp_dist_comp)
 
-text {*
+text \<open>
 Bijective elements and mappings are necessarily regular, that is, invariant under double-complement.
 This implies that points are regular.
 Moreover, also arcs are regular.
-*}
+\<close>
 
 lemma bijective_regular:
   "bijective x \<Longrightarrow> regular x"
@@ -1608,9 +1608,9 @@ lemma schroeder_6: "x * y \<le> z \<longleftrightarrow> -z\<^sup>T * x \<le> -y\
 
 end
 
-text {*
+text \<open>
 Every Stone algebra can be expanded to a Stone relation algebra by identifying the semiring and lattice structures and taking identity as converse.
-*}
+\<close>
 
 sublocale stone_algebra < comp_inf: stone_relation_algebra where one = top and times = inf and conv = id
 proof (unfold_locales, goal_cases)
@@ -1618,10 +1618,10 @@ proof (unfold_locales, goal_cases)
   show ?case by (simp add: inf_commute)
 qed (auto simp: inf.assoc inf_sup_distrib2 inf_left_commute)
 
-text {*
+text \<open>
 Every bounded linear order can be expanded to a Stone algebra, which can be expanded to a Stone relation algebra by reusing some of the operations.
-In particular, composition is meet, its identity is @{text top} and converse is the identity function.
-*}
+In particular, composition is meet, its identity is \<open>top\<close> and converse is the identity function.
+\<close>
 
 class linorder_stone_relation_algebra_expansion = linorder_stone_algebra_expansion + times + conv + one +
   assumes times_def [simp]: "x * y = min x y"
@@ -1643,12 +1643,12 @@ lemma times_dense:
 
 end
 
-subsection {* Relation Algebras *}
+subsection \<open>Relation Algebras\<close>
 
-text {*
+text \<open>
 For a relation algebra, we only require that the underlying lattice is a Boolean algebra.
 In fact, the only missing axiom is that double-complement is the identity.
-*}
+\<close>
 
 class relation_algebra = boolean_algebra + stone_relation_algebra
 begin
@@ -1657,9 +1657,9 @@ lemma conv_complement_0 [simp]:
   "x\<^sup>T \<squnion> (-x)\<^sup>T = top"
   by (simp add: conv_complement)
 
-text {*
+text \<open>
 We now obtain the original formulations of the Schr\"oder equivalences.
-*}
+\<close>
 
 lemma schroeder_3:
   "x * y \<le> z \<longleftrightarrow> x\<^sup>T * -z \<le> -y"
@@ -1719,18 +1719,18 @@ lemma schroeder_6:
 
 end
 
-text {*
+text \<open>
 We briefly look at the so-called Tarski rule.
 In some models of Stone relation algebras it only holds for regular elements, so we add this as an assumption.
-*}
+\<close>
 
 class stone_relation_algebra_tarski = stone_relation_algebra +
   assumes tarski: "regular x \<Longrightarrow> x \<noteq> bot \<Longrightarrow> top * x * top = top"
 begin
 
-text {*
+text \<open>
 We can then show, for example, that every arc is contained in a pseudocomplemented relation or its pseudocomplement.
-*}
+\<close>
 
 lemma arc_in_partition:
   assumes "arc x"
@@ -1787,10 +1787,10 @@ end
 
 class relation_algebra_tarski = relation_algebra + stone_relation_algebra_tarski
 
-text {*
+text \<open>
 Finally, the above axioms of relation algebras do not imply that they contain at least two elements.
 This is necessary, for example, to show that arcs are not empty.
-*}
+\<close>
 
 class stone_relation_algebra_consistent = stone_relation_algebra +
   assumes consistent: "bot \<noteq> top"

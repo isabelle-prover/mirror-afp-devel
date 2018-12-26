@@ -102,7 +102,7 @@ proof -
       unfolding p using a00 by simp
     obtain aa bb where quot: "quotient_of (- ?r b / ?r a) = (bb,aa)" by force
     hence "quotient_of (?r (-b) / ?r a) = (bb, aa)" by simp
-    from quotient_of_int_div[OF this `a \<noteq> 0`] obtain z where 
+    from quotient_of_int_div[OF this \<open>a \<noteq> 0\<close>] obtain z where 
       z: "z \<noteq> 0" and b: "- b = z * bb" and a: "a = z * aa" by auto
     from rt[unfolded quotient_of_div[OF quot]] have rt: "poly p (?r bb / ?r aa) = 0" by auto
     from quotient_of_coprime[OF quot] have cop: "coprime bb aa" "coprime (- bb) aa" by auto
@@ -114,11 +114,11 @@ proof -
     from a0 have ip0: "ip \<noteq> 0" by auto
     hence an0: "?an \<noteq> 0" by auto
     from ipr ip0 have "r \<noteq> 0" by auto
-    from degree_mult_eq[OF _ this, of "[:b,a:]", folded ipr] `a \<noteq> 0` ipr 
+    from degree_mult_eq[OF _ this, of "[:b,a:]", folded ipr] \<open>a \<noteq> 0\<close> ipr 
     have deg: "degree ip = Suc (degree r)" by auto
     from arg_cong[OF ipr, of "\<lambda> p. coeff p (degree ip)"] have ba0: "a dvd ?an"
       unfolding deg by (auto simp: coeff_eq_0)
-    hence "aa dvd ?an" using `a \<noteq> 0` unfolding a by (auto simp: dvd_def)
+    hence "aa dvd ?an" using \<open>a \<noteq> 0\<close> unfolding a by (auto simp: dvd_def)
     from dp[OF an0 this aa] have aa: "aa \<in> set ?dn" .
     from find_map_filter_None[OF find] rt have "(?r bb / ?r aa) \<notin> set tests" by auto
     note test = this[unfolded tests_def, simplified, rule_format, of _ aa]

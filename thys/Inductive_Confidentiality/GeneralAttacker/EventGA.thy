@@ -1,4 +1,4 @@
-section{*Theory of Events for Security Protocols against the General Attacker*}
+section\<open>Theory of Events for Security Protocols against the General Attacker\<close>
 
 theory EventGA imports MessageGA begin
 
@@ -45,7 +45,7 @@ apply (auto split: event.split)
 done
 
 
-subsection{*Function @{term knows}*}
+subsection\<open>Function @{term knows}\<close>
 
 lemmas parts_insert_knows_A = parts_insert [of _ "knows A evs"] for A evs
 
@@ -61,7 +61,7 @@ by simp
 lemma knows_Gets [simp]: "knows A (Gets A' X # evs) = knows A evs"
 by simp
 
-text{*Everybody sees what is sent on the traffic*}
+text\<open>Everybody sees what is sent on the traffic\<close>
 lemma Says_imp_knows [rule_format]:
      "Says A' B X \<in> set evs \<longrightarrow> (\<forall>A. X \<in> knows A evs)"
 apply (induct_tac "evs")
@@ -76,8 +76,8 @@ apply (simp_all (no_asm_simp) split: event.split)
 done
 
 
-text{*Elimination rules: derive contradictions from old Says events containing
-  items known to be fresh*}
+text\<open>Elimination rules: derive contradictions from old Says events containing
+  items known to be fresh\<close>
 lemmas Says_imp_parts_knows = 
        Says_imp_knows [THEN parts.Inj, THEN revcut_rl] 
 
@@ -87,7 +87,7 @@ lemmas knows_partsEs =
 lemmas Says_imp_analz = Says_imp_knows [THEN analz.Inj]
 
 
-subsection{*Knowledge of generic agents*}
+subsection\<open>Knowledge of generic agents\<close>
 
 lemma knows_subset_knows_Says: "knows A evs \<subseteq> knows A (Says A' B X # evs)"
 by (simp add: subset_insertI)
@@ -133,7 +133,7 @@ apply simp
 apply (blast intro: initState_into_used)
 done
 
-text{*NOTE REMOVAL--laws above are cleaner, as they don't involve "case"*}
+text\<open>NOTE REMOVAL--laws above are cleaner, as they don't involve "case"\<close>
 declare knows_Cons [simp del]
         used_Nil [simp del] used_Cons [simp del]
 
@@ -153,7 +153,7 @@ apply (blast intro: knows_subset_knows_Cons [THEN subsetD])
 done
 
 
-text{*For proving @{text new_keys_not_used}*}
+text\<open>For proving \<open>new_keys_not_used\<close>\<close>
 lemma keysFor_parts_insert:
      "[| K \<in> keysFor (parts (insert X G));  X \<in> synth (analz H) |] 
       ==> K \<in> keysFor (parts (G \<union> H)) | Key (invKey K) \<in> parts H" 
@@ -166,23 +166,23 @@ by (force
 lemmas analz_impI = impI [where P = "Y \<notin> analz (knows A evs)"] for Y A evs
 
 ML
-{*
+\<open>
 fun analz_mono_contra_tac ctxt =
   resolve_tac ctxt @{thms analz_impI} THEN' 
   REPEAT1 o (dresolve_tac ctxt @{thms analz_mono_contra})
   THEN' mp_tac ctxt
-*}
+\<close>
 
-method_setup analz_mono_contra = {*
-    Scan.succeed (fn ctxt => SIMPLE_METHOD (REPEAT_FIRST (analz_mono_contra_tac ctxt))) *}
+method_setup analz_mono_contra = \<open>
+    Scan.succeed (fn ctxt => SIMPLE_METHOD (REPEAT_FIRST (analz_mono_contra_tac ctxt)))\<close>
     "for proving theorems of the form X \<notin> analz (knows A evs) \<longrightarrow> P"
 
-text{*Useful for case analysis on whether a hash is a spoof or not*}
+text\<open>Useful for case analysis on whether a hash is a spoof or not\<close>
 
 lemmas syan_impI = impI [where P = "Y \<notin> synth (analz (knows A evs))"] for Y A evs
 
 ML
-{*
+\<open>
 fun synth_analz_mono_contra_tac ctxt =
   resolve_tac ctxt @{thms syan_impI} THEN'
   REPEAT1 o 
@@ -192,10 +192,10 @@ fun synth_analz_mono_contra_tac ctxt =
       @{thm knows_subset_knows_Gets} RS @{thm synth_analz_mono} RS @{thm contra_subsetD}])
   THEN'
   mp_tac ctxt
-*}
+\<close>
 
-method_setup synth_analz_mono_contra = {*
-    Scan.succeed (fn ctxt => SIMPLE_METHOD (REPEAT_FIRST (synth_analz_mono_contra_tac ctxt))) *}
+method_setup synth_analz_mono_contra = \<open>
+    Scan.succeed (fn ctxt => SIMPLE_METHOD (REPEAT_FIRST (synth_analz_mono_contra_tac ctxt)))\<close>
     "for proving theorems of the form X \<notin> synth (analz (knows A evs)) \<longrightarrow> P"
 
 end

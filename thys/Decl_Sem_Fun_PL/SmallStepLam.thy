@@ -1,14 +1,14 @@
-section {* Small-step semantics of CBV lambda calculus *}
+section \<open>Small-step semantics of CBV lambda calculus\<close>
 
 theory SmallStepLam
   imports Lambda
 begin
   
-text{*
+text\<open>
   The following substitution function is not capture avoiding, so it has a precondition
   that $v$ is closed. With hindsight, we should have used DeBruijn indices instead
   because we also use substitution in the optimizing compiler.
-*}
+\<close>
 fun subst :: "name \<Rightarrow> exp \<Rightarrow> exp \<Rightarrow> exp" where
   "subst x v (EVar y) = (if x = y then v else EVar y)" |
   "subst x v (ENat n) = ENat n" |

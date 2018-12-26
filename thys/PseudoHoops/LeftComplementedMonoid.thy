@@ -1,4 +1,4 @@
-section{* Left Complemented Monoid *}
+section\<open>Left Complemented Monoid\<close>
 
 theory LeftComplementedMonoid
   imports Operations LatticeProperties.Lattice_Prop

@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-section {* Demonstrating Policy Transformations *}
+section \<open>Demonstrating Policy Transformations\<close>
 theory 
   Transformation
   imports 

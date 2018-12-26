@@ -19,10 +19,10 @@ begin
   proof -
     have "finite (supp (\<langle>f\<rangle>Q, F, f))"
       by (fact finite_supp)
-    with `P \<Turnstile> Act f \<alpha> x` obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F, f)"
+    with \<open>P \<Turnstile> Act f \<alpha> x\<close> obtain \<alpha>' x' P' where eq: "Act f \<alpha> x = Act f \<alpha>' x'" and trans: "\<langle>f\<rangle>P \<rightarrow> \<langle>\<alpha>',P'\<rangle>" and valid: "P' \<Turnstile> x'" and fresh: "bn \<alpha>' \<sharp>* (\<langle>f\<rangle>Q, F, f)"
       by (metis FL_valid_Act_strong)
 
-    from `P \<sim>\<cdot>[F] Q` and `f \<in>\<^sub>f\<^sub>s F` and fresh and trans obtain Q' where trans': "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot>[L (\<alpha>',F,f)] Q'"
+    from \<open>P \<sim>\<cdot>[F] Q\<close> and \<open>f \<in>\<^sub>f\<^sub>s F\<close> and fresh and trans obtain Q' where trans': "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>',Q'\<rangle>" and bisim': "P' \<sim>\<cdot>[L (\<alpha>',F,f)] Q'"
       by (metis FL_bisimilar_simulation_step)
 
     from eq obtain p where p_\<alpha>: "\<alpha>' = p \<bullet> \<alpha>" and p_x: "x' = p \<bullet> x"
@@ -35,7 +35,7 @@ begin
 
     moreover from fresh and p_\<alpha> have "(p \<bullet> bn \<alpha>) \<sharp>* (F, f)"
       by (simp add: bn_eqvt fresh_star_Pair)
-    with `bn \<alpha> \<sharp>* (F, f)` and supp_p have "supp (F, f) \<sharp>* p"
+    with \<open>bn \<alpha> \<sharp>* (F, f)\<close> and supp_p have "supp (F, f) \<sharp>* p"
       by (meson UnE fresh_def fresh_star_def subsetCE)
     then have "supp F \<sharp>* p" and "supp f \<sharp>* p"
       by (simp add: fresh_star_Un supp_Pair)+
@@ -44,7 +44,7 @@ begin
       by (metis FL_bisimilar_eqvt L_eqvt' permute_minus_cancel(2) supp_perm_eq)
 
     ultimately have "-p \<bullet> Q' \<Turnstile> x"
-      using `\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F, f)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x` by metis
+      using \<open>\<And>P Q. P \<sim>\<cdot>[L (\<alpha>, F, f)] Q \<Longrightarrow> P \<Turnstile> x \<longleftrightarrow> Q \<Turnstile> x\<close> by metis
 
     with p_x have "Q' \<Turnstile> x'"
       by (metis permute_minus_cancel(1) FL_valid_eqvt)

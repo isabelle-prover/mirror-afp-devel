@@ -4,7 +4,7 @@ imports Consensus_Types
 begin
 (*>*)
 
-subsection {* Quorums *}
+subsection \<open>Quorums\<close>
 (******************************************************************************)
 
 
@@ -68,7 +68,7 @@ next
 next
   fix Q Q'
   assume "Q \<in> majs" "Q \<subseteq> Q'"
-  thus "Q' \<in> majs" using card_mono[OF _ `Q \<subseteq> Q'`]
+  thus "Q' \<in> majs" using card_mono[OF _ \<open>Q \<subseteq> Q'\<close>]
     by(auto simp add: majs_def)
 qed
 

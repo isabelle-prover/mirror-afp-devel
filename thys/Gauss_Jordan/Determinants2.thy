@@ -4,16 +4,16 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Computing determinants of matrices using the Gauss Jordan algorithm*}
+section\<open>Computing determinants of matrices using the Gauss Jordan algorithm\<close>
 
 theory Determinants2
 imports
   Gauss_Jordan_PA
 begin
 
-subsection{*Some previous properties*}
+subsection\<open>Some previous properties\<close>
 
-subsubsection{*Relationships between determinants and elementary row operations*}
+subsubsection\<open>Relationships between determinants and elementary row operations\<close>
 
 lemma det_interchange_rows:
 shows "det (interchange_rows A i j) = of_int (if i = j then 1 else -1) * det A"
@@ -56,7 +56,7 @@ finally show ?thesis .
 qed
 
 
-subsubsection{*Relationships between determinants and elementary column operations*}
+subsubsection\<open>Relationships between determinants and elementary column operations\<close>
 
 lemma det_interchange_columns:
 shows "det (interchange_columns A i j) = of_int (if i = j then 1 else -1) * det A"
@@ -97,9 +97,9 @@ also have "... = det A" unfolding det_row_add'[OF i_not_j] det_transpose ..
 finally show ?thesis .
 qed
 
-subsection{*Proving that the determinant can be computed by means of the Gauss Jordan algorithm*}
+subsection\<open>Proving that the determinant can be computed by means of the Gauss Jordan algorithm\<close>
 
-subsubsection{*Previous properties*}
+subsubsection\<open>Previous properties\<close>
 
 lemma det_row_add_iterate_upt_n:
 fixes A::"'a::{comm_ring_1}^'n::{mod_type}^'n::{mod_type}"
@@ -175,10 +175,10 @@ also have "... = - 1/(A$ (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) $j) * 
 finally show ?thesis .
 qed
 
-subsubsection{*Definitions*}
+subsubsection\<open>Definitions\<close>
 
-text{*The following definitions allow the computation of the determinant of a matrix using the Gauss-Jordan algorithm. In the first component the determinant of each transformation
-is accumulated and the second component contains the matrix transformed into a reduced row echelon form matrix*}
+text\<open>The following definitions allow the computation of the determinant of a matrix using the Gauss-Jordan algorithm. In the first component the determinant of each transformation
+is accumulated and the second component contains the matrix transformed into a reduced row echelon form matrix\<close>
 
 definition Gauss_Jordan_in_ij_det_P :: "'a::{semiring_1, inverse, one, uminus}^'m^'n::{finite, ord}=> 'n=>'m=>('a \<times> ('a^'m^'n::{finite, ord}))"
   where "Gauss_Jordan_in_ij_det_P A i j = (let n = (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n) in (if i = n then 1/(A $ i $ j) else - 1/(A $ n $ j), Gauss_Jordan_in_ij A i j))"
@@ -193,9 +193,9 @@ definition Gauss_Jordan_upt_k_det_P
 definition Gauss_Jordan_det_P 
   where "Gauss_Jordan_det_P A = Gauss_Jordan_upt_k_det_P A (ncols A - 1)"
 
-subsubsection{*Proofs*}
+subsubsection\<open>Proofs\<close>
 
-text{*This is an equivalent definition created to achieve a more efficient computation.*}
+text\<open>This is an equivalent definition created to achieve a more efficient computation.\<close>
 lemma Gauss_Jordan_in_ij_det_P_code[code]:
 shows "Gauss_Jordan_in_ij_det_P A i j = 
     (let n = (LEAST n. A $ n $ j \<noteq> 0 \<and> i \<le> n);
@@ -401,7 +401,7 @@ unfolding Gauss_Jordan_column_k_det_P_def Gauss_Jordan_column_k_PA_def Let_def s
 by auto
 
 
-text{*The way of proving the following lemma is very similar to the demonstration of @{thm "rref_and_index_Gauss_Jordan_upt_k"}.*}
+text\<open>The way of proving the following lemma is very similar to the demonstration of @{thm "rref_and_index_Gauss_Jordan_upt_k"}.\<close>
 
 lemma foldl_Gauss_Jordan_column_k_det_P:
 fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"

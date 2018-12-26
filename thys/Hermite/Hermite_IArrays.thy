@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Hermite Normal Form refined to immutable arrays*}
+section\<open>Hermite Normal Form refined to immutable arrays\<close>
 
 theory Hermite_IArrays
 imports 
@@ -12,7 +12,7 @@ imports
   Echelon_Form.Echelon_Form_IArrays
 begin
 
-subsection{*Definition of the algorithm over immutable arrays*}
+subsection\<open>Definition of the algorithm over immutable arrays\<close>
 
 primrec Hermite_reduce_above_iarrays :: "'a::unique_euclidean_ring iarray iarray \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a\<Rightarrow>'a\<Rightarrow>'a) \<Rightarrow> 'a iarray iarray"
 where "Hermite_reduce_above_iarrays A 0 i j res  = A"
@@ -36,7 +36,7 @@ definition "Hermite_of_iarrays A ass res bezout =
   (let A'= echelon_form_of_iarrays A bezout 
   in Hermite_of_upt_row_i_iarrays A' (nrows_iarray A) ass res)"
 
-subsection{*Proving the equivalence between definitions of both representations*}
+subsection\<open>Proving the equivalence between definitions of both representations\<close>
 
 lemma matrix_to_iarray_Hermite_reduce_above:
   fixes A::"'a::{unique_euclidean_ring}^'cols::{mod_type}^'rows::{mod_type}"
@@ -141,7 +141,7 @@ proof -
     unfolding matrix_to_iarray_nrows ..
 qed
 
-subsection{*Examples of execution using immutable arrays*}
+subsection\<open>Examples of execution using immutable arrays\<close>
 
 value[code] "let A = list_of_list_to_matrix ([[37,8,6],[5,4,-8],[3,24,-7]])::int^3^3
   in matrix_to_iarray (Hermite_of A ass_function_euclidean res_function_euclidean euclid_ext2)"

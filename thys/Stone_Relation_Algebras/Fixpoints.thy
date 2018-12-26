@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Fixpoints *}
+section \<open>Fixpoints\<close>
 
-text {*
+text \<open>
 This theory develops a fixpoint calculus based on partial orders.
 Besides fixpoints we consider least prefixpoints and greatest postfixpoints of functions on a partial order.
 We do not assume that the underlying structure is complete or that all functions are continuous or isotone.
@@ -24,7 +24,7 @@ Our fixpoint calculus contains similar rules, in particular:
 \end{itemize}
 All of our rules are based on existence rather than completeness of the underlying structure.
 We have applied results from this theory in \cite{Guttmann2012c} and subsequent papers for unifying and reasoning about the semantics of recursion in various relational and matrix-based computation models.
-*}
+\<close>
 
 theory Fixpoints
 
@@ -32,16 +32,16 @@ imports Stone_Algebras.Lattice_Basics
 
 begin
 
-text {*
+text \<open>
 The whole calculus is based on partial orders only.
-*}
+\<close>
 
 context order
 begin
 
-text {*
+text \<open>
 We first define when an element $x$ is a least/greatest (pre/post)fixpoint of a given function $f$.
-*}
+\<close>
 
 definition is_fixpoint               :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> bool" where "is_fixpoint              f x \<equiv> f x = x"
 definition is_prefixpoint            :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> bool" where "is_prefixpoint           f x \<equiv> f x \<le> x"
@@ -51,9 +51,9 @@ definition is_greatest_fixpoint      :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a 
 definition is_least_prefixpoint      :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> bool" where "is_least_prefixpoint     f x \<equiv> f x \<le> x \<and> (\<forall>y . f y \<le> y \<longrightarrow> x \<le> y)"
 definition is_greatest_postfixpoint  :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a \<Rightarrow> bool" where "is_greatest_postfixpoint f x \<equiv> f x \<ge> x \<and> (\<forall>y . f y \<ge> y \<longrightarrow> x \<ge> y)"
 
-text {*
+text \<open>
 Next follows the existence of the corresponding fixpoints for a given function $f$.
-*}
+\<close>
 
 definition has_fixpoint              :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where "has_fixpoint              f \<equiv> \<exists>x . is_fixpoint f x"
 definition has_prefixpoint           :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where "has_prefixpoint           f \<equiv> \<exists>x . is_prefixpoint f x"
@@ -63,18 +63,18 @@ definition has_greatest_fixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> boo
 definition has_least_prefixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where "has_least_prefixpoint     f \<equiv> \<exists>x . is_least_prefixpoint f x"
 definition has_greatest_postfixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> bool" where "has_greatest_postfixpoint f \<equiv> \<exists>x . is_greatest_postfixpoint f x"
 
-text {*
+text \<open>
 The actual least/greatest (pre/post)fixpoints of a given function $f$ are extracted by the following operators.
-*}
+\<close>
 
 definition the_least_fixpoint        :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("\<mu> _"  [201] 200) where "\<mu>  f = (THE x . is_least_fixpoint f x)"
 definition the_greatest_fixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("\<nu> _"  [201] 200) where "\<nu>  f = (THE x . is_greatest_fixpoint f x)"
 definition the_least_prefixpoint     :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("p\<mu> _" [201] 200) where "p\<mu> f = (THE x . is_least_prefixpoint f x)"
 definition the_greatest_postfixpoint :: "('a \<Rightarrow> 'a) \<Rightarrow> 'a" ("p\<nu> _" [201] 200) where "p\<nu> f = (THE x . is_greatest_postfixpoint f x)"
 
-text {*
+text \<open>
 We start with basic consequences of the above definitions.
-*}
+\<close>
 
 lemma least_fixpoint_unique:
   "has_least_fixpoint f \<Longrightarrow> \<exists>!x . is_least_fixpoint f x"
@@ -140,9 +140,9 @@ lemma greatest_postfixpoint_char:
   "is_greatest_postfixpoint f x \<longleftrightarrow> has_greatest_postfixpoint f \<and> x = p\<nu> f"
   using greatest_postfixpoint_same has_greatest_postfixpoint_def by auto
 
-text {*
+text \<open>
 Next come the unfold rules for least/greatest (pre/post)fixpoints.
-*}
+\<close>
 
 lemma mu_unfold:
   "has_least_fixpoint f \<Longrightarrow> f (\<mu> f) = \<mu> f"
@@ -160,9 +160,9 @@ lemma pnu_unfold:
   "has_greatest_postfixpoint f \<Longrightarrow> p\<nu> f \<le> f (p\<nu> f)"
   using greatest_postfixpoint is_greatest_postfixpoint_def by auto
 
-text {*
+text \<open>
 Pre-/postfixpoints of isotone functions are fixpoints.
-*}
+\<close>
 
 lemma least_prefixpoint_fixpoint:
   "has_least_prefixpoint f \<Longrightarrow> isotone f \<Longrightarrow> is_least_fixpoint f (p\<mu> f)"
@@ -180,9 +180,9 @@ lemma pnu_nu:
   "has_greatest_postfixpoint f \<Longrightarrow> isotone f \<Longrightarrow> p\<nu> f = \<nu> f"
   by (simp add: greatest_fixpoint_same greatest_postfixpoint_fixpoint)
 
-text {*
+text \<open>
 The fixpoint operators preserve isotonicity.
-*}
+\<close>
 
 lemma pmu_isotone:
   "has_least_prefixpoint f \<Longrightarrow> has_least_prefixpoint g \<Longrightarrow> f \<le>\<le> g \<Longrightarrow> p\<mu> f \<le> p\<mu> g"
@@ -200,9 +200,9 @@ lemma nu_isotone:
   "has_greatest_postfixpoint f \<Longrightarrow> has_greatest_postfixpoint g \<Longrightarrow> isotone f \<Longrightarrow> isotone g \<Longrightarrow> f \<le>\<le> g \<Longrightarrow> \<nu> f \<le> \<nu> g"
   using pnu_isotone pnu_nu by fastforce
 
-text {*
+text \<open>
 The square rule for fixpoints of a function applied twice.
-*}
+\<close>
 
 lemma mu_square:
   "isotone f \<Longrightarrow> has_least_fixpoint f \<Longrightarrow> has_least_fixpoint (f \<circ> f) \<Longrightarrow> \<mu> f = \<mu> (f \<circ> f)"
@@ -212,9 +212,9 @@ lemma nu_square:
   "isotone f \<Longrightarrow> has_greatest_fixpoint f \<Longrightarrow> has_greatest_fixpoint (f \<circ> f) \<Longrightarrow> \<nu> f = \<nu> (f \<circ> f)"
   by (metis (no_types, hide_lams) antisym is_greatest_fixpoint_def isotone_def greatest_fixpoint_char greatest_fixpoint_unique o_apply)
 
-text {*
+text \<open>
 The rolling rule for fixpoints of the composition of two functions.
-*}
+\<close>
 
 lemma mu_roll:
   assumes "isotone g"
@@ -248,9 +248,9 @@ next
     by (metis assms(2-3) comp_apply greatest_fixpoint is_greatest_fixpoint_def)
 qed
 
-text {*
+text \<open>
 Least (pre)fixpoints are below greatest (post)fixpoints.
-*}
+\<close>
 
 lemma mu_below_nu:
   "has_least_fixpoint f \<Longrightarrow> has_greatest_fixpoint f \<Longrightarrow> \<mu> f \<le> \<nu> f"
@@ -264,9 +264,9 @@ lemma pmu_below_pnu_iso:
   "isotone f \<Longrightarrow> has_least_prefixpoint f \<Longrightarrow> has_greatest_postfixpoint f \<Longrightarrow> p\<mu> f \<le> p\<nu> f"
   using greatest_postfixpoint_fixpoint is_greatest_fixpoint_def is_least_fixpoint_def least_prefixpoint_fixpoint by auto
 
-text {*
+text \<open>
 Several variants of the fusion rule for fixpoints follow.
-*}
+\<close>
 
 lemma mu_fusion_1:
   assumes "galois l u"
@@ -390,9 +390,9 @@ proof -
     by (simp add: assms(2,4) pnu_nu)
 qed
 
-text {*
+text \<open>
 Next come the exchange rules for replacing the first/second function in a composition.
-*}
+\<close>
 
 lemma mu_exchange_1:
   assumes "galois l u"
@@ -534,9 +534,9 @@ proof -
     using 1 2 3 4 assms antisym galois_char lifted_reflexive nu_exchange_2 by auto
 qed
 
-text {*
+text \<open>
 The following results generalise parts of \cite[Exercise 8.27]{DaveyPriestley2002} from continuous functions on complete partial orders to the present setting.
-*}
+\<close>
 
 lemma mu_commute_fixpoint_1:
   "isotone f \<Longrightarrow> has_least_fixpoint (f \<circ> g) \<Longrightarrow> f \<circ> g = g \<circ> f \<Longrightarrow> is_fixpoint f (\<mu> (f \<circ> g))"
@@ -550,9 +550,9 @@ lemma mu_commute_least_fixpoint:
   "isotone f \<Longrightarrow> isotone g \<Longrightarrow> has_least_fixpoint f \<Longrightarrow> has_least_fixpoint g \<Longrightarrow> has_least_fixpoint (f \<circ> g) \<Longrightarrow> f \<circ> g = g \<circ> f \<Longrightarrow> \<mu> (f \<circ> g) = \<mu> f \<Longrightarrow> \<mu> g \<le> \<mu> f"
   by (metis is_least_fixpoint_def least_fixpoint mu_roll)
 
-text {*
+text \<open>
 The converse of the preceding result is claimed for continuous $f$, $g$ on a complete partial order; it is unknown whether it holds without these additional assumptions.
-*}
+\<close>
 
 lemma nu_commute_fixpoint_1:
   "isotone f \<Longrightarrow> has_greatest_fixpoint (f \<circ> g) \<Longrightarrow> f \<circ> g = g \<circ> f \<Longrightarrow> is_fixpoint f (\<nu>(f \<circ> g))"
@@ -566,9 +566,9 @@ lemma nu_commute_greatest_fixpoint:
   "isotone f \<Longrightarrow> isotone g \<Longrightarrow> has_greatest_fixpoint f \<Longrightarrow> has_greatest_fixpoint g \<Longrightarrow> has_greatest_fixpoint (f \<circ> g) \<Longrightarrow> f \<circ> g = g \<circ> f \<Longrightarrow> \<nu> (f \<circ> g) = \<nu> f \<Longrightarrow> \<nu> f \<le> \<nu> g"
   by (metis greatest_fixpoint is_greatest_fixpoint_def nu_roll)
 
-text {*
+text \<open>
 Finally, we show a number of versions of the diagonal rule for functions with two arguments.
-*}
+\<close>
 
 lemma mu_diagonal_1:
   assumes "isotone (\<lambda>x . \<mu> (\<lambda>y . f x y))"

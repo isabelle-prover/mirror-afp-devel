@@ -3,7 +3,7 @@ imports Nielson_VCG
 begin
 
 
-subsubsection {* example *}
+subsubsection \<open>example\<close>
   
   
 lemma "\<turnstile>\<^sub>1 {%l s. True} SKIP;; SKIP { %s. 1 \<Down> %l s. True}"
@@ -123,7 +123,7 @@ shows "\<turnstile>\<^sub>1 { %l s. 0 \<le> s ''a''  } strip (  {%l s. 0 \<le> s
   done
      
 
-paragraph {* Example: nested loops *}
+paragraph \<open>Example: nested loops\<close>
 
 lemma nested: assumes   
     I2: "I2 = (%l s. s ''a'' \<ge> 0 \<and> s ''b'' \<ge> 0  \<and> s ''a'' >  s ''z''  \<and> s ''z'' \<ge> 0 \<and>   s ''b'' \<ge> s ''g'' \<and> s ''g'' \<ge> 0  \<and> s ''y'' = (s ''z'')  * (s ''b'') + s ''g''  )" and

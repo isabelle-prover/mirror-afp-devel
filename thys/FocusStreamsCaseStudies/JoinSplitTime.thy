@@ -4,13 +4,13 @@
    Author: Maria Spichkova <maria.spichkova at rmit.edu.au>, 2013
 *) 
 (*>*)
- section {* Changing time granularity of the streams  *} 
+ section \<open>Changing time granularity of the streams\<close> 
 
 theory JoinSplitTime
 imports stream arith_hints
 begin
 
-subsection  {* Join time units *}
+subsection  \<open>Join time units\<close>
 
 primrec
   join_ti ::"'a istream \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a list"
@@ -140,7 +140,7 @@ lemma fin_join_ti_1nempty:
 using assms  by (induct n, auto)
 
 
-subsection {* Split time units *}
+subsection \<open>Split time units\<close>
 
 definition 
   split_time ::"'a istream \<Rightarrow> nat \<Rightarrow> 'a istream"
@@ -212,7 +212,7 @@ proof -
 qed
 
 
-subsection {* Duality of the split and the join operators *}
+subsection \<open>Duality of the split and the join operators\<close>
 
 lemma join_split_i:
   assumes "0 < n"

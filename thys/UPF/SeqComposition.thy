@@ -40,23 +40,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-section{* Sequential Composition *}
+section\<open>Sequential Composition\<close>
 theory  
   SeqComposition
   imports 
     ElementaryPolicies
 begin
 
-text{* 
+text\<open>
   Sequential composition is based on the idea that two policies are to be combined by applying 
   the second policy to the output of the first one. Again, there are four possibilities how the 
-  decisions can be combined. *} 
+  decisions can be combined.\<close> 
 
-subsection {* Flattening *}
-text{* 
+subsection \<open>Flattening\<close>
+text\<open>
   A key concept of sequential policy composition is the flattening of nested decisions. There are 
   four possibilities, and these possibilities will give the various flavours of policy composition.
-*}
+\<close>
 fun    flat_orA :: "('\<alpha> decision) decision \<Rightarrow> ('\<alpha> decision)"
 where "flat_orA(allow(allow y)) = allow y"
      |"flat_orA(allow(deny y))  = allow y"
@@ -149,10 +149,10 @@ lemma flat_2_deny[dest]: "flat_2 x = deny y \<Longrightarrow>  x = deny(deny y) 
   apply (case_tac "\<alpha>", simp_all)[1]
   done
 
-subsection{* Policy Composition *}
-text{* 
+subsection\<open>Policy Composition\<close>
+text\<open>
   The following definition allows to compose two policies. Denies and allows are transferred. 
-*}
+\<close>
 
 fun lift :: "('\<alpha> \<mapsto> '\<beta>) \<Rightarrow> ('\<alpha> decision \<mapsto>'\<beta> decision)"  
 where "lift f (deny s)  = (case f s of 
@@ -170,10 +170,10 @@ lemma lift_mt [simp]: "lift \<emptyset> = \<emptyset>"
     done
   done
 
-text{* 
+text\<open>
   Since policies are maps, we inherit a composition on them. However, this results in nestings 
   of decisions---which must be flattened. As we now that there are four different forms of 
-  flattening, we have four different forms of policy composition: *}
+  flattening, we have four different forms of policy composition:\<close>
 definition
   comp_orA :: "['\<beta>\<mapsto>'\<gamma>, '\<alpha>\<mapsto>'\<beta>] \<Rightarrow> '\<alpha>\<mapsto>'\<gamma>"  (infixl "o'_orA" 55) where
   "p2 o_orA p1 \<equiv> (map_option flat_orA) o (lift p2 \<circ>\<^sub>m p1)"

@@ -1,4 +1,4 @@
-section {* The MRU Vote Model *}
+section \<open>The MRU Vote Model\<close>
 
 theory MRU_Vote
 imports Same_Vote
@@ -7,18 +7,18 @@ begin
 context quorum_process
 begin
 
-text {* This model is identical to Same Vote, except that it replaces
-  the @{term safe} guard with the following one, which says that @{text v} is the
+text \<open>This model is identical to Same Vote, except that it replaces
+  the @{term safe} guard with the following one, which says that \<open>v\<close> is the
   most recently used (MRU) vote of a quorum:
-*}
+\<close>
 
 definition mru_guard :: "v_state \<Rightarrow> process set \<Rightarrow> val \<Rightarrow> bool" where
   "mru_guard s Q v \<equiv> Q \<in> Quorum \<and> (let mru = mru_of_set (votes s) Q in 
     mru = None \<or> (\<exists>r. mru = Some (r, v)))"
 
-text {* The concrete algorithms will not refine the MRU Voting model directly, but its optimized
+text \<open>The concrete algorithms will not refine the MRU Voting model directly, but its optimized
   version instead. For simplicity, we thus do not create the model explicitly, but just prove guard
-  strengthening. We will show later that the optimized model refines the Same Vote model. *}
+  strengthening. We will show later that the optimized model refines the Same Vote model.\<close>
 
 lemma mru_vote_implies_safe:
   assumes 

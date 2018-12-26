@@ -10,10 +10,10 @@ theory Crypt
 imports Main Mod
 begin
 
-text {* 
+text \<open>
   This theory defines the rsacrypt function which implements RSA using fast
   exponentiation. An proof, that this function calculates RSA is also given
-*}
+\<close>
 
 definition rsa_crypt :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat"
 where

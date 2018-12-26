@@ -11,7 +11,7 @@ theory Rules
 imports PreFormulas  
 begin
 
-text{* 
+text\<open>
   We prove soundness of the proof system of \tlastar{}, from which the system
   verification rules from Lamport's original TLA paper will be derived. 
   This theory is still state-independent, thus state-dependent enableness proofs,
@@ -21,18 +21,18 @@ text{*
   The \tlastar{} paper \cite{Merz99} suggest both a \emph{hetereogeneous} and a 
   \emph{homogenous} proof system for \tlastar{}.
   The homogeneous version eliminates the auxiliary definitions from the
-  @{text Preformula} theory, creating a single provability relation.
+  \<open>Preformula\<close> theory, creating a single provability relation.
   This axiomatisation is based on the fact that a pre-formula can only be used
-  via the @{text sq} rule. In a nutshell, @{text sq} is applied to
-  @{text pax1} to @{text pax5}, and @{text nex}, @{text pre} and @{text pmp}
+  via the \<open>sq\<close> rule. In a nutshell, \<open>sq\<close> is applied to
+  \<open>pax1\<close> to \<open>pax5\<close>, and \<open>nex\<close>, \<open>pre\<close> and \<open>pmp\<close>
   are changed to accommodate this. It is argued that while the hetereogenous version
   is easier to understand, the homogenous system avoids the introduction of an
   auxiliary provability relation. However, the price to pay is that reasoning about
   pre-formulas (in particular, actions) has to be performed in the scope of
-  temporal operators such as @{text "\<box>[P]_v"}, which is notationally quite heavy,
+  temporal operators such as \<open>\<box>[P]_v\<close>, which is notationally quite heavy,
   We prefer here the heterogeneous approach, which exposes the pre-formulas and
   lets us use standard HOL rules more directly.
-*}
+\<close>
 
 subsection "The Basic Axioms"
 
@@ -132,11 +132,11 @@ qed
 theorem pax5: "|~ \<circle>\<box>F \<longrightarrow> \<box>[\<circle>F]_v"
   by (auto simp: nexts_def always_def action_def tail_def suffix_plus)
 
-text {* 
+text \<open>
   Theorem to show that universal quantification distributes over the always
   operator. Since the \tlastar{} paper only addresses the propositional fragment,
   this theorem does not appear there.
-*}
+\<close>
 
 theorem allT:  "\<turnstile> (\<forall>x. \<box>(F x)) = (\<box>(\<forall>x. F x))"
   by (auto simp: always_def)
@@ -146,20 +146,20 @@ theorem allActT:  "\<turnstile> (\<forall>x. \<box>[F x]_v) = (\<box>[(\<forall>
 
 subsection "Derived Theorems"
 
-text{* 
+text\<open>
   This section includes some derived theorems based on the axioms, taken
   from the \tlastar{} paper~\cite{Merz99}. We mimic the proofs given there
   and avoid semantic reasoning whenever possible.
 
-  The @{text "alw"} theorem of~\cite{Merz99} states that if F holds
+  The \<open>alw\<close> theorem of~\cite{Merz99} states that if F holds
   in all worlds then it always holds, i.e. $F \vDash \Box F$. However,
   the derivation of this theorem (using the proof rules above) 
   relies on access of the set of free variables (FV), which is not
   available in a shallow encoding.
 
-  However, we can prove a similar rule @{text "alw2"} using an additional
+  However, we can prove a similar rule \<open>alw2\<close> using an additional
   hypothesis @{term "|~ F \<and> Unchanged v \<longrightarrow> \<circle>F"}.
-*}
+\<close>
 
 theorem alw2: 
   assumes h1: "\<turnstile> F" and h2: "|~ F \<and> Unchanged v \<longrightarrow> \<circle>F"
@@ -173,9 +173,9 @@ proof -
   with h1[unlifted] show ?thesis by auto
 qed
 
-text{*
+text\<open>
   Similar theorem, assuming that @{term "F"} is stuttering invariant.
-*}
+\<close>
 
 theorem alw3:
   assumes h1: "\<turnstile> F" and h2: "stutinv F"
@@ -185,13 +185,13 @@ proof -
   with h1 show ?thesis by (rule alw2)
 qed
 
-text{*
+text\<open>
   In a deep embedding, we could prove that all (proper) \tlastar{}
   formulas are stuttering invariant and then get rid of the second
-  hypothesis of rule @{text "alw3"}. In fact, the rule is even true
+  hypothesis of rule \<open>alw3\<close>. In fact, the rule is even true
   for pre-formulas, as shown by the following rule, whose proof relies
   on semantical reasoning.
-*}
+\<close>
 theorem alw: assumes H1: "\<turnstile> F" shows "\<turnstile> \<box>F"
   using H1 by (auto simp: always_def)
 
@@ -201,11 +201,11 @@ proof
   from this ax1 show "\<turnstile> F" by (rule fmp)
 qed (rule alw)
 
-text {*
+text \<open>
   \cite{Merz99} proves the following theorem using the deduction theorem of
-  \tlastar{}: @{text "(\<turnstile> F \<Longrightarrow> \<turnstile> G) \<Longrightarrow> \<turnstile> []F \<longrightarrow> G"}, which can only be
+  \tlastar{}: \<open>(\<turnstile> F \<Longrightarrow> \<turnstile> G) \<Longrightarrow> \<turnstile> []F \<longrightarrow> G\<close>, which can only be
   proved by induction on the formula structure, in a deep embedding.
-*}
+\<close>
 
 theorem T1[simp_unl]: "\<turnstile> \<box>\<box>F = []F"
 proof (auto simp: always_def suffix_plus)
@@ -426,26 +426,26 @@ proof -
   ultimately show ?thesis by force
 qed
 
-text {* 
+text \<open>
   We now derive Lamport's 6 simple temporal logic rules (STL1)-(STL6) \cite{Lamport94}.
   Firstly, STL1 is the same as @{thm alw} derived above.
-*}
+\<close>
 
 lemmas STL1 = alw
 
-text {*
+text \<open>
   STL2 and STL3 have also already been derived.
-*}
+\<close>
 
 lemmas STL2 = ax1 
 
 lemmas STL3 = T1
 
-text {*
+text \<open>
   As with the derivation of @{thm alw}, a purely syntactic derivation of 
-  (STL4) relies on an additional argument -- either using @{text "Unchanged"}
-  or @{text "STUTINV"}.
-*}
+  (STL4) relies on an additional argument -- either using \<open>Unchanged\<close>
+  or \<open>STUTINV\<close>.
+\<close>
 
 theorem STL4_2: 
   assumes h1: "\<turnstile> F \<longrightarrow> G" and h2: "|~ G \<and> Unchanged v \<longrightarrow> \<circle>G"
@@ -468,19 +468,19 @@ lemma STL4_3:
   shows "\<turnstile> \<box>F \<longrightarrow> \<box>G"
 using h1 h2[THEN pre_id_unch] by (rule STL4_2)
 
-text {* Of course, the original rule can be derived semantically *}
+text \<open>Of course, the original rule can be derived semantically\<close>
 
 lemma STL4: assumes h: "\<turnstile> F \<longrightarrow> G" shows "\<turnstile> \<box>F \<longrightarrow> \<box>G"
   using h by (force simp: always_def)
 
-text {* Dual rule for @{text "\<diamond>"} *}
+text \<open>Dual rule for \<open>\<diamond>\<close>\<close>
 
 lemma STL4_eve: assumes h: "\<turnstile> F \<longrightarrow> G" shows "\<turnstile> \<diamond>F \<longrightarrow> \<diamond>G"
   using h by (force simp: eventually_defs)
 
-text{*
+text\<open>
   Similarly, a purely syntactic derivation of (STL5) requires extra hypotheses.
-*}
+\<close>
 
 theorem STL5_2: 
   assumes h1: "|~ F \<and> Unchanged f \<longrightarrow> \<circle>F"
@@ -515,12 +515,12 @@ theorem STL5_21:
   shows "\<turnstile> \<box>(F \<and> G) = (\<box>F \<and> \<box>G)"
   using h1[THEN pre_id_unch] h2[THEN pre_id_unch] by (rule STL5_2)
 
-text {* We also derive STL5 semantically.*}
+text \<open>We also derive STL5 semantically.\<close>
 
 lemma STL5: "\<turnstile> \<box>(F \<and> G) = (\<box>F \<and> \<box>G)" 
   by (auto simp: always_def)
 
-text {* Elimination rule corresponding to @{text STL5} in unlifted form. *}
+text \<open>Elimination rule corresponding to \<open>STL5\<close> in unlifted form.\<close>
 
 lemma box_conjE:
   assumes "s \<Turnstile> \<box>F" and "s \<Turnstile> \<box>G" and "s \<Turnstile> \<box>(F \<and> G) \<Longrightarrow> P"
@@ -532,7 +532,7 @@ lemma box_thin:
   shows "PROP W"
   using h2 .
 
-text {* Finally, we derive STL6 (only semantically) *}
+text \<open>Finally, we derive STL6 (only semantically)\<close>
 
 lemma STL6: "\<turnstile> \<diamond>\<box>(F \<and> G) = (\<diamond>\<box>F \<and> \<diamond>\<box>G)"
 proof auto
@@ -710,7 +710,7 @@ theorem E15b[simp_unl]: "\<turnstile> \<diamond>\<not>#F = \<not>#F"
 theorem E16: "\<turnstile> \<diamond>\<box>F \<longrightarrow> \<diamond>F"
   by (rule STL4_eve[OF ax1])
 
-text {* An action version of STL6 *}
+text \<open>An action version of STL6\<close>
 
 lemma STL6_act: "\<turnstile> \<diamond>(\<box>[F]_v \<and> \<box>[G]_w) = (\<diamond>\<box>[F]_v \<and> \<diamond>\<box>[G]_w)"
 proof -
@@ -1210,10 +1210,10 @@ next
   with 1 show ?thesis by force
 qed
 
-text {*
+text \<open>
   The following are proved semantically because they are essentially
   first-order theorems.
-*}
+\<close>
 lemma next_fun1: "|~ \<circle>f<x> = f<\<circle>x>"
   by (auto simp: nexts_def)
 
@@ -1235,11 +1235,11 @@ lemma next_exists: "|~ \<circle>(\<exists> x. P x) = (\<exists> x. \<circle> P x
 lemma next_exists1: "|~ \<circle>(\<exists>! x. P x) = (\<exists>! x. \<circle> P x)"
   by (auto simp: nexts_def)
 
-text {*
+text \<open>
   Rewrite rules to push the ``next'' operator inward over connectives.
-  (Note that axiom @{text pax1} and theorem @{text next_const} are anyway active
+  (Note that axiom \<open>pax1\<close> and theorem \<open>next_const\<close> are anyway active
   as rewrite rules.)
-*}
+\<close>
 lemmas next_commutes[int_rewrite] =
   next_and next_or next_imp next_eq 
   next_fun1 next_fun2 next_fun3 next_fun4
@@ -1252,9 +1252,9 @@ lemmas next_always = pax3
 lemma t1: "|~ \<circle>$x = x$"
   by (simp add: before_def after_def nexts_def first_tail_second)
 
-text {*
-  Theorem @{text next_eventually} should not be used "blindly".
-*}
+text \<open>
+  Theorem \<open>next_eventually\<close> should not be used "blindly".
+\<close>
 lemma next_eventually:
   assumes h: "stutinv F"
   shows "|~ \<diamond>F \<longrightarrow> \<not>F \<longrightarrow> \<circle>\<diamond>F"
@@ -1269,12 +1269,12 @@ lemma next_action: "|~ \<box>[P]_v \<longrightarrow> \<circle>\<box>[P]_v"
 
 subsection "Higher Level Derived Rules"
 
-text {*
+text \<open>
   In most verification tasks the low-level rules discussed above are not used directly. 
   Here, we derive some higher-level rules more suitable for verification. In particular, 
-  variants of Lamport's rules @{text TLA1}, @{text TLA2}, @{text INV1} and @{text INV2}
-  are derived, where @{text "|~"} is used where appropriate.
-*}
+  variants of Lamport's rules \<open>TLA1\<close>, \<open>TLA2\<close>, \<open>INV1\<close> and \<open>INV2\<close>
+  are derived, where \<open>|~\<close> is used where appropriate.
+\<close>
 
 theorem TLA1: 
   assumes H: "|~ P \<and> Unchanged f \<longrightarrow> \<circle>P" 

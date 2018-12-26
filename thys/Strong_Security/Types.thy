@@ -13,8 +13,8 @@ begin
 \<comment> \<open>'com: commands\<close>
 \<comment> \<open>'d: domains\<close>
 
-text{* This is a collection of type synonyms. Note that not all of these type synonyms are 
-  used within Strong-Security - some are used in WHATandWHERE-Security.*}
+text\<open>This is a collection of type synonyms. Note that not all of these type synonyms are 
+  used within Strong-Security - some are used in WHATandWHERE-Security.\<close>
 
 \<comment> \<open>type for memory states - map ids to values\<close>
 type_synonym ('id, 'val) State = "'id \<Rightarrow> 'val"

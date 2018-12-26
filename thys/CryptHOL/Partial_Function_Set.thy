@@ -3,7 +3,7 @@
 
 theory Partial_Function_Set imports Main begin
 
-subsection \<open>Setup for @{text "partial_function"} for sets\<close>
+subsection \<open>Setup for \<open>partial_function\<close> for sets\<close>
 
 lemma (in complete_lattice) lattice_partial_function_definition:
   "partial_function_definitions (\<le>) Sup"
@@ -84,9 +84,9 @@ proof -
     by(subst (asm) eq')(auto simp add: inverse2 le_fun_def)
 qed
 
-declaration {* Partial_Function.init "set" @{term set.fixp_fun}
+declaration \<open>Partial_Function.init "set" @{term set.fixp_fun}
   @{term set.mono_body} @{thm set.fixp_rule_uc} @{thm set.fixp_induct_uc}
-  (SOME @{thm fixp_induct_set}) *}
+  (SOME @{thm fixp_induct_set})\<close>
 
 lemma [partial_function_mono]:
   shows insert_mono: "mono_set A \<Longrightarrow> mono_set (\<lambda>f. insert x (A f))"
@@ -163,9 +163,9 @@ proof(rule contrapos_np)
   ultimately show "y \<in> U f x" by(auto simp add: le_fun_def eq')
 qed
 
-declaration {* Partial_Function.init "coset" @{term coset.fixp_fun}
+declaration \<open>Partial_Function.init "coset" @{term coset.fixp_fun}
   @{term coset.mono_body} @{thm coset.fixp_rule_uc} @{thm coset.fixp_induct_uc}
-  (SOME @{thm fixp_coinduct_set}) *}
+  (SOME @{thm fixp_coinduct_set})\<close>
 
 abbreviation "mono_set' \<equiv> monotone (fun_ord (\<supseteq>)) (\<supseteq>)"
 
@@ -185,7 +185,7 @@ private lemma test2_coinduct:
   assumes "P x y"
   and *: "\<And>x y. P x y \<Longrightarrow> y = x \<or> (P (Suc x) y \<or> y \<in> test2 (Suc x))"
   shows "y \<in> test2 x"
-using `P x y`
+using \<open>P x y\<close>
 apply(rule contrapos_pp)
 apply(erule test2.raw_induct[rotated])
 apply(simp add: *)

@@ -3,7 +3,7 @@ theory Imaginary_Factory_Network
 imports "../TopoS_Impl"
 begin
 
-text{*
+text\<open>
 In this theory, we give an an example of an imaginary factory network. 
 The example was chosen to show the interplay of several security invariants 
 and to demonstrate their configuration effort.
@@ -48,7 +48,7 @@ We model one additional special host.
 
 
 The security policy is defined below.
-*}
+\<close>
 
 definition policy :: "string list_graph" where
   "policy \<equiv> \<lparr> nodesL = [''Statistics'',
@@ -81,11 +81,11 @@ definition policy :: "string list_graph" where
 lemma "wf_list_graph policy" by eval
 
 
-ML_val{*
+ML_val\<open>
 visualize_graph @{context} @{term "[]::string SecurityInvariant list"} @{term "policy"};
-*}
+\<close>
 
-text{*The idea behind the policy is the following.
+text\<open>The idea behind the policy is the following.
 The sensors on the left can all send their readings in an unidirectional fashion to the sensor sink, 
 which forwards the data to the statistics server.
 In the production line, on the right, all devices will set up stateful connections. 
@@ -94,19 +94,19 @@ This makes sure that the watchdog will receive the health information from the r
 the mission control machines will receive the current state of the robots, and the administrator can actually log into the mission control machines. 
 The policy should only specify who is allowed to set up the connections. 
 We will elaborate on the stateful implementation in @{file "../TopoS_Stateful_Policy.thy"} 
-and @{file "../TopoS_Stateful_Policy_Algorithm.thy"}. *}
+and @{file "../TopoS_Stateful_Policy_Algorithm.thy"}.\<close>
 
 
-subsection{*Specification of Security Invariants*}
+subsection\<open>Specification of Security Invariants\<close>
 
 
-text{*Several security invariants are specified.*}
+text\<open>Several security invariants are specified.\<close>
 
-text{*Privacy for employees.
+text\<open>Privacy for employees.
   The sensors in the building may record any employee. 
 	Due to privacy requirements, the sensor readings, processing, and storage of the data is treated with high security levels. 
 	The presence sensor does not allow do identify an individual employee, hence produces less critical data, hence has a lower level.
-*}
+\<close>
 context begin
   private definition "BLP_privacy_host_attributes \<equiv> [''Statistics'' \<mapsto> 3,
                            ''SensorSink'' \<mapsto> 3,
@@ -120,11 +120,11 @@ context begin
 end
 
 
-text{*Secret corporate knowledge and intellectual property:
+text\<open>Secret corporate knowledge and intellectual property:
   The production process is a corporate trade secret. 
 	The mission control devices have the trade secretes in their program. 
 	The important and secret step is done by MissionControl2.
-*}
+\<close>
 context begin
   private definition "BLP_tradesecrets_host_attributes \<equiv> [''MissionControl1'' \<mapsto> 1,
                            ''MissionControl2'' \<mapsto> 2,
@@ -136,17 +136,17 @@ context begin
   definition "BLP_tradesecrets_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_BLPbasic \<lparr> 
         node_properties = BLP_tradesecrets_host_attributes \<rparr> ''trade secrets''"
 end
-text{*Note that Invariant 1 and Invariant 2 are two distinct specifications. 
+text\<open>Note that Invariant 1 and Invariant 2 are two distinct specifications. 
 	They specify individual security goals independent of each other. 
 	For example, in Invariant 1,@{term "''MissionControl2''"} has the security level 
 	@{term \<bottom>} and in Invariant 2, @{term "''PresenceSensor''"} has security level @{term \<bottom>}. 
 	Consequently, both cannot interact.
-*}
+\<close>
 
 
 
 
-text{*Privacy for employees, exporting aggregated data:
+text\<open>Privacy for employees, exporting aggregated data:
   Monitoring the building while both ensuring privacy of the employees is an important goal for the company. 
 	While the presence sensor only collects the single-bit information whether a human is present, the 
   webcam allows to identify individual employees. 
@@ -158,7 +158,7 @@ text{*Privacy for employees, exporting aggregated data:
 	It does not store the data over long periods. 
 	Therefore, it is marked as trusted and may thus receive the webcam's data. 
 	The statistics server, which archives all the data, is considered top secret.
-*}
+\<close>
 context begin
   private definition "BLP_employee_export_host_attributes \<equiv>
                           [''Statistics'' \<mapsto> \<lparr> security_level = 3, trusted = False \<rparr>,
@@ -175,10 +175,10 @@ end
 
 
 
-text{*Who can access bot2?
+text\<open>Who can access bot2?
   Robot2 carries out a mission-critical production step. 
 	It must be made sure that Robot2 only receives packets from Robot1, the two mission control devices and the watchdog.
-*}
+\<close>
 context begin
   private definition "ACL_bot2_host_attributues \<equiv>
                           [''Robot2'' \<mapsto> Master [''Robot1'',
@@ -193,7 +193,7 @@ context begin
     by(simp add: ACL_bot2_host_attributues_def policy_def)
   definition "ACL_bot2_m \<equiv> new_configured_list_SecurityInvariant SINVAR_LIB_CommunicationPartners
                              \<lparr>node_properties = ACL_bot2_host_attributues \<rparr> ''Robot2 ACL''"
-  text{*
+  text\<open>
   Note that Robot1 is in the access list of Robot2 but it does not have the @{const Care} attribute. 
 	This means, Robot1 can never access Robot2. 
 	A tool could automatically detect such inconsistencies and emit a warning. 
@@ -223,14 +223,14 @@ context begin
 	constructed access lists of other hosts. 
 	It also prevents that new hosts which have the name of hosts removed long ago (but where stale 
 	access rights were not cleaned up) accidentally inherit their access rights. 
-*}
+\<close>
 end
 
 
 (*TODO: dependability*)
 
 
-text{*Hierarchy of fab robots:
+text\<open>Hierarchy of fab robots:
   The production line is designed according to a strict command hierarchy. 
 	On top of the hierarchy are control terminals which allow a human operator to intervene and supervise the production process. 
 	On the level below, one distinguishes between supervision devices and control devices. 
@@ -239,11 +239,11 @@ text{*Hierarchy of fab robots:
 	This is the structure that is necessary for the example. 
 	However, the company defined a few more sub-departments for future use. 
 	The full domain hierarchy tree is visualized below. 
-*}
-text{*
+\<close>
+text\<open>
   Apart from the watchdog, only the following linear part of the tree is used: 
-  @{text "''Robots'' \<sqsubseteq> ''ControlDevices'' \<sqsubseteq> ''ControlTerminal''"}.
-	Because the watchdog is in a different domain, it needs a trust level of $1$ to access the robots it is monitoring. *}
+  \<open>''Robots'' \<sqsubseteq> ''ControlDevices'' \<sqsubseteq> ''ControlTerminal''\<close>.
+	Because the watchdog is in a different domain, it needs a trust level of $1$ to access the robots it is monitoring.\<close>
 context begin
   private definition "DomainHierarchy_host_attributes \<equiv>
                 [(''MissionControl1'',
@@ -284,8 +284,8 @@ context begin
 end
 
 
-text{*Sensor Gateway: 
-  The sensors should not communicate among each other; all accesses must be mediated by the sensor sink. *}
+text\<open>Sensor Gateway: 
+  The sensors should not communicate among each other; all accesses must be mediated by the sensor sink.\<close>
 context begin
   private definition "PolEnforcePoint_host_attributes \<equiv>
                 [''SensorSink'' \<mapsto> PolEnforcePoint,
@@ -303,13 +303,13 @@ context begin
 end
 
 
-text{*Production Robots are an information sink:
+text\<open>Production Robots are an information sink:
   The actual control program of the robots is a corporate trade secret. 
 	The control commands must not leave the robots. 
 	Therefore, they are declared information sinks. 
 	In addition, the control command must not leave the mission control devices. 
 	However, the two devices could possibly interact to synchronize and they must send their commands to the robots. 
-	Therefore, they are labeled as sink pools. *}
+	Therefore, they are labeled as sink pools.\<close>
 context begin
   private definition "SinkRobots_host_attributes \<equiv>
                 [''MissionControl1'' \<mapsto> SinkPool,
@@ -325,12 +325,12 @@ context begin
                               ''non-leaking production units''"
 end
 
-text{*Subnet of the fab:
+text\<open>Subnet of the fab:
   The sensors, including their sink and statistics server are located in their own subnet and must 
   not be accessible from elsewhere. 
 	Also, the administrator's PC is in its own subnet. 
 	The production units (mission control and robots) are already isolated by the DomainHierarchy 
-  and are not added to a subnet explicitly. *}
+  and are not added to a subnet explicitly.\<close>
 context begin
   private definition "Subnets_host_attributes \<equiv>
                 [''Statistics'' \<mapsto> Subnet 1,
@@ -350,10 +350,10 @@ context begin
 end
 
 
-text{* Access Gateway for the Statistics server:
+text\<open>Access Gateway for the Statistics server:
   The statistics server is further protected from external accesses. 
 	Another, smaller subnet is defined with the only member being the statistics server. 
-	The only way it may be accessed is via that sensor sink. *}
+	The only way it may be accessed is via that sensor sink.\<close>
 context begin
   private definition "SubnetsInGW_host_attributes \<equiv>
                 [''Statistics'' \<mapsto> Member,
@@ -368,10 +368,10 @@ context begin
 end
 
 
-text{*NonInterference (for the sake of example):
+text\<open>NonInterference (for the sake of example):
 	The fire sensor is managed by an external company and has a built-in GSM module to call the fire fighters in case of an emergency. 
 	This additional, out-of-band connectivity is not modeled. 
-	However, the contract defines that the company's administrator must not interfere in any way with the fire sensor. *}
+	However, the contract defines that the company's administrator must not interfere in any way with the fire sensor.\<close>
 context begin
   private definition "NonInterference_host_attributes \<equiv>
                 [''Statistics'' \<mapsto> Unrelated,
@@ -394,9 +394,9 @@ context begin
                                     \<lparr> node_properties = NonInterference_host_attributes \<rparr>
                                    ''for the sake of an acdemic example!''"
 end
-text{*As discussed, this invariant is very strict and rather theoretical. 
+text\<open>As discussed, this invariant is very strict and rather theoretical. 
     It is not ENF-structured and may produce an exponential number of offending flows. 
-    Therefore, we exclude it by default from our algorithms. *}
+    Therefore, we exclude it by default from our algorithms.\<close>
 
 
 
@@ -404,23 +404,23 @@ text{*As discussed, this invariant is very strict and rather theoretical.
 definition "invariants \<equiv> [BLP_privacy_m, BLP_tradesecrets_m, BLP_employee_export_m,
                           ACL_bot2_m, Control_hierarchy_m,
                           PolEnforcePoint_m, SinkRobots_m, Subnets_m, SubnetsInGW_m]"
-text{*We have excluded @{const NonInterference_m} because of its infeasible runtime.*}
+text\<open>We have excluded @{const NonInterference_m} because of its infeasible runtime.\<close>
 
 lemma "length invariants = 9" by eval
 
 
 
-subsection{*Policy Verification*}
+subsection\<open>Policy Verification\<close>
 
 
-text{*
+text\<open>
 The given policy fulfills all the specified security invariants.
 Also with @{const NonInterference_m}, the policy fulfills all security invariants.
-*}
+\<close>
 lemma "all_security_requirements_fulfilled (NonInterference_m#invariants) policy" by eval
-ML{*
+ML\<open>
 visualize_graph @{context} @{term "invariants"} @{term "policy"};
-*}
+\<close>
 
 
 definition make_policy :: "('a SecurityInvariant) list \<Rightarrow> 'a list \<Rightarrow> 'a list_graph" where
@@ -431,7 +431,7 @@ definition make_policy_efficient :: "('a SecurityInvariant) list \<Rightarrow> '
   "make_policy_efficient sinvars Vs \<equiv> generate_valid_topology_some sinvars \<lparr>nodesL = Vs, edgesL = List.product Vs Vs \<rparr>"
 
 
-text{*
+text\<open>
 The question, ``how good are the specified security invariants?'' remains. 
 Therefore, we use the algorithm from @{const make_policy} to generate a policy. 
 Then, we will compare our policy with the automatically generated one. 
@@ -443,7 +443,7 @@ must be a subset of the computed policy.
 This allows to compare the manually-specified policy to the policy implied by the security invariants: 
 If there are too many flows which are allowed according to the computed policy but which are not in 
 our manually-specified policy, we can conclude that our security invariants are not strict enough. 
-*}
+\<close>
 value[code] "make_policy invariants (nodesL policy)" (*15s without NonInterference*)
 lemma "make_policy invariants (nodesL policy) = 
    \<lparr>nodesL =
@@ -469,7 +469,7 @@ lemma "make_policy invariants (nodesL policy) =
        (''AdminPc'', ''Robot1''), (''AdminPc'', ''AdminPc''), (''AdminPc'', ''INET''),
        (''INET'', ''INET'')]\<rparr>" by eval
 
-text{*Additional flows which would be allowed but which are not in the policy*}
+text\<open>Additional flows which would be allowed but which are not in the policy\<close>
 lemma  "set [e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). e \<notin> set (edgesL policy)] = 
         set [(v,v). v \<leftarrow> (nodesL policy)] \<union>
         set [(''SensorSink'', ''Webcam''),
@@ -482,18 +482,18 @@ lemma  "set [e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). e \
              (''AdminPc'', ''Watchdog''),
              (''AdminPc'', ''Robot1''),
              (''AdminPc'', ''INET'')]" by eval
-text{*
+text\<open>
 We visualize this comparison below. 
 The solid edges correspond to the manually-specified policy. 
-The dotted edges correspond to the flow which would be additionally permitted by the computed policy. *}
-ML_val{*
+The dotted edges correspond to the flow which would be additionally permitted by the computed policy.\<close>
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
      @{term "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)).
                 e \<notin> set (edgesL policy)]"})] "";
-*}
+\<close>
 
-text{*
+text\<open>
 The comparison reveals that the following flows would be additionally permitted. 
 We will discuss whether this is acceptable or if the additional permission indicates that 
 we probably forgot to specify an additional security goal. 
@@ -530,15 +530,15 @@ we probably forgot to specify an additional security goal.
   \<^item> The @{term "''AdminPc''"} is allowed to access the @{term "''Watchdog''"}, 
     @{term "''Robot1''"}, and the @{term "''INET''"}. 
     Since this machine is trusted anyway, the company does not see a problem with this. 
-*}
+\<close>
 
-text{* without @{const NonInterference_m} *}
+text\<open>without @{const NonInterference_m}\<close>
 lemma "all_security_requirements_fulfilled invariants (make_policy invariants (nodesL policy))" by eval
 
 
 
 
-text{*Side note: what if we exclude subnets?*}
+text\<open>Side note: what if we exclude subnets?\<close>
 ML_val \<open>
 visualize_edges @{context} @{term "edgesL (make_policy invariants (nodesL policy))"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
@@ -549,8 +549,8 @@ visualize_edges @{context} @{term "edgesL (make_policy invariants (nodesL policy
 \<close>
 
 
-subsection{*About NonInterference*}
-text{*
+subsection\<open>About NonInterference\<close>
+text\<open>
 The NonInterference template was deliberately selected for our scenario as one of the 
 `problematic' and rather theoretical invariants. 
 Our framework allows to specify almost arbitrary invariant templates. 
@@ -562,17 +562,17 @@ Dependability (@{file "../Security_Invariants/SINVAR_Dependability.thy"}),
 and NonInterference (@{file "../Security_Invariants/SINVAR_NonInterference.thy"}).
 In this section, we discuss the consequences of the NonInterference invariant for automated policy construction. 
 We will conclude that, though we can solve all technical challenges, said invariants are 
----due to their inherent ambiguity--- not very well suited for automated policy construction. *}
+---due to their inherent ambiguity--- not very well suited for automated policy construction.\<close>
 
 
-text{*
+text\<open>
 The computed maximum policy does not fulfill invariant 10 (NonInterference). 
 This is because the fire sensor and the administrator's PC may be indirectly connected over the Internet. 
-*}
+\<close>
 lemma "\<not> all_security_requirements_fulfilled (NonInterference_m#invariants) (make_policy invariants (nodesL policy))" by eval
 
 
-text{*
+text\<open>
 Since the NonInterference template may produce an exponential number of offending flows, 
 it is infeasible to try our automated policy construction algorithm with it. 
 We have tried to do so on a machine with 128GB of memory but after a few minutes, the computation ran out of memory. 
@@ -580,9 +580,9 @@ On said machine, we were unable to run our policy construction algorithm with th
 
 Algorithm @{const make_policy_efficient} improves the policy construction algorithm. 
 The new algorithm instantly returns a solution for this scenario with a very small memory footprint. 
-*}
+\<close>
 
-text{*The more efficient algorithm does not need to construct the complete set of offending flows*}
+text\<open>The more efficient algorithm does not need to construct the complete set of offending flows\<close>
 value[code] "make_policy_efficient (invariants@[NonInterference_m]) (nodesL policy)"
 value[code] "make_policy_efficient (NonInterference_m#invariants) (nodesL policy)"
 
@@ -595,14 +595,14 @@ value[code] "make_policy (NonInterference_m#invariants) (nodesL policy)"
 lemma "make_policy_efficient (invariants@[NonInterference_m]) (nodesL policy) = 
        make_policy_efficient (NonInterference_m#invariants) (nodesL policy)" by eval
 
-text{*But @{const NonInterference_m} insists on removing something, which would not be necessary.*}
+text\<open>But @{const NonInterference_m} insists on removing something, which would not be necessary.\<close>
 lemma "make_policy invariants (nodesL policy) \<noteq> make_policy_efficient (NonInterference_m#invariants) (nodesL policy)" by eval
 
 lemma "set (edgesL (make_policy_efficient (NonInterference_m#invariants) (nodesL policy)))
        \<subseteq>
        set (edgesL (make_policy invariants (nodesL policy)))" by eval
 
-text{*This is what it wants to be gone.*} (*may take some minutes*)
+text\<open>This is what it wants to be gone.\<close> (*may take some minutes*)
 lemma "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)).
                 e \<notin> set (edgesL (make_policy_efficient (NonInterference_m#invariants) (nodesL policy)))] =
        [(''AdminPc'', ''MissionControl1''), (''AdminPc'', ''MissionControl2''),
@@ -613,14 +613,14 @@ lemma "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)).
                e \<notin> set (edgesL (make_policy_efficient (NonInterference_m#invariants) (nodesL policy)))] =
        [e \<leftarrow> edgesL (make_policy invariants (nodesL policy)). fst e = ''AdminPc'' \<and> snd e \<noteq> ''AdminPc'']"
   by eval
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "edgesL policy"}
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]",
      @{term "[e \<leftarrow> edgesL (make_policy invariants (nodesL policy)).
                 e \<notin> set (edgesL (make_policy_efficient (NonInterference_m#invariants) (nodesL policy)))]"})] ""; 
-*}
+\<close>
 
-text{*
+text\<open>
 However, it is an inherent property of the NonInterferance template (and similar templates), 
 that the set of offending flows is not uniquely defined. 
 Consequently, since several solutions are possible, even our new algorithm may not be able to compute one maximum solution. 
@@ -644,12 +644,12 @@ and afterwards fix the policy manually for the remaining non-$\Phi$-structured i
 Though our new algorithm gives better results and returns instantly, the very nature of invariant 
 templates with an exponential number of offending flows tells that these invariants are problematic 
 for automated policy construction. 
-*}
+\<close>
 
 
 
-subsection{*Stateful Implementation*}
-text{*
+subsection\<open>Stateful Implementation\<close>
+text\<open>
 In this section, we will implement the policy and deploy it in a network. 
 As the scenario description stated, all devices in the production line should establish 
 stateful connections which allows -- once the connection is established -- packets to travel in both directions. 
@@ -659,7 +659,7 @@ We compute a stateful implementation.
 Below, the stateful implementation is visualized. 
 It consists of the policy as visualized above. 
 In addition, dotted edges visualize where answer packets are permitted. 
-*}
+\<close>
 definition "stateful_policy = generate_valid_stateful_policy_IFSACS policy invariants"
 lemma "stateful_policy =
  \<lparr>hostsL = nodesL policy,
@@ -668,12 +668,12 @@ lemma "stateful_policy =
       [(''Webcam'', ''SensorSink''),
        (''SensorSink'', ''Statistics'')]\<rparr>" by eval
 
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL stateful_policy"} 
     [("edge [dir=\"arrow\", style=dashed, color=\"#FF8822\", constraint=false]", @{term "flows_stateL stateful_policy"})] ""; 
-*}
+\<close>
 
-text{*As can be seen, only the flows @{term "(''Webcam'', ''SensorSink'')"} 
+text\<open>As can be seen, only the flows @{term "(''Webcam'', ''SensorSink'')"} 
 and @{term "(''SensorSink'', ''Statistics'')"} are allowed to be stateful. 
 This setup cannot be practically deployed because the watchdog, the mission control devices, 
 and the administrator's PC also need to set up stateful connections. 
@@ -682,7 +682,7 @@ The reason why the desired stateful connections are not permitted is due to info
 In detail: @{const BLP_tradesecrets_m} and @{const SinkRobots_m} are responsible. 
 Both invariants prevent that any data leaves the robots and the mission control devices. 
 To verify this suspicion, the two invariants are removed and the stateful flows are computed again. 
-The result visualized is below. *}
+The result visualized is below.\<close>
 
 lemma "generate_valid_stateful_policy_IFSACS policy
       [BLP_privacy_m, BLP_employee_export_m,
@@ -701,15 +701,15 @@ lemma "generate_valid_stateful_policy_IFSACS policy
        (''Watchdog'', ''Robot1''),
        (''Watchdog'', ''Robot2'')]\<rparr>" by eval
 
-text{*This stateful policy could be transformed into a fully functional implementation. 
+text\<open>This stateful policy could be transformed into a fully functional implementation. 
 However, there would be no security invariants specified which protect the trade secrets. 
 Without those two invariants, the invariant specification is too permissive. 
 For example, if we recompute the maximum policy, we can see that the robots and mission control can leak any data to the Internet. 
 Even without the maximum policy, in the stateful policy above, it can be seen that 
-MissionControl1 can exfiltrate information from robot 2, once it establishes a stateful connection. *}
+MissionControl1 can exfiltrate information from robot 2, once it establishes a stateful connection.\<close>
 
 
-text{*Without the two invariants, the security goals are way too permissive!*}
+text\<open>Without the two invariants, the security goals are way too permissive!\<close>
 lemma "set [e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_employee_export_m,
        ACL_bot2_m, Control_hierarchy_m, 
        PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m] (nodesL policy)). e \<notin> set (edgesL policy)] =
@@ -733,7 +733,7 @@ lemma "set [e \<leftarrow> edgesL (make_policy [BLP_privacy_m, BLP_employee_expo
              (''Robot2'', ''INET'')]" by eval
 
 
-ML_val{*
+ML_val\<open>
 visualize_edges @{context} @{term "flows_fixL (generate_valid_stateful_policy_IFSACS policy [BLP_privacy_m,  BLP_employee_export_m,
                           ACL_bot2_m, Control_hierarchy_m, 
                           PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m])"} 
@@ -741,11 +741,11 @@ visualize_edges @{context} @{term "flows_fixL (generate_valid_stateful_policy_IF
       @{term "flows_stateL (generate_valid_stateful_policy_IFSACS policy [BLP_privacy_m,  BLP_employee_export_m,
                           ACL_bot2_m, Control_hierarchy_m, 
                           PolEnforcePoint_m,  Subnets_m, SubnetsInGW_m])"})] "";
-*}
+\<close>
 
 
 
-text{*
+text\<open>
 Therefore, the two invariants are not removed but repaired. 
 The goal is to allow the watchdog, administrator's pc, and the mission control devices to set up stateful connections without leaking corporate trade secrets to the outside. 
 
@@ -770,7 +770,7 @@ We realize that the following set set of hosts forms one big pool of devices whi
 somehow interact but where information must not leave the pool: 
 The administrator's PC, the mission control devices, the robots, and the watchdog. 
 Therefore, all those devices are configured to be in the same @{const SinkPool}. 
-*}
+\<close>
 
 
 
@@ -803,9 +803,9 @@ lemma "all_security_requirements_fulfilled invariants_tuned policy" by eval
 
 definition "stateful_policy_tuned = generate_valid_stateful_policy_IFSACS policy invariants_tuned"
 
-text{*
+text\<open>
 The computed stateful policy is visualized below.
-*}
+\<close>
 lemma "stateful_policy_tuned
  =
  \<lparr>hostsL = nodesL policy,
@@ -820,7 +820,7 @@ lemma "stateful_policy_tuned
        (''Watchdog'', ''Robot1''),
        (''Watchdog'', ''Robot2'')]\<rparr>" by eval
 
-text{*We even get a better (i.e. stricter) maximum policy*}
+text\<open>We even get a better (i.e. stricter) maximum policy\<close>
 lemma "set (edgesL (make_policy invariants_tuned (nodesL policy))) \<subset>
        set (edgesL (make_policy invariants (nodesL policy)))" by eval
 lemma "set [e \<leftarrow> edgesL (make_policy invariants_tuned (nodesL policy)). e \<notin> set (edgesL policy)] =
@@ -834,18 +834,18 @@ lemma "set [e \<leftarrow> edgesL (make_policy invariants_tuned (nodesL policy))
              (''AdminPc'', ''Watchdog''),
              (''AdminPc'', ''Robot1'')]" by eval
 
-text{*
+text\<open>
 It can be seen that all connections which should be stateful are now indeed stateful. 
 In addition, it can be seen that MissionControl1 cannot set up a stateful connection to Bot2. 
 This is because MissionControl1 was never declared a trusted device and the confidential information 
 in MissionControl2 and Robot2 must not leak. 
 
-The improved invariant definition even produces a better (i.e. stricter) maximum policy. *}
+The improved invariant definition even produces a better (i.e. stricter) maximum policy.\<close>
 
-subsection{*Iptables Implementation*}
+subsection\<open>Iptables Implementation\<close>
 
-text{*firewall -- classical use case*}
-ML_val{*
+text\<open>firewall -- classical use case\<close>
+ML_val\<open>
 
 (*header*)
 writeln (*("echo 1 > /proc/sys/net/ipv4/ip_forward"^"\n"^
@@ -875,9 +875,9 @@ iterate_edges_ML @{context} @{term "flows_stateL stateful_policy_tuned"}
   (fn _ => () );
 
 writeln "COMMIT";
-*}
+\<close>
 
-text{*Using, @{url "https://github.com/diekmann/Iptables_Semantics"}, the iptables ruleset is indeed correct.*}
+text\<open>Using, @{url "https://github.com/diekmann/Iptables_Semantics"}, the iptables ruleset is indeed correct.\<close>
 
 end
 

@@ -2,14 +2,14 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* General Algorithms for Iterators over Finite Sets *}
+section \<open>General Algorithms for Iterators over Finite Sets\<close>
 theory SetIteratorCollectionsGA
 imports 
   "../spec/SetSpec" 
   "../spec/MapSpec" 
 begin
 
-subsection {* Iterate add to Set *}
+subsection \<open>Iterate add to Set\<close>
 
 definition iterate_add_to_set where
     "iterate_add_to_set s ins (it::('x,'x_set) set_iterator) = 
@@ -40,7 +40,7 @@ apply (insert ins_dj_OK s_OK dj)
 apply (simp_all add: set_ins_dj_def set_eq_iff)
 done
 
-subsection {* Iterator to Set *}
+subsection \<open>Iterator to Set\<close>
 
 definition iterate_to_set where
     "iterate_to_set emp ins_dj (it::('x,'x_set) set_iterator) = 
@@ -61,11 +61,11 @@ using iterate_add_to_set_dj_correct [OF ins_dj_OK _ it, of "emp ()"] emp_OK
 by (simp add: set_empty_def)
 
 
-subsection {* Iterate image/filter add to Set *}
+subsection \<open>Iterate image/filter add to Set\<close>
 
-text {* Iterators only visit element once. Therefore the image operations makes sense for
+text \<open>Iterators only visit element once. Therefore the image operations makes sense for
 filters only if an injective function is used. However, when adding to a set using
-non-injective functions is fine. *}
+non-injective functions is fine.\<close>
 
 lemma iterate_image_filter_add_to_set_correct :
 assumes ins_OK: "set_ins \<alpha> invar ins"
@@ -94,7 +94,7 @@ unfolding iterate_to_set_def
 using iterate_image_filter_add_to_set_correct [OF ins_OK _ it, of "emp ()" f] emp_OK
 by (simp add: set_empty_def)
 
-text{* For completeness lets also consider injective versions. *}
+text\<open>For completeness lets also consider injective versions.\<close>
 
 lemma iterate_inj_image_filter_add_to_set_correct :
 assumes ins_dj_OK: "set_ins_dj \<alpha> invar ins"
@@ -128,7 +128,7 @@ using iterate_inj_image_filter_add_to_set_correct [OF ins_OK _ it _ f_inj_on, of
 by (simp add: set_empty_def)
 
 
-subsection {* Iterate diff Set *}
+subsection \<open>Iterate diff Set\<close>
 
 definition iterate_diff_set where
     "iterate_diff_set s del (it::('x,'x_set) set_iterator) = 
@@ -146,7 +146,7 @@ apply (insert del_OK s_OK)
 apply (auto simp add: set_delete_def set_eq_iff)
 done
 
-subsection {* Iterate add to Map *}
+subsection \<open>Iterate add to Map\<close>
 
 definition iterate_add_to_map where
     "iterate_add_to_map m update (it::('k \<times> 'v,'kv_map) set_iterator) = 
@@ -178,7 +178,7 @@ apply (simp_all add: map_update_dj_def restrict_map_insert set_eq_iff)
 done
 
 
-subsection {* Iterator to Map *}
+subsection \<open>Iterator to Map\<close>
 
 definition iterate_to_map where
     "iterate_to_map emp upd_dj (it::('k \<times> 'v,'kv_map) set_iterator) = 

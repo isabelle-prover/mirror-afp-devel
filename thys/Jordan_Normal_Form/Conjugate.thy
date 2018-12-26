@@ -43,7 +43,7 @@ lemma conjugate_square_0:
   shows "a * conjugate a = 0 \<Longrightarrow> a = 0" by auto
 
 
-subsection {* Instantiations *}
+subsection \<open>Instantiations\<close>
 
 instantiation complex :: conjugatable_ordered_field
 begin

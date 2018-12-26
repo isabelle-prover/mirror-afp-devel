@@ -1,11 +1,11 @@
-subsection {* ISK (Interruptible Separation Kernel) *}
+subsection \<open>ISK (Interruptible Separation Kernel)\<close>
 
 theory ISK
   imports SK
 begin
 
 
-text {*
+text \<open>
 
 At this point, the precondition linking action to state is generic and highly unconstrained.
 We refine the previous locale by given generic functions ``precondition'' and ``realistic\_trace'' a definiton.
@@ -43,7 +43,7 @@ The following constraints are assumed and must therefore be proven for the insta
     \item The action sequence that is at the head of the execution is skipped and the execution is updated accordingly.
     \end{enumerate}    
     As for the state update, this is still completely unconstrained and generic as long as it respects the generic invariant and the precondition.
-*}
+\<close>
 
 locale Interruptible_Separation_Kernel = Separation_Kernel kstep output_f s0 current cswitch interrupt kprecondition realistic_execution control kinvolved ifp vpeq
   for kstep :: "'state_t \<Rightarrow> 'action_t \<Rightarrow> 'state_t"
@@ -88,9 +88,9 @@ assumes empty_in_AS_set: "[] \<in> AS_set"
     and spec_of_waiting: "\<forall> s a . waiting s (current s) a \<longrightarrow> kstep s a = s"
 begin
 
-text {*
+text \<open>
   We can now formulate a total run function, since based on the new assumptions the case where the precondition does not hold, will never occur.
-*}
+\<close>
 function run_total :: "time_t \<Rightarrow> 'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> 'state_t"
 where "run_total 0 s execs = s"
 | "interrupt (Suc n) \<Longrightarrow> run_total (Suc n) s execs = run_total n (cswitch (Suc n) s) execs"
@@ -100,38 +100,38 @@ where "run_total 0 s execs = s"
 using not0_implies_Suc by (metis prod_cases3,auto)
 termination by lexicographic_order
 
-text {*
+text \<open>
   The major part of the proofs in this locale consist of proving that function run\_total is equivalent to function run, i.e., that the precondition does always hold.
   This assumes that the executions are \emph{realistic}.
   This means that the execution of each domain contains action sequences that are from AS\_set.
   This ensures, e.g, that a COPY\_CHECK is always preceded by a COPY\_INIT.
-*}
+\<close>
 definition realistic_executions :: "('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> bool"
 where "realistic_executions execs \<equiv> \<forall> d . realistic_execution (execs d)"
 
-text {*
+text \<open>
   Lemma run\_total\_equals\_run is proven by doing induction.
   It is however not inductive and can therefore not be proven directly: a realistic execution is not necessarily realistic after performing one action.
   We generalize to do induction.
   Predicate realistic\_executions\_ind is the inductive version of realistic\_executions. All action sequences in the tail of the executions must be complete action sequences (i.e., they must be from AS\_set).
   The first action sequence, however, is being executed and is therefore not necessarily an action sequence from AS\_set, but it is \emph{the last part}
   of some action sequence from AS\_set.
-*}
+\<close>
 definition realistic_AS_partial :: "'action_t list \<Rightarrow> bool"
 where "realistic_AS_partial aseq \<equiv> \<exists> n aseq' .  n \<le> length aseq' \<and> aseq' \<in> AS_set \<and> aseq = lastn n aseq'"
 definition realistic_executions_ind :: "('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> bool"
 where "realistic_executions_ind execs \<equiv> \<forall> d . (case execs d of [] \<Rightarrow> True | (aseq#aseqs) \<Rightarrow> realistic_AS_partial aseq \<and> set aseqs \<subseteq> AS_set)"
-text {*
+text \<open>
   We need to know that invariably, the precondition holds.
   As this precondition consists of 1.) a generic invariant and 2.) more refined preconditions for the current action, we have to know that these two are invariably true.
-*}
+\<close>
 definition precondition_ind :: "'state_t \<Rightarrow> ('dom_t \<Rightarrow> 'action_t execution) \<Rightarrow> bool"
 where "precondition_ind s execs \<equiv> invariant s \<and> (\<forall> d . fst(control s d (execs d)) \<rightharpoonup> AS_precondition s d)"
 
-text {*
+text \<open>
   Proof that ``execution is realistic" is inductive, i.e., 
   assuming the current execution is realistic, the execution returned by the control mechanism is realistic.
-*}
+\<close>
 lemma next_execution_is_realistic_partial:
 assumes na_def: "next_execs s execs d = aseq # aseqs"
     and d_is_curr: "d = current s"
@@ -229,9 +229,9 @@ show ?thesis
   by (auto simp add: Let_def)
 qed
             
-text {*
+text \<open>
   The lemma that proves that the total run function is equivalent to the partial run function, i.e., that in this refinement the case of the run function where the precondition is False will never occur.
-*}
+\<close>
 lemma run_total_equals_run:
   assumes realistic_exec: "realistic_executions execs"
       and invariant: "invariant s"      
@@ -559,11 +559,11 @@ have 3: "precondition_ind s execs"
 from thm_inductive 1 2 3 show ?thesis by auto   
 qed
 
-text {*
+text \<open>
   Theorem unwinding\_implies\_isecure gives security for all realistic executions.
   For unrealistic executions, it holds vacuously and therefore does not tell us anything.
   In order to prove security for this refinement (i.e., for function run\_total), we have to prove that purging yields realistic runs.
-*}
+\<close>
 
 lemma realistic_purge:
   shows "\<forall> execs d . realistic_executions execs \<longrightarrow> realistic_executions (purge execs d)"
@@ -607,11 +607,11 @@ proof-
 thus ?thesis by auto
 qed
 
-text {*
+text \<open>
   We now have sufficient lemma's to prove security for run\_total.
   The definition of security is similar to that in Section~\ref{sec:sep_kernel}.
   It now assumes that the executions are realistic and concerns function run\_total instead of function run.
-*}
+\<close>
 
 definition NI_unrelated_total::bool
 where "NI_unrelated_total
@@ -658,7 +658,7 @@ proof-
         from 2 None show ?thesis using 2 unfolding NI_unrelated_total_def strict_equal_def by auto
       next
       case (Some s_f2)
-        from `run n (Some s0) execs = Some s_f` Some 1 2  secure_partial[unfolded NI_unrelated_def,THEN spec,THEN spec,THEN spec,where x=n and x2=execs]
+        from \<open>run n (Some s0) execs = Some s_f\<close> Some 1 2  secure_partial[unfolded NI_unrelated_def,THEN spec,THEN spec,THEN spec,where x=n and x2=execs]
           show ?thesis
           unfolding strict_equal_def NI_unrelated_def
           by(simp add: Let_def B_def B2_def)
@@ -699,7 +699,7 @@ proof-
           from 3 None show ?thesis using 2 unfolding NI_unrelated_total_def strict_equal_def by auto
           next
           case (Some s_ipurge_r)
-            from `run n (Some s0) execs = Some s_f` `run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l`
+            from \<open>run n (Some s0) execs = Some s_f\<close> \<open>run n (Some s0) (ipurge_l execs (current s_f)) = Some s_ipurge_l\<close>
                   Some 1 2 3 isecure1_partial[unfolded NI_indirect_sources_def,THEN spec,THEN spec,THEN spec,where x=n and x2=execs]
             show ?thesis
               unfolding strict_equal_def NI_unrelated_def

@@ -4,7 +4,7 @@
 The invariant for the type safety proof.
 *)
 
-section {* BV Type Safety Invariant *}
+section \<open>BV Type Safety Invariant\<close>
 
 theory BVConform
 imports
@@ -85,7 +85,7 @@ lemma conf_f_def2:
   P,h \<turnstile> stk [:\<le>] ST \<and> P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT \<and> pc < size is"
   by (simp add: conf_f_def)
 
-subsection {* Values and @{text "\<top>"} *}
+subsection \<open>Values and \<open>\<top>\<close>\<close>
 
 lemma confT_Err [iff]: "P,h \<turnstile> x :\<le>\<^sub>\<top> Err" 
   by (simp add: confT_def)
@@ -111,7 +111,7 @@ lemma confT_hext [intro?, trans]:
 
 end
 
-subsection {* Stack and Registers *}
+subsection \<open>Stack and Registers\<close>
 
 context JVM_heap_base begin
 
@@ -154,7 +154,7 @@ lemma confTs_hext [intro?]:
   "P,h \<turnstile> loc [:\<le>\<^sub>\<top>] LT \<Longrightarrow> h \<unlhd> h' \<Longrightarrow> P,h' \<turnstile> loc [:\<le>\<^sub>\<top>] LT"
   by (fast elim: list_all2_mono confT_hext)    
   
-subsection {* correct-frames *}
+subsection \<open>correct-frames\<close>
 
 declare fun_upd_apply[simp del]
 

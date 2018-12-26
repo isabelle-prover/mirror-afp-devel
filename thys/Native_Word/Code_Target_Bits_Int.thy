@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Implementation of bit operations on int by target language operations *}
+chapter \<open>Implementation of bit operations on int by target language operations\<close>
 
 theory Code_Target_Bits_Int
 imports

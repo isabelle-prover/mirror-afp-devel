@@ -4,7 +4,7 @@
 
   Evaluation of terms involving rational numerals with the simplifier.
 *)
-section {* Evaluating expressions with rational numerals *}
+section \<open>Evaluating expressions with rational numerals\<close>
 theory Eval_Numeral
 imports
   Complex_Main
@@ -112,7 +112,7 @@ lemmas eval_numeral_simps =
   greaterThanLessThan_iff atLeastAtMost_iff atLeastLessThan_iff greaterThanAtMost_iff rat_powr
   Num.pow.simps Num.sqr.simps Product_Type.split of_int_numeral of_int_neg_numeral of_nat_numeral
 
-ML {*
+ML \<open>
 signature EVAL_NUMERAL =
 sig
   val eval_numeral_tac : Proof.context -> int -> tactic
@@ -129,12 +129,12 @@ fun eval_numeral_tac ctxt =
   end
 
 end
-*}
+\<close>
 
 lemma "21254387548659589512*314213523632464357453884361*2342523623324234*564327438587241734743*
           12561712738645824362329316482973164398214286 powr 2 /
          (1130246312978423123+231212374631082764842731842*122474378389424362347451251263) >
         (12313244512931247243543279768645745929475829310651205623844::real)"
-  by (tactic {* Eval_Numeral.eval_numeral_tac @{context} 1 *})
+  by (tactic \<open>Eval_Numeral.eval_numeral_tac @{context} 1\<close>)
 
 end

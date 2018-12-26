@@ -6,21 +6,21 @@ section "Main Result"
 theory MainResult
 imports ConstraintSystems
 begin
-text_raw {*\label{thy:MainResult}*}
+text_raw \<open>\label{thy:MainResult}\<close>
 
-text {* At this point everything is available to prove the main result of this project: 
+text \<open>At this point everything is available to prove the main result of this project: 
   {\em The constraint system @{term RUV_cs} precisely characterizes simultaneously reachable control nodes w.r.t. to our
   semantic reference point.}
 
   The ,,trusted base'' of this proof, that are all definitions a reader that trusts the Isabelle prover must additionally trust, is the following:
   \begin{itemize}
-    \item The flowgraph and the assumptions made on it in the @{text flowgraph}- and @{text eflowgraph}-locales. Note that we show in Section~\ref{sec:Flowgraph:ex_flowgraph} 
-      that there is at least one non-trivial model of @{text eflowgraph}.
+    \item The flowgraph and the assumptions made on it in the \<open>flowgraph\<close>- and \<open>eflowgraph\<close>-locales. Note that we show in Section~\ref{sec:Flowgraph:ex_flowgraph} 
+      that there is at least one non-trivial model of \<open>eflowgraph\<close>.
     \item The reference point semantics (@{term refpoint}) and the transitive closure operator (@{term trcl}).
     \item The definition of @{term atUV}.
     \item All dependencies of the above definitions in the Isabelle standard libraries.
   \end{itemize}
-*}
+\<close>
 theorem (in eflowgraph) RUV_is_sim_reach: 
   "(\<exists>w c'. ({#[entry fg (main fg)]#},w,c')\<in>trcl (refpoint fg) \<and> atUV U V c') 
     \<longleftrightarrow> (\<exists>Ml Me. (entry fg (main fg),Ml,Me)\<in>RUV_cs fg U V)" 

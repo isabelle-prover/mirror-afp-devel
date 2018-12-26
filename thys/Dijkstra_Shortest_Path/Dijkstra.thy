@@ -1,4 +1,4 @@
-section {* Dijkstra's Algorithm *}
+section \<open>Dijkstra's Algorithm\<close>
 theory Dijkstra
   imports 
   Graph 
@@ -6,28 +6,28 @@ theory Dijkstra
   Collections.Refine_Dflt_ICF
   Weight
 begin
-text {*
+text \<open>
   This theory defines Dijkstra's algorithm. First, a correct result of 
   Dijkstra's algorithm w.r.t. a graph and a start vertex is specified. 
   Then, the refinement 
   framework is used to specify Dijkstra's Algorithm, prove it correct, and
   finally refine it to datatypes that are closer to an implementation than
   the original specification.
-  *}
+\<close>
 
 subsection "Graph's for Dijkstra's Algorithm"
-  text {* A graph annotated with weights. *}
+  text \<open>A graph annotated with weights.\<close>
   locale weighted_graph = valid_graph G
     for G :: "('V,'W::weight) graph"
 
 subsection "Specification of Correct Result"
   context weighted_graph
   begin
-    text {*
+    text \<open>
       A result of Dijkstra's algorithm is correct, if it is a map from nodes 
-      @{text "v"} to the shortest path from the start node @{text "v0"} to 
-      @{text "v"}. Iff there is no such path, the node is not in the map.
-      *}
+      \<open>v\<close> to the shortest path from the start node \<open>v0\<close> to 
+      \<open>v\<close>. Iff there is no such path, the node is not in the map.
+\<close>
     definition is_shortest_path_map :: "'V \<Rightarrow> ('V \<rightharpoonup> ('V,'W) path) \<Rightarrow> bool" 
       where
       "is_shortest_path_map v0 res \<equiv> \<forall>v\<in>V. (case res v of
@@ -37,27 +37,27 @@ subsection "Specification of Correct Result"
       )"
   end
 
-  text {*
+  text \<open>
     The following function returns the weight of an optional path,
-    where @{text "None"} is interpreted as infinity.
-    *}
+    where \<open>None\<close> is interpreted as infinity.
+\<close>
   fun path_weight' where
     "path_weight' None = top" |
     "path_weight' (Some p) = Num (path_weight p)"
 
 subsection "Dijkstra's Algorithm"
-  text {*
+  text \<open>
     The state in the main loop of the algorithm consists of a workset 
-    @{text "wl"} of vertexes that still need to be explored, and a map 
-    @{text "res"} that contains the current shortest path for each vertex.
-    *}
+    \<open>wl\<close> of vertexes that still need to be explored, and a map 
+    \<open>res\<close> that contains the current shortest path for each vertex.
+\<close>
   type_synonym ('V,'W) state = "('V set) \<times> ('V \<rightharpoonup> ('V,'W) path)"
 
-  text {*
+  text \<open>
     The preconditions of Dijkstra's algorithm, i.e., that it operates on a 
     valid and finite graph, and that the start node is a node of the graph,
     are summarized in a locale.
-    *}
+\<close>
   locale Dijkstra = weighted_graph G 
     for G :: "('V,'W::weight) graph"+
     fixes v0 :: 'V
@@ -66,11 +66,11 @@ subsection "Dijkstra's Algorithm"
     assumes nonneg_weights[simp, intro]: "(v,w,v')\<in>edges G \<Longrightarrow> 0\<le>w"
   begin
 
-  text {* Paths have non-negative weights.*}
+  text \<open>Paths have non-negative weights.\<close>
   lemma path_nonneg_weight: "is_path v p v' \<Longrightarrow> 0 \<le> path_weight p"
     by (induct rule: is_path.induct) auto
 
-  text {* Invariant of the main loop: 
+  text \<open>Invariant of the main loop: 
     \begin{itemize}
       \item The workset only contains nodes of the graph.
       \item If the result set contains a path for a node, it is actually a path,
@@ -81,7 +81,7 @@ subsection "Dijkstra's Algorithm"
         shortest path among all paths that only use intermediate vertices outside
         the workset.
     \end{itemize}
-    *}
+\<close>
   definition "dinvar \<sigma> \<equiv> let (wl,res)=\<sigma> in
     wl \<subseteq> V \<and>
     (\<forall>v\<in>V. \<forall>p. res v = Some p \<longrightarrow> is_path v0 p v \<and> int_vertices p \<subseteq> V-wl) \<and>
@@ -92,38 +92,38 @@ subsection "Dijkstra's Algorithm"
     )
     "
 
-  text {* Sanity check: The invariant is strong enough to imply correctness 
-    of result. *}
+  text \<open>Sanity check: The invariant is strong enough to imply correctness 
+    of result.\<close>
   lemma invar_imp_correct: "dinvar ({},res) \<Longrightarrow> is_shortest_path_map v0 res"
     unfolding dinvar_def is_shortest_path_map_def
     by (auto simp: infty_unbox split: option.split)
 
-  text {*
+  text \<open>
     The initial workset contains all vertices. The initial result maps
-    @{text "v0"} to the empty path, and all other vertices to @{text "None"}.
-    *}
+    \<open>v0\<close> to the empty path, and all other vertices to \<open>None\<close>.
+\<close>
   definition dinit :: "('V,'W) state nres" where
     "dinit \<equiv> SPEC ( \<lambda>(wl,res) . 
         wl=V \<and> res v0 = Some [] \<and> (\<forall>v\<in>V-{v0}. res v = None))"
 
-  text {*
+  text \<open>
     The initial state satisfies the invariant.
-    *}
+\<close>
   lemma dinit_invar: "dinit \<le> SPEC dinvar"
     unfolding dinit_def
     apply (intro refine_vcg)
     apply (force simp: dinvar_def split: option.split)
     done
 
-  text {*
+  text \<open>
     In each iteration, the main loop of the algorithm pops a minimal node from
     the workset, and then updates the result map accordingly.
-    *}
+\<close>
 
-  text {*
+  text \<open>
     Pop a minimal node from the workset. The node is minimal in the sense that
     the length of the current path for that node is minimal.
-    *}
+\<close>
   definition pop_min :: "('V,'W) state \<Rightarrow> ('V \<times> ('V,'W) state) nres" where
     "pop_min \<sigma> \<equiv> do {
       let (wl,res)=\<sigma>;
@@ -133,11 +133,11 @@ subsection "Dijkstra's Algorithm"
     }"
 
 
-  text {*
-    Updating the result according to a node @{text "v"} is done by checking, 
-    for each successor node, whether the path over @{text "v"} is shorter than 
+  text \<open>
+    Updating the result according to a node \<open>v\<close> is done by checking, 
+    for each successor node, whether the path over \<open>v\<close> is shorter than 
     the path currently stored into the result map.
-    *}
+\<close>
   inductive update_spec :: "'V \<Rightarrow> ('V,'W) state \<Rightarrow> ('V,'W) state \<Rightarrow> bool"
     where
     "\<lbrakk> \<forall>v'\<in>V. 
@@ -146,10 +146,10 @@ subsection "Dijkstra's Algorithm"
       )
      \<rbrakk> \<Longrightarrow> update_spec v (wl,res) (wl,res')"
 
-  text {*
+  text \<open>
     In order to ease the refinement proof, we will assert the following 
     precondition for updating.
-    *}
+\<close>
   definition update_pre :: "'V \<Rightarrow> ('V,'W) state \<Rightarrow> bool" where
     "update_pre v \<sigma> \<equiv> let (wl,res)=\<sigma> in v\<in>V 
       \<and> (\<forall>v'\<in>V-wl. v'\<noteq>v \<longrightarrow> (\<forall>p. is_path v0 p v' 
@@ -159,7 +159,7 @@ subsection "Dijkstra's Algorithm"
   definition update :: "'V \<Rightarrow> ('V,'W) state \<Rightarrow> ('V,'W) state nres" where 
     "update v \<sigma> \<equiv> do {ASSERT (update_pre v \<sigma>); SPEC (update_spec v \<sigma>)}"
 
-  text {* Finally, we define Dijkstra's algorithm: *}
+  text \<open>Finally, we define Dijkstra's algorithm:\<close>
   definition dijkstra where
     "dijkstra \<equiv> do {
        \<sigma>0\<leftarrow>dinit; 
@@ -171,8 +171,8 @@ subsection "Dijkstra's Algorithm"
        RETURN res }
     "
 
-  text {* The following theorem states (total) correctness of Dijkstra's 
-    algorithm. *}
+  text \<open>The following theorem states (total) correctness of Dijkstra's 
+    algorithm.\<close>
 
   theorem dijkstra_correct: "dijkstra \<le> SPEC (is_shortest_path_map v0)"
     unfolding dijkstra_def
@@ -188,10 +188,10 @@ subsection "Dijkstra's Algorithm"
     (* TODO/FIXME: Should we built in such massaging of the goal into 
         refine_rcg ?*)
     apply (simp_all split: prod.split_asm)
-    apply (tactic {*
+    apply (tactic \<open>
       ALLGOALS ((REPEAT_DETERM o Hypsubst.bound_hyp_subst_tac @{context})
       THEN' asm_full_simp_tac @{context}
-      )*})
+      )\<close>)
 
   proof -
     fix wl res v
@@ -268,7 +268,7 @@ subsection "Dijkstra's Algorithm"
       proof (intro ballI conjI impI allI)
         fix v' p
         assume V'_MEM: "v'\<in>V" and [simp]: "res' v' = Some p"
-        txt {* The new paths that we have added are valid and only use 
+        txt \<open>The new paths that we have added are valid and only use 
           intermediate vertices outside the workset. 
           
           This proof works as follows: A path @{term "res' v'"} is either
@@ -279,7 +279,7 @@ subsection "Dijkstra's Algorithm"
           Then, we observe that appending an edge to a valid path yields a valid 
           path again. Also, adding @{term v} as intermediate node is legal, as we 
           just removed @{term v} from the workset.
-          *}
+\<close>
         with CONSIDERED_NEW_PATHS have "res' v' \<in> (insert (res v') 
           ({ Some (p@[(v,w,v')]) | p w. res v = Some p \<and> (v,w,v')\<in>E }))"
           by (rule_tac least_map_elemD) blast
@@ -309,24 +309,23 @@ subsection "Dijkstra's Algorithm"
           by blast+
       qed
 
-      txt {*
+      txt \<open>
         We show that already the {\em original} result stores the minimal 
         path for all vertices not in the {\em new} workset. 
         For vertices also not in the original workset, this follows 
         straightforwardly from the invariant.
         
-        For the vertex @{text v}, that has been removed from the
-        workset, we split a path @{text p'} to @{text v} at the point
-        @{text u} where it first enters the original workset.  
+        For the vertex \<open>v\<close>, that has been removed from the
+        workset, we split a path \<open>p'\<close> to \<open>v\<close> at the point
+        \<open>u\<close> where it first enters the original workset.  
 
-        As we chose @{text v} to be the vertex in the workset with the
+        As we chose \<open>v\<close> to be the vertex in the workset with the
         minimal weight, its weight is less than the current weight of
-        @{text u}.  As the vertices of the prefix of @{text p'} up to
-        @{text u} are not in the workset, the current weight of
-        @{text u} is less than the weight of the prefix of @{text
-        p'}, and thus less than the weight of @{text p'}. 
-        Together, the current weight of @{text v} is less than the weight of
-        @{text p'}. *}
+        \<open>u\<close>.  As the vertices of the prefix of \<open>p'\<close> up to
+        \<open>u\<close> are not in the workset, the current weight of
+        \<open>u\<close> is less than the weight of the prefix of \<open>p'\<close>, and thus less than the weight of \<open>p'\<close>. 
+        Together, the current weight of \<open>v\<close> is less than the weight of
+        \<open>p'\<close>.\<close>
       have RES_MIN: "\<forall>v\<in>V - (wl - {v}). \<forall>p. is_path v0 p v 
         \<longrightarrow> path_weight' (res v) \<le> Num (path_weight p)"
       proof (intro ballI allI impI)
@@ -363,10 +362,10 @@ subsection "Dijkstra's Algorithm"
         qed
       qed
         
-      txt {* With the previous statement, we easily show the
+      txt \<open>With the previous statement, we easily show the
         third part of the invariant, as the new paths are not longer than the
         old ones.
-        *}
+\<close>
       show "\<forall>v\<in>V - (wl - {v}). \<forall>p. is_path v0 p v 
         \<longrightarrow> path_weight' (res' v) \<le> Num (path_weight p)"
       proof (intro allI ballI impI)
@@ -382,12 +381,12 @@ subsection "Dijkstra's Algorithm"
         finally show "path_weight' (res' v') \<le> Num (path_weight p)" .
       qed
 
-      txt {*
+      txt \<open>
         Finally, we have to show that for nodes on the worklist,
         the stored paths are not longer than any path using only nodes not
         on the worklist. Compared to the situation before the step, those
-        path may also use the node @{text v}.
-        *}
+        path may also use the node \<open>v\<close>.
+\<close>
       show "\<forall>va\<in>wl - {v}. \<forall>p. 
         is_path v0 p va \<and> int_vertices p \<subseteq> V - (wl - {v}) 
         \<longrightarrow> path_weight' (res' va) \<le> Num (path_weight p)"
@@ -399,11 +398,11 @@ subsection "Dijkstra's Algorithm"
         from IWS WL_SUBSET have [simp, intro!]: "v'\<in>V" by auto
         
         {
-          txt {*
+          txt \<open>
             If the path is empty, the proposition follows easily from the
             invariant for the original states, as no intermediate nodes are 
             used at all.
-            *}
+\<close>
           assume [simp]: "p=[]"
           from bspec[OF CONSIDERED_NEW_PATHS, of v'] have
             "path_weight' (res' v') \<le> path_weight' (res v')"
@@ -416,16 +415,16 @@ subsection "Dijkstra's Algorithm"
         } moreover {
           fix p1 u w
           assume [simp]: "p = p1@[(u,w,v')]"
-          txt {* If the path is not empty, we pick the last but one vertex, and
-            call it @{term u}.*}
+          txt \<open>If the path is not empty, we pick the last but one vertex, and
+            call it @{term u}.\<close>
           from PATH have PATH1: "is_path v0 p1 u" and EDGE: "(u,w,v')\<in>E" by auto
           from VERTICES have NIV: "u\<in>V - (wl-{v})" by simp
           hence U_MEM[simp]: "u\<in>V" by auto
 
-          txt {* From @{thm [source] RES_MIN}, we know that @{term "res u"} holds
-            the shortest path to @{term u}. Thus @{text p} is longer than the 
+          txt \<open>From @{thm [source] RES_MIN}, we know that @{term "res u"} holds
+            the shortest path to @{term u}. Thus \<open>p\<close> is longer than the 
             path that is constructed by replacing the prefix of @{term p} by 
-            {term "res u"}*}
+            {term "res u"}\<close>
           from NIV RES_MIN PATH1 
           have G: "Num (path_weight p1) \<ge> path_weight' (res u)" by simp
           then obtain pu where [simp]: "res u = Some pu" 
@@ -434,7 +433,7 @@ subsection "Dijkstra's Algorithm"
             by (auto simp: infty_unbox add_right_mono)
           also 
           have "path_weight' (res u) + Num w \<ge> path_weight' (res' v')"
-            txt {*
+            txt \<open>
               The remaining argument depends on wether @{term u} 
               equals @{term v}. 
               In the case @{term "u\<noteq>v"}, all vertices of @{term "res u"} are
@@ -446,9 +445,9 @@ subsection "Dijkstra's Algorithm"
               @{term "res' v'"} is shorter.
 
               In the case @{term "u=v"}, the step has
-              considered the path to @{text v'} over @{text v}, and thus the
+              considered the path to \<open>v'\<close> over \<open>v\<close>, and thus the
               result path is not longer.
-              *}
+\<close>
           proof (cases "u=v")
             assume "u\<noteq>v"
             with NIV have NIV': "u\<in>V-wl" by auto
@@ -480,16 +479,16 @@ subsection "Dijkstra's Algorithm"
     qed
   qed
 
-  subsection {* Structural Refinement of Update *}
-  text {*
+  subsection \<open>Structural Refinement of Update\<close>
+  text \<open>
     Now that we have proved correct the initial version of the algorithm, we start
     refinement towards an efficient implementation.
-    *}
+\<close>
 
-  text {*
+  text \<open>
     First, the update function is refined to iterate over each successor of the
     selected node, and update the result on demand.
-    *}
+\<close>
   definition uinvar 
     :: "'V \<Rightarrow> 'V set \<Rightarrow> _ \<Rightarrow> ('W\<times>'V) set \<Rightarrow> ('V,'W) state \<Rightarrow> bool" where
     "uinvar v wl res it \<sigma> \<equiv> let (wl',res')=\<sigma> in wl'=wl 
@@ -703,7 +702,7 @@ subsection "Dijkstra's Algorithm"
     show "finite (succ G v)" by simp
   qed
 
-  text {* We integrate the new update function into the main algorithm: *}
+  text \<open>We integrate the new update function into the main algorithm:\<close>
   definition dijkstra' where
     "dijkstra' \<equiv> do {
       \<sigma>0 \<leftarrow> dinit; 
@@ -726,8 +725,8 @@ subsection "Dijkstra's Algorithm"
   qed
 end
 
-subsection {* Refinement to Cached Weights *}
-text {*
+subsection \<open>Refinement to Cached Weights\<close>
+text \<open>
   Next, we refine the data types of the workset and the result map.
   The workset becomes a map from nodes to their current weights.
   The result map stores, in addition to the shortest path, also the
@@ -737,15 +736,15 @@ text {*
   These refinements allow to implement the workset as a priority queue,
   and save recomputation of the path weights in the inner loop of the
   algorithm.
-*}
+\<close>
 
 type_synonym ('V,'W) mwl = "('V \<rightharpoonup> 'W infty)"
 type_synonym ('V,'W) mres = "('V \<rightharpoonup> (('V,'W) path \<times> 'W))"
 type_synonym ('V,'W) mstate = "('V,'W) mwl \<times> ('V,'W) mres"
 
-text {*
+text \<open>
   Map a path with cached weight to one without cached weight.
-*}
+\<close>
 fun mpath' :: "(('V,'W) path \<times> 'W) option \<rightharpoonup> ('V,'W) path" where
   "mpath' None = None" |
   "mpath' (Some (p,w)) = Some p"
@@ -762,8 +761,8 @@ begin
   definition \<alpha>s:: "('V,'W) mstate \<Rightarrow> ('V,'W) state" where
     "\<alpha>s \<equiv> map_prod \<alpha>w \<alpha>r"
 
-  text {* Additional invariants for the new state. They guarantee that
-    the cached weights are consistent.*}
+  text \<open>Additional invariants for the new state. They guarantee that
+    the cached weights are consistent.\<close>
   definition res_invarm :: "('V \<rightharpoonup> (('V,'W) path\<times>'W)) \<Rightarrow> bool" where
     "res_invarm res \<equiv> (\<forall>v. case res v of 
         None \<Rightarrow> True | 
@@ -795,7 +794,7 @@ begin
     finally show ?thesis by simp
   qed
 
-  text {* The initial state is constructed using an iterator: *}
+  text \<open>The initial state is constructed using an iterator:\<close>
   definition mdinit :: "('V,'W) mstate nres" where
     "mdinit \<equiv> do {
       wl \<leftarrow> FOREACH V (\<lambda>v wl. RETURN (wl(v\<mapsto>Infty))) Map.empty;
@@ -814,7 +813,7 @@ begin
     )
     done
 
-  text {* The new pop function: *}
+  text \<open>The new pop function:\<close>
   definition 
     mpop_min :: "('V,'W) mstate \<Rightarrow> ('V \<times> 'W infty \<times> ('V,'W) mstate) nres" 
     where
@@ -852,7 +851,7 @@ begin
 
     done
 
-  text {* The new update function: *}
+  text \<open>The new update function:\<close>
   definition "uinvarm v wl res it \<sigma> \<equiv> 
     uinvar v wl res it (\<alpha>s \<sigma>) \<and> dinvarm \<sigma>"
 
@@ -879,7 +878,7 @@ begin
     shows "mupdate v wv \<sigma> \<le> \<Down>(build_rel \<alpha>s dinvarm) (update' v' \<sigma>')"
   proof (simp only: VV')
     {
-      txt {* Show that IF-condition is a refinement: *}
+      txt \<open>Show that IF-condition is a refinement:\<close>
       fix wl res wl' res' it w' v'
       assume "uinvarm v (\<alpha>w wl) (\<alpha>r res) it (wl',res')" 
         and "dinvarm (wl,res)"
@@ -890,7 +889,7 @@ begin
     } note COND_refine=this
 
     {
-      txt {* THEN-case: *}
+      txt \<open>THEN-case:\<close>
       fix wl res wl' res' it w' v'
       assume UINV: "uinvarm v (\<alpha>w wl) (\<alpha>r res) it (wl',res')"
         and DINV: "dinvarm (wl,res)"
@@ -929,7 +928,7 @@ begin
                                       ))))" (is ?G4)
         using UINV unfolding uinvarm_def dinvarm_def res_invarm_def
         by (auto simp: infty_unbox split: option.split option.split_asm)
-      note `?G1` `?G2` `?G3` `?G4`
+      note \<open>?G1\<close> \<open>?G2\<close> \<open>?G3\<close> \<open>?G4\<close>
     } note THEN_refine=this
 
 
@@ -950,12 +949,12 @@ begin
       apply (rule ccontr,simp)
       using THEN_refine(3,4)
       apply (auto simp: \<alpha>s_def) []
-      txt {*The ELSE-case is trivial:*}
+      txt \<open>The ELSE-case is trivial:\<close>
       apply simp
       done
   qed
 
-  text {* Finally, we assemble the refined algorithm: *}
+  text \<open>Finally, we assemble the refined algorithm:\<close>
   definition mdijkstra where
     "mdijkstra \<equiv> do {
       \<sigma>0 \<leftarrow> mdinit; 

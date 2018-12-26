@@ -2,9 +2,9 @@
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory OBJ imports Main begin
 
-section{*Base-line non-interference with objects*}
+section\<open>Base-line non-interference with objects\<close>
 
-text{*\label{sec:Objects} We now extend the encoding for base-line
+text\<open>\label{sec:Objects} We now extend the encoding for base-line
 non-interference to a language with objects.  The development follows
 the structure of Sections \ref{sec:IMP} to
 \ref{sec:BaseLineNI}. Syntax and operational semantics are defined in
@@ -13,12 +13,12 @@ Section \ref{sec:ObjLanguage}, the axiomatic semantics in Section
 given in \ref{sec:ObjNI}, the derived proof rules in Section
 \ref{sec:ObjDerivedRules}, and a type system in the style of Volpano
 et al.~in Section \ref{sec:ObjTypeSystem}. Finally, Section
-\ref{sec:contextObj} concludes with results on contextual closure.*}
+\ref{sec:contextObj} concludes with results on contextual closure.\<close>
 
-subsection {*Syntax and operational semantics*}
-text{*\label{sec:ObjLanguage}*}
+subsection \<open>Syntax and operational semantics\<close>
+text\<open>\label{sec:ObjLanguage}\<close>
 
-text{*First, some operations for association lists*}
+text\<open>First, some operations for association lists\<close>
 
 primrec lookup :: "('a \<times> 'b) list \<Rightarrow> 'a \<Rightarrow> 'b option"
 where
@@ -67,29 +67,29 @@ apply clarsimp
 done
 (*>*)
 
-text{*Abstract types of variables, class names, field names, and
-locations.*}
+text\<open>Abstract types of variables, class names, field names, and
+locations.\<close>
 
 typedecl Var
 typedecl Class
 typedecl Field
 typedecl Location
 
-text{*References are either null or a location. Values are either
-integers or references.*}
+text\<open>References are either null or a location. Values are either
+integers or references.\<close>
 
 datatype Ref = Nullref | Loc Location
 
 datatype Val = RVal Ref | IVal int 
 
-text{*The heap is a finite map from locations to objects. Objects have
-a dynamic class and a field map.*}
+text\<open>The heap is a finite map from locations to objects. Objects have
+a dynamic class and a field map.\<close>
 
 type_synonym Object = "Class \<times> ((Field \<times> Val) list)"
 type_synonym Heap = "(Location \<times> Object) list"
 
-text{*Stores contain values for all variables, and states are pairs of
-stores and heaps.*}
+text\<open>Stores contain values for all variables, and states are pairs of
+stores and heaps.\<close>
 
 type_synonym Store = "Var \<Rightarrow> Val"
 
@@ -98,7 +98,7 @@ where "update s x v = (\<lambda> y . if x=y then v else s y)"
 
 type_synonym State = "Store \<times> Heap"
 
-text{*Arithmetic and boolean expressions are as before.*}
+text\<open>Arithmetic and boolean expressions are as before.\<close>
 
 datatype Expr = 
     varE Var 
@@ -107,7 +107,7 @@ datatype Expr =
 
 datatype BExpr = compB "Val \<Rightarrow> Val \<Rightarrow> bool" Expr Expr
 
-text{*The same applies to their semantics.*}
+text\<open>The same applies to their semantics.\<close>
 
 primrec evalE::"Expr \<Rightarrow> Store \<Rightarrow> Val"
 where
@@ -119,9 +119,9 @@ primrec evalB::"BExpr \<Rightarrow> Store \<Rightarrow> bool"
 where
 "evalB (compB f e1 e2) s = f (evalE e1 s) (evalE e2 s)"
 
-text{*The category of commands is extended by instructions for
+text\<open>The category of commands is extended by instructions for
 allocating a fresh object, obtaining a value from a field and assigning
-a value to a field.*}
+a value to a field.\<close>
 
 datatype OBJ =
     Skip 
@@ -134,13 +134,13 @@ datatype OBJ =
   | Iff BExpr OBJ OBJ
   | Call
 
-text{*The body of the procedure is identified by the same constant as
-before.*}
+text\<open>The body of the procedure is identified by the same constant as
+before.\<close>
 
 consts body :: OBJ
 
-text{*The operational semantics is again a standard big-step
-relation.*}
+text\<open>The operational semantics is again a standard big-step
+relation.\<close>
 
 inductive_set Semn :: "(State \<times> OBJ \<times> nat \<times> State) set"
 where
@@ -191,8 +191,8 @@ abbreviation
 where
 "s,c \<rightarrow>\<^sub>n t == (s,c,n,t) : Semn"
 
-text{*Often, the height index does not matter, so we define a notion
-hiding it.*}
+text\<open>Often, the height index does not matter, so we define a notion
+hiding it.\<close>
 
 definition
 Sem :: "[State, OBJ, State] \<Rightarrow> bool" ("_ , _ \<Down> _ " 1000)
@@ -216,7 +216,7 @@ by (induct_tac c, auto elim: Sem_eval_cases)
 lemma Sem_no_zero_height_derivs: "(s, c \<rightarrow>\<^sub>0 t) \<Longrightarrow> False"
 (*<*)by (insert Sem_no_zero_height_derivsAux, fastforce)(*>*)
 
-text{* Determinism does not hold as allocation is nondeterministic.*}
+text\<open>Determinism does not hold as allocation is nondeterministic.\<close>
 
-text{*End of theory OBJ*}
+text\<open>End of theory OBJ\<close>
 end

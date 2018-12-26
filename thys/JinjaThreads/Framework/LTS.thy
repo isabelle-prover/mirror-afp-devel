@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Labelled transition systems *}
+section \<open>Labelled transition systems\<close>
 
 theory LTS
 imports
@@ -28,15 +28,15 @@ by(clarsimp simp add: lconcat_llist_of zero_enat_def[symmetric]) blast
 definition flip :: "('a \<Rightarrow> 'b \<Rightarrow> 'c) \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> 'c"
 where "flip f = (\<lambda>b a. f a b)"
 
-text {* Create a dynamic list @{text "flip_simps"} of theorems for flip *}
-ML {*
+text \<open>Create a dynamic list \<open>flip_simps\<close> of theorems for flip\<close>
+ML \<open>
 structure FlipSimpRules = Named_Thms
 (
   val name = @{binding flip_simps}
   val description = "Simplification rules for flip in bisimulations"
 )
-*}
-setup {* FlipSimpRules.setup *}
+\<close>
+setup \<open>FlipSimpRules.setup\<close>
 
 lemma flip_conv [flip_simps]: "flip f b a = f a b"
 by(simp add: flip_def)
@@ -80,7 +80,7 @@ next
     by(coinduct rule: tllist_all2_coinduct)(auto dest: tllist_all2_is_TNilD tllist_all2_tfinite2_terminalD tllist_all2_thdD intro: tllist_all2_ttlI simp add: flip_def)
 qed
 
-subsection {* Labelled transition systems *}
+subsection \<open>Labelled transition systems\<close>
 
 type_synonym ('a, 'b) trsys = "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool"
 
@@ -188,7 +188,7 @@ proof -
       case (inf_stepI tl s' tls')
       let ?s' = "SOME s'. trsys s tl s' \<and> s' -tls'\<rightarrow>* \<infinity>"
       have "trsys s tl ?s' \<and> ?s' -tls'\<rightarrow>* \<infinity>" by(rule someI)(blast intro: inf_stepI)
-      thus ?thesis using `tls = LCons tl tls'` by auto
+      thus ?thesis using \<open>tls = LCons tl tls'\<close> by auto
     qed
   qed
   moreover have "tls = lmap (fst \<circ> snd) (inf_step2inf_step_table s tls)"
@@ -243,7 +243,7 @@ proof -
     proof(cases)
       case (Step s' tls' tl)
       let ?P = "\<lambda>s'. s -tl\<rightarrow> s' \<and> Runs s' tls'"
-      from `s -tl\<rightarrow> s'` `Runs s' tls'` have "?P s'" ..
+      from \<open>s -tl\<rightarrow> s'\<close> \<open>Runs s' tls'\<close> have "?P s'" ..
       hence "?P (Eps ?P)" by(rule someI)
       with Step have ?Step by auto
       thus ?thesis ..
@@ -258,22 +258,22 @@ lemma Runs_lappendE:
   obtains \<sigma>' where "\<sigma> -list_of tls\<rightarrow>* \<sigma>'"
   and "Runs \<sigma>' tls'"
 proof(atomize_elim)
-  from `lfinite tls` `Runs \<sigma> (lappend tls tls')`
+  from \<open>lfinite tls\<close> \<open>Runs \<sigma> (lappend tls tls')\<close>
   show "\<exists>\<sigma>'. \<sigma> -list_of tls\<rightarrow>* \<sigma>' \<and> Runs \<sigma>' tls'"
   proof(induct arbitrary: \<sigma>)
     case lfinite_LNil thus ?case by(auto)
   next
     case (lfinite_LConsI tls tl)
-    from `Runs \<sigma> (lappend (LCons tl tls) tls')`
+    from \<open>Runs \<sigma> (lappend (LCons tl tls) tls')\<close>
     show ?case unfolding lappend_code
     proof(cases)
       case (Step \<sigma>')
-      from `Runs \<sigma>' (lappend tls tls') \<Longrightarrow> \<exists>\<sigma>''. \<sigma>' -list_of tls\<rightarrow>* \<sigma>'' \<and> Runs \<sigma>'' tls'` `Runs \<sigma>' (lappend tls tls')`
+      from \<open>Runs \<sigma>' (lappend tls tls') \<Longrightarrow> \<exists>\<sigma>''. \<sigma>' -list_of tls\<rightarrow>* \<sigma>'' \<and> Runs \<sigma>'' tls'\<close> \<open>Runs \<sigma>' (lappend tls tls')\<close>
       obtain \<sigma>'' where "\<sigma>' -list_of tls\<rightarrow>* \<sigma>''" "Runs \<sigma>'' tls'" by blast
-      from `\<sigma> -tl\<rightarrow> \<sigma>'` `\<sigma>' -list_of tls\<rightarrow>* \<sigma>''`
+      from \<open>\<sigma> -tl\<rightarrow> \<sigma>'\<close> \<open>\<sigma>' -list_of tls\<rightarrow>* \<sigma>''\<close>
       have "\<sigma> -tl # list_of tls\<rightarrow>* \<sigma>''" by(rule rtrancl3p_step_converse)
-      with `lfinite tls` have "\<sigma> -list_of (LCons tl tls)\<rightarrow>* \<sigma>''" by(simp)
-      with `Runs \<sigma>'' tls'` show ?thesis by blast
+      with \<open>lfinite tls\<close> have "\<sigma> -list_of (LCons tl tls)\<rightarrow>* \<sigma>''" by(simp)
+      with \<open>Runs \<sigma>'' tls'\<close> show ?thesis by blast
     qed
   qed
 qed
@@ -322,7 +322,7 @@ using assms(2,1) by(induction arbitrary: s rule: tfinite_induct)(auto simp add: 
 
 end
   
-subsection {* Labelled transition systems with internal actions *}
+subsection \<open>Labelled transition systems with internal actions\<close>
 
 locale \<tau>trsys = trsys +
   constrains trsys :: "('s, 'tl) trsys"
@@ -431,17 +431,17 @@ proof(induct stls arbitrary: s)
   case Nil thus ?case by(auto elim: inf_step_table.cases intro: inf_step_table.intros rtrancl3p_refl)
 next
   case (Cons st stls)
-  note IH = `\<And>s. s -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity> \<Longrightarrow>
-                 s -map (fst \<circ> snd) stls\<rightarrow>* x \<and> x -LCons (x, tl', x') xs\<rightarrow>*t \<infinity>`
-  from `s -lappend (llist_of (st # stls)) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>`
+  note IH = \<open>\<And>s. s -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity> \<Longrightarrow>
+                 s -map (fst \<circ> snd) stls\<rightarrow>* x \<and> x -LCons (x, tl', x') xs\<rightarrow>*t \<infinity>\<close>
+  from \<open>s -lappend (llist_of (st # stls)) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>\<close>
   show ?case
   proof cases
     case (inf_step_tableI s' stls' tl)
     hence [simp]: "st = (s, tl, s')" "stls' = lappend (llist_of stls) (LCons (x, tl', x') xs)"
       and "s -tl\<rightarrow> s'" "s' -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>" by simp_all
-    from IH[OF `s' -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>`]
+    from IH[OF \<open>s' -lappend (llist_of stls) (LCons (x, tl', x') xs)\<rightarrow>*t \<infinity>\<close>]
     have "s' -map (fst \<circ> snd) stls\<rightarrow>* x" "x -LCons (x, tl', x') xs\<rightarrow>*t \<infinity>" by auto
-    with `s -tl\<rightarrow> s'` show ?thesis by(auto simp add: o_def intro: rtrancl3p_step_converse)
+    with \<open>s -tl\<rightarrow> s'\<close> show ?thesis by(auto simp add: o_def intro: rtrancl3p_step_converse)
   qed
 qed
 
@@ -453,19 +453,19 @@ proof(induct arbitrary: s rule: lfinite.induct)
   case lfinite_LNil thus ?case by(auto elim: inf_step_table.cases)
 next
   case (lfinite_LConsI stls st)
-  note IH = `\<And>s. \<lbrakk>s -lappend stls (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>; \<forall>(s, tl, s')\<in>lset stls. \<tau>move s tl s' \<rbrakk> \<Longrightarrow> s -\<tau>\<rightarrow>* x`
+  note IH = \<open>\<And>s. \<lbrakk>s -lappend stls (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>; \<forall>(s, tl, s')\<in>lset stls. \<tau>move s tl s' \<rbrakk> \<Longrightarrow> s -\<tau>\<rightarrow>* x\<close>
   obtain s1 tl1 s1' where [simp]: "st = (s1, tl1, s1')" by(cases st)
-  from `s -lappend (LCons st stls) (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>`
+  from \<open>s -lappend (LCons st stls) (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>\<close>
   show ?case
   proof cases
     case (inf_step_tableI X' STLS TL)
     hence [simp]: "s1 = s" "TL = tl1" "X' = s1'" "STLS = lappend stls (LCons (x, tl' x') xs)"
       and "s -tl1\<rightarrow> s1'" and "s1' -lappend stls (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>" by simp_all
-    from `\<forall>(s, tl, s')\<in>lset (LCons st stls). \<tau>move s tl s'` have "\<tau>move s tl1 s1'" by simp
+    from \<open>\<forall>(s, tl, s')\<in>lset (LCons st stls). \<tau>move s tl s'\<close> have "\<tau>move s tl1 s1'" by simp
     moreover
-    from IH[OF `s1' -lappend stls (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>`] `\<forall>(s, tl, s')\<in>lset (LCons st stls). \<tau>move s tl s'`
+    from IH[OF \<open>s1' -lappend stls (LCons (x, tl' x') xs)\<rightarrow>*t \<infinity>\<close>] \<open>\<forall>(s, tl, s')\<in>lset (LCons st stls). \<tau>move s tl s'\<close>
     have "s1' -\<tau>\<rightarrow>* x" by simp
-    ultimately show ?thesis using `s -tl1\<rightarrow> s1'` by(auto intro: converse_rtranclp_into_rtranclp)
+    ultimately show ?thesis using \<open>s -tl1\<rightarrow> s1'\<close> by(auto intro: converse_rtranclp_into_rtranclp)
   qed
 qed
 
@@ -490,9 +490,9 @@ proof(coinduction arbitrary: s stls)
       and "lfinite stls1"
       and \<tau>s: "\<forall>(s, tl, s')\<in>lset stls1. \<tau>move s tl s'"
       and n\<tau>: "\<not> \<tau>move x tl x'" and xs: "xs = lfilter ?P stls2" by blast
-    from `lfinite stls1` \<tau>inf_step \<tau>s have "s -\<tau>\<rightarrow>* x" unfolding stls1
+    from \<open>lfinite stls1\<close> \<tau>inf_step \<tau>s have "s -\<tau>\<rightarrow>* x" unfolding stls1
       by(rule inf_step_table_lappend_llist_of_\<tau>_into_\<tau>moves)
-    moreover from `lfinite stls1` have "llist_of (list_of stls1) = stls1" by(simp add: llist_of_list_of)
+    moreover from \<open>lfinite stls1\<close> have "llist_of (list_of stls1) = stls1" by(simp add: llist_of_list_of)
     with \<tau>inf_step stls1 have "s -lappend (llist_of (list_of stls1)) (LCons (x, tl, x') stls2)\<rightarrow>*t \<infinity>" by simp
     from inf_step_table_lappend_llist_ofD[OF this]
     have "x -LCons (x, tl, x') stls2\<rightarrow>*t \<infinity>" ..
@@ -508,7 +508,7 @@ lemma inf_step_into_\<tau>inf_step:
 proof -
   from inf_step_imp_inf_step_table[OF assms]
   obtain stls where "s -stls\<rightarrow>*t \<infinity>" and tls: "tls = lmap (fst \<circ> snd) stls" by blast
-  from `s -stls\<rightarrow>*t \<infinity>` have "s -\<tau>-lmap (fst \<circ> snd) (lfilter (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') stls)\<rightarrow>* \<infinity>"
+  from \<open>s -stls\<rightarrow>*t \<infinity>\<close> have "s -\<tau>-lmap (fst \<circ> snd) (lfilter (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') stls)\<rightarrow>* \<infinity>"
     by(rule inf_step_table_into_\<tau>inf_step)
   hence "s -\<tau>-lnths tls {n. enat n < llength stls \<and> (\<lambda>(s, tl, s'). \<not> \<tau>move s tl s') (lnth stls n)}\<rightarrow>* \<infinity>"
     unfolding lfilter_conv_lnths tls by simp
@@ -543,13 +543,13 @@ proof(atomize_elim)
   from red show "\<exists>s' s''. s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' -\<tau>\<rightarrow>* s'''"
   proof(induct s tls\<equiv>"[tl]" s''')
     case (\<tau>rtrancl3p_step s s' s'')
-    from `s -tl\<rightarrow> s'` `\<not> \<tau>move s tl s'` `s' -\<tau>-[]\<rightarrow>* s''` show ?case
+    from \<open>s -tl\<rightarrow> s'\<close> \<open>\<not> \<tau>move s tl s'\<close> \<open>s' -\<tau>-[]\<rightarrow>* s''\<close> show ?case
       by(auto simp add: \<tau>rtrancl3p_Nil_eq_\<tau>moves)
    next
     case (\<tau>rtrancl3p_\<tau>step s s' s'' tl')
     then obtain t' t'' where "s' -\<tau>\<rightarrow>* t'" "t' -tl\<rightarrow> t''" "\<not> \<tau>move t' tl t''" "t'' -\<tau>\<rightarrow>* s''" by auto
     moreover
-    from `s -tl'\<rightarrow> s'` `\<tau>move s tl' s'` have "s -\<tau>\<rightarrow>* s'" by blast
+    from \<open>s -tl'\<rightarrow> s'\<close> \<open>\<tau>move s tl' s'\<close> have "s -\<tau>\<rightarrow>* s'" by blast
     ultimately show ?case by(auto intro: rtranclp_trans)
   qed
 qed
@@ -579,20 +579,20 @@ proof -
   proof(coinduct)
     case (\<tau>diverge s)
     then obtain s' where "silent_move\<^sup>*\<^sup>* s s'" "X s'" by blast
-    from step[OF `X s'`] obtain s'''
+    from step[OF \<open>X s'\<close>] obtain s'''
       where "silent_move^++ s' s'''" "X s''' \<or> s''' -\<tau>\<rightarrow> \<infinity>" by blast
-    from `silent_move\<^sup>*\<^sup>* s s'` show ?case
+    from \<open>silent_move\<^sup>*\<^sup>* s s'\<close> show ?case
     proof(cases rule: converse_rtranclpE[consumes 1, case_names refl step])
       case refl
-      moreover from tranclpD[OF `silent_move^++ s' s'''`] obtain s''
+      moreover from tranclpD[OF \<open>silent_move^++ s' s'''\<close>] obtain s''
         where "silent_move s' s''" "silent_move^** s'' s'''" by blast
-      ultimately show ?thesis using `silent_move^** s'' s'''` `X s''' \<or> s''' -\<tau>\<rightarrow> \<infinity>`
+      ultimately show ?thesis using \<open>silent_move^** s'' s'''\<close> \<open>X s''' \<or> s''' -\<tau>\<rightarrow> \<infinity>\<close>
         by(auto intro: \<tau>diverge_rtranclp_silent_move)
     next
       case (step S)
-      moreover from `silent_move\<^sup>*\<^sup>* S s'` `silent_move^++ s' s'''`
+      moreover from \<open>silent_move\<^sup>*\<^sup>* S s'\<close> \<open>silent_move^++ s' s'''\<close>
       have "silent_move^** S s'''" by(rule rtranclp_trans[OF _ tranclp_into_rtranclp])
-      ultimately show ?thesis using `X s''' \<or> s''' -\<tau>\<rightarrow> \<infinity>` by(auto intro: \<tau>diverge_rtranclp_silent_move)
+      ultimately show ?thesis using \<open>X s''' \<or> s''' -\<tau>\<rightarrow> \<infinity>\<close> by(auto intro: \<tau>diverge_rtranclp_silent_move)
     qed
   qed
 qed
@@ -604,32 +604,32 @@ lemma \<tau>diverge_trancl_measure_coinduct [consumes 2, case_names \<tau>diverg
 proof -
   { fix s t
     assume "X s t"
-    with `wfP \<mu>` have "\<exists>s' t'. silent_move^++ s s' \<and> (X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>)"
+    with \<open>wfP \<mu>\<close> have "\<exists>s' t'. silent_move^++ s s' \<and> (X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>)"
     proof(induct arbitrary: s rule: wfP_induct[consumes 1])
       case (1 t)
       hence IH: "\<And>s' t'. \<lbrakk> \<mu> t' t; X s' t' \<rbrakk> \<Longrightarrow>
                  \<exists>s'' t''. silent_move^++ s' s'' \<and> (X s'' t'' \<or> s'' -\<tau>\<rightarrow> \<infinity>)" by blast
-      from step[OF `X s t`] obtain s' t'
+      from step[OF \<open>X s t\<close>] obtain s' t'
         where "\<mu> t' t \<and> s' = s \<or> silent_move\<^sup>+\<^sup>+ s s'" "X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>" by blast
-      from `\<mu> t' t \<and> s' = s \<or> silent_move\<^sup>+\<^sup>+ s s'` show ?case
+      from \<open>\<mu> t' t \<and> s' = s \<or> silent_move\<^sup>+\<^sup>+ s s'\<close> show ?case
       proof
         assume "\<mu> t' t \<and> s' = s"
         hence  "\<mu> t' t" and [simp]: "s' = s" by simp_all
-        from `X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>` show ?thesis
+        from \<open>X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>\<close> show ?thesis
         proof
           assume "X s' t'"
-          from IH[OF `\<mu> t' t` this] show ?thesis by simp
+          from IH[OF \<open>\<mu> t' t\<close> this] show ?thesis by simp
         next
           assume "s' -\<tau>\<rightarrow> \<infinity>" thus ?thesis
             by cases(auto simp add: silent_move_iff)
         qed
       next
         assume "silent_move\<^sup>+\<^sup>+ s s'"
-        thus ?thesis using `X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>` by blast
+        thus ?thesis using \<open>X s' t' \<or> s' -\<tau>\<rightarrow> \<infinity>\<close> by blast
       qed
     qed }
   note X = this
-  from `X s t` have "\<exists>t. X s t" ..
+  from \<open>X s t\<close> have "\<exists>t. X s t" ..
   thus ?thesis
   proof(coinduct rule: \<tau>diverge_trancl_coinduct)
     case (\<tau>diverge s)
@@ -723,16 +723,16 @@ lemma \<tau>diverge_not_wfP_silent_move_from:
 proof
   assume "wfP (flip (silent_move_from s))"
   moreover define Q where "Q = {s'. silent_moves s s' \<and> s' -\<tau>\<rightarrow> \<infinity>}"
-  hence "s \<in> Q" using `s -\<tau>\<rightarrow> \<infinity>` by(auto)
+  hence "s \<in> Q" using \<open>s -\<tau>\<rightarrow> \<infinity>\<close> by(auto)
   ultimately have "\<exists>z\<in>Q. \<forall>y. silent_move_from s z y \<longrightarrow> y \<notin> Q"
     unfolding wfP_eq_minimal flip_simps by blast
   then obtain z where "z \<in> Q"
     and min: "\<And>y. silent_move_from s z y \<Longrightarrow> y \<notin> Q" by blast
-  from `z \<in> Q` have "silent_moves s z" "z -\<tau>\<rightarrow> \<infinity>" unfolding Q_def by auto
-  from `z -\<tau>\<rightarrow> \<infinity>` obtain y where "silent_move z y" "y -\<tau>\<rightarrow> \<infinity>" by cases auto
-  from `silent_moves s z` `silent_move z y` have "silent_move_from s z y" ..
+  from \<open>z \<in> Q\<close> have "silent_moves s z" "z -\<tau>\<rightarrow> \<infinity>" unfolding Q_def by auto
+  from \<open>z -\<tau>\<rightarrow> \<infinity>\<close> obtain y where "silent_move z y" "y -\<tau>\<rightarrow> \<infinity>" by cases auto
+  from \<open>silent_moves s z\<close> \<open>silent_move z y\<close> have "silent_move_from s z y" ..
   hence "y \<notin> Q" by(rule min)
-  moreover from `silent_moves s z` `silent_move z y` `y -\<tau>\<rightarrow> \<infinity>`
+  moreover from \<open>silent_moves s z\<close> \<open>silent_move z y\<close> \<open>y -\<tau>\<rightarrow> \<infinity>\<close>
   have "y \<in> Q" unfolding Q_def by auto
   ultimately show False by contradiction
 qed
@@ -749,22 +749,22 @@ proof(intro allI impI)
     case False
     hence "\<forall>y. silent_move_from s x y \<longrightarrow> \<not> y \<in> Q"
       by(cases "x=s")(auto, blast elim: converse_rtranclpE intro: rtranclp.rtrancl_into_rtrancl)
-    with `x \<in> Q` show ?thesis by blast
+    with \<open>x \<in> Q\<close> show ?thesis by blast
   next
     case True
     then obtain s' x' where "s -\<tau>\<rightarrow> s'" and "silent_moves s' x'" and "x' \<in> Q"
       by auto
-    from `s -\<tau>\<rightarrow> s'` have "wfP (flip (silent_move_from s'))" by(rule wfPs')
-    from this `x' \<in> Q` obtain z where "z \<in> Q" and min: "\<And>y. silent_move_from s' z y \<Longrightarrow> \<not> y \<in> Q"
+    from \<open>s -\<tau>\<rightarrow> s'\<close> have "wfP (flip (silent_move_from s'))" by(rule wfPs')
+    from this \<open>x' \<in> Q\<close> obtain z where "z \<in> Q" and min: "\<And>y. silent_move_from s' z y \<Longrightarrow> \<not> y \<in> Q"
       and "(silent_move_from s')^** x' z"
       by (rule wfP_minimalE) (unfold flip_simps, blast)
     { fix y
       assume "silent_move_from s z y"
-      with `(silent_move_from s')^** x' z` `silent_move^** s' x'`
+      with \<open>(silent_move_from s')^** x' z\<close> \<open>silent_move^** s' x'\<close>
       have "silent_move_from s' z y"
         by(blast intro: rtranclp_silent_move_from_imp_silent_moves)
       hence "\<not> y \<in> Q" by(rule min) }
-    with `z \<in> Q` show ?thesis by(auto simp add: intro!: bexI)
+    with \<open>z \<in> Q\<close> show ?thesis by(auto simp add: intro!: bexI)
   qed
 qed
 
@@ -789,27 +789,27 @@ lemma not_\<tau>diverge_to_no_\<tau>move:
   shows "\<exists>s'. s -\<tau>\<rightarrow>* s' \<and> (\<forall>s''. \<not> s' -\<tau>\<rightarrow> s'')"
 proof -
   define S where "S = s"
-  from `\<not> \<tau>diverge s` have "wfP (flip (silent_move_from S))" unfolding S_def
+  from \<open>\<not> \<tau>diverge s\<close> have "wfP (flip (silent_move_from S))" unfolding S_def
     using \<tau>diverge_neq_wfP_silent_move_from[of s] by simp
   moreover have "silent_moves S s" unfolding S_def ..
   ultimately show ?thesis
   proof(induct rule: wfP_induct')
     case (wfP s)
-    note IH = `\<And>y. \<lbrakk>flip (silent_move_from S) y s; S -\<tau>\<rightarrow>* y \<rbrakk>
-             \<Longrightarrow> \<exists>s'. y -\<tau>\<rightarrow>* s' \<and> (\<forall>s''. \<not> s' -\<tau>\<rightarrow> s'')`
+    note IH = \<open>\<And>y. \<lbrakk>flip (silent_move_from S) y s; S -\<tau>\<rightarrow>* y \<rbrakk>
+             \<Longrightarrow> \<exists>s'. y -\<tau>\<rightarrow>* s' \<and> (\<forall>s''. \<not> s' -\<tau>\<rightarrow> s'')\<close>
     show ?case
     proof(cases "\<exists>s'. silent_move s s'")
       case False thus ?thesis by auto
     next
       case True
       then obtain s' where "s -\<tau>\<rightarrow> s'" ..
-      with `S -\<tau>\<rightarrow>* s` have "flip (silent_move_from S) s' s"
+      with \<open>S -\<tau>\<rightarrow>* s\<close> have "flip (silent_move_from S) s' s"
         unfolding flip_conv by(rule silent_move_fromI)
-      moreover from `S -\<tau>\<rightarrow>* s` `s -\<tau>\<rightarrow> s'` have "S -\<tau>\<rightarrow>* s'" ..
+      moreover from \<open>S -\<tau>\<rightarrow>* s\<close> \<open>s -\<tau>\<rightarrow> s'\<close> have "S -\<tau>\<rightarrow>* s'" ..
       ultimately have "\<exists>s''. s' -\<tau>\<rightarrow>* s'' \<and> (\<forall>s'''. \<not> s'' -\<tau>\<rightarrow> s''')" by(rule IH)
       then obtain s'' where "s' -\<tau>\<rightarrow>* s''" "\<forall>s'''. \<not> s'' -\<tau>\<rightarrow> s'''" by blast
-      from `s -\<tau>\<rightarrow> s'` `s' -\<tau>\<rightarrow>* s''` have "s -\<tau>\<rightarrow>* s''" by(rule converse_rtranclp_into_rtranclp)
-      with `\<forall>s'''. \<not> s'' -\<tau>\<rightarrow> s'''` show ?thesis by blast
+      from \<open>s -\<tau>\<rightarrow> s'\<close> \<open>s' -\<tau>\<rightarrow>* s''\<close> have "s -\<tau>\<rightarrow>* s''" by(rule converse_rtranclp_into_rtranclp)
+      with \<open>\<forall>s'''. \<not> s'' -\<tau>\<rightarrow> s'''\<close> show ?thesis by blast
     qed
   qed
 qed
@@ -909,7 +909,7 @@ proof(intro exI conjI)
       let ?P = "\<lambda>s''. \<exists>s'. s -\<tau>\<rightarrow>* s' \<and> s' -tl\<rightarrow> s'' \<and> \<not> \<tau>move s' tl s'' \<and> s'' \<Down> tls'"
       from Proceed have "?P s''" by auto
       hence "?P (Eps ?P)" by(rule someI)
-      hence ?Proceed using `tls = TCons tl tls'`
+      hence ?Proceed using \<open>tls = TCons tl tls'\<close>
         by(auto simp add: split_beta)
       thus ?thesis by simp
     qed
@@ -922,24 +922,24 @@ lemma \<tau>Runs_lappendtE:
   obtains \<sigma>' where "\<sigma> -\<tau>-list_of tls\<rightarrow>* \<sigma>'"
   and "\<sigma>' \<Down> tls'"
 proof(atomize_elim)
-  from `lfinite tls` `\<sigma> \<Down> lappendt tls tls'`
+  from \<open>lfinite tls\<close> \<open>\<sigma> \<Down> lappendt tls tls'\<close>
   show "\<exists>\<sigma>'. \<sigma> -\<tau>-list_of tls\<rightarrow>* \<sigma>' \<and> \<sigma>' \<Down> tls'"
   proof(induct arbitrary: \<sigma>)
     case lfinite_LNil thus ?case by(auto intro: \<tau>rtrancl3p_refl)
   next
     case (lfinite_LConsI tls tl)
-    from `\<sigma> \<Down> lappendt (LCons tl tls) tls'`
+    from \<open>\<sigma> \<Down> lappendt (LCons tl tls) tls'\<close>
     show ?case unfolding lappendt_LCons
     proof(cases)
       case (Proceed \<sigma>' \<sigma>'')
-      from `\<sigma>'' \<Down> lappendt tls tls' \<Longrightarrow> \<exists>\<sigma>'''. \<sigma>'' -\<tau>-list_of tls\<rightarrow>* \<sigma>''' \<and> \<sigma>''' \<Down> tls'` `\<sigma>'' \<Down> lappendt tls tls'`
+      from \<open>\<sigma>'' \<Down> lappendt tls tls' \<Longrightarrow> \<exists>\<sigma>'''. \<sigma>'' -\<tau>-list_of tls\<rightarrow>* \<sigma>''' \<and> \<sigma>''' \<Down> tls'\<close> \<open>\<sigma>'' \<Down> lappendt tls tls'\<close>
       obtain \<sigma>''' where "\<sigma>'' -\<tau>-list_of tls\<rightarrow>* \<sigma>'''" "\<sigma>''' \<Down> tls'" by blast
-      from `\<sigma>' -tl\<rightarrow> \<sigma>''` `\<not> \<tau>move \<sigma>' tl \<sigma>''` `\<sigma>'' -\<tau>-list_of tls\<rightarrow>* \<sigma>'''`
+      from \<open>\<sigma>' -tl\<rightarrow> \<sigma>''\<close> \<open>\<not> \<tau>move \<sigma>' tl \<sigma>''\<close> \<open>\<sigma>'' -\<tau>-list_of tls\<rightarrow>* \<sigma>'''\<close>
       have "\<sigma>' -\<tau>-tl # list_of tls\<rightarrow>* \<sigma>'''" by(rule \<tau>rtrancl3p_step)
-      with `\<sigma> -\<tau>\<rightarrow>* \<sigma>'` have "\<sigma> -\<tau>-[] @ (tl # list_of tls)\<rightarrow>* \<sigma>'''"
+      with \<open>\<sigma> -\<tau>\<rightarrow>* \<sigma>'\<close> have "\<sigma> -\<tau>-[] @ (tl # list_of tls)\<rightarrow>* \<sigma>'''"
         unfolding \<tau>rtrancl3p_Nil_eq_\<tau>moves[symmetric] by(rule \<tau>rtrancl3p_trans)
-      with `lfinite tls` have "\<sigma> -\<tau>-list_of (LCons tl tls)\<rightarrow>* \<sigma>'''" by(simp add: list_of_LCons)
-      with `\<sigma>''' \<Down> tls'` show ?thesis by blast
+      with \<open>lfinite tls\<close> have "\<sigma> -\<tau>-list_of (LCons tl tls)\<rightarrow>* \<sigma>'''" by(simp add: list_of_LCons)
+      with \<open>\<sigma>''' \<Down> tls'\<close> show ?thesis by blast
     qed
   qed
 qed
@@ -1037,10 +1037,10 @@ proof -
     case (inf_step s tls)
     let ?P = "\<lambda>(tl, s'). silent_move2 s tl s' \<and> s' -\<tau>\<rightarrow> \<infinity>"
     from inf_step obtain "s -\<tau>\<rightarrow> \<infinity>" and tls: "tls = ?tls s" ..
-    from `s -\<tau>\<rightarrow> \<infinity>` obtain s' where "s -\<tau>\<rightarrow> s'" "s' -\<tau>\<rightarrow> \<infinity>" by cases
-    from `s -\<tau>\<rightarrow> s'` obtain tl where "silent_move2 s tl s'" 
+    from \<open>s -\<tau>\<rightarrow> \<infinity>\<close> obtain s' where "s -\<tau>\<rightarrow> s'" "s' -\<tau>\<rightarrow> \<infinity>" by cases
+    from \<open>s -\<tau>\<rightarrow> s'\<close> obtain tl where "silent_move2 s tl s'" 
       by(blast dest: silent_move_into_silent_move2)
-    with `s' -\<tau>\<rightarrow> \<infinity>` have "?P (tl, s')" by simp
+    with \<open>s' -\<tau>\<rightarrow> \<infinity>\<close> have "?P (tl, s')" by simp
     hence "?P (Eps ?P)" by(rule someI)
     thus ?case using tls
       by(subst (asm) unfold_llist.code)(auto)
@@ -1058,16 +1058,16 @@ proof(induct arbitrary: s rule: tfinite_induct)
   case TNil thus ?case by cases(auto intro: silent_moves_into_\<tau>rtrancl3p)
 next
   case (TCons tl tlss)
-  from `s \<Down> TCons tl tlss` obtain s'' s'''
+  from \<open>s \<Down> TCons tl tlss\<close> obtain s'' s'''
     where step: "s -\<tau>\<rightarrow>* s''"
     and step2: "s'' -tl\<rightarrow> s'''" "\<not> \<tau>move s'' tl s'''" 
     and "s''' \<Down> tlss" by cases
-  from `terminal (TCons tl tlss) = \<lfloor>s'\<rfloor>` have "terminal tlss = \<lfloor>s'\<rfloor>" by simp
-  with `s''' \<Down> tlss` have "s''' -\<tau>-list_of (llist_of_tllist tlss)\<rightarrow>* s'" by(rule TCons)
+  from \<open>terminal (TCons tl tlss) = \<lfloor>s'\<rfloor>\<close> have "terminal tlss = \<lfloor>s'\<rfloor>" by simp
+  with \<open>s''' \<Down> tlss\<close> have "s''' -\<tau>-list_of (llist_of_tllist tlss)\<rightarrow>* s'" by(rule TCons)
   with step2 have "s'' -\<tau>-tl # list_of (llist_of_tllist tlss)\<rightarrow>* s'" by(rule \<tau>rtrancl3p_step)
   with step have "s -\<tau>-[] @ tl # list_of (llist_of_tllist tlss)\<rightarrow>* s'"
     by(rule \<tau>rtrancl3p_trans[OF silent_moves_into_\<tau>rtrancl3p])
-  thus ?case using `tfinite tlss` by simp
+  thus ?case using \<open>tfinite tlss\<close> by simp
 qed
 
 lemma \<tau>Runs_terminal_stuck:
@@ -1103,12 +1103,12 @@ proof -
     case lfinite_LNil thus ?case by(auto elim: Runs_table.cases)
   next
     case (lfinite_LConsI stlss stls)
-    from `Runs_table s (LCons stls stlss)`
+    from \<open>Runs_table s (LCons stls stlss)\<close>
     obtain tl s' where [simp]: "stls = (s, tl, s')"
       and "s -tl\<rightarrow> s'" and Run': "Runs_table s' stlss" by cases
-    from `\<forall>(s, tl, s')\<in>lset (LCons stls stlss). \<tau>move s tl s'`
+    from \<open>\<forall>(s, tl, s')\<in>lset (LCons stls stlss). \<tau>move s tl s'\<close>
     have "\<tau>move s tl s'" and silent': "\<forall>(s, tl, s')\<in>lset stlss. \<tau>move s tl s'" by simp_all
-    from `s -tl\<rightarrow> s'` `\<tau>move s tl s'` have "s -\<tau>\<rightarrow> s'" by auto
+    from \<open>s -tl\<rightarrow> s'\<close> \<open>\<tau>move s tl s'\<close> have "s -\<tau>\<rightarrow> s'" by auto
     moreover from Run' silent'
     have "s' -\<tau>\<rightarrow>* llast (LCons s' (lmap (\<lambda>(s, tl, s'). s') stlss)) \<and>
           (llast (LCons s' (lmap (\<lambda>(s, tl, s'). s') stlss)) -tl'\<rightarrow> s'' \<longrightarrow> False)"
@@ -1150,8 +1150,8 @@ lemma Runs_table_into_\<tau>Runs:
 using assms
 proof(coinduction arbitrary: s tls stlss)
   case (\<tau>Runs s tls stlss)
-  note tls = `tls = ?conv s stlss`
-    and Run = `Runs_table s stlss`
+  note tls = \<open>tls = ?conv s stlss\<close>
+    and Run = \<open>Runs_table s stlss\<close>
   show ?case
   proof(cases tls)
     case [simp]: (TNil so)
@@ -1194,14 +1194,14 @@ proof(coinduction arbitrary: s tls stlss)
     have "s -\<tau>\<rightarrow>* llast (LCons s (lmap (\<lambda>(s, tl, s'). s') stls\<tau>))"
       and "Runs_table (llast (LCons s (lmap (\<lambda>(s, tl, s'). s') stls\<tau>))) rest'"
       and "llast (LCons s (lmap (\<lambda>(s, tl, s'). s') stls\<tau>)) = fst (lhd rest')"
-      by(rule Runs_table_silent_lappendD)+(simp add: `rest' \<noteq> LNil`)
-    moreover with rest' `rest' \<noteq> LNil` stlss fin obtain rest''
+      by(rule Runs_table_silent_lappendD)+(simp add: \<open>rest' \<noteq> LNil\<close>)
+    moreover with rest' \<open>rest' \<noteq> LNil\<close> stlss fin obtain rest''
       where rest': "rest' = LCons (s', tl, s'') rest''"
       and rest: "rest = tllist_of_llist \<lfloor>llast (LCons s'' (lmap (\<lambda>(s, tl, s'). s') rest''))\<rfloor> rest''"
       by(clarsimp simp add: neq_LNil_conv llast_LCons lmap_lappend_distrib)
     ultimately have "s -\<tau>\<rightarrow>* s'" "s' -tl\<rightarrow> s''" "Runs_table s'' rest''"
       by(simp_all add: Runs_table_simps)
-    hence ?Proceed using `\<not> \<tau>move s' tl s''` tls' stlss' rest
+    hence ?Proceed using \<open>\<not> \<tau>move s' tl s''\<close> tls' stlss' rest
       by(auto simp add: id_def)
     thus ?thesis by simp
   qed
@@ -1253,20 +1253,20 @@ proof -
     proof(cases)
       case (Terminate s')
       let ?P = "\<lambda>tls'. silent_moves2 s tls' s'"
-      from `s -\<tau>\<rightarrow>* s'` obtain tls' where "?P tls'" by(blast dest: silent_moves_into_silent_moves2)
+      from \<open>s -\<tau>\<rightarrow>* s'\<close> obtain tls' where "?P tls'" by(blast dest: silent_moves_into_silent_moves2)
       hence "?P (Eps ?P)" by(rule someI)
       with Terminate have ?Terminate by auto
       thus ?thesis by simp
     next
       case Diverge
       let ?P = "\<lambda>tls'. trsys.inf_step silent_move2 s tls'"
-      from `s -\<tau>\<rightarrow> \<infinity>` obtain tls' where "?P tls'" by(rule \<tau>diverge_into_inf_step_silent_move2)
+      from \<open>s -\<tau>\<rightarrow> \<infinity>\<close> obtain tls' where "?P tls'" by(rule \<tau>diverge_into_inf_step_silent_move2)
       hence "?P (Eps ?P)" by(rule someI)
-      hence ?Diverge using `tls = TNil None` by simp
+      hence ?Diverge using \<open>tls = TNil None\<close> by simp
       thus ?thesis by simp
     next
       case (Proceed s' s'' tls' tl)
-      from `s -\<tau>\<rightarrow>* s'` obtain tls'' where "silent_moves2 s tls'' s'"
+      from \<open>s -\<tau>\<rightarrow>* s'\<close> obtain tls'' where "silent_moves2 s tls'' s'"
         by(blast dest: silent_moves_into_silent_moves2)
       with Proceed have "?P s tls (tls'', s', s'')" by simp
       hence "?P s tls (Eps (?P s tls))" by(rule someI)
@@ -1282,11 +1282,11 @@ proof -
     thus ?case
     proof(cases)
       case (Proceed s' s'' tls' tl)
-      from `s -\<tau>\<rightarrow>* s'` obtain tls'' where "silent_moves2 s tls'' s'"
+      from \<open>s -\<tau>\<rightarrow>* s'\<close> obtain tls'' where "silent_moves2 s tls'' s'"
         by(blast dest: silent_moves_into_silent_moves2)
       with Proceed have "?P s tls (tls'', s', s'')" by simp
       hence "?P s tls (Eps (?P s tls))" by(rule someI)
-      thus ?thesis using `tls = TCons tl tls'` by auto
+      thus ?thesis using \<open>tls = TCons tl tls'\<close> by auto
     qed auto
   qed
   ultimately show thesis by(rule that)
@@ -1302,40 +1302,40 @@ proof(coinduction arbitrary: s tlsstlss)
   thus ?case
   proof(cases)
     case (Terminate tls' s')
-    from `silent_moves2 s tls' s'` show ?thesis
+    from \<open>silent_moves2 s tls' s'\<close> show ?thesis
     proof(cases rule: rtrancl3p_converseE)
       case refl 
       hence ?Stuck using Terminate by simp
       thus ?thesis ..
     next
       case (step tls'' tl s'')
-      from `silent_moves2 s'' tls'' s'` `\<And>tl s''. \<not> s' -tl\<rightarrow> s''`
+      from \<open>silent_moves2 s'' tls'' s'\<close> \<open>\<And>tl s''. \<not> s' -tl\<rightarrow> s''\<close>
       have "\<tau>Runs_table2 s'' (TNil (Inl (tls'', s')))" ..
-      with `tls' = tl # tls''` `silent_move2 s tl s''` `tlsstlss = TNil (Inl (tls', s'))`
+      with \<open>tls' = tl # tls''\<close> \<open>silent_move2 s tl s''\<close> \<open>tlsstlss = TNil (Inl (tls', s'))\<close>
       have ?Step by(auto simp add: silent_move2_def intro!: exI)
       thus ?thesis ..
     qed
   next
     case (Diverge tls')
-    from `trsys.inf_step silent_move2 s tls'`
+    from \<open>trsys.inf_step silent_move2 s tls'\<close>
     obtain tl tls'' s' where "silent_move2 s tl s'" 
       and "tls' = LCons tl tls''" "trsys.inf_step silent_move2 s' tls''"
       by(cases rule: trsys.inf_step.cases[consumes 1]) auto
-    from `trsys.inf_step silent_move2 s' tls''`
+    from \<open>trsys.inf_step silent_move2 s' tls''\<close>
     have "\<tau>Runs_table2 s' (TNil (Inr tls''))" ..
-    hence ?Step using `tlsstlss = TNil (Inr tls')` `tls' = LCons tl tls''` `silent_move2 s tl s'`
+    hence ?Step using \<open>tlsstlss = TNil (Inr tls')\<close> \<open>tls' = LCons tl tls''\<close> \<open>silent_move2 s tl s'\<close>
       by(auto simp add: silent_move2_def intro!: exI)
     thus ?thesis ..
   next
     case (Proceed tls' s' s'' tlsstlss' tl)
-    from `silent_moves2 s tls' s'` have ?Step
+    from \<open>silent_moves2 s tls' s'\<close> have ?Step
     proof(cases rule: rtrancl3p_converseE)
       case refl with Proceed show ?thesis by auto
     next
       case (step tls'' tl' s''')
-      from `silent_moves2 s''' tls'' s'` `s' -tl\<rightarrow> s''` `\<not> \<tau>move s' tl s''` `\<tau>Runs_table2 s'' tlsstlss'`
+      from \<open>silent_moves2 s''' tls'' s'\<close> \<open>s' -tl\<rightarrow> s''\<close> \<open>\<not> \<tau>move s' tl s''\<close> \<open>\<tau>Runs_table2 s'' tlsstlss'\<close>
       have "\<tau>Runs_table2 s''' (TCons (tls'', s', tl, s'') tlsstlss')" ..
-      with `tls' = tl' # tls''` `silent_move2 s tl' s'''` `tlsstlss = TCons (tls', s', tl, s'') tlsstlss'`
+      with \<open>tls' = tl' # tls''\<close> \<open>silent_move2 s tl' s'''\<close> \<open>tlsstlss = TCons (tls', s', tl, s'') tlsstlss'\<close>
       show ?thesis by(auto simp add: silent_move2_def intro!: exI)
     qed
     thus ?thesis ..
@@ -1351,7 +1351,7 @@ lemma \<tau>Runs_table2_silentsD:
 using tset Runs
 proof(induct arbitrary: s rule: tset_induct)
   case (find tlsstlss')
-  from `\<tau>Runs_table2 s (TCons (tls, s', tl', s'') tlsstlss')`
+  from \<open>\<tau>Runs_table2 s (TCons (tls, s', tl', s'') tlsstlss')\<close>
   have "silent_moves2 s tls s'" by cases
   thus ?case using set by induct auto
 next

@@ -5,7 +5,7 @@
   The continuous version of the Akra-Bazzi theorem for functions on the reals.
 *)
 
-section {* The continuous Akra-Bazzi theorem *}
+section \<open>The continuous Akra-Bazzi theorem\<close>
 theory Akra_Bazzi_Real
 imports
   Complex_Main
@@ -65,7 +65,7 @@ next
   thus "\<exists>x. f x = y" by blast
 qed
 
-text {* The parameter @{term "p"} in the Akra-Bazzi theorem always exists and is unique. *}
+text \<open>The parameter @{term "p"} in the Akra-Bazzi theorem always exists and is unique.\<close>
 
 definition akra_bazzi_exponent :: "real list \<Rightarrow> real list \<Rightarrow> real" where
   "akra_bazzi_exponent as bs \<equiv> (THE p. (\<Sum>i<length as. as!i * bs!i powr p) = 1)"
@@ -117,12 +117,12 @@ lemma akra_bazzi_p_strict_mono:
 proof (intro sum_strict_mono_ex1 ballI)
   from ex_a_pos obtain a where "a \<in> set as" "a > 0" by blast
   then obtain i where "i < k" "as!i > 0" by (force simp: in_set_conv_nth length_as)
-  with b_bounds `x < y` have "as!i * bs!i powr y < as!i * bs!i powr x"
+  with b_bounds \<open>x < y\<close> have "as!i * bs!i powr y < as!i * bs!i powr x"
     by (intro mult_strict_left_mono powr_less_mono') auto
-  with `i < k` show "\<exists>i\<in>{..<k}. as!i * bs!i powr y < as!i * bs!i powr x" by blast
+  with \<open>i < k\<close> show "\<exists>i\<in>{..<k}. as!i * bs!i powr y < as!i * bs!i powr x" by blast
 next
   fix i assume "i \<in> {..<k}"
-  with a_ge_0 b_bounds[of "bs!i"] `x < y` show "as!i * bs!i powr y \<le> as!i * bs!i powr x"
+  with a_ge_0 b_bounds[of "bs!i"] \<open>x < y\<close> show "as!i * bs!i powr y \<le> as!i * bs!i powr x"
     by (intro mult_left_mono powr_mono') simp_all
 qed simp_all
 
@@ -241,7 +241,7 @@ proof-
   from bs_nonempty obtain b where "b \<in> set bs" by (cases bs) auto
   from b_pos[OF this] b_less_1[OF this] x0_ge_1 have "1 < 2 * x\<^sub>0 * inverse b"
     by (simp add: field_simps)
-  also from x1_ge and `b \<in> set bs` have "... \<le> x\<^sub>1" by simp
+  also from x1_ge and \<open>b \<in> set bs\<close> have "... \<le> x\<^sub>1" by simp
   finally show ?thesis .
 qed
 
@@ -476,12 +476,12 @@ lemma akra_bazzi_induct[consumes 1, case_names base rec]:
   assumes base: "\<And>x. x \<ge> x\<^sub>0 \<Longrightarrow> x \<le> x\<^sub>1 \<Longrightarrow> P x"
   assumes rec:  "\<And>x. x > x\<^sub>1 \<Longrightarrow> (\<And>i. i < k \<Longrightarrow> P (bs!i*x + (hs!i) x)) \<Longrightarrow> P x"
   shows   "P x"
-proof (insert `x \<ge> x\<^sub>0`, induction "akra_bazzi_measure x" arbitrary: x rule: less_induct)
+proof (insert \<open>x \<ge> x\<^sub>0\<close>, induction "akra_bazzi_measure x" arbitrary: x rule: less_induct)
   case less
   show ?case
   proof (cases "x \<le> x\<^sub>1")
     case True
-    with base and `x \<ge> x\<^sub>0` show ?thesis .
+    with base and \<open>x \<ge> x\<^sub>0\<close> show ?thesis .
   next
     case False
     hence x: "x > x\<^sub>1" by simp
@@ -855,7 +855,7 @@ proof-
     finally have "g_approx i x \<le> c4 * g x"
       unfolding g_approx_def using x_pos by (simp add: field_simps)
   }
-  thus ?thesis using that `c4 > 0` by blast
+  thus ?thesis using that \<open>c4 > 0\<close> by blast
 qed
 
 lemma f_approx_bounded_above:
@@ -1126,7 +1126,7 @@ proof-
     finally have "c3 * g x \<le> g_approx i x" using x_pos
       unfolding g_approx_def by (simp add: field_simps)
   }
-  thus ?thesis using that `c3 > 0` by blast
+  thus ?thesis using that \<open>c3 > 0\<close> by blast
 qed
 
 

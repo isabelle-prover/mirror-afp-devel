@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* Deciding Equivalence of WS1S Formulas *}
+section \<open>Deciding Equivalence of WS1S Formulas\<close>
 
 (*<*)
 theory WS1S_Equivalence_Checking
@@ -50,7 +50,7 @@ lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of_norm = trans[OF sym[OF \<Phi
 lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of'_norm = trans[OF sym[OF \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_norm] \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of']
 lemmas lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm = trans[OF sym[OF \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_norm] \<Phi>.lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of'']
 
-setup {* Sign.map_naming (Name_Space.mandatory_path "slow") *}
+setup \<open>Sign.map_naming (Name_Space.mandatory_path "slow")\<close>
 
 global_interpretation D: rexp_DFA "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. \<guillemotleft>pnorm (inorm x)\<guillemotright>"
   "\<lambda>a r. \<guillemotleft>\<DD> \<Sigma> a r\<guillemotright>" final "alphabet.wf (wf_atom \<Sigma>) n" pnorm "lang \<Sigma> n" n
@@ -93,9 +93,9 @@ lemma completeness:
                 OF box_equals[OF assms(1) lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm]])
    (auto intro!: \<Phi>.wf_rexp_of'')
 
-setup {* Sign.map_naming Name_Space.parent_path *}
+setup \<open>Sign.map_naming Name_Space.parent_path\<close>
 
-setup {* Sign.map_naming (Name_Space.mandatory_path "fast") *}
+setup \<open>Sign.map_naming (Name_Space.mandatory_path "fast")\<close>
 
 global_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup "\<lambda>x. pnorm (inorm x)"
   "\<lambda>a r. pnorm (\<DD> \<Sigma> a r)" final "alphabet.wf (wf_atom \<Sigma>) n" "lang \<Sigma> n" n
@@ -130,9 +130,9 @@ lemma soundness: "fast.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<
   sym[OF trans[OF lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm]] sym[OF trans[OF lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm]]])
    (auto simp: fast.check_eqv_def intro!: \<Phi>.wf_rexp_of'')
 
-setup {* Sign.map_naming Name_Space.parent_path *}
+setup \<open>Sign.map_naming Name_Space.parent_path\<close>
 
-setup {* Sign.map_naming (Name_Space.mandatory_path "dual") *}
+setup \<open>Sign.map_naming (Name_Space.mandatory_path "dual")\<close>
 
 global_interpretation D: rexp_DA_no_post "\<sigma> \<Sigma>" "wf_atom \<Sigma>" \<pi> lookup
   "\<lambda>x. pnorm_dual (rexp_dual_of (inorm x))" "\<lambda>a r. pnorm_dual (Co\<DD> \<Sigma> a r)" final_dual
@@ -171,7 +171,7 @@ lemma soundness: "dual.check_eqv n \<phi> \<psi> \<Longrightarrow> \<Phi>.lang\<
   sym[OF trans[OF lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm]] sym[OF trans[OF lang\<^sub>W\<^sub>S\<^sub>1\<^sub>S_rexp_of''_norm]]])
    (auto simp: dual.check_eqv_def intro!: \<Phi>.wf_rexp_of'')
 
-setup {* Sign.map_naming Name_Space.parent_path *}
+setup \<open>Sign.map_naming Name_Space.parent_path\<close>
 
 (*<*)
 end

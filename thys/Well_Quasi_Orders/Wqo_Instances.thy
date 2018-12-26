@@ -39,9 +39,9 @@ end
 
 subsection \<open>Pairs are Well-Quasi-Ordered\<close>
 
-text \<open>If types @{typ "'a"} and @{typ "'b"} are well-quasi-ordered by @{text "P"}
-and @{text "Q"}, then pairs of type @{typ "'a \<times> 'b"} are well-quasi-ordered by
-the pointwise combination of @{text P} and @{text Q}.\<close>
+text \<open>If types @{typ "'a"} and @{typ "'b"} are well-quasi-ordered by \<open>P\<close>
+and \<open>Q\<close>, then pairs of type @{typ "'a \<times> 'b"} are well-quasi-ordered by
+the pointwise combination of \<open>P\<close> and \<open>Q\<close>.\<close>
 
 instantiation prod :: (wqo, wqo) wqo
 begin
@@ -56,7 +56,7 @@ end
 
 subsection \<open>Lists are Well-Quasi-Ordered\<close>
 
-text \<open>If the type @{typ "'a"} is well-quasi-ordered by @{text "P"}, then
+text \<open>If the type @{typ "'a"} is well-quasi-ordered by \<open>P\<close>, then
 lists of type @{typ "'a list"} are well-quasi-ordered by the homeomorphic
 embedding relation.\<close>
 

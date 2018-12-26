@@ -13,17 +13,17 @@ following Mike Gordon) would suffice. Maybe the datatype com comes in useful
 later.
 *)
 
-section {* Hoare Logic for Total Correctness *}
+section \<open>Hoare Logic for Total Correctness\<close>
 
 theory Hoare_Logic
 imports Main
 begin
 
-text {*
-This theory is based on Isabelle/HOL's @{text Hoare}/@{text Hoare_Logic.thy} written by L. P. Nieto and T. Nipkow.
+text \<open>
+This theory is based on Isabelle/HOL's \<open>Hoare\<close>/\<open>Hoare_Logic.thy\<close> written by L. P. Nieto and T. Nipkow.
 We have extended it to total-correctness proofs.
-We added corresponding modifications to @{text hoare_syntax.ML} and @{text hoare_tac.ML}.
-*}
+We added corresponding modifications to \<open>hoare_syntax.ML\<close> and \<open>hoare_tac.ML\<close>.
+\<close>
 
 type_synonym 'a bexp = "'a set"
 type_synonym 'a assn = "'a set"

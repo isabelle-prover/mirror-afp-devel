@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel, ported by Tobias Nipkow *)
 
-section {* Finiteness of Derivatives Modulo ACI *}
+section \<open>Finiteness of Derivatives Modulo ACI\<close>
 
 (*<*)
 (* split into Norm and Fin theories *)
@@ -9,7 +9,7 @@ imports "Regular-Sets.Derivatives"
 begin
 (*>*)
 
-text {* Lifting constructors to lists *}
+text \<open>Lifting constructors to lists\<close>
 
 fun rexp_of_list where
   "rexp_of_list OP N [] = N"
@@ -25,7 +25,7 @@ shows "P xs"
 using assms by induction_schema (pat_completeness, lexicographic_order)
 
 
-subsection {* ACI normalization *}
+subsection \<open>ACI normalization\<close>
 
 fun toplevel_summands :: "'a rexp \<Rightarrow> 'a rexp set" where
   "toplevel_summands (Plus r s) = toplevel_summands r \<union> toplevel_summands s"
@@ -158,7 +158,7 @@ proof (induct r)
 qed auto
 
 
-subsection {* Finiteness of ACI-Equivalent Derivatives *}
+subsection \<open>Finiteness of ACI-Equivalent Derivatives\<close>
 
 lemma toplevel_summands_deriv:
   "toplevel_summands (deriv as r) = (\<Union>s\<in>toplevel_summands r. toplevel_summands (deriv as s))"
@@ -259,7 +259,7 @@ next
 qed
 
 
-subsection {* Deriving preserves ACI-equivalence *}
+subsection \<open>Deriving preserves ACI-equivalence\<close>
 
 lemma ACI_norm_PLUS:
   "list_all2 (\<lambda>r s. \<guillemotleft>r\<guillemotright> = \<guillemotleft>s\<guillemotright>) xs ys \<Longrightarrow> \<guillemotleft>PLUS xs\<guillemotright> = \<guillemotleft>PLUS ys\<guillemotright>"
@@ -314,9 +314,9 @@ proof (induction xs arbitrary: r rule: rev_induct)
     using ACI_norm_deriv[of x "derivs xs r"] ACI_norm_deriv[of x "derivs xs \<guillemotleft>r\<guillemotright>"] by auto
 qed simp
 
-subsection {* Alternative ACI defintions *}
+subsection \<open>Alternative ACI defintions\<close>
 
-text {* Not necessary but conceptually nicer (and seems also to be faster?!) *}
+text \<open>Not necessary but conceptually nicer (and seems also to be faster?!)\<close>
 
 fun ACI_nPlus :: "'a::linorder rexp \<Rightarrow> 'a rexp \<Rightarrow> 'a rexp"
 where

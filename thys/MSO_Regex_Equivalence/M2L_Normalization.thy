@@ -1,6 +1,6 @@
 (* Author: Dmitriy Traytel *)
 
-section {* Normalization of M2L Formulas *}
+section \<open>Normalization of M2L Formulas\<close>
 
 (*<*)
 theory M2L_Normalization

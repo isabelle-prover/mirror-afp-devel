@@ -4,15 +4,15 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*QR Decomposition*}
+section\<open>QR Decomposition\<close>
 
 theory QR_Decomposition
 imports Gram_Schmidt
 begin
  
-subsection{*The QR Decomposition of a matrix*}
+subsection\<open>The QR Decomposition of a matrix\<close>
 
-text{*
+text\<open>
 First of all, it's worth noting what an orthogonal matrix is. In linear algebra, 
 an orthogonal matrix is a square matrix with real entries whose columns and rows are orthogonal 
 unit vectors.
@@ -22,7 +22,7 @@ There are some variants of the algorithm, depending on the properties that the o
 satisfy (see for instance, @{url "http://inst.eecs.berkeley.edu/~ee127a/book/login/l_mats_qr.html"}). 
 We present two of them below.
 
-Let A be a matrix with m rows and n columns (A is @{text "m \<times> n"}).
+Let A be a matrix with m rows and n columns (A is \<open>m \<times> n\<close>).
 
 Case 1: Starting with a matrix whose column rank is maximum. We can define the QR decomposition
 to obtain:
@@ -32,56 +32,56 @@ to obtain:
   \item Q has m rows and n columns. Its columns are orthogonal unit vectors 
         and @{term "(transpose Q) * Q = mat 1"}. In addition, if A is a square matrix, then Q
         will be an orthonormal matrix.
-  \item R is @{text "n \<times> n"}, invertible and upper triangular.
+  \item R is \<open>n \<times> n\<close>, invertible and upper triangular.
 \end{itemize}
 
 Case 2: The called full QR decomposition. We can obtain:
 \begin{itemize}
  \item @{term "A = Q ** R"}
- \item Q is an orthogonal matrix (Q is @{text "m \<times> m"}).
- \item R is @{text "m \<times> n"} and upper triangular, but it isn't invertible.
+ \item Q is an orthogonal matrix (Q is \<open>m \<times> m\<close>).
+ \item R is \<open>m \<times> n\<close> and upper triangular, but it isn't invertible.
 \end{itemize}
 
 We have decided to formalise the first one, because it's the only useful for solving 
 the linear least squares problem (@{url "http://math.mit.edu/linearalgebra/ila0403.pdf"}).
 
-If we have an unsolvable system @{text "A *v x = b"}, we can try to find an approximate solution.
-A plausible choice (not the only one) is to seek an @{text "x"} with the property that
-@{text "\<parallel>A ** x - y\<parallel>"} (the magnitude of the error) is as small as possible. That @{text "x"}
+If we have an unsolvable system \<open>A *v x = b\<close>, we can try to find an approximate solution.
+A plausible choice (not the only one) is to seek an \<open>x\<close> with the property that
+\<open>\<parallel>A ** x - y\<parallel>\<close> (the magnitude of the error) is as small as possible. That \<open>x\<close>
 is the least squares approximation.
 
 We will demostrate that the best approximation (the solution for the linear least squares problem)
-is the @{text "x"} that satisfies:
+is the \<open>x\<close> that satisfies:
 
-@{text "(transpose A) ** A *v x = (transpose A) *v b"}
+\<open>(transpose A) ** A *v x = (transpose A) *v b\<close>
 
 Now we want to compute that x.
 
-If we are working with the first case, @{text "A"} can be substituted by @{text "Q**R"} and then
+If we are working with the first case, \<open>A\<close> can be substituted by \<open>Q**R\<close> and then
 obtain the solution of the least squares approximation by means of the QR decomposition:
 
-@{text "x = (inverse R)**(transpose Q) *v b"}
+\<open>x = (inverse R)**(transpose Q) *v b\<close>
 
 On the contrary, if we are working with the second case after 
-substituting @{text "A"} by @{text "Q**R"} we obtain:
+substituting \<open>A\<close> by \<open>Q**R\<close> we obtain:
 
-@{text "(transpose R) ** R *v x = (transpose R) ** (transpose Q) *v b"}
+\<open>(transpose R) ** R *v x = (transpose R) ** (transpose Q) *v b\<close>
 
-But the @{text "R"} matrix is not invertible (so neither is @{text "transpose R"}). The left part
-of the equation @{text "(transpose R) ** R"} is not going to be an upper triangular matrix, 
+But the \<open>R\<close> matrix is not invertible (so neither is \<open>transpose R\<close>). The left part
+of the equation \<open>(transpose R) ** R\<close> is not going to be an upper triangular matrix, 
 so it can't either be solved using backward-substitution.
-*}
+\<close>
 
 
-subsubsection{*Divide a vector by its norm*}
+subsubsection\<open>Divide a vector by its norm\<close>
 
-text{*An orthogonal matrix is a matrix whose rows (and columns) are orthonormal vectors. So, in order to 
+text\<open>An orthogonal matrix is a matrix whose rows (and columns) are orthonormal vectors. So, in order to 
 obtain the QR decomposition, we have to normalise (divide by the norm) 
-the vectors obtained with the Gram-Schmidt algorithm.*}
+the vectors obtained with the Gram-Schmidt algorithm.\<close>
 
 definition "divide_by_norm A  = (\<chi> a b. normalize (column b A) $ a)"
 
-text{*Properties*}
+text\<open>Properties\<close>
 
 lemma norm_column_divide_by_norm:
   fixes A::"'a::{real_inner}^'cols^'rows"
@@ -133,7 +133,7 @@ next
   qed
 qed
 
-text{*Code lemmas*}
+text\<open>Code lemmas\<close>
 
 definition "divide_by_norm_row A a = vec_lambda(% b. ((1 / norm (column b A)) *\<^sub>R column b A) $ a)"
 
@@ -147,11 +147,11 @@ lemma divide_by_norm_code [code abstract]:
   unfolding normalize_def
   by fastforce
 
-subsubsection{*The QR Decomposition*}
+subsubsection\<open>The QR Decomposition\<close>
 
-text{*The QR decomposition. Given a real matrix @{term "A"}, the algorithm will return a pair @{term "(Q,R)"}
+text\<open>The QR decomposition. Given a real matrix @{term "A"}, the algorithm will return a pair @{term "(Q,R)"}
   where @{term "Q"} is an matrix whose columns are orthogonal unit vectors, @{term "R"} 
-  is upper triangular and @{term "A=Q**R"}.*}
+  is upper triangular and @{term "A=Q**R"}.\<close>
 
 definition "QR_decomposition A = (let Q = divide_by_norm (Gram_Schmidt_matrix A) in (Q, (transpose Q) ** A))"
 
@@ -729,7 +729,7 @@ lemma QR_decomposition_square:
   by (metis QR_decomposition orthogonal_matrix_fst_QR_decomposition' r)
 
 
-text{*QR for computing determinants*}
+text\<open>QR for computing determinants\<close>
 
 lemma det_QR_decomposition:
   fixes A::"real^'n::{mod_type}^'n::{mod_type}"

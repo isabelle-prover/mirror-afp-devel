@@ -4,12 +4,12 @@ imports Semantics_Embeddings
         Simple_Firewall.Service_Matrix
 begin
 
-section{*Applying the Access Matrix to the Bigstep Semantics*}
+section\<open>Applying the Access Matrix to the Bigstep Semantics\<close>
   
-text{*
+text\<open>
 If the real iptables firewall (@{const iptables_bigstep}) accepts a packet, we have a corresponding
 edge in the @{const access_matrix}.
-*}
+\<close>
 corollary access_matrix_and_bigstep_semantics:
   defines "preprocess rs \<equiv> upper_closure (optimize_matches abstract_for_simple_firewall (upper_closure (packet_assume_new rs)))"
   and     "newpkt p \<equiv> match_tcp_flags ipt_tcp_syn (p_tcp_flags p) \<and> p_tag_ctstate p = CT_New"

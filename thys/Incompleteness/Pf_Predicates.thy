@@ -1,12 +1,12 @@
-chapter{*Formalizing Provability*}
+chapter\<open>Formalizing Provability\<close>
 
 theory Pf_Predicates
 imports Coding_Predicates
 begin
 
-section {* Section 4 Predicates (Leading up to Pf)*}
+section \<open>Section 4 Predicates (Leading up to Pf)\<close>
 
-subsection {*The predicate @{text SentP}, for the Sentiential (Boolean) Axioms*}
+subsection \<open>The predicate \<open>SentP\<close>, for the Sentiential (Boolean) Axioms\<close>
 
 definition Sent_axioms :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool" where
  "Sent_axioms x y z w \<equiv>
@@ -45,7 +45,7 @@ proof -
     by (auto simp: Sent_def Sent_axioms_def q_defs)
 qed
 
-subsection {*The predicate @{text Equality_axP}, for the Equality Axioms*}
+subsection \<open>The predicate \<open>Equality_axP\<close>, for the Equality Axioms\<close>
 
 definition Equality_ax :: "hf set" where
  "Equality_ax \<equiv> { \<lbrakk>\<lceil>refl_ax\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>eq_cong_ax\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>mem_cong_ax\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>eats_cong_ax\<rceil>\<rbrakk>e0 }"
@@ -61,7 +61,7 @@ termination
 lemma eval_fm_Equality_axP [simp]: "eval_fm e (Equality_axP x) \<longleftrightarrow> \<lbrakk>x\<rbrakk>e \<in> Equality_ax"
   by (auto simp: Equality_ax_def intro: eval_quot_fm_ignore)
 
-subsection {*The predicate @{text HF_axP}, for the HF Axioms*}
+subsection \<open>The predicate \<open>HF_axP\<close>, for the HF Axioms\<close>
 
 definition HF_ax :: "hf set" where
   "HF_ax \<equiv> {\<lbrakk>\<lceil>HF1\<rceil>\<rbrakk>e0, \<lbrakk>\<lceil>HF2\<rceil>\<rbrakk>e0}"
@@ -80,13 +80,13 @@ lemma HF_axP_sf [iff]: "Sigma_fm (HF_axP t)"
   by auto
 
 
-subsection {*The specialisation axioms*}
+subsection \<open>The specialisation axioms\<close>
 
 inductive_set Special_ax :: "hf set" where
   I: "\<lbrakk>AbstForm v 0 x ax; SubstForm v y x sx; Form x; is_Var v; Term y\<rbrakk>
       \<Longrightarrow> q_Imp sx (q_Ex ax) \<in> Special_ax"
 
-subsubsection {*Defining the syntax*}
+subsubsection \<open>Defining the syntax\<close>
 
 nominal_function Special_axP :: "tm \<Rightarrow> fm" where
   "\<lbrakk>atom v \<sharp> (p,sx,y,ax,x); atom x \<sharp> (p,sx,y,ax);
@@ -117,7 +117,7 @@ proof -
     done
 qed
 
-subsubsection {*Correctness (or, correspondence) *}
+subsubsection \<open>Correctness (or, correspondence)\<close>
 
 lemma Special_ax_imp_special_axioms:
   assumes "x \<in> Special_ax" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> A \<in> special_axioms"
@@ -158,12 +158,12 @@ proof (induct rule: special_axioms.induct)
   finally show ?case .
 qed
 
-text{*We have precisely captured the codes of the specialisation axioms.*}
+text\<open>We have precisely captured the codes of the specialisation axioms.\<close>
 corollary Special_ax_eq_special_axioms: "Special_ax = (\<Union>A \<in> special_axioms. { \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e })"
   by (force dest: special_axioms_into_Special_ax Special_ax_imp_special_axioms)
 
 
-subsection {*The induction axioms*}
+subsection \<open>The induction axioms\<close>
 
 inductive_set Induction_ax :: "hf set" where
   I: "\<lbrakk>SubstForm v 0 x x0;
@@ -175,7 +175,7 @@ inductive_set Induction_ax :: "hf set" where
        v \<noteq> w; VarNonOccForm w x\<rbrakk>
       \<Longrightarrow> q_Imp x0 (q_Imp (q_All allvw) (q_All ax)) \<in> Induction_ax"
 
-subsubsection {*Defining the syntax*}
+subsubsection \<open>Defining the syntax\<close>
 
 nominal_function Induction_axP :: "tm \<Rightarrow> fm" where
   "\<lbrakk>atom ax \<sharp> (p,v,w,x,x0,xw,xevw,allw,allvw);
@@ -226,7 +226,7 @@ proof -
     qed
 qed
 
-subsubsection {*Correctness (or, correspondence) *}
+subsubsection \<open>Correctness (or, correspondence)\<close>
 
 lemma Induction_ax_imp_induction_axioms:
   assumes "x \<in> Induction_ax" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> A \<in> induction_axioms"
@@ -338,13 +338,13 @@ proof (induct rule: induction_axioms.induct)
   qed
 qed
 
-text{*We have captured the codes of the induction axioms.*}
+text\<open>We have captured the codes of the induction axioms.\<close>
 corollary Induction_ax_eq_induction_axioms:
   "Induction_ax = (\<Union>A \<in> induction_axioms. {\<lbrakk>\<lceil>A\<rceil>\<rbrakk>e})"
   by (force dest: induction_axioms_into_Induction_ax Induction_ax_imp_induction_axioms)
 
 
-subsection {*The predicate @{text AxiomP}, for any Axioms*}
+subsection \<open>The predicate \<open>AxiomP\<close>, for any Axioms\<close>
 
 definition Extra_ax :: "hf set" where
  "Extra_ax \<equiv> {\<lbrakk>\<lceil>extra_axiom\<rceil>\<rbrakk>e0}"
@@ -370,7 +370,7 @@ lemma AxiomP_sf [iff]: "Sigma_fm (AxiomP t)"
   by (auto simp: AxiomP_def)
 
 
-subsection {*The predicate @{text ModPonP}, for the inference rule Modus Ponens*}
+subsection \<open>The predicate \<open>ModPonP\<close>, for the inference rule Modus Ponens\<close>
 
 definition ModPon :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool" where
   "ModPon x y z \<equiv> (y = q_Imp x z)"
@@ -395,8 +395,8 @@ lemma ModPonP_subst [simp]:
   by (auto simp: ModPonP_def)
 
 
-subsection {*The predicate @{text ExistsP}, for the existential rule *}
-subsubsection {*Definition*}
+subsection \<open>The predicate \<open>ExistsP\<close>, for the existential rule\<close>
+subsubsection \<open>Definition\<close>
 
 (*  "\<turnstile> A IMP B \<Longrightarrow> atom i \<sharp> B \<Longrightarrow>  \<turnstile> (Ex i A) IMP B" *)
 definition Exists :: "hf \<Rightarrow> hf \<Rightarrow> bool" where
@@ -438,7 +438,7 @@ proof -
     by (auto simp: ExistsP.simps [of x _ _ x' y v])
 qed
 
-subsubsection {*Correctness*}
+subsubsection \<open>Correctness\<close>
 
 lemma Exists_imp_exists:
   assumes "Exists p q"
@@ -469,22 +469,22 @@ lemma Exists_intro: "atom i \<sharp> B \<Longrightarrow> Exists (\<lbrakk>\<lcei
   by (simp add: Exists_def quot_simps q_defs)
      (metis AbstForm_trans_fm Form_quot_fm fresh_imp_VarNonOccForm)
 
-text{*Thus, we have precisely captured the codes of the specialisation axioms.*}
+text\<open>Thus, we have precisely captured the codes of the specialisation axioms.\<close>
 corollary Exists_iff_exists:
   "Exists p q \<longleftrightarrow> (\<exists>A B i. p = \<lbrakk>\<lceil>A IMP B\<rceil>\<rbrakk>e \<and> q = \<lbrakk>\<lceil>(Ex i A) IMP B\<rceil>\<rbrakk>e \<and> atom i \<sharp> B)"
   by (force dest: Exists_imp_exists Exists_intro)
 
 
-subsection {*The predicate @{text SubstP}, for the substitution rule *}
+subsection \<open>The predicate \<open>SubstP\<close>, for the substitution rule\<close>
 
-text{*Although the substitution rule is derivable in the calculus, the derivation is
+text\<open>Although the substitution rule is derivable in the calculus, the derivation is
 too complicated to reproduce within the proof function. It is much easier to
 provide it as an immediate inference step, justifying its soundness in terms
-of other inference rules.*}
+of other inference rules.\<close>
 
-subsubsection {*Definition*}
+subsubsection \<open>Definition\<close>
 
-text{*This is the inference @{text"H \<turnstile> A \<Longrightarrow> H \<turnstile> A (i::=x)"} *}
+text\<open>This is the inference \<open>H \<turnstile> A \<Longrightarrow> H \<turnstile> A (i::=x)\<close>\<close>
 definition Subst :: "hf \<Rightarrow> hf \<Rightarrow> bool" where
   "Subst p q \<equiv> (\<exists>v u. SubstForm v u p q)"
 
@@ -515,7 +515,7 @@ proof -
     by (simp add: SubstP.simps [of u _ _ v])
 qed
 
-subsubsection {*Correctness*}
+subsubsection \<open>Correctness\<close>
 
 lemma Subst_imp_subst:
   assumes "Subst p q" "Form p"
@@ -533,7 +533,7 @@ proof -
 qed
 
 
-subsection {*The predicate @{text PrfP}*}
+subsection \<open>The predicate \<open>PrfP\<close>\<close>
 
 (*Prf(s,k,t) \<equiv> LstSeq(s,k,t) \<and> (\<forall>n\<in>k)[Sent (s n) \<or> (\<exists>m,l\<in>n)[ModPon (s m) (s l) (s n)]]*)
 definition Prf :: "hf \<Rightarrow> hf \<Rightarrow> hf \<Rightarrow> bool"
@@ -591,7 +591,7 @@ proof -
 qed
 
 
-subsection {*The predicate @{text PfP}*}
+subsection \<open>The predicate \<open>PfP\<close>\<close>
 
 definition Pf :: "hf \<Rightarrow> bool"
   where "Pf y \<equiv> (\<exists>s k. Prf s k y)"
@@ -627,9 +627,9 @@ lemma ground_PfP [simp]: "ground_fm (PfP y) = ground y"
   by (simp add: ground_aux_def ground_fm_aux_def supp_conv_fresh)
 
 
-section{*Proposition 4.4*}
+section\<open>Proposition 4.4\<close>
 
-subsection{*Left-to-Right Proof*}
+subsection\<open>Left-to-Right Proof\<close>
 
 lemma extra_axiom_imp_Pf: "Pf \<lbrakk>\<lceil>extra_axiom\<rceil>\<rbrakk>e"
 proof -
@@ -730,7 +730,7 @@ corollary proved_imp_proved_PfP: "{} \<turnstile> \<alpha> \<Longrightarrow> {} 
   by (rule Sigma_fm_imp_thm [OF PfP_sf]) 
      (auto simp: ground_aux_def supp_conv_fresh proved_imp_Pf)
 
-subsection{*Right-to-Left Proof*}
+subsection\<open>Right-to-Left Proof\<close>
 
 lemma Sent_imp_hfthm:
   assumes "x \<in> Sent" shows "\<exists>A. x = \<lbrakk>\<lceil>A\<rceil>\<rbrakk>e \<and> {} \<turnstile> A"
@@ -810,7 +810,7 @@ qed
 corollary Pf_quot_imp_is_proved: "Pf \<lbrakk>\<lceil>\<alpha>\<rceil>\<rbrakk>e \<Longrightarrow> {} \<turnstile> \<alpha>"
   by (metis Pf_def Prf_imp_proved eval_fm_inject)
 
-text{*Proposition 4.4!*}
+text\<open>Proposition 4.4!\<close>
 theorem proved_iff_proved_PfP: "{} \<turnstile> \<alpha> \<longleftrightarrow> {} \<turnstile> PfP \<lceil>\<alpha>\<rceil>"
   by (metis Pf_quot_imp_is_proved emptyE eval_fm_PfP hfthm_sound proved_imp_proved_PfP)
 

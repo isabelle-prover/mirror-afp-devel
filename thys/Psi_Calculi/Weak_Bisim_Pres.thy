@@ -100,40 +100,40 @@ proof -
       ultimately have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<lessapprox><(?X \<union> weakBisim)> \<lparr>\<nu>x\<rparr>Q"
         by(rule weakStatImpResPres)
     }
-    with `(\<Psi>, xP, xQ) \<in> ?X` show ?case by auto
+    with \<open>(\<Psi>, xP, xQ) \<in> ?X\<close> show ?case by auto
   next
     case(cSim \<Psi> xP xQ)
-    from `(\<Psi>, xP, xQ) \<in> ?X` obtain x P Q where "\<Psi> \<rhd> P \<approx> Q" and "x \<sharp> \<Psi>" and "xP = \<lparr>\<nu>x\<rparr>P" and "xQ = \<lparr>\<nu>x\<rparr>Q"
+    from \<open>(\<Psi>, xP, xQ) \<in> ?X\<close> obtain x P Q where "\<Psi> \<rhd> P \<approx> Q" and "x \<sharp> \<Psi>" and "xP = \<lparr>\<nu>x\<rparr>P" and "xQ = \<lparr>\<nu>x\<rparr>Q"
       by auto
-    from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(rule weakBisimE)
+    from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<rhd> P \<leadsto><weakBisim> Q" by(rule weakBisimE)
     moreover have "eqvt ?X"
       by(force simp add: eqvt_def weakBisimClosed pt_fresh_bij[OF pt_name_inst, OF at_name_inst])
     hence "eqvt(?X \<union> weakBisim)" by auto
-    moreover note `x \<sharp> \<Psi>`
+    moreover note \<open>x \<sharp> \<Psi>\<close>
     moreover have "weakBisim \<subseteq> ?X \<union> weakBisim" by auto
     moreover have "\<And>\<Psi> P Q x. \<lbrakk>(\<Psi>, P, Q) \<in> weakBisim; x \<sharp> \<Psi>\<rbrakk> \<Longrightarrow> (\<Psi>, \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>x\<rparr>Q) \<in> ?X \<union> weakBisim"
       by auto
     ultimately have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>x\<rparr>Q"
       by(rule weakResPres)
-    with `xP = \<lparr>\<nu>x\<rparr>P` `xQ = \<lparr>\<nu>x\<rparr>Q` show ?case
+    with \<open>xP = \<lparr>\<nu>x\<rparr>P\<close> \<open>xQ = \<lparr>\<nu>x\<rparr>Q\<close> show ?case
       by simp
   next
     case(cExt \<Psi> xP xQ \<Psi>')
-    from `(\<Psi>, xP, xQ) \<in> ?X` obtain x P Q where "\<Psi> \<rhd> P \<approx> Q" and "x \<sharp> \<Psi>" and "xP = \<lparr>\<nu>x\<rparr>P" and "xQ = \<lparr>\<nu>x\<rparr>Q"
+    from \<open>(\<Psi>, xP, xQ) \<in> ?X\<close> obtain x P Q where "\<Psi> \<rhd> P \<approx> Q" and "x \<sharp> \<Psi>" and "xP = \<lparr>\<nu>x\<rparr>P" and "xQ = \<lparr>\<nu>x\<rparr>Q"
       by auto
     obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> \<Psi>" and "y \<sharp> \<Psi>'"
      by(generate_fresh "name", auto simp add: fresh_prod)
-   from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>') \<rhd> P \<approx> Q"
+   from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>') \<rhd> P \<approx> Q"
      by(rule weakBisimE)
    hence "([(x, y)] \<bullet> (\<Psi> \<otimes> ([(x, y)] \<bullet> \<Psi>'))) \<rhd> ([(x, y)] \<bullet> P) \<approx> ([(x, y)] \<bullet> Q)"
      by(rule weakBisimClosed)
-   with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi> \<otimes> \<Psi>' \<rhd> ([(x, y)] \<bullet> P) \<approx> ([(x, y)] \<bullet> Q)"
+   with \<open>x \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> ([(x, y)] \<bullet> P) \<approx> ([(x, y)] \<bullet> Q)"
      by(simp add: eqvts)
-   with `y \<sharp> \<Psi>` `y \<sharp> \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P), \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q)) \<in> ?X"
+   with \<open>y \<sharp> \<Psi>\<close> \<open>y \<sharp> \<Psi>'\<close> have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P), \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q)) \<in> ?X"
      by auto
-   moreover from `y \<sharp> P` `y \<sharp> Q` have "\<lparr>\<nu>x\<rparr>P = \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)" and "\<lparr>\<nu>x\<rparr>Q = \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q)"
+   moreover from \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> have "\<lparr>\<nu>x\<rparr>P = \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> P)" and "\<lparr>\<nu>x\<rparr>Q = \<lparr>\<nu>y\<rparr>([(x, y)] \<bullet> Q)"
      by(simp add: alphaRes)+
-   ultimately show ?case using `xP = \<lparr>\<nu>x\<rparr>P` `xQ = \<lparr>\<nu>x\<rparr>Q` by simp
+   ultimately show ?case using \<open>xP = \<lparr>\<nu>x\<rparr>P\<close> \<open>xQ = \<lparr>\<nu>x\<rparr>Q\<close> by simp
  next
     case(cSym \<Psi> P Q)
     thus ?case by(blast dest: weakBisimE)
@@ -197,27 +197,27 @@ proof -
     assume "xvec \<sharp>* \<Psi>"
     and    A: "\<And>A\<^sub>R \<Psi>\<^sub>R. \<lbrakk>extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>; A\<^sub>R \<sharp>* P; A\<^sub>R \<sharp>* Q; A\<^sub>R \<sharp>* C\<rbrakk> \<Longrightarrow> \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q"
 
-    from `xvec \<sharp>* \<Psi>` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) \<in> ?X"
+    from \<open>xvec \<sharp>* \<Psi>\<close> have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) \<in> ?X"
     proof(rule XI)
       fix A\<^sub>R \<Psi>\<^sub>R
       assume FrR: "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>"
       obtain p::"name prm" where "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" and "(p \<bullet> A\<^sub>R) \<sharp>* P" and "(p \<bullet> A\<^sub>R) \<sharp>* Q" and "(p \<bullet> A\<^sub>R) \<sharp>* R" and "(p \<bullet> A\<^sub>R) \<sharp>* C"
                              and "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<^sub>R" and S: "(set p) \<subseteq> (set A\<^sub>R) \<times> (set(p \<bullet> A\<^sub>R))" and "distinctPerm p"
         by(rule_tac c="(\<Psi>, P, Q, R, \<Psi>\<^sub>R, C)" in name_list_avoiding) auto
-      from FrR `(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<^sub>R` S have "extractFrame R = \<langle>(p \<bullet> A\<^sub>R), p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: frameChainAlpha')
+      from FrR \<open>(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<^sub>R\<close> S have "extractFrame R = \<langle>(p \<bullet> A\<^sub>R), p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: frameChainAlpha')
 
       moreover assume "A\<^sub>R \<sharp>* \<Psi>"
       hence "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `A\<^sub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>` S have "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" by simp
+      with \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<close> S have "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" by simp
       moreover assume "A\<^sub>R \<sharp>* P"
       hence "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `A\<^sub>R \<sharp>* P` `(p \<bullet> A\<^sub>R) \<sharp>* P` S have "(p \<bullet> A\<^sub>R) \<sharp>* P" by simp
+      with \<open>A\<^sub>R \<sharp>* P\<close> \<open>(p \<bullet> A\<^sub>R) \<sharp>* P\<close> S have "(p \<bullet> A\<^sub>R) \<sharp>* P" by simp
       moreover assume "A\<^sub>R \<sharp>* Q"
       hence "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R) \<sharp>* Q` S have "(p \<bullet> A\<^sub>R) \<sharp>* Q" by simp
-      ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> P \<approx> Q" using `(p \<bullet> A\<^sub>R) \<sharp>* C` A by blast
+      with \<open>A\<^sub>R \<sharp>* Q\<close> \<open>(p \<bullet> A\<^sub>R) \<sharp>* Q\<close> S have "(p \<bullet> A\<^sub>R) \<sharp>* Q" by simp
+      ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> P \<approx> Q" using \<open>(p \<bullet> A\<^sub>R) \<sharp>* C\<close> A by blast
       hence "(p \<bullet> (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R))) \<rhd> (p \<bullet> P) \<approx> (p \<bullet> Q)" by(rule weakBisimClosed)
-      with `A\<^sub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* P` `(p \<bullet> A\<^sub>R) \<sharp>* P` `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R) \<sharp>* Q` S `distinctPerm p`
+      with \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* P\<close> \<open>(p \<bullet> A\<^sub>R) \<sharp>* P\<close> \<open>A\<^sub>R \<sharp>* Q\<close> \<open>(p \<bullet> A\<^sub>R) \<sharp>* Q\<close> S \<open>distinctPerm p\<close>
       show "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q" by(simp add: eqvts)
     qed
   }
@@ -255,15 +255,15 @@ proof -
     show "(\<Psi>, \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>x\<rparr>Q) \<in> ?X \<union> weakBisim"
     proof(case_tac "(\<Psi>, P, Q) \<in> ?X")
       assume "(\<Psi>, P, Q) \<in> ?X"
-      with `x \<sharp> \<Psi>` have "(\<Psi>, \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>x\<rparr>Q) \<in> ?X"
+      with \<open>x \<sharp> \<Psi>\<close> have "(\<Psi>, \<lparr>\<nu>x\<rparr>P, \<lparr>\<nu>x\<rparr>Q) \<in> ?X"
         apply auto
         by(rule_tac x="x#xvec" in exI) auto
       thus ?thesis by simp
     next
       assume "\<not>(\<Psi>, P, Q) \<in> ?X"
-      with `(\<Psi>, P, Q) \<in> ?X \<union> weakBisim` have "\<Psi> \<rhd> P \<approx> Q"
+      with \<open>(\<Psi>, P, Q) \<in> ?X \<union> weakBisim\<close> have "\<Psi> \<rhd> P \<approx> Q"
         by blast
-      hence "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<approx> \<lparr>\<nu>x\<rparr>Q" using `x \<sharp> \<Psi>`
+      hence "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<approx> \<lparr>\<nu>x\<rparr>Q" using \<open>x \<sharp> \<Psi>\<close>
         by(rule weakBisimResPres)
       thus ?thesis
         by simp
@@ -285,7 +285,7 @@ proof -
                          and "\<Psi> \<otimes> \<Psi>' \<rhd> Q \<approx> P''" using weakStatImp_def
       by(blast dest: weakBisimE)
     note PChain QimpP' P'Chain
-    moreover from `\<Psi> \<otimes> \<Psi>' \<rhd> Q \<approx> P''` have "\<Psi> \<otimes> \<Psi>' \<rhd> P'' \<approx> Q" by(rule weakBisimE)
+    moreover from \<open>\<Psi> \<otimes> \<Psi>' \<rhd> Q \<approx> P''\<close> have "\<Psi> \<otimes> \<Psi>' \<rhd> P'' \<approx> Q" by(rule weakBisimE)
     ultimately have "\<exists>P' P''. \<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P' \<and> insertAssertion(extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion(extractFrame P') \<Psi> \<and>
                               \<Psi> \<otimes> \<Psi>' \<rhd> P' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'' \<and> \<Psi> \<otimes> \<Psi>' \<rhd> P'' \<approx> Q"
       by blast
@@ -320,21 +320,21 @@ proof -
           by(rule_tac c="(A\<^sub>R, \<Psi>, \<Psi>\<^sub>R', P, Q)" in name_list_avoiding) auto
 
         
-        from `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<^sub>R'` S have "\<langle>A\<^sub>R', \<Psi>\<^sub>R'\<rangle> = \<langle>p \<bullet> A\<^sub>R', p \<bullet> \<Psi>\<^sub>R'\<rangle>"
+        from \<open>(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<^sub>R'\<close> S have "\<langle>A\<^sub>R', \<Psi>\<^sub>R'\<rangle> = \<langle>p \<bullet> A\<^sub>R', p \<bullet> \<Psi>\<^sub>R'\<rangle>"
           by(simp add: frameChainAlpha)
         
         with FrR' have FrR'': "extractFrame R = \<langle>p \<bullet> A\<^sub>R', p \<bullet> \<Psi>\<^sub>R'\<rangle>" by simp
-        with FrR `(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R`
+        with FrR \<open>(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R\<close>
         obtain q where "p \<bullet> \<Psi>\<^sub>R' = (q::name prm) \<bullet> \<Psi>\<^sub>R" and S': "set q \<subseteq> (set A\<^sub>R) \<times> set(p \<bullet> A\<^sub>R')" and "distinctPerm q"
           apply auto
           apply(drule_tac sym) apply simp
           by(drule_tac frameChainEq) auto
         from PSimQ have "(q \<bullet> (\<Psi> \<otimes> \<Psi>\<^sub>R)) \<rhd> (q \<bullet> P) \<approx> (q \<bullet> Q)"
           by(rule weakBisimClosed)
-        with `A\<^sub>R \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* P` `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* Q` S'
+        with \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* P\<close> \<open>A\<^sub>R \<sharp>* Q\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* P\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* Q\<close> S'
         have "\<Psi> \<otimes> (q \<bullet> \<Psi>\<^sub>R) \<rhd> P \<approx> Q" by(simp add: eqvts)
         hence "(p \<bullet> (\<Psi> \<otimes> (q \<bullet> \<Psi>\<^sub>R))) \<rhd> (p \<bullet> P) \<approx> (p \<bullet> Q)" by(rule weakBisimClosed)
-        with `A\<^sub>R' \<sharp>* \<Psi>` `A\<^sub>R' \<sharp>* P` `A\<^sub>R' \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* Q` S `distinctPerm p` `(p \<bullet> \<Psi>\<^sub>R') = q \<bullet> \<Psi>\<^sub>R` 
+        with \<open>A\<^sub>R' \<sharp>* \<Psi>\<close> \<open>A\<^sub>R' \<sharp>* P\<close> \<open>A\<^sub>R' \<sharp>* Q\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* P\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* Q\<close> S \<open>distinctPerm p\<close> \<open>(p \<bullet> \<Psi>\<^sub>R') = q \<bullet> \<Psi>\<^sub>R\<close> 
         have "\<Psi> \<otimes> \<Psi>\<^sub>R' \<rhd> P \<approx> Q"
           by(drule_tac sym) (simp add: eqvts)
       }
@@ -354,7 +354,7 @@ proof -
     thus "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>P, \<lparr>\<nu>*xvec\<rparr>Q) \<in> ?X \<union> weakBisim"
     proof(induct xvec)
       case Nil
-      thus ?case using `(\<Psi>, P, Q) \<in> ?X \<union> weakBisim` by simp
+      thus ?case using \<open>(\<Psi>, P, Q) \<in> ?X \<union> weakBisim\<close> by simp
     next
       case(Cons x xvec)
       thus ?case by(simp only: resChain.simps) (rule_tac Res, auto)
@@ -391,18 +391,18 @@ proof -
                    and Sp: "(set p) \<subseteq> (set A\<^sub>R') \<times> (set(p \<bullet> A\<^sub>R'))" and "distinctPerm p"
           by(rule_tac c="(A\<^sub>R, \<Psi>, \<Psi>\<^sub>R', P, Q)" in name_list_avoiding) auto
             
-        from FrR' `(p \<bullet> A\<^sub>R') \<sharp>*  \<Psi>\<^sub>R'` Sp have "extractFrame R = \<langle>(p \<bullet> A\<^sub>R'), p \<bullet> \<Psi>\<^sub>R'\<rangle>"
+        from FrR' \<open>(p \<bullet> A\<^sub>R') \<sharp>*  \<Psi>\<^sub>R'\<close> Sp have "extractFrame R = \<langle>(p \<bullet> A\<^sub>R'), p \<bullet> \<Psi>\<^sub>R'\<rangle>"
           by(simp add: frameChainAlpha eqvts)
-        with FrR `(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R` obtain q::"name prm" 
+        with FrR \<open>(p \<bullet> A\<^sub>R') \<sharp>* A\<^sub>R\<close> obtain q::"name prm" 
           where Sq: "set q \<subseteq> set(p \<bullet> A\<^sub>R') \<times> set A\<^sub>R" and "distinctPerm q" and "\<Psi>\<^sub>R = q \<bullet> p \<bullet> \<Psi>\<^sub>R'"
           by(force elim: frameChainEq)
 
-        from `\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q` `\<Psi>\<^sub>R = q \<bullet> p \<bullet> \<Psi>\<^sub>R'` have "\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^sub>R') \<rhd> P \<approx> Q" by simp
+        from \<open>\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q\<close> \<open>\<Psi>\<^sub>R = q \<bullet> p \<bullet> \<Psi>\<^sub>R'\<close> have "\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^sub>R') \<rhd> P \<approx> Q" by simp
         hence "(q \<bullet> (\<Psi> \<otimes> (q \<bullet> p \<bullet> \<Psi>\<^sub>R'))) \<rhd> (q \<bullet> P) \<approx> (q \<bullet> Q)" by(rule weakBisimClosed)
-        with Sq `A\<^sub>R \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `A\<^sub>R \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* P` `A\<^sub>R \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* Q` `distinctPerm q`
+        with Sq \<open>A\<^sub>R \<sharp>* \<Psi>\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<close> \<open>A\<^sub>R \<sharp>* P\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* P\<close> \<open>A\<^sub>R \<sharp>* Q\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* Q\<close> \<open>distinctPerm q\<close>
         have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R') \<rhd> P \<approx> Q" by(simp add: eqvts)
         hence "(p \<bullet> (\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R'))) \<rhd> (p \<bullet> P) \<approx> (p \<bullet> Q)" by(rule weakBisimClosed)
-        with Sp `A\<^sub>R' \<sharp>* \<Psi>` `(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>` `A\<^sub>R' \<sharp>* P` `(p \<bullet> A\<^sub>R') \<sharp>* P` `A\<^sub>R' \<sharp>* Q` `(p \<bullet> A\<^sub>R') \<sharp>* Q` `distinctPerm p`
+        with Sp \<open>A\<^sub>R' \<sharp>* \<Psi>\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* \<Psi>\<close> \<open>A\<^sub>R' \<sharp>* P\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* P\<close> \<open>A\<^sub>R' \<sharp>* Q\<close> \<open>(p \<bullet> A\<^sub>R') \<sharp>* Q\<close> \<open>distinctPerm p\<close>
         have "\<Psi> \<otimes> \<Psi>\<^sub>R' \<rhd> P \<approx> Q" by(simp add: eqvts)
       }
       thus ?thesis
@@ -431,22 +431,22 @@ proof -
       ultimately have "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R) \<lessapprox><(?X \<union> weakBisim)> \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)" 
         by(rule weakStatImpParPres)
     }
-    with `(\<Psi>, PR, QR) \<in> ?X` show ?case by auto
+    with \<open>(\<Psi>, PR, QR) \<in> ?X\<close> show ?case by auto
   next
     case(cSim \<Psi> PR QR)
-    from `(\<Psi>, PR, QR) \<in> ?X`    
+    from \<open>(\<Psi>, PR, QR) \<in> ?X\<close>    
     obtain xvec P Q R A\<^sub>R \<Psi>\<^sub>R where PFrR: "PR = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R)" and QFrR: "QR = \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)"
                                and "xvec \<sharp>* \<Psi>"
       by auto
-    with `(\<Psi>, PR, QR) \<in> ?X` have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) \<in> ?X" by simp
-    hence "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)" using `xvec \<sharp>* \<Psi>`
+    with \<open>(\<Psi>, PR, QR) \<in> ?X\<close> have "(\<Psi>, \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)) \<in> ?X" by simp
+    hence "\<Psi> \<rhd> \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)" using \<open>xvec \<sharp>* \<Psi>\<close>
     proof(induct xvec)
       case Nil
-      from `(\<Psi>, \<lparr>\<nu>*[]\<rparr>(P \<parallel> R), \<lparr>\<nu>*[]\<rparr>(Q \<parallel> R)) \<in> ?X` have PRQR: "(\<Psi>, P \<parallel> R, Q \<parallel> R) \<in> ?X" by simp
+      from \<open>(\<Psi>, \<lparr>\<nu>*[]\<rparr>(P \<parallel> R), \<lparr>\<nu>*[]\<rparr>(Q \<parallel> R)) \<in> ?X\<close> have PRQR: "(\<Psi>, P \<parallel> R, Q \<parallel> R) \<in> ?X" by simp
       from PRQR have "\<And>A\<^sub>R \<Psi>\<^sub>R. \<lbrakk>extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>; A\<^sub>R \<sharp>* \<Psi>;  A\<^sub>R \<sharp>* P;  A\<^sub>R \<sharp>* Q\<rbrakk> \<Longrightarrow> (\<Psi> \<otimes> \<Psi>\<^sub>R, P, Q) \<in> weakBisim"
         by auto
       moreover note weakBisimEqvt
-      moreover from `eqvt ?X` have "eqvt(?X \<union> weakBisim)" by auto
+      moreover from \<open>eqvt ?X\<close> have "eqvt(?X \<union> weakBisim)" by auto
       moreover note weakBisimE(2) weakBisimE(4) weakBisimE(3) weakBisimE(1)
       moreover note C1 C2 
       ultimately have "\<Psi> \<rhd> P \<parallel> R \<leadsto><(?X \<union> weakBisim)> Q \<parallel> R" using statEqWeakBisim
@@ -454,8 +454,8 @@ proof -
       thus ?case by simp
     next
       case(Cons x xvec')
-      from `(x#xvec') \<sharp>* \<Psi>` have "x \<sharp> \<Psi>" and "xvec' \<sharp>* \<Psi>" by simp+
-      with `(\<Psi>, \<lparr>\<nu>*(x#xvec')\<rparr>P \<parallel> R, \<lparr>\<nu>*(x#xvec')\<rparr>Q \<parallel> R) \<in> ?X`
+      from \<open>(x#xvec') \<sharp>* \<Psi>\<close> have "x \<sharp> \<Psi>" and "xvec' \<sharp>* \<Psi>" by simp+
+      with \<open>(\<Psi>, \<lparr>\<nu>*(x#xvec')\<rparr>P \<parallel> R, \<lparr>\<nu>*(x#xvec')\<rparr>Q \<parallel> R) \<in> ?X\<close>
       have "(\<Psi>, \<lparr>\<nu>*(xvec')\<rparr>P \<parallel> R, \<lparr>\<nu>*(xvec')\<rparr>Q \<parallel> R) \<in> ?X"
         apply auto
         apply(subgoal_tac "\<exists>y yvec. xvec=y#yvec")
@@ -497,11 +497,11 @@ proof -
         apply(simp add: eqvts)
         by(case_tac xvec) auto
       
-      with `\<lbrakk>(\<Psi>, \<lparr>\<nu>*xvec'\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec'\<rparr>(Q \<parallel> R)) \<in> ?X; xvec' \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> \<lparr>\<nu>*xvec'\<rparr>(P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>*xvec'\<rparr>(Q \<parallel> R)` `xvec' \<sharp>* \<Psi>`
+      with \<open>\<lbrakk>(\<Psi>, \<lparr>\<nu>*xvec'\<rparr>(P \<parallel> R), \<lparr>\<nu>*xvec'\<rparr>(Q \<parallel> R)) \<in> ?X; xvec' \<sharp>* \<Psi>\<rbrakk> \<Longrightarrow> \<Psi> \<rhd> \<lparr>\<nu>*xvec'\<rparr>(P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>*xvec'\<rparr>(Q \<parallel> R)\<close> \<open>xvec' \<sharp>* \<Psi>\<close>
       have "\<Psi> \<rhd> \<lparr>\<nu>*xvec'\<rparr>(P \<parallel> R) \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>*xvec'\<rparr>(Q \<parallel> R)" by blast
-      moreover note `eqvt ?X` 
-      moreover from `eqvt ?X` have "eqvt(?X \<union> weakBisim)" by auto
-      moreover note `x \<sharp> \<Psi>`
+      moreover note \<open>eqvt ?X\<close> 
+      moreover from \<open>eqvt ?X\<close> have "eqvt(?X \<union> weakBisim)" by auto
+      moreover note \<open>x \<sharp> \<Psi>\<close>
       moreover have "?X \<union> weakBisim \<subseteq> ?X \<union> weakBisim" by simp
       ultimately have "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec'\<rparr>(P \<parallel> R)) \<leadsto><(?X \<union> weakBisim)> \<lparr>\<nu>x\<rparr>(\<lparr>\<nu>*xvec'\<rparr>(Q \<parallel> R))" using Res
         by(rule_tac weakResPres)
@@ -513,7 +513,7 @@ proof -
   next
     case(cExt \<Psi> PR QR \<Psi>')
 
-    from `(\<Psi>, PR, QR) \<in> ?X`
+    from \<open>(\<Psi>, PR, QR) \<in> ?X\<close>
     obtain xvec P Q R A\<^sub>R \<Psi>\<^sub>R where PFrR: "PR = \<lparr>\<nu>*xvec\<rparr>(P \<parallel> R)" and QFrR: "QR = \<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R)"
                                and "xvec \<sharp>* \<Psi>" and A: "\<forall>A\<^sub>R \<Psi>\<^sub>R. (extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle> \<and> A\<^sub>R \<sharp>* \<Psi> \<and> A\<^sub>R \<sharp>* P \<and> A\<^sub>R \<sharp>* Q) \<longrightarrow> \<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q"
       by auto
@@ -526,28 +526,28 @@ proof -
                and S: "(set p) \<subseteq> (set xvec) \<times> (set(p \<bullet> xvec))" and "distinctPerm p"
       by(rule_tac c="(\<Psi>, P, Q, R, \<Psi>')" in name_list_avoiding) auto
 
-    from `(p \<bullet> xvec) \<sharp>* P` `(p \<bullet> xvec) \<sharp>* R` S have "\<lparr>\<nu>*xvec\<rparr>(P \<parallel> R) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(p \<bullet> (P \<parallel> R))"
+    from \<open>(p \<bullet> xvec) \<sharp>* P\<close> \<open>(p \<bullet> xvec) \<sharp>* R\<close> S have "\<lparr>\<nu>*xvec\<rparr>(P \<parallel> R) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(p \<bullet> (P \<parallel> R))"
       by(subst resChainAlpha) auto
     hence PRAlpha: "\<lparr>\<nu>*xvec\<rparr>(P \<parallel> R) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> R))"
       by(simp add: eqvts)
 
-    from `(p \<bullet> xvec) \<sharp>* Q` `(p \<bullet> xvec) \<sharp>* R` S have "\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(p \<bullet> (Q \<parallel> R))"
+    from \<open>(p \<bullet> xvec) \<sharp>* Q\<close> \<open>(p \<bullet> xvec) \<sharp>* R\<close> S have "\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>(p \<bullet> (Q \<parallel> R))"
       by(subst resChainAlpha) auto
     hence QRAlpha: "\<lparr>\<nu>*xvec\<rparr>(Q \<parallel> R) = \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> Q) \<parallel> (p \<bullet> R))"
       by(simp add: eqvts)
 
-    from `(p \<bullet> xvec) \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>'` have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> R)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> Q) \<parallel> (p \<bullet> R))) \<in> ?X"
+    from \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>'\<close> have "(\<Psi> \<otimes> \<Psi>', \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> P) \<parallel> (p \<bullet> R)), \<lparr>\<nu>*(p \<bullet> xvec)\<rparr>((p \<bullet> Q) \<parallel> (p \<bullet> R))) \<in> ?X"
    proof(rule_tac C2="(\<Psi>, (p \<bullet> P), (p \<bullet> Q), R, \<Psi>', xvec, p \<bullet> xvec)" in XI', auto)
       fix A\<^sub>R \<Psi>\<^sub>R
       assume FrR: "extractFrame (p \<bullet> R) = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>" and "A\<^sub>R \<sharp>* \<Psi>" and "A\<^sub>R \<sharp>* \<Psi>'" and "A\<^sub>R \<sharp>* (p \<bullet> P)" and "A\<^sub>R \<sharp>* (p \<bullet> Q)"
       from FrR have "(p \<bullet> (extractFrame (p \<bullet> R))) = (p \<bullet> \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>)" by simp
-      with `distinctPerm p` have "extractFrame R = \<langle>p \<bullet> A\<^sub>R, p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: eqvts)
-      moreover from `A\<^sub>R \<sharp>* \<Psi>` have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S have "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" by simp
-      moreover from `A\<^sub>R \<sharp>* (p \<bullet> P)` have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `distinctPerm p` have "(p \<bullet> A\<^sub>R) \<sharp>* P" by simp
-      moreover from `A\<^sub>R \<sharp>* (p \<bullet> Q)` have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-      with `distinctPerm p` have "(p \<bullet> A\<^sub>R) \<sharp>* Q" by simp
+      with \<open>distinctPerm p\<close> have "extractFrame R = \<langle>p \<bullet> A\<^sub>R, p \<bullet> \<Psi>\<^sub>R\<rangle>" by(simp add: eqvts)
+      moreover from \<open>A\<^sub>R \<sharp>* \<Psi>\<close> have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> \<Psi>)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S have "(p \<bullet> A\<^sub>R) \<sharp>* \<Psi>" by simp
+      moreover from \<open>A\<^sub>R \<sharp>* (p \<bullet> P)\<close> have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> p \<bullet> P)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with \<open>distinctPerm p\<close> have "(p \<bullet> A\<^sub>R) \<sharp>* P" by simp
+      moreover from \<open>A\<^sub>R \<sharp>* (p \<bullet> Q)\<close> have "(p \<bullet> A\<^sub>R) \<sharp>* (p \<bullet> p \<bullet> Q)" by(simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
+      with \<open>distinctPerm p\<close> have "(p \<bullet> A\<^sub>R) \<sharp>* Q" by simp
       ultimately have "\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R) \<rhd> P \<approx> Q" using A by blast
       hence "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> (p \<bullet> \<Psi>') \<rhd> P \<approx> Q" by(rule weakBisimE)
       moreover have "(\<Psi> \<otimes> (p \<bullet> \<Psi>\<^sub>R)) \<otimes> (p \<bullet> \<Psi>') \<simeq> (\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^sub>R)"
@@ -556,7 +556,7 @@ proof -
         by(rule statEqWeakBisim)
       hence "(p \<bullet> ((\<Psi> \<otimes> (p \<bullet> \<Psi>')) \<otimes> (p \<bullet> \<Psi>\<^sub>R))) \<rhd> (p \<bullet> P) \<approx> (p \<bullet> Q)"
         by(rule weakBisimClosed)
-      with `distinctPerm p` `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S show "(\<Psi> \<otimes> \<Psi>') \<otimes> \<Psi>\<^sub>R \<rhd> (p \<bullet> P) \<approx> (p \<bullet> Q)"
+      with \<open>distinctPerm p\<close> \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S show "(\<Psi> \<otimes> \<Psi>') \<otimes> \<Psi>\<^sub>R \<rhd> (p \<bullet> P) \<approx> (p \<bullet> Q)"
         by(simp add: eqvts)
     qed
     with PFrR QFrR PRAlpha QRAlpha show ?case by simp
@@ -578,7 +578,7 @@ lemma weakBisimParPres:
 proof -
   obtain A\<^sub>R \<Psi>\<^sub>R where "extractFrame R = \<langle>A\<^sub>R, \<Psi>\<^sub>R\<rangle>" and "A\<^sub>R \<sharp>* \<Psi>" and "A\<^sub>R \<sharp>* P" and "A\<^sub>R \<sharp>* Q"
     by(rule_tac C="(\<Psi>, P, Q)" in freshFrame) auto
-  moreover from `\<Psi> \<rhd> P \<approx> Q` have "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q" by(rule weakBisimE)
+  moreover from \<open>\<Psi> \<rhd> P \<approx> Q\<close> have "\<Psi> \<otimes> \<Psi>\<^sub>R \<rhd> P \<approx> Q" by(rule weakBisimE)
   ultimately show ?thesis by(rule_tac weakBisimParPresAux)
 qed
 

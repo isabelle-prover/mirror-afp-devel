@@ -108,7 +108,7 @@ proof -
       hence "P \<leadsto>\<guillemotleft>(?X \<union> weakBisim)\<guillemotright> Q" by(rule_tac Weak_Early_Step_Sim.monotonic) auto
       hence "P \<leadsto><(?X \<union> weakBisim)> Q" by(rule weakSimWeakEqSim)
     }
-    with `(P, Q) \<in> ?X` show ?case by auto
+    with \<open>(P, Q) \<in> ?X\<close> show ?case by auto
   next
     case(cSym P Q)
     thus ?case by(auto simp add: weakCongruence_def)

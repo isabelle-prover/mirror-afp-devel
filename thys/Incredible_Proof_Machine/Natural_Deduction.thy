@@ -19,7 +19,7 @@ of the given rules in @{theory Incredible_Proof_Machine.Abstract_Rules}.\<close>
 datatype 'rule NatRule = Axiom | NatRule 'rule | Cut
 
 
-text \<open>The following locale is still abstract in the set of rules (@{text nat_rule}), but implements
+text \<open>The following locale is still abstract in the set of rules (\<open>nat_rule\<close>), but implements
 the bookkeeping logic for assumptions, the @{term Axiom} rule and the @{term Cut} rule.\<close>
 
 locale ND_Rules_Inst =
@@ -40,7 +40,7 @@ begin
   text \<open>
   \<^item> An application of the @{term Axiom} rule is valid if the conclusion is among the assumptions.
   \<^item> An application of a @{term NatRule} is more complicated. This requires some natural number
-    @{text a} to rename local variables, and some instantiation @{text s}. It checks that
+    \<open>a\<close> to rename local variables, and some instantiation \<open>s\<close>. It checks that
      \<^item> none of the local variables occur in the context of the judgement.
      \<^item> none of the local variables occur in the instantiation.
     Together, this implements the usual freshness side-conditions.

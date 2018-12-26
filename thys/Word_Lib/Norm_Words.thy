@@ -16,7 +16,7 @@ begin
 
 text \<open>
   Normalise word numerals, including negative ones apart from @{term "-1"}, to the
-  interval @{text "[0..2^len_of 'a)"}. Only for concrete word lengths.
+  interval \<open>[0..2^len_of 'a)\<close>. Only for concrete word lengths.
 \<close>
 
 lemma neg_num_bintr:

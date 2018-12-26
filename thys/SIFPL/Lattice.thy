@@ -1,12 +1,12 @@
 (*File: Lattice.thy*)
 (*Authors: Lennart Beringer and Martin Hofmann, LMU Munich 2008*)
 theory Lattice imports Main begin
-section{*Lattices*}
+section\<open>Lattices\<close>
 
-text{*In preparation of the encoding of the type system of Hunt and
+text\<open>In preparation of the encoding of the type system of Hunt and
 Sands, we define some abstract type of lattices, together with the
 operations $\bot$, $\sqsubseteq$ and $\sqcup$, and some obvious
-axioms.*}
+axioms.\<close>
 
 typedecl L (*The lattice*)
 
@@ -22,5 +22,5 @@ where
   LAT5: "LUB p (LUB q r) = LUB (LUB p q) r" and
   LAT6: "LEQ x x" and
   LAT7: "p = LUB p p"
-text{*End of theory Lattice*}
+text\<open>End of theory Lattice\<close>
 end

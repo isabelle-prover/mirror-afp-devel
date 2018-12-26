@@ -1,10 +1,10 @@
-section {* Lift monad *}
+section \<open>Lift monad\<close>
 
 theory Lift_Monad
 imports Monad
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 tycondef 'a\<cdot>lifted = Lifted (lazy "'a")
 
@@ -24,7 +24,7 @@ apply simp
 apply (simp add: Lifted_def)
 done
 
-subsection {* Class instance proofs *}
+subsection \<open>Class instance proofs\<close>
 
 instance lifted :: "functor"
   by standard (induct_tac xs rule: lifted.induct, simp_all)
@@ -56,7 +56,7 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_lifted_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>lifted) = \<bottom>"

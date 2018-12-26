@@ -4,12 +4,12 @@
     Copyright   2010 Technische Universitaet Berlin
 *)
 
-section {* Data Space Assignments *}
+section \<open>Data Space Assignments\<close>
 theory Data
 imports DataSpace
 begin
 
-subsection {* Total data space assignments *}
+subsection \<open>Total data space assignments\<close>
 
 definition
   Data :: "['d list, 'd dataspace]
@@ -88,7 +88,7 @@ apply (unfold DataPart_def)
 apply auto
 done
 
-subsection {* Partial data space assignments *}
+subsection \<open>Partial data space assignments\<close>
 
 definition
   PData :: "['d option list, 'd dataspace] => bool" where
@@ -178,7 +178,7 @@ apply (unfold pdata_def)
 apply auto
 done
 
-subsubsection {* @{text "DefaultPData"} *}
+subsubsection \<open>\<open>DefaultPData\<close>\<close>
 
 lemma PData_DefaultPData [simp]:
    "PData (replicate (PartNum D) None) D"
@@ -207,7 +207,7 @@ apply (unfold pdata_def PData_def)
 apply auto
 done
 
-subsubsection {* @{text "Data2PData"} *}
+subsubsection \<open>\<open>Data2PData\<close>\<close>
 
 lemma PData_Data2PData [simp]:
   "PData (map Some (DataValue D)) (Data.DataSpace D)"
@@ -263,7 +263,7 @@ apply (unfold pdata_def PData_def)
 apply auto
 done
 
-subsubsection {* @{text "DataOverride"} *}
+subsubsection \<open>\<open>DataOverride\<close>\<close>
 
 lemma Data_DataOverride:
  "((PDataSpace P) = (Data.DataSpace Q)) \<Longrightarrow>
@@ -318,7 +318,7 @@ apply (rule data_DataOverride)
 apply auto
 done
 
-subsubsection {* @{text "OptionOverride"} *}
+subsubsection \<open>\<open>OptionOverride\<close>\<close>
 
 lemma DataValue_OptionOverride_nth:
  "\<lbrakk> ((PDataSpace P) = (DataSpace Q));

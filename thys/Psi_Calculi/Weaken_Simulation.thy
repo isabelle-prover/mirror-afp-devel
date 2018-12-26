@@ -45,33 +45,33 @@ lemma weakenSimWeakSim:
   shows "\<Psi> \<rhd> P \<leadsto><Rel'> Q"
 proof(induct rule: weakSimI2)
   case(cAct \<Psi>' \<alpha> Q')
-  from `(\<Psi>, P, Q) \<in> Rel` obtain P''''
+  from \<open>(\<Psi>, P, Q) \<in> Rel\<close> obtain P''''
     where PChain: "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P''''" 
       and QImpP'''': "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame P'''') \<Psi>"
       and "(\<Psi>, P'''', Q) \<in> Rel" using weakenStatImp_def
     by(metis cStatImp cSym)
     
-  from `(\<Psi>, P'''', Q) \<in> Rel` have "\<Psi> \<rhd> P'''' \<leadsto>\<^sub>w<Rel'> Q" by(rule cSim)
-  moreover from PChain `bn \<alpha> \<sharp>* P` have "bn \<alpha> \<sharp>* P''''" by(rule tauChainFreshChain)
+  from \<open>(\<Psi>, P'''', Q) \<in> Rel\<close> have "\<Psi> \<rhd> P'''' \<leadsto>\<^sub>w<Rel'> Q" by(rule cSim)
+  moreover from PChain \<open>bn \<alpha> \<sharp>* P\<close> have "bn \<alpha> \<sharp>* P''''" by(rule tauChainFreshChain)
   ultimately obtain P' where P''''Trans: "\<Psi> \<rhd> P'''' \<Longrightarrow>\<alpha> \<prec> P'" and "(\<Psi>, P', Q') \<in> Rel'"
-    using `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `bn \<alpha> \<sharp>* \<Psi>`
+    using \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>bn \<alpha> \<sharp>* \<Psi>\<close>
     by(unfold weakenSimulation_def, auto)
 
-  from P''''Trans `\<alpha> \<noteq> \<tau>` obtain P''' P'' where P''''Chain: "\<Psi> \<rhd> P'''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" and P'''Trans: "\<Psi> \<rhd> P''' \<longmapsto>\<alpha> \<prec> P''" and P''Chain: "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" 
+  from P''''Trans \<open>\<alpha> \<noteq> \<tau>\<close> obtain P''' P'' where P''''Chain: "\<Psi> \<rhd> P'''' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'''" and P'''Trans: "\<Psi> \<rhd> P''' \<longmapsto>\<alpha> \<prec> P''" and P''Chain: "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" 
     by(force simp add: weakenTransition_def)
   from P''''Chain QImpP'''' have "insertAssertion (extractFrame Q) \<Psi> \<hookrightarrow>\<^sub>F insertAssertion (extractFrame P''') \<Psi>"
     by(blast intro: statImpTauChainDerivative FrameStatImpTrans)
   with PChain P''''Chain have "\<Psi> : Q \<rhd> P \<Longrightarrow>\<alpha> \<prec> P''" using P'''Trans by(rule_tac weakTransitionI) auto
   moreover from P''Chain have "\<Psi> \<otimes> \<Psi>' \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(rule weakenTauChain) 
-  moreover from `(\<Psi>, P', Q') \<in> Rel'` have "(\<Psi> \<otimes> \<Psi>', P', Q') \<in> Rel'" by(rule cExt)
+  moreover from \<open>(\<Psi>, P', Q') \<in> Rel'\<close> have "(\<Psi> \<otimes> \<Psi>', P', Q') \<in> Rel'" by(rule cExt)
   ultimately show ?case by blast
 next
   case(cTau Q')
-  from `(\<Psi>, P, Q) \<in> Rel` have "\<Psi> \<rhd> P \<leadsto>\<^sub>w<Rel'> Q" by(rule cSim)
-  then obtain P' where "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'" and "(\<Psi>, P', Q') \<in> Rel'" using `\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'`
+  from \<open>(\<Psi>, P, Q) \<in> Rel\<close> have "\<Psi> \<rhd> P \<leadsto>\<^sub>w<Rel'> Q" by(rule cSim)
+  then obtain P' where "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'" and "(\<Psi>, P', Q') \<in> Rel'" using \<open>\<Psi> \<rhd> Q \<longmapsto>\<tau> \<prec> Q'\<close>
     by(unfold weakenSimulation_def, fastforce)
-  from `\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'` have "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(auto simp add: weakenTransition_def dest: tauActTauChain)
-  with `(\<Psi>, P', Q') \<in> Rel'` show ?case by blast
+  from \<open>\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'\<close> have "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(auto simp add: weakenTransition_def dest: tauActTauChain)
+  with \<open>(\<Psi>, P', Q') \<in> Rel'\<close> show ?case by blast
 qed
 
 lemma weakSimWeakenSim:
@@ -89,26 +89,26 @@ proof(induct rule: weakenSimI)
   show ?case
   proof(cases "\<alpha>=\<tau>")
     case True
-    from `\<Psi> \<rhd> P \<leadsto><Rel> Q` `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha> = \<tau>` 
+    from \<open>\<Psi> \<rhd> P \<leadsto><Rel> Q\<close> \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>\<alpha> = \<tau>\<close> 
     obtain P' where "\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" and "(\<Psi>, P', Q') \<in> Rel"
       by(blast dest: weakSimE)
-    from `\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'` have "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'"
+    from \<open>\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'\<close> have "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'"
       by(induct rule: tauChainInduct) (auto simp add: weakenTransition_def)
-    thus ?thesis using `(\<Psi>, P', Q') \<in> Rel` `\<alpha> = \<tau>` by blast
+    thus ?thesis using \<open>(\<Psi>, P', Q') \<in> Rel\<close> \<open>\<alpha> = \<tau>\<close> by blast
   next
     case False
-    from `\<Psi> \<rhd> P \<leadsto><Rel> Q` `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `\<alpha> \<noteq> \<tau>`
+    from \<open>\<Psi> \<rhd> P \<leadsto><Rel> Q\<close> \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>bn \<alpha> \<sharp>* \<Psi>\<close> \<open>bn \<alpha> \<sharp>* P\<close> \<open>\<alpha> \<noteq> \<tau>\<close>
     obtain P'' P' where PTrans: "\<Psi> : Q \<rhd> P \<Longrightarrow>\<alpha> \<prec> P''" and P''Chain: "\<Psi> \<otimes> \<one> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" and "(\<Psi> \<otimes> \<one>, P', Q') \<in> Rel"
       by(blast dest: weakSimE)
     from PTrans have "\<Psi> \<rhd> P \<Longrightarrow>\<alpha> \<prec> P''" by(auto simp add: weakTransition_def weakenTransition_def)
     moreover from P''Chain have "\<Psi> \<rhd> P'' \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'" by(metis tauChainStatEq Identity)
-    moreover from `(\<Psi> \<otimes> \<one>, P', Q') \<in> Rel` have "(\<Psi>, P', Q') \<in> Rel" by(metis cStatEq Identity)
+    moreover from \<open>(\<Psi> \<otimes> \<one>, P', Q') \<in> Rel\<close> have "(\<Psi>, P', Q') \<in> Rel" by(metis cStatEq Identity)
     ultimately show ?thesis
     proof(induct rule: weakenTransitionCases)
       case cBase 
-      from `\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'` have "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'"
+      from \<open>\<Psi> \<rhd> P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P'\<close> have "\<Psi> \<rhd> P \<Longrightarrow>\<tau> \<prec> P'"
         by(induct rule: tauChainInduct) (auto simp add: weakenTransition_def)
-      with `(\<Psi>, P', Q') \<in> Rel` show ?case by blast
+      with \<open>(\<Psi>, P', Q') \<in> Rel\<close> show ?case by blast
     next
       case(cStep P'''' P''')
       thus ?case 

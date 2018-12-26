@@ -2,7 +2,7 @@
     Author:     Denis Lohner, Sebastian Ullrich
 *)
 
-subsection {* Code Equations for SSA Construction *}
+subsection \<open>Code Equations for SSA Construction\<close>
 
 theory Construct_SSA_code imports
   SSA_CFG_code
@@ -195,13 +195,13 @@ begin
       assume asm: "g \<turnstile> n'-ns\<rightarrow>m" "distinct ns" "length (predecessors g n') \<noteq> 1" "n \<in> set ns"
       then obtain ns\<^sub>1 ns\<^sub>2 where split: "g \<turnstile> n'-ns\<^sub>1\<rightarrow>n" "g \<turnstile> n-ns\<^sub>2\<rightarrow>m" "ns = butlast ns\<^sub>1 @ ns\<^sub>2"
         by - (rule path2_split_ex)
-      with `distinct ns` have "m \<notin> set (butlast ns\<^sub>1)"
+      with \<open>distinct ns\<close> have "m \<notin> set (butlast ns\<^sub>1)"
         by (auto dest: path2_last_in_ns)
       from split(1,2) have False
       apply-
       apply (frule path2_unsnoc)
         apply (erule path2_nontrivial)
-        using assms asm(3) `m \<notin> set (butlast ns\<^sub>1)`
+        using assms asm(3) \<open>m \<notin> set (butlast ns\<^sub>1)\<close>
         apply (auto dest: path2_not_Nil)
       done
     }

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Matrices as nested IArrays*}
+section\<open>Matrices as nested IArrays\<close>
 
 theory Matrix_To_IArray_QR
 imports 
@@ -13,13 +13,13 @@ imports
   IArray_Addenda_QR
 begin
 
-text{*The file is similar to the @{text "Matrix_To_IArray.thy"} one, presented in the Gauss-Jordan
+text\<open>The file is similar to the \<open>Matrix_To_IArray.thy\<close> one, presented in the Gauss-Jordan
 algorithm. But now, some proofs have changed slightly because of the new instantiations presented
-in the file @{text "IArray_Addenda_QR.thy"}.*}
+in the file \<open>IArray_Addenda_QR.thy\<close>.\<close>
 
-subsection{*Isomorphism between matrices implemented by vecs and matrices implemented by iarrays*}
+subsection\<open>Isomorphism between matrices implemented by vecs and matrices implemented by iarrays\<close>
 
-subsubsection{*Isomorphism between vec and iarray*}
+subsubsection\<open>Isomorphism between vec and iarray\<close>
 
 definition vec_to_iarray :: "'a^'n::{mod_type} \<Rightarrow> 'a iarray"
   where "vec_to_iarray A = IArray.of_fun (\<lambda>i. A $ (from_nat i)) (CARD('n))"
@@ -91,7 +91,7 @@ lemma length_vec_to_iarray:
   shows "IArray.length (vec_to_iarray xa) = CARD('n)"
   unfolding vec_to_iarray_def by simp
 
-subsubsection{*Isomorphism between matrix and nested iarrays*}
+subsubsection\<open>Isomorphism between matrix and nested iarrays\<close>
 
 definition matrix_to_iarray :: "'a^'n::{mod_type}^'m::{mod_type} => 'a iarray iarray"
   where "matrix_to_iarray A = IArray (map (vec_to_iarray \<circ> (($) A) \<circ> (from_nat::nat=>'m)) [0..<CARD('m)])"
@@ -147,7 +147,7 @@ lemma iarray_to_matrix_matrix_to_iarray:
   by (vector, auto, metis IArray.sub_def vec_to_iarray_nth')
 
 
-subsection{*Definition of operations over matrices implemented by iarrays*}
+subsection\<open>Definition of operations over matrices implemented by iarrays\<close>
 
 definition mult_iarray :: "'a::{times} iarray => 'a => 'a iarray"
   where "mult_iarray A q = IArray.of_fun (\<lambda>n. q * A!!n) (IArray.length A)"
@@ -188,7 +188,7 @@ definition mat_iarray :: "'a::{zero} => nat => 'a iarray iarray"
 definition is_zero_iarray :: "'a::{zero} iarray \<Rightarrow> bool"
   where "is_zero_iarray A = IArray_Addenda_QR.all (\<lambda>i. A !! i = 0) (IArray[0..<IArray.length A])"
 
-subsubsection{*Properties of previous definitions*}
+subsubsection\<open>Properties of previous definitions\<close>
 lemma is_zero_iarray_eq_iff:
   fixes A::"'a::{zero}^'n::{mod_type}"
   shows "(A = 0) = (is_zero_iarray (vec_to_iarray A))"
@@ -280,7 +280,7 @@ lemma vec_to_iarray_columns: "vec_to_iarray` (columns A) = columns_iarray (matri
   by (unfold image_def, auto, metis from_nat_not_eq vec_to_iarray_column)
 
 
-subsection{*Definition of elementary operations*}
+subsection\<open>Definition of elementary operations\<close>
 
 definition interchange_rows_iarray :: "'a iarray iarray => nat => nat => 'a iarray iarray"
   where "interchange_rows_iarray A a b = IArray.of_fun (\<lambda>n. if n=a then A!!b else if n=b then A!!a else A!!n) (IArray.length A)"
@@ -300,7 +300,7 @@ definition mult_column_iarray :: "'a::{times} iarray iarray => nat => 'a => 'a i
 definition column_add_iarray :: "'a::{plus, times} iarray iarray => nat => nat => 'a => 'a iarray iarray"
   where "column_add_iarray A n m q = tabulate2 (nrows_iarray A) (ncols_iarray A) (\<lambda>i j. if j = n then A !! i !! n + A !! i !! m * q else A !! i !! j)"
 
-subsubsection{*Code generator*}
+subsubsection\<open>Code generator\<close>
 
 lemma vec_to_iarray_plus[code_unfold]: "vec_to_iarray (a + b) =  (vec_to_iarray a) + (vec_to_iarray b)"
   unfolding vec_to_iarray_def

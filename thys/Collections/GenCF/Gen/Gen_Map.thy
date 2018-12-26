@@ -1,4 +1,4 @@
-section {* \isaheader{Generic Map Algorithms} *}
+section \<open>\isaheader{Generic Map Algorithms}\<close>
 theory Gen_Map
 imports "../Intf/Intf_Map" "../../Iterator/Iterator"
 begin
@@ -338,7 +338,7 @@ context begin interpretation autoref_syn .
       \<in> \<langle>Rk\<times>\<^sub>rRv\<rangle>nres_rel"
       unfolding gen_pick_def
       apply (parametricity add: the_paramR)
-      using `?fld = Some (k,v)`
+      using \<open>?fld = Some (k,v)\<close>
       by simp
     ultimately show ?thesis
       unfolding autoref_tag_defs

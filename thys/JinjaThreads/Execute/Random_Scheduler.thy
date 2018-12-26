@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Random scheduler *}
+section \<open>Random scheduler\<close>
 
 theory Random_Scheduler
 imports
@@ -197,7 +197,7 @@ qed
 
 end
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 lemmas [code] =
   random_scheduler_base.next_thread_def

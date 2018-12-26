@@ -10,7 +10,7 @@ imports
   Stuff
 begin
 
-section {* Digraphs *}
+section \<open>Digraphs\<close>
 
 record ('a,'b) pre_digraph =
   verts :: "'a set"
@@ -41,11 +41,11 @@ definition arcs_ends :: "('a,'b) pre_digraph \<Rightarrow> ('a \<times> 'a) set"
 definition symmetric :: "('a,'b) pre_digraph \<Rightarrow> bool" where
   "symmetric G \<equiv> sym (arcs_ends G)"
 
-text {*
+text \<open>
   Matches "pseudo digraphs" from \cite{bangjensen2009digraphs}, except for
   allowing the null graph. For a discussion of that topic,
   see also \cite{harary1974nullgraph}.
-*}
+\<close>
 locale fin_digraph = wf_digraph +
   assumes finite_verts[simp]: "finite (verts G)"
     and finite_arcs[simp]: "finite (arcs G)"
@@ -62,12 +62,12 @@ locale sym_digraph = wf_digraph +
 
 locale digraph = fin_digraph + loopfree_digraph + nomulti_digraph
 
-text {*
+text \<open>
   We model graphs as symmetric digraphs. This is fine for many purposes,
   but not for all. For example, the path $a,b,a$ is considered to be a cycle
   in a digraph (and hence in a symmetric digraph), but not in an undirected
   graph.
- *}
+\<close>
 locale pseudo_graph = fin_digraph + sym_digraph
 
 locale graph = digraph + pseudo_graph
@@ -116,7 +116,7 @@ lemma (in nomulti_digraph) inj_on_arc_to_ends:
 
 
 
-subsection {* Reachability *}
+subsection \<open>Reachability\<close>
 
 abbreviation dominates :: "('a,'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<rightarrow>\<index> _" [100,100] 40) where
   "dominates G u v \<equiv> (u,v) \<in> arcs_ends G"
@@ -259,7 +259,7 @@ lemma (in sym_digraph) symmetric_reachable':
 
 
 
-subsection {* Degrees of vertices *}
+subsection \<open>Degrees of vertices\<close>
 
 definition in_arcs :: "('a, 'b) pre_digraph \<Rightarrow> 'a \<Rightarrow> 'b set" where
   "in_arcs G v \<equiv> {e \<in> arcs G. head G e = v}"
@@ -310,7 +310,7 @@ lemma in_arcs_in_arcs: "x \<in> in_arcs G u \<Longrightarrow> x \<in> arcs G"
 
 
 
-subsection {* Graph operations *}
+subsection \<open>Graph operations\<close>
 
 context pre_digraph begin
 

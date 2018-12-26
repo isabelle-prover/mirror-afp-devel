@@ -28,13 +28,13 @@ of the session key.
 
 We establish three refinements for this model, namely that this model refines
 \begin{enumerate}
-\item the authenticated key distribution model @{text "m1_keydist_iirn"}, 
+\item the authenticated key distribution model \<open>m1_keydist_iirn\<close>, 
 
-\item the injective agreement model @{text "a0i"}, instantiated such that 
+\item the injective agreement model \<open>a0i\<close>, instantiated such that 
 the responder agrees with the initiator on the session key, its timestamp
 and the initiator's authenticator timestamp.
 
-\item the injective agreement model @{text "a0i"}, instantiated such that 
+\item the injective agreement model \<open>a0i\<close>, instantiated such that 
 the initiator agrees with the responder on the session key, its timestamp
 and the initiator's authenticator timestamp.
 \end{enumerate}
@@ -328,14 +328,14 @@ by (rule inv_rule_basic) (auto del: subsetI)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "m1a"}\<close>
+subsection \<open>Refinement of \<open>m1a\<close>\<close>
 (******************************************************************************)
 
 subsubsection \<open>Simulation relation\<close>
 (******************************************************************************)
 
 text \<open>The abstraction removes all but the first freshness
-identifiers (corresponding to @{text "Kab"} and @{text "Ts"}) from the 
+identifiers (corresponding to \<open>Kab\<close> and \<open>Ts\<close>) from the 
 initiator and responder frames and leaves the server's freshness ids untouched.
 \<close>
 
@@ -541,7 +541,7 @@ done
 subsubsection \<open>inv (inherited): Initiator auth server.\<close>
 (*invh*************************************************************************)
 
-text \<open>Simplified version of invariant @{text "m1a_inv2i_serv"}.\<close>
+text \<open>Simplified version of invariant \<open>m1a_inv2i_serv\<close>.\<close>
 
 definition 
   m1_inv2i_serv :: "'x m1r_pred"
@@ -604,7 +604,7 @@ done
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0i"} for responder/initiator\<close>
+subsection \<open>Refinement of \<open>a0i\<close> for responder/initiator\<close>
 (******************************************************************************)
 
 text \<open>The responder injectively agrees with the initiator on @{term "Kab"},
@@ -965,11 +965,11 @@ by (rule external_from_internal_invariant)
 
 
 (******************************************************************************)
-subsection \<open>Refinement of @{text "a0i"} for initiator/responder\<close>
+subsection \<open>Refinement of \<open>a0i\<close> for initiator/responder\<close>
 (******************************************************************************)
 
-text \<open>The initiator injectively agrees with the responder on @{text "Kab"},
-@{text "Ts"}, and @{text "Ta"}.\<close>
+text \<open>The initiator injectively agrees with the responder on \<open>Kab\<close>,
+\<open>Ts\<close>, and \<open>Ta\<close>.\<close>
 
 
 subsubsection \<open>Simulation relation\<close>

@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* Type rules for the intermediate language *}
+section \<open>Type rules for the intermediate language\<close>
 
 theory J1WellType imports
   J1State
@@ -244,10 +244,10 @@ proof(induct n\<equiv>"length Env" Ts body arbitrary: Env rule: blocks1.induct)
   case 1 thus ?case by simp
 next
   case (2 T' Ts e)
-  note IH = `\<And>Env'. \<lbrakk>Suc (length Env) = length Env'; P,Env' @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> types P \<rbrakk>
-              \<Longrightarrow> P,Env' \<turnstile>1 blocks1 (length Env') Ts e :: T`
-  from `set (T' # Ts) \<subseteq> types P` have "set Ts \<subseteq> types P" "is_type P T'" by(auto)
-  moreover from `P,Env @ T' # Ts \<turnstile>1 e :: T` have "P,(Env @ [T']) @ Ts \<turnstile>1 e :: T" by simp
+  note IH = \<open>\<And>Env'. \<lbrakk>Suc (length Env) = length Env'; P,Env' @ Ts \<turnstile>1 e :: T; set Ts \<subseteq> types P \<rbrakk>
+              \<Longrightarrow> P,Env' \<turnstile>1 blocks1 (length Env') Ts e :: T\<close>
+  from \<open>set (T' # Ts) \<subseteq> types P\<close> have "set Ts \<subseteq> types P" "is_type P T'" by(auto)
+  moreover from \<open>P,Env @ T' # Ts \<turnstile>1 e :: T\<close> have "P,(Env @ [T']) @ Ts \<turnstile>1 e :: T" by simp
   note IH[OF _ this]
   ultimately show ?case by auto
 qed
@@ -256,11 +256,11 @@ lemma WT1_fv: "\<lbrakk> P,E \<turnstile>1 e :: T; \<B> e (length E); syncvars e
   and WTs1_fvs: "\<lbrakk> P,E \<turnstile>1 es [::] Ts; \<B>s es (length E); syncvarss es \<rbrakk> \<Longrightarrow> fvs es \<subseteq> {0..<length E}"
 proof(induct rule: WT1_WTs1.inducts)
   case (WT1Synchronized E e1 T e2 T' V)
-  note IH1 = `\<lbrakk>\<B> e1 (length E); syncvars e1\<rbrakk> \<Longrightarrow> fv e1 \<subseteq> {0..<length E}`
-  note IH2 = `\<lbrakk>\<B> e2 (length (E @ [Class Object])); syncvars e2\<rbrakk> \<Longrightarrow> fv e2 \<subseteq> {0..<length (E @ [Class Object])}`
-  from `\<B> (sync\<^bsub>V\<^esub> (e1) e2) (length E)` have [simp]: "V = length E"
+  note IH1 = \<open>\<lbrakk>\<B> e1 (length E); syncvars e1\<rbrakk> \<Longrightarrow> fv e1 \<subseteq> {0..<length E}\<close>
+  note IH2 = \<open>\<lbrakk>\<B> e2 (length (E @ [Class Object])); syncvars e2\<rbrakk> \<Longrightarrow> fv e2 \<subseteq> {0..<length (E @ [Class Object])}\<close>
+  from \<open>\<B> (sync\<^bsub>V\<^esub> (e1) e2) (length E)\<close> have [simp]: "V = length E"
     and B1: "\<B> e1 (length E)" and B2: "\<B> e2 (Suc (length E))" by auto
-  from `syncvars (sync\<^bsub>V\<^esub> (e1) e2)` have sync1: "syncvars e1" and sync2: "syncvars e2" and V: "V \<notin> fv e2" by auto
+  from \<open>syncvars (sync\<^bsub>V\<^esub> (e1) e2)\<close> have sync1: "syncvars e1" and sync2: "syncvars e2" and V: "V \<notin> fv e2" by auto
   have "fv e2 \<subseteq> {0..<length E}"
   proof
     fix x

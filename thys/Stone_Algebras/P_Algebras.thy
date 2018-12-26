@@ -3,9 +3,9 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Pseudocomplemented Algebras *}
+section \<open>Pseudocomplemented Algebras\<close>
 
-text {*
+text \<open>
 This theory expands lattices with a pseudocomplement operation.
 In particular, we consider the following algebraic structures:
 \begin{itemize}
@@ -20,7 +20,7 @@ In particular, we consider the following algebraic structures:
 \item Boolean algebras
 \end{itemize}
 Most of these structures and many results in this theory are discussed in \cite{BalbesDwinger1974,Birkhoff1967,Blyth2005,Curry1977,Graetzer1971,Maddux1996}.
-*}
+\<close>
 
 theory P_Algebras
 
@@ -28,25 +28,25 @@ imports Lattice_Basics
 
 begin
 
-subsection {* P-Algebras *}
+subsection \<open>P-Algebras\<close>
 
-text {*
+text \<open>
 In this section we add a pseudocomplement operation to lattices and to distributive lattices.
-*}
+\<close>
 
-subsubsection {* Pseudocomplemented Lattices *}
+subsubsection \<open>Pseudocomplemented Lattices\<close>
 
-text {*
-The pseudocomplement of an element @{text y} is the greatest element whose meet with @{text y} is the least element of the lattice.
-*}
+text \<open>
+The pseudocomplement of an element \<open>y\<close> is the greatest element whose meet with \<open>y\<close> is the least element of the lattice.
+\<close>
 
 class p_algebra = bounded_lattice + uminus +
   assumes pseudo_complement: "x \<sqinter> y = bot \<longleftrightarrow> x \<le> -y"
 begin
 
-text {*
+text \<open>
 Regular elements and dense elements are frequently used in pseudocomplemented algebras.
-*}
+\<close>
 
 abbreviation "regular x \<equiv> x = --x"
 abbreviation "dense x \<equiv> -x = bot"
@@ -65,9 +65,9 @@ lemma p_top [simp]:
   "-top = bot"
   by (metis eq_refl inf_top.comm_neutral pseudo_complement)
 
-text {*
+text \<open>
 The pseudocomplement satisfies the following half of the requirements of a complement.
-*}
+\<close>
 
 lemma inf_p [simp]:
   "x \<sqinter> -x = bot"
@@ -81,9 +81,9 @@ lemma pp_inf_p:
   "--x \<sqinter> -x = bot"
   by simp
 
-text {*
+text \<open>
 The double complement is a closure operation.
-*}
+\<close>
 
 lemma pp_increasing:
   "x \<le> --x"
@@ -133,9 +133,9 @@ lemma pp_isotone_inf:
   "--(x \<sqinter> y) \<le> --x"
   by (simp add: p_antitone)
 
-text {*
+text \<open>
 One of De Morgan's laws holds in pseudocomplemented lattices.
-*}
+\<close>
 
 lemma p_dist_sup [simp]:
   "-(x \<squnion> y) = -x \<sqinter> -y"
@@ -175,10 +175,10 @@ lemma pp_inf_bot_iff:
   "x \<sqinter> y = bot \<longleftrightarrow> --x \<sqinter> y = bot"
   by (simp add: pseudo_complement_pp)
 
-text {*
+text \<open>
 Weak forms of the shunting property hold.
 Most require a pseudocomplemented element on the right-hand side.
-*}
+\<close>
 
 lemma p_shunting_swap:
   "x \<sqinter> y \<le> -z \<longleftrightarrow> x \<sqinter> z \<le> -y"
@@ -228,9 +228,9 @@ lemma inf_import_p [simp]:
   using p_shunting_swap apply fastforce
   using inf.sup_right_isotone p_antitone by auto
 
-text {*
+text \<open>
 Pseudocomplements are unique.
-*}
+\<close>
 
 lemma p_unique:
   "(\<forall>x . x \<sqinter> y = bot \<longleftrightarrow> x \<le> z) \<Longrightarrow> z = -y"
@@ -310,9 +310,9 @@ lemma selection_closed_id:
   "selection x x"
   using inf.le_iff_sup pp_increasing by auto
 
-text {*
+text \<open>
 Conjugates are usually studied for Boolean algebras, however, some of their properties generalise to pseudocomplemented algebras.
-*}
+\<close>
 
 lemma conjugate_unique_p:
   assumes "conjugate f g"
@@ -455,9 +455,9 @@ lemma complemented_regular: "complemented x \<longrightarrow> regular x" nitpick
 
 end
 
-text {*
+text \<open>
 The following class gives equational axioms for the pseudocomplement operation.
-*}
+\<close>
 
 class p_algebra_eq = bounded_lattice + uminus +
   assumes p_bot_eq: "-bot = top"
@@ -477,11 +477,11 @@ subclass p_algebra
 
 end
 
-subsubsection {* Pseudocomplemented Distributive Lattices *}
+subsubsection \<open>Pseudocomplemented Distributive Lattices\<close>
 
-text {*
+text \<open>
 We obtain further properties if we assume that the lattice operations are distributive.
-*}
+\<close>
 
 class pd_algebra = p_algebra + bounded_distrib_lattice
 begin
@@ -555,20 +555,20 @@ lemma stone [simp]: "-x \<squnion> --x = top" nitpick [expect=genuine] oops
 
 end
 
-subsection {* Stone Algebras *}
+subsection \<open>Stone Algebras\<close>
 
-text {*
+text \<open>
 A Stone algebra is a distributive lattice with a pseudocomplement that satisfies the following equation.
 We thus obtain the other half of the requirements of a complement at least for the regular elements.
-*}
+\<close>
 
 class stone_algebra = pd_algebra +
   assumes stone [simp]: "-x \<squnion> --x = top"
 begin
 
-text {*
+text \<open>
 As a consequence, we obtain both De Morgan's laws for all elements.
-*}
+\<close>
 
 lemma p_dist_inf [simp]:
   "-(x \<sqinter> y) = -x \<squnion> -y"
@@ -598,9 +598,9 @@ lemma regular_closed_sup:
   "regular x \<Longrightarrow> regular y \<Longrightarrow> regular (x \<squnion> y)"
   by simp
 
-text {*
+text \<open>
 The regular elements are precisely the ones having a complement.
-*}
+\<close>
 
 lemma regular_complemented_iff:
   "regular x \<longleftrightarrow> complemented x"
@@ -657,9 +657,9 @@ lemma shunting_p:
   "x \<sqinter> y \<le> -z \<longleftrightarrow> x \<le> -z \<squnion> -y"
   by (metis inf.assoc p_dist_inf p_shunting_swap pseudo_complement)
 
-text {*
-The following weak shunting property is interesting as it does not require the element @{text z} on the right-hand side to be regular.
-*}
+text \<open>
+The following weak shunting property is interesting as it does not require the element \<open>z\<close> on the right-hand side to be regular.
+\<close>
 
 lemma shunting_var_p:
   "x \<sqinter> -y \<le> z \<longleftrightarrow> x \<le> z \<squnion> --y"
@@ -777,10 +777,10 @@ lemma selection_closed_pp: "selection s x \<longrightarrow> selection (--s) x" n
 
 end
 
-text {*
+text \<open>
 Every bounded linear order can be expanded to a Stone algebra.
-The pseudocomplement takes @{text bot} to the @{text top} and every other element to @{text bot}.
-*}
+The pseudocomplement takes \<open>bot\<close> to the \<open>top\<close> and every other element to \<open>bot\<close>.
+\<close>
 
 class linorder_stone_algebra_expansion = linorder_lattice_expansion + uminus +
   assumes uminus_def [simp]: "-x = (if x = bot then top else bot)"
@@ -790,10 +790,10 @@ subclass stone_algebra
   apply unfold_locales
   using bot_unique min_def top_le by auto
 
-text {*
+text \<open>
 The regular elements are the least and greatest elements.
 All elements except the least element are dense.
-*}
+\<close>
 
 lemma regular_bot_top:
   "regular x \<longleftrightarrow> x = bot \<or> x = top"
@@ -805,20 +805,20 @@ lemma not_bot_dense:
 
 end
 
-subsection {* Heyting Algebras *}
+subsection \<open>Heyting Algebras\<close>
 
-text {*
+text \<open>
 In this section we add a relative pseudocomplement operation to semilattices and to lattices.
-*}
+\<close>
 
-subsubsection {* Heyting Semilattices *}
+subsubsection \<open>Heyting Semilattices\<close>
 
-text {*
-The pseudocomplement of an element @{text y} relative to an element @{text z} is the least element whose meet with @{text y} is below @{text z}.
+text \<open>
+The pseudocomplement of an element \<open>y\<close> relative to an element \<open>z\<close> is the least element whose meet with \<open>y\<close> is below \<open>z\<close>.
 This can be stated as a Galois connection.
-Specialising @{text "z = bot"} gives (non-relative) pseudocomplements.
+Specialising \<open>z = bot\<close> gives (non-relative) pseudocomplements.
 Many properties can already be shown if the underlying structure is just a semilattice.
-*}
+\<close>
 
 class implies =
   fixes implies :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<leadsto>" 65)
@@ -952,9 +952,9 @@ lemma implies_itself_same:
 
 end
 
-text {*
+text \<open>
 The following class gives equational axioms for the relative pseudocomplement operation (inequalities can be written as equations).
-*}
+\<close>
 
 class heyting_semilattice_eq = semilattice_inf + implies +
   assumes implies_mp_below: "x \<sqinter> (x \<leadsto> y) \<le> y"
@@ -970,9 +970,9 @@ subclass heyting_semilattice
 
 end
 
-text {*
+text \<open>
 The following class allows us to explicitly give the pseudocomplement of an element relative to itself.
-*}
+\<close>
 
 class bounded_heyting_semilattice = bounded_semilattice_inf_top + heyting_semilattice
 begin
@@ -995,12 +995,12 @@ lemma top_implies [simp]:
 
 end
 
-subsubsection {* Heyting Lattices *}
+subsubsection \<open>Heyting Lattices\<close>
 
-text {*
+text \<open>
 We obtain further properties if the underlying structure is a lattice.
 In particular, the lattice operations are automatically distributive in this case.
-*}
+\<close>
 
 class heyting_lattice = lattice + heyting_semilattice
 begin
@@ -1086,12 +1086,12 @@ lemma implies_bot [simp]:
 
 end
 
-subsubsection {* Heyting Algebras *}
+subsubsection \<open>Heyting Algebras\<close>
 
-text {*
+text \<open>
 The pseudocomplement operation can be defined in Heyting algebras, but it is typically not part of their signature.
-We add the definition as an axiom so that we can use the class hierarchy, for example, to inherit results from the class @{text pd_algebra}.
-*}
+We add the definition as an axiom so that we can use the class hierarchy, for example, to inherit results from the class \<open>pd_algebra\<close>.
+\<close>
 
 class heyting_algebra = bounded_heyting_lattice + uminus +
   assumes uminus_eq: "-x = x \<leadsto> bot"
@@ -1131,9 +1131,9 @@ lemma stone: "-x \<squnion> --x = top" nitpick [expect=genuine] oops
 
 end
 
-text {*
+text \<open>
 The following class gives equational axioms for Heyting algebras.
-*}
+\<close>
 
 class heyting_algebra_eq = bounded_lattice + implies + uminus +
   assumes implies_mp_eq: "x \<sqinter> (x \<leadsto> y) = x \<sqinter> y"
@@ -1151,9 +1151,9 @@ subclass heyting_algebra
 
 end
 
-text {*
+text \<open>
 A relative pseudocomplement is not enough to obtain the Stone equation, so we add it in the following class.
-*}
+\<close>
 
 class heyting_stone_algebra = heyting_algebra +
   assumes heyting_stone: "-x \<squnion> --x = top"
@@ -1168,13 +1168,13 @@ lemma pre_linear: "(x \<leadsto> y) \<squnion> (y \<leadsto> x) = top" nitpick [
 
 end
 
-subsubsection {* Brouwer Algebras *}
+subsubsection \<open>Brouwer Algebras\<close>
 
-text {*
+text \<open>
 Brouwer algebras are dual to Heyting algebras.
-The dual pseudocomplement of an element @{text y} relative to an element @{text x} is the least element whose join with @{text y} is above @{text x}.
+The dual pseudocomplement of an element \<open>y\<close> relative to an element \<open>x\<close> is the least element whose join with \<open>y\<close> is above \<open>x\<close>.
 We can now use the binary operation provided by Boolean algebras in Isabelle/HOL because it is compatible with dual relative pseudocomplements (not relative pseudocomplements).
-*}
+\<close>
 
 class brouwer_algebra = bounded_lattice + minus + uminus +
   assumes minus_galois: "x \<le> y \<squnion> z \<longleftrightarrow> x - y \<le> z"
@@ -1204,19 +1204,19 @@ lemma inf_sup_minus:
 
 end
 
-subsection {* Boolean Algebras *}
+subsection \<open>Boolean Algebras\<close>
 
-text {*
+text \<open>
 This section integrates Boolean algebras in the above hierarchy.
 In particular, we strengthen several results shown above.
-*}
+\<close>
 
 context boolean_algebra
 begin
 
-text {*
+text \<open>
 Every Boolean algebra is a Stone algebra, a Heyting algebra and a Brouwer algebra.
-*}
+\<close>
 
 subclass stone_algebra
   apply unfold_locales

@@ -4,11 +4,11 @@ begin
 
 declare if_split_asm [split] \<comment> \<open>perform default perform case splitting on conditionals\<close>
 
-section {* Heard-Of Algorithms *}
+section \<open>Heard-Of Algorithms\<close>
 
-subsection {* The Consensus Problem *}
+subsection \<open>The Consensus Problem\<close>
 
-text {*
+text \<open>
   We are interested in the verification of fault-tolerant distributed algorithms.
   The Consensus problem is paradigmatic in this area. Stated
   informally, it assumes that all processes participating in the algorithm
@@ -16,19 +16,19 @@ text {*
   It is required that every process eventually decides, and that all processes
   must decide the same value.
 
-  More formally, we represent runs of algorithms as @{text \<omega>}-sequences of
+  More formally, we represent runs of algorithms as \<open>\<omega>\<close>-sequences of
   configurations (vectors of process states). Hence, a run is modeled as
-  a function of type @{text "nat \<Rightarrow> 'proc \<Rightarrow> 'pst"} where type variables 
-  @{text "'proc"} and @{text "'pst"} represent types of processes and process
+  a function of type \<open>nat \<Rightarrow> 'proc \<Rightarrow> 'pst\<close> where type variables 
+  \<open>'proc\<close> and \<open>'pst\<close> represent types of processes and process
   states, respectively. The Consensus property is expressed with respect
-  to a collection @{text "vals"} of initially proposed values (one per process) 
-  and an observer function @{text "dec::'pst \<Rightarrow> val option"} that retrieves the decision
+  to a collection \<open>vals\<close> of initially proposed values (one per process) 
+  and an observer function \<open>dec::'pst \<Rightarrow> val option\<close> that retrieves the decision
   (if any) from a process state. The Consensus problem is stated as the conjunction
   of the following properties:
   \begin{description}
   \item[Integrity.] Processes can only decide initially proposed values.
-  \item[Agreement.] Whenever processes @{text p} and @{text q} decide,
-    their decision values must be the same. (In particular, process @{text p}
+  \item[Agreement.] Whenever processes \<open>p\<close> and \<open>q\<close> decide,
+    their decision values must be the same. (In particular, process \<open>p\<close>
     may never change the value it decides, which is referred to as Irrevocability.)
   \item[Termination.] Every process decides eventually.
   \end{description}
@@ -37,7 +37,7 @@ text {*
   nothing can be required of a faulty process.
   The Heard-Of model does not attribute faults to processes, and therefore the
   above formulation is appropriate in this framework.
-*}
+\<close>
 
 type_synonym
   ('proc,'pst) run = "nat \<Rightarrow> 'proc \<Rightarrow> 'pst"
@@ -51,13 +51,13 @@ where
          \<longrightarrow> v = w)
    \<and> (\<forall>p. \<exists>n. dec (rho n p) \<noteq> None)"
 
-text {*
+text \<open>
   A variant of the Consensus problem replaces the Integrity requirement by
   \begin{description}
-  \item[Validity.] If all processes initially propose the same value @{text "v"}
-    then every process may only decide @{text "v"}.
+  \item[Validity.] If all processes initially propose the same value \<open>v\<close>
+    then every process may only decide \<open>v\<close>.
   \end{description}
-*}
+\<close>
 
 definition weak_consensus where
   "weak_consensus vals dec rho \<equiv>
@@ -66,21 +66,21 @@ definition weak_consensus where
          \<longrightarrow> v = w)
    \<and> (\<forall>p. \<exists>n. dec (rho n p) \<noteq> None)"
 
-text {*
-  Clearly, @{text "consensus"} implies @{text "weak_consensus"}.
-*}
+text \<open>
+  Clearly, \<open>consensus\<close> implies \<open>weak_consensus\<close>.
+\<close>
 
 lemma consensus_then_weak_consensus:
   assumes "consensus vals dec rho"
   shows "weak_consensus vals dec rho"
   using assms by (auto simp: consensus_def weak_consensus_def image_def)
 
-text {*
-  Over Boolean values (``binary Consensus''), @{text weak_consensus}
-  implies @{text consensus}, hence the two problems are equivalent.
+text \<open>
+  Over Boolean values (``binary Consensus''), \<open>weak_consensus\<close>
+  implies \<open>consensus\<close>, hence the two problems are equivalent.
   In fact, this theorem holds more generally whenever at most two
-  different values are proposed initially (i.e., @{text "card (range vals) \<le> 2"}).
-*}
+  different values are proposed initially (i.e., \<open>card (range vals) \<le> 2\<close>).
+\<close>
 
 lemma binary_weak_consensus_then_consensus:
   assumes bc: "weak_consensus (vals::'proc \<Rightarrow> bool) dec rho"
@@ -105,15 +105,15 @@ proof -
     unfolding consensus_def weak_consensus_def by (auto elim!: integrity)
 qed
 
-text {*
+text \<open>
   The algorithms that we are going to verify solve the Consensus or weak Consensus
   problem, under different hypotheses about the kinds and number of faults.
-*}
+\<close>
 
 
-subsection {* A Generic Representation of Heard-Of Algorithms *}
+subsection \<open>A Generic Representation of Heard-Of Algorithms\<close>
 
-text {*
+text \<open>
   Charron-Bost and Schiper~\cite{charron:heardof} introduce
   the Heard-Of (HO) model for representing fault-tolerant
   distributed algorithms. In this model, algorithms execute in communication-closed
@@ -158,40 +158,40 @@ text {*
   The following definitions provide a generic representation of HO and SHO algorithms
   in Isabelle/HOL. A (coordinated) HO algorithm is described by the following parameters:
   \begin{itemize}
-  \item a finite type @{text 'proc} of processes,
-  \item a type @{text 'pst} of local process states,
-  \item a type @{text 'msg} of messages sent in the course of the algorithm,
-  \item a predicate @{text CinitState} such that @{text "CinitState p st crd"} is
-    true precisely of the initial states @{text st} of process @{text p}, assuming
-    that @{text crd} is the initial coordinator of @{text p},
-  \item a function @{text sendMsg} where @{text "sendMsg r p q st"} yields
-    the message that process @{text p} sends to process @{text q} at round
-    @{text r}, given its local state @{text st}, and
-  \item a predicate @{text CnextState} where @{text "CnextState r p st msgs crd st'"}
-    characterizes the successor states @{text st'} of process @{text p} at round
-    @{text r}, given current state @{text st}, the vector
-    @{text "msgs :: 'proc \<Rightarrow> 'msg option"} of messages that @{text p} received at
-    round @{text r} (@{text "msgs q = None"} indicates that no message has been
-    received from process @{text q}),
-    and process @{text crd} as the coordinator for the following round.
+  \item a finite type \<open>'proc\<close> of processes,
+  \item a type \<open>'pst\<close> of local process states,
+  \item a type \<open>'msg\<close> of messages sent in the course of the algorithm,
+  \item a predicate \<open>CinitState\<close> such that \<open>CinitState p st crd\<close> is
+    true precisely of the initial states \<open>st\<close> of process \<open>p\<close>, assuming
+    that \<open>crd\<close> is the initial coordinator of \<open>p\<close>,
+  \item a function \<open>sendMsg\<close> where \<open>sendMsg r p q st\<close> yields
+    the message that process \<open>p\<close> sends to process \<open>q\<close> at round
+    \<open>r\<close>, given its local state \<open>st\<close>, and
+  \item a predicate \<open>CnextState\<close> where \<open>CnextState r p st msgs crd st'\<close>
+    characterizes the successor states \<open>st'\<close> of process \<open>p\<close> at round
+    \<open>r\<close>, given current state \<open>st\<close>, the vector
+    \<open>msgs :: 'proc \<Rightarrow> 'msg option\<close> of messages that \<open>p\<close> received at
+    round \<open>r\<close> (\<open>msgs q = None\<close> indicates that no message has been
+    received from process \<open>q\<close>),
+    and process \<open>crd\<close> as the coordinator for the following round.
   \end{itemize}
   Note that every process can store the coordinator for the current round in its
   local state, and it is therefore not necessary to make the coordinator a parameter
-  of the message sending function @{text sendMsg}.
+  of the message sending function \<open>sendMsg\<close>.
 
   We represent an algorithm by a record as follows.
-*}
+\<close>
 
 record ('proc, 'pst, 'msg) CHOAlgorithm =
   CinitState ::  "'proc \<Rightarrow> 'pst \<Rightarrow> 'proc \<Rightarrow> bool"
   sendMsg ::   "nat \<Rightarrow> 'proc \<Rightarrow> 'proc \<Rightarrow> 'pst \<Rightarrow> 'msg"
   CnextState :: "nat \<Rightarrow> 'proc \<Rightarrow> 'pst \<Rightarrow> ('proc \<Rightarrow> 'msg option) \<Rightarrow> 'proc \<Rightarrow> 'pst \<Rightarrow> bool"
 
-text {*
+text \<open>
   For non-coordinated HO algorithms, the coordinator argument of functions
-  @{text CinitState} and @{text CnextState} is irrelevant, and we
+  \<open>CinitState\<close> and \<open>CnextState\<close> is irrelevant, and we
   define utility functions that omit that argument.
-*}
+\<close>
 
 definition isNCAlgorithm where
   "isNCAlgorithm alg \<equiv> 
@@ -205,14 +205,14 @@ definition initState where
 definition nextState where
   "nextState alg r p st msgs st' \<equiv> CnextState alg r p st msgs undefined st'"
 
-text {*
+text \<open>
   A \emph{heard-of assignment} associates a set of processes with each
   process. The following type is used to represent the collections $HO(p,r)$
   and $SHO(p,r)$ for fixed round $r$.
 %
   Similarly, a \emph{coordinator assignment} associates a process (its coordinator)
   to each process.
-*}
+\<close>
 
 type_synonym
   'proc HO = "'proc \<Rightarrow> 'proc set"
@@ -220,11 +220,11 @@ type_synonym
 type_synonym
   'proc coord = "'proc \<Rightarrow> 'proc"
 
-text {*
+text \<open>
   An execution of an HO algorithm is defined with respect to HO and SHO
-  assignments that indicate, for every round @{text r} and every process @{text p},
-  from which sender processes @{text p} receives messages (resp., uncorrupted
-  messages) at round @{text r}.
+  assignments that indicate, for every round \<open>r\<close> and every process \<open>p\<close>,
+  from which sender processes \<open>p\<close> receives messages (resp., uncorrupted
+  messages) at round \<open>r\<close>.
 
 %% That's the intention, but we don't enforce this in the definitions.
 %  Obviously, SHO sets are always included in HO sets, for the same process and round.
@@ -232,7 +232,7 @@ text {*
   The following definitions formalize this idea. We define ``coarse-grained''
   executions whose unit of atomicity is the round of execution. At each round,
   the entire collection of processes performs a transition according to the
-  @{text CnextState} function of the algorithm. Consequently, a system state is
+  \<open>CnextState\<close> function of the algorithm. Consequently, a system state is
   simply described by a configuration, i.e. a function assigning a process state
   to every process. This definition of executions may appear surprising for an
   asynchronous distributed system, but it simplifies system verification,
@@ -241,36 +241,36 @@ text {*
   later why the ``coarse-grained'' model is sufficient for verifying interesting
   correctness properties of HO algorithms.
 
-  The predicate @{text CSHOinitConfig} describes the possible initial configurations
-  for algorithm @{text A} (remember that a configuration is a function that assigns
+  The predicate \<open>CSHOinitConfig\<close> describes the possible initial configurations
+  for algorithm \<open>A\<close> (remember that a configuration is a function that assigns
   local states to every process).
-*}
+\<close>
 
 definition CHOinitConfig where
   "CHOinitConfig A cfg (coord::'proc coord) \<equiv> \<forall>p. CinitState A p (cfg p) (coord p)"
 
-text {*
-  Given the current configuration @{text cfg} and the HO and SHO sets @{text HOp}
-  and @{text SHOp} for process @{text p} at round @{text r}, the function
-  @{text SHOmsgVectors} computes the set of possible vectors of messages that
-  process @{text p} may receive. For processes @{text "q \<notin> HOp"}, @{text p} 
-  receives no message (represented as value @{text None}). For processes
-  @{text "q \<in> SHOp"}, @{text p} receives the message that @{text q} computed
-  according to the @{text sendMsg} function of the algorithm. For the remaining
-  processes @{text "q \<in> HOp - SHOp"}, @{text p} may receive some arbitrary value.
-*}
+text \<open>
+  Given the current configuration \<open>cfg\<close> and the HO and SHO sets \<open>HOp\<close>
+  and \<open>SHOp\<close> for process \<open>p\<close> at round \<open>r\<close>, the function
+  \<open>SHOmsgVectors\<close> computes the set of possible vectors of messages that
+  process \<open>p\<close> may receive. For processes \<open>q \<notin> HOp\<close>, \<open>p\<close> 
+  receives no message (represented as value \<open>None\<close>). For processes
+  \<open>q \<in> SHOp\<close>, \<open>p\<close> receives the message that \<open>q\<close> computed
+  according to the \<open>sendMsg\<close> function of the algorithm. For the remaining
+  processes \<open>q \<in> HOp - SHOp\<close>, \<open>p\<close> may receive some arbitrary value.
+\<close>
 
 definition SHOmsgVectors where
   "SHOmsgVectors A r p cfg HOp SHOp \<equiv>
    {\<mu>. (\<forall>q. q \<in> HOp \<longleftrightarrow> \<mu> q \<noteq> None)
      \<and> (\<forall>q. q \<in> SHOp \<inter> HOp \<longrightarrow> \<mu> q = Some (sendMsg A r q p (cfg q)))}"
 
-text {*
-  Predicate @{text CSHOnextConfig} uses the preceding function and the algorithm's
-  @{text CnextState} function to characterize the possible successor configurations
-  in a coarse-grained step, and predicate @{text CSHORun} defines (coarse-grained)
-  executions @{text rho} of an HO algorithm.
-*}
+text \<open>
+  Predicate \<open>CSHOnextConfig\<close> uses the preceding function and the algorithm's
+  \<open>CnextState\<close> function to characterize the possible successor configurations
+  in a coarse-grained step, and predicate \<open>CSHORun\<close> defines (coarse-grained)
+  executions \<open>rho\<close> of an HO algorithm.
+\<close>
 
 definition CSHOnextConfig where
   "CSHOnextConfig A r cfg HO SHO coord cfg' \<equiv>
@@ -283,11 +283,11 @@ definition CSHORun where
    \<and> (\<forall>r. CSHOnextConfig A r (rho r) (HOs r) (SHOs r) (coords (Suc r))
                              (rho (Suc r)))"
 
-text {*
-  For non-coordinated algorithms. the @{text coord} arguments of the above functions
+text \<open>
+  For non-coordinated algorithms. the \<open>coord\<close> arguments of the above functions
   are irrelevant. We define similar functions that omit that argument, and relate
   them to the above utility functions for these algorithms.
-*}
+\<close>
 
 definition HOinitConfig where
   "HOinitConfig A cfg \<equiv> CHOinitConfig A cfg (\<lambda>q. undefined)"
@@ -316,7 +316,7 @@ lemma SHORun_eq:
    \<and> (\<forall>r. SHOnextConfig A r (rho r) (HOs r) (SHOs r) (rho (Suc r))))"
   by (auto simp: SHORun_def CSHORun_def HOinitConfig_def SHOnextConfig_def)
 
-text {*
+text \<open>
   Algorithms designed to tolerate benign failures are not subject to
   message corruption, and therefore the SHO sets are irrelevant (more formally,
   each SHO set equals the corresponding HO set). We define corresponding
@@ -325,7 +325,7 @@ text {*
   useful in proofs. In particular, the vector of messages received by a process
   in a benign execution is uniquely determined from the current configuration
   and the HO sets.
-*}
+\<close>
 
 definition HOrcvdMsgs where
   "HOrcvdMsgs A r p HO cfg \<equiv>
@@ -335,7 +335,7 @@ lemma SHOmsgVectors_HO:
   "SHOmsgVectors A r p cfg HO HO = {HOrcvdMsgs A r p HO cfg}"
   unfolding SHOmsgVectors_def HOrcvdMsgs_def by auto
 
-text {* With coordinators *}
+text \<open>With coordinators\<close>
 
 definition CHOnextConfig where
   "CHOnextConfig A r cfg HO coord cfg' \<equiv> 
@@ -356,7 +356,7 @@ lemma CHORun_eq:
       \<and> (\<forall>r. CHOnextConfig A r (rho r) (HOs r) (coords (Suc r)) (rho (Suc r))))"
   by (auto simp: CHORun_def CSHORun_def CHOinitConfig_def CHOnextConfig_def)
 
-text {* Without coordinators *}
+text \<open>Without coordinators\<close>
 definition HOnextConfig where
   "HOnextConfig A r cfg HO cfg' \<equiv> SHOnextConfig A r cfg HO HO cfg'"
 
@@ -375,10 +375,10 @@ lemma HORun_eq:
   by (auto simp: HORun_def SHORun_eq HOnextConfig_def)
 
 
-text {*
+text \<open>
   The following derived proof rules are immediate consequences of
-  the definition of @{text CHORun}; they simplify automatic reasoning.
-*}
+  the definition of \<open>CHORun\<close>; they simplify automatic reasoning.
+\<close>
 
 lemma CHORun_0:
   assumes "CHORun A rho HOs coords" 
@@ -401,7 +401,7 @@ lemma CHORun_induct:
   shows "P n"
 using run unfolding CHORun_eq by (induct n, auto elim: init step)
 
-text {*
+text \<open>
   Because algorithms will not operate for arbitrary HO, SHO, and coordinator
   assignments, these are constrained by a \emph{communication predicate}.
   For convenience, we split this predicate into a \emph{per Round} part that
@@ -411,7 +411,7 @@ text {*
   In the parlance of~\cite{charron:heardof}, a \emph{HO machine} is an HO algorithm
   augmented with a communication predicate. We therefore define (C)(S)HO machines as
   the corresponding extensions of the record defining an HO algorithm.
-*}
+\<close>
 
 record ('proc, 'pst, 'msg) HOMachine = "('proc, 'pst, 'msg) CHOAlgorithm" +
   HOcommPerRd::"'proc HO \<Rightarrow> bool"

@@ -174,7 +174,7 @@ next
     then show "2^(length (nat_to_bv n) - Suc 0) <= n" using a by simp
   next
     assume "n~=1"
-    with `0 < n` show "2^(length (nat_to_bv n) - Suc 0) <= n" using c by simp
+    with \<open>0 < n\<close> show "2^(length (nat_to_bv n) - Suc 0) <= n" using c by simp
   qed
 qed
 
@@ -229,7 +229,7 @@ proof (induct n rule: nat_to_bv_helper_legacy_induct)
       using nat_to_bv_def by simp
     then show "hd (nat_to_bv_helper n []) = \<one>" using b and c by simp
   next
-    assume "~1 < n" with `0<n` have c: "n=1" by simp
+    assume "~1 < n" with \<open>0<n\<close> have c: "n=1" by simp
     have "nat_to_bv_helper 1 [] = [\<one>]" by (simp add: nat_to_bv_helper.simps)
     then show "hd (nat_to_bv_helper n []) = \<one>" using c by simp
   qed

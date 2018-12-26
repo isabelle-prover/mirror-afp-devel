@@ -4,7 +4,7 @@
     Based on the Jinja theory Common/Decl.thy by David von Oheimb
 *)
 
-section {* Class Declarations and Programs *}
+section \<open>Class Declarations and Programs\<close>
 
 theory Decl
 imports
@@ -80,7 +80,7 @@ where "types P \<equiv> {T. is_type P T}"
 abbreviation is_htype :: "'m prog \<Rightarrow> htype \<Rightarrow> bool"
 where "is_htype P hT \<equiv> is_type P (ty_of_htype hT)"
 
-subsection {* Code generation *}
+subsection \<open>Code generation\<close>
 
 lemma is_class_intros [code_pred_intro]:
   "class P C \<noteq> None \<Longrightarrow> is_class P C"

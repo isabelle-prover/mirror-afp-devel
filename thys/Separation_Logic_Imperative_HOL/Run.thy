@@ -1,9 +1,9 @@
-section {* Exception-Aware Relational Framework *}
+section \<open>Exception-Aware Relational Framework\<close>
 theory Run
 imports "HOL-Imperative_HOL.Imperative_HOL"
 begin
 
-  text {*
+  text \<open>
     With Imperative HOL comes a relational framework. 
     However, this can only be used if exception freeness is already assumed.
     This results in some proof duplication, because exception freeness and 
@@ -12,17 +12,17 @@ begin
     In this theory, we develop a relational framework that is aware of 
     exceptions, and makes it possible to show correctness and exception 
     freeness in one run.
-    *}
+\<close>
 
   
-  text {*
+  text \<open>
     There are two types of states:
     \begin{enumerate}
       \item A normal (Some) state contains the current heap.
       \item An exception state is None
     \end{enumerate}
     The two states exactly correspond to the option monad in Imperative HOL.
-    *}
+\<close>
 
 type_synonym state = "Heap.heap option"
 
@@ -43,7 +43,7 @@ inductive run :: "'a Heap \<Rightarrow> state \<Rightarrow> state \<Rightarrow> 
     \<Longrightarrow> run c \<sigma> (Some h') r"
 
 
-subsubsection "Link with @{text effect} and @{text success}"
+subsubsection "Link with \<open>effect\<close> and \<open>success\<close>"
 
 lemma run_effectE: 
   assumes "run c \<sigma> \<sigma>' r"
@@ -80,7 +80,7 @@ proof -
 qed
 
 
-text {* run always yields a result *}
+text \<open>run always yields a result\<close>
 lemma run_complete:
   obtains \<sigma>' r where "run c \<sigma> \<sigma>' r"
   apply (cases "is_exn \<sigma>")
@@ -110,7 +110,7 @@ lemma run_exn:
   apply (auto elim!: run.cases intro: that)
   done
 
-subsubsection {* Elimination Rules for Basic Combinators *}
+subsubsection \<open>Elimination Rules for Basic Combinators\<close>
 
 named_theorems run_elims "elemination rules for run"
 
@@ -189,7 +189,7 @@ lemma run_heap[run_elims]:
   qed
   done
 
-subsection {* Array Commands*}
+subsection \<open>Array Commands\<close>
 
 lemma run_length[run_elims]:
   assumes "run (Array.len a) \<sigma> \<sigma>' r"
@@ -318,7 +318,7 @@ lemma run_freeze[run_elims]:
 
 
 
-subsection {* Reference Commands*}
+subsection \<open>Reference Commands\<close>
 
 lemma run_new_ref[run_elims]:
   assumes "run (ref x) \<sigma> \<sigma>' r"

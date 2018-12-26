@@ -2,14 +2,14 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Map Implementation by Association Lists with explicit invariants} *}
+section \<open>\isaheader{Map Implementation by Association Lists with explicit invariants}\<close>
 theory ListMapImpl_Invar
 imports 
   "../spec/MapSpec"
   "../../Lib/Assoc_List" 
   "../gen_algo/MapGA"
 begin
-text_raw {*\label{thy:ListMapImpl_Invar}*}
+text_raw \<open>\label{thy:ListMapImpl_Invar}\<close>
 
 (*@impl Map
   @type 'a lmi
@@ -106,7 +106,7 @@ proof -
 qed
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "lmi"*}
+setup \<open>ICF_Tools.revert_abbrevs "lmi"\<close>
 
 lemma pi_lmi[proper_it]: 
   "proper_it' foldli foldli"
@@ -126,7 +126,7 @@ lemma lmi_from_list_dj_correct:
         "lmi.invar (lmi_from_list_dj l)"
   by (auto simp add: lmi_from_list_dj_def icf_rec_unf lmi_\<alpha>_def lmi_invar_def)
 
-text {* Code generator test *}
+text \<open>Code generator test\<close>
 definition "test_codegen \<equiv> (
   lmi.add ,
   lmi.add_dj ,

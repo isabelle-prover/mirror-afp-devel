@@ -14,7 +14,7 @@ proof (induct l arbitrary: p \<alpha>)
   let "?up dir \<alpha>" = "up' d l (?ch dir) \<alpha>"
   let "?upl" = "snd (?up left \<alpha>)"
 
-  from contrapos_nn[OF `p' \<notin> grid p ds` grid_child[OF `d \<in> ds`]]
+  from contrapos_nn[OF \<open>p' \<notin> grid p ds\<close> grid_child[OF \<open>d \<in> ds\<close>]]
   have left: "p' \<notin> grid (?ch left) ds" and
        right: "p' \<notin> grid (?ch right) ds" by auto
 
@@ -31,7 +31,7 @@ lemma up'_fl_fr:
                \<Sum> p' \<in> lgrid p {d} (lm + level p). (\<alpha> p') * l2_\<phi> (p' ! d) (p_l ! d))"
 proof (induct lm arbitrary: p p_l p_r \<alpha>)
   case (Suc lm)
-  note `d < length p`[simp]
+  note \<open>d < length p\<close>[simp]
 
   from child_ex_neighbour
   obtain pc_r pc_l
@@ -77,12 +77,12 @@ proof (induct lm arbitrary: p p_l p_r \<alpha>)
       by (auto simp add: sum.distrib[symmetric] sum_divide_distrib)
 
     have "?sum p dir p / 2 = ?sum p dir (p_d dir)"
-      using l2_down2[OF _ _ `p = child (p_d dir) dir d`]
+      using l2_down2[OF _ _ \<open>p = child (p_d dir) dir d\<close>]
       by (force intro!: sum.cong simp add: sum_divide_distrib)
     moreover
     have "?C p (p_d dir) = (\<alpha> p) / 2 ^ (lv p d) / 4"
-      using l2_child[OF `d < length (p_d dir)`, of p dir "{d}"] p_d_child[of dir]
-      `d < length (p_d dir)` child_lv child_ix grid.Start[of p "{d}"]
+      using l2_child[OF \<open>d < length (p_d dir)\<close>, of p dir "{d}"] p_d_child[of dir]
+      \<open>d < length (p_d dir)\<close> child_lv child_ix grid.Start[of p "{d}"]
       by (cases dir) (auto simp add: add_divide_distrib field_simps)
     ultimately
     have "?sum' p (p_d dir) =
@@ -94,7 +94,7 @@ proof (induct lm arbitrary: p p_l p_r \<alpha>)
       by (cases dir) auto }
   note this[of left] this[of right]
   moreover
-  note eq = up'_inplace[OF grid_not_child[OF `d < length p`], of d "{d}" lm]
+  note eq = up'_inplace[OF grid_not_child[OF \<open>d < length p\<close>], of d "{d}" lm]
   { fix p' assume "p' \<in> lgrid (?ch right) {d} (lm + level (?ch right))"
     with grid_disjunct[of d p] up'_inplace[of p' "?ch left" "{d}" d lm \<alpha>] \<beta>l_def
     have "\<beta>l p' = \<alpha> p'" by auto }
@@ -130,13 +130,13 @@ proof (induct l arbitrary: b p \<alpha>)
   let "?C p'" = "\<alpha> p' * l2_\<phi> (p' ! d) (p ! d)"
   let "?s s" = "\<Sum> p' \<in> (lgrid s {d} lm). ?C p'"
 
-  from `b \<in> sparsegrid' dm` have "length b = dm" unfolding sparsegrid'_def start_def
+  from \<open>b \<in> sparsegrid' dm\<close> have "length b = dm" unfolding sparsegrid'_def start_def
     by auto
-  hence "d < dm" using `d < length b` by auto
+  hence "d < dm" using \<open>d < length b\<close> by auto
 
   { fix p' assume "p' \<in> grid ?r {d}"
     hence "p' \<notin> grid ?l {d}"
-      using grid_disjunct[OF `d < length b`] by auto
+      using grid_disjunct[OF \<open>d < length b\<close>] by auto
     hence "snd ?ul p' = \<alpha> p'" using up'_inplace by auto
   } note eq = this
 
@@ -147,65 +147,65 @@ proof (induct l arbitrary: b p \<alpha>)
     let "?C p'" = "\<alpha> p' * l2_\<phi> (p' ! d) (b ! d)"
     let "?s s" = "\<Sum> p' \<in> (lgrid s {d} lm). ?C p'"
 
-    have "d < length ?l" using `d < length b` by auto
+    have "d < length ?l" using \<open>d < length b\<close> by auto
     from up'_fl_fr[OF this p_r_def]
     have fml: "snd (fst ?ul) = (\<Sum> p' \<in> lgrid ?l {d} (l + level ?l). ?C p')" by simp
 
-    have "d < length ?r" using `d < length b` by auto
+    have "d < length ?r" using \<open>d < length b\<close> by auto
     from up'_fl_fr[OF this _ p_l_def, where \<alpha>="snd ?ul"]
     have fmr: "fst (fst ?ur) = (\<Sum> p' \<in> lgrid ?r {d} (l + level ?r).
                                 ((snd ?ul) p') * l2_\<phi> (p' ! d) (b ! d))" by simp
 
-    have "level b < lm" using `Suc l + level b = lm` by auto
+    have "level b < lm" using \<open>Suc l + level b = lm\<close> by auto
     hence "{ b } \<subseteq> lgrid b {d} lm" unfolding lgrid_def by auto
     from sum_diff[OF lgrid_finite this]
     have "(\<Sum> p' \<in> (lgrid b {d} lm) - {b}. ?C p') = ?s b - ?C b" by simp
     also have "\<dots> = ?s ?l + ?s ?r"
-      using lgrid_sum and `level b < lm` and `d < length b` by auto
+      using lgrid_sum and \<open>level b < lm\<close> and \<open>d < length b\<close> by auto
     also have "\<dots> = snd (fst ?ul) + fst (fst ?ur)" using fml and fmr
-      and `Suc l + level b = lm` and child_level[OF `d < length b`]
+      and \<open>Suc l + level b = lm\<close> and child_level[OF \<open>d < length b\<close>]
       using eq unfolding True lgrid_def by auto
 
     finally show ?thesis unfolding up'.simps Let_def and fun_upd_def lgrid_def
-      using `p = b` and `level b < lm`
+      using \<open>p = b\<close> and \<open>level b < lm\<close>
       by (cases ?ul, cases ?ur, auto)
   next
     case False
 
     have "?r \<in> sparsegrid' dm" and "?l \<in> sparsegrid' dm"
-      using `b \<in> sparsegrid' dm` and `d < dm` unfolding sparsegrid'_def by auto
+      using \<open>b \<in> sparsegrid' dm\<close> and \<open>d < dm\<close> unfolding sparsegrid'_def by auto
     from Suc.hyps[OF _ _ this(1)] Suc.hyps[OF _ _ this(2)]
     have "?goal l ?l p \<alpha>" and "?goal l ?r p (snd ?ul)"
-      using `d < length b` and `Suc l + level b = lm` and `p \<in> sparsegrid' dm` by auto
+      using \<open>d < length b\<close> and \<open>Suc l + level b = lm\<close> and \<open>p \<in> sparsegrid' dm\<close> by auto
 
     show ?thesis
     proof (cases "p \<in> lgrid b {d} lm")
       case True
       hence "level p < lm" and "p \<in> grid b {d}" unfolding lgrid_def by auto
       hence "p \<in> grid ?l {d} \<or> p \<in> grid ?r {d}"
-        unfolding grid_partition[of b] using `p \<noteq> b` by auto
+        unfolding grid_partition[of b] using \<open>p \<noteq> b\<close> by auto
       thus ?thesis
       proof (rule disjE)
         assume "p \<in> grid (child b left d) {d}"
         hence "p \<notin> grid (child b right d) {d}"
-          using grid_disjunct[OF `d < length b`] by auto
+          using grid_disjunct[OF \<open>d < length b\<close>] by auto
         thus ?thesis
-          using `?goal l ?l p \<alpha>` and `?goal l ?r p (snd ?ul)`
-          using `p \<noteq> b` `p \<in> lgrid b {d} lm`
+          using \<open>?goal l ?l p \<alpha>\<close> and \<open>?goal l ?r p (snd ?ul)\<close>
+          using \<open>p \<noteq> b\<close> \<open>p \<in> lgrid b {d} lm\<close>
           unfolding lgrid_def grid_partition[of b]
           by (cases ?ul, cases ?ur, auto simp add: Let_def)
       next
         assume *: "p \<in> grid (child b right d) {d}"
         hence "p \<notin> grid (child b left d) {d}"
-          using grid_disjunct[OF `d < length b`] by auto
+          using grid_disjunct[OF \<open>d < length b\<close>] by auto
         moreover
         { fix p' assume "p' \<in> grid p {d}"
           from grid_transitive[OF this *] eq[of p']
           have "snd ?ul p' = \<alpha> p'" by simp
         }
         ultimately show ?thesis
-          using `?goal l ?l p \<alpha>` and `?goal l ?r p (snd ?ul)`
-          using `p \<noteq> b` `p \<in> lgrid b {d} lm` *
+          using \<open>?goal l ?l p \<alpha>\<close> and \<open>?goal l ?r p (snd ?ul)\<close>
+          using \<open>p \<noteq> b\<close> \<open>p \<in> lgrid b {d} lm\<close> *
           unfolding lgrid_def
           by (cases ?ul, cases ?ur, auto simp add: Let_def)
   qed
@@ -213,8 +213,8 @@ next
       case False
       then have "p \<notin> lgrid ?l {d} lm" and "p \<notin> lgrid ?r {d} lm"
         unfolding lgrid_def and grid_partition[where p=b] by auto
-      with False show ?thesis using `?goal l ?l p \<alpha>` and `?goal l ?r p (snd ?ul)`
-        using `p \<noteq> b` `p \<notin> lgrid b {d} lm`
+      with False show ?thesis using \<open>?goal l ?l p \<alpha>\<close> and \<open>?goal l ?r p (snd ?ul)\<close>
+        using \<open>p \<noteq> b\<close> \<open>p \<notin> lgrid b {d} lm\<close>
         unfolding lgrid_def
         by (cases ?ul, cases ?ur, auto simp add: Let_def)
     qed
@@ -241,20 +241,20 @@ proof -
 
   { fix l b p \<alpha>
     assume b: "b \<in> lgrid (start dm) ({0..<dm} - {d}) lm"
-    hence "b \<in> sparsegrid' dm" and "d < length b" using sparsegrid'_start `d < dm` by auto
+    hence "b \<in> sparsegrid' dm" and "d < length b" using sparsegrid'_start \<open>d < dm\<close> by auto
     assume l: "l + level b = lm" and p: "p \<in> sparsegrid dm lm"
     note sparsegridE[OF p]
 
-    note up' = up'_\<beta>[OF `d < length b` l `b \<in> sparsegrid' dm` `p \<in> sparsegrid' dm`]
+    note up' = up'_\<beta>[OF \<open>d < length b\<close> l \<open>b \<in> sparsegrid' dm\<close> \<open>p \<in> sparsegrid' dm\<close>]
 
     have "?F d l b \<alpha> p =
           (if b = base {d} p then (\<Sum>p'\<in>lgrid b {d} lm. ?S (\<alpha> p') p p') else \<alpha> p)"
     proof (cases "b = base {d} p")
-      case True with baseE(2)[OF `p \<in> sparsegrid' dm`] `level p < lm`
+      case True with baseE(2)[OF \<open>p \<in> sparsegrid' dm\<close>] \<open>level p < lm\<close>
       have "p \<in> lgrid b {d} lm" and "p \<in> grid b {d}" by auto
       show ?thesis
-        using lgrid_eq[OF `p \<in> grid b {d}`]
-        unfolding up' if_P[OF True] if_P[OF `p \<in> lgrid b {d} lm`]
+        using lgrid_eq[OF \<open>p \<in> grid b {d}\<close>]
+        unfolding up' if_P[OF True] if_P[OF \<open>p \<in> lgrid b {d} lm\<close>]
         by (intro sum.mono_neutral_cong_left lgrid_finite) auto
     next
       case False
@@ -266,10 +266,10 @@ proof -
       qed
       ultimately show ?thesis unfolding up' by auto
     qed }
-  with lift[where F = ?F, OF `d < dm` `p \<in> sparsegrid dm lm`]
+  with lift[where F = ?F, OF \<open>d < dm\<close> \<open>p \<in> sparsegrid dm lm\<close>]
   have lift_eq: "lift ?F dm lm d \<alpha> p =
          (\<Sum>p'\<in>lgrid (base {d} p) {d} lm. ?S (\<alpha> p') p p')" by auto
-  from lgrid_eq[OF baseE(2)[OF sparsegrid_subset[OF `p \<in> sparsegrid dm lm`]]]
+  from lgrid_eq[OF baseE(2)[OF sparsegrid_subset[OF \<open>p \<in> sparsegrid dm lm\<close>]]]
   show ?thesis
     unfolding up_def lift_eq by (intro sum.mono_neutral_cong_right lgrid_finite) auto
 qed

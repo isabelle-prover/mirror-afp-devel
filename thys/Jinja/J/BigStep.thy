@@ -4,7 +4,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Big Step Semantics *}
+section \<open>Big Step Semantics\<close>
 
 theory BigStep imports Expr State begin
 
@@ -317,8 +317,8 @@ next
 qed auto
 (*>*)
 
-text{* Only used later, in the small to big translation, but is already a
-good sanity check: *}
+text\<open>Only used later, in the small to big translation, but is already a
+good sanity check:\<close>
 
 lemma eval_finalId:  "final e \<Longrightarrow> P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e,s\<rangle>"
 (*<*)by (erule finalE) (iprover intro: eval_evals.intros)+(*>*)

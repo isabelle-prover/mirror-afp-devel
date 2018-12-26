@@ -2,21 +2,21 @@
     Author:      Peter Lammich <peter dot lammich at uni-muenster.de>
     Maintainer:  Peter Lammich <peter dot lammich at uni-muenster.de>
 *)
-section {* \isaheader{Specification of Sets} *}
+section \<open>\isaheader{Specification of Sets}\<close>
 theory SetSpec
 imports ICF_Spec_Base
 begin
-text_raw{*\label{thy:SetSpec}*}
+text_raw\<open>\label{thy:SetSpec}\<close>
 
 (*@intf Set
   @abstype 'a set
   Sets
 *)
 
-text {*
+text \<open>
   This theory specifies set operations by means of a mapping to
   HOL's standard sets.
-*}
+\<close>
 
 (* Drop some notation that gets in the way here*)
 (*no_notation member (infixl "mem" 55)*)
@@ -142,14 +142,14 @@ begin
 end
 
 subsection "Iterators"
-text {*
+text \<open>
   An iterator applies a
   function to a state and all the elements of the set.
   The function is applied in any order. Proofs over the iteration are
   done by establishing invariants over the iteration.
   Iterators may have a break-condition, that interrupts the iteration before
   the last element has been visited.
-*}
+\<close>
 
 (* Deprecated *)
 (*
@@ -273,7 +273,7 @@ begin
     apply simp_all
   done
 
-  text {* Versions without break condition. *}
+  text \<open>Versions without break condition.\<close>
   lemma iterate_rule_P:
     "\<lbrakk>
       invar S;
@@ -881,7 +881,7 @@ subsubsection "Minimal and Maximal Element"
      show thesis 
        apply (rule that[OF KV])
        apply (clarify)
-       apply (drule (1) min_correct(2)[OF `invar s`])
+       apply (drule (1) min_correct(2)[OF \<open>invar s\<close>])
        apply (simp add: KV(1))
        done
    qed
@@ -948,7 +948,7 @@ subsubsection "Minimal and Maximal Element"
      show thesis 
        apply (rule that[OF KV])
        apply (clarify)
-       apply (drule (1) max_correct(2)[OF `invar s`])
+       apply (drule (1) max_correct(2)[OF \<open>invar s\<close>])
        apply (simp add: KV(1))
        done
    qed

@@ -3,11 +3,11 @@ theory PromelaInvariants
 imports PromelaDatastructures
 begin
 
-text {* 
+text \<open>
   The different data structures used in the Promela implementation require different invariants,
   which are specified in this file. As there is no (useful) way of specifying \emph{correctness} of the implementation,
 those invariants are tailored towards proving the finitness of the generated state-space. 
-*}
+\<close>
 
 (*<*)
 (*subsection {* Auxiliary lemmas *}*)
@@ -58,12 +58,12 @@ lemma Assoc_List_set_eq_lookup:
 
 (*>*)
 
-subsection {* Bounds *}
+subsection \<open>Bounds\<close>
 
-text {* 
+text \<open>
   Finiteness requires that possible variable ranges are finite, as is the maximium number of processes.
   Currently, they are supplied here as constants. In a perfect world, they should be able to be set dynamically. 
-*}
+\<close>
 
 (* NB! Make sure those values coincide with the bounds definied in @{const ppVarType} *)
 definition min_var_value :: "integer" where
@@ -84,7 +84,7 @@ definition "max_channels \<equiv> 65535"
 definition "max_array_size = 65535"
 
 
-subsection {* Variables and similar *}
+subsection \<open>Variables and similar\<close>
 
 fun varType_inv :: "varType \<Rightarrow> bool" where
   "varType_inv (VTBounded l h) 
@@ -188,7 +188,7 @@ proof (rule finite_subset)
   show "finite ..." by (blast intro: finite_lists_length_le varTypes_finite)+
 qed
 
-text {* To give an upper bound of variable names, we need a way to calculate it. *}
+text \<open>To give an upper bound of variable names, we need a way to calculate it.\<close>
 
 primrec procArgName :: "procArg \<Rightarrow> String.literal" where
   "procArgName (ProcArg _ name) = name"
@@ -264,7 +264,7 @@ using assms
 unfolding vardict_inv_def
 by (auto simp add: lm.correct dest: map_of_SomeD)
 
-subsection {* Invariants of a process *}
+subsection \<open>Invariants of a process\<close>
 
 (* The definition of a channel to be between -1 and max_channels definitly lacks the necessary abstraction ... *)
 definition pState_inv :: "program \<Rightarrow> pState \<Rightarrow> bool" where
@@ -295,7 +295,7 @@ proof -
     (\<lambda>(pid,idx,pc,channels,vars). pState.make pid vars pc channels idx) ` ?P"
     unfolding pState_inv_def image_def [of _ ?P]
     apply (clarsimp simp add: pState.defs)
-    apply (tactic {* Record.split_simp_tac @{context} [] (K ~1) 1*})
+    apply (tactic \<open>Record.split_simp_tac @{context} [] (K ~1) 1\<close>)
     apply auto
     apply (rule order_trans [OF less_imp_le])
     apply (auto intro!: Max_ge)
@@ -307,9 +307,9 @@ proof -
   ultimately show ?thesis by (elim finite_subset) (rule finite_imageI)
 qed
 
-text {* 
+text \<open>
   Throughout the calculation of the semantic engine, a modified process is not necessarily part of @{term "procs g"}.
-  Hence we need to establish an additional constraint for the relation between a global and a process state.  *}
+  Hence we need to establish an additional constraint for the relation between a global and a process state.\<close>
 
 definition cl_inv :: "('a gState_scheme * pState) \<Rightarrow> bool" where
   "cl_inv gp = (case gp of (g,p) \<Rightarrow> 
@@ -351,9 +351,9 @@ lemma cl_inv_channels_update:
 using assms unfolding cl_inv_def 
 by simp
 
-subsection {* Invariants of the global state *}
+subsection \<open>Invariants of the global state\<close>
 
-text {* Note that @{term gState_inv} must be defined in a way to be applicable to both @{typ gState} and @{typ gState\<^sub>I}. *}
+text \<open>Note that @{term gState_inv} must be defined in a way to be applicable to both @{typ gState} and @{typ gState\<^sub>I}.\<close>
 
 definition gState_inv :: "program \<Rightarrow> 'a gState_scheme \<Rightarrow> bool" where
   "gState_inv prog g 
@@ -363,9 +363,9 @@ definition gState_inv :: "program \<Rightarrow> 'a gState_scheme \<Rightarrow> b
     \<and> set (channels g) \<subseteq> Collect channel_inv
     \<and> lm.ball (vars g) (\<lambda>(k,v). variable_inv v)" 
 
-text {* The set of global states adhering to the terms of @{const gState_inv} is not finite.
+text \<open>The set of global states adhering to the terms of @{const gState_inv} is not finite.
 But the set of all global states that can be constructed by the semantic engine from one starting state is. 
-Thus we establish a progress relation, \ie all successors of a state @{term g} relate to @{term g} under this specification. *}
+Thus we establish a progress relation, \ie all successors of a state @{term g} relate to @{term g} under this specification.\<close>
 
 definition gState_progress_rel :: "program \<Rightarrow> ('a gState_scheme) rel" where
   "gState_progress_rel p = {(g,g'). gState_inv p g \<and> gState_inv p g'
@@ -415,9 +415,9 @@ lemma gState_progress_rel_rtrancl_absorb:
 using assms refl_on_gState_progress_rel
 by (intro Image_absorb_rtrancl) auto
 
-text {* 
+text \<open>
   The main theorem: The set of all global states reachable from an initial state, is finite.
-*}
+\<close>
 lemma gStates_finite:
   fixes g :: "gState"
   shows "finite ((gState_progress_rel prog)\<^sup>* `` {g})"
@@ -495,12 +495,12 @@ proof -
   finally show ?thesis .
 qed
 
-subsection {* Invariants of the program *}
+subsection \<open>Invariants of the program\<close>
 
-text {* 
+text \<open>
   Naturally, we need our program to also adhere to certain invariants. Else we can't show, that
   the generated states are correct according to the invariants above.
-*}
+\<close>
 
 definition program_inv where
   "program_inv prog 

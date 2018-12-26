@@ -5,7 +5,7 @@ imports Heard_Of.Majorities
 begin
 (*>*)
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
 definition majs :: "(process set) set" where
   "majs \<equiv> {S. card S > (2 * N) div 3}"
@@ -38,7 +38,7 @@ next
   have "N > 0"
     by auto
   have "2 * N div 3 < N"
-    by(simp only: eval_nat_numeral m_mult_div_Suc_m[OF `N > 0`])
+    by(simp only: eval_nat_numeral m_mult_div_Suc_m[OF \<open>N > 0\<close>])
   thus "\<exists>Q. Q \<in> majs" 
     apply(rule_tac x=UNIV in exI)
     apply(auto simp add: majs_def intro!: div_less_dividend)
@@ -122,7 +122,7 @@ definition CSHOnextConfig where
 
 type_synonym rHO = "nat \<Rightarrow> process HO"
 
-subsubsection {* Refinement *}
+subsubsection \<open>Refinement\<close>
 (******************************************************************************)
 
 definition otr_ref_rel :: "(opt_v_state \<times> p_TS_state)set" where
@@ -284,11 +284,11 @@ next
       CSHO_trans_alt_def CHO_trans_alt OTR_trans_step_def)
 qed
 
-subsubsection {* Termination *}
+subsubsection \<open>Termination\<close>
 (******************************************************************************)
 
-text {* The termination proof for the algorithm is already given in the Heard-Of Model AFP
-  entry, and we do not repeat it here. *}
+text \<open>The termination proof for the algorithm is already given in the Heard-Of Model AFP
+  entry, and we do not repeat it here.\<close>
 
 
 end

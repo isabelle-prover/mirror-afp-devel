@@ -2,14 +2,14 @@
     Author:      Thomas Tuerk <tuerk@in.tum.de>
     Maintainer:  Thomas Tuerk <tuerk@in.tum.de>
 *)
-section {* \isaheader{ROBDDs} *}
+section \<open>\isaheader{ROBDDs}\<close>
 theory Robdd
 imports Main "../ICF/spec/MapSpec" "../Iterator/SetIteratorOperations"
         
 begin
 
-text {* Let's first fix some datatypes for BDDs or more specifically
-for reduced ordered binary decision diagrams (OBDDs). *}
+text \<open>Let's first fix some datatypes for BDDs or more specifically
+for reduced ordered binary decision diagrams (OBDDs).\<close>
 
 type_synonym node_id = nat
 type_synonym var = nat
@@ -55,8 +55,8 @@ lemma robdd_is_leaf_alt_def :
   "robdd_is_leaf b \<longleftrightarrow> (b = robdd_one \<or> b = robdd_zero)"
 by (cases b) auto
 
-text {* IDs are just used a convinience for performance reasons. Therefore,
-        we define two robdds to be equivalent if they are equal up to ids. *}
+text \<open>IDs are just used a convinience for performance reasons. Therefore,
+        we define two robdds to be equivalent if they are equal up to ids.\<close>
 primrec robdd_equiv where
    "robdd_equiv (robdd_leaf f) b = (b = robdd_leaf f)"
  | "robdd_equiv (robdd_var i l v r) b = 
@@ -67,10 +67,10 @@ lemma robdd_equiv_simps[simp] :
    "robdd_equiv b b"
   by (induct b, auto)
 
-subsection {* subrobdds *}
+subsection \<open>subrobdds\<close>
 
-text {* It is for later definitions important to be able to talk about all the
-robdds that form a robdd. This leads to the definition of subrobdds. *}
+text \<open>It is for later definitions important to be able to talk about all the
+robdds that form a robdd. This leads to the definition of subrobdds.\<close>
 
 primrec subrobdds :: "robdd \<Rightarrow> robdd set" where
    "subrobdds (robdd_leaf f) = {robdd_leaf f}"
@@ -189,20 +189,20 @@ lemma subrobdds_set_mono2 :
   "bs1 \<subseteq> bs2 \<Longrightarrow> (subrobdds_set bs1 \<subseteq> subrobdds_set bs2)"
 unfolding subrobdds_set_def by auto
 
-subsection {* Invariants *}
+subsection \<open>Invariants\<close>
 
-subsubsection {* IDs *}
+subsubsection \<open>IDs\<close>
 
-text {* Ids are just added for convienience and performance. Two ROBDDs should have
+text \<open>Ids are just added for convienience and performance. Two ROBDDs should have
 the same id if and only if they have the same semantics. This way, the equivalence check
-of ROBDDs can be reduced to an equality check of ids. *}
+of ROBDDs can be reduced to an equality check of ids.\<close>
 
 definition robdd_invar_ids where
   "robdd_invar_ids bs =
    (\<forall>b1 b2. (b1 \<in> subrobdds_set bs \<and> b2 \<in> subrobdds_set bs) \<longrightarrow>
               ((robdd_\<alpha> b1 = robdd_\<alpha> b2) \<longleftrightarrow> robdd_get_id b1 = robdd_get_id b2))" 
 
-text {* leafs can often be implicitly added *}
+text \<open>leafs can often be implicitly added\<close>
 definition robdd_invar_ids_leafs where
   "robdd_invar_ids_leafs bs =
    (\<forall>b f. (b \<in> subrobdds_set bs) \<longrightarrow>
@@ -225,8 +225,8 @@ unfolding robdd_invar_ids_full_def robdd_invar_ids_def robdd_invar_ids_leafs_def
   apply (metis+) 
 done
 
-text {* Together with other invariants it can the later be derived that
-        two robdds have the same id if and only if they are equal. *}
+text \<open>Together with other invariants it can the later be derived that
+        two robdds have the same id if and only if they are equal.\<close>
 definition robdd_invar_ids_equal where
   "robdd_invar_ids_equal bs =
    (\<forall>b1 b2. (b1 \<in> subrobdds_set bs \<and> b2 \<in> subrobdds_set bs) \<longrightarrow>
@@ -283,7 +283,7 @@ apply (simp add: robdd_invar_ids_expand invar_bs1)
 apply (simp add: subset_iff pre subrobdds_set_def)
 done
 
-text {* If two ROBDDs are equal up to ids and then they are in fact equal. *}
+text \<open>If two ROBDDs are equal up to ids and then they are in fact equal.\<close>
 lemma robdd_invar_ids_equiv_implies_eq:
 assumes "robdd_invar_ids bs"
     and "b1 \<in> bs" "b2 \<in> bs"
@@ -324,10 +324,10 @@ proof (induct b1 arbitrary: b2 bs)
 qed simp_all
 
 
-subsubsection {* Variable order *}
+subsubsection \<open>Variable order\<close>
 
-text {* We are formalising reduced \emph{ordered} binary decision diagrams. Therefore, the
-variables need to appear in order. *}
+text \<open>We are formalising reduced \emph{ordered} binary decision diagrams. Therefore, the
+variables need to appear in order.\<close>
 
 primrec robdd_invar_vars_greater where
    "robdd_invar_vars_greater n (robdd_leaf f) = True"
@@ -347,10 +347,10 @@ unfolding robdd_invar_vars_def
 by (rule robdd_invar_vars_greater___weaken[of n]) (simp_all)
 
 
-subsubsection {* Reduced *}
+subsubsection \<open>Reduced\<close>
 
-text {* We are formalising \emph{reduced} ordered binary decision diagrams. Therefore, it should
-be reduced. *}
+text \<open>We are formalising \emph{reduced} ordered binary decision diagrams. Therefore, it should
+be reduced.\<close>
 
 primrec robdd_invar_reduced where
    "robdd_invar_reduced (robdd_leaf f) = True"
@@ -462,7 +462,7 @@ next
 qed
 
 
-subsubsection {* Overall Invariant *}
+subsubsection \<open>Overall Invariant\<close>
 
 definition robdd_invar_ext where
   "robdd_invar_ext bs n b = (b \<in> subrobdds_set bs \<and> robdd_invar_ids bs \<and> robdd_invar_vars_greater n b \<and> robdd_invar_reduced b)"
@@ -518,7 +518,7 @@ next
     from subrobdds_trans [of l "robdd_var i l v r" b]
          subrobdds_trans [of r "robdd_var i l v r" b] 
     have "r \<in> subrobdds b" "l \<in> subrobdds b" by (simp_all add: b_props)
-    with `?ls` `b \<in> bs` show ?rs by (auto simp add: robdd_invar_ext_def subrobdds_set_def)
+    with \<open>?ls\<close> \<open>b \<in> bs\<close> show ?rs by (auto simp add: robdd_invar_ext_def subrobdds_set_def)
   qed
 qed
 
@@ -541,22 +541,22 @@ proof -
     "robdd_invar_reduced b" 
   unfolding robdd_invar_ext_def by simp_all
 
-  from `b \<in> subrobdds_set bs2` b_in
+  from \<open>b \<in> subrobdds_set bs2\<close> b_in
   have b_in: "b \<in> subrobdds_set bs1" by simp
 
   have invar_ids: "robdd_invar_ids bs1"
     apply (rule robdd_invar_ids_subset_subrobdds_rule [OF bs2_props])
-    apply (simp add: `b \<in> subrobdds_set bs2`)
+    apply (simp add: \<open>b \<in> subrobdds_set bs2\<close>)
     apply simp
     apply fact
   done
 
   have invar_greater: "robdd_invar_vars_greater m b"
-    by (rule robdd_invar_vars_greater___weaken[OF `robdd_invar_vars_greater n b` m_le])
+    by (rule robdd_invar_vars_greater___weaken[OF \<open>robdd_invar_vars_greater n b\<close> m_le])
 
   show ?thesis 
     unfolding robdd_invar_ext_def
-    by (simp add: b_in invar_ids `robdd_invar_reduced b` invar_greater)
+    by (simp add: b_in invar_ids \<open>robdd_invar_reduced b\<close> invar_greater)
 qed
 
 lemma robdd_invar_ext_weaken_var :
@@ -586,11 +586,11 @@ using assms
   apply (metis le_Suc_eq robdd_invar_vars_greater___weaken)
 done
 
-subsection {* ROBDDs are unique *}
+subsection \<open>ROBDDs are unique\<close>
 
-text {* An important property of ROBDDs is that two ROBDDs have the same semantics if and only
+text \<open>An important property of ROBDDs is that two ROBDDs have the same semantics if and only
 if they are equal (up to ids in our case). Before we can prove this property some 
-lemmata are needed.*}
+lemmata are needed.\<close>
 
 lemma robdd_unique_leaf :
 assumes invars_b: "robdd_invar_vars b" "robdd_invar_reduced b"
@@ -852,11 +852,11 @@ apply (simp add: robdd_invar_ids_full_alt_def[symmetric] weak_invar)
 done
 
 
-subsection {* Variable dependency *}
+subsection \<open>Variable dependency\<close>
 
-text {* ROBDDs talk about assignments that consider infinitely many variables. However,
+text \<open>ROBDDs talk about assignments that consider infinitely many variables. However,
 the result depends only on a finite set of variables. Let's have a closer look at these
-variables. *}
+variables.\<close>
 
 definition robdd_depends_on_var where
   "robdd_depends_on_var v b \<longleftrightarrow> (\<exists>a. robdd_\<alpha> b (a(v := True)) \<noteq> robdd_\<alpha> b (a(v := False)))"
@@ -1025,10 +1025,10 @@ apply (metis robbd_depends_on_var_var_impl1)
 done
 
 
-subsection {* Inverse Map *}
+subsection \<open>Inverse Map\<close>
 
-text {* If the invariant for ids is satisfied, one can find a find a unique mapping between ids
-and ROBDDs. *}
+text \<open>If the invariant for ids is satisfied, one can find a find a unique mapping between ids
+and ROBDDs.\<close>
 
 definition robdd_id_map_OK where
    "robdd_id_map_OK bs m \<longleftrightarrow> (\<forall>b \<in> subrobdds_set bs. m (robdd_get_id b) = Some b)"
@@ -1137,11 +1137,11 @@ proof
 qed
 
 
-subsection {* Extended Boolean Operations *}
+subsection \<open>Extended Boolean Operations\<close>
 
-text {* For Boolean Operations on ROBDDs it is important to extend boolean operations
+text \<open>For Boolean Operations on ROBDDs it is important to extend boolean operations
 to option types. This allows to get the information that the result of the operation does
-not depend on the value of some arguments. *}
+not depend on the value of some arguments.\<close>
 
 fun bool_op_extend :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow> 
                                 (bool option \<Rightarrow> bool option \<Rightarrow> bool option)" where
@@ -1155,7 +1155,7 @@ fun bool_op_extend :: "(bool \<Rightarrow> bool \<Rightarrow> bool) \<Rightarrow
        (if (bop b True \<longleftrightarrow> bop b False) then Some (bop b True) else None)"
   | "bool_op_extend bop (Some b) (Some b') = Some (bop b b')"
 
-text {* Common Operations *}
+text \<open>Common Operations\<close>
 
 fun bope_neg where
    "bope_neg None = None"
@@ -1256,12 +1256,12 @@ unfolding bope_imp_def
 done
 
 
-subsection {* Implementing boolean Combination *}
+subsection \<open>Implementing boolean Combination\<close>
 
-text {* For building boolean combinations of BDDs it is essential to use
+text \<open>For building boolean combinations of BDDs it is essential to use
 a map storing already used IDs and a cache. 
 These datastructures cache can be implemented in different ways. Therefore, here the
-needed properties are abstracted by using a locale. *}
+needed properties are abstracted by using a locale.\<close>
 
 locale robdd_locale = 
   c: map_empty c_\<alpha> c_invar c_empty +
@@ -2202,8 +2202,8 @@ locale robdd_locale =
        by (simp split: option.splits add: bope_neg_intro next_eq split_def robdd_neg_next_def)
    qed
 
-  text {* An auxiliary construct to get the ids of a ROBDD consistent with some cache or
-          other ROBDDs. *}
+  text \<open>An auxiliary construct to get the ids of a ROBDD consistent with some cache or
+          other ROBDDs.\<close>
   definition robdd_copy where
     "robdd_copy apply_map rev_map b = robdd_apply apply_map rev_map (\<lambda>b1 b2. (b1 \<and> b2)) b robdd_one"
 
@@ -2517,7 +2517,7 @@ locale robdd_locale =
           from subset_bs' subset_bs'' have "l' \<in> bs''" "r' \<in> bs''"
             by (simp_all add: subset_iff)
 
-          from robdd_construct_correct [OF invar_rev_map'' `l' \<in> bs''` `r' \<in> bs''`
+          from robdd_construct_correct [OF invar_rev_map'' \<open>l' \<in> bs''\<close> \<open>r' \<in> bs''\<close>
               l'_invar' r'_invar]
           have b3_invar: "robdd_invar_ext (insert b3 bs'') v b3" and
                invar_rev_map''': "rev_map_invar (insert b3 bs'') rev_map'''" and
@@ -2599,12 +2599,12 @@ locale robdd_locale =
 end
 
 
-subsection {* Semantics on lists *}
+subsection \<open>Semantics on lists\<close>
 
-text {* BDDs represent boolean expression. I.e. they are functions from assignments to 
+text \<open>BDDs represent boolean expression. I.e. they are functions from assignments to 
   \texttt{True} or \texttt{False}. Here, assignments are represented by functions from
   variable indices to the values of these Boolean variables. While this reprentation of 
-  is convenient for proofs, a representation based on lists is more convinient for execution.*}
+  is convenient for proofs, a representation based on lists is more convinient for execution.\<close>
 
 definition list_to_assignment_set :: "bool option list \<Rightarrow> (nat \<Rightarrow> bool) set" where
 "list_to_assignment_set l = {a . (\<forall>v < length l. (\<forall>f. l ! v = Some f \<longrightarrow> a v = f))}"

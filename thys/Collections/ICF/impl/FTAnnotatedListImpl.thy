@@ -1,4 +1,4 @@
-section {*\isaheader{Implementation of Annotated Lists by 2-3 Finger Trees}*}
+section \<open>\isaheader{Implementation of Annotated Lists by 2-3 Finger Trees}\<close>
 theory FTAnnotatedListImpl
 imports 
   "Finger-Trees.FingerTree" 
@@ -196,7 +196,7 @@ interpretation ft: StdAL_no_invar ft_ops
   by (unfold_locales) (simp add: icf_rec_unf)
 setup Locale_Code.close_block
 
-setup {* ICF_Tools.revert_abbrevs "ft"*}
+setup \<open>ICF_Tools.revert_abbrevs "ft"\<close>
 
 
 definition "test_codegen \<equiv> (

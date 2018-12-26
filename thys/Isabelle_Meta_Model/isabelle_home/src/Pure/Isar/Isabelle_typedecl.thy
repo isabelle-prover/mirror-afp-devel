@@ -34,12 +34,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************)
 
-chapter{* Part ... *}
+chapter\<open>Part ...\<close>
 
 theory Isabelle_typedecl
 imports Main
 begin
-ML{*
+ML\<open>
 structure Isabelle_Typedecl =
 struct
 (*  Title:      Pure/Isar/typedecl.ML
@@ -75,5 +75,5 @@ fun abbrev_cmd0 b = read_abbrev b
 end;
 
 end
-*}
+\<close>
 end

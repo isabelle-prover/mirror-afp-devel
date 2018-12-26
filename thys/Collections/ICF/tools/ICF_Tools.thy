@@ -1,4 +1,4 @@
-section {* General ML-level tools *}
+section \<open>General ML-level tools\<close>
 theory ICF_Tools
 imports Main
 begin
@@ -7,7 +7,7 @@ lemma meta_same_imp_rule: "(\<lbrakk>PROP P; PROP P\<rbrakk> \<Longrightarrow> P
   by rule
 (* TODO: Replace by distinct_prems_rl *)
 
-ML {*
+ML \<open>
   infix 0 ##;
 
   fun (f ## g) (a,b) = (f a, g b)
@@ -298,15 +298,15 @@ ML {*
 
   end;
 
-*}
+\<close>
 
-attribute_setup rem_dup_prems = {*
+attribute_setup rem_dup_prems = \<open>
   Scan.succeed (Thm.rule_attribute [] (ICF_Tools.rem_dup_prems o Context.proof_of))
-*} "Remove duplicate premises"
+\<close> "Remove duplicate premises"
 
-method_setup dup_subgoals = {*
+method_setup dup_subgoals = \<open>
   Scan.succeed (fn ctxt => SIMPLE_METHOD (PRIMITIVE (ICF_Tools.rem_dup_prems ctxt)))
-*} "Remove duplicate subgoals"
+\<close> "Remove duplicate subgoals"
 
 
 end

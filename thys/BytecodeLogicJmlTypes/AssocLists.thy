@@ -7,13 +7,13 @@
 theory AssocLists imports Main begin
 (*>*)
 
-section{*Preliminaries: association lists \label{sec:preliminaries}*}
+section\<open>Preliminaries: association lists \label{sec:preliminaries}\<close>
 
-text{*Finite maps are used frequently, both in the representation of
+text\<open>Finite maps are used frequently, both in the representation of
 syntax and in the program logics. Instead of restricting Isabelle's
 partial map type $\alpha \rightharpoonup \beta$ to finite domains, we
 found it easier for the present development to use the following adhoc
-data type of association lists.*}
+data type of association lists.\<close>
 
 type_synonym ('a,'b) AssList = "('a \<times> 'b) list"
 
@@ -35,11 +35,11 @@ lemma AL_Triv3:"\<lbrakk>L=M ; M\<down>b = X\<rbrakk> \<Longrightarrow> L\<down>
 lemma AL_Triv4:"\<lbrakk>L=M ; L\<down>b = X\<rbrakk> \<Longrightarrow> M\<down>b = X" by clarsimp
 (*>*)
 
-text{*The statement following the type declaration of @{text lookup}
-indicates that we may use the infix notation @{text "L\<down>a"} for the
+text\<open>The statement following the type declaration of \<open>lookup\<close>
+indicates that we may use the infix notation \<open>L\<down>a\<close> for the
 lookup operation, and asserts some precedence for bracketing. In a
 similar way, shorthands are introduced for various operations
-throughout this document.*}
+throughout this document.\<close>
 
 primrec delete::"('a, 'b) AssList \<Rightarrow> 'a \<Rightarrow> ('a, 'b) AssList"
 where
@@ -101,7 +101,7 @@ apply (erule AL_update2)
 done
 (*>*)
 
-text{*The empty map is represented by the empty list.*}
+text\<open>The empty map is represented by the empty list.\<close>
 
 definition emp::"('a, 'b)AssList"
 where "emp = []"
@@ -116,7 +116,7 @@ where "AL_isEmp l = (\<forall> a . l\<down>a = None)"
 definition contained::"('a,'b) AssList \<Rightarrow> ('a,'b) AssList \<Rightarrow> bool"
 where "contained L M = (\<forall> a b . L\<down>a = Some b \<longrightarrow> M\<down>a = Some b)"
 
-text{*The following operation defined the cardinality of a map.*}
+text\<open>The following operation defined the cardinality of a map.\<close>
 
 fun AL_Size :: "('a, 'b) AssList \<Rightarrow> nat"  ("|_|" [1000] 1000) where
   "AL_Size [] = 0"
@@ -185,9 +185,9 @@ lemma updSize: "h\<down>a = Some obj \<Longrightarrow> |h[a\<mapsto>obj1]| = |h|
 by (insert updSizeAux [of h a obj1 "|h[a\<mapsto>obj1]|" obj], simp)
 (*>*)
 
-text{*Some obvious basic properties of association lists and their
+text\<open>Some obvious basic properties of association lists and their
 operations are easily proven, but have been suppressed
-during the document preparation.*}
+during the document preparation.\<close>
 
 (*<*)
 end

@@ -2,7 +2,7 @@ theory HeapSemantics
   imports EvalHeap "AList-Utils-Nominal" HasESem Iterative "Env-Nominal"
 begin
 
-subsubsection {* A locale for heap semantics, abstract in the expression semantics *}
+subsubsection \<open>A locale for heap semantics, abstract in the expression semantics\<close>
 
 context has_ESem
 begin
@@ -20,7 +20,7 @@ abbreviation HSem_syn ("\<lbrace> _ \<rbrace>_"  [0,60] 60)
 lemma HSem_def': "\<lbrace>\<Gamma>\<rbrace>\<rho> = (\<mu> \<rho>'. \<rho> ++\<^bsub>domA \<Gamma>\<^esub> \<^bold>\<lbrakk>\<Gamma>\<^bold>\<rbrakk>\<^bsub>\<rho>'\<^esub>)"
   unfolding HSem_def by simp
 
-subsubsection {* Induction and other lemmas about @{term HSem} *}
+subsubsection \<open>Induction and other lemmas about @{term HSem}\<close>
 
 lemma HSem_ind:
   assumes "adm P"
@@ -43,7 +43,7 @@ next
   case (3 \<rho>')
     show ?case
     by (rule override_on_belowI)
-       (auto simp add: lookupEvalHeap  below_trans[OF monofun_cfun_arg[OF `\<rho>' \<sqsubseteq> r`] h] rho)
+       (auto simp add: lookupEvalHeap  below_trans[OF monofun_cfun_arg[OF \<open>\<rho>' \<sqsubseteq> r\<close>] h] rho)
 qed
 
 lemma HSem_bot_below:
@@ -168,7 +168,7 @@ lemma env_restr_HSem_noop:
 lemma HSem_Nil[simp]: "\<lbrace>[]\<rbrace>\<rho> = \<rho>"
   by (subst HSem_eq, simp)
 
-subsubsection {* Substitution *}
+subsubsection \<open>Substitution\<close>
 
 lemma HSem_subst_exp:
   assumes "\<And>\<rho>'. \<lbrakk> e \<rbrakk>\<^bsub>\<rho>'\<^esub> = \<lbrakk> e' \<rbrakk>\<^bsub>\<rho>'\<^esub>"
@@ -186,7 +186,7 @@ lemma HSem_subst_expr:
   shows "\<lbrace>(x, e1) # \<Gamma>\<rbrace>\<rho> = \<lbrace>(x, e2) # \<Gamma>\<rbrace>\<rho>"
   by (metis assms HSem_subst_expr_below below_antisym)
 
-subsubsection {* Re-calculating the semantics of the heap is idempotent *} 
+subsubsection \<open>Re-calculating the semantics of the heap is idempotent\<close> 
 
 lemma HSem_redo:
   shows "\<lbrace>\<Gamma>\<rbrace>(\<lbrace>\<Gamma> @ \<Delta>\<rbrace>\<rho>) f|` (edom \<rho> \<union> domA \<Delta>) = \<lbrace>\<Gamma> @ \<Delta>\<rbrace>\<rho>" (is "?LHS = ?RHS")
@@ -209,13 +209,13 @@ proof (rule below_antisym)
     next
     case False
       hence delta: "x \<in> domA \<Delta>" using prems by auto
-      with False `?LHS \<sqsubseteq> ?RHS`
+      with False \<open>?LHS \<sqsubseteq> ?RHS\<close>
       show ?thesis by (auto simp add: lookup_HSem_other lookup_HSem_heap monofun_cfun_arg)
     qed
   qed
 qed
 
-subsubsection {* Iterative definition of the heap semantics *}
+subsubsection \<open>Iterative definition of the heap semantics\<close>
 
 lemma iterative_HSem:
   assumes "x \<notin> domA \<Gamma>"
@@ -261,7 +261,7 @@ proof-
   show ?thesis.
 qed
 
-subsubsection {* Fresh variables on the heap are irrelevant *}
+subsubsection \<open>Fresh variables on the heap are irrelevant\<close>
 
 lemma HSem_ignores_fresh_restr':
   assumes "fv \<Gamma> \<subseteq> S"
@@ -283,9 +283,9 @@ next
     have "fv (the (map_of \<Gamma> x)) \<inter> S = fv (the (map_of \<Gamma> x))" by auto
     with step
     have "y f|` fv (the (map_of \<Gamma> x)) = z f|` fv (the (map_of \<Gamma> x))" by auto
-    with `x \<in> domA \<Gamma>`
+    with \<open>x \<in> domA \<Gamma>\<close>
     show "\<lbrakk> the (map_of \<Gamma> x) \<rbrakk>\<^bsub>y\<^esub> = \<lbrakk> the (map_of \<Gamma> x) \<rbrakk>\<^bsub>z\<^esub>"
-      by (subst (1 2) assms(2)[OF `x \<in> domA \<Gamma>`]) simp
+      by (subst (1 2) assms(2)[OF \<open>x \<in> domA \<Gamma>\<close>]) simp
   qed
   moreover
   have "domA \<Gamma> \<subseteq> S" using domA_fv_subset assms(1) by auto
@@ -294,7 +294,7 @@ next
 qed
 end
 
-subsubsection {* Freshness *}
+subsubsection \<open>Freshness\<close>
 
 context has_ignore_fresh_ESem begin
  
@@ -373,7 +373,7 @@ apply (rule HSem_fresh_cong_below[OF eq_imp_below[OF assms]])
 apply (rule HSem_fresh_cong_below[OF eq_imp_below[OF assms[symmetric]]])
 done
 
-subsubsection {* Adding a fresh variable to a heap does not affect its semantics *} 
+subsubsection \<open>Adding a fresh variable to a heap does not affect its semantics\<close> 
 
 lemma HSem_add_fresh':
   assumes fresh: "atom x \<sharp> \<Gamma>"
@@ -386,7 +386,7 @@ next
   case 2 show ?case by auto
 next
   case prems: (3 y z)
-  have "env_delete x \<rho> = \<rho>" using `x \<notin> edom \<rho>` by (rule env_delete_noop)
+  have "env_delete x \<rho> = \<rho>" using \<open>x \<notin> edom \<rho>\<close> by (rule env_delete_noop)
   moreover
   from fresh have "x \<notin> domA \<Gamma>" by (metis domA_not_fresh)
   hence "env_delete x (\<^bold>\<lbrakk> (x, e) # \<Gamma> \<^bold>\<rbrakk>\<^bsub>y\<^esub>) = \<^bold>\<lbrakk> \<Gamma> \<^bold>\<rbrakk>\<^bsub>y\<^esub>"
@@ -398,7 +398,7 @@ next
     using prems(1) apply auto
     done
   ultimately
-  show ?case using `x \<notin> domA \<Gamma>`
+  show ?case using \<open>x \<notin> domA \<Gamma>\<close>
     by (simp add: env_delete_add)
 qed
 
@@ -415,7 +415,7 @@ proof(rule HSem_add_fresh'[OF assms], goal_cases)
     by (rule ESem_fresh_cong[OF env_restr_env_delete_other[symmetric]])
 qed
 
-subsubsection {* Mutual recursion with fresh variables *}
+subsubsection \<open>Mutual recursion with fresh variables\<close>
 
 lemma HSem_subset_below:
   assumes fresh: "atom ` domA \<Gamma> \<sharp>* \<Delta>" 
@@ -424,13 +424,13 @@ proof(rule HSem_below)
   fix x
   assume [simp]: "x \<in> domA \<Delta>"
   with assms have *: "atom ` domA \<Gamma> \<sharp>* the (map_of \<Delta> x)" by (metis fresh_star_map_of)
-  hence [simp]: "x \<notin> domA \<Gamma>" using fresh `x \<in> domA \<Delta>` by (metis fresh_star_def domA_not_fresh image_eqI)
+  hence [simp]: "x \<notin> domA \<Gamma>" using fresh \<open>x \<in> domA \<Delta>\<close> by (metis fresh_star_def domA_not_fresh image_eqI)
   show "\<lbrakk> the (map_of \<Delta> x) \<rbrakk>\<^bsub>(\<lbrace>\<Delta> @ \<Gamma>\<rbrace>\<rho>) f|` (- domA \<Gamma>)\<^esub> \<sqsubseteq> ((\<lbrace>\<Delta> @ \<Gamma>\<rbrace>\<rho>) f|` (- domA \<Gamma>)) x"
     by (simp add: lookup_HSem_heap ESem_ignores_fresh_restr[OF *, symmetric])
  qed (simp add: lookup_HSem_other lookup_env_restr_eq)
 
-text {* In the following lemma we show that the semantics of fresh variables can be be calculated
-together with the presently bound variables, or separately. *}
+text \<open>In the following lemma we show that the semantics of fresh variables can be be calculated
+together with the presently bound variables, or separately.\<close>
 
 lemma HSem_merge:
   assumes fresh: "atom ` domA \<Gamma> \<sharp>* \<Delta>"
@@ -493,7 +493,7 @@ proof(rule below_antisym)
 qed
 end
 
-subsubsection {* Parallel induction *}
+subsubsection \<open>Parallel induction\<close>
 
 lemma parallel_HSem_ind_different_ESem:
   assumes "adm (\<lambda>\<rho>'. P (fst \<rho>') (snd \<rho>'))"
@@ -513,7 +513,7 @@ proof-
     done
 qed
 
-subsubsection {* Congruence rule *}
+subsubsection \<open>Congruence rule\<close>
 
 lemma HSem_cong[fundef_cong]:
   "\<lbrakk> (\<And> e. e \<in> snd ` set heap2 \<Longrightarrow> ESem1 e = ESem2 e); heap1 = heap2  \<rbrakk>
@@ -521,7 +521,7 @@ lemma HSem_cong[fundef_cong]:
   unfolding has_ESem.HSem_def
   by (auto cong:evalHeap_cong)
 
-subsubsection {* Equivariance of the heap semantics *}
+subsubsection \<open>Equivariance of the heap semantics\<close>
 
 lemma HSem_eqvt[eqvt]:
   "\<pi> \<bullet> has_ESem.HSem ESem \<Gamma> = has_ESem.HSem (\<pi> \<bullet> ESem) (\<pi> \<bullet> \<Gamma>)"

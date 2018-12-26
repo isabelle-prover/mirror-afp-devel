@@ -164,7 +164,7 @@ subsection\<open>Simple IPs\<close>
   declare simple_matches.simps[simp del]
 
 subsection\<open>Merging Simple Matches\<close>
-  text\<open>@{typ "'i::len simple_match"} @{text \<and>} @{typ "'i::len simple_match"}\<close>
+  text\<open>@{typ "'i::len simple_match"} \<open>\<and>\<close> @{typ "'i::len simple_match"}\<close>
   
   fun simple_match_and :: "'i::len simple_match \<Rightarrow> 'i simple_match \<Rightarrow> 'i simple_match option" where
     "simple_match_and \<lparr>iiface=iif1, oiface=oif1, src=sip1, dst=dip1, proto=p1, sports=sps1, dports=dps1 \<rparr> 
@@ -278,7 +278,7 @@ subsection\<open>Further Properties of a Simple Firewall\<close>
 
 
 subsection\<open>Reality check: Validity of Simple Matches\<close>
-  text\<open>While it is possible to construct a @{text "simple_fw"} expression that only matches a source
+  text\<open>While it is possible to construct a \<open>simple_fw\<close> expression that only matches a source
   or destination port, such a match is not meaningful, as the presence of the port information is 
   dependent on the protocol. Thus, a match for a port should always include the match for a protocol.
   Additionally, prefixes should be zero on bits beyond the prefix length.
@@ -326,7 +326,7 @@ subsection\<open>Reality check: Validity of Simple Matches\<close>
         Decision FinalDeny" by eval
   
     private definition "example_simple_match2 \<equiv> example_simple_match1\<lparr> proto := ProtoAny \<rparr>"
-    text\<open>Thus, @{text "example_simple_match1"} is valid, but if we set its protocol match to any, it isn't anymore\<close>
+    text\<open>Thus, \<open>example_simple_match1\<close> is valid, but if we set its protocol match to any, it isn't anymore\<close>
     private lemma "simple_match_valid example_simple_match1" by eval
     private lemma "\<not> simple_match_valid example_simple_match2" by eval
   end
@@ -399,7 +399,7 @@ subsection\<open>Reality check: Validity of Simple Matches\<close>
 
 
 
-text{*The simple firewall does not care about tcp flags, payload, or any other packet extensions.*}
+text\<open>The simple firewall does not care about tcp flags, payload, or any other packet extensions.\<close>
 lemma simple_matches_extended_packet:
       "simple_matches m
         \<lparr>p_iiface = iifce,

@@ -1,12 +1,12 @@
-section {* Interface for Maps *}
+section \<open>Interface for Maps\<close>
 theory Imp_Map_Spec
 imports "../Sep_Main"
 begin
-text {*
+text \<open>
   This file specifies an abstract interface for map data structures. It can
   be implemented by concrete map data structures, as demonstrated in the 
   hash map example.
-*}
+\<close>
 
 locale imp_map = 
   fixes is_map :: "('k \<rightharpoonup> 'v) \<Rightarrow> 'm \<Rightarrow> assn"

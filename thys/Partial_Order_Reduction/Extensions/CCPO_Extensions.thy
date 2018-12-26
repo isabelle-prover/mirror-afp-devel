@@ -1,4 +1,4 @@
-section {* Chain-Complete Partial Orders *}
+section \<open>Chain-Complete Partial Orders\<close>
 
 theory CCPO_Extensions
 imports

@@ -4,7 +4,7 @@
     Maintainer:  Brian Huffman <brianh at cse.ogi.edu>
 *)
 
-section {* Inverse Functions *}
+section \<open>Inverse Functions\<close>
 
 theory OrdinalInverse
 imports OrdinalArith
@@ -141,7 +141,7 @@ proof
     assume "x \<le> F 0" then show ?thesis by (simp add: oInv_eq_0)
   next
     assume "F 0 \<le> x" show ?thesis
-      by (rule le_oInv, simp only: `x \<le> y` `F 0 \<le> x` order_trans [OF oInv_bound1])
+      by (rule le_oInv, simp only: \<open>x \<le> y\<close> \<open>F 0 \<le> x\<close> order_trans [OF oInv_bound1])
   qed
 qed
 
@@ -154,7 +154,7 @@ lemma (in normal) oInv_decreasing:
 done
 
 
-subsection {* Division *}
+subsection \<open>Division\<close>
 
 instantiation ordinal :: modulo
 begin
@@ -240,7 +240,7 @@ lemma ordinal_mod_0: "x mod 0 = (x::ordinal)"
 by (simp add: mod_ordinal_def)
 
 
-subsection {* Derived properties of division *}
+subsection \<open>Derived properties of division\<close>
 
 lemma ordinal_div_1 [simp]: "x div oSuc 0 = x"
 by (rule_tac r=0 in ordinal_divI, simp_all)
@@ -292,7 +292,7 @@ lemma ordinal_dvd_oLimit: "\<forall>n. x dvd f n \<Longrightarrow> x dvd oLimit 
 done
 
 
-subsection {* Logarithms *}
+subsection \<open>Logarithms\<close>
 
 definition
   oLog :: "ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal" where

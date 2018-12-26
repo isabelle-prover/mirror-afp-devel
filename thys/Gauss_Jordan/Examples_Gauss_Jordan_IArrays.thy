@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of computations over matrices represented as nested IArrays*}
+section\<open>Examples of computations over matrices represented as nested IArrays\<close>
 
 theory Examples_Gauss_Jordan_IArrays
 imports
@@ -16,20 +16,20 @@ imports
 (*"HOL-Library.Code_Real_Approx_By_Float"*)
 begin
 
-subsection{*Transformations between nested lists nested IArrays*}
+subsection\<open>Transformations between nested lists nested IArrays\<close>
 definition iarray_of_iarray_to_list_of_list :: "'a iarray iarray => 'a list list"
   where "iarray_of_iarray_to_list_of_list A = map IArray.list_of (map ((!!) A) [0..<IArray.length A])"
 
-text{*The following definitions are also in the file @{text "Examples_on_Gauss_Jordan_Abstract"}.*}
+text\<open>The following definitions are also in the file \<open>Examples_on_Gauss_Jordan_Abstract\<close>.\<close>
 
-text{*Definitions to transform a matrix to a list of list and vice versa*}
+text\<open>Definitions to transform a matrix to a list of list and vice versa\<close>
 definition vec_to_list :: "'a^'n::{finite, enum} => 'a list"
   where "vec_to_list A = map (($) A) (enum_class.enum::'n list)"
 
 definition matrix_to_list_of_list :: "'a^'n::{finite, enum}^'m::{finite, enum} => 'a list list"
   where "matrix_to_list_of_list A = map (vec_to_list) (map (($) A) (enum_class.enum::'m list))"
 
-text{*This definition should be equivalent to @{text "vector_def"} (in suitable types)*}
+text\<open>This definition should be equivalent to \<open>vector_def\<close> (in suitable types)\<close>
 definition list_to_vec :: "'a list => 'a^'n::{enum, mod_type}"
   where "list_to_vec xs = vec_lambda (% i. xs ! (to_nat i))"
 
@@ -42,12 +42,12 @@ definition list_of_list_to_matrix :: "'a list list => 'a^'n::{enum, mod_type}^'m
 lemma [code abstract]: "vec_nth (list_of_list_to_matrix xs) = (%i. list_to_vec (xs ! (to_nat i)))"
   unfolding list_of_list_to_matrix_def by auto
 
-subsection{*Examples*}
+subsection\<open>Examples\<close>
 
-text{*The following three lemmas are presented in both this file and in the 
-@{text "Examples_Gauss_Jordan_Abstract"} one. They allow a more convenient printing of rational and
+text\<open>The following three lemmas are presented in both this file and in the 
+\<open>Examples_Gauss_Jordan_Abstract\<close> one. They allow a more convenient printing of rational and
 real numbers after evaluation. They have already been added to the repository version of Isabelle, 
-so after Isabelle2014 they should be removed from here. *}
+so after Isabelle2014 they should be removed from here.\<close>
 
 lemma [code_post]:
   "int_of_integer (- 1) = - 1"
@@ -62,12 +62,12 @@ lemma [code_post]:
  "(of_rat (- (numeral k / numeral l)) :: real) = - numeral k / numeral l"
  by (simp_all add: of_rat_divide of_rat_minus)
 
-text{*From here on, we do the computations in two ways. The first one consists of executing the abstract functions (which internally will execute the ones over iarrays).
-The second one runs directly the functions over iarrays.*}
+text\<open>From here on, we do the computations in two ways. The first one consists of executing the abstract functions (which internally will execute the ones over iarrays).
+The second one runs directly the functions over iarrays.\<close>
 
-subsubsection{*Ranks, dimensions and Gauss Jordan algorithm*}
-text{*In the following examples, the theorem @{text "matrix_to_iarray_rank"} (which is the file @{text "Gauss_Jordan_IArrays"} 
-  and it is a code unfold theorem) assures that the computation will be carried out using the iarrays representation.*}
+subsubsection\<open>Ranks, dimensions and Gauss Jordan algorithm\<close>
+text\<open>In the following examples, the theorem \<open>matrix_to_iarray_rank\<close> (which is the file \<open>Gauss_Jordan_IArrays\<close> 
+  and it is a code unfold theorem) assures that the computation will be carried out using the iarrays representation.\<close>
 value "vec.dim (col_space (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4))"
 value "rank (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4)" 
 value "vec.dim (null_space (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::rat^5^4))"
@@ -77,12 +77,12 @@ value "rank_iarray (IArray[IArray[1::rat,0,0,7,5],IArray[1,0,4,8,-1],IArray[1,0,
 value "rank_iarray (IArray[IArray[1::real,0,1],IArray[1,1,0],IArray[0,1,1]])"
 value "rank_iarray (IArray[IArray[1::bit,0,1],IArray[1,1,0],IArray[0,1,1]])"
 
-text{*Examples on computing the Gauss Jordan algorithm.*}
+text\<open>Examples on computing the Gauss Jordan algorithm.\<close>
 value "iarray_of_iarray_to_list_of_list (matrix_to_iarray (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 1,Complex 1 (- 1), Complex 0 0],[Complex 2 (- 1),Complex 1 3, Complex 7 3]]::complex^3^2)))"
 value "iarray_of_iarray_to_list_of_list (Gauss_Jordan_iarrays(IArray[IArray[Complex 1 1,Complex 1 (- 1),Complex 0 0],IArray[Complex 2 (- 1),Complex 1 3,Complex 7 3]]))"
 
-subsubsection{*Inverse of a matrix*}
-text{*Examples on inverting matrices*}
+subsubsection\<open>Inverse of a matrix\<close>
+text\<open>Examples on inverting matrices\<close>
 
 definition "print_result_some_iarrays A = (if A = None then None else Some (iarray_of_iarray_to_list_of_list (the A)))" 
 
@@ -91,8 +91,8 @@ value "let A=(list_of_list_to_matrix [[1,1,2,4,5,9,8],[3,0,8,4,5,0,8],[3,2,0,4,5
 value "let A=(IArray[IArray[1::real,1,2,4,5,9,8],IArray[3,0,8,4,5,0,8],IArray[3,2,0,4,5,9,8],IArray[3,2,8,0,5,9,8],IArray[3,2,8,4,0,9,8],IArray[3,2,8,4,5,0,8],IArray[3,2,8,4,5,9,0]])
                     in print_result_some_iarrays (inverse_matrix_iarray A)"
 
-subsubsection{*Determinant of a matrix*}
-text{*Examples on computing determinants of matrices*}
+subsubsection\<open>Determinant of a matrix\<close>
+text\<open>Examples on computing determinants of matrices\<close>
 
 value "det (list_of_list_to_matrix ([[1,8,9,1,47],[7,2,2,5,9],[3,2,7,7,4],[9,8,7,5,1],[1,2,6,4,5]])::rat^5^5)"
 value "det (list_of_list_to_matrix [[1,2,7,8,9],[3,4,12,10,7],[-5,4,8,7,4],[0,1,2,4,8],[9,8,7,13,11]]::rat^5^5)"
@@ -110,8 +110,8 @@ IArray[800,376,331,363,840,737,911,886,456,848],
 IArray[900,737,280,370,121,195,958,862,957,754::real]])"
 
 
-subsubsection{*Bases of the fundamental subspaces*}
-text{*Examples on computing basis for null space, row space, column space and left null space.*}
+subsubsection\<open>Bases of the fundamental subspaces\<close>
+text\<open>Examples on computing basis for null space, row space, column space and left null space.\<close>
 (*Null_space basis:*)
 value "let A = (list_of_list_to_matrix ([[1,3,-2,0,2,0],[2,6,-5,-2,4,-3],[0,0,5,10,0,15],[2,6,0,8,4,18]])::real^6^4) 
   in vec_to_list` (basis_null_space A)"
@@ -157,11 +157,11 @@ value "let A = (IArray[IArray[3::real,4,0,7],IArray[1,-5,2,-2],IArray[-1,4,0,3],
   in IArray.list_of` (basis_left_null_space_iarrays A)"
 
 
-subsubsection{*Consistency and inconsistency*}
+subsubsection\<open>Consistency and inconsistency\<close>
 
-text{*Examples on checking the consistency/inconsistency of a system of equations. The theorems @{text "matrix_to_iarray_independent_and_consistent"} and 
-@{text "matrix_to_iarray_dependent_and_consistent"} which are code theorems and they are in the file @{text "System_Of_Equations_IArrays"}
-assure the execution using the iarrays representation.*}
+text\<open>Examples on checking the consistency/inconsistency of a system of equations. The theorems \<open>matrix_to_iarray_independent_and_consistent\<close> and 
+\<open>matrix_to_iarray_dependent_and_consistent\<close> which are code theorems and they are in the file \<open>System_Of_Equations_IArrays\<close>
+assure the execution using the iarrays representation.\<close>
 
 value "independent_and_consistent (list_of_list_to_matrix ([[1,0,0],[0,1,0],[0,0,1],[0,0,0],[0,0,0]])::real^3^5) (list_to_vec([2,3,4,0,0])::real^5)"
 value "consistent (list_of_list_to_matrix ([[1,0,0],[0,1,0],[0,0,1],[0,0,0],[0,0,0]])::real^3^5) (list_to_vec([2,3,4,0,0])::real^5)"
@@ -170,8 +170,8 @@ value "dependent_and_consistent (list_of_list_to_matrix ([[1,0,0],[0,1,0]])::rea
 value "independent_and_consistent (mat 1::real^3^3) (list_to_vec([3,4,5])::real^3)"
 
 
-subsubsection{*Solving systems of linear equations*}
-text{*Examples on solving linear systems.*}
+subsubsection\<open>Solving systems of linear equations\<close>
+text\<open>Examples on solving linear systems.\<close>
 definition "print_result_system_iarrays A = (if A = None then None else Some (IArray.list_of (fst (the A)), IArray.list_of` (snd (the A))))" 
 
 value "let A = (list_of_list_to_matrix [[0,0,0],[0,0,0],[0,0,1]]::real^3^3); b=(list_to_vec [4,5,0]::real^3);

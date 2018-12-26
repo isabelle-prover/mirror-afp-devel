@@ -1,19 +1,19 @@
-section {* \isaheader{Fold-Combinator} *}
+section \<open>\isaheader{Fold-Combinator}\<close>
 theory Refine_Fold
 imports Collections.Refine_Dflt_Only_ICF
 begin
-  text {*
+  text \<open>
     In this theory, we explore the usage of the partial-function package, and
     define a function with a higher-order argument. As example, we choose a
     nondeterministic fold-operation on lists.
-    *}
+\<close>
 
-  text {*
+  text \<open>
     Note that the function @{const nfoldli}, which is included in the 
     refinement framework by default, is similar to this function.
     Also, the parametricity based proof technique used there should
     be prefered to this example.
-    *}
+\<close>
 
   partial_function (nrec) rfoldl where
     "rfoldl f s l = (case l of 
@@ -21,8 +21,8 @@ begin
       | x#ls \<Rightarrow> do { s\<leftarrow>f s x; rfoldl f s ls}
     )"
 
-  text {* Currently, we have to manually state the standard simplification 
-    lemmas: *}
+  text \<open>Currently, we have to manually state the standard simplification 
+    lemmas:\<close>
   lemma rfoldl_simps[simp]: 
     "rfoldl f s [] = RETURN s"
     "rfoldl f s (x#ls) = do { s\<leftarrow>f s x; rfoldl f s ls}"
@@ -59,12 +59,12 @@ begin
     apply simp
     done
 
-  subsection {* Example *}
-  text {*
+  subsection \<open>Example\<close>
+  text \<open>
     As example application, we define a program that takes as input a list
     of non-empty sets of natural numbers, picks some number of each list,
     and adds up the picked numbers.
-    *}
+\<close>
   definition "pick_sum (s0::nat) l \<equiv>
     rfoldl (\<lambda>s x. do {
       ASSERT (x\<noteq>{});

@@ -2553,7 +2553,7 @@ lemma lower_set_imp_not_SN_on:
 
 lemma SN_on_Image_rtrancl_iff[simp]: "SN_on R (R\<^sup>* `` X) \<longleftrightarrow> SN_on R X" (is "?l = ?r")
 proof(intro iffI)
-  assume "?l" show "?r" by (rule SN_on_subset2[OF _ `?l`], auto)
+  assume "?l" show "?r" by (rule SN_on_subset2[OF _ \<open>?l\<close>], auto)
 qed (fact SN_on_Image_rtrancl)
 
 lemma O_mono1: "R \<subseteq> R' \<Longrightarrow> S O R \<subseteq> S O R'" by auto

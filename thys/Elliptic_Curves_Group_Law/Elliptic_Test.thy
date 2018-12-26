@@ -228,10 +228,10 @@ lemma (in residues_prime_gt2) on_curve_residues_eq:
 
 subsection \<open>The NIST Curve P-521\<close>
 
-text {*
+text \<open>
 The following test data is taken from RFC 5903 \cite{RFC5903}, \S 3.3 and \S 8.3.
 The curve parameters can also be found in \S D.1.2.5 of FIPS PUB 186-4 \cite{FIPS186-4}.
-*}
+\<close>
 
 definition m :: int where
   "m = 0x01FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"

@@ -1,23 +1,23 @@
-section {* Syntactic Matching in the Simplifier *}
+section \<open>Syntactic Matching in the Simplifier\<close>
 theory Syntax_Match
 imports Main
 begin
 
-subsection {* Non-Matching *}
+subsection \<open>Non-Matching\<close>
 
-text {*
-  We define the predicates @{text "syntax_nomatch"} 
-  and @{text "syntax_fo_nomatch"}. The expression 
-  @{text "syntax_nomatch pattern object"} is simplified to true only if 
-  the term @{text "pattern"} syntactically matches the term @{text "object"}. 
-  Note that, semantically, @{text "syntax_nomatch pattern object"} is always
-  true. While @{text "syntax_nomatch"} does higher-order matching, 
-  @{text "syntax_fo_nomatch"} does first-order matching.
+text \<open>
+  We define the predicates \<open>syntax_nomatch\<close> 
+  and \<open>syntax_fo_nomatch\<close>. The expression 
+  \<open>syntax_nomatch pattern object\<close> is simplified to true only if 
+  the term \<open>pattern\<close> syntactically matches the term \<open>object\<close>. 
+  Note that, semantically, \<open>syntax_nomatch pattern object\<close> is always
+  true. While \<open>syntax_nomatch\<close> does higher-order matching, 
+  \<open>syntax_fo_nomatch\<close> does first-order matching.
 
   The intended application of these predicates are as guards for simplification
   rules, enforcing additional syntactic restrictions on the applicability of
   the simplification rule.
-*}
+\<close>
 definition syntax_nomatch :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
   where syntax_nomatch_def: "syntax_nomatch pat obj \<equiv> True"
 definition syntax_fo_nomatch :: "'a \<Rightarrow> 'b \<Rightarrow> bool" 
@@ -27,7 +27,7 @@ definition syntax_fo_nomatch :: "'a \<Rightarrow> 'b \<Rightarrow> bool"
 lemma [cong]: "syntax_fo_nomatch x y = syntax_fo_nomatch x y" by simp
 lemma [cong]: "syntax_nomatch x y = syntax_nomatch x y" by simp
 
-ML {*
+ML \<open>
 structure Syntax_Match = struct
   val nomatch_thm = @{thm syntax_nomatch_def};
   val fo_nomatch_thm = @{thm syntax_fo_nomatch_def};
@@ -55,21 +55,21 @@ structure Syntax_Match = struct
     if Pattern.matches thy (pat,obj) then NONE else SOME nomatch_thm
   end
 end
-*}
+\<close>
 simproc_setup nomatch ("syntax_nomatch pat obj") 
-  = {* K Syntax_Match.nomatch_simproc *}
+  = \<open>K Syntax_Match.nomatch_simproc\<close>
 simproc_setup fo_nomatch ("syntax_fo_nomatch pat obj") 
-  = {* K Syntax_Match.fo_nomatch_simproc *}
+  = \<open>K Syntax_Match.fo_nomatch_simproc\<close>
 
 
-subsection {* Examples *}
-subsubsection {* Ordering AC-structures *}
-text {*
+subsection \<open>Examples\<close>
+subsubsection \<open>Ordering AC-structures\<close>
+text \<open>
   Currently, the simplifier rules for ac-rewriting only work when
   associativity groups to the right. Here, we define rules that work for
   associativity grouping to the left. They are useful for operators where 
   syntax is parsed (and pretty-printed) left-associative.
-*}
+\<close>
 
 locale ac_operator =
   fixes f
@@ -103,8 +103,8 @@ interpretation add: ac_operator "(+) ::'a::ab_semigroup_add \<Rightarrow> _ \<Ri
   apply (simp_all add: ac_simps)
   done
 
-text {* Attention: @{text "conj_assoc"} is in standard simpset, it has to be 
-  removed when using @{text "conj.left_ac"} ! *}
+text \<open>Attention: \<open>conj_assoc\<close> is in standard simpset, it has to be 
+  removed when using \<open>conj.left_ac\<close> !\<close>
 interpretation conj: ac_operator "(\<and>)"
   by unfold_locales auto
 interpretation disj: ac_operator "(\<or>)"

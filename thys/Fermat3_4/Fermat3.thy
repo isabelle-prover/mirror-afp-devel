@@ -2,7 +2,7 @@
     Author:     Roelof Oosterhuis, 2007  Rijksuniversiteit Groningen
 *)
 
-section {* Fermat's last theorem, case $n=3$ *}
+section \<open>Fermat's last theorem, case $n=3$\<close>
 
 theory Fermat3
 imports Quad_Form
@@ -11,7 +11,7 @@ begin
 context
 begin
 
-text {* Proof of Fermat's last theorem for the case $n=3$: $$\forall x,y,z:~x^3 + y^3 = z^3 \Longrightarrow xyz=0.$$ *}
+text \<open>Proof of Fermat's last theorem for the case $n=3$: $$\forall x,y,z:~x^3 + y^3 = z^3 \Longrightarrow xyz=0.$$\<close>
 
 (* TODO: this lemma is also used in Fermat4 with a slightly different generalization to ints.
 Maybe it should be generalized to factorial rings and moved to another theory. *)
@@ -92,7 +92,7 @@ proof -
   ultimately show False by arith
 qed
 
-text {* Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $coprime v w$ and $x$ even, by constructing a solution with a smaller $|x^3|$. *}
+text \<open>Shows there exists no solution $v^3+w^3 = x^3$ with $vwx\ne 0$ and $coprime v w$ and $x$ even, by constructing a solution with a smaller $|x^3|$.\<close>
 
 private lemma no_rewritten_fermat3: 
   "\<not> (\<exists> v w. v^3+w^3 = x^3 \<and> v*w*x \<noteq> 0 \<and> even (x::int) \<and> coprime v w)"
@@ -156,7 +156,7 @@ next
       moreover have "?g \<ge> 0" by simp
       ultimately have "?g = 0" by arith
       hence "p = 0" by simp
-      with vwpq vwx `0 < nat\<bar>x^3\<bar>` show False by auto
+      with vwpq vwx \<open>0 < nat\<bar>x^3\<bar>\<close> show False by auto
     qed
     have gOdd: "odd ?g"
     proof (rule ccontr)
@@ -313,7 +313,7 @@ next
         also with albega have "\<dots> = \<gamma>^3 *((a+3*b)*(a- 3*b)*?A)" by auto
         finally have eq: "\<bar>x^3\<bar> = \<bar>\<gamma>^3\<bar> * \<bar>(a+3*b)*(a- 3*b)*?A\<bar>"
           by (auto simp add: abs_mult)
-        with `0 < nat\<bar>x^3\<bar>` have "\<bar>(a+3*b)*(a- 3*b)*?A\<bar> > 0" by auto
+        with \<open>0 < nat\<bar>x^3\<bar>\<close> have "\<bar>(a+3*b)*(a- 3*b)*?A\<bar> > 0" by auto
         hence eqpos: "\<bar>(a+3*b)*(a- 3*b)\<bar> > 0" by auto
         moreover have Ag1: "\<bar>?A\<bar> > 1"
         proof -
@@ -348,7 +348,7 @@ next
         moreover have "\<bar>\<gamma>^3\<bar> > 0"
         proof - 
           from eq have "\<bar>\<gamma>^3\<bar> = 0 \<Longrightarrow> \<bar>x^3\<bar>=0" by auto
-          with `0 < nat\<bar>x^3\<bar>` show ?thesis by auto
+          with \<open>0 < nat\<bar>x^3\<bar>\<close> show ?thesis by auto
         qed
         ultimately have "\<bar>\<gamma>^3\<bar> * 1 < \<bar>\<gamma>^3\<bar> * \<bar>(a+3*b)*(a- 3*b)*?A\<bar>"
           by (rule zmult_zless_mono2)
@@ -573,13 +573,13 @@ next
         also with a1 have "\<dots> = \<gamma>^3 *(9*(a+b)*(a-b)*?A)" by auto
         finally have eq: "\<bar>x^3\<bar> = \<bar>\<gamma>^3\<bar> * \<bar>9*(a+b)*(a-b)*?A\<bar>" 
           by (auto simp add: abs_mult)
-        with `0 < nat\<bar>x^3\<bar>` have "\<bar>9*(a+b)*(a-b)*?A\<bar> > 0" by auto
+        with \<open>0 < nat\<bar>x^3\<bar>\<close> have "\<bar>9*(a+b)*(a-b)*?A\<bar> > 0" by auto
         hence "\<bar>(a+b)*(a-b)*?A\<bar> \<ge> 1" by arith
         hence "\<bar>9*(a+b)*(a-b)*?A\<bar> > 1" by arith
         moreover have "\<bar>\<gamma>^3\<bar> > 0"
         proof - 
           from eq have "\<bar>\<gamma>^3\<bar> = 0 \<Longrightarrow> \<bar>x^3\<bar>=0" by auto
-          with `0 < nat\<bar>x^3\<bar>` show ?thesis by auto
+          with \<open>0 < nat\<bar>x^3\<bar>\<close> show ?thesis by auto
         qed
         ultimately have "\<bar>\<gamma>^3\<bar> * 1 < \<bar>\<gamma>^3\<bar> * \<bar>9*(a+b)*(a-b)*?A\<bar>"
           by (rule zmult_zless_mono2)
@@ -592,7 +592,7 @@ next
   thus ?case by auto
 qed
 
-text {* The theorem. Puts equation in requested shape. *}  
+text \<open>The theorem. Puts equation in requested shape.\<close>  
 
 theorem fermat_3:
   assumes ass: "(x::int)^3 + y^3 = z^3"
@@ -673,7 +673,7 @@ proof (rule ccontr)
           using power_Suc [of b 2] dvd_diff [of h "a ^ 3 + b ^ 3" "b ^ 3"] by simp
         with hb3 show "h dvd a^3" "h dvd b^3" using power_Suc[of b 2] by auto
       qed
-      ultimately have "?Q u v w" using `even a` by simp
+      ultimately have "?Q u v w" using \<open>even a\<close> by simp
       hence ?thesis by auto }
     moreover 
     { assume "even b"
@@ -699,7 +699,7 @@ proof (rule ccontr)
           using power_Suc [of a 2] dvd_diff [of h "a ^ 3 + b ^ 3" "a ^ 3"] by simp
         with hb3 show "h dvd a^3" and "h dvd b^3" using power_Suc[of a 2] by auto
       qed
-      ultimately have "?Q u v w" using `even b` by simp
+      ultimately have "?Q u v w" using \<open>even b\<close> by simp
       hence ?thesis by auto }
     moreover 
     { assume "even ?c"

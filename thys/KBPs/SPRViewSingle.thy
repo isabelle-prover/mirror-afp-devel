@@ -16,16 +16,16 @@ imports
 begin
 (*>*)
 
-subsection{*Perfect Recall for a Single Agent*}
+subsection\<open>Perfect Recall for a Single Agent\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-spr-single-agent}
 
 We capture our expectations of a single-agent scenario in the
 following locale:
 
-*}
+\<close>
 
 locale FiniteSingleAgentEnvironment =
   FiniteEnvironment jkbp envInit envAction envTrans envVal envObs
@@ -38,18 +38,18 @@ locale FiniteSingleAgentEnvironment =
 + fixes agent :: "'a"
   assumes envSingleAgent: "a = agent"
 
-text{*
+text\<open>
 
 As per the clock semantics of \S\ref{sec:kbps-theory-clock-view}, we
 assume that the set of states is finite and linearly ordered. We give
-the sole agent the name @{text "agent"}.
+the sole agent the name \<open>agent\<close>.
 
 Our simulation is quite similar to the one for the clock semantics of
 \S\ref{sec:kbps-theory-clock-view}: it records the set of worlds that
 the agent considers possible relative to a trace and the SPR view. The
 key difference is that it is path-sensitive:
 
-*}
+\<close>
 
 context FiniteSingleAgentEnvironment
 begin
@@ -96,14 +96,14 @@ lemma spr_sim_simps[simp]:
   unfolding spr_sim_def by simp
 
 (*>*)
-text{*
+text\<open>
 
 The Kripke structure for this simulation relates worlds for @{term
 "agent"} if the sets of states it considers possible coincide, and the
 observation of the final states of the trace is the same. Propositions
 are evaluated at the final state.
 
-*}
+\<close>
 
 definition spr_simRels :: "'a \<Rightarrow> 's spr_simWorlds Relation" where
   "spr_simRels \<equiv> \<lambda>a. { ((U, u), (V, v)) |U u V v.
@@ -145,12 +145,12 @@ proof
 qed
 
 (*>*)
-text{*
+text\<open>
 
 Demonstrating that this is a simulation
 (\S\ref{sec:kripke-theory-simulations}) is straightforward.
 
-*}
+\<close>
 
 lemma spr_sim: "sim SPR.MC spr_simMC spr_sim"
 (*<*)
@@ -164,7 +164,7 @@ next
 qed auto
 
 (*>*)
-text{**}
+text\<open>\<close>
 end (* context FiniteSingleAgentEnvironment *)
 
 sublocale FiniteSingleAgentEnvironment
@@ -177,9 +177,9 @@ sublocale FiniteSingleAgentEnvironment
 
 (* **************************************** *)
 
-subsubsection{* Representations *}
+subsubsection\<open>Representations\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-spr-single-rep}
 
@@ -190,30 +190,30 @@ trace @{term "t"} is isomorphic to the set of states that are possible
 given the sequence of observations made by @{term "agent"} on @{term
 "t"}. Therefore we have a very simple representation:
 
-*}
+\<close>
 
 context FiniteSingleAgentEnvironment
 begin
 
 type_synonym (in -) 's spr_simWorldsRep = "'s odlist"
 
-text{*
+text\<open>
 
 It is very easy to map these representations back to simulated
 equivalence classes:
 
-*}
+\<close>
 
 definition
   spr_simAbs :: "'s spr_simWorldsRep \<Rightarrow> 's spr_simWorlds set"
 where
   "spr_simAbs \<equiv> \<lambda>ss. { (toSet ss, s) |s. s \<in> toSet ss }"
 
-text{*
+text\<open>
 
 This time our representation is unconditionally canonical:
 
-*}
+\<close>
 
 lemma spr_simAbs_inj: "inj spr_simAbs"
 (*<*)
@@ -258,13 +258,13 @@ lemma spr_simAbs_list:
   unfolding spr_simAbs_def Set.image_def by auto
 
 (*>*)
-text{*
+text\<open>
 
 We again make use of the following Kripke structure, where the worlds
 are the final states of the subset of the temporal slice that @{term
 "agent"} believes possible:
 
-*}
+\<close>
 
 definition spr_repRels :: "'a \<Rightarrow> ('s \<times> 's) set" where
   "spr_repRels \<equiv> \<lambda>a. { (s, s'). envObs a s' = envObs a s }"
@@ -272,13 +272,13 @@ definition spr_repRels :: "'a \<Rightarrow> ('s \<times> 's) set" where
 abbreviation spr_repMC :: "'s set \<Rightarrow> ('a, 'p, 's) KripkeStructure" where
   "spr_repMC \<equiv> \<lambda>X. mkKripke X spr_repRels envVal"
 
-text{*
+text\<open>
 
 Similarly we show that this Kripke structure is adequate by
 introducing an intermediate structure and connecting them all with a
 tower of simulations:
 
-*}
+\<close>
 
 abbreviation spr_jkbpCSt :: "'s Trace \<Rightarrow> 's spr_simWorlds set" where
   "spr_jkbpCSt t \<equiv> SPRsingle.sim_equiv_class agent t"
@@ -309,7 +309,7 @@ lemma spr_simRep_sim_simps[simp]:
   unfolding spr_repSim_def spr_sim_def Set.image_def by auto
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma spr_repSim:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -354,23 +354,23 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
 As before, the following sections discharge the requirements of the
-@{text "Algorithm"} locale of Figure~\ref{fig:kbps-alg-alg-locale}.
+\<open>Algorithm\<close> locale of Figure~\ref{fig:kbps-alg-alg-locale}.
 
-*}
+\<close>
 
 (* **************************************** *)
 
-subsubsection{* Initial states *}
+subsubsection\<open>Initial states\<close>
 
-text{*
+text\<open>
 
 The initial states of the automaton for @{term "agent"} is simply the
 partition of @{term "envInit"} under @{term "agent"}'s observation.
 
-*}
+\<close>
 
 definition (in -)
   spr_simInit :: "('s :: linorder) list \<Rightarrow> ('a \<Rightarrow> 's \<Rightarrow> 'obs)
@@ -386,7 +386,7 @@ where
   "spr_simInit \<equiv> SPRViewSingle.spr_simInit envInit envObs"
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma spr_simInit:
   assumes "iobs \<in> envObs a ` set envInit"
@@ -411,14 +411,14 @@ lemma spr_simInit:
 
 (* **************************************** *)
 
-subsubsection{* Simulated observations *}
+subsubsection\<open>Simulated observations\<close>
 
-text{*
+text\<open>
 
 As the agent makes the same observation on the entire equivalence
 class, we arbitrarily choose the first element of the representation:
 
-*}
+\<close>
 
 definition (in -)
   spr_simObs :: "('a \<Rightarrow> 's \<Rightarrow> 'obs)
@@ -433,7 +433,7 @@ where
   "spr_simObs \<equiv> SPRViewSingle.spr_simObs envObs"
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 lemma spr_simObs:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -453,9 +453,9 @@ qed
 
 (* **************************************** *)
 
-subsubsection{* Evaluation *}
+subsubsection\<open>Evaluation\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-spr-single-agent-eval}
 
@@ -466,7 +466,7 @@ Intuitively @{term "eval"} yields the subset of @{term "X"} where the
 formula holds, where @{term "X"} is taken to be a representation of a
 canonical equivalence class for @{term "agent"}.
 
-*}
+\<close>
 
 fun (in -)
   eval :: "(('s :: linorder) \<Rightarrow> 'p \<Rightarrow> bool)
@@ -479,7 +479,7 @@ where
 | "eval val X (Kcknows as \<phi>) =
                      (if as = [] \<or> eval val X \<phi> = X then X else ODList.empty)"
 
-text{*
+text\<open>
 
 In general this is less efficient than the tableau approach of
 \citet[Proposition~3.2.1]{FHMV:1995}, which labels all states with all
@@ -489,7 +489,7 @@ is much smaller than the set of all system states.
 Showing that this corresponds with the standard models relation is
 routine.
 
-*}
+\<close>
 (*<*)
 
 lemma eval_ec_subseteq:
@@ -542,14 +542,14 @@ lemma eval_models:
 
 (* **************************************** *)
 
-subsubsection{* Simulated actions *}
+subsubsection\<open>Simulated actions\<close>
 
-text{*
+text\<open>
 
 The actions enabled on a canonical equivalence class are those for
 which @{term "eval"} yields a non-empty set of states:
 
-*}
+\<close>
 
 definition (in -)
   spr_simAction :: "('a, 'p, 'aAct) KBP \<Rightarrow> (('s :: linorder) \<Rightarrow> 'p \<Rightarrow> bool)
@@ -565,12 +565,12 @@ where
   "spr_simAction \<equiv> SPRViewSingle.spr_simAction (jkbp agent) envVal"
 
 (*>*)
-text{*
+text\<open>
 
 The key lemma relates the agent's behaviour on an equivalence class to
 that on its representation:
 
-*}
+\<close>
 
 lemma spr_simAction_jAction:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -650,12 +650,12 @@ next
 qed (insert s, auto)
 
 (*>*)
-text{*
+text\<open>
 
-The @{text "Algorithm"} locale requires the following lemma, which is
+The \<open>Algorithm\<close> locale requires the following lemma, which is
 a straightforward chaining of the above simulations.
 
-*}
+\<close>
 
 lemma spr_simAction:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -684,14 +684,14 @@ qed
 
 (* **************************************** *)
 
-subsubsection{* Simulated transitions *}
+subsubsection\<open>Simulated transitions\<close>
 
-text{*
+text\<open>
 
 It is straightforward to determine the possible successor states of a
 given canonical equivalence class @{term "X"}:
 
-*}
+\<close>
 
 definition (in -)
   spr_trans :: "('a, 'p, 'aAct) KBP
@@ -711,12 +711,12 @@ where
   "spr_trans \<equiv> SPRViewSingle.spr_trans (jkbp agent) envAction envTrans envVal"
 
 (*>*)
-text{*
+text\<open>
 
 Using this function we can determine the set of possible successor
 equivalence classes from @{term "X"}:
 
-*}
+\<close>
 
 abbreviation (in -) envObs_rel :: "('s \<Rightarrow> 'obs) \<Rightarrow> 's \<times> 's \<Rightarrow> bool" where
   "envObs_rel envObs \<equiv> \<lambda>(s, s'). envObs s' = envObs s"
@@ -825,15 +825,15 @@ next
 qed
 
 (*>*)
-text{*
+text\<open>
 
-The @{text "partition"} function splits a list into equivalence
+The \<open>partition\<close> function splits a list into equivalence
 classes under the given equivalence relation.
 
-The property asked for by the @{text "Algorithm"} locale follows from
-the properties of @{text "partition"} and @{text "spr_trans"}:
+The property asked for by the \<open>Algorithm\<close> locale follows from
+the properties of \<open>partition\<close> and \<open>spr_trans\<close>:
 
-*}
+\<close>
 
 lemma spr_simTrans:
   assumes tC: "t \<in> SPR.jkbpC"
@@ -926,15 +926,15 @@ proof -
 qed
 
 (*>*)
-text{**}
+text\<open>\<close>
 
 end (* context FiniteSingleAgentEnvironment *)
 
 (* **************************************** *)
 
-subsubsection{* Maps *}
+subsubsection\<open>Maps\<close>
 
-text{*
+text\<open>
 
 \label{sec:kbps-theory-spr-single-maps}
 
@@ -942,7 +942,7 @@ As in \S\ref{sec:kbps-theory-clock-view-maps}, we use a pair of tries
 and an association list to handle the automata representation. Recall
 that the keys of these tries are lists of system states.
 
-*}
+\<close>
 
 type_synonym ('s, 'obs) spr_trans_trie = "('s, ('obs, 's odlist) mapping) trie"
 type_synonym ('s, 'aAct) spr_acts_trie = "('s, ('s, 'aAct) trie) trie"
@@ -1000,13 +1000,13 @@ qed
 
 (*>*)
 
-subsubsection{* Locale instantiation *}
+subsubsection\<open>Locale instantiation\<close>
 
-text{*
+text\<open>
 
 The above is sufficient to instantiate the @{term "Algorithm"} locale.
 
-*}
+\<close>
 
 sublocale FiniteSingleAgentEnvironment
         < SPRsingle: Algorithm
@@ -1093,12 +1093,12 @@ lemma (in FiniteSingleAgentEnvironment)
   unfolding mkSPRSingleAuto_def SPRSingleAutoDFS_def mkAlgAuto_def alg_mk_auto_def by (simp add: Let_def)
 
 (*>*)
-text{*
+text\<open>
 
 We use this theory to synthesise a solution to the robot of
 \S\ref{sec:kbps-robot-intro} in \S\ref{sec:kbps-theory-robot}.
 
-*}
+\<close>
 (*<*)
 
 end

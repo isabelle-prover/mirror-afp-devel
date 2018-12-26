@@ -147,9 +147,9 @@ proof (induction n arbitrary: q)
             using r_def nxt_run_sink_free by metis
           moreover
           obtain q' where "q' \<in> set (r n)" and "\<delta> q' (w n) = q"
-            using `q \<in> set (r (Suc n))` nxt_run_reverse_step[OF _ `q \<noteq> q\<^sub>0`] unfolding r_def by blast
+            using \<open>q \<in> set (r (Suc n))\<close> nxt_run_reverse_step[OF _ \<open>q \<noteq> q\<^sub>0\<close>] unfolding r_def by blast
           hence "configuration q (Suc n) \<noteq> {}" and "\<not> sink q"
-            unfolding configuration_step_eq[OF True] Suc using True `\<not> sink q` by auto
+            unfolding configuration_step_eq[OF True] Suc using True \<open>\<not> sink q\<close> by auto
         }
         moreover
         {
@@ -158,12 +158,12 @@ proof (induction n arbitrary: q)
             unfolding configuration_step_eq[OF True] by blast
           moreover 
           hence "\<not>sink q'"
-            using `\<not>sink q` sink_rev_step assms by blast
+            using \<open>\<not>sink q\<close> sink_rev_step assms by blast
           ultimately
           have "q' \<in> set (r n)"
             unfolding Suc by blast
           hence "q \<in> set (r (Suc n))"
-            using `\<delta> q' (w n) = q` `\<not>sink q` 
+            using \<open>\<delta> q' (w n) = q\<close> \<open>\<not>sink q\<close> 
             unfolding r_def run.simps set_filter comp_def remdups_fwd_set set_map set_append image_def
             unfolding r_def[symmetric] by auto
         }
@@ -209,17 +209,17 @@ proof (induction n)
           hence "p = q\<^sub>0" and q_def: "filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) (r n)) = zs @ [q] @ zs'"
             using step_def unfolding sink_def by simp+
           hence "q\<^sub>0 \<notin> set (filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) (r n)))"
-            using `p \<notin> set zs \<union> set zs' \<union> {q}`  unfolding `p = q\<^sub>0` sink_def by simp
+            using \<open>p \<notin> set zs \<union> set zs' \<union> {q}\<close>  unfolding \<open>p = q\<^sub>0\<close> sink_def by simp
           hence "q\<^sub>0 \<notin> (\<lambda>q. \<delta> q (w n)) ` {q'. configuration q' n \<noteq> {}}"
             using nxt_run_configuration bounded_w unfolding set_map set_filter r_def sink_def init.simps by blast
           hence "configuration p (Suc n) = {Suc n}" using assms
-            unfolding `p = q\<^sub>0` using configuration_step_eq_q\<^sub>0 by blast
+            unfolding \<open>p = q\<^sub>0\<close> using configuration_step_eq_q\<^sub>0 by blast
           hence "?f_Suc_n p = Suc n"
            using assms  by force
           moreover
           have "q \<in> (\<lambda>q. \<delta> q (w n)) ` set (r n)"
-            using  `p \<notin> set zs \<union> set zs' \<union> {q}` image_set unfolding filter_map_split_iff[of "(\<lambda>q. \<not> sink q)" "\<lambda>q. \<delta> q (w n)"] 
-            by (metis (no_types, lifting) Un_insert_right `p = q\<^sub>0`  `{q, p} \<subseteq> set [q\<leftarrow>map (\<lambda>q. \<delta> q (w n)) (r n) @ [q\<^sub>0] . \<not> sink q]` append_Nil2 insert_iff insert_subset list.simps(15) mem_Collect_eq set_append set_filter)  
+            using  \<open>p \<notin> set zs \<union> set zs' \<union> {q}\<close> image_set unfolding filter_map_split_iff[of "(\<lambda>q. \<not> sink q)" "\<lambda>q. \<delta> q (w n)"] 
+            by (metis (no_types, lifting) Un_insert_right \<open>p = q\<^sub>0\<close>  \<open>{q, p} \<subseteq> set [q\<leftarrow>map (\<lambda>q. \<delta> q (w n)) (r n) @ [q\<^sub>0] . \<not> sink q]\<close> append_Nil2 insert_iff insert_subset list.simps(15) mem_Collect_eq set_append set_filter)  
           hence "q \<in> (\<lambda>q. \<delta> q (w n)) ` {q'. configuration q' n \<noteq> {}}"
             using nxt_run_configuration unfolding r_def by auto
           hence "configuration q (Suc n) \<noteq> {}"
@@ -246,19 +246,19 @@ proof (induction n)
             and 41: "Set.filter (\<lambda>q. \<not>sink q) ((\<lambda>q. \<delta> q (w n)) ` set sp') = {p}"
             by (metis filter_set image_set list.set(1) list.simps(15))+
           from 21 obtain q' where "q' \<in> set sq'" and "\<not> sink q'" and "q = \<delta> q' (w n)"
-            using sink_rev_step(2)[OF `\<not> sink q`, of _ n] by fastforce
+            using sink_rev_step(2)[OF \<open>\<not> sink q\<close>, of _ n] by fastforce
           from 41 obtain p' where "p' \<in> set sp'" and "\<not> sink p'" and "p = \<delta> p' (w n)"
-            using sink_rev_step(2)[OF `\<not> sink p`, of _ n] by fastforce
+            using sink_rev_step(2)[OF \<open>\<not> sink p\<close>, of _ n] by fastforce
           from Suc have "?f_n q' \<le> ?f_n p'"
-            unfolding r_def' map_append sorted_append set_append set_map using `q' \<in> set sq'` `p' \<in> set sp'` by auto
+            unfolding r_def' map_append sorted_append set_append set_map using \<open>q' \<in> set sq'\<close> \<open>p' \<in> set sp'\<close> by auto
           moreover
           {
             have "oldest_token q' n \<noteq> None"     
-              using nxt_run_configuration option.distinct(1) r_def r_def'  `q' \<in> set sq'` `p' \<in> set sp'` set_append
+              using nxt_run_configuration option.distinct(1) r_def r_def'  \<open>q' \<in> set sq'\<close> \<open>p' \<in> set sp'\<close> set_append
               unfolding init.simps oldest_token.simps by (metis UnCI)
             moreover
             hence "oldest_token q (Suc n) \<noteq> None"
-              using `q = \<delta> q' (w n)` by (metis oldest_token.simps option.distinct(1) configuration_step_non_empty)
+              using \<open>q = \<delta> q' (w n)\<close> by (metis oldest_token.simps option.distinct(1) configuration_step_non_empty)
             ultimately 
             obtain x y where x_def: "oldest_token q' n = Some x"  
               and y_def: "oldest_token q (Suc n) = Some y" 
@@ -268,35 +268,35 @@ proof (induction n)
               using oldest_token_bounded push_down_oldest_token_token_run assms by blast+
             moreover
             hence "token_run x (Suc n) = q"
-              using `q = \<delta> q' (w n)` by (rule token_run_step)
+              using \<open>q = \<delta> q' (w n)\<close> by (rule token_run_step)
             ultimately
             have "x \<ge> y" 
               using oldest_token_monotonic_Suc assms by blast
             moreover
             {
               have "\<And>q''. q = \<delta> q'' (w n) \<Longrightarrow> q'' \<notin> set qs'"
-                 using `q \<notin> set zs` unfolding `filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) qs') = zs`[symmetric] set_map set_filter apply simp using `\<not> sink q` by blast 
+                 using \<open>q \<notin> set zs\<close> unfolding \<open>filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) qs') = zs\<close>[symmetric] set_map set_filter apply simp using \<open>\<not> sink q\<close> by blast 
               moreover
               {
                 obtain us vs where 1: "map (\<lambda>q. \<delta> q (w n)) sq' = us @ [q] @ vs" and "\<forall>u\<in>set us. sink u" and "[] = [q\<leftarrow>vs . \<not> sink q]"
-                   using `filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) sq') = [q]`   unfolding filter_eq_Cons_iff by auto
+                   using \<open>filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) sq') = [q]\<close>   unfolding filter_eq_Cons_iff by auto
                 moreover
                 hence "\<And>q''. q'' \<in> (set us) \<union> (set vs) \<Longrightarrow> sink q''"
                   by (metis UnE filter_empty_conv) 
                 hence "q \<notin> (set us) \<union> (set vs)"
-                  using `\<not> sink q` by blast
+                  using \<open>\<not> sink q\<close> by blast
                 ultimately
                 have "\<And>q''. q'' \<in> (set sq' - {q'}) \<Longrightarrow> \<delta> q'' (w n) \<noteq> q"
-                  using 1 `q = \<delta> q' (w n)` `q' \<in> set sq'` by (fastforce dest: split_list elim: map_splitE)
+                  using 1 \<open>q = \<delta> q' (w n)\<close> \<open>q' \<in> set sq'\<close> by (fastforce dest: split_list elim: map_splitE)
               }
               ultimately
               have "\<And>q''. q = \<delta> q'' (w n) \<Longrightarrow> configuration q'' n \<noteq> {} \<Longrightarrow> q'' \<in> set (ps' @ sp' @ ps'') \<or> q'' = q'"
-                using nxt_run_configuration[of _ n] `\<not> sink q` sink_rev_step 
+                using nxt_run_configuration[of _ n] \<open>\<not> sink q\<close> sink_rev_step 
                 unfolding r_def'[unfolded r_def] set_append 
                 by blast
               moreover
               have "\<And>q''. q'' \<in> set (ps' @ sp' @ ps'') \<Longrightarrow> x \<le> ?f_n q''"
-                using x_def using Suc unfolding r_def' map_append sorted_append set_append set_map  using `q' \<in> set sq'` `p' \<in> set sp'`
+                using x_def using Suc unfolding r_def' map_append sorted_append set_append set_map  using \<open>q' \<in> set sq'\<close> \<open>p' \<in> set sp'\<close>
                 apply (simp del: oldest_token.simps) by fastforce 
               moreover
               have "\<And>q''. q'' = q' \<Longrightarrow> x \<le> ?f_n q''"
@@ -309,7 +309,7 @@ proof (induction n)
                 by fastforce
             }
             hence "\<And>z. z \<in> configuration q (Suc n) \<Longrightarrow> x \<le> z"
-              unfolding configuration_step_eq_unified using `x \<le> n` 
+              unfolding configuration_step_eq_unified using \<open>x \<le> n\<close> 
               by (cases "q = q\<^sub>0"; auto)
             hence "x \<le> y"
               using y_def Min.boundedI configuration_finite using push_down_oldest_token_configuration by presburger 
@@ -320,11 +320,11 @@ proof (induction n)
           moreover
           {
             have "oldest_token p' n \<noteq> None"     
-              using nxt_run_configuration oldest_token.simps option.distinct(1) r_def r_def'  `q' \<in> set sq'` `p' \<in> set sp'` set_append
+              using nxt_run_configuration oldest_token.simps option.distinct(1) r_def r_def'  \<open>q' \<in> set sq'\<close> \<open>p' \<in> set sp'\<close> set_append
               unfolding init.simps by (metis UnCI)
             moreover
             hence "oldest_token p (Suc n) \<noteq> None"
-              using `p = \<delta> p' (w n)` by (metis oldest_token.simps option.distinct(1) configuration_step_non_empty)
+              using \<open>p = \<delta> p' (w n)\<close> by (metis oldest_token.simps option.distinct(1) configuration_step_non_empty)
             ultimately 
             obtain x y where x_def: "oldest_token p' n = Some x"  
               and y_def: "oldest_token p (Suc n) = Some y" 
@@ -334,34 +334,34 @@ proof (induction n)
               using oldest_token_bounded push_down_oldest_token_token_run assms by blast+
             moreover
             hence "token_run x (Suc n) = p"
-              using `p = \<delta> p' (w n)` assms token_run_step by simp
+              using \<open>p = \<delta> p' (w n)\<close> assms token_run_step by simp
             ultimately
             have "x \<ge> y" 
               using oldest_token_monotonic_Suc assms by blast
             moreover
             {     
               have "\<And>q''. p = \<delta> q'' (w n) \<Longrightarrow> q'' \<notin> set qs' \<union> set sq' \<union> set ps'"
-                 using `p \<notin> set zs \<union> set zs' \<union> set [q]` `\<not> sink p` unfolding 1[symmetric] 2[symmetric] 3[symmetric] set_map set_filter by blast 
+                 using \<open>p \<notin> set zs \<union> set zs' \<union> set [q]\<close> \<open>\<not> sink p\<close> unfolding 1[symmetric] 2[symmetric] 3[symmetric] set_map set_filter by blast 
               moreover
               {
                 obtain us vs where 1: "map (\<lambda>q. \<delta> q (w n)) sp' = us @ [p] @ vs" and "\<forall>u\<in>set us. sink u" and "[] = [q\<leftarrow>vs . \<not> sink q]"
-                   using `filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) sp') = [p]` unfolding filter_eq_Cons_iff by auto
+                   using \<open>filter (\<lambda>q. \<not>sink q) (map (\<lambda>q. \<delta> q (w n)) sp') = [p]\<close> unfolding filter_eq_Cons_iff by auto
                 moreover
                 hence "\<And>q''. q'' \<in> (set us) \<union> (set vs) \<Longrightarrow> sink q''"
                   by (metis UnE filter_empty_conv) 
                 hence "p \<notin> (set us) \<union> (set vs)"
-                  using `\<not> sink p` by blast
+                  using \<open>\<not> sink p\<close> by blast
                 ultimately
                 have "\<And>q''. q'' \<in> (set sp' - {p'}) \<Longrightarrow> \<delta> q'' (w n) \<noteq> p"
-                  using 1 `p = \<delta> p' (w n)` `p' \<in> set sp'` by (fastforce dest: split_list elim: map_splitE)
+                  using 1 \<open>p = \<delta> p' (w n)\<close> \<open>p' \<in> set sp'\<close> by (fastforce dest: split_list elim: map_splitE)
               }
               ultimately
               have "\<And>q''. p = \<delta> q'' (w n) \<Longrightarrow> configuration q'' n \<noteq> {} \<Longrightarrow> q'' \<in> set ps'' \<or> q'' = p'"
-                using nxt_run_configuration[of _ n]  `\<not> sink p`[THEN sink_rev_step(2)] unfolding r_def'[unfolded r_def] set_append 
+                using nxt_run_configuration[of _ n]  \<open>\<not> sink p\<close>[THEN sink_rev_step(2)] unfolding r_def'[unfolded r_def] set_append 
                 by blast 
               moreover
               have "\<And>q''. q'' \<in> set ps'' \<Longrightarrow> x \<le> ?f_n q''"
-                using x_def using Suc unfolding r_def' map_append sorted_append set_append set_map  using `q' \<in> set sq'` `p' \<in> set sp'`
+                using x_def using Suc unfolding r_def' map_append sorted_append set_append set_map  using \<open>q' \<in> set sq'\<close> \<open>p' \<in> set sp'\<close>
                 apply (simp del: oldest_token.simps)  by fastforce 
               moreover
               have "\<And>q''. q'' = p' \<Longrightarrow> x \<le> ?f_n q''"
@@ -374,7 +374,7 @@ proof (induction n)
                 by fastforce
             }
             hence "\<And>z. z \<in> configuration p (Suc n) \<Longrightarrow> x \<le> z"
-              unfolding configuration_step_eq_unified using `x \<le> n` 
+              unfolding configuration_step_eq_unified using \<open>x \<le> n\<close> 
               by (cases "p = q\<^sub>0"; auto)
             hence "x \<le> y"
               using y_def Min.boundedI configuration_finite using push_down_oldest_token_configuration  by presburger 
@@ -409,7 +409,7 @@ proof (rule set_eqI, rule)
     by fastforce  
   moreover
   hence "\<not>sink q'" and "configuration q' n \<noteq> {}"
-    using q'_def option.distinct(1) `oldest_token q' n = Some y` 
+    using q'_def option.distinct(1) \<open>oldest_token q' n = Some y\<close> 
      oldest_token.simps using assms by (force, metis)
   hence "q' \<in> set (r n)" and "q \<in> set (r n)"
     using nxt_run_configuration assms by blast+
@@ -422,7 +422,7 @@ proof (rule set_eqI, rule)
   hence "q' \<in> set (r' @ q' # r'')"
     by simp
   thus "q' \<in> set (takeWhile (\<lambda>q'. q' \<noteq> q) (r n))"
-    using `distinct (r n)` takeWhile_distinct[of "r' @ q' # r''" q r''' q'] unfolding r_alt_def by simp
+    using \<open>distinct (r n)\<close> takeWhile_distinct[of "r' @ q' # r''" q r''' q'] unfolding r_alt_def by simp
 next
   fix q' assume q'_def: "q' \<in> set (takeWhile (\<lambda>q'. q' \<noteq> q) (r n))"
   moreover
@@ -442,10 +442,10 @@ next
     unfolding r_alt_def map_append list.map
     unfolding sorted_append by (simp del: oldest_token.simps)
   have "q \<noteq> q'"
-    using `distinct (r n)` r_alt_def by auto 
+    using \<open>distinct (r n)\<close> r_alt_def by auto 
   moreover
   have 2: "oldest_token q' n \<noteq> None" and 3: "oldest_token q n \<noteq> None"
-    using assms `q' \<in> set (r n)` nxt_run_configuration by force+
+    using assms \<open>q' \<in> set (r n)\<close> nxt_run_configuration by force+
   ultimately
   have 4: "the (oldest_token q' n) \<noteq> the (oldest_token q n)"
     by (metis oldest_token_equal option.collapse)
@@ -483,7 +483,7 @@ proof -
       using \<HH>.nxt_run_configuration by auto
     also 
     have "\<dots> \<subseteq> reach \<Sigma> \<delta> q\<^sub>0" (is "_ \<subseteq> ?S2")
-      unfolding reach_def token_run.simps using `range w \<subseteq> \<Sigma>` by fastforce
+      unfolding reach_def token_run.simps using \<open>range w \<subseteq> \<Sigma>\<close> by fastforce
     finally
     have "?S1 \<subseteq> ?S2" .
   }
@@ -588,7 +588,7 @@ export_code init nxt fail_filt succeed_filt merge_filt mojmir_to_rabin_exec chec
 lemma (in mojmir) max_rank_card:
   assumes "\<Sigma> = set \<Sigma>'"
   shows "max_rank = card (Set.filter (Not o semi_mojmir_def.sink (set \<Sigma>') \<delta> q\<^sub>0) (Q\<^sub>L \<Sigma>' \<delta> q\<^sub>0))"
-  unfolding max_rank_def Q\<^sub>L_reach[OF finite_reach[unfolded `\<Sigma> = set \<Sigma>'`]] 
+  unfolding max_rank_def Q\<^sub>L_reach[OF finite_reach[unfolded \<open>\<Sigma> = set \<Sigma>'\<close>]] 
   by (simp add: Set.filter_def set_diff_eq assms(1))
  
 theorem (in mojmir_to_rabin) exec_correct:

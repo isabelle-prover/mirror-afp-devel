@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* String representation of types *}
+section \<open>String representation of types\<close>
 
 theory ToString imports
   "../J/Expr"

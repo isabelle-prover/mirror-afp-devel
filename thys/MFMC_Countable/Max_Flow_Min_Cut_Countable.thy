@@ -115,7 +115,7 @@ proof
     by(auto simp add: cycle_edges_def set_zip)
   from assms obtain v where p: "path G v p v" and "p \<noteq> []" and "distinct p" by cases
   let ?i = "Suc i mod length p"
-  have "?i < length p" by (simp add: `p \<noteq> []`)
+  have "?i < length p" by (simp add: \<open>p \<noteq> []\<close>)
   note rtrancl_path_nth[OF p this]
   also have "(v # p) ! ?i = p ! i"
   proof(cases "Suc i < length p")
@@ -664,7 +664,7 @@ next
       case True thus ?thesis by(simp)
     next
       case False
-      hence "share > 0" using `h_plus i (x, y) \<le> g _`
+      hence "share > 0" using \<open>h_plus i (x, y) \<le> g _\<close>
         by(simp add: share_def dual_order.strict_iff_order)
       moreover have "share \<le> shares" unfolding share_def shares_eq by(rule nn_integral_ge_point)simp
       ultimately show ?thesis by(simp add: divide_le_posI_ennreal)
@@ -1112,7 +1112,7 @@ proof(cases "x \<in> \<^bold>V")
       moreover then obtain i'' where i': "i' = Suc i''" by(cases i') auto
       ultimately have "d_OUT (h_plus i') x = d_IN (h_plus i'') x" using  \<open>x \<noteq> source \<Delta>\<close>
         by(simp add: h_plus_OUT_eq_IN)
-      moreover have "i \<le> i''" using `i < i'` i' by simp
+      moreover have "i \<le> i''" using \<open>i < i'\<close> i' by simp
       then have "d_IN (h_plus i) x \<le> d_IN (h_plus i'') x" by(intro d_IN_mono h_plus_mono')
       ultimately have "d_IN (h_plus i) x \<le> d_OUT (h_plus i') x" by simp
       thus "\<exists>i'\<in>UNIV. d_IN (h_plus i) x \<le> d_OUT (h_plus i') x" by blast
@@ -3633,16 +3633,16 @@ subsection \<open>Linkage\<close>
 text \<open>
   The following definition of orthogonality is stronger than the original definition 3.5 in
   @{cite AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT} in that the outflow from any
-  @{text "A"}-vertices in the set must saturate the vertex; @{term "S \<subseteq> SAT \<Gamma> f"} is not enough.
+  \<open>A\<close>-vertices in the set must saturate the vertex; @{term "S \<subseteq> SAT \<Gamma> f"} is not enough.
 
   With the original definition of orthogonal current, the reduction from networks to webs fails because
   the induced flow need not saturate edges going out of the source. Consider the network with three
-  nodes @{text s}, @{text x}, and @{text t} and edges @{text "(s, x)"} and @{text "(x, t)"} with
-  capacity @{text 1}. Then, the corresponding web has the vertices @{text "(s, x)"} and
-  @{text "(x, t)"} and one edge from @{text "(s, x)"} to @{text "(x, t)"}. Clearly, the zero current
-  @{term [source] zero_current} is a web-flow and @{text "TER zero_current = {(s, x)}"}, which is essential.
-  Moreover, @{term [source] zero_current} and @{text "{(s, x)}"} are orthogonal because
-  @{term [source] zero_current} trivially saturates @{text "(s, x)"} as this is a vertex in @{text A}.
+  nodes \<open>s\<close>, \<open>x\<close>, and \<open>t\<close> and edges \<open>(s, x)\<close> and \<open>(x, t)\<close> with
+  capacity \<open>1\<close>. Then, the corresponding web has the vertices \<open>(s, x)\<close> and
+  \<open>(x, t)\<close> and one edge from \<open>(s, x)\<close> to \<open>(x, t)\<close>. Clearly, the zero current
+  @{term [source] zero_current} is a web-flow and \<open>TER zero_current = {(s, x)}\<close>, which is essential.
+  Moreover, @{term [source] zero_current} and \<open>{(s, x)}\<close> are orthogonal because
+  @{term [source] zero_current} trivially saturates \<open>(s, x)\<close> as this is a vertex in \<open>A\<close>.
 \<close>
 inductive orthogonal_current :: "('v, 'more) web_scheme \<Rightarrow> 'v current \<Rightarrow> 'v set \<Rightarrow> bool"
   for \<Gamma> (structure) and f S
@@ -6908,18 +6908,18 @@ subsection \<open>Single-vertex saturation in unhindered bipartite webs\<close>
 text \<open>
   The proof of lemma 6.10 in @{cite "AharoniBergerGeorgakopoulusPerlsteinSpruessel2011JCT"} is flawed.
   The transfinite steps (taking the least upper bound) only preserves unhinderedness, but not looseness.
-  However, the single steps to non-limit ordinals assumes that @{text "\<Omega> - f\<^sub>i"} is loose in order to
+  However, the single steps to non-limit ordinals assumes that \<open>\<Omega> - f\<^sub>i\<close> is loose in order to
   apply Lemma 6.9.
 
-  Counterexample: The bipartite web with three nodes @{text a\<^sub>1}, @{text a\<^sub>2}, @{text a\<^sub>3} in @{text A}
-  and two nodes @{text b\<^sub>1}, @{text b\<^sub>2} in @{text B} and edges @{text "(a\<^sub>1, b\<^sub>1)"}, @{text "(a\<^sub>2, b\<^sub>1)"},
-  @{text "(a\<^sub>2, b\<^sub>2)"}, @{text "(a\<^sub>3, b\<^sub>2)"} and weights @{text "a\<^sub>1 = a\<^sub>3 = 1"} and @{text "a\<^sub>2 = 2"} and
-  @{text "b\<^sub>1 = 3"} and @{text "b\<^sub>2 = 2"}.
-  Then, we can get a sequence of weight reductions on @{text b\<^sub>2} from @{text 2} to @{text "1.5"},
-  @{text "1.25"}, @{text "1.125"}, etc. with limit @{text 1}.
+  Counterexample: The bipartite web with three nodes \<open>a\<^sub>1\<close>, \<open>a\<^sub>2\<close>, \<open>a\<^sub>3\<close> in \<open>A\<close>
+  and two nodes \<open>b\<^sub>1\<close>, \<open>b\<^sub>2\<close> in \<open>B\<close> and edges \<open>(a\<^sub>1, b\<^sub>1)\<close>, \<open>(a\<^sub>2, b\<^sub>1)\<close>,
+  \<open>(a\<^sub>2, b\<^sub>2)\<close>, \<open>(a\<^sub>3, b\<^sub>2)\<close> and weights \<open>a\<^sub>1 = a\<^sub>3 = 1\<close> and \<open>a\<^sub>2 = 2\<close> and
+  \<open>b\<^sub>1 = 3\<close> and \<open>b\<^sub>2 = 2\<close>.
+  Then, we can get a sequence of weight reductions on \<open>b\<^sub>2\<close> from \<open>2\<close> to \<open>1.5\<close>,
+  \<open>1.25\<close>, \<open>1.125\<close>, etc. with limit \<open>1\<close>.
   All maximal waves in the restricted webs in the sequence are @{term [source] zero_current}, so in
-  the limit, we get @{text "k = 0"} and @{text "\<epsilon> = 1"} for @{text "a\<^sub>2"} and @{text "b\<^sub>2"}. Now, the
-  restricted web for the two is not loose because it contains the wave which assigns 1 to @{text "(a\<^sub>3, b\<^sub>2)"}.
+  the limit, we get \<open>k = 0\<close> and \<open>\<epsilon> = 1\<close> for \<open>a\<^sub>2\<close> and \<open>b\<^sub>2\<close>. Now, the
+  restricted web for the two is not loose because it contains the wave which assigns 1 to \<open>(a\<^sub>3, b\<^sub>2)\<close>.
 
   We prove a stronger version which only assumes and ensures on unhinderedness.
 \<close>

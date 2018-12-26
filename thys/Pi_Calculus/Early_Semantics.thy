@@ -215,9 +215,9 @@ lemma Input:
 proof -
   obtain y::name where "y \<noteq> a" and "y \<noteq> u" and "y \<sharp> P"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `y \<noteq> a` `y \<noteq> u` have "a<y>.([(x, y)] \<bullet> P) \<longmapsto>a<u> \<prec> ([(x, y)] \<bullet> P)[y::=u]"
+  from \<open>y \<noteq> a\<close> \<open>y \<noteq> u\<close> have "a<y>.([(x, y)] \<bullet> P) \<longmapsto>a<u> \<prec> ([(x, y)] \<bullet> P)[y::=u]"
     by(rule Input)
-  with `y \<sharp> P` show ?thesis by(simp add: alphaInput renaming name_swap) 
+  with \<open>y \<sharp> P\<close> show ?thesis by(simp add: alphaInput renaming name_swap) 
 qed
 
 lemma Par1B:
@@ -234,11 +234,11 @@ lemma Par1B:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<noteq> a" and "y \<sharp> P'"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `P \<longmapsto>a<\<nu>x> \<prec> P'` `y \<sharp> P'` have "P \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
+  from \<open>P \<longmapsto>a<\<nu>x> \<prec> P'\<close> \<open>y \<sharp> P'\<close> have "P \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
     by(simp add: alphaBoundOutput)
-  hence "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> (([(x, y)] \<bullet> P') \<parallel> Q)" using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a`
+  hence "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> (([(x, y)] \<bullet> P') \<parallel> Q)" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close>
     by(rule Par1B)
-  with `x \<sharp> Q` `y \<sharp> Q` `y \<sharp> P'` show ?thesis
+  with \<open>x \<sharp> Q\<close> \<open>y \<sharp> Q\<close> \<open>y \<sharp> P'\<close> show ?thesis
     by(subst alphaBoundOutput) (auto simp add: name_fresh_fresh)
 qed
 
@@ -256,11 +256,11 @@ lemma Par2B:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<noteq> a" and "y \<sharp> Q'"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `Q \<longmapsto>a<\<nu>x> \<prec> Q'` `y \<sharp> Q'` have "Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q')"
+  from \<open>Q \<longmapsto>a<\<nu>x> \<prec> Q'\<close> \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q')"
     by(simp add: alphaBoundOutput)
-  hence "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> (P \<parallel> ([(x, y)] \<bullet> Q'))" using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a`
+  hence "P \<parallel> Q \<longmapsto>a<\<nu>y> \<prec> (P \<parallel> ([(x, y)] \<bullet> Q'))" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close>
     by(rule Par2B)
-  with `x \<sharp> P` `y \<sharp> P` `y \<sharp> Q'` show ?thesis
+  with \<open>x \<sharp> P\<close> \<open>y \<sharp> P\<close> \<open>y \<sharp> Q'\<close> show ?thesis
     by(subst alphaBoundOutput[of y]) (auto simp add: name_fresh_fresh)
 qed
 
@@ -297,10 +297,10 @@ lemma inputAlpha:
 using assms
 proof(nominal_induct avoiding: r rule: inputInduct)
   case(cInput a x P u r)
-  from `x \<noteq> u` `u \<sharp> a<x>.P`have "u \<noteq> a" and "u \<sharp> P" by(simp add: abs_fresh)+
+  from \<open>x \<noteq> u\<close> \<open>u \<sharp> a<x>.P\<close>have "u \<noteq> a" and "u \<sharp> P" by(simp add: abs_fresh)+
   have "a<x>.P \<longmapsto>a<r> \<prec> P[x::=r]"
     by(rule Input)
-  thus ?case using `r \<sharp> P[x::=u]` `u \<sharp> P`
+  thus ?case using \<open>r \<sharp> P[x::=u]\<close> \<open>u \<sharp> P\<close>
     by(simp add: injPermSubst substTrans)
 next
   case(cMatch P a u P' b r)
@@ -344,14 +344,14 @@ lemma Close1:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<noteq> a" and "y \<sharp> Q'" and "y \<sharp> P'"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `P \<longmapsto>a<x> \<prec> P'` `x \<sharp> P` `y \<sharp> P'` have "P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')"
+  from \<open>P \<longmapsto>a<x> \<prec> P'\<close> \<open>x \<sharp> P\<close> \<open>y \<sharp> P'\<close> have "P \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> P')"
     by(rule inputAlpha)
-  moreover from `Q \<longmapsto>a<\<nu>x> \<prec> Q'` `y \<sharp> Q'` have "Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q')"
+  moreover from \<open>Q \<longmapsto>a<\<nu>x> \<prec> Q'\<close> \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> Q')"
     by(simp add: alphaBoundOutput)
   
-  ultimately have "P \<parallel> Q \<longmapsto>\<tau> \<prec> <\<nu>y>(([(x, y)] \<bullet> P') \<parallel> ([(x, y)] \<bullet> Q'))" using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a`
+  ultimately have "P \<parallel> Q \<longmapsto>\<tau> \<prec> <\<nu>y>(([(x, y)] \<bullet> P') \<parallel> ([(x, y)] \<bullet> Q'))" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close>
     by(rule Close1)
-  with `y \<sharp> P'` `y \<sharp> Q'` show ?thesis by(subst alphaRes) (auto simp add: name_fresh_fresh)
+  with \<open>y \<sharp> P'\<close> \<open>y \<sharp> Q'\<close> show ?thesis by(subst alphaRes) (auto simp add: name_fresh_fresh)
 qed
 
 lemma Close2:
@@ -370,14 +370,14 @@ lemma Close2:
 proof -
   obtain y::name where "y \<sharp> P" and "y \<sharp> Q" and "y \<noteq> a" and "y \<sharp> Q'" and "y \<sharp> P'"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `P \<longmapsto>a<\<nu>x> \<prec> P'` `y \<sharp> P'` have "P \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
+  from \<open>P \<longmapsto>a<\<nu>x> \<prec> P'\<close> \<open>y \<sharp> P'\<close> have "P \<longmapsto>a<\<nu>y> \<prec> ([(x, y)] \<bullet> P')"
     by(simp add: alphaBoundOutput)
-  moreover from `Q \<longmapsto>a<x> \<prec> Q'` `x \<sharp> Q` `y \<sharp> Q'` have "Q \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> Q')"
+  moreover from \<open>Q \<longmapsto>a<x> \<prec> Q'\<close> \<open>x \<sharp> Q\<close> \<open>y \<sharp> Q'\<close> have "Q \<longmapsto>a<y> \<prec> ([(x, y)] \<bullet> Q')"
     by(rule inputAlpha)
   
-  ultimately have "P \<parallel> Q \<longmapsto>\<tau> \<prec> <\<nu>y>(([(x, y)] \<bullet> P') \<parallel> ([(x, y)] \<bullet> Q'))" using `y \<sharp> P` `y \<sharp> Q` `y \<noteq> a`
+  ultimately have "P \<parallel> Q \<longmapsto>\<tau> \<prec> <\<nu>y>(([(x, y)] \<bullet> P') \<parallel> ([(x, y)] \<bullet> Q'))" using \<open>y \<sharp> P\<close> \<open>y \<sharp> Q\<close> \<open>y \<noteq> a\<close>
     by(rule Close2)
-  with `y \<sharp> P'` `y \<sharp> Q'` show ?thesis by(subst alphaRes) (auto simp add: name_fresh_fresh)
+  with \<open>y \<sharp> P'\<close> \<open>y \<sharp> Q'\<close> show ?thesis by(subst alphaRes) (auto simp add: name_fresh_fresh)
 qed
 
 lemma ResB:
@@ -395,11 +395,11 @@ lemma ResB:
 proof -
   obtain z :: name where "z \<sharp> P" and "z \<sharp> P'" and "z \<noteq> a" and "z \<noteq> y"
     by(generate_fresh "name") (auto simp add: fresh_prod)
-  from `P \<longmapsto>a<\<nu>x> \<prec> P'` `z \<sharp> P'` have "P \<longmapsto>a<\<nu>z> \<prec> ([(x, z)] \<bullet> P')"
+  from \<open>P \<longmapsto>a<\<nu>x> \<prec> P'\<close> \<open>z \<sharp> P'\<close> have "P \<longmapsto>a<\<nu>z> \<prec> ([(x, z)] \<bullet> P')"
     by(simp add: alphaBoundOutput)
-  hence "<\<nu>y>P \<longmapsto>a<\<nu>z> \<prec> (<\<nu>y>([(x, z)] \<bullet> P'))" using `y \<noteq> a` `z \<noteq> y` `z \<sharp> P` `z \<noteq> a`
+  hence "<\<nu>y>P \<longmapsto>a<\<nu>z> \<prec> (<\<nu>y>([(x, z)] \<bullet> P'))" using \<open>y \<noteq> a\<close> \<open>z \<noteq> y\<close> \<open>z \<sharp> P\<close> \<open>z \<noteq> a\<close>
     by(rule_tac ResB) auto
-  thus ?thesis using `z \<noteq> y` `y \<noteq> x` `z \<sharp> P'`
+  thus ?thesis using \<open>z \<noteq> y\<close> \<open>y \<noteq> x\<close> \<open>z \<sharp> P'\<close>
     by(subst alphaBoundOutput[where x'=z]) (auto simp add: eqvts calc_atm abs_fresh)
 qed
 
@@ -653,7 +653,7 @@ lemma tauInduct[consumes 1, case_names Tau Match Mismatch Sum1 Sum2 Par1 Par2 Co
   and     "\<And>P P' C. \<lbrakk>P \<parallel> !P \<longmapsto>\<tau> \<prec> P'; \<And>C. F C (P \<parallel> !P) P'\<rbrakk> \<Longrightarrow> F C (!P) P'"
 
   shows "F C P P'"
-using `P \<longmapsto>\<tau> \<prec> P'`
+using \<open>P \<longmapsto>\<tau> \<prec> P'\<close>
 by(nominal_induct x2=="\<tau> \<prec> P'" avoiding: C arbitrary: P' rule: TransitionsEarly.strong_induct)
   (auto simp add: residual.inject intro: assms)+
 
@@ -713,9 +713,9 @@ proof -
    note Goal = this
    obtain y::name where "y \<sharp> P" and "y \<sharp> \<alpha>" and "y \<sharp> P'" and "y \<noteq> a"
      by(generate_fresh "name") (auto simp add: fresh_prod)
-   from Input `y \<sharp> P` have "a<y>.([(x, y)] \<bullet> P) \<longmapsto>\<alpha> \<prec> P'" by(simp add: alphaInput)
-   moreover note `y \<sharp> \<alpha>` `y \<sharp> P'` `y \<noteq> a`
-   moreover from A `y \<sharp> P` have "\<And>u. Prop (a<u>) (([(x, y)] \<bullet> P)[y::=u])"
+   from Input \<open>y \<sharp> P\<close> have "a<y>.([(x, y)] \<bullet> P) \<longmapsto>\<alpha> \<prec> P'" by(simp add: alphaInput)
+   moreover note \<open>y \<sharp> \<alpha>\<close> \<open>y \<sharp> P'\<close> \<open>y \<noteq> a\<close>
+   moreover from A \<open>y \<sharp> P\<close> have "\<And>u. Prop (a<u>) (([(x, y)] \<bullet> P)[y::=u])"
      by(simp add: renaming name_swap)
    ultimately show ?thesis by(rule Goal)
 qed

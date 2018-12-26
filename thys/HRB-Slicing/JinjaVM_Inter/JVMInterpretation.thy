@@ -1,6 +1,6 @@
 theory JVMInterpretation imports JVMCFG "../StaticInter/CFGExit" begin
 
-section {* Instatiation of the @{text CFG} locale *}
+section \<open>Instatiation of the \<open>CFG\<close> locale\<close>
 
 abbreviation sourcenode :: "cfg_edge \<Rightarrow> cfg_node"
   where "sourcenode e \<equiv> fst e"
@@ -64,7 +64,7 @@ proof -
     case Nil thus ?case by simp
   next
     case (Cons Class P)
-    with ins_def outs_def `map_of ms M = \<lfloor>(Ts, T, mb)\<rfloor>` show ?case
+    with ins_def outs_def \<open>map_of ms M = \<lfloor>(Ts, T, mb)\<rfloor>\<close> show ?case
       by (cases Class, cases mb) (auto intro: in_set_methodsI)
   qed
 qed
@@ -150,18 +150,18 @@ lemma in_set_procsE:
   and "ins = Heap # (map (\<lambda>n. Local n) [0..<Suc (length Ts)])"
   and "outs = [Heap, Stack 0, Exception]"
 proof -
-  from `((C, M), ins, outs) \<in> set (procs (PROG P))`
+  from \<open>((C, M), ins, outs) \<in> set (procs (PROG P))\<close>
   obtain D fs ms Ts T mxs mxl\<^sub>0 "is" xt
     where "(C, D, fs, ms) \<in> set (PROG P)"
     and "(M, Ts, T, mxs, mxl\<^sub>0, is, xt) \<in> set ms"
     and "ins = Heap # (map (\<lambda>n. Local n) [0..<Suc (length Ts)])"
     and "outs = [Heap, Stack 0, Exception]"
     by (fastforce elim: in_set_procsE')
-  moreover from `(C, D, fs, ms) \<in> set (PROG P)` distinct_class_names [of P]
+  moreover from \<open>(C, D, fs, ms) \<in> set (PROG P)\<close> distinct_class_names [of P]
   have "class (PROG P) C = \<lfloor>(D, fs, ms)\<rfloor>"
     by (fastforce intro: map_of_SomeI simp: class_def)
   moreover from wf_jvmprog_is_wf_typ [of P]
-    `(M, Ts, T, mxs, mxl\<^sub>0, is, xt) \<in> set ms` `(C, D, fs, ms) \<in> set (PROG P)`
+    \<open>(M, Ts, T, mxs, mxl\<^sub>0, is, xt) \<in> set ms\<close> \<open>(C, D, fs, ms) \<in> set (PROG P)\<close>
   have "PROG P \<turnstile> C sees M:Ts\<rightarrow>T = (mxs, mxl\<^sub>0, is, xt) in C"
     by (fastforce intro: mdecl_visible simp: wf_jvm_prog_phi_def)
   ultimately show ?thesis using that by blast
@@ -286,8 +286,8 @@ next
     case (Main_Call T mxs mxl0 "is" xt D')
     hence "D = D'" and "M' = Main"
       by simp_all
-    with `(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)`
-      `PROG P \<turnstile> C0 sees Main: []\<rightarrow>T = (mxs, mxl0, is, xt) in D'`
+    with \<open>(P, C0, Main) \<turnstile> \<Rightarrow>(ClassMain P, MethodMain P, \<lfloor>0\<rfloor>, Normal)\<close>
+      \<open>PROG P \<turnstile> C0 sees Main: []\<rightarrow>T = (mxs, mxl0, is, xt) in D'\<close>
     have "(P, C0, Main) \<turnstile> \<Rightarrow>(D, M', None, Enter)"
       by -(rule reachable_step, fastforce, fastforce intro: JVMCFG_reachable.Main_Call)
     hence "(P, C0, Main) \<turnstile> \<Rightarrow>(D, M', None, nodeType.Return)"
@@ -323,10 +323,10 @@ next
   show "\<exists>!a'. valid_edge (P, C0, Main) a' \<and>
                 (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) \<and> a \<in> get_return_edges P a'"
   proof (rule ex_ex1I)
-    from `valid_edge (P, C0, Main) a`
+    from \<open>valid_edge (P, C0, Main) a\<close>
     have "(P, C0, Main) \<turnstile> sourcenode a -kind a\<rightarrow> targetnode a"
       by (clarsimp simp: valid_edge_def)
-    from this `kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'`
+    from this \<open>kind a = Q'\<hookleftarrow>\<^bsub>p\<^esub>f'\<close>
     show "\<exists>a'. valid_edge (P, C0, Main) a' \<and> (\<exists>Q r fs. kind a' = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs)
       \<and> a \<in> get_return_edges P a'"
       by cases (cases a, fastforce intro: get_return_edges.intros[simplified] simp: valid_edge_def)+
@@ -387,7 +387,7 @@ next
       case (CFG_Return_from_Method C M C' M' pc' Q'' ps Q stateUpdate)
       hence [simp]: "Q = Q'" and [simp]: "p = (C, M)" and [simp]: "f' = stateUpdate"
         by simp_all
-      from `(P, C0, Main) \<turnstile> (C', M', \<lfloor>pc'\<rfloor>, Normal) -Q'':(C', M', pc')\<hookrightarrow>\<^bsub>(C, M)\<^esub>ps\<rightarrow> (C, M, None, Enter)`
+      from \<open>(P, C0, Main) \<turnstile> (C', M', \<lfloor>pc'\<rfloor>, Normal) -Q'':(C', M', pc')\<hookrightarrow>\<^bsub>(C, M)\<^esub>ps\<rightarrow> (C, M, None, Enter)\<close>
       have invoke_reachable: "(P, C0, Main) \<turnstile> \<Rightarrow>(C', M', \<lfloor>pc'\<rfloor>, Normal)"
         by -(drule sourcenode_reachable)
       show ?thesis

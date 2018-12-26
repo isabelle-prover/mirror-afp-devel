@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Abstract heap locales for byte code programs *}
+section \<open>Abstract heap locales for byte code programs\<close>
 
 theory JVMHeap
 imports

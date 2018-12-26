@@ -6,12 +6,12 @@ imports "HOL-ex.Unification"
 
 begin
 
-section {* Terms *}
+section \<open>Terms\<close>
 
-subsection {* Basic Syntax *}
+subsection \<open>Basic Syntax\<close>
 
-text {* We use the same term representation as in the Unification theory provided in Isabelle. 
-Terms are represented by binary trees built on variables and constant symbols. *}
+text \<open>We use the same term representation as in the Unification theory provided in Isabelle. 
+Terms are represented by binary trees built on variables and constant symbols.\<close>
  
 fun is_a_variable 
 where
@@ -48,12 +48,12 @@ proof -
   then show ?thesis by (simp add: ground_term_def) 
 qed
 
-subsection {* Positions *}
+subsection \<open>Positions\<close>
 
-text {* We define the notion of a position together with functions to access to subterms and 
-replace them. We establish some basic properties of these functions. *}
+text \<open>We define the notion of a position together with functions to access to subterms and 
+replace them. We establish some basic properties of these functions.\<close>
 
-text {* Since terms are binary trees, positions are sequences of binary digits. *}
+text \<open>Since terms are binary trees, positions are sequences of binary digits.\<close>
 
 datatype indices = Left | Right
 
@@ -112,28 +112,28 @@ lemma replace_subterm_is_a_function:
   shows "\<And>t u v. subterm t p u \<Longrightarrow> \<exists>s. replace_subterm t p v s"
 proof (induction p,auto)
   next case (Cons i q)
-    from `subterm t (Cons i q) u` obtain t1 t2 where "t = (Comb t1 t2)"
+    from \<open>subterm t (Cons i q) u\<close> obtain t1 t2 where "t = (Comb t1 t2)"
       using subterm.elims(2) by blast 
     have "i = Right \<or> i = Left" using indices.exhaust by auto 
     then show ?case
     proof
       assume "i = Right"
-      from this and `t = (Comb t1 t2)` and `subterm t (Cons i q) u` have "subterm t2 q u" by auto
+      from this and \<open>t = (Comb t1 t2)\<close> and \<open>subterm t (Cons i q) u\<close> have "subterm t2 q u" by auto
       from this obtain s where "replace_subterm t2 q v s" using Cons.IH [of t2 u] by auto
-      from this and `t = (Comb t1 t2)` and `i = Right` have "replace_subterm t (Cons i q) v (Comb t1 s)" 
+      from this and \<open>t = (Comb t1 t2)\<close> and \<open>i = Right\<close> have "replace_subterm t (Cons i q) v (Comb t1 s)" 
         by auto
       from this show ?case by auto
     next assume "i = Left"
-      from this and `t = (Comb t1 t2)` and `subterm t (Cons i q) u` have "subterm t1 q u" by auto
+      from this and \<open>t = (Comb t1 t2)\<close> and \<open>subterm t (Cons i q) u\<close> have "subterm t1 q u" by auto
       from this obtain s where "replace_subterm t1 q v s" using Cons.IH [of t1 u] by auto
-      from this and `t = (Comb t1 t2)` and `i = Left` have "replace_subterm t (Cons i q) v (Comb s t2)" 
+      from this and \<open>t = (Comb t1 t2)\<close> and \<open>i = Left\<close> have "replace_subterm t (Cons i q) v (Comb s t2)" 
         by auto
       from this show ?case by auto
     qed
 qed
 
-text {* We prove some useful lemmata concerning the set of variables or subterms occurring in a 
-term. *}
+text \<open>We prove some useful lemmata concerning the set of variables or subterms occurring in a 
+term.\<close>
 
 lemma root_subterm:
   shows "t \<in> (subterms_of t)"
@@ -192,22 +192,22 @@ proof (induction p)
   case Nil
     show "?case" using Nil.prems assms by auto  
   next case (Cons i p')
-    from `subterm t (Cons i p') u` obtain t1 t2 where "t = (Comb t1 t2)"
+    from \<open>subterm t (Cons i p') u\<close> obtain t1 t2 where "t = (Comb t1 t2)"
       using subterm.elims(2) by blast 
     have "i = Right \<or> i = Left" using indices.exhaust by auto 
     then show ?case
     proof
       assume "i = Right"
-      from this and `subterm t (Cons i p') u` and `t = (Comb t1 t2)` 
+      from this and \<open>subterm t (Cons i p') u\<close> and \<open>t = (Comb t1 t2)\<close> 
         have "subterm t2 p' u" by auto
       from this have "subterm t2 (append p' q) v" by (simp add: Cons.IH) 
-      from this and  `t = (Comb t1 t2)` and `i = Right` show "subterm t  (append (Cons i p') q) v"
+      from this and  \<open>t = (Comb t1 t2)\<close> and \<open>i = Right\<close> show "subterm t  (append (Cons i p') q) v"
         by simp 
     next assume "i = Left"
-      from this and `subterm t (Cons i p') u` and `t = (Comb t1 t2)` 
+      from this and \<open>subterm t (Cons i p') u\<close> and \<open>t = (Comb t1 t2)\<close> 
         have "subterm t1 p' u" by auto
       from this have "subterm t1 (append p' q) v" by (simp add: Cons.IH) 
-      from this and  `t = (Comb t1 t2)` and `i = Left` show "subterm t  (append (Cons i p') q) v"
+      from this and  \<open>t = (Comb t1 t2)\<close> and \<open>i = Left\<close> show "subterm t  (append (Cons i p') q) v"
         by simp 
     qed
 qed
@@ -225,22 +225,22 @@ proof (induction p)
   case Nil
     show "?case" using Nil.prems assms by auto  
   next case (Cons i p')
-    from `subterm t (Cons i p') s` obtain t1 t2 where "t = (Comb t1 t2)"
+    from \<open>subterm t (Cons i p') s\<close> obtain t1 t2 where "t = (Comb t1 t2)"
       using subterm.elims(2) by blast 
     have "i = Right \<or> i = Left" using indices.exhaust by auto 
     then show ?case
     proof
       assume "i = Right"
-      from this and `subterm t (Cons i p') s` and `t = (Comb t1 t2)` 
+      from this and \<open>subterm t (Cons i p') s\<close> and \<open>t = (Comb t1 t2)\<close> 
         have "subterm t2 p' s" by auto
       from this have "x \<in> vars_of t2" by (simp add: Cons.IH) 
-      from this and  `t = (Comb t1 t2)` and `i = Right` show ?case
+      from this and  \<open>t = (Comb t1 t2)\<close> and \<open>i = Right\<close> show ?case
         by simp 
     next assume "i = Left"
-      from this and `subterm t (Cons i p') s` and `t = (Comb t1 t2)` 
+      from this and \<open>subterm t (Cons i p') s\<close> and \<open>t = (Comb t1 t2)\<close> 
         have "subterm t1 p' s" by auto
       from this have "x \<in> vars_of t1" by (simp add: Cons.IH) 
-      from this and  `t = (Comb t1 t2)` and `i = Left` show ?case
+      from this and  \<open>t = (Comb t1 t2)\<close> and \<open>i = Left\<close> show ?case
         by simp 
     qed
 qed
@@ -267,7 +267,7 @@ proof
     then show "x \<in> (subterms_of t1) \<union> (subterms_of t2) \<union> { (Comb t1 t2) }"
     proof 
       assume "p = []" 
-      from this and `subterm (Comb t1 t2) p x` show ?thesis by auto
+      from this and \<open>subterm (Comb t1 t2) p x\<close> show ?thesis by auto
     next
       assume "\<exists>i q. p = i #q"
       then obtain i q where "p = i # q" by auto 
@@ -275,13 +275,13 @@ proof
       then show "x \<in> (subterms_of t1) \<union> (subterms_of t2) \<union> { (Comb t1 t2) }"
       proof 
         assume "i = Left"
-        from this and `p = i # q` and `subterm (Comb t1 t2) p x` 
+        from this and \<open>p = i # q\<close> and \<open>subterm (Comb t1 t2) p x\<close> 
           have "subterm t1 q x" by auto
         then have "occurs_in x t1" unfolding occurs_in_def by auto
         then show "x \<in> (subterms_of t1) \<union> (subterms_of t2) \<union> { (Comb t1 t2) }" by auto
       next
         assume "i = Right"
-        from this and `p = i # q` and `subterm (Comb t1 t2) p x` 
+        from this and \<open>p = i # q\<close> and \<open>subterm (Comb t1 t2) p x\<close> 
           have "subterm t2 q x" by auto
         then have "occurs_in x t2" unfolding occurs_in_def by auto
         then show "x \<in> (subterms_of t1) \<union> (subterms_of t2) \<union> { (Comb t1 t2) }" by auto
@@ -331,7 +331,7 @@ proof
     then show "x \<in> (left_app ` (pos_of t1)) \<union> (right_app ` (pos_of t2)) \<union> { Nil }"
     proof 
       assume "x = []" 
-      from this and `subterm (Comb t1 t2) x s` show ?thesis by auto
+      from this and \<open>subterm (Comb t1 t2) x s\<close> show ?thesis by auto
     next
       assume "\<exists>i q. x = i #q"
       then obtain i q where "x = i # q" by auto 
@@ -339,17 +339,17 @@ proof
       then show "x \<in> (left_app ` (pos_of t1)) \<union> (right_app ` (pos_of t2)) \<union> { Nil }"
       proof 
         assume "i = Left"
-        from this and `x = i # q` and `subterm (Comb t1 t2) x s` 
+        from this and \<open>x = i # q\<close> and \<open>subterm (Comb t1 t2) x s\<close> 
           have "subterm t1 q s" by auto
         then have "position_in q t1" unfolding position_in_def by auto
-        from this and `x = i # q` `i = Left`
+        from this and \<open>x = i # q\<close> \<open>i = Left\<close>
           show "x \<in> (left_app ` (pos_of t1)) \<union> (right_app ` (pos_of t2)) \<union> { Nil }" by auto
       next
         assume "i = Right"
-        from this and `x = i # q` and `subterm (Comb t1 t2) x s` 
+        from this and \<open>x = i # q\<close> and \<open>subterm (Comb t1 t2) x s\<close> 
           have "subterm t2 q s" by auto
         then have "position_in q t2" unfolding position_in_def by auto
-        from this and `x = i # q` `i = Right`
+        from this and \<open>x = i # q\<close> \<open>i = Right\<close>
           show "x \<in> (left_app ` (pos_of t1)) \<union> (right_app ` (pos_of t2)) \<union> { Nil }" by auto
       qed
     qed
@@ -365,7 +365,7 @@ next
       then obtain q where "x = Left # q" and "position_in q t1" by auto
       then obtain s where "subterm t1 q s" unfolding position_in_def by auto 
       then have "subterm (Comb t1 t2) (Left # q) s" by auto
-      from this and `x = Left # q` have "position_in x (Comb t1 t2)" using position_in_def by blast
+      from this and \<open>x = Left # q\<close> have "position_in x (Comb t1 t2)" using position_in_def by blast
       then show "x \<in> pos_of (Comb t1 t2)" by auto
     next    
       assume "(x \<in> (right_app ` (pos_of t2))) \<or> (x = Nil)"
@@ -375,7 +375,7 @@ next
         then obtain q where "x = Right # q" and "position_in q t2" by auto
         then obtain s where "subterm t2 q s" unfolding position_in_def by auto 
         then have "subterm (Comb t1 t2) (Right # q) s" by auto
-        from this and `x = Right # q` have "position_in x (Comb t1 t2)" using position_in_def by blast
+        from this and \<open>x = Right # q\<close> have "position_in x (Comb t1 t2)" using position_in_def by blast
         then show "x \<in> pos_of (Comb t1 t2)" by auto
       next
         assume "x = Nil"
@@ -397,7 +397,7 @@ proof (induction t)
     case (Comb t1 t2) assume "finite (subterms_of t1)" and "finite (subterms_of t2)"
     have "subterms_of (Comb t1 t2) = subterms_of t1 \<union> subterms_of t2 \<union> { Comb t1 t2 }" 
       using subterms_of_a_non_atomic_term by auto
-    from this and `finite (subterms_of t1)` and `finite (subterms_of t2)` 
+    from this and \<open>finite (subterms_of t1)\<close> and \<open>finite (subterms_of t2)\<close> 
       show "finite (subterms_of (Comb t1 t2))" by simp 
 qed
 
@@ -411,8 +411,8 @@ proof (induction t)
     then show ?case using positions_of_an_atomic_term [of "Const x"]  by simp
   next
     case (Comb t1 t2) assume "finite (pos_of t1)" and "finite (pos_of t2)"
-    from `finite (pos_of t1)` have i: "finite (left_app ` (pos_of t1))" by auto
-    from `finite (pos_of t2)` have ii: "finite (right_app ` (pos_of t2))" by auto
+    from \<open>finite (pos_of t1)\<close> have i: "finite (left_app ` (pos_of t1))" by auto
+    from \<open>finite (pos_of t2)\<close> have ii: "finite (right_app ` (pos_of t2))" by auto
     have "pos_of (Comb t1 t2) = (left_app ` (pos_of t1)) \<union> (right_app ` (pos_of t2)) \<union> { Nil }" 
       using positions_of_a_non_atomic_term by metis
     from this and i ii show "finite (pos_of (Comb t1 t2))" by simp 
@@ -443,11 +443,11 @@ proof (induction t)
         by auto
     then have rhs: "\<Union> { V. \<exists>x. (x \<in> (vars_of (Comb t1 t2))) \<and> (V = vars_of (subst (Var x) \<sigma>)) } 
       = (vars_of (subst t1 \<sigma>))  \<union> (vars_of (subst t2 \<sigma>))"
-      using `vars_of (subst t1 \<sigma>) 
-              = \<Union> { V. \<exists>x. (x \<in> (vars_of t1)) \<and> (V = vars_of (subst (Var x) \<sigma>)) }`
+      using \<open>vars_of (subst t1 \<sigma>) 
+              = \<Union> { V. \<exists>x. (x \<in> (vars_of t1)) \<and> (V = vars_of (subst (Var x) \<sigma>)) }\<close>
         and
-            `vars_of (subst t2 \<sigma>) 
-              = \<Union> { V. \<exists>x. (x \<in> (vars_of t2)) \<and> (V = vars_of (subst (Var x) \<sigma>)) }`
+            \<open>vars_of (subst t2 \<sigma>) 
+              = \<Union> { V. \<exists>x. (x \<in> (vars_of t2)) \<and> (V = vars_of (subst (Var x) \<sigma>)) }\<close>
       by auto   
     have "(subst (Comb t1 t2) \<sigma>) = (Comb (subst t1 \<sigma>) (subst t2 \<sigma>))" 
       by auto
@@ -472,13 +472,13 @@ proof (induction p)
         ((\<exists> v'. ((\<not> is_a_variable v') \<and> (subterm v [] v') \<and> (u' = (subst v' s)))))" 
     proof (cases)
       assume "is_a_variable v"
-        from `u = u'`and `u = (subst v s)` 
+        from \<open>u = u'\<close>and \<open>u = (subst v s)\<close> 
           have "(subterm (subst v s) [] u')" by auto
         have "subterm v [] v" by auto
-        from this and `(subterm (subst v s) [] u')` and `is_a_variable v`
+        from this and \<open>(subterm (subst v s) [] u')\<close> and \<open>is_a_variable v\<close>
           show ?thesis by auto
       next assume "\<not> is_a_variable v"
-        from `u = u'` and `u = (subst v s)` 
+        from \<open>u = u'\<close> and \<open>u = (subst v s)\<close> 
         have "((subterm v [] v) \<and> (u' = (subst v s)))" by auto
         then show ?thesis  by auto
    qed
@@ -495,26 +495,26 @@ proof (induction p)
     proof (cases v)
       fix x assume "v = (Var x)"
       then have "subterm v [] v" by auto 
-      from `v = (Var x)` have "is_a_variable v" by auto
+      from \<open>v = (Var x)\<close> have "is_a_variable v" by auto
       have "Cons i q = (append [] (Cons i q))" by auto
-      from `subterm u (Cons i q) u'` and `u = (subst v s)` 
-        and `v = (Var x)` have "subterm (subst v s) (Cons i q) u'" by auto
-      from `is_a_variable v` and `subterm v [] v` and `Cons i q = (append [] (Cons i q))` and this 
+      from \<open>subterm u (Cons i q) u'\<close> and \<open>u = (subst v s)\<close> 
+        and \<open>v = (Var x)\<close> have "subterm (subst v s) (Cons i q) u'" by auto
+      from \<open>is_a_variable v\<close> and \<open>subterm v [] v\<close> and \<open>Cons i q = (append [] (Cons i q))\<close> and this 
         show ?thesis  by blast
     next
       fix x assume "v = (Const x)"
-      from this and `u = (subst v s)` have "u = v" by auto
-      from this and `v = (Const x)` and `subterm u (Cons i q) u'` show ?thesis by auto
+      from this and \<open>u = (subst v s)\<close> have "u = v" by auto
+      from this and \<open>v = (Const x)\<close> and \<open>subterm u (Cons i q) u'\<close> show ?thesis by auto
     next
       fix t1 t2 assume "v = (Comb t1 t2)"
-      from this and  `u = (subst v s)` 
+      from this and  \<open>u = (subst v s)\<close> 
         have "u = (Comb (subst t1 s) (subst t2 s))" by auto
       have "i = Left \<or> i = Right" using indices.exhaust by auto 
-      from `i = Left \<or> i = Right` and `u = (Comb (subst t1 s) (subst t2 s))` 
-        and `subterm u (Cons i q) u'` obtain ti where 
+      from \<open>i = Left \<or> i = Right\<close> and \<open>u = (Comb (subst t1 s) (subst t2 s))\<close> 
+        and \<open>subterm u (Cons i q) u'\<close> obtain ti where 
         "subterm (subst ti s) q u'" and "ti = t1 \<or> ti = t2" and "subterm v [i] ti"
-        using `v = t1 \<cdot> t2` by auto
-      from `?prop q` and `subterm (subst ti s) q u'` have
+        using \<open>v = t1 \<cdot> t2\<close> by auto
+      from \<open>?prop q\<close> and \<open>subterm (subst ti s) q u'\<close> have
         "(\<exists>x q1 q2. (is_a_variable x) \<and> (subterm (subst x s) q1 u') \<and> 
                       (subterm ti q2 x) \<and> (q = (append q2 q1))) \<or> 
                       ((\<exists> v'. ((\<not> is_a_variable v') \<and> (subterm ti q v') \<and> (u' = (subst v' s)))))"  
@@ -526,18 +526,18 @@ proof (induction p)
         then obtain x q1 q2 where "is_a_variable x" and "subterm (subst x s) q1 u'" 
             and "subterm ti q2 x" and "q = (append q2 q1)"
          by auto
-        from `subterm ti q2 x` and `subterm v [i] ti` have "subterm v (i # q2) x"
-        using `i = indices.Left \<or> i = indices.Right` `v = t1 \<cdot> t2` by auto
-        from `q = append q2 q1` have "i # q = (append (i # q2) q1)" by auto
-        from `i # q = (append (i # q2) q1)` and `is_a_variable x` 
-          and `subterm (subst x s) q1 u'` and `subterm v (i # q2) x` 
+        from \<open>subterm ti q2 x\<close> and \<open>subterm v [i] ti\<close> have "subterm v (i # q2) x"
+        using \<open>i = indices.Left \<or> i = indices.Right\<close> \<open>v = t1 \<cdot> t2\<close> by auto
+        from \<open>q = append q2 q1\<close> have "i # q = (append (i # q2) q1)" by auto
+        from \<open>i # q = (append (i # q2) q1)\<close> and \<open>is_a_variable x\<close> 
+          and \<open>subterm (subst x s) q1 u'\<close> and \<open>subterm v (i # q2) x\<close> 
           show ?thesis by blast 
       next
         assume "((\<exists> v'. ((\<not> is_a_variable v') \<and> (subterm ti q v') \<and> (u' = (subst v' s)))))"
         then obtain v' where "(\<not> is_a_variable v')" "(subterm ti q v')" and "u' = (subst v' s)"  by auto
-        from `subterm ti q v'`  and `subterm v [i] ti` have "subterm v (i # q) v'"
-          using `i = indices.Left \<or> i = indices.Right` `v = t1 \<cdot> t2` by auto
-        from this and `(\<not> is_a_variable v')` `subterm ti q v'` and `u' = (subst v' s)` 
+        from \<open>subterm ti q v'\<close>  and \<open>subterm v [i] ti\<close> have "subterm v (i # q) v'"
+          using \<open>i = indices.Left \<or> i = indices.Right\<close> \<open>v = t1 \<cdot> t2\<close> by auto
+        from this and \<open>(\<not> is_a_variable v')\<close> \<open>subterm ti q v'\<close> and \<open>u' = (subst v' s)\<close> 
           show ?thesis by auto
       qed
     qed
@@ -548,47 +548,47 @@ lemma vars_of_replacement:
   shows "\<And> t s. x \<in> vars_of s \<Longrightarrow> replace_subterm t p v s \<Longrightarrow> x \<in> (vars_of t) \<union> (vars_of v)"
 proof (induction p)
   case Nil
-    from `replace_subterm t Nil v s` have "s = v" by auto
-    from this and `x \<in> vars_of s` show ?case by auto
+    from \<open>replace_subterm t Nil v s\<close> have "s = v" by auto
+    from this and \<open>x \<in> vars_of s\<close> show ?case by auto
   next case (Cons i q)
-    from `replace_subterm t (Cons i q) v s` obtain t1 t2 where
+    from \<open>replace_subterm t (Cons i q) v s\<close> obtain t1 t2 where
         "t = (Comb t1 t2)"
         by (metis is_a_variable.cases replace_subterm.simps(2) replace_subterm.simps(3)) 
     have "i = Left \<or> i = Right" using indices.exhaust by blast 
     then show ?case
     proof 
       assume "i = Left"
-      from this and `t = Comb t1 t2` and `replace_subterm t (Cons i q) v s` 
+      from this and \<open>t = Comb t1 t2\<close> and \<open>replace_subterm t (Cons i q) v s\<close> 
         obtain s1 where "s = Comb s1 t2" and "replace_subterm t1  q v s1"
           using replace_subterm.simps(4) by auto
-      from `s = Comb s1 t2` and `x \<in> vars_of s` have "x \<in> vars_of s1 \<or> x \<in> vars_of t2"
+      from \<open>s = Comb s1 t2\<close> and \<open>x \<in> vars_of s\<close> have "x \<in> vars_of s1 \<or> x \<in> vars_of t2"
         by simp
       then show ?case
       proof 
         assume "x \<in> vars_of s1"
-        from this and Cons.IH [of s1 t1] and `replace_subterm t1 q v s1` have "x \<in> (vars_of t1) \<union> (vars_of v)"
+        from this and Cons.IH [of s1 t1] and \<open>replace_subterm t1 q v s1\<close> have "x \<in> (vars_of t1) \<union> (vars_of v)"
           by auto
-        from this and `t = (Comb t1 t2)` show ?case by auto
+        from this and \<open>t = (Comb t1 t2)\<close> show ?case by auto
       next
         assume "x \<in> vars_of t2"
-        from this and `t = (Comb t1 t2)` show ?case by auto
+        from this and \<open>t = (Comb t1 t2)\<close> show ?case by auto
       qed
     next
       assume "i = Right"
-      from this and `t = Comb t1 t2` and `replace_subterm t (Cons i q) v s` 
+      from this and \<open>t = Comb t1 t2\<close> and \<open>replace_subterm t (Cons i q) v s\<close> 
         obtain s2 where "s = Comb t1 s2" and "replace_subterm t2 q v s2"
           using replace_subterm.simps by auto
-      from `s = Comb t1 s2` and `x \<in> vars_of s` have "x \<in> vars_of t1 \<or> x \<in> vars_of s2"
+      from \<open>s = Comb t1 s2\<close> and \<open>x \<in> vars_of s\<close> have "x \<in> vars_of t1 \<or> x \<in> vars_of s2"
         by simp
       then show ?case
       proof 
         assume "x \<in> vars_of s2"
-        from this and Cons.IH [of s2 t2] and `replace_subterm t2 q v s2` have "x \<in> (vars_of t2) \<union> (vars_of v)"
+        from this and Cons.IH [of s2 t2] and \<open>replace_subterm t2 q v s2\<close> have "x \<in> (vars_of t2) \<union> (vars_of v)"
           by auto
-        from this and `t = (Comb t1 t2)` show ?case by auto
+        from this and \<open>t = (Comb t1 t2)\<close> show ?case by auto
       next
         assume "x \<in> vars_of t1"
-        from this and `t = (Comb t1 t2)` show ?case by auto
+        from this and \<open>t = (Comb t1 t2)\<close> show ?case by auto
       qed
    qed
 qed
@@ -598,10 +598,10 @@ lemma vars_of_replacement_set:
   shows "vars_of s \<subseteq> (vars_of t) \<union> (vars_of v)"
 by (meson assms subsetI vars_of_replacement)
 
-subsection {* Substitutions and Most General Unifiers *}
+subsection \<open>Substitutions and Most General Unifiers\<close>
 
-text {* Substitutions are defined in the Unification theory. We provide some 
-additional definitions and lemmata. *}
+text \<open>Substitutions are defined in the Unification theory. We provide some 
+additional definitions and lemmata.\<close>
 
 fun subst_set :: "'a trm set => 'a subst => 'a trm set"
   where
@@ -619,22 +619,22 @@ proof -
   proof 
     fix x assume "x \<in> ((\<lambda>x. (Var x)) ` (subst_codomain \<eta> A))"
     from this obtain y where "y \<in> (subst_codomain \<eta> A)" and "x = (Var y)" by auto
-    from `y \<in> (subst_codomain \<eta> A)`  obtain z where "(subst (Var z) \<eta>) = (Var y)" "(z \<in> A)"
+    from \<open>y \<in> (subst_codomain \<eta> A)\<close>  obtain z where "(subst (Var z) \<eta>) = (Var y)" "(z \<in> A)"
       unfolding subst_codomain_def by auto
-    from `(z \<in> A)` `x = (Var y)` `(subst (Var z) \<eta>) = (Var y)` this show 
+    from \<open>(z \<in> A)\<close> \<open>x = (Var y)\<close> \<open>(subst (Var z) \<eta>) = (Var y)\<close> this show 
       "x \<in> ((\<lambda>x. (subst (Var x) \<eta>)) ` A)"using image_iff by fastforce 
   qed
   have "inj_on (\<lambda>x. (Var x)) (subst_codomain \<eta> A)" by (meson inj_onI trm.inject(1))
   from assms(1) have "finite ((\<lambda>x. (subst (Var x) \<eta>)) ` A)" by auto
   from this and i have "finite ((\<lambda>x. (Var x)) ` (subst_codomain \<eta> A))" 
     using rev_finite_subset by auto
-  from this and `inj_on (\<lambda>x. (Var x)) (subst_codomain \<eta> A)` show ?thesis using finite_imageD [of "(\<lambda>x. (Var x))" "subst_codomain \<eta> A"]
+  from this and \<open>inj_on (\<lambda>x. (Var x)) (subst_codomain \<eta> A)\<close> show ?thesis using finite_imageD [of "(\<lambda>x. (Var x))" "subst_codomain \<eta> A"]
     by auto
 qed
 
-text {* The notions of unifiers, most general unifiers, the unification algorithm and a 
+text \<open>The notions of unifiers, most general unifiers, the unification algorithm and a 
 proof of correctness are provided in the Unification theory. Below, we prove that the algorithm 
-is complete. *}
+is complete.\<close>
 
 lemma subt_decompose:
   shows "\<forall>t1 t2. Comb t1 t2 \<prec> s \<longrightarrow> (t1 \<prec> s \<and> t2\<prec> s) "
@@ -646,7 +646,7 @@ proof ((induction s),(simp),(simp))
       show "t1 \<prec> (Comb s1 s2) \<and> t2 \<prec> (Comb s1 s2)"
       proof (rule ccontr)
         assume neg: "\<not>(t1 \<prec> (Comb s1 s2) \<and> t2 \<prec> (Comb s1 s2))"
-        from `Comb t1 t2 \<prec> Comb s1 s2` have 
+        from \<open>Comb t1 t2 \<prec> Comb s1 s2\<close> have 
           d: "Comb t1 t2 = s1 \<or> Comb t1 t2 = s2 \<or> Comb t1 t2 \<prec> s1 \<or> Comb t1 t2 \<prec> s2" 
           by auto
         have i: "\<not> (Comb t1 t2 = s1)"
@@ -686,8 +686,8 @@ proof ((induction s),(simp),(simp))
     proof 
       assume "Comb t1 t2 \<prec> Comb t1 t2"
       then have i: "Comb t1 t2 \<noteq> t1" using Comb.IH(1) by fastforce 
-      from `Comb t1 t2 \<prec> Comb t1 t2` have ii: "Comb t1 t2 \<noteq> t2" using Comb.IH(2) by fastforce 
-      from i ii and `Comb t1 t2 \<prec> Comb t1 t2` have "Comb t1 t2 \<prec> t1 \<or> Comb t1 t2 \<prec> t2" by auto
+      from \<open>Comb t1 t2 \<prec> Comb t1 t2\<close> have ii: "Comb t1 t2 \<noteq> t2" using Comb.IH(2) by fastforce 
+      from i ii and \<open>Comb t1 t2 \<prec> Comb t1 t2\<close> have "Comb t1 t2 \<prec> t1 \<or> Comb t1 t2 \<prec> t2" by auto
       then show False
       proof
         assume "Comb t1 t2  \<prec> t1"
@@ -744,23 +744,23 @@ proof (rule unify.induct)
         from this and h1 have "unify t1 s1 \<noteq> None" by auto
         from this obtain \<theta> where "unify t1 s1 = Some \<theta>" and "MGU \<theta> t1 s1"
             by (meson option.exhaust unify_computes_MGU) 
-        from `subst t1 \<sigma> = subst s1 \<sigma>` have "Unifier \<sigma> t1 s1" 
+        from \<open>subst t1 \<sigma> = subst s1 \<sigma>\<close> have "Unifier \<sigma> t1 s1" 
             unfolding Unifier_def by auto
-        from this and `MGU \<theta> t1 s1` obtain \<eta> where  "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>" using MGU_def by metis
+        from this and \<open>MGU \<theta> t1 s1\<close> obtain \<eta> where  "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>" using MGU_def by metis
         from h3 have "subst t2 \<sigma> = subst s2 \<sigma>" by auto
-        from this and `\<sigma> \<doteq> \<theta> \<lozenge> \<eta>`   
+        from this and \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close>   
             have "subst (subst t2 \<theta>) \<eta> 
               = subst (subst s2 \<theta>) \<eta>"
             by (simp add: subst_eq_def)
-        from this and `unify t1 s1 = Some \<theta>` and h2 [of \<theta>] have "unify (t2 \<lhd> \<theta>) (s2 \<lhd> \<theta>) \<noteq> None"
+        from this and \<open>unify t1 s1 = Some \<theta>\<close> and h2 [of \<theta>] have "unify (t2 \<lhd> \<theta>) (s2 \<lhd> \<theta>) \<noteq> None"
             by auto
         from this show "unify (t1 \<cdot> t2) (s1 \<cdot> s2) \<noteq> None" 
-          by (simp add: `unify t1 s1 = Some \<theta>` option.case_eq_if)  
+          by (simp add: \<open>unify t1 s1 = Some \<theta>\<close> option.case_eq_if)  
       qed
    qed
 qed
 
-text {* We establish some useful properties of substitutions and instances. *}
+text \<open>We establish some useful properties of substitutions and instances.\<close>
 
 definition ground_on :: "'a set \<Rightarrow> 'a subst \<Rightarrow> bool"
   where "ground_on V \<sigma> = (\<forall>x \<in> V. (ground_term (subst (Var x)  \<sigma>)))"
@@ -769,9 +769,9 @@ lemma comp_subst_terms:
     assumes "\<sigma> \<doteq> \<theta> \<lozenge> \<eta>"
     shows "(subst t \<sigma>) = (subst (subst t \<theta>) \<eta>)"
 proof -
-    from `\<sigma> \<doteq> \<theta> \<lozenge> \<eta>` have "((subst t \<sigma>) = (subst t (\<theta> \<lozenge> \<eta>)))" by auto
+    from \<open>\<sigma> \<doteq> \<theta> \<lozenge> \<eta>\<close> have "((subst t \<sigma>) = (subst t (\<theta> \<lozenge> \<eta>)))" by auto
     have "(subst t (\<theta> \<lozenge> \<eta>) = (subst (subst t \<theta>) \<eta>))" by auto
-    from this and `((subst t \<sigma>) = (subst t (\<theta> \<lozenge> \<eta>)))` show ?thesis by auto
+    from this and \<open>((subst t \<sigma>) = (subst t (\<theta> \<lozenge> \<eta>)))\<close> show ?thesis by auto
 qed
 
 lemma ground_instance:
@@ -784,9 +784,9 @@ proof (rule ccontr)
   then have "x \<in> \<Union> { V. \<exists>x. (x \<in> (vars_of t)) \<and> (V = vars_of (subst (Var x) \<sigma>)) }"
     using vars_of_instances by force  
   then obtain y where "x \<in> (vars_of (subst (Var y) \<sigma>))" and "y \<in> (vars_of t)" by blast
-  from assms(1) and `y \<in> (vars_of t)` have "ground_term (subst (Var y) \<sigma>)" unfolding ground_on_def
+  from assms(1) and \<open>y \<in> (vars_of t)\<close> have "ground_term (subst (Var y) \<sigma>)" unfolding ground_on_def
     by auto
-  from this and `x \<in> (vars_of (subst (Var y) \<sigma>))` show False unfolding ground_term_def by auto
+  from this and \<open>x \<in> (vars_of (subst (Var y) \<sigma>))\<close> show False unfolding ground_term_def by auto
 qed
 
 lemma substs_preserve_groundness:
@@ -819,14 +819,14 @@ next
       show "ground_term (subst (Var x) \<theta>)"
       proof cases
         assume "x = a"
-        from this and `\<theta> = (a,c) # \<sigma>` have "(subst (Var x) \<theta>) = c" by auto
-        from `is_a_constant c` have "ground_term c" using constants_are_ground by auto
-        from this and `(subst (Var x) \<theta>) = c` show "ground_term (subst (Var x) \<theta>)" by auto
+        from this and \<open>\<theta> = (a,c) # \<sigma>\<close> have "(subst (Var x) \<theta>) = c" by auto
+        from \<open>is_a_constant c\<close> have "ground_term c" using constants_are_ground by auto
+        from this and \<open>(subst (Var x) \<theta>) = c\<close> show "ground_term (subst (Var x) \<theta>)" by auto
       next
         assume "x \<noteq> a"
-        from `x \<noteq> a` and `x \<in> insert a A` have "x \<in> A" by auto
-        from `x \<noteq> a` and  `\<theta> = (a,c) # \<sigma>` have "(subst (Var x) \<theta>) = (subst (Var x) \<sigma>)" by auto
-        from this and `x \<in> A` and `ground_on A \<sigma>`
+        from \<open>x \<noteq> a\<close> and \<open>x \<in> insert a A\<close> have "x \<in> A" by auto
+        from \<open>x \<noteq> a\<close> and  \<open>\<theta> = (a,c) # \<sigma>\<close> have "(subst (Var x) \<theta>) = (subst (Var x) \<sigma>)" by auto
+        from this and \<open>x \<in> A\<close> and \<open>ground_on A \<sigma>\<close>
           show "ground_term (subst (Var x) \<theta>)" unfolding ground_on_def by auto
       qed
     qed
@@ -844,26 +844,26 @@ lemma substs_preserve_subterms :
 proof (induction p)
   case Nil
     then have "t = s" using subterm.elims(2) by auto 
-    from `t = s` have "(subst t \<sigma>) = (subst s \<sigma>)" by auto
+    from \<open>t = s\<close> have "(subst t \<sigma>) = (subst s \<sigma>)" by auto
     from this show ?case using Nil.prems by auto
   next case (Cons i q)
-    from `subterm t (i # q) s` obtain t1 t2 where
+    from \<open>subterm t (i # q) s\<close> obtain t1 t2 where
         "t = (Comb t1 t2)" using subterm.elims(2) by blast 
     have "i = Left \<or> i = Right" using indices.exhaust by blast 
     then show "subterm (subst t \<sigma>) (i # q) (subst s \<sigma>)"
     proof 
       assume "i = Left"
-      from this and `t = Comb t1 t2` and `subterm t (i # q) s`  
+      from this and \<open>t = Comb t1 t2\<close> and \<open>subterm t (i # q) s\<close>  
         have "subterm t1 q s" by auto
       from this have "subterm (subst t1 \<sigma>) q (subst s \<sigma>)" using Cons.IH by auto 
-      from this and `t = Comb t1 t2` 
+      from this and \<open>t = Comb t1 t2\<close> 
         show "subterm (subst t \<sigma>) (i # q) (subst s \<sigma>)" 
           by (simp add: \<open>i = indices.Left\<close>) 
     next assume "i = Right"
-      from this and `t = Comb t1 t2` and `subterm t (i # q) s`  
+      from this and \<open>t = Comb t1 t2\<close> and \<open>subterm t (i # q) s\<close>  
         have "subterm t2 q s" by auto
       from this have "subterm (subst t2 \<sigma>) q (subst s \<sigma>)" using Cons.IH by auto 
-      from this and `t = Comb t1 t2` 
+      from this and \<open>t = Comb t1 t2\<close> 
         show "subterm (subst t \<sigma>) (i # q) (subst s \<sigma>)" 
           by (simp add: \<open>i = indices.Right\<close>) 
     qed
@@ -909,13 +909,13 @@ proof -
   from assms(3) have "ground_on (vars_of v) \<sigma>" unfolding ground_on_def
     by (metis contra_subsetD ex_in_conv ground_term_def 
       occs_vars_subset subst_mono vars_iff_occseq)
-  from `vars_of s \<subseteq> (vars_of t) \<union> (vars_of v)` `ground_on (vars_of t) \<sigma>` 
-    and  `ground_on (vars_of v) \<sigma>` have "ground_on (vars_of s) \<sigma>" 
+  from \<open>vars_of s \<subseteq> (vars_of t) \<union> (vars_of v)\<close> \<open>ground_on (vars_of t) \<sigma>\<close> 
+    and  \<open>ground_on (vars_of v) \<sigma>\<close> have "ground_on (vars_of s) \<sigma>" 
     by (meson UnE ground_on_def rev_subsetD) 
   from this show ?thesis using ground_instance by blast
 qed
 
-text {* We now show that two disjoint substitutions can always be fused. *}
+text \<open>We now show that two disjoint substitutions can always be fused.\<close>
 
 lemma combine_substs:
   assumes "finite V1"
@@ -934,13 +934,13 @@ proof -
       assume  "ground_on (insert a V1) \<eta>1" 
       assume "(insert a V1) \<inter> V2 = {}"
       from this have "V1 \<inter> V2 = {}" by auto
-      from `ground_on (insert a V1) \<eta>1` have "ground_on V1 \<eta>1" 
+      from \<open>ground_on (insert a V1) \<eta>1\<close> have "ground_on V1 \<eta>1" 
         unfolding ground_on_def by auto
-      from this and hyp_ind and `V1 \<inter> V2 = {}` obtain \<sigma>' 
+      from this and hyp_ind and \<open>V1 \<inter> V2 = {}\<close> obtain \<sigma>' 
         where c:"(coincide_on \<sigma>' \<eta>1 V1) \<and> (coincide_on \<sigma>' \<eta>2 V2)" by auto
       let ?t = "subst (Var a) \<eta>1"
       from assms(2) have "ground_term ?t"
-        by (meson `ground_on (insert a V1) \<eta>1` ground_on_def insertI1) 
+        by (meson \<open>ground_on (insert a V1) \<eta>1\<close> ground_on_def insertI1) 
       let ?\<sigma> = "comp [(a,?t)] \<sigma>'"
       have "coincide_on ?\<sigma> \<eta>1 (insert a V1)" 
       proof (rule ccontr)
@@ -949,16 +949,16 @@ proof -
           "(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>1))" 
           unfolding coincide_on_def by blast  
         have "subst (Var a) ?\<sigma>  = subst ?t \<sigma>'" by simp  
-        from `ground_term ?t` have "subst (Var a) ?\<sigma>  = ?t"
+        from \<open>ground_term ?t\<close> have "subst (Var a) ?\<sigma>  = ?t"
           using substs_preserve_ground_terms by auto  
-        from this and `(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>1))`
+        from this and \<open>(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>1))\<close>
           have "x \<noteq> a" by blast
-        from this and `x \<in> (insert a V1)` have "x \<in> V1" by auto
-        from `x \<noteq> a` have "(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')" by auto
-        from c and `x \<in> V1` have "(subst (Var x) \<sigma>') = (subst (Var x) \<eta>1)"
+        from this and \<open>x \<in> (insert a V1)\<close> have "x \<in> V1" by auto
+        from \<open>x \<noteq> a\<close> have "(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')" by auto
+        from c and \<open>x \<in> V1\<close> have "(subst (Var x) \<sigma>') = (subst (Var x) \<eta>1)"
           unfolding coincide_on_def by blast
-        from this and `(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')` 
-          and `(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>1))` show False by auto
+        from this and \<open>(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')\<close> 
+          and \<open>(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>1))\<close> show False by auto
       qed
       have "coincide_on ?\<sigma> \<eta>2 V2" 
       proof (rule ccontr)
@@ -966,20 +966,20 @@ proof -
         then obtain x where "x \<in> V2" and 
           "(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>2))" 
           unfolding coincide_on_def by blast  
-        from `(insert a V1) \<inter> V2 = {}` and `x \<in> V2` have "x \<noteq> a" by auto
+        from \<open>(insert a V1) \<inter> V2 = {}\<close> and \<open>x \<in> V2\<close> have "x \<noteq> a" by auto
         from this  have "(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')" by auto
-        from c and `x \<in> V2` have "(subst (Var x) \<sigma>') = (subst (Var x) \<eta>2)"
+        from c and \<open>x \<in> V2\<close> have "(subst (Var x) \<sigma>') = (subst (Var x) \<eta>2)"
           unfolding coincide_on_def by blast
-        from this and `(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')` 
-          and `(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>2))` show False by auto 
+        from this and \<open>(subst (Var x) ?\<sigma>) = (subst (Var x) \<sigma>')\<close> 
+          and \<open>(subst (Var x) ?\<sigma>) \<noteq> ( (subst (Var x) \<eta>2))\<close> show False by auto 
       qed
-      from `coincide_on ?\<sigma> \<eta>1 (insert a V1)` `coincide_on ?\<sigma> \<eta>2 V2` 
+      from \<open>coincide_on ?\<sigma> \<eta>1 (insert a V1)\<close> \<open>coincide_on ?\<sigma> \<eta>2 V2\<close> 
         show "\<exists>\<sigma>. (coincide_on \<sigma> \<eta>1 (insert a V1)) \<and> (coincide_on \<sigma> \<eta>2 V2)" by auto
   qed  
   from this and assms show ?thesis by auto
 qed
 
-text {* We define a map function for substitutions and prove its correctness. *}
+text \<open>We define a map function for substitutions and prove its correctness.\<close>
 
 fun map_subst
   where "map_subst f Nil = Nil" 
@@ -1004,30 +1004,30 @@ proof (induction \<sigma>,simp)
         assume "x = ?u"
         from this have "subst (Var x) (Cons p \<sigma>) = ?v"
           by (metis assoc.simps(2) prod.collapse subst.simps(1))
-        from `map_subst f (Cons p \<sigma>) = ( (?u, (f ?v)) # (map_subst f \<sigma>))` 
-          and `x = ?u` 
+        from \<open>map_subst f (Cons p \<sigma>) = ( (?u, (f ?v)) # (map_subst f \<sigma>))\<close> 
+          and \<open>x = ?u\<close> 
           have "subst (Var x) (map_subst f (Cons p \<sigma>)) = (f ?v)" by simp 
-        from `subst (Var x) (Cons p \<sigma>) = ?v` `subst (Var x) (map_subst f (Cons p \<sigma>)) = (f ?v)` show ?thesis by auto
+        from \<open>subst (Var x) (Cons p \<sigma>) = ?v\<close> \<open>subst (Var x) (map_subst f (Cons p \<sigma>)) = (f ?v)\<close> show ?thesis by auto
       next 
         assume "x \<noteq> ?u"
         from this have "subst (Var x) (Cons p \<sigma>) = (subst (Var x) \<sigma>)"
           by (metis  assoc.simps(2) prod.collapse subst.simps(1)) 
-        from `map_subst f (Cons p \<sigma>) = ( (?u, (f ?v)) # (map_subst f \<sigma>))` 
-          and `x \<noteq> ?u` 
+        from \<open>map_subst f (Cons p \<sigma>) = ( (?u, (f ?v)) # (map_subst f \<sigma>))\<close> 
+          and \<open>x \<noteq> ?u\<close> 
           have "subst (Var x) (map_subst f (Cons p \<sigma>)) = 
             subst (Var x) (map_subst f \<sigma>)" by simp 
         from this and "Cons.IH" have 
           "subst (Var x) (map_subst f (Cons p \<sigma>)) = (f (subst (Var x) \<sigma>))"
             using \<open>subst (Var x) (p # \<sigma>) = subst (Var x) \<sigma>\<close> \<open>subst (Var x) (p # \<sigma>) \<noteq> Var x \<or> subst (Var x) (p # \<sigma>) \<noteq> subst (Var x) (map_subst f (p # \<sigma>))\<close> by auto            
-        from this and `subst (Var x) (Cons p \<sigma>) = (subst (Var x) \<sigma>)` show ?thesis by auto
+        from this and \<open>subst (Var x) (Cons p \<sigma>) = (subst (Var x) \<sigma>)\<close> show ?thesis by auto
       qed
    qed
 qed
 
-subsection {* Congruences *}
+subsection \<open>Congruences\<close>
 
-text {* We now define the notion of a congruence on ground terms, i.e., an equivalence relation
-that is closed under contextual embedding. *}
+text \<open>We now define the notion of a congruence on ground terms, i.e., an equivalence relation
+that is closed under contextual embedding.\<close>
 
 type_synonym 'a binary_relation_on_trms = "'a trm \<Rightarrow> 'a trm \<Rightarrow> bool"
 
@@ -1062,45 +1062,45 @@ lemma replacement_preserves_congruences :
           \<Longrightarrow> (I (subst t \<sigma>)  (subst s \<sigma>))"
 proof (induction p)
   case Nil
-    from `subterm t Nil u` have "t = u" by auto 
-    from `replace_subterm t Nil v s` have "s = v" by auto
-    from `t = u` and `s = v` and `(I (subst u \<sigma>)  (subst v \<sigma>))` 
+    from \<open>subterm t Nil u\<close> have "t = u" by auto 
+    from \<open>replace_subterm t Nil v s\<close> have "s = v" by auto
+    from \<open>t = u\<close> and \<open>s = v\<close> and \<open>(I (subst u \<sigma>)  (subst v \<sigma>))\<close> 
       show ?case by auto
   next case (Cons i q)
-    from `subterm t (i # q) u` obtain t1 t2 where
+    from \<open>subterm t (i # q) u\<close> obtain t1 t2 where
         "t = (Comb t1 t2)" using subterm.elims(2) by blast 
     have "i = Left \<or> i = Right" using indices.exhaust by blast 
     then show "I (subst t \<sigma>)  (subst s \<sigma>)"
     proof 
       assume "i = Left"
-      from this and `t = Comb t1 t2` and `subterm t (i # q) u`  
+      from this and \<open>t = Comb t1 t2\<close> and \<open>subterm t (i # q) u\<close>  
         have "subterm t1 q u" by auto
-      from `i = Left` and `t = Comb t1 t2` and `replace_subterm t (i # q) v s`  
+      from \<open>i = Left\<close> and \<open>t = Comb t1 t2\<close> and \<open>replace_subterm t (i # q) v s\<close>  
         obtain t1' where "replace_subterm t1 q v t1'" and "s = Comb t1' t2" by auto
-      from `congruence I` and `(I (subst u \<sigma>)  (subst v \<sigma>))` 
-        and `subterm t1 q u` and `replace_subterm t1 q v t1'` have 
+      from \<open>congruence I\<close> and \<open>(I (subst u \<sigma>)  (subst v \<sigma>))\<close> 
+        and \<open>subterm t1 q u\<close> and \<open>replace_subterm t1 q v t1'\<close> have 
         "I (subst t1 \<sigma>) (subst t1' \<sigma>)" using Cons.IH Cons.prems(1) by blast 
-      from `congruence I` have "I (subst t2 \<sigma>)  (subst t2 \<sigma>)" 
+      from \<open>congruence I\<close> have "I (subst t2 \<sigma>)  (subst t2 \<sigma>)" 
         unfolding congruence_def equivalence_relation_def reflexive_def by auto
-      from `I (subst t1 \<sigma>) (subst t1' \<sigma>)` 
-        and `I (subst t2 \<sigma>)  (subst t2 \<sigma>)` 
-        and `congruence I` and `t = (Comb t1 t2)` and `s = (Comb t1' t2)` 
+      from \<open>I (subst t1 \<sigma>) (subst t1' \<sigma>)\<close> 
+        and \<open>I (subst t2 \<sigma>)  (subst t2 \<sigma>)\<close> 
+        and \<open>congruence I\<close> and \<open>t = (Comb t1 t2)\<close> and \<open>s = (Comb t1' t2)\<close> 
         show "I (subst t \<sigma>)  (subst s \<sigma>)" 
           unfolding congruence_def compatible_with_structure_def by auto
     next 
       assume "i = Right"
-      from this and `t = Comb t1 t2` and `subterm t (i # q) u`  
+      from this and \<open>t = Comb t1 t2\<close> and \<open>subterm t (i # q) u\<close>  
         have "subterm t2 q u" by auto
-      from `i = Right` and `t = Comb t1 t2` and `replace_subterm t (i # q) v s`  
+      from \<open>i = Right\<close> and \<open>t = Comb t1 t2\<close> and \<open>replace_subterm t (i # q) v s\<close>  
         obtain t2' where "replace_subterm t2 q v t2'" and "s = Comb t1 t2'" by auto
-      from `congruence I` and `(I (subst u \<sigma>)  (subst v \<sigma>))` 
-        and `subterm t2 q u` and `replace_subterm t2 q v t2'` have 
+      from \<open>congruence I\<close> and \<open>(I (subst u \<sigma>)  (subst v \<sigma>))\<close> 
+        and \<open>subterm t2 q u\<close> and \<open>replace_subterm t2 q v t2'\<close> have 
         "I (subst t2 \<sigma>) (subst t2' \<sigma>)" using Cons.IH Cons.prems(1) by blast 
-      from `congruence I` have "I (subst t1 \<sigma>)  (subst t1 \<sigma>)" 
+      from \<open>congruence I\<close> have "I (subst t1 \<sigma>)  (subst t1 \<sigma>)" 
         unfolding congruence_def equivalence_relation_def reflexive_def by auto
-      from `I (subst t2 \<sigma>) (subst t2' \<sigma>)` 
-        and `I (subst t1 \<sigma>)  (subst t1 \<sigma>)` 
-        and `congruence I` and `t = (Comb t1 t2)` and `s = (Comb t1 t2')` 
+      from \<open>I (subst t2 \<sigma>) (subst t2' \<sigma>)\<close> 
+        and \<open>I (subst t1 \<sigma>)  (subst t1 \<sigma>)\<close> 
+        and \<open>congruence I\<close> and \<open>t = (Comb t1 t2)\<close> and \<open>s = (Comb t1 t2')\<close> 
         show "I (subst t \<sigma>)  (subst s \<sigma>)" 
           unfolding congruence_def compatible_with_structure_def by auto
     qed
@@ -1125,10 +1125,10 @@ proof (induction t)
       unfolding congruence_def compatible_with_structure_def by auto
 qed
    
-subsection {* Renamings *}
+subsection \<open>Renamings\<close>
 
-text {* We define the usual notion of a renaming. We show that fresh renamings always exist 
-(provided the set of variables is infinite) and that renamings admit inverses. *}
+text \<open>We define the usual notion of a renaming. We show that fresh renamings always exist 
+(provided the set of variables is infinite) and that renamings admit inverses.\<close>
 
 definition renaming
 where
@@ -1158,12 +1158,12 @@ next
     proof (cases)
       assume "a \<in> A"
       from this have "insert a A = A" by auto
-      from this and `renaming \<sigma> (insert a A)` hyp_ind show ?thesis by metis 
+      from this and \<open>renaming \<sigma> (insert a A)\<close> hyp_ind show ?thesis by metis 
     next assume "a \<notin> A"
-      from `renaming \<sigma> (insert a A)` have "renaming \<sigma> A" unfolding renaming_def by blast
+      from \<open>renaming \<sigma> (insert a A)\<close> have "renaming \<sigma> A" unfolding renaming_def by blast
       from this and hyp_ind obtain \<theta> where i: "(\<forall> x \<in> A. (subst (subst (Var x) \<sigma> ) \<theta>) = (Var x))" and 
         ii:  "(\<forall> x. (x \<notin> (subst_codomain \<sigma> A) \<longrightarrow> (subst (Var x) \<theta>) = (Var x)))" by metis 
-      from `renaming \<sigma> (insert a A)` have "is_a_variable (subst (Var a) \<sigma>)" unfolding renaming_def by blast
+      from \<open>renaming \<sigma> (insert a A)\<close> have "is_a_variable (subst (Var a) \<sigma>)" unfolding renaming_def by blast
       from this obtain b where "(subst (Var a) \<sigma>) = (Var b)" using is_a_variable.elims(2) by auto 
       let ?\<eta> = "(b,(Var a)) # \<theta>"
       have i': "(\<forall> x \<in>  (insert a A). (subst (subst (Var x) \<sigma> ) ?\<eta>) = (Var x))"
@@ -1182,21 +1182,21 @@ next
               by force 
             then obtain a' where "a' \<in> A" and "subst (Var a') \<sigma> = (Var b)" 
               by metis
-            from `a' \<in> A` and `a \<notin> A` have "a \<noteq> a'" by auto
+            from \<open>a' \<in> A\<close> and \<open>a \<notin> A\<close> have "a \<noteq> a'" by auto
             have "a \<in> (insert a A)" by auto
-            from `a \<noteq> a'` and `a' \<in> A` and `a \<in> (insert a A)` and `renaming \<sigma> (insert a A)` 
+            from \<open>a \<noteq> a'\<close> and \<open>a' \<in> A\<close> and \<open>a \<in> (insert a A)\<close> and \<open>renaming \<sigma> (insert a A)\<close> 
               have "(subst (Var a) \<sigma> \<noteq> (subst (Var a') \<sigma>))"
               unfolding renaming_def by blast
-            from this and `subst (Var a') \<sigma> = (Var b)` `(subst (Var a) \<sigma>) = (Var b)`  
+            from this and \<open>subst (Var a') \<sigma> = (Var b)\<close> \<open>(subst (Var a) \<sigma>) = (Var b)\<close>  
               show False by auto
           qed
           from this and ii have "(subst (Var b) \<theta>) = (Var b)" by auto
-          from this and `x = a` `(subst (Var a) \<sigma>) = (Var b)`
-            `(subst  (Var b) ( (b,(Var a)) # Nil)) = (Var a)`
+          from this and \<open>x = a\<close> \<open>(subst (Var a) \<sigma>) = (Var b)\<close>
+            \<open>(subst  (Var b) ( (b,(Var a)) # Nil)) = (Var a)\<close>
             show "(subst (subst (Var x) \<sigma> ) ?\<eta>) = (Var x)"
             by simp
          next assume "x \<noteq> a"
-          from this and `x \<in> insert a A` obtain "x \<in> A" by auto
+          from this and \<open>x \<in> insert a A\<close> obtain "x \<in> A" by auto
           from this i have "(subst (subst (Var x) \<sigma> ) \<theta>) = (Var x)"
             by auto
           then show "(subst (subst (Var x) \<sigma> ) ?\<eta>) = (Var x)"
@@ -1208,14 +1208,14 @@ next
        have ii': "(\<forall> x. (x \<notin> (subst_codomain \<sigma> (insert a A)) \<longrightarrow> (subst (Var x) ?\<eta>) = (Var x)))"
        proof ((rule allI),(rule impI))
         fix x assume "x \<notin> subst_codomain \<sigma> (insert a A)"
-        from this `(subst (Var a) \<sigma>) = (Var b)`  have "x\<noteq> b" unfolding subst_codomain_def 
+        from this \<open>(subst (Var a) \<sigma>) = (Var b)\<close>  have "x\<noteq> b" unfolding subst_codomain_def 
           by auto
         from this have "(subst (Var x) ?\<eta>) = (subst (Var x) \<theta>)" by auto
-        from `x \<notin> subst_codomain \<sigma> (insert a A)` have "x \<notin> (subst_codomain \<sigma> A)" unfolding subst_codomain_def 
+        from \<open>x \<notin> subst_codomain \<sigma> (insert a A)\<close> have "x \<notin> (subst_codomain \<sigma> A)" unfolding subst_codomain_def 
           by auto
         from this and ii have "(subst (Var x) \<theta>) = (Var x)" by auto
-        from `(subst (Var x) ?\<eta>) = (subst (Var x) \<theta>)` 
-          and `(subst (Var x) \<theta>) = (Var x)` show "(subst (Var x) ?\<eta>) = (Var x)" 
+        from \<open>(subst (Var x) ?\<eta>) = (subst (Var x) \<theta>)\<close> 
+          and \<open>(subst (Var x) \<theta>) = (Var x)\<close> show "(subst (Var x) ?\<eta>) = (Var x)" 
           by auto
        qed
       from i' ii' show ?thesis by auto
@@ -1239,11 +1239,11 @@ next
       fix V':: "'a set" assume "finite V'"
       from this have "finite (insert a V')" by auto
       from this and hyp_ind obtain \<eta> where "renaming \<eta> A" and "(subst_codomain \<eta> A) \<inter> (insert a V') = {}" by metis
-      from `finite A` have "finite (subst_codomain \<eta> A)" 
+      from \<open>finite A\<close> have "finite (subst_codomain \<eta> A)" 
         using subst_codomain_is_finite by auto
-      from this `finite V'` have "finite (V' \<union> (subst_codomain \<eta> A))" by auto
+      from this \<open>finite V'\<close> have "finite (V' \<union> (subst_codomain \<eta> A))" by auto
       from this have "finite ((insert a V') \<union> (subst_codomain \<eta> A))" by auto
-      from this `\<not> finite Vars` have "\<not> (Vars \<subseteq> ((insert a V') \<union> (subst_codomain \<eta> A)))" using rev_finite_subset
+      from this \<open>\<not> finite Vars\<close> have "\<not> (Vars \<subseteq> ((insert a V') \<union> (subst_codomain \<eta> A)))" using rev_finite_subset
         by metis
       from this obtain nv where "nv \<in> Vars" and "nv \<notin> (insert a V')" and "nv \<notin> (subst_codomain \<eta> A)" by auto
       let ?\<eta> = "(a,(Var nv)) # \<eta>"
@@ -1252,13 +1252,13 @@ next
         assume "\<not> (\<forall>x \<in>  (insert a A). (is_a_variable (subst (Var x) ?\<eta>)))"
         then obtain x where "x \<in>  (insert a A)" and "\<not>is_a_variable (subst (Var x) ?\<eta>)" 
           by auto
-        from `\<not>is_a_variable (subst (Var x) ?\<eta>)` have "x \<noteq> a" by auto
-        from this and `x \<in>  (insert a A)` have "x \<in> A" by auto
-        from `x \<noteq> a` have "(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)" by auto
-        from `renaming \<eta> A` and `x \<in> A` have "is_a_variable (subst (Var x) \<eta>)" 
+        from \<open>\<not>is_a_variable (subst (Var x) ?\<eta>)\<close> have "x \<noteq> a" by auto
+        from this and \<open>x \<in>  (insert a A)\<close> have "x \<in> A" by auto
+        from \<open>x \<noteq> a\<close> have "(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)" by auto
+        from \<open>renaming \<eta> A\<close> and \<open>x \<in> A\<close> have "is_a_variable (subst (Var x) \<eta>)" 
           unfolding renaming_def by metis
-        from this and `\<not>is_a_variable (subst (Var x) ?\<eta>)`
-          `(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)` show False by auto
+        from this and \<open>\<not>is_a_variable (subst (Var x) ?\<eta>)\<close>
+          \<open>(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)\<close> show False by auto
       qed
       have ii: "(\<forall> x y. ((x \<in> (insert a A)) \<longrightarrow> (y \<in> (insert a A)) \<longrightarrow> x \<noteq> y 
         \<longrightarrow> (subst (Var x) ?\<eta>) \<noteq> (subst (Var y) ?\<eta>)))"
@@ -1271,37 +1271,37 @@ next
           using is_a_variable.simps using \<open>y \<in> insert a A\<close> is_a_variable.elims(2) by auto 
         from i obtain x' where "(subst (Var x) ?\<eta>) = (Var x')" 
           using is_a_variable.simps using \<open>x \<in> insert a A\<close> is_a_variable.elims(2) by auto 
-        from `(subst (Var x) ?\<eta>) = (Var x')` `(subst (Var y) ?\<eta>) = (Var y')` 
-          `(subst (Var x) ?\<eta>) = (subst (Var y) ?\<eta>)` have "x' = y'" by auto
+        from \<open>(subst (Var x) ?\<eta>) = (Var x')\<close> \<open>(subst (Var y) ?\<eta>) = (Var y')\<close> 
+          \<open>(subst (Var x) ?\<eta>) = (subst (Var y) ?\<eta>)\<close> have "x' = y'" by auto
         have "x \<noteq> a"
         proof 
           assume "x = a"
-          from this and `x \<noteq> y` and `y \<in> insert a A` have "y \<in> A" by auto
-          from this and `x \<noteq> y` and `x = a` and `(subst (Var y) ?\<eta>) = (Var y')`
+          from this and \<open>x \<noteq> y\<close> and \<open>y \<in> insert a A\<close> have "y \<in> A" by auto
+          from this and \<open>x \<noteq> y\<close> and \<open>x = a\<close> and \<open>(subst (Var y) ?\<eta>) = (Var y')\<close>
           have "y' \<in> (subst_codomain \<eta> A)" unfolding subst_codomain_def by auto
-          from `x = a` and `(subst (Var x) ?\<eta>) = (Var x')` have "x' = nv" by auto
-          from this and `y' \<in> (subst_codomain \<eta> A)` and `x' = y'` and `nv \<notin> (subst_codomain \<eta> A)` 
+          from \<open>x = a\<close> and \<open>(subst (Var x) ?\<eta>) = (Var x')\<close> have "x' = nv" by auto
+          from this and \<open>y' \<in> (subst_codomain \<eta> A)\<close> and \<open>x' = y'\<close> and \<open>nv \<notin> (subst_codomain \<eta> A)\<close> 
           show False by auto
         qed
-        from this and `x \<in> insert a A` have "x \<in> A" and 
+        from this and \<open>x \<in> insert a A\<close> have "x \<in> A" and 
           "(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)" by auto
         have "y \<noteq> a"
         proof 
           assume "y = a"
-          from this and `x \<noteq> y` and `x \<in> insert a A` have "x \<in> A" by auto
-          from this and `x \<noteq> y` and `y = a` and `(subst (Var x) ?\<eta>) = (Var x')`
+          from this and \<open>x \<noteq> y\<close> and \<open>x \<in> insert a A\<close> have "x \<in> A" by auto
+          from this and \<open>x \<noteq> y\<close> and \<open>y = a\<close> and \<open>(subst (Var x) ?\<eta>) = (Var x')\<close>
             have "x' \<in> (subst_codomain \<eta> A)" unfolding subst_codomain_def by auto
-          from `y = a` and `(subst (Var y) ?\<eta>) = (Var y')` have "y' = nv" by auto
-          from this and `x' \<in> (subst_codomain \<eta> A)` and `x' = y'` and `nv \<notin> (subst_codomain \<eta> A)` 
+          from \<open>y = a\<close> and \<open>(subst (Var y) ?\<eta>) = (Var y')\<close> have "y' = nv" by auto
+          from this and \<open>x' \<in> (subst_codomain \<eta> A)\<close> and \<open>x' = y'\<close> and \<open>nv \<notin> (subst_codomain \<eta> A)\<close> 
             show False by auto
         qed
-        from this and `y \<in> insert a A` have "y \<in> A" and 
+        from this and \<open>y \<in> insert a A\<close> have "y \<in> A" and 
           "(subst (Var y) ?\<eta>) = (subst (Var y) \<eta>)" by auto
-        from `(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)` 
-          `(subst (Var y) ?\<eta>) = (subst (Var y) \<eta>)` 
-          `(subst (Var x) ?\<eta>) = (subst (Var y) ?\<eta>)` 
+        from \<open>(subst (Var x) ?\<eta>) = (subst (Var x) \<eta>)\<close> 
+          \<open>(subst (Var y) ?\<eta>) = (subst (Var y) \<eta>)\<close> 
+          \<open>(subst (Var x) ?\<eta>) = (subst (Var y) ?\<eta>)\<close> 
         have "(subst (Var x) \<eta>) = (subst (Var y) \<eta>)" by auto
-        from this and `x \<in> A` and `y \<in> A`and `renaming \<eta> A` and `x \<noteq> y` show False 
+        from this and \<open>x \<in> A\<close> and \<open>y \<in> A\<close>and \<open>renaming \<eta> A\<close> and \<open>x \<noteq> y\<close> show False 
           unfolding renaming_def by metis
      qed
      from i ii have "renaming ?\<eta> (insert a A)" unfolding renaming_def by auto
@@ -1309,22 +1309,22 @@ next
      proof (rule ccontr)
       assume "(subst_codomain ?\<eta> (insert a A)) \<inter> V' \<noteq> {}"
       then obtain x where "x \<in> (subst_codomain ?\<eta> (insert a A))" and "x \<in> V'" by auto
-      from `x \<in> (subst_codomain ?\<eta> (insert a A))` obtain x' where "x' \<in> (insert a A)"  
+      from \<open>x \<in> (subst_codomain ?\<eta> (insert a A))\<close> obtain x' where "x' \<in> (insert a A)"  
         and "subst (Var x') ?\<eta> = (Var x)" unfolding subst_codomain_def by blast
       have "x' \<noteq> a"
       proof 
         assume "x' = a"
-        from this and `subst (Var x') ?\<eta> = (Var x)` have "x = nv" by auto
-        from this and `x \<in> V'` and `nv \<notin> (insert a V')` show False by auto
+        from this and \<open>subst (Var x') ?\<eta> = (Var x)\<close> have "x = nv" by auto
+        from this and \<open>x \<in> V'\<close> and \<open>nv \<notin> (insert a V')\<close> show False by auto
       qed
-      from this and `x' \<in> (insert a A)` have "x' \<in> A" by auto 
-      from `x' \<noteq> a` and `subst (Var x') ?\<eta> = (Var x)` have 
+      from this and \<open>x' \<in> (insert a A)\<close> have "x' \<in> A" by auto 
+      from \<open>x' \<noteq> a\<close> and \<open>subst (Var x') ?\<eta> = (Var x)\<close> have 
         "(Var x) = (subst (Var x') \<eta>)" by auto
-      from this and `x' \<in> A`  have "x \<in> subst_codomain \<eta> A" unfolding subst_codomain_def by auto
-      from `x \<in> subst_codomain \<eta> A` and `(subst_codomain \<eta> A) \<inter> (insert a V') = {}` and `x \<in> V'` 
+      from this and \<open>x' \<in> A\<close>  have "x \<in> subst_codomain \<eta> A" unfolding subst_codomain_def by auto
+      from \<open>x \<in> subst_codomain \<eta> A\<close> and \<open>(subst_codomain \<eta> A) \<inter> (insert a V') = {}\<close> and \<open>x \<in> V'\<close> 
         show False  by auto
      qed
-     from this and `renaming ?\<eta> (insert a A)` 
+     from this and \<open>renaming ?\<eta> (insert a A)\<close> 
       show "\<exists>\<eta>. renaming \<eta> (insert a A) \<and> subst_codomain \<eta> (insert a A) \<inter> V' = {}" by auto
    qed
 qed

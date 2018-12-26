@@ -16,7 +16,7 @@ sub-intervals s and t.
 
 section \<open>Closed Real-valued Intervals\<close>
 
-text{* We define a type for real-valued intervals. It consists of pairs of real numbers, where
+text\<open>We define a type for real-valued intervals. It consists of pairs of real numbers, where
 the first is lesser or equal to the second. Both endpoints are understood to be part of
 the interval, i.e., the intervals are closed. This also implies that we do not
 consider empty intervals. 
@@ -27,7 +27,7 @@ a real value \(x\). Finally, an interval \(r\) can be chopped into \(s\) and
 \(t\), if the left endpoint of \(r\) and \(s\) as well as the right endpoint
 of \(r\) and \(t\) coincides, and if the right endpoint of \(s\) is 
 the left endpoint of \(t\).
- *}
+\<close>
 
 theory RealInt
   imports HOL.Real
@@ -60,8 +60,8 @@ definition R_Chop :: "real_int \<Rightarrow> real_int \<Rightarrow> real_int \<R
         
 end
 
-text {* The intervals defined in this way allow for the definition of an order: 
-the subinterval relation.*}
+text \<open>The intervals defined in this way allow for the definition of an order: 
+the subinterval relation.\<close>
   
 instantiation real_int :: order
 begin

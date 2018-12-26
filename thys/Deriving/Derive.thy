@@ -3,7 +3,7 @@
     Maintainer:  Christian Sternagel and René Thiemann 
     License:     LGPL
 *)
-section {* Loading Existing Derive-Commands *}
+section \<open>Loading Existing Derive-Commands\<close>
 theory Derive
 imports 
   "Comparator_Generator/Compare_Instances"
@@ -12,11 +12,11 @@ imports
   "Countable_Generator/Countable_Generator"
 begin
 
-text{*
+text\<open>
 We just load the commands to derive comparators, equality-functions, hash-functions, and the
 command to show that a datatype is countable, so that now all of them are available.
 There are further generators available in the AFP entries Containers and Show.
-*}
+\<close>
 
 print_derives
 

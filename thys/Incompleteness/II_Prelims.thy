@@ -1,4 +1,4 @@
-chapter{*Syntactic Preliminaries for the Second Incompleteness Theorem*}
+chapter\<open>Syntactic Preliminaries for the Second Incompleteness Theorem\<close>
 
 theory II_Prelims
 imports Pf_Predicates
@@ -47,7 +47,7 @@ proof -
   done
 qed
 
-section {*NotInDom*}
+section \<open>NotInDom\<close>
 
 nominal_function NotInDom :: "tm \<Rightarrow> tm \<Rightarrow> fm" 
   where "atom z \<sharp> (t, r) \<Longrightarrow> NotInDom t r = All z (Neg (HPair t (Var z) IN r))"
@@ -100,7 +100,7 @@ by (rule NotInDom_Fls [THEN cut2, THEN ExFalso])
    (auto intro: thin1 NotInDom_cong [OF Assume Refl, THEN Iff_MP2_same])
 
 
-section {*Restriction of a Sequence to a Domain*}
+section \<open>Restriction of a Sequence to a Domain\<close>
 
 nominal_function RestrictedP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom x \<sharp> (y,f,k,g); atom y \<sharp> (f,k,g)\<rbrakk> \<Longrightarrow>
@@ -280,7 +280,7 @@ qed
 
 declare RestrictedP.simps [simp del]
 
-section {*Applications to LstSeqP*}
+section \<open>Applications to LstSeqP\<close>
 
 lemma HFun_Sigma_Eats: 
   assumes "H \<turnstile> HFun_Sigma r" "H \<turnstile> NotInDom d r" "H \<turnstile> OrdP d"
@@ -380,9 +380,9 @@ by (blast intro: Mem_Neg_refl cut2 [OF NotInDom_LstSeqP_Eats]
                               cut2 [OF RestrictedP_NotInDom] cut2 [OF RestrictedP_LstSeqP])
 
 
-section{*Ordinal Addition*}
+section\<open>Ordinal Addition\<close>
 
-subsection{*Predicate form, defined on sequences*}
+subsection\<open>Predicate form, defined on sequences\<close>
 
 nominal_function SeqHaddP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom l \<sharp> (sl,s,k,j); atom sl \<sharp> (s,j)\<rbrakk> \<Longrightarrow>
@@ -488,7 +488,7 @@ proof -
    by (metis Assume HaddP_imp_OrdP cut2)
 qed (*>*)
 
-subsection{*Proving that these relations are functions*}
+subsection\<open>Proving that these relations are functions\<close>
 
 lemma SeqHaddP_Zero_E: "{SeqHaddP s w Zero z} \<turnstile> w EQ z"
 proof -
@@ -987,7 +987,7 @@ proof -
 qed
 
 
-section {*A Shifted Sequence*}
+section \<open>A Shifted Sequence\<close>
 
 nominal_function ShiftP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom x \<sharp> (x',y,z,f,del,k); atom x' \<sharp> (y,z,f,del,k); atom y \<sharp> (z,f,del,k); atom z \<sharp> (f,del,g,k)\<rbrakk> \<Longrightarrow>
@@ -1199,7 +1199,7 @@ proof -
 qed (*>*)
 
 
-section {*Union of Two Sets*}
+section \<open>Union of Two Sets\<close>
 
 nominal_function UnionP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "atom i \<sharp> (x,y,z) \<Longrightarrow> UnionP x y z = All i (Var i IN z IFF (Var i IN x OR Var i IN y))"
@@ -1311,7 +1311,7 @@ lemma UnionP_Mem_E:
   by (blast intro: rotate2 cut_same [OF UnionP_Mem [THEN cut2]] thin1) 
 
   
-section {*Append on Sequences*}
+section \<open>Append on Sequences\<close>
 
 nominal_function SeqAppendP :: "tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> tm \<Rightarrow> fm"
   where "\<lbrakk>atom g1 \<sharp> (g2,f1,k1,f2,k2,g); atom g2 \<sharp> (f1,k1,f2,k2,g)\<rbrakk> \<Longrightarrow>
@@ -1413,7 +1413,7 @@ proof -
     done
 qed (*>*)
 
-section {*LstSeqP and SeqAppendP*}
+section \<open>LstSeqP and SeqAppendP\<close>
 
 lemma HDomain_Incl_SeqAppendP:  \<comment> \<open>The And eliminates the need to prove @{text cut5}\<close>
   "{SeqAppendP f1 k1 f2 k2 g, HDomain_Incl f1 k1 AND HDomain_Incl f2 k2, 
@@ -1614,9 +1614,9 @@ proof -
     by (rule cut4)
 qed
 
-section {*Substitution and Abstraction on Terms*}
+section \<open>Substitution and Abstraction on Terms\<close>
 
-subsection {*Atomic cases*}
+subsection \<open>Atomic cases\<close>
 
 lemma SeqStTermP_Var_same:
   assumes "atom s \<sharp> (k,v,i)" "atom k \<sharp> (v,i)"
@@ -1746,7 +1746,7 @@ proof -
               intro: SeqStTermP_Ind [THEN cut2])
 qed
  
-subsection {*Non-atomic cases*}
+subsection \<open>Non-atomic cases\<close>
 
 lemma SeqStTermP_Eats:
   assumes sk: "atom s \<sharp> (k,s1,s2,k1,k2,t1,t2,u1,u2,v,i)"
@@ -1900,7 +1900,7 @@ proof -
                     SubstTermP.simps [of s2 v i t2 u2 k2])
 qed
 
-subsection {*Substitution over a constant*}
+subsection \<open>Substitution over a constant\<close>
 
 lemma SeqConstP_lemma:
   assumes "atom m \<sharp> (s,k,c,n,sm,sn)"  "atom n \<sharp> (s,k,c,sm,sn)" 
@@ -1994,9 +1994,9 @@ proof -
 qed
 
 
-section {*Substitution on Formulas*}
+section \<open>Substitution on Formulas\<close>
 
-subsection {*Membership*}
+subsection \<open>Membership\<close>
 
 lemma SubstAtomicP_Mem: 
   "{SubstTermP v i x x', SubstTermP v i y y'} \<turnstile> SubstAtomicP v i (Q_Mem x y) (Q_Mem x' y')"
@@ -2053,7 +2053,7 @@ proof -
              intro: SubstTermP_imp_TermP SubstTermP_imp_VarP SeqSubstFormP_Mem thin1)
 qed
 
-subsection {*Equality*}
+subsection \<open>Equality\<close>
 
 lemma SubstAtomicP_Eq:
   "{SubstTermP v i x x', SubstTermP v i y y'} \<turnstile> SubstAtomicP v i (Q_Eq x y) (Q_Eq x' y')"
@@ -2111,7 +2111,7 @@ proof -
              intro: SeqSubstFormP_Eq SubstTermP_imp_TermP SubstTermP_imp_VarP thin1)
 qed
 
-subsection {*Negation*}
+subsection \<open>Negation\<close>
 
 lemma SeqSubstFormP_Neg:
   assumes "atom s \<sharp> (k,s1,k1,x,x',v,i)" "atom k \<sharp> (s1,k1,x,x',v,i)"
@@ -2219,7 +2219,7 @@ proof -
                intro: SeqSubstFormP_Neg [THEN cut3])
 qed
 
-subsection {*Disjunction*}
+subsection \<open>Disjunction\<close>
 
 lemma SeqSubstFormP_Disj:
   assumes "atom s \<sharp> (k,s1,s2,k1,k2,x,y,x',y',v,i)" "atom k \<sharp> (s1,s2,k1,k2,x,y,x',y',v,i)"
@@ -2385,7 +2385,7 @@ proof -
                intro: SeqSubstFormP_Disj [THEN cut4])
 qed
 
-subsection {*Existential*}
+subsection \<open>Existential\<close>
 
 lemma SeqSubstFormP_Ex:
   assumes "atom s \<sharp> (k,s1,k1,x,x',v,i)" "atom k \<sharp> (s1,k1,x,x',v,i)"
@@ -2495,7 +2495,7 @@ proof -
 qed
 
 
-section {*Constant Terms*}
+section \<open>Constant Terms\<close>
 
 lemma ConstP_Zero: "{} \<turnstile> ConstP Zero"
   by (auto intro: Sigma_fm_imp_thm [OF CTermP_sf] simp: Const_0 ground_fm_aux_def supp_conv_fresh)
@@ -2634,7 +2634,7 @@ proof -
 qed
 
 
-section {*Proofs*}
+section \<open>Proofs\<close>
 
 lemma PrfP_inference:
   assumes "atom s \<sharp> (k,s1,s2,k1,k2,\<alpha>1,\<alpha>2,\<beta>)" "atom k \<sharp> (s1,s2,k1,k2,\<alpha>1,\<alpha>2,\<beta>)"

@@ -1,4 +1,4 @@
-section {* Syntactic Typeclasses *}
+section \<open>Syntactic Typeclasses\<close>
 
 theory Wasm_Type_Abs imports Main begin
 

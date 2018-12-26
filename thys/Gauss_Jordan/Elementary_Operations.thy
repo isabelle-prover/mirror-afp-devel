@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Elementary Operations over matrices*}
+section\<open>Elementary Operations over matrices\<close>
 
 theory Elementary_Operations
 imports 
@@ -12,7 +12,7 @@ imports
   Code_Matrix
 begin
 
-subsection{*Some previous results:*}
+subsection\<open>Some previous results:\<close>
 
 lemma mat_1_fun: "mat 1 $ a $ b = (\<lambda>i j. if i=j then 1 else 0) a b" unfolding mat_def by auto
 
@@ -83,9 +83,9 @@ qed
 corollary invertible_mat_1:
   shows "invertible (mat (1::'a::{field}))" by (metis invertible_mat_n zero_neq_one)
 
-subsection{*Definitions of elementary row and column operations*}
+subsection\<open>Definitions of elementary row and column operations\<close>
 
-text{*Definitions of elementary row operations*}
+text\<open>Definitions of elementary row operations\<close>
 
 definition interchange_rows :: "'a ^'n^'m => 'm => 'm \<Rightarrow> 'a ^'n^'m"
   where "interchange_rows A a b = (\<chi> i j. if i=a then A $ b $ j else if i=b then A $ a $ j else A $ i $ j)"
@@ -96,7 +96,7 @@ definition mult_row :: "('a::times) ^'n^'m => 'm => 'a \<Rightarrow> 'a ^'n^'m"
 definition row_add :: "('a::{plus, times}) ^'n^'m => 'm => 'm \<Rightarrow> 'a \<Rightarrow> 'a ^'n^'m"
   where "row_add A a b q = (\<chi> i j. if i=a then (A $ a $ j) + q*(A $ b $ j) else A $ i $ j)"
 
-text{*Definitions of elementary column operations*}
+text\<open>Definitions of elementary column operations\<close>
 
 definition interchange_columns :: "'a ^'n^'m => 'n => 'n \<Rightarrow> 'a ^'n^'m"
   where "interchange_columns A n m = (\<chi> i j. if j=n then A $ i $ m else if j=m then A $ i $ n else A $ i $ j)"
@@ -107,10 +107,10 @@ definition mult_column :: "('a::times) ^'n^'m => 'n => 'a \<Rightarrow> 'a ^'n^'
 definition column_add :: "('a::{plus, times}) ^'n^'m => 'n => 'n \<Rightarrow> 'a \<Rightarrow> 'a ^'n^'m"
   where "column_add A n m q = (\<chi> i j. if j=n then ((A $ i $ n) + (A $ i $ m)*q) else A $ i $ j)"
 
-subsection{*Properties about elementary row operations*}
-subsubsection{*Properties about interchanging rows*}
+subsection\<open>Properties about elementary row operations\<close>
+subsubsection\<open>Properties about interchanging rows\<close>
 
-text{*Properties about @{term "interchange_rows"}*}
+text\<open>Properties about @{term "interchange_rows"}\<close>
 
 lemma interchange_same_rows: "interchange_rows A a a = A"
   unfolding interchange_rows_def by vector
@@ -239,8 +239,8 @@ next
   qed
 qed
 
-subsubsection{*Properties about multiplying a row by a constant*}
-text{*Properties about @{term "mult_row"}*}
+subsubsection\<open>Properties about multiplying a row by a constant\<close>
+text\<open>Properties about @{term "mult_row"}\<close>
 
 lemma mult_row_mat_1: "mult_row (mat 1) a q ** A = mult_row A a q"
 proof (unfold matrix_matrix_mult_def mult_row_def, vector, auto)
@@ -349,8 +349,8 @@ corollary invertible_mult_row':
   shows "invertible (mult_row (mat (1::'a::{field})) a q)"
   by (simp add: invertible_mult_row[of q "inverse q"] q_not_zero)
 
-subsubsection{*Properties about adding a row multiplied by a constant to another row*}
-text{*Properties about @{term "row_add"}*}
+subsubsection\<open>Properties about adding a row multiplied by a constant to another row\<close>
+text\<open>Properties about @{term "row_add"}\<close>
 
 lemma row_add_mat_1: "row_add (mat 1) a b q ** A = row_add A a b q"
 proof (unfold matrix_matrix_mult_def row_add_def, vector, auto)
@@ -553,9 +553,9 @@ next
   qed
 qed
 
-subsection{*Properties about elementary column operations*}
-subsubsection{*Properties about interchanging columns*}
-text{*Properties about @{term "interchange_columns"}*}
+subsection\<open>Properties about elementary column operations\<close>
+subsubsection\<open>Properties about interchanging columns\<close>
+text\<open>Properties about @{term "interchange_columns"}\<close>
 
 lemma interchange_columns_mat_1: "A ** interchange_columns (mat 1) a b = interchange_columns A a b"
 proof (unfold matrix_matrix_mult_def, unfold interchange_columns_def, vector, auto) 
@@ -663,8 +663,8 @@ next
     by (rule sum.neutral, auto simp add: s_not_a s_not_b s_not_t)
 qed
 
-subsubsection{*Properties about multiplying a column by a constant*}
-text{*Properties about @{term "mult_column"}*}
+subsubsection\<open>Properties about multiplying a column by a constant\<close>
+text\<open>Properties about @{term "mult_column"}\<close>
 
 lemma mult_column_mat_1: "A ** mult_column (mat 1) a q = mult_column A a q"
 proof (unfold matrix_matrix_mult_def, unfold mult_column_def, vector, auto)
@@ -746,8 +746,8 @@ corollary invertible_mult_column':
   shows "invertible (mult_column (mat (1::'a::{field})) a q)"
   by (simp add: invertible_mult_column[of q "inverse q"] q_not_zero)
 
-subsubsection{*Properties about adding a column multiplied by a constant to another column*}
-text{*Properties about @{term "column_add"}*}
+subsubsection\<open>Properties about adding a column multiplied by a constant to another column\<close>
+text\<open>Properties about @{term "column_add"}\<close>
 
 lemma column_add_mat_1: "A ** column_add (mat 1) a b q = column_add A a b q"
 proof (unfold matrix_matrix_mult_def, 
@@ -936,9 +936,9 @@ next
   qed
 qed
 
-subsection{*Relationships amongst the definitions*}
+subsection\<open>Relationships amongst the definitions\<close>
 
-text{*Relationships between @{term "interchange_rows"} and @{term "interchange_columns"}*}
+text\<open>Relationships between @{term "interchange_rows"} and @{term "interchange_columns"}\<close>
 
 lemma interchange_rows_transpose:
   shows "interchange_rows (transpose A) a b = transpose (interchange_columns A a b)"
@@ -956,9 +956,9 @@ lemma interchange_columns_transpose':
   shows "interchange_columns A a b = transpose (interchange_rows (transpose A) a b)"
   unfolding interchange_rows_def interchange_columns_def transpose_def by vector
 
-subsection{*Code Equations*}
-text{*Code equations for @{thm interchange_rows_def}, @{thm interchange_columns_def}, @{thm row_add_def}, @{thm column_add_def}, 
-@{thm mult_row_def} and @{thm mult_column_def}:*}
+subsection\<open>Code Equations\<close>
+text\<open>Code equations for @{thm interchange_rows_def}, @{thm interchange_columns_def}, @{thm row_add_def}, @{thm column_add_def}, 
+@{thm mult_row_def} and @{thm mult_column_def}:\<close>
 
 definition interchange_rows_row 
   where "interchange_rows_row A a b i = vec_lambda (%j. if i = a then A $ b $ j else if i = b then A $ a $ j else A $ i $ j)"

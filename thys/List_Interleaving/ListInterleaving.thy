@@ -11,7 +11,7 @@ theory ListInterleaving
 imports Main
 begin
 
-text {*
+text \<open>
 \null
 
 Among the various mathematical tools introduced in his outstanding work on Communicating Sequential
@@ -32,28 +32,28 @@ Throughout this paper, the salient points of definitions and proofs are commente
 information, cf. Isabelle documentation, particularly \cite{R3}, \cite{R4}, \cite{R5}, and
 \cite{R6}. For a sample nontrivial application of the mathematical machinery developed in this
 paper, cf. \cite{R1}.
-*}
+\<close>
 
 
 subsection "A first version of interleaving"
 
-text {*
-Here below is the definition of predicate @{text interleaves}, as well as of a convenient symbolic
+text \<open>
+Here below is the definition of predicate \<open>interleaves\<close>, as well as of a convenient symbolic
 notation for it. As in the definition of predicate \emph{interleaves} formulated in \cite{R2}, the
 recursive decomposition of the input lists is performed by item prepending. In the case of a list
-@{text ws} constructed recursively by item appending rather than prepending, the statement that it
-satisfies predicate @{text interleaves} with two further lists can nevertheless be proven by
-induction using as input @{term "rev ws"}, rather than @{text ws} itself.
+\<open>ws\<close> constructed recursively by item appending rather than prepending, the statement that it
+satisfies predicate \<open>interleaves\<close> with two further lists can nevertheless be proven by
+induction using as input @{term "rev ws"}, rather than \<open>ws\<close> itself.
 
-With respect to Hoare's homonymous predicate, @{text interleaves} takes as an additional input a
-predicate @{text P}, which is a function of a single item and a list. Then, for statement
-@{term "interleaves P (x # xs) (y # ys) (z # zs)"} to hold, the item picked for being @{text x} must
-be @{text y} if @{text "P x xs"}, @{text z} otherwise. On the contrary, in case either the second or
-the third list is empty, the truth value of @{text "P x xs"} does not matter and list
+With respect to Hoare's homonymous predicate, \<open>interleaves\<close> takes as an additional input a
+predicate \<open>P\<close>, which is a function of a single item and a list. Then, for statement
+@{term "interleaves P (x # xs) (y # ys) (z # zs)"} to hold, the item picked for being \<open>x\<close> must
+be \<open>y\<close> if \<open>P x xs\<close>, \<open>z\<close> otherwise. On the contrary, in case either the second or
+the third list is empty, the truth value of \<open>P x xs\<close> does not matter and list
 @{term "x # xs"} just has to match the other nonempty one, if any.
 
 \null
-*}
+\<close>
 
 fun interleaves ::
  "('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
@@ -74,11 +74,11 @@ abbreviation interleaves_syntax ::
     ("(_ \<simeq> {_, _, _})" [60, 60, 60] 51)
   where "xs \<simeq> {ys, zs, P} \<equiv> interleaves P xs ys zs"
 
-text {*
+text \<open>
 \null
 
 The advantage provided by this enhanced \emph{interleaves} predicate is that in case
-@{term "xs \<simeq> {ys, zs, P}"}, fixing the values of @{text xs} and either @{text ys} or @{text zs} has
+@{term "xs \<simeq> {ys, zs, P}"}, fixing the values of \<open>xs\<close> and either \<open>ys\<close> or \<open>zs\<close> has
 the effect of fixing the value of the remaining list, too. Namely, if @{term "xs \<simeq> {ys', zs, P}"}
 also holds, then @{term "ys = ys'"}, and likewise, if @{term "xs \<simeq> {ys, zs', P}"} also holds, then
 @{term "zs = zs'"}. Therefore, once two \emph{interleaves} statements @{term "xs \<simeq> {ys, zs, P}"},
@@ -88,16 +88,16 @@ remaining equality, i.e. respectively @{term "ys = ys'"} and @{term "zs = zs'"},
 without the need of a further induction.
 
 Here below is the proof of this property as well as of other ones. Particularly, it is also proven
-that in case @{term "xs \<simeq> {ys, zs, P}"}, lists @{text ys} and @{text zs} can be swapped by
-replacing predicate @{text P} with its negation.
+that in case @{term "xs \<simeq> {ys, zs, P}"}, lists \<open>ys\<close> and \<open>zs\<close> can be swapped by
+replacing predicate \<open>P\<close> with its negation.
 
-It is worth noting that fixing the values of @{text ys} and @{text zs} does not fix the value of
-@{text xs} instead. A counterexample is @{term "ys = [y]"}, @{term "zs = [z]"} with @{term "y \<noteq> z"},
+It is worth noting that fixing the values of \<open>ys\<close> and \<open>zs\<close> does not fix the value of
+\<open>xs\<close> instead. A counterexample is @{term "ys = [y]"}, @{term "zs = [z]"} with @{term "y \<noteq> z"},
 @{term "P y [z] = True"}, @{term "P z [y] = False"}, in which case both of the \emph{interleaves}
 statements @{term "[y, z] \<simeq> {ys, zs, P}"} and @{term "[z, y] \<simeq> {ys, zs, P}"} hold.
 
 \null
-*}
+\<close>
 
 lemma interleaves_length [rule_format]:
  "xs \<simeq> {ys, zs, P} \<longrightarrow> length xs = length ys + length zs"
@@ -230,7 +230,7 @@ lemma interleaves_equal_snd:
  "xs \<simeq> {ys, zs, P} \<Longrightarrow> xs \<simeq> {ys, zs', P} \<Longrightarrow> zs = zs'"
 by (subst (asm) (1 2) interleaves_swap, rule interleaves_equal_fst)
 
-text {*
+text \<open>
 \null
 
 Since \emph{interleaves} statements permit to prove equalities between lists without the need of an
@@ -240,7 +240,7 @@ assumptions, predicate @{term interleaves} keeps being satisfied by applying a f
 the addition or removal of a prefix to the input lists.
 
 \null
-*}
+\<close>
 
 lemma interleaves_all_nil:
  "xs \<simeq> {xs, [], P}"
@@ -313,14 +313,14 @@ next
         assume "Q x"
         hence "filter Q (x # xs) = x # filter Q xs" by simp
         moreover have "filter Q (y # ys') = x # filter Q ys'"
-         using `Q x` and F by simp
+         using \<open>Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (z # zs')", simp_all)
       next
         assume "\<not> Q x"
         hence "filter Q (x # xs) = filter Q xs" by simp
         moreover have "filter Q (y # ys') = filter Q ys'"
-         using `\<not> Q x` and F by simp
+         using \<open>\<not> Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (z # zs')", simp_all)
       qed
@@ -338,14 +338,14 @@ next
         assume "Q x"
         hence "filter Q (x # xs) = x # filter Q xs" by simp
         moreover have "filter Q (z # zs') = x # filter Q zs'"
-         using `Q x` and F by simp
+         using \<open>Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (y # ys')", simp_all)
       next
         assume "\<not> Q x"
         hence "filter Q (x # xs) = filter Q xs" by simp
         moreover have "filter Q (z # zs') = filter Q zs'"
-         using `\<not> Q x` and F by simp
+         using \<open>\<not> Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (z # zs')", simp_all)
       qed
@@ -484,7 +484,7 @@ qed (rule interleaves_prefix_fst, simp)
 
 subsection "A second, stronger version of interleaving"
 
-text {*
+text \<open>
 Simple counterexamples show that unlike prefixes, the addition or removal of suffixes to the input
 lists does not generally preserve the validity of predicate @{term interleaves}. In fact, if
 @{term "P y [x] = True"} with @{term "x \<noteq> y"}, then @{term "[y, x] \<simeq> {[x], [y], P}"} does not hold
@@ -498,7 +498,7 @@ condition @{term "P y [x] = True"} would entail the falseness of statement
 @{term "[y] \<simeq> {[], [y], \<lambda>w ws. P w (ws @ [x])}"}, so that the validity of rule
 @{term "[y] \<simeq> {[], [y], \<lambda>w ws. P w (ws @ [x])} \<Longrightarrow> [y, x] \<simeq> {[x], [y], P}"} would be preserved. In
 the latter case, statement @{term "[x, y, x] \<simeq> {[x], [y, x], P}"} may only hold provided the last
-item @{text x} of the first list is extracted from the third one, which would require that
+item \<open>x\<close> of the first list is extracted from the third one, which would require that
 @{term "\<not> P x []"}; thus, subordinating rule
 @{term "[x, y, x] \<simeq> {[x], [y, x], P} \<Longrightarrow> [x, y] \<simeq> {[], [y, x], \<lambda>w ws. P w (ws @ [x])}"} to
 condition @{term "P x []"} would preserve its validity.
@@ -506,11 +506,11 @@ condition @{term "P x []"} would preserve its validity.
 This argument suggests that in order to obtain an \emph{interleaves} predicate whose validity is
 also preserved upon the addition or removal of a suffix to the input lists, the truth value of the
 input predicate must matter until both the second and the third list are empty. In what follows,
-such a stronger version of the predicate, named @{text Interleaves}, is defined along with a
+such a stronger version of the predicate, named \<open>Interleaves\<close>, is defined along with a
 convenient symbolic notation for it.
 
 \null
-*}
+\<close>
 
 fun Interleaves ::
  "('a \<Rightarrow> 'a list \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool" where
@@ -531,19 +531,19 @@ abbreviation Interleaves_syntax ::
     ("(_ \<cong> {_, _, _})" [60, 60, 60] 51)
   where "xs \<cong> {ys, zs, P} \<equiv> Interleaves P xs ys zs"
 
-text {*
+text \<open>
 \null
 
 In what follows, it is proven that predicate @{term Interleaves} is actually not weaker than, viz.
 is a sufficient condition for, predicate @{term interleaves}. Moreover, the former predicate is
 shown to fulfil the same rules as the latter, although sometimes under more stringent assumptions
-(cf. lemmas @{text Interleaves_all_nil}, @{text Interleaves_nil_all} with lemmas
+(cf. lemmas \<open>Interleaves_all_nil\<close>, \<open>Interleaves_nil_all\<close> with lemmas
 @{thm interleaves_all_nil}, @{thm interleaves_nil_all}), and to have the further property that under
 proper assumptions, its validity is preserved upon the addition or removal of a suffix to the input
 lists.
 
 \null
-*}
+\<close>
 
 lemma Interleaves_interleaves [rule_format]:
  "xs \<cong> {ys, zs, P} \<longrightarrow> xs \<simeq> {ys, zs, P}"
@@ -640,14 +640,14 @@ next
         assume "Q x"
         hence "filter Q (x # xs) = x # filter Q xs" by simp
         moreover have "filter Q (y # ys') = x # filter Q ys'"
-         using `Q x` and F by simp
+         using \<open>Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (z # zs')", simp_all)
       next
         assume "\<not> Q x"
         hence "filter Q (x # xs) = filter Q xs" by simp
         moreover have "filter Q (y # ys') = filter Q ys'"
-         using `\<not> Q x` and F by simp
+         using \<open>\<not> Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (z # zs')", simp_all)
       qed
@@ -665,14 +665,14 @@ next
         assume "Q x"
         hence "filter Q (x # xs) = x # filter Q xs" by simp
         moreover have "filter Q (z # zs') = x # filter Q zs'"
-         using `Q x` and F by simp
+         using \<open>Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (y # ys')", simp_all)
       next
         assume "\<not> Q x"
         hence "filter Q (x # xs) = filter Q xs" by simp
         moreover have "filter Q (z # zs') = filter Q zs'"
-         using `\<not> Q x` and F by simp
+         using \<open>\<not> Q x\<close> and F by simp
         ultimately show ?thesis using E and G
          by (cases "filter Q (z # zs')", simp_all)
       qed

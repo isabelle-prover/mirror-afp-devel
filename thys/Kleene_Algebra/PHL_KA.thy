@@ -4,7 +4,7 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Propositional Hoare Logic for Conway and Kleene Algebra *}
+section \<open>Propositional Hoare Logic for Conway and Kleene Algebra\<close>
 
 theory PHL_KA
   imports Kleene_Algebra
@@ -13,14 +13,14 @@ begin
 
 (**********************************************************)
 
-text {* This is a minimalist Hoare logic developed in the context of pre-dioids. In near-dioids, the sequencing rule would not be derivable.
+text \<open>This is a minimalist Hoare logic developed in the context of pre-dioids. In near-dioids, the sequencing rule would not be derivable.
  Iteration is modelled by a function that needs to satisfy a simulation law. 
 
 The main assumtions on pre-dioid elements needed to derive the Hoare rules are preservation properties; an additional distributivity propery is needed
 for the conditional rule. 
 
 This Hoare logic can be instantated in various ways. It covers notions of 
-finite and possibly infinite iteration. In this theory, it it specialised to Conway and Kleene algebras. *}
+finite and possibly infinite iteration. In this theory, it it specialised to Conway and Kleene algebras.\<close>
 
 class it_pre_dioid = pre_dioid_one +
   fixes it :: "'a \<Rightarrow> 'a" 
@@ -43,7 +43,7 @@ qed
 
 end
 
-text {* Next we define a Hoare triple to make the format of the rules more explicit. *}
+text \<open>Next we define a Hoare triple to make the format of the rules more explicit.\<close>
 
 context pre_dioid_one
 begin

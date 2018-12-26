@@ -24,8 +24,8 @@ text\<open>  The following is an existence predicate for our object-language. (W
 abbreviation existencePredicate::"\<up>\<langle>\<zero>\<rangle>" ("E!") where
   "E! x  \<equiv> (\<lambda>w. (\<^bold>\<exists>\<^sup>Ey. y\<^bold>\<approx>x) w)"
   
-text\<open> Reminder: The `@{text "\<lparr>_\<rparr>"}' parenthesis are used to convert an extensional object into its `rigid'
-intensional counterpart (e.g. @{text "\<lparr>\<phi>\<rparr> \<equiv> \<lambda>w. \<phi>"}). \<close>
+text\<open> Reminder: The `\<open>\<lparr>_\<rparr>\<close>' parenthesis are used to convert an extensional object into its `rigid'
+intensional counterpart (e.g. \<open>\<lparr>\<phi>\<rparr> \<equiv> \<lambda>w. \<phi>\<close>). \<close>
   
 consts positiveProperty::"\<up>\<langle>\<langle>\<zero>\<rangle>\<rangle>" ("\<P>")
 abbreviation God::"\<up>\<langle>\<zero>\<rangle>" ("G") where "G \<equiv> (\<lambda>x. \<^bold>\<forall>Y. \<P> Y \<^bold>\<rightarrow> \<lparr>Y x\<rparr>)"
@@ -65,14 +65,14 @@ text\<open>  \emph{T3} (God exists possibly) can be formalised in two different 
 theorem T3_deRe: "\<lfloor>(\<lambda>X. \<^bold>\<diamond>\<^bold>\<exists>\<^sup>E X) \<^bold>\<down>G\<rfloor>" using T1a T2 by simp 
 theorem T3_deDicto: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>" nitpick oops    \<comment> \<open>countersatisfiable\<close>      
 
-text\<open>  From the last two theorems, we think @{text "T3_deRe"} should be the version originally implied in the book,
- since @{text "T3_deDicto"} is not valid (\emph{T1b} were valid but it isn't) \<close>
+text\<open>  From the last two theorems, we think \<open>T3_deRe\<close> should be the version originally implied in the book,
+ since \<open>T3_deDicto\<close> is not valid (\emph{T1b} were valid but it isn't) \<close>
 lemma assumes T1b: "\<lfloor>\<^bold>\<forall>X. \<P> \<down>X \<^bold>\<rightarrow> \<^bold>\<diamond>(\<^bold>\<exists>\<^sup>Ez. X z)\<rfloor>" 
    shows T3_deDicto: "\<lfloor>\<^bold>\<diamond>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>" using assms T2 by simp
     
 subsection \<open>Part II - God's Existence is Necessary if Possible\<close>
   
-text\<open>  In this variant @{text "\<P>"} also designates rigidly, as shown in the last section. \<close>
+text\<open>  In this variant \<open>\<P>\<close> also designates rigidly, as shown in the last section. \<close>
 axiomatization where
       A4a: "\<lfloor>\<^bold>\<forall>X. \<P> X \<^bold>\<rightarrow> \<^bold>\<box>(\<P> X)\<rfloor>"      \<comment> \<open>axiom 11.11\<close>
 lemma A4b: "\<lfloor>\<^bold>\<forall>X. \<^bold>\<not>(\<P> X) \<^bold>\<rightarrow> \<^bold>\<box>\<^bold>\<not>(\<P> X)\<rfloor>" using A1a A1b A4a by blast
@@ -96,7 +96,7 @@ axiomatization where
     
 lemma True nitpick[satisfy] oops \<comment> \<open>model found: so far all axioms consistent\<close>
 
-text\<open>  Reminder: We use @{text "\<down>G"} instead of @{text "G"} because it is more explicit. See (non-)equivalences above. \<close>
+text\<open>  Reminder: We use \<open>\<down>G\<close> instead of \<open>G\<close> because it is more explicit. See (non-)equivalences above. \<close>
 lemma "\<lfloor>\<^bold>\<exists> G \<^bold>\<leftrightarrow> \<^bold>\<exists> \<^bold>\<down>G\<rfloor>" by simp       
 lemma "\<lfloor>\<^bold>\<exists>\<^sup>E G \<^bold>\<leftrightarrow> \<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>" by simp    
 lemma "\<lfloor>\<^bold>\<box>\<^bold>\<exists>\<^sup>E G \<^bold>\<leftrightarrow>  \<^bold>\<box>\<^bold>\<exists>\<^sup>E \<^bold>\<down>G\<rfloor>" by simp    

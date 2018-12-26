@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Unobservable steps for the JVM *}
+section \<open>Unobservable steps for the JVM\<close>
 
 theory JVMTau imports
   TypeComp
@@ -224,8 +224,8 @@ proof(induct es arbitrary: pc)
   case Nil thus ?case by simp
 next
   case (Cons e es)
-  note IH = `\<And>pc. pc < length (compEs2 es) \<Longrightarrow> \<tau>moves2 P h stk es pc \<lfloor>xcp\<rfloor>`
-  note pc = `pc < length (compEs2 (e # es))`
+  note IH = \<open>\<And>pc. pc < length (compEs2 es) \<Longrightarrow> \<tau>moves2 P h stk es pc \<lfloor>xcp\<rfloor>\<close>
+  note pc = \<open>pc < length (compEs2 (e # es))\<close>
   show ?case
   proof(cases "pc < length (compE2 e)")
     case True

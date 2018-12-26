@@ -3,7 +3,7 @@
     Copyright   2003 Technische Universitaet Muenchen
 *)
 
-section {* Small Step Semantics *}
+section \<open>Small Step Semantics\<close>
 
 theory SmallStep
 imports Expr State
@@ -220,7 +220,7 @@ inductive_cases [elim!]:
  "P \<turnstile> \<langle>e1;;e2,s\<rangle> \<rightarrow> \<langle>e',s'\<rangle>"
 (*>*)
 
-subsection{* The reflexive transitive closure *}
+subsection\<open>The reflexive transitive closure\<close>
 
 abbreviation
   Step :: "J_prog \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> expr \<Rightarrow> state \<Rightarrow> bool"
@@ -259,7 +259,7 @@ qed
 (*>*)
 
 
-subsection{*Some easy lemmas*}
+subsection\<open>Some easy lemmas\<close>
 
 lemma [iff]: "\<not> P \<turnstile> \<langle>[],s\<rangle> [\<rightarrow>] \<langle>es',s'\<rangle>"
 (*<*)by(blast elim: reds.cases)(*>*)

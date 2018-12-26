@@ -15,7 +15,7 @@ PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License along
 with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
-section {* Testing Generator on Examples from AFP-Entry Datatype-Order-Generator *}
+section \<open>Testing Generator on Examples from AFP-Entry Datatype-Order-Generator\<close>
 
 theory Old_Show_Examples
 imports
@@ -23,19 +23,19 @@ imports
   Old_Show_Instances
 begin
   
-subsection {* Without Nested Recursion *}
+subsection \<open>Without Nested Recursion\<close>
 
 (* datatype 'a bintree = BEmpty | BNode "'a bintree" 'a "'a bintree" *)
 
 derive "show" bintree
 
-subsection {* Using Other Datatypes *}
+subsection \<open>Using Other Datatypes\<close>
 
 (* datatype nat_list_list = NNil | CCons "nat list" nat_list_list *)
 
 derive "show" nat_list_list
 
-subsection {* Explicit Mutual Recursion *}
+subsection \<open>Explicit Mutual Recursion\<close>
 
 (*
 datatype
@@ -45,7 +45,7 @@ datatype
 
 derive "show" mtree
 
-subsection {* Implicit mutual recursion *}
+subsection \<open>Implicit mutual recursion\<close>
 
 (*  datatype 'a tree = Empty | Node 'a "'a tree list"  *)
 
@@ -55,7 +55,7 @@ derive "show" tree
 
 derive "show" ttree
 
-subsection {* Examples from IsaFoR *}
+subsection \<open>Examples from IsaFoR\<close>
 
 (* datatype ('f,'v) "term" = Var 'v | Fun 'f "('f,'v) term list" *)
 
@@ -71,7 +71,7 @@ datatype ('f, 'l) lab =
 
 derive "show" lab
 
-subsection {* A Complex Datatype *}
+subsection \<open>A Complex Datatype\<close>
 
 (*
 datatype ('a, 'b) complex = 

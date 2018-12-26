@@ -1,4 +1,4 @@
-section {* Relations interpreted as Directed Graphs *}
+section \<open>Relations interpreted as Directed Graphs\<close>
 theory Digraph_Basic
 imports   
   "Automatic_Refinement.Misc"
@@ -17,15 +17,15 @@ text \<open>
 \<close>
 
 
-text {* Directed graphs are modeled as a relation on nodes *}
+text \<open>Directed graphs are modeled as a relation on nodes\<close>
 type_synonym 'v digraph = "('v\<times>'v) set"
 
 locale digraph = fixes E :: "'v digraph"
 
-subsection {* Paths *}
-text {* Path are modeled as list of nodes, the last node of a path is not included
+subsection \<open>Paths\<close>
+text \<open>Path are modeled as list of nodes, the last node of a path is not included
   into the list. This formalization allows for nice concatenation and splitting
-  of paths. *}
+  of paths.\<close>
 inductive path :: "'v digraph \<Rightarrow> 'v \<Rightarrow> 'v list \<Rightarrow> 'v \<Rightarrow> bool" for E where
   path0: "path E u [] u"
 | path_prepend: "\<lbrakk> (u,v)\<in>E; path E v l w \<rbrakk> \<Longrightarrow> path E u (u#l) w"
@@ -169,7 +169,7 @@ proof induction
   from path_prepend.IH have "path (E \<inter> set (u#p) \<times> insert w (set p)) v p w"
     apply (rule path_mono[rotated])
     by (cases p) auto
-  thus ?case using `(u,v)\<in>E`
+  thus ?case using \<open>(u,v)\<in>E\<close>
     by (cases p) (auto simp add: path_cons_conv)
 qed auto
 
@@ -335,12 +335,12 @@ next
       using path_uncons by metis+
     moreover from cons.prems False have "v \<in> set ps" by simp
     ultimately have "path E y c' v" using cons.IH by metis
-    with `(w,y) \<in> E` show ?thesis by (auto simp add: path_cons_conv)
+    with \<open>(w,y) \<in> E\<close> show ?thesis by (auto simp add: path_cons_conv)
   qed
 qed
 
 
-subsection {* Infinite Paths *}
+subsection \<open>Infinite Paths\<close>
 definition ipath :: "'q digraph \<Rightarrow> 'q word \<Rightarrow> bool"
   \<comment> \<open>Predicate for an infinite path in a digraph\<close>
   where "ipath E r \<equiv> \<forall>i. (r i, r (Suc i))\<in>E"
@@ -431,14 +431,14 @@ lemma ipath_subpath:
 proof (induction "u-l" arbitrary: u l)
   case (Suc n)
   note IH=Suc.hyps(1)
-  from `Suc n = u-l` `l\<le>u` obtain u' where [simp]: "u=Suc u'" 
+  from \<open>Suc n = u-l\<close> \<open>l\<le>u\<close> obtain u' where [simp]: "u=Suc u'" 
     and A: "n=u'-l" "l \<le> u'" 
     by (cases u) auto
     
   note IH[OF A]
   also from P have "(r u',r u)\<in>E"
     by (auto simp: ipath_def)
-  finally show ?case using `l \<le> u'` by (simp add: upt_Suc_append)
+  finally show ?case using \<open>l \<le> u'\<close> by (simp add: upt_Suc_append)
 qed auto  
 
 lemma ipath_restrict_eq: "ipath (E \<inter> (E\<^sup>*``{r 0} \<times> E\<^sup>*``{r 0})) r \<longleftrightarrow> ipath E r"
@@ -463,10 +463,10 @@ lemma ipath_in_Range: "\<lbrakk>ipath E r; i\<noteq>0\<rbrakk> \<Longrightarrow>
 lemma ipath_suffix: "ipath E r \<Longrightarrow> ipath E (suffix i r)"
   unfolding suffix_def ipath_def by auto
 
-subsection {* Strongly Connected Components *}
+subsection \<open>Strongly Connected Components\<close>
 
-text {* A strongly connected component is a maximal mutually connected set 
-  of nodes *}
+text \<open>A strongly connected component is a maximal mutually connected set 
+  of nodes\<close>
 definition is_scc :: "'q digraph \<Rightarrow> 'q set \<Rightarrow> bool"
   where "is_scc E U \<longleftrightarrow> U\<times>U\<subseteq>E\<^sup>* \<and> (\<forall>V. V\<supset>U \<longrightarrow> \<not> (V\<times>V\<subseteq>E\<^sup>*))"
 
@@ -503,12 +503,12 @@ lemma is_scc_connected:
   shows "(x,y)\<in>E\<^sup>*"
   using assms unfolding is_scc_def by auto
 
-text {* In the following, we play around with alternative characterizations, and
-  prove them all equivalent .*}
+text \<open>In the following, we play around with alternative characterizations, and
+  prove them all equivalent .\<close>
 
-text {* A common characterization is to define an equivalence relation 
+text \<open>A common characterization is to define an equivalence relation 
   ,,mutually connected'' on nodes, and characterize the SCCs as its 
-  equivalence classes: *}
+  equivalence classes:\<close>
 
 definition mconn :: "('a\<times>'a) set \<Rightarrow> ('a \<times> 'a) set"
   \<comment> \<open>Mutually connected relation on nodes\<close>
@@ -518,7 +518,7 @@ lemma mconn_pointwise:
    "mconn E = {(u,v). (u,v)\<in>E\<^sup>* \<and> (v,u)\<in>E\<^sup>*}"
   by (auto simp add: mconn_def rtrancl_converse)
 
-text {* @{text "mconn"} is an equivalence relation: *}
+text \<open>\<open>mconn\<close> is an equivalence relation:\<close>
 lemma mconn_refl[simp]: "Id\<subseteq>mconn E"
   by (auto simp add: mconn_def)
 
@@ -567,9 +567,9 @@ qed
 lemma "is_scc E U \<longleftrightarrow> U \<in> UNIV // (E\<^sup>* \<inter> (E\<inverse>)\<^sup>*)"
   unfolding is_scc_mconn_eqclasses mconn_def by simp
 
-text {* We can also restrict the notion of "reachability" to nodes
+text \<open>We can also restrict the notion of "reachability" to nodes
   inside the SCC
-  *}
+\<close>
 
 lemma find_outside_node:
   assumes "(u,v)\<in>E\<^sup>*"

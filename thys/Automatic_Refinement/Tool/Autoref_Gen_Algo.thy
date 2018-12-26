@@ -1,4 +1,4 @@
-section {* Infrastructure for Generic Algorithms *}
+section \<open>Infrastructure for Generic Algorithms\<close>
 theory Autoref_Gen_Algo
 imports Autoref_Translate
 begin
@@ -15,7 +15,7 @@ definition [simp, autoref_tag_defs]: "GEN_ALGO_tag P == P"
 lemma GEN_ALGO_tagI: "P ==> GEN_ALGO_tag P" by simp
 abbreviation "SIDE_GEN_ALGO P == PREFER_tag (GEN_ALGO_tag P)"
 
-ML {*
+ML \<open>
   structure Autoref_Gen_Algo = struct 
 
     fun transform_ga_rule context rl = let
@@ -71,7 +71,7 @@ ML {*
         "Autoref: Generic algorithm operation instantiation" 
         ( side_ga_op_tac) phi
   end
-*}  
+\<close>  
 
 setup Autoref_Gen_Algo.setup
 declaration Autoref_Gen_Algo.decl_setup

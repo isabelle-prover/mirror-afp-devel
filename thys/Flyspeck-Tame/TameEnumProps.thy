@@ -7,7 +7,7 @@ imports GeneratorProps
 begin
 
 
-text{* Completeness of filter for final graphs. *}
+text\<open>Completeness of filter for final graphs.\<close>
 
 lemma untame_negFin:
 assumes pl: "inv g" and fin: "final g" and tame: "tame g"

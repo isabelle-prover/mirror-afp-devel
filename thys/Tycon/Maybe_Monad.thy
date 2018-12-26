@@ -1,10 +1,10 @@
-section {* Maybe monad *}
+section \<open>Maybe monad\<close>
 
 theory Maybe_Monad
 imports Monad_Zero_Plus
 begin
 
-subsection {* Type definition *}
+subsection \<open>Type definition\<close>
 
 tycondef 'a\<cdot>maybe = Nothing | Just (lazy "'a")
 
@@ -29,7 +29,7 @@ apply (simp add: Nothing_def)
 apply (simp add: Just_def)
 done
 
-subsection {* Class instance proofs *}
+subsection \<open>Class instance proofs\<close>
 
 instance maybe :: "functor"
 apply standard
@@ -96,7 +96,7 @@ qed
 
 end
 
-subsection {* Transfer properties to polymorphic versions *}
+subsection \<open>Transfer properties to polymorphic versions\<close>
 
 lemma fmap_maybe_simps [simp]:
   "fmap\<cdot>f\<cdot>(\<bottom>::'a\<cdot>maybe) = \<bottom>"
@@ -134,11 +134,11 @@ lemma join_maybe_simps [simp]:
   "join\<cdot>(Just\<cdot>xs) = xs"
 unfolding join_def by simp_all
 
-subsection {* Maybe is not in @{text monad_plus} *}
+subsection \<open>Maybe is not in \<open>monad_plus\<close>\<close>
 
-text {*
-  The @{text maybe} type does not satisfy the law @{text bind_mplus}.
-*}
+text \<open>
+  The \<open>maybe\<close> type does not satisfy the law \<open>bind_mplus\<close>.
+\<close>
 
 lemma maybe_counterexample1:
   "\<lbrakk>a = Just\<cdot>x; b = \<bottom>; k\<cdot>x = Nothing\<rbrakk>

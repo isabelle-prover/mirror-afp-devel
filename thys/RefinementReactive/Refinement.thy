@@ -1,12 +1,12 @@
 theory Refinement imports Main
 begin
-  section{*Monotonic Predicate Transformers*}
-text{*
+  section\<open>Monotonic Predicate Transformers\<close>
+text\<open>
   In this section we introduce the basics of refinement calculus \cite{back-wright-98}.
   Part of this theory is a reformulation of some definitions from \cite{preoteasa:back:2010a},
   but here they are given for predicates, while \cite{preoteasa:back:2010a} uses
   sets.
-*}
+\<close>
 
   notation
     bot ("\<bottom>") and
@@ -14,7 +14,7 @@ text{*
     inf (infixl "\<sqinter>" 70)
     and sup (infixl "\<squnion>" 65)
 
-  subsection{*Basic predicate transformers*}
+  subsection\<open>Basic predicate transformers\<close>
 
   definition
     demonic :: "('a => 'b::lattice) => 'b => 'a \<Rightarrow> bool" ("[: _ :]" [0] 1000) where
@@ -127,7 +127,7 @@ text{*
   lemma "p \<sqinter> p' = \<bottom> \<Longrightarrow> ({.p.} o [:r:]) \<squnion> ({.p'.} o [:r':]) = {.p \<squnion> p'.} o [:(\<lambda> x y . p x \<longrightarrow> r x y) \<sqinter> ((\<lambda> x y . p' x \<longrightarrow> r' x y)):]"
     by (simp add: fun_eq_iff assert_def demonic_def, auto)
 
-  subsection{*Conjunctive predicate transformers*}
+  subsection\<open>Conjunctive predicate transformers\<close>
 
   definition "conjunctive (S::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) = (\<forall> Q . S (Inf Q) = Inf (S ` Q))"
   definition "sconjunctive (S::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) = (\<forall> Q . (\<exists> x . x \<in> Q) \<longrightarrow> S (Inf Q) = Inf (S ` Q))"
@@ -297,15 +297,15 @@ text{*
   lemma "trs r \<sqinter> trs r' = trs (\<lambda> x y . inpt r x \<and> inpt r' x \<and> (r x y \<or> r' x y))"  
     by (auto simp add: fun_eq_iff trs_def assert_def demonic_def inpt_def)
 
-  subsection{*Fusion of predicate transformers*}
+  subsection\<open>Fusion of predicate transformers\<close>
   
-  text{*
+  text\<open>
   In this section we define the fusion operator from \cite{back:butler:1995}. The fusion
   of two programs $S$ and $T$ is intuitively equivalent with the parallel execution of the two
   programs. If $S$ and $T$ assign nondeterministically some value to some program variable
   $x$, then the fusion of $S$ and $T$ will assign a value to $x$ which can be assigned by
   both $S$ and $T$.
-*}
+\<close>
 
   definition fusion :: "(('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)) \<Rightarrow> (('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool)) \<Rightarrow> (('a \<Rightarrow> bool) \<Rightarrow> ('b \<Rightarrow> bool))" (infixl "\<parallel>" 70) where
     "(S \<parallel> S') q x = (\<exists> (p::'a\<Rightarrow>bool) p' . p \<sqinter> p' \<le> q \<and> S p x \<and> S' p' x)"

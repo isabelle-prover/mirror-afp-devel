@@ -38,7 +38,7 @@ next
   thus ?case by(rule Late_Semantics.Match)
 next
   case(Mismatch P a b P' c d)
-  from `P \<longmapsto>\<^sub>la[b] \<prec>\<^sub>l P'` `c \<noteq> d`
+  from \<open>P \<longmapsto>\<^sub>la[b] \<prec>\<^sub>l P'\<close> \<open>c \<noteq> d\<close>
   show ?case by(rule Late_Semantics.Mismatch)
 next
   case(Sum1 P a b P' Q)
@@ -185,7 +185,7 @@ proof -
     by(simp add: Late_Semantics.alphaBoundResidual)
   hence "P \<longmapsto>\<^sub>e a<\<nu>c> \<prec>\<^sub>e ([(x, c)] \<bullet> P')" using cFreshP
     by(rule Goal)
-  moreover from cFreshP' `c \<noteq> x` have "x \<sharp> [(x, c)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
+  moreover from cFreshP' \<open>c \<noteq> x\<close> have "x \<sharp> [(x, c)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
   ultimately show ?thesis by(simp add: Early_Semantics.alphaBoundOutput name_swap)
 qed
 
@@ -252,7 +252,7 @@ proof -
     by(simp add: Early_Semantics.alphaBoundOutput)
   hence "P \<longmapsto>\<^sub>l a<\<nu>c> \<prec>\<^sub>l ([(x, c)] \<bullet> P')" using cFreshP
     by(rule Goal)
-  moreover from cFreshP' `c \<noteq> x` have "x \<sharp> [(x, c)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
+  moreover from cFreshP' \<open>c \<noteq> x\<close> have "x \<sharp> [(x, c)] \<bullet> P'" by(simp add: name_fresh_left name_calc)
   ultimately show ?thesis by(simp add: Late_Semantics.alphaBoundResidual name_swap)
 qed
 
@@ -389,7 +389,7 @@ proof -
       have "\<exists>c::name. c \<sharp> (Q, P'')" by(blast intro: name_exists_fresh)
       then obtain c::name where cFreshQ: "c \<sharp> Q" and cFreshP'': "c \<sharp> P''" by(force simp add: fresh_prod)
       from PTrans cFreshP'' have "P \<longmapsto>\<^sub>la<c> \<prec> [(x, c)] \<bullet> P''" by(simp add: Late_Semantics.alphaBoundResidual)
-      hence "P \<parallel> Q \<longmapsto>\<^sub>la<c> \<prec> ([(x, c)] \<bullet> P'') \<parallel> Q" using `c \<sharp> Q` by(rule Late_Semantics.Par1B)
+      hence "P \<parallel> Q \<longmapsto>\<^sub>la<c> \<prec> ([(x, c)] \<bullet> P'') \<parallel> Q" using \<open>c \<sharp> Q\<close> by(rule Late_Semantics.Par1B)
       moreover from cFreshQ cFreshP'' P'eqP'' have "P' \<parallel> Q = (([(x, c)] \<bullet> P'') \<parallel> Q)[c::=u]"
         by(simp add: forget renaming name_swap)
       ultimately show ?case by blast
@@ -400,7 +400,7 @@ proof -
       have "\<exists>c::name. c \<sharp> (P, Q'')" by(blast intro: name_exists_fresh)
       then obtain c::name where cFreshP: "c \<sharp> P" and cFreshQ'': "c \<sharp> Q''" by(force simp add: fresh_prod)
       from QTrans cFreshQ'' have "Q \<longmapsto>\<^sub>la<c> \<prec> [(x, c)] \<bullet> Q''" by(simp add: Late_Semantics.alphaBoundResidual)
-      hence "P \<parallel> Q \<longmapsto>\<^sub>la<c> \<prec> P \<parallel> ([(x, c)] \<bullet> Q'')" using `c \<sharp> P` by(rule Late_Semantics.Par2B)
+      hence "P \<parallel> Q \<longmapsto>\<^sub>la<c> \<prec> P \<parallel> ([(x, c)] \<bullet> Q'')" using \<open>c \<sharp> P\<close> by(rule Late_Semantics.Par2B)
       moreover from cFreshP cFreshQ'' Q'eqQ'' have "P \<parallel> Q' = (P \<parallel> ([(x, c)] \<bullet> Q''))[c::=u]"
         by(simp add: forget renaming name_swap)
       ultimately show ?case by blast
@@ -430,13 +430,13 @@ proof -
   show ?thesis
   proof(cases "x=y")
     case True
-    from PTrans P'eqP'' `x = y` show ?thesis by blast
+    from PTrans P'eqP'' \<open>x = y\<close> show ?thesis by blast
   next
     case False
-    from PTrans `x \<noteq> y` `x \<sharp> P` have "x \<sharp> P''" by(fastforce dest: freshBoundDerivative simp add: residual.inject)
+    from PTrans \<open>x \<noteq> y\<close> \<open>x \<sharp> P\<close> have "x \<sharp> P''" by(fastforce dest: freshBoundDerivative simp add: residual.inject)
     with PTrans have "P \<longmapsto>\<^sub>la<x> \<prec>\<^sub>l ([(x, y)] \<bullet> P'')"
       by(simp add: Late_Semantics.alphaBoundResidual)
-    moreover from `x \<sharp> P''` have "P''[y::=u] = ([(x, y)] \<bullet> P'')[x::=u]" by(simp add: renaming name_swap)
+    moreover from \<open>x \<sharp> P''\<close> have "P''[y::=u] = ([(x, y)] \<bullet> P'')[x::=u]" by(simp add: renaming name_swap)
     ultimately show ?thesis using P'eqP'' by blast
   qed
 qed
@@ -764,23 +764,23 @@ next
   proof(nominal_induct \<alpha> rule: freeRes.strong_induct)
     case(InputR a u)
     obtain x::name where "x \<sharp> Q" and "x \<sharp> P" by(generate_fresh "name") auto
-    with `Q \<longmapsto>\<^sub>ea<u> \<prec>\<^sub>e Q'` obtain Q'' where QTrans: "Q \<longmapsto>\<^sub>la<x> \<prec>\<^sub>l Q''" and Q'eqQ'': "Q' = Q''[x::=u]"
+    with \<open>Q \<longmapsto>\<^sub>ea<u> \<prec>\<^sub>e Q'\<close> obtain Q'' where QTrans: "Q \<longmapsto>\<^sub>la<x> \<prec>\<^sub>l Q''" and Q'eqQ'': "Q' = Q''[x::=u]"
       by(blast dest: earlyLateInput)
-    from PSimQ QTrans `x \<sharp> P`  obtain P' where PTrans: "P \<longmapsto>\<^sub>la<x> \<prec> P'"
+    from PSimQ QTrans \<open>x \<sharp> P\<close>  obtain P' where PTrans: "P \<longmapsto>\<^sub>la<x> \<prec> P'"
                                           and P'RelQ': "(P'[x::=u], Q''[x::=u]) \<in> Rel"
       by(force dest: Strong_Late_Sim.simE simp add: derivative_def)
     from PTrans have "P \<longmapsto>\<^sub>ea<u> \<prec>\<^sub>e P'[x::=u]" by(rule lateEarlyInput)
     with P'RelQ' Q'eqQ'' show "\<exists>P'. P \<longmapsto>\<^sub>ea<u> \<prec>\<^sub>e P' \<and> (P', Q') \<in> Rel" by blast
   next
     case(OutputR a b)
-    from `Q \<longmapsto>\<^sub>ea[b] \<prec>\<^sub>e Q'` have "Q \<longmapsto>\<^sub>la[b] \<prec>\<^sub>l Q'" by(rule earlyLateOutput)
+    from \<open>Q \<longmapsto>\<^sub>ea[b] \<prec>\<^sub>e Q'\<close> have "Q \<longmapsto>\<^sub>la[b] \<prec>\<^sub>l Q'" by(rule earlyLateOutput)
     with PSimQ obtain P' where PTrans: "P \<longmapsto>\<^sub>la[b] \<prec>\<^sub>l P'" and P'RelQ': "(P', Q') \<in> Rel"
       by(blast dest: Strong_Late_Sim.simE)
     from PTrans have "P \<longmapsto>\<^sub>ea[b] \<prec>\<^sub>e P'" by(rule lateEarlyOutput)
     with P'RelQ' show "\<exists>P'. P \<longmapsto>\<^sub>ea[b] \<prec>\<^sub>e P' \<and> (P', Q') \<in> Rel"  by blast
   next
     case TauR
-    from `Q \<longmapsto>\<^sub>e\<tau> \<prec>\<^sub>e Q'` have "Q \<longmapsto>\<^sub>l\<tau> \<prec>\<^sub>l Q'" by(rule earlyLateTau)
+    from \<open>Q \<longmapsto>\<^sub>e\<tau> \<prec>\<^sub>e Q'\<close> have "Q \<longmapsto>\<^sub>l\<tau> \<prec>\<^sub>l Q'" by(rule earlyLateTau)
     with PSimQ obtain P' where PTrans: "P \<longmapsto>\<^sub>l\<tau> \<prec>\<^sub>l P'" and P'RelQ': "(P', Q') \<in> Rel"
       by(blast dest: Strong_Late_Sim.simE)
     from PTrans have "P \<longmapsto>\<^sub>e\<tau> \<prec>\<^sub>e P'" by(rule lateEarlyTau)

@@ -248,7 +248,7 @@ proof(auto simp add: substClosed_def)
   obtain y::name where "y \<sharp> \<sigma>"
     by(generate_fresh "name") auto
   have "<\<nu>y>\<zero> \<sim> \<zero>" by (rule Strong_Late_Bisim_SC.nilRes)
-  with `y \<sharp> \<sigma>` have "(<\<nu>y>\<zero>)[<\<sigma>>] \<sim> \<zero>" by simp
+  with \<open>y \<sharp> \<sigma>\<close> have "(<\<nu>y>\<zero>)[<\<sigma>>] \<sim> \<zero>" by simp
   thus "(<\<nu>x>\<zero>)[<\<sigma>>] \<sim> \<zero>"
     by(subst alphaRes[where c=y]) auto
 qed
@@ -264,9 +264,9 @@ proof(auto simp add: substClosed_def)
     by(generate_fresh "name", auto)
   have "<\<nu>y>(\<tau>.(([(x, y)] \<bullet> P)[<\<sigma>>])) \<sim> \<tau>.(<\<nu>y>(([(x, y)] \<bullet> P)[<\<sigma>>]))"
     by(rule resTau)
-  with `y \<sharp> \<sigma>` have "(<\<nu>y>(\<tau>.([(x, y)] \<bullet> P)))[<\<sigma>>] \<sim> (\<tau>.(<\<nu>y>([(x, y)] \<bullet> P)))[<\<sigma>>]"
+  with \<open>y \<sharp> \<sigma>\<close> have "(<\<nu>y>(\<tau>.([(x, y)] \<bullet> P)))[<\<sigma>>] \<sim> (\<tau>.(<\<nu>y>([(x, y)] \<bullet> P)))[<\<sigma>>]"
     by simp
-  with `y \<sharp> P` show "(<\<nu>x>\<tau>.(P))[<\<sigma>>] \<sim> \<tau>.((<\<nu>x>P)[<\<sigma>>])"
+  with \<open>y \<sharp> P\<close> show "(<\<nu>x>\<tau>.(P))[<\<sigma>>] \<sim> \<tau>.((<\<nu>x>P)[<\<sigma>>])"
     apply(subst alphaRes[where c=y])
     apply simp
     apply(subst alphaRes[where c=y and a=x])
@@ -288,11 +288,11 @@ proof(auto simp add: substClosed_def)
   obtain y::name where "y \<sharp> P" and "y \<sharp> \<sigma>" and "y \<noteq> a" and "y \<noteq> b"
     by(generate_fresh "name", auto)
   have "<\<nu>y>((seq_subst_name a \<sigma>){seq_subst_name b \<sigma>}.(([(x, y)] \<bullet> P)[<\<sigma>>])) \<sim> seq_subst_name a \<sigma>{seq_subst_name b \<sigma>}.(<\<nu>y>(([(x, y)] \<bullet> P)[<\<sigma>>]))"
-    using `y \<noteq> a` `y \<noteq> b` `y \<sharp> \<sigma>` freshSeqSubstName
+    using \<open>y \<noteq> a\<close> \<open>y \<noteq> b\<close> \<open>y \<sharp> \<sigma>\<close> freshSeqSubstName
     by(rule_tac resOutput) auto
-  with `y \<sharp> \<sigma>` have "(<\<nu>y>(a{b}.([(x, y)] \<bullet> P)))[<\<sigma>>] \<sim> (a{b}.(<\<nu>y>([(x, y)] \<bullet> P)))[<\<sigma>>]"
+  with \<open>y \<sharp> \<sigma>\<close> have "(<\<nu>y>(a{b}.([(x, y)] \<bullet> P)))[<\<sigma>>] \<sim> (a{b}.(<\<nu>y>([(x, y)] \<bullet> P)))[<\<sigma>>]"
     by simp
-  with `y \<sharp> P` `y \<noteq> a` `y \<noteq> b` `x \<noteq> a` `x \<noteq> b` show "(<\<nu>x>a{b}.(P))[<\<sigma>>] \<sim> seq_subst_name a \<sigma>{seq_subst_name b \<sigma>}.((<\<nu>x>P)[<\<sigma>>])"
+  with \<open>y \<sharp> P\<close> \<open>y \<noteq> a\<close> \<open>y \<noteq> b\<close> \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> show "(<\<nu>x>a{b}.(P))[<\<sigma>>] \<sim> seq_subst_name a \<sigma>{seq_subst_name b \<sigma>}.((<\<nu>x>P)[<\<sigma>>])"
     apply(subst alphaRes[where c=y])
     apply simp
     apply(subst alphaRes[where c=y and a=x])
@@ -316,11 +316,11 @@ proof(auto simp add: substClosed_def)
   obtain y'::name where "y' \<sharp> P" and "y' \<sharp> \<sigma>" and "y' \<noteq> a" and "y' \<noteq> x" and "y' \<noteq> y" and "x' \<noteq> y'"
     by(generate_fresh "name", auto)
   have "<\<nu>x'>((seq_subst_name a \<sigma>)<y'>.(([(y, y')] \<bullet> [(x, x')] \<bullet> P)[<\<sigma>>])) \<sim> seq_subst_name a \<sigma><y'>.(<\<nu>x'>(([(y, y')] \<bullet> [(x, x')] \<bullet> P)[<\<sigma>>]))"
-    using `x' \<noteq> a` `x' \<noteq> y'` `x' \<sharp> \<sigma>` `y' \<sharp> \<sigma>` freshSeqSubstName
+    using \<open>x' \<noteq> a\<close> \<open>x' \<noteq> y'\<close> \<open>x' \<sharp> \<sigma>\<close> \<open>y' \<sharp> \<sigma>\<close> freshSeqSubstName
     by(rule_tac resInput) auto
-  with `x' \<sharp> \<sigma>` `y' \<sharp> \<sigma>` have "(<\<nu>x'>(a<y'>.([(y, y')] \<bullet> [(x, x')] \<bullet> P)))[<\<sigma>>] \<sim> (a<y'>.(<\<nu>x'>([(y, y')] \<bullet> [(x, x')] \<bullet> P)))[<\<sigma>>]"
+  with \<open>x' \<sharp> \<sigma>\<close> \<open>y' \<sharp> \<sigma>\<close> have "(<\<nu>x'>(a<y'>.([(y, y')] \<bullet> [(x, x')] \<bullet> P)))[<\<sigma>>] \<sim> (a<y'>.(<\<nu>x'>([(y, y')] \<bullet> [(x, x')] \<bullet> P)))[<\<sigma>>]"
     by simp
-  with `x' \<sharp> P` `y' \<noteq> x` `x' \<noteq> y` `y' \<sharp> P` `x' \<noteq> y'` `x' \<noteq> a` `y' \<noteq> a` `x \<noteq> a` `x \<noteq> y` show "(<\<nu>x>a<y>.(P))[<\<sigma>>] \<sim> a<y>.(<\<nu>x>P)[<\<sigma>>]"
+  with \<open>x' \<sharp> P\<close> \<open>y' \<noteq> x\<close> \<open>x' \<noteq> y\<close> \<open>y' \<sharp> P\<close> \<open>x' \<noteq> y'\<close> \<open>x' \<noteq> a\<close> \<open>y' \<noteq> a\<close> \<open>x \<noteq> a\<close> \<open>x \<noteq> y\<close> show "(<\<nu>x>a<y>.(P))[<\<sigma>>] \<sim> a<y>.(<\<nu>x>P)[<\<sigma>>]"
     apply(subst alphaInput[where c=y'])
     apply simp
     apply(subst alphaRes[where c=x'])

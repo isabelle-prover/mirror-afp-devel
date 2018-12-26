@@ -2,29 +2,29 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* Unsigned words of 8 bits *}
+chapter \<open>Unsigned words of 8 bits\<close>
 
 theory Uint8 imports
   Word_Misc
   Bits_Integer
 begin
 
-text {*
+text \<open>
   Restriction for OCaml code generation:
   OCaml does not provide an int8 type, so no special code generation 
-  for this type is set up. If the theory @{text "Code_Target_Bits_Int"}
-  is imported, the type @{text uint8} is emulated via @{typ "8 word"}.
-*}
+  for this type is set up. If the theory \<open>Code_Target_Bits_Int\<close>
+  is imported, the type \<open>uint8\<close> is emulated via @{typ "8 word"}.
+\<close>
 
 declare prod.Quotient[transfer_rule]
 
-section {* Type definition and primitive operations *}
+section \<open>Type definition and primitive operations\<close>
 
 typedef uint8 = "UNIV :: 8 word set" ..
 
 setup_lifting type_definition_uint8
 
-text {* Use an abstract type for code generation to disable pattern matching on @{term Abs_uint8}. *}
+text \<open>Use an abstract type for code generation to disable pattern matching on @{term Abs_uint8}.\<close>
 declare Rep_uint8_inverse[code abstype]
 
 declare Quotient_uint8[transfer_rule]
@@ -93,7 +93,7 @@ lift_definition nat_of_uint8 :: "uint8 \<Rightarrow> nat" is "unat" .
 definition integer_of_uint8 :: "uint8 \<Rightarrow> integer"
 where "integer_of_uint8 = integer_of_int o int_of_uint8"
 
-text {* Use pretty numerals from integer for pretty printing *}
+text \<open>Use pretty numerals from integer for pretty printing\<close>
 
 context includes integer.lifting begin
 
@@ -126,10 +126,10 @@ by(simp add: zero_uint8_def)
 lemma Abs_uint8_1 [code_post]: "Abs_uint8 1 = 1"
 by(simp add: one_uint8_def)
 
-section {* Code setup *}
+section \<open>Code setup\<close>
 
 code_printing code_module Uint8 \<rightharpoonup> (SML)
-{*(* Test that words can handle numbers between 0 and 3 *)
+\<open>(* Test that words can handle numbers between 0 and 3 *)
 val _ = if 3 <= Word.wordSize then () else raise (Fail ("wordSize less than 3"));
 
 structure Uint8 : sig
@@ -158,25 +158,25 @@ fun shiftr_signed x n =
 fun test_bit x n =
   Word8.andb (x, Word8.<< (0wx1, Word.fromLargeInt (IntInf.toLarge n))) <> Word8.fromInt 0
 
-end; (* struct Uint8 *)*}
+end; (* struct Uint8 *)\<close>
 code_reserved SML Uint8
 
 code_printing code_module Uint8 \<rightharpoonup> (Haskell)
-{*import qualified Data.Word;
+\<open>import qualified Data.Word;
 import qualified Data.Int;
 
 type Int8 = Data.Int.Int8;
 
-type Word8 = Data.Word.Word8;*}
+type Word8 = Data.Word.Word8;\<close>
 code_reserved Haskell Uint8
 
-text {*
+text \<open>
   Scala provides only signed 8bit numbers, so we use these and 
   implement sign-sensitive operations like comparisons manually.
-*}
+\<close>
 
 code_printing code_module Uint8 \<rightharpoonup> (Scala)
-{*object Uint8 {
+\<open>object Uint8 {
 
 def less(x: Byte, y: Byte) : Boolean =
   if (x < 0) y < 0 && x < y
@@ -201,10 +201,10 @@ def shiftr_signed(x: Byte, n: BigInt) : Byte = (x >> n.intValue).toByte
 def test_bit(x: Byte, n: BigInt) : Boolean =
   (x & (1 << n.intValue)) != 0
 
-} /* object Uint8 */*}
+} /* object Uint8 */\<close>
 code_reserved Scala Uint8
 
-text {* 
+text \<open>
   Avoid @{term Abs_uint8} in generated code, use @{term Rep_uint8'} instead. 
   The symbolic implementations for code\_simp use @{term Rep_uint8}.
 
@@ -217,7 +217,7 @@ text {*
   these instances will be folded away.)
 
   To convert @{typ "8 word"} values into @{typ uint8}, use @{term "Abs_uint8'"}.
-*}
+\<close>
 
 definition Rep_uint8' where [simp]: "Rep_uint8' = Rep_uint8"
 
@@ -357,10 +357,10 @@ lemma uint8_sdiv_code [code abstract]:
     else Rep_uint8 x sdiv Rep_uint8 y)"
 unfolding uint8_sdiv_def by(simp add: Abs_uint8_inverse)
 
-text {* 
+text \<open>
   Note that we only need a translation for signed division, but not for the remainder
   because @{thm uint8_divmod_code} computes both with division only.
-*}
+\<close>
 
 code_printing
   constant uint8_div \<rightharpoonup>
@@ -548,7 +548,7 @@ code_printing
 | constant "integer_of_uint8_signed" \<rightharpoonup>
   (Scala) "BigInt"
 
-section {* Quickcheck setup *}
+section \<open>Quickcheck setup\<close>
 
 definition uint8_of_natural :: "natural \<Rightarrow> uint8"
 where "uint8_of_natural x \<equiv> Uint8 (integer_of_natural x)"

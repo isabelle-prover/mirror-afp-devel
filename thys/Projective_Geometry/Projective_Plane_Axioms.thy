@@ -8,7 +8,7 @@ text \<open>
 Contents:
 \<^item> We introduce the types of points and lines and an incidence relation between them.
 \<^item> A set of axioms for the projective plane (the models of these axioms are 
-n-dimensional with n @{text "\<ge>"} 2). 
+n-dimensional with n \<open>\<ge>\<close> 2). 
 \<close>
 
 section \<open>The Axioms of the Projective Plane\<close>

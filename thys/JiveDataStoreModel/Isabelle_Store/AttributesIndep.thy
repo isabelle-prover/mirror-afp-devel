@@ -5,17 +5,17 @@
     License:     LGPL
 *)
 
-section {* Program-Independent Lemmas on Attributes *}
+section \<open>Program-Independent Lemmas on Attributes\<close>
 
 theory AttributesIndep
 imports "../Isa_Counter_Store/Attributes"
 begin
 
-text {* The following lemmas validate the functions defined in the Attributes theory.
+text \<open>The following lemmas validate the functions defined in the Attributes theory.
 They also aid in subsequent proving tasks. Since they are
 program-independent, it is of no use to add them to the generation process of
 Attributes.thy. Therefore, they have been extracted to this theory.
-*}
+\<close>
 
 lemma cls_catt [simp]: 
   "CClassT c \<le> dtype f \<Longrightarrow> cls (catt c f) = c"
@@ -38,7 +38,7 @@ lemma att_catt [simp]:
         derived\<close>
   done
 
-text {* The following lemmas are just a demonstration of simplification. *}
+text \<open>The following lemmas are just a demonstration of simplification.\<close>
 
 lemma rtype_att_catt: 
   "CClassT c \<le> dtype f \<Longrightarrow> rtype (att (catt c f)) = rtype f"

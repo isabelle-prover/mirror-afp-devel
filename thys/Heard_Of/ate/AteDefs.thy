@@ -2,9 +2,9 @@ theory AteDefs
 imports "../HOModel"
 begin
 
-section {* Verification of the \ate{} Consensus algorithm *}
+section \<open>Verification of the \ate{} Consensus algorithm\<close>
 
-text {* 
+text \<open>
   Algorithm \ate{} is presented in~\cite{biely:tolerating}. Like \ute{},
   it is an uncoordinated algorithm that tolerates value faults, and it
   is parameterized by values $T$, $E$, and $\alpha$ that serve a similar
@@ -14,17 +14,17 @@ text {*
 
   We formalize in Isabelle the correctness proof of the algorithm that
   appears in~\cite{biely:tolerating}, using the framework of theory
-  @{text HOModel}.
-*}
+  \<open>HOModel\<close>.
+\<close>
 
 
-subsection {* Model of the Algorithm *}
+subsection \<open>Model of the Algorithm\<close>
 
-text {*
+text \<open>
   We begin by introducing an anonymous type of processes of finite
-  cardinality that will instantiate the type variable @{text "'proc"}
+  cardinality that will instantiate the type variable \<open>'proc\<close>
   of the generic HO model.
-*}
+\<close>
 
 typedecl Proc \<comment> \<open>the set of processes\<close>
 axiomatization where Proc_finite: "OFCLASS(Proc, finite_class)"
@@ -33,24 +33,24 @@ instance Proc :: finite by (rule Proc_finite)
 abbreviation
   "N \<equiv> card (UNIV::Proc set)"   \<comment> \<open>number of processes\<close>
 
-text {* The following record models the local state of a process. *}
+text \<open>The following record models the local state of a process.\<close>
 
 record 'val pstate =
   x :: "'val"              \<comment> \<open>current value held by process\<close>
   decide :: "'val option"  \<comment> \<open>value the process has decided on, if any\<close>
 
-text {*
-  The @{text x} field of the initial state is unconstrained, but no
+text \<open>
+  The \<open>x\<close> field of the initial state is unconstrained, but no
   decision has yet been taken.
-*}
+\<close>
 
 definition Ate_initState where
   "Ate_initState p st \<equiv> (decide st = None)"
 
-text {* 
+text \<open>
   The following locale introduces the parameters used for the \ate{}
   algorithm and their constraints~\cite{biely:tolerating}.
-*}
+\<close>
 
 locale ate_parameters =
   fixes \<alpha>::nat and T::nat and E::nat
@@ -60,7 +60,7 @@ locale ate_parameters =
 
 begin
 
-text {* The following are consequences of the assumptions on the parameters. *}
+text \<open>The following are consequences of the assumptions on the parameters.\<close>
 
 lemma majE: "2 * (E - \<alpha>) \<ge> N"
 using TNaE TltN by auto
@@ -71,15 +71,15 @@ using majE EltN by auto
 lemma Tge2a: "T \<ge> 2 * \<alpha>"
 using TNaE EltN by auto
 
-text {*
-  At every round, each process sends its current @{text x}.
-  If it received more than @{text T} messages, it selects the smallest value
-  and store it in @{text x}. As in algorithm \emph{OneThirdRule}, we
+text \<open>
+  At every round, each process sends its current \<open>x\<close>.
+  If it received more than \<open>T\<close> messages, it selects the smallest value
+  and store it in \<open>x\<close>. As in algorithm \emph{OneThirdRule}, we
   therefore require values to be linearly ordered.
 
-  If more than @{text E} messages holding the same value are received,
+  If more than \<open>E\<close> messages holding the same value are received,
   the process decides that value.
-*}
+\<close>
 
 definition mostOftenRcvd where
   "mostOftenRcvd (msgs::Proc \<Rightarrow> 'val option) \<equiv>
@@ -103,31 +103,31 @@ where
          \<and> decide st' = decide st)"
 
 
-subsection {* Communication Predicate for \ate{} *}
+subsection \<open>Communication Predicate for \ate{}\<close>
 
-text {*
+text \<open>
   Following~\cite{biely:tolerating}, we now define the communication
   predicate for the \ate{} algorithm. The round-by-round predicate
-  requires that no process may receive more than @{text "\<alpha>"} corrupted
+  requires that no process may receive more than \<open>\<alpha>\<close> corrupted
   messages at any round.
-*}
+\<close>
 definition Ate_commPerRd where
   "Ate_commPerRd HOrs SHOrs \<equiv>
    \<forall>p. card (HOrs p - SHOrs p) \<le> \<alpha>"
 
-text {*
+text \<open>
   The global communication predicate stipulates the three following
   conditions:
   \begin{itemize}
-  \item for every process @{text p} there are infinitely many rounds 
-    where @{text p} receives more than @{text T} messages,
-  \item for every process @{text p} there are infinitely many rounds 
-    where @{text p} receives more than @{text E} uncorrupted messages,
+  \item for every process \<open>p\<close> there are infinitely many rounds 
+    where \<open>p\<close> receives more than \<open>T\<close> messages,
+  \item for every process \<open>p\<close> there are infinitely many rounds 
+    where \<open>p\<close> receives more than \<open>E\<close> uncorrupted messages,
   \item and there are infinitely many rounds in which more than
-    @{text "E - \<alpha>"} processes receive uncorrupted messages from the
-    same set of processes, which contains more than @{text T} processes.
+    \<open>E - \<alpha>\<close> processes receive uncorrupted messages from the
+    same set of processes, which contains more than \<open>T\<close> processes.
   \end{itemize}
-*}
+\<close>
 definition
   Ate_commGlobal where
   "Ate_commGlobal HOs SHOs \<equiv>
@@ -138,12 +138,12 @@ definition
       \<and> card \<pi>2 > T
       \<and> (\<forall>p \<in> \<pi>1. HOs r' p = \<pi>2 \<and> SHOs r' p \<inter> HOs r' p = \<pi>2))"
 
-subsection {* The \ate{} Heard-Of Machine *}
+subsection \<open>The \ate{} Heard-Of Machine\<close>
 
-text {* 
+text \<open>
   We now define the non-coordinated SHO machine for the \ate{} algorithm
   by assembling the algorithm definition and its communication-predicate.
-*}
+\<close>
 
 definition Ate_SHOMachine where
   "Ate_SHOMachine = \<lparr> 

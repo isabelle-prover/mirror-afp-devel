@@ -1,16 +1,16 @@
-section {* An Existing FLPSystem *}
+section \<open>An Existing FLPSystem\<close>
 
 theory FLPExistingSystem
 imports FLPTheorem
 begin
 
-text {*
+text \<open>
   We define an example FLPSystem with some example execution to show that the
   locales employed are not void. (If they were, the consensus impossibility
   result would be trivial.)
-*}
+\<close>
 
-subsection {* System definition *}
+subsection \<open>System definition\<close>
 
 datatype proc = p0 | p1
 datatype state = s0 | s1
@@ -41,7 +41,7 @@ where
 lemma ProcUniv: "(UNIV :: proc set) = {p0, p1}"
   by (metis UNIV_eq_I insert_iff proc.exhaust)
 
-subsection {* Interpretation as FLP Locale *}
+subsection \<open>Interpretation as FLP Locale\<close>
 
 interpretation FLPSys: flpSystem trans sends start
 proof

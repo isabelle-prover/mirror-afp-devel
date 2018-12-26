@@ -35,7 +35,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************)
 
-chapter {* UPF Firewall *}
+chapter \<open>UPF Firewall\<close>
 theory 
   "UPF-Firewall"
   imports 
@@ -44,7 +44,7 @@ theory
     "FWNormalisation/FWNormalisation"
     "StatefulFW/StatefulFW" 
 begin
-text{* 
+text\<open>
   This is the main entry point for specifications of firewall policies. 
-*}
+\<close>
 end

@@ -4,13 +4,13 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Models of Kleene Algebras *}
+section \<open>Models of Kleene Algebras\<close>
 
 theory Kleene_Algebra_Models
 imports Kleene_Algebra Dioid_Models
 begin
 
-text {* We now show that most of the models considered for dioids are
+text \<open>We now show that most of the models considered for dioids are
 also Kleene algebras. Some of the dioid models cannot be expanded, for
 instance max-plus and min-plus semirings, but we do not formalise this
 fact. We also currently do not show that formal powerseries and
@@ -18,14 +18,14 @@ matrices form Kleene algebras.
 
 The interpretation proofs for some of the following models are quite
 similar. One could, perhaps, abstract out common reasoning in the
-future. *}
+future.\<close>
 
-subsection {* Preliminary Lemmas *}
+subsection \<open>Preliminary Lemmas\<close>
 
-text {* We first prove two induction-style statements for dioids that
+text \<open>We first prove two induction-style statements for dioids that
 are useful for establishing the full induction laws. In the future
 these will live in a theory file on finite sums for Kleene
-algebras. *}
+algebras.\<close>
 
 context dioid_one_zero
 begin
@@ -56,7 +56,7 @@ proof (induct n)
     moreover have "... \<le> y \<cdot> x"
       by (metis calculation(1) mult_isor)
     moreover have "... \<le> y"
-      using `z + y \<cdot> x \<le> y` by auto
+      using \<open>z + y \<cdot> x \<le> y\<close> by auto
     ultimately have "z \<cdot> x ^ Suc n \<le> y" by auto
   }
   thus ?case
@@ -66,10 +66,10 @@ qed
 end (* dioid_one_zero *)
 
 
-subsection {* The Powerset Kleene Algebra over a Monoid *}
+subsection \<open>The Powerset Kleene Algebra over a Monoid\<close>
 
-text {* We now show that the powerset dioid forms a Kleene
-algebra. The Kleene star is defined as in language theory. *}
+text \<open>We now show that the powerset dioid forms a Kleene
+algebra. The Kleene star is defined as in language theory.\<close>
 
 lemma Un_0_Suc: "(\<Union>n. f n) = f 0 \<union> (\<Union>n. f (Suc n))"
 by auto (metis not0_implies_Suc)
@@ -117,18 +117,18 @@ begin
 end (* instantiation *)
 
 
-subsection {* Language Kleene Algebras *}
+subsection \<open>Language Kleene Algebras\<close>
 
-text {* We now specialise this fact to languages. *}
+text \<open>We now specialise this fact to languages.\<close>
 
 interpretation lan_kleene_algebra: kleene_algebra "(+)" "(\<cdot>)" "1::'a lan" "0" "(\<subseteq>)" "(\<subset>)" star ..
 
 
-subsection {* Regular Languages *}
+subsection \<open>Regular Languages\<close>
 
-text {* {\ldots} and further to regular languages. For the sake of
+text \<open>{\ldots} and further to regular languages. For the sake of
 simplicity we just copy in the axiomatisation of regular expressions
-by Krauss and Nipkow~\cite{krauss12regular}. *}
+by Krauss and Nipkow~\cite{krauss12regular}.\<close>
 
 datatype 'a rexp =
   Zero
@@ -138,9 +138,9 @@ datatype 'a rexp =
 | Times "'a rexp" "'a rexp"
 | Star "'a rexp"
 
-text {* The interpretation map that induces regular languages as the
+text \<open>The interpretation map that induces regular languages as the
 images of regular expressions in the set of languages has also been
-adapted from there. *}
+adapted from there.\<close>
 
 fun lang :: "'a rexp \<Rightarrow> 'a lan" where
   "lang Zero = 0"  \<comment> \<open>{}\<close>
@@ -228,12 +228,12 @@ end  (* instantiation *)
 interpretation reg_lan_kleene_algebra: kleene_algebra "(+)" "(\<cdot>)" "1::'a reg_lan" 0 "(\<le>)" "(<)" star ..
 
 
-subsection {* Relation Kleene Algebras *}
+subsection \<open>Relation Kleene Algebras\<close>
 
-text {* We now show that binary relations form Kleene algebras. While
+text \<open>We now show that binary relations form Kleene algebras. While
 we could have used the reflexive transitive closure operation as the
 Kleene star, we prefer the equivalent definition of the star as the
-sum of powers. This essentially allows us to copy previous proofs. *}
+sum of powers. This essentially allows us to copy previous proofs.\<close>
 
 lemma power_is_relpow: "rel_dioid.power X n = X ^^ n"
 proof (induct n)
@@ -269,10 +269,10 @@ next
     by (simp only: rel_star_contl, metis (lifting) SUP_le_iff rel_dioid.power_inductr)
 qed
 
-subsection {* Trace Kleene Algebras *}
+subsection \<open>Trace Kleene Algebras\<close>
 
-text {* Again, the proof that sets of traces form Kleene algebras
-follows the same schema. *}
+text \<open>Again, the proof that sets of traces form Kleene algebras
+follows the same schema.\<close>
 
 definition t_star :: "('p, 'a) trace set \<Rightarrow> ('p, 'a) trace set" where
   "t_star X \<equiv> \<Union>n. trace_dioid.power X n"
@@ -307,9 +307,9 @@ proof
 qed
 
 
-subsection {* Path Kleene Algebras *}
+subsection \<open>Path Kleene Algebras\<close>
 
-text {* We start with paths that include the empty path. *}
+text \<open>We start with paths that include the empty path.\<close>
 
 definition p_star :: "'a path set \<Rightarrow> 'a path set" where
   "p_star X \<equiv> \<Union>n. path_dioid.power X n"
@@ -353,8 +353,8 @@ proof
     by (simp only: ball_UNIV p_star_contl SUP_le_iff) (metis path_dioid.power_inductr)
 qed
 
-text {* We now consider a notion of paths that does not include the
-empty path. *}
+text \<open>We now consider a notion of paths that does not include the
+empty path.\<close>
 
 definition pp_star :: "'a ppath set \<Rightarrow> 'a ppath set" where
   "pp_star X \<equiv> \<Union>n. ppath_dioid.power X n"
@@ -389,10 +389,10 @@ proof
 qed
 
 
-subsection {* The Distributive Lattice Kleene Algebra *}
+subsection \<open>The Distributive Lattice Kleene Algebra\<close>
 
-text {* In the case of bounded distributive lattices, the star maps
-all elements to to the maximal element. *}
+text \<open>In the case of bounded distributive lattices, the star maps
+all elements to to the maximal element.\<close>
 
 definition (in bounded_distributive_lattice) bdl_star :: "'a \<Rightarrow> 'a" where
   "bdl_star x = top"
@@ -409,14 +409,14 @@ proof
 qed
 
 
-subsection {* The Min-Plus Kleene Algebra *}
+subsection \<open>The Min-Plus Kleene Algebra\<close>
 
-text {* One cannot define a Kleene star for max-plus and min-plus
+text \<open>One cannot define a Kleene star for max-plus and min-plus
 algebras that range over the real numbers. Here we define the star for
 a min-plus algebra restricted to natural numbers and~$+\infty$. The
 resulting Kleene algebra is commutative. Similar variants can be
 obtained for max-plus algebras and other algebras ranging over the
-positive or negative integers. *}
+positive or negative integers.\<close>
 
 instantiation pnat :: commutative_kleene_algebra
 begin

@@ -14,9 +14,9 @@ imports
 begin
 (*>*)
 
-section{* Tagless interpreter via double-barreled continuations *}
+section\<open>Tagless interpreter via double-barreled continuations\<close>
 
-text{*\label{sec:continuations} *}
+text\<open>\label{sec:continuations}\<close>
 
 type_synonym 'a Cont = "('a \<rightarrow> 'a) \<rightarrow> 'a"
 
@@ -57,7 +57,7 @@ lemma eval_body_strictExpr[simp]: "eval_body\<cdot>r\<cdot>\<bottom> = \<bottom>
 lemma eval_eval_body_eq: "eval = fix\<cdot>eval_body"
   by (rule cfun_eqI, subst eval_def, subst eval_body.unfold, simp)
 
-subsection{* Worker/wrapper *}
+subsection\<open>Worker/wrapper\<close>
 
 definition
   unwrapC :: "(Expr \<rightarrow> Nat Maybe) \<rightarrow> (Expr \<rightarrow> (Nat \<rightarrow> Nat Maybe) \<rightarrow> Nat Maybe \<rightarrow> Nat Maybe)" where
@@ -108,8 +108,8 @@ definition
   eval_work' :: "Expr \<rightarrow> (Nat \<rightarrow> Nat Maybe) \<rightarrow> Nat Maybe \<rightarrow> Nat Maybe" where
   "eval_work' \<equiv> fix\<cdot>eval_body'"
 
-text{* This proof is unfortunately quite messy, due to the
-simplifier's inability to cope with HOLCF's case distinctions. *}
+text\<open>This proof is unfortunately quite messy, due to the
+simplifier's inability to cope with HOLCF's case distinctions.\<close>
 
 lemma eval_body'_eval_body_eq: "eval_body' = unwrapC oo eval_body oo wrapC"
   apply (intro cfun_eqI)

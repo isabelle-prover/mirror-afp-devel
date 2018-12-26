@@ -6,24 +6,24 @@ theory POPLmarkRecord
 imports Basis
 begin
 
-section {* Extending the calculus with records *}
+section \<open>Extending the calculus with records\<close>
 
-text {*
+text \<open>
 \label{sec:record-calculus}
 We now describe how the calculus introduced in the previous section can
 be extended with records. An important point to note is that many of the
 definitions and proofs developed for the simple calculus can be reused.
-*}
+\<close>
 
 
-subsection {* Types and Terms *}
+subsection \<open>Types and Terms\<close>
 
-text {*
+text \<open>
 In order to represent records, we also need a type of {\it field names}.
 For this purpose, we simply use the type of {\it strings}. We extend the
-datatype of types of System \fsub{} by a new constructor @{text RcdT}
+datatype of types of System \fsub{} by a new constructor \<open>RcdT\<close>
 representing record types.
-*}
+\<close>
 
 type_synonym name = string
 
@@ -56,18 +56,18 @@ where
   "mapB f (VarB T) = VarB (f T)"
 | "mapB f (TVarB T) = TVarB (f T)"
 
-text {*
+text \<open>
 A record type is essentially an association list, mapping names of record fields
 to their types.
-The types of bindings and environments remain unchanged. The datatype @{text trm}
-of terms is extended with three new constructors @{text Rcd}, @{text Proj},
-and @{text LET}, denoting construction of a new record, selection of
+The types of bindings and environments remain unchanged. The datatype \<open>trm\<close>
+of terms is extended with three new constructors \<open>Rcd\<close>, \<open>Proj\<close>,
+and \<open>LET\<close>, denoting construction of a new record, selection of
 a specific field of a record (projection), and matching of a record against
-a pattern, respectively. A pattern, represented by datatype @{text pat},
+a pattern, respectively. A pattern, represented by datatype \<open>pat\<close>,
 can be either a variable matching any value of a given type, or a nested
 record pattern. Due to the encoding of variables using de Bruijn indices,
 a variable pattern only consists of a type.
-*}
+\<close>
 
 datatype pat = PVar type | PRcd "(name \<times> pat) list"
 
@@ -86,15 +86,15 @@ type_synonym rcd = "(name \<times> trm) list"
 type_synonym fpat = "name \<times> pat"
 type_synonym rpat = "(name \<times> pat) list"
 
-text {*
-In order to motivate the typing and evaluation rules for the @{text LET}, it is
+text \<open>
+In order to motivate the typing and evaluation rules for the \<open>LET\<close>, it is
 important to note that an expression of the form
 @{text [display] "LET PRcd [(l\<^sub>1, PVar T\<^sub>1), \<dots>, (l\<^sub>n, PVar T\<^sub>n)] = Rcd [(l\<^sub>1, v\<^sub>1), \<dots>, (l\<^sub>n, v\<^sub>n)] IN t"}
-can be treated like a nested abstraction @{text "(\<lambda>:T\<^sub>1. \<dots> \<lambda>:T\<^sub>n. t) \<bullet> v\<^sub>1 \<bullet> \<dots> \<bullet> v\<^sub>n"}
-*}
+can be treated like a nested abstraction \<open>(\<lambda>:T\<^sub>1. \<dots> \<lambda>:T\<^sub>n. t) \<bullet> v\<^sub>1 \<bullet> \<dots> \<bullet> v\<^sub>n\<close>
+\<close>
 
 
-subsection {* Lifting and Substitution *}
+subsection \<open>Lifting and Substitution\<close>
 
 primrec psize :: "pat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^sub>p")
   and rsize :: "rpat \<Rightarrow> nat" ("\<parallel>_\<parallel>\<^sub>r")
@@ -174,13 +174,13 @@ where
   "\<down>\<^sub>p 0 k p = p"
 | "\<down>\<^sub>p (Suc n) k p = \<down>\<^sub>p n k (p[k \<mapsto>\<^sub>\<tau> Top]\<^sub>p)"
 
-text {*
+text \<open>
 In addition to the lifting and substitution functions already needed for the
 basic calculus, we also have to define lifting and substitution functions
 for patterns, which we denote by @{term "\<up>\<^sub>p n k p"} and @{term "T[k \<mapsto>\<^sub>\<tau> S]\<^sub>p"},
 respectively. The extension of the existing lifting and substitution
 functions to records is fairly standard.
-*}
+\<close>
 
 primrec subst :: "trm \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> trm"  ("_[_ \<mapsto> _]" [300, 0, 0] 300)
   and substr :: "rcd \<Rightarrow> nat \<Rightarrow> trm \<Rightarrow> rcd"  ("_[_ \<mapsto> _]\<^sub>r" [300, 0, 0] 300)
@@ -199,15 +199,15 @@ where
 | "(f \<Colon> fs)[k \<mapsto> s]\<^sub>r = f[k \<mapsto> s]\<^sub>f \<Colon> fs[k \<mapsto> s]\<^sub>r"
 | "(l, t)[k \<mapsto> s]\<^sub>f = (l, t[k \<mapsto> s])"
 
-text {*
+text \<open>
 Note that the substitution function on terms is defined simultaneously
 with a substitution function @{term "fs[k \<mapsto> s]\<^sub>r"} on records (i.e.\ lists
 of fields), and a substitution function @{term "f[k \<mapsto> s]\<^sub>f"} on fields.
 To avoid conflicts with locally bound variables, we have to add an offset
 @{term "\<parallel>p\<parallel>\<^sub>p"} to @{term k} when performing substitution in the body of
-the @{text LET} binder, where @{term "\<parallel>p\<parallel>\<^sub>p"} is the number of variables
+the \<open>LET\<close> binder, where @{term "\<parallel>p\<parallel>\<^sub>p"} is the number of variables
 in the pattern @{term p}.
-*}
+\<close>
 
 primrec substT :: "trm \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> trm"  ("_[_ \<mapsto>\<^sub>\<tau> _]" [300, 0, 0] 300)
   and substrT :: "rcd \<Rightarrow> nat \<Rightarrow> type \<Rightarrow> rcd"  ("_[_ \<mapsto>\<^sub>\<tau> _]\<^sub>r" [300, 0, 0] 300)
@@ -236,12 +236,12 @@ where
   "[][k \<mapsto>\<^sub>\<tau> T]\<^sub>e = []"
 | "(B \<Colon> \<Gamma>)[k \<mapsto>\<^sub>\<tau> T]\<^sub>e = mapB (\<lambda>U. U[k + \<parallel>\<Gamma>\<parallel> \<mapsto>\<^sub>\<tau> T]\<^sub>\<tau>) B \<Colon> \<Gamma>[k \<mapsto>\<^sub>\<tau> T]\<^sub>e"
 
-text {*
+text \<open>
 For the formalization of the reduction
-rules for @{text LET}, we need a function \mbox{@{text "t[k \<mapsto>\<^sub>s us]"}}
+rules for \<open>LET\<close>, we need a function \mbox{\<open>t[k \<mapsto>\<^sub>s us]\<close>}
 for simultaneously substituting terms @{term us} for variables with
 consecutive indices:
-*}
+\<close>
 
 primrec substs :: "trm \<Rightarrow> nat \<Rightarrow> trm list \<Rightarrow> trm"  ("_[_ \<mapsto>\<^sub>s _]" [300, 0, 0] 300)
 where
@@ -263,12 +263,12 @@ where
   "\<down>\<^sub>r\<^sub>\<tau> 0 k fTs = fTs"
 | "\<down>\<^sub>r\<^sub>\<tau> (Suc n) k fTs = \<down>\<^sub>r\<^sub>\<tau> n k (fTs[k \<mapsto>\<^sub>\<tau> Top]\<^sub>r\<^sub>\<tau>)"
 
-text {*
+text \<open>
 The lemmas about substitution and lifting are very similar to those needed
 for the simple calculus without records, with the difference that most
 of them have to be proved simultaneously with a suitable property for
 records.
-*}
+\<close>
 
 lemma liftE_length [simp]: "\<parallel>\<up>\<^sub>e n k \<Gamma>\<parallel> = \<parallel>\<Gamma>\<parallel>"
   by (induct \<Gamma>) simp_all
@@ -582,14 +582,14 @@ lemma substrT_setD:
   by (induct fs rule: list.induct) auto
 
 
-subsection {* Well-formedness *}
+subsection \<open>Well-formedness\<close>
 
-text {*
+text \<open>
 The definition of well-formedness is extended with a rule stating that a
 record type @{term "RcdT fs"} is well-formed, if for all fields @{term "(l, T)"}
 contained in the list @{term fs}, the type @{term T} is well-formed, and
 all labels @{term l} in @{term fs} are {\it unique}.
-*}
+\<close>
 
 inductive
   well_formed :: "env \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile>\<^sub>w\<^sub>f _" [50, 50] 50)
@@ -824,14 +824,14 @@ theorem wfE_subst: "\<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f 
   apply assumption+
   done
 
-subsection {* Subtyping *}
+subsection \<open>Subtyping\<close>
 
-text {*
-The definition of the subtyping judgement is extended with a rule @{text SA_Rcd} stating
+text \<open>
+The definition of the subtyping judgement is extended with a rule \<open>SA_Rcd\<close> stating
 that a record type @{term "RcdT fs"} is a subtype of @{term "RcdT fs'"}, if
 for all fields \mbox{@{term "(l, T)"}} contained in @{term fs'}, there exists a
 corresponding field @{term "(l, S)"} such that @{term S} is a subtype of @{term T}.
-If the list @{term fs'} is empty, @{text SA_Rcd} can appear as a leaf in
+If the list @{term fs'} is empty, \<open>SA_Rcd\<close> can appear as a leaf in
 the derivation tree of the subtyping judgement. Therefore, the introduction
 rule needs an additional premise @{term "\<Gamma> \<turnstile>\<^sub>w\<^sub>f"} to make sure that only
 subtyping judgements with well-formed contexts are derivable. Moreover,
@@ -841,7 +841,7 @@ In order to ensure that the type @{term "RcdT fs'"} is well-formed, too,
 we only have to require that labels in @{term fs'} are unique, since,
 by induction on the subtyping derivation, all types contained in @{term fs'}
 are already well-formed.
-*}
+\<close>
 
 inductive
   subtyping :: "env \<Rightarrow> type \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ <: _" [50, 50, 50] 50)
@@ -936,7 +936,7 @@ next
 next
   case (SA_Rcd fs fs')
   with wf have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f" by simp (rule wfE_weaken)
-  moreover from `\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs`
+  moreover from \<open>\<Delta> @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs\<close>
   have "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f \<up>\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> (RcdT fs)"
     by (rule wf_weaken)
   hence "\<up>\<^sub>e (Suc 0) 0 \<Delta> @ B \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT (\<up>\<^sub>r\<^sub>\<tau> (Suc 0) \<parallel>\<Delta>\<parallel> fs)" by simp
@@ -1042,9 +1042,9 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         with SA_Rcd show ?thesis by (auto intro!: subtyping.SA_Top)
       next
         case (SA_Rcd fs\<^sub>2')
-        note `\<Gamma> \<turnstile>\<^sub>w\<^sub>f`
-        moreover note `\<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs\<^sub>1`
-        moreover note `unique fs\<^sub>2'`
+        note \<open>\<Gamma> \<turnstile>\<^sub>w\<^sub>f\<close>
+        moreover note \<open>\<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs\<^sub>1\<close>
+        moreover note \<open>unique fs\<^sub>2'\<close>
         moreover have "\<forall>(l, T)\<in>set fs\<^sub>2'. \<exists>S. (l, S)\<in>set fs\<^sub>1 \<and> \<Gamma> \<turnstile> S <: T"
         proof (rule ballpI)
           fix l T
@@ -1092,7 +1092,7 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
           case True
           from SA_trans_TVar have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
             by (auto intro: wfE_replace elim!: wf_subtypeE)
-          with `\<Gamma> \<turnstile> P <: Q`
+          with \<open>\<Gamma> \<turnstile> P <: Q\<close>
           have "(\<Delta> @ [TVarB P]) @ \<Gamma> \<turnstile> \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 P <: \<up>\<^sub>\<tau> \<parallel>\<Delta> @ [TVarB P]\<parallel> 0 Q"
             by (rule subtype_weaken')
           with SA_trans_TVar True False have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> \<up>\<^sub>\<tau> (Suc \<parallel>\<Delta>\<parallel>) 0 P <: T"
@@ -1115,12 +1115,12 @@ proof (induct Q arbitrary: \<Gamma> S T \<Delta> P M N rule: wf_induct_rule)
         SA_all(4) [of "TVarB T\<^sub>1 \<Colon> \<Delta>", simplified])
     next
       case (SA_Rcd fs fs')
-      from `\<Gamma> \<turnstile> P <: Q` have "\<Gamma> \<turnstile>\<^sub>w\<^sub>f P" by (rule wf_subtypeE)
+      from \<open>\<Gamma> \<turnstile> P <: Q\<close> have "\<Gamma> \<turnstile>\<^sub>w\<^sub>f P" by (rule wf_subtypeE)
       with SA_Rcd have "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f"
         by - (rule wfE_replace, simp+)
       moreover from SA_Rcd have "\<Delta> @ TVarB Q \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs" by simp
       hence "\<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile>\<^sub>w\<^sub>f RcdT fs" by (rule wf_equallength) simp_all
-      moreover note `unique fs'`
+      moreover note \<open>unique fs'\<close>
       moreover from SA_Rcd
       have "\<forall>(l, T)\<in>set fs'. \<exists>S. (l, S)\<in>set fs \<and> \<Delta> @ TVarB P \<Colon> \<Gamma> \<turnstile> S <: T"
         by blast
@@ -1306,19 +1306,19 @@ lemma subst_subtype:
   done
 
 
-subsection {* Typing *}
+subsection \<open>Typing\<close>
 
-text {*
-In the formalization of the type checking rule for the @{text LET} binder,
-we use an additional judgement @{text "\<turnstile> p : T \<Rightarrow> \<Delta>"} for checking whether a
+text \<open>
+In the formalization of the type checking rule for the \<open>LET\<close> binder,
+we use an additional judgement \<open>\<turnstile> p : T \<Rightarrow> \<Delta>\<close> for checking whether a
 given pattern @{term p} is compatible with the type @{term T} of an object that
 is to be matched against this pattern. The judgement will be defined simultaneously
-with a judgement \mbox{@{text "\<turnstile> ps [:] Ts \<Rightarrow> \<Delta>"}} for type checking field patterns.
+with a judgement \mbox{\<open>\<turnstile> ps [:] Ts \<Rightarrow> \<Delta>\<close>} for type checking field patterns.
 Apart from checking the type, the judgement also returns a list of bindings @{term \<Delta>},
 which can be thought of as a ``flattened'' list of types of the variables occurring
 in the pattern. Since typing environments are extended ``to the left'', the bindings
 in @{term \<Delta>} appear in reverse order.
-*}
+\<close>
 
 inductive
   ptyping :: "pat \<Rightarrow> type \<Rightarrow> env \<Rightarrow> bool"  ("\<turnstile> _ : _ \<Rightarrow> _" [50, 50, 50] 50)
@@ -1330,13 +1330,13 @@ where
 | P_Cons: "\<turnstile> p : T \<Rightarrow> \<Delta>\<^sub>1 \<Longrightarrow> \<turnstile> fps [:] fTs \<Rightarrow> \<Delta>\<^sub>2 \<Longrightarrow> fps\<langle>l\<rangle>\<^sub>? = \<bottom> \<Longrightarrow>
     \<turnstile> ((l, p) \<Colon> fps) [:] ((l, T) \<Colon> fTs) \<Rightarrow> \<up>\<^sub>e \<parallel>\<Delta>\<^sub>1\<parallel> 0 \<Delta>\<^sub>2 @ \<Delta>\<^sub>1"
 
-text {*
-The definition of the typing judgement for terms is extended with the rules @{text "T_Let"},
+text \<open>
+The definition of the typing judgement for terms is extended with the rules \<open>T_Let\<close>,
 @{term "T_Rcd"}, and @{term "T_Proj"} for pattern matching, record construction and
 field selection, respectively. The above typing judgement for patterns is used in
-the rule @{text "T_Let"}. The typing judgement for terms is defined simultaneously
-with a typing judgement @{text "\<Gamma> \<turnstile> fs [:] fTs"} for record fields.
-*}
+the rule \<open>T_Let\<close>. The typing judgement for terms is defined simultaneously
+with a typing judgement \<open>\<Gamma> \<turnstile> fs [:] fTs\<close> for record fields.
+\<close>
 
 inductive
   typing :: "env \<Rightarrow> trm \<Rightarrow> type \<Rightarrow> bool"  ("_ \<turnstile> _ : _" [50, 50, 50] 50)
@@ -1493,14 +1493,14 @@ lemma Abs_type: \<comment> \<open>A.13(1)\<close>
   using H
 proof (induct \<Gamma> "\<lambda>:S. s" T arbitrary: U U' S s P)
   case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
-  from `\<Gamma> \<turnstile> T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U \<rightarrow> U'`
+  from \<open>\<Gamma> \<turnstile> T\<^sub>1 \<rightarrow> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U \<rightarrow> U'\<close>
   obtain ty1: "\<Gamma> \<turnstile> U <: T\<^sub>1" and ty2: "\<Gamma> \<turnstile> \<down>\<^sub>\<tau> 1 0 T\<^sub>2 <: U'"
     by cases simp_all
-  from ty1 `VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2` ty2
+  from ty1 \<open>VarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2\<close> ty2
   show ?case by (rule T_Abs)
 next
   case (T_Sub \<Gamma> S' T)
-  from `\<Gamma> \<turnstile> S' <: T` and `\<Gamma> \<turnstile> T <: U \<rightarrow> U'`
+  from \<open>\<Gamma> \<turnstile> S' <: T\<close> and \<open>\<Gamma> \<turnstile> T <: U \<rightarrow> U'\<close>
   have "\<Gamma> \<turnstile> S' <: U \<rightarrow> U'" by (rule subtype_trans(1))
   then show ?case
     by (rule T_Sub) (rule T_Sub(5))
@@ -1521,16 +1521,16 @@ lemma TAbs_type: \<comment> \<open>A.13(2)\<close>
   using H
 proof (induct \<Gamma> "\<lambda><:S. s" T arbitrary: U U' S s P)
   case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2)
-  from `\<Gamma> \<turnstile> (\<forall><:T\<^sub>1. T\<^sub>2) <: (\<forall><:U. U')`
+  from \<open>\<Gamma> \<turnstile> (\<forall><:T\<^sub>1. T\<^sub>2) <: (\<forall><:U. U')\<close>
   obtain ty1: "\<Gamma> \<turnstile> U <: T\<^sub>1" and ty2: "TVarB U \<Colon> \<Gamma> \<turnstile> T\<^sub>2 <: U'"
     by cases simp_all
-  from `TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2`
+  from \<open>TVarB T\<^sub>1 \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2\<close>
   have "TVarB U \<Colon> \<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>2" using ty1
     by (rule narrow_type [of "[]", simplified])
   with ty1 show ?case using ty2 by (rule T_TAbs)
 next
   case (T_Sub \<Gamma> S' T)
-  from `\<Gamma> \<turnstile> S' <: T` and `\<Gamma> \<turnstile> T <: (\<forall><:U. U')`
+  from \<open>\<Gamma> \<turnstile> S' <: T\<close> and \<open>\<Gamma> \<turnstile> T <: (\<forall><:U. U')\<close>
   have "\<Gamma> \<turnstile> S' <: (\<forall><:U. U')" by (rule subtype_trans(1))
   then show ?case
     by (rule T_Sub) (rule T_Sub(5))
@@ -1543,10 +1543,10 @@ lemma TAbs_type':
   shows "P" using H subtype_refl' [OF H]
   by (rule TAbs_type) (rule R)
 
-text {*
+text \<open>
 In the proof of the preservation theorem, the following elimination rule
 for typing judgements on record types will be useful:
-*}
+\<close>
 
 lemma Rcd_type1: \<comment> \<open>A.13(3)\<close>
   assumes H: "\<Gamma> \<turnstile> t : T"
@@ -1581,19 +1581,19 @@ lemma Rcd_type1':
   using H refl subtype_refl' [OF H]
   by (rule Rcd_type1)
 
-text {*
+text \<open>
 Intuitively, this means that for a record @{term "Rcd fs"} of type @{term "RcdT fTs"},
 each field with name @{term l} associated with a type @{term U} in @{term "fTs"}
 must correspond to a field in @{term fs} with value @{term u}, where @{term u} has
-type @{term U}. Thanks to the subsumption rule @{text T_Sub}, the typing judgement
+type @{term U}. Thanks to the subsumption rule \<open>T_Sub\<close>, the typing judgement
 for terms is not sensitive to the order of record fields. For example,
 @{term [display] "\<Gamma> \<turnstile> Rcd [(l\<^sub>1, t\<^sub>1), (l\<^sub>2, t\<^sub>2), (l\<^sub>3, t\<^sub>3)] : RcdT [(l\<^sub>2, T\<^sub>2), (l\<^sub>1, T\<^sub>1)]"}
-provided that @{text "\<Gamma> \<turnstile> t\<^sub>i : T\<^sub>i"}. Note however that this does not imply
+provided that \<open>\<Gamma> \<turnstile> t\<^sub>i : T\<^sub>i\<close>. Note however that this does not imply
 @{term [display] "\<Gamma> \<turnstile> [(l\<^sub>1, t\<^sub>1), (l\<^sub>2, t\<^sub>2), (l\<^sub>3, t\<^sub>3)] [:] [(l\<^sub>2, T\<^sub>2), (l\<^sub>1, T\<^sub>1)]"}
 In order for this statement to hold, we need to remove the field @{term "l\<^sub>3"}
 and exchange the order of the fields @{term "l\<^sub>1"} and @{term "l\<^sub>2"}. This gives rise
 to the following variant of the above elimination rule:
-*}
+\<close>
 
 lemma Rcd_type2:
   "\<Gamma> \<turnstile> Rcd fs : T \<Longrightarrow> \<Gamma> \<turnstile> T <: RcdT fTs \<Longrightarrow>
@@ -1732,10 +1732,10 @@ lemma type_weaken': \<comment> \<open>A.5(6)\<close>
   apply simp+
   done
 
-text {*
+text \<open>
 The substitution lemmas are now proved by mutual induction on the derivations of
 the typing derivations for terms and lists of fields.
-*}
+\<close>
 
 lemma subst_ptyping:
   "\<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> \<turnstile> p[k \<mapsto>\<^sub>\<tau> U]\<^sub>p : T[k \<mapsto>\<^sub>\<tau> U]\<^sub>\<tau> \<Rightarrow> \<Delta>[k \<mapsto>\<^sub>\<tau> U]\<^sub>e"
@@ -1906,14 +1906,14 @@ theorem substT_type: \<comment> \<open>A.11\<close>
   done
 
 
-subsection {* Evaluation *}
+subsection \<open>Evaluation\<close>
 
-text {*
+text \<open>
 \label{sec:evaluation-rcd}
 The definition of canonical values is extended with a clause saying that
 a record @{term "Rcd fs"} is a canonical value if all fields contain
 canonical values:
-*}
+\<close>
 
 inductive_set
   "value" :: "trm set"
@@ -1922,14 +1922,14 @@ where
 | TAbs: "(\<lambda><:T. t) \<in> value"
 | Rcd: "\<forall>(l, t) \<in> set fs. t \<in> value \<Longrightarrow> Rcd fs \<in> value"
 
-text {*
-In order to formalize the evaluation rule for @{text LET}, we introduce another
-relation @{text "\<turnstile> p \<rhd> t \<Rightarrow> ts"} expressing that a pattern @{term p} matches a
+text \<open>
+In order to formalize the evaluation rule for \<open>LET\<close>, we introduce another
+relation \<open>\<turnstile> p \<rhd> t \<Rightarrow> ts\<close> expressing that a pattern @{term p} matches a
 term @{term t}. The relation also yields a list of terms @{term ts} corresponding
 to the variables in the pattern. The relation is defined simultaneously with another
-relation @{text "\<turnstile> fps [\<rhd>] fs \<Rightarrow> ts"} for matching a list of field patterns @{term fps}
+relation \<open>\<turnstile> fps [\<rhd>] fs \<Rightarrow> ts\<close> for matching a list of field patterns @{term fps}
 against a list of fields @{term fs}:
-*}
+\<close>
 
 inductive
   match :: "pat \<Rightarrow> trm \<Rightarrow> trm list \<Rightarrow> bool"  ("\<turnstile> _ \<rhd> _ \<Rightarrow> _" [50, 50, 50] 50)
@@ -1941,9 +1941,9 @@ where
 | M_Cons: "fs\<langle>l\<rangle>\<^sub>? = \<lfloor>t\<rfloor> \<Longrightarrow> \<turnstile> p \<rhd> t \<Rightarrow> ts \<Longrightarrow> \<turnstile> fps [\<rhd>] fs \<Rightarrow> us \<Longrightarrow>
     \<turnstile> (l, p) \<Colon> fps [\<rhd>] fs \<Rightarrow> ts @ us"
 
-text {*
+text \<open>
 The rules of the evaluation relation for the calculus with records are as follows:
-*}
+\<close>
 
 inductive
   eval :: "trm \<Rightarrow> trm \<Rightarrow> bool"  (infixl "\<longmapsto>" 50)
@@ -1962,14 +1962,14 @@ where
 | E_hd: "t \<longmapsto> t' \<Longrightarrow> (l, t) \<Colon> fs [\<longmapsto>] (l, t') \<Colon> fs"
 | E_tl: "v \<in> value \<Longrightarrow> fs [\<longmapsto>] fs' \<Longrightarrow> (l, v) \<Colon> fs [\<longmapsto>] (l, v) \<Colon> fs'"
 
-text {*
+text \<open>
 The relation @{term "t \<longmapsto> t'"} is defined simultaneously with
 a relation \mbox{@{term "fs [\<longmapsto>] fs'"}} for evaluating record fields.
 The ``immediate'' reductions, namely pattern matching and projection,
-are described by the rules @{text E_LetV} and @{text E_ProjRcd}, respectively,
-whereas @{text E_Proj}, @{text E_Rcd}, @{text E_Let}, @{text E_hd} and
-@{text E_tl} are congruence rules.
-*}
+are described by the rules \<open>E_LetV\<close> and \<open>E_ProjRcd\<close>, respectively,
+whereas \<open>E_Proj\<close>, \<open>E_Rcd\<close>, \<open>E_Let\<close>, \<open>E_hd\<close> and
+\<open>E_tl\<close> are congruence rules.
+\<close>
 
 lemmas matchs_induct = match_matchs.inducts(2)
   [of _ _ _ "\<lambda>x y z. True", simplified True_simps, consumes 1,
@@ -2034,14 +2034,14 @@ theorem match_length:
   by (induct arbitrary: T \<Delta> and fTs \<Delta> set: match matchs)
     (erule ptyping.cases ptypings.cases, simp+)+
 
-text {*
+text \<open>
 In the proof of the preservation theorem
 for the calculus with records, we need the following lemma relating
 the matching and typing judgements for patterns,
 which means that well-typed matching preserves typing. Although this property
 will only be used for @{term "\<Gamma>\<^sub>1 = []"} later, the statement must be proved in
 a more general form in order for the induction to go through.
-*}
+\<close>
 
 theorem match_type: \<comment> \<open>A.17\<close>
   "\<turnstile> p : T\<^sub>1 \<Rightarrow> \<Delta> \<Longrightarrow> \<Gamma>\<^sub>2 \<turnstile> t\<^sub>1 : T\<^sub>1 \<Longrightarrow>
@@ -2105,15 +2105,15 @@ theorem preservation: \<comment> \<open>A.20\<close>
   "\<Gamma> \<turnstile> fs [:] fTs \<Longrightarrow> fs [\<longmapsto>] fs' \<Longrightarrow> \<Gamma> \<turnstile> fs' [:] fTs"
 proof (induct arbitrary: t' and fs' set: typing typings)
   case (T_Var \<Gamma> i U T t')
-  from `Var i \<longmapsto> t'`
+  from \<open>Var i \<longmapsto> t'\<close>
   show ?case by cases
 next
   case (T_Abs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 t')
-  from `(\<lambda>:T\<^sub>1. t\<^sub>2) \<longmapsto> t'`
+  from \<open>(\<lambda>:T\<^sub>1. t\<^sub>2) \<longmapsto> t'\<close>
   show ?case by cases
 next
   case (T_App \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 t\<^sub>2 t')
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t'`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<longmapsto> t'\<close>
   show ?case
   proof cases
     case (E_Abs T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
@@ -2122,7 +2122,7 @@ next
       where T\<^sub>1\<^sub>1: "\<Gamma> \<turnstile> T\<^sub>1\<^sub>1 <: T\<^sub>1\<^sub>1'"
       and t\<^sub>1\<^sub>2: "VarB T\<^sub>1\<^sub>1' \<Colon> \<Gamma> \<turnstile> t\<^sub>1\<^sub>2 : S'"
       and S': "\<Gamma> \<turnstile> S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau> <: T\<^sub>1\<^sub>2" by (rule Abs_type' [simplified]) blast
-    from `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
+    from \<open>\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1\<close>
     have "\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1'" using T\<^sub>1\<^sub>1 by (rule T_Sub)
     with t\<^sub>1\<^sub>2 have "\<Gamma> \<turnstile> t\<^sub>1\<^sub>2[0 \<mapsto> t\<^sub>2] : S'[0 \<mapsto>\<^sub>\<tau> Top]\<^sub>\<tau>"
       by (rule subst_type [where \<Delta>="[]", simplified])
@@ -2130,14 +2130,14 @@ next
     with E_Abs show ?thesis by simp
   next
     case (E_App1 t'')
-    from `t\<^sub>1 \<longmapsto> t''`
+    from \<open>t\<^sub>1 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : T\<^sub>1\<^sub>1 \<rightarrow> T\<^sub>1\<^sub>2" by (rule T_App)
-    hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2" using `\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1`
+    hence "\<Gamma> \<turnstile> t'' \<bullet> t\<^sub>2 : T\<^sub>1\<^sub>2" using \<open>\<Gamma> \<turnstile> t\<^sub>2 : T\<^sub>1\<^sub>1\<close>
       by (rule typing_typings.T_App)
     with E_App1 show ?thesis by simp
   next
     case (E_App2 t'')
-    from `t\<^sub>2 \<longmapsto> t''`
+    from \<open>t\<^sub>2 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : T\<^sub>1\<^sub>1" by (rule T_App)
     with T_App(1) have "\<Gamma> \<turnstile> t\<^sub>1 \<bullet> t'' : T\<^sub>1\<^sub>2"
       by (rule typing_typings.T_App)
@@ -2145,11 +2145,11 @@ next
   qed
 next
   case (T_TAbs T\<^sub>1 \<Gamma> t\<^sub>2 T\<^sub>2 t')
-  from `(\<lambda><:T\<^sub>1. t\<^sub>2) \<longmapsto> t'`
+  from \<open>(\<lambda><:T\<^sub>1. t\<^sub>2) \<longmapsto> t'\<close>
   show ?case by cases
 next
   case (T_TApp \<Gamma> t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 t')
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t'`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<longmapsto> t'\<close>
   show ?case
   proof cases
     case (E_TAbs T\<^sub>1\<^sub>1' t\<^sub>1\<^sub>2)
@@ -2163,31 +2163,31 @@ next
     with E_TAbs show ?thesis by simp
   next
     case (E_TApp t'')
-    from `t\<^sub>1 \<longmapsto> t''`
+    from \<open>t\<^sub>1 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : (\<forall><:T\<^sub>1\<^sub>1. T\<^sub>1\<^sub>2)" by (rule T_TApp)
-    hence "\<Gamma> \<turnstile> t'' \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>" using `\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1`
+    hence "\<Gamma> \<turnstile> t'' \<bullet>\<^sub>\<tau> T\<^sub>2 : T\<^sub>1\<^sub>2[0 \<mapsto>\<^sub>\<tau> T\<^sub>2]\<^sub>\<tau>" using \<open>\<Gamma> \<turnstile> T\<^sub>2 <: T\<^sub>1\<^sub>1\<close>
       by (rule typing_typings.T_TApp)
     with E_TApp show ?thesis by simp
   qed
 next
   case (T_Sub \<Gamma> t S T t')
-  from `t \<longmapsto> t'`
+  from \<open>t \<longmapsto> t'\<close>
   have "\<Gamma> \<turnstile> t' : S" by (rule T_Sub)
-  then show ?case using `\<Gamma> \<turnstile> S <: T`
+  then show ?case using \<open>\<Gamma> \<turnstile> S <: T\<close>
     by (rule typing_typings.T_Sub)
 next
   case (T_Let \<Gamma> t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 t')
-  from `(LET p = t\<^sub>1 IN t\<^sub>2) \<longmapsto> t'`
+  from \<open>(LET p = t\<^sub>1 IN t\<^sub>2) \<longmapsto> t'\<close>
   show ?case
   proof cases
     case (E_LetV ts)
-    from T_Let (3,1,4) `\<turnstile> p \<rhd> t\<^sub>1 \<Rightarrow> ts`
+    from T_Let (3,1,4) \<open>\<turnstile> p \<rhd> t\<^sub>1 \<Rightarrow> ts\<close>
     have "\<Gamma> \<turnstile> t\<^sub>2[0 \<mapsto>\<^sub>s ts] : \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T\<^sub>2"
       by (rule match_type(1) [of _ _ _ _ _ "[]", simplified])
     with E_LetV show ?thesis by simp
   next
     case (E_Let t'')
-    from `t\<^sub>1 \<longmapsto> t''`
+    from \<open>t\<^sub>1 \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : T\<^sub>1" by (rule T_Let)
     hence "\<Gamma> \<turnstile> (LET p = t'' IN t\<^sub>2) : \<down>\<^sub>\<tau> \<parallel>\<Delta>\<parallel> 0 T\<^sub>2" using T_Let(3,4)
       by (rule typing_typings.T_Let)
@@ -2195,7 +2195,7 @@ next
   qed
 next
   case (T_Rcd \<Gamma> fs fTs t')
-  from `Rcd fs \<longmapsto> t'`
+  from \<open>Rcd fs \<longmapsto> t'\<close>
   obtain fs' where t': "t' = Rcd fs'" and fs: "fs [\<longmapsto>] fs'"
     by cases simp_all
   from fs have "\<Gamma> \<turnstile> fs' [:] fTs" by (rule T_Rcd)
@@ -2203,7 +2203,7 @@ next
   with t' show ?case by simp
 next
   case (T_Proj \<Gamma> t fTs l T t')
-  from `t..l \<longmapsto> t'`
+  from \<open>t..l \<longmapsto> t'\<close>
   show ?case
   proof cases
     case (E_ProjRcd fs)
@@ -2213,7 +2213,7 @@ next
     with E_ProjRcd T_Proj show ?thesis by (fastforce dest: assoc_set)
   next
     case (E_Proj t'')
-    from `t \<longmapsto> t''`
+    from \<open>t \<longmapsto> t''\<close>
     have "\<Gamma> \<turnstile> t'' : RcdT fTs" by (rule T_Proj)
     hence "\<Gamma> \<turnstile> t''..l : T" using T_Proj(3)
       by (rule typing_typings.T_Proj)
@@ -2221,22 +2221,22 @@ next
   qed
 next
   case (T_Nil \<Gamma> fs')
-  from `[] [\<longmapsto>] fs'`
+  from \<open>[] [\<longmapsto>] fs'\<close>
   show ?case by cases
 next
   case (T_Cons \<Gamma> t T fs fTs l fs')
-  from `(l, t) \<Colon> fs [\<longmapsto>] fs'`
+  from \<open>(l, t) \<Colon> fs [\<longmapsto>] fs'\<close>
   show ?case
   proof cases
     case (E_hd t')
-    from `t \<longmapsto> t'`
+    from \<open>t \<longmapsto> t'\<close>
     have "\<Gamma> \<turnstile> t' : T" by (rule T_Cons)
     hence "\<Gamma> \<turnstile> (l, t') \<Colon> fs [:] (l, T) \<Colon> fTs" using T_Cons(3,5)
       by (rule typing_typings.T_Cons)
     with E_hd show ?thesis by simp
   next
     case (E_tl fs'')
-    note fs = `fs [\<longmapsto>] fs''`
+    note fs = \<open>fs [\<longmapsto>] fs''\<close>
     note T_Cons(1)
     moreover from fs have "\<Gamma> \<turnstile> fs'' [:] fTs" by (rule T_Cons)
     moreover from fs T_Cons have "fs''\<langle>l\<rangle>\<^sub>? = \<bottom>" by simp
@@ -2254,25 +2254,25 @@ proof (induct "[]::env" v "T\<^sub>1 \<rightarrow> T\<^sub>2" arbitrary: T\<^sub
   show ?case by iprover
 next
   case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 T\<^sub>1 T\<^sub>2)
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1 T\<^sub>2')
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_Sub t S T\<^sub>1 T\<^sub>2)
-  from `[] \<turnstile> S <: T\<^sub>1 \<rightarrow> T\<^sub>2`
+  from \<open>[] \<turnstile> S <: T\<^sub>1 \<rightarrow> T\<^sub>2\<close>
   obtain S\<^sub>1 S\<^sub>2 where S: "S = S\<^sub>1 \<rightarrow> S\<^sub>2"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+
 next
   case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 T\<^sub>1' T\<^sub>2')
-  from `(LET p = t\<^sub>1 IN t\<^sub>2) \<in> value`
+  from \<open>(LET p = t\<^sub>1 IN t\<^sub>2) \<in> value\<close>
   show ?case by cases
 next
   case (T_Proj t fTs l T\<^sub>1 T\<^sub>2)
-  from `t..l \<in> value`
+  from \<open>t..l \<in> value\<close>
   show ?case by cases
 qed simp_all
 
@@ -2281,35 +2281,35 @@ lemma TyAll_canonical: \<comment> \<open>A.14(3)\<close>
   shows "v \<in> value \<Longrightarrow> \<exists>t S. v = (\<lambda><:S. t)" using ty
 proof (induct "[]::env" v "\<forall><:T\<^sub>1. T\<^sub>2" arbitrary: T\<^sub>1 T\<^sub>2 rule: typing_induct)
   case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 T\<^sub>1 T\<^sub>2)
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case T_TAbs
   show ?case by iprover
 next
   case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 T\<^sub>1 T\<^sub>2')
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_Sub t S T\<^sub>1 T\<^sub>2)
-  from `[] \<turnstile> S <: (\<forall><:T\<^sub>1. T\<^sub>2)`
+  from \<open>[] \<turnstile> S <: (\<forall><:T\<^sub>1. T\<^sub>2)\<close>
   obtain S\<^sub>1 S\<^sub>2 where S: "S = (\<forall><:S\<^sub>1. S\<^sub>2)"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+
 next
   case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 T\<^sub>1' T\<^sub>2')
-  from `(LET p = t\<^sub>1 IN t\<^sub>2) \<in> value`
+  from \<open>(LET p = t\<^sub>1 IN t\<^sub>2) \<in> value\<close>
   show ?case by cases
 next
   case (T_Proj t fTs l T\<^sub>1 T\<^sub>2)
-  from `t..l \<in> value`
+  from \<open>t..l \<in> value\<close>
   show ?case by cases
 qed simp_all
 
-text {*
+text \<open>
 Like in the case of the simple calculus,
 we also need a canonical values theorem for record types:
-*}
+\<close>
 
 lemma RcdT_canonical: \<comment> \<open>A.14(2)\<close>
   assumes ty: "[] \<turnstile> v : RcdT fTs"
@@ -2317,29 +2317,29 @@ lemma RcdT_canonical: \<comment> \<open>A.14(2)\<close>
     \<exists>fs. v = Rcd fs \<and> (\<forall>(l, t) \<in> set fs. t \<in> value)" using ty
 proof (induct "[]::env" v "RcdT fTs" arbitrary: fTs rule: typing_induct)
   case (T_App t\<^sub>1 T\<^sub>1\<^sub>1 t\<^sub>2 fTs)
-  from `t\<^sub>1 \<bullet> t\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet> t\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_TApp t\<^sub>1 T\<^sub>1\<^sub>1 T\<^sub>1\<^sub>2 T\<^sub>2 fTs)
-  from `t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value`
+  from \<open>t\<^sub>1 \<bullet>\<^sub>\<tau> T\<^sub>2 \<in> value\<close>
   show ?case by cases
 next
   case (T_Sub t S fTs)
-  from `[] \<turnstile> S <: RcdT fTs`
+  from \<open>[] \<turnstile> S <: RcdT fTs\<close>
   obtain fTs' where S: "S = RcdT fTs'"
     by cases (auto simp add: T_Sub)
   show ?case by (rule T_Sub S)+
 next
   case (T_Let t\<^sub>1 T\<^sub>1 p \<Delta> t\<^sub>2 T\<^sub>2 fTs)
-  from `(LET p = t\<^sub>1 IN t\<^sub>2) \<in> value`
+  from \<open>(LET p = t\<^sub>1 IN t\<^sub>2) \<in> value\<close>
   show ?case by cases
 next
   case (T_Rcd fs fTs)
-  from `Rcd fs \<in> value`
+  from \<open>Rcd fs \<in> value\<close>
   show ?case using T_Rcd by cases simp_all
 next
   case (T_Proj t fTs l fTs')
-  from `t..l \<in> value`
+  from \<open>t..l \<in> value\<close>
   show ?case by cases
 qed simp_all
 
@@ -2359,7 +2359,7 @@ theorem reorder_prop:
   apply (auto dest: assoc_set)
   done
 
-text {*
+text \<open>
 Another central property needed in the proof of the progress theorem is
 that well-typed matching is defined.
 This means that if the pattern @{term p} is compatible with the type @{term T} of
@@ -2367,7 +2367,7 @@ the closed term @{term t} that it has to match, then it is always possible to ex
 list of terms @{term ts} corresponding to the variables in @{term p}.
 Interestingly, this important property is missing in the description of the
 {\sc PoplMark} Challenge \cite{PoplMark}.
-*}
+\<close>
 
 theorem ptyping_match:
   "\<turnstile> p : T \<Rightarrow> \<Delta> \<Longrightarrow> [] \<turnstile> t : T \<Longrightarrow> t \<in> value \<Longrightarrow>
@@ -2400,7 +2400,7 @@ next
   show ?case by (iprover intro: M_Nil)
 next
   case (P_Cons p T \<Delta>\<^sub>1 fps fTs \<Delta>\<^sub>2 l fs)
-  from `[] \<turnstile> fs [:] (l, T) \<Colon> fTs`
+  from \<open>[] \<turnstile> fs [:] (l, T) \<Colon> fTs\<close>
   obtain t fs' where fs: "fs = (l, t) \<Colon> fs'" and t: "[] \<turnstile> t : T"
     and fs': "[] \<turnstile> fs' [:] fTs" by cases auto
   have "((l, t) \<Colon> fs')\<langle>l\<rangle>\<^sub>? = \<lfloor>t\<rfloor>" by simp

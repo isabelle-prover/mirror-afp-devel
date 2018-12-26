@@ -1,12 +1,12 @@
-section {* Graphs defined by Successor Functions *}
+section \<open>Graphs defined by Successor Functions\<close>
 theory Succ_Graph
 imports 
   Collections.Refine_Dflt
 begin
 
-text {*
+text \<open>
   This code is used in various examples
-*}
+\<close>
 
 type_synonym 'a slg = "'a \<Rightarrow> 'a list"
 definition slg_rel_def_internal: "slg_rel R \<equiv> 

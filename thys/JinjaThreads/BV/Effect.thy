@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* Effect of Instructions on the State Type *}
+section \<open>Effect of Instructions on the State Type\<close>
 
 theory Effect
 imports
@@ -21,7 +21,7 @@ locale jvm_method = prog +
   fixes mxl :: nat
   defines mxl_def: "mxl \<equiv> 1+size Ts+mxl\<^sub>0"
 
-text {* Program counter of successor instructions: *}
+text \<open>Program counter of successor instructions:\<close>
 primrec succs :: "'addr instr \<Rightarrow> ty\<^sub>i \<Rightarrow> pc \<Rightarrow> pc list"
 where
   "succs (Load idx) \<tau> pc     = [pc+1]"
@@ -355,10 +355,10 @@ lemma length_cases5:
   subgoal for l l' l'' ST LT by(cases ST; clarsimp simp: assms)
   done
 
-text {* 
+text \<open>
 \medskip
 simp rules for @{term app}
-*}
+\<close>
 lemma appNone[simp]: "app i P mxs T\<^sub>r pc mpc et None = True" 
   by (simp add: app_def)
 
@@ -532,7 +532,7 @@ lemma app_append [simp]:
   by (unfold app_def eff_def) auto
 
 
-subsection {* Code generator setup *}
+subsection \<open>Code generator setup\<close>
 
 declare list_all2_Nil [code]
 declare list_all2_Cons [code]

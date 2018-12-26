@@ -5,7 +5,7 @@
   The semantics of the target language.
 *)
 
-section {* Target Language Syntax and Semantics *}
+section \<open>Target Language Syntax and Semantics\<close>
 
 theory PDF_Target_Semantics
 imports PDF_Semantics
@@ -294,11 +294,11 @@ lemma cexpr_sem_Mult:
   by (auto simp: lift_RealIntVal2_def extract_real_def split: val.split)
 
 
-subsection {* General functions on Expressions *}
+subsection \<open>General functions on Expressions\<close>
 
-text {*
+text \<open>
    Transform variable names in an expression.
-*}
+\<close>
 primrec map_vars :: "(vname \<Rightarrow> vname) \<Rightarrow> cexpr \<Rightarrow> cexpr" where
   "map_vars f (CVal v) = CVal v"
 | "map_vars f (CVar x) = CVar (f x)"
@@ -351,9 +351,9 @@ definition insert_var :: "vname \<Rightarrow> (vname \<Rightarrow> 'a) \<Rightar
 lemma insert_var_0[simp]: "insert_var 0 f x = case_nat x f"
   by (intro ext) (simp add: insert_var_def split: nat.split)
 
-text {*
+text \<open>
   Substitutes expression e for variable x in e'.
-*}
+\<close>
 primrec cexpr_subst :: "vname \<Rightarrow> cexpr \<Rightarrow> cexpr \<Rightarrow> cexpr" where
   "cexpr_subst _ _ (CVal v) = CVal v"
 | "cexpr_subst x e (CVar y) = insert_var x CVar e y"
@@ -373,10 +373,10 @@ proof (induction e' arbitrary: x e \<sigma>)
   show ?case by (simp add: o_def A cexpr_sem_map_vars CIntegral.IH)
 qed (simp_all add: insert_var_def)
 
-text {*
+text \<open>
    This corresponds to a Let-binding; the variable with index 0 is substituted
    with the given expression.
-*}
+\<close>
 lemma cexpr_sem_cexpr_subst:
     "cexpr_sem \<sigma> (cexpr_subst 0 e e') = cexpr_sem (case_nat (cexpr_sem \<sigma> e) \<sigma>) e'"
   using cexpr_sem_cexpr_subst_aux by simp
@@ -566,7 +566,7 @@ lemma free_vars_cexpr_subst_val[simp]:
   by (simp add: cexpr_subst_val_def free_vars_cexpr_subst_val_aux)
 
 
-subsection {* Nonnegative expressions *}
+subsection \<open>Nonnegative expressions\<close>
 
 definition "nonneg_cexpr V \<Gamma> e \<equiv>
     \<forall>\<sigma> \<in> space (state_measure V \<Gamma>). extract_real (cexpr_sem \<sigma> e) \<ge> 0"
@@ -677,7 +677,7 @@ proof (intro nonneg_cexprI)
 qed
 
 
-text {* Subprobability density expressions *}
+text \<open>Subprobability density expressions\<close>
 
 definition "subprob_cexpr V V' \<Gamma> e \<equiv>
     \<forall>\<rho> \<in> space (state_measure V' \<Gamma>).
@@ -853,20 +853,20 @@ proof (intro conjI)
     done
 
   have nonneg: "\<And>\<sigma>. \<sigma> \<in> space ?M \<Longrightarrow> ?f \<sigma> \<ge> 0"
-    using `nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta>`
+    using \<open>nonneg_cexpr (set vs \<union> set vs') \<Gamma> \<delta>\<close>
     by (rule nonneg_cexprD, intro merge_in_state_measure[OF _ \<rho>])
-  with `subprob_cexpr (set vs) (set vs') \<Gamma> \<delta>` and \<rho>
+  with \<open>subprob_cexpr (set vs) (set vs') \<Gamma> \<delta>\<close> and \<rho>
   show "(\<integral>\<^sup>+\<sigma>. ennreal (norm (?f \<sigma>)) \<partial>?M) < \<infinity>" unfolding subprob_cexpr_def
     by (auto simp: less_top[symmetric] top_unique cong: nn_integral_cong)
 qed
 
 
-subsection {* Randomfree expressions *}
+subsection \<open>Randomfree expressions\<close>
 
-text {*
+text \<open>
   Translates an expression with no occurrences of Random or Fail into an
   equivalent target language expression.
-*}
+\<close>
 primrec expr_rf_to_cexpr :: "expr \<Rightarrow> cexpr" where
   "expr_rf_to_cexpr (Val v) = CVal v"
 | "expr_rf_to_cexpr (Var x) = CVar x"
@@ -897,7 +897,7 @@ proof (induction e)
         intro order.trans[OF free_vars_cexpr_subst]) auto
 qed auto
 
-subsection {* Builtin density expressions *}
+subsection \<open>Builtin density expressions\<close>
 
 primrec dist_dens_cexpr :: "pdf_dist \<Rightarrow> cexpr \<Rightarrow> cexpr \<Rightarrow> cexpr" where
   "dist_dens_cexpr Bernoulli p x = (IF\<^sub>c CReal 0 \<le>\<^sub>c p \<and>\<^sub>c p \<le>\<^sub>c CReal 1 THEN
@@ -992,7 +992,7 @@ proof (intro nonneg_cexprI)
     by simp
 qed
 
-subsection {* Integral expressions *}
+subsection \<open>Integral expressions\<close>
 
 definition integrate_var :: "tyenv \<Rightarrow> vname \<Rightarrow> cexpr \<Rightarrow> cexpr" where
   "integrate_var \<Gamma> v e = \<integral>\<^sub>c map_vars (\<lambda>w. if v = w then 0 else Suc w) e \<partial>(\<Gamma> v)"

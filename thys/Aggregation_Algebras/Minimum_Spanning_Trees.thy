@@ -3,14 +3,14 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Minimum Spanning Tree Algorithms *}
+section \<open>Minimum Spanning Tree Algorithms\<close>
 
-text {*
+text \<open>
 In this theory we prove the total-correctness of Kruskal's and Prim's minimum spanning tree algorithms.
 Specifications and algorithms work in Stone-Kleene relation algebras extended by operations for aggregation and minimisation.
 The algorithms are implemented in a simple imperative language and their proof uses Hoare Logic.
 The correctness proofs are discussed in \cite{Guttmann2016c,Guttmann2018a,Guttmann2018b}.
-*}
+\<close>
 
 theory Minimum_Spanning_Trees
 
@@ -24,24 +24,24 @@ no_notation
 context m_kleene_algebra
 begin
 
-subsection {* Kruskal's Minimum Spanning Tree Algorithm *}
+subsection \<open>Kruskal's Minimum Spanning Tree Algorithm\<close>
 
-text {*
+text \<open>
 The total-correctness proof of Kruskal's minimum spanning tree algorithm uses the following steps \cite{Guttmann2018b}.
 We first establish that the algorithm terminates and constructs a spanning tree.
 This is a constructive proof of the existence of a spanning tree; any spanning tree algorithm could be used for this.
 We then conclude that a minimum spanning tree exists.
 This is necessary to establish the invariant for the actual correctness proof, which shows that Kruskal's algorithm produces a minimum spanning tree.
-*}
+\<close>
 
 definition "spanning_forest f g \<equiv> forest f \<and> f \<le> --g \<and> components g \<le> forest_components f \<and> regular f"
 definition "minimum_spanning_forest f g \<equiv> spanning_forest f g \<and> (\<forall>u . spanning_forest u g \<longrightarrow> sum (f \<sqinter> g) \<le> sum (u \<sqinter> g))"
 definition "kruskal_spanning_invariant f g h \<equiv> symmetric g \<and> h = h\<^sup>T \<and> g \<sqinter> --h = h \<and> spanning_forest f (-h \<sqinter> g)"
 definition "kruskal_invariant f g h \<equiv> kruskal_spanning_invariant f g h \<and> (\<exists>w . minimum_spanning_forest w g \<and> f \<le> w \<squnion> w\<^sup>T)"
 
-text {*
+text \<open>
 We first show two verification conditions which are used in both correctness proofs.
-*}
+\<close>
 
 lemma kruskal_vc_1:
   assumes "symmetric g"
@@ -205,10 +205,10 @@ proof -
   qed
 qed
 
-text {*
+text \<open>
 The following result shows that Kruskal's algorithm terminates and constructs a spanning tree.
 We cannot yet show that this is a minimum spanning tree.
-*}
+\<close>
 
 theorem kruskal_spanning:
   "VARS e f h
@@ -232,17 +232,17 @@ theorem kruskal_spanning:
   using kruskal_vc_2 apply blast
   using kruskal_spanning_invariant_def by auto
 
-text {*
+text \<open>
 Because we have shown total correctness, we conclude that a spanning tree exists.
-*}
+\<close>
 
 lemma kruskal_exists_spanning:
   "symmetric g \<Longrightarrow> \<exists>f . spanning_forest f g"
   using tc_extract_function kruskal_spanning by blast
 
-text {*
+text \<open>
 This implies that a minimum spanning tree exists, which is used in the subsequent correctness proof.
-*}
+\<close>
 
 lemma kruskal_exists_minimal_spanning:
   assumes "symmetric g"
@@ -258,10 +258,10 @@ proof -
     using minimum_spanning_forest_def by simp
 qed
 
-text {*
+text \<open>
 Kruskal's minimum spanning tree algorithm terminates and is correct.
 This is the same algorithm that is used in the previous correctness proof, with the same precondition and variant, but with a different invariant and postcondition.
-*}
+\<close>
 
 theorem kruskal:
   "VARS e f h
@@ -603,12 +603,12 @@ next
     using 29 30 minimum_spanning_forest_def by simp
 qed
 
-subsection {* Prim's Minimum Spanning Tree Algorithm *}
+subsection \<open>Prim's Minimum Spanning Tree Algorithm\<close>
 
-text {*
+text \<open>
 The total-correctness proof of Prim's minimum spanning tree algorithm has the same overall structure as the proof of Kruskal's algorithm.
 The partial-correctness proof is discussed in \cite{Guttmann2016c,Guttmann2018a}.
-*}
+\<close>
 
 abbreviation "component g r \<equiv> r\<^sup>T * (--g)\<^sup>\<star>"
 definition "spanning_tree t g r \<equiv> forest t \<and> t \<le> (component g r)\<^sup>T * (component g r) \<sqinter> --g \<and> component g r \<le> r\<^sup>T * t\<^sup>\<star> \<and> regular t"
@@ -632,9 +632,9 @@ lemma span_tree_component:
     shows "component g r = component t r"
   using assms by (simp add: antisym mult_right_isotone star_isotone spanning_tree_def)
 
-text {*
+text \<open>
 We first show three verification conditions which are used in both correctness proofs.
-*}
+\<close>
 
 lemma prim_vc_1:
   assumes "prim_precondition g r"
@@ -822,10 +822,10 @@ proof -
     using assms(1) prim_spanning_invariant_def spanning_tree_def by simp
 qed
 
-text {*
+text \<open>
 The following result shows that Prim's algorithm terminates and constructs a spanning tree.
 We cannot yet show that this is a minimum spanning tree.
-*}
+\<close>
 
 theorem prim_spanning:
   "VARS t v e
@@ -845,17 +845,17 @@ theorem prim_spanning:
   using prim_vc_2 apply blast
   using prim_vc_3 by auto
 
-text {*
+text \<open>
 Because we have shown total correctness, we conclude that a spanning tree exists.
-*}
+\<close>
 
 lemma prim_exists_spanning:
   "prim_precondition g r \<Longrightarrow> \<exists>t . spanning_tree t g r"
   using tc_extract_function prim_spanning by blast
 
-text {*
+text \<open>
 This implies that a minimum spanning tree exists, which is used in the subsequent correctness proof.
-*}
+\<close>
 
 lemma prim_exists_minimal_spanning:
   assumes "prim_precondition g r"
@@ -871,10 +871,10 @@ proof -
     using minimum_spanning_tree_def by simp
 qed
 
-text {*
+text \<open>
 Prim's minimum spanning tree algorithm terminates and is correct.
 This is the same algorithm that is used in the previous correctness proof, with the same precondition and variant, but with a different invariant and postcondition.
-*}
+\<close>
 
 theorem prim:
   "VARS t v e

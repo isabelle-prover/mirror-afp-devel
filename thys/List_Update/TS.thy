@@ -1086,7 +1086,7 @@ apply(subst T_on_embed)
 
     with 1(6) s have inv: "TS_inv' ([a, b], h) a [a, b]" by simp
 
-    from `\<sigma>' \<in> Lxx a b` have "\<sigma>' \<noteq> []" using Lxx1 by fastforce
+    from \<open>\<sigma>' \<in> Lxx a b\<close> have "\<sigma>' \<noteq> []" using Lxx1 by fastforce
     then have l: "last \<sigma>' \<in> {x,y}" using 1(5,7) last_in_set by blast
 
     show ?case unfolding s T_on'_embed[symmetric]

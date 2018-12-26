@@ -89,10 +89,10 @@ proof -
     thus ?case by(auto dest: symmetric)
   next
     case(cSim P R)
-    from `?Prop P R` obtain Q where "P \<cong> Q" and "Q \<cong> R"
+    from \<open>?Prop P R\<close> obtain Q where "P \<cong> Q" and "Q \<cong> R"
       by auto
-    from `P \<cong> Q` have "P \<leadsto><weakBisimulation> Q" by(rule weakCongruenceE)
-    moreover from `Q \<cong> R` have "Q \<leadsto><weakBisimulation> R" by(rule weakCongruenceE)
+    from \<open>P \<cong> Q\<close> have "P \<leadsto><weakBisimulation> Q" by(rule weakCongruenceE)
+    moreover from \<open>Q \<cong> R\<close> have "Q \<leadsto><weakBisimulation> R" by(rule weakCongruenceE)
     moreover from Weak_Bisim.transitive have "weakBisimulation O weakBisimulation \<subseteq> weakBisimulation"
       by auto
     ultimately show ?case using weakBisimulationE(1)
@@ -113,7 +113,7 @@ proof(induct rule: weakCongISym)
   thus ?case by(rule bisimE)
 next
   case(cSim P Q)
-  from `P \<sim> Q` have "P \<leadsto>[bisim] Q" by(rule bisimE)
+  from \<open>P \<sim> Q\<close> have "P \<leadsto>[bisim] Q" by(rule bisimE)
   hence "P \<leadsto>[weakBisimulation] Q" using bisimWeakBisimulation 
     by(rule_tac monotonic) auto
   thus ?case by(rule simWeakSim)
@@ -142,13 +142,13 @@ proof -
   thus ?thesis
   proof(coinduct rule: weakBisimulationCoinduct)
     case(cSim P Q)
-    from `(P, Q) \<in> ?X` have "P \<cong> Q" by auto
+    from \<open>(P, Q) \<in> ?X\<close> have "P \<cong> Q" by auto
     hence "P \<leadsto><weakBisimulation> Q" by(rule Weak_Cong.weakCongruenceE)
     hence "P \<leadsto><(?X \<union> weakBisimulation)> Q" by(force intro: Weak_Cong_Sim.weakMonotonic)
     thus ?case by(rule weakCongSimWeakSim)
   next
     case(cSym P Q)
-    from `(P, Q) \<in> ?X` show ?case by(blast dest: symmetric)
+    from \<open>(P, Q) \<in> ?X\<close> show ?case by(blast dest: symmetric)
   qed
 qed
 

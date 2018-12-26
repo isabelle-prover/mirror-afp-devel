@@ -54,7 +54,7 @@ proof -
     fix j
     assume "j < hd (dims A)"
     have 1:"subtensor ?LS j = listsum (tl (dims A)) (map (\<lambda>A. subtensor A j) (map ?f [0..<hd (dims A)]))"
-      using subtensor_listsum[of "(map (\<lambda>i. ?f i) [0..<hd (dims A)])" "dims A" j, OF correct_dims assms `j < hd (dims A)`]
+      using subtensor_listsum[of "(map (\<lambda>i. ?f i) [0..<hd (dims A)])" "dims A" j, OF correct_dims assms \<open>j < hd (dims A)\<close>]
       by linarith
     also have "... = listsum (tl (dims A)) (map (\<lambda>i. subtensor (?f i) j) [0..<hd (dims A)])"
     proof -
@@ -63,7 +63,7 @@ proof -
       with 1 show ?thesis by metis
     qed
     also have "... =  map (\<lambda>i. if i = j then subtensor A i else tensor0 (dims (subtensor A i))) [0..<hd (dims A)] ! j"
-      unfolding subtensor_prod_with_unit_vec[OF `j < hd (dims A)`]
+      unfolding subtensor_prod_with_unit_vec[OF \<open>j < hd (dims A)\<close>]
       using listsum_all_0_but_one[of j "(map (\<lambda>i. if i = j then subtensor A i else tensor0 (dims (subtensor A i))) [0..<hd (dims A)])" "tl (dims A)"]
       by (simp add: \<open>j < hd (dims A)\<close> assms)
     also have "... = subtensor A j" by (simp add: \<open>j < hd (dims A)\<close>)

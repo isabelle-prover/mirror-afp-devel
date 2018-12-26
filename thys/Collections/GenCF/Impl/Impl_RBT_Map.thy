@@ -1,4 +1,4 @@
-section {* \isaheader{Red-Black Tree based Maps} *}
+section \<open>\isaheader{Red-Black Tree based Maps}\<close>
 theory Impl_RBT_Map
 imports 
   "HOL-Library.RBT_Impl"
@@ -11,7 +11,7 @@ begin
 
 (* TODO: Move to common/RBT_add (replace) *)
 
-subsection {* Standard Setup *}
+subsection \<open>Standard Setup\<close>
 
   inductive_set color_rel where
     "(color.R,color.R) \<in> color_rel"
@@ -763,7 +763,7 @@ lemma (in linorder) autoref_gen_rbt_union:
   apply assumption+
   done
 
-subsection {* A linear ordering on red-black trees *}
+subsection \<open>A linear ordering on red-black trees\<close>
 
 abbreviation "rbt_to_list t \<equiv> it_to_list rm_iterateoi t"
 
@@ -860,7 +860,7 @@ lemma rbt_map_rel_sv[relator_props]:
 lemmas [autoref_rel_intf] = REL_INTFI[of "rbt_map_rel x" i_map] for x
 
 
-subsection {* Second Part: Binding *}
+subsection \<open>Second Part: Binding\<close>
 lemma autoref_rbt_empty[autoref_rules]:
   assumes ELO: "SIDE_GEN_ALGO (eq_linorder cmp')"
   assumes [simplified,param]: "GEN_OP cmp cmp' (Rk\<rightarrow>Rk\<rightarrow>Id)"

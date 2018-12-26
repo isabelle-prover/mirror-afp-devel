@@ -21,11 +21,11 @@ begin
 
 text \<open>The initial model abstractly specifies entity authentication, where 
 one agent/role authenticates another. More precisely, this property corresponds 
-to non-injective agreement on a data set @{text "ds"}. We use Running and Commit 
+to non-injective agreement on a data set \<open>ds\<close>. We use Running and Commit 
 signals to obtain a protocol-independent extensional specification.\<close>
 
 text \<open>Proof tool configuration. Avoid annoying automatic unfolding of
-@{text "dom"}.\<close>
+\<open>dom\<close>.\<close>
 
 declare domIff [simp, iff del]
 
@@ -151,8 +151,8 @@ subsection \<open>inv1: non-injective agreement\<close>
 (******************************************************************************)
 
 text \<open>This is an extensional variant of Lowe's \emph{non-injective agreement}
-of the first with the second agent (by convention) in @{text "h"} on data 
-@{text "d"} [Lowe97]. 
+of the first with the second agent (by convention) in \<open>h\<close> on data 
+\<open>d\<close> [Lowe97]. 
 \<close>
 
 definition 

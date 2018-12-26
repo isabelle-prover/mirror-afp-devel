@@ -3,13 +3,13 @@
     Author:     David Trachtenherz
 *)
 
-section {* Order and linear order: min and max *}
+section \<open>Order and linear order: min and max\<close>
 
 theory Util_MinMax
 imports Main
 begin
 
-subsection {* Additional lemmata about @{term min} and @{term max} *}
+subsection \<open>Additional lemmata about @{term min} and @{term max}\<close>
 
 lemma min_less_imp_conj: "(z::'a::linorder) < min x y \<Longrightarrow> z < x \<and> z < y" by simp
 lemma conj_less_imp_min: "\<lbrakk> z < x; z < y \<rbrakk> \<Longrightarrow> (z::'a::linorder) < min x y" by simp

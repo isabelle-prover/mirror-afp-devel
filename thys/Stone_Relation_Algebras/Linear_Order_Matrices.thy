@@ -3,13 +3,13 @@
    Maintainer: Walter Guttmann <walter.guttmann at canterbury.ac.nz>
 *)
 
-section {* Matrices over Bounded Linear Orders *}
+section \<open>Matrices over Bounded Linear Orders\<close>
 
-text {*
+text \<open>
 In this theory we characterise relation-algebraic properties of matrices over bounded linear orders (for example, extended real numbers) in terms of the entries in the matrices.
 We consider, in particular, the following properties: univalent, injective, total, surjective, mapping, bijective, vector, covector, point, arc, reflexive, coreflexive, irreflexive, symmetric, antisymmetric, asymmetric.
 We also consider the effect of composition with the matrix of greatest elements and with coreflexives (tests).
-*}
+\<close>
 
 theory Linear_Order_Matrices
 
@@ -24,9 +24,9 @@ subclass non_trivial_bounded_order ..
 
 end
 
-text {*
+text \<open>
 Before we look at matrices, we generalise selectivity to finite suprema.
-*}
+\<close>
 
 lemma linorder_finite_sup_selective:
   fixes f :: "'a::finite \<Rightarrow> 'b::linorder_stone_algebra_expansion"
@@ -41,9 +41,9 @@ lemma linorder_top_finite_sup:
     shows "(\<Squnion>\<^sub>k f k) \<noteq> top"
   by (metis assms linorder_finite_sup_selective)
 
-text {*
-The following results show the effect of composition with the @{text top} matrix from the left and from the right.
-*}
+text \<open>
+The following results show the effect of composition with the \<open>top\<close> matrix from the left and from the right.
+\<close>
 
 lemma comp_top_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -57,9 +57,9 @@ lemma top_comp_linorder_matrix:
   apply (unfold times_matrix_def top_matrix_def)
   by (metis (no_types, lifting) case_prod_conv comp_left_one one_def sup_monoid.sum.cong)
 
-text {*
-We characterise univalent matrices: in each row, at most one entry may be different from @{text bot}.
-*}
+text \<open>
+We characterise univalent matrices: in each row, at most one entry may be different from \<open>bot\<close>.
+\<close>
 
 lemma univalent_linorder_matrix_1:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -112,18 +112,18 @@ lemma univalent_linorder_matrix:
   shows "matrix_stone_relation_algebra.univalent f \<longleftrightarrow> (\<forall>i j k . f (i,j) \<noteq> bot \<and> f (i,k) \<noteq> bot \<longrightarrow> j = k)"
   using univalent_linorder_matrix_1 univalent_linorder_matrix_2 by auto
 
-text {*
-Injective matrices can then be characterised by applying converse: in each column, at most one entry may be different from @{text bot}.
-*}
+text \<open>
+Injective matrices can then be characterised by applying converse: in each column, at most one entry may be different from \<open>bot\<close>.
+\<close>
 
 lemma injective_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
   shows "matrix_stone_relation_algebra.injective f \<longleftrightarrow> (\<forall>i j k . f (j,i) \<noteq> bot \<and> f (k,i) \<noteq> bot \<longrightarrow> j = k)"
   by (unfold matrix_stone_relation_algebra.injective_conv_univalent univalent_linorder_matrix) (simp add: conv_matrix_def)
 
-text {*
-Next come total matrices: each row has a @{text top} entry.
-*}
+text \<open>
+Next come total matrices: each row has a \<open>top\<close> entry.
+\<close>
 
 lemma total_linorder_matrix_1:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -171,18 +171,18 @@ lemma total_linorder_matrix:
   shows "matrix_bounded_idempotent_semiring.total f \<longleftrightarrow> (\<forall>i . \<exists>j . f (i,j) = top)"
   using total_linorder_matrix_1 total_linorder_matrix_2 matrix_stone_relation_algebra.total_var by auto
 
-text {*
-Surjective matrices are again characterised by applying converse: each column has a @{text top} entry.
-*}
+text \<open>
+Surjective matrices are again characterised by applying converse: each column has a \<open>top\<close> entry.
+\<close>
 
 lemma surjective_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
   shows "matrix_bounded_idempotent_semiring.surjective f \<longleftrightarrow> (\<forall>j . \<exists>i . f (i,j) = top)"
   by (unfold matrix_stone_relation_algebra.surjective_conv_total total_linorder_matrix) (simp add: conv_matrix_def)
 
-text {*
-A mapping therefore means that each row has exactly one @{text top} entry and all others are @{text bot}.
-*}
+text \<open>
+A mapping therefore means that each row has exactly one \<open>top\<close> entry and all others are \<open>bot\<close>.
+\<close>
 
 lemma mapping_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -195,9 +195,9 @@ lemma mapping_linorder_matrix_unique:
   apply (unfold mapping_linorder_matrix)
   using bot_not_top by auto
 
-text {*
-Conversely, bijective means that each column has exactly one @{text top} entry and all others are @{text bot}.
-*}
+text \<open>
+Conversely, bijective means that each column has exactly one \<open>top\<close> entry and all others are \<open>bot\<close>.
+\<close>
 
 lemma bijective_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -209,9 +209,9 @@ lemma bijective_linorder_matrix_unique:
   shows "matrix_stone_relation_algebra.bijective f \<longleftrightarrow> (\<forall>j . \<exists>!i . f (i,j) = top \<and> (\<forall>k . i \<noteq> k \<longrightarrow> f (k,j) = bot))"
   by (unfold matrix_stone_relation_algebra.bijective_conv_mapping mapping_linorder_matrix_unique) (simp add: conv_matrix_def)
 
-text {*
-We derive algebraic characterisations of matrices in which each row has an entry that is different from @{text bot}.
-*}
+text \<open>
+We derive algebraic characterisations of matrices in which each row has an entry that is different from \<open>bot\<close>.
+\<close>
 
 lemma pp_total_linorder_matrix_1:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
@@ -268,9 +268,9 @@ lemma pp_mapping_linorder_matrix_unique:
   using pp_mapping_linorder_matrix apply blast
   by (metis pp_total_linorder_matrix univalent_linorder_matrix)
 
-text {*
-Next follow matrices in which each column has an entry that is different from @{text bot}.
-*}
+text \<open>
+Next follow matrices in which each column has an entry that is different from \<open>bot\<close>.
+\<close>
 
 lemma pp_surjective_linorder_matrix_1:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
@@ -303,9 +303,9 @@ lemma pp_bijective_linorder_matrix_unique:
   shows "matrix_stone_relation_algebra.pp_bijective f \<longleftrightarrow> (\<forall>j . \<exists>!i . f (i,j) \<noteq> bot \<and> (\<forall>k . i \<noteq> k \<longrightarrow> f (k,j) = bot))"
   by (unfold matrix_stone_relation_algebra.pp_bijective_conv_mapping pp_mapping_linorder_matrix_unique) (simp add: conv_matrix_def)
 
-text {*
-The regular matrices are those which contain only @{text bot} or @{text top} entries.
-*}
+text \<open>
+The regular matrices are those which contain only \<open>bot\<close> or \<open>top\<close> entries.
+\<close>
 
 lemma regular_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -321,9 +321,9 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 Vectors are precisely the row-constant matrices.
-*}
+\<close>
 
 lemma vector_linorder_matrix_0:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -356,9 +356,9 @@ lemma vector_linorder_matrix:
   shows "matrix_bounded_idempotent_semiring.vector f \<longleftrightarrow> (\<forall>i j k . f (i,j) = f (i,k))"
   using vector_linorder_matrix_1 vector_linorder_matrix_2 by auto
 
-text {*
+text \<open>
 Hence covectors are precisely the column-constant matrices.
-*}
+\<close>
 
 lemma covector_linorder_matrix_0:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -371,9 +371,9 @@ lemma covector_linorder_matrix:
   shows "matrix_bounded_idempotent_semiring.covector f \<longleftrightarrow> (\<forall>i j k . f (i,j) = f (k,j))"
   by (unfold matrix_stone_relation_algebra.covector_conv_vector vector_linorder_matrix) (metis (no_types, lifting) case_prod_conv conv_matrix_def conv_def)
 
-text {*
-A point is a matrix that has exactly one row, which is constant @{text top}, and all other rows are constant @{text bot}.
-*}
+text \<open>
+A point is a matrix that has exactly one row, which is constant \<open>top\<close>, and all other rows are constant \<open>bot\<close>.
+\<close>
 
 lemma point_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -407,9 +407,9 @@ lemma pp_point_linorder_matrix_unique:
   apply metis
   by metis
 
-text {*
-An arc is a matrix that has exactly one @{text top} entry and all other entries are @{text bot}.
-*}
+text \<open>
+An arc is a matrix that has exactly one \<open>top\<close> entry and all other entries are \<open>bot\<close>.
+\<close>
 
 lemma arc_linorder_matrix_1:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
@@ -641,9 +641,9 @@ lemma pp_arc_linorder_matrix_unique:
   apply (metis (no_types, hide_lams) pp_arc_linorder_matrix)
   using pp_arc_linorder_matrix by blast
 
-text {*
-Reflexive matrices are those with a constant @{text top} diagonal.
-*}
+text \<open>
+Reflexive matrices are those with a constant \<open>top\<close> diagonal.
+\<close>
 
 lemma reflexive_linorder_matrix_1:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -683,9 +683,9 @@ lemma reflexive_linorder_matrix:
   shows "matrix_idempotent_semiring.reflexive f \<longleftrightarrow> (\<forall>i . f (i,i) = top)"
   using reflexive_linorder_matrix_1 reflexive_linorder_matrix_2 by auto
 
-text {*
-Coreflexive matrices are those in which all non-diagonal entries are @{text bot}.
-*}
+text \<open>
+Coreflexive matrices are those in which all non-diagonal entries are \<open>bot\<close>.
+\<close>
 
 lemma coreflexive_linorder_matrix_1:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -726,9 +726,9 @@ lemma coreflexive_linorder_matrix:
   shows "matrix_idempotent_semiring.coreflexive f \<longleftrightarrow> (\<forall>i j . i \<noteq> j \<longrightarrow> f (i,j) = bot)"
   using coreflexive_linorder_matrix_1 coreflexive_linorder_matrix_2 by auto
 
-text {*
-Irreflexive matrices are those with a constant @{text bot} diagonal.
-*}
+text \<open>
+Irreflexive matrices are those with a constant \<open>bot\<close> diagonal.
+\<close>
 
 lemma irreflexive_linorder_matrix_1:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -772,18 +772,18 @@ lemma irreflexive_linorder_matrix:
   shows "matrix_stone_relation_algebra.irreflexive f \<longleftrightarrow> (\<forall>i . f (i,i) = bot)"
   using irreflexive_linorder_matrix_1 irreflexive_linorder_matrix_2 by auto
 
-text {*
+text \<open>
 As usual, symmetric matrices are those which do not change under transposition.
-*}
+\<close>
 
 lemma symmetric_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
   shows "matrix_stone_relation_algebra.symmetric f \<longleftrightarrow> (\<forall>i j . f (i,j) = f (j,i))"
   by (metis (mono_tags, lifting) case_prod_conv cond_case_prod_eta conv_matrix_def conv_def)
 
-text {*
-Antisymmetric matrices are characterised as follows: each entry not on the diagonal or its mirror entry across the diagonal must be @{text bot}.
-*}
+text \<open>
+Antisymmetric matrices are characterised as follows: each entry not on the diagonal or its mirror entry across the diagonal must be \<open>bot\<close>.
+\<close>
 
 lemma antisymmetric_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -795,9 +795,9 @@ proof -
     by (metis (no_types, hide_lams) inf.absorb_iff1 inf.cobounded1 inf_bot_right inf_dense)
 qed
 
-text {*
-For asymmetric matrices the diagonal is included: each entry or its mirror entry across the diagonal must be @{text bot}.
-*}
+text \<open>
+For asymmetric matrices the diagonal is included: each entry or its mirror entry across the diagonal must be \<open>bot\<close>.
+\<close>
 
 lemma asymmetric_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -810,9 +810,9 @@ proof -
     by (metis (no_types, hide_lams) inf.absorb_iff1 inf.cobounded1 inf_bot_right inf_dense)
 qed
 
-text {*
+text \<open>
 In a transitive matrix, the weight of one of the edges on an indirect route must be below the weight of the direct edge.
-*}
+\<close>
 
 lemma transitive_linorder_matrix:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
@@ -828,11 +828,11 @@ proof -
     .
 qed
 
-text {*
+text \<open>
 We finally show the effect of composing with a coreflexive (test) from the left and from the right.
 This amounts to a restriction of each row or column to the entry on the diagonal of the coreflexive.
 In this case, restrictions are formed by meets.
-*}
+\<close>
 
 lemma coreflexive_comp_linorder_matrix:
   fixes f g :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"

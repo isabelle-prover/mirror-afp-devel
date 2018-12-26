@@ -5,13 +5,13 @@
 Functors: Define functors and prove a trivial example.
 *)
 
-section {* Functors *}
+section \<open>Functors\<close>
 
 theory Functors
 imports Cat
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 record ('o1,'a1,'o2,'a2) "functor" =
   om :: "'o1 \<Rightarrow> 'o2"
@@ -55,16 +55,16 @@ lemmas func_pred_defs = preserves_dom_def preserves_cod_def preserves_id_def pre
 
 end
 
-text {* This gives us nicer notation for asserting that things are functors. *}
+text \<open>This gives us nicer notation for asserting that things are functors.\<close>
 
 abbreviation
   Functor  ("Functor _ : _ \<longrightarrow> _" [81]) where
   "Functor F : AA \<longrightarrow> BB \<equiv> functor AA BB F"
 
 
-subsection {* Simple Lemmas *}
+subsection \<open>Simple Lemmas\<close>
 
-text {* For example: *}
+text \<open>For example:\<close>
 
 lemma (in "functor") "Functor F : AA \<longrightarrow> BB" ..
 
@@ -74,10 +74,10 @@ lemma functors_preserve_arrows [intro]:
     and "f \<in> ar AA"
   shows "F\<^bsub>\<a>\<^esub> f \<in> ar BB"
 proof-
-  from `Functor F : AA \<longrightarrow> BB`
+  from \<open>Functor F : AA \<longrightarrow> BB\<close>
   have "F\<^bsub>\<a>\<^esub> : ar AA \<rightarrow> ar BB"
     by (simp add: functor_def functor_axioms_def)
-  from this and `f \<in> ar AA`
+  from this and \<open>f \<in> ar AA\<close>
   show ?thesis by (rule funcset_mem)
 qed
 
@@ -117,15 +117,15 @@ lemma functors_preserve_objects [intro]:
     and "A \<in> ob AA"
   shows "F\<^bsub>\<o>\<^esub> A \<in> ob BB"
 proof-
-  from `Functor F : AA \<longrightarrow> BB`
+  from \<open>Functor F : AA \<longrightarrow> BB\<close>
   have "F\<^bsub>\<o>\<^esub> : ob AA \<rightarrow> ob BB"
     by (simp add: functor_def functor_axioms_def)
-  from this and `A \<in> ob AA`
+  from this and \<open>A \<in> ob AA\<close>
   show ?thesis by (rule funcset_mem)
 qed
 
 
-subsection {* Identity Functor *}
+subsection \<open>Identity Functor\<close>
 
 definition
   id_func :: "('o,'a,'m) category_scheme \<Rightarrow> ('o,'a,'o,'a) functor" where

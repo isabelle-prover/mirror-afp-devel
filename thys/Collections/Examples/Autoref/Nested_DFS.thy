@@ -1,4 +1,4 @@
-section {* \isaheader{Nested DFS (HPY improvement)} *}
+section \<open>\isaheader{Nested DFS (HPY improvement)}\<close>
 theory Nested_DFS
 imports 
   Collections.Refine_Dflt
@@ -7,14 +7,14 @@ imports
   CAVA_Automata.Digraph_Basic
 begin
 
-text {*
+text \<open>
   Implementation of a nested DFS algorithm for accepting cycle detection
   using the refinement framework. The algorithm uses the improvement of 
   [HPY96], i.e., it reports a cycle if the inner DFS finds a path back to 
   the stack of the outer DFS.
 
   The algorithm returns a witness in case that an accepting cycle is detected.
-*}
+\<close>
 
 subsection "Tools for DFS Algorithms"
 
@@ -67,7 +67,7 @@ lemma gen_dfs_pre_imp_fin:
   using assms unfolding gen_dfs_pre_def
   by auto
 
-text {* Inserted @{text "u0"} on stack and to visited set*}
+text \<open>Inserted \<open>u0\<close> on stack and to visited set\<close>
 lemma gen_dfs_pre_imp_fe:
   assumes "gen_dfs_pre E U S V u0"
   shows "gen_dfs_fe_inv E U (insert u0 S) (insert u0 V) u0 
@@ -237,19 +237,19 @@ lemma gen_dfs_post_imp_below_U:
 
 subsection "Abstract Algorithm"
 
-subsubsection {* Inner (red) DFS *}
+subsubsection \<open>Inner (red) DFS\<close>
 
-text {* A witness of the red algorithm is a node on the stack and a path
-  to this node *}
+text \<open>A witness of the red algorithm is a node on the stack and a path
+  to this node\<close>
 type_synonym 'v red_witness = "('v list \<times> 'v) option"
-text {* Prepend node to red witness *}
+text \<open>Prepend node to red witness\<close>
 fun prep_wit_red :: "'v \<Rightarrow> 'v red_witness \<Rightarrow> 'v red_witness" where
   "prep_wit_red v None = None"
 | "prep_wit_red v (Some (p,u)) = Some (v#p,u)"
 
-text {* 
-  Initial witness for node @{text "u"} with onstack successor @{text "v"} 
-  *}
+text \<open>
+  Initial witness for node \<open>u\<close> with onstack successor \<open>v\<close> 
+\<close>
 definition red_init_witness :: "'v \<Rightarrow> 'v \<Rightarrow> 'v red_witness" where
   "red_init_witness u v = Some ([u],v)"
 
@@ -277,30 +277,30 @@ definition red_dfs where
     }) (V,u)
   "
 
-text {*
-  A witness of the blue DFS may be in two different phases, the @{text "REACH"}
+text \<open>
+  A witness of the blue DFS may be in two different phases, the \<open>REACH\<close>
   phase is before the node on the stack has actually been popped, and the
-  @{text "CIRC"} phase is after the node on the stack has been popped.
+  \<open>CIRC\<close> phase is after the node on the stack has been popped.
 
-  @{text "REACH v p u p'"}: \begin{description}
-  \item[@{text "v"}] accepting node 
-  \item[@{text "p"}] path from @{text "v"} to @{text "u"}
-  \item[@{text "u"}] node on stack
-  \item[@{text "p'"}] path from current node to @{text "v"}
+  \<open>REACH v p u p'\<close>: \begin{description}
+  \item[\<open>v\<close>] accepting node 
+  \item[\<open>p\<close>] path from \<open>v\<close> to \<open>u\<close>
+  \item[\<open>u\<close>] node on stack
+  \item[\<open>p'\<close>] path from current node to \<open>v\<close>
   \end{description}
 
-  @{text "CIRC v pc pr"}: \begin{description}
-  \item[@{text "v"}] accepting node 
-  \item[@{text "pc"}] path from @{text "v"} to @{text "v"}
-  \item[@{text "pr"}] path from current node to @{text "v"}
+  \<open>CIRC v pc pr\<close>: \begin{description}
+  \item[\<open>v\<close>] accepting node 
+  \item[\<open>pc\<close>] path from \<open>v\<close> to \<open>v\<close>
+  \item[\<open>pr\<close>] path from current node to \<open>v\<close>
   \end{description}
-*}
+\<close>
 datatype 'v blue_witness = 
   NO_CYC
 | REACH "'v" "'v list" "'v" "'v list"
 | CIRC "'v" "'v list" "'v list"
 
-text {* Prepend node to witness *}
+text \<open>Prepend node to witness\<close>
 primrec prep_wit_blue :: "'v \<Rightarrow> 'v blue_witness \<Rightarrow> 'v blue_witness" where
   "prep_wit_blue u0 NO_CYC = NO_CYC"
 | "prep_wit_blue u0 (REACH v p u p') = (
@@ -311,7 +311,7 @@ primrec prep_wit_blue :: "'v \<Rightarrow> 'v blue_witness \<Rightarrow> 'v blue
   )"
 | "prep_wit_blue u0 (CIRC v pc pr) = CIRC v pc (u0#pr)"
 
-text {* Initialize blue witness *}
+text \<open>Initialize blue witness\<close>
 fun init_wit_blue :: "'v \<Rightarrow> 'v red_witness \<Rightarrow> 'v blue_witness" where
   "init_wit_blue u0 None = NO_CYC"
 | "init_wit_blue u0 (Some (p,u)) = (
@@ -319,11 +319,11 @@ fun init_wit_blue :: "'v \<Rightarrow> 'v red_witness \<Rightarrow> 'v blue_witn
     CIRC u0 p []
   else REACH u0 p u [])"
 
-text {* Extract result from witness *}
+text \<open>Extract result from witness\<close>
 definition "extract_res cyc 
   \<equiv> (case cyc of CIRC v pc pr \<Rightarrow> Some (v,pc,pr) | _ \<Rightarrow> None)"
 
-subsubsection {* Outer (Blue) DFS *}
+subsubsection \<open>Outer (Blue) DFS\<close>
 definition blue_dfs 
   :: "('a\<times>'a) set \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> ('a\<times>'a list\<times>'a list) option nres" 
   where
@@ -358,14 +358,14 @@ subsection "Correctness"
 
 subsubsection "Specification"
 
-text {* Specification of a reachable accepting cycle: *}
+text \<open>Specification of a reachable accepting cycle:\<close>
 definition "has_acc_cycle E A v0 \<equiv> \<exists>v\<in>A. (v0,v)\<in>E\<^sup>* \<and> (v,v)\<in>E\<^sup>+"
 
-text {* Specification of witness for accepting cycle *}
+text \<open>Specification of witness for accepting cycle\<close>
 definition "is_acc_cycle E A v0 v r c 
   \<equiv> v\<in>A \<and> path E v0 r v \<and> path E v c v \<and> c\<noteq>[]"
 
-text {* Specification is compatible with existence of accepting cycle *}
+text \<open>Specification is compatible with existence of accepting cycle\<close>
 lemma is_acc_cycle_eq:
   "has_acc_cycle E A v0 \<longleftrightarrow> (\<exists>v r c. is_acc_cycle E A v0 v r c)"
   unfolding has_acc_cycle_def is_acc_cycle_def
@@ -374,7 +374,7 @@ lemma is_acc_cycle_eq:
 
 subsubsection "Correctness Proofs"
 
-text {* Additional invariant to be maintained between calls of red dfs *}
+text \<open>Additional invariant to be maintained between calls of red dfs\<close>
 definition "red_dfs_inv E U reds onstack \<equiv> 
   E``U \<subseteq> U           \<comment> \<open>Upper bound is closed under transitions\<close>
   \<and> finite U         \<comment> \<open>Upper bound is finite\<close>
@@ -390,7 +390,7 @@ lemma red_dfs_inv_initial:
   apply auto
   done
 
-text {* Correctness of the red DFS. *}
+text \<open>Correctness of the red DFS.\<close>
 theorem red_dfs_correct:
   fixes v0 u0 :: 'v
   assumes PRE: 
@@ -571,7 +571,7 @@ proof -
     unfolding red_dfs_def .
 qed
 
-text {* Main theorem: Correctness of the blue DFS *}
+text \<open>Main theorem: Correctness of the blue DFS\<close>
 theorem blue_dfs_correct:
   fixes v0 :: 'v
   assumes FIN[simp,intro!]: "finite (E\<^sup>*``{v0})"
@@ -806,15 +806,15 @@ proof -
               thus "v\<in>blues"
               proof (cases rule: rtrancl_last_visit[where S="onstack - {u0}"])
                 case no_visit
-                thus "v\<in>blues" using `u0\<in>blues` CL 
+                thus "v\<in>blues" using \<open>u0\<in>blues\<close> CL 
                   by induct (auto elim: rtranclE)
               next
                 case (last_visit_point u)
                 then obtain uh where "(u0,uh)\<in>E\<^sup>*" and "(uh,u)\<in>E"
                   by (metis tranclD2) 
-                with REDS'CL DJ' `u0\<in>reds'` have "uh\<in>reds'" 
+                with REDS'CL DJ' \<open>u0\<in>reds'\<close> have "uh\<in>reds'" 
                   by (auto dest: Image_closed_trancl)
-                with DJ' `(uh,u)\<in>E` `u \<in> onstack - {u0}` have False 
+                with DJ' \<open>(uh,u)\<in>E\<close> \<open>u \<in> onstack - {u0}\<close> have False 
                   by simp blast
                 thus ?thesis ..
               qed
@@ -836,9 +836,9 @@ proof -
                 assume "(v,v)\<in>E\<^sup>+"
                 then obtain uh where "(u0,uh)\<in>E\<^sup>*" and "(uh,u0)\<in>E" 
                   by (auto dest: tranclD2)
-                with REDS'CL DJ `u0\<in>reds'` have "uh\<in>reds'" 
+                with REDS'CL DJ \<open>u0\<in>reds'\<close> have "uh\<in>reds'" 
                   by (auto dest: Image_closed_trancl)
-                with DJ `(uh,u0)\<in>E` `u0 \<in> onstack` show False by blast
+                with DJ \<open>(uh,u0)\<in>E\<close> \<open>u0 \<in> onstack\<close> show False by blast
               qed
             qed
           qed
@@ -848,20 +848,20 @@ proof -
             assume "reds' \<inter> (onstack0 - {u0}) \<noteq> {}"
             then obtain v where "v\<in>reds'" and "v\<in>onstack0" and "v\<noteq>u0" by auto
           
-            from `v\<in>reds'` REDS'R have "v\<in>reds \<or> (u0,v)\<in>E\<^sup>*"
+            from \<open>v\<in>reds'\<close> REDS'R have "v\<in>reds \<or> (u0,v)\<in>E\<^sup>*"
               by auto
             thus False proof
               assume "v\<in>reds" 
               with FEI[unfolded fe_inv_def add_inv_def cyc_post_def] 
-                `v\<in>onstack0`
+                \<open>v\<in>onstack0\<close>
               show False by auto
             next
               assume "(u0,v)\<in>E\<^sup>*"
-              with `v\<noteq>u0` obtain uh where "(u0,uh)\<in>E\<^sup>*" and "(uh,v)\<in>E"
+              with \<open>v\<noteq>u0\<close> obtain uh where "(u0,uh)\<in>E\<^sup>*" and "(uh,v)\<in>E"
                 by (auto elim: rtranclE)
-              with REDS'CL DJ `u0\<in>reds'` have "uh\<in>reds'" 
+              with REDS'CL DJ \<open>u0\<in>reds'\<close> have "uh\<in>reds'" 
                 by (auto dest: Image_closed_trancl)
-              with DJ `(uh,v)\<in>E` `v \<in> onstack0` show False by simp blast
+              with DJ \<open>(uh,v)\<in>E\<close> \<open>v \<in> onstack0\<close> show False by simp blast
             qed
           qed
         qed
@@ -1019,9 +1019,9 @@ qed
 
 subsection "Refinement"
 
-subsubsection {* Setup for Custom Datatypes *}
-text {* This effort can be automated, but currently, such an automation is
-  not yet implemented *}
+subsubsection \<open>Setup for Custom Datatypes\<close>
+text \<open>This effort can be automated, but currently, such an automation is
+  not yet implemented\<close>
 abbreviation "red_wit_rel \<equiv> \<langle>\<langle>\<langle>nat_rel\<rangle>list_rel,nat_rel\<rangle>prod_rel\<rangle>option_rel"
 abbreviation "wit_res_rel \<equiv> 
   \<langle>\<langle>nat_rel,\<langle>\<langle>nat_rel\<rangle>list_rel,\<langle>nat_rel\<rangle>list_rel\<rangle>prod_rel\<rangle>prod_rel\<rangle>option_rel"
@@ -1058,7 +1058,7 @@ lemma autoref_wit[autoref_rules_raw]:
   "(extract_res,extract_res) \<in> blue_wit_rel \<rightarrow> wit_res_rel"
   by simp_all
 
-subsubsection {* Actual Refinement*}
+subsubsection \<open>Actual Refinement\<close>
 
 
 
@@ -1117,11 +1117,11 @@ export_code
   integer_of_nat
   in SML module_name HPY_new
 
-ML_val {*
+ML_val \<open>
   @{code ndfs_impl} (@{code succ_of_list_impl_int} [(1,2),(2,3),(2,7),(7,1)])
     (@{code acc_of_list_impl_int} [7]) (@{code nat_of_integer} 1)
 
-*}
+\<close>
 
 
 schematic_goal ndfs_impl_refine_aux_old:

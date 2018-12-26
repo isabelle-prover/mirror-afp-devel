@@ -7,7 +7,7 @@ theory FFT
 imports Complex_Main
 begin
 
-text {* We formalise a functional implementation of the FFT algorithm
+text \<open>We formalise a functional implementation of the FFT algorithm
   over the complex numbers, and its inverse.  Both are shown
   equivalent to the usual definitions
   of these operations through Vandermonde matrices.  They are also
@@ -17,13 +17,13 @@ text {* We formalise a functional implementation of the FFT algorithm
 
   The presentation closely follows Section 30.2 of Cormen \textit{et
   al.}, \emph{Introduction to Algorithms}, 2nd edition, MIT Press,
-  2003. *}
+  2003.\<close>
 
 
-section {* Preliminaries *}
+section \<open>Preliminaries\<close>
 
-text {* The following two lemmas are useful for experimenting with the
-  transformations, at a vector length of four. *}
+text \<open>The following two lemmas are useful for experimenting with the
+  transformations, at a vector length of four.\<close>
 
 lemma Ivl4:
   "{0..<4::nat} = {0, 1, 2, 3}"
@@ -39,8 +39,8 @@ lemma Sum4:
   by (simp add: Ivl4 eval_nat_numeral)
 
 
-text {* A number of specialised lemmas for the summation operator,
-  where the index set is the natural numbers *}
+text \<open>A number of specialised lemmas for the summation operator,
+  where the index set is the natural numbers\<close>
 
 lemma sum_add_nat_ivl_singleton:
   assumes less: "m < (n::nat)"
@@ -99,12 +99,12 @@ proof -
 qed
 
 
-section {* Complex Roots of Unity *}
+section \<open>Complex Roots of Unity\<close>
 
-text {* The function @{term cis} from the complex library returns the
+text \<open>The function @{term cis} from the complex library returns the
   point on the unity circle corresponding to the argument angle.  It
-  is the base for our definition of @{text root}.  The main property,
-  De Moirve's formula is already there in the library. *}
+  is the base for our definition of \<open>root\<close>.  The main property,
+  De Moirve's formula is already there in the library.\<close>
 
 definition root :: "nat => complex" where
   "root n == cis (2*pi/(real (n::nat)))"
@@ -130,7 +130,7 @@ proof -
 qed
 
 
-subsection {* Basic Lemmas *}
+subsection \<open>Basic Lemmas\<close>
 
 lemma root_nonzero: "root n \<noteq> 0"
   by (auto simp add: complex_eq_iff root_def dest: sin_zero_abs_cos_one)
@@ -154,7 +154,7 @@ proof -
     b = "real n" and c = "2 * pi / real n", simplified]
   have realk: "real k * (2 * pi) / real n < 2 * pi"
     by (simp add: zero_less_divide_iff)
-  txt {* Main part of the proof *}
+  txt \<open>Main part of the proof\<close>
   have "(\<Sum>i=0..<n. (root n ^ k) ^ i) =
     ((root n ^ k) ^ n - 1) / (root n ^ k - 1)"
     unfolding atLeast0LessThan
@@ -182,7 +182,7 @@ proof -
     b = "real n" and c = "2 * pi / real n", simplified]
   have realk: "real k * (2 * pi) / real n < 2 * pi"
     by (simp add: zero_less_divide_iff)
-  txt {* Main part of the proof *}
+  txt \<open>Main part of the proof\<close>
   have "(\<Sum>i=0..<n. ((1 / root n) ^ k) ^ i) =
     (((1 / root n) ^ k) ^ n - 1) / ((1 / root n) ^ k - 1)"
     unfolding atLeast0LessThan
@@ -217,7 +217,7 @@ lemma root4 [simp]:
   by (simp add: complex_eq_iff root_def)
 
 
-subsection {* Derived Lemmas *}
+subsection \<open>Derived Lemmas\<close>
 
 lemma root_cancel1:
   "root (2 * m) ^ (i * (2 * j)) = root m ^ (i * j)"
@@ -231,21 +231,21 @@ qed
 
 lemma root_cancel2:
   "0 < n ==> root (2 * n) ^ n = - 1"
-  txt {* Note the space between @{text "-"} and @{text "1"}. *}
+  txt \<open>Note the space between \<open>-\<close> and \<open>1\<close>.\<close>
   using root_cancel [where n = 2 and k = 1]
   by (simp add: complex_eq_iff ac_simps)
 
 
-section {* Discrete Fourier Transformation *}
+section \<open>Discrete Fourier Transformation\<close>
 
-text {*
-  We define operations  @{text DFT} and @{text IDFT} for the discrete
+text \<open>
+  We define operations  \<open>DFT\<close> and \<open>IDFT\<close> for the discrete
   Fourier Transform and its inverse.  Vectors are simply functions of
-  type @{text "nat => complex"}. *}
+  type \<open>nat => complex\<close>.\<close>
 
-text {*
-  @{text "DFT n a"} is the transform of vector @{text a}
-  of length @{text n}, @{text IDFT} its inverse. *}
+text \<open>
+  \<open>DFT n a\<close> is the transform of vector \<open>a\<close>
+  of length \<open>n\<close>, \<open>IDFT\<close> its inverse.\<close>
 
 definition DFT :: "nat => (nat => complex) => (nat => complex)" where
   "DFT n a == (%i. \<Sum>j=0..<n. (root n) ^ (i * j) * (a j))"
@@ -256,7 +256,7 @@ definition IDFT :: "nat => (nat => complex) => (nat => complex)" where
 schematic_goal "map (DFT 4 a) [0, 1, 2, 3] = ?x"
   by(simp add: DFT_def Sum4)
 
-text {* Lemmas for the correctness proof. *}
+text \<open>Lemmas for the correctness proof.\<close>
 
 lemma DFT_lower:
   "DFT (2 * m) a i =
@@ -272,9 +272,9 @@ proof (unfold DFT_def)
     root (2 * m) ^ i *
     (\<Sum>j = 0..<m. root m ^ (i * j) * a (2 * j + 1))"
     (is "_ = ?t")
-    txt {* First pair of sums *}
+    txt \<open>First pair of sums\<close>
     apply (simp add: root_cancel1)
-    txt {* Second pair of sums *}
+    txt \<open>Second pair of sums\<close>
     apply (simp add: sum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: root_cancel1)
@@ -299,10 +299,10 @@ proof (unfold DFT_def)
     root (2 * m) ^ (i - m) *
     (\<Sum>j = 0..<m. root m ^ ((i - m) * j) * a (2 * j + 1))"
     (is "_ = ?t")
-    txt {* First pair of sums *}
+    txt \<open>First pair of sums\<close>
     apply (simp add: root_cancel1)
     apply (simp add: root_unity ibound root_nonzero power_diff power_mult)
-    txt {* Second pair of sums *}
+    txt \<open>Second pair of sums\<close>
     apply (simp add: mbound root_cancel2)
     apply (simp add: sum_distrib_left)
     apply (simp add: power_add)
@@ -327,9 +327,9 @@ proof (unfold IDFT_def)
     (1 / root (2 * m)) ^ i *
     (\<Sum>j = 0..<m. a (2 * j + 1) / root m ^ (i * j))"
     (is "_ = ?t")
-    txt {* First pair of sums *}
+    txt \<open>First pair of sums\<close>
     apply (simp add: root_cancel1)
-    txt {* Second pair of sums *}
+    txt \<open>Second pair of sums\<close>
     apply (simp add: sum_distrib_left)
     apply (simp add: power_add)
     apply (simp add: power_divide root_nonzero)
@@ -355,10 +355,10 @@ proof (unfold IDFT_def)
     (1 / root (2 * m)) ^ (i - m) *
     (\<Sum>j = 0..<m. a (2 * j + 1) / root m ^ ((i - m) * j))"
     (is "_ = ?t")
-    txt {* First pair of sums *}
+    txt \<open>First pair of sums\<close>
     apply (simp add: root_cancel1)
     apply (simp add: root_unity ibound root_nonzero power_diff power_mult)
-    txt {* Second pair of sums *}
+    txt \<open>Second pair of sums\<close>
     apply (simp add: power_divide root_nonzero)
     apply (simp add: mbound root_cancel2)
     apply (simp add: sum_divide_distrib)
@@ -370,7 +370,7 @@ proof (unfold IDFT_def)
   finally show "?s = ?t" .
 qed
 
-text {* @{text DFT} und @{text IDFT} are inverses. *}
+text \<open>\<open>DFT\<close> und \<open>IDFT\<close> are inverses.\<close>
 
 declare divide_divide_eq_right [simp del]
   divide_divide_eq_left [simp del]
@@ -444,10 +444,10 @@ theorem DFT_inverse:
   qed
 
 
-section {* Discrete, Fast Fourier Transformation *}
+section \<open>Discrete, Fast Fourier Transformation\<close>
 
-text {* @{text "FFT k a"} is the transform of vector @{text a}
-  of length @{text "2 ^ k"}, @{text IFFT} its inverse. *}
+text \<open>\<open>FFT k a\<close> is the transform of vector \<open>a\<close>
+  of length \<open>2 ^ k\<close>, \<open>IFFT\<close> its inverse.\<close>
 
 primrec FFT :: "nat => (nat => complex) => (nat => complex)" where
   "FFT 0 a = a"
@@ -466,9 +466,9 @@ primrec IFFT :: "nat => (nat => complex) => (nat => complex)" where
             else x (i - 2^k) -
               (1 / root (2 ^ (Suc k))) ^ (i - 2^k) * y (i - 2^k)))"
 
-text {* Finally, for vectors of length @{text "2 ^ k"},
-  @{text DFT} and @{text FFT}, and @{text IDFT} and
-  @{text IFFT} are equivalent. *}
+text \<open>Finally, for vectors of length \<open>2 ^ k\<close>,
+  \<open>DFT\<close> and \<open>FFT\<close>, and \<open>IDFT\<close> and
+  \<open>IFFT\<close> are equivalent.\<close>
 
 theorem DFT_FFT:
   "!!a i. i < 2 ^ k ==> DFT (2 ^ k) a i = FFT k a i"

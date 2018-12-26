@@ -1,10 +1,10 @@
-section {* Weak Order Dependence *}
+section \<open>Weak Order Dependence\<close>
 
 theory WeakOrderDependence imports "../Basic/CFG" DataDependence begin
 
-text {* Weak order dependence is just defined as a static control dependence *}
+text \<open>Weak order dependence is just defined as a static control dependence\<close>
 
-subsection{* Definition and some lemmas *}
+subsection\<open>Definition and some lemmas\<close>
 
 definition (in CFG) weak_order_dependence :: "'node \<Rightarrow> 'node \<Rightarrow> 'node \<Rightarrow> bool"
    ("_ \<longrightarrow>\<^sub>w\<^sub>o\<^sub>d _,_")

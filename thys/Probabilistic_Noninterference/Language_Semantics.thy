@@ -1,13 +1,13 @@
-section {* Simple While Language with probabilistic choice and parallel execution *}
+section \<open>Simple While Language with probabilistic choice and parallel execution\<close>
 
 theory Language_Semantics
 imports Interface
 begin
 
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
-text{* Trivia *}
+text\<open>Trivia\<close>
 
 declare zero_le_mult_iff[simp]
 declare split_mult_pos_le[simp]
@@ -53,7 +53,7 @@ lemma length_unique_prefix:
   "al1 \<le> al \<Longrightarrow> al2 \<le> al \<Longrightarrow> length al1 = length al2 \<Longrightarrow> al1 = al2"
   by (metis not_equal_is_parallel parallelE prefix_same_cases less_eq_list_def)
 
-text{* take: *}
+text\<open>take:\<close>
 
 lemma take_length[simp]:
 "take (length al) al = al"
@@ -100,7 +100,7 @@ qed
 lemma lt_take: "n1 < n2 \<Longrightarrow> n2 \<le> length al \<Longrightarrow> take n1 al < take n2 al"
   by (metis inj_take le_less_trans le_take not_less_iff_gr_or_eq order.not_eq_order_implies_strict order.strict_implies_order)
 
-text{* lsum: *}
+text\<open>lsum:\<close>
 
 definition lsum :: "('a \<Rightarrow> nat) \<Rightarrow> 'a list \<Rightarrow> nat" where
 "lsum f al \<equiv> sum_list (map f al)"
@@ -292,7 +292,7 @@ proof-
   thus ?thesis unfolding n_j_def locate1_def locate2_def by (metis fst_conv n_j_def snd_conv)
 qed
 
-text{* sum: *}
+text\<open>sum:\<close>
 
 lemma sum_2[simp]:
 "sum f {..< 2} = f 0 + f (Suc 0)"
@@ -380,11 +380,11 @@ proof-
   have 1: "A1 = B1 Un {a1}" and 2: "A2 = B2 Un {a2}"
     using assms by blast+
   from assms have "a1 \<notin> B1" by simp
-  with 1 `finite A1` have "sum f1 A1 = sum f1 B1 + f1 a1"
+  with 1 \<open>finite A1\<close> have "sum f1 A1 = sum f1 B1 + f1 a1"
     by simp
   hence 3: "sum f1 B1 = sum f1 A1 - f1 a1" by simp
   from assms have "a2 \<notin> B2" by simp
-  with 2 `finite A2 `have "sum f2 A2 = sum f2 B2 + f2 a2"
+  with 2 \<open>finite A2 \<close>have "sum f2 A2 = sum f2 B2 + f2 a2"
     by simp
   hence "sum f2 B2 = sum f2 A2 - f2 a2" by simp
   thus ?thesis using 3 assms by simp
@@ -428,7 +428,7 @@ proof-
   thus ?thesis by auto
 qed
 
-subsection {* Syntax *}
+subsection \<open>Syntax\<close>
 
 datatype ('test, 'atom, 'choice) cmd =
   Done
@@ -620,7 +620,7 @@ using * apply(induct c)
 using assms unfolding properL_def by auto
 
 
-subsubsection {* Operational Small-Step Semantics *}
+subsubsection \<open>Operational Small-Step Semantics\<close>
 
 (* "The Finished Threads": The sublist of finished threads from a list of threads  *)
 definition "theFT cl \<equiv> {n. n < length cl \<and> finished (cl!n)}"
@@ -1595,7 +1595,7 @@ proof-
 qed
 
 
-subsubsection {* Operations on configurations *}
+subsubsection \<open>Operations on configurations\<close>
 
 definition "cont_eff cf b = snd (wt_cont_eff (fst cf) (snd cf) b)"
 

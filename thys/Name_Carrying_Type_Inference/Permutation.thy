@@ -34,35 +34,35 @@ proof(cases s)
     consider "x = a" | "x = b" | "x \<noteq> a \<and> x \<noteq> b" by auto
     thus ?thesis proof(cases)
       case 1
-        have "swp_apply s x = b" using `s = (a, b)` `x = a` by simp
-        moreover have "swp_apply s y \<noteq> b" using `s = (a, b)` `x = a` `x \<noteq> y`
+        have "swp_apply s x = b" using \<open>s = (a, b)\<close> \<open>x = a\<close> by simp
+        moreover have "swp_apply s y \<noteq> b" using \<open>s = (a, b)\<close> \<open>x = a\<close> \<open>x \<noteq> y\<close>
           by(cases "y = b", simp_all)
         ultimately show ?thesis by metis
       next
       case 2
-        have "swp_apply s x = a" using `s = (a, b)` `x = b` by simp
-        moreover have "swp_apply s y \<noteq> a" using `s = (a, b)` `x = b` `x \<noteq> y`
+        have "swp_apply s x = a" using \<open>s = (a, b)\<close> \<open>x = b\<close> by simp
+        moreover have "swp_apply s y \<noteq> a" using \<open>s = (a, b)\<close> \<open>x = b\<close> \<open>x \<noteq> y\<close>
           by(cases "y = a", simp_all)
         ultimately show ?thesis by metis
       next
       case 3
-        have "swp_apply s x = x" using `s = (a, b)` `x \<noteq> a \<and> x \<noteq> b` by simp
+        have "swp_apply s x = x" using \<open>s = (a, b)\<close> \<open>x \<noteq> a \<and> x \<noteq> b\<close> by simp
         consider "y = a" | "y = b" | "y \<noteq> a \<and> y \<noteq> b" by auto
         hence "swp_apply s y \<noteq> x" proof(cases)
           case 1
-            hence "swp_apply s y = b" using `s = (a, b)` by simp
-            thus ?thesis using `x \<noteq> a \<and> x \<noteq> b` by metis
+            hence "swp_apply s y = b" using \<open>s = (a, b)\<close> by simp
+            thus ?thesis using \<open>x \<noteq> a \<and> x \<noteq> b\<close> by metis
           next
           case 2
-            hence "swp_apply s y = a" using `s = (a, b)` by simp
-            thus ?thesis using `x \<noteq> a \<and> x \<noteq> b` by metis
+            hence "swp_apply s y = a" using \<open>s = (a, b)\<close> by simp
+            thus ?thesis using \<open>x \<noteq> a \<and> x \<noteq> b\<close> by metis
           next
           case 3
-            hence "swp_apply s y = y" using `s = (a, b)` by simp
-            thus ?thesis using `x \<noteq> y` by metis
+            hence "swp_apply s y = y" using \<open>s = (a, b)\<close> by simp
+            thus ?thesis using \<open>x \<noteq> y\<close> by metis
           next
         qed
-        thus ?thesis using `swp_apply s x = x` `x \<noteq> y` by metis
+        thus ?thesis using \<open>swp_apply s x = x\<close> \<open>x \<noteq> y\<close> by metis
       next
     qed
   next
@@ -106,7 +106,7 @@ using assms proof(induction \<pi>, simp)
   case (Cons s ss)
     have  "preprm_apply (s # ss) x = swp_apply s (preprm_apply ss x)"
       and "preprm_apply (s # ss) y = swp_apply s (preprm_apply ss y)" by auto
-    thus ?case using Cons.IH `x \<noteq> y` swp_apply_unequal by metis
+    thus ?case using Cons.IH \<open>x \<noteq> y\<close> swp_apply_unequal by metis
   next
 qed
 
@@ -404,8 +404,8 @@ proof
     from this obtain y where "x = [a \<leftrightarrow> b] $ y" unfolding prm_set_def using imageE by metis
     hence "y \<in> S" using H inj_image_mem_iff prm_apply_injective prm_set_def by metis
     hence "y \<noteq> a" and "y \<noteq> b" using assms by auto
-    hence "x = y" using prm_unit_inaction `x = [a \<leftrightarrow> b] $ y` by metis
-    thus "x \<in> S" using `y \<in> S` by auto
+    hence "x = y" using prm_unit_inaction \<open>x = [a \<leftrightarrow> b] $ y\<close> by metis
+    thus "x \<in> S" using \<open>y \<in> S\<close> by auto
   qed
   show "S \<subseteq> [a \<leftrightarrow> b] {$} S" proof
     fix x
@@ -429,12 +429,12 @@ proof
     consider "y = a" | "y \<noteq> a" by auto
     thus "x \<in> S - {a} \<union> {b}" proof(cases)
       case 1
-        hence "x = b" using `x = [a \<leftrightarrow> b] $ y` using prm_unit_action by metis
+        hence "x = b" using \<open>x = [a \<leftrightarrow> b] $ y\<close> using prm_unit_action by metis
         thus ?thesis by auto
       next
       case 2
-        hence "x = y" using `x = [a \<leftrightarrow> b] $ y` using prm_unit_inaction `y \<noteq> b` by metis
-        hence "x \<in> S" and "x \<noteq> a" using `y \<in> S` `y \<noteq> a` by auto
+        hence "x = y" using \<open>x = [a \<leftrightarrow> b] $ y\<close> using prm_unit_inaction \<open>y \<noteq> b\<close> by metis
+        hence "x \<in> S" and "x \<noteq> a" using \<open>y \<in> S\<close> \<open>y \<noteq> a\<close> by auto
         thus ?thesis by auto
       next
     qed
@@ -447,11 +447,11 @@ proof
     thus "x \<in> [a \<leftrightarrow> b] {$} S" proof(cases)
       case 1
         hence "x = [a \<leftrightarrow> b] $ a" using prm_unit_action by metis
-        thus ?thesis using `a \<in> S` prm_set_membership by metis
+        thus ?thesis using \<open>a \<in> S\<close> prm_set_membership by metis
       next
       case 2
         hence "x \<in> S" using H by auto
-        moreover have "x = [a \<leftrightarrow> b] $ x" using prm_unit_inaction `x \<noteq> a` `x \<noteq> b` by metis
+        moreover have "x = [a \<leftrightarrow> b] $ x" using prm_unit_inaction \<open>x \<noteq> a\<close> \<open>x \<noteq> b\<close> by metis
         ultimately show ?thesis using prm_set_membership by metis
       next
     qed

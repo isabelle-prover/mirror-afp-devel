@@ -2,7 +2,7 @@
     Author:     Gerwin Klein, Andreas Lochbihler
 *)
 
-section {* Monotonicity of eff and app *}
+section \<open>Monotonicity of eff and app\<close>
 
 theory EffectMono
 imports
@@ -290,7 +290,7 @@ proof -
       D'_M: "P \<turnstile> D' sees M: Ts'\<rightarrow>T' = m' in C''" and
       Ts': "P \<turnstile> Ts [\<le>] Ts'" and "P \<turnstile> T' \<le> T" by (blast dest: sees_method_mono)
 
-    show ?thesis using Invoke n D D' D_M less D'_M Ts' `P \<turnstile> T' \<le> T`
+    show ?thesis using Invoke n D D' D_M less D'_M Ts' \<open>P \<turnstile> T' \<le> T\<close>
       by(auto intro: list_all2_dropI)
   next
     case ALoad with less app app\<^sub>i succs

@@ -462,7 +462,7 @@ lemma mk_minsky_comp3_3:
 
 text \<open>Primitive recursion is a non-destructive apply followed by a loop with another
 non-destructive apply. The key to the proof is the loop invariant, which we can specify
-as part of composing the various @{text "mk_minsky_*"} lemmas.\<close>
+as part of composing the various \<open>mk_minsky_*\<close> lemmas.\<close>
 
 lemma mk_minsky_prim_rec:
   assumes "mk_minsky1 g" "mk_minsky3 h"
@@ -681,7 +681,7 @@ proof -
   have "?f \<circ> ?f = id" by auto
   define N where "N = map_minsky ?f id M"
   have M_def: "M = map_minsky ?f id N"
-    unfolding N_def map_minsky_comp `?f \<circ> ?f = id` map_minsky_id o_id ..
+    unfolding N_def map_minsky_comp \<open>?f \<circ> ?f = id\<close> map_minsky_id o_id ..
   show ?thesis using M(1-3)
   proof (intro that[of N], goal_cases)
     case (4 x vs) show ?case using M(5)[OF 4(4,5)] 4(6) M(7)[OF 4(4,5)]

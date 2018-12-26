@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-chapter {* More bit operations on integers *}
+chapter \<open>More bit operations on integers\<close>
 
 theory More_Bits_Int
 imports
@@ -26,7 +26,7 @@ lemma nat_less_numeral_unfold: fixes n :: nat shows
   "n < numeral w \<longleftrightarrow> n = pred_numeral w \<or> n < pred_numeral w"
 by(auto simp add: numeral_eq_Suc)
 
-section {* Lemmas about bit operations on @{typ int} *}
+section \<open>Lemmas about bit operations on @{typ int}\<close>
 
 lemma twice_conv_BIT: "2 * x = x BIT False"
 by(rule bin_rl_eqI)(simp_all, simp_all add: bin_rest_def bin_last_def)
@@ -103,7 +103,7 @@ proof -
   obtain x b where "i = x BIT b" by(cases i rule: bin_exhaust)
   hence "i AND 1 = 0 BIT b"
     by(simp add: BIT_special_simps(2)[symmetric] del: BIT_special_simps(2))
-  thus ?thesis using `i = x BIT b` by(cases b) simp_all
+  thus ?thesis using \<open>i = x BIT b\<close> by(cases b) simp_all
 qed
 
 lemma bitval_bin_last:
@@ -175,7 +175,7 @@ qed simp
 lemma bin_sign_mask [simp]: "bin_sign (bin_mask n) = 0"
 by(induct n) simp_all
 
-section {* Symbolic bit operations on numerals and @{typ int}s *}
+section \<open>Symbolic bit operations on numerals and @{typ int}s\<close>
 
 lemma int_not_neg_numeral: "NOT (- numeral n) = (Num.sub n num.One :: int)"
 by(simp add: int_not_def)
@@ -353,7 +353,7 @@ lemma int_xor_code [code]: fixes i j :: int shows
 by(fold int_not_neg_numeral)(simp_all add: int_numeral_bitXOR_num int_xor_not cong: option.case_cong)
 
 
-section {* More on bits and bitss operations *}
+section \<open>More on bits and bitss operations\<close>
 
 inductive wf_set_bits_int :: "(nat \<Rightarrow> bool) \<Rightarrow> bool" 
   for f :: "nat \<Rightarrow> bool"
@@ -606,10 +606,10 @@ proof(induction m arbitrary: x y n)
     by(simp add: bin_last_def shiftl_int_def) (metis (hide_lams, no_types) mod_diff_right_eq mod_self neq0_conv numeral_One power_eq_0_iff power_mod diff_zero zero_neq_numeral)
 next
   case (Suc m)
-  from `Suc m < n` obtain n' where [simp]: "n = Suc n'" by(cases n) auto
+  from \<open>Suc m < n\<close> obtain n' where [simp]: "n = Suc n'" by(cases n) auto
   obtain x' b where [simp]: "x = x' BIT b" by(cases x rule: bin_exhaust)
-  from `bin_sign x = 0` have "bin_sign x' = 0" by simp
-  moreover from `x < 1 << n` have "x' < 1 << n'"
+  from \<open>bin_sign x = 0\<close> have "bin_sign x' = 0" by simp
+  moreover from \<open>x < 1 << n\<close> have "x' < 1 << n'"
     by(cases b)(simp_all add: Bit_def shiftl_int_def)
   moreover have "(2 * x' + of_bool b - 2 * 2 ^ n') div 2 = x' + (- (2 ^ n') + of_bool b div 2)"
     by(simp only: add_diff_eq[symmetric] add.commute div_mult_self2[OF zero_neq_numeral[symmetric]])
@@ -748,7 +748,7 @@ lemma msb_numeral [simp]:
   "msb (- numeral n :: int) = True"
 by(simp_all add: msb_int_def)
 
-section {* Bit list operations implemented by bitwise operations *}
+section \<open>Bit list operations implemented by bitwise operations\<close>
 
 lemma bin_rest_code [code]: "bin_rest i = i >> 1"
 by(simp add: bin_rest_def shiftr_int_def)
@@ -765,13 +765,13 @@ next
   thus ?case by(cases bin rule: bin_exhaust)(simp add: Let_def minus_BIT_0)
 qed
 
-text {* 
+text \<open>
   Use this function to convert numeral @{typ integer}s quickly into @{typ int}s.
   By default, it works only for symbolic evaluation; normally generated code raises
-  an exception at run-time. If theory @{text Code_Target_Bits_Int} is imported, 
+  an exception at run-time. If theory \<open>Code_Target_Bits_Int\<close> is imported, 
   it works again, because then @{typ int} is implemented in terms of @{typ integer}
   even for symbolic evaluation.
-*}
+\<close>
 
 definition int_of_integer_symbolic :: "integer \<Rightarrow> int"
 where "int_of_integer_symbolic = int_of_integer"

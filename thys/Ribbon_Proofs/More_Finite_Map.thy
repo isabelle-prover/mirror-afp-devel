@@ -1,4 +1,4 @@
-section {* Finite partial functions *}
+section \<open>Finite partial functions\<close>
 
 theory More_Finite_Map imports
   "HOL-Library.Finite_Map"
@@ -10,7 +10,7 @@ unbundle fmap.lifting
 type_notation fmap (infix "\<rightharpoonup>\<^sub>f" 9)
 
 
-subsection {* Difference *}
+subsection \<open>Difference\<close>
 
 definition
   map_diff :: "('k \<rightharpoonup> 'v) \<Rightarrow> 'k fset \<Rightarrow> ('k \<rightharpoonup> 'v)"
@@ -22,7 +22,7 @@ lift_definition
 is "map_diff"
 by (auto simp add: map_diff_def)
 
-subsection {* Comprehension *}
+subsection \<open>Comprehension\<close>
 
 definition
   make_map :: "'k fset \<Rightarrow> 'v \<Rightarrow> ('k \<rightharpoonup> 'v)"
@@ -47,7 +47,7 @@ by transfer (simp add: make_map_def)
 
 
 
-subsection {* Domain *}
+subsection \<open>Domain\<close>
 
 
 lemma fmap_add_commute:
@@ -70,7 +70,7 @@ apply transfer
 apply (auto simp: dom_def make_map_def fset_inverse)
 done
 
-subsection {* Lookup *}
+subsection \<open>Lookup\<close>
 
 lift_definition
   lookup :: "('k \<rightharpoonup>\<^sub>f 'v) \<Rightarrow> 'k \<Rightarrow> 'v"

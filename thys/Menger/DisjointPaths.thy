@@ -1,11 +1,11 @@
-section {* Internally Vertex-Disjoint Paths *}
+section \<open>Internally Vertex-Disjoint Paths\<close>
 
 theory DisjointPaths imports Separations begin
 
-text {*
+text \<open>
   Menger's Theorem talks about internally vertex-disjoint @{term v0}-@{term v1}-paths.  Let us
   define this concept.
-*}
+\<close>
 
 locale DisjointPaths = v0_v1_Digraph +
   fixes paths :: "'a Walk set"
@@ -14,13 +14,13 @@ locale DisjointPaths = v0_v1_Digraph +
   and paths_disjoint: "\<And>xs ys v.
     \<lbrakk> xs \<in> paths; ys \<in> paths; xs \<noteq> ys; v \<in> set xs; v \<in> set ys \<rbrakk> \<Longrightarrow> v = v0 \<or> v = v1"
 
-subsection {* Basic Properties *}
+subsection \<open>Basic Properties\<close>
 
-text {* The empty set of paths trivially satisfies the conditions. *}
+text \<open>The empty set of paths trivially satisfies the conditions.\<close>
 lemma (in v0_v1_Digraph) DisjointPaths_empty: "DisjointPaths G v0 v1 {}"
   by (simp add: DisjointPaths.intro DisjointPaths_axioms_def v0_v1_Digraph_axioms)
 
-text {* Re-adding a deleted vertex is fine. *}
+text \<open>Re-adding a deleted vertex is fine.\<close>
 lemma (in v0_v1_Digraph) DisjointPaths_supergraph:
   assumes "DisjointPaths (remove_vertex v) v0 v1 paths"
   shows "DisjointPaths G v0 v1 paths"
@@ -70,7 +70,7 @@ proof (rule ccontr)
     by (metis distinct_length_2_or_more path_decomp(2) path_from_to_def path_from_to_ends paths)
 qed
 
-text {* Specify the conditions for adding a new disjoint path to the set of disjoint paths. *}
+text \<open>Specify the conditions for adding a new disjoint path to the set of disjoint paths.\<close>
 lemma DisjointPaths_extend:
   assumes P_path: "v0\<leadsto>P\<leadsto>v1"
       and P_disjoint: "\<And>xs v. \<lbrakk> xs \<in> paths; xs \<noteq> P; v \<in> set xs; v \<in> set P \<rbrakk> \<Longrightarrow> v = v0 \<or> v = v1"
@@ -95,12 +95,12 @@ next
   then show "v = v0 \<or> v = v1" by (meson assms paths_disjoint subsetCE)
 qed
 
-subsection {* Second Vertices *}
+subsection \<open>Second Vertices\<close>
 
-text {*
+text \<open>
   Let us now define the set of second vertices of the paths.  We are going to need this in order
   to find a path avoiding the old paths on its first edge.
-*}
+\<close>
 
 definition second_vertex where "second_vertex \<equiv> \<lambda>xs :: 'a Walk. hd (tl xs)"
 definition second_vertices where "second_vertices \<equiv> second_vertex ` paths"
@@ -125,10 +125,10 @@ lemma second_vertices_first_edge:
   unfolding second_vertices_def second_vertex_def
   using first_edge_hd_tl paths paths_tl_notnil by fastforce
 
-text {*
+text \<open>
   If we have no small separations, then the set of second vertices is not a separator and we can
   find a path avoiding this set.
-*}
+\<close>
 lemma disjoint_paths_new_path:
   assumes no_small_separations: "\<And>S. Separation G v0 v1 S \<Longrightarrow> card S \<ge> Suc (card paths)"
   shows "\<exists>P_new. v0\<leadsto>P_new\<leadsto>v1 \<and> set P_new \<inter> second_vertices = {}"
@@ -139,25 +139,25 @@ proof-
       by (simp add: path_exists_if_no_separation second_vertices_in_V v0_v1_notin_second_vertices)
 qed
 
-text {*
+text \<open>
   We need the following predicate to find the first vertex on a new path that hits one of the
   other paths.  We add the condition @{term "x = v1"} to cover the case @{term "paths = {}"}.
-*}
+\<close>
 definition hitting_paths where
   "hitting_paths \<equiv> \<lambda>x. x \<noteq> v0 \<and> ((\<exists>xs \<in> paths. x \<in> set xs) \<or> x = v1)"
 
 end \<comment> \<open>DisjointPaths\<close>
 
 
-section {* One More Path *}
+section \<open>One More Path\<close>
 
-text {*
+text \<open>
   Let us define a set of disjoint paths with one more path.  Except for the first and last vertex,
   the new path must be disjoint from all other paths.  The first vertex must be @{term v0} and the
   last vertex must be on some other path.  In the ideal case, the last vertex will be @{term v1},
   in which case we are already done because we have found a new disjoint path between @{term v0}
   and @{term v1}.
-*}
+\<close>
 locale DisjointPathsPlusOne = DisjointPaths +
   fixes P_new :: "'a Walk"
   assumes P_new:
@@ -170,7 +170,7 @@ locale DisjointPathsPlusOne = DisjointPaths +
     "\<And>v. v \<in> set (butlast P_new) \<Longrightarrow> \<not>hitting_paths v"
 begin
 
-subsection {* Characterizing the New Path *}
+subsection \<open>Characterizing the New Path\<close>
 
 lemma P_new_hd_disjoint: "\<And>xs. xs \<in> paths \<Longrightarrow> hd (tl P_new) \<noteq> hd (tl xs)"
   using tl_P_new(2) unfolding second_vertices_def second_vertex_def by blast
@@ -191,14 +191,14 @@ lemma paths_with_new_path: "xs \<in> paths_with_new \<Longrightarrow> path xs"
 lemma paths_with_new_start_in_v0: "xs \<in> paths_with_new \<Longrightarrow> hd xs = v0"
   using P_new paths paths_with_new_def by auto
 
-subsection {* The Last Vertex of the New Path *}
+subsection \<open>The Last Vertex of the New Path\<close>
 
-text {*
+text \<open>
   McCuaig in \cite{DBLP:journals/jgt/McCuaig84} calls the last vertex of @{term P_new} by the name
   @{term x}.  However, this name is somewhat confusing because it is so short and it will be visible
   in most places from now on, so let us give this vertex the more descriptive name of
   @{term new_last}.
-*}
+\<close>
 definition new_pre where "new_pre \<equiv> butlast P_new"
 definition new_last where "new_last \<equiv> last P_new"
 
@@ -250,14 +250,14 @@ proof-
     by (metis insert_iff paths_with_new_def new_last_def)
 qed
 
-text {* If the new path is disjoint, we are happy. *}
+text \<open>If the new path is disjoint, we are happy.\<close>
 
 lemma P_new_solves_if_disjoint:
   "new_last = v1 \<Longrightarrow> \<exists>paths'. DisjointPaths G v0 v1 paths' \<and> card paths' = Suc (card paths)"
   using DisjointPaths_extend P_new(1) paths_plus_one_disjoint card_paths_with_new
   unfolding paths_with_new_def new_last_def by blast
 
-subsection {* Removing the Last Vertex *}
+subsection \<open>Removing the Last Vertex\<close>
 
 definition H_x where "H_x \<equiv> remove_vertex new_last"
 
@@ -266,9 +266,9 @@ lemma H_x_Digraph: "Digraph H_x" unfolding H_x_def using remove_vertex_Digraph .
 lemma H_x_v0_v1_Digraph: "new_last \<noteq> v1 \<Longrightarrow> v0_v1_Digraph H_x v0 v1" unfolding H_x_def
   using remove_vertices_v0_v1_Digraph hitting_paths_def P_hit by (simp add: H_x_def)
 
-subsection {* A New Path Following the Other Paths *}
+subsection \<open>A New Path Following the Other Paths\<close>
 
-text {*
+text \<open>
   The following lemma is one of the most complicated technical lemmas in the proof of Menger's
   Theorem.
 
@@ -278,7 +278,7 @@ text {*
   path is an initial segment of @{term P}.
 
   Note that McCuaig does not mention this statement at all in his proof because it looks so obvious.
-*}
+\<close>
 
 lemma new_path_follows_old_paths:
   assumes xs: "v0 \<leadsto>xs\<leadsto> w" "tl xs \<noteq> Nil" "v1 \<notin> set xs" "new_last \<notin> set xs"

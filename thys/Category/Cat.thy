@@ -3,13 +3,13 @@
     License: LGPL
 *)
 
-section {* Categories *}
+section \<open>Categories\<close>
 
 theory Cat
 imports "HOL-Library.FuncSet"
 begin
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 record ('o, 'a) category =
   ob :: "'o set" ("Ob\<index>"  70)
@@ -44,7 +44,7 @@ locale category =
   \<Longrightarrow> f \<bullet> (g \<bullet> h) = (f \<bullet> g) \<bullet> h"
 
 
-subsection {* Lemmas *}
+subsection \<open>Lemmas\<close>
 
 lemma (in category) homI:
   assumes "f \<in> Ar" and "Dom f = A" and "Cod f = B"
@@ -63,7 +63,7 @@ lemma (in category) id_arrow [intro]:
   assumes "A \<in> Ob"
   shows "Id A \<in> Ar"
 proof-
-  from `A \<in> Ob` have "Id A \<in> Hom A A" by (rule id_hom)
+  from \<open>A \<in> Ob\<close> have "Id A \<in> Hom A A" by (rule id_hom)
   thus "Id A \<in> Ar" by (simp add: hom_def)
 qed
 
@@ -71,7 +71,7 @@ lemma (in category) id_dom_cod:
   assumes "A \<in> Ob"
   shows "Dom (Id A) = A" and "Cod (Id A) = A"
 proof-
-  from `A \<in> Ob` have 1: "Id A \<in> Hom A A" ..
+  from \<open>A \<in> Ob\<close> have 1: "Id A \<in> Hom A A" ..
   then show "Dom (Id A) = A" and "Cod (Id A) = A"
     by (simp_all add: hom_def)
 qed
@@ -84,7 +84,7 @@ lemma (in category) compI [intro]:
   and "Cod (g \<bullet> f) = Cod g"
 proof-
   have "f \<in> Hom (Dom f) (Cod f)" using f by (simp add: hom_def)
-  with `Cod f = Dom g` have f_homset: "f \<in> Hom (Dom f) (Dom g)" by simp
+  with \<open>Cod f = Dom g\<close> have f_homset: "f \<in> Hom (Dom f) (Dom g)" by simp
   have g_homset: "g \<in> Hom (Dom g) (Cod g)" using g by (simp add: hom_def)
   have "(\<bullet>) : Hom (Dom g) (Cod g) \<rightarrow> Hom (Dom f) (Dom g) \<rightarrow> Hom (Dom f) (Cod g)" ..
   from this and g_homset 

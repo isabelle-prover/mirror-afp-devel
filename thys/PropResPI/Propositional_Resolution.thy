@@ -1,10 +1,10 @@
 (* N. Peltier. LIG/CNRS http://membres-lig.imag.fr/peltier/ *)
 
-section {* Syntax of Propositional Clausal Logic *}
+section \<open>Syntax of Propositional Clausal Logic\<close>
 
-text {* We define the usual syntactic notions of clausal propositional logic.
+text \<open>We define the usual syntactic notions of clausal propositional logic.
 The set of atoms may be arbitrary (even uncountable), but a well-founded total order is assumed 
-to be given. *}
+to be given.\<close>
 
 theory Propositional_Resolution
 
@@ -22,9 +22,9 @@ locale propositional_atoms =
   and   atom_ordering_irrefl: "\<forall>x y. (x,y) \<in> atom_ordering \<longrightarrow> (y,x) \<notin> atom_ordering"
 begin
 
-text {* Literals are defined as usual and clauses and formulas are considered as sets. 
+text \<open>Literals are defined as usual and clauses and formulas are considered as sets. 
 Clause sets are not assumed to be finite (so that the results can 
-be applied to sets of clauses obtained by grounding first-order clauses). *}
+be applied to sets of clauses obtained by grounding first-order clauses).\<close>
 
 datatype 'a Literal = Pos "'a" | Neg "'a" 
 
@@ -57,10 +57,10 @@ type_synonym 'a Clause = "'a Literal set"
 
 type_synonym 'a Formula = "'a Clause set"
 
-text {* Note that the clauses are not assumed to be finite (some of the properties below
-hold for infinite clauses). *}
+text \<open>Note that the clauses are not assumed to be finite (some of the properties below
+hold for infinite clauses).\<close>
 
-text {* The following functions return the set of atoms occurring in a clause or formula. *}
+text \<open>The following functions return the set of atoms occurring in a clause or formula.\<close>
 
 fun atoms_clause :: "'at Clause \<Rightarrow> 'at set"
   where "atoms_clause C = { A. \<exists>L. L \<in> C \<and> A = atom(L) }"
@@ -74,13 +74,13 @@ by auto
 lemma atoms_formula_union: "atoms_formula (S1 \<union> S2) = atoms_formula S1 \<union> atoms_formula S2"
 by auto
 
-text {* The following predicate is useful to state that every clause in a set fulfills 
-some property. *}
+text \<open>The following predicate is useful to state that every clause in a set fulfills 
+some property.\<close>
 
 definition all_fulfill :: "('at Clause \<Rightarrow> bool) \<Rightarrow> 'at Formula \<Rightarrow> bool"
   where "all_fulfill P S = (\<forall>C. (C \<in> S \<longrightarrow> (P C)))"
 
-text {* The order on atoms induces a (non total) order among literals: *}
+text \<open>The order on atoms induces a (non total) order among literals:\<close>
 
 fun literal_ordering :: "'at Literal \<Rightarrow> 'at Literal \<Rightarrow> bool"
 where
@@ -96,10 +96,10 @@ definition strictly_maximal_literal :: "'at Clause \<Rightarrow> 'at Literal \<R
 where
   "(strictly_maximal_literal S A) \<equiv> (A \<in> S) \<and> (\<forall>B. ( B \<in> S \<and> A \<noteq> B)  \<longrightarrow> (literal_ordering B A))"
 
-section {* Semantics *}
+section \<open>Semantics\<close>
 
-text {* We define the notions of interpretation, satisfiability and entailment and establish  
-some basic properties. *}
+text \<open>We define the notions of interpretation, satisfiability and entailment and establish  
+some basic properties.\<close>
 
 type_synonym 'a Interpretation  = "'a set" 
 
@@ -120,7 +120,7 @@ definition satisfiable :: "'at Formula \<Rightarrow> bool"
 where
   "(satisfiable S) \<equiv> (\<exists>I. (validate_formula I S))"
 
-text {* We define the usual notions of entailment between clauses and formulas. *}
+text \<open>We define the usual notions of entailment between clauses and formulas.\<close>
 
 definition entails :: "'at Formula \<Rightarrow> 'at Clause \<Rightarrow> bool"
 where
@@ -179,9 +179,9 @@ lemma entailed_formula_entails_implicates:
   shows "entails S1 C"
 using assms entailment_implies_validity entails_def by blast
 
-section {* Inference Rules *}
+section \<open>Inference Rules\<close>
 
-text {* We first define an abstract notion of a binary inference rule. *}
+text \<open>We first define an abstract notion of a binary inference rule.\<close>
 
 type_synonym 'a BinaryRule = "'a Clause \<Rightarrow> 'a Clause \<Rightarrow> 'a Clause \<Rightarrow> bool"
 
@@ -189,8 +189,8 @@ definition less_restrictive :: "'at BinaryRule \<Rightarrow> 'at BinaryRule \<Ri
 where
   "(less_restrictive R1 R2) = (\<forall>P1 P2 C. (R2 P1 P2 C) \<longrightarrow> ((R1 P1 P2 C) \<or> (R1 P2 P1 C)))"
 
-text {* The following functions allow to generate all the clauses that are deducible
-from a given clause set (in one step). *}
+text \<open>The following functions allow to generate all the clauses that are deducible
+from a given clause set (in one step).\<close>
 
 fun all_deducible_clauses:: "'at BinaryRule \<Rightarrow> 'at Formula \<Rightarrow> 'at Formula"
   where "all_deducible_clauses R S = { C. \<exists>P1 P2. P1 \<in> S \<and> P2 \<in> S \<and> (R P1 P2 C) }" 
@@ -208,19 +208,19 @@ lemma less_restrictive_and_finite :
   shows "derived_clauses_are_finite R2"
 by (metis assms derived_clauses_are_finite_def less_restrictive_def)  (* takes a few seconds *)
  
-text {* We then define the unrestricted resolution rule and usual resolution refinements. *} 
+text \<open>We then define the unrestricted resolution rule and usual resolution refinements.\<close> 
 
-subsection {* Unrestricted Resolution *}
+subsection \<open>Unrestricted Resolution\<close>
 
 definition resolvent :: "'at BinaryRule"
   where
   "(resolvent P1 P2 C) \<equiv> 
     (\<exists>A. ((Pos A) \<in> P1 \<and> (Neg A) \<in> P2 \<and> (C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A })))))"
 
-text {* For technical convience, we now introduce a slightly extended definition in which resolution 
+text \<open>For technical convience, we now introduce a slightly extended definition in which resolution 
 upon a literal  not occurring in the premises is allowed (the obtained resolvent is then redundant 
 with the premises). If the atom is fixed then this version of the resolution rule can be turned into 
-a total function. *}
+a total function.\<close>
 
 fun resolvent_upon :: "'at Clause \<Rightarrow> 'at Clause \<Rightarrow> 'at \<Rightarrow> 'at Clause"
 where
@@ -245,17 +245,17 @@ proof (rule ccontr)
   then have "\<exists>P1 P2 C. \<not>(resolvent P1 P2 C \<longrightarrow> finite P1 \<longrightarrow> finite P2 \<longrightarrow> finite C)"
     unfolding derived_clauses_are_finite_def by blast
  then obtain P1 P2 C where "resolvent P1 P2 C" "finite P1" "finite P2" and "\<not>finite C" by blast    
- from `resolvent P1 P2 C` `finite P1` `finite P2` and `\<not>finite C` show "False"
+ from \<open>resolvent P1 P2 C\<close> \<open>finite P1\<close> \<open>finite P2\<close> and \<open>\<not>finite C\<close> show "False"
  unfolding resolvent_def using finite_Diff and finite_Union by auto
 qed
 
 
-text {* In the next subsections we introduce various resolution refinements and show that they are 
-more restrictive than unrestricted resolution. *}
+text \<open>In the next subsections we introduce various resolution refinements and show that they are 
+more restrictive than unrestricted resolution.\<close>
 
-subsection {* Ordered Resolution *}
+subsection \<open>Ordered Resolution\<close>
 
-text {* In the first refinement, resolution is only allowed on maximal literals. *}
+text \<open>In the first refinement, resolution is only allowed on maximal literals.\<close>
 
 definition ordered_resolvent :: "'at Clause \<Rightarrow> 'at Clause \<Rightarrow> 'at Clause \<Rightarrow> bool" 
   where
@@ -263,8 +263,8 @@ definition ordered_resolvent :: "'at Clause \<Rightarrow> 'at Clause \<Rightarro
     (\<exists>A. ((C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A })))
       \<and> (strictly_maximal_literal P1 (Pos A)) \<and> (strictly_maximal_literal P2 (Neg A))))"
 
-text {* We now show that the maximal literal of the resolvent is always smaller than those of 
-the premises. *}
+text \<open>We now show that the maximal literal of the resolvent is always smaller than those of 
+the premises.\<close>
 
 lemma resolution_and_max_literal : 
   assumes "R = resolvent_upon P1 P2 A"
@@ -275,32 +275,32 @@ lemma resolution_and_max_literal :
 proof -
   obtain MA where "M = (Pos MA) \<or> M = (Neg MA)" using Literal.exhaust [of M] by auto
   hence "MA = (atom M)" by auto
-  from `strictly_maximal_literal R M` and `R = resolvent_upon P1 P2 A` 
+  from \<open>strictly_maximal_literal R M\<close> and \<open>R = resolvent_upon P1 P2 A\<close> 
     have "M \<in> P1 - { Pos A } \<or> M \<in> P2 - { Neg A }"
     unfolding strictly_maximal_literal_def by auto
   hence "(MA,A) \<in> atom_ordering"
   proof 
     assume "M \<in> P1 - { Pos A }"
-    from `M \<in> P1 - { Pos A }` and `strictly_maximal_literal P1 (Pos A)` 
+    from \<open>M \<in> P1 - { Pos A }\<close> and \<open>strictly_maximal_literal P1 (Pos A)\<close> 
       have "literal_ordering M (Pos A)" 
       unfolding strictly_maximal_literal_def by auto
-    from `M = Pos MA \<or> M = Neg MA` and `literal_ordering M (Pos A)` 
+    from \<open>M = Pos MA \<or> M = Neg MA\<close> and \<open>literal_ordering M (Pos A)\<close> 
     show "(MA,A) \<in> atom_ordering" by auto
   next
     assume "M \<in> P2 - { Neg A }"
-    from `M \<in> P2 - { Neg A }` and `strictly_maximal_literal P2 (Neg A)` 
+    from \<open>M \<in> P2 - { Neg A }\<close> and \<open>strictly_maximal_literal P2 (Neg A)\<close> 
       have "literal_ordering M (Neg A)" by (auto simp only: strictly_maximal_literal_def)
-    from `M = Pos MA \<or> M = Neg MA` and `literal_ordering M (Neg A)` 
+    from \<open>M = Pos MA \<or> M = Neg MA\<close> and \<open>literal_ordering M (Neg A)\<close> 
     show "(MA,A) \<in> atom_ordering" by auto
   qed
-  from this and `MA = atom M` show ?thesis by auto
+  from this and \<open>MA = atom M\<close> show ?thesis by auto
 qed
 
-subsection {* Ordered Resolution with Selection *}
+subsection \<open>Ordered Resolution with Selection\<close>
 
-text {* In the next restriction strategy, some negative literals are selected with highest priority 
+text \<open>In the next restriction strategy, some negative literals are selected with highest priority 
 for applying the resolution rule, regardless of the ordering. Relaxed ordering restrictions also 
-apply. *}
+apply.\<close>
 
 definition "(selected_part Sel C) = { L. L \<in> C \<and> (\<exists>A \<in> Sel. L = (Neg A)) }"
 
@@ -315,8 +315,8 @@ definition ordered_sel_resolvent :: "'at set \<Rightarrow> 'at Clause \<Rightarr
 lemma ordered_resolvent_is_resolvent : "less_restrictive resolvent ordered_resolvent"
 using less_restrictive_def ordered_resolvent_def resolvent_upon_is_resolvent strictly_maximal_literal_def by auto
 
-text {* The next lemma states that ordered resolution with selection coincides with ordered 
-resolution if the selected part is empty. *}
+text \<open>The next lemma states that ordered resolution with selection coincides with ordered 
+resolution if the selected part is empty.\<close>
 
 lemma ordered_sel_resolvent_is_ordered_resolvent : 
  assumes "ordered_resolvent P1 P2 C"
@@ -332,10 +332,10 @@ lemma ordered_resolvent_upon_is_resolvent :
 using assms ordered_resolvent_def by auto
 
 
-subsection {* Semantic Resolution *}
+subsection \<open>Semantic Resolution\<close>
 
-text {* In this strategy, resolution is applied only if one parent is false in some (fixed) 
-interpretation. Note that ordering restrictions still apply, although they are relaxed. *}
+text \<open>In this strategy, resolution is applied only if one parent is false in some (fixed) 
+interpretation. Note that ordering restrictions still apply, although they are relaxed.\<close>
 
 definition validated_part :: "'at set \<Rightarrow> 'at Clause \<Rightarrow> 'at Clause"
 where "(validated_part I C) = { L. L \<in> C \<and> (validate_literal I L) }"
@@ -353,23 +353,23 @@ proof (rule ccontr)
   assume "\<not> less_restrictive resolvent (ordered_model_resolvent I)"
   then obtain P1 P2 C where "ordered_model_resolvent I P1 P2 C" and "\<not>resolvent P1 P2 C" 
     and "\<not>resolvent P2 P1 C" unfolding less_restrictive_def by auto
-  from `ordered_model_resolvent I P1 P2 C` obtain L 
+  from \<open>ordered_model_resolvent I P1 P2 C\<close> obtain L 
     where "strictly_maximal_literal P1 L" 
     and "strictly_maximal_literal (validated_part I P2) (complement L)" 
     and "C = (P1 - { L }) \<union> (P2 - { complement L })"
     using ordered_model_resolvent_def [of I P1 P2 C] by auto 
-  from `strictly_maximal_literal P1 L` have "L \<in> P1" by (simp only: strictly_maximal_literal_def)
-  from `strictly_maximal_literal (validated_part I P2) (complement L)` have "(complement L) \<in> P2" 
+  from \<open>strictly_maximal_literal P1 L\<close> have "L \<in> P1" by (simp only: strictly_maximal_literal_def)
+  from \<open>strictly_maximal_literal (validated_part I P2) (complement L)\<close> have "(complement L) \<in> P2" 
     by (auto simp only: strictly_maximal_literal_def validated_part_def)
   obtain A where "L = Pos A \<or> L = Neg A" using Literal.exhaust [of L] by auto
-  from this and `C = (P1 - { L }) \<union> (P2 - { complement L })` and `L \<in> P1` and `(complement L) \<in> P2`
+  from this and \<open>C = (P1 - { L }) \<union> (P2 - { complement L })\<close> and \<open>L \<in> P1\<close> and \<open>(complement L) \<in> P2\<close>
     have "resolvent P1 P2 C \<or> resolvent P2 P1 C" unfolding resolvent_def by auto
-  from this and `\<not>resolvent P2 P1 C` and `\<not>resolvent P1 P2 C` show "False" by auto
+  from this and \<open>\<not>resolvent P2 P1 C\<close> and \<open>\<not>resolvent P1 P2 C\<close> show "False" by auto
 qed
 
-subsection {* Unit Resolution *}
+subsection \<open>Unit Resolution\<close>
 
-text {* Resolution is applied only if one parent is unit (this restriction is incomplete).*}
+text \<open>Resolution is applied only if one parent is unit (this restriction is incomplete).\<close>
 
 definition Unit :: "'at Clause \<Rightarrow> bool"
   where "(Unit C) = ((card C) = 1)"
@@ -383,19 +383,19 @@ proof (rule ccontr)
   assume "\<not> less_restrictive resolvent unit_resolvent"
   then obtain P1 P2 C where "unit_resolvent P1 P2 C" and "\<not>resolvent P1 P2 C" 
     and "\<not>resolvent P2 P1 C" unfolding less_restrictive_def by auto
-  from `unit_resolvent P1 P2 C` obtain L where "L \<in> P1" and "complement L \<in> P2" 
+  from \<open>unit_resolvent P1 P2 C\<close> obtain L where "L \<in> P1" and "complement L \<in> P2" 
     and "C = (P1 - { L }) \<union> (P2 - { complement L })"
     using unit_resolvent_def [of P1 P2 C] by auto 
   obtain A where "L = Pos A \<or> L = Neg A" using Literal.exhaust [of L] by auto
-  from this and `C = (P1 - { L }) \<union> (P2 - { complement L })` and `L \<in> P1` and `complement L \<in> P2`
+  from this and \<open>C = (P1 - { L }) \<union> (P2 - { complement L })\<close> and \<open>L \<in> P1\<close> and \<open>complement L \<in> P2\<close>
     have "resolvent P1 P2 C \<or> resolvent P2 P1 C" unfolding resolvent_def by auto
-  from this and `\<not>resolvent P2 P1 C` and `\<not>resolvent P1 P2 C` show "False" by auto
+  from this and \<open>\<not>resolvent P2 P1 C\<close> and \<open>\<not>resolvent P1 P2 C\<close> show "False" by auto
 qed
 
-subsection {* Positive and Negative Resolution *}
+subsection \<open>Positive and Negative Resolution\<close>
 
-text {* Resolution is applied only if one parent is positive (resp. negative). Again, relaxed
-ordering restrictions apply. *}
+text \<open>Resolution is applied only if one parent is positive (resp. negative). Again, relaxed
+ordering restrictions apply.\<close>
 
 definition positive_part :: "'at Clause \<Rightarrow> 'at Clause"
 where 
@@ -415,12 +415,12 @@ proof
     show "x \<in> (negative_part C) \<union> (positive_part C)"
     proof cases 
       assume "x = Pos A"
-      from this and `x \<in> C` have "x \<in> positive_part C" unfolding positive_part_def by auto
+      from this and \<open>x \<in> C\<close> have "x \<in> positive_part C" unfolding positive_part_def by auto
       then show "x \<in> (negative_part C) \<union> (positive_part C)" by auto
     next
       assume "x \<noteq> Pos A"
-      from this and `x = Pos A \<or> x = Neg A`have "x = Neg A" by auto
-      from this and `x \<in> C` have "x \<in> negative_part C" unfolding negative_part_def by auto
+      from this and \<open>x = Pos A \<or> x = Neg A\<close>have "x = Neg A" by auto
+      from this and \<open>x \<in> C\<close> have "x \<in> negative_part C" unfolding negative_part_def by auto
       then show "x \<in> (negative_part C) \<union> (positive_part C)" by auto
     qed
   qed
@@ -448,18 +448,18 @@ proof (rule ccontr)
   assume "\<not> less_restrictive resolvent ordered_positive_resolvent"
   then obtain P1 P2 C where "ordered_positive_resolvent P1 P2 C" and "\<not>resolvent P1 P2 C" 
     and "\<not>resolvent P2 P1 C"  unfolding less_restrictive_def by auto
-  from `ordered_positive_resolvent P1 P2 C` obtain L 
+  from \<open>ordered_positive_resolvent P1 P2 C\<close> obtain L 
     where "strictly_maximal_literal P1 L" 
     and "strictly_maximal_literal (negative_part P2)(complement L)" 
     and "C = (P1 - { L }) \<union> (P2 - { complement L })"
     using ordered_positive_resolvent_def [of P1 P2 C] by auto 
-  from `strictly_maximal_literal P1 L` have "L \<in> P1" unfolding strictly_maximal_literal_def by auto
-  from `strictly_maximal_literal (negative_part P2) (complement L)` have "(complement L) \<in> P2" 
+  from \<open>strictly_maximal_literal P1 L\<close> have "L \<in> P1" unfolding strictly_maximal_literal_def by auto
+  from \<open>strictly_maximal_literal (negative_part P2) (complement L)\<close> have "(complement L) \<in> P2" 
     unfolding strictly_maximal_literal_def negative_part_def by auto
   obtain A where "L = Pos A \<or> L = Neg A" using Literal.exhaust [of L] by auto
-  from this and `C = (P1 - { L }) \<union> (P2 - { complement L })` and `L \<in> P1` and `(complement L) \<in> P2`
+  from this and \<open>C = (P1 - { L }) \<union> (P2 - { complement L })\<close> and \<open>L \<in> P1\<close> and \<open>(complement L) \<in> P2\<close>
   have "resolvent P1 P2 C \<or> resolvent P2 P1 C" unfolding resolvent_def by auto
-  from this and `\<not>(resolvent P2 P1 C)` and `\<not>(resolvent P1 P2 C)` show "False" by auto
+  from this and \<open>\<not>(resolvent P2 P1 C)\<close> and \<open>\<not>(resolvent P1 P2 C)\<close> show "False" by auto
 qed
 
 lemma negative_resolvent_is_resolvent : "less_restrictive resolvent ordered_negative_resolvent"
@@ -467,22 +467,22 @@ proof (rule ccontr)
   assume "\<not> less_restrictive resolvent ordered_negative_resolvent"
   then obtain P1 P2 C where "(ordered_negative_resolvent P1 P2 C)" and "\<not>(resolvent P1 P2 C)" 
     and "\<not>(resolvent P2 P1 C)"  unfolding less_restrictive_def by auto
-  from `ordered_negative_resolvent P1 P2 C` obtain L where "strictly_maximal_literal P1 L" 
+  from \<open>ordered_negative_resolvent P1 P2 C\<close> obtain L where "strictly_maximal_literal P1 L" 
     and "strictly_maximal_literal (positive_part P2)(complement L)" 
     and "C = (P1 - { L }) \<union> (P2 - { complement L })"
     using ordered_negative_resolvent_def [of P1 P2 C] by auto 
-  from `strictly_maximal_literal P1 L` have "L \<in> P1" unfolding strictly_maximal_literal_def by auto
-  from `strictly_maximal_literal (positive_part P2) (complement L)` have "(complement L) \<in> P2" 
+  from \<open>strictly_maximal_literal P1 L\<close> have "L \<in> P1" unfolding strictly_maximal_literal_def by auto
+  from \<open>strictly_maximal_literal (positive_part P2) (complement L)\<close> have "(complement L) \<in> P2" 
   unfolding strictly_maximal_literal_def positive_part_def by auto
   obtain A where "L = Pos A \<or> L = Neg A" using Literal.exhaust [of L] by auto
-  from this and `C = (P1 - { L }) \<union> (P2 - { complement L })` and `L \<in> P1` and `(complement L) \<in> P2`
+  from this and \<open>C = (P1 - { L }) \<union> (P2 - { complement L })\<close> and \<open>L \<in> P1\<close> and \<open>(complement L) \<in> P2\<close>
   have "resolvent P1 P2 C \<or> resolvent P2 P1 C" unfolding resolvent_def by auto
-  from this and `\<not>resolvent P2 P1 C` and `\<not>resolvent P1 P2 C` show "False" by auto
+  from this and \<open>\<not>resolvent P2 P1 C\<close> and \<open>\<not>resolvent P1 P2 C\<close> show "False" by auto
 qed
 
-section {* Redundancy Elimination Rules *}
+section \<open>Redundancy Elimination Rules\<close>
 
-text {* We define the usual redundancy elimination rules. *}
+text \<open>We define the usual redundancy elimination rules.\<close>
 
 definition tautology :: "'a Clause \<Rightarrow> bool"
 where
@@ -504,7 +504,7 @@ definition simplify :: "'at Formula \<Rightarrow> 'at Formula"
 where 
   "simplify S = { C. C \<in> S \<and> \<not>strictly_redundant C S }"
 
-text {* We first establish some basic syntactic properties. *}
+text \<open>We first establish some basic syntactic properties.\<close>
 
 lemma tautology_monotonous : "(tautology C) \<Longrightarrow> (C \<subseteq> D) \<Longrightarrow> (tautology D)"
 unfolding tautology_def by auto
@@ -538,20 +538,20 @@ lemma subsumption_and_max_literal :
   assumes "A2 = atom L2"
   shows "(A1 = A2) \<or> (A1,A2) \<in> atom_ordering"
 proof -
-  from `A1 = atom L1` have "L1 = (Pos A1) \<or> L1 = (Neg A1)" by (rule atom_property)
-  from `A2 = atom L2` have "L2 = (Pos A2) \<or> L2 = (Neg A2)" by (rule atom_property)
-  from `subsumes C1 C2` and `strictly_maximal_literal C1 L1` have "L1 \<in> C2" 
+  from \<open>A1 = atom L1\<close> have "L1 = (Pos A1) \<or> L1 = (Neg A1)" by (rule atom_property)
+  from \<open>A2 = atom L2\<close> have "L2 = (Pos A2) \<or> L2 = (Neg A2)" by (rule atom_property)
+  from \<open>subsumes C1 C2\<close> and \<open>strictly_maximal_literal C1 L1\<close> have "L1 \<in> C2" 
     unfolding strictly_maximal_literal_def subsumes_def by auto
-  from `strictly_maximal_literal C2 L2` and `L1 \<in> C2` have "L1 = L2 \<or> literal_ordering L1 L2" 
+  from \<open>strictly_maximal_literal C2 L2\<close> and \<open>L1 \<in> C2\<close> have "L1 = L2 \<or> literal_ordering L1 L2" 
     unfolding strictly_maximal_literal_def by auto
   thus ?thesis 
   proof
     assume "L1 = L2"
-    from `L1 = L2` and `A1 = atom L1` and `A2 = atom L2` show ?thesis by auto
+    from \<open>L1 = L2\<close> and \<open>A1 = atom L1\<close> and \<open>A2 = atom L2\<close> show ?thesis by auto
   next
     assume "literal_ordering L1 L2"
-    from `literal_ordering L1 L2` and `L1 = (Pos A1) \<or> L1 = (Neg A1)`   
-      and `L2 = (Pos A2) \<or> L2 = (Neg A2)` 
+    from \<open>literal_ordering L1 L2\<close> and \<open>L1 = (Pos A1) \<or> L1 = (Neg A1)\<close>   
+      and \<open>L2 = (Pos A2) \<or> L2 = (Neg A2)\<close> 
       show ?thesis by auto
   qed
 qed
@@ -568,8 +568,8 @@ lemma superset_preserves_strict_redundancy:
   shows "strictly_redundant C SS"
 using assms unfolding strictly_redundant_def by blast
 
-text {* The following lemmas relate the above notions with that of semantic entailment and thus 
-establish the soundness of redundancy elimination rules. *}
+text \<open>The following lemmas relate the above notions with that of semantic entailment and thus 
+establish the soundness of redundancy elimination rules.\<close>
 
 lemma tautologies_are_valid : 
   assumes "tautology C"
@@ -608,10 +608,10 @@ proof -
       show "?P 0"
       proof ((rule allI),(rule impI)+)
         fix C assume "card C \<le> 0" and "C \<in> S"
-        from `card C \<le> 0` and `C \<in> S` and `all_fulfill finite S` have "C = {}" using card_0_eq 
+        from \<open>card C \<le> 0\<close> and \<open>C \<in> S\<close> and \<open>all_fulfill finite S\<close> have "C = {}" using card_0_eq 
           unfolding all_fulfill_def by auto
         then have "\<not> strictly_redundant C S" unfolding strictly_redundant_def tautology_def by auto
-        from this and `C \<in> S` and `T = simplify S` have "C \<in> T" using simplify_def by auto 
+        from this and \<open>C \<in> S\<close> and \<open>T = simplify S\<close> have "C \<in> T" using simplify_def by auto 
         from this show "redundant C T" unfolding redundant_def subsumes_def by auto
       qed
     next 
@@ -623,34 +623,34 @@ proof -
           proof (rule ccontr)
             assume "\<not>redundant C T"
             from this have "C \<notin> T" unfolding redundant_def subsumes_def by auto
-            from this and `T = simplify S` and `C \<in> S` have "strictly_redundant C S" 
+            from this and \<open>T = simplify S\<close> and \<open>C \<in> S\<close> have "strictly_redundant C S" 
               unfolding simplify_def strictly_redundant_def by auto
-              from this and `\<not>redundant C T` obtain D where "D \<in> S" and "D \<subset> C" 
+              from this and \<open>\<not>redundant C T\<close> obtain D where "D \<in> S" and "D \<subset> C" 
               unfolding redundant_def strictly_redundant_def by auto
-            from `D \<subset> C` and `C \<in> S` and `all_fulfill finite S` have "card D < card C" 
+            from \<open>D \<subset> C\<close> and \<open>C \<in> S\<close> and \<open>all_fulfill finite S\<close> have "card D < card C" 
               unfolding all_fulfill_def 
               using psubset_card_mono  by auto
-            from this and `card C \<le> (Suc n)` have "card D \<le> n" by auto
-            from this and  `?P n` and `D \<in> S` have "redundant D T" by auto
+            from this and \<open>card C \<le> (Suc n)\<close> have "card D \<le> n" by auto
+            from this and  \<open>?P n\<close> and \<open>D \<in> S\<close> have "redundant D T" by auto
             show "False"
             proof cases
               assume "tautology D"
-              from this and  `D \<subset> C` have "tautology C" unfolding tautology_def by auto
+              from this and  \<open>D \<subset> C\<close> have "tautology C" unfolding tautology_def by auto
               then have "redundant C T" unfolding redundant_def by auto
-              from this and `\<not>redundant C T` show "False" by auto
+              from this and \<open>\<not>redundant C T\<close> show "False" by auto
             next 
               assume "\<not>tautology D"
-              from this and `redundant D T` obtain E where "E \<in> T" and "E \<subseteq> D" 
+              from this and \<open>redundant D T\<close> obtain E where "E \<in> T" and "E \<subseteq> D" 
                 unfolding redundant_def subsumes_def by auto
-              from this and  `D \<subset> C` have "E \<subseteq> C" by auto
-              from this and `E \<in> T` and  `\<not>redundant C T` show False 
+              from this and  \<open>D \<subset> C\<close> have "E \<subseteq> C" by auto
+              from this and \<open>E \<in> T\<close> and  \<open>\<not>redundant C T\<close> show False 
                 unfolding redundant_def and subsumes_def by auto
             qed 
           qed
         qed
       qed
     }
-  from this and `C \<in> S` show ?thesis by auto
+  from this and \<open>C \<in> S\<close> show ?thesis by auto
 qed
 
 lemma simplify_preserves_redundancy: 
@@ -667,13 +667,13 @@ proof ((cases "tautology C"),(auto simp add: strictly_redundant_def)[1])
 next
   assume "\<not>tautology C"
   from this and assms(2) obtain D where "D \<subset> C" and "D \<in> S" unfolding strictly_redundant_def by auto
-  from `D \<in> S` have "redundant D S" unfolding redundant_def subsumes_def by auto
+  from \<open>D \<in> S\<close> have "redundant D S" unfolding redundant_def subsumes_def by auto
   from assms(1) this have "redundant D (simplify S)" using simplify_preserves_redundancy by auto
-  from `\<not>tautology C` and `D \<subset> C` have "\<not>tautology D" unfolding tautology_def by auto
-  from this and `redundant D (simplify S)` obtain E where "E \<in> simplify S" 
+  from \<open>\<not>tautology C\<close> and \<open>D \<subset> C\<close> have "\<not>tautology D" unfolding tautology_def by auto
+  from this and \<open>redundant D (simplify S)\<close> obtain E where "E \<in> simplify S" 
     and "subsumes E D" unfolding redundant_def by auto
-  from `subsumes E D` and `D \<subset> C` have "E \<subset> C" unfolding subsumes_def by auto
-  from this and `E \<in> simplify S` show "strictly_redundant C (simplify S)" 
+  from \<open>subsumes E D\<close> and \<open>D \<subset> C\<close> have "E \<subset> C" unfolding subsumes_def by auto
+  from this and \<open>E \<in> simplify S\<close> show "strictly_redundant C (simplify S)" 
     unfolding strictly_redundant_def by auto
 qed
 
@@ -690,7 +690,7 @@ lemma simplify_preserves_equivalence :
   shows "equivalent S T"
 using assms equivalent_def simplify_preserves_semantic validity_implies_entailment by auto
 
-text {* After simplification, the formula contains no strictly redundant clause: *}
+text \<open>After simplification, the formula contains no strictly redundant clause:\<close>
 
 definition non_redundant :: "'at Formula \<Rightarrow> bool"
   where "non_redundant S = (\<forall>C. (C \<in> S \<longrightarrow> \<not>strictly_redundant C S))"
@@ -704,10 +704,10 @@ lemma deducible_clause_preserve_redundancy:
   shows "redundant C (add_all_deducible_clauses R S)"
 using assms superset_preserves_redundancy by fastforce
 
-section {* Renaming *}
+section \<open>Renaming\<close>
 
-text {* A renaming is a function changing the sign of some literals. We show that this operation preserves 
- most of the previous syntactic and semantic notions. *}
+text \<open>A renaming is a function changing the sign of some literals. We show that this operation preserves 
+ most of the previous syntactic and semantic notions.\<close>
 
 definition rename_literal :: "'at set \<Rightarrow> 'at Literal \<Rightarrow> 'at Literal" 
 where "rename_literal A L = (if ((atom L) \<in> A) then (complement L) else L)"
@@ -767,23 +767,23 @@ lemma renaming_preserves_strictly_maximal_literal :
 proof -
   from assms have "(L \<in> C)" and Lismax: "(\<forall>B. (B \<in> C \<and> L \<noteq> B)  \<longrightarrow> (literal_ordering B L))" 
   unfolding strictly_maximal_literal_def by auto
-  from `L \<in> C` have "(rename_literal A L) \<in> (rename_clause A C)" 
+  from \<open>L \<in> C\<close> have "(rename_literal A L) \<in> (rename_clause A C)" 
     unfolding rename_literal_def and rename_clause_def by auto
   have 
     "\<forall>B. (B \<in> rename_clause A C \<longrightarrow> rename_literal A L \<noteq> B  
       \<longrightarrow> literal_ordering B (rename_literal A L))"
   proof (rule)+
     fix B assume "B \<in> rename_clause A C" and "rename_literal A L \<noteq> B"
-    from `B \<in> rename_clause A C` obtain B' where "B' \<in> C" and "B = rename_literal A B'" 
+    from \<open>B \<in> rename_clause A C\<close> obtain B' where "B' \<in> C" and "B = rename_literal A B'" 
       unfolding rename_clause_def by auto 
-    from `rename_literal A L \<noteq> B` and `B = rename_literal A B'` 
+    from \<open>rename_literal A L \<noteq> B\<close> and \<open>B = rename_literal A B'\<close> 
       have "rename_literal A L \<noteq> rename_literal A B'" by auto
     hence "L \<noteq> B'" by auto
-    from this and `B' \<in> C` and Lismax have "literal_ordering B' L" by auto
-    from this and `B = (rename_literal A B')` 
+    from this and \<open>B' \<in> C\<close> and Lismax have "literal_ordering B' L" by auto
+    from this and \<open>B = (rename_literal A B')\<close> 
       show "literal_ordering B (rename_literal A L)" using renaming_preserves_literal_order by auto
   qed
-  from this and `(rename_literal A L) \<in> (rename_clause A C)` show ?thesis 
+  from this and \<open>(rename_literal A L) \<in> (rename_clause A C)\<close> show ?thesis 
     unfolding strictly_maximal_literal_def by auto
 qed
 
@@ -795,27 +795,27 @@ proof
     fix x assume "x \<in> selected_part UNIV C"
     show "x \<in> rename_clause Sel (validated_part Sel (rename_clause Sel C))"
     proof -
-      from `x \<in> selected_part UNIV C` obtain A where "x = Neg A" and "x \<in> C" 
+      from \<open>x \<in> selected_part UNIV C\<close> obtain A where "x = Neg A" and "x \<in> C" 
         unfolding selected_part_def by auto
-      from `x \<in> C` have "rename_literal Sel x \<in> rename_clause Sel C" 
+      from \<open>x \<in> C\<close> have "rename_literal Sel x \<in> rename_clause Sel C" 
         unfolding rename_clause_def by blast
       show "x \<in> rename_clause Sel (validated_part Sel (rename_clause Sel C))"
       proof cases
         assume "A \<in> Sel"
-        from this and `x = Neg A` have "rename_literal Sel x = Pos A" 
+        from this and \<open>x = Neg A\<close> have "rename_literal Sel x = Pos A" 
           unfolding rename_literal_def by auto  
-        from this and `A \<in> Sel` have "validate_literal Sel (rename_literal Sel x)" by auto
-        from this and `rename_literal Sel x \<in> rename_clause Sel C` 
+        from this and \<open>A \<in> Sel\<close> have "validate_literal Sel (rename_literal Sel x)" by auto
+        from this and \<open>rename_literal Sel x \<in> rename_clause Sel C\<close> 
         have "rename_literal Sel x \<in> validated_part Sel (rename_clause Sel C)" 
           unfolding validated_part_def by auto
         thus "x \<in> rename_clause Sel (validated_part Sel (rename_clause Sel C))" 
           using inverse_renaming rename_clause_def by auto
       next
         assume "A \<notin> Sel"
-        from this and `x = Neg A` have "rename_literal Sel x = Neg A" 
+        from this and \<open>x = Neg A\<close> have "rename_literal Sel x = Neg A" 
           unfolding rename_literal_def by auto  
-        from this and `A \<notin> Sel` have "validate_literal Sel (rename_literal Sel x)" by auto
-        from this and `rename_literal Sel x \<in> rename_clause Sel C` 
+        from this and \<open>A \<notin> Sel\<close> have "validate_literal Sel (rename_literal Sel x)" by auto
+        from this and \<open>rename_literal Sel x \<in> rename_clause Sel C\<close> 
         have "rename_literal Sel x \<in> validated_part Sel (rename_clause Sel C)" 
           unfolding  validated_part_def by auto
         thus "x \<in> rename_clause Sel (validated_part Sel (rename_clause Sel C))" 
@@ -831,31 +831,31 @@ proof
     from this obtain y where "y \<in> validated_part Sel (rename_clause Sel C)" 
       and "x = rename_literal Sel y" 
       unfolding rename_clause_def validated_part_def by auto
-    from `y \<in> validated_part Sel (rename_clause Sel C)` have
+    from \<open>y \<in> validated_part Sel (rename_clause Sel C)\<close> have
       "y \<in> rename_clause Sel C" and "validate_literal Sel y" unfolding validated_part_def by auto
-    from `y \<in> rename_clause Sel C` obtain z where "z \<in> C" and "y = rename_literal Sel z" 
+    from \<open>y \<in> rename_clause Sel C\<close> obtain z where "z \<in> C" and "y = rename_literal Sel z" 
       unfolding rename_clause_def by auto
     obtain A where zA: "z = Pos A \<or> z = Neg A" using Literal.exhaust [of z] by auto
     show "x \<in> selected_part UNIV C"
     proof cases
         assume "A \<in> Sel"
-        from this and zA and `y = rename_literal Sel z` have "y = complement z" 
+        from this and zA and \<open>y = rename_literal Sel z\<close> have "y = complement z" 
           using rename_literal_def by auto
-        from this and `A \<in> Sel` and zA and `validate_literal Sel y` have "y = Pos A" 
+        from this and \<open>A \<in> Sel\<close> and zA and \<open>validate_literal Sel y\<close> have "y = Pos A" 
           and "z = Neg A" by auto
-        from this and  `A \<in> Sel` and `x = rename_literal Sel y` have "x = Neg A" 
+        from this and  \<open>A \<in> Sel\<close> and \<open>x = rename_literal Sel y\<close> have "x = Neg A" 
           unfolding rename_literal_def by auto
-        from this and `z \<in> C` and `z = Neg A` show "x \<in> selected_part UNIV C" 
+        from this and \<open>z \<in> C\<close> and \<open>z = Neg A\<close> show "x \<in> selected_part UNIV C" 
           unfolding selected_part_def by auto
     next 
         assume "A \<notin> Sel"
-        from this and zA and `y = rename_literal Sel z` have "y = z" 
+        from this and zA and \<open>y = rename_literal Sel z\<close> have "y = z" 
           using rename_literal_def by auto
-        from this and `A \<notin> Sel` and zA and `validate_literal Sel y` have "y = Neg A" 
+        from this and \<open>A \<notin> Sel\<close> and zA and \<open>validate_literal Sel y\<close> have "y = Neg A" 
           and "z = Neg A" by auto
-        from this and  `A \<notin> Sel` and `x = rename_literal Sel y` have "x = Neg A" 
+        from this and  \<open>A \<notin> Sel\<close> and \<open>x = rename_literal Sel y\<close> have "x = Neg A" 
           unfolding rename_literal_def by auto
-        from this and `z \<in> C` and `z = Neg A` show "x \<in> selected_part UNIV C" 
+        from this and \<open>z \<in> C\<close> and \<open>z = Neg A\<close> show "x \<in> selected_part UNIV C" 
           unfolding selected_part_def by auto
     qed
   qed
@@ -866,9 +866,9 @@ lemma renaming_preserves_tautology:
   shows "tautology (rename_clause Sel C)"
 proof -
   from assms obtain A where "Pos A \<in> C" and "Neg A \<in> C" unfolding tautology_def by auto
-  from `Pos A \<in> C` have "rename_literal Sel (Pos A) \<in>  rename_clause Sel C" 
+  from \<open>Pos A \<in> C\<close> have "rename_literal Sel (Pos A) \<in>  rename_clause Sel C" 
     unfolding rename_clause_def by auto
-  from `Neg A \<in> C` have "rename_literal Sel (Neg A) \<in>  rename_clause Sel C" 
+  from \<open>Neg A \<in> C\<close> have "rename_literal Sel (Neg A) \<in>  rename_clause Sel C" 
     unfolding rename_clause_def by auto
   show ?thesis
   proof cases
@@ -876,17 +876,17 @@ proof -
     from this have "rename_literal Sel (Pos A) = Neg A" 
       and "rename_literal Sel (Neg A) = (Pos A)" 
       unfolding rename_literal_def by auto
-    from `rename_literal Sel (Pos A) = (Neg A)` and  `rename_literal Sel (Neg A) = (Pos A)` 
-      and `rename_literal Sel (Pos A) \<in>  (rename_clause Sel C)` 
-      and  `rename_literal Sel (Neg A) \<in>  (rename_clause Sel C)`
+    from \<open>rename_literal Sel (Pos A) = (Neg A)\<close> and  \<open>rename_literal Sel (Neg A) = (Pos A)\<close> 
+      and \<open>rename_literal Sel (Pos A) \<in>  (rename_clause Sel C)\<close> 
+      and  \<open>rename_literal Sel (Neg A) \<in>  (rename_clause Sel C)\<close>
       show "tautology (rename_clause Sel C)" unfolding tautology_def by auto
   next 
     assume "A \<notin> Sel"
     from this have "rename_literal Sel (Pos A) = Pos A" and "rename_literal Sel (Neg A) = (Neg A)" 
       unfolding rename_literal_def by auto
-    from `rename_literal Sel (Pos A) = Pos A` and `rename_literal Sel (Neg A) = (Neg A)` 
-      and `rename_literal Sel (Pos A) \<in>  rename_clause Sel C` 
-      and  `rename_literal Sel (Neg A) \<in>  rename_clause Sel C`
+    from \<open>rename_literal Sel (Pos A) = Pos A\<close> and \<open>rename_literal Sel (Neg A) = (Neg A)\<close> 
+      and \<open>rename_literal Sel (Pos A) \<in>  rename_clause Sel C\<close> 
+      and  \<open>rename_literal Sel (Neg A) \<in>  rename_clause Sel C\<close>
       show "tautology (rename_clause Sel C)" unfolding tautology_def by auto
   qed
 qed
@@ -900,16 +900,16 @@ proof
     fix x assume "x \<in> rename_clause Sel (C - { L })"
     then obtain y where "y \<in> C - { L }" and "x = rename_literal Sel y" 
       unfolding rename_clause_def by auto
-    from `y \<in> C - { L }` and `x = rename_literal Sel y` have "x \<in> rename_clause Sel C" 
+    from \<open>y \<in> C - { L }\<close> and \<open>x = rename_literal Sel y\<close> have "x \<in> rename_clause Sel C" 
       unfolding rename_clause_def by auto
     have "x \<noteq> rename_literal Sel L" 
     proof
       assume "x = rename_literal Sel L"
       hence "rename_literal Sel x = L" using inverse_renaming by auto
-      from this and `x = rename_literal Sel y` have "y = L" using inverse_renaming by auto
-      from this and `y \<in> C - { L }` show "False" by auto
+      from this and \<open>x = rename_literal Sel y\<close> have "y = L" using inverse_renaming by auto
+      from this and \<open>y \<in> C - { L }\<close> show "False" by auto
     qed
-    from `x \<noteq> rename_literal Sel L` and `x \<in> rename_clause Sel C`
+    from \<open>x \<noteq> rename_literal Sel L\<close> and \<open>x \<in> rename_clause Sel C\<close>
       show "x \<in> (rename_clause Sel C) - {rename_literal Sel L }" by auto
 qed
 
@@ -946,41 +946,41 @@ lemma renaming_preserves_semantic :
 proof -
   let ?J = "rename_interpretation Sel I"
     obtain A where "L = Pos A \<or> L = Neg A" using Literal.exhaust [of L] by auto
-    from `L = Pos A \<or> L = Neg A` have "atom L = A" by auto
+    from \<open>L = Pos A \<or> L = Neg A\<close> have "atom L = A" by auto
     show ?thesis
     proof cases
       assume "A \<in> Sel"
-      from this and `atom L = A` have "rename_literal Sel L = complement L"  
+      from this and \<open>atom L = A\<close> have "rename_literal Sel L = complement L"  
       unfolding rename_literal_def by auto
       show ?thesis 
       proof cases
         assume "L = Pos A" 
-        from this and `validate_literal I L` have "A \<in> I" by auto
-        from this and `A \<in> Sel` have "A \<notin> ?J" unfolding rename_interpretation_def by blast
-        from this and `L = Pos A` and `rename_literal Sel L = complement L` show ?thesis by auto
+        from this and \<open>validate_literal I L\<close> have "A \<in> I" by auto
+        from this and \<open>A \<in> Sel\<close> have "A \<notin> ?J" unfolding rename_interpretation_def by blast
+        from this and \<open>L = Pos A\<close> and \<open>rename_literal Sel L = complement L\<close> show ?thesis by auto
         next
         assume "L \<noteq> Pos A"
-        from this and `L = Pos A \<or> L = Neg A`have "L = Neg A" by auto
-        from this and `validate_literal I L` have "A \<notin> I" by auto
-        from this and `A \<in> Sel` have "A \<in> ?J" unfolding rename_interpretation_def by blast
-        from this and `L = Neg A` and `rename_literal Sel L = complement L` show ?thesis by auto
+        from this and \<open>L = Pos A \<or> L = Neg A\<close>have "L = Neg A" by auto
+        from this and \<open>validate_literal I L\<close> have "A \<notin> I" by auto
+        from this and \<open>A \<in> Sel\<close> have "A \<in> ?J" unfolding rename_interpretation_def by blast
+        from this and \<open>L = Neg A\<close> and \<open>rename_literal Sel L = complement L\<close> show ?thesis by auto
       qed
       next
       assume "A \<notin> Sel"
-      from this and `atom L = A` have "rename_literal Sel L = L"  
+      from this and \<open>atom L = A\<close> have "rename_literal Sel L = L"  
         unfolding rename_literal_def by auto
       show ?thesis 
       proof cases
         assume "L = Pos A" 
-        from this and `validate_literal I L` have "A \<in> I" by auto
-        from this and `A \<notin> Sel` have "A \<in> ?J" unfolding rename_interpretation_def by blast
-        from this and `L = Pos A` and `rename_literal Sel L = L` show ?thesis by auto
+        from this and \<open>validate_literal I L\<close> have "A \<in> I" by auto
+        from this and \<open>A \<notin> Sel\<close> have "A \<in> ?J" unfolding rename_interpretation_def by blast
+        from this and \<open>L = Pos A\<close> and \<open>rename_literal Sel L = L\<close> show ?thesis by auto
         next
         assume "L \<noteq> Pos A"
-        from this and `L = Pos A \<or> L = Neg A`have "L = Neg A" by auto
-        from this and `validate_literal I L` have "A \<notin> I" by auto
-        from this and `A \<notin> Sel` have "A \<notin> ?J" unfolding rename_interpretation_def by blast
-        from this and `L = Neg A` and `rename_literal Sel L = L` show ?thesis by auto
+        from this and \<open>L = Pos A \<or> L = Neg A\<close>have "L = Neg A" by auto
+        from this and \<open>validate_literal I L\<close> have "A \<notin> I" by auto
+        from this and \<open>A \<notin> Sel\<close> have "A \<notin> ?J" unfolding rename_interpretation_def by blast
+        from this and \<open>L = Neg A\<close> and \<open>rename_literal Sel L = L\<close> show ?thesis by auto
       qed
    qed
 qed
@@ -996,11 +996,11 @@ proof -
     assume "\<not>validate_formula ?J (rename_formula Sel S)"
     then obtain C where "C \<in> S" and "\<not>(validate_clause ?J (rename_clause Sel C))" 
     unfolding rename_formula_def by auto
-    from `C \<in> S` and `validate_formula I S` obtain L where "L \<in> C" 
+    from \<open>C \<in> S\<close> and \<open>validate_formula I S\<close> obtain L where "L \<in> C" 
       and "validate_literal I L" by auto
-    from `validate_literal I L` have "validate_literal ?J (rename_literal Sel L)" 
+    from \<open>validate_literal I L\<close> have "validate_literal ?J (rename_literal Sel L)" 
       using renaming_preserves_semantic by auto 
-    from this and `L \<in> C` and `\<not>validate_clause ?J (rename_clause Sel C)` show "False" 
+    from this and \<open>L \<in> C\<close> and \<open>\<not>validate_clause ?J (rename_clause Sel C)\<close> show "False" 
       unfolding rename_clause_def by auto
   qed
   from this show ?thesis unfolding satisfiable_def by auto
@@ -1011,10 +1011,10 @@ lemma renaming_preserves_subsumption:
   shows "subsumes (rename_clause Sel C) (rename_clause Sel D)"
 using assms unfolding subsumes_def rename_clause_def by auto
 
-section {* Soundness *}
+section \<open>Soundness\<close>
 
-text {* In this section we prove that all the rules introduced in the previous section are sound. 
-We first introduce an abstract notion of soundness. *}
+text \<open>In this section we prove that all the rules introduced in the previous section are sound. 
+We first introduce an abstract notion of soundness.\<close>
 
 definition Sound :: "'at BinaryRule \<Rightarrow> bool"
 where 
@@ -1036,9 +1036,9 @@ proof (rule ccontr)
   assume "\<not>entails_formula S (all_deducible_clauses R S)"
   then obtain C where "C \<in> all_deducible_clauses R S" and "\<not> entails S C" 
     unfolding entails_formula_def by auto
-  from `C \<in> all_deducible_clauses R S` obtain P1 P2 where "R P1 P2 C" and "P1 \<in> S" and "P2 \<in> S"    
+  from \<open>C \<in> all_deducible_clauses R S\<close> obtain P1 P2 where "R P1 P2 C" and "P1 \<in> S" and "P2 \<in> S"    
     by auto
-  from `R P1 P2 C`and assms(1) and `P1 \<in> S` and `P2 \<in> S` and `\<not> entails S C` 
+  from \<open>R P1 P2 C\<close>and assms(1) and \<open>P1 \<in> S\<close> and \<open>P2 \<in> S\<close> and \<open>\<not> entails S C\<close> 
     show "False" using soundness_and_entailment by auto
 qed
 
@@ -1048,7 +1048,7 @@ lemma add_all_deducible_sound:
 by (metis UnE add_all_deducible_clauses.simps all_deducible_sound assms 
       entails_formula_def entails_member)
 
-text {* If a rule is more restrictive than a sound rule then it is necessarily sound. *}
+text \<open>If a rule is more restrictive than a sound rule then it is necessarily sound.\<close>
 
 lemma less_restrictive_correct:
   assumes "less_restrictive R1 R2"
@@ -1056,7 +1056,7 @@ lemma less_restrictive_correct:
   shows "Sound R2"
 using assms unfolding less_restrictive_def Sound_def by blast
 
-text {* We finally establish usual concrete soundness results. *}
+text \<open>We finally establish usual concrete soundness results.\<close>
 
 theorem resolution_is_correct: 
   "(Sound resolvent)" 
@@ -1065,24 +1065,24 @@ proof (rule ccontr)
   then obtain I P1 P2 C where  
     "resolvent P1 P2 C" "validate_clause I P1" "validate_clause I P2" and "\<not>validate_clause I C" 
     unfolding  Sound_def by blast
-  from `resolvent P1 P2 C` obtain A where
+  from \<open>resolvent P1 P2 C\<close> obtain A where
       "(Pos A) \<in> P1" and "(Neg A) \<in> P2" and "C = ( (P1 - { Pos A}) \<union> (P2 - { Neg A }))"
       unfolding resolvent_def by auto 
   show "False" 
   proof cases
         assume "A \<in> I"
         hence "\<not>validate_literal I (Neg A)" by auto
-        from `\<not>validate_literal I (Neg A)` and `validate_clause I P2` 
+        from \<open>\<not>validate_literal I (Neg A)\<close> and \<open>validate_clause I P2\<close> 
           have "validate_clause I (P2 - { Neg A })" by auto
-        from `validate_clause I (P2 - { Neg A })` and `C = ( (P1 - { Pos A}) \<union> (P2 - { Neg A }))` 
-          and `\<not>validate_clause I C` show "False" by auto
+        from \<open>validate_clause I (P2 - { Neg A })\<close> and \<open>C = ( (P1 - { Pos A}) \<union> (P2 - { Neg A }))\<close> 
+          and \<open>\<not>validate_clause I C\<close> show "False" by auto
   next
         assume "A \<notin> I"
         hence "\<not>validate_literal I (Pos A)" by auto
-        from `\<not>validate_literal I (Pos A)` and `validate_clause I P1` 
+        from \<open>\<not>validate_literal I (Pos A)\<close> and \<open>validate_clause I P1\<close> 
           have "validate_clause I (P1 - { Pos A })" by auto
-        from `validate_clause I (P1 - { Pos A })` and `C = ( (P1 - { Pos A}) \<union> (P2 - { Neg A }))` 
-          and `\<not>validate_clause I C`
+        from \<open>validate_clause I (P1 - { Pos A })\<close> and \<open>C = ( (P1 - { Pos A}) \<union> (P2 - { Neg A }))\<close> 
+          and \<open>\<not>validate_clause I C\<close>
           show "False" by auto
   qed 
 qed
@@ -1102,14 +1102,14 @@ using less_restrictive_correct negative_resolvent_is_resolvent resolution_is_cor
 theorem unit_resolvent_correct : "Sound unit_resolvent"
 using less_restrictive_correct resolution_is_correct unit_resolvent_is_resolvent by auto
 
-section {* Refutational Completeness *}
+section \<open>Refutational Completeness\<close>
 
-text {* In this section we establish the refutational completeness of the previous inference 
+text \<open>In this section we establish the refutational completeness of the previous inference 
 rules (under adequate restrictions for the unit resolution rule). Completeness is proven
 w.r.t.\ redundancy elimination rules, i.e., we show that every saturated unsatisfiable clause set
-contains the empty clause. *}
+contains the empty clause.\<close>
 
-text {* We first introduce an abstract notion of saturation. *}
+text \<open>We first introduce an abstract notion of saturation.\<close>
 
 definition saturated_binary_rule :: "'a BinaryRule \<Rightarrow> 'a Formula \<Rightarrow> bool"
 where
@@ -1121,9 +1121,9 @@ where
   "(Complete Rule) = (\<forall>S. ((saturated_binary_rule Rule S) \<longrightarrow> (all_fulfill finite S) 
     \<longrightarrow> ({} \<notin> S) \<longrightarrow> satisfiable S))"
 
-text {* If a set of clauses is saturated under some rule then it is necessarily saturated 
+text \<open>If a set of clauses is saturated under some rule then it is necessarily saturated 
 under more restrictive rules, which entails that if a rule is less restrictive than a complete rule 
-then it is also complete.*}
+then it is also complete.\<close>
 
 lemma less_restrictive_saturated:
   assumes "less_restrictive R1 R2"
@@ -1137,16 +1137,16 @@ lemma less_restrictive_complete:
   shows "Complete R1"
 using assms less_restrictive_saturated Complete_def by auto
 
-subsection {* Ordered Resolution *}
+subsection \<open>Ordered Resolution\<close>
 
-text {* We define a function associating every set of clauses @{ term S } with a ``canonic'' 
+text \<open>We define a function associating every set of clauses @{ term S } with a ``canonic'' 
 interpretation constructed from @{ term S }.
 If @{ term S } is saturated under ordered resolution and does not contain the empty clause
 then the interpretation is a model of @{ term S }. The interpretation is defined by mean
 of an auxiliary function that maps every atom to a function indicating whether the
 atom occurs in the interpretation corresponding to a given clause set.
 The auxiliary function is defined by induction on the set of atoms.
-*}
+\<close>
 
 function canonic_int_fun_ordered :: "'at \<Rightarrow> ('at Formula \<Rightarrow> bool)"
 where
@@ -1162,8 +1162,8 @@ definition canonic_int_ordered :: "'at Formula \<Rightarrow> 'at Interpretation"
 where
   "(canonic_int_ordered S) = { A. ((canonic_int_fun_ordered A) S) }"
 
-text {* We first prove that the canonic interpretation validates every clause 
-having a positive strictly maximal literal *}
+text \<open>We first prove that the canonic interpretation validates every clause 
+having a positive strictly maximal literal\<close>
  
 lemma int_validate_cl_with_pos_max : 
   assumes "strictly_maximal_literal C (Pos A)"
@@ -1179,17 +1179,17 @@ proof cases
       have "((canonic_int_fun_ordered A) S)" 
       proof (rule ccontr)
         assume "\<not> ((canonic_int_fun_ordered A) S)"
-        from `\<not> ((canonic_int_fun_ordered A) S)`
+        from \<open>\<not> ((canonic_int_fun_ordered A) S)\<close>
         have e: "\<not> (\<exists> C. (C \<in> S) \<and> (strictly_maximal_literal C (Pos A) ) 
       \<and> ( \<forall> B. ( Pos B \<in> C \<longrightarrow> (B, A) \<in> atom_ordering \<longrightarrow> (\<not>(canonic_int_fun_ordered B) S)))
       \<and> ( \<forall> B. ( Neg B \<in> C \<longrightarrow> (B, A) \<in> atom_ordering \<longrightarrow> ((canonic_int_fun_ordered B) S))))"
         by ((simp only:canonic_int_fun_ordered.simps[of A]), blast)
-        from e and c1 and c2 and `(C \<in> S)`and `(strictly_maximal_literal C (Pos A))`
+        from e and c1 and c2 and \<open>(C \<in> S)\<close>and \<open>(strictly_maximal_literal C (Pos A))\<close>
         show "False" by blast
       qed
-      from `((canonic_int_fun_ordered A) S)` have "A \<in> (canonic_int_ordered S)" 
+      from \<open>((canonic_int_fun_ordered A) S)\<close> have "A \<in> (canonic_int_ordered S)" 
         unfolding canonic_int_ordered_def by blast
-      from `A \<in> (canonic_int_ordered S)` and `(strictly_maximal_literal C (Pos A))` 
+      from \<open>A \<in> (canonic_int_ordered S)\<close> and \<open>(strictly_maximal_literal C (Pos A))\<close> 
         show "?thesis"
         unfolding strictly_maximal_literal_def by auto
     next
@@ -1197,18 +1197,18 @@ proof cases
                         \<longrightarrow> ((canonic_int_fun_ordered B) S)))"
       from not_c2 obtain B where "Neg B \<in> C" and "\<not>((canonic_int_fun_ordered B) S)"
       by blast
-      from `\<not> ((canonic_int_fun_ordered B) S)` have "B \<notin> (canonic_int_ordered S)" 
+      from \<open>\<not> ((canonic_int_fun_ordered B) S)\<close> have "B \<notin> (canonic_int_ordered S)" 
         unfolding canonic_int_ordered_def by blast
-      with `Neg B \<in> C` show "?thesis" by auto
+      with \<open>Neg B \<in> C\<close> show "?thesis" by auto
     qed
   next
     assume not_c1: "\<not>(\<forall> B. ( Pos B \<in> C \<longrightarrow> (B, A) \<in> atom_ordering 
                       \<longrightarrow> (\<not>(canonic_int_fun_ordered B) S)))"
     from not_c1 obtain B where "Pos B \<in> C" and "((canonic_int_fun_ordered B) S)"
       by blast
-    from `((canonic_int_fun_ordered B) S)` have "B \<in> (canonic_int_ordered S)" 
+    from \<open>((canonic_int_fun_ordered B) S)\<close> have "B \<in> (canonic_int_ordered S)" 
       unfolding canonic_int_ordered_def by blast
-    with `Pos B \<in> C` show "?thesis" by auto
+    with \<open>Pos B \<in> C\<close> show "?thesis" by auto
 qed
 
 lemma strictly_maximal_literal_exists : 
@@ -1231,36 +1231,36 @@ proof (induction n)
               have "C \<noteq> {}"
               proof
                 assume "C = {}"
-                from `finite C` and `C = {}` have "card C = 0" using card_0_eq by auto
-                from `card C = 0` and `card C = Suc n` show "False" by auto
+                from \<open>finite C\<close> and \<open>C = {}\<close> have "card C = 0" using card_0_eq by auto
+                from \<open>card C = 0\<close> and \<open>card C = Suc n\<close> show "False" by auto
               qed
               then obtain L where "L \<in> C" by auto
-              from `\<not>tautology C` have "\<not>tautology (C - { L })" using tautology_monotonous 
+              from \<open>\<not>tautology C\<close> have "\<not>tautology (C - { L })" using tautology_monotonous 
                 by auto
-              from `L \<in> C` and  `finite C` have "Suc (card (C - { L })) = card C" 
+              from \<open>L \<in> C\<close> and  \<open>finite C\<close> have "Suc (card (C - { L })) = card C" 
                 using card_Suc_Diff1  by metis
-              with `card C = Suc n` have "card (C - { L }) = n" by auto
+              with \<open>card C = Suc n\<close> have "card (C - { L }) = n" by auto
              
               show "\<exists>A. (strictly_maximal_literal C A)"
               proof cases
                 assume "card C = 1"
-                  from this and  `card C = Suc n` have "n = 0" by auto
-                  from this and `finite C` and `card (C - { L }) = n` have "C - { L } = {}" 
+                  from this and  \<open>card C = Suc n\<close> have "n = 0" by auto
+                  from this and \<open>finite C\<close> and \<open>card (C - { L }) = n\<close> have "C - { L } = {}" 
                     using card_0_eq by auto
-                  from this and `L \<in> C` show ?thesis  unfolding strictly_maximal_literal_def by auto
+                  from this and \<open>L \<in> C\<close> show ?thesis  unfolding strictly_maximal_literal_def by auto
                 next
                 assume "card C \<noteq> 1"
-                  from `finite C` have "finite (C - { L })" by auto
-                  from  `Suc (card (C - { L })) = card C` and `card C \<noteq> 1` 
-                    and `(card (C - { L })) = n` have "n \<noteq> 0" by auto
-                  from this and `finite (C - { L })` and `card (C - { L }) = n` 
-                    and `\<not>tautology (C - { L })` and `?P n` 
+                  from \<open>finite C\<close> have "finite (C - { L })" by auto
+                  from  \<open>Suc (card (C - { L })) = card C\<close> and \<open>card C \<noteq> 1\<close> 
+                    and \<open>(card (C - { L })) = n\<close> have "n \<noteq> 0" by auto
+                  from this and \<open>finite (C - { L })\<close> and \<open>card (C - { L }) = n\<close> 
+                    and \<open>\<not>tautology (C - { L })\<close> and \<open>?P n\<close> 
                   obtain A where "strictly_maximal_literal (C - { L }) A" by metis
                   show "\<exists>M. strictly_maximal_literal C M" 
                   proof cases
                     assume "(atom L, atom A) \<in> atom_ordering"
                       from this have "literal_ordering L A" by auto            
-                      from this and `strictly_maximal_literal (C - { L }) A` 
+                      from this and \<open>strictly_maximal_literal (C - { L }) A\<close> 
                         have "strictly_maximal_literal C A" 
                       unfolding strictly_maximal_literal_def by blast
                       thus ?thesis by auto
@@ -1270,14 +1270,14 @@ proof (induction n)
                         by ((rule atom_property [of "(atom L)"]), auto)
                       have a_cases: "A = (Pos (atom A)) \<or> A = (Neg (atom A))" 
                         by ((rule atom_property [of "(atom A)"]), auto)
-                      from l_cases and a_cases and`(strictly_maximal_literal (C - { L }) A)` 
-                        and `\<not> (tautology C)` and `L \<in> C`  
+                      from l_cases and a_cases and\<open>(strictly_maximal_literal (C - { L }) A)\<close> 
+                        and \<open>\<not> (tautology C)\<close> and \<open>L \<in> C\<close>  
                       have "atom L \<noteq> atom A" 
                       unfolding strictly_maximal_literal_def and tautology_def by auto
-                      from this and `(atom L, atom A) \<notin> atom_ordering` and atom_ordering_total 
+                      from this and \<open>(atom L, atom A) \<notin> atom_ordering\<close> and atom_ordering_total 
                         have "(atom A,atom L) \<in> atom_ordering" by auto
                       hence "literal_ordering A L" by auto
-                      from this and `L \<in> C` and `strictly_maximal_literal (C - { L }) A` 
+                      from this and \<open>L \<in> C\<close> and \<open>strictly_maximal_literal (C - { L }) A\<close> 
                         and literal_ordering_trans  
                       have "strictly_maximal_literal C L" unfolding strictly_maximal_literal_def
                       unfolding strictly_maximal_literal_def by blast
@@ -1288,7 +1288,7 @@ proof (induction n)
       qed
   qed
 
-text {* We then deduce that all clauses are validated. *}
+text \<open>We then deduce that all clauses are validated.\<close>
 
 lemma canonic_int_validates_all_clauses : 
   assumes "saturated_binary_rule ordered_resolvent S"
@@ -1301,9 +1301,9 @@ proof cases
     thus ?thesis using tautologies_are_valid [of "C" "(canonic_int_ordered S)"] by auto
   next
     assume "\<not>tautology C"
-    from `all_fulfill finite S` and `C \<in> S` have "finite C" using all_fulfill_def by auto
-    from `{} \<notin> S` and `C \<in> S` and `finite C` have "card C \<noteq> 0" using card_0_eq by auto 
-    from `\<not>tautology C` and `finite C` and `card C \<noteq> 0` obtain "L"
+    from \<open>all_fulfill finite S\<close> and \<open>C \<in> S\<close> have "finite C" using all_fulfill_def by auto
+    from \<open>{} \<notin> S\<close> and \<open>C \<in> S\<close> and \<open>finite C\<close> have "card C \<noteq> 0" using card_0_eq by auto 
+    from \<open>\<not>tautology C\<close> and \<open>finite C\<close> and \<open>card C \<noteq> 0\<close> obtain "L"
       where "strictly_maximal_literal C L" using strictly_maximal_literal_exists by blast
     obtain A where "A = atom L" by auto
   
@@ -1320,21 +1320,21 @@ proof cases
         show "validate_clause (canonic_int_ordered S) C"
         proof cases
           assume "L = Pos x"
-          from `L = Pos x` and `strictly_maximal_literal C L` and `C \<in> S`
+          from \<open>L = Pos x\<close> and \<open>strictly_maximal_literal C L\<close> and \<open>C \<in> S\<close>
             show "validate_clause (canonic_int_ordered S) C" 
             using int_validate_cl_with_pos_max by auto
         next
           assume "L \<noteq> Pos x"
-          have "L = (Neg x)" using `L \<noteq> Pos x` `x = atom L` atom_property by fastforce 
+          have "L = (Neg x)" using \<open>L \<noteq> Pos x\<close> \<open>x = atom L\<close> atom_property by fastforce 
           show "(validate_clause (canonic_int_ordered S) C)" 
           proof (rule ccontr)
             assume  "\<not> (validate_clause(canonic_int_ordered S) C)"
-            from `(L = (Neg x))` and `(strictly_maximal_literal C L)` 
-              and `(\<not> (validate_clause (canonic_int_ordered S) C))`
+            from \<open>(L = (Neg x))\<close> and \<open>(strictly_maximal_literal C L)\<close> 
+              and \<open>(\<not> (validate_clause (canonic_int_ordered S) C))\<close>
             have "x \<in> canonic_int_ordered S" unfolding strictly_maximal_literal_def by auto
-            from `x \<in> canonic_int_ordered S` have "(canonic_int_fun_ordered x) S" 
+            from \<open>x \<in> canonic_int_ordered S\<close> have "(canonic_int_fun_ordered x) S" 
               unfolding canonic_int_ordered_def by blast
-            from `(canonic_int_fun_ordered x) S` 
+            from \<open>(canonic_int_fun_ordered x) S\<close> 
               have "(\<exists> C. (C \<in> S) \<and> (strictly_maximal_literal C (Pos x) ) 
             \<and> ( \<forall> B. ( Pos B \<in> C \<longrightarrow> (B, x) \<in> atom_ordering \<longrightarrow> (\<not>(canonic_int_fun_ordered B) S)))
             \<and> ( \<forall> B. ( Neg B \<in> C \<longrightarrow> (B, x) \<in> atom_ordering \<longrightarrow> ((canonic_int_fun_ordered B) S))))" 
@@ -1347,22 +1347,22 @@ proof cases
                       \<longrightarrow> ((canonic_int_fun_ordered B) S)))"
             by blast
             obtain R where "R = (resolvent_upon D C x)" by auto
-            from `R = resolvent_upon D C x` and `strictly_maximal_literal D (Pos x)` 
-              and `strictly_maximal_literal C L` and `L = (Neg x)` have "resolvent D C R" 
+            from \<open>R = resolvent_upon D C x\<close> and \<open>strictly_maximal_literal D (Pos x)\<close> 
+              and \<open>strictly_maximal_literal C L\<close> and \<open>L = (Neg x)\<close> have "resolvent D C R" 
             unfolding strictly_maximal_literal_def using resolvent_upon_is_resolvent by auto
 
-            from `R = resolvent_upon D C x` and `strictly_maximal_literal D (Pos x)` 
-              and `strictly_maximal_literal C L` and `L = Neg x` 
+            from \<open>R = resolvent_upon D C x\<close> and \<open>strictly_maximal_literal D (Pos x)\<close> 
+              and \<open>strictly_maximal_literal C L\<close> and \<open>L = Neg x\<close> 
               have "ordered_resolvent D C R" 
             using ordered_resolvent_upon_is_resolvent by auto
 
             have "\<not> validate_clause (canonic_int_ordered S) R"
             proof
               assume "validate_clause (canonic_int_ordered S) R"
-              from `validate_clause (canonic_int_ordered S) R` obtain M 
+              from \<open>validate_clause (canonic_int_ordered S) R\<close> obtain M 
                 where "(M \<in> R)" and "validate_literal (canonic_int_ordered S) M" 
                 by auto
-              from `M \<in> R` and `R = resolvent_upon D C x` 
+              from \<open>M \<in> R\<close> and \<open>R = resolvent_upon D C x\<close> 
                 have "(M \<in> (D - { Pos x })) \<or> (M \<in> (C - { Neg x }))" by auto
               thus "False"
               proof
@@ -1371,88 +1371,88 @@ proof cases
                 proof cases
                   assume "\<exists>AA. M = (Pos AA)"
                   from this obtain AA where "M = Pos AA" by auto
-                  from `M \<in> D - { Pos x }` and `strictly_maximal_literal D (Pos x)` 
-                    and `(M = Pos AA)`
+                  from \<open>M \<in> D - { Pos x }\<close> and \<open>strictly_maximal_literal D (Pos x)\<close> 
+                    and \<open>(M = Pos AA)\<close>
                   have "(AA,x) \<in> atom_ordering" unfolding strictly_maximal_literal_def by auto
-                  from a and `(AA,x) \<in> atom_ordering` and `M = (Pos AA)` and `M \<in> (D - { Pos x })`
+                  from a and \<open>(AA,x) \<in> atom_ordering\<close> and \<open>M = (Pos AA)\<close> and \<open>M \<in> (D - { Pos x })\<close>
                   have "\<not>(canonic_int_fun_ordered AA) S" by blast
-                  from `\<not>(canonic_int_fun_ordered AA) S` have "AA \<notin> canonic_int_ordered S" 
+                  from \<open>\<not>(canonic_int_fun_ordered AA) S\<close> have "AA \<notin> canonic_int_ordered S" 
                     unfolding canonic_int_ordered_def by blast
-                  from `AA \<notin> canonic_int_ordered S` and `M = Pos AA` 
-                    and `validate_literal (canonic_int_ordered S) M` 
+                  from \<open>AA \<notin> canonic_int_ordered S\<close> and \<open>M = Pos AA\<close> 
+                    and \<open>validate_literal (canonic_int_ordered S) M\<close> 
                     show "False" by auto
                 next
                   assume "\<not>(\<exists>AA. M = (Pos AA))"
                   obtain AA where "M = (Pos AA) \<or> M = (Neg AA)" using Literal.exhaust [of M] by auto
-                  from this and `\<not>(\<exists>AA. M = (Pos AA))` have "M = (Neg AA)" by auto
-                  from `M \<in> (D - { Pos x })` and `strictly_maximal_literal D (Pos x)` 
-                    and `M = (Neg AA)`
+                  from this and \<open>\<not>(\<exists>AA. M = (Pos AA))\<close> have "M = (Neg AA)" by auto
+                  from \<open>M \<in> (D - { Pos x })\<close> and \<open>strictly_maximal_literal D (Pos x)\<close> 
+                    and \<open>M = (Neg AA)\<close>
                   have "(AA,x) \<in> atom_ordering" unfolding strictly_maximal_literal_def by auto
-                  from b and `(AA,x) \<in> atom_ordering` and `M = (Neg AA)` and `M \<in> (D - { Pos x })`
+                  from b and \<open>(AA,x) \<in> atom_ordering\<close> and \<open>M = (Neg AA)\<close> and \<open>M \<in> (D - { Pos x })\<close>
                   have "(canonic_int_fun_ordered AA) S" by blast
-                  from `(canonic_int_fun_ordered AA) S` have "AA \<in> canonic_int_ordered S"
+                  from \<open>(canonic_int_fun_ordered AA) S\<close> have "AA \<in> canonic_int_ordered S"
                     unfolding canonic_int_ordered_def by blast
-                  from `AA \<in> canonic_int_ordered S` and `M = (Neg AA)` 
-                    and `validate_literal (canonic_int_ordered S) M` show "False" by auto
+                  from \<open>AA \<in> canonic_int_ordered S\<close> and \<open>M = (Neg AA)\<close> 
+                    and \<open>validate_literal (canonic_int_ordered S) M\<close> show "False" by auto
                 qed
               next
                 assume "M \<in> (C - { Neg x })"
-                from `\<not>validate_clause(canonic_int_ordered S) C` and `M \<in> (C - { Neg x })`
-                and `validate_literal (canonic_int_ordered S) M` show "False" by auto
+                from \<open>\<not>validate_clause(canonic_int_ordered S) C\<close> and \<open>M \<in> (C - { Neg x })\<close>
+                and \<open>validate_literal (canonic_int_ordered S) M\<close> show "False" by auto
               qed
             qed  
-            from `\<not>validate_clause (canonic_int_ordered S) R` have "\<not>tautology R" 
+            from \<open>\<not>validate_clause (canonic_int_ordered S) R\<close> have "\<not>tautology R" 
               using tautologies_are_valid by auto
-            from `ordered_resolvent D C R` and `D \<in> S` and `C \<in> S` 
-              and `saturated_binary_rule ordered_resolvent S` 
+            from \<open>ordered_resolvent D C R\<close> and \<open>D \<in> S\<close> and \<open>C \<in> S\<close> 
+              and \<open>saturated_binary_rule ordered_resolvent S\<close> 
               have "redundant R S" unfolding saturated_binary_rule_def  by auto
-            from this and `\<not>tautology R` obtain R' where "R' \<in> S" and "subsumes R' R" 
+            from this and \<open>\<not>tautology R\<close> obtain R' where "R' \<in> S" and "subsumes R' R" 
               unfolding redundant_def by auto
-            from `R = resolvent_upon D C x` and `strictly_maximal_literal D (Pos x)` 
-              and `strictly_maximal_literal C L` and `L = (Neg x)` 
+            from \<open>R = resolvent_upon D C x\<close> and \<open>strictly_maximal_literal D (Pos x)\<close> 
+              and \<open>strictly_maximal_literal C L\<close> and \<open>L = (Neg x)\<close> 
             have "resolvent D C R" unfolding strictly_maximal_literal_def 
               using resolvent_upon_is_resolvent by auto
-            from `all_fulfill finite S` and `C \<in> S` have "finite C" using all_fulfill_def by auto
-            from `all_fulfill finite S` and `D \<in> S` have "finite D" using all_fulfill_def by auto
-            from `finite C` and `finite D` and  `(resolvent D C R)` have "finite R" 
+            from \<open>all_fulfill finite S\<close> and \<open>C \<in> S\<close> have "finite C" using all_fulfill_def by auto
+            from \<open>all_fulfill finite S\<close> and \<open>D \<in> S\<close> have "finite D" using all_fulfill_def by auto
+            from \<open>finite C\<close> and \<open>finite D\<close> and  \<open>(resolvent D C R)\<close> have "finite R" 
             using resolvent_is_finite unfolding derived_clauses_are_finite_def  by blast
-            from `finite R` and `subsumes R' R` have "finite R'" unfolding subsumes_def 
+            from \<open>finite R\<close> and \<open>subsumes R' R\<close> have "finite R'" unfolding subsumes_def 
             using finite_subset by auto
-            from `R' \<in> S` and `{} \<notin> S` and `(subsumes R' R)` have "R' \<noteq> {}" 
+            from \<open>R' \<in> S\<close> and \<open>{} \<notin> S\<close> and \<open>(subsumes R' R)\<close> have "R' \<noteq> {}" 
               unfolding subsumes_def by auto
-            from `finite R'` and `R' \<noteq> {}` have "card R' \<noteq> 0" using card_0_eq by auto
-            from `subsumes R' R` and `\<not>tautology R` have "\<not>tautology R'" 
+            from \<open>finite R'\<close> and \<open>R' \<noteq> {}\<close> have "card R' \<noteq> 0" using card_0_eq by auto
+            from \<open>subsumes R' R\<close> and \<open>\<not>tautology R\<close> have "\<not>tautology R'" 
               unfolding subsumes_def 
               using tautology_monotonous by auto
-            from `\<not>tautology R'` and `finite R'`  and `card R' \<noteq> 0` obtain "LR'" 
+            from \<open>\<not>tautology R'\<close> and \<open>finite R'\<close>  and \<open>card R' \<noteq> 0\<close> obtain "LR'" 
               where "strictly_maximal_literal R' LR'" using strictly_maximal_literal_exists 
               by blast
-            from `finite R` and `finite R'` and `card R' \<noteq> 0` and `subsumes R' R` 
+            from \<open>finite R\<close> and \<open>finite R'\<close> and \<open>card R' \<noteq> 0\<close> and \<open>subsumes R' R\<close> 
               have "card R \<noteq> 0" 
               unfolding subsumes_def by auto
-            from `\<not>tautology R` and `finite R`  and `card R \<noteq> 0` obtain "LR" 
+            from \<open>\<not>tautology R\<close> and \<open>finite R\<close>  and \<open>card R \<noteq> 0\<close> obtain "LR" 
               where "strictly_maximal_literal R LR" using strictly_maximal_literal_exists by blast
             obtain AR and AR' where "AR = atom LR" and "AR' = atom LR'" by auto
-            from `subsumes R' R` and `AR = atom LR` and `AR' = atom LR'` 
-              and `(strictly_maximal_literal R LR)`
-              and `(strictly_maximal_literal R' LR')` have "(AR' = AR) \<or> (AR',AR) \<in> atom_ordering" 
+            from \<open>subsumes R' R\<close> and \<open>AR = atom LR\<close> and \<open>AR' = atom LR'\<close> 
+              and \<open>(strictly_maximal_literal R LR)\<close>
+              and \<open>(strictly_maximal_literal R' LR')\<close> have "(AR' = AR) \<or> (AR',AR) \<in> atom_ordering" 
               using subsumption_and_max_literal by auto
-            from `R = (resolvent_upon D C x)` and `AR = atom LR` 
-              and `strictly_maximal_literal R LR` 
-              and `strictly_maximal_literal D (Pos x)` 
-              and `strictly_maximal_literal C L` and `L = (Neg x)`
+            from \<open>R = (resolvent_upon D C x)\<close> and \<open>AR = atom LR\<close> 
+              and \<open>strictly_maximal_literal R LR\<close> 
+              and \<open>strictly_maximal_literal D (Pos x)\<close> 
+              and \<open>strictly_maximal_literal C L\<close> and \<open>L = (Neg x)\<close>
             have "(AR,x) \<in> atom_ordering" using resolution_and_max_literal by auto
-            from `(AR,x) \<in> atom_ordering` and `(AR' = AR) \<or> (AR',AR) \<in> atom_ordering` 
+            from \<open>(AR,x) \<in> atom_ordering\<close> and \<open>(AR' = AR) \<or> (AR',AR) \<in> atom_ordering\<close> 
               have "(AR',x) \<in> atom_ordering" using atom_ordering_trans by auto
-            from this and hyp_induct and `R' \<in> S` and `strictly_maximal_literal R' LR'` 
-              and `AR' = atom LR'` have "validate_clause (canonic_int_ordered S) R'" by auto
-            from this and `subsumes R' R` and `\<not>validate_clause (canonic_int_ordered S) R` 
+            from this and hyp_induct and \<open>R' \<in> S\<close> and \<open>strictly_maximal_literal R' LR'\<close> 
+              and \<open>AR' = atom LR'\<close> have "validate_clause (canonic_int_ordered S) R'" by auto
+            from this and \<open>subsumes R' R\<close> and \<open>\<not>validate_clause (canonic_int_ordered S) R\<close> 
             show "False" using subsumption_and_semantics by blast
           qed
         qed
       qed
   qed
-  from inductive_lemma and `C \<in> S` and `strictly_maximal_literal C L` and `A = atom L` show ?thesis by blast
+  from inductive_lemma and \<open>C \<in> S\<close> and \<open>strictly_maximal_literal C L\<close> and \<open>A = atom L\<close> show ?thesis by blast
 qed
 
 theorem ordered_resolution_is_complete :
@@ -1465,21 +1465,21 @@ proof (rule ccontr)
   proof (rule ccontr)
     assume "\<not>validate_formula (canonic_int_ordered S) S"
     from this obtain C where "C \<in> S" and "\<not>validate_clause (canonic_int_ordered S) C" by auto
-    from `saturated_binary_rule ordered_resolvent S` and `all_fulfill finite S` and `{} \<notin> S` 
-      and `C \<in> S` and `\<not>validate_clause (canonic_int_ordered S) C` 
+    from \<open>saturated_binary_rule ordered_resolvent S\<close> and \<open>all_fulfill finite S\<close> and \<open>{} \<notin> S\<close> 
+      and \<open>C \<in> S\<close> and \<open>\<not>validate_clause (canonic_int_ordered S) C\<close> 
       show "False" using canonic_int_validates_all_clauses by auto
   qed
-  from `validate_formula (canonic_int_ordered S) S` and `\<not>satisfiable S` show "False" 
+  from \<open>validate_formula (canonic_int_ordered S) S\<close> and \<open>\<not>satisfiable S\<close> show "False" 
     unfolding satisfiable_def by blast
 qed
 
-subsection {* Ordered Resolution with Selection *}
+subsection \<open>Ordered Resolution with Selection\<close>
 
-text {* We now consider the case where some negative literals are considered with highest priority. 
+text \<open>We now consider the case where some negative literals are considered with highest priority. 
 The proof reuses the canonic interpretation defined in the previous section. 
 The interpretation is constructed using only clauses with no selected literals. By the previous 
 result, all such clauses must be satisfied. We then show that the property carries over to the 
-clauses with non empty selected part. *}
+clauses with non empty selected part.\<close>
 
 definition "empty_selected_part Sel S = { C. C \<in> S \<and> (selected_part Sel C) = {} }"
 
@@ -1495,33 +1495,33 @@ proof -
       and "ordered_resolvent P1 P2 C"
       and "\<not>redundant C (empty_selected_part Sel S)"
     unfolding "saturated_binary_rule_def" by auto
-    from `ordered_resolvent P1 P2 C` obtain A where "C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))"
+    from \<open>ordered_resolvent P1 P2 C\<close> obtain A where "C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))"
       and "strictly_maximal_literal P1 (Pos A)" and  "strictly_maximal_literal P2 (Neg A)"
       unfolding ordered_resolvent_def by auto
-    from  `P1 \<in> empty_selected_part Sel S` have "selected_part Sel P1 = {}"
+    from  \<open>P1 \<in> empty_selected_part Sel S\<close> have "selected_part Sel P1 = {}"
     unfolding empty_selected_part_def by auto
-    from  `P2 \<in> empty_selected_part Sel S` have "selected_part Sel P2 = {}"
+    from  \<open>P2 \<in> empty_selected_part Sel S\<close> have "selected_part Sel P2 = {}"
     unfolding empty_selected_part_def by auto
-    from `C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))` and `strictly_maximal_literal P1 (Pos A)` 
-    and `strictly_maximal_literal P2 (Neg A)` and `(selected_part Sel P1) = {}` 
-    and `selected_part Sel P2 = {}`
+    from \<open>C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))\<close> and \<open>strictly_maximal_literal P1 (Pos A)\<close> 
+    and \<open>strictly_maximal_literal P2 (Neg A)\<close> and \<open>(selected_part Sel P1) = {}\<close> 
+    and \<open>selected_part Sel P2 = {}\<close>
     have "ordered_sel_resolvent Sel P1 P2 C" unfolding ordered_sel_resolvent_def by auto
-    from `saturated_binary_rule (ordered_sel_resolvent Sel) S`  
+    from \<open>saturated_binary_rule (ordered_sel_resolvent Sel) S\<close>  
     have "\<forall>P1 P2 C. (P1 \<in> S \<and> P2 \<in> S \<and> (ordered_sel_resolvent Sel P1 P2 C)) \<longrightarrow> redundant C S" 
     unfolding saturated_binary_rule_def  by auto
-    from this and `P1 \<in> (empty_selected_part Sel S)` and `P2 \<in> (empty_selected_part Sel S)` 
-    and `ordered_sel_resolvent Sel P1 P2 C` have "tautology C \<or> (\<exists>D. D \<in> S \<and> subsumes D C)"
+    from this and \<open>P1 \<in> (empty_selected_part Sel S)\<close> and \<open>P2 \<in> (empty_selected_part Sel S)\<close> 
+    and \<open>ordered_sel_resolvent Sel P1 P2 C\<close> have "tautology C \<or> (\<exists>D. D \<in> S \<and> subsumes D C)"
     unfolding empty_selected_part_def redundant_def by auto
-    from this and `tautology C \<or> (\<exists>D. D \<in> S \<and> subsumes D C)` 
-      and `\<not>redundant C (empty_selected_part Sel S)` 
+    from this and \<open>tautology C \<or> (\<exists>D. D \<in> S \<and> subsumes D C)\<close> 
+      and \<open>\<not>redundant C (empty_selected_part Sel S)\<close> 
       obtain D where "D \<in> S" and "subsumes D C" and "D \<notin> empty_selected_part Sel S" 
       unfolding redundant_def by auto
-    from `D \<notin> empty_selected_part Sel S` and `D \<in> S` obtain B where "B \<in> Sel" and "Neg B \<in> D" 
+    from \<open>D \<notin> empty_selected_part Sel S\<close> and \<open>D \<in> S\<close> obtain B where "B \<in> Sel" and "Neg B \<in> D" 
     unfolding empty_selected_part_def selected_part_def by auto
-    from `Neg B \<in> D` this and `subsumes D C` have "Neg B \<in> C" unfolding subsumes_def by auto
-    from this and `C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))` have "Neg B \<in> (P1 \<union> P2)" by auto
-    from `Neg B \<in> (P1 \<union> P2)` and `P1 \<in> empty_selected_part Sel S` 
-      and `P2 \<in> empty_selected_part Sel S` and `B \<in> Sel` show "False" 
+    from \<open>Neg B \<in> D\<close> this and \<open>subsumes D C\<close> have "Neg B \<in> C" unfolding subsumes_def by auto
+    from this and \<open>C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))\<close> have "Neg B \<in> (P1 \<union> P2)" by auto
+    from \<open>Neg B \<in> (P1 \<union> P2)\<close> and \<open>P1 \<in> empty_selected_part Sel S\<close> 
+      and \<open>P2 \<in> empty_selected_part Sel S\<close> and \<open>B \<in> Sel\<close> show "False" 
       unfolding empty_selected_part_def selected_part_def by auto
   qed  
 qed
@@ -1547,36 +1547,36 @@ lemma resolution_decreases_selected_part:
   assumes "card (selected_part Sel P2) = Suc n"
   shows "card (selected_part Sel C) = n"
 proof -
-  from `finite P2` have "finite (selected_part Sel P2)" unfolding selected_part_def by auto
-  from `card (selected_part Sel P2) = (Suc n)` have "card (selected_part Sel P2) \<noteq> 0" by auto
-  from this and `finite (selected_part Sel P2)` have "selected_part Sel P2 \<noteq> {}" 
+  from \<open>finite P2\<close> have "finite (selected_part Sel P2)" unfolding selected_part_def by auto
+  from \<open>card (selected_part Sel P2) = (Suc n)\<close> have "card (selected_part Sel P2) \<noteq> 0" by auto
+  from this and \<open>finite (selected_part Sel P2)\<close> have "selected_part Sel P2 \<noteq> {}" 
   using card_0_eq by auto
-  from this and `ordered_sel_resolvent_upon Sel P1 P2 C A` have 
+  from this and \<open>ordered_sel_resolvent_upon Sel P1 P2 C A\<close> have 
     "C = (P1 - { Pos A}) \<union> ( P2 - { Neg A })"
       and "selected_part Sel P1 = {}" and  "strictly_maximal_literal (selected_part Sel P2) (Neg A)"
       unfolding ordered_sel_resolvent_upon_def by auto
-  from `strictly_maximal_literal (selected_part Sel P2) (Neg A)` 
+  from \<open>strictly_maximal_literal (selected_part Sel P2) (Neg A)\<close> 
     have "Neg A \<in> selected_part Sel P2"
     unfolding strictly_maximal_literal_def by auto 
   from this have "A \<in> Sel" unfolding selected_part_def by auto
-  from `selected_part Sel P1 = {}` have "selected_part Sel (P1 - { Pos A}) = {}" 
+  from \<open>selected_part Sel P1 = {}\<close> have "selected_part Sel (P1 - { Pos A}) = {}" 
     unfolding selected_part_def by auto
-  from `Neg A \<in> (selected_part Sel P2)` 
+  from \<open>Neg A \<in> (selected_part Sel P2)\<close> 
     have "selected_part Sel (P2 - { Neg A}) = (selected_part Sel P2) - { Neg A }" 
   unfolding selected_part_def by auto
-  from `C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))` have
+  from \<open>C = ( (P1 - { Pos A}) \<union> ( P2 - { Neg A }))\<close> have
   "selected_part Sel C 
     = (selected_part Sel (P1 - { Pos A})) \<union> (selected_part Sel (P2 - { Neg A}))"
   unfolding selected_part_def by auto
-  from this and `selected_part Sel (P1 - { Pos A}) = {}`
-    and `selected_part Sel (P2 - { Neg A}) = selected_part Sel P2 - { Neg A }`
+  from this and \<open>selected_part Sel (P1 - { Pos A}) = {}\<close>
+    and \<open>selected_part Sel (P2 - { Neg A}) = selected_part Sel P2 - { Neg A }\<close>
   have "selected_part Sel C = selected_part Sel P2 - { Neg A }" by auto
-  from `Neg A \<in> P2` and `A \<in> Sel` have "Neg A \<in> selected_part Sel P2" 
+  from \<open>Neg A \<in> P2\<close> and \<open>A \<in> Sel\<close> have "Neg A \<in> selected_part Sel P2" 
     unfolding selected_part_def by auto
-  from this and `selected_part Sel C = (selected_part Sel P2) - { Neg A }` 
-    and `finite (selected_part Sel P2)`
+  from this and \<open>selected_part Sel C = (selected_part Sel P2) - { Neg A }\<close> 
+    and \<open>finite (selected_part Sel P2)\<close>
   have "card (selected_part Sel C) = card (selected_part Sel P2) - 1" by auto
-  from this and `card (selected_part Sel P2) = Suc n` show ?thesis by auto
+  from this and \<open>card (selected_part Sel P2) = Suc n\<close> show ?thesis by auto
 qed
 
 lemma canonic_int_validates_all_clauses_sel : 
@@ -1597,49 +1597,49 @@ proof -
     show "(?P n)"
     proof (rule+)
       fix C assume "card (selected_part Sel C) = n" and "C \<in> S"
-      from `all_fulfill finite S` and `C \<in> S` have "finite C" unfolding all_fulfill_def by auto 
+      from \<open>all_fulfill finite S\<close> and \<open>C \<in> S\<close> have "finite C" unfolding all_fulfill_def by auto 
       from this have "finite (selected_part Sel C)" unfolding selected_part_def by auto
       show "validate_clause ?I  C"
       proof (rule nat.exhaust [of "n"])
         assume "n = 0"
-        from this and `card (selected_part Sel C) = n` and `finite (selected_part Sel C)`
+        from this and \<open>card (selected_part Sel C) = n\<close> and \<open>finite (selected_part Sel C)\<close>
           have "selected_part Sel C = {}" by auto
-        from `saturated_binary_rule (ordered_sel_resolvent Sel) S` 
+        from \<open>saturated_binary_rule (ordered_sel_resolvent Sel) S\<close> 
           have "saturated_binary_rule ordered_resolvent ?SE" 
           using saturated_ordered_sel_res_empty_sel by auto
-        from `{} \<notin> S` have "{} \<notin> ?SE" unfolding empty_selected_part_def by auto
-        from `selected_part Sel C = {}` `C \<in> S` have "C \<in> ?SE" unfolding empty_selected_part_def 
+        from \<open>{} \<notin> S\<close> have "{} \<notin> ?SE" unfolding empty_selected_part_def by auto
+        from \<open>selected_part Sel C = {}\<close> \<open>C \<in> S\<close> have "C \<in> ?SE" unfolding empty_selected_part_def 
           by auto
-        from `all_fulfill finite S` have "all_fulfill finite ?SE" 
+        from \<open>all_fulfill finite S\<close> have "all_fulfill finite ?SE" 
           unfolding empty_selected_part_def all_fulfill_def by auto
-        from this  and `saturated_binary_rule ordered_resolvent ?SE` and `{} \<notin> ?SE` and `C \<in> ?SE` 
+        from this  and \<open>saturated_binary_rule ordered_resolvent ?SE\<close> and \<open>{} \<notin> ?SE\<close> and \<open>C \<in> ?SE\<close> 
         show "validate_clause ?I C" using canonic_int_validates_all_clauses by auto
       next
         fix m assume "n = Suc m"
-        from this and `card (selected_part Sel C) = n` have "selected_part Sel C \<noteq> {}" by auto
+        from this and \<open>card (selected_part Sel C) = n\<close> have "selected_part Sel C \<noteq> {}" by auto
         show "validate_clause ?I C" 
         proof (rule ccontr)
           assume "\<not>validate_clause ?I C"
           show "False"
           proof (cases)
             assume "tautology C" 
-            from `tautology C` and `\<not>validate_clause ?I C` show "False" 
+            from \<open>tautology C\<close> and \<open>\<not>validate_clause ?I C\<close> show "False" 
               using tautologies_are_valid by auto
           next
             assume "\<not>(tautology C)"
             hence "\<not>(tautology (selected_part Sel C))" 
               unfolding selected_part_def tautology_def by auto
-            from `selected_part Sel C \<noteq> {}` and `finite (selected_part Sel C)` 
+            from \<open>selected_part Sel C \<noteq> {}\<close> and \<open>finite (selected_part Sel C)\<close> 
               have "card (selected_part Sel C) \<noteq> 0" by auto
-            from this and `\<not>(tautology (selected_part Sel C))` and `finite (selected_part Sel C)` 
+            from this and \<open>\<not>(tautology (selected_part Sel C))\<close> and \<open>finite (selected_part Sel C)\<close> 
               obtain L where "strictly_maximal_literal (selected_part Sel C) L" 
               using strictly_maximal_literal_exists [of "card (selected_part Sel C)"] by blast
-            from `strictly_maximal_literal (selected_part Sel C) L` have "L \<in> (selected_part Sel C)" 
+            from \<open>strictly_maximal_literal (selected_part Sel C) L\<close> have "L \<in> (selected_part Sel C)" 
               and "L \<in> C" unfolding strictly_maximal_literal_def selected_part_def by auto
-            from this and `\<not>validate_clause ?I C` have "\<not>(validate_literal ?I L)" by auto
-            from `L \<in> (selected_part Sel C)` obtain A where "L = (Neg A)" and "A \<in> Sel" 
+            from this and \<open>\<not>validate_clause ?I C\<close> have "\<not>(validate_literal ?I L)" by auto
+            from \<open>L \<in> (selected_part Sel C)\<close> obtain A where "L = (Neg A)" and "A \<in> Sel" 
               unfolding selected_part_def by auto
-            from `\<not>(validate_literal ?I L)` and `L = (Neg A)` have "A \<in> ?I" by auto
+            from \<open>\<not>(validate_literal ?I L)\<close> and \<open>L = (Neg A)\<close> have "A \<in> ?I" by auto
             from this have "((canonic_int_fun_ordered A) ?SE)" unfolding canonic_int_ordered_def 
               by blast
             have "((\<exists> C. (C \<in> ?SE) \<and> (strictly_maximal_literal C (Pos A) ) 
@@ -1651,7 +1651,7 @@ proof -
                 assume "\<not> ?exp"
                 from this have "\<not>((canonic_int_fun_ordered A) ?SE)" 
                   by ((simp only:canonic_int_fun_ordered.simps [of A]), blast)
-                from this and `(canonic_int_fun_ordered A) ?SE` show "False" by blast
+                from this and \<open>(canonic_int_fun_ordered A) ?SE\<close> show "False" by blast
             qed
             then obtain D where 
                 "D \<in> ?SE" and "strictly_maximal_literal D (Pos A)" 
@@ -1660,24 +1660,24 @@ proof -
                 and c2: "( \<forall> B. ( Neg B \<in> D \<longrightarrow> (B, A) \<in> atom_ordering 
                   \<longrightarrow> ((canonic_int_fun_ordered B) ?SE)))"
                 by blast
-            from `D \<in> ?SE` have "(selected_part Sel D) = {}" and "D \<in> S" 
+            from \<open>D \<in> ?SE\<close> have "(selected_part Sel D) = {}" and "D \<in> S" 
               unfolding empty_selected_part_def by auto
-            from `D \<in> ?SE` and `all_fulfill finite S` have "finite D" 
+            from \<open>D \<in> ?SE\<close> and \<open>all_fulfill finite S\<close> have "finite D" 
               unfolding empty_selected_part_def all_fulfill_def by auto
             let ?R = "(D - { Pos A }) \<union> (C - { Neg A })"
-              from `strictly_maximal_literal D (Pos A)` 
-                and `strictly_maximal_literal (selected_part Sel C) L` 
-                and `L = (Neg A)` and `(selected_part Sel D) = {}`
+              from \<open>strictly_maximal_literal D (Pos A)\<close> 
+                and \<open>strictly_maximal_literal (selected_part Sel C) L\<close> 
+                and \<open>L = (Neg A)\<close> and \<open>(selected_part Sel D) = {}\<close>
               have "(ordered_sel_resolvent_upon Sel D C ?R A)" 
                 unfolding ordered_sel_resolvent_upon_def by auto
               from this have "ordered_sel_resolvent Sel D C ?R" 
                 by (rule ordered_sel_resolvent_upon_is_resolvent)
-              from `(ordered_sel_resolvent_upon Sel D C ?R A)` `(card (selected_part Sel C)) = n` 
-                and `n = Suc m` and `L \<in> C` and `L = (Neg A)` and `finite D` and `finite C`
+              from \<open>(ordered_sel_resolvent_upon Sel D C ?R A)\<close> \<open>(card (selected_part Sel C)) = n\<close> 
+                and \<open>n = Suc m\<close> and \<open>L \<in> C\<close> and \<open>L = (Neg A)\<close> and \<open>finite D\<close> and \<open>finite C\<close>
                 have "card (selected_part Sel ?R) = m" 
                 using resolution_decreases_selected_part by auto
-              from `ordered_sel_resolvent Sel D C ?R` and `D \<in> S`and `C \<in> S` 
-                and `saturated_binary_rule (ordered_sel_resolvent Sel) S`
+              from \<open>ordered_sel_resolvent Sel D C ?R\<close> and \<open>D \<in> S\<close>and \<open>C \<in> S\<close> 
+                and \<open>saturated_binary_rule (ordered_sel_resolvent Sel) S\<close>
                 have "redundant ?R S" unfolding saturated_binary_rule_def by auto
               hence "tautology ?R \<or> (\<exists>RR. (RR \<in> S \<and> (subsumes RR ?R)))" 
                 unfolding redundant_def by auto  
@@ -1688,17 +1688,17 @@ proof -
               next
                 assume "\<exists>R'. R' \<in> S \<and> (subsumes R' ?R)"
                 then obtain R' where "R' \<in> S" and "subsumes R' ?R" by auto
-                from `finite C`and `finite D` have "finite ?R" by auto
+                from \<open>finite C\<close>and \<open>finite D\<close> have "finite ?R" by auto
                 from this have "finite (selected_part Sel ?R)" unfolding selected_part_def by auto
-                from `subsumes R' ?R` have "selected_part Sel R' \<subseteq> selected_part Sel ?R" 
+                from \<open>subsumes R' ?R\<close> have "selected_part Sel R' \<subseteq> selected_part Sel ?R" 
                   unfolding selected_part_def and subsumes_def by auto
-                from this and `finite (selected_part Sel ?R)` 
+                from this and \<open>finite (selected_part Sel ?R)\<close> 
                   have "card (selected_part Sel R') \<le> card (selected_part Sel ?R)" 
                   using card_mono by auto
-                from this and `card (selected_part Sel ?R) = m` and `n = Suc m` 
+                from this and \<open>card (selected_part Sel ?R) = m\<close> and \<open>n = Suc m\<close> 
                   have "card (selected_part Sel R') < n" by auto
-                from this and ind_hyp and `R' \<in> S` have "validate_clause ?I R'" by auto
-                from this and `subsumes R' ?R` show "validate_clause ?I ?R" 
+                from this and ind_hyp and \<open>R' \<in> S\<close> have "validate_clause ?I R'" by auto
+                from this and \<open>subsumes R' ?R\<close> show "validate_clause ?I ?R" 
                   using subsumption_and_semantics [of R' ?R ?I] by auto
               qed
               from this obtain L' where "L' \<in> ?R" and "validate_literal ?I L'" by auto
@@ -1711,42 +1711,42 @@ proof -
                 thus "False"
                 proof
                   assume "L' = (Pos ?A')" 
-                  from this and `strictly_maximal_literal D (Pos A)` and `L' \<in> D - { Pos A }`
+                  from this and \<open>strictly_maximal_literal D (Pos A)\<close> and \<open>L' \<in> D - { Pos A }\<close>
                   have "(?A',A) \<in> atom_ordering" unfolding strictly_maximal_literal_def by auto
                   from c1 
                   have c1': "Pos ?A' \<in> D \<longrightarrow> (?A', A) \<in> atom_ordering 
                                 \<longrightarrow> (\<not>(canonic_int_fun_ordered ?A') ?SE)"
                     by blast
-                  from `L' \<in> D` and `L' = Pos ?A'` have "Pos ?A' \<in> D" by auto 
-                  from c1' and `Pos ?A' \<in> D` and `(?A',A) \<in> atom_ordering`  
+                  from \<open>L' \<in> D\<close> and \<open>L' = Pos ?A'\<close> have "Pos ?A' \<in> D" by auto 
+                  from c1' and \<open>Pos ?A' \<in> D\<close> and \<open>(?A',A) \<in> atom_ordering\<close>  
                   have "\<not>(canonic_int_fun_ordered ?A') ?SE" by blast
                   from this have "?A' \<notin> ?I" unfolding canonic_int_ordered_def by blast
                   from this have "\<not>(validate_literal ?I (Pos ?A'))" by auto
-                  from this and `L' = Pos ?A'` and `validate_literal ?I L'` show "False" by auto
+                  from this and \<open>L' = Pos ?A'\<close> and \<open>validate_literal ?I L'\<close> show "False" by auto
                 next
                   assume "L' = Neg ?A'" 
-                  from this and `strictly_maximal_literal D (Pos A)` and `L' \<in> D - { Pos A }`
+                  from this and \<open>strictly_maximal_literal D (Pos A)\<close> and \<open>L' \<in> D - { Pos A }\<close>
                   have "(?A',A) \<in> atom_ordering" unfolding strictly_maximal_literal_def by auto
                   from c2 
                     have c2': "Neg ?A' \<in> D \<longrightarrow> (?A', A) \<in> atom_ordering 
                       \<longrightarrow> (canonic_int_fun_ordered ?A') ?SE"
                     by blast
-                  from `L' \<in> D` and `L' = (Neg ?A')` have "Neg ?A' \<in> D" by auto 
-                  from c2' and `Neg ?A' \<in> D` and `(?A',A) \<in> atom_ordering`  
+                  from \<open>L' \<in> D\<close> and \<open>L' = (Neg ?A')\<close> have "Neg ?A' \<in> D" by auto 
+                  from c2' and \<open>Neg ?A' \<in> D\<close> and \<open>(?A',A) \<in> atom_ordering\<close>  
                   have "(canonic_int_fun_ordered ?A') ?SE" by blast
                   from this have "?A' \<in> ?I" unfolding canonic_int_ordered_def by blast
                   from this have "\<not>validate_literal ?I (Neg ?A')" by auto
-                  from this and `L' = Neg ?A'` and `validate_literal ?I L'` show "False" by auto
+                  from this and \<open>L' = Neg ?A'\<close> and \<open>validate_literal ?I L'\<close> show "False" by auto
                 qed
              qed
-           from this and `L' \<in> ?R` have "L' \<in> C" by auto
-           from this and `validate_literal ?I L'` and `\<not>validate_clause ?I C` show "False" by auto
+           from this and \<open>L' \<in> ?R\<close> have "L' \<in> C" by auto
+           from this and \<open>validate_literal ?I L'\<close> and \<open>\<not>validate_clause ?I C\<close> show "False" by auto
          qed
       qed
     qed
   qed
  qed
- from `?P n` and `n = card (selected_part Sel C)` and `C \<in> S` show ?thesis by auto
+ from \<open>?P n\<close> and \<open>n = card (selected_part Sel C)\<close> and \<open>C \<in> S\<close> show ?thesis by auto
 qed
 
 theorem ordered_resolution_is_complete_ordered_sel : 
@@ -1763,19 +1763,19 @@ proof (rule ccontr)
   proof (rule ccontr)
     assume "\<not>(validate_formula ?I S)"
     from this obtain C where "C \<in> S" and "\<not>(validate_clause ?I C)" by auto
-    from `saturated_binary_rule (ordered_sel_resolvent Sel) S` and `all_fulfill finite S` 
-      and `{} \<notin> S` and `C \<in> S` and `\<not>(validate_clause ?I C)` 
+    from \<open>saturated_binary_rule (ordered_sel_resolvent Sel) S\<close> and \<open>all_fulfill finite S\<close> 
+      and \<open>{} \<notin> S\<close> and \<open>C \<in> S\<close> and \<open>\<not>(validate_clause ?I C)\<close> 
     show "False" using canonic_int_validates_all_clauses_sel [of Sel S C] by auto
   qed
-  from `(validate_formula ?I S)` and `\<not>(satisfiable S)` show "False" 
+  from \<open>(validate_formula ?I S)\<close> and \<open>\<not>(satisfiable S)\<close> show "False" 
     unfolding satisfiable_def by blast
 qed
 
-subsection {* Semantic Resolution *}
+subsection \<open>Semantic Resolution\<close>
 
-text {* We show that under some particular renaming, model resolution simulates ordered resolution 
+text \<open>We show that under some particular renaming, model resolution simulates ordered resolution 
 where all negative literals are selected, which immediately entails the refutational completeness 
-of model resolution. *}
+of model resolution.\<close>
 
 lemma ordered_res_with_selection_is_model_res :
   assumes "ordered_sel_resolvent UNIV P1 P2 C"
@@ -1809,9 +1809,9 @@ proof -
   proof
     assume "(strictly_maximal_literal P2 (Neg A)) \<and> (selected_part UNIV P2) = {}"
     from this have "strictly_maximal_literal P2 (Neg A)" and "selected_part UNIV P2 = {}" by auto
-    from `strictly_maximal_literal P2 (Neg A)` have "Neg A \<in> P2" 
+    from \<open>strictly_maximal_literal P2 (Neg A)\<close> have "Neg A \<in> P2" 
       unfolding strictly_maximal_literal_def by auto
-    from this and `selected_part UNIV P2 = {}` show "False" unfolding selected_part_def by auto
+    from this and \<open>selected_part UNIV P2 = {}\<close> show "False" unfolding selected_part_def by auto
   qed
   from this and disj have "strictly_maximal_literal (selected_part UNIV P2) (Neg A)" by auto
   from this have "strictly_maximal_literal (rename_clause Sel (validated_part Sel (rename_clause Sel P2))) (Neg A)" 
@@ -1823,10 +1823,10 @@ proof -
     p1: "strictly_maximal_literal (validated_part Sel (rename_clause Sel P2)) 
       (rename_literal Sel (Neg A))" 
     using inverse_clause_renaming  by auto 
-  from `strictly_maximal_literal P1 (Pos A)`
+  from \<open>strictly_maximal_literal P1 (Pos A)\<close>
   have p2: "strictly_maximal_literal (rename_clause Sel P1) (rename_literal Sel (Pos A))" 
     using renaming_preserves_strictly_maximal_literal by auto
-  from `(selected_part UNIV P1) = {}` have 
+  from \<open>(selected_part UNIV P1) = {}\<close> have 
     "rename_clause Sel (validated_part Sel (rename_clause Sel P1)) = {}" 
     using renaming_and_selected_part by auto
   from this have q: "validated_part Sel (rename_clause Sel P1) = {}"   
@@ -1850,10 +1850,10 @@ proof (rule ccontr)
   proof
     assume "{} \<in> ?S'"
     then obtain V where "V \<in> S" and "rename_clause Sel V = {}" unfolding rename_formula_def by auto
-    from `rename_clause Sel V = {}` have "V = {}" unfolding rename_clause_def by auto
-    from this and `V \<in> S`  and `{} \<notin> S` show "False" by auto
+    from \<open>rename_clause Sel V = {}\<close> have "V = {}" unfolding rename_clause_def by auto
+    from this and \<open>V \<in> S\<close>  and \<open>{} \<notin> S\<close> show "False" by auto
   qed
-  from `all_fulfill finite S` have "all_fulfill finite ?S'" 
+  from \<open>all_fulfill finite S\<close> have "all_fulfill finite ?S'" 
   unfolding all_fulfill_def rename_formula_def rename_clause_def by auto
   have "saturated_binary_rule (ordered_sel_resolvent UNIV) ?S'"
   proof (rule ccontr)
@@ -1862,41 +1862,41 @@ proof (rule ccontr)
       and "ordered_sel_resolvent UNIV P1 P2 C" and "\<not>tautology C" 
       and not_subsumed: "\<forall>D. (D \<in> ?S' \<longrightarrow> \<not>subsumes D C)" 
       unfolding saturated_binary_rule_def redundant_def by auto  
-    from `ordered_sel_resolvent UNIV P1 P2 C` 
+    from \<open>ordered_sel_resolvent UNIV P1 P2 C\<close> 
       have ord_ren: "ordered_model_resolvent Sel (rename_clause Sel P1) (rename_clause Sel P2) 
                         (rename_clause Sel C)" 
       using ordered_res_with_selection_is_model_res by auto
     have "\<not>tautology (rename_clause Sel C)" 
       using renaming_preserves_tautology inverse_clause_renaming 
-      by (metis `\<not> tautology C` inverse_clause_renaming renaming_preserves_tautology)
-    from `P1 \<in> ?S'` have "rename_clause Sel P1 \<in> rename_formula Sel ?S'" 
+      by (metis \<open>\<not> tautology C\<close> inverse_clause_renaming renaming_preserves_tautology)
+    from \<open>P1 \<in> ?S'\<close> have "rename_clause Sel P1 \<in> rename_formula Sel ?S'" 
       unfolding rename_formula_def by auto
     hence "rename_clause Sel P1 \<in> S" using inverse_formula_renaming by auto
-    from `P2 \<in> ?S'` have "rename_clause Sel P2 \<in> rename_formula Sel ?S'" 
+    from \<open>P2 \<in> ?S'\<close> have "rename_clause Sel P2 \<in> rename_formula Sel ?S'" 
       unfolding rename_formula_def by auto
     hence "rename_clause Sel P2 \<in> S" using inverse_formula_renaming by auto
-    from `\<not>tautology (rename_clause Sel C)` and ord_ren 
-      and `saturated_binary_rule (ordered_model_resolvent Sel) S` 
-      and `rename_clause Sel P1 \<in> S` and `rename_clause Sel P2 \<in> S` 
+    from \<open>\<not>tautology (rename_clause Sel C)\<close> and ord_ren 
+      and \<open>saturated_binary_rule (ordered_model_resolvent Sel) S\<close> 
+      and \<open>rename_clause Sel P1 \<in> S\<close> and \<open>rename_clause Sel P2 \<in> S\<close> 
       obtain D' where "D' \<in> S" and "subsumes D' (rename_clause Sel C)" 
       unfolding saturated_binary_rule_def redundant_def by blast
-    from `subsumes D' (rename_clause Sel C)` 
+    from \<open>subsumes D' (rename_clause Sel C)\<close> 
       have "subsumes (rename_clause Sel D') (rename_clause Sel (rename_clause Sel C))" 
       using renaming_preserves_subsumption by auto
     hence "subsumes (rename_clause Sel D') C" using inverse_clause_renaming by auto
-    from `D' \<in> S` have "rename_clause Sel D' \<in> ?S'" unfolding rename_formula_def by auto
-    from this and not_subsumed and  `subsumes (rename_clause Sel D') C` show "False" by auto
+    from \<open>D' \<in> S\<close> have "rename_clause Sel D' \<in> ?S'" unfolding rename_formula_def by auto
+    from this and not_subsumed and  \<open>subsumes (rename_clause Sel D') C\<close> show "False" by auto
   qed
-  from this and `{} \<notin> ?S'` and `all_fulfill finite ?S'` have "satisfiable ?S'" 
+  from this and \<open>{} \<notin> ?S'\<close> and \<open>all_fulfill finite ?S'\<close> have "satisfiable ?S'" 
     using ordered_resolution_is_complete_ordered_sel unfolding Complete_def by auto
   hence "satisfiable (rename_formula Sel ?S')" using renaming_preserves_satisfiability  by auto
-  from this and `\<not>satisfiable S` show "False" using inverse_formula_renaming by auto
+  from this and \<open>\<not>satisfiable S\<close> show "False" using inverse_formula_renaming by auto
 qed
 
-subsection {* Positive and Negative Resolution *}
+subsection \<open>Positive and Negative Resolution\<close>
 
-text {* We show that positive and negative resolution simulate model resolution 
-with some specific interpretation. Then completeness follows from previous results. *}
+text \<open>We show that positive and negative resolution simulate model resolution 
+with some specific interpretation. Then completeness follows from previous results.\<close>
 
 lemma empty_interpretation_validate :
   "validate_literal {} L = (\<exists>A. (L = Neg A))"
@@ -1930,12 +1930,12 @@ using ordered_resolution_is_complete_model_resolution less_restrictive_complete 
 theorem ordered_negative_resolvent_is_complete: "Complete ordered_negative_resolvent"
 using ordered_resolution_is_complete_model_resolution less_restrictive_complete negative_resolvent_is_model_res by auto
 
-subsection {* Unit Resolution and Horn Renamable Clauses *}
+subsection \<open>Unit Resolution and Horn Renamable Clauses\<close>
 
-text {* Unit resolution is complete if the considered clause set can be transformed into a 
+text \<open>Unit resolution is complete if the considered clause set can be transformed into a 
 Horn clause set by renaming. 
 This result is proven by showing that unit resolution simulates
-semantic resolution for Horn-renamable clauses (for some specific interpretation). *}
+semantic resolution for Horn-renamable clauses (for some specific interpretation).\<close>
 
 definition Horn :: "'at Clause \<Rightarrow> bool"
   where "(Horn C) = ((card (positive_part C)) \<le> 1)"
@@ -1950,7 +1950,7 @@ theorem unit_resolvent_complete_for_Horn_renamable_set:
   assumes "Horn_renamable_formula S"
   shows "satisfiable S"
 proof -
-  from `Horn_renamable_formula S` obtain I where "all_fulfill Horn (rename_formula I S)" 
+  from \<open>Horn_renamable_formula S\<close> obtain I where "all_fulfill Horn (rename_formula I S)" 
     unfolding Horn_renamable_formula_def by auto
   have "saturated_binary_rule (ordered_model_resolvent I) S"
   proof (rule ccontr)
@@ -1958,59 +1958,59 @@ proof -
     then obtain P1 P2 C where "ordered_model_resolvent I P1 P2 C" and "P1 \<in> S" and "P2 \<in> S" 
       and "\<not>redundant C S"
       unfolding saturated_binary_rule_def by auto
-    from `ordered_model_resolvent I P1 P2 C` obtain L 
+    from \<open>ordered_model_resolvent I P1 P2 C\<close> obtain L 
       where def_c: "C = ( (P1 - { L }) \<union> ( P2 - { (complement L) }))" 
       and "strictly_maximal_literal P1 L" and "validated_part I P1 = {}" 
       and "strictly_maximal_literal (validated_part I P2) (complement L)"
       unfolding ordered_model_resolvent_def by auto
-    from `strictly_maximal_literal P1 L` have "L \<in> P1" 
+    from \<open>strictly_maximal_literal P1 L\<close> have "L \<in> P1" 
       unfolding strictly_maximal_literal_def by auto
-    from `strictly_maximal_literal (validated_part I P2) (complement L)` have "complement L \<in> P2" 
+    from \<open>strictly_maximal_literal (validated_part I P2) (complement L)\<close> have "complement L \<in> P2" 
       unfolding strictly_maximal_literal_def validated_part_def by auto
     have "selected_part UNIV (rename_clause I P1) 
       =  rename_clause I (validated_part I (rename_clause I (rename_clause I P1)))" 
       using renaming_and_selected_part [of "rename_clause I P1" I] by auto
     then have "selected_part UNIV (rename_clause I P1) =  rename_clause I (validated_part I P1)" 
       using inverse_clause_renaming by auto 
-    from this and `validated_part I P1 = {}` have "selected_part UNIV (rename_clause I P1) = {}" 
+    from this and \<open>validated_part I P1 = {}\<close> have "selected_part UNIV (rename_clause I P1) = {}" 
       unfolding rename_clause_def by auto 
     then have "negative_part (rename_clause I P1) = {}" 
       unfolding selected_part_def negative_part_def by auto
-    from `all_fulfill Horn (rename_formula I S)` and `P1 \<in> S` have "Horn (rename_clause I P1)" 
+    from \<open>all_fulfill Horn (rename_formula I S)\<close> and \<open>P1 \<in> S\<close> have "Horn (rename_clause I P1)" 
       unfolding all_fulfill_def and rename_formula_def by auto
     then have "card (positive_part (rename_clause I P1)) \<le> 1" unfolding Horn_def by auto
-      from  `negative_part (rename_clause I P1) = {}` 
+      from  \<open>negative_part (rename_clause I P1) = {}\<close> 
       have "rename_clause I P1 = (positive_part (rename_clause I P1))" 
       using decomposition_clause_pos_neg by auto
-    from this and `card (positive_part (rename_clause I P1)) \<le> 1` 
+    from this and \<open>card (positive_part (rename_clause I P1)) \<le> 1\<close> 
       have "card (rename_clause I P1) \<le> 1" by auto
-    from `strictly_maximal_literal P1 L` have "P1 \<noteq> {}" 
+    from \<open>strictly_maximal_literal P1 L\<close> have "P1 \<noteq> {}" 
       unfolding strictly_maximal_literal_def by auto
     then have "rename_clause I P1 \<noteq> {}" unfolding rename_clause_def by auto
-    from `all_fulfill finite S` and `P1 \<in> S` have "finite P1" unfolding all_fulfill_def by auto
+    from \<open>all_fulfill finite S\<close> and \<open>P1 \<in> S\<close> have "finite P1" unfolding all_fulfill_def by auto
     then have "finite (rename_clause I P1)" unfolding rename_clause_def by auto
-    from this and `rename_clause I P1 \<noteq> {}` have "card(rename_clause I P1) \<noteq> 0" 
+    from this and \<open>rename_clause I P1 \<noteq> {}\<close> have "card(rename_clause I P1) \<noteq> 0" 
       using card_0_eq by auto
-    from this and `card (rename_clause I P1) \<le> 1` have "card (rename_clause I P1) = 1" by auto
+    from this and \<open>card (rename_clause I P1) \<le> 1\<close> have "card (rename_clause I P1) = 1" by auto
     then have "card P1 = 1" using renaming_preserves_cardinality by auto
     then have "Unit P1" unfolding Unit_def using card_image by auto
-    from this and `L \<in> P1` and `complement L \<in> P2` and def_c have "unit_resolvent P1 P2 C"
+    from this and \<open>L \<in> P1\<close> and \<open>complement L \<in> P2\<close> and def_c have "unit_resolvent P1 P2 C"
       unfolding unit_resolvent_def by auto
-    from this and `\<not>(redundant C S)` and `P1 \<in> S` and `P2 \<in> S` 
-      and `saturated_binary_rule unit_resolvent S`
+    from this and \<open>\<not>(redundant C S)\<close> and \<open>P1 \<in> S\<close> and \<open>P2 \<in> S\<close> 
+      and \<open>saturated_binary_rule unit_resolvent S\<close>
     show "False" unfolding saturated_binary_rule_def by auto
   qed
-  from this and `all_fulfill finite S` and `{} \<notin> S` show ?thesis 
+  from this and \<open>all_fulfill finite S\<close> and \<open>{} \<notin> S\<close> show ?thesis 
     using ordered_resolution_is_complete_model_resolution unfolding Complete_def by auto
 qed
 
-section {* Computation of Saturated Clause Sets *}
+section \<open>Computation of Saturated Clause Sets\<close>
 
-text {* We now provide a concrete (rather straightforward) procedure for computing saturated clause 
+text \<open>We now provide a concrete (rather straightforward) procedure for computing saturated clause 
 sets. Starting from the initial set, we define a sequence of clause sets, where each set is obtained 
 from the previous one by applying the resolution rule in a systematic way, followed by redundancy 
 elimination rules. The algorithm is generic, in the sense that it applies to any binary 
-inference rule. *}
+inference rule.\<close>
 
 fun inferred_clause_sets :: "'at BinaryRule \<Rightarrow> 'at Formula \<Rightarrow> nat \<Rightarrow> 'at Formula"
  where 
@@ -2018,14 +2018,14 @@ fun inferred_clause_sets :: "'at BinaryRule \<Rightarrow> 'at Formula \<Rightarr
   "(inferred_clause_sets R S (Suc N)) = 
     (simplify (add_all_deducible_clauses R (inferred_clause_sets R S N)))"
 
-text {* The saturated set is constructed by considering the set of persistent clauses, i.e.,
-the clauses that are generated and never deleted. *}
+text \<open>The saturated set is constructed by considering the set of persistent clauses, i.e.,
+the clauses that are generated and never deleted.\<close>
  
 fun saturation :: "'at BinaryRule \<Rightarrow> 'at Formula \<Rightarrow> 'at Formula"
  where 
   "saturation R S = { C. \<exists>N. (\<forall>M. (M \<ge> N \<longrightarrow> C \<in> inferred_clause_sets R S M)) }"
 
-text {* We prove that all inference rules yield finite clauses. *}
+text \<open>We prove that all inference rules yield finite clauses.\<close>
 
 theorem ordered_resolvent_is_finite : "derived_clauses_are_finite ordered_resolvent"
 using less_restrictive_and_finite ordered_resolvent_is_resolvent resolvent_is_finite by auto
@@ -2051,15 +2051,15 @@ proof (rule ccontr)
   assume "\<not>all_fulfill finite (all_deducible_clauses R S)"
   from this obtain C where "C \<in> all_deducible_clauses R S" and "\<not>finite C"
     unfolding all_fulfill_def by auto
-  from `C \<in> all_deducible_clauses R S` have "\<exists> P1 P2. R P1 P2 C \<and> P1 \<in> S \<and> P2 \<in> S" by auto
+  from \<open>C \<in> all_deducible_clauses R S\<close> have "\<exists> P1 P2. R P1 P2 C \<and> P1 \<in> S \<and> P2 \<in> S" by auto
   then obtain P1 P2 where "R P1 P2 C" and "P1 \<in> S" and "P2 \<in> S" by auto
-  from `P1 \<in> S` and `all_fulfill finite S` have "finite P1" unfolding all_fulfill_def by auto
-  from `P2 \<in> S` and `all_fulfill finite S` have "finite P2" unfolding  all_fulfill_def by auto
-  from `finite P1` and `finite P2` and `derived_clauses_are_finite R` and `R P1 P2 C` and `\<not>finite C` show "False"
+  from \<open>P1 \<in> S\<close> and \<open>all_fulfill finite S\<close> have "finite P1" unfolding all_fulfill_def by auto
+  from \<open>P2 \<in> S\<close> and \<open>all_fulfill finite S\<close> have "finite P2" unfolding  all_fulfill_def by auto
+  from \<open>finite P1\<close> and \<open>finite P2\<close> and \<open>derived_clauses_are_finite R\<close> and \<open>R P1 P2 C\<close> and \<open>\<not>finite C\<close> show "False"
     unfolding derived_clauses_are_finite_def by metis
 qed
 
-text {* This entails that all the clauses occurring in the sets in the sequence are finite. *}
+text \<open>This entails that all the clauses occurring in the sets in the sequence are finite.\<close>
 
 lemma all_inferred_clause_sets_are_finite: 
   assumes "derived_clauses_are_finite R" 
@@ -2073,7 +2073,7 @@ next
   then have "all_fulfill finite (all_deducible_clauses R (inferred_clause_sets R S N))"
     using assms(1) all_deducible_clauses_are_finite [of R "inferred_clause_sets R S N"]
     by auto 
-  from this and `all_fulfill finite (inferred_clause_sets R S N)`
+  from this and \<open>all_fulfill finite (inferred_clause_sets R S N)\<close>
     have "all_fulfill finite (add_all_deducible_clauses R (inferred_clause_sets R S N))"
     using all_fulfill_def by auto
   then show "all_fulfill finite (inferred_clause_sets R S (Suc N))"
@@ -2092,7 +2092,7 @@ proof -
   using assms all_fulfill_def all_inferred_clause_sets_are_finite [of R S "N"] by auto
 qed
 
-text {* We show that the set of redundant clauses can only increase. *}
+text \<open>We show that the set of redundant clauses can only increase.\<close>
 
 lemma sequence_of_inferred_clause_sets_is_monotonous: 
  assumes "derived_clauses_are_finite R"
@@ -2109,19 +2109,19 @@ proof ((induction M), auto simp del: inferred_clause_sets.simps)
     using deducible_clause_preserve_redundancy by auto
   then have "all_fulfill finite (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))"
   using assms  add_all_deducible_clauses_finite [of R S "N+M"] by auto
-  from  `redundant C (inferred_clause_sets R S N)` and ind_hyp 
+  from  \<open>redundant C (inferred_clause_sets R S N)\<close> and ind_hyp 
     have "redundant C (inferred_clause_sets R S (N+M))" by auto
-  from  `redundant C (inferred_clause_sets R S (N+M))` 
+  from  \<open>redundant C (inferred_clause_sets R S (N+M))\<close> 
     have "redundant C (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))"
     using deducible_clause_preserve_redundancy by blast
-  from this and `all_fulfill finite (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))` 
+  from this and \<open>all_fulfill finite (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))\<close> 
     have "redundant C (simplify (add_all_deducible_clauses R (inferred_clause_sets R S (N+M))))"
     using simplify_preserves_redundancy by auto 
   thus "redundant C (inferred_clause_sets R S (Suc (N + M)))"  by auto
 qed
 
-text {* We show that non-persistent clauses are strictly redundant in some element of the 
-sequence. *}
+text \<open>We show that non-persistent clauses are strictly redundant in some element of the 
+sequence.\<close>
 
 lemma non_persistent_clauses_are_redundant:
   assumes "D \<in> inferred_clause_sets R S N"
@@ -2142,7 +2142,7 @@ proof (rule ccontr)
       show "D \<in> (inferred_clause_sets R S (N+(Suc M)))"
       proof (rule ccontr)
         assume "D \<notin> (inferred_clause_sets R S (N+(Suc M)))"
-        from this and `D \<in> add_all_deducible_clauses R (inferred_clause_sets R S (N+M))`
+        from this and \<open>D \<in> add_all_deducible_clauses R (inferred_clause_sets R S (N+M))\<close>
           have "strictly_redundant D (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))"
           using simplify_def by auto
         then have "all_fulfill finite (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))"
@@ -2150,7 +2150,7 @@ proof (rule ccontr)
         by auto
 
         from this 
-          and `strictly_redundant D (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))`
+          and \<open>strictly_redundant D (add_all_deducible_clauses R (inferred_clause_sets R S (N+M)))\<close>
           have "strictly_redundant D (inferred_clause_sets R S (N+(Suc M)))"
           using simplify_preserves_strict_redundancy by auto
 
@@ -2160,14 +2160,14 @@ proof (rule ccontr)
   }
   from assms(2) and assms(1) have "\<not>(\<forall>M'. (M' \<ge> N \<longrightarrow> D \<in> inferred_clause_sets R S M'))" by auto 
   from this obtain M' where "M' \<ge> N" and "D \<notin> inferred_clause_sets R S M'" by auto 
-  from `M' \<ge> N` obtain N':: nat where "N' = M' - N" by auto
+  from \<open>M' \<ge> N\<close> obtain N':: nat where "N' = M' - N" by auto
   have "D \<in> inferred_clause_sets R S (N+(M'-N))"
-    by (simp add: `\<And>M. D \<in> inferred_clause_sets R S (N + M)`) 
-  from this and `D \<notin> inferred_clause_sets R S M'` show "False" by (simp add: `N \<le> M'`) 
+    by (simp add: \<open>\<And>M. D \<in> inferred_clause_sets R S (N + M)\<close>) 
+  from this and \<open>D \<notin> inferred_clause_sets R S M'\<close> show "False" by (simp add: \<open>N \<le> M'\<close>) 
 qed        
 
-text {* This entails that the clauses that are redundant in some set in the sequence are also 
-redundant in the set of persistent clauses. *}
+text \<open>This entails that the clauses that are redundant in some set in the sequence are also 
+redundant in the set of persistent clauses.\<close>
 
 lemma persistent_clauses_subsume_redundant_clauses:
   assumes "redundant C (inferred_clause_sets R S N)"
@@ -2191,38 +2191,38 @@ proof -
         then show "redundant C (saturation R S)" unfolding redundant_def by auto
       next
         assume "\<not>tautology C"
-        from this and `redundant C (inferred_clause_sets R S N)` obtain D 
+        from this and \<open>redundant C (inferred_clause_sets R S N)\<close> obtain D 
           where "subsumes D C" and "D \<in> inferred_clause_sets R S N" unfolding redundant_def by auto
         show "redundant C (saturation R S)"
         proof (cases)
           assume "D \<in> saturation R S"
-          from this and `subsumes D C` show "redundant C (saturation R S)" 
+          from this and \<open>subsumes D C\<close> show "redundant C (saturation R S)" 
             unfolding redundant_def by auto
         next
           assume "D \<notin> saturation R S"
-          from assms(2) assms(3) and `D \<in> inferred_clause_sets R S N` and `D \<notin> saturation R S`
+          from assms(2) assms(3) and \<open>D \<in> inferred_clause_sets R S N\<close> and \<open>D \<notin> saturation R S\<close>
           obtain M where "strictly_redundant D (inferred_clause_sets R S M)" using 
             non_persistent_clauses_are_redundant [of D R S] by auto
-          from `subsumes D C` and `\<not>tautology C` have "\<not>tautology D" 
+          from \<open>subsumes D C\<close> and \<open>\<not>tautology C\<close> have "\<not>tautology D" 
             unfolding subsumes_def tautology_def by auto
-          from `strictly_redundant D (inferred_clause_sets R S M)` and `\<not>tautology D` 
+          from \<open>strictly_redundant D (inferred_clause_sets R S M)\<close> and \<open>\<not>tautology D\<close> 
             obtain D' where "D' \<subset> D" and "D' \<in> inferred_clause_sets R S M"
             unfolding strictly_redundant_def by auto
    
-          from `D' \<subset> D` and `subsumes D C` have "D' \<subset> C" unfolding subsumes_def by auto 
-          from `D' \<subset> C` and `finite C` have "finite D'" 
+          from \<open>D' \<subset> D\<close> and \<open>subsumes D C\<close> have "D' \<subset> C" unfolding subsumes_def by auto 
+          from \<open>D' \<subset> C\<close> and \<open>finite C\<close> have "finite D'" 
             by (meson psubset_imp_subset rev_finite_subset) 
-          from `D' \<subset> C` and `finite C` have "card D' < card C" 
+          from \<open>D' \<subset> C\<close> and \<open>finite C\<close> have "card D' < card C" 
               unfolding all_fulfill_def 
               using psubset_card_mono  by auto
-          from this and `card C = I` have "(card D',I) \<in> ?nat_order" by auto
-          from `D' \<in> inferred_clause_sets R S M` have "redundant D' (inferred_clause_sets R S M)"
+          from this and \<open>card C = I\<close> have "(card D',I) \<in> ?nat_order" by auto
+          from \<open>D' \<in> inferred_clause_sets R S M\<close> have "redundant D' (inferred_clause_sets R S M)"
             unfolding redundant_def subsumes_def by auto
-          from  hyp_induct and `(card D',I) \<in> ?nat_order` have "?P (card D')" by force
-          from this and `finite D'` and `redundant D' (inferred_clause_sets R S M)` have 
+          from  hyp_induct and \<open>(card D',I) \<in> ?nat_order\<close> have "?P (card D')" by force
+          from this and \<open>finite D'\<close> and \<open>redundant D' (inferred_clause_sets R S M)\<close> have 
             "redundant D' (saturation R S)" by auto
           show "redundant C (saturation R S)"
-            by (meson `D' \<subset> C` `redundant D' (saturation R S)` 
+            by (meson \<open>D' \<subset> C\<close> \<open>redundant D' (saturation R S)\<close> 
               psubset_imp_subset subsumes_def subsumption_preserves_redundancy) 
         qed
       qed
@@ -2232,7 +2232,7 @@ proof -
  then show "redundant C (saturation R S)" using assms(1) assms(4) by blast
 qed
 
-text {* We deduce that the set of persistent clauses is saturated. *}
+text \<open>We deduce that the set of persistent clauses is saturated.\<close>
 
 theorem persistent_clauses_are_saturated:
  assumes "derived_clauses_are_finite R"
@@ -2243,43 +2243,43 @@ proof (rule ccontr)
   assume "\<not>saturated_binary_rule R ?S"
   then obtain P1 P2 C where "R P1 P2 C" and "P1 \<in> ?S" and "P2 \<in> ?S" and "\<not>redundant C ?S"
     unfolding saturated_binary_rule_def by blast
-  from `P1 \<in> ?S` obtain N1 where i: "\<forall>M. (M \<ge> N1 \<longrightarrow> P1 \<in> (inferred_clause_sets R S M))"
+  from \<open>P1 \<in> ?S\<close> obtain N1 where i: "\<forall>M. (M \<ge> N1 \<longrightarrow> P1 \<in> (inferred_clause_sets R S M))"
     by auto
-  from `P2 \<in> ?S` obtain N2 where ii: "\<forall>M. (M \<ge> N2 \<longrightarrow> P2 \<in> (inferred_clause_sets R S M))"
+  from \<open>P2 \<in> ?S\<close> obtain N2 where ii: "\<forall>M. (M \<ge> N2 \<longrightarrow> P2 \<in> (inferred_clause_sets R S M))"
     by auto
   let ?N = "max N1 N2"
   have "?N \<ge> N1" and "?N \<ge> N2" by auto
   from this and i have "P1 \<in> inferred_clause_sets R S ?N" by metis
-  from `?N \<ge> N2` and ii have "P2 \<in> inferred_clause_sets R S ?N" by metis
-  from `R P1 P2 C` and `P1 \<in> inferred_clause_sets R S ?N` and `P2 \<in> inferred_clause_sets R S ?N`
+  from \<open>?N \<ge> N2\<close> and ii have "P2 \<in> inferred_clause_sets R S ?N" by metis
+  from \<open>R P1 P2 C\<close> and \<open>P1 \<in> inferred_clause_sets R S ?N\<close> and \<open>P2 \<in> inferred_clause_sets R S ?N\<close>
     have "C \<in> all_deducible_clauses R ( inferred_clause_sets R S ?N)" by auto
   from this have "C \<in> add_all_deducible_clauses R (inferred_clause_sets R S ?N)" by auto
   from assms have "all_fulfill finite (inferred_clause_sets R S ?N)"
     using all_inferred_clause_sets_are_finite [of R S ?N] by auto
   from assms have "all_fulfill finite (add_all_deducible_clauses R (inferred_clause_sets R S ?N))"
     using add_all_deducible_clauses_finite by auto
-  from this and `C \<in> add_all_deducible_clauses R (inferred_clause_sets R S ?N)`
+  from this and \<open>C \<in> add_all_deducible_clauses R (inferred_clause_sets R S ?N)\<close>
     have "redundant C (inferred_clause_sets R S (Suc ?N))" 
     using simplify_and_membership
     [of "add_all_deducible_clauses R (inferred_clause_sets R S ?N)" 
       "inferred_clause_sets R S (Suc ?N)" C]
         by auto
   have "finite P1"
-    using `P1 \<in> inferred_clause_sets R S (max N1 N2)`
-      `all_fulfill finite (inferred_clause_sets R S (max N1 N2))` all_fulfill_def by auto 
+    using \<open>P1 \<in> inferred_clause_sets R S (max N1 N2)\<close>
+      \<open>all_fulfill finite (inferred_clause_sets R S (max N1 N2))\<close> all_fulfill_def by auto 
   have "finite P2"
-    using `P2 \<in> inferred_clause_sets R S (max N1 N2)`
-      `all_fulfill finite (inferred_clause_sets R S (max N1 N2))` all_fulfill_def by auto 
-  from `R P1 P2 C` and `finite P1` and `finite P2` and `derived_clauses_are_finite R` have "finite C" 
+    using \<open>P2 \<in> inferred_clause_sets R S (max N1 N2)\<close>
+      \<open>all_fulfill finite (inferred_clause_sets R S (max N1 N2))\<close> all_fulfill_def by auto 
+  from \<open>R P1 P2 C\<close> and \<open>finite P1\<close> and \<open>finite P2\<close> and \<open>derived_clauses_are_finite R\<close> have "finite C" 
     unfolding derived_clauses_are_finite_def  by blast
-  from assms this and `redundant C (inferred_clause_sets R S (Suc ?N))`
+  from assms this and \<open>redundant C (inferred_clause_sets R S (Suc ?N))\<close>
     have "redundant C (saturation R S)" 
     using  persistent_clauses_subsume_redundant_clauses [of C R S "Suc ?N"]
     by auto
-  thus "False" using `\<not>redundant C ?S` by auto
+  thus "False" using \<open>\<not>redundant C ?S\<close> by auto
  qed
 
-text {* Finally, we show that the computed saturated set is equivalent to the initial formula. *}
+text \<open>Finally, we show that the computed saturated set is equivalent to the initial formula.\<close>
 
 theorem saturation_is_correct: 
   assumes "Sound R"
@@ -2292,7 +2292,7 @@ proof -
     assume "\<not> entails_formula S (saturation R S)"
     then obtain C where "C \<in> saturation R S" and "\<not> entails S C" 
       unfolding entails_formula_def by auto
-    from `C \<in> saturation R S` obtain N where "C \<in> inferred_clause_sets R S N" by auto
+    from \<open>C \<in> saturation R S\<close> obtain N where "C \<in> inferred_clause_sets R S N" by auto
     { 
       fix N 
       have "entails_formula S (inferred_clause_sets R S N)"
@@ -2304,7 +2304,7 @@ proof -
         from assms(1) have "entails_formula (inferred_clause_sets R S N)   
           (add_all_deducible_clauses R (inferred_clause_sets R S N))"
           using add_all_deducible_sound  by auto
-        from this and `entails_formula S (inferred_clause_sets R S N)` 
+        from this and \<open>entails_formula S (inferred_clause_sets R S N)\<close> 
           have "entails_formula S (add_all_deducible_clauses R (inferred_clause_sets R S N))"
           using entails_transitive 
         [of S "inferred_clause_sets R S N" "add_all_deducible_clauses R (inferred_clause_sets R S N)"] 
@@ -2314,13 +2314,13 @@ proof -
           using simplify_def by auto
         then have "entails_formula (add_all_deducible_clauses R (inferred_clause_sets R S N))
               (inferred_clause_sets R S (Suc N))" using entailment_subset by auto
-        from this and `entails_formula S (add_all_deducible_clauses R (inferred_clause_sets R S N))`
+        from this and \<open>entails_formula S (add_all_deducible_clauses R (inferred_clause_sets R S N))\<close>
           show "entails_formula S (inferred_clause_sets R S (Suc N))"
           using entails_transitive [of S "add_all_deducible_clauses R (inferred_clause_sets R S N)"] 
           by auto
       qed
     }
-    from this and `C \<in> inferred_clause_sets R S N` and `\<not> entails S C` show "False" 
+    from this and \<open>C \<in> inferred_clause_sets R S N\<close> and \<open>\<not> entails S C\<close> show "False" 
     unfolding entails_formula_def by auto
   qed
   have "entails_formula (saturation R S) S"
@@ -2328,17 +2328,17 @@ proof -
     assume "\<not> entails_formula (saturation R S) S"
     then obtain C where "C \<in> S" and "\<not> entails (saturation R S) C" 
       unfolding entails_formula_def by auto
-    from `C \<in> S` have "redundant C S" unfolding redundant_def subsumes_def by auto
-    from assms(3) and `redundant C S` have "redundant C (inferred_clause_sets R S 0)" 
+    from \<open>C \<in> S\<close> have "redundant C S" unfolding redundant_def subsumes_def by auto
+    from assms(3) and \<open>redundant C S\<close> have "redundant C (inferred_clause_sets R S 0)" 
       using simplify_preserves_redundancy by auto
-    from assms(3) and `C \<in> S` have "finite C" unfolding all_fulfill_def by auto
-    from `redundant C (inferred_clause_sets R S 0)` assms(2) assms(3) `finite C` 
+    from assms(3) and \<open>C \<in> S\<close> have "finite C" unfolding all_fulfill_def by auto
+    from \<open>redundant C (inferred_clause_sets R S 0)\<close> assms(2) assms(3) \<open>finite C\<close> 
       have "redundant C (saturation R S)" 
       using persistent_clauses_subsume_redundant_clauses [of C R S 0] by auto
-    from this and `\<not> entails (saturation R S) C` show "False" 
+    from this and \<open>\<not> entails (saturation R S) C\<close> show "False" 
       using entails_formula_def redundancy_implies_entailment by auto
  qed
- from `entails_formula S (saturation R S)` and `entails_formula (saturation R S) S` 
+ from \<open>entails_formula S (saturation R S)\<close> and \<open>entails_formula (saturation R S) S\<close> 
  show ?thesis
  unfolding equivalent_def by auto
 qed

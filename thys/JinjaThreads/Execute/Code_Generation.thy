@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler
 *)
 
-section {* Code generator setup *}
+section \<open>Code generator setup\<close>
 
 theory Code_Generation 
 imports
@@ -16,7 +16,7 @@ imports
   "HOL-Library.Code_Target_Numeral"
 begin
 
-text {* Avoid module dependency cycles. *}
+text \<open>Avoid module dependency cycles.\<close>
 (* FIXME: Eliminate dependency cycle in Isabelle library *) 
 
 code_identifier
@@ -25,14 +25,14 @@ code_identifier
 | code_module Complete_Lattices \<rightharpoonup> (SML) Set
 | code_module Complete_Partial_Order \<rightharpoonup> (SML) Set
 
-text {* new code equation for @{term "insort_insert_key"} to avoid module dependency cycle with @{term "set"}. *}
+text \<open>new code equation for @{term "insort_insert_key"} to avoid module dependency cycle with @{term "set"}.\<close>
 lemma insort_insert_key_code [code]:
   "insort_insert_key f x xs = 
   (if List.member (map f xs) (f x) then xs else insort_key f x xs)"
 by(simp add: insort_insert_key_def List.member_def split del: if_split)
 
 
-text {* equations on predicate operations for code inlining *}
+text \<open>equations on predicate operations for code inlining\<close>
 
 lemma eq_i_o_conv_single: "eq_i_o = Predicate.single"
 by(rule ext)(simp add: Predicate.single_bind eq.equation)

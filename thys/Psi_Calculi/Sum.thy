@@ -23,9 +23,9 @@ lemma SumAssert1:
 
   shows "\<Psi> \<rhd> P \<oplus>\<^sub>\<phi> Q \<longmapsto> Rs"
 proof -
-  note `\<Psi> \<rhd> P \<longmapsto> Rs`
+  note \<open>\<Psi> \<rhd> P \<longmapsto> Rs\<close>
   moreover have "(\<phi>, P) mem [(\<phi>, P), (\<phi>, Q)]" by simp
-  ultimately show ?thesis using `\<Psi> \<turnstile> \<phi>` `guarded P`
+  ultimately show ?thesis using \<open>\<Psi> \<turnstile> \<phi>\<close> \<open>guarded P\<close>
     by(rule Case)
 qed
 
@@ -40,9 +40,9 @@ lemma SumAssert2:
 
   shows "\<Psi> \<rhd> P \<oplus>\<^sub>\<phi> Q \<longmapsto> Rs"
 proof -
-  note `\<Psi> \<rhd> Q \<longmapsto> Rs`
+  note \<open>\<Psi> \<rhd> Q \<longmapsto> Rs\<close>
   moreover have "(\<phi>, Q) mem [(\<phi>, P), (\<phi>, Q)]" by simp
-  ultimately show ?thesis using `\<Psi> \<turnstile> \<phi>` `guarded Q`
+  ultimately show ?thesis using \<open>\<Psi> \<turnstile> \<phi>\<close> \<open>guarded Q\<close>
     by(rule Case)
 qed
 
@@ -59,18 +59,18 @@ lemma sumAssertCases[consumes 2, case_names cSum1 cSum2]:
 
   shows Prop
 proof -
-  from `\<Psi> \<rhd> P \<oplus>\<^sub>\<phi> Q \<longmapsto> Rs` show ?thesis
+  from \<open>\<Psi> \<rhd> P \<oplus>\<^sub>\<phi> Q \<longmapsto> Rs\<close> show ?thesis
   proof(induct rule: caseCases)
     case(cCase \<phi>' P')
-    from `(\<phi>', P') mem [(\<phi>, P), (\<phi>, Q)]`
+    from \<open>(\<phi>', P') mem [(\<phi>, P), (\<phi>, Q)]\<close>
     have "\<phi> = \<phi>'" and D: "P = P' \<or> Q = P'" by auto
     from D show ?thesis
     proof(rule disjE)
       assume "P = P'"
-      with `\<Psi> \<rhd> P' \<longmapsto> Rs` `guarded P'` show ?case by(rule_tac rSum1) auto
+      with \<open>\<Psi> \<rhd> P' \<longmapsto> Rs\<close> \<open>guarded P'\<close> show ?case by(rule_tac rSum1) auto
     next
       assume "Q = P'"
-      with `\<Psi> \<rhd> P' \<longmapsto> Rs` `guarded P'` show ?case by(rule_tac rSum2) auto
+      with \<open>\<Psi> \<rhd> P' \<longmapsto> Rs\<close> \<open>guarded P'\<close> show ?case by(rule_tac rSum2) auto
     qed
   qed
 qed
@@ -151,7 +151,7 @@ lemma Sum1:
   shows "\<Psi> \<rhd> P \<oplus> Q \<longmapsto> Rs"
 proof -
   have "\<Psi> \<turnstile> \<top>" by(rule Top)
-  with `\<Psi> \<rhd> P \<longmapsto> Rs` show ?thesis using `guarded P`
+  with \<open>\<Psi> \<rhd> P \<longmapsto> Rs\<close> show ?thesis using \<open>guarded P\<close>
     by(rule SumAssert1)
 qed
 
@@ -166,7 +166,7 @@ lemma Sum2:
   shows "\<Psi> \<rhd> P \<oplus> Q \<longmapsto> Rs"
 proof -
   have "\<Psi> \<turnstile> \<top>" by(rule Top)
-  with `\<Psi> \<rhd> Q \<longmapsto> Rs` show ?thesis using `guarded Q`
+  with \<open>\<Psi> \<rhd> Q \<longmapsto> Rs\<close> show ?thesis using \<open>guarded Q\<close>
     by(rule SumAssert2)
 qed
 
@@ -182,7 +182,7 @@ lemma sumCases[consumes 1, case_names cSum1 cSum2]:
   shows Prop
 proof -
   have "\<Psi> \<turnstile> \<top>" by(rule Top)
-  with `\<Psi> \<rhd> P \<oplus> Q \<longmapsto> Rs` show ?thesis
+  with \<open>\<Psi> \<rhd> P \<oplus> Q \<longmapsto> Rs\<close> show ?thesis
   proof(induct rule: sumAssertCases)
     case cSum1
     thus ?case by (rule rSum1)

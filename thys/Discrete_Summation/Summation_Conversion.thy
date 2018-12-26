@@ -1,7 +1,7 @@
 
 (* Author: Florian Haftmann, TU Muenchen *)
 
-section {* A barebone conversion for discrete summation *}
+section \<open>A barebone conversion for discrete summation\<close>
 
 theory Summation_Conversion
 imports Factorials Discrete_Summation
@@ -39,7 +39,7 @@ next
     by (simp add: algebra_simps)
   also have "\<dots> = of_nat (Suc m) * ffact m (of_int k)" by simp
   also have "\<dots> = of_nat (Suc m) * ffact (Suc m - 1) (of_int k)" by simp
-  finally show ?case by (simp only: `m = Suc n` diff_Suc_1)
+  finally show ?case by (simp only: \<open>m = Suc n\<close> diff_Suc_1)
 qed
 
 lemma \<Sigma>_ffact_divide [summation]:
@@ -141,7 +141,7 @@ lemma [summation]:
   
 text \<open>Generic conversion\<close>  
 
-ML {*
+ML \<open>
 signature SUMMATION =
 sig
   val conv: Proof.context -> conv
@@ -193,7 +193,7 @@ fun conv ctxt =
   end
 
 end
-*}
+\<close>
 
 hide_fact (open) nat_simps of_int_pull_out of_int_pull_in
 

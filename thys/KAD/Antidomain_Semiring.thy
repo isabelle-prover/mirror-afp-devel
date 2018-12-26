@@ -5,15 +5,15 @@
                Tjark Weber <tjark.weber at it.uu.se>
 *)
 
-section {* Antidomain Semirings *}
+section \<open>Antidomain Semirings\<close>
 
 theory Antidomain_Semiring
 imports Domain_Semiring
 begin
 
-subsection {* Antidomain Monoids *}
+subsection \<open>Antidomain Monoids\<close>
 
-text {* We axiomatise antidomain monoids, using the axioms of~\cite{DesharnaisJipsenStruth}. *}
+text \<open>We axiomatise antidomain monoids, using the axioms of~\cite{DesharnaisJipsenStruth}.\<close>
 
 class antidomain_op =
   fixes antidomain_op :: "'a \<Rightarrow> 'a" ("ad")
@@ -30,7 +30,7 @@ begin
 no_notation domain_op ("d")
 no_notation zero_class.zero ("0")
 
-text {* We define a zero element and operations of domain and addition. *}
+text \<open>We define a zero element and operations of domain and addition.\<close>
 
 definition a_zero :: "'a" ("0") where
   "0 = ad 1"
@@ -70,7 +70,7 @@ qed
 lemma a_add_idem [simp]: "ad x \<oplus> ad x = ad x"
   by (metis am1 am3 am4 mult_1_right am_add_op_def)
 
-text {* The next three axioms suffice to show that the domain elements form a Boolean algebra. *}
+text \<open>The next three axioms suffice to show that the domain elements form a Boolean algebra.\<close>
 
 lemma a_add_comm: "x \<oplus> y = y \<oplus> x"
   using am2 am_add_op_def by auto
@@ -97,7 +97,7 @@ proof -
     using a_add_idem am_add_op_def by auto
 qed
 
-text {* The distributivity laws remain to be proved; our proofs follow those of Maddux~\cite{Maddux}. *}
+text \<open>The distributivity laws remain to be proved; our proofs follow those of Maddux~\cite{Maddux}.\<close>
 
 lemma prod_split [simp]: "ad x \<cdot> ad y \<oplus> ad x \<cdot> d y = ad x"
   using a_add_idem am_d_def am_add_op_def by auto
@@ -189,7 +189,7 @@ proof -
     using f1 by (metis (no_types) am_d_def)
 qed
 
-text {* Every antidomain monoid is a domain monoid. *}
+text \<open>Every antidomain monoid is a domain monoid.\<close>
 
 sublocale dm: domain_monoid am_d "(\<cdot>)" 1
   apply (unfold_locales)
@@ -261,9 +261,9 @@ no_notation am_d ("d")
 
 end
 
-subsection {* Antidomain Near-Semirings *}
+subsection \<open>Antidomain Near-Semirings\<close>
 
-text {* We define antidomain near-semirings. We do not consider units separately. The axioms are taken from~\cite{DesharnaisStruthAMAST}. *}
+text \<open>We define antidomain near-semirings. We do not consider units separately. The axioms are taken from~\cite{DesharnaisStruthAMAST}.\<close>
 
 notation zero_class.zero ("0")
 
@@ -319,7 +319,7 @@ proof -
     by simp
 qed
 
-text {* Every antidomain near-semiring is automatically a dioid, and therefore ordered. *}
+text \<open>Every antidomain near-semiring is automatically a dioid, and therefore ordered.\<close>
 
 subclass near_dioid_one_zerol
 proof
@@ -415,7 +415,7 @@ next
     by (metis a2_eq a_antitone a_comm a_subid_aux1 join.sup_least ans_d_def)
 qed
 
-text {* Every antidomain near-semiring is a domain near-semiring. *}
+text \<open>Every antidomain near-semiring is a domain near-semiring.\<close>
 
 sublocale dnsz: domain_near_semiring_one_zerol "(+)" "(\<cdot>)" 1 0 "ans_d" "(\<le>)" "(<)"
   apply (unfold_locales)
@@ -452,7 +452,7 @@ proof -
     by simp
 qed
 
-text {* The following counterexamples show that some of the antidomain monoid axioms do not need to hold. *}
+text \<open>The following counterexamples show that some of the antidomain monoid axioms do not need to hold.\<close>
 
 lemma "x \<cdot> ad 1 = ad 1"
 (*nitpick [expect=genuine]*)
@@ -490,9 +490,9 @@ no_notation ans_d ("d")
 
 end
 
-subsection {* Antidomain Pre-Dioids *}
+subsection \<open>Antidomain Pre-Dioids\<close>
 
-text {* Antidomain pre-diods are based on a different set of axioms, which are again taken from~\cite{DesharnaisStruthAMAST}. *}
+text \<open>Antidomain pre-diods are based on a different set of axioms, which are again taken from~\cite{DesharnaisStruthAMAST}.\<close>
 
 class antidomain_pre_dioid = pre_dioid_one_zerol + antidomain_op +
   assumes apd1 [simp]: "ad x \<cdot> x = 0"
@@ -671,7 +671,7 @@ proof (rule antisym)
     using a_antitone' apd_d_def d1_sum_var by auto
 qed
 
-text {* Antidomain pre-dioids are domain pre-dioids and antidomain near-semirings, but still not antidomain monoids. *}
+text \<open>Antidomain pre-dioids are domain pre-dioids and antidomain near-semirings, but still not antidomain monoids.\<close>
 
 sublocale dpdz: domain_pre_dioid_one_zerol "(+)" "(\<cdot>)" 1 0 "(\<le>)" "(<)" "\<lambda>x. ad (ad x)"
   apply (unfold_locales)
@@ -728,9 +728,9 @@ no_notation apd_d ("d")
 
 end
 
-subsection {* Antidomain Semirings *}
+subsection \<open>Antidomain Semirings\<close>
 
-text {* Antidomain semirings are direct expansions of antidomain pre-dioids, but do not require idempotency of addition. Hence we give a slightly different axiomatisation, following~\cite{DesharnaisStruthSCP}. *}
+text \<open>Antidomain semirings are direct expansions of antidomain pre-dioids, but do not require idempotency of addition. Hence we give a slightly different axiomatisation, following~\cite{DesharnaisStruthSCP}.\<close>
 
 class antidomain_semiringl = semiring_one_zerol + plus_ord + antidomain_op +
   assumes as1 [simp]: "ad x \<cdot> x = 0"
@@ -745,7 +745,7 @@ definition ads_d :: "'a \<Rightarrow> 'a" ("d") where
 lemma one_idem': "1 + 1 = 1"
   by (metis as1 as2 as3 add_zeror mult.right_neutral)
 
-text {* Every antidomain semiring is a dioid and an antidomain pre-dioid. *}
+text \<open>Every antidomain semiring is a dioid and an antidomain pre-dioid.\<close>
 
 subclass dioid
   by (standard, metis distrib_left mult.right_neutral one_idem')
@@ -787,7 +787,7 @@ lemma a_one [simp]: "ad 1 = 0"
 subclass antidomain_left_monoid
   by (unfold_locales, auto simp:  local.a_comm')
 
-text {* Every antidomain left semiring is a domain left semiring. *}
+text \<open>Every antidomain left semiring is a domain left semiring.\<close>
 
 no_notation domain_semiringl_class.fd ("( |_\<rangle> _)" [61,81] 82)
 
@@ -822,7 +822,7 @@ class antidomain_semiring = antidomain_semiringl + semiring_one_zero
 
 begin
 
-text {* Every antidomain semiring is an antidomain monoid. *}
+text \<open>Every antidomain semiring is an antidomain monoid.\<close>
 
 subclass antidomain_monoid
   by (standard, metis ans1 mult_1_right annir)
@@ -836,7 +836,7 @@ sublocale ds: domain_semiring "(+)" "(\<cdot>)" 1 0 "\<lambda>x. ad (ad x)" "(\<
 
 end
 
-subsection {* The Boolean Algebra of Domain Elements *}
+subsection \<open>The Boolean Algebra of Domain Elements\<close>
 
 typedef (overloaded) 'a a2_element = "{x :: 'a :: antidomain_semiring. x = d x}"
   by (rule_tac x=1 in exI, auto simp: ads_d_def)
@@ -890,7 +890,7 @@ instance
 
 end
 
-subsection {* Further Properties *}
+subsection \<open>Further Properties\<close>
 
 context antidomain_semiringl
 
@@ -899,7 +899,7 @@ begin
 lemma a_2_var: "ad x \<cdot> d y = 0 \<longleftrightarrow> ad x \<le> ad y"
   using local.a_gla local.ads_d_def local.dpdz.dom_weakly_local by auto
 
-text {* The following two lemmas give the Galois connection of Heyting algebras. *}
+text \<open>The following two lemmas give the Galois connection of Heyting algebras.\<close>
 
 lemma da_shunt1: "x \<le> d y + z \<Longrightarrow> x \<cdot> ad y \<le> z"
 proof -
@@ -1023,7 +1023,7 @@ qed
 lemma kat_4_equiv_opp: "y \<cdot> d x = d z \<cdot> y \<cdot> d x \<longleftrightarrow> y \<cdot> d x \<le> d z \<cdot> y"
   using kat_2_equiv kat_3_equiv_opp local.ads_d_def by auto
 
-subsection {* Forward Box and Diamond Operators *}
+subsection \<open>Forward Box and Diamond Operators\<close>
 
 lemma fdemodalisation22: "|x\<rangle> y \<le> d z \<longleftrightarrow> ad z \<cdot> x \<cdot> d y = 0"
 proof -
@@ -1063,7 +1063,7 @@ lemma fdia_split: "|x\<rangle> y = d z \<cdot> |x\<rangle> y + ad z \<cdot> |x\<
 definition fbox :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("( |_] _)" [61,81] 82) where
   "|x] y = ad (x \<cdot> ad y)"
 
-text {* The next lemmas establish the De Morgan duality between boxes and diamonds. *}
+text \<open>The next lemmas establish the De Morgan duality between boxes and diamonds.\<close>
 
 lemma fdia_fbox_de_morgan_2: "ad ( |x\<rangle> y) = |x] ad y"
   using fbox_def local.a_closure local.a_loc local.am_d_def local.fdia_def by auto
@@ -1181,7 +1181,7 @@ lemma fbox_demodalisation3: "d y \<le> |x] d z \<longleftrightarrow> d y \<cdot>
 
 end
 
-subsection {* Antidomain Kleene Algebras *}
+subsection \<open>Antidomain Kleene Algebras\<close>
 
 class antidomain_left_kleene_algebra = antidomain_semiringl + left_kleene_algebra_zerol
 

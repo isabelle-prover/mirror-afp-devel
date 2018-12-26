@@ -3,19 +3,19 @@
   Author:     Diego Marmsoler
 *)
 section "A Calculus for Dynamic Architectures"
-text {*
+text \<open>
   The following theory formalizes our calculus for dynamic architectures~\cite{Marmsoler2017b,Marmsoler2017c} and verifies its soundness.
   The calculus allows to reason about temporal-logic specifications of component behavior in a dynamic setting.
   The theory is based on our theory of configuration traces and introduces the notion of behavior trace assertion to specify component behavior in a dynamic setting.
-*}
+\<close>
 theory Dynamic_Architecture_Calculus
   imports Configuration_Traces
 begin
 
 subsection "Extended Natural Numbers"
-text {*
+text \<open>
   We first provide one additional property for extended natural numbers.
-*}
+\<close>
 
 lemma the_enat_mono[simp]:
   assumes "m \<noteq> \<infinity>"
@@ -24,9 +24,9 @@ lemma the_enat_mono[simp]:
   using assms(1) assms(2) enat_ile by fastforce
     
 subsection "Lazy Lists"
-text {*
+text \<open>
   Finally, we provide an additional property for lazy lists.
-*}
+\<close>
   
 lemma llength_geq_enat_lfiniteD: "llength xs \<le> enat n \<Longrightarrow> lfinite xs"
   using not_lfinite_llength by force
@@ -35,9 +35,9 @@ context dynamic_component
 begin
 
 subsection "Dynamic Evaluation of Temporal Operators"
-text {*
+text \<open>
   In the following we introduce a function to evaluate a behavior trace assertion over a given configuration trace.
-*}
+\<close>
 type_synonym 'c bta = "(nat \<Rightarrow> 'c) \<Rightarrow> nat \<Rightarrow> bool"
 
 definition eval:: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> (nat \<Rightarrow> 'cmp) \<Rightarrow> nat
@@ -46,18 +46,18 @@ definition eval:: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> (nat 
     (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>) \<and> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat(\<langle>cid #\<^bsub>n\<^esub> inf_llist t\<rangle>)) \<or>
     (\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>) \<and> (\<nexists>i'. i'\<ge>n \<and> \<parallel>cid\<parallel>\<^bsub>t i'\<^esub>) \<and> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>(n)) \<or>
     (\<nexists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>) \<and> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) n"
-text {*
+text \<open>
   @{const eval} takes a component identifier @{term cid}, a configuration trace @{term t}, a behavior trace @{term t'}, and point in time @{term n} and evaluates behavior trace assertion @{term \<gamma>} as follows:
   \begin{itemize}
     \item If component @{term cid} is again activated in the future, @{term \<gamma>} is evaluated at the next point in time where @{term cid} is active in @{term t}.
     \item If component @{term cid} is not again activated in the future but it is activated at least once in @{term t}, then @{term \<gamma>} is evaluated at the point in time given by @{term "(\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>(n))"}.
     \item If component @{term cid} is never active in @{term t}, then @{term \<gamma>} is evaluated at time point @{term n}.
   \end{itemize}
-*}
+\<close>
   
-text {*
+text \<open>
   The following proposition evaluates definition @{const eval} by showing that a behavior trace assertion @{term \<gamma>} holds over configuration trace @{term t} and continuation @{term t'} whenever it holds for the concatenation of the corresponding projection with @{term t'}.
-*}
+\<close>
 proposition eval_corr:
   "eval cid t t' 0 \<gamma> \<longleftrightarrow> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) 0"
 proof
@@ -82,13 +82,13 @@ next
   proof cases
     assume "\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
     hence "\<exists>i\<ge>0. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>" by simp
-    moreover from `\<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) 0` have
+    moreover from \<open>\<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) 0\<close> have
       "\<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat(\<langle>cid #\<^bsub>enat 0\<^esub> inf_llist t\<rangle>))"
       using zero_enat_def by auto
     ultimately show ?thesis using eval_def by simp
   next
     assume "\<nexists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    with `\<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) 0` show ?thesis using eval_def by simp
+    with \<open>\<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) 0\<close> show ?thesis using eval_def by simp
   qed
 qed
 
@@ -159,7 +159,7 @@ proposition validity2:
   shows "eval c t t' n' \<gamma> \<Longrightarrow> eval c t t' n \<gamma>"
 proof -
   assume "eval c t t' n' \<gamma>"
-  with `\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>`
+  with \<open>\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close>
     have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle>))"
     using validCE_act by blast
   moreover have "enat n' - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
@@ -172,14 +172,14 @@ proof -
 qed
   
 subsection "Specification Operators"
-text {*
+text \<open>
   In the following we introduce some basic operators for behavior trace assertions.
-*}
+\<close>
 
 subsubsection "Predicates"
-text {*
+text \<open>
   Every predicate can be transformed to a behavior trace assertion.
-*}
+\<close>
 
 definition pred :: "bool \<Rightarrow> ('cmp bta)"
   where "pred P \<equiv> \<lambda> t n. P"
@@ -243,28 +243,28 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    with `eval cid t t' n \<gamma> \<longrightarrow> eval cid t t' n \<gamma>'`
+    with \<open>eval cid t t' n \<gamma> \<longrightarrow> eval cid t t' n \<gamma>'\<close>
       have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)
       \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using eval_def by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
       using validCI_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] by blast
     thus ?thesis using imp_def by simp
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `eval cid t t' n \<gamma> \<longrightarrow> eval cid t t' n \<gamma>'`
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>eval cid t t' n \<gamma> \<longrightarrow> eval cid t t' n \<gamma>'\<close>
       have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)
       \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)" using eval_def by blast
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
       using validCI_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] by blast
     thus ?thesis using imp_def by simp
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  with `eval cid t t' n \<gamma> \<longrightarrow> eval cid t t' n \<gamma>'`
+  with \<open>eval cid t t' n \<gamma> \<longrightarrow> eval cid t t' n \<gamma>'\<close>
     have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using eval_def by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
     using validCI_not_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] by blast
   thus ?thesis using imp_def by simp    
 qed
@@ -277,29 +277,29 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (\<gamma> \<longrightarrow>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
+    moreover from \<open>eval cid t t' n (\<gamma> \<longrightarrow>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
       using imp_def by simp
     ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)
       \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (\<gamma> \<longrightarrow>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
+    moreover from \<open>eval cid t t' n (\<gamma> \<longrightarrow>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
       using imp_def by simp
     ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)
       \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
-      using validCE_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
-    with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+      using validCE_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+    with \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (\<gamma> \<longrightarrow>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
+  moreover from \<open>eval cid t t' n (\<gamma> \<longrightarrow>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<longrightarrow> \<gamma>' t n)"
     using imp_def by simp
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n
     \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"] by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using eval_def by blast
 qed
 
 subsubsection "Disjunction"  
@@ -320,31 +320,31 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (\<gamma> \<or>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<or> \<gamma>' t n)"
+    moreover from \<open>eval cid t t' n (\<gamma> \<or>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<or> \<gamma>' t n)"
       using disj_def by simp
     ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)
       \<or> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"] by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis
       using validCI_act[of n cid t \<gamma> t'] validCI_act[of n cid t \<gamma>' t'] by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (\<gamma> \<or>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<or> \<gamma>' t n)"
+    moreover from \<open>eval cid t t' n (\<gamma> \<or>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<or> \<gamma>' t n)"
       using disj_def by simp
     ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)
       \<or> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
-      using validCE_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
-    with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis
+      using validCE_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"] \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+    with \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis
       using validCI_cont[of cid t n \<gamma> t'] validCI_cont[of cid t n \<gamma>' t'] by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (\<gamma> \<or>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<or> \<gamma>' t n)"
+  moreover from \<open>eval cid t t' n (\<gamma> \<or>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<or> \<gamma>' t n)"
     using disj_def by simp
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n
     \<or> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"] by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis
     using validCI_not_act[of cid t \<gamma> t' n] validCI_not_act[of cid t \<gamma>' t' n] by blast
 qed
 
@@ -361,27 +361,27 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    with `eval cid t t' n \<gamma> \<and> eval cid t t' n \<gamma>'`
+    with \<open>eval cid t t' n \<gamma> \<and> eval cid t t' n \<gamma>'\<close>
       have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)
       \<and> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using eval_def by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
       using validCI_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] by blast
     thus ?thesis using conj_def by simp
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `eval cid t t' n \<gamma> \<and> eval cid t t' n \<gamma>'`
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>eval cid t t' n \<gamma> \<and> eval cid t t' n \<gamma>'\<close>
       have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)
       \<and> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)" using eval_def by blast
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
       using validCI_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] by blast
     thus ?thesis using conj_def by simp
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  with `eval cid t t' n \<gamma> \<and> eval cid t t' n \<gamma>'` have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n
+  with \<open>eval cid t t' n \<gamma> \<and> eval cid t t' n \<gamma>'\<close> have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n
     \<and> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n" using eval_def by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
     using validCI_not_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] by blast
   thus ?thesis using conj_def by simp    
 qed
@@ -394,28 +394,28 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (\<gamma> \<and>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
+    moreover from \<open>eval cid t t' n (\<gamma> \<and>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
       using conj_def by simp
     ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)
       \<and> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (\<gamma> \<and>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
+    moreover from \<open>eval cid t t' n (\<gamma> \<and>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
       using conj_def by simp
     ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)
       \<and> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
-      using validCE_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
-    with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+      using validCE_cont[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+    with \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (\<gamma> \<and>\<^sup>b \<gamma>')` have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
+  moreover from \<open>eval cid t t' n (\<gamma> \<and>\<^sup>b \<gamma>')\<close> have "eval cid t t' n (\<lambda>t n. \<gamma> t n \<and> \<gamma>' t n)"
     using conj_def by simp
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n \<and> \<gamma>' (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"] by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using eval_def by blast
 qed
 
 subsubsection "Negation"
@@ -431,24 +431,24 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    with `\<not> eval cid t t' n \<gamma>`
+    with \<open>\<not> eval cid t t' n \<gamma>\<close>
       have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using eval_def by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
       using validCI_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
     thus ?thesis using neg_def by simp
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> eval cid t t' n \<gamma>`
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> eval cid t t' n \<gamma>\<close>
       have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)" using eval_def by blast
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
       using validCI_cont[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
     thus ?thesis using neg_def by simp
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  with `\<not> eval cid t t' n \<gamma>` have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n" using eval_def by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
+  with \<open>\<not> eval cid t t' n \<gamma>\<close> have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n" using eval_def by blast
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
     using validCI_not_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
   thus ?thesis using neg_def by simp    
 qed   
@@ -461,23 +461,23 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
+    moreover from \<open>eval cid t t' n (\<not>\<^sup>b \<gamma>)\<close> have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
     ultimately have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
+    moreover from \<open>eval cid t t' n (\<not>\<^sup>b \<gamma>)\<close> have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
     ultimately have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
-      using validCE_cont[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
-    with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+      using validCE_cont[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+    with \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
+  moreover from \<open>eval cid t t' n (\<not>\<^sup>b \<gamma>)\<close> have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
   ultimately have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using eval_def by blast
 qed
 
 subsubsection "Quantifiers"
@@ -494,26 +494,26 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    with `\<forall>p. eval cid t t' n (\<gamma> p)`
+    with \<open>\<forall>p. eval cid t t' n (\<gamma> p)\<close>
     have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using eval_def by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
       using validCI_act[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] by blast
     thus ?thesis using all_def[of \<gamma>] by auto
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<forall>p. eval cid t t' n (\<gamma> p)`
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<forall>p. eval cid t t' n (\<gamma> p)\<close>
       have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
       using eval_def by blast
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
       using validCI_cont[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] by blast
     thus ?thesis using all_def[of \<gamma>] by auto
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  with `\<forall>p. eval cid t t' n (\<gamma> p)` have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
+  with \<open>\<forall>p. eval cid t t' n (\<gamma> p)\<close> have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using eval_def by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
     using validCI_not_act[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] by blast
   thus ?thesis using all_def[of \<gamma>] by auto
 qed
@@ -526,26 +526,26 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (all (\<lambda>p. \<gamma> p))` have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
+    moreover from \<open>eval cid t t' n (all (\<lambda>p. \<gamma> p))\<close> have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
       using all_def[of \<gamma>] by auto
     ultimately have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (all (\<lambda>p. \<gamma> p))` have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
+    moreover from \<open>eval cid t t' n (all (\<lambda>p. \<gamma> p))\<close> have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
       using all_def[of \<gamma>] by auto
     ultimately have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
-      using validCE_cont[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
-    with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+      using validCE_cont[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+    with \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (all (\<lambda>p. \<gamma> p))` have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
+  moreover from \<open>eval cid t t' n (all (\<lambda>p. \<gamma> p))\<close> have "eval cid t t' n (\<lambda>t n. (\<forall>y. (\<gamma> y t n)))"
     using all_def[of \<gamma>] by auto
   ultimately have "\<forall>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda>t n. (\<forall>y. (\<gamma> y t n))"] by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using eval_def by blast
 qed
   
 definition ex :: "('a \<Rightarrow> ('cmp bta))
@@ -560,25 +560,25 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    with `\<exists>p. eval cid t t' n (\<gamma> p)`
+    with \<open>\<exists>p. eval cid t t' n (\<gamma> p)\<close>
       have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using eval_def by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
       using validCI_act[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] by blast
     thus ?thesis using ex_def[of \<gamma>] by auto
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<exists>p. eval cid t t' n (\<gamma> p)`
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<exists>p. eval cid t t' n (\<gamma> p)\<close>
       have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)" using eval_def by blast
-    with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
+    with \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
       using validCI_cont[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] by blast
     thus ?thesis using ex_def[of \<gamma>] by auto
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  with `\<exists>p. eval cid t t' n (\<gamma> p)` have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
+  with \<open>\<exists>p. eval cid t t' n (\<gamma> p)\<close> have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using eval_def by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
     using validCI_not_act[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] by blast
   thus ?thesis using ex_def[of \<gamma>] by auto
 qed
@@ -591,32 +591,32 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (ex (\<lambda>p. \<gamma> p))` have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
+    moreover from \<open>eval cid t t' n (ex (\<lambda>p. \<gamma> p))\<close> have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
       using ex_def[of \<gamma>] by auto
     ultimately have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] by blast
-    with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+    with \<open>\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (\<exists>\<^sub>bp. \<gamma> p)` have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
+    moreover from \<open>eval cid t t' n (\<exists>\<^sub>bp. \<gamma> p)\<close> have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
       using ex_def[of \<gamma>] by auto
     ultimately have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
-      using validCE_cont[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
-    with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
+      using validCE_cont[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+    with \<open>\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using eval_def by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (\<exists>\<^sub>bp. \<gamma> p)` have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
+  moreover from \<open>eval cid t t' n (\<exists>\<^sub>bp. \<gamma> p)\<close> have "eval cid t t' n (\<lambda>t n. (\<exists>y. (\<gamma> y t n)))"
     using ex_def[of \<gamma>] by auto
   ultimately have "\<exists>p. (\<gamma> p) (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda>t n. (\<exists>y. (\<gamma> y t n))"] by blast
-  with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
+  with \<open>\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using eval_def by blast
 qed    
     
 subsubsection "Behavior Assertions"
-text {*
+text \<open>
   First we provide rules for basic behavior assertions.
-*}
+\<close>
 
 definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ('cmp bta)" ("[_]\<^sub>b")
   where "ba \<phi> \<equiv> \<lambda> t n. \<phi> (t n)"
@@ -730,7 +730,7 @@ lemma baEA[elim]:
     and "eval c t t' n (ba \<phi>)"
   shows "\<phi> (\<sigma>\<^bsub>c\<^esub>(t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>))"
 proof -
-  from `eval c t t' n (ba \<phi>)` have "eval c t t' n (\<lambda> t n. \<phi> (t n))" using ba_def by simp
+  from \<open>eval c t t' n (ba \<phi>)\<close> have "eval c t t' n (\<lambda> t n. \<phi> (t n))" using ba_def by simp
   moreover from assms have "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" and "\<parallel>c\<parallel>\<^bsub>t (\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)\<^esub>" using nxtActI[of n c t] by auto
   ultimately have "\<phi> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t')) (the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)))"
     using validCE_act by blast
@@ -742,7 +742,7 @@ proof -
     moreover have "\<langle>c #\<^bsub>enat n\<^esub> inf_llist t\<rangle> < \<langle>c #\<^bsub>\<infinity>\<^esub> inf_llist t\<rangle>"
     proof -
       have "enat \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> < llength (inf_llist t)" by simp
-      with `\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n` `\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>` show ?thesis using nAct_less by simp
+      with \<open>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<close> \<open>\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> show ?thesis using nAct_less by simp
     qed
     ultimately show ?thesis by simp
   qed
@@ -755,12 +755,12 @@ proof -
     from assms have "\<nexists>k. n\<le>k \<and> k<\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>" using nxtActI[of n c t] by auto
     hence "\<not> (\<exists>k\<ge>n. k < \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>c\<parallel>\<^bsub>lnth (inf_llist t) k\<^esub>)" by simp
     moreover have "enat \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-    ultimately show ?thesis using `\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n` nAct_not_active_same by simp
+    ultimately show ?thesis using \<open>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<close> nAct_not_active_same by simp
   qed      
   moreover have "\<sigma>\<^bsub>c\<^esub>(t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) = lnth (\<pi>\<^bsub>c\<^esub>(inf_llist t)) (the_enat (\<langle>c #\<^bsub>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>))"
   proof -
     have "enat (Suc i) < llength (inf_llist t)" using enat_ord_code by simp
-    moreover from `\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>` have "\<parallel>c\<parallel>\<^bsub>lnth (inf_llist t) \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" by simp
+    moreover from \<open>\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> have "\<parallel>c\<parallel>\<^bsub>lnth (inf_llist t) \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" by simp
     ultimately show ?thesis using proj_active_nth by simp
   qed
   ultimately show ?thesis by simp
@@ -836,12 +836,12 @@ proof (cases)
   with assms(2) obtain n' where "n'\<ge>n" and "\<exists>!i. n\<le>i \<and> i<n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>" and "eval c t t' n' \<gamma>" by blast
   moreover from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" using nxtActI by auto
   ultimately have "\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by (metis \<open>\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> dual_order.strict_trans2 leI nat_less_le)
-  with `eval c t t' n' \<gamma>`
+  with \<open>eval c t t' n' \<gamma>\<close>
   have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle>))"
     using validCE_act by blast
   moreover have "the_enat(\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>) = Suc (the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>))"
   proof -
-    from `\<exists>!i. n\<le>i \<and> i<n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>` obtain i where "n\<le>i" and "i<n'" and "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    from \<open>\<exists>!i. n\<le>i \<and> i<n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> obtain i where "n\<le>i" and "i<n'" and "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
       and "\<forall>i'. n\<le>i' \<and> i'<n' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub> \<longrightarrow> i'=i" by blast
     moreover have "n' - 1 < llength (inf_llist t)" by simp            
     ultimately have "the_enat(\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>) = the_enat(eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>))"
@@ -857,10 +857,10 @@ proof (cases)
 next
   assume "\<not> (\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   with assms(3) have "eval c t t' (Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<gamma>" by simp
-  moreover from `\<not> (\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<not> (\<exists>i\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp
+  moreover from \<open>\<not> (\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<not> (\<exists>i\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>))"
     using assms(1) validCE_cont[of c t "Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" t' \<gamma>] by blast
-  moreover from assms(1) `\<not> (\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)`
+  moreover from assms(1) \<open>\<not> (\<exists>i>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close>
     have "Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>) = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)"
     using nAct_cnf2proj_Suc_dist by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (Suc (the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)))"
@@ -868,7 +868,7 @@ next
   moreover from assms(1) have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<ge> n" using nxtActI by auto
   ultimately have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using validCI_act[of n c t "\<lambda>t n. \<gamma> t (Suc n)" t']
     by blast
-  with `\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>` `\<not> (\<exists>i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` show ?thesis using nxt_def by simp
+  with \<open>\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>\<close> \<open>\<not> (\<exists>i'\<ge>Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> show ?thesis using nxt_def by simp
 qed
   
 lemma nxtIN[intro]:
@@ -881,18 +881,18 @@ lemma nxtIN[intro]:
   shows "eval c t t' n (\<circle>\<^sub>b(\<gamma>))"
 proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  moreover from `\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<not> (\<exists>i\<ge>Suc n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp
+  moreover from \<open>\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<not> (\<exists>i\<ge>Suc n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc n))"
-    using validCE_cont `eval c t t' (Suc n) \<gamma>` by blast
+    using validCE_cont \<open>eval c t t' (Suc n) \<gamma>\<close> by blast
   with \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (Suc (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)))"
-    using `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` lActive_less by auto
-  with `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))"
+    using \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> lActive_less by auto
+  with \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))"
     using validCI_cont[where \<gamma>="(\<lambda>t n. \<gamma> t (Suc n))"] by simp
   thus ?thesis using nxt_def by simp
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   with assms have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) (Suc n)" using validCE_not_act by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))"
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))"
     using validCI_not_act[where \<gamma>="(\<lambda>t n. \<gamma> t (Suc n))"] by blast
   thus ?thesis using nxt_def by simp
 qed
@@ -908,7 +908,7 @@ lemma nxtEA1[elim]:
     and "\<exists>!i. i\<ge>n \<and> i<n' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   shows "eval c t t' n' \<gamma>"
 proof -
-  from `eval c t t' n (\<circle>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
+  from \<open>eval c t t' n (\<circle>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
   moreover from assms(4) obtain i where "i\<ge>n" and "i<n'" and "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
     and "\<forall>i'. n\<le>i' \<and> i'<n' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub> \<longrightarrow> i'=i" by blast
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) (Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>))"
@@ -916,7 +916,7 @@ proof -
   moreover have "the_enat(\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>) = Suc (the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>))"
   proof -
     have "n' - 1 < llength (inf_llist t)" by simp            
-    with `i<n'` and `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` and `\<forall>i'. n\<le>i' \<and> i'<n' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub> \<longrightarrow> i'=i`
+    with \<open>i<n'\<close> and \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> and \<open>\<forall>i'. n\<le>i' \<and> i'<n' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub> \<longrightarrow> i'=i\<close>
       have "the_enat(\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>) = the_enat(eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>))"
       using nAct_active_suc[of "inf_llist t" n' n i c]  by (simp add: \<open>n \<le> i\<close>)
     moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle> \<noteq> \<infinity>" by simp
@@ -926,7 +926,7 @@ proof -
   moreover have "\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
   proof -
     from assms(4) have "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n" and "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by auto
-    with `\<forall>i'. n\<le>i' \<and> i'<n' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub> \<longrightarrow> i'=i` show ?thesis
+    with \<open>\<forall>i'. n\<le>i' \<and> i'<n' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub> \<longrightarrow> i'=i\<close> show ?thesis
       using assms(1) by (metis leI le_trans less_le)
   qed
   ultimately show ?thesis using validCI_act by blast
@@ -942,7 +942,7 @@ lemma nxtEA2[elim]:
     and "eval c t t' n (\<circle>\<^sub>b(\<gamma>))"
   shows "eval c t t' (Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>) \<gamma>"
 proof -
-  from `eval c t t' n (\<circle>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
+  from \<open>eval c t t' n (\<circle>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
   with assms(1) have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) (Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>))"
     using validCE_act[of n c t t' "\<lambda>t n. \<gamma> t (Suc n)"] by blast
   moreover from assms(1) assms(2) have "Suc (the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)=\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>)"
@@ -963,19 +963,19 @@ lemma nxtEN[elim]:
   shows "eval c t t' (Suc n) \<gamma>"
 proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  moreover from `eval c t t' n (\<circle>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
+  moreover from \<open>eval c t t' n (\<circle>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) (Suc (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>n))"
-    using `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` validCE_cont[where \<gamma>="(\<lambda>t n. \<gamma> t (Suc n))"] by simp
+    using \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> validCE_cont[where \<gamma>="(\<lambda>t n. \<gamma> t (Suc n))"] by simp
   hence "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(Suc n))"
     using \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> assms(1) lActive_less by auto
-  moreover from `\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<not> (\<exists>i\<ge>Suc n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp      
-  ultimately show ?thesis using validCI_cont[where n="Suc n"] `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+  moreover from \<open>\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<not> (\<exists>i\<ge>Suc n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp      
+  ultimately show ?thesis using validCI_cont[where n="Suc n"] \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval c t t' n (\<circle>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
+  moreover from \<open>eval c t t' n (\<circle>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<gamma> t (Suc n))" using nxt_def by simp
   ultimately have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) (Suc n)"
-    using `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` validCE_not_act[where \<gamma>="(\<lambda>t n. \<gamma> t (Suc n))"] by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using validCI_not_act[of c t \<gamma> t' "Suc n"] by blast
+    using \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> validCE_not_act[where \<gamma>="(\<lambda>t n. \<gamma> t (Suc n))"] by blast
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using validCI_not_act[of c t \<gamma> t' "Suc n"] by blast
 qed
 
 subsubsection "Eventually Operator"  
@@ -997,36 +997,36 @@ lemma evtIA[intro]:
 proof cases  assume "\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
   with assms(3) obtain n'' where "n'' \<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>" and "n''\<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n'\<^esub>" and "eval c t t' n'' \<gamma>" by auto
   hence "\<exists>i'\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using \<open>\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>\<close> nxtActI by blast
-  with `eval c t t' n'' \<gamma>` have
+  with \<open>eval c t t' n'' \<gamma>\<close> have
     "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>))"
     using validCE_act by blast
   moreover have "the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>) \<le> the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>)"
   proof -
-    from `\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<le>n''` have "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>"
+    from \<open>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<le>n''\<close> have "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>"
       using nAct_mono_lNact by simp
-    moreover from `n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>` have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>"
+    moreover from \<open>n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>"
       using nAct_mono_lNact by simp
     moreover have "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<noteq> \<infinity>" by simp
     ultimately show ?thesis by simp
   qed
   moreover have "\<exists>i'\<ge>n. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
   proof -
-    from `\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>` obtain i' where "i'\<ge>n'" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by blast
-    with `n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>` have "i'\<ge> n" using lNactGe le_trans by blast
-    with `\<parallel>c\<parallel>\<^bsub>t i'\<^esub>` show ?thesis by blast
+    from \<open>\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>\<close> obtain i' where "i'\<ge>n'" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by blast
+    with \<open>n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "i'\<ge> n" using lNactGe le_trans by blast
+    with \<open>\<parallel>c\<parallel>\<^bsub>t i'\<^esub>\<close> show ?thesis by blast
   qed
   ultimately have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"
     using validCI_act[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] by blast
   thus ?thesis using evt_def by simp
 next
   assume "\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)"
-  with `(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "n' \<ge> \<langle>c \<and> t\<rangle>" using lActive_less by auto
+  with \<open>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "n' \<ge> \<langle>c \<and> t\<rangle>" using lActive_less by auto
   hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using cnf2bhv_ge_llength by simp
   moreover have "the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 \<ge> the_enat(\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
   proof -
-    from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) \<ge> eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
+    from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) \<ge> eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
       using nAct_llength_proj by simp
-    moreover from `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+    moreover from \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
       using proj_finite2[of "inf_llist t"] by simp
     hence "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>" using llength_eq_infty_conv_lfinite by auto
     ultimately have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) \<ge> the_enat(eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>))"
@@ -1037,11 +1037,11 @@ next
     thus ?thesis by simp
   qed
   ultimately have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" by simp   
-  moreover from `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` have "eval c t t' n' \<gamma>" using assms(4) by simp
-    with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)`
+  moreover from \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> have "eval c t t' n' \<gamma>" using assms(4) by simp
+    with \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close>
     have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" using validCE_cont by blast
   ultimately have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"
-    using `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` validCI_act[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] by blast
+    using \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> validCI_act[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] by blast
   thus ?thesis using evt_def by simp
 qed
     
@@ -1059,16 +1059,16 @@ proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   moreover from assms(1) assms(2) have "\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)" by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))"
-    using validCE_cont[of c t n' t' \<gamma>] `eval c t t' n' \<gamma>` by blast
-  moreover from `n'\<ge>n` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_mono by simp
+    using validCE_cont[of c t n' t' \<gamma>] \<open>eval c t t' n' \<gamma>\<close> by blast
+  moreover from \<open>n'\<ge>n\<close> have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_mono by simp
   ultimately have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"
-    using validCI_cont[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` by blast
+    using validCI_cont[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by blast
   thus ?thesis using evt_def by simp
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   with assms have "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'" using validCE_not_act by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"
-    using validCI_not_act[where \<gamma>="\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n'"] `n'\<ge>n` by blast
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"
+    using validCI_not_act[where \<gamma>="\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n'"] \<open>n'\<ge>n\<close> by blast
   thus ?thesis using evt_def by simp
 qed
   
@@ -1083,8 +1083,8 @@ lemma evtEA[elim]:
           (\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub> \<and> (\<forall>n''\<ge> \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval c t t' n'' \<gamma>)) \<or>
           (\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>) \<and> eval c t t' n' \<gamma>)"
 proof -
-  from `eval c t t' n (\<diamond>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')" using evt_def by simp
-  with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>`
+  from \<open>eval c t t' n (\<diamond>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')" using evt_def by simp
+  with \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close>
     have "\<exists>n'\<ge>the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'"
     using validCE_act[where \<gamma>="\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n'"] by blast
   then obtain x where "x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" and
@@ -1092,38 +1092,38 @@ proof -
   thus ?thesis
   proof (cases)
     assume "x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
-    moreover from `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
+    moreover from \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
       by (metis infinity_ileE)
-    moreover from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<ge>1"
+    moreover from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<ge>1"
       using proj_one[of "inf_llist t"] by auto
     ultimately have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x"
       by (metis One_nat_def Suc_ile_eq antisym_conv2 diff_Suc_less enat_ord_simps(2)
           enat_the_enat less_imp_diff_less one_enat_def)
     hence "x = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x))" using cnf2bhv_bhv2cnf by simp
-    with `\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x`
+    with \<open>\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x\<close>
       have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))" by simp
     moreover have "\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
     proof -
-      from `x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+      from \<open>x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
         using llength_geq_enat_lfiniteD[of "\<pi>\<^bsub>c\<^esub>(inf_llist t)" x] by simp
       then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
-      moreover from `the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x` have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
+      moreover from \<open>the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x\<close> have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
         using bhv2cnf_greater_lActive by simp
       ultimately show ?thesis using lActive_greater_active_all by simp
     qed
     ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x) \<gamma>"
-      using `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` validCI_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"] by blast
+      using \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> validCI_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"] by blast
     moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
     proof -
-      from `x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+      from \<open>x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
         using llength_geq_enat_lfiniteD[of "\<pi>\<^bsub>c\<^esub>(inf_llist t)" x] by simp
       then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
-      moreover from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
+      moreover from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
       ultimately have "\<langle>c \<and> t\<rangle>\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using lActive_greatest by fastforce
       moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<and> t\<rangle>" by simp
       ultimately show "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by arith
     qed
-    ultimately show ?thesis using `\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` by blast
+    ultimately show ?thesis using \<open>\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by blast
   next
     assume "\<not>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
     hence "x<llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))" by simp
@@ -1137,18 +1137,18 @@ proof -
         assume "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub> \<le> n''" and "n'' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>"
         hence "the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>)"
           using nAct_same by simp
-        moreover from `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<^esub>" using nxtActI by auto
-        with `n'' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>` have "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using dual_order.strict_implies_order by auto
+        moreover from \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<^esub>" using nxtActI by auto
+        with \<open>n'' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close> have "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using dual_order.strict_implies_order by auto
         moreover have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>))"
         proof -
           have "enat i - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-          with `x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>` `i\<ge>n'` `\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)` have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
+          with \<open>x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>\<close> \<open>i\<ge>n'\<close> \<open>\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)\<close> have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
             using one_enat_def nAct_not_active_same by simp
           moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
           ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce        
-          thus ?thesis using `\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x` by blast
+          thus ?thesis using \<open>\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x\<close> by blast
         qed
-        with `the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>)` have
+        with \<open>the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>)\<close> have
           "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>))" by simp
         ultimately show "eval c t t' n'' \<gamma>" using validCI_act by blast
       qed
@@ -1156,15 +1156,15 @@ proof -
     moreover have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
     proof -
       have "enat i - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-      with `x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>` `i\<ge>n'` `\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)` have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
+      with \<open>x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>\<close> \<open>i\<ge>n'\<close> \<open>\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)\<close> have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
         using one_enat_def nAct_not_active_same by simp
       moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
       ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce        
-      with `x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)`
+      with \<open>x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)\<close>
         have "the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" by simp
-      with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis using active_geq_nxtAct by simp
+      with \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using active_geq_nxtAct by simp
     qed
-    ultimately show ?thesis using `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` by auto
+    ultimately show ?thesis using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by auto
   qed    
 qed
     
@@ -1179,9 +1179,9 @@ lemma evtEN[elim]:
   shows "\<exists>n'\<ge>n. eval c t t' n' \<gamma>" 
 proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  moreover from `eval c t t' n (\<diamond>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')" using evt_def by simp
+  moreover from \<open>eval c t t' n (\<diamond>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')" using evt_def by simp
   ultimately have "\<exists>n'\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>n. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'"
-    using validCE_cont[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` by blast
+    using validCE_cont[where \<gamma>="(\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')"] \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by blast
   then obtain x where "x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" and " \<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x" by auto
   moreover have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x"
   proof -
@@ -1194,29 +1194,29 @@ proof cases
       ultimately show False using \<open>\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by simp
     qed
     hence "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_greater_llength by simp
-    with `x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` show ?thesis by simp
+    with \<open>x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)\<close> show ?thesis by simp
   qed
   hence "x = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x))" using cnf2bhv_bhv2cnf by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))" by simp
-  moreover from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
+  moreover from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   proof -
-    from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by simp
+    from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by simp
     then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
-    moreover from `the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x` have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
+    moreover from \<open>the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x\<close> have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
       using bhv2cnf_greater_lActive by simp
     ultimately show ?thesis using lActive_greater_active_all by simp
   qed      
   ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x) \<gamma>"
-    using validCI_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" \<gamma>] `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
-  moreover from `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<langle>c \<and> t\<rangle> \<le> n" using lActive_less[of c t _ n] by auto
-  with `x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` have "n \<le> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" using p2c_mono_c2p by blast  
+    using validCI_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" \<gamma>] \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+  moreover from \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<langle>c \<and> t\<rangle> \<le> n" using lActive_less[of c t _ n] by auto
+  with \<open>x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)\<close> have "n \<le> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" using p2c_mono_c2p by blast  
   ultimately show ?thesis by auto
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval c t t' n (\<diamond>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')" using evt_def by simp
+  moreover from \<open>eval c t t' n (\<diamond>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n')" using evt_def by simp
   ultimately obtain n' where "n'\<ge>n" and "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'"
-    using `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` validCE_not_act[where \<gamma>="\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n'"] by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using validCI_not_act[of c t \<gamma> t' n'] by blast
+    using \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> validCE_not_act[where \<gamma>="\<lambda>t n. \<exists>n'\<ge>n. \<gamma> t n'"] by blast
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using validCI_not_act[of c t \<gamma> t' n'] by blast
 qed    
 
 subsubsection "Globally Operator"
@@ -1252,25 +1252,25 @@ proof -
         ultimately have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by arith
         moreover have "\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)"
         proof -
-          from `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>`
+          from \<open>lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close>
             have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) = Suc (\<langle>c \<and> t\<rangle>)"
             using bhv2cnf_lActive by blast
-          moreover from `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))` have "x \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
+          moreover from \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close> have "x \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
             using the_enat_mono by fastforce
           hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))))"
             using bhv2cnf_mono[of "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))" x] by simp
           ultimately have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> Suc (\<langle>c \<and> t\<rangle>)" by simp
           hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) > \<langle>c \<and> t\<rangle>" by simp
-          with `\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>` show ?thesis using lActive_greater_active_all by simp
+          with \<open>\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>\<close> show ?thesis using lActive_greater_active_all by simp
         qed
         ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)) \<gamma>" using assms(3) by simp
         hence "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))"
-          using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>] `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` by blast
-        moreover from `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))`
+          using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>] \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> by blast
+        moreover from \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close>
           have "(enat x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))" by auto
-        with `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
+        with \<open>lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
           using llength_eq_infty_conv_lfinite by auto
-        with `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))`
+        with \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close>
           have "the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 \<le> x" by auto
         ultimately show ?thesis using cnf2bhv_bhv2cnf[of c t x] by simp
       next
@@ -1285,19 +1285,19 @@ proof -
         ultimately have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>" using one_enat_def nAct_not_active_same by simp
         moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
         ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce
-        from `x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)` `x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)`
+        from \<open>x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)\<close> \<open>x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<close>
         have "the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" by simp
-        with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using active_geq_nxtAct by simp
-        moreover from `x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>` `x < llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))`
+        with \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using active_geq_nxtAct by simp
+        moreover from \<open>x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<close> \<open>x < llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close>
           have "\<exists>i'. i \<le> enat i' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using nAct_less_llength_active[of x c "inf_llist t" i] by simp
         hence "\<exists>i'\<ge>i. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by simp
         ultimately obtain n'' where "eval c t t' n'' \<gamma>" and "n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>" and "n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>"
           using assms(2) by blast
         moreover have "\<exists>i'\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
-          using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> `n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>` less_or_eq_imp_le nxtAct_active by auto
+          using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close> less_or_eq_imp_le nxtAct_active by auto
         ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>))"
           using validCE_act[of n'' c t t' \<gamma>] by blast
-        moreover from `n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>` and `n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>`
+        moreover from \<open>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>\<close> and \<open>n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close>
           have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>)=the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" using nAct_same by simp
         hence "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) = x" by (simp add: \<open>x = the_enat \<langle>c #\<^bsub>enat i\<^esub>inf_llist t\<rangle>\<close>)
         ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat x)" by simp
@@ -1305,7 +1305,7 @@ proof -
       qed
     qed
   qed
-  with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
+  with \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
     using validCI_act[of n c t "\<lambda> t n. \<forall>n'\<ge>n. \<gamma> t n'" t'] by blast
   thus ?thesis using glob_def by simp
 qed
@@ -1320,7 +1320,7 @@ lemma globIN[intro]:
   shows "eval c t t' n (\<box>\<^sub>b(\<gamma>))"
 proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"    
-  from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by simp
+  from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by simp
   then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
     
   have "\<forall>x::nat\<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x"
@@ -1328,36 +1328,36 @@ proof cases
     fix x::nat show "(x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)) \<longrightarrow> \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x"
     proof
       assume "x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)"
-      moreover from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<langle>c \<and> t\<rangle> \<le> n" using `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` lActive_less by auto
+      moreover from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<langle>c \<and> t\<rangle> \<le> n" using \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> lActive_less by auto
       ultimately have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n" using p2c_mono_c2p by simp
       with assms have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)) \<gamma>" by simp    
       moreover have "\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)"
       proof -
-        from `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>`
+        from \<open>lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close>
           have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) = Suc (\<langle>c \<and> t\<rangle>)"
           using bhv2cnf_lActive by blast
-        moreover from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "n>\<langle>c \<and> t\<rangle>"
-          by (meson `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` lActive_active leI le_eq_less_or_eq)
+        moreover from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "n>\<langle>c \<and> t\<rangle>"
+          by (meson \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> lActive_active leI le_eq_less_or_eq)
         hence "n\<ge>Suc (\<langle>c \<and> t\<rangle>)" by simp
-        with `n\<ge>Suc(\<langle>c \<and> t\<rangle>)` `\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> Suc (\<langle>c \<and> t\<rangle>)" by simp
+        with \<open>n\<ge>Suc(\<langle>c \<and> t\<rangle>)\<close> \<open>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n\<close> have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> Suc (\<langle>c \<and> t\<rangle>)" by simp
         hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) > \<langle>c \<and> t\<rangle>" by simp
-        with `\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>` show ?thesis using lActive_greater_active_all by simp
+        with \<open>\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>\<close> show ?thesis using lActive_greater_active_all by simp
       qed
       ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))"
-        using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>] `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+        using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>] \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
       moreover have "x \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
         using \<open>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<le> x\<close> cnf2bhv_def by auto
       ultimately show "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x"
         using cnf2bhv_bhv2cnf by simp
     qed
   qed
-  with `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
+  with \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
     using validCI_cont[of c t n "\<lambda> t n. \<forall>n'\<ge>n. \<gamma> t n'" t'] by simp
   thus ?thesis using glob_def by simp
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   with assms have "\<forall>n'\<ge>n. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'" using validCE_not_act by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
     using validCI_not_act[where \<gamma>="\<lambda> t n. \<forall>n'\<ge>n. \<gamma> t n'"] by blast
   thus ?thesis using glob_def by simp
 qed
@@ -1374,19 +1374,19 @@ lemma globEA[elim]:
   shows "eval c t t' n' \<gamma>"
 proof (cases)
   assume "\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  with `n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>` have "the_enat (\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>) \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
-    using nAct_mono_lNact `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by simp
-  moreover from `eval c t t' n (\<box>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
+  with \<open>n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "the_enat (\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>) \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
+    using nAct_mono_lNact \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by simp
+  moreover from \<open>eval c t t' n (\<box>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
     using glob_def by simp
   hence "\<forall>x\<ge>the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x"
-    using validCE_act `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+    using validCE_act \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>))" by simp
-  with `\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis using validCI_act by blast    
+  with \<open>\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using validCI_act by blast    
 next
   assume "\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
-  from `eval c t t' n (\<box>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')" using glob_def by simp
+  from \<open>eval c t t' n (\<box>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')" using glob_def by simp
   hence "\<forall>x\<ge>the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x"
-    using validCE_act `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+    using validCE_act \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
   moreover have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
   proof -
     have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>\<le>llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using nAct_le_proj by metis
@@ -1399,7 +1399,7 @@ next
     ultimately show ?thesis by simp
   qed
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" by simp
-  with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using validCI_cont by blast
+  with \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using validCI_cont by blast
 qed
 
 lemma globEANow:
@@ -1426,21 +1426,21 @@ lemma globEN[elim]:
   shows "eval c t t' n' \<gamma>"
 proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  moreover from `eval c t t' n (\<box>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
+  moreover from \<open>eval c t t' n (\<box>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
     using glob_def by simp
   ultimately have "\<forall>x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>n. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x"
-    using validCE_cont[of c t n t' "\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n'"] `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` by blast
-  moreover from `n'\<ge>n` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_mono by simp
+    using validCE_cont[of c t n t' "\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n'"] \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by blast
+  moreover from \<open>n'\<ge>n\<close> have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_mono by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" by simp
-  moreover from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` `n'\<ge>n` have "\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp
-  ultimately show ?thesis using validCI_cont `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+  moreover from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>n'\<ge>n\<close> have "\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)" by simp
+  ultimately show ?thesis using validCI_cont \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval c t t' n (\<box>\<^sub>b(\<gamma>))` have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
+  moreover from \<open>eval c t t' n (\<box>\<^sub>b(\<gamma>))\<close> have "eval c t t' n (\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n')"
     using glob_def by simp
   ultimately have "\<forall>n'\<ge>n. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'"
-    using `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` validCE_not_act[where \<gamma>="\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n'"] by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` `n'\<ge>n` show ?thesis using validCI_not_act by blast
+    using \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> validCE_not_act[where \<gamma>="\<lambda>t n. \<forall>n'\<ge>n. \<gamma> t n'"] by blast
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>n'\<ge>n\<close> show ?thesis using validCI_not_act by blast
 qed
 
 subsubsection "Until Operator"
@@ -1470,14 +1470,14 @@ proof cases
     a1: "\<forall>n'''\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. n'''< \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n''\<^esub>
     \<longrightarrow> (\<exists>n''''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'''\<^esub>. n''''\<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n'''\<^esub> \<and> eval c t t' n'''' \<gamma>')" by blast
   hence "\<exists>i'\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using \<open>\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>\<close> nxtActI by blast
-  with `eval c t t' n'' \<gamma>` have
+  with \<open>eval c t t' n'' \<gamma>\<close> have
     "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>))"
     using validCE_act by blast
   moreover have "the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>) \<le> the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>)"
   proof -
-    from `\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<le>n'` have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>"
+    from \<open>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<le>n'\<close> have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>"
       using nAct_mono_lNact by simp
-    moreover from `\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<le>n''` have "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>"
+    moreover from \<open>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>\<le>n''\<close> have "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>"
       using nAct_mono_lNact by simp        
     ultimately have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>" by simp
     moreover have "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<noteq> \<infinity>" by simp
@@ -1485,9 +1485,9 @@ proof cases
   qed
   moreover have "\<exists>i'\<ge>n. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
   proof -
-    from `\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>` obtain i' where "i'\<ge>n'" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by blast
-    with `n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>` have "i'\<ge> n" using lNactGe le_trans by blast
-    with `\<parallel>c\<parallel>\<^bsub>t i'\<^esub>` show ?thesis by blast
+    from \<open>\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>\<close> obtain i' where "i'\<ge>n'" and "\<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by blast
+    with \<open>n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "i'\<ge> n" using lNactGe le_trans by blast
+    with \<open>\<parallel>c\<parallel>\<^bsub>t i'\<^esub>\<close> show ?thesis by blast
   qed
   moreover have "\<forall>n'\<ge>the_enat \<langle>c #\<^bsub>n\<^esub>inf_llist t\<rangle>. n' < (the_enat \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle>)
     \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'"
@@ -1508,24 +1508,24 @@ proof cases
       ultimately have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>" using one_enat_def nAct_not_active_same by simp
       moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
       ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce
-      from `x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)` `x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)`
+      from \<open>x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)\<close> \<open>x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<close>
       have "the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" by simp
-      with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using active_geq_nxtAct by simp
+      with \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using active_geq_nxtAct by simp
       moreover have "i < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n''\<^esub>"
       proof -
         have "the_enat \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle> = \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle>" by simp
-        with `x < (the_enat \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle>)` and `x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>` have
+        with \<open>x < (the_enat \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle>)\<close> and \<open>x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<close> have
           "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle><\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>" by (metis enat_ord_simps(2))
         hence "i<n''" using nAct_strict_mono_back[of c i "inf_llist t" n''] by auto
-        with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis using lNact_notActive leI by blast
+        with \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using lNact_notActive leI by blast
       qed
       ultimately obtain n'' where "eval c t t' n'' \<gamma>'" and "n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>" and "n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>"
         using a1 by auto
       moreover have "\<exists>i'\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>"
-        using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> `n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>` less_or_eq_imp_le nxtAct_active by auto
+        using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close> less_or_eq_imp_le nxtAct_active by auto
       ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>))"
         using validCE_act[of n'' c t t' \<gamma>'] by blast
-      moreover from `n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>` and `n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>`
+      moreover from \<open>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>\<close> and \<open>n''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close>
         have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>)=the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" using nAct_same by simp
       hence "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) = x" by (simp add: \<open>x = the_enat \<langle>c #\<^bsub>enat i\<^esub>inf_llist t\<rangle>\<close>)
       ultimately show "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x" by simp
@@ -1539,17 +1539,17 @@ next
   with assms(4) have "eval c t t' n' \<gamma>" and a2: "\<forall>n''\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. n''< n'
     \<longrightarrow> ((\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>) \<and> (\<exists>n'''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n''\<^esub>. n'''\<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n''\<^esub> \<and> eval c t t' n''' \<gamma>')) \<or>
     (\<not>(\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>) \<and> eval c t t' n'' \<gamma>')" by auto
-  with `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` `eval c t t' n' \<gamma>` `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have
+  with \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> \<open>eval c t t' n' \<gamma>\<close> \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have
     "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))" using validCE_cont by blast
   moreover have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
   proof -
-    from `(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` have "n' \<ge> \<langle>c \<and> t\<rangle>" using lActive_less by auto
+    from \<open>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> have "n' \<ge> \<langle>c \<and> t\<rangle>" using lActive_less by auto
     hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using cnf2bhv_ge_llength by simp
     moreover have "the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 \<ge> the_enat(\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
     proof -
-      from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) \<ge> eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
+      from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)) \<ge> eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
         using nAct_llength_proj by simp
-      moreover from `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+      moreover from \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
         using proj_finite2[of "inf_llist t"] by simp
       hence "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>" using llength_eq_infty_conv_lfinite by auto
       ultimately have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) \<ge> the_enat(eSuc (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>))"
@@ -1580,35 +1580,35 @@ next
         ultimately have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by arith
         moreover have "\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)"
         proof -
-          from `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>`
+          from \<open>lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close>
             have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))) = Suc (\<langle>c \<and> t\<rangle>)"
             using bhv2cnf_lActive by blast
-          moreover from `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))` have "x \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
+          moreover from \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close> have "x \<ge> the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
             using the_enat_mono by fastforce
           hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))))"
             using bhv2cnf_mono[of "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))" x] by simp
           ultimately have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> Suc (\<langle>c \<and> t\<rangle>)" by simp
           hence "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) > \<langle>c \<and> t\<rangle>" by simp
-          with `\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>` show ?thesis using lActive_greater_active_all by simp
+          with \<open>\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>\<close> show ?thesis using lActive_greater_active_all by simp
         qed
         moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x < n'"
         proof -
-          from `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "llength (\<pi>\<^bsub>c\<^esub>inf_llist t) = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t))"
+          from \<open>lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "llength (\<pi>\<^bsub>c\<^esub>inf_llist t) = the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t))"
             by (simp add: enat_the_enat llength_eq_infty_conv_lfinite)
-          with `x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "x\<ge>the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t))"
+          with \<open>x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "x\<ge>the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t))"
             using enat_ord_simps(1) by fastforce
-          moreover from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "llength (\<pi>\<^bsub>c\<^esub>inf_llist t)\<ge>1" using proj_one by force
+          moreover from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "llength (\<pi>\<^bsub>c\<^esub>inf_llist t)\<ge>1" using proj_one by force
           ultimately have "the_enat (llength (\<pi>\<^bsub>c\<^esub>inf_llist t)) - 1 \<le> x" by simp
-          with `x < (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))` show ?thesis using c2p_mono_p2c_strict by simp
+          with \<open>x < (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))\<close> show ?thesis using c2p_mono_p2c_strict by simp
         qed
         ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)) \<gamma>'" using a2 by blast
         hence "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))"
-          using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>'] `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` by blast
-        moreover from `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))`
+          using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>'] \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not> (\<exists>i'\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> by blast
+        moreover from \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close>
           have "(enat x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))" by auto
-        with `lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
+        with \<open>lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
           using llength_eq_infty_conv_lfinite by auto
-        with `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))`
+        with \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close>
           have "the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 \<le> x" by auto
         ultimately show ?thesis using cnf2bhv_bhv2cnf[of c t x] by simp
       next
@@ -1623,26 +1623,26 @@ next
         ultimately have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>" using one_enat_def nAct_not_active_same by simp
         moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
         ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce
-        from `x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)` `x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)`
+        from \<open>x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)\<close> \<open>x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<close>
         have "the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" by simp
-        with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using active_geq_nxtAct by simp
-        moreover from `x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>` `x < llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))`
+        with \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using active_geq_nxtAct by simp
+        moreover from \<open>x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<close> \<open>x < llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close>
           have "\<exists>i'. i \<le> enat i' \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using nAct_less_llength_active[of x c "inf_llist t" i] by simp
         hence "\<exists>i'\<ge>i. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" by simp
         moreover have "i<n'"
         proof -
-          from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` have "n'\<ge>\<langle>c \<and> t\<rangle>" using lActive_less by auto
+          from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> have "n'\<ge>\<langle>c \<and> t\<rangle>" using lActive_less by auto
           hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')\<ge>the_enat(llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using cnf2bhv_ge_llength by simp
-          with `x<llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` show ?thesis
+          with \<open>x<llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> show ?thesis
             using \<open>\<not> (\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> le_neq_implies_less nat_le_linear by blast
         qed
         ultimately obtain n''' where "eval c t t' n''' \<gamma>'" and "n'''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>" and "n'''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>"
           using a2 by blast
-        moreover from `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<^esub>" using nxtActI by auto
-        with `n'''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>` have "\<exists>i'\<ge>n'''. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using less_or_eq_imp_le by blast
+        moreover from \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<^esub>" using nxtActI by auto
+        with \<open>n'''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close> have "\<exists>i'\<ge>n'''. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using less_or_eq_imp_le by blast
         ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n'''\<^esub> inf_llist t\<rangle>))"
           using validCE_act[of n''' c t t' \<gamma>'] by blast
-        moreover from `n'''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>` and `n'''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>`
+        moreover from \<open>n'''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>\<close> and \<open>n'''\<le>\<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close>
           have "the_enat (\<langle>c #\<^bsub>n'''\<^esub> inf_llist t\<rangle>)=the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" using nAct_same by simp
         hence "the_enat (\<langle>c #\<^bsub>n'''\<^esub> inf_llist t\<rangle>) = x" by (simp add: \<open>x = the_enat \<langle>c #\<^bsub>enat i\<^esub>inf_llist t\<rangle>\<close>)
         ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat x)" by simp
@@ -1651,7 +1651,7 @@ next
     qed
   qed
   ultimately have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))"
-    using `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` validCI_act[of n c t "\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')" t']
+    using \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> validCI_act[of n c t "\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')" t']
     by blast
   thus ?thesis using until_def by simp
 qed
@@ -1671,22 +1671,22 @@ proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
   moreover from assms(1) assms(2) have "\<not>(\<exists>i'\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)" by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'))"
-    using validCE_cont[of c t n' t' \<gamma>] `eval c t t' n' \<gamma>` by blast
-  moreover from `n'\<ge>n` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_mono by simp
+    using validCE_cont[of c t n' t' \<gamma>] \<open>eval c t t' n' \<gamma>\<close> by blast
+  moreover from \<open>n'\<ge>n\<close> have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_mono by simp
   moreover have "\<forall>x::nat\<ge> \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). x<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n') \<longrightarrow> \<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x"
   proof (rule HOL.allI[OF HOL.impI[OF HOL.impI]])
     fix x assume "x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" and "x<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')"
   
-    from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<langle>c \<and> t\<rangle> \<le> n" using `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` lActive_less by auto
-    with `x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n" using p2c_mono_c2p by simp
-    moreover from `\<langle>c \<and> t\<rangle> \<le> n` \<open>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<le> x\<close> have "x \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
+    from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<langle>c \<and> t\<rangle> \<le> n" using \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> lActive_less by auto
+    with \<open>x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)\<close> have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n" using p2c_mono_c2p by simp
+    moreover from \<open>\<langle>c \<and> t\<rangle> \<le> n\<close> \<open>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<le> x\<close> have "x \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
       using cnf2bhv_ge_llength dual_order.trans by blast
-    with `x<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')` have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) < n'" using c2p_mono_p2c_strict[of c t x n'] by simp
-    moreover from \<open>\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> `\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n` have "\<not> (\<exists>i''\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i''\<^esub>)" by auto
+    with \<open>x<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n')\<close> have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) < n'" using c2p_mono_p2c_strict[of c t x n'] by simp
+    moreover from \<open>\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> \<open>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> n\<close> have "\<not> (\<exists>i''\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i''\<^esub>)" by auto
     ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)) \<gamma>'" using a1[of "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"] by simp
     with \<open>\<not> (\<exists>i''\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x. \<parallel>c\<parallel>\<^bsub>t i''\<^esub>)\<close>
       have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))"
-      using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>'] `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+      using validCE_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" t' \<gamma>'] \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
     moreover have "x \<ge> the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1"
       using \<open>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n) \<le> x\<close> cnf2bhv_def by auto
     ultimately show "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (x)"
@@ -1694,13 +1694,13 @@ proof cases
   qed   
   ultimately have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))"
     using validCI_cont[of c t n "\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')" t']
-    `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i'\<ge>n. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)` by blast
+    \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i'\<ge>n. \<parallel>c\<parallel>\<^bsub>t i'\<^esub>)\<close> by blast
   thus ?thesis using until_def by simp
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   with assms have "\<exists>n''\<ge>n. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'' \<and>
     (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n')" using validCE_not_act by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))"
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))"
     using validCI_not_act[where \<gamma>="\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"] by blast
   thus ?thesis using until_def by simp
 qed
@@ -1718,42 +1718,42 @@ lemma untilEA[elim]:
       \<and> (\<forall>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval c t t' n'' \<gamma>') \<or>
     (\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)) \<and> eval c t t' n' \<gamma> \<and> (\<forall>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < n' \<longrightarrow> eval c t t' n'' \<gamma>'))"
 proof -
-  from `eval c t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)`
+  from \<open>eval c t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)\<close>
     have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))" using until_def by simp
-  with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` obtain x
+  with \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> obtain x
     where "x\<ge>the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>" and "\<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x"
     and a1: "\<forall>x'\<ge>the_enat \<langle>c #\<^bsub>enat n\<^esub>inf_llist t\<rangle>. x' < x \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) x'"
     using validCE_act[where \<gamma>="\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"] by blast
   thus ?thesis
   proof (cases)
     assume "x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
-    moreover from `(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
+    moreover from \<open>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<noteq>\<infinity>"
       by (metis infinity_ileE)
-    moreover from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<ge>1"
+    moreover from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<ge>1"
       using proj_one[of "inf_llist t"] by auto
     ultimately have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x"
       by (metis One_nat_def Suc_ile_eq antisym_conv2 diff_Suc_less enat_ord_simps(2)
           enat_the_enat less_imp_diff_less one_enat_def)
     hence "x = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x))" using cnf2bhv_bhv2cnf by simp
-    with `\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x`
+    with \<open>\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x\<close>
       have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))" by simp
     moreover have "\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
     proof -
-      from `x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+      from \<open>x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
         using llength_geq_enat_lfiniteD[of "\<pi>\<^bsub>c\<^esub>(inf_llist t)" x] by simp
       then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
-      moreover from `the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x` have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
+      moreover from \<open>the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x\<close> have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
         using bhv2cnf_greater_lActive by simp
       ultimately show ?thesis using lActive_greater_active_all by simp
     qed
     ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x) \<gamma>"
-      using `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` validCI_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"] by blast
+      using \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> validCI_cont[of c t "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"] by blast
     moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
     proof -
-      from `x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
+      from \<open>x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))"
         using llength_geq_enat_lfiniteD[of "\<pi>\<^bsub>c\<^esub>(inf_llist t)" x] by simp
       then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
-      moreover from `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
+      moreover from \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
       ultimately have "\<langle>c \<and> t\<rangle>\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using lActive_greatest by fastforce
       moreover have "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<and> t\<rangle>" by simp
       ultimately show "\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<ge> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" by arith
@@ -1766,13 +1766,13 @@ proof -
         show "eval c t t' n'' \<gamma>'"
         proof cases
           assume "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-          with `n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>` have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
-            using nAct_mono_lNact `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by simp
+          with \<open>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
+            using nAct_mono_lNact \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by simp
           moreover have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>)<x"
           proof -
             from \<open>\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "eSuc \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle> \<le> llength (\<pi>\<^bsub>c\<^esub>inf_llist t)"
               using nAct_llength_proj by auto
-            with `x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))` have "eSuc \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle> \<le> x" by simp
+            with \<open>x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))\<close> have "eSuc \<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle> \<le> x" by simp
             moreover have "\<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle>\<noteq>\<infinity>" by simp
             ultimately have "Suc (the_enat(\<langle>c #\<^bsub>enat n''\<^esub>inf_llist t\<rangle>)) \<le> x"
               by (metis enat.distinct(2) the_enat.simps the_enat_eSuc the_enat_mono)
@@ -1780,7 +1780,7 @@ proof -
           qed
           ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>))"
             using a1 by auto
-          with `\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis using validCI_act by blast      
+          with \<open>\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using validCI_act by blast      
         next
           assume "\<not>(\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
           moreover have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'') \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
@@ -1794,15 +1794,15 @@ proof -
             hence "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'') > the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1" using cnf2bhv_greater_llength by simp
             ultimately show ?thesis by simp
           qed
-          moreover from `\<not>(\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<langle>c \<and> t\<rangle> \<le> n''" using assms(1) lActive_less by auto
-            with `n'' < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x` have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'')<x" using p2c_mono_c2p_strict by simp
+          moreover from \<open>\<not>(\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<langle>c \<and> t\<rangle> \<le> n''" using assms(1) lActive_less by auto
+            with \<open>n'' < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>x\<close> have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'')<x" using p2c_mono_c2p_strict by simp
           ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n''))"
             using a1 by auto
-          with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using validCI_cont by blast              
+          with \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using validCI_cont by blast              
         qed
       qed
     qed
-    ultimately show ?thesis using `\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` by blast
+    ultimately show ?thesis using \<open>\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by blast
   next
     assume "\<not>(x \<ge> llength (\<pi>\<^bsub>c\<^esub>(inf_llist t)))"
     hence "x<llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))" by simp
@@ -1816,18 +1816,18 @@ proof -
         assume "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub> \<le> n''" and "n'' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>"
         hence "the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>)"
           using nAct_same by simp
-        moreover from `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<^esub>" using nxtActI by auto
-        with `n'' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>` have "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using dual_order.strict_implies_order by auto
+        moreover from \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> have "\<parallel>c\<parallel>\<^bsub>t \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<^esub>" using nxtActI by auto
+        with \<open>n'' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>i\<^esub>\<close> have "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using dual_order.strict_implies_order by auto
         moreover have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>))"
         proof -
           have "enat i - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-          with `x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>` `i\<ge>n'` `\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)` have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
+          with \<open>x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>\<close> \<open>i\<ge>n'\<close> \<open>\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)\<close> have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
             using one_enat_def nAct_not_active_same by simp
           moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
           ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce        
-          thus ?thesis using `\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x` by blast
+          thus ?thesis using \<open>\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x\<close> by blast
         qed
-        with `the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>)` have
+        with \<open>the_enat (\<langle>c #\<^bsub>enat i\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>)\<close> have
           "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>enat n''\<^esub> inf_llist t\<rangle>))" by simp
         ultimately show "eval c t t' n'' \<gamma>" using validCI_act by blast
       qed
@@ -1835,13 +1835,13 @@ proof -
     moreover have "i\<ge>\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
     proof -
       have "enat i - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-      with `x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>` `i\<ge>n'` `\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)` have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
+      with \<open>x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>\<close> \<open>i\<ge>n'\<close> \<open>\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)\<close> have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
         using one_enat_def nAct_not_active_same by simp
       moreover have "\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
       ultimately have "x=the_enat(\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)" by fastforce        
-      with `x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)`
+      with \<open>x\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)\<close>
         have "the_enat (\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>)\<ge>the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)" by simp
-      with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis using active_geq_nxtAct by simp
+      with \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> show ?thesis using active_geq_nxtAct by simp
     qed
     moreover have "\<forall>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub> \<longrightarrow> eval c t t' n'' \<gamma>'"
     proof
@@ -1849,26 +1849,26 @@ proof -
       proof (rule HOL.impI[OF HOL.impI])
         assume "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n''" and "n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>"
         moreover have "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>\<le>i" by simp
-        ultimately have "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` by (meson less_le less_le_trans)
-        with `n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>` have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
-          using nAct_mono_lNact `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by simp
+        ultimately have "\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by (meson less_le less_le_trans)
+        with \<open>n''\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<close> have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) \<ge> the_enat (\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>)"
+          using nAct_mono_lNact \<open>\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by simp
         moreover have "the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>) < x"
         proof -
-          from `n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>` \<open>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub> \<le> i\<close> have "n'' < i" using dual_order.strict_trans1 by arith
-          with `n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>` have "\<exists>i'\<ge>n''. i' < i \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using lNact_least[of i n''] by fastforce
+          from \<open>n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>\<close> \<open>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub> \<le> i\<close> have "n'' < i" using dual_order.strict_trans1 by arith
+          with \<open>n'' < \<langle>c \<Leftarrow> t\<rangle>\<^bsub>i\<^esub>\<close> have "\<exists>i'\<ge>n''. i' < i \<and> \<parallel>c\<parallel>\<^bsub>t i'\<^esub>" using lNact_least[of i n''] by fastforce
           hence "\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle> < \<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>" using nAct_less by auto
           moreover have "enat i - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-          with `x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>` `i\<ge>n'` `\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)` have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
+          with \<open>x=\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>\<close> \<open>i\<ge>n'\<close> \<open>\<not> (\<exists>k\<ge>n'. k < i \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)\<close> have "x=\<langle>c #\<^bsub>i\<^esub> inf_llist t\<rangle>"
             using one_enat_def nAct_not_active_same by simp    
           moreover have "\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>\<noteq>\<infinity>" by simp
           ultimately show ?thesis by (metis enat_ord_simps(2) enat_the_enat)
         qed
         ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat (\<langle>c #\<^bsub>n''\<^esub> inf_llist t\<rangle>))"
           using a1 by auto
-        with `\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` show "eval c t t' n'' \<gamma>'" using validCI_act by blast
+        with \<open>\<exists>i\<ge>n''. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> show "eval c t t' n'' \<gamma>'" using validCI_act by blast
       qed
     qed
-    ultimately show ?thesis using `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` by auto
+    ultimately show ?thesis using \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by auto
   qed    
 qed
 
@@ -1884,15 +1884,15 @@ lemma untilEN[elim]:
     (\<forall>n''\<ge>n. n'' < n' \<longrightarrow> eval c t t' n'' \<gamma>')"
 proof cases
   assume "\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  moreover from `eval c t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)`
+  moreover from \<open>eval c t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)\<close>
     have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))" using until_def by simp
   ultimately have "\<exists>n''\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n'' \<and>
     (\<forall>n'\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). n' < n'' \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n')"
     using validCE_cont[where \<gamma>="\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"]
-    `\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+    \<open>\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
   then obtain x where "x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" and "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x"
     and "\<forall>x'\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). x'<x \<longrightarrow> \<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x'" by auto
-  moreover from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x"
+  moreover from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x"
   proof -
     have "\<langle>c \<and> t\<rangle> < n"
     proof (rule ccontr)
@@ -1903,21 +1903,21 @@ proof cases
       ultimately show False using \<open>\<not> (\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> by simp
     qed
     hence "the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)" using cnf2bhv_greater_llength by simp
-    with `x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` show ?thesis by simp
+    with \<open>x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)\<close> show ?thesis by simp
   qed
   hence "x = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x))" using cnf2bhv_bhv2cnf by simp
   ultimately have "\<gamma> (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)))" by simp
-  moreover from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
+  moreover from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<not>(\<exists>i\<ge>\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x). \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
   proof -
-    from `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by simp
+    from \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "lfinite (\<pi>\<^bsub>c\<^esub>(inf_llist t))" using proj_finite2 by simp
     then obtain z where "\<forall>n''>z. \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>" using proj_finite_bound by blast
-    moreover from `the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x` have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
+    moreover from \<open>the_enat (llength (\<pi>\<^bsub>c\<^esub>(inf_llist t))) - 1 < x\<close> have "\<langle>c \<and> t\<rangle> < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
       using bhv2cnf_greater_lActive by simp
     ultimately show ?thesis using lActive_greater_active_all by simp
   qed      
-  ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)) \<gamma>" using validCI_cont `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
-  moreover from `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` have "\<langle>c \<and> t\<rangle> \<le> n" using lActive_less[of c t _ n] by auto
-  with `x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)` have "n \<le> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" using p2c_mono_c2p by blast
+  ultimately have "eval c t t' (\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)) \<gamma>" using validCI_cont \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
+  moreover from \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>\<not>(\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> have "\<langle>c \<and> t\<rangle> \<le> n" using lActive_less[of c t _ n] by auto
+  with \<open>x\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n)\<close> have "n \<le> \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)" using p2c_mono_c2p by blast
   moreover have "\<forall>n''\<ge>n. n'' < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x) \<longrightarrow> eval c t t' n'' \<gamma>'"
   proof (rule HOL.allI[OF HOL.impI[OF HOL.impI]])
     fix n'' assume "n \<le> n''" and "n'' < \<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x)"
@@ -1926,19 +1926,19 @@ proof cases
     with \<open>\<langle>c \<and> t\<rangle> \<le> n\<close> \<open>n \<le> n''\<close> have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'')<\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x))" using cnf2bhv_mono_strict by simp
     with \<open>x = \<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(\<^bsub>c\<^esub>\<up>\<^bsub>t\<^esub>(x))\<close> have "\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n'')< x" by simp
     ultimately have "\<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n''))"
-      using `\<forall>x'\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). x'<x \<longrightarrow> \<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x'` by simp
-    moreover from `n \<le> n''` have "\<nexists>i. i\<ge>n'' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using `\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by simp
-    ultimately show "eval c t t' n'' \<gamma>'" using validCI_cont using `\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` by blast
+      using \<open>\<forall>x'\<ge>\<^bsub>c\<^esub>\<down>\<^bsub>t\<^esub>(n). x'<x \<longrightarrow> \<gamma>' (lnth ((\<pi>\<^bsub>c\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) x'\<close> by simp
+    moreover from \<open>n \<le> n''\<close> have "\<nexists>i. i\<ge>n'' \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>" using \<open>\<nexists>i. i\<ge>n \<and> \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by simp
+    ultimately show "eval c t t' n'' \<gamma>'" using validCI_cont using \<open>\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> by blast
   qed
   ultimately show ?thesis by auto
 next
   assume "\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval c t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)`
+  moreover from \<open>eval c t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)\<close>
     have "eval c t t' n (\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'))" using until_def by simp
   ultimately have "\<exists>n''\<ge>n. \<gamma> (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n''
-    \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n')" using `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)`
+    \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' (lnth (\<pi>\<^bsub>c\<^esub>inf_llist t @\<^sub>l inf_llist t')) n')" using \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close>
     validCE_not_act[where \<gamma>="\<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"] by blast
-  with `\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using validCI_not_act by blast
+  with \<open>\<not>(\<exists>i. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)\<close> show ?thesis using validCI_not_act by blast
 qed
   
 subsubsection "Weak Until"

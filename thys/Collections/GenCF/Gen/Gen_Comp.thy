@@ -1,4 +1,4 @@
-section {* \isaheader{Generic Compare Algorithms} *}
+section \<open>\isaheader{Generic Compare Algorithms}\<close>
 theory Gen_Comp
 imports 
   "../Intf/Intf_Comp"
@@ -6,7 +6,7 @@ imports
   "HOL-Library.Product_Lexorder"
 begin
 
-subsection {* Order for Product *}
+subsection \<open>Order for Product\<close>
 (* TODO: Optimization? Or only go via prod_cmp? *)
 lemma autoref_prod_cmp_dflt_id[autoref_rules_raw]: 
   "(dflt_cmp (\<le>) (<), dflt_cmp (\<le>) (<)) \<in>

@@ -4,7 +4,7 @@
     Author:     Jesús Aransay <jesus-maria.aransay at unirioja.es>
 *)
 
-section{*Examples of execution using floats and IArrays*}
+section\<open>Examples of execution using floats and IArrays\<close>
 
 theory Examples_QR_IArrays_Float
 imports
@@ -12,7 +12,7 @@ imports
   Gauss_Jordan.Code_Real_Approx_By_Float_Haskell
 begin
 
-subsection{*Examples*}
+subsection\<open>Examples\<close>
 
 definition "example1 = (let A = list_of_list_to_matrix [[1,2,4],[9,4,5],[0,0,0]]::real^3^3 in 
   iarray_of_iarray_to_list_of_list (matrix_to_iarray (divide_by_norm A)))"
@@ -54,8 +54,8 @@ definition "example5b = (let A = IArray[IArray[1,2,4],IArray[9,4,5],IArray[0,0,4
 definition "example6b = (let A = IArray [IArray[1,sqrt 2,4],IArray[sqrt 5,4,5],IArray[0,sqrt 7,4]]
   in iarray_of_iarray_to_list_of_list (fst (QR_decomposition_iarrays A)))"
 
-text{*The following example is presented in Chapter 1 of the book
-@{text "Numerical Methods in Scientific Computing"} by Dahlquist and Bjorck*}
+text\<open>The following example is presented in Chapter 1 of the book
+\<open>Numerical Methods in Scientific Computing\<close> by Dahlquist and Bjorck\<close>
 
 definition "book_example = (let A = list_of_list_to_matrix 
   [[1,-0.6691],[1,-0.3907],[1,-0.1219],[1,0.3090],[1,0.5878]]::real^2^5; 

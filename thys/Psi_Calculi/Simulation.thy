@@ -55,7 +55,7 @@ proof(auto simp add: simulation_def)
         by(rule_tac xvec=xvec and c="(\<Psi>, M, Q, N, P, Q', xvec, C)" in name_list_avoiding)
           (auto simp add: eqvts fresh_star_prod)
 
-      from `(p \<bullet> xvec) \<sharp>* M` `distinctPerm p` have "xvec \<sharp>* (p \<bullet> M)"
+      from \<open>(p \<bullet> xvec) \<sharp>* M\<close> \<open>distinctPerm p\<close> have "xvec \<sharp>* (p \<bullet> M)"
         by(subst pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst, where pi=p, symmetric]) simp
 
       assume Trans: "\<Psi> \<rhd> Q \<longmapsto>M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> Q'"
@@ -70,10 +70,10 @@ proof(auto simp add: simulation_def)
         by(drule_tac Sim) auto
       hence "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto>(p \<bullet> (M\<lparr>\<nu>*(p \<bullet> xvec)\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> P'))"
         by(rule_tac semantics.eqvt)
-      with `xvec \<sharp>* \<Psi>` xvecFreshPsi `xvec \<sharp>* P` xvecFreshP S dpr
+      with \<open>xvec \<sharp>* \<Psi>\<close> xvecFreshPsi \<open>xvec \<sharp>* P\<close> xvecFreshP S dpr
       have "\<Psi> \<rhd> P \<longmapsto>(p \<bullet> M)\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (p \<bullet> P')"
         by(simp add: eqvts name_set_fresh_fresh)
-      with `xvec \<sharp>* \<Psi>` xvecFreshPsi `xvec \<sharp>* P` xvecFreshP S `xvec \<sharp>* (p \<bullet> M)`
+      with \<open>xvec \<sharp>* \<Psi>\<close> xvecFreshPsi \<open>xvec \<sharp>* P\<close> xvecFreshP S \<open>xvec \<sharp>* (p \<bullet> M)\<close>
       have "\<Psi> \<rhd> P \<longmapsto>(p \<bullet> p \<bullet> M)\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> (p \<bullet> P')"
        by(rule_tac outputPermSubject)
          (simp add: fresh_star_def | assumption)+
@@ -88,7 +88,7 @@ proof(auto simp add: simulation_def)
         by(auto simp add: eqvts)
 
 
-      with `xvec \<sharp>* \<Psi>` xvecFreshPsi S dpr have "(\<Psi>, p \<bullet> P', Q') \<in> Rel" by simp
+      with \<open>xvec \<sharp>* \<Psi>\<close> xvecFreshPsi S dpr have "(\<Psi>, p \<bullet> P', Q') \<in> Rel" by simp
       ultimately have "\<exists>P'. \<Psi> \<rhd> P \<longmapsto> M\<lparr>\<nu>*xvec\<rparr>\<langle>N\<rangle> \<prec> P' \<and> (\<Psi>, P', Q') \<in> Rel"
         by blast
     }
@@ -128,10 +128,10 @@ lemma simIChainFresh[consumes 4, case_names cSim]:
                          bn \<alpha> \<sharp>* subject \<alpha>; distinct(bn \<alpha>); bn \<alpha> \<sharp>* C; xvec \<sharp>* \<alpha>; xvec \<sharp>* Q'\<rbrakk> \<Longrightarrow>
                          \<exists>P'. \<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> P' \<and> (\<Psi>, P', Q') \<in> Rel"
   shows "\<Psi> \<rhd> P \<leadsto>[Rel] Q"
-using `eqvt Rel`
+using \<open>eqvt Rel\<close>
 proof(induct rule: simI[where C="(xvec, C)"])
   case(cSim \<alpha> Q')
-  from `bn \<alpha> \<sharp>* (xvec, C)` have "bn \<alpha> \<sharp>* xvec" and "bn \<alpha> \<sharp>* C" by(simp add: freshChainSym)+ 
+  from \<open>bn \<alpha> \<sharp>* (xvec, C)\<close> have "bn \<alpha> \<sharp>* xvec" and "bn \<alpha> \<sharp>* C" by(simp add: freshChainSym)+ 
   obtain p::"name prm" where "(p \<bullet> xvec) \<sharp>* \<Psi>" and  "(p \<bullet> xvec) \<sharp>* P" and  "(p \<bullet> xvec) \<sharp>* Q"
                          and  "(p \<bullet> xvec) \<sharp>* \<alpha>" and S: "set p \<subseteq> set xvec \<times> set(p \<bullet> xvec)"
                          and "distinctPerm p"
@@ -139,64 +139,64 @@ proof(induct rule: simI[where C="(xvec, C)"])
   show ?case
   proof(cases rule: actionCases[where \<alpha>=\<alpha>])
     case(cInput M N)
-    from `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha>=M\<lparr>N\<rparr>` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<longmapsto>(p \<bullet> (M\<lparr>N\<rparr> \<prec> Q'))"
+    from \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>\<alpha>=M\<lparr>N\<rparr>\<close> have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<longmapsto>(p \<bullet> (M\<lparr>N\<rparr> \<prec> Q'))"
       by(fastforce intro: semantics.eqvt)
-    with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` `xvec \<sharp>* Q` `(p \<bullet> xvec) \<sharp>* Q` S
+    with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>xvec \<sharp>* Q\<close> \<open>(p \<bullet> xvec) \<sharp>* Q\<close> S
     have QTrans: "\<Psi> \<rhd> Q \<longmapsto>(p \<bullet> M)\<lparr>(p \<bullet> N)\<rparr> \<prec> (p \<bullet> Q')"
       by(simp add: eqvts)
-    moreover from `(p \<bullet> xvec) \<sharp>* \<alpha>` have "(p \<bullet> (p \<bullet> xvec)) \<sharp>* (p \<bullet> \<alpha>)"
+    moreover from \<open>(p \<bullet> xvec) \<sharp>* \<alpha>\<close> have "(p \<bullet> (p \<bullet> xvec)) \<sharp>* (p \<bullet> \<alpha>)"
       by(simp only: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])  
-    with `distinctPerm p` `\<alpha>=M\<lparr>N\<rparr>` have "xvec \<sharp>* (p \<bullet> M)" and "xvec \<sharp>* (p \<bullet> N)" by simp+
-    moreover with QTrans `xvec \<sharp>* Q` have "xvec \<sharp>* (p \<bullet> Q')" by(rule_tac inputFreshChainDerivative)
+    with \<open>distinctPerm p\<close> \<open>\<alpha>=M\<lparr>N\<rparr>\<close> have "xvec \<sharp>* (p \<bullet> M)" and "xvec \<sharp>* (p \<bullet> N)" by simp+
+    moreover with QTrans \<open>xvec \<sharp>* Q\<close> have "xvec \<sharp>* (p \<bullet> Q')" by(rule_tac inputFreshChainDerivative)
     ultimately have "\<exists>P'. \<Psi> \<rhd> P \<longmapsto> (p \<bullet> M)\<lparr>(p \<bullet> N)\<rparr> \<prec> P' \<and> (\<Psi>, P', (p \<bullet> Q')) \<in> Rel"
       by(rule_tac Sim) (assumption | simp)+
     then obtain P' where PTrans: "\<Psi> \<rhd> P \<longmapsto> (p \<bullet> M)\<lparr>(p \<bullet> N)\<rparr> \<prec> P'" and P'RelQ': "(\<Psi>, P', (p \<bullet> Q')) \<in> Rel"
       by blast
     from PTrans have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto> (p \<bullet> ((p \<bullet> M)\<lparr>(p \<bullet> N)\<rparr> \<prec> P'))"
       by(rule semantics.eqvt)
-    with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` `xvec \<sharp>* P` `(p \<bullet> xvec) \<sharp>* P` S `distinctPerm p`
+    with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>xvec \<sharp>* P\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close> S \<open>distinctPerm p\<close>
     have "\<Psi> \<rhd> P \<longmapsto> M\<lparr>N\<rparr> \<prec> (p \<bullet> P')" by(simp add: eqvts)
-    moreover from P'RelQ' `eqvt Rel` have "(p \<bullet> \<Psi>, p \<bullet> P', p \<bullet> p \<bullet> Q') \<in> Rel"
+    moreover from P'RelQ' \<open>eqvt Rel\<close> have "(p \<bullet> \<Psi>, p \<bullet> P', p \<bullet> p \<bullet> Q') \<in> Rel"
       by(auto simp add: eqvt_def)
-    with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S `distinctPerm p`
+    with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S \<open>distinctPerm p\<close>
     have "(\<Psi>, p \<bullet> P', Q') \<in> Rel" by simp
-    ultimately show ?thesis using `\<alpha>=M\<lparr>N\<rparr>` by blast
+    ultimately show ?thesis using \<open>\<alpha>=M\<lparr>N\<rparr>\<close> by blast
   next
     case(cOutput M yvec N)
-    from `distinct(bn \<alpha>)` `bn \<alpha> \<sharp>* subject \<alpha>` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` have "distinct yvec" and "yvec \<sharp>* M" by simp+
-    from `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<longmapsto>(p \<bullet> (M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle> \<prec> Q'))"
+    from \<open>distinct(bn \<alpha>)\<close> \<open>bn \<alpha> \<sharp>* subject \<alpha>\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> have "distinct yvec" and "yvec \<sharp>* M" by simp+
+    from \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> Q) \<longmapsto>(p \<bullet> (M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle> \<prec> Q'))"
       by(fastforce intro: semantics.eqvt)
-    with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` `xvec \<sharp>* Q` `(p \<bullet> xvec) \<sharp>* Q` S
+    with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>xvec \<sharp>* Q\<close> \<open>(p \<bullet> xvec) \<sharp>* Q\<close> S
     have QTrans: "\<Psi> \<rhd> Q \<longmapsto>(p \<bullet> M)\<lparr>\<nu>*(p \<bullet> yvec)\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> (p \<bullet> Q')"
       by(simp add: eqvts)
-    with S `bn \<alpha> \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* \<alpha>` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` have "\<Psi> \<rhd> Q \<longmapsto>(p \<bullet> M)\<lparr>\<nu>*yvec\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> (p \<bullet> Q')"
+    with S \<open>bn \<alpha> \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* \<alpha>\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> have "\<Psi> \<rhd> Q \<longmapsto>(p \<bullet> M)\<lparr>\<nu>*yvec\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> (p \<bullet> Q')"
       by simp
-    moreover from `(p \<bullet> xvec) \<sharp>* \<alpha>` have "(p \<bullet> (p \<bullet> xvec)) \<sharp>* (p \<bullet> \<alpha>)"
+    moreover from \<open>(p \<bullet> xvec) \<sharp>* \<alpha>\<close> have "(p \<bullet> (p \<bullet> xvec)) \<sharp>* (p \<bullet> \<alpha>)"
       by(simp only: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])  
-    with `distinctPerm p` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` have "xvec \<sharp>* (p \<bullet> M)" and "xvec \<sharp>* (p \<bullet> N)" and "xvec \<sharp>* (p \<bullet> yvec)" by simp+
-    moreover with QTrans `xvec \<sharp>* Q` `distinct yvec` `yvec \<sharp>* M` have "xvec \<sharp>* (p \<bullet> Q')"
+    with \<open>distinctPerm p\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> have "xvec \<sharp>* (p \<bullet> M)" and "xvec \<sharp>* (p \<bullet> N)" and "xvec \<sharp>* (p \<bullet> yvec)" by simp+
+    moreover with QTrans \<open>xvec \<sharp>* Q\<close> \<open>distinct yvec\<close> \<open>yvec \<sharp>* M\<close> have "xvec \<sharp>* (p \<bullet> Q')"
       by(drule_tac outputFreshChainDerivative(2)) (auto simp add: pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst])
-    moreover from `yvec \<sharp>* M` S `bn \<alpha> \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* \<alpha>` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` `distinctPerm p`
+    moreover from \<open>yvec \<sharp>* M\<close> S \<open>bn \<alpha> \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* \<alpha>\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> \<open>distinctPerm p\<close>
     have "yvec \<sharp>* (p \<bullet> M)" by(subst pt_fresh_star_bij[OF pt_name_inst, OF at_name_inst, symmetric, where pi=p]) simp
     ultimately have "\<exists>P'. \<Psi> \<rhd> P \<longmapsto> (p \<bullet> M)\<lparr>\<nu>*yvec\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> P' \<and> (\<Psi>, P', (p \<bullet> Q')) \<in> Rel"
-      using `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P` `bn \<alpha> \<sharp>* Q``bn \<alpha> \<sharp>* xvec` `bn \<alpha> \<sharp>* C` `yvec \<sharp>* M` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` `distinct yvec`
+      using \<open>bn \<alpha> \<sharp>* \<Psi>\<close> \<open>bn \<alpha> \<sharp>* P\<close> \<open>bn \<alpha> \<sharp>* Q\<close>\<open>bn \<alpha> \<sharp>* xvec\<close> \<open>bn \<alpha> \<sharp>* C\<close> \<open>yvec \<sharp>* M\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> \<open>distinct yvec\<close>
       by(rule_tac Sim) auto
     then obtain P' where PTrans: "\<Psi> \<rhd> P \<longmapsto> (p \<bullet> M)\<lparr>\<nu>*yvec\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> P'" and P'RelQ': "(\<Psi>, P', (p \<bullet> Q')) \<in> Rel"
       by blast
     from PTrans have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto> (p \<bullet> ((p \<bullet> M)\<lparr>\<nu>*yvec\<rparr>\<langle>(p \<bullet> N)\<rangle> \<prec> P'))"
       by(rule semantics.eqvt)
-    with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` `xvec \<sharp>* P` `(p \<bullet> xvec) \<sharp>* P` S `distinctPerm p` `bn \<alpha> \<sharp>* xvec` `(p \<bullet> xvec) \<sharp>* \<alpha>` `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>`
+    with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> \<open>xvec \<sharp>* P\<close> \<open>(p \<bullet> xvec) \<sharp>* P\<close> S \<open>distinctPerm p\<close> \<open>bn \<alpha> \<sharp>* xvec\<close> \<open>(p \<bullet> xvec) \<sharp>* \<alpha>\<close> \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close>
     have "\<Psi> \<rhd> P \<longmapsto> M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle> \<prec> (p \<bullet> P')" by(simp add: eqvts)
-    moreover from P'RelQ' `eqvt Rel` have "(p \<bullet> \<Psi>, p \<bullet> P', p \<bullet> p \<bullet> Q') \<in> Rel"
+    moreover from P'RelQ' \<open>eqvt Rel\<close> have "(p \<bullet> \<Psi>, p \<bullet> P', p \<bullet> p \<bullet> Q') \<in> Rel"
       by(auto simp add: eqvt_def)
-    with `xvec \<sharp>* \<Psi>` `(p \<bullet> xvec) \<sharp>* \<Psi>` S `distinctPerm p`
+    with \<open>xvec \<sharp>* \<Psi>\<close> \<open>(p \<bullet> xvec) \<sharp>* \<Psi>\<close> S \<open>distinctPerm p\<close>
     have "(\<Psi>, p \<bullet> P', Q') \<in> Rel" by simp
-    ultimately show ?thesis using `\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>` by blast
+    ultimately show ?thesis using \<open>\<alpha>=M\<lparr>\<nu>*yvec\<rparr>\<langle>N\<rangle>\<close> by blast
   next
     case cTau
-    from `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha> = \<tau>` `xvec \<sharp>* Q` have "xvec \<sharp>* Q'"
+    from \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>\<alpha> = \<tau>\<close> \<open>xvec \<sharp>* Q\<close> have "xvec \<sharp>* Q'"
       by(blast dest: tauFreshChainDerivative)
-    with `\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<alpha> = \<tau>` 
+    with \<open>\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>\<alpha> = \<tau>\<close> 
     show ?thesis by(drule_tac Sim) auto
   qed
 qed
@@ -247,19 +247,19 @@ lemma simClosedAux:
 using EqvtRel
 proof(induct rule: simI[of _ _ _ _ "(\<Psi>, P, p)"])
   case(cSim \<alpha> Q')
-  from `p \<bullet> \<Psi> \<rhd> p \<bullet> Q \<longmapsto>\<alpha> \<prec> Q'` 
+  from \<open>p \<bullet> \<Psi> \<rhd> p \<bullet> Q \<longmapsto>\<alpha> \<prec> Q'\<close> 
   have "(rev p \<bullet> p \<bullet> \<Psi>) \<rhd> (rev p \<bullet> p \<bullet> Q) \<longmapsto>(rev p \<bullet> (\<alpha> \<prec> Q'))"
     by(blast dest: semantics.eqvt)
   hence "\<Psi> \<rhd> Q \<longmapsto>(rev p \<bullet> \<alpha>) \<prec> (rev p \<bullet> Q')"
     by(simp add: eqvts)
-  moreover with `bn \<alpha> \<sharp>* (\<Psi>, P, p)` have "bn \<alpha> \<sharp>* \<Psi>" and "bn \<alpha> \<sharp>* P" and "bn \<alpha> \<sharp>* p" by simp+
+  moreover with \<open>bn \<alpha> \<sharp>* (\<Psi>, P, p)\<close> have "bn \<alpha> \<sharp>* \<Psi>" and "bn \<alpha> \<sharp>* P" and "bn \<alpha> \<sharp>* p" by simp+
   ultimately obtain P' where PTrans: "\<Psi> \<rhd> P \<longmapsto>(rev p \<bullet> \<alpha>) \<prec> P'"
                          and P'RelQ': "(\<Psi>, P', rev p \<bullet> Q') \<in> Rel"
     using PSimQ
     by(force dest: simE freshChainPermSimp simp add: eqvts)
   from PTrans have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto>(p \<bullet> ((rev p \<bullet> \<alpha>) \<prec> P'))"
     by(rule semantics.eqvt)
-  with `bn \<alpha> \<sharp>* p` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto>\<alpha> \<prec> (p \<bullet> P')"
+  with \<open>bn \<alpha> \<sharp>* p\<close> have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<longmapsto>\<alpha> \<prec> (p \<bullet> P')"
     by(simp add: eqvts freshChainPermSimp)
   moreover from P'RelQ' EqvtRel have "(p \<bullet> (\<Psi>, P', rev p \<bullet> Q')) \<in> Rel"
     by(simp only: eqvt_def)
@@ -307,13 +307,13 @@ lemma transitive:
   and     Set: "{(\<Psi>, P, R) | \<Psi> P R. \<exists>Q. (\<Psi>, P, Q) \<in> Rel \<and> (\<Psi>, Q, R) \<in> Rel'} \<subseteq> Rel''"
 
   shows "\<Psi> \<rhd> P \<leadsto>[Rel''] R"
-using `eqvt Rel''`
+using \<open>eqvt Rel''\<close>
 proof(induct rule: simI[where C=Q])
   case(cSim \<alpha> R')
-  from QSimR `\<Psi> \<rhd> R \<longmapsto>\<alpha> \<prec> R'` `(bn \<alpha>) \<sharp>* \<Psi>` `(bn \<alpha>) \<sharp>* Q`
+  from QSimR \<open>\<Psi> \<rhd> R \<longmapsto>\<alpha> \<prec> R'\<close> \<open>(bn \<alpha>) \<sharp>* \<Psi>\<close> \<open>(bn \<alpha>) \<sharp>* Q\<close>
   obtain Q' where QTrans: "\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'" and Q'Rel'R': "(\<Psi>, Q', R') \<in> Rel'"
     by(blast dest: simE)
-  from PSimQ QTrans `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P`
+  from PSimQ QTrans \<open>bn \<alpha> \<sharp>* \<Psi>\<close> \<open>bn \<alpha> \<sharp>* P\<close>
   obtain P' where PTrans: "\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> P'" and P'RelQ': "(\<Psi>, P', Q') \<in> Rel"
     by(blast dest: simE)
   with PTrans Q'Rel'R' P'RelQ' Set
@@ -333,18 +333,18 @@ lemma statEqSim:
   and     C1: "\<And>\<Psi>'' R S \<Psi>'''. \<lbrakk>(\<Psi>'', R, S) \<in> Rel; \<Psi>'' \<simeq> \<Psi>'''\<rbrakk> \<Longrightarrow> (\<Psi>''', R, S) \<in> Rel'"
 
   shows "\<Psi>' \<rhd> P \<leadsto>[Rel'] Q"
-using `eqvt Rel'`
+using \<open>eqvt Rel'\<close>
 proof(induct rule: simI[of _ _ _ _ \<Psi>])
   case(cSim \<alpha> Q')
-  from `\<Psi>' \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'` `\<Psi> \<simeq> \<Psi>'`
+  from \<open>\<Psi>' \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close>
   have "\<Psi> \<rhd> Q \<longmapsto>\<alpha> \<prec> Q'" by(metis statEqTransition AssertionStatEqSym)
-  with PSimQ `bn \<alpha> \<sharp>* \<Psi>` `bn \<alpha> \<sharp>* P`
+  with PSimQ \<open>bn \<alpha> \<sharp>* \<Psi>\<close> \<open>bn \<alpha> \<sharp>* P\<close>
   obtain P' where "\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> P'" and "(\<Psi>, P', Q') \<in> Rel"
     by(blast dest: simE)
   
-  from `\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> P'` `\<Psi> \<simeq> \<Psi>'` have "\<Psi>' \<rhd> P \<longmapsto>\<alpha> \<prec> P'"
+  from \<open>\<Psi> \<rhd> P \<longmapsto>\<alpha> \<prec> P'\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close> have "\<Psi>' \<rhd> P \<longmapsto>\<alpha> \<prec> P'"
     by(rule statEqTransition)
-  moreover from `(\<Psi>, P', Q') \<in> Rel` `\<Psi> \<simeq> \<Psi>'` have "(\<Psi>', P', Q') \<in> Rel'"
+  moreover from \<open>(\<Psi>, P', Q') \<in> Rel\<close> \<open>\<Psi> \<simeq> \<Psi>'\<close> have "(\<Psi>', P', Q') \<in> Rel'"
     by(rule C1)
   ultimately show ?case by blast
 qed

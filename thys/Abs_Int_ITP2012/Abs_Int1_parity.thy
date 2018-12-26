@@ -8,22 +8,21 @@ subsection "Parity Analysis"
 
 datatype parity = Even | Odd | Either
 
-text{* Instantiation of class @{class preord} with type @{typ parity}: *}
+text\<open>Instantiation of class @{class preord} with type @{typ parity}:\<close>
 
 instantiation parity :: preord
 begin
 
-text{* First the definition of the interface function @{text"\<sqsubseteq>"}. Note that
+text\<open>First the definition of the interface function \<open>\<sqsubseteq>\<close>. Note that
 the header of the definition must refer to the ascii name @{const le} of the
-constants as @{text le_parity} and the definition is named @{text
-le_parity_def}.  Inside the definition the symbolic names can be used. *}
+constants as \<open>le_parity\<close> and the definition is named \<open>le_parity_def\<close>.  Inside the definition the symbolic names can be used.\<close>
 
 definition le_parity where
 "x \<sqsubseteq> y = (y = Either \<or> x=y)"
 
-text{* Now the instance proof, i.e.\ the proof that the definition fulfills
+text\<open>Now the instance proof, i.e.\ the proof that the definition fulfills
 the axioms (assumptions) of the class. The initial proof-step generates the
-necessary proof obligations. *}
+necessary proof obligations.\<close>
 
 instance
 proof
@@ -35,7 +34,7 @@ qed
 
 end
 
-text{* Instantiation of class @{class SL_top} with type @{typ parity}: *}
+text\<open>Instantiation of class @{class SL_top} with type @{typ parity}:\<close>
 
 instantiation parity :: SL_top
 begin
@@ -47,11 +46,11 @@ definition join_parity where
 definition Top_parity where
 "\<top> = Either"
 
-text{* Now the instance proof. This time we take a lazy shortcut: we do not
-write out the proof obligations but use the @{text goali} primitive to refer
-to the assumptions of subgoal i and @{text "case?"} to refer to the
+text\<open>Now the instance proof. This time we take a lazy shortcut: we do not
+write out the proof obligations but use the \<open>goali\<close> primitive to refer
+to the assumptions of subgoal i and \<open>case?\<close> to refer to the
 conclusion of subgoal i. The class axioms are presented in the same order as
-in the class definition. *}
+in the class definition.\<close>
 
 instance
 proof (standard, goal_cases)
@@ -67,10 +66,10 @@ qed
 end
 
 
-text{* Now we define the functions used for instantiating the abstract
+text\<open>Now we define the functions used for instantiating the abstract
 interpretation locales. Note that the Isabelle terminology is
 \emph{interpretation}, not \emph{instantiation} of locales, but we use
-instantiation to avoid confusion with abstract interpretation.  *}
+instantiation to avoid confusion with abstract interpretation.\<close>
 
 fun \<gamma>_parity :: "parity \<Rightarrow> val set" where
 "\<gamma>_parity Even = {i. i mod 2 = 0}" |
@@ -88,16 +87,16 @@ fun plus_parity :: "parity \<Rightarrow> parity \<Rightarrow> parity" where
 "plus_parity Either y  = Either" |
 "plus_parity x Either  = Either"
 
-text{* First we instantiate the abstract value interface and prove that the
-functions on type @{typ parity} have all the necessary properties: *}
+text\<open>First we instantiate the abstract value interface and prove that the
+functions on type @{typ parity} have all the necessary properties:\<close>
 
 interpretation Val_abs
 where \<gamma> = \<gamma>_parity and num' = num_parity and plus' = plus_parity
-proof (standard, goal_cases) txt{* of the locale axioms *}
+proof (standard, goal_cases) txt\<open>of the locale axioms\<close>
   fix a b :: parity
   assume "a \<sqsubseteq> b" thus "\<gamma>_parity a \<subseteq> \<gamma>_parity b"
     by(auto simp: le_parity_def)
-next txt{* The rest in the lazy, implicit way *}
+next txt\<open>The rest in the lazy, implicit way\<close>
   case 2 show ?case by(auto simp: Top_parity_def)
 next
   case 3 show ?case by auto
@@ -107,9 +106,9 @@ next
   qed (auto, presburger)
 qed
 
-text{* Instantiating the abstract interpretation locale requires no more
+text\<open>Instantiating the abstract interpretation locale requires no more
 proofs (they happened in the instatiation above) but delivers the
-instantiated abstract interpreter which we call AI: *}
+instantiated abstract interpreter which we call AI:\<close>
 
 global_interpretation Abs_Int
 where \<gamma> = \<gamma>_parity and num' = num_parity and plus' = plus_parity

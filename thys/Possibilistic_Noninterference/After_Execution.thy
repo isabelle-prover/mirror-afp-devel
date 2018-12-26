@@ -1,4 +1,4 @@
-section {* After-execution security *} 
+section \<open>After-execution security\<close> 
 
 theory After_Execution
 imports During_Execution
@@ -10,7 +10,7 @@ begin
 context PL_Indis
 begin
 
-subsection{* Setup for bisimilarities *}
+subsection\<open>Setup for bisimilarities\<close>
 
 (* Sbis: *)
 lemma Sbis_transC[consumes 3, case_names Match]: 
@@ -403,7 +403,7 @@ obtains s' where "(c,s) \<rightarrow>*t s'" and "s' \<approx> t'"
 by (metis BisT_MtransT BisT_Sym assms indis_sym)
 
 
-subsection {* Execution traces *}
+subsection \<open>Execution traces\<close>
 
 (* Partial traces, modeled as lists of configurations *) 
 primrec parTrace where
@@ -431,7 +431,7 @@ proof (induct rule: MtransC_induct)
 next
   case (Trans cf cf' cf'')
   then obtain cfl where "parTrace cfl" "hd cfl = cf" "last cfl = cf'" by auto
-  with `cf' \<rightarrow>c cf''` show ?case
+  with \<open>cf' \<rightarrow>c cf''\<close> show ?case
     by (auto intro!: exI[of _ "cfl @ [cf'']"])
 qed
 
@@ -464,7 +464,7 @@ definition "iconfig tr \<equiv> hd (fst tr)"
 lemma MtransT_Ex_finTrace:
   assumes "cf \<rightarrow>*t s" shows "\<exists>tr. finTrace tr \<and> iconfig tr = cf \<and> fstate tr = s"
 proof -
-  from `cf \<rightarrow>*t s` obtain cf' cfl where "parTrace cfl" "hd cfl = cf" "last cfl \<rightarrow>t s"
+  from \<open>cf \<rightarrow>*t s\<close> obtain cf' cfl where "parTrace cfl" "hd cfl = cf" "last cfl \<rightarrow>t s"
     by (auto simp: MtransT.simps dest!: MtransC_Ex_parTrace)
   then show ?thesis
     by (auto simp: finTrace.simps iconfig_def fstate_def
@@ -479,7 +479,7 @@ lemma finTrace_imp_MtransT:
            simp del: split_paired_Ex)
 
 subsection
-{* Relationship between during-execution and after-execution security *}
+\<open>Relationship between during-execution and after-execution security\<close>
 
 (* For the termination-sensitive versions: *)
 
@@ -530,7 +530,7 @@ proof -
 
     from cons have "(c,s) \<rightarrow>c (fst (hd cfl), snd (hd cfl))"
       unfolding parTrace_def by (auto simp add: hd_conv_nth)
-    with `c \<approx>01T d` `s \<approx> t` show ?case
+    with \<open>c \<approx>01T d\<close> \<open>s \<approx> t\<close> show ?case
     proof (cases rule: ZObisT_transC)
       case MatchS
       from cons(2)[OF cfl _ this(2,1)]
@@ -618,11 +618,11 @@ proof -
     case (MatchO d' t')
     from T[THEN mustT_MtransC, OF MatchO(1)] have "mustT d' t'" .
     from this[THEN mustT_MtransT] obtain s' where "(d', t') \<rightarrow>*t s'" ..
-    from MatchO(1) `(d', t') \<rightarrow>*t s'` have "(c, t) \<rightarrow>*t s'" by (rule MtransC_MtransT)
+    from MatchO(1) \<open>(d', t') \<rightarrow>*t s'\<close> have "(c, t) \<rightarrow>*t s'" by (rule MtransC_MtransT)
     note MtransT_Ex_finTrace[OF this]
     moreover
-    from `discr d'` `(d', t') \<rightarrow>*t s'` have "t' \<approx> s'" by (rule discr_MtransT)
-    with `fstate tr \<approx> t'`have "fstate tr \<approx> s'" by (rule indis_trans)
+    from \<open>discr d'\<close> \<open>(d', t') \<rightarrow>*t s'\<close> have "t' \<approx> s'" by (rule discr_MtransT)
+    with \<open>fstate tr \<approx> t'\<close>have "fstate tr \<approx> s'" by (rule indis_trans)
     ultimately show ?thesis
       by auto
   qed

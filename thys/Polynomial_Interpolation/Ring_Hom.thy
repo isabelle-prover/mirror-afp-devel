@@ -15,16 +15,16 @@ begin
 
 hide_const (open) mult
 
-text {*
+text \<open>
 Many standard operations can be interpreted as homomorphisms in some sense.
 Since declaring some lemmas as [simp] will interfere with existing simplification rules,
 we introduce named theorems that would be added to the simp set when necessary.
 
 The following collects distribution lemmas for homomorphisms.
-Its symmetric version can often be useful. *}
+Its symmetric version can often be useful.\<close>
 named_theorems hom_distribs
 
-subsection {* Basic Homomorphism Locales *}
+subsection \<open>Basic Homomorphism Locales\<close>
 
 locale zero_hom =
   fixes hom :: "'a :: zero \<Rightarrow> 'b :: zero"
@@ -51,10 +51,10 @@ locale semigroup_add_hom =
 locale monoid_mult_hom = one_hom hom + semigroup_mult_hom hom
   for hom :: "'a :: monoid_mult \<Rightarrow> 'b :: monoid_mult"
 begin
-  text {* Homomorphism distributes over product: *}
+  text \<open>Homomorphism distributes over product:\<close>
   lemma hom_prod_list: "hom (prod_list xs) = prod_list (map hom xs)"
     by (induct xs, auto simp: hom_distribs)
-  text {* but since it introduces unapplied @{term hom}, the reverse direction would be simp. *}
+  text \<open>but since it introduces unapplied @{term hom}, the reverse direction would be simp.\<close>
   lemmas prod_list_map_hom[simp] = hom_prod_list[symmetric]
   lemma hom_power[hom_distribs]: "hom (x ^ n) = hom x ^ n"
     by (induct n, auto simp: hom_distribs)
@@ -83,7 +83,7 @@ begin
     unfolding diff_conv_add_uminus hom_distribs..
 end
 
-subsection {* Commutativity *}
+subsection \<open>Commutativity\<close>
 
 locale ab_semigroup_mult_hom = semigroup_mult_hom hom
   for hom :: "'a :: ab_semigroup_mult \<Rightarrow> 'b :: ab_semigroup_mult"
@@ -156,7 +156,7 @@ end
 locale idom_hom = comm_ring_hom hom
   for hom :: "'a :: idom \<Rightarrow> 'b :: idom"
 
-subsection {* Division *}
+subsection \<open>Division\<close>
 
 locale idom_divide_hom = idom_hom hom
   for hom :: "'a :: idom_divide \<Rightarrow> 'b :: idom_divide" +
@@ -185,7 +185,7 @@ locale field_char_0_hom = field_hom hom
   for hom :: "'a :: field_char_0 \<Rightarrow> 'b :: field_char_0"
 
 
-subsection {* (Partial) Injectivitiy *}
+subsection \<open>(Partial) Injectivitiy\<close>
 
 locale zero_hom_0 = zero_hom +
   assumes hom_0: "\<And>x. hom x = 0 \<Longrightarrow> x = 0"
@@ -199,9 +199,9 @@ begin
   lemma hom_1_iff[iff]: "hom x = 1 \<longleftrightarrow> x = 1" using hom_1 by auto
 end
 
-text {* Next locales are at this point not interesting.
+text \<open>Next locales are at this point not interesting.
   They will retain some results when we think of polynomials.
-*}
+\<close>
 locale monoid_mult_hom_1 = monoid_mult_hom + one_hom_1
 
 locale monoid_add_hom_0 = monoid_add_hom + zero_hom_0
@@ -267,7 +267,7 @@ begin
   sublocale inj_comm_monoid_mult_hom..
 end
 
-text {* For groups, injectivity is easily ensured. *}
+text \<open>For groups, injectivity is easily ensured.\<close>
 locale inj_group_add_hom = group_add_hom + zero_hom_0
 begin
   sublocale injective hom
@@ -301,7 +301,7 @@ begin
   sublocale inj_comm_ring_hom..
 end
 
-text {* Field homomorphism is always injective. *}
+text \<open>Field homomorphism is always injective.\<close>
 context field_hom begin
   sublocale zero_hom_0
   proof (unfold_locales, rule ccontr)
@@ -317,7 +317,7 @@ context field_hom begin
   sublocale inj_idom_hom..
 end
 
-subsection {* Surjectivity and Isomorphisms *}
+subsection \<open>Surjectivity and Isomorphisms\<close>
 
 locale surjective =
   fixes f :: "'a \<Rightarrow> 'b"
@@ -476,7 +476,7 @@ sublocale inj_idom_divide_hom ..
 end
 
 
-subsection {* Example Interpretations *}
+subsection \<open>Example Interpretations\<close>
 
 interpretation of_int_hom: ring_hom of_int by (unfold_locales, auto)
 interpretation of_int_hom: comm_ring_hom of_int by (unfold_locales, auto)
@@ -488,7 +488,7 @@ interpretation of_int_hom: inj_comm_ring_hom "of_int :: int \<Rightarrow> 'a :: 
 interpretation of_int_hom: inj_idom_hom "of_int :: int \<Rightarrow> 'a :: {idom,ring_char_0}"
   by (unfold_locales, auto)
 
-text {* Somehow @{const of_rat} is defined only on @{text char_0}. *}
+text \<open>Somehow @{const of_rat} is defined only on \<open>char_0\<close>.\<close>
 interpretation of_rat_hom: field_char_0_hom "of_rat"
   by (unfold_locales, auto simp: of_rat_add of_rat_mult of_rat_inverse of_rat_minus)
 
@@ -499,7 +499,7 @@ interpretation of_real_hom: field_hom of_real by (unfold_locales, auto)
 interpretation of_real_hom: field_char_0_hom "of_real" by (unfold_locales, auto)
 
 
-text {* Constant multiplication in a semiring is only a monoid homomorphism. *}
+text \<open>Constant multiplication in a semiring is only a monoid homomorphism.\<close>
 
 interpretation mult_hom: comm_monoid_add_hom "\<lambda>x. c * x" for c :: "'a :: semiring_1"
   by (unfold_locales, auto simp: field_simps)

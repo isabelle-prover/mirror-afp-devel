@@ -31,7 +31,7 @@ subsection \<open>Subset and Union\<close>
 
 text \<open>
   For the subset operation @{term "r \<subseteq> s"} we provide two implementations. The first one (@{term
-  rs_subset}) traverses over @{term r} and then performs membership tests @{text "\<in> s"}. Its
+  rs_subset}) traverses over @{term r} and then performs membership tests \<open>\<in> s\<close>. Its
   complexity is ${\cal O}(|r| \cdot log (|s|))$. The second one (@{term rs_subset_list}) generates
   sorted lists for both @{term r} and @{term s} and then linearly checks the subset condition. Its
   complexity is ${\cal O}(|r| + |s|)$.

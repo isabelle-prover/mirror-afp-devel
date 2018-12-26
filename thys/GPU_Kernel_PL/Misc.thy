@@ -1,15 +1,15 @@
-section {* General purpose definitions and lemmas *}
+section \<open>General purpose definitions and lemmas\<close>
 
 theory Misc imports 
   Main
 begin
 
-text {* A handy abbreviation when working with maps *}
+text \<open>A handy abbreviation when working with maps\<close>
 abbreviation make_map :: "'a set \<Rightarrow> 'b \<Rightarrow> ('a \<rightharpoonup> 'b)" ("[ _ |=> _ ]")
 where
   "[ks |=> v] \<equiv> \<lambda>k. if k \<in> ks then Some v else None"
 
-text {* Projecting the components of a triple *}
+text \<open>Projecting the components of a triple\<close>
 definition "fst3 \<equiv> fst"
 definition "snd3 \<equiv> fst \<circ> snd"
 definition "thd3 \<equiv> snd \<circ> snd"
